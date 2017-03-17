@@ -625,14 +625,12 @@ public class CPDecision_Ind_Doc extends CPIDecision_Doc implements Constante {
                 varTemp = "";
             }
             // Formatage texte pour capital ex:2.50% de 156'125
-            varTemp1 = this.getTexteDocument(
-                    decisionsInd,
-                    decisionInd,
-                    4,
-                    8,
-                    JANumberFormatter
-                            .fmt(getDonneeCalcul().getMontant(getDecision().getIdDecision(),
-                                    CPDonneesCalcul.CS_TAUX_INTCAP), true, false, true, 2)).toString();
+            String taux = getDonneeCalcul().getMontant(getDecision().getIdDecision(), CPDonneesCalcul.CS_TAUX_INTCAP);
+            if (taux.isEmpty()) {
+                taux = "0";
+            }
+            varTemp1 = this.getTexteDocument(decisionsInd, decisionInd, 4, 8,
+                    JANumberFormatter.fmt(taux, true, false, false, 2)).toString();
             varTemp1 = format(new StringBuffer(varTemp1), getDonneeBase().getCapital()).toString();
             // Selon le cas, formatage du texte sur l'arrondi Ex:
             // (Arrondi au 1000 CHF supèrieur)
