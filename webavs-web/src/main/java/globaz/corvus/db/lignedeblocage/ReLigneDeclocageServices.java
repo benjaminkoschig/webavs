@@ -268,6 +268,11 @@ public class ReLigneDeclocageServices {
     }
 
     public RELigneDeblocage read(String idLigneDeblocage) {
+
+        if (idLigneDeblocage == null) {
+            throw new IllegalArgumentException("To perform a read, idLigneDeblocage must be not null");
+        }
+
         RELigneDeblocage ligneDeblocage = new RELigneDeblocage();
         ligneDeblocage.setSession(session);
         ligneDeblocage.setIdEntity(idLigneDeblocage);
