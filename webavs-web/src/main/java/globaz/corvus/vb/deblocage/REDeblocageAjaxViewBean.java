@@ -116,9 +116,9 @@ public class REDeblocageAjaxViewBean extends BJadePersistentObjectViewBean imple
         RELigneDeblocage reLigneDeblocage = new RELigneDeblocage();
         reLigneDeblocage.setIdApplicationAdressePaiement(vb.getIdApplicationAdressePaiement());
         reLigneDeblocage.setIdEntity(vb.getIdLigneDeblocage());
-        reLigneDeblocage.setIdRentePrestation(vb.getIdRentePrestation());
-        reLigneDeblocage.setIdRoleDetteEnCompta(vb.getIdRoleDetteEnCompta());
-        reLigneDeblocage.setIdSectionDetteEnCompta(vb.getIdSectionDetteEnCompta());
+        reLigneDeblocage.setIdRenteAccordee(vb.getIdRenteAccordee());
+        reLigneDeblocage.setIdRoleSection(vb.getIdRoleSection());
+        reLigneDeblocage.setIdSectionCompensee(vb.getIdSectionCompensee());
         reLigneDeblocage.setIdTiersAdressePaiement(vb.getIdTiersAdressePaiement());
         reLigneDeblocage.setIdTiersCreancier(vb.getIdTiersCreancier());
         reLigneDeblocage.setMontant(new Montant(vb.getMontant()));
@@ -140,13 +140,13 @@ public class REDeblocageAjaxViewBean extends BJadePersistentObjectViewBean imple
             vb.setIdLigneDeblocage(entity.getId());
         }
         if (entity.getIdApplicationAdressePaiement() != null) {
-            vb.setIdRentePrestation(entity.getIdRentePrestation());
+            vb.setIdRenteAccordee(entity.getIdRenteAccordee());
         }
         if (entity.getIdApplicationAdressePaiement() != null) {
-            vb.setIdRoleDetteEnCompta(entity.getIdRoleDetteEnCompta());
+            vb.setIdRoleSection(entity.getIdRoleSection());
         }
         if (entity.getIdApplicationAdressePaiement() != null) {
-            vb.setIdSectionDetteEnCompta(entity.getIdSectionDetteEnCompta());
+            vb.setIdSectionCompensee(entity.getIdSectionCompensee());
         }
         if (entity.getIdApplicationAdressePaiement() != null) {
             vb.setIdTiersAdressePaiement(entity.getIdTiersAdressePaiement());

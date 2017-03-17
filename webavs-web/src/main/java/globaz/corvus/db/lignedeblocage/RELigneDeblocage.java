@@ -84,14 +84,6 @@ public class RELigneDeblocage extends JadeEntity {
         this.idTiersCreancier = idTiersCreancier;
     }
 
-    public Long getIdRoleDetteEnCompta() {
-        return idRoleSection;
-    }
-
-    public void setIdRoleDetteEnCompta(Long idRoleDetteEnCompta) {
-        idRoleSection = idRoleDetteEnCompta;
-    }
-
     public Long getIdTiersAdressePaiement() {
         return idTiersAdressePaiement;
     }
@@ -108,14 +100,6 @@ public class RELigneDeblocage extends JadeEntity {
         this.idApplicationAdressePaiement = idApplicationAdressePaiement;
     }
 
-    public Long getIdSectionDetteEnCompta() {
-        return idSectionCompensee;
-    }
-
-    public void setIdSectionDetteEnCompta(Long idSectionDetteEnCompta) {
-        idSectionCompensee = idSectionDetteEnCompta;
-    }
-
     public Montant getMontant() {
         return montant;
     }
@@ -130,14 +114,6 @@ public class RELigneDeblocage extends JadeEntity {
 
     public void setRefPaiement(String refPaiement) {
         this.refPaiement = refPaiement;
-    }
-
-    public Long getIdRentePrestation() {
-        return idRenteAccordee;
-    }
-
-    public void setIdRentePrestation(Long idRentePrestation) {
-        idRenteAccordee = idRentePrestation;
     }
 
     public RELigneDeblocageType getType() {
@@ -187,6 +163,38 @@ public class RELigneDeblocage extends JadeEntity {
     @Override
     public boolean hasCreationSpy() {
         return true;
+    }
+
+    public Long getIdRoleSection() {
+        return idRoleSection;
+    }
+
+    public void setIdRoleSection(Long idRoleSection) {
+        this.idRoleSection = idRoleSection;
+    }
+
+    public Long getIdSectionCompensee() {
+        return idSectionCompensee;
+    }
+
+    public void setIdSectionCompensee(Long idSectionCompensee) {
+        this.idSectionCompensee = idSectionCompensee;
+    }
+
+    public Long getIdRenteAccordee() {
+        return idRenteAccordee;
+    }
+
+    public void setIdRenteAccordee(Long idRenteAccordee) {
+        this.idRenteAccordee = idRenteAccordee;
+    }
+
+    public Long getIdLot() {
+        return idLot;
+    }
+
+    public void setIdLot(Long idLot) {
+        this.idLot = idLot;
     }
 
 }

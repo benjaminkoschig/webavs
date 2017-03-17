@@ -10,9 +10,9 @@ public class RELigneDeblocageViewBean implements Serializable {
     private static final long serialVersionUID = 1L;
     private String idLigneDeblocage;
     private long idApplicationAdressePaiement;
-    private long idRentePrestation;
-    private long idRoleDetteEnCompta;
-    private long idSectionDetteEnCompta;
+    private long idRenteAccordee;
+    private long idRoleSection;
+    private long idSectionCompensee;
     private long idTiersAdressePaiement;
     private long idTiersCreancier;
     private String etatDeblocage;
@@ -35,30 +35,6 @@ public class RELigneDeblocageViewBean implements Serializable {
 
     public void setIdApplicationAdressePaiement(long idApplicationAdressePaiement) {
         this.idApplicationAdressePaiement = idApplicationAdressePaiement;
-    }
-
-    public long getIdRentePrestation() {
-        return idRentePrestation;
-    }
-
-    public void setIdRentePrestation(long idRentePrestation) {
-        this.idRentePrestation = idRentePrestation;
-    }
-
-    public long getIdRoleDetteEnCompta() {
-        return idRoleDetteEnCompta;
-    }
-
-    public void setIdRoleDetteEnCompta(long idRoleDetteEnCompta) {
-        this.idRoleDetteEnCompta = idRoleDetteEnCompta;
-    }
-
-    public long getIdSectionDetteEnCompta() {
-        return idSectionDetteEnCompta;
-    }
-
-    public void setIdSectionDetteEnCompta(long idSectionDetteEnCompta) {
-        this.idSectionDetteEnCompta = idSectionDetteEnCompta;
     }
 
     public long getIdTiersAdressePaiement() {
@@ -115,6 +91,30 @@ public class RELigneDeblocageViewBean implements Serializable {
 
     public void setRefPaiement(String refPaiement) {
         this.refPaiement = refPaiement;
+    }
+
+    public long getIdRenteAccordee() {
+        return idRenteAccordee;
+    }
+
+    public void setIdRenteAccordee(long idRenteAccordee) {
+        this.idRenteAccordee = idRenteAccordee;
+    }
+
+    public long getIdRoleSection() {
+        return idRoleSection;
+    }
+
+    public void setIdRoleSection(long idRoleSection) {
+        this.idRoleSection = idRoleSection;
+    }
+
+    public long getIdSectionCompensee() {
+        return idSectionCompensee;
+    }
+
+    public void setIdSectionCompensee(long idSectionCompensee) {
+        this.idSectionCompensee = idSectionCompensee;
     }
 
 }

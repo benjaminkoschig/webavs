@@ -143,7 +143,7 @@ public class ReLigneDeclocageServices {
         RELigneDeblocages lignesDeblocagesCompleted = new RELigneDeblocages();
         lignesDeblocagesCompleted.addAll(toCreancier(lignesDeblocages.getLigneDeblocageCreancier()));
 
-        RELingeDeblocageDetteHandler deblocageDetteHandler = new RELingeDeblocageDetteHandler(session);
+        RELigneDeblocageDetteHandler deblocageDetteHandler = new RELigneDeblocageDetteHandler(session);
         List<RELigneDeblocageDette> dettes = deblocageDetteHandler.toDette(
                 lignesDeblocages.getLigneDeblocageDetteEnCompta(), idTiers);
         lignesDeblocagesCompleted.addAll(dettes);
