@@ -66,7 +66,8 @@ public enum Infirmite {
 	/** Craniosynostoses */
 	INFIRMITE_142(52810142),
 	/** Platybasie (impression basilaire) */
-	INFIRMITE_143(52810143),
+	INFIRMITE_143(52810143),	
+
 	/**
 	 * Malformations vertébrales congénitales (vertèbres très fortement cunéïformes, vertèbres soudées en bloc type
 	 * Klippel- Feil, vertèbres aplasiques et vertèbres très fortement dysplasiques)
@@ -870,8 +871,20 @@ public enum Infirmite {
 	/** (accident) Scoliose idiopathique */
 	INFIRMITE_937(52810937),
 	/** (accident) Autres altérations des os et des organes du mouvement (ligaments, muscles et tendons) */
-	INFIRMITE_938(52810938);
+	INFIRMITE_938(52810938),
 	// @formatter:on
+
+    /**
+     * Vieux codes systemes inactifs, mais utiles pour d'anciennes demandes lors
+     * d'utilisation et d'importation de données ACOR
+     * 
+     * (K160202_002)
+     */
+    INFIRMITE_004(52810004),
+    INFIRMITE_151(52810151),
+    INFIRMITE_401(52810401),
+    INFIRMITE_426(52810426),
+    INFIRMITE_442(52810442);
 
     /**
      * Retourne l'énuméré correspondant au code système. </br><strong>Renvoie une {@link IllegalArgumentException} si la
