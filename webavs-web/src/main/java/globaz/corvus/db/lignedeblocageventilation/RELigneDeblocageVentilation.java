@@ -17,7 +17,6 @@ public class RELigneDeblocageVentilation extends JadeEntity {
 
     @Override
     protected void writeProperties() {
-        this.write(RELigneDeblocageVentilationTableDef.ID, id);
         this.write(RELigneDeblocageVentilationTableDef.ID_LIGNE_DEBLOCAGE, idLigneDeblocage);
         this.write(RELigneDeblocageVentilationTableDef.ID_SECTION_SOURCE, idSectionSource);
         this.write(RELigneDeblocageVentilationTableDef.MONTANT, montant, CONVERTER_MONTANT);
