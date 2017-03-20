@@ -200,25 +200,33 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
 
         TIAdressePaiementData detailTiers = null;
 
-        if (!JadeStringUtil.isEmpty(getIdTiersEmployeur())) {
-
+        if (!JadeStringUtil.isBlankOrZero(getIdTiersEmployeur())) {
+            
+            String idDomainPaiementEmployeur = getIdDomainePaiementEmployeur();
+            String idTiersPaiementEmployeur = getIdTiersPaiementEmployeur();
+            
             // si l'id tiers paiement employeur est déjà renseigné, nous le prenons avec son id domaine stocké
-            if (!JadeStringUtil.isEmpty(getIdTiersPaiementEmployeur())) {
+            if (!JadeStringUtil.isBlankOrZero(idTiersPaiementEmployeur)) {
 
                 detailTiers = PRTiersHelper.getAdressePaiementData(getSession(), getSession()
-                        .getCurrentThreadTransaction(), getIdTiersPaiementEmployeur(), getIdDomainePaiementEmployeur(),
+                        .getCurrentThreadTransaction(), idTiersPaiementEmployeur, idDomainPaiementEmployeur,
                         getIdAffilieEmployeur(), JACalendar.todayJJsMMsAAAA());
             } else {
                 // si un employeur défini dans la situation
 
+                idTiersPaiementEmployeur = getIdTiersEmployeur();
+                idDomainPaiementEmployeur = isAPG() ? IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_APG
+                        : IPRConstantesExternes.TIERS_CS_DOMAINE_MATERNITE;
+                
                 // nous recherchons en cascade du domaine APG ou MATERNITE
                 detailTiers = PRTiersHelper.getAdressePaiementData(getSession(), getSession()
-                        .getCurrentThreadTransaction(), getIdTiersEmployeur(),
-                        isAPG() ? IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_APG
-                                : IPRConstantesExternes.TIERS_CS_DOMAINE_MATERNITE, getIdAffilieEmployeur(), JACalendar
-                                .todayJJsMMsAAAA());
+                        .getCurrentThreadTransaction(), idTiersPaiementEmployeur, idDomainPaiementEmployeur,
+                        getIdAffilieEmployeur(), JACalendar.todayJJsMMsAAAA());
 
             }
+            setIdTiersPaiementEmployeur(idTiersPaiementEmployeur);
+            setIdDomainePaiementEmployeur(idDomainPaiementEmployeur);
+            
             final TIAdressePaiementDataSource dataSource = new TIAdressePaiementDataSource();
             dataSource.load(detailTiers);
             return new TIAdresseFormater().format(dataSource);

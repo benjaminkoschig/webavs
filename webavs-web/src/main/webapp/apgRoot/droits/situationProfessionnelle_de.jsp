@@ -132,7 +132,7 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
   
   function postInit(){
   	if (document.all('isIndependant').checked) {
-		document.forms[0].elements('isVersementEmployeur')[0].checked = true;
+  		document.forms[0].elements('isVersementEmployeur')[0].checked = true;
 		document.forms[0].elements('isVersementEmployeur')[1].checked = false;
 	  	// revenu indépendant
 	  	document.all('blockWithoutAnneeTaxation').style.display = 'none';
@@ -144,7 +144,7 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
    		document.all('blockWithoutAnneeTaxation').style.display = 'block';
 	  	document.all('blockAnneeTaxation').style.display = 'none';
    	}
-  	showisAMATFExcluded(); 
+   	showisAMATFExcluded();
   	manageAdressePaiement();
   }
   	
@@ -152,10 +152,6 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
   	// revenu indépendant
   	document.all('specialEmployeur').style.display = 'none';
   	document.forms[0].elements('isIndependant').checked = true;
-  	//si independant cocher auto. alloc. expl. sauf si non-actif
-//   	if(isPeriodeApgInPeriodeAff()){
-//   		document.forms[0].elements('isAllocationExploitation').checked = true;
-//   	}
   	
   	// on vide tous les champs des autres salaires
   	document.forms[0].elements('heuresSemaine').value = '';
@@ -209,8 +205,11 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
 		} else {
 			
 	  		document.all('specialEmployeur').style.display = 'block';
+	  		
 	  		document.forms[0].elements('isIndependant').checked = false;
 	  		
+			document.forms[0].elements('isVersementEmployeur')[0].checked = false;
+			document.forms[0].elements('isVersementEmployeur')[1].checked = true;
 	  	  	document.forms[0].elements('isVersementEmployeur')[0].disabled = false;
 		  	document.forms[0].elements('isVersementEmployeur')[1].disabled = false;
 
@@ -542,7 +541,7 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
 								<INPUT type="checkbox" name="isAllocationMax" value="on" <%=viewBean.getIsAllocationMax().booleanValue()?"CHECKED":""%>>
 							</TD>
 							<%}else{%>
-							<TD> 
+							<TD>
 								<INPUT type="hidden" name="isAllocationMax" value="">
 							</TD>
 							<%}%>
@@ -601,8 +600,7 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
 						</TR>
 						<TR>
 							<TD class="withoutAdressePaiement" colspan="2">&nbsp;</TD>
-							<TD class="withAdressePaiement"><ct:FWLabel key="JSP_ADRESSE_DE_PAIEMENT"/></TD>
-							<input type="hidden" name="crNomPrenom" value="crNomPrenom"/>
+							<TD class="withAdressePaiement"><ct:FWLabel key="JSP_ADRESSE_DE_PAIEMENT"/><input type="hidden" name="crNomPrenom" value="crNomPrenom"/></TD>
 							<% Object[] adresseParams= new Object[]{new String[]{"idTiersEmployeur","idTiers"}, new String[]{"nomEmployeur","cr1Text"}, new String[]{"crNomPrenom", "cr1"} }; %>
 							
 							<TD class="withAdressePaiement">
@@ -614,8 +612,6 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
 									providerActionParams ="<%=adresseParams%>"
 									target="fr_main"
 									redirectUrl="<%=mainServletPath%>"/>
-								<INPUT type="hidden" name="idTiersPaiementEmployeur" value="<%=viewBean.getIdTiersPaiementEmployeur()%>">
-								<INPUT type="hidden" name="idDomainePaiementEmployeur" value="<%=viewBean.getIdDomainePaiementEmployeur()%>">
 							</TD>
 							<TD><LABEL for="salaireMensuel"><ct:FWLabel key="JSP_SALAIRE_MENSUEL"/></LABEL></TD>
 							<TD><INPUT type="text" name="salaireMensuel" value="<%=viewBean.getSalaireMensuel()%>" class="montant" onchange="validateFloatNumber(this);" onkeypress="montantMensuelChange(); return filterCharForFloat(window.event);"></TD>
@@ -632,8 +628,8 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
 						</TR>
 						<TR>
 							<TD class="withoutAdressePaiement" colspan="2">&nbsp;</TD>
-							<TD class="withAdressePaiement" colspan="2">
-								<span><b><%=viewBean.getAdressePaiementEmployeur()%></b></span>
+							<TD class="withAdressePaiement" colspan="2" rowspan="2">
+								<b><%=viewBean.getAdressePaiementEmployeur()%></b>
 							</TD>
 							<TD><LABEL for="autreRemuneration"><ct:FWLabel key="JSP_AUTRE_REMUNERATION"/></LABEL></TD>
 							<TD><INPUT type="text" name="autreRemuneration" value="<%=viewBean.getAutreRemuneration()%>" class="montant" onchange="validateFloatNumber(this);" onkeypress="return filterCharForFloat(window.event);"></TD>
@@ -646,7 +642,7 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
 							</TD>
 						</TR>
 						<TR>
-							<TD colspan="2"></TD>
+							<TD class="withoutAdressePaiement" colspan="2"></TD>
 							<TD><LABEL for="salaireNature"><ct:FWLabel key="JSP_SALAIRE_NATURE"/></LABEL></TD>
 							<TD><INPUT type="text" name="salaireNature" value="<%=viewBean.getSalaireNature()%>" class="montant" onchange="validateFloatNumber(this);" onkeypress="return filterCharForFloat(window.event);"></TD>
 							<TD colspan="3"><ct:FWCodeSelectTag codeType="APPERSITP" defaut="<%=viewBean.getPeriodiciteSalaireNature()%>" name="periodiciteSalaireNature"/></TD>

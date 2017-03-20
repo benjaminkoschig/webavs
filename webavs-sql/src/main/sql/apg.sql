@@ -166,13 +166,19 @@ update SCHEMA.fwcosp set pcosli = 'MATERNITE_IMPOT_SOURCE_LAMATGE_ASSURE' where 
 update SCHEMA.fwcoup set pcolut = 'Maternité impôt à la source LAMAT cantonale Assuré' where pcosid = 237111 and plaide = 'F';
 update SCHEMA.fwcoup set pcolut = 'Mutterschaft Quellensteuer LAMAT Kantonal Versicherte' where pcosid = 237111 and plaide = 'D';
 
+
 ALTER TABLE SCHEMA.APDROIP ADD VACANT decimal(9,0);
 REORG TABLE SCHEMA.APDROIP;
 
-ALTER TABLE SCHEMA.APSIPRP ADD VFBEXL varchar(1) DEFAULT '2';
-REORG TABLE SCHEMA.APSIPRP;
+alter table SCHEMA.APCOMPP add column VNIIND CHAR(1);
+alter table SCHEMA.APCOMPP add column VNIEMP CHAR(1);
+reorg table SCHEMA.APCOMPP;
 
--- Ajout propriété S161012_001 pour ajouté le traité par dans les décisions
-INSERT INTO DB2COTT.JADEPROP (PROPNAME,PROPVAL) VALUES ('apg.amat.isAfficherDossierTraitePar.decision','false');
--- Ajout document 5037PAP
-INSERT INTO db2cott.FWDDOC (IDDOC,IDCONF,NUMREF,DESCFR,DESCDE,DESCIT,DOCTYP,PSPY,OUTXML,OUTPDF) VALUES (330,1,'5037PAP','Lettre de garde APG','','',null,'20161114082550co7001    ','2','1')
+alter table SCHEMA.APSIPRP add column VFIDDOP NUMERIC(15,0);
+alter table SCHEMA.APSIPRP add column VFIDTIP NUMERIC(15,0);
+ALTER TABLE SCHEMA.APSIPRP ADD VFBEXL varchar(1) DEFAULT '2';
+reorg table SCHEMA.APSIPRP;
+
+--Ajout propriété S161012_001 pour ajouté le traité par dans les décisions
+INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL) VALUES ('apg.amat.isAfficherDossierTraitePar.decision','false');
+INSERT INTO SCHEMA.FWDDOC (IDDOC,IDCONF,NUMREF,DESCFR,DESCDE,DESCIT,DOCTYP,PSPY,OUTXML,OUTPDF) VALUES (330,1,'5037PAP','Lettre de garde APG','','',null,'20161114082550co7001    ','2','1');

@@ -87,7 +87,6 @@ public class APSituationProfessionnelle extends BEntity implements IPRCloneable,
 
     public static final String FIELDNAME_ISAMATFEEXCLUDED = "VFBEXL";
 
-    /** DOCUMENT ME! */
     public static final String FIELDNAME_ISSITUATIONPROF = "VFBSIP";
 
     public static final String FIELDNAME_ISTRAVAILGRICOLE = "VFBTRA";
@@ -181,7 +180,6 @@ public class APSituationProfessionnelle extends BEntity implements IPRCloneable,
 
     protected Boolean isAMATFExcluded = Boolean.FALSE;
 
-    /** DOCUMENT ME! */
     protected Boolean isTravailleurAgricole = Boolean.FALSE;
 
     protected Boolean isTravailleurSansEmploi = Boolean.FALSE;
@@ -481,6 +479,7 @@ public class APSituationProfessionnelle extends BEntity implements IPRCloneable,
             _addError(transaction, getSession().getLabel("COLLABO_AGR_ET_INDEP"));
         }
 
+        // ne peut pas porté en compte ET être un versement à l'assuré
         if (isPorteEnCompte.booleanValue() && !isVersementEmployeur) {
             _addError(transaction, getSession().getLabel("VERSEMENT_ASSURE_ET_PORTER_EN_COMPTE_INTERDIT"));
         }
@@ -525,8 +524,8 @@ public class APSituationProfessionnelle extends BEntity implements IPRCloneable,
 
     private void nettoyage() {
         if (!isVersementEmployeur) {
-            idDomainePaiementEmployeur = null;
-            idTiersPaiementEmployeur = null;
+            setIdTiersPaiementEmployeur(null);
+            setIdDomainePaiementEmployeur(null);
         }
     }
 
