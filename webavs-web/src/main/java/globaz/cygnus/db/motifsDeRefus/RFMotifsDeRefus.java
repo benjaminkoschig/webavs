@@ -24,9 +24,9 @@ public class RFMotifsDeRefus extends BEntity {
     public static final String FIELDNAME_DESCRIPTION_FR = "EHLMFR";
     public static final String FIELDNAME_DESCRIPTION_IT = "EHLMIT";
 
-    public static final String FIELDNAME_DESCRIPTION_LONGUE_DE = "EHLDMI";
+    public static final String FIELDNAME_DESCRIPTION_LONGUE_DE = "EHLDMD";
     public static final String FIELDNAME_DESCRIPTION_LONGUE_FR = "EHLDMF";
-    public static final String FIELDNAME_DESCRIPTION_LONGUE_IT = "EHLDMD";
+    public static final String FIELDNAME_DESCRIPTION_LONGUE_IT = "EHLDMI";
 
     public static final String FIELDNAME_HAS_MONTANT = "EHBMNT";
     public static final String FIELDNAME_ID_MOTIF_REFUS = "EHIMOR";
