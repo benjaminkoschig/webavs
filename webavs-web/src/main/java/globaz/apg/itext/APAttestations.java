@@ -325,6 +325,7 @@ public class APAttestations extends FWIDocumentManager {
             codeIsoLangue = PRUtil.getISOLangueTiers(codeIsoLangue);
 
             crBean.setDate(JACalendar.format(date, codeIsoLangue));
+            crBean.setNomCollaborateur(getSession().getUserFullName());
             // bz-3737
             /*
              * crBean.setNoAvs(tiers.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL ) + "\n" +
@@ -339,7 +340,9 @@ public class APAttestations extends FWIDocumentManager {
 
                 crBean.setConfidentiel(true);
             }
-
+            if (!JadeStringUtil.isBlankOrZero(idTiers)) {
+                crBean.setNoAvs(tiers.getNSS());
+            }
             caisseHelper.addHeaderParameters(getImporter(), crBean);
 
             if (!JadeStringUtil.isBlankOrZero(idTiers)) {

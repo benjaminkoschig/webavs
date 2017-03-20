@@ -45,6 +45,9 @@ import globaz.globall.util.JACalendarGregorian;
 import globaz.globall.util.JADate;
 import globaz.globall.util.JAException;
 import globaz.globall.util.JANumberFormatter;
+import globaz.jade.admin.JadeAdminServiceLocatorProvider;
+import globaz.jade.admin.user.bean.JadeUser;
+import globaz.jade.admin.user.service.JadeUserService;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
 import globaz.naos.application.AFApplication;
@@ -1171,24 +1174,41 @@ public class APDecisionCommunicationAMAT extends FWIDocumentManager {
         final CaisseHeaderReportBean crBean = new CaisseHeaderReportBean();
 
         codeIsoLangue = this.codeIsoLangue;
-
         crBean.setDate(JACalendar.format(date, codeIsoLangue));
 
         try {
+            String noAVS;
+            // Si on souhaite afficher le dossier traié par qui corresond au gestionnaire
+            if (APProperties.PROPERTY_AFFICHER_TRAITE_PAR.getBooleanValue()) {
+                noAVS = tiers().getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL);
+                if (!JadeStringUtil.isBlankOrZero(droit.getIdGestionnaire())) {
+                    JadeUserService userService = JadeAdminServiceLocatorProvider.getInstance().getServiceLocator()
+                            .getUserService();
+                    JadeUser gestionnaire;
+                    try {
+                        gestionnaire = userService.load(droit.getIdGestionnaire());
+                        crBean.setNomCollaborateur(gestionnaire.getFirstname() + " " + gestionnaire.getLastname());
+                    } catch (Exception e) {
+                        throw new FWIException("Impossible de charger le gestionnaire", e);
+                    }
+                }
+
+            } else {
+                noAVS = tiers().getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL) + "\n"
+                        + tiers().getProperty(PRTiersWrapper.PROPERTY_NOM) + " "
+                        + tiers().getProperty(PRTiersWrapper.PROPERTY_PRENOM);
+
+            }
+
             if ("true".equals(getSession().getApplication().getProperty(APApplication.PROPERTY_DISPLAY_NIP))) {
                 // On concatène le NIP à la suite du nom.
                 // Car si rempli comme pour l'employeur, superposition de
                 // plusieurs ligne.
                 final String s = getSession().getLabel("NIP") + " "
                         + tiers().getProperty(PRTiersWrapper.PROPERTY_ID_TIERS);
-                crBean.setNoAvs(tiers().getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL) + "\n"
-                        + tiers().getProperty(PRTiersWrapper.PROPERTY_NOM) + " "
-                        + tiers().getProperty(PRTiersWrapper.PROPERTY_PRENOM) + "\n" + s);
-            } else {
-                crBean.setNoAvs(tiers().getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL) + "\n"
-                        + tiers().getProperty(PRTiersWrapper.PROPERTY_NOM) + " "
-                        + tiers().getProperty(PRTiersWrapper.PROPERTY_PRENOM));
+                noAVS = noAVS + "\n" + s;
             }
+            crBean.setNoAvs(noAVS);
         } catch (final Exception e) {
             crBean.setNoAvs(tiers().getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL) + "\n"
                     + tiers().getProperty(PRTiersWrapper.PROPERTY_NOM) + " "
