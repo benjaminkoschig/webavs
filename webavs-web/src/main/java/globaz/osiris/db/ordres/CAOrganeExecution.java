@@ -1257,7 +1257,8 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
 
                 // Vérifier les erreurs de comptabilisation
                 if (jrn.getEtat().equals(CAJournal.ERREUR)) {
-                    getMemoryLog().logMessage("5337", null, FWMessage.ERREUR, this.getClass().getName());
+                    getMemoryLog().logMessage(getMessageJournalErreur(jrn.getId(), jrn.getLibelle()), null,
+                            FWMessage.ERREUR, this.getClass().getName());
                 }
             }
 
@@ -1281,6 +1282,12 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
         } catch (Exception e) {
             _addError(context.getTransaction(), e.toString());
         }
+    }
+
+    private String getMessageJournalErreur(final String idJournal, final String libelle) {
+        final String messageLabel = getSession().getLabel("5360");
+
+        return MessageFormat.format(messageLabel, idJournal + " - " + libelle);
     }
 
     /**
@@ -1877,10 +1884,12 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
             }
             // Vérifier les erreurs de comptabilisation
             if (jrn.getEtat().equals(CAJournal.ERREUR)) {
+                final String message = getMessageJournalErreur(jrn.getId(), jrn.getLibelle());
+
                 if (groupTxMessage != null) {
-                    groupTxMessage.addMessage(Level.SEVERE, getSession().getLabel("5337"));
+                    groupTxMessage.addMessage(Level.SEVERE, message);
                 } else {
-                    getMemoryLog().logMessage("5337", null, FWMessage.ERREUR, this.getClass().getName());
+                    getMemoryLog().logMessage(message, null, FWMessage.ERREUR, this.getClass().getName());
                 }
             }
         }
