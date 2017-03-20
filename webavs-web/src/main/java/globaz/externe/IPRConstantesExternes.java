@@ -137,8 +137,6 @@ public interface IPRConstantesExternes {
     public static final String RFM_LETTRE_TYPE_LIT_ELECTRIQUE_QUESTIONNAIRE_CCJU = "7021PRF";
     public static final String RFM_LETTRE_TYPE_MOYENS_AUXILIAIRES_ANNEXE_BON_ACCUSE_DE_RECEPTION_BENEFICIARE_PC = "7024PRF";
 
-    // public static final String
-    // RFM_LETTRE_TYPE_MOYENS_AUXILIAIRES_ANNEXE_BON_ACHAT_ACCUSE_DE_RECPETION_BENEFICIAIRE_PC = "7026PRF";
     public static final String RFM_LETTRE_TYPE_MOYENS_AUXILIAIRES_BON_ACHAT_POUR_REMISE_EN_PRET = "7025PRF";
     public static final String RFM_LETTRE_TYPE_MOYENS_AUXILIAIRES_BON_REMISE_EN_PRET = "7023PRF";
 
@@ -158,26 +156,10 @@ public interface IPRConstantesExternes {
     public static final String TIERS_CS_DOMAINE_ALLOCATION_DE_NOEL = "64800010";
 
     public static final String TIERS_CS_DOMAINE_APPLICATION_APG = "519002";
-    public static final String TIERS_CS_DOMAINE_APPLICATION_APG_1 = "";
-    public static final String TIERS_CS_DOMAINE_APPLICATION_APG_2 = "";
-    public static final String TIERS_CS_DOMAINE_APPLICATION_APG_3 = "";
-    public static final String TIERS_CS_DOMAINE_APPLICATION_APG_4 = "";
-    public static final String TIERS_CS_DOMAINE_APPLICATION_APG_5 = "";
-    public static final String TIERS_CS_DOMAINE_APPLICATION_APG_6 = "";
-    public static final String TIERS_CS_DOMAINE_APPLICATION_APG_7 = "";
-    public static final String TIERS_CS_DOMAINE_APPLICATION_APG_8 = "";
 
     public static final String TIERS_CS_DOMAINE_APPLICATION_DEFAULT = "519004";
     public static final String TIERS_CS_DOMAINE_APPLICATION_IJAI = "519009";
     public static final String TIERS_CS_DOMAINE_APPLICATION_RENTE = "519006";
     public static final String TIERS_CS_DOMAINE_MATERNITE = "519003";
-    public static final String TIERS_CS_DOMAINE_MATERNITE_1 = "";
-    public static final String TIERS_CS_DOMAINE_MATERNITE_2 = "";
-    public static final String TIERS_CS_DOMAINE_MATERNITE_3 = "";
-    public static final String TIERS_CS_DOMAINE_MATERNITE_4 = "";
-    public static final String TIERS_CS_DOMAINE_MATERNITE_5 = "";
-    public static final String TIERS_CS_DOMAINE_MATERNITE_6 = "";
-    public static final String TIERS_CS_DOMAINE_MATERNITE_7 = "";
-    public static final String TIERS_CS_DOMAINE_MATERNITE_8 = "";
     public static final String TIERS_CS_TYPE_ADRESSE_COURRIER = "508001";
 }
