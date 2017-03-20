@@ -623,7 +623,7 @@ public class CAImportOperationsUtils {
 
                     if (section.getIdTypeSection().equals(APISection.ID_TYPE_SECTION_APG)) {
                         defaultRubrique = (CARubrique) referenceRubrique
-                                .getRubriqueByCodeReference(APIReferenceRubrique.APG_FONDS_DE_COMPENSATION);
+                                .getRubriqueByCodeReference(APIReferenceRubrique.APG_FONDS_DE_COMPENSATION_ASSURE);
                     } else if (section.getIdTypeSection().equals(APISection.ID_TYPE_SECTION_IJAI)) {
                         defaultRubrique = (CARubrique) referenceRubrique
                                 .getRubriqueByCodeReference(APIReferenceRubrique.IJAI_FONDS_DE_COMPENSATION);

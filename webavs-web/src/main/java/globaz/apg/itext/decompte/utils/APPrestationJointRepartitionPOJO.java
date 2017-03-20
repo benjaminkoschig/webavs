@@ -30,7 +30,7 @@ public class APPrestationJointRepartitionPOJO {
 
     public APPrestationJointRepartitionPOJO(final APRepartitionJointPrestation repartitionJointPrestation,
             final APSituationProfessionnelle situationProfessionnelle, final PRDepartement departement,
-            final APTypeDePrestation typeDePrestation) {
+            final APTypeDePrestation typeDePrestation, final boolean isModuleCompensationPorteEnCompteActif) {
 
         if (repartitionJointPrestation == null) {
             throw new IllegalArgumentException(
@@ -43,7 +43,7 @@ public class APPrestationJointRepartitionPOJO {
 
         prestationJointRepartition = repartitionJointPrestation;
         donneePourRegroupement = new APDonneeRegroupementDecompte(prestationJointRepartition, situationProfessionnelle,
-                departement, typeDePrestation);
+                departement, typeDePrestation, isModuleCompensationPorteEnCompteActif);
     }
 
     /**

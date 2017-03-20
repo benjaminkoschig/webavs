@@ -152,6 +152,7 @@ public class APSituationProfessionnelleAction extends PRDefaultAction {
             // on revient depuis pyxis on se contente de forwarder car le bon
             // viewBean est deja en session
             ((APSituationProfessionnelleViewBean) viewBean).setRetourDepuisPyxis(false);
+            ((APSituationProfessionnelleViewBean) viewBean).setRetourDepuisAdresse(false);
 
             ((APSituationProfessionnelleViewBean) viewBean).setRetourDesTiers(true);
 
@@ -398,8 +399,10 @@ public class APSituationProfessionnelleAction extends PRDefaultAction {
      * @return
      */
     private boolean isRetourDepuisPyxis(FWViewBeanInterface viewBean) {
-        return ((viewBean != null) && (viewBean instanceof APSituationProfessionnelleViewBean) && ((APSituationProfessionnelleViewBean) viewBean)
-                .isRetourDepuisPyxis());
+        return viewBean != null
+                && (viewBean instanceof APSituationProfessionnelleViewBean)
+                && (((APSituationProfessionnelleViewBean) viewBean).isRetourDepuisPyxis() || ((APSituationProfessionnelleViewBean) viewBean)
+                        .isRetourDepuisAdresse());
     }
 
     /**

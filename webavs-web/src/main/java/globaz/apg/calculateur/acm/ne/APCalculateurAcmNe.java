@@ -105,7 +105,8 @@ public class APCalculateurAcmNe implements IAPPrestationCalculateur {
                         final APRepartitionPaiementData repartitionPaiementData = creerRepartition(
                                 montantBrutRepartition, cotisationAvs, cotisationAc, cotisationFne,
                                 IAPRepartitionPaiements.CS_NORMAL, IAPRepartitionPaiements.CS_PAIEMENT_EMPLOYEUR,
-                                situationProf.getIdTiersEmployeur(), situationProf.getAssociation()
+                                situationProf.getIdTiersEmployeur(), situationProf.getIdTiersPaiementEmployeur(),
+                                situationProf.getIdDomainePaiementEmployeur(), situationProf.getAssociation()
                                         .getCodesystemToString(), situationProf.getId(), situationProf.getNom(),
                                 situationProf.getIdAffilie());
                         prestationAcmNe.getRepartitionsPaiementMap().add(repartitionPaiementData);
@@ -147,7 +148,8 @@ public class APCalculateurAcmNe implements IAPPrestationCalculateur {
     private APRepartitionPaiementData creerRepartition(final BigDecimal montantBrutRepartition,
             final APCotisationData cotisationAvs, final APCotisationData cotisationAc,
             final APCotisationData cotisationFne, final String typePrestation, final String typePaiement,
-            final String idTiersAdressePaiement, final String typeAssociationAssurance,
+            final String idTiersEmployeur, final String idTiersPaiementEmployeur,
+            final String idDomainePaiementEmployeur, final String typeAssociationAssurance,
             final String idSituationProfessionnelle, final String nom, final String idAffilie) {
 
         final BigDecimal montantNetRepartition = getMontantNetRepartition(montantBrutRepartition,
@@ -156,8 +158,8 @@ public class APCalculateurAcmNe implements IAPPrestationCalculateur {
 
         // création de la répartition
         final APRepartitionPaiementData repartition = new APRepartitionPaiementData(montantBrutRepartition,
-                montantNetRepartition, typePrestation, typePaiement, idTiersAdressePaiement, typeAssociationAssurance,
-                idSituationProfessionnelle, nom, idAffilie);
+                montantNetRepartition, typePrestation, typePaiement, idTiersEmployeur, idTiersPaiementEmployeur,
+                idDomainePaiementEmployeur, typeAssociationAssurance, idSituationProfessionnelle, nom, idAffilie);
         repartition.getCotisations().add(cotisationAvs);
         repartition.getCotisations().add(cotisationAc);
         if (cotisationFne != null) {
@@ -219,9 +221,10 @@ public class APCalculateurAcmNe implements IAPPrestationCalculateur {
                 apRepartitionPaiementsEntity.setTypePrestation(apRepPaiDat.getTypePrestation());
                 apRepartitionPaiementsEntity.setIdSituationProfessionnelle(apRepPaiDat.getIdSituationProfessionnelle());
                 apRepartitionPaiementsEntity.setNom(apRepPaiDat.getNom());
-                apRepartitionPaiementsEntity.setIdTiers(apRepPaiDat.getIdTiersAdressePaiement());
-                apRepartitionPaiementsEntity.setIdTiersAdressePaiement(apRepPaiDat.getIdTiersAdressePaiement());
+                apRepartitionPaiementsEntity.setIdTiers(apRepPaiDat.getIdTiersEmployeur());
+                apRepartitionPaiementsEntity.setIdTiersAdressePaiement(apRepPaiDat.getIdTiersPaiementEmployeur());
                 apRepartitionPaiementsEntity.setIdAffilie(apRepPaiDat.getIdAffilie());
+                apRepartitionPaiementsEntity.setIdDomaineAdressePaiement(apRepPaiDat.getIdDomainePaiementEmployeur());
 
                 final APRepartitionCalculeeAPersister apResRepAcmNeEntite = new APRepartitionCalculeeAPersister();
                 apResRepAcmNeEntite.setRepartitionPaiements(apRepartitionPaiementsEntity);
@@ -428,18 +431,15 @@ public class APCalculateurAcmNe implements IAPPrestationCalculateur {
                         idSituationProfessionnelleCourante = apSitProJoiEmpEnt.getIdSitPro();
                         // Définition de l'association
                         final APAssuranceTypeAssociation association = getAssociationFromSituationProf(apSitProJoiEmpEnt);
-                        // Définition du type de prestation
-                        // APTypeDePrestation typeDePrestation = null;
-                        //
-                        // typeDePrestation = this.getTypeDePrestationDepuisSituationProf(apSitProJoiEmpEnt);
 
                         prestationStandard.getSituationProfessionnelle().put(
                                 apSitProJoiEmpEnt.getIdSitPro(),
                                 new APSituationProfessionnelleData(association, apSitProJoiEmpEnt.getDateDebut(),
                                         apSitProJoiEmpEnt.getDateFin(), new BigDecimal(apSitProJoiEmpEnt
-                                                .getMontantJournalierAcmNe()), /* typeDePrestation, */
-                                        apSitProJoiEmpEnt.getIdSitPro(), apSitProJoiEmpEnt.getIdTiers(),
-                                        apSitProJoiEmpEnt.getIdAffilie(), apSitProJoiEmpEnt.getNom()));
+                                                .getMontantJournalierAcmNe()), apSitProJoiEmpEnt.getIdSitPro(),
+                                        apSitProJoiEmpEnt.getIdTiers(), apSitProJoiEmpEnt.getIdAffilie(),
+                                        apSitProJoiEmpEnt.getNom(), apSitProJoiEmpEnt.getIdTiersPaiementEmployeur(),
+                                        apSitProJoiEmpEnt.getIdDomainePaiementEmployeur()));
                     }
                 } else {
                     throw new Exception("APCalculerAcmNeService.convert(): impossible de retrouver la prestation");

@@ -394,27 +394,43 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
     // ACM
     private APIRubrique ACM_MONTANT_BRUT = null;
     private APIRubrique ACM_RESTITUTION = null;
-    private APIRubrique ASSURE_OU_INDEPENDANT_AVEC_AC = null;
-    private APIRubrique ASSURE_OU_INDEPENDANT_SANS_AC = null;
+    private APIRubrique AVEC_AC_ASSURE;
+    private APIRubrique AVEC_AC_INDEPENDANT = null;
+    private APIRubrique SANS_AC_ASSURE = null;
+    private APIRubrique SANS_AC_INDEPENDANT = null;
     private APIRubrique COMPENSATION = null;
     private APIRubrique COMPENSATION_ACM = null;
     private APIRubrique COMPENSATION_LAMAT = null;
-    private APIRubrique COT_AC = null;
-    private APIRubrique COT_AVS = null;
+    private APIRubrique COT_AC_ASSURE = null;
+    private APIRubrique COT_AC_INDEPENDANT = null;
+    private APIRubrique COT_AVS_ASSURE = null;
+    private APIRubrique COT_AVS_INDEPENDANT = null;
     private APIRubrique COT_LFA = null;
-    private APIRubrique IMPOT_SOURCE = null;
+    private APIRubrique IMPOT_SOURCE_ASSURE = null;
+    private APIRubrique IMPOT_SOURCE_INDEPENDANT = null;
     private APIRubrique IMPOT_SOURCE_ACM = null;
-    private APIRubrique IMPOT_SOURCE_LAMAT_CANTONALE = null;
+    private APIRubrique IMPOT_SOURCE_LAMAT_CANTONALE_ASSURE = null;
+    private APIRubrique IMPOT_SOURCE_LAMAT_CANTONALE_INDEPENDANT = null;
     private APIRubrique EMPLOYEUR_AVEC_AC = null;
     private APIRubrique EMPLOYEUR_SANS_AC = null;
-    private APIRubrique FONDS_DE_COMPENSATION = null;
+    private APIRubrique FONDS_DE_COMPENSATION_ASSURE = null;
+    private APIRubrique FONDS_DE_COMPENSATION_EMPLOYEUR = null;
+    private APIRubrique FONDS_DE_COMPENSATION_INDEPENDANT = null;
     private APIRubrique FONDS_DE_COMPENSATION_ACM = null;
     private APIRubrique FRAIS_ADMINISTRATION = null;
-    private APIRubrique PRESTATION_A_RESTITUER = null;
-    private APIRubrique PRESTATION_A_RESTITUER_LAMAT = null;
+    private APIRubrique PRESTATION_A_RESTITUER_ASSURE = null;
+    private APIRubrique PRESTATION_A_RESTITUER_EMPLOYEUR = null;
+    private APIRubrique PRESTATION_A_RESTITUER_INDEPENDANT = null;
+    private APIRubrique PRESTATION_A_RESTITUER_LAMAT_ASSURE = null;
+    private APIRubrique PRESTATION_A_RESTITUER_LAMAT_EMPLOYEUR = null;
+    private APIRubrique PRESTATION_A_RESTITUER_LAMAT_INDEPENDANT = null;
     private APIRubrique SANS_COTISATION = null;
-    private APIRubrique SANS_COTISATION_LAMAT_ADOPTION = null;
-    private APIRubrique SANS_COTISATION_LAMAT_NAISSANCE = null;
+    private APIRubrique SANS_COTISATION_LAMAT_ADOPTION_ASSURE = null;
+    private APIRubrique SANS_COTISATION_LAMAT_ADOPTION_EMPLOYEUR = null;
+    private APIRubrique SANS_COTISATION_LAMAT_ADOPTION_INDEPENDANT = null;
+    private APIRubrique SANS_COTISATION_LAMAT_NAISSANCE_ASSURE = null;
+    private APIRubrique SANS_COTISATION_LAMAT_NAISSANCE_EMPLOYEUR = null;
+    private APIRubrique SANS_COTISATION_LAMAT_NAISSANCE_INDEPENDANT = null;
 
     private String dateComptable = "";
     private String dateSurDocument = "";
@@ -1279,26 +1295,36 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
         // les cotisations sont sommées dans une map avec comme clef l'année de
         // cotisation (nécessaire pour les
         // écritures en compta)
-        final Map mapTotalAVS = new HashMap();
-        final Map mapTotalAC = new HashMap();
+        final Map mapTotalAVSAssure = new HashMap();
+        final Map mapTotalAVSIndependant = new HashMap();
+        final Map mapTotalACAssure = new HashMap();
+        final Map mapTotalACIndependant = new HashMap();
         final Map mapTotalLFA = new HashMap();
         final Map<String, CotisationFNE> mapTotalCotFNE = new HashMap<String, APGenererEcrituresComptablesProcess.CotisationFNE>();
 
         final Montants totalFA = new Montants();
-        Montants totalIS = new Montants();
-        final Montants totalFondDeCompensation = new Montants();
+        Montants totalISAssure = new Montants();
+        Montants totalISIndependant = new Montants();
+        final Montants totalFondDeCompensationAssure = new Montants();
+        final Montants totalFondDeCompensationEmployeur = new Montants();
+        final Montants totalFondDeCompensationIndependant = new Montants();
         final Montants totalFondDeCompensationACM = new Montants();
         final Montants totalFondDeCompensationACMNE = new Montants();
 
-        final Map mapTotalAVSRestitution = new HashMap();
-        final Map mapTotalACRestitution = new HashMap();
+        final Map mapTotalAVSRestitutionAssure = new HashMap();
+        final Map mapTotalAVSRestitutionIndependant = new HashMap();
+        final Map mapTotalACRestitutionAssure = new HashMap();
+        final Map mapTotalACRestitutionIndependant = new HashMap();
         final Map mapTotalLFARestitution = new HashMap();
 
         FWCurrency montantTotalCotFNE = new FWCurrency();
 
         final Montants totalFARestitution = new Montants();
-        Montants totalISRestitution = new Montants();
-        final Montants totalFondDeCompensationRestitution = new Montants();
+        Montants totalISRestitutionAssure = new Montants();
+        Montants totalISRestitutionIndependant = new Montants();
+        final Montants totalFondDeCompensationRestitutionAssure = new Montants();
+        final Montants totalFondDeCompensationRestitutionEmployeur = new Montants();
+        final Montants totalFondDeCompensationRestitutionIndependant = new Montants();
         final Montants totalFondDeCompensationRestitutionACM = new Montants();
         final Montants totalFondDeCompensationRestitutionACMNE = new Montants();
 
@@ -1446,54 +1472,39 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
                 } else {
                     if (!isRestitution) {
                         if (!(repartition.isEmployeur && !repartition.isIndependant)) {
-                            if (mapTotalAC.containsKey(repartition.anneeCotisation)) {
-                                final Montants mnt = new Montants();
-                                mnt.add(convertGenrePrestToRubrique(repartition.genrePrestation),
-                                        repartition.cotisationAC);
+                            if (!repartition.isEmployeur && repartition.isIndependant) { // INDEPENDANT
 
-                                ((Montants) mapTotalAC.get(repartition.anneeCotisation)).add(mnt);
-                                ((Montants) mapTotalAC.get(repartition.anneeCotisation)).add(mnt);
-                            } else {
-                                final Montants mnt = new Montants();
-                                mnt.add(convertGenrePrestToRubrique(repartition.genrePrestation),
-                                        repartition.cotisationAC);
+                                putMontantIntoMap(mapTotalACIndependant, repartition, repartition.cotisationAC);
+                            } else if (!repartition.isEmployeur && !repartition.isIndependant) { // ASSURE
 
-                                mapTotalAC.put(repartition.anneeCotisation, mnt);
-                                ((Montants) mapTotalAC.get(repartition.anneeCotisation)).add(mnt);
+                                putMontantIntoMap(mapTotalACAssure, repartition, repartition.cotisationAC);
                             }
                         }
 
                         if (repartition.isIndependant) {
                             final Montants mnt = new Montants();
                             mnt.add(convertGenrePrestToRubrique(repartition.genrePrestation), repartition.cotisationAC);
-                            totalFondDeCompensation.sub(mnt);
+                            totalFondDeCompensationIndependant.sub(mnt);
                         } else if (repartition.isEmployeur) {
                             final Montants mnt = new Montants();
                             mnt.add(convertGenrePrestToRubrique(repartition.genrePrestation), repartition.cotisationAC);
-                            totalFondDeCompensation.add(mnt);
+                            totalFondDeCompensationEmployeur.add(mnt);
                         } else {
                             final Montants mnt = new Montants();
                             mnt.add(convertGenrePrestToRubrique(repartition.genrePrestation), repartition.cotisationAC);
-                            totalFondDeCompensation.sub(mnt);
+                            totalFondDeCompensationAssure.sub(mnt);
                         }
 
                     } else {
                         if (!(repartition.isEmployeur && !repartition.isIndependant)) {
-                            if (mapTotalACRestitution.containsKey(repartition.anneeCotisation)) {
-                                final Montants mnt = new Montants();
-                                mnt.add(convertGenrePrestToRubrique(repartition.genrePrestation),
+
+                            if (!repartition.isEmployeur && repartition.isIndependant) { // INDEPENDANT
+
+                                putMontantIntoMap(mapTotalACRestitutionIndependant, repartition,
                                         repartition.cotisationAC);
+                            } else if (!repartition.isEmployeur && !repartition.isIndependant) { // ASSURE
 
-                                ((Montants) mapTotalACRestitution.get(repartition.anneeCotisation)).add(mnt);
-                                ((Montants) mapTotalACRestitution.get(repartition.anneeCotisation)).add(mnt);
-
-                            } else {
-                                final Montants mnt = new Montants();
-                                mnt.add(convertGenrePrestToRubrique(repartition.genrePrestation),
-                                        repartition.cotisationAC);
-
-                                mapTotalACRestitution.put(repartition.anneeCotisation, mnt);
-                                ((Montants) mapTotalACRestitution.get(repartition.anneeCotisation)).add(mnt);
+                                putMontantIntoMap(mapTotalACRestitutionAssure, repartition, repartition.cotisationAC);
                             }
                         }
 
@@ -1501,17 +1512,17 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
                             final Montants mnt = new Montants();
                             mnt.add(convertGenrePrestToRubrique(repartition.genrePrestation), repartition.cotisationAC);
 
-                            totalFondDeCompensationRestitution.sub(mnt);
+                            totalFondDeCompensationRestitutionIndependant.sub(mnt);
                         } else if (repartition.isEmployeur) {
                             final Montants mnt = new Montants();
                             mnt.add(convertGenrePrestToRubrique(repartition.genrePrestation), repartition.cotisationAC);
 
-                            totalFondDeCompensationRestitution.add(mnt);
+                            totalFondDeCompensationRestitutionEmployeur.add(mnt);
                         } else {
                             final Montants mnt = new Montants();
                             mnt.add(convertGenrePrestToRubrique(repartition.genrePrestation), repartition.cotisationAC);
 
-                            totalFondDeCompensationRestitution.sub(mnt);
+                            totalFondDeCompensationRestitutionAssure.sub(mnt);
                         }
 
                     }
@@ -1547,20 +1558,12 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
                 } else {
                     if (!isRestitution) {
                         if (!(repartition.isEmployeur && !repartition.isIndependant)) {
-                            if (mapTotalAVS.containsKey(repartition.anneeCotisation)) {
-                                final Montants mnt = new Montants();
-                                mnt.add(convertGenrePrestToRubrique(repartition.genrePrestation),
-                                        repartition.cotisationAVS);
+                            if (!repartition.isEmployeur && repartition.isIndependant) { // INDEPENDANT
 
-                                ((Montants) mapTotalAVS.get(repartition.anneeCotisation)).add(mnt);
-                                ((Montants) mapTotalAVS.get(repartition.anneeCotisation)).add(mnt);
-                            } else {
-                                final Montants mnt = new Montants();
-                                mnt.add(convertGenrePrestToRubrique(repartition.genrePrestation),
-                                        repartition.cotisationAVS);
+                                putMontantIntoMap(mapTotalAVSIndependant, repartition, repartition.cotisationAVS);
+                            } else if (!repartition.isEmployeur && !repartition.isIndependant) { // ASSURE
 
-                                mapTotalAVS.put(repartition.anneeCotisation, mnt);
-                                ((Montants) mapTotalAVS.get(repartition.anneeCotisation)).add(mnt);
+                                putMontantIntoMap(mapTotalAVSAssure, repartition, repartition.cotisationAVS);
                             }
                         }
 
@@ -1568,36 +1571,28 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
                             final Montants mnt = new Montants();
                             mnt.add(convertGenrePrestToRubrique(repartition.genrePrestation), repartition.cotisationAVS);
 
-                            totalFondDeCompensation.sub(mnt);
+                            totalFondDeCompensationIndependant.sub(mnt);
                         } else if (repartition.isEmployeur) {
                             final Montants mnt = new Montants();
                             mnt.add(convertGenrePrestToRubrique(repartition.genrePrestation), repartition.cotisationAVS);
 
-                            totalFondDeCompensation.add(mnt);
+                            totalFondDeCompensationEmployeur.add(mnt);
                         } else {
                             final Montants mnt = new Montants();
                             mnt.add(convertGenrePrestToRubrique(repartition.genrePrestation), repartition.cotisationAVS);
 
-                            totalFondDeCompensation.sub(mnt);
+                            totalFondDeCompensationAssure.sub(mnt);
                         }
 
                     } else {
                         if (!(repartition.isEmployeur && !repartition.isIndependant)) {
-                            if (mapTotalAVSRestitution.containsKey(repartition.anneeCotisation)) {
-                                final Montants mnt = new Montants();
-                                mnt.add(convertGenrePrestToRubrique(repartition.genrePrestation),
+                            if (!repartition.isEmployeur && repartition.isIndependant) { // INDEPENDANT
+
+                                putMontantIntoMap(mapTotalAVSRestitutionIndependant, repartition,
                                         repartition.cotisationAVS);
+                            } else if (!repartition.isEmployeur && repartition.isIndependant) { // ASSURE
 
-                                ((Montants) mapTotalAVSRestitution.get(repartition.anneeCotisation)).add(mnt);
-                                ((Montants) mapTotalAVSRestitution.get(repartition.anneeCotisation)).add(mnt);
-
-                            } else {
-                                final Montants mnt = new Montants();
-                                mnt.add(convertGenrePrestToRubrique(repartition.genrePrestation),
-                                        repartition.cotisationAVS);
-
-                                mapTotalAVSRestitution.put(repartition.anneeCotisation, mnt);
-                                ((Montants) mapTotalAVSRestitution.get(repartition.anneeCotisation)).add(mnt);
+                                putMontantIntoMap(mapTotalAVSRestitutionAssure, repartition, repartition.cotisationAVS);
                             }
                         }
 
@@ -1605,17 +1600,17 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
                             final Montants mnt = new Montants();
                             mnt.add(convertGenrePrestToRubrique(repartition.genrePrestation), repartition.cotisationAVS);
 
-                            totalFondDeCompensationRestitution.sub(mnt);
+                            totalFondDeCompensationRestitutionIndependant.sub(mnt);
                         } else if (repartition.isEmployeur) {
                             final Montants mnt = new Montants();
                             mnt.add(convertGenrePrestToRubrique(repartition.genrePrestation), repartition.cotisationAVS);
 
-                            totalFondDeCompensationRestitution.add(mnt);
+                            totalFondDeCompensationRestitutionEmployeur.add(mnt);
                         } else {
                             final Montants mnt = new Montants();
                             mnt.add(convertGenrePrestToRubrique(repartition.genrePrestation), repartition.cotisationAVS);
 
-                            totalFondDeCompensationRestitution.sub(mnt);
+                            totalFondDeCompensationRestitutionAssure.sub(mnt);
                         }
 
                     }
@@ -1680,11 +1675,22 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
 
                 if (!isRestitution) {
 
-                    totalIS = getCumulMontantsParGenre(totalIS, repartition.genrePrestation, repartition.impotSource);
-
+                    if (!repartition.isEmployeur && repartition.isIndependant) { // INDEPENDANT
+                        totalISIndependant = getCumulMontantsParGenre(totalISIndependant, repartition.genrePrestation,
+                                repartition.impotSource);
+                    } else { // ASSURE
+                        totalISAssure = getCumulMontantsParGenre(totalISAssure, repartition.genrePrestation,
+                                repartition.impotSource);
+                    }
                 } else {
-                    totalISRestitution = getCumulMontantsParGenre(totalISRestitution, repartition.genrePrestation,
-                            repartition.impotSource);
+                    if (!repartition.isEmployeur && repartition.isIndependant) { // INDEPENDANT
+                        totalISRestitutionIndependant = getCumulMontantsParGenre(totalISRestitutionIndependant,
+                                repartition.genrePrestation, repartition.impotSource);
+                    } else { // ASSURE
+                        totalISRestitutionAssure = getCumulMontantsParGenre(totalISRestitutionAssure,
+                                repartition.genrePrestation, repartition.impotSource);
+                    }
+
                 }
             }
 
@@ -1760,9 +1766,6 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
         // ACM -> pour la rubrique ALFA_ACM
         // APG -> pour la rubrique LISSAGE
 
-        // FWCurrency montantTotalStandard = new FWCurrency(0);
-        // FWCurrency montantTotalRestitution = new FWCurrency(0);
-
         final Montants montantTotalStandard = new Montants();
         final Montants montantTotalRestitution = new Montants();
 
@@ -1815,13 +1818,18 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
         Montants montantTemp = new Montants();
 
         // ecriture des cotisations (normales et restitutions)
-
-        montantTemp = ecrisCotisations(compta, COT_AVS, compteAnnexeAPG.getIdCompteAnnexe(),
-                sectionNormale.getIdSection(), mapTotalAVS);
+        montantTemp = ecrisCotisations(compta, COT_AVS_ASSURE, compteAnnexeAPG.getIdCompteAnnexe(),
+                sectionNormale.getIdSection(), mapTotalAVSAssure);
+        montantTotalStandard.add(montantTemp);
+        montantTemp = ecrisCotisations(compta, COT_AVS_INDEPENDANT, compteAnnexeAPG.getIdCompteAnnexe(),
+                sectionNormale.getIdSection(), mapTotalAVSIndependant);
         montantTotalStandard.add(montantTemp);
 
-        montantTemp = ecrisCotisations(compta, COT_AC, compteAnnexeAPG.getIdCompteAnnexe(),
-                sectionNormale.getIdSection(), mapTotalAC);
+        montantTemp = ecrisCotisations(compta, COT_AC_ASSURE, compteAnnexeAPG.getIdCompteAnnexe(),
+                sectionNormale.getIdSection(), mapTotalACAssure);
+        montantTotalStandard.add(montantTemp);
+        montantTemp = ecrisCotisations(compta, COT_AC_INDEPENDANT, compteAnnexeAPG.getIdCompteAnnexe(),
+                sectionNormale.getIdSection(), mapTotalACIndependant);
         montantTotalStandard.add(montantTemp);
 
         montantTotalStandard.add(totalFA);
@@ -1834,71 +1842,120 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
                 sectionNormale.getIdSection(), mapTotalLFA);
         montantTotalStandard.add(montantTemp);
 
-        // bz-3867
-        // Conversion du montant Total IS en type APG ou ACM pour la prise en
-        // compte des Compensation Internes (lettrage)!!!
-        // montantTotalStandard.add(totalIS);
         final Montants mntIS = new Montants();
         if (isLotMaternite) {
-            FWCurrency montant = totalIS.getMontant(Montants.TYPE_AMAT);
+            FWCurrency montantAssure = totalISAssure.getMontant(Montants.TYPE_AMAT);
+            FWCurrency montantIndependant = totalISIndependant.getMontant(Montants.TYPE_AMAT);
 
-            if ((montant != null) && !montant.isZero()) {
-                doEcriture(compta, montant.toString(), IMPOT_SOURCE, compteAnnexeAPG.getIdCompteAnnexe(),
+            if ((montantAssure != null) && !montantAssure.isZero()) {
+                doEcriture(compta, montantAssure.toString(), IMPOT_SOURCE_ASSURE, compteAnnexeAPG.getIdCompteAnnexe(),
                         sectionNormale.getIdSection(), null);
 
-                mntIS.add(Montants.TYPE_APG, montant);
+                mntIS.add(Montants.TYPE_APG, montantAssure);
             }
-
-            montant = totalIS.getMontant(Montants.TYPE_LAMAT);
-            if ((montant != null) && !montant.isZero()) {
-                doEcriture(compta, montant.toString(), IMPOT_SOURCE_LAMAT_CANTONALE,
+            if ((montantIndependant != null) && !montantIndependant.isZero()) {
+                doEcriture(compta, montantIndependant.toString(), IMPOT_SOURCE_INDEPENDANT,
                         compteAnnexeAPG.getIdCompteAnnexe(), sectionNormale.getIdSection(), null);
 
-                mntIS.add(Montants.TYPE_APG, montant);
+                mntIS.add(Montants.TYPE_APG, montantIndependant);
             }
 
-            montant = totalIS.getMontant(Montants.TYPE_ACM);
-            if ((montant != null) && !montant.isZero()) {
-                doEcriture(compta, montant.toString(), IMPOT_SOURCE_ACM, compteAnnexeAPG.getIdCompteAnnexe(),
+            montantAssure = totalISAssure.getMontant(Montants.TYPE_LAMAT);
+            montantIndependant = totalISIndependant.getMontant(Montants.TYPE_LAMAT);
+            if ((montantAssure != null) && !montantAssure.isZero()) {
+                doEcriture(compta, montantAssure.toString(), IMPOT_SOURCE_LAMAT_CANTONALE_ASSURE,
+                        compteAnnexeAPG.getIdCompteAnnexe(), sectionNormale.getIdSection(), null);
+
+                mntIS.add(Montants.TYPE_APG, montantAssure);
+            }
+            if ((montantIndependant != null) && !montantIndependant.isZero()) {
+                doEcriture(compta, montantIndependant.toString(), IMPOT_SOURCE_LAMAT_CANTONALE_INDEPENDANT,
+                        compteAnnexeAPG.getIdCompteAnnexe(), sectionNormale.getIdSection(), null);
+
+                mntIS.add(Montants.TYPE_APG, montantIndependant);
+            }
+
+            montantAssure = totalISAssure.getMontant(Montants.TYPE_ACM);
+            montantIndependant = totalISIndependant.getMontant(Montants.TYPE_ACM);
+            if ((montantAssure != null) && !montantAssure.isZero()) {
+                doEcriture(compta, montantAssure.toString(), IMPOT_SOURCE_ACM, compteAnnexeAPG.getIdCompteAnnexe(),
                         sectionNormale.getIdSection(), null);
 
-                mntIS.add(Montants.TYPE_ACM, montant);
+                mntIS.add(Montants.TYPE_ACM, montantAssure);
+            }
+            if ((montantIndependant != null) && !montantIndependant.isZero()) {
+                doEcriture(compta, montantIndependant.toString(), IMPOT_SOURCE_ACM,
+                        compteAnnexeAPG.getIdCompteAnnexe(), sectionNormale.getIdSection(), null);
+
+                mntIS.add(Montants.TYPE_ACM, montantIndependant);
             }
 
         } else {
-            FWCurrency montant = totalIS.getMontant(Montants.TYPE_APG);
+            FWCurrency montantAssure = totalISAssure.getMontant(Montants.TYPE_APG);
+            FWCurrency montantIndependant = totalISIndependant.getMontant(Montants.TYPE_APG);
 
-            if ((montant != null) && !montant.isZero()) {
-                doEcriture(compta, montant.toString(), IMPOT_SOURCE, compteAnnexeAPG.getIdCompteAnnexe(),
+            if ((montantAssure != null) && !montantAssure.isZero()) {
+                doEcriture(compta, montantAssure.toString(), IMPOT_SOURCE_ASSURE, compteAnnexeAPG.getIdCompteAnnexe(),
                         sectionNormale.getIdSection(), null);
 
-                mntIS.add(Montants.TYPE_APG, montant);
+                mntIS.add(Montants.TYPE_APG, montantAssure);
+            }
+            if ((montantIndependant != null) && !montantIndependant.isZero()) {
+                doEcriture(compta, montantIndependant.toString(), IMPOT_SOURCE_INDEPENDANT,
+                        compteAnnexeAPG.getIdCompteAnnexe(), sectionNormale.getIdSection(), null);
+
+                mntIS.add(Montants.TYPE_APG, montantIndependant);
             }
 
-            montant = totalIS.getMontant(Montants.TYPE_ACM);
-            if ((montant != null) && !montant.isZero()) {
-                doEcriture(compta, montant.toString(), IMPOT_SOURCE_ACM, compteAnnexeAPG.getIdCompteAnnexe(),
+            montantAssure = totalISAssure.getMontant(Montants.TYPE_ACM);
+            montantIndependant = totalISIndependant.getMontant(Montants.TYPE_ACM);
+            if ((montantAssure != null) && !montantAssure.isZero()) {
+                doEcriture(compta, montantAssure.toString(), IMPOT_SOURCE_ACM, compteAnnexeAPG.getIdCompteAnnexe(),
                         sectionNormale.getIdSection(), null);
 
-                mntIS.add(Montants.TYPE_ACM, montant);
+                mntIS.add(Montants.TYPE_ACM, montantAssure);
+            }
+            if ((montantIndependant != null) && !montantIndependant.isZero()) {
+                doEcriture(compta, montantIndependant.toString(), IMPOT_SOURCE_ACM,
+                        compteAnnexeAPG.getIdCompteAnnexe(), sectionNormale.getIdSection(), null);
+
+                mntIS.add(Montants.TYPE_ACM, montantIndependant);
             }
 
-            montant = totalIS.getMontant(Montants.TYPE_ACM_NE);
-            if ((montant != null) && !montant.isZero()) {
-                doEcriture(compta, montant.toString(), mapAcmNeBean.get(typeAssociationPourAcmNe)
+            montantAssure = totalISAssure.getMontant(Montants.TYPE_ACM_NE);
+            montantIndependant = totalISIndependant.getMontant(Montants.TYPE_ACM_NE);
+            if ((montantAssure != null) && !montantAssure.isZero()) {
+                doEcriture(compta, montantAssure.toString(), mapAcmNeBean.get(typeAssociationPourAcmNe)
                         .getRubriqueImpotSource(), compteAnnexeAPG.getIdCompteAnnexe(), sectionNormale.getIdSection(),
                         null);
 
-                mntIS.add(Montants.TYPE_ACM_NE, montant);
+                mntIS.add(Montants.TYPE_ACM_NE, montantAssure);
+            }
+            if ((montantIndependant != null) && !montantIndependant.isZero()) {
+                doEcriture(compta, montantIndependant.toString(), mapAcmNeBean.get(typeAssociationPourAcmNe)
+                        .getRubriqueImpotSource(), compteAnnexeAPG.getIdCompteAnnexe(), sectionNormale.getIdSection(),
+                        null);
+
+                mntIS.add(Montants.TYPE_ACM_NE, montantIndependant);
             }
         }
 
         montantTotalStandard.add(mntIS);
 
-        montantTotalStandard.add(totalFondDeCompensation);
-        doEcriture(compta, totalFondDeCompensation.getMontantCumule(Montants.TYPE_ACM + "_" + Montants.TYPE_APG)
-                .toString(), FONDS_DE_COMPENSATION, compteAnnexeAPG.getIdCompteAnnexe(), sectionNormale.getIdSection(),
-                null);
+        montantTotalStandard.add(totalFondDeCompensationAssure);
+        doEcriture(compta, totalFondDeCompensationAssure.getMontantCumule(Montants.TYPE_ACM + "_" + Montants.TYPE_APG)
+                .toString(), FONDS_DE_COMPENSATION_ASSURE, compteAnnexeAPG.getIdCompteAnnexe(),
+                sectionNormale.getIdSection(), null);
+        montantTotalStandard.add(totalFondDeCompensationEmployeur);
+        doEcriture(compta,
+                totalFondDeCompensationEmployeur.getMontantCumule(Montants.TYPE_ACM + "_" + Montants.TYPE_APG)
+                        .toString(), FONDS_DE_COMPENSATION_EMPLOYEUR, compteAnnexeAPG.getIdCompteAnnexe(),
+                sectionNormale.getIdSection(), null);
+        montantTotalStandard.add(totalFondDeCompensationIndependant);
+        doEcriture(compta,
+                totalFondDeCompensationIndependant.getMontantCumule(Montants.TYPE_ACM + "_" + Montants.TYPE_APG)
+                        .toString(), FONDS_DE_COMPENSATION_INDEPENDANT, compteAnnexeAPG.getIdCompteAnnexe(),
+                sectionNormale.getIdSection(), null);
 
         montantTotalStandard.add(totalFondDeCompensationACM);
         doEcriture(compta, totalFondDeCompensationACM.getMontantCumule(Montants.TYPE_ACM + "_" + Montants.TYPE_APG)
@@ -1917,12 +1974,18 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
 
         if (hasRestitution) {
 
-            montantTemp = ecrisCotisations(compta, COT_AVS, compteAnnexeAPG.getIdCompteAnnexe(),
-                    sectionRestitution.getIdSection(), mapTotalAVSRestitution);
+            montantTemp = ecrisCotisations(compta, COT_AVS_ASSURE, compteAnnexeAPG.getIdCompteAnnexe(),
+                    sectionRestitution.getIdSection(), mapTotalAVSRestitutionAssure);
+            montantTotalRestitution.add(montantTemp);
+            montantTemp = ecrisCotisations(compta, COT_AVS_INDEPENDANT, compteAnnexeAPG.getIdCompteAnnexe(),
+                    sectionRestitution.getIdSection(), mapTotalAVSRestitutionIndependant);
             montantTotalRestitution.add(montantTemp);
 
-            montantTemp = ecrisCotisations(compta, COT_AC, compteAnnexeAPG.getIdCompteAnnexe(),
-                    sectionRestitution.getIdSection(), mapTotalACRestitution);
+            montantTemp = ecrisCotisations(compta, COT_AC_ASSURE, compteAnnexeAPG.getIdCompteAnnexe(),
+                    sectionRestitution.getIdSection(), mapTotalACRestitutionAssure);
+            montantTotalRestitution.add(montantTemp);
+            montantTemp = ecrisCotisations(compta, COT_AC_INDEPENDANT, compteAnnexeAPG.getIdCompteAnnexe(),
+                    sectionRestitution.getIdSection(), mapTotalACRestitutionIndependant);
             montantTotalRestitution.add(montantTemp);
 
             montantTotalRestitution.add(totalFARestitution);
@@ -1936,71 +1999,123 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
                     sectionRestitution.getIdSection(), mapTotalLFARestitution);
             montantTotalRestitution.add(montantTemp);
 
-            // bz-3867
-            // montantTotalRestitution.add(totalISRestitution);
             final Montants mntISRestit = new Montants();
-
             if (isLotMaternite) {
-                FWCurrency montant = totalISRestitution.getMontant(Montants.TYPE_AMAT);
+                FWCurrency montantAssure = totalISRestitutionAssure.getMontant(Montants.TYPE_AMAT);
+                FWCurrency montantIndependant = totalISRestitutionIndependant.getMontant(Montants.TYPE_AMAT);
 
-                if ((montant != null) && !montant.isZero()) {
-                    doEcriture(compta, montant.toString(), IMPOT_SOURCE, compteAnnexeAPG.getIdCompteAnnexe(),
-                            sectionRestitution.getIdSection(), null);
-
-                    mntISRestit.add(Montants.TYPE_APG, montant);
-                }
-
-                montant = totalISRestitution.getMontant(Montants.TYPE_LAMAT);
-                if ((montant != null) && !montant.isZero()) {
-                    doEcriture(compta, montant.toString(), IMPOT_SOURCE_LAMAT_CANTONALE,
+                if ((montantAssure != null) && !montantAssure.isZero()) {
+                    doEcriture(compta, montantAssure.toString(), IMPOT_SOURCE_ASSURE,
                             compteAnnexeAPG.getIdCompteAnnexe(), sectionRestitution.getIdSection(), null);
 
-                    mntISRestit.add(Montants.TYPE_APG, montant);
+                    mntISRestit.add(Montants.TYPE_APG, montantAssure);
+                }
+                if ((montantIndependant != null) && !montantIndependant.isZero()) {
+                    doEcriture(compta, montantIndependant.toString(), IMPOT_SOURCE_INDEPENDANT,
+                            compteAnnexeAPG.getIdCompteAnnexe(), sectionRestitution.getIdSection(), null);
+
+                    mntISRestit.add(Montants.TYPE_APG, montantIndependant);
                 }
 
-                montant = totalISRestitution.getMontant(Montants.TYPE_ACM);
-                if ((montant != null) && !montant.isZero()) {
-                    doEcriture(compta, montant.toString(), IMPOT_SOURCE_ACM, compteAnnexeAPG.getIdCompteAnnexe(),
+                montantAssure = totalISRestitutionAssure.getMontant(Montants.TYPE_LAMAT);
+                montantIndependant = totalISRestitutionIndependant.getMontant(Montants.TYPE_LAMAT);
+                if ((montantAssure != null) && !montantAssure.isZero()) {
+                    doEcriture(compta, montantAssure.toString(), IMPOT_SOURCE_LAMAT_CANTONALE_ASSURE,
+                            compteAnnexeAPG.getIdCompteAnnexe(), sectionRestitution.getIdSection(), null);
+
+                    mntISRestit.add(Montants.TYPE_APG, montantAssure);
+                }
+                if ((montantIndependant != null) && !montantIndependant.isZero()) {
+                    doEcriture(compta, montantIndependant.toString(), IMPOT_SOURCE_LAMAT_CANTONALE_INDEPENDANT,
+                            compteAnnexeAPG.getIdCompteAnnexe(), sectionRestitution.getIdSection(), null);
+
+                    mntISRestit.add(Montants.TYPE_APG, montantIndependant);
+                }
+
+                montantAssure = totalISRestitutionAssure.getMontant(Montants.TYPE_ACM);
+                montantIndependant = totalISRestitutionIndependant.getMontant(Montants.TYPE_ACM);
+                if ((montantAssure != null) && !montantAssure.isZero()) {
+                    doEcriture(compta, montantAssure.toString(), IMPOT_SOURCE_ACM, compteAnnexeAPG.getIdCompteAnnexe(),
                             sectionRestitution.getIdSection(), null);
 
-                    mntISRestit.add(Montants.TYPE_ACM, montant);
+                    mntISRestit.add(Montants.TYPE_ACM, montantAssure);
                 }
+                if ((montantIndependant != null) && !montantIndependant.isZero()) {
+                    doEcriture(compta, montantIndependant.toString(), IMPOT_SOURCE_ACM,
+                            compteAnnexeAPG.getIdCompteAnnexe(), sectionRestitution.getIdSection(), null);
 
+                    mntISRestit.add(Montants.TYPE_ACM, montantIndependant);
+                }
             } else {
-                FWCurrency montant = totalISRestitution.getMontant(Montants.TYPE_APG);
+                FWCurrency montantAssure = totalISRestitutionAssure.getMontant(Montants.TYPE_APG);
+                FWCurrency montantIndependant = totalISRestitutionIndependant.getMontant(Montants.TYPE_APG);
 
-                if ((montant != null) && !montant.isZero()) {
-                    doEcriture(compta, montant.toString(), IMPOT_SOURCE, compteAnnexeAPG.getIdCompteAnnexe(),
-                            sectionRestitution.getIdSection(), null);
+                if ((montantAssure != null) && !montantAssure.isZero()) {
+                    doEcriture(compta, montantAssure.toString(), IMPOT_SOURCE_ASSURE,
+                            compteAnnexeAPG.getIdCompteAnnexe(), sectionRestitution.getIdSection(), null);
 
-                    mntISRestit.add(Montants.TYPE_APG, montant);
+                    mntISRestit.add(Montants.TYPE_APG, montantAssure);
+                }
+                if ((montantIndependant != null) && !montantIndependant.isZero()) {
+                    doEcriture(compta, montantIndependant.toString(), IMPOT_SOURCE_INDEPENDANT,
+                            compteAnnexeAPG.getIdCompteAnnexe(), sectionRestitution.getIdSection(), null);
+
+                    mntISRestit.add(Montants.TYPE_APG, montantIndependant);
                 }
 
-                montant = totalISRestitution.getMontant(Montants.TYPE_ACM);
-                if ((montant != null) && !montant.isZero()) {
-                    doEcriture(compta, montant.toString(), IMPOT_SOURCE_ACM, compteAnnexeAPG.getIdCompteAnnexe(),
+                montantAssure = totalISRestitutionAssure.getMontant(Montants.TYPE_ACM);
+                montantIndependant = totalISRestitutionIndependant.getMontant(Montants.TYPE_ACM);
+                if ((montantAssure != null) && !montantAssure.isZero()) {
+                    doEcriture(compta, montantAssure.toString(), IMPOT_SOURCE_ACM, compteAnnexeAPG.getIdCompteAnnexe(),
                             sectionRestitution.getIdSection(), null);
 
-                    mntISRestit.add(Montants.TYPE_ACM, montant);
+                    mntISRestit.add(Montants.TYPE_ACM, montantAssure);
+                }
+                if ((montantIndependant != null) && !montantIndependant.isZero()) {
+                    doEcriture(compta, montantIndependant.toString(), IMPOT_SOURCE_ACM,
+                            compteAnnexeAPG.getIdCompteAnnexe(), sectionRestitution.getIdSection(), null);
+
+                    mntISRestit.add(Montants.TYPE_ACM, montantIndependant);
                 }
 
-                montant = totalISRestitution.getMontant(Montants.TYPE_ACM_NE);
-                if ((montant != null) && !montant.isZero()) {
-                    doEcriture(compta, montant.toString(), mapAcmNeBean.get(typeAssociationPourAcmNe)
+                montantAssure = totalISRestitutionAssure.getMontant(Montants.TYPE_ACM_NE);
+                montantIndependant = totalISRestitutionIndependant.getMontant(Montants.TYPE_ACM_NE);
+                if ((montantAssure != null) && !montantAssure.isZero()) {
+                    doEcriture(compta, montantAssure.toString(), mapAcmNeBean.get(typeAssociationPourAcmNe)
                             .getRubriqueImpotSource(), compteAnnexeAPG.getIdCompteAnnexe(),
                             sectionRestitution.getIdSection(), null);
 
-                    mntISRestit.add(Montants.TYPE_ACM_NE, montant);
+                    mntISRestit.add(Montants.TYPE_ACM_NE, montantAssure);
+                }
+                if ((montantIndependant != null) && !montantIndependant.isZero()) {
+                    doEcriture(compta, montantIndependant.toString(), mapAcmNeBean.get(typeAssociationPourAcmNe)
+                            .getRubriqueImpotSource(), compteAnnexeAPG.getIdCompteAnnexe(),
+                            sectionRestitution.getIdSection(), null);
+
+                    mntISRestit.add(Montants.TYPE_ACM_NE, montantIndependant);
                 }
             }
 
             montantTotalRestitution.add(mntISRestit);
 
-            montantTotalRestitution.add(totalFondDeCompensationRestitution);
-            doEcriture(compta,
-                    totalFondDeCompensationRestitution.getMontantCumule(Montants.TYPE_ACM + "_" + Montants.TYPE_APG)
-                            .toString(), FONDS_DE_COMPENSATION, compteAnnexeAPG.getIdCompteAnnexe(),
-                    sectionRestitution.getIdSection(), null);
+            montantTotalRestitution.add(totalFondDeCompensationRestitutionAssure);
+            doEcriture(
+                    compta,
+                    totalFondDeCompensationRestitutionAssure.getMontantCumule(
+                            Montants.TYPE_ACM + "_" + Montants.TYPE_APG).toString(), FONDS_DE_COMPENSATION_ASSURE,
+                    compteAnnexeAPG.getIdCompteAnnexe(), sectionRestitution.getIdSection(), null);
+            montantTotalRestitution.add(totalFondDeCompensationRestitutionEmployeur);
+            doEcriture(
+                    compta,
+                    totalFondDeCompensationRestitutionEmployeur.getMontantCumule(
+                            Montants.TYPE_ACM + "_" + Montants.TYPE_APG).toString(), FONDS_DE_COMPENSATION_EMPLOYEUR,
+                    compteAnnexeAPG.getIdCompteAnnexe(), sectionRestitution.getIdSection(), null);
+            montantTotalRestitution.add(totalFondDeCompensationRestitutionIndependant);
+            doEcriture(
+                    compta,
+                    totalFondDeCompensationRestitutionIndependant.getMontantCumule(
+                            Montants.TYPE_ACM + "_" + Montants.TYPE_APG).toString(), FONDS_DE_COMPENSATION_INDEPENDANT,
+                    compteAnnexeAPG.getIdCompteAnnexe(), sectionRestitution.getIdSection(), null);
 
             montantTotalRestitution.add(totalFondDeCompensationRestitutionACM);
             doEcriture(compta,
@@ -2284,6 +2399,22 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
 
     }
 
+    private void putMontantIntoMap(Map<String, Montants> montantsInMap, Repartition repartition, String cotisation) {
+        if (montantsInMap.containsKey(repartition.anneeCotisation)) {
+            final Montants mnt = new Montants();
+            mnt.add(convertGenrePrestToRubrique(repartition.genrePrestation), cotisation);
+
+            montantsInMap.get(repartition.anneeCotisation).add(mnt);
+            montantsInMap.get(repartition.anneeCotisation).add(mnt);
+        } else {
+            final Montants mnt = new Montants();
+            mnt.add(convertGenrePrestToRubrique(repartition.genrePrestation), cotisation);
+
+            montantsInMap.put(repartition.anneeCotisation, mnt);
+            montantsInMap.get(repartition.anneeCotisation).add(mnt);
+        }
+    }
+
     private Montants getCumulMontantsParGenre(final Montants montants, final String genrePrestation,
             final String montant) {
 
@@ -2516,14 +2647,14 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
             if (idAssureDeBase.equals(idTiers)) {
                 // choix de la section
                 repartition.section = getSection(idTiers, idAffilie, isRestitution);
-                key = new Key(idTiers, idAffilie, "0", "0", "0");
+                key = new Key(idTiers, idAffilie, "0", "0", "0", false, false);
 
             }
             // Cas ou le bénéficiaire est un affilié
             else if (!JadeStringUtil.isIntegerEmpty(idAffilie)) {
                 // choix de la section
                 repartition.section = getSection(idTiers, idAffilie, isRestitution);
-                key = new Key(idTiers, idAffilie, "0", "0", "0");
+                key = new Key(idTiers, idAffilie, "0", "0", "0", false, false);
 
             }
             // Cas ou le bénéficiaire est un employeur non affilié,
@@ -2535,7 +2666,7 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
             else {
                 // choix de la section
                 repartition.section = getSection(idAssureDeBase, idAffilie, isRestitution);
-                key = new Key(idAssureDeBase, "0", idTiers, "0", "0");
+                key = new Key(idAssureDeBase, "0", idTiers, "0", "0", false, false);
             }
 
             if (repartitions.containsKey(key)) {
@@ -2610,7 +2741,7 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
      *            normal, ACM, LAMAT
      * @return la rubrique concernée
      */
-    private APIRubrique getRubriqueConcernee(final boolean isEmployeur, final boolean isIndependant,
+    protected APIRubrique getRubriqueConcernee(final boolean isEmployeur, final boolean isIndependant,
             final boolean hasAC, final boolean hasCotisation, final boolean isRestitution,
             final String genrePrestation, final boolean isAdoption, final String typeAssociation) {
         APIRubrique rubrique = null;
@@ -2636,17 +2767,41 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
             }
         } else if (isRestitution) {
             if (isLamat) {
-                rubrique = PRESTATION_A_RESTITUER_LAMAT;
+                if (isEmployeur && !isIndependant) {
+                    rubrique = PRESTATION_A_RESTITUER_LAMAT_EMPLOYEUR;
+                } else if (isIndependant) {
+                    rubrique = PRESTATION_A_RESTITUER_LAMAT_INDEPENDANT;
+                } else {
+                    rubrique = PRESTATION_A_RESTITUER_LAMAT_ASSURE;
+                }
             } else {
-                rubrique = PRESTATION_A_RESTITUER;
+                if (isEmployeur && !isIndependant) {
+                    rubrique = PRESTATION_A_RESTITUER_EMPLOYEUR;
+                } else if (isIndependant) {
+                    rubrique = PRESTATION_A_RESTITUER_INDEPENDANT;
+                } else {
+                    rubrique = PRESTATION_A_RESTITUER_ASSURE;
+                }
             }
         } else {
             if (!hasCotisation) {
                 if (isLamat) {
                     if (isAdoption) {
-                        rubrique = SANS_COTISATION_LAMAT_ADOPTION;
+                        if (isEmployeur && !isIndependant) {
+                            rubrique = SANS_COTISATION_LAMAT_ADOPTION_EMPLOYEUR;
+                        } else if (isIndependant) {
+                            rubrique = SANS_COTISATION_LAMAT_ADOPTION_INDEPENDANT;
+                        } else {
+                            rubrique = SANS_COTISATION_LAMAT_ADOPTION_ASSURE;
+                        }
                     } else {
-                        rubrique = SANS_COTISATION_LAMAT_NAISSANCE;
+                        if (isEmployeur && !isIndependant) {
+                            rubrique = SANS_COTISATION_LAMAT_NAISSANCE_EMPLOYEUR;
+                        } else if (isIndependant) {
+                            rubrique = SANS_COTISATION_LAMAT_NAISSANCE_INDEPENDANT;
+                        } else {
+                            rubrique = SANS_COTISATION_LAMAT_NAISSANCE_ASSURE;
+                        }
                     }
                 } else {
                     rubrique = SANS_COTISATION;
@@ -2655,9 +2810,21 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
                 // Pour les cas Lamat avec impôt à la source
                 if (isLamat) {
                     if (isAdoption) {
-                        rubrique = SANS_COTISATION_LAMAT_ADOPTION;
+                        if (isEmployeur && !isIndependant) {
+                            rubrique = SANS_COTISATION_LAMAT_ADOPTION_EMPLOYEUR;
+                        } else if (isIndependant) {
+                            rubrique = SANS_COTISATION_LAMAT_ADOPTION_INDEPENDANT;
+                        } else {
+                            rubrique = SANS_COTISATION_LAMAT_ADOPTION_ASSURE;
+                        }
                     } else {
-                        rubrique = SANS_COTISATION_LAMAT_NAISSANCE;
+                        if (isEmployeur && !isIndependant) {
+                            rubrique = SANS_COTISATION_LAMAT_NAISSANCE_EMPLOYEUR;
+                        } else if (isIndependant) {
+                            rubrique = SANS_COTISATION_LAMAT_NAISSANCE_INDEPENDANT;
+                        } else {
+                            rubrique = SANS_COTISATION_LAMAT_NAISSANCE_ASSURE;
+                        }
                     }
                 } else {
                     if (isEmployeur && !isIndependant) {
@@ -2668,9 +2835,17 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
                         }
                     } else {
                         if (hasAC) {
-                            rubrique = ASSURE_OU_INDEPENDANT_AVEC_AC;
+                            if (isIndependant) {
+                                rubrique = AVEC_AC_INDEPENDANT;
+                            } else {
+                                rubrique = AVEC_AC_ASSURE;
+                            }
                         } else {
-                            rubrique = ASSURE_OU_INDEPENDANT_SANS_AC;
+                            if (isIndependant) {
+                                rubrique = SANS_AC_INDEPENDANT;
+                            } else {
+                                rubrique = SANS_AC_ASSURE;
+                            }
                         }
                     }
                 }
@@ -2737,34 +2912,81 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
                     .getRubriqueByCodeReference(APIReferenceRubrique.MATERNITE_EMPLOYEUR_AVEC_AC);
             EMPLOYEUR_SANS_AC = referenceRubrique
                     .getRubriqueByCodeReference(APIReferenceRubrique.MATERNITE_EMPLOYEUR_SANS_AC);
-            ASSURE_OU_INDEPENDANT_AVEC_AC = referenceRubrique
-                    .getRubriqueByCodeReference(APIReferenceRubrique.MATERNITE_ASSURE_OU_INDEPENDANT_AVEC_AC);
-            ASSURE_OU_INDEPENDANT_SANS_AC = referenceRubrique
-                    .getRubriqueByCodeReference(APIReferenceRubrique.MATERNITE_ASSURE_OU_INDEPENDANT_SANS_AC);
+
+            AVEC_AC_ASSURE = referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.MATERNITE_AVEC_AC_ASSURE);
+            AVEC_AC_INDEPENDANT = referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.MATERNITE_AVEC_AC_INDEPENDANT);
+
+            SANS_AC_ASSURE = referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.MATERNITE_SANS_AC_ASSURE);
+            SANS_AC_INDEPENDANT = referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.MATERNITE_SANS_AC_INDEPENDANT);
+
             SANS_COTISATION = referenceRubrique
                     .getRubriqueByCodeReference(APIReferenceRubrique.MATERNITE_SANS_COTISATIONS);
 
-            SANS_COTISATION_LAMAT_ADOPTION = referenceRubrique
-                    .getRubriqueByCodeReference(APIReferenceRubrique.PRESTATION_LAMATGE_ADOPTION);
-            SANS_COTISATION_LAMAT_NAISSANCE = referenceRubrique
-                    .getRubriqueByCodeReference(APIReferenceRubrique.PRESTATION_LAMATGE_NAISSANCE);
-            PRESTATION_A_RESTITUER_LAMAT = referenceRubrique
-                    .getRubriqueByCodeReference(APIReferenceRubrique.PRESTATION_LAMATGE_RESTITUTION);
+            SANS_COTISATION_LAMAT_ADOPTION_ASSURE = referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.PRESTATION_LAMATGE_ADOPTION_ASSURE);
+            SANS_COTISATION_LAMAT_ADOPTION_EMPLOYEUR = referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.PRESTATION_LAMATGE_ADOPTION_EMPLOYEUR);
+            SANS_COTISATION_LAMAT_ADOPTION_INDEPENDANT = referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.PRESTATION_LAMATGE_ADOPTION_INDEPENDANT);
+
+            SANS_COTISATION_LAMAT_NAISSANCE_ASSURE = referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.PRESTATION_LAMATGE_NAISSANCE_ASSURE);
+            SANS_COTISATION_LAMAT_NAISSANCE_EMPLOYEUR = referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.PRESTATION_LAMATGE_NAISSANCE_EMPLOYEUR);
+            SANS_COTISATION_LAMAT_NAISSANCE_INDEPENDANT = referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.PRESTATION_LAMATGE_NAISSANCE_INDEPENDANT);
+
+            PRESTATION_A_RESTITUER_LAMAT_ASSURE = referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.PRESTATION_LAMATGE_RESTITUTION_ASSURE);
+            PRESTATION_A_RESTITUER_LAMAT_EMPLOYEUR = referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.PRESTATION_LAMATGE_RESTITUTION_EMPLOYEUR);
+            PRESTATION_A_RESTITUER_LAMAT_INDEPENDANT = referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.PRESTATION_LAMATGE_RESTITUTION_INDEPENDANT);
+
             COMPENSATION_LAMAT = referenceRubrique
                     .getRubriqueByCodeReference(APIReferenceRubrique.COMPENSATION_APG_MAT);
 
-            PRESTATION_A_RESTITUER = referenceRubrique
-                    .getRubriqueByCodeReference(APIReferenceRubrique.MATERNITE_PRESTATION_A_RESTITUER);
-            COT_AVS = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.MATERNITE_COTISATION_AVS);
-            COT_AC = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.MATERNITE_COTISATION_AC);
-            FONDS_DE_COMPENSATION = referenceRubrique
-                    .getRubriqueByCodeReference(APIReferenceRubrique.MATERNITE_FONDS_DE_COMPENSATION);
+            PRESTATION_A_RESTITUER_ASSURE = referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.MATERNITE_PRESTATION_A_RESTITUER_ASSURE);
+            PRESTATION_A_RESTITUER_EMPLOYEUR = referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.MATERNITE_PRESTATION_A_RESTITUER_EMPLOYEUR);
+            PRESTATION_A_RESTITUER_INDEPENDANT = referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.MATERNITE_PRESTATION_A_RESTITUER_INDEPENDANT);
+
+            COT_AVS_ASSURE = referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.MATERNITE_COTISATION_AVS_ASSURE);
+            COT_AVS_INDEPENDANT = referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.MATERNITE_COTISATION_AVS_INDEPENDANT);
+
+            COT_AC_ASSURE = referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.MATERNITE_COTISATION_AC_ASSURE);
+            COT_AC_INDEPENDANT = referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.MATERNITE_COTISATION_AC_INDEPENDANT);
+
+            FONDS_DE_COMPENSATION_ASSURE = referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.MATERNITE_FONDS_DE_COMPENSATION_ASSURE);
+            FONDS_DE_COMPENSATION_EMPLOYEUR = referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.MATERNITE_FONDS_DE_COMPENSATION_EMPLOYEUR);
+            FONDS_DE_COMPENSATION_INDEPENDANT = referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.MATERNITE_FONDS_DE_COMPENSATION_INDEPENDANT);
+
             FONDS_DE_COMPENSATION_ACM = referenceRubrique
                     .getRubriqueByCodeReference(APIReferenceRubrique.MATERNITE_ACM_FONDS_DE_COMPENSATION);
-            IMPOT_SOURCE = referenceRubrique
-                    .getRubriqueByCodeReference(APIReferenceRubrique.MATERNITE_IMPOT_A_LA_SOURCE);
-            IMPOT_SOURCE_LAMAT_CANTONALE = referenceRubrique
-                    .getRubriqueByCodeReference(APIReferenceRubrique.MATERNITE_IMPOT_A_LA_SOURCE_LAMAT_CANTONALE);
+
+            IMPOT_SOURCE_ASSURE = referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.MATERNITE_IMPOT_A_LA_SOURCE_ASSURE);
+            IMPOT_SOURCE_INDEPENDANT = referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.MATERNITE_IMPOT_A_LA_SOURCE_INDEPENDANT);
+
+            IMPOT_SOURCE_LAMAT_CANTONALE_ASSURE = referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.MATERNITE_IMPOT_A_LA_SOURCE_LAMAT_CANTONALE_ASSURE);
+            IMPOT_SOURCE_LAMAT_CANTONALE_INDEPENDANT = referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.MATERNITE_IMPOT_A_LA_SOURCE_LAMAT_CANTONALE_INDEPENDANT);
+
             IMPOT_SOURCE_ACM = referenceRubrique
                     .getRubriqueByCodeReference(APIReferenceRubrique.MATERNITE_IMPOT_A_LA_SOURCE_ACM);
 
@@ -2782,20 +3004,46 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
                     .getRubriqueByCodeReference(APIReferenceRubrique.APG_EMPLOYEUR_AVEC_AC);
             EMPLOYEUR_SANS_AC = referenceRubrique
                     .getRubriqueByCodeReference(APIReferenceRubrique.APG_EMPLOYEUR_SANS_AC);
-            ASSURE_OU_INDEPENDANT_AVEC_AC = referenceRubrique
-                    .getRubriqueByCodeReference(APIReferenceRubrique.APG_ASSURE_OU_INDEPENDANT_AVEC_AC);
-            ASSURE_OU_INDEPENDANT_SANS_AC = referenceRubrique
-                    .getRubriqueByCodeReference(APIReferenceRubrique.APG_ASSURE_OU_INDEPENDANT_SANS_AC);
+
+            AVEC_AC_ASSURE = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.APG_AVEC_AC_ASSURE);
+            AVEC_AC_INDEPENDANT = referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.APG_AVEC_AC_INDEPENDANT);
+
+            SANS_AC_ASSURE = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.APG_SANS_AC_ASSURE);
+            SANS_AC_INDEPENDANT = referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.APG_SANS_AC_INDEPENDANT);
+
             SANS_COTISATION = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.APG_SANS_COTISATIONS);
-            PRESTATION_A_RESTITUER = referenceRubrique
-                    .getRubriqueByCodeReference(APIReferenceRubrique.APG_PRESTATION_A_RESTITUER);
-            COT_AVS = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.APG_COTISATION_AVS);
-            COT_AC = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.APG_COTISATION_AC);
-            FONDS_DE_COMPENSATION = referenceRubrique
-                    .getRubriqueByCodeReference(APIReferenceRubrique.APG_FONDS_DE_COMPENSATION);
+
+            PRESTATION_A_RESTITUER_ASSURE = referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.APG_PRESTATION_A_RESTITUER_ASSURE);
+            PRESTATION_A_RESTITUER_EMPLOYEUR = referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.APG_PRESTATION_A_RESTITUER_EMPLOYEUR);
+            PRESTATION_A_RESTITUER_INDEPENDANT = referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.APG_PRESTATION_A_RESTITUER_INDEPENDANT);
+
+            COT_AVS_ASSURE = referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.APG_COTISATION_AVS_ASSURE);
+            COT_AVS_INDEPENDANT = referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.APG_COTISATION_AVS_INDEPENDANT);
+
+            COT_AC_ASSURE = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.APG_COTISATION_AC_ASSURE);
+            COT_AC_INDEPENDANT = referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.APG_COTISATION_AC_INDEPENDANT);
+
+            FONDS_DE_COMPENSATION_ASSURE = referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.APG_FONDS_DE_COMPENSATION_ASSURE);
+            FONDS_DE_COMPENSATION_EMPLOYEUR = referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.APG_FONDS_DE_COMPENSATION_EMPLOYEUR);
+            FONDS_DE_COMPENSATION_INDEPENDANT = referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.APG_FONDS_DE_COMPENSATION_INDEPENDANT);
+
             FONDS_DE_COMPENSATION_ACM = referenceRubrique
                     .getRubriqueByCodeReference(APIReferenceRubrique.APG_ACM_FONDS_DE_COMPENSATION);
-            IMPOT_SOURCE = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.APG_IMPOT_A_LA_SOURCE);
+
+            IMPOT_SOURCE_ASSURE = referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.APG_IMPOT_A_LA_SOURCE);
+
             IMPOT_SOURCE_ACM = referenceRubrique
                     .getRubriqueByCodeReference(APIReferenceRubrique.APG_IMPOT_A_LA_SOURCE_ACM);
             COT_LFA = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.APG_COTISATION_LFA);

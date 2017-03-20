@@ -94,8 +94,14 @@ subTableHeight = 20;
 							<TABLE border="0">
 								<TR>
 									<TD><B><ct:FWLabel key="JSP_DETAIL_REQUERANT"/></B></TD>
-									<TD><INPUT type="text" value="<%=viewBean.getDetailRequerantDetail()%>" size="100" class="disabled" readonly>
-								&nbsp;/&nbsp;<A href="<%=request.getContextPath()%>\pyxis?userAction=pyxis.tiers.tiers.diriger&selectedId=<%=viewBean.getIdTier()%>" >Tiers</A></TD>
+									<TD>
+										<INPUT type="text" value="<%=viewBean.getDetailRequerantDetail()%>" size="100" class="disabled" readonly>
+										&nbsp;/&nbsp;<A href="<%=request.getContextPath()%>\pyxis?userAction=pyxis.tiers.tiers.diriger&selectedId=<%=viewBean.getIdTier()%>" >Tiers</A>
+									</TD>
+									<TD width="30px">&nbsp;</TD>
+									<TD rowspan="2">
+										<PRE><span class="IJAfficheText"><%=viewBean.getAdressePaiementRequerant()%></span></PRE>
+									</TD>
 								</TR>
 								<TR>									
 									<TD><ct:FWLabel key="JSP_DATE_DEBUT"/></TD>

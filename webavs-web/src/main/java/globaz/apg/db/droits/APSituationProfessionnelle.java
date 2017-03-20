@@ -21,9 +21,6 @@ import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.api.IPRSituationProfessionnelle;
 import globaz.prestation.clone.factory.IPRCloneable;
 
-// TODO formatage des montants pour le deletePrestationsRequis. Pas urgent puisque pour modifier une situation
-// professionnelle, il faut cliquer sur modifier puis apres valider, donc faut vraiment le vouloir
-
 /**
  * <H1>Bentity de la situation professionnelle</H1>
  * <p>
@@ -36,12 +33,6 @@ import globaz.prestation.clone.factory.IPRCloneable;
  */
 public class APSituationProfessionnelle extends BEntity implements IPRCloneable, SituationProfessionnelle {
 
-    // ~ Static fields/initializers
-    // -------------------------------------------------------------------------------------
-
-    /**
-     * 
-     */
     private static final long serialVersionUID = 1L;
 
     private static final JACalendarGregorian CALENDAR = new JACalendarGregorian();
@@ -50,244 +41,167 @@ public class APSituationProfessionnelle extends BEntity implements IPRCloneable,
 
     public static final String FIELDNAME_ANNEE_TAXATION = "VFMAAT";
 
-    /** DOCUMENT ME! */
     public static final String FIELDNAME_AUTRE_REMUNERATION = "VFMARE";
 
-    /** DOCUMENT ME! */
     public static final String FIELDNAME_AUTRSALAIRE = "VFMASA";
 
-    /** DOCUMENT ME! */
     public static final String FIELDNAME_CS_ASSURANCE_ASSOCIATION = "VFTAAS";
 
-    /** DOCUMENT ME! */
     public static final String FIELDNAME_DATEDEBUT = "VFDDEB";
 
-    /** DOCUMENT ME! */
     public static final String FIELDNAME_DATEFIN = "VFDFIN";
 
-    /** DOCUMENT ME! */
     public static final String FIELDNAME_DATEFINCONTRAT = "VFDFCO";
 
-    /** DOCUMENT ME! */
     public static final String FIELDNAME_HAS_ACM_ALPHA_PRESTATION = "VFBACM";
 
-    /** DOCUMENT ME! */
     public static final String FIELDNAME_HAS_ACM2_ALPHA_PRESTATION = "VFBACM2";
 
-    /** DOCUMENT ME! */
     public static final String FIELDNAME_HAS_LAMAT_PRESTATION = "VFBLAM";
 
-    /** DOCUMENT ME! */
     public static final String FIELDNAME_HEURESSEMAINE = "VFMHES";
 
-    /** DOCUMENT ME! */
     public static final String FIELDNAME_IDDROIT = "VFIDRO";
 
-    /** DOCUMENT ME! */
+    public static final String FIELDNAME_IDDOMAINE_PAIEMENT = "VFIDDOP";
+
+    public static final String FIELDNAME_IDTIERS_PAIEMENT = "VFIDTIP";
+
     public static final String FIELDNAME_IDEMPLOYEUR = "VFIEMP";
 
-    /** DOCUMENT ME! */
     public static final String FIELDNAME_IDSITUATIONPROF = "VFISIP";
 
-    /** DOCUMENT ME! */
     public static final String FIELDNAME_ISALLOCATIONMAX = "VFBALM";
 
-    /** DOCUMENT ME! */
     public static final String FIELDNAME_ISALLOCEXPLOIT = "VFBAEX";
 
-    /** DOCUMENT ME! */
     public static final String FIELDNAME_ISCOLLABOAGRICOLE = "VFBCOA";
 
-    /** DOCUMENT ME! */
     public static final String FIELDNAME_ISINDEPENDANT = "VFBIND";
 
-    /** DOCUMENT ME! */
     public static final String FIELDNAME_ISNOACTIF = "VFBNAC";
 
-    /** DOCUMENT ME! */
     public static final String FIELDNAME_ISNONSOUMISCOTISATION = "VFBNSC";
 
-    /** DOCUMENT ME! */
+    public static final String FIELDNAME_ISPORTEENCOMPTE = "VFBPEC";
+
     public static final String FIELDNAME_ISSITUATIONPROF = "VFBSIP";
 
-    /** DOCUMENT ME! */
     public static final String FIELDNAME_ISTRAVAILGRICOLE = "VFBTRA";
 
-    /** DOCUMENT ME! */
     public static final String FIELDNAME_ISTRAVAILSANSEMPL = "VFBTSE";
 
-    /** DOCUMENT ME! */
     public static final String FIELDNAME_ISVERSEMENTEMPLOYEUR = "VFBVEM";
 
-    /** DOCUMENT ME! */
-    // TODO public static final String FIELDNAME_MONTANT_JOURNALIER_ACM_NE = "VFMTAN";
     public static final String FIELDNAME_MONTANT_JOURNALIER_ACM_NE = "VFMJOU";
 
-    /** DOCUMENT ME! */
     public static final String FIELDNAME_MONTANTVERSE = "VFMMOV";
 
-    /** DOCUMENT ME! */
     public static final String FIELDNAME_PERIODAUTREREMUN = "VFTAUR";
 
-    /** DOCUMENT ME! */
     public static final String FIELDNAME_PERIODAUTRSALAIRE = "VFTPAS";
 
-    /** DOCUMENT ME! */
     public static final String FIELDNAME_PERIODMONTANTVERSE = "VFTPMV";
 
-    /** DOCUMENT ME! */
     public static final String FIELDNAME_PERIODSALAIRENATUR = "VFTPSN";
 
-    /** DOCUMENT ME! */
     public static final String FIELDNAME_POURCENTAUTRREMUN = "VFMPAR";
 
-    /** DOCUMENT ME! */
     public static final String FIELDNAME_POURCENTMONTVERSE = "VFMPMV";
 
-    /** DOCUMENT ME! */
     public static final String FIELDNAME_REVENUINDEPENDANT = "VFMRIN";
 
-    /** DOCUMENT ME! */
     public static final String FIELDNAME_SALAIREHORAIRE = "VFMSAH";
 
-    /** DOCUMENT ME! */
     public static final String FIELDNAME_SALAIREMENSUEL = "VFMSAM";
 
-    /** DOCUMENT ME! */
     public static final String FIELDNAME_SALAIRENATURE = "VFMSAN";
 
-    /** DOCUMENT ME! */
     public static final String TABLE_NAME_SITUATION_PROFESSIONNELLE = "APSIPRP";
-
-    // ~ Instance fields
-    // ------------------------------------------------------------------------------------------------
 
     protected String anneeTaxation = "";
 
-    /** DOCUMENT ME! */
     protected String autreOuPourcentRemuneration = "";
 
-    /** DOCUMENT ME! */
     protected String autreSalaire = "";
 
-    /** DOCUMENT ME! */
     protected String csAssuranceAssociation = "";
 
-    /** DOCUMENT ME! */
     protected String dateDebut = "";
 
-    /** DOCUMENT ME! */
     protected String dateFin = "";
 
-    /**
-     */
     protected String dateFinContrat = "";
 
     private boolean deletePrestationsRequis = false;
 
-    protected transient APEmployeur employeur = null; // transient pour ne pas
-    // surcharger la session
-    // http
+    // transient pour ne pas surcharger la session http
+    protected transient APEmployeur employeur = null;
 
-    /** DOCUMENT ME! */
     protected Boolean hasAcmAlphaPrestations = Boolean.FALSE;
 
-    /** DOCUMENT ME! */
     protected Boolean hasAcm2AlphaPrestations = Boolean.FALSE;
 
-    /** DOCUMENT ME! */
     protected Boolean hasLaMatPrestations = Boolean.FALSE;
 
-    /** DOCUMENT ME! */
     protected String heuresSemaine = "";
 
-    /** DOCUMENT ME! */
     protected String idDroit = "";
 
-    /** DOCUMENT ME! */
+    protected String idDomainePaiementEmployeur = "";
+
+    protected String idTiersPaiementEmployeur = "";
+
     protected String idEmployeur = "";
 
-    /** DOCUMENT ME! */
     protected String idSituationProf = "";
 
-    /** DOCUMENT ME! */
     protected Boolean isAllocationExploitation = Boolean.FALSE;
 
-    /** DOCUMENT ME! */
     protected Boolean isAllocationMax = Boolean.FALSE;
 
-    /** DOCUMENT ME! */
     protected Boolean isCollaborateurAgricole = Boolean.FALSE;
 
-    /** DOCUMENT ME! */
     protected Boolean isIndependant = Boolean.FALSE;
 
-    /** DOCUMENT ME! */
     protected Boolean isNonActif = Boolean.FALSE;
 
-    /** DOCUMENT ME! */
     protected Boolean isNonSoumisCotisation = Boolean.FALSE;
 
-    /** DOCUMENT ME! */
     protected Boolean isPourcentAutreRemun = Boolean.FALSE;
 
-    /** DOCUMENT ME! */
+    protected Boolean isPorteEnCompte = Boolean.FALSE;
+
     protected Boolean isPourcentMontantVerse = Boolean.FALSE;
 
-    /** DOCUMENT ME! */
     protected Boolean isSituationProf = Boolean.FALSE;
 
-    /** DOCUMENT ME! */
     protected Boolean isTravailleurAgricole = Boolean.FALSE;
 
-    /** DOCUMENT ME! */
     protected Boolean isTravailleurSansEmploi = Boolean.FALSE;
 
-    /** DOCUMENT ME! */
     protected Boolean isVersementEmployeur = Boolean.TRUE;
 
-    /** DOCUMENT ME! */
     protected String montantJournalierAcmNe = "";
 
-    /** DOCUMENT ME! */
     protected String montantOuPourcentVerse = "";
 
-    /** DOCUMENT ME! */
     protected String periodiciteAutreRemun = "";
 
-    /** DOCUMENT ME! */
     protected String periodiciteAutreSalaire = "";
 
-    /** DOCUMENT ME! */
     protected String periodiciteMontantVerse = "";
 
-    /** DOCUMENT ME! */
     protected String periodiciteSalaireNature = "";
 
-    /** DOCUMENT ME! */
     protected String revenuIndependant = "";
 
-    /** DOCUMENT ME! */
     protected String salaireHoraire = "";
 
-    /** DOCUMENT ME! */
     protected String salaireMensuel = "";
 
-    /** DOCUMENT ME! */
     protected String salaireNature = "";
 
-    // ~ Methods
-    // --------------------------------------------------------------------------------------------------------
-
-    /**
-     * (non-Javadoc)
-     * 
-     * @see globaz.globall.db.BEntity#_afterAdd(globaz.globall.db.BTransaction)
-     * @param transaction
-     *            DOCUMENT ME!
-     * @throws Exception
-     *             DOCUMENT ME!
-     */
     @Override
     protected void _afterAdd(BTransaction transaction) throws Exception {
         APPrestationManager prestationManager = new APPrestationManager();
@@ -303,15 +217,6 @@ public class APSituationProfessionnelle extends BEntity implements IPRCloneable,
         super._afterAdd(transaction);
     }
 
-    /**
-     * (non-Javadoc)
-     * 
-     * @see globaz.globall.db.BEntity#_afterDelete(globaz.globall.db.BTransaction)
-     * @param transaction
-     *            DOCUMENT ME!
-     * @throws Exception
-     *             DOCUMENT ME!
-     */
     @Override
     protected void _afterDelete(BTransaction transaction) throws Exception {
         if (!loadEmployeur().isNew()) {
@@ -331,15 +236,6 @@ public class APSituationProfessionnelle extends BEntity implements IPRCloneable,
         super._afterDelete(transaction);
     }
 
-    /**
-     * (non-Javadoc)
-     * 
-     * @see globaz.globall.db.BEntity#_afterUpdate(globaz.globall.db.BTransaction)
-     * @param transaction
-     *            DOCUMENT ME!
-     * @throws Exception
-     *             DOCUMENT ME!
-     */
     @Override
     protected void _afterUpdate(BTransaction transaction) throws Exception {
         // quand un droit est mis à jour, les prestations qui ont pu être
@@ -361,16 +257,9 @@ public class APSituationProfessionnelle extends BEntity implements IPRCloneable,
         }
     }
 
-    /**
-     * DOCUMENT ME!
-     * 
-     * @param transaction
-     *            DOCUMENT ME!
-     * @throws Exception
-     *             DOCUMENT ME!
-     */
     @Override
     protected void _beforeAdd(BTransaction transaction) throws Exception {
+        nettoyage();
         // on sauve l'employeur
         APEmployeur employeur = loadEmployeur();
 
@@ -381,17 +270,9 @@ public class APSituationProfessionnelle extends BEntity implements IPRCloneable,
         setIdSituationProf(this._incCounter(transaction, "0"));
     }
 
-    /**
-     * (non-Javadoc)
-     * 
-     * @see globaz.globall.db.BEntity#_beforeUpdate(globaz.globall.db.BTransaction)
-     * @param transaction
-     *            DOCUMENT ME!
-     * @throws Exception
-     *             DOCUMENT ME!
-     */
     @Override
     protected void _beforeUpdate(BTransaction transaction) throws Exception {
+        nettoyage();
         // on met a jour l'employeur
         loadEmployeur().update(transaction);
 
@@ -408,14 +289,6 @@ public class APSituationProfessionnelle extends BEntity implements IPRCloneable,
         return APSituationProfessionnelle.TABLE_NAME_SITUATION_PROFESSIONNELLE;
     }
 
-    /**
-     * DOCUMENT ME!
-     * 
-     * @param statement
-     *            DOCUMENT ME!
-     * @throws Exception
-     *             DOCUMENT ME!
-     */
     @Override
     protected void _readProperties(BStatement statement) throws Exception {
         isTravailleurSansEmploi = statement.dbReadBoolean(APSituationProfessionnelle.FIELDNAME_ISTRAVAILSANSEMPL);
@@ -428,6 +301,10 @@ public class APSituationProfessionnelle extends BEntity implements IPRCloneable,
         autreSalaire = statement.dbReadNumeric(APSituationProfessionnelle.FIELDNAME_AUTRSALAIRE, 2);
         periodiciteAutreSalaire = statement.dbReadNumeric(APSituationProfessionnelle.FIELDNAME_PERIODAUTRSALAIRE);
         idDroit = statement.dbReadNumeric(APSituationProfessionnelle.FIELDNAME_IDDROIT);
+
+        idDomainePaiementEmployeur = statement.dbReadNumeric(APSituationProfessionnelle.FIELDNAME_IDDOMAINE_PAIEMENT);
+        idTiersPaiementEmployeur = statement.dbReadNumeric(APSituationProfessionnelle.FIELDNAME_IDTIERS_PAIEMENT);
+
         dateDebut = statement.dbReadDateAMJ(APSituationProfessionnelle.FIELDNAME_DATEDEBUT);
         autreOuPourcentRemuneration = statement
                 .dbReadNumeric(APSituationProfessionnelle.FIELDNAME_POURCENTAUTRREMUN, 2);
@@ -447,6 +324,7 @@ public class APSituationProfessionnelle extends BEntity implements IPRCloneable,
         dateFinContrat = statement.dbReadDateAMJ(APSituationProfessionnelle.FIELDNAME_DATEFINCONTRAT);
         isAllocationMax = statement.dbReadBoolean(APSituationProfessionnelle.FIELDNAME_ISALLOCATIONMAX);
         isCollaborateurAgricole = statement.dbReadBoolean(APSituationProfessionnelle.FIELDNAME_ISCOLLABOAGRICOLE);
+        isPorteEnCompte = statement.dbReadBoolean(APSituationProfessionnelle.FIELDNAME_ISPORTEENCOMPTE);
         isTravailleurAgricole = statement.dbReadBoolean(APSituationProfessionnelle.FIELDNAME_ISTRAVAILGRICOLE);
         salaireNature = statement.dbReadNumeric(APSituationProfessionnelle.FIELDNAME_SALAIRENATURE, 2);
         periodiciteSalaireNature = statement.dbReadNumeric(APSituationProfessionnelle.FIELDNAME_PERIODSALAIRENATUR);
@@ -477,14 +355,6 @@ public class APSituationProfessionnelle extends BEntity implements IPRCloneable,
                 APSituationProfessionnelle.FIELDNAME_MONTANT_JOURNALIER_ACM_NE, 2);
     }
 
-    /**
-     * DOCUMENT ME!
-     * 
-     * @param statement
-     *            DOCUMENT ME!
-     * @throws Exception
-     *             DOCUMENT ME!
-     */
     @Override
     protected void _validate(BStatement statement) throws Exception {
         BTransaction transaction = statement.getTransaction();
@@ -603,13 +473,14 @@ public class APSituationProfessionnelle extends BEntity implements IPRCloneable,
             _addError(transaction, getSession().getLabel("COLLABO_AGR_ET_INDEP"));
         }
 
+        if (isPorteEnCompte.booleanValue() && !isVersementEmployeur) {
+            _addError(transaction, getSession().getLabel("VERSEMENT_ASSURE_ET_PORTER_EN_COMPTE_INTERDIT"));
+        }
+
         // il faut au moins UN revenu ou que la case montant maximum soit cochée
         if (JadeStringUtil.isDecimalEmpty(revenuIndependant) && JadeStringUtil.isDecimalEmpty(salaireHoraire)
-                && JadeStringUtil.isDecimalEmpty(salaireMensuel) &&
-                // JadeStringUtil.isDecimalEmpty(autreOuPourcentRemuneration) &&
-                JadeStringUtil.isDecimalEmpty(autreSalaire) &&
-                // JadeStringUtil.isDecimalEmpty(salaireNature) &&
-                !isAllocationMax.booleanValue()) {
+                && JadeStringUtil.isDecimalEmpty(salaireMensuel) && JadeStringUtil.isDecimalEmpty(autreSalaire)
+                && !isAllocationMax.booleanValue()) {
             _addError(transaction, getSession().getLabel("AU_MOINS_UN_REVENU"));
         }
 
@@ -642,31 +513,21 @@ public class APSituationProfessionnelle extends BEntity implements IPRCloneable,
         if (isAssuranceAssociationACMNE && new FWCurrency(montantJournalierAcmNe).isNegative()) {
             _addError(transaction, getSession().getLabel("JSP_SITUATION_PROFESSIONNELLE_ERREUR_TOTAL_ACM_NE_NEGATIF"));
         }
-
     }
 
-    /**
-     * Clef primaire
-     * 
-     * @param statement
-     *            DOCUMENT ME!
-     * @throws Exception
-     *             DOCUMENT ME!
-     */
+    private void nettoyage() {
+        if (!isVersementEmployeur) {
+            idDomainePaiementEmployeur = null;
+            idTiersPaiementEmployeur = null;
+        }
+    }
+
     @Override
     protected void _writePrimaryKey(BStatement statement) throws Exception {
         statement.writeKey(APSituationProfessionnelle.FIELDNAME_IDSITUATIONPROF,
                 this._dbWriteNumeric(statement.getTransaction(), idSituationProf, "idSituationProf"));
     }
 
-    /**
-     * DOCUMENT ME!
-     * 
-     * @param statement
-     *            DOCUMENT ME!
-     * @throws Exception
-     *             DOCUMENT ME!
-     */
     @Override
     protected void _writeProperties(BStatement statement) throws Exception {
         statement.writeField(APSituationProfessionnelle.FIELDNAME_ISTRAVAILSANSEMPL, this._dbWriteBoolean(
@@ -694,6 +555,12 @@ public class APSituationProfessionnelle extends BEntity implements IPRCloneable,
                 this._dbWriteNumeric(statement.getTransaction(), periodiciteAutreSalaire, "periodiciteAutreSalaire"));
         statement.writeField(APSituationProfessionnelle.FIELDNAME_IDDROIT,
                 this._dbWriteNumeric(statement.getTransaction(), idDroit, "idDroit"));
+
+        statement.writeField(APSituationProfessionnelle.FIELDNAME_IDDOMAINE_PAIEMENT,
+                this._dbWriteNumeric(statement.getTransaction(), idDomainePaiementEmployeur, "idDomainePaiement"));
+        statement.writeField(APSituationProfessionnelle.FIELDNAME_IDTIERS_PAIEMENT,
+                this._dbWriteNumeric(statement.getTransaction(), idTiersPaiementEmployeur, "idTiersPaiement"));
+
         statement.writeField(APSituationProfessionnelle.FIELDNAME_DATEDEBUT,
                 this._dbWriteDateAMJ(statement.getTransaction(), dateDebut, "dateDebut"));
 
@@ -734,6 +601,10 @@ public class APSituationProfessionnelle extends BEntity implements IPRCloneable,
         statement.writeField(APSituationProfessionnelle.FIELDNAME_ISNONSOUMISCOTISATION, this._dbWriteBoolean(
                 statement.getTransaction(), isNonSoumisCotisation, BConstants.DB_TYPE_BOOLEAN_CHAR,
                 "isNonSoumisCotisation"));
+
+        statement.writeField(APSituationProfessionnelle.FIELDNAME_ISPORTEENCOMPTE, this._dbWriteBoolean(
+                statement.getTransaction(), isPorteEnCompte, BConstants.DB_TYPE_BOOLEAN_CHAR, "isPorteEnCompte"));
+
         statement.writeField(APSituationProfessionnelle.FIELDNAME_IDEMPLOYEUR,
                 this._dbWriteNumeric(statement.getTransaction(), idEmployeur, "idEmployeur"));
 
@@ -779,24 +650,18 @@ public class APSituationProfessionnelle extends BEntity implements IPRCloneable,
 
     }
 
-    /**
-     * DOCUMENT ME!
-     * 
-     * @param actionType
-     *            DOCUMENT ME!
-     * @return DOCUMENT ME!
-     * @throws Exception
-     *             DOCUMENT ME!
-     */
     @Override
     public IPRCloneable duplicate(int actionType) throws Exception {
         APSituationProfessionnelle clone = new APSituationProfessionnelle();
+        clone.setAnneeTaxation(getAnneeTaxation());
         clone.setAutreRemuneration(getAutreRemuneration());
         clone.setAutreSalaire(getAutreSalaire());
         clone.setDateDebut(getDateDebut());
         clone.setDateFin(getDateFin());
         clone.setDateFinContrat(getDateFinContrat());
         clone.setHeuresSemaine(getHeuresSemaine());
+        clone.setIdDomainePaiementEmployeur(getIdDomainePaiementEmployeur());
+        clone.setIdTiersPaiementEmployeur(getIdTiersPaiementEmployeur());
         clone.setIsAllocationExploitation(getIsAllocationExploitation());
         clone.setIsAllocationMax(getIsAllocationMax());
         clone.setIsCollaborateurAgricole(getIsCollaborateurAgricole());
@@ -807,8 +672,8 @@ public class APSituationProfessionnelle extends BEntity implements IPRCloneable,
         clone.setIsPourcentMontantVerse(getIsPourcentMontantVerse());
         clone.setIsSituationProf(getIsSituationProf());
         clone.setIsNonSoumisCotisation(getIsNonSoumisCotisation());
+        clone.setIsPorteEnCompte(getIsPorteEnCompte());
         clone.setIsTravailleurSansEmploi(getIsTravailleurSansEmploi());
-        clone.setAnneeTaxation(getAnneeTaxation());
         clone.setIsVersementEmployeur(getIsVersementEmployeur());
         clone.setMontantVerse(getMontantVerse());
         clone.setPeriodiciteAutreRemun(getPeriodiciteAutreRemun());
@@ -999,6 +864,14 @@ public class APSituationProfessionnelle extends BEntity implements IPRCloneable,
     @Override
     public Boolean getIsIndependant() {
         return isIndependant;
+    }
+
+    @Override
+    public Boolean getIsPorteEnCompte() {
+        if (isPorteEnCompte == null) {
+            return false;
+        }
+        return isPorteEnCompte;
     }
 
     /**
@@ -1458,6 +1331,10 @@ public class APSituationProfessionnelle extends BEntity implements IPRCloneable,
         isNonActif = boolean1;
     }
 
+    public void setIsPorteEnCompte(Boolean isPorteEnCompte) {
+        this.isPorteEnCompte = isPorteEnCompte;
+    }
+
     /**
      * setter pour l'attribut is non soumis cotisation
      * 
@@ -1707,6 +1584,24 @@ public class APSituationProfessionnelle extends BEntity implements IPRCloneable,
         salaireNature = string;
     }
 
+    public void setIdDomainePaiementEmployeur(String idDomainePaiementEmployeur) {
+        this.idDomainePaiementEmployeur = idDomainePaiementEmployeur;
+    }
+
+    public void setIdTiersPaiementEmployeur(String idTiersPaiementEmployeur) {
+        this.idTiersPaiementEmployeur = idTiersPaiementEmployeur;
+    }
+
+    @Override
+    public String getIdDomainePaiementEmployeur() {
+        return idDomainePaiementEmployeur;
+    }
+
+    @Override
+    public String getIdTiersPaiementEmployeur() {
+        return idTiersPaiementEmployeur;
+    }
+
     /**
      * setter pour l'attribut unique primary key
      * 
@@ -1718,6 +1613,7 @@ public class APSituationProfessionnelle extends BEntity implements IPRCloneable,
         setIdSituationProf(pk);
     }
 
+    @Override
     public String getAnneeTaxation() {
         return anneeTaxation;
     }
@@ -1725,5 +1621,4 @@ public class APSituationProfessionnelle extends BEntity implements IPRCloneable,
     public void setAnneeTaxation(String anneeTaxation) {
         this.anneeTaxation = anneeTaxation;
     }
-
 }

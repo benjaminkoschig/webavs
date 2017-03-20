@@ -49,6 +49,8 @@ public interface SituationProfessionnelle {
 
     public Boolean getIsPourcentMontantVerse();
 
+    public Boolean getIsPorteEnCompte();
+
     public Boolean getIsSituationProf();
 
     public Boolean getIsTravailleurAgricole();
@@ -74,5 +76,11 @@ public interface SituationProfessionnelle {
     public String getSalaireMensuel();
 
     public String getSalaireNature();
+
+    public String getAnneeTaxation();
+
+    public String getIdDomainePaiementEmployeur();
+
+    public String getIdTiersPaiementEmployeur();
 
 }

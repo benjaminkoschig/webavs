@@ -67,20 +67,9 @@ import java.util.TreeMap;
  * @author dvh
  */
 public class APGenererCompensationsProcess003 extends BProcess implements IAPGenererCompensationProcess {
-
-    // ~ Instance fields
-    // ------------------------------------------------------------------------------------------------
-
-    private static final String PROCESS_GENERER_COMPENSATIONS = "PROCESS_GENERER_COMPENSATIONS";
-    /**
-     * 
-     */
     private static final long serialVersionUID = 1L;
     private String forIdLot = "";
     private String moisPeriodeFacturation = "";
-
-    // ~ Constructors
-    // ---------------------------------------------------------------------------------------------------
 
     /**
      * Crée une nouvelle instance de la classe APGenererCompensationsProcess.
@@ -108,9 +97,6 @@ public class APGenererCompensationsProcess003 extends BProcess implements IAPGen
     public APGenererCompensationsProcess003(BSession session) {
         super(session);
     }
-
-    // ~ Methods
-    // --------------------------------------------------------------------------------------------------------
 
     /**
      * (non-Javadoc)
@@ -318,7 +304,7 @@ public class APGenererCompensationsProcess003 extends BProcess implements IAPGen
 
                     Key key = new Key(repartitionPaiementsJointEmployeur.getIdTiers(),
                             repartitionPaiementsJointEmployeur.getIdAffilie(), "0",
-                            repartitionPaiementsJointEmployeur.getIdParticularite(), genre);
+                            repartitionPaiementsJointEmployeur.getIdParticularite(), genre, false, false);
 
                     key.idDomaineAdressePaiement = repartitionPaiementsJointEmployeur.getIdDomaineAdressePaiement();
                     key.idTiersAdressePaiement = repartitionPaiementsJointEmployeur.getIdTiersAdressePaiement();
@@ -782,6 +768,11 @@ public class APGenererCompensationsProcess003 extends BProcess implements IAPGen
     @Override
     public void setMoisPeriodeFacturation(String string) {
         moisPeriodeFacturation = string;
+    }
+
+    @Override
+    public boolean isModulePorterEnCompte() {
+        return false;
     }
 
 }

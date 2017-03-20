@@ -48,4 +48,9 @@ public class APGenererCompensationsProcess004 extends APGenererCompensationsProc
         return sectionEtCompteAnnexe.getSection().isSectionAuContentieux()
                 && !sectionEtCompteAnnexe.getSection().isSectionAuxPoursuitesNotRadiee(true);
     }
+
+    @Override
+    public boolean isModulePorterEnCompte() {
+        return false;
+    }
 }

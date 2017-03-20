@@ -55,7 +55,8 @@ public class APSitProJointEmployeur extends BEntity {
                 + APSituationProfessionnelle.FIELDNAME_DATEDEBUT + ", " + APSituationProfessionnelle.FIELDNAME_DATEFIN
                 + ", " + APSituationProfessionnelle.FIELDNAME_MONTANT_JOURNALIER_ACM_NE + ", "
                 + APSituationProfessionnelle.FIELDNAME_CS_ASSURANCE_ASSOCIATION + " , "
-                + APEmployeur.FIELDNAME_ID_TIERS;
+                + APEmployeur.FIELDNAME_ID_TIERS + ", " + APSituationProfessionnelle.FIELDNAME_IDDOMAINE_PAIEMENT
+                + ", " + APSituationProfessionnelle.FIELDNAME_IDTIERS_PAIEMENT + " ";
     }
 
     /**
@@ -153,6 +154,8 @@ public class APSitProJointEmployeur extends BEntity {
     private String idTiers = "";
     private Boolean isVersementEmployeur = Boolean.FALSE;
     private String montantJournalierAcmNe = "";
+    private String idDomainePaiementEmployeur = "";
+    private String idTiersPaiementEmployeur = "";
 
     // ~ Methods
     // --------------------------------------------------------------------------------------------------------
@@ -245,7 +248,8 @@ public class APSitProJointEmployeur extends BEntity {
         montantJournalierAcmNe = statement.dbReadNumeric(
                 APSituationProfessionnelle.FIELDNAME_MONTANT_JOURNALIER_ACM_NE, 2);
         csAssuranceAssociation = statement.dbReadNumeric(APSituationProfessionnelle.FIELDNAME_CS_ASSURANCE_ASSOCIATION);
-
+        idDomainePaiementEmployeur = statement.dbReadNumeric(APSituationProfessionnelle.FIELDNAME_IDDOMAINE_PAIEMENT);
+        idTiersPaiementEmployeur = statement.dbReadNumeric(APSituationProfessionnelle.FIELDNAME_IDTIERS_PAIEMENT);
     }
 
     /**
@@ -436,5 +440,21 @@ public class APSitProJointEmployeur extends BEntity {
 
     public void setHasAcm2AlphaPrestations(boolean hasAcm2AlphaPrestations) {
         this.hasAcm2AlphaPrestations = hasAcm2AlphaPrestations;
+    }
+
+    public void setIdDomainePaiementEmployeur(String idDomainePaiementEmployeur) {
+        this.idDomainePaiementEmployeur = idDomainePaiementEmployeur;
+    }
+
+    public void setIdTiersPaiementEmployeur(String idTiersPaiementEmployeur) {
+        this.idTiersPaiementEmployeur = idTiersPaiementEmployeur;
+    }
+
+    public String getIdDomainePaiementEmployeur() {
+        return idDomainePaiementEmployeur;
+    }
+
+    public String getIdTiersPaiementEmployeur() {
+        return idTiersPaiementEmployeur;
     }
 }

@@ -1,6 +1,7 @@
 package globaz.apg.itext.decompte;
 
 import globaz.apg.api.codesystem.IAPCatalogueTexte;
+import globaz.apg.api.process.IAPGenererCompensationProcess;
 import globaz.apg.db.droits.APEmployeur;
 import globaz.apg.db.droits.APSituationProfessionnelle;
 import globaz.apg.db.lots.APFactureACompenser;
@@ -20,9 +21,11 @@ import globaz.apg.properties.APPropertyTypeDePrestationAcmValues;
 import globaz.babel.api.ICTDocument;
 import globaz.framework.printing.itext.exception.FWIException;
 import globaz.globall.db.BManager;
+import globaz.globall.db.BProcess;
 import globaz.globall.db.GlobazJobQueue;
 import globaz.globall.util.JADate;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.log.JadeLogger;
 import globaz.prestation.api.IPRDemande;
 import globaz.prestation.db.employeurs.PRDepartement;
 import globaz.prestation.interfaces.af.IPRAffilie;
@@ -431,9 +434,25 @@ public class APDecompteGenerationProcess extends APAbstractDecomptesGenerationPr
             typeDePrestation = recupererTypeDePrestation(repartitionJointPrestation);
 
             data.add(new APPrestationJointRepartitionPOJO(repartitionJointPrestation, situationProfessionnelle,
-                    departement, typeDePrestation));
+                    departement, typeDePrestation, isModuleActifForPorterEnCompte()));
         }
         return data;
+    }
+
+    private boolean isModuleActifForPorterEnCompte() {
+        boolean isModulePorterEnCompte = false;
+        try {
+            IAPGenererCompensationProcess moduleCompensation = (IAPGenererCompensationProcess) getSession()
+                    .getApplication().getImplementationFor(getSession(), IAPGenererCompensationProcess.class);
+
+            if (moduleCompensation != null && moduleCompensation instanceof BProcess) {
+                isModulePorterEnCompte = moduleCompensation.isModulePorterEnCompte();
+            }
+        } catch (Exception e) {
+            JadeLogger.error(this, e);
+        }
+
+        return isModulePorterEnCompte;
     }
 
     /**

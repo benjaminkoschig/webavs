@@ -1,4 +1,5 @@
 <%-- tpl:insert page="/theme/detail.jtpl" --%>
+<%@page import="globaz.jade.client.util.JadeStringUtil"%>
 <%@page import="globaz.prestation.api.IPRDemande"%>
 <%@page import="globaz.jade.client.util.JadeDateUtil"%>
 <%@ page language="java" import="globaz.globall.http.*" contentType="text/html;charset=ISO-8859-1" %>
@@ -102,6 +103,7 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
 	var isPrestationAcmNeEnable = <%=viewBean.isPrestationAcmNeEnable()%>;
 	var isPrestationAcmAlphaEnable = <%=viewBean.isPrestationAcmAlfaEnable().booleanValue()%>;
 	var isPrestationAcm2AlphaEnable = <%=viewBean.isPrestationAcm2AlfaEnable().booleanValue()%>;
+	var isPorteEnCompte = <%=viewBean.getIsPorteEnCompte().booleanValue()%>;
 	
 	// Création d'une instance contenant tous les paramètres du droit en cours
 	var viewControllerData = new ViewControllerData();
@@ -111,6 +113,7 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
 	viewControllerData.isAcmAlphaEnable = isPrestationAcmAlphaEnable;
 	viewControllerData.isAcm2AlphaEnable = isMaternite && viewControllerData.isAcmAlphaEnable && isPrestationAcm2AlphaEnable;
 	viewControllerData.isAcmNeEnable = isAPG && isPrestationAcmNeEnable;
+	viewControllerData.isPorteEnCompte = isPorteEnCompte;
 	
 	if (document.forms[0].elements('_method').value == "add"){
 		$('input[type="checkbox"][name="hasAcmAlphaPrestations"]').attr('checked', viewControllerData.isAcmAlphaEnable);
@@ -123,6 +126,8 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
 	// Création d'une instance du controlleur de vue de cette page
 	var viewController = new ViewController(viewControllerData);
 	viewController.init(isRetourPyxis);
+	
+	manageAdressePaiement();
   }
   
   function postInit(){
@@ -137,6 +142,7 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
    		document.all('blockWithoutAnneeTaxation').style.display = 'block';
 	  	document.all('blockAnneeTaxation').style.display = 'none';
    	}
+  	manageAdressePaiement();
   }
   	
   function montantIndependantChange() {
@@ -156,13 +162,25 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
   	document.forms[0].elements('montantVerse').value = '';
   }
   
+  function manageAdressePaiement(){
+	  if(document.forms[0].elements('isVersementEmployeur')[0].checked && <%=!JadeStringUtil.isBlankOrZero(viewBean.getIdAffilieEmployeur()) %>){
+		  $(".withoutAdressePaiement").hide();
+		  $(".withAdressePaiement").show();
+	  } else {
+		  $(".withoutAdressePaiement").show();
+		  $(".withAdressePaiement").hide();
+	  }
+  }
+  
   function boutonIndependantChange() {
 	  	if (document.all('isIndependant').checked) {
-		  	// revenu indépendant
+	  		
 	  		document.all('specialEmployeur').style.display = 'none';
+	  		
 		  	document.forms[0].elements('isIndependant').checked = true;
 			
 			document.forms[0].elements('isVersementEmployeur')[0].checked = true;
+			document.forms[0].elements('isVersementEmployeur')[1].checked = false;
 		  	document.forms[0].elements('isVersementEmployeur')[0].disabled = true;
 		  	document.forms[0].elements('isVersementEmployeur')[1].disabled = true;
 	  	
@@ -175,6 +193,7 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
 		  	
 		  	document.all('blockWithoutAnneeTaxation').style.display = 'none';
 		  	document.all('blockAnneeTaxation').style.display = 'block';
+		  	
 		  	document.forms[0].elements('anneeTaxation').value = '<%=viewBean.getAnneeFromDateDebutDroit()%>';
 		  	
 		  	//si independant cocher auto. alloc. expl. sauf si non-actif
@@ -185,15 +204,25 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
 		  		<%}%>
 		  	}
 		} else {
+			
 	  		document.all('specialEmployeur').style.display = 'block';
+	  		
+	  		document.forms[0].elements('isIndependant').checked = false;
+	  		
+			document.forms[0].elements('isVersementEmployeur')[0].checked = false;
+			document.forms[0].elements('isVersementEmployeur')[1].checked = true;
 	  	  	document.forms[0].elements('isVersementEmployeur')[0].disabled = false;
 		  	document.forms[0].elements('isVersementEmployeur')[1].disabled = false;
-		  	document.forms[0].elements('isAllocationExploitation').checked = false;
-		  	
+
 		  	document.all('blockWithoutAnneeTaxation').style.display = 'block';
 		  	document.all('blockAnneeTaxation').style.display = 'none';
+		  	
 		  	document.forms[0].elements('anneeTaxation').value = '';
+		  	
+		  	document.forms[0].elements('isAllocationExploitation').checked = false;
 		}
+	  	
+	  	manageAdressePaiement();
   }
   
   function montantHoraireChange() {
@@ -422,6 +451,15 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
 			$('input[type="checkbox"][name="hasAcmAlphaPrestations"]').prop('checked', true);
 		}
 	}
+	
+	function OnClickPorterEnCompte(){
+		var isPorteEnCompte = $('#isPorteEnCompte').is(':checked');
+		if(isPorteEnCompte){
+			$("#personnelDeclarePar").show();
+		} else {
+			$("#personnelDeclarePar").hide();
+		}
+	}
 </script>
 <%-- /tpl:put --%>
 <%@ include file="/theme/detail/bodyStart.jspf" %>
@@ -470,8 +508,8 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
 							<TD><LABEL for="adressePaiement"><ct:FWLabel key="JSP_ADRESSE_DE_PAIEMENT"/></LABEL></TD>
 							
 							<TD>
-								<INPUT type="radio" name="isVersementEmployeur" value="on" <%=viewBean.getIsVersementEmployeur().booleanValue()?"CHECKED":""%> disabled=<%=viewBean.getIsVersementEmployeur().booleanValue()?"disabled":""%>> <ct:FWLabel key="JSP_EMPLOYEUR"/>
-							    <INPUT type="radio" name="isVersementEmployeur" value="" <%=!viewBean.getIsVersementEmployeur().booleanValue()?"CHECKED":""%> disabled=<%=viewBean.getIsVersementEmployeur().booleanValue()?"disabled":""%>> <ct:FWLabel key="JSP_ASSURE"/>
+								<INPUT type="radio" name="isVersementEmployeur" value="on" <%=viewBean.getIsVersementEmployeur().booleanValue()?"CHECKED":""%> onclick="manageAdressePaiement()" disabled=<%=viewBean.getIsVersementEmployeur().booleanValue()?"disabled":""%>> <ct:FWLabel key="JSP_EMPLOYEUR"/>
+							    <INPUT type="radio" name="isVersementEmployeur" value="" <%=!viewBean.getIsVersementEmployeur().booleanValue()?"CHECKED":""%> onclick="manageAdressePaiement()" disabled=<%=viewBean.getIsVersementEmployeur().booleanValue()?"disabled":""%>> <ct:FWLabel key="JSP_ASSURE"/>
 							</TD>
 						</TR>
 						<TR>
@@ -547,7 +585,23 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
 							<TD colspan="2"></TD>
 						</TR>
 						<TR>
-							<TD colspan="2"></TD>
+							<TD class="withoutAdressePaiement" colspan="2">&nbsp;</TD>
+							<TD class="withAdressePaiement"><ct:FWLabel key="JSP_ADRESSE_DE_PAIEMENT"/></TD>
+							<input type="hidden" name="crNomPrenom" value="crNomPrenom"/>
+							<% Object[] adresseParams= new Object[]{new String[]{"idTiersEmployeur","idTiers"}, new String[]{"nomEmployeur","cr1Text"}, new String[]{"crNomPrenom", "cr1"} }; %>
+							
+							<TD class="withAdressePaiement">
+								<ct:FWSelectorTag name="selecteurAdresses"
+									methods="<%=viewBean.getMethodesSelectionAdressePaiement()%>"
+									providerApplication="pyxis"
+									providerPrefix="TI"
+									providerAction="pyxis.adressepaiement.adressePaiement.chercher"
+									providerActionParams ="<%=adresseParams%>"
+									target="fr_main"
+									redirectUrl="<%=mainServletPath%>"/>
+								<INPUT type="hidden" name="idTiersPaiementEmployeur" value="<%=viewBean.getIdTiersPaiementEmployeur()%>">
+								<INPUT type="hidden" name="idDomainePaiementEmployeur" value="<%=viewBean.getIdDomainePaiementEmployeur()%>">
+							</TD>
 							<TD><LABEL for="salaireMensuel"><ct:FWLabel key="JSP_SALAIRE_MENSUEL"/></LABEL></TD>
 							<TD><INPUT type="text" name="salaireMensuel" value="<%=viewBean.getSalaireMensuel()%>" class="montant" onchange="validateFloatNumber(this);" onkeypress="montantMensuelChange(); return filterCharForFloat(window.event);"></TD>
 							<TD><LABEL for="autreSalaire"><ct:FWLabel key="JSP_AUTRE_SALAIRE"/></LABEL></TD>
@@ -562,7 +616,10 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
 							</TD>
 						</TR>
 						<TR>
-							<TD colspan="2"></TD>
+							<TD class="withoutAdressePaiement" colspan="2">&nbsp;</TD>
+							<TD class="withAdressePaiement" colspan="2">
+								<span><b><%=viewBean.getAdressePaiementEmployeur()%></b></span>
+							</TD>
 							<TD><LABEL for="autreRemuneration"><ct:FWLabel key="JSP_AUTRE_REMUNERATION"/></LABEL></TD>
 							<TD><INPUT type="text" name="autreRemuneration" value="<%=viewBean.getAutreRemuneration()%>" class="montant" onchange="validateFloatNumber(this);" onkeypress="return filterCharForFloat(window.event);"></TD>
 							<TD	colspan="2">
@@ -631,6 +688,21 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
 							<TD colspan="2"></TD>
 							<% } %>
 						</TR>
+				<%if(viewBean.isModuleActifForPorterEnCompte()){ %>
+					</TBODY>
+					<TBODY>
+						<TR><TD colspan="6"><HR></TD></TR>
+						<TR>
+							<TD><LABEL for="isPorteEnCompte"><ct:FWLabel key="JSP_PORTE_EN_COMPTE"/></LABEL></TD>
+							<TD colspan="2">
+								<INPUT id="isPorteEnCompte" type="checkbox" name="isPorteEnCompte" value="on" onclick="OnClickPorterEnCompte()" <%=viewBean.getIsPorteEnCompte().booleanValue()?"CHECKED":""%>>
+								&nbsp;&nbsp;
+								<span id="personnelDeclarePar"><%=viewBean.getPersonnelDeclarePar(request.getContextPath(), viewBean.getDateDebutDroit())%></span>
+							</TD>
+							<TD colspan="3">
+						</TR>
+				<%} %>
+				
 						<%-- /tpl:put --%>
 <%@ include file="/theme/detail/bodyButtons.jspf" %>
 				<%-- tpl:put name="zoneButtons" --%>

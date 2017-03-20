@@ -173,7 +173,7 @@ public class APGenererCompensationsProcess001 extends BProcess implements IAPGen
                                     new Object[] { repartitionJointPrestation.getNom(),
                                             tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL),
                                             repartitionJointPrestation.getIdPrestationApg() }), FWMessage.ERREUR,
-                            getSession().getLabel("PROCESS_GENERER_COMPENSATIONS"));
+                            getSession().getLabel(PROCESS_GENERER_COMPENSATIONS));
                 }
 
                 // unique test
@@ -200,7 +200,7 @@ public class APGenererCompensationsProcess001 extends BProcess implements IAPGen
                             java.text.MessageFormat.format(getSession().getLabel("ADRESSE_PAIEMENT_ABSENTE"),
                                     new Object[] { repartitionJointPrestation.getNom(), noAVS,
                                             repartitionJointPrestation.getIdPrestationApg() }), FWMessage.ERREUR,
-                            getSession().getLabel("PROCESS_GENERER_COMPENSATIONS"));
+                            getSession().getLabel(PROCESS_GENERER_COMPENSATIONS));
                 }
 
                 // adresse de courrier absente
@@ -214,7 +214,7 @@ public class APGenererCompensationsProcess001 extends BProcess implements IAPGen
                             java.text.MessageFormat.format(getSession().getLabel("ADRESSE_COURRIER_ABSENTE"),
                                     new Object[] { repartitionJointPrestation.getNom(), noAVS,
                                             repartitionJointPrestation.getIdPrestationApg() }), FWMessage.ERREUR,
-                            getSession().getLabel("PROCESS_GENERER_COMPENSATIONS"));
+                            getSession().getLabel(PROCESS_GENERER_COMPENSATIONS));
                 }
 
                 // Etat civil absent
@@ -230,12 +230,12 @@ public class APGenererCompensationsProcess001 extends BProcess implements IAPGen
                                 java.text.MessageFormat.format(getSession().getLabel("ETAT_CIVIL_ABSENT"),
                                         new Object[] { repartitionJointPrestation.getNom(), noAVS,
                                                 repartitionJointPrestation.getIdPrestationApg() }), FWMessage.ERREUR,
-                                getSession().getLabel("PROCESS_GENERER_COMPENSATIONS"));
+                                getSession().getLabel(PROCESS_GENERER_COMPENSATIONS));
                     }
                 } else {
                     getMemoryLog().logMessage(
                             "Tiers non trouvé pour idTiers n° " + droitLAPG.loadDemande().getIdTiers(),
-                            FWMessage.ERREUR, getSession().getLabel("PROCESS_GENERER_COMPENSATIONS"));
+                            FWMessage.ERREUR, getSession().getLabel(PROCESS_GENERER_COMPENSATIONS));
                 }
 
                 // Montant brut vaut zero
@@ -247,7 +247,7 @@ public class APGenererCompensationsProcess001 extends BProcess implements IAPGen
                     getMemoryLog().logMessage(
                             java.text.MessageFormat.format(getSession().getLabel("MONTANT_BRUT_VAUT_ZERO"),
                                     new Object[] { repartitionJointPrestation.getIdPrestationApg(), noAVS }),
-                            FWMessage.ERREUR, getSession().getLabel("PROCESS_GENERER_COMPENSATIONS"));
+                            FWMessage.ERREUR, getSession().getLabel(PROCESS_GENERER_COMPENSATIONS));
                 }
 
             }
@@ -312,7 +312,7 @@ public class APGenererCompensationsProcess001 extends BProcess implements IAPGen
 
                     Key key = new Key(repartitionPaiementsJointEmployeur.getIdTiers(),
                             repartitionPaiementsJointEmployeur.getIdAffilie(), "0",
-                            repartitionPaiementsJointEmployeur.getIdParticularite(), genre);
+                            repartitionPaiementsJointEmployeur.getIdParticularite(), genre, false, false);
 
                     key.idDomaineAdressePaiement = repartitionPaiementsJointEmployeur.getIdDomaineAdressePaiement();
                     key.idTiersAdressePaiement = repartitionPaiementsJointEmployeur.getIdTiersAdressePaiement();
@@ -377,7 +377,7 @@ public class APGenererCompensationsProcess001 extends BProcess implements IAPGen
                     getMemoryLog().logMessage(
                             MessageFormat.format(getSession().getLabel("COMPENSATION_AJOUTEE"),
                                     new Object[] { compensation.getIdCompensation() }), FWMessage.INFORMATION,
-                            getSession().getLabel("PROCESS_GENERER_COMPENSATIONS"));
+                            getSession().getLabel(PROCESS_GENERER_COMPENSATIONS));
 
                     IAFAffiliation employeur = (IAFAffiliation) session.getAPIFor(IAFAffiliation.class);
                     employeur.setAffiliationId(key.idAffilie);
@@ -711,8 +711,8 @@ public class APGenererCompensationsProcess001 extends BProcess implements IAPGen
             e.printStackTrace();
         }
 
-        return getSession().getLabel("PROCESS_GENERER_COMPENSATIONS") + " du lot: " + lot.getDescription()
-                + ", status: " + ((getMemoryLog().hasErrors() == true) ? "ECHEC" : "SUCCES");
+        return getSession().getLabel(PROCESS_GENERER_COMPENSATIONS) + " du lot: " + lot.getDescription() + ", status: "
+                + ((getMemoryLog().hasErrors() == true) ? "ECHEC" : "SUCCES");
     }
 
     /**
@@ -805,6 +805,11 @@ public class APGenererCompensationsProcess001 extends BProcess implements IAPGen
     @Override
     public void setMoisPeriodeFacturation(String string) {
         moisPeriodeFacturation = string;
+    }
+
+    @Override
+    public boolean isModulePorterEnCompte() {
+        return false;
     }
 
 }

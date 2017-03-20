@@ -14,8 +14,11 @@ package globaz.apg.api.process;
  */
 public interface IAPGenererCompensationProcess {
 
+    public static final String PROCESS_GENERER_COMPENSATIONS = "PROCESS_GENERER_COMPENSATIONS";
+
     void setForIdLot(String s);
 
     void setMoisPeriodeFacturation(String s);
 
+    boolean isModulePorterEnCompte();
 }

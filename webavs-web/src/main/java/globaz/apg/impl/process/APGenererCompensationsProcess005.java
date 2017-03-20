@@ -43,4 +43,9 @@ public class APGenererCompensationsProcess005 extends APGenererCompensationsProc
             throw new APTechnicalException("Error while using module Osiris", ex);
         }
     }
+
+    @Override
+    public boolean isModulePorterEnCompte() {
+        return false;
+    }
 }

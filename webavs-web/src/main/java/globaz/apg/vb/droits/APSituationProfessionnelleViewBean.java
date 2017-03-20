@@ -4,6 +4,7 @@
 package globaz.apg.vb.droits;
 
 import globaz.apg.api.assurance.IAPAssurance;
+import globaz.apg.api.process.IAPGenererCompensationProcess;
 import globaz.apg.application.APApplication;
 import globaz.apg.db.droits.APDroitLAPG;
 import globaz.apg.db.droits.APSituationProfessionnelle;
@@ -14,18 +15,26 @@ import globaz.apg.services.APRechercherTypeAcmService;
 import globaz.apg.servlet.IAPActions;
 import globaz.apg.util.TypePrestation;
 import globaz.commons.nss.NSUtil;
+import globaz.externe.IPRConstantesExternes;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.globall.api.GlobazSystem;
+import globaz.globall.db.BManager;
+import globaz.globall.db.BProcess;
 import globaz.globall.db.BSessionUtil;
+import globaz.globall.util.JACalendar;
 import globaz.globall.util.JANumberFormatter;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.log.JadeLogger;
 import globaz.naos.api.IAFAffiliation;
 import globaz.naos.api.IAFAssurance;
 import globaz.naos.api.IAFCotisation;
 import globaz.naos.api.IAFSuiviCaisseAffiliation;
 import globaz.naos.application.AFApplication;
 import globaz.naos.db.affiliation.AFAffiliation;
+import globaz.naos.db.lienAffiliation.AFLienAffiliation;
+import globaz.naos.db.lienAffiliation.AFLienAffiliationManager;
+import globaz.naos.translation.CodeSystem;
 import globaz.pavo.db.compte.CICompteIndividuel;
 import globaz.pavo.db.compte.CICompteIndividuelManager;
 import globaz.prestation.api.IPRDemande;
@@ -40,6 +49,9 @@ import globaz.prestation.tools.PRCodeSystem;
 import globaz.prestation.tools.PRImagesConstants;
 import globaz.prestation.tools.PRSession;
 import globaz.prestation.tools.nnss.PRNSSUtil;
+import globaz.pyxis.adresse.datasource.TIAdressePaiementDataSource;
+import globaz.pyxis.adresse.formater.TIAdresseFormater;
+import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -65,6 +77,11 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
      * 
      */
     private static final long serialVersionUID = 1L;
+
+    private static final Object[] METHODES_SEL_ADRESSE = new Object[] {
+            new String[] { "setIdTiersPaiementEmployeurDepuisAdresse", "idTiers" },
+            new String[] { "idDomainePaiementEmployeur", "idApplication" } };
+
     // ~ Static fields/initializers
     // -------------------------------------------------------------------------------------
     private static final String DEST_SUIVANT_APG = IAPActions.ACTION_ENFANT_APG + ".chercher";
@@ -113,6 +130,8 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
     // date de fin de l'affiliation de l'employeur
     private String dateFinAffiliation = null;
 
+    private String crNomPrenom = "crNomPrenom";
+
     // champs relatifs a l'economie de requetes pour l'affichage des infos dans
     // l'ecran rc.
     private transient APDroitDTO droitDTO = null;
@@ -132,6 +151,8 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
     // champs supplementaires utilises pour la gestion du choix de l'employeur
     // avec Pyxis
     private boolean retourDepuisPyxis;
+
+    private boolean retourDepuisAdresse;
 
     // boolean supplementaire utilise pour la gestion de reprise de l'employeur
     // par numero d'affilie
@@ -153,6 +174,102 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
 
     public boolean isMaternite() {
         return IPRDemande.CS_TYPE_MATERNITE.equals(getTypePrestation().toCodeSysteme());
+    }
+
+    public boolean isModuleActifForPorterEnCompte() {
+        boolean isModulePorterEnCompte = false;
+        try {
+            IAPGenererCompensationProcess moduleCompensation = (IAPGenererCompensationProcess) getSession()
+                    .getApplication().getImplementationFor(getSession(), IAPGenererCompensationProcess.class);
+
+            if (moduleCompensation != null && moduleCompensation instanceof BProcess) {
+                isModulePorterEnCompte = moduleCompensation.isModulePorterEnCompte();
+            }
+        } catch (Exception e) {
+            JadeLogger.error(this, e);
+        }
+
+        return isModulePorterEnCompte;
+    }
+
+    public Object[] getMethodesSelectionAdressePaiement() {
+        return APSituationProfessionnelleViewBean.METHODES_SEL_ADRESSE;
+    }
+
+    public String getAdressePaiementEmployeur() throws Exception {
+
+        TIAdressePaiementData detailTiers = null;
+
+        if (!JadeStringUtil.isEmpty(getIdTiersEmployeur())) {
+
+            // si l'id tiers paiement employeur est déjà renseigné, nous le prenons avec son id domaine stocké
+            if (!JadeStringUtil.isEmpty(getIdTiersPaiementEmployeur())) {
+
+                detailTiers = PRTiersHelper.getAdressePaiementData(getSession(), getSession()
+                        .getCurrentThreadTransaction(), getIdTiersPaiementEmployeur(), getIdDomainePaiementEmployeur(),
+                        getIdAffilieEmployeur(), JACalendar.todayJJsMMsAAAA());
+            } else {
+                // si un employeur défini dans la situation
+
+                // nous recherchons en cascade du domaine APG ou MATERNITE
+                detailTiers = PRTiersHelper.getAdressePaiementData(getSession(), getSession()
+                        .getCurrentThreadTransaction(), getIdTiersEmployeur(),
+                        isAPG() ? IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_APG
+                                : IPRConstantesExternes.TIERS_CS_DOMAINE_MATERNITE, getIdAffilieEmployeur(), JACalendar
+                                .todayJJsMMsAAAA());
+
+            }
+            final TIAdressePaiementDataSource dataSource = new TIAdressePaiementDataSource();
+            dataSource.load(detailTiers);
+            return new TIAdresseFormater().format(dataSource);
+        }
+
+        return "";
+    }
+
+    public String getPersonnelDeclarePar(final String contextPath, final String date) throws Exception {
+        // Si le module n'est pas actif pour le porter en compte ou que l'on a pas d'id affilié.
+        if (!isModuleActifForPorterEnCompte() || JadeStringUtil.isBlankOrZero(getIdAffilieEmployeur())) {
+            return "";
+        }
+
+        // Nous recherchons les liens d'affiliation de type personnel déclarer par avec une date de validité encore
+        // active
+        final AFLienAffiliationManager manager = new AFLienAffiliationManager();
+        manager.setSession(getSession());
+        manager.setForTypeLien(CodeSystem.TYPE_LIEN_PERSONNEL_DECLARE);
+        manager.setForAffiliationId(getIdAffilieEmployeur());
+        manager.setForDate(date);
+        manager.find(BManager.SIZE_NOLIMIT);
+
+        String multiple = "";
+        AFLienAffiliation lienAffiliation = null;
+        if (manager.getSize() > 1) {
+            lienAffiliation = (AFLienAffiliation) manager.get(0);
+            multiple = " *";
+        } else if (manager.getSize() == 1) {
+            lienAffiliation = (AFLienAffiliation) manager.get(0);
+        }
+
+        if (lienAffiliation == null) {
+            return "";
+        }
+
+        final String numeroAffiliation = lienAffiliation.getLienAffiliation().getAffilieNumero();
+        final String idAffiliation = lienAffiliation.getLienAffiliation().getAffiliationId();
+
+        final StringBuilder builder = new StringBuilder();
+        builder.append(getSession().getLabel("PORTERENCOMPTE_PERSONNEL_DECLARER_PAR"));
+        builder.append("<a class='external_link'");
+        builder.append("target='_parent'");
+        builder.append("href='" + contextPath + "\\naos?");
+        builder.append("userAction=naos.affiliation.affiliation.afficher");
+        builder.append("&selectedId=" + idAffiliation);
+        builder.append("'>");
+        builder.append(numeroAffiliation).append(multiple);
+        builder.append("</a>");
+
+        return builder.toString();
     }
 
     /**
@@ -311,6 +428,19 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
         } else {
             return APSituationProfessionnelleViewBean.DEST_SUIVANT_APG;
         }
+    }
+
+    public String getAdressePaiementRequerant() throws Exception {
+
+        final TIAdressePaiementData detailTiers = PRTiersHelper.getAdressePaiementData(getSession(), getSession()
+                .getCurrentThreadTransaction(), getIdTier(),
+                isAPG() ? IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_APG
+                        : IPRConstantesExternes.TIERS_CS_DOMAINE_MATERNITE, null, JACalendar.todayJJsMMsAAAA());
+
+        final TIAdressePaiementDataSource dataSource = new TIAdressePaiementDataSource();
+        dataSource.load(detailTiers);
+        return new TIAdresseFormater().format(dataSource);
+
     }
 
     /**
@@ -602,6 +732,14 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
     @Override
     public String getSalaireNature() {
         return JANumberFormatter.fmt(salaireNature, true, true, true, 2);
+    }
+
+    public String getCrNomPrenom() {
+        return "crNomPrenom";
+    }
+
+    public void setCrNomPrenom(String crNomPrenom) {
+        this.crNomPrenom = crNomPrenom;
     }
 
     /**
@@ -983,6 +1121,15 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
     }
 
     /**
+     * getter pour l'attribut retour depuis pyxis
+     * 
+     * @return la valeur courante de l'attribut retour depuis pyxis
+     */
+    public boolean isRetourDepuisAdresse() {
+        return retourDepuisAdresse;
+    }
+
+    /**
      * @return
      */
     public boolean isRetourDesTiers() {
@@ -1250,6 +1397,21 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
     }
 
     /**
+     * setter pour l'attribut id tiers employeur depuis pyxis
+     * <p>
+     * Note: cette methode renseigne le champ retourDepuisPyxis a vrai ce qui sera interprete dans l'action comme le
+     * fait que l'on revient depuis pyxis, il est necessaire de reinitialiser ce champ a la fin.
+     * </p>
+     * 
+     * @param idTiersEmployeur
+     *            une nouvelle valeur pour cet attribut
+     */
+    public void setIdTiersPaiementEmployeurDepuisAdresse(final String idTiersPaiement) {
+        setIdTiersPaiementEmployeur(idTiersPaiement);
+        retourDepuisAdresse = true;
+    }
+
+    /**
      * @see globaz.apg.db.droits.APSituationProfessionnelle#setMontantVerse(java.lang.String)
      */
     @Override
@@ -1285,6 +1447,16 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
      */
     public void setRetourDepuisPyxis(final boolean retourDepuisPyxis) {
         this.retourDepuisPyxis = retourDepuisPyxis;
+    }
+
+    /**
+     * setter pour l'attribut retour depuis pyxis
+     * 
+     * @param retourDepuisAdresse
+     *            une nouvelle valeur pour cet attribut
+     */
+    public void setRetourDepuisAdresse(final boolean retourDepuisAdresse) {
+        this.retourDepuisAdresse = retourDepuisAdresse;
     }
 
     /**

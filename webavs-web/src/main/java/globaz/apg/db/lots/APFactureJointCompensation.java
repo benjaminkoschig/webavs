@@ -323,6 +323,12 @@ public class APFactureJointCompensation extends APFactureACompenser implements P
                     } catch (Exception e) {
                         numAffilie = affilie.getNumAffilie();
                     }
+
+                    if (compensation.getIsEmployeur() && !compensation.getIsIndependant()) { // EMPLOYEUR
+                        numAffilie += " [" + getSession().getLabel("JSP_EMPLOYEUR") + "]";
+                    } else if (compensation.getIsEmployeur() && compensation.getIsIndependant()) { // INDEPENDANT
+                        numAffilie += " [" + getSession().getLabel("JSP_INDEPENDANT") + "]";
+                    }
                 }
             } catch (Exception e) {
                 e.printStackTrace();

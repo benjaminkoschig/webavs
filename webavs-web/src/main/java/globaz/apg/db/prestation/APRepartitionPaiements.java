@@ -141,7 +141,7 @@ public class APRepartitionPaiements extends BEntity implements PRHierarchique {
         // on recherche l'adresse de paiement pour cette application ou
         // l'adresse standard
         if (JadeStringUtil.isBlankOrZero(idParent)) {
-            chercherAdressePaiement(transaction);
+            chercherAdressePaiement(transaction, idSituationProfessionnelle);
         }
     }
 
@@ -356,26 +356,37 @@ public class APRepartitionPaiements extends BEntity implements PRHierarchique {
                 this._dbWriteNumeric(statement.getTransaction(), typeAssociationAssurance, "typeAssociationAssurance"));
     }
 
-    public void chercherAdressePaiement(BTransaction transaction) throws Exception {
+    public void chercherAdressePaiement(BTransaction transaction, String idSituationProf) throws Exception {
 
-        // chercher adresse de paiement
+        String idDomainePaiement = null;
+        String idTiersPaiement = idTiers;
 
-        // si la prestation est de type maternite, on cherche l'adresse dans le
-        // domaine maternite
-        APPrestation prestation = new APPrestation();
-        prestation.setSession(getSession());
-        prestation.setIdPrestationApg(getIdPrestationApg());
-        prestation.retrieve(transaction);
-        if ((prestation != null) && IAPDroitMaternite.CS_REVISION_MATERNITE_2005.equals(prestation.getNoRevision())) {
+        if (!JadeStringUtil.isBlankOrZero(idSituationProf)) {
+            APSituationProfessionnelle situation = new APSituationProfessionnelle();
+            situation.setSession(getSession());
+            situation.setId(idSituationProf);
+            situation.retrieve();
 
-            setAdressePaiement(PRTiersHelper.getAdressePaiementData(getSession(), transaction, idTiers,
-                    IPRConstantesExternes.TIERS_CS_DOMAINE_MATERNITE, idAffilie, JACalendar.todayJJsMMsAAAA()));
-
+            if (!situation.isNew()) {
+                idDomainePaiement = situation.getIdDomainePaiementEmployeur();
+                idTiersPaiement = situation.getIdTiersPaiementEmployeur();
+            }
         } else {
+            // chercher adresse de paiement
+            APPrestation prestation = new APPrestation();
+            prestation.setSession(getSession());
+            prestation.setIdPrestationApg(getIdPrestationApg());
+            prestation.retrieve(transaction);
 
-            setAdressePaiement(PRTiersHelper.getAdressePaiementData(getSession(), transaction, idTiers,
-                    IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_APG, idAffilie, JACalendar.todayJJsMMsAAAA()));
+            if (IAPDroitMaternite.CS_REVISION_MATERNITE_2005.equals(prestation.getNoRevision())) {
+                idDomainePaiement = IPRConstantesExternes.TIERS_CS_DOMAINE_MATERNITE;
+            } else {
+                idDomainePaiement = IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_APG;
+            }
         }
+
+        setAdressePaiement(PRTiersHelper.getAdressePaiementData(getSession(), transaction, idTiersPaiement,
+                idDomainePaiement, idAffilie, JACalendar.todayJJsMMsAAAA()));
     }
 
     /**

@@ -38,4 +38,9 @@ public class APGenererCompensationsProcess002 extends APGenererCompensationsProc
     protected boolean isSectionAVerifier(SectionEtCompteAnnexe section) {
         return false;
     }
+
+    @Override
+    public boolean isModulePorterEnCompte() {
+        return false;
+    }
 }

@@ -21,16 +21,19 @@ package globaz.apg.process;
 
 public final class Key implements Comparable {
 
-    // ~ Instance fields
-    // ------------------------------------------------------------------------------------------------
-
-    /**
-     */
     public String genrePrestation = "";
 
-    /**
-     */
     public String idAffilie = "";
+
+    public String idExtra1 = "";
+
+    public String idExtra2 = "";
+
+    public String idTiers = "";
+
+    public Boolean isIndependant = false;
+
+    public Boolean isEmployeur = false;
 
     /**
      * non pris en compte pour le regroupement, sert à retrouver l'idAdressePaiement
@@ -38,60 +41,21 @@ public final class Key implements Comparable {
     public String idDomaineAdressePaiement = "";
 
     /**
-     */
-    public String idExtra1 = "";
-
-    /**
-     */
-    public String idExtra2 = "";
-
-    /**
-     */
-    public String idTiers = "";
-
-    /**
      * non pris en compte pour le regroupement, sert à retrouver l'idAdressePaiement
      */
     public String idTiersAdressePaiement = "";
 
-    // ~ Constructors
-    // ---------------------------------------------------------------------------------------------------
-
-    /**
-     * Crée une nouvelle instance de la classe Key.
-     * 
-     * @param idTiers
-     *            DOCUMENT ME!
-     * @param idAffilie
-     *            DOCUMENT ME!
-     * @param idExtra1
-     *            DOCUMENT ME!
-     * @param idExtra2
-     *            DOCUMENT ME!
-     * @param genrePrestation
-     *            DOCUMENT ME!
-     */
-    public Key(String idTiers, String idAffilie, String idExtra1, String idExtra2, String genrePrestation) {
+    public Key(String idTiers, String idAffilie, String idExtra1, String idExtra2,
+            String genrePrestation, boolean isEmployeur, boolean isIndependant) {
         this.idTiers = idTiers;
         this.idAffilie = idAffilie;
         this.idExtra1 = idExtra1;
         this.idExtra2 = idExtra2;
         this.genrePrestation = genrePrestation;
+        this.isEmployeur = isEmployeur;
+        this.isIndependant = isIndependant;
     }
 
-    // ~ Methods
-    // --------------------------------------------------------------------------------------------------------
-
-    /**
-     * (non-Javadoc)
-     * 
-     * @see java.lang.Comparable#compareTo(java.lang.Object)
-     * 
-     * @param o
-     *            DOCUMENT ME!
-     * 
-     * @return DOCUMENT ME!
-     */
     @Override
     public int compareTo(Object o) {
         Key key = (Key) o;
@@ -106,17 +70,15 @@ public final class Key implements Comparable {
             return idExtra2.compareTo(key.idExtra2);
         } else if (genrePrestation.compareTo(key.genrePrestation) != 0) {
             return genrePrestation.compareTo(key.genrePrestation);
+        } else if (isEmployeur.compareTo(key.isEmployeur) != 0) {
+            return isEmployeur.compareTo(key.isEmployeur);
+        } else if (isIndependant.compareTo(key.isIndependant) != 0) {
+            return isIndependant.compareTo(key.isIndependant);
         } else {
             return 0;
         }
     }
 
-    /**
-     * @param obj
-     *            DOCUMENT ME!
-     * 
-     * @return DOCUMENT ME!
-     */
     @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof Key)) {
@@ -126,18 +88,12 @@ public final class Key implements Comparable {
         Key key = (Key) obj;
 
         return ((key.idTiers.equals(idTiers)) && (key.idAffilie.equals(idAffilie)) && (key.idExtra1.equals(idExtra1))
-                && (key.idExtra2.equals(idExtra2)) && key.genrePrestation.equals(genrePrestation));
+                && (key.idExtra2.equals(idExtra2)) && key.genrePrestation.equals(genrePrestation))
+                && key.isEmployeur.equals(isEmployeur) && key.isIndependant.equals(isIndependant);
     }
 
-    /**
-     * (non-Javadoc)
-     * 
-     * @see java.lang.Object#hashCode()
-     * 
-     * @return DOCUMENT ME!
-     */
     @Override
     public int hashCode() {
-        return (idTiers + idAffilie + idExtra1 + idExtra2 + genrePrestation).hashCode();
+        return (idTiers + idAffilie + idExtra1 + idExtra2 + genrePrestation + isEmployeur + isIndependant).hashCode();
     }
 }

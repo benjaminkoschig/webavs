@@ -1,5 +1,6 @@
 package globaz.apg.itext.decompte.utils;
 
+import globaz.apg.api.prestation.IAPRepartitionPaiements;
 import globaz.apg.db.droits.APSituationProfessionnelle;
 import globaz.apg.db.prestation.APRepartitionJointPrestation;
 import globaz.apg.enums.APTypeDePrestation;
@@ -34,6 +35,9 @@ public class APDonneeRegroupementDecompte {
     private PRDepartement departement;
     private APTypeDePrestation typeDePrestation;
     private final APSituationProfessionnelle situationProfessionnelle;
+    private boolean isIndependant;
+    private boolean isEmployeur;
+    private boolean isModuleCompensationPorteEnCompteActif;
 
     /**
      * Mapping utilisé pour le regroupement des prestations Standard et ACM_NE
@@ -80,10 +84,18 @@ public class APDonneeRegroupementDecompte {
         key.append("-");
         key.append(idAffilie);
         key.append("-");
-        key.append(String.valueOf(isPaiementEmployeur));
-        key.append("-");
+        if (!isModuleCompensationPorteEnCompteActif) {
+            key.append(String.valueOf(isPaiementEmployeur));
+            key.append("-");
+        }
         key.append(departement == null ? "null" : departement.getDepartement());
         key.append("-");
+        if (isModuleCompensationPorteEnCompteActif) {
+            key.append(isEmployeur);
+            key.append("-");
+            key.append(isIndependant);
+            key.append("-");
+        }
 
         switch (methodeRegroupement) {
             case SEPARE:
@@ -116,7 +128,7 @@ public class APDonneeRegroupementDecompte {
      */
     public APDonneeRegroupementDecompte(final APRepartitionJointPrestation repartitionJointPrestation,
             final APSituationProfessionnelle situationProfessionnelle, final PRDepartement departement,
-            final APTypeDePrestation typeDePrestation) {
+            final APTypeDePrestation typeDePrestation, boolean isModuleCompensationPorteEnCompteActif) {
 
         if (repartitionJointPrestation == null) {
             throw new IllegalArgumentException(
@@ -131,8 +143,15 @@ public class APDonneeRegroupementDecompte {
         this.typeDePrestation = typeDePrestation;
         this.situationProfessionnelle = situationProfessionnelle;
 
+        isEmployeur = repartitionJointPrestation.getTypePaiement()
+                .equals(IAPRepartitionPaiements.CS_PAIEMENT_EMPLOYEUR);
+        isIndependant = repartitionJointPrestation.getSituatuionPro() != null ? repartitionJointPrestation
+                .getSituatuionPro().getIsIndependant() : false;
+
         isPaiementEmployeur = determinerSiPaiementAEmployeur(repartitionJointPrestation, situationProfessionnelle);
         this.departement = determinerDepartement(isPaiementEmployeur, situationProfessionnelle, departement);
+
+        this.isModuleCompensationPorteEnCompteActif = isModuleCompensationPorteEnCompteActif;
     }
 
     /**

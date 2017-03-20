@@ -13,22 +13,23 @@ public class APSituationProfessionnelleData {
     private String idTiersEmployeur = "";
     private BigDecimal montantJournalierAcmNe = null;
     private String nom = "";
-
-    // private APTypeDePrestation typeDePrestation = null;
+    private String idTiersPaiementEmployeur = "";
+    private String idDomainePaiementEmployeur = "";
 
     public APSituationProfessionnelleData(APAssuranceTypeAssociation association, String dateDebut, String dateFin,
-            BigDecimal montantJournalierAcmNe /* , APTypeDePrestation typeDePrestation */, String id,
-            String idTiersEmployeur, String idAffilie, String nom) {
+            BigDecimal montantJournalierAcmNe, String id, String idTiersEmployeur, String idAffilie, String nom,
+            String idTiersPaiementEmployeur, String idDomainePaiementEmployeur) {
         super();
         this.association = association;
         this.dateDebut = dateDebut;
         this.dateFin = dateFin;
         this.montantJournalierAcmNe = montantJournalierAcmNe;
-        // this.typeDePrestation = typeDePrestation;
         this.id = id;
         this.idTiersEmployeur = idTiersEmployeur;
         this.idAffilie = idAffilie;
         this.nom = nom;
+        this.idTiersPaiementEmployeur = idTiersPaiementEmployeur;
+        this.idDomainePaiementEmployeur = idDomainePaiementEmployeur;
     }
 
     public APAssuranceTypeAssociation getAssociation() {
@@ -63,10 +64,6 @@ public class APSituationProfessionnelleData {
         return nom;
     }
 
-    // public APTypeDePrestation getTypeDePrestation() {
-    // return this.typeDePrestation;
-    // }
-
     public void setAssociation(APAssuranceTypeAssociation association) {
         this.association = association;
     }
@@ -99,8 +96,19 @@ public class APSituationProfessionnelleData {
         this.nom = nom;
     }
 
-    // public void setTypeDePrestation(APTypeDePrestation typeDePrestation) {
-    // this.typeDePrestation = typeDePrestation;
-    // }
+    public void setIdDomainePaiementEmployeur(String idDomainePaiementEmployeur) {
+        this.idDomainePaiementEmployeur = idDomainePaiementEmployeur;
+    }
 
+    public void setIdTiersPaiementEmployeur(String idTiersPaiementEmployeur) {
+        this.idTiersPaiementEmployeur = idTiersPaiementEmployeur;
+    }
+
+    public String getIdDomainePaiementEmployeur() {
+        return idDomainePaiementEmployeur;
+    }
+
+    public String getIdTiersPaiementEmployeur() {
+        return idTiersPaiementEmployeur;
+    }
 }

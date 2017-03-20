@@ -6,6 +6,7 @@
  */
 package globaz.apg.db.lots;
 
+import globaz.globall.db.BConstants;
 import globaz.globall.db.BEntity;
 import globaz.globall.db.BStatement;
 import globaz.globall.db.BTransaction;
@@ -55,6 +56,14 @@ public class APCompensation extends BEntity {
 
     /**
      */
+    public static final String FIELDNAME_ISINDEPENDANT = "VNIIND";
+
+    /**
+     */
+    public static final String FIELDNAME_ISEMPLOYEUR = "VNIEMP";
+
+    /**
+     */
     public static final String TABLE_NAME = "APCOMPP";
 
     // ~ Instance fields
@@ -67,6 +76,8 @@ public class APCompensation extends BEntity {
     private String idLot = "";
     private String idTiers = "";
     private String montantTotal = "";
+    private Boolean isIndependant = false;
+    private Boolean isEmployeur = false;
 
     // ~ Methods
     // --------------------------------------------------------------------------------------------------------
@@ -120,6 +131,8 @@ public class APCompensation extends BEntity {
         montantTotal = statement.dbReadNumeric(APCompensation.FIELDNAME_MONTANTTOTAL, 2);
         dettes = statement.dbReadNumeric(APCompensation.FIELDNAME_DETTES, 2);
         genrePrestation = statement.dbReadNumeric(APCompensation.FIELDNAME_GENRE_PRESTATION);
+        isIndependant = statement.dbReadBoolean(APCompensation.FIELDNAME_ISINDEPENDANT);
+        isEmployeur = statement.dbReadBoolean(APCompensation.FIELDNAME_ISEMPLOYEUR);
     }
 
     /**
@@ -156,6 +169,11 @@ public class APCompensation extends BEntity {
         statement.writeField(APCompensation.FIELDNAME_DETTES, this._dbWriteNumeric(transaction, dettes, "dettes"));
         statement.writeField(APCompensation.FIELDNAME_GENRE_PRESTATION,
                 this._dbWriteNumeric(transaction, genrePrestation, "genrePrestation"));
+
+        statement.writeField(APCompensation.FIELDNAME_ISINDEPENDANT,
+                this._dbWriteBoolean(transaction, isIndependant, BConstants.DB_TYPE_BOOLEAN_CHAR, "isIndependant"));
+        statement.writeField(APCompensation.FIELDNAME_ISEMPLOYEUR,
+                this._dbWriteBoolean(transaction, isEmployeur, BConstants.DB_TYPE_BOOLEAN_CHAR, "isEmployeur"));
     }
 
     /**
@@ -286,4 +304,41 @@ public class APCompensation extends BEntity {
         montantTotal = string;
     }
 
+    /**
+     * setter pour l'attribut is employeur
+     * 
+     * @param isEmployeur
+     *            une nouvelle valeur pour cet attribut
+     */
+    public void setIsEmployeur(Boolean isEmployeur) {
+        this.isEmployeur = isEmployeur;
+    }
+
+    /**
+     * setter pour l'attribut is indépendant
+     * 
+     * @param isIndependant
+     *            une nouvelle valeur pour cet attribut
+     */
+    public void setIsIndependant(Boolean isIndependant) {
+        this.isIndependant = isIndependant;
+    }
+
+    /**
+     * getter pour l'attribut is indépendant
+     * 
+     * @return la valeur courante de l'attribut is indépendant
+     */
+    public Boolean getIsIndependant() {
+        return isIndependant;
+    }
+
+    /**
+     * getter pour l'attribut is employeur
+     * 
+     * @return la valeur courante de l'attribut is employeur
+     */
+    public Boolean getIsEmployeur() {
+        return isEmployeur;
+    }
 }

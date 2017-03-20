@@ -9,7 +9,9 @@ public class APRepartitionPaiementData {
     private List<APCotisationData> cotisations = new ArrayList<APCotisationData>();
     private String idAffilie;
     private String idSituationProfessionnelle;
-    private String idTiersAdressePaiement;
+    private String idDomainePaiementEmployeur;
+    private String idTiersPaiementEmployeur;
+    private String idTiersEmployeur;
     private BigDecimal montantBrut = null;
     private BigDecimal montantNet = null;
     private String nom;
@@ -18,18 +20,21 @@ public class APRepartitionPaiementData {
     private String typePrestation;
 
     public APRepartitionPaiementData(BigDecimal montantBrut, BigDecimal montantNet, String typePrestation,
-            String typePaiement, String idTiersAdressePaiement, String typeAssociationAssurance,
-            String idSituationProfessionnelle, String nom, String idAffilie) {
+            String typePaiement, String idTiersEmployeur, String idTiersPaiementEmployeur,
+            String idDomainePaiementEmployeur, String typeAssociationAssurance, String idSituationProfessionnelle,
+            String nom, String idAffilie) {
         super();
         this.montantBrut = montantBrut;
         this.montantNet = montantNet;
         this.typePrestation = typePrestation;
         this.typePaiement = typePaiement;
-        this.idTiersAdressePaiement = idTiersAdressePaiement;
+        this.idTiersPaiementEmployeur = idTiersPaiementEmployeur;
+        this.idDomainePaiementEmployeur = idDomainePaiementEmployeur;
         this.typeAssociationAssurance = typeAssociationAssurance;
         this.idSituationProfessionnelle = idSituationProfessionnelle;
         this.nom = nom;
         this.idAffilie = idAffilie;
+        this.idTiersEmployeur = idTiersEmployeur;
     }
 
     public List<APCotisationData> getCotisations() {
@@ -44,8 +49,8 @@ public class APRepartitionPaiementData {
         return idSituationProfessionnelle;
     }
 
-    public String getIdTiersAdressePaiement() {
-        return idTiersAdressePaiement;
+    public String getIdTiersPaiementEmployeur() {
+        return idTiersPaiementEmployeur;
     }
 
     public BigDecimal getMontantBrut() {
@@ -84,8 +89,8 @@ public class APRepartitionPaiementData {
         this.idSituationProfessionnelle = idSituationProfessionnelle;
     }
 
-    public void setIdTiersAdressePaiement(String idTiersAdressePaiement) {
-        this.idTiersAdressePaiement = idTiersAdressePaiement;
+    public void setIdTiersPaiementEmployeur(String idTiersPaiementEmployeur) {
+        this.idTiersPaiementEmployeur = idTiersPaiementEmployeur;
     }
 
     public void setMontantBrut(BigDecimal montantBrut) {
@@ -110,6 +115,22 @@ public class APRepartitionPaiementData {
 
     public void setTypePrestation(String typePrestation) {
         this.typePrestation = typePrestation;
+    }
+
+    public String getIdDomainePaiementEmployeur() {
+        return idDomainePaiementEmployeur;
+    }
+
+    public void setIdDomainePaiementEmployeur(String idDomainePaiementEmployeur) {
+        this.idDomainePaiementEmployeur = idDomainePaiementEmployeur;
+    }
+
+    public String getIdTiersEmployeur() {
+        return idTiersEmployeur;
+    }
+
+    public void setIdTiersEmployeur(String idTiersEmployeur) {
+        this.idTiersEmployeur = idTiersEmployeur;
     }
 
 }

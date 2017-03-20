@@ -17,6 +17,9 @@ public class APResultatCalculSituationProfessionnel {
     private String idSituationProfessionnelle = "";
     private String idTiers = null;
 
+    private String idTiersPaiement = null;
+    private String idDomainePaiement = null;
+
     private boolean isCollaborateurAgricole = false;
     private boolean isIndependant = false;
     private boolean isSoumisCotisation = false;
@@ -325,6 +328,22 @@ public class APResultatCalculSituationProfessionnel {
      */
     public void setVersementEmployeur(boolean b) {
         isVersementEmployeur = b;
+    }
+
+    public void setIdDomainePaiement(String idDomainePaiement) {
+        this.idDomainePaiement = idDomainePaiement;
+    }
+
+    public void setIdTiersPaiement(String idTiersPaiement) {
+        this.idTiersPaiement = idTiersPaiement;
+    }
+
+    public String getIdDomainePaiement() {
+        return idDomainePaiement;
+    }
+
+    public String getIdTiersPaiement() {
+        return idTiersPaiement;
     }
 
 }

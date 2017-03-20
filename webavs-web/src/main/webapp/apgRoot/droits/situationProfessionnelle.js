@@ -11,6 +11,7 @@ ViewControllerData = function(){
 	this.isAcmNeEnable;
 	this.isAcmAlphaEnable;
 	this.isAcm2AlphaEnable;
+	this.isPorteEnCompte;
 	
 	this.validate = function() {
 		if(this.isEmpty(this.className)){
@@ -68,6 +69,9 @@ ViewController = function(viewControllerData){
 		
 		this.isAcm2AlphaEnable = viewControllerData.isAcm2AlphaEnable;
 		this.log("ACM 2 ALFA enable : " + this.isAcm2AlphaEnable);
+		
+		this.isPorteEnCompte = viewControllerData.isPorteEnCompte;
+		this.log("PORTER EN COMPTE enable : " + this.isAcm2AlphaEnable);
 		
 		if (isRetourPyxis) {
 			this.change();
@@ -150,7 +154,7 @@ ViewController = function(viewControllerData){
 	this.change = function() {		
 		this.log("change()");
 		this.hideAllAcm();
-		
+		this.managePorteEnCompte();
 		var that = this;
 		if(this.isAcmNeEnable){
 			if(this.isVersementEmployeur() && this.isAcmNeEnable){
@@ -223,6 +227,7 @@ ViewController = function(viewControllerData){
 		if(this.isAcm2AlphaEnable){
 			this.showAcm2Alpha();
 		}
+		this.managePorteEnCompte();
 	};
 	
 	this.isAssociationEmpty = function(){
@@ -231,6 +236,14 @@ ViewController = function(viewControllerData){
 		result = result || associationName == '';
 		return result;
 	};
+	
+	this.managePorteEnCompte = function() {
+		if(this.isPorteEnCompte){
+			$("#personnelDeclarePar").show();
+		} else {
+			$("#personnelDeclarePar").hide();
+		}
+	}
 	
 	this.hideAllAcm = function() {
 		this.hideAcmNe();
