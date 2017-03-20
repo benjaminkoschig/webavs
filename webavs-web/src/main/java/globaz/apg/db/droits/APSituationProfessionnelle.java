@@ -85,6 +85,9 @@ public class APSituationProfessionnelle extends BEntity implements IPRCloneable,
 
     public static final String FIELDNAME_ISPORTEENCOMPTE = "VFBPEC";
 
+    public static final String FIELDNAME_ISAMATFEEXCLUDED = "VFBEXL";
+
+    /** DOCUMENT ME! */
     public static final String FIELDNAME_ISSITUATIONPROF = "VFBSIP";
 
     public static final String FIELDNAME_ISTRAVAILGRICOLE = "VFBTRA";
@@ -176,6 +179,9 @@ public class APSituationProfessionnelle extends BEntity implements IPRCloneable,
 
     protected Boolean isSituationProf = Boolean.FALSE;
 
+    protected Boolean isAMATFExcluded = Boolean.FALSE;
+
+    /** DOCUMENT ME! */
     protected Boolean isTravailleurAgricole = Boolean.FALSE;
 
     protected Boolean isTravailleurSansEmploi = Boolean.FALSE;
@@ -353,6 +359,8 @@ public class APSituationProfessionnelle extends BEntity implements IPRCloneable,
 
         montantJournalierAcmNe = statement.dbReadNumeric(
                 APSituationProfessionnelle.FIELDNAME_MONTANT_JOURNALIER_ACM_NE, 2);
+
+        isAMATFExcluded = statement.dbReadBoolean(APSituationProfessionnelle.FIELDNAME_ISAMATFEEXCLUDED);
     }
 
     @Override
@@ -648,6 +656,9 @@ public class APSituationProfessionnelle extends BEntity implements IPRCloneable,
         statement.writeField(APSituationProfessionnelle.FIELDNAME_MONTANT_JOURNALIER_ACM_NE,
                 this._dbWriteNumeric(statement.getTransaction(), montantJournalierAcmNe, "montantJournalierAcmNe"));
 
+        statement.writeField(APSituationProfessionnelle.FIELDNAME_ISAMATFEEXCLUDED, this._dbWriteBoolean(
+                statement.getTransaction(), isAMATFExcluded, BConstants.DB_TYPE_BOOLEAN_CHAR, "isAMATFExcluded"));
+
     }
 
     @Override
@@ -691,6 +702,7 @@ public class APSituationProfessionnelle extends BEntity implements IPRCloneable,
         clone.setHasAcm2AlphaPrestations(getHasAcm2AlphaPrestations());
         clone.setCsAssuranceAssociation(getCsAssuranceAssociation());
         clone.setMontantJournalierAcmNe(getMontantJournalierAcmNe());
+        clone.setIsAMATFExcluded(getIsAMATFExcluded());
 
         // On ne veut pas de la validation pendant une duplication
         clone.wantCallValidate(false);
@@ -1076,6 +1088,13 @@ public class APSituationProfessionnelle extends BEntity implements IPRCloneable,
     @Override
     public String getUniquePrimaryKey() {
         return getIdSituationProf();
+    }
+
+    /**
+     * @return the isAMATFExcluded
+     */
+    public Boolean getIsAMATFExcluded() {
+        return isAMATFExcluded;
     }
 
     /**
@@ -1621,4 +1640,11 @@ public class APSituationProfessionnelle extends BEntity implements IPRCloneable,
     public void setAnneeTaxation(String anneeTaxation) {
         this.anneeTaxation = anneeTaxation;
     }
+    /**
+     * @param isAMATFExcluded the isAMATFExcluded to set
+     */
+    public void setIsAMATFExcluded(Boolean isAMATFExcluded) {
+        this.isAMATFExcluded = isAMATFExcluded;
+    }
+
 }

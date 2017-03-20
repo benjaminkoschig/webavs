@@ -452,6 +452,7 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
             genererPrestations(session, data.getDroit(), data.getFraisDeGarde(), data.getBasesCalcul());
 
             viewBean = calculPrestationAMAT_ACM(session, transaction, data.getDroit(), data.getAction());
+
         } else {
             // Les données ne sont pas valides
             viewBean.setMsgType(FWViewBeanInterface.ERROR);
@@ -1101,6 +1102,21 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
     @Override
     public List<APPrestationCalculeeAPersister> domainToPersistence(final List<Object> resultat) throws Exception {
         throw new RuntimeException("Not implemented yet... ");
+    }
+
+    public void deletePrestationsStandardsWhenAmatIsExcluded(final BSession session, final BTransaction transaction,
+            final APDroitLAPG droit) throws Exception {
+        APSituationProfessionnelleManager si = new APSituationProfessionnelleManager();
+        String iddroi = droit.getIdDroit();
+        si.setForIdDroit(iddroi);
+        si.setSession(session);
+        si.find(transaction, BManager.SIZE_NOLIMIT);
+        for (int i = 0; i < si.size(); i++) {
+            APSituationProfessionnelle sipro = (APSituationProfessionnelle) si.getEntity(i);
+            if (sipro.getIsAMATFExcluded()) {
+                deletePrestationStandard(droit, session, transaction);
+            }
+        }
     }
 
     private void deletePrestationStandard(final APDroitLAPG droit, final BISession session,

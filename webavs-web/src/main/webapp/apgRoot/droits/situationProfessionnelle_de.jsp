@@ -142,6 +142,7 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
    		document.all('blockWithoutAnneeTaxation').style.display = 'block';
 	  	document.all('blockAnneeTaxation').style.display = 'none';
    	}
+  	showisAMATFExcluded(); 
   	manageAdressePaiement();
   }
   	
@@ -452,6 +453,18 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
 		}
 	}
 	
+	function showisAMATFExcluded(){
+		var isAMATFExluded = $('input[type="checkbox"][name="hasLaMatPrestations"]').is(':checked');
+		var excludeAmat = document.getElementById("idisAMATFExcluded");
+		if(isAMATFExluded){
+			excludeAmat.style.visibility = "visible";
+		}else{
+			excludeAmat.style.visibility = "hidden";
+			var isAMATFExluded = $('input[type="checkbox"][name="isAMATFExcluded"]').prop("checked", false);
+		}
+	}
+	
+	
 	function OnClickPorterEnCompte(){
 		var isPorteEnCompte = $('#isPorteEnCompte').is(':checked');
 		if(isPorteEnCompte){
@@ -538,9 +551,12 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
 								<%if (viewBean.isDroitMaterniteCantonaleFromProperties() && 
 								      globaz.apg.util.TypePrestation.TYPE_MATERNITE.equals(viewBean.getTypePrestation())) {%>
 									<LABEL for="hasLaMatPrestations"><ct:FWLabel key="JSP_LAMAT" /></LABEL>
-									<INPUT type="checkbox" name="hasLaMatPrestations" value="on" <%=viewBean.getHasLaMatPrestations().booleanValue()?"CHECKED":""%>>
+									<INPUT id="idhasLaMatPrestations" type="checkbox" name="hasLaMatPrestations" onclick="showisAMATFExcluded()" value="on" <%=viewBean.getHasLaMatPrestations().booleanValue()?"CHECKED":""%>>
+									<SPAN id="idisAMATFExcluded"><LABEL for="isAMATFExcluded"><ct:FWLabel key="JSP_EXCLUDE_AMATFEDERAL" /></LABEL>
+									<INPUT type="checkbox" name="isAMATFExcluded" value="on" <%=viewBean.getIsAMATFExcluded().booleanValue()?"CHECKED":""%>></SPAN>
 								<%}else{%>
 									<INPUT type="hidden" name="hasLaMatPrestations" value="">
+									<INPUT type="hidden" name="isAMATFExcluded" value="">
 								<%}%>
 								<!-- ************************* D0063 ************************** -->
 								<!-- Sélection des types ACM selon propertie "apg.type.de.prestation" -->

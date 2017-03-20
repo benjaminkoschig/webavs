@@ -328,6 +328,10 @@ public class APPrestationHelper extends PRAbstractHelper {
             // Calcul des prestations ACM 2 si besoin
             calculerPrestationsAcm2(session, transaction, droit);
 
+            // Suppression des prestations standards si l'utilisateur a coché "Exclure l'amat fédéral" dans la situation
+            // professionnelle du droit
+            calculateur.deletePrestationsStandardsWhenAmatIsExcluded(session, transaction, droit);
+
             if (!hasErrors(session, transaction)) {
                 transaction.commit();
             }
@@ -395,6 +399,11 @@ public class APPrestationHelper extends PRAbstractHelper {
 
             // Calcul des prestations ACM 2 si besoin
             calculerPrestationsAcm2(session, transaction, droit);
+
+            // Suppression des prestations standards si l'utilisateur a coché "Exclure l'amat fédéral" dans la situation
+            // professionnelle du droit
+            ((APCalculateurPrestationStandardLamatAcmAlpha) calculateur).deletePrestationsStandardsWhenAmatIsExcluded(
+                    session, transaction, droit);
 
         } catch (final Exception exception) {
             JadeLogger.error(this, exception);
