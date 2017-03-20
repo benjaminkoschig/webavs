@@ -593,7 +593,9 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
             final FWCurrency montantTotal = new FWCurrency();
             int nbTransactionTotal = 0;
 
-            if (!validationCLevel(groupTx, groupTxMessage, organesExecutions)) {
+            // Validation du C LEVEL
+            boolean isValid = validationCLevel(groupTx, groupTxMessage, organesExecutions);
+            if (!isValid) {
                 context.setProgressCounter(context.getProgressCounter() + groupTx.getListTransactions().size());
                 continue;
             }
@@ -601,15 +603,19 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
             // Boucle sur chaque transaction (D LEVEL)
             for (IntBVRPojo txDetail : groupTx.getListTransactions()) {
 
-                verifyDLevel(context, groupTx);
+                // Validation du D LEVEL
+                validationDLevel(context, groupTx);
 
-                groupTxMessage.addDetail(manageTx(context, refBVR, txDetail, montantTotal, journal));
+                // Gestion de la transaction D LEVEL
+                final CACamt054DetailMessage detailMessage = manageTx(context, refBVR, txDetail, montantTotal, journal);
+                groupTxMessage.addDetail(detailMessage);
+
                 nbTransactionTotal++;
                 context.incProgressCounter();
             }
 
             // Vérification des champs de contrôle
-            verifyControlFields(groupTxMessage, groupTx, montantTotal, nbTransactionTotal);
+            validationVerificationFields(groupTxMessage, groupTx, montantTotal, nbTransactionTotal);
         }
         // Exécuter le mise en compte
         miseEnCompte(context, totTransactionErreur, journal, groupTxMessage);
@@ -619,16 +625,19 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
         return groupTxMessage;
     }
 
-    private void verifyDLevel(globaz.osiris.process.CAProcessBVR context, CACamt054GroupTransaction groupTx) {
+    private boolean validationDLevel(globaz.osiris.process.CAProcessBVR context, CACamt054GroupTransaction groupTx) {
+        boolean isValid = true;
 
         // On met en erreur les transactions quand le C Level est de type CAJT (contre passation) et que le reversal
         // indication est à true
         if (groupTx.getSubFamilyCode().equals(CaCamtDefinitionType.SUBFAMILY_CAJT.getCode())
                 && groupTx.isReversalIndication()) {
-
+            isValid = false;
             context.getMemoryLog().logMessage(getSession().getLabel("5601"), FWMessage.ERREUR,
                     this.getClass().getName());
         }
+
+        return isValid;
     }
 
     private void checkIBANBLevel(final CACamt054Notification notification, final CACamt054GroupTxMessage groupTxMessage)
@@ -658,6 +667,7 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
     protected boolean validationCLevel(final CACamt054GroupTransaction groupTx,
             final CACamt054GroupTxMessage groupTxMessage, final Map<String, CAOrganeExecution> organesExecutions) {
         boolean isOk = true;
+
         // Si le même numéro d'adhérent n'est pas le même que l'organe d'exécution
         if (!getNoAdherentBVR().equals(groupTx.getNoAdherent())) {
 
@@ -684,14 +694,15 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
 
         // Ne pas faire l'entry quand il n'est pas de type BVR
         if (!(new CACamt054Processor().checkEntryForGoodType(CACamt054DefinitionType.CAMT054_BVR, groupTx))) {
+            groupTxMessage.addMessage(Level.WARNING, getSession().getLabel("5361"));
             isOk = false;
         }
 
         return isOk;
     }
 
-    private void verifyControlFields(final CACamt054GroupTxMessage groupTxMessage, CACamt054GroupTransaction groupTx,
-            final FWCurrency montantTotal, int nbTransactionTotal) {
+    private void validationVerificationFields(final CACamt054GroupTxMessage groupTxMessage,
+            CACamt054GroupTransaction groupTx, final FWCurrency montantTotal, int nbTransactionTotal) {
 
         // Vérifier le nombre de transactions
         if (nbTransactionTotal != groupTx.getNbTransactions()) {
