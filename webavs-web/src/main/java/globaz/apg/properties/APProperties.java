@@ -106,7 +106,18 @@ public enum APProperties implements IProperties {
         public boolean isValidValue(final String propertyValue) {
             return CommonPropertiesUtils.isValidIntegerPropertyValue(propertyValue);
         }
-    };
+    },
+
+    PROPERTY_AFFICHER_TRAITE_PAR("amat.isAfficherDossierTraitePar.decision",
+            "Permet d'afficher la notion de Dossier traité par dans la décision") {
+        @Override
+        public boolean isValidValue(final String propertyValue) {
+            return CommonPropertiesUtils.isValidBooleanPropertyValue(propertyValue);
+        }
+
+    }
+
+    ;
 
     private String description;
     private String propertyName;

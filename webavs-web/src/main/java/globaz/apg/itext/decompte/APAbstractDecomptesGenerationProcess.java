@@ -450,8 +450,9 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                 }
 
                 crBean.setAdresse(adresse);
+                crBean.setNoAvs(tiers.getNSS());
                 crBean.setDate(JACalendar.format(JACalendar.format(getDateDocument()), getCodeIsoLangue()));
-
+                crBean.setNomCollaborateur(getSession().getUserFullName());
                 // nom du document
                 setDocumentTitle(tiers.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL) + " - "
                         + tiers.getProperty(PRTiersWrapper.PROPERTY_NOM).toUpperCase() + " "
@@ -483,7 +484,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
 
                 crBean.setNoAffilie(affilie.getNumAffilie());
                 crBean.setAdresse(adresse);
-
+                crBean.setNomCollaborateur(getSession().getUserFullName());
                 crBean.setDate(JACalendar.format(JACalendar.format(getDateDocument()), getCodeIsoLangue()));
 
                 // nom du document

@@ -179,6 +179,7 @@ public class APGenererDecomptesProcess extends BProcess {
                     // point ouvert 00540
                     doEcrituresComptables(transaction);
                     if (getMemoryLog().hasErrors()) {
+                        System.out.println(getMemoryLog().getTransaction().getErrors());
                         throw new Exception(getSession().getLabel("ERROR_GENERATION_DECOMPTES_ECRITURES_COMPTABLES"));
                     }
 
