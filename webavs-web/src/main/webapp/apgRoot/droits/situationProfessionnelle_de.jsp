@@ -132,6 +132,8 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
   
   function postInit(){
   	if (document.all('isIndependant').checked) {
+		document.forms[0].elements('isVersementEmployeur')[0].checked = true;
+		document.forms[0].elements('isVersementEmployeur')[1].checked = false;
 	  	// revenu indépendant
 	  	document.all('blockWithoutAnneeTaxation').style.display = 'none';
 	  	document.all('blockAnneeTaxation').style.display = 'block';
@@ -207,11 +209,8 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
 		} else {
 			
 	  		document.all('specialEmployeur').style.display = 'block';
-	  		
 	  		document.forms[0].elements('isIndependant').checked = false;
 	  		
-			document.forms[0].elements('isVersementEmployeur')[0].checked = false;
-			document.forms[0].elements('isVersementEmployeur')[1].checked = true;
 	  	  	document.forms[0].elements('isVersementEmployeur')[0].disabled = false;
 		  	document.forms[0].elements('isVersementEmployeur')[1].disabled = false;
 
@@ -543,7 +542,7 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
 								<INPUT type="checkbox" name="isAllocationMax" value="on" <%=viewBean.getIsAllocationMax().booleanValue()?"CHECKED":""%>>
 							</TD>
 							<%}else{%>
-							<TD>
+							<TD> 
 								<INPUT type="hidden" name="isAllocationMax" value="">
 							</TD>
 							<%}%>
