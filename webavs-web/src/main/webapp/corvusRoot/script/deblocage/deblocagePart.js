@@ -29,7 +29,7 @@ function DeblocageAjax(m_options) {
 		}
 			
 		map["currentEntity.typeDeblocage"] = this.mainContainer.closest(".titre").attr("id").split("_")[1];
-		map["currentEntity.idRentePrestation"] = globazGlobal.idRentePrestation ;
+		map["currentEntity.idRenteAccordee"] = globazGlobal.idRenteAccordee ;
 		map["currentEntity.idApplicationAdressePaiement"] = this.mainContainer.find("avoirPaiement\\.idApplication").val();
 		map[m_options.s_entityIdPath] = this.selectedEntityId;
 		return map;
@@ -364,7 +364,7 @@ validationDevalidation = {
 			this.disableButton();
 			this.addWait();
 			params = {
-					idRentePrestation: globazGlobal.idRentePrestation,
+					idRenteAccordee: globazGlobal.idRenteAccordee,
 					action: s_action
 				};
 			

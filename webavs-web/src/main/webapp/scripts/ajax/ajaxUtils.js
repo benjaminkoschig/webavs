@@ -352,7 +352,11 @@ var ajaxUtils = {
 				$json = $data.find('json');
 				s_errorJson = $json.find('exception').text();
 				if (s_errorJson) {
+					try {
 					data = $.parseJSON(s_errorJson);
+					} catch(e){
+						s_error = s_errorJson;
+					}
 				}
 			} else {
 				s_error = $error.text();

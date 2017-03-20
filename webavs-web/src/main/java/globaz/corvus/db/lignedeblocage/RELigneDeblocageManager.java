@@ -11,7 +11,8 @@ import ch.globaz.common.sql.SQLWriter;
 public class RELigneDeblocageManager extends JadeManager<RELigneDeblocage> {
 
     private static final long serialVersionUID = 1L;
-    private Integer forIdRentePrestation;
+    private Long forIdRentePrestation;
+    private Long forIdLot;
     private RELigneDeblocageEtat forEtat;
     private RELigneDeblocageType forType;
 
@@ -20,6 +21,7 @@ public class RELigneDeblocageManager extends JadeManager<RELigneDeblocage> {
         sqlWhere.and(RELigneDeblocageTableDef.ID_RENTE_ACCORDEE).equal(forIdRentePrestation);
         sqlWhere.and(RELigneDeblocageTableDef.CS_ETAT).equal(forEtat);
         sqlWhere.and(RELigneDeblocageTableDef.CS_TYPE_DEBLOCAGE).equal(forType);
+        sqlWhere.and(RELigneDeblocageTableDef.ID_LOT).equal(forIdLot);
     }
 
     @Override
@@ -27,7 +29,7 @@ public class RELigneDeblocageManager extends JadeManager<RELigneDeblocage> {
         return new RELigneDeblocage();
     }
 
-    public void setForIdRentePrestation(Integer forIdRentePrestation) {
+    public void setForIdRentePrestation(Long forIdRentePrestation) {
         this.forIdRentePrestation = forIdRentePrestation;
     }
 
@@ -37,6 +39,10 @@ public class RELigneDeblocageManager extends JadeManager<RELigneDeblocage> {
 
     public void setForType(RELigneDeblocageType forType) {
         this.forType = forType;
+    }
+
+    public void setForIdLot(Long forIdLot) {
+        this.forIdLot = forIdLot;
     }
 
 }

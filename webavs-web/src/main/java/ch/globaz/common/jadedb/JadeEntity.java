@@ -12,7 +12,10 @@ import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import org.apache.commons.lang.StringUtils;
 import ch.globaz.common.domaine.CodeSystemEnum;
@@ -95,7 +98,11 @@ public abstract class JadeEntity extends BEntity {
     }
 
     public <T extends Enum<T> & CodeSystemEnum<T>> T read(TableDefinition tableDefinition, Class<T> clazz) {
-        return CodeSystemEnumUtils.valueOfById(((Integer) read(tableDefinition)).toString(), clazz);
+        Object id = read(tableDefinition);
+        if (id == null) {
+            return null;
+        }
+        return CodeSystemEnumUtils.valueOfById(((Integer) id).toString(), clazz);
     }
 
     public <D, B> D read(TableDefinition tableDefinition, ConverterDB<D, B> converter) {
@@ -359,13 +366,31 @@ public abstract class JadeEntity extends BEntity {
     Field resolveFieldPrimaryKey() {
         TableDefinition defPrimaryKey = resolveDefPK();
         try {
-            Field field = this.getClass().getDeclaredField(
-                    defPrimaryKey.getColumnName().toLowerCase(Locale.getDefault()));
-            field.setAccessible(true);
-            return field;
+
+            List<Field> fields = new ArrayList<Field>();
+            String name = defPrimaryKey.getColumnName().toLowerCase(Locale.getDefault());
+            Class<?> i = this.getClass();
+            while (i != null && i != Object.class) {
+                Collections.addAll(fields, i.getDeclaredFields());
+                i = i.getSuperclass();
+            }
+
+            for (Field field : fields) {
+                if (field.getDeclaringClass().equals(this.getClass()) && field.getName().equals(name)) {
+                    field.setAccessible(true);
+                    return field;
+                }
+            }
+
+            for (Field field : fields) {
+                if (field.getName().equals(name)) {
+                    field.setAccessible(true);
+                    return field;
+                }
+            }
+
+            throw new JadeDataBaseException("Unalble to find the field for the primary key with this name:" + name);
         } catch (SecurityException e) {
-            throw new JadeDataBaseException(e);
-        } catch (NoSuchFieldException e) {
             throw new JadeDataBaseException(e);
         }
     }
@@ -399,4 +424,10 @@ public abstract class JadeEntity extends BEntity {
         }
         return writer.toString();
     }
+
+    @Override
+    protected boolean _autoInherits() {
+        return false;
+    }
+
 }

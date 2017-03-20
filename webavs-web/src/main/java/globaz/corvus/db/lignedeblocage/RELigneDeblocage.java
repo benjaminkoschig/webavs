@@ -3,6 +3,7 @@
  */
 package globaz.corvus.db.lignedeblocage;
 
+import globaz.corvus.db.deblocage.REDeblocageException;
 import globaz.corvus.db.lignedeblocage.constantes.RELigneDeblocageEtat;
 import globaz.corvus.db.lignedeblocage.constantes.RELigneDeblocageType;
 import ch.globaz.common.domaine.Montant;
@@ -27,20 +28,17 @@ public class RELigneDeblocage extends JadeEntity {
 
     @Override
     protected void writeProperties() {
-        this.write(RELigneDeblocageTableDef.ID, id);
+        this.write(RELigneDeblocageTableDef.ID_LOT, idLot);
         this.write(RELigneDeblocageTableDef.ID_TIERS_CREANCIER, idTiersCreancier);
         this.write(RELigneDeblocageTableDef.ID_ROLE_SECTION, idRoleSection);
         this.write(RELigneDeblocageTableDef.ID_TIERS_ADRESSE_PAIEMENT, idTiersAdressePaiement);
         this.write(RELigneDeblocageTableDef.ID_APPLICATION_ADRESSE_PAIEMENT, idApplicationAdressePaiement);
         this.write(RELigneDeblocageTableDef.ID_SECTION_COMPENSEE, idSectionCompensee);
         this.write(RELigneDeblocageTableDef.ID_RENTE_ACCORDEE, idRenteAccordee);
-        this.write(RELigneDeblocageTableDef.CS_TYPE_DEBLOCAGE, type);
         this.write(RELigneDeblocageTableDef.CS_ETAT, etat);
         this.write(RELigneDeblocageTableDef.CS_TYPE_DEBLOCAGE, type);
-        this.write(RELigneDeblocageTableDef.CS_ETAT, etat);
         this.write(RELigneDeblocageTableDef.MONTANT, montant, CONVERTER_MONTANT);
         this.write(RELigneDeblocageTableDef.REFERENCE_PAIEMENT, refPaiement);
-        this.write(RELigneDeblocageTableDef.ID_LOT, idLot);
     }
 
     @Override
@@ -53,8 +51,6 @@ public class RELigneDeblocage extends JadeEntity {
         idSectionCompensee = this.read(RELigneDeblocageTableDef.ID_SECTION_COMPENSEE);
         idRenteAccordee = this.read(RELigneDeblocageTableDef.ID_RENTE_ACCORDEE);
         idLot = this.read(RELigneDeblocageTableDef.ID_LOT);
-        type = this.read(RELigneDeblocageTableDef.CS_TYPE_DEBLOCAGE);
-        etat = this.read(RELigneDeblocageTableDef.CS_ETAT);
         type = this.read(RELigneDeblocageTableDef.CS_TYPE_DEBLOCAGE, RELigneDeblocageType.class);
         etat = this.read(RELigneDeblocageTableDef.CS_ETAT, RELigneDeblocageEtat.class);
         montant = this.read(RELigneDeblocageTableDef.MONTANT, CONVERTER_MONTANT);
@@ -129,6 +125,7 @@ public class RELigneDeblocage extends JadeEntity {
     }
 
     public void setEtat(RELigneDeblocageEtat etat) {
+        verifChangeEtat(etat);
         this.etat = etat;
     }
 
@@ -197,4 +194,16 @@ public class RELigneDeblocage extends JadeEntity {
         this.idLot = idLot;
     }
 
+    private void verifChangeEtat(RELigneDeblocageEtat etat) {
+        if (this.etat != null) {
+            if (this.etat.isComptabilise() && !etat.isComptabilise()) {
+                throw new REDeblocageException(
+                        "It is not possible to change the stat the object is allready comptabilisé !");
+            }
+
+            if (this.etat.isEnregistre() && etat.isComptabilise()) {
+                throw new REDeblocageException("It is not possible to change the stat from enregistre to comtpabilisé!");
+            }
+        }
+    }
 }

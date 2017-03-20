@@ -6,7 +6,9 @@ package globaz.corvus.db.lignedeblocage;
 import globaz.corvus.db.lignedeblocage.constantes.RELigneDeblocageEtat;
 import globaz.corvus.db.lignedeblocage.constantes.RELigneDeblocageType;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import ch.globaz.common.domaine.Montant;
 
 /**
@@ -51,26 +53,6 @@ public class RELigneDeblocages extends ArrayList<RELigneDeblocage> {
         return lignes;
     }
 
-    RELigneDeblocages getLigneDeblocageByType(RELigneDeblocageType byType) {
-
-        RELigneDeblocages ld = new RELigneDeblocages();
-        for (RELigneDeblocage l : this) {
-            if (l.getType().equals(byType)) {
-                ld.add(l);
-            }
-        }
-
-        return ld;
-    }
-
-    public List<RELigneDeblocage> toList() {
-        List<RELigneDeblocage> list = new ArrayList<RELigneDeblocage>();
-        for (RELigneDeblocage ligne : this) {
-            list.add(ligne);
-        }
-        return list;
-    }
-
     public List<RELigneDeblocageCreancier> toListCreancier() {
         return toListType();
     }
@@ -81,6 +63,14 @@ public class RELigneDeblocages extends ArrayList<RELigneDeblocage> {
 
     public List<RELigneDeblocageDette> toListDette() {
         return toListType();
+    }
+
+    public List<RELigneDeblocage> toList() {
+        List<RELigneDeblocage> list = new ArrayList<RELigneDeblocage>();
+        for (RELigneDeblocage ligne : this) {
+            list.add(ligne);
+        }
+        return list;
     }
 
     private <T extends RELigneDeblocage> List<T> toListType() {
@@ -107,12 +97,74 @@ public class RELigneDeblocages extends ArrayList<RELigneDeblocage> {
         return getLigneDeblocageByType(RELigneDeblocageType.VERSEMENT_BENEFICIAIRE);
     }
 
-    public Montant sumMontantsDebloquer() {
+    public RELigneDeblocages changeEtatToValide() {
+        return changeEtat(RELigneDeblocageEtat.VALIDE);
+    }
+
+    public RELigneDeblocages changeEtatToComptabilise() {
+        return changeEtat(RELigneDeblocageEtat.COMPTABILISE);
+    }
+
+    public RELigneDeblocages changeEtatToEnregistre() {
+        return changeEtat(RELigneDeblocageEtat.ENREGISTRE);
+    }
+
+    public RELigneDeblocages changeIdLot(Long idLot) {
+        for (RELigneDeblocage ligne : this) {
+            ligne.setIdLot(idLot);
+        }
+        return this;
+    }
+
+    public RELigneDeblocages changeSection(Long idSection, Long idRoleSection) {
+        for (RELigneDeblocage ligne : this) {
+            ligne.setIdSectionCompensee(idSection);
+            ligne.setIdRoleSection(idRoleSection);
+        }
+        return this;
+    }
+
+    public Montant sumMontants() {
         Montant sum = Montant.ZERO;
         for (RELigneDeblocage ligne : this) {
             sum = sum.add(ligne.getMontant());
         }
         return sum;
+    }
+
+    public RELigneDeblocages filtreByIdLot(Long idLot) {
+        RELigneDeblocages ld = new RELigneDeblocages();
+        for (RELigneDeblocage l : this) {
+            if (idLot.equals(l.getIdLot())) {
+                ld.add(l);
+            }
+        }
+        return ld;
+    }
+
+    public Set<Long> getIdsLigne() {
+        Set<Long> ids = new HashSet<Long>();
+        for (RELigneDeblocage ligne : this) {
+            ids.add(Long.valueOf(ligne.getIdEntity()));
+        }
+        return ids;
+    }
+
+    RELigneDeblocages getLigneDeblocageByType(RELigneDeblocageType byType) {
+        RELigneDeblocages ld = new RELigneDeblocages();
+        for (RELigneDeblocage l : this) {
+            if (l.getType().equals(byType)) {
+                ld.add(l);
+            }
+        }
+        return ld;
+    }
+
+    private RELigneDeblocages changeEtat(RELigneDeblocageEtat etat) {
+        for (RELigneDeblocage ligne : this) {
+            ligne.setEtat(etat);
+        }
+        return this;
     }
 
 }

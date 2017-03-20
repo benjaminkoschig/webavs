@@ -393,4 +393,17 @@ public class MontantTest {
         montant = new Montant("-5.265");
         assertEquals(false, montant.isNormalized());
     }
+
+    @Test
+    public void testMin() throws Exception {
+        Montant montant = new Montant(5);
+        assertEquals("5.00", montant.min(new Montant(6)).toStringFormat());
+        assertEquals("4.00", montant.min(new Montant(4)).toStringFormat());
+    }
+
+    @Test
+    public void testAbs() throws Exception {
+        assertEquals("5.00", new Montant(5).abs().toStringFormat());
+        assertEquals("5.00", new Montant(-5).abs().toStringFormat());
+    }
 }

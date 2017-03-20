@@ -9,6 +9,8 @@
 <%-- tpl:put name="zoneInit" --%>
 <link rel="stylesheet" type="text/css" href="<%=servletContext%><%=(mainServletPath+"Root")%>/css/bootstrap.css"/>
 <%
+	idEcran="PRE3001";
+
     REDeblocageViewBean viewBean = (REDeblocageViewBean) session.getAttribute("viewBean");
 	userActionValue = IREActions.ACTION_DEBLOQUER_MONTANT_RENTE_ACCORDEE + ".executer";
 %>
@@ -25,9 +27,11 @@
 
 <%-- tpl:put name="zoneScripts" --%>
 <script type="text/javascript">
+globazGlobal.paramActionLiberer = "${viewBean.paramActionLiberer}";
+globazGlobal.paramActionDeLiberer = "${viewBean.paramActionDeValider}";
 globazGlobal.isDevalidable = ${viewBean.isDevalidable};
 globazGlobal.ACTION_AJAX = "${viewBean.action}";
-globazGlobal.idRentePrestation = ${viewBean.id};
+globazGlobal.idRenteAccordee = ${viewBean.id};
 globazGlobal.CS_DOMAINE_APPLICATION_RENTE = ${viewBean.csDomaineApplicationRente};
 globazGlobal.CS_TYPE_CREANCIER = "${viewBean.csTypeDeBlocageCreancier}";
 globazGlobal.montantBlocage = "${viewBean.montantToUsedForDeblocage}";
@@ -112,7 +116,7 @@ globazGlobal.isUpdatable = ${viewBean.isUpdatable};
 							<span class="lbl"><ct:FWLabel key="JSP_RE_DEBLOCAGE_MONTANT_RENTE"/></span>
 						</div>
 						<div class="span1 right">
-							<span class="value">${viewBean.montantBloque}</span>
+							<span class="value">${viewBean.montantRenteAccordee}</span>
 						</div>
 						<div class="span1"></div>
 					</div>
@@ -379,7 +383,7 @@ globazGlobal.isUpdatable = ${viewBean.isUpdatable};
 						<div class="notUpdatable"  idEntity = "${entry.idEntity}">
 							<div class="row-fluid">
 								<div class="span10">
-									<span class="lbl">${entry.descriptionTiers}</span>
+									<span class="lbl"><ct:FWLabel key="JSP_RE_DEBLOCAGE_MONTANT_A_RETENIR_IMPOT"/></span>
 								</div>
 								<div class="span1 right">
 									<span vlaue="value amountToSum"> ${entry.montant.toStringFormat()} </span>
@@ -430,14 +434,14 @@ globazGlobal.isUpdatable = ${viewBean.isUpdatable};
 					</h1>
 				</div>
 			</div>	
-<!-- 			<div class="right"> -->
-<%-- 				<ct:ifhasright element="<%=partialUserActionAction%>" crud="cud"> --%>
-<%-- 					<button type="button" id="ValiderLiberation" class=""><ct:FWLabel key="JSP_RE_DEBLOCAGE_VALIDER_LIBERATION"/></button> --%>
-<%-- 					<c:if test="${viewBean.isDevalidable}"> --%>
-<%-- 						<button type="button" id="DeValiderLiberation" class=""><ct:FWLabel key="JSP_RE_DEBLOCAGE_DEVALIDER_LIBERATION"/></button> --%>
-<%-- 					</c:if> --%>
-<%-- 				</ct:ifhasright> --%>
-<!-- 			</div> -->
+			<div class="right"> 
+				<ct:ifhasright element="<%=partialUserActionAction%>" crud="cud">
+					<button type="button" id="ValiderLiberation" class=""><ct:FWLabel key="JSP_RE_DEBLOCAGE_VALIDER_LIBERATION"/></button>
+					<c:if test="${viewBean.isDevalidable}">
+						<button type="button" id="DeValiderLiberation" class=""><ct:FWLabel key="JSP_RE_DEBLOCAGE_DEVALIDER_LIBERATION"/></button>
+					</c:if>
+				</ct:ifhasright>
+			</div>
 		</TD>		
 	</TR>
 

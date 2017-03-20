@@ -389,7 +389,7 @@
 
 
 	  	function actionDeblocageMontant(){
-  			document.forms[0].elements('userAction').value = "<%=globaz.corvus.servlet.IREActions.ACTION_RENTE_ACCORDEE_JOINT_DEMANDE_RENTE%>.actionDebloquerMontantRA";
+  			document.forms[0].elements('userAction').value = "<%=globaz.corvus.servlet.IREActions.ACTION_DEBLOCAGE%>.afficher";
 	  		document.forms[0].submit();
 	 	}
 

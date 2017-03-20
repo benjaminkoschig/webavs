@@ -1,5 +1,6 @@
 package globaz.corvus.vb.deblocage;
 
+import globaz.corvus.db.deblocage.RELibererDevaliderDeblocage;
 import globaz.corvus.db.lignedeblocage.RELigneDeblocage;
 import globaz.corvus.db.lignedeblocage.ReLigneDeclocageServices;
 import globaz.corvus.db.lignedeblocage.constantes.RELigneDeblocageEtat;
@@ -33,6 +34,7 @@ public class REDeblocageAjaxViewBean extends BJadePersistentObjectViewBean imple
     private String action = null;
     private RELigneDeblocageViewBean lingeDeblocage = new RELigneDeblocageViewBean();
     private String idAvoirPaiementUnique;
+    private String idRenteAccordee;
 
     // utilisé pour la serialization en ajax
     private AdressePaiement adressePaiement = null;
@@ -47,18 +49,22 @@ public class REDeblocageAjaxViewBean extends BJadePersistentObjectViewBean imple
         this.lingeDeblocage = lingeDeblocage;
     }
 
-    public void setUserAction(String action) {
-        this.action = action;
-    }
-
     @Override
     public void add() throws Exception {
-        RELigneDeblocage ligneDeblocage = toReLigneDeblocage(lingeDeblocage);
-        ReLigneDeclocageServices services = new ReLigneDeclocageServices((BSession) getISession());
-        if (ligneDeblocage.getType().isCreancier() && ligneDeblocage.getIdApplicationAdressePaiement() != null) {
-            readAdresse(ligneDeblocage);
+        if ("liberer".equals(action)) {
+            RELibererDevaliderDeblocage libererDevalider = new RELibererDevaliderDeblocage((BSession) getISession());
+            libererDevalider.liberer(Long.valueOf(idRenteAccordee));
+        } else if ("devalider".equals(action)) {
+            RELibererDevaliderDeblocage libererDevalider = new RELibererDevaliderDeblocage((BSession) getISession());
+            libererDevalider.devalider(Long.valueOf(idRenteAccordee));
+        } else {
+            RELigneDeblocage ligneDeblocage = toReLigneDeblocage(lingeDeblocage);
+            ReLigneDeclocageServices services = new ReLigneDeclocageServices((BSession) getISession());
+            if (ligneDeblocage.getType().isCreancier() && ligneDeblocage.getIdApplicationAdressePaiement() != null) {
+                readAdresse(ligneDeblocage);
+            }
+            lingeDeblocage = fromReLigneDeblocage(services.add(ligneDeblocage));
         }
-        lingeDeblocage = fromReLigneDeblocage(services.add(ligneDeblocage));
     }
 
     @Override
@@ -234,4 +240,19 @@ public class REDeblocageAjaxViewBean extends BJadePersistentObjectViewBean imple
         // rien, pas de liste
     }
 
+    public String getAction() {
+        return action;
+    }
+
+    public void setAction(String action) {
+        this.action = action;
+    }
+
+    public String getIdRenteAccordee() {
+        return idRenteAccordee;
+    }
+
+    public void setIdRenteAccordee(String idRenteAccordee) {
+        this.idRenteAccordee = idRenteAccordee;
+    }
 }

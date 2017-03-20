@@ -281,6 +281,22 @@ public class SQLWriter {
     }
 
     /**
+     * Ajoute le = avec le paramètre définit à la requête SQL
+     * 
+     * @param param Long sql
+     * @return SQLWriter utilisé
+     */
+    public SQLWriter equal(Long param) {
+        if (param != null) {
+            paramsToUse.add(String.valueOf(param));
+            query.append("=?");
+        } else {
+            rollback();
+        }
+        return this;
+    }
+
+    /**
      * Ajoute le "in(values)" avec le paramètre définit à la requête SQL
      * Attention : Les guillemets et les doubles guillemets ne sont pas remplacés par les caractères suivants : '¬' et
      * '¢'

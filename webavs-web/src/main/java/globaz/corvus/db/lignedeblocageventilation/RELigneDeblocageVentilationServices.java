@@ -3,8 +3,12 @@
  */
 package globaz.corvus.db.lignedeblocageventilation;
 
+import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
+import java.util.List;
+import java.util.Set;
 import ch.globaz.common.jadedb.exception.JadeDataBaseException;
+import com.google.common.base.Joiner;
 
 /**
  * Service d'acces aux données de ventilations des lignes de déblocage
@@ -99,5 +103,43 @@ public class RELigneDeblocageVentilationServices {
         }
 
         return ligneDeblocageVentilation;
+    }
+
+    /**
+     * Permet de rechercher les lignes de ventilation avec les ids des lignes de déblocage
+     * 
+     * @param ids
+     * @return List<RELigneDeblocageVentilation>
+     */
+    public List<RELigneDeblocageVentilation> searchByIdsLigneDeblocage(Set<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            throw new IllegalArgumentException(
+                    "To searchByIdsLigneDeblocage ligneDeblocageVentilation, ids must be not null or empty");
+        }
+
+        RELigneDeblocageVentilationManager manager = new RELigneDeblocageVentilationManager();
+        manager.setForIdsLigneDeblocage(ids);
+        manager.setSession(session);
+        try {
+            manager.find(BManager.SIZE_NOLIMIT);
+        } catch (Exception e) {
+            throw new JadeDataBaseException(
+                    "Unabled to search ventilation ligne de déblocage with this idsLigneDeblocage: "
+                            + Joiner.on(",").join(ids), e);
+
+        }
+        return manager.toList();
+    }
+
+    public void save(List<RELigneDeblocageVentilation> ventilations) {
+        for (RELigneDeblocageVentilation ventilation : ventilations) {
+            add(ventilation);
+        }
+    }
+
+    public void delete(List<RELigneDeblocageVentilation> ventilations) {
+        for (RELigneDeblocageVentilation ventilation : ventilations) {
+            delete(ventilation);
+        }
     }
 }

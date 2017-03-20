@@ -39,7 +39,7 @@ public class REDeblocageViewBean extends PRAbstractViewBeanSupport {
     @Override
     public void retrieve() throws Exception {
         REDeblocageService service = new REDeblocageService(getSession());
-        REDeblocage deblocage = service.read(getId());
+        REDeblocage deblocage = service.read(Long.valueOf(getId()));
         deblocages = deblocage.getLignesDeblocages();
 
         idTiersBeneficiaire = deblocage.getBeneficiaire().getIdTiers();
@@ -50,8 +50,7 @@ public class REDeblocageViewBean extends PRAbstractViewBeanSupport {
         montantRente = deblocage.getPracc().getMontantPrestation();
         montantBloque = deblocage.getEnteteBlocage().getMontantBloque();
         montantDebloque = deblocage.getEnteteBlocage().getMontantDebloque();
-        montantADebloquer = deblocage.computeMontantAdebloquer().toStringFormat();
-
+        montantADebloquer = deblocage.computeMontantToUseForDeblocage().toStringFormat();
     }
 
     public String getGenre() {
@@ -139,7 +138,7 @@ public class REDeblocageViewBean extends PRAbstractViewBeanSupport {
         return null;
     }
 
-    public String getMontantRente() {
+    public String getMontantRenteAccordee() {
         return montantRente;
     }
 
@@ -166,7 +165,7 @@ public class REDeblocageViewBean extends PRAbstractViewBeanSupport {
     }
 
     public String getMontantToUsedForDeblocage() {
-        return getMontantBloque();
+        return montantADebloquer;
     }
 
     public String getCsTypeDeBlocageDette() {
@@ -223,7 +222,7 @@ public class REDeblocageViewBean extends PRAbstractViewBeanSupport {
     }
 
     public List<RELigneDeblocage> getImpotSources() {
-        return deblocages.filtreEnregistres().getLigneDeblocageImpotsSource().filtreValidesAndComptabilises().toList();
+        return deblocages.getLigneDeblocageImpotsSource().filtreValidesAndComptabilises().toList();
     }
 
     public String getTiersBeneficiaireInfo() {
@@ -236,22 +235,6 @@ public class REDeblocageViewBean extends PRAbstractViewBeanSupport {
 
     public void setIdRenteAccordee(String newIdRenteAccordee) {
         idRenteAccordee = newIdRenteAccordee;
-    }
-
-    public void setIdTiersFamille(Set<String> idTiersFamille) {
-        this.idTiersFamille = idTiersFamille;
-    }
-
-    public void setMontantADebloquer(String montantADebloquer) {
-        this.montantADebloquer = montantADebloquer;
-    }
-
-    public void setMontantBloque(String montantBloque) {
-        this.montantBloque = montantBloque;
-    }
-
-    public void setMontantDebloque(String montantDebloque) {
-        this.montantDebloque = montantDebloque;
     }
 
     public void setRetourDepuisPyxis(boolean retourDepuisPyxis) {
@@ -270,7 +253,12 @@ public class REDeblocageViewBean extends PRAbstractViewBeanSupport {
         this.retours = retours;
     }
 
-    public void setMontantRente(String montantRente) {
-        this.montantRente = montantRente;
+    public String getParamActionLiberer() {
+        return "liberer";
     }
+
+    public String getParamActionDeValider() {
+        return "devalider";
+    }
+
 }

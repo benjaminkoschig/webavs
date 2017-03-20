@@ -39,7 +39,7 @@ public class RELigneDeblocagesTest {
         ligne.setEtat(etat);
         ligne.setType(type);
         ligne.setMontant(new Montant(1));
-
+        ligne.setIdLot(Long.valueOf(10));
         return ligne;
     }
 
@@ -47,11 +47,11 @@ public class RELigneDeblocagesTest {
     public void testGetLigneDeblocageByEtat() throws Exception {
         RELigneDeblocages ld = new RELigneDeblocages();
         ld.addAll(createListLigneDeblocage());
-
         assertThat(ld.getLigneDeblocageByEtat(RELigneDeblocageEtat.COMPTABILISE).size()).isEqualTo(4);
-        assertThat(ld.getLigneDeblocageByEtat(RELigneDeblocageEtat.ENREGISTRE).size()).isEqualTo(3);
-        assertThat(ld.getLigneDeblocageByEtat(RELigneDeblocageEtat.VALIDE).size()).isEqualTo(1);
 
+        assertThat(ld.getLigneDeblocageByEtat(RELigneDeblocageEtat.ENREGISTRE).size()).isEqualTo(3);
+
+        assertThat(ld.getLigneDeblocageByEtat(RELigneDeblocageEtat.VALIDE).size()).isEqualTo(1);
     }
 
     @Test
@@ -127,10 +127,55 @@ public class RELigneDeblocagesTest {
     }
 
     @Test
-    public void testSumMontantsDebloquer() throws Exception {
+    public void testSumMontants() throws Exception {
         RELigneDeblocages ld = new RELigneDeblocages();
         ld.addAll(createListLigneDeblocage());
 
-        assertThat(ld.sumMontantsDebloquer()).isEqualTo(new Montant(8));
+        assertThat(ld.sumMontants()).isEqualTo(new Montant(8));
+    }
+
+    @Test
+    public void testChangeEtatToEnregistre() throws Exception {
+        RELigneDeblocages ld = new RELigneDeblocages();
+        ld.add(createLigneDeblocage(RELigneDeblocageEtat.VALIDE, RELigneDeblocageType.IMPOTS_SOURCE));
+        ld.add(createLigneDeblocage(RELigneDeblocageEtat.VALIDE, RELigneDeblocageType.IMPOTS_SOURCE));
+
+        assertThat(ld.changeEtatToValide()).contains(
+                createLigneDeblocage(RELigneDeblocageEtat.ENREGISTRE, RELigneDeblocageType.IMPOTS_SOURCE),
+                createLigneDeblocage(RELigneDeblocageEtat.ENREGISTRE, RELigneDeblocageType.IMPOTS_SOURCE));
+    }
+
+    @Test
+    public void testChangeEtatToValide() throws Exception {
+        RELigneDeblocages ld = new RELigneDeblocages();
+        ld.add(createLigneDeblocage(RELigneDeblocageEtat.ENREGISTRE, RELigneDeblocageType.IMPOTS_SOURCE));
+        ld.add(createLigneDeblocage(RELigneDeblocageEtat.ENREGISTRE, RELigneDeblocageType.IMPOTS_SOURCE));
+
+        assertThat(ld.changeEtatToValide()).contains(
+                createLigneDeblocage(RELigneDeblocageEtat.VALIDE, RELigneDeblocageType.IMPOTS_SOURCE),
+                createLigneDeblocage(RELigneDeblocageEtat.VALIDE, RELigneDeblocageType.IMPOTS_SOURCE));
+    }
+
+    @Test
+    public void testChangeEtatToComptabilise() throws Exception {
+        RELigneDeblocages ld = new RELigneDeblocages();
+        ld.add(createLigneDeblocage(RELigneDeblocageEtat.VALIDE, RELigneDeblocageType.IMPOTS_SOURCE));
+        ld.add(createLigneDeblocage(RELigneDeblocageEtat.VALIDE, RELigneDeblocageType.IMPOTS_SOURCE));
+
+        assertThat(ld.changeEtatToComptabilise()).contains(
+                createLigneDeblocage(RELigneDeblocageEtat.COMPTABILISE, RELigneDeblocageType.IMPOTS_SOURCE),
+                createLigneDeblocage(RELigneDeblocageEtat.COMPTABILISE, RELigneDeblocageType.IMPOTS_SOURCE));
+    }
+
+    @Test
+    public void testFiltreByIdLot() throws Exception {
+        RELigneDeblocages ld = new RELigneDeblocages();
+
+        ld.add(createLigneDeblocage(RELigneDeblocageEtat.VALIDE, RELigneDeblocageType.IMPOTS_SOURCE));
+        ld.get(0).setIdLot(null);
+        ld.add(createLigneDeblocage(RELigneDeblocageEtat.ENREGISTRE, RELigneDeblocageType.IMPOTS_SOURCE));
+
+        assertThat(ld.filtreByIdLot(Long.valueOf(10))).contains(
+                createLigneDeblocage(RELigneDeblocageEtat.ENREGISTRE, RELigneDeblocageType.IMPOTS_SOURCE));
     }
 }

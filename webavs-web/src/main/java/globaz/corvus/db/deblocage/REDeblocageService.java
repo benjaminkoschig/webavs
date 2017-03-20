@@ -1,5 +1,6 @@
 package globaz.corvus.db.deblocage;
 
+import globaz.corvus.db.lignedeblocage.RELigneDeblocage;
 import globaz.corvus.db.lignedeblocage.RELigneDeblocages;
 import globaz.corvus.db.lignedeblocage.ReLigneDeclocageServices;
 import globaz.corvus.db.rentesaccordees.REEnteteBlocage;
@@ -17,39 +18,48 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import ch.globaz.common.domaine.Montant;
 import ch.globaz.common.sql.SQLWriter;
 import ch.globaz.queryexec.bridge.jade.SCM;
 
 public class REDeblocageService {
     private BSession session;
+    private ReLigneDeclocageServices ligneDeclocageServices;
 
     public REDeblocageService(BSession session) {
         this.session = session;
+        ligneDeclocageServices = new ReLigneDeclocageServices(session);
     }
 
-    public REDeblocage read(String idPrestationAccordee) throws Exception {
+    public REDeblocage read(Long idPrestationAccordee) {
         RERenteAccordeeJoinInfoComptaJoinPrstDues pracc = loadPrestation(idPrestationAccordee);
 
         REEnteteBlocage enteteBlocage = readEnteteBlocage(pracc.getIdEnteteBlocage());
 
-        PRTiersWrapper beneficiaires = PRTiersHelper.getTiersParId(session, pracc.getIdTiersBeneficiaire());
+        PRTiersWrapper beneficiaires;
+        try {
+            beneficiaires = PRTiersHelper.getTiersParId(session, pracc.getIdTiersBeneficiaire());
+        } catch (Exception e) {
+            throw new REDeblocageException("Unable to read the tier :" + pracc.getIdTiersBeneficiaire(), e);
+        }
         Set<String> idTiers = findIdsTiersFamille(pracc.getIdTiersBeneficiaire());
         String tiersDescription = generateDescriptionTiers(pracc.getIdTiersBeneficiaire());
 
-        ReLigneDeclocageServices service = new ReLigneDeclocageServices(session);
-        RELigneDeblocages lignesDeblocages = service.searchByIdRenteAndCompleteInfo(
-                Integer.valueOf(idPrestationAccordee), idTiers, tiersDescription);
+        RELigneDeblocages lignesDeblocages = ligneDeclocageServices.searchByIdRenteAndCompleteInfo(
+                idPrestationAccordee, idTiers, tiersDescription);
 
-        Montant disponibleEnCompta = computeMontantDisponibleEnComptat(beneficiaires.getIdTiers());
+        List<CASectionJoinCompteAnnexeJoinTiers> sections = findSection(beneficiaires.getIdTiers());
 
         List<ReRetour> retours = findRetours(idTiers);
+
         return new REDeblocage(lignesDeblocages, beneficiaires, enteteBlocage, pracc, tiersDescription, retours,
-                disponibleEnCompta);
+                sections);
     }
 
-    private Montant computeMontantDisponibleEnComptat(String idTiers) {
-        Montant montant = Montant.ZERO;
+    public Integer countLignesDeblocageByIdlot(Long idLot) {
+        return ligneDeclocageServices.searchByIdLot(idLot).size();
+    }
+
+    private List<CASectionJoinCompteAnnexeJoinTiers> findSection(String idTiers) {
         if (!idTiers.isEmpty()) {
             try {
                 CASectionJoinCompteAnnexeJoinTiersManager mgr = new CASectionJoinCompteAnnexeJoinTiersManager();
@@ -57,17 +67,13 @@ public class REDeblocageService {
                 mgr.setSession(session);
                 mgr.setForSoldeNegatif(true);
                 mgr.find(BManager.SIZE_NOLIMIT);
-                List<CASectionJoinCompteAnnexeJoinTiers> sections = mgr.toList();
-                for (CASectionJoinCompteAnnexeJoinTiers section : sections) {
-                    montant = montant.add(section.getSolde());
-                }
-                return montant;
+                return mgr.toList();
 
             } catch (Exception e1) {
-                throw new RuntimeException("Unable to search the dette en compta ", e1);
+                throw new REDeblocageException("Unable to search the dette en compta ", e1);
             }
         }
-        return montant;
+        return new ArrayList<CASectionJoinCompteAnnexeJoinTiers>();
     }
 
     private REEnteteBlocage readEnteteBlocage(String idEnteteBlocage) {
@@ -81,10 +87,10 @@ public class REDeblocageService {
                     return entete;
                 }
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                throw new REDeblocageException("Unable to read the enteteBlocage: " + idEnteteBlocage, e);
             }
         }
-        throw new RuntimeException("Any one enteteBlocage found with this id: " + idEnteteBlocage);
+        throw new REDeblocageException("Any one enteteBlocage found with this id: " + idEnteteBlocage);
     }
 
     private String generateDescriptionTiers(String idTiers) {
@@ -99,7 +105,7 @@ public class REDeblocageService {
                     session.getCodeLibelle(beneficiaire.getProperty(PRTiersWrapper.PROPERTY_SEXE)),
                     getLibellePays(beneficiaire.getProperty(PRTiersWrapper.PROPERTY_ID_PAYS_DOMICILE), session));
         } catch (Exception e) {
-            throw new RuntimeException("Unable to load the tiers with this id:" + idTiers, e);
+            throw new REDeblocageException("Unable to load the tiers with this id:" + idTiers, e);
         }
 
     }
@@ -124,21 +130,30 @@ public class REDeblocageService {
         return new ArrayList<ReRetour>();
     }
 
-    private RERenteAccordeeJoinInfoComptaJoinPrstDues loadPrestation(String idRenteAccordee) throws Exception {
+    private RERenteAccordeeJoinInfoComptaJoinPrstDues loadPrestation(Long idRenteAccordee) {
         RERenteAccordeeJoinInfoComptaJoinPrstDues pracc = new RERenteAccordeeJoinInfoComptaJoinPrstDues();
-        // REPrestationsAccordees pracc = new REPrestationsAccordees();
         pracc.setSession(session);
-        pracc.setIdPrestationAccordee(idRenteAccordee);
-        pracc.retrieve();
+        pracc.setIdPrestationAccordee(idRenteAccordee.toString());
+        try {
+            pracc.retrieve();
+        } catch (Exception e) {
+            throw new REDeblocageException("Unable to read the renteAccordee :" + pracc, e);
+        }
         return pracc;
     }
 
-    private Set<String> findIdsTiersFamille(final String idTiersBeneficiaire) throws Exception {
+    private Set<String> findIdsTiersFamille(final String idTiersBeneficiaire) {
 
         // récupération des ID Tiers des membres de la famille (étendue)
         Set<String> idMembreFamille = new HashSet<String>();
 
-        Set<PRTiersWrapper> famille = SFFamilleUtils.getTiersFamilleProche(session, idTiersBeneficiaire);
+        Set<PRTiersWrapper> famille;
+        try {
+            famille = SFFamilleUtils.getTiersFamilleProche(session, idTiersBeneficiaire);
+        } catch (Exception e) {
+            throw new REDeblocageException("Unable to find the membre famille with this idTiersBeneficiaire :"
+                    + idTiersBeneficiaire, e);
+        }
 
         for (PRTiersWrapper unMembre : famille) {
             if (!JadeStringUtil.isBlank(unMembre.getIdTiers())) {
@@ -159,6 +174,17 @@ public class REDeblocageService {
             return "";
         } else {
             return session.getCodeLibelle(session.getSystemCode("CIPAYORI", idPays));
+        }
+    }
+
+    public void update(RELigneDeblocages lignesDeblocages) {
+        for (RELigneDeblocage reLigneDeblocage : lignesDeblocages) {
+            reLigneDeblocage.setSession(session);
+            try {
+                reLigneDeblocage.update();
+            } catch (Exception e) {
+                throw new REDeblocageException("Unable to update this ligneDeblocage " + reLigneDeblocage, e);
+            }
         }
     }
 

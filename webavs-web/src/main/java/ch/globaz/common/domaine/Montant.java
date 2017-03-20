@@ -18,15 +18,13 @@ import java.util.Locale;
  * 
  */
 public class Montant implements Serializable {
-    private static final long serialVersionUID = 1L;
-
-    private BigDecimal currency = BigDecimal.ZERO;
-
     public final static Montant ZERO = new Montant(BigDecimal.ZERO, MontantTypePeriode.SANS_PERIODE);
     public final static Montant ZERO_ANNUEL = new Montant(BigDecimal.ZERO, MontantTypePeriode.ANNUEL);
 
+    private static final long serialVersionUID = 1L;
     private final static MathContext mathContext = new MathContext(16, RoundingMode.HALF_UP);
     private final static BigDecimal menuslisationJour = new BigDecimal(21.7, mathContext);
+    private BigDecimal currency = BigDecimal.ZERO;
 
     private MontantTypePeriode typePeriode = MontantTypePeriode.SANS_PERIODE;
 
@@ -187,7 +185,7 @@ public class Montant implements Serializable {
     }
 
     public Montant add(final double montant) {
-        return new Montant(currency.add(new BigDecimal(montant)));
+        return new Montant(currency.add(BigDecimal.valueOf(montant)));
     }
 
     public Montant add(final String montant) {
@@ -196,6 +194,10 @@ public class Montant implements Serializable {
 
     public Montant max(BigDecimal montant) {
         return new Montant(currency.max(montant), typePeriode);
+    }
+
+    public Montant min(Montant montant) {
+        return new Montant(currency.min(montant.getCurrency()), resolveTypePeriode(montant));
     }
 
     public Montant max(Montant montant) {
@@ -279,6 +281,10 @@ public class Montant implements Serializable {
         symbols.setDecimalSeparator('.');
         DecimalFormat decimalFormat = new DecimalFormat(pattern, symbols);
         return decimalFormat.format(currency.setScale(2, RoundingMode.HALF_UP));
+    }
+
+    public Montant abs() {
+        return new Montant(currency.abs(), resolveTypePeriode(this));
     }
 
     public Montant multiply(final int valueToMultiply) {

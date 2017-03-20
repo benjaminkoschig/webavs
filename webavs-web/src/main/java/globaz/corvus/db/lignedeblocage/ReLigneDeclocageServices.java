@@ -114,7 +114,7 @@ public class ReLigneDeclocageServices {
      * @param idRentePrestation Un id rente prestation
      * @return
      */
-    public RELigneDeblocages searchByIdRente(Integer forIdRentePrestation) {
+    public RELigneDeblocages searchByIdRente(Long forIdRentePrestation) {
 
         if (forIdRentePrestation == null) {
             throw new IllegalArgumentException("To perform a search by id rente, idRentePrestation must be not null");
@@ -124,11 +124,82 @@ public class ReLigneDeclocageServices {
         manager.setSession(session);
         manager.setForIdRentePrestation(forIdRentePrestation);
 
-        List<RELigneDeblocage> entities = manager.search();
+        return search(manager);
+    }
 
-        RELigneDeblocages lignesDeblocages = new RELigneDeblocages();
-        lignesDeblocages.addAll(entities);
-        return lignesDeblocages;
+    /**
+     * Recherche de toutes les lignes de déblocage par le type
+     * 
+     * @param fortype Un type de déblocage
+     * @return
+     */
+    public RELigneDeblocages searchByType(RELigneDeblocageType fortype) {
+
+        if (fortype == null) {
+            throw new IllegalArgumentException("To perform a search by type, type must be not null");
+        }
+
+        RELigneDeblocageManager manager = new RELigneDeblocageManager();
+        manager.setSession(session);
+        manager.setForType(fortype);
+
+        return search(manager);
+    }
+
+    /**
+     * Recherche de toutes les lignes de déblocage par lot
+     * 
+     * @param idLot L'id du lot
+     * @return
+     */
+    public RELigneDeblocages searchByIdLot(Long idLot) {
+
+        if (idLot == null) {
+            throw new IllegalArgumentException("To perform a search by idLot, type must be not null");
+        }
+
+        RELigneDeblocageManager manager = new RELigneDeblocageManager();
+        manager.setSession(session);
+        manager.setForIdLot(idLot);
+
+        return search(manager);
+    }
+
+    /**
+     * Recherche de toutes les lignes de déblocage par l'état.
+     * 
+     * @param forEtat Un état de déblocage
+     * @return
+     */
+    public RELigneDeblocages searchByEtat(RELigneDeblocageEtat forEtat) {
+
+        if (forEtat == null) {
+            throw new IllegalArgumentException("To perform a search by etat, etat must be not null");
+        }
+
+        RELigneDeblocageManager manager = new RELigneDeblocageManager();
+        manager.setSession(session);
+        manager.setForEtat(forEtat);
+
+        return search(manager);
+    }
+
+    public RELigneDeblocage read(String idLigneDeblocage) {
+
+        if (idLigneDeblocage == null) {
+            throw new IllegalArgumentException("To perform a read, idLigneDeblocage must be not null");
+        }
+
+        RELigneDeblocage ligneDeblocage = new RELigneDeblocage();
+        ligneDeblocage.setSession(session);
+        ligneDeblocage.setIdEntity(idLigneDeblocage);
+        ligneDeblocage.setId(idLigneDeblocage);
+        try {
+            ligneDeblocage.retrieve();
+            return ligneDeblocage;
+        } catch (Exception e) {
+            throw new JadeDataBaseException("Unabled read the déblocage", e);
+        }
     }
 
     /**
@@ -137,7 +208,7 @@ public class ReLigneDeclocageServices {
      * @param idRentePrestation Un id rente prestation
      * @return
      */
-    public RELigneDeblocages searchByIdRenteAndCompleteInfo(Integer forIdRentePrestation, Set<String> idTiers,
+    public RELigneDeblocages searchByIdRenteAndCompleteInfo(Long forIdRentePrestation, Set<String> idTiers,
             String descriptionTiersBeneficiaire) {
         RELigneDeblocages lignesDeblocages = searchByIdRente(forIdRentePrestation);
         RELigneDeblocages lignesDeblocagesCompleted = new RELigneDeblocages();
@@ -203,7 +274,9 @@ public class ReLigneDeclocageServices {
         newLigne.setEtat(dbLigne.getEtat());
         newLigne.setType(dbLigne.getType());
         newLigne.setMontant(dbLigne.getMontant());
+        newLigne.setIdRenteAccordee(dbLigne.getIdRenteAccordee());
         newLigne.setIdEntity(dbLigne.getIdEntity());
+        newLigne.setIdLot(dbLigne.getIdLot());
         newLigne.setSpy(dbLigne.getSpy());
     }
 
@@ -219,70 +292,13 @@ public class ReLigneDeclocageServices {
         }
     }
 
-    /**
-     * Recherche de toutes les lignes de déblocage par l'état.
-     * 
-     * @param forEtat Un état de déblocage
-     * @return
-     */
-    public RELigneDeblocages searchByEtat(RELigneDeblocageEtat forEtat) {
-
-        if (forEtat == null) {
-            throw new IllegalArgumentException("To perform a search by etat, etat must be not null");
-        }
-
-        RELigneDeblocageManager manager = new RELigneDeblocageManager();
-        manager.setSession(session);
-        manager.setForEtat(forEtat);
-
+    private RELigneDeblocages search(RELigneDeblocageManager manager) {
         List<RELigneDeblocage> entities = manager.search();
 
         RELigneDeblocages lignesDeblocages = new RELigneDeblocages();
         lignesDeblocages.addAll(entities);
 
         return lignesDeblocages;
-    }
-
-    /**
-     * Recherche de toutes les lignes de déblocage par le type
-     * 
-     * @param fortype Un type de déblocage
-     * @return
-     */
-    public RELigneDeblocages searchByType(RELigneDeblocageType fortype) {
-
-        if (fortype == null) {
-            throw new IllegalArgumentException("To perform a search by type, type must be not null");
-        }
-
-        RELigneDeblocageManager manager = new RELigneDeblocageManager();
-        manager.setSession(session);
-        manager.setForType(fortype);
-
-        List<RELigneDeblocage> entities = manager.search();
-
-        RELigneDeblocages lignesDeblocages = new RELigneDeblocages();
-        lignesDeblocages.addAll(entities);
-
-        return lignesDeblocages;
-    }
-
-    public RELigneDeblocage read(String idLigneDeblocage) {
-
-        if (idLigneDeblocage == null) {
-            throw new IllegalArgumentException("To perform a read, idLigneDeblocage must be not null");
-        }
-
-        RELigneDeblocage ligneDeblocage = new RELigneDeblocage();
-        ligneDeblocage.setSession(session);
-        ligneDeblocage.setIdEntity(idLigneDeblocage);
-        ligneDeblocage.setId(idLigneDeblocage);
-        try {
-            ligneDeblocage.retrieve();
-            return ligneDeblocage;
-        } catch (Exception e) {
-            throw new JadeDataBaseException("Unabled read the déblocage", e);
-        }
     }
 
 }

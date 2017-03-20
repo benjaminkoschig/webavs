@@ -10,7 +10,7 @@ public enum RELigneDeblocageVentilationTableDef implements TableDefinition {
     ID_SECTION_SOURCE("ID_SECTION_SOURCE", Long.class),
     MONTANT("MONTANT", BigDecimal.class);
 
-    public static final String TABLE_NAME = "RE_LIGNE_DEBLOCAGE_VENTILATION";
+    public static final String TABLE_NAME = "RE_LIGNE_DEBLOCAGE_VENTIL";
     private String columnName;
     private Class<?> classType;
     private boolean primaryKey;
