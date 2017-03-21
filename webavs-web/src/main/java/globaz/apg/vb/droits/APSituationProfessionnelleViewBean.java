@@ -50,7 +50,8 @@ import globaz.prestation.tools.PRImagesConstants;
 import globaz.prestation.tools.PRSession;
 import globaz.prestation.tools.nnss.PRNSSUtil;
 import globaz.pyxis.adresse.datasource.TIAdressePaiementDataSource;
-import globaz.pyxis.adresse.formater.TIAdresseFormater;
+import globaz.pyxis.adresse.formater.TIAdressePaiementBanqueFormater;
+import globaz.pyxis.adresse.formater.TIAdressePaiementCppFormater;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -201,12 +202,13 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
         TIAdressePaiementData detailTiers = null;
 
         if (!JadeStringUtil.isBlankOrZero(getIdTiersEmployeur())) {
-            
+
             String idDomainPaiementEmployeur = getIdDomainePaiementEmployeur();
             String idTiersPaiementEmployeur = getIdTiersPaiementEmployeur();
-            
+
             // si l'id tiers paiement employeur est déjà renseigné, nous le prenons avec son id domaine stocké
-            if (!JadeStringUtil.isBlankOrZero(idTiersPaiementEmployeur)) {
+            if (!JadeStringUtil.isBlankOrZero(idTiersPaiementEmployeur)
+                    && !JadeStringUtil.isBlankOrZero(idDomainPaiementEmployeur)) {
 
                 detailTiers = PRTiersHelper.getAdressePaiementData(getSession(), getSession()
                         .getCurrentThreadTransaction(), idTiersPaiementEmployeur, idDomainPaiementEmployeur,
@@ -217,22 +219,37 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
                 idTiersPaiementEmployeur = getIdTiersEmployeur();
                 idDomainPaiementEmployeur = isAPG() ? IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_APG
                         : IPRConstantesExternes.TIERS_CS_DOMAINE_MATERNITE;
-                
+
                 // nous recherchons en cascade du domaine APG ou MATERNITE
                 detailTiers = PRTiersHelper.getAdressePaiementData(getSession(), getSession()
                         .getCurrentThreadTransaction(), idTiersPaiementEmployeur, idDomainPaiementEmployeur,
                         getIdAffilieEmployeur(), JACalendar.todayJJsMMsAAAA());
-
             }
-            setIdTiersPaiementEmployeur(idTiersPaiementEmployeur);
-            setIdDomainePaiementEmployeur(idDomainPaiementEmployeur);
-            
+
+            setAdressePaiementEmployeur(detailTiers);
+
             final TIAdressePaiementDataSource dataSource = new TIAdressePaiementDataSource();
             dataSource.load(detailTiers);
-            return new TIAdresseFormater().format(dataSource);
+
+            // formatter le no de ccp ou le no bancaire
+            if (JadeStringUtil.isEmpty(detailTiers.getCcp())) {
+                return new TIAdressePaiementBanqueFormater().format(dataSource);
+            } else {
+                return new TIAdressePaiementCppFormater().format(dataSource);
+            }
         }
 
         return "";
+    }
+
+    public void setAdressePaiementEmployeur(TIAdressePaiementData detailTiers) {
+        if (detailTiers != null && !detailTiers.isNew()) {
+            setIdTiersPaiementEmployeur(detailTiers.getIdTiers());
+            setIdDomainePaiementEmployeur(detailTiers.getIdApplication());
+        } else {
+            setIdTiersPaiementEmployeur(null);
+            setIdDomainePaiementEmployeur(null);
+        }
     }
 
     public String getPersonnelDeclarePar(final String contextPath, final String date) throws Exception {
@@ -447,8 +464,13 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
 
         final TIAdressePaiementDataSource dataSource = new TIAdressePaiementDataSource();
         dataSource.load(detailTiers);
-        return new TIAdresseFormater().format(dataSource);
 
+        // formatter le no de ccp ou le no bancaire
+        if (JadeStringUtil.isEmpty(detailTiers.getCcp())) {
+            return new TIAdressePaiementBanqueFormater().format(dataSource);
+        } else {
+            return new TIAdressePaiementCppFormater().format(dataSource);
+        }
     }
 
     /**

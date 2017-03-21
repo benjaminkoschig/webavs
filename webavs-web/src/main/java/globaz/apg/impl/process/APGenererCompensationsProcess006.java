@@ -40,7 +40,6 @@ import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.tools.PRSession;
 import java.text.MessageFormat;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -228,41 +227,46 @@ public class APGenererCompensationsProcess006 extends BProcess implements IAPGen
         if (!JadeStringUtil.isIntegerEmpty(compensation.getIdAffilie()) && !value.getMontantPorterEnCompte().isZero()) {
 
             final IAFAffiliation employeur = getAffiliation(session, key);
-            final boolean isRadie = isRadie(employeur);
-
-            final APFactureACompenser factureACompenser = new APFactureACompenser();
-            factureACompenser.setSession(session);
-            factureACompenser.setIdTiers(compensation.getIdTiers());
-            factureACompenser.setIdAffilie(compensation.getIdAffilie());
-            factureACompenser.setIdCompensationParente(compensation.getIdCompensation());
-
-            String montantAReporter = value.getMontantPorterEnCompte().toString();
-            boolean mustBeCompenser = true;
-            if (value.getMontantTotal().doubleValue() < value.getMontantPorterEnCompte().doubleValue()) {
-                montantAReporter = value.getMontantTotal().toString();
-
-                if (value.getMontantTotal().isZero() || value.getMontantTotal().isNegative()) {
-                    mustBeCompenser = false;
-                }
-            }
-
-            factureACompenser.setIsCompenser(isRadie || !mustBeCompenser ? Boolean.FALSE : Boolean.TRUE);
-            factureACompenser.setMontant(montantAReporter);
-
-            factureACompenser.add();
-
-            getMemoryLog().logMessage(getSession().getLabel("FACTURE_AJOUTEE"), "",
-                    factureACompenser.getIdFactureACompenser());
+            createFactureACompenser(session, compensation, value, employeur);
 
             /**
              * Un employeur qui est en cours de radiation ou est radié, nous mettons une avertissement en indiquant que
              * l'on à mis la facture à compenser non compensable automatiquement
              */
-            if (isRadie && employeur != null && !employeur.isNew()) {
+            if (isRadie(employeur)) {
                 memoryLog(getSession().getLabel("FACTURE_A_COMPENSER_DESACTIVER_RADIE"), FWMessage.AVERTISSEMENT,
                         employeur.getAffilieNumero());
             }
         }
+    }
+
+    private void createFactureACompenser(final BSession session, final APCompensation compensation,
+            MontantsPorterEnCompte value, final IAFAffiliation employeur) throws Exception {
+
+        final APFactureACompenser factureACompenser = new APFactureACompenser();
+
+        factureACompenser.setSession(session);
+        factureACompenser.setIdTiers(compensation.getIdTiers());
+        factureACompenser.setIdAffilie(compensation.getIdAffilie());
+        factureACompenser.setIdCompensationParente(compensation.getIdCompensation());
+
+        String montantAReporter = value.getMontantPorterEnCompte().toString();
+        boolean mustBeCompenser = true;
+        if (value.getMontantTotal().doubleValue() < value.getMontantPorterEnCompte().doubleValue()) {
+            montantAReporter = value.getMontantTotal().toString();
+
+            if (value.getMontantTotal().isZero() || value.getMontantTotal().isNegative()) {
+                mustBeCompenser = false;
+            }
+        }
+
+        factureACompenser.setIsCompenser(isRadie(employeur) || !mustBeCompenser ? Boolean.FALSE : Boolean.TRUE);
+        factureACompenser.setMontant(montantAReporter);
+
+        factureACompenser.add();
+
+        getMemoryLog().logMessage(getSession().getLabel("FACTURE_AJOUTEE"), "",
+                factureACompenser.getIdFactureACompenser());
     }
 
     private APCompensation createCompensation(final BSession session, final BTransaction transaction, final Key key,
@@ -295,19 +299,20 @@ public class APGenererCompensationsProcess006 extends BProcess implements IAPGen
         return employeur;
     }
 
-    private boolean isRadie(IAFAffiliation employeur) throws Exception {
-        // On considère l'affilié comme radié, même si la date de
-        // fin est dans le futur.
-        // Si isRadie = true, pas de compensation sur facture
-        // future.
+    /**
+     * Nous considérons l'affilié comme radié, même si la date de fin est dans le futur. Si isRadie = true, pas de
+     * compensation sur facture future.
+     * 
+     * @param employeur L'employeur.
+     * @return Vrai si il est en phase de radiation ou déjà radié.
+     */
+    private boolean isRadie(IAFAffiliation employeur) {
         boolean isRadie = false;
-        try {
-            if (!employeur.isNew() && !JadeStringUtil.isBlankOrZero(employeur.getDateFin())) {
-                isRadie = true;
-            }
-        } catch (Exception e) {
-            log(Level.INFO, e, e.getMessage());
+
+        if (employeur != null && !employeur.isNew() && !JadeStringUtil.isBlankOrZero(employeur.getDateFin())) {
+            isRadie = true;
         }
+
         return isRadie;
     }
 
@@ -400,7 +405,6 @@ public class APGenererCompensationsProcess006 extends BProcess implements IAPGen
     }
 
     private boolean checkBusinessRules() throws Exception {
-
         boolean isOk = true;
 
         final APRepartitionJointPrestationManager repartitionJointPrestationManager = new APRepartitionJointPrestationManager();
@@ -466,6 +470,9 @@ public class APGenererCompensationsProcess006 extends BProcess implements IAPGen
             throws Exception {
         boolean isOk = true;
 
+        /**
+         * Repris cette condition, même si les == ne sont pas top pour les float...
+         */
         if (Float.parseFloat(repartitionJointPrestation.getMontantBrut()) == 0
                 && Float.parseFloat(repartitionJointPrestation.getMontantVentile()) == 0) {
 
@@ -478,6 +485,7 @@ public class APGenererCompensationsProcess006 extends BProcess implements IAPGen
 
             isOk = false;
         }
+
         return isOk;
     }
 
@@ -533,8 +541,8 @@ public class APGenererCompensationsProcess006 extends BProcess implements IAPGen
 
     private boolean checkAdressePaiementSiVentilation(APRepartitionJointPrestation repartitionJointPrestation,
             PRTiersWrapper tw) throws Exception {
-
         boolean isOk = true;
+
         final FWCurrency montantTotalVentilations = giveMontantVentilationRepartitionParent(repartitionJointPrestation);
 
         if (repartitionJointPrestation.loadAdressePaiement(null) == null
@@ -553,8 +561,8 @@ public class APGenererCompensationsProcess006 extends BProcess implements IAPGen
     }
 
     private boolean checkTiersActif(APRepartitionJointPrestation repartitionJointPrestation, PRTiersWrapper tw) {
-
         boolean isOk = true;
+
         if (!isTiersRequerantActif(tw)) {
             final String msgTiersInactif = getSession().getLabel("TIERS_INACTIF");
             final String nss = tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL);
@@ -565,19 +573,21 @@ public class APGenererCompensationsProcess006 extends BProcess implements IAPGen
             memoryLog(messageInfo, FWMessage.ERREUR, nom, nss, idPrestationApg);
             isOk = false;
         }
+
         return isOk;
     }
 
     private FWCurrency giveMontantVentilationRepartitionParent(APRepartitionJointPrestation repartitionJointPrestation)
             throws Exception {
         final FWCurrency montantTotalVentilations = new FWCurrency();
-        APRepartitionJointPrestationManager mgr = new APRepartitionJointPrestationManager();
+
+        final APRepartitionJointPrestationManager mgr = new APRepartitionJointPrestationManager();
         mgr.setSession(getSession());
         mgr.setForIdParent(repartitionJointPrestation.getIdRepartitionBeneficiairePaiement());
         mgr.find(BManager.SIZE_NOLIMIT);
 
-        for (Iterator iterator = mgr.iterator(); iterator.hasNext();) {
-            APRepartitionJointPrestation entity = (APRepartitionJointPrestation) iterator.next();
+        for (int i = 0; i < mgr.getSize(); i++) {
+            final APRepartitionJointPrestation entity = (APRepartitionJointPrestation) mgr.get(i);
 
             montantTotalVentilations.add(entity.getMontantVentile());
         }
@@ -587,7 +597,7 @@ public class APGenererCompensationsProcess006 extends BProcess implements IAPGen
 
     @Override
     protected void _validate() throws Exception {
-        APLot lot = new APLot();
+        final APLot lot = new APLot();
         lot.setSession(getSession());
         lot.setIdLot(forIdLot);
         lot.retrieve();
@@ -613,9 +623,10 @@ public class APGenererCompensationsProcess006 extends BProcess implements IAPGen
 
     @Override
     protected String getEMailObject() {
-        APLot lot = new APLot();
+        final APLot lot = new APLot();
         lot.setSession(getSession());
         lot.setIdLot(forIdLot);
+
         try {
             lot.retrieve();
         } catch (Exception e) {

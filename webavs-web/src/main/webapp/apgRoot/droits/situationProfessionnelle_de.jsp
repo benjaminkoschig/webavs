@@ -629,7 +629,7 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
 						<TR>
 							<TD class="withoutAdressePaiement" colspan="2">&nbsp;</TD>
 							<TD class="withAdressePaiement" colspan="2" rowspan="2">
-								<b><%=viewBean.getAdressePaiementEmployeur()%></b>
+								<pre><%=viewBean.getAdressePaiementEmployeur()%></pre>
 							</TD>
 							<TD><LABEL for="autreRemuneration"><ct:FWLabel key="JSP_AUTRE_REMUNERATION"/></LABEL></TD>
 							<TD><INPUT type="text" name="autreRemuneration" value="<%=viewBean.getAutreRemuneration()%>" class="montant" onchange="validateFloatNumber(this);" onkeypress="return filterCharForFloat(window.event);"></TD>
