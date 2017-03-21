@@ -14,13 +14,17 @@ public class REDeblocageVersement extends BEntity {
 
     private String idCompteAnnexe;
     private String idRenteAccordee;
+    private String codeRenteAccordee;
     private Long idTiersAdressePaiement;
+    private Long idApplicationAdressePaiement;
     private Long idTiersBeneficiaire;
     private Long idSectionSource;
     private Long idSectionCompense;
     private Long idRoleSection;
+
     private Montant montant;
     private RELigneDeblocageType type;
+    private String refPaiement;
 
     @Override
     protected String _getTableName() {
@@ -122,6 +126,35 @@ public class REDeblocageVersement extends BEntity {
 
     public void setType(RELigneDeblocageType type) {
         this.type = type;
+    }
+
+    public Long getIdApplicationAdressePaiement() {
+        return idApplicationAdressePaiement;
+    }
+
+    public void setIdApplicationAdressePaiement(Long idApplicationAdressePaiement) {
+        this.idApplicationAdressePaiement = idApplicationAdressePaiement;
+    }
+
+    public String getCodeRenteAccordee() {
+        return codeRenteAccordee;
+    }
+
+    public void setCodeRenteAccordee(String codeRenteAccordee) {
+        this.codeRenteAccordee = codeRenteAccordee;
+    }
+
+    public String getRefPaiement() {
+        return refPaiement;
+    }
+
+    public void setRefPaiement(String refPaiement) {
+        this.refPaiement = refPaiement;
+    }
+
+    public String getIdAvoirPaiementUnique() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }
