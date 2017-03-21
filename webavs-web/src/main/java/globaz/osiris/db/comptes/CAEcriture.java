@@ -4,6 +4,7 @@ import globaz.aquila.db.access.poursuite.COContentieux;
 import globaz.aquila.db.access.poursuite.COContentieuxManager;
 import globaz.framework.util.FWCurrency;
 import globaz.framework.util.FWMessage;
+import globaz.framework.util.FWMessageFormat;
 import globaz.globall.api.BISession;
 import globaz.globall.api.BITransaction;
 import globaz.globall.db.BTransaction;
@@ -980,10 +981,14 @@ public class CAEcriture extends CAOperation implements APIEcriture, APISlave {
 
             // SI dateEcriture > dateLimite ALORS erreur
             if (cal.compare(dateEcriture, dateLimite) == JACalendar.COMPARE_FIRSTUPPER) {
-                _addError(transaction, getSession().getLabel("ECR_ERR_DELAI_DATE_VALEUR"));
+                _addError(transaction, FWMessageFormat.format(
+                        FWMessageFormat.prepareQuotes(getSession().getLabel("ECR_ERR_DELAI_DATE_VALEUR"), false),
+                        dateEcriture.toStr("."), dateLimite.toStr(".")));
             }
         } catch (JAException e) {
-            _addError(transaction, getSession().getLabel("ECR_ERR_DELAI_DATE_VALEUR"));
+            _addError(transaction, FWMessageFormat.format(
+                    FWMessageFormat.prepareQuotes(getSession().getLabel("ECR_ERR_DELAI_DATE_VALEUR"), false),
+                    "undefined", "undefined"));
         }
 
         // S'il n'y a pas d'erreur, on effectue certaines transformations
