@@ -6,12 +6,15 @@ package globaz.apg.servlet;
 import globaz.apg.db.droits.APDroitAPG;
 import globaz.apg.db.droits.APDroitLAPG;
 import globaz.apg.db.droits.APDroitMaternite;
+import globaz.apg.db.droits.APEmployeur;
+import globaz.apg.db.droits.APSituationProfessionnelle;
 import globaz.apg.db.droits.APSituationProfessionnelleManager;
 import globaz.apg.groupdoc.ccju.GroupdocPropagateUtil;
 import globaz.apg.util.TypePrestation;
 import globaz.apg.vb.droits.APDroitAPGDTO;
 import globaz.apg.vb.droits.APDroitDTO;
 import globaz.apg.vb.droits.APSituationProfessionnelleViewBean;
+import globaz.externe.IPRConstantesExternes;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.controller.FWAction;
 import globaz.framework.controller.FWController;
@@ -19,13 +22,18 @@ import globaz.framework.controller.FWDefaultServletAction;
 import globaz.framework.controller.FWDispatcher;
 import globaz.framework.servlets.FWServlet;
 import globaz.fweb.taglib.FWSelectorTag;
+import globaz.globall.db.BManager;
 import globaz.globall.http.JSPUtils;
+import globaz.globall.util.JACalendar;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.log.JadeLogger;
+import globaz.prestation.api.IPRDemande;
 import globaz.prestation.db.demandes.PRDemande;
+import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.servlet.PRDefaultAction;
 import globaz.prestation.tools.PRSessionDataContainerHelper;
+import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
 import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -344,6 +352,10 @@ public class APSituationProfessionnelleAction extends PRDefaultAction {
         try {
             APSituationProfessionnelleViewBean spViewBean = (APSituationProfessionnelleViewBean) viewBean;
 
+            // Fait pour les anciens situations professionnelles, car on ne passe pas forcement par 
+            // l ecran pour remplir les nouveaux deux champs id domaine paiement et id tiers paiement.
+            updateAdresseSituationProfessionnelle(idDroit, spViewBean);
+
             // check if propagation have to be called
             if (GroupdocPropagateUtil.shouldPropagate()) {
                 APSituationProfessionnelleManager manager = new APSituationProfessionnelleManager();
@@ -388,6 +400,42 @@ public class APSituationProfessionnelleAction extends PRDefaultAction {
             // fack pour le retour de la creation de la sit. fam. APG
             return "/apg?userAction=" + IAPActions.ACTION_ENFANT_APG + ".chercher&"
                     + APAbstractDroitDTOAction.PARAM_ID_DROIT + "=" + idDroit;
+        }
+    }
+
+    private void updateAdresseSituationProfessionnelle(String idDroit, APSituationProfessionnelleViewBean spViewBean)
+            throws Exception {
+        
+        final APSituationProfessionnelleManager managerSituation = new APSituationProfessionnelleManager();
+        managerSituation.setSession(spViewBean.getSession());
+        managerSituation.setForIdDroit(idDroit);
+        managerSituation.find(BManager.SIZE_NOLIMIT);
+
+        for (int i = 0; i < managerSituation.getSize(); i++) {
+            final APSituationProfessionnelle situation = (APSituationProfessionnelle) managerSituation.get(i);
+            if (situation.getIsVersementEmployeur()
+                    && (JadeStringUtil.isBlankOrZero(situation.getIdDomainePaiementEmployeur()) || JadeStringUtil
+                            .isBlankOrZero(situation.getIdTiersPaiementEmployeur()))) {
+
+                final APEmployeur loadEmployeur = situation.loadEmployeur();
+                final String idTiersPaiementEmployeur = loadEmployeur.getIdTiers();
+                final String idDomainPaiementEmployeur = IPRDemande.CS_TYPE_MATERNITE.equals(spViewBean
+                        .getTypePrestation().toCodeSysteme()) ? IPRConstantesExternes.TIERS_CS_DOMAINE_MATERNITE
+                        : IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_APG;
+
+                // nous recherchons en cascade du domaine APG ou MATERNITE
+                final TIAdressePaiementData detailTiers = PRTiersHelper.getAdressePaiementData(spViewBean.getSession(),
+                        spViewBean.getSession().getCurrentThreadTransaction(), idTiersPaiementEmployeur,
+                        idDomainPaiementEmployeur, loadEmployeur.getIdAffilie(), JACalendar.todayJJsMMsAAAA());
+
+                if (detailTiers != null && !detailTiers.isNew()) {
+                    situation.setIdDomainePaiementEmployeur(detailTiers.getIdApplication());
+                    situation.setIdTiersPaiementEmployeur(detailTiers.getIdTiers());
+                    situation.setSession(spViewBean.getSession());
+                    situation.wantCallValidate(false);
+                    situation.update();
+                }
+            }
         }
     }
 
