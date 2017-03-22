@@ -23,10 +23,10 @@ public class RELigneDeblocageTypeTest {
 
     @Test
     public void testIsVersementBeneficaire() throws Exception {
-        assertThat(RELigneDeblocageType.fromValue("52863001").isVersementBeneficaire()).isFalse();
-        assertThat(RELigneDeblocageType.fromValue("52863002").isVersementBeneficaire()).isFalse();
-        assertThat(RELigneDeblocageType.fromValue("52863003").isVersementBeneficaire()).isTrue();
-        assertThat(RELigneDeblocageType.fromValue("52863004").isVersementBeneficaire()).isFalse();
+        assertThat(RELigneDeblocageType.fromValue("52863001").isVersementBeneficiaire()).isFalse();
+        assertThat(RELigneDeblocageType.fromValue("52863002").isVersementBeneficiaire()).isFalse();
+        assertThat(RELigneDeblocageType.fromValue("52863003").isVersementBeneficiaire()).isTrue();
+        assertThat(RELigneDeblocageType.fromValue("52863004").isVersementBeneficiaire()).isFalse();
     }
 
     @Test

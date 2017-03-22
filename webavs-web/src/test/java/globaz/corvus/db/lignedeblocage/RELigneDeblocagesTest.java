@@ -123,7 +123,7 @@ public class RELigneDeblocagesTest {
         RELigneDeblocages ld = new RELigneDeblocages();
         ld.addAll(createListLigneDeblocage());
 
-        assertThat(ld.getLigneDeblocageVersementBeneficaire().size()).isEqualTo(1);
+        assertThat(ld.getLigneDeblocageVersementBeneficiaire().size()).isEqualTo(1);
     }
 
     @Test
