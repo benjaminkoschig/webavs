@@ -30,6 +30,8 @@ public abstract class JadeEntity extends BEntity {
 
     private transient BStatement statement;
 
+    private String aliasTable;
+
     protected abstract void writeProperties();
 
     protected abstract void readProperties();
@@ -109,20 +111,27 @@ public abstract class JadeEntity extends BEntity {
     }
 
     public <T> T read(TableDefinition tableDefinition) {
+
+        String columnName = tableDefinition.getColumnName();
+
+        if (aliasTable != null) {
+            columnName = aliasTable + "." + columnName;
+        }
+
         if (Integer.class.equals(tableDefinition.getType())) {
-            return (T) readInteger(tableDefinition.getColumnName());
+            return (T) readInteger(columnName);
         } else if (Double.class.equals(tableDefinition.getType())) {
-            return (T) readDouble(tableDefinition.getColumnName());
+            return (T) readDouble(columnName);
         } else if (Long.class.equals(tableDefinition.getType())) {
-            return (T) readLong(tableDefinition.getColumnName());
+            return (T) readLong(columnName);
         } else if (String.class.equals(tableDefinition.getType())) {
-            return (T) readString(tableDefinition.getColumnName());
+            return (T) readString(columnName);
         } else if (Date.class.equals(tableDefinition.getType())) {
-            return (T) readDate(tableDefinition.getColumnName());
+            return (T) readDate(columnName);
         } else if (Boolean.class.equals(tableDefinition.getType())) {
-            return (T) readBoolean(tableDefinition.getColumnName());
+            return (T) readBoolean(columnName);
         } else if (BigDecimal.class.equals(tableDefinition.getType())) {
-            return (T) readBigDecimal(tableDefinition.getColumnName());
+            return (T) readBigDecimal(columnName);
         } else {
             throw new JadeDataBaseException("Type non pris en charge pour la colonne suivante : " + tableDefinition);
         }
@@ -408,6 +417,12 @@ public abstract class JadeEntity extends BEntity {
     @Override
     protected boolean _autoInherits() {
         return false;
+    }
+
+    public void readFromStatement(BStatement statement, String aliasTable) {
+        this.statement = statement;
+        this.aliasTable = aliasTable;
+        readProperties();
     }
 
 }
