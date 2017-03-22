@@ -443,4 +443,10 @@ public class SQLWriterTest {
         assertThat(SQLWriter.write().datToGlobazFormat("1.10.2015")).isEqualTo(20151001);
     }
 
+    @Test
+    public void testFields() throws Exception {
+        assertThat(SQLWriter.write().fields(TableDefTest.class, "test").toSql()).isEqualTo(
+                " TEST.COL1 AS TEST_COL1, TEST.COL2 AS TEST_COL2 ");
+    }
+
 }
