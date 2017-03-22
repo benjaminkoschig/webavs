@@ -396,8 +396,10 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
     private APIRubrique ACM_RESTITUTION = null;
     private APIRubrique AVEC_AC_ASSURE;
     private APIRubrique AVEC_AC_INDEPENDANT = null;
+    private APIRubrique AVEC_AC_EMPLOYEUR = null;
     private APIRubrique SANS_AC_ASSURE = null;
     private APIRubrique SANS_AC_INDEPENDANT = null;
+    private APIRubrique SANS_AC_EMPLOYEUR = null;
     private APIRubrique COMPENSATION = null;
     private APIRubrique COMPENSATION_ACM = null;
     private APIRubrique COMPENSATION_LAMAT = null;
@@ -411,8 +413,6 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
     private APIRubrique IMPOT_SOURCE_ACM = null;
     private APIRubrique IMPOT_SOURCE_LAMAT_CANTONALE_ASSURE = null;
     private APIRubrique IMPOT_SOURCE_LAMAT_CANTONALE_INDEPENDANT = null;
-    private APIRubrique EMPLOYEUR_AVEC_AC = null;
-    private APIRubrique EMPLOYEUR_SANS_AC = null;
     private APIRubrique FONDS_DE_COMPENSATION_ASSURE = null;
     private APIRubrique FONDS_DE_COMPENSATION_EMPLOYEUR = null;
     private APIRubrique FONDS_DE_COMPENSATION_INDEPENDANT = null;
@@ -1374,6 +1374,9 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
             final boolean isGenrePrestationACMNe = APTypeDePrestation.ACM_NE
                     .isCodeSystemEqual(repartition.genrePrestation);
 
+            final GenreDestinataire destinataire = GenreDestinataire.getDestinataire(repartition.isEmployeur,
+                    repartition.isIndependant);
+
             // recup de l'idAdressePaiement
             idAdressePaiementBeneficiaireDeBase = repartition.idAdressePaiement;
 
@@ -1468,63 +1471,43 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
                             throw new Exception("Not implemented");
                         }
                     }
-
                 } else {
                     if (!isRestitution) {
-                        if (!(repartition.isEmployeur && !repartition.isIndependant)) {
-                            if (!repartition.isEmployeur && repartition.isIndependant) { // INDEPENDANT
+                        if (GenreDestinataire.INDEPENDANT.equals(destinataire)) {
+                            putMontantIntoMap(mapTotalACIndependant, repartition, repartition.cotisationAC);
 
-                                putMontantIntoMap(mapTotalACIndependant, repartition, repartition.cotisationAC);
-                            } else if (!repartition.isEmployeur && !repartition.isIndependant) { // ASSURE
-
-                                putMontantIntoMap(mapTotalACAssure, repartition, repartition.cotisationAC);
-                            }
-                        }
-
-                        if (repartition.isIndependant) {
                             final Montants mnt = new Montants();
                             mnt.add(convertGenrePrestToRubrique(repartition.genrePrestation), repartition.cotisationAC);
                             totalFondDeCompensationIndependant.sub(mnt);
-                        } else if (repartition.isEmployeur) {
+                        } else if (GenreDestinataire.EMPLOYEUR.equals(destinataire)) {
                             final Montants mnt = new Montants();
                             mnt.add(convertGenrePrestToRubrique(repartition.genrePrestation), repartition.cotisationAC);
                             totalFondDeCompensationEmployeur.add(mnt);
                         } else {
+                            putMontantIntoMap(mapTotalACAssure, repartition, repartition.cotisationAC);
+
                             final Montants mnt = new Montants();
                             mnt.add(convertGenrePrestToRubrique(repartition.genrePrestation), repartition.cotisationAC);
                             totalFondDeCompensationAssure.sub(mnt);
                         }
-
                     } else {
-                        if (!(repartition.isEmployeur && !repartition.isIndependant)) {
+                        if (GenreDestinataire.INDEPENDANT.equals(destinataire)) {
+                            putMontantIntoMap(mapTotalACRestitutionIndependant, repartition, repartition.cotisationAC);
 
-                            if (!repartition.isEmployeur && repartition.isIndependant) { // INDEPENDANT
-
-                                putMontantIntoMap(mapTotalACRestitutionIndependant, repartition,
-                                        repartition.cotisationAC);
-                            } else if (!repartition.isEmployeur && !repartition.isIndependant) { // ASSURE
-
-                                putMontantIntoMap(mapTotalACRestitutionAssure, repartition, repartition.cotisationAC);
-                            }
-                        }
-
-                        if (repartition.isIndependant) {
                             final Montants mnt = new Montants();
                             mnt.add(convertGenrePrestToRubrique(repartition.genrePrestation), repartition.cotisationAC);
-
                             totalFondDeCompensationRestitutionIndependant.sub(mnt);
-                        } else if (repartition.isEmployeur) {
+                        } else if (GenreDestinataire.EMPLOYEUR.equals(destinataire)) {
                             final Montants mnt = new Montants();
                             mnt.add(convertGenrePrestToRubrique(repartition.genrePrestation), repartition.cotisationAC);
-
                             totalFondDeCompensationRestitutionEmployeur.add(mnt);
                         } else {
+                            putMontantIntoMap(mapTotalACRestitutionAssure, repartition, repartition.cotisationAC);
+
                             final Montants mnt = new Montants();
                             mnt.add(convertGenrePrestToRubrique(repartition.genrePrestation), repartition.cotisationAC);
-
                             totalFondDeCompensationRestitutionAssure.sub(mnt);
                         }
-
                     }
                 }
             }
@@ -1557,62 +1540,41 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
 
                 } else {
                     if (!isRestitution) {
-                        if (!(repartition.isEmployeur && !repartition.isIndependant)) {
-                            if (!repartition.isEmployeur && repartition.isIndependant) { // INDEPENDANT
+                        if (GenreDestinataire.INDEPENDANT.equals(destinataire)) {
+                            putMontantIntoMap(mapTotalAVSIndependant, repartition, repartition.cotisationAVS);
 
-                                putMontantIntoMap(mapTotalAVSIndependant, repartition, repartition.cotisationAVS);
-                            } else if (!repartition.isEmployeur && !repartition.isIndependant) { // ASSURE
-
-                                putMontantIntoMap(mapTotalAVSAssure, repartition, repartition.cotisationAVS);
-                            }
-                        }
-
-                        if (repartition.isIndependant) {
                             final Montants mnt = new Montants();
                             mnt.add(convertGenrePrestToRubrique(repartition.genrePrestation), repartition.cotisationAVS);
-
                             totalFondDeCompensationIndependant.sub(mnt);
-                        } else if (repartition.isEmployeur) {
+                        } else if (GenreDestinataire.EMPLOYEUR.equals(destinataire)) {
                             final Montants mnt = new Montants();
                             mnt.add(convertGenrePrestToRubrique(repartition.genrePrestation), repartition.cotisationAVS);
-
                             totalFondDeCompensationEmployeur.add(mnt);
                         } else {
+                            putMontantIntoMap(mapTotalAVSAssure, repartition, repartition.cotisationAVS);
+
                             final Montants mnt = new Montants();
                             mnt.add(convertGenrePrestToRubrique(repartition.genrePrestation), repartition.cotisationAVS);
-
                             totalFondDeCompensationAssure.sub(mnt);
                         }
-
                     } else {
-                        if (!(repartition.isEmployeur && !repartition.isIndependant)) {
-                            if (!repartition.isEmployeur && repartition.isIndependant) { // INDEPENDANT
+                        if (GenreDestinataire.INDEPENDANT.equals(destinataire)) {
+                            putMontantIntoMap(mapTotalAVSRestitutionIndependant, repartition, repartition.cotisationAVS);
 
-                                putMontantIntoMap(mapTotalAVSRestitutionIndependant, repartition,
-                                        repartition.cotisationAVS);
-                            } else if (!repartition.isEmployeur && repartition.isIndependant) { // ASSURE
-
-                                putMontantIntoMap(mapTotalAVSRestitutionAssure, repartition, repartition.cotisationAVS);
-                            }
-                        }
-
-                        if (repartition.isIndependant) {
                             final Montants mnt = new Montants();
                             mnt.add(convertGenrePrestToRubrique(repartition.genrePrestation), repartition.cotisationAVS);
-
                             totalFondDeCompensationRestitutionIndependant.sub(mnt);
-                        } else if (repartition.isEmployeur) {
+                        } else if (GenreDestinataire.EMPLOYEUR.equals(destinataire)) {
                             final Montants mnt = new Montants();
                             mnt.add(convertGenrePrestToRubrique(repartition.genrePrestation), repartition.cotisationAVS);
-
                             totalFondDeCompensationRestitutionEmployeur.add(mnt);
                         } else {
+                            putMontantIntoMap(mapTotalAVSRestitutionAssure, repartition, repartition.cotisationAVS);
+
                             final Montants mnt = new Montants();
                             mnt.add(convertGenrePrestToRubrique(repartition.genrePrestation), repartition.cotisationAVS);
-
                             totalFondDeCompensationRestitutionAssure.sub(mnt);
                         }
-
                     }
                 }
             }
@@ -1628,7 +1590,6 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
 
                         final Montants mnt = new Montants();
                         mnt.add(convertGenrePrestToRubrique(repartition.genrePrestation), repartition.cotisationLFA);
-
                         ((Montants) mapTotalLFA.get(repartition.anneeCotisation)).add(mnt);
                     } else {
                         final Montants mnt = new Montants();
@@ -1639,7 +1600,6 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
                     if (mapTotalLFARestitution.containsKey(repartition.anneeCotisation)) {
                         final Montants mnt = new Montants();
                         mnt.add(convertGenrePrestToRubrique(repartition.genrePrestation), repartition.cotisationLFA);
-
                         ((Montants) mapTotalLFARestitution.get(repartition.anneeCotisation)).add(mnt);
                     } else {
                         final Montants mnt = new Montants();
@@ -1658,35 +1618,32 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
                 if (!isRestitution) {
                     final Montants mnt = new Montants();
                     mnt.add(convertGenrePrestToRubrique(repartition.genrePrestation), repartition.fraisAdministration);
-
                     totalFA.add(mnt);
                 } else {
                     final Montants mnt = new Montants();
                     mnt.add(convertGenrePrestToRubrique(repartition.genrePrestation), repartition.fraisAdministration);
-
                     totalFARestitution.add(mnt);
                 }
             }
 
-            // IS
+            // Impot à la source
             if (!JadeStringUtil.isDecimalEmpty(repartition.impotSource)) {
                 totalCotisations = getCumulMontantsParGenre(totalCotisations, repartition.genrePrestation,
                         repartition.impotSource);
 
                 if (!isRestitution) {
-
-                    if (!repartition.isEmployeur && repartition.isIndependant) { // INDEPENDANT
+                    if (GenreDestinataire.INDEPENDANT.equals(destinataire)) {
                         totalISIndependant = getCumulMontantsParGenre(totalISIndependant, repartition.genrePrestation,
                                 repartition.impotSource);
-                    } else { // ASSURE
+                    } else if (GenreDestinataire.ASSURE.equals(destinataire)) {
                         totalISAssure = getCumulMontantsParGenre(totalISAssure, repartition.genrePrestation,
                                 repartition.impotSource);
                     }
                 } else {
-                    if (!repartition.isEmployeur && repartition.isIndependant) { // INDEPENDANT
+                    if (GenreDestinataire.INDEPENDANT.equals(destinataire)) {
                         totalISRestitutionIndependant = getCumulMontantsParGenre(totalISRestitutionIndependant,
                                 repartition.genrePrestation, repartition.impotSource);
-                    } else { // ASSURE
+                    } else if (GenreDestinataire.ASSURE.equals(destinataire)) {
                         totalISRestitutionAssure = getCumulMontantsParGenre(totalISRestitutionAssure,
                                 repartition.genrePrestation, repartition.impotSource);
                     }
@@ -2746,6 +2703,8 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
             final String genrePrestation, final boolean isAdoption, final String typeAssociation) {
         APIRubrique rubrique = null;
 
+        final GenreDestinataire destinataire = GenreDestinataire.getDestinataire(isEmployeur, isIndependant);
+
         boolean isLamat = false;
         if (APTypeDePrestation.LAMAT.isCodeSystemEqual(genrePrestation)) {
             isLamat = true;
@@ -2767,18 +2726,18 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
             }
         } else if (isRestitution) {
             if (isLamat) {
-                if (isEmployeur && !isIndependant) {
-                    rubrique = PRESTATION_A_RESTITUER_LAMAT_EMPLOYEUR;
-                } else if (isIndependant) {
+                if (GenreDestinataire.INDEPENDANT.equals(destinataire)) {
                     rubrique = PRESTATION_A_RESTITUER_LAMAT_INDEPENDANT;
+                } else if (GenreDestinataire.EMPLOYEUR.equals(destinataire)) {
+                    rubrique = PRESTATION_A_RESTITUER_LAMAT_EMPLOYEUR;
                 } else {
                     rubrique = PRESTATION_A_RESTITUER_LAMAT_ASSURE;
                 }
             } else {
-                if (isEmployeur && !isIndependant) {
-                    rubrique = PRESTATION_A_RESTITUER_EMPLOYEUR;
-                } else if (isIndependant) {
+                if (GenreDestinataire.INDEPENDANT.equals(destinataire)) {
                     rubrique = PRESTATION_A_RESTITUER_INDEPENDANT;
+                } else if (GenreDestinataire.EMPLOYEUR.equals(destinataire)) {
+                    rubrique = PRESTATION_A_RESTITUER_EMPLOYEUR;
                 } else {
                     rubrique = PRESTATION_A_RESTITUER_ASSURE;
                 }
@@ -2787,18 +2746,18 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
             if (!hasCotisation) {
                 if (isLamat) {
                     if (isAdoption) {
-                        if (isEmployeur && !isIndependant) {
-                            rubrique = SANS_COTISATION_LAMAT_ADOPTION_EMPLOYEUR;
-                        } else if (isIndependant) {
+                        if (GenreDestinataire.INDEPENDANT.equals(destinataire)) {
                             rubrique = SANS_COTISATION_LAMAT_ADOPTION_INDEPENDANT;
+                        } else if (GenreDestinataire.EMPLOYEUR.equals(destinataire)) {
+                            rubrique = SANS_COTISATION_LAMAT_ADOPTION_EMPLOYEUR;
                         } else {
                             rubrique = SANS_COTISATION_LAMAT_ADOPTION_ASSURE;
                         }
                     } else {
-                        if (isEmployeur && !isIndependant) {
-                            rubrique = SANS_COTISATION_LAMAT_NAISSANCE_EMPLOYEUR;
-                        } else if (isIndependant) {
+                        if (GenreDestinataire.INDEPENDANT.equals(destinataire)) {
                             rubrique = SANS_COTISATION_LAMAT_NAISSANCE_INDEPENDANT;
+                        } else if (GenreDestinataire.EMPLOYEUR.equals(destinataire)) {
+                            rubrique = SANS_COTISATION_LAMAT_NAISSANCE_EMPLOYEUR;
                         } else {
                             rubrique = SANS_COTISATION_LAMAT_NAISSANCE_ASSURE;
                         }
@@ -2810,42 +2769,38 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
                 // Pour les cas Lamat avec impôt à la source
                 if (isLamat) {
                     if (isAdoption) {
-                        if (isEmployeur && !isIndependant) {
-                            rubrique = SANS_COTISATION_LAMAT_ADOPTION_EMPLOYEUR;
-                        } else if (isIndependant) {
+                        if (GenreDestinataire.INDEPENDANT.equals(destinataire)) {
                             rubrique = SANS_COTISATION_LAMAT_ADOPTION_INDEPENDANT;
+                        } else if (GenreDestinataire.EMPLOYEUR.equals(destinataire)) {
+                            rubrique = SANS_COTISATION_LAMAT_ADOPTION_EMPLOYEUR;
                         } else {
                             rubrique = SANS_COTISATION_LAMAT_ADOPTION_ASSURE;
                         }
                     } else {
-                        if (isEmployeur && !isIndependant) {
-                            rubrique = SANS_COTISATION_LAMAT_NAISSANCE_EMPLOYEUR;
-                        } else if (isIndependant) {
+                        if (GenreDestinataire.INDEPENDANT.equals(destinataire)) {
                             rubrique = SANS_COTISATION_LAMAT_NAISSANCE_INDEPENDANT;
+                        } else if (GenreDestinataire.EMPLOYEUR.equals(destinataire)) {
+                            rubrique = SANS_COTISATION_LAMAT_NAISSANCE_EMPLOYEUR;
                         } else {
                             rubrique = SANS_COTISATION_LAMAT_NAISSANCE_ASSURE;
                         }
                     }
                 } else {
-                    if (isEmployeur && !isIndependant) {
-                        if (hasAC) {
-                            rubrique = EMPLOYEUR_AVEC_AC;
+                    if (hasAC) {
+                        if (GenreDestinataire.INDEPENDANT.equals(destinataire)) {
+                            rubrique = AVEC_AC_INDEPENDANT;
+                        } else if (GenreDestinataire.EMPLOYEUR.equals(destinataire)) {
+                            rubrique = AVEC_AC_EMPLOYEUR;
                         } else {
-                            rubrique = EMPLOYEUR_SANS_AC;
+                            rubrique = AVEC_AC_ASSURE;
                         }
                     } else {
-                        if (hasAC) {
-                            if (isIndependant) {
-                                rubrique = AVEC_AC_INDEPENDANT;
-                            } else {
-                                rubrique = AVEC_AC_ASSURE;
-                            }
+                        if (GenreDestinataire.INDEPENDANT.equals(destinataire)) {
+                            rubrique = SANS_AC_INDEPENDANT;
+                        } else if (GenreDestinataire.EMPLOYEUR.equals(destinataire)) {
+                            rubrique = SANS_AC_EMPLOYEUR;
                         } else {
-                            if (isIndependant) {
-                                rubrique = SANS_AC_INDEPENDANT;
-                            } else {
-                                rubrique = SANS_AC_ASSURE;
-                            }
+                            rubrique = SANS_AC_ASSURE;
                         }
                     }
                 }
@@ -2908,9 +2863,9 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
                 .getAPIFor(APIReferenceRubrique.class);
 
         if (isLotMaternite) {
-            EMPLOYEUR_AVEC_AC = referenceRubrique
+            AVEC_AC_EMPLOYEUR = referenceRubrique
                     .getRubriqueByCodeReference(APIReferenceRubrique.MATERNITE_EMPLOYEUR_AVEC_AC);
-            EMPLOYEUR_SANS_AC = referenceRubrique
+            SANS_AC_EMPLOYEUR = referenceRubrique
                     .getRubriqueByCodeReference(APIReferenceRubrique.MATERNITE_EMPLOYEUR_SANS_AC);
 
             AVEC_AC_ASSURE = referenceRubrique
@@ -3000,9 +2955,9 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
             ACM_RESTITUTION = referenceRubrique
                     .getRubriqueByCodeReference(APIReferenceRubrique.MATERNITE_ACM_RESTITUTION);
         } else {
-            EMPLOYEUR_AVEC_AC = referenceRubrique
+            AVEC_AC_EMPLOYEUR = referenceRubrique
                     .getRubriqueByCodeReference(APIReferenceRubrique.APG_EMPLOYEUR_AVEC_AC);
-            EMPLOYEUR_SANS_AC = referenceRubrique
+            SANS_AC_EMPLOYEUR = referenceRubrique
                     .getRubriqueByCodeReference(APIReferenceRubrique.APG_EMPLOYEUR_SANS_AC);
 
             AVEC_AC_ASSURE = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.APG_AVEC_AC_ASSURE);
@@ -3181,5 +3136,4 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
     public void setIdLot(final String string) {
         idLot = string;
     }
-
 }
