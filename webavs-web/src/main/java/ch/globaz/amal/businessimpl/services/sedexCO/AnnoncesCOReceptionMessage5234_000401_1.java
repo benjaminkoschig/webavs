@@ -198,6 +198,8 @@ public class AnnoncesCOReceptionMessage5234_000401_1 extends AnnoncesCODefault {
                     .getCertificateOfLossQuarterlyStatement().getStatementStartDate()));
             annonceSedexCO.setPeriodeFin(AMSedexRPUtil.getDateXMLToString(message.getContent()
                     .getCertificateOfLossQuarterlyStatement().getStatementEndDate()));
+            annonceSedexCO.setStatus(IAMCodeSysteme.AMStatutAnnonceSedex.ENVOYE.getValue());
+            annonceSedexCO.setDateAnnonce(Date.now().getSwissValue());
             JadePersistenceManager.add(annonceSedexCO);
             checkJadeThreadErrors();
 
@@ -205,8 +207,8 @@ public class AnnoncesCOReceptionMessage5234_000401_1 extends AnnoncesCODefault {
         } catch (Exception ex) {
             JadeThread.logError(
                     "AnnoncesCOReceptionMessage5234_000401_1.saveAnnonce()",
-                    "Erreur pendant la sauvegarde de l'annonce ! (Msg id : " + header.getMessageId() + ") => "
-                            + ex.getMessage());
+                    "Erreur pendant la sauvegarde de l'annonce du décompte trimestriel ! (Msg id : "
+                            + header.getMessageId() + ") => " + ex.getMessage());
         }
     }
 
@@ -384,17 +386,10 @@ public class AnnoncesCOReceptionMessage5234_000401_1 extends AnnoncesCODefault {
                     }
 
                     FamilleContribuable personneAssuree = searchPersonne(nssAssureFormate, null);
-                    // StringBuilder messagePersonneAssuree = ligneDecompte.getMessage() == null ? new StringBuilder()
-                    // : new StringBuilder(ligneDecompte.getMessage());
-                    // if (personneAssuree == null) {
-                    // messagePersonneAssuree.append("Personne assurée " + nssAssureFormate + " non trouvée, ");
-                    // ligneDecompte.setMessage(messagePersonneAssuree.toString());
-                    // }
 
                     cptPersonne++;
                     listLigneDecompteTrimestriel.add(ligneDecompte);
                 }
-                // creerAnnonce(familleContribuable.getSimpleFamille(), decompteTrim.getDebtorWithClaim(), message);
             } else if (decompteTrim.getDebtorWithClaim().getDebtor().getDebtorJP() != null) {
                 JadeThread.logWarn(this.getClass().getName(),
                         "Les personnes morales ne sont pas prises en charge par l'application");

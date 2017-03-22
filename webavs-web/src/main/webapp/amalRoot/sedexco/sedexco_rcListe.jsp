@@ -123,7 +123,7 @@ $(document).ready(function() {
 			libelleImg = "";
 			%>				
 			<TD class="mtd" nowrap>
-				<%=line.getComplexAnnonceSedexCO().getSimpleFamille().getNomPrenom() %>&nbsp;
+<%-- 				<%=line.getComplexAnnonceSedexCO().getSimpleFamille().getNomPrenom() %>&nbsp; --%>
 			</TD>
 			<TD class="mtd" nowrap align="center">		
 				<%if (!line.getComplexAnnonceSedexCO().getSimpleAnnonceSedexCO().getPeriodeDebut().isEmpty()) { %>	

@@ -5,6 +5,7 @@ package ch.globaz.amal.business.services.sedexCO;
 
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.sedex.JadeSedexMessageNotHandledException;
 import globaz.jade.sedex.message.SedexMessage;
 import globaz.jade.service.provider.application.JadeApplicationService;
 
@@ -20,7 +21,11 @@ public interface AnnoncesCOService extends JadeApplicationService {
      * Appelé par le gestionnaire SEDEX (JadeSedexService.xml)
      * 
      * @param idMessageSedex
+     * @throws JadeSedexMessageNotHandledException
      * 
      */
-    public void importMessages(SedexMessage message) throws JadeApplicationException, JadePersistenceException;
+    public void importMessages(SedexMessage message) throws JadeApplicationException, JadePersistenceException,
+            JadeSedexMessageNotHandledException;
+
+    public String printListComparaisonFull(String annee) throws Exception;
 }

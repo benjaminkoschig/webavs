@@ -36,11 +36,13 @@
 	String SEDEXCOAction = IAMActions.ACTION_CAISSEMALADIE+".launchSEDEXCOProcess";
 // 	String annonceAction = IAMActions.ACTION_CAISSEMALADIE+".launchAnnonceProcess";
 	String simulationRPAction = IAMActions.ACTION_CAISSEMALADIE+".launchSimulationProcess";
+	String simulationCOAction = IAMActions.ACTION_CAISSEMALADIE+".launchSimulationCOProcess";
 	
 	boolean hasRightOnSEDEX = objSession.hasRight(SEDEXRPAction, FWSecureConstants.ADD);
 	boolean hasRightOnSEDEXCO = objSession.hasRight(SEDEXCOAction, FWSecureConstants.ADD);
 // 	boolean hasRightOnAnnonce = objSession.hasRight(annonceAction, FWSecureConstants.ADD);
 	boolean hasRightOnSimulationRP = objSession.hasRight(simulationRPAction, FWSecureConstants.ADD);
+	boolean hasRightOnSimulationCO = objSession.hasRight(simulationCOAction, FWSecureConstants.ADD);
 %>
 
 <%-- tpl:insert attribute="zoneScripts" --%>
@@ -341,23 +343,15 @@ function manageSEDEXCOButtonEvent(currentIdButton, type){
  * Gestion des événements sur les boutons Simulation CO
  */
 function manageSimulationCOButtonEvent(currentIdButton, type){
-	alert("manageSimulationCOButtonEvent not implemented yet");
-// 	s_currentButtonId = currentIdButton;
-// 	s_typeJob = type;
-// 	$("#dialogSimuAnnonceCO").dialog( "option", "height", 450 );
-// 	$("#dialogSimuAnnonceCO").dialog( "option", "minHeight", 450 );
-// 	$(".trSedexCO").show();
-// 	$(".trSedexRP").hide();
-// 	$(".trSelectionYear").hide();
-// 	//Affichage de la case à cocher pour simuler les message
-// 	$("#msgSelectionNone").show();
-// 	setOpacityElement("msgSelectionNone",1.0);
-// 	setDisabledElement("msgSelectionNone", false);
-// 	$("#msgSelectionNone").attr("checked", false);
-// 	$(".msgTypeSelectionSedexRP").attr("disabled",true);
-// 	//Fin affichage de la case à cocher pour simuler les message
+	s_currentButtonId = currentIdButton;
+	s_typeJob = type;
+	$("#dialogSimuAnnonceCO").dialog( "option", "height", 250 );
+	$("#dialogSimuAnnonceCO").dialog( "option", "minHeight", 250 );
+	$(".msgTypeSelectionSedexCO").attr("disabled",false);
+	$("#msgSelectionListOfGuaranteedAssumptions").click();
 	
-// 	$("#dialogSimuAnnonceCO").dialog('open');	
+	
+	$("#dialogSimuAnnonceCO").dialog('open');	
 }
 
 function processSEDEXRP(currentIdButton) {
@@ -689,9 +683,71 @@ function processSimulationRP(currentIdButton) {
 }
 
 function processSimulationCO(currentIdButton) {
-	alert("processSimulationCO not implemented yet");
-}
+	var s_actionSimuler = '<%=simulationCOAction%>';
+	var s_idButtonSimulerPrincipale = 'buttonSimulationCOGroupe_';
+	var s_idButtonSimulerEnfant = 'buttonSimulationCOEnfant_';
 
+	if(currentIdButton.substring(0,s_idButtonSimulerEnfant.length)==s_idButtonSimulerEnfant){
+		// Proceed with deletion			
+		var s_idGroupe=currentIdButton.split('_')[1];
+		var s_idTiersCaisse=currentIdButton.split('_')[2];
+	    parent.document.forms[0].elements('userAction').value = s_actionSimuler;
+	    parent.document.forms[0].elements('selectedCaisse').value = s_idTiersCaisse;
+		parent.document.forms[0].onsubmit = '';
+		parent.document.forms[0].target = '';
+		parent.document.forms[0].submit();
+	} else if(currentIdButton.substring(0,s_idButtonSimulerPrincipale.length)==s_idButtonSimulerPrincipale){
+		var s_idGroupe=currentIdButton.split('_')[1];
+		// Get the status of the main checkbox
+		// if checked, print the whole job
+		// if not, print the selected childrens
+		var s_idRelatedCheckBox='checkboxGroupe_'+s_idGroupe+'_';
+	
+		if($('#'+s_idRelatedCheckBox).prop('checked') && s_idGroupe!= '0000' && s_idGroupe !='XXXX'){
+			    parent.document.forms[0].elements('userAction').value = s_actionSimuler;
+			    parent.document.forms[0].elements('selectedGroupe').value = s_idGroupe;
+				parent.document.forms[0].onsubmit = '';
+				parent.document.forms[0].target = '';
+				parent.document.forms[0].submit();
+		} else {
+			var s_allCaissesId = '';
+			var i_nbLines = 0;
+			// check the children status (checked) and get the ids
+			$('input:checkbox').each(function (iIndex) {
+				var s_currentCheckBoxId=this.id;
+				var s_s_checkBoxCaisse = 'checkboxCaisse_'+s_idGroupe+'_';
+				if(s_currentCheckBoxId.substring(0,s_s_checkBoxCaisse.length)==s_s_checkBoxCaisse){
+					i_nbLines++;
+					if($('#'+s_currentCheckBoxId).prop('checked')){
+						var s_caisseId = s_currentCheckBoxId.split('_')[2];
+						if(s_allCaissesId.length>0){
+							s_allCaissesId+=';';	
+						}
+						s_allCaissesId+=s_caisseId;
+					}
+				}
+			});
+			if(s_allCaissesId.length>0){
+				if(i_nbLines == s_allCaissesId.split(';').length && s_idGroupe!= '0000' && s_idGroupe !='XXXX'){
+					    parent.document.forms[0].elements('userAction').value = s_actionSimuler;
+					    parent.document.forms[0].elements('selectedGroupe').value = s_idGroupe;
+						parent.document.forms[0].onsubmit = '';
+						parent.document.forms[0].target = '';
+						parent.document.forms[0].submit();
+				}else{
+					// Sélection d'éléments
+					    parent.document.forms[0].elements('userAction').value = s_actionSimuler;
+					    parent.document.forms[0].elements('selectedCaisse').value = s_allCaissesId;
+						parent.document.forms[0].onsubmit = '';
+						parent.document.forms[0].target = '';
+						parent.document.forms[0].submit();
+				}
+			}else{
+				alert('Pas d\'élément sélectionné, aucune action ne sera générée');
+			}
+		}
+	}
+}
 /**
  * Toggle hide/show children lines
  */

@@ -4,8 +4,6 @@
 package ch.globaz.amal.business.models.annoncesedexco;
 
 import globaz.jade.persistence.model.JadeComplexModel;
-import ch.globaz.amal.business.models.contribuable.SimpleContribuable;
-import ch.globaz.amal.business.models.famille.SimpleFamille;
 import ch.globaz.pyxis.business.model.AdministrationComplexModel;
 import ch.globaz.pyxis.business.model.CompositionTiersSimpleModel;
 
@@ -20,8 +18,10 @@ public class ComplexAnnonceSedexCO extends JadeComplexModel {
     private AdministrationComplexModel caisseMaladie = null;
     private CompositionTiersSimpleModel compositionTiersSimpleModel = null;
     private SimpleAnnonceSedexCO simpleAnnonceSedexCO = null;
-    private SimpleContribuable simpleContribuable = null;
-    private SimpleFamille simpleFamille = null;
+
+    // private SimpleAnnonceSedexCOPersonne simpleAnnonceSedexCOPersonne = null;
+    // private SimpleContribuable simpleContribuable = null;
+    // private SimpleFamille simpleFamille = null;
 
     /**
      * Default constructor
@@ -29,7 +29,8 @@ public class ComplexAnnonceSedexCO extends JadeComplexModel {
     public ComplexAnnonceSedexCO() {
         super();
         simpleAnnonceSedexCO = new SimpleAnnonceSedexCO();
-        simpleFamille = new SimpleFamille();
+        // simpleAnnonceSedexCOPersonne = new SimpleAnnonceSedexCOPersonne();
+        // simpleFamille = new SimpleFamille();
         caisseMaladie = new AdministrationComplexModel();
         compositionTiersSimpleModel = new CompositionTiersSimpleModel();
         administrationComplexModelGroupes = new AdministrationComplexModel();
@@ -71,13 +72,6 @@ public class ComplexAnnonceSedexCO extends JadeComplexModel {
      */
     public SimpleAnnonceSedexCO getSimpleAnnonceSedexCO() {
         return simpleAnnonceSedexCO;
-    }
-
-    /**
-     * @return the simpleFamille
-     */
-    public SimpleFamille getSimpleFamille() {
-        return simpleFamille;
     }
 
     /*
@@ -132,14 +126,6 @@ public class ComplexAnnonceSedexCO extends JadeComplexModel {
         this.simpleAnnonceSedexCO = simpleAnnonceSedexCO;
     }
 
-    /**
-     * @param simpleFamille
-     *            the simpleFamille to set
-     */
-    public void setSimpleFamille(SimpleFamille simpleFamille) {
-        this.simpleFamille = simpleFamille;
-    }
-
     /*
      * (non-Javadoc)
      * 
@@ -150,11 +136,4 @@ public class ComplexAnnonceSedexCO extends JadeComplexModel {
         simpleAnnonceSedexCO.setSpy(spy);
     }
 
-    public SimpleContribuable getSimpleContribuable() {
-        return simpleContribuable;
-    }
-
-    public void setSimpleContribuable(SimpleContribuable simpleContribuable) {
-        this.simpleContribuable = simpleContribuable;
-    }
 }

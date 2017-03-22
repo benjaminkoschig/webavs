@@ -8,9 +8,8 @@ import globaz.jade.persistence.model.JadeSimpleModel;
 public class SimpleAnnonceSedexCO extends JadeSimpleModel {
     private static final long serialVersionUID = 1L;
     private String idAnnonceSedexCO = null;
-    private String idContribuable = null;
     private String idTiersCM = null;
-    private String idFamille = null;
+    private String idMembre = null;
     private String dateAnnonce = null;
     private String messageType = null;
     private String messageSubType = null;
@@ -27,6 +26,7 @@ public class SimpleAnnonceSedexCO extends JadeSimpleModel {
     private String totalCreance = null;
     private String frais = null;
     private String interets = null;
+    private String xmlId = null;
 
     /*
      * (non-Javadoc)
@@ -64,14 +64,6 @@ public class SimpleAnnonceSedexCO extends JadeSimpleModel {
         this.idAnnonceSedexCO = idAnnonceSedexCO;
     }
 
-    public String getIdContribuable() {
-        return idContribuable;
-    }
-
-    public void setIdContribuable(String idContribuable) {
-        this.idContribuable = idContribuable;
-    }
-
     public String getIdTiersCM() {
         return idTiersCM;
     }
@@ -80,12 +72,12 @@ public class SimpleAnnonceSedexCO extends JadeSimpleModel {
         this.idTiersCM = idTiersCM;
     }
 
-    public String getIdFamille() {
-        return idFamille;
+    public String getIdMembre() {
+        return idMembre;
     }
 
-    public void setIdFamille(String idFamille) {
-        this.idFamille = idFamille;
+    public void setIdMembre(String idMembre) {
+        this.idMembre = idMembre;
     }
 
     public String getMessageEmetteur() {
@@ -206,5 +198,13 @@ public class SimpleAnnonceSedexCO extends JadeSimpleModel {
 
     public void setInterets(String interets) {
         this.interets = interets;
+    }
+
+    public String getXmlId() {
+        return xmlId;
+    }
+
+    public void setXmlId(String xmlId) {
+        this.xmlId = xmlId;
     }
 }

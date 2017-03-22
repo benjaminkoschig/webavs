@@ -173,13 +173,16 @@ function getParametersForCSV() {
 	return params;
 }
 
+function getAnneeListCompare() {
+	return $("#anneeListCompare").val();
+}
 </script>
 
 <%-- /tpl:insert --%>
 
 <%@ include file="/theme/find/bodyStart.jspf" %>
 	<%-- tpl:insert attribute="zoneTitle" --%>
-		Gestion des annonces SEDEX RP
+		Gestion des annonces SEDEX CO
 	<%-- /tpl:insert --%>
 <%@ include file="/theme/find/bodyStart2.jspf" %>
 				<%-- tpl:insert attribute="zoneMain" --%>
@@ -260,7 +263,7 @@ function getParametersForCSV() {
 						data-g-calendar="mandatory:false" />
 					</TD>
 					<TD>&nbsp;</TD>
-					<TD>&nbsp;</TD>
+					<TD>Année <input type="text" name="anneeListCompare" id="anneeListCompare" maxlength="4" size="4" value="2016"/></TD>
 					<td>&nbsp;</td>
 				</TR>
 				<TR style="height:16px">
@@ -286,12 +289,13 @@ function getParametersForCSV() {
 					<TD>&nbsp;
 					</TD>
 					<TD>
-						<a data-g-download="docType:csv,
-							dynParametres:getParametersForCSV,
+						<a data-g-download="docType:xls,							
 	                    	serviceClassName:ch.globaz.amal.business.services.sedexCO.AnnoncesCOService,
-	                    	serviceMethodName:exportListAnnonces,
-	                    	docName:listeAnnonces,
-	                    	displayOnlyImage:false">Créer liste</a> 
+	                    	serviceMethodName:printListComparaisonFull,
+	                    	docName:listeComparaison,
+	                    	displayOnlyImage:false,
+	                    	dynParametres:getAnneeListCompare,
+	                    	byPassExtentionXml:true">Créer liste</a> 
 					</TD>
 					<td>&nbsp;</td>
 				</TR>				

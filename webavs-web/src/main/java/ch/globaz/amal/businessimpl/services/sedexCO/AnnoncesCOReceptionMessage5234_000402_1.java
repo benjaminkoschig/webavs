@@ -29,6 +29,7 @@ import ch.gdk_cds.xmlns.da_64a_common._1.CertificateOfLossArrivalType;
 import ch.gdk_cds.xmlns.da_64a_common._1.CertificateOfLossPaymentType;
 import ch.gdk_cds.xmlns.da_64a_common._1.DebtorNPType;
 import ch.gdk_cds.xmlns.da_64a_common._1.PaymentType;
+import ch.globaz.amal.business.constantes.IAMCodeSysteme;
 import ch.globaz.amal.business.models.annoncesedexco.SimpleAnnonceSedexCO;
 import ch.globaz.amal.business.models.annoncesedexco.SimpleAnnonceSedexCOXML;
 import ch.globaz.amal.businessimpl.services.sedexCO.listes.SimpleOutputList_DecomptePaiement_5234_402_1;
@@ -130,15 +131,16 @@ public class AnnoncesCOReceptionMessage5234_000402_1 extends AnnoncesCOReception
                     .getCertificateOfLossFinalStatement().getStatementStartDate()));
             annonceSedexCO.setPeriodeFin(AMSedexRPUtil.getDateXMLToString(message.getContent()
                     .getCertificateOfLossFinalStatement().getStatementEndDate()));
+            annonceSedexCO.setStatus(IAMCodeSysteme.AMStatutAnnonceSedex.ENVOYE.getValue());
+            annonceSedexCO.setDateAnnonce(Date.now().getSwissValue());
             JadePersistenceManager.add(annonceSedexCO);
             checkJadeThreadErrors();
 
             saveXml(addClasses, message);
         } catch (Exception ex) {
-            JadeThread.logError(
-                    "AnnoncesCOReceptionMessage5234_000401_1.saveAnnonce()",
-                    "Erreur pendant la sauvegarde de l'annonce ! (Msg id : " + header.getMessageId() + ") => "
-                            + ex.getMessage());
+            JadeThread.logError("AnnoncesCOReceptionMessage5234_000402_1.saveAnnonce()",
+                    "Erreur pendant la sauvegarde de l'annonce du décompte final! (Msg id : " + header.getMessageId()
+                            + ") => " + ex.getMessage());
         }
     }
 

@@ -11,8 +11,6 @@ import ch.globaz.amal.business.exceptions.models.famille.FamilleException;
 import ch.globaz.amal.business.models.annoncesedexco.ComplexAnnonceSedexCO;
 import ch.globaz.amal.business.models.annoncesedexco.ComplexAnnonceSedexCOSearch;
 import ch.globaz.amal.business.models.annoncesedexco.SimpleAnnonceSedexCO;
-import ch.globaz.amal.business.models.contribuable.SimpleContribuable;
-import ch.globaz.amal.business.models.famille.SimpleFamille;
 import ch.globaz.amal.business.services.models.annoncesedexco.ComplexAnnonceSedexCOService;
 import ch.globaz.pyxis.business.model.AdministrationComplexModel;
 import ch.globaz.pyxis.business.service.TIBusinessServiceLocator;
@@ -52,19 +50,22 @@ public class ComplexAnnonceSedexCOServiceImpl implements ComplexAnnonceSedexCOSe
         simpleAnnonceSedexCO.setId(idAnnonce);
         simpleAnnonceSedexCO = (SimpleAnnonceSedexCO) JadePersistenceManager.read(simpleAnnonceSedexCO);
         toReturn.setSimpleAnnonceSedexCO(simpleAnnonceSedexCO);
-        // Read simple famille
-        SimpleFamille currentFamille = new SimpleFamille();
-        if (JadeStringUtil.isEmpty(simpleAnnonceSedexCO.getIdFamille())) {
-            currentFamille.setId(simpleAnnonceSedexCO.getIdFamille());
-            currentFamille = (SimpleFamille) JadePersistenceManager.read(currentFamille);
-        }
-        toReturn.setSimpleFamille(currentFamille);
-        // Read contribuable
-        SimpleContribuable currentContribuable = new SimpleContribuable();
-        if (!JadeStringUtil.isEmpty(simpleAnnonceSedexCO.getIdContribuable())) {
-            currentContribuable = (SimpleContribuable) JadePersistenceManager.read(currentContribuable);
-        }
-        toReturn.setSimpleContribuable(currentContribuable);
+
+        // SimpleAnnonceSedexCOPersonne simpleAnnonceSedexCOPersonne = new SimpleAnnonceSedexCOPersonne();
+        // simpleAnnonceSedexCOPersonne.se
+        // // Read simple famille
+        // SimpleFamille currentFamille = new SimpleFamille();
+        // if (JadeStringUtil.isEmpty(simpleAnnonceSedexCO.getIdFamille())) {
+        // currentFamille.setId(simpleAnnonceSedexCO.getIdFamille());
+        // currentFamille = (SimpleFamille) JadePersistenceManager.read(currentFamille);
+        // }
+        // toReturn.setSimpleFamille(currentFamille);
+        // // Read contribuable
+        // SimpleContribuable currentContribuable = new SimpleContribuable();
+        // if (!JadeStringUtil.isEmpty(simpleAnnonceSedexCO.getIdContribuable())) {
+        // currentContribuable = (SimpleContribuable) JadePersistenceManager.read(currentContribuable);
+        // }
+        // toReturn.setSimpleContribuable(currentContribuable);
         // read administration
         AdministrationComplexModel caisse = new AdministrationComplexModel();
         if (!JadeStringUtil.isEmpty(simpleAnnonceSedexCO.getIdTiersCM())) {

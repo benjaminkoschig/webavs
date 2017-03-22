@@ -5,16 +5,16 @@
 		<table name="MASDXCO" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
 		<fields>
 			<primary-key name="idAnnonceSedexCO" column="ID" comment="clé primaire"/>
-			<field name="messageId" column="MSGID" type="STRING" dataType="VARCHAR(40)" mandatory="false" comment="Message ID"/>
-			<field name="businessProcessId" column="BPRID" type="STRING" dataType="VARCHAR(40)" mandatory="false" comment="Business process id"/>			
-			<field name="messageType" column="MESSAGE_TYPE" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="TYPE_MESSAGE_SEDEX_RIP"/>
-			<field name="messageSubType" column="MESSAGE_SUBTYPE" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="SUBTYPE_MESSAGE_SEDEX"/>
-			<field name="messageEmetteur" column="EMETTEUR" type="STRING" dataType="VARCHAR(20)" mandatory="false" comment="ID_SEDEX_EMETTEUR"/>
-			<field name="messageRecepteur" column="RECEPTEUR" type="STRING" dataType="VARCHAR(20)" mandatory="false" comment="ID_SEDEX_RECEPTEUR"/>
-			<field name="status" column="CSSTAT" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="STATUS_MESSAGE"/>
+			<field name="messageId" column="MSGID" type="STRING" dataType="VARCHAR(40)" mandatory="true" comment="Message ID"/>
+			<field name="businessProcessId" column="BPRID" type="STRING" dataType="VARCHAR(40)" mandatory="true" comment="Business process id"/>
+			<field name="xmlId" column="XMLID" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="true" comment="Id XML"/>			
+			<field name="messageType" column="MESSAGE_TYPE" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="true" comment="TYPE_MESSAGE_SEDEX_RIP"/>
+			<field name="messageSubType" column="MESSAGE_SUBTYPE" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="true" comment="SUBTYPE_MESSAGE_SEDEX"/>
+			<field name="messageEmetteur" column="EMETTEUR" type="STRING" dataType="VARCHAR(20)" mandatory="true" comment="ID_SEDEX_EMETTEUR"/>
+			<field name="messageRecepteur" column="RECEPTEUR" type="STRING" dataType="VARCHAR(20)" mandatory="true" comment="ID_SEDEX_RECEPTEUR"/>
+			<field name="status" column="CSSTAT" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="true" comment="STATUS_MESSAGE"/>
 			<field name="idTiersCM" column="IDTIERSCM" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="true" comment="ID_TIERS_CAISSE_MALADIE"/>
-			<field name="idContribuable" column="IDCONT" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="true" comment="ID_CONTRIBUABLE_DOSSIER"/>
-			<field name="idFamille" column="IDFAMI" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="true" comment="ID_MEMBRE_FAMILLE"/>
+			<field name="idMembre" column="IDMEMBRE" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="true" comment="ID_MEMBRE"/>
 			<field name="dateAnnonce" column="DATE_ANNONCE" type="DATE" mandatory="false" comment="DATE_ANNONCE"/>
 			<field name="periodeDebut" column="PERIODE_DEBUT" type="DATE" mandatory="false" comment="PERIODE_DEBUT"/>
 			<field name="periodeFin" column="PERIODE_FIN" type="DATE" mandatory="false" comment="PERIODE_FIN"/>

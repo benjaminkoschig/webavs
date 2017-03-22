@@ -14,6 +14,7 @@ import globaz.jade.jaxb.JAXBValidationError;
 import globaz.jade.jaxb.JAXBValidationException;
 import globaz.jade.jaxb.JAXBValidationWarning;
 import globaz.jade.log.JadeLogger;
+import globaz.jade.persistence.JadePersistenceManager;
 import globaz.jade.persistence.model.JadeAbstractModel;
 import globaz.jade.persistence.model.JadeAbstractSearchModel;
 import globaz.jade.sedex.JadeSedexDirectoryInitializationException;
@@ -23,7 +24,9 @@ import globaz.jade.sedex.message.SimpleSedexMessage;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import globaz.jade.smtp.JadeSmtpClient;
 import globaz.pyxis.constantes.IConstantes;
+import java.io.File;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.text.DateFormat;
@@ -63,6 +66,8 @@ import ch.globaz.amal.business.exceptions.models.annoncesedex.AnnonceSedexExcept
 import ch.globaz.amal.business.exceptions.models.annoncesedexco.AnnonceSedexCOException;
 import ch.globaz.amal.business.exceptions.models.detailFamille.DetailFamilleException;
 import ch.globaz.amal.business.models.annoncesedexco.SimpleAnnonceSedexCO;
+import ch.globaz.amal.business.models.annoncesedexco.SimpleAnnonceSedexCOPersonne;
+import ch.globaz.amal.business.models.annoncesedexco.SimpleAnnonceSedexCOXML;
 import ch.globaz.amal.business.models.caissemaladie.CaisseMaladie;
 import ch.globaz.amal.business.models.caissemaladie.CaisseMaladieSearch;
 import ch.globaz.amal.business.models.controleurEnvoi.SimpleControleurJob;
@@ -73,15 +78,22 @@ import ch.globaz.amal.business.models.simplepersonneanepaspoursuivre.SimplePerso
 import ch.globaz.amal.business.models.simplepersonneanepaspoursuivre.SimplePersonneANePasPoursuivreSearch;
 import ch.globaz.amal.business.services.AmalServiceLocator;
 import ch.globaz.amal.businessimpl.services.AmalImplServiceLocator;
+import ch.globaz.amal.businessimpl.services.sedexCO.listes.Simulation_5222_201_1;
 import ch.globaz.amal.businessimpl.services.sedexRP.utils.AMSedexRPUtil;
 import ch.globaz.amal.businessimpl.utils.AMGestionTiers;
+import ch.globaz.common.domaine.Date;
+import ch.globaz.common.listoutput.SimpleOutputListBuilderJade;
 import ch.globaz.pyxis.business.model.AdministrationComplexModel;
 import ch.globaz.pyxis.business.model.AdresseTiersDetail;
 import ch.globaz.pyxis.business.model.PaysSearchSimpleModel;
 import ch.globaz.pyxis.business.model.PaysSimpleModel;
 import ch.globaz.pyxis.business.model.TiersSimpleModel;
 import ch.globaz.pyxis.business.service.TIBusinessServiceLocator;
-import ch.horizon.jaspe.util.JACalendar;
+import ch.globaz.simpleoutputlist.annotation.style.Align;
+import ch.globaz.simpleoutputlist.configuration.Configuration;
+import ch.globaz.simpleoutputlist.core.Details;
+import ch.globaz.simpleoutputlist.outimpl.Configurations;
+import ch.globaz.simpleoutputlist.outimpl.SimpleOutputListBuilder;
 
 public class AnnoncesCOEnvoiMessage5222_000201_1 extends AMALabstractProcess {
     private static final String ANNEE_A_TRAITER = "2016";
@@ -94,6 +106,7 @@ public class AnnoncesCOEnvoiMessage5222_000201_1 extends AMALabstractProcess {
     static BSession session = null;
     private ObjectFactory objectFactory = null;
     private List<String> errors = null;
+    private Boolean simulation = false;
 
     public AnnoncesCOEnvoiMessage5222_000201_1() {
         if (objectFactory == null) {
@@ -115,66 +128,100 @@ public class AnnoncesCOEnvoiMessage5222_000201_1 extends AMALabstractProcess {
     protected void process() {
 
         errors = new ArrayList<String>();
+        File fichierSimulation = null;
         try {
-
-            // AnneeToDelete doit provenir d'un écran
-            String anneeToDelete = ANNEE_A_TRAITER;
 
             Map<String, List<FamilleContribuable>> mapSubsideParAssurance = getPersonnesToSend();
 
-            for (Entry<String, List<FamilleContribuable>> entry : mapSubsideParAssurance.entrySet()) {
-                int incr = 1;
-                Message message = objectFactory.createMessage();
-                String idCaisseMaladie = entry.getKey();
-                try {
-                    ArrayList<SimpleSedexMessage> messagesToSend = new ArrayList<SimpleSedexMessage>();
-                    String recipientId = AMSedexRPUtil.getSedexIdFromIdTiers(idCaisseMaladie);
+            if (simulation) {
+                List<Simulation_5222_201_1> listSimulationsFiles = new ArrayList<Simulation_5222_201_1>();
 
-                    dropPersonneANePasPoursuivre(anneeToDelete, idCaisseMaladie);
+                for (Entry<String, List<FamilleContribuable>> entry : mapSubsideParAssurance.entrySet()) {
+                    String idCaisseMaladie = entry.getKey();
 
-                    HeaderType header = generateHeader(recipientId);
-                    ContentType content = generateContent(entry);
-                    message.setHeader(header);
-                    message.setContent(content);
-                    message.setMinorVersion(VERSION);
+                    CaisseMaladie caisseMaladie = new CaisseMaladie();
+                    try {
+                        caisseMaladie = AmalServiceLocator.getCaisseMaladieService().read(idCaisseMaladie);
 
-                    // TODO Validation ne fonctionne pas ????
-                    Class<?>[] classes = new Class<?>[] {};
-                    String messageFile = JAXBServices.getInstance().marshal(message, false, false, classes);
+                        List<FamilleContribuable> famillesContribuables = entry.getValue();
 
-                    // Ajout du message dans la liste de messages à envoyer
-                    SimpleSedexMessage simpleSedexMessage = new SimpleSedexMessage();
-                    simpleSedexMessage.fileLocation = messageFile;
-                    simpleSedexMessage.increment = JadeStringUtil.fillWithZeroes(String.valueOf(incr), 5);
-                    messagesToSend.add(simpleSedexMessage);
+                        for (FamilleContribuable familleContribuable : famillesContribuables) {
+                            Simulation_5222_201_1 simulationFile = new Simulation_5222_201_1();
+                            simulationFile.setNomCaisse(caisseMaladie.getNomCaisse());
 
-                    // Préparer l'enveloppe sedex (ech-0090)
-                    String envelopeFile = generateEnveloppe(recipientId);
-
-                    JadeSedexService.getInstance().sendGroupedMessage(envelopeFile, messagesToSend);
-
-                    createSimpleAnnonceSedexCOInDB(header, idCaisseMaladie);
-
-                    incr++;
-                } catch (AnnonceSedexException ase) {
-                    errors.add("Erreur SEDEX " + ase.getMessage());
-                    ase.printStackTrace();
-                } catch (JAXBValidationException e) {
-                    String events = "";
-                    if (e.getEvents() != null && !e.getEvents().isEmpty()) {
-                        for (ValidationEvent event : e.getEvents()) {
-                            errors.add("Erreur validation " + event.getMessage());
+                            simulationFile.setNssPersonne(familleContribuable.getPersonneEtendue().getPersonneEtendue()
+                                    .getNumAvsActuel());
+                            simulationFile.setNomPrenomPersonne(familleContribuable.getPersonneEtendue().getTiers()
+                                    .getDesignation1()
+                                    + " " + familleContribuable.getPersonneEtendue().getTiers().getDesignation2());
+                            simulationFile.setAnnee(familleContribuable.getSimpleDetailFamille().getAnneeHistorique());
+                            listSimulationsFiles.add(simulationFile);
                         }
+                    } catch (Exception e) {
+                        errors.add("Erreur lors de la création du fichier de simulation : " + e.getMessage());
+                        JadeThread.logError("Erreur lors de la création du fichier de simulation", e.getMessage());
                     }
-                    JadeThread.logError("Erreur de validation du message => " + events, e.getMessage());
-                    e.printStackTrace();
-                } catch (JadeSedexMessageNotSentException e) {
-                    errors.add("Erreur lors de l'envoi : " + e.getMessage());
-                    JadeThread.logError("Erreur lors de l'envoi du message", e.getMessage());
-                    e.printStackTrace();
-                } catch (Exception e) {
-                    errors.add("Erreur technique (" + idCaisseMaladie + ") " + e.getMessage());
-                    e.printStackTrace();
+                }
+
+                fichierSimulation = printSimulation(listSimulationsFiles);
+            } else {
+                // AnneeToDelete doit provenir d'un écran
+                String anneeToDelete = ANNEE_A_TRAITER;
+
+                for (Entry<String, List<FamilleContribuable>> entry : mapSubsideParAssurance.entrySet()) {
+                    int incr = 1;
+                    Message message = objectFactory.createMessage();
+                    String idCaisseMaladie = entry.getKey();
+                    try {
+                        ArrayList<SimpleSedexMessage> messagesToSend = new ArrayList<SimpleSedexMessage>();
+                        String recipientId = AMSedexRPUtil.getSedexIdFromIdTiers(idCaisseMaladie);
+
+                        dropPersonneANePasPoursuivre(anneeToDelete, idCaisseMaladie);
+
+                        HeaderType header = generateHeader(recipientId);
+                        SimpleAnnonceSedexCO simpleAnnonceSedexCO = creerAnnonce(header, idCaisseMaladie);
+                        ContentType content = generateContent(entry, simpleAnnonceSedexCO);
+                        message.setHeader(header);
+                        message.setContent(content);
+                        message.setMinorVersion(VERSION);
+
+                        // TODO Validation ne fonctionne pas ????
+                        Class<?>[] classes = new Class<?>[] {};
+                        String messageFile = JAXBServices.getInstance().marshal(message, false, false, classes);
+                        saveXml(classes, message);
+
+                        // Ajout du message dans la liste de messages à envoyer
+                        SimpleSedexMessage simpleSedexMessage = new SimpleSedexMessage();
+                        simpleSedexMessage.fileLocation = messageFile;
+                        simpleSedexMessage.increment = JadeStringUtil.fillWithZeroes(String.valueOf(incr), 5);
+                        messagesToSend.add(simpleSedexMessage);
+
+                        // Préparer l'enveloppe sedex (ech-0090)
+                        String envelopeFile = generateEnveloppe(recipientId);
+
+                        JadeSedexService.getInstance().sendGroupedMessage(envelopeFile, messagesToSend);
+
+                        incr++;
+                    } catch (AnnonceSedexException ase) {
+                        errors.add("Erreur SEDEX " + ase.getMessage());
+                        ase.printStackTrace();
+                    } catch (JAXBValidationException e) {
+                        String events = "";
+                        if (e.getEvents() != null && !e.getEvents().isEmpty()) {
+                            for (ValidationEvent event : e.getEvents()) {
+                                errors.add("Erreur validation " + event.getMessage());
+                            }
+                        }
+                        JadeThread.logError("Erreur de validation du message => " + events, e.getMessage());
+                        e.printStackTrace();
+                    } catch (JadeSedexMessageNotSentException e) {
+                        errors.add("Erreur lors de l'envoi : " + e.getMessage());
+                        JadeThread.logError("Erreur lors de l'envoi du message", e.getMessage());
+                        e.printStackTrace();
+                    } catch (Exception e) {
+                        errors.add("Erreur technique (" + idCaisseMaladie + ") " + e.getMessage());
+                        e.printStackTrace();
+                    }
                 }
             }
 
@@ -183,7 +230,7 @@ public class AnnoncesCOEnvoiMessage5222_000201_1 extends AMALabstractProcess {
             JadeThread.logError("AnnoncesCOEnvoiMessage5222_000201_1.process()", e.getMessage());
             e.printStackTrace();
         } finally {
-            createMail();
+            createMail(fichierSimulation);
 
             try {
                 // ------------------------------------------------------------------------
@@ -198,7 +245,20 @@ public class AnnoncesCOEnvoiMessage5222_000201_1 extends AMALabstractProcess {
 
     }
 
-    private void createSimpleAnnonceSedexCOInDB(HeaderType header, String idTiersCM) throws JadePersistenceException,
+    private File printSimulation(List<Simulation_5222_201_1> listSimulationsFiles) {
+        Details details = new Details();
+        details.add("Reçu le", Date.now().getSwissValue());
+        details.newLigne();
+        Configuration config = Configurations.buildeDefault();
+        SimpleOutputListBuilder builder = SimpleOutputListBuilderJade.newInstance()
+                .outputNameAndAddPath("SimulationEnvoi").addList(listSimulationsFiles)
+                .addTitle("Simulation", Align.LEFT).addSubTitle("Simulation").configure(config)
+                .addHeaderDetails(details);
+
+        return builder.asXls().build();
+    }
+
+    private SimpleAnnonceSedexCO creerAnnonce(HeaderType header, String idTiersCM) throws JadePersistenceException,
             JadeApplicationServiceNotAvailableException, AnnonceSedexCOException, DetailFamilleException {
         SimpleAnnonceSedexCO simpleAnnonceSedexCO = new SimpleAnnonceSedexCO();
         simpleAnnonceSedexCO.setMessageType(header.getMessageType());
@@ -208,20 +268,35 @@ public class AnnoncesCOEnvoiMessage5222_000201_1 extends AMALabstractProcess {
         simpleAnnonceSedexCO.setBusinessProcessId(header.getBusinessProcessId());
         simpleAnnonceSedexCO.setMessageId(header.getMessageId());
         simpleAnnonceSedexCO.setStatus(IAMCodeSysteme.AMStatutAnnonceSedex.ENVOYE.getValue());
-        simpleAnnonceSedexCO.setDateAnnonce(getToday(DD_MM_YYYY));
+        simpleAnnonceSedexCO.setDateAnnonce(Date.now().getSwissValue());
         simpleAnnonceSedexCO.setIdTiersCM(idTiersCM);
-        AmalServiceLocator.getSimpleAnnonceSedexCOService().create(simpleAnnonceSedexCO);
+        simpleAnnonceSedexCO = AmalServiceLocator.getSimpleAnnonceSedexCOService().create(simpleAnnonceSedexCO);
+
+        return simpleAnnonceSedexCO;
+    }
+
+    private SimpleAnnonceSedexCOXML saveXml(Class<?>[] addClasses, Message message) throws JAXBException, SAXException,
+            IOException, JAXBValidationError, JAXBValidationWarning, JadePersistenceException {
+        StringWriter sw = new StringWriter();
+        JAXBServices.getInstance().marshal(message, sw, false, true, addClasses);
+        SimpleAnnonceSedexCOXML annonceSedexCOXML = new SimpleAnnonceSedexCOXML();
+        annonceSedexCOXML.setMessageId(message.getHeader().getMessageId());
+        annonceSedexCOXML.setXml(sw.toString());
+        JadePersistenceManager.add(annonceSedexCOXML);
+        return annonceSedexCOXML;
     }
 
     /**
      * Création du mail à envoyer à l'utilisateur
+     * 
+     * @param fichierSimulation
      * 
      * @param typeMessage
      * 
      * @param idTiersCMInput
      * @param idTiersGroupeInput
      */
-    private void createMail() {
+    private void createMail(File fichierSimulation) {
         // --------------------------------------------------
         // 1) Préparation du message (body and subject)
         // --------------------------------------------------
@@ -235,14 +310,14 @@ public class AnnoncesCOEnvoiMessage5222_000201_1 extends AMALabstractProcess {
         }
 
         String typeProcess = "Processus";
-        // if (isSimulation) {
-        // typeProcess = "Simulation";
-        // }
+        if (simulation) {
+            typeProcess = "Simulation";
+        }
 
         try {
             subject += "Web@Lamal : " + typeProcess + " SEDEX CO 'Liste des personnes ne devant pas être poursuivies' "
                     + etatProcess;
-            message += typeProcess + " de création et d'envoi d'annonces SEDEX RP terminé.\n\n";
+            message += typeProcess + " de création et d'envoi d'annonces SEDEX CO terminé.\n\n";
 
             if (onError) {
                 if (!errors.isEmpty()) {
@@ -295,7 +370,10 @@ public class AnnoncesCOEnvoiMessage5222_000201_1 extends AMALabstractProcess {
             e.printStackTrace();
         }
 
-        String[] files = null;
+        String[] files = new String[1];
+        if (fichierSimulation != null) {
+            files[0] = fichierSimulation.getPath();
+        }
         // if (mapReturn.containsKey(AnnonceSedexProcess.ATTACHED_FILES)) {
         // files = (String[]) mapReturn.get(AnnonceSedexProcess.ATTACHED_FILES);
         // }
@@ -335,8 +413,8 @@ public class AnnoncesCOEnvoiMessage5222_000201_1 extends AMALabstractProcess {
             }
         }
 
-        String today = getToday(MM_YYYY);
-        String yearToday = String.valueOf(JACalendar.today().getYear());
+        String today = Date.now().getSwissMonthValue();
+        String yearToday = Date.now().getAnnee();
         // Récupération des assurées qui ont un subside ASSISTE ou PC active au moment du traitement
         FamilleContribuableSearch familleContribuableSearch = new FamilleContribuableSearch();
         List<String> typesDemande = new ArrayList<String>();
@@ -348,7 +426,6 @@ public class AnnoncesCOEnvoiMessage5222_000201_1 extends AMALabstractProcess {
         familleContribuableSearch.setForCodeActif(Boolean.TRUE);
         // Date de fin du subside = 0 ou plus grand que date du jour
         familleContribuableSearch.setForDroitActifFromToday(today);
-        // familleContribuableSearch.setIsOnListePersonneNePasPoursuivre(Boolean.FALSE);
         familleContribuableSearch.setInNoCaisseMaladie(selectedIdCaisses);
         familleContribuableSearch.setDefinedSearchSize(JadeAbstractSearchModel.SIZE_NOLIMIT);
         familleContribuableSearch.setOrderKey("sedexco");
@@ -384,7 +461,8 @@ public class AnnoncesCOEnvoiMessage5222_000201_1 extends AMALabstractProcess {
         return envelopeFile;
     }
 
-    private ContentType generateContent(Entry<String, List<FamilleContribuable>> entry) {
+    private ContentType generateContent(Entry<String, List<FamilleContribuable>> entry,
+            SimpleAnnonceSedexCO simpleAnnonceSedexCO) {
         ContentType content = objectFactory.createContentType();
         ListOfGuaranteedAssumptionsType listOfGuaranteedAssumptionsType = new ListOfGuaranteedAssumptionsType();
         content.setListOfGuaranteedAssumptions(listOfGuaranteedAssumptionsType);
@@ -442,6 +520,12 @@ public class AnnoncesCOEnvoiMessage5222_000201_1 extends AMALabstractProcess {
 
                 // Insertion de la persone dans la table des personnes a ne pas poursuivre
                 flagPersonne(vn, familleContribuable);
+                // Création d'une entrée pour chaque membre
+                SimpleAnnonceSedexCOPersonne sedexCOPersonne = new SimpleAnnonceSedexCOPersonne();
+                sedexCOPersonne.setIdAnnonceSedexCO(simpleAnnonceSedexCO.getId());
+                sedexCOPersonne.setIdContribuable(familleContribuable.getSimpleContribuable().getIdContribuable());
+                sedexCOPersonne.setIdFamille(familleContribuable.getSimpleFamille().getIdFamille());
+                JadePersistenceManager.add(sedexCOPersonne);
 
             } catch (Exception ase) {
                 errors.add(ase.getMessage());
@@ -507,7 +591,7 @@ public class AnnoncesCOEnvoiMessage5222_000201_1 extends AMALabstractProcess {
     private AddressType getAddress(FamilleContribuable familleContribuable) throws AnnonceSedexException {
 
         try {
-            String dateToday = getToday(DD_MM_YYYY);
+            String dateToday = Date.now().getSwissValue();
 
             // Recherche de l'adresse en utilisant l'id tiers du contribuable principal
             AdresseTiersDetail currentAdresseStandardDomicile = TIBusinessServiceLocator.getAdresseService()
@@ -572,42 +656,6 @@ public class AnnoncesCOEnvoiMessage5222_000201_1 extends AMALabstractProcess {
                             + familleContribuable.getPersonneEtendue().getTiers().getIdTiers() + " NNSS : "
                             + familleContribuable.getPersonneEtendue().getPersonneEtendue().getNumAvsActuel() + " ==> "
                             + ex.getMessage());
-        }
-    }
-
-    private String getToday(String format) {
-        String dateToday = "";
-        Calendar cal = Calendar.getInstance();
-        SimpleDateFormat sdf = new SimpleDateFormat(format);
-        dateToday = sdf.format(cal.getTime());
-        return dateToday;
-    }
-
-    protected XMLGregorianCalendar toXmlDate(String dateJJsMMsAAAA, boolean YYYYMMFormat) {
-        try {
-            GregorianCalendar cal = new GregorianCalendar();
-            DateFormat df = new SimpleDateFormat(DD_MM_YYYY);
-            if (YYYYMMFormat) {
-                if (!JadeDateUtil.isGlobazDateMonthYear(dateJJsMMsAAAA)) {
-                    dateJJsMMsAAAA = dateJJsMMsAAAA.substring(3);
-                }
-
-                df = new SimpleDateFormat("MM.yyyy");
-            }
-            cal.setTime(df.parse(dateJJsMMsAAAA));
-            int year = cal.get(Calendar.YEAR);
-            int month = cal.get(Calendar.MONTH) + 1;
-            int day = cal.get(Calendar.DAY_OF_MONTH);
-            if (YYYYMMFormat) {
-                day = DatatypeConstants.FIELD_UNDEFINED;
-            }
-
-            DatatypeFactory factory = DatatypeFactory.newInstance();
-            XMLGregorianCalendar xmlCal = factory.newXMLGregorianCalendarDate(year, month, day,
-                    DatatypeConstants.FIELD_UNDEFINED);
-            return xmlCal;
-        } catch (Exception pe) {
-            return null;
         }
     }
 
@@ -745,6 +793,34 @@ public class AnnoncesCOEnvoiMessage5222_000201_1 extends AMALabstractProcess {
 
     }
 
+    protected XMLGregorianCalendar toXmlDate(String dateJJsMMsAAAA, boolean YYYYMMFormat) {
+        try {
+            GregorianCalendar cal = new GregorianCalendar();
+            DateFormat df = new SimpleDateFormat(DD_MM_YYYY);
+            if (YYYYMMFormat) {
+                if (!JadeDateUtil.isGlobazDateMonthYear(dateJJsMMsAAAA)) {
+                    dateJJsMMsAAAA = dateJJsMMsAAAA.substring(3);
+                }
+
+                df = new SimpleDateFormat("MM.yyyy");
+            }
+            cal.setTime(df.parse(dateJJsMMsAAAA));
+            int year = cal.get(Calendar.YEAR);
+            int month = cal.get(Calendar.MONTH) + 1;
+            int day = cal.get(Calendar.DAY_OF_MONTH);
+            if (YYYYMMFormat) {
+                day = DatatypeConstants.FIELD_UNDEFINED;
+            }
+
+            DatatypeFactory factory = DatatypeFactory.newInstance();
+            XMLGregorianCalendar xmlCal = factory.newXMLGregorianCalendarDate(year, month, day,
+                    DatatypeConstants.FIELD_UNDEFINED);
+            return xmlCal;
+        } catch (Exception pe) {
+            return null;
+        }
+    }
+
     public String getNoGroupeCaisse() {
         return noGroupeCaisse;
     }
@@ -759,6 +835,14 @@ public class AnnoncesCOEnvoiMessage5222_000201_1 extends AMALabstractProcess {
 
     public void setSelectedIdCaisses(List<String> selectedIdCaisses) {
         this.selectedIdCaisses = selectedIdCaisses;
+    }
+
+    public Boolean getSimulation() {
+        return simulation;
+    }
+
+    public void setSimulation(Boolean simulation) {
+        this.simulation = simulation;
     }
 
 }
