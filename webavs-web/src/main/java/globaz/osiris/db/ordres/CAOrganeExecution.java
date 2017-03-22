@@ -694,7 +694,10 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
 
         // Ne pas faire l'entry quand il n'est pas de type BVR
         if (!(new CACamt054Processor().checkEntryForGoodType(CACamt054DefinitionType.CAMT054_BVR, groupTx))) {
-            groupTxMessage.addMessage(Level.WARNING, getSession().getLabel("5361"));
+            final String message = MessageFormat.format(getSession().getLabel("5361"), groupTx.getNtryRef(),
+                    groupTx.getBxTxCdEntry(), groupTx.getCtrlAmount());
+
+            groupTxMessage.addMessage(Level.WARNING, message);
             isOk = false;
         }
 

@@ -52,6 +52,7 @@ public class CACamt054BVRV0104 extends AbstractCamt054Version<iso.std.iso._20022
 
             for (final ReportEntry4 entry : ntfc.getNtry()) {
                 final CACamt054GroupTransaction groupTx = new CACamt054GroupTransaction();
+                groupTx.setNtryRef(entry.getNtryRef());
                 groupTx.setCtrlAmount(getMontantControle(entry));
                 groupTx.setCrdtDbtIndicator(getCreditOrDebitInterne(entry.getCdtDbtInd()));
                 groupTx.setNoAdherent(entry.getNtryRef());

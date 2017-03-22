@@ -1,6 +1,7 @@
 package globaz.osiris.db.ordres.sepa;
 
 import globaz.framework.util.FWCurrency;
+import globaz.jade.client.util.JadeStringUtil;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,6 +13,7 @@ import java.util.List;
  * 
  */
 public class CACamt054GroupTransaction {
+    private String ntryRef;
     private FWCurrency ctrlAmount;
     private String crdtDbtIndicator;
     private int nbTransactions;
@@ -109,5 +111,35 @@ public class CACamt054GroupTransaction {
             return false;
         }
         return isReversalIndication;
+    }
+
+    public void setNtryRef(String ntryRef) {
+        this.ntryRef = ntryRef;
+    }
+
+    public String getNtryRef() {
+        return ntryRef;
+    }
+
+    public String getBxTxCdEntry() {
+        String bxTxCdEntry = "";
+
+        if (!JadeStringUtil.isEmpty(getDomainCode())) {
+            bxTxCdEntry += getDomainCode();
+        }
+
+        bxTxCdEntry += "/";
+
+        if (!JadeStringUtil.isEmpty(getFamilyCode())) {
+            bxTxCdEntry += getFamilyCode();
+        }
+
+        bxTxCdEntry += "/";
+
+        if (!JadeStringUtil.isEmpty(getSubFamilyCode())) {
+            bxTxCdEntry += getSubFamilyCode();
+        }
+
+        return bxTxCdEntry;
     }
 }
