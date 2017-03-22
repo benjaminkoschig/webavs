@@ -3,6 +3,10 @@
  */
 package ch.globaz.al.liste.process;
 
+import globaz.globall.db.BManager;
+import globaz.globall.db.BSession;
+import globaz.globall.db.FWFindParameter;
+import globaz.globall.db.FWFindParameterManager;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -84,5 +88,37 @@ public class GenerateurAnneeRevenuMinimal {
 
     public String toStringForSql(List<ALRevenuMinAnnee> listeRevenuMinAnnee) {
         return Joiner.on(",").join(listeRevenuMinAnnee);
+    }
+
+    /**
+     * Retourne un string formaté des valeurs reprises des plages de valeurs AL
+     */
+    public String getValeursFromPlages(BSession session) {
+
+        StringBuilder revenusMinimauxProperties = new StringBuilder();
+
+        try {
+            FWFindParameterManager manager = new FWFindParameterManager();
+            manager.setSession(session);
+            manager.setIdCodeSysteme("61051001");
+            manager.setIdCleDiffere("REMINAVS");
+            manager.find(BManager.SIZE_NOLIMIT);
+
+            for (int i = 0; i < manager.size(); i++) {
+                revenusMinimauxProperties.append(((FWFindParameter) manager.get(i)).getDateDebutValidite().substring(0,
+                        4));
+                revenusMinimauxProperties.append(":");
+                revenusMinimauxProperties.append(((FWFindParameter) manager.get(i)).getValeurNumParametre()
+                        .split("\\.")[0]);
+                if (i != manager.size() - 1) {
+                    revenusMinimauxProperties.append(",");
+                }
+            }
+
+            return revenusMinimauxProperties.toString();
+
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Error when retrieving the 'plage de valeur' with key 'REMINAVS'");
+        }
     }
 }

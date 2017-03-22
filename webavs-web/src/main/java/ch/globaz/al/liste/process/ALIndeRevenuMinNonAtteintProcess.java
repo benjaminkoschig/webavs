@@ -18,7 +18,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ch.globaz.al.business.constantes.ALConstIndependantAF;
 import ch.globaz.al.liste.container.ALIndeRevenuMinNonAtteintContainer;
-import ch.globaz.al.properties.ALProperties;
 import ch.globaz.al.web.application.ALApplication;
 import ch.globaz.common.domaine.Date;
 import ch.globaz.common.listoutput.SimpleOutputListBuilderJade;
@@ -58,10 +57,12 @@ public class ALIndeRevenuMinNonAtteintProcess extends BProcess {
         mailsList.add(getEMailAddress());
 
         try {
+            GenerateurAnneeRevenuMinimal generateur = new GenerateurAnneeRevenuMinimal();
+
             // Récupération des properties et génère la chaine (string) avec les couple année:valeur min
-            String revenusMinimauxProperties = ALProperties.REVENUS_MINIMAUX.getValue();
-            chaineRevenusMinimaux = new GenerateurAnneeRevenuMinimal()
-                    .genererStringAnneeRevenuMinimal(revenusMinimauxProperties);
+            String revenusMinimauxProperties = generateur.getValeursFromPlages(getSession());
+
+            chaineRevenusMinimaux = generateur.genererStringAnneeRevenuMinimal(revenusMinimauxProperties);
         } catch (Exception e) {
             ProcessMailUtils.sendMailError(mailsList, e, this, null, null, "Erreur de propriété");
             return false;
@@ -130,6 +131,7 @@ public class ALIndeRevenuMinNonAtteintProcess extends BProcess {
                 + "INNER JOIN SCHEMA.ALALLOC AS AF_ALLOCATAIRE  ON AFFILIE.HTITIE = AF_ALLOCATAIRE.HTITIE "
                 + "INNER JOIN SCHEMA.ALDOS AS AF_DOSSIER  ON AF_ALLOCATAIRE.BID = AF_DOSSIER.BID "
                 + "INNER JOIN SCHEMA.ALENTPRE AS AF_PRES_ENTETE  ON AF_DOSSIER.EID = AF_PRES_ENTETE.EID "
+                + "INNER JOIN CCJUWEB.FAENTFP AS FA_ENT ON AFFILIE.MALNAF = FA_ENT.IDEXTERNEROLE "
                 + "INNER JOIN (SELECT * FROM (VALUES "
                 + chaineRevenusMinimaux
                 + ") AS TEMP(ANNEE, MINIMAL)) AS REVENU_MIN ON ANNEE = Cast(CP_DECI.IADDEB / 10000 as integer) "
@@ -149,7 +151,11 @@ public class ALIndeRevenuMinNonAtteintProcess extends BProcess {
                 + " AND AFFILIE.MATTAF IN("
                 + ALConstIndependantAF.CS_GENRE_INDEPENDANT
                 + ","
-                + ALConstIndependantAF.CS_GENRE_INDEPENDANT_ET_EMPLOYEUR + ") ORDER BY NOM_AFFILIE";
+                + ALConstIndependantAF.CS_GENRE_INDEPENDANT_ET_EMPLOYEUR
+                + ") "
+                + "AND FA_ENT.IDPASSAGE ="
+                + noPassage
+                + " ORDER BY NOM_AFFILIE";
     }
 
     private void sendMail(List<String> mailsList, String joinFilePath) {
