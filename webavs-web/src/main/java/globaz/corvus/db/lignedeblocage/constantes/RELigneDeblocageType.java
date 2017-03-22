@@ -35,7 +35,7 @@ public enum RELigneDeblocageType implements CodeSystemEnum<RELigneDeblocageType>
         return DETTE_EN_COMPTA.equals(this);
     }
 
-    public boolean isVersementBeneficaire() {
+    public boolean isVersementBeneficiaire() {
         return VERSEMENT_BENEFICIAIRE.equals(this);
     }
 

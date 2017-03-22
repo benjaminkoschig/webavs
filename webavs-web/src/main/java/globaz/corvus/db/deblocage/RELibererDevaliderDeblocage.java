@@ -6,7 +6,9 @@ import globaz.corvus.db.lignedeblocageventilation.RELigneDeblocageVentilationSer
 import globaz.corvus.db.lots.RELot;
 import globaz.corvus.db.lots.RELotManager;
 import globaz.corvus.db.rentesaccordees.REEnteteBlocage;
+import globaz.externe.IPRConstantesExternes;
 import globaz.globall.db.BSession;
+import globaz.osiris.api.APIReferenceRubrique;
 import ch.globaz.common.domaine.Date;
 import ch.globaz.common.domaine.Montant;
 
@@ -33,8 +35,9 @@ public class RELibererDevaliderDeblocage {
         Long idLot = Long.valueOf(lot.getIdLot());
 
         RELigneDeblocages lignes = deblocage.getLignesDeblocages().filtreByIdLot(idLot);
+        lignes.changeEtatToEnregistre().changeIdLot(null);
 
-        deblocageService.update(lignes.changeEtatToEnregistre().changeIdLot(null));
+        deblocageService.update(lignes);
 
         ventilationService.delete(ventilationService.searchByIdsLigneDeblocage(lignes.getIdsLigne()));
 
@@ -50,8 +53,15 @@ public class RELibererDevaliderDeblocage {
         RELot lot = findLotOrCreate();
         Long idLot = Long.valueOf(lot.getIdLot());
         RELigneDeblocages deblocages = deblocage.getLignesDeblocages().filtreEnregistres();
+        Long idApplication = Long.valueOf(IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_RENTE);
+        Long idTiersAdressePaiement = Long.valueOf(deblocage.getPracc().getIdTiersAdressePmt());
 
         deblocages.changeEtatToValide().changeIdLot(idLot);
+
+        deblocages.getLigneDeblocageVersementBeneficiaire().changeIdTiersAdressePaiementAndApplication(
+                idTiersAdressePaiement, idApplication);
+
+        deblocages.getLigneDeblocageImpotsSource().changeSection(Long.valueOf(APIReferenceRubrique.IMPOT_A_LA_SOURCE));
 
         deblocageService.update(deblocage.getLignesDeblocages());
 

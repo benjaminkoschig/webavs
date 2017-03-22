@@ -93,7 +93,7 @@ public class RELigneDeblocages extends ArrayList<RELigneDeblocage> {
         return getLigneDeblocageByType(RELigneDeblocageType.IMPOTS_SOURCE);
     }
 
-    public RELigneDeblocages getLigneDeblocageVersementBeneficaire() {
+    public RELigneDeblocages getLigneDeblocageVersementBeneficiaire() {
         return getLigneDeblocageByType(RELigneDeblocageType.VERSEMENT_BENEFICIAIRE);
     }
 
@@ -116,10 +116,17 @@ public class RELigneDeblocages extends ArrayList<RELigneDeblocage> {
         return this;
     }
 
-    public RELigneDeblocages changeSection(Long idSection, Long idRoleSection) {
+    public RELigneDeblocages changeSection(Long idSection) {
         for (RELigneDeblocage ligne : this) {
             ligne.setIdSectionCompensee(idSection);
-            ligne.setIdRoleSection(idRoleSection);
+        }
+        return this;
+    }
+
+    public RELigneDeblocages changeIdTiersAdressePaiementAndApplication(Long idTiers, Long idApplication) {
+        for (RELigneDeblocage ligne : this) {
+            ligne.setIdTiersAdressePaiement(idTiers);
+            ligne.setIdApplicationAdressePaiement(idApplication);
         }
         return this;
     }

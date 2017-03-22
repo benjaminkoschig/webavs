@@ -153,8 +153,8 @@ public class RELigneDeblocage extends JadeEntity {
         return type.isImpotsSource();
     }
 
-    public boolean isVersementBeneficaire() {
-        return type.isVersementBeneficaire();
+    public boolean isVersementBeneficiaire() {
+        return type.isVersementBeneficiaire();
     }
 
     @Override

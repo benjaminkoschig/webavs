@@ -131,7 +131,7 @@ public class REDeblocageViewBean extends PRAbstractViewBeanSupport {
     }
 
     public List<RELigneDeblocageVersement> getVersementBeneficiaires() {
-        return deblocages.getLigneDeblocageVersementBeneficaire().filtreValidesAndComptabilises().toListVersement();
+        return deblocages.getLigneDeblocageVersementBeneficiaire().filtreValidesAndComptabilises().toListVersement();
     }
 
     public String getMontantLiberer() {
@@ -212,13 +212,13 @@ public class REDeblocageViewBean extends PRAbstractViewBeanSupport {
     }
 
     public RELigneDeblocageVersement getVersementBeneficiaire() {
-        if (deblocages.filtreEnregistres().getLigneDeblocageVersementBeneficaire().toList().isEmpty()) {
+        if (deblocages.filtreEnregistres().getLigneDeblocageVersementBeneficiaire().toList().isEmpty()) {
             RELigneDeblocageVersement versement = new RELigneDeblocageVersement();
             versement.setMontant(Montant.ZERO);
             versement.setDescriptionTiers(tiersBeneficiaireInfo);
             return versement;
         }
-        return deblocages.getLigneDeblocageVersementBeneficaire().filtreEnregistres().toListVersement().get(0);
+        return deblocages.getLigneDeblocageVersementBeneficiaire().filtreEnregistres().toListVersement().get(0);
     }
 
     public List<RELigneDeblocage> getImpotSources() {

@@ -1,5 +1,6 @@
 package ch.globaz.common.sql;
 
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -66,12 +67,39 @@ public class SQLWriter {
     }
 
     /**
-     * Ajout le mot select ä la requête.
+     * Ajout le mot select à la requête.
      * 
      * @return SQLWriter utilisé
      */
     public SQLWriter select() {
         query.append("select ");
+        return this;
+    }
+
+    /**
+     * Ajout le mot select à la requête.
+     * 
+     * @return SQLWriter utilisé
+     */
+    public SQLWriter fields(Class<? extends TableDefinition> clazz, String aliasTable) {
+        TableDefinition[] values = clazz.getEnumConstants();
+        StringWriter writer = new StringWriter();
+        boolean addComma = false;
+        for (TableDefinition def : values) {
+            if (addComma) {
+                writer.append(", ");
+            } else {
+                addComma = true;
+            }
+            writer.append(aliasTable);
+            writer.append(".");
+            writer.append(def.getColumnName());
+            writer.append(" as ");
+            writer.append(aliasTable);
+            writer.append("_");
+            writer.append(def.getColumnName());
+        }
+        query.append(" ").append(writer.toString().toUpperCase()).append(" ");
         return this;
     }
 

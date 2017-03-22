@@ -7,7 +7,6 @@ import globaz.globall.db.BEntity;
 import globaz.globall.db.BSpy;
 import globaz.globall.db.BStatement;
 import globaz.globall.db.BTransaction;
-import java.io.StringWriter;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.text.ParseException;
@@ -404,25 +403,6 @@ public abstract class JadeEntity extends BEntity {
             }
         }
         return defPrimaryKey;
-    }
-
-    public String createSelectField(String alias) {
-        TableDefinition[] values = getTableDef().getEnumConstants();
-        StringWriter writer = new StringWriter();
-        boolean addComma = false;
-        for (TableDefinition def : values) {
-            if (addComma) {
-                writer.append(", ");
-            } else {
-                addComma = true;
-            }
-            writer.append(def.getColumnName()).append(" as ");
-            if (alias != null) {
-                writer.append(alias);
-            }
-            writer.append(def.toString());
-        }
-        return writer.toString();
     }
 
     @Override

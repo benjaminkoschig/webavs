@@ -219,7 +219,7 @@ public class ReLigneDeclocageServices {
                 lignesDeblocages.getLigneDeblocageDetteEnCompta(), idTiers);
         lignesDeblocagesCompleted.addAll(dettes);
 
-        RELigneDeblocages versements = toVersement(lignesDeblocages.getLigneDeblocageVersementBeneficaire(),
+        RELigneDeblocages versements = toVersement(lignesDeblocages.getLigneDeblocageVersementBeneficiaire(),
                 descriptionTiersBeneficiaire);
 
         lignesDeblocagesCompleted.addAll(versements);

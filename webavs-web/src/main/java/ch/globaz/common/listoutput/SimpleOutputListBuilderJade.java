@@ -10,6 +10,7 @@ import ch.globaz.simpleoutputlist.configuration.Configuration;
 import ch.globaz.simpleoutputlist.configuration.FontStyle;
 import ch.globaz.simpleoutputlist.configuration.RowDecorator;
 import ch.globaz.simpleoutputlist.configuration.RowStyle;
+import ch.globaz.simpleoutputlist.converter.Translater;
 import ch.globaz.simpleoutputlist.outimpl.Configurations;
 import ch.globaz.simpleoutputlist.outimpl.SimpleOutputListBuilder;
 
@@ -18,6 +19,7 @@ public class SimpleOutputListBuilderJade extends SimpleOutputListBuilder {
     private boolean isContextInizialised = false;
     private Configuration configurationGlobaz = Configurations.buildeDefault();
     private BSession session;
+    private Translater translater;
 
     public SimpleOutputListBuilderJade() {
         super();
@@ -67,12 +69,14 @@ public class SimpleOutputListBuilderJade extends SimpleOutputListBuilder {
     }
 
     public SimpleOutputListBuilderJade addTranslater() {
-        translater(new LabelTranslaterNormal(session, null));
+        translater = new LabelTranslaterNormal(session, null);
+        translater(translater);
         return this;
     }
 
     public SimpleOutputListBuilderJade addTranslater(String identifier) {
-        translater(new LabelTranslaterNormal(session, identifier));
+        translater = new LabelTranslaterNormal(session, identifier);
+        translater(translater);
         return this;
     }
 
@@ -118,6 +122,7 @@ public class SimpleOutputListBuilderJade extends SimpleOutputListBuilder {
                 return rowStyle;
             }
         });
+        configuration.setTranslater(translater);
         configure(configuration);
         configurationGlobaz = configuration;
         return this;

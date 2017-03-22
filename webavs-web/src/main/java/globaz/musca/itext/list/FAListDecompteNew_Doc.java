@@ -24,6 +24,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import net.sf.jasperreports.engine.JREmptyDataSource;
+import ch.globaz.common.domaine.Date;
 import ch.globaz.common.listoutput.SimpleOutputListBuilderJade;
 import ch.globaz.simpleoutputlist.annotation.style.Align;
 import ch.globaz.simpleoutputlist.core.Details;
@@ -335,7 +336,10 @@ public class FAListDecompteNew_Doc extends FWIDocumentManager {
         SimpleOutputListBuilderJade builder = null;
         File file = null;
         try {
+            new Date();
             builder = SimpleOutputListBuilderJade.newInstance().session(getSession()).globazTheme().addTranslater()
+                    .headerLeftTop(NUM_REF_INFOROM_LISTE_DECOMPTE)
+                    .headerLeftBottom(getSession().getUserName() + " " + Date.now().getSwissValue())
                     .outputNameAndAddPath(NUM_REF_INFOROM_LISTE_DECOMPTE + "_" + toLabel("DECOMPTE"));
 
             file = builder.addList(list).classElementList(FaDecompteBeanXls.class).addHeaderDetails(details)
