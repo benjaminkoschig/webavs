@@ -34,5 +34,5 @@
 <IFRAME name="fr_list" id="fr_list" scrolling="YES" style="border : solid 1px black; width:100%;"  height="<%=IFrameListHeight%>">
 </IFRAME>
 <PRE></PRE>
-<IFRAME name="fr_detail" id="fr_detail" scrolling="NO" style="width:100%;"  height="<%=IFrameDetailHeight%>">
+<IFRAME name="fr_detail" id="fr_detail" scrolling="<%=scrollingDetailActive%>" style="width:100%;"  height="<%=IFrameDetailHeight%>">
 </IFRAME>

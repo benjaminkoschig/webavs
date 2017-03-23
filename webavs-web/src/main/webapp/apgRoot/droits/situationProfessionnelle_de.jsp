@@ -628,8 +628,8 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
 						</TR>
 						<TR>
 							<TD class="withoutAdressePaiement" colspan="2">&nbsp;</TD>
-							<TD class="withAdressePaiement" colspan="2" rowspan="2">
-								<pre><%=viewBean.getAdressePaiementEmployeur()%></pre>
+							<TD class="withAdressePaiement" colspan="2" rowspan="4">
+								<PRE style="font-size:1em"><%=viewBean.getAdressePaiementEmployeur()%></PRE>
 							</TD>
 							<TD><LABEL for="autreRemuneration"><ct:FWLabel key="JSP_AUTRE_REMUNERATION"/></LABEL></TD>
 							<TD><INPUT type="text" name="autreRemuneration" value="<%=viewBean.getAutreRemuneration()%>" class="montant" onchange="validateFloatNumber(this);" onkeypress="return filterCharForFloat(window.event);"></TD>
@@ -647,6 +647,8 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
 							<TD><INPUT type="text" name="salaireNature" value="<%=viewBean.getSalaireNature()%>" class="montant" onchange="validateFloatNumber(this);" onkeypress="return filterCharForFloat(window.event);"></TD>
 							<TD colspan="3"><ct:FWCodeSelectTag codeType="APPERSITP" defaut="<%=viewBean.getPeriodiciteSalaireNature()%>" name="periodiciteSalaireNature"/></TD>
 						</TR>
+						<TR><TD class="withAdressePaiement" colspan="6">&nbsp;</TD></TR>
+						<TR><TD class="withAdressePaiement" colspan="6">&nbsp;</TD></TR>
 						<TR><TD colspan="6"><HR></TD></TR>
 						<TR>
 							<TD><LABEL for="isCollaborateurAgricole"><ct:FWLabel key="JSP_COLL_AGRICOLE"/></LABEL></TD>

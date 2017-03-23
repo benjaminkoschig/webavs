@@ -13,6 +13,7 @@ String actionNew =  servletContext + mainServletPath + "?userAction=" + request.
 int subTableHeight = 100;
 String IFrameListHeight = "150";
 String IFrameDetailHeight ="230";
+String scrollingDetailActive = "NO";
 String applicationId = ((globaz.globall.db.BSession)session.getAttribute(globaz.framework.servlets.FWServlet.OBJ_SESSION)).getApplicationId();
 
 if (mainServletPath == null) {

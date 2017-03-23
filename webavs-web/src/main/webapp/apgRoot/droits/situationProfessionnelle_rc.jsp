@@ -11,9 +11,10 @@ idEcran="PAP0016";
 APSituationProfessionnelleViewBean viewBean = (globaz.apg.vb.droits.APSituationProfessionnelleViewBean) request.getAttribute("viewBean");
 actionNew += "&" + APAbstractDroitDTOAction.PARAM_ID_DROIT + "=" + viewBean.getIdDroit();
 bButtonNew = viewBean.isModifiable() && bButtonNew &&  viewBean.getSession().hasRight(IAPActions.ACTION_SITUATION_PROFESSIONNELLE, FWSecureConstants.UPDATE);
-IFrameDetailHeight = "450";
+IFrameDetailHeight = "460";
 IFrameListHeight = "100";
 subTableHeight = 20;
+scrollingDetailActive = "YES";
 %>
 	<%-- /tpl:put --%>
 <%@ include file="/theme/capage/javascripts.jspf" %>
@@ -100,7 +101,7 @@ subTableHeight = 20;
 									</TD>
 									<TD width="30px">&nbsp;</TD>
 									<TD rowspan="2">
-										<PRE><span class="IJAfficheText"><%=viewBean.getAdressePaiementRequerant()%></span></PRE>
+										<PRE style="font-size:1em"><%=viewBean.getAdressePaiementRequerant()%></PRE>
 									</TD>
 								</TR>
 								<TR>									
