@@ -131,7 +131,7 @@ public class ALIndeRevenuMinNonAtteintProcess extends BProcess {
                 + "INNER JOIN SCHEMA.ALALLOC AS AF_ALLOCATAIRE  ON AFFILIE.HTITIE = AF_ALLOCATAIRE.HTITIE "
                 + "INNER JOIN SCHEMA.ALDOS AS AF_DOSSIER  ON AF_ALLOCATAIRE.BID = AF_DOSSIER.BID "
                 + "INNER JOIN SCHEMA.ALENTPRE AS AF_PRES_ENTETE  ON AF_DOSSIER.EID = AF_PRES_ENTETE.EID "
-                + "INNER JOIN CCJUWEB.FAENTFP AS FA_ENT ON AFFILIE.MALNAF = FA_ENT.IDEXTERNEROLE "
+                + "INNER JOIN SCHEMA.FAENTFP AS FA_ENT ON AFFILIE.MALNAF = FA_ENT.IDEXTERNEROLE "
                 + "INNER JOIN (SELECT * FROM (VALUES "
                 + chaineRevenusMinimaux
                 + ") AS TEMP(ANNEE, MINIMAL)) AS REVENU_MIN ON ANNEE = Cast(CP_DECI.IADDEB / 10000 as integer) "
@@ -153,7 +153,7 @@ public class ALIndeRevenuMinNonAtteintProcess extends BProcess {
                 + ","
                 + ALConstIndependantAF.CS_GENRE_INDEPENDANT_ET_EMPLOYEUR
                 + ") "
-                + "AND FA_ENT.IDPASSAGE ="
+                + "AND FA_ENT.IDPASSAGE = "
                 + noPassage
                 + " ORDER BY NOM_AFFILIE";
     }
