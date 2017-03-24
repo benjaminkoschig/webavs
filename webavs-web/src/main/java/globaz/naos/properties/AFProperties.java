@@ -35,7 +35,9 @@ public enum AFProperties implements IProperties {
     REE_VALIDATION_UNITAIRE("ree.process.validation", "Validation unitaire à réaliser"),
     REE_DESTINATAIRE("ree.message.header.recipient.id", "Destinataire"),
     IDE_PLAN_AFFILIATION_VERIFICATION_INACTIF("ide.planAffiliation.verificationInactif",
-            "Prise en compte ou non des plan d'affiliation inactif lors d'annonce IDE");
+            "Prise en compte ou non des plans d'affiliation inactif lors d'annonce IDE"),
+    IDE_COTISATION_VERIFICATION_TAXE_SOUS("ide.cotisation.verificationTaxeSous",
+            "Prise en compte ou non des plans d'affiliation de l'affiliation qui détient une autre affiliation");
 
     private String description;
     private String propertyName;

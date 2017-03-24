@@ -21,6 +21,8 @@ import globaz.naos.db.cotisation.AFCotisation;
 import globaz.naos.db.cotisation.AFCotisationManager;
 import globaz.naos.db.ide.AFIdeAnnonce;
 import globaz.naos.db.ide.AFIdeAnnonceManager;
+import globaz.naos.db.lienAffiliation.AFLienAffiliation;
+import globaz.naos.db.lienAffiliation.AFLienAffiliationManager;
 import globaz.naos.db.planAffiliation.AFPlanAffiliation;
 import globaz.naos.db.planAffiliation.AFPlanAffiliationManager;
 import globaz.naos.exceptions.AFIdeNumberNoMatchException;
@@ -1464,7 +1466,7 @@ public class AFIDEUtil {
         cotisMgr.setForTypeAssurance(CodeSystem.TYPE_ASS_COTISATION_AVS_AI);
         cotisMgr.setForDateDifferente(Boolean.TRUE);
 
-        // Contrôle de la propriété
+        // Contrôle la propriété pour vérifier les plans inactifs
         if ("true".equalsIgnoreCase(AFProperties.IDE_PLAN_AFFILIATION_VERIFICATION_INACTIF.getValue())) {
             boolean hasAtLeastOnePlanInactif = false;
 
@@ -1482,7 +1484,42 @@ public class AFIDEUtil {
 
             cotisMgr.setShowInactif(Boolean.toString(hasAtLeastOnePlanInactif));
         }
+
+        // Contrôle la propriété pour vérifier si on prend en compte les affiliations "parents" pour les cotisations
+        if ("true".equalsIgnoreCase(AFProperties.IDE_COTISATION_VERIFICATION_TAXE_SOUS.getValue())) {
+            AFLienAffiliationManager lienMgr = getLienAffiManagerForAffiliationTaxeSous(session, idAffiliation);
+
+            // Si le manager n'est pas vide ça veut dire qu'on à une affiliation qui détient ("père") notre affiliation
+            if (lienMgr.getCount() == 1) {
+                String idAffiliationDetientAffilie = ((AFLienAffiliation) lienMgr.getFirstEntity())
+                        .getAff_AffiliationId();
+
+                // Si le manager ne trouve pas de cotisation pour le "fils", on recherche des cotisations pour le "père"
+                if (cotisMgr.getCount() == 0) {
+                    cotisMgr = initCotiManager(session, idAffiliationDetientAffilie);
+                }
+            }
+        }
         return cotisMgr;
+    }
+
+    /**
+     * Récupère un manager contenant le lien de l'affiliation pour laquelle est est de type "taxé sous"
+     * 
+     * @param session
+     * @param idAffiliation : id de l'affilaition dont on veut récupérer le lien dont elle est "taxée sous"
+     * @return AFLienAffiliationManager
+     * @throws Exception
+     */
+    public static AFLienAffiliationManager getLienAffiManagerForAffiliationTaxeSous(BSession session,
+            String idAffiliation) throws Exception {
+        AFLienAffiliationManager lienMgr = new AFLienAffiliationManager();
+        lienMgr.setSession(session);
+        lienMgr.setForTypeLien(CodeSystem.TYPE_LIEN_TAXE_SOUS);
+        lienMgr.setForAffiliationId(idAffiliation);
+        lienMgr.find(BManager.SIZE_NOLIMIT);
+
+        return lienMgr;
     }
 
     /**

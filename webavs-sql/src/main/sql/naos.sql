@@ -10,3 +10,6 @@ INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL) VALUES ('naos.ree.message.header.
 
 -- D0196 : Ajout de proptiétés pour changer le comportement des plan d'affilaition inactif
 INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL) VALUES ('naos.ide.planAffiliation.verificationInactif','false');
+
+-- D0197 : Ajout de proptiétés pour changer le comportement des cotisations et prendre en compte ou non les affiliés "pères" si le "fils" n'a pas de coti' AVS
+INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL) VALUES ('naos.ide.cotisation.verificationTaxeSous','false');
