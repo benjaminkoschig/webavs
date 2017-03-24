@@ -7,7 +7,11 @@ import globaz.jade.client.util.JadeConversionUtil;
 import globaz.jade.context.JadeContext;
 import globaz.jade.context.JadeContextImplementation;
 import globaz.jade.context.JadeThreadContext;
+import globaz.jade.crypto.JadeDecryptionNotSupportedException;
+import globaz.jade.crypto.JadeDefaultEncrypters;
+import globaz.jade.crypto.JadeEncrypterNotFoundException;
 import globaz.jade.jaxb.JAXBServices;
+import globaz.jade.log.JadeLogger;
 import java.util.Properties;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
@@ -81,24 +85,22 @@ public class AnnoncesCODefault {
         return session;
     }
 
-    protected void getUserAndPassSedex(Properties properties) {
+    protected void getUserAndPassSedex(Properties properties) throws JadeDecryptionNotSupportedException,
+            JadeEncrypterNotFoundException, Exception {
 
-        // String encryptedUser = properties.getProperty("userSedex");
-        // if (encryptedUser == null) {
-        // JadeLogger.error(this, "Réception message RP AMAL: user sedex non renseigné. ");
-        // throw new IllegalStateException("Réception message RP AMAL: user sedex non renseigné. ");
-        // }
-        // userSedex = JadeDefaultEncrypters.getJadeDefaultEncrypter().decrypt(encryptedUser);
+        String encryptedUser = properties.getProperty("userSedex");
+        if (encryptedUser == null) {
+            JadeLogger.error(this, "Réception message RP AMAL: user sedex non renseigné. ");
+            throw new IllegalStateException("Réception message RP AMAL: user sedex non renseigné. ");
+        }
+        userSedex = JadeDefaultEncrypters.getJadeDefaultEncrypter().decrypt(encryptedUser);
 
-        // String encryptedPass = properties.getProperty("passSedex");
-        // if (encryptedPass == null) {
-        // JadeLogger.error(this, "Réception message RP AMAL: pass sedex non renseigné. ");
-        // throw new IllegalStateException("Réception message RP AMAL: pass sedex non renseigné. ");
-        // }
-        // passSedex = JadeDefaultEncrypters.getJadeDefaultEncrypter().decrypt(encryptedPass);
-
-        userSedex = properties.getProperty("userSedex");
-        passSedex = properties.getProperty("passSedex");
+        String encryptedPass = properties.getProperty("passSedex");
+        if (encryptedPass == null) {
+            JadeLogger.error(this, "Réception message RP AMAL: pass sedex non renseigné. ");
+            throw new IllegalStateException("Réception message RP AMAL: pass sedex non renseigné. ");
+        }
+        passSedex = JadeDefaultEncrypters.getJadeDefaultEncrypter().decrypt(encryptedPass);
     }
 
     public String getPassSedex() {
