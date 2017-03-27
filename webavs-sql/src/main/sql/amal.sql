@@ -1,6 +1,8 @@
 --Personnes a ne pas poursuivre
 CREATE TABLE SCHEMA.MAPERNPP (
 	ID decimal(15,0) PRIMARY KEY NOT NULL,
+	IDSEDEX NUMERIC(15,0),
+	IDDETFAM NUMERIC(15,0),
 	NSS decimal(15,0),
 	ANNEE decimal(4,0),
 	IDTIERSCM decimal(15,0),
@@ -13,9 +15,6 @@ CREATE TABLE SCHEMA.MAPERNPP (
 	PSPY varchar(24) NOT NULL,
    	CSPY varchar(24) NOT NULL
 );
-
-ALTER TABLE SCHEMA.MAFAMILL ADD COLUMN FLAG_ENVOI_NPP DECIMAL(1,0);
-REORG TABLE SCHEMA.MAFAMILL;
 
 --Annonces sedex
 DROP TABLE SCHEMA.MASDXCO;
@@ -60,6 +59,7 @@ DROP TABLE SCHEMA.MASDXCO_XML;
 CREATE TABLE SCHEMA.MASDXCO_XML(
 	ID decimal(15,0) PRIMARY KEY NOT NULL,
 	MSGID varchar(40),
+	IDSEDEX NUMERIC(15,0)
 	XML CLOB,
 	PSPY varchar(24) NOT NULL,
    	CSPY varchar(24) NOT NULL
@@ -115,4 +115,3 @@ insert into SCHEMA.FWCOSP (pcosid,pptygr,pconcs,pptycn,pptycl,pptysa,pcosli,pcos
 insert into SCHEMA.FWCOUP (pcosid,plaide,pcouid,pcolut, pspy) values ( 42003823, 'F', 'ACTTITREQU', 'Titre équivalent', (replace(char(current date), '-', '') concat replace(char(current time), '.', '') concat user) ); 
 insert into SCHEMA.FWCOUP (pcosid,plaide,pcouid,pcolut, pspy) values ( 42003823, 'D', 'ACTTITREQU', '?Titre équivalent', (replace(char(current date), '-', '') concat replace(char(current time), '.', '') concat user) ); 
 insert into SCHEMA.FWCOUP (pcosid,plaide,pcouid,pcolut, pspy) values ( 42003823, 'I', 'ACTTITREQU', '?Titre équivalent', (replace(char(current date), '-', '') concat replace(char(current time), '.', '') concat user) ); 
-
