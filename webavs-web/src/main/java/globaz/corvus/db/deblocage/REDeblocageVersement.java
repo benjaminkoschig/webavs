@@ -3,6 +3,7 @@
  */
 package globaz.corvus.db.deblocage;
 
+import globaz.corvus.db.lignedeblocage.RELigneDeblocage;
 import globaz.corvus.db.lignedeblocage.constantes.RELigneDeblocageType;
 import globaz.globall.db.BEntity;
 import globaz.globall.db.BStatement;
@@ -25,6 +26,7 @@ public class REDeblocageVersement extends BEntity {
     private Montant montant;
     private RELigneDeblocageType type;
     private String refPaiement;
+    private RELigneDeblocage ligneDeblocage = new RELigneDeblocage();
 
     @Override
     protected String _getTableName() {
@@ -33,8 +35,8 @@ public class REDeblocageVersement extends BEntity {
 
     @Override
     protected void _readProperties(BStatement statement) throws Exception {
-        // TODO Auto-generated method stub
 
+        ligneDeblocage.readFromStatement(statement, "");
     }
 
     @Override
@@ -151,10 +153,4 @@ public class REDeblocageVersement extends BEntity {
     public void setRefPaiement(String refPaiement) {
         this.refPaiement = refPaiement;
     }
-
-    public String getIdAvoirPaiementUnique() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
 }
