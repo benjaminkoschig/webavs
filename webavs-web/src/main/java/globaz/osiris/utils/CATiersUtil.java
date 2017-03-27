@@ -159,7 +159,7 @@ public class CATiersUtil {
             String idExterneRole) throws Exception {
 
         // recherche de l'office des poursuites relatifs au tiers
-        IntTiers officePoursuite = CATiersUtil.getOfficePoursuite(session, tiers, idExterne);
+        IntTiers officePoursuite = CATiersUtil.getOfficePoursuite(session, tiers, idExterneRole);
         if (officePoursuite == null) {
             throw new Exception(session.getLabel("IM_ERR_OP_INTROUVABLE") + " : " + idExterneRole + " / " + idExterne);
         }
