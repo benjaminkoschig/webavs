@@ -275,7 +275,7 @@ public abstract class COTransitionAction {
         }
 
         // POAVS-223
-        if (!isNouveauRegime(transaction.getSession(), contentieux.getDateExecution())) {
+        if (!isNouveauRegime(transaction.getSession(), date)) {
             return null;
         }
 
