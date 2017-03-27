@@ -474,7 +474,7 @@ public class CAComptabiliserJournal {
      * @throws Exception
      */
     private ArrayList<CAInteretManuelVisualComponent> calculIMManuel(BProcess context, CAPaiement pmt,
-            boolean forceSoumis) throws Exception {
+            boolean forceExempte) throws Exception {
         // Calcul IM
         CAProcessInteretMoratoireManuel process = new CAProcessInteretMoratoireManuel();
         process.setSession(context.getSession());
@@ -483,7 +483,7 @@ public class CAComptabiliserJournal {
         process.setIdSection(pmt.getIdSection());
         process.setIdJournal(pmt.getIdJournal());
         process.setSimulationMode(false);
-        process.setForceSoumis(forceSoumis);
+        process.setForceExempte(forceExempte);
 
         try {
             process.executeProcess();

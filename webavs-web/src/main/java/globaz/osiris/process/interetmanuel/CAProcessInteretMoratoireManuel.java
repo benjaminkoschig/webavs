@@ -50,7 +50,7 @@ public class CAProcessInteretMoratoireManuel extends BProcess {
     private String numeroFactureGroupe = new String();
     private Boolean simulationMode = new Boolean(true);
     private Boolean isRDPProcess = false;
-    private boolean forceSoumis = false;
+    private boolean forceExempte = false;
 
     private CAInteretManuelVisualComponent visualComponent = null;
     private ArrayList<CAInteretManuelVisualComponent> visualComponents = new ArrayList<CAInteretManuelVisualComponent>();
@@ -265,7 +265,7 @@ public class CAProcessInteretMoratoireManuel extends BProcess {
                     interetTardif.getIdSection(), interetTardif.getIdJournal());
 
             if (interet.isNew()) {
-                if (isForceSoumis()) {
+                if (isForceExempte()) {
                     interet.setMotifcalcul(CAInteretMoratoire.CS_EXEMPTE);
                 } else {
                     // Mise à jour de l'intérêt tardif "standard" créé précédement
@@ -295,12 +295,16 @@ public class CAProcessInteretMoratoireManuel extends BProcess {
 
     }
 
-    private boolean isForceSoumis() {
-        return forceSoumis;
+    private boolean isNotForceExempte() {
+        return !forceExempte;
     }
 
-    public void setForceSoumis(boolean forceSoumis) {
-        this.forceSoumis = forceSoumis;
+    private boolean isForceExempte() {
+        return forceExempte;
+    }
+
+    public void setForceExempte(boolean forceExempte) {
+        this.forceExempte = forceExempte;
     }
 
     /**
@@ -421,7 +425,8 @@ public class CAProcessInteretMoratoireManuel extends BProcess {
         // POAVS-223
         if (aControlerManuellement) {
             interet.setMotifcalcul(CAInteretMoratoire.CS_A_CONTROLER);
-        } else {
+        } else if (isNotForceExempte()) {
+            // On force donc on va pas regarder la limite exempté.
             FWCurrency limiteExempte = new FWCurrency(CAInteretUtil.getLimiteExempteInteretMoratoire(getSession(),
                     getTransaction()));
 
