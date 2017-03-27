@@ -5,6 +5,7 @@ package globaz.corvus.db.deblocage;
 
 import globaz.corvus.db.lignedeblocage.RELigneDeblocage;
 import globaz.corvus.db.lignedeblocage.constantes.RELigneDeblocageType;
+import globaz.corvus.db.lignedeblocageventilation.RELigneDeblocageVentilation;
 import globaz.globall.db.BEntity;
 import globaz.globall.db.BStatement;
 import ch.globaz.common.domaine.Montant;
@@ -27,6 +28,7 @@ public class REDeblocageVersement extends BEntity {
     private RELigneDeblocageType type;
     private String refPaiement;
     private RELigneDeblocage ligneDeblocage = new RELigneDeblocage();
+    private RELigneDeblocageVentilation ligneDeblocageVentilation = new RELigneDeblocageVentilation();
 
     @Override
     protected String _getTableName() {
@@ -36,7 +38,12 @@ public class REDeblocageVersement extends BEntity {
     @Override
     protected void _readProperties(BStatement statement) throws Exception {
 
-        ligneDeblocage.readFromStatement(statement, "");
+        idCompteAnnexe = statement.dbReadNumeric("");
+        idRenteAccordee = statement.dbReadNumeric("");
+        codeRenteAccordee = statement.dbReadNumeric("");
+
+        ligneDeblocage.readFromStatement(statement, "ld");
+        ligneDeblocageVentilation.readFromStatement(statement, "ldv");
     }
 
     @Override
