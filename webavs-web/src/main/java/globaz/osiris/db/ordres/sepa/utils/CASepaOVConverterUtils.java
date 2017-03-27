@@ -113,7 +113,7 @@ public class CASepaOVConverterUtils {
     public static LocalInstrument2Choice getLclInstrm(CASepaGroupeOGKey key) throws Exception {
         LocalInstrument2Choice lclInstrm = new LocalInstrument2Choice();
         lclInstrm.setCd(ExternalLocalInstrument1_CPP);
-        if (key.isTypeVirement(IntAdressePaiement.MANDAT)) {
+        if (key.isTypeVirement(CASepaCommonUtils.TYPE_VIREMENT_MANDAT)) {
             return lclInstrm;
         }
         return null;
