@@ -49,28 +49,28 @@
 <!-- 	<defaultJdbcSchema>CCBQUA</defaultJdbcSchema> -->
 
 <!-- 		<defaultJdbcUrl>jdbc:jade:CCVD_QA</defaultJdbcUrl> -->
-<!-- 		<defaultJdbcSchema>CCVDQUA</defaultJdbcSchema> -->
+<!-- 		<defaultJdbcSchema>AGLAQUA</defaultJdbcSchema> -->
 	
 <!-- 		<defaultJdbcUrl>jdbc:jade:CCVD_TEST_CLIENTS</defaultJdbcUrl> -->
-<!-- 		<defaultJdbcSchema>RT_AGLA</defaultJdbcSchema> -->
+<!-- 		<defaultJdbcSchema>CCVDINT</defaultJdbcSchema> -->
 	
 <!-- 		<defaultJdbcUrl>jdbc:jade:CCVD_TEST_CLIENTS</defaultJdbcUrl> -->
 <!-- 		<defaultJdbcSchema>PC_CCVD</defaultJdbcSchema> -->
 	
-<!-- 		<defaultJdbcUrl>jdbc:jade:CCJU_QUALITE_1_6</defaultJdbcUrl> -->
-<!-- 		<defaultJdbcSchema>CCJUWEB</defaultJdbcSchema>	 -->
+		<defaultJdbcUrl>jdbc:jade:CCJU_QUALITE_1_6</defaultJdbcUrl>
+		<defaultJdbcSchema>CCJUWEB</defaultJdbcSchema>	
 
 <!-- 		<defaultJdbcUrl>jdbc:jade:H51_X_QUALITE</defaultJdbcUrl> -->
 <!-- 		<defaultJdbcSchema>H51XWEB</defaultJdbcSchema> -->
-
+ 
 <!-- 	 	<defaultJdbcUrl>jdbc:jade:CCJU_PC_RFM_QUALITE_1_6</defaultJdbcUrl> -->
 <!-- 		<defaultJdbcSchema>CCJUWEB</defaultJdbcSchema> -->
 	
 <!-- 		<defaultJdbcUrl>jdbc:jade:CICICAM_QUALITE</defaultJdbcUrl> -->
 <!-- 		<defaultJdbcSchema>CICIWEB</defaultJdbcSchema> -->
 		
-		 	<defaultJdbcUrl>jdbc:jade:CCVS_QUALITE_2</defaultJdbcUrl>
-		<defaultJdbcSchema>DB2COTT</defaultJdbcSchema>
+<!-- 		 	<defaultJdbcUrl>jdbc:jade:CCVS_QUALITE_2</defaultJdbcUrl> -->
+<!-- 			<defaultJdbcSchema>DB2COTT</defaultJdbcSchema> -->
 		
 	<!-- 	<defaultJdbcUrl>jdbc:jade:CVCI_QUALTIE</defaultJdbcUrl> -->
 	<!-- 	<defaultJdbcSchema>CVCIWEB</defaultJdbcSchema> -->

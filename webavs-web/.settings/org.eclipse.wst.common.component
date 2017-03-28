@@ -8,6 +8,7 @@
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/java"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/resources"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/properties"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/target/generated-sources/xjc"/>
         <property name="java-output-path" value="/webavs-web/target/classes"/>
         <property name="component.exclusion.patterns"/>
         <property name="context-root" value="webavs-web"/>
