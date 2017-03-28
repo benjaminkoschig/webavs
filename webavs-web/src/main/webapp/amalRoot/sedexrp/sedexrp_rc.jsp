@@ -30,7 +30,7 @@
 
 <script type="text/javascript">
 
-bFind = true;
+bFind = false;
 
 usrAction = "amal.sedexrp.sedexrp.lister";
 $(document).ready(function() {

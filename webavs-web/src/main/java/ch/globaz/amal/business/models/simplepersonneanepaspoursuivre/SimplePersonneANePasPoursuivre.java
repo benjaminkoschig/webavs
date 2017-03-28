@@ -15,6 +15,8 @@ public class SimplePersonneANePasPoursuivre extends JadeSimpleModel {
     private String montantCreance = null;
     private String nomPrenom = null;
     private String npaLocalite = null;
+    private String idAnnonceSedex = null;
+    private String idDetailFamille = null;
 
     @Override
     public String getId() {
@@ -104,6 +106,22 @@ public class SimplePersonneANePasPoursuivre extends JadeSimpleModel {
 
     public void setNpaLocalite(String npaLocalite) {
         this.npaLocalite = npaLocalite;
+    }
+
+    public String getIdAnnonceSedex() {
+        return idAnnonceSedex;
+    }
+
+    public void setIdAnnonceSedex(String idAnnonceSedex) {
+        this.idAnnonceSedex = idAnnonceSedex;
+    }
+
+    public String getIdDetailFamille() {
+        return idDetailFamille;
+    }
+
+    public void setIdDetailFamille(String idDetailFamille) {
+        this.idDetailFamille = idDetailFamille;
     }
 
 }

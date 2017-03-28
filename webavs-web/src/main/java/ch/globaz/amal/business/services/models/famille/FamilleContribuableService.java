@@ -14,6 +14,7 @@ import ch.globaz.amal.business.models.famille.FamilleContribuable;
 import ch.globaz.amal.business.models.famille.FamilleContribuableSearch;
 import ch.globaz.amal.business.models.famille.FamilleContribuableView;
 import ch.globaz.amal.business.models.famille.FamilleContribuableViewSearch;
+import ch.globaz.amal.business.models.famille.FamillePersonneEtendueSearch;
 import ch.globaz.amal.business.models.famille.SimpleFamilleSearch;
 
 /**
@@ -46,6 +47,8 @@ public interface FamilleContribuableService extends JadeApplicationService {
      *             Levée en cas de problème dans la couche de persistence
      */
     public int count(SimpleFamilleSearch search) throws FamilleException, JadePersistenceException;
+
+    public int count(FamillePersonneEtendueSearch search) throws FamilleException, JadePersistenceException;
 
     /**
      * Permet la création d'une entité familleContribuable
@@ -204,6 +207,17 @@ public interface FamilleContribuableService extends JadeApplicationService {
      */
     public SimpleFamilleSearch search(SimpleFamilleSearch simpleFamilleSearch) throws JadePersistenceException,
             FamilleException;
+
+    /**
+     * Recherche une FamillePersonneEtendue
+     * 
+     * @param famillePersonneEtendueSearch
+     * @return
+     * @throws JadePersistenceException
+     * @throws FamilleException
+     */
+    public FamillePersonneEtendueSearch search(FamillePersonneEtendueSearch famillePersonneEtendueSearch)
+            throws JadePersistenceException, FamilleException;
 
     /**
      * 

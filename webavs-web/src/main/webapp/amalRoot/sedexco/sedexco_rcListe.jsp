@@ -41,10 +41,7 @@ $(document).ready(function() {
 		<TH>Assureur</TH> 		
    		<TH>Message</TH>
    		<TH>Status</TH>
-   		<TH>Membre</TH>
    		<TH>Période</TH>
-   		<TH>Intérêts</TH>
-   		<TH>Frais</TH>
    		<TH>Montant</TH>   		
 	    <%-- /tpl:insert --%> 
 <%@ include file="/theme/list/tableHeader.jspf" %>
@@ -122,31 +119,12 @@ $(document).ready(function() {
 			imgName = "";
 			libelleImg = "";
 			%>				
-			<TD class="mtd" nowrap>
-<%-- 				<%=line.getComplexAnnonceSedexCO().getSimpleFamille().getNomPrenom() %>&nbsp; --%>
-			</TD>
 			<TD class="mtd" nowrap align="center">		
 				<%if (!line.getComplexAnnonceSedexCO().getSimpleAnnonceSedexCO().getPeriodeDebut().isEmpty()) { %>	
 					<%=line.getComplexAnnonceSedexCO().getSimpleAnnonceSedexCO().getPeriodeDebut()%> - <%=line.getComplexAnnonceSedexCO().getSimpleAnnonceSedexCO().getPeriodeFin() %>
 				<%} else { %>
 					&nbsp;
 				<% } %>
-			</TD>
-			<TD class="mtd" nowrap align="right">
-			<% Montant interet = new Montant(line.getComplexAnnonceSedexCO().getSimpleAnnonceSedexCO().getInterets());
-			if (!interet.isZero()) {%>	
-				<%=interet.toStringFormat() %>
-			<%} else { %>
-				&nbsp;
-			<%} %>
-			</TD>
-			<TD class="mtd" nowrap align="right">
-			<% Montant frais = new Montant(line.getComplexAnnonceSedexCO().getSimpleAnnonceSedexCO().getFrais());
-			if (!frais.isZero()) {%>	
-				<%=frais.toStringFormat() %>
-			<%} else { %>
-				&nbsp;
-			<%} %>
 			</TD>
 			<TD class="mtd" nowrap align="right">
 			<% Montant totalCreance = new Montant(line.getComplexAnnonceSedexCO().getSimpleAnnonceSedexCO().getTotalCreance());

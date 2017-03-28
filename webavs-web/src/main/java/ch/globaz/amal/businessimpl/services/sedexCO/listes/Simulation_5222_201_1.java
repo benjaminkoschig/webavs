@@ -6,7 +6,6 @@ public class Simulation_5222_201_1 {
     private String nssPersonne = null;
     private String nomPrenomPersonne = null;
     private String nomCaisse = null;
-    private String annee = null;
 
     @Column(name = "NSS", order = 0)
     public String getNssPersonne() {
@@ -34,14 +33,4 @@ public class Simulation_5222_201_1 {
     public void setNomCaisse(String nomCaisse) {
         this.nomCaisse = nomCaisse;
     }
-
-    @Column(name = "Année", order = 3)
-    public String getAnnee() {
-        return annee;
-    }
-
-    public void setAnnee(String annee) {
-        this.annee = annee;
-    }
-
 }

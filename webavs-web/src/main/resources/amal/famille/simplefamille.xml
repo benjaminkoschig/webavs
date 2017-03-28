@@ -24,7 +24,6 @@
 			<field name="isContribuable" column="ISCONT" type="BOOLEAN" mandatory="false" comment="Is contribuable"/>
 			<field name="tauxDeductIc" column="TAUXIC" type="NUMERIC" dataType="NUMERIC(3,0)" mandatory="false" comment="Taux deduction IC"/>
 			<field name="tauxDeductIfd" column="TXDIFD" type="NUMERIC" dataType="NUMERIC(3,0)" mandatory="false" comment="Taux deduction IFD"/>
-			<field name="flagEnvoiNPP" column="FLAG_ENVOI_NPP" type="BOOLEAN" mandatory="false" comment="Flag envoyé ne pas poursuivre"/>
 		</fields>
 		<search-definition>
 			<search-group operator="AND">

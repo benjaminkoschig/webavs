@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.amal.business.models.famille.FamillePersonneEtendue">
+		<root-model name="simpleFamille" model-ref="ch.globaz.amal.business.models.famille.SimpleFamille"/>
+		
+		<linked-model name="personneEtendue" model-ref="ch.globaz.pyxis.business.model.PersonneEtendueComplexModel" join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="personneEtendue.idTiers" operation="EQUALS" field-ref="simpleFamille.idTier"/>
+			</join-group>
+		</linked-model>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="likeNss" field-ref="personneEtendue.personneEtendue.numAvsActuel" operation="LIKE" />
+				<search-field name="forMembreFinDroit" field-ref="simpleFamille.finDefinitive" operation="EQUALS" />
+				<search-group operator="OR">
+					<search-field name="forMembreActifFromToday" field-ref="simpleFamille.finDefinitive" operation="GREATER"/>
+					<search-field name="forMembreActifFromToday" field-ref="simpleFamille.finDefinitive" operation="EQUALS" value="0"/>
+				</search-group>
+			</search-group>
+		</search-definition>
+				
+	</complexe-model>
+</model-mapping>

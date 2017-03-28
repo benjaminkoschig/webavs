@@ -15,6 +15,7 @@ public class ComparaisonAnnonceCreancePriseEnCharge {
     private String assureur;
     private Montant montantCreance;
     private String message = null;
+    private String typeSubside = null;
 
     @Column(name = "N° de contribuable", order = 0)
     public String getNoContribuable() {
@@ -79,7 +80,16 @@ public class ComparaisonAnnonceCreancePriseEnCharge {
         this.montantCreance = montantCreance;
     }
 
-    @Column(name = "Message", order = 7)
+    @Column(name = "Type", order = 7)
+    public String getTypeSubside() {
+        return typeSubside;
+    }
+
+    public void setTypeSubside(String typeSubside) {
+        this.typeSubside = typeSubside;
+    }
+
+    @Column(name = "Message", order = 8)
     public String getMessage() {
         return message;
     }
@@ -87,5 +97,4 @@ public class ComparaisonAnnonceCreancePriseEnCharge {
     public void setMessage(String message) {
         this.message = message;
     }
-
 }

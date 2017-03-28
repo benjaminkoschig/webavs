@@ -5,6 +5,7 @@
 		<table name="MASDXCO_XML" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
 		<fields>
 			<primary-key name="idAnnonceSedexCOXML" column="ID" comment="clé primaire"/>
+			<field name="idAnnonceSedex" column="IDSEDEX" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="true" comment="ID annonce SEDEX"/>
 			<field name="messageId" column="MSGID" type="STRING" dataType="VARCHAR(40)" mandatory="false" comment="Message ID"/>			
 			<field name="xml" column="XML" type="STRING" mandatory="false" comment="XML"/>			
 		</fields>

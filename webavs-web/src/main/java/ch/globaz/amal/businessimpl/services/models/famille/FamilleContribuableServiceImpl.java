@@ -37,6 +37,7 @@ import ch.globaz.amal.business.models.famille.FamilleContribuable;
 import ch.globaz.amal.business.models.famille.FamilleContribuableSearch;
 import ch.globaz.amal.business.models.famille.FamilleContribuableView;
 import ch.globaz.amal.business.models.famille.FamilleContribuableViewSearch;
+import ch.globaz.amal.business.models.famille.FamillePersonneEtendueSearch;
 import ch.globaz.amal.business.models.famille.SimpleFamille;
 import ch.globaz.amal.business.models.famille.SimpleFamilleSearch;
 import ch.globaz.amal.business.services.AmalServiceLocator;
@@ -231,7 +232,15 @@ public class FamilleContribuableServiceImpl implements FamilleContribuableServic
     @Override
     public int count(SimpleFamilleSearch search) throws FamilleException, JadePersistenceException {
         if (search == null) {
-            throw new FamilleException("Unable to search familleContribuable, the search model passed is null!");
+            throw new FamilleException("Unable to search SimpleFamille, the search model passed is null!");
+        }
+        return JadePersistenceManager.count(search);
+    }
+
+    @Override
+    public int count(FamillePersonneEtendueSearch search) throws FamilleException, JadePersistenceException {
+        if (search == null) {
+            throw new FamilleException("Unable to search famillePersonneEtendue, the search model passed is null!");
         }
         return JadePersistenceManager.count(search);
     }
@@ -727,6 +736,16 @@ public class FamilleContribuableServiceImpl implements FamilleContribuableServic
         } catch (JadeApplicationServiceNotAvailableException e) {
             throw new FamilleException("Service not available - " + e.getMessage());
         }
+    }
+
+    @Override
+    public FamillePersonneEtendueSearch search(FamillePersonneEtendueSearch famillePersonneEtendueSearch)
+            throws JadePersistenceException, FamilleException {
+        if (famillePersonneEtendueSearch == null) {
+            throw new FamilleException("Unable to search FamillePersonneEtendueSearch, the given model is null!");
+        }
+
+        return (FamillePersonneEtendueSearch) JadePersistenceManager.search(famillePersonneEtendueSearch);
     }
 
     /*

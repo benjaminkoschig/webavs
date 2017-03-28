@@ -43,7 +43,6 @@
 				<search-field name="inNumerosContribuables" field-ref="personneEtendue.personneEtendue.numContribuableActuel" operation="IN"/>
 				<search-field name="forContribuableActif" field-ref="simpleContribuable.isContribuableActif" operation="EQUALS"/>
 				<search-field name="forNNSS" field-ref="personneEtendue.personneEtendue.numAvsActuel" operation="EQUALS"/>
-				<search-field name="isOnListePersonneNePasPoursuivre" field-ref="simpleFamille.flagEnvoiNPP" operation="EQUALS" />
 				<search-field name="inNoCaisseMaladie" field-ref="simpleDetailFamille.noCaisseMaladie" operation="IN"/>
 			</search-group>
 		</search-definition>
@@ -79,6 +78,10 @@
 		<order-by name="sedexco">
 			<order-field field-ref="simpleDetailFamille.noCaisseMaladie" order="DESC"/>			
 			<order-field field-ref="simpleDetailFamille.debutDroit" order="DESC"/>
+		</order-by>
+		
+		<order-by name="orderByFinDroitDesc">
+			<order-field field-ref="simpleDetailFamille.finDroit" order="DESC"/>			
 		</order-by>
 	</complexe-model>
 </model-mapping>

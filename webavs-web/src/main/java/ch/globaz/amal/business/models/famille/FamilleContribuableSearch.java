@@ -34,7 +34,6 @@ public class FamilleContribuableSearch extends JadeSearchComplexModel {
     private String forNumeroContribuable = null;
     private List inNumerosContribuables = null;
     private List inTypeDemande = null;
-    private Boolean isOnListePersonneNePasPoursuivre = false;
     private List<String> inNoCaisseMaladie = null;
 
     public FamilleContribuableSearch() {
@@ -195,14 +194,6 @@ public class FamilleContribuableSearch extends JadeSearchComplexModel {
 
     public void setInTypeDemande(List inTypeDemande) {
         this.inTypeDemande = inTypeDemande;
-    }
-
-    public Boolean getIsOnListePersonneNePasPoursuivre() {
-        return isOnListePersonneNePasPoursuivre;
-    }
-
-    public void setIsOnListePersonneNePasPoursuivre(Boolean isOnListePersonneNePasPoursuivre) {
-        this.isOnListePersonneNePasPoursuivre = isOnListePersonneNePasPoursuivre;
     }
 
     public List<String> getInNoCaisseMaladie() {

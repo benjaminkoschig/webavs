@@ -101,19 +101,20 @@ public class AnnoncesCOReceptionMessage5234_000402_1 extends AnnoncesCOReception
             Class<?>[] addClasses = new Class[] { ch.gdk_cds.xmlns.da_64a_5234_000402._1.Message.class };
             jaxbs = JAXBServices.getInstance();
             Message message = (Message) jaxbs.unmarshal(currentSimpleMessage.fileLocation, false, true, addClasses);
+            // Sauvegarde du code XML de l'annonce dans la table
+            SimpleAnnonceSedexCO simpleAnnonceSedexCO = saveAnnonce(addClasses, message);
+            saveXml(addClasses, message, simpleAnnonceSedexCO);
 
             senderId = message.getHeader().getSenderId();
             idTiersSender = AMSedexRPUtil.getIdTiersFromSedexId(senderId);
-            run(message);
+            run(message, simpleAnnonceSedexCO);
 
-            // Sauvegarde du code XML de l'annonce dans la table
-            saveAnnonce(addClasses, message);
         } catch (Exception e) {
             throw new JadeSedexMessageNotHandledException("Erreur lors du traitement du message", e);
         }
     }
 
-    private void saveAnnonce(Class<?>[] addClasses, Message message) {
+    private SimpleAnnonceSedexCO saveAnnonce(Class<?>[] addClasses, Message message) {
         // Sauvegarde de l'annonce dans la table
         HeaderType header = message.getHeader();
         ContentType content = message.getContent();
@@ -135,17 +136,19 @@ public class AnnoncesCOReceptionMessage5234_000402_1 extends AnnoncesCOReception
             annonceSedexCO.setDateAnnonce(Date.now().getSwissValue());
             JadePersistenceManager.add(annonceSedexCO);
             checkJadeThreadErrors();
-
-            saveXml(addClasses, message);
+            return annonceSedexCO;
         } catch (Exception ex) {
             JadeThread.logError("AnnoncesCOReceptionMessage5234_000402_1.saveAnnonce()",
                     "Erreur pendant la sauvegarde de l'annonce du décompte final! (Msg id : " + header.getMessageId()
                             + ") => " + ex.getMessage());
         }
+
+        return null;
     }
 
-    private void saveXml(Class<?>[] addClasses, Message message) throws JAXBException, SAXException, IOException,
-            JAXBValidationError, JAXBValidationWarning, JadePersistenceException {
+    private void saveXml(Class<?>[] addClasses, Message message, SimpleAnnonceSedexCO simpleAnnonceSedexCO)
+            throws JAXBException, SAXException, IOException, JAXBValidationError, JAXBValidationWarning,
+            JadePersistenceException {
         StringWriter sw = new StringWriter();
         jaxbs.marshal(message, sw, false, true, addClasses);
         SimpleAnnonceSedexCOXML annonceSedexCOXML = new SimpleAnnonceSedexCOXML();
@@ -160,7 +163,7 @@ public class AnnoncesCOReceptionMessage5234_000402_1 extends AnnoncesCOReception
      * @return La liste des personnes non trouvées
      * @throws Exception
      */
-    protected void run(Message message) throws Exception {
+    protected void run(Message message, SimpleAnnonceSedexCO simpleAnnonceSedexCO) throws Exception {
         List<CertificateOfLossArrivalType> decomptesFinaux = message.getContent().getCertificateOfLossFinalStatement()
                 .getCertificateOfLossArrival();
         List<CertificateOfLossPaymentType> decomptesFinauxPaiement = message.getContent()
@@ -173,7 +176,7 @@ public class AnnoncesCOReceptionMessage5234_000402_1 extends AnnoncesCOReception
                 finPeriodeAObserver.getSwissMonthValue());
 
         List<SimpleOutputList_Decompte_5234_401_1> listLigneDecompteFinal = createLigneDecompte(decomptesFinaux,
-                periodeAObserver);
+                periodeAObserver, simpleAnnonceSedexCO);
 
         List<SimpleOutputList_DecomptePaiement_5234_402_1> listLigneDecompteFinalPaiement = createLignesPaiement(
                 decomptesFinauxPaiement, periodeAObserver);

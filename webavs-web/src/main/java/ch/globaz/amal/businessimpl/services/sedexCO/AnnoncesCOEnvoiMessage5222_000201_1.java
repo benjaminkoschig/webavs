@@ -96,7 +96,7 @@ import ch.globaz.simpleoutputlist.outimpl.Configurations;
 import ch.globaz.simpleoutputlist.outimpl.SimpleOutputListBuilder;
 
 public class AnnoncesCOEnvoiMessage5222_000201_1 extends AMALabstractProcess {
-    private static final String ANNEE_A_TRAITER = "2016";
+    private static String ANNEE_A_TRAITER;
     private static final String MM_YYYY = "MM.yyyy";
     private static final String DD_MM_YYYY = "dd.MM.yyyy";
     private static final String PACKAGE_CLASS_FOR_SEDEX_LISTE_PERSONNE_NE_PAS_POURSUIVRE = "ch.gdk_cds.xmlns.da_64a_5222_000201._1";
@@ -112,6 +112,7 @@ public class AnnoncesCOEnvoiMessage5222_000201_1 extends AMALabstractProcess {
         if (objectFactory == null) {
             objectFactory = new ObjectFactory();
         }
+        ANNEE_A_TRAITER = "2016";// new Date().getAnnee();
     }
 
     @Override
@@ -154,7 +155,6 @@ public class AnnoncesCOEnvoiMessage5222_000201_1 extends AMALabstractProcess {
                             simulationFile.setNomPrenomPersonne(familleContribuable.getPersonneEtendue().getTiers()
                                     .getDesignation1()
                                     + " " + familleContribuable.getPersonneEtendue().getTiers().getDesignation2());
-                            simulationFile.setAnnee(familleContribuable.getSimpleDetailFamille().getAnneeHistorique());
                             listSimulationsFiles.add(simulationFile);
                         }
                     } catch (Exception e) {
@@ -165,7 +165,6 @@ public class AnnoncesCOEnvoiMessage5222_000201_1 extends AMALabstractProcess {
 
                 fichierSimulation = printSimulation(listSimulationsFiles);
             } else {
-                // AnneeToDelete doit provenir d'un écran
                 String anneeToDelete = ANNEE_A_TRAITER;
 
                 for (Entry<String, List<FamilleContribuable>> entry : mapSubsideParAssurance.entrySet()) {
@@ -188,7 +187,7 @@ public class AnnoncesCOEnvoiMessage5222_000201_1 extends AMALabstractProcess {
                         // TODO Validation ne fonctionne pas ????
                         Class<?>[] classes = new Class<?>[] {};
                         String messageFile = JAXBServices.getInstance().marshal(message, false, false, classes);
-                        saveXml(classes, message);
+                        saveXml(classes, message, simpleAnnonceSedexCO);
 
                         // Ajout du message dans la liste de messages à envoyer
                         SimpleSedexMessage simpleSedexMessage = new SimpleSedexMessage();
@@ -247,7 +246,7 @@ public class AnnoncesCOEnvoiMessage5222_000201_1 extends AMALabstractProcess {
 
     private File printSimulation(List<Simulation_5222_201_1> listSimulationsFiles) {
         Details details = new Details();
-        details.add("Reçu le", Date.now().getSwissValue());
+        details.add("Envoyé le", Date.now().getSwissValue());
         details.newLigne();
         Configuration config = Configurations.buildeDefault();
         SimpleOutputListBuilder builder = SimpleOutputListBuilderJade.newInstance()
@@ -275,11 +274,13 @@ public class AnnoncesCOEnvoiMessage5222_000201_1 extends AMALabstractProcess {
         return simpleAnnonceSedexCO;
     }
 
-    private SimpleAnnonceSedexCOXML saveXml(Class<?>[] addClasses, Message message) throws JAXBException, SAXException,
-            IOException, JAXBValidationError, JAXBValidationWarning, JadePersistenceException {
+    private SimpleAnnonceSedexCOXML saveXml(Class<?>[] addClasses, Message message,
+            SimpleAnnonceSedexCO simpleAnnonceSedexCO) throws JAXBException, SAXException, IOException,
+            JAXBValidationError, JAXBValidationWarning, JadePersistenceException {
         StringWriter sw = new StringWriter();
         JAXBServices.getInstance().marshal(message, sw, false, true, addClasses);
         SimpleAnnonceSedexCOXML annonceSedexCOXML = new SimpleAnnonceSedexCOXML();
+        annonceSedexCOXML.setIdAnnonceSedex(simpleAnnonceSedexCO.getIdAnnonceSedexCO());
         annonceSedexCOXML.setMessageId(message.getHeader().getMessageId());
         annonceSedexCOXML.setXml(sw.toString());
         JadePersistenceManager.add(annonceSedexCOXML);
@@ -519,7 +520,7 @@ public class AnnoncesCOEnvoiMessage5222_000201_1 extends AMALabstractProcess {
                 content.getListOfGuaranteedAssumptions().getInsuredPerson().add(insuredPersonType);
 
                 // Insertion de la persone dans la table des personnes a ne pas poursuivre
-                flagPersonne(vn, familleContribuable);
+                flagPersonne(vn, familleContribuable, simpleAnnonceSedexCO);
                 // Création d'une entrée pour chaque membre
                 SimpleAnnonceSedexCOPersonne sedexCOPersonne = new SimpleAnnonceSedexCOPersonne();
                 sedexCOPersonne.setIdAnnonceSedexCO(simpleAnnonceSedexCO.getId());
@@ -568,7 +569,8 @@ public class AnnoncesCOEnvoiMessage5222_000201_1 extends AMALabstractProcess {
 
     }
 
-    private void flagPersonne(String nss, FamilleContribuable familleContribuable) throws JadePersistenceException,
+    private void flagPersonne(String nss, FamilleContribuable familleContribuable,
+            SimpleAnnonceSedexCO simpleAnnonceSedexCO) throws JadePersistenceException,
             SimplePersonneANePasPoursuivreException, JadeApplicationServiceNotAvailableException {
         SimplePersonneANePasPoursuivreSearch personneANePasPoursuivreSearch = new SimplePersonneANePasPoursuivreSearch();
         personneANePasPoursuivreSearch.setForNSS(nss);
@@ -582,6 +584,9 @@ public class AnnoncesCOEnvoiMessage5222_000201_1 extends AMALabstractProcess {
             personneANePasPoursuivre.setAnnee(familleContribuable.getSimpleDetailFamille().getAnneeHistorique());
             personneANePasPoursuivre.setIdTiersCM(familleContribuable.getSimpleDetailFamille().getNoCaisseMaladie());
             personneANePasPoursuivre.setIdFamille(familleContribuable.getSimpleFamille().getIdFamille());
+            personneANePasPoursuivre.setIdDetailFamille(familleContribuable.getSimpleDetailFamille()
+                    .getIdDetailFamille());
+            personneANePasPoursuivre.setIdAnnonceSedex(simpleAnnonceSedexCO.getIdAnnonceSedexCO());
             personneANePasPoursuivre.setFlagEnvoi(true);
             personneANePasPoursuivre.setFlagReponse(false);
             AmalImplServiceLocator.getSimplePersonneANePasPoursuivreService().create(personneANePasPoursuivre);
@@ -720,6 +725,7 @@ public class AnnoncesCOEnvoiMessage5222_000201_1 extends AMALabstractProcess {
         GregorianCalendar cal = new GregorianCalendar();
         XMLGregorianCalendar nowDateTime;
         nowDateTime = DatatypeFactory.newInstance().newXMLGregorianCalendar(cal);
+        nowDateTime.setTimezone(DatatypeConstants.FIELD_UNDEFINED);
         header.setMessageDate(nowDateTime);
 
         header.setAction(IAMSedex.MESSAGE_ACTION_NOUVEAU);
