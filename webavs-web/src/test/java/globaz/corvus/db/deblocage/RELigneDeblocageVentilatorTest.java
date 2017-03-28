@@ -34,8 +34,8 @@ public class RELigneDeblocageVentilatorTest {
 
     private RELigneDeblocageVentilation newVentialtion(int i, int j, int montant) {
         RELigneDeblocageVentilation ventilation = new RELigneDeblocageVentilation();
-        ventilation.setIdLigneDeblocage(i);
-        ventilation.setIdSectionSource(j);
+        // ventilation.setIdLigneDeblocage(i);
+        // ventilation.setIdSectionSource(j);
         ventilation.setMontant(new Montant(montant));
         return ventilation;
     }

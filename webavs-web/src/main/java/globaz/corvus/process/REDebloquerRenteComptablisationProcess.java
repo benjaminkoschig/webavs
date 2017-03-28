@@ -5,6 +5,7 @@ import globaz.framework.util.FWMessage;
 import globaz.globall.db.BProcess;
 import globaz.globall.db.BTransaction;
 import globaz.globall.db.GlobazJobQueue;
+import ch.globaz.common.process.ProcessMailUtils;
 
 public class REDebloquerRenteComptablisationProcess extends BProcess {
 
@@ -31,6 +32,9 @@ public class REDebloquerRenteComptablisationProcess extends BProcess {
         } catch (Exception e) {
             BTransaction transaction = getTransaction();
             transaction.addErrors(e.toString());
+            ProcessMailUtils.sendMailError(getEMailAddress(), e, this, "");
+            setSendCompletionMail(false);
+
             getMemoryLog().logMessage(e.toString(), FWMessage.ERREUR, this.getClass().getName());
         } finally {
             if (succes) {

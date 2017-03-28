@@ -156,11 +156,11 @@ public class ProcessMailUtils {
      * @param objectsToJson
      * @throws Exception
      */
-    public static void sendMailError(String mail, Throwable e, AbstractJadeJob process, String messageInfo,
+    public static void sendMailError(String mail, Throwable e, Object processObject, String messageInfo,
             Object... objectsToJson) throws Exception {
         List<String> mailsList = new ArrayList<String>();
         mailsList.add(mail);
-        sendMailError(mailsList, e, process, messageInfo, null, objectsToJson);
+        sendMailError(mailsList, e, processObject, messageInfo, null, objectsToJson);
     }
 
     /**
