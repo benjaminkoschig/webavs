@@ -9,6 +9,7 @@ import ch.globaz.common.domaine.CodeSystemEnumUtils;
 public enum RELigneDeblocageEtat implements CodeSystemEnum<RELigneDeblocageEtat> {
     COMPTABILISE("52862003"),
     ENREGISTRE("52862001"),
+    NONE(""),
     VALIDE("52862002");
 
     private String csCode;

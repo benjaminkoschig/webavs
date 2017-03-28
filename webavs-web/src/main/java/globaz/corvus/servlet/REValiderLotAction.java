@@ -76,8 +76,10 @@ public class REValiderLotAction extends REDefaultProcessAction {
             // on lui donne les parametres en requete.
             JSPUtils.setBeanProperties(request, viewBean);
             session.setAttribute(FWServlet.VIEWBEAN, viewBean);
+            REValiderLotViewBean vb = (REValiderLotViewBean) viewBean;
 
-            if (!IRELot.CS_TYP_LOT_DECISION.equals(((REValiderLotViewBean) viewBean).getCsTypeLot())) {
+            if (!IRELot.CS_TYP_LOT_DECISION.equals(vb.getCsTypeLot())
+                    && !IRELot.CS_TYP_LOT_DEBLOCAGE_RA.equals(vb.getCsTypeLot())) {
                 viewBean.setMsgType(FWViewBeanInterface.ERROR);
                 viewBean.setMessage(((BSession) mainDispatcher.getSession())
                         .getLabel("ERREUR_LOT_TYPE_DECISION_VALIDE"));

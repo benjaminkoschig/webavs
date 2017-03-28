@@ -52,20 +52,21 @@ public class RELibererDevaliderDeblocage {
 
         RELot lot = findLotOrCreate();
         Long idLot = Long.valueOf(lot.getIdLot());
-        RELigneDeblocages deblocages = deblocage.getLignesDeblocages().filtreEnregistres();
+        RELigneDeblocages deblocagesEnregistre = deblocage.getLignesDeblocages().filtreEnregistres();
         Long idApplication = Long.valueOf(IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_RENTE);
         Long idTiersAdressePaiement = Long.valueOf(deblocage.getPracc().getIdTiersAdressePmt());
 
-        deblocages.changeEtatToValide().changeIdLot(idLot);
+        deblocagesEnregistre.changeEtatToValide().changeIdLot(idLot);
 
-        deblocages.getLigneDeblocageVersementBeneficiaire().changeIdTiersAdressePaiementAndApplication(
+        deblocagesEnregistre.getLigneDeblocageVersementBeneficiaire().changeIdTiersAdressePaiementAndApplication(
                 idTiersAdressePaiement, idApplication);
 
-        deblocages.getLigneDeblocageImpotsSource().changeSection(Long.valueOf(APIReferenceRubrique.IMPOT_A_LA_SOURCE));
+        deblocagesEnregistre.getLigneDeblocageImpotsSource().changeSection(
+                Long.valueOf(APIReferenceRubrique.IMPOT_A_LA_SOURCE));
 
-        deblocageService.update(deblocage.getLignesDeblocages());
+        deblocageService.update(deblocagesEnregistre);
 
-        RELigneDeblocageVentilator ventilator = new RELigneDeblocageVentilator(deblocage.getLignesDeblocages(),
+        RELigneDeblocageVentilator ventilator = new RELigneDeblocageVentilator(deblocagesEnregistre,
                 deblocage.getSections());
 
         ventilationService.save(ventilator.ventil());

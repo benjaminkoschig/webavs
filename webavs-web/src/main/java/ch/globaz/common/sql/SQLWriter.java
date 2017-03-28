@@ -27,6 +27,7 @@ public class SQLWriter {
     private Integer currentIndice;
     private final boolean addSchema;
     private static final String CONST_SCHEMA = "schema.";
+    private boolean addComma = false;
 
     private SQLWriter(String schema) {
         this.schema = schema;
@@ -77,14 +78,32 @@ public class SQLWriter {
     }
 
     /**
-     * Ajout le mot select à la requête.
+     * Ajout les fields à la requête.
      * 
      * @return SQLWriter utilisé
      */
-    public SQLWriter fields(Class<? extends TableDefinition> clazz, String aliasTable) {
+    public SQLWriter fields(String... fields) {
+        StringWriter writer = new StringWriter();
+        for (String field : fields) {
+            if (addComma) {
+                writer.append(", ");
+            } else {
+                addComma = true;
+            }
+            writer.append(field);
+        }
+        query.append(" ").append(writer.toString().toUpperCase());
+        return this;
+    }
+
+    /**
+     * Ajout les fields à la requête.
+     * 
+     * @return SQLWriter utilisé
+     */
+    public SQLWriter fields(String aliasTable, Class<? extends TableDefinition> clazz) {
         TableDefinition[] values = clazz.getEnumConstants();
         StringWriter writer = new StringWriter();
-        boolean addComma = false;
         for (TableDefinition def : values) {
             if (addComma) {
                 writer.append(", ");
@@ -99,7 +118,7 @@ public class SQLWriter {
             writer.append("_");
             writer.append(def.getColumnName());
         }
-        query.append(" ").append(writer.toString().toUpperCase()).append(" ");
+        query.append(" ").append(writer.toString().toUpperCase());
         return this;
     }
 
@@ -298,23 +317,7 @@ public class SQLWriter {
      * @param param Integer sql
      * @return SQLWriter utilisé
      */
-    public SQLWriter equal(Integer param) {
-        if (param != null) {
-            paramsToUse.add(String.valueOf(param));
-            query.append("=?");
-        } else {
-            rollback();
-        }
-        return this;
-    }
-
-    /**
-     * Ajoute le = avec le paramètre définit à la requête SQL
-     * 
-     * @param param Long sql
-     * @return SQLWriter utilisé
-     */
-    public SQLWriter equal(Long param) {
+    public SQLWriter equal(Number param) {
         if (param != null) {
             paramsToUse.add(String.valueOf(param));
             query.append("=?");
@@ -395,6 +398,21 @@ public class SQLWriter {
         return this;
     }
 
+    /**
+     * Ajoute le mot 'and' à la requête si besoin
+     * 
+     * @param sqlFramgment
+     * @return SQLWriter utilisé
+     */
+    public SQLWriter and(String alias, TableDefinition tableDefinition) {
+        String column = alias + "." + tableDefinition.getColumnName();
+
+        this.and();
+        query.append(" ").append(column);
+
+        return this;
+    }
+
     public SQLWriter isNullOrZero(TableDefinition tableDefinition) {
         String column = tableDefinition.getTableName() + "." + tableDefinition.getColumnName();
         return isNullOrZero(column);
@@ -470,7 +488,7 @@ public class SQLWriter {
     /**
      * Ajoute le mot 'and' à la requête(si besoin) et le fragment SQL si les paramètres ne sont pas vide(null).
      * 
-     * @param params Paramétrées à utilisé dans le fragment SQL
+     * @param params Paramètres à utilisé dans le fragment SQL
      * @param sqlFragement SQl à ajouté à la requête. Les caractères [?] sont remplacés par les params donnés en
      *            paramètre(Ex: nom = '?' , => nom = 'Test').
      * @return SQLWriter utilisé

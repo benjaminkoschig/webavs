@@ -115,7 +115,7 @@ public abstract class JadeEntity extends BEntity {
         String columnName = tableDefinition.getColumnName();
 
         if (aliasTable != null) {
-            columnName = aliasTable + "." + columnName;
+            columnName = aliasTable + "_" + columnName;
         }
 
         if (Integer.class.equals(tableDefinition.getType())) {

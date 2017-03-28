@@ -3,8 +3,10 @@
  */
 package globaz.corvus.helpers.process;
 
+import globaz.corvus.api.lots.IRELot;
 import globaz.corvus.db.decisions.REDecisionEntity;
 import globaz.corvus.db.demandes.REDemandeRenteJointDemande;
+import globaz.corvus.process.REDebloquerRenteComptablisationProcess;
 import globaz.corvus.process.RETraiterLotDecisionsProcess;
 import globaz.corvus.vb.process.REValiderDecisionsViewBean;
 import globaz.corvus.vb.process.REValiderLotViewBean;
@@ -70,17 +72,26 @@ public class REValiderLotHelper extends PRAbstractHelper {
     protected void _start(FWViewBeanInterface viewBean, FWAction action, BISession session) {
         REValiderLotViewBean vb = (REValiderLotViewBean) viewBean;
 
-        RETraiterLotDecisionsProcess process = new RETraiterLotDecisionsProcess((BSession) session);
+        if (IRELot.CS_TYP_LOT_DEBLOCAGE_RA.equals(vb.getCsTypeLot())) {
+            REDebloquerRenteComptablisationProcess process = new REDebloquerRenteComptablisationProcess();
+            process.setSession((BSession) session);
+            process.setIdLot(vb.getIdLot());
+            // process.setDateComptable(vb.getDateValeurComptable());
+            process.setEMailAddress(vb.getEMailAddress());
+            process.start();
 
-        process.setIdLot(vb.getIdLot());
-        process.setDateComptable(vb.getDateValeurComptable());
-        process.setEMailAddress(vb.getEMailAddress());
-        process.setIdOrganeExecution(vb.getIdOrganeExecution());
-        process.setNumeroOG(vb.getNumeroOG());
-        process.setDateEcheancePaiement(vb.getDateEcheancePaiement());
-        process.setIsoGestionnaire(vb.getIsoGestionnaire());
-        process.setIsoHighPriority(vb.getIsoHighPriority());
-        process.start();
+        } else {
+            RETraiterLotDecisionsProcess process = new RETraiterLotDecisionsProcess((BSession) session);
+
+            process.setIdLot(vb.getIdLot());
+            process.setDateComptable(vb.getDateValeurComptable());
+            process.setEMailAddress(vb.getEMailAddress());
+            process.setIdOrganeExecution(vb.getIdOrganeExecution());
+            process.setNumeroOG(vb.getNumeroOG());
+            process.setDateEcheancePaiement(vb.getDateEcheancePaiement());
+            process.setIsoGestionnaire(vb.getIsoGestionnaire());
+            process.setIsoHighPriority(vb.getIsoHighPriority());
+            process.start();
+        }
     }
-
 }

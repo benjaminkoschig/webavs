@@ -6,6 +6,8 @@ package globaz.corvus.db.deblocage;
 import globaz.corvus.db.lignedeblocage.RELigneDeblocage;
 import globaz.corvus.db.lignedeblocage.constantes.RELigneDeblocageType;
 import globaz.corvus.db.lignedeblocageventilation.RELigneDeblocageVentilation;
+import globaz.corvus.db.rentesaccordees.REInformationsComptabilite;
+import globaz.corvus.db.rentesaccordees.REPrestationsAccordees;
 import globaz.globall.db.BEntity;
 import globaz.globall.db.BStatement;
 import ch.globaz.common.domaine.Montant;
@@ -17,15 +19,11 @@ public class REDeblocageVersement extends BEntity {
     private String idCompteAnnexe;
     private String idRenteAccordee;
     private String codeRenteAccordee;
-    private Long idTiersAdressePaiement;
-    private Long idApplicationAdressePaiement;
-    private Long idTiersBeneficiaire;
-    private Long idSectionSource;
-    private Long idSectionCompense;
-    private Long idRoleSection;
+    private String idTiersAdressePaiement;
+    private String idApplicationAdressePaiement;
+    private String idTiersBeneficiaire;
 
     private Montant montant;
-    private RELigneDeblocageType type;
     private String refPaiement;
     private RELigneDeblocage ligneDeblocage = new RELigneDeblocage();
     private RELigneDeblocageVentilation ligneDeblocageVentilation = new RELigneDeblocageVentilation();
@@ -37,10 +35,13 @@ public class REDeblocageVersement extends BEntity {
 
     @Override
     protected void _readProperties(BStatement statement) throws Exception {
-
-        idCompteAnnexe = statement.dbReadNumeric("");
-        idRenteAccordee = statement.dbReadNumeric("");
-        codeRenteAccordee = statement.dbReadNumeric("");
+        idCompteAnnexe = statement.dbReadNumeric(REInformationsComptabilite.FIELDNAME_ID_COMPTE_ANNEXE);
+        idRenteAccordee = statement.dbReadNumeric(REPrestationsAccordees.FIELDNAME_ID_PRESTATION_ACCORDEE);
+        codeRenteAccordee = statement.dbReadNumeric(REPrestationsAccordees.FIELDNAME_CODE_PRESTATION);
+        idTiersAdressePaiement = statement.dbReadNumeric(REInformationsComptabilite.FIELDNAME_ID_TIERS_ADRESSE_PMT);
+        idApplicationAdressePaiement = statement
+                .dbReadNumeric(REInformationsComptabilite.FIELDNAME_ID_DOMAINE_APPLICATION);
+        idTiersBeneficiaire = statement.dbReadNumeric(REPrestationsAccordees.FIELDNAME_ID_TIERS_BENEFICIAIRE);
 
         ligneDeblocage.readFromStatement(statement, "ld");
         ligneDeblocageVentilation.readFromStatement(statement, "ldv");
@@ -81,46 +82,6 @@ public class REDeblocageVersement extends BEntity {
         this.idRenteAccordee = idRenteAccordee;
     }
 
-    public Long getIdTiersAdressePaiement() {
-        return idTiersAdressePaiement;
-    }
-
-    public void setIdTiersAdressePaiement(Long idTiersAdressePaiement) {
-        this.idTiersAdressePaiement = idTiersAdressePaiement;
-    }
-
-    public Long getIdTiersBeneficiaire() {
-        return idTiersBeneficiaire;
-    }
-
-    public void setIdTiersBeneficiaire(Long idTiersBeneficiaire) {
-        this.idTiersBeneficiaire = idTiersBeneficiaire;
-    }
-
-    public Long getIdSectionSource() {
-        return idSectionSource;
-    }
-
-    public void setIdSectionSource(Long idSectionSource) {
-        this.idSectionSource = idSectionSource;
-    }
-
-    public Long getIdSectionCompense() {
-        return idSectionCompense;
-    }
-
-    public void setIdSectionCompense(Long idSectionCompense) {
-        this.idSectionCompense = idSectionCompense;
-    }
-
-    public Long getIdRoleSection() {
-        return idRoleSection;
-    }
-
-    public void setIdRoleSection(Long idRoleSection) {
-        this.idRoleSection = idRoleSection;
-    }
-
     public Montant getMontant() {
         return montant;
     }
@@ -130,34 +91,35 @@ public class REDeblocageVersement extends BEntity {
     }
 
     public RELigneDeblocageType getType() {
-        return type;
-    }
-
-    public void setType(RELigneDeblocageType type) {
-        this.type = type;
-    }
-
-    public Long getIdApplicationAdressePaiement() {
-        return idApplicationAdressePaiement;
-    }
-
-    public void setIdApplicationAdressePaiement(Long idApplicationAdressePaiement) {
-        this.idApplicationAdressePaiement = idApplicationAdressePaiement;
+        return ligneDeblocage.getType();
     }
 
     public String getCodeRenteAccordee() {
         return codeRenteAccordee;
     }
 
-    public void setCodeRenteAccordee(String codeRenteAccordee) {
-        this.codeRenteAccordee = codeRenteAccordee;
-    }
-
     public String getRefPaiement() {
         return refPaiement;
     }
 
-    public void setRefPaiement(String refPaiement) {
-        this.refPaiement = refPaiement;
+    public String getIdTiersAdressePaiement() {
+        return idTiersAdressePaiement;
     }
+
+    public String getIdApplicationAdressePaiement() {
+        return idApplicationAdressePaiement;
+    }
+
+    public String getIdTiersBeneficiaire() {
+        return idTiersBeneficiaire;
+    }
+
+    public RELigneDeblocage getLigneDeblocage() {
+        return ligneDeblocage;
+    }
+
+    public RELigneDeblocageVentilation getLigneDeblocageVentilation() {
+        return ligneDeblocageVentilation;
+    }
+
 }

@@ -11,8 +11,8 @@ public class RELigneDeblocageVentilation extends JadeEntity {
     private static final long serialVersionUID = 1L;
 
     private String id;
-    private long idLigneDeblocage;
-    private long idSectionSource;
+    private Long idLigneDeblocage;
+    private Long idSectionSource;
     private Montant montant;
 
     @Override
@@ -50,19 +50,19 @@ public class RELigneDeblocageVentilation extends JadeEntity {
         return true;
     }
 
-    public long getIdLigneDeblocage() {
+    public Long getIdLigneDeblocage() {
         return idLigneDeblocage;
     }
 
-    public void setIdLigneDeblocage(long idLigneDeblocage) {
+    public void setIdLigneDeblocage(Long idLigneDeblocage) {
         this.idLigneDeblocage = idLigneDeblocage;
     }
 
-    public long getIdSectionSource() {
+    public Long getIdSectionSource() {
         return idSectionSource;
     }
 
-    public void setIdSectionSource(long idSectionSource) {
+    public void setIdSectionSource(Long idSectionSource) {
         this.idSectionSource = idSectionSource;
     }
 

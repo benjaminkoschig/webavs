@@ -40,6 +40,13 @@ public class RELigneDeblocages extends ArrayList<RELigneDeblocage> {
         return getLigneDeblocageByEtat(RELigneDeblocageEtat.ENREGISTRE);
     }
 
+    public RELigneDeblocages filtreEnregistresAndNone() {
+        RELigneDeblocages deblocages = new RELigneDeblocages();
+        deblocages.addAll(getLigneDeblocageByEtat(RELigneDeblocageEtat.NONE));
+        deblocages.addAll(getLigneDeblocageByEtat(RELigneDeblocageEtat.ENREGISTRE));
+        return deblocages;
+    }
+
     public RELigneDeblocages filtreValides() {
         return getLigneDeblocageByEtat(RELigneDeblocageEtat.VALIDE);
     }

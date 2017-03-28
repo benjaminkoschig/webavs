@@ -35,4 +35,22 @@ public class REDeblocageVersementService {
         return manager.toList();
     }
 
+    public List<REDeblocageVersement> searchByIdLot(Long forIdLot) {
+
+        if (forIdLot == null) {
+            throw new IllegalArgumentException("To perform a search by id lot, forIdLot must be not null");
+        }
+
+        REDeblocageVersementManager manager = new REDeblocageVersementManager();
+        manager.setSession(session);
+        manager.setForIdLot(forIdLot);
+        try {
+            manager.find(BManager.SIZE_NOLIMIT);
+        } catch (Exception e) {
+            throw new REDeblocageException("Unabled to search deblocage versement for id lot: " + forIdLot, e);
+        }
+
+        return manager.toList();
+    }
+
 }

@@ -203,12 +203,12 @@ globazGlobal.isUpdatable = ${viewBean.isUpdatable};
 								</div>
 								<div class="span5">
 									<span class="lbl"><ct:FWLabel key="JSP_RE_DEBLOCAGE_MONTANT"/></span>
-									<span class="value mnt">${entry.montant.toStringFormat()}</span>
+									<span class="value mnt">${entry.montanDette.toStringFormat()}</span>
 								</div>
 								<div class="span1 right">
 									<input data-g-amount="" class="input-mini liveSum" name="montant"  value="${entry.montant.toStringFormat()}"/>
-									<input type="hidden" class="idSectionDetteEnCompta" value="${entry.idSectionDetteEnCompta}" />
-									<input type="hidden" class="idRoleDetteEnCompta" value="${entry.idRoleDetteEnCompta}" />
+									<input type="hidden" class="idSectionDetteEnCompta" value="${entry.idSectionCompensee}" />
+									<input type="hidden" class="idRoleDetteEnCompta" value="${entry.idRoleSection}" />
 								</div>
 								<div class="span1">
 									<button type="button"  class="save globazIconButton"></button>
