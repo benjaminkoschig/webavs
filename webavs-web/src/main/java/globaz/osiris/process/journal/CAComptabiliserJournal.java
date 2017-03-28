@@ -31,6 +31,7 @@ import globaz.osiris.application.CAApplication;
 import globaz.osiris.application.CAParametres;
 import globaz.osiris.db.bulletinSolde.CABulletinSolde;
 import globaz.osiris.db.bulletinSolde.CABulletinSoldeManager;
+import globaz.osiris.db.comptes.CACompensationForCalculIMManager;
 import globaz.osiris.db.comptes.CACompteAnnexe;
 import globaz.osiris.db.comptes.CACompteAnnexeManager;
 import globaz.osiris.db.comptes.CAEcriture;
@@ -442,6 +443,32 @@ public class CAComptabiliserJournal {
         }
     }
 
+    private void calculerInteretsFromCompensation(BProcess context, String idJournal) throws Exception {
+        CACompensationForCalculIMManager manager = new CACompensationForCalculIMManager();
+        manager.setSession(context.getSession());
+        manager.setForIdJournal(idJournal);
+        manager.find(BManager.SIZE_NOLIMIT);
+
+        @SuppressWarnings("unchecked")
+        Iterator<CAEcriture> it = manager.iterator();
+        while (it.hasNext()) {
+            CAEcriture ecr = it.next();
+
+            if (ecr == null) {
+                throw new Exception("Error calculerInteretsFromCompensation - ecr not found !");
+            }
+
+            FWCurrency soldeSection = new FWCurrency(ecr.getSection().getSolde());
+            if (!soldeSection.isPositive()) {
+                // POAVS-223
+                if (CAInteretTardif.isNouveauCalculPoursuite(context.getSession(), ecr.getSection())) {
+                    // Simuler IM
+                    calculIMManuel(context, ecr, true);
+                }
+            }
+        }
+    }
+
     /**
      * Calcule et ajoute les interets tardifs pour une section.
      * 
@@ -473,15 +500,15 @@ public class CAComptabiliserJournal {
      * @return
      * @throws Exception
      */
-    private ArrayList<CAInteretManuelVisualComponent> calculIMManuel(BProcess context, CAPaiement pmt,
+    private ArrayList<CAInteretManuelVisualComponent> calculIMManuel(BProcess context, CAEcriture ecr,
             boolean forceExempte) throws Exception {
         // Calcul IM
         CAProcessInteretMoratoireManuel process = new CAProcessInteretMoratoireManuel();
         process.setSession(context.getSession());
         process.setParent(context);
-        process.setDateFin(pmt.getDate());
-        process.setIdSection(pmt.getIdSection());
-        process.setIdJournal(pmt.getIdJournal());
+        process.setDateFin(ecr.getDate());
+        process.setIdSection(ecr.getIdSection());
+        process.setIdJournal(ecr.getIdJournal());
         process.setSimulationMode(false);
         process.setForceExempte(forceExempte);
 
@@ -490,7 +517,7 @@ public class CAComptabiliserJournal {
         } catch (Exception e) {
             JadeLogger.error(this, e);
             throw new Exception("Error : lors du calcul d'interet manuel à l'activation de l'écriture. "
-                    + pmt.getIdOperation() + " - " + e);
+                    + ecr.getIdOperation() + " - " + e);
         }
 
         return process.getVisualComponents();
@@ -593,7 +620,11 @@ public class CAComptabiliserJournal {
                 return false;
             }
 
+            // Calcul des intérets sur les paiements
             calculerInteretsOP(context, journal.getIdJournal());
+
+            // Calcul des intérets sur les compensations
+            calculerInteretsFromCompensation(context, journal.getIdJournal());
 
             processIterationForLissage(context, readTransaction, journal);
 
