@@ -1672,13 +1672,11 @@ public class CPProcessReceptionGenererDecision extends BProcess {
             if (newDecision.getAffiliation().getTypeAffiliation().equalsIgnoreCase(CodeSystem.TYPE_AFFILI_TSE)
                     || newDecision.getAffiliation().getTypeAffiliation()
                             .equalsIgnoreCase(CodeSystem.TYPE_AFFILI_TSE_VOLONTAIRE)) {
-                if (!traitementConjoint && !JadeStringUtil.isEmpty(donnee.getIncomeFromSelfEmployment())) {
-                    mRevenuInd = new BigDecimal(JANumberFormatter.deQuote(donnee.getIncomeFromSelfEmployment()));
-                } else if (traitementConjoint && !JadeStringUtil.isEmpty(donnee.getIncomeFromSelfEmploymentCjt())) {
-                    mRevenuInd = new BigDecimal(JANumberFormatter.deQuote(donnee.getIncomeFromSelfEmploymentCjt()));
+                if (traitementConjoint) {
+                    mRevenuTSE = new BigDecimal(JANumberFormatter.deQuote(donnee.getEmploymentIncomeCjt()));
+                } else {
+                    mRevenuTSE = new BigDecimal(JANumberFormatter.deQuote(donnee.getEmploymentIncome()));
                 }
-                mRevenuTSE = new BigDecimal(JANumberFormatter.deQuote(revenu1));
-                mRevenuTSE = mRevenuTSE.subtract(mRevenuInd);
                 newDecision.setRevenu1(mRevenuTSE.toString());
             } else if (!(newDecision.getAffiliation().getTypeAffiliation().equalsIgnoreCase(CodeSystem.TYPE_AFFILI_TSE) || newDecision
                     .getAffiliation().getTypeAffiliation().equalsIgnoreCase(CodeSystem.TYPE_AFFILI_TSE_VOLONTAIRE))
