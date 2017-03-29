@@ -61,7 +61,13 @@ public enum REProperties implements IProperties {
             "isWantAdresseCourrier",
             "Si la caisse n'utilise pas le genre d'adresse 'domicile', cette propriété permet de rechercher les données du canton de domicile à travers l'adresse de courrier du type 'Rentes'. (Description à compléter)"),
     DNRA_PROCESS_EMAILS("dnra.process.emails",
-            "permet de définir les adresses emails à utiliser lors du traitement DNRA, séparer les emails par des virgules");
+            "permet de définir les adresses emails à utiliser lors du traitement DNRA, séparer les emails par des virgules"),
+    ACTIVER_ANNONCES_XML("isAnnoncesXML", "détermine si les annonces sont envoyées au format xml"),
+    RACINE_NOM_FICHIER_OUTPUT_ZAS("racine.nom.fichier.centrale",
+            "donne la raçine nom du fichier à envoyer à la centrale"),
+    FTP_CENTRALE_PATH("centrale.url", "donne l'url de la centrale"),
+    CENTRALE_TEST("centrale.test",
+            "définit si nous sommes en mode test pour mettre la balise test dans le fichier output de la centrale");
 
     private String description;
     private String propertyName;

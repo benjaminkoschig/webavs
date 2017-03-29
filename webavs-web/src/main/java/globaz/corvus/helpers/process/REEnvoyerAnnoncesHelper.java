@@ -5,6 +5,8 @@ package globaz.corvus.helpers.process;
 
 import globaz.corvus.exceptions.RETechnicalException;
 import globaz.corvus.process.REEnvoyerAnnoncesProcess;
+import globaz.corvus.process.REEnvoyerAnnoncesXMLProcess;
+import globaz.corvus.properties.REProperties;
 import globaz.corvus.utils.REPmtMensuel;
 import globaz.corvus.vb.process.REEnvoyerAnnoncesViewBean;
 import globaz.framework.bean.FWViewBeanInterface;
@@ -14,6 +16,7 @@ import globaz.globall.api.BISession;
 import globaz.globall.db.BSession;
 import globaz.globall.util.JADate;
 import globaz.globall.util.JAException;
+import ch.globaz.common.business.exceptions.CommonTechnicalException;
 
 /**
  * <H1>Description</H1>
@@ -36,14 +39,31 @@ public class REEnvoyerAnnoncesHelper extends FWHelper {
         REEnvoyerAnnoncesViewBean eaViewBean = (REEnvoyerAnnoncesViewBean) viewBean;
 
         if (valider((BSession) session, viewBean)) {
-            REEnvoyerAnnoncesProcess process = new REEnvoyerAnnoncesProcess((BSession) session);
+            try {
+                // D0215 si la propriété est activée on passe en mode xml
+                if (REProperties.ACTIVER_ANNONCES_XML.getBooleanValue()) {
+                    REEnvoyerAnnoncesXMLProcess process = new REEnvoyerAnnoncesXMLProcess((BSession) session);
+                    process.setEMailAddress(eaViewBean.getEMailAddress());
+                    process.setForDateEnvoi(eaViewBean.getForDateEnvoi());
+                    process.setForMoisAnneeComptable(eaViewBean.getForMoisAnneeComptable());
+                    process.setIsForAnnoncesSubsequentes(false);
+                    process.start();
 
-            process.setEMailAddress(eaViewBean.getEMailAddress());
-            process.setForDateEnvoi(eaViewBean.getForDateEnvoi());
-            process.setForMoisAnneeComptable(eaViewBean.getForMoisAnneeComptable());
-            process.setIsForAnnoncesSubsequentes(false);
-            process.start();
+                } else {
+
+                    REEnvoyerAnnoncesProcess process = new REEnvoyerAnnoncesProcess((BSession) session);
+                    process.setEMailAddress(eaViewBean.getEMailAddress());
+                    process.setForDateEnvoi(eaViewBean.getForDateEnvoi());
+                    process.setForMoisAnneeComptable(eaViewBean.getForMoisAnneeComptable());
+                    process.setIsForAnnoncesSubsequentes(false);
+                    process.start();
+                }
+
+            } catch (Exception e) {
+                throw new CommonTechnicalException("Problem in REEnvoyerAnnoncesHelper", e);
+            }
         }
+
     }
 
     /**
