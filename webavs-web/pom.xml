@@ -176,8 +176,6 @@
 							<schemaDirectory>src/main/resources/xsd</schemaDirectory>
 							<schemaIncludes>
 								<include>ree/*.xsd</include>
-<!-- 								<include>P2020/Typebase/*/*.xsd</include> -->
-<!-- 								<include>P2020/annoncesRC/*/*.xsd</include> -->
 								<include>P2020/annoncesRC/*.xsd</include>
 							</schemaIncludes>
 							<bindingDirectory>src/main/resources/xjb</bindingDirectory>
