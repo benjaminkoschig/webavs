@@ -172,6 +172,7 @@
 							<goal>generate</goal>
 						</goals>
 						<configuration>
+							<specVersion>2.1</specVersion>
 							<schemaDirectory>src/main/resources/xsd</schemaDirectory>
 							<schemaIncludes>
 								<include>ree/*.xsd</include>
