@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2005 rel. 3 U (http://www.altova.com) by Magnin (OFIT) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:simpleType name="NIF_weakType">
+		<xs:annotation>
+			<xs:documentation xml:lang="de">Weite Codifizierung der Abrechnungsnummer eines IV-Sachleistunglieferantes</xs:documentation>
+			<xs:documentation xml:lang="fr">Numéro d'Identification de Fournisseur (de prestation en nature AI) (typage faible, défaut)</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:unsignedInt">
+			<xs:minInclusive value="1"/>
+			<xs:maxInclusive value="9999999"/>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

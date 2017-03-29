@@ -1,0 +1,416 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2005 rel. 3 U (http://www.altova.com) by OFFICE FEDERAL DE L'INFORMATIQUE (OFFICE FEDERAL DE L'INFORMATIQUE) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:simpleType name="AnzahlErziehungsgutschrift10_Type">
+		<xs:annotation>
+			<xs:documentation>Anzahl Erziehungsgutschrift</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:decimal">
+			<xs:minInclusive value="0.00"/>
+			<xs:maxInclusive value="44.00"/>
+			<xs:fractionDigits value="2"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="AnzahlBetreuungsgutschrift10_Type">
+		<xs:annotation>
+			<xs:documentation>Anzahl Betreuungsgutschrift</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:decimal">
+			<xs:minInclusive value="0.00"/>
+			<xs:maxInclusive value="44.00"/>
+			<xs:fractionDigits value="2"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="AnzahlUebergangsgutschrift10_Type">
+		<xs:annotation>
+			<xs:documentation>Anzahl Uebergangsgutschrift</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:decimal">
+			<xs:minInclusive value="0.0"/>
+			<xs:maxInclusive value="8.0"/>
+			<xs:totalDigits value="2"/>
+			<xs:fractionDigits value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="OrdentlicheAHVRente10_strongType">
+		<xs:annotation>
+			<xs:documentation xml:lang="de">Leistungsart: Ordentliche AHV-Rente</xs:documentation>
+			<xs:documentation xml:lang="fr">Rente ordinaire de l'AVS</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:unsignedByte">
+			<xs:enumeration value="10">
+				<xs:annotation>
+					<xs:documentation xml:lang="de">ordentliche Altersrente (AHV)</xs:documentation>
+					<xs:documentation xml:lang="fr">Rente ordinaire de vieillesse (AVS)</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="13">
+				<xs:annotation>
+					<xs:documentation xml:lang="de">ordentliche Witwen-/Wittwerrente (AHV)</xs:documentation>
+					<xs:documentation xml:lang="fr">Rente ordinaire de veuve ou de veuf (AVS)</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="14">
+				<xs:annotation>
+					<xs:documentation xml:lang="de">ordentliche Waisenrente (Vater) (AHV)</xs:documentation>
+					<xs:documentation xml:lang="fr">Rente ordinaire d'orphelin de père (AVS)</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="15">
+				<xs:annotation>
+					<xs:documentation xml:lang="de">ordentliche Waisenrente (Mutter) (AHV)</xs:documentation>
+					<xs:documentation xml:lang="fr">Rente ordinaire d'orphelin de mère (AVS)</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="16">
+				<xs:annotation>
+					<xs:documentation xml:lang="de">ordentliche Weisenrente 60% (AHV)</xs:documentation>
+					<xs:documentation xml:lang="fr">Rente ordinaire d'orphelin 60% (AVS)</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="33">
+				<xs:annotation>
+					<xs:documentation xml:lang="de">ordentliche Zusatzrente für den Ehegatten (AHV)</xs:documentation>
+					<xs:documentation xml:lang="fr">
+                        Rente complémentaire ordinaire en faveur du conjoint (AVS)
+                    </xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="34">
+				<xs:annotation>
+					<xs:documentation xml:lang="de">Kinderrente (zur Rente des Vaters) (AHV)</xs:documentation>
+					<xs:documentation xml:lang="fr">
+                        Rente ordinaire pour enfant liée à la rente du père (AVS)
+                    </xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="35">
+				<xs:annotation>
+					<xs:documentation xml:lang="de">
+                        ordentliche Kinderrente (zur Rente der Mutter) (AHV)
+                    </xs:documentation>
+					<xs:documentation xml:lang="fr">
+                        Rente ordinaire pour enfant liée à la rente de la mère (AVS)
+                    </xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="36">
+				<xs:annotation>
+					<xs:documentation xml:lang="de">
+                        ordentliche Kinderrente (zur Rente der Mutter) (AHV)
+                    </xs:documentation>
+					<xs:documentation xml:lang="fr">
+                        Rente ordinaire pour enfant liée à la rente de la mère (AVS)
+                    </xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="OrdentlicheIVRente10_strongType">
+		<xs:annotation>
+			<xs:documentation xml:lang="de">Leistungsart: Ordentliche IV-Rente</xs:documentation>
+			<xs:documentation xml:lang="fr">Rente ordinaire de l'AI</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:unsignedByte">
+			<xs:enumeration value="50">
+				<xs:annotation>
+					<xs:documentation xml:lang="de">ordentliche Invalidenrente (IV)</xs:documentation>
+					<xs:documentation xml:lang="fr">Rente ordinaire d'invalidité (AI)</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="53">
+				<xs:annotation>
+					<xs:documentation xml:lang="de">Zusatzrente für den Ehegatten (IV)</xs:documentation>
+					<xs:documentation xml:lang="fr">
+                        Rente complémentaire ordinaire en faveur du conjoint (AI)
+                    </xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="54">
+				<xs:annotation>
+					<xs:documentation xml:lang="de">Kinderrente (zur Rente des Vaters) (IV)</xs:documentation>
+					<xs:documentation xml:lang="fr">Rente pour enfant liée à la rente du père (AI)</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="55">
+				<xs:annotation>
+					<xs:documentation xml:lang="de">
+                        ordentliche Kinderrente (zur Rente der Mutter) (IV)
+                    </xs:documentation>
+					<xs:documentation xml:lang="fr">
+                        Rente ordinaire pour enfant liée à la rente de la mère (AI)
+                    </xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="56">
+				<xs:annotation>
+					<xs:documentation xml:lang="de">
+                        ordentliche Kinderrente (zur Rente der Mutter) (IV)
+                    </xs:documentation>
+					<xs:documentation xml:lang="fr">
+                        Rente ordinaire pour enfant liée à la rente de la mère (AI)
+                    </xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="AusserordentlicheAHVRente10_strongType">
+		<xs:annotation>
+			<xs:documentation xml:lang="de">Leistungsart: Ausserordentliche AHV-Rente</xs:documentation>
+			<xs:documentation xml:lang="fr">Rente extraordinaire de l'AVS</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:unsignedByte">
+			<xs:enumeration value="20">
+				<xs:annotation>
+					<xs:documentation xml:lang="de">ausserordentliche Altersrente (AHV)</xs:documentation>
+					<xs:documentation xml:lang="fr">Rente extraordinaire de vieillesse (AVS)</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="23">
+				<xs:annotation>
+					<xs:documentation xml:lang="de">ausserordentliche Witwen-/Wittwerrente (AHV)</xs:documentation>
+					<xs:documentation xml:lang="fr">Rente extraordinaire de veuve ou de veuf (AVS)</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="24">
+				<xs:annotation>
+					<xs:documentation xml:lang="de">ausserordentliche Waisenrente (Vater) (AHV)</xs:documentation>
+					<xs:documentation xml:lang="fr">Rente extraordinaire d'orphelin de père (AVS)</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="25">
+				<xs:annotation>
+					<xs:documentation xml:lang="de">ausserordentliche Waisenrente (Mutter) (AHV)</xs:documentation>
+					<xs:documentation xml:lang="fr">Rente extraordinaire d'orphelin de mère (AVS)</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="26">
+				<xs:annotation>
+					<xs:documentation xml:lang="de">ausserordentliche Weisenrente 60% (AHV)</xs:documentation>
+					<xs:documentation xml:lang="fr">Rente extraordinaire d'orphelin 60% (AVS)</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="45">
+				<xs:annotation>
+					<xs:documentation xml:lang="de">
+                        ausserordentliche Kinderrente (zur Rente der Mutter) (AHV)
+                    </xs:documentation>
+					<xs:documentation xml:lang="fr">
+                        Rente extraordinaire pour enfant liée à la rente de la mère (AVS)
+                    </xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="AusserordentlicheIVRente10_strongType">
+		<xs:annotation>
+			<xs:documentation xml:lang="de">Leistungsart: Ausserordentliche IV-Rente</xs:documentation>
+			<xs:documentation xml:lang="fr">Rente extraordinaire de l'AI</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:unsignedByte">
+			<xs:enumeration value="70">
+				<xs:annotation>
+					<xs:documentation xml:lang="de">ausserordentliche Invalidenrente (IV)</xs:documentation>
+					<xs:documentation xml:lang="fr">Rente extraordinaire d'invalidité (AI)</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="73">
+				<xs:annotation>
+					<xs:documentation xml:lang="de">Zusatzrente für den Ehegatten (IV)</xs:documentation>
+					<xs:documentation xml:lang="fr">
+                        Rente complémentaire extraordinaire en faveur du conjoint (AI)
+                    </xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="74">
+				<xs:annotation>
+					<xs:documentation xml:lang="de">
+                        ausserordentliche Kinderrente (zur Rente des Vaters) (IV)
+                    </xs:documentation>
+					<xs:documentation xml:lang="fr">
+                        Rente extraordinaire pour enfant liée à la rente du père (AI)
+                    </xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="75">
+				<xs:annotation>
+					<xs:documentation xml:lang="de">
+                        ausserordentliche Kinderrente (zur Rente der Mutter) (IV)
+                    </xs:documentation>
+					<xs:documentation xml:lang="fr">
+                        Rente extraordinaire pour enfant liée à la rente de la mère (AI)
+                    </xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="HilflosenentschaedigungenZuHauseAHV10_strongType">
+		<xs:annotation>
+			<xs:documentation xml:lang="de">Leistungsart: Hilflosenentschaedigungen zu Hause (AHV)</xs:documentation>
+			<xs:documentation xml:lang="fr">Allocations pour impotents à domicile, AVS</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:unsignedByte">
+			<xs:enumeration value="85">
+				<xs:annotation>
+					<xs:documentation xml:lang="de">bei Hilflosigkeit leichten Grades (AHV)</xs:documentation>
+					<xs:documentation xml:lang="fr">cas d'impotence de faible degré (AVS)</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="86">
+				<xs:annotation>
+					<xs:documentation xml:lang="de">bei Hilflosigkeit mittleren Grades (AHV)</xs:documentation>
+					<xs:documentation xml:lang="fr">cas d'impotence de moyen degré (AVS)</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="87">
+				<xs:annotation>
+					<xs:documentation xml:lang="de">bei Hilflosigkeit schweren Grades (AHV)</xs:documentation>
+					<xs:documentation xml:lang="fr">cas d'impotence de grave degré (AVS)</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="89">
+				<xs:annotation>
+					<xs:documentation xml:lang="de">
+                        leichte Hilflosenentschädigung, die erst im Alter entsteht (HE/AHV), ohne Besitzstandsgarantie aus der IV
+                    </xs:documentation>
+					<xs:documentation xml:lang="fr">
+                        cas d'impotence légère qui apparaît à l'âge de l'AVS, sans la garantie des droits acquis découlant d'un événement de l'AI
+                    </xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="HilflosenentschaedigungenZuHauseIV10_strongType">
+		<xs:annotation>
+			<xs:documentation xml:lang="de">Leistungsart: Hilflosenentschaedigungen zu Hause (IV)</xs:documentation>
+			<xs:documentation xml:lang="fr">Allocations pour impotents à domicile, AVS</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:unsignedByte">
+			<xs:enumeration value="81">
+				<xs:annotation>
+					<xs:documentation xml:lang="de">bei Hilflosigkeit leichten Grades (IV)</xs:documentation>
+					<xs:documentation xml:lang="fr">cas d'impotence de faible degré (AI)</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="82">
+				<xs:annotation>
+					<xs:documentation xml:lang="de">bei Hilflosigkeit mittleren Grades (IV)</xs:documentation>
+					<xs:documentation xml:lang="fr">cas d'impotence de moyen degré (AI)</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="83">
+				<xs:annotation>
+					<xs:documentation xml:lang="de">bei Hilflosigkeit schweren Grades (IV)</xs:documentation>
+					<xs:documentation xml:lang="fr">cas d'impotence de grave degré (AI)</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="84">
+				<xs:annotation>
+					<xs:documentation xml:lang="de">
+                        bei Hilflosigkeit leichten Grades und lebenspraktischer Begleitung
+                    </xs:documentation>
+					<xs:documentation xml:lang="fr">
+                        cas d’impotence de faible degré et accompagnement pour faire face aux nécessités de la vie
+                    </xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="88">
+				<xs:annotation>
+					<xs:documentation xml:lang="de">
+                        bei Hilflosigkeit mittleren Grades und lebenspraktischer Begleitung
+                    </xs:documentation>
+					<xs:documentation xml:lang="fr">
+                        cas d’impotence de moyen degré et accompagnement pour faire face aux nécessités de la vie
+                    </xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="HilflosenentschaedigungenZuHauseUndImHeimAHV10_strongType">
+		<xs:annotation>
+			<xs:documentation xml:lang="de">
+                Leistungsart: Hilflosenentschaedigungen zu Hause und im Heim (AHV)
+            </xs:documentation>
+			<xs:documentation xml:lang="fr">Allocations pour impotents à domicile et en home, AVS</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:unsignedByte">
+			<xs:enumeration value="94">
+				<xs:annotation>
+					<xs:documentation xml:lang="de">bei Hilflosigkeit leichten Grades (AHV)</xs:documentation>
+					<xs:documentation xml:lang="fr">cas d'impotence de faible degré (AVS)</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="95">
+				<xs:annotation>
+					<xs:documentation xml:lang="de">bei Hilflosigkeit leichten Grades (AHV)</xs:documentation>
+					<xs:documentation xml:lang="fr">cas d'impotence de faible degré (AVS)</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="96">
+				<xs:annotation>
+					<xs:documentation xml:lang="de">bei Hilflosigkeit mittleren Grades (AHV)</xs:documentation>
+					<xs:documentation xml:lang="fr">cas d'impotence de moyen degré (AVS)</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="97">
+				<xs:annotation>
+					<xs:documentation xml:lang="de">bei Hilflosigkeit schweren Grades (AHV)</xs:documentation>
+					<xs:documentation xml:lang="fr">cas d'impotence de grave degré (AVS)</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="HilflosenentschaedigungenZuHauseUndImHeimIV10_strongType">
+		<xs:annotation>
+			<xs:documentation xml:lang="de">
+                Leistungsart: Hilflosenentschaedigungen zu Hause und im Heim (IV)
+            </xs:documentation>
+			<xs:documentation xml:lang="fr">Allocations pour impotents à domicile et eh home, AVS</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:unsignedByte">
+			<xs:enumeration value="91">
+				<xs:annotation>
+					<xs:documentation xml:lang="de">bei Hilflosigkeit leichten Grades (IV)</xs:documentation>
+					<xs:documentation xml:lang="fr">cas d'impotence de faible degré (AI)</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="92">
+				<xs:annotation>
+					<xs:documentation xml:lang="de">bei Hilflosigkeit mittleren Grades (IV)</xs:documentation>
+					<xs:documentation xml:lang="fr">cas d'impotence de moyen degré (AI)</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="93">
+				<xs:annotation>
+					<xs:documentation xml:lang="de">bei Hilflosigkeit schweren Grades (IV)</xs:documentation>
+					<xs:documentation xml:lang="fr">cas d'impotence de grave degré (AI)</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="OrdentlicheRente10_strongType">
+		<xs:annotation>
+			<xs:documentation>Leistungsart: Ordentliche Rente 10e (AHV oder IV)</xs:documentation>
+		</xs:annotation>
+		<xs:union memberTypes="OrdentlicheAHVRente10_strongType OrdentlicheIVRente10_strongType"/>
+	</xs:simpleType>
+	<xs:simpleType name="AusserordentlicheRente10_strongType">
+		<xs:annotation>
+			<xs:documentation>Leistungsart: Ausserordentliche Rente 10e (AHV oder IV)</xs:documentation>
+		</xs:annotation>
+		<xs:union memberTypes="AusserordentlicheAHVRente10_strongType AusserordentlicheIVRente10_strongType"/>
+	</xs:simpleType>
+	<xs:simpleType name="Hilflosenentschaedigung10_strongType">
+		<xs:annotation>
+			<xs:documentation>Leistungsart: Hilflosenentschaedigung 10e (AHV oder IV)</xs:documentation>
+		</xs:annotation>
+		<xs:union memberTypes="HilflosenentschaedigungenZuHauseAHV10_strongType HilflosenentschaedigungenZuHauseIV10_strongType HilflosenentschaedigungenZuHauseUndImHeimAHV10_strongType HilflosenentschaedigungenZuHauseUndImHeimIV10_strongType"/>
+	</xs:simpleType>
+	<xs:simpleType name="Leistungsart10_strongType">
+		<xs:annotation>
+			<xs:documentation xml:lang="de">Leistungsart: 10.Revision</xs:documentation>
+			<xs:documentation xml:lang="fr">Genre de la prestation (rente ou API, AVS ou AI)</xs:documentation>
+		</xs:annotation>
+		<xs:union memberTypes="OrdentlicheRente10_strongType AusserordentlicheRente10_strongType Hilflosenentschaedigung10_strongType"/>
+	</xs:simpleType>
+</xs:schema>

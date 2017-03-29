@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright : Centrale de Compensation AVS/AI, Genève (2004). -->
+<xs:schema xmlns="http://www.zas.admin.ch/POOL" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:rc="http://www.zas.admin.ch/RC" targetNamespace="http://www.zas.admin.ch/POOL" elementFormDefault="qualified"
+    attributeFormDefault="unqualified" version="1.1">
+
+    <!-- Include de schémas -->
+    <xs:import namespace="http://www.zas.admin.ch/RC" schemaLocation="./annonceEnteteFin-types.xsd" />
+
+    <xs:element name="AccuseReceptionNotOk">
+        <xs:complexType>
+            <xs:choice>
+                <xs:element name="fichierRefuse">
+                    <xs:complexType>
+                        <xs:sequence minOccurs="0" maxOccurs="unbounded">
+                            <xs:element name="message" type="xs:string" />
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="LotsRefuses">
+                    <xs:complexType>
+                        <xs:sequence maxOccurs="unbounded" minOccurs="0">
+                            <xs:element name="Lot">
+                                <xs:complexType>
+                                    <xs:sequence maxOccurs="1">
+                                        <xs:element name="PositionLot" type="xs:unsignedInt">
+                                            <xs:annotation>
+                                                <xs:documentation>
+                                                    Position du lot dans le message envoyé
+                                                </xs:documentation>
+                                            </xs:annotation>
+                                        </xs:element>
+                                        <xs:element name="PoolKopf" type="rc:PoolKopf_Type" />
+                                        <xs:element name="PoolFuss" type="rc:PoolFuss_Type" />
+                                        <xs:element name="Erreur" maxOccurs="unbounded" minOccurs="1">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element name="Message" type="xs:string" minOccurs="1" 
+                                                        maxOccurs="1" />
+                                                    
+                                                    <xs:element name="Zeile" type="xs:unsignedInt" minOccurs="0" 
+                                                        maxOccurs="1" />
+                                                    
+                                                    <xs:element name="Spalte" type="xs:unsignedInt" minOccurs="0" 
+                                                        maxOccurs="1" />
+                                                    
+                                                    <xs:element name="Announcement" type="xs:string" minOccurs="0" 
+                                                    	maxOccurs="1" />
+                                                </xs:sequence>
+                                            </xs:complexType>
+                                        </xs:element>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:choice>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

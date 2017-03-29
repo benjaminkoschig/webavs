@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright : Centrale de Compensation AVS/AI, Gen絥 (2004). -->
+<!-- edited with XML Spy v4.3 U (http://www.xmlspy.com) by andreas frutiger (private) -->
+<!-- edited with XMLSPY v2004 rel. 2 U (http://www.xmlspy.com) by OFIT (private) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:include schemaLocation="../../Typebase/General/Lieux-types.xsd"/>
+	<xs:include schemaLocation="../../Typebase/PersPhys/DateNaissanceDeces-types.xsd"/>
+	<xs:include schemaLocation="../../Typebase/PersPhys/NomPrenom-types.xsd"/>
+	<xs:include schemaLocation="../../Typebase/PersPhys/Sexe-types.xsd"/>
+	<xs:include schemaLocation="../../Typebase/PersPhys/IdsAssure-types.xsd"/>
+	<xs:include schemaLocation="../../Typebase/General/DatesPeriodesDurees-types.xsd"/>
+	<xs:include schemaLocation="../../Typebase/General/Caisses-OAI-Agences-types.xsd"/>
+	<xs:include schemaLocation="../../Typebase/General/RestrictedGeneric-types.xsd"/>
+	<xs:include schemaLocation="../../Typebase/CI/typesCI-types.xsd"/>
+	<xs:complexType name="TVersicherteAngabenVoll">
+		<xs:sequence>
+			<xs:element name="Namen" type="NameVorname_Type" nillable="true"/>
+			<xs:element name="Vornamen" type="NameVorname_Type" nillable="true"/>
+			<xs:element name="Geschlecht" type="Geschlecht_numType" nillable="true"/>
+			<xs:element name="Geburtsdatum" type="Geburtsdatum_Type" nillable="true"/>
+			<xs:element name="Heimatstaat" type="LandNrBSV_weakType" nillable="true"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="TVersicherteAngabenFakultativ">
+		<xs:sequence>
+			<xs:element name="Namen" type="NameVorname_Type" nillable="true" minOccurs="0"/>
+			<xs:element name="Vornamen" type="NameVorname_Type" nillable="true" minOccurs="0"/>
+			<xs:element name="Geschlecht" type="Geschlecht_numType" nillable="true" minOccurs="0"/>
+			<xs:element name="Geburtsdatum" type="Geburtsdatum_Type" nillable="true" minOccurs="0"/>
+			<xs:element name="Heimatstaat" type="LandNrBSV_weakType" nillable="true" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="TVersicherteAngabenFakultativ_WeakName">
+		<xs:sequence>
+			<xs:element name="Namen" type="NameVorname_WeakType" nillable="true" minOccurs="0"/>
+			<xs:element name="Vornamen" type="NameVorname_WeakType" nillable="true" minOccurs="0"/>
+			<xs:element name="Geschlecht" type="Geschlecht_numType" nillable="true" minOccurs="0"/>
+			<xs:element name="Geburtsdatum" type="Geburtsdatum_Type" nillable="true" minOccurs="0"/>
+			<xs:element name="Heimatstaat" type="LandNrBSV_weakType" nillable="true" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="TVersicherteAngabenSemiFakultativ">
+		<xs:sequence>
+			<xs:element name="Namen" type="NameVorname_Type"
+				nillable="true" />
+			<xs:element name="Vornamen" type="NameVorname_Type"
+				nillable="true" />
+			<xs:element name="Geschlecht" type="Geschlecht_numType"
+				nillable="true" minOccurs="0" />
+			<xs:element name="Geburtsdatum" type="Geburtsdatum_Type"
+				nillable="true" minOccurs="0" />
+			<xs:element name="Heimatstaat" type="LandNrBSV_weakType"
+				nillable="true" />
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="CHWohnsitzCode_Type">
+		<xs:restriction base="xs:unsignedByte">
+			<xs:minInclusive value="1"/>
+			<xs:maxInclusive value="3"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="AKAbrechnungsNr_Type">
+		<xs:annotation>
+			<xs:documentation>Abrechnungsnummer eines AK-Mitgliedes</xs:documentation>
+			<xs:documentation>Numéro d'affilié (d'un employeur auprès d'une caisse)</xs:documentation>
+		</xs:annotation>
+		<xs:union memberTypes="String11stellig_Type Versichertennummer13Stellen_Type"/>
+	</xs:simpleType>
+	<xs:complexType name="SplittingPeriode_Type">
+		<xs:sequence>
+			<xs:element name="BesondereSchluesselzahlSplitPer" type="BesondereSchluesselzahlSplitPer_Type" minOccurs="0"/>
+			<xs:element name="Anfangsjahr" type="AHVDatumJ_Type"/>
+			<xs:element name="Endjahr" type="AHVDatumJ_Type"/>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

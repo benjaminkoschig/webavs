@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright : Centrale de Compensation AVS/AI, Genève (2004). -->
+<!-- edited with XMLSPY v2004 rel. 2 U (http://www.xmlspy.com) by OFIT (private) -->
+<!-- edited with XML Spy v4.3 U (http://www.xmlspy.com) by andreas frutiger (private) -->
+<xs:schema targetNamespace="http://www.zas.admin.ch/RC" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.zas.admin.ch/RC" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.1">
+	<xs:include schemaLocation="../annoncesCommon-types.xsd"/>
+	<xs:include schemaLocation="./annoncesCACICommon-types.xsd"/>
+	<xs:include schemaLocation="../../Typebase/ARC/NumeroAnnonce-types.xsd"/>
+	<xs:include schemaLocation="../../Typebase/ARC/MotifAnnonce-types.xsd"/>
+	<xs:simpleType name="TVerarbeitungscode">
+		<xs:restriction base="xs:unsignedInt">
+			<xs:minInclusive value="0"/>
+			<xs:maxInclusive value="7"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="VAIKEmpfangsbestaetigung_Type">
+		<xs:annotation>
+			<xs:documentation>Code application 20: accusé de réception d'une annonce au registre central des assurés</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="KasseZweigstelle" type="IrgendeineZweigstelle_weakType" nillable="true"/>
+			<xs:element name="KasseneigenerHinweis" type="KasseneigenerHinweis_Type"/>
+			<xs:element name="Meldungsnummer" type="Meldungsnummer_Type"/>
+			<xs:element name="Versichertennummer" type="Versichertennummer11oder13Stellen_Type" minOccurs="0"/>
+			<xs:element name="Versichertennummer13Stellen"  type="Versichertennummer13Stellen_Type" minOccurs="0"/>
+			<xs:element name="VersichertenAngaben" type="TVersicherteAngabenFakultativ" minOccurs="0"/>
+			<xs:element name="VersichertenNrBisher" type="Versichertennummer8bis13Stellen_Type" minOccurs="0"/>
+			<xs:element name="MZRSchluesselzahl" type="MZRSchluesselzahl_weakType"/>
+			<xs:element name="Verarbeitungscode">
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="TVerarbeitungscode">
+							<xs:attribute name="nils" type="xs:boolean" use="optional" default="false"/>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Bemerkung1">
+				<xs:simpleType>
+					<xs:restriction base="xs:unsignedByte">
+						<xs:minInclusive value="0"/>
+						<xs:maxInclusive value="1"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="Bemerkung2">
+				<xs:simpleType>
+					<xs:restriction base="xs:unsignedByte">
+						<xs:minInclusive value="0"/>
+						<xs:maxInclusive value="1"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="Bemerkung3">
+				<xs:simpleType>
+					<xs:restriction base="xs:unsignedByte">
+						<xs:minInclusive value="0"/>
+						<xs:maxInclusive value="1"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="FehlerhaftesFeld" minOccurs="0" maxOccurs="3">
+				<xs:complexType>
+					<xs:sequence minOccurs="0">
+						<xs:element name="Feldnummer">
+							<xs:simpleType>
+								<xs:restriction base="xs:unsignedByte">
+									<xs:maxInclusive value="99"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="Tagname" type="xs:string" minOccurs="0"/>
+					</xs:sequence>
+					<xs:attribute name="nils" type="xs:boolean" use="optional" default="false"/>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

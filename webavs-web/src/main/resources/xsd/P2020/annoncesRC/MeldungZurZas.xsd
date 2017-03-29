@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright : Centrale de Compensation AVS/AI, Genève (2004). -->
+<xs:schema targetNamespace="http://www.zas.admin.ch/POOL" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.1" xmlns="http://www.zas.admin.ch/POOL" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:rc="http://www.zas.admin.ch/RC">
+	<!-- Import de schémas -->
+	<xs:import namespace="http://www.zas.admin.ch/RC" schemaLocation="rc.xsd"/>
+	<!-- Définition élément root -->
+	<xs:element name="PoolMeldungZurZAS">
+		<xs:annotation>
+			<xs:documentation>Pool d'annonces en entrée entourées par une entete et une fin.</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence maxOccurs="unbounded">
+				<xs:element name="lot" minOccurs="1" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="PoolKopf" type="rc:PoolKopf_Type"/>
+							<xs:choice minOccurs="1" maxOccurs="unbounded">
+								<!-- Annonces RA -->
+								<xs:element name="VAIKMeldungNeuerVersicherter" type="rc:VAIKMeldungNeuerVersicherter_Type"/>
+								<xs:element name="VAIKMeldungAenderungVersichertenDaten" type="rc:VAIKMeldungAenderungVersichertenDaten_Type"/>
+								<xs:element name="VAIKMeldungVerkettungVersichertenNr" type="rc:VAIKMeldungVerkettungVersichertenNr_Type"/>
+								<xs:element name="VAIKMeldungVAErsatz" type="rc:VAIKMeldungVAErsatz_Type"/>
+								<xs:element name="VAIKMeldungIKEroeffnung" type="rc:VAIKMeldungIKEroeffnung_Type"/>
+								<xs:element name="VAIKMeldungZIK" type="rc:VAIKMeldungZIK_Type"/>
+								<xs:element name="VAIKMeldungZIKRueckgaengigmachung" type="rc:VAIKMeldungZIKRueckgaengigmachung_Type"/>
+								<xs:element name="VAIKMeldungIKKopieAuszug" type="rc:VAIKMeldungIKKopieAuszug_Type"/>
+								<xs:element name="VAIKMeldungSplitting" type="rc:VAIKMeldungSplitting_Type"/>
+								<xs:element name="VAIKMeldungSplittingRueckgaengigmachung" type="rc:VAIKMeldungSplittingRueckgaengigmachung_Type"/>
+								<xs:element name="VAIKMeldungKassenWechsel" type="rc:VAIKMeldungKassenWechsel_Type"/>
+								<xs:element name="VAIKMeldungEintrittAHVIV" type="rc:VAIKMeldungEintrittAHVIV_Type"/>
+								<xs:element name="VAIKMeldungAustauschReferenzNummer" type="rc:VAIKMeldungAustauschReferenzNummer_Type"/>
+								<xs:element name="IKMeldung" type="rc:IKMeldung_Type"/>
+								<xs:element name="IKStatistikMeldung" type="rc:IKStatistikMeldung_Type"/>
+								
+								<!-- Annonces RR -->
+								<xs:element name="RRMeldung9" type="rc:RRMeldung9_Type"/>
+								<xs:element name="RRMeldung10" type="rc:RRMeldung10_Type"/>
+								<xs:element name="RRMeldungRueckerstattungUeberweisung" type="rc:RRMeldungRueckerstattungUeberweisung_Type"/>
+
+								<!-- Annonces APG/IJ -->
+								<xs:element name="IVTaggelderMeldung" type="rc:IVTaggelderMeldung_Type"/>
+								<xs:element name="IVTaggelderMeldungBis2003" type="rc:IVTaggelderMeldungBis2003_Type"/>
+								<xs:element name="EoMeldung" type="rc:EoMeldung_Type"/>
+								<xs:element name="EoMeldungNachAltemRecht" type="rc:EoMeldungNachAltemRecht_Type"/>
+								<!-- Annonces comptables -->
+								<xs:element name="BetriebsRechnung" type="rc:BetriebsRechnung_Type"/>
+								<xs:element name="BilanzVerwaltungsRechnung" type="rc:BilanzVerwaltungsRechnung_Type"/>
+								<xs:element name="JahresUmsatzBilanz" type="rc:JahresUmsatzBilanz_Type"/>
+								<xs:element name="MonatsRekapitulationBeitragsBuchhaltung" type="rc:MonatsRekapitulationBeitragsBuchhaltung_Type"/>
+								<xs:element name="MonatsRekapitulationRenten" type="rc:MonatsRekapitulationRenten_Type"/>
+								<!-- Annonces PC -->
+								<xs:element name="ELMeldung" type="rc:ELMeldung_Type"/>
+								<xs:element name="ELFaelleOhneAnspruchZuwachsMeldung" type="rc:ELFaelleOhneAnspruchZuwachsMeldung_Type"/>
+								<xs:element name="ELFaelleOhneAnspruchAbgangsMeldung" type="rc:ELFaelleOhneAnspruchAbgangsMeldung_Type"/>
+								<!-- Annonces IJ -->
+								<xs:element name="IVVerfuegungMeldung" type="rc:IVVerfuegungMeldung_Type"/>
+								<xs:element name="IVAnmeldungMeldung" type="rc:IVAnmeldungMeldung_Type"/>
+								<xs:element name="IVBeschlussMeldung" type="rc:IVBeschlussMeldung_Type"/>
+								<xs:element name="IVAblehnungMeldung" type="rc:IVAblehnungMeldung_Type"/>
+								<xs:element name="IVBranchenTaetigkeitenMeldung" type="rc:IVBranchenTaetigkeitenMeldung_Type"/>
+								<xs:element name="IVIntegrationsmassnahmenMeldung" type="rc:IVIntegrationsmassnahmenMeldung_Type"/>
+								<!-- Annonces assurance militaire -->
+								<xs:element name="MilitaerVersicherungsMeldung" type="rc:MilitaerVersicherungsMeldung_Type"/>
+								<!-- Annonce Assurance Chomage -->
+								<xs:element name="ALVEntschaedigungenMeldung" type="rc:ALVEntschaedigungenMeldung_Type"/>					
+							</xs:choice>
+							<xs:element name="PoolFuss" type="rc:PoolFuss_Type"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

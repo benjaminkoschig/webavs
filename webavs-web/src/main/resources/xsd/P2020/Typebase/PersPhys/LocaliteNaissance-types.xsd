@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2005 rel. 3 U (http://www.altova.com) by Magnin (OFIT) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:simpleType name="Geburtsort_Type">
+		<xs:annotation>
+			<xs:documentation xml:lang="de">Geburtsort</xs:documentation>
+			<xs:documentation xml:lang="fr">lieu de naissance</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="40"/>
+			<xs:pattern value=""/>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>
