@@ -172,9 +172,12 @@
 							<goal>generate</goal>
 						</goals>
 						<configuration>
-							<schemaDirectory>src/main/resources/xsd/ree</schemaDirectory>
+							<schemaDirectory>src/main/resources/xsd</schemaDirectory>
 							<schemaIncludes>
-								<include>*.xsd</include>
+								<include>ree/*.xsd</include>
+								<include>P2020/annoncesRC/*.xsd</include>
+								<include>P2020/annoncesRC/*/*.xsd</include>
+								<include>P2020/Typebase/*/*.xsd</include>
 							</schemaIncludes>
 							<bindingDirectory>src/main/resources/xjb</bindingDirectory>
 							<bindingIncludes>
