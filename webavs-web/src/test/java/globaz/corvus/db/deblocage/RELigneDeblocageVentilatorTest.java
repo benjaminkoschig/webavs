@@ -21,10 +21,7 @@ public class RELigneDeblocageVentilatorTest {
         deblocages.add(deblocage);
 
         List<CASectionJoinCompteAnnexeJoinTiers> sections = new ArrayList<CASectionJoinCompteAnnexeJoinTiers>();
-        CASectionJoinCompteAnnexeJoinTiers section = new CASectionJoinCompteAnnexeJoinTiers();
-        section.setSolde("100");
-        section.setIdSection("2");
-        sections.add(section);
+        sections.add(createSection(100, 2));
 
         RELigneDeblocageVentilator ventilator = new RELigneDeblocageVentilator(deblocages, sections);
         List<RELigneDeblocageVentilation> ventilations = ventilator.ventil();
@@ -34,8 +31,8 @@ public class RELigneDeblocageVentilatorTest {
 
     private RELigneDeblocageVentilation newVentialtion(int i, int j, int montant) {
         RELigneDeblocageVentilation ventilation = new RELigneDeblocageVentilation();
-        // ventilation.setIdLigneDeblocage(i);
-        // ventilation.setIdSectionSource(j);
+        ventilation.setIdLigneDeblocage(Long.valueOf(i));
+        ventilation.setIdSectionSource(Long.valueOf(j));
         ventilation.setMontant(new Montant(montant));
         return ventilation;
     }
@@ -49,15 +46,8 @@ public class RELigneDeblocageVentilatorTest {
         deblocages.add(deblocage);
 
         List<CASectionJoinCompteAnnexeJoinTiers> sections = new ArrayList<CASectionJoinCompteAnnexeJoinTiers>();
-        CASectionJoinCompteAnnexeJoinTiers section = new CASectionJoinCompteAnnexeJoinTiers();
-        section.setSolde("10");
-        section.setIdSection("2");
-        sections.add(section);
-
-        section = new CASectionJoinCompteAnnexeJoinTiers();
-        section.setSolde("100");
-        section.setIdSection("3");
-        sections.add(section);
+        sections.add(createSection(10, 1));
+        sections.add(createSection(100, 3));
 
         RELigneDeblocageVentilator ventilator = new RELigneDeblocageVentilator(deblocages, sections);
         List<RELigneDeblocageVentilation> ventilations = ventilator.ventil();
@@ -75,13 +65,28 @@ public class RELigneDeblocageVentilatorTest {
         deblocages.add(deblocage);
 
         List<CASectionJoinCompteAnnexeJoinTiers> sections = new ArrayList<CASectionJoinCompteAnnexeJoinTiers>();
-        CASectionJoinCompteAnnexeJoinTiers section = new CASectionJoinCompteAnnexeJoinTiers();
-        section.setSolde("10");
-        section.setIdSection("2");
-        sections.add(section);
+        sections.add(createSection(10, 1));
 
         RELigneDeblocageVentilator ventilator = new RELigneDeblocageVentilator(deblocages, sections);
         assertThat(ventilator.ventil()).hasSize(1);
+    }
+
+    @Test
+    public void testVentilMontantSurTroisSection() throws Exception {
+        RELigneDeblocages deblocages = new RELigneDeblocages();
+        RELigneDeblocage deblocage = new RELigneDeblocage();
+        deblocage.setIdEntity("1");
+        deblocage.setMontant(new Montant(30));
+        deblocages.add(deblocage);
+
+        List<CASectionJoinCompteAnnexeJoinTiers> sections = new ArrayList<CASectionJoinCompteAnnexeJoinTiers>();
+        sections.add(createSection(10, 1));
+        sections.add(createSection(15, 2));
+        sections.add(createSection(10, 3));
+        sections.add(createSection(16, 4));
+
+        RELigneDeblocageVentilator ventilator = new RELigneDeblocageVentilator(deblocages, sections);
+        assertThat(ventilator.ventil()).hasSize(3);
     }
 
     @Test(expected = REDeblocageException.class)
@@ -93,12 +98,17 @@ public class RELigneDeblocageVentilatorTest {
         deblocages.add(deblocage);
 
         List<CASectionJoinCompteAnnexeJoinTiers> sections = new ArrayList<CASectionJoinCompteAnnexeJoinTiers>();
-        CASectionJoinCompteAnnexeJoinTiers section = new CASectionJoinCompteAnnexeJoinTiers();
-        section.setSolde("10");
-        section.setIdSection("2");
-        sections.add(section);
+        sections.add(createSection(10, 1));
 
         RELigneDeblocageVentilator ventilator = new RELigneDeblocageVentilator(deblocages, sections);
         assertThat(ventilator.ventil()).hasSize(1);
+    }
+
+    private CASectionJoinCompteAnnexeJoinTiers createSection(Integer solde, Integer idSection) {
+        CASectionJoinCompteAnnexeJoinTiers section = new CASectionJoinCompteAnnexeJoinTiers();
+        section.setSolde(solde.toString());
+        section.setIdSection(idSection.toString());
+        section.setIdExterne(idSection + "10");
+        return section;
     }
 }

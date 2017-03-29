@@ -4,7 +4,6 @@ import globaz.corvus.api.lots.IRELot;
 import globaz.corvus.db.deblocage.REDeblocageVersement;
 import globaz.corvus.db.deblocage.REDeblocageVersementService;
 import globaz.corvus.db.lots.RELot;
-import globaz.corvus.db.lots.RELotManager;
 import globaz.corvus.module.compta.AREModuleComptable;
 import globaz.corvus.module.compta.REModuleComptableFactory;
 import globaz.corvus.utils.REPmtMensuel;
@@ -40,9 +39,8 @@ public class REComptabiliseDebloquage extends AREModuleComptable {
 
     public void comptabilise(BProcess process, Long idLot) throws Exception {
 
-        RELot lot = retriveLot();
+        RELot lot = retriveLot(idLot);
         APIGestionComptabiliteExterne compta = initCompta(process);
-        lot.setIdJournalCA(compta.getJournal().getIdJournal());
         BIMessageLog log = compta.getMessageLog();
 
         REDeblocageVersementService deblocageVersementService = new REDeblocageVersementService(session);
@@ -51,18 +49,14 @@ public class REComptabiliseDebloquage extends AREModuleComptable {
         String dateComptable = getDateValeurComptable();
 
         for (REDeblocageVersement versement : deblocageVersements) {
-            PRTiersWrapper tw = PRTiersHelper.getTiersParId(session, versement.getIdTiersBeneficiaire().toString());
+            PRTiersWrapper tw = PRTiersHelper.getTiersParId(session, versement.getIdTiersBeneficiaire());
             String motifVersement = getMotifVersementDeblocage(session, tw, versement.getRefPaiement(),
+                    versement.getCodeRenteAccordee(), versement.getIdTiersAdressePaiement());
 
-            versement.getCodeRenteAccordee(), versement.getIdTiersAdressePaiement().toString());
             if (versement.getType().isCreancier() || versement.getType().isVersementBeneficiaire()) {
-                // if ((adr == null) || adr.isNew()) {
-                // throw new Exception(session.getLabel("ERREUR_AUCUNE_ADRESSE_PMT_TROUVEE_POUR_TIERS")
-                // + versement.getIdTiersBeneficiaire());
-                // }
                 log.logMessage(doOrdreVersement(session, compta, versement.getIdCompteAnnexe(), versement
                         .getLigneDeblocageVentilation().getIdSectionSource().toString(), versement.getMontant()
-                        .toString(), versement.getIdTiersAdressePaiement(), motifVersement, dateComptable, false));
+                        .toStringFormat(), versement.getIdTiersAdressePaiement(), motifVersement, dateComptable, false));
             } else if (versement.getType().isDetteEnCompta()) {
                 doEcriture(session, compta, versement.getMontant().toStringValue(),
                         REModuleComptableFactory.getInstance().COMPENSATION, versement.getIdCompteAnnexe(), versement
@@ -74,9 +68,13 @@ public class REComptabiliseDebloquage extends AREModuleComptable {
                                 .getLigneDeblocageVentilation().getIdSectionSource().toString(), dateComptable,
                         motifVersement);
             }
-
         }
+        lot.setIdJournalCA(compta.getJournal().getIdJournal());
+        lot.setCsEtatLot(IRELot.CS_ETAT_LOT_VALIDE);
+        lot.setDateEnvoiLot(dateComptable);
         compta.comptabiliser();
+        lot.update();
+
         // ecritures.add(this.generateEcriture(SectionPegasus.DECISION_PC, APIEcriture.DEBIT,
         // APIReferenceRubrique.COMPENSATION_RENTES, montant, null, compteAnnexe.getIdCompteAnnexe(),
         // TypeEcriture.DETTE, ov));
@@ -86,15 +84,12 @@ public class REComptabiliseDebloquage extends AREModuleComptable {
         // montant, section, section.getIdCompteAnnexe(), TypeEcriture.DETTE, ov));
     }
 
-    private RELot retriveLot() throws Exception {
-        RELotManager mgr = new RELotManager();
-        mgr.setSession(session);
-        mgr.setForCsEtatDiffentDe(IRELot.CS_ETAT_LOT_OUVERT);
-        mgr.setForCsType(IRELot.CS_TYP_LOT_DEBLOCAGE_RA);
-        mgr.setForCsLotOwner(IRELot.CS_LOT_OWNER_RENTES);
-        mgr.setOrderBy(RELot.FIELDNAME_ID_LOT + " DESC ");
-        mgr.find(1);
-        return (RELot) mgr.getFirstEntity();
+    private RELot retriveLot(Long idLot) throws Exception {
+        RELot lot = new RELot();
+        lot.setSession(session);
+        lot.setId(idLot.toString());
+        lot.retrieve();
+        return lot;
     }
 
     private APIGestionComptabiliteExterne initCompta(BProcess process) throws Exception {

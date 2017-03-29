@@ -70,24 +70,12 @@ public class REDeblocageVersement extends BEntity {
         return idCompteAnnexe;
     }
 
-    public void setIdCompteAnnexe(String idCompteAnnexe) {
-        this.idCompteAnnexe = idCompteAnnexe;
-    }
-
     public String getIdRenteAccordee() {
         return idRenteAccordee;
     }
 
-    public void setIdRenteAccordee(String idRenteAccordee) {
-        this.idRenteAccordee = idRenteAccordee;
-    }
-
     public Montant getMontant() {
-        return montant;
-    }
-
-    public void setMontant(Montant montant) {
-        this.montant = montant;
+        return ligneDeblocage.getMontant();
     }
 
     public RELigneDeblocageType getType() {

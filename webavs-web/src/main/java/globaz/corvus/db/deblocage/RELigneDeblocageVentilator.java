@@ -5,42 +5,75 @@ import globaz.corvus.db.lignedeblocage.RELigneDeblocages;
 import globaz.corvus.db.lignedeblocageventilation.RELigneDeblocageVentilation;
 import globaz.osiris.db.comptes.CASectionJoinCompteAnnexeJoinTiers;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import ch.globaz.common.domaine.Montant;
 
 class RELigneDeblocageVentilator {
     private final RELigneDeblocages lignesDeblocages;
     private final List<CASectionJoinCompteAnnexeJoinTiers> sections;
-    private final Montant totalMontantVentile = Montant.ZERO;
+    private final Montant sumDeblocage;
 
     public RELigneDeblocageVentilator(RELigneDeblocages lignesDeblocages,
             List<CASectionJoinCompteAnnexeJoinTiers> sections) {
-        this.lignesDeblocages = lignesDeblocages;
+
+        sumDeblocage = sumDeblocage(lignesDeblocages).abs();
+        Montant sumSection = sumSection(sections).abs();
+
+        if (sumDeblocage.greater(sumSection)) {
+            throw new REDeblocageException("Not enough amount in the all sections");
+        }
+
+        Comparator<CASectionJoinCompteAnnexeJoinTiers> comparator = new Comparator<CASectionJoinCompteAnnexeJoinTiers>() {
+            @Override
+            public int compare(CASectionJoinCompteAnnexeJoinTiers o1, CASectionJoinCompteAnnexeJoinTiers o2) {
+                return Integer.valueOf(o1.getIdExterne()).compareTo(Integer.valueOf(o2.getIdExterne()));
+            }
+        };
+        Collections.sort(sections, comparator);
         this.sections = sections;
+        this.lignesDeblocages = lignesDeblocages;
     }
 
     public List<RELigneDeblocageVentilation> ventil() {
-        CASectionJoinCompteAnnexeJoinTiers section = sections.remove(0);
-        Montant resteInSection = new Montant(section.getSolde()).abs();
-        List<RELigneDeblocageVentilation> ventiliations = new ArrayList<RELigneDeblocageVentilation>();
+        Montant totalMontantVentile = Montant.ZERO;
+
+        List<RELigneDeblocageVentilation> ventilations = new ArrayList<RELigneDeblocageVentilation>();
+
         for (RELigneDeblocage ligne : lignesDeblocages) {
-            Montant montantVentialition = ligne.getMontant();
-            if (!resteInSection.greaterOrEquals(montantVentialition)) {
+            ventilations.addAll(ventilBySection(ligne));
+            totalMontantVentile = totalMontantVentile.add(ligne.getMontant());
+        }
 
-                ventiliations.add(newVentilation(section, ligne.getIdEntity(), resteInSection));
-                if (resteInSection.less(montantVentialition)) {
-                    if (sections.isEmpty()) {
-                        throw new REDeblocageException("not enough section to ventilate this idLigneDeblocage"
-                                + ligne.getIdEntity());
-                    }
+        if (!sumVentilation(ventilations).equals(sumDeblocage)) {
+            throw new REDeblocageException(
+                    "Le montant total des ventilations n'es pas egale au montant des lignes de déblocages !");
+        }
 
-                    section = sections.remove(0);
-                    Montant montantSection = new Montant(section.getSolde()).abs();
-                    montantVentialition = montantSection.substract(resteInSection);
+        return ventilations;
+    }
+
+    private List<RELigneDeblocageVentilation> ventilBySection(RELigneDeblocage ligne) {
+        List<RELigneDeblocageVentilation> ventiliations = new ArrayList<RELigneDeblocageVentilation>();
+        Montant montantAVantiler = ligne.getMontant();
+
+        for (CASectionJoinCompteAnnexeJoinTiers section : sections) {
+            Montant resteInSection = new Montant(section.getSolde()).abs();
+            if (Montant.ZERO.less(resteInSection)) {
+                if (!resteInSection.greaterOrEquals(montantAVantiler)) {
+                    montantAVantiler = montantAVantiler.substract(resteInSection);
+                    ventiliations.add(newVentilation(section, ligne.getIdEntity(), resteInSection));
+                } else {
+                    resteInSection = resteInSection.substract(montantAVantiler);
+                    ventiliations.add(newVentilation(section, ligne.getIdEntity(), montantAVantiler));
+                    montantAVantiler = Montant.ZERO;
                 }
             }
-            ventiliations.add(newVentilation(section, ligne.getIdEntity(), montantVentialition));
-            resteInSection = resteInSection.substract(ligne.getMontant());
+            section.setSolde(resteInSection.getValue());
+            if (montantAVantiler.isZero()) {
+                break;
+            }
         }
         return ventiliations;
     }
@@ -52,5 +85,29 @@ class RELigneDeblocageVentilator {
         ventilation.setIdLigneDeblocage(Long.valueOf(idLigneDeblocate));
         ventilation.setIdSectionSource(Long.valueOf(section.getIdSection()));
         return ventilation;
+    }
+
+    private Montant sumSection(List<CASectionJoinCompteAnnexeJoinTiers> sections) {
+        Montant sum = Montant.ZERO;
+        for (CASectionJoinCompteAnnexeJoinTiers section : sections) {
+            sum = sum.add(section.getSolde());
+        }
+        return sum;
+    }
+
+    private Montant sumDeblocage(List<RELigneDeblocage> deblocages) {
+        Montant sum = Montant.ZERO;
+        for (RELigneDeblocage deblocage : deblocages) {
+            sum = sum.add(deblocage.getMontant());
+        }
+        return sum;
+    }
+
+    private Montant sumVentilation(List<RELigneDeblocageVentilation> ventilations) {
+        Montant sum = Montant.ZERO;
+        for (RELigneDeblocageVentilation ventilation : ventilations) {
+            sum = sum.add(ventilation.getMontant());
+        }
+        return sum;
     }
 }
