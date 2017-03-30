@@ -49,7 +49,6 @@ import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
-import javax.xml.bind.PropertyException;
 import javax.xml.bind.ValidationEvent;
 import javax.xml.bind.ValidationEventHandler;
 import javax.xml.datatype.DatatypeConfigurationException;
@@ -1200,7 +1199,7 @@ public class REEnvoyerAnnoncesXMLProcess extends BProcess {
 
     }
 
-    private Marshaller initMarshaller(Object element) throws SAXException, JAXBException, PropertyException {
+    private Marshaller initMarshaller(Object element) throws SAXException, JAXBException {
         if (marshaller == null) {
             SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
             URL url = getClass().getResource(XSD_FOLDER + XSD_NAME);
@@ -1255,7 +1254,7 @@ public class REEnvoyerAnnoncesXMLProcess extends BProcess {
             LOG.error("impossible d'initialier un PoolMeldungZurZAS", e);
         }
 
-        if (validationErrors.size() > 0) {
+        if (!validationErrors.isEmpty()) {
             throw new ValidationException(validationErrors);
         }
 

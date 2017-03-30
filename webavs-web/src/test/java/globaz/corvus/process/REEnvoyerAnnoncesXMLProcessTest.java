@@ -11,6 +11,7 @@ import globaz.hermes.api.IHEAnnoncesViewBean;
 import globaz.jade.client.util.JadeStringUtil;
 import java.math.BigDecimal;
 import java.util.Map;
+import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import org.junit.Assert;
 import org.junit.Before;
@@ -636,6 +637,16 @@ public class REEnvoyerAnnoncesXMLProcessTest {
     public void testValidateUnitMessage() throws Exception {
         // je ne sais pas dans quoi je me lance e je corrige au fur et a mesure que la validation pète pour obtenir un
         // test OK
+        RRMeldung9Type rrm9 = mockOrdentlicheZuwachsMeldung();
+        try {
+            testInstance.validateUnitMessage(rrm9);
+        } catch (ValidationException ve) {
+            Assert.assertEquals(null, ve);
+        }
+
+    }
+
+    private RRMeldung9Type mockOrdentlicheZuwachsMeldung() throws DatatypeConfigurationException {
         ch.admin.zas.rc.ObjectFactory of = new ch.admin.zas.rc.ObjectFactory();
         RRMeldung9Type rrm9 = of.createRRMeldung9Type();
         RRMeldung9Type.OrdentlicheRente rrm9o = of.createRRMeldung9TypeOrdentlicheRente();
@@ -677,21 +688,17 @@ public class REEnvoyerAnnoncesXMLProcessTest {
         zmt9.setBerichtsmonat(DatatypeFactory.newInstance().newXMLGregorianCalendar(2017, 01, 01, 01, 01, 01, 01, 01));
         rrm9o.setZuwachsmeldung(zmt9);
         rrm9.setOrdentlicheRente(rrm9o);
-        try {
-            testInstance.validateUnitMessage(rrm9);
-        } catch (ValidationException ve) {
-            Assert.assertEquals(null, ve);
-        }
-
+        return rrm9;
     }
 
     @Test
     public void testFailValidateUnitMessage() throws Exception {
         ch.admin.zas.rc.ObjectFactory of = new ch.admin.zas.rc.ObjectFactory();
+        // empty object
         RRMeldung9Type rrm9 = of.createRRMeldung9Type();
         try {
             testInstance.validateUnitMessage(rrm9);
-            fail("Doit dans ce cas lever une exception et ne jamais passer ici");
+            fail("Doit, dans ce cas, lever une exception et ne jamais passer ici");
         } catch (ValidationException ve) {
             assertNotNull(ve);
             System.err.println(ve.getFormattedMessage());
