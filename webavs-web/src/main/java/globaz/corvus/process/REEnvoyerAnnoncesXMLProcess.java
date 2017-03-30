@@ -31,34 +31,42 @@ import globaz.jade.fs.JadeFsFacade;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.tools.PRSession;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.net.URL;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+import javax.xml.bind.PropertyException;
 import javax.xml.bind.ValidationEvent;
 import javax.xml.bind.ValidationEventHandler;
+import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
 import ch.admin.ofit.anakin.donnee.AnnonceErreur;
 import ch.admin.zas.pool.PoolMeldungZurZAS;
 import ch.admin.zas.rc.PoolFussType;
 import ch.admin.zas.rc.PoolKopfType;
 import ch.globaz.common.properties.CommonProperties;
+import ch.globaz.common.properties.PropertiesException;
+import ch.globaz.naos.ree.sedex.ValidationException;
 import ch.horizon.jaspe.util.JACalendar;
 
 /**
@@ -67,7 +75,12 @@ import ch.horizon.jaspe.util.JACalendar;
  */
 public class REEnvoyerAnnoncesXMLProcess extends BProcess {
 
+    private static final String XSD_FOLDER = "/xsd/P2020/annoncesRC/";
+    private static final String XSD_NAME = "MeldungZurZas.xsd";
+
     private static final Logger LOG = LoggerFactory.getLogger(REEnvoyerAnnoncesXMLProcess.class);
+
+    private Marshaller marshaller;
 
     private boolean modeTest = true;
 
@@ -139,32 +152,8 @@ public class REEnvoyerAnnoncesXMLProcess extends BProcess {
     protected boolean _executeProcess() {
         try {
 
-            ch.admin.zas.pool.ObjectFactory factoryPool = new ch.admin.zas.pool.ObjectFactory();
-            PoolMeldungZurZAS lotAnnonces = factoryPool.createPoolMeldungZurZAS();
-            ch.admin.zas.rc.ObjectFactory factoryType = new ch.admin.zas.rc.ObjectFactory();
-            ch.admin.zas.pool.PoolMeldungZurZAS.Lot lot = factoryPool.createPoolMeldungZurZASLot();
-            PoolKopfType poolKopf = factoryType.createPoolKopfType();
-            if (REProperties.CENTRALE_TEST.getBooleanValue()) {
-                poolKopf.setTest("TEST");
-            }
-            poolKopf.setSender(CommonProperties.KEY_NO_CAISSE.getValue());
-
-            final DateFormat format = new SimpleDateFormat("dd.mm.yyyy");
-            final String dateStr = JACalendar.todayjjMMMMaaaa();
-            final java.util.Date dDate = format.parse(dateStr);
-
-            GregorianCalendar gregory = new GregorianCalendar();
-            gregory.setTime(dDate);
-
-            XMLGregorianCalendar dealCloseDate = DatatypeFactory.newInstance().newXMLGregorianCalendar(gregory);
-            poolKopf.setErstellungsdatum(dealCloseDate);
-            lot.setPoolKopf(poolKopf);
-
-            PoolFussType poolFuss = factoryType.createPoolFussType();
-            poolFuss.setEintragungengesamtzahl(0);
-            lot.setPoolFuss(poolFuss);
-
-            lotAnnonces.getLot().add(lot);
+            PoolMeldungZurZAS lotAnnonces = initPoolMeldungZurZAS(REProperties.CENTRALE_TEST.getBooleanValue(),
+                    CommonProperties.KEY_NO_CAISSE.getValue());
 
             // On prend la date du jour qu'on mettra a toutes les annonces
             // envoyées (pour éviter le problème qui
@@ -306,6 +295,37 @@ public class REEnvoyerAnnoncesXMLProcess extends BProcess {
             return false;
         }
         return true;
+    }
+
+    private PoolMeldungZurZAS initPoolMeldungZurZAS(boolean poolKopfTest, String poolKopfSender)
+            throws PropertiesException, ParseException, DatatypeConfigurationException {
+        ch.admin.zas.pool.ObjectFactory factoryPool = new ch.admin.zas.pool.ObjectFactory();
+        PoolMeldungZurZAS lotAnnonces = factoryPool.createPoolMeldungZurZAS();
+        ch.admin.zas.rc.ObjectFactory factoryType = new ch.admin.zas.rc.ObjectFactory();
+        ch.admin.zas.pool.PoolMeldungZurZAS.Lot lot = factoryPool.createPoolMeldungZurZASLot();
+        PoolKopfType poolKopf = factoryType.createPoolKopfType();
+        if (poolKopfTest) {
+            poolKopf.setTest("TEST");
+        }
+        poolKopf.setSender(poolKopfSender);
+
+        final DateFormat format = new SimpleDateFormat("dd.mm.yyyy");
+        final String dateStr = JACalendar.todayjjMMMMaaaa();
+        final java.util.Date dDate = format.parse(dateStr);
+
+        GregorianCalendar gregory = new GregorianCalendar();
+        gregory.setTime(dDate);
+
+        XMLGregorianCalendar dealCloseDate = DatatypeFactory.newInstance().newXMLGregorianCalendar(gregory);
+        poolKopf.setErstellungsdatum(dealCloseDate);
+        lot.setPoolKopf(poolKopf);
+
+        PoolFussType poolFuss = factoryType.createPoolFussType();
+        poolFuss.setEintragungengesamtzahl(0);
+        lot.setPoolFuss(poolFuss);
+
+        lotAnnonces.getLot().add(lot);
+        return lotAnnonces;
     }
 
     /**
@@ -1153,16 +1173,7 @@ public class REEnvoyerAnnoncesXMLProcess extends BProcess {
      */
     private String genereFichier(PoolMeldungZurZAS poolMeldung) throws Exception {
         String fileName;
-        SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-        URL url = getClass().getResource("/xsd/P2020/annoncesRC/MeldungZurZas.xsd");
-        Schema schema = sf.newSchema(url);
-
-        JAXBContext jc = JAXBContext.newInstance(poolMeldung.getClass());
-
-        Marshaller marshaller = jc.createMarshaller();
-        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-        marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
-        marshaller.setSchema(schema);
+        initMarshaller(poolMeldung);
         fileName = Jade.getInstance().getSharedDir() + getFileNameTimeStamp();
 
         File f = new File(fileName);
@@ -1173,19 +1184,80 @@ public class REEnvoyerAnnoncesXMLProcess extends BProcess {
 
                 @Override
                 public boolean handleEvent(ValidationEvent event) {
-                    // logger.warn("JAXB validation error : " + event.getMessage(), this);
+                    LOG.warn("JAXB validation error : " + event.getMessage(), this);
                     return false;
                 }
             });
             marshaller.marshal(poolMeldung, f);
 
         } catch (JAXBException exception) {
-            // logger.error("JAXB validation has thrown a JAXBException : " + exception.toString(), exception);
+            LOG.error("JAXB validation has thrown a JAXBException : " + exception.toString(), exception);
             exception.printStackTrace();
             throw exception;
 
         }
         return fileName;
+
+    }
+
+    private Marshaller initMarshaller(Object element) throws SAXException, JAXBException, PropertyException {
+        if (marshaller == null) {
+            SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+            URL url = getClass().getResource(XSD_FOLDER + XSD_NAME);
+            Schema schema = sf.newSchema(url);
+
+            JAXBContext jc = JAXBContext.newInstance(element.getClass());
+
+            marshaller = jc.createMarshaller();
+            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+            marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
+            marshaller.setSchema(schema);
+        }
+        return marshaller;
+    }
+
+    /**
+     * CAUTION, only of sub-object of a PoolMeldungZurZAS
+     * 
+     * @param element
+     * @throws ValidationException
+     * @throws SAXException
+     * @throws JAXBException
+     */
+    public void validateUnitMessage(Object element) throws ValidationException, SAXException, JAXBException {
+        PoolMeldungZurZAS pool;
+        final List<String> validationErrors = new LinkedList<String>();
+        try {
+            pool = initPoolMeldungZurZAS(true, "validateUnitMessage");
+            pool.getLot()
+                    .get(0)
+                    .getVAIKMeldungNeuerVersicherterOrVAIKMeldungAenderungVersichertenDatenOrVAIKMeldungVerkettungVersichertenNr()
+                    .add(element);
+            initMarshaller(pool);
+
+            marshaller.setEventHandler(new ValidationEventHandler() {
+
+                @Override
+                public boolean handleEvent(ValidationEvent event) {
+                    LOG.warn("JAXB validation error : " + event.getMessage(), this);
+                    validationErrors.add(event.getMessage());
+                    return true;
+                }
+
+            });
+
+            marshaller.marshal(pool, new ByteArrayOutputStream());
+
+        } catch (JAXBException exception) {
+            LOG.error("JAXB validation has thrown a JAXBException : " + exception.toString(), exception);
+            throw exception;
+        } catch (Exception e) {
+            LOG.error("impossible d'initialier un PoolMeldungZurZAS", e);
+        }
+
+        if (validationErrors.size() > 0) {
+            throw new ValidationException(validationErrors);
+        }
 
     }
 
