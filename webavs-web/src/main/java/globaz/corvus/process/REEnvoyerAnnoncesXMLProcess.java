@@ -192,7 +192,6 @@ public class REEnvoyerAnnoncesXMLProcess extends BProcess {
             if (getIsForAnnoncesSubsequentes()) {
                 mgr.setForAnnoncesSubsequentes(true);
             }
-
             statement = mgr.cursorOpen(getTransaction());
 
             boolean hasError = false;
@@ -645,7 +644,7 @@ public class REEnvoyerAnnoncesXMLProcess extends BProcess {
 
                 parseAugmentationAvecAnakin(augmentation9eme01, augmentation9eme02);
 
-                if (codeApplication == 43) {
+                if (codeApplication == 41) {
                     serviceAnnonces.annonceAugmentationOrdinaire9e(augmentation9eme01, augmentation9eme01);
                 } else {
                     // préparer annonceModification
