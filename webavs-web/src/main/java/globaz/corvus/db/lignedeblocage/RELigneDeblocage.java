@@ -157,6 +157,14 @@ public class RELigneDeblocage extends JadeEntity {
         return type.isVersementBeneficiaire();
     }
 
+    public boolean isCompensation() {
+        return type.isCompensation();
+    }
+
+    public boolean isMontantAPayer() {
+        return type.isNotCompensation();
+    }
+
     @Override
     public boolean hasCreationSpy() {
         return true;

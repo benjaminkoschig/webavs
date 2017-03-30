@@ -42,4 +42,12 @@ public enum RELigneDeblocageType implements CodeSystemEnum<RELigneDeblocageType>
     public boolean isImpotsSource() {
         return IMPOTS_SOURCE.equals(this);
     }
+
+    public boolean isCompensation() {
+        return isDetteEnCompta() || isImpotsSource();
+    }
+
+    public boolean isNotCompensation() {
+        return !isCompensation();
+    }
 }

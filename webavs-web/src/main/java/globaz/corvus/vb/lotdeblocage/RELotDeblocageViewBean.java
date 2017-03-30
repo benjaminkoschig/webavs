@@ -3,24 +3,18 @@
  */
 package globaz.corvus.vb.lotdeblocage;
 
-import globaz.corvus.db.lots.RELot;
+import globaz.corvus.db.deblocage.REDeblocageVersement;
 import globaz.corvus.vb.lots.RELotViewBean;
-import globaz.globall.db.BStatement;
-import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.log.JadeLogger;
+import org.apache.commons.lang.StringUtils;
+import ch.globaz.common.domaine.AdressePaiement;
+import ch.globaz.common.services.AdressePaiementLoader;
 
-public class RELotDeblocageViewBean extends RELot {
+public class RELotDeblocageViewBean extends REDeblocageVersement {
 
     private static final long serialVersionUID = 1L;
     private RELotViewBean lot;
-
-    private String idRentePrestation;
-
-    @Override
-    protected void _readProperties(final BStatement statement) throws Exception {
-        super._readProperties(statement);
-
-        idRentePrestation = statement.dbReadNumeric("ID_RENTE_PRESTATION");
-    }
+    private String idLot;
 
     public String getLotDescription() {
 
@@ -49,7 +43,7 @@ public class RELotDeblocageViewBean extends RELot {
     }
 
     private boolean loadLot() {
-        if ((lot == null) && !JadeStringUtil.isIntegerEmpty(getIdLot())) {
+        if ((lot == null) && !StringUtils.isEmpty(getIdLot())) {
             RELotViewBean l = new RELotViewBean();
             l.setSession(getSession());
             l.setIdLot(getIdLot());
@@ -57,37 +51,53 @@ public class RELotDeblocageViewBean extends RELot {
                 l.retrieve();
                 lot = l;
             } catch (Exception e) {
-                // on ne fait rien
+                JadeLogger.error("", e);
             }
         }
         return lot != null;
     }
 
-    public String getDescriptionCompteAnnexe() {
-        return "CompteAnnexe 1";
-    }
-
-    public String getSection() {
-        return "Section";
-    }
-
     public String getMontantACompenser() {
+        if (getLigneDeblocage().isCompensation()) {
+            return getLigneDeblocageVentilation().getMontant().getValue();
+        }
+
         return "";
     }
 
     public String getAdresseDePaiement() {
+
+        if (getLigneDeblocage().isMontantAPayer()) {
+            try {
+                AdressePaiementLoader loader = new AdressePaiementLoader(getSession());
+                AdressePaiement adr = loader.searchAdressePaiement(getLigneDeblocage().getIdTiersAdressePaiement(),
+                        getLigneDeblocage().getIdApplicationAdressePaiement());
+
+                return getSession().getCodeLibelle(adr.getTiers().getTitre()) + " " + adr.formatInOneLine("<BR>");
+            } catch (RuntimeException e) {
+                JadeLogger.error("", e);
+            }
+        } else {
+            return getSession().getCodeLibelle(getLigneDeblocage().getType().getValue());
+        }
+
         return "";
     }
 
     public String getMontantAPayer() {
+        if (getLigneDeblocage().isMontantAPayer()) {
+            return getLigneDeblocageVentilation().getMontant().getValue();
+        }
+
         return "";
     }
 
-    public String getIdRentePrestation() {
-        return idRentePrestation;
+    public String getIdLot() {
+        return idLot;
     }
 
-    public void setIdRentePrestation(String idRentePrestation) {
-        this.idRentePrestation = idRentePrestation;
+    public void setIdLot(String idLot) {
+        this.idLot = idLot;
     }
+
 }
