@@ -16,8 +16,8 @@ public class REDeblocageVersementManager extends BManager {
 
     private static final long serialVersionUID = 1L;
 
-    private Long forIdRenteAccordee;
-    private Long forIdLot;
+    private String forIdRenteAccordee;
+    private String forIdLot;
 
     @Override
     protected BEntity _newEntity() throws Exception {
@@ -35,30 +35,35 @@ public class REDeblocageVersementManager extends BManager {
                         REPrestationsAccordees.FIELDNAME_CODE_PRESTATION,
                         REInformationsComptabilite.FIELDNAME_ID_TIERS_ADRESSE_PMT,
                         REInformationsComptabilite.FIELDNAME_ID_DOMAINE_APPLICATION,
-                        REInformationsComptabilite.FIELDNAME_ID_COMPTE_ANNEXE)
+                        REInformationsComptabilite.FIELDNAME_ID_COMPTE_ANNEXE, "cpta.DESCRIPTION",
+                        "cpta.IDEXTERNEROLE", "sec.IDEXTERNE")
                 .fields("ld", RELigneDeblocageTableDef.class)
                 .fields("ldv", RELigneDeblocageVentilationTableDef.class)
                 .from("schema." + RELigneDeblocageTableDef.TABLE_NAME + " ld "
                         + "inner join schema.RE_LIGNE_DEBLOCAGE_VENTIL ldv on ldv.ID_LIGNE_DEBLOCAGE = ld.ID "
                         + "inner join schema.REPRACC ra on ra.ZTIPRA = ld.ID_RENTE_ACCORDEE "
-                        + "inner join schema.REINCOM ri on ri.YNIIIC = ra.ZTIICT").where().and("ra")
-                .equal(forIdRenteAccordee).and("ld", RELigneDeblocageTableDef.ID_LOT).equal(forIdLot).toSql();
+                        + "inner join schema.REINCOM ri on ri.YNIIIC = ra.ZTIICT "
+                        + "inner join schema.CACPTAP cpta on cpta.idcompteannexe = ri."
+                        + REInformationsComptabilite.FIELDNAME_ID_COMPTE_ANNEXE + " "
+                        + "inner join CCJUWEB.CASECTP sec on sec.IDSECTION = ldv.ID_SECTION_SOURCE").where().and("ra")
+                .equalForNumber(forIdRenteAccordee).and("ld", RELigneDeblocageTableDef.ID_LOT).equalForNumber(forIdLot)
+                .toSql();
     }
 
-    public Long getForIdRenteAccordee() {
+    public String getForIdRenteAccordee() {
         return forIdRenteAccordee;
     }
 
-    public Long getForIdLot() {
+    public void setForIdRenteAccordee(String forIdRenteAccordee) {
+        this.forIdRenteAccordee = forIdRenteAccordee;
+    }
+
+    public String getForIdLot() {
         return forIdLot;
     }
 
-    public void setForIdLot(Long forIdLot) {
+    public void setForIdLot(String forIdLot) {
         this.forIdLot = forIdLot;
-    }
-
-    public void setForIdRenteAccordee(Long forIdRenteAccordee) {
-        this.forIdRenteAccordee = forIdRenteAccordee;
     }
 
 }

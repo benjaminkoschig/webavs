@@ -30,4 +30,17 @@ public class AdressePaiement implements Serializable {
         return idAvoirPaiementUnique;
     }
 
+    public String formatInOneLine() {
+        return formatInOneLine(" ");
+    }
+
+    public String formatInOneLine(String separateurTiersWithBanque) {
+
+        return tiers.getDesignation1() + " " + tiers.getDesignation2() + " " + tiers.getNpa() + " "
+                + tiers.getLocalite() + separateurTiersWithBanque + banque.getCompte() + " " + banque.getDesignation1()
+                + ", " + banque.getRue() + " " + banque.getNumero() + ", " + banque.getNpa() + " "
+                + banque.getLocalite();
+
+    }
+
 }

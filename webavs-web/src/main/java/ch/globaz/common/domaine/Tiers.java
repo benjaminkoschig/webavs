@@ -19,6 +19,7 @@ public class Tiers implements Serializable {
     private String pays;
     private String paysIso;
     private String rue;
+    private String titre;
 
     public String getCanton() {
         return canton;
@@ -106,5 +107,13 @@ public class Tiers implements Serializable {
 
     public void setRue(String rue) {
         this.rue = rue;
+    }
+
+    public String getTitre() {
+        return titre;
+    }
+
+    public void setTitre(String titre) {
+        this.titre = titre;
     }
 }

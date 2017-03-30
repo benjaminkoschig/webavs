@@ -9,6 +9,7 @@ import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import ch.globaz.common.business.exceptions.CommonTechnicalException;
 import ch.globaz.common.domaine.AdressePaiement;
 import ch.globaz.common.domaine.Banque;
 import ch.globaz.common.domaine.Tiers;
@@ -36,26 +37,32 @@ public class AdressePaiementLoader {
                         .toString(), entry.getValue().toString(), null, null);
                 adresses.put(entry.getKey(), convertAdressePaiement(adresseData));
             } catch (Exception e) {
-                throw new RuntimeException("Unabled to find adresse paiement for " + entry.getKey(), e);
+                throw new CommonTechnicalException("Unabled to find adresse paiement for " + entry.getKey(), e);
             }
         }
 
         return adresses;
+    }
 
-        // TIAdressePaiementDataManager mgr = new TIAdressePaiementDataManager();
-        //
-        // mgr.setSession(session);
-        // mgr.setForIdTiers(idTiersAdressePmt);
-        // mgr.setForDateEntreDebutEtFin(JACalendar.todayJJsMMsAAAA());
-        // mgr.find(BManager.SIZE_NOLIMIT);
-        //
-        // java.util.Collection<BIEntity> c = TIAdressePmtResolver.resolve(mgr, domainePaiement, idExterne);
-        //
-        // if (c.size() > 0) {
-        // return (TIAdressePaiementData) c.toArray()[0];
-        // }
-        //
-        // TIAdressePaiementData data = new TIAdressePaiementData();
+    public AdressePaiement searchAdressePaiement(Long idTiersAdressePaiement, Long idApplicationAdressePaiement) {
+
+        if (idTiersAdressePaiement == null) {
+            throw new IllegalArgumentException("Unabled to find adresses, idTiersAdressePaiement is null");
+        }
+
+        if (idApplicationAdressePaiement == null) {
+            throw new IllegalArgumentException("Unabled to find adresses, idApplicationAdressePaiement is null");
+        }
+
+        TIAdressePaiementData adresseData;
+        try {
+            adresseData = PRTiersHelper.getAdressePaiementData(session, null, idTiersAdressePaiement.toString(),
+                    idApplicationAdressePaiement.toString(), null, null);
+
+            return convertAdressePaiement(adresseData);
+        } catch (Exception e) {
+            throw new CommonTechnicalException("Unabled to find adresse paiement for " + idTiersAdressePaiement, e);
+        }
     }
 
     private static AdressePaiement convertAdressePaiement(TIAdressePaiementData adresseData) {
@@ -67,8 +74,6 @@ public class AdressePaiementLoader {
             banque.setAdresse2(adresseData.getLigneAdresse2_banque());
             banque.setAdresse3(adresseData.getLigneAdresse3_banque());
             banque.setAdresse4(adresseData.getLigneAdresse4_banque());
-            // banque.setCanton(adressePaiement.getFields().get(AdresseTiersDetail.ADRESSE_VAR_CANTON));
-            // banque.setCantonCour(adressePaiement.getFields().get(AdresseTiersDetail.ADRESSEP_VAR_PAYS));
             banque.setCasePostal(adresseData.getCasePostale_banque());
             banque.setCompte(adresseData.getCompte());
             banque.setDesignation1(adresseData.getDesignation1_banque());
@@ -82,9 +87,16 @@ public class AdressePaiementLoader {
             banque.setCcp(adresseData.getCcp_banque());
 
             Tiers tiers = new Tiers();
-            // tiers.setCanton(adressePaiement.getFields().get(AdresseTiersDetail.ADRESSE_VAR_CANTON));
             tiers.setDesignation1(adresseData.getDesignation1_tiers());
             tiers.setDesignation2(adresseData.getDesignation2_tiers());
+            tiers.setRue(adresseData.getRue());
+            tiers.setLocalite(adresseData.getLocalite());
+            tiers.setPaysIso(adresseData.getPaysIso());
+            tiers.setPays(adresseData.getPays());
+            tiers.setNumero(adresseData.getNumero());
+            tiers.setNpa(adresseData.getNpa());
+            tiers.setCasePostal(adresseData.getCasePostale());
+            tiers.setTitre(adresseData.getTitre_tiers());
 
             return new AdressePaiement(banque, tiers, adresseData.getIdAvoirPaiementUnique());
         }

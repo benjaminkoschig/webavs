@@ -24,7 +24,7 @@ public class REDeblocageVersementService {
 
         REDeblocageVersementManager manager = new REDeblocageVersementManager();
         manager.setSession(session);
-        manager.setForIdRenteAccordee(forIdRenteAccordee);
+        manager.setForIdRenteAccordee(forIdRenteAccordee.toString());
         try {
             manager.find(BManager.SIZE_NOLIMIT);
         } catch (Exception e) {
@@ -43,7 +43,7 @@ public class REDeblocageVersementService {
 
         REDeblocageVersementManager manager = new REDeblocageVersementManager();
         manager.setSession(session);
-        manager.setForIdLot(forIdLot);
+        manager.setForIdLot(forIdLot.toString());
         try {
             manager.find(BManager.SIZE_NOLIMIT);
         } catch (Exception e) {

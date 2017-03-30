@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import org.apache.commons.lang.StringUtils;
+import ch.globaz.common.business.exceptions.CommonTechnicalException;
 import ch.globaz.common.domaine.CodeSystemEnum;
 import ch.globaz.common.domaine.Date;
 import ch.globaz.common.jadedb.TableDefinition;
@@ -320,6 +321,22 @@ public class SQLWriter {
     public SQLWriter equal(Number param) {
         if (param != null) {
             paramsToUse.add(String.valueOf(param));
+            query.append("=?");
+        } else {
+            rollback();
+        }
+        return this;
+    }
+
+    /**
+     * Ajoute le = avec le paramètre définit à la requête SQL
+     * 
+     * @param param String sql
+     * @return SQLWriter utilisé
+     */
+    public SQLWriter equalForNumber(String param) {
+        if (StringUtils.isNotEmpty(param)) {
+            paramsToUse.add(param);
             query.append("=?");
         } else {
             rollback();
@@ -831,7 +848,7 @@ public class SQLWriter {
     void checkMatchParams(String sqlFragment, int nbParams) {
         int nbMatch = countCharToReplace(sqlFragment);
         if (nbMatch != nbParams) {
-            throw new RuntimeException("Unabeld to replace the " + charToReplace + " with parmas. The number ("
+            throw new CommonTechnicalException("Unabeld to replace the " + charToReplace + " with parmas. The number ("
                     + nbMatch + ") of the " + charToReplace + " not match with the number of parmas (" + nbParams + ")");
         }
     }
