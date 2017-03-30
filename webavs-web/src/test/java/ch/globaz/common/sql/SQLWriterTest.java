@@ -449,4 +449,11 @@ public class SQLWriterTest {
                 " TEST.COL1 AS TEST_COL1, TEST.COL2 AS TEST_COL2");
     }
 
+    @Test
+    public void testEqualForNumber() throws Exception {
+        assertThat(SQLWriter.write().and("col").equalForNumber("1").toSql()).isEqualTo(" col=1");
+        assertThat(SQLWriter.write().and("col").equalForNumber(null).toSql()).isEqualTo("");
+        assertThat(SQLWriter.write().and("col").equalForNumber("").toSql()).isEqualTo("");
+    }
+
 }

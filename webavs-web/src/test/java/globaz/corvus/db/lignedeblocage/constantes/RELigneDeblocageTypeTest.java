@@ -22,7 +22,7 @@ public class RELigneDeblocageTypeTest {
     }
 
     @Test
-    public void testIsVersementBeneficaire() throws Exception {
+    public void testIsVersementBeneficiaire() throws Exception {
         assertThat(RELigneDeblocageType.fromValue("52863001").isVersementBeneficiaire()).isFalse();
         assertThat(RELigneDeblocageType.fromValue("52863002").isVersementBeneficiaire()).isFalse();
         assertThat(RELigneDeblocageType.fromValue("52863003").isVersementBeneficiaire()).isTrue();
@@ -35,6 +35,26 @@ public class RELigneDeblocageTypeTest {
         assertThat(RELigneDeblocageType.fromValue("52863002").isImpotsSource()).isFalse();
         assertThat(RELigneDeblocageType.fromValue("52863003").isImpotsSource()).isFalse();
         assertThat(RELigneDeblocageType.fromValue("52863004").isImpotsSource()).isTrue();
+    }
+
+    @Test
+    public void testIsCompensation() throws Exception {
+        // Dette en compta
+        assertThat(RELigneDeblocageType.fromValue("52863002").isCompensation()).isTrue();
+        // impot source
+        assertThat(RELigneDeblocageType.fromValue("52863004").isCompensation()).isTrue();
+
+        assertThat(RELigneDeblocageType.fromValue("52863001").isCompensation()).isFalse();
+        assertThat(RELigneDeblocageType.fromValue("52863003").isCompensation()).isFalse();
+
+    }
+
+    @Test
+    public void testIsNotCompensation() throws Exception {
+        assertThat(RELigneDeblocageType.fromValue("52863001").isNotCompensation()).isTrue();
+        assertThat(RELigneDeblocageType.fromValue("52863003").isNotCompensation()).isTrue();
+        assertThat(RELigneDeblocageType.fromValue("52863002").isNotCompensation()).isFalse();
+        assertThat(RELigneDeblocageType.fromValue("52863004").isNotCompensation()).isFalse();
     }
 
 }
