@@ -139,10 +139,10 @@ public class RFDevaliderDecisionService {
 
                                 if (idsPetiteQdMap.containsKey(rfDem.getIdQdAssure())) {
 
-                                    BigDecimal montantAReattribuerPetiteQdMapBigDec = idsPetiteQdMap.get(rfDem
-                                            .getIdQdAssure());
-                                    montantAReattribuerPetiteQdMapBigDec = montantAReattribuerPetiteQdMapBigDec
-                                            .add(montantAReattribuerPetiteQdBigDec);
+                                    BigDecimal totalMontantDemandesARetribuer = idsPetiteQdMap.get(
+                                            rfDem.getIdQdAssure()).add(montantAReattribuerPetiteQdBigDec);
+
+                                    idsPetiteQdMap.put(rfDem.getIdQdAssure(), totalMontantDemandesARetribuer);
 
                                 } else {
                                     idsPetiteQdMap.put(rfDem.getIdQdAssure(), montantAReattribuerPetiteQdBigDec);
