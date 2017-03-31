@@ -42,7 +42,7 @@
 			<ct:menuParam key="selectedId" value=""/>
 		</ct:menuPopup>
     </TD>
-    <TD class="mtd" nowrap="nowrap" onClick="<%=actionDetail%>"><%=line.getIdExterneCompteAnnexe() + " - " +line.getDescriptionCompteAnnexe() %>&nbsp;</TD>
+    <TD class="mtd" nowrap="nowrap" onClick="<%=actionDetail%>"><%=line.formatInformationCompte()%>&nbsp;</TD>
     <TD class="mtd" nowrap="nowrap" onClick="<%=actionDetail%>" align="center"><%=line.getIdExterneSextion()%>&nbsp;</TD>
 	<TD class="mtd" nowrap="nowrap" onClick="<%=actionDetail%>" align="right"><%=line.getMontantACompenser() %>&nbsp;</TD>
 	<TD class="mtd" nowrap="nowrap" onClick="<%=actionDetail%>"><%=line.getAdresseDePaiement()%>&nbsp;</TD>

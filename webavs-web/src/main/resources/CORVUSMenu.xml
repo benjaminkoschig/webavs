@@ -1227,6 +1227,47 @@
 		</nodes>
 	</menu>
 
+	<!-- Menu Option Lot deblocage-->
+	<menu id="corvus-optionslotDeblocage">
+		<label refId="MENU_OPTION_TITRE" />
+		<nodes>
+			<node id="prestationDeblocage">
+				<label refId="MENU_OPTION_PRESTATIONS" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.lotdeblocage.lotDeblocage.chercher" />
+					<parameter name="selectedId" />
+					<parameter name="csTypeLot" />
+					<parameter name="csEtatLot" />
+					<parameter name="provenance" />
+					<parameter name="descriptionLot" />
+				</action>
+			</node>
+			<node id="imprimerOrdresVersement">
+				<label refId="MENU_OPTION_IMPRIMER_ORDRES_VERSEMENT" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.process.genererListeOrdresVersements.afficher" />
+					<parameter name="selectedId" />
+					<parameter name="csTypeLot" />
+					<parameter name="csEtatLot" />
+					<parameter name="provenance" />
+					<parameter name="descriptionLot" />
+				</action>
+			</node>
+			<node id="comptabiliser">
+				<label refId="MENU_OPTION_COMPTABILISER" />
+				<action command="/corvus" responseTarget="fr_main">
+					<parameter name="userAction" value="corvus.process.validerLot.afficher" />
+					<parameter name="selectedId" />
+					<parameter name="csEtatLot" />
+					<parameter name="csTypeLot" />
+					<parameter name="provenance" />
+					<parameter name="descriptionLot" />
+				</action>
+			</node>
+
+		</nodes>
+	</menu>
+
 	<!-- Menu Option Prestations joint demande rente -->
 	<menu id="corvus-optionprestations">
 		<label refId="MENU_OPTION_TITRE" />
@@ -1241,6 +1282,12 @@
 					<parameter name="montantPrestation" />
 				</action>
 			</node>
+		</nodes>
+	</menu>
+
+	<menu id="corvus-optionprestationsdeblocage">
+		<label refId="MENU_OPTION_TITRE" />
+		<nodes>
 		</nodes>
 	</menu>
 

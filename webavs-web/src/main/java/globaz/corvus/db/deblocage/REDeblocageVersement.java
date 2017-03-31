@@ -10,6 +10,7 @@ import globaz.corvus.db.rentesaccordees.REInformationsComptabilite;
 import globaz.corvus.db.rentesaccordees.REPrestationsAccordees;
 import globaz.globall.db.BEntity;
 import globaz.globall.db.BStatement;
+import globaz.prestation.tools.nnss.PRNSSUtil;
 import ch.globaz.common.domaine.Montant;
 
 public class REDeblocageVersement extends BEntity {
@@ -27,6 +28,9 @@ public class REDeblocageVersement extends BEntity {
     private String idTiersAdressePaiement;
     private String idApplicationAdressePaiement;
     private String idTiersBeneficiaire;
+    private String csSexe;
+    private String dateNaissance;
+    private String pays;
 
     private Montant montant;
     private String refPaiement;
@@ -43,6 +47,10 @@ public class REDeblocageVersement extends BEntity {
         idCompteAnnexe = statement.dbReadNumeric(REInformationsComptabilite.FIELDNAME_ID_COMPTE_ANNEXE);
         descriptionCompteAnnexe = statement.dbReadString("DESCRIPTION");
         idExterneCompteAnnexe = statement.dbReadString("IDEXTERNEROLE");
+
+        csSexe = statement.dbReadNumeric("hptsex");
+        dateNaissance = statement.dbReadDateAMJ("hpdnai");
+        pays = statement.dbReadNumeric("hnipay");
 
         idExterneSextion = statement.dbReadString("IDEXTERNE");
 
@@ -128,6 +136,12 @@ public class REDeblocageVersement extends BEntity {
         return idExterneCompteAnnexe;
     }
 
+    public String formatInformationCompte() {
+        return PRNSSUtil.formatDetailRequerantListe(getIdExterneCompteAnnexe(), getDescriptionCompteAnnexe(),
+                getDateNaissance(), getSession().getCodeLibelle(getCsSexe()),
+                getSession().getCodeLibelle(getSession().getSystemCode("CIPAYORI", getPays())));
+    }
+
     public String getIdExterneSextion() {
         return idExterneSextion;
     }
@@ -138,5 +152,17 @@ public class REDeblocageVersement extends BEntity {
                 + ", idApplicationAdressePaiement=" + idApplicationAdressePaiement + ", idTiersBeneficiaire="
                 + idTiersBeneficiaire + ", montant=" + montant + ", refPaiement=" + refPaiement + ", ligneDeblocage="
                 + ligneDeblocage + ", ligneDeblocageVentilation=" + ligneDeblocageVentilation + "]";
+    }
+
+    public String getDateNaissance() {
+        return dateNaissance;
+    }
+
+    public String getPays() {
+        return pays;
+    }
+
+    public String getCsSexe() {
+        return csSexe;
     }
 }

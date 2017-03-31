@@ -43,7 +43,7 @@ public class REDeblocageVersementManager extends BManager {
                         REInformationsComptabilite.FIELDNAME_ID_TIERS_ADRESSE_PMT,
                         REInformationsComptabilite.FIELDNAME_ID_DOMAINE_APPLICATION,
                         REInformationsComptabilite.FIELDNAME_ID_COMPTE_ANNEXE, "cpta.DESCRIPTION",
-                        "cpta.IDEXTERNEROLE", "sec.IDEXTERNE")
+                        "cpta.IDEXTERNEROLE", "sec.IDEXTERNE", "tpers.hptsex", "tpers.hpdnai", "tiers.hnipay")
                 .fields("ld", RELigneDeblocageTableDef.class)
                 .fields("ldv", RELigneDeblocageVentilationTableDef.class)
                 .from("schema." + RELigneDeblocageTableDef.TABLE_NAME + " ld "

@@ -31,7 +31,7 @@ viewBean.setIdLot(selectedId);
 <%-- tpl:put name="zoneScripts" --%>
 
 <ct:menuChange displayId="menu" menuId="corvus-menuprincipal" showTab="menu"/>
-<ct:menuChange displayId="options" menuId="corvus-optionslot" showTab="options">
+<ct:menuChange displayId="options" menuId="corvus-optionslotDeblocage" showTab="options">
 	<ct:menuSetAllParams key="selectedId" value="<%=selectedId%>"/>
 	<ct:menuSetAllParams key="csTypeLot" value="<%=csTypeLot%>"/>
 	<ct:menuSetAllParams key="csEtatLot" value="<%=csEtatLot%>"/>
@@ -54,7 +54,6 @@ viewBean.setIdLot(selectedId);
 				<%-- tpl:put name="zoneTitle" --%><ct:FWLabel key="JSP_PRE_R_LOT_DEBLOCAGE_TITRE"/><%-- /tpl:put --%>
 <%@ include file="/theme/find/bodyStart2.jspf" %>
 						<%-- tpl:put name="zoneMain" --%>
-						<%if(provenance.equals(globaz.corvus.vb.prestations.REPrestationsJointTiersViewBean.FROM_ECRAN_LOTS)){%>
 						<TR>
 							<TD><ct:FWLabel key="JSP_PRE_R_LOT"/></TD>
 							<TD colspan="3">
@@ -74,15 +73,6 @@ viewBean.setIdLot(selectedId);
 								<INPUT type="hidden" name="csTypeLot" value="<%=csTypeLot%>">
 							</TD>
 						</TR>
-						<%}else{%>
-						<TR>
-							<TD><ct:FWLabel key="JSP_PRE_R_DECISION"/></TD>
-							<TD colspan="3">
-								<INPUT type="text" name="decisionDescription" value="<%=selectedId%>" class="libelleLongDisabled" readonly="readonly">
-								<INPUT type="hidden" name="forIdDecision" value="<%=selectedId%>">
-							</TD>
-						</TR>
-						<%}%>
 						<TR><TD>&nbsp;</TD></TR>
 						<TR>
 							<TD><LABEL for="likeNumeroAVS"><ct:FWLabel key="JSP_DRE_R_NSS"/></LABEL>&nbsp;</TD>
