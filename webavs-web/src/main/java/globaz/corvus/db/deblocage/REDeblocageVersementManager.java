@@ -10,6 +10,7 @@ import globaz.corvus.db.rentesaccordees.REPrestationsAccordees;
 import globaz.globall.db.BEntity;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BStatement;
+import java.util.Locale;
 import ch.globaz.common.sql.SQLWriter;
 
 public class REDeblocageVersementManager extends BManager {
@@ -18,6 +19,11 @@ public class REDeblocageVersementManager extends BManager {
 
     private String forIdRenteAccordee;
     private String forIdLot;
+    private String forCsSexe;
+    private String likeNom;
+    private String likePrenom;
+    private String forDateNaissance;
+    private String likeNumeroAVS;
 
     @Override
     protected BEntity _newEntity() throws Exception {
@@ -29,6 +35,7 @@ public class REDeblocageVersementManager extends BManager {
 
         return SQLWriter
                 .write(_getCollection())
+                .locale(new Locale(getSession().getIdLangueISO()))
                 .select()
                 .fields(REPrestationsAccordees.FIELDNAME_ID_TIERS_BENEFICIAIRE,
                         REPrestationsAccordees.FIELDNAME_ID_PRESTATION_ACCORDEE,
@@ -45,8 +52,14 @@ public class REDeblocageVersementManager extends BManager {
                         + "inner join schema.REINCOM ri on ri.YNIIIC = ra.ZTIICT "
                         + "inner join schema.CACPTAP cpta on cpta.idcompteannexe = ri."
                         + REInformationsComptabilite.FIELDNAME_ID_COMPTE_ANNEXE + " "
-                        + "inner join CCJUWEB.CASECTP sec on sec.IDSECTION = ldv.ID_SECTION_SOURCE").where().and("ra")
+                        + "inner join schema.titierp tiers on tiers.HTITIE = cpta.IDTIERS "
+                        + "inner join schema.TIPERSP tpers on tpers.HTITIE = cpta.IDTIERS "
+                        + "inner join schema.CASECTP sec on sec.IDSECTION = ldv.ID_SECTION_SOURCE").where()
+                .and("ra." + REPrestationsAccordees.FIELDNAME_ID_PRESTATION_ACCORDEE)
                 .equalForNumber(forIdRenteAccordee).and("ld", RELigneDeblocageTableDef.ID_LOT).equalForNumber(forIdLot)
+                .and("tiers.HTLDE1").fullLikeCaseInsensitive(likeNom).and("tiers.HTLDE2")
+                .fullLikeCaseInsensitive(likePrenom).and("cpta.IDEXTERNEROLE").fullLikeCaseInsensitive(likeNumeroAVS)
+                .and("tpers.HPDNAI").equalForDate(forDateNaissance).and("tpers.HPTSEX").equalForNumber(forCsSexe)
                 .toSql();
     }
 
@@ -64,6 +77,46 @@ public class REDeblocageVersementManager extends BManager {
 
     public void setForIdLot(String forIdLot) {
         this.forIdLot = forIdLot;
+    }
+
+    public String getForCsSexe() {
+        return forCsSexe;
+    }
+
+    public void setForCsSexe(String forCsSexe) {
+        this.forCsSexe = forCsSexe;
+    }
+
+    public String getLikeNom() {
+        return likeNom;
+    }
+
+    public void setLikeNom(String likeNom) {
+        this.likeNom = likeNom;
+    }
+
+    public String getLikePrenom() {
+        return likePrenom;
+    }
+
+    public void setLikePrenom(String likePrenom) {
+        this.likePrenom = likePrenom;
+    }
+
+    public String getForDateNaissance() {
+        return forDateNaissance;
+    }
+
+    public void setForDateNaissance(String forDateNaissance) {
+        this.forDateNaissance = forDateNaissance;
+    }
+
+    public String getLikeNumeroAVS() {
+        return likeNumeroAVS;
+    }
+
+    public void setLikeNumeroAVS(String likeNumeroAVS) {
+        this.likeNumeroAVS = likeNumeroAVS;
     }
 
 }

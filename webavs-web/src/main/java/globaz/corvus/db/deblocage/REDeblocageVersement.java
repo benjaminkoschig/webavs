@@ -17,6 +17,11 @@ public class REDeblocageVersement extends BEntity {
     private static final long serialVersionUID = 1L;
 
     private String idCompteAnnexe;
+    private String descriptionCompteAnnexe;
+    private String idExterneCompteAnnexe;
+
+    private String idExterneSextion;
+
     private String idRenteAccordee;
     private String codeRenteAccordee;
     private String idTiersAdressePaiement;
@@ -36,6 +41,11 @@ public class REDeblocageVersement extends BEntity {
     @Override
     protected void _readProperties(BStatement statement) throws Exception {
         idCompteAnnexe = statement.dbReadNumeric(REInformationsComptabilite.FIELDNAME_ID_COMPTE_ANNEXE);
+        descriptionCompteAnnexe = statement.dbReadString("DESCRIPTION");
+        idExterneCompteAnnexe = statement.dbReadString("IDEXTERNEROLE");
+
+        idExterneSextion = statement.dbReadString("IDEXTERNE");
+
         idRenteAccordee = statement.dbReadNumeric(REPrestationsAccordees.FIELDNAME_ID_PRESTATION_ACCORDEE);
         codeRenteAccordee = statement.dbReadNumeric(REPrestationsAccordees.FIELDNAME_CODE_PRESTATION);
         idTiersAdressePaiement = statement.dbReadNumeric(REInformationsComptabilite.FIELDNAME_ID_TIERS_ADRESSE_PMT);
@@ -110,6 +120,18 @@ public class REDeblocageVersement extends BEntity {
         return ligneDeblocageVentilation;
     }
 
+    public String getDescriptionCompteAnnexe() {
+        return descriptionCompteAnnexe;
+    }
+
+    public String getIdExterneCompteAnnexe() {
+        return idExterneCompteAnnexe;
+    }
+
+    public String getIdExterneSextion() {
+        return idExterneSextion;
+    }
+
     public String toStringEntity() {
         return "REDeblocageVersement [idCompteAnnexe=" + idCompteAnnexe + ", idRenteAccordee=" + idRenteAccordee
                 + ", codeRenteAccordee=" + codeRenteAccordee + ", idTiersAdressePaiement=" + idTiersAdressePaiement
@@ -117,5 +139,4 @@ public class REDeblocageVersement extends BEntity {
                 + idTiersBeneficiaire + ", montant=" + montant + ", refPaiement=" + refPaiement + ", ligneDeblocage="
                 + ligneDeblocage + ", ligneDeblocageVentilation=" + ligneDeblocageVentilation + "]";
     }
-
 }
