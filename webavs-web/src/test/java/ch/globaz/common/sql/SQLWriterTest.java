@@ -448,7 +448,10 @@ public class SQLWriterTest {
     public void testFields() throws Exception {
         assertThat(SQLWriter.write().fields("test", TableDefTest.class).toSql()).isEqualTo(
                 " TEST.COL1 AS TEST_COL1, TEST.COL2 AS TEST_COL2");
+    }
 
+    @Test
+    public void testFieldsWithSpys() throws Exception {
         assertThat(SQLWriter.write().fields("test", TableDefTestWithSpys.class).toSql()).isEqualTo(
                 " TEST.COL1 AS TEST_COL1, TEST.COL2 AS TEST_COL2, TEST.CSPY AS TEST_CSPY, TEST.PSPY AS TEST_PSPY");
     }
