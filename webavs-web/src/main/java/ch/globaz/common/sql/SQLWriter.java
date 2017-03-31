@@ -4,8 +4,8 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 import org.apache.commons.lang.StringUtils;
-import ch.globaz.common.business.exceptions.CommonTechnicalException;
 import ch.globaz.common.domaine.CodeSystemEnum;
 import ch.globaz.common.domaine.Date;
 import ch.globaz.common.jadedb.TableDefinition;
@@ -26,9 +26,11 @@ public class SQLWriter {
     private String charToReplace = "?";
     private List<String> paramsToUse = new ArrayList<String>();
     private Integer currentIndice;
+    private Integer currentIndiceAfterOperator;
     private final boolean addSchema;
     private static final String CONST_SCHEMA = "schema.";
     private boolean addComma = false;
+    private Locale locale;
 
     private SQLWriter(String schema) {
         this.schema = schema;
@@ -66,6 +68,17 @@ public class SQLWriter {
      */
     public static SQLWriter write(String schema) {
         return new SQLWriter(schema);
+    }
+
+    /**
+     * Permet de setter la locale. Utile et nécessaire pour faire des recherches *case insensitive"
+     * 
+     * @param locale La locale
+     * @return SQLWriter utilisé
+     */
+    public SQLWriter locale(Locale locale) {
+        this.locale = locale;
+        return this;
     }
 
     /**
@@ -478,6 +491,37 @@ public class SQLWriter {
     }
 
     /**
+     * Ajoute le mot 'like %param%' à la requête si besoin. Réalise une comparaison en uppercase du champ.
+     * Nécessite de setter la locale.
+     * 
+     * @param sqlFramgment
+     * @return SQLWriter utilisé
+     */
+    public SQLWriter fullLikeCaseInsensitive(String param) {
+        if (locale == null) {
+            throw new SQLWriterException(
+                    "Unabled to perform a full like case insensitve without a Locale. Please use locale(...) function");
+        }
+        if (StringUtils.isNotEmpty(param)) {
+            makeColumnUpper();
+            String sanitized = replaceQuotes(param);
+            paramsToUse.add(sanitized.toUpperCase(locale));
+            query.append(" like '%?%'");
+        } else {
+            rollback();
+        }
+        return this;
+    }
+
+    private void makeColumnUpper() {
+        if (currentIndiceAfterOperator != null) {
+            String column = query.substring(currentIndiceAfterOperator, query.length());
+            query.delete(currentIndiceAfterOperator, query.length());
+            query.append(" UPPER(" + column + ") ");
+        }
+    }
+
+    /**
      * Ajoute le mot 'like param' à la requête si besoin
      * 
      * @param sqlFramgment
@@ -856,7 +900,7 @@ public class SQLWriter {
     void checkMatchParams(String sqlFragment, int nbParams) {
         int nbMatch = countCharToReplace(sqlFragment);
         if (nbMatch != nbParams) {
-            throw new CommonTechnicalException("Unabeld to replace the " + charToReplace + " with parmas. The number ("
+            throw new SQLWriterException("Unabeld to replace the " + charToReplace + " with parmas. The number ("
                     + nbMatch + ") of the " + charToReplace + " not match with the number of parmas (" + nbParams + ")");
         }
     }
@@ -864,6 +908,11 @@ public class SQLWriter {
     int currentIndex() {
         currentIndice = query.length();
         return currentIndice;
+    }
+
+    int currentIndexAfterOperator() {
+        currentIndiceAfterOperator = query.length();
+        return currentIndiceAfterOperator;
     }
 
     SQLWriter rollback() {
@@ -893,6 +942,7 @@ public class SQLWriter {
         if (countAddOperators > 0) {
             query.append(" ").append(operator);
         }
+        currentIndexAfterOperator();
         countAddOperators++;
     }
 
