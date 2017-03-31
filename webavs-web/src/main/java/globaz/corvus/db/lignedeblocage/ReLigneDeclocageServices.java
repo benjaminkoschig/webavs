@@ -253,7 +253,7 @@ public class ReLigneDeclocageServices {
 
         for (RELigneDeblocage reLigneDeblocage : lignesDeblocages) {
             RELigneDeblocageCreancier ligne = new RELigneDeblocageCreancier();
-            ligne.setAdressePaiement(mapAdresses.get(reLigneDeblocage.getIdTiersAdressePaiement().toString()));
+            ligne.setAdressePaiement(mapAdresses.get(reLigneDeblocage.getIdTiersAdressePaiement()));
             TITiers tiers = loadTiers(reLigneDeblocage.getIdTiersCreancier());
             ligne.setDesignationTiers1(tiers.getDesignation1());
             ligne.setDesignationTiers2(tiers.getDesignation2());

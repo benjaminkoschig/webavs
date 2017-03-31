@@ -153,7 +153,7 @@ public class REDeblocageViewBean extends PRAbstractViewBeanSupport {
     }
 
     public boolean getIsDevalidable() {
-        return true;
+        return deblocages.isDevalidable();
     }
 
     public boolean getIsUpdatable() {
@@ -254,8 +254,8 @@ public class REDeblocageViewBean extends PRAbstractViewBeanSupport {
         this.retours = retours;
     }
 
-    public boolean isLiberer() {
-        return deblocages.isLiberer();
+    public boolean isLiberable() {
+        return deblocages.isLiberable();
     }
 
     public String getParamActionLiberer() {

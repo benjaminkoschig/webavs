@@ -181,13 +181,17 @@ public class RELigneDeblocages extends ArrayList<RELigneDeblocage> {
         return this;
     }
 
-    public Boolean isLiberer() {
+    public Boolean isLiberable() {
         for (RELigneDeblocage ligne : this) {
             if (ligne.getEtat().isValide()) {
-                return true;
+                return false;
             }
         }
-        return false;
+        return true;
+    }
+
+    public Boolean isDevalidable() {
+        return !isLiberable();
     }
 
 }

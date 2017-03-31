@@ -27,7 +27,6 @@
 
 <%-- tpl:put name="zoneScripts" --%>
 <script type="text/javascript">
-globazGlobal.isLiberer = ${viewBean.isLiberer};
 globazGlobal.paramActionLiberer = "${viewBean.paramActionLiberer}";
 globazGlobal.paramActionDeLiberer = "${viewBean.paramActionDeValider}";
 globazGlobal.isDevalidable = ${viewBean.isDevalidable};
@@ -80,6 +79,11 @@ globazGlobal.isUpdatable = ${viewBean.isUpdatable};
 <TR>
 		<TD colspan="3" >
 		
+			<div id="messageDebloquage" style="display:none">
+				Voulez-vous débloquer la rente ?
+				<input type="hidden" id="debloquerRente" name="debloquerRente" value="false" >
+			</div>
+			
 
 			<div id="detailDeblocage" class="form-horizontal"> 
 				<!--  ************************* Zone infos requerant/ PCA *************************  -->
@@ -437,7 +441,9 @@ globazGlobal.isUpdatable = ${viewBean.isUpdatable};
 			</div>	
 			<div class="right"> 
 				<ct:ifhasright element="<%=partialUserActionAction%>" crud="cud">
-					<button type="button" id="ValiderLiberation" class=""><ct:FWLabel key="JSP_RE_DEBLOCAGE_VALIDER_LIBERATION"/></button>
+<%-- 					<c:if test="${viewBean.isLiberable()}"> --%>
+						<button type="button" id="ValiderLiberation" class=""><ct:FWLabel key="JSP_RE_DEBLOCAGE_VALIDER_LIBERATION"/></button>
+<%-- 					</c:if> --%>
 					<c:if test="${viewBean.isDevalidable}">
 						<button type="button" id="DeValiderLiberation" class=""><ct:FWLabel key="JSP_RE_DEBLOCAGE_DEVALIDER_LIBERATION"/></button>
 					</c:if>

@@ -309,8 +309,6 @@ validationDevalidation = {
 			this.$detailDeblocage = $("#detailDeblocage");
 			this.addButton();
 			this.addEvent();
-			if()
-			this.disableButton();
 		},
 		
 		addButton: function () {
@@ -361,12 +359,12 @@ validationDevalidation = {
 		},
 		
 		submit: function (s_action) {
-	
 			var that = this;
 			this.disableButton();
 			this.addWait();
-			params = {
+			var params = {
 					idRenteAccordee: globazGlobal.idRenteAccordee,
+					debloquerRente:  $("#debloquerRente").val(),
 					action: s_action
 				};
 			
@@ -374,7 +372,7 @@ validationDevalidation = {
 				that.enableButton();
 				that.removeWait();
 				//window.location.reload(true); 
-				window.location = window.location.href;
+				//window.location = window.location.href;
 			}, function () { 
 				that.enableButton();
 				that.removeWait();
@@ -384,7 +382,27 @@ validationDevalidation = {
 		addEvent: function () {
 			var that = this;
 			this.$validerButton.click(function () {
-				that.submit(globazGlobal.paramActionLiberer);
+				$("#messageDebloquage").dialog({
+					  buttons: [
+					            {
+					              text: "oui",
+					              click: function() {
+					            	$("#debloquerRente").val("true");
+					                $( this ).dialog( "close" );
+									that.submit(globazGlobal.paramActionLiberer);
+					              }
+					            },
+					            {
+					              text: "non",
+					              click: function() {
+						            $("#debloquerRente").val("false");
+					                $( this ).dialog( "close" );
+									that.submit(globazGlobal.paramActionLiberer);
+					              }
+						        }
+					          ]
+				});
+				
 			});
 
 			if(this.$deValiderLiberation) {
@@ -399,7 +417,6 @@ validationDevalidation = {
 $(function () {
 	validationDevalidation.init(globazGlobal.isDevalidable);
 
-	
 	$('.avoirPaiement.idTiers').change(function () {
 		that.readAdresse(this.value, this);
 	});

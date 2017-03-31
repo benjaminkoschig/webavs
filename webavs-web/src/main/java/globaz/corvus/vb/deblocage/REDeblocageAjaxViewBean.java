@@ -5,6 +5,7 @@ import globaz.corvus.db.lignedeblocage.RELigneDeblocage;
 import globaz.corvus.db.lignedeblocage.ReLigneDeclocageServices;
 import globaz.corvus.db.lignedeblocage.constantes.RELigneDeblocageEtat;
 import globaz.corvus.db.lignedeblocage.constantes.RELigneDeblocageType;
+import globaz.corvus.db.rentesaccordees.REPrestationsAccordees;
 import globaz.framework.bean.FWAJAXViewBeanInterface;
 import globaz.framework.bean.FWListViewBeanInterface;
 import globaz.framework.bean.FWViewBeanInterface;
@@ -35,6 +36,7 @@ public class REDeblocageAjaxViewBean extends BJadePersistentObjectViewBean imple
     private RELigneDeblocageViewBean lingeDeblocage = new RELigneDeblocageViewBean();
     private String idAvoirPaiementUnique;
     private String idRenteAccordee;
+    private String debloquerRente;
 
     // utilisé pour la serialization en ajax
     private AdressePaiement adressePaiement = null;
@@ -54,6 +56,14 @@ public class REDeblocageAjaxViewBean extends BJadePersistentObjectViewBean imple
         if ("liberer".equals(action)) {
             RELibererDevaliderDeblocage libererDevalider = new RELibererDevaliderDeblocage((BSession) getISession());
             libererDevalider.liberer(Long.valueOf(idRenteAccordee));
+            if ("true".equalsIgnoreCase(debloquerRente)) {
+                REPrestationsAccordees accordee = new REPrestationsAccordees();
+                accordee.setSession((BSession) getISession());
+                accordee.setId(idRenteAccordee);
+                accordee.retrieve();
+                accordee.setIsAttenteMajBlocage(false);
+                accordee.update();
+            }
         } else if ("devalider".equals(action)) {
             RELibererDevaliderDeblocage libererDevalider = new RELibererDevaliderDeblocage((BSession) getISession());
             libererDevalider.devalider(Long.valueOf(idRenteAccordee));
@@ -255,4 +265,13 @@ public class REDeblocageAjaxViewBean extends BJadePersistentObjectViewBean imple
     public void setIdRenteAccordee(String idRenteAccordee) {
         this.idRenteAccordee = idRenteAccordee;
     }
+
+    public String getDebloquerRente() {
+        return debloquerRente;
+    }
+
+    public void setDebloquerRente(String debloquerRente) {
+        this.debloquerRente = debloquerRente;
+    }
+
 }
