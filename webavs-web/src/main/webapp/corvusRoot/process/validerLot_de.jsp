@@ -1,6 +1,8 @@
 <%-- tpl:insert page="/theme/process.jtpl" --%>
-<%@page import="globaz.framework.secure.FWSecureConstants"%>
+
 <%@ page language="java" errorPage="/errorPage.jsp" import="globaz.globall.http.*" contentType="text/html;charset=ISO-8859-1" %>
+<%@page import="globaz.corvus.api.lots.IRELot"%>
+<%@page import="globaz.framework.secure.FWSecureConstants"%>
 <%@ page import="globaz.framework.controller.FWController"%>
 <%@ page import="globaz.corvus.servlet.IREActions"%>
 <%@ page import="globaz.corvus.vb.process.REValiderLotViewBean"%>
@@ -34,6 +36,16 @@
 <%-- /tpl:put --%>
 <%@ include file="/theme/process/javascripts.jspf" %>
 <%-- tpl:put name="zoneScripts" --%>
+<% if(IRELot.CS_TYP_LOT_DEBLOCAGE_RA.equals(csTypeLot)) {%>
+<ct:menuChange displayId="menu" menuId="corvus-menuprincipal" />
+<ct:menuChange displayId="options" menuId="corvus-optionslotDeblocage" showTab="options">
+	<ct:menuSetAllParams key="selectedId" value="<%=selectedId%>" />
+	<ct:menuSetAllParams key="csTypeLot" value="<%=csTypeLot%>" />
+	<ct:menuSetAllParams key="csEtatLot" value="<%=csEtatLot%>" />
+	<ct:menuSetAllParams key="provenance" value="<%=provenance%>" />
+	<ct:menuSetAllParams key="descriptionLot" value="<%=descriptionLot%>" />
+</ct:menuChange>
+<%} else { %>
 <ct:menuChange displayId="menu" menuId="corvus-menuprincipal" />
 <ct:menuChange displayId="options" menuId="corvus-optionslot" showTab="options">
 	<ct:menuSetAllParams key="selectedId" value="<%=selectedId%>" />
@@ -42,6 +54,7 @@
 	<ct:menuSetAllParams key="provenance" value="<%=provenance%>" />
 	<ct:menuSetAllParams key="descriptionLot" value="<%=descriptionLot%>" />
 </ct:menuChange>
+<%} %>
 <script type="text/javascript">
 	var $numeroOG;
 	var $boutonOk;

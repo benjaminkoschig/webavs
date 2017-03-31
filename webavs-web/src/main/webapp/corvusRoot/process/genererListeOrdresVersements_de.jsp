@@ -1,4 +1,9 @@
-<%-- tpl:insert page="/theme/process.jtpl" --%><%@ page language="java" errorPage="/errorPage.jsp" import="globaz.globall.http.*" contentType="text/html;charset=ISO-8859-1" %>
+<%-- tpl:insert page="/theme/process.jtpl" --%>
+<%@page import="globaz.corvus.api.lots.IRELot"%>
+<%@page import="globaz.corvus.vb.process.REGenererListeCiAdditionnelsViewBean"%>
+<%@page import="globaz.corvus.vb.process.REGenererListeOrdresVersementsViewBean"%>
+<%@page import="globaz.jade.client.util.JadeStringUtil"%>
+<%@ page language="java" errorPage="/errorPage.jsp" import="globaz.globall.http.*" contentType="text/html;charset=ISO-8859-1" %>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ include file="/theme/process/header.jspf" %>
 <%-- tpl:put name="zoneInit" --%>
@@ -29,9 +34,18 @@
 <%-- /tpl:put --%>
 <%@ include file="/theme/process/javascripts.jspf" %>
 <%-- tpl:put name="zoneScripts" --%>
-<%@page import="globaz.corvus.vb.process.REGenererListeCiAdditionnelsViewBean"%>
-<%@page import="globaz.corvus.vb.process.REGenererListeOrdresVersementsViewBean"%>
-<%@page import="globaz.jade.client.util.JadeStringUtil"%>
+
+
+<% if(IRELot.CS_TYP_LOT_DEBLOCAGE_RA.equals(csTypeLot)) {%>
+<ct:menuChange displayId="menu" menuId="corvus-menuprincipal"/>
+<ct:menuChange displayId="options" menuId="corvus-optionslotDeblocage" showTab="options">
+	<ct:menuSetAllParams key="selectedId" value="<%=idLot%>"/>
+	<ct:menuSetAllParams key="csTypeLot" value="<%=csTypeLot%>"/>
+	<ct:menuSetAllParams key="csEtatLot" value="<%=csEtatLot%>"/>
+	<ct:menuSetAllParams key="provenance" value="<%=provenance%>"/>
+	<ct:menuSetAllParams key="descriptionLot" value="<%=descriptionLot%>"/>
+</ct:menuChange>
+<%} else { %>
 <ct:menuChange displayId="menu" menuId="corvus-menuprincipal"/>
 <ct:menuChange displayId="options" menuId="corvus-optionslot" showTab="options">
 	<ct:menuSetAllParams key="selectedId" value="<%=idLot%>"/>
@@ -40,6 +54,7 @@
 	<ct:menuSetAllParams key="provenance" value="<%=provenance%>"/>
 	<ct:menuSetAllParams key="descriptionLot" value="<%=descriptionLot%>"/>
 </ct:menuChange>
+<%} %>
 <%-- /tpl:put --%>
 <%@ include file="/theme/process/bodyStart.jspf" %>
 			<%-- tpl:put name="zoneTitle" --%><ct:FWLabel key="JSP_LOV_D_TITRE"/> <%-- /tpl:put --%>

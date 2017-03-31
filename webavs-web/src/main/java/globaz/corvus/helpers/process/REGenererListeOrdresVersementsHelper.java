@@ -3,6 +3,7 @@
  */
 package globaz.corvus.helpers.process;
 
+import globaz.corvus.api.lots.IRELot;
 import globaz.corvus.itext.REListeOrdresVersements;
 import globaz.corvus.vb.process.REGenererListeOrdresVersementsViewBean;
 import globaz.framework.bean.FWViewBeanInterface;
@@ -42,16 +43,21 @@ public class REGenererListeOrdresVersementsHelper extends PRAbstractHelper {
     protected void _start(FWViewBeanInterface viewBean, FWAction action, BISession session) {
         REGenererListeOrdresVersementsViewBean glOVViewBean = (REGenererListeOrdresVersementsViewBean) viewBean;
 
-        REListeOrdresVersements process = new REListeOrdresVersements((BSession) session);
+        if (IRELot.CS_TYP_LOT_DEBLOCAGE_RA.equals(glOVViewBean.getCsTypeLot())) {
 
-        process.setEMailAddress(glOVViewBean.getEMailAddress());
-        process.setForIdLot(glOVViewBean.getIdLot());
-        try {
-            process.setAjouterCommunePolitique(CommonProperties.ADD_COMMUNE_POLITIQUE.getBooleanValue());
-        } catch (PropertiesException e) {
-            throw new RuntimeException(e);
+        } else {
+
+            REListeOrdresVersements process = new REListeOrdresVersements((BSession) session);
+
+            process.setEMailAddress(glOVViewBean.getEMailAddress());
+            process.setForIdLot(glOVViewBean.getIdLot());
+            try {
+                process.setAjouterCommunePolitique(CommonProperties.ADD_COMMUNE_POLITIQUE.getBooleanValue());
+            } catch (PropertiesException e) {
+                throw new RuntimeException(e);
+            }
+
+            process.start();
         }
-
-        process.start();
     }
 }

@@ -1,4 +1,7 @@
-<%-- tpl:insert page="/theme/detail.jtpl" --%><%@page import="globaz.framework.secure.FWSecureConstants"%>
+<%-- tpl:insert page="/theme/detail.jtpl" --%>
+<%@page import="globaz.framework.secure.FWSecureConstants"%>
+<%@page import="globaz.corvus.api.lots.IRELot"%>
+<%@page import="globaz.corvus.vb.prestations.REPrestationsJointDemandeRenteViewBean"%>
 <%@ page language="java" errorPage="/errorPage.jsp" import="globaz.globall.http.*" contentType="text/html;charset=ISO-8859-1" %>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ include file="/theme/detail/header.jspf" %>
@@ -20,9 +23,26 @@
 <%@ include file="/theme/detail/javascripts.jspf" %>
 <%-- tpl:put name="zoneScripts" --%>
 <!--si APG -->
-<%@page import="globaz.corvus.api.lots.IRELot"%>
-<%@page import="globaz.corvus.vb.prestations.REPrestationsJointDemandeRenteViewBean"%>
+
+<% if(IRELot.CS_TYP_LOT_DEBLOCAGE_RA.equals(viewBean.getCsTypeLot())) {%>
 <ct:menuChange displayId="menu" menuId="corvus-menuprincipal"/>
+<ct:menuChange displayId="options" menuId="corvus-optionslotDeblocage" showTab="options">
+	<ct:menuSetAllParams key="selectedId" value="<%=viewBean.getIdLot()%>"/>
+	<ct:menuSetAllParams key="idLot" value="<%=viewBean.getIdLot()%>"/>
+	<ct:menuSetAllParams key="csTypeLot" value="<%=viewBean.getCsTypeLot()%>"/>
+	<ct:menuSetAllParams key="csEtatLot" value="<%=viewBean.getCsEtatLot()%>"/>
+	<ct:menuSetAllParams key="descriptionLot" value="<%=viewBean.getDescription()%>"/>
+	<ct:menuSetAllParams key="provenance" value="<%=REPrestationsJointDemandeRenteViewBean.FROM_ECRAN_LOTS%>"/>		
+	<%if (IRELot.CS_TYP_LOT_MENSUEL.equals(viewBean.getCsTypeLot()) || IRELot.CS_ETAT_LOT_VALIDE.equals(viewBean.getCsEtatLot())) {%>
+		<ct:menuActivateNode nodeId="comptabiliser" active="no"/>
+	<%} else{%>
+		<ct:menuActivateNode nodeId="comptabiliser" active="yes"/>
+	<%} %>
+	<ct:menuActivateNode nodeId="prestation" active="yes"/>
+	<ct:menuActivateNode nodeId="imprimerOrdresVersement" active="yes"/>
+</ct:menuChange>
+<%} else { %>
+<ct:menuChange displayId="menu" menuId="corvus-menuprincipal"/>	
 <ct:menuChange displayId="options" menuId="corvus-optionslot" showTab="options">
 	<ct:menuSetAllParams key="selectedId" value="<%=viewBean.getIdLot()%>"/>
 	<ct:menuSetAllParams key="idLot" value="<%=viewBean.getIdLot()%>"/>
@@ -43,7 +63,7 @@
 		<ct:menuActivateNode nodeId="imprimerOrdresVersement" active="yes"/>
 	<%} %>		
 </ct:menuChange>
-
+<% } %>
 <SCRIPT language="javascript">
 
 	function add(){

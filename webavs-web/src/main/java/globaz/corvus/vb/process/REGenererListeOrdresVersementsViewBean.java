@@ -18,6 +18,7 @@ public class REGenererListeOrdresVersementsViewBean extends PRAbstractViewBeanSu
     private String descriptionLot = "";
     private String eMailAddress = "";
     private String idLot = "";
+    private String csTypeLot;
 
     // ~ Methods
     // --------------------------------------------------------------------------------------------------------
@@ -65,6 +66,14 @@ public class REGenererListeOrdresVersementsViewBean extends PRAbstractViewBeanSu
     @Override
     public boolean validate() {
         return true;
+    }
+
+    public String getCsTypeLot() {
+        return csTypeLot;
+    }
+
+    public void setCsTypeLot(String csTypeLot) {
+        this.csTypeLot = csTypeLot;
     }
 
 }
