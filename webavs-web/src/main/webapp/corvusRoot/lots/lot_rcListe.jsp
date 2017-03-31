@@ -63,14 +63,13 @@
 		<%}%>	
 	<%}else if (IRELot.CS_TYP_LOT_DEBLOCAGE_RA.equals(line.getCsTypeLot())) {%>				
 	    <TD class="mtd" width="">		
-		   	<ct:menuPopup menu="corvus-optionslot" detailLabelId="MENU_OPTION_DETAIL" detailLink="<%=detailLink + line.getIdLot()%>">
+		   	<ct:menuPopup menu="corvus-optionslotDeblocage" detailLabelId="MENU_OPTION_DETAIL" detailLink="<%=detailLink + line.getIdLot()%>">
 				<ct:menuParam key="selectedId" value="<%=line.getIdLot()%>"/>
 				<ct:menuParam key="idLot" value="<%=line.getIdLot()%>"/>
 				<ct:menuParam key="csEtatLot" value="<%=line.getCsEtatLot()%>"/>
 				<ct:menuParam key="csTypeLot" value="<%=line.getCsTypeLot()%>"/>
 				<ct:menuParam key="provenance" value="<%=globaz.corvus.vb.prestations.REPrestationsJointDemandeRenteViewBean.FROM_ECRAN_LOTS%>"/>
 				<ct:menuParam key="descriptionLot" value="<%=line.getDescription()%>"/>
-				<ct:menuExcludeNode nodeId="prestation"/>
 				<%if (IRELot.CS_TYP_LOT_MENSUEL.equals(line.getCsTypeLot())) {%>
 					<ct:menuExcludeNode nodeId="comptabiliser"/>
 					<ct:menuExcludeNode nodeId="imprimerOrdresVersement"/>
