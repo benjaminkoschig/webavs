@@ -61,4 +61,14 @@ public enum EBPucsFileDefTable implements TableDefinition {
     public boolean isPrimaryKey() {
         return primaryKey;
     }
+
+    @Override
+    public boolean hasPspy() {
+        return true;
+    }
+
+    @Override
+    public boolean hasCspy() {
+        return false;
+    }
 }

@@ -126,10 +126,14 @@ public class SQLWriter {
             }
             writeField(aliasTable, writer, def.getColumnName());
         }
-        writer.append(", ");
-        writeField(aliasTable, writer, "CSPY");
-        writer.append(", ");
-        writeField(aliasTable, writer, "PSPY");
+        if (values[0].hasCspy()) {
+            writer.append(", ");
+            writeField(aliasTable, writer, "CSPY");
+        }
+        if (values[0].hasPspy()) {
+            writer.append(", ");
+            writeField(aliasTable, writer, "PSPY");
+        }
         query.append(" ").append(writer.toString().toUpperCase());
         return this;
     }

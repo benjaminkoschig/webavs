@@ -11,4 +11,9 @@ public interface TableDefinition {
     Class<?> getType();
 
     boolean isPrimaryKey();
+
+    boolean hasPspy();
+
+    boolean hasCspy();
+
 }

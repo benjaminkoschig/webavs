@@ -46,4 +46,14 @@ public enum RELigneDeblocageVentilationTableDef implements TableDefinition {
         return primaryKey;
     }
 
+    @Override
+    public boolean hasPspy() {
+        return true;
+    }
+
+    @Override
+    public boolean hasCspy() {
+        return true;
+    }
+
 }

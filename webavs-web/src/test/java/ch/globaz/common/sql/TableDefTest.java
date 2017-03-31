@@ -33,4 +33,14 @@ enum TableDefTest implements TableDefinition {
         return false;
     }
 
+    @Override
+    public boolean hasPspy() {
+        return false;
+    }
+
+    @Override
+    public boolean hasCspy() {
+        return false;
+    }
+
 }

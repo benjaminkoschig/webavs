@@ -1,6 +1,5 @@
 package ch.globaz.common.jadedb;
 
-
 enum TableDefTest implements TableDefinition {
 
     COL1("COL1"),
@@ -29,6 +28,16 @@ enum TableDefTest implements TableDefinition {
 
     @Override
     public boolean isPrimaryKey() {
+        return false;
+    }
+
+    @Override
+    public boolean hasPspy() {
+        return false;
+    }
+
+    @Override
+    public boolean hasCspy() {
         return false;
     }
 
