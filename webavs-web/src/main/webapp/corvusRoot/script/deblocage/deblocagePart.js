@@ -309,6 +309,8 @@ validationDevalidation = {
 			this.$detailDeblocage = $("#detailDeblocage");
 			this.addButton();
 			this.addEvent();
+			if()
+			this.disableButton();
 		},
 		
 		addButton: function () {

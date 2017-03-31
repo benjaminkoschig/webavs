@@ -84,7 +84,9 @@ public class REComptabiliseDebloquage extends AREModuleComptable {
         RELigneDeblocages deblocages = new RELigneDeblocages();
 
         for (REDeblocageVersement deblocage : deblocageVersements) {
-            deblocages.add(deblocage.getLigneDeblocage());
+            if (!deblocages.contains(deblocage.getId())) {
+                deblocages.add(deblocage.getLigneDeblocage());
+            }
         }
         deblocages.changeEtatToComptabilise();
         deblocageService.update(deblocages);

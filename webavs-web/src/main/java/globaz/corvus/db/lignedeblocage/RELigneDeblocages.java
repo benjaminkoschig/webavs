@@ -16,7 +16,7 @@ import ch.globaz.common.domaine.Montant;
  * 
  * @author sco
  */
-public class RELigneDeblocages extends HashSet<RELigneDeblocage> {
+public class RELigneDeblocages extends ArrayList<RELigneDeblocage> {
 
     private static final long serialVersionUID = 1L;
 
@@ -179,6 +179,15 @@ public class RELigneDeblocages extends HashSet<RELigneDeblocage> {
             ligne.setEtat(etat);
         }
         return this;
+    }
+
+    public Boolean isLiberer() {
+        for (RELigneDeblocage ligne : this) {
+            if (ligne.getEtat().isValide()) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }

@@ -27,6 +27,7 @@
 
 <%-- tpl:put name="zoneScripts" --%>
 <script type="text/javascript">
+globazGlobal.isLiberer = ${viewBean.isLiberer};
 globazGlobal.paramActionLiberer = "${viewBean.paramActionLiberer}";
 globazGlobal.paramActionDeLiberer = "${viewBean.paramActionDeValider}";
 globazGlobal.isDevalidable = ${viewBean.isDevalidable};

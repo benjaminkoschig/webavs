@@ -254,6 +254,10 @@ public class REDeblocageViewBean extends PRAbstractViewBeanSupport {
         this.retours = retours;
     }
 
+    public boolean isLiberer() {
+        return deblocages.isLiberer();
+    }
+
     public String getParamActionLiberer() {
         return "liberer";
     }
