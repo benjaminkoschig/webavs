@@ -207,8 +207,8 @@ globazGlobal.isUpdatable = ${viewBean.isUpdatable};
 								</div>
 								<div class="span1 right">
 									<input data-g-amount="" class="input-mini liveSum" name="montant"  value="${entry.montant.toStringFormat()}"/>
-									<input type="hidden" class="idSectionDetteEnCompta" value="${entry.idSectionCompensee}" />
-									<input type="hidden" class="idRoleDetteEnCompta" value="${entry.idRoleSection}" />
+									<input type="hidden" class="idSectionCompensee" value="${entry.idSectionCompensee}" />
+									<input type="hidden" class="idRoleSection" value="${entry.idRoleSection}" />
 								</div>
 								<div class="span1">
 									<button type="button"  class="save globazIconButton"></button>

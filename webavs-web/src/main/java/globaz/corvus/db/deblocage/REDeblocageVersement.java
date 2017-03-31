@@ -110,4 +110,12 @@ public class REDeblocageVersement extends BEntity {
         return ligneDeblocageVentilation;
     }
 
+    public String toStringEntity() {
+        return "REDeblocageVersement [idCompteAnnexe=" + idCompteAnnexe + ", idRenteAccordee=" + idRenteAccordee
+                + ", codeRenteAccordee=" + codeRenteAccordee + ", idTiersAdressePaiement=" + idTiersAdressePaiement
+                + ", idApplicationAdressePaiement=" + idApplicationAdressePaiement + ", idTiersBeneficiaire="
+                + idTiersBeneficiaire + ", montant=" + montant + ", refPaiement=" + refPaiement + ", ligneDeblocage="
+                + ligneDeblocage + ", ligneDeblocageVentilation=" + ligneDeblocageVentilation + "]";
+    }
+
 }

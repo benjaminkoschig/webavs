@@ -29,12 +29,12 @@ public class RELigneDeblocage extends JadeEntity {
     @Override
     protected void writeProperties() {
         this.write(RELigneDeblocageTableDef.ID_LOT, idLot);
+        this.write(RELigneDeblocageTableDef.ID_RENTE_ACCORDEE, idRenteAccordee);
         this.write(RELigneDeblocageTableDef.ID_TIERS_CREANCIER, idTiersCreancier);
-        this.write(RELigneDeblocageTableDef.ID_ROLE_SECTION, idRoleSection);
         this.write(RELigneDeblocageTableDef.ID_TIERS_ADRESSE_PAIEMENT, idTiersAdressePaiement);
         this.write(RELigneDeblocageTableDef.ID_APPLICATION_ADRESSE_PAIEMENT, idApplicationAdressePaiement);
         this.write(RELigneDeblocageTableDef.ID_SECTION_COMPENSEE, idSectionCompensee);
-        this.write(RELigneDeblocageTableDef.ID_RENTE_ACCORDEE, idRenteAccordee);
+        this.write(RELigneDeblocageTableDef.ID_ROLE_SECTION, idRoleSection);
         this.write(RELigneDeblocageTableDef.CS_ETAT, etat);
         this.write(RELigneDeblocageTableDef.CS_TYPE_DEBLOCAGE, type);
         this.write(RELigneDeblocageTableDef.MONTANT, montant, CONVERTER_MONTANT);
@@ -44,13 +44,13 @@ public class RELigneDeblocage extends JadeEntity {
     @Override
     protected void readProperties() {
         id = this.read(RELigneDeblocageTableDef.ID);
+        idLot = this.read(RELigneDeblocageTableDef.ID_LOT);
+        idRenteAccordee = this.read(RELigneDeblocageTableDef.ID_RENTE_ACCORDEE);
         idTiersCreancier = this.read(RELigneDeblocageTableDef.ID_TIERS_CREANCIER);
-        idRoleSection = this.read(RELigneDeblocageTableDef.ID_ROLE_SECTION);
         idTiersAdressePaiement = this.read(RELigneDeblocageTableDef.ID_TIERS_ADRESSE_PAIEMENT);
         idApplicationAdressePaiement = this.read(RELigneDeblocageTableDef.ID_APPLICATION_ADRESSE_PAIEMENT);
         idSectionCompensee = this.read(RELigneDeblocageTableDef.ID_SECTION_COMPENSEE);
-        idRenteAccordee = this.read(RELigneDeblocageTableDef.ID_RENTE_ACCORDEE);
-        idLot = this.read(RELigneDeblocageTableDef.ID_LOT);
+        idRoleSection = this.read(RELigneDeblocageTableDef.ID_ROLE_SECTION);
         type = this.read(RELigneDeblocageTableDef.CS_TYPE_DEBLOCAGE, RELigneDeblocageType.class);
         etat = this.read(RELigneDeblocageTableDef.CS_ETAT, RELigneDeblocageEtat.class);
         montant = this.read(RELigneDeblocageTableDef.MONTANT, CONVERTER_MONTANT);
@@ -214,4 +214,5 @@ public class RELigneDeblocage extends JadeEntity {
             }
         }
     }
+
 }

@@ -1,8 +1,11 @@
 package globaz.corvus.module.compta.deblocage;
 
 import globaz.corvus.api.lots.IRELot;
+import globaz.corvus.db.deblocage.REDeblocageException;
+import globaz.corvus.db.deblocage.REDeblocageService;
 import globaz.corvus.db.deblocage.REDeblocageVersement;
 import globaz.corvus.db.deblocage.REDeblocageVersementService;
+import globaz.corvus.db.lignedeblocage.RELigneDeblocages;
 import globaz.corvus.db.lots.RELot;
 import globaz.corvus.module.compta.AREModuleComptable;
 import globaz.corvus.module.compta.REModuleComptableFactory;
@@ -30,10 +33,12 @@ public class REComptabiliseDebloquage extends AREModuleComptable {
 
     private BSession sessionOsiris;
     private BSession session;
+    private final REDeblocageService deblocageService;
 
     public REComptabiliseDebloquage(BSession session) throws Exception {
         super(true);
         this.session = session;
+        deblocageService = new REDeblocageService(session);
         sessionOsiris = (BSession) PRSession.connectSession(session, CAApplication.DEFAULT_APPLICATION_OSIRIS);
     }
 
@@ -47,7 +52,9 @@ public class REComptabiliseDebloquage extends AREModuleComptable {
         List<REDeblocageVersement> deblocageVersements = deblocageVersementService.searchByIdLot(idLot);
 
         String dateComptable = getDateValeurComptable();
-
+        if (REModuleComptableFactory.getInstance().COMPENSATION == null) {
+            REModuleComptableFactory.getInstance().initIdsRubriques(sessionOsiris);
+        }
         for (REDeblocageVersement versement : deblocageVersements) {
             PRTiersWrapper tw = PRTiersHelper.getTiersParId(session, versement.getIdTiersBeneficiaire());
             String motifVersement = getMotifVersementDeblocage(session, tw, versement.getRefPaiement(),
@@ -58,17 +65,30 @@ public class REComptabiliseDebloquage extends AREModuleComptable {
                         .getLigneDeblocageVentilation().getIdSectionSource().toString(), versement.getMontant()
                         .toStringFormat(), versement.getIdTiersAdressePaiement(), motifVersement, dateComptable, false));
             } else if (versement.getType().isDetteEnCompta()) {
-                doEcriture(session, compta, versement.getMontant().toStringValue(),
+                doEcriture(session, compta, versement.getMontant().abs().toStringValue(),
                         REModuleComptableFactory.getInstance().COMPENSATION, versement.getIdCompteAnnexe(), versement
-                                .getLigneDeblocageVentilation().getIdSectionSource().toString(), dateComptable,
-                        motifVersement);
+                                .getLigneDeblocage().getIdSectionCompensee().toString(), dateComptable, null);
 
                 doEcriture(session, compta, versement.getMontant().negate().toStringValue(),
                         REModuleComptableFactory.getInstance().COMPENSATION, versement.getIdCompteAnnexe(), versement
-                                .getLigneDeblocageVentilation().getIdSectionSource().toString(), dateComptable,
-                        motifVersement);
+                                .getLigneDeblocageVentilation().getIdSectionSource().toString(), dateComptable, null);
+            } else if (versement.getType().isImpotsSource()) {
+                doEcriture(session, compta, versement.getMontant().negate().toStringValue(),
+                        REModuleComptableFactory.getInstance().IMPOT_SOURCE, versement.getIdCompteAnnexe(), versement
+                                .getLigneDeblocageVentilation().getIdSectionSource().toString(), dateComptable, null);
+            } else {
+                throw new REDeblocageException("Type of versement not know :" + versement.toStringEntity());
             }
         }
+
+        RELigneDeblocages deblocages = new RELigneDeblocages();
+
+        for (REDeblocageVersement deblocage : deblocageVersements) {
+            deblocages.add(deblocage.getLigneDeblocage());
+        }
+        deblocages.changeEtatToComptabilise();
+        deblocageService.update(deblocages);
+
         lot.setIdJournalCA(compta.getJournal().getIdJournal());
         lot.setCsEtatLot(IRELot.CS_ETAT_LOT_VALIDE);
         lot.setDateEnvoiLot(dateComptable);

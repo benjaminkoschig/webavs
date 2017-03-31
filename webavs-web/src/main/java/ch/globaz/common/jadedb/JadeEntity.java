@@ -7,6 +7,7 @@ import globaz.globall.db.BEntity;
 import globaz.globall.db.BSpy;
 import globaz.globall.db.BStatement;
 import globaz.globall.db.BTransaction;
+import globaz.globall.util.JAException;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.text.ParseException;
@@ -23,7 +24,7 @@ import ch.globaz.common.jadedb.converter.ConverterDB;
 import ch.globaz.common.jadedb.converter.MontantConverterDB;
 import ch.globaz.common.jadedb.exception.JadeDataBaseException;
 
-public abstract class JadeEntity extends BEntity {
+public abstract class JadeEntity extends BEntity implements Comparable<JadeEntity> {
 
     private static final long serialVersionUID = 1L;
     public static final MontantConverterDB CONVERTER_MONTANT = new MontantConverterDB();
@@ -84,6 +85,9 @@ public abstract class JadeEntity extends BEntity {
     protected final void _readProperties(BStatement statement) throws Exception {
         this.statement = statement;
         readProperties();
+        // if (getIdEntity() != null && !getIdEntity().isEmpty()) {
+        // setId(getIdEntity());
+        // }
     }
 
     protected void writeKey(TableDefinition tableDefinition, Object value) {
@@ -316,7 +320,8 @@ public abstract class JadeEntity extends BEntity {
             statement.writeField(column, null);
         } else if (value instanceof String) {
             writeString(column, (String) value, desc);
-        } else if (value instanceof Integer || value instanceof Long || value instanceof Double) {
+        } else if (value instanceof Integer || value instanceof Long || value instanceof Double
+                || value instanceof Float) {
             writeNumeric(column, (Number) value);
         } else if (value instanceof Boolean) {
             writeBoolean(column, (Boolean) value, desc);
@@ -419,10 +424,36 @@ public abstract class JadeEntity extends BEntity {
         return false;
     }
 
-    public void readFromStatement(BStatement statement, String aliasTable) {
-        this.statement = statement;
+    /**
+     * Retourne le contenu d'un champ espion.
+     * 
+     * @return l'espion
+     * @exception java.lang.Exception
+     *                si le champ n'existe pas ou si son type est incorrect
+     */
+    public final BSpy readSpy(String spy) throws Exception {
+        try {
+            String value = this.readString(spy);
+            if (value == null) {
+                return new BSpy(getSession());
+            }
+            return new BSpy(value.trim());
+        } catch (Exception e) {
+            throw new JAException("Le champ '" + BSpy.FIELDNAME + "' n'a pas été trouvé dans l'ensemble de résultat");
+        }
+    }
+
+    public void readFromStatement(BStatement statement, String aliasTable) throws Exception {
         this.aliasTable = aliasTable;
-        readProperties();
+        _readProperties(statement);
+        _setSpy(this.readSpy(aliasTable + "_" + BSpy.FIELDNAME));
+        _setCreationSpy(this.readSpy(aliasTable + "_" + BSpy.FIELDNAME_CREATION));
+        setIdAndJustDoIt(getIdEntity());
+    }
+
+    @Override
+    public int compareTo(JadeEntity o) {
+        return o.getIdEntity().compareTo(getIdEntity());
     }
 
 }

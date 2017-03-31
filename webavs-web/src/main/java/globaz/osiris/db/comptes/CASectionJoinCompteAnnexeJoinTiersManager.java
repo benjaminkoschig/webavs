@@ -31,6 +31,8 @@ public class CASectionJoinCompteAnnexeJoinTiersManager extends BManager implemen
     private Boolean forSoldeNegatif = false;
     private Boolean forSoldePositif = false;
     private String likeIdExterne = "";
+    private String forTypeSection;
+    private String forCategorie;
 
     public CASectionJoinCompteAnnexeJoinTiersManager() {
         super();
@@ -252,6 +254,26 @@ public class CASectionJoinCompteAnnexeJoinTiersManager extends BManager implemen
             sql.append(this._dbWriteString(statement.getTransaction(), getLikeIdExterne() + "%"));
         }
 
+        if (!JadeStringUtil.isBlank(forCategorie)) {
+            if (sql.length() != 0) {
+                sql.append(" AND ");
+            }
+            sql.append(_getCollection()).append(CASection.TABLE_CASECTP).append(".")
+                    .append(CASection.FIELD_CATEGORIESECTION);
+            sql.append("=");
+            sql.append(this._dbWriteNumeric(statement.getTransaction(), forCategorie));
+        }
+
+        if (!JadeStringUtil.isBlank(forTypeSection)) {
+            if (sql.length() != 0) {
+                sql.append(" AND ");
+            }
+            sql.append(_getCollection()).append(CASection.TABLE_CASECTP).append(".")
+                    .append(CASection.FIELD_IDTYPESECTION);
+            sql.append("=");
+            sql.append(this._dbWriteNumeric(statement.getTransaction(), forTypeSection));
+        }
+
         return sql.toString();
     }
 
@@ -363,4 +385,21 @@ public class CASectionJoinCompteAnnexeJoinTiersManager extends BManager implemen
     public void setLikeIdExterne(String likeIdExterne) {
         this.likeIdExterne = likeIdExterne;
     }
+
+    public String getForTypeSection() {
+        return forTypeSection;
+    }
+
+    public void setForTypeSection(String forTypeSection) {
+        this.forTypeSection = forTypeSection;
+    }
+
+    public String getForCategorie() {
+        return forCategorie;
+    }
+
+    public void setForCategorie(String forCategorie) {
+        this.forCategorie = forCategorie;
+    }
+
 }

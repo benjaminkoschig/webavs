@@ -64,12 +64,11 @@ public class RELibererDevaliderDeblocage {
         deblocagesEnregistre.getLigneDeblocageImpotsSource().changeSection(
                 Long.valueOf(APIReferenceRubrique.IMPOT_A_LA_SOURCE));
 
-        deblocageService.update(deblocagesEnregistre);
-
         RELigneDeblocageVentilator ventilator = new RELigneDeblocageVentilator(deblocagesEnregistre,
                 deblocage.getSections());
 
         ventilationService.save(ventilator.ventil());
+        deblocageService.update(deblocagesEnregistre);
     }
 
     private RELot findLotOrCreate() {

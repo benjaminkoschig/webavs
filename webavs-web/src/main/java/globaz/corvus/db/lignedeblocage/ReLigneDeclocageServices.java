@@ -211,20 +211,20 @@ public class ReLigneDeclocageServices {
     public RELigneDeblocages searchByIdRenteAndCompleteInfo(Long forIdRentePrestation, Set<String> idTiers,
             String descriptionTiersBeneficiaire) {
         RELigneDeblocages lignesDeblocages = searchByIdRente(forIdRentePrestation);
-        RELigneDeblocages lignesDeblocagesCompleted = new RELigneDeblocages();
-        lignesDeblocagesCompleted.addAll(toCreancier(lignesDeblocages.getLigneDeblocageCreancier()));
-
         RELigneDeblocageDetteHandler deblocageDetteHandler = new RELigneDeblocageDetteHandler(session);
+
         List<RELigneDeblocageDette> dettes = deblocageDetteHandler.toDette(
                 lignesDeblocages.getLigneDeblocageDetteEnCompta(), idTiers);
-        lignesDeblocagesCompleted.addAll(dettes);
 
         RELigneDeblocages versements = toVersement(lignesDeblocages.getLigneDeblocageVersementBeneficiaire(),
                 descriptionTiersBeneficiaire);
 
+        RELigneDeblocages lignesDeblocagesCompleted = new RELigneDeblocages();
+        lignesDeblocagesCompleted.addAll(toCreancier(lignesDeblocages.getLigneDeblocageCreancier()));
         lignesDeblocagesCompleted.addAll(versements);
-
+        lignesDeblocagesCompleted.addAll(dettes);
         lignesDeblocagesCompleted.addAll(lignesDeblocages.getLigneDeblocageImpotsSource().toList());
+
         return lignesDeblocagesCompleted;
     }
 
@@ -257,7 +257,6 @@ public class ReLigneDeclocageServices {
             TITiers tiers = loadTiers(reLigneDeblocage.getIdTiersCreancier());
             ligne.setDesignationTiers1(tiers.getDesignation1());
             ligne.setDesignationTiers2(tiers.getDesignation2());
-            ligne.setIdTiersAdressePaiement(reLigneDeblocage.getIdTiersAdressePaiement());
             ligne.setIdTiersCreancier(reLigneDeblocage.getIdTiersCreancier());
             addInfoCommun(ligne, reLigneDeblocage);
             ligne.setSpy(reLigneDeblocage.getSpy());
@@ -278,6 +277,8 @@ public class ReLigneDeclocageServices {
         newLigne.setIdEntity(dbLigne.getIdEntity());
         newLigne.setIdLot(dbLigne.getIdLot());
         newLigne.setSpy(dbLigne.getSpy());
+        newLigne.setIdTiersAdressePaiement(dbLigne.getIdTiersAdressePaiement());
+        newLigne.setIdApplicationAdressePaiement(dbLigne.getIdApplicationAdressePaiement());
     }
 
     private TITiers loadTiers(Long idTiers) {

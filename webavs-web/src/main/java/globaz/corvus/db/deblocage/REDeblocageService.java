@@ -9,6 +9,7 @@ import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
 import globaz.hera.utils.SFFamilleUtils;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.osiris.api.APISection;
 import globaz.osiris.db.comptes.CASectionJoinCompteAnnexeJoinTiers;
 import globaz.osiris.db.comptes.CASectionJoinCompteAnnexeJoinTiersManager;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
@@ -66,9 +67,10 @@ public class REDeblocageService {
                 mgr.setForIdTiersIn(idTiers);
                 mgr.setSession(session);
                 mgr.setForSoldeNegatif(true);
+                mgr.setForTypeSection(APISection.ID_TYPE_SECTION_BLOCAGE);
+                mgr.setForCategorie(APISection.ID_CATEGORIE_SECTION_PRESTATIONS_BLOQUEES);
                 mgr.find(BManager.SIZE_NOLIMIT);
                 return mgr.toList();
-
             } catch (Exception e1) {
                 throw new REDeblocageException("Unable to search the dette en compta ", e1);
             }
@@ -107,7 +109,6 @@ public class REDeblocageService {
         } catch (Exception e) {
             throw new REDeblocageException("Unable to load the tiers with this id:" + idTiers, e);
         }
-
     }
 
     private List<ReRetour> findRetours(Set<String> idTiers) {

@@ -111,16 +111,24 @@ public class SQLWriter {
             } else {
                 addComma = true;
             }
-            writer.append(aliasTable);
-            writer.append(".");
-            writer.append(def.getColumnName());
-            writer.append(" as ");
-            writer.append(aliasTable);
-            writer.append("_");
-            writer.append(def.getColumnName());
+            writeField(aliasTable, writer, def.getColumnName());
         }
+        writer.append(", ");
+        writeField(aliasTable, writer, "CSPY");
+        writer.append(", ");
+        writeField(aliasTable, writer, "PSPY");
         query.append(" ").append(writer.toString().toUpperCase());
         return this;
+    }
+
+    private void writeField(String aliasTable, StringWriter writer, String nameField) {
+        writer.append(aliasTable);
+        writer.append(".");
+        writer.append(nameField);
+        writer.append(" as ");
+        writer.append(aliasTable);
+        writer.append("_");
+        writer.append(nameField);
     }
 
     /**

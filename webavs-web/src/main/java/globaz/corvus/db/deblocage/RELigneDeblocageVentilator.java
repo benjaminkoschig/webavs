@@ -5,6 +5,7 @@ import globaz.corvus.db.lignedeblocage.RELigneDeblocages;
 import globaz.corvus.db.lignedeblocageventilation.RELigneDeblocageVentilation;
 import globaz.osiris.db.comptes.CASectionJoinCompteAnnexeJoinTiers;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -95,7 +96,7 @@ class RELigneDeblocageVentilator {
         return sum;
     }
 
-    private Montant sumDeblocage(List<RELigneDeblocage> deblocages) {
+    private Montant sumDeblocage(Collection<RELigneDeblocage> deblocages) {
         Montant sum = Montant.ZERO;
         for (RELigneDeblocage deblocage : deblocages) {
             sum = sum.add(deblocage.getMontant());
@@ -103,7 +104,7 @@ class RELigneDeblocageVentilator {
         return sum;
     }
 
-    private Montant sumVentilation(List<RELigneDeblocageVentilation> ventilations) {
+    private Montant sumVentilation(Collection<RELigneDeblocageVentilation> ventilations) {
         Montant sum = Montant.ZERO;
         for (RELigneDeblocageVentilation ventilation : ventilations) {
             sum = sum.add(ventilation.getMontant());

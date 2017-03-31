@@ -53,7 +53,6 @@ public class RELigneDeblocageVentilatorTest {
         List<RELigneDeblocageVentilation> ventilations = ventilator.ventil();
         assertThat(ventilations).hasSize(2);
         assertThat(ventilations).contains(newVentialtion(1, 2, 10), newVentialtion(1, 3, 5));
-
     }
 
     @Test

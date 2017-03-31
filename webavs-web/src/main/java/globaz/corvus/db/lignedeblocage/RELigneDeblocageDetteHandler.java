@@ -9,6 +9,7 @@ import globaz.osiris.db.comptes.CASectionJoinCompteAnnexeJoinTiers;
 import globaz.osiris.db.comptes.CASectionJoinCompteAnnexeJoinTiersManager;
 import globaz.osiris.db.comptes.CASectionManager;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -25,13 +26,13 @@ class RELigneDeblocageDetteHandler {
         this.session = session;
     }
 
-    public List<RELigneDeblocageDette> toDette(List<RELigneDeblocage> lignesDeblocage, Set<String> idTiers) {
-        List<RELigneDeblocageDette> dettes = findListDetteEnCompta(idTiers);
+    public List<RELigneDeblocageDette> toDette(Collection<RELigneDeblocage> lignesDeblocage, Set<String> idTiers) {
+        Collection<RELigneDeblocageDette> dettes = findListDetteEnCompta(idTiers);
         return mergedDetteWithDeblocage(dettes, lignesDeblocage);
     }
 
-    private List<RELigneDeblocageDette> mergedDetteWithDeblocage(List<RELigneDeblocageDette> dettes,
-            List<RELigneDeblocage> lignesDeblocage) {
+    private List<RELigneDeblocageDette> mergedDetteWithDeblocage(Collection<RELigneDeblocageDette> dettes,
+            Collection<RELigneDeblocage> lignesDeblocage) {
 
         Map<String, RELigneDeblocageDette> mapDettes = new HashMap<String, RELigneDeblocageDette>();
         for (RELigneDeblocageDette dette : dettes) {
@@ -44,9 +45,12 @@ class RELigneDeblocageDetteHandler {
 
             String key = ligne.getIdSectionCompensee() + "_" + ligne.getIdRoleSection();
             if (mapDettes.containsKey(key)) {
-                RELigneDeblocageDette detteComptat = mapDettes.get(key);
+                RELigneDeblocageDette detteComptat = mapDettes.remove(key);
                 RELigneDeblocageDette dette = new RELigneDeblocageDette();
+                dette.setIdAndJustDoIt(ligne.getIdEntity());
                 dette.setIdEntity(ligne.getIdEntity());
+                dette.setSpy(ligne.getSpy());
+                dette.setIdAndJustDoIt(ligne.getIdEntity());
                 dette.setIdRenteAccordee(ligne.getIdRenteAccordee());
                 dette.setEtat(ligne.getEtat());
                 dette.setType(ligne.getType());
@@ -60,13 +64,6 @@ class RELigneDeblocageDetteHandler {
                 dette.setIdSectionCompensee(detteComptat.getIdSectionCompensee());
                 list.add(dette);
                 keyMatch.add(key);
-            }
-        }
-
-        for (RELigneDeblocageDette dette : dettes) {
-            String key = dette.getIdSectionCompensee() + "_" + dette.getIdRoleSection();
-            if (keyMatch.contains(key)) {
-                mapDettes.remove(key);
             }
         }
 
