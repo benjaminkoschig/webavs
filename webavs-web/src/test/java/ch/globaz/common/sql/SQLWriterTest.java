@@ -4,6 +4,7 @@ import static org.fest.assertions.api.Assertions.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import org.junit.Test;
 
 public class SQLWriterTest {
@@ -454,6 +455,33 @@ public class SQLWriterTest {
         assertThat(SQLWriter.write().and("col").equalForNumber("1").toSql()).isEqualTo(" col=1");
         assertThat(SQLWriter.write().and("col").equalForNumber(null).toSql()).isEqualTo("");
         assertThat(SQLWriter.write().and("col").equalForNumber("").toSql()).isEqualTo("");
+    }
+
+    @Test
+    public void testCurrentIndexAfterOperator() throws Exception {
+        assertThat(
+                SQLWriter.write().select().fields("*").from("TABLE").where().and("col").equalForNumber("1").and("col2")
+                        .equalForNumber("2").currentIndexAfterOperator()).isEqualTo(43);
+    }
+
+    @Test
+    public void testFullLikeCaseInsensitive() throws Exception {
+        String s = null;
+        assertThat(SQLWriter.writeWithSchema().locale(Locale.FRENCH).and("COL").fullLikeCaseInsensitive("").toSql())
+                .isEqualTo("");
+        assertThat(SQLWriter.writeWithSchema().locale(Locale.FRENCH).and("COL").fullLikeCaseInsensitive(s).toSql())
+                .isEqualTo("");
+        assertThat(SQLWriter.writeWithSchema().locale(Locale.FRENCH).and("COL").fullLikeCaseInsensitive("P").toSql())
+                .isEqualTo(" UPPER( schema.COL)  like '%P%'");
+        assertThat(SQLWriter.writeWithSchema().locale(Locale.FRENCH).and("COL").fullLikeCaseInsensitive("Rose").toSql())
+                .isEqualTo(" UPPER( schema.COL)  like '%ROSE%'");
+        try {
+            SQLWriter.writeWithSchema().and("COL").fullLikeCaseInsensitive("Rose").toSql();
+        } catch (RuntimeException e) {
+            assertThat(e).isInstanceOf(SQLWriterException.class);
+            assertThat(e).hasMessage(
+                    "Unabled to perform a full like case insensitve without a Locale. Please use locale(...) function");
+        }
     }
 
 }
