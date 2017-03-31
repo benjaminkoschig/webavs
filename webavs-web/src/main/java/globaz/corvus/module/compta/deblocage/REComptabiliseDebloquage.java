@@ -89,19 +89,11 @@ public class REComptabiliseDebloquage extends AREModuleComptable {
         deblocages.changeEtatToComptabilise();
         deblocageService.update(deblocages);
 
+        compta.comptabiliser();
         lot.setIdJournalCA(compta.getJournal().getIdJournal());
         lot.setCsEtatLot(IRELot.CS_ETAT_LOT_VALIDE);
         lot.setDateEnvoiLot(dateComptable);
-        compta.comptabiliser();
         lot.update();
-
-        // ecritures.add(this.generateEcriture(SectionPegasus.DECISION_PC, APIEcriture.DEBIT,
-        // APIReferenceRubrique.COMPENSATION_RENTES, montant, null, compteAnnexe.getIdCompteAnnexe(),
-        // TypeEcriture.DETTE, ov));
-        //
-        // //positif=>
-        // ecritures.add(this.generateEcriture(null, APIEcriture.CREDIT, APIReferenceRubrique.COMPENSATION_RENTES,
-        // montant, section, section.getIdCompteAnnexe(), TypeEcriture.DETTE, ov));
     }
 
     private RELot retriveLot(Long idLot) throws Exception {

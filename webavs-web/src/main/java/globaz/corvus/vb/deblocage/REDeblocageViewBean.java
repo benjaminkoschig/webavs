@@ -47,9 +47,10 @@ public class REDeblocageViewBean extends PRAbstractViewBeanSupport {
         periode = deblocage.getPracc().getDateDebutDroit() + " - " + deblocage.getPracc().getDateDebutDroit();
         genre = deblocage.getPracc().getCodePrestation();
         retours = deblocage.getRetours();
-        montantRente = deblocage.getPracc().getMontantPrestation();
-        montantBloque = deblocage.getEnteteBlocage().getMontantBloque();
-        montantDebloque = deblocage.getEnteteBlocage().getMontantDebloque();
+
+        montantRente = new Montant(deblocage.getPracc().getMontantPrestation()).toStringFormat();
+        montantBloque = new Montant(deblocage.getEnteteBlocage().getMontantBloque()).toStringFormat();
+        montantDebloque = new Montant(deblocage.getEnteteBlocage().getMontantDebloque()).toStringFormat();
         montantADebloquer = deblocage.computeMontantToUseForDeblocage().toStringFormat();
     }
 

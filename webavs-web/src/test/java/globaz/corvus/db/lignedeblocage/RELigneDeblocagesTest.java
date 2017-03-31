@@ -172,7 +172,7 @@ public class RELigneDeblocagesTest {
         RELigneDeblocages ld = new RELigneDeblocages();
 
         ld.add(createLigneDeblocage(RELigneDeblocageEtat.VALIDE, RELigneDeblocageType.IMPOTS_SOURCE));
-        ld.get(0).setIdLot(null);
+        ld.iterator().next().setIdLot(null);
         ld.add(createLigneDeblocage(RELigneDeblocageEtat.ENREGISTRE, RELigneDeblocageType.IMPOTS_SOURCE));
 
         assertThat(ld.filtreByIdLot(Long.valueOf(10))).contains(
