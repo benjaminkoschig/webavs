@@ -1,6 +1,7 @@
 package globaz.osiris.db.ordres.sepa;
 
 import globaz.jade.client.util.JadeFilenameUtil;
+import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.common.Jade;
 import globaz.osiris.api.ordre.APICommonOdreVersement;
 import globaz.osiris.api.ordre.APIOrdreGroupe;
@@ -166,9 +167,9 @@ public class CAProcessFormatOrdreSEPA extends CAOrdreFormateur {
 
             if (key.isPaysDestination(CASepaOVConverterUtils.PAYS_DESTINATION_SUISSE)) {
                 // adrLine interdit pour les type mandat
-                final String rue = CASepaCommonUtils.limit70(ov.getAdressePaiement().getAdresseCourrier().getRue()
-                        .trim());
-                postalAdr.setStrtNm((rue.isEmpty() ? null : rue));
+                final String rue = getRue(ov);
+
+                postalAdr.setStrtNm(rue.isEmpty() ? null : rue);
                 // FIXME besoin de modif des interfaces PIXYS
                 final String postCode = CASepaCommonUtils.limit16(ov.getAdressePaiement().getAdresseCourrier()
                         .getNumPostal());
@@ -187,9 +188,10 @@ public class CAProcessFormatOrdreSEPA extends CAOrdreFormateur {
                 // postalAdr.setCtry(ov.getAdressePaiement().getAdresseCourrier().getPaysISO());
             } else {
 
-                if (!ov.getAdressePaiement().getAdresseCourrier().getRue().isEmpty()) {
-                    postalAdr.getAdrLine().add(
-                            CASepaCommonUtils.limit70(ov.getAdressePaiement().getAdresseCourrier().getRue()));
+                final String rue = getRue(ov);
+                if (!rue.isEmpty()) {
+                    postalAdr.getAdrLine().add(CASepaCommonUtils.limit70(rue));
+
                 }
                 postalAdr.getAdrLine().add(
                         CASepaCommonUtils.limit70(ov.getAdressePaiement().getAdresseCourrier().getPaysISO() + "-"
@@ -263,6 +265,19 @@ public class CAProcessFormatOrdreSEPA extends CAOrdreFormateur {
             logger.debug("added clevel to blevel [{}] contain now {}", key.getKeyString(), bLevels.get(key).size());
         }
         return null;
+    }
+
+    private String getRue(final APICommonOdreVersement ov) throws Exception {
+        String rue = CASepaCommonUtils.limit70(ov.getAdressePaiement().getAdresseCourrier().getRue().trim());
+
+        if (JadeStringUtil.isEmpty(rue)) {
+            rue = CASepaCommonUtils.limit70(ov.getAdressePaiement().getAdresseCourrier().getAdresse()[0]);
+            if (!JadeStringUtil.isEmpty(rue)) {
+                rue = rue.trim();
+            }
+        }
+
+        return rue;
     }
 
     @Override
