@@ -331,12 +331,12 @@ $(function () {
 			}
 		%>
 			<TD nowrap height="31" width="294"><ct:FWCodeSelectTag name="typeDeclaration" defaut="<%=viewBean.getTypeDeclaration()%>" codeType="DRATYPDECL" except="<%=except%>"/></TD>
-			<TD id="tdAnneeTaux" height="31" width="150">Année de référence pour le taux</TD>
+			<TD id="tdAnneeTaux" height="31" width="150">Année de référence pour le taux et les plafonds</TD>
 			<TD id="tdAnneeTaux2" height="31" width="100"><INPUT name="anneeTaux" id="anneeTaux" size="4" maxlength="4"  onkeypress="return filterCharForPositivInteger(window.event);" value="<%=viewBean.getAnneeTaux()%>" /></TD>    
 		<%} else {%>
 			<TD nowrap height="31" width="76"><INPUT name="typeDeclarationEcran" value="<%=CodeSystem.getLibelle(session,viewBean.getTypeDeclaration())%>" class="libelleLongDisabled" readonly="readonly" ></TD>
 		<% if(CodeSystem.CS_SALAIRE_DIFFERES.equals(viewBean.getTypeDeclaration())) { %>
-			<TD nowrap height="31" width="150">Année de référence pour le taux</TD>
+			<TD nowrap height="31" width="150">Année de référence pour le taux et les plafonds</TD>
 			<TD nowrap height="31" width="100"><INPUT name="anneeTaux" id="anneeTaux" size="4" maxlength="4" value="<%=viewBean.getAnneeTaux()%>" /></TD>
 		<% } else { %>
 			<TD nowrap height="31" width="150">&nbsp;</TD>

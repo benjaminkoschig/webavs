@@ -787,7 +787,12 @@ public class DSInscriptionsIndividuelles extends BEntity {
             param.setIdCleDiffere("PLAFONDAC1");
             param.setIdActeurParametre("0");
             param.setPlageValDeParametre("0");
-            param.setDateDebutValidite("01.01." + anneeInsc);
+            if (globaz.draco.translation.CodeSystem.CS_SALAIRE_DIFFERES.equals(declaration.getTypeDeclaration())) {
+                param.setDateDebutValidite("01.01." + declaration.getAnneeTaux());
+            } else {
+                param.setDateDebutValidite("01.01." + anneeInsc);
+            }
+
             param.find();
             BigDecimal plafondAc = new BigDecimal(((FWFindParameter) param.getFirstEntity()).getValeurNumParametre());
             param.setIdCleDiffere("PLAFONDAC2");
