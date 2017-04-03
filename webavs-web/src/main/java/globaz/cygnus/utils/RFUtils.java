@@ -150,7 +150,8 @@ public class RFUtils {
         String value = "";
         try {
             if (EPCProperties.LVPC.getBooleanValue()) {
-                if (IPCHomes.CS_SERVICE_ETAT_SASH.equals(codeSystemPCTypeHome)) {
+                if (IPCHomes.CS_SERVICE_ETAT_SASH.equals(codeSystemPCTypeHome)
+                        || IPCHomes.CS_SERVICE_ETAT_EPS.equals(codeSystemPCTypeHome)) {
                     value = IRFQd.CS_TYPE_REMBOURSEMENT_SASH;
                 } else if (IPCHomes.CS_SERVICE_ETAT_SPAS.equals(codeSystemPCTypeHome)) {
                     value = IRFQd.CS_TYPE_REMBOURSEMENT_SPAS;
