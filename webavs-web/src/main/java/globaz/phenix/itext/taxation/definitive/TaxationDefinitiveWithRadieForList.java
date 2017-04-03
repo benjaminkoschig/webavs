@@ -12,11 +12,12 @@ public class TaxationDefinitiveWithRadieForList extends TaxationDefinitiveForLis
     private String radie;
 
     public TaxationDefinitiveWithRadieForList(String radiation) {
+        super();
         radie = radiation;
     }
 
     @ColumnStyle(align = Align.LEFT)
-    @Column(name = "listeTaxDefRadie", order = 12)
+    @Column(name = "LISTE_TAX_DEF_RADIE", order = 12)
     public String getRadie() {
         return radie;
     }
