@@ -650,7 +650,8 @@ public class REEnvoyerAnnoncesXMLProcess extends BProcess {
 
         switch (codeApplication) {
             case 41:
-            case 43:
+            case 42:
+
                 REAnnoncesAugmentationModification9Eme augmentation9eme01 = new REAnnoncesAugmentationModification9Eme();
                 augmentation9eme01.setSession(getSession());
                 augmentation9eme01.setIdAnnonce(annonce.getIdAnnonce());
@@ -664,7 +665,12 @@ public class REEnvoyerAnnoncesXMLProcess extends BProcess {
                 parseAugmentationAvecAnakin(augmentation9eme01, augmentation9eme02);
 
                 if (codeApplication == 41) {
-                    serviceAnnonces.annonceAugmentationOrdinaire9e(augmentation9eme01, augmentation9eme01);
+                    poolMeldung
+                            .getLot()
+                            .get(0)
+                            .getVAIKMeldungNeuerVersicherterOrVAIKMeldungAenderungVersichertenDatenOrVAIKMeldungVerkettungVersichertenNr()
+                            .add(serviceAnnonces.annonceAugmentationOrdinaire9e(augmentation9eme01, augmentation9eme01));
+
                 } else {
                     // préparer annonceModification
                 }
@@ -674,7 +680,7 @@ public class REEnvoyerAnnoncesXMLProcess extends BProcess {
                     augmentation9eme02.update(getTransaction());
                 }
                 break;
-            case 42:
+            case 43:
                 REAnnoncesDiminution9Eme diminution9eme01 = new REAnnoncesDiminution9Eme();
                 diminution9eme01.setSession(getSession());
                 diminution9eme01.setIdAnnonce(annonce.getIdAnnonce());
