@@ -358,7 +358,7 @@ public class APRepartitionPaiements extends BEntity implements PRHierarchique {
 
     public void chercherAdressePaiement(BTransaction transaction, String idSituationProf) throws Exception {
 
-        String idDomainePaiement = null;
+        String idDomainePaiement = idDomaineAdressePaiement;
         String idTiersPaiement = idTiers;
 
         if (!JadeStringUtil.isBlankOrZero(idSituationProf)) {
