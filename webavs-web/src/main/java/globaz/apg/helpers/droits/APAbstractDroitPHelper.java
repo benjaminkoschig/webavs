@@ -480,7 +480,7 @@ public class APAbstractDroitPHelper extends PRAbstractHelper {
                 if (tiers != null) {
                     idTiers = tiers.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS);
                 } else {
-                    droitPViewBean._addError(session.getLabel("ERROR_CREATION_TIERS"));
+                    droitPViewBean._addError("ERROR_CREATION_TIERS");
                 }
 
             }
