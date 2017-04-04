@@ -85,6 +85,7 @@ public class AdressePaiementLoader {
             banque.setPays(adresseData.getPays_banque());
             banque.setRue(adresseData.getRue_banque());
             banque.setCcp(adresseData.getCcp_banque());
+            banque.setClearing(adresseData.getClearing());
 
             Tiers tiers = new Tiers();
             tiers.setDesignation1(adresseData.getDesignation1_tiers());

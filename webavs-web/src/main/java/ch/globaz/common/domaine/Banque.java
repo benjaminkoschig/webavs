@@ -26,6 +26,7 @@ public class Banque implements Serializable {
     private String pays;
     private String paysIso;
     private String rue;
+    private String clearing;
 
     public String getAdresse1() {
         return adresse1;
@@ -169,5 +170,13 @@ public class Banque implements Serializable {
 
     public void setRue(String rue) {
         this.rue = rue;
+    }
+
+    public String getClearing() {
+        return clearing;
+    }
+
+    public void setClearing(String clearing) {
+        this.clearing = clearing;
     }
 }

@@ -142,6 +142,12 @@ public class REDeblocageVersement extends BEntity {
                 getSession().getCodeLibelle(getSession().getSystemCode("CIPAYORI", getPays())));
     }
 
+    public String formatInformationCompteForListe() {
+        return getIdExterneCompteAnnexe() + "/ " + getDescriptionCompteAnnexe() + " / " + getDateNaissance() + " / "
+                + getSession().getCodeLibelle(getCsSexe()) + " / "
+                + getSession().getCodeLibelle(getSession().getSystemCode("CIPAYORI", getPays()));
+    }
+
     public String getIdExterneSextion() {
         return idExterneSextion;
     }
