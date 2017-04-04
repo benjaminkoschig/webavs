@@ -55,6 +55,9 @@ public class AFControleLppAnnuelProcess extends BProcess {
     private static final String LISTE_CAS_REJETES = "listeSoumisLpp.xml";
     private String annee;
 
+    private String anneeDebut;
+    private String anneeFin;
+
     private int anneeControle = 0;
     private int anneeCourante = 0;
     private AFAffilieSoumiLppConteneur casRejetes = null;
@@ -809,5 +812,21 @@ public class AFControleLppAnnuelProcess extends BProcess {
         // Il ne dépasse pas la règle des seuils
         return false;
 
+    }
+
+    public String getAnneeDebut() {
+        return anneeDebut;
+    }
+
+    public void setAnneeDebut(String anneeDebut) {
+        this.anneeDebut = anneeDebut;
+    }
+
+    public String getAnneeFin() {
+        return anneeFin;
+    }
+
+    public void setAnneeFin(String anneeFin) {
+        this.anneeFin = anneeFin;
     }
 }

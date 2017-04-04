@@ -29,8 +29,11 @@ function init(){}
 
 function postInit() {
 	var myDate = new Date();
-	<% if(JadeStringUtil.isEmpty(viewBean.getAnnee())) {%>
-	$("#annee").val(myDate.getFullYear()-1);
+	<% if(JadeStringUtil.isEmpty(viewBean.getAnneeDebut())) {%>
+	$("#anneeDebut").val(myDate.getFullYear()-1);
+	<%}%>
+	<% if(JadeStringUtil.isEmpty(viewBean.getAnneeFin())) {%>
+	$("#anneeFin").val(myDate.getFullYear()-1);
 	<%}%>
 }
 </SCRIPT>
@@ -42,8 +45,12 @@ function postInit() {
 <%-- tpl:put name="zoneMain" --%>
 
 <TR> 
-   	<TD><ct:FWLabel key='ANNEE'/></TD>
-   	<TD><INPUT name="annee" id="annee" maxlength="4" size="4" type="text" style="text-align : left;" value="<%= viewBean.getAnnee() != null ? viewBean.getAnnee() : "" %>" onkeypress="return filterCharForPositivInteger(window.event);" /></TD>                   
+   	<TD><ct:FWLabel key='ANNEES'/></TD>
+   	<TD>
+   		<INPUT name="anneeDebut" id="anneeDebut" maxlength="4" size="4" type="text" style="text-align : left;" value="<%= viewBean.getAnneeDebut() != null ? viewBean.getAnneeDebut() : "" %>" onkeypress="return filterCharForPositivInteger(window.event);" />
+   		<ct:FWLabel key='A'/>
+   		<INPUT name="anneeFin" id="anneeFin" maxlength="4" size="4" type="text" style="text-align : left;" value="<%= viewBean.getAnneeFin() != null ? viewBean.getAnneeFin() : "" %>" onkeypress="return filterCharForPositivInteger(window.event);" />
+   	</TD>                   
  	<TD>&nbsp;</TD>
 </TR> 
 <TR>

@@ -1,3 +1,6 @@
+/*
+ * Globaz SA
+ */
 package globaz.naos.db.controleLpp;
 
 import globaz.jade.client.util.JadeStringUtil;
@@ -10,15 +13,14 @@ import globaz.naos.db.AFAbstractViewBean;
  */
 public class AFControleLppAnnuelViewBean extends AFAbstractViewBean {
 
-    private String annee;
+    private String anneeDebut;
+    private String anneeFin;
     private String dateImpression;
     private String email;
-    private boolean modeControle = true; // true = simulation
-    private String typeAdresse;
 
-    public String getAnnee() {
-        return annee;
-    }
+    // true = simulation
+    private boolean modeControle = true;
+    private String typeAdresse;
 
     public String getDateImpression() {
         return dateImpression;
@@ -40,10 +42,6 @@ public class AFControleLppAnnuelViewBean extends AFAbstractViewBean {
         return modeControle;
     }
 
-    public void setAnnee(String annee) {
-        this.annee = annee;
-    }
-
     public void setDateImpression(String dateImpression) {
         this.dateImpression = dateImpression;
     }
@@ -58,5 +56,21 @@ public class AFControleLppAnnuelViewBean extends AFAbstractViewBean {
 
     public void setTypeAdresse(String typeAdresse) {
         this.typeAdresse = typeAdresse;
+    }
+
+    public String getAnneeDebut() {
+        return anneeDebut;
+    }
+
+    public void setAnneeDebut(String anneeDebut) {
+        this.anneeDebut = anneeDebut;
+    }
+
+    public String getAnneeFin() {
+        return anneeFin;
+    }
+
+    public void setAnneeFin(String anneeFin) {
+        this.anneeFin = anneeFin;
     }
 }

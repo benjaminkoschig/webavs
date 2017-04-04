@@ -70,13 +70,13 @@ public class AFXmlmlMappingSoumisLpp {
     }
 
     private static void loadHeader(CommonExcelmlContainer container, String dateImpression, String nomListe,
-            String annee, String numInforom, String user) throws Exception {
+            String anneeDebut, String anneeFin, String numInforom, String user) throws Exception {
         // Modif PO 6352
-        container.put(IAFListeColumns.HEADER_NUM_INFOROM, numInforom); // PO 6352
-        container.put(IAFListeColumns.HEADER_USER, user); // PO 6352
+        container.put(IAFListeColumns.HEADER_NUM_INFOROM, numInforom);
+        container.put(IAFListeColumns.HEADER_USER, user);
         container.put(IAFListeColumns.HEADER_DATE, dateImpression);
         container.put(IAFListeColumns.HEADER_NOM_LISTE, nomListe);
-        container.put(IAFListeColumns.HEADER_ANNEE, annee);
+        container.put(IAFListeColumns.HEADER_ANNEE, anneeDebut + " " + anneeFin);
 
         /**
          * astuce temporaire pour que le fichier xls généré contienne les lignes blanches d'entête du modèle xml
@@ -103,8 +103,8 @@ public class AFXmlmlMappingSoumisLpp {
         CommonExcelmlContainer container = new CommonExcelmlContainer();
 
         // Chargement du header du document
-        AFXmlmlMappingSoumisLpp.loadHeader(container, process.getDateImpression(), nomListe, process.getAnnee(),
-                numInforom, process.getSession().getUserName());
+        AFXmlmlMappingSoumisLpp.loadHeader(container, process.getDateImpression(), nomListe, process.getAnneeDebut(),
+                process.getAnneeFin(), numInforom, process.getSession().getUserName());
 
         String[] listAffilie = conteneur.getTableauAffilie();
 

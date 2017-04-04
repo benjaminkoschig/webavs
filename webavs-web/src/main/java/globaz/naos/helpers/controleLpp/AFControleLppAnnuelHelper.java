@@ -1,3 +1,6 @@
+/*
+ * Globaz SA
+ */
 package globaz.naos.helpers.controleLpp;
 
 import globaz.framework.bean.FWViewBeanInterface;
@@ -34,7 +37,9 @@ public class AFControleLppAnnuelHelper extends FWHelper {
                 AFControleLppAnnuelProcess process = new AFControleLppAnnuelProcess();
                 process.setSession((BSession) session);
 
-                process.setAnnee(vb.getAnnee());
+                process.setAnneeDebut(vb.getAnneeDebut());
+                process.setAnneeFin(vb.getAnneeFin());
+
                 process.setTypeAdresse(vb.getTypeAdresse());
                 process.setDateImpression(vb.getDateImpression());
                 process.setModeControle(vb.isModeControleSimulation());
