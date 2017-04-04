@@ -134,8 +134,8 @@ bButtonNew = false;
 							<TD><ct:FWLabel key="JSP_ASSURE"/></TD>
 							<TD COLSPAN="5">
 								<%=viewBean.getDetailRequerantListe()%>&nbsp;/&nbsp;
-								<A href="#" onclick="window.open('<%=servletContext%><%=("/apg")%>?userAction=<%=globaz.apg.servlet.IAPActions.ACTION_DROIT_LAPG%>.actionAfficherDossierGed&amp;noAVSId=<%=viewBean.getNoAVS()%>&amp;serviceNameId=<%=viewBean.getSession().getApplication().getProperty(globaz.externe.IPRConstantesExternes.PROPERTY_AFFICHAGE_DOSSIER_GED)%>')" >GED</A>
-								&nbsp;/&nbsp;<A href="<%=request.getContextPath()%>\pyxis?userAction=pyxis.tiers.tiers.diriger&selectedId=<%=viewBean.getTiers()%>" >Tiers</A>
+								<A href="#" onclick="window.open('<%=servletContext%><%=("/apg")%>?userAction=<%=globaz.apg.servlet.IAPActions.ACTION_DROIT_LAPG%>.actionAfficherDossierGed&amp;noAVSId=<%=viewBean.getNoAVS()%>&amp;serviceNameId=<%=viewBean.getSession().getApplication().getProperty(globaz.externe.IPRConstantesExternes.PROPERTY_AFFICHAGE_DOSSIER_GED)%>')" ><ct:FWLabel key="JSP_GED"/></A>
+								&nbsp;/&nbsp;<A href="<%=request.getContextPath()%>\pyxis?userAction=pyxis.tiers.tiers.diriger&selectedId=<%=viewBean.getTiers()%>" ><ct:FWLabel key="JSP_TIERS" /></A>
 							</TD>
 						</TR>
 						<TR><TD COLSPAN="6">&nbsp;</TD></TR>
@@ -184,8 +184,8 @@ bButtonNew = false;
 											<TD style="text-align: center">
 												<IMG SRC="<%=request.getContextPath()+(!employeur.getIsVersementEmployeur().booleanValue()?"/images/ok.gif":"/images/erreur.gif")%>" ALT="">
 											</TD>
-											<TD><A href="#" onclick="window.open('<%=servletContext%><%=("/apg")%>?userAction=<%=globaz.apg.servlet.IAPActions.ACTION_DROIT_LAPG%>.actionAfficherDossierGed&amp;noAffiliationId=<%=employeur.getNoAffilie()%>&amp;noAVSId=<%=employeur.retrieveNoAVS()%>&amp;serviceNameId=<%=viewBean.getSession().getApplication().getProperty(globaz.externe.IPRConstantesExternes.PROPERTY_AFFICHAGE_DOSSIER_GED_COTI)%>')" >GED</A>&nbsp;/&nbsp;
-												<A href="<%=request.getContextPath()%>\pyxis?userAction=pyxis.tiers.tiers.diriger&selectedId=<%=employeur.getIdTiers()%>" >Tiers</A></TD>
+											<TD><A href="#" onclick="window.open('<%=servletContext%><%=("/apg")%>?userAction=<%=globaz.apg.servlet.IAPActions.ACTION_DROIT_LAPG%>.actionAfficherDossierGed&amp;noAffiliationId=<%=employeur.getNoAffilie()%>&amp;noAVSId=<%=employeur.retrieveNoAVS()%>&amp;serviceNameId=<%=viewBean.getSession().getApplication().getProperty(globaz.externe.IPRConstantesExternes.PROPERTY_AFFICHAGE_DOSSIER_GED_COTI)%>')" ><ct:FWLabel key="JSP_GED"/></A>&nbsp;/&nbsp;
+												<A href="<%=request.getContextPath()%>\pyxis?userAction=pyxis.tiers.tiers.diriger&selectedId=<%=employeur.getIdTiers()%>" ><ct:FWLabel key="JSP_TIERS" /></A></TD>
 										</TR>
 									<% }} %>
 									</TBODY>

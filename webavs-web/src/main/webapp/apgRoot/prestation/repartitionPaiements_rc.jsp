@@ -140,7 +140,7 @@ bButtonNew = false;
 										<% if (!globaz.apg.api.prestation.IAPPrestation.CS_ETAT_PRESTATION_DEFINITIF.equals(viewBean.getEtatPrestation()) &&
 											   !viewBean.isRestitution() &&
 											   viewBean.getSession().hasRight(IAPActions.ACTION_REPARTITION_PAIEMENTS, FWSecureConstants.UPDATE)) { %>
-											<INPUT type="button" value="Répartir les montants" onclick="repartirLesMontants()">
+											<INPUT type="button" value="<ct:FWLabel key="JSP_REPARTIR_MONTANTS"/>" onclick="repartirLesMontants()">
 										<% } %>
 									</TD>
 								</TR>

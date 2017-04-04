@@ -515,7 +515,7 @@
 									name="nomPrenom" 
 									value="<%=viewBean.getNom()%> <%=viewBean.getPrenom()%>" 
 									class="libelleLongDisabled" />
-							<span id="linkTiers">/&nbsp;<A href="<%=request.getContextPath()%>\pyxis?userAction=pyxis.tiers.tiers.diriger&selectedId=<%=viewBean.getIdAssure()%>" >Tiers</A></span>
+							<span id="linkTiers">/&nbsp;<A href="<%=request.getContextPath()%>\pyxis?userAction=pyxis.tiers.tiers.diriger&selectedId=<%=viewBean.getIdAssure()%>" ><ct:FWLabel key="JSP_TIERS" /></A></span>
 							<input	type="hidden" 
 									name="nss" 
 									id="nss" 
