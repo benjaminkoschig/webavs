@@ -5,10 +5,10 @@ package globaz.corvus.process;
 
 import globaz.caisse.helper.CaisseHelperFactory;
 import globaz.commons.nss.NSUtil;
-import globaz.corvus.anakin.REAnakinParser;
+import globaz.corvus.annonce.service.REAnnonceXmlService;
+import globaz.corvus.annonce.service.REAnnonces10eXmlService;
 import globaz.corvus.annonce.service.REAnnonces9eXmlService;
 import globaz.corvus.api.annonces.IREAnnonces;
-import globaz.corvus.application.REApplication;
 import globaz.corvus.db.annonces.REAnnoncesAbstractLevel1A;
 import globaz.corvus.db.annonces.REAnnoncesAbstractLevel1AManager;
 import globaz.corvus.db.annonces.REAnnoncesAugmentationModification10Eme;
@@ -17,34 +17,24 @@ import globaz.corvus.db.annonces.REAnnoncesDiminution10Eme;
 import globaz.corvus.db.annonces.REAnnoncesDiminution9Eme;
 import globaz.corvus.properties.REProperties;
 import globaz.framework.util.FWMessage;
-import globaz.globall.api.BISession;
 import globaz.globall.db.BProcess;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BStatement;
 import globaz.globall.db.GlobazJobQueue;
-import globaz.hermes.api.IHEAnnoncesViewBean;
-import globaz.hermes.api.IHEInputAnnonceLight;
 import globaz.jade.client.util.JadeFilenameUtil;
-import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.common.Jade;
 import globaz.jade.fs.JadeFsFacade;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
-import globaz.prestation.tools.PRSession;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -59,7 +49,6 @@ import javax.xml.validation.SchemaFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
-import ch.admin.ofit.anakin.donnee.AnnonceErreur;
 import ch.admin.zas.pool.PoolMeldungZurZAS;
 import ch.admin.zas.rc.PoolFussType;
 import ch.admin.zas.rc.PoolKopfType;
@@ -79,7 +68,7 @@ public class REEnvoyerAnnoncesXMLProcess extends BProcess {
 
     private static final Logger LOG = LoggerFactory.getLogger(REEnvoyerAnnoncesXMLProcess.class);
 
-    private Marshaller marshaller;
+    private transient Marshaller marshaller;
 
     private boolean modeTest = true;
 
@@ -95,8 +84,6 @@ public class REEnvoyerAnnoncesXMLProcess extends BProcess {
 
     // ~ Instance fields
     // ------------------------------------------------------------------------------------------------
-
-    private List<Map<String, String>> annoncesAEnvoyer = new ArrayList<Map<String, String>>();
 
     private String forDateEnvoi = "";
 
@@ -151,7 +138,7 @@ public class REEnvoyerAnnoncesXMLProcess extends BProcess {
     protected boolean _executeProcess() {
         try {
 
-            PoolMeldungZurZAS lotAnnonces = initPoolMeldungZurZAS(REProperties.CENTRALE_TEST.getBooleanValue(),
+            PoolMeldungZurZAS.Lot lotAnnonces = initPoolMeldungZurZASLot(REProperties.CENTRALE_TEST.getBooleanValue(),
                     CommonProperties.KEY_NO_CAISSE.getValue());
 
             // On prend la date du jour qu'on mettra a toutes les annonces
@@ -296,10 +283,9 @@ public class REEnvoyerAnnoncesXMLProcess extends BProcess {
         return true;
     }
 
-    private PoolMeldungZurZAS initPoolMeldungZurZAS(boolean poolKopfTest, String poolKopfSender)
+    private PoolMeldungZurZAS.Lot initPoolMeldungZurZASLot(boolean poolKopfTest, String poolKopfSender)
             throws PropertiesException, ParseException, DatatypeConfigurationException {
         ch.admin.zas.pool.ObjectFactory factoryPool = new ch.admin.zas.pool.ObjectFactory();
-        PoolMeldungZurZAS lotAnnonces = factoryPool.createPoolMeldungZurZAS();
         ch.admin.zas.rc.ObjectFactory factoryType = new ch.admin.zas.rc.ObjectFactory();
         ch.admin.zas.pool.PoolMeldungZurZAS.Lot lot = factoryPool.createPoolMeldungZurZASLot();
         PoolKopfType poolKopf = factoryType.createPoolKopfType();
@@ -323,8 +309,7 @@ public class REEnvoyerAnnoncesXMLProcess extends BProcess {
         poolFuss.setEintragungengesamtzahl(0);
         lot.setPoolFuss(poolFuss);
 
-        lotAnnonces.getLot().add(lot);
-        return lotAnnonces;
+        return lot;
     }
 
     /**
@@ -348,122 +333,6 @@ public class REEnvoyerAnnoncesXMLProcess extends BProcess {
         if (getSession().hasErrors()) {
             abort();
         }
-    }
-
-    private void envoieAnnonces() throws Exception {
-
-        BISession remoteSession = PRSession.connectSession(getSession(),
-                REEnvoyerAnnoncesXMLProcess.APPLICATION_ANNONCES);
-
-        // création de l'API
-        IHEInputAnnonceLight remoteEcritureAnnonce = (IHEInputAnnonceLight) remoteSession
-                .getAPIFor(IHEInputAnnonceLight.class);
-
-        Iterator<Map<String, String>> iter = annoncesAEnvoyer.iterator();
-        String currentNSS = "";
-        String previousNSS;
-
-        while (iter.hasNext()) {
-            previousNSS = currentNSS;
-
-            remoteEcritureAnnonce.clear();
-            remoteEcritureAnnonce.setIdProgramme(REApplication.DEFAULT_APPLICATION_CORVUS);
-            remoteEcritureAnnonce.setUtilisateur(getSession().getUserId());
-            remoteEcritureAnnonce.setStatut(IHEAnnoncesViewBean.CS_EN_ATTENTE);
-            Map<String, String> element = iter.next();
-            remoteEcritureAnnonce.putAll(element);
-
-            if (element.containsKey(IHEAnnoncesViewBean.NUMERO_ASSURE_AYANT_DROIT)) {
-                currentNSS = element.get(IHEAnnoncesViewBean.NUMERO_ASSURE_AYANT_DROIT);
-            } else {
-                currentNSS = "";
-            }
-
-            try {
-                remoteEcritureAnnonce.add(getTransaction());
-            } catch (Exception e) {
-                if ((e != null) && (e.toString() != null) && (e.toString().length() > 0)) {
-                    String errorMsg = e.toString();
-                    if (!JadeStringUtil.isBlankOrZero(currentNSS)) {
-                        errorMsg += " : " + currentNSS;
-                    } else if (!JadeStringUtil.isBlankOrZero(previousNSS)) {
-
-                        errorMsg += " !arc.préc! : " + previousNSS;
-                    }
-                    throw new Exception(errorMsg, e);
-                } else {
-                    throw e;
-                }
-            }
-        }
-
-    }
-
-    private void envoieChamp(Map<String, String> map, String clefAttribut, String valeurAttribut) {
-        if (!JadeStringUtil.isEmpty(valeurAttribut)) {
-            map.put(clefAttribut, valeurAttribut);
-        }
-    }
-
-    protected String formatXPosAppendWithBlank(int nombrePos, boolean isAppendLeft, String value) {
-        StringBuffer result = new StringBuffer();
-
-        if (JadeStringUtil.isEmpty(value)) {
-
-            for (int i = 0; i < nombrePos; i++) {
-                result.append(" ");
-            }
-        } else {
-            int diff = nombrePos - value.length();
-            // Append left
-            if (isAppendLeft) {
-                for (int i = 0; i < diff; i++) {
-                    result.append(" ");
-                }
-                result.append(value);
-            }
-            // Append right
-            else {
-                result.append(value);
-                for (int i = 0; i < diff; i++) {
-                    result.append(" ");
-                }
-            }
-        }
-        return result.toString();
-    }
-
-    private String formatXPosAppendWithZero(int nombrePos, boolean isAppendLeft, String value) {
-
-        StringBuffer result = new StringBuffer();
-
-        if (JadeStringUtil.isEmpty(value)) {
-
-            for (int i = 0; i < nombrePos; i++) {
-                result.append("0");
-            }
-        } else {
-            int diff = nombrePos - value.length();
-            // Append left
-            if (isAppendLeft) {
-                for (int i = 0; i < diff; i++) {
-                    result.append("0");
-                }
-                result.append(value);
-            }
-            // Append right
-            else {
-                result.append(value);
-                for (int i = 0; i < diff; i++) {
-                    result.append("0");
-                }
-            }
-        }
-        return result.toString();
-    }
-
-    List<Map<String, String>> getAnnoncesAEnvoyer() {
-        return annoncesAEnvoyer;
     }
 
     /**
@@ -519,8 +388,7 @@ public class REEnvoyerAnnoncesXMLProcess extends BProcess {
      * @throws Exception
      */
     String getNumeroAgenceFromApplication() throws Exception {
-        return formatXPosAppendWithZero(3, true,
-                CaisseHelperFactory.getInstance().getNoAgence(getSession().getApplication()));
+        return CaisseHelperFactory.getInstance().getNoAgence(getSession().getApplication());
     }
 
     /**
@@ -538,8 +406,7 @@ public class REEnvoyerAnnoncesXMLProcess extends BProcess {
      * @throws Exception
      */
     String getNumeroCaisseFromApplication() throws Exception {
-        return formatXPosAppendWithZero(3, true,
-                CaisseHelperFactory.getInstance().getNoCaisse(getSession().getApplication()));
+        return CaisseHelperFactory.getInstance().getNoCaisse(getSession().getApplication());
     }
 
     /**
@@ -598,43 +465,6 @@ public class REEnvoyerAnnoncesXMLProcess extends BProcess {
     }
 
     /**
-     * Valide une annonce d'augmentation avec ANAKIN <br/>
-     * Lance une exception si une erreur de parsing survient
-     * 
-     * @param enregistrement01
-     * @param enregistrement02
-     * @throws Exception
-     */
-    @SuppressWarnings("rawtypes")
-    void parseAugmentationAvecAnakin(REAnnoncesAbstractLevel1A enregistrement01,
-            REAnnoncesAbstractLevel1A enregistrement02) throws Exception {
-
-        Enumeration erreurs = REAnakinParser.getInstance().parse(getSession(), enregistrement01, enregistrement02,
-                forMoisAnneeComptable);
-
-        StringBuilder stringBuilder = new StringBuilder();
-        while ((erreurs != null) && erreurs.hasMoreElements()) {
-            AnnonceErreur erreur = (AnnonceErreur) erreurs.nextElement();
-            stringBuilder.append(erreur.getMessage()).append("\n");
-        }
-        if (stringBuilder.length() > 0) {
-            throw new Exception(stringBuilder.toString());
-        }
-
-    }
-
-    /**
-     * Valide une annonce de diminution avec ANAKIN <br/>
-     * Lance une exception si une erreur de parsing survient
-     * 
-     * @param enregistrement01
-     * @throws Exception
-     */
-    void parseDiminutionAvecAnakin(REAnnoncesAbstractLevel1A enregistrement01) throws Exception {
-        parseAugmentationAvecAnakin(enregistrement01, null);
-    }
-
-    /**
      * Aiguille la préparation de l'annonce passée en paramètre sur la bonne méthode <br/>
      * selon si c'est une annonce sous la 9ème ou 10ème révision, et si c'est une augmentation ou une diminution
      * 
@@ -643,428 +473,40 @@ public class REEnvoyerAnnoncesXMLProcess extends BProcess {
      * @throws Exception
      *             si une erreur dans la validation par ANAKIN surivent, une exception est lancée
      */
-    void prepareEnvoieAnnonce(REAnnoncesAbstractLevel1A annonce, PoolMeldungZurZAS poolMeldung) throws Exception {
-        Map<String, String> attribs = new HashMap<String, String>();
-        REAnnonces9eXmlService serviceAnnonces = new REAnnonces9eXmlService();
+    void prepareEnvoieAnnonce(REAnnoncesAbstractLevel1A annonce, PoolMeldungZurZAS.Lot poolMeldungLot) throws Exception {
+
         int codeApplication = Integer.parseInt(annonce.getCodeApplication());
 
+        REAnnonceXmlService abstractService = resolveAnnonceVersionService(codeApplication);
+
+        Object annonceXml = abstractService.getAnnonceXml(annonce, forMoisAnneeComptable, getSession(),
+                getTransaction());
+
+        validateUnitMessage(annonceXml);
+
+        poolMeldungLot
+                .getVAIKMeldungNeuerVersicherterOrVAIKMeldungAenderungVersichertenDatenOrVAIKMeldungVerkettungVersichertenNr()
+                .add(annonceXml);
+
+    }
+
+    private REAnnonceXmlService resolveAnnonceVersionService(int codeApplication) {
         switch (codeApplication) {
             case 41:
             case 42:
-
-                REAnnoncesAugmentationModification9Eme augmentation9eme01 = new REAnnoncesAugmentationModification9Eme();
-                augmentation9eme01.setSession(getSession());
-                augmentation9eme01.setIdAnnonce(annonce.getIdAnnonce());
-                augmentation9eme01.retrieve();
-
-                REAnnoncesAugmentationModification9Eme augmentation9eme02 = new REAnnoncesAugmentationModification9Eme();
-                augmentation9eme02.setSession(getSession());
-                augmentation9eme02.setIdAnnonce(augmentation9eme01.getIdLienAnnonce());
-                augmentation9eme02.retrieve();
-
-                parseAugmentationAvecAnakin(augmentation9eme01, augmentation9eme02);
-
-                if (codeApplication == 41) {
-                    poolMeldung
-                            .getLot()
-                            .get(0)
-                            .getVAIKMeldungNeuerVersicherterOrVAIKMeldungAenderungVersichertenDatenOrVAIKMeldungVerkettungVersichertenNr()
-                            .add(serviceAnnonces.annonceAugmentationOrdinaire9e(augmentation9eme01, augmentation9eme01));
-
-                } else {
-                    // préparer annonceModification
-                }
-
-                if (!augmentation9eme02.isNew()) {
-                    augmentation9eme02.setEtat(IREAnnonces.CS_ETAT_ENVOYE);
-                    augmentation9eme02.update(getTransaction());
-                }
-                break;
             case 43:
-                REAnnoncesDiminution9Eme diminution9eme01 = new REAnnoncesDiminution9Eme();
-                diminution9eme01.setSession(getSession());
-                diminution9eme01.setIdAnnonce(annonce.getIdAnnonce());
-                diminution9eme01.retrieve();
-
-                parseDiminutionAvecAnakin(diminution9eme01);
-
-                attribs.putAll(preparerDiminution9Eme(diminution9eme01));
-
-                if (!attribs.isEmpty()) {
-                    annoncesAEnvoyer.add(attribs);
-                }
-                break;
+                return REAnnonces9eXmlService.getInstance();
             case 44:
-            case 46:
-                REAnnoncesAugmentationModification10Eme augmentation10eme01 = new REAnnoncesAugmentationModification10Eme();
-                augmentation10eme01.setSession(getSession());
-                augmentation10eme01.setIdAnnonce(annonce.getIdAnnonce());
-                augmentation10eme01.retrieve();
-
-                REAnnoncesAugmentationModification10Eme augmentation10eme02 = new REAnnoncesAugmentationModification10Eme();
-                augmentation10eme02.setSession(getSession());
-                augmentation10eme02.setIdAnnonce(augmentation10eme01.getIdLienAnnonce());
-                augmentation10eme02.retrieve();
-
-                parseAugmentationAvecAnakin(augmentation10eme01, augmentation10eme02);
-
-                attribs = preparerAugmentation10EmeEnregistrement01(augmentation10eme01);
-                if (!attribs.isEmpty()) {
-                    annoncesAEnvoyer.add(attribs);
-                }
-
-                attribs = preparerAugmentation10EmeEnregistrement02(augmentation10eme02);
-                if (!attribs.isEmpty()) {
-                    annoncesAEnvoyer.add(attribs);
-                }
-
-                if (!augmentation10eme02.isNew()) {
-                    augmentation10eme02.setEtat(IREAnnonces.CS_ETAT_ENVOYE);
-                    augmentation10eme02.update(getTransaction());
-                }
-                break;
             case 45:
-                REAnnoncesDiminution10Eme diminution10eme01 = new REAnnoncesDiminution10Eme();
-                diminution10eme01.setSession(getSession());
-                diminution10eme01.setIdAnnonce(annonce.getIdAnnonce());
-                diminution10eme01.retrieve();
-
-                parseDiminutionAvecAnakin(diminution10eme01);
-
-                attribs.putAll(preparerDiminution10Eme(diminution10eme01));
-
-                if (!attribs.isEmpty()) {
-                    annoncesAEnvoyer.add(attribs);
-                }
-                break;
+            case 46:
+                return REAnnonces10eXmlService.getInstance();
             default:
                 getMemoryLog().logMessage("Code Application inconnu", FWMessage.ERREUR,
                         getSession().getLabel("ENVOYER_ANNONCES"));
                 break;
+
         }
-    }
-
-    Map<String, String> preparerAugmentation10EmeEnregistrement01(
-            REAnnoncesAugmentationModification10Eme enregistrement01) throws Exception {
-        HashMap<String, String> attribs = new HashMap<String, String>();
-
-        // Enregistrement 01
-        envoieChamp(attribs, IHEAnnoncesViewBean.CODE_APPLICATION, enregistrement01.getCodeApplication());
-        envoieChamp(attribs, IHEAnnoncesViewBean.CODE_ENREGISTREMENT, enregistrement01.getCodeEnregistrement01());
-
-        attribs.putAll(validerNumeroCaisseEtAgence(enregistrement01));
-
-        envoieChamp(attribs, IHEAnnoncesViewBean.REFERENCE_INTERNE_CAISSE,
-                formatXPosAppendWithBlank(20, false, enregistrement01.getReferenceCaisseInterne()));
-        envoieChamp(attribs, IHEAnnoncesViewBean.NUMERO_ASSURE_AYANT_DROIT,
-                formatXPosAppendWithBlank(11, false, enregistrement01.getNoAssAyantDroit()));
-        envoieChamp(attribs, IHEAnnoncesViewBean.CS_PREMIER_NUMERO_ASSURE_COMPLEMENTAIRE,
-                formatXPosAppendWithBlank(11, false, enregistrement01.getPremierNoAssComplementaire()));
-        envoieChamp(attribs, IHEAnnoncesViewBean.CS_SECOND_NUMERO_ASSURE_COMPLEMENTAIRE,
-                formatXPosAppendWithBlank(11, false, enregistrement01.getSecondNoAssComplementaire()));
-        envoieChamp(attribs, IHEAnnoncesViewBean.CS_NOUVEAU_NUMERO_ASSURE_AYANT_DROIT_PRESTATION,
-                formatXPosAppendWithBlank(11, false, enregistrement01.getNouveauNoAssureAyantDroit()));
-        envoieChamp(attribs, IHEAnnoncesViewBean.CS_ETAT_CIVIL_AYANT_DROIT,
-                formatXPosAppendWithBlank(1, false, enregistrement01.getEtatCivil()));
-        envoieChamp(attribs, IHEAnnoncesViewBean.CS_REFUGIE,
-                formatXPosAppendWithBlank(1, false, enregistrement01.getIsRefugie()));
-        envoieChamp(attribs, IHEAnnoncesViewBean.CS_CANTON_ETAT_DOMICILE,
-                formatXPosAppendWithBlank(3, true, enregistrement01.getCantonEtatDomicile()));
-        envoieChamp(attribs, IHEAnnoncesViewBean.CS_GENRE_DE_SERVICE_PRESTATION,
-                formatXPosAppendWithBlank(2, true, enregistrement01.getGenrePrestation()));
-        envoieChamp(attribs, IHEAnnoncesViewBean.CS_DEBUT_DU_DROIT_MMAA,
-                formatXPosAppendWithBlank(4, false, enregistrement01.getDebutDroit()));
-        envoieChamp(attribs, IHEAnnoncesViewBean.CS_MENSUALITE_PRESTATION_FRANCS,
-                formatXPosAppendWithBlank(5, true, enregistrement01.getMensualitePrestationsFrancs()));
-        envoieChamp(attribs, IHEAnnoncesViewBean.CS_FIN_DU_DROIT_MMAA,
-                formatXPosAppendWithBlank(4, false, enregistrement01.getFinDroit()));
-        envoieChamp(attribs, IHEAnnoncesViewBean.CS_MOIS_DU_RAPPORT,
-                formatXPosAppendWithBlank(4, false, enregistrement01.getMoisRapport()));
-        envoieChamp(attribs, IHEAnnoncesViewBean.CS_CODE_DE_MUTATION,
-                formatXPosAppendWithBlank(2, true, enregistrement01.getCodeMutation()));
-
-        return attribs;
-    }
-
-    Map<String, String> preparerAugmentation10EmeEnregistrement02(
-            REAnnoncesAugmentationModification10Eme enregistrement02) throws Exception {
-        HashMap<String, String> attribs = new HashMap<String, String>();
-        if (!enregistrement02.isNew()) {
-            // Enregistrement 02
-            envoieChamp(attribs, IHEAnnoncesViewBean.CODE_APPLICATION, enregistrement02.getCodeApplication());
-            envoieChamp(attribs, IHEAnnoncesViewBean.CODE_ENREGISTREMENT, enregistrement02.getCodeEnregistrement01());
-            envoieChamp(attribs, IHEAnnoncesViewBean.CS_ECHELLE_DE_RENTES,
-                    formatXPosAppendWithBlank(2, true, enregistrement02.getEchelleRente()));
-            envoieChamp(attribs, IHEAnnoncesViewBean.CS_DUREE_COTISATIONS_CHOIX_ECHELLE_RENTES_AV_1973_AAMM,
-                    formatXPosAppendWithBlank(4, false, enregistrement02.getDureeCoEchelleRenteAv73()));
-            envoieChamp(attribs, IHEAnnoncesViewBean.CS_DUREE_COTISATIONS_CHOIX_ECHELLE_RENTES_DES_1973_AAMM,
-                    formatXPosAppendWithBlank(4, false, enregistrement02.getDureeCoEchelleRenteDes73()));
-            envoieChamp(attribs, IHEAnnoncesViewBean.CS_DUREE_COTISATIONS_MANQUANTES_POUR_LES_ANNEES_1948_72,
-                    formatXPosAppendWithBlank(2, true, enregistrement02.getDureeCotManquante48_72()));
-            envoieChamp(attribs, IHEAnnoncesViewBean.CS_DUREE_COTISATIONS_MANQUANTES_POUR_LES_ANNEES_1973_78,
-                    formatXPosAppendWithBlank(2, true, enregistrement02.getDureeCotManquante73_78()));
-            envoieChamp(attribs, IHEAnnoncesViewBean.CS_ANNEE_COTISATIONS_DE_LA_CLASSE_AGE,
-                    formatXPosAppendWithBlank(2, true, enregistrement02.getAnneeCotClasseAge()));
-            envoieChamp(attribs, IHEAnnoncesViewBean.CS_REVENU_ANNUEL_MOYEN_DETERMINANT_EN_FRANCS,
-                    formatXPosAppendWithBlank(8, true, enregistrement02.getRamDeterminant()));
-            envoieChamp(attribs, IHEAnnoncesViewBean.CS_CODE_DE_REVENUS_SPLITTES,
-                    formatXPosAppendWithBlank(1, false, enregistrement02.getCodeRevenuSplitte()));
-            envoieChamp(attribs, IHEAnnoncesViewBean.CS_DUREE_COTISATIONS_POUR_DETERMINER_REVENU_ANNUEL_MOYEN_AAMM,
-                    formatXPosAppendWithBlank(4, false, enregistrement02.getDureeCotPourDetRAM()));
-            envoieChamp(attribs, IHEAnnoncesViewBean.CS_ANNEE_DE_NIVEAU,
-                    formatXPosAppendWithBlank(2, true, enregistrement02.getAnneeNiveau()));
-            envoieChamp(attribs, IHEAnnoncesViewBean.CS_NB_ANNEES_BONIFI_TACHES_EDUCATIVES_AADD,
-                    formatXPosAppendWithBlank(4, true, enregistrement02.getNombreAnneeBTE()));
-            envoieChamp(attribs, IHEAnnoncesViewBean.CS_NB_ANNEES_BONIFI_TACHES_ASSISTANCE_AADD,
-                    formatXPosAppendWithBlank(4, true, enregistrement02.getNbreAnneeBTA()));
-            envoieChamp(attribs, IHEAnnoncesViewBean.CS_NB_ANNEES_BONIFI_TACHES_TRANSITOIREs_AD,
-                    formatXPosAppendWithBlank(2, true, enregistrement02.getNbreAnneeBonifTrans()));
-            envoieChamp(attribs, IHEAnnoncesViewBean.CS_OFFICE_AI,
-                    formatXPosAppendWithBlank(3, false, enregistrement02.getOfficeAICompetent()));
-            envoieChamp(attribs, IHEAnnoncesViewBean.CS_DEGRE_INVALIDITE,
-                    formatXPosAppendWithBlank(3, true, enregistrement02.getDegreInvalidite()));
-            envoieChamp(attribs, IHEAnnoncesViewBean.CS_CODE_INFIRMITE,
-                    formatXPosAppendWithBlank(5, false, enregistrement02.getCodeInfirmite()));
-            envoieChamp(attribs, IHEAnnoncesViewBean.CS_SURVENANCE_EVENEMENT_ASSURE_AYANT_DROIT_MMAA,
-                    formatXPosAppendWithBlank(4, false, enregistrement02.getSurvenanceEvenAssure()));
-            envoieChamp(attribs, IHEAnnoncesViewBean.CS_AGE_DEBUT_INVALIDITE_AYANT_DROIT,
-                    formatXPosAppendWithBlank(1, false, enregistrement02.getAgeDebutInvalidite()));
-            envoieChamp(attribs, IHEAnnoncesViewBean.CS_GENRE_DROIT_API,
-                    formatXPosAppendWithBlank(1, false, enregistrement02.getGenreDroitAPI()));
-            envoieChamp(attribs, IHEAnnoncesViewBean.CS_REDUCTION,
-                    formatXPosAppendWithBlank(2, true, JadeStringUtil.removeChar(enregistrement02.getReduction(), '.')));
-            envoieChamp(attribs, IHEAnnoncesViewBean.CS_CAS_SPECIAL_1_CODE,
-                    formatXPosAppendWithBlank(2, true, enregistrement02.getCasSpecial1()));
-            envoieChamp(attribs, IHEAnnoncesViewBean.CS_CAS_SPECIAL_2_CODE,
-                    formatXPosAppendWithBlank(2, true, enregistrement02.getCasSpecial2()));
-            envoieChamp(attribs, IHEAnnoncesViewBean.CS_CAS_SPECIAL_3_CODE,
-                    formatXPosAppendWithBlank(2, true, enregistrement02.getCasSpecial3()));
-            envoieChamp(attribs, IHEAnnoncesViewBean.CS_CAS_SPECIAL_4_CODE,
-                    formatXPosAppendWithBlank(2, true, enregistrement02.getCasSpecial4()));
-            envoieChamp(attribs, IHEAnnoncesViewBean.CS_CAS_SPECIAL_5_CODE,
-                    formatXPosAppendWithBlank(2, true, enregistrement02.getCasSpecial5()));
-            envoieChamp(attribs, IHEAnnoncesViewBean.CS_NB_ANNEE_ANTICIPATION,
-                    formatXPosAppendWithBlank(1, false, enregistrement02.getNbreAnneeAnticipation()));
-            envoieChamp(attribs, IHEAnnoncesViewBean.CS_REDUCTION_ANTICIPATION_FRANCS,
-                    formatXPosAppendWithBlank(5, true, enregistrement02.getReductionAnticipation()));
-            envoieChamp(attribs, IHEAnnoncesViewBean.CS_DATE_DEBUT_ANTICIPATION_MMAA,
-                    formatXPosAppendWithBlank(4, false, enregistrement02.getDateDebutAnticipation()));
-            envoieChamp(attribs, IHEAnnoncesViewBean.CS_DUREE_AJOURNEMENT_AMM,
-                    formatXPosAppendWithBlank(3, false, enregistrement02.getDureeAjournement()));
-            envoieChamp(attribs, IHEAnnoncesViewBean.CS_SUPPLEMENT_AJOURNEMENT_FRANCS,
-                    formatXPosAppendWithBlank(5, true, enregistrement02.getSupplementAjournement()));
-            envoieChamp(attribs, IHEAnnoncesViewBean.CS_DATE_REVOCATION_AJOURNEMENT_MMAA,
-                    formatXPosAppendWithBlank(4, false, enregistrement02.getDateRevocationAjournement()));
-            envoieChamp(attribs, IHEAnnoncesViewBean.CS_CODE_SURVIVANT_INVALIDE,
-                    formatXPosAppendWithBlank(1, false, enregistrement02.getIsSurvivant()));
-        }
-        return attribs;
-    }
-
-    Map<String, String> preparerAugmentation9EmeEnregistrement01(REAnnoncesAugmentationModification9Eme enregistrement01)
-            throws Exception {
-        HashMap<String, String> attribs = new HashMap<String, String>();
-
-        envoieChamp(attribs, IHEAnnoncesViewBean.CODE_APPLICATION, enregistrement01.getCodeApplication());
-        envoieChamp(attribs, IHEAnnoncesViewBean.CODE_ENREGISTREMENT, enregistrement01.getCodeEnregistrement01());
-
-        attribs.putAll(validerNumeroCaisseEtAgence(enregistrement01));
-
-        // Enregistrement 01
-        envoieChamp(attribs, IHEAnnoncesViewBean.REFERENCE_INTERNE_CAISSE,
-                formatXPosAppendWithBlank(20, false, enregistrement01.getReferenceCaisseInterne()));
-        envoieChamp(attribs, IHEAnnoncesViewBean.NUMERO_ASSURE_AYANT_DROIT,
-                formatXPosAppendWithBlank(11, false, enregistrement01.getNoAssAyantDroit()));
-        envoieChamp(attribs, IHEAnnoncesViewBean.CS_PREMIER_NUMERO_ASSURE_COMPLEMENTAIRE,
-                formatXPosAppendWithBlank(11, false, enregistrement01.getPremierNoAssComplementaire()));
-        envoieChamp(attribs, IHEAnnoncesViewBean.CS_SECOND_NUMERO_ASSURE_COMPLEMENTAIRE,
-                formatXPosAppendWithBlank(11, false, enregistrement01.getSecondNoAssComplementaire()));
-        envoieChamp(attribs, IHEAnnoncesViewBean.CS_NOUVEAU_NUMERO_ASSURE_AYANT_DROIT_PRESTATION,
-                formatXPosAppendWithBlank(11, false, enregistrement01.getNouveauNoAssureAyantDroit()));
-        envoieChamp(attribs, IHEAnnoncesViewBean.CS_ETAT_CIVIL_AYANT_DROIT,
-                formatXPosAppendWithBlank(1, false, enregistrement01.getEtatCivil()));
-        envoieChamp(attribs, IHEAnnoncesViewBean.CS_REFUGIE,
-                formatXPosAppendWithBlank(1, false, enregistrement01.getIsRefugie()));
-        envoieChamp(attribs, IHEAnnoncesViewBean.CS_CANTON_ETAT_DOMICILE,
-                formatXPosAppendWithBlank(3, true, enregistrement01.getCantonEtatDomicile()));
-        envoieChamp(attribs, IHEAnnoncesViewBean.CS_GENRE_DE_SERVICE_PRESTATION,
-                formatXPosAppendWithBlank(2, true, enregistrement01.getGenrePrestation()));
-        envoieChamp(attribs, IHEAnnoncesViewBean.CS_DEBUT_DU_DROIT_MMAA,
-                formatXPosAppendWithBlank(4, false, enregistrement01.getDebutDroit()));
-        envoieChamp(attribs, IHEAnnoncesViewBean.CS_MENSUALITE_PRESTATION_FRANCS,
-                formatXPosAppendWithBlank(5, true, enregistrement01.getMensualitePrestationsFrancs()));
-        envoieChamp(attribs, IHEAnnoncesViewBean.CS_MENSUALITE_RENTE_ORDINAIRE_REMPLACEE_FRANCS,
-                formatXPosAppendWithBlank(5, true, enregistrement01.getMensualiteRenteOrdRemp()));
-        envoieChamp(attribs, IHEAnnoncesViewBean.CS_FIN_DU_DROIT_MMAA,
-                formatXPosAppendWithBlank(4, false, enregistrement01.getFinDroit()));
-        envoieChamp(attribs, IHEAnnoncesViewBean.CS_MOIS_DU_RAPPORT,
-                formatXPosAppendWithBlank(4, false, enregistrement01.getMoisRapport()));
-        envoieChamp(attribs, IHEAnnoncesViewBean.CS_CODE_DE_MUTATION,
-                formatXPosAppendWithBlank(2, true, enregistrement01.getCodeMutation()));
-
-        return attribs;
-    }
-
-    Map<String, String> preparerAugmentation9EmeEnregistrement02(REAnnoncesAugmentationModification9Eme enregistrement02) {
-        HashMap<String, String> attribs = new HashMap<String, String>();
-        if (!enregistrement02.isNew()) {
-            // Enregistrement 02
-            envoieChamp(attribs, IHEAnnoncesViewBean.CODE_APPLICATION, enregistrement02.getCodeApplication());
-            envoieChamp(attribs, IHEAnnoncesViewBean.CODE_ENREGISTREMENT, enregistrement02.getCodeEnregistrement01());
-            envoieChamp(attribs, IHEAnnoncesViewBean.CS_REVENU_ANNUEL_MOYEN_DETERMINANT_EN_FRANCS,
-                    formatXPosAppendWithBlank(8, true, enregistrement02.getRamDeterminant()));
-            envoieChamp(attribs, IHEAnnoncesViewBean.CS_DUREE_COTISATIONS_POUR_DETERMINER_REVENU_ANNUEL_MOYEN_AAMM,
-                    formatXPosAppendWithBlank(4, false, enregistrement02.getDureeCotPourDetRAM()));
-            envoieChamp(attribs, IHEAnnoncesViewBean.CS_ANNEE_DE_NIVEAU,
-                    formatXPosAppendWithBlank(2, false, enregistrement02.getAnneeNiveau()));
-            envoieChamp(attribs, IHEAnnoncesViewBean.CS_REVENUS_PRIS_EN_COMPTE,
-                    formatXPosAppendWithBlank(1, false, enregistrement02.getRevenuPrisEnCompte()));
-            envoieChamp(attribs, IHEAnnoncesViewBean.CS_ECHELLE_DE_RENTES,
-                    formatXPosAppendWithBlank(2, true, enregistrement02.getEchelleRente()));
-            envoieChamp(attribs, IHEAnnoncesViewBean.CS_DUREE_COTISATIONS_CHOIX_ECHELLE_RENTES_AV_1973_AAMM,
-                    formatXPosAppendWithBlank(4, false, enregistrement02.getDureeCoEchelleRenteAv73()));
-            envoieChamp(attribs, IHEAnnoncesViewBean.CS_DUREE_COTISATIONS_CHOIX_ECHELLE_RENTES_DES_1973_AAMM,
-                    formatXPosAppendWithBlank(4, false, enregistrement02.getDureeCoEchelleRenteDes73()));
-            envoieChamp(attribs, IHEAnnoncesViewBean.CS_DUREE_COTISATIONS_MANQUANTES_POUR_LES_ANNEES_1948_72,
-                    formatXPosAppendWithBlank(2, true, enregistrement02.getDureeCotManquante48_72()));
-            envoieChamp(attribs, IHEAnnoncesViewBean.CS_ANNEE_COTISATIONS_DE_LA_CLASSE_AGE,
-                    formatXPosAppendWithBlank(2, true, enregistrement02.getAnneeCotClasseAge()));
-            envoieChamp(attribs, IHEAnnoncesViewBean.CS_DUREE_AJOURNEMENT_AMM,
-                    formatXPosAppendWithBlank(3, false, enregistrement02.getDureeAjournement()));
-            envoieChamp(attribs, IHEAnnoncesViewBean.CS_SUPPLEMENT_AJOURNEMENT_FRANCS,
-                    formatXPosAppendWithBlank(5, true, enregistrement02.getSupplementAjournement()));
-            envoieChamp(attribs, IHEAnnoncesViewBean.CS_DATE_REVOCATION_AJOURNEMENT_MMAA,
-                    formatXPosAppendWithBlank(4, false, enregistrement02.getDateRevocationAjournement()));
-            envoieChamp(attribs, IHEAnnoncesViewBean.CS_LIMITES_DE_REVENU,
-                    formatXPosAppendWithBlank(1, false, enregistrement02.getIsLimiteRevenu()));
-            envoieChamp(attribs, IHEAnnoncesViewBean.CS_MINIMUM_GARANTIT,
-                    formatXPosAppendWithBlank(1, false, enregistrement02.getIsMinimumGaranti()));
-            envoieChamp(attribs, IHEAnnoncesViewBean.CS_OFFICEAI_COMPETENT_AYANT_DROIT,
-                    formatXPosAppendWithBlank(2, true, enregistrement02.getOfficeAICompetent()));
-            envoieChamp(attribs, IHEAnnoncesViewBean.CS_OFFICEAI_COMPETENT_EPOUSE,
-                    formatXPosAppendWithBlank(2, true, enregistrement02.getOfficeAiCompEpouse()));
-            envoieChamp(attribs, IHEAnnoncesViewBean.CS_DEGREINVALIDITE_AYANT_DROIT,
-                    formatXPosAppendWithBlank(3, true, enregistrement02.getDegreInvalidite()));
-            envoieChamp(attribs, IHEAnnoncesViewBean.CS_DEGREINVALIDITE_EPOUSE,
-                    formatXPosAppendWithBlank(3, true, enregistrement02.getDegreInvaliditeEpouse()));
-            envoieChamp(attribs, IHEAnnoncesViewBean.CS_CODEINFIRMITE_AYANT_DROIT,
-                    formatXPosAppendWithBlank(5, false, enregistrement02.getCodeInfirmite()));
-            envoieChamp(attribs, IHEAnnoncesViewBean.CS_CODEINFIRMITE_EPOUSE,
-                    formatXPosAppendWithBlank(5, false, enregistrement02.getCodeInfirmiteEpouse()));
-            envoieChamp(attribs, IHEAnnoncesViewBean.CS_SURVENANCE_EVENEMENT_ASSURE_AYANT_DROIT_MMAA,
-                    formatXPosAppendWithBlank(4, false, enregistrement02.getSurvenanceEvenAssure()));
-            envoieChamp(attribs, IHEAnnoncesViewBean.CS_SURVENANCE_EVENEMENT_ASSURE_EPOUSE_MMAA,
-                    formatXPosAppendWithBlank(4, false, enregistrement02.getSurvenanceEvtAssureEpouse()));
-            envoieChamp(attribs, IHEAnnoncesViewBean.CS_AGE_DEBUT_INVALIDITE_AYANT_DROIT,
-                    formatXPosAppendWithBlank(1, false, enregistrement02.getAgeDebutInvalidite()));
-            envoieChamp(attribs, IHEAnnoncesViewBean.CS_AGE_DEBUT_INVALIDITE_EPOUSE,
-                    formatXPosAppendWithBlank(1, false, enregistrement02.getAgeDebutInvaliditeEpouse()));
-            envoieChamp(attribs, IHEAnnoncesViewBean.CS_GENRE_DROIT_API,
-                    formatXPosAppendWithBlank(1, false, enregistrement02.getGenreDroitAPI()));
-            envoieChamp(attribs, IHEAnnoncesViewBean.CS_REDUCTION,
-                    formatXPosAppendWithBlank(2, true, JadeStringUtil.removeChar(enregistrement02.getReduction(), '.')));
-            envoieChamp(attribs, IHEAnnoncesViewBean.CS_CAS_SPECIAL_1_CODE,
-                    formatXPosAppendWithBlank(2, true, enregistrement02.getCasSpecial1()));
-            envoieChamp(attribs, IHEAnnoncesViewBean.CS_CAS_SPECIAL_2_CODE,
-                    formatXPosAppendWithBlank(2, true, enregistrement02.getCasSpecial2()));
-            envoieChamp(attribs, IHEAnnoncesViewBean.CS_CAS_SPECIAL_3_CODE,
-                    formatXPosAppendWithBlank(2, true, enregistrement02.getCasSpecial3()));
-            envoieChamp(attribs, IHEAnnoncesViewBean.CS_CAS_SPECIAL_4_CODE,
-                    formatXPosAppendWithBlank(2, true, enregistrement02.getCasSpecial4()));
-            envoieChamp(attribs, IHEAnnoncesViewBean.CS_CAS_SPECIAL_5_CODE,
-                    formatXPosAppendWithBlank(2, true, enregistrement02.getCasSpecial5()));
-            envoieChamp(attribs, IHEAnnoncesViewBean.CS_DUREE_COTISATIONS_MANQUANTES_POUR_LES_ANNEES_1973_78,
-                    formatXPosAppendWithBlank(2, true, enregistrement02.getDureeCotManquante73_78()));
-            envoieChamp(attribs, IHEAnnoncesViewBean.CS_REVENU_ANNUEL_MOYEN_SANS_BONIFI_TACHES_EDUC_FRANCS,
-                    formatXPosAppendWithBlank(8, true, enregistrement02.getRevenuAnnuelMoyenSansBTE()));
-            envoieChamp(attribs, IHEAnnoncesViewBean.CS_BONIFI_TACHES_EDUC_MOYENNES_FRANCS,
-                    formatXPosAppendWithBlank(6, true, enregistrement02.getBteMoyennePrisEnCompte()));
-            envoieChamp(attribs, IHEAnnoncesViewBean.CS_NB_ANNEES_BONIFI_TACHES_EDUC,
-                    formatXPosAppendWithBlank(2, true, enregistrement02.getNombreAnneeBTE()));
-        }
-        return attribs;
-    }
-
-    Map<String, String> preparerDiminution10Eme(REAnnoncesDiminution10Eme enregistrement01) throws Exception {
-        HashMap<String, String> attribs = new HashMap<String, String>();
-
-        envoieChamp(attribs, IHEAnnoncesViewBean.CODE_APPLICATION, enregistrement01.getCodeApplication());
-        envoieChamp(attribs, IHEAnnoncesViewBean.CODE_ENREGISTREMENT, enregistrement01.getCodeEnregistrement01());
-
-        attribs.putAll(validerNumeroCaisseEtAgence(enregistrement01));
-
-        envoieChamp(attribs, IHEAnnoncesViewBean.REFERENCE_INTERNE_CAISSE,
-                formatXPosAppendWithBlank(20, false, enregistrement01.getReferenceCaisseInterne()));
-        envoieChamp(attribs, IHEAnnoncesViewBean.NUMERO_ASSURE_AYANT_DROIT,
-                formatXPosAppendWithBlank(11, false, enregistrement01.getNoAssAyantDroit()));
-        envoieChamp(attribs, IHEAnnoncesViewBean.CS_PREMIER_NUMERO_ASSURE_COMPLEMENTAIRE,
-                formatXPosAppendWithBlank(11, false, enregistrement01.getPremierNoAssComplementaire()));
-        envoieChamp(attribs, IHEAnnoncesViewBean.CS_SECOND_NUMERO_ASSURE_COMPLEMENTAIRE,
-                formatXPosAppendWithBlank(11, false, enregistrement01.getSecondNoAssComplementaire()));
-        envoieChamp(attribs, IHEAnnoncesViewBean.CS_NOUVEAU_NUMERO_ASSURE_AYANT_DROIT_PRESTATION,
-                formatXPosAppendWithBlank(11, false, enregistrement01.getNouveauNumeroAssureAyantDroit()));
-        envoieChamp(attribs, IHEAnnoncesViewBean.CS_ETAT_CIVIL_AYANT_DROIT,
-                formatXPosAppendWithBlank(1, false, enregistrement01.getEtatCivil()));
-        envoieChamp(attribs, IHEAnnoncesViewBean.CS_REFUGIE,
-                formatXPosAppendWithBlank(1, false, enregistrement01.getIsRefugie()));
-        envoieChamp(attribs, IHEAnnoncesViewBean.CS_CANTON_ETAT_DOMICILE,
-                formatXPosAppendWithBlank(3, true, enregistrement01.getCantonEtatDomicile()));
-        envoieChamp(attribs, IHEAnnoncesViewBean.CS_GENRE_DE_SERVICE_PRESTATION,
-                formatXPosAppendWithBlank(2, true, enregistrement01.getGenrePrestation()));
-        envoieChamp(attribs, IHEAnnoncesViewBean.CS_DEBUT_DU_DROIT_MMAA,
-                formatXPosAppendWithBlank(4, false, enregistrement01.getDebutDroit()));
-        envoieChamp(attribs, IHEAnnoncesViewBean.CS_MENSUALITE_PRESTATION_FRANCS,
-                formatXPosAppendWithBlank(5, true, enregistrement01.getMensualitePrestationsFrancs()));
-        envoieChamp(attribs, IHEAnnoncesViewBean.CS_FIN_DU_DROIT_MMAA,
-                formatXPosAppendWithBlank(4, false, enregistrement01.getFinDroit()));
-        envoieChamp(attribs, IHEAnnoncesViewBean.CS_MOIS_DU_RAPPORT,
-                formatXPosAppendWithBlank(4, false, enregistrement01.getMoisRapport()));
-        envoieChamp(attribs, IHEAnnoncesViewBean.CS_CODE_DE_MUTATION,
-                formatXPosAppendWithBlank(2, true, enregistrement01.getCodeMutation()));
-
-        return attribs;
-    }
-
-    Map<String, String> preparerDiminution9Eme(REAnnoncesDiminution9Eme enregistrement01) throws Exception {
-        HashMap<String, String> attribs = new HashMap<String, String>();
-
-        envoieChamp(attribs, IHEAnnoncesViewBean.CODE_APPLICATION, enregistrement01.getCodeApplication());
-        envoieChamp(attribs, IHEAnnoncesViewBean.CODE_ENREGISTREMENT, enregistrement01.getCodeEnregistrement01());
-
-        attribs.putAll(validerNumeroCaisseEtAgence(enregistrement01));
-
-        envoieChamp(attribs, IHEAnnoncesViewBean.REFERENCE_INTERNE_CAISSE,
-                formatXPosAppendWithBlank(20, false, enregistrement01.getReferenceCaisseInterne()));
-        envoieChamp(attribs, IHEAnnoncesViewBean.NUMERO_ASSURE_AYANT_DROIT,
-                formatXPosAppendWithBlank(11, false, enregistrement01.getNoAssAyantDroit()));
-        envoieChamp(attribs, IHEAnnoncesViewBean.CS_PREMIER_NUMERO_ASSURE_COMPLEMENTAIRE,
-                formatXPosAppendWithBlank(11, false, enregistrement01.getPremierNoAssComplementaire()));
-        envoieChamp(attribs, IHEAnnoncesViewBean.CS_SECOND_NUMERO_ASSURE_COMPLEMENTAIRE,
-                formatXPosAppendWithBlank(11, false, enregistrement01.getSecondNoAssComplementaire()));
-        envoieChamp(attribs, IHEAnnoncesViewBean.CS_NOUVEAU_NUMERO_ASSURE_AYANT_DROIT_PRESTATION,
-                formatXPosAppendWithBlank(11, false, enregistrement01.getNouveauNumeroAssureAyantDroit()));
-        envoieChamp(attribs, IHEAnnoncesViewBean.CS_ETAT_CIVIL_AYANT_DROIT,
-                formatXPosAppendWithBlank(1, false, enregistrement01.getEtatCivil()));
-        envoieChamp(attribs, IHEAnnoncesViewBean.CS_REFUGIE,
-                formatXPosAppendWithBlank(1, false, enregistrement01.getIsRefugie()));
-        envoieChamp(attribs, IHEAnnoncesViewBean.CS_CANTON_ETAT_DOMICILE,
-                formatXPosAppendWithBlank(3, true, enregistrement01.getCantonEtatDomicile()));
-        envoieChamp(attribs, IHEAnnoncesViewBean.CS_GENRE_DE_SERVICE_PRESTATION,
-                formatXPosAppendWithBlank(2, true, enregistrement01.getGenrePrestation()));
-        envoieChamp(attribs, IHEAnnoncesViewBean.CS_DEBUT_DU_DROIT_MMAA,
-                formatXPosAppendWithBlank(4, false, enregistrement01.getDebutDroit()));
-        envoieChamp(attribs, IHEAnnoncesViewBean.CS_MENSUALITE_PRESTATION_FRANCS,
-                formatXPosAppendWithBlank(5, true, enregistrement01.getMensualitePrestationsFrancs()));
-        envoieChamp(attribs, IHEAnnoncesViewBean.CS_MENSUALITE_RENTE_ORDINAIRE_REMPLACEE_FRANCS,
-                formatXPosAppendWithBlank(5, true, enregistrement01.getMensualiteRenteOrdinaire()));
-        envoieChamp(attribs, IHEAnnoncesViewBean.CS_FIN_DU_DROIT_MMAA,
-                formatXPosAppendWithBlank(4, false, enregistrement01.getFinDroit()));
-        envoieChamp(attribs, IHEAnnoncesViewBean.CS_MOIS_DU_RAPPORT,
-                formatXPosAppendWithBlank(4, false, enregistrement01.getMoisRapport()));
-        envoieChamp(attribs, IHEAnnoncesViewBean.CS_CODE_DE_MUTATION,
-                formatXPosAppendWithBlank(2, true, enregistrement01.getCodeMutation()));
-
-        return attribs;
+        return null;
     }
 
     /**
@@ -1089,43 +531,6 @@ public class REEnvoyerAnnoncesXMLProcess extends BProcess {
 
     public void setIsForAnnoncesSubsequentes(Boolean isForAnnoncesSubsequentes) {
         this.isForAnnoncesSubsequentes = isForAnnoncesSubsequentes;
-    }
-
-    /**
-     * Traitement commun à toutes les méthodes de préparation d'envoie qui vérifie que le numéro de caisse et d'agence
-     * d'une annonce correspond à celui de l'application <br/>
-     * dans le cas contraire, l'utilisateur est notifié de l'erreur par l'email de confirmation qui reçoit
-     * 
-     * @param annonce
-     *            l'annonce à vérifier
-     * @return un Map contenant les clé-valeurs pour le numéro d'agence et de caisse
-     * @throws Exception
-     */
-    Map<String, String> validerNumeroCaisseEtAgence(REAnnoncesAbstractLevel1A annonce) throws Exception {
-        HashMap<String, String> attribs = new HashMap<String, String>();
-
-        String nc = getNumeroCaisseFromApplication();
-        String na = getNumeroAgenceFromApplication();
-
-        String nc2 = formatXPosAppendWithBlank(3, true, annonce.getNumeroCaisse());
-        String na2 = formatXPosAppendWithBlank(3, true, annonce.getNumeroAgence());
-
-        if ((nc != null) && (nc.compareTo(nc2) != 0)) {
-            logMessageAvecInfos(annonce, "Mauvais no de caisse", nc, nc2);
-        }
-        if ((na != null) && (na.compareTo(na2) != 0)) {
-            logMessageAvecInfos(annonce, "Mauvais no d'agence", na, na2);
-        }
-
-        if ((na != null) && (nc != null)) {
-            envoieChamp(attribs, IHEAnnoncesViewBean.NUMERO_CAISSE, formatXPosAppendWithBlank(3, true, nc));
-            envoieChamp(attribs, IHEAnnoncesViewBean.NUMERO_AGENCE, formatXPosAppendWithBlank(3, true, na));
-        } else {
-            envoieChamp(attribs, IHEAnnoncesViewBean.NUMERO_CAISSE, formatXPosAppendWithBlank(3, true, nc2));
-            envoieChamp(attribs, IHEAnnoncesViewBean.NUMERO_AGENCE, formatXPosAppendWithBlank(3, true, na2));
-        }
-
-        return attribs;
     }
 
     /**
@@ -1171,14 +576,17 @@ public class REEnvoyerAnnoncesXMLProcess extends BProcess {
     }
 
     /**
-     * Méthode qui génère le fichier en fonction des annonces en input
+     * Méthode qui génère le fichier en fonction d'un lot d'annonces en input
      * 
      * @return l'uri du fichier généré
      * @throws Exception
      */
-    private String genereFichier(PoolMeldungZurZAS poolMeldung) throws Exception {
+    private String genereFichier(PoolMeldungZurZAS.Lot lotAnnonce) throws Exception {
         String fileName;
-        initMarshaller(poolMeldung);
+        ch.admin.zas.pool.ObjectFactory factoryPool = new ch.admin.zas.pool.ObjectFactory();
+        PoolMeldungZurZAS pool = factoryPool.createPoolMeldungZurZAS();
+        pool.getLot().add(lotAnnonce);
+        initMarshaller(pool);
         fileName = Jade.getInstance().getSharedDir() + getFileNameTimeStamp();
 
         File f = new File(fileName);
@@ -1193,7 +601,7 @@ public class REEnvoyerAnnoncesXMLProcess extends BProcess {
                     return false;
                 }
             });
-            marshaller.marshal(poolMeldung, f);
+            marshaller.marshal(pool, f);
 
         } catch (JAXBException exception) {
             LOG.error("JAXB validation has thrown a JAXBException : " + exception.toString(), exception);
@@ -1222,9 +630,11 @@ public class REEnvoyerAnnoncesXMLProcess extends BProcess {
     }
 
     /**
-     * CAUTION, only of sub-object of a PoolMeldungZurZAS
+     * CAUTION, only element choice of a PoolMeldungZurZAS.Lot
      * 
-     * @param element
+     * possible object are element of Lot {@link PoolMeldungZurZAS.Lot }
+     * 
+     * @param element : must be an element to put on a PoolMeldungZurZAS.Lot
      * @throws ValidationException
      * @throws SAXException
      * @throws JAXBException
@@ -1233,11 +643,12 @@ public class REEnvoyerAnnoncesXMLProcess extends BProcess {
         PoolMeldungZurZAS pool;
         final List<String> validationErrors = new LinkedList<String>();
         try {
-            pool = initPoolMeldungZurZAS(true, "validateUnitMessage");
-            pool.getLot()
-                    .get(0)
-                    .getVAIKMeldungNeuerVersicherterOrVAIKMeldungAenderungVersichertenDatenOrVAIKMeldungVerkettungVersichertenNr()
+            ch.admin.zas.pool.ObjectFactory factoryPool = new ch.admin.zas.pool.ObjectFactory();
+            pool = factoryPool.createPoolMeldungZurZAS();
+            PoolMeldungZurZAS.Lot lot = initPoolMeldungZurZASLot(true, "validateUnitMessage");
+            lot.getVAIKMeldungNeuerVersicherterOrVAIKMeldungAenderungVersichertenDatenOrVAIKMeldungVerkettungVersichertenNr()
                     .add(element);
+            pool.getLot().add(lot);
             initMarshaller(pool);
 
             marshaller.setEventHandler(new ValidationEventHandler() {

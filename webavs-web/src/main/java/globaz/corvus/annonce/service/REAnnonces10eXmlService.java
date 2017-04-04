@@ -2,8 +2,9 @@ package globaz.corvus.annonce.service;
 
 import globaz.corvus.api.annonces.IREAnnonces;
 import globaz.corvus.db.annonces.REAnnoncesAbstractLevel1A;
+import globaz.corvus.db.annonces.REAnnoncesAugmentationModification10Eme;
 import globaz.corvus.db.annonces.REAnnoncesAugmentationModification9Eme;
-import globaz.corvus.db.annonces.REAnnoncesDiminution9Eme;
+import globaz.corvus.db.annonces.REAnnoncesDiminution10Eme;
 import globaz.globall.api.BITransaction;
 import globaz.globall.db.BSession;
 import globaz.jade.client.util.JadeStringUtil;
@@ -24,9 +25,9 @@ import ch.admin.zas.rc.SkalaBerechnungType;
 import ch.admin.zas.rc.ZuwachsmeldungO9Type;
 import ch.globaz.common.properties.CommonProperties;
 
-public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implements REAnnonceXmlService {
+public class REAnnonces10eXmlService extends REAbstractAnnonceXmlService implements REAnnonceXmlService {
 
-    private static REAnnonceXmlService instance = new REAnnonces9eXmlService();
+    private static REAnnonceXmlService instance = new REAnnonces10eXmlService();
 
     private ch.admin.zas.rc.ObjectFactory factoryType = new ch.admin.zas.rc.ObjectFactory();
 
@@ -40,40 +41,32 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
 
         int codeApplication = Integer.parseInt(annonce.getCodeApplication());
         switch (codeApplication) {
-            case 41:
-            case 43:
-                REAnnoncesAugmentationModification9Eme augmentation9eme01 = new REAnnoncesAugmentationModification9Eme();
-                augmentation9eme01.setSession(session);
-                augmentation9eme01.setIdAnnonce(annonce.getIdAnnonce());
-                augmentation9eme01.retrieve();
+            case 44:
+            case 46:
+                REAnnoncesAugmentationModification10Eme augmentation10eme01 = new REAnnoncesAugmentationModification10Eme();
+                augmentation10eme01.setSession(session);
+                augmentation10eme01.setIdAnnonce(annonce.getIdAnnonce());
+                augmentation10eme01.retrieve();
 
-                REAnnoncesAugmentationModification9Eme augmentation9eme02 = new REAnnoncesAugmentationModification9Eme();
-                augmentation9eme02.setSession(session);
-                augmentation9eme02.setIdAnnonce(augmentation9eme01.getIdLienAnnonce());
-                augmentation9eme02.retrieve();
+                REAnnoncesAugmentationModification10Eme augmentation10eme02 = new REAnnoncesAugmentationModification10Eme();
+                augmentation10eme02.setSession(session);
+                augmentation10eme02.setIdAnnonce(augmentation10eme01.getIdLienAnnonce());
+                augmentation10eme02.retrieve();
 
-                parseAugmentationAvecAnakin(augmentation9eme01, augmentation9eme02, session, forMoisAnneeComptable);
+                parseAugmentationAvecAnakin(augmentation10eme01, augmentation10eme02, session, forMoisAnneeComptable);
 
-                if (codeApplication == 41) {
-                    return annonceAugmentationOrdinaire9e(augmentation9eme01, augmentation9eme01);
-                } else {
-                    // préparer annonceModification
-                }
-
-                if (!augmentation9eme02.isNew()) {
-                    augmentation9eme02.setEtat(IREAnnonces.CS_ETAT_ENVOYE);
-                    augmentation9eme02.update(transaction);
+                if (!augmentation10eme02.isNew()) {
+                    augmentation10eme02.setEtat(IREAnnonces.CS_ETAT_ENVOYE);
+                    augmentation10eme02.update(transaction);
                 }
                 break;
-            case 42:
-                REAnnoncesDiminution9Eme diminution9eme01 = new REAnnoncesDiminution9Eme();
-                diminution9eme01.setSession(session);
-                diminution9eme01.setIdAnnonce(annonce.getIdAnnonce());
-                diminution9eme01.retrieve();
+            case 45:
+                REAnnoncesDiminution10Eme diminution10eme01 = new REAnnoncesDiminution10Eme();
+                diminution10eme01.setSession(session);
+                diminution10eme01.setIdAnnonce(annonce.getIdAnnonce());
+                diminution10eme01.retrieve();
 
-                parseDiminutionAvecAnakin(diminution9eme01, session, forMoisAnneeComptable);
-
-                break;
+                parseDiminutionAvecAnakin(diminution10eme01, session, forMoisAnneeComptable);
         }
         throw new Exception("no match into the expected variable paussibilities");
     }
