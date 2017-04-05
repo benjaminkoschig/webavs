@@ -71,6 +71,7 @@ public class APMainServletAction {
         APMainServletAction.ACTIONS.put(IREActions.ACTION_JADE_WIDGET, FWJadeWidgetServletAction.class);
 
         APMainServletAction.ACTIONS.put(IAPActions.ACTION_LISTE_PRESTATION_VERSEE, APListePrestationVerseeAction.class);
+        APMainServletAction.ACTIONS.put(IAPActions.ACTION_LISTE_TAXATIONS, APListeTaxationsDefinitivesAction.class);
     }
 
     // ~ Constructors

@@ -373,6 +373,8 @@ public class APApplication extends PRAbstractApplication {
         FWAction.registerActionCustom("apg.process.genererDecisionAMAT.reAfficher", FWSecureConstants.READ);
         FWAction.registerActionCustom(IAPActions.ACTION_LISTE_PRESTATION_VERSEE + "." + FWAction.ACTION_REAFFICHER,
                 FWSecureConstants.READ);
+        FWAction.registerActionCustom(IAPActions.ACTION_LISTE_TAXATIONS + "." + FWAction.ACTION_REAFFICHER,
+                FWSecureConstants.READ);
 
     }
 

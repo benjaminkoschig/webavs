@@ -38,6 +38,7 @@ public interface IAPActions {
     public static final String ACTION_INSCRIRE_CI = "apg.process.inscrireCI";
     public static final String ACTION_LISTE_CONTROLE = "apg.process.listeControle";
     public static final String ACTION_LISTE_PRESTATION_VERSEE = "apg.process.listePrestationVersee";
+    public static final String ACTION_LISTE_TAXATIONS = "apg.process.listeTaxationsDefinitives";
     public static final String ACTION_LISTE_RECAPITULATION_ANNONCE = "apg.process.recapitulationAnnonce";
     public static final String ACTION_LOTS = "apg.lots.lot";
     public static final String ACTION_PERE_MAT = "apg.droits.pereMat";
