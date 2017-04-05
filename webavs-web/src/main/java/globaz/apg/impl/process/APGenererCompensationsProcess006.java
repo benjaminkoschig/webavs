@@ -176,9 +176,22 @@ public class APGenererCompensationsProcess006 extends BProcess implements IAPGen
         }
     }
 
+    private void memoryLog(final String message, final String level) {
+        memoryLog(message, level, new Object[] {});
+    }
+
     private void memoryLog(final String message, final String level, Object... objects) {
-        getMemoryLog().logMessage(MessageFormat.format(FWMessageFormat.prepareQuotes(message, false), objects), level,
-                labelProcess());
+        String messageToPrint = message;
+        if (message == null) {
+            messageToPrint = "";
+        }
+        if (objects == null || objects.length == 0) {
+            getMemoryLog().logMessage(FWMessageFormat.prepareQuotes(messageToPrint, false), level, labelProcess());
+        } else {
+            getMemoryLog().logMessage(
+                    MessageFormat.format(FWMessageFormat.prepareQuotes(messageToPrint, false), objects), level,
+                    labelProcess());
+        }
     }
 
     private String labelProcess() {
@@ -456,7 +469,6 @@ public class APGenererCompensationsProcess006 extends BProcess implements IAPGen
 
             if (manager.getSize() > 0) {
                 isOk = false;
-
                 final String noAffilie = ((AFLienAffiliation) manager.get(0)).getAffiliation().getAffilieNumero();
                 final String messagePorteEnCompte = getSession().getLabel(
                         "PORTER_EN_COMPTE_PERSONNEL_DECLARE_PAR_ERREUR");
@@ -527,12 +539,15 @@ public class APGenererCompensationsProcess006 extends BProcess implements IAPGen
                 repartitionJointPrestation.getIdTiers(), repartitionJointPrestation.getIdAffilie(),
                 APApplication.CS_DOMAINE_ADRESSE_APG))) {
 
-            final String noAVS = tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL);
+            String nss = "";
+            if (tw != null) {
+                nss = tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL);
+            }
             final String nom = repartitionJointPrestation.getNom();
             final String idPrestationAPG = repartitionJointPrestation.getIdPrestationApg();
             final String messageAdresseAbsente = getSession().getLabel("ADRESSE_COURRIER_ABSENTE");
 
-            memoryLog(messageAdresseAbsente, FWMessage.ERREUR, nom, noAVS, idPrestationAPG);
+            memoryLog(messageAdresseAbsente, FWMessage.ERREUR, nom, nss, idPrestationAPG);
             isOk = false;
         }
 
@@ -548,7 +563,10 @@ public class APGenererCompensationsProcess006 extends BProcess implements IAPGen
         if (repartitionJointPrestation.loadAdressePaiement(null) == null
                 && !montantTotalVentilations.equals(new FWCurrency(repartitionJointPrestation.getMontantNet()))) {
 
-            final String nss = tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL);
+            String nss = "";
+            if (tw != null) {
+                nss = tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL);
+            }
             final String nom = repartitionJointPrestation.getNom();
             final String idPrestationApg = repartitionJointPrestation.getIdPrestationApg();
             final String msgAdressePaiementAbsente = getSession().getLabel("ADRESSE_PAIEMENT_ABSENTE");
@@ -565,10 +583,15 @@ public class APGenererCompensationsProcess006 extends BProcess implements IAPGen
 
         if (!isTiersRequerantActif(tw)) {
             final String msgTiersInactif = getSession().getLabel("TIERS_INACTIF");
-            final String nss = tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL);
+
+            String nss = "";
+            if (tw != null) {
+                nss = tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL);
+            }
+
             final String nom = repartitionJointPrestation.getNom();
             final String idPrestationApg = repartitionJointPrestation.getIdPrestationApg();
-            final String messageInfo = msgTiersInactif + " " + nss;
+            final String messageInfo = msgTiersInactif + " " + nss + " " + nom;
 
             memoryLog(messageInfo, FWMessage.ERREUR, nom, nss, idPrestationApg);
             isOk = false;
@@ -676,6 +699,9 @@ public class APGenererCompensationsProcess006 extends BProcess implements IAPGen
     }
 
     protected boolean isTiersRequerantActif(PRTiersWrapper tiers) {
+        if (tiers == null) {
+            return false;
+        }
         return !"true".equalsIgnoreCase(tiers.getProperty(PRTiersWrapper.PROPERTY_INACTIF));
     }
 
