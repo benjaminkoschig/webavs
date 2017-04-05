@@ -3,6 +3,7 @@
  */
 package globaz.corvus.db.rentesaccordees;
 
+import globaz.corvus.api.basescalcul.IREPrestationAccordee;
 import globaz.corvus.db.basescalcul.REBasesCalcul;
 import globaz.corvus.db.demandes.REDemandeRente;
 import globaz.corvus.db.demandes.REDemandeRenteJointDemande;
@@ -70,6 +71,7 @@ public class RERenteAccJoinTblTiersJoinDemRenteManager extends PRAbstractManager
     private String likePrenom = "";
     private int nbTiersFamille = 0;
     private String toDateFinDroit = "";
+    private boolean isEtatCalculeForDateFinDroitNotEmpty = false;
 
     @Override
     protected void _beforeFind(BTransaction transaction) throws Exception {
@@ -423,7 +425,16 @@ public class RERenteAccJoinTblTiersJoinDemRenteManager extends PRAbstractManager
             sqlWhere += " OR ";
 
             sqlWhere += "(" + _getCollection() + REPrestationsAccordees.TABLE_NAME_PRESTATIONS_ACCORDEES + "."
-                    + REPrestationsAccordees.FIELDNAME_DATE_FIN_DROIT + " is NULL ))";
+                    + REPrestationsAccordees.FIELDNAME_DATE_FIN_DROIT + " is NULL )";
+
+            if (isEtatCalculeForDateFinDroitNotEmpty) {
+
+                // ou si date de fin ET etat = calcule
+                sqlWhere += " OR " + "(" + REPrestationsAccordees.FIELDNAME_DATE_FIN_DROIT + " <> 0 " + " AND "
+                        + REPrestationsAccordees.FIELDNAME_CS_ETAT + "=" + IREPrestationAccordee.CS_ETAT_CALCULE + ") ";
+            }
+
+            sqlWhere += ")";
 
             sqlWhere += " AND ";
             sqlWhere += "("
@@ -758,6 +769,10 @@ public class RERenteAccJoinTblTiersJoinDemRenteManager extends PRAbstractManager
         return toDateFinDroit;
     }
 
+    public boolean isEtatCalculeForDateFinDroitNotEmpty() {
+        return isEtatCalculeForDateFinDroitNotEmpty;
+    }
+
     public final boolean isEscapeString() {
         return escapeString;
     }
@@ -911,5 +926,9 @@ public class RERenteAccJoinTblTiersJoinDemRenteManager extends PRAbstractManager
 
     public void setToDateFinDroit(String toDateFinDroit) {
         this.toDateFinDroit = toDateFinDroit;
+    }
+
+    public void setEtatCalculeForDateFinDroitNotEmpty(boolean isEtatCalculeForDateFinDroitNotEmpty) {
+        this.isEtatCalculeForDateFinDroitNotEmpty = isEtatCalculeForDateFinDroitNotEmpty;
     }
 }
