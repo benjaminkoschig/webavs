@@ -182,3 +182,14 @@ reorg table SCHEMA.APSIPRP;
 --Ajout propriété S161012_001 pour ajouté le traité par dans les décisions
 INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL) VALUES ('apg.amat.isAfficherDossierTraitePar.decision','false');
 INSERT INTO SCHEMA.FWDDOC (IDDOC,IDCONF,NUMREF,DESCFR,DESCDE,DESCIT,DOCTYP,PSPY,OUTXML,OUTPDF) VALUES (330,1,'5037PAP','Lettre de garde APG','','',null,'20161114082550co7001    ','2','1');
+
+
+ALTER TABLE SCHEMA.APSIPRP ADD COLUMN VFBACM2 VARCHAR(1) DEFAULT '2';
+reorg table SCHEMA.APSIPRP allow read access;
+
+insert into SCHEMA.FWCOSP (pcosid,pptygr,pconcs,pptycn,pptycl,pptysa,pcosli,pcosdf,pcosdm,pcosdp,pcoian,pcoide,pcodfi,pcoitc,pcoise, pspy) values ( 52015005, 'APGENRPRES', 2 ,1,0,0, 'ACM2', 2,1,2,2,2, 2 , 51000015 ,0, (replace(char(current date), '-', '') concat replace(char(current time), '.', '') concat user) ); 
+insert into SCHEMA.FWCOUP (pcosid,plaide,pcouid,pcolut, pspy) values ( 52015005, 'F', 'ACMALPHA2', 'ACM 2', (replace(char(current date), '-', '') concat replace(char(current time), '.', '') concat user) ); 
+insert into SCHEMA.FWCOUP (pcosid,plaide,pcouid,pcolut, pspy) values ( 52015005, 'D', 'ACMALPHA2', 'ACM 2', (replace(char(current date), '-', '') concat replace(char(current time), '.', '') concat user) ); 
+
+INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL) VALUES ('apg.prestation.maternite.acm2.actif','false');
+INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL) VALUES ('apg.prestation.maternite.acm2.nombre.jours','14');
