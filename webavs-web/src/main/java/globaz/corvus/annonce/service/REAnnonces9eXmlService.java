@@ -8,21 +8,13 @@ import globaz.globall.api.BITransaction;
 import globaz.globall.db.BSession;
 import globaz.jade.client.util.JadeStringUtil;
 import java.math.BigDecimal;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.GregorianCalendar;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
 import ch.admin.zas.rc.DJE9BeschreibungType;
-import ch.admin.zas.rc.FamilienAngehoerigeType;
 import ch.admin.zas.rc.Gutschriften9Type;
 import ch.admin.zas.rc.IVDaten9Type;
 import ch.admin.zas.rc.RRLeistungsberechtigtePersonAuslType;
 import ch.admin.zas.rc.RRMeldung9Type;
-import ch.admin.zas.rc.RentenaufschubType;
 import ch.admin.zas.rc.SkalaBerechnungType;
 import ch.admin.zas.rc.ZuwachsmeldungO9Type;
-import ch.globaz.common.properties.CommonProperties;
 
 /**
  * @author jmc
@@ -31,8 +23,6 @@ import ch.globaz.common.properties.CommonProperties;
 public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implements REAnnonceXmlService {
 
     private static REAnnonceXmlService instance = new REAnnonces9eXmlService();
-
-    private ch.admin.zas.rc.ObjectFactory factoryType = new ch.admin.zas.rc.ObjectFactory();
 
     public static REAnnonceXmlService getInstance() {
         return instance;
@@ -82,53 +72,6 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
         throw new Exception("no match into the expected variable paussibilities");
     }
 
-    private String retourneCaisseAgence() throws Exception {
-        return CommonProperties.KEY_NO_CAISSE.getValue() + CommonProperties.NUMERO_AGENCE.getValue();
-    }
-
-    private Long retourneNoDAnnonceSur6Position(String noAnnonce) {
-        if (noAnnonce.length() > 6) {
-            noAnnonce = noAnnonce.substring(noAnnonce.length() - 6);
-        }
-        return new Long(noAnnonce);
-    }
-
-    private Boolean convertIntToBoolean(String valeurString) {
-        if ("1".equals(valeurString)) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    protected String formatXPosAppendWithBlank(int nombrePos, boolean isAppendLeft, String value) {
-        StringBuffer result = new StringBuffer();
-
-        if (JadeStringUtil.isEmpty(value)) {
-
-            for (int i = 0; i < nombrePos; i++) {
-                result.append(" ");
-            }
-        } else {
-            int diff = nombrePos - value.length();
-            // Append left
-            if (isAppendLeft) {
-                for (int i = 0; i < diff; i++) {
-                    result.append(" ");
-                }
-                result.append(value);
-            }
-            // Append right
-            else {
-                result.append(value);
-                for (int i = 0; i < diff; i++) {
-                    result.append(" ");
-                }
-            }
-        }
-        return result.toString();
-    }
-
     protected RRMeldung9Type annonceAugmentationOrdinaire9e(REAnnoncesAugmentationModification9Eme enr01,
             REAnnoncesAugmentationModification9Eme enr02) throws Exception {
 
@@ -141,23 +84,11 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
         augmentation.setMeldungsnummer(retourneNoDAnnonceSur6Position(enr01.getIdAnnonce()));
         augmentation.setKasseneigenerHinweis(enr01.getReferenceCaisseInterne());
         // Remplir la personne
-        RRLeistungsberechtigtePersonAuslType personne = factoryType.createRRLeistungsberechtigtePersonAuslType();
-        personne.setVersichertennummer(enr01.getNoAssAyantDroit());
-        personne.setIstFluechtling(convertIntToBoolean(enr01.getIsRefugie()));
-        FamilienAngehoerigeType membresDeLaFamille = factoryType.createFamilienAngehoerigeType();
-        if (!JadeStringUtil.isBlankOrZero(enr01.getPremierNoAssComplementaire())) {
-            membresDeLaFamille.getVNr1Ergaenzend().add(enr01.getPremierNoAssComplementaire());
-        }
-        if (!JadeStringUtil.isBlankOrZero(enr01.getSecondNoAssComplementaire())) {
-            membresDeLaFamille.getVNr1Ergaenzend().add(enr01.getSecondNoAssComplementaire());
-        }
-        personne.setWohnkantonStaat(new Integer(enr01.getCantonEtatDomicile()).toString());
-        personne.setFamilienAngehoerige(membresDeLaFamille);
-        personne.setZivilstand(new Integer(enr01.getEtatCivil()).shortValue());
+        RRLeistungsberechtigtePersonAuslType personne = rempliRRLeistungsberechtigtePersonAuslType(enr01, enr02);
+        augmentation.setLeistungsberechtigtePerson(personne);
         // Description
         ZuwachsmeldungO9Type.Leistungsbeschreibung description = factoryType
                 .createZuwachsmeldungO9TypeLeistungsbeschreibung();
-        augmentation.setLeistungsberechtigtePerson(personne);
 
         description.setLeistungsart(enr01.getGenrePrestation());
         description.setAnspruchsbeginn(retourneXMLGregorianCalendarFromMonth(enr01.getDebutDroit()));
@@ -176,26 +107,10 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
         baseDeCalcul.setNiveaujahr(retourneXMLGregorianCalendarFromYear(enr02.getAnneeNiveau()));
 
         // Echelle de la base de calcul
-        SkalaBerechnungType echelleCalcul = factoryType.createSkalaBerechnungType();
-        echelleCalcul.setSkala(new Integer(enr02.getEchelleRente()).shortValue());
-        echelleCalcul.setBeitragsdauerVor1973(new BigDecimal(testSiNullouZero(enr02.getDureeCoEchelleRenteAv73())));
-        echelleCalcul.setBeitragsdauerAb1973(new BigDecimal(testSiNullouZero(enr02.getDureeCoEchelleRenteDes73())));
-        echelleCalcul.setAnrechnungVor1973FehlenderBeitragsmonate(new Integer(testSiNullouZero(enr02
-                .getDureeCotManquante48_72())));
-        echelleCalcul.setAnrechnungAb1973Bis1978FehlenderBeitragsmonate(new Integer(testSiNullouZero(enr02
-                .getDureeCotManquante73_78())));
-        echelleCalcul.setBeitragsjahreJahrgang(new Integer(testSiNullouZero(enr02.getAnneeCotClasseAge())));
+        SkalaBerechnungType echelleCalcul = rempliScalaBerechnungTyp(enr02);
         baseDeCalcul.setSkalaBerechnung(echelleCalcul);
 
-        DJE9BeschreibungType ramDescription = factoryType.createDJE9BeschreibungType();
-        ramDescription.setAngerechneteEinkommen(new Integer(testSiNullouZero(enr02.getRevenuPrisEnCompte()))
-                .shortValue());
-        ramDescription
-                .setDurchschnittlichesJahreseinkommen(new BigDecimal(testSiNullouZero(enr02.getRamDeterminant())));
-        ramDescription.setBeitragsdauerDurchschnittlichesJahreseinkommen(new BigDecimal(testSiNullouZero(enr02
-                .getDureeCotPourDetRAM())));
-        baseDeCalcul.setDJEBeschreibung(ramDescription);
-        Gutschriften9Type bte = rempliBonnifications9e(enr01, enr02);
+        Gutschriften9Type bte = rempliDJE9BeschreibungType(enr01, enr02);
 
         baseDeCalcul.setGutschriften(bte);
 
@@ -214,13 +129,29 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
             baseDeCalcul.setFlexiblesRentenAlter(ajournement);
         }
         rempliCasSpecial(enr01, enr02, description);
-        description.setKuerzungSelbstverschulden(new Integer(enr02.getReduction()).shortValue());
+        if (!JadeStringUtil.isBlankOrZero(enr02.getReduction())) {
+            description.setKuerzungSelbstverschulden(new Integer(enr02.getReduction()).shortValue());
+        }
         description.setBerechnungsgrundlagen(baseDeCalcul);
         augmentation.setLeistungsbeschreibung(description);
         renteOrdinaire.setZuwachsmeldung(augmentation);
         annonce9.setOrdentlicheRente(renteOrdinaire);
-        return new RRMeldung9Type();
+        return annonce9;
 
+    }
+
+    private Gutschriften9Type rempliDJE9BeschreibungType(REAnnoncesAugmentationModification9Eme enr01,
+            REAnnoncesAugmentationModification9Eme enr02) {
+        DJE9BeschreibungType ramDescription = factoryType.createDJE9BeschreibungType();
+        ramDescription.setAngerechneteEinkommen(new Integer(testSiNullouZero(enr02.getRevenuPrisEnCompte()))
+                .shortValue());
+        ramDescription
+                .setDurchschnittlichesJahreseinkommen(new BigDecimal(testSiNullouZero(enr02.getRamDeterminant())));
+        ramDescription.setBeitragsdauerDurchschnittlichesJahreseinkommen(new BigDecimal(testSiNullouZero(enr02
+                .getDureeCotPourDetRAM())));
+
+        Gutschriften9Type bte = rempliBonnifications9e(enr01, enr02);
+        return bte;
     }
 
     private Gutschriften9Type rempliBonnifications9e(REAnnoncesAugmentationModification9Eme enr01,
@@ -230,49 +161,6 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
         bte.setDJEohneErziehungsgutschrift(new BigDecimal(testSiNullouZero(enr02.getBteMoyennePrisEnCompte())));
         bte.setAnzahlErziehungsgutschrift(new Integer(testSiNullouZero(enr02.getNombreAnneeBTE())).shortValue());
         return bte;
-    }
-
-    /**
-     * Méthode qui remplit les cas spéciaux
-     * 
-     * @param enr01
-     * @param enr02
-     * @param desc
-     */
-    private void rempliCasSpecial(REAnnoncesAugmentationModification9Eme enr01,
-            REAnnoncesAugmentationModification9Eme enr02, ZuwachsmeldungO9Type.Leistungsbeschreibung desc) {
-        if (!JadeStringUtil.isBlankOrZero(enr02.getCasSpecial1())) {
-            desc.getSonderfallcodeRente().add(new Integer(enr02.getCasSpecial1()).shortValue());
-        }
-        if (!JadeStringUtil.isBlankOrZero(enr02.getCasSpecial2())) {
-            desc.getSonderfallcodeRente().add(new Integer(enr02.getCasSpecial2()).shortValue());
-        }
-        if (!JadeStringUtil.isBlankOrZero(enr02.getCasSpecial3())) {
-            desc.getSonderfallcodeRente().add(new Integer(enr02.getCasSpecial3()).shortValue());
-        }
-        if (!JadeStringUtil.isBlankOrZero(enr02.getCasSpecial4())) {
-            desc.getSonderfallcodeRente().add(new Integer(enr02.getCasSpecial4()).shortValue());
-        }
-        if (!JadeStringUtil.isBlankOrZero(enr02.getCasSpecial5())) {
-            desc.getSonderfallcodeRente().add(new Integer(enr02.getCasSpecial5()).shortValue());
-        }
-    }
-
-    /**
-     * Méthode qui retourne un objet qui rempli les ajournements
-     * 
-     * @param enr01
-     * @param enr02
-     * @return un ajournement
-     * @throws Exception
-     */
-    private RentenaufschubType rempliRentenaufschubType(REAnnoncesAugmentationModification9Eme enr01,
-            REAnnoncesAugmentationModification9Eme enr02) throws Exception {
-        RentenaufschubType ajournement = factoryType.createRentenaufschubType();
-        ajournement.setAbrufdatum(retourneXMLGregorianCalendarFromMonth(enr02.getDateRevocationAjournement()));
-        ajournement.setAufschubsdauer(new BigDecimal(testSiNullouZero(enr02.getDureeAjournement())));
-        ajournement.setAufschubszuschlag(new BigDecimal(testSiNullouZero(enr02.getSupplementAjournement())));
-        return ajournement;
     }
 
     /**
@@ -315,51 +203,6 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
         donneeAI.setIstFruehInvalid(convertIntToBoolean(enr02.getAgeDebutInvalidite()));
 
         return donneeAI;
-    }
-
-    public XMLGregorianCalendar retourneXMLGregorianCalendar(String jaDate) throws Exception {
-
-        final DateFormat format = new SimpleDateFormat("dd.mm.yyyy");
-        final java.util.Date dDate = format.parse(jaDate);
-
-        GregorianCalendar gregory = new GregorianCalendar();
-        gregory.setTime(dDate);
-
-        return DatatypeFactory.newInstance().newXMLGregorianCalendar(gregory);
-    }
-
-    public XMLGregorianCalendar retourneXMLGregorianCalendarFromMonth(String dateMmYy) throws Exception {
-
-        GregorianCalendar gregory = null;
-        if (new Integer(dateMmYy.substring(2)) > 48) {
-            gregory = new GregorianCalendar(new Integer(dateMmYy.substring(2)) + 1900, new Integer(dateMmYy.substring(
-                    0, 2)), 0);
-        } else {
-            gregory = new GregorianCalendar(new Integer(dateMmYy.substring(2)) + 2000, new Integer(dateMmYy.substring(
-                    0, 2)), 0);
-        }
-
-        return DatatypeFactory.newInstance().newXMLGregorianCalendar(gregory);
-    }
-
-    public XMLGregorianCalendar retourneXMLGregorianCalendarFromYear(String dateYy) throws Exception {
-
-        GregorianCalendar gregory = null;
-        if (new Integer(dateYy) > 48) {
-            gregory = new GregorianCalendar(new Integer(dateYy) + 1900, 0, 0);
-        } else {
-            gregory = new GregorianCalendar(new Integer(dateYy) + 2000, 0, 0);
-        }
-
-        return DatatypeFactory.newInstance().newXMLGregorianCalendar(gregory);
-    }
-
-    private String testSiNullouZero(String valeur) {
-        if (JadeStringUtil.isBlankOrZero(valeur)) {
-            return "0";
-        } else {
-            return valeur;
-        }
     }
 
 }
