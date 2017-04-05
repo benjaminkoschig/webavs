@@ -114,13 +114,13 @@ $(document).ready(function() {
 			<td><%=nomContribuable%></td>
 			
 			<!--  Intérêts créance || vide  -->
-			<td><%=currentAnnonce.getSimpleAnnonceSedexCO().getInterets() %></td>
+			<td></td>
 
 			<!--  Frais créance || vide -->
-			<td><%=currentAnnonce.getSimpleAnnonceSedexCO().getFrais() %></td>
+			<td></td>
 
 			<!--  Total créance || vide  -->
-			<td><%=currentAnnonce.getSimpleAnnonceSedexCO().getTotalCreance() %></td>
+			<td></td>
 		</tr>
 
 		<%
