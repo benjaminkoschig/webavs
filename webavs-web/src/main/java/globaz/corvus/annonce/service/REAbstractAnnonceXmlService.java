@@ -3,7 +3,12 @@ package globaz.corvus.annonce.service;
 import globaz.corvus.anakin.REAnakinParser;
 import globaz.corvus.db.annonces.REAnnoncesAbstractLevel1A;
 import globaz.globall.db.BSession;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Enumeration;
+import java.util.GregorianCalendar;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
 import ch.admin.ofit.anakin.donnee.AnnonceErreur;
 
 public abstract class REAbstractAnnonceXmlService {
@@ -38,4 +43,22 @@ public abstract class REAbstractAnnonceXmlService {
             String forMoisAnneeComptable) throws Exception {
         parseAugmentationAvecAnakin(enregistrement01, null, session, forMoisAnneeComptable);
     }
+
+    /**
+     * 
+     * @param jaDate dd.mm.yyyy
+     * @return
+     * @throws Exception
+     */
+    public XMLGregorianCalendar retourneXMLGregorianCalendar(String jaDate) throws Exception {
+
+        final DateFormat format = new SimpleDateFormat("dd.mm.yyyy");
+        final java.util.Date dDate = format.parse(jaDate);
+
+        GregorianCalendar gregory = new GregorianCalendar();
+        gregory.setTime(dDate);
+
+        return DatatypeFactory.newInstance().newXMLGregorianCalendar(gregory);
+    }
+
 }

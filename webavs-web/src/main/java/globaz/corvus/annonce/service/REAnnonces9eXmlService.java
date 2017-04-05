@@ -125,7 +125,7 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
         return result.toString();
     }
 
-    public RRMeldung9Type annonceAugmentationOrdinaire9e(REAnnoncesAugmentationModification9Eme enr01,
+    protected RRMeldung9Type annonceAugmentationOrdinaire9e(REAnnoncesAugmentationModification9Eme enr01,
             REAnnoncesAugmentationModification9Eme enr02) throws Exception {
 
         RRMeldung9Type annonce9 = factoryType.createRRMeldung9Type();
@@ -272,6 +272,7 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
         return donneeAI;
     }
 
+    @Override
     public XMLGregorianCalendar retourneXMLGregorianCalendar(String jaDate) throws Exception {
 
         final DateFormat format = new SimpleDateFormat("dd.mm.yyyy");

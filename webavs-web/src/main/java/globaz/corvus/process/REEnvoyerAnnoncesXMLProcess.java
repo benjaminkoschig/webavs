@@ -80,8 +80,6 @@ public class REEnvoyerAnnoncesXMLProcess extends BProcess {
      */
     private static final long serialVersionUID = 1L;
 
-    private static final String APPLICATION_ANNONCES = "HERMES";
-
     // ~ Instance fields
     // ------------------------------------------------------------------------------------------------
 
@@ -123,8 +121,6 @@ public class REEnvoyerAnnoncesXMLProcess extends BProcess {
     // ~ Methods
     // --------------------------------------------------------------------------------------------------------
 
-    /**
-	 */
     @Override
     protected void _executeCleanUp() {
     }
@@ -283,6 +279,15 @@ public class REEnvoyerAnnoncesXMLProcess extends BProcess {
         return true;
     }
 
+    /**
+     * 
+     * @param poolKopfTest if you need to set TEST flag into header
+     * @param poolKopfSender
+     * @return
+     * @throws PropertiesException
+     * @throws ParseException
+     * @throws DatatypeConfigurationException
+     */
     private PoolMeldungZurZAS.Lot initPoolMeldungZurZASLot(boolean poolKopfTest, String poolKopfSender)
             throws PropertiesException, ParseException, DatatypeConfigurationException {
         ch.admin.zas.pool.ObjectFactory factoryPool = new ch.admin.zas.pool.ObjectFactory();
@@ -475,9 +480,7 @@ public class REEnvoyerAnnoncesXMLProcess extends BProcess {
      */
     void prepareEnvoieAnnonce(REAnnoncesAbstractLevel1A annonce, PoolMeldungZurZAS.Lot poolMeldungLot) throws Exception {
 
-        int codeApplication = Integer.parseInt(annonce.getCodeApplication());
-
-        REAnnonceXmlService abstractService = resolveAnnonceVersionService(codeApplication);
+        REAnnonceXmlService abstractService = resolveAnnonceVersionService(annonce);
 
         Object annonceXml = abstractService.getAnnonceXml(annonce, forMoisAnneeComptable, getSession(),
                 getTransaction());
@@ -490,7 +493,8 @@ public class REEnvoyerAnnoncesXMLProcess extends BProcess {
 
     }
 
-    private REAnnonceXmlService resolveAnnonceVersionService(int codeApplication) {
+    protected REAnnonceXmlService resolveAnnonceVersionService(REAnnoncesAbstractLevel1A annonce) {
+        int codeApplication = Integer.parseInt(annonce.getCodeApplication());
         switch (codeApplication) {
             case 41:
             case 42:
