@@ -5,6 +5,8 @@ import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAv
 import ch.globaz.amal.business.services.AmalServiceLocator;
 import ch.globaz.amal.business.services.models.annonce.SimpleAnnonceService;
 import ch.globaz.amal.business.services.models.annoncesedex.SimpleAnnonceSedexService;
+import ch.globaz.amal.business.services.models.annoncesedexco.SimpleAnnonceSedexCOPersonneService;
+import ch.globaz.amal.business.services.models.annoncesedexco.SimpleAnnonceSedexCOService;
 import ch.globaz.amal.business.services.models.caissemaladie.SimpleDetailCaisseMaladieService;
 import ch.globaz.amal.business.services.models.contribuable.ContribuableService;
 import ch.globaz.amal.business.services.models.contribuable.SimpleContribuableService;
@@ -48,6 +50,30 @@ public class AmalImplServiceLocator extends AmalServiceLocator {
             throws JadeApplicationServiceNotAvailableException {
         return (SimpleAnnonceSedexService) JadeApplicationServiceLocator.getInstance().getServiceImpl(
                 SimpleAnnonceSedexService.class);
+    }
+
+    /**
+     * Récupération d'une instance du service des annonces sedex co - db
+     * 
+     * @return Le service des annonces, utilisable
+     * @throws JadeApplicationServiceNotAvailableException
+     */
+    public static SimpleAnnonceSedexCOService getSimpleAnnonceSedexServiceCO()
+            throws JadeApplicationServiceNotAvailableException {
+        return (SimpleAnnonceSedexCOService) JadeApplicationServiceLocator.getInstance().getServiceImpl(
+                SimpleAnnonceSedexCOService.class);
+    }
+
+    /**
+     * Récupération d'une instance du service des annonces sedex co personne- db
+     * 
+     * @return Le service des annonces, utilisable
+     * @throws JadeApplicationServiceNotAvailableException
+     */
+    public static SimpleAnnonceSedexCOPersonneService getSimpleAnnonceSedexCOPersonneServiceCO()
+            throws JadeApplicationServiceNotAvailableException {
+        return (SimpleAnnonceSedexCOPersonneService) JadeApplicationServiceLocator.getInstance().getServiceImpl(
+                SimpleAnnonceSedexCOPersonneService.class);
     }
 
     /**

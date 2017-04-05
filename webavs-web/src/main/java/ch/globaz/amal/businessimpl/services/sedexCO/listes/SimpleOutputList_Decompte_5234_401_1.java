@@ -24,7 +24,9 @@ public class SimpleOutputList_Decompte_5234_401_1 {
     private Montant primeMontant = null;
     private Periode sharingPeriode = null;
     private Montant sharingMontant = null;
-    private String message = null;
+    private String typeSubside = null;
+    private String messageDebiteur = null;
+    private String messageAssure = null;
 
     @Column(name = "NSS débiteur", order = 0)
     public String getNssDebiteur() {
@@ -92,9 +94,19 @@ public class SimpleOutputList_Decompte_5234_401_1 {
         return total;
     }
 
-    @Column(name = "Message", order = 12)
-    public String getMessage() {
-        return message;
+    @Column(name = "Type subside", order = 12)
+    public String getTypeSubside() {
+        return typeSubside;
+    }
+
+    @Column(name = "Message débiteur", order = 13)
+    public String getMessageDebiteur() {
+        return messageDebiteur;
+    }
+
+    @Column(name = "Message assuré", order = 14)
+    public String getMessageAssure() {
+        return messageAssure;
     }
 
     public void setNssDebiteur(String nssDebiteur) {
@@ -145,8 +157,16 @@ public class SimpleOutputList_Decompte_5234_401_1 {
         this.sharingMontant = sharingMontant;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public void setTypeSubside(String typeSubside) {
+        this.typeSubside = typeSubside;
+    }
+
+    public void setMessageDebiteur(String messageDebiteur) {
+        this.messageDebiteur = messageDebiteur;
+    }
+
+    public void setMessageAssure(String messageAssure) {
+        this.messageAssure = messageAssure;
     }
 
 }

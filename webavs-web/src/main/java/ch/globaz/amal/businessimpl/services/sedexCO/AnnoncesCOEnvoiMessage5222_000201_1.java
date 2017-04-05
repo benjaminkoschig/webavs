@@ -175,8 +175,6 @@ public class AnnoncesCOEnvoiMessage5222_000201_1 extends AMALabstractProcess {
                         ArrayList<SimpleSedexMessage> messagesToSend = new ArrayList<SimpleSedexMessage>();
                         String recipientId = AMSedexRPUtil.getSedexIdFromIdTiers(idCaisseMaladie);
 
-                        dropPersonneANePasPoursuivre(anneeToDelete, idCaisseMaladie);
-
                         HeaderType header = generateHeader(recipientId);
                         SimpleAnnonceSedexCO simpleAnnonceSedexCO = creerAnnonce(header, idCaisseMaladie);
                         ContentType content = generateContent(entry, simpleAnnonceSedexCO);
@@ -550,47 +548,38 @@ public class AnnoncesCOEnvoiMessage5222_000201_1 extends AMALabstractProcess {
         return language;
     }
 
-    private void dropPersonneANePasPoursuivre(String annee, String idTiersCM) throws AnnonceSedexCOException {
-        try {
-            SimplePersonneANePasPoursuivreSearch personneANePasPoursuivreSearch = new SimplePersonneANePasPoursuivreSearch();
-            personneANePasPoursuivreSearch.setForAnnee(annee);
-            personneANePasPoursuivreSearch.setForIdTiersCM(idTiersCM);
-            personneANePasPoursuivreSearch = AmalImplServiceLocator.getSimplePersonneANePasPoursuivreService().search(
-                    personneANePasPoursuivreSearch);
-
-            for (JadeAbstractModel model_personneANePasPoursuivre : personneANePasPoursuivreSearch.getSearchResults()) {
-                SimplePersonneANePasPoursuivre simplePersonneANePasPoursuivre = (SimplePersonneANePasPoursuivre) model_personneANePasPoursuivre;
-                AmalImplServiceLocator.getSimplePersonneANePasPoursuivreService()
-                        .delete(simplePersonneANePasPoursuivre);
-            }
-        } catch (Exception e) {
-            throw new AnnonceSedexCOException("Erreur lors du vidage de la table des personne a ne pas poursuivre", e);
-        }
-
-    }
-
     private void flagPersonne(String nss, FamilleContribuable familleContribuable,
             SimpleAnnonceSedexCO simpleAnnonceSedexCO) throws JadePersistenceException,
             SimplePersonneANePasPoursuivreException, JadeApplicationServiceNotAvailableException {
         SimplePersonneANePasPoursuivreSearch personneANePasPoursuivreSearch = new SimplePersonneANePasPoursuivreSearch();
         personneANePasPoursuivreSearch.setForNSS(nss);
         personneANePasPoursuivreSearch.setForAnnee(familleContribuable.getSimpleDetailFamille().getAnneeHistorique());
-        int count = AmalImplServiceLocator.getSimplePersonneANePasPoursuivreService().count(
+        personneANePasPoursuivreSearch = AmalImplServiceLocator.getSimplePersonneANePasPoursuivreService().search(
                 personneANePasPoursuivreSearch);
 
-        if (count == 0) {
-            SimplePersonneANePasPoursuivre personneANePasPoursuivre = new SimplePersonneANePasPoursuivre();
-            personneANePasPoursuivre.setNss(nss);
-            personneANePasPoursuivre.setAnnee(familleContribuable.getSimpleDetailFamille().getAnneeHistorique());
-            personneANePasPoursuivre.setIdTiersCM(familleContribuable.getSimpleDetailFamille().getNoCaisseMaladie());
-            personneANePasPoursuivre.setIdFamille(familleContribuable.getSimpleFamille().getIdFamille());
-            personneANePasPoursuivre.setIdDetailFamille(familleContribuable.getSimpleDetailFamille()
-                    .getIdDetailFamille());
-            personneANePasPoursuivre.setIdAnnonceSedex(simpleAnnonceSedexCO.getIdAnnonceSedexCO());
-            personneANePasPoursuivre.setFlagEnvoi(true);
-            personneANePasPoursuivre.setFlagReponse(false);
-            AmalImplServiceLocator.getSimplePersonneANePasPoursuivreService().create(personneANePasPoursuivre);
+        if (personneANePasPoursuivreSearch.getNbOfResultMatchingQuery() > 1) {
+            // Il ne devrait y avoir qu'un couple NSS / Année, donc si on arrive ici : erreur
+            throw new RuntimeException("Plus d'un record pour le NSS / année : " + nss + "-"
+                    + familleContribuable.getSimpleDetailFamille().getAnneeHistorique());
         }
+
+        if (personneANePasPoursuivreSearch.getNbOfResultMatchingQuery() == 1) {
+            SimplePersonneANePasPoursuivre simplePersonneANePasPoursuivre = (SimplePersonneANePasPoursuivre) personneANePasPoursuivreSearch
+                    .getSearchResults()[0];
+            AmalImplServiceLocator.getSimplePersonneANePasPoursuivreService().delete(simplePersonneANePasPoursuivre);
+        }
+
+        SimplePersonneANePasPoursuivre personneANePasPoursuivre = new SimplePersonneANePasPoursuivre();
+        personneANePasPoursuivre.setNss(nss);
+        personneANePasPoursuivre.setAnnee(familleContribuable.getSimpleDetailFamille().getAnneeHistorique());
+        personneANePasPoursuivre.setIdTiersCM(familleContribuable.getSimpleDetailFamille().getNoCaisseMaladie());
+        personneANePasPoursuivre.setIdFamille(familleContribuable.getSimpleFamille().getIdFamille());
+        personneANePasPoursuivre.setIdDetailFamille(familleContribuable.getSimpleDetailFamille().getIdDetailFamille());
+        personneANePasPoursuivre.setIdAnnonceSedex(simpleAnnonceSedexCO.getIdAnnonceSedexCO());
+        personneANePasPoursuivre.setIdContribuable(familleContribuable.getSimpleContribuable().getIdContribuable());
+        personneANePasPoursuivre.setFlagEnvoi(true);
+        personneANePasPoursuivre.setFlagReponse(false);
+        AmalImplServiceLocator.getSimplePersonneANePasPoursuivreService().create(personneANePasPoursuivre);
     }
 
     private AddressType getAddress(FamilleContribuable familleContribuable) throws AnnonceSedexException {

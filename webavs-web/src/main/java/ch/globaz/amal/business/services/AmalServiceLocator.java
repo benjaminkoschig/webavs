@@ -7,6 +7,7 @@ import ch.globaz.amal.business.services.models.annonce.SimpleAnnonceService;
 import ch.globaz.amal.business.services.models.annoncesedex.ComplexAnnonceSedexService;
 import ch.globaz.amal.business.services.models.annoncesedex.SimpleAnnonceSedexService;
 import ch.globaz.amal.business.services.models.annoncesedexco.ComplexAnnonceSedexCOService;
+import ch.globaz.amal.business.services.models.annoncesedexco.SimpleAnnonceSedexCOPersonneService;
 import ch.globaz.amal.business.services.models.annoncesedexco.SimpleAnnonceSedexCOService;
 import ch.globaz.amal.business.services.models.caissemaladie.CaisseMaladieService;
 import ch.globaz.amal.business.services.models.caissemaladie.SimpleDetailCaisseMaladieService;
@@ -249,6 +250,17 @@ public class AmalServiceLocator {
             throws JadeApplicationServiceNotAvailableException {
         return (SimpleAnnonceSedexCOService) JadeApplicationServiceLocator.getInstance().getServiceImpl(
                 SimpleAnnonceSedexCOService.class);
+    }
+
+    /**
+     * @return Implémentation du service de gestion des annonces SEDEX CO Personne
+     * @throws JadeApplicationServiceNotAvailableException
+     *             Levée lorsque le service n'est pas disponible - n'arrive qu'en remote
+     */
+    public static SimpleAnnonceSedexCOPersonneService getSimpleAnnonceSedexCOPersonneService()
+            throws JadeApplicationServiceNotAvailableException {
+        return (SimpleAnnonceSedexCOPersonneService) JadeApplicationServiceLocator.getInstance().getServiceImpl(
+                SimpleAnnonceSedexCOPersonneService.class);
     }
 
     /**

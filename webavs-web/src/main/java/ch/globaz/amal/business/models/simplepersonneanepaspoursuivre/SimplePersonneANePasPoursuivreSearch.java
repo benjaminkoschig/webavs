@@ -7,9 +7,8 @@ public class SimplePersonneANePasPoursuivreSearch extends JadeSearchSimpleModel 
 
     private String forNSS = null;
     private String forAnnee = null;
+    private String forIdAnnonceSedex = null;
     private String forIdTiersCM = null;
-    private Boolean isFlagEnvoi = null;
-    private Boolean isFlagReception = null;
 
     @Override
     public Class whichModelClass() {
@@ -32,6 +31,14 @@ public class SimplePersonneANePasPoursuivreSearch extends JadeSearchSimpleModel 
         this.forAnnee = forAnnee;
     }
 
+    public String getForIdAnnonceSedex() {
+        return forIdAnnonceSedex;
+    }
+
+    public void setForIdAnnonceSedex(String forIdAnnonceSedex) {
+        this.forIdAnnonceSedex = forIdAnnonceSedex;
+    }
+
     public String getForIdTiersCM() {
         return forIdTiersCM;
     }
@@ -39,21 +46,4 @@ public class SimplePersonneANePasPoursuivreSearch extends JadeSearchSimpleModel 
     public void setForIdTiersCM(String forIdTiersCM) {
         this.forIdTiersCM = forIdTiersCM;
     }
-
-    public Boolean getIsFlagEnvoi() {
-        return isFlagEnvoi;
-    }
-
-    public void setIsFlagEnvoi(Boolean isFlagEnvoi) {
-        this.isFlagEnvoi = isFlagEnvoi;
-    }
-
-    public Boolean getIsFlagReception() {
-        return isFlagReception;
-    }
-
-    public void setIsFlagReception(Boolean isFlagReception) {
-        this.isFlagReception = isFlagReception;
-    }
-
 }

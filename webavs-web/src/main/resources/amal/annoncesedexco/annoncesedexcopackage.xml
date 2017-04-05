@@ -5,4 +5,7 @@
 	<model-mapping import="amal/annoncesedexco/simpleannoncesedexcoxml.xml"/>
 	<model-mapping import="amal/annoncesedexco/simplepersonnenepaspoursuivre.xml"/>
 	<model-mapping import="amal/annoncesedexco/complexannoncesedexco.xml"/>
+	<model-mapping import="amal/annoncesedexco/complexannoncesedexcodebiteursassures.xml"/>
+	<model-mapping import="amal/annoncesedexco/simpleannoncesedexcodebiteur.xml"/>
+	<model-mapping import="amal/annoncesedexco/simpleannoncesedexcopersonneassuree.xml"/>
 </model-mapping>

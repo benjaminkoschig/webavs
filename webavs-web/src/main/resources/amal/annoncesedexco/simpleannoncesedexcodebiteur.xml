@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<simple-model className="ch.globaz.amal.business.models.annoncesedexco.SimpleAnnonceSedexCODebiteur">
+		<description>Enregistrement Annonce Sedex contentieux débiteur</description>
+		<table name="MASDXCODEB" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idAnnonceSedexCODebiteur" column="ID" comment="clé primaire"/>
+			<field name="idFamille" column="ID_FAMILLE" type="NUMERIC" dataType="NUMERIC(15)" mandatory="true" comment="IDFAMILLE"/>
+			<field name="idContribuable" column="ID_CONTRIBUABLE" type="NUMERIC" dataType="NUMERIC(15)" mandatory="true" comment="id contribuable"/>
+			<field name="idAnnonceSedexCO" column="ID_SEDEX" type="NUMERIC" dataType="NUMERIC(15)" mandatory="true" comment="IDSEDEX"/>
+			<field name="nssDebiteur" column="NSS_DEBITEUR" type="STRING" dataType="VARCHAR(16)" mandatory="false" comment="NSS DEBITEUR"/>
+			<field name="nomPrenomDebiteur" column="NOM_PRENOM_DEBITEUR" type="STRING" dataType="VARCHAR(100)" mandatory="false" comment="NOM_PRENOM_DEBITEUR"/>
+			<field name="npaLocaliteDebiteur" column="NPA_LOCALITE_DEBITEUR" type="STRING" dataType="VARCHAR(100)"  mandatory="false" comment="NPA localité débiteur"/>
+			<field name="rueNumeroDebiteur" column="RUE_NUMERO_DEBITEUR" type="STRING" dataType="VARCHAR(100)"  mandatory="false" comment="Rue numéro débiteur"/>
+			<field name="acte" column="CS_ACTE" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="TYPE_ACTE"/>
+			<field name="interets" column="INTERETS" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="Interets"/>
+			<field name="frais" column="FRAIS" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="frais"/>
+			<field name="total" column="TOTAL" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="total"/>
+			<field name="message" column="MESSAGE_DEBITEUR" type="STRING" dataType="VARCHAR(255)" mandatory="false" comment="NSS DEBITEUR"/>
+		</fields>
+	</simple-model>
+</model-mapping>

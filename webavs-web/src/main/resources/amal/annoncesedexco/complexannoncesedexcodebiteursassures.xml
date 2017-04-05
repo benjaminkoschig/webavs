@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.amal.business.models.annoncesedexco.ComplexAnnonceSedexCODebiteursAssures">
+
+		<root-model name="simpleAnnonceSedexCO" model-ref="ch.globaz.amal.business.models.annoncesedexco.SimpleAnnonceSedexCO"/>
+		
+		<linked-model name="simpleAnnonceSedexCODebiteur" model-ref="ch.globaz.amal.business.models.annoncesedexco.SimpleAnnonceSedexCODebiteur" join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="idAnnonceSedexCO" operation="EQUALS" field-ref="simpleAnnonceSedexCO.idAnnonceSedexCO"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="simpleAnnonceSedexCOAssure" model-ref="ch.globaz.amal.business.models.annoncesedexco.SimpleAnnonceSedexCOAssure" join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="idAnnonceSedexCODebiteur" operation="EQUALS" field-ref="simpleAnnonceSedexCODebiteur.idAnnonceSedexCODebiteur"/>
+			</join-group>
+		</linked-model>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdSedexCO" field-ref="simpleAnnonceSedexCO.idAnnonceSedexCO" operation="EQUALS" />
+			</search-group>
+		</search-definition>
+
+	</complexe-model>
+</model-mapping>

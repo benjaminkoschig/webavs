@@ -7,25 +7,25 @@
 			<primary-key name="idPersonneNPP" column="ID" comment="clé primaire"/>
 			<field name="nss" column="NSS" type="NUMERIC" dataType="NUMERIC(13,0)" mandatory="true" comment="id famille"/>
 			<field name="idTiersCM" column="IDTIERSCM" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="true" comment="ID_TIERS_CAISSE_MALADIE"/>
-			<field name="idFamille" column="IDFAMI" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="true" comment="ID_MEMBRE_FAMILLE"/>
+			<field name="idFamille" column="IDFAMI" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="false" comment="ID_MEMBRE_FAMILLE"/>
+			<field name="idContribuable" column="IDCONTRI" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="false" comment="ID_CONTRIBUABLE"/>
+			<field name="idAnnonceSedex" column="IDSEDEX" type="NUMERIC" dataType="NUMERIC(15,0)" comment="Id sedex"/>
+			<field name="idDetailFamille" column="IDDETFAM" type="NUMERIC" dataType="NUMERIC(15,0)" comment="detail famille"/>					
 			<field name="annee" column="ANNEE" type="NUMERIC" dataType="NUMERIC(4,0)" mandatory="true" comment="Année" />
 			<field name="flagEnvoi" column="FLAG_ENVOI" type="BOOLEAN" comment="Flag envoi"/>			
 			<field name="flagReponse" column="FLAG_REPONSE" type="BOOLEAN" comment="Flag réponse"/>
 			<field name="montantCreance" column="MT_CREANCE" type="NUMERIC" dataType="NUMERIC(15,2)" comment="Montant créance"/>
 			<field name="nomPrenom" column="NOM_PRENOM" type="STRING" dataType="VARCHAR(100)" comment="Nom prenom"/>			
 			<field name="npaLocalite" column="NPA_LOCALITE" type="STRING" dataType="VARCHAR(100)" comment="NPA localité"/>
-			<field name="idAnnonceSedex" column="IDSEDEX" type="NUMERIC" dataType="NUMERIC(15,0)" comment="Id sedex"/>
-			<field name="idDetailFamille" column="IDDETFAM" type="NUMERIC" dataType="NUMERIC(15,0)" comment="Id sedex"/>					
 		</fields>
 		
 		<search-definition>
 			<search-group operator="AND">
 				<search-field name="forNSS" field-ref="nss" operation="EQUALS"/>
 				<search-field name="forAnnee" field-ref="annee" operation="EQUALS"/>
-				<search-field name="isFlagEnvoi" field-ref="flagEnvoi" operation="EQUALS"/>
-				<search-field name="isFlagReception" field-ref="flagReponse" operation="EQUALS"/>
+				<search-field name="forIdAnnonceSedex" field-ref="idAnnonceSedex" operation="EQUALS"/>
+				<search-field name="forIdTiersCM" field-ref="idTiersCM" operation="EQUALS"/>
 			</search-group>
 		</search-definition>
-		
 	</simple-model>
 </model-mapping>

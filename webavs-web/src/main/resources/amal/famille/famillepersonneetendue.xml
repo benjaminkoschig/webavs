@@ -9,6 +9,12 @@
 			</join-group>
 		</linked-model>
 		
+		<linked-model name="simpleContribuable" model-ref="ch.globaz.amal.business.models.contribuable.SimpleContribuable" join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="idContribuable" operation="EQUALS" field-ref="simpleFamille.idContribuable"/>
+			</join-group>
+		</linked-model>
+		
 		<search-definition>
 			<search-group operator="AND">
 				<search-field name="likeNss" field-ref="personneEtendue.personneEtendue.numAvsActuel" operation="LIKE" />

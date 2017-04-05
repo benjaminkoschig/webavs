@@ -7,23 +7,16 @@
 			<primary-key name="idAnnonceSedexCO" column="ID" comment="clé primaire"/>
 			<field name="messageId" column="MSGID" type="STRING" dataType="VARCHAR(40)" mandatory="true" comment="Message ID"/>
 			<field name="businessProcessId" column="BPRID" type="STRING" dataType="VARCHAR(40)" mandatory="true" comment="Business process id"/>
-			<field name="xmlId" column="XMLID" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="true" comment="Id XML"/>			
 			<field name="messageType" column="MESSAGE_TYPE" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="true" comment="TYPE_MESSAGE_SEDEX_RIP"/>
 			<field name="messageSubType" column="MESSAGE_SUBTYPE" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="true" comment="SUBTYPE_MESSAGE_SEDEX"/>
 			<field name="messageEmetteur" column="EMETTEUR" type="STRING" dataType="VARCHAR(20)" mandatory="true" comment="ID_SEDEX_EMETTEUR"/>
 			<field name="messageRecepteur" column="RECEPTEUR" type="STRING" dataType="VARCHAR(20)" mandatory="true" comment="ID_SEDEX_RECEPTEUR"/>
 			<field name="status" column="CSSTAT" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="true" comment="STATUS_MESSAGE"/>
 			<field name="idTiersCM" column="IDTIERSCM" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="true" comment="ID_TIERS_CAISSE_MALADIE"/>
-			<field name="idMembre" column="IDMEMBRE" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="true" comment="ID_MEMBRE"/>
 			<field name="dateAnnonce" column="DATE_ANNONCE" type="DATE" mandatory="false" comment="DATE_ANNONCE"/>
-			<field name="periodeDebut" column="PERIODE_DEBUT" type="DATE" mandatory="false" comment="PERIODE_DEBUT"/>
-			<field name="periodeFin" column="PERIODE_FIN" type="DATE" mandatory="false" comment="PERIODE_FIN"/>
-			<field name="interets" column="INTERETS" type="NUMERIC" dataType="NUMERIC(10,0)" mandatory="false" comment="Intérêts"/>
-			<field name="frais" column="FRAIS" type="NUMERIC" dataType="NUMERIC(10,0)" mandatory="false" comment="Frais"/>
-			<field name="totalCreance" column="TOTAL_CREANCE" type="NUMERIC" dataType="NUMERIC(10,0)" mandatory="false" comment="Total créance"/>
-			<field name="pmtDebiteur" column="PMT_DEBITEUR" type="NUMERIC" dataType="NUMERIC(10,0)" mandatory="false" comment="Paiement débiteur"/>
-			<field name="rpRetro" column="RP_RETRO" type="NUMERIC" dataType="NUMERIC(10,0)" mandatory="false" comment="RP rétro"/>
-			<field name="annulation" column="ANNULATION" type="NUMERIC" dataType="NUMERIC(10,0)" mandatory="false" comment="Annulation"/>
+			<field name="statementDate" column="STATEMENT_DATE" type="DATE" mandatory="false" comment="STATEMENT_DATE"/>
+			<field name="statementStartDate" column="STATEMENT_START_DATE" type="DATE" mandatory="false" comment="STATEMENT_START_DATE"/>
+			<field name="statementEndDate" column="STATEMENT_END_DATE" type="DATE" mandatory="false" comment="STATEMENT_END_DATE"/>
 		</fields>
 				
 		<order-by>

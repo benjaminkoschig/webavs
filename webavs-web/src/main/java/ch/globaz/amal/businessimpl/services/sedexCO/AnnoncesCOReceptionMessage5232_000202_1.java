@@ -1,6 +1,7 @@
 package ch.globaz.amal.businessimpl.services.sedexCO;
 
 import globaz.globall.db.BSessionUtil;
+import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.context.JadeThread;
 import globaz.jade.context.JadeThreadActivator;
 import globaz.jade.crypto.JadeDecryptionNotSupportedException;
@@ -13,15 +14,16 @@ import globaz.jade.log.JadeLogger;
 import globaz.jade.log.business.JadeBusinessMessage;
 import globaz.jade.log.business.JadeBusinessMessageLevels;
 import globaz.jade.persistence.JadePersistenceManager;
-import globaz.jade.persistence.model.JadeAbstractSearchModel;
+import globaz.jade.persistence.model.JadeAbstractModel;
 import globaz.jade.sedex.JadeSedexMessageNotHandledException;
 import globaz.jade.sedex.annotation.OnReceive;
 import globaz.jade.sedex.annotation.Setup;
 import globaz.jade.sedex.message.GroupedSedexMessage;
 import globaz.jade.sedex.message.SedexMessage;
 import globaz.jade.sedex.message.SimpleSedexMessage;
+import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import globaz.jade.smtp.JadeSmtpClient;
-import globaz.pyxis.util.CommonNSSFormater;
+import globaz.webavs.common.CommonNSSFormater;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -33,11 +35,13 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import org.apache.commons.lang.StringUtils;
 import org.xml.sax.SAXException;
-import ch.gdk_cds.xmlns.da_64a_5232_000202._1.ContentType;
+import FamilleException.SimplePersonneANePasPoursuivreException;
 import ch.gdk_cds.xmlns.da_64a_5232_000202._1.HeaderType;
 import ch.gdk_cds.xmlns.da_64a_5232_000202._1.Message;
 import ch.gdk_cds.xmlns.da_64a_common._1.ClaimDebtorGuaranteedAssumptionType;
+import ch.gdk_cds.xmlns.da_64a_common._1.DebtorNPType;
 import ch.gdk_cds.xmlns.da_64a_common._1.DebtorWithClaimType;
+import ch.gdk_cds.xmlns.da_64a_common._1.InsuredPersonType;
 import ch.gdk_cds.xmlns.da_64a_common._1.InsuredPersonWithClaimType;
 import ch.gdk_cds.xmlns.da_64a_common._1.ListOfClaimsGuaranteedAssumptionsType;
 import ch.globaz.amal.business.constantes.IAMCodeSysteme;
@@ -46,9 +50,8 @@ import ch.globaz.amal.business.models.annoncesedexco.SimpleAnnonceSedexCO;
 import ch.globaz.amal.business.models.annoncesedexco.SimpleAnnonceSedexCOPersonne;
 import ch.globaz.amal.business.models.annoncesedexco.SimpleAnnonceSedexCOXML;
 import ch.globaz.amal.business.models.contribuable.Contribuable;
-import ch.globaz.amal.business.models.contribuable.ContribuableSearch;
-import ch.globaz.amal.business.models.detailfamille.SimpleDetailFamille;
 import ch.globaz.amal.business.models.famille.FamillePersonneEtendue;
+import ch.globaz.amal.business.models.famille.FamillePersonneEtendueSearch;
 import ch.globaz.amal.business.models.simplepersonneanepaspoursuivre.SimplePersonneANePasPoursuivre;
 import ch.globaz.amal.business.models.simplepersonneanepaspoursuivre.SimplePersonneANePasPoursuivreSearch;
 import ch.globaz.amal.business.services.AmalServiceLocator;
@@ -58,19 +61,24 @@ import ch.globaz.amal.businessimpl.services.sedexRP.utils.AMSedexRPUtil;
 import ch.globaz.common.domaine.Date;
 import ch.globaz.common.domaine.Montant;
 import ch.globaz.common.listoutput.SimpleOutputListBuilderJade;
-import ch.globaz.pyxis.business.model.AdministrationComplexModel;
-import ch.globaz.pyxis.business.service.TIBusinessServiceLocator;
 import ch.globaz.simpleoutputlist.annotation.style.Align;
 import ch.globaz.simpleoutputlist.core.Details;
 import ch.globaz.simpleoutputlist.outimpl.SimpleOutputListBuilder;
 
 public class AnnoncesCOReceptionMessage5232_000202_1 extends AnnoncesCODefault {
     private static final String PACKAGE_CLASS_FOR_READ_SEDEX_CREANCE_AVEC_GARANTIE = "ch.gdk_cds.xmlns.da_64a_5232_000202._1";
-    List<String> errors = new ArrayList<String>();
     private String senderId = null;
     private String idTiersCM = null;
-    private String anneePeriodeMessage = null;
-    protected File fileAnnoncesRecues = null;
+    private List<String> personnesNotFound = null;
+    private List<String> errors = null;
+
+    private Message message = null;
+    private String idTiersCaisseMaladie = null;
+
+    public AnnoncesCOReceptionMessage5232_000202_1() {
+        personnesNotFound = new ArrayList<String>();
+        errors = new ArrayList<String>();
+    }
 
     /**
      * Préparation des users et mots de passe pour le gestion SEDEX (JadeSedexService.xml)
@@ -88,6 +96,20 @@ public class AnnoncesCOReceptionMessage5232_000202_1 extends AnnoncesCODefault {
         JAXBContext jaxbContext = JAXBContext.newInstance(PACKAGE_CLASS_FOR_READ_SEDEX_CREANCE_AVEC_GARANTIE);
         unmarshaller = jaxbContext.createUnmarshaller();
         marshaller = jaxbContext.createMarshaller();
+    }
+
+    // CODEFAULT
+    private void checkJadeThreadErrors() throws JadePersistenceException {
+        if (JadeThread.logHasMessagesOfLevel(JadeBusinessMessageLevels.ERROR)) {
+            JadeBusinessMessage[] msg = JadeThread.logMessagesOfLevel(JadeBusinessMessageLevels.ERROR);
+            List<String> errors = new ArrayList<String>();
+            for (JadeBusinessMessage jadeBusinessMessage : msg) {
+                errors.add(jadeBusinessMessage.getMessageId());
+            }
+            String strErrors = StringUtils.join(errors, ";");
+            throw new JadePersistenceException("Erreur(s) pendant la création de l'annonce : " + strErrors);
+        }
+
     }
 
     @OnReceive
@@ -121,7 +143,20 @@ public class AnnoncesCOReceptionMessage5232_000202_1 extends AnnoncesCODefault {
         } finally {
             JadeThreadActivator.stopUsingContext(Thread.currentThread());
         }
+    }
 
+    private SimpleAnnonceSedexCOXML saveXml(Class<?>[] addClasses, SimpleAnnonceSedexCO annonceSedexCO)
+            throws JAXBException, SAXException, IOException, JAXBValidationError, JAXBValidationWarning,
+            JadePersistenceException {
+        StringWriter sw = new StringWriter();
+        jaxbs.marshal(message, sw, false, true, addClasses);
+        SimpleAnnonceSedexCOXML annonceSedexCOXML = new SimpleAnnonceSedexCOXML();
+        annonceSedexCOXML.setMessageId(message.getHeader().getMessageId());
+        annonceSedexCOXML.setIdAnnonceSedex(annonceSedexCO.getIdAnnonceSedexCO());
+        annonceSedexCOXML.setXml(sw.toString());
+        JadePersistenceManager.add(annonceSedexCOXML);
+        checkJadeThreadErrors();
+        return annonceSedexCOXML;
     }
 
     /**
@@ -137,189 +172,330 @@ public class AnnoncesCOReceptionMessage5232_000202_1 extends AnnoncesCODefault {
         try {
             Class<?>[] addClasses = new Class[] { ch.gdk_cds.xmlns.da_64a_5232_000202._1.Message.class };
             jaxbs = JAXBServices.getInstance();
-            Message message = (Message) jaxbs.unmarshal(currentSimpleMessage.fileLocation, false, true, addClasses);
-            // Sauvegarde de l'annonce dans la table
-            SimpleAnnonceSedexCO annonceSedexCO = creerAnnonceHeader(message);
-            // Sauvegarde du code XML de l'annonce dans la table
-            saveXml(addClasses, message, annonceSedexCO);
-
+            message = (Message) jaxbs.unmarshal(currentSimpleMessage.fileLocation, false, true, addClasses);
             senderId = message.getHeader().getSenderId();
             idTiersCM = AMSedexRPUtil.getIdTiersFromSedexId(senderId);
+            // Sauvegarde de l'annonce dans la table
+            SimpleAnnonceSedexCO annonceSedexCO = persistAnnonce(addClasses);
 
-            List<String> personnesNotFound = run(message, annonceSedexCO);
+            List<ComparaisonAnnonceCreancePriseEnCharge> comparaisonSheet = creationListeAnnonceRecue();
+            File fileComparaisonSheet = printList(comparaisonSheet);
 
-            sendMail(personnesNotFound);
+            sendMail(fileComparaisonSheet);
         } catch (Exception e) {
-            throw new JadeSedexMessageNotHandledException("Erreur lors du traitement du message");
+            throw new JadeSedexMessageNotHandledException("Erreur lors du traitement du message => " + e.getMessage());
         }
     }
 
-    private SimpleAnnonceSedexCOXML saveXml(Class<?>[] addClasses, Message message, SimpleAnnonceSedexCO annonceSedexCO)
-            throws JAXBException, SAXException, IOException, JAXBValidationError, JAXBValidationWarning,
-            JadePersistenceException {
-        StringWriter sw = new StringWriter();
-        jaxbs.marshal(message, sw, false, true, addClasses);
-        SimpleAnnonceSedexCOXML annonceSedexCOXML = new SimpleAnnonceSedexCOXML();
-        annonceSedexCOXML.setMessageId(message.getHeader().getMessageId());
-        annonceSedexCOXML.setIdAnnonceSedex(annonceSedexCO.getIdAnnonceSedexCO());
-        annonceSedexCOXML.setXml(sw.toString());
-        JadePersistenceManager.add(annonceSedexCOXML);
-        checkJadeThreadErrors();
-        return annonceSedexCOXML;
+    protected File createAndPrintList(String annee, String idTiers) {
+        List<ComparaisonAnnonceCreancePriseEnCharge> comparaisonSheet = creationListeAnnonceWithParam(annee, idTiers);
+        File fileComparaisonSheet = printList(comparaisonSheet);
+        return fileComparaisonSheet;
     }
 
-    private List<String> run(Message message, SimpleAnnonceSedexCO annonceSedexCO) throws JAXBValidationError,
-            JAXBValidationWarning, JAXBException, SAXException, IOException, AnnonceSedexCOReceptionException {
-        List<String> personnesNotFound = new ArrayList<String>();
-        List<ComparaisonAnnonceCreancePriseEnCharge> listeComparaison = new ArrayList<ComparaisonAnnonceCreancePriseEnCharge>();
+    private SimpleAnnonceSedexCO persistAnnonce(Class<?>[] addClasses) {
+        // Sauvegarde de l'annonce dans la table
+        // Sauvegarde de l'annonce dans la table
+        HeaderType header = message.getHeader();
+        SimpleAnnonceSedexCO annonceSedexCO = new SimpleAnnonceSedexCO();
+        try {
+            String idTiersSender = AMSedexRPUtil.getIdTiersFromSedexId(message.getHeader().getSenderId());
 
-        // Récupération de la période (année)
-        anneePeriodeMessage = String.valueOf(message.getContent().getListOfClaimsGuaranteedAssumptions()
-                .getStatementStartDate().getYear());
+            annonceSedexCO.setStatus(IAMCodeSysteme.AMStatutAnnonceSedex.RECU.getValue());
+            annonceSedexCO.setMessageId(header.getMessageId());
+            annonceSedexCO.setBusinessProcessId(header.getBusinessProcessId());
+            annonceSedexCO.setMessageType(header.getMessageType());
+            annonceSedexCO.setMessageSubType(header.getSubMessageType());
+            annonceSedexCO.setMessageEmetteur(header.getSenderId());
+            annonceSedexCO.setMessageRecepteur(header.getRecipientId());
+            annonceSedexCO.setIdTiersCM(idTiersSender);
+            annonceSedexCO.setDateAnnonce(Date.now().getSwissValue());
 
-        // Itération sur les créances trouvées dans le message
-        for (ClaimDebtorGuaranteedAssumptionType claimDebtorGuaranteedAssumption : message.getContent()
-                .getListOfClaimsGuaranteedAssumptions().getClaimDebtorGuaranteedAssumption()) {
+            ListOfClaimsGuaranteedAssumptionsType listOfClaimsGuaranteedAssumptionsType = message.getContent()
+                    .getListOfClaimsGuaranteedAssumptions();
 
-            DebtorWithClaimType debiteur = claimDebtorGuaranteedAssumption.getDebtorWithClaim();
-            List<InsuredPersonWithClaimType> listePersonnesAssurees = claimDebtorGuaranteedAssumption
-                    .getInsuredPersonWithClaim();
+            annonceSedexCO.setStatementDate(AMSedexRPUtil.getDateXMLToString(listOfClaimsGuaranteedAssumptionsType
+                    .getStatementDate()));
+            annonceSedexCO.setStatementStartDate(AMSedexRPUtil.getDateXMLToString(listOfClaimsGuaranteedAssumptionsType
+                    .getStatementStartDate()));
+            annonceSedexCO.setStatementEndDate(AMSedexRPUtil.getDateXMLToString(listOfClaimsGuaranteedAssumptionsType
+                    .getStatementEndDate()));
+            annonceSedexCO = (SimpleAnnonceSedexCO) JadePersistenceManager.add(annonceSedexCO);
+            checkJadeThreadErrors();
 
+            // Sauvegarde du XML dans la base
+            saveXml(addClasses, annonceSedexCO);
+
+            // Sauvegarde des débiteurs et personnes assurées
+            processDonneesAnnonce(annonceSedexCO);
+        } catch (Exception ex) {
+            JadeThread.logError(
+                    "AnnoncesCOReceptionMessage5232_000202_1.saveAnnonce()",
+                    "Erreur pendant la sauvegarde de l'annonce des créances avec prise en charge ! (Msg id : "
+                            + header.getMessageId() + ") => " + ex.getMessage());
+        }
+
+        return annonceSedexCO;
+    }
+
+    private void processDonneesAnnonce(SimpleAnnonceSedexCO simpleAnnonceSedexCO) {
+        ListOfClaimsGuaranteedAssumptionsType listOfClaimsGuaranteedAssumptions = message.getContent()
+                .getListOfClaimsGuaranteedAssumptions();
+
+        for (ClaimDebtorGuaranteedAssumptionType claimDebtorGuaranteedAssumption : listOfClaimsGuaranteedAssumptions
+                .getClaimDebtorGuaranteedAssumption()) {
             try {
-                String vn = debiteur.getDebtor().getDebtorNP().getVn().toString();
-                CommonNSSFormater nssFormater = new CommonNSSFormater();
-                String nssFormate = nssFormater.format(vn);
+                DebtorWithClaimType debtorWithClaim = claimDebtorGuaranteedAssumption.getDebtorWithClaim();
+                DebtorNPType debtorNP = debtorWithClaim.getDebtor().getDebtorNP();
+                List<InsuredPersonWithClaimType> listInsuredPersonsWithClaim = claimDebtorGuaranteedAssumption
+                        .getInsuredPersonWithClaim();
 
-                FamillePersonneEtendue famillePersonneEtendue = searchPersonne(nssFormate, listePersonnesAssurees);
-
-                if (famillePersonneEtendue != null) {
-                    // Création d'une entrée pour chaque membre
-                    SimpleAnnonceSedexCOPersonne sedexCOPersonne = new SimpleAnnonceSedexCOPersonne();
-                    sedexCOPersonne.setIdAnnonceSedexCO(annonceSedexCO.getId());
-                    sedexCOPersonne.setIdContribuable(famillePersonneEtendue.getSimpleFamille().getIdContribuable());
-                    sedexCOPersonne.setIdFamille(famillePersonneEtendue.getSimpleFamille().getIdFamille());
-                    JadePersistenceManager.add(sedexCOPersonne);
+                if (debtorNP == null) {
+                    JadeThread.logInfo(this.getClass().getName(), "Débiteur non personne physique");
+                    continue;
                 }
-            } catch (Exception ex) {
-                throw new AnnonceSedexCOReceptionException(ex.getMessage());
-            }
 
-            ComparaisonAnnonceCreancePriseEnCharge comparaisonAnnonceCreancePriseEnCharge = new ComparaisonAnnonceCreancePriseEnCharge();
-            for (InsuredPersonWithClaimType personneAssuree : listePersonnesAssurees) {
-                SimplePersonneANePasPoursuivre personneANePasPoursuivre = flagPersonne(personneAssuree,
-                        personnesNotFound);
+                if (debtorNP.getVn() != null && debtorNP.getVn() > 0) {
+                    String strNss = String.valueOf(debtorNP.getVn());
+                    FamillePersonneEtendue famillePersonneEtendue = searchPersonne(strNss, listInsuredPersonsWithClaim);
 
-                comparaisonAnnonceCreancePriseEnCharge = getLigneComparaison(personneANePasPoursuivre);
-                listeComparaison.add(comparaisonAnnonceCreancePriseEnCharge);
+                    if (famillePersonneEtendue == null) {
+                        String nss = "";
+                        try {
+                            nss = formatNSS(debtorNP.getVn());
+                        } catch (Exception ex) {
+                            nss = String.valueOf(debtorNP.getVn());
+                        }
+                        personnesNotFound.add("Débiteur " + nss + " - " + debtorNP.getOfficialName() + " "
+                                + debtorNP.getFirstName());
+                    } else {
+                        SimpleAnnonceSedexCOPersonne simpleAnnonceSedexCOPersonne = new SimpleAnnonceSedexCOPersonne();
+                        simpleAnnonceSedexCOPersonne.setIdAnnonceSedexCO(simpleAnnonceSedexCO.getIdAnnonceSedexCO());
+                        simpleAnnonceSedexCOPersonne.setIdFamille(famillePersonneEtendue.getSimpleFamille()
+                                .getIdFamille());
+                        simpleAnnonceSedexCOPersonne.setIdContribuable(famillePersonneEtendue.getSimpleContribuable()
+                                .getIdContribuable());
+                        try {
+                            AmalServiceLocator.getSimpleAnnonceSedexCOPersonneService().create(
+                                    simpleAnnonceSedexCOPersonne);
+                        } catch (Exception ex) {
+                            throw new JadePersistenceException(ex.getMessage());
+                        }
+                    }
+                }
+
+                for (InsuredPersonWithClaimType insuredPersonWithClaim : listInsuredPersonsWithClaim) {
+                    try {
+                        InsuredPersonType insuredPerson = insuredPersonWithClaim.getInsuredPerson();
+
+                        // FLAG de la personne dans la table MAPERNPP
+                        flagPersonne(simpleAnnonceSedexCO, insuredPersonWithClaim);
+
+                        String strNss = String.valueOf(insuredPerson.getVn());
+                        FamillePersonneEtendue famillePersonneEtendue = getPersonneEtendue(strNss);
+
+                        if (famillePersonneEtendue == null) {
+                            String nss = "";
+                            try {
+                                nss = formatNSS(insuredPerson.getVn());
+                            } catch (Exception ex) {
+                                nss = String.valueOf(insuredPerson.getVn());
+                            }
+                            personnesNotFound.add("Personne " + nss + " - " + insuredPerson.getOfficialName() + " "
+                                    + insuredPerson.getFirstName());
+                        }
+
+                    } catch (AnnonceSedexCOReceptionException asre) {
+                        JadeThread.logError(
+                                this.getClass().getName(),
+                                "Erreur pendant le traitement d'une personne a ne pas poursuivre : "
+                                        + asre.getMessage());
+                    }
+                }
+            } catch (JadePersistenceException jpe) {
+                JadeThread.logError(this.getClass().getName(),
+                        "Erreur pendant la création du débiteur en DB : " + jpe.getMessage());
             }
         }
-
-        generationListeDifferences(listeComparaison);
-
-        return personnesNotFound;
-
     }
 
-    protected ComparaisonAnnonceCreancePriseEnCharge getLigneComparaison(
-            SimplePersonneANePasPoursuivre personneANePasPoursuivre) throws AnnonceSedexCOReceptionException {
+    /**
+     * Règles :
+     * Si le débiteur existe avec le nss passé, on utilise celui ci
+     * Sinon, on prend le premier contribuable actif trouvé d'une personne assurée
+     * Et enfin, on prend un contribuable qui a une fin de droit la plus récente et on met un message
+     * 
+     * @param nss
+     * @param personnesAssurees
+     * @return
+     * @throws JadePersistenceException
+     */
+    // CODEFAULT
+    protected FamillePersonneEtendue searchPersonne(String nss, List<InsuredPersonWithClaimType> personnesAssurees)
+            throws JadePersistenceException {
 
-        ComparaisonAnnonceCreancePriseEnCharge comparaisonAnnonceCreancePriseEnCharge = new ComparaisonAnnonceCreancePriseEnCharge();
         try {
-            CommonNSSFormater nssFormateur = new CommonNSSFormater();
-            String nssDebiteurFormate = nssFormateur.format(personneANePasPoursuivre.getNss());
-            ContribuableSearch contribuableSearch = new ContribuableSearch();
-            contribuableSearch.setLikeNss(nssDebiteurFormate);
-            contribuableSearch = AmalServiceLocator.getContribuableService().search(contribuableSearch);
-            Contribuable contribuable = null;
+            FamillePersonneEtendue famillePersonneEtendue = getPersonneEtendue(nss);
 
-            if (contribuableSearch.getNbOfResultMatchingQuery() > 0) {
-                contribuable = (Contribuable) contribuableSearch.getSearchResults()[0];
+            if (famillePersonneEtendue != null) {
+                return famillePersonneEtendue;
             }
 
-            if (contribuable == null) {
-                throw new AnnonceSedexCOReceptionException("Contribuable not exist with NSS : " + nssDebiteurFormate);
+            // Si on arrive jusqu'ici, c'est qu'on a trouvé aucun membre avec ce nss, on tente de récupérer le 1er
+            // contribuable actif qu'on trouve sur une des personnes assurées...
+            // On en profite également pour conserver le contribuable avec la fin de droit la plus récente, au cas où on
+            // devrait aller à la prochaine étape...
+            FamillePersonneEtendue famillePersonneEtendueMostRecent = null;
+            for (InsuredPersonWithClaimType insuredPerson : personnesAssurees) {
+                String nssPersonneAssureeFormate = "";
+                try {
+                    CommonNSSFormater nssFormateur = new CommonNSSFormater();
+                    nssPersonneAssureeFormate = nssFormateur.format(String.valueOf(insuredPerson.getInsuredPerson()
+                            .getVn()));
+                } catch (Exception e) {
+                    throw new IllegalArgumentException(e.getMessage());
+                }
+                FamillePersonneEtendueSearch famillePersonneEtendueSearch = new FamillePersonneEtendueSearch();
+                famillePersonneEtendueSearch.setLikeNss(nssPersonneAssureeFormate);
+                famillePersonneEtendueSearch.setOrderKey("orderByFinDroitDesc");
+                famillePersonneEtendueSearch = AmalServiceLocator.getFamilleContribuableService().search(
+                        famillePersonneEtendueSearch);
+                for (JadeAbstractModel abstractFamilleContribuable : famillePersonneEtendueSearch.getSearchResults()) {
+                    famillePersonneEtendue = (FamillePersonneEtendue) abstractFamilleContribuable;
+
+                    if (JadeStringUtil.isBlankOrZero(famillePersonneEtendue.getSimpleFamille().getFinDefinitive())) {
+                        // On retourne le 1er cas sans date de fin qu'on trouve.
+                        return famillePersonneEtendue;
+                    } else {
+                        // Sinon on prend le 1er, qui est le plus récent
+                        Date dateFinMostRecent = new Date(famillePersonneEtendueMostRecent.getSimpleFamille()
+                                .getFinDefinitive());
+                        Date dateFinCurrent = new Date(famillePersonneEtendue.getSimpleFamille().getFinDefinitive());
+                        if (dateFinCurrent.after(dateFinMostRecent)) {
+                            famillePersonneEtendueMostRecent = famillePersonneEtendue;
+                        }
+                    }
+                }
             }
 
-            SimpleDetailFamille subside = AmalServiceLocator.getDetailFamilleService().read(
-                    personneANePasPoursuivre.getIdDetailFamille());
-            if (subside == null) {
-                throw new AnnonceSedexCOReceptionException("Subside not found : "
-                        + personneANePasPoursuivre.getIdDetailFamille());
-            }
-
-            comparaisonAnnonceCreancePriseEnCharge.setNoContribuable(contribuable.getPersonneEtendue()
-                    .getPersonneEtendue().getNumContribuableActuel());
-            comparaisonAnnonceCreancePriseEnCharge.setNss(contribuable.getPersonneEtendue().getPersonneEtendue()
-                    .getNumAvsActuel());
-            comparaisonAnnonceCreancePriseEnCharge.setNomPrenom(contribuable.getPersonneEtendue().getTiers()
-                    .getDesignation1()
-                    + " " + contribuable.getPersonneEtendue().getTiers().getDesignation2());
-            comparaisonAnnonceCreancePriseEnCharge.setLocalite(personneANePasPoursuivre.getNpaLocalite());
-            comparaisonAnnonceCreancePriseEnCharge.setAnnee(anneePeriodeMessage);
-            comparaisonAnnonceCreancePriseEnCharge.setMontantCreance(new Montant(personneANePasPoursuivre
-                    .getMontantCreance()));
-
-            if (IAMCodeSysteme.AMTypeDemandeSubside.ASSISTE.getValue().equals(subside.getTypeDemande())) {
-                comparaisonAnnonceCreancePriseEnCharge.setTypeSubside("A");
-            } else if (IAMCodeSysteme.AMTypeDemandeSubside.DEMANDE.getValue().equals(subside.getTypeDemande())) {
-                comparaisonAnnonceCreancePriseEnCharge.setTypeSubside("");
-            } else if (IAMCodeSysteme.AMTypeDemandeSubside.PC.getValue().equals(subside.getTypeDemande())) {
-                comparaisonAnnonceCreancePriseEnCharge.setTypeSubside("P");
-            } else if (IAMCodeSysteme.AMTypeDemandeSubside.REPRISE.getValue().equals(subside.getTypeDemande())) {
-                comparaisonAnnonceCreancePriseEnCharge.setTypeSubside("R");
-            } else if (IAMCodeSysteme.AMTypeDemandeSubside.SOURCE.getValue().equals(subside.getTypeDemande())) {
-                comparaisonAnnonceCreancePriseEnCharge.setTypeSubside("S");
-            }
-
-            AdministrationComplexModel administration = TIBusinessServiceLocator.getAdministrationService().read(
-                    subside.getNoCaisseMaladie());
-            comparaisonAnnonceCreancePriseEnCharge.setAssureur(administration.getTiers().getDesignation1());
-
-            SimplePersonneANePasPoursuivreSearch personneANePasPoursuivreSearch = new SimplePersonneANePasPoursuivreSearch();
-            personneANePasPoursuivreSearch.setForNSS(personneANePasPoursuivre.getNss());
-            personneANePasPoursuivreSearch.setForAnnee(anneePeriodeMessage);
-            personneANePasPoursuivreSearch.setDefinedSearchSize(JadeAbstractSearchModel.SIZE_NOLIMIT);
-            personneANePasPoursuivreSearch = AmalImplServiceLocator.getSimplePersonneANePasPoursuivreService().search(
-                    personneANePasPoursuivreSearch);
-
-            if (!personneANePasPoursuivre.getFlagEnvoi()) {
-                comparaisonAnnonceCreancePriseEnCharge.setMessage("Contribuable non demandé");
-            } else if (personneANePasPoursuivre.getFlagEnvoi() && !personneANePasPoursuivre.getFlagReponse()) {
-                comparaisonAnnonceCreancePriseEnCharge.setMessage("Non confirmé");
-            }
+            // Si on arrive la, c'est qu'on a trouvé aucun contribuable actif sur une des personnes assurées, on
+            // retourne donc celui qui a la date de fin la plus récente.
+            return famillePersonneEtendueMostRecent;
         } catch (Exception ex) {
-            throw new AnnonceSedexCOReceptionException("Erreur lors de la génération de la ligne de comparaison ==> "
-                    + ex.getMessage());
+            throw new JadePersistenceException("Erreur pendant la recherche de la personne " + nss, ex);
         }
-
-        return comparaisonAnnonceCreancePriseEnCharge;
     }
 
-    protected void generationListeDifferences(List<ComparaisonAnnonceCreancePriseEnCharge> listeComparaison)
-            throws AnnonceSedexCOReceptionException {
+    private List<ComparaisonAnnonceCreancePriseEnCharge> creationListeAnnonceRecue() {
         try {
-            Details details = new Details();
-            details.add("Reçu le", Date.now().getSwissValue());
-            details.newLigne();
+            SimplePersonneANePasPoursuivreSearch simplePersonneANePasPoursuivreSearch = new SimplePersonneANePasPoursuivreSearch();
+            Date debutPeriode = new Date(AMSedexRPUtil.getDateXMLToString(message.getContent()
+                    .getListOfClaimsGuaranteedAssumptions().getStatementStartDate()));
+            simplePersonneANePasPoursuivreSearch.setForAnnee(debutPeriode.getAnnee());
+            simplePersonneANePasPoursuivreSearch.setForIdTiersCM(idTiersCM);
+            simplePersonneANePasPoursuivreSearch = AmalImplServiceLocator.getSimplePersonneANePasPoursuivreService()
+                    .search(simplePersonneANePasPoursuivreSearch);
 
-            SimpleOutputListBuilder listeComparaisonBuilder = SimpleOutputListBuilderJade.newInstance()
-                    .outputNameAndAddPath("Comparaisons").addList(listeComparaison)
-                    .classElementList(ComparaisonAnnonceCreancePriseEnCharge.class)
-                    .addTitle("Liste de comparaison des annonces de prise en charge", Align.LEFT)
-                    .addSubTitle("Comparaisons").addHeaderDetails(details);
-
-            fileAnnoncesRecues = listeComparaisonBuilder.asXls().build();
-
+            return generateListe(simplePersonneANePasPoursuivreSearch, false);
         } catch (Exception ex) {
-            throw new AnnonceSedexCOReceptionException("Erreur lors de la génération de la liste de comparaison ==> "
-                    + ex.getMessage());
+            throw new RuntimeException(ex.getMessage());
         }
     }
 
-    private SimplePersonneANePasPoursuivre flagPersonne(InsuredPersonWithClaimType personneAssuree,
-            List<String> personnesNotFound) throws AnnonceSedexCOReceptionException {
-
+    private List<ComparaisonAnnonceCreancePriseEnCharge> creationListeAnnonceWithParam(String annee, String idTiersCM) {
         try {
+            SimplePersonneANePasPoursuivreSearch simplePersonneANePasPoursuivreSearch = new SimplePersonneANePasPoursuivreSearch();
+            simplePersonneANePasPoursuivreSearch.setForAnnee(annee);
+            simplePersonneANePasPoursuivreSearch.setForIdTiersCM(idTiersCM);
+            simplePersonneANePasPoursuivreSearch = AmalImplServiceLocator.getSimplePersonneANePasPoursuivreService()
+                    .search(simplePersonneANePasPoursuivreSearch);
+
+            return generateListe(simplePersonneANePasPoursuivreSearch, true);
+        } catch (Exception ex) {
+            throw new RuntimeException(ex.getMessage());
+        }
+    }
+
+    private List<ComparaisonAnnonceCreancePriseEnCharge> generateListe(
+            SimplePersonneANePasPoursuivreSearch simplePersonneANePasPoursuivreSearch, Boolean wantComplete)
+            throws Exception {
+        List<ComparaisonAnnonceCreancePriseEnCharge> comparaisonSheet = new ArrayList<ComparaisonAnnonceCreancePriseEnCharge>();
+
+        for (JadeAbstractModel abstractModel : simplePersonneANePasPoursuivreSearch.getSearchResults()) {
+            SimplePersonneANePasPoursuivre simplePersonneANePasPoursuivre = (SimplePersonneANePasPoursuivre) abstractModel;
+
+            if (!wantComplete && isEnvoyeEtRepondu(simplePersonneANePasPoursuivre)) {
+                continue;
+            }
+
+            ComparaisonAnnonceCreancePriseEnCharge ligne = new ComparaisonAnnonceCreancePriseEnCharge();
+
+            Contribuable contribuable = AmalImplServiceLocator.getContribuableService().read(
+                    simplePersonneANePasPoursuivre.getIdContribuable());
+            if (!contribuable.isNew()) {
+                ligne.setNoContribuable(contribuable.getPersonneEtendue().getPersonneEtendue()
+                        .getNumContribuableActuel());
+            }
+
+            String nss = formatNSS(simplePersonneANePasPoursuivre.getNss());
+            ligne.setNss(nss);
+            ligne.setNomPrenom(simplePersonneANePasPoursuivre.getNomPrenom());
+            ligne.setLocalite(simplePersonneANePasPoursuivre.getNpaLocalite());
+            ligne.setAnnee(simplePersonneANePasPoursuivre.getAnnee());
+
+            String nomCaisseMaladie = getNomCaisseMaladie(simplePersonneANePasPoursuivre.getIdTiersCM());
+            ligne.setAssureur(nomCaisseMaladie);
+
+            Montant montantCreance = new Montant(simplePersonneANePasPoursuivre.getMontantCreance());
+            ligne.setMontantCreance(montantCreance);
+
+            if (isNonDemande(simplePersonneANePasPoursuivre)) {
+                ligne.setMessage("Contribuable non demandé");
+            } else if (isNonRepondu(simplePersonneANePasPoursuivre)) {
+                ligne.setMessage("Contribuable non confirmé");
+            }
+
+            comparaisonSheet.add(ligne);
+        }
+
+        return comparaisonSheet;
+    }
+
+    private File printList(List<ComparaisonAnnonceCreancePriseEnCharge> listeComparaisons) {
+
+        Details details = new Details();
+        details.add("Reçu le", Date.now().getSwissValue());
+        details.newLigne();
+
+        SimpleOutputListBuilder listeComparaisonBuilder = SimpleOutputListBuilderJade.newInstance()
+                .outputNameAndAddPath("Comparaisons").addList(listeComparaisons)
+                .classElementList(ComparaisonAnnonceCreancePriseEnCharge.class)
+                .addTitle("Liste de comparaison des annonces de prise en charge", Align.LEFT)
+                .addSubTitle("Comparaisons").addHeaderDetails(details);
+
+        File fileAnnoncesRecues = listeComparaisonBuilder.asXls().build();
+
+        return fileAnnoncesRecues;
+    }
+
+    private boolean isEnvoyeEtRepondu(SimplePersonneANePasPoursuivre personneANePasPoursuivre) {
+        return personneANePasPoursuivre.getFlagEnvoi() && personneANePasPoursuivre.getFlagReponse();
+    }
+
+    private boolean isNonDemande(SimplePersonneANePasPoursuivre personneANePasPoursuivre) {
+        return !personneANePasPoursuivre.getFlagEnvoi() && personneANePasPoursuivre.getFlagReponse();
+    }
+
+    private boolean isNonRepondu(SimplePersonneANePasPoursuivre personneANePasPoursuivre) {
+        return personneANePasPoursuivre.getFlagEnvoi() && !personneANePasPoursuivre.getFlagReponse();
+    }
+
+    private SimplePersonneANePasPoursuivre flagPersonne(SimpleAnnonceSedexCO annonceSedexCO,
+            InsuredPersonWithClaimType personneAssuree) throws AnnonceSedexCOReceptionException {
+        try {
+            // Récupération de la période (année)
+            String anneePeriodeMessage = String.valueOf(message.getContent().getListOfClaimsGuaranteedAssumptions()
+                    .getStatementStartDate().getYear());
 
             Montant totalCreance = new Montant("0");
             if (personneAssuree.getPremium() != null) {
@@ -330,34 +506,18 @@ public class AnnoncesCOReceptionMessage5232_000202_1 extends AnnoncesCODefault {
                 totalCreance = totalCreance.add(new Montant(personneAssuree.getCostSharing().getClaimAmount()));
             }
 
-            String npa_localite = "";
-            if (personneAssuree.getInsuredPerson().getAddress().getCountry() == 8100) {
-                npa_localite = personneAssuree.getInsuredPerson().getAddress().getSwissZipCode().toString();
-            } else {
-                npa_localite = personneAssuree.getInsuredPerson().getAddress().getForeignZipCode().toString();
-            }
-            npa_localite += " " + personneAssuree.getInsuredPerson().getAddress().getMunicipalityName();
+            String npaLocalite = getNPALocalite(personneAssuree.getInsuredPerson().getAddress());
 
-            SimplePersonneANePasPoursuivreSearch personneANePasPoursuivreSearch = new SimplePersonneANePasPoursuivreSearch();
-            personneANePasPoursuivreSearch.setForNSS(String.valueOf(personneAssuree.getInsuredPerson().getVn()));
-            personneANePasPoursuivreSearch.setForAnnee(anneePeriodeMessage);
-            personneANePasPoursuivreSearch = AmalImplServiceLocator.getSimplePersonneANePasPoursuivreService().search(
-                    personneANePasPoursuivreSearch);
+            SimplePersonneANePasPoursuivreSearch personneANePasPoursuivreSearch = searchPersonneANePasPoursuivre(
+                    personneAssuree, anneePeriodeMessage);
             // S'il existe, on passe le flag reception a true, sinon on créé une ligne
             if (personneANePasPoursuivreSearch.getNbOfResultMatchingQuery() == 1) {
                 SimplePersonneANePasPoursuivre personneANePasPoursuivre = (SimplePersonneANePasPoursuivre) personneANePasPoursuivreSearch
                         .getSearchResults()[0];
-
-                if (!personneANePasPoursuivre.getFlagEnvoi()) {
-                    personnesNotFound.add(personneAssuree.getInsuredPerson().getVn() + " - "
-                            + personneAssuree.getInsuredPerson().getOfficialName() + " "
-                            + personneAssuree.getInsuredPerson().getFirstName());
-                }
-
                 personneANePasPoursuivre.setFlagReponse(Boolean.TRUE);
                 personneANePasPoursuivre.setNomPrenom(personneAssuree.getInsuredPerson().getOfficialName() + " "
                         + personneAssuree.getInsuredPerson().getFirstName());
-                personneANePasPoursuivre.setNpaLocalite(npa_localite);
+                personneANePasPoursuivre.setNpaLocalite(npaLocalite);
                 personneANePasPoursuivre.setMontantCreance(totalCreance.getValue());
 
                 AmalImplServiceLocator.getSimplePersonneANePasPoursuivreService().update(personneANePasPoursuivre);
@@ -365,19 +525,17 @@ public class AnnoncesCOReceptionMessage5232_000202_1 extends AnnoncesCODefault {
 
                 return personneANePasPoursuivre;
             } else if (personneANePasPoursuivreSearch.getNbOfResultMatchingQuery() == 0) {
-                personnesNotFound.add(personneAssuree.getInsuredPerson().getVn() + " - "
-                        + personneAssuree.getInsuredPerson().getOfficialName() + " "
-                        + personneAssuree.getInsuredPerson().getFirstName());
                 SimplePersonneANePasPoursuivre personneANePasPoursuivreNonExistante = new SimplePersonneANePasPoursuivre();
-                personneANePasPoursuivreNonExistante.setFlagEnvoi(false);
-                personneANePasPoursuivreNonExistante.setFlagReponse(true);
+                personneANePasPoursuivreNonExistante.setFlagEnvoi(Boolean.FALSE);
+                personneANePasPoursuivreNonExistante.setFlagReponse(Boolean.TRUE);
                 personneANePasPoursuivreNonExistante.setMontantCreance(totalCreance.getValue());
                 personneANePasPoursuivreNonExistante.setAnnee(anneePeriodeMessage);
                 personneANePasPoursuivreNonExistante.setNss(String.valueOf(personneAssuree.getInsuredPerson().getVn()));
                 personneANePasPoursuivreNonExistante.setNomPrenom(personneAssuree.getInsuredPerson().getOfficialName()
                         + " " + personneAssuree.getInsuredPerson().getFirstName());
-                personneANePasPoursuivreNonExistante.setNpaLocalite(npa_localite);
+                personneANePasPoursuivreNonExistante.setNpaLocalite(npaLocalite);
                 personneANePasPoursuivreNonExistante.setIdTiersCM(idTiersCM);
+                personneANePasPoursuivreNonExistante.setIdAnnonceSedex(annonceSedexCO.getIdAnnonceSedexCO());
                 AmalImplServiceLocator.getSimplePersonneANePasPoursuivreService().create(
                         personneANePasPoursuivreNonExistante);
                 checkJadeThreadErrors();
@@ -393,49 +551,21 @@ public class AnnoncesCOReceptionMessage5232_000202_1 extends AnnoncesCODefault {
         }
     }
 
-    private void checkJadeThreadErrors() throws JadePersistenceException {
-        if (JadeThread.logHasMessagesOfLevel(JadeBusinessMessageLevels.ERROR)) {
-            JadeBusinessMessage[] msg = JadeThread.logMessagesOfLevel(JadeBusinessMessageLevels.ERROR);
-            List<String> errors = new ArrayList<String>();
-            for (JadeBusinessMessage jadeBusinessMessage : msg) {
-                errors.add(jadeBusinessMessage.getMessageId());
-            }
-            String strErrors = StringUtils.join(errors, ";");
-            throw new JadePersistenceException("Erreur(s) pendant la création de l'annonce : " + strErrors);
-        }
-
+    private SimplePersonneANePasPoursuivreSearch searchPersonneANePasPoursuivre(
+            InsuredPersonWithClaimType personneAssuree, String anneePeriodeMessage) throws JadePersistenceException,
+            SimplePersonneANePasPoursuivreException, JadeApplicationServiceNotAvailableException {
+        SimplePersonneANePasPoursuivreSearch personneANePasPoursuivreSearch = new SimplePersonneANePasPoursuivreSearch();
+        personneANePasPoursuivreSearch.setForNSS(String.valueOf(personneAssuree.getInsuredPerson().getVn()));
+        personneANePasPoursuivreSearch.setForAnnee(anneePeriodeMessage);
+        personneANePasPoursuivreSearch = AmalImplServiceLocator.getSimplePersonneANePasPoursuivreService().search(
+                personneANePasPoursuivreSearch);
+        return personneANePasPoursuivreSearch;
     }
 
-    private SimpleAnnonceSedexCO creerAnnonceHeader(Message message) {
-
-        try {
-            // Sauvegarde de l'annonce dans la table
-            HeaderType header = message.getHeader();
-            ContentType content = message.getContent();
-            ListOfClaimsGuaranteedAssumptionsType claims = content.getListOfClaimsGuaranteedAssumptions();
-
-            SimpleAnnonceSedexCO annonceSedexCO = new SimpleAnnonceSedexCO();
-            annonceSedexCO.setStatus(IAMCodeSysteme.AMStatutAnnonceSedex.RECU.getValue());
-            annonceSedexCO.setMessageId(header.getMessageId());
-            annonceSedexCO.setBusinessProcessId(header.getBusinessProcessId());
-            annonceSedexCO.setMessageType(header.getMessageType());
-            annonceSedexCO.setMessageSubType(header.getSubMessageType());
-            annonceSedexCO.setMessageEmetteur(header.getSenderId());
-            annonceSedexCO.setMessageRecepteur(header.getRecipientId());
-            annonceSedexCO.setIdTiersCM(AMSedexRPUtil.getIdTiersFromSedexId(header.getSenderId()));
-            annonceSedexCO.setDateAnnonce(AMSedexRPUtil.getDateXMLToString(claims.getStatementDate()));
-            annonceSedexCO = (SimpleAnnonceSedexCO) JadePersistenceManager.add(annonceSedexCO);
-            checkJadeThreadErrors();
-            return annonceSedexCO;
-        } catch (Exception ex) {
-            errors.add("Erreur pendant la création de l'enregistrement SimpleAnnonceSedexCO" + ex.getMessage());
-        }
-        return null;
-    }
-
-    private void sendMail(List<String> personnesNotFound) throws Exception {
+    private void sendMail(File file) {
         String subject = "Contentieux Amal : réception des annonces de prise en charge effectuée avec succès !";
         StringBuilder body = new StringBuilder();
+
         if (!personnesNotFound.isEmpty()) {
             if (personnesNotFound.size() > 1) {
                 subject = "Contentieux Amal : " + personnesNotFound.size()
@@ -443,32 +573,30 @@ public class AnnoncesCOReceptionMessage5232_000202_1 extends AnnoncesCODefault {
             } else {
                 subject = "Contentieux Amal : 1 personne non connue détectée lors de la réception des annonces de prise en charge !";
             }
-            body.append("Liste des personnes non trouvées :\n");
+            body.append("Liste des débiteurs / personnes non trouvées :\n");
 
             for (String personne : personnesNotFound) {
                 body.append("   -" + personne + "\n");
             }
+
+            if (!errors.isEmpty()) {
+                body.append("\nErreur(s) rencontrée(s) ");
+                for (String erreur : errors) {
+                    body.append("   -" + erreur + "\n");
+                }
+            }
         }
 
         String[] files = new String[1];
-        if (fileAnnoncesRecues != null) {
-            files[0] = fileAnnoncesRecues.getPath();
+        if (file != null) {
+            files[0] = file.getPath();
         }
 
-        JadeSmtpClient.getInstance().sendMail(BSessionUtil.getSessionFromThreadContext().getUserEMail(), subject,
-                body.toString(), files);
-    }
-
-    private void sendMailListComparaisonOnly() throws Exception {
-        String subject = "Contentieux Amal : Liste de comparaison";
-        StringBuilder body = new StringBuilder();
-
-        String[] files = new String[1];
-        if (fileAnnoncesRecues != null) {
-            files[0] = fileAnnoncesRecues.getPath();
+        try {
+            JadeSmtpClient.getInstance().sendMail(BSessionUtil.getSessionFromThreadContext().getUserEMail(), subject,
+                    body.toString(), files);
+        } catch (Exception e) {
+            JadeThread.logError(this.getClass().getName(), "Erreur lors de l'envoi du mail ! => " + e.getMessage());
         }
-
-        JadeSmtpClient.getInstance().sendMail(BSessionUtil.getSessionFromThreadContext().getUserEMail(), subject,
-                body.toString(), files);
     }
 }

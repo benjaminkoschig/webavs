@@ -42,7 +42,6 @@ $(document).ready(function() {
    		<TH>Message</TH>
    		<TH>Status</TH>
    		<TH>Période</TH>
-   		<TH>Montant</TH>   		
 	    <%-- /tpl:insert --%> 
 <%@ include file="/theme/list/tableHeader.jspf" %>
     <%-- tpl:insert attribute="zoneCondition" --%>
@@ -120,19 +119,11 @@ $(document).ready(function() {
 			libelleImg = "";
 			%>				
 			<TD class="mtd" nowrap align="center">		
-				<%if (!line.getComplexAnnonceSedexCO().getSimpleAnnonceSedexCO().getPeriodeDebut().isEmpty()) { %>	
-					<%=line.getComplexAnnonceSedexCO().getSimpleAnnonceSedexCO().getPeriodeDebut()%> - <%=line.getComplexAnnonceSedexCO().getSimpleAnnonceSedexCO().getPeriodeFin() %>
+				<%if (!line.getComplexAnnonceSedexCO().getSimpleAnnonceSedexCO().getStatementStartDate().isEmpty()) { %>	
+					<%=line.getComplexAnnonceSedexCO().getSimpleAnnonceSedexCO().getStatementStartDate()%> - <%=line.getComplexAnnonceSedexCO().getSimpleAnnonceSedexCO().getStatementEndDate() %>
 				<%} else { %>
 					&nbsp;
 				<% } %>
-			</TD>
-			<TD class="mtd" nowrap align="right">
-			<% Montant totalCreance = new Montant(line.getComplexAnnonceSedexCO().getSimpleAnnonceSedexCO().getTotalCreance());
-			if (!totalCreance.isZero()) {%>	
-				<%=totalCreance.toStringFormat() %>
-			<%} else { %>
-				&nbsp;
-			<%} %>
 			</TD>
 		<%-- /tpl:insert --%>
 <%@ include file="/theme/list/lineEnd.jspf" %>
