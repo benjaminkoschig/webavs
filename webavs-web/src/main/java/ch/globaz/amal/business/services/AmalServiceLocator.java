@@ -6,6 +6,8 @@ import ch.globaz.amal.business.services.annonce.AnnonceService;
 import ch.globaz.amal.business.services.models.annonce.SimpleAnnonceService;
 import ch.globaz.amal.business.services.models.annoncesedex.ComplexAnnonceSedexService;
 import ch.globaz.amal.business.services.models.annoncesedex.SimpleAnnonceSedexService;
+import ch.globaz.amal.business.services.models.annoncesedexco.ComplexAnnonceSedexCO2Service;
+import ch.globaz.amal.business.services.models.annoncesedexco.ComplexAnnonceSedexCO4Service;
 import ch.globaz.amal.business.services.models.annoncesedexco.ComplexAnnonceSedexCOService;
 import ch.globaz.amal.business.services.models.annoncesedexco.SimpleAnnonceSedexCOPersonneService;
 import ch.globaz.amal.business.services.models.annoncesedexco.SimpleAnnonceSedexCOService;
@@ -67,6 +69,30 @@ public class AmalServiceLocator {
             throws JadeApplicationServiceNotAvailableException {
         return (ComplexAnnonceSedexCOService) JadeApplicationServiceLocator.getInstance().getServiceImpl(
                 ComplexAnnonceSedexCOService.class);
+    }
+
+    /**
+     * Implémentation du service d'annonce sedex co2 complex modèle
+     * 
+     * @return
+     * @throws JadeApplicationServiceNotAvailableException
+     */
+    public static ComplexAnnonceSedexCO2Service getComplexAnnonceSedexCO2Service()
+            throws JadeApplicationServiceNotAvailableException {
+        return (ComplexAnnonceSedexCO2Service) JadeApplicationServiceLocator.getInstance().getServiceImpl(
+                ComplexAnnonceSedexCO2Service.class);
+    }
+
+    /**
+     * Implémentation du service d'annonce sedex co4 complex modèle
+     * 
+     * @return
+     * @throws JadeApplicationServiceNotAvailableException
+     */
+    public static ComplexAnnonceSedexCO4Service getComplexAnnonceSedexCO4Service()
+            throws JadeApplicationServiceNotAvailableException {
+        return (ComplexAnnonceSedexCO4Service) JadeApplicationServiceLocator.getInstance().getServiceImpl(
+                ComplexAnnonceSedexCO4Service.class);
     }
 
     /**

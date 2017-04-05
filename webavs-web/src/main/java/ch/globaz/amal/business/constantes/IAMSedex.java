@@ -11,8 +11,13 @@ public interface IAMSedex {
     public static final String MESSAGE_ACTION_REPONSE = "6";
     public static final BigInteger MESSAGE_MINOR_VERSION = new BigInteger("0");
 
-    // Sedex Contentieux
+    // Sedex Contentieux: personnes ne devant pas être poursuivies
     public static final String MESSAGE_LIST_GUARANTED_TYPE = "5222";
     public static final String MESSAGE_LIST_GUARANTED_SUBTYPE = "000201";
     public static final String MESSAGE_LIST_GUARANTED_SUBJECT = "list of guaranteed assumptions";
+
+    // Sedex Contentieux: créances avec garantie
+    public static final String MESSAGE_LIST_CLAIMS_TYPE = "5232";
+    public static final String MESSAGE_LIST_CLAIMS_SUBTYPE = "000202";
+    public static final String MESSAGE_LIST_CLAIMS_SUBJECT = "list of claims with guaranteed assumptions";
 }

@@ -583,10 +583,12 @@ function delMembreFamille(finalUrl){
 									<li><a href="amal?userAction=amal.contribuable.contribuableHistoriqueFamille.afficher"><ct:FWLabel key="JSP_AM_CON_D_ONGLET_FAMILLE"/><span>&nbsp;</span></a></li>
 								<% } %>
 								<li><a href="amal?userAction=amal.contribuable.contribuableRevenu.afficher<%=contribReprise?"&fromHisto=1":""%>"><ct:FWLabel key="JSP_AM_CON_D_ONGLET_REVENUS"/><span>&nbsp;</span></a></li>
-								<li><a href="amal?userAction=amal.contribuable.contribuableTaxations.afficher<%=contribReprise?"&fromHisto=1":""%>">Taxations<span>&nbsp;</span></a></li>
+								<li><a href="amal?userAction=amal.contribuable.contribuableTaxations.afficher<%=contribReprise?"&fromHisto=1":""%>"><ct:FWLabel key="JSP_AM_CON_D_ONGLET_TAXATIONS"/><span>&nbsp;</span></a></li>
 								<% if (!contribReprise) {%>
 									<li><a href="#conteneurCalculs"><ct:FWLabel key="JSP_AM_CON_D_ONGLET_CALCUL"/><span>&nbsp;</span></a></li>
-									<li><a href="amal?userAction=amal.contribuable.contribuableComplexAnnonceSedex.afficher">Sedex RP<span>&nbsp;</span></a></li>
+									<li><a href="amal?userAction=amal.contribuable.contribuableComplexAnnonceSedex.afficher"><ct:FWLabel key="JSP_AM_CON_D_ONGLET_SEDEX_RP"/><span>&nbsp;</span></a></li>
+									<li><a href="amal?userAction=amal.contribuable.contribuableComplexAnnonceSedexCo2.afficher"><ct:FWLabel key="JSP_AM_CON_D_ONGLET_SEDEX_CO_2"/><span>&nbsp;</span></a></li>
+									<li><a href="amal?userAction=amal.contribuable.contribuableComplexAnnonceSedexCo4.afficher"><ct:FWLabel key="JSP_AM_CON_D_ONGLET_SEDEX_CO_4"/><span>&nbsp;</span></a></li>
 								<% } %>
 							</ul>
 							<% if (!contribReprise) {%> 	

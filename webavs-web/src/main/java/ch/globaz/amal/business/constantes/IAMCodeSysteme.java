@@ -470,6 +470,90 @@ public interface IAMCodeSysteme {
         public String getValue() {
             return value;
         }
+
+        public static AMStatutAnnonceSedex getAMStatutAnnonceSedex(String value) {
+            if (CREE.getValue().equals(value)) {
+                return CREE;
+            } else if (ENVOYE.getValue().equals(value)) {
+                return ENVOYE;
+            } else if (ERREUR_RECU.getValue().equals(value)) {
+                return ERREUR_RECU;
+            } else if (ERROR_CREE.getValue().equals(value)) {
+                return ERROR_CREE;
+            } else if (ERROR_ENVOYE.getValue().equals(value)) {
+                return ERROR_ENVOYE;
+            } else if (RECU.getValue().equals(value)) {
+                return RECU;
+            } else if (RECU_SIMULE.getValue().equals(value)) {
+                return RECU_SIMULE;
+            } else {
+                return INITIAL;
+            }
+        }
+
+        /**
+         * @return image name in accord to message status
+         */
+        public static String getStatusImageName(String value) {
+            String imgName = "";
+            AMStatutAnnonceSedex enumValue = AMStatutAnnonceSedex.getAMStatutAnnonceSedex(value);
+            switch (enumValue) {
+                case CREE:
+                    imgName = "sedex_creation_ok.png";
+                    break;
+                case ERROR_CREE:
+                    imgName = "sedex_creation_ko.png";
+                    break;
+                case ENVOYE:
+                    imgName = "sedex_envoi_ok.png";
+                    break;
+                case ERROR_ENVOYE:
+                    imgName = "sedex_envoi_ko.png";
+                    break;
+                case RECU:
+                    imgName = "sedex_recu_ok.png";
+                    break;
+                case ERREUR_RECU:
+                    imgName = "sedex_recu_ko.png";
+                    break;
+                default:
+                    imgName = "";
+                    break;
+            }
+            return imgName;
+        }
+
+        /**
+         * @return image description in accord to message status
+         */
+        public static String getStatusImageLabel(String value) {
+            String imgLabel = "";
+            AMStatutAnnonceSedex enumValue = AMStatutAnnonceSedex.getAMStatutAnnonceSedex(value);
+            switch (enumValue) {
+                case CREE:
+                    imgLabel = "Créé";
+                    break;
+                case ERROR_CREE:
+                    imgLabel = "Erreur création";
+                    break;
+                case ENVOYE:
+                    imgLabel = "Envoyé";
+                    break;
+                case ERROR_ENVOYE:
+                    imgLabel = "Erreur envoyé";
+                    break;
+                case RECU:
+                    imgLabel = "Reçu";
+                    break;
+                case ERREUR_RECU:
+                    imgLabel = "Erreur reçu";
+                    break;
+                default:
+                    imgLabel = "";
+                    break;
+            }
+            return imgLabel;
+        }
     }
 
     /**

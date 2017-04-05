@@ -22,6 +22,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import ch.globaz.amal.business.calcul.CalculsSubsidesContainer;
+import ch.globaz.amal.business.constantes.AMMessagesSubTypesAnnonceSedexCO;
 import ch.globaz.amal.business.constantes.IAMCodeSysteme;
 import ch.globaz.amal.business.exceptions.models.annonce.AnnonceException;
 import ch.globaz.amal.business.exceptions.models.controleurEnvoi.ControleurEnvoiException;
@@ -33,6 +34,7 @@ import ch.globaz.amal.business.exceptions.models.parametreModel.ParametreModelEx
 import ch.globaz.amal.business.exceptions.models.revenu.RevenuException;
 import ch.globaz.amal.business.models.annoncesedex.ComplexAnnonceSedex;
 import ch.globaz.amal.business.models.annoncesedex.ComplexAnnonceSedexSearch;
+import ch.globaz.amal.business.models.annoncesedexco.ComplexAnnonceSedexCO2Search;
 import ch.globaz.amal.business.models.contribuable.Contribuable;
 import ch.globaz.amal.business.models.contribuable.ContribuableOnly;
 import ch.globaz.amal.business.models.contribuable.ContribuableRCListe;
@@ -346,6 +348,27 @@ public class AMContribuableViewBean extends BJadePersistentObjectViewBean {
         currentSearch.setForSDXIdContribuable(idContribuable);
         try {
             currentSearch = AmalServiceLocator.getComplexAnnonceSedexService().search(currentSearch);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return currentSearch;
+    }
+
+    /**
+     * Récupération des annonces SedexCO2 pour le dossier en cours
+     * 
+     * @return
+     */
+    public ComplexAnnonceSedexCO2Search getAnnonceSedexCO2() {
+        ComplexAnnonceSedexCO2Search currentSearch = new ComplexAnnonceSedexCO2Search();
+        String idContribuable = getId();
+        ArrayList<String> subType = new ArrayList<String>();
+        subType.add(AMMessagesSubTypesAnnonceSedexCO.LISTE_PERSONNE_NE_DEVANT_PAS_ETRE_POURSUIVIES.getValue());
+        subType.add(AMMessagesSubTypesAnnonceSedexCO.CREANCE_AVEC_GARANTIE_DE_PRISE_EN_CHARGE.getValue());
+        currentSearch.setInSDXMessageSubType(subType);
+        currentSearch.setForIdContribuable(idContribuable);
+        try {
+            currentSearch = AmalServiceLocator.getComplexAnnonceSedexCO2Service().search(currentSearch);
         } catch (Exception ex) {
             ex.printStackTrace();
         }

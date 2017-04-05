@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.amal.business.models.annoncesedexco.ComplexAnnonceSedexCO2">
+
+		<root-model name="simpleAnnonceSedexCOPersonne" model-ref="ch.globaz.amal.business.models.annoncesedexco.SimpleAnnonceSedexCOPersonne"/>
+
+		<linked-model name="simpleAnnonceSedexCO" model-ref="ch.globaz.amal.business.models.annoncesedexco.SimpleAnnonceSedexCO" join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="idAnnonceSedexCO" operation="EQUALS" field-ref="simpleAnnonceSedexCOPersonne.idAnnonceSedexCO"/>
+			</join-group>
+		</linked-model>
+
+		<linked-model name="caisseMaladie" model-ref="ch.globaz.pyxis.business.model.AdministrationComplexModel" join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="admin.idTiersAdministration" operation="EQUALS" field-ref="simpleAnnonceSedexCO.idTiersCM"/>
+			</join-group>
+		</linked-model>
+
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdContribuable" field-ref="simpleAnnonceSedexCOPersonne.idContribuable" operation="EQUALS"/>
+				<search-field name="inSDXMessageSubType" field-ref="simpleAnnonceSedexCO.messageSubType" operation="IN"/>
+			</search-group>
+		</search-definition>
+
+		<order-by>
+			<order-field field-ref="simpleAnnonceSedexCO.dateAnnonce" order="DESC"/>
+			<order-field field-ref="caisseMaladie.admin.codeAdministration" order="ASC"/> 
+			<order-field field-ref="simpleAnnonceSedexCO.idAnnonceSedexCO" order="DESC" />
+		</order-by>
+
+	</complexe-model>
+</model-mapping>

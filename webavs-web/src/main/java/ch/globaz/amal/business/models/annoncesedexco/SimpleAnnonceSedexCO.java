@@ -4,6 +4,7 @@
 package ch.globaz.amal.business.models.annoncesedexco;
 
 import globaz.jade.persistence.model.JadeSimpleModel;
+import ch.globaz.amal.business.constantes.AMMessagesSubTypesAnnonceSedexCO;
 
 public class SimpleAnnonceSedexCO extends JadeSimpleModel {
     private static final long serialVersionUID = 1L;
@@ -152,5 +153,12 @@ public class SimpleAnnonceSedexCO extends JadeSimpleModel {
 
     public void setDateAnnonce(String dateAnnonce) {
         this.dateAnnonce = dateAnnonce;
+    }
+
+    /**
+     * @return libelle based on Enum : ch.globaz.amal.business.constantes.AMMessageSubTypesAnnonceSedexCO
+     */
+    public String getMessageSubTypeLibelle() {
+        return AMMessagesSubTypesAnnonceSedexCO.getSubTypeCSLibelle(messageSubType);
     }
 }

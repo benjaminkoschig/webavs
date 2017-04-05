@@ -1,5 +1,7 @@
 package ch.globaz.amal.web.servlet;
 
+import globaz.amal.vb.contribuable.AMContribuableComplexAnnonceSedexCo2ViewBean;
+import globaz.amal.vb.contribuable.AMContribuableComplexAnnonceSedexCo4ViewBean;
 import globaz.amal.vb.contribuable.AMContribuableComplexAnnonceSedexViewBean;
 import globaz.amal.vb.contribuable.AMContribuableFamilleViewBean;
 import globaz.amal.vb.contribuable.AMContribuableHistoriqueFamilleViewBean;
@@ -146,7 +148,10 @@ public class AMContribuableServletAction extends AMAbstractServletAction {
         if ((viewBean instanceof AMContribuableTaxationsViewBean) || (viewBean instanceof AMContribuableRevenuViewBean)
                 || (viewBean instanceof AMContribuableFamilleViewBean)
                 || (viewBean instanceof AMContribuableHistoriqueFamilleViewBean)
-                || (viewBean instanceof AMContribuableComplexAnnonceSedexViewBean)) {
+                || (viewBean instanceof AMContribuableComplexAnnonceSedexViewBean)
+                || (viewBean instanceof AMContribuableComplexAnnonceSedexCo2ViewBean)
+                || (viewBean instanceof AMContribuableComplexAnnonceSedexCo4ViewBean)) {
+
             AMContribuableViewBean vbContribuable = (AMContribuableViewBean) session.getAttribute("viewBean");
             viewBean = vbContribuable;
         }

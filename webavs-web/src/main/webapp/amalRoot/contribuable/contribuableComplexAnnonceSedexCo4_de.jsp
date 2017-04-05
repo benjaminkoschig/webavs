@@ -9,7 +9,7 @@
 <%@page import="ch.globaz.amal.business.models.annoncesedex.ComplexAnnonceSedex"%>
 <%@ include file="/amalRoot/contribuable/contribuableHeader.jspf" %>
 <link rel="stylesheet" type="text/css" href="<%=servletContext%><%=(mainServletPath+"Root")%>/css/amal.css" rel="stylesheet"/>
-<script type="text/javascript">
+<%-- <script type="text/javascript">
 <%
 
 %>
@@ -24,7 +24,7 @@ $(document).ready(function() {
 			}
 		});
 });
-</script>
+</script> --%>
 
 <div id="conteneurComplexAnnonceSedex">
 	<table width="100%" border="0">
@@ -36,23 +36,27 @@ $(document).ready(function() {
 		<col align="center"></col>
 		<col align="left"></col>
 		<col align="left"></col>
-		<col align="right"></col>
-		<col align="right"></col>
+		<col align="left"></col>
+		<col align="left"></col>
+		<col align="left"></col>
+		<col align="left"></col>
 		<tr>
 			<th>Année</th>
 			<th>Date</th>
 			<th>Assureur</th>
 			<th>Message</th>
 			<th>Status</th>
-			<th>Traité</th>
-			<th>Membre</th>
 			<th>Période</th>
-			<th>Contribution</th>
-			<th>Prime</th>
+			<th>Intérêts</th>
+			<th>Frais</th>
+			<th>Total créance</th>
+			<th>Débiteur</th>
+			<th>RP Rétro</th>
+			<th>Annulation</th>
 		</tr>
-		<%HashMap<String, String> listIdsDetailFamille = viewBean.getIdDetailFamilleSedex(); %>
-		<tr class="amalRowOdd" style="height:26px; display:<%=listIdsDetailFamille.size() > 0? "":"none"%>;">
+		<%-- <tr class="amalRowOdd" style="height:26px">
 			<td colspan="10">
+			<%HashMap<String, String> listIdsDetailFamille = viewBean.getIdDetailFamilleSedex(); %>
 				<select id="selectSedex">
 					<option value="all"></option>
 				<%for (String idDetailFamille : listIdsDetailFamille.keySet()) { %>
@@ -93,9 +97,30 @@ $(document).ready(function() {
 
 			<td>
 				<%
+				String imgName = "";
+				String libelleImg = "";
 				String status = currentAnnonce.getSimpleAnnonceSedex().getStatus();
-				String imgName = AMStatutAnnonceSedex.getStatusImageName(status);
-				String libelleImg = AMStatutAnnonceSedex.getStatusImageLabel(status);
+				if (AMStatutAnnonceSedex.CREE.getValue().equals(status)) {
+					imgName = "sedex_creation_ok.png";
+					libelleImg = "Créé";
+				} else if (AMStatutAnnonceSedex.ERROR_CREE.getValue().equals(status)) {
+					imgName = "sedex_creation_ko.png";
+					libelleImg = "Erreur création";
+				} else if (AMStatutAnnonceSedex.ENVOYE.getValue().equals(status)) {
+					imgName = "sedex_envoi_ok.png";
+					libelleImg = "Envoyé";
+				} else if (AMStatutAnnonceSedex.ERROR_ENVOYE.getValue().equals(status)) {
+					imgName = "sedex_envoi_ko.png";
+					libelleImg = "Erreur envoyé";
+				} else if (AMStatutAnnonceSedex.RECU.getValue().equals(status)) {
+					imgName = "sedex_recu_ok.png";
+					libelleImg = "Reçu";
+				} else if (AMStatutAnnonceSedex.ERREUR_RECU.getValue().equals(status)) {
+					imgName = "sedex_recu_ko.png";
+					libelleImg = "Erreur reçu";
+				} else {
+					imgName = "";
+				}
 				%>
 				<%
 				if (!JadeStringUtil.isEmpty(imgName)) { %>
@@ -153,6 +178,6 @@ $(document).ready(function() {
 		<tr style="background-color:#B3C4DB"><td colspan="10"></td></tr>
 		<%
 			}
-		%>
+		%> --%>
 	</table>						
 </div>

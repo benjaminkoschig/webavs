@@ -43,6 +43,8 @@ public class AMMainServlet extends FWJadeServlet {
         listeInterdits.add(".download");
         listeInterdits.add(".choisir");
         listeInterdits.add("contribuableComplexAnnonceSedex.afficher");
+        listeInterdits.add("contribuableComplexAnnonceSedexCO2.afficher");
+        listeInterdits.add("contribuableComplexAnnonceSedexCO4.afficher");
 
         FWRemoveActionsEndingWith remRule = new FWRemoveActionsEndingWith(listeInterdits);
         aStack.addRule(remRule);
