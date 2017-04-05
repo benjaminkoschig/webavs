@@ -1,6 +1,7 @@
 package globaz.corvus.process;
 
 import static org.junit.Assert.*;
+import globaz.corvus.annonce.service.REAnnonces10eXmlService;
 import globaz.corvus.annonce.service.REAnnonces9eXmlService;
 import globaz.corvus.db.annonces.REAnnoncesAbstractLevel1A;
 import java.math.BigDecimal;
@@ -55,9 +56,29 @@ public class REEnvoyerAnnoncesXMLProcessTest {
     @Test
     public void testServiceAnnonceResolver() {
         REAnnoncesAbstractLevel1A annonceMock = Mockito.spy(new REAnnoncesAbstractLevel1A());
-        Mockito.when(annonceMock.getCodeApplication()).thenReturn("41");
-        assertTrue(testInstance.resolveAnnonceVersionService(annonceMock) instanceof REAnnonces9eXmlService);
-
+        try {
+            Mockito.when(annonceMock.getCodeApplication()).thenReturn("41");
+            assertTrue(testInstance.resolveAnnonceVersionService(annonceMock) instanceof REAnnonces9eXmlService);
+            Mockito.when(annonceMock.getCodeApplication()).thenReturn("42");
+            assertTrue(testInstance.resolveAnnonceVersionService(annonceMock) instanceof REAnnonces9eXmlService);
+            Mockito.when(annonceMock.getCodeApplication()).thenReturn("43");
+            assertTrue(testInstance.resolveAnnonceVersionService(annonceMock) instanceof REAnnonces9eXmlService);
+            Mockito.when(annonceMock.getCodeApplication()).thenReturn("44");
+            assertTrue(testInstance.resolveAnnonceVersionService(annonceMock) instanceof REAnnonces10eXmlService);
+            Mockito.when(annonceMock.getCodeApplication()).thenReturn("45");
+            assertTrue(testInstance.resolveAnnonceVersionService(annonceMock) instanceof REAnnonces10eXmlService);
+            Mockito.when(annonceMock.getCodeApplication()).thenReturn("46");
+            assertTrue(testInstance.resolveAnnonceVersionService(annonceMock) instanceof REAnnonces10eXmlService);
+        } catch (Exception e) {
+            Assert.assertEquals(null, e);
+        }
+        try {
+            Mockito.when(annonceMock.getCodeApplication()).thenReturn("30");
+            assertTrue(testInstance.resolveAnnonceVersionService(annonceMock) instanceof REAnnonces9eXmlService);
+            fail("ce codeApplication ne doit pas être pris en charge");
+        } catch (Exception e) {
+            Assert.assertNotNull(e);
+        }
     }
 
     @Test

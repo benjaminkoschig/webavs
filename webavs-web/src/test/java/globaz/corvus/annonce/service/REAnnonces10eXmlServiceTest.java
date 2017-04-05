@@ -1,14 +1,20 @@
 package globaz.corvus.annonce.service;
 
+import static org.junit.Assert.*;
+import globaz.corvus.db.annonces.REAnnoncesAbstractLevel1A;
 import globaz.corvus.db.annonces.REAnnoncesAugmentationModification10Eme;
 import globaz.corvus.db.annonces.REAnnoncesDiminution10Eme;
 import globaz.corvus.process.REEnvoyerAnnoncesXMLProcess;
+import globaz.globall.api.BITransaction;
+import globaz.globall.db.BSession;
 import globaz.globall.db.BSpy;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.mockito.Matchers;
 import org.mockito.Mockito;
 import org.mockito.Spy;
+import ch.admin.zas.rc.RRMeldung10Type;
 
 public class REAnnonces10eXmlServiceTest {
     private String ageDebutInvalidite = "";
@@ -75,7 +81,8 @@ public class REAnnonces10eXmlServiceTest {
 
     @Spy
     private REEnvoyerAnnoncesXMLProcess testInstance;
-    private REAnnonces9eXmlService testService;
+    @Spy
+    private REAnnonces10eXmlService testService;
 
     @Before
     public void setUp() throws Exception {
@@ -107,6 +114,7 @@ public class REAnnonces10eXmlServiceTest {
         anneeNiveau = "96";
 
         testInstance = Mockito.spy(new REEnvoyerAnnoncesXMLProcess());
+        testService = Mockito.spy(new REAnnonces10eXmlService());
 
     }
 
@@ -203,4 +211,117 @@ public class REAnnonces10eXmlServiceTest {
 
     }
 
+    @Test
+    public void testGetAnnonceXmlDirections() throws Exception {
+
+        // SetUp
+        // Mute DAO
+        Mockito.doReturn(new REAnnoncesAugmentationModification10Eme()).when(testService)
+                .retrieveAnnonceAugModif10(Matchers.any(REAnnoncesAbstractLevel1A.class), Matchers.any(BSession.class));
+        Mockito.doReturn(new REAnnoncesAugmentationModification10Eme())
+                .when(testService)
+                .retrieveAnnonceAugModif10_2(Matchers.any(REAnnoncesAugmentationModification10Eme.class),
+                        Matchers.any(BSession.class));
+        Mockito.doReturn(new REAnnoncesDiminution10Eme()).when(testService)
+                .retrieveAnnonceDimi10(Matchers.any(REAnnoncesAbstractLevel1A.class), Matchers.any(BSession.class));
+        Mockito.doNothing()
+                .when(testService)
+                .checkAndUpdate10eme2(Matchers.any(REAnnoncesAugmentationModification10Eme.class),
+                        Matchers.any(BITransaction.class));
+        // Mute ANAKIN
+        Mockito.doNothing()
+                .when(testService)
+                .parseAugmentationAvecAnakin(Matchers.any(REAnnoncesAugmentationModification10Eme.class),
+                        Matchers.any(REAnnoncesAugmentationModification10Eme.class), Matchers.any(BSession.class),
+                        Matchers.any(String.class));
+        Mockito.doNothing()
+                .when(testService)
+                .parseDiminutionAvecAnakin(Matchers.any(REAnnoncesDiminution10Eme.class), Matchers.any(BSession.class),
+                        Matchers.any(String.class));
+
+        // Temoins
+        RRMeldung10Type temoinAugmentationOrdinaire = new RRMeldung10Type();
+        Mockito.doReturn(temoinAugmentationOrdinaire)
+                .when(testService)
+                .genererZuwachmeldungOrdentliche(Matchers.any(REAnnoncesAugmentationModification10Eme.class),
+                        Matchers.any(REAnnoncesAugmentationModification10Eme.class));
+        RRMeldung10Type temoinAugmentationExtraordinaire = new RRMeldung10Type();
+        Mockito.doReturn(temoinAugmentationExtraordinaire)
+                .when(testService)
+                .genererZuwachmeldungAusserordentliche(Matchers.any(REAnnoncesAugmentationModification10Eme.class),
+                        Matchers.any(REAnnoncesAugmentationModification10Eme.class));
+        RRMeldung10Type temoinAugmentationAPI = new RRMeldung10Type();
+        Mockito.doReturn(temoinAugmentationAPI)
+                .when(testService)
+                .genererZuwachmeldungHilflosenentschaedigung(
+                        Matchers.any(REAnnoncesAugmentationModification10Eme.class),
+                        Matchers.any(REAnnoncesAugmentationModification10Eme.class));
+
+        RRMeldung10Type temoinModificationOrdinaire = new RRMeldung10Type();
+        Mockito.doReturn(temoinModificationOrdinaire)
+                .when(testService)
+                .genererAenderungsmeldungOrdentliche(Matchers.any(REAnnoncesAugmentationModification10Eme.class),
+                        Matchers.any(REAnnoncesAugmentationModification10Eme.class));
+        RRMeldung10Type temoinModificationExtraordinaire = new RRMeldung10Type();
+        Mockito.doReturn(temoinModificationExtraordinaire)
+                .when(testService)
+                .genererAenderungsmeldungAusserordentliche(Matchers.any(REAnnoncesAugmentationModification10Eme.class),
+                        Matchers.any(REAnnoncesAugmentationModification10Eme.class));
+        RRMeldung10Type temoinModificationAPI = new RRMeldung10Type();
+        Mockito.doReturn(temoinModificationAPI)
+                .when(testService)
+                .genererAenderungsmeldungHilflosenentschaedigung(
+                        Matchers.any(REAnnoncesAugmentationModification10Eme.class),
+                        Matchers.any(REAnnoncesAugmentationModification10Eme.class));
+
+        RRMeldung10Type temoinDiminutionOrdinaire = new RRMeldung10Type();
+        Mockito.doReturn(temoinDiminutionOrdinaire).when(testService)
+                .genererAbgangsOrdentliche(Matchers.any(REAnnoncesDiminution10Eme.class));
+
+        RRMeldung10Type temoinDiminutionExtrardinaire = new RRMeldung10Type();
+        Mockito.doReturn(temoinDiminutionExtrardinaire).when(testService)
+                .genererAbgangsAusserordentliche(Matchers.any(REAnnoncesDiminution10Eme.class));
+
+        RRMeldung10Type temoinDiminutionAPI = new RRMeldung10Type();
+        Mockito.doReturn(temoinDiminutionAPI).when(testService)
+                .genererAbgangsHilflosenentschaedigung(Matchers.any(REAnnoncesDiminution10Eme.class));
+
+        // TEST
+        // Augmentation
+        REAnnoncesAbstractLevel1A annonceMock = Mockito.spy(new REAnnoncesAbstractLevel1A());
+        Mockito.when(annonceMock.getCodeApplication()).thenReturn("44");
+        Mockito.when(annonceMock.getGenrePrestation()).thenReturn("10");
+        assertEquals(temoinAugmentationOrdinaire, getAnnonceXml(annonceMock));
+        Mockito.when(annonceMock.getGenrePrestation()).thenReturn("20");
+        assertEquals(temoinAugmentationExtraordinaire, getAnnonceXml(annonceMock));
+        Mockito.when(annonceMock.getGenrePrestation()).thenReturn("81");
+        assertEquals(temoinAugmentationAPI, getAnnonceXml(annonceMock));
+        // modif
+        Mockito.when(annonceMock.getCodeApplication()).thenReturn("46");
+        Mockito.when(annonceMock.getGenrePrestation()).thenReturn("10");
+        assertEquals(temoinModificationOrdinaire, getAnnonceXml(annonceMock));
+        Mockito.when(annonceMock.getGenrePrestation()).thenReturn("20");
+        assertEquals(temoinModificationExtraordinaire, getAnnonceXml(annonceMock));
+        Mockito.when(annonceMock.getGenrePrestation()).thenReturn("81");
+        assertEquals(temoinModificationAPI, getAnnonceXml(annonceMock));
+        // Diminution
+        Mockito.when(annonceMock.getCodeApplication()).thenReturn("45");
+        Mockito.when(annonceMock.getGenrePrestation()).thenReturn("13");
+        assertEquals(temoinDiminutionOrdinaire, getAnnonceXml(annonceMock));
+        Mockito.when(annonceMock.getGenrePrestation()).thenReturn("20");
+        assertEquals(temoinDiminutionExtrardinaire, getAnnonceXml(annonceMock));
+        Mockito.when(annonceMock.getGenrePrestation()).thenReturn("81");
+        assertEquals(temoinDiminutionAPI, getAnnonceXml(annonceMock));
+
+        // juste pour être sûr
+        assertNotEquals(temoinDiminutionExtrardinaire, getAnnonceXml(annonceMock));
+        assertNotEquals(temoinDiminutionOrdinaire, getAnnonceXml(annonceMock));
+        assertNotEquals(temoinModificationAPI, getAnnonceXml(annonceMock));
+        assertNotEquals(temoinAugmentationAPI, getAnnonceXml(annonceMock));
+
+    }
+
+    private Object getAnnonceXml(REAnnoncesAbstractLevel1A annonceMock) throws Exception {
+        return testService.getAnnonceXml(annonceMock, null, null, null);
+    }
 }

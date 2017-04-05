@@ -493,7 +493,7 @@ public class REEnvoyerAnnoncesXMLProcess extends BProcess {
 
     }
 
-    protected REAnnonceXmlService resolveAnnonceVersionService(REAnnoncesAbstractLevel1A annonce) {
+    protected REAnnonceXmlService resolveAnnonceVersionService(REAnnoncesAbstractLevel1A annonce) throws Exception {
         int codeApplication = Integer.parseInt(annonce.getCodeApplication());
         switch (codeApplication) {
             case 41:
@@ -505,12 +505,12 @@ public class REEnvoyerAnnoncesXMLProcess extends BProcess {
             case 46:
                 return REAnnonces10eXmlService.getInstance();
             default:
+
                 getMemoryLog().logMessage("Code Application inconnu", FWMessage.ERREUR,
                         getSession().getLabel("ENVOYER_ANNONCES"));
-                break;
+                throw new Exception("Code Application inconnu : " + codeApplication);
 
         }
-        return null;
     }
 
     /**
