@@ -24,6 +24,10 @@ import ch.admin.zas.rc.SkalaBerechnungType;
 import ch.admin.zas.rc.ZuwachsmeldungO9Type;
 import ch.globaz.common.properties.CommonProperties;
 
+/**
+ * @author jmc
+ * 
+ */
 public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implements REAnnonceXmlService {
 
     private static REAnnonceXmlService instance = new REAnnonces9eXmlService();
@@ -55,7 +59,7 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
                 parseAugmentationAvecAnakin(augmentation9eme01, augmentation9eme02, session, forMoisAnneeComptable);
 
                 if (codeApplication == 41) {
-                    return annonceAugmentationOrdinaire9e(augmentation9eme01, augmentation9eme01);
+                    return annonceAugmentationOrdinaire9e(augmentation9eme01, augmentation9eme02);
                 } else {
                     // préparer annonceModification
                 }
@@ -131,6 +135,8 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
         RRMeldung9Type annonce9 = factoryType.createRRMeldung9Type();
         RRMeldung9Type.OrdentlicheRente renteOrdinaire = factoryType.createRRMeldung9TypeOrdentlicheRente();
         ZuwachsmeldungO9Type augmentation = factoryType.createZuwachsmeldungO9Type();
+        augmentation.setBerichtsmonat(retourneXMLGregorianCalendarFromMonth(enr01.getMoisRapport()));
+
         augmentation.setKasseZweigstelle(retourneCaisseAgence());
         augmentation.setMeldungsnummer(retourneNoDAnnonceSur6Position(enr01.getIdAnnonce()));
         augmentation.setKasseneigenerHinweis(enr01.getReferenceCaisseInterne());
@@ -167,7 +173,7 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
         // Base de calcul
         ZuwachsmeldungO9Type.Leistungsbeschreibung.Berechnungsgrundlagen baseDeCalcul = factoryType
                 .createZuwachsmeldungO9TypeLeistungsbeschreibungBerechnungsgrundlagen();
-        baseDeCalcul.setNiveaujahr(retourneXMLGregorianCalendarFromMonth(enr02.getAnneeNiveau()));
+        baseDeCalcul.setNiveaujahr(retourneXMLGregorianCalendarFromYear(enr02.getAnneeNiveau()));
 
         // Echelle de la base de calcul
         SkalaBerechnungType echelleCalcul = factoryType.createSkalaBerechnungType();
@@ -189,18 +195,15 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
         ramDescription.setBeitragsdauerDurchschnittlichesJahreseinkommen(new BigDecimal(testSiNullouZero(enr02
                 .getDureeCotPourDetRAM())));
         baseDeCalcul.setDJEBeschreibung(ramDescription);
+        Gutschriften9Type bte = rempliBonnifications9e(enr01, enr02);
 
-        Gutschriften9Type bte = factoryType.createGutschriften9Type();
-        bte.setDJEohneErziehungsgutschrift(new BigDecimal(testSiNullouZero(enr02.getRevenuAnnuelMoyenSansBTE())));
-        bte.setDJEohneErziehungsgutschrift(new BigDecimal(testSiNullouZero(enr02.getBteMoyennePrisEnCompte())));
-        bte.setAnzahlErziehungsgutschrift(new Integer(testSiNullouZero(enr02.getNombreAnneeBTE())).shortValue());
         baseDeCalcul.setGutschriften(bte);
 
         // Si pas d'office AI pas de bloc AI
-        if (JadeStringUtil.isBlankOrZero(enr02.getOfficeAICompetent())) {
+        if (!JadeStringUtil.isBlankOrZero(enr02.getOfficeAICompetent())) {
             baseDeCalcul.setIVDaten(rempliIVDatenType9Assure(enr01, enr02));
         }
-        if (JadeStringUtil.isBlankOrZero(enr02.getOfficeAiCompEpouse())) {
+        if (!JadeStringUtil.isBlankOrZero(enr02.getOfficeAiCompEpouse())) {
             baseDeCalcul.setIVDatenEhefrau(rempliIVDatenType9Conjoint(enr01, enr02));
         }
         if (!JadeStringUtil.isBlankOrZero(enr02.getDureeAjournement())) {
@@ -210,6 +213,8 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
             ajournement.setRentenaufschub(rempliRentenaufschubType(enr01, enr02));
             baseDeCalcul.setFlexiblesRentenAlter(ajournement);
         }
+        rempliCasSpecial(enr01, enr02, description);
+        description.setKuerzungSelbstverschulden(new Integer(enr02.getReduction()).shortValue());
         description.setBerechnungsgrundlagen(baseDeCalcul);
         augmentation.setLeistungsbeschreibung(description);
         renteOrdinaire.setZuwachsmeldung(augmentation);
@@ -218,6 +223,22 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
 
     }
 
+    private Gutschriften9Type rempliBonnifications9e(REAnnoncesAugmentationModification9Eme enr01,
+            REAnnoncesAugmentationModification9Eme enr02) {
+        Gutschriften9Type bte = factoryType.createGutschriften9Type();
+        bte.setDJEohneErziehungsgutschrift(new BigDecimal(testSiNullouZero(enr02.getRevenuAnnuelMoyenSansBTE())));
+        bte.setDJEohneErziehungsgutschrift(new BigDecimal(testSiNullouZero(enr02.getBteMoyennePrisEnCompte())));
+        bte.setAnzahlErziehungsgutschrift(new Integer(testSiNullouZero(enr02.getNombreAnneeBTE())).shortValue());
+        return bte;
+    }
+
+    /**
+     * Méthode qui remplit les cas spéciaux
+     * 
+     * @param enr01
+     * @param enr02
+     * @param desc
+     */
     private void rempliCasSpecial(REAnnoncesAugmentationModification9Eme enr01,
             REAnnoncesAugmentationModification9Eme enr02, ZuwachsmeldungO9Type.Leistungsbeschreibung desc) {
         if (!JadeStringUtil.isBlankOrZero(enr02.getCasSpecial1())) {
@@ -237,6 +258,14 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
         }
     }
 
+    /**
+     * Méthode qui retourne un objet qui rempli les ajournements
+     * 
+     * @param enr01
+     * @param enr02
+     * @return un ajournement
+     * @throws Exception
+     */
     private RentenaufschubType rempliRentenaufschubType(REAnnoncesAugmentationModification9Eme enr01,
             REAnnoncesAugmentationModification9Eme enr02) throws Exception {
         RentenaufschubType ajournement = factoryType.createRentenaufschubType();
@@ -246,6 +275,14 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
         return ajournement;
     }
 
+    /**
+     * Rempli les données utiles pour les données AI 9e révision
+     * 
+     * @param enr01
+     * @param enr02
+     * @return
+     * @throws Exception
+     */
     private IVDaten9Type rempliIVDatenType9Assure(REAnnoncesAugmentationModification9Eme enr01,
             REAnnoncesAugmentationModification9Eme enr02) throws Exception {
         IVDaten9Type donneeAI = factoryType.createIVDaten9Type();
@@ -259,6 +296,14 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
         return donneeAI;
     }
 
+    /**
+     * Méthode qui rempli
+     * 
+     * @param enr01
+     * @param enr02
+     * @return
+     * @throws Exception
+     */
     private IVDaten9Type rempliIVDatenType9Conjoint(REAnnoncesAugmentationModification9Eme enr01,
             REAnnoncesAugmentationModification9Eme enr02) throws Exception {
         IVDaten9Type donneeAI = factoryType.createIVDaten9Type();
@@ -272,7 +317,6 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
         return donneeAI;
     }
 
-    @Override
     public XMLGregorianCalendar retourneXMLGregorianCalendar(String jaDate) throws Exception {
 
         final DateFormat format = new SimpleDateFormat("dd.mm.yyyy");
@@ -287,10 +331,12 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
     public XMLGregorianCalendar retourneXMLGregorianCalendarFromMonth(String dateMmYy) throws Exception {
 
         GregorianCalendar gregory = null;
-        if (new Integer(dateMmYy.substring(2)) > 30) {
-            new GregorianCalendar(new Integer(dateMmYy.substring(2)) + 1900, new Integer(dateMmYy.substring(0, 2)), 0);
+        if (new Integer(dateMmYy.substring(2)) > 48) {
+            gregory = new GregorianCalendar(new Integer(dateMmYy.substring(2)) + 1900, new Integer(dateMmYy.substring(
+                    0, 2)), 0);
         } else {
-            new GregorianCalendar(new Integer(dateMmYy.substring(2)) + 2000, new Integer(dateMmYy.substring(0, 2)), 0);
+            gregory = new GregorianCalendar(new Integer(dateMmYy.substring(2)) + 2000, new Integer(dateMmYy.substring(
+                    0, 2)), 0);
         }
 
         return DatatypeFactory.newInstance().newXMLGregorianCalendar(gregory);
@@ -299,10 +345,10 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
     public XMLGregorianCalendar retourneXMLGregorianCalendarFromYear(String dateYy) throws Exception {
 
         GregorianCalendar gregory = null;
-        if (new Integer(dateYy) > 30) {
-            new GregorianCalendar(new Integer(dateYy.substring(2)) + 1900, 0, 0);
+        if (new Integer(dateYy) > 48) {
+            gregory = new GregorianCalendar(new Integer(dateYy) + 1900, 0, 0);
         } else {
-            new GregorianCalendar(new Integer(dateYy.substring(2)) + 2000, 0, 0);
+            gregory = new GregorianCalendar(new Integer(dateYy) + 2000, 0, 0);
         }
 
         return DatatypeFactory.newInstance().newXMLGregorianCalendar(gregory);
