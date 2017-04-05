@@ -420,3 +420,5 @@ UPDATE SCHEMA.FWCOUP SET PCOLUT = 'Übrige Veränderungen an Knochen und Bewe-gung
 UPDATE SCHEMA.FWCOUP SET PCOLUT = 'Journal par mois par trimestre par semestre' WHERE PCOSID = 940178 AND PLAIDE = 'F';
 UPDATE SCHEMA.FWCOUP SET PCOLUT = 'Taux des coûts d''aministration par trimestre' WHERE PCOSID = 940124 AND PLAIDE = 'F';
 
+--Ajout propriété D0215
+INSERT INTO schema.JADEPROP (PROPNAME,PROPVAL) VALUES ('corvus.isAnnoncesXML','false');
