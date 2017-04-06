@@ -283,21 +283,21 @@ public class REAnnonces10eXmlService extends REAbstractAnnonceXmlService impleme
     private Gutschriften10Type rempliBonnifications10e(REAnnoncesAugmentationModification10Eme enr01,
             REAnnoncesAugmentationModification10Eme enr02) {
         Gutschriften10Type bte = factoryType.createGutschriften10Type();
-        // bte.setDJEohneErziehungsgutschrift(new BigDecimal(testSiNullouZero(enr02.getRevenuAnnuelMoyenSansBTE())));
-        // bte.setDJEohneErziehungsgutschrift(new BigDecimal(testSiNullouZero(enr02.getBteMoyennePrisEnCompte())));
-        // bte.setAnzahlErziehungsgutschrift(new Integer(testSiNullouZero(enr02.getNombreAnneeBTE())).shortValue());
+        bte.setAnzahlErziehungsgutschrift(new BigDecimal(testSiNullouZero(enr02.getNombreAnneeBTE())));
+        bte.setAnzahlBetreuungsgutschrift(new BigDecimal(testSiNullouZero(enr02.getNbreAnneeBTA())));
+        bte.setAnzahlUebergangsgutschrift(new BigDecimal(testSiNullouZero(enr02.getNbreAnneeBonifTrans())));
         return bte;
     }
 
     private DJE10BeschreibungType rempliDJE10BeschreibungType(REAnnoncesAugmentationModification10Eme enr01,
             REAnnoncesAugmentationModification10Eme enr02) {
         DJE10BeschreibungType ramDescription = factoryType.createDJE10BeschreibungType();
-        // ramDescription.setAngerechneteEinkommen(new Integer(testSiNullouZero(enr02.getRevenuPrisEnCompte()))
-        // .shortValue());
+        // duree de coti ram
+        ramDescription.setBeitragsdauerDurchschnittlichesJahreseinkommen(convertAAMMtoBigDecimal(enr02
+                .getDureeCotPourDetRAM()));
         ramDescription
                 .setDurchschnittlichesJahreseinkommen(new BigDecimal(testSiNullouZero(enr02.getRamDeterminant())));
-        ramDescription.setBeitragsdauerDurchschnittlichesJahreseinkommen(convertAAMMtoBeigDecimal(enr02
-                .getDureeCotPourDetRAM()));
+        ramDescription.setGesplitteteEinkommen(convertIntToBoolean(enr02.getCodeRevenuSplitte()));
         return ramDescription;
     }
 

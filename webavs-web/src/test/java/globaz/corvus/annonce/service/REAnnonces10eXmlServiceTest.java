@@ -135,6 +135,7 @@ public class REAnnonces10eXmlServiceTest {
 
     }
 
+    @Ignore
     @Test
     public void testPreparerAugmentation10Eme() throws Exception {
         // data

@@ -149,8 +149,8 @@ public abstract class REAbstractAnnonceXmlService {
     protected SkalaBerechnungType rempliScalaBerechnungTyp(REAnnoncesAbstractLevel2A enr02) {
         SkalaBerechnungType echelleCalcul = factoryType.createSkalaBerechnungType();
         echelleCalcul.setSkala(new Integer(enr02.getEchelleRente()).shortValue());
-        echelleCalcul.setBeitragsdauerVor1973(convertAAMMtoBeigDecimal(enr02.getDureeCoEchelleRenteAv73()));
-        echelleCalcul.setBeitragsdauerAb1973(convertAAMMtoBeigDecimal(enr02.getDureeCoEchelleRenteDes73()));
+        echelleCalcul.setBeitragsdauerVor1973(convertAAMMtoBigDecimal(enr02.getDureeCoEchelleRenteAv73()));
+        echelleCalcul.setBeitragsdauerAb1973(convertAAMMtoBigDecimal(enr02.getDureeCoEchelleRenteDes73()));
         echelleCalcul.setAnrechnungVor1973FehlenderBeitragsmonate(new Integer(testSiNullouZero(enr02
                 .getDureeCotManquante48_72())));
         echelleCalcul.setAnrechnungAb1973Bis1978FehlenderBeitragsmonate(new Integer(testSiNullouZero(enr02
@@ -159,8 +159,8 @@ public abstract class REAbstractAnnonceXmlService {
         return echelleCalcul;
     }
 
-    protected BigDecimal convertAAMMtoBeigDecimal(String strAAMM) {
-        return BigDecimal.valueOf(Long.valueOf(testSiNullouZero(strAAMM)), 2);
+    protected BigDecimal convertAAMMtoBigDecimal(String strAAMM) {
+        return BigDecimal.valueOf(Long.valueOf(testSiNullouZero(strAAMM)), 2).setScale(2);
     }
 
     /**

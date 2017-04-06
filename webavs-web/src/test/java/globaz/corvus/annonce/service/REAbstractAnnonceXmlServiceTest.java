@@ -2,6 +2,7 @@ package globaz.corvus.annonce.service;
 
 import static org.junit.Assert.*;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -17,10 +18,12 @@ public class REAbstractAnnonceXmlServiceTest {
     }
 
     @Test
-    public void testConvertAAMMtoBeigDecimal() throws Exception {
-        assertTrue(0 == testService.convertAAMMtoBeigDecimal("1700").compareTo(new BigDecimal(17.00)));
-        assertTrue(0 == testService.convertAAMMtoBeigDecimal("2505").compareTo(new BigDecimal(25.05)));
-        assertTrue(0 == testService.convertAAMMtoBeigDecimal("").compareTo(new BigDecimal(0)));
+    public void testConvertAAMMtoBigDecimal() throws Exception {
+        assertTrue(0 == testService.convertAAMMtoBigDecimal("1700").compareTo(
+                new BigDecimal(17.00).setScale(2, RoundingMode.HALF_UP)));
+        assertEquals(testService.convertAAMMtoBigDecimal("2505"),
+                new BigDecimal(25.05).setScale(2, RoundingMode.HALF_UP));
+        assertEquals(testService.convertAAMMtoBigDecimal(""), new BigDecimal(0).setScale(2, RoundingMode.HALF_UP));
 
     }
 
