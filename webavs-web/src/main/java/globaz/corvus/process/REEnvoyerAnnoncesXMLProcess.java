@@ -506,11 +506,14 @@ public class REEnvoyerAnnoncesXMLProcess extends BProcess {
                 return REAnnonces10eXmlService.getInstance();
             default:
 
-                getMemoryLog().logMessage("Code Application inconnu", FWMessage.ERREUR,
-                        getSession().getLabel("ENVOYER_ANNONCES"));
+                logInMemoryLog("Code Application inconnu", "ENVOYER_ANNONCES");
                 throw new Exception("Code Application inconnu : " + codeApplication);
 
         }
+    }
+
+    protected void logInMemoryLog(String message, String labelSource) {
+        getMemoryLog().logMessage(message, FWMessage.ERREUR, getSession().getLabel(labelSource));
     }
 
     /**

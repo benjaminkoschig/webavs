@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 import globaz.corvus.annonce.service.REAnnonces10eXmlService;
 import globaz.corvus.annonce.service.REAnnonces9eXmlService;
 import globaz.corvus.db.annonces.REAnnoncesAbstractLevel1A;
+import globaz.framework.util.FWMemoryLog;
 import java.math.BigDecimal;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
@@ -28,6 +29,8 @@ public class REEnvoyerAnnoncesXMLProcessTest {
 
     @Spy
     private REEnvoyerAnnoncesXMLProcess testInstance;
+    @Spy
+    private FWMemoryLog fwMemory;
 
     public REEnvoyerAnnoncesXMLProcessTest() {
 
@@ -50,7 +53,7 @@ public class REEnvoyerAnnoncesXMLProcessTest {
                 .when(testInstance)
                 .logMessageAvecInfos(Matchers.any(REAnnoncesAbstractLevel1A.class), Matchers.anyString(),
                         Matchers.anyString(), Matchers.anyString());
-
+        Mockito.doNothing().when(testInstance).logInMemoryLog(Matchers.anyString(), Matchers.anyString());
     }
 
     @Test
@@ -72,6 +75,7 @@ public class REEnvoyerAnnoncesXMLProcessTest {
         } catch (Exception e) {
             Assert.assertEquals(null, e);
         }
+        // ne pas tester le cas d'echec sans pouvoir muter le fwMemoryLog
         try {
             Mockito.when(annonceMock.getCodeApplication()).thenReturn("30");
             assertTrue(testInstance.resolveAnnonceVersionService(annonceMock) instanceof REAnnonces9eXmlService);
