@@ -150,7 +150,8 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
             ajournement.setRentenaufschub(rempliRentenaufschubType(enr01, enr02));
             baseDeCalcul.setFlexiblesRentenAlter(ajournement);
         }
-        rempliCasSpecial(enr01, enr02, description);
+
+        description.getSonderfallcodeRente().addAll(rempliCasSpecial(enr01, enr02));
         if (!JadeStringUtil.isBlankOrZero(enr02.getReduction())) {
             description.setKuerzungSelbstverschulden(new Integer(enr02.getReduction()).shortValue());
         }
@@ -218,7 +219,8 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
             ajournement.setRentenaufschub(rempliRentenaufschubType(enr01, enr02));
             baseDeCalcul.setFlexiblesRentenAlter(ajournement);
         }
-        rempliCasSpecial(enr01, enr02, description);
+
+        description.getSonderfallcodeRente().addAll(rempliCasSpecial(enr01, enr02));
         if (!JadeStringUtil.isBlankOrZero(enr02.getReduction())) {
             description.setKuerzungSelbstverschulden(new Integer(enr02.getReduction()).shortValue());
         }
@@ -286,7 +288,7 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
             ajournement.setRentenaufschub(rempliRentenaufschubType(enr01, enr02));
             baseDeCalcul.setFlexiblesRentenAlter(ajournement);
         }
-        rempliCasSpecial(enr01, enr02, description);
+        description.getSonderfallcodeRente().addAll(rempliCasSpecial(enr01, enr02));
         if (!JadeStringUtil.isBlankOrZero(enr02.getReduction())) {
             description.setKuerzungSelbstverschulden(new Integer(enr02.getReduction()).shortValue());
         }
@@ -354,7 +356,7 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
             ajournement.setRentenaufschub(rempliRentenaufschubType(enr01, enr02));
             baseDeCalcul.setFlexiblesRentenAlter(ajournement);
         }
-        rempliCasSpecial(enr01, enr02, description);
+        description.getSonderfallcodeRente().addAll(rempliCasSpecial(enr01, enr02));
         if (!JadeStringUtil.isBlankOrZero(enr02.getReduction())) {
             description.setKuerzungSelbstverschulden(new Integer(enr02.getReduction()).shortValue());
         }

@@ -3,14 +3,15 @@ package globaz.corvus.annonce.service;
 import globaz.corvus.anakin.REAnakinParser;
 import globaz.corvus.db.annonces.REAnnoncesAbstractLevel1A;
 import globaz.corvus.db.annonces.REAnnoncesAbstractLevel2A;
-import globaz.corvus.db.annonces.REAnnoncesAugmentationModification9Eme;
 import globaz.globall.db.BSession;
 import globaz.jade.client.util.JadeStringUtil;
 import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.GregorianCalendar;
+import java.util.List;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import ch.admin.ofit.anakin.donnee.AnnonceErreur;
@@ -18,7 +19,6 @@ import ch.admin.zas.rc.FamilienAngehoerigeType;
 import ch.admin.zas.rc.RRLeistungsberechtigtePersonAuslType;
 import ch.admin.zas.rc.RentenaufschubType;
 import ch.admin.zas.rc.SkalaBerechnungType;
-import ch.admin.zas.rc.ZuwachsmeldungO9Type;
 import ch.globaz.common.properties.CommonProperties;
 
 public abstract class REAbstractAnnonceXmlService {
@@ -84,7 +84,7 @@ public abstract class REAbstractAnnonceXmlService {
             membresDeLaFamille.getVNr1Ergaenzend().add(enr01.getPremierNoAssComplementaire());
         }
         if (!JadeStringUtil.isBlankOrZero(enr01.getSecondNoAssComplementaire())) {
-            membresDeLaFamille.getVNr1Ergaenzend().add(enr01.getSecondNoAssComplementaire());
+            membresDeLaFamille.getVNr2Ergaenzend().add(enr01.getSecondNoAssComplementaire());
         }
         personne.setWohnkantonStaat(new Integer(enr01.getCantonEtatDomicile()).toString());
         personne.setFamilienAngehoerige(membresDeLaFamille);
@@ -149,14 +149,18 @@ public abstract class REAbstractAnnonceXmlService {
     protected SkalaBerechnungType rempliScalaBerechnungTyp(REAnnoncesAbstractLevel2A enr02) {
         SkalaBerechnungType echelleCalcul = factoryType.createSkalaBerechnungType();
         echelleCalcul.setSkala(new Integer(enr02.getEchelleRente()).shortValue());
-        echelleCalcul.setBeitragsdauerVor1973(new BigDecimal(testSiNullouZero(enr02.getDureeCoEchelleRenteAv73())));
-        echelleCalcul.setBeitragsdauerAb1973(new BigDecimal(testSiNullouZero(enr02.getDureeCoEchelleRenteDes73())));
+        echelleCalcul.setBeitragsdauerVor1973(convertAAMMtoBeigDecimal(enr02.getDureeCoEchelleRenteAv73()));
+        echelleCalcul.setBeitragsdauerAb1973(convertAAMMtoBeigDecimal(enr02.getDureeCoEchelleRenteDes73()));
         echelleCalcul.setAnrechnungVor1973FehlenderBeitragsmonate(new Integer(testSiNullouZero(enr02
                 .getDureeCotManquante48_72())));
         echelleCalcul.setAnrechnungAb1973Bis1978FehlenderBeitragsmonate(new Integer(testSiNullouZero(enr02
                 .getDureeCotManquante73_78())));
         echelleCalcul.setBeitragsjahreJahrgang(new Integer(testSiNullouZero(enr02.getAnneeCotClasseAge())));
         return echelleCalcul;
+    }
+
+    protected BigDecimal convertAAMMtoBeigDecimal(String strAAMM) {
+        return BigDecimal.valueOf(Long.valueOf(testSiNullouZero(strAAMM)), 2);
     }
 
     /**
@@ -166,23 +170,24 @@ public abstract class REAbstractAnnonceXmlService {
      * @param enr02
      * @param desc
      */
-    protected void rempliCasSpecial(REAnnoncesAugmentationModification9Eme enr01,
-            REAnnoncesAugmentationModification9Eme enr02, ZuwachsmeldungO9Type.Leistungsbeschreibung desc) {
+    protected List<Short> rempliCasSpecial(REAnnoncesAbstractLevel2A enr01, REAnnoncesAbstractLevel2A enr02) {
+        List<Short> listCas = new ArrayList<Short>();
         if (!JadeStringUtil.isBlankOrZero(enr02.getCasSpecial1())) {
-            desc.getSonderfallcodeRente().add(new Integer(enr02.getCasSpecial1()).shortValue());
+            listCas.add(new Integer(enr02.getCasSpecial1()).shortValue());
         }
         if (!JadeStringUtil.isBlankOrZero(enr02.getCasSpecial2())) {
-            desc.getSonderfallcodeRente().add(new Integer(enr02.getCasSpecial2()).shortValue());
+            listCas.add(new Integer(enr02.getCasSpecial2()).shortValue());
         }
         if (!JadeStringUtil.isBlankOrZero(enr02.getCasSpecial3())) {
-            desc.getSonderfallcodeRente().add(new Integer(enr02.getCasSpecial3()).shortValue());
+            listCas.add(new Integer(enr02.getCasSpecial3()).shortValue());
         }
         if (!JadeStringUtil.isBlankOrZero(enr02.getCasSpecial4())) {
-            desc.getSonderfallcodeRente().add(new Integer(enr02.getCasSpecial4()).shortValue());
+            listCas.add(new Integer(enr02.getCasSpecial4()).shortValue());
         }
         if (!JadeStringUtil.isBlankOrZero(enr02.getCasSpecial5())) {
-            desc.getSonderfallcodeRente().add(new Integer(enr02.getCasSpecial5()).shortValue());
+            listCas.add(new Integer(enr02.getCasSpecial5()).shortValue());
         }
+        return listCas;
     }
 
     /**
@@ -193,8 +198,8 @@ public abstract class REAbstractAnnonceXmlService {
      * @return un ajournement
      * @throws Exception
      */
-    protected RentenaufschubType rempliRentenaufschubType(REAnnoncesAugmentationModification9Eme enr01,
-            REAnnoncesAugmentationModification9Eme enr02) throws Exception {
+    protected RentenaufschubType rempliRentenaufschubType(REAnnoncesAbstractLevel2A enr01,
+            REAnnoncesAbstractLevel2A enr02) throws Exception {
         RentenaufschubType ajournement = factoryType.createRentenaufschubType();
         ajournement.setAbrufdatum(retourneXMLGregorianCalendarFromMonth(enr02.getDateRevocationAjournement()));
         ajournement.setAufschubsdauer(new BigDecimal(testSiNullouZero(enr02.getDureeAjournement())));
