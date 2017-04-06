@@ -1,3 +1,6 @@
+/*
+ * Globaz SA.
+ */
 package globaz.naos.db.controleLpp;
 
 import globaz.globall.db.BEntity;
@@ -13,29 +16,8 @@ import globaz.pavo.db.compte.CIEcriture;
  */
 public class AFAffilieSoumiLppManager extends BManager {
 
-    // SELECT
-    // af.MAIAFF,af.MALNAF,ecr.KBMMON,ci.KANAVS,ci.KALNOM,ci.KATSEX,ci.KADNAI,ecr.KBNMOD,
-    // ecr.KBNMOF,ecr.KBTGEN,ecr.KAIIND,suiv.MYDFIN,af.MADFIN from CCJUWEB.AFAFFIP af
-    // LEFT OUTER JOIN (
-    // SELECT * FROM CCJUWEB.AFSUAFP
-    // WHERE MYTGEN = 830003 AND MYDFIN > 0
-    // ) suiv on suiv.MAIAFF = af.MAIAFF
-    // LEFT OUTER JOIN (
-    // SELECT * FROM CCJUWEB.AFSUAFP
-    // WHERE MYTGEN = 830003 AND MYDFIN = 0
-    // ) suiv2 on suiv2.MAIAFF = af.MAIAFF
-    // INNER JOIN CCJUWEB.CIECRIP ecr on ecr.KBITIE = af.MAIAFF
-    // LEFT JOIN CCJUWEB.CIINDIP ci on ecr.KAIIND = ci.KAIIND
-    // WHERE ecr.KBNANN = 2010
-    // AND (suiv.MYISUA IS NULL or (suiv.MYTGEN = 830003 and suiv.MYDFIN < af.MADFIN and suiv.MYDFIN > 0) or
-    // (suiv.MYTGEN = 830003 and suiv.MYDFIN > 0 and af.MADFIN = 0))
-    // AND suiv2.MYISUA is null
-    // AND af.MATTAF in (804002, 804012, 804005)
-    // AND (KBTGEN IN (310001 ,310006) OR (KBTGEN = 310007 and KBTSPE = (312003)))
-    // AND KBTCPT IN (303001,303002,303004);
-
     private static final long serialVersionUID = -7937459372384591359L;
-    private String forAnnee;
+    private int forAnnee;
 
     @Override
     protected String _getFields(BStatement statement) {
@@ -56,6 +38,7 @@ public class AFAffilieSoumiLppManager extends BManager {
         AFUtil.sqlAddField(sqlFields, "ecr.KBTGEN");
         AFUtil.sqlAddField(sqlFields, "ecr.KAIIND");
         AFUtil.sqlAddField(sqlFields, "suiv.MYDFIN");
+        AFUtil.sqlAddField(sqlFields, "suiv.MYTMOT");
         AFUtil.sqlAddField(sqlFields, "af.MADFIN");
         AFUtil.sqlAddField(sqlFields, "ecr.KBTEXT");
 
@@ -64,7 +47,7 @@ public class AFAffilieSoumiLppManager extends BManager {
 
     @Override
     protected String _getFrom(BStatement statement) {
-        StringBuffer sqlFrom = new StringBuffer();
+        StringBuilder sqlFrom = new StringBuilder();
 
         sqlFrom.append(_getCollection() + "AFAFFIP af ");
 
@@ -84,9 +67,8 @@ public class AFAffilieSoumiLppManager extends BManager {
         // WHERE ecr.KBNANN = 2010
         AFUtil.sqlAddCondition(sqlWhere, "ecr.KBNANN = " + getForAnnee());
 
-        // AND (suiv.MYISUA IS NULL or (suiv.MYTGEN = 830003 and suiv.MYDFIN < af.MADFIN and suiv.MYDFIN > 0) or
-        // (suiv.MYTGEN = 830003 and suiv.MYDFIN > 0 and af.MADFIN = 0))
-        AFUtil.sqlAddCondition(sqlWhere, "suiv.MYISUA IS NULL ");
+        // AND (suiv.MYISUA IS NULL OR suiv.mytmot <> 0)
+        AFUtil.sqlAddCondition(sqlWhere, "(suiv.MYISUA IS NULL OR suiv.MYTMOT <> 0) ");
 
         // AND af.MATTAF in (804002, 804012, 804005)
         AFUtil.sqlAddCondition(sqlWhere, "af.MATTAF in (804002, 804012, 804005)");
@@ -106,11 +88,11 @@ public class AFAffilieSoumiLppManager extends BManager {
         return new AFAffilieSoumiLpp();
     }
 
-    public String getForAnnee() {
+    public int getForAnnee() {
         return forAnnee;
     }
 
-    public void setForAnnee(String forAnnee) {
+    public void setForAnnee(int forAnnee) {
         this.forAnnee = forAnnee;
     }
 

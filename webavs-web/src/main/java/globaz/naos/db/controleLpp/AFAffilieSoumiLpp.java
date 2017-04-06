@@ -29,6 +29,7 @@ public class AFAffilieSoumiLpp extends BEntity {
     private String nss;
     private String numeroAffilie;
     private String sexe;
+    private String motifSuivi;
 
     @Override
     protected String _getTableName() {
@@ -56,6 +57,7 @@ public class AFAffilieSoumiLpp extends BEntity {
         if (!JadeStringUtil.isBlankOrZero(statement.dbReadNumeric("KBTEXT"))) {
             isExtourne = true;
         }
+        motifSuivi = statement.dbReadNumeric("MYTMOT");
     }
 
     @Override
@@ -204,6 +206,14 @@ public class AFAffilieSoumiLpp extends BEntity {
 
     public void setSexe(String sexe) {
         this.sexe = sexe;
+    }
+
+    public String getMotifSuivi() {
+        return motifSuivi;
+    }
+
+    public void setMotifSuivi(String motifSuivi) {
+        this.motifSuivi = motifSuivi;
     }
 
 }

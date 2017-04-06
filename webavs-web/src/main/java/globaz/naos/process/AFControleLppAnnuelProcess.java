@@ -1,3 +1,6 @@
+/*
+ * Globaz SA.
+ */
 package globaz.naos.process;
 
 import globaz.globall.db.BManager;
@@ -39,8 +42,11 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+import org.apache.commons.lang.StringUtils;
+import ch.globaz.common.business.exceptions.CommonTechnicalException;
 
 /**
  * Processus de gestion LPP. Permet de rechercher suivant l'année donnée, tous les affiliés sans LPP active et qui ont
@@ -53,27 +59,31 @@ public class AFControleLppAnnuelProcess extends BProcess {
 
     private static final long serialVersionUID = 6612166262485600549L;
     private static final String LISTE_CAS_REJETES = "listeSoumisLpp.xml";
-    private String annee;
 
     private String anneeDebut;
     private String anneeFin;
 
-    private int anneeControle = 0;
-    private int anneeCourante = 0;
-    private AFAffilieSoumiLppConteneur casRejetes = null;
-    private AFAffilieSoumiLppConteneur casSoumis = null;
-    private StringBuffer corpsMessage = null;
+    private int anneeCourante;
+    private AFAffilieSoumiLppConteneur casRejetes;
+    private AFAffilieSoumiLppConteneur casSoumis;
+
+    private AFAffilieSoumiLppConteneur casRejetesFinal;
+    private AFAffilieSoumiLppConteneur casSoumisFinal;
+
+    private StringBuilder corpsMessage;
     private String dateImpression;
     private String email;
-    private Boolean modeControle = true; // true = simulation
-    private int nbCasRejetes = 0;
-    private int nbCasSoumis = 0;
-    private double seuilAnnuel = 0;
-    private double seuilMensuel = 0;
+    // true = simulation
+    private Boolean modeControle = true;
+    private int nbCasRejetes;
+    private int nbCasSoumis;
+    private double seuilAnnuel;
+    private double seuilMensuel;
     private String typeAdresse;
 
     @Override
     protected void _executeCleanUp() {
+        // nothing
     }
 
     @Override
@@ -83,32 +93,47 @@ public class AFControleLppAnnuelProcess extends BProcess {
             // Initialisation des variables
             initialisation();
 
-            // 1. Création d'un conteneur pour regrouper les salariés par affilié
-            creationDonnees();
+            // boucle sur chaque année
+            int anneeStart = Integer.valueOf(getAnneeDebut());
+            int anneeEnd = Integer.valueOf(getAnneeFin());
 
-            // Gestion de l'abort
-            if (isAborted()) {
-                return false;
+            for (int anneeControle = anneeStart; anneeControle <= anneeEnd; anneeControle++) {
+
+                // Détermination des seuils mensuel
+                seuilAnnuel = Double.parseDouble(getSeuilByParameterCode(anneeControle));
+                seuilMensuel = seuilAnnuel / 12.0;
+
+                // 1. Création d'un conteneur pour regrouper les salariés par affilié
+                creationDonnees(anneeControle);
+
+                // Gestion de l'abort
+                if (isAborted()) {
+                    return false;
+                }
+
+                // 2. Application des régles de soumission a la LPP
+                // => On ne garde que les NSS qui seront dans la liste pour le courrier
+                // => création d'un conteneur avec les cas rejetés
+                applicationReglesSoumission(anneeControle);
+
+                // Gestion de l'abort
+                if (isAborted()) {
+                    return false;
+                }
+
+                // 3. On gére la gestion de suivi
+                gestionSuivisLpp(anneeControle);
+
+                // Gestion de l'abort
+                if (isAborted()) {
+                    return false;
+                }
+
+                casRejetesFinal.addAllSalarie(casRejetes.getMapAffilie());
+                casSoumisFinal.addAllSalarie(casSoumis.getMapAffilie());
+                casRejetes.clear();
+                casSoumis.clear();
             }
-
-            // 2. Application des régles de soumission a la LPP
-            // => On ne garde que les NSS qui seront dans la liste pour le courrier
-            // => création d'un conteneur avec les cas rejetés
-            applicationReglesSoumission();
-
-            // Gestion de l'abort
-            if (isAborted()) {
-                return false;
-            }
-
-            // 3. On gére la gestion de suivi
-            gestionSuivisLpp();
-
-            // Gestion de l'abort
-            if (isAborted()) {
-                return false;
-            }
-
             // 4. Création des listes de résultat pour le mail
             creationListes();
 
@@ -116,7 +141,7 @@ public class AFControleLppAnnuelProcess extends BProcess {
 
             this._addError(getTransaction(), getSession().getLabel("EXECUTION_CONTROLE_LPP_ANNUEL_ERREUR"));
 
-            String messageInformation = "Annee du controle : " + getAnnee() + "\n";
+            String messageInformation = "Annees du controle : " + getAnneeDebut() + " à " + getAnneeFin() + "\n";
             messageInformation += "dateImpression : " + getDateImpression() + "\n";
             messageInformation += "modeControle : " + isModeControleSimulation() + "\n";
             messageInformation += AFUtil.stack2string(e);
@@ -131,24 +156,28 @@ public class AFControleLppAnnuelProcess extends BProcess {
 
     @Override
     protected void _validate() throws Exception {
-        if (JadeStringUtil.isEmpty(getEMailAddress())) {
+        if (StringUtils.isEmpty(getEMailAddress())) {
             this._addError(getTransaction(), getSession().getLabel("VAL_EMAIL_CONTROLE_LPP"));
         }
 
-        if (JadeStringUtil.isEmpty(getAnnee())) {
-            this._addError(getTransaction(), getSession().getLabel("VAL_ANNEE_CONTROLE_LPP"));
+        if (StringUtils.isEmpty(getAnneeDebut())) {
+            this._addError(getTransaction(), getSession().getLabel("VAL_ANNEE_DEBUT_CONTROLE_LPP"));
+        }
+
+        if (StringUtils.isEmpty(getAnneeFin())) {
+            this._addError(getTransaction(), getSession().getLabel("VAL_ANNEE_FIN_CONTROLE_LPP"));
         }
 
         // L'anne de contrôle doit etre plus petite que l'année courante
         // et plus grande que 2007
-        if (!JadeStringUtil.isEmpty(getAnnee())) {
-            int anneeTest = CEUtils.transformeStringToInt(getAnnee());
-            int anneeCourante = CEUtils.transformeStringToInt(CEUtils.giveAnneeCourante());
-
-            if (anneeTest > anneeCourante) {
-                this._addError(getTransaction(), getSession().getLabel("VAL_ANNEE_CONTROLE_LPP_SUP"));
-            }
-        }
+        // if (StringUtils.isNotEmpty(getAnnee())) {
+        // int anneeTest = CEUtils.transformeStringToInt(getAnnee());
+        // int anneeCouranteTest = CEUtils.transformeStringToInt(CEUtils.giveAnneeCourante());
+        //
+        // if (anneeTest > anneeCouranteTest) {
+        // this._addError(getTransaction(), getSession().getLabel("VAL_ANNEE_CONTROLE_LPP_SUP"));
+        // }
+        // }
 
     }
 
@@ -157,7 +186,7 @@ public class AFControleLppAnnuelProcess extends BProcess {
      * 
      * @throws Exception
      */
-    private void applicationReglesSoumission() throws Exception {
+    private void applicationReglesSoumission(int anneeControle) throws Exception {
 
         setProcessDescription("Application des règles");
         String[] listAffilie = casSoumis.getTableauAffilie();
@@ -176,12 +205,12 @@ public class AFControleLppAnnuelProcess extends BProcess {
                 boolean salarieSoumis = true;
 
                 // 1.Controle date <18 ans et retraite
-                salarieSoumis = testAge(idAffSoumis, sal);
+                salarieSoumis = testAge(anneeControle, idAffSoumis, sal);
 
                 // 2. Controle + de 3 mois de suite
                 // => si pas 3 mois verif les années avant et apres
                 if (salarieSoumis) {
-                    salarieSoumis = testDureeTravail(idAffSoumis, sal);
+                    salarieSoumis = testDureeTravail(anneeControle, idAffSoumis, sal);
                 }
 
                 // 3. Test des seuils
@@ -197,7 +226,7 @@ public class AFControleLppAnnuelProcess extends BProcess {
             }
 
             if ((casSoumis.getListSalarieForAffilie(idAffSoumis) == null)
-                    || (casSoumis.getListSalarieForAffilie(idAffSoumis).size() == 0)) {
+                    || (casSoumis.getListSalarieForAffilie(idAffSoumis).isEmpty())) {
                 casSoumis.removeAffilie(idAffSoumis);
             }
         }
@@ -212,8 +241,8 @@ public class AFControleLppAnnuelProcess extends BProcess {
                 numInforom);
 
         Collection<String> ligne = container.getFieldValues(IAFListeColumns.NUM_AFFILIE);
-        String docPath = AFExcelmlUtils.createDocumentExcel(getSession().getIdLangueISO().toUpperCase() + "/"
-                + AFControleLppAnnuelProcess.LISTE_CAS_REJETES, numInforom + "_" + nomDoc, container);
+        String docPath = AFExcelmlUtils.createDocumentExcel(AFControleLppAnnuelProcess.LISTE_CAS_REJETES, numInforom
+                + "_" + nomDoc, container);
 
         // Publication du document
         JadePublishDocumentInfo docInfo = createDocumentInfo();
@@ -238,9 +267,9 @@ public class AFControleLppAnnuelProcess extends BProcess {
      */
     private void createDocumentCasRejetes() throws Exception {
         String titreDoc = getSession().getLabel("TITRE_LISTE_LPP_CAS_REJETES");
-        String numInforom = "0279CAF"; // PO 6352
+        String numInforom = "0279CAF";
         String nomDoc = getSession().getLabel("LISTE_LPP_CAS_REJETES");
-        nbCasRejetes = createDocument(casRejetes, nomDoc, titreDoc, numInforom);
+        nbCasRejetes = createDocument(casRejetesFinal, nomDoc, titreDoc, numInforom);
     }
 
     /**
@@ -253,7 +282,7 @@ public class AFControleLppAnnuelProcess extends BProcess {
         String titreDoc = getSession().getLabel("TITRE_LISTE_LPP_CAS_SOUMIS");
         String numInforom = "0280CAF";
         String nomDoc = getSession().getLabel("LISTE_LPP_CAS_SOUMIS");
-        nbCasSoumis = createDocument(casSoumis, nomDoc, titreDoc, numInforom);
+        nbCasSoumis = createDocument(casSoumisFinal, nomDoc, titreDoc, numInforom);
     }
 
     /**
@@ -261,7 +290,7 @@ public class AFControleLppAnnuelProcess extends BProcess {
      * 
      * @throws Exception
      */
-    private void creationDonnees() throws Exception {
+    private void creationDonnees(int forAnnee) throws Exception {
 
         setProcessDescription("Génération des données");
 
@@ -271,26 +300,25 @@ public class AFControleLppAnnuelProcess extends BProcess {
         // -------------
         AFAffilieSoumiLppManager manager = new AFAffilieSoumiLppManager();
         manager.setSession(getSession());
-        manager.setForAnnee(getAnnee());
+        manager.setForAnnee(forAnnee);
         manager.find(getTransaction(), BManager.SIZE_NOLIMIT);
 
-        Object[] obj_listAf = manager.getContainer().toArray();
+        List<AFAffilieSoumiLpp> objListAf = manager.toList();
 
         // Pour chaque ligne de la requete, on les regroupe par affilié
-        for (Object obj_af : obj_listAf) {
-            AFAffilieSoumiLpp affSoumis = (AFAffilieSoumiLpp) obj_af;
+        for (AFAffilieSoumiLpp affSoumis : objListAf) {
 
             // Si il l'affilié n'a pas de cotisation AVS, on le prend pas en compte
             // BUG:7202
-            if (!hasCotisationAVS(affSoumis.getIdAffilie(), getAnnee())) {
+            if (!hasCotisationAVS(affSoumis.getIdAffilie(), forAnnee)) {
                 continue;
             }
 
             casSoumis.addSalarie(affSoumis.getIdTiers(), affSoumis.getIdAffilie(), affSoumis.getNumeroAffilie(),
-                    affSoumis.getNom(), affSoumis.getSexe(), affSoumis.getNss(), affSoumis.getMoisDebut(),
-                    affSoumis.getMoisFin(), affSoumis.getDateNaissance(), affSoumis.getGenreEcriture(),
-                    affSoumis.getIdCompteIndividuel(), affSoumis.getMontant(), affSoumis.isExtourne(),
-                    affSoumis.getNivSecuAffilie(), affSoumis.getNivSecuCI());
+                    affSoumis.getMotifSuivi(), affSoumis.getNom(), affSoumis.getSexe(), affSoumis.getNss(),
+                    affSoumis.getMoisDebut(), affSoumis.getMoisFin(), forAnnee, affSoumis.getDateNaissance(),
+                    affSoumis.getGenreEcriture(), affSoumis.getIdCompteIndividuel(), affSoumis.getMontant(),
+                    affSoumis.isExtourne(), affSoumis.getNivSecuAffilie(), affSoumis.getNivSecuCI());
 
         }
 
@@ -314,7 +342,8 @@ public class AFControleLppAnnuelProcess extends BProcess {
         createDocumentCasSoumis();
 
         // Cröation du corps du message
-        corpsMessage.append(getSession().getLabel("ANNEE")).append(" : ").append(getAnnee()).append("\n");
+        corpsMessage.append(getSession().getLabel("ANNEES")).append(" : ").append(getAnneeDebut()).append(" - ")
+                .append(getAnneeFin()).append("\n");
         corpsMessage.append(getSession().getLabel("DATE_IMPRESSION")).append(" : ").append(getDateImpression())
                 .append("\n");
         corpsMessage.append(getSession().getLabel("MODE_CONTROLE")).append(" : ").append(isModeControleSimulation())
@@ -392,7 +421,7 @@ public class AFControleLppAnnuelProcess extends BProcess {
      * 
      * @throws Exception
      */
-    private void gestionSuivisLpp() throws Exception {
+    private void gestionSuivisLpp(int annee) throws Exception {
 
         setProcessDescription("Génération des suivis");
 
@@ -410,7 +439,7 @@ public class AFControleLppAnnuelProcess extends BProcess {
             }
 
             // 1. controle si pas déjà un suivi
-            if (isDejaJournalise(getSession(), idAffSoumis, (listSalarie[0]).getNumeroAffilie(), getAnnee())) {
+            if (isDejaJournalise(getSession(), idAffSoumis, (listSalarie[0]).getNumeroAffilie(), annee)) {
 
                 // Parcours de tous les salariés de l'affilié
                 for (AFAffilieSoumiLppConteneur.Salarie sal : listSalarie) {
@@ -437,10 +466,6 @@ public class AFControleLppAnnuelProcess extends BProcess {
         incProgressCounter();
     }
 
-    public String getAnnee() {
-        return annee;
-    }
-
     public String getDateImpression() {
         return dateImpression;
     }
@@ -453,10 +478,7 @@ public class AFControleLppAnnuelProcess extends BProcess {
     protected String getEMailObject() {
 
         // Information sur l'année de traitement
-        String anneeTraitement = "";
-        if (!JadeStringUtil.isEmpty(getAnnee())) {
-            anneeTraitement = " (" + getAnnee() + ")";
-        }
+        String anneeTraitement = " (" + getAnneeDebut() + " - " + getAnneeFin() + ")";
 
         // Information sur le type de traitement
         String simulation = isModeControleSimulation() ? getSession().getLabel("CONTROLE_LPP_SIMULATION") + " - " : "";
@@ -481,7 +503,7 @@ public class AFControleLppAnnuelProcess extends BProcess {
      * @return
      * @throws Exception
      */
-    private String getSeuilByParameterCode() throws Exception {
+    private String getSeuilByParameterCode(int annee) {
 
         String montantSeuil = "";
 
@@ -492,18 +514,18 @@ public class AFControleLppAnnuelProcess extends BProcess {
         param.setIdCleDiffere("SEUILLPP");
         param.setIdActeurParametre("0");
         param.setPlageValDeParametre("0");
-        param.setDateDebutValidite("01.01." + getAnnee());
+        param.setDateDebutValidite("01.01." + annee);
         try {
-            param.find(getTransaction());
+            param.find(getTransaction(), BManager.SIZE_USEDEFAULT);
 
         } catch (Exception e) {
-            throw new Exception("Technical Exception, unabled to retrieve seuil annuel for " + getAnnee(), e);
+            throw new CommonTechnicalException("Technical Exception, unabled to retrieve seuil annuel for " + annee, e);
         }
 
         if (param.size() > 0) {
             montantSeuil = ((FWFindParameter) param.getFirstEntity()).getValeurNumParametre();
         } else {
-            throw new Exception("Unabled to retrieve seuil annuel for " + getAnnee());
+            throw new CommonTechnicalException("Unabled to retrieve seuil annuel for " + annee);
         }
 
         return montantSeuil;
@@ -513,7 +535,8 @@ public class AFControleLppAnnuelProcess extends BProcess {
     public String getSubjectDetail() {
         if ((getTransaction() != null) && getTransaction().hasErrors()) {
             return super.getSubjectDetail();
-        } else if ((getSession() != null) && getSession().hasErrors()) {
+        }
+        if ((getSession() != null) && getSession().hasErrors()) {
             return super.getSubjectDetail();
         }
 
@@ -533,14 +556,14 @@ public class AFControleLppAnnuelProcess extends BProcess {
      * @return
      * @throws HerculeException
      */
-    private boolean hasCotisationAVS(String idAffilie, String annee) throws Exception {
+    private boolean hasCotisationAVS(String idAffilie, int annee) throws Exception {
 
         if (JadeStringUtil.isEmpty(idAffilie)) {
-            throw new Exception("Unabled to find cotisation AVS. idAffilie is null or empty");
+            throw new IllegalArgumentException("Unabled to find cotisation AVS. idAffilie is null or empty");
         }
 
-        if (JadeStringUtil.isEmpty(annee)) {
-            throw new Exception("Unabled to find cotisation AVS. annee is null or empty");
+        if (annee == 0) {
+            throw new IllegalArgumentException("Unabled to find cotisation AVS. annee is null or empty");
         }
 
         boolean hasCoti = false;
@@ -548,14 +571,14 @@ public class AFControleLppAnnuelProcess extends BProcess {
         AFCotisationManager manager = new AFCotisationManager();
         manager.setSession(getSession());
         manager.setForTypeAssurance(globaz.naos.translation.CodeSystem.TYPE_ASS_COTISATION_AVS_AI);
-        manager.setForAnneeActive(annee);
+        manager.setForAnneeActive(String.valueOf(annee));
         manager.setForAffiliationId(idAffilie);
 
         try {
             hasCoti = manager.getCount() > 0;
         } catch (Exception e) {
-            throw new Exception("Unabled to retrieve cotisation avs (idAffilie = " + idAffilie + " / annee = " + annee
-                    + ")", e);
+            throw new CommonTechnicalException("Unabled to retrieve cotisation avs (idAffilie = " + idAffilie
+                    + " / annee = " + annee + ")", e);
         }
 
         return hasCoti;
@@ -567,19 +590,16 @@ public class AFControleLppAnnuelProcess extends BProcess {
      * @throws Exception
      * @throws NumberFormatException
      */
-    private void initialisation() throws NumberFormatException, Exception {
+    private void initialisation() throws Exception {
         // Initialisation de la progresse bar
         setProgressScaleValue(5);
 
-        anneeControle = CEUtils.transformeStringToInt(annee);
         anneeCourante = CEUtils.transformeStringToInt(CEUtils.giveAnneeCourante());
         casSoumis = new AFAffilieSoumiLppConteneur();
         casRejetes = new AFAffilieSoumiLppConteneur();
-        corpsMessage = new StringBuffer("");
-
-        // Détermination des seuils mensuel
-        seuilAnnuel = Double.parseDouble(getSeuilByParameterCode());
-        seuilMensuel = seuilAnnuel / 12.0;
+        casSoumisFinal = new AFAffilieSoumiLppConteneur();
+        casRejetesFinal = new AFAffilieSoumiLppConteneur();
+        corpsMessage = new StringBuilder("");
 
         // Etape terminé, on incremente le compteur
         incProgressCounter();
@@ -595,7 +615,7 @@ public class AFControleLppAnnuelProcess extends BProcess {
      * @return
      * @throws Exception
      */
-    public boolean isDejaJournalise(BSession session, String idAffiliation, String numAffilie, String annee)
+    public boolean isDejaJournalise(BSession session, String idAffiliation, String numAffilie, int annee)
             throws Exception {
 
         // On sette les critères qui font que l'envoi est unique
@@ -611,15 +631,16 @@ public class AFControleLppAnnuelProcess extends BProcess {
         viewBean.setProvenance(provenanceCriteres);
         viewBean.setForCsTypeCodeSysteme(ILEConstantes.CS_DEF_FORMULE_GROUPE);
         viewBean.setForValeurCodeSysteme(ILEConstantes.CS_DEBUT_SUIVI_LPP);
-        viewBean.find(getTransaction());
+        viewBean.find(getTransaction(), BManager.SIZE_USEDEFAULT);
 
         // Si le viewBean retourne un enregistrement c'est que l'envoi a déjà
         // été journalisé donc on retourne true
         if (viewBean.size() > 0) {
             return true;
-        } else {
-            return false;
         }
+
+        return false;
+
     }
 
     public boolean isModeControleSimulation() {
@@ -629,10 +650,6 @@ public class AFControleLppAnnuelProcess extends BProcess {
     @Override
     public GlobazJobQueue jobQueue() {
         return GlobazJobQueue.UPDATE_LONG;
-    }
-
-    public void setAnnee(String annee) {
-        this.annee = annee;
     }
 
     public void setDateImpression(String dateImpression) {
@@ -658,7 +675,8 @@ public class AFControleLppAnnuelProcess extends BProcess {
      * @return
      * @throws JAException
      */
-    private boolean testAge(String idAffilie, AFAffilieSoumiLppConteneur.Salarie sal) throws JAException {
+    private boolean testAge(int anneeControle, String idAffilie, AFAffilieSoumiLppConteneur.Salarie sal)
+            throws JAException {
 
         // Test si date de naissance existante et sexe
         if (JadeStringUtil.isEmpty(sal.getDateNaissance()) || JadeStringUtil.isEmpty(sal.getSexe())) {
@@ -673,8 +691,10 @@ public class AFControleLppAnnuelProcess extends BProcess {
         if (((anneeControle - anneeNaissance) >= 18) && !CIUtil.isRetraite(dateNaissance, sal.getSexe(), anneeControle)) {
             return true;
 
-        } else if (CIUtil.isAnneeRetraite(dateNaissance, sal.getSexe(), anneeControle)) {
-            // Test si on est dans l'année de retraite
+        }
+
+        // Test si on est dans l'année de retraite
+        if (CIUtil.isAnneeRetraite(dateNaissance, sal.getSexe(), anneeControle)) {
             return true;
         }
 
@@ -699,7 +719,7 @@ public class AFControleLppAnnuelProcess extends BProcess {
         man.setForAnnee(autreAnnee);
         man.setForIdAffilie(idAffilie);
         man.setForIdCompteIndividuel(sal.getIdCompteIndividuel());
-        man.find(getTransaction());
+        man.find(getTransaction(), BManager.SIZE_NOLIMIT);
 
         for (int i = 0; i < man.size(); i++) {
             AFLineCi ecri = (AFLineCi) man.getEntity(i);
@@ -709,7 +729,8 @@ public class AFControleLppAnnuelProcess extends BProcess {
             // Si les mois sont pas dans la continuité, il est pas soumis
             if (anneeInf && (moisFinEcri != 12)) {
                 return false;
-            } else if (!anneeInf && (moisDebEcri != 1)) {
+            }
+            if (!anneeInf && (moisDebEcri != 1)) {
                 return false;
             }
 
@@ -729,7 +750,7 @@ public class AFControleLppAnnuelProcess extends BProcess {
      * @return
      * @throws Exception
      */
-    private boolean testDureeTravail(String idAffilie, Salarie sal) throws Exception {
+    private boolean testDureeTravail(int anneeControle, String idAffilie, Salarie sal) throws Exception {
 
         // Test si periode de travail existante
         if (JadeStringUtil.isEmpty(sal.getMoisDebut()) || JadeStringUtil.isEmpty(sal.getMoisFin())) {
@@ -785,7 +806,7 @@ public class AFControleLppAnnuelProcess extends BProcess {
     private boolean testSeuils(String idAffilie, Salarie sal) {
 
         // Test si periode de travail existante
-        if (JadeStringUtil.isEmpty(sal.getMontant()) || JadeStringUtil.isEmpty(sal.getMontant())) {
+        if (JadeStringUtil.isEmpty(sal.getMontant())) {
             casRejetes.addSalarie(idAffilie, sal);
             return false;
         }
@@ -800,7 +821,8 @@ public class AFControleLppAnnuelProcess extends BProcess {
 
         int moisDeb = CEUtils.transformeStringToInt(sal.getMoisDebut());
         int moisFin = CEUtils.transformeStringToInt(sal.getMoisFin());
-        double nbMois = moisFin - moisDeb + 1; // +1 car le mois de début compte
+        // +1 car le mois de début compte
+        double nbMois = moisFin - moisDeb + 1;
         double salaireMensuel = salaire / nbMois;
 
         // Test du seuil mensuel

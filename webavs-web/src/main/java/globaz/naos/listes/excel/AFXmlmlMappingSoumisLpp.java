@@ -50,10 +50,12 @@ public class AFXmlmlMappingSoumisLpp {
         AFXmlmlMappingSoumisLpp.renseigneNomEtAdresse(process.getSession(), process.getTypeAdresse(), container,
                 sal.getIdTiers(), sal.getNumeroAffilie());
 
+        container.put(IAFListeColumns.MOTIF, sal.getMotif());
         container.put(IAFListeColumns.NUM_AFFILIE, sal.getNumeroAffilie());
         container.put(IAFListeColumns.NOM_SALARIE, sal.getNom());
         container.put(IAFListeColumns.NSS, NSUtil.formatAVSNewNum(sal.getNss()));
         container.put(IAFListeColumns.PERIODE_TRAVAIL, sal.getMoisDebut() + " - " + sal.getMoisFin());
+        container.put(IAFListeColumns.ANNEE, "" + sal.getAnnee());
 
         // Gestion de la sécurité affilié utilisateur (Secure Code)
         if (AFXmlmlMappingSoumisLpp.hasUserShowRight(sal, nivSecuUser)) {
@@ -76,7 +78,7 @@ public class AFXmlmlMappingSoumisLpp {
         container.put(IAFListeColumns.HEADER_USER, user);
         container.put(IAFListeColumns.HEADER_DATE, dateImpression);
         container.put(IAFListeColumns.HEADER_NOM_LISTE, nomListe);
-        container.put(IAFListeColumns.HEADER_ANNEE, anneeDebut + " " + anneeFin);
+        container.put(IAFListeColumns.HEADER_ANNEE, anneeDebut + " - " + anneeFin);
 
         /**
          * astuce temporaire pour que le fichier xls généré contienne les lignes blanches d'entête du modèle xml

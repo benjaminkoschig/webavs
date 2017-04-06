@@ -1,3 +1,6 @@
+/*
+ * Globaz SA.
+ */
 package globaz.naos.db.controleLpp;
 
 import globaz.framework.util.FWCurrency;
@@ -6,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 public class AFAffilieSoumiLppConteneur {
 
@@ -17,10 +21,11 @@ public class AFAffilieSoumiLppConteneur {
         String genreEcriture;
         String idCompteIndividuel;
         String idTiers;
-        boolean isNegatif = false;
-        boolean isSuivi = false;
+        boolean isNegatif;
+        boolean isSuivi;
         String moisDebut;
         String moisFin;
+        int annee;
         String montant;
         String nivSecuAffilie;
         String nivSecuCI;
@@ -28,10 +33,11 @@ public class AFAffilieSoumiLppConteneur {
         String nss;
         String numeroAffilie;
         String sexe;
+        String motif;
 
-        public Salarie(String idTiers, String numeroAffilie, String nom, String sexe, String nss, String moisDebut,
-                String moisFin, String dateNaissance, String genreEcriture, String idCI, String montant,
-                boolean isExtourne, String nivSecuAffilie, String nivSecuCI) {
+        public Salarie(String idTiers, String numeroAffilie, String motif, String nom, String sexe, String nss,
+                String moisDebut, String moisFin, int annee, String dateNaissance, String genreEcriture, String idCI,
+                String montant, boolean isExtourne, String nivSecuAffilie, String nivSecuCI) {
             this.nom = nom;
             this.nss = nss;
             this.sexe = sexe;
@@ -46,6 +52,8 @@ public class AFAffilieSoumiLppConteneur {
             isNegatif = isExtourne;
             this.nivSecuAffilie = nivSecuAffilie;
             this.nivSecuCI = nivSecuCI;
+            this.annee = annee;
+            this.motif = motif;
         }
 
         public String getDateNaissance() {
@@ -167,9 +175,25 @@ public class AFAffilieSoumiLppConteneur {
         public void setSuivi(boolean isSuivi) {
             this.isSuivi = isSuivi;
         }
+
+        public String getMotif() {
+            return motif;
+        }
+
+        public void setMotif(String motif) {
+            this.motif = motif;
+        }
+
+        public int getAnnee() {
+            return annee;
+        }
+
+        public void setAnnee(int annee) {
+            this.annee = annee;
+        }
     }
 
-    private Map<String, List<Salarie>> listeSalarieAffilie = null;
+    private Map<String, List<Salarie>> listeSalarieAffilie;
 
     /**
      * Constructeur
@@ -242,12 +266,13 @@ public class AFAffilieSoumiLppConteneur {
      * @param genreEcriture
      * @param montant
      */
-    public void addSalarie(String idTiers, String idAffilie, String numeroAffilie, String nom, String sexe, String nss,
-            String moisDebut, String moisFin, String dateNaissance, String genreEcriture, String idCI, String montant,
-            boolean isExtourne, String nivSecuAffilie, String nivSecuCI) {
+    public void addSalarie(String idTiers, String idAffilie, String numeroAffilie, String motif, String nom,
+            String sexe, String nss, String moisDebut, String moisFin, int annee, String dateNaissance,
+            String genreEcriture, String idCI, String montant, boolean isExtourne, String nivSecuAffilie,
+            String nivSecuCI) {
 
-        Salarie salarie = new Salarie(idTiers, numeroAffilie, nom, sexe, nss, moisDebut, moisFin, dateNaissance,
-                genreEcriture, idCI, montant, isExtourne, nivSecuAffilie, nivSecuCI);
+        Salarie salarie = new Salarie(idTiers, numeroAffilie, motif, nom, sexe, nss, moisDebut, moisFin, annee,
+                dateNaissance, genreEcriture, idCI, montant, isExtourne, nivSecuAffilie, nivSecuCI);
 
         this.addSalarie(idAffilie, salarie);
     }
@@ -258,6 +283,10 @@ public class AFAffilieSoumiLppConteneur {
         }
 
         return listeSalarieAffilie.get(idAffilie);
+    }
+
+    public Map<String, List<Salarie>> getMapAffilie() {
+        return listeSalarieAffilie;
     }
 
     /**
@@ -308,5 +337,21 @@ public class AFAffilieSoumiLppConteneur {
         }
 
         listeSalarie.remove(salarie);
+    }
+
+    public void addAllSalarie(Map<String, List<Salarie>> affilies) {
+        for (Entry<String, List<Salarie>> aff : affilies.entrySet()) {
+            List<Salarie> sal = listeSalarieAffilie.get(aff.getKey());
+            if (sal == null) {
+                sal = aff.getValue();
+            } else {
+                sal.addAll(aff.getValue());
+            }
+            listeSalarieAffilie.put(aff.getKey(), sal);
+        }
+    }
+
+    public void clear() {
+        listeSalarieAffilie = new HashMap<String, List<Salarie>>();
     }
 }

@@ -43,6 +43,8 @@ public interface IAFListeColumns {
     public static final String NPA = "npa";
     public static final String NSS = "nss";
     public static final String NUM_AFFILIE = "numAffilie";
+    public static final String MOTIF = "motif";
+    public static final String ANNEE = "annee";
 
     public static final String NUM_CAISSE_AF = "numCaisseAF";
 
