@@ -312,7 +312,7 @@ public class RFDevaliderDecisionService {
                                             montantExcedentDecBigDec);
 
                                     RFUtils.setMsgExceptionWarningViewBean(vb,
-                                            "La dévalidation c'est déroulée avec succés");
+                                            "La dévalidation s'est déroulée avec succés");
 
                                 }// Il reste une charge sur la Qd malgré la réattribution
                                  // -> impossible de réallouer l'excédent de revenu
@@ -338,7 +338,7 @@ public class RFDevaliderDecisionService {
                                             montantExcedentDecBigDec);
 
                                     RFUtils.setMsgExceptionWarningViewBean(vb,
-                                            "La dévalidation c'est déroulée avec succés");
+                                            "La dévalidation s'est déroulée avec succés");
                                 } else {
                                     RFUtils.setMsgExceptionWarningViewBean(vb,
                                             "Cas 2: La réallocation de l'excédent de revenu n'a pas pu s'effectuer (charge RFM > 0 après réallocation)");
@@ -359,7 +359,7 @@ public class RFDevaliderDecisionService {
 
                             rfQdPri.setIdGesModSoldeExcedentAugmentationQdPreDec(RFDevaliderDecisionService.session
                                     .getUserId());
-                            RFUtils.setMsgExceptionWarningViewBean(vb, "La dévalidation c'est déroulée avec succés");
+                            RFUtils.setMsgExceptionWarningViewBean(vb, "La dévalidation s'est déroulée avec succés");
                         }
                     }// Si la Qd a actuellement un solde excédent de revenu
                     else {
@@ -382,7 +382,7 @@ public class RFDevaliderDecisionService {
                                     RFDevaliderDecisionService.reattribuerSoldeExcedent(rfQdPri,
                                             montantExcedentDecBigDec);
                                 }
-                                RFUtils.setMsgExceptionWarningViewBean(vb, "La dévalidation c'est déroulée avec succés");
+                                RFUtils.setMsgExceptionWarningViewBean(vb, "La dévalidation s'est déroulée avec succés");
 
                             }// Si la Qd a une charge RFM
                             else {
