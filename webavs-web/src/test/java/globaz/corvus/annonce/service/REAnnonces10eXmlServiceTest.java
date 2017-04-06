@@ -10,7 +10,6 @@ import globaz.globall.db.BSession;
 import globaz.globall.db.BSpy;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Matchers;
 import org.mockito.Mockito;
@@ -127,6 +126,7 @@ public class REAnnonces10eXmlServiceTest {
         ageDebutInvalidite = "0";
         genreDroitAPI = "";
         casSpecial1 = "02";
+        codeMutation = "1";
 
         testInstance = Mockito.spy(new REEnvoyerAnnoncesXMLProcess());
         testService = Mockito.spy(new REAnnonces10eXmlService());
@@ -135,7 +135,6 @@ public class REAnnonces10eXmlServiceTest {
 
     }
 
-    @Ignore
     @Test
     public void testPreparerAugmentation10Eme() throws Exception {
         // data
@@ -202,31 +201,44 @@ public class REAnnonces10eXmlServiceTest {
         enregistrement02.setIsSurvivant(isSurvivant);
 
         try {
+            // Augmentation Ordinaire
             testInstance.validateUnitMessage(testService.genererZuwachmeldungOrdentliche(enregistrement01,
                     enregistrement02));
-            // testInstance.validateUnitMessage(testService.genererZuwachmeldungAusserordentliche(enregistrement01,
-            // enregistrement02));
-            // testInstance.validateUnitMessage(testService.genererZuwachmeldungHilflosenentschaedigung(enregistrement01,
-            // enregistrement02));
-            // testInstance.validateUnitMessage(testService.genererAenderungsmeldungOrdentliche(enregistrement01,
-            // enregistrement02));
-            // testInstance.validateUnitMessage(testService.genererAenderungsmeldungAusserordentliche(enregistrement01,
-            // enregistrement02));
-            // testInstance.validateUnitMessage(testService.genererAenderungsmeldungHilflosenentschaedigung(
-            // enregistrement01, enregistrement02));
+            // Modification Ordinaire
+            testInstance.validateUnitMessage(testService.genererAenderungsmeldungOrdentliche(enregistrement01,
+                    enregistrement02));
+
+            // Extraordinaire
+            enregistrement01.setGenrePrestation("74");
+            // Augmentation Extraordinaire
+            testInstance.validateUnitMessage(testService.genererZuwachmeldungAusserordentliche(enregistrement01,
+                    enregistrement02));
+            // Modification Extraordinaire
+            testInstance.validateUnitMessage(testService.genererAenderungsmeldungAusserordentliche(enregistrement01,
+                    enregistrement02));
+
+            // API
+            enregistrement01.setGenrePrestation("81");
+            enregistrement02.setGenreDroitAPI("1");
+            // Augmentation API
+            testInstance.validateUnitMessage(testService.genererZuwachmeldungHilflosenentschaedigung(enregistrement01,
+                    enregistrement02));
+            // Modification API
+            testInstance.validateUnitMessage(testService.genererAenderungsmeldungHilflosenentschaedigung(
+                    enregistrement01, enregistrement02));
+
         } catch (ValidationException ve) {
             Assert.assertEquals(null, ve);
         }
     }
 
-    // FIXME refact this test for XML version test
-    @Ignore
     @Test
     public void testPreparerDiminution10Eme() throws Exception {
         // data
         REAnnoncesDiminution10Eme enregistrement01 = new REAnnoncesDiminution10Eme();
 
         // enregistrement 1
+        enregistrement01.setIdAnnonce(idAnnonce);
         enregistrement01.setNumeroCaisse(numeroCaisse);
         enregistrement01.setNumeroAgence(numeroAgence);
         enregistrement01.setReferenceCaisseInterne(referenceCaisseInterne);
@@ -243,6 +255,20 @@ public class REAnnonces10eXmlServiceTest {
         enregistrement01.setFinDroit(finDroit);
         enregistrement01.setMoisRapport(moisRapport);
         enregistrement01.setCodeMutation(codeMutation);
+        enregistrement01.setFinDroit("1217");
+
+        try {
+            // ordinaire
+            testInstance.validateUnitMessage(testService.genererAbgangsOrdentliche(enregistrement01));
+            // extraordinaire
+            enregistrement01.setGenrePrestation("20");
+            testInstance.validateUnitMessage(testService.genererAbgangsAusserordentliche(enregistrement01));
+            // api
+            enregistrement01.setGenrePrestation("81");
+            testInstance.validateUnitMessage(testService.genererAbgangsHilflosenentschaedigung(enregistrement01));
+        } catch (ValidationException ve) {
+            Assert.assertEquals(null, ve);
+        }
 
     }
 

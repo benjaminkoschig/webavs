@@ -17,8 +17,11 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import ch.admin.ofit.anakin.donnee.AnnonceErreur;
 import ch.admin.zas.rc.FamilienAngehoerigeType;
 import ch.admin.zas.rc.RRLeistungsberechtigtePersonAuslType;
+import ch.admin.zas.rc.RRLeistungsberechtigtePersonAuslWeakType;
 import ch.admin.zas.rc.RentenaufschubType;
+import ch.admin.zas.rc.RentenaufschubWeakType;
 import ch.admin.zas.rc.SkalaBerechnungType;
+import ch.admin.zas.rc.SkalaBerechnungWeakType;
 import ch.globaz.common.properties.CommonProperties;
 
 public abstract class REAbstractAnnonceXmlService {
@@ -93,6 +96,33 @@ public abstract class REAbstractAnnonceXmlService {
 
     }
 
+    /**
+     * RRLeistungsberechtigtePersonAusl<b>Weak</b>Type
+     * 
+     * @param enr01
+     * @param enr02
+     * @return
+     */
+    protected RRLeistungsberechtigtePersonAuslWeakType rempliRRLeistungsberechtigtePersonAuslWeakType(
+            REAnnoncesAbstractLevel2A enr01, REAnnoncesAbstractLevel2A enr02) {
+        RRLeistungsberechtigtePersonAuslWeakType personne = factoryType
+                .createRRLeistungsberechtigtePersonAuslWeakType();
+        personne.setVersichertennummer(enr01.getNoAssAyantDroit());
+        personne.setIstFluechtling(convertIntToBoolean(enr01.getIsRefugie()));
+        FamilienAngehoerigeType membresDeLaFamille = factoryType.createFamilienAngehoerigeType();
+        if (!JadeStringUtil.isBlankOrZero(enr01.getPremierNoAssComplementaire())) {
+            membresDeLaFamille.getVNr1Ergaenzend().add(enr01.getPremierNoAssComplementaire());
+        }
+        if (!JadeStringUtil.isBlankOrZero(enr01.getSecondNoAssComplementaire())) {
+            membresDeLaFamille.getVNr2Ergaenzend().add(enr01.getSecondNoAssComplementaire());
+        }
+        personne.setWohnkantonStaat(new Integer(enr01.getCantonEtatDomicile()).toString());
+        personne.setFamilienAngehoerige(membresDeLaFamille);
+        personne.setZivilstand(new Integer(enr01.getEtatCivil()).shortValue());
+        return personne;
+
+    }
+
     public XMLGregorianCalendar retourneXMLGregorianCalendarFromMonth(String dateMmYy) throws Exception {
 
         GregorianCalendar gregory = null;
@@ -146,6 +176,19 @@ public abstract class REAbstractAnnonceXmlService {
         }
     }
 
+    protected SkalaBerechnungWeakType rempliScalaBerechnungWeakTyp(REAnnoncesAbstractLevel2A enr02) {
+        SkalaBerechnungWeakType echelleCalcul = factoryType.createSkalaBerechnungWeakType();
+        echelleCalcul.setSkala(new Integer(enr02.getEchelleRente()).shortValue());
+        echelleCalcul.setBeitragsdauerVor1973(convertAAMMtoBigDecimal(enr02.getDureeCoEchelleRenteAv73()));
+        echelleCalcul.setBeitragsdauerAb1973(convertAAMMtoBigDecimal(enr02.getDureeCoEchelleRenteDes73()));
+        echelleCalcul.setAnrechnungVor1973FehlenderBeitragsmonate(new Integer(testSiNullouZero(enr02
+                .getDureeCotManquante48_72())));
+        echelleCalcul.setAnrechnungAb1973Bis1978FehlenderBeitragsmonate(new Integer(testSiNullouZero(enr02
+                .getDureeCotManquante73_78())));
+        echelleCalcul.setBeitragsjahreJahrgang(new Integer(testSiNullouZero(enr02.getAnneeCotClasseAge())));
+        return echelleCalcul;
+    }
+
     protected SkalaBerechnungType rempliScalaBerechnungTyp(REAnnoncesAbstractLevel2A enr02) {
         SkalaBerechnungType echelleCalcul = factoryType.createSkalaBerechnungType();
         echelleCalcul.setSkala(new Integer(enr02.getEchelleRente()).shortValue());
@@ -188,6 +231,23 @@ public abstract class REAbstractAnnonceXmlService {
             listCas.add(new Integer(enr02.getCasSpecial5()).shortValue());
         }
         return listCas;
+    }
+
+    /**
+     * Weak Type
+     * 
+     * @param enr01
+     * @param enr02
+     * @return un ajournement
+     * @throws Exception
+     */
+    protected RentenaufschubWeakType rempliRentenaufschubWeakType(REAnnoncesAbstractLevel2A enr01,
+            REAnnoncesAbstractLevel2A enr02) throws Exception {
+        RentenaufschubWeakType ajournement = factoryType.createRentenaufschubWeakType();
+        ajournement.setAbrufdatum(retourneXMLGregorianCalendarFromMonth(enr02.getDateRevocationAjournement()));
+        ajournement.setAufschubsdauer(new BigDecimal(testSiNullouZero(enr02.getDureeAjournement())));
+        ajournement.setAufschubszuschlag(new BigDecimal(testSiNullouZero(enr02.getSupplementAjournement())));
+        return ajournement;
     }
 
     /**
