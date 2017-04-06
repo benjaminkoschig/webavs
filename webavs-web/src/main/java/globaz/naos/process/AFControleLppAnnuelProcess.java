@@ -168,17 +168,10 @@ public class AFControleLppAnnuelProcess extends BProcess {
             this._addError(getTransaction(), getSession().getLabel("VAL_ANNEE_FIN_CONTROLE_LPP"));
         }
 
-        // L'anne de contrôle doit etre plus petite que l'année courante
-        // et plus grande que 2007
-        // if (StringUtils.isNotEmpty(getAnnee())) {
-        // int anneeTest = CEUtils.transformeStringToInt(getAnnee());
-        // int anneeCouranteTest = CEUtils.transformeStringToInt(CEUtils.giveAnneeCourante());
-        //
-        // if (anneeTest > anneeCouranteTest) {
-        // this._addError(getTransaction(), getSession().getLabel("VAL_ANNEE_CONTROLE_LPP_SUP"));
-        // }
-        // }
-
+        if (!StringUtils.isEmpty(getAnneeDebut()) && !StringUtils.isEmpty(getAnneeFin())
+                && JADate.getYear(getAnneeFin()).intValue() < JADate.getYear(getAnneeDebut()).intValue()) {
+            this._addError(getTransaction(), getSession().getLabel("VAL_ANNEE_FIN_PLUS_PETIT_ANNEE_DEBUT_CONTROLE_LPP"));
+        }
     }
 
     /**
@@ -315,10 +308,11 @@ public class AFControleLppAnnuelProcess extends BProcess {
             }
 
             casSoumis.addSalarie(affSoumis.getIdTiers(), affSoumis.getIdAffilie(), affSoumis.getNumeroAffilie(),
-                    affSoumis.getMotifSuivi(), affSoumis.getNom(), affSoumis.getSexe(), affSoumis.getNss(),
-                    affSoumis.getMoisDebut(), affSoumis.getMoisFin(), forAnnee, affSoumis.getDateNaissance(),
-                    affSoumis.getGenreEcriture(), affSoumis.getIdCompteIndividuel(), affSoumis.getMontant(),
-                    affSoumis.isExtourne(), affSoumis.getNivSecuAffilie(), affSoumis.getNivSecuCI());
+                    getSession().getCodeLibelle(affSoumis.getMotifSuivi()), affSoumis.getNom(), affSoumis.getSexe(),
+                    affSoumis.getNss(), affSoumis.getMoisDebut(), affSoumis.getMoisFin(), forAnnee,
+                    affSoumis.getDateNaissance(), affSoumis.getGenreEcriture(), affSoumis.getIdCompteIndividuel(),
+                    affSoumis.getMontant(), affSoumis.isExtourne(), affSoumis.getNivSecuAffilie(),
+                    affSoumis.getNivSecuCI());
 
         }
 
@@ -338,7 +332,7 @@ public class AFControleLppAnnuelProcess extends BProcess {
         // Cröation de la liste des cas rejetes
         createDocumentCasRejetes();
 
-        // Cröation de la liste des cas rejetes
+        // Cröation de la liste des cas soumis
         createDocumentCasSoumis();
 
         // Cröation du corps du message
