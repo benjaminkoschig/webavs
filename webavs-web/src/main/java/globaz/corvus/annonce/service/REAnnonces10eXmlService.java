@@ -10,6 +10,7 @@ import globaz.jade.client.util.JadeStringUtil;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
+import org.apache.commons.lang.StringUtils;
 import ch.admin.zas.rc.DJE10BeschreibungType;
 import ch.admin.zas.rc.Gutschriften10Type;
 import ch.admin.zas.rc.IVDaten10Type;
@@ -295,8 +296,8 @@ public class REAnnonces10eXmlService extends REAbstractAnnonceXmlService impleme
         // .shortValue());
         ramDescription
                 .setDurchschnittlichesJahreseinkommen(new BigDecimal(testSiNullouZero(enr02.getRamDeterminant())));
-        ramDescription.setBeitragsdauerDurchschnittlichesJahreseinkommen(new BigDecimal(testSiNullouZero(enr02
-                .getDureeCotPourDetRAM())));
+        ramDescription.setBeitragsdauerDurchschnittlichesJahreseinkommen(convertAAMMtoBeigDecimal(enr02
+                .getDureeCotPourDetRAM()));
         return ramDescription;
     }
 
@@ -313,8 +314,10 @@ public class REAnnonces10eXmlService extends REAbstractAnnonceXmlService impleme
         IVDaten10Type donneeAI = factoryType.createIVDaten10Type();
         donneeAI.setIVStelle(new Integer(enr02.getOfficeAICompetent()));
         donneeAI.setInvaliditaetsgrad(new Integer(enr02.getDegreInvalidite()).shortValue());
-        donneeAI.setGebrechensschluessel(new Integer(enr02.getCodeInfirmite().substring(0, 2)));
-        donneeAI.setFunktionsausfallcode(new Integer(enr02.getCodeInfirmite().substring(2)).shortValue());
+        // s'assurer des 5 positions avant le split
+        String codeInfirmite = StringUtils.leftPad(enr02.getCodeInfirmite(), 5);
+        donneeAI.setGebrechensschluessel(new Integer(StringUtils.left(codeInfirmite, 3)));
+        donneeAI.setFunktionsausfallcode(new Integer(StringUtils.right(codeInfirmite, 2)).shortValue());
         donneeAI.setDatumVersicherungsfall(retourneXMLGregorianCalendarFromMonth(enr02.getSurvenanceEvenAssure()));
         donneeAI.setIstFruehInvalid(convertIntToBoolean(enr02.getAgeDebutInvalidite()));
 

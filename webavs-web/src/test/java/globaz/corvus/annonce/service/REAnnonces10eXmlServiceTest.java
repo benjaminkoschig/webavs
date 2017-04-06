@@ -8,6 +8,7 @@ import globaz.corvus.process.REEnvoyerAnnoncesXMLProcess;
 import globaz.globall.api.BITransaction;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSpy;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -15,6 +16,7 @@ import org.mockito.Matchers;
 import org.mockito.Mockito;
 import org.mockito.Spy;
 import ch.admin.zas.rc.RRMeldung10Type;
+import ch.globaz.naos.ree.sedex.ValidationException;
 
 public class REAnnonces10eXmlServiceTest {
     private String ageDebutInvalidite = "";
@@ -78,6 +80,8 @@ public class REAnnonces10eXmlServiceTest {
     private String supplementAjournement = "";
     private String survenanceEvenAssure = "";
     private String survenanceEvtAssureEpouse = "";
+    private String idAnnonce = "";
+    private String codeEnregistrement02 = "";
 
     @Spy
     private REEnvoyerAnnoncesXMLProcess testInstance;
@@ -87,39 +91,50 @@ public class REAnnonces10eXmlServiceTest {
     @Before
     public void setUp() throws Exception {
         // enregistrement 1
-        numeroCaisse = "059";
+        idAnnonce = "1546129";
+        codeEnregistrement01 = "01";
+        numeroCaisse = "150";
         numeroAgence = "000";
-        referenceCaisseInterne = "AUGCICIGLO";
-        noAssAyantDroit = "7563985732784";
-        premierNoAssComplementaire = "7566499521103";
-        etatCivil = "2";
+        referenceCaisseInterne = "AUGJUCBA";
+        noAssAyantDroit = "7563364333014";
+        premierNoAssComplementaire = "7560644640800";
+        secondNoAssComplementaire = "7565024495087";
+        etatCivil = "1";
         isRefugie = "0";
-        cantonEtatDomicile = "010";
-        genrePrestation = "10";
-        debutDroit = "0311";
-        mensualitePrestationsFrancs = "02320";
-
+        cantonEtatDomicile = "050";
+        genrePrestation = "55";
+        debutDroit = "1016";
+        mensualitePrestationsFrancs = "00181";
+        moisRapport = "0117";
         // enregistrement 2
         codeApplication = "44";
-        codeEnregistrement01 = "02";
+        codeEnregistrement02 = "02";
         echelleRente = "44";
-        dureeCoEchelleRenteAv73 = "1000";
-        dureeCoEchelleRenteDes73 = "1000";
+        dureeCoEchelleRenteAv73 = "0000";
+        dureeCoEchelleRenteDes73 = "1700";
         dureeCotManquante48_72 = "00";
         dureeCotManquante73_78 = "00";
-        anneeCotClasseAge = "20";
-        ramDeterminant = "44760";
-        codeRevenuSplitte = "0";
-        dureeCotPourDetRAM = "2000";
-        anneeNiveau = "96";
+        anneeCotClasseAge = "17";
+        ramDeterminant = "00054990";
+        codeRevenuSplitte = "1";
+        dureeCotPourDetRAM = "1700";
+        anneeNiveau = "08";
+        nombreAnneeBTE = "0500";
+        officeAICompetent = "350";
+        degreInvalidite = "47";
+        codeInfirmite = "64665";
+        survenanceEvenAssure = "0208";
+        ageDebutInvalidite = "0";
+        genreDroitAPI = "";
+        casSpecial1 = "02";
 
         testInstance = Mockito.spy(new REEnvoyerAnnoncesXMLProcess());
         testService = Mockito.spy(new REAnnonces10eXmlService());
 
+        Mockito.doReturn("059000").when(testService).retourneCaisseAgence();
+
     }
 
-    // FIXME refact this test for XML version test
-    @Ignore
     @Test
     public void testPreparerAugmentation10Eme() throws Exception {
         // data
@@ -128,6 +143,9 @@ public class REAnnonces10eXmlServiceTest {
                 .spy(new REAnnoncesAugmentationModification10Eme());
 
         // enregistrement 1
+        enregistrement01.setIdAnnonce(idAnnonce);
+        enregistrement01.setCodeApplication(codeApplication);
+        enregistrement01.setCodeEnregistrement01(codeEnregistrement01);
         enregistrement01.setNumeroCaisse(numeroCaisse);
         enregistrement01.setNumeroAgence(numeroAgence);
         enregistrement01.setReferenceCaisseInterne(referenceCaisseInterne);
@@ -148,7 +166,7 @@ public class REAnnonces10eXmlServiceTest {
         // enregistrement 2
         Mockito.when(enregistrement02.getSpy()).thenReturn(new BSpy("20110101120000test"));
         enregistrement02.setCodeApplication(codeApplication);
-        enregistrement02.setCodeEnregistrement01(codeEnregistrement01);
+        enregistrement02.setCodeEnregistrement01(codeEnregistrement02);
         enregistrement02.setEchelleRente(echelleRente);
         enregistrement02.setDureeCoEchelleRenteAv73(dureeCoEchelleRenteAv73);
         enregistrement02.setDureeCoEchelleRenteDes73(dureeCoEchelleRenteDes73);
@@ -182,6 +200,22 @@ public class REAnnonces10eXmlServiceTest {
         enregistrement02.setDateRevocationAjournement(dateRevocationAjournement);
         enregistrement02.setIsSurvivant(isSurvivant);
 
+        try {
+            testInstance.validateUnitMessage(testService.genererZuwachmeldungOrdentliche(enregistrement01,
+                    enregistrement02));
+            // testInstance.validateUnitMessage(testService.genererZuwachmeldungAusserordentliche(enregistrement01,
+            // enregistrement02));
+            // testInstance.validateUnitMessage(testService.genererZuwachmeldungHilflosenentschaedigung(enregistrement01,
+            // enregistrement02));
+            // testInstance.validateUnitMessage(testService.genererAenderungsmeldungOrdentliche(enregistrement01,
+            // enregistrement02));
+            // testInstance.validateUnitMessage(testService.genererAenderungsmeldungAusserordentliche(enregistrement01,
+            // enregistrement02));
+            // testInstance.validateUnitMessage(testService.genererAenderungsmeldungHilflosenentschaedigung(
+            // enregistrement01, enregistrement02));
+        } catch (ValidationException ve) {
+            Assert.assertEquals(null, ve);
+        }
     }
 
     // FIXME refact this test for XML version test
