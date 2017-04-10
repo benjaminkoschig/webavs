@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<simple-model className="ch.globaz.amal.business.models.annoncesedexco.SimpleAnnonceSedexCOPaiements">
+		<description>Enregistrement Annonce Sedex paiements</description>
+		<table name="MASDXCOPMT" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idAnnonceSedexCOPaiement" column="ID" comment="clé primaire"/>
+			<field name="idAnnonceSedexCODebiteur" column="ID_DEBITEUR" type="NUMERIC" dataType="NUMERIC(15)" mandatory="true" comment="IDSEDEX"/>			
+			<field name="paiementTotalAmout" column="PAIEMENT_TOTAL_AMOUT" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="Montant total paiement"/>
+			<field name="paiementCategory" column="PAIEMENT_CATEGORY" type="STRING" dataType="VARCHAR(1)" mandatory="false" comment="Catégorie paiement"/>
+		</fields>
+	</simple-model>
+</model-mapping>

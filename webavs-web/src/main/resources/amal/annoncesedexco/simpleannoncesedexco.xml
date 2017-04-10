@@ -17,6 +17,10 @@
 			<field name="statementDate" column="STATEMENT_DATE" type="DATE" mandatory="false" comment="STATEMENT_DATE"/>
 			<field name="statementStartDate" column="STATEMENT_START_DATE" type="DATE" mandatory="false" comment="STATEMENT_START_DATE"/>
 			<field name="statementEndDate" column="STATEMENT_END_DATE" type="DATE" mandatory="false" comment="STATEMENT_END_DATE"/>
+			<field name="totalClaim" column="TOTAL_CLAIME" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="Montant total des actes de défauts de bien"/>
+			<field name="totalArrivalDebtor" column="TOTAL_ARRIVAL_DEBTOR" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="Montant total des paiements débiteurs"/>
+			<field name="totalArrivalPV" column="TOTAL_ARRIVAL_PV" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="Montant total PV retro"/>
+			<field name="totalAnnulation" column="TOTAL_ANNULATION" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="Montant total des remboursements suiste a annulation"/>
 		</fields>
 				
 		<order-by>

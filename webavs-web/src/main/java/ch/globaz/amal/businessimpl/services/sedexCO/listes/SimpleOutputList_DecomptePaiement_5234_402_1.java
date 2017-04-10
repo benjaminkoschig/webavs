@@ -47,6 +47,7 @@ public class SimpleOutputList_DecomptePaiement_5234_402_1 {
     }
 
     @Column(name = "RP rétroactive", order = 4)
+    @ColumnStyle(align = Align.RIGHT, format = "#,##0.00")
     public Montant getRpRetro() {
         return rpRetro;
     }
@@ -56,6 +57,7 @@ public class SimpleOutputList_DecomptePaiement_5234_402_1 {
     }
 
     @Column(name = "Annulation", order = 5)
+    @ColumnStyle(align = Align.RIGHT, format = "#,##0.00")
     public Montant getAnnulation() {
         return annulation;
     }

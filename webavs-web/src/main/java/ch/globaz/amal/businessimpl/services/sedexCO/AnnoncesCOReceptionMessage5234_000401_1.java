@@ -73,7 +73,6 @@ import ch.globaz.simpleoutputlist.configuration.RowStyle;
 import ch.globaz.simpleoutputlist.core.Details;
 import ch.globaz.simpleoutputlist.outimpl.Configurations;
 import ch.globaz.simpleoutputlist.outimpl.SimpleOutputListBuilder;
-import com.sun.star.lang.IllegalArgumentException;
 
 public class AnnoncesCOReceptionMessage5234_000401_1 extends AnnoncesCODefault {
     private static final String PACKAGE_CLASS_FOR_READ_SEDEX_DECOMPTE_TRIMESTRIEL = "ch.gdk_cds.xmlns.da_64a_5234_000401._1";
@@ -84,28 +83,6 @@ public class AnnoncesCOReceptionMessage5234_000401_1 extends AnnoncesCODefault {
 
     public AnnoncesCOReceptionMessage5234_000401_1() {
         personnesNotFound = new ArrayList<String>();
-    }
-
-    public enum TypesOfLossEnum {
-        ACTE_DE_DEFAUT_BIEN("1", "42003821"),
-        ACTE_DE_DEFAUT_BIEN_FAILLITE("2", "42003822"),
-        TITRE_EQUIVALENT("3", "42003823");
-
-        private String value;
-        private String cs;
-
-        public String getValue() {
-            return value;
-        }
-
-        public String getCs() {
-            return cs;
-        }
-
-        private TypesOfLossEnum(String value, String cs) {
-            this.value = value;
-            this.cs = cs;
-        }
     }
 
     /**
@@ -460,8 +437,13 @@ public class AnnoncesCOReceptionMessage5234_000401_1 extends AnnoncesCODefault {
 
     protected SimpleAnnonceSedexCODebiteur findCorrespondanceDebiteur(DebtorNPType debtorNP,
             SimpleAnnonceSedexCODebiteur annonceSedexCODebiteur, List<InsuredPersonWithClaimType> insuredPersonTypes) {
+
+        if (debtorNP.getVn() == null) {
+            throw new IllegalArgumentException("NSS débiteur is null or incorrect ! => " + debtorNP.getVn());
+        }
+
+        String strNss = String.valueOf(debtorNP.getVn());
         try {
-            String strNss = String.valueOf(debtorNP.getVn());
             FamillePersonneEtendue famillePersonneEtendue = searchPersonne(strNss, insuredPersonTypes);
 
             if (famillePersonneEtendue != null) {
@@ -475,6 +457,8 @@ public class AnnoncesCOReceptionMessage5234_000401_1 extends AnnoncesCODefault {
                 annonceSedexCODebiteur.setMessage("Debiteur non retrouvé");
             }
         } catch (Exception ex) {
+            JadeThread.logError(this.getClass().getName(), "Erreur lors de la recherche de correspondance du débiteur "
+                    + ex.getMessage());
             ex.printStackTrace();
         }
         return annonceSedexCODebiteur;
@@ -519,8 +503,7 @@ public class AnnoncesCOReceptionMessage5234_000401_1 extends AnnoncesCODefault {
             String noCaisseMaladie = subside.getNoCaisseMaladie();
             String idTiersSender = getIdTiersCaisseMaladie();
             if (!noCaisseMaladie.equals(idTiersSender)) {
-                String msg = annonceSedexCOAssure.getMessage();
-                msg += " / Caisse maladie différente";
+                String msg = appendMessage(annonceSedexCOAssure.getMessage(), "Caisse maladie différente");
                 annonceSedexCOAssure.setMessage(msg);
             }
 
@@ -700,18 +683,6 @@ public class AnnoncesCOReceptionMessage5234_000401_1 extends AnnoncesCODefault {
             return famillePersonneEtendueMostRecent;
         } catch (Exception ex) {
             throw new JadePersistenceException("Erreur pendant la recherche de la personne " + nss, ex);
-        }
-    }
-
-    protected TypesOfLossEnum getTypeActe(String typeOfLoss) {
-        if (TypesOfLossEnum.ACTE_DE_DEFAUT_BIEN.getValue().equals(typeOfLoss)) {
-            return TypesOfLossEnum.ACTE_DE_DEFAUT_BIEN;
-        } else if (TypesOfLossEnum.ACTE_DE_DEFAUT_BIEN_FAILLITE.getValue().equals(typeOfLoss)) {
-            return TypesOfLossEnum.ACTE_DE_DEFAUT_BIEN_FAILLITE;
-        } else if (TypesOfLossEnum.TITRE_EQUIVALENT.getValue().equals(typeOfLoss)) {
-            return TypesOfLossEnum.TITRE_EQUIVALENT;
-        } else {
-            return null;
         }
     }
 

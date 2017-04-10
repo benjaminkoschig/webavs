@@ -26,6 +26,56 @@ import ch.globaz.pyxis.business.model.AdministrationComplexModel;
 import ch.globaz.pyxis.business.service.TIBusinessServiceLocator;
 
 public class AnnoncesCODefault {
+    public enum TypesOfLossEnum {
+        ACTE_DE_DEFAUT_BIEN("1", "42003821"),
+        ACTE_DE_DEFAUT_BIEN_FAILLITE("2", "42003822"),
+        TITRE_EQUIVALENT("3", "42003823");
+
+        private String value;
+        private String cs;
+
+        public String getValue() {
+            return value;
+        }
+
+        public String getCs() {
+            return cs;
+        }
+
+        private TypesOfLossEnum(String value, String cs) {
+            this.value = value;
+            this.cs = cs;
+        }
+    }
+
+    public enum PaymentCategoryEnum {
+        PAIEMENT_DEBITEUR("1"),
+        RP_RETROACTIVE("2"),
+        ANNULATION("3");
+
+        private String value;
+
+        public String getValue() {
+            return value;
+        }
+
+        private PaymentCategoryEnum(String value) {
+            this.value = value;
+        }
+
+        public static boolean isPaiementDebiteur(String value) {
+            return PAIEMENT_DEBITEUR.getValue().equals(value);
+        }
+
+        public static boolean isRPRetro(String value) {
+            return RP_RETROACTIVE.getValue().equals(value);
+        }
+
+        public static boolean isAnnulation(String value) {
+            return ANNULATION.getValue().equals(value);
+        }
+    }
+
     protected String passSedex = "";
     protected String userSedex = "";
     protected JadeContext context;
@@ -185,6 +235,31 @@ public class AnnoncesCODefault {
     protected String getRueNumero(AddressType address) {
         String rueNumero = address.getStreet() + " " + address.getHouseNumber();
         return rueNumero;
+    }
+
+    protected TypesOfLossEnum getTypeActe(String typeOfLoss) {
+        if (TypesOfLossEnum.ACTE_DE_DEFAUT_BIEN.getValue().equals(typeOfLoss)) {
+            return TypesOfLossEnum.ACTE_DE_DEFAUT_BIEN;
+        } else if (TypesOfLossEnum.ACTE_DE_DEFAUT_BIEN_FAILLITE.getValue().equals(typeOfLoss)) {
+            return TypesOfLossEnum.ACTE_DE_DEFAUT_BIEN_FAILLITE;
+        } else if (TypesOfLossEnum.TITRE_EQUIVALENT.getValue().equals(typeOfLoss)) {
+            return TypesOfLossEnum.TITRE_EQUIVALENT;
+        } else {
+            return null;
+        }
+    }
+
+    protected String appendMessage(String messageActuel, String newMessage) {
+        String currentMessage = messageActuel;
+        if (currentMessage == null) {
+            currentMessage = "";
+        } else {
+            currentMessage += ";";
+        }
+
+        currentMessage += newMessage;
+
+        return currentMessage;
     }
 
     public String getPassSedex() {
