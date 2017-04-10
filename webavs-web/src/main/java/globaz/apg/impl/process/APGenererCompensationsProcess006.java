@@ -192,6 +192,8 @@ public class APGenererCompensationsProcess006 extends BProcess implements IAPGen
                     MessageFormat.format(FWMessageFormat.prepareQuotes(messageToPrint, false), objects), level,
                     labelProcess());
         }
+
+        logger.log(Level.INFO, messageToPrint + " - " + labelProcess());
     }
 
     private String labelProcess() {
