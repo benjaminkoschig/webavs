@@ -23,6 +23,7 @@ import globaz.globall.db.BProcess;
 import globaz.globall.db.BSessionUtil;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JANumberFormatter;
+import globaz.jade.client.util.JadeCodesSystemsUtil;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.log.JadeLogger;
@@ -197,9 +198,23 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
         return APSituationProfessionnelleViewBean.METHODES_SEL_ADRESSE;
     }
 
+    public String getDomaineAdressePaiementEmployeur() {
+        return getDomaineLibelle(idDomainePaiementEmployeur);
+    }
+
+    public String getDomaineLibelle(String idCode) {
+        if (!JadeStringUtil.isBlankOrZero(idCode)) {
+            return getSession().getLabel("DOMAINE_ADRESSE") + " : "
+                    + JadeCodesSystemsUtil.getCodeLibelle(getSession(), idCode) + "\n";
+        }
+
+        return "";
+    }
+
     public String getAdressePaiementEmployeur() throws Exception {
 
         TIAdressePaiementData detailTiers = null;
+        String adresseLine = "";
 
         if (!JadeStringUtil.isBlankOrZero(getIdTiersEmployeur())) {
 
@@ -233,13 +248,15 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
 
             // formatter le no de ccp ou le no bancaire
             if (JadeStringUtil.isEmpty(detailTiers.getCcp())) {
-                return new TIAdressePaiementBanqueFormater().format(dataSource);
+                adresseLine += getDomaineAdressePaiementEmployeur();
+                adresseLine += new TIAdressePaiementBanqueFormater().format(dataSource);
             } else {
-                return new TIAdressePaiementCppFormater().format(dataSource);
+                adresseLine += getDomaineAdressePaiementEmployeur();
+                adresseLine += new TIAdressePaiementCppFormater().format(dataSource);
             }
         }
 
-        return "";
+        return adresseLine;
     }
 
     public void setAdressePaiementEmployeur(TIAdressePaiementData detailTiers) {
@@ -457,6 +474,8 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
 
     public String getAdressePaiementRequerant() throws Exception {
 
+        String adresseLine = "";
+
         final TIAdressePaiementData detailTiers = PRTiersHelper.getAdressePaiementData(getSession(), getSession()
                 .getCurrentThreadTransaction(), getIdTier(),
                 isAPG() ? IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_APG
@@ -467,10 +486,14 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
 
         // formatter le no de ccp ou le no bancaire
         if (JadeStringUtil.isEmpty(detailTiers.getCcp())) {
-            return new TIAdressePaiementBanqueFormater().format(dataSource);
+            adresseLine += getDomaineLibelle(detailTiers.getIdApplication());
+            adresseLine += new TIAdressePaiementBanqueFormater().format(dataSource);
         } else {
-            return new TIAdressePaiementCppFormater().format(dataSource);
+            adresseLine += getDomaineLibelle(detailTiers.getIdApplication());
+            adresseLine += new TIAdressePaiementCppFormater().format(dataSource);
         }
+
+        return adresseLine;
     }
 
     /**
