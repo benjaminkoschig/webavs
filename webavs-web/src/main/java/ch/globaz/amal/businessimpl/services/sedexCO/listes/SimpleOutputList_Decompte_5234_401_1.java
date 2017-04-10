@@ -169,4 +169,20 @@ public class SimpleOutputList_Decompte_5234_401_1 {
         this.messageAssure = messageAssure;
     }
 
+    public void addMessageDebiteur(String message) {
+        if (messageDebiteur == null || messageDebiteur.trim().isEmpty()) {
+            messageDebiteur = message;
+        } else {
+            messageDebiteur += ";" + message;
+        }
+    }
+
+    public void addMessageAssure(String message) {
+        if (messageAssure == null || messageAssure.trim().isEmpty()) {
+            messageAssure = message;
+        } else {
+            messageAssure += ";" + message;
+        }
+    }
+
 }

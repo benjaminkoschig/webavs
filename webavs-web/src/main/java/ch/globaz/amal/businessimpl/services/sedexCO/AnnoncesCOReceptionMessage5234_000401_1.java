@@ -78,7 +78,7 @@ public class AnnoncesCOReceptionMessage5234_000401_1 extends AnnoncesCODefault {
     private static final String PACKAGE_CLASS_FOR_READ_SEDEX_DECOMPTE_TRIMESTRIEL = "ch.gdk_cds.xmlns.da_64a_5234_000401._1";
     private String idTiersCaisseMaladie = null;
     protected String senderId = null;
-    protected Date statementDate = null;
+    protected Date statementStartDate = null;
     protected List<String> personnesNotFound = null;
 
     public AnnoncesCOReceptionMessage5234_000401_1() {
@@ -199,7 +199,14 @@ public class AnnoncesCOReceptionMessage5234_000401_1 extends AnnoncesCODefault {
             if (lastIdDebiteur.isEmpty()
                     || !lastIdDebiteur.equals(debiteursAssures.getSimpleAnnonceSedexCODebiteur()
                             .getIdAnnonceSedexCODebiteur())) {
-                ligneDecompte.setNssDebiteur(debiteur.getNssDebiteur());
+
+                String nss = debiteur.getNssDebiteur();
+                try {
+                    nss = formatNSS(debiteur.getNssDebiteur());
+                } catch (Exception e) {
+                    // En cas d'erreur, on garde le nss non formaté tel que récupéré plus haut
+                }
+                ligneDecompte.setNssDebiteur(nss);
                 ligneDecompte.setNomPrenomDebiteur(debiteur.getNomPrenomDebiteur());
                 ligneDecompte.setTypeActe(debiteur.getActe());
                 if (!debiteur.getInterets().isEmpty()) {
@@ -219,7 +226,7 @@ public class AnnoncesCOReceptionMessage5234_000401_1 extends AnnoncesCODefault {
                 } else {
                     ligneDecompte.setTotal(new Montant("0"));
                 }
-                ligneDecompte.setMessageDebiteur(debiteur.getMessage());
+                ligneDecompte.addMessageDebiteur(debiteur.getMessage());
 
                 totalInterets = totalInterets.add(debiteur.getInterets());
                 totalFrais = totalFrais.add(debiteur.getFrais());
@@ -245,7 +252,7 @@ public class AnnoncesCOReceptionMessage5234_000401_1 extends AnnoncesCODefault {
                 totalMontantParticipation = totalMontantParticipation.add(assure.getCostSharingMontant());
             }
 
-            ligneDecompte.setMessageAssure(assure.getMessage());
+            ligneDecompte.addMessageAssure(assure.getMessage());
             lastIdDebiteur = idDebiteur;
             decompteSheet.add(ligneDecompte);
         }
@@ -391,8 +398,8 @@ public class AnnoncesCOReceptionMessage5234_000401_1 extends AnnoncesCODefault {
 
             List<CertificateOfLossArrivalType> decomptesTrimestriels = message.getContent()
                     .getCertificateOfLossQuarterlyStatement().getCertificateOfLossArrival();
-            statementDate = new Date(AMSedexRPUtil.getDateXMLToString(message.getContent()
-                    .getCertificateOfLossQuarterlyStatement().getStatementDate()));
+            statementStartDate = new Date(AMSedexRPUtil.getDateXMLToString(message.getContent()
+                    .getCertificateOfLossQuarterlyStatement().getStatementStartDate()));
 
             // Sauvegarde des débiteurs et personnes assurées
             saveActesDefautBien(decomptesTrimestriels, annonceSedexCO);
@@ -444,17 +451,18 @@ public class AnnoncesCOReceptionMessage5234_000401_1 extends AnnoncesCODefault {
 
         String strNss = String.valueOf(debtorNP.getVn());
         try {
-            FamillePersonneEtendue famillePersonneEtendue = searchPersonne(strNss, insuredPersonTypes);
+            FamillePersonneEtendue famillePersonneEtendue = searchPersonne(strNss, insuredPersonTypes,
+                    annonceSedexCODebiteur);
 
             if (famillePersonneEtendue != null) {
                 annonceSedexCODebiteur.setIdFamille(famillePersonneEtendue.getSimpleFamille().getIdFamille());
                 annonceSedexCODebiteur.setIdContribuable(famillePersonneEtendue.getSimpleContribuable()
                         .getIdContribuable());
-
             } else {
                 personnesNotFound.add("Débiteur " + debtorNP.getVn() + " - " + debtorNP.getOfficialName() + " "
                         + debtorNP.getFirstName());
-                annonceSedexCODebiteur.setMessage("Debiteur non retrouvé");
+
+                annonceSedexCODebiteur.addMessage("Debiteur non retrouvé");
             }
         } catch (Exception ex) {
             JadeThread.logError(this.getClass().getName(), "Erreur lors de la recherche de correspondance du débiteur "
@@ -465,7 +473,7 @@ public class AnnoncesCOReceptionMessage5234_000401_1 extends AnnoncesCODefault {
     }
 
     protected SimpleAnnonceSedexCOAssure findCorrespondancePersonneAssuree(InsuredPersonType insuredPerson,
-            SimpleAnnonceSedexCOAssure annonceSedexCOAssure, Date dateDecompte) {
+            SimpleAnnonceSedexCOAssure annonceSedexCOAssure) {
         try {
             String strNss = String.valueOf(insuredPerson.getVn());
             FamillePersonneEtendue famillePersonneEtendue = getPersonneEtendue(strNss);
@@ -475,11 +483,11 @@ public class AnnoncesCOReceptionMessage5234_000401_1 extends AnnoncesCODefault {
                 annonceSedexCOAssure.setIdContribuable(famillePersonneEtendue.getSimpleContribuable()
                         .getIdContribuable());
 
-                getInfosSubside(annonceSedexCOAssure, famillePersonneEtendue, dateDecompte);
+                getInfosSubside(annonceSedexCOAssure, famillePersonneEtendue);
             } else {
                 personnesNotFound.add("Personne " + insuredPerson.getVn() + " - " + insuredPerson.getOfficialName()
                         + " " + insuredPerson.getFirstName());
-                annonceSedexCOAssure.setMessage("Personne assurée non retrouvé");
+                annonceSedexCOAssure.setMessage("Personne assurée non retrouvée !");
             }
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -488,11 +496,11 @@ public class AnnoncesCOReceptionMessage5234_000401_1 extends AnnoncesCODefault {
     }
 
     private void getInfosSubside(SimpleAnnonceSedexCOAssure annonceSedexCOAssure,
-            FamillePersonneEtendue famillePersonneEtendue, Date dateDecompte) throws JadePersistenceException,
-            DetailFamilleException, JadeApplicationServiceNotAvailableException {
+            FamillePersonneEtendue famillePersonneEtendue) throws JadePersistenceException, DetailFamilleException,
+            JadeApplicationServiceNotAvailableException {
         SimpleDetailFamilleSearch simpleDetailFamilleSearch = new SimpleDetailFamilleSearch();
         simpleDetailFamilleSearch.setForIdFamille(famillePersonneEtendue.getSimpleFamille().getIdFamille());
-        simpleDetailFamilleSearch.setForAnneeHistorique(dateDecompte.getAnnee());
+        simpleDetailFamilleSearch.setForAnneeHistorique(statementStartDate.getAnnee());
         simpleDetailFamilleSearch.setForCodeActif(Boolean.TRUE);
         simpleDetailFamilleSearch = AmalImplServiceLocator.getSimpleDetailFamilleService().search(
                 simpleDetailFamilleSearch);
@@ -503,8 +511,7 @@ public class AnnoncesCOReceptionMessage5234_000401_1 extends AnnoncesCODefault {
             String noCaisseMaladie = subside.getNoCaisseMaladie();
             String idTiersSender = getIdTiersCaisseMaladie();
             if (!noCaisseMaladie.equals(idTiersSender)) {
-                String msg = appendMessage(annonceSedexCOAssure.getMessage(), "Caisse maladie différente");
-                annonceSedexCOAssure.setMessage(msg);
+                annonceSedexCOAssure.addMessage("Caisse maladie différente");
             }
 
             if (IAMCodeSysteme.AMTypeDemandeSubside.ASSISTE.getValue().equals(subside.getTypeDemande())) {
@@ -589,7 +596,7 @@ public class AnnoncesCOReceptionMessage5234_000401_1 extends AnnoncesCODefault {
             InsuredPersonType insuredPerson = insuredPersonWithClaimType.getInsuredPerson();
 
             SimpleAnnonceSedexCOAssure annonceSedexCOAssure = new SimpleAnnonceSedexCOAssure();
-            findCorrespondancePersonneAssuree(insuredPerson, annonceSedexCOAssure, statementDate);
+            findCorrespondancePersonneAssuree(insuredPerson, annonceSedexCOAssure);
             annonceSedexCOAssure.setIdAnnonceSedexCODebiteur(annonceSedexCODebiteur.getId());
 
             annonceSedexCOAssure.setNssAssure(String.valueOf(insuredPerson.getVn()));
@@ -627,11 +634,12 @@ public class AnnoncesCOReceptionMessage5234_000401_1 extends AnnoncesCODefault {
      * 
      * @param nss
      * @param personnesAssurees
+     * @param annonceSedexCODebiteur
      * @return
      * @throws JadePersistenceException
      */
-    protected FamillePersonneEtendue searchPersonne(String nss, List<InsuredPersonWithClaimType> personnesAssurees)
-            throws JadePersistenceException {
+    protected FamillePersonneEtendue searchPersonne(String nss, List<InsuredPersonWithClaimType> personnesAssurees,
+            SimpleAnnonceSedexCODebiteur annonceSedexCODebiteur) throws JadePersistenceException {
 
         try {
             FamillePersonneEtendue famillePersonneEtendue = getPersonneEtendue(nss);
@@ -679,7 +687,7 @@ public class AnnoncesCOReceptionMessage5234_000401_1 extends AnnoncesCODefault {
 
             // Si on arrive la, c'est qu'on a trouvé aucun contribuable actif sur une des personnes assurées, on
             // retourne donc celui qui a la date de fin la plus récente.
-
+            annonceSedexCODebiteur.addMessage("Contribuable non concordants !");
             return famillePersonneEtendueMostRecent;
         } catch (Exception ex) {
             throw new JadePersistenceException("Erreur pendant la recherche de la personne " + nss, ex);

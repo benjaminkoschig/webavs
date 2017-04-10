@@ -168,4 +168,12 @@ public class SimpleAnnonceSedexCOAssure extends JadeSimpleModel {
         this.typeSubside = typeSubside;
     }
 
+    public void addMessage(String message) {
+        if (this.message.trim().isEmpty()) {
+            this.message = message;
+        } else {
+            this.message += ";" + message;
+        }
+    }
+
 }

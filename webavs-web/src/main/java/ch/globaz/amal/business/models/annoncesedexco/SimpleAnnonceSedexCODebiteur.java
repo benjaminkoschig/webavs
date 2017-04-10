@@ -131,4 +131,12 @@ public class SimpleAnnonceSedexCODebiteur extends JadeSimpleModel {
         this.message = message;
     }
 
+    public void addMessage(String message) {
+        if (this.message == null || this.message.trim().isEmpty()) {
+            this.message = message;
+        } else {
+            this.message += ";" + message;
+        }
+    }
+
 }

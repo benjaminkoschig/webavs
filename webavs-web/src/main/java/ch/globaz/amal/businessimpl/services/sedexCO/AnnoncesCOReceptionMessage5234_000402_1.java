@@ -321,8 +321,8 @@ public class AnnoncesCOReceptionMessage5234_000402_1 extends AnnoncesCOReception
 
             List<CertificateOfLossArrivalType> decomptesFinauxsActes = message.getContent()
                     .getCertificateOfLossFinalStatement().getCertificateOfLossArrival();
-            statementDate = new Date(AMSedexRPUtil.getDateXMLToString(message.getContent()
-                    .getCertificateOfLossFinalStatement().getStatementDate()));
+            statementStartDate = new Date(AMSedexRPUtil.getDateXMLToString(message.getContent()
+                    .getCertificateOfLossFinalStatement().getStatementStartDate()));
             // Sauvegarde des débiteurs et personnes assurées
             saveActesDefautBien(decomptesFinauxsActes, annonceSedexCO);
 

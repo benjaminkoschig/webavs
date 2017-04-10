@@ -112,7 +112,7 @@ public class AnnoncesCOEnvoiMessage5222_000201_1 extends AMALabstractProcess {
         if (objectFactory == null) {
             objectFactory = new ObjectFactory();
         }
-        ANNEE_A_TRAITER = "2016";// new Date().getAnnee();
+        ANNEE_A_TRAITER = new Date().getAnnee();
     }
 
     @Override
