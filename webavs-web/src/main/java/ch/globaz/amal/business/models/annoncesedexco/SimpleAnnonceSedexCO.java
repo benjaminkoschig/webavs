@@ -10,7 +10,6 @@ public class SimpleAnnonceSedexCO extends JadeSimpleModel {
     private static final long serialVersionUID = 1L;
     private String idAnnonceSedexCO = null;
     private String idTiersCM = null;
-    private String idMembre = null;
     private String messageType = null;
     private String messageSubType = null;
     private String messageEmetteur = null;
@@ -22,6 +21,10 @@ public class SimpleAnnonceSedexCO extends JadeSimpleModel {
     private String statementStartDate = null;
     private String statementEndDate = null;
     private String statementDate = null;
+    private String totalAnnulation = null;
+    private String totalArrivalPV = null;
+    private String totalArrivalDebtor = null;
+    private String totalClaim = null;
 
     public String getStatementDate() {
         return statementDate;
@@ -81,14 +84,6 @@ public class SimpleAnnonceSedexCO extends JadeSimpleModel {
 
     public void setIdTiersCM(String idTiersCM) {
         this.idTiersCM = idTiersCM;
-    }
-
-    public String getIdMembre() {
-        return idMembre;
-    }
-
-    public void setIdMembre(String idMembre) {
-        this.idMembre = idMembre;
     }
 
     public String getMessageEmetteur() {
@@ -153,6 +148,38 @@ public class SimpleAnnonceSedexCO extends JadeSimpleModel {
 
     public void setDateAnnonce(String dateAnnonce) {
         this.dateAnnonce = dateAnnonce;
+    }
+
+    public String getTotalAnnulation() {
+        return totalAnnulation;
+    }
+
+    public void setTotalAnnulation(String totalAnnulation) {
+        this.totalAnnulation = totalAnnulation;
+    }
+
+    public String getTotalArrivalPV() {
+        return totalArrivalPV;
+    }
+
+    public void setTotalArrivalPV(String totalArrivalPV) {
+        this.totalArrivalPV = totalArrivalPV;
+    }
+
+    public String getTotalArrivalDebtor() {
+        return totalArrivalDebtor;
+    }
+
+    public void setTotalArrivalDebtor(String totalArrivalDebtor) {
+        this.totalArrivalDebtor = totalArrivalDebtor;
+    }
+
+    public String getTotalClaim() {
+        return totalClaim;
+    }
+
+    public void setTotalClaim(String totalClaim) {
+        this.totalClaim = totalClaim;
     }
 
     /**

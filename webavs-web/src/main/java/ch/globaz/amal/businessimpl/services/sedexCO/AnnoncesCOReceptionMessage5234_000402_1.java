@@ -2,6 +2,7 @@ package ch.globaz.amal.businessimpl.services.sedexCO;
 
 import globaz.jade.context.JadeThread;
 import globaz.jade.context.JadeThreadActivator;
+import globaz.jade.context.exception.JadeNoBusinessLogSessionError;
 import globaz.jade.crypto.JadeDecryptionNotSupportedException;
 import globaz.jade.crypto.JadeEncrypterNotFoundException;
 import globaz.jade.exception.JadePersistenceException;
@@ -10,6 +11,7 @@ import globaz.jade.jaxb.JAXBValidationError;
 import globaz.jade.jaxb.JAXBValidationWarning;
 import globaz.jade.log.JadeLogger;
 import globaz.jade.persistence.JadePersistenceManager;
+import globaz.jade.persistence.model.JadeAbstractModel;
 import globaz.jade.sedex.JadeSedexMessageNotHandledException;
 import globaz.jade.sedex.annotation.OnReceive;
 import globaz.jade.sedex.annotation.Setup;
@@ -30,26 +32,65 @@ import ch.gdk_cds.xmlns.da_64a_5234_000402._1.HeaderType;
 import ch.gdk_cds.xmlns.da_64a_5234_000402._1.Message;
 import ch.gdk_cds.xmlns.da_64a_common._1.CertificateOfLossArrivalType;
 import ch.gdk_cds.xmlns.da_64a_common._1.CertificateOfLossFinalStatementType;
+import ch.gdk_cds.xmlns.da_64a_common._1.CertificateOfLossPaymentType;
 import ch.gdk_cds.xmlns.da_64a_common._1.DebtorNPType;
-import ch.gdk_cds.xmlns.da_64a_common._1.DebtorWithClaimType;
-import ch.gdk_cds.xmlns.da_64a_common._1.InsuredPersonType;
-import ch.gdk_cds.xmlns.da_64a_common._1.InsuredPersonWithClaimType;
+import ch.gdk_cds.xmlns.da_64a_common._1.DebtorType;
+import ch.gdk_cds.xmlns.da_64a_common._1.PaymentType;
 import ch.globaz.amal.business.constantes.IAMCodeSysteme;
+import ch.globaz.amal.business.models.annoncesedexco.ComplexAnnonceSedexCODebiteursAssures;
+import ch.globaz.amal.business.models.annoncesedexco.ComplexAnnonceSedexCODebiteursAssuresSearch;
 import ch.globaz.amal.business.models.annoncesedexco.SimpleAnnonceSedexCO;
-import ch.globaz.amal.business.models.annoncesedexco.SimpleAnnonceSedexCOAssure;
 import ch.globaz.amal.business.models.annoncesedexco.SimpleAnnonceSedexCODebiteur;
+import ch.globaz.amal.business.models.annoncesedexco.SimpleAnnonceSedexCOPaiements;
 import ch.globaz.amal.business.models.annoncesedexco.SimpleAnnonceSedexCOPersonne;
 import ch.globaz.amal.business.models.annoncesedexco.SimpleAnnonceSedexCOXML;
 import ch.globaz.amal.business.services.AmalServiceLocator;
+import ch.globaz.amal.businessimpl.services.sedexCO.listes.SimpleOutputList_DecomptePaiement_5234_402_1;
 import ch.globaz.amal.businessimpl.services.sedexCO.listes.SimpleOutputList_Decompte_5234_401_1;
 import ch.globaz.amal.businessimpl.services.sedexRP.utils.AMSedexRPUtil;
 import ch.globaz.common.domaine.Date;
+import ch.globaz.common.domaine.Montant;
+import ch.globaz.common.listoutput.SimpleOutputListBuilderJade;
+import ch.globaz.simpleoutputlist.annotation.style.Align;
+import ch.globaz.simpleoutputlist.configuration.Configuration;
+import ch.globaz.simpleoutputlist.configuration.RowDecorator;
+import ch.globaz.simpleoutputlist.configuration.RowStyle;
+import ch.globaz.simpleoutputlist.core.Details;
+import ch.globaz.simpleoutputlist.outimpl.Configurations;
+import ch.globaz.simpleoutputlist.outimpl.SimpleOutputListBuilder;
 
 public class AnnoncesCOReceptionMessage5234_000402_1 extends AnnoncesCOReceptionMessage5234_000401_1 {
     private static final String PACKAGE_CLASS_FOR_READ_SEDEX_DECOMPTE_FINAL = "ch.gdk_cds.xmlns.da_64a_5234_000402._1";
     private String idTiersCaisseMaladie = null;
-    private List<String> personnesNotFound = null;
-    private Message message = null;
+    private Class<?>[] addClasses = new Class[] { ch.gdk_cds.xmlns.da_64a_5234_000402._1.Message.class };
+
+    public enum PaymentCategoryEnum {
+        PAIEMENT_DEBITEUR("1"),
+        RP_RETROACTIVE("2"),
+        ANNULATION("3");
+
+        private String value;
+
+        public String getValue() {
+            return value;
+        }
+
+        private PaymentCategoryEnum(String value) {
+            this.value = value;
+        }
+
+        public static boolean isPaiementDebiteur(String value) {
+            return PAIEMENT_DEBITEUR.getValue().equals(value);
+        }
+
+        public static boolean isRPRetro(String value) {
+            return RP_RETROACTIVE.getValue().equals(value);
+        }
+
+        public static boolean isAnnulation(String value) {
+            return ANNULATION.getValue().equals(value);
+        }
+    }
 
     public AnnoncesCOReceptionMessage5234_000402_1() {
         personnesNotFound = new ArrayList<String>();
@@ -121,21 +162,159 @@ public class AnnoncesCOReceptionMessage5234_000402_1 extends AnnoncesCOReception
     protected void importMessagesSingle(SimpleSedexMessage currentSimpleMessage)
             throws JadeSedexMessageNotHandledException {
         try {
-            Class<?>[] addClasses = new Class[] { ch.gdk_cds.xmlns.da_64a_5234_000402._1.Message.class };
-            jaxbs = JAXBServices.getInstance();
-            message = (Message) jaxbs.unmarshal(currentSimpleMessage.fileLocation, false, true, addClasses);
-            // Sauvegarde du code XML de l'annonce dans la table
-            SimpleAnnonceSedexCO annonceSedexCO = persistAnnonce(addClasses);
 
-            List<SimpleOutputList_Decompte_5234_401_1> sheetDecomptes = generateList(annonceSedexCO);
-            File fileDecompte = printList(sheetDecomptes);
+            jaxbs = JAXBServices.getInstance();
+            Message message = (Message) jaxbs.unmarshal(currentSimpleMessage.fileLocation, false, true, addClasses);
+            senderId = message.getHeader().getSenderId();
+            // Sauvegarde du code XML de l'annonce dans la table
+            SimpleAnnonceSedexCO annonceSedexCO = persistAnnonce(message);
+
+            ComplexAnnonceSedexCODebiteursAssuresSearch annonceSedexCODebiteursAssuresSearch = super
+                    .searchDataReport(annonceSedexCO);
+            File fileDecompte = generateListFinal(annonceSedexCODebiteursAssuresSearch);
             sendMail(fileDecompte, "Décompte final");
         } catch (Exception e) {
             throw new JadeSedexMessageNotHandledException("Erreur lors du traitement du message", e);
         }
     }
 
-    private SimpleAnnonceSedexCO persistAnnonce(Class<?>[] addClasses) {
+    private File generateListFinal(ComplexAnnonceSedexCODebiteursAssuresSearch annonceSedexCODebiteursAssuresSearch) {
+
+        List<SimpleOutputList_Decompte_5234_401_1> sheetDecomptes = super
+                .generateList(annonceSedexCODebiteursAssuresSearch);
+        List<SimpleOutputList_DecomptePaiement_5234_402_1> sheetPaiements = generateListPaiement(annonceSedexCODebiteursAssuresSearch);
+
+        File file = printList(sheetDecomptes, sheetPaiements);
+
+        return file;
+
+    }
+
+    private File printList(List<SimpleOutputList_Decompte_5234_401_1> listLigneDecompteFinaux,
+            List<SimpleOutputList_DecomptePaiement_5234_402_1> listLigneDecompteFinalPaiement) {
+
+        if (listLigneDecompteFinaux.isEmpty()) {
+            return null;
+        }
+
+        if (listLigneDecompteFinalPaiement.isEmpty()) {
+            return null;
+        }
+
+        Details details = new Details();
+        details.add("Reçu le", Date.now().getSwissValue());
+        details.newLigne();
+        Configuration config = Configurations.buildeDefault();
+        config.setRowDecorator(new RowDecorator<Object>() {
+            @Override
+            public RowStyle decorat(Object outputList, int rowNum, int size) {
+                final RowStyle rowStyle = new RowStyle();
+                if (rowNum % 2 == 0) {
+                    rowStyle.setBackGroundColor(247, 252, 255);
+                }
+
+                String nss = "";
+                if (outputList instanceof SimpleOutputList_Decompte_5234_401_1) {
+                    nss = ((SimpleOutputList_Decompte_5234_401_1) outputList).getNssDebiteur();
+                } else if (outputList instanceof SimpleOutputList_DecomptePaiement_5234_402_1) {
+                    nss = ((SimpleOutputList_DecomptePaiement_5234_402_1) outputList).getNssDebiteur();
+                }
+
+                if ("Total".equals(nss) || "85% du total".equals(nss)) {
+                    rowStyle.setBackGroundColor(203, 210, 212);
+                }
+                return rowStyle;
+            }
+        });
+
+        String nomCaisseMaladieEmetteur = getNomCaisseMaladie(getIdTiersCaisseMaladie());
+
+        SimpleOutputListBuilder builderOnglet1 = SimpleOutputListBuilderJade.newInstance()
+                .outputNameAndAddPath("decompteAnnuel").addList(listLigneDecompteFinaux)
+                .addTitle(nomCaisseMaladieEmetteur, Align.LEFT).addSubTitle("Décompte final").configure(config)
+                .addHeaderDetails(details);
+        SimpleOutputListBuilder builderOnglet2 = builderOnglet1.jump().addList(listLigneDecompteFinalPaiement)
+                .addTitle(nomCaisseMaladieEmetteur, Align.LEFT).addSubTitle("Paiement").addHeaderDetails(details);
+
+        // Onglet2 contient onglet 1
+        File file = builderOnglet2.asXls().build();
+
+        return file;
+    }
+
+    private List<SimpleOutputList_DecomptePaiement_5234_402_1> generateListPaiement(
+            ComplexAnnonceSedexCODebiteursAssuresSearch annonceSedexCODebiteursAssuresSearch) {
+        List<SimpleOutputList_DecomptePaiement_5234_402_1> decomptePaiements = new ArrayList<SimpleOutputList_DecomptePaiement_5234_402_1>();
+        // try {
+        String lastIdDebiteur = "";
+
+        Montant totalPaiementDebiteurs = new Montant(0);
+        Montant totalRPRetro = new Montant(0);
+        Montant totalAnnulation = new Montant(0);
+        Montant totalTotal = new Montant(0);
+        for (JadeAbstractModel abstractComplex : annonceSedexCODebiteursAssuresSearch.getSearchResults()) {
+            SimpleOutputList_DecomptePaiement_5234_402_1 ligneDecompte = new SimpleOutputList_DecomptePaiement_5234_402_1();
+            ComplexAnnonceSedexCODebiteursAssures debiteursPaiements = (ComplexAnnonceSedexCODebiteursAssures) abstractComplex;
+            String idDebiteur = debiteursPaiements.getSimpleAnnonceSedexCODebiteur().getIdAnnonceSedexCODebiteur();
+            SimpleAnnonceSedexCODebiteur debiteur = debiteursPaiements.getSimpleAnnonceSedexCODebiteur();
+            SimpleAnnonceSedexCOPaiements paiement = debiteursPaiements.getSimpleAnnonceSedexCOPaiements();
+
+            if (paiement.isNew()) {
+                continue;
+            }
+
+            if (lastIdDebiteur.isEmpty()
+                    || !lastIdDebiteur.equals(debiteursPaiements.getSimpleAnnonceSedexCODebiteur()
+                            .getIdAnnonceSedexCODebiteur())) {
+                ligneDecompte.setNssDebiteur(debiteur.getNssDebiteur());
+                ligneDecompte.setNomPrenomDebiteur(debiteur.getNomPrenomDebiteur());
+
+                ligneDecompte.setTypeActe(debiteur.getActe());
+
+                String paiementCategory = paiement.getPaiementCategory();
+
+                if (PaymentCategoryEnum.isPaiementDebiteur(paiementCategory)) {
+                    Montant montantPmtDebiteur = new Montant(paiement.getPaiementTotalAmout());
+                    ligneDecompte.setPaiementDebiteur(montantPmtDebiteur);
+                    totalPaiementDebiteurs = totalPaiementDebiteurs.add(montantPmtDebiteur);
+                    totalTotal = totalTotal.add(montantPmtDebiteur);
+                } else if (PaymentCategoryEnum.isRPRetro(paiementCategory)) {
+                    Montant montantRPRetro = new Montant(paiement.getPaiementTotalAmout());
+                    ligneDecompte.setRpRetro(montantRPRetro);
+                    totalRPRetro = totalRPRetro.add(montantRPRetro);
+                    totalTotal = totalTotal.add(montantRPRetro);
+                } else if (PaymentCategoryEnum.isAnnulation(paiementCategory)) {
+                    Montant montantAnnulation = new Montant(paiement.getPaiementTotalAmout());
+                    ligneDecompte.setAnnulation(montantAnnulation);
+                    totalAnnulation = totalAnnulation.add(montantAnnulation);
+                    totalTotal = totalTotal.add(montantAnnulation);
+                }
+            }
+
+            lastIdDebiteur = idDebiteur;
+            decomptePaiements.add(ligneDecompte);
+        }
+
+        SimpleOutputList_DecomptePaiement_5234_402_1 ligneTotal = new SimpleOutputList_DecomptePaiement_5234_402_1();
+        ligneTotal.setNssDebiteur("Total");
+        ligneTotal.setNomPrenomDebiteur("");
+        ligneTotal.setPaiementDebiteur(totalPaiementDebiteurs);
+        ligneTotal.setRpRetro(totalRPRetro);
+        ligneTotal.setAnnulation(totalAnnulation);
+        ligneTotal.setTypeActe(totalTotal.getValue());
+        ligneTotal.setMessage("");
+        decomptePaiements.add(ligneTotal);
+
+        return decomptePaiements;
+
+        // } catch (JadePersistenceException jpe) {
+        // jpe.printStackTrace();
+        // }
+
+        // return decompteSheet;
+    }
+
+    private SimpleAnnonceSedexCO persistAnnonce(Message message) {
 
         // Sauvegarde de l'annonce dans la table
         HeaderType header = message.getHeader();
@@ -166,10 +345,19 @@ public class AnnoncesCOReceptionMessage5234_000402_1 extends AnnoncesCOReception
             checkJadeThreadErrors();
 
             // Sauvegarde du XML dans la base
-            saveXml(addClasses, annonceSedexCO);
+            saveXml(message, annonceSedexCO);
 
+            List<CertificateOfLossArrivalType> decomptesFinauxsActes = message.getContent()
+                    .getCertificateOfLossFinalStatement().getCertificateOfLossArrival();
+            statementDate = new Date(AMSedexRPUtil.getDateXMLToString(message.getContent()
+                    .getCertificateOfLossFinalStatement().getStatementDate()));
             // Sauvegarde des débiteurs et personnes assurées
-            saveDebiteursPersonnesAssurees(annonceSedexCO);
+            saveActesDefautBien(decomptesFinauxsActes, annonceSedexCO);
+
+            List<CertificateOfLossPaymentType> decomptesFinauxPaiements = message.getContent()
+                    .getCertificateOfLossFinalStatement().getCertificateOfLossPayment();
+
+            savePaiements(decomptesFinauxPaiements, annonceSedexCO);
         } catch (Exception ex) {
             JadeThread.logError(
                     "AnnoncesCOReceptionMessage5234_000402_1.saveAnnonce()",
@@ -180,8 +368,8 @@ public class AnnoncesCOReceptionMessage5234_000402_1 extends AnnoncesCOReception
         return annonceSedexCO;
     }
 
-    private void saveXml(Class<?>[] addClasses, SimpleAnnonceSedexCO simpleAnnonceCO) throws JAXBException,
-            SAXException, IOException, JAXBValidationError, JAXBValidationWarning, JadePersistenceException {
+    private void saveXml(Message message, SimpleAnnonceSedexCO simpleAnnonceCO) throws JAXBException, SAXException,
+            IOException, JAXBValidationError, JAXBValidationWarning, JadePersistenceException {
         StringWriter sw = new StringWriter();
         jaxbs.marshal(message, sw, false, true, addClasses);
         SimpleAnnonceSedexCOXML annonceSedexCOXML = new SimpleAnnonceSedexCOXML();
@@ -196,7 +384,7 @@ public class AnnoncesCOReceptionMessage5234_000402_1 extends AnnoncesCOReception
     protected String getIdTiersCaisseMaladie() {
         try {
             if (idTiersCaisseMaladie == null) {
-                idTiersCaisseMaladie = AMSedexRPUtil.getIdTiersFromSedexId(message.getHeader().getSenderId());
+                idTiersCaisseMaladie = AMSedexRPUtil.getIdTiersFromSedexId(senderId);
             }
         } catch (Exception ex) {
             throw new RuntimeException(ex.getMessage());
@@ -205,93 +393,64 @@ public class AnnoncesCOReceptionMessage5234_000402_1 extends AnnoncesCOReception
         return idTiersCaisseMaladie;
     }
 
-    @Override
-    protected void saveDebiteursPersonnesAssurees(SimpleAnnonceSedexCO simpleAnnonceSedexCO) {
-        List<CertificateOfLossArrivalType> decomptesTrimestriels = message.getContent()
-                .getCertificateOfLossFinalStatement().getCertificateOfLossArrival();
-
-        for (CertificateOfLossArrivalType certificateOfLossArrivalType : decomptesTrimestriels) {
+    private void savePaiements(List<CertificateOfLossPaymentType> decomptesFinauxPaiements,
+            SimpleAnnonceSedexCO simpleAnnonceSedexCO) {
+        for (CertificateOfLossPaymentType certificateOfLossPayment : decomptesFinauxPaiements) {
             try {
-                DebtorWithClaimType debtorWithClaim = certificateOfLossArrivalType.getDebtorWithClaim();
-                DebtorNPType debtorNP = debtorWithClaim.getDebtor().getDebtorNP();
-                List<InsuredPersonWithClaimType> insuredPersonTypes = certificateOfLossArrivalType
-                        .getInsuredPersonWithClaim();
-
-                if (debtorNP == null) {
+                if (certificateOfLossPayment.getDebtor().getDebtorNP() == null) {
                     JadeThread.logInfo(this.getClass().getName(), "Débiteur non personne physique");
                     continue;
                 }
 
-                SimpleAnnonceSedexCODebiteur annonceSedexCODebiteur = new SimpleAnnonceSedexCODebiteur();
-                annonceSedexCODebiteur.setIdAnnonceSedexCO(simpleAnnonceSedexCO.getIdAnnonceSedexCO());
-                annonceSedexCODebiteur.setNssDebiteur(String.valueOf(debtorNP.getVn()));
-                annonceSedexCODebiteur.setNomPrenomDebiteur(debtorNP.getOfficialName() + " " + debtorNP.getFirstName());
-                annonceSedexCODebiteur.setNpaLocaliteDebiteur(getNPALocalite(debtorNP.getAddress()));
-                annonceSedexCODebiteur.setRueNumeroDebiteur(getRueNumero(debtorNP.getAddress()));
-                TypesOfLossEnum typeActe = getTypeActe(certificateOfLossArrivalType.getCertificateOfLoss()
-                        .getTypeOfLoss());
-                annonceSedexCODebiteur.setActe(typeActe.getCs());
-                annonceSedexCODebiteur.setInterets(debtorWithClaim.getClaimDebtor().getInterests().toString());
-                annonceSedexCODebiteur.setFrais(debtorWithClaim.getClaimDebtor().getExpenses().toString());
-                annonceSedexCODebiteur.setTotal(debtorWithClaim.getClaimDebtor().getTotalClaim().toString());
+                SimpleAnnonceSedexCODebiteur simpleAnnonceSedexCODebiteur = saveDebiteur(simpleAnnonceSedexCO,
+                        certificateOfLossPayment.getCertificateOfLoss().getTypeOfLoss(),
+                        certificateOfLossPayment.getDebtor());
 
-                if (debtorNP.getVn() != null && debtorNP.getVn() > 0) {
-                    annonceSedexCODebiteur = findCorrespondanceDebiteur(debtorNP, annonceSedexCODebiteur,
-                            insuredPersonTypes);
-
-                    if (annonceSedexCODebiteur != null && annonceSedexCODebiteur.getIdFamille() != null) {
-                        SimpleAnnonceSedexCOPersonne simpleAnnonceSedexCOPersonne = new SimpleAnnonceSedexCOPersonne();
-                        simpleAnnonceSedexCOPersonne.setIdAnnonceSedexCO(simpleAnnonceSedexCO.getIdAnnonceSedexCO());
-                        simpleAnnonceSedexCOPersonne.setIdFamille(annonceSedexCODebiteur.getIdFamille());
-                        simpleAnnonceSedexCOPersonne.setIdContribuable(annonceSedexCODebiteur.getIdContribuable());
-                        try {
-                            AmalServiceLocator.getSimpleAnnonceSedexCOPersonneService().create(
-                                    simpleAnnonceSedexCOPersonne);
-                        } catch (Exception ex) {
-                            throw new JadePersistenceException(ex.getMessage());
-                        }
-                    }
-                }
-                annonceSedexCODebiteur = (SimpleAnnonceSedexCODebiteur) JadePersistenceManager
-                        .add(annonceSedexCODebiteur);
-
-                for (InsuredPersonWithClaimType insuredPersonWithClaimType : insuredPersonTypes) {
-                    InsuredPersonType insuredPerson = insuredPersonWithClaimType.getInsuredPerson();
-
-                    SimpleAnnonceSedexCOAssure annonceSedexCOAssure = new SimpleAnnonceSedexCOAssure();
-                    findCorrespondancePersonneAssuree(insuredPerson, annonceSedexCOAssure, message.getContent()
-                            .getCertificateOfLossFinalStatement().getStatementDate());
-                    annonceSedexCOAssure.setIdAnnonceSedexCODebiteur(annonceSedexCODebiteur.getId());
-
-                    annonceSedexCOAssure.setNssAssure(String.valueOf(insuredPerson.getVn()));
-                    annonceSedexCOAssure.setNomPrenomAssure(insuredPerson.getOfficialName() + " "
-                            + insuredPerson.getFirstName());
-                    annonceSedexCODebiteur.setNpaLocaliteDebiteur(getNPALocalite(insuredPerson.getAddress()));
-                    annonceSedexCODebiteur.setRueNumeroDebiteur(getRueNumero(insuredPerson.getAddress()));
-
-                    if (insuredPersonWithClaimType.getPremium() != null) {
-                        annonceSedexCOAssure.setPrimePeriodeDebut(AMSedexRPUtil
-                                .getDateXMLToString(insuredPersonWithClaimType.getPremium().getClaimStartDate()));
-                        annonceSedexCOAssure.setPrimePeriodeFin(AMSedexRPUtil
-                                .getDateXMLToString(insuredPersonWithClaimType.getPremium().getClaimEndDate()));
-                        annonceSedexCOAssure.setPrimeMontant(insuredPersonWithClaimType.getPremium().getClaimAmount()
-                                .toString());
-                    }
-
-                    if (insuredPersonWithClaimType.getCostSharing() != null) {
-                        annonceSedexCOAssure.setCostSharingPeriodeDebut(AMSedexRPUtil
-                                .getDateXMLToString(insuredPersonWithClaimType.getCostSharing().getClaimStartDate()));
-                        annonceSedexCOAssure.setCostSharingPeriodeFin(AMSedexRPUtil
-                                .getDateXMLToString(insuredPersonWithClaimType.getCostSharing().getClaimEndDate()));
-                        annonceSedexCOAssure.setCostSharingMontant(insuredPersonWithClaimType.getCostSharing()
-                                .getClaimAmount().toString());
-                    }
-                    JadePersistenceManager.add(annonceSedexCOAssure);
+                for (PaymentType payment : certificateOfLossPayment.getPayment()) {
+                    SimpleAnnonceSedexCOPaiements simpleAnnonceSedexCOPaiements = new SimpleAnnonceSedexCOPaiements();
+                    simpleAnnonceSedexCOPaiements.setIdAnnonceSedexCODebiteur(simpleAnnonceSedexCODebiteur
+                            .getIdAnnonceSedexCODebiteur());
+                    simpleAnnonceSedexCOPaiements.setPaiementTotalAmout(payment.getTotalAmount().toString());
+                    simpleAnnonceSedexCOPaiements.setPaiementCategory(payment.getPaymentCategory());
+                    JadePersistenceManager.add(simpleAnnonceSedexCOPaiements);
                 }
             } catch (JadePersistenceException jpe) {
                 JadeThread.logError(this.getClass().getName(), "Erreur pendant la création du débiteur en DB");
             }
         }
+    }
+
+    protected SimpleAnnonceSedexCODebiteur saveDebiteur(SimpleAnnonceSedexCO simpleAnnonceSedexCO, String typeOfLoss,
+            DebtorType debtorType) throws JadeNoBusinessLogSessionError, JadePersistenceException {
+
+        DebtorNPType debtorNP = debtorType.getDebtorNP();
+
+        SimpleAnnonceSedexCODebiteur annonceSedexCODebiteur = new SimpleAnnonceSedexCODebiteur();
+        annonceSedexCODebiteur.setIdAnnonceSedexCO(simpleAnnonceSedexCO.getIdAnnonceSedexCO());
+        annonceSedexCODebiteur.setNssDebiteur(String.valueOf(debtorNP.getVn()));
+        annonceSedexCODebiteur.setNomPrenomDebiteur(debtorNP.getOfficialName() + " " + debtorNP.getFirstName());
+        annonceSedexCODebiteur.setNpaLocaliteDebiteur(getNPALocalite(debtorNP.getAddress()));
+        annonceSedexCODebiteur.setRueNumeroDebiteur(getRueNumero(debtorNP.getAddress()));
+        TypesOfLossEnum typeActe = getTypeActe(typeOfLoss);
+        annonceSedexCODebiteur.setActe(typeActe.getCs());
+
+        if (debtorNP.getVn() != null && debtorNP.getVn() > 0) {
+            annonceSedexCODebiteur = findCorrespondanceDebiteur(debtorNP, annonceSedexCODebiteur, null);
+
+            if (annonceSedexCODebiteur != null && annonceSedexCODebiteur.getIdFamille() != null) {
+                SimpleAnnonceSedexCOPersonne simpleAnnonceSedexCOPersonne = new SimpleAnnonceSedexCOPersonne();
+                simpleAnnonceSedexCOPersonne.setIdAnnonceSedexCO(simpleAnnonceSedexCO.getIdAnnonceSedexCO());
+                simpleAnnonceSedexCOPersonne.setIdFamille(annonceSedexCODebiteur.getIdFamille());
+                simpleAnnonceSedexCOPersonne.setIdContribuable(annonceSedexCODebiteur.getIdContribuable());
+                try {
+                    AmalServiceLocator.getSimpleAnnonceSedexCOPersonneService().create(simpleAnnonceSedexCOPersonne);
+                } catch (Exception ex) {
+                    throw new JadePersistenceException(ex.getMessage());
+                }
+            }
+        }
+        annonceSedexCODebiteur = (SimpleAnnonceSedexCODebiteur) JadePersistenceManager.add(annonceSedexCODebiteur);
+        return annonceSedexCODebiteur;
     }
 
 }

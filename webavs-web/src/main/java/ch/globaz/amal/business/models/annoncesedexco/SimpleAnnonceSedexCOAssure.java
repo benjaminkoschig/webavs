@@ -3,6 +3,7 @@ package ch.globaz.amal.business.models.annoncesedexco;
 import globaz.jade.persistence.model.JadeSimpleModel;
 
 public class SimpleAnnonceSedexCOAssure extends JadeSimpleModel {
+    private static final long serialVersionUID = -2360050957298529938L;
     private String idAnnonceSedexCOPersonneAssuree = null;
     private String idAnnonceSedexCODebiteur = null;
     private String idFamille = null;

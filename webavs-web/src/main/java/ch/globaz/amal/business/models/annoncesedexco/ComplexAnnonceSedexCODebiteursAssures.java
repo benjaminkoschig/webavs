@@ -6,12 +6,14 @@ public class ComplexAnnonceSedexCODebiteursAssures extends JadeComplexModel {
     private SimpleAnnonceSedexCO simpleAnnonceSedexCO = null;
     private SimpleAnnonceSedexCODebiteur simpleAnnonceSedexCODebiteur = null;
     private SimpleAnnonceSedexCOAssure simpleAnnonceSedexCOAssure = null;
+    private SimpleAnnonceSedexCOPaiements simpleAnnonceSedexCOPaiements = null;
 
     public ComplexAnnonceSedexCODebiteursAssures() {
         super();
         simpleAnnonceSedexCO = new SimpleAnnonceSedexCO();
         simpleAnnonceSedexCODebiteur = new SimpleAnnonceSedexCODebiteur();
         simpleAnnonceSedexCOAssure = new SimpleAnnonceSedexCOAssure();
+        simpleAnnonceSedexCOPaiements = new SimpleAnnonceSedexCOPaiements();
     }
 
     public SimpleAnnonceSedexCO getSimpleAnnonceSedexCO() {
@@ -56,6 +58,14 @@ public class ComplexAnnonceSedexCODebiteursAssures extends JadeComplexModel {
     @Override
     public void setSpy(String spy) {
         simpleAnnonceSedexCO.setSpy(spy);
+    }
+
+    public SimpleAnnonceSedexCOPaiements getSimpleAnnonceSedexCOPaiements() {
+        return simpleAnnonceSedexCOPaiements;
+    }
+
+    public void setSimpleAnnonceSedexCOPaiements(SimpleAnnonceSedexCOPaiements simpleAnnonceSedexCOPaiements) {
+        this.simpleAnnonceSedexCOPaiements = simpleAnnonceSedexCOPaiements;
     }
 
 }
