@@ -245,19 +245,19 @@ function init(){
 		switchOnglets("prestations");
 	else
 		switchOnglets("droits");
-	
-	var activite = document.getElementById("dossierComplexModel.dossierModel.activiteAllocataire").value;
-	if (activite=="<%=ALCSDossier.ACTIVITE_AGRICULTEUR%>" || activite=="<%=ALCSDossier.ACTIVITE_COLLAB_AGRICOLE%>" || activite=="<%=ALCSDossier.ACTIVITE_TRAVAILLEUR_AGRICOLE%>") {
-		$("#TypeDomaineAgriculteur").css("visibility","visible");
-		$("#TypeDomaineAgriculteur").css("width","80px");
-	}
-	
-	if(activite == CS_SALARIE){
-		$("#complementActiviteAllocataire").css("visibility","visible");
-		$("#complementActiviteAllocataire").css("width","80px");
-	}
-	
-	
+
+		var activite = document.getElementById("dossierComplexModel.dossierModel.activiteAllocataire").value;
+		if (activite=="<%=ALCSDossier.ACTIVITE_AGRICULTEUR%>" || activite=="<%=ALCSDossier.ACTIVITE_COLLAB_AGRICOLE%>" || activite=="<%=ALCSDossier.ACTIVITE_TRAVAILLEUR_AGRICOLE%>") {
+			$("#TypeDomaineAgriculteur").css("visibility","visible");
+			$("#TypeDomaineAgriculteur").css("width","80px");
+		}
+		
+		if(activite == CS_SALARIE){
+			$("#complementActiviteAllocataire").css("visibility","visible");
+			$("#complementActiviteAllocataire").css("width","80px");
+		}
+
+
 }
 
 function postInit(){
@@ -402,57 +402,198 @@ $(document).ready(function(){
 		
 	}
 
-	try {
-		$("#droits").tablesorter( {
-			sortInitialOrder: "desc",
-			sortReset   : true,
-			headers: {
-				0: {
-					sorter: false
-				}, 
-				1: {
-					sorter: false
-				}, 
-				2: {
-					sorter: false
-				}, 
-				3: {
-					sorter: true
-				}, 
-				4: {
-					sorter: false
-				}, 
-				5: {
-					sorter: false
-				}, 
-				6: {
-					sorter: false
-				}, 
-				7: {
-					sorter: false
-				},
-				8: {
-					sorter: false
-				},
-				9: {
-					sorter: false
-				},
-				10: {
-					sorter: false
-				}, 
-				11: {
-					sorter: false
-				},
-				12: {
-					sorter: false
+// 	try {
+// 		$("#droits").tablesorter( {
+// 			sortInitialOrder: "desc",
+// 			sortReset   : true,
+// 			headers: {
+// 				0: {
+// 					sorter: false
+// 				}, 
+// 				1: {
+// 					sorter: false
+// 				}, 
+// 				2: {
+// 					sorter: false
+// 				}, 
+// 				3: {
+// 					sorter: true
+// 				}, 
+// 				4: {
+// 					sorter: false
+// 				}, 
+// 				5: {
+// 					sorter: false
+// 				}, 
+// 				6: {
+// 					sorter: false
+// 				}, 
+// 				7: {
+// 					sorter: false
+// 				},
+// 				8: {
+// 					sorter: false
+// 				},
+// 				9: {
+// 					sorter: false
+// 				},
+// 				10: {
+// 					sorter: false
+// 				}, 
+// 				11: {
+// 					sorter: false
+// 				},
+// 				12: {
+// 					sorter: false
+// 				}
+// 			}
+// 		});
+// 	} catch (e) {
+// 		if (typeof console !== 'undefined') {
+// 			console.log(e);
+// 		}
+// 	}
+
+
+
+function sortStandardTable ($th) {
+		var that = this,
+			getNumberForAmount = function (s_value) {
+				var f_amount = globazNotation.utilsFormatter.amountTofloat(s_value);
+				if (!isNaN(f_amount)) {
+					return f_amount;
+				} else {
+					return false;
 				}
-			}
+			},
+			findSortKey = function ($cell) {
+				var s_value = $cell.find('.sort-key').text().toUpperCase() + ' ' + $cell.text().toUpperCase(),
+					f_amount = getNumberForAmount.call(this, s_value),
+					s_date = globazNotation.utilsDate.normalizeFullGlobazDate(s_value);
+				if (s_date) {
+					return s_date;
+				} else if (f_amount) {
+					return f_amount;
+				} else {
+					return s_value;
+				}
+			};
+		var $table = $th.closest("table");
+		$th.wrapInner('<span>');
+
+		$th.append($('<span/>', {
+			"class": "ui-icon ui-icon-arrowthick-2-n-s",
+			style: 'display:inline-block'
+		}));
+		
+		$th.each(function (column) {
+			var $this = $(this);
+			$this.attr('nowrap', 'nowrap');
+			$this.addClass('sortable ' + that.hoverRowClass).click(function () {
+				var sortDirection = $this.is('.sorted-asc') ? -1 : 1,
+				$uiIconsNotWithThis = $th.not(this).find('.ui-icon'),
+				$uiIcon = $this.find('.ui-icon'),
+				$tbody = $table.find('tbody'),
+				$rows = $tbody.find('tr');
+				
+				$uiIconsNotWithThis.removeClass('ui-icon-arrowthick-1-n ui-icon-arrowthick-1-s');
+				$uiIconsNotWithThis.addClass('ui-icon-arrowthick-2-n-s');
+				$rows.detach();
+				$uiIcon.removeClass('ui-icon-arrowthick-2-n-s');
+
+				if (sortDirection === -1) {
+					$uiIcon.removeClass('ui-icon-arrowthick-1-s');
+					$uiIcon.addClass('ui-icon-arrowthick-1-n');
+				} else {
+					$uiIcon.removeClass('ui-icon-arrowthick-1-n');
+					$uiIcon.addClass('ui-icon-arrowthick-1-s');
+				}
+
+				//loop through all the rows and find  
+				$.each($rows, function (index, row) {
+					row.$row = $(row);
+					if (row.id === "") {
+						row.id = index;
+					}
+					var n_index = $this.get(0).cellIndex;
+					row.notSortable = row.$row.is('.notSortable');
+					if(!row.notSortable){
+						row.sortKey = findSortKey.call(that, row.$row.find('td:eq(' + n_index + ')'));
+					}
+				});
+
+				if ($this.hasClass('dateSortable')) {
+					$rows.sort(function (date1, date2) {
+						if (date1.notSortable || date2.notSortable) {
+							return 0;
+						}
+
+						if ($.type(date1.sortKey) === "string" && $.type(date2.sortKey) === "string") {
+							var s_date1 = $.trim(date1.sortKey),
+								s_date2 = $.trim(date2.sortKey);
+															
+							if (s_date1 === '' && s_date1 === s_date2) {
+								return 0;
+							}
+							
+							if (s_date1 === '') {
+								return sortDirection;
+							}
+							if (s_date2 === '') {
+								return -sortDirection;
+							}
+
+							if (globazNotation.utilsDate.areDatesSame(s_date1, s_date2)) {
+								return 0;
+							}
+							if (globazNotation.utilsDate.convertJSDateToDBstringDateFormat(s_date1) > globazNotation.utilsDate.convertJSDateToDBstringDateFormat(s_date2)) {
+								return sortDirection;
+							} else {
+								return -sortDirection;
+							}
+						}
+						return 0;
+					});
+				} else {
+					//compare and sort the rows alphabetically
+					$rows.sort(function (a, b) {
+						if (a.notSortable || b.notSortable) {
+							return 0;
+						}
+						
+						if (a.sortKey < b.sortKey) {
+							return -sortDirection;  
+						}
+						if (a.sortKey > b.sortKey) {
+							return sortDirection;  
+						}
+						return 0;  
+					});
+				}
+
+				$rows.each(function (row) {
+/* 					if (row % 2 == 0) {
+						this.$row.addClass('odd');
+					} else {
+						this.$row.removeClass('odd');
+					} */
+					$tbody.append(this); 
+					this.sortKey = null;  
+				});  
+
+
+				//identify the column sort order  
+				$th.removeClass('sorted-asc sorted-desc');  
+
+				if (sortDirection === 1) {
+					$this.addClass('sorted-asc');
+				} else {
+					$this.addClass('sorted-desc');
+				}
+			}); 
 		});
-	} catch (e) {
-		if (typeof console !== 'undefined') {
-			console.log(e);
-		}
 	}
+sortStandardTable($("#headerDateNaissance"))
 });
 
 var MAIN_URL = "<%=(servletContext + mainServletPath)%>";

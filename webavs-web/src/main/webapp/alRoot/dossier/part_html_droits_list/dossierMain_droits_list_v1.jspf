@@ -14,7 +14,7 @@
                   <th scope="col"></th>
                   <th scope="col" ><ct:FWLabel key="AL0004_DROITS_ENTETE_NOM"/></th>
                   <th scope="col" ><ct:FWLabel key="AL0004_DROITS_ENTETE_PAYS"/></th>
-                  <th scope="col" ><ct:FWLabel key="AL0004_DROITS_ENTETE_DATENAISSANCE"/></th>
+                  <th scope="col" class="dateSortable" id="headerDateNaissance" ><ct:FWLabel key="AL0004_DROITS_ENTETE_DATENAISSANCE"/></th>
                   <th scope="col" ><ct:FWLabel key="AL0004_DROITS_ENTETE_DATEDEBUT"/></th>
                   <th scope="col" ><ct:FWLabel key="AL0004_DROITS_ENTETE_DATEFIN"/></th>
                   <th scope="col" ><ct:FWLabel key="AL0004_DROITS_ENTETE_MOTIF"/></th>
