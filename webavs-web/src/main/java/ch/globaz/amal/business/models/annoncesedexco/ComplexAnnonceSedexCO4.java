@@ -15,11 +15,15 @@ public class ComplexAnnonceSedexCO4 extends JadeComplexModel {
     private static final long serialVersionUID = 1L;
     private SimpleAnnonceSedexCO simpleAnnonceSedexCO;
     private AdministrationComplexModel caisseMaladie;
+    private SimpleAnnonceSedexCODebiteur simpleAnnonceSedexCODebiteur;
+    private SimpleAnnonceSedexCOAssure simpleAnnonceSedexCOAssure;
 
     public ComplexAnnonceSedexCO4() {
         super();
         simpleAnnonceSedexCO = new SimpleAnnonceSedexCO();
         caisseMaladie = new AdministrationComplexModel();
+        simpleAnnonceSedexCODebiteur = new SimpleAnnonceSedexCODebiteur();
+        simpleAnnonceSedexCOAssure = new SimpleAnnonceSedexCOAssure();
     }
 
     /*
@@ -35,11 +39,31 @@ public class ComplexAnnonceSedexCO4 extends JadeComplexModel {
     /*
      * (non-Javadoc)
      * 
+     * @see globaz.jade.persistence.model.JadeAbstractModel#setId(java.lang.String)
+     */
+    @Override
+    public void setId(String id) {
+        simpleAnnonceSedexCO.setId(id);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see globaz.jade.persistence.model.JadeAbstractModel#getSpy()
      */
     @Override
     public String getSpy() {
         return simpleAnnonceSedexCO.getSpy();
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see globaz.jade.persistence.model.JadeAbstractModel#setSpy(java.lang.String)
+     */
+    @Override
+    public void setSpy(String spy) {
+        simpleAnnonceSedexCO.setSpy(spy);
     }
 
     /**
@@ -70,23 +94,31 @@ public class ComplexAnnonceSedexCO4 extends JadeComplexModel {
         this.caisseMaladie = caisseMaladie;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see globaz.jade.persistence.model.JadeAbstractModel#setId(java.lang.String)
+    /**
+     * @return the simpleAnnonceSedexCODebiteur
      */
-    @Override
-    public void setId(String id) {
-        simpleAnnonceSedexCO.setId(id);
+    public SimpleAnnonceSedexCODebiteur getSimpleAnnonceSedexCODebiteur() {
+        return simpleAnnonceSedexCODebiteur;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see globaz.jade.persistence.model.JadeAbstractModel#setSpy(java.lang.String)
+    /**
+     * @param simpleAnnonceSedexCODebiteur the simpleAnnonceSedexCODebiteur to set
      */
-    @Override
-    public void setSpy(String spy) {
-        simpleAnnonceSedexCO.setSpy(spy);
+    public void setSimpleAnnonceSedexCODebiteur(SimpleAnnonceSedexCODebiteur simpleAnnonceSedexCODebiteur) {
+        this.simpleAnnonceSedexCODebiteur = simpleAnnonceSedexCODebiteur;
+    }
+
+    /**
+     * @return the simpleAnnonceSedexCOAssure
+     */
+    public SimpleAnnonceSedexCOAssure getSimpleAnnonceSedexCOAssure() {
+        return simpleAnnonceSedexCOAssure;
+    }
+
+    /**
+     * @param simpleAnnonceSedexCOAssure the simpleAnnonceSedexCOAssure to set
+     */
+    public void setSimpleAnnonceSedexCOAssure(SimpleAnnonceSedexCOAssure simpleAnnonceSedexCOAssure) {
+        this.simpleAnnonceSedexCOAssure = simpleAnnonceSedexCOAssure;
     }
 }
