@@ -21,6 +21,7 @@ public class SimpleAnnonceSedexCO extends JadeSimpleModel {
     private String statementStartDate = null;
     private String statementEndDate = null;
     private String statementDate = null;
+    private String statementYear = null;
     private String totalAnnulation = null;
     private String totalArrivalPV = null;
     private String totalArrivalDebtor = null;
@@ -48,6 +49,14 @@ public class SimpleAnnonceSedexCO extends JadeSimpleModel {
 
     public void setStatementEndDate(String statementEndDate) {
         this.statementEndDate = statementEndDate;
+    }
+
+    public String getStatementYear() {
+        return statementYear;
+    }
+
+    public void setStatementYear(String statementYear) {
+        this.statementYear = statementYear;
     }
 
     /*

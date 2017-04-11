@@ -1,6 +1,5 @@
 package ch.globaz.amal.businessimpl.services.sedexCO;
 
-import globaz.globall.db.BSessionUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.context.JadeThread;
 import globaz.jade.context.JadeThreadActivator;
@@ -23,7 +22,6 @@ import globaz.jade.sedex.message.GroupedSedexMessage;
 import globaz.jade.sedex.message.SedexMessage;
 import globaz.jade.sedex.message.SimpleSedexMessage;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
-import globaz.jade.smtp.JadeSmtpClient;
 import globaz.pyxis.util.CommonNSSFormater;
 import java.io.File;
 import java.io.IOException;
@@ -79,11 +77,7 @@ public class AnnoncesCOReceptionMessage5234_000401_1 extends AnnoncesCODefault {
     private String idTiersCaisseMaladie = null;
     protected String senderId = null;
     protected Date statementStartDate = null;
-    protected List<String> personnesNotFound = null;
-
-    public AnnoncesCOReceptionMessage5234_000401_1() {
-        personnesNotFound = new ArrayList<String>();
-    }
+    protected Date statementDate = null;
 
     /**
      * Préparation des users et mots de passe pour le gestion SEDEX (JadeSedexService.xml)
@@ -138,6 +132,11 @@ public class AnnoncesCOReceptionMessage5234_000401_1 extends AnnoncesCODefault {
 
     }
 
+    @Override
+    protected String getSubjectMail() {
+        return "Contentieux Amal : réception des annonces 'Décompte trimestriel' effectuée avec succès !";
+    }
+
     /**
      * Méthode de lecture du message sedex en réception, et traitement
      * 
@@ -147,6 +146,7 @@ public class AnnoncesCOReceptionMessage5234_000401_1 extends AnnoncesCODefault {
      */
     protected void importMessagesSingle(SimpleSedexMessage currentSimpleMessage)
             throws JadeSedexMessageNotHandledException {
+        File fileDecompte = null;
         try {
             Class<?>[] addClasses = new Class[] { ch.gdk_cds.xmlns.da_64a_5234_000401._1.Message.class };
             jaxbs = JAXBServices.getInstance();
@@ -157,10 +157,18 @@ public class AnnoncesCOReceptionMessage5234_000401_1 extends AnnoncesCODefault {
 
             ComplexAnnonceSedexCODebiteursAssuresSearch annonceSedexCODebiteursAssuresSearch = searchDataReport(annonceSedexCO);
             List<SimpleOutputList_Decompte_5234_401_1> sheetDecomptes = generateList(annonceSedexCODebiteursAssuresSearch);
-            File fileDecompte = printList(sheetDecomptes);
-            sendMail(fileDecompte, "Décompte trimestriel");
+            fileDecompte = printList(sheetDecomptes);
+        } catch (JadePersistenceException jpe) {
+            logErrors("AnnoncesCOReceptionMessage5234_000401_1.importMessagesSingle()",
+                    "Erreur pendant le traitement de la liste : " + jpe.getMessage(), jpe);
+        } catch (Exception ex) {
+            logErrors("AnnoncesCOReceptionMessage5234_000401_1.importMessagesSingle()", "Erreur unmarshall message : "
+                    + ex.getMessage(), ex);
+        }
+        try {
+            sendMail(fileDecompte);
         } catch (Exception e) {
-            throw new JadeSedexMessageNotHandledException("Erreur lors du traitement du message", e);
+            throw new JadeSedexMessageNotHandledException("Erreur lors de l'envoi du mail", e);
         }
     }
 
@@ -334,34 +342,42 @@ public class AnnoncesCOReceptionMessage5234_000401_1 extends AnnoncesCODefault {
         return file;
     }
 
-    protected void sendMail(File file, String typeDecompte) throws Exception {
-        String subject = "Contentieux Amal : réception des annonces '" + typeDecompte + "' effectuée avec succès !";
-        StringBuilder body = new StringBuilder();
-        if (!personnesNotFound.isEmpty()) {
-            if (personnesNotFound.size() > 1) {
-                subject = personnesNotFound.size()
-                        + " personnes non connues détectées lors de la réception des annonces de type '" + typeDecompte
-                        + "' !";
-            } else {
-                subject = "1 personne non connue détectée lors de la réception des annonces de type '" + typeDecompte
-                        + "' !";
-            }
-            body.append("Liste des personnes non trouvées :\n");
-
-            for (String personneInexistante : personnesNotFound) {
-                body.append("   -" + personneInexistante + "\n");
-            }
-
-        }
-
-        String[] files = new String[1];
-        if (file != null) {
-            files[0] = file.getPath();
-        }
-
-        JadeSmtpClient.getInstance().sendMail(BSessionUtil.getSessionFromThreadContext().getUserEMail(), subject,
-                body.toString(), files);
-    }
+    // @Override
+    // protected void sendMail(File file, String typeDecompte) throws Exception {
+    // String subject = "Contentieux Amal : réception des annonces '" + typeDecompte + "' effectuée avec succès !";
+    // StringBuilder body = new StringBuilder();
+    // if (!personnesNotFound.isEmpty()) {
+    // if (personnesNotFound.size() > 1) {
+    // subject = personnesNotFound.size()
+    // + " personnes non connues détectées lors de la réception des annonces de type '" + typeDecompte
+    // + "' !";
+    // } else {
+    // subject = "1 personne non connue détectée lors de la réception des annonces de type '" + typeDecompte
+    // + "' !";
+    // }
+    // body.append("Liste des personnes non trouvées :\n");
+    //
+    // for (String personneInexistante : personnesNotFound) {
+    // body.append("   -" + personneInexistante + "\n");
+    // }
+    //
+    // }
+    //
+    // if (errors.size() > 0) {
+    // body.append("Autres erreurs détectée(s)");
+    // for (String error : errors) {
+    // body.append(error);
+    // }
+    // }
+    //
+    // String[] files = new String[1];
+    // if (file != null) {
+    // files[0] = file.getPath();
+    // }
+    //
+    // JadeSmtpClient.getInstance().sendMail(BSessionUtil.getSessionFromThreadContext().getUserEMail(), subject,
+    // body.toString(), files);
+    // }
 
     private SimpleAnnonceSedexCO persistAnnonce(Message message, Class<?>[] addClasses) {
 
@@ -384,8 +400,12 @@ public class AnnoncesCOReceptionMessage5234_000401_1 extends AnnoncesCODefault {
             CertificateOfLossQuarterlyStatementType certificateOfLossArrivalType = message.getContent()
                     .getCertificateOfLossQuarterlyStatement();
 
-            annonceSedexCO.setStatementDate(AMSedexRPUtil.getDateXMLToString(certificateOfLossArrivalType
-                    .getStatementDate()));
+            statementDate = new Date(AMSedexRPUtil.getDateXMLToString(certificateOfLossArrivalType.getStatementDate()));
+            statementStartDate = new Date(AMSedexRPUtil.getDateXMLToString(message.getContent()
+                    .getCertificateOfLossQuarterlyStatement().getStatementStartDate()));
+
+            annonceSedexCO.setStatementDate(statementDate.getSwissValue());
+            annonceSedexCO.setStatementYear(statementDate.getAnnee());
             annonceSedexCO.setStatementStartDate(AMSedexRPUtil.getDateXMLToString(certificateOfLossArrivalType
                     .getStatementStartDate()));
             annonceSedexCO.setStatementEndDate(AMSedexRPUtil.getDateXMLToString(certificateOfLossArrivalType
@@ -398,16 +418,14 @@ public class AnnoncesCOReceptionMessage5234_000401_1 extends AnnoncesCODefault {
 
             List<CertificateOfLossArrivalType> decomptesTrimestriels = message.getContent()
                     .getCertificateOfLossQuarterlyStatement().getCertificateOfLossArrival();
-            statementStartDate = new Date(AMSedexRPUtil.getDateXMLToString(message.getContent()
-                    .getCertificateOfLossQuarterlyStatement().getStatementStartDate()));
 
             // Sauvegarde des débiteurs et personnes assurées
             saveActesDefautBien(decomptesTrimestriels, annonceSedexCO);
         } catch (Exception ex) {
-            JadeThread.logError(
+            logErrors(
                     "AnnoncesCOReceptionMessage5234_000401_1.saveAnnonce()",
                     "Erreur pendant la sauvegarde de l'annonce du décompte trimestriel ! (Msg id : "
-                            + header.getMessageId() + ") => " + ex.getMessage());
+                            + header.getMessageId() + ") => " + ex.getMessage(), ex);
         }
 
         return annonceSedexCO;
@@ -427,16 +445,15 @@ public class AnnoncesCOReceptionMessage5234_000401_1 extends AnnoncesCODefault {
     }
 
     protected String getIdTiersCaisseMaladie() {
-
         if (senderId == null || senderId.isEmpty()) {
-            throw new RuntimeException("Aucun sedex id n'a été défini !");
+            throw new IllegalStateException("Aucun sedex id n'a été défini !");
         }
         try {
             if (idTiersCaisseMaladie == null) {
                 idTiersCaisseMaladie = AMSedexRPUtil.getIdTiersFromSedexId(senderId);
             }
         } catch (Exception ex) {
-            throw new RuntimeException(ex.getMessage());
+            throw new IllegalStateException(ex.getMessage());
         }
 
         return idTiersCaisseMaladie;
@@ -465,9 +482,8 @@ public class AnnoncesCOReceptionMessage5234_000401_1 extends AnnoncesCODefault {
                 annonceSedexCODebiteur.addMessage("Debiteur non retrouvé");
             }
         } catch (Exception ex) {
-            JadeThread.logError(this.getClass().getName(), "Erreur lors de la recherche de correspondance du débiteur "
-                    + ex.getMessage());
-            ex.printStackTrace();
+            logErrors("AnnoncesCOReceptionMessage5234_000401_1.findCorrespondanceDebiteur()",
+                    "Erreur lors de la recherche de correspondance du débiteur " + ex.getMessage(), ex);
         }
         return annonceSedexCODebiteur;
     }
@@ -487,10 +503,11 @@ public class AnnoncesCOReceptionMessage5234_000401_1 extends AnnoncesCODefault {
             } else {
                 personnesNotFound.add("Personne " + insuredPerson.getVn() + " - " + insuredPerson.getOfficialName()
                         + " " + insuredPerson.getFirstName());
-                annonceSedexCOAssure.setMessage("Personne assurée non retrouvée !");
+                annonceSedexCOAssure.addMessage("Personne assurée non retrouvée !");
             }
         } catch (Exception ex) {
-            ex.printStackTrace();
+            logErrors("AnnoncesCOReceptionMessage5234_000401_1.findCorrespondancePersonneAssuree()",
+                    "Erreur lors de la recherche de correspondance de la personne assurée : " + ex.getMessage(), ex);
         }
         return annonceSedexCOAssure;
     }
@@ -537,25 +554,29 @@ public class AnnoncesCOReceptionMessage5234_000401_1 extends AnnoncesCODefault {
 
                 List<InsuredPersonWithClaimType> insuredPersonTypes = certificateOfLossArrivalType
                         .getInsuredPersonWithClaim();
+                if (debtorWithClaim.getDebtor().getDebtorNP() == null) {
+                    JadeThread.logInfo(this.getClass().getName(), "Débiteur non personne physique");
+                    continue;
+                }
 
-                SimpleAnnonceSedexCODebiteur simpleAnnonceSedexCODebiteur = saveDebiteur(simpleAnnonceSedexCO,
+                SimpleAnnonceSedexCODebiteur simpleAnnonceSedexCODebiteur = saveDebiteurNP(simpleAnnonceSedexCO,
                         certificateOfLossArrivalType.getCertificateOfLoss().getTypeOfLoss(), debtorWithClaim,
                         insuredPersonTypes);
 
                 savePersonneAssuree(insuredPersonTypes, simpleAnnonceSedexCODebiteur);
             } catch (JadePersistenceException jpe) {
-                JadeThread.logError(this.getClass().getName(), "Erreur pendant la création du débiteur en DB");
+                logErrors("AnnoncesCOReceptionMessage5234_000401_1.saveActesDefautBien()",
+                        "Erreur pendant la création du débiteur en DB : " + jpe.getMessage(), jpe);
             }
         }
     }
 
-    protected SimpleAnnonceSedexCODebiteur saveDebiteur(SimpleAnnonceSedexCO simpleAnnonceSedexCO, String typeOfLoss,
+    protected SimpleAnnonceSedexCODebiteur saveDebiteurNP(SimpleAnnonceSedexCO simpleAnnonceSedexCO, String typeOfLoss,
             DebtorWithClaimType debtorWithClaim, List<InsuredPersonWithClaimType> insuredPersonTypes)
             throws JadeNoBusinessLogSessionError, JadePersistenceException {
 
         if (debtorWithClaim.getDebtor().getDebtorNP() == null) {
-            JadeThread.logInfo(this.getClass().getName(), "Débiteur non personne physique");
-            return null;
+            throw new IllegalArgumentException("Le débiteur doit être une personne physique (NPType)");
         }
         DebtorNPType debtorNP = debtorWithClaim.getDebtor().getDebtorNP();
 
@@ -590,6 +611,23 @@ public class AnnoncesCOReceptionMessage5234_000401_1 extends AnnoncesCODefault {
         return annonceSedexCODebiteur;
     }
 
+    private boolean hasAutreDecomptes(InsuredPersonType insuredPerson) {
+        try {
+            ComplexAnnonceSedexCODebiteursAssuresSearch annonceSedexCODebiteursAssuresSearch = new ComplexAnnonceSedexCODebiteursAssuresSearch();
+            annonceSedexCODebiteursAssuresSearch.setForMessageSubtype("401");
+            annonceSedexCODebiteursAssuresSearch.setForStatementYear(statementStartDate.getAnnee().toString());
+            annonceSedexCODebiteursAssuresSearch.setLikeNssAssure(String.valueOf(insuredPerson.getVn()));
+            int nb = JadePersistenceManager.count(annonceSedexCODebiteursAssuresSearch);
+
+            return nb > 0;
+        } catch (JadePersistenceException jpe) {
+            logErrors("AnnoncesCOReceptionMessage5234_000401_1.hasAutreDecomptes()",
+                    "Erreur pendant la recherche d'un autre décompte d'une personne assurée : " + jpe.getMessage(), jpe);
+        }
+        return false;
+
+    }
+
     private void savePersonneAssuree(List<InsuredPersonWithClaimType> insuredPersonTypes,
             SimpleAnnonceSedexCODebiteur annonceSedexCODebiteur) throws JadePersistenceException {
         for (InsuredPersonWithClaimType insuredPersonWithClaimType : insuredPersonTypes) {
@@ -598,6 +636,10 @@ public class AnnoncesCOReceptionMessage5234_000401_1 extends AnnoncesCODefault {
             SimpleAnnonceSedexCOAssure annonceSedexCOAssure = new SimpleAnnonceSedexCOAssure();
             findCorrespondancePersonneAssuree(insuredPerson, annonceSedexCOAssure);
             annonceSedexCOAssure.setIdAnnonceSedexCODebiteur(annonceSedexCODebiteur.getId());
+
+            if (hasAutreDecomptes(insuredPerson)) {
+                annonceSedexCOAssure.addMessage("Un décompte existe déjà pour cette personne");
+            }
 
             annonceSedexCOAssure.setNssAssure(String.valueOf(insuredPerson.getVn()));
             annonceSedexCOAssure.setNomPrenomAssure(insuredPerson.getOfficialName() + " "

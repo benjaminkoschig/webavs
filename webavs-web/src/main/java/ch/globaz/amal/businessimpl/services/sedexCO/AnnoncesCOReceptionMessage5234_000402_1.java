@@ -64,10 +64,6 @@ public class AnnoncesCOReceptionMessage5234_000402_1 extends AnnoncesCOReception
     private String idTiersCaisseMaladie = null;
     private Class<?>[] addClasses = new Class[] { ch.gdk_cds.xmlns.da_64a_5234_000402._1.Message.class };
 
-    public AnnoncesCOReceptionMessage5234_000402_1() {
-        personnesNotFound = new ArrayList<String>();
-    }
-
     /**
      * Préparation des users et mots de passe pour le gestion SEDEX (JadeSedexService.xml)
      * 
@@ -133,8 +129,8 @@ public class AnnoncesCOReceptionMessage5234_000402_1 extends AnnoncesCOReception
     @Override
     protected void importMessagesSingle(SimpleSedexMessage currentSimpleMessage)
             throws JadeSedexMessageNotHandledException {
+        File fileDecompte = null;
         try {
-
             jaxbs = JAXBServices.getInstance();
             Message message = (Message) jaxbs.unmarshal(currentSimpleMessage.fileLocation, false, true, addClasses);
             senderId = message.getHeader().getSenderId();
@@ -143,11 +139,25 @@ public class AnnoncesCOReceptionMessage5234_000402_1 extends AnnoncesCOReception
 
             ComplexAnnonceSedexCODebiteursAssuresSearch annonceSedexCODebiteursAssuresSearch = super
                     .searchDataReport(annonceSedexCO);
-            File fileDecompte = generateListFinal(annonceSedexCODebiteursAssuresSearch);
-            sendMail(fileDecompte, "Décompte final");
+            fileDecompte = generateListFinal(annonceSedexCODebiteursAssuresSearch);
+        } catch (JadePersistenceException jpe) {
+            logErrors("AnnoncesCOReceptionMessage5234_000402_1.importMessagesSingle()",
+                    "Erreur pendant le traitement de la liste : " + jpe.getMessage(), jpe);
+        } catch (Exception ex) {
+            logErrors("AnnoncesCOReceptionMessage5234_000402_1.importMessagesSingle()", "Erreur unmarshall message : "
+                    + ex.getMessage(), ex);
+        }
+
+        try {
+            sendMail(fileDecompte);
         } catch (Exception e) {
             throw new JadeSedexMessageNotHandledException("Erreur lors du traitement du message", e);
         }
+    }
+
+    @Override
+    protected String getSubjectMail() {
+        return "Contentieux Amal : réception des annonces 'Décompte annuel' effectuée avec succès !";
     }
 
     private File generateListFinal(ComplexAnnonceSedexCODebiteursAssuresSearch annonceSedexCODebiteursAssuresSearch) {
@@ -278,12 +288,6 @@ public class AnnoncesCOReceptionMessage5234_000402_1 extends AnnoncesCOReception
         decomptePaiements.add(ligneTotal);
 
         return decomptePaiements;
-
-        // } catch (JadePersistenceException jpe) {
-        // jpe.printStackTrace();
-        // }
-
-        // return decompteSheet;
     }
 
     private SimpleAnnonceSedexCO persistAnnonce(Message message) {
@@ -307,8 +311,12 @@ public class AnnoncesCOReceptionMessage5234_000402_1 extends AnnoncesCOReception
             CertificateOfLossFinalStatementType certificateOfLossArrivalType = message.getContent()
                     .getCertificateOfLossFinalStatement();
 
-            annonceSedexCO.setStatementDate(AMSedexRPUtil.getDateXMLToString(certificateOfLossArrivalType
+            Date statementDate = new Date(AMSedexRPUtil.getDateXMLToString(certificateOfLossArrivalType
                     .getStatementDate()));
+
+            annonceSedexCO.setStatementDate(statementDate.getSwissValue());
+            annonceSedexCO.setStatementYear(statementDate.getAnnee());
+
             annonceSedexCO.setStatementStartDate(AMSedexRPUtil.getDateXMLToString(certificateOfLossArrivalType
                     .getStatementStartDate()));
             annonceSedexCO.setStatementEndDate(AMSedexRPUtil.getDateXMLToString(certificateOfLossArrivalType
@@ -323,6 +331,8 @@ public class AnnoncesCOReceptionMessage5234_000402_1 extends AnnoncesCOReception
                     .getCertificateOfLossFinalStatement().getCertificateOfLossArrival();
             statementStartDate = new Date(AMSedexRPUtil.getDateXMLToString(message.getContent()
                     .getCertificateOfLossFinalStatement().getStatementStartDate()));
+            statementDate = new Date(AMSedexRPUtil.getDateXMLToString(message.getContent()
+                    .getCertificateOfLossFinalStatement().getStatementDate()));
             // Sauvegarde des débiteurs et personnes assurées
             saveActesDefautBien(decomptesFinauxsActes, annonceSedexCO);
 
@@ -331,10 +341,10 @@ public class AnnoncesCOReceptionMessage5234_000402_1 extends AnnoncesCOReception
 
             savePaiements(decomptesFinauxPaiements, annonceSedexCO);
         } catch (Exception ex) {
-            JadeThread.logError(
+            logErrors(
                     "AnnoncesCOReceptionMessage5234_000402_1.saveAnnonce()",
                     "Erreur pendant la sauvegarde de l'annonce du décompte trimestriel ! (Msg id : "
-                            + header.getMessageId() + ") => " + ex.getMessage());
+                            + header.getMessageId() + ") => " + ex.getMessage(), ex);
         }
 
         return annonceSedexCO;
@@ -354,12 +364,15 @@ public class AnnoncesCOReceptionMessage5234_000402_1 extends AnnoncesCOReception
 
     @Override
     protected String getIdTiersCaisseMaladie() {
+        if (senderId == null || senderId.isEmpty()) {
+            throw new IllegalStateException("Aucun sedex id n'a été défini !");
+        }
         try {
             if (idTiersCaisseMaladie == null) {
                 idTiersCaisseMaladie = AMSedexRPUtil.getIdTiersFromSedexId(senderId);
             }
         } catch (Exception ex) {
-            throw new RuntimeException(ex.getMessage());
+            throw new IllegalStateException(ex.getMessage());
         }
 
         return idTiersCaisseMaladie;
@@ -387,7 +400,8 @@ public class AnnoncesCOReceptionMessage5234_000402_1 extends AnnoncesCOReception
                     JadePersistenceManager.add(simpleAnnonceSedexCOPaiements);
                 }
             } catch (JadePersistenceException jpe) {
-                JadeThread.logError(this.getClass().getName(), "Erreur pendant la création du débiteur en DB");
+                logErrors("AnnoncesCOReceptionMessage5234_000402_1.savePaiements()",
+                        "Erreur pendant la création du débiteur en DB : " + jpe.getMessage(), jpe);
             }
         }
     }

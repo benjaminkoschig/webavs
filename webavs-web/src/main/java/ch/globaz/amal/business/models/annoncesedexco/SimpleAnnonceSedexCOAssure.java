@@ -169,7 +169,7 @@ public class SimpleAnnonceSedexCOAssure extends JadeSimpleModel {
     }
 
     public void addMessage(String message) {
-        if (this.message.trim().isEmpty()) {
+        if (this.message == null || this.message.trim().isEmpty()) {
             this.message = message;
         } else {
             this.message += ";" + message;

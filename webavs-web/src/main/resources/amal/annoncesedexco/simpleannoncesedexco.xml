@@ -14,6 +14,7 @@
 			<field name="status" column="CSSTAT" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="true" comment="STATUS_MESSAGE"/>
 			<field name="idTiersCM" column="IDTIERSCM" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="true" comment="ID_TIERS_CAISSE_MALADIE"/>
 			<field name="dateAnnonce" column="DATE_ANNONCE" type="DATE" mandatory="false" comment="DATE_ANNONCE"/>
+			<field name="statementYear" column="STATEMENT_YEAR" type="NUMERIC" dataType="NUMERIC(4,0)" comment="Année du décompte"/>
 			<field name="statementDate" column="STATEMENT_DATE" type="DATE" mandatory="false" comment="STATEMENT_DATE"/>
 			<field name="statementStartDate" column="STATEMENT_START_DATE" type="DATE" mandatory="false" comment="STATEMENT_START_DATE"/>
 			<field name="statementEndDate" column="STATEMENT_END_DATE" type="DATE" mandatory="false" comment="STATEMENT_END_DATE"/>

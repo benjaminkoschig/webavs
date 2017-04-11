@@ -25,6 +25,10 @@
 		<search-definition>
 			<search-group operator="AND">
 				<search-field name="forIdSedexCO" field-ref="simpleAnnonceSedexCO.idAnnonceSedexCO" operation="EQUALS" />
+				<search-field name="forMessageSubtype" field-ref="simpleAnnonceSedexCO.messageSubType" operation="EQUALS"/>
+				<search-field name="forStatementYear" field-ref="simpleAnnonceSedexCO.statementYear" operation="EQUALS" />
+				<search-field name="likeNssDebiteur" field-ref="simpleAnnonceSedexCODebiteur.nssDebiteur" operation="LIKE" />
+				<search-field name="likeNssAssure" field-ref="simpleAnnonceSedexCOAssure.nssAssure" operation="LIKE" />
 			</search-group>
 		</search-definition>
 

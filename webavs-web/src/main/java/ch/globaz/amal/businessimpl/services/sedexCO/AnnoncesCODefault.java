@@ -2,17 +2,23 @@ package ch.globaz.amal.businessimpl.services.sedexCO;
 
 import globaz.globall.api.GlobazSystem;
 import globaz.globall.db.BSession;
+import globaz.globall.db.BSessionUtil;
 import globaz.jade.admin.JadeAdminServiceLocatorProvider;
 import globaz.jade.client.util.JadeConversionUtil;
 import globaz.jade.context.JadeContext;
 import globaz.jade.context.JadeContextImplementation;
+import globaz.jade.context.JadeThread;
 import globaz.jade.context.JadeThreadContext;
 import globaz.jade.crypto.JadeDecryptionNotSupportedException;
 import globaz.jade.crypto.JadeDefaultEncrypters;
 import globaz.jade.crypto.JadeEncrypterNotFoundException;
 import globaz.jade.jaxb.JAXBServices;
 import globaz.jade.log.JadeLogger;
+import globaz.jade.smtp.JadeSmtpClient;
 import globaz.pyxis.util.CommonNSSFormater;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
@@ -83,6 +89,13 @@ public class AnnoncesCODefault {
     protected BSession session;
     protected Unmarshaller unmarshaller;
     protected Marshaller marshaller;
+    private List<String> errors = null;
+    protected List<String> personnesNotFound = null;
+
+    public AnnoncesCODefault() {
+        personnesNotFound = new ArrayList<String>();
+        errors = new ArrayList<String>();
+    }
 
     /**
      * Retourne un contexte. Si nécessaire il est initialisé
@@ -249,17 +262,73 @@ public class AnnoncesCODefault {
         }
     }
 
-    protected String appendMessage(String messageActuel, String newMessage) {
-        String currentMessage = messageActuel;
-        if (currentMessage == null) {
-            currentMessage = "";
-        } else {
-            currentMessage += ";";
+    protected void logErrors(String source, String error, Throwable exception) {
+        exception.printStackTrace();
+        logErrors(source, exception.getMessage());
+    }
+
+    protected void logErrors(String source, String error) {
+        if (errors == null) {
+            errors = new ArrayList<String>();
         }
 
-        currentMessage += newMessage;
+        JadeThread.logError(source, error);
+        errors.add(source + " : " + error);
+    }
 
-        return currentMessage;
+    private List<String> getErrors() {
+        if (errors == null) {
+            errors = new ArrayList<String>();
+        }
+        return errors;
+    }
+
+    private List<String> getPersonnesNotFoundList() {
+        if (personnesNotFound == null) {
+            personnesNotFound = new ArrayList<String>();
+        }
+        return personnesNotFound;
+    }
+
+    protected String getSubjectMail() {
+        return "Contentieux Amal : réception des annonces contentieux effectuée avec succès !";
+    }
+
+    protected void sendMail(File file) throws Exception {
+        String subject = getSubjectMail();
+        StringBuilder body = new StringBuilder();
+        if (!getPersonnesNotFoundList().isEmpty()) {
+            if (getPersonnesNotFoundList().size() > 1) {
+                subject = getPersonnesNotFoundList().size() + " personnes non connues détectées !";
+            } else {
+                subject = "1 personne non connue détectée !";
+            }
+
+            body.append("Liste des personnes non trouvées :\n");
+            for (String personneInexistante : getPersonnesNotFoundList()) {
+                body.append("   -" + personneInexistante + "\n");
+            }
+
+        }
+
+        if (!getErrors().isEmpty()) {
+            body.append("Autres erreurs détectée(s)");
+            for (String error : errors) {
+                body.append(error);
+            }
+        }
+
+        String[] files = new String[1];
+        if (file != null) {
+            files[0] = file.getPath();
+        }
+
+        JadeSmtpClient.getInstance().sendMail(BSessionUtil.getSessionFromThreadContext().getUserEMail(), subject,
+                body.toString(), files);
+    }
+
+    protected List<String> getErrorsList() {
+        return errors;
     }
 
     public String getPassSedex() {
@@ -277,72 +346,5 @@ public class AnnoncesCODefault {
     public void setUserSedex(String userSedex) {
         this.userSedex = userSedex;
     }
-
-    // /**
-    // * Règles :
-    // * Si le débiteur existe avec le nss passé, on utilise celui ci
-    // * Sinon, on prend le premier contribuable actif trouvé d'une personne assurée
-    // * Et enfin, on prend un contribuable qui a une fin de droit la plus récente et on met un message
-    // *
-    // * @param nss
-    // * @param personnesAssurees
-    // * @return
-    // * @throws JadePersistenceException
-    // */
-    // protected FamillePersonneEtendue searchPersonne(String nss, List<InsuredPersonWithClaimType> personnesAssurees)
-    // throws JadePersistenceException {
-    //
-    // try {
-    // FamillePersonneEtendue famillePersonneEtendue = getPersonneEtendue(nss);
-    //
-    // if (famillePersonneEtendue != null) {
-    // return famillePersonneEtendue;
-    // }
-    //
-    // // Ici, c'est qu'on a trouvé aucun membre avec ce nss, on tente de récupérer le 1er contribuable actif qu'on
-    // // trouve sur une des personnes assurées...
-    // // On en profite également pour conserver le contribuable avec la fin de droit la plus récente, au cas où on
-    // // devrait aller à la prochaine étape...
-    // FamillePersonneEtendue famillePersonneEtendueMostRecent = null;
-    // for (InsuredPersonWithClaimType insuredPerson : personnesAssurees) {
-    // String nssPersonneAssureeFormate = "";
-    // try {
-    // CommonNSSFormater nssFormateur = new CommonNSSFormater();
-    // nssPersonneAssureeFormate = nssFormateur.format(String.valueOf(insuredPerson.getInsuredPerson()
-    // .getVn()));
-    // } catch (Exception e) {
-    // nssPersonneAssureeFormate = "N/A";
-    // }
-    // FamillePersonneEtendueSearch famillePersonneEtendueSearch = new FamillePersonneEtendueSearch();
-    // famillePersonneEtendueSearch.setLikeNss(nssPersonneAssureeFormate);
-    // famillePersonneEtendueSearch.setOrderKey("orderByFinDroitDesc");
-    // famillePersonneEtendueSearch = AmalServiceLocator.getFamilleContribuableService().search(
-    // famillePersonneEtendueSearch);
-    // for (JadeAbstractModel abstractFamilleContribuable : famillePersonneEtendueSearch.getSearchResults()) {
-    // famillePersonneEtendue = (FamillePersonneEtendue) abstractFamilleContribuable;
-    //
-    // if (JadeStringUtil.isBlankOrZero(famillePersonneEtendue.getSimpleFamille().getFinDefinitive())) {
-    // // On retourne le 1er cas sans date de fin qu'on trouve.
-    // return famillePersonneEtendue;
-    // } else {
-    // // Sinon on prend le 1er, qui est le plus récent
-    // Date dateFinMostRecent = new Date(famillePersonneEtendueMostRecent.getSimpleFamille()
-    // .getFinDefinitive());
-    // Date dateFinCurrent = new Date(famillePersonneEtendue.getSimpleFamille().getFinDefinitive());
-    // if (dateFinCurrent.after(dateFinMostRecent)) {
-    // famillePersonneEtendueMostRecent = famillePersonneEtendue;
-    // }
-    // }
-    // }
-    // }
-    //
-    // // Si on arrive la, c'est qu'on a trouvé aucun contribuable actif sur une des personnes assurées, on
-    // // retourne donc celui qui a la date de fin la plus récente.
-    //
-    // return famillePersonneEtendueMostRecent;
-    // } catch (Exception ex) {
-    // throw new JadePersistenceException("Erreur pendant la recherche de la personne " + nss, ex);
-    // }
-    // }
 
 }

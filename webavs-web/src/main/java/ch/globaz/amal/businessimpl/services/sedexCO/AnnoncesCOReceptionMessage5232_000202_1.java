@@ -1,6 +1,5 @@
 package ch.globaz.amal.businessimpl.services.sedexCO;
 
-import globaz.globall.db.BSessionUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.context.JadeThread;
 import globaz.jade.context.JadeThreadActivator;
@@ -23,7 +22,6 @@ import globaz.jade.sedex.message.GroupedSedexMessage;
 import globaz.jade.sedex.message.SedexMessage;
 import globaz.jade.sedex.message.SimpleSedexMessage;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
-import globaz.jade.smtp.JadeSmtpClient;
 import globaz.webavs.common.CommonNSSFormater;
 import java.io.File;
 import java.io.IOException;
@@ -75,16 +73,9 @@ public class AnnoncesCOReceptionMessage5232_000202_1 extends AnnoncesCODefault {
     private static final String PACKAGE_CLASS_FOR_READ_SEDEX_CREANCE_AVEC_GARANTIE = "ch.gdk_cds.xmlns.da_64a_5232_000202._1";
     private String senderId = null;
     private String idTiersCM = null;
-    private List<String> personnesNotFound = null;
-    private List<String> errors = null;
     protected Date statementStartDate = null;
     private Message message = null;
     private String idTiersCaisseMaladie = null;
-
-    public AnnoncesCOReceptionMessage5232_000202_1() {
-        personnesNotFound = new ArrayList<String>();
-        errors = new ArrayList<String>();
-    }
 
     /**
      * Préparation des users et mots de passe pour le gestion SEDEX (JadeSedexService.xml)
@@ -174,23 +165,35 @@ public class AnnoncesCOReceptionMessage5232_000202_1 extends AnnoncesCODefault {
      */
     private void importMessagesSingle(SimpleSedexMessage currentSimpleMessage)
             throws JadeSedexMessageNotHandledException {
-
+        File fileComparaisonSheet = null;
         try {
             Class<?>[] addClasses = new Class[] { ch.gdk_cds.xmlns.da_64a_5232_000202._1.Message.class };
             jaxbs = JAXBServices.getInstance();
             message = (Message) jaxbs.unmarshal(currentSimpleMessage.fileLocation, false, true, addClasses);
             senderId = message.getHeader().getSenderId();
-            // idTiersCM = AMSedexRPUtil.getIdTiersFromSedexId(senderId);
             // Sauvegarde de l'annonce dans la table
             SimpleAnnonceSedexCO annonceSedexCO = persistAnnonce(addClasses);
 
             List<ComparaisonAnnonceCreancePriseEnCharge> comparaisonSheet = creationListeAnnonceRecue();
-            File fileComparaisonSheet = printList(comparaisonSheet);
+            fileComparaisonSheet = printList(comparaisonSheet);
+        } catch (AnnonceSedexCOReceptionException asre) {
+            logErrors("AnnoncesCOReceptionMessage5232_000202_1.importMessagesSingle()",
+                    "Erreur pendant le traitement de la liste : " + asre.getMessage(), asre);
+        } catch (Exception ex) {
+            logErrors("AnnoncesCOReceptionMessage5232_000402_1.importMessagesSingle()", "Erreur unmarshall message : "
+                    + ex.getMessage(), ex);
+        }
 
+        try {
             sendMail(fileComparaisonSheet);
         } catch (Exception e) {
-            throw new JadeSedexMessageNotHandledException("Erreur lors du traitement du message => " + e.getMessage());
+            throw new JadeSedexMessageNotHandledException("Erreur lors de l'envoi du mail", e);
         }
+    }
+
+    @Override
+    protected String getSubjectMail() {
+        return "Contentieux Amal : réception des annonces 'Créance avec garantie de prise en charge' effectuée avec succès !";
     }
 
     protected File createAndPrintList(String annee, String idTiers) {
@@ -200,7 +203,6 @@ public class AnnoncesCOReceptionMessage5232_000202_1 extends AnnoncesCODefault {
     }
 
     private SimpleAnnonceSedexCO persistAnnonce(Class<?>[] addClasses) {
-        // Sauvegarde de l'annonce dans la table
         // Sauvegarde de l'annonce dans la table
         HeaderType header = message.getHeader();
         SimpleAnnonceSedexCO annonceSedexCO = new SimpleAnnonceSedexCO();
@@ -222,8 +224,10 @@ public class AnnoncesCOReceptionMessage5232_000202_1 extends AnnoncesCODefault {
             statementStartDate = new Date(AMSedexRPUtil.getDateXMLToString(message.getContent()
                     .getListOfClaimsGuaranteedAssumptions().getStatementStartDate()));
 
-            annonceSedexCO.setStatementDate(AMSedexRPUtil.getDateXMLToString(listOfClaimsGuaranteedAssumptionsType
+            Date statementDate = new Date(AMSedexRPUtil.getDateXMLToString(listOfClaimsGuaranteedAssumptionsType
                     .getStatementDate()));
+            annonceSedexCO.setStatementDate(statementDate.getSwissValue());
+            annonceSedexCO.setStatementYear(statementDate.getAnnee());
             annonceSedexCO.setStatementStartDate(AMSedexRPUtil.getDateXMLToString(listOfClaimsGuaranteedAssumptionsType
                     .getStatementStartDate()));
             annonceSedexCO.setStatementEndDate(AMSedexRPUtil.getDateXMLToString(listOfClaimsGuaranteedAssumptionsType
@@ -237,10 +241,10 @@ public class AnnoncesCOReceptionMessage5232_000202_1 extends AnnoncesCODefault {
             // Sauvegarde des débiteurs et personnes assurées
             processDonneesAnnonce(annonceSedexCO);
         } catch (Exception ex) {
-            JadeThread.logError(
+            logErrors(
                     "AnnoncesCOReceptionMessage5232_000202_1.saveAnnonce()",
                     "Erreur pendant la sauvegarde de l'annonce des créances avec prise en charge ! (Msg id : "
-                            + header.getMessageId() + ") => " + ex.getMessage());
+                            + header.getMessageId() + ") => " + ex.getMessage(), ex);
         }
 
         return annonceSedexCO;
@@ -316,15 +320,15 @@ public class AnnoncesCOReceptionMessage5232_000202_1 extends AnnoncesCODefault {
                         }
 
                     } catch (AnnonceSedexCOReceptionException asre) {
-                        JadeThread.logError(
-                                this.getClass().getName(),
+                        logErrors(
+                                "AnnoncesCOReceptionMessage5232_000202_1.processDonneesAnnonce",
                                 "Erreur pendant le traitement d'une personne a ne pas poursuivre : "
-                                        + asre.getMessage());
+                                        + asre.getMessage(), asre);
                     }
                 }
             } catch (JadePersistenceException jpe) {
-                JadeThread.logError(this.getClass().getName(),
-                        "Erreur pendant la création du débiteur en DB : " + jpe.getMessage());
+                logErrors("AnnoncesCOReceptionMessage5232_000202_1.processDonneesAnnonce",
+                        "Erreur pendant la création du débiteur en DB : " + jpe.getMessage(), jpe);
             }
         }
     }
@@ -396,7 +400,8 @@ public class AnnoncesCOReceptionMessage5232_000202_1 extends AnnoncesCODefault {
         }
     }
 
-    private List<ComparaisonAnnonceCreancePriseEnCharge> creationListeAnnonceRecue() {
+    private List<ComparaisonAnnonceCreancePriseEnCharge> creationListeAnnonceRecue()
+            throws AnnonceSedexCOReceptionException {
         try {
             SimplePersonneANePasPoursuivreSearch simplePersonneANePasPoursuivreSearch = new SimplePersonneANePasPoursuivreSearch();
             Date debutPeriode = new Date(AMSedexRPUtil.getDateXMLToString(message.getContent()
@@ -408,7 +413,7 @@ public class AnnoncesCOReceptionMessage5232_000202_1 extends AnnoncesCODefault {
 
             return generateListe(simplePersonneANePasPoursuivreSearch, false);
         } catch (Exception ex) {
-            throw new RuntimeException(ex.getMessage());
+            throw new AnnonceSedexCOReceptionException(ex.getMessage());
         }
     }
 
@@ -658,9 +663,8 @@ public class AnnoncesCOReceptionMessage5232_000202_1 extends AnnoncesCODefault {
                 annonceSedexCODebiteur.addMessage("Debiteur non retrouvé");
             }
         } catch (Exception ex) {
-            JadeThread.logError(this.getClass().getName(), "Erreur lors de la recherche de correspondance du débiteur "
-                    + ex.getMessage());
-            ex.printStackTrace();
+            logErrors("AnnoncesCOReceptionMessage5232_000202_1.findCorrespondanceDebiteur()",
+                    "Erreur lors de la recherche de correspondance du débiteur " + ex.getMessage(), ex);
         }
         return annonceSedexCODebiteur;
     }
@@ -683,7 +687,8 @@ public class AnnoncesCOReceptionMessage5232_000202_1 extends AnnoncesCODefault {
                 annonceSedexCOAssure.addMessage("Personne assurée non retrouvé");
             }
         } catch (Exception ex) {
-            ex.printStackTrace();
+            logErrors("AnnoncesCOReceptionMessage5232_000202_1.findCorrespondancePersonneAssuree()",
+                    "Erreur lors de la recherche de correspondance de la personne assurée " + ex.getMessage(), ex);
         }
         return annonceSedexCOAssure;
     }
@@ -725,14 +730,14 @@ public class AnnoncesCOReceptionMessage5232_000202_1 extends AnnoncesCODefault {
     protected String getIdTiersCaisseMaladie() {
 
         if (senderId == null || senderId.isEmpty()) {
-            throw new RuntimeException("Aucun sedex id n'a été défini !");
+            throw new IllegalStateException("Aucun sedex id n'a été défini !");
         }
         try {
             if (idTiersCaisseMaladie == null) {
                 idTiersCaisseMaladie = AMSedexRPUtil.getIdTiersFromSedexId(senderId);
             }
         } catch (Exception ex) {
-            throw new RuntimeException(ex.getMessage());
+            throw new IllegalStateException(ex.getMessage());
         }
 
         return idTiersCaisseMaladie;
@@ -749,41 +754,42 @@ public class AnnoncesCOReceptionMessage5232_000202_1 extends AnnoncesCODefault {
         return personneANePasPoursuivreSearch;
     }
 
-    private void sendMail(File file) {
-        String subject = "Contentieux Amal : réception des annonces de prise en charge effectuée avec succès !";
-        StringBuilder body = new StringBuilder();
-
-        if (!personnesNotFound.isEmpty()) {
-            if (personnesNotFound.size() > 1) {
-                subject = "Contentieux Amal : " + personnesNotFound.size()
-                        + " personnes non connues détectées lors de la réception des annonces de prise en charge !";
-            } else {
-                subject = "Contentieux Amal : 1 personne non connue détectée lors de la réception des annonces de prise en charge !";
-            }
-            body.append("Liste des débiteurs / personnes non trouvées :\n");
-
-            for (String personne : personnesNotFound) {
-                body.append("   -" + personne + "\n");
-            }
-
-            if (!errors.isEmpty()) {
-                body.append("\nErreur(s) rencontrée(s) ");
-                for (String erreur : errors) {
-                    body.append("   -" + erreur + "\n");
-                }
-            }
-        }
-
-        String[] files = new String[1];
-        if (file != null) {
-            files[0] = file.getPath();
-        }
-
-        try {
-            JadeSmtpClient.getInstance().sendMail(BSessionUtil.getSessionFromThreadContext().getUserEMail(), subject,
-                    body.toString(), files);
-        } catch (Exception e) {
-            JadeThread.logError(this.getClass().getName(), "Erreur lors de l'envoi du mail ! => " + e.getMessage());
-        }
-    }
+    // private void sendMail(File file) {
+    // String subject = "Contentieux Amal : réception des annonces de prise en charge effectuée avec succès !";
+    // StringBuilder body = new StringBuilder();
+    //
+    // if (!personnesNotFound.isEmpty()) {
+    // if (personnesNotFound.size() > 1) {
+    // subject = "Contentieux Amal : " + personnesNotFound.size()
+    // + " personnes non connues détectées lors de la réception des annonces de prise en charge !";
+    // } else {
+    // subject =
+    // "Contentieux Amal : 1 personne non connue détectée lors de la réception des annonces de prise en charge !";
+    // }
+    // body.append("Liste des débiteurs / personnes non trouvées :\n");
+    //
+    // for (String personne : personnesNotFound) {
+    // body.append("   -" + personne + "\n");
+    // }
+    //
+    // if (!errors.isEmpty()) {
+    // body.append("\nErreur(s) rencontrée(s) ");
+    // for (String erreur : errors) {
+    // body.append("   -" + erreur + "\n");
+    // }
+    // }
+    // }
+    //
+    // String[] files = new String[1];
+    // if (file != null) {
+    // files[0] = file.getPath();
+    // }
+    //
+    // try {
+    // JadeSmtpClient.getInstance().sendMail(BSessionUtil.getSessionFromThreadContext().getUserEMail(), subject,
+    // body.toString(), files);
+    // } catch (Exception e) {
+    // JadeThread.logError(this.getClass().getName(), "Erreur lors de l'envoi du mail ! => " + e.getMessage());
+    // }
+    // }
 }

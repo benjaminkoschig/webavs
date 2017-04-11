@@ -4,12 +4,6 @@
 
 		<root-model name="simpleAnnonceSedexCO" model-ref="ch.globaz.amal.business.models.annoncesedexco.SimpleAnnonceSedexCO"/>
 		
-<!--		<linked-model name="simpleAnnonceSedexCOP" model-ref="ch.globaz.amal.business.models.annoncesedexco.SimpleAnnonceSedexCOPersonne" join-type="LEFT_OUTER">
-			<join-group operator="AND">
-				<join-field name="idAnnonceSedexCO" operation="EQUALS" field-ref="simpleAnnonceSedexCO.idAnnonceSedexCO"/>
-			</join-group>
-		</linked-model>
--->		
 		<linked-model name="caisseMaladie" model-ref="ch.globaz.pyxis.business.model.AdministrationComplexModel" join-type="LEFT_OUTER">
 			<join-group operator="AND">
 				<join-field name="admin.idTiersAdministration" operation="EQUALS" field-ref="simpleAnnonceSedexCO.idTiersCM"/>
@@ -28,19 +22,6 @@
 			</join-group>
 		</linked-model>			
 
-
-<!--		<linked-model name="simpleFamille" model-ref="ch.globaz.amal.business.models.famille.SimpleFamille" join-type="LEFT_OUTER">
-			<join-group operator="AND">
-				<join-field name="idFamille" operation="EQUALS" field-ref="simpleAnnonceSedexCOP.idFamille"/>
-			</join-group>
-		</linked-model>
-		
-		<linked-model name="simpleContribuable" model-ref="ch.globaz.amal.business.models.contribuable.SimpleContribuable" join-type="LEFT_OUTER">
-			<join-group operator="AND">
-				<join-field name="idContribuable" operation="EQUALS" field-ref="simpleFamille.idContribuable"/>
-			</join-group>
-		</linked-model>
--->		
 		<search-definition name="rcListe">
 			<search-group operator="AND">
 				<!-- CAISSE MALADIE -->
