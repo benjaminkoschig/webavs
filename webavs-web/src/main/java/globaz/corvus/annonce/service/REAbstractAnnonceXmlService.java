@@ -176,19 +176,6 @@ public abstract class REAbstractAnnonceXmlService {
         }
     }
 
-    protected SkalaBerechnungWeakType rempliScalaBerechnungWeakTyp(REAnnoncesAbstractLevel2A enr02) {
-        SkalaBerechnungWeakType echelleCalcul = factoryType.createSkalaBerechnungWeakType();
-        echelleCalcul.setSkala(new Integer(enr02.getEchelleRente()).shortValue());
-        echelleCalcul.setBeitragsdauerVor1973(convertAAMMtoBigDecimal(enr02.getDureeCoEchelleRenteAv73()));
-        echelleCalcul.setBeitragsdauerAb1973(convertAAMMtoBigDecimal(enr02.getDureeCoEchelleRenteDes73()));
-        echelleCalcul.setAnrechnungVor1973FehlenderBeitragsmonate(new Integer(testSiNullouZero(enr02
-                .getDureeCotManquante48_72())));
-        echelleCalcul.setAnrechnungAb1973Bis1978FehlenderBeitragsmonate(new Integer(testSiNullouZero(enr02
-                .getDureeCotManquante73_78())));
-        echelleCalcul.setBeitragsjahreJahrgang(new Integer(testSiNullouZero(enr02.getAnneeCotClasseAge())));
-        return echelleCalcul;
-    }
-
     protected SkalaBerechnungType rempliScalaBerechnungTyp(REAnnoncesAbstractLevel2A enr02) {
         SkalaBerechnungType echelleCalcul = factoryType.createSkalaBerechnungType();
         echelleCalcul.setSkala(new Integer(enr02.getEchelleRente()).shortValue());
@@ -208,10 +195,10 @@ public abstract class REAbstractAnnonceXmlService {
             echelleCalcul.setSkala(new Integer(enr02.getEchelleRente()).shortValue());
         }
         if (!JadeStringUtil.isBlankOrZero(enr02.getDureeCoEchelleRenteAv73())) {
-            echelleCalcul.setBeitragsdauerVor1973(convertAAMMtoBeigDecimal(enr02.getDureeCoEchelleRenteAv73()));
+            echelleCalcul.setBeitragsdauerVor1973(convertAAMMtoBigDecimal(enr02.getDureeCoEchelleRenteAv73()));
         }
         if (!JadeStringUtil.isBlankOrZero(enr02.getDureeCoEchelleRenteDes73())) {
-            echelleCalcul.setBeitragsdauerAb1973(convertAAMMtoBeigDecimal(enr02.getDureeCoEchelleRenteDes73()));
+            echelleCalcul.setBeitragsdauerAb1973(convertAAMMtoBigDecimal(enr02.getDureeCoEchelleRenteDes73()));
         }
         if (!JadeStringUtil.isBlankOrZero(enr02.getDureeCotManquante48_72())) {
             echelleCalcul.setAnrechnungVor1973FehlenderBeitragsmonate(new Integer(testSiNullouZero(enr02

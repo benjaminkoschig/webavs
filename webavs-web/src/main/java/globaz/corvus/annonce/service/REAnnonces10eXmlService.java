@@ -488,7 +488,7 @@ public class REAnnonces10eXmlService extends REAbstractAnnonceXmlService impleme
             // Ajournement
             AenderungsmeldungO10Type.Leistungsbeschreibung.Berechnungsgrundlagen.FlexiblesRentenAlter ajournement = factoryType
                     .createAenderungsmeldungO10TypeLeistungsbeschreibungBerechnungsgrundlagenFlexiblesRentenAlter();
-            ajournement.setRentenaufschub(rempliRentenaufschubWeakType(enr01, enr02));
+            ajournement.setRentenaufschub(rempliRentenaufschubTypeWeak(enr01, enr02));
             ajournement.setRentenvorbezug(rempliRentenvorbezugWeakType(enr01, enr02));
             baseDeCalcul.setFlexiblesRentenAlter(ajournement);
         }
