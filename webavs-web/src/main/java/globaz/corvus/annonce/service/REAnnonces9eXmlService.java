@@ -64,6 +64,10 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
                 augmentation9eme02.setIdAnnonce(augmentation9eme01.getIdLienAnnonce());
                 augmentation9eme02.retrieve();
 
+                if (!augmentation9eme01.isNew()) {
+                    augmentation9eme01.setEtat(IREAnnonces.CS_ETAT_ENVOYE);
+                    augmentation9eme01.update(transaction);
+                }
                 if (!augmentation9eme02.isNew()) {
                     augmentation9eme02.setEtat(IREAnnonces.CS_ETAT_ENVOYE);
                     augmentation9eme02.update(transaction);
@@ -98,11 +102,25 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
                 diminution9eme01.setSession(session);
                 diminution9eme01.setIdAnnonce(annonce.getIdAnnonce());
                 diminution9eme01.retrieve();
+                if (!diminution9eme01.isNew()) {
+                    diminution9eme01.setEtat(IREAnnonces.CS_ETAT_ENVOYE);
+                    diminution9eme01.update(transaction);
+                }
 
                 if (ordentlicheRente.contains(new Integer(diminution9eme01.getGenrePrestation()))) {
-                    if (codeApplication == 41) {
-                        return annonceDiminutionOrdinaire(diminution9eme01);
-                    }
+
+                    return annonceDiminutionOrdinaire(diminution9eme01);
+
+                }
+                if (ausserordentlicheRente.contains(new Integer(diminution9eme01.getGenrePrestation()))) {
+
+                    return annonceDiminutionExtraOrdinaire(diminution9eme01);
+
+                }
+                if (hilflosenentschaedigung.contains(new Integer(diminution9eme01.getGenrePrestation()))) {
+
+                    return annonceDiminutionAPI(diminution9eme01);
+
                 }
                 // parseDiminutionAvecAnakin(diminution9eme01, session, forMoisAnneeComptable);
 
@@ -422,10 +440,48 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
     protected RRMeldung9Type annonceDiminutionOrdinaire(REAnnoncesDiminution9Eme enr01) throws Exception {
 
         RRMeldung9Type.OrdentlicheRente renteOrdinaire = factoryType.createRRMeldung9TypeOrdentlicheRente();
-        AbgangsmeldungType diminution = createDiminutionCommune(enr01);
         RRMeldung9Type meldung9Type = factoryType.createRRMeldung9Type();
-        renteOrdinaire.setAbgangsmeldung(diminution);
-        meldung9Type.setOrdentlicheRente(renteOrdinaire);
+        try {
+            AbgangsmeldungType diminution = createDiminutionCommune(enr01);
+
+            renteOrdinaire.setAbgangsmeldung(diminution);
+            meldung9Type.setOrdentlicheRente(renteOrdinaire);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return meldung9Type;
+
+    }
+
+    protected RRMeldung9Type annonceDiminutionExtraOrdinaire(REAnnoncesDiminution9Eme enr01) throws Exception {
+
+        RRMeldung9Type.AusserordentlicheRente renteExtraOrdinaire = factoryType
+                .createRRMeldung9TypeAusserordentlicheRente();
+        RRMeldung9Type meldung9Type = factoryType.createRRMeldung9Type();
+        try {
+            AbgangsmeldungType diminution = createDiminutionCommune(enr01);
+
+            renteExtraOrdinaire.setAbgangsmeldung(diminution);
+            meldung9Type.setAusserordentlicheRente(renteExtraOrdinaire);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return meldung9Type;
+
+    }
+
+    protected RRMeldung9Type annonceDiminutionAPI(REAnnoncesDiminution9Eme enr01) throws Exception {
+
+        RRMeldung9Type.Hilflosenentschaedigung api = factoryType.createRRMeldung9TypeHilflosenentschaedigung();
+        RRMeldung9Type meldung9Type = factoryType.createRRMeldung9Type();
+        try {
+            AbgangsmeldungType diminution = createDiminutionCommune(enr01);
+
+            api.setAbgangsmeldung(diminution);
+            meldung9Type.setHilflosenentschaedigung(api);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return meldung9Type;
 
     }
