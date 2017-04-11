@@ -202,6 +202,31 @@ public abstract class REAbstractAnnonceXmlService {
         return echelleCalcul;
     }
 
+    protected SkalaBerechnungWeakType rempliScalaBerechnungWeakTyp(REAnnoncesAbstractLevel2A enr02) {
+        SkalaBerechnungWeakType echelleCalcul = factoryType.createSkalaBerechnungWeakType();
+        if (!JadeStringUtil.isBlankOrZero(enr02.getEchelleRente())) {
+            echelleCalcul.setSkala(new Integer(enr02.getEchelleRente()).shortValue());
+        }
+        if (!JadeStringUtil.isBlankOrZero(enr02.getDureeCoEchelleRenteAv73())) {
+            echelleCalcul.setBeitragsdauerVor1973(convertAAMMtoBeigDecimal(enr02.getDureeCoEchelleRenteAv73()));
+        }
+        if (!JadeStringUtil.isBlankOrZero(enr02.getDureeCoEchelleRenteDes73())) {
+            echelleCalcul.setBeitragsdauerAb1973(convertAAMMtoBeigDecimal(enr02.getDureeCoEchelleRenteDes73()));
+        }
+        if (!JadeStringUtil.isBlankOrZero(enr02.getDureeCotManquante48_72())) {
+            echelleCalcul.setAnrechnungVor1973FehlenderBeitragsmonate(new Integer(testSiNullouZero(enr02
+                    .getDureeCotManquante48_72())));
+        }
+        if (!JadeStringUtil.isBlankOrZero(enr02.getDureeCotManquante73_78())) {
+            echelleCalcul.setAnrechnungAb1973Bis1978FehlenderBeitragsmonate(new Integer(testSiNullouZero(enr02
+                    .getDureeCotManquante73_78())));
+        }
+        if (!JadeStringUtil.isBlankOrZero(enr02.getAnneeCotClasseAge())) {
+            echelleCalcul.setBeitragsjahreJahrgang(new Integer(testSiNullouZero(enr02.getAnneeCotClasseAge())));
+        }
+        return echelleCalcul;
+    }
+
     protected BigDecimal convertAAMMtoBigDecimal(String strAAMM) {
         return BigDecimal.valueOf(Long.valueOf(testSiNullouZero(strAAMM)), 2).setScale(2);
     }
@@ -234,23 +259,6 @@ public abstract class REAbstractAnnonceXmlService {
     }
 
     /**
-     * Weak Type
-     * 
-     * @param enr01
-     * @param enr02
-     * @return un ajournement
-     * @throws Exception
-     */
-    protected RentenaufschubWeakType rempliRentenaufschubWeakType(REAnnoncesAbstractLevel2A enr01,
-            REAnnoncesAbstractLevel2A enr02) throws Exception {
-        RentenaufschubWeakType ajournement = factoryType.createRentenaufschubWeakType();
-        ajournement.setAbrufdatum(retourneXMLGregorianCalendarFromMonth(enr02.getDateRevocationAjournement()));
-        ajournement.setAufschubsdauer(new BigDecimal(testSiNullouZero(enr02.getDureeAjournement())));
-        ajournement.setAufschubszuschlag(new BigDecimal(testSiNullouZero(enr02.getSupplementAjournement())));
-        return ajournement;
-    }
-
-    /**
      * Méthode qui retourne un objet qui rempli les ajournements
      * 
      * @param enr01
@@ -267,4 +275,12 @@ public abstract class REAbstractAnnonceXmlService {
         return ajournement;
     }
 
+    protected RentenaufschubWeakType rempliRentenaufschubTypeWeak(REAnnoncesAbstractLevel2A enr01,
+            REAnnoncesAbstractLevel2A enr02) throws Exception {
+        RentenaufschubWeakType ajournement = factoryType.createRentenaufschubWeakType();
+        ajournement.setAbrufdatum(retourneXMLGregorianCalendarFromMonth(enr02.getDateRevocationAjournement()));
+        ajournement.setAufschubsdauer(new BigDecimal(testSiNullouZero(enr02.getDureeAjournement())));
+        ajournement.setAufschubszuschlag(new BigDecimal(testSiNullouZero(enr02.getSupplementAjournement())));
+        return ajournement;
+    }
 }
