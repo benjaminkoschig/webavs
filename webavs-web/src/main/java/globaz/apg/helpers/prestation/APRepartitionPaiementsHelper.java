@@ -342,6 +342,19 @@ public class APRepartitionPaiementsHelper extends PRAbstractHelper {
             }
         }
 
+        if (JadeStringUtil.isBlankOrZero(rpViewBean.getIdDomaineAdressePaiement())) {
+            APDroitLAPG droit = new APDroitLAPG();
+            droit.setSession(rpViewBean.getSession());
+            droit.setIdDroit(rpViewBean.getIdDroit());
+            droit.retrieve();
+
+            if (IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE.equals(droit.getGenreService())) {
+                rpViewBean.setIdDomaineAdressePaiement(IPRConstantesExternes.TIERS_CS_DOMAINE_MATERNITE);
+            } else {
+                rpViewBean.setIdDomaineAdressePaiement(IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_APG);
+            }
+        }
+
         // si le tiers beneficiaire est null, il ne sert a rien de faire une
         // recherche
         // ce cas de figure peut survenir lors du chargement du viewBean utilise

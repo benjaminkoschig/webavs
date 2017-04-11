@@ -359,9 +359,10 @@ public class APRepartitionPaiements extends BEntity implements PRHierarchique {
     public void chercherAdressePaiement(BTransaction transaction, String idSituationProf) throws Exception {
 
         String idDomainePaiement = idDomaineAdressePaiement;
-        String idTiersPaiement = idTiers;
+        String idTiersPaiement = idTiersAdressePaiement;
 
-        if (!JadeStringUtil.isBlankOrZero(idSituationProf)) {
+        if (!JadeStringUtil.isBlankOrZero(idSituationProf)
+                && IAPRepartitionPaiements.CS_PAIEMENT_EMPLOYEUR.equals(typePaiement)) {
             APSituationProfessionnelle situation = new APSituationProfessionnelle();
             situation.setSession(getSession());
             situation.setId(idSituationProf);
@@ -383,6 +384,10 @@ public class APRepartitionPaiements extends BEntity implements PRHierarchique {
             } else {
                 idDomainePaiement = IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_APG;
             }
+        }
+
+        if (JadeStringUtil.isBlankOrZero(idTiersPaiement)) {
+            idTiersPaiement = idTiers;
         }
 
         setAdressePaiement(PRTiersHelper.getAdressePaiementData(getSession(), transaction, idTiersPaiement,
