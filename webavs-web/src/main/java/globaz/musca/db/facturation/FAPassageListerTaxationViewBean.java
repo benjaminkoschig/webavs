@@ -18,5 +18,6 @@ public class FAPassageListerTaxationViewBean extends CPListeTaxationDefinitiveXl
      * Insérez la description de la méthode ici. Date de création : (10.03.2003 10:55:33)
      */
     public FAPassageListerTaxationViewBean() throws java.lang.Exception {
+        setFromFacturation(true);
     }
 }
