@@ -159,7 +159,7 @@ public class REEnvoyerAnnoncesXMLProcess extends BProcess {
             mgr.setForCsEtat(IREAnnonces.CS_ETAT_OUVERT);
             mgr.setForCodeEnregistrement("01");
             mgr.setForMoisRapport(forMoisAnneeComptable);
-
+            System.out.println(mgr.getCount());
             if (getIsForAnnoncesSubsequentes()) {
                 mgr.setForAnnoncesSubsequentes(true);
             }
@@ -252,12 +252,12 @@ public class REEnvoyerAnnoncesXMLProcess extends BProcess {
             // de cette manière, on aura toutes les erreurs dans l'email de confirmation
             // plutôt qu'une erreur à la fois
             if (hasError) {
-                throw new Exception(getSession().getLabel("PROCESS_ENVOI_ANNONCES_ERREUR_PREPARATION_ENVOI"));
+                // throw new Exception(getSession().getLabel("PROCESS_ENVOI_ANNONCES_ERREUR_PREPARATION_ENVOI"));
             }
 
             mgr.cursorClose(statement);
 
-            String fileName = genereFichier(lotAnnonces);
+            String fileName = genereFichier(lotAnnonces, mgr.getCount());
             envoiFichier(fileName);
 
         } catch (Exception e) {
@@ -588,11 +588,12 @@ public class REEnvoyerAnnoncesXMLProcess extends BProcess {
      * @return l'uri du fichier généré
      * @throws Exception
      */
-    private String genereFichier(PoolMeldungZurZAS.Lot lotAnnonce) throws Exception {
+    private String genereFichier(PoolMeldungZurZAS.Lot lotAnnonce, int size) throws Exception {
         String fileName;
         ch.admin.zas.pool.ObjectFactory factoryPool = new ch.admin.zas.pool.ObjectFactory();
         PoolMeldungZurZAS pool = factoryPool.createPoolMeldungZurZAS();
         pool.getLot().add(lotAnnonce);
+        lotAnnonce.getPoolFuss().setEintragungengesamtzahl(size);
         initMarshaller(pool);
         fileName = Jade.getInstance().getSharedDir() + getFileNameTimeStamp();
 
