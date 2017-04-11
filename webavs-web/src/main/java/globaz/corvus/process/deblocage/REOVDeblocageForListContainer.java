@@ -27,7 +27,7 @@ public class REOVDeblocageForListContainer {
     }
 
     @Column(name = "LISTE_DEBLOCAGE_OV_MONTANT", order = 3)
-    @ColumnStyle(align = Align.RIGHT, format = "#,##0.00")
+    @ColumnStyle(align = Align.RIGHT, format = "#,##0.00", width = "10%")
     public Montant getMontant() {
         return montant;
     }

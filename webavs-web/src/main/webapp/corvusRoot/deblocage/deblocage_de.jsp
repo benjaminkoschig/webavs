@@ -35,7 +35,8 @@ globazGlobal.idRenteAccordee = ${viewBean.id};
 globazGlobal.CS_DOMAINE_APPLICATION_RENTE = ${viewBean.csDomaineApplicationRente};
 globazGlobal.CS_TYPE_CREANCIER = "${viewBean.csTypeDeBlocageCreancier}";
 globazGlobal.montantBlocage = "${viewBean.montantToUsedForDeblocage}";
-globazGlobal.isUpdatable = ${viewBean.isUpdatable};  
+globazGlobal.isUpdatable = true;  
+globazGlobal.isRenteBloque = ${viewBean.isRenteBloque()};
 </script> 
 
 <script type="text/template" id="templateCreancier">
@@ -229,7 +230,7 @@ globazGlobal.isUpdatable = ${viewBean.isUpdatable};
 					<div id="creanciers">
 						<c:forEach var="entry" items="${viewBean.lignesDeblocageCreancier}">
 <%-- 						<c:set var="classNotUpdable" value="areaDetail"></c:set> --%>
-<%-- 						<c:if test="${entry.etatDeblocage != viewBean.etatEnregistre && !(empty entry.etat) && !viewBean.isUpdatable}"> --%>
+<%-- 						<c:if test="${entry.etatDeblocage != viewBean.etatEnregistre && !(empty entry.etat) && !viewBean.isLiberable}"> --%>
 <%-- 							<c:set var="classNotUpdable" value="notUpdatable"></c:set> --%>
 <%-- 						</c:if> --%>
 		
@@ -277,14 +278,13 @@ globazGlobal.isUpdatable = ${viewBean.isUpdatable};
 												</span>		
 											</c:if>
 										</div>
-									</c:otherwise>
+									</c:otherwise> 
 								</c:choose>
 							</div>
 						</div>
 						</c:forEach>
 					</div>
 					<hr />
-					<c:if test="${viewBean.isUpdatable}">
 					<div class="areaDetail" style="background-color: white!important;" >
 						<div class="row-fluid " >
 							<div class="span4">
@@ -338,7 +338,6 @@ globazGlobal.isUpdatable = ${viewBean.isUpdatable};
 							</div>
 						</div>
 					</div>
-					</c:if>
 				</div>
 
 				<!--  ************************* Zone *************************  -->
@@ -441,9 +440,7 @@ globazGlobal.isUpdatable = ${viewBean.isUpdatable};
 			</div>	
 			<div class="right"> 
 				<ct:ifhasright element="<%=partialUserActionAction%>" crud="cud">
-<%-- 					<c:if test="${viewBean.isLiberable()}"> --%>
 						<button type="button" id="ValiderLiberation" class=""><ct:FWLabel key="JSP_RE_DEBLOCAGE_VALIDER_LIBERATION"/></button>
-<%-- 					</c:if> --%>
 					<c:if test="${viewBean.isDevalidable}">
 						<button type="button" id="DeValiderLiberation" class=""><ct:FWLabel key="JSP_RE_DEBLOCAGE_DEVALIDER_LIBERATION"/></button>
 					</c:if>

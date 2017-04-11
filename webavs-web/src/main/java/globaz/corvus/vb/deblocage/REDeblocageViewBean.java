@@ -9,6 +9,7 @@ import globaz.corvus.db.lignedeblocage.RELigneDeblocageDette;
 import globaz.corvus.db.lignedeblocage.RELigneDeblocageVersement;
 import globaz.corvus.db.lignedeblocage.RELigneDeblocages;
 import globaz.corvus.db.lignedeblocage.constantes.RELigneDeblocageType;
+import globaz.corvus.db.rentesaccordees.RERenteAccordeeJoinInfoComptaJoinPrstDues;
 import globaz.externe.IPRConstantesExternes;
 import globaz.jade.client.util.JadeNumericUtil;
 import globaz.osiris.db.comptes.CASectionJoinCompteAnnexeJoinTiersManager;
@@ -35,12 +36,14 @@ public class REDeblocageViewBean extends PRAbstractViewBeanSupport {
     private String genre;
     private List<ReRetour> retours;
     private RELigneDeblocages deblocages;
+    private RERenteAccordeeJoinInfoComptaJoinPrstDues pracc;
 
     @Override
     public void retrieve() throws Exception {
         REDeblocageService service = new REDeblocageService(getSession());
         REDeblocage deblocage = service.read(Long.valueOf(getId()));
         deblocages = deblocage.getLignesDeblocages();
+        pracc = deblocage.getPracc();
 
         idTiersBeneficiaire = deblocage.getBeneficiaire().getIdTiers();
         tiersBeneficiaireInfo = deblocage.getDescriptonTier();
@@ -156,10 +159,6 @@ public class REDeblocageViewBean extends PRAbstractViewBeanSupport {
         return deblocages.isDevalidable();
     }
 
-    public boolean getIsUpdatable() {
-        return true;
-    }
-
     @Override
     public String getAction() {
         return "corvus.deblocage.deblocageAjax";
@@ -252,6 +251,10 @@ public class REDeblocageViewBean extends PRAbstractViewBeanSupport {
 
     public void setRetours(List<ReRetour> retours) {
         this.retours = retours;
+    }
+
+    public boolean isRenteBloque() {
+        return pracc.getIsPrestationBloquee();
     }
 
     public boolean isLiberable() {

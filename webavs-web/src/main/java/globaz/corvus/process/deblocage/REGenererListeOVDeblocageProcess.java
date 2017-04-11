@@ -106,9 +106,7 @@ public class REGenererListeOVDeblocageProcess extends BProcess {
 
         Details detail = new Details();
         detail.add(getSession().getLabel("LISTE_DEBLOCAGE_OV_NUM_IMFOROM"), NUM_INFOROM);
-        detail.newLigne();
         detail.add(getSession().getLabel("LISTE_DEBLOCAGE_OV_DATE_IMPRESSION"), Date.now().toString());
-        detail.newLigne();
         detail.add(getSession().getLabel("LISTE_DEBLOCAGE_OV_NOM_LOT"), getForIdLot());
         detail.newLigne();
 

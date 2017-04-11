@@ -61,7 +61,8 @@ public class REDeblocageAjaxViewBean extends BJadePersistentObjectViewBean imple
                 accordee.setSession((BSession) getISession());
                 accordee.setId(idRenteAccordee);
                 accordee.retrieve();
-                accordee.setIsAttenteMajBlocage(false);
+                // accordee.setIsAttenteMajBlocage(false);
+                accordee.setIsPrestationBloquee(false);
                 accordee.update();
             }
         } else if ("devalider".equals(action)) {

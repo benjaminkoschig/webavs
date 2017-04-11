@@ -371,8 +371,11 @@ validationDevalidation = {
 			ajaxUtils.ajaxCustom( globazGlobal.ACTION_AJAX+".ajouterAJAX", params, function (data) {
 				that.enableButton();
 				that.removeWait();
-				//window.location.reload(true); 
-				//window.location = window.location.href;
+				if(window.location.href.search("userAction")=== -1) {
+					window.location.href = window.location.href+"?userAction=corvus.deblocage.deblocage.afficher&selectedId="+globazGlobal.idRenteAccordee;
+				} else {
+					window.location.href = window.location.href;
+				}
 			}, function () { 
 				that.enableButton();
 				that.removeWait();
@@ -382,27 +385,30 @@ validationDevalidation = {
 		addEvent: function () {
 			var that = this;
 			this.$validerButton.click(function () {
-				$("#messageDebloquage").dialog({
-					  buttons: [
-					            {
-					              text: "oui",
-					              click: function() {
-					            	$("#debloquerRente").val("true");
-					                $( this ).dialog( "close" );
-									that.submit(globazGlobal.paramActionLiberer);
-					              }
-					            },
-					            {
-					              text: "non",
-					              click: function() {
-						            $("#debloquerRente").val("false");
-					                $( this ).dialog( "close" );
-									that.submit(globazGlobal.paramActionLiberer);
-					              }
-						        }
-					          ]
-				});
-				
+				if(globazGlobal.isRenteBloque){
+					$("#messageDebloquage").dialog({
+						  buttons: [
+						            {
+						              text: "oui",
+						              click: function() {
+						            	$("#debloquerRente").val("true");
+						                $( this ).dialog( "close" );
+										that.submit(globazGlobal.paramActionLiberer);
+						              }
+						            },
+						            {
+						              text: "non",
+						              click: function() {
+							            $("#debloquerRente").val("false");
+						                $( this ).dialog( "close" );
+										that.submit(globazGlobal.paramActionLiberer);
+						              }
+							        }
+						          ]
+					});
+					} else {
+						that.submit(globazGlobal.paramActionLiberer);
+					}
 			});
 
 			if(this.$deValiderLiberation) {

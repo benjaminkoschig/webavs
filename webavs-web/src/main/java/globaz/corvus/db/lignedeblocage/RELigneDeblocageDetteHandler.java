@@ -49,7 +49,9 @@ class RELigneDeblocageDetteHandler {
                 RELigneDeblocageDette dette = new RELigneDeblocageDette();
                 dette.setIdAndJustDoIt(ligne.getIdEntity());
                 dette.setIdEntity(ligne.getIdEntity());
+                dette.setIdLot(ligne.getIdLot());
                 dette.setSpy(ligne.getSpy());
+                dette.setMontant(ligne.getMontant());
                 dette.setIdAndJustDoIt(ligne.getIdEntity());
                 dette.setIdRenteAccordee(ligne.getIdRenteAccordee());
                 dette.setEtat(ligne.getEtat());
@@ -59,7 +61,6 @@ class RELigneDeblocageDetteHandler {
                 dette.setDescriptionCompteAnnexe(detteComptat.getDescriptionCompteAnnexe());
                 dette.setType(ligne.getType());
                 dette.setMontanDette(detteComptat.getMontanDette());
-                dette.setMontant(ligne.getMontant());
                 dette.setIdRoleSection(detteComptat.getIdRoleSection());
                 dette.setIdSectionCompensee(detteComptat.getIdSectionCompensee());
                 list.add(dette);

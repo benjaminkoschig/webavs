@@ -34,7 +34,7 @@ public class RELibererDevaliderDeblocage {
         RELot lot = findLot();
         Long idLot = Long.valueOf(lot.getIdLot());
 
-        RELigneDeblocages lignes = deblocage.getLignesDeblocages().filtreByIdLot(idLot);
+        RELigneDeblocages lignes = deblocage.getLignesDeblocages().filtreValides().filtreByIdLot(idLot);
         lignes.changeEtatToEnregistre().changeIdLot(null);
 
         deblocageService.update(lignes);
