@@ -17,6 +17,7 @@ public class AFControleLppAnnuelViewBean extends AFAbstractViewBean {
     private String anneeFin;
     private String dateImpression;
     private String email;
+    private String filename;
 
     // true = simulation
     private boolean modeControle = true;
@@ -72,5 +73,13 @@ public class AFControleLppAnnuelViewBean extends AFAbstractViewBean {
 
     public void setAnneeFin(String anneeFin) {
         this.anneeFin = anneeFin;
+    }
+
+    public String getFilename() {
+        return filename;
+    }
+
+    public void setFilename(String filename) {
+        this.filename = filename;
     }
 }

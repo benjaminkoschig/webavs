@@ -277,6 +277,31 @@ public class AFAffilieSoumiLppConteneur {
         this.addSalarie(idAffilie, salarie);
     }
 
+    /***
+     * Méthode pour ajouter un salarié avec les infos trouvé lors de l'injection de la liste.
+     * 
+     * @param idTiers
+     * @param idAffilie
+     * @param numeroAffilie
+     * @param motif
+     * @param nom
+     * @param sexe
+     * @param nss
+     * @param moisDebut
+     * @param moisFin
+     * @param annee
+     * @param dateNaissance
+     * @param montant
+     */
+    public void addSalarieFromReinjection(String idTiers, String idAffilie, String numeroAffilie, String motif,
+            String nom, String sexe, String nss, String moisDebut, String moisFin, int annee, String dateNaissance,
+            String montant) {
+        Salarie salarie = new Salarie(idTiers, numeroAffilie, motif, nom, sexe, nss, moisDebut, moisFin, annee,
+                dateNaissance, "", "", montant, false, "", "");
+
+        this.addSalarie(idAffilie, salarie);
+    }
+
     public List<Salarie> getListSalarieForAffilie(String idAffilie) {
         if (listeSalarieAffilie.get(idAffilie) == null) {
             return null;

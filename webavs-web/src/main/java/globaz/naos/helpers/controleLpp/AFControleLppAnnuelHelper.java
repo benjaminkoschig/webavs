@@ -45,6 +45,8 @@ public class AFControleLppAnnuelHelper extends FWHelper {
                 process.setModeControle(vb.isModeControleSimulation());
                 process.setEMailAddress(vb.getEmail());
 
+                process.setFileName(vb.getFilename());
+
                 BProcessLauncher.start(process);
             } else {
                 viewBean.setMessage(((BSession) session).getLabel("DROIT_MODIFICATION"));

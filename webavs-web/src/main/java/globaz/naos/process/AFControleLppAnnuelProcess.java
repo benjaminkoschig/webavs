@@ -6,6 +6,7 @@ package globaz.naos.process;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BProcess;
 import globaz.globall.db.BSession;
+import globaz.globall.db.BTransaction;
 import globaz.globall.db.FWFindParameter;
 import globaz.globall.db.FWFindParameterManager;
 import globaz.globall.db.GlobazJobQueue;
@@ -17,6 +18,7 @@ import globaz.jade.client.util.JadeFilenameUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.client.zip.JadeZipUtil;
 import globaz.jade.common.Jade;
+import globaz.jade.fs.JadeFsFacade;
 import globaz.jade.publish.client.JadePublishDocument;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
 import globaz.leo.constantes.ILEConstantes;
@@ -24,6 +26,7 @@ import globaz.leo.process.LEGenererEnvoi;
 import globaz.lupus.db.data.LUProvenanceDataSource;
 import globaz.lupus.db.journalisation.LUJournalListViewBean;
 import globaz.naos.application.AFApplication;
+import globaz.naos.db.affiliation.AFAffiliation;
 import globaz.naos.db.controleLpp.AFAffilieSoumiLpp;
 import globaz.naos.db.controleLpp.AFAffilieSoumiLppConteneur;
 import globaz.naos.db.controleLpp.AFAffilieSoumiLppConteneur.Salarie;
@@ -34,14 +37,20 @@ import globaz.naos.db.cotisation.AFCotisationManager;
 import globaz.naos.listes.excel.AFXmlmlMappingSoumisLpp;
 import globaz.naos.listes.excel.util.AFExcelmlUtils;
 import globaz.naos.listes.excel.util.IAFListeColumns;
+import globaz.naos.services.AFAffiliationServices;
 import globaz.naos.util.AFUtil;
 import globaz.pavo.util.CIUtil;
 import globaz.pyxis.db.tiers.TIRole;
 import globaz.webavs.common.CommonExcelmlContainer;
+import globaz.webavs.common.op.CommonExcelDataContainer;
+import globaz.webavs.common.op.CommonExcelDataContainer.CommonLine;
+import globaz.webavs.common.op.CommonExcelDocumentParser;
+import globaz.webavs.common.op.CommonExcelFilterNotSupportedException;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -58,6 +67,8 @@ import ch.globaz.common.business.exceptions.CommonTechnicalException;
 public class AFControleLppAnnuelProcess extends BProcess {
 
     private static final long serialVersionUID = 6612166262485600549L;
+    private static final String NUM_INFOROM_CAS_COUMIS = "0280CAF";
+    private static final String NUM_INFOROM_NAME_SPACE = "headerNumInforom";
     private static final String LISTE_CAS_REJETES = "listeSoumisLpp.xml";
 
     private String anneeDebut;
@@ -81,6 +92,8 @@ public class AFControleLppAnnuelProcess extends BProcess {
     private double seuilMensuel;
     private String typeAdresse;
 
+    private String fileName;
+
     @Override
     protected void _executeCleanUp() {
         // nothing
@@ -97,32 +110,12 @@ public class AFControleLppAnnuelProcess extends BProcess {
             int anneeStart = Integer.valueOf(getAnneeDebut());
             int anneeEnd = Integer.valueOf(getAnneeFin());
 
-            for (int anneeControle = anneeStart; anneeControle <= anneeEnd; anneeControle++) {
+            if (!fileName.isEmpty() && !modeControle) {
+                // On va réinjecter les données via le fichier renseigné
+                reinjectionDonnees();
 
-                // Détermination des seuils mensuel
-                seuilAnnuel = Double.parseDouble(getSeuilByParameterCode(anneeControle));
-                seuilMensuel = seuilAnnuel / 12.0;
-
-                // 1. Création d'un conteneur pour regrouper les salariés par affilié
-                creationDonnees(anneeControle);
-
-                // Gestion de l'abort
-                if (isAborted()) {
-                    return false;
-                }
-
-                // 2. Application des régles de soumission a la LPP
-                // => On ne garde que les NSS qui seront dans la liste pour le courrier
-                // => création d'un conteneur avec les cas rejetés
-                applicationReglesSoumission(anneeControle);
-
-                // Gestion de l'abort
-                if (isAborted()) {
-                    return false;
-                }
-
-                // 3. On gére la gestion de suivi
-                gestionSuivisLpp(anneeControle);
+                // On gére la gestion de suivi
+                gestionSuivisLpp();
 
                 // Gestion de l'abort
                 if (isAborted()) {
@@ -133,9 +126,52 @@ public class AFControleLppAnnuelProcess extends BProcess {
                 casSoumisFinal.addAllSalarie(casSoumis.getMapAffilie());
                 casRejetes.clear();
                 casSoumis.clear();
+
+                // Etape terminé, on incremente le compteur
+                incProgressCounter();
+
+            } else {
+                for (int anneeControle = anneeStart; anneeControle <= anneeEnd; anneeControle++) {
+
+                    // Détermination des seuils mensuel
+                    seuilAnnuel = Double.parseDouble(getSeuilByParameterCode(anneeControle));
+                    seuilMensuel = seuilAnnuel / 12.0;
+
+                    // 1. Création d'un conteneur pour regrouper les salariés par affilié
+                    creationDonnees(anneeControle);
+
+                    // Gestion de l'abort
+                    if (isAborted()) {
+                        return false;
+                    }
+
+                    // 2. Application des régles de soumission a la LPP
+                    // => On ne garde que les NSS qui seront dans la liste pour le courrier
+                    // => création d'un conteneur avec les cas rejetés
+                    applicationReglesSoumission(anneeControle);
+
+                    // Gestion de l'abort
+                    if (isAborted()) {
+                        return false;
+                    }
+
+                    // 3. On gére la gestion de suivi
+                    gestionSuivisLpp();
+
+                    // Gestion de l'abort
+                    if (isAborted()) {
+                        return false;
+                    }
+
+                    casRejetesFinal.addAllSalarie(casRejetes.getMapAffilie());
+                    casSoumisFinal.addAllSalarie(casSoumis.getMapAffilie());
+                    casRejetes.clear();
+                    casSoumis.clear();
+                }
+
+                // 4. Création des listes de résultat pour le mail
+                creationListes();
             }
-            // 4. Création des listes de résultat pour le mail
-            creationListes();
 
         } catch (Exception e) {
 
@@ -273,9 +309,121 @@ public class AFControleLppAnnuelProcess extends BProcess {
      */
     private void createDocumentCasSoumis() throws Exception {
         String titreDoc = getSession().getLabel("TITRE_LISTE_LPP_CAS_SOUMIS");
-        String numInforom = "0280CAF";
+        String numInforom = NUM_INFOROM_CAS_COUMIS;
         String nomDoc = getSession().getLabel("LISTE_LPP_CAS_SOUMIS");
         nbCasSoumis = createDocument(casSoumisFinal, nomDoc, titreDoc, numInforom);
+    }
+
+    /***
+     * Contrôle du fichier reçu et injection des données.
+     */
+    private boolean reinjectionDonnees() throws Exception {
+        boolean status = true;
+        CommonExcelDataContainer container = null;
+
+        String path = Jade.getInstance().getHomeDir() + "work/" + getFileName();
+
+        // copy du fichier dans le répertoire work pour le traiter
+        JadeFsFacade.copyFile("jdbc://" + Jade.getInstance().getDefaultJdbcSchema() + "/" + getFileName(), path);
+
+        // parse du document, retourne un container avec toutes les entrées et
+        // valeurs trouvées dans le document
+        try {
+            container = CommonExcelDocumentParser.parseWorkBook(AFExcelmlUtils.loadPath(path));
+
+        } catch (CommonExcelFilterNotSupportedException e) {
+            this._addError(getTransaction(), getSession().getLabel("ERREUR_FICHIER_REINJECTION_FILTRE"));
+            String messageInformation = "Unsupported filtered Excel file injection throw exception in Parser due to file :"
+                    + getFileName() + "\n";
+            messageInformation += CEUtils.stack2string(e);
+            AFUtil.addMailInformationsError(getMemoryLog(), messageInformation, this.getClass().getName());
+            status = false;
+        } catch (Exception e) {
+            this._addError(getTransaction(), getSession().getLabel("ERREUR_FICHIER_REINJECTION"));
+
+            String messageInformation = "Nom du fichier : " + getFileName() + "\n";
+            messageInformation += CEUtils.stack2string(e);
+
+            AFUtil.addMailInformationsError(getMemoryLog(), messageInformation, this.getClass().getName());
+
+            status = false;
+        }
+
+        if (status) {
+            String numInforom = container.getHeaderValue(NUM_INFOROM_NAME_SPACE);
+
+            if (JadeStringUtil.isEmpty(numInforom)) {
+                getTransaction().addErrors(getSession().getLabel("NUM_INFOROM_NOT_FOUND"));
+                AFUtil.addMailInformationsError(getMemoryLog(), getSession().getLabel("NUM_INFOROM_NOT_FOUND"), this
+                        .getClass().getName());
+                return false;
+            } else if (!(numInforom.equals(NUM_INFOROM_CAS_COUMIS))) {
+                getTransaction().addErrors(getSession().getLabel("NUM_INFOROM_NOT_IMPLEMENTED"));
+                AFUtil.addMailInformationsError(getMemoryLog(), getSession().getLabel("NUM_INFOROM_NOT_IMPLEMENTED"),
+                        this.getClass().getName());
+                return false;
+            }
+
+            Iterator<CommonLine> lines = container.returnLinesIterator();
+
+            // On itère sur chaque ligne
+            while (lines.hasNext()) {
+                CommonLine line = lines.next();
+                HashMap<String, String> lineMap = line.returnLineHashMap();
+
+                String numeroAffilie = returnValeurHashMapWithNumAffilie(IAFListeColumns.NUM_AFFILIE, lineMap,
+                        getTransaction(), "");
+
+                String nom = returnValeurHashMapWithNumAffilie(IAFListeColumns.NOM, lineMap, getTransaction(),
+                        numeroAffilie);
+                String motif = returnValeurHashMapWithNumAffilie(IAFListeColumns.MOTIF, lineMap, getTransaction(),
+                        numeroAffilie);
+                String nss = returnValeurHashMapWithNumAffilie(IAFListeColumns.NSS, lineMap, getTransaction(),
+                        numeroAffilie);
+                String sexe = returnValeurHashMapWithNumAffilie(IAFListeColumns.SEXE, lineMap, getTransaction(),
+                        numeroAffilie);
+                String dateNaissance = returnValeurHashMapWithNumAffilie(IAFListeColumns.DATE_NAISSANCE, lineMap,
+                        getTransaction(), numeroAffilie);
+                String pediode = returnValeurHashMapWithNumAffilie(IAFListeColumns.PERIODE_TRAVAIL, lineMap,
+                        getTransaction(), numeroAffilie);
+                String annee = returnValeurHashMapWithNumAffilie(IAFListeColumns.ANNEE, lineMap, getTransaction(),
+                        numeroAffilie);
+                String montant = returnValeurHashMapWithNumAffilie(IAFListeColumns.MONTANT, lineMap, getTransaction(),
+                        numeroAffilie);
+
+                AFAffiliation affi = AFAffiliationServices.getAffiliationParitaireByNumero(numeroAffilie, annee,
+                        getSession());
+
+                casSoumis.addSalarieFromReinjection(affi.getIdTiers(), affi.getAffiliationId(), numeroAffilie, motif,
+                        nom, sexe, nss, pediode.split("-")[0], pediode.split("-")[1], Integer.parseInt(annee),
+                        dateNaissance, montant);
+            }
+        }
+
+        // Etape terminé, on incremente le compteur
+        incProgressCounter();
+
+        return status;
+    }
+
+    /***
+     * Méthode qui retourne la valeur choisie dans la hashmap en fonction du numéro d'affilié.
+     * 
+     * @param valeur
+     * @param lineMap
+     * @param transaction
+     * @param numAffilie
+     * @return
+     */
+    private String returnValeurHashMapWithNumAffilie(final String valeur, final HashMap<String, String> lineMap,
+            final BTransaction transaction, final String numAffilie) {
+        String valeurRetour = "";
+
+        if (lineMap.containsKey(valeur)) {
+            valeurRetour = lineMap.get(valeur);
+        }
+
+        return valeurRetour;
     }
 
     /**
@@ -415,7 +563,7 @@ public class AFControleLppAnnuelProcess extends BProcess {
      * 
      * @throws Exception
      */
-    private void gestionSuivisLpp(int annee) throws Exception {
+    private void gestionSuivisLpp() throws Exception {
 
         setProcessDescription("Génération des suivis");
 
@@ -433,7 +581,7 @@ public class AFControleLppAnnuelProcess extends BProcess {
             }
 
             // 1. controle si pas déjà un suivi
-            if (isDejaJournalise(getSession(), idAffSoumis, (listSalarie[0]).getNumeroAffilie(), annee)) {
+            if (isDejaJournalise(getSession(), idAffSoumis, (listSalarie[0]).getNumeroAffilie())) {
 
                 // Parcours de tous les salariés de l'affilié
                 for (AFAffilieSoumiLppConteneur.Salarie sal : listSalarie) {
@@ -470,20 +618,25 @@ public class AFControleLppAnnuelProcess extends BProcess {
 
     @Override
     protected String getEMailObject() {
+        if (fileName.isEmpty()) {
+            // Information sur l'année de traitement
+            String anneeTraitement = " (" + getAnneeDebut() + " - " + getAnneeFin() + ")";
 
-        // Information sur l'année de traitement
-        String anneeTraitement = " (" + getAnneeDebut() + " - " + getAnneeFin() + ")";
+            // Information sur le type de traitement
+            String simulation = isModeControleSimulation() ? getSession().getLabel("CONTROLE_LPP_SIMULATION") + " - "
+                    : "";
 
-        // Information sur le type de traitement
-        String simulation = isModeControleSimulation() ? getSession().getLabel("CONTROLE_LPP_SIMULATION") + " - " : "";
-
-        // Construction de l'object
-        if (isAborted()) {
-            return simulation + getSession().getLabel("IMPRESSION_CONTROLE_LPP_ANNUEL_ABORTED") + anneeTraitement;
-        } else if (isOnError() || getSession().hasErrors()) {
-            return simulation + getSession().getLabel("IMPRESSION_CONTROLE_LPP_ANNUEL_ERREUR") + anneeTraitement;
+            // Construction de l'object
+            if (isAborted()) {
+                return simulation + getSession().getLabel("IMPRESSION_CONTROLE_LPP_ANNUEL_ABORTED") + anneeTraitement;
+            } else if (isOnError() || getSession().hasErrors()) {
+                return simulation + getSession().getLabel("IMPRESSION_CONTROLE_LPP_ANNUEL_ERREUR") + anneeTraitement;
+            } else {
+                return simulation + getSession().getLabel("IMPRESSION_CONTROLE_LPP_ANNUEL_OK") + anneeTraitement;
+            }
         } else {
-            return simulation + getSession().getLabel("IMPRESSION_CONTROLE_LPP_ANNUEL_OK") + anneeTraitement;
+            return getSession().getLabel("IMPRESSION_CONTROLE_LPP_ANNUEL_OK") + " ("
+                    + getSession().getLabel("MENU_REINJECTION_LISTE_EXCEL") + ")";
         }
     }
 
@@ -609,8 +762,7 @@ public class AFControleLppAnnuelProcess extends BProcess {
      * @return
      * @throws Exception
      */
-    public boolean isDejaJournalise(BSession session, String idAffiliation, String numAffilie, int annee)
-            throws Exception {
+    public boolean isDejaJournalise(BSession session, String idAffiliation, String numAffilie) throws Exception {
 
         // On sette les critères qui font que l'envoi est unique
         LUProvenanceDataSource provenanceCriteres = new LUProvenanceDataSource();
@@ -844,5 +996,13 @@ public class AFControleLppAnnuelProcess extends BProcess {
 
     public void setAnneeFin(String anneeFin) {
         this.anneeFin = anneeFin;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 }

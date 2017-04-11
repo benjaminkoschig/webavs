@@ -14,6 +14,11 @@
 	AFControleLppAnnuelViewBean viewBean = (AFControleLppAnnuelViewBean) session.getAttribute("viewBean");                            
     userActionValue="naos.controleLpp.controleLppAnnuel.executer";
     
+    formAction= request.getContextPath()+mainServletPath+"Root/"+languePage+"/controleLpp/reinjectionFile_de.jsp";
+    
+	//Encryptage de la page
+	formEncType = "'multipart/form-data' method='post'";
+    
     String strSimulation = viewBean.isModeControleSimulation() ? "checked=\"checked\"" : "";
     String dateImpression = viewBean.getDateImpression() != null ? viewBean.getDateImpression() : "";
 %>
@@ -25,6 +30,33 @@
 
 <SCRIPT>
 top.document.title = "Web@AVS - <ct:FWLabel key='AFFILIATION'/>";
+
+$(function() {
+	var checkBoxChecked = {
+			$checkBox: null,
+			
+			init: function () {
+				this.$checkBox =  $("#modeControle");
+				this.check();
+				var that = this;
+				this.$checkBox.change(function() {
+					that.check();
+				});
+			},
+			
+			check: function () {
+			    if(this.$checkBox.prop("checked")) {
+			    	$("#reinjectionRow").hide();
+			    }
+			    else{
+		    		$("#reinjectionRow").show();
+		    	}
+			}
+	}
+
+	checkBoxChecked.init();
+});
+
 function init(){}
 
 function postInit() {
@@ -69,13 +101,22 @@ function postInit() {
 </tr>		
 <tr>
 	<TD><ct:FWLabel key="MODE_CONTROLE"/></TD>
-	<TD><input type="checkbox" name="modeControle" <%=strSimulation%>></TD>
+	<TD><input type="checkbox" id="modeControle" name="modeControle" <%=strSimulation%>></TD>
 	<TD>&nbsp;</TD>
+</tr>
+
 <TR> 
 	<TD><ct:FWLabel key='EMAIL'/></TD>
 	<TD><INPUT name="email" size="40" type="text" style="text-align : left;" value="<%= viewBean.getEmail() != null ? viewBean.getEmail() : "" %>"></TD>                        
  	<TD>&nbsp;</TD>
 </TR>
+
+<tr id="reinjectionRow" style="display:none;">
+     <td><ct:FWLabel key="REINJECTION_FICHIER_MODIF"/></td>
+     <td>          		
+          <input align="right"  type="file" size="65" name="filename" maxlength="256">
+	</td>
+</tr>
 
 <%-- /tpl:put --%>
 <%@ include file="/theme/process/footer.jspf" %>
