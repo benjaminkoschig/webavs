@@ -8,6 +8,7 @@ import globaz.apg.api.prestation.IAPRepartitionPaiements;
 import globaz.apg.api.process.IAPGenererCompensationProcess;
 import globaz.apg.application.APApplication;
 import globaz.apg.db.droits.APDroitLAPG;
+import globaz.apg.db.droits.APSituationProfessionnelle;
 import globaz.apg.db.lots.APCompensation;
 import globaz.apg.db.lots.APCompensationManager;
 import globaz.apg.db.lots.APFactureACompenser;
@@ -455,9 +456,10 @@ public class APGenererCompensationsProcess006 extends BProcess implements IAPGen
     private boolean checkRepartition(APRepartitionJointPrestation repartition, APDroitLAPG droitLAPG) throws Exception {
         boolean isOk = true;
 
-        if (repartition.loadSituationProfessionnelle() != null
-                && repartition.loadSituationProfessionnelle().getIsPorteEnCompte()
-                && !JadeStringUtil.isBlankOrZero(repartition.loadSituationProfessionnelle().getIdEmployeur())) {
+        APSituationProfessionnelle situationProf = repartition.loadSituationProfessionnelle();
+
+        if (situationProf != null && !situationProf.isNew() && situationProf.getIsPorteEnCompte()
+                && !JadeStringUtil.isBlankOrZero(repartition.getIdAffilie())) {
             /**
              * Nous recherchons les liens d'affiliation de type personnel déclarer par avec une date de validité encore
              * active, pour les situations professionnelles avec la case porté en compte
@@ -465,7 +467,7 @@ public class APGenererCompensationsProcess006 extends BProcess implements IAPGen
             final AFLienAffiliationManager manager = new AFLienAffiliationManager();
             manager.setSession(getSession());
             manager.setForTypeLien(CodeSystem.TYPE_LIEN_PERSONNEL_DECLARE);
-            manager.setForAffiliationId(repartition.loadSituationProfessionnelle().getIdEmployeur());
+            manager.setForAffiliationId(repartition.getIdAffilie());
             manager.setForDate(droitLAPG.getDateDebutDroit());
             manager.find(BManager.SIZE_NOLIMIT);
 
@@ -474,7 +476,8 @@ public class APGenererCompensationsProcess006 extends BProcess implements IAPGen
                 final String noAffilie = ((AFLienAffiliation) manager.get(0)).getAffiliation().getAffilieNumero();
                 final String messagePorteEnCompte = getSession().getLabel(
                         "PORTER_EN_COMPTE_PERSONNEL_DECLARE_PAR_ERREUR");
-                memoryLog(messagePorteEnCompte, FWMessage.ERREUR, noAffilie, droitLAPG.getNoDroit());
+                memoryLog(messagePorteEnCompte, FWMessage.ERREUR, noAffilie, repartition.getId(),
+                        droitLAPG.getNoDroit());
             }
         }
         return isOk;
