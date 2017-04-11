@@ -235,6 +235,7 @@ public class REAnnonces10eXmlServiceTest {
     @Test
     public void testPreparerDiminution10Eme() throws Exception {
         // data
+        finDroit = "1217";
         REAnnoncesDiminution10Eme enregistrement01 = new REAnnoncesDiminution10Eme();
 
         // enregistrement 1
@@ -255,7 +256,6 @@ public class REAnnonces10eXmlServiceTest {
         enregistrement01.setFinDroit(finDroit);
         enregistrement01.setMoisRapport(moisRapport);
         enregistrement01.setCodeMutation(codeMutation);
-        enregistrement01.setFinDroit("1217");
 
         try {
             // ordinaire
@@ -281,7 +281,7 @@ public class REAnnonces10eXmlServiceTest {
                 .retrieveAnnonceAugModif10(Matchers.any(REAnnoncesAbstractLevel1A.class), Matchers.any(BSession.class));
         Mockito.doReturn(new REAnnoncesAugmentationModification10Eme())
                 .when(testService)
-                .retrieveAnnonceAugModif10_2(Matchers.any(REAnnoncesAugmentationModification10Eme.class),
+                .retrieveAnnonceAugModif10eme2(Matchers.any(REAnnoncesAugmentationModification10Eme.class),
                         Matchers.any(BSession.class));
         Mockito.doReturn(new REAnnoncesDiminution10Eme()).when(testService)
                 .retrieveAnnonceDimi10(Matchers.any(REAnnoncesAbstractLevel1A.class), Matchers.any(BSession.class));

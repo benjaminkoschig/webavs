@@ -78,7 +78,7 @@ public abstract class REAbstractAnnonceXmlService {
     }
 
     protected RRLeistungsberechtigtePersonAuslType rempliRRLeistungsberechtigtePersonAuslType(
-            REAnnoncesAbstractLevel2A enr01, REAnnoncesAbstractLevel2A enr02) {
+            REAnnoncesAbstractLevel2A enr01) {
         RRLeistungsberechtigtePersonAuslType personne = factoryType.createRRLeistungsberechtigtePersonAuslType();
         personne.setVersichertennummer(enr01.getNoAssAyantDroit());
         personne.setIstFluechtling(convertIntToBoolean(enr01.getIsRefugie()));
@@ -100,15 +100,22 @@ public abstract class REAbstractAnnonceXmlService {
      * RRLeistungsberechtigtePersonAusl<b>Weak</b>Type
      * 
      * @param enr01
-     * @param enr02
+     * @param nouveauNumeroNss Si besoin, peut être null <br/>
+     *            donner la valeur directement car celle-ci ne fait pas
+     *            partie de l'abstractLvl2
      * @return
      */
     protected RRLeistungsberechtigtePersonAuslWeakType rempliRRLeistungsberechtigtePersonAuslWeakType(
-            REAnnoncesAbstractLevel2A enr01, REAnnoncesAbstractLevel2A enr02) {
+            REAnnoncesAbstractLevel2A enr01, String nouveauNumeroNss) {
         RRLeistungsberechtigtePersonAuslWeakType personne = factoryType
                 .createRRLeistungsberechtigtePersonAuslWeakType();
         personne.setVersichertennummer(enr01.getNoAssAyantDroit());
-        personne.setIstFluechtling(convertIntToBoolean(enr01.getIsRefugie()));
+        if (!JadeStringUtil.isBlankOrZero(nouveauNumeroNss)) {
+            personne.setGeaenderteVersichertennummer(nouveauNumeroNss);
+        }
+        if (!JadeStringUtil.isBlankOrZero(enr01.getIsRefugie())) {
+            personne.setIstFluechtling(convertIntToBoolean(enr01.getIsRefugie()));
+        }
         FamilienAngehoerigeType membresDeLaFamille = factoryType.createFamilienAngehoerigeType();
         if (!JadeStringUtil.isBlankOrZero(enr01.getPremierNoAssComplementaire())) {
             membresDeLaFamille.getVNr1Ergaenzend().add(enr01.getPremierNoAssComplementaire());
@@ -116,22 +123,23 @@ public abstract class REAbstractAnnonceXmlService {
         if (!JadeStringUtil.isBlankOrZero(enr01.getSecondNoAssComplementaire())) {
             membresDeLaFamille.getVNr2Ergaenzend().add(enr01.getSecondNoAssComplementaire());
         }
-        personne.setWohnkantonStaat(new Integer(enr01.getCantonEtatDomicile()).toString());
+        if (!JadeStringUtil.isBlankOrZero(enr01.getCantonEtatDomicile())) {
+            personne.setWohnkantonStaat(Integer.valueOf(enr01.getCantonEtatDomicile()).toString());
+        }
         personne.setFamilienAngehoerige(membresDeLaFamille);
         personne.setZivilstand(new Integer(enr01.getEtatCivil()).shortValue());
         return personne;
-
     }
 
     public XMLGregorianCalendar retourneXMLGregorianCalendarFromMonth(String dateMmYy) throws Exception {
 
-        GregorianCalendar gregory = null;
+        GregorianCalendar gregory;
         if (new Integer(dateMmYy.substring(2)) > 48) {
-            gregory = new GregorianCalendar(new Integer(dateMmYy.substring(2)) + 1900, new Integer(dateMmYy.substring(
-                    0, 2)), 0);
+            gregory = new GregorianCalendar(new Integer(dateMmYy.substring(2)) + 1900, Integer.valueOf(dateMmYy
+                    .substring(0, 2)), 0);
         } else {
-            gregory = new GregorianCalendar(new Integer(dateMmYy.substring(2)) + 2000, new Integer(dateMmYy.substring(
-                    0, 2)), 0);
+            gregory = new GregorianCalendar(new Integer(dateMmYy.substring(2)) + 2000, Integer.valueOf(dateMmYy
+                    .substring(0, 2)), 0);
         }
 
         return DatatypeFactory.newInstance().newXMLGregorianCalendar(gregory);
@@ -139,11 +147,11 @@ public abstract class REAbstractAnnonceXmlService {
 
     public XMLGregorianCalendar retourneXMLGregorianCalendarFromYear(String dateYy) throws Exception {
 
-        GregorianCalendar gregory = null;
+        GregorianCalendar gregory;
         if (new Integer(dateYy) > 48) {
-            gregory = new GregorianCalendar(new Integer(dateYy) + 1900, 0, 0);
+            gregory = new GregorianCalendar(Integer.valueOf(dateYy) + 1900, 0, 0);
         } else {
-            gregory = new GregorianCalendar(new Integer(dateYy) + 2000, 0, 0);
+            gregory = new GregorianCalendar(Integer.valueOf(dateYy) + 2000, 0, 0);
         }
 
         return DatatypeFactory.newInstance().newXMLGregorianCalendar(gregory);
@@ -181,18 +189,18 @@ public abstract class REAbstractAnnonceXmlService {
         echelleCalcul.setSkala(new Integer(enr02.getEchelleRente()).shortValue());
         echelleCalcul.setBeitragsdauerVor1973(convertAAMMtoBigDecimal(enr02.getDureeCoEchelleRenteAv73()));
         echelleCalcul.setBeitragsdauerAb1973(convertAAMMtoBigDecimal(enr02.getDureeCoEchelleRenteDes73()));
-        echelleCalcul.setAnrechnungVor1973FehlenderBeitragsmonate(new Integer(testSiNullouZero(enr02
+        echelleCalcul.setAnrechnungVor1973FehlenderBeitragsmonate(Integer.valueOf(testSiNullouZero(enr02
                 .getDureeCotManquante48_72())));
-        echelleCalcul.setAnrechnungAb1973Bis1978FehlenderBeitragsmonate(new Integer(testSiNullouZero(enr02
+        echelleCalcul.setAnrechnungAb1973Bis1978FehlenderBeitragsmonate(Integer.valueOf(testSiNullouZero(enr02
                 .getDureeCotManquante73_78())));
-        echelleCalcul.setBeitragsjahreJahrgang(new Integer(testSiNullouZero(enr02.getAnneeCotClasseAge())));
+        echelleCalcul.setBeitragsjahreJahrgang(Integer.valueOf(testSiNullouZero(enr02.getAnneeCotClasseAge())));
         return echelleCalcul;
     }
 
     protected SkalaBerechnungWeakType rempliScalaBerechnungWeakTyp(REAnnoncesAbstractLevel2A enr02) {
         SkalaBerechnungWeakType echelleCalcul = factoryType.createSkalaBerechnungWeakType();
         if (!JadeStringUtil.isBlankOrZero(enr02.getEchelleRente())) {
-            echelleCalcul.setSkala(new Integer(enr02.getEchelleRente()).shortValue());
+            echelleCalcul.setSkala(Integer.valueOf(enr02.getEchelleRente()).shortValue());
         }
         if (!JadeStringUtil.isBlankOrZero(enr02.getDureeCoEchelleRenteAv73())) {
             echelleCalcul.setBeitragsdauerVor1973(convertAAMMtoBigDecimal(enr02.getDureeCoEchelleRenteAv73()));
@@ -209,7 +217,7 @@ public abstract class REAbstractAnnonceXmlService {
                     .getDureeCotManquante73_78())));
         }
         if (!JadeStringUtil.isBlankOrZero(enr02.getAnneeCotClasseAge())) {
-            echelleCalcul.setBeitragsjahreJahrgang(new Integer(testSiNullouZero(enr02.getAnneeCotClasseAge())));
+            echelleCalcul.setBeitragsjahreJahrgang(Integer.valueOf(testSiNullouZero(enr02.getAnneeCotClasseAge())));
         }
         return echelleCalcul;
     }
@@ -221,26 +229,25 @@ public abstract class REAbstractAnnonceXmlService {
     /**
      * Méthode qui remplit les cas spéciaux
      * 
-     * @param enr01
      * @param enr02
      * @param desc
      */
-    protected List<Short> rempliCasSpecial(REAnnoncesAbstractLevel2A enr01, REAnnoncesAbstractLevel2A enr02) {
+    protected List<Short> rempliCasSpecial(REAnnoncesAbstractLevel2A enr02) {
         List<Short> listCas = new ArrayList<Short>();
         if (!JadeStringUtil.isBlankOrZero(enr02.getCasSpecial1())) {
-            listCas.add(new Integer(enr02.getCasSpecial1()).shortValue());
+            listCas.add(Integer.valueOf(enr02.getCasSpecial1()).shortValue());
         }
         if (!JadeStringUtil.isBlankOrZero(enr02.getCasSpecial2())) {
-            listCas.add(new Integer(enr02.getCasSpecial2()).shortValue());
+            listCas.add(Integer.valueOf(enr02.getCasSpecial2()).shortValue());
         }
         if (!JadeStringUtil.isBlankOrZero(enr02.getCasSpecial3())) {
-            listCas.add(new Integer(enr02.getCasSpecial3()).shortValue());
+            listCas.add(Integer.valueOf(enr02.getCasSpecial3()).shortValue());
         }
         if (!JadeStringUtil.isBlankOrZero(enr02.getCasSpecial4())) {
-            listCas.add(new Integer(enr02.getCasSpecial4()).shortValue());
+            listCas.add(Integer.valueOf(enr02.getCasSpecial4()).shortValue());
         }
         if (!JadeStringUtil.isBlankOrZero(enr02.getCasSpecial5())) {
-            listCas.add(new Integer(enr02.getCasSpecial5()).shortValue());
+            listCas.add(Integer.valueOf(enr02.getCasSpecial5()).shortValue());
         }
         return listCas;
     }
@@ -248,13 +255,12 @@ public abstract class REAbstractAnnonceXmlService {
     /**
      * Méthode qui retourne un objet qui rempli les ajournements
      * 
-     * @param enr01
      * @param enr02
+     * 
      * @return un ajournement
      * @throws Exception
      */
-    protected RentenaufschubType rempliRentenaufschubType(REAnnoncesAbstractLevel2A enr01,
-            REAnnoncesAbstractLevel2A enr02) throws Exception {
+    protected RentenaufschubType rempliRentenaufschubType(REAnnoncesAbstractLevel2A enr02) throws Exception {
         RentenaufschubType ajournement = factoryType.createRentenaufschubType();
         ajournement.setAbrufdatum(retourneXMLGregorianCalendarFromMonth(enr02.getDateRevocationAjournement()));
         ajournement.setAufschubsdauer(new BigDecimal(testSiNullouZero(enr02.getDureeAjournement())));
@@ -262,8 +268,7 @@ public abstract class REAbstractAnnonceXmlService {
         return ajournement;
     }
 
-    protected RentenaufschubWeakType rempliRentenaufschubTypeWeak(REAnnoncesAbstractLevel2A enr01,
-            REAnnoncesAbstractLevel2A enr02) throws Exception {
+    protected RentenaufschubWeakType rempliRentenaufschubTypeWeak(REAnnoncesAbstractLevel2A enr02) throws Exception {
         RentenaufschubWeakType ajournement = factoryType.createRentenaufschubWeakType();
         ajournement.setAbrufdatum(retourneXMLGregorianCalendarFromMonth(enr02.getDateRevocationAjournement()));
         ajournement.setAufschubsdauer(new BigDecimal(testSiNullouZero(enr02.getDureeAjournement())));
