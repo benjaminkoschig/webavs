@@ -402,59 +402,6 @@ $(document).ready(function(){
 		
 	}
 
-// 	try {
-// 		$("#droits").tablesorter( {
-// 			sortInitialOrder: "desc",
-// 			sortReset   : true,
-// 			headers: {
-// 				0: {
-// 					sorter: false
-// 				}, 
-// 				1: {
-// 					sorter: false
-// 				}, 
-// 				2: {
-// 					sorter: false
-// 				}, 
-// 				3: {
-// 					sorter: true
-// 				}, 
-// 				4: {
-// 					sorter: false
-// 				}, 
-// 				5: {
-// 					sorter: false
-// 				}, 
-// 				6: {
-// 					sorter: false
-// 				}, 
-// 				7: {
-// 					sorter: false
-// 				},
-// 				8: {
-// 					sorter: false
-// 				},
-// 				9: {
-// 					sorter: false
-// 				},
-// 				10: {
-// 					sorter: false
-// 				}, 
-// 				11: {
-// 					sorter: false
-// 				},
-// 				12: {
-// 					sorter: false
-// 				}
-// 			}
-// 		});
-// 	} catch (e) {
-// 		if (typeof console !== 'undefined') {
-// 			console.log(e);
-// 		}
-// 	}
-
-
 
 function sortStandardTable ($th) {
 		var that = this,
@@ -480,10 +427,10 @@ function sortStandardTable ($th) {
 			};
 		var $table = $th.closest("table");
 		$th.wrapInner('<span>');
-
+		
 		$th.append($('<span/>', {
 			"class": "ui-icon ui-icon-arrowthick-2-n-s",
-			style: 'display:inline-block'
+			style: 'display:inline-block; position:relative; left: 15%'
 		}));
 		
 		$th.each(function (column) {
