@@ -255,9 +255,10 @@ public class REEnvoyerAnnoncesXMLProcess extends BProcess {
                 // throw new Exception(getSession().getLabel("PROCESS_ENVOI_ANNONCES_ERREUR_PREPARATION_ENVOI"));
             }
 
+            int nbAnnoncesLot = mgr.getCount();
             mgr.cursorClose(statement);
 
-            String fileName = genereFichier(lotAnnonces, mgr.getCount());
+            String fileName = genereFichier(lotAnnonces, nbAnnoncesLot);
             envoiFichier(fileName);
 
         } catch (Exception e) {
