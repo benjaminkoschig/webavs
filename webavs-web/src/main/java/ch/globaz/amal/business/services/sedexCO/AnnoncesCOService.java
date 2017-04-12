@@ -8,6 +8,7 @@ import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.sedex.JadeSedexMessageNotHandledException;
 import globaz.jade.sedex.message.SedexMessage;
 import globaz.jade.service.provider.application.JadeApplicationService;
+import ch.globaz.pyxis.business.model.AdministrationSearchComplexModel;
 
 /**
  * @author cbu
@@ -27,5 +28,6 @@ public interface AnnoncesCOService extends JadeApplicationService {
     public void importMessages(SedexMessage message) throws JadeApplicationException, JadePersistenceException,
             JadeSedexMessageNotHandledException;
 
-    public String printListComparaisonFull(String annee) throws Exception;
+    public AdministrationSearchComplexModel find(AdministrationSearchComplexModel searchModel)
+            throws JadePersistenceException, JadeApplicationException;
 }

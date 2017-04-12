@@ -4,6 +4,8 @@ import ch.globaz.common.domaine.Montant;
 import ch.globaz.common.listoutput.converterImplemented.MontantConverterToDouble;
 import ch.globaz.simpleoutputlist.annotation.Column;
 import ch.globaz.simpleoutputlist.annotation.ColumnValueConverter;
+import ch.globaz.simpleoutputlist.annotation.style.Align;
+import ch.globaz.simpleoutputlist.annotation.style.ColumnStyle;
 
 @ColumnValueConverter({ MontantConverterToDouble.class })
 public class ComparaisonAnnonceCreancePriseEnCharge {
@@ -72,6 +74,7 @@ public class ComparaisonAnnonceCreancePriseEnCharge {
     }
 
     @Column(name = "Montant créance", order = 6)
+    @ColumnStyle(align = Align.RIGHT, format = "#,##0.00")
     public Montant getMontantCreance() {
         return montantCreance;
     }

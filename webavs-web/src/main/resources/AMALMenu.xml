@@ -14,6 +14,7 @@
 					- Gestion
 					- SEDEX RP
 					- SEDEX CO
+					- Liste comparaisons CO
 				> Envois-Annonces
 					- Modifiables
 					- Rappel
@@ -72,6 +73,12 @@
 						<label refId="MENU_ASSUREURS_SEDEX_CO"/>
 						<action command="/amal" responseTarget="fr_main">
 							<parameter name="userAction" value="amal.sedexco.sedexco.chercher"/>							
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_ASSUREURS_SEDEX_CO_COMPARAISONS"/>
+						<action command="/amal" responseTarget="fr_main">
+							<parameter name="userAction" value="amal.sedexco.sedexcocomparaison.afficher"/>					
 						</action>
 					</node>
 <!-- 					

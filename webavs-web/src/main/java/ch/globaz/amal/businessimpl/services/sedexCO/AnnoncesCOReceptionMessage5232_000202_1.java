@@ -72,7 +72,6 @@ import ch.globaz.simpleoutputlist.outimpl.SimpleOutputListBuilder;
 public class AnnoncesCOReceptionMessage5232_000202_1 extends AnnoncesCODefault {
     private static final String PACKAGE_CLASS_FOR_READ_SEDEX_CREANCE_AVEC_GARANTIE = "ch.gdk_cds.xmlns.da_64a_5232_000202._1";
     private String senderId = null;
-    private String idTiersCM = null;
     protected Date statementStartDate = null;
     private Message message = null;
     private String idTiersCaisseMaladie = null;
@@ -196,7 +195,7 @@ public class AnnoncesCOReceptionMessage5232_000202_1 extends AnnoncesCODefault {
         return "Contentieux Amal : réception des annonces 'Créance avec garantie de prise en charge' effectuée avec succès !";
     }
 
-    protected File createAndPrintList(String annee, String idTiers) {
+    public File createAndPrintList(String annee, String idTiers) {
         List<ComparaisonAnnonceCreancePriseEnCharge> comparaisonSheet = creationListeAnnonceWithParam(annee, idTiers);
         File fileComparaisonSheet = printList(comparaisonSheet);
         return fileComparaisonSheet;
@@ -407,7 +406,8 @@ public class AnnoncesCOReceptionMessage5232_000202_1 extends AnnoncesCODefault {
             Date debutPeriode = new Date(AMSedexRPUtil.getDateXMLToString(message.getContent()
                     .getListOfClaimsGuaranteedAssumptions().getStatementStartDate()));
             simplePersonneANePasPoursuivreSearch.setForAnnee(debutPeriode.getAnnee());
-            simplePersonneANePasPoursuivreSearch.setForIdTiersCM(idTiersCM);
+            String idTiersSender = getIdTiersCaisseMaladie();
+            simplePersonneANePasPoursuivreSearch.setForIdTiersCM(idTiersSender);
             simplePersonneANePasPoursuivreSearch = AmalImplServiceLocator.getSimplePersonneANePasPoursuivreService()
                     .search(simplePersonneANePasPoursuivreSearch);
 
@@ -532,6 +532,7 @@ public class AnnoncesCOReceptionMessage5232_000202_1 extends AnnoncesCODefault {
                 personneANePasPoursuivre.setFlagReponse(Boolean.TRUE);
                 personneANePasPoursuivre.setNomPrenom(personneAssuree.getInsuredPerson().getOfficialName() + " "
                         + personneAssuree.getInsuredPerson().getFirstName());
+                personneANePasPoursuivre.setIdTiersCM(getIdTiersCaisseMaladie());
                 personneANePasPoursuivre.setNpaLocalite(npaLocalite);
                 personneANePasPoursuivre.setMontantCreance(totalCreance.getValue());
 
@@ -549,7 +550,7 @@ public class AnnoncesCOReceptionMessage5232_000202_1 extends AnnoncesCODefault {
                 personneANePasPoursuivreNonExistante.setNomPrenom(personneAssuree.getInsuredPerson().getOfficialName()
                         + " " + personneAssuree.getInsuredPerson().getFirstName());
                 personneANePasPoursuivreNonExistante.setNpaLocalite(npaLocalite);
-                personneANePasPoursuivreNonExistante.setIdTiersCM(idTiersCM);
+                personneANePasPoursuivreNonExistante.setIdTiersCM(getIdTiersCaisseMaladie());
                 personneANePasPoursuivreNonExistante.setIdAnnonceSedex(annonceSedexCO.getIdAnnonceSedexCO());
                 AmalImplServiceLocator.getSimplePersonneANePasPoursuivreService().create(
                         personneANePasPoursuivreNonExistante);
