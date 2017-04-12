@@ -83,10 +83,10 @@ public abstract class REAbstractAnnonceXmlService {
         personne.setVersichertennummer(enr01.getNoAssAyantDroit());
         personne.setIstFluechtling(convertIntToBoolean(enr01.getIsRefugie()));
         FamilienAngehoerigeType membresDeLaFamille = factoryType.createFamilienAngehoerigeType();
-        if (!JadeStringUtil.isBlankOrZero(enr01.getPremierNoAssComplementaire())) {
+        if (!JadeStringUtil.isBlank(enr01.getPremierNoAssComplementaire())) {
             membresDeLaFamille.getVNr1Ergaenzend().add(enr01.getPremierNoAssComplementaire());
         }
-        if (!JadeStringUtil.isBlankOrZero(enr01.getSecondNoAssComplementaire())) {
+        if (!JadeStringUtil.isBlank(enr01.getSecondNoAssComplementaire())) {
             membresDeLaFamille.getVNr2Ergaenzend().add(enr01.getSecondNoAssComplementaire());
         }
         personne.setWohnkantonStaat(new Integer(enr01.getCantonEtatDomicile()).toString());
@@ -110,20 +110,20 @@ public abstract class REAbstractAnnonceXmlService {
         RRLeistungsberechtigtePersonAuslWeakType personne = factoryType
                 .createRRLeistungsberechtigtePersonAuslWeakType();
         personne.setVersichertennummer(enr01.getNoAssAyantDroit());
-        if (!JadeStringUtil.isBlankOrZero(nouveauNumeroNss)) {
+        if (!JadeStringUtil.isBlank(nouveauNumeroNss)) {
             personne.setGeaenderteVersichertennummer(nouveauNumeroNss);
         }
-        if (!JadeStringUtil.isBlankOrZero(enr01.getIsRefugie())) {
+        if (!JadeStringUtil.isBlank(enr01.getIsRefugie())) {
             personne.setIstFluechtling(convertIntToBoolean(enr01.getIsRefugie()));
         }
         FamilienAngehoerigeType membresDeLaFamille = factoryType.createFamilienAngehoerigeType();
-        if (!JadeStringUtil.isBlankOrZero(enr01.getPremierNoAssComplementaire())) {
+        if (!JadeStringUtil.isBlank(enr01.getPremierNoAssComplementaire())) {
             membresDeLaFamille.getVNr1Ergaenzend().add(enr01.getPremierNoAssComplementaire());
         }
-        if (!JadeStringUtil.isBlankOrZero(enr01.getSecondNoAssComplementaire())) {
+        if (!JadeStringUtil.isBlank(enr01.getSecondNoAssComplementaire())) {
             membresDeLaFamille.getVNr2Ergaenzend().add(enr01.getSecondNoAssComplementaire());
         }
-        if (!JadeStringUtil.isBlankOrZero(enr01.getCantonEtatDomicile())) {
+        if (!JadeStringUtil.isBlank(enr01.getCantonEtatDomicile())) {
             personne.setWohnkantonStaat(Integer.valueOf(enr01.getCantonEtatDomicile()).toString());
         }
         personne.setFamilienAngehoerige(membresDeLaFamille);
@@ -158,7 +158,7 @@ public abstract class REAbstractAnnonceXmlService {
     }
 
     protected String testSiNullouZero(String valeur) {
-        if (JadeStringUtil.isBlankOrZero(valeur)) {
+        if (JadeStringUtil.isBlank(valeur)) {
             return "0";
         } else {
             return valeur;
@@ -199,24 +199,24 @@ public abstract class REAbstractAnnonceXmlService {
 
     protected SkalaBerechnungWeakType rempliScalaBerechnungWeakTyp(REAnnoncesAbstractLevel2A enr02) {
         SkalaBerechnungWeakType echelleCalcul = factoryType.createSkalaBerechnungWeakType();
-        if (!JadeStringUtil.isBlankOrZero(enr02.getEchelleRente())) {
+        if (!JadeStringUtil.isBlank(enr02.getEchelleRente())) {
             echelleCalcul.setSkala(Integer.valueOf(enr02.getEchelleRente()).shortValue());
         }
-        if (!JadeStringUtil.isBlankOrZero(enr02.getDureeCoEchelleRenteAv73())) {
+        if (!JadeStringUtil.isBlank(enr02.getDureeCoEchelleRenteAv73())) {
             echelleCalcul.setBeitragsdauerVor1973(convertAAMMtoBigDecimal(enr02.getDureeCoEchelleRenteAv73()));
         }
-        if (!JadeStringUtil.isBlankOrZero(enr02.getDureeCoEchelleRenteDes73())) {
+        if (!JadeStringUtil.isBlank(enr02.getDureeCoEchelleRenteDes73())) {
             echelleCalcul.setBeitragsdauerAb1973(convertAAMMtoBigDecimal(enr02.getDureeCoEchelleRenteDes73()));
         }
-        if (!JadeStringUtil.isBlankOrZero(enr02.getDureeCotManquante48_72())) {
+        if (!JadeStringUtil.isBlank(enr02.getDureeCotManquante48_72())) {
             echelleCalcul.setAnrechnungVor1973FehlenderBeitragsmonate(new Integer(testSiNullouZero(enr02
                     .getDureeCotManquante48_72())));
         }
-        if (!JadeStringUtil.isBlankOrZero(enr02.getDureeCotManquante73_78())) {
+        if (!JadeStringUtil.isBlank(enr02.getDureeCotManquante73_78())) {
             echelleCalcul.setAnrechnungAb1973Bis1978FehlenderBeitragsmonate(new Integer(testSiNullouZero(enr02
                     .getDureeCotManquante73_78())));
         }
-        if (!JadeStringUtil.isBlankOrZero(enr02.getAnneeCotClasseAge())) {
+        if (!JadeStringUtil.isBlank(enr02.getAnneeCotClasseAge())) {
             echelleCalcul.setBeitragsjahreJahrgang(Integer.valueOf(testSiNullouZero(enr02.getAnneeCotClasseAge())));
         }
         return echelleCalcul;
@@ -234,19 +234,19 @@ public abstract class REAbstractAnnonceXmlService {
      */
     protected List<Short> rempliCasSpecial(REAnnoncesAbstractLevel2A enr02) {
         List<Short> listCas = new ArrayList<Short>();
-        if (!JadeStringUtil.isBlankOrZero(enr02.getCasSpecial1())) {
+        if (!JadeStringUtil.isBlank(enr02.getCasSpecial1())) {
             listCas.add(Integer.valueOf(enr02.getCasSpecial1()).shortValue());
         }
-        if (!JadeStringUtil.isBlankOrZero(enr02.getCasSpecial2())) {
+        if (!JadeStringUtil.isBlank(enr02.getCasSpecial2())) {
             listCas.add(Integer.valueOf(enr02.getCasSpecial2()).shortValue());
         }
-        if (!JadeStringUtil.isBlankOrZero(enr02.getCasSpecial3())) {
+        if (!JadeStringUtil.isBlank(enr02.getCasSpecial3())) {
             listCas.add(Integer.valueOf(enr02.getCasSpecial3()).shortValue());
         }
-        if (!JadeStringUtil.isBlankOrZero(enr02.getCasSpecial4())) {
+        if (!JadeStringUtil.isBlank(enr02.getCasSpecial4())) {
             listCas.add(Integer.valueOf(enr02.getCasSpecial4()).shortValue());
         }
-        if (!JadeStringUtil.isBlankOrZero(enr02.getCasSpecial5())) {
+        if (!JadeStringUtil.isBlank(enr02.getCasSpecial5())) {
             listCas.add(Integer.valueOf(enr02.getCasSpecial5()).shortValue());
         }
         return listCas;

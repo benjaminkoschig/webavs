@@ -217,10 +217,10 @@ public class REAnnonces10eXmlService extends REAbstractAnnonceXmlService impleme
         AbgangsmeldungType.Leistungsbeschreibung description = factoryType
                 .createAbgangsmeldungTypeLeistungsbeschreibung();
         description.getLeistungsart().add(enr01.getGenrePrestation());
-        if (!JadeStringUtil.isBlankOrZero(enr01.getFinDroit())) {
+        if (!JadeStringUtil.isBlank(enr01.getFinDroit())) {
             description.setAnspruchsende(retourneXMLGregorianCalendarFromMonth(enr01.getFinDroit()));
         }
-        if (!JadeStringUtil.isBlankOrZero(enr01.getCodeMutation())) {
+        if (!JadeStringUtil.isBlank(enr01.getCodeMutation())) {
             description.setMutationscode(Integer.valueOf(enr01.getCodeMutation()).shortValue());
         }
         description.setMonatsbetrag(new BigDecimal(testSiNullouZero(enr01.getMensualitePrestationsFrancs())));
@@ -256,10 +256,10 @@ public class REAnnonces10eXmlService extends REAbstractAnnonceXmlService impleme
 
         description.setLeistungsart(enr01.getGenrePrestation());
         description.setAnspruchsbeginn(retourneXMLGregorianCalendarFromMonth(enr01.getDebutDroit()));
-        if (!JadeStringUtil.isBlankOrZero(enr01.getFinDroit())) {
+        if (!JadeStringUtil.isBlank(enr01.getFinDroit())) {
             description.setAnspruchsende(retourneXMLGregorianCalendarFromMonth(enr01.getFinDroit()));
         }
-        if (!JadeStringUtil.isBlankOrZero(enr01.getCodeMutation())) {
+        if (!JadeStringUtil.isBlank(enr01.getCodeMutation())) {
             description.setMutationscode(Integer.valueOf(enr01.getCodeMutation()).shortValue());
         }
 
@@ -270,7 +270,7 @@ public class REAnnonces10eXmlService extends REAbstractAnnonceXmlService impleme
                 .createAenderungsmeldungHE10TypeLeistungsbeschreibungBerechnungsgrundlagen();
 
         // Si pas d'office AI pas de bloc AI
-        if (!JadeStringUtil.isBlankOrZero(enr02.getOfficeAICompetent())) {
+        if (!JadeStringUtil.isBlank(enr02.getOfficeAICompetent())) {
             baseDeCalcul.setIVDaten(rempliIVDatenHEWeakTypeAssure(enr02));
         }
         description.getSonderfallcodeRente().addAll(rempliCasSpecial(enr02));
@@ -310,10 +310,10 @@ public class REAnnonces10eXmlService extends REAbstractAnnonceXmlService impleme
 
         description.setLeistungsart(enr01.getGenrePrestation());
         description.setAnspruchsbeginn(retourneXMLGregorianCalendarFromMonth(enr01.getDebutDroit()));
-        if (!JadeStringUtil.isBlankOrZero(enr01.getFinDroit())) {
+        if (!JadeStringUtil.isBlank(enr01.getFinDroit())) {
             description.setAnspruchsende(retourneXMLGregorianCalendarFromMonth(enr01.getFinDroit()));
         }
-        if (!JadeStringUtil.isBlankOrZero(enr01.getCodeMutation())) {
+        if (!JadeStringUtil.isBlank(enr01.getCodeMutation())) {
             description.setMutationscode(Integer.valueOf(enr01.getCodeMutation()).shortValue());
         }
 
@@ -324,7 +324,7 @@ public class REAnnonces10eXmlService extends REAbstractAnnonceXmlService impleme
                 .createZuwachsmeldungHE10TypeLeistungsbeschreibungBerechnungsgrundlagen();
 
         // Si pas d'office AI pas de bloc AI
-        if (!JadeStringUtil.isBlankOrZero(enr02.getOfficeAICompetent())) {
+        if (!JadeStringUtil.isBlank(enr02.getOfficeAICompetent())) {
             baseDeCalcul.setIVDaten(rempliIVDatenHETypeAssure(enr02));
         }
         description.getSonderfallcodeRente().addAll(rempliCasSpecial(enr02));
@@ -365,10 +365,10 @@ public class REAnnonces10eXmlService extends REAbstractAnnonceXmlService impleme
 
         description.setLeistungsart(enr01.getGenrePrestation());
         description.setAnspruchsbeginn(retourneXMLGregorianCalendarFromMonth(enr01.getDebutDroit()));
-        if (!JadeStringUtil.isBlankOrZero(enr01.getFinDroit())) {
+        if (!JadeStringUtil.isBlank(enr01.getFinDroit())) {
             description.setAnspruchsende(retourneXMLGregorianCalendarFromMonth(enr01.getFinDroit()));
         }
-        if (!JadeStringUtil.isBlankOrZero(enr01.getCodeMutation())) {
+        if (!JadeStringUtil.isBlank(enr01.getCodeMutation())) {
             description.setMutationscode(Integer.valueOf(enr01.getCodeMutation()).shortValue());
         }
 
@@ -380,11 +380,11 @@ public class REAnnonces10eXmlService extends REAbstractAnnonceXmlService impleme
         baseDeCalcul.setNiveaujahr(retourneXMLGregorianCalendarFromYear(enr02.getAnneeNiveau()));
 
         // Si pas d'office AI pas de bloc AI
-        if (!JadeStringUtil.isBlankOrZero(enr02.getOfficeAICompetent())) {
+        if (!JadeStringUtil.isBlank(enr02.getOfficeAICompetent())) {
             baseDeCalcul.setIVDaten(rempliIVDatenWeakType10(enr02));
         }
         description.getSonderfallcodeRente().addAll(rempliCasSpecial(enr02));
-        if (!JadeStringUtil.isBlankOrZero(enr02.getReduction())) {
+        if (!JadeStringUtil.isBlank(enr02.getReduction())) {
             description.setKuerzungSelbstverschulden(Integer.valueOf(enr02.getReduction()).shortValue());
         }
         description.setIstInvaliderHinterlassener(convertIntToBoolean(enr02.getIsSurvivant()));
@@ -424,10 +424,10 @@ public class REAnnonces10eXmlService extends REAbstractAnnonceXmlService impleme
 
         description.setLeistungsart(enr01.getGenrePrestation());
         description.setAnspruchsbeginn(retourneXMLGregorianCalendarFromMonth(enr01.getDebutDroit()));
-        if (!JadeStringUtil.isBlankOrZero(enr01.getFinDroit())) {
+        if (!JadeStringUtil.isBlank(enr01.getFinDroit())) {
             description.setAnspruchsende(retourneXMLGregorianCalendarFromMonth(enr01.getFinDroit()));
         }
-        if (!JadeStringUtil.isBlankOrZero(enr01.getCodeMutation())) {
+        if (!JadeStringUtil.isBlank(enr01.getCodeMutation())) {
             description.setMutationscode(Integer.valueOf(enr01.getCodeMutation()).shortValue());
         }
 
@@ -439,11 +439,11 @@ public class REAnnonces10eXmlService extends REAbstractAnnonceXmlService impleme
         baseDeCalcul.setNiveaujahr(retourneXMLGregorianCalendarFromYear(enr02.getAnneeNiveau()));
 
         // Si pas d'office AI pas de bloc AI
-        if (!JadeStringUtil.isBlankOrZero(enr02.getOfficeAICompetent())) {
+        if (!JadeStringUtil.isBlank(enr02.getOfficeAICompetent())) {
             baseDeCalcul.setIVDaten(rempliIVDatenType10(enr02));
         }
         description.getSonderfallcodeRente().addAll(rempliCasSpecial(enr02));
-        if (!JadeStringUtil.isBlankOrZero(enr02.getReduction())) {
+        if (!JadeStringUtil.isBlank(enr02.getReduction())) {
             description.setKuerzungSelbstverschulden(Integer.valueOf(enr02.getReduction()).shortValue());
         }
         description.setIstInvaliderHinterlassener(convertIntToBoolean(enr02.getIsSurvivant()));
@@ -480,10 +480,10 @@ public class REAnnonces10eXmlService extends REAbstractAnnonceXmlService impleme
 
         description.setLeistungsart(enr01.getGenrePrestation());
         description.setAnspruchsbeginn(retourneXMLGregorianCalendarFromMonth(enr01.getDebutDroit()));
-        if (!JadeStringUtil.isBlankOrZero(enr01.getFinDroit())) {
+        if (!JadeStringUtil.isBlank(enr01.getFinDroit())) {
             description.setAnspruchsende(retourneXMLGregorianCalendarFromMonth(enr01.getFinDroit()));
         }
-        if (!JadeStringUtil.isBlankOrZero(enr01.getCodeMutation())) {
+        if (!JadeStringUtil.isBlank(enr01.getCodeMutation())) {
             description.setMutationscode(Integer.valueOf(enr01.getCodeMutation()).shortValue());
         }
 
@@ -505,10 +505,10 @@ public class REAnnonces10eXmlService extends REAbstractAnnonceXmlService impleme
         baseDeCalcul.setGutschriften(bte);
 
         // Si pas d'office AI pas de bloc AI
-        if (!JadeStringUtil.isBlankOrZero(enr02.getOfficeAICompetent())) {
+        if (!JadeStringUtil.isBlank(enr02.getOfficeAICompetent())) {
             baseDeCalcul.setIVDaten(rempliIVDatenWeakType10(enr02));
         }
-        if (!JadeStringUtil.isBlankOrZero(enr02.getDureeAjournement())) {
+        if (!JadeStringUtil.isBlank(enr02.getDureeAjournement())) {
             // Ajournement
             AenderungsmeldungO10Type.Leistungsbeschreibung.Berechnungsgrundlagen.FlexiblesRentenAlter ajournement = factoryType
                     .createAenderungsmeldungO10TypeLeistungsbeschreibungBerechnungsgrundlagenFlexiblesRentenAlter();
@@ -518,7 +518,7 @@ public class REAnnonces10eXmlService extends REAbstractAnnonceXmlService impleme
         }
 
         description.getSonderfallcodeRente().addAll(rempliCasSpecial(enr02));
-        if (!JadeStringUtil.isBlankOrZero(enr02.getReduction())) {
+        if (!JadeStringUtil.isBlank(enr02.getReduction())) {
             description.setKuerzungSelbstverschulden(Integer.valueOf(enr02.getReduction()).shortValue());
         }
         description.setIstInvaliderHinterlassener(convertIntToBoolean(enr02.getIsSurvivant()));
@@ -557,10 +557,10 @@ public class REAnnonces10eXmlService extends REAbstractAnnonceXmlService impleme
 
         description.setLeistungsart(enr01.getGenrePrestation());
         description.setAnspruchsbeginn(retourneXMLGregorianCalendarFromMonth(enr01.getDebutDroit()));
-        if (!JadeStringUtil.isBlankOrZero(enr01.getFinDroit())) {
+        if (!JadeStringUtil.isBlank(enr01.getFinDroit())) {
             description.setAnspruchsende(retourneXMLGregorianCalendarFromMonth(enr01.getFinDroit()));
         }
-        if (!JadeStringUtil.isBlankOrZero(enr01.getCodeMutation())) {
+        if (!JadeStringUtil.isBlank(enr01.getCodeMutation())) {
             description.setMutationscode(Integer.valueOf(enr01.getCodeMutation()).shortValue());
         }
 
@@ -582,10 +582,10 @@ public class REAnnonces10eXmlService extends REAbstractAnnonceXmlService impleme
         baseDeCalcul.setGutschriften(bte);
 
         // Si pas d'office AI pas de bloc AI
-        if (!JadeStringUtil.isBlankOrZero(enr02.getOfficeAICompetent())) {
+        if (!JadeStringUtil.isBlank(enr02.getOfficeAICompetent())) {
             baseDeCalcul.setIVDaten(rempliIVDatenType10(enr02));
         }
-        if (!JadeStringUtil.isBlankOrZero(enr02.getDureeAjournement())) {
+        if (!JadeStringUtil.isBlank(enr02.getDureeAjournement())) {
             // Ajournement
             ZuwachsmeldungO10Type.Leistungsbeschreibung.Berechnungsgrundlagen.FlexiblesRentenAlter ajournement = factoryType
                     .createZuwachsmeldungO10TypeLeistungsbeschreibungBerechnungsgrundlagenFlexiblesRentenAlter();
@@ -595,7 +595,7 @@ public class REAnnonces10eXmlService extends REAbstractAnnonceXmlService impleme
         }
 
         description.getSonderfallcodeRente().addAll(rempliCasSpecial(enr02));
-        if (!JadeStringUtil.isBlankOrZero(enr02.getReduction())) {
+        if (!JadeStringUtil.isBlank(enr02.getReduction())) {
             description.setKuerzungSelbstverschulden(Integer.valueOf(enr02.getReduction()).shortValue());
         }
         description.setIstInvaliderHinterlassener(convertIntToBoolean(enr02.getIsSurvivant()));
@@ -619,13 +619,13 @@ public class REAnnonces10eXmlService extends REAbstractAnnonceXmlService impleme
     private RentenvorbezugWeakType rempliRentenvorbezugWeakType(REAnnoncesAugmentationModification10Eme enr02)
             throws Exception {
         RentenvorbezugWeakType anticipation = factoryType.createRentenvorbezugWeakType();
-        if (!JadeStringUtil.isBlankOrZero(enr02.getNbreAnneeAnticipation())) {
+        if (!JadeStringUtil.isBlank(enr02.getNbreAnneeAnticipation())) {
             anticipation.setAnzahlVorbezugsjahre(Integer.valueOf(enr02.getNbreAnneeAnticipation()));
         }
-        if (!JadeStringUtil.isBlankOrZero(enr02.getDateDebutAnticipation())) {
+        if (!JadeStringUtil.isBlank(enr02.getDateDebutAnticipation())) {
             anticipation.setVorbezugsdatum(retourneXMLGregorianCalendarFromMonth(enr02.getDateDebutAnticipation()));
         }
-        if (!JadeStringUtil.isBlankOrZero(enr02.getReductionAnticipation())) {
+        if (!JadeStringUtil.isBlank(enr02.getReductionAnticipation())) {
             anticipation.setVorbezugsreduktion(new BigDecimal(testSiNullouZero(enr02.getReductionAnticipation())));
         }
         return anticipation;

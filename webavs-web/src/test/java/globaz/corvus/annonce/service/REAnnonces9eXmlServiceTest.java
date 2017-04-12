@@ -141,7 +141,7 @@ public class REAnnonces9eXmlServiceTest {
     }
 
     @Test
-    public void testAnnonceAugmentationOrdinaire9e() throws Exception {
+    public void testAnnonceAugmentationChangementGlobal() throws Exception {
 
         // data
         REAnnoncesAugmentationModification9Eme enregistrement01 = new REAnnoncesAugmentationModification9Eme();
@@ -226,6 +226,65 @@ public class REAnnonces9eXmlServiceTest {
             testInstance.validateUnitMessage(testService.annonceAugmentationAPI9e(enregistrement01, enregistrement02));
             // Modification API
             testInstance.validateUnitMessage(testService.annonceChangementAPI9e(enregistrement01, enregistrement02));
+
+        } catch (ValidationException ve) {
+            Assert.assertEquals(null, ve);
+        }
+
+    }
+
+    @Test
+    public void testAnnonceChangementOrdinaire9e() throws Exception {
+
+        // data
+        REAnnoncesAugmentationModification9Eme enregistrement01 = new REAnnoncesAugmentationModification9Eme();
+        REAnnoncesAugmentationModification9Eme enregistrement02 = Mockito
+                .spy(new REAnnoncesAugmentationModification9Eme());
+
+        // enregistrement 1
+        enregistrement01.setIdAnnonce(idAnnonce);
+        enregistrement01.setCodeApplication(codeApplication);
+        enregistrement01.setCodeEnregistrement01(codeEnregistrement01);
+        enregistrement01.setNumeroCaisse(numeroCaisse);
+        enregistrement01.setNumeroAgence(numeroAgence);
+        enregistrement01.setReferenceCaisseInterne(referenceCaisseInterne);
+        enregistrement01.setNoAssAyantDroit(noAssAyantDroit);
+        enregistrement01.setEtatCivil(etatCivil);
+        enregistrement01.setIsRefugie(isRefugie);
+        enregistrement01.setCantonEtatDomicile(cantonEtatDomicile);
+        enregistrement01.setGenrePrestation(genrePrestation);
+        enregistrement01.setDebutDroit(debutDroit);
+        enregistrement01.setMensualitePrestationsFrancs(mensualitePrestationsFrancs);
+        enregistrement01.setMensualiteRenteOrdRemp(mensualiteRenteOrdRemp);
+        enregistrement01.setFinDroit(finDroit);
+        enregistrement01.setMoisRapport(moisRapport);
+        enregistrement01.setCodeMutation(codeMutation);
+
+        // enregistrement 2
+        Mockito.when(enregistrement02.getSpy()).thenReturn(new BSpy("20110101120000test"));
+        enregistrement02.setCodeApplication(codeApplication);
+        enregistrement02.setCodeEnregistrement01(codeEnregistrement02);
+        enregistrement02.setDureeCotPourDetRAM(dureeCotPourDetRAM);
+        enregistrement02.setAnneeCotClasseAge(anneeCotClasseAge);
+        enregistrement02.setReduction(reduction);
+        enregistrement02.setCasSpecial1(casSpecial1);
+        enregistrement02.setCasSpecial2(casSpecial2);
+        enregistrement02.setCasSpecial3(casSpecial3);
+        enregistrement02.setCasSpecial4(casSpecial4);
+        enregistrement02.setCasSpecial5(casSpecial5);
+        enregistrement02.setDureeAjournement(dureeAjournement);
+        enregistrement02.setSupplementAjournement(supplementAjournement);
+        enregistrement02.setDateRevocationAjournement(dateRevocationAjournement);
+        enregistrement02.setRevenuAnnuelMoyenSansBTE(revenuAnnuelMoyenSansBTE);
+        enregistrement02.setRevenuPrisEnCompte(revenuPrisEnCompte);
+        enregistrement02.setBteMoyennePrisEnCompte(bteMoyennePrisEnCompte);
+
+        try {
+            // Augmentation Ordinaire
+
+            // Modification Ordinaire
+            testInstance.validateUnitMessage(testService.annonceChangementOrdinaire9e(enregistrement01,
+                    enregistrement02));
 
         } catch (ValidationException ve) {
             Assert.assertEquals(null, ve);
