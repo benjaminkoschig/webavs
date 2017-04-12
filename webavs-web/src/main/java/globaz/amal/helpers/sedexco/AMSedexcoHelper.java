@@ -5,7 +5,6 @@ import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.controller.FWAction;
 import globaz.framework.controller.FWHelper;
 import globaz.globall.api.BISession;
-import globaz.jade.smtp.JadeSmtpClient;
 import java.io.File;
 import ch.globaz.amal.business.models.annoncesedexco.SimpleAnnonceSedexCO;
 import ch.globaz.amal.businessimpl.services.sedexCO.AnnoncesCOReceptionMessage5234_000401_1;
@@ -24,8 +23,6 @@ public class AMSedexcoHelper extends FWHelper {
                     if ("000401".equals(simpleAnnonceSedexCO.getMessageSubType())) {
                         AnnoncesCOReceptionMessage5234_000401_1 reception401 = new AnnoncesCOReceptionMessage5234_000401_1();
                         File file = reception401.generationList(simpleAnnonceSedexCO);
-
-                        JadeSmtpClient.getInstance().sendMail(session.getUserEMail(), "Liste 401", "", filenames);
                     }
                 }
             } catch (Exception e) {
