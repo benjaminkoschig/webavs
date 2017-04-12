@@ -52,10 +52,15 @@ $(document).ready(function() {
 <%@ include file="/theme/list/lineStyle.jspf" %>
 		<%-- tpl:insert attribute="zoneList" --%>
 			<TD class="mtd" nowrap >
+			<%
+			String msgSubType = line.getComplexAnnonceSedexCO().getSimpleAnnonceSedexCO().getMessageSubType();
+			if (!msgSubType.equals("202")) {
+			%>
 			<ct:menuPopup menu="amal-optionsannoncesco" detailLabelId="MENU_SEDEXCO_PRINT_LIST" >
 	     			<ct:menuParam key="selectedId" value="<%=line.getComplexAnnonceSedexCO().getSimpleAnnonceSedexCO().getIdAnnonceSedexCO()%>"/>  
 		 	</ct:menuPopup>
 				<%
+			}
 				String msgType = line.getComplexAnnonceSedexCO().getSimpleAnnonceSedexCO().getMessageType();
 				if (AMMessagesTypesAnnonceSedexCO.LISTE_PERSONNES_NE_DEVANT_PAS_ETRE_POURSUIVIES.getValue().equals(msgType)) {
 				%>

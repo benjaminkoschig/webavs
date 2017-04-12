@@ -20,7 +20,36 @@
 			<join-group operator="AND">
 				<join-field name="admin.idTiersAdministration" operation="EQUALS" field-ref="compositionTiersSimpleModel.idTiersParent"/>
 			</join-group>
-		</linked-model>			
+		</linked-model>		
+		
+			
+		<search-definition name="rcListeSansGroupe">
+			<search-group operator="AND">
+				<!-- CAISSE MALADIE -->
+				<search-group operator="OR">
+					<search-field name="forCMIdTiersGroupe" field-ref="administrationComplexModelGroupes.tiers.idTiers" operation="NULL" />
+					<search-field name="forCMIdTiersGroupe" field-ref="administrationComplexModelGroupes.tiers.idTiers" operation="EQUALS" value="0" />
+				</search-group>
+				<search-field name="forCMIdTiersCaisse" field-ref="caisseMaladie.tiers.idTiers" operation="EQUALS" />
+				<search-field name="forCMNumCaisse" field-ref="caisseMaladie.admin.codeAdministration" operation="EQUALS" />
+				<search-field name="forCMNumGroupe" field-ref="administrationComplexModelGroupes.admin.codeAdministration" operation="EQUALS" />
+				<search-field name="likeCMNomCaisse" field-ref="caisseMaladie.tiers.designationUpper1" operation="LIKE" />
+				<!-- MESSAGE -->
+				<search-field name="forSDXDateMessage" field-ref="simpleAnnonceSedexCO.dateMessage" operation="EQUALS"/>
+				<search-field name="forSDXDateMessageGOE" field-ref="simpleAnnonceSedexCO.dateAnnonce" operation="GREATER_OR_EQUALS"/>
+				<search-field name="forSDXDateMessageLOE" field-ref="simpleAnnonceSedexCO.dateAnnonce" operation="LESS_OR_EQUALS"/>
+				<search-field name="forSDXMessageType" field-ref="simpleAnnonceSedexCO.messageType" operation="EQUALS"/>
+				<search-field name="forSDXMessageSubType" field-ref="simpleAnnonceSedexCO.messageSubType" operation="EQUALS"/>
+				<search-field name="forSDXMessageEmetteur" field-ref="simpleAnnonceSedexCO.messageEmetteur" operation="EQUALS"/>
+				<search-field name="forSDXMessageRecepteur" field-ref="simpleAnnonceSedexCO.messageRecepteur" operation="EQUALS"/>
+				<search-field name="forSDXNoDecision" field-ref="simpleAnnonceSedexCO.numeroDecision" operation="EQUALS"/>
+				<search-field name="inSDXMessageEmetteur" field-ref="simpleAnnonceSedexCO.messageEmetteur" operation="IN"/>
+				<search-field name="inSDXMessageRecepteur" field-ref="simpleAnnonceSedexCO.messageRecepteur" operation="IN"/>
+				<search-field name="inSDXMessageSubType" field-ref="simpleAnnonceSedexCO.messageSubType" operation="IN"/>
+				<search-field name="inSDXStatus" field-ref="simpleAnnonceSedexCO.status" operation="IN"/>
+				<search-field name="inSDXTraitement" field-ref="simpleAnnonceSedexCO.traitement" operation="IN"/>
+			</search-group>
+		</search-definition>	
 
 		<search-definition name="rcListe">
 			<search-group operator="AND">

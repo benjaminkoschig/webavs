@@ -30,4 +30,14 @@ public interface AnnoncesCOService extends JadeApplicationService {
 
     public AdministrationSearchComplexModel find(AdministrationSearchComplexModel searchModel)
             throws JadePersistenceException, JadeApplicationException;
+
+    /**
+     * Création de la liste des annonces au format CSV
+     * 
+     * @param idMessageSedex
+     * @return L'url du fichier crée
+     * 
+     */
+    public String exportListAnnonces(String filters, String order) throws JadeApplicationException,
+            JadePersistenceException;
 }

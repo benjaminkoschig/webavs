@@ -17,7 +17,6 @@ public class AMSedexcoHelper extends FWHelper {
             vb.setISession(session);
             try {
                 vb.retrieve();
-
                 if (!vb.getComplexAnnonceSedexCO().getSimpleAnnonceSedexCO().isNew()) {
                     SimpleAnnonceSedexCO simpleAnnonceSedexCO = vb.getComplexAnnonceSedexCO().getSimpleAnnonceSedexCO();
                     if ("401".equals(simpleAnnonceSedexCO.getMessageSubType())) {
@@ -36,8 +35,6 @@ public class AMSedexcoHelper extends FWHelper {
         } else {
             super.execute(viewBean, action, session);
         }
-
         return viewBean;
     }
-
 }

@@ -23,6 +23,8 @@ public class ComplexAnnonceSedexCOSearch extends JadeSearchComplexModel {
     private String forSDXDateAnnonceLOE = null;
     private String forSDXIdAnnonceSedexCO = null;
     private String forSDXIdAnnonceSedexCOLT = null;
+    private String forSDXDateMessageGOE = null;
+    private String forSDXDateMessageLOE = null;
     private String forSDXIdTiersCM = null;
     private String forSDXMessageEmetteur = null;
     private String forSDXMessageRecepteur = null;
@@ -108,6 +110,22 @@ public class ComplexAnnonceSedexCOSearch extends JadeSearchComplexModel {
 
     public void setForSDXIdAnnonceSedexCOLT(String forSDXIdAnnonceSedexCOLT) {
         this.forSDXIdAnnonceSedexCOLT = forSDXIdAnnonceSedexCOLT;
+    }
+
+    public String getForSDXDateMessageGOE() {
+        return forSDXDateMessageGOE;
+    }
+
+    public void setForSDXDateMessageGOE(String forSDXDateMessageGOE) {
+        this.forSDXDateMessageGOE = forSDXDateMessageGOE;
+    }
+
+    public String getForSDXDateMessageLOE() {
+        return forSDXDateMessageLOE;
+    }
+
+    public void setForSDXDateMessageLOE(String forSDXDateMessageLOE) {
+        this.forSDXDateMessageLOE = forSDXDateMessageLOE;
     }
 
     /**

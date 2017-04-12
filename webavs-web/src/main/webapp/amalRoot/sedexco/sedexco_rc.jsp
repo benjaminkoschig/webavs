@@ -263,7 +263,7 @@ function getAnneeListCompare() {
 						data-g-calendar="mandatory:false" />
 					</TD>
 					<TD>&nbsp;</TD>
-					<TD>Année <input type="text" name="anneeListCompare" id="anneeListCompare" maxlength="4" size="4" value="2016"/></TD>
+					<TD>&nbsp;</TD>
 					<td>&nbsp;</td>
 				</TR>
 				<TR style="height:16px">
@@ -289,13 +289,20 @@ function getAnneeListCompare() {
 					<TD>&nbsp;
 					</TD>
 					<TD>
-						<a data-g-download="docType:xls,							
+<!-- 						<a data-g-download="docType:xls,							 -->
+<!-- 	                    	serviceClassName:ch.globaz.amal.business.services.sedexCO.AnnoncesCOService, -->
+<!-- 	                    	serviceMethodName:printListComparaisonFull, -->
+<!-- 	                    	docName:listeComparaison, -->
+<!-- 	                    	displayOnlyImage:false, -->
+<!-- 	                    	dynParametres:getAnneeListCompare, -->
+<!-- 	                    	byPassExtentionXml:true">Créer liste</a>  -->
+	                    	
+	                    <a data-g-download="docType:csv,
+							dynParametres:getParametersForCSV,
 	                    	serviceClassName:ch.globaz.amal.business.services.sedexCO.AnnoncesCOService,
-	                    	serviceMethodName:printListComparaisonFull,
-	                    	docName:listeComparaison,
-	                    	displayOnlyImage:false,
-	                    	dynParametres:getAnneeListCompare,
-	                    	byPassExtentionXml:true">Créer liste</a> 
+	                    	serviceMethodName:exportListAnnonces,
+	                    	docName:listeAnnonces,
+	                    	displayOnlyImage:false">Créer liste</a> 
 					</TD>
 					<td>&nbsp;</td>
 				</TR>				
