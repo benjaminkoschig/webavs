@@ -37,6 +37,8 @@ import ch.gdk_cds.xmlns.da_64a_common._1.DebtorNPType;
 import ch.gdk_cds.xmlns.da_64a_common._1.DebtorType;
 import ch.gdk_cds.xmlns.da_64a_common._1.PaymentType;
 import ch.globaz.amal.business.constantes.IAMCodeSysteme;
+import ch.globaz.amal.business.constantes.PaymentCategoryEnum;
+import ch.globaz.amal.business.constantes.TypesOfLossEnum;
 import ch.globaz.amal.business.models.annoncesedexco.ComplexAnnonceSedexCODebiteursAssures;
 import ch.globaz.amal.business.models.annoncesedexco.ComplexAnnonceSedexCODebiteursAssuresSearch;
 import ch.globaz.amal.business.models.annoncesedexco.SimpleAnnonceSedexCO;
@@ -147,12 +149,6 @@ public class AnnoncesCOReceptionMessage5234_000402_1 extends AnnoncesCOReception
             logErrors("AnnoncesCOReceptionMessage5234_000402_1.importMessagesSingle()", "Erreur unmarshall message : "
                     + ex.getMessage(), ex);
         }
-
-        try {
-            sendMail(fileDecompte);
-        } catch (Exception e) {
-            throw new JadeSedexMessageNotHandledException("Erreur lors du traitement du message", e);
-        }
     }
 
     @Override
@@ -166,9 +162,9 @@ public class AnnoncesCOReceptionMessage5234_000402_1 extends AnnoncesCOReception
                 .generateList(annonceSedexCODebiteursAssuresSearch);
         List<SimpleOutputList_DecomptePaiement_5234_402_1> sheetPaiements = generateListPaiement(annonceSedexCODebiteursAssuresSearch);
 
-        File file = printList(sheetDecomptes, sheetPaiements);
-
-        return file;
+        File fileDecompte = printList(sheetDecomptes, sheetPaiements);
+        sendMail(fileDecompte);
+        return fileDecompte;
 
     }
 

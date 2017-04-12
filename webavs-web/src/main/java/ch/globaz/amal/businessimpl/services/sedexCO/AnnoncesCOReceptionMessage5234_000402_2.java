@@ -30,6 +30,8 @@ import ch.gdk_cds.xmlns.da_64a_common._1.CertificateOfLossPaymentType;
 import ch.gdk_cds.xmlns.da_64a_common._1.DebtorNPType;
 import ch.gdk_cds.xmlns.da_64a_common._1.PaymentType;
 import ch.globaz.amal.business.constantes.IAMCodeSysteme;
+import ch.globaz.amal.business.constantes.PaymentCategoryEnum;
+import ch.globaz.amal.business.constantes.TypesOfLossEnum;
 import ch.globaz.amal.business.models.annoncesedexco.SimpleAnnonceSedexCO;
 import ch.globaz.amal.business.models.annoncesedexco.SimpleAnnonceSedexCOXML;
 import ch.globaz.amal.businessimpl.services.sedexCO.listes.SimpleOutputList_DecomptePaiement_5234_402_1;
@@ -50,22 +52,6 @@ import ch.globaz.simpleoutputlist.outimpl.SimpleOutputListBuilder;
 public class AnnoncesCOReceptionMessage5234_000402_2 extends AnnoncesCOReceptionMessage5234_000401_1 {
     private static final String PACKAGE_CLASS_FOR_READ_SEDEX_DECOMPTE_FINAL = "ch.gdk_cds.xmlns.da_64a_5234_000402._1";
     private String idTiersSender;
-
-    public enum PaymentCategoryEnum {
-        PAIEMENT_DEBITEUR("1"),
-        RP_RETROACTIVE("2"),
-        ANNULATION("3");
-
-        private String value;
-
-        public String getValue() {
-            return value;
-        }
-
-        private PaymentCategoryEnum(String value) {
-            this.value = value;
-        }
-    }
 
     /**
      * Préparation des users et mots de passe pour le gestion SEDEX (JadeSedexService.xml)

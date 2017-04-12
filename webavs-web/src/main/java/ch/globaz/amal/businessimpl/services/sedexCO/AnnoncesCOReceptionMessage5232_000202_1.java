@@ -179,12 +179,6 @@ public class AnnoncesCOReceptionMessage5232_000202_1 extends AnnoncesCODefault {
             logErrors("AnnoncesCOReceptionMessage5232_000402_1.importMessagesSingle()", "Erreur unmarshall message : "
                     + ex.getMessage(), ex);
         }
-
-        try {
-            sendMail(fileComparaisonSheet);
-        } catch (Exception e) {
-            throw new JadeSedexMessageNotHandledException("Erreur lors de l'envoi du mail", e);
-        }
     }
 
     @Override
@@ -419,9 +413,11 @@ public class AnnoncesCOReceptionMessage5232_000202_1 extends AnnoncesCODefault {
                 .addTitle("Liste de comparaison des annonces de prise en charge", Align.LEFT)
                 .addSubTitle("Comparaisons").addHeaderDetails(details);
 
-        File fileAnnoncesRecues = listeComparaisonBuilder.asXls().build();
+        File fileComparaisonSheet = listeComparaisonBuilder.asXls().build();
 
-        return fileAnnoncesRecues;
+        sendMail(fileComparaisonSheet);
+
+        return fileComparaisonSheet;
     }
 
     private boolean isEnvoyeEtRepondu(SimplePersonneANePasPoursuivre personneANePasPoursuivre) {

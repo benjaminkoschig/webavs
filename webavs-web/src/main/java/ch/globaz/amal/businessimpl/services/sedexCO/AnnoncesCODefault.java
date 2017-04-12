@@ -27,6 +27,7 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import ch.gdk_cds.xmlns.da_64a_common._1.AddressType;
 import ch.gdk_cds.xmlns.da_64a_common._1.InsuredPersonWithClaimType;
+import ch.globaz.amal.business.constantes.TypesOfLossEnum;
 import ch.globaz.amal.business.models.annoncesedexco.SimpleAnnonceSedexCODebiteur;
 import ch.globaz.amal.business.models.famille.FamillePersonneEtendue;
 import ch.globaz.amal.business.models.famille.FamillePersonneEtendueSearch;
@@ -37,56 +38,6 @@ import ch.globaz.pyxis.business.model.AdministrationComplexModel;
 import ch.globaz.pyxis.business.service.TIBusinessServiceLocator;
 
 public class AnnoncesCODefault {
-    public enum TypesOfLossEnum {
-        ACTE_DE_DEFAUT_BIEN("1", "42003821"),
-        ACTE_DE_DEFAUT_BIEN_FAILLITE("2", "42003822"),
-        TITRE_EQUIVALENT("3", "42003823");
-
-        private String value;
-        private String cs;
-
-        public String getValue() {
-            return value;
-        }
-
-        public String getCs() {
-            return cs;
-        }
-
-        private TypesOfLossEnum(String value, String cs) {
-            this.value = value;
-            this.cs = cs;
-        }
-    }
-
-    public enum PaymentCategoryEnum {
-        PAIEMENT_DEBITEUR("1"),
-        RP_RETROACTIVE("2"),
-        ANNULATION("3");
-
-        private String value;
-
-        public String getValue() {
-            return value;
-        }
-
-        private PaymentCategoryEnum(String value) {
-            this.value = value;
-        }
-
-        public static boolean isPaiementDebiteur(String value) {
-            return PAIEMENT_DEBITEUR.getValue().equals(value);
-        }
-
-        public static boolean isRPRetro(String value) {
-            return RP_RETROACTIVE.getValue().equals(value);
-        }
-
-        public static boolean isAnnulation(String value) {
-            return ANNULATION.getValue().equals(value);
-        }
-    }
-
     protected String passSedex = "";
     protected String userSedex = "";
     protected JadeContext context;
@@ -373,7 +324,7 @@ public class AnnoncesCODefault {
         return "Contentieux Amal : réception des annonces contentieux effectuée avec succès !";
     }
 
-    protected void sendMail(File file) throws Exception {
+    protected void sendMail(File file) {
         String subject = getSubjectMail();
         StringBuilder body = new StringBuilder();
         if (!getPersonnesNotFoundList().isEmpty()) {
@@ -402,8 +353,14 @@ public class AnnoncesCODefault {
             files[0] = file.getPath();
         }
 
-        JadeSmtpClient.getInstance().sendMail(BSessionUtil.getSessionFromThreadContext().getUserEMail(), subject,
-                body.toString(), files);
+        try {
+            JadeSmtpClient.getInstance().sendMail(BSessionUtil.getSessionFromThreadContext().getUserEMail(), subject,
+                    body.toString(), files);
+        } catch (Exception e) {
+            JadeThread.logError("Sendmail", "Erreur lors de l'envoi du mail : " + e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException("Erreur lors de l'envoi du mail : " + e.getMessage());
+        }
     }
 
     protected List<String> getErrorsList() {

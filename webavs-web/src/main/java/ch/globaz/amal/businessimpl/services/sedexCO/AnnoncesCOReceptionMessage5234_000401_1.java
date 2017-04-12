@@ -40,6 +40,7 @@ import ch.gdk_cds.xmlns.da_64a_common._1.DebtorWithClaimType;
 import ch.gdk_cds.xmlns.da_64a_common._1.InsuredPersonType;
 import ch.gdk_cds.xmlns.da_64a_common._1.InsuredPersonWithClaimType;
 import ch.globaz.amal.business.constantes.IAMCodeSysteme;
+import ch.globaz.amal.business.constantes.TypesOfLossEnum;
 import ch.globaz.amal.business.exceptions.models.detailFamille.DetailFamilleException;
 import ch.globaz.amal.business.models.annoncesedexco.ComplexAnnonceSedexCODebiteursAssures;
 import ch.globaz.amal.business.models.annoncesedexco.ComplexAnnonceSedexCODebiteursAssuresSearch;
@@ -92,6 +93,10 @@ public class AnnoncesCOReceptionMessage5234_000401_1 extends AnnoncesCODefault {
         JAXBContext jaxbContext = JAXBContext.newInstance(PACKAGE_CLASS_FOR_READ_SEDEX_DECOMPTE_TRIMESTRIEL);
         unmarshaller = jaxbContext.createUnmarshaller();
         marshaller = jaxbContext.createMarshaller();
+    }
+
+    public void setSenderId(String senderId) {
+        this.senderId = senderId;
     }
 
     @OnReceive
@@ -160,11 +165,6 @@ public class AnnoncesCOReceptionMessage5234_000401_1 extends AnnoncesCODefault {
             logErrors("AnnoncesCOReceptionMessage5234_000401_1.importMessagesSingle()", "Erreur unmarshall message : "
                     + ex.getMessage(), ex);
         }
-        try {
-            sendMail(fileDecompte);
-        } catch (Exception e) {
-            throw new JadeSedexMessageNotHandledException("Erreur lors de l'envoi du mail", e);
-        }
     }
 
     public File generationList(SimpleAnnonceSedexCO annonceSedexCO) throws JadePersistenceException {
@@ -172,6 +172,7 @@ public class AnnoncesCOReceptionMessage5234_000401_1 extends AnnoncesCODefault {
         ComplexAnnonceSedexCODebiteursAssuresSearch annonceSedexCODebiteursAssuresSearch = searchDataReport(annonceSedexCO);
         List<SimpleOutputList_Decompte_5234_401_1> sheetDecomptes = generateList(annonceSedexCODebiteursAssuresSearch);
         fileDecompte = printList(sheetDecomptes);
+        sendMail(fileDecompte);
         return fileDecompte;
     }
 
