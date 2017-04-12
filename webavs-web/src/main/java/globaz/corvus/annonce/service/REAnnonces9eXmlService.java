@@ -65,10 +65,10 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
                 REAnnoncesAugmentationModification9Eme augmentation9eme02 = retrieveAnnonceAugModif9(
                         augmentation9eme01, session);
 
-                checkAndUpdate9eme(augmentation9eme01, transaction);
-                checkAndUpdate9eme(augmentation9eme02, transaction);
-
                 parseAugmentationAvecAnakin(augmentation9eme01, augmentation9eme02, session, forMoisAnneeComptable);
+
+                // checkAndUpdate9eme(augmentation9eme01, transaction);
+                checkAndUpdate9eme(augmentation9eme02, transaction);
 
                 if (ordentlicheRente.contains(genrePrestation)) {
                     if (codeApplication == 41) {
