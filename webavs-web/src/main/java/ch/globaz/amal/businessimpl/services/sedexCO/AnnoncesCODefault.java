@@ -5,6 +5,7 @@ import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
 import globaz.jade.admin.JadeAdminServiceLocatorProvider;
 import globaz.jade.client.util.JadeConversionUtil;
+import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.context.JadeContext;
 import globaz.jade.context.JadeContextImplementation;
 import globaz.jade.context.JadeThread;
@@ -12,8 +13,10 @@ import globaz.jade.context.JadeThreadContext;
 import globaz.jade.crypto.JadeDecryptionNotSupportedException;
 import globaz.jade.crypto.JadeDefaultEncrypters;
 import globaz.jade.crypto.JadeEncrypterNotFoundException;
+import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.jaxb.JAXBServices;
 import globaz.jade.log.JadeLogger;
+import globaz.jade.persistence.model.JadeAbstractModel;
 import globaz.jade.smtp.JadeSmtpClient;
 import globaz.pyxis.util.CommonNSSFormater;
 import java.io.File;
@@ -23,6 +26,8 @@ import java.util.Properties;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import ch.gdk_cds.xmlns.da_64a_common._1.AddressType;
+import ch.gdk_cds.xmlns.da_64a_common._1.InsuredPersonWithClaimType;
+import ch.globaz.amal.business.models.annoncesedexco.SimpleAnnonceSedexCODebiteur;
 import ch.globaz.amal.business.models.famille.FamillePersonneEtendue;
 import ch.globaz.amal.business.models.famille.FamillePersonneEtendueSearch;
 import ch.globaz.amal.business.services.AmalServiceLocator;
@@ -174,7 +179,7 @@ public class AnnoncesCODefault {
         passSedex = JadeDefaultEncrypters.getJadeDefaultEncrypter().decrypt(encryptedPass);
     }
 
-    protected FamillePersonneEtendue getPersonneEtendue(String nss) {
+    protected FamillePersonneEtendue getPersonneEtendue(String nss, Boolean onlyPrincipal) {
 
         try {
             if (nss == null || nss.isEmpty()) {
@@ -185,6 +190,11 @@ public class AnnoncesCODefault {
             String nssFormate = nssFormater.format(nss);
 
             FamillePersonneEtendueSearch famillePersonneEtendueSearch = new FamillePersonneEtendueSearch();
+
+            if (onlyPrincipal) {
+                famillePersonneEtendueSearch.setIsContribuablePrincipal(Boolean.TRUE);
+            }
+
             famillePersonneEtendueSearch.setLikeNss(nssFormate);
             famillePersonneEtendueSearch = AmalServiceLocator.getFamilleContribuableService().search(
                     famillePersonneEtendueSearch);
@@ -206,6 +216,75 @@ public class AnnoncesCODefault {
         }
 
         return null;
+    }
+
+    /**
+     * Règles :
+     * Si le débiteur existe avec le nss passé, on utilise celui ci
+     * Sinon, on prend le premier contribuable actif trouvé d'une personne assurée
+     * Et enfin, on prend un contribuable qui a une fin de droit la plus récente et on met un message
+     * 
+     * @param nss
+     * @param personnesAssurees
+     * @param annonceSedexCODebiteur
+     * @return
+     * @throws JadePersistenceException
+     */
+    protected FamillePersonneEtendue searchPersonne(String nss, List<InsuredPersonWithClaimType> personnesAssurees,
+            SimpleAnnonceSedexCODebiteur annonceSedexCODebiteur) throws JadePersistenceException {
+
+        try {
+            FamillePersonneEtendue famillePersonneEtendue = getPersonneEtendue(nss, Boolean.TRUE);
+
+            if (famillePersonneEtendue != null) {
+                return famillePersonneEtendue;
+            }
+
+            // Si on arrive jusqu'ici, c'est qu'on a trouvé aucun membre avec ce nss, on tente de récupérer le 1er
+            // contribuable actif qu'on trouve sur une des personnes assurées...
+            // On en profite également pour conserver le contribuable avec la fin de droit la plus récente, au cas où on
+            // devrait aller à la prochaine étape...
+            FamillePersonneEtendue famillePersonneEtendueMostRecent = null;
+            for (InsuredPersonWithClaimType insuredPerson : personnesAssurees) {
+                String nssPersonneAssureeFormate = "";
+                try {
+                    CommonNSSFormater nssFormateur = new CommonNSSFormater();
+                    nssPersonneAssureeFormate = nssFormateur.format(String.valueOf(insuredPerson.getInsuredPerson()
+                            .getVn()));
+                } catch (Exception e) {
+                    throw new IllegalArgumentException(e.getMessage());
+                }
+                FamillePersonneEtendueSearch famillePersonneEtendueSearch = new FamillePersonneEtendueSearch();
+                famillePersonneEtendueSearch.setLikeNss(nssPersonneAssureeFormate);
+                famillePersonneEtendueSearch.setIsContribuablePrincipal(Boolean.TRUE);
+                famillePersonneEtendueSearch.setOrderKey("orderByFinDroitDesc");
+                famillePersonneEtendueSearch = AmalServiceLocator.getFamilleContribuableService().search(
+                        famillePersonneEtendueSearch);
+                for (JadeAbstractModel abstractFamilleContribuable : famillePersonneEtendueSearch.getSearchResults()) {
+                    famillePersonneEtendue = (FamillePersonneEtendue) abstractFamilleContribuable;
+
+                    if (JadeStringUtil.isBlankOrZero(famillePersonneEtendue.getSimpleFamille().getFinDefinitive())) {
+                        // On retourne le 1er cas sans date de fin qu'on trouve.
+                        return famillePersonneEtendue;
+                    } else {
+                        // Sinon on prend le 1er, qui est le plus récent
+                        Date dateFinMostRecent = new Date(famillePersonneEtendueMostRecent.getSimpleFamille()
+                                .getFinDefinitive());
+                        Date dateFinCurrent = new Date(famillePersonneEtendue.getSimpleFamille().getFinDefinitive());
+                        if (dateFinCurrent.after(dateFinMostRecent)) {
+                            famillePersonneEtendueMostRecent = famillePersonneEtendue;
+                        }
+                    }
+                }
+            }
+
+            // Si on arrive la, c'est qu'on a trouvé aucun contribuable actif sur une des personnes assurées, on
+            // retourne donc celui qui a la date de fin la plus récente.
+            annonceSedexCODebiteur.addMessage("Contribuable non concordants !");
+            return famillePersonneEtendueMostRecent;
+        } catch (Exception ex) {
+            throw new JadePersistenceException("Erreur pendant la recherche de la personne " + nss, ex);
+        }
     }
 
     protected String formatNSS(long nssNonFormate) throws Exception {

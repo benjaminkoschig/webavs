@@ -461,4 +461,17 @@
 			</node>
 		</nodes>
 	</menu>
+	
+		<menu id="amal-optionsannoncesco">
+		<label refId="MENU_OPTION_TITRE"/>
+	  	<nodes>
+			<node>
+				<label refId="MENU_SEDEXCO_PRINT_LIST"/>
+				<action command="/amal" responseTarget="fr_main">
+					<parameter name="userAction" value="amal.sedexco.sedexco.imprimerListe"/>
+					<parameter name="selectedId"/>
+				</action>
+			</node>
+		</nodes>
+	</menu>
 </menus>

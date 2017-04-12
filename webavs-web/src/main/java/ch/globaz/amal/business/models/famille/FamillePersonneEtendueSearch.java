@@ -6,6 +6,7 @@ public class FamillePersonneEtendueSearch extends JadeSearchComplexModel {
     private String likeNss = null;
     private String forMembreFinDroit = null;
     private String forMembreActifFromToday = null;
+    private Boolean isContribuablePrincipal = null;
 
     public String getForMembreFinDroit() {
         return forMembreFinDroit;
@@ -34,6 +35,14 @@ public class FamillePersonneEtendueSearch extends JadeSearchComplexModel {
 
     public void setForMembreActifFromToday(String forMembreActifFromToday) {
         this.forMembreActifFromToday = forMembreActifFromToday;
+    }
+
+    public Boolean getIsContribuablePrincipal() {
+        return isContribuablePrincipal;
+    }
+
+    public void setIsContribuablePrincipal(Boolean isContribuablePrincipal) {
+        this.isContribuablePrincipal = isContribuablePrincipal;
     }
 
 }

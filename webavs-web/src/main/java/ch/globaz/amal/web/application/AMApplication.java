@@ -45,5 +45,6 @@ public class AMApplication extends BApplication {
         FWAction.registerActionCustom(IAMActions.ACTION_CONTRIBUABLE + ".fusionner", FWSecureConstants.READ);
         FWAction.registerActionCustom(IAMActions.ACTION_PARAMETRES_COPY_PARAMETRES + ".copyParams",
                 FWSecureConstants.READ);
+        FWAction.registerActionCustom(IAMActions.ACTION_SEDEX_CO + ".imprimerListe", FWSecureConstants.READ);
     }
 }
