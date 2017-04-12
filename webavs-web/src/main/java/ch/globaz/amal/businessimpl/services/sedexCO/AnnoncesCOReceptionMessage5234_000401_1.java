@@ -168,10 +168,9 @@ public class AnnoncesCOReceptionMessage5234_000401_1 extends AnnoncesCODefault {
     }
 
     public File generationList(SimpleAnnonceSedexCO annonceSedexCO) throws JadePersistenceException {
-        File fileDecompte;
         ComplexAnnonceSedexCODebiteursAssuresSearch annonceSedexCODebiteursAssuresSearch = searchDataReport(annonceSedexCO);
         List<SimpleOutputList_Decompte_5234_401_1> sheetDecomptes = generateList(annonceSedexCODebiteursAssuresSearch);
-        fileDecompte = printList(sheetDecomptes);
+        File fileDecompte = printList(sheetDecomptes);
         sendMail(fileDecompte);
         return fileDecompte;
     }

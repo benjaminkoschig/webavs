@@ -26,7 +26,7 @@ public class AMSedexcoHelper extends FWHelper {
                     } else if ("402".equals(simpleAnnonceSedexCO.getMessageSubType())) {
                         AnnoncesCOReceptionMessage5234_000402_1 reception402 = new AnnoncesCOReceptionMessage5234_000402_1();
                         reception402.setSenderId(simpleAnnonceSedexCO.getMessageEmetteur());
-                        reception402.generationList(simpleAnnonceSedexCO);
+                        reception402.generateListFinal(simpleAnnonceSedexCO);
                     }
                 }
             } catch (Exception e) {

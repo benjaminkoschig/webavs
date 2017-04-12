@@ -139,9 +139,7 @@ public class AnnoncesCOReceptionMessage5234_000402_1 extends AnnoncesCOReception
             // Sauvegarde du code XML de l'annonce dans la table
             SimpleAnnonceSedexCO annonceSedexCO = persistAnnonce(message);
 
-            ComplexAnnonceSedexCODebiteursAssuresSearch annonceSedexCODebiteursAssuresSearch = super
-                    .searchDataReport(annonceSedexCO);
-            fileDecompte = generateListFinal(annonceSedexCODebiteursAssuresSearch);
+            fileDecompte = generateListFinal(annonceSedexCO);
         } catch (JadePersistenceException jpe) {
             logErrors("AnnoncesCOReceptionMessage5234_000402_1.importMessagesSingle()",
                     "Erreur pendant le traitement de la liste : " + jpe.getMessage(), jpe);
@@ -156,7 +154,10 @@ public class AnnoncesCOReceptionMessage5234_000402_1 extends AnnoncesCOReception
         return "Contentieux Amal : réception des annonces 'Décompte annuel' effectuée avec succès !";
     }
 
-    private File generateListFinal(ComplexAnnonceSedexCODebiteursAssuresSearch annonceSedexCODebiteursAssuresSearch) {
+    public File generateListFinal(SimpleAnnonceSedexCO annonceSedexCO) throws JadePersistenceException {
+
+        ComplexAnnonceSedexCODebiteursAssuresSearch annonceSedexCODebiteursAssuresSearch = super
+                .searchDataReport(annonceSedexCO);
 
         List<SimpleOutputList_Decompte_5234_401_1> sheetDecomptes = super
                 .generateList(annonceSedexCODebiteursAssuresSearch);
