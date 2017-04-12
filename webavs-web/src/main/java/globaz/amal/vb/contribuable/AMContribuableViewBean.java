@@ -35,6 +35,7 @@ import ch.globaz.amal.business.exceptions.models.revenu.RevenuException;
 import ch.globaz.amal.business.models.annoncesedex.ComplexAnnonceSedex;
 import ch.globaz.amal.business.models.annoncesedex.ComplexAnnonceSedexSearch;
 import ch.globaz.amal.business.models.annoncesedexco.ComplexAnnonceSedexCO2Search;
+import ch.globaz.amal.business.models.annoncesedexco.ComplexAnnonceSedexCO4Search;
 import ch.globaz.amal.business.models.contribuable.Contribuable;
 import ch.globaz.amal.business.models.contribuable.ContribuableOnly;
 import ch.globaz.amal.business.models.contribuable.ContribuableRCListe;
@@ -369,6 +370,27 @@ public class AMContribuableViewBean extends BJadePersistentObjectViewBean {
         currentSearch.setForIdContribuable(idContribuable);
         try {
             currentSearch = AmalServiceLocator.getComplexAnnonceSedexCO2Service().search(currentSearch);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return currentSearch;
+    }
+
+    /**
+     * Récupération des annonces SedexCO4 pour le dossier en cours
+     * 
+     * @return
+     */
+    public ComplexAnnonceSedexCO4Search getAnnonceSedexCO4() {
+        ComplexAnnonceSedexCO4Search currentSearch = new ComplexAnnonceSedexCO4Search();
+        String idContribuable = getId();
+        ArrayList<String> subType = new ArrayList<String>();
+        subType.add(AMMessagesSubTypesAnnonceSedexCO.DECOMPTE_TRIMESTRIEL.getValue());
+        subType.add(AMMessagesSubTypesAnnonceSedexCO.DECOMPTE_FINAL.getValue());
+        currentSearch.setInSDXMessageSubType(subType);
+        currentSearch.setForIdContribuable(idContribuable);
+        try {
+            currentSearch = AmalServiceLocator.getComplexAnnonceSedexCO4Service().search(currentSearch);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
