@@ -1,5 +1,8 @@
 package globaz.osiris.parser;
 
+import globaz.framework.util.FWMemoryLog;
+import globaz.globall.db.BSession;
+
 /**
  * Interface des besoins d'informations purement métier à obtenir d'un processus de remontée automatique des BVR
  * (fichier plat et ISO20022)
@@ -41,5 +44,13 @@ public interface IntBVRPojo {
     public String getAccountServicerReference();
 
     public String getDebtor();
+
+    public FWMemoryLog getMemoryLog();
+
+    public void setMemoryLog(FWMemoryLog newMemoryLog);
+
+    BSession getSession();
+
+    void setSession(BSession session);
 
 }

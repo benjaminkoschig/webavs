@@ -219,16 +219,6 @@ public final class CABVR3Parser implements IntBVRFlatFileParser {
     }
 
     /**
-     * Insérez la description de la méthode ici. Date de création : (19.05.2003 13:21:10)
-     * 
-     * @return BSession
-     */
-    @Override
-    public BSession getSession() {
-        return session;
-    }
-
-    /**
      * Insérez la description de la méthode ici. Date de création : (18.02.2002 08:48:20)
      * 
      * @return String
@@ -490,6 +480,16 @@ public final class CABVR3Parser implements IntBVRFlatFileParser {
     @Override
     public void setMemoryLog(FWMemoryLog newMemoryLog) {
         memoryLog = newMemoryLog;
+    }
+
+    /**
+     * Insérez la description de la méthode ici. Date de création : (19.05.2003 13:21:10)
+     * 
+     * @return BSession
+     */
+    @Override
+    public BSession getSession() {
+        return session;
     }
 
     /**

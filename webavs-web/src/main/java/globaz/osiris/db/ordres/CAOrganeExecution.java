@@ -308,7 +308,7 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
         paiement.setSession(context.getSession());
 
         // Partager le log
-        paiement.setMemoryLog(context.getMemoryLog());
+        paiement.setMemoryLog(parser.getMemoryLog());
         paiement.setIdCompteAnnexe(refBVR.getIdCompteAnnexe());
 
         if (!JadeStringUtil.isBlankOrZero(refBVR.getIdSection())) {
@@ -362,7 +362,7 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
             CAJournal jrn, CAPlanRecouvrement planRecouvrement, IntReferenceBVRParser refBVR) throws Exception {
         // Création du paiement BVR et Incrémenter le montant total
         CAPaiementBVR[] paiements = CAPlanRecouvrement.serviceComputePaiements(context.getSession(),
-                planRecouvrement.getIdPlanRecouvrement(), new BigDecimal(parser.getMontant()), context.getMemoryLog());
+                planRecouvrement.getIdPlanRecouvrement(), new BigDecimal(parser.getMontant()), parser.getMemoryLog());
 
         for (int i = 0; i < paiements.length; i++) {
             initPaiementBvr(paiements[i], parser, jrn);
@@ -374,7 +374,7 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
 
             // Contrôle que le compte annexe du plan corresponde à
             // l'idExterneRole de la référence BVR
-            checkCompteAnnexe(refBVR, planRecouvrement, paiements[i], context.getMemoryLog());
+            checkCompteAnnexe(refBVR, planRecouvrement, paiements[i], parser.getMemoryLog());
 
             // Création du paiement BVR
             if (!context.getSimulation().booleanValue()) {
@@ -741,8 +741,10 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
             if (context.getSimulation()) {
                 // Pour éviter trop de lourdeur dans le code, je reprend les memorylog générés dans les processus
                 // d'avant et je les réinjecte dans notre txDetailMessage pour le mail (uniquement en mode simulation)
-                transformMemoryLogToDetailMessage(context, txDetailMessage);
+                transformMemoryLogToDetailMessage(txDetail.getMemoryLog(), txDetailMessage);
+                transformMemoryLogToDetailMessage(context.getMemoryLog(), txDetailMessage);
             }
+            txDetail.getMemoryLog().clear();
             context.getMemoryLog().clear();
         }
 
@@ -778,14 +780,14 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
         }
     }
 
-    private void transformMemoryLogToDetailMessage(globaz.osiris.process.CAProcessBVR context,
-            final CACamt054DetailMessage txDetailMessage) {
+    private void transformMemoryLogToDetailMessage(FWMemoryLog memoryLog, final CACamt054DetailMessage txDetailMessage) {
 
-        final List<Object> messagesToVector = Arrays.asList(context.getMemoryLog().getMessagesToVector().toArray());
+        final List<Object> messagesToVector = Arrays.asList(memoryLog.getMessagesToVector().toArray());
 
         for (Object object : messagesToVector) {
             if (object instanceof FWMessage) {
                 FWMessage message = (FWMessage) object;
+                message.setSession(getSession());
 
                 final String messageToRegister = message.getMessageText();
 
@@ -2079,14 +2081,14 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
 
         if (planRecouvrement.isNew() || !planRecouvrement.getIdEtat().equals(CAPlanRecouvrement.CS_ACTIF)) {
             if (!planRecouvrement.getIdCompteAnnexe().equals(refBVR.getIdCompteAnnexe())) {
-                context.getMemoryLog().logMessage(
+                parser.getMemoryLog().logMessage(
                         "7397",
                         "plan idCA=" + planRecouvrement.getIdCompteAnnexe() + "<> refBVR idCA="
                                 + refBVR.getIdCompteAnnexe(), FWMessage.ERREUR, this.getClass().getName());
             }
 
             // Message d'erreur : Le plan n'existe pas ou est inactif
-            context.getMemoryLog().logMessage("7129", getMessage() + " Plan N°" + refBVR.getIdPlanPaiement(),
+            parser.getMemoryLog().logMessage("7129", getMessage() + " Plan N°" + refBVR.getIdPlanPaiement(),
                     FWMessage.ERREUR, this.getClass().getName());
 
             CAPaiementBVR paiement = createNewPaiementBvr(context, fTotal, parser, refBVR, jrn);

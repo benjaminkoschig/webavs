@@ -1,5 +1,7 @@
 package globaz.osiris.db.ordres.sepa;
 
+import globaz.framework.util.FWMemoryLog;
+import globaz.globall.db.BSession;
 import globaz.osiris.parser.IntBVRPojo;
 
 /**
@@ -26,10 +28,11 @@ public class CACamt054Transaction implements IntBVRPojo {
     private String referenceInterne;
     private String taxeTraitement;
     private String taxeVersement;
-
     private String accountServicerReference;
     private String debtor;
     private String bankTransactionCode;
+    private FWMemoryLog memoryLog;
+    private BSession session = null;
 
     /**
      * never used by process
@@ -179,6 +182,41 @@ public class CACamt054Transaction implements IntBVRPojo {
 
     public void setDebtor(String debtor) {
         this.debtor = debtor;
+    }
+
+    @Override
+    public FWMemoryLog getMemoryLog() {
+        if (memoryLog == null) {
+            memoryLog = new FWMemoryLog();
+        }
+        memoryLog.setSession(getSession());
+        return memoryLog;
+    }
+
+    @Override
+    public void setMemoryLog(FWMemoryLog newMemoryLog) {
+        memoryLog = newMemoryLog;
+    }
+
+    /**
+     * Insérez la description de la méthode ici. Date de création : (19.05.2003 13:21:10)
+     * 
+     * @param newSession
+     *            BSession
+     */
+    @Override
+    public void setSession(BSession newSession) {
+        session = newSession;
+    }
+
+    /**
+     * Insérez la description de la méthode ici. Date de création : (19.05.2003 13:21:10)
+     * 
+     * @return BSession
+     */
+    @Override
+    public BSession getSession() {
+        return session;
     }
 
 }

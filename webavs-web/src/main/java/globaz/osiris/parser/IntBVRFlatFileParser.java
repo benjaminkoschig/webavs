@@ -28,19 +28,11 @@ public interface IntBVRFlatFileParser extends IntBVRPojo {
 
     public BufferedReader getInputReader();
 
-    public FWMemoryLog getMemoryLog();
-
-    BSession getSession();
-
     boolean parseNextElement();
 
     public void setEchoToConsole(boolean newEchoToConsole);
 
     public void setInputReader(BufferedReader newInputReader);
-
-    public void setMemoryLog(FWMemoryLog newMemoryLog);
-
-    void setSession(BSession session);
 
     public String getNombreTransactions();
 }
