@@ -1,4 +1,4 @@
-package ch.globaz.naos.ree.sedex;
+package ch.globaz.common.exceptions;
 
 import java.util.Iterator;
 import java.util.List;

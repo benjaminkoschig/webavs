@@ -15,7 +15,7 @@ import org.mockito.Matchers;
 import org.mockito.Mockito;
 import org.mockito.Spy;
 import ch.admin.zas.rc.RRMeldung9Type;
-import ch.globaz.naos.ree.sedex.ValidationException;
+import ch.globaz.common.exceptions.ValidationException;
 
 public class REAnnonces9eXmlServiceTest {
 

@@ -9,6 +9,7 @@ import java.net.MalformedURLException;
 import javax.xml.bind.JAXBException;
 import javax.xml.datatype.DatatypeConfigurationException;
 import org.xml.sax.SAXException;
+import ch.globaz.common.exceptions.ValidationException;
 import ch.globaz.naos.ree.protocol.ProcessProtocolAndMessages;
 import ch.globaz.naos.ree.protocol.SedexTechnicalProtocol;
 

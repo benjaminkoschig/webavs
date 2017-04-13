@@ -33,6 +33,7 @@ import ree.ch.admin.bfs.xmlns.bfs_5054_000102._2.HeaderType.PartialDelivery;
 import ree.ch.admin.bfs.xmlns.bfs_5054_000102._2.Message;
 import ree.ch.admin.bfs.xmlns.bfs_5054_000102._2.ObjectFactory;
 import ree.ch.ech.xmlns.ech_0058._3.SendingApplicationType;
+import ch.globaz.common.exceptions.ValidationException;
 import ch.globaz.naos.ree.domain.pojo.ProcessProperties;
 import ch.globaz.naos.ree.protocol.ProcessProtocolAndMessages;
 import ch.globaz.naos.ree.protocol.ProcessProtocolAndMessages5054;

@@ -52,9 +52,9 @@ import org.xml.sax.SAXException;
 import ch.admin.zas.pool.PoolMeldungZurZAS;
 import ch.admin.zas.rc.PoolFussType;
 import ch.admin.zas.rc.PoolKopfType;
+import ch.globaz.common.exceptions.ValidationException;
 import ch.globaz.common.properties.CommonProperties;
 import ch.globaz.common.properties.PropertiesException;
-import ch.globaz.naos.ree.sedex.ValidationException;
 import ch.horizon.jaspe.util.JACalendar;
 
 /**
@@ -172,6 +172,11 @@ public class REEnvoyerAnnoncesXMLProcess extends BProcess {
                 annonce.update(getTransaction());
                 try {
                     prepareEnvoieAnnonce(annonce, lotAnnonces);
+                } catch (ValidationException ex) {
+                    // traiter les exception de validation xml autrement
+
+                    getMemoryLog().logMessage(ex.getFormattedMessage() + "}\n", FWMessage.ERREUR,
+                            getSession().getLabel("ENVOYER_ANNONCES"));
                 } catch (Exception ex) {
                     String err;
                     if (ex.getMessage() != null) {
@@ -244,15 +249,15 @@ public class REEnvoyerAnnoncesXMLProcess extends BProcess {
                                 getSession().getLabel("ENVOYER_ANNONCES"));
                     }
                     hasError = true;
-                    continue;
                 }
+                continue;
             }
 
             // s'il y a eu une (ou plusieurs) erreur(s), levé d'une exception
             // de cette manière, on aura toutes les erreurs dans l'email de confirmation
             // plutôt qu'une erreur à la fois
             if (hasError) {
-                // throw new Exception(getSession().getLabel("PROCESS_ENVOI_ANNONCES_ERREUR_PREPARATION_ENVOI"));
+                throw new Exception(getSession().getLabel("PROCESS_ENVOI_ANNONCES_ERREUR_PREPARATION_ENVOI"));
             }
 
             int nbAnnoncesLot = mgr.getCount();

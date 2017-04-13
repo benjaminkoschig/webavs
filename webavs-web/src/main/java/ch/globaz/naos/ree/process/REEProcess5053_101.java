@@ -11,6 +11,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.xml.sax.SAXException;
 import ree.ch.admin.bfs.xmlns.bfs_5053_000101._1.MasterDataType;
 import ch.globaz.common.domaine.Date;
+import ch.globaz.common.exceptions.ValidationException;
 import ch.globaz.common.sql.QueryExecutor;
 import ch.globaz.naos.ree.domain.converter.Converter;
 import ch.globaz.naos.ree.domain.converter.Converter5053_101;
@@ -19,7 +20,6 @@ import ch.globaz.naos.ree.domain.pojo.Pojo5053_101;
 import ch.globaz.naos.ree.protocol.ProcessProtocol;
 import ch.globaz.naos.ree.protocol.ProcessProtocolAndMessages;
 import ch.globaz.naos.ree.sedex.SedexMessageSender;
-import ch.globaz.naos.ree.sedex.ValidationException;
 import ch.globaz.naos.ree.tools.InfoCaisse;
 import ch.globaz.naos.ree.tools.SedexInfo;
 

@@ -28,6 +28,7 @@ import ree.ch.admin.bfs.xmlns.bfs_5053_000102._1.HeaderType.PartialDelivery;
 import ree.ch.admin.bfs.xmlns.bfs_5053_000102._1.Message;
 import ree.ch.admin.bfs.xmlns.bfs_5053_000102._1.ObjectFactory;
 import ree.ch.ech.xmlns.ech_0058._3.SendingApplicationType;
+import ch.globaz.common.exceptions.ValidationException;
 import ch.globaz.naos.ree.domain.pojo.ProcessProperties;
 import ch.globaz.naos.ree.protocol.ProcessProtocolAndMessages;
 import ch.globaz.naos.ree.protocol.SedexTechnicalProtocol;

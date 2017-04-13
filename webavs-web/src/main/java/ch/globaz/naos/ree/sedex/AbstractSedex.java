@@ -21,6 +21,7 @@ import javax.xml.validation.SchemaFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
+import ch.globaz.common.exceptions.ValidationException;
 
 public class AbstractSedex {
 

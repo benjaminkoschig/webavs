@@ -20,7 +20,7 @@ import ch.admin.zas.rc.RRLeistungsberechtigtePersonAuslType;
 import ch.admin.zas.rc.RRMeldung9Type;
 import ch.admin.zas.rc.SkalaBerechnungType;
 import ch.admin.zas.rc.ZuwachsmeldungO9Type;
-import ch.globaz.naos.ree.sedex.ValidationException;
+import ch.globaz.common.exceptions.ValidationException;
 
 public class REEnvoyerAnnoncesXMLProcessTest {
 
