@@ -1,5 +1,6 @@
 package globaz.osiris.db.ordres.sepa;
 
+import globaz.framework.util.FWMessageFormat;
 import globaz.jade.client.util.JadeFilenameUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.common.Jade;
@@ -297,7 +298,12 @@ public class CAProcessFormatOrdreSEPA extends CAOrdreFormateur {
         if (bLevels.isEmpty()) {
             throw new SepaException(getSession().getLabel("ISO20022_ERROR_EOF_NO_TRANSACTION"));
         }
-
+        if (og.getOrganeExecution().getAdressePaiement() == null) {
+            throw new SepaException(
+                    FWMessageFormat.format(FWMessageFormat.prepareQuotes(
+                            getSession().getLabel("ISO20022_ERROR_OE_NO_PAIEMENT_ADDRESS"), true), og
+                            .getOrganeExecution().getNom()));
+        }
         final String nomCaisse = CASepaOGConverterUtils.getNomCaisse70(og);
         // set validation fields
         grpHeader.setNbOfTxs(og.getNbTransactions());
