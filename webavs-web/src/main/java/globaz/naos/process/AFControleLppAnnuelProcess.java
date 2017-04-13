@@ -786,7 +786,7 @@ public class AFControleLppAnnuelProcess extends BProcess {
 
             // On regarde si il y a une journalisation sans date de réception.
             for (LUJournalViewBean luJournalViewBean : lst) {
-                if (StringUtils.isNotEmpty(luJournalViewBean.getDateReception())) {
+                if (StringUtils.isEmpty(luJournalViewBean.getDateReception())) {
                     return true;
                 }
             }
