@@ -572,6 +572,10 @@ public class CodeSystem {
     public static final String ETAT_ANNONCE_IDE_ERREUR = "858004";
     public static final String ETAT_ANNONCE_IDE_ATTENTE = "858005";
 
+    // LPP
+
+    public static final String CS_SEUIL_LPP = "10800042";
+
     public static String getCode(BSession session, String code) throws Exception {
         FWParametersSystemCode cs = new FWParametersSystemCode();
         cs.setSession(session);
