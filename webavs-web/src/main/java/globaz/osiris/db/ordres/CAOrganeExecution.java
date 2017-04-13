@@ -957,7 +957,13 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
                         totalForFooter(totTransactionTraitee, fTotal, parser);
                     }
                 } else { // Numéro d'adhérent n'existe pas ou correspond pas
-                    parser.getMemoryLog().logMessage("5339", parser.getNumeroAdherent(), FWMessage.ERREUR,
+                    final StringBuilder messageAdherent = new StringBuilder();
+                    String nomAdherent = getSession().getLabel("5358");
+
+                    messageAdherent.append(MessageFormat.format(getSession().getLabel("5339"),
+                            parser.getNumeroAdherent(), getNoAdherentBVR(), nomAdherent));
+
+                    parser.getMemoryLog().logMessage(messageAdherent.toString(), FWMessage.ERREUR,
                             this.getClass().getName());
                 }
 
@@ -1122,7 +1128,14 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
                 int _parserNumeroAdherent = Integer.parseInt(parser.getNumeroAdherent());
                 int _numeroAdherent = Integer.parseInt(getNoAdherent());
                 if (_parserNumeroAdherent != _numeroAdherent) {
-                    parser.getMemoryLog().logMessage("5339", parser.getNumeroAdherent(), FWMessage.ERREUR,
+                    final StringBuilder messageAdherent = new StringBuilder();
+
+                    String nomAdherent = getSession().getLabel("5358");
+
+                    messageAdherent.append(MessageFormat.format(getSession().getLabel("5339"),
+                            parser.getNumeroAdherent(), getNoAdherent(), nomAdherent));
+
+                    parser.getMemoryLog().logMessage(messageAdherent.toString(), FWMessage.ERREUR,
                             this.getClass().getName());
                 } else {
                     if (parser.getGenreTransaction().equals("081") || parser.getGenreTransaction().equals("084")) {
