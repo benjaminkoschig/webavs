@@ -80,6 +80,8 @@ public class RELibererDevaliderDeblocage {
             lot.setCsTypeLot(IRELot.CS_TYP_LOT_DEBLOCAGE_RA);
             lot.setCsLotOwner(IRELot.CS_LOT_OWNER_RENTES);
             lot.setDateCreationLot(Date.now().getSwissValue());
+            lot.setDescription(session.getLabel("DESCRIPTION_LOT_DEBLOCAGE") + " "
+                    + (new Date()).getMoisAnneeFormatte());
             try {
                 lot.add();
             } catch (Exception e) {
