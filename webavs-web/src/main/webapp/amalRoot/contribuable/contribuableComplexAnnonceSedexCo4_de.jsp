@@ -6,6 +6,7 @@
 <%@page import="ch.globaz.amal.business.constantes.IAMCodeSysteme.AMStatutAnnonceSedex"%>
 <%@page import="globaz.jade.client.util.JadeStringUtil"%>
 <%@page import="ch.globaz.amal.business.constantes.AMMessagesSubTypesAnnonceSedex"%>
+<%@page import="ch.globaz.amal.business.models.annoncesedexco.SimpleAnnonceSedexCO"%>
 <%@page import="ch.globaz.amal.business.models.annoncesedexco.SimpleAnnonceSedexCOAssure"%>
 <%@page import="ch.globaz.amal.business.models.annoncesedexco.SimpleAnnonceSedexCODebiteur"%>
 <%@page import="ch.globaz.amal.business.models.annoncesedexco.ComplexAnnonceSedexCO4"%>
@@ -132,103 +133,112 @@ function callBackPrintList() {
 	String noAvs = "";
 	String nomPrenom = "";
 	String subtypeLibelle = "";
+	String dateAnnonce = "";
+	String caisse = "";
 	int assureCounter = 0;
-	long latestAnnonce = 0;
-	
+	int annonceCounter = 0;
 	ComplexAnnonceSedexCO4Search annoncesCO4Search = viewBean.getAnnonceSedexCO4();
-
-	for(int iAnnonce = 0; iAnnonce<annoncesCO4Search.getSize();iAnnonce++){
-	    ComplexAnnonceSedexCO4 currentAnnonce = (ComplexAnnonceSedexCO4)annoncesCO4Search.getSearchResults()[iAnnonce];
-	    String tmpMess = currentAnnonce.getSimpleAnnonceSedexCO().getIdAnnonceSedexCO();
-	    
-	    long messageId = 0;
-		if(tmpMess != null){
-	    	messageId = Long.parseLong(tmpMess);
-		}
-		
-	    if (latestAnnonce == 0 || messageId > latestAnnonce){
-	        latestAnnonce = messageId;
-	    }
-	}
 	
-
-	for(int iAnnonce = 0; iAnnonce<annoncesCO4Search.getSize();iAnnonce++){
+	int nbItems = annoncesCO4Search.getSize();
+	for(int iAnnonce = 0; iAnnonce<nbItems;iAnnonce++){
 	    ComplexAnnonceSedexCO4 currentAnnonce = (ComplexAnnonceSedexCO4)annoncesCO4Search.getSearchResults()[iAnnonce];
 	    csMess = currentAnnonce.getSimpleAnnonceSedexCO().getIdAnnonceSedexCO();
+	    SimpleAnnonceSedexCODebiteur currentDebiteur = (SimpleAnnonceSedexCODebiteur)currentAnnonce.getSimpleAnnonceSedexCODebiteur();
+	    SimpleAnnonceSedexCOAssure currentAssure = (SimpleAnnonceSedexCOAssure)currentAnnonce.getSimpleAnnonceSedexCOAssure();
+	    SimpleAnnonceSedexCO annoceSedex = (SimpleAnnonceSedexCO)currentAnnonce.getSimpleAnnonceSedexCO();
 	    
-	    if(String.valueOf(latestAnnonce).equals(csMess)){
-		    SimpleAnnonceSedexCODebiteur currentDebiteur = (SimpleAnnonceSedexCODebiteur)currentAnnonce.getSimpleAnnonceSedexCODebiteur();
-		    SimpleAnnonceSedexCOAssure currentAssure = (SimpleAnnonceSedexCOAssure)currentAnnonce.getSimpleAnnonceSedexCOAssure();
-		    String assureNss = currentAssure.getNssAssure();
-		    String debiteurNss = currentDebiteur.getNssDebiteur();
-		    String messSubType = currentAnnonce.getSimpleAnnonceSedexCO().getMessageSubType();
-			subtypeLibelle = currentAnnonce.getSimpleAnnonceSedexCO().getMessageSubTypeLibelle();
-			
-			boolean isDebiteur = debiteurNss.equals(assureNss);
-			annonceId = csMess;
-			if(isDebiteur){
-				title = "Détail annonce # " + csMess;
-				subtitle = "TODO";
-				interets = currentAnnonce.getSimpleAnnonceSedexCODebiteur().getInterets();
-				frais = currentAnnonce.getSimpleAnnonceSedexCODebiteur().getFrais();
-				total = currentAnnonce.getSimpleAnnonceSedexCODebiteur().getTotal();
-				noAvs = nssFormater.format(debiteurNss);
-				nomPrenom = currentDebiteur.getNomPrenomDebiteur() ;
-			}
-			String avsAssure = nssFormater.format(currentAssure.getNssAssure());
-			String nomPrenomAssure= currentAssure.getNomPrenomAssure();
-			// Loop over Prime & Participation if any of them (Element)
-			String description = "";
-			String startDate = "";
-			String endDate = "";
-			String value = currentAssure.getPrimeMontant();
-			int countElement = 0;
+	    String assureNss = currentAssure.getNssAssure();
+	    String debiteurNss = currentDebiteur.getNssDebiteur();
+	    String messSubType = annoceSedex.getMessageSubType();
+		
+		boolean isDebiteur = debiteurNss.equals(assureNss);
+		annonceId = csMess;
+		if(isDebiteur){
+			subtypeLibelle = annoceSedex.getMessageSubTypeLibelle();
+			title = "Détail annonce # " + csMess;
+			subtitle = subtypeLibelle + " " + annoceSedex.getStatementStartDate() + " - "+ annoceSedex.getStatementEndDate();
+			interets = currentDebiteur.getInterets();
+			frais = currentDebiteur.getFrais();
+			total = currentDebiteur.getTotal();
+			noAvs = nssFormater.format(debiteurNss);
+			nomPrenom = currentDebiteur.getNomPrenomDebiteur() ;
+			dateAnnonce = annoceSedex.getDateAnnonce();
+			caisse = currentAnnonce.getCaisseMaladie().getTiers().getDesignation1();
+		}
+		String avsAssure = nssFormater.format(currentAssure.getNssAssure());
+		String nomPrenomAssure= currentAssure.getNomPrenomAssure();
+		// Loop over Prime & Participation if any of them (Element)
+		String description = "";
+		String startDate = "";
+		String endDate = "";
+		String value = currentAssure.getPrimeMontant();
+		int countElement = 0;
+		%>
+		<script>
+			var detailAssure = new Array; 
+		</script>
+		<%
+		double tmpValue = 0;
+		if(value != null){
+			tmpValue = Double.parseDouble(value);
+		}
+		if(tmpValue > 0){
+		    description = "Prime";
+		    startDate = currentAssure.getPrimePeriodeDebut();
+		    endDate = currentAssure.getPrimePeriodeFin() ;
 		%>
 			<script>
-				var detailAssure = new Array; 
+				detailAssure['<%=countElement%>'] = new DetailFinance('<%=description%>', '<%=startDate%>', '<%=endDate%>', '<%=value%>');
 			</script>
 		<%
-			double tmpValue = 0;
-			if(value != null){
-				tmpValue = Double.parseDouble(value);
-			}
-			if(tmpValue > 0){
-			    description = "Prime";
-			    startDate = currentAssure.getPrimePeriodeDebut();
-			    endDate = currentAssure.getPrimePeriodeFin() ;
-		%>
-				<script>
-					detailAssure['<%=countElement%>'] = new DetailFinance('<%=description%>', '<%=startDate%>', '<%=endDate%>', '<%=value%>');
-				</script>
-		<%
 				countElement++;
-			}
+		}
 
-			value = currentAssure.getCostSharingMontant();
-			if(value != null){
-				tmpValue = Double.parseDouble(value);
-			}
-			if(tmpValue > 0){
-			    description = "Participation";
-			    startDate = currentAssure.getCostSharingPeriodeDebut();
-			    endDate = currentAssure.getCostSharingPeriodeFin();
+		value = currentAssure.getCostSharingMontant();
+		if(value != null){
+			tmpValue = Double.parseDouble(value);
+		}
+		if(tmpValue > 0){
+		    description = "Participation";
+		    startDate = currentAssure.getCostSharingPeriodeDebut();
+		    endDate = currentAssure.getCostSharingPeriodeFin();
 		%>
-				<script>
-					detailAssure['<%=countElement%>'] = new DetailFinance('<%=description%>', '<%=startDate%>', '<%=endDate%>', '<%=value%>');
-				</script>
+			<script>
+				detailAssure['<%=countElement%>'] = new DetailFinance('<%=description%>', '<%=startDate%>', '<%=endDate%>', '<%=value%>');
+			</script>
 		<%}	%>
 	<!-- Load assure information -->
 	<script>
 		var assure = new Personne('<%=avsAssure%>','<%=nomPrenomAssure%>');
 		assureArray['<%=assureCounter%>'] = new DetailAssure(assure, detailAssure);
 	</script>
-	<%assureCounter++;
-	}//End if latest annonce
-}// End for %>
-	<script>
+
+	<%
+		// Check if next message have same id
+		String nextMessage = "";
+		if(nbItems > iAnnonce + 1){
+		    ComplexAnnonceSedexCO4 tmpAnnonce = (ComplexAnnonceSedexCO4)annoncesCO4Search.getSearchResults()[iAnnonce + 1];
+		    nextMessage = tmpAnnonce.getSimpleAnnonceSedexCO().getIdAnnonceSedexCO();
+		    if(!nextMessage.equals(csMess)){
+    %>
+		        <script> 
+			        var debiteur = new Personne('<%=noAvs%>','<%=nomPrenom%>');
+			    	var annonce = new Annonce('<%=csMess%>', '<%=title%>', '<%=subtitle%>','<%=interets%>','<%=frais%>','<%=total%>', debiteur, assureArray);
+			    	annoncesCO4['<%=annonceCounter%>'] = new AnnonceCO4(annonce,'<%=csMess%>', '<%=caisse%>', '<%=dateAnnonce%>');
+			    	assureArray = new Array; // Reset object
+		    	</script>
+   	<%
+   				assureCounter = 0;
+		    	annonceCounter++;
+		    }
+		}
+		assureCounter++;
+	}// End for
+%>
+<script>
 	var debiteur = new Personne('<%=noAvs%>','<%=nomPrenom%>');
 	var annonce = new Annonce('<%=csMess%>', '<%=title%>', '<%=subtitle%>','<%=interets%>','<%=frais%>','<%=total%>', debiteur, assureArray);
-	var annonceCO4 = new AnnonceCO4(annonce, 'Assura', '30.10.2017');
+	annoncesCO4['<%=annonceCounter%>'] = new AnnonceCO4(annonce,'<%=csMess%>', '<%=caisse%>', '<%=dateAnnonce%>');
 	assureArray = new Array; // Reset object
 </script>
 
@@ -340,6 +350,9 @@ function callBackPrintList() {
 					frais = currentAnnonce.getSimpleAnnonceSedexCODebiteur().getFrais();
 					total = currentAnnonce.getSimpleAnnonceSedexCODebiteur().getTotal();
 					
+					dateAnnonce = currentAnnonce.getSimpleAnnonceSedexCO().getDateAnnonce();
+					caisse = currentAnnonce.getCaisseMaladie().getTiers().getDesignation1();
+					
 					long messageId = 0;
 					if(csMess != null){
 				    	messageId = Long.parseLong(csMess);
@@ -362,10 +375,10 @@ function callBackPrintList() {
 				<td><%=statementYear%></td>
 				
 				<!-- Date -->
-				<td><%=currentAnnonce.getSimpleAnnonceSedexCO().getDateAnnonce()%></td>
+				<td><%=dateAnnonce%></td>
 				
 				<!-- Assureur -->
-				<td><%=currentAnnonce.getCaisseMaladie().getTiers().getDesignation1() %></td>
+				<td><%=caisse%></td>
 				
 				<!-- Message -->
 				<td>
