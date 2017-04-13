@@ -3,10 +3,19 @@
  */
 package globaz.naos.listes.pdf.extraitDS;
 
+import globaz.caisse.report.helper.ACaisseReportHelper;
+import globaz.framework.printing.itext.fill.FWIImportProperties;
+import globaz.globall.db.BProcess;
+import globaz.globall.db.GlobazJobQueue;
+import globaz.jade.client.util.JadeUUIDGenerator;
 import globaz.jade.common.Jade;
+import globaz.jade.publish.document.JadePublishDocumentInfo;
+import globaz.naos.application.AFApplication;
+import globaz.naos.db.affiliation.AFAffiliation;
 import globaz.naos.db.controleLpp.AFExtraitDS;
+import globaz.pyxis.adresse.datasource.TIAbstractAdresseDataSource;
+import globaz.pyxis.adresse.datasource.TIAdresseDataSource;
 import java.awt.Color;
-import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -15,6 +24,7 @@ import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import ch.globaz.common.domaine.Date;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Element;
@@ -33,28 +43,42 @@ import com.lowagie.text.pdf.PdfWriter;
  * 
  * @author est
  */
-public class AFListeExtraitDS {
+public class AFListeExtraitDS extends BProcess {
 
-    private static List<HSSFRow> listeRowSalarie = null;
-    private static BaseFont font = null;
+    private static String NUM_INFORMOM = "0324CAF";
+
+    private static short CELL_EMPLOYEUR_NOM = 0;
+    private static short CELL_EMPLOYEUR_RUE = 1;
+    private static short CELL_EMPLOYEUR_NPA = 2;
+    private static short CELL_EMPLOYEUR_LOCALITE = 3;
+    private static short CELL_EMPLOYEUR_NUM_AFFI = 4;
+
+    private static short CELL_SALARIE_NSS = 0;
+    private static short CELL_SALARIE_NOM = 1;
+    private static short CELL_SALARIE_PERIODE = 2;
+    private static short CELL_SALARIE_SALAIRE = 3;
+    private static short CELL_SALARIE_SEUIL = 4;
+
+    private List<AFExtraitDS> listeDS;
+    private List<HSSFRow> listeRowSalarie = null;
+    private AFAffiliation employeur;
+    private TIAdresseDataSource adresseEmployeur;
+    private String nomCaisse;
+    private String adresseCaisse;
+    private String annee;
+    private BaseFont font = null;
     private HSSFWorkbook wb;
     private HSSFSheet sheet;
 
-    public AFListeExtraitDS(List<AFExtraitDS> listeDS) {
+    private JadePublishDocumentInfo documentInfoPdf;
+    private String path;
 
-        initFonts();
-
-        wb = new HSSFWorkbook();
-        sheet = wb.createSheet("Sheet");
-        sheet.setColumnWidth((short) 1, (short) (256 * 27));
-
-        fillHashMap(listeDS);
-
+    public AFListeExtraitDS() {
     }
 
-    public void createListPDF() {
+    private void createListPDF() {
         try {
-            createTableauSalarie("testExtraitSalaire");
+            createTableauSalarie(NUM_INFORMOM + "_" + JadeUUIDGenerator.createStringUUID());
         } catch (DocumentException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -64,7 +88,13 @@ public class AFListeExtraitDS {
         }
     }
 
-    private static void initFonts() {
+    private void initSheet() {
+        wb = new HSSFWorkbook();
+        sheet = wb.createSheet("Sheet");
+        sheet.setColumnWidth((short) 1, (short) (256 * 27));
+    }
+
+    private void initFonts() {
         try {
             font = BaseFont.createFont("Helvetica", BaseFont.WINANSI, false);
         } catch (DocumentException e) {
@@ -76,36 +106,57 @@ public class AFListeExtraitDS {
         }
     }
 
+    private JadePublishDocumentInfo createDocInfo() {
+        JadePublishDocumentInfo documentInfo = createDocumentInfo();
+        documentInfo.setPublishDocument(true);
+        documentInfo.setDocumentTypeNumber(NUM_INFORMOM);
+        return documentInfo;
+    }
+
     /***
-     * Permet de remplir la hashmap avec une liste de AFExtraitDS
+     * Permet de remplir la list des AFExtraitDS
      * 
      * @param listeDS
      */
-    private void fillHashMap(List<AFExtraitDS> listeDS) {
+    private void fillRowsList(List<AFExtraitDS> listeDS) {
         listeRowSalarie = new ArrayList<HSSFRow>();
 
-        for (int i = 0; i < listeDS.size(); i++) {
+        HSSFRow rowEmployeur = sheet.createRow(0);
+        rowEmployeur.setHeightInPoints(10 * 15);
+        rowEmployeur.createCell(CELL_EMPLOYEUR_NOM).setCellValue(getEmployeur().getRaisonSociale());
+        rowEmployeur.createCell(CELL_EMPLOYEUR_RUE).setCellValue(
+                getAdresseEmployeur().getData().get(TIAbstractAdresseDataSource.ADRESSE_VAR_RUE));
+        rowEmployeur.createCell(CELL_EMPLOYEUR_NPA).setCellValue(
+                getAdresseEmployeur().getData().get(TIAbstractAdresseDataSource.ADRESSE_VAR_NPA));
+        rowEmployeur.createCell(CELL_EMPLOYEUR_LOCALITE).setCellValue(
+                getAdresseEmployeur().getData().get(TIAbstractAdresseDataSource.ADRESSE_VAR_LOCALITE));
+        rowEmployeur.createCell(CELL_EMPLOYEUR_NUM_AFFI).setCellValue(getEmployeur().getAffilieNumero());
+
+        listeRowSalarie.add(0, rowEmployeur);
+
+        for (int i = 1; i < listeDS.size(); i++) {
             HSSFRow row = sheet.createRow(i);
             row.setHeightInPoints(10 * 15);
-            row.createCell((short) 0).setCellValue(listeDS.get(i).getNss());
-            row.createCell((short) 1).setCellValue(listeDS.get(i).getNomSalarie());
-            row.createCell((short) 2).setCellValue(listeDS.get(i).getMoisDebut() + " - " + listeDS.get(i).getMoisFin());
-            row.createCell((short) 3).setCellValue(listeDS.get(i).getSalaire());
-            row.createCell((short) 4).setCellValue(listeDS.get(i).getSeuilEntree());
+            row.createCell(CELL_SALARIE_NSS).setCellValue(listeDS.get(i).getNss());
+            row.createCell(CELL_SALARIE_NOM).setCellValue(listeDS.get(i).getNomSalarie());
+            row.createCell(CELL_SALARIE_PERIODE).setCellValue(
+                    listeDS.get(i).getMoisDebut() + " - " + listeDS.get(i).getMoisFin());
+            row.createCell(CELL_SALARIE_SALAIRE).setCellValue(listeDS.get(i).getSalaire());
+            row.createCell(CELL_SALARIE_SEUIL).setCellValue(listeDS.get(i).getSeuilEntree());
 
             listeRowSalarie.add(i, row);
         }
     }
 
     /**
-     * Creation du tanleau récapitulatif des salariés
+     * Creation du tableau récapitulatif des salariés
      * 
      * @param fileName
      * @param listeSalarie
      * @throws DocumentException
      * @throws IOException
      */
-    private static void createTableauSalarie(String fileName) throws DocumentException, IOException {
+    private void createTableauSalarie(String fileName) throws DocumentException, IOException {
         // nouveau document pdf
         Document out = new Document(PageSize.LETTER.rotate());
 
@@ -118,31 +169,163 @@ public class AFListeExtraitDS {
         tableHeaderFont.setSize(8);
         tableHeaderFont.setStyle("bold");
 
-        ByteArrayOutputStream os = new ByteArrayOutputStream();
         // Construction nom fichier et path
-        String path = Jade.getInstance().getHomeDir() + "work/" + fileName + ".pdf";
+        setPath(Jade.getInstance().getExternalModelDir() + AFApplication.DEFAULT_APPLICATION_NAOS_REP + "//work//"
+                + fileName + ".pdf");
 
-        PdfWriter.getInstance(out, new FileOutputStream(path));
+        FileOutputStream file = new FileOutputStream(getPath());
+
+        PdfWriter.getInstance(out, file);
 
         out.open();
 
-        int cpt = 1;
-
-        // Debut de la feuille , 1 feuille, une par années
+        // Debut de la feuille
         out.newPage();
         // *********** en tete
-        // out.add(createEnteteFeuilleTable(tableHeaderFont, cpt));
+        out.add(createEnteteFeuilleTable(tableHeaderFont));
         // *********** Titre feuille
-        // out.add(createTitreFeuilleTable(tableHeaderFont));
+        out.add(createTitreFeuilleTable(tableHeaderFont));
         // *********** Bloc employeur
-        // out.add(createBlocEmployeurFeuilleTable(tableHeaderFont, tableStandardFont, annee,
-        // listeSalarie.get(annee)));
+        out.add(createBlocEmployeurFeuilleTable(tableHeaderFont, tableStandardFont));
         // ********** Bloc salarié, 1 par année
         out.add(createBlocSalarieFeuilleTable(tableHeaderFont, tableStandardFont));
-        cpt++;
-
         // ********** Fin de la feuille
         out.close();
+
+        file.close();
+    }
+
+    /**
+     * Retourne l'en tete de la caisse pour chaque feuille récapitulative des salariées
+     * 
+     * @param font
+     * @return
+     */
+    private PdfPTable createEnteteFeuilleTable(Font font) {
+        // tableau de base
+        PdfPTable table = new PdfPTable(3);
+        // largeur 100
+        table.setWidthPercentage(100);
+        // titre caisse
+        PdfPCell cell = new PdfPCell(new Phrase(getNomCaisse(), font));
+        cell.setColspan(2);
+        cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+        cell.setBorder(Rectangle.NO_BORDER);
+        table.addCell(cell);
+
+        // date, ajouter la date voulue
+        cell = new PdfPCell(new Phrase("Date : " + Date.now().getSwissValue(), font));
+        cell.setBorder(Rectangle.NO_BORDER);
+        table.addCell(cell);
+
+        // localité
+        cell = new PdfPCell(new Phrase(getAdresseCaisse(), font));
+        cell.setColspan(2);
+        cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+        cell.setBorder(Rectangle.NO_BORDER);
+        table.addCell(cell);
+
+        // lignes vide pour espace avant tableau employeur
+        cell = new PdfPCell(new Phrase(" ", font));
+        cell.setColspan(3);
+        cell.setBorder(Rectangle.NO_BORDER);
+        table.addCell(cell);
+        cell = new PdfPCell(new Phrase(" ", font));
+        cell.setColspan(3);
+        cell.setBorder(Rectangle.NO_BORDER);
+        table.addCell(cell);
+
+        return table;
+    }
+
+    /**
+     * Création du titre de la feuille des salariées
+     * 
+     * @param tableHeaderFont
+     * @return
+     */
+    private PdfPTable createTitreFeuilleTable(Font tableHeaderFont) {
+        // En tete titre détaié
+        PdfPTable table = new PdfPTable(1);
+        table.setWidthPercentage(100);
+        PdfPCell cell = new PdfPCell(new Phrase("Détail des salaires versés soumis aux cotisations LPP",
+                tableHeaderFont));
+        cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+        table.addCell(cell);
+        // ligne vide
+        cell = new PdfPCell(new Phrase(" ", tableHeaderFont));
+        cell.setBorder(Rectangle.NO_BORDER);
+        table.addCell(cell);
+        return table;
+    }
+
+    /**
+     * Creation du bloc employeur, titre, entete et tableau
+     * 
+     * @param header
+     * @param standard
+     * @return
+     */
+    private PdfPTable createBlocEmployeurFeuilleTable(Font header, Font standard) {
+
+        // récupération d'une ligne
+        HSSFRow ligneEmployeur = listeRowSalarie.get(0);
+
+        // tableau de 8 colones
+        PdfPTable tableau = new PdfPTable(8);
+        tableau.setWidthPercentage(100.00f);
+        // ligne employeur
+        PdfPCell cell = new PdfPCell(new Phrase("Employeur :", header));
+        cell.setBorder(Rectangle.NO_BORDER);
+        cell.setHorizontalAlignment(Element.ALIGN_LEFT);
+        cell.setColspan(8);
+        tableau.addCell(cell);
+
+        // **** En tete employeur, en tete du tableau
+
+        cell = new PdfPCell(new Phrase("Nom", header));
+        cell.setColspan(2);
+        tableau.addCell(cell);
+        cell = new PdfPCell(new Phrase("Rue", header));
+        cell.setColspan(2);
+        tableau.addCell(cell);
+        tableau.addCell(new Phrase("NPA", header));
+        tableau.addCell(new Phrase("Localité", header));
+        tableau.addCell(new Phrase("N° affilié", header));
+        tableau.addCell(new Phrase("Année de décompte", header));
+
+        // Valeurs de la cellule employeur
+
+        // Nom - colonne 0
+        cell = new PdfPCell(new Phrase(ligneEmployeur.getCell(CELL_EMPLOYEUR_NOM).getStringCellValue(), standard));
+        cell.setColspan(2);
+        tableau.addCell(cell);
+
+        // Rue - colonne 1
+        cell = new PdfPCell(new Phrase(ligneEmployeur.getCell(CELL_EMPLOYEUR_RUE).getStringCellValue(), standard));
+        cell.setColspan(2);
+        tableau.addCell(cell);
+
+        // NPA - colonne 2
+        tableau.addCell(new Phrase(ligneEmployeur.getCell(CELL_EMPLOYEUR_NPA).getStringCellValue(), standard));
+
+        // Localite - colonne 3
+        tableau.addCell(new Phrase(ligneEmployeur.getCell(CELL_EMPLOYEUR_LOCALITE).getStringCellValue(), standard));
+
+        // No Affilie - colonne 4
+        tableau.addCell(new Phrase(ligneEmployeur.getCell(CELL_EMPLOYEUR_NUM_AFFI).getStringCellValue(), standard));
+
+        // Annee
+        tableau.addCell(new Phrase(getAnnee(), standard));
+
+        // ligne vide
+        PdfPCell cellVide = new PdfPCell(new Phrase(" ", standard));
+        cellVide.setBorder(Rectangle.NO_BORDER);
+        cellVide.setColspan(8);
+        tableau.addCell(cellVide);
+
+        return tableau;
+
     }
 
     /**
@@ -153,13 +336,13 @@ public class AFListeExtraitDS {
      * @param listeSalarie
      * @return
      */
-    private static PdfPTable createBlocSalarieFeuilleTable(Font header, Font standard) {
+    private PdfPTable createBlocSalarieFeuilleTable(Font header, Font standard) {
 
         // tableau de 8 colones
-        PdfPTable tableau = new PdfPTable(8);
+        PdfPTable tableau = new PdfPTable(6);
         tableau.setWidthPercentage(100.00f);
         // ligne employeur
-        PdfPCell cell = new PdfPCell(new Phrase("Salarié(s):", header));
+        PdfPCell cell = new PdfPCell(new Phrase("Salarié(s) :", header));
         cell.setBorder(Rectangle.NO_BORDER);
         cell.setHorizontalAlignment(Element.ALIGN_LEFT);
         cell.setColspan(8);
@@ -192,26 +375,12 @@ public class AFListeExtraitDS {
         cell.setHorizontalAlignment(Element.ALIGN_CENTER);
         tableau.addCell(cell);
 
-        // Deduction
-        cell = new PdfPCell(new Phrase("Déduction coodination", header));
-        cell.setHorizontalAlignment(Element.ALIGN_CENTER);
-        tableau.addCell(cell);
-
-        // montant soumis total
-        cell = new PdfPCell(new Phrase("Montant soumis", header));
-        cell.setHorizontalAlignment(Element.ALIGN_CENTER);
-        tableau.addCell(cell);
-
-        // iteration sur les salarie
-
-        for (int i = 0; i < listeRowSalarie.size(); i++) {
+        // iteration sur les salarie (commence à 1 car la ligne 0 est l'employeur)
+        for (int i = 1; i < listeRowSalarie.size(); i++) {
             HSSFRow ligne = listeRowSalarie.get(i);
 
-            // String montant = new
-            // String(ligne.getCell(ILPPConstantes.XLS_MONTANT_SALARIE_COLUMN).getStringCellValue());
-
             // nss - colonne 0
-            HSSFCell nssCell = ligne.getCell((short) 0);
+            HSSFCell nssCell = ligne.getCell(CELL_SALARIE_NSS);
 
             // Si nss pas null
             if (nssCell != null) {
@@ -223,37 +392,130 @@ public class AFListeExtraitDS {
             tableau.addCell(cell);
 
             // nom - colonne 1
-            cell = new PdfPCell(new Phrase(ligne.getCell((short) 1).getStringCellValue(), standard));
+            cell = new PdfPCell(new Phrase(ligne.getCell(CELL_SALARIE_NOM).getStringCellValue(), standard));
             cell.setColspan(2);
             cell.setHorizontalAlignment(Element.ALIGN_LEFT);
             tableau.addCell(cell);
 
             // période - colonne 2
-            cell = new PdfPCell(new Phrase(ligne.getCell((short) 2).getStringCellValue(), standard));
+            cell = new PdfPCell(new Phrase(ligne.getCell(CELL_SALARIE_PERIODE).getStringCellValue(), standard));
             cell.setHorizontalAlignment(Element.ALIGN_CENTER);
             tableau.addCell(cell);
 
             // montant salaire - colonne 3
-            cell = new PdfPCell(new Phrase(ligne.getCell((short) 3).getStringCellValue(), standard));
+            cell = new PdfPCell(new Phrase(ligne.getCell(CELL_SALARIE_SALAIRE).getStringCellValue(), standard));
             cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
             tableau.addCell(cell);
 
             // seuil entrée LPP - colonne 4
-            cell = new PdfPCell(new Phrase(ligne.getCell((short) 4).getStringCellValue(), standard));
-            cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
-            tableau.addCell(cell);
-
-            // ? - colonne 5
-            cell = new PdfPCell(new Phrase("", standard));
-            cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
-            tableau.addCell(cell);
-
-            // ? - colonne 6
-            cell = new PdfPCell(new Phrase("", standard));
+            cell = new PdfPCell(new Phrase(ligne.getCell(CELL_SALARIE_SEUIL).getStringCellValue(), standard));
             cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
             tableau.addCell(cell);
 
         }
         return tableau;
+    }
+
+    // Getters
+
+    public AFAffiliation getEmployeur() {
+        return employeur;
+    }
+
+    public String getAnnee() {
+        return annee;
+    }
+
+    public TIAdresseDataSource getAdresseEmployeur() {
+        return adresseEmployeur;
+    }
+
+    public String getNomCaisse() {
+        return nomCaisse;
+    }
+
+    public String getAdresseCaisse() {
+        return adresseCaisse;
+    }
+
+    public List<AFExtraitDS> getListeDS() {
+        return listeDS;
+    }
+
+    // Setters
+
+    public void setEmployeur(AFAffiliation employeur) {
+        this.employeur = employeur;
+    }
+
+    public void setAnnee(String annee) {
+        this.annee = annee;
+    }
+
+    public void setAdresseEmployeur(TIAdresseDataSource adresseEmployeur) {
+        this.adresseEmployeur = adresseEmployeur;
+    }
+
+    public void setNomCaisse(String nomCaisse) {
+        this.nomCaisse = nomCaisse;
+    }
+
+    public void setAdresseCaisse(String adresseCaisse) {
+        this.adresseCaisse = adresseCaisse;
+    }
+
+    public void setListeDS(List<AFExtraitDS> listeDS) {
+        this.listeDS = listeDS;
+    }
+
+    @Override
+    protected void _executeCleanUp() {
+        //
+    }
+
+    @Override
+    protected boolean _executeProcess() throws Exception {
+        setDocumentInfoPdf(createDocInfo());
+
+        setNomCaisse(FWIImportProperties.getInstance().getProperty(getDocumentInfoPdf(),
+                ACaisseReportHelper.JASP_PROP_NOM_CAISSE + getSession().getIdLangueISO().toUpperCase()));
+        setAdresseCaisse(FWIImportProperties.getInstance().getProperty(getDocumentInfoPdf(),
+                ACaisseReportHelper.JASP_PROP_HEADER_ADRESSE_CAISSE + getSession().getIdLangueISO().toUpperCase()));
+
+        initFonts();
+
+        initSheet();
+
+        fillRowsList(getListeDS());
+
+        createListPDF();
+
+        return true;
+    }
+
+    @Override
+    protected String getEMailObject() {
+        return "L'impression du document Extrait déclaration de salaires pour l'affilié a été réalisée avec succès";
+    }
+
+    @Override
+    public GlobazJobQueue jobQueue() {
+        return null;
+    }
+
+    public JadePublishDocumentInfo getDocumentInfoPdf() {
+        return documentInfoPdf;
+    }
+
+    public void setDocumentInfoPdf(JadePublishDocumentInfo documentInfoPdf) {
+        this.documentInfoPdf = documentInfoPdf;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
     }
 }
