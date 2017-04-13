@@ -1,3 +1,5 @@
+<%@page import="ch.globaz.utils.CommonNSSFormater"%>
+<%@page import="ch.globaz.amal.business.models.annoncesedexco.SimpleAnnonceSedexCODebiteur"%>
 <%@page import="globaz.amal.utils.AMContribuableHistoriqueHelper"%>
 <%@page import="ch.globaz.amal.business.models.annoncesedexco.SimpleAnnonceSedexCOAssure"%>
 <%@page import="ch.globaz.amal.business.models.annoncesedexco.ComplexAnnonceSedexCO2"%>
@@ -18,59 +20,14 @@
 
 <link rel="stylesheet" type="text/css" href="<%=servletContext%><%=(mainServletPath+"Root")%>/css/amal.css" rel="stylesheet"/>
 
-<script type="text/javascript">
-
-function Personne(_noAvs, _prenom, _nom){
-	this.avs = _noAvs;
-	this.prenom = _prenom;
-	this.nom = _nom;
-}
-
-function DetailFinance(_description, _startDate, _endDate, _valeur){
-	this.description = _description; // Prime or Participation
-	this.startDate = _startDate;
-	this.endDate = _endDate;
-	this.valeur = _valeur;
-}
-
-function DetailAssure(_objAssure, _objPrime){
-	this.assure = _objAssure; // Type Personne
-	this.prime = _objPrime; // Type DetailFinance
-}
-
-function Annonce(_title, _subtitle, _interets, _frais, _total, _objDebiteur/*, _objAssure*/) {
-	this.title = _title;
-	this.subtitle = _subtitle;
-	this.interets = _interets;
-	this.frais = _frais;
-	this.total = _total;
-	this.debiteur = _objDebiteur; // Type personne seulement 1 element
-	//this.assure = _objAssure; // Collection type DetailAssure
-}
-
-<%
-	String title = "Détail annonce #";
-	String subtitle = "Créance avec garantie de prise en charge";
-	String interets = String.valueOf(3);
-	String frais = String.valueOf(10);
-	String total = String.valueOf(13);
-	String noAvs = "756.4567.8912.33";
-	String prenom = "Johnn Arnold";
-	String nom = "Smidth Johannensons";
-%>
-var debiteur = new Personne('<%=noAvs%>','<%=prenom%>','<%=nom%>');
-var annonceDetail = new Annonce('<%=title%>', '<%=subtitle%>','<%=interets%>','<%=frais%>','<%=total%>', debiteur);
-
-</script>
-
-
+<script type="text/javascript" src="<%=servletContext%><%=(mainServletPath + "Root")%>/scripts/annoncesedex/baseObjectsCO.js"/></script>
 <script type="text/javascript" src="<%=servletContext%><%=(mainServletPath + "Root")%>/scripts/annoncesedex/detailsCO2.js"/></script>
 
-<div id="dlgAnnonceDetail" title="Affichage detail SEDEX CO2">
-	<table id="tblAnnonceContainer"></table>
+<div id="dlgAnnonceDetailCO2" title="Affichage detail SEDEX CO2">
+	<table id="tblAnnonceContainerCO2"></table>
 </div>
 
-<div id="conteneurComplexAnnonceSedex">
+<div id="conteneurComplexAnnonceSedex" style="overflow: auto; height: 600px;">
 	<table width="100%" border="0">
 		<col align="center" style="font-weight: bold"></col> 	<!-- Date -->
 		<col align="center"></col>								<!-- Assureur -->
@@ -95,38 +52,157 @@ var annonceDetail = new Annonce('<%=title%>', '<%=subtitle%>','<%=interets%>','<
 			String rowStyle = "amalRowOdd";
 			ComplexAnnonceSedexCO2Search annoncesCOSearch = viewBean.getAnnonceSedexCO2();
 			if(annoncesCOSearch != null){%>
-			
-<!--
-Stand by code if any filter is implement later
 
-		<tr class="amalRowOdd" behaviour="search" style="height:26px; display:<%=annoncesCOSearch.getSize() > 0? "":"none"%>;" >
-			<td colspan="10" align="left">
-				<select id="selectSedex">
-					<option value="all"></option>
-				 <%for (String idDetailFamille : listIdsDetailFamille.keySet()) { %>
-					<option value="<%=idDetailFamille%>"><%=listIdsDetailFamille.get(idDetailFamille) %></option>
-				<%} %> 
-				</select>
-			</td>							
-		</tr>
--->
 		<tr style="background-color:#B3C4DB" >
 			<td colspan="10"></td>
 		</tr>
+
+<!-- /////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+<!-- ////////////////////////		Start: Popup section related /////////////////////////////////////////// -->
+<!-- /////////////////////////////////////////////////////////////////////////////////////////////////////// -->
 		<%
+			CommonNSSFormater nssFormater = new CommonNSSFormater();
+			long latestAnnonce = 0;
 			for(int iAnnonce = 0; iAnnonce<annoncesCOSearch.getSize();iAnnonce++){
 			    ComplexAnnonceSedexCO2 currentAnnonce = (ComplexAnnonceSedexCO2)annoncesCOSearch.getSearchResults()[iAnnonce];
-			    SimpleAnnonceSedexCOAssure currentAssure = (SimpleAnnonceSedexCOAssure)currentAnnonce.getSimpleAnnonceSedexCOAssure();
-			    String debiteurId = viewBean.getContribuable().getId();
-			    String currentId = currentAssure.getIdContribuable();
-			    boolean isDebiteur = debiteurId.equals(currentId);
-				if(iAnnonce%2==0){
-					rowStyle = "amalRow";
-				}else{
-					rowStyle = "amalRowOdd";
+			    String tmpMess = currentAnnonce.getSimpleAnnonceSedexCO().getIdAnnonceSedexCO();
+			    
+			    long messageId = 0;
+				if(tmpMess != null){
+			    	messageId = Long.parseLong(tmpMess);
 				}
+				
+			    if (latestAnnonce == 0 || messageId > latestAnnonce){
+			        latestAnnonce = messageId;
+			    }
+			}
+			
+			String tmpAnnonceSedex = "";
+			String annonceId = "";
+			String csMess = "";
+			String title = "";
+			String subtitle = "";
+			String interets = "";
+			String frais = "";
+			String total = "";
+			String noAvs = "";
+			String nomPrenom = "";
+			int assureCounter = 0;
+
+			for(int iAnnonce = 0; iAnnonce<annoncesCOSearch.getSize();iAnnonce++){
+			    ComplexAnnonceSedexCO2 currentAnnonce = (ComplexAnnonceSedexCO2)annoncesCOSearch.getSearchResults()[iAnnonce];
+			    csMess = currentAnnonce.getSimpleAnnonceSedexCO().getIdAnnonceSedexCO();
+			    
+			    if(String.valueOf(latestAnnonce).equals(csMess)){
+				    SimpleAnnonceSedexCODebiteur currentDebiteur = (SimpleAnnonceSedexCODebiteur)currentAnnonce.getSimpleAnnonceSedexCODebiteur();
+				    SimpleAnnonceSedexCOAssure currentAssure = (SimpleAnnonceSedexCOAssure)currentAnnonce.getSimpleAnnonceSedexCOAssure();
+				    String assureNss = currentAssure.getNssAssure();
+				    String debiteurNss = currentDebiteur.getNssDebiteur();
+				    
+				    String messSubType = currentAnnonce.getSimpleAnnonceSedexCO().getMessageSubType();
+					String creanceConst = AMMessagesSubTypesAnnonceSedexCO.CREANCE_AVEC_GARANTIE_DE_PRISE_EN_CHARGE.getValue();
+					String subtypeLibelle = currentAnnonce.getSimpleAnnonceSedexCO().getMessageSubTypeLibelle();
+					
+					
+					boolean isDebiteur = debiteurNss.equals(assureNss);
+					boolean isCreance = messSubType.equals(creanceConst);
+					annonceId = csMess;
+					if(isDebiteur){
+						title = "Détail annonce # " + csMess;
+						subtitle = isCreance  ? "Créance avec garantie de prise en charge" :"";
+						interets = currentAnnonce.getSimpleAnnonceSedexCODebiteur().getInterets();
+						frais = currentAnnonce.getSimpleAnnonceSedexCODebiteur().getFrais();
+						total = currentAnnonce.getSimpleAnnonceSedexCODebiteur().getTotal();
+						noAvs = nssFormater.format(debiteurNss);
+						nomPrenom = currentDebiteur.getNomPrenomDebiteur() ;
+					}
+					String avsAssure = nssFormater.format(currentAssure.getNssAssure());
+					String nomPrenomAssure= currentAssure.getNomPrenomAssure();
+					// Loop over Prime & Participation if any of them (Element)
+					String description = "";
+					String startDate = "";
+					String endDate = "";
+					String value = currentAssure.getPrimeMontant();
+					int countElement = 0;
+				%>
+					<script>
+						var detailAssure = new Array; 
+					</script>
+				<%
+					double tmpValue = 0;
+					if(value != null){
+						tmpValue = Double.parseDouble(value);
+					}
+					if(tmpValue > 0){
+					    description = "Prime";
+					    startDate = currentAssure.getPrimePeriodeDebut();
+					    endDate = currentAssure.getPrimePeriodeFin() ;
+				%>
+						<script>
+							detailAssure['<%=countElement%>'] = new DetailFinance('<%=description%>', '<%=startDate%>', '<%=endDate%>', '<%=value%>');
+						</script>
+				<%
+						countElement++;
+					}
+		
+					value = currentAssure.getCostSharingMontant();
+					if(value != null){
+						tmpValue = Double.parseDouble(value);
+					}
+					if(tmpValue > 0){
+					    description = "Participation";
+					    startDate = currentAssure.getCostSharingPeriodeDebut();
+					    endDate = currentAssure.getCostSharingPeriodeFin();
+				%>
+						<script>
+							detailAssure['<%=countElement%>'] = new DetailFinance('<%=description%>', '<%=startDate%>', '<%=endDate%>', '<%=value%>');
+						</script>
+				<%}	%>
+			<!-- Load assure information -->
+			<script>
+				var assure = new Personne('<%=avsAssure%>','<%=nomPrenomAssure%>');
+				assureArray['<%=assureCounter%>'] = new DetailAssure(assure, detailAssure);
+			</script>
+			<%assureCounter++;
+			}//End if latest annonce
+		}// End for %>
+ 		<script>
+			var debiteur = new Personne('<%=noAvs%>','<%=nomPrenom%>');
+			var annonceDetail = new Annonce('<%=csMess%>', '<%=title%>', '<%=subtitle%>','<%=interets%>','<%=frais%>','<%=total%>', debiteur, assureArray);
+			assureArray = new Array; // Reset object
+		</script>
+<!-- /////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+<!-- ////////////////////////		End: Popup section related   /////////////////////////////////////////// -->
+<!-- /////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+
+		<%		
+			for(int iAnnonce = 0; iAnnonce<annoncesCOSearch.getSize();iAnnonce++){
+			    ComplexAnnonceSedexCO2 currentAnnonce = (ComplexAnnonceSedexCO2)annoncesCOSearch.getSearchResults()[iAnnonce];
+			    csMess = currentAnnonce.getSimpleAnnonceSedexCO().getIdAnnonceSedexCO();
+			    
+			    if(String.valueOf(latestAnnonce).equals(csMess)){
+				    SimpleAnnonceSedexCODebiteur currentDebiteur = (SimpleAnnonceSedexCODebiteur)currentAnnonce.getSimpleAnnonceSedexCODebiteur();
+				    SimpleAnnonceSedexCOAssure currentAssure = (SimpleAnnonceSedexCOAssure)currentAnnonce.getSimpleAnnonceSedexCOAssure();
+				    String assureNss = currentAssure.getNssAssure();
+				    String debiteurNss = currentDebiteur.getNssDebiteur();
+				    
+				    String messSubType = currentAnnonce.getSimpleAnnonceSedexCO().getMessageSubType();
+					String creanceConst = AMMessagesSubTypesAnnonceSedexCO.CREANCE_AVEC_GARANTIE_DE_PRISE_EN_CHARGE.getValue();
+					String subtypeLibelle = currentAnnonce.getSimpleAnnonceSedexCO().getMessageSubTypeLibelle();
+					interets = currentAnnonce.getSimpleAnnonceSedexCODebiteur().getInterets();
+					frais = currentAnnonce.getSimpleAnnonceSedexCODebiteur().getFrais();
+					total = currentAnnonce.getSimpleAnnonceSedexCODebiteur().getTotal();
+						
+					boolean isDebiteur = debiteurNss.equals(assureNss);
+					boolean isCreance = messSubType.equals(creanceConst);
+					
+					if(iAnnonce%2==0){
+						rowStyle = "amalRow";
+					}else{
+						rowStyle = "amalRowOdd";
+					}
 		%>
- 
+
 		<tr style="height:26px" class="<%=rowStyle%>" onMouseOver="jscss('swap', this, '<%=rowStyle%>', 'amalRowHighligthed')" onMouseOut="jscss('swap', this, 'amalRowHighligthed', '<%=rowStyle%>')">
 			<!-- Date -->
 			<td><%=currentAnnonce.getSimpleAnnonceSedexCO().getDateAnnonce()%></td>
@@ -138,16 +214,9 @@ Stand by code if any filter is implement later
 			<!-- Seulement créance avec garantie auras de liens sur le détail -->
 			<td>
 			<%
-			String messSubType = currentAnnonce.getSimpleAnnonceSedexCO().getMessageSubType();
-			String creanceConst = AMMessagesSubTypesAnnonceSedexCO.CREANCE_AVEC_GARANTIE_DE_PRISE_EN_CHARGE.getValue();
-			String subtypeLibelle = currentAnnonce.getSimpleAnnonceSedexCO().getMessageSubTypeLibelle();
-			String csMess = currentAnnonce.getSimpleAnnonceSedexCO().getIdAnnonceSedexCO();
-			long messageId = 0;
-			if(csMess != null){
-		    	messageId = Long.parseLong(csMess);
-			}
-			if (messSubType.equals(creanceConst)){ %>
-				<a style="color:blue" onclick="showdetail(<%=messageId%>);" href="#">
+			
+			if (isCreance){ %>
+				<a style="color:blue" onclick="showdetailCO2(<%=csMess%>);" href="#<%=csMess%>">
 					<%=subtypeLibelle%>
 				</a>
 				<%} else { %>
@@ -190,19 +259,20 @@ Stand by code if any filter is implement later
 			<td><%=nomMembre%></td>
 			<%if(isDebiteur){ %>
 				<!--  Intérêts créance || vide  -->
-				<td><%=currentAnnonce.getSimpleAnnonceSedexCODebiteur().getInterets()%></td>
+				<td><%=interets%></td>
 	
 				<!--  Frais créance || vide -->
-				<td><%=currentAnnonce.getSimpleAnnonceSedexCODebiteur().getFrais()%></td>
+				<td><%=frais%></td>
 	
 				<!--  Total créance || vide  -->
-				<td><%=currentAnnonce.getSimpleAnnonceSedexCODebiteur().getTotal()%></td>
+				<td><%=total%></td>
 			<%}else{%>
 				<td/><td/><td/>
 			<%}%>
 		</tr>
 
 		<%
+			    } //End if latestAnnonce
 			} //End for
 		} // end if null object
 		%>

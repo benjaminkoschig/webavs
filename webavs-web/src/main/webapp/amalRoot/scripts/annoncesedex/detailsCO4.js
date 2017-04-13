@@ -1,13 +1,24 @@
 //------------------------------------------------------------
+// Auxiliary class to store extended data for CO4
+//------------------------------------------------------------
+
+function AnnonceCO4(_annonce, _caisse, _dateAnnonce) {
+	this.annonce = _annonce; // Base annonce defined in baseObjects.js
+	this.caisse = _caisse;
+	this.dateAnnonce = _dateAnnonce;
+}
+
+//------------------------------------------------------------
 // Clean and load the modal dialog
 //------------------------------------------------------------
-function showdetailCO2(_sedexId){
-	// Clean up previous information of DIV container
-	var tblContainer = document.getElementById("dlgAnnonceDetailCO2");
-	var oldTable = document.getElementById("tblAnnonceContainerCO2");
-	tblContainer.removeChild(oldTable);
-
-	if(annonceDetail != undefined){
+function showdetailCO4(_sedexId){
+	if(annonceCO4 != undefined){
+		// Clean up previous information of DIV container
+		var tblContainer = document.getElementById("dlgAnnonceDetailCO4");
+		var oldTable = document.getElementById("tblAnnonceContainerCO4");
+		tblContainer.removeChild(oldTable);
+		
+		var annonceDetail = annonceCO4.annonce;
 		var titreAnnonce = annonceDetail.title;
 		var subtitreAnnonce = annonceDetail.subtitle;
 		var avsDebiteur = annonceDetail.debiteur.avs;
@@ -16,8 +27,8 @@ function showdetailCO2(_sedexId){
 		var frais = annonceDetail.frais;
 		var total = annonceDetail.total;
 
-		$('#dlgAnnonceDetailCO2').dialog('option', 'title', titreAnnonce); // Set dialog title
-		var textToInsert = '<table id="tblAnnonceContainerCO2" width="100%">';
+		$('#dlgAnnonceDetailCO4').dialog('option', 'title', titreAnnonce); // Set dialog title
+		var textToInsert = '<table id="tblAnnonceContainerCO4" width="100%">';
 		textToInsert += '<col width="10"></col>'; // empty col only to format view
 		textToInsert += '<col align="left" width="100"></col>'; // Fix text Débiteur, Assuré, Intérêts, Frais et Total
 		textToInsert += '<col align="left" width="150"></col>'; // Data
@@ -76,8 +87,8 @@ function showdetailCO2(_sedexId){
 		
 		textToInsert += '</table>';
 		
-		$('#dlgAnnonceDetailCO2').append(textToInsert);
-		$('#dlgAnnonceDetailCO2').dialog({height:'400px', minHeight :'300px', width:'700'});
-		$('#dlgAnnonceDetailCO2').dialog('open');
-	}			
+		$('#dlgAnnonceDetailCO4').append(textToInsert);
+		$('#dlgAnnonceDetailCO4').dialog({height:'400px', minHeight :'300px', width:'700'});
+		$('#dlgAnnonceDetailCO4').dialog('open');
+	}
 }

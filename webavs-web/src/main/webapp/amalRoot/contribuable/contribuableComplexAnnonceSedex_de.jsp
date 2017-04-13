@@ -26,7 +26,7 @@ $(document).ready(function() {
 });
 </script>
 
-<div id="conteneurComplexAnnonceSedex">
+<div id="conteneurComplexAnnonceSedex" style="overflow: auto; height: 600px;">
 	<table width="100%" border="0">
 		<col align="left" style="font-weight: bold"></col>
 		<col width="20px" align="center"></col>
