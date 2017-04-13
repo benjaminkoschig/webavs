@@ -12,6 +12,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ch.admin.zas.rc.AbgangsmeldungType;
 import ch.admin.zas.rc.AenderungsmeldungAO9Type;
 import ch.admin.zas.rc.AenderungsmeldungHE9Type;
@@ -38,6 +40,8 @@ import ch.admin.zas.rc.ZuwachsmeldungO9Type;
  * 
  */
 public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implements REAnnonceXmlService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(REAnnonces9eXmlService.class);
 
     public static Set<Integer> ordentlicheRente = new HashSet<Integer>(Arrays.asList(10, 11, 12, 13, 14, 15, 16, 33,
             34, 35, 36, 50, 51, 52, 53, 54, 55, 56));
@@ -139,7 +143,7 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
         return augmentation9eme01;
     }
 
-    protected REAnnoncesAugmentationModification9Eme retrieveAnnonceAugModif9_2(
+    protected REAnnoncesAugmentationModification9Eme retrieveAnnonceAugModif9eme2(
             REAnnoncesAugmentationModification9Eme augmentation9eme01, BSession session) throws Exception {
         REAnnoncesAugmentationModification9Eme augmentation9eme02 = new REAnnoncesAugmentationModification9Eme();
         augmentation9eme02.setSession(session);
@@ -191,7 +195,7 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
 
         // Si pas d'office AI pas de bloc AI
         if (!JadeStringUtil.isBlank(enr02.getOfficeAICompetent())) {
-            baseDeCalcul.setIVDaten(rempliIVDatenWeakTypeHE9Assure(enr01, enr02));
+            baseDeCalcul.setIVDaten(rempliIVDatenWeakTypeHE9Assure(enr02));
         }
 
         description.getSonderfallcodeRente().addAll(rempliCasSpecial(enr02));
@@ -237,7 +241,7 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
 
         // Si pas d'office AI pas de bloc AI
         if (!JadeStringUtil.isBlank(enr02.getOfficeAICompetent())) {
-            baseDeCalcul.setIVDaten(rempliIVDatenTypeHE9Assure(enr01, enr02));
+            baseDeCalcul.setIVDaten(rempliIVDatenTypeHE9Assure(enr02));
         }
 
         description.getSonderfallcodeRente().addAll(rempliCasSpecial(enr02));
@@ -286,20 +290,20 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
         baseDeCalcul.setNiveaujahr(retourneXMLGregorianCalendarFromYear(enr02.getAnneeNiveau()));
 
         // Echelle de la base de calcul
-        SkalaBerechnungType echelleCalcul = rempliScalaBerechnungTyp(enr02);
+        SkalaBerechnungType echelleCalcul = rempliSkalaBerechnungTyp(enr02);
         baseDeCalcul.setSkalaBerechnung(echelleCalcul);
 
-        Gutschriften9Type bte = rempliBonnifications9e(enr01, enr02);
+        Gutschriften9Type bte = rempliBonnifications9e(enr02);
 
         baseDeCalcul.setGutschriften(bte);
-        DJE9BeschreibungType ram = rempliDJE9BeschreibungType(enr01, enr02);
+        DJE9BeschreibungType ram = rempliDJE9BeschreibungType(enr02);
         baseDeCalcul.setDJEBeschreibung(ram);
         // Si pas d'office AI pas de bloc AI
         if (!JadeStringUtil.isBlank(enr02.getOfficeAICompetent())) {
-            baseDeCalcul.setIVDaten(rempliIVDatenType9Assure(enr01, enr02));
+            baseDeCalcul.setIVDaten(rempliIVDatenType9Assure(enr02));
         }
         if (!JadeStringUtil.isBlank(enr02.getOfficeAiCompEpouse())) {
-            baseDeCalcul.setIVDatenEhefrau(rempliIVDatenType9Conjoint(enr01, enr02));
+            baseDeCalcul.setIVDatenEhefrau(rempliIVDatenType9Conjoint(enr02));
         }
         if (!JadeStringUtil.isBlank(enr02.getDureeAjournement())) {
             // Ajournement
@@ -363,20 +367,20 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
         }
 
         // Echelle de la base de calcul
-        ch.admin.zas.rc.SkalaBerechnungWeakType echelleCalcul = rempliScalaBerechnungWeakTyp(enr02);
+        ch.admin.zas.rc.SkalaBerechnungWeakType echelleCalcul = rempliSkalaBerechnungWeakTyp(enr02);
         baseDeCalcul.setSkalaBerechnung(echelleCalcul);
 
-        Gutschriften9WeakType bte = rempliBonnificationsWeak9e(enr01, enr02);
+        Gutschriften9WeakType bte = rempliBonnificationsWeak9e(enr02);
 
         baseDeCalcul.setGutschriften(bte);
-        DJE9BeschreibungWeakType ram = rempliDJE9BeschreibungWeakType(enr01, enr02);
+        DJE9BeschreibungWeakType ram = rempliDJE9BeschreibungWeakType(enr02);
         baseDeCalcul.setDJEBeschreibung(ram);
         // Si pas d'office AI pas de bloc AI
         if (!JadeStringUtil.isBlank(enr02.getOfficeAICompetent())) {
-            baseDeCalcul.setIVDaten(rempliIVDatenType9AssureWeak(enr01, enr02));
+            baseDeCalcul.setIVDaten(rempliIVDatenType9AssureWeak(enr02));
         }
         if (!JadeStringUtil.isBlank(enr02.getOfficeAiCompEpouse())) {
-            baseDeCalcul.setIVDatenEhefrau(rempliIVDatenType9ConjointWeak(enr01, enr02));
+            baseDeCalcul.setIVDatenEhefrau(rempliIVDatenType9ConjointWeak(enr02));
         }
         if (!JadeStringUtil.isBlank(enr02.getDureeAjournement())) {
             // Ajournement
@@ -435,20 +439,20 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
         baseDeCalcul.setNiveaujahr(retourneXMLGregorianCalendarFromYear(enr02.getAnneeNiveau()));
 
         // Echelle de la base de calcul
-        SkalaBerechnungWeakType echelleCalcul = rempliScalaBerechnungWeakTyp(enr02);
+        SkalaBerechnungWeakType echelleCalcul = rempliSkalaBerechnungWeakTyp(enr02);
         baseDeCalcul.setSkalaBerechnung(echelleCalcul);
 
-        Gutschriften9WeakType bte = rempliBonnificationsWeak9e(enr01, enr02);
+        Gutschriften9WeakType bte = rempliBonnificationsWeak9e(enr02);
 
         baseDeCalcul.setGutschriften(bte);
-        DJE9BeschreibungWeakType ram = rempliDJE9BeschreibungWeakType(enr01, enr02);
+        DJE9BeschreibungWeakType ram = rempliDJE9BeschreibungWeakType(enr02);
         baseDeCalcul.setDJEBeschreibung(ram);
         // Si pas d'office AI pas de bloc AI
         if (!JadeStringUtil.isBlank(enr02.getOfficeAICompetent())) {
-            baseDeCalcul.setIVDaten(rempliIVDatenType9AssureWeak(enr01, enr02));
+            baseDeCalcul.setIVDaten(rempliIVDatenType9AssureWeak(enr02));
         }
         if (!JadeStringUtil.isBlank(enr02.getOfficeAiCompEpouse())) {
-            baseDeCalcul.setIVDatenEhefrau(rempliIVDatenType9ConjointWeak(enr01, enr02));
+            baseDeCalcul.setIVDatenEhefrau(rempliIVDatenType9ConjointWeak(enr02));
         }
         description.getSonderfallcodeRente().addAll(rempliCasSpecial(enr02));
         if (!JadeStringUtil.isBlank(enr02.getReduction())) {
@@ -503,21 +507,21 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
         baseDeCalcul.setEinkommensgrenzenCode(convertIntToBoolean(testSiNullouZero(enr02.getAnneeNiveau())));
         baseDeCalcul.setMinimalgarantieCode(convertIntToBoolean(testSiNullouZero(enr02.getIsMinimumGaranti())));
         // Echelle de la base de calcul
-        SkalaBerechnungType echelleCalcul = rempliScalaBerechnungTyp(enr02);
+        SkalaBerechnungType echelleCalcul = rempliSkalaBerechnungTyp(enr02);
         baseDeCalcul.setSkalaBerechnung(echelleCalcul);
 
-        Gutschriften9Type bte = rempliBonnifications9e(enr01, enr02);
+        Gutschriften9Type bte = rempliBonnifications9e(enr02);
 
         baseDeCalcul.setGutschriften(bte);
 
-        DJE9BeschreibungType ram = rempliDJE9BeschreibungType(enr01, enr02);
+        DJE9BeschreibungType ram = rempliDJE9BeschreibungType(enr02);
         baseDeCalcul.setDJEBeschreibung(ram);
         // Si pas d'office AI pas de bloc AI
         if (!JadeStringUtil.isBlank(enr02.getOfficeAICompetent())) {
-            baseDeCalcul.setIVDaten(rempliIVDatenType9Assure(enr01, enr02));
+            baseDeCalcul.setIVDaten(rempliIVDatenType9Assure(enr02));
         }
         if (!JadeStringUtil.isBlank(enr02.getOfficeAiCompEpouse())) {
-            baseDeCalcul.setIVDatenEhefrau(rempliIVDatenType9Conjoint(enr01, enr02));
+            baseDeCalcul.setIVDatenEhefrau(rempliIVDatenType9Conjoint(enr02));
         }
         description.getSonderfallcodeRente().addAll(rempliCasSpecial(enr02));
         if (!JadeStringUtil.isBlank(enr02.getReduction())) {
@@ -535,16 +539,11 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
 
         RRMeldung9Type.OrdentlicheRente renteOrdinaire = factoryType.createRRMeldung9TypeOrdentlicheRente();
         RRMeldung9Type meldung9Type = factoryType.createRRMeldung9Type();
-        try {
-            AbgangsmeldungType diminution = createDiminutionCommune(enr01);
+        AbgangsmeldungType diminution = createDiminutionCommune(enr01);
 
-            renteOrdinaire.setAbgangsmeldung(diminution);
-            meldung9Type.setOrdentlicheRente(renteOrdinaire);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        renteOrdinaire.setAbgangsmeldung(diminution);
+        meldung9Type.setOrdentlicheRente(renteOrdinaire);
         return meldung9Type;
-
     }
 
     protected RRMeldung9Type annonceDiminutionExtraOrdinaire(REAnnoncesDiminution9Eme enr01) throws Exception {
@@ -552,14 +551,10 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
         RRMeldung9Type.AusserordentlicheRente renteExtraOrdinaire = factoryType
                 .createRRMeldung9TypeAusserordentlicheRente();
         RRMeldung9Type meldung9Type = factoryType.createRRMeldung9Type();
-        try {
-            AbgangsmeldungType diminution = createDiminutionCommune(enr01);
+        AbgangsmeldungType diminution = createDiminutionCommune(enr01);
 
-            renteExtraOrdinaire.setAbgangsmeldung(diminution);
-            meldung9Type.setAusserordentlicheRente(renteExtraOrdinaire);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        renteExtraOrdinaire.setAbgangsmeldung(diminution);
+        meldung9Type.setAusserordentlicheRente(renteExtraOrdinaire);
         return meldung9Type;
 
     }
@@ -568,14 +563,10 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
 
         RRMeldung9Type.Hilflosenentschaedigung api = factoryType.createRRMeldung9TypeHilflosenentschaedigung();
         RRMeldung9Type meldung9Type = factoryType.createRRMeldung9Type();
-        try {
-            AbgangsmeldungType diminution = createDiminutionCommune(enr01);
+        AbgangsmeldungType diminution = createDiminutionCommune(enr01);
 
-            api.setAbgangsmeldung(diminution);
-            meldung9Type.setHilflosenentschaedigung(api);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        api.setAbgangsmeldung(diminution);
+        meldung9Type.setHilflosenentschaedigung(api);
         return meldung9Type;
 
     }
@@ -605,8 +596,7 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
         return diminution;
     }
 
-    private DJE9BeschreibungType rempliDJE9BeschreibungType(REAnnoncesAugmentationModification9Eme enr01,
-            REAnnoncesAugmentationModification9Eme enr02) {
+    private DJE9BeschreibungType rempliDJE9BeschreibungType(REAnnoncesAugmentationModification9Eme enr02) {
         DJE9BeschreibungType ramDescription = factoryType.createDJE9BeschreibungType();
         if (!JadeStringUtil.isBlank(enr02.getRevenuPrisEnCompte())) {
             ramDescription.setAngerechneteEinkommen(Integer.valueOf(testSiNullouZero(enr02.getRevenuPrisEnCompte()))
@@ -617,15 +607,14 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
                     .getRamDeterminant())));
         }
         if (!JadeStringUtil.isBlank(enr02.getDureeCotPourDetRAM())) {
-            ramDescription.setBeitragsdauerDurchschnittlichesJahreseinkommen(convertAAMMtoBigDecimal((enr02
-                    .getDureeCotPourDetRAM())));
+            ramDescription.setBeitragsdauerDurchschnittlichesJahreseinkommen(convertAAMMtoBigDecimal(enr02
+                    .getDureeCotPourDetRAM()));
         }
 
         return ramDescription;
     }
 
-    private DJE9BeschreibungWeakType rempliDJE9BeschreibungWeakType(REAnnoncesAugmentationModification9Eme enr01,
-            REAnnoncesAugmentationModification9Eme enr02) {
+    private DJE9BeschreibungWeakType rempliDJE9BeschreibungWeakType(REAnnoncesAugmentationModification9Eme enr02) {
         DJE9BeschreibungWeakType ramDescription = factoryType.createDJE9BeschreibungWeakType();
         if (!JadeStringUtil.isBlank(enr02.getRevenuPrisEnCompte())) {
             ramDescription.setAngerechneteEinkommen(Integer.valueOf(testSiNullouZero(enr02.getRevenuPrisEnCompte()))
@@ -636,15 +625,14 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
                     .getRamDeterminant())));
         }
         if (!JadeStringUtil.isBlank(enr02.getDureeCotPourDetRAM())) {
-            ramDescription.setBeitragsdauerDurchschnittlichesJahreseinkommen(convertAAMMtoBigDecimal((enr02
-                    .getDureeCotPourDetRAM())));
+            ramDescription.setBeitragsdauerDurchschnittlichesJahreseinkommen(convertAAMMtoBigDecimal(enr02
+                    .getDureeCotPourDetRAM()));
         }
 
         return ramDescription;
     }
 
-    private Gutschriften9Type rempliBonnifications9e(REAnnoncesAugmentationModification9Eme enr01,
-            REAnnoncesAugmentationModification9Eme enr02) {
+    private Gutschriften9Type rempliBonnifications9e(REAnnoncesAugmentationModification9Eme enr02) {
         Gutschriften9Type bte = factoryType.createGutschriften9Type();
         if (!JadeStringUtil.isBlank(enr02.getRevenuAnnuelMoyenSansBTE())) {
             bte.setDJEohneErziehungsgutschrift(new BigDecimal(testSiNullouZero(enr02.getRevenuAnnuelMoyenSansBTE())));
@@ -659,8 +647,7 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
 
     }
 
-    private Gutschriften9WeakType rempliBonnificationsWeak9e(REAnnoncesAugmentationModification9Eme enr01,
-            REAnnoncesAugmentationModification9Eme enr02) {
+    private Gutschriften9WeakType rempliBonnificationsWeak9e(REAnnoncesAugmentationModification9Eme enr02) {
         Gutschriften9WeakType bte = factoryType.createGutschriften9WeakType();
         if (!JadeStringUtil.isBlank(enr02.getRevenuAnnuelMoyenSansBTE())) {
             bte.setDJEohneErziehungsgutschrift(new BigDecimal(testSiNullouZero(enr02.getRevenuAnnuelMoyenSansBTE())));
@@ -677,13 +664,12 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
     /**
      * Rempli les données utiles pour les données AI 9e révision
      * 
-     * @param enr01
      * @param enr02
+     * 
      * @return
      * @throws Exception
      */
-    private IVDaten9Type rempliIVDatenType9Assure(REAnnoncesAugmentationModification9Eme enr01,
-            REAnnoncesAugmentationModification9Eme enr02) throws Exception {
+    private IVDaten9Type rempliIVDatenType9Assure(REAnnoncesAugmentationModification9Eme enr02) throws Exception {
         IVDaten9Type donneeAI = factoryType.createIVDaten9Type();
         donneeAI.setIVStelle(Integer.valueOf(enr02.getOfficeAICompetent()));
         donneeAI.setInvaliditaetsgrad(Integer.valueOf(enr02.getDegreInvalidite()).shortValue());
@@ -696,8 +682,8 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
         return donneeAI;
     }
 
-    private IVDaten9WeakType rempliIVDatenType9AssureWeak(REAnnoncesAugmentationModification9Eme enr01,
-            REAnnoncesAugmentationModification9Eme enr02) throws Exception {
+    private IVDaten9WeakType rempliIVDatenType9AssureWeak(REAnnoncesAugmentationModification9Eme enr02)
+            throws Exception {
         IVDaten9WeakType donneeAI = factoryType.createIVDaten9WeakType();
         donneeAI.setIVStelle(Integer.valueOf(enr02.getOfficeAICompetent()));
         donneeAI.setInvaliditaetsgrad(Integer.valueOf(enr02.getDegreInvalidite()).shortValue());
@@ -710,8 +696,7 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
         return donneeAI;
     }
 
-    private IVDatenHE9Type rempliIVDatenTypeHE9Assure(REAnnoncesAugmentationModification9Eme enr01,
-            REAnnoncesAugmentationModification9Eme enr02) throws Exception {
+    private IVDatenHE9Type rempliIVDatenTypeHE9Assure(REAnnoncesAugmentationModification9Eme enr02) throws Exception {
         IVDatenHE9Type donneeAI = factoryType.createIVDatenHE9Type();
         donneeAI.setIVStelle(Integer.valueOf(enr02.getOfficeAICompetent()));
         String codeInfirmite = StringUtils.leftPad(enr02.getCodeInfirmite(), 5);
@@ -723,8 +708,8 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
         return donneeAI;
     }
 
-    private IVDatenHE9WeakType rempliIVDatenWeakTypeHE9Assure(REAnnoncesAugmentationModification9Eme enr01,
-            REAnnoncesAugmentationModification9Eme enr02) throws Exception {
+    private IVDatenHE9WeakType rempliIVDatenWeakTypeHE9Assure(REAnnoncesAugmentationModification9Eme enr02)
+            throws Exception {
         IVDatenHE9WeakType donneeAI = factoryType.createIVDatenHE9WeakType();
         donneeAI.setIVStelle(Integer.valueOf(enr02.getOfficeAICompetent()));
         String codeInfirmite = StringUtils.leftPad(enr02.getCodeInfirmite(), 5);
@@ -735,8 +720,7 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
         return donneeAI;
     }
 
-    private IVDaten9Type rempliIVDatenType9Conjoint(REAnnoncesAugmentationModification9Eme enr01,
-            REAnnoncesAugmentationModification9Eme enr02) throws Exception {
+    private IVDaten9Type rempliIVDatenType9Conjoint(REAnnoncesAugmentationModification9Eme enr02) throws Exception {
         IVDaten9Type donneeAI = factoryType.createIVDaten9Type();
         donneeAI.setIVStelle(Integer.valueOf(enr02.getOfficeAiCompEpouse()));
         donneeAI.setInvaliditaetsgrad(Integer.valueOf(enr02.getDegreInvaliditeEpouse()).shortValue());
@@ -749,8 +733,8 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
         return donneeAI;
     }
 
-    private IVDaten9WeakType rempliIVDatenType9ConjointWeak(REAnnoncesAugmentationModification9Eme enr01,
-            REAnnoncesAugmentationModification9Eme enr02) throws Exception {
+    private IVDaten9WeakType rempliIVDatenType9ConjointWeak(REAnnoncesAugmentationModification9Eme enr02)
+            throws Exception {
         IVDaten9WeakType donneeAI = factoryType.createIVDaten9WeakType();
         donneeAI.setIVStelle(Integer.valueOf(enr02.getOfficeAiCompEpouse()));
         donneeAI.setInvaliditaetsgrad(Integer.valueOf(enr02.getDegreInvaliditeEpouse()).shortValue());

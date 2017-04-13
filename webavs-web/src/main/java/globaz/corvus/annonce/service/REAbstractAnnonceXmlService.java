@@ -127,7 +127,9 @@ public abstract class REAbstractAnnonceXmlService {
             personne.setWohnkantonStaat(Integer.valueOf(enr01.getCantonEtatDomicile()).toString());
         }
         personne.setFamilienAngehoerige(membresDeLaFamille);
-        personne.setZivilstand(new Integer(enr01.getEtatCivil()).shortValue());
+        if (!JadeStringUtil.isBlank(enr01.getEtatCivil())) {
+            personne.setZivilstand(Integer.valueOf(enr01.getEtatCivil()).shortValue());
+        }
         return personne;
     }
 
@@ -184,7 +186,7 @@ public abstract class REAbstractAnnonceXmlService {
         }
     }
 
-    protected SkalaBerechnungType rempliScalaBerechnungTyp(REAnnoncesAbstractLevel2A enr02) {
+    protected SkalaBerechnungType rempliSkalaBerechnungTyp(REAnnoncesAbstractLevel2A enr02) {
         SkalaBerechnungType echelleCalcul = factoryType.createSkalaBerechnungType();
         echelleCalcul.setSkala(new Integer(enr02.getEchelleRente()).shortValue());
         echelleCalcul.setBeitragsdauerVor1973(convertAAMMtoBigDecimal(enr02.getDureeCoEchelleRenteAv73()));
@@ -197,7 +199,7 @@ public abstract class REAbstractAnnonceXmlService {
         return echelleCalcul;
     }
 
-    protected SkalaBerechnungWeakType rempliScalaBerechnungWeakTyp(REAnnoncesAbstractLevel2A enr02) {
+    protected SkalaBerechnungWeakType rempliSkalaBerechnungWeakTyp(REAnnoncesAbstractLevel2A enr02) {
         SkalaBerechnungWeakType echelleCalcul = factoryType.createSkalaBerechnungWeakType();
         if (!JadeStringUtil.isBlank(enr02.getEchelleRente())) {
             echelleCalcul.setSkala(Integer.valueOf(enr02.getEchelleRente()).shortValue());

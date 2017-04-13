@@ -280,12 +280,9 @@ public class REAnnonces9eXmlServiceTest {
         enregistrement02.setBteMoyennePrisEnCompte(bteMoyennePrisEnCompte);
 
         try {
-            // Augmentation Ordinaire
-
             // Modification Ordinaire
             testInstance.validateUnitMessage(testService.annonceChangementOrdinaire9e(enregistrement01,
                     enregistrement02));
-
         } catch (ValidationException ve) {
             Assert.assertEquals(null, ve);
         }
@@ -339,7 +336,7 @@ public class REAnnonces9eXmlServiceTest {
                 .retrieveAnnonceAugModif9(Matchers.any(REAnnoncesAbstractLevel1A.class), Matchers.any(BSession.class));
         Mockito.doReturn(new REAnnoncesAugmentationModification9Eme())
                 .when(testService)
-                .retrieveAnnonceAugModif9_2(Matchers.any(REAnnoncesAugmentationModification9Eme.class),
+                .retrieveAnnonceAugModif9eme2(Matchers.any(REAnnoncesAugmentationModification9Eme.class),
                         Matchers.any(BSession.class));
         Mockito.doReturn(new REAnnoncesDiminution9Eme()).when(testService)
                 .retrieveAnnonceDimi9(Matchers.any(REAnnoncesAbstractLevel1A.class), Matchers.any(BSession.class));
