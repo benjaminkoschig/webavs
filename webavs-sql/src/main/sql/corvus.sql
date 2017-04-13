@@ -38,6 +38,9 @@ CREATE TABLE schema.RE_LIGNE_DEBLOCAGE_VENTIL
    CSPY varchar(24) NOT NULL
 );
 
+--Mise à jour des anciens lots de déblocage
+UPDATE SCHEMA.RELOTS SET YTDENV=20100101 WHERE YTTOWN=52858001 AND YTTTYP = 52833004;
+
 /* Type d''etat pour les lignes de déblocage : */
 delete from SCHEMA.FWCOUP where pcosid in(select pcosid from SCHEMA.FWCOSP where pptygr ='REDEBETA');
 delete from SCHEMA.FWCOSP where pptygr ='REDEBETA';
