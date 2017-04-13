@@ -47,7 +47,7 @@ public class REGenererListeOVDeblocageProcess extends BProcess {
         }
 
         // Conversion des données pour l'impresssion
-        List<REOVDeblocageForListContainer> listOv = prepareDateToImpress(lstDeblocageVersement);
+        List<REOVDeblocageForListContainer> listOv = prepareDataToImpress(lstDeblocageVersement);
 
         // génération du document
         String docPath = genererFileExcel(listOv).getAbsolutePath();
@@ -70,7 +70,7 @@ public class REGenererListeOVDeblocageProcess extends BProcess {
         this.registerAttachedDocument(docInfo, docPath);
     }
 
-    private List<REOVDeblocageForListContainer> prepareDateToImpress(List<REDeblocageVersement> lst) {
+    private List<REOVDeblocageForListContainer> prepareDataToImpress(List<REDeblocageVersement> lst) {
 
         List<REOVDeblocageForListContainer> listOV = new ArrayList<REOVDeblocageForListContainer>();
 
@@ -89,6 +89,11 @@ public class REGenererListeOVDeblocageProcess extends BProcess {
                             + adr.getBanque().getCompte() + "\n" + getSession().getLabel("LISTE_DEBLOCAGE_OV_CLEARING")
                             + " : " + adr.getBanque().getClearing() + "\n" + adr.getBanque().getDesignation1() + "\n"
                             + adr.getBanque().getNpa() + " " + adr.getBanque().getLocalite());
+
+                    con.setAdresseBeneficiaire(adr.getTiers().getDesignation1() + "\n" + adr.getTiers().getRue() + " "
+                            + adr.getTiers().getNumero() + "\n" + adr.getTiers().getNpa() + " "
+                            + adr.getTiers().getLocalite());
+
                 } catch (RuntimeException e) {
                     JadeLogger.error("", e);
                 }

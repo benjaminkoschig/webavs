@@ -12,6 +12,7 @@ public class REOVDeblocageForListContainer {
 
     private String desciption;
     private String adressePaiement;
+    private String adresseBeneficiaire;
     private Montant montant;
 
     @Column(name = "LISTE_DEBLOCAGE_OV_DESCRIPTION", order = 1)
@@ -26,7 +27,13 @@ public class REOVDeblocageForListContainer {
         return adressePaiement;
     }
 
-    @Column(name = "LISTE_DEBLOCAGE_OV_MONTANT", order = 3)
+    @Column(name = "LISTE_DEBLOCAGE_OV_ADRESSE_BENEFICIAIRE", order = 3)
+    @ColumnStyle(align = Align.LEFT)
+    public String getAdresseBeneficiaire() {
+        return adresseBeneficiaire;
+    }
+
+    @Column(name = "LISTE_DEBLOCAGE_OV_MONTANT", order = 4)
     @ColumnStyle(align = Align.RIGHT, format = "#,##0.00", width = "10%")
     public Montant getMontant() {
         return montant;
@@ -38,6 +45,10 @@ public class REOVDeblocageForListContainer {
 
     public void setAdressePaiement(String adressePaiement) {
         this.adressePaiement = adressePaiement;
+    }
+
+    public void setAdresseBeneficiaire(String adresseBeneficiaire) {
+        this.adresseBeneficiaire = adresseBeneficiaire;
     }
 
     public void setMontant(Montant montant) {
