@@ -25,6 +25,7 @@ import globaz.leo.constantes.ILEConstantes;
 import globaz.leo.process.LEGenererEnvoi;
 import globaz.lupus.db.data.LUProvenanceDataSource;
 import globaz.lupus.db.journalisation.LUJournalListViewBean;
+import globaz.lupus.db.journalisation.LUJournalViewBean;
 import globaz.naos.application.AFApplication;
 import globaz.naos.db.affiliation.AFAffiliation;
 import globaz.naos.db.controleLpp.AFAffilieSoumiLpp;
@@ -107,8 +108,8 @@ public class AFControleLppAnnuelProcess extends BProcess {
             initialisation();
 
             // boucle sur chaque année
-            int anneeStart = Integer.valueOf(getAnneeDebut());
-            int anneeEnd = Integer.valueOf(getAnneeFin());
+            int anneeStart = Integer.parseInt(getAnneeDebut());
+            int anneeEnd = Integer.parseInt(getAnneeFin());
 
             if (!fileName.isEmpty() && !modeControle) {
                 // On va réinjecter les données via le fichier renseigné
@@ -206,7 +207,8 @@ public class AFControleLppAnnuelProcess extends BProcess {
 
         if (!StringUtils.isEmpty(getAnneeDebut()) && !StringUtils.isEmpty(getAnneeFin())
                 && JADate.getYear(getAnneeFin()).intValue() < JADate.getYear(getAnneeDebut()).intValue()) {
-            this._addError(getTransaction(), getSession().getLabel("VAL_ANNEE_FIN_PLUS_PETIT_ANNEE_DEBUT_CONTROLE_LPP"));
+            String label = getSession().getLabel("VAL_ANNEE_FIN_PLUS_PETIT_ANNEE_DEBUT_CONTROLE_LPP");
+            this._addError(getTransaction(), label);
         }
     }
 
@@ -415,7 +417,7 @@ public class AFControleLppAnnuelProcess extends BProcess {
      * @param numAffilie
      * @return
      */
-    private String returnValeurHashMapWithNumAffilie(final String valeur, final HashMap<String, String> lineMap,
+    private static String returnValeurHashMapWithNumAffilie(final String valeur, final HashMap<String, String> lineMap,
             final BTransaction transaction, final String numAffilie) {
         String valeurRetour = "";
 
@@ -537,7 +539,7 @@ public class AFControleLppAnnuelProcess extends BProcess {
      * @param idAffilie
      * @throws Exception
      */
-    private void generationSuiviLpp(String idTiers, String numAffilie, String idAffilie) throws Exception {
+    private void generationSuiviLpp(String idTiers, String numAffilie, String idAffilie, int annee) throws Exception {
         // prépare les données pour l'envoi
         HashMap<String, String> params = new HashMap<String, String>();
         params.put(ILEConstantes.CS_PARAM_GEN_ID_TIERS, idTiers);
@@ -546,14 +548,15 @@ public class AFControleLppAnnuelProcess extends BProcess {
         params.put(ILEConstantes.CS_PARAM_GEN_TYPE_PROVENANCE_MODULE, AFApplication.DEFAULT_APPLICATION_NAOS);
         params.put(ILEConstantes.CS_PARAM_GEN_ID_AFFILIATION, idAffilie);
         params.put(ILEConstantes.CS_PARAM_GEN_ID_TIERS_DESTINAIRE, idTiers);
+        params.put(ILEConstantes.CS_PARAM_GEN_PERIODE, String.valueOf(annee));
 
         // execute le process de génération
         LEGenererEnvoi gen = new LEGenererEnvoi();
         gen.setSession(getSession());
-        gen.setCsDocument(ILEConstantes.CS_DEBUT_SUIVI_LPP);
+        gen.setCsDocument(ILEConstantes.CS_DEBUT_SUIVI_ANNUEL_LPP);
         gen.setParamEnvoiList(params);
         gen.setSendCompletionMail(false);
-        gen.setGenerateEtapeSuivante(Boolean.FALSE);
+        gen.setGenerateEtapeSuivante(Boolean.TRUE);
 
         gen.executeProcess();
     }
@@ -594,7 +597,8 @@ public class AFControleLppAnnuelProcess extends BProcess {
 
             if (!isModeControleSimulation()) {
                 // Si pas en simulation
-                generationSuiviLpp(listSalarie[0].getIdTiers(), listSalarie[0].getNumeroAffilie(), idAffSoumis);
+                generationSuiviLpp(listSalarie[0].getIdTiers(), listSalarie[0].getNumeroAffilie(), idAffSoumis,
+                        listSalarie[0].getAnnee());
 
                 // Parcours de tous les salariés de l'affilié
                 for (AFAffilieSoumiLppConteneur.Salarie sal : listSalarie) {
@@ -652,8 +656,6 @@ public class AFControleLppAnnuelProcess extends BProcess {
      */
     private String getSeuilByParameterCode(int annee) {
 
-        String montantSeuil = "";
-
         FWFindParameterManager param = new FWFindParameterManager();
         param.setSession(getSession());
         param.setIdApplParametre(AFApplication.DEFAULT_APPLICATION_NAOS);
@@ -670,12 +672,10 @@ public class AFControleLppAnnuelProcess extends BProcess {
         }
 
         if (param.size() > 0) {
-            montantSeuil = ((FWFindParameter) param.getFirstEntity()).getValeurNumParametre();
+            return ((FWFindParameter) param.getFirstEntity()).getValeurNumParametre();
         } else {
             throw new CommonTechnicalException("Unabled to retrieve seuil annuel for " + annee);
         }
-
-        return montantSeuil;
     }
 
     @Override
@@ -737,7 +737,7 @@ public class AFControleLppAnnuelProcess extends BProcess {
      * @throws Exception
      * @throws NumberFormatException
      */
-    private void initialisation() throws Exception {
+    private void initialisation() {
         // Initialisation de la progresse bar
         setProgressScaleValue(5);
 
@@ -776,13 +776,20 @@ public class AFControleLppAnnuelProcess extends BProcess {
         viewBean.setSession(session);
         viewBean.setProvenance(provenanceCriteres);
         viewBean.setForCsTypeCodeSysteme(ILEConstantes.CS_DEF_FORMULE_GROUPE);
-        viewBean.setForValeurCodeSysteme(ILEConstantes.CS_DEBUT_SUIVI_LPP);
+        viewBean.setForValeurCodeSysteme(ILEConstantes.CS_DEBUT_SUIVI_ANNUEL_LPP);
         viewBean.find(getTransaction(), BManager.SIZE_USEDEFAULT);
 
         // Si le viewBean retourne un enregistrement c'est que l'envoi a déjà
         // été journalisé donc on retourne true
-        if (viewBean.size() > 0) {
-            return true;
+        if (!viewBean.isEmpty()) {
+            List<LUJournalViewBean> lst = viewBean.toList();
+
+            // On regarde si il y a une journalisation sans date de réception.
+            for (LUJournalViewBean luJournalViewBean : lst) {
+                if (StringUtils.isNotEmpty(luJournalViewBean.getDateReception())) {
+                    return true;
+                }
+            }
         }
 
         return false;
@@ -922,8 +929,8 @@ public class AFControleLppAnnuelProcess extends BProcess {
             // Si le mois de début = janvier
             if (valide && (moisDeb == 1)) {
                 // on regarde l'année précédente pour savoir si il a travaillé octobre, novembre et décembre
-                valide = testAutreAnneeDureeTravail("" + (anneeControle - 1), true, idAffilie, sal,
-                        (moisFin - moisDeb + 1));
+                valide = testAutreAnneeDureeTravail(Integer.toString(anneeControle - 1), true, idAffilie, sal, (moisFin
+                        - moisDeb + 1));
             }
 
             // Si le mois de fin est le mois de décembre
@@ -931,8 +938,8 @@ public class AFControleLppAnnuelProcess extends BProcess {
                 // On regarde l'année suivante
                 // Pour autant que ce ne soit pas l'année courante + 1
                 if (!(anneeControle >= anneeCourante)) {
-                    valide = testAutreAnneeDureeTravail("" + (anneeControle + 1), false, idAffilie, sal, (moisFin
-                            - moisDeb + 1));
+                    valide = testAutreAnneeDureeTravail(Integer.toString(anneeControle + 1), false, idAffilie, sal,
+                            (moisFin - moisDeb + 1));
                 }
             }
 
