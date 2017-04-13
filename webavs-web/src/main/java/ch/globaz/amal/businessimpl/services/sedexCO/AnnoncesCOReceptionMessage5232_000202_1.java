@@ -462,7 +462,7 @@ public class AnnoncesCOReceptionMessage5232_000202_1 extends AnnoncesCODefault {
                 personneANePasPoursuivre.setIdTiersCM(getIdTiersCaisseMaladie());
                 personneANePasPoursuivre.setNpaLocalite(npaLocalite);
                 personneANePasPoursuivre.setMontantCreance(totalCreance.getValue());
-
+                personneANePasPoursuivre.setIdAnnonceSedex(annonceSedexCO.getIdAnnonceSedexCO());
                 AmalImplServiceLocator.getSimplePersonneANePasPoursuivreService().update(personneANePasPoursuivre);
                 checkJadeThreadErrors();
 

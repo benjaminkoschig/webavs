@@ -245,7 +245,12 @@ public class AnnoncesCOReceptionMessage5234_000402_1 extends AnnoncesCOReception
             if (lastIdDebiteur.isEmpty()
                     || !lastIdDebiteur.equals(debiteursPaiements.getSimpleAnnonceSedexCODebiteur()
                             .getIdAnnonceSedexCODebiteur())) {
-                ligneDecompte.setNssDebiteur(debiteur.getNssDebiteur());
+
+                try {
+                    ligneDecompte.setNssDebiteur(formatNSS(debiteur.getNssDebiteur()));
+                } catch (Exception ex) {
+                    ligneDecompte.setNssDebiteur(debiteur.getNssDebiteur());
+                }
                 ligneDecompte.setNomPrenomDebiteur(debiteur.getNomPrenomDebiteur());
 
                 ligneDecompte.setTypeActe(debiteur.getActe());

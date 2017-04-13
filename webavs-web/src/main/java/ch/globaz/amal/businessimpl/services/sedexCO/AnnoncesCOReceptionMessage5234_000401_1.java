@@ -244,7 +244,11 @@ public class AnnoncesCOReceptionMessage5234_000401_1 extends AnnoncesCODefault {
                 totalTotal = totalTotal.add(debiteur.getTotal());
             }
 
-            ligneDecompte.setNssAssure(assure.getNssAssure());
+            try {
+                ligneDecompte.setNssAssure(formatNSS(assure.getNssAssure()));
+            } catch (Exception ex) {
+                ligneDecompte.setNssAssure(assure.getNssAssure());
+            }
             ligneDecompte.setNomPrenomAssure(assure.getNomPrenomAssure());
             ligneDecompte.setTypeSubside(assure.getTypeSubside());
 

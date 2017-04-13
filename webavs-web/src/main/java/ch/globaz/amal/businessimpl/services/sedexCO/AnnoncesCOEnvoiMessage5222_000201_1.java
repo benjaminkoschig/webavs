@@ -245,6 +245,7 @@ public class AnnoncesCOEnvoiMessage5222_000201_1 extends AMALabstractProcess {
     private File printSimulation(List<Simulation_5222_201_1> listSimulationsFiles) {
         Details details = new Details();
         details.add("Envoyé le", Date.now().getSwissValue());
+        details.add("Année", ANNEE_A_TRAITER);
         details.newLigne();
         Configuration config = Configurations.buildeDefault();
         SimpleOutputListBuilder builder = SimpleOutputListBuilderJade.newInstance()
