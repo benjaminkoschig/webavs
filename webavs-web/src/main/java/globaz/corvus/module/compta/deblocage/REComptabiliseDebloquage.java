@@ -10,7 +10,7 @@ import globaz.corvus.db.lots.RELot;
 import globaz.corvus.module.compta.AREModuleComptable;
 import globaz.corvus.module.compta.REModuleComptableFactory;
 import globaz.corvus.utils.REPmtMensuel;
-import globaz.globall.api.BIMessageLog;
+import globaz.framework.util.FWMessage;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BProcess;
 import globaz.globall.db.BSession;
@@ -18,15 +18,20 @@ import globaz.globall.util.JACalendar;
 import globaz.globall.util.JACalendarGregorian;
 import globaz.globall.util.JADate;
 import globaz.globall.util.JAException;
+import globaz.globall.util.JATime;
 import globaz.osiris.api.APIGestionComptabiliteExterne;
 import globaz.osiris.application.CAApplication;
 import globaz.osiris.db.comptes.CACompteAnnexe;
 import globaz.osiris.db.comptes.CACompteAnnexeManager;
+import globaz.osiris.db.comptes.CASectionJoinCompteAnnexeJoinTiers;
+import globaz.osiris.db.comptes.CASectionJoinCompteAnnexeJoinTiersManager;
+import globaz.osiris.db.ordres.CAOrdreGroupe;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.tools.PRDateFormater;
 import globaz.prestation.tools.PRSession;
 import java.util.List;
+import ch.globaz.common.domaine.AdressePaiement;
 import com.google.common.base.Joiner;
 
 public class REComptabiliseDebloquage extends AREModuleComptable {
@@ -42,16 +47,18 @@ public class REComptabiliseDebloquage extends AREModuleComptable {
         sessionOsiris = (BSession) PRSession.connectSession(session, CAApplication.DEFAULT_APPLICATION_OSIRIS);
     }
 
-    public void comptabilise(BProcess process, Long idLot) throws Exception {
+    public void comptabilise(BProcess process, Long idLot, String numeroOG, String idOrganeExecution,
+            String dateEcheancePaiement, String dateValeurComptable) throws Exception {
 
         RELot lot = retriveLot(idLot);
         APIGestionComptabiliteExterne compta = initCompta(process);
-        BIMessageLog log = compta.getMessageLog();
+        // BIMessageLog log = compta.getMessageLog();
 
         REDeblocageVersementService deblocageVersementService = new REDeblocageVersementService(session);
         List<REDeblocageVersement> deblocageVersements = deblocageVersementService.searchByIdLot(idLot);
-
-        String dateComptable = getDateValeurComptable();
+        if (dateValeurComptable == null) {
+            dateValeurComptable = getDateValeurComptable();
+        }
         if (REModuleComptableFactory.getInstance().COMPENSATION == null) {
             REModuleComptableFactory.getInstance().initIdsRubriques(sessionOsiris);
         }
@@ -61,42 +68,54 @@ public class REComptabiliseDebloquage extends AREModuleComptable {
                     versement.getCodeRenteAccordee(), versement.getIdTiersAdressePaiement());
 
             if (versement.getType().isCreancier() || versement.getType().isVersementBeneficiaire()) {
-                log.logMessage(doOrdreVersement(session, compta, versement.getIdCompteAnnexe(), versement
+                AdressePaiement adr = versement.loadAdressePaiement();
+                doOrdreVersement(session, compta, versement.getIdCompteAnnexe(), versement
                         .getLigneDeblocageVentilation().getIdSectionSource().toString(), versement.getMontant()
-                        .toStringFormat(), versement.getIdTiersAdressePaiement(), motifVersement, dateComptable, false));
+                        .toStringFormat(), adr.getIdAvoirPaiementUnique(), motifVersement, dateValeurComptable, false,
+                        idOrganeExecution);
             } else if (versement.getType().isDetteEnCompta()) {
+
+                String idSection = versement.getLigneDeblocage().getIdSectionCompensee().toString();
+                CASectionJoinCompteAnnexeJoinTiersManager mgr = new CASectionJoinCompteAnnexeJoinTiersManager();
+                mgr.setForIdSection(idSection);
+                mgr.setSession(session);
+                mgr.find(1);
+                List<CASectionJoinCompteAnnexeJoinTiers> sections = mgr.toList();
+
                 doEcriture(session, compta, versement.getMontant().abs().toStringValue(),
-                        REModuleComptableFactory.getInstance().COMPENSATION, versement.getIdCompteAnnexe(), versement
-                                .getLigneDeblocage().getIdSectionCompensee().toString(), dateComptable, null);
+                        REModuleComptableFactory.getInstance().COMPENSATION, sections.get(0).getIdCompteAnnexe(),
+                        idSection, dateValeurComptable, null);
 
                 doEcriture(session, compta, versement.getMontant().negate().toStringValue(),
                         REModuleComptableFactory.getInstance().COMPENSATION, versement.getIdCompteAnnexe(), versement
-                                .getLigneDeblocageVentilation().getIdSectionSource().toString(), dateComptable, null);
+                                .getLigneDeblocageVentilation().getIdSectionSource().toString(), dateValeurComptable,
+                        null);
             } else if (versement.getType().isImpotsSource()) {
                 doEcriture(session, compta, versement.getMontant().negate().toStringValue(),
                         REModuleComptableFactory.getInstance().IMPOT_SOURCE, versement.getIdCompteAnnexe(), versement
-                                .getLigneDeblocageVentilation().getIdSectionSource().toString(), dateComptable, null);
+                                .getLigneDeblocageVentilation().getIdSectionSource().toString(), dateValeurComptable,
+                        null);
             } else {
                 throw new REDeblocageException("Type of versement not know :" + versement.toStringEntity());
             }
         }
 
         RELigneDeblocages deblocages = new RELigneDeblocages();
-
         for (REDeblocageVersement deblocage : deblocageVersements) {
-            if (!deblocages.contains(deblocage.getId())) {
-                deblocages.add(deblocage.getLigneDeblocage());
-            }
+            deblocages.add(deblocage.getLigneDeblocage());
         }
+        deblocages = deblocages.distinct();
         deblocages.changeEtatToComptabilise();
         deblocageService.update(deblocages);
 
-        compta.comptabiliser();
         lot.setIdJournalCA(compta.getJournal().getIdJournal());
+        compta.comptabiliser();
+
         lot.setCsEtatLot(IRELot.CS_ETAT_LOT_VALIDE);
-        lot.setDateEnvoiLot(dateComptable);
+        lot.setDateEnvoiLot(dateValeurComptable);
         lot.update();
     }
+
 
     private RELot retriveLot(Long idLot) throws Exception {
         RELot lot = new RELot();

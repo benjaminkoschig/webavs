@@ -5,6 +5,7 @@ import ch.globaz.common.domaine.Montant;
 public class RELigneDeblocageDette extends RELigneDeblocage {
     private String description;
     private String descriptionCompteAnnexe;
+    private String idCompteAnnexe;
     private Montant montanDette;
 
     public String getDescription() {
@@ -30,4 +31,13 @@ public class RELigneDeblocageDette extends RELigneDeblocage {
     public void setMontanDette(Montant montanDette) {
         this.montanDette = montanDette;
     }
+
+    public String getIdCompteAnnexe() {
+        return idCompteAnnexe;
+    }
+
+    public void setIdCompteAnnexe(String idCompteAnnexe) {
+        this.idCompteAnnexe = idCompteAnnexe;
+    }
+
 }

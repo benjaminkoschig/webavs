@@ -2,6 +2,8 @@ package globaz.corvus.process.deblocage;
 
 import ch.globaz.common.domaine.Montant;
 import ch.globaz.common.listoutput.converterImplemented.MontantConverterToDouble;
+import ch.globaz.simpleoutputlist.annotation.Aggregate;
+import ch.globaz.simpleoutputlist.annotation.AggregateFunction;
 import ch.globaz.simpleoutputlist.annotation.Column;
 import ch.globaz.simpleoutputlist.annotation.ColumnValueConverter;
 import ch.globaz.simpleoutputlist.annotation.style.Align;
@@ -35,6 +37,7 @@ public class REOVDeblocageForListContainer {
 
     @Column(name = "LISTE_DEBLOCAGE_OV_MONTANT", order = 4)
     @ColumnStyle(align = Align.RIGHT, format = "#,##0.00", width = "10%")
+    @Aggregate(AggregateFunction.SUM)
     public Montant getMontant() {
         return montant;
     }

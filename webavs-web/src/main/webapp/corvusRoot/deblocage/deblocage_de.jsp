@@ -81,11 +81,10 @@ globazGlobal.isRenteBloque = ${viewBean.isRenteBloque()};
 		<TD colspan="3" >
 		
 			<div id="messageDebloquage" style="display:none">
-				Voulez-vous débloquer la rente ?
+				<ct:FWLabel key="JSP_RE_DEBLOCAGE_DEBLOQUER"/>
 				<input type="hidden" id="debloquerRente" name="debloquerRente" value="false" >
 			</div>
 			
-
 			<div id="detailDeblocage" class="form-horizontal"> 
 				<!--  ************************* Zone infos requerant/ PCA *************************  -->
 				<div id="infos_requerant" class="titre">
@@ -111,14 +110,14 @@ globazGlobal.isRenteBloque = ${viewBean.isRenteBloque()};
 							<span class="value">${viewBean.periode}</span>
 						</div>
 
-						<div class="span1">
+						<div class="span2">
 							<span class="lbl"><ct:FWLabel key="JSP_RE_DEBLOCAGE_GENRE_RENTE"/></span>
 						</div>
-						<div class="span2">
+						<div class="span3">
 							<span class="value">${viewBean.genre}</span>
 						</div>
 	
-						<div class="span1">
+						<div class="span2">
 							<span class="lbl"><ct:FWLabel key="JSP_RE_DEBLOCAGE_MONTANT_RENTE"/></span>
 						</div>
 						<div class="span1 right">
@@ -163,12 +162,11 @@ globazGlobal.isRenteBloque = ${viewBean.isRenteBloque()};
 								<div class="span3">
 									<span class="lbl">${entry.libelle}</span>
 								</div>
-								<div class="span3">
+								<div class="span2">
 									<span class="lbl"><ct:FWLabel key="JSP_RE_DEBLOCAGE_MONTANT_RETOUR"/></span>
-									<span class="value mnt">${entry.montant.toStringFormat()}</span>
 								</div>
 								<div class="span1 right">
-
+									<span class="value mnt">${entry.montant.toStringFormat()}</span>
 								</div>
 							</div>
 						</div>
@@ -207,9 +205,13 @@ globazGlobal.isRenteBloque = ${viewBean.isRenteBloque()};
 								<div class="span5">
 									<span class="lbl">${entry.description} (${entry.descriptionCompteAnnexe})</span>
 								</div>
-								<div class="span5">
+								<div class="span2">
 									<span class="lbl"><ct:FWLabel key="JSP_RE_DEBLOCAGE_MONTANT"/></span>
+								</div>
+								<div class="span1 right">
 									<span class="value mnt">${entry.montanDette.toStringFormat()}</span>
+								</div>
+								<div class="span2 ">
 								</div>
 								<div class="span1 right">
 									<input data-g-amount="" class="input-mini liveSum" name="montant"  value="${entry.montant.toStringFormat()}"/>
@@ -294,7 +296,7 @@ globazGlobal.isRenteBloque = ${viewBean.isRenteBloque()};
 									<input type="text" id="widgetTiers" name="widgetTiers" class="jadeAutocompleteAjax widgetTiers" 
 									    data-g-autocomplete="service:¦ch.globaz.pyxis.business.service.PersonneEtendueService¦,
 									    method:¦find¦,
-									    criterias:¦{'forDesignation1Like':'Des1','forDesignation2Like':'Des2','forNumeroAvsActuel':'nss','forDateNaissance':'dateNaisse)'}¦,
+									    criterias:¦{'forDesignation1Like':'<ct:FWLabel key="JSP_RE_DEBLOCAGE_NOM"/>','forDesignation2Like':'<ct:FWLabel key="JSP_RE_DEBLOCAGE_PRENOM"/>','forNumeroAvsActuel':'<ct:FWLabel key="JSP_RE_DEBLOCAGE_NSS"/>','forDateNaissance':'<ct:FWLabel key="JSP_RE_DEBLOCAGE_DATENAISSE"/>'}¦,
 									    lineFormatter:¦#{tiers.designation1} #{tiers.designation2} #{personneEtendue.numAvsActuel} #{personne.dateNaissance}¦,
 									    modelReturnVariables:¦tiers.designation1,tiers.designation2,tiers.id¦,
 									    nbReturn:¦20¦,

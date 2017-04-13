@@ -8,6 +8,8 @@ import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import com.google.common.base.Joiner;
 
 /**
  * Manager spécialisé pour une utilisation avec le widget d'auto-complétion lors de la recherche de factures.<br/>
@@ -32,6 +34,7 @@ public class CASectionJoinCompteAnnexeJoinTiersManager extends BManager implemen
     private Boolean forSoldePositif = false;
     private String likeIdExterne = "";
     private String forTypeSection;
+    private Collection<String> forIdSectionIn = new ArrayList<String>();
     private String forCategorie;
 
     public CASectionJoinCompteAnnexeJoinTiersManager() {
@@ -274,6 +277,15 @@ public class CASectionJoinCompteAnnexeJoinTiersManager extends BManager implemen
             sql.append(this._dbWriteNumeric(statement.getTransaction(), forTypeSection));
         }
 
+        if (!forIdSectionIn.isEmpty()) {
+            if (sql.length() != 0) {
+                sql.append(" AND ");
+            }
+            sql.append(_getCollection()).append(CASection.TABLE_CASECTP).append(".").append(CASection.FIELD_IDSECTION);
+            sql.append(" in (");
+            sql.append(Joiner.on(",").join(forIdSectionIn)).append(")");
+        }
+
         return sql.toString();
     }
 
@@ -400,6 +412,20 @@ public class CASectionJoinCompteAnnexeJoinTiersManager extends BManager implemen
 
     public void setForCategorie(String forCategorie) {
         this.forCategorie = forCategorie;
+    }
+
+    public Collection<String> getForIdSectionIn() {
+        return forIdSectionIn;
+    }
+
+    public void setForIdSectionIn(Collection<String> forIdSectionIn) {
+        this.forIdSectionIn = forIdSectionIn;
+    }
+
+    public void setForIdSection(String forIdSection) {
+        List<String> list = new ArrayList<String>();
+        list.add(forIdSection);
+        forIdSectionIn = list;
     }
 
 }

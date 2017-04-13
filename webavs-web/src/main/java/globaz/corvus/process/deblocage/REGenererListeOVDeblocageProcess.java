@@ -15,9 +15,9 @@ import java.util.List;
 import ch.globaz.common.domaine.AdressePaiement;
 import ch.globaz.common.domaine.Date;
 import ch.globaz.common.listoutput.SimpleOutputListBuilderJade;
-import ch.globaz.common.services.AdressePaiementLoader;
 import ch.globaz.simpleoutputlist.annotation.style.Align;
 import ch.globaz.simpleoutputlist.core.Details;
+import ch.globaz.simpleoutputlist.core.InfosAggregate;
 
 public class REGenererListeOVDeblocageProcess extends BProcess {
 
@@ -81,9 +81,7 @@ public class REGenererListeOVDeblocageProcess extends BProcess {
                 con.setMontant(dv.getMontant());
 
                 try {
-                    AdressePaiementLoader loader = new AdressePaiementLoader(getSession());
-                    AdressePaiement adr = loader.searchAdressePaiement(dv.getLigneDeblocage()
-                            .getIdTiersAdressePaiement(), dv.getLigneDeblocage().getIdApplicationAdressePaiement());
+                    AdressePaiement adr = dv.loadAdressePaiement();
 
                     con.setAdressePaiement(getSession().getLabel("LISTE_DEBLOCAGE_OV_COMPTE") + " : "
                             + adr.getBanque().getCompte() + "\n" + getSession().getLabel("LISTE_DEBLOCAGE_OV_CLEARING")
@@ -121,10 +119,11 @@ public class REGenererListeOVDeblocageProcess extends BProcess {
                 .outputNameAndAddPath(NUM_INFOROM + "_" + getSession().getLabel("LISTE_DEBLOCAGE_OV_NOM_FICHIER"))
                 .globazTheme().headerLeftTop(NUM_INFOROM).addTranslater().addList(listOv)
                 .classElementList(REOVDeblocageForListContainer.class)
+                .addInfosForAggregate(new InfosAggregate(getSession().getLabel("LISTE_DEBLOCAGE_MONTANT_TOTAL"), 1))
                 .addTitle(getSession().getLabel("LISTE_DEBLOCAGE_OV_TITRE_LISTE"), Align.CENTER)
                 .addHeaderDetails(detail).asPdf().build();
-        simpleOutputListBuilderJade.close();
 
+        simpleOutputListBuilderJade.close();
         return file;
     }
 

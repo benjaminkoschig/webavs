@@ -11,7 +11,9 @@ import globaz.corvus.db.rentesaccordees.REPrestationsAccordees;
 import globaz.globall.db.BEntity;
 import globaz.globall.db.BStatement;
 import globaz.prestation.tools.nnss.PRNSSUtil;
+import ch.globaz.common.domaine.AdressePaiement;
 import ch.globaz.common.domaine.Montant;
+import ch.globaz.common.services.AdressePaiementLoader;
 
 public class REDeblocageVersement extends BEntity {
 
@@ -170,5 +172,11 @@ public class REDeblocageVersement extends BEntity {
 
     public String getCsSexe() {
         return csSexe;
+    }
+
+    public AdressePaiement loadAdressePaiement() {
+        AdressePaiementLoader loader = new AdressePaiementLoader(getSession());
+        return loader.searchAdressePaiement(getLigneDeblocage().getIdTiersAdressePaiement(), getLigneDeblocage()
+                .getIdApplicationAdressePaiement());
     }
 }

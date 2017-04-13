@@ -76,8 +76,12 @@ public class REValiderLotHelper extends PRAbstractHelper {
             REDebloquerRenteComptablisationProcess process = new REDebloquerRenteComptablisationProcess();
             process.setSession((BSession) session);
             process.setIdLot(vb.getIdLot());
-            // process.setDateComptable(vb.getDateValeurComptable());
+            process.setDateComptable(vb.getDateValeurComptable());
             process.setEMailAddress(vb.getEMailAddress());
+            process.setIdOrganeExecution(vb.getIdOrganeExecution());
+            process.setNumeroOG(vb.getNumeroOG());
+            process.setDateEcheancePaiement(vb.getDateEcheancePaiement());
+
             process.start();
 
         } else {

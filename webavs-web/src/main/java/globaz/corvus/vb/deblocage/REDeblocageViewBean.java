@@ -197,11 +197,11 @@ public class REDeblocageViewBean extends PRAbstractViewBeanSupport {
     }
 
     public List<RELigneDeblocageDette> getDettes() {
-        return deblocages.filtreValides().getLigneDeblocageDetteEnCompta().toListDette();
+        return deblocages.getLigneDeblocageDetteEnCompta().filtreValidesAndComptabilises().toListDette();
     }
 
     public List<RELigneDeblocageDette> getDettesUpdateable() {
-        return deblocages.filtreEnregistresAndNone().getLigneDeblocageDetteEnCompta().toListDette();
+        return deblocages.getLigneDeblocageDetteEnCompta().filtreEnregistresAndNone().toListDette();
     }
 
     public RELigneDeblocage getImpotSource() {

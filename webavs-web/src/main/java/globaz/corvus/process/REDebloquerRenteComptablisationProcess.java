@@ -12,6 +12,10 @@ public class REDebloquerRenteComptablisationProcess extends BProcess {
     private static final long serialVersionUID = 1L;
     private String emailObject;
     private String idLot;
+    private String numeroOG;
+    private String idOrganeExecution;
+    private String dateEcheancePaiement;
+    private String dateValeurComptable;
 
     public REDebloquerRenteComptablisationProcess() {
     }
@@ -27,7 +31,8 @@ public class REDebloquerRenteComptablisationProcess extends BProcess {
         try {
             doValidation();
             REComptabiliseDebloquage comptabiliseDebloquage = new REComptabiliseDebloquage(getSession());
-            comptabiliseDebloquage.comptabilise(this, Long.valueOf(idLot));
+            comptabiliseDebloquage.comptabilise(this, Long.valueOf(idLot), numeroOG, idOrganeExecution,
+                    dateEcheancePaiement, dateValeurComptable);
             succes = true;
         } catch (Exception e) {
             BTransaction transaction = getTransaction();
@@ -82,4 +87,20 @@ public class REDebloquerRenteComptablisationProcess extends BProcess {
         return emailObject;
     }
 
+    public void setIdOrganeExecution(String idOrganeExecution) {
+        this.idOrganeExecution = idOrganeExecution;
+    }
+
+    public void setDateEcheancePaiement(String dateEcheancePaiement) {
+        this.dateEcheancePaiement = dateEcheancePaiement;
+    }
+
+    public void setNumeroOG(String numeroOG) {
+        this.numeroOG = numeroOG;
+    }
+
+    public void setDateComptable(String dateValeurComptable) {
+        // TODO Auto-generated method stub
+
+    }
 }

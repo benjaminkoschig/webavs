@@ -6,8 +6,10 @@ package globaz.corvus.db.lignedeblocage;
 import globaz.corvus.db.lignedeblocage.constantes.RELigneDeblocageEtat;
 import globaz.corvus.db.lignedeblocage.constantes.RELigneDeblocageType;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import ch.globaz.common.domaine.Montant;
 
@@ -192,6 +194,16 @@ public class RELigneDeblocages extends ArrayList<RELigneDeblocage> {
 
     public Boolean isDevalidable() {
         return !isLiberable();
+    }
+
+    public RELigneDeblocages distinct() {
+        Map<String, RELigneDeblocage> mapDeblocages = new HashMap<String, RELigneDeblocage>();
+        for (RELigneDeblocage deblocage : this) {
+            mapDeblocages.put(deblocage.getId(), deblocage);
+        }
+        RELigneDeblocages deblocages = new RELigneDeblocages();
+        deblocages.addAll(mapDeblocages.values());
+        return deblocages;
     }
 
 }
