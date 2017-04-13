@@ -10,7 +10,6 @@ import globaz.corvus.db.lots.RELot;
 import globaz.corvus.module.compta.AREModuleComptable;
 import globaz.corvus.module.compta.REModuleComptableFactory;
 import globaz.corvus.utils.REPmtMensuel;
-import globaz.framework.util.FWMessage;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BProcess;
 import globaz.globall.db.BSession;
@@ -18,14 +17,12 @@ import globaz.globall.util.JACalendar;
 import globaz.globall.util.JACalendarGregorian;
 import globaz.globall.util.JADate;
 import globaz.globall.util.JAException;
-import globaz.globall.util.JATime;
 import globaz.osiris.api.APIGestionComptabiliteExterne;
 import globaz.osiris.application.CAApplication;
 import globaz.osiris.db.comptes.CACompteAnnexe;
 import globaz.osiris.db.comptes.CACompteAnnexeManager;
 import globaz.osiris.db.comptes.CASectionJoinCompteAnnexeJoinTiers;
 import globaz.osiris.db.comptes.CASectionJoinCompteAnnexeJoinTiersManager;
-import globaz.osiris.db.ordres.CAOrdreGroupe;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.tools.PRDateFormater;
@@ -115,7 +112,6 @@ public class REComptabiliseDebloquage extends AREModuleComptable {
         lot.setDateEnvoiLot(dateValeurComptable);
         lot.update();
     }
-
 
     private RELot retriveLot(Long idLot) throws Exception {
         RELot lot = new RELot();
