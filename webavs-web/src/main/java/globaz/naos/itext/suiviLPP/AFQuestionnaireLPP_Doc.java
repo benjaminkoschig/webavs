@@ -76,7 +76,7 @@ public class AFQuestionnaireLPP_Doc extends AFAbstractTiersDocument {
         super.createDataSource();
 
         // Lancement du process pour générer la liste extrait de salaires
-        initAndLaunchProcessListExtraitDS("15", 2009);
+        initAndLaunchProcessListExtraitDS(getIdAffiliation(), Integer.parseInt(getPeriode()));
 
         fillDocInfo();
     }
