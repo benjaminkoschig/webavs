@@ -1,4 +1,4 @@
-package ch.globaz.amal.businessimpl.services.sedexCO;
+package ch.globaz.amal.businessimpl.services.models.sedexCO;
 
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
@@ -6,6 +6,7 @@ import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.common.Jade;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.persistence.JadePersistenceManager;
 import globaz.jade.persistence.model.JadeAbstractModel;
 import globaz.jade.persistence.model.JadeAbstractSearchModel;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
@@ -20,14 +21,19 @@ import ch.globaz.amal.business.constantes.AMMessagesSubTypesAnnonceSedexCO;
 import ch.globaz.amal.business.exceptions.models.annoncesedex.AnnonceSedexException;
 import ch.globaz.amal.business.exceptions.models.annoncesedexco.AnnonceSedexCOException;
 import ch.globaz.amal.business.models.annoncesedexco.ComplexAnnonceSedexCO;
+import ch.globaz.amal.business.models.annoncesedexco.ComplexAnnonceSedexCODebiteursAssuresSearch;
 import ch.globaz.amal.business.models.annoncesedexco.ComplexAnnonceSedexCOSearch;
 import ch.globaz.amal.business.services.AmalServiceLocator;
-import ch.globaz.amal.business.services.sedexCO.AnnoncesCOService;
+import ch.globaz.amal.business.services.models.sedexCO.AnnoncesCOService;
+import ch.globaz.amal.businessimpl.services.sedexCO.AnnoncesCOReceptionMessage5234_000401_1;
+import ch.globaz.amal.businessimpl.services.sedexCO.AnnoncesCOReceptionMessage5234_000402_1;
 import ch.globaz.amal.businessimpl.services.sedexRP.AnnoncesRPServiceImpl;
+import ch.globaz.amal.businessimpl.services.sedexRP.utils.AMSedexRPUtil;
+import ch.globaz.pyxis.business.model.AdministrationComplexModel;
 import ch.globaz.pyxis.business.model.AdministrationSearchComplexModel;
 import ch.globaz.pyxis.business.service.TIBusinessServiceLocator;
 
-public class AnnoncesCOServiceImpl extends AnnoncesCOReceptionMessage5232_000202_1 implements AnnoncesCOService {
+public class AnnoncesCOServiceImpl implements AnnoncesCOService {
 
     @Override
     public AdministrationSearchComplexModel find(AdministrationSearchComplexModel searchModel)
@@ -227,6 +233,87 @@ public class AnnoncesCOServiceImpl extends AnnoncesCOReceptionMessage5232_000202
         }
 
         return file;
+    }
+
+    @Override
+    public String printListAnnonces(String idContribuable, String annee, String idTiersCM, String typeDecompte,
+            String fromPeriode, String toPeriode) throws JadeApplicationException, JadePersistenceException {
+
+        if (idContribuable == null || idContribuable.isEmpty()) {
+            throw new IllegalArgumentException("Id contribuable non présent !");
+        }
+
+        ComplexAnnonceSedexCODebiteursAssuresSearch complexAnnonceSedexCODebiteursAssuresSearch = new ComplexAnnonceSedexCODebiteursAssuresSearch();
+        complexAnnonceSedexCODebiteursAssuresSearch.setForIdContribuable(idContribuable);
+
+        List<String> listCriteres = new ArrayList<String>();
+
+        if (!JadeStringUtil.isNull(annee)) {
+            complexAnnonceSedexCODebiteursAssuresSearch.setForStatementYear(annee);
+            listCriteres.add("Année : " + annee);
+        }
+
+        if (!JadeStringUtil.isNull(idTiersCM)) {
+            complexAnnonceSedexCODebiteursAssuresSearch.setForIdTiersCM(idTiersCM);
+            listCriteres.add("Caisse maladie : " + getNomCaisseMaladie(idTiersCM));
+        }
+
+        if (!JadeStringUtil.isNull(typeDecompte)) {
+            complexAnnonceSedexCODebiteursAssuresSearch.setForMessageSubtype(typeDecompte);
+            if (AMMessagesSubTypesAnnonceSedexCO.DECOMPTE_TRIMESTRIEL.getValue().equals(typeDecompte)) {
+                listCriteres.add("Type : trimestriel");
+            } else if (AMMessagesSubTypesAnnonceSedexCO.DECOMPTE_FINAL.getValue().equals(typeDecompte)) {
+                listCriteres.add("Type : final");
+            }
+        }
+
+        if (!JadeStringUtil.isNull(fromPeriode)) {
+            complexAnnonceSedexCODebiteursAssuresSearch.setForDateAnnonceGOE(fromPeriode);
+            listCriteres.add("Depuis : " + fromPeriode);
+        }
+        if (!JadeStringUtil.isNull(toPeriode)) {
+            complexAnnonceSedexCODebiteursAssuresSearch.setForDateAnnonceLOE(toPeriode);
+            listCriteres.add("Jusqu'à : " + toPeriode);
+        }
+        complexAnnonceSedexCODebiteursAssuresSearch = (ComplexAnnonceSedexCODebiteursAssuresSearch) JadePersistenceManager
+                .search(complexAnnonceSedexCODebiteursAssuresSearch);
+
+        String senderId = null;
+        if (!JadeStringUtil.isNull(idTiersCM)) {
+            senderId = AMSedexRPUtil.getSedexIdFromIdTiers(idTiersCM);
+        }
+
+        if (AMMessagesSubTypesAnnonceSedexCO.DECOMPTE_TRIMESTRIEL.getValue().equals(typeDecompte)) {
+            AnnoncesCOReceptionMessage5234_000401_1 reception401 = new AnnoncesCOReceptionMessage5234_000401_1();
+            if (senderId != null) {
+                reception401.setSenderId(senderId);
+            }
+            reception401.setListCriteres(listCriteres);
+            reception401.generateFromComplexModel(complexAnnonceSedexCODebiteursAssuresSearch);
+        } else if (AMMessagesSubTypesAnnonceSedexCO.DECOMPTE_FINAL.getValue().equals(typeDecompte)) {
+            AnnoncesCOReceptionMessage5234_000402_1 reception402 = new AnnoncesCOReceptionMessage5234_000402_1();
+            if (senderId != null) {
+                reception402.setSenderId(senderId);
+            }
+            reception402.setListCriteres(listCriteres);
+            reception402.generateListFinalFromComplexModel(complexAnnonceSedexCODebiteursAssuresSearch);
+        }
+
+        return null;
+    }
+
+    protected String getNomCaisseMaladie(String noCaisseMaladie) {
+        try {
+            AdministrationComplexModel admin = TIBusinessServiceLocator.getAdministrationService()
+                    .read(noCaisseMaladie);
+            if (!admin.isNew()) {
+                return admin.getTiers().getDesignation1();
+            } else {
+                return "Caisse inconnue";
+            }
+        } catch (Exception ex) {
+            return "Caisse inconnue";
+        }
     }
 
 }

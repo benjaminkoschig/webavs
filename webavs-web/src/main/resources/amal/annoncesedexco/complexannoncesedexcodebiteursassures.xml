@@ -29,6 +29,11 @@
 				<search-field name="forStatementYear" field-ref="simpleAnnonceSedexCO.statementYear" operation="EQUALS" />
 				<search-field name="likeNssDebiteur" field-ref="simpleAnnonceSedexCODebiteur.nssDebiteur" operation="LIKE" />
 				<search-field name="likeNssAssure" field-ref="simpleAnnonceSedexCOAssure.nssAssure" operation="LIKE" />
+				<search-field name="forIdContribuable" field-ref="simpleAnnonceSedexCODebiteur.idContribuable" operation="EQUALS" />
+				<search-field name="forIdTiersCM" field-ref="simpleAnnonceSedexCO.idTiersCM" operation="EQUALS" />
+				<search-field name="forMessageSubType" field-ref="simpleAnnonceSedexCO.messageSubType" operation="EQUALS" />
+				<search-field name="forDateAnnonceGOE" field-ref="simpleAnnonceSedexCO.dateAnnonce" operation="GREATER_OR_EQUALS" />
+				<search-field name="forDateAnnonceLOE" field-ref="simpleAnnonceSedexCO.dateAnnonce" operation="LESS_OR_EQUALS" />
 			</search-group>
 		</search-definition>
 

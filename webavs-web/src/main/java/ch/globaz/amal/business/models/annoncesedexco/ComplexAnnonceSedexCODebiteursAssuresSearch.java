@@ -9,6 +9,11 @@ public class ComplexAnnonceSedexCODebiteursAssuresSearch extends JadeSearchCompl
     private String forStatementYear = null;
     private String likeNssDebiteur = null;
     private String likeNssAssure = null;
+    private String forIdTiersCM = null;
+    private String forIdContribuable = null;
+    private String forDateAnnonceLOE = null;
+    private String forDateAnnonceGOE = null;
+    private String forMessageSubType = null;
 
     @Override
     public Class whichModelClass() {
@@ -54,4 +59,45 @@ public class ComplexAnnonceSedexCODebiteursAssuresSearch extends JadeSearchCompl
     public void setLikeNssAssure(String likeNssAssure) {
         this.likeNssAssure = likeNssAssure;
     }
+
+    public String getForIdTiersCM() {
+        return forIdTiersCM;
+    }
+
+    public void setForIdTiersCM(String forIdTiersCM) {
+        this.forIdTiersCM = forIdTiersCM;
+    }
+
+    public String getForIdContribuable() {
+        return forIdContribuable;
+    }
+
+    public void setForIdContribuable(String forIdContribuable) {
+        this.forIdContribuable = forIdContribuable;
+    }
+
+    public String getForDateAnnonceLOE() {
+        return forDateAnnonceLOE;
+    }
+
+    public void setForDateAnnonceLOE(String forDateAnnonceLOE) {
+        this.forDateAnnonceLOE = forDateAnnonceLOE;
+    }
+
+    public String getForDateAnnonceGOE() {
+        return forDateAnnonceGOE;
+    }
+
+    public void setForDateAnnonceGOE(String forDateAnnonceGOE) {
+        this.forDateAnnonceGOE = forDateAnnonceGOE;
+    }
+
+    public String getForMessageSubType() {
+        return forMessageSubType;
+    }
+
+    public void setForMessageSubType(String forMessageSubType) {
+        this.forMessageSubType = forMessageSubType;
+    }
+
 }

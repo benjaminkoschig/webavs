@@ -289,17 +289,9 @@ function getAnneeListCompare() {
 					<TD>&nbsp;
 					</TD>
 					<TD>
-<!-- 						<a data-g-download="docType:xls,							 -->
-<!-- 	                    	serviceClassName:ch.globaz.amal.business.services.sedexCO.AnnoncesCOService, -->
-<!-- 	                    	serviceMethodName:printListComparaisonFull, -->
-<!-- 	                    	docName:listeComparaison, -->
-<!-- 	                    	displayOnlyImage:false, -->
-<!-- 	                    	dynParametres:getAnneeListCompare, -->
-<!-- 	                    	byPassExtentionXml:true">Créer liste</a>  -->
-	                    	
 	                    <a data-g-download="docType:csv,
 							dynParametres:getParametersForCSV,
-	                    	serviceClassName:ch.globaz.amal.business.services.sedexCO.AnnoncesCOService,
+	                    	serviceClassName:ch.globaz.amal.business.services.models.sedexCO.AnnoncesCOService,
 	                    	serviceMethodName:exportListAnnonces,
 	                    	docName:listeAnnonces,
 	                    	displayOnlyImage:false">Créer liste</a> 

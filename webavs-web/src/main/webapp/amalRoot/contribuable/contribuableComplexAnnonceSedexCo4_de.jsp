@@ -14,11 +14,107 @@
 <%@ include file="/amalRoot/contribuable/contribuableHeader.jspf" %>
 <link rel="stylesheet" type="text/css" href="<%=servletContext%><%=(mainServletPath+"Root")%>/css/amal.css" rel="stylesheet"/>
 
+<script type="text/javascript">
+<%
+
+%>
+$(document).ready(function() {
+		$("#selectSedex").on("change", function() {
+			var idDetailFamille = $(this).val();
+			if (idDetailFamille == 'all') {
+				$(".sedexLine").show();	
+			} else {
+				$(".sedexLine").hide();
+				$(".sedexLine."+idDetailFamille).show();
+			}
+		});
+		
+		// ---------------------------------------------------------------------
+		// Action pour afficher la boite de sélection des templates
+		// ---------------------------------------------------------------------
+		$('#btnPrintList').click(function(e) {
+			$('#impressionListe').dialog('open');
+		});
+		
+		$("#selectIdTiersCM").change(function(e) {
+			var thisVal = $(this).val();
+		
+			if (!thisVal) {
+				$('#idTiersCM').val('');
+			}
+		});
+
+	setTimeout(function(){
+		$('#impressionListe').dialog(
+				{
+					autoOpen:false,
+					buttons:
+						[	
+							{
+								text:"Imprimer",
+								click: function() {
+									imprimerListe();
+								}
+							},
+				         	{
+								text:"Fermer",
+								click: function() {
+									$(this).dialog("close");
+								}
+							}
+						],
+					modal:true,
+					closeOnEscape:true,
+					draggable : true,
+					resizable : true,
+					width : 1000,
+					height: "auto",
+					minHeight:400
+					
+				}
+			);
+	},300);
+
+});
+
+
+function toEmptyValue(val) {
+	if (!val) {
+		return null
+	} else {
+		return val;
+	}
+}
+
+function imprimerListe() {
+	var idContribuable = $("#idContribuable").val();
+	var annee = toEmptyValue($("#annee").val());
+	var idTiersCM = toEmptyValue($("#idTiersCM").val());
+	var typeDecompte = toEmptyValue($("#typeDecompte").val());
+	var fromPeriode = toEmptyValue($("#fromPeriode").val());
+	var toPeriode = toEmptyValue($("#toPeriode").val());
+	
+	var o_options= {
+			serviceClassName: 'ch.globaz.amal.business.services.models.sedexCO.AnnoncesCOService',
+			serviceMethodName:'printListAnnonces',
+			parametres:idContribuable+","+annee+","+idTiersCM+","+typeDecompte+","+fromPeriode+","+toPeriode,
+			callBack: callBackPrintList
+	}
+	globazNotation.readwidget.options=o_options;		
+	globazNotation.readwidget.read();	
+}
+
+function callBackPrintList() {
+	$('#impressionListe').dialog('close');
+}
+</script>
+
 <!-- /////////////////////////////////////////////////////////////////////////////////////////////////////// -->
 <!-- ////////////////////////		Start: Popup section related /////////////////////////////////////////// -->
 <!-- /////////////////////////////////////////////////////////////////////////////////////////////////////// -->
 <script type="text/javascript" src="<%=servletContext%><%=(mainServletPath + "Root")%>/scripts/annoncesedex/baseObjectsCO.js"/></script>
 <script type="text/javascript" src="<%=servletContext%><%=(mainServletPath + "Root")%>/scripts/annoncesedex/detailsCO4.js"/></script>
+
 
 <div id="dlgAnnonceDetailCO4" title="Affichage detail SEDEX CO4">
 	<table id="tblAnnonceContainerCO4"></table>
@@ -140,6 +236,52 @@
 <!-- ////////////////////////		End: Popup section related   /////////////////////////////////////////// -->
 <!-- /////////////////////////////////////////////////////////////////////////////////////////////////////// -->
 
+<div id="impressionListe" title="Imprimer la liste pour le contribuable">
+	<table>
+		<tr>
+			<td>Année</td>
+			<td><input tabindex="1" type="text" id="annee" name="annee" size="4" maxlength="4"/></td>
+		</tr>
+		<tr>
+			<td>Assureur</td>
+			<td>
+               		<input name="selectIdTiersCM" id="selectIdTiersCM" tabindex="2"
+						class="jadeAutocompleteAjax" type="text"
+						data-g-autocomplete="service:¦ch.globaz.amal.business.services.models.sedexCO.AnnoncesCOService¦,
+ 						 method:¦find¦,
+ 						 criterias:¦{
+ 						 	forCodeAdministrationLike:'Code',
+ 						 	forDesignation1Like:'Designation'
+ 						 }¦,
+ 						 constCriterias:¦forGenreAdministration=509008¦,
+						 lineFormatter:¦<b>#{admin.codeAdministration}</b> - #{tiers.designation1} #{tiers.designation2}¦,
+ 						 modelReturnVariables:¦tiers.id,tiers.designation1,tiers.designation2,admin.codeAdministration¦,nbReturn:¦20¦,
+ 						 functionReturn:¦
+ 						 	function(element){
+ 						 		this.value=$(element).attr('admin.codeAdministration') + ' - ' + $(element).attr('tiers.designation1')+' '+$(element).attr('tiers.designation2');
+ 						 		$('#idTiersCM').val($(element).attr('tiers.id'))
+ 						 	}¦
+						 ,nbOfCharBeforeLaunch:¦3¦" />
+						 <input type="hidden" name="idTiersCM" value="" id="idTiersCM"/>
+           </td>
+		</tr>
+		<tr>
+			<td>Type de décompte</td>
+			<td>
+				<select id="typeDecompte" tabindex="3">
+					<option value="401">Trimestriel</option>
+					<option value="402">Final</option>
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td>Période</td>
+			<td><input type="text" id="fromPeriode" data-g-calendar="" tabindex="4"/> à <input type="text" id="toPeriode" data-g-calendar="" tabindex="5"/></td>
+		</tr>
+	</table>
+</div>
+
+
 <div id="conteneurComplexAnnonceSedex" style="overflow: auto; height: 600px;">
 	<table width="100%" border="0">
 		<col align="left" style="font-weight: bold"></col>
@@ -167,6 +309,11 @@
 			<th>Débiteur</th>
 			<th>RP Rétro</th>
 			<th>Annulation</th>
+		</tr>
+		<tr>
+			<td colspan="12">
+				<input type="button" id="btnPrintList" value="Imprimer">
+			</td>
 		</tr>
 		<%
 			String rowStyle = "amalRowOdd";

@@ -127,6 +127,7 @@ JadeLogger.info(this, "Time JSP start : " + currentTime);
 <!-- JAVASCRIPT AND CSS PART -->
 
 <%@ include file="/theme/detail/javascripts.jspf" %>
+<script type="text/javascript" src="<%=servletContext%>/scripts/widget/globazwidget.js"></script>
 <link rel="stylesheet" type="text/css" href="<%=servletContext%><%=(mainServletPath+"Root")%>/css/amal.css" rel="stylesheet"/>
 
 <%-- tpl:put name="zoneScripts" --%>

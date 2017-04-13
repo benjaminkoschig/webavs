@@ -169,6 +169,20 @@ public class AnnoncesCOReceptionMessage5234_000402_1 extends AnnoncesCOReception
 
     }
 
+    public File generateListFinalFromComplexModel(
+            ComplexAnnonceSedexCODebiteursAssuresSearch annonceSedexCODebiteursAssuresSearch)
+            throws JadePersistenceException {
+
+        List<SimpleOutputList_Decompte_5234_401_1> sheetDecomptes = super
+                .generateList(annonceSedexCODebiteursAssuresSearch);
+        List<SimpleOutputList_DecomptePaiement_5234_402_1> sheetPaiements = generateListPaiement(annonceSedexCODebiteursAssuresSearch);
+
+        File fileDecompte = printList(sheetDecomptes, sheetPaiements);
+        sendMail(fileDecompte);
+        return fileDecompte;
+
+    }
+
     private File printList(List<SimpleOutputList_Decompte_5234_401_1> listLigneDecompteFinaux,
             List<SimpleOutputList_DecomptePaiement_5234_402_1> listLigneDecompteFinalPaiement) {
 
@@ -206,7 +220,12 @@ public class AnnoncesCOReceptionMessage5234_000402_1 extends AnnoncesCOReception
             }
         });
 
-        String nomCaisseMaladieEmetteur = getNomCaisseMaladie(getIdTiersCaisseMaladie());
+        String nomCaisseMaladieEmetteur = "";
+        if (senderId != null && !senderId.isEmpty()) {
+            nomCaisseMaladieEmetteur = getNomCaisseMaladie(getIdTiersCaisseMaladie());
+        } else {
+            nomCaisseMaladieEmetteur = "Caisse maladie non trouvée ou non spécifiée";
+        }
 
         SimpleOutputListBuilder builderOnglet1 = SimpleOutputListBuilderJade.newInstance()
                 .outputNameAndAddPath("decompteAnnuel").addList(listLigneDecompteFinaux)

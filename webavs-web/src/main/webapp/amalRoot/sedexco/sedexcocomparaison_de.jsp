@@ -116,14 +116,14 @@ $(function () {
 						<td>
 	                		<input name="selectIdTiersCM" id="selectIdTiersCM"
 								class="jadeAutocompleteAjax" type="text"
-								data-g-autocomplete="service:¦ch.globaz.amal.business.services.sedexCO.AnnoncesCOService¦,
+								data-g-autocomplete="service:¦ch.globaz.amal.business.services.models.sedexCO.AnnoncesCOService¦,
 								 method:¦find¦,
 								 criterias:¦{
 								 	forCodeAdministrationLike:'Code',
 								 	forDesignation1Like:'Designation'
 								 }¦,
 								 constCriterias:¦forGenreAdministration=509008¦,
-								 lineFormatter:¦<b>#{admin.codeAdministration}</b><br />#{tiers.designation1} #{tiers.designation2}¦,
+								 lineFormatter:¦<b>#{admin.codeAdministration}</b> - #{tiers.designation1} #{tiers.designation2}¦,
 								 modelReturnVariables:¦tiers.id,tiers.designation1,tiers.designation2,admin.codeAdministration¦,nbReturn:¦20¦,
 								 functionReturn:¦
 								 	function(element){

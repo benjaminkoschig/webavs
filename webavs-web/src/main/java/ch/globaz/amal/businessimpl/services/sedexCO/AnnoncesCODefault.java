@@ -47,10 +47,15 @@ public class AnnoncesCODefault {
     protected Marshaller marshaller;
     private List<String> errors = null;
     protected List<String> personnesNotFound = null;
+    protected List<String> listCriteres = null;
 
     public AnnoncesCODefault() {
         personnesNotFound = new ArrayList<String>();
         errors = new ArrayList<String>();
+    }
+
+    public void setListCriteres(List<String> listCriteres) {
+        this.listCriteres = listCriteres;
     }
 
     /**
@@ -327,6 +332,14 @@ public class AnnoncesCODefault {
     protected void sendMail(File file) {
         String subject = getSubjectMail();
         StringBuilder body = new StringBuilder();
+
+        if (listCriteres != null && !listCriteres.isEmpty()) {
+            body.append("Critères\n");
+            for (String critere : listCriteres) {
+                body.append("&nbsp;&nbsp;&nbsp;&nbsp;- " + critere + "\n");
+            }
+        }
+
         if (!getPersonnesNotFoundList().isEmpty()) {
             if (getPersonnesNotFoundList().size() > 1) {
                 subject = getPersonnesNotFoundList().size() + " personnes non connues détectées !";

@@ -169,6 +169,11 @@ public class AnnoncesCOReceptionMessage5234_000401_1 extends AnnoncesCODefault {
 
     public File generationList(SimpleAnnonceSedexCO annonceSedexCO) throws JadePersistenceException {
         ComplexAnnonceSedexCODebiteursAssuresSearch annonceSedexCODebiteursAssuresSearch = searchDataReport(annonceSedexCO);
+        return generateFromComplexModel(annonceSedexCODebiteursAssuresSearch);
+    }
+
+    public File generateFromComplexModel(
+            ComplexAnnonceSedexCODebiteursAssuresSearch annonceSedexCODebiteursAssuresSearch) {
         List<SimpleOutputList_Decompte_5234_401_1> sheetDecomptes = generateList(annonceSedexCODebiteursAssuresSearch);
         File fileDecompte = printList(sheetDecomptes);
         sendMail(fileDecompte);
@@ -338,7 +343,12 @@ public class AnnoncesCOReceptionMessage5234_000401_1 extends AnnoncesCODefault {
             }
         });
 
-        String nomCaisseMaladieEmetteur = getNomCaisseMaladie(getIdTiersCaisseMaladie());
+        String nomCaisseMaladieEmetteur = "";
+        if (senderId != null && !senderId.isEmpty()) {
+            nomCaisseMaladieEmetteur = getNomCaisseMaladie(getIdTiersCaisseMaladie());
+        } else {
+            nomCaisseMaladieEmetteur = "Caisse maladie non trouvée ou non spécifiée";
+        }
 
         SimpleOutputListBuilder builder = SimpleOutputListBuilderJade.newInstance()
                 .outputNameAndAddPath("décompteTrimestriel").addList(listLigneDecompteTrimestriel)
@@ -348,43 +358,6 @@ public class AnnoncesCOReceptionMessage5234_000401_1 extends AnnoncesCODefault {
 
         return file;
     }
-
-    // @Override
-    // protected void sendMail(File file, String typeDecompte) throws Exception {
-    // String subject = "Contentieux Amal : réception des annonces '" + typeDecompte + "' effectuée avec succès !";
-    // StringBuilder body = new StringBuilder();
-    // if (!personnesNotFound.isEmpty()) {
-    // if (personnesNotFound.size() > 1) {
-    // subject = personnesNotFound.size()
-    // + " personnes non connues détectées lors de la réception des annonces de type '" + typeDecompte
-    // + "' !";
-    // } else {
-    // subject = "1 personne non connue détectée lors de la réception des annonces de type '" + typeDecompte
-    // + "' !";
-    // }
-    // body.append("Liste des personnes non trouvées :\n");
-    //
-    // for (String personneInexistante : personnesNotFound) {
-    // body.append("   -" + personneInexistante + "\n");
-    // }
-    //
-    // }
-    //
-    // if (errors.size() > 0) {
-    // body.append("Autres erreurs détectée(s)");
-    // for (String error : errors) {
-    // body.append(error);
-    // }
-    // }
-    //
-    // String[] files = new String[1];
-    // if (file != null) {
-    // files[0] = file.getPath();
-    // }
-    //
-    // JadeSmtpClient.getInstance().sendMail(BSessionUtil.getSessionFromThreadContext().getUserEMail(), subject,
-    // body.toString(), files);
-    // }
 
     private SimpleAnnonceSedexCO persistAnnonce(Message message, Class<?>[] addClasses) {
 

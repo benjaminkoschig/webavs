@@ -1,12 +1,11 @@
 /**
  * 
  */
-package ch.globaz.amal.business.services.sedexCO;
+package ch.globaz.amal.business.services.models.sedexCO;
 
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.sedex.JadeSedexMessageNotHandledException;
-import globaz.jade.sedex.message.SedexMessage;
 import globaz.jade.service.provider.application.JadeApplicationService;
 import ch.globaz.pyxis.business.model.AdministrationSearchComplexModel;
 
@@ -25,8 +24,8 @@ public interface AnnoncesCOService extends JadeApplicationService {
      * @throws JadeSedexMessageNotHandledException
      * 
      */
-    public void importMessages(SedexMessage message) throws JadeApplicationException, JadePersistenceException,
-            JadeSedexMessageNotHandledException;
+    // public void importMessages(SedexMessage message) throws JadeApplicationException, JadePersistenceException,
+    // JadeSedexMessageNotHandledException;
 
     public AdministrationSearchComplexModel find(AdministrationSearchComplexModel searchModel)
             throws JadePersistenceException, JadeApplicationException;
@@ -40,4 +39,7 @@ public interface AnnoncesCOService extends JadeApplicationService {
      */
     public String exportListAnnonces(String filters, String order) throws JadeApplicationException,
             JadePersistenceException;
+
+    public String printListAnnonces(String idContribuable, String annee, String idTiersCM, String typeDecompte,
+            String fromPeriode, String toPeriode) throws JadeApplicationException, JadePersistenceException;
 }
