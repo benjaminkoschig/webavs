@@ -43,7 +43,7 @@ bButtonNew = false;
 								<input type="hidden" name="isTriParDateEnvoi" value="true">
 								<input type="hidden" name="forCsLotOwner" value="<%=IRELot.CS_LOT_OWNER_RENTES%>">
 								<ct:select name="forCsType">
-									<OPTION value="<%=RELotManager.FOR_CS_TYPE_LOT_IN_DECISION_MENSUEL%>" selected></OPTION>
+									<OPTION value="<%=RELotManager.FOR_CS_TYPE_LOT_IN_DECISION_ALL%>" selected></OPTION>
 									<OPTION value="<%=IRELot.CS_TYP_LOT_MENSUEL%>"><%=objSession.getCodeLibelle(IRELot.CS_TYP_LOT_MENSUEL)%></OPTION>
 									<OPTION value="<%=IRELot.CS_TYP_LOT_DECISION%>"><%=objSession.getCodeLibelle(IRELot.CS_TYP_LOT_DECISION)%></OPTION>
 									<OPTION value="<%=IRELot.CS_TYP_LOT_DEBLOCAGE_RA%>"><%=objSession.getCodeLibelle(IRELot.CS_TYP_LOT_DEBLOCAGE_RA)%></OPTION>

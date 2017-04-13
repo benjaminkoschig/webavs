@@ -27,6 +27,7 @@ public class RELotManager extends PRAbstractManager {
     private static final long serialVersionUID = 1L;
 
     public static final String FOR_CS_TYPE_LOT_IN_DECISION_MENSUEL = "0A00";
+    public static final String FOR_CS_TYPE_LOT_IN_DECISION_ALL = "0B00";
 
     private String forCsEtat = "";
     private String forCsEtatDiffentDe = "";
@@ -100,7 +101,12 @@ public class RELotManager extends PRAbstractManager {
                 whereClause.append(" AND ");
             }
 
-            if (RELotManager.FOR_CS_TYPE_LOT_IN_DECISION_MENSUEL.equals(getForCsType())) {
+            if (RELotManager.FOR_CS_TYPE_LOT_IN_DECISION_ALL.equals(getForCsType())) {
+                whereClause.append(RELot.FIELDNAME_TYPE_LOT);
+                whereClause.append(" IN (");
+                whereClause.append(IRELot.CS_TYP_LOT_DECISION + ", " + IRELot.CS_TYP_LOT_MENSUEL + ", "
+                        + IRELot.CS_TYP_LOT_DEBLOCAGE_RA + ") ");
+            } else if (RELotManager.FOR_CS_TYPE_LOT_IN_DECISION_MENSUEL.equals(getForCsType())) {
                 whereClause.append(RELot.FIELDNAME_TYPE_LOT);
                 whereClause.append(" IN (");
                 whereClause.append(IRELot.CS_TYP_LOT_DECISION + ", " + IRELot.CS_TYP_LOT_MENSUEL + ") ");
