@@ -1286,8 +1286,8 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
 
                 // Vérifier les erreurs de comptabilisation
                 if (jrn.getEtat().equals(CAJournal.ERREUR)) {
-                    getMemoryLog().logMessage(getMessageJournalErreur(jrn.getId(), jrn.getLibelle()), null,
-                            FWMessage.ERREUR, this.getClass().getName());
+                    getMemoryLog().logMessage(getMessageJournalErreur(jrn.getId(), jrn.getLibelle()), FWMessage.ERREUR,
+                            this.getClass().getName());
                 }
             }
 
@@ -1918,7 +1918,7 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
                 if (groupTxMessage != null) {
                     groupTxMessage.addMessage(Level.SEVERE, message);
                 } else {
-                    getMemoryLog().logMessage(message, null, FWMessage.ERREUR, this.getClass().getName());
+                    getMemoryLog().logMessage(message, FWMessage.ERREUR, this.getClass().getName());
                 }
             }
         }
