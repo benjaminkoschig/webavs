@@ -7,7 +7,7 @@
 	</parent>
 
 	<artifactId>webavs-parent</artifactId>
-	<version>1.18.0-RC1-SNAPSHOT</version>
+	<version>1.18.0-ALPHA-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>WebAVS Parent</name>
 	<description>WebAVS system</description>
