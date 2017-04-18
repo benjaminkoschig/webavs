@@ -64,13 +64,4 @@ public interface WebAvsCotisationsService {
     @WebMethod
     public abstract DecompteMensuel findDecompteMois(@WebParam(name = "numeroAffilie") String numeroAffilie,
             @WebParam(name = "mois") String mois, @WebParam(name = "annee") String annee);
-
-    @WebMethod
-    /**
-     * Permet de récupérer la liste des cotisations paritaires et personnelles pour un numéro d'affilié
-     * @param noAffilie
-     * @return
-     */
-    public abstract MassesForAffilie listerMassesActuellesConfigurable(String noAffilie, boolean cotParitaire,
-            boolean cotPers);
 }

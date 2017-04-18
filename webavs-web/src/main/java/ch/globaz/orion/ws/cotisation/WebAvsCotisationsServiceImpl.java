@@ -74,7 +74,6 @@ public class WebAvsCotisationsServiceImpl implements WebAvsCotisationsService {
             masse.valeur = convertirAnnuelToMensuelA5Centimes(masseAff.getMasseCotisation());
             masse.typeCotisation = Integer.parseInt(masseAff.getTypeAssurance());
             masse.codeCanton = Integer.parseInt(masseAff.getCodeCanton());
-            masse.genreCoti = Integer.parseInt(masseAff.getGenreCoti());
 
             massesForAffilie.masses.add(masse);
         }
@@ -286,21 +285,5 @@ public class WebAvsCotisationsServiceImpl implements WebAvsCotisationsService {
         }
 
         return lines;
-    }
-
-    @Override
-    public MassesForAffilie listerMassesActuellesConfigurable(String noAffilie, boolean cotParitaire, boolean cotPers) {
-        if (JadeStringUtil.isEmpty(noAffilie)) {
-            throw new IllegalArgumentException("Unabled to list Masses, numeroAffilie is empty or null");
-        }
-
-        // Récupération d'une session
-        BSession session = UtilsService.initSession();
-
-        // Récupération de la liste des cotisations paritaires et personnelles
-        List<AFMassesForAffilie> listeMasseForAffilie = AppAffiliationService
-                .retrieveListCotisationConfigurableForNumAffilie(session, noAffilie, cotParitaire, cotPers);
-
-        return fillMassesForAffilie(listeMasseForAffilie);
     }
 }

@@ -1,8 +1,6 @@
 package ch.globaz.orion.ws.common;
 
-import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.log.JadeLogger;
-import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import java.io.File;
 import java.io.IOException;
 import javax.jws.WebService;
@@ -22,15 +20,5 @@ public class WebAvsCommonServiceImpl implements WebAvsCommonService {
         }
 
         return byteFile;
-    }
-
-    @Override
-    public String findDateRetraite(String sexe, String dateNaissance) {
-        if ((sexe != null && !JadeStringUtil.isBlankOrZero(sexe))
-                && (dateNaissance != null && !JadeStringUtil.isBlankOrZero(dateNaissance))) {
-            return PRTiersHelper.getDateDebutDroitAVS(dateNaissance, sexe);
-        } else {
-            throw new IllegalArgumentException();
-        }
     }
 }

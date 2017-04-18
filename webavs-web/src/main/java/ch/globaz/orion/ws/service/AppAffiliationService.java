@@ -10,7 +10,6 @@ import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.log.JadeLogger;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import globaz.naos.db.affiliation.AFAffiliation;
-import globaz.naos.db.affiliation.AFAffiliationManager;
 import globaz.naos.services.AFAffiliationServices;
 import globaz.naos.translation.CodeSystem;
 import globaz.pyxis.application.TIApplication;
@@ -20,7 +19,6 @@ import java.util.List;
 import ch.globaz.common.business.exceptions.CommonTechnicalException;
 import ch.globaz.common.domaine.Checkers;
 import ch.globaz.naos.business.service.AFBusinessServiceLocator;
-import ch.globaz.orion.ws.exceptions.WebAvsException;
 import ch.globaz.pyxis.business.model.AdresseTiersDetail;
 import ch.globaz.pyxis.business.service.AdresseService;
 import ch.globaz.pyxis.business.service.TIBusinessServiceLocator;
@@ -46,7 +44,7 @@ public class AppAffiliationService {
      * @return Une liste des masses pour l'affilié
      */
     public static List<AFMassesForAffilie> retrieveListCotisationForNumAffilie(BSession session, String numAffilie,
-            String date, String forMois, String forAnnee, boolean cotParitaire, boolean cotPers) {
+            String date, String forMois, String forAnnee) {
 
         Checkers.checkNotNull(session, "session");
         Checkers.checkNotNull(numAffilie, "numAffilie");
@@ -56,8 +54,6 @@ public class AppAffiliationService {
         manager.setSession(session);
         manager.setDateFin(date);
         manager.setNumAffilie(numAffilie);
-        manager.setCotParitaire(cotParitaire);
-        manager.setCotPers(cotPers);
 
         try {
             manager.find(BManager.SIZE_NOLIMIT);
@@ -93,7 +89,7 @@ public class AppAffiliationService {
      */
     public static List<AFMassesForAffilie> retrieveListCotisationForNumAffilieForMoisAnnee(BSession session,
             String numAffilie, String forMois, String forAnnee) {
-        return retrieveListCotisationForNumAffilie(session, numAffilie, null, forMois, forAnnee, true, false);
+        return retrieveListCotisationForNumAffilie(session, numAffilie, null, forMois, forAnnee);
     }
 
     /**
@@ -108,7 +104,7 @@ public class AppAffiliationService {
      */
     public static List<AFMassesForAffilie> retrieveListCotisationForNumAffilie(BSession session, String numAffilie,
             String date) {
-        return retrieveListCotisationForNumAffilie(session, numAffilie, date, null, null, true, false);
+        return retrieveListCotisationForNumAffilie(session, numAffilie, date, null, null);
     }
 
     /**
@@ -121,42 +117,7 @@ public class AppAffiliationService {
      * @throws NullPointerException Si la session est null
      */
     public static List<AFMassesForAffilie> retrieveListCotisationActiveForNumAffilie(BSession session, String numAffilie) {
-        return retrieveListCotisationForNumAffilie(session, numAffilie, null, null, null, true, false);
-    }
-
-    /**
-     * Méthode permettant de récupérer de la liste des cotisations paritaires et personnelles d'un affilié à la date
-     * indiquée.
-     * 
-     * @param session Une session
-     * @param numAffilie Un numéro d'affilié
-     * @param date une date
-     * @return Une list de masses
-     * @throws IllegalArgumentException Exception levée si le numéro d'affilié est null ou vide
-     * @throws NullPointerException Si la session est null
-     */
-    public static List<AFMassesForAffilie> retrieveListCotisationParAndPersForNumAffilie(BSession session,
-            String numAffilie) {
-        return retrieveListCotisationForNumAffilie(session, numAffilie, null, null, null, true, true);
-    }
-
-    /**
-     * Méthode permettant de récupérer de la liste des cotisations paritaires et / ou personnelles d'un affilié à la
-     * date
-     * indiquée.
-     * 
-     * @param session Une session
-     * @param numAffilie Un numéro d'affilié
-     * @param date une date
-     * @param cotParitaire
-     * @param cotPers
-     * @return Une list de masses
-     * @throws IllegalArgumentException Exception levée si le numéro d'affilié est null ou vide
-     * @throws NullPointerException Si la session est null
-     */
-    public static List<AFMassesForAffilie> retrieveListCotisationConfigurableForNumAffilie(BSession session,
-            String numAffilie, boolean cotParitaire, boolean cotPers) {
-        return retrieveListCotisationForNumAffilie(session, numAffilie, null, null, null, cotParitaire, cotPers);
+        return retrieveListCotisationForNumAffilie(session, numAffilie, null, null, null);
     }
 
     /**
@@ -322,32 +283,5 @@ public class AppAffiliationService {
         }
 
         return adresseCourrier;
-    }
-
-    public static AFAffiliation findAffiliation(String numeroAffilie) throws WebAvsException {
-        BSession session = UtilsService.initSession();
-
-        // recherche de l'affiliation
-        AFAffiliationManager affiliationManager = new AFAffiliationManager();
-        affiliationManager.setSession(session);
-        affiliationManager.setForAffilieNumero(numeroAffilie);
-        affiliationManager.setForTypeAffiliation(new String[] { CodeSystem.TYPE_AFFILI_EMPLOY,
-                CodeSystem.TYPE_AFFILI_INDEP_EMPLOY });
-        affiliationManager.setFromDateFin(JACalendar.todayJJsMMsAAAA());
-
-        try {
-            affiliationManager.find(BManager.SIZE_USEDEFAULT);
-            if (affiliationManager.size() > 0) {
-                // récupération de l'affiliation
-                return (AFAffiliation) affiliationManager.getFirstEntity();
-            } else {
-                // aucun affiliation trouvée
-                return null;
-            }
-        } catch (Exception e) {
-            JadeLogger.error(AppAffiliationService.class, "technical error when findAffiliation for numeroAffilie : "
-                    + numeroAffilie);
-            throw new WebAvsException("technical error when findAffiliation for numeroAffilie : " + numeroAffilie);
-        }
     }
 }
