@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
+<%@page import="globaz.globall.db.BSessionInfo"%>
+<%@page import="globaz.globall.db.BSession"%>
 <%@ page language="java" import="globaz.globall.http.*" contentType="text/xml;charset=ISO-8859-1" %>
 <%@ page import="globaz.framework.servlets.FWServlet"%>
 <%@ page import="globaz.globall.db.BSessionUtil"%>
@@ -9,6 +11,13 @@
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct"%>
 <%
 	LYEcheanceAjaxViewBean viewBean = (LYEcheanceAjaxViewBean) request.getAttribute(FWServlet.VIEWBEAN);
+	String sessionLanguage = viewBean.getISession().getIdLangue();
+	String descriptionEcheance = viewBean.getDescriptionEcheance_fr();
+	if(sessionLanguage.equals("D")){
+	    descriptionEcheance = viewBean.getDescriptionEcheance_de();
+	}else if(sessionLanguage.equals("I")){
+	    descriptionEcheance = viewBean.getDescriptionEcheance_it();
+	}
 %>
 <message>
 	<contenu>
@@ -28,7 +37,7 @@
 								<span	id="descriptif"
 										data-g-tooltip="libelle:<%=viewBean.getProcessEcheance()%>">
 									<strong>
-										<%=viewBean.getDescriptionEcheance()%>
+										<%=descriptionEcheance%>
 									</strong>
 								</span>
 								<input	type="hidden" 

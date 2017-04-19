@@ -12,14 +12,20 @@
 	if (viewBean.getSearchModel().getSize() > 0) {
 		String preparationLink = "lyra?userAction=" + ILYActions.ACTION_PREPARATION + ".afficher&selectedId=";
 	
+		String sessionLanguage = viewBean.getISession().getIdLangue();
 		for(int i = 0; i < viewBean.getLineViewBeans().size(); i++) {
 			LYEcheanceLineViewBean line = viewBean.getLineViewBeans().get(i);
-
 			String preparationUrl = preparationLink + line.getIdEcheance();
+			String descriptionEcheance = line.getDescriptionEcheance_fr();
+			if(sessionLanguage.equals("D")){
+			    descriptionEcheance = line.getDescriptionEcheance_de();
+			}else if(sessionLanguage.equals("I")){
+			    descriptionEcheance = line.getDescriptionEcheance_it();
+			}
 %>
 				<tr class="echeance">
 					<td>
-						<%=line.getDescriptionEcheance()%>
+						<%=descriptionEcheance%>
 					</td>
 					<td>
 						<%=line.getLibelleDomaineApplicatif()%>

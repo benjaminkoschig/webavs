@@ -20,6 +20,9 @@ public class LYEcheances extends BEntity {
     // -------------------------------------------------------------------------------------
 
     public static final String FIELDNAME_DESCRIPTION = "WMLDES";
+    public static final String FIELDNAME_DESCRIPTION_FR = "WMLDESF";
+    public static final String FIELDNAME_DESCRIPTION_DE = "WMLDESD";
+    public static final String FIELDNAME_DESCRIPTION_IT = "WMLDESI";
 
     public static final String FIELDNAME_DOMAINE_APPLI = "WMTDAP";
     public static final String FIELDNAME_IDECHEANCES = "WMIECH";
@@ -32,6 +35,9 @@ public class LYEcheances extends BEntity {
     // ------------------------------------------------------------------------------------------------
 
     private String descriptionEcheances = "";
+    private String descriptionEcheances_fr = "";
+    private String descriptionEcheances_de = "";
+    private String descriptionEcheances_it = "";
     private String domaineApplicatif = "";
     private String idEcheances = "";
     private String processEcheance = "";
@@ -82,7 +88,9 @@ public class LYEcheances extends BEntity {
         domaineApplicatif = statement.dbReadNumeric(FIELDNAME_DOMAINE_APPLI);
         processEcheance = statement.dbReadString(FIELDNAME_INTERFACE_ECH);
         descriptionEcheances = statement.dbReadString(FIELDNAME_DESCRIPTION);
-
+        descriptionEcheances_fr = statement.dbReadString(FIELDNAME_DESCRIPTION_FR);
+        descriptionEcheances_de = statement.dbReadString(FIELDNAME_DESCRIPTION_DE);
+        descriptionEcheances_it = statement.dbReadString(FIELDNAME_DESCRIPTION_IT);
     }
 
     /**
@@ -127,6 +135,12 @@ public class LYEcheances extends BEntity {
                 _dbWriteString(statement.getTransaction(), processEcheance, "processEcheance"));
         statement.writeField(FIELDNAME_DESCRIPTION,
                 _dbWriteString(statement.getTransaction(), descriptionEcheances, "descriptionEcheances"));
+        statement.writeField(FIELDNAME_DESCRIPTION_FR,
+                _dbWriteString(statement.getTransaction(), descriptionEcheances_fr, "descriptionEcheances_fr"));
+        statement.writeField(FIELDNAME_DESCRIPTION_DE,
+                _dbWriteString(statement.getTransaction(), descriptionEcheances_de, "descriptionEcheances_de"));
+        statement.writeField(FIELDNAME_DESCRIPTION_IT,
+                _dbWriteString(statement.getTransaction(), descriptionEcheances_it, "descriptionEcheances_it"));
 
     }
 

@@ -101,6 +101,18 @@ public class LYEcheanceAjaxViewBean extends JadeAbstractAjaxListFindViewBean {
         return detailViewBean.getDescriptionEcheance();
     }
 
+    public String getDescriptionEcheance_fr() {
+        return detailViewBean.getDescriptionEcheance_fr();
+    }
+
+    public String getDescriptionEcheance_de() {
+        return detailViewBean.getDescriptionEcheance_de();
+    }
+
+    public String getDescriptionEcheance_it() {
+        return detailViewBean.getDescriptionEcheance_it();
+    }
+
     public String getIdEcheance() {
         return detailViewBean.getIdEcheance();
     }

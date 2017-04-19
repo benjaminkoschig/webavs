@@ -30,6 +30,18 @@ public class LYEcheanceLineViewBean {
         return echeance.getDescriptionEcheance();
     }
 
+    public String getDescriptionEcheance_fr() {
+        return echeance.getDescriptionEcheance_fr();
+    }
+
+    public String getDescriptionEcheance_de() {
+        return echeance.getDescriptionEcheance_de();
+    }
+
+    public String getDescriptionEcheance_it() {
+        return echeance.getDescriptionEcheance_it();
+    }
+
     public LYSimpleEcheance getEcheance() {
         return echeance;
     }
