@@ -18,11 +18,16 @@ import globaz.globall.util.JACalendarGregorian;
 import globaz.globall.util.JADate;
 import globaz.globall.util.JAException;
 import globaz.osiris.api.APIGestionComptabiliteExterne;
+import globaz.osiris.api.APIJournal;
+import globaz.osiris.api.ordre.APIOrganeExecution;
 import globaz.osiris.application.CAApplication;
 import globaz.osiris.db.comptes.CACompteAnnexe;
 import globaz.osiris.db.comptes.CACompteAnnexeManager;
 import globaz.osiris.db.comptes.CASectionJoinCompteAnnexeJoinTiers;
 import globaz.osiris.db.comptes.CASectionJoinCompteAnnexeJoinTiersManager;
+import globaz.osiris.db.ordres.CAOrdreGroupe;
+import globaz.osiris.db.ordres.CAOrganeExecution;
+import globaz.osiris.db.ordres.CAOrganeExecutionManager;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.tools.PRDateFormater;
@@ -45,7 +50,8 @@ public class REComptabiliseDebloquage extends AREModuleComptable {
     }
 
     public void comptabilise(BProcess process, Long idLot, String numeroOG, String idOrganeExecution,
-            String dateEcheancePaiement, String dateValeurComptable) throws Exception {
+            String dateEcheancePaiement, String dateValeurComptable, String isoGestionnaire, String isoHighPriority)
+            throws Exception {
 
         RELot lot = retriveLot(idLot);
         APIGestionComptabiliteExterne compta = initCompta(process);
@@ -104,13 +110,54 @@ public class REComptabiliseDebloquage extends AREModuleComptable {
         deblocages = deblocages.distinct();
         deblocages.changeEtatToComptabilise();
         deblocageService.update(deblocages);
-
-        lot.setIdJournalCA(compta.getJournal().getIdJournal());
+        APIJournal journal = compta.getJournal();
+        lot.setIdJournalCA(journal.getIdJournal());
         compta.comptabiliser();
 
         lot.setCsEtatLot(IRELot.CS_ETAT_LOT_VALIDE);
         lot.setDateEnvoiLot(dateValeurComptable);
         lot.update();
+
+        doPreparerOG(idOrganeExecution, numeroOG, dateEcheancePaiement, journal.getLibelle(), compta, isoGestionnaire,
+                isoHighPriority);
+
+    }
+
+    private void doPreparerOG(String idOrganeExecution, String numeroOG, String dateEcheancePaiement,
+            String description, APIGestionComptabiliteExterne compta, String isoGestionnaire, String isoHighPriority) {
+        String libelleOG = description;
+        String numOG = "";
+        if (isIso20022(idOrganeExecution, session)) {
+            libelleOG = "ISO20022 - " + libelleOG;
+        } else {
+            int n = Integer.parseInt(numeroOG);
+            if (n < 10) {
+                libelleOG = "OPAE 0" + n + " - " + libelleOG;
+            } else {
+                libelleOG = "OPAE" + n + " - " + libelleOG;
+            }
+            numOG = String.valueOf(n);
+        }
+        compta.preparerOrdreGroupe(idOrganeExecution, numOG, dateEcheancePaiement, CAOrdreGroupe.VERSEMENT,
+                CAOrdreGroupe.NATURE_RENTES_AVS_AI, description, isoGestionnaire, isoHighPriority);
+
+    }
+
+    protected boolean isIso20022(String idOrganeExecution, BSession session) {
+        CAOrganeExecutionManager mgr = new CAOrganeExecutionManager();
+        mgr.setSession(session);
+        mgr.setForIdOrganeExecution(idOrganeExecution);
+        try {
+            mgr.find();
+            if (mgr.size() != 1) {
+                throw new Exception();
+            }
+        } catch (Exception e) {
+            session.addError("PMT_AVANCE_IDORGANEEXEC_NULL");
+        }
+
+        return ((CAOrganeExecution) mgr.getEntity(0)).getIdTypeTraitementOG().equals(APIOrganeExecution.OG_ISO_20022);
+
     }
 
     private RELot retriveLot(Long idLot) throws Exception {

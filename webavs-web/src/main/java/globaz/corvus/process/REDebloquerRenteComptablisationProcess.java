@@ -16,6 +16,8 @@ public class REDebloquerRenteComptablisationProcess extends BProcess {
     private String idOrganeExecution;
     private String dateEcheancePaiement;
     private String dateValeurComptable;
+    private String isoGestionnaire;
+    private String isoHighPriority;
 
     public REDebloquerRenteComptablisationProcess() {
     }
@@ -32,14 +34,15 @@ public class REDebloquerRenteComptablisationProcess extends BProcess {
             doValidation();
             REComptabiliseDebloquage comptabiliseDebloquage = new REComptabiliseDebloquage(getSession());
             comptabiliseDebloquage.comptabilise(this, Long.valueOf(idLot), numeroOG, idOrganeExecution,
-                    dateEcheancePaiement, dateValeurComptable);
+                    dateEcheancePaiement, dateValeurComptable, isoGestionnaire, isoHighPriority);
             succes = true;
         } catch (Exception e) {
             BTransaction transaction = getTransaction();
             transaction.addErrors(e.toString());
             ProcessMailUtils.sendMailError(getEMailAddress(), e, this, "");
             setSendCompletionMail(false);
-
+            transaction.rollback();
+            getSession().getCurrentThreadTransaction().rollback();
             getMemoryLog().logMessage(e.toString(), FWMessage.ERREUR, this.getClass().getName());
         } finally {
             if (succes) {
@@ -99,8 +102,39 @@ public class REDebloquerRenteComptablisationProcess extends BProcess {
         this.numeroOG = numeroOG;
     }
 
-    public void setDateComptable(String dateValeurComptable) {
-        // TODO Auto-generated method stub
+    public String getDateValeurComptable() {
+        return dateValeurComptable;
+    }
 
+    public void setDateValeurComptable(String dateValeurComptable) {
+        this.dateValeurComptable = dateValeurComptable;
+    }
+
+    public String getIsoGestionnaire() {
+        return isoGestionnaire;
+    }
+
+    public void setIsoGestionnaire(String isoGestionnaire) {
+        this.isoGestionnaire = isoGestionnaire;
+    }
+
+    public String getIsoHighPriority() {
+        return isoHighPriority;
+    }
+
+    public void setIsoHighPriority(String isoHighPriority) {
+        this.isoHighPriority = isoHighPriority;
+    }
+
+    public String getNumeroOG() {
+        return numeroOG;
+    }
+
+    public String getIdOrganeExecution() {
+        return idOrganeExecution;
+    }
+
+    public String getDateEcheancePaiement() {
+        return dateEcheancePaiement;
     }
 }
