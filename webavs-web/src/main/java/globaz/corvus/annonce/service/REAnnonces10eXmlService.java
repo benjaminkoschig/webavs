@@ -37,6 +37,8 @@ import ch.admin.zas.rc.ZuwachsmeldungO10Type;
 
 public class REAnnonces10eXmlService extends REAbstractAnnonceXmlService implements REAnnonceXmlService {
 
+    private static final int CODE_APPLICATION_AUGMENTATION_DIXIEME = 44;
+
     private static final Logger LOG = LoggerFactory.getLogger(REAnnonces10eXmlService.class);
 
     public static final List<Integer> GENRE_PRESTATION_10_API = Arrays.asList(81, 82, 83, 84, 85, 86, 87, 88, 91, 92,
@@ -59,7 +61,7 @@ public class REAnnonces10eXmlService extends REAbstractAnnonceXmlService impleme
         int codeApplication = Integer.parseInt(annonce.getCodeApplication());
         RRMeldung10Type annonceXmlT10;
         switch (codeApplication) {
-            case 44:
+            case CODE_APPLICATION_AUGMENTATION_DIXIEME:
             case 46:
                 REAnnoncesAugmentationModification10Eme augmentation10eme01 = retrieveAnnonceAugModif10(annonce,
                         session);
@@ -70,20 +72,20 @@ public class REAnnonces10eXmlService extends REAbstractAnnonceXmlService impleme
                 parseAugmentationAvecAnakin(augmentation10eme01, augmentation10eme02, session, forMoisAnneeComptable);
 
                 if (GENRE_PRESTATION_10_ORDINAIRE.contains(genrePrestation)) {
-                    if (codeApplication == 44) {
+                    if (codeApplication == CODE_APPLICATION_AUGMENTATION_DIXIEME) {
                         annonceXmlT10 = genererZuwachmeldungOrdentliche(augmentation10eme01, augmentation10eme02);
                     } else {
                         annonceXmlT10 = genererAenderungsmeldungOrdentliche(augmentation10eme01, augmentation10eme02);
                     }
                 } else if (GENRE_PRESTATION_10_EXTRAORDINAIRE.contains(genrePrestation)) {
-                    if (codeApplication == 44) {
+                    if (codeApplication == CODE_APPLICATION_AUGMENTATION_DIXIEME) {
                         annonceXmlT10 = genererZuwachmeldungAusserordentliche(augmentation10eme01, augmentation10eme02);
                     } else {
                         annonceXmlT10 = genererAenderungsmeldungAusserordentliche(augmentation10eme01,
                                 augmentation10eme02);
                     }
                 } else if (GENRE_PRESTATION_10_API.contains(genrePrestation)) {
-                    if (codeApplication == 44) {
+                    if (codeApplication == CODE_APPLICATION_AUGMENTATION_DIXIEME) {
                         annonceXmlT10 = genererZuwachmeldungHilflosenentschaedigung(augmentation10eme01,
                                 augmentation10eme02);
                     } else {
@@ -91,6 +93,8 @@ public class REAnnonces10eXmlService extends REAbstractAnnonceXmlService impleme
                                 augmentation10eme02);
                     }
                 } else {
+                    LOG.warn("La valeur du genre de prestation {} ne fait pas partie des valeurs attendues ",
+                            genrePrestation);
                     throw new Exception("Genre Prestation non identifié " + genrePrestation);
                 }
 
@@ -108,13 +112,18 @@ public class REAnnonces10eXmlService extends REAbstractAnnonceXmlService impleme
                 } else if (GENRE_PRESTATION_10_API.contains(genrePrestation)) {
                     annonceXmlT10 = genererAbgangsHilflosenentschaedigung(diminution10eme01);
                 } else {
+                    LOG.warn("La valeur du genre de prestation {} ne fait pas partie des valeurs attendues ",
+                            genrePrestation);
                     throw new Exception("Genre Prestation non identifié " + genrePrestation);
                 }
+
                 break;
             default:
+                LOG.warn("La valeur du code application {} ne fait pas partie des valeurs attendues ", codeApplication);
                 throw new Exception("no match into the expected CodeApplication for " + getClass().getSimpleName());
         }
         if (annonceXmlT10 == null) {
+            LOG.debug("l'annonce10eme vaut NULL");
             throw new Exception("La génération de l'annonce Xml ne s'est pas effectuiée correctement");
         }
         return annonceXmlT10;

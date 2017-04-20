@@ -159,7 +159,8 @@ public class REEnvoyerAnnoncesXMLProcess extends BProcess {
             mgr.setForCsEtat(IREAnnonces.CS_ETAT_OUVERT);
             mgr.setForCodeEnregistrement("01");
             mgr.setForMoisRapport(forMoisAnneeComptable);
-            System.out.println(mgr.getCount());
+            int nbAnnoncesLot = mgr.getCount();
+            LOG.debug(String.valueOf(nbAnnoncesLot));
             if (getIsForAnnoncesSubsequentes()) {
                 mgr.setForAnnoncesSubsequentes(true);
             }
@@ -172,11 +173,6 @@ public class REEnvoyerAnnoncesXMLProcess extends BProcess {
                 annonce.update(getTransaction());
                 try {
                     prepareEnvoieAnnonce(annonce, lotAnnonces);
-                } catch (ValidationException ex) {
-                    // traiter les exception de validation xml autrement
-
-                    getMemoryLog().logMessage(ex.getFormattedMessage() + "}\n", FWMessage.ERREUR,
-                            getSession().getLabel("ENVOYER_ANNONCES"));
                 } catch (Exception ex) {
                     String err;
                     if (ex.getMessage() != null) {
@@ -185,67 +181,66 @@ public class REEnvoyerAnnoncesXMLProcess extends BProcess {
                         err = ex.toString();
                     }
                     // si une erreur est levée, on continue en gardant en mémoire l'erreur
-                    if (err != null) {
-                        StringBuilder messageBuilder = new StringBuilder();
+                    StringBuilder messageBuilder = new StringBuilder();
 
-                        // si première erreur, ajout du mois du rapport comme info (bas de l'email)
-                        if (!hasError) {
-                            messageBuilder.append(getSession().getLabel("PROCESS_ENVOI_ANNONCES_ERROR_EMAIL_HEADER"))
-                                    .append(" ");
-                            messageBuilder.append(forMoisAnneeComptable).append("\n\n");
+                    // si première erreur, ajout du mois du rapport comme info (bas de l'email)
+                    if (!hasError) {
+                        messageBuilder.append(getSession().getLabel("PROCESS_ENVOI_ANNONCES_ERROR_EMAIL_HEADER"))
+                                .append(" ");
+                        messageBuilder.append(forMoisAnneeComptable).append("\n\n");
 
-                            getMemoryLog().logMessage(messageBuilder.toString(), FWMessage.INFORMATION,
-                                    getSession().getLabel("ENVOYER_ANNONCES"));
+                        getMemoryLog().logMessage(messageBuilder.toString(), FWMessage.INFORMATION,
+                                getSession().getLabel("ENVOYER_ANNONCES"));
 
-                            messageBuilder = new StringBuilder();
-                        }
+                        messageBuilder = new StringBuilder();
+                    }
 
-                        messageBuilder.append(getSession().getLabel("PROCESS_ENVOI_ANNONCES_ERROR_TITLE")).append("\n");
-                        messageBuilder.append(getSession().getLabel("PROCESS_ENVOI_ANNONCES_ERROR_NO_AVS"))
-                                .append(" : ").append(NSUtil.formatAVSUnknown(annonce.getNoAssAyantDroit()))
-                                .append("\n");
-                        messageBuilder.append(getSession().getLabel("PROCESS_ENVOI_ANNONCES_ERROR_CODE_APPLICATION"))
-                                .append(" : ").append(annonce.getCodeApplication()).append("\n");
-                        messageBuilder.append(getSession().getLabel("PROCESS_ENVOI_ANNONCES_ERROR_GENRE_PRESTATION"))
-                                .append(" : ").append(annonce.getGenrePrestation()).append("\n");
+                    messageBuilder.append(getSession().getLabel("PROCESS_ENVOI_ANNONCES_ERROR_TITLE")).append("\n");
+                    messageBuilder.append(getSession().getLabel("PROCESS_ENVOI_ANNONCES_ERROR_NO_AVS")).append(" : ")
+                            .append(NSUtil.formatAVSUnknown(annonce.getNoAssAyantDroit())).append("\n");
+                    messageBuilder.append(getSession().getLabel("PROCESS_ENVOI_ANNONCES_ERROR_CODE_APPLICATION"))
+                            .append(" : ").append(annonce.getCodeApplication()).append("\n");
+                    messageBuilder.append(getSession().getLabel("PROCESS_ENVOI_ANNONCES_ERROR_GENRE_PRESTATION"))
+                            .append(" : ").append(annonce.getGenrePrestation()).append("\n");
+                    if (ex instanceof ValidationException) {
+                        messageBuilder.append(getSession().getLabel("PROCESS_ENVOI_ANNONCES_ERROR_MESSAGE_XML"))
+                                .append(" : {");
+                        err = ((ValidationException) ex).getFormattedMessage();
+                    } else {
                         messageBuilder.append(getSession().getLabel("PROCESS_ENVOI_ANNONCES_ERROR_MESSAGE_ANAKIN"))
                                 .append(" : {");
-
-                        getMemoryLog().logMessage(messageBuilder.toString(), FWMessage.ERREUR,
+                    }
+                    getMemoryLog().logMessage(messageBuilder.toString(), FWMessage.ERREUR,
+                            getSession().getLabel("ENVOYER_ANNONCES"));
+                    if (err.length() < 255) {
+                        getMemoryLog().logMessage(err + "}\n", FWMessage.ERREUR,
                                 getSession().getLabel("ENVOYER_ANNONCES"));
-                        if (err.length() < 255) {
-                            getMemoryLog().logMessage(err + "}\n", FWMessage.ERREUR,
-                                    getSession().getLabel("ENVOYER_ANNONCES"));
-                        } else {
-
-                            // si le message est plus grand que 255 caractères, on découpe le message
-                            // en plusieurs entrées dans le mail (la limite du framework pour une entrée
-                            // est de 255 caractères)
-                            String[] splitedErr = err.split("\n");
-                            StringBuilder message = new StringBuilder();
-
-                            for (String split : splitedErr) {
-                                // s'il y a encore assez de place pour ce message dans cette entrée, on l'ajoute
-                                if ((message.length() + split.length()) < 255) {
-                                    message.append(split).append("\n");
-                                } else {
-                                    // sinon on écrit les messages précédents dans le mail et on crée une nouvelle
-                                    // entrée avec ce message
-                                    getMemoryLog().logMessage(message.toString(), FWMessage.ERREUR,
-                                            getSession().getLabel("ENVOYER_ANNONCES"));
-
-                                    message = new StringBuilder();
-                                    message.append(split).append("\n");
-                                }
-                            }
-
-                            // on écrit dans le mail les messages restants
-                            message.append("}\n");
-                            getMemoryLog().logMessage(message.toString(), FWMessage.ERREUR,
-                                    getSession().getLabel("ENVOYER_ANNONCES"));
-                        }
                     } else {
-                        getMemoryLog().logMessage("Error for ARC id = " + annonce.getIdAnnonce(), FWMessage.ERREUR,
+
+                        // si le message est plus grand que 255 caractères, on découpe le message
+                        // en plusieurs entrées dans le mail (la limite du framework pour une entrée
+                        // est de 255 caractères)
+                        String[] splitedErr = err.split("\n");
+                        StringBuilder message = new StringBuilder();
+
+                        for (String split : splitedErr) {
+                            // s'il y a encore assez de place pour ce message dans cette entrée, on l'ajoute
+                            if ((message.length() + split.length()) < 255) {
+                                message.append(split).append("\n");
+                            } else {
+                                // sinon on écrit les messages précédents dans le mail et on crée une nouvelle
+                                // entrée avec ce message
+                                getMemoryLog().logMessage(message.toString(), FWMessage.ERREUR,
+                                        getSession().getLabel("ENVOYER_ANNONCES"));
+
+                                message = new StringBuilder();
+                                message.append(split).append("\n");
+                            }
+                        }
+
+                        // on écrit dans le mail les messages restants
+                        message.append("}\n");
+                        getMemoryLog().logMessage(message.toString(), FWMessage.ERREUR,
                                 getSession().getLabel("ENVOYER_ANNONCES"));
                     }
                     hasError = true;
@@ -260,25 +255,27 @@ public class REEnvoyerAnnoncesXMLProcess extends BProcess {
                 throw new Exception(getSession().getLabel("PROCESS_ENVOI_ANNONCES_ERREUR_PREPARATION_ENVOI"));
             }
 
-            int nbAnnoncesLot = mgr.getCount();
             mgr.cursorClose(statement);
+
+            if (lotAnnonces
+                    .getVAIKMeldungNeuerVersicherterOrVAIKMeldungAenderungVersichertenDatenOrVAIKMeldungVerkettungVersichertenNr()
+                    .isEmpty()) {
+                throw new Exception(getSession().getLabel("PROCESS_ENVOI_ANNONCES_ERREUR_AUCUNE_ANNONCE"));
+            }
 
             String fileName = genereFichier(lotAnnonces, nbAnnoncesLot);
             envoiFichier(fileName);
 
         } catch (Exception e) {
-            String message = getSession().getLabel("ENVOYER_ANNONCES");
-            LOG.warn(message, e);
+            String source = getSession().getLabel("ENVOYER_ANNONCES");
+            LOG.warn(source, e);
 
-            StringBuilder messageBuilder = new StringBuilder();
-
-            getMemoryLog().logMessage(messageBuilder.toString(), FWMessage.ERREUR, message);
-            getMemoryLog().logMessage(e.toString() + "}\n", FWMessage.ERREUR, message);
+            getMemoryLog().logMessage(e.toString(), FWMessage.ERREUR, source);
 
             try {
                 getTransaction().rollback();
             } catch (Exception e1) {
-                LOG.error(message, e);
+                LOG.error(source, e1);
             }
             return false;
         }
@@ -330,7 +327,7 @@ public class REEnvoyerAnnoncesXMLProcess extends BProcess {
     @Override
     protected void _validate() throws Exception {
         if (getParent() == null) {
-            if ((getEMailAddress() == null) || getEMailAddress().equals("")) {
+            if ((getEMailAddress() == null) || "".equals(getEMailAddress())) {
                 setSendCompletionMail(false);
                 setSendMailOnError(false);
             } else {
@@ -455,6 +452,7 @@ public class REEnvoyerAnnoncesXMLProcess extends BProcess {
             PRTiersWrapper tiers = PRTiersHelper.getTiersParId(getSession(), annonce.getIdTiers());
             nss = tiers.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL);
         } catch (Exception ex) {
+            LOG.debug("NSS Not Found", ex);
             nss = "NSS Not Found";
         }
 
@@ -481,10 +479,12 @@ public class REEnvoyerAnnoncesXMLProcess extends BProcess {
      * 
      * @param annonce
      *            l'annonce à préparer
+     * @throws ValidationException si une erreur de validation unitaire d'une annonce survient
      * @throws Exception
      *             si une erreur dans la validation par ANAKIN surivent, une exception est lancée
      */
-    void prepareEnvoieAnnonce(REAnnoncesAbstractLevel1A annonce, PoolMeldungZurZAS.Lot poolMeldungLot) throws Exception {
+    void prepareEnvoieAnnonce(REAnnoncesAbstractLevel1A annonce, PoolMeldungZurZAS.Lot poolMeldungLot)
+            throws ValidationException, Exception {
 
         REAnnonceXmlService abstractService = resolveAnnonceVersionService(annonce);
 
