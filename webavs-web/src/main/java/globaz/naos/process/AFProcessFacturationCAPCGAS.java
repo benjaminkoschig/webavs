@@ -805,7 +805,7 @@ public final class AFProcessFacturationCAPCGAS extends BProcess {
 
                             if (isAssuranceCAPWithAF(theAssurance)) {
                                 double montantAFAFacturer = getMontantAFAFacturer(anneeFacturation, idAffiliation,
-                                        nbMoisAFacturer, aLine.getDebutPeriode(), aLine.getFinPeriode());
+                                        affilieNumero, nbMoisAFacturer, aLine.getDebutPeriode(), aLine.getFinPeriode());
 
                                 // Comme l'allocation familiale se trouve dans un afact négatif séparé
                                 // Il faut augmenter l'afact de cotisation avec la valeur de l'allocation familiale
@@ -1009,7 +1009,7 @@ public final class AFProcessFacturationCAPCGAS extends BProcess {
 
                     if (isAssuranceCAPWithAF(theAssurance)) {
                         double montantAFAFacturer = getMontantAFAFacturer(anneeFacturation, idAffiliation,
-                                nbMoisAFacturer, aLine.getDebutPeriode(), aLine.getFinPeriode());
+                                affilieNumero, nbMoisAFacturer, aLine.getDebutPeriode(), aLine.getFinPeriode());
 
                         // Comme l'allocation familiale se trouve dans un afact négatif séparé
                         // Il faut augmenter l'afact de cotisation avec la valeur de l'allocation familiale
@@ -1152,8 +1152,8 @@ public final class AFProcessFacturationCAPCGAS extends BProcess {
         return idModuleFacturationCAPCGAS;
     }
 
-    private double getMontantAFAFacturer(String anneeFacturation, String idAffiliation, int nbMoisAFacturer,
-            String debutPeriode, String finPeriode) throws Exception {
+    private double getMontantAFAFacturer(String anneeFacturation, String idAffiliation, String affilieNumero,
+            int nbMoisAFacturer, String debutPeriode, String finPeriode) throws Exception {
 
         try {
 
@@ -1181,6 +1181,11 @@ public final class AFProcessFacturationCAPCGAS extends BProcess {
                     break;
                 }
 
+            }
+
+            if (decisionCAP == null) {
+                throw new Exception("Aucune décision pour l'année " + anneeFacturation
+                        + " et l'affiliation suivante : " + affilieNumero + " (id affiliation : " + idAffiliation + ")");
             }
 
             double montantAFAFacturer = decisionCAPService.getMontantAFAFacturer(decisionCAP, nbMoisAFacturer);
