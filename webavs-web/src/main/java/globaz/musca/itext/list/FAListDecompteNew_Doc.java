@@ -295,9 +295,9 @@ public class FAListDecompteNew_Doc extends FWIDocumentManager {
     public void generateXsl() {
         // FilenameUtils
         _createDocumentInfo();
-
         File file;
         try {
+            beforeBuildReport();
             file = this.generateXsl(load(), decompteRecap);
         } catch (Exception e1) {
             throw new RuntimeException(e1);
@@ -339,7 +339,7 @@ public class FAListDecompteNew_Doc extends FWIDocumentManager {
             new Date();
             builder = SimpleOutputListBuilderJade.newInstance().session(getSession()).globazTheme().addTranslater()
                     .headerLeftTop(NUM_REF_INFOROM_LISTE_DECOMPTE)
-                    .headerLeftBottom(getSession().getUserName() + " " + Date.now().getSwissValue())
+                    .headerLeftBottom(getSession().getUserName() + " (" + Date.toDayformatteSwissValueWithTime() + ")")
                     .outputNameAndAddPath(NUM_REF_INFOROM_LISTE_DECOMPTE + "_" + toLabel("DECOMPTE"));
 
             file = builder.addList(list).classElementList(FaDecompteBeanXls.class).addHeaderDetails(details)

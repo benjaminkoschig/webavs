@@ -123,6 +123,11 @@ public class SimpleOutputListBuilderJade extends SimpleOutputListBuilder {
             }
         });
         configuration.setTranslater(translater);
+        configuration.getHeaderFooter().setCenterTop(configurationGlobaz.getHeaderFooter().getCenterTop());
+        configuration.getHeaderFooter().setLeftBottom(configurationGlobaz.getHeaderFooter().getLeftBottom());
+        configuration.getHeaderFooter().setLeftTop(configurationGlobaz.getHeaderFooter().getRightTop());
+        configuration.getHeaderFooter().setRightTop(configurationGlobaz.getHeaderFooter().getRightTop());
+
         configure(configuration);
         configurationGlobaz = configuration;
         return this;

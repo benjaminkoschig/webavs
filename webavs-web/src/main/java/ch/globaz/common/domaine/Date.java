@@ -288,6 +288,16 @@ public class Date implements Comparable<Date> {
     }
 
     /**
+     * Retour la date au format standard Swiss et le temps
+     * 
+     * @return String au format dd.MM.yyyy
+     */
+    public static String toDayformatteSwissValueWithTime() {
+        final SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy - HH:mm", Locale.FRENCH);
+        return dateFormat.format(new java.util.Date());
+    }
+
+    /**
      * Retour la date au format standard Swiss
      * 
      * @return String au format MM.yyyy

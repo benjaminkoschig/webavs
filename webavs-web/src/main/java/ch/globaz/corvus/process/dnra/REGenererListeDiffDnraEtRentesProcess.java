@@ -463,7 +463,8 @@ public class REGenererListeDiffDnraEtRentesProcess extends REAbstractJadeJob {
         headerFooter = configuration.getHeaderFooter();
         headerFooter.setRightTop(session.getLabel("LIST_CORVUS_DIFFERENCE_TROUVEE_RIGHT_TOP"));
         headerFooter.setLeftTop(nomCaisse);
-        headerFooter.setLeftBottom(" - " + session.getUserName());
+        headerFooter.setLeftBottom(session.getUserName() + " ("
+                + ch.globaz.common.domaine.Date.toDayformatteSwissValueWithTime() + ")");
 
         Collections.sort(list, new Comparator<DifferenceTrouvee>() {
             @Override

@@ -249,7 +249,8 @@ public class CAListOrdreRejeteProcess extends BProcess {
         headerFooter.setRightTop(FWMessageFormat.format(session.getLabel("LIST_OSIRIS_ORDREREJETE_RIGHT_TOP"),
                 new Date()));
         headerFooter.setLeftTop(INFOROM_NUMBER);
-        headerFooter.setLeftBottom(" - " + session.getUserName());
+        headerFooter.setLeftBottom(session.getUserName() + " ("
+                + ch.globaz.common.domaine.Date.toDayformatteSwissValueWithTime() + ")");
 
         title = session.getLabel("LIST_OSIRIS_ORDREREJETE_TITLE");
 
