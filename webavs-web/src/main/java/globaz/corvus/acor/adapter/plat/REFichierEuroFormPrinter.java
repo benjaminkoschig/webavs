@@ -21,8 +21,11 @@ import globaz.pyxis.db.adressecourrier.TIPaysManager;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
 import globaz.pyxis.db.tiers.TITiers;
 import globaz.pyxis.util.TIAdresseResolver;
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import ch.globaz.common.domaine.Date;
 import ch.globaz.hera.business.constantes.ISFMembreFamille;
 
 /**
@@ -59,31 +62,37 @@ public class REFichierEuroFormPrinter implements PRFichierACORPrinter {
     }
 
     private String rechercherLeTiers(String idTiersAssure) throws Exception {
-        ISFMembreFamilleRequerant[] membresFamille = getToutesLesMembresFamilles(idTiersAssure);
+        List<ISFMembreFamilleRequerant> membresFamille = Arrays.asList(getToutesLesMembresFamilles(idTiersAssure));
+        // On trie car on veut prendre en premier le conjoint et si ce n'est pas possible on prend l'enfant le plus
+        // jeune.
+        Collections.sort(membresFamille, new Comparator<ISFMembreFamilleRequerant>() {
+            @Override
+            public int compare(ISFMembreFamilleRequerant o1, ISFMembreFamilleRequerant o2) {
+                if (o1.getRelationAuRequerant().equals(o2.getRelationAuRequerant())) {
+                    if (!JadeStringUtil.isBlankOrZero(o1.getDateNaissance())
+                            && !JadeStringUtil.isBlankOrZero(o2.getDateNaissance())) {
+                        Date dateNaisse1 = new Date(o1.getDateNaissance());
+                        Date dateNaisse2 = new Date(o2.getDateNaissance());
+                        return dateNaisse2.compareTo(dateNaisse1);
+                    }
+                }
+                return o2.getRelationAuRequerant().compareTo(o1.getRelationAuRequerant());
+            }
+        });
 
-        List<ISFMembreFamilleRequerant> conjoints = new ArrayList<ISFMembreFamilleRequerant>();
         for (ISFMembreFamilleRequerant tiers : membresFamille) {
-            // On ne veut pas traiter le tiers requérant
-            if (idTiersAssure.equals(tiers.getIdTiers())) {
-                continue;
+            // On ne veut pas traiter le tiers requérant et les membres de famille qui n'ont pas d'idTiers
+            if (!idTiersAssure.equals(tiers.getIdTiers()) && !JadeStringUtil.isBlankOrZero(tiers.getIdTiers())) {
+                if (ISFMembreFamille.CS_TYPE_RELATION_CONJOINT.equals(tiers.getRelationAuRequerant())
+                        || ISFMembreFamille.CS_TYPE_RELATION_ENFANT.equals(tiers.getRelationAuRequerant())) {
+                    return tiers.getIdTiers();
+                }
             }
-            if (ISFMembreFamille.CS_TYPE_RELATION_CONJOINT.equals(tiers.getRelationAuRequerant())) {
-                conjoints.add(tiers);
-            }
         }
 
-        String idTiersConjoint = null;
+        throw new Exception("Impossible de retrouver l'idTiers du conjoint pour l'idTiersAssuré [" + idTiersAssure
+                + "]");
 
-        if (!conjoints.isEmpty()) {
-            idTiersConjoint = conjoints.get(0).getIdTiers();
-        }
-
-        if (JadeStringUtil.isBlankOrZero(idTiersConjoint)) {
-            throw new Exception("Impossible de retrouver l'idTiers du conjoint pour l'idTiersAssuré [" + idTiersAssure
-                    + "]");
-        }
-
-        return idTiersConjoint;
     }
 
     /**
@@ -96,10 +105,11 @@ public class REFichierEuroFormPrinter implements PRFichierACORPrinter {
     protected ISFMembreFamilleRequerant[] getToutesLesMembresFamilles(String idTiersRequerant) throws Exception {
         // On recherche la sit famille du tiers requérant
         globaz.hera.api.ISFSituationFamiliale sf = SFSituationFamilialeFactory.getSituationFamiliale(
-                adapter.getSession(), ISFSituationFamiliale.CS_DOMAINE_RENTES, idTiersRequerant);
+                adapter.getSession(), ISFSituationFamiliale.CS_DOMAINE_STANDARD, idTiersRequerant);
 
         // On récupère tous les membres de la famille
         ISFMembreFamilleRequerant[] membresFamille = sf.getMembresFamilleRequerant(idTiersRequerant);
+
         return membresFamille;
     }
 
