@@ -135,41 +135,41 @@ public class AnnoncesCODefault {
         passSedex = JadeDefaultEncrypters.getJadeDefaultEncrypter().decrypt(encryptedPass);
     }
 
-    protected FamillePersonneEtendue getPersonneEtendue(String nss, Boolean onlyPrincipal) {
+    protected FamillePersonneEtendue getPersonneEtendue(String nss, Boolean onlyPrincipal) throws Exception {
 
-        try {
-            if (nss == null || nss.isEmpty()) {
-                return null;
-            }
+        // try {
+        if (nss == null || nss.isEmpty()) {
+            return null;
+        }
 
-            CommonNSSFormater nssFormater = new CommonNSSFormater();
-            String nssFormate = nssFormater.format(nss);
+        CommonNSSFormater nssFormater = new CommonNSSFormater();
+        String nssFormate = nssFormater.format(nss);
 
-            FamillePersonneEtendueSearch famillePersonneEtendueSearch = new FamillePersonneEtendueSearch();
+        FamillePersonneEtendueSearch famillePersonneEtendueSearch = new FamillePersonneEtendueSearch();
 
-            if (onlyPrincipal) {
-                famillePersonneEtendueSearch.setIsContribuablePrincipal(Boolean.TRUE);
-            }
+        if (onlyPrincipal) {
+            famillePersonneEtendueSearch.setIsContribuablePrincipal(Boolean.TRUE);
+        }
 
-            famillePersonneEtendueSearch.setLikeNss(nssFormate);
-            famillePersonneEtendueSearch = AmalServiceLocator.getFamilleContribuableService().search(
+        famillePersonneEtendueSearch.setLikeNss(nssFormate);
+        famillePersonneEtendueSearch = AmalServiceLocator.getFamilleContribuableService().search(
+                famillePersonneEtendueSearch);
+        int nbFamilleContribuable = famillePersonneEtendueSearch.getNbOfResultMatchingQuery();
+        // Si on trouve un seul membre, on retourne celui la
+        if (nbFamilleContribuable == 1) {
+            return (FamillePersonneEtendue) famillePersonneEtendueSearch.getSearchResults()[0];
+        } else if (nbFamilleContribuable > 1) {
+            // Si on en trouve plusieurs, on relance la requête en ne spécifiant qu'on ne veut que les actifs
+            famillePersonneEtendueSearch.setForMembreActifFromToday(Date.now().getSwissMonthValue());
+            nbFamilleContribuable = AmalServiceLocator.getFamilleContribuableService().count(
                     famillePersonneEtendueSearch);
-            int nbFamilleContribuable = famillePersonneEtendueSearch.getNbOfResultMatchingQuery();
-            // Si on trouve un seul membre, on retourne celui la
             if (nbFamilleContribuable == 1) {
                 return (FamillePersonneEtendue) famillePersonneEtendueSearch.getSearchResults()[0];
-            } else if (nbFamilleContribuable > 1) {
-                // Si on en trouve plusieurs, on relance la requête en ne spécifiant qu'on ne veut que les actifs
-                famillePersonneEtendueSearch.setForMembreActifFromToday(Date.now().getSwissMonthValue());
-                nbFamilleContribuable = AmalServiceLocator.getFamilleContribuableService().count(
-                        famillePersonneEtendueSearch);
-                if (nbFamilleContribuable == 1) {
-                    return (FamillePersonneEtendue) famillePersonneEtendueSearch.getSearchResults()[0];
-                }
             }
-        } catch (Exception ex) {
-            throw new RuntimeException(ex.getMessage());
         }
+        // } catch (Exception ex) {
+        // throw new AnnoncesedexCORuntimeException(ex.getMessage());
+        // }
 
         return null;
     }
@@ -298,7 +298,6 @@ public class AnnoncesCODefault {
     }
 
     protected void logErrors(String source, String error, Throwable exception) {
-        exception.printStackTrace();
         logErrors(source, exception.getMessage());
     }
 
@@ -371,7 +370,6 @@ public class AnnoncesCODefault {
                     body.toString(), files);
         } catch (Exception e) {
             JadeThread.logError("Sendmail", "Erreur lors de l'envoi du mail : " + e.getMessage());
-            e.printStackTrace();
             throw new RuntimeException("Erreur lors de l'envoi du mail : " + e.getMessage());
         }
     }

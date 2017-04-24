@@ -4,6 +4,7 @@ import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.common.Jade;
+import globaz.jade.context.JadeThread;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.persistence.JadePersistenceManager;
@@ -177,7 +178,6 @@ public class AnnoncesCOServiceImpl implements AnnoncesCOService {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
             // On ne fait rien, order pas appliqué
         }
 
@@ -208,6 +208,7 @@ public class AnnoncesCOServiceImpl implements AnnoncesCOService {
             fstream = new FileWriter(new File(file));
             out = new BufferedWriter(fstream);
         } catch (Exception ex) {
+            JadeThread.logError("AnnoncesCOServiceImpl._writeFile", ex.getMessage());
             ex.printStackTrace();
             return null;
         }
@@ -226,9 +227,10 @@ public class AnnoncesCOServiceImpl implements AnnoncesCOService {
                 if (out != null) {
                     out.flush();
                     out.close();
+                    fstream.close();
                 }
             } catch (Exception ex) {
-                ex.printStackTrace();
+                JadeThread.logError("AnnoncesCOServiceImpl._writeFile", ex.getMessage());
             }
         }
 

@@ -112,7 +112,6 @@ public class AnnoncesCOReceptionMessage5234_000402_1 extends AnnoncesCOReception
             }
         } catch (Exception e) {
             JadeLogger.error(this, "SEDEX: error receiving message ");
-            e.printStackTrace();
             JadeLogger.error(this, e);
             throw new JadeSedexMessageNotHandledException("Erreur dans la réception d'une annonce SEDEX CO: ");
         } finally {

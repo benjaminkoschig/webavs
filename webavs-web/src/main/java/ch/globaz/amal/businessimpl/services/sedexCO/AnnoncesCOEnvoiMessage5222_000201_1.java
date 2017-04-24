@@ -102,10 +102,10 @@ public class AnnoncesCOEnvoiMessage5222_000201_1 extends AMALabstractProcess {
     private static final String PACKAGE_CLASS_FOR_SEDEX_LISTE_PERSONNE_NE_PAS_POURSUIVRE = "ch.gdk_cds.xmlns.da_64a_5222_000201._1";
     private static final BigInteger VERSION = new BigInteger("1");
     private String noGroupeCaisse = null;
-    private List<String> selectedIdCaisses = null;
+    private transient List<String> selectedIdCaisses = null;
     static BSession session = null;
-    private ObjectFactory objectFactory = null;
-    private List<String> errors = null;
+    private transient ObjectFactory objectFactory = null;
+    private transient List<String> errors = null;
     private Boolean simulation = false;
 
     public AnnoncesCOEnvoiMessage5222_000201_1() {
@@ -201,7 +201,6 @@ public class AnnoncesCOEnvoiMessage5222_000201_1 extends AMALabstractProcess {
                         incr++;
                     } catch (AnnonceSedexException ase) {
                         errors.add("Erreur SEDEX " + ase.getMessage());
-                        ase.printStackTrace();
                     } catch (JAXBValidationException e) {
                         String events = "";
                         if (e.getEvents() != null && !e.getEvents().isEmpty()) {
@@ -210,14 +209,11 @@ public class AnnoncesCOEnvoiMessage5222_000201_1 extends AMALabstractProcess {
                             }
                         }
                         JadeThread.logError("Erreur de validation du message => " + events, e.getMessage());
-                        e.printStackTrace();
                     } catch (JadeSedexMessageNotSentException e) {
                         errors.add("Erreur lors de l'envoi : " + e.getMessage());
                         JadeThread.logError("Erreur lors de l'envoi du message", e.getMessage());
-                        e.printStackTrace();
                     } catch (Exception e) {
                         errors.add("Erreur technique (" + idCaisseMaladie + ") " + e.getMessage());
-                        e.printStackTrace();
                     }
                 }
             }
@@ -225,7 +221,6 @@ public class AnnoncesCOEnvoiMessage5222_000201_1 extends AMALabstractProcess {
         } catch (AnnonceSedexCOException e) {
             errors.add("Annonce SEDEX Exception : " + e.getMessage());
             JadeThread.logError("AnnoncesCOEnvoiMessage5222_000201_1.process()", e.getMessage());
-            e.printStackTrace();
         } finally {
             createMail(fichierSimulation);
 
@@ -357,7 +352,7 @@ public class AnnoncesCOEnvoiMessage5222_000201_1 extends AMALabstractProcess {
                         currentNomGroupe = currentCMGroupe.getNomGroupe();
                     }
                 } catch (Exception ex) {
-                    ex.printStackTrace();
+                    // on ne fait rien
                 }
                 if (JadeStringUtil.isEmpty(currentNomGroupe) && JadeStringUtil.isEmpty(currentNoGroupe)) {
                     message += "Groupe sélectionné : " + currentGroupe + "\n    ";
@@ -367,7 +362,7 @@ public class AnnoncesCOEnvoiMessage5222_000201_1 extends AMALabstractProcess {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            JadeThread.logError("AnnoncesCOEnvoi.createMail", e.getMessage());
         }
 
         String[] files = new String[1];
@@ -385,7 +380,7 @@ public class AnnoncesCOEnvoiMessage5222_000201_1 extends AMALabstractProcess {
             JadeSmtpClient.getInstance().sendMail(BSessionUtil.getSessionFromThreadContext().getUserEMail(), subject,
                     message, files);
         } catch (Exception ex) {
-            ex.printStackTrace();
+            JadeThread.logError("AnnoncesCOEnvoi.createMail", ex.getMessage());
         }
     }
 
@@ -560,7 +555,7 @@ public class AnnoncesCOEnvoiMessage5222_000201_1 extends AMALabstractProcess {
 
         if (personneANePasPoursuivreSearch.getNbOfResultMatchingQuery() > 1) {
             // Il ne devrait y avoir qu'un couple NSS / Année, donc si on arrive ici : erreur
-            throw new RuntimeException("Plus d'un record pour le NSS / année : " + nss + "-"
+            throw new SimplePersonneANePasPoursuivreException("Plus d'un record pour le NSS / année : " + nss + "-"
                     + familleContribuable.getSimpleDetailFamille().getAnneeHistorique());
         }
 
@@ -778,13 +773,11 @@ public class AnnoncesCOEnvoiMessage5222_000201_1 extends AMALabstractProcess {
             }
         } catch (Exception ex) {
             JadeLogger.error(null, "Error reseting status job annonce à SENT :" + ex.toString());
-            ex.printStackTrace();
         }
         try {
             JadeThread.commitSession();
         } catch (Exception ex) {
             JadeLogger.error(null, "Error commiting session when reseting status job annonce à SENT :" + ex.toString());
-            ex.printStackTrace();
         }
 
     }
@@ -813,6 +806,7 @@ public class AnnoncesCOEnvoiMessage5222_000201_1 extends AMALabstractProcess {
                     DatatypeConstants.FIELD_UNDEFINED);
             return xmlCal;
         } catch (Exception pe) {
+            errors.add(pe.getMessage());
             return null;
         }
     }

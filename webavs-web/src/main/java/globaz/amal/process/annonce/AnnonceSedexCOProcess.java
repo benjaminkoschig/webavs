@@ -56,7 +56,6 @@ public class AnnonceSedexCOProcess extends AMALabstractProcess {
                     "AnnonceSedexCOProcess",
                     "Erreur lors de l'envoi du mail du processu de génération de la liste de comparaison : "
                             + e.getMessage());
-            e.printStackTrace();
         }
     }
 

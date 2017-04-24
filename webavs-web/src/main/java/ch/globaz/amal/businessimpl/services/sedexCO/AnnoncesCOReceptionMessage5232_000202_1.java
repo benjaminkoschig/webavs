@@ -42,6 +42,7 @@ import ch.gdk_cds.xmlns.da_64a_common._1.InsuredPersonType;
 import ch.gdk_cds.xmlns.da_64a_common._1.InsuredPersonWithClaimType;
 import ch.gdk_cds.xmlns.da_64a_common._1.ListOfClaimsGuaranteedAssumptionsType;
 import ch.globaz.amal.business.constantes.IAMCodeSysteme;
+import ch.globaz.amal.business.exceptions.models.AmalRuntimeException;
 import ch.globaz.amal.business.exceptions.models.annoncesedexco.AnnonceSedexCOReceptionException;
 import ch.globaz.amal.business.exceptions.models.detailFamille.DetailFamilleException;
 import ch.globaz.amal.business.models.annoncesedexco.SimpleAnnonceSedexCO;
@@ -310,11 +311,10 @@ public class AnnoncesCOReceptionMessage5232_000202_1 extends AnnoncesCODefault {
                                     + insuredPerson.getFirstName());
                         }
 
-                    } catch (AnnonceSedexCOReceptionException asre) {
-                        logErrors(
-                                "AnnoncesCOReceptionMessage5232_000202_1.processDonneesAnnonce",
-                                "Erreur pendant le traitement d'une personne a ne pas poursuivre : "
-                                        + asre.getMessage(), asre);
+                    } catch (Exception ex) {
+                        logErrors("AnnoncesCOReceptionMessage5232_000202_1.processDonneesAnnonce",
+                                "Erreur pendant le traitement d'une personne a ne pas poursuivre : " + ex.getMessage(),
+                                ex);
                     }
                 }
             } catch (JadePersistenceException jpe) {
@@ -352,7 +352,7 @@ public class AnnoncesCOReceptionMessage5232_000202_1 extends AnnoncesCODefault {
 
             return generateListe(simplePersonneANePasPoursuivreSearch, true);
         } catch (Exception ex) {
-            throw new RuntimeException(ex.getMessage());
+            throw new AmalRuntimeException(ex.getMessage());
         }
     }
 

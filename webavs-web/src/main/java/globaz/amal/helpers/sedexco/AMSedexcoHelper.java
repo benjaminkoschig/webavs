@@ -6,6 +6,7 @@ import globaz.framework.controller.FWAction;
 import globaz.framework.controller.FWHelper;
 import globaz.globall.api.BISession;
 import ch.globaz.amal.business.constantes.AMMessagesSubTypesAnnonceSedexCO;
+import ch.globaz.amal.business.exceptions.models.AmalRuntimeException;
 import ch.globaz.amal.business.models.annoncesedexco.SimpleAnnonceSedexCO;
 import ch.globaz.amal.businessimpl.services.sedexCO.AnnoncesCOReceptionMessage5234_000401_1;
 import ch.globaz.amal.businessimpl.services.sedexCO.AnnoncesCOReceptionMessage5234_000402_1;
@@ -33,7 +34,7 @@ public class AMSedexcoHelper extends FWHelper {
                     }
                 }
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                throw new AmalRuntimeException(e);
             }
         } else {
             super.execute(viewBean, action, session);
