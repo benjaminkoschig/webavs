@@ -154,6 +154,8 @@ function controlnew() {
 			document.getElementById("tdAnneeTaux2").style.display = 'none';
 			document.getElementById("tdRapportControle").style.visibility = 'visible';
 			document.getElementById("tdRapportControle2").style.visibility = 'visible';
+			document.getElementById("tdAnneeTaux").style.visibility = 'hidden';
+			document.getElementById("anneeTaux").style.visibility = 'hidden';
 		} else if (document.getElementById('typeDeclaration').value == typeSalaireDifferes) {
 			document.getElementById("rapportControl").disabled = true;
 			document.getElementById("controlEmployeur").disabled = true;
@@ -161,6 +163,8 @@ function controlnew() {
 			document.getElementById("annee").className = "enabled";
 			document.getElementById("tdAnneeTaux").style.display = 'block';
 			document.getElementById("tdAnneeTaux2").style.display = 'block';
+			document.getElementById("tdAnneeTaux").style.visibility = 'visible';
+			document.getElementById("anneeTaux").style.visibility = 'visible';
 			document.getElementById("tdRapportControle").style.visibility = 'hidden';
 			document.getElementById("tdRapportControle2").style.visibility = 'hidden';
 			document.getElementById("soumisInteret").value='<%=globaz.osiris.db.interets.CAInteretMoratoire.CS_EXEMPTE%>';
@@ -168,10 +172,14 @@ function controlnew() {
 			document.getElementById("soumisInteret").value='<%=globaz.osiris.db.interets.CAInteretMoratoire.CS_EXEMPTE%>';
 			document.getElementById("soumisInteret").disabled = true;
 			document.getElementById("soumisInteret").className = "disabled";
+			document.getElementById("tdAnneeTaux").style.visibility = 'hidden';
+			document.getElementById("anneeTaux").style.visibility = 'hidden';
 		} else if (typeDividende == document.getElementById('typeDeclaration').value) {
 			document.getElementById("soumisInteret").value='<%=globaz.osiris.db.interets.CAInteretMoratoire.CS_EXEMPTE%>';
 			document.getElementById("soumisInteret").disabled = true;
 			document.getElementById("soumisInteret").className = "disabled";
+			document.getElementById("tdAnneeTaux").style.visibility = 'hidden';
+			document.getElementById("anneeTaux").style.visibility = 'hidden';
 		} else {
 			document.getElementById("rapportControl").disabled = true;
 			document.getElementById("controlEmployeur").disabled = true;
@@ -181,6 +189,8 @@ function controlnew() {
 			document.getElementById("tdAnneeTaux2").style.display = 'none';
 			document.getElementById("tdRapportControle").style.visibility = 'hidden';
 			document.getElementById("tdRapportControle2").style.visibility = 'hidden';
+			document.getElementById("tdAnneeTaux").style.visibility = 'hidden';
+			document.getElementById("anneeTaux").style.visibility = 'hidden';
 		}
 	}
 }
