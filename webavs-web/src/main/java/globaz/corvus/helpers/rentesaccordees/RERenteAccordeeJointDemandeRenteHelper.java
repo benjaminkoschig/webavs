@@ -923,9 +923,19 @@ public class RERenteAccordeeJointDemandeRenteHelper extends PRHybridHelper {
                         idTiersMembreFamilleSameAsIdTiersAdressePmt);
             }
         }
-        // Si TiersAdressePmt parmi les idTiersFamille
+        // Si il y a un plus jeune dans la famille
         else if (!idTiersYoungestMembreFamilleSameIdTiersAdressePmt.isEmpty()) {
             idCAToChange = getIdCompteAnnexe(session, idTiersYoungestMembreFamilleSameIdTiersAdressePmt);
+
+            // Si on a pas d'idCompteAnnexe -> créer un compte annexe
+            if (idCAToChange.isEmpty()) {
+                idCAToChange = createCompteAnnexeAndReturnId(session, transaction, ra,
+                        idTiersYoungestMembreFamilleSameIdTiersAdressePmt);
+            }
+        }
+        // Enfin si aucun cas ne correspond on récupère l'id du CA de la personne a qui la rente est accordée
+        else {
+            idCAToChange = getIdCompteAnnexe(session, ra.getIdTiersBeneficiaire());
 
             // Si on a pas d'idCompteAnnexe -> créer un compte annexe
             if (idCAToChange.isEmpty()) {
@@ -980,9 +990,9 @@ public class RERenteAccordeeJointDemandeRenteHelper extends PRHybridHelper {
             RERenteAccJoinTblTiersJoinDemandeRente tempRefRenteAvecDateDeFinDroit = null;
             // itérer sur toutes les rentes :
             for (int i = 0; i < rentesEnfants.size(); i++) {
-                // Si adresse payement est égal à un enfant et pas égaà elle même
-                if (ra.getIdTierAdressePmt().equals(rentesEnfants.get(i).getIdTierAdressePmt())
-                        && ra != rentesEnfants.get(i)) {
+                // Si adresse payement est égal à un enfant, si elle est égal à elle même c'est plus un soucis, on
+                // récupère le plus jeune -> lui même
+                if (ra.getIdTierAdressePmt().equals(rentesEnfants.get(i).getIdTierAdressePmt())) {
 
                     // Récupérer le tiers rentier
                     PRTiersWrapper tiersFamille = PRTiersHelper.getTiersParId(session, rentesEnfants.get(i)
