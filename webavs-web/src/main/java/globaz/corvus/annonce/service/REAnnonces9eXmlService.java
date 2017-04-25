@@ -687,8 +687,9 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
         if (!JadeStringUtil.isBlank(enr02.getOfficeAICompetent())) {
             donneeAI.setIVStelle(Integer.valueOf(enr02.getOfficeAICompetent()));
         }
-
-        donneeAI.setInvaliditaetsgrad(Integer.valueOf(enr02.getDegreInvalidite()).shortValue());
+        if (!JadeStringUtil.isBlank(enr02.getDegreInvalidite())) {
+            donneeAI.setInvaliditaetsgrad(Integer.valueOf(enr02.getDegreInvalidite()).shortValue());
+        }
         if (!JadeStringUtil.isBlank(enr02.getCodeInfirmite())) {
             String codeInfirmite = StringUtils.leftPad(enr02.getCodeInfirmite(), 5);
             donneeAI.setGebrechensschluessel(Integer.valueOf(StringUtils.left(codeInfirmite, 3)));
@@ -710,8 +711,9 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
         if (!JadeStringUtil.isBlank(enr02.getOfficeAICompetent())) {
             donneeAI.setIVStelle(Integer.valueOf(enr02.getOfficeAICompetent()));
         }
-
-        donneeAI.setInvaliditaetsgrad(Integer.valueOf(enr02.getDegreInvalidite()).shortValue());
+        if (!JadeStringUtil.isBlank(enr02.getDegreInvalidite())) {
+            donneeAI.setInvaliditaetsgrad(Integer.valueOf(enr02.getDegreInvalidite()).shortValue());
+        }
         if (!JadeStringUtil.isBlank(enr02.getCodeInfirmite())) {
             String codeInfirmite = StringUtils.leftPad(enr02.getCodeInfirmite(), 5);
             donneeAI.setGebrechensschluessel(Integer.valueOf(StringUtils.left(codeInfirmite, 3)));
@@ -772,7 +774,7 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
         if (!JadeStringUtil.isBlank(enr02.getOfficeAiCompEpouse())) {
             donneeAI.setIVStelle(Integer.valueOf(enr02.getOfficeAiCompEpouse()));
         }
-        if (JadeStringUtil.isBlank(enr02.getDegreInvaliditeEpouse())) {
+        if (!JadeStringUtil.isBlank(enr02.getDegreInvaliditeEpouse())) {
             donneeAI.setInvaliditaetsgrad(Integer.valueOf(enr02.getDegreInvaliditeEpouse()).shortValue());
         }
         if (!JadeStringUtil.isBlank(enr02.getCodeInfirmite())) {
@@ -795,7 +797,7 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
         if (!JadeStringUtil.isBlank(enr02.getOfficeAiCompEpouse())) {
             donneeAI.setIVStelle(Integer.valueOf(enr02.getOfficeAiCompEpouse()));
         }
-        if (JadeStringUtil.isBlank(enr02.getDegreInvaliditeEpouse())) {
+        if (!JadeStringUtil.isBlank(enr02.getDegreInvaliditeEpouse())) {
             donneeAI.setInvaliditaetsgrad(Integer.valueOf(enr02.getDegreInvaliditeEpouse()).shortValue());
         }
         if (!JadeStringUtil.isBlank(enr02.getCodeInfirmite())) {
