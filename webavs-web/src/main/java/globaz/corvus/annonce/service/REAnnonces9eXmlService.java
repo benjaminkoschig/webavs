@@ -43,11 +43,11 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
 
     private static final Logger LOG = LoggerFactory.getLogger(REAnnonces9eXmlService.class);
 
-    public static Set<Integer> ordentlicheRente = new HashSet<Integer>(Arrays.asList(10, 11, 12, 13, 14, 15, 16, 33,
+    public static Set<Integer> ORDENTLICHERENTE = new HashSet<Integer>(Arrays.asList(10, 11, 12, 13, 14, 15, 16, 33,
             34, 35, 36, 50, 51, 52, 53, 54, 55, 56));
-    public static Set<Integer> ausserordentlicheRente = new HashSet<Integer>(Arrays.asList(20, 21, 22, 23, 24, 25, 26,
+    public static Set<Integer> AUSSERORDENTLICHERENTE = new HashSet<Integer>(Arrays.asList(20, 21, 22, 23, 24, 25, 26,
             43, 44, 45, 46, 70, 71, 72, 73, 74, 75, 76));
-    public static Set<Integer> hilflosenentschaedigung = new HashSet<Integer>(Arrays.asList(91, 92, 93, 95, 96, 97));
+    public static Set<Integer> HILFLOSENENTSCHAEDIGUNG = new HashSet<Integer>(Arrays.asList(91, 92, 93, 95, 96, 97));
 
     private static REAnnonceXmlService instance = new REAnnonces9eXmlService();
 
@@ -72,19 +72,19 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
 
                 parseAugmentationAvecAnakin(augmentation9eme01, augmentation9eme02, session, forMoisAnneeComptable);
 
-                if (ordentlicheRente.contains(genrePrestation)) {
+                if (ORDENTLICHERENTE.contains(genrePrestation)) {
                     if (codeApplication == 41) {
                         annonceXmlT9 = annonceAugmentationOrdinaire9e(augmentation9eme01, augmentation9eme02);
                     } else {
                         annonceXmlT9 = annonceChangementOrdinaire9e(augmentation9eme01, augmentation9eme02);
                     }
-                } else if (ausserordentlicheRente.contains(genrePrestation)) {
+                } else if (AUSSERORDENTLICHERENTE.contains(genrePrestation)) {
                     if (codeApplication == 41) {
                         annonceXmlT9 = annonceAugmentationExtraOrdinaire9e(augmentation9eme01, augmentation9eme02);
                     } else {
                         annonceXmlT9 = annonceChangementExtraOrdinaire9e(augmentation9eme01, augmentation9eme02);
                     }
-                } else if (hilflosenentschaedigung.contains(genrePrestation)) {
+                } else if (HILFLOSENENTSCHAEDIGUNG.contains(genrePrestation)) {
                     if (codeApplication == 41) {
                         annonceXmlT9 = annonceAugmentationAPI9e(augmentation9eme01, augmentation9eme02);
                     } else {
@@ -101,13 +101,13 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
                 REAnnoncesDiminution9Eme diminution9eme01 = retrieveAnnonceDimi9(annonce, session);
                 parseDiminutionAvecAnakin(diminution9eme01, session, forMoisAnneeComptable);
 
-                if (ordentlicheRente.contains(genrePrestation)) {
+                if (ORDENTLICHERENTE.contains(genrePrestation)) {
                     annonceXmlT9 = annonceDiminutionOrdinaire(diminution9eme01);
                 }
-                if (ausserordentlicheRente.contains(genrePrestation)) {
+                if (AUSSERORDENTLICHERENTE.contains(genrePrestation)) {
                     annonceXmlT9 = annonceDiminutionExtraOrdinaire(diminution9eme01);
                 }
-                if (hilflosenentschaedigung.contains(genrePrestation)) {
+                if (HILFLOSENENTSCHAEDIGUNG.contains(genrePrestation)) {
                     annonceXmlT9 = annonceDiminutionAPI(diminution9eme01);
                 }
                 // FIXME, pas présent dans le code ancien mode

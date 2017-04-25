@@ -604,7 +604,10 @@ public class REEnvoyerAnnoncesXMLProcess extends BProcess {
         fileName = Jade.getInstance().getSharedDir() + getFileNameTimeStamp();
 
         File f = new File(fileName);
-        f.createNewFile();
+        boolean canCreateFile = f.createNewFile();
+        if (!canCreateFile) {
+            throw new Exception("Unable to create file : " + fileName);
+        }
 
         try {
             marshaller.setEventHandler(new ValidationEventHandler() {
@@ -619,7 +622,6 @@ public class REEnvoyerAnnoncesXMLProcess extends BProcess {
 
         } catch (JAXBException exception) {
             LOG.error("JAXB validation has thrown a JAXBException : " + exception.toString(), exception);
-            exception.printStackTrace();
             throw exception;
 
         }
