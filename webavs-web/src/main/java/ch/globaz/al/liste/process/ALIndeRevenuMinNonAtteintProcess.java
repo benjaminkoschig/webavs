@@ -134,7 +134,7 @@ public class ALIndeRevenuMinNonAtteintProcess extends BProcess {
                 + "INNER JOIN (SELECT * FROM (VALUES "
                 + chaineRevenusMinimaux
                 + ") AS TEMP(ANNEE, MINIMAL)) AS REVENU_MIN ON ANNEE = Cast(CP_DECI.IADDEB / 10000 as integer) "
-                + "WHERE (AF_PRES_ENTETE.MPERD * 100 ) BETWEEN CP_DECI.IADDEB AND CP_DECI.IADFIN "
+                + "WHERE (AF_PRES_ENTETE.MPERD * 100 + 1) BETWEEN CP_DECI.IADDEB AND CP_DECI.IADFIN "
                 + "AND CP_DECI.IATTDE IN("
                 + ALConstIndependantAF.CS_TYPE_DECISION_DEFINITIF
                 + ","
