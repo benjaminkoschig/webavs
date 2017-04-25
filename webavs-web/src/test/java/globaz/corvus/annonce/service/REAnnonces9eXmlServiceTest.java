@@ -344,9 +344,6 @@ public class REAnnonces9eXmlServiceTest {
                 .when(testService)
                 .checkAndUpdate9eme(Matchers.any(REAnnoncesAugmentationModification9Eme.class),
                         Matchers.any(BITransaction.class));
-        Mockito.doNothing()
-                .when(testService)
-                .checkAndUpdateDimi9eme(Matchers.any(REAnnoncesDiminution9Eme.class), Matchers.any(BITransaction.class));
         // Mute ANAKIN
         Mockito.doNothing()
                 .when(testService)
