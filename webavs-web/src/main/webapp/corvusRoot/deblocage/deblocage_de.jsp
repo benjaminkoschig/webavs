@@ -57,7 +57,7 @@ globazGlobal.isRenteBloque = ${viewBean.isRenteBloque()};
 				<span class="value">{{rue}} {{numero}}</span>	
 			</div>
 			<div class="span3">
-				<textarea class="refPaiement" rows="3" cols="20">{{refPaiement}}</textarea>
+				<textarea class="refPaiement" rows="3" cols="20"  data-g-string="sizeMax:140" >{{refPaiement}}</textarea>
 			</div>
 			<div class="span1 right">
 				<input data-g-amount=" " class="input-mini liveSum montant" name="montant" value="{{montant}}" />
@@ -90,11 +90,11 @@ globazGlobal.isRenteBloque = ${viewBean.isRenteBloque()};
 				<div id="infos_requerant" class="titre">
 					<h1 class="ui-widget-header "><ct:FWLabel key="JSP_RE_DEBLOCAGE_HEADER_INFO_PCA_REQUERANT"/></h1>
 					<div class="row-fluid">
-						<div class="span1">
+						<div class="span2">
 							<span class="lbl"><ct:FWLabel key="JSP_RE_DEBLOCAGE_BENEFICIARE"/></span>
 							
 						</div>
-						<div class="span11">
+						<div class="span10">
 							<span id="requerantInfos" class="value">
 								<a  class="labeld" href="./pyxis?userAction=pyxis.tiers.tiers.afficher&selectedId=${viewBean.idTiersBeneficiaire}">	
 									<span id="valRequerant">${viewBean.tiersBeneficiaireInfo}</span>
@@ -255,7 +255,7 @@ globazGlobal.isRenteBloque = ${viewBean.isRenteBloque()};
 								<c:choose>
 									<c:when  test="${entry.etat.isEnregistre()}">
 										<div class="span3">
-											<textarea class="refPaiement" rows="3" cols="20">${entry.refPaiement}</textarea>	
+											<textarea class="refPaiement" data-g-string="sizeMax:140" rows="3" cols="20">${entry.refPaiement}</textarea>	
 										</div>
 										<div class="span1 right">
 											<input data-g-amount="" class="input-mini liveSum" name="montant" value="${entry.montant.toStringFormat()}" />
@@ -327,7 +327,7 @@ globazGlobal.isRenteBloque = ${viewBean.isRenteBloque()};
 							</div>
 							<div class="span3">
 								<span class="lbl"><ct:FWLabel key="JSP_RE_DEBLOCAGE_REFERENCE_PAIEMENT"/></span>
-								<textarea class="refPaiement" rows="3" cols="20"></textarea>
+								<textarea class="refPaiement" rows="3" cols="20"  data-g-string="sizeMax:140" ></textarea>
 							</div>
 							<div class="span1 right">
 								<input data-g-amount="" class="input-mini liveSum" name="montant" />

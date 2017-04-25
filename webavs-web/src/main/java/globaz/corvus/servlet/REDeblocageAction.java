@@ -1,5 +1,6 @@
 package globaz.corvus.servlet;
 
+import globaz.corvus.vb.deblocage.REDeblocageAjaxViewBean;
 import globaz.framework.bean.FWAJAXFindInterface;
 import globaz.framework.bean.FWAJAXViewBeanInterface;
 import globaz.framework.controller.FWAction;
@@ -9,7 +10,9 @@ import globaz.framework.controller.FWViewBeanActionFactory;
 import globaz.framework.servlets.FWServlet;
 import globaz.globall.vb.BJadePersistentObjectViewBean;
 import globaz.prestation.servlet.PRHybridAction;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -73,6 +76,42 @@ public class REDeblocageAction extends PRHybridAction {
          * redirection vers la destination
          */
         servlet.getServletContext().getRequestDispatcher(destination).forward(request, response);
+    }
+
+    @Override
+    protected void actionSupprimerAJAX(HttpSession session, HttpServletRequest request, HttpServletResponse response,
+            FWDispatcher mainDispatcher) throws ServletException, IOException {
+
+        String action = request.getParameter("userAction");
+        FWAction newAction = FWAction.newInstance(action);
+        FWAJAXViewBeanInterface viewBean = new REDeblocageAjaxViewBean();
+        String hexaSerializedViewBean = request.getParameter("viewBean");
+
+        if (hexaSerializedViewBean != null && !"null".equals(hexaSerializedViewBean)) {
+            super.actionSupprimerAJAX(session, request, response, mainDispatcher);
+        } else {
+            try {
+                globaz.globall.http.JSPUtils.setBeanProperties(request, viewBean);
+            } catch (InvocationTargetException e) {
+                throw new RuntimeException(e);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+
+            /*
+             * appelle du dispatcher
+             */
+            viewBean = (FWAJAXViewBeanInterface) beforeSupprimer(session, request, response, viewBean);
+            viewBean.setGetListe(true);
+
+            viewBean = (FWAJAXViewBeanInterface) mainDispatcher.dispatch(viewBean, newAction);
+
+            request.setAttribute(FWServlet.VIEWBEAN, viewBean);
+
+            servlet.getServletContext().getRequestDispatcher(getAJAXAfficherSuccessDestination(session, request))
+                    .forward(request, response);
+        }
+
     }
 
 }

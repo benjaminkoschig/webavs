@@ -72,6 +72,7 @@ function DeblocageAjax(m_options) {
 		 var $html = globazNotation.template.compile$(obj, this.tempateCreancier);
 		 var part = newAjaxDeblocage($html)
 		 $("#creanciers").append($html);
+		 $html.find(".save").find(".ui-icon").css("background-image", "url(theme/jquery/images/ui-icons_green_256x240.png)");
 	};
 	
 	this.onUpdate = function (data, action) {
@@ -107,7 +108,6 @@ function DeblocageAjax(m_options) {
 		}else{
 			this.mainContainer.find(".save").find(".ui-icon").css("background-image", "url(theme/jquery/images/ui-icons_green_256x240.png)");
 		}
-		
 		this.mainContainer.css("color","");
 	};
 
@@ -137,9 +137,11 @@ function DeblocageAjax(m_options) {
 	this.init(function () {
 		var that = this;
 	
-		this.mainContainer.find(".liveSum").keyup(function () {
-			that.mainContainer.find(".save").find(".ui-icon").css("background-image", "url(theme/jquery/images/ui-icons_f9bd01_256x240.png)");
-			that.mainContainer.css("color","#29769F");
+		this.mainContainer.find(".liveSum").keypress(function (event) {
+			if(filterCharForFloat(event)) {
+				that.mainContainer.find(".save").find(".ui-icon").css("background-image", "url(theme/jquery/images/ui-icons_f9bd01_256x240.png)");
+				that.mainContainer.css("color","#29769F");
+			}
 		});
 		this.tempateCreancier = $("#templateCreancier").html();
 		this.mainContainer.find(".save").button({

@@ -5,16 +5,19 @@ package globaz.corvus.db.lignedeblocage;
 
 import globaz.corvus.db.lignedeblocage.constantes.RELigneDeblocageEtat;
 import globaz.corvus.db.lignedeblocage.constantes.RELigneDeblocageType;
+import globaz.framework.util.FWMessageFormat;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
 import globaz.pyxis.db.tiers.TITiers;
 import globaz.pyxis.db.tiers.TITiersManager;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import ch.globaz.common.domaine.AdressePaiement;
+import ch.globaz.common.domaine.Montant;
 import ch.globaz.common.jadedb.exception.JadeDataBaseException;
 import ch.globaz.common.services.AdressePaiementLoader;
 
@@ -51,11 +54,32 @@ public class ReLigneDeclocageServices {
         ligneDeblocage.setSession(session);
         try {
             ligneDeblocage.add();
+            checkDette(ligneDeblocage);
         } catch (Exception e) {
             throw new JadeDataBaseException("Unabled to add ligne de déblocage", e);
         }
 
         return ligneDeblocage;
+    }
+
+    private void checkDette(RELigneDeblocage ligneDeblocage) {
+        if (ligneDeblocage.isDetteEnCompta()) {
+            RELigneDeblocages deblocage = searchByIdSection(ligneDeblocage.getIdSectionCompensee(),
+                    ligneDeblocage.getIdRoleSection());
+            Montant montant = deblocage.sumMontants();
+
+            RELigneDeblocageDetteHandler deblocageDetteHandler = new RELigneDeblocageDetteHandler(session);
+            RELigneDeblocageDette dette = deblocageDetteHandler.readDetteComptabiliser(
+                    ligneDeblocage.getIdSectionCompensee(), ligneDeblocage.getIdRoleSection());
+            if (dette != null) {
+                if (dette.getMontanDette().less(montant)) {
+                    String message = MessageFormat.format(FWMessageFormat.prepareQuotes(
+                            session.getLabel("ERROR_DEBLOCAGE_DETTE_MONTANT_TROP_GRAND"), false), montant
+                            .toStringFormat(), dette.getMontanDette().toStringFormat());
+                    session.addError(message);
+                }
+            }
+        }
     }
 
     /**
@@ -101,6 +125,7 @@ public class ReLigneDeclocageServices {
         ligneDeblocage.setSession(session);
         try {
             ligneDeblocage.update();
+            checkDette(ligneDeblocage);
         } catch (Exception e) {
             throw new JadeDataBaseException("Unabled to add ligne de déblocage", e);
         }
@@ -143,6 +168,30 @@ public class ReLigneDeclocageServices {
         manager.setSession(session);
         manager.setForType(fortype);
 
+        return search(manager);
+    }
+
+    /**
+     * Recherche de toutes les lignes de déblocage par le type
+     * 
+     * @param idSectionCompensee Une section de la compta(Une dette)
+     * @return
+     */
+    public RELigneDeblocages searchByIdSection(Long idSectionCompensee, Long idRoleSection) {
+
+        if (idSectionCompensee == null) {
+            throw new IllegalArgumentException(
+                    "To perform a search by idSectionCompensee, idSectionCompensee must be not null");
+        }
+        if (idRoleSection == null) {
+            throw new IllegalArgumentException(
+                    "To perform a search by idSectionCompensee, idRoleSection must be not null");
+        }
+
+        RELigneDeblocageManager manager = new RELigneDeblocageManager();
+        manager.setSession(session);
+        manager.setForIdSectionCompensee(idSectionCompensee);
+        manager.setForIdRoleSection(idRoleSection);
         return search(manager);
     }
 
@@ -258,6 +307,7 @@ public class ReLigneDeclocageServices {
             ligne.setDesignationTiers1(tiers.getDesignation1());
             ligne.setDesignationTiers2(tiers.getDesignation2());
             ligne.setIdTiersCreancier(reLigneDeblocage.getIdTiersCreancier());
+            ligne.setRefPaiement(reLigneDeblocage.getRefPaiement());
             addInfoCommun(ligne, reLigneDeblocage);
             ligne.setSpy(reLigneDeblocage.getSpy());
             if (ligne.getIdTiersCreancier() != null && ligne.getIdTiersCreancier() != 0) {

@@ -703,9 +703,8 @@ public class RERenteAccordeeJointDemandeRenteViewBean extends RERenteAccJoinTblT
                 e.printStackTrace();
                 return false;
             }
-            FWCurrency mnt = new FWCurrency(blocage.getMontantBloque());
-            mnt.sub(blocage.getMontantDebloque());
-            return mnt.isPositive();
+            FWCurrency mntB = new FWCurrency(blocage.getMontantBloque());
+            return mntB.isPositive();
         }
     }
 
@@ -781,8 +780,6 @@ public class RERenteAccordeeJointDemandeRenteViewBean extends RERenteAccJoinTblT
     public boolean isPreparationDecisionValide(String dateDernierPaiement) {
         return REDecisionsUtil.isPreparationDecisionAuthorise(getSession(), getNoDemandeRente());
     }
-
-
 
     /**
      * @return

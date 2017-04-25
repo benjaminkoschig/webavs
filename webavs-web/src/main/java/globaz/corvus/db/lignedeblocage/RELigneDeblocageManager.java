@@ -15,6 +15,8 @@ public class RELigneDeblocageManager extends JadeManager<RELigneDeblocage> {
     private Long forIdLot;
     private RELigneDeblocageEtat forEtat;
     private RELigneDeblocageType forType;
+    private Long forIdSectionCompensee;
+    private Long forIdRoleSection;
 
     @Override
     protected void createWhere(SQLWriter sqlWhere) {
@@ -22,6 +24,8 @@ public class RELigneDeblocageManager extends JadeManager<RELigneDeblocage> {
         sqlWhere.and(RELigneDeblocageTableDef.CS_ETAT).equal(forEtat);
         sqlWhere.and(RELigneDeblocageTableDef.CS_TYPE_DEBLOCAGE).equal(forType);
         sqlWhere.and(RELigneDeblocageTableDef.ID_LOT).equal(forIdLot);
+        sqlWhere.and(RELigneDeblocageTableDef.ID_SECTION_COMPENSEE).equal(forIdSectionCompensee);
+        sqlWhere.and(RELigneDeblocageTableDef.ID_ROLE_SECTION).equal(forIdRoleSection);
     }
 
     @Override
@@ -43,6 +47,14 @@ public class RELigneDeblocageManager extends JadeManager<RELigneDeblocage> {
 
     public void setForIdLot(Long forIdLot) {
         this.forIdLot = forIdLot;
+    }
+
+    public void setForIdSectionCompensee(Long forIdSectionCompensee) {
+        this.forIdSectionCompensee = forIdSectionCompensee;
+    }
+
+    public void setForIdRoleSection(Long forIdRoleSection) {
+        this.forIdRoleSection = forIdRoleSection;
     }
 
 }

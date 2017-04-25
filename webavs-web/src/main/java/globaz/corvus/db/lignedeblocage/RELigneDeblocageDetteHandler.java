@@ -10,6 +10,8 @@ import globaz.osiris.db.comptes.CASectionJoinCompteAnnexeJoinTiersManager;
 import globaz.osiris.db.comptes.CASectionManager;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -33,7 +35,15 @@ class RELigneDeblocageDetteHandler {
             idsSection.add(ligne.getIdSectionCompensee().toString());
         }
         List<RELigneDeblocageDette> dettesComptabiliser = findDetteComptabiliser(idsSection);
-        return mergedDetteWithDeblocage(dettes, dettesComptabiliser, lignesDeblocage);
+        List<RELigneDeblocageDette> dettesMerged = mergedDetteWithDeblocage(dettes, dettesComptabiliser,
+                lignesDeblocage);
+        Collections.sort(dettesMerged, new Comparator<RELigneDeblocageDette>() {
+            @Override
+            public int compare(RELigneDeblocageDette o1, RELigneDeblocageDette o2) {
+                return o1.getIdSectionCompensee().compareTo(o2.getIdSectionCompensee());
+            }
+        });
+        return dettesMerged;
     }
 
     private List<RELigneDeblocageDette> mergedDetteWithDeblocage(Collection<RELigneDeblocageDette> dettes,
@@ -41,10 +51,6 @@ class RELigneDeblocageDetteHandler {
 
         Map<String, RELigneDeblocageDette> mapDettes = new HashMap<String, RELigneDeblocageDette>();
         for (RELigneDeblocageDette dette : dettes) {
-            mapDettes.put(dette.getIdSectionCompensee() + "_" + dette.getIdRoleSection(), dette);
-        }
-
-        for (RELigneDeblocageDette dette : dettesComptabiliser) {
             mapDettes.put(dette.getIdSectionCompensee() + "_" + dette.getIdRoleSection(), dette);
         }
 
@@ -86,14 +92,14 @@ class RELigneDeblocageDetteHandler {
             }
         }
 
-        // for (RELigneDeblocage ligne : lignesDeblocage) {
-        // String key = ligne.getIdSectionCompensee() + "_" + ligne.getIdRoleSection();
-        // if (mapDettesNonLiquide.containsKey(key)) {
-        // if (mapDettesNonLiquide.get(key).equals(ligne.getMontant())) {
-        // mapDettes.remove(key);
-        // }
-        // }
-        // }
+        for (RELigneDeblocage ligne : lignesDeblocage) {
+            String key = ligne.getIdSectionCompensee() + "_" + ligne.getIdRoleSection();
+            if (mapDettesNonLiquide.containsKey(key)) {
+                if (mapDettesNonLiquide.get(key).equals(ligne.getMontant())) {
+                    mapDettes.remove(key);
+                }
+            }
+        }
 
         list.addAll(mapDettes.values());
 
@@ -132,6 +138,18 @@ class RELigneDeblocageDetteHandler {
             }
         }
         return list;
+    }
+
+    public RELigneDeblocageDette readDetteComptabiliser(Long idSection, Long idRole) {
+        HashSet<String> ids = new HashSet<String>();
+        ids.add(String.valueOf(idSection));
+        List<RELigneDeblocageDette> dettes = findDetteComptabiliser(ids);
+        for (RELigneDeblocageDette dette : dettes) {
+            if (idRole.equals(dette.getIdRoleSection())) {
+                return dette;
+            }
+        }
+        return null;
     }
 
     private void toDettes(Set<String> idsSection, List<RELigneDeblocageDette> list,

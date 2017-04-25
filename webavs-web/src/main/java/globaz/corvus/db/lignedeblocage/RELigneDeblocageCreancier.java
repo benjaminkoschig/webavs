@@ -9,7 +9,6 @@ public class RELigneDeblocageCreancier extends RELigneDeblocage {
      */
     private static final long serialVersionUID = 1L;
     private AdressePaiement adressePaiement;
-    private String refPaiement = null;
     private String designationTiers1 = null;
     private String designationTiers2 = null;
 
@@ -19,16 +18,6 @@ public class RELigneDeblocageCreancier extends RELigneDeblocage {
 
     public void setAdressePaiement(AdressePaiement adressePaiement) {
         this.adressePaiement = adressePaiement;
-    }
-
-    @Override
-    public String getRefPaiement() {
-        return refPaiement;
-    }
-
-    @Override
-    public void setRefPaiement(String refPaiement) {
-        this.refPaiement = refPaiement;
     }
 
     public String getDesignationTiers1() {

@@ -14,6 +14,7 @@ import globaz.externe.IPRConstantesExternes;
 import globaz.jade.client.util.JadeNumericUtil;
 import globaz.osiris.db.comptes.CASectionJoinCompteAnnexeJoinTiersManager;
 import globaz.prestation.vb.PRAbstractViewBeanSupport;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -201,7 +202,15 @@ public class REDeblocageViewBean extends PRAbstractViewBeanSupport {
     }
 
     public List<RELigneDeblocageDette> getDettesUpdateable() {
-        return deblocages.getLigneDeblocageDetteEnCompta().filtreEnregistresAndNone().toListDette();
+        List<RELigneDeblocageDette> dettes = deblocages.getLigneDeblocageDetteEnCompta().filtreEnregistresAndNone()
+                .toListDette();
+        List<RELigneDeblocageDette> l = new ArrayList<RELigneDeblocageDette>();
+        for (RELigneDeblocageDette reLigneDeblocageDette : dettes) {
+            if (reLigneDeblocageDette.getMontanDette().isPositive()) {
+                l.add(reLigneDeblocageDette);
+            }
+        }
+        return l;
     }
 
     public RELigneDeblocage getImpotSource() {

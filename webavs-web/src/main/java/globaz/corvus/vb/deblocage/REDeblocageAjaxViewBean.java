@@ -93,9 +93,15 @@ public class REDeblocageAjaxViewBean extends BJadePersistentObjectViewBean imple
 
     @Override
     public void delete() throws Exception {
-        RELigneDeblocage ligneDeblocage = toReLigneDeblocage(lingeDeblocage);
         ReLigneDeclocageServices services = new ReLigneDeclocageServices((BSession) getISession());
-        lingeDeblocage = fromReLigneDeblocage(services.update(ligneDeblocage));
+        retrieve();
+
+        RELigneDeblocage ligneDeblocage = toReLigneDeblocage(lingeDeblocage);
+        if (ligneDeblocage.isCreancier()) {
+            services.delete(ligneDeblocage);
+        } else {
+            lingeDeblocage = fromReLigneDeblocage(services.update(ligneDeblocage));
+        }
     }
 
     @Override
@@ -153,22 +159,22 @@ public class REDeblocageAjaxViewBean extends BJadePersistentObjectViewBean imple
         if (entity.getIdApplicationAdressePaiement() != null) {
             vb.setIdApplicationAdressePaiement(entity.getIdApplicationAdressePaiement());
         }
-        if (entity.getIdApplicationAdressePaiement() != null) {
+        if (entity.getId() != null) {
             vb.setIdLigneDeblocage(entity.getId());
         }
-        if (entity.getIdApplicationAdressePaiement() != null) {
+        if (entity.getIdRenteAccordee() != null) {
             vb.setIdRenteAccordee(entity.getIdRenteAccordee());
         }
-        if (entity.getIdApplicationAdressePaiement() != null) {
+        if (entity.getIdRoleSection() != null) {
             vb.setIdRoleSection(entity.getIdRoleSection());
         }
-        if (entity.getIdApplicationAdressePaiement() != null) {
+        if (entity.getIdSectionCompensee() != null) {
             vb.setIdSectionCompensee(entity.getIdSectionCompensee());
         }
-        if (entity.getIdApplicationAdressePaiement() != null) {
+        if (entity.getIdTiersAdressePaiement() != null) {
             vb.setIdTiersAdressePaiement(entity.getIdTiersAdressePaiement());
         }
-        if (entity.getIdApplicationAdressePaiement() != null) {
+        if (entity.getIdTiersCreancier() != null) {
             vb.setIdTiersCreancier(entity.getIdTiersCreancier());
         }
         vb.setMontant(entity.getMontant().toStringFormat());

@@ -6,6 +6,8 @@ package globaz.corvus.db.lignedeblocage;
 import globaz.corvus.db.lignedeblocage.constantes.RELigneDeblocageEtat;
 import globaz.corvus.db.lignedeblocage.constantes.RELigneDeblocageType;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -71,7 +73,14 @@ public class RELigneDeblocages extends ArrayList<RELigneDeblocage> {
     }
 
     public List<RELigneDeblocageDette> toListDette() {
-        return toListType();
+        List<RELigneDeblocageDette> dettes = toListType();
+        Collections.sort(dettes, new Comparator<RELigneDeblocageDette>() {
+            @Override
+            public int compare(RELigneDeblocageDette o1, RELigneDeblocageDette o2) {
+                return o1.getIdSectionCompensee().compareTo(o2.getIdSectionCompensee());
+            }
+        });
+        return dettes;
     }
 
     public List<RELigneDeblocage> toList() {
