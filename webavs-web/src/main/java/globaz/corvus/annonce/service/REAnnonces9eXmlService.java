@@ -110,8 +110,6 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
                 if (HILFLOSENENTSCHAEDIGUNG.contains(genrePrestation)) {
                     annonceXmlT9 = annonceDiminutionAPI(diminution9eme01);
                 }
-                // FIXME, pas présent dans le code ancien mode
-                // checkAndUpdateDimi9eme(diminution9eme01, transaction);
                 break;
             default:
                 LOG.warn("La valeur du code application {} ne fait pas partie des valeurs attendues ", codeApplication);
@@ -124,14 +122,6 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
         }
         return annonceXmlT9;
 
-    }
-
-    protected void checkAndUpdateDimi9eme(REAnnoncesDiminution9Eme diminution9eme01, BITransaction transaction)
-            throws Exception {
-        if (!diminution9eme01.isNew()) {
-            diminution9eme01.setEtat(IREAnnonces.CS_ETAT_ENVOYE);
-            diminution9eme01.update(transaction);
-        }
     }
 
     protected REAnnoncesDiminution9Eme retrieveAnnonceDimi9(REAnnoncesAbstractLevel1A annonce, BSession session)
@@ -208,9 +198,8 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
                 .createAenderungsmeldungHE9TypeLeistungsbeschreibungBerechnungsgrundlagen();
 
         // Si pas d'office AI pas de bloc AI
-        if (!JadeStringUtil.isBlank(enr02.getOfficeAICompetent())) {
-            baseDeCalcul.setIVDaten(rempliIVDatenWeakTypeHE9Assure(enr02));
-        }
+
+        baseDeCalcul.setIVDaten(rempliIVDatenWeakTypeHE9Assure(enr02));
 
         description.getSonderfallcodeRente().addAll(rempliCasSpecial(enr02));
         description.setBerechnungsgrundlagen(baseDeCalcul);
@@ -230,7 +219,9 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
 
         augmentation.setKasseZweigstelle(retourneCaisseAgence());
         augmentation.setMeldungsnummer(retourneNoDAnnonceSur6Position(enr01.getIdAnnonce()));
-        augmentation.setKasseneigenerHinweis(enr01.getReferenceCaisseInterne());
+        if (!JadeStringUtil.isBlank(enr01.getReferenceCaisseInterne())) {
+            augmentation.setKasseneigenerHinweis(enr01.getReferenceCaisseInterne());
+        }
         // Remplir la personne
         RRLeistungsberechtigtePersonAuslType personne = rempliRRLeistungsberechtigtePersonAuslType(enr01);
         augmentation.setLeistungsberechtigtePerson(personne);
@@ -392,12 +383,11 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
         DJE9BeschreibungWeakType ram = rempliDJE9BeschreibungWeakType(enr02);
         baseDeCalcul.setDJEBeschreibung(ram);
         // Si pas d'office AI pas de bloc AI
-        if (!JadeStringUtil.isBlank(enr02.getOfficeAICompetent())) {
-            baseDeCalcul.setIVDaten(rempliIVDatenType9AssureWeak(enr02));
-        }
-        if (!JadeStringUtil.isBlank(enr02.getOfficeAiCompEpouse())) {
-            baseDeCalcul.setIVDatenEhefrau(rempliIVDatenType9ConjointWeak(enr02));
-        }
+
+        baseDeCalcul.setIVDaten(rempliIVDatenType9AssureWeak(enr02));
+
+        baseDeCalcul.setIVDatenEhefrau(rempliIVDatenType9ConjointWeak(enr02));
+
         if (!JadeStringUtil.isBlank(enr02.getDureeAjournement())) {
             // Ajournement
             AenderungsmeldungO9Type.Leistungsbeschreibung.Berechnungsgrundlagen.FlexiblesRentenAlter ajournement = factoryType
@@ -445,9 +435,8 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
         if (!JadeStringUtil.isBlank(enr01.getFinDroit())) {
             description.setAnspruchsende(retourneXMLGregorianCalendarFromMonth(enr01.getFinDroit()));
         }
-        if (!JadeStringUtil.isBlank(enr01.getCodeMutation())) {
-            description.setMutationscode(Integer.valueOf(enr01.getCodeMutation()).shortValue());
-        }
+
+        description.setMutationscode(Integer.valueOf(enr01.getCodeMutation()).shortValue());
 
         description.setMonatsbetrag(new BigDecimal(testSiNullouZero(enr01.getMensualitePrestationsFrancs())));
 
@@ -468,12 +457,11 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
         DJE9BeschreibungWeakType ram = rempliDJE9BeschreibungWeakType(enr02);
         baseDeCalcul.setDJEBeschreibung(ram);
         // Si pas d'office AI pas de bloc AI
-        if (!JadeStringUtil.isBlank(enr02.getOfficeAICompetent())) {
-            baseDeCalcul.setIVDaten(rempliIVDatenType9AssureWeak(enr02));
-        }
-        if (!JadeStringUtil.isBlank(enr02.getOfficeAiCompEpouse())) {
-            baseDeCalcul.setIVDatenEhefrau(rempliIVDatenType9ConjointWeak(enr02));
-        }
+
+        baseDeCalcul.setIVDaten(rempliIVDatenType9AssureWeak(enr02));
+
+        baseDeCalcul.setIVDatenEhefrau(rempliIVDatenType9ConjointWeak(enr02));
+
         description.getSonderfallcodeRente().addAll(rempliCasSpecial(enr02));
         if (!JadeStringUtil.isBlank(enr02.getReduction())) {
             description.setKuerzungSelbstverschulden(Integer.valueOf(enr02.getReduction()).shortValue());
@@ -696,13 +684,22 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
      */
     private IVDaten9Type rempliIVDatenType9Assure(REAnnoncesAugmentationModification9Eme enr02) throws Exception {
         IVDaten9Type donneeAI = factoryType.createIVDaten9Type();
-        donneeAI.setIVStelle(Integer.valueOf(enr02.getOfficeAICompetent()));
+        if (!JadeStringUtil.isBlank(enr02.getOfficeAICompetent())) {
+            donneeAI.setIVStelle(Integer.valueOf(enr02.getOfficeAICompetent()));
+        }
+
         donneeAI.setInvaliditaetsgrad(Integer.valueOf(enr02.getDegreInvalidite()).shortValue());
-        String codeInfirmite = StringUtils.leftPad(enr02.getCodeInfirmite(), 5);
-        donneeAI.setGebrechensschluessel(Integer.valueOf(StringUtils.left(codeInfirmite, 3)));
-        donneeAI.setFunktionsausfallcode(Integer.valueOf(StringUtils.right(codeInfirmite, 2)).shortValue());
-        donneeAI.setDatumVersicherungsfall(retourneXMLGregorianCalendarFromMonth(enr02.getSurvenanceEvenAssure()));
-        donneeAI.setIstFruehInvalid(convertIntToBoolean(enr02.getAgeDebutInvalidite()));
+        if (!JadeStringUtil.isBlank(enr02.getCodeInfirmite())) {
+            String codeInfirmite = StringUtils.leftPad(enr02.getCodeInfirmite(), 5);
+            donneeAI.setGebrechensschluessel(Integer.valueOf(StringUtils.left(codeInfirmite, 3)));
+            donneeAI.setFunktionsausfallcode(Integer.valueOf(StringUtils.right(codeInfirmite, 2)).shortValue());
+        }
+        if (!JadeStringUtil.isBlank(enr02.getSurvenanceEvenAssure())) {
+            donneeAI.setDatumVersicherungsfall(retourneXMLGregorianCalendarFromMonth(enr02.getSurvenanceEvenAssure()));
+        }
+        if (!JadeStringUtil.isBlank(enr02.getAgeDebutInvalidite())) {
+            donneeAI.setIstFruehInvalid(convertIntToBoolean(enr02.getAgeDebutInvalidite()));
+        }
 
         return donneeAI;
     }
@@ -710,25 +707,42 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
     private IVDaten9WeakType rempliIVDatenType9AssureWeak(REAnnoncesAugmentationModification9Eme enr02)
             throws Exception {
         IVDaten9WeakType donneeAI = factoryType.createIVDaten9WeakType();
-        donneeAI.setIVStelle(Integer.valueOf(enr02.getOfficeAICompetent()));
+        if (!JadeStringUtil.isBlank(enr02.getOfficeAICompetent())) {
+            donneeAI.setIVStelle(Integer.valueOf(enr02.getOfficeAICompetent()));
+        }
+
         donneeAI.setInvaliditaetsgrad(Integer.valueOf(enr02.getDegreInvalidite()).shortValue());
-        String codeInfirmite = StringUtils.leftPad(enr02.getCodeInfirmite(), 5);
-        donneeAI.setGebrechensschluessel(Integer.valueOf(StringUtils.left(codeInfirmite, 3)));
-        donneeAI.setFunktionsausfallcode(Integer.valueOf(StringUtils.right(codeInfirmite, 2)).shortValue());
-        donneeAI.setDatumVersicherungsfall(retourneXMLGregorianCalendarFromMonth(enr02.getSurvenanceEvenAssure()));
-        donneeAI.setIstFruehInvalid(convertIntToBoolean(enr02.getAgeDebutInvalidite()));
+        if (!JadeStringUtil.isBlank(enr02.getCodeInfirmite())) {
+            String codeInfirmite = StringUtils.leftPad(enr02.getCodeInfirmite(), 5);
+            donneeAI.setGebrechensschluessel(Integer.valueOf(StringUtils.left(codeInfirmite, 3)));
+            donneeAI.setFunktionsausfallcode(Integer.valueOf(StringUtils.right(codeInfirmite, 2)).shortValue());
+        }
+        if (!JadeStringUtil.isBlank(enr02.getSurvenanceEvenAssure())) {
+            donneeAI.setDatumVersicherungsfall(retourneXMLGregorianCalendarFromMonth(enr02.getSurvenanceEvenAssure()));
+        }
+        if (!JadeStringUtil.isBlank(enr02.getAgeDebutInvalidite())) {
+            donneeAI.setIstFruehInvalid(convertIntToBoolean(enr02.getAgeDebutInvalidite()));
+        }
 
         return donneeAI;
     }
 
     private IVDatenHE9Type rempliIVDatenTypeHE9Assure(REAnnoncesAugmentationModification9Eme enr02) throws Exception {
         IVDatenHE9Type donneeAI = factoryType.createIVDatenHE9Type();
-        donneeAI.setIVStelle(Integer.valueOf(enr02.getOfficeAICompetent()));
-        String codeInfirmite = StringUtils.leftPad(enr02.getCodeInfirmite(), 5);
-        donneeAI.setGebrechensschluessel(Integer.valueOf(StringUtils.left(codeInfirmite, 3)));
-        donneeAI.setFunktionsausfallcode(Integer.valueOf(StringUtils.right(codeInfirmite, 2)).shortValue());
-        donneeAI.setDatumVersicherungsfall(retourneXMLGregorianCalendarFromMonth(enr02.getSurvenanceEvenAssure()));
-        donneeAI.setArtHEAnspruch(Integer.valueOf(enr02.getGenreDroitAPI()).shortValue());
+        if (!JadeStringUtil.isBlank(enr02.getOfficeAICompetent())) {
+            donneeAI.setIVStelle(Integer.valueOf(enr02.getOfficeAICompetent()));
+        }
+        if (!JadeStringUtil.isBlank(enr02.getCodeInfirmite())) {
+            String codeInfirmite = StringUtils.leftPad(enr02.getCodeInfirmite(), 5);
+            donneeAI.setGebrechensschluessel(Integer.valueOf(StringUtils.left(codeInfirmite, 3)));
+            donneeAI.setFunktionsausfallcode(Integer.valueOf(StringUtils.right(codeInfirmite, 2)).shortValue());
+        }
+        if (!JadeStringUtil.isBlank(enr02.getSurvenanceEvenAssure())) {
+            donneeAI.setDatumVersicherungsfall(retourneXMLGregorianCalendarFromMonth(enr02.getSurvenanceEvenAssure()));
+        }
+        if (!JadeStringUtil.isBlank(enr02.getGenreDroitAPI())) {
+            donneeAI.setArtHEAnspruch(Integer.valueOf(enr02.getGenreDroitAPI()).shortValue());
+        }
 
         return donneeAI;
     }
@@ -755,27 +769,46 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
 
     private IVDaten9Type rempliIVDatenType9Conjoint(REAnnoncesAugmentationModification9Eme enr02) throws Exception {
         IVDaten9Type donneeAI = factoryType.createIVDaten9Type();
-        donneeAI.setIVStelle(Integer.valueOf(enr02.getOfficeAiCompEpouse()));
-        donneeAI.setInvaliditaetsgrad(Integer.valueOf(enr02.getDegreInvaliditeEpouse()).shortValue());
-        String codeInfirmite = StringUtils.leftPad(enr02.getCodeInfirmiteEpouse(), 5);
-        donneeAI.setGebrechensschluessel(Integer.valueOf(StringUtils.left(codeInfirmite, 3)));
-        donneeAI.setFunktionsausfallcode(Integer.valueOf(StringUtils.right(codeInfirmite, 2)).shortValue());
-        donneeAI.setDatumVersicherungsfall(retourneXMLGregorianCalendarFromMonth(enr02.getSurvenanceEvtAssureEpouse()));
-        donneeAI.setIstFruehInvalid(convertIntToBoolean(enr02.getAgeDebutInvaliditeEpouse()));
-
+        if (!JadeStringUtil.isBlank(enr02.getOfficeAiCompEpouse())) {
+            donneeAI.setIVStelle(Integer.valueOf(enr02.getOfficeAiCompEpouse()));
+        }
+        if (JadeStringUtil.isBlank(enr02.getDegreInvaliditeEpouse())) {
+            donneeAI.setInvaliditaetsgrad(Integer.valueOf(enr02.getDegreInvaliditeEpouse()).shortValue());
+        }
+        if (!JadeStringUtil.isBlank(enr02.getCodeInfirmite())) {
+            String codeInfirmite = StringUtils.leftPad(enr02.getCodeInfirmite(), 5);
+            donneeAI.setGebrechensschluessel(Integer.valueOf(StringUtils.left(codeInfirmite, 3)));
+            donneeAI.setFunktionsausfallcode(Integer.valueOf(StringUtils.right(codeInfirmite, 2)).shortValue());
+        }
+        if (!JadeStringUtil.isBlank(enr02.getSurvenanceEvenAssure())) {
+            donneeAI.setDatumVersicherungsfall(retourneXMLGregorianCalendarFromMonth(enr02.getSurvenanceEvenAssure()));
+        }
+        if (!JadeStringUtil.isBlank(enr02.getAgeDebutInvaliditeEpouse())) {
+            donneeAI.setIstFruehInvalid(convertIntToBoolean(enr02.getAgeDebutInvaliditeEpouse()));
+        }
         return donneeAI;
     }
 
     private IVDaten9WeakType rempliIVDatenType9ConjointWeak(REAnnoncesAugmentationModification9Eme enr02)
             throws Exception {
         IVDaten9WeakType donneeAI = factoryType.createIVDaten9WeakType();
-        donneeAI.setIVStelle(Integer.valueOf(enr02.getOfficeAiCompEpouse()));
-        donneeAI.setInvaliditaetsgrad(Integer.valueOf(enr02.getDegreInvaliditeEpouse()).shortValue());
-        String codeInfirmite = StringUtils.leftPad(enr02.getCodeInfirmiteEpouse(), 5);
-        donneeAI.setGebrechensschluessel(Integer.valueOf(StringUtils.left(codeInfirmite, 3)));
-        donneeAI.setFunktionsausfallcode(Integer.valueOf(StringUtils.right(codeInfirmite, 2)).shortValue());
-        donneeAI.setDatumVersicherungsfall(retourneXMLGregorianCalendarFromMonth(enr02.getSurvenanceEvtAssureEpouse()));
-        donneeAI.setIstFruehInvalid(convertIntToBoolean(enr02.getAgeDebutInvaliditeEpouse()));
+        if (!JadeStringUtil.isBlank(enr02.getOfficeAiCompEpouse())) {
+            donneeAI.setIVStelle(Integer.valueOf(enr02.getOfficeAiCompEpouse()));
+        }
+        if (JadeStringUtil.isBlank(enr02.getDegreInvaliditeEpouse())) {
+            donneeAI.setInvaliditaetsgrad(Integer.valueOf(enr02.getDegreInvaliditeEpouse()).shortValue());
+        }
+        if (!JadeStringUtil.isBlank(enr02.getCodeInfirmite())) {
+            String codeInfirmite = StringUtils.leftPad(enr02.getCodeInfirmite(), 5);
+            donneeAI.setGebrechensschluessel(Integer.valueOf(StringUtils.left(codeInfirmite, 3)));
+            donneeAI.setFunktionsausfallcode(Integer.valueOf(StringUtils.right(codeInfirmite, 2)).shortValue());
+        }
+        if (!JadeStringUtil.isBlank(enr02.getSurvenanceEvenAssure())) {
+            donneeAI.setDatumVersicherungsfall(retourneXMLGregorianCalendarFromMonth(enr02.getSurvenanceEvenAssure()));
+        }
+        if (!JadeStringUtil.isBlank(enr02.getAgeDebutInvaliditeEpouse())) {
+            donneeAI.setIstFruehInvalid(convertIntToBoolean(enr02.getAgeDebutInvaliditeEpouse()));
+        }
 
         return donneeAI;
     }

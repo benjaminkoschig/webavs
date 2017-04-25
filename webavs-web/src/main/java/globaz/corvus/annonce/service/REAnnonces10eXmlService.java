@@ -283,10 +283,7 @@ public class REAnnonces10eXmlService extends REAbstractAnnonceXmlService impleme
         AenderungsmeldungHE10Type.Leistungsbeschreibung.Berechnungsgrundlagen baseDeCalcul = factoryType
                 .createAenderungsmeldungHE10TypeLeistungsbeschreibungBerechnungsgrundlagen();
 
-        // Si pas d'office AI pas de bloc AI
-        if (!JadeStringUtil.isBlank(enr02.getOfficeAICompetent())) {
-            baseDeCalcul.setIVDaten(rempliIVDatenHEWeakTypeAssure(enr02));
-        }
+        baseDeCalcul.setIVDaten(rempliIVDatenHEWeakTypeAssure(enr02));
         description.getSonderfallcodeRente().addAll(rempliCasSpecial(enr02));
 
         description.setBerechnungsgrundlagen(baseDeCalcul);
@@ -402,10 +399,7 @@ public class REAnnonces10eXmlService extends REAbstractAnnonceXmlService impleme
             baseDeCalcul.setNiveaujahr(retourneXMLGregorianCalendarFromYear(enr02.getAnneeNiveau()));
         }
 
-        // Si pas d'office AI pas de bloc AI
-        if (!JadeStringUtil.isBlank(enr02.getOfficeAICompetent())) {
-            baseDeCalcul.setIVDaten(rempliIVDatenWeakType10(enr02));
-        }
+        baseDeCalcul.setIVDaten(rempliIVDatenWeakType10(enr02));
         description.getSonderfallcodeRente().addAll(rempliCasSpecial(enr02));
         if (!JadeStringUtil.isBlank(enr02.getReduction())) {
             description.setKuerzungSelbstverschulden(Integer.valueOf(enr02.getReduction()).shortValue());
@@ -542,10 +536,8 @@ public class REAnnonces10eXmlService extends REAbstractAnnonceXmlService impleme
         Gutschriften10Type bte = rempliBonnifications10e(enr02);
         baseDeCalcul.setGutschriften(bte);
 
-        // Si pas d'office AI pas de bloc AI
-        if (!JadeStringUtil.isBlank(enr02.getOfficeAICompetent())) {
-            baseDeCalcul.setIVDaten(rempliIVDatenWeakType10(enr02));
-        }
+        baseDeCalcul.setIVDaten(rempliIVDatenWeakType10(enr02));
+
         if (!JadeStringUtil.isBlank(enr02.getDureeAjournement())) {
             // Ajournement
             AenderungsmeldungO10Type.Leistungsbeschreibung.Berechnungsgrundlagen.FlexiblesRentenAlter ajournement = factoryType
