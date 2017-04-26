@@ -313,7 +313,8 @@ public class COProcessComptabiliserIrrecouvrable extends BProcess {
             // Si une exception est cachée, on renvoit l'erreur sous forme de mail -> workaround pour les throw
             // exception qui ne remontent pas par mail.
             if (libelleMail.equals("")) {
-                libelleMail = createLibelleForException(compteAnnexe);
+                List<Integer> anneeATraiterList = determinerAnneeATraiter();
+                libelleMail = createLibelleForException(compteAnnexe, anneeATraiterList);
             }
             String body = libelleMail + "\n" + getSession().getLabel("IRRECOUVRABLE_PROCESS_ERROR") + " : "
                     + e.getMessage();
@@ -507,10 +508,14 @@ public class COProcessComptabiliserIrrecouvrable extends BProcess {
     private String creerLibelle(final APICompteAnnexe compteAnnexe, final List<Integer> anneeATraiterList) {
         String role = compteAnnexe.getRole().getDescription();
         String numeroAffilie = compteAnnexe.getIdExterneRole();
+        String nss = compteAnnexe.getTiers().getNumAvsActuel();
         String description = compteAnnexe.getDescription();
         String libelle = getSession().getLabel("IRRECOUVRABLE_PREFIXE_LIBELLE_JOURNAL");
         libelle += " " + role;
         libelle += " " + numeroAffilie;
+        if (!nss.isEmpty()) {
+            libelle += " (" + nss + ")";
+        }
         libelle += " " + description;
         for (Integer annee : anneeATraiterList) {
             if (Integer.signum(annee) != 0) {
@@ -521,16 +526,25 @@ public class COProcessComptabiliserIrrecouvrable extends BProcess {
         return libelle;
     }
 
-    private String createLibelleForException(final APICompteAnnexe compteAnnexe) {
+    private String createLibelleForException(final APICompteAnnexe compteAnnexe, final List<Integer> anneeATraiterList) {
         String libelle = getSession().getLabel("IRRECOUVRABLE_PREFIXE_LIBELLE_JOURNAL");
         if (compteAnnexe != null) {
             String role = compteAnnexe.getRole().getDescription();
             String numeroAffilie = compteAnnexe.getIdExterneRole();
+            String nss = compteAnnexe.getTiers().getNumAvsActuel();
             String description = compteAnnexe.getDescription();
 
             libelle += " " + role;
             libelle += " " + numeroAffilie;
+            if (!nss.isEmpty()) {
+                libelle += " (" + nss + ")";
+            }
             libelle += " " + description;
+            for (Integer annee : anneeATraiterList) {
+                if (Integer.signum(annee) != 0) {
+                    libelle += ", " + annee;
+                }
+            }
         }
         return libelle;
     }
