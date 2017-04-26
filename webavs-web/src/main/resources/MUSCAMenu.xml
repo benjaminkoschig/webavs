@@ -146,7 +146,7 @@
 				</action>
 			</node>
 			<node>
-				<label refId="OPTIONS_IMPRIMER" />
+				<label refId="MUSCA_OPTIONS_IMPRIMER" />
 				<action command="/musca" responseTarget="fr_main">
 					<parameter name="userAction" value="musca.facturation.passageFacturation.imprimerDecomptes" />
 					<parameter name="selectedId"/>
