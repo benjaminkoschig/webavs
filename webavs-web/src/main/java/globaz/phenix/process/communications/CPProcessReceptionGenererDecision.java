@@ -1785,16 +1785,20 @@ public class CPProcessReceptionGenererDecision extends BProcess {
         }
 
         double revenus = ((double) revenu + revenuAgricole);
-        double rachatLPPCalcule = rachatLPPDonneBase / 2.0;
 
-        if (rachatLPPCalcule > revenus / 2.0) {
-            rachatLPPCalcule = revenus / 2.0;
+        // Ne pas tenir compte du rachat LPP si les revenus sont inférieur à 0
+        if (revenus >= 0.0) {
+            double rachatLPPCalcule = rachatLPPDonneBase / 2.0;
+
+            if (rachatLPPCalcule > revenus / 2.0) {
+                rachatLPPCalcule = revenus / 2.0;
+            }
+
+            rachatLPPCalcule = Math.abs(rachatLPPCalcule);
+
+            decisionViewBean.setRachatLPP(String.valueOf(JANumberFormatter.format(rachatLPPCalcule, 1.0, 0,
+                    JANumberFormatter.SUP)));
         }
-
-        rachatLPPCalcule = Math.abs(rachatLPPCalcule);
-
-        decisionViewBean.setRachatLPP(String.valueOf(JANumberFormatter.format(rachatLPPCalcule, 1.0, 0,
-                JANumberFormatter.SUP)));
     }
 
     /**
