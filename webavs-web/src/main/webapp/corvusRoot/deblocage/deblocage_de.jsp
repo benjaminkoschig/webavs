@@ -179,11 +179,9 @@ globazGlobal.isRenteBloque = ${viewBean.isRenteBloque()};
 
 					<div class="notUpdatable" idEntity = "${entry.idEntity}" >
 						<div class="row-fluid">
-							<div class="span5">
-	
+							<div class="span10">
 								<span class="lbl">${entry.description} (${entry.descriptionCompteAnnexe})</span>
 							</div>
-							<div class="span5"></div>
 							<div class="span1 right">
 								<span class="mnt value">${entry.montant.toStringFormat()}</span>
 							</div>
@@ -202,7 +200,7 @@ globazGlobal.isRenteBloque = ${viewBean.isRenteBloque()};
 					<c:forEach var="entry" items="${viewBean.dettesUpdateable}">
 						<div class="areaDetail" idEntity = "${entry.idEntity}" >
 							<div class="row-fluid " >
-								<div class="span5">
+								<div class="span7">
 									<span class="lbl">${entry.description} (${entry.descriptionCompteAnnexe})</span>
 								</div>
 								<div class="span2">
@@ -210,8 +208,6 @@ globazGlobal.isRenteBloque = ${viewBean.isRenteBloque()};
 								</div>
 								<div class="span1 right">
 									<span class="value mnt">${entry.montanDette.toStringFormat()}</span>
-								</div>
-								<div class="span2 ">
 								</div>
 								<div class="span1 right">
 									<input data-g-amount="" class="input-mini liveSum" name="montant"  value="${entry.montant.toStringFormat()}"/>

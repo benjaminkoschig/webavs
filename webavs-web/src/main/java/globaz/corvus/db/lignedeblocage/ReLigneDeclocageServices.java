@@ -39,6 +39,18 @@ public class ReLigneDeclocageServices {
         this.session = session;
     }
 
+    private void checkCreancier(RELigneDeblocage ligneDeblocage) {
+        if (ligneDeblocage.getType().isCreancier() && ligneDeblocage.getIdApplicationAdressePaiement() != null) {
+            if (ligneDeblocage.getIdTiersCreancier() == null || ligneDeblocage.getIdTiersCreancier() == 0) {
+                session.getCurrentThreadTransaction().addErrors(session.getLabel("ERROR_DEBLOCAGE_CREANCIER_VIDE"));
+            } else if (ligneDeblocage.getIdTiersAdressePaiement() == null
+                    && ligneDeblocage.getIdTiersAdressePaiement() == 0) {
+                session.getCurrentThreadTransaction().addErrors(
+                        session.getLabel("ERROR_DEBLOCAGE_ADRESSE_CREANCIER_VIDE"));
+            }
+        }
+    }
+
     /**
      * Ajout d'une ligne de déblocage
      * 
@@ -50,11 +62,13 @@ public class ReLigneDeclocageServices {
         if (ligneDeblocage == null) {
             throw new IllegalArgumentException("To update ligneDeblocage, ligneDeblocage must be not null");
         }
-
+        checkCreancier(ligneDeblocage);
         ligneDeblocage.setSession(session);
         try {
-            ligneDeblocage.add();
-            checkDette(ligneDeblocage);
+            if (!session.getCurrentThreadTransaction().hasErrors()) {
+                ligneDeblocage.add();
+                checkDette(ligneDeblocage);
+            }
         } catch (Exception e) {
             throw new JadeDataBaseException("Unabled to add ligne de déblocage", e);
         }
@@ -66,7 +80,7 @@ public class ReLigneDeclocageServices {
         if (ligneDeblocage.isDetteEnCompta()) {
             RELigneDeblocages deblocage = searchByIdSection(ligneDeblocage.getIdSectionCompensee(),
                     ligneDeblocage.getIdRoleSection());
-            Montant montant = deblocage.sumMontants();
+            Montant montant = deblocage.filtreEnregistresAndValides().sumMontants();
 
             RELigneDeblocageDetteHandler deblocageDetteHandler = new RELigneDeblocageDetteHandler(session);
             RELigneDeblocageDette dette = deblocageDetteHandler.readDetteComptabiliser(
@@ -76,7 +90,7 @@ public class ReLigneDeclocageServices {
                     String message = MessageFormat.format(FWMessageFormat.prepareQuotes(
                             session.getLabel("ERROR_DEBLOCAGE_DETTE_MONTANT_TROP_GRAND"), false), montant
                             .toStringFormat(), dette.getMontanDette().toStringFormat());
-                    session.addError(message);
+                    session.getCurrentThreadTransaction().addErrors(message);
                 }
             }
         }
@@ -121,11 +135,14 @@ public class ReLigneDeclocageServices {
         if (ligneDeblocage.isNew()) {
             throw new IllegalArgumentException("To update ligneDeblocage, ligneDeblocage must be not new");
         }
+        checkCreancier(ligneDeblocage);
 
         ligneDeblocage.setSession(session);
         try {
-            ligneDeblocage.update();
-            checkDette(ligneDeblocage);
+            if (!session.getCurrentThreadTransaction().hasErrors()) {
+                ligneDeblocage.update();
+                checkDette(ligneDeblocage);
+            }
         } catch (Exception e) {
             throw new JadeDataBaseException("Unabled to add ligne de déblocage", e);
         }

@@ -51,6 +51,13 @@ public class RELigneDeblocages extends ArrayList<RELigneDeblocage> {
         return deblocages;
     }
 
+    public RELigneDeblocages filtreEnregistresAndValides() {
+        RELigneDeblocages deblocages = new RELigneDeblocages();
+        deblocages.addAll(getLigneDeblocageByEtat(RELigneDeblocageEtat.VALIDE));
+        deblocages.addAll(getLigneDeblocageByEtat(RELigneDeblocageEtat.ENREGISTRE));
+        return deblocages;
+    }
+
     public RELigneDeblocages filtreValides() {
         return getLigneDeblocageByEtat(RELigneDeblocageEtat.VALIDE);
     }
@@ -77,7 +84,7 @@ public class RELigneDeblocages extends ArrayList<RELigneDeblocage> {
         Collections.sort(dettes, new Comparator<RELigneDeblocageDette>() {
             @Override
             public int compare(RELigneDeblocageDette o1, RELigneDeblocageDette o2) {
-                return o1.getIdSectionCompensee().compareTo(o2.getIdSectionCompensee());
+                return o1.getIdExterne().compareTo(o2.getIdExterne());
             }
         });
         return dettes;

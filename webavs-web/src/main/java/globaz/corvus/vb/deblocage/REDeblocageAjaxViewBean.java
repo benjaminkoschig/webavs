@@ -22,7 +22,6 @@ import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAv
 import java.util.Iterator;
 import ch.globaz.common.domaine.AdressePaiement;
 import ch.globaz.common.domaine.Montant;
-import ch.globaz.pegasus.business.exceptions.models.blocage.BlocageException;
 import ch.globaz.pegasus.businessimpl.utils.adresse.AdresseHandler;
 import ch.globaz.pyxis.business.model.AvoirPaiementSimpleModel;
 import ch.globaz.pyxis.business.model.TiersSimpleModel;
@@ -71,10 +70,9 @@ public class REDeblocageAjaxViewBean extends BJadePersistentObjectViewBean imple
         } else {
             RELigneDeblocage ligneDeblocage = toReLigneDeblocage(lingeDeblocage);
             ReLigneDeclocageServices services = new ReLigneDeclocageServices((BSession) getISession());
-            if (ligneDeblocage.getType().isCreancier() && ligneDeblocage.getIdApplicationAdressePaiement() != null) {
-                readAdresse(ligneDeblocage);
-            }
+
             lingeDeblocage = fromReLigneDeblocage(services.add(ligneDeblocage));
+            readAdresse(ligneDeblocage);
         }
     }
 
@@ -114,25 +112,25 @@ public class REDeblocageAjaxViewBean extends BJadePersistentObjectViewBean imple
 
     private void readAdresse(RELigneDeblocage ligneDeblocage) throws JadeApplicationServiceNotAvailableException,
             JadePersistenceException, JadeApplicationException {
-        if (JadeStringUtil.isEmpty(idAvoirPaiementUnique)) {
-            throw new BlocageException("Unable to find the application the idAvoirPaiementUnique is null!");
+        if (!JadeStringUtil.isEmpty(idAvoirPaiementUnique)) {
+
+            AvoirPaiementSimpleModel avoirPaiementSimpleModel = new AvoirPaiementSimpleModel();
+            avoirPaiementSimpleModel.setId(idAvoirPaiementUnique);
+            avoirPaiementSimpleModel = (AvoirPaiementSimpleModel) JadePersistenceManager.read(avoirPaiementSimpleModel);
+            ligneDeblocage.setIdApplicationAdressePaiement(Long.valueOf(avoirPaiementSimpleModel.getIdApplication()));
+            ligneDeblocage.setIdTiersAdressePaiement(Long.valueOf(avoirPaiementSimpleModel.getIdTiers()));
+
+            adressePaiement = AdresseHandler.convertAdressePaiement(TIBusinessServiceLocator.getAdresseService()
+                    .getAdressePaiementTiers(ligneDeblocage.getIdTiersAdressePaiement().toString(), false,
+                            ligneDeblocage.getIdApplicationAdressePaiement().toString(), JACalendar.todayJJsMMsAAAA(),
+                            avoirPaiementSimpleModel.getIdExterne()));
+
+            TiersSimpleModel tiersCreancier = TIBusinessServiceLocator.getTiersService().read(
+                    ligneDeblocage.getIdTiersCreancier().toString());
+
+            designationTiers1 = tiersCreancier.getDesignation1();
+            designationTiers2 = tiersCreancier.getDesignation2();
         }
-        AvoirPaiementSimpleModel avoirPaiementSimpleModel = new AvoirPaiementSimpleModel();
-        avoirPaiementSimpleModel.setId(idAvoirPaiementUnique);
-        avoirPaiementSimpleModel = (AvoirPaiementSimpleModel) JadePersistenceManager.read(avoirPaiementSimpleModel);
-        ligneDeblocage.setIdApplicationAdressePaiement(Long.valueOf(avoirPaiementSimpleModel.getIdApplication()));
-        ligneDeblocage.setIdTiersAdressePaiement(Long.valueOf(avoirPaiementSimpleModel.getIdTiers()));
-
-        adressePaiement = AdresseHandler.convertAdressePaiement(TIBusinessServiceLocator.getAdresseService()
-                .getAdressePaiementTiers(ligneDeblocage.getIdTiersAdressePaiement().toString(), false,
-                        ligneDeblocage.getIdApplicationAdressePaiement().toString(), JACalendar.todayJJsMMsAAAA(),
-                        avoirPaiementSimpleModel.getIdExterne()));
-
-        TiersSimpleModel tiersCreancier = TIBusinessServiceLocator.getTiersService().read(
-                ligneDeblocage.getIdTiersCreancier().toString());
-
-        designationTiers1 = tiersCreancier.getDesignation1();
-        designationTiers2 = tiersCreancier.getDesignation2();
     }
 
     private RELigneDeblocage toReLigneDeblocage(RELigneDeblocageViewBean vb) {

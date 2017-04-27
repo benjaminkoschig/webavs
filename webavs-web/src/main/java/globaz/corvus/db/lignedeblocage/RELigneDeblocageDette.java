@@ -7,6 +7,7 @@ public class RELigneDeblocageDette extends RELigneDeblocage {
     private String descriptionCompteAnnexe;
     private String idCompteAnnexe;
     private Montant montanDette;
+    private String idExterne;
 
     public String getDescription() {
         return description;
@@ -38,6 +39,18 @@ public class RELigneDeblocageDette extends RELigneDeblocage {
 
     public void setIdCompteAnnexe(String idCompteAnnexe) {
         this.idCompteAnnexe = idCompteAnnexe;
+    }
+
+    public String generateKey() {
+        return getIdSectionCompensee() + "_" + getIdRoleSection();
+    }
+
+    public String getIdExterne() {
+        return idExterne;
+    }
+
+    public void setIdExterne(String idExterne) {
+        this.idExterne = idExterne;
     }
 
 }

@@ -51,25 +51,28 @@ class RELigneDeblocageDetteHandler {
 
         Map<String, RELigneDeblocageDette> mapDettes = new HashMap<String, RELigneDeblocageDette>();
         for (RELigneDeblocageDette dette : dettes) {
-            mapDettes.put(dette.getIdSectionCompensee() + "_" + dette.getIdRoleSection(), dette);
+            mapDettes.put(dette.generateKey(), dette);
         }
 
         for (RELigneDeblocageDette dette : dettesComptabiliser) {
-            mapDettes.put(dette.getIdSectionCompensee() + "_" + dette.getIdRoleSection(), dette);
+            mapDettes.put(dette.generateKey(), dette);
         }
 
         List<RELigneDeblocageDette> list = new ArrayList<RELigneDeblocageDette>();
         Set<String> keyMatch = new HashSet<String>();
-        Map<String, Montant> mapDettesNonLiquide = new HashMap<String, Montant>();
+        Map<String, Montant> mapDettesToRemove = new HashMap<String, Montant>();
         for (RELigneDeblocage ligne : lignesDeblocage) {
             String key = ligne.getIdSectionCompensee() + "_" + ligne.getIdRoleSection();
-            if (mapDettesNonLiquide.containsKey(key)) {
-                mapDettesNonLiquide.put(key, mapDettesNonLiquide.get(key).add(ligne.getMontant()));
-            } else {
-                mapDettesNonLiquide.put(key, ligne.getMontant());
-            }
+
             if (mapDettes.containsKey(key)) {
+
                 RELigneDeblocageDette detteComptat = mapDettes.get(key);
+
+                if (ligne.isValide()
+                        || (ligne.isComptabilise() && ligne.getMontant().equals(detteComptat.getMontanDette()))) {
+                    mapDettesToRemove.put(key, ligne.getMontant());
+                }
+
                 RELigneDeblocageDette dette = new RELigneDeblocageDette();
                 dette.setIdAndJustDoIt(ligne.getIdEntity());
                 dette.setIdEntity(ligne.getIdEntity());
@@ -81,6 +84,7 @@ class RELigneDeblocageDetteHandler {
                 dette.setEtat(ligne.getEtat());
                 dette.setType(ligne.getType());
                 dette.setRefPaiement(ligne.getRefPaiement());
+                dette.setIdExterne(detteComptat.getIdExterne());
                 dette.setDescription(detteComptat.getDescription());
                 dette.setDescriptionCompteAnnexe(detteComptat.getDescriptionCompteAnnexe());
                 dette.setType(ligne.getType());
@@ -94,15 +98,11 @@ class RELigneDeblocageDetteHandler {
 
         for (RELigneDeblocage ligne : lignesDeblocage) {
             String key = ligne.getIdSectionCompensee() + "_" + ligne.getIdRoleSection();
-            if (mapDettesNonLiquide.containsKey(key)) {
-                if (mapDettesNonLiquide.get(key).equals(ligne.getMontant())) {
-                    mapDettes.remove(key);
-                }
+            if (mapDettesToRemove.containsKey(key)) {
+                mapDettes.remove(key);
             }
         }
-
         list.addAll(mapDettes.values());
-
         return list;
     }
 
@@ -156,23 +156,26 @@ class RELigneDeblocageDetteHandler {
             CASectionJoinCompteAnnexeJoinTiersManager mgr) throws OsirisException {
         List<CASectionJoinCompteAnnexeJoinTiers> sections = mgr.toList();
         for (CASectionJoinCompteAnnexeJoinTiers section : sections) {
+
             RELigneDeblocageDette dette = new RELigneDeblocageDette();
             dette.setIdRoleSection(Long.valueOf(section.getIdRole()));
             dette.setIdSectionCompensee(Long.valueOf(section.getIdSection()));
-            dette.setDescriptionCompteAnnexe(section.getDescriptionCompteAnnexe());
+            dette.setDescriptionCompteAnnexe(section.getIdExterneRole() + " - " + section.getDescriptionCompteAnnexe());
+            dette.setDescription(section.getIdExterne() + " - " + section.getCategorieSection());
             dette.setIdCompteAnnexe(section.getIdCompteAnnexe());
             dette.setEtat(RELigneDeblocageEtat.NONE);
             dette.setIdSectionCompensee(Long.valueOf(section.getIdSection()));
+            dette.setIdExterne(section.getIdExterne());
             dette.setMontant(Montant.ZERO);
             dette.setMontanDette(new Montant(section.getSolde()));
             dette.setType(RELigneDeblocageType.DETTE_EN_COMPTA);
             idsSection.add(section.getIdSection());
             list.add(dette);
         }
-        Map<Long, String> descriptions = findDescription(idsSection);
-        for (RELigneDeblocageDette dette : list) {
-            dette.setDescription(descriptions.get(dette.getIdSectionCompensee()));
-        }
+        // Map<Long, String> descriptions = findDescription(idsSection);
+        // for (RELigneDeblocageDette dette : list) {
+        // dette.setDescription(descriptions.get(dette.getIdSectionCompensee()));
+        // }
     }
 
     private Map<Long, String> findDescription(Set<String> forIdsSectionIn) throws OsirisException {
