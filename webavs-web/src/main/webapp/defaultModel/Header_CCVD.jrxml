@@ -100,7 +100,7 @@
 						mode="Opaque"
 						x="6"
 						y="178"
-						width="73"
+						width="91"
 						height="24"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -118,7 +118,7 @@
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
-						x="83"
+						x="97"
 						y="178"
 						width="165"
 						height="24"
