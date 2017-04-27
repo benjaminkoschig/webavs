@@ -26,6 +26,23 @@ public interface IAFListeColumns {
     public static final String HEADER_NOM_LISTE = "headerNomListe";
     public static final String HEADER_NUM_INFOROM = "headerNumInforom";
     public static final String HEADER_USER = "headerUser";
+    public static final String HEADER_ANNEE_LABEL = "headerAnneeLabel";
+    public static final String HEADER_DATE_LABEL = "headerDateLabel";
+    public static final String HEADER_ROW_NUMAFFI = "headerRowNumAffi";
+    public static final String HEADER_ROW_NOM = "headerRowNom";
+    public static final String HEADER_ROW_RUE = "headerRowRue";
+    public static final String HEADER_ROW_CASE_POSTALE = "headerRowCasePostale";
+    public static final String HEADER_ROW_NPA = "headerRowNpa";
+    public static final String HEADER_ROW_LOCALITE = "headerRowLocalite";
+    public static final String HEADER_ROW_SOUMIS = "headerRowSoumis";
+    public static final String HEADER_ROW_NSS = "headerRowNss";
+    public static final String HEADER_ROW_NOM_SALARIE = "headerRowNomSalarie";
+    public static final String HEADER_ROW_SEXE = "headerRowSexe";
+    public static final String HEADER_ROW_DATE_NAISSANCE = "headerRowDateNaissance";
+    public static final String HEADER_ROW_PERIODE = "headerRowPeriode";
+    public static final String HEADER_ROW_ANNEE = "headerRowAnnee";
+    public static final String HEADER_ROW_MONTANT = "headerRowMontant";
+    public static final String HEADER_ROW_SUIVI = "headerRowSuivi";
     public static final String ID_TAXE = "idTaxe";
     public static final String[] listeNoms = { IAFListeColumns.CASE_POSTALE, IAFListeColumns.COMMENTAIRE,
             IAFListeColumns.DATE_AFFILIATION, IAFListeColumns.DATE_DEBUT_CAISSE, IAFListeColumns.DATE_FIN_CAISSE,

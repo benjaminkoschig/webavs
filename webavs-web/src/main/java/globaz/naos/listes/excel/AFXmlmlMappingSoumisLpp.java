@@ -72,12 +72,14 @@ public class AFXmlmlMappingSoumisLpp {
     }
 
     private static void loadHeader(CommonExcelmlContainer container, String dateImpression, String nomListe,
-            String anneeDebut, String anneeFin, String numInforom, String user) throws Exception {
+            String anneeDebut, String anneeFin, String numInforom, String user, BSession session) throws Exception {
         // Modif PO 6352
         container.put(IAFListeColumns.HEADER_NUM_INFOROM, numInforom);
         container.put(IAFListeColumns.HEADER_USER, user);
+        container.put(IAFListeColumns.HEADER_DATE_LABEL, session.getLabel("NAOS_LISTE_SOUMIS_LPP_DATE_IMPRESSION"));
         container.put(IAFListeColumns.HEADER_DATE, dateImpression);
         container.put(IAFListeColumns.HEADER_NOM_LISTE, nomListe);
+        container.put(IAFListeColumns.HEADER_ANNEE_LABEL, session.getLabel("NAOS_LISTE_SOUMIS_LPP_ANNEE_CONTROLE"));
         container.put(IAFListeColumns.HEADER_ANNEE, anneeDebut + " - " + anneeFin);
 
         /**
@@ -87,6 +89,25 @@ public class AFXmlmlMappingSoumisLpp {
         container.put(IAFListeColumns.HEADER_BLANK_2, "");
         container.put(IAFListeColumns.HEADER_BLANK_3, "");
 
+        /***
+         * Internationalisation de la liste
+         */
+        container.put(IAFListeColumns.HEADER_ROW_NUMAFFI, session.getLabel("NAOS_LISTE_SOUMIS_LPP_NUM_AFFI"));
+        container.put(IAFListeColumns.HEADER_ROW_NOM, session.getLabel("NAOS_LISTE_SOUMIS_LPP_NOM"));
+        container.put(IAFListeColumns.HEADER_ROW_RUE, session.getLabel("NAOS_LISTE_SOUMIS_LPP_RUE"));
+        container.put(IAFListeColumns.HEADER_ROW_CASE_POSTALE, session.getLabel("NAOS_LISTE_SOUMIS_LPP_CASE_POSTALE"));
+        container.put(IAFListeColumns.HEADER_ROW_NPA, session.getLabel("NAOS_LISTE_SOUMIS_LPP_NPA"));
+        container.put(IAFListeColumns.HEADER_ROW_LOCALITE, session.getLabel("NAOS_LISTE_SOUMIS_LPP_LOCALITE"));
+        container.put(IAFListeColumns.HEADER_ROW_SOUMIS, session.getLabel("NAOS_LISTE_SOUMIS_LPP_SOUMIS"));
+        container.put(IAFListeColumns.HEADER_ROW_NSS, session.getLabel("NAOS_LISTE_SOUMIS_LPP_NSS"));
+        container.put(IAFListeColumns.HEADER_ROW_NOM_SALARIE, session.getLabel("NAOS_LISTE_SOUMIS_LPP_NOM_SALARIE"));
+        container.put(IAFListeColumns.HEADER_ROW_SEXE, session.getLabel("NAOS_LISTE_SOUMIS_LPP_SEXE"));
+        container.put(IAFListeColumns.HEADER_ROW_DATE_NAISSANCE,
+                session.getLabel("NAOS_LISTE_SOUMIS_LPP_DATE_NAISSANCE"));
+        container.put(IAFListeColumns.HEADER_ROW_PERIODE, session.getLabel("NAOS_LISTE_SOUMIS_LPP_PERIODE"));
+        container.put(IAFListeColumns.HEADER_ROW_ANNEE, session.getLabel("NAOS_LISTE_SOUMIS_LPP_ANNEE"));
+        container.put(IAFListeColumns.HEADER_ROW_MONTANT, session.getLabel("NAOS_LISTE_SOUMIS_LPP_MONTANT"));
+        container.put(IAFListeColumns.HEADER_ROW_SUIVI, session.getLabel("NAOS_LISTE_SOUMIS_LPP_SUIVI"));
     }
 
     /**
@@ -106,7 +127,7 @@ public class AFXmlmlMappingSoumisLpp {
 
         // Chargement du header du document
         AFXmlmlMappingSoumisLpp.loadHeader(container, process.getDateImpression(), nomListe, process.getAnneeDebut(),
-                process.getAnneeFin(), numInforom, process.getSession().getUserName());
+                process.getAnneeFin(), numInforom, process.getSession().getUserName(), process.getSession());
 
         String[] listAffilie = conteneur.getTableauAffilie();
 
