@@ -44,6 +44,7 @@ import globaz.osiris.db.ordres.sepa.CAProcessFormatOrdreSEPALite;
 import globaz.osiris.db.ordres.sepa.SepaSendOrderProcessor;
 import globaz.osiris.db.ordres.sepa.utils.CASepaCommonUtils;
 import globaz.osiris.db.ordres.utils.CAOrdreGroupeFtpUtils;
+import globaz.osiris.db.utils.CAAdressePaiementFormatter;
 import globaz.osiris.external.IntAdressePaiement;
 import globaz.osiris.process.CAProcessAnnulerOrdre;
 import globaz.osiris.process.CAProcessAttacherOrdre;
@@ -1032,6 +1033,12 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
                                             + oper.getCompteAnnexe().getIdExterneRole() + " - "
                                             + oper.getSection().getIdExterne() + ")", FWMessage.INFORMATION,
                                     this.getClass().getName());
+                        } else if (!chekAdressePaiementNoError(oper)) {
+                            getMemoryLog().logMessage(
+                                    getSession().getLabel("OG_PREPA_ERROR_MISSING_INVALID_ADDRESS_PAIMENT") + " ("
+                                            + oper.getCompteAnnexe().getIdExterneRole() + " - "
+                                            + oper.getSection().getIdExterne() + ")", FWMessage.INFORMATION,
+                                    this.getClass().getName());
                         } else {
                             // Le rattacher
                             oper.setIdOrdreGroupe(getIdOrdreGroupe());
@@ -1069,6 +1076,21 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
             setTotal(cTotal.toString());
             setNombreTransactions(String.valueOf(lNTransactions));
 
+        }
+
+    }
+
+    private boolean chekAdressePaiementNoError(CAOperationOrdreVersement oper) throws Exception {
+        if (getOrganeExecution().getCSTypeTraitementOG().equals(APIOrganeExecution.OG_ISO_20022)) {
+            try {
+                CAAdressePaiementFormatter.checkAdressePaiementData(oper.getAdressePaiementData(), getSession());
+                return true;
+            } catch (Exception e) {
+                getMemoryLog().logMessage(e.getMessage(), FWMessage.INFORMATION, this.getClass().getName());
+                return false;
+            }
+        } else {
+            return true;
         }
 
     }
