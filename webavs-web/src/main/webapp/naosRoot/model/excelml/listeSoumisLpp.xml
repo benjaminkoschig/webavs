@@ -165,12 +165,29 @@
   <NamedRange ss:Name="col_suivi" ss:RefersTo="=Feuil1!C15"/>
   <NamedRange ss:Name="dateNaissance" ss:RefersTo="=Feuil1!R8C11"/>
   <NamedRange ss:Name="headerAnnee" ss:RefersTo="=Feuil1!R3C2"/>
+  <NamedRange ss:Name="headerAnneeLabel" ss:RefersTo="=Feuil1!R3C1"/>
   <NamedRange ss:Name="headerBlank1" ss:RefersTo="=Feuil1!R2C1"/>
   <NamedRange ss:Name="headerBlank2" ss:RefersTo="=Feuil1!R5C1"/>
   <NamedRange ss:Name="headerBlank3" ss:RefersTo="=Feuil1!R6C1"/>
   <NamedRange ss:Name="headerDate" ss:RefersTo="=Feuil1!R4C2"/>
+  <NamedRange ss:Name="headerDateLabel" ss:RefersTo="=Feuil1!R4C1"/>
   <NamedRange ss:Name="headerNomListe" ss:RefersTo="=Feuil1!R4C3"/>
   <NamedRange ss:Name="headerNumInforom" ss:RefersTo="=Feuil1!R1C1"/>
+  <NamedRange ss:Name="headerRowAnnee" ss:RefersTo="=Feuil1!R7C13"/>
+  <NamedRange ss:Name="headerRowCasePostale" ss:RefersTo="=Feuil1!R7C4"/>
+  <NamedRange ss:Name="headerRowDateNaissance" ss:RefersTo="=Feuil1!R7C11"/>
+  <NamedRange ss:Name="headerRowLocalite" ss:RefersTo="=Feuil1!R7C6"/>
+  <NamedRange ss:Name="headerRowMontant" ss:RefersTo="=Feuil1!R7C14"/>
+  <NamedRange ss:Name="headerRowNom" ss:RefersTo="=Feuil1!R7C2"/>
+  <NamedRange ss:Name="headerRowNomSalarie" ss:RefersTo="=Feuil1!R7C9"/>
+  <NamedRange ss:Name="headerRowNpa" ss:RefersTo="=Feuil1!R7C5"/>
+  <NamedRange ss:Name="headerRowNss" ss:RefersTo="=Feuil1!R7C8"/>
+  <NamedRange ss:Name="headerRowNumAffi" ss:RefersTo="=Feuil1!R7C1"/>
+  <NamedRange ss:Name="headerRowPeriode" ss:RefersTo="=Feuil1!R7C12"/>
+  <NamedRange ss:Name="headerRowRue" ss:RefersTo="=Feuil1!R7C3"/>
+  <NamedRange ss:Name="headerRowSexe" ss:RefersTo="=Feuil1!R7C10"/>
+  <NamedRange ss:Name="headerRowSoumis" ss:RefersTo="=Feuil1!R7C7"/>
+  <NamedRange ss:Name="headerRowSuivi" ss:RefersTo="=Feuil1!R7C15"/>
   <NamedRange ss:Name="headerUser" ss:RefersTo="=Feuil1!R1C15"/>
   <NamedRange ss:Name="localite" ss:RefersTo="=Feuil1!R8C6"/>
   <NamedRange ss:Name="montant" ss:RefersTo="=Feuil1!R8C14"/>
@@ -213,8 +230,8 @@
       ss:Name="headerBlank1"/><NamedCell ss:Name="col_numAffilie"/></Cell>
    </Row>
    <Row>
-    <Cell ss:StyleID="s66"><Data ss:Type="String">Années de contrôle</Data><NamedCell
-      ss:Name="col_numAffilie"/></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">headerAnneeLabel</Data><NamedCell
+      ss:Name="headerAnneeLabel"/><NamedCell ss:Name="col_numAffilie"/></Cell>
     <Cell><Data ss:Type="String">headerAnnee</Data><NamedCell ss:Name="headerAnnee"/><NamedCell
       ss:Name="col_nom"/></Cell>
     <Cell ss:StyleID="s66"><NamedCell ss:Name="col_rue"/></Cell>
@@ -224,8 +241,8 @@
     <Cell ss:StyleID="s66"><NamedCell ss:Name="col_motif"/></Cell>
    </Row>
    <Row>
-    <Cell ss:StyleID="s66"><Data ss:Type="String">Date impression</Data><NamedCell
-      ss:Name="col_numAffilie"/></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">headerDateLabel</Data><NamedCell
+      ss:Name="headerDateLabel"/><NamedCell ss:Name="col_numAffilie"/></Cell>
     <Cell><Data ss:Type="String">headerDate</Data><NamedCell ss:Name="headerDate"/><NamedCell
       ss:Name="col_nom"/></Cell>
     <Cell ss:StyleID="s66"><Data ss:Type="String">headerNomListe</Data><NamedCell
@@ -244,36 +261,51 @@
       ss:Name="headerBlank3"/><NamedCell ss:Name="col_numAffilie"/></Cell>
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="25.5">
-    <Cell ss:StyleID="s68"><Data ss:Type="String">No d'affilié</Data><NamedCell
-      ss:Name="row_tableDefinition"/><NamedCell ss:Name="col_numAffilie"/></Cell>
-    <Cell ss:StyleID="s70"><Data ss:Type="String">Nom</Data><NamedCell
-      ss:Name="row_tableDefinition"/><NamedCell ss:Name="col_nom"/></Cell>
-    <Cell ss:StyleID="s70"><Data ss:Type="String">Rue No</Data><NamedCell
-      ss:Name="row_tableDefinition"/><NamedCell ss:Name="col_rue"/></Cell>
-    <Cell ss:StyleID="s72"><Data ss:Type="String">Case postale</Data><NamedCell
-      ss:Name="row_tableDefinition"/><NamedCell ss:Name="col_casePostale"/></Cell>
-    <Cell ss:StyleID="s70"><Data ss:Type="String">NPA</Data><NamedCell
-      ss:Name="row_tableDefinition"/><NamedCell ss:Name="col_npa"/></Cell>
-    <Cell ss:StyleID="s70"><Data ss:Type="String">Localité</Data><NamedCell
-      ss:Name="row_tableDefinition"/><NamedCell ss:Name="col_localite"/></Cell>
-    <Cell ss:StyleID="s70"><Data ss:Type="String">Non soumis</Data><NamedCell
-      ss:Name="row_tableDefinition"/><NamedCell ss:Name="col_motif"/></Cell>
-    <Cell ss:StyleID="s68"><Data ss:Type="String">NSS</Data><NamedCell
-      ss:Name="row_tableDefinition"/><NamedCell ss:Name="col_nss"/></Cell>
-    <Cell ss:StyleID="s68"><Data ss:Type="String">Nom salarié</Data><NamedCell
-      ss:Name="row_tableDefinition"/><NamedCell ss:Name="col_nomSalarie"/></Cell>
-    <Cell ss:StyleID="s73"><Data ss:Type="String">Sexe</Data><NamedCell
-      ss:Name="row_tableDefinition"/><NamedCell ss:Name="col_sexe"/></Cell>
-    <Cell ss:StyleID="s73"><Data ss:Type="String">Date naissance</Data><NamedCell
-      ss:Name="row_tableDefinition"/><NamedCell ss:Name="col_dateNaissance"/></Cell>
-    <Cell ss:StyleID="s73"><Data ss:Type="String">Période</Data><NamedCell
-      ss:Name="row_tableDefinition"/><NamedCell ss:Name="col_periodeTravail"/></Cell>
-    <Cell ss:StyleID="s73"><Data ss:Type="String">Année</Data><NamedCell
-      ss:Name="row_tableDefinition"/><NamedCell ss:Name="col_annee"/></Cell>
-    <Cell ss:StyleID="s74"><Data ss:Type="String">Montant</Data><NamedCell
-      ss:Name="row_tableDefinition"/><NamedCell ss:Name="col_montant"/></Cell>
-    <Cell ss:StyleID="s75"><Data ss:Type="String">Suivi</Data><NamedCell
-      ss:Name="row_tableDefinition"/><NamedCell ss:Name="col_suivi"/></Cell>
+    <Cell ss:StyleID="s68"><Data ss:Type="String">headerRowNumAffi</Data><NamedCell
+      ss:Name="headerRowNumAffi"/><NamedCell ss:Name="row_tableDefinition"/><NamedCell
+      ss:Name="col_numAffilie"/></Cell>
+    <Cell ss:StyleID="s70"><Data ss:Type="String">headerRowNom</Data><NamedCell
+      ss:Name="headerRowNom"/><NamedCell ss:Name="row_tableDefinition"/><NamedCell
+      ss:Name="col_nom"/></Cell>
+    <Cell ss:StyleID="s70"><Data ss:Type="String">headerRowRue</Data><NamedCell
+      ss:Name="headerRowRue"/><NamedCell ss:Name="row_tableDefinition"/><NamedCell
+      ss:Name="col_rue"/></Cell>
+    <Cell ss:StyleID="s72"><Data ss:Type="String">headerRowCasePostale</Data><NamedCell
+      ss:Name="headerRowCasePostale"/><NamedCell ss:Name="row_tableDefinition"/><NamedCell
+      ss:Name="col_casePostale"/></Cell>
+    <Cell ss:StyleID="s70"><Data ss:Type="String">headerRowNpa</Data><NamedCell
+      ss:Name="headerRowNpa"/><NamedCell ss:Name="row_tableDefinition"/><NamedCell
+      ss:Name="col_npa"/></Cell>
+    <Cell ss:StyleID="s70"><Data ss:Type="String">headerRowLocalite</Data><NamedCell
+      ss:Name="headerRowLocalite"/><NamedCell ss:Name="row_tableDefinition"/><NamedCell
+      ss:Name="col_localite"/></Cell>
+    <Cell ss:StyleID="s70"><Data ss:Type="String">headerRowSoumis</Data><NamedCell
+      ss:Name="headerRowSoumis"/><NamedCell ss:Name="row_tableDefinition"/><NamedCell
+      ss:Name="col_motif"/></Cell>
+    <Cell ss:StyleID="s68"><Data ss:Type="String">headerRowNss</Data><NamedCell
+      ss:Name="headerRowNss"/><NamedCell ss:Name="row_tableDefinition"/><NamedCell
+      ss:Name="col_nss"/></Cell>
+    <Cell ss:StyleID="s68"><Data ss:Type="String">headerRowNomSalarie</Data><NamedCell
+      ss:Name="headerRowNomSalarie"/><NamedCell ss:Name="row_tableDefinition"/><NamedCell
+      ss:Name="col_nomSalarie"/></Cell>
+    <Cell ss:StyleID="s73"><Data ss:Type="String">headerRowSexe</Data><NamedCell
+      ss:Name="headerRowSexe"/><NamedCell ss:Name="row_tableDefinition"/><NamedCell
+      ss:Name="col_sexe"/></Cell>
+    <Cell ss:StyleID="s73"><Data ss:Type="String">headerRowDateNaissance</Data><NamedCell
+      ss:Name="headerRowDateNaissance"/><NamedCell ss:Name="row_tableDefinition"/><NamedCell
+      ss:Name="col_dateNaissance"/></Cell>
+    <Cell ss:StyleID="s73"><Data ss:Type="String">headerRowPeriode</Data><NamedCell
+      ss:Name="headerRowPeriode"/><NamedCell ss:Name="row_tableDefinition"/><NamedCell
+      ss:Name="col_periodeTravail"/></Cell>
+    <Cell ss:StyleID="s73"><Data ss:Type="String">headerRowAnnee</Data><NamedCell
+      ss:Name="headerRowAnnee"/><NamedCell ss:Name="row_tableDefinition"/><NamedCell
+      ss:Name="col_annee"/></Cell>
+    <Cell ss:StyleID="s74"><Data ss:Type="String">headerRowMontant</Data><NamedCell
+      ss:Name="headerRowMontant"/><NamedCell ss:Name="row_tableDefinition"/><NamedCell
+      ss:Name="col_montant"/></Cell>
+    <Cell ss:StyleID="s75"><Data ss:Type="String">headerRowSuivi</Data><NamedCell
+      ss:Name="headerRowSuivi"/><NamedCell ss:Name="row_tableDefinition"/><NamedCell
+      ss:Name="col_suivi"/></Cell>
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="15">
     <Cell ss:StyleID="s76"><Data ss:Type="String">numAffilie</Data><NamedCell
@@ -326,8 +358,8 @@
    <Panes>
     <Pane>
      <Number>3</Number>
-     <ActiveRow>33</ActiveRow>
-     <ActiveCol>6</ActiveCol>
+     <ActiveRow>11</ActiveRow>
+     <ActiveCol>4</ActiveCol>
     </Pane>
    </Panes>
    <ProtectObjects>False</ProtectObjects>
