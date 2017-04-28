@@ -79,11 +79,7 @@ public class ALIndeRevenuMinNonAtteintProcess extends BProcess {
             File file = genererFileExcel(listRevenuMinNonAtteint);
             // Envoi du mail
             sendMail(mailsList, file.getAbsolutePath());
-        } else {
-            // Envoi du mail disant que la liste est vide
-            sendMail(mailsList, "");
         }
-
         return true;
     }
 
@@ -166,21 +162,13 @@ public class ALIndeRevenuMinNonAtteintProcess extends BProcess {
 
         subject = MessageFormat.format(getSession().getLabel("LISTE_INDE_TITRE"), "");
 
-        // joindre la pièce jointe si le fichier est présent
-        if (!joinFilePath.isEmpty()) {
-            joinsFilesPathsList.add(joinFilePath);
+        joinsFilesPathsList.add(joinFilePath);
 
-            body = MessageFormat.format(
-                    FWMessageFormat.prepareQuotes(getSession().getLabel("LISTE_INDE_MAIL_BODY"), false), numJournal,
-                    libelle, dateFacturation);
-        } else {
-            body = MessageFormat.format(
-                    FWMessageFormat.prepareQuotes(getSession().getLabel("LISTE_INDE_MAIL_BODY_LISTE_VIDE"), false),
-                    numJournal, libelle, dateFacturation);
-        }
+        body = MessageFormat.format(
+                FWMessageFormat.prepareQuotes(getSession().getLabel("LISTE_INDE_MAIL_BODY"), false), numJournal,
+                libelle, dateFacturation);
 
         try {
-            // envoi
             ProcessMailUtils.sendMail(mailsList, subject, body, joinsFilesPathsList);
         } catch (Exception e) {
             logger.error("Erreur lors de l'envoi du mail", e);
