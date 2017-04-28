@@ -43,11 +43,12 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
 
     private static final Logger LOG = LoggerFactory.getLogger(REAnnonces9eXmlService.class);
 
-    public static Set<Integer> ORDENTLICHERENTE = new HashSet<Integer>(Arrays.asList(10, 11, 12, 13, 14, 15, 16, 33,
+    protected static Set<Integer> ORDENTLICHERENTE = new HashSet<Integer>(Arrays.asList(10, 11, 12, 13, 14, 15, 16, 33,
             34, 35, 36, 50, 51, 52, 53, 54, 55, 56));
-    public static Set<Integer> AUSSERORDENTLICHERENTE = new HashSet<Integer>(Arrays.asList(20, 21, 22, 23, 24, 25, 26,
-            43, 44, 45, 46, 70, 71, 72, 73, 74, 75, 76));
-    public static Set<Integer> HILFLOSENENTSCHAEDIGUNG = new HashSet<Integer>(Arrays.asList(91, 92, 93, 95, 96, 97));
+    protected static Set<Integer> AUSSERORDENTLICHERENTE = new HashSet<Integer>(Arrays.asList(20, 21, 22, 23, 24, 25,
+            26, 43, 44, 45, 46, 70, 71, 72, 73, 74, 75, 76));
+    protected static Set<Integer> HILFLOSENENTSCHAEDIGUNG = new HashSet<Integer>(Arrays.asList(81, 82, 83, 84, 85, 86,
+            87, 88, 89, 91, 92, 93, 95, 96, 97));
 
     private static REAnnonceXmlService instance = new REAnnonces9eXmlService();
 
@@ -312,7 +313,8 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
         if (!JadeStringUtil.isBlank(enr02.getOfficeAiCompEpouse())) {
             baseDeCalcul.setIVDatenEhefrau(rempliIVDatenType9Conjoint(enr02));
         }
-        if (!JadeStringUtil.isBlank(enr02.getDureeAjournement())) {
+
+        if (wantGenerateAjournement(enr02)) {
             // Ajournement
             ZuwachsmeldungO9Type.Leistungsbeschreibung.Berechnungsgrundlagen.FlexiblesRentenAlter ajournement = factoryType
                     .createZuwachsmeldungO9TypeLeistungsbeschreibungBerechnungsgrundlagenFlexiblesRentenAlter();
@@ -388,7 +390,7 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
 
         baseDeCalcul.setIVDatenEhefrau(rempliIVDatenType9ConjointWeak(enr02));
 
-        if (!JadeStringUtil.isBlank(enr02.getDureeAjournement())) {
+        if (wantGenerateAjournement(enr02)) {
             // Ajournement
             AenderungsmeldungO9Type.Leistungsbeschreibung.Berechnungsgrundlagen.FlexiblesRentenAlter ajournement = factoryType
                     .createAenderungsmeldungO9TypeLeistungsbeschreibungBerechnungsgrundlagenFlexiblesRentenAlter();
@@ -397,6 +399,7 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
         }
 
         description.getSonderfallcodeRente().addAll(rempliCasSpecial(enr02));
+
         if (!JadeStringUtil.isBlank(enr02.getReduction())) {
             description.setKuerzungSelbstverschulden(Integer.valueOf(enr02.getReduction()).shortValue());
         }
@@ -813,5 +816,11 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
         }
 
         return donneeAI;
+    }
+
+    protected boolean wantGenerateAjournement(REAnnoncesAugmentationModification9Eme enr02) {
+        return !JadeStringUtil.isBlank(enr02.getDateRevocationAjournement())
+                || !JadeStringUtil.isBlank(enr02.getDureeAjournement())
+                || !JadeStringUtil.isBlank(enr02.getSupplementAjournement());
     }
 }
