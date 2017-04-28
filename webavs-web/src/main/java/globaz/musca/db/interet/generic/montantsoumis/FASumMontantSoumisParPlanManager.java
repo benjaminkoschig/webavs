@@ -8,6 +8,7 @@ import globaz.globall.util.JACalendar;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.musca.db.facturation.FAAfact;
 import globaz.musca.db.facturation.FAEnteteFacture;
+import globaz.osiris.api.APISection;
 import globaz.osiris.db.interets.CAInteretMoratoire;
 import globaz.osiris.db.interets.CARubriqueSoumiseInteret;
 import globaz.phenix.db.principale.CPDecision;
@@ -46,7 +47,6 @@ public class FASumMontantSoumisParPlanManager extends BManager {
      */
     @Override
     protected void _beforeFind(BTransaction transaction) throws Exception {
-        // TODO Dal Implement validation rules HERE !
         super._beforeFind(transaction);
     }
 
@@ -77,7 +77,7 @@ public class FASumMontantSoumisParPlanManager extends BManager {
      */
     @Override
     protected String _getWhere(BStatement statement) {
-        StringBuffer where = new StringBuffer();
+        StringBuilder where = new StringBuilder();
         where.append(getWhere());
         where.append(getGroupBy());
         where.append(getHaving());
@@ -109,13 +109,28 @@ public class FASumMontantSoumisParPlanManager extends BManager {
 
     private String getForIdSousTypeWhere() {
         if (getForIdSousTypeIn() != null) {
-            StringBuffer tmp = new StringBuffer("a." + FAEnteteFacture.FIELD_IDSOUSTYPE + " in (");
+            StringBuilder tmp = new StringBuilder("(a." + FAEnteteFacture.FIELD_IDSOUSTYPE + " in (");
 
             for (int i = 0; i < getForIdSousTypeIn().size(); i++) {
-                tmp.append("" + getForIdSousTypeIn().get(i));
 
-                if (i < getForIdSousTypeIn().size() - 1) {
-                    tmp.append(", ");
+                if (!getForIdSousTypeIn().get(i).equals(APISection.ID_CATEGORIE_SECTION_CONTROLE_EMPLOYEUR)) {
+                    tmp.append("" + getForIdSousTypeIn().get(i));
+
+                    if (i < getForIdSousTypeIn().size() - 1) {
+                        tmp.append(", ");
+                    }
+                }
+            }
+            tmp.append(") ");
+            for (int i = 0; i < getForIdSousTypeIn().size(); i++) {
+                if (getForIdSousTypeIn().get(i).equals(APISection.ID_CATEGORIE_SECTION_CONTROLE_EMPLOYEUR)) {
+                    tmp.append(" OR (a.IDSOUSTYPE=" + APISection.ID_CATEGORIE_SECTION_CONTROLE_EMPLOYEUR);
+
+                    if (isForMontantPositif()) {
+                        tmp.append(" and b.MONTANTFACTURE > 0) ");
+                    } else {
+                        tmp.append(") ");
+                    }
                 }
             }
 
@@ -147,7 +162,7 @@ public class FASumMontantSoumisParPlanManager extends BManager {
     }
 
     protected String getWhere() {
-        StringBuffer where = new StringBuffer();
+        StringBuilder where = new StringBuilder();
         where.append("a." + FAEnteteFacture.FIELD_IDENTETEFACTURE + " = b." + FAAfact.FIELD_IDENTETEFACTURE + " and ");
         where.append("a." + FAEnteteFacture.FIELD_IDPASSAGE + " = " + getForIdPassage() + " and ");
         where.append("b." + FAAfact.FIELD_IDPASSAGE + " = " + getForIdPassage() + " and ");

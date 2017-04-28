@@ -1,3 +1,6 @@
+/*
+ * Globaz SA.
+ */
 package globaz.musca.db.interet.cotipercuentrop.montantsoumis;
 
 import globaz.globall.db.BEntity;
@@ -10,15 +13,10 @@ import globaz.musca.db.facturation.FAEnteteFacture;
 import globaz.musca.db.interet.generic.montantsoumis.FASumMontantSoumisParPlanManager;
 
 public class FACotiPercuEnTropParRubriqueManager extends FASumMontantSoumisParPlanManager {
-    /**
-     * 
-     */
+
     private static final long serialVersionUID = 1L;
     private String fromAnneeCotisation;
 
-    /**
-     * see globaz.globall.db.BManager#_getFields(globaz.globall.db.BStatement)
-     */
     @Override
     protected String _getFields(BStatement statement) {
         return super._getFields(statement) + ", b." + FAAfact.FIELD_IDRUBRIQUE + ", a."
@@ -26,18 +24,11 @@ public class FACotiPercuEnTropParRubriqueManager extends FASumMontantSoumisParPl
                 + FAEnteteFacture.FIELD_IDSOUSTYPE;
     }
 
-    /**
-     * see globaz.globall.db.BManager#_getWhere(globaz.globall.db.BStatement)
-     */
     @Override
     protected String _getWhere(BStatement statement) {
         StringBuilder where = new StringBuilder();
 
         where.append(getWhere());
-
-        // K150915_057, déplacement du having sum(...) > | < 0 dans le where pour les cotisations perçues en trop.
-        where.append(" and b." + FAAfact.FIELD_MONTANTFACTURE);
-        where.append(isForMontantPositif() ? " > " : " < ").append(" 0 ");
 
         try {
             FAApplication app = new FAApplication();
@@ -47,7 +38,6 @@ public class FACotiPercuEnTropParRubriqueManager extends FASumMontantSoumisParPl
             }
         } catch (Exception e) {
             JadeLogger.info(e, e.getMessage());
-            // do nothing
         }
 
         where.append(getGroupBy());
@@ -55,6 +45,7 @@ public class FACotiPercuEnTropParRubriqueManager extends FASumMontantSoumisParPl
         where.append(",b." + FAAfact.FIELD_IDRUBRIQUE + ", a." + FAEnteteFacture.FIELD_IDEXTERNEROLE + ", a."
                 + FAEnteteFacture.FIELD_IDROLE + ", a." + FAEnteteFacture.FIELD_IDSOUSTYPE + " ");
 
+        where.append(getHaving());
         where.append(getOrder());
 
         return where.toString();
@@ -65,17 +56,10 @@ public class FACotiPercuEnTropParRubriqueManager extends FASumMontantSoumisParPl
         return new FACotiPercuEnTropParRubrique();
     }
 
-    /**
-     * @return the fromAnneeCotisation
-     */
     public String getFromAnneeCotisation() {
         return fromAnneeCotisation;
     }
 
-    /**
-     * @param fromAnneeCotisation
-     *            the fromAnneeCotisation to set
-     */
     public void setFromAnneeCotisation(String fromAnneeCotisation) {
         this.fromAnneeCotisation = fromAnneeCotisation;
     }
