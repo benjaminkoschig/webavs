@@ -41,11 +41,11 @@ public class REAnnonces10eXmlService extends REAbstractAnnonceXmlService impleme
 
     private static final Logger LOG = LoggerFactory.getLogger(REAnnonces10eXmlService.class);
 
-    public static final List<Integer> GENRE_PRESTATION_10_API = Arrays.asList(81, 82, 83, 84, 85, 86, 87, 88, 91, 92,
-            93, 95, 96, 97);
+    public static final List<Integer> GENRE_PRESTATION_10_API = Arrays.asList(81, 82, 83, 84, 85, 86, 87, 88, 89, 91,
+            92, 93, 94, 95, 96, 97);
 
-    public static final List<Integer> GENRE_PRESTATION_10_ORDINAIRE = Arrays.asList(10, 13, 14, 15, 16, 33, 34, 35, 50,
-            53, 54, 55);
+    public static final List<Integer> GENRE_PRESTATION_10_ORDINAIRE = Arrays.asList(10, 13, 14, 15, 16, 33, 34, 35, 36,
+            50, 53, 54, 55, 56);
     public static final List<Integer> GENRE_PRESTATION_10_EXTRAORDINAIRE = Arrays.asList(20, 23, 24, 25, 26, 45, 70,
             73, 74, 75);
     private static REAnnonceXmlService instance = new REAnnonces10eXmlService();
@@ -63,6 +63,7 @@ public class REAnnonces10eXmlService extends REAbstractAnnonceXmlService impleme
         switch (codeApplication) {
             case CODE_APPLICATION_AUGMENTATION_DIXIEME:
             case 46:
+
                 REAnnoncesAugmentationModification10Eme augmentation10eme01 = retrieveAnnonceAugModif10(annonce,
                         session);
 
@@ -538,12 +539,17 @@ public class REAnnonces10eXmlService extends REAbstractAnnonceXmlService impleme
 
         baseDeCalcul.setIVDaten(rempliIVDatenWeakType10(enr02));
 
-        if (!JadeStringUtil.isBlank(enr02.getDureeAjournement())) {
+        if (wantGenerateAjournement(enr02)) {
             // Ajournement
             AenderungsmeldungO10Type.Leistungsbeschreibung.Berechnungsgrundlagen.FlexiblesRentenAlter ajournement = factoryType
                     .createAenderungsmeldungO10TypeLeistungsbeschreibungBerechnungsgrundlagenFlexiblesRentenAlter();
-            ajournement.setRentenaufschub(rempliRentenaufschubTypeWeak(enr02));
-            ajournement.setRentenvorbezug(rempliRentenvorbezugWeakType(enr02));
+            if (!JadeStringUtil.isBlank(enr02.getDateRevocationAjournement())
+                    || !JadeStringUtil.isBlank(enr02.getDureeAjournement())
+                    || !JadeStringUtil.isBlank(enr02.getSupplementAjournement())) {
+                ajournement.setRentenaufschub(rempliRentenaufschubTypeWeak(enr02));
+            } else {
+                ajournement.setRentenvorbezug(rempliRentenvorbezugWeakType(enr02));
+            }
             baseDeCalcul.setFlexiblesRentenAlter(ajournement);
         }
 
@@ -573,7 +579,9 @@ public class REAnnonces10eXmlService extends REAbstractAnnonceXmlService impleme
      */
     protected RRMeldung10Type genererZuwachmeldungOrdentliche(REAnnoncesAugmentationModification10Eme enr01,
             REAnnoncesAugmentationModification10Eme enr02) throws Exception {
+        RRMeldung10Type meldung10Type = factoryType.createRRMeldung10Type();
         RRMeldung10Type.OrdentlicheRente renteOrdinaire = factoryType.createRRMeldung10TypeOrdentlicheRente();
+
         ZuwachsmeldungO10Type augmentation = factoryType.createZuwachsmeldungO10Type();
         augmentation.setBerichtsmonat(retourneXMLGregorianCalendarFromMonth(enr01.getMoisRapport()));
 
@@ -619,12 +627,17 @@ public class REAnnonces10eXmlService extends REAbstractAnnonceXmlService impleme
         if (!JadeStringUtil.isBlank(enr02.getOfficeAICompetent())) {
             baseDeCalcul.setIVDaten(rempliIVDatenType10(enr02));
         }
-        if (!JadeStringUtil.isBlank(enr02.getDureeAjournement())) {
-            // Ajournement
+
+        if (wantGenerateAjournement(enr02)) {
             ZuwachsmeldungO10Type.Leistungsbeschreibung.Berechnungsgrundlagen.FlexiblesRentenAlter ajournement = factoryType
                     .createZuwachsmeldungO10TypeLeistungsbeschreibungBerechnungsgrundlagenFlexiblesRentenAlter();
-            ajournement.setRentenaufschub(rempliRentenaufschubType(enr02));
-            ajournement.setRentenvorbezug(rempliRentenvorbezugType(enr02));
+            if (!JadeStringUtil.isBlank(enr02.getDateRevocationAjournement())
+                    || !JadeStringUtil.isBlank(enr02.getDureeAjournement())
+                    || !JadeStringUtil.isBlank(enr02.getSupplementAjournement())) {
+                ajournement.setRentenaufschub(rempliRentenaufschubType(enr02));
+            } else {
+                ajournement.setRentenvorbezug(rempliRentenvorbezugType(enr02));
+            }
             baseDeCalcul.setFlexiblesRentenAlter(ajournement);
         }
 
@@ -639,8 +652,9 @@ public class REAnnonces10eXmlService extends REAbstractAnnonceXmlService impleme
         description.setBerechnungsgrundlagen(baseDeCalcul);
         augmentation.setLeistungsbeschreibung(description);
         renteOrdinaire.setZuwachsmeldung(augmentation);
-        RRMeldung10Type meldung10Type = factoryType.createRRMeldung10Type();
+
         meldung10Type.setOrdentlicheRente(renteOrdinaire);
+
         return meldung10Type;
     }
 
@@ -679,9 +693,15 @@ public class REAnnonces10eXmlService extends REAbstractAnnonceXmlService impleme
      */
     private RentenvorbezugType rempliRentenvorbezugType(REAnnoncesAugmentationModification10Eme enr02) throws Exception {
         RentenvorbezugType anticipation = factoryType.createRentenvorbezugType();
-        anticipation.setAnzahlVorbezugsjahre(Integer.valueOf(enr02.getNbreAnneeAnticipation()));
-        anticipation.setVorbezugsdatum(retourneXMLGregorianCalendarFromMonth(enr02.getDateDebutAnticipation()));
-        anticipation.setVorbezugsreduktion(new BigDecimal(testSiNullouZero(enr02.getReductionAnticipation())));
+        if (!JadeStringUtil.isBlank(enr02.getNbreAnneeAnticipation())) {
+            anticipation.setAnzahlVorbezugsjahre(Integer.valueOf(enr02.getNbreAnneeAnticipation()));
+        }
+        if (!JadeStringUtil.isBlank(enr02.getDateDebutAnticipation())) {
+            anticipation.setVorbezugsdatum(retourneXMLGregorianCalendarFromMonth(enr02.getDateDebutAnticipation()));
+        }
+        if (!JadeStringUtil.isBlank(enr02.getReductionAnticipation())) {
+            anticipation.setVorbezugsreduktion(new BigDecimal(testSiNullouZero(enr02.getReductionAnticipation())));
+        }
         return anticipation;
     }
 
@@ -691,10 +711,13 @@ public class REAnnonces10eXmlService extends REAbstractAnnonceXmlService impleme
             bte.setAnzahlErziehungsgutschrift(convertAAMMtoBigDecimal(enr02.getNombreAnneeBTE()));
         }
         if (!JadeStringUtil.isBlank(enr02.getNbreAnneeBTA())) {
-            bte.setAnzahlBetreuungsgutschrift(new BigDecimal(testSiNullouZero(enr02.getNbreAnneeBTA())));
+            bte.setAnzahlBetreuungsgutschrift(formatuneDecimale(enr02.getNbreAnneeBTA()));
         }
         if (!JadeStringUtil.isBlank(enr02.getNbreAnneeBonifTrans())) {
-            bte.setAnzahlUebergangsgutschrift(new BigDecimal(testSiNullouZero(enr02.getNbreAnneeBonifTrans())));
+            if (!JadeStringUtil.isBlankOrZero(enr02.getNbreAnneeBonifTrans())) {
+                bte.setAnzahlUebergangsgutschrift(new BigDecimal(testSiNullouZero(enr02.getNbreAnneeBonifTrans()))
+                        .divide(new BigDecimal(10)).setScale(1));
+            }
         }
         return bte;
     }
@@ -836,4 +859,14 @@ public class REAnnonces10eXmlService extends REAbstractAnnonceXmlService impleme
         }
         return donneeAI;
     }
+
+    protected boolean wantGenerateAjournement(REAnnoncesAugmentationModification10Eme enr02) {
+        return !JadeStringUtil.isBlank(enr02.getDateRevocationAjournement())
+                || !JadeStringUtil.isBlank(enr02.getDureeAjournement())
+                || !JadeStringUtil.isBlank(enr02.getSupplementAjournement())
+                || !JadeStringUtil.isBlank(enr02.getNbreAnneeAnticipation())
+                || !JadeStringUtil.isBlank(enr02.getDateDebutAnticipation())
+                || !JadeStringUtil.isBlank(enr02.getReductionAnticipation());
+    }
+
 }
