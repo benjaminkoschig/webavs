@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.GregorianCalendar;
 import java.util.List;
+import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import ch.admin.ofit.anakin.donnee.AnnonceErreur;
@@ -84,10 +85,12 @@ public abstract class REAbstractAnnonceXmlService {
         personne.setIstFluechtling(convertIntToBoolean(enr01.getIsRefugie()));
         FamilienAngehoerigeType membresDeLaFamille = factoryType.createFamilienAngehoerigeType();
         if (!JadeStringUtil.isBlank(enr01.getPremierNoAssComplementaire())) {
-            membresDeLaFamille.getVNr1Ergaenzend().add(enr01.getPremierNoAssComplementaire());
+            membresDeLaFamille.getVNr1Ergaenzend().add(
+                    testSiNullouZero(new BigDecimal(enr01.getPremierNoAssComplementaire()).toString()));
         }
         if (!JadeStringUtil.isBlank(enr01.getSecondNoAssComplementaire())) {
-            membresDeLaFamille.getVNr2Ergaenzend().add(enr01.getSecondNoAssComplementaire());
+            membresDeLaFamille.getVNr2Ergaenzend().add(
+                    testSiNullouZero(new BigDecimal(enr01.getSecondNoAssComplementaire()).toString()));
         }
         personne.setWohnkantonStaat(new Integer(enr01.getCantonEtatDomicile()).toString());
         personne.setFamilienAngehoerige(membresDeLaFamille);
@@ -118,10 +121,12 @@ public abstract class REAbstractAnnonceXmlService {
         }
         FamilienAngehoerigeType membresDeLaFamille = factoryType.createFamilienAngehoerigeType();
         if (!JadeStringUtil.isBlank(enr01.getPremierNoAssComplementaire())) {
-            membresDeLaFamille.getVNr1Ergaenzend().add(enr01.getPremierNoAssComplementaire());
+            membresDeLaFamille.getVNr1Ergaenzend().add(
+                    testSiNullouZero(new BigDecimal(enr01.getPremierNoAssComplementaire()).toString()));
         }
         if (!JadeStringUtil.isBlank(enr01.getSecondNoAssComplementaire())) {
-            membresDeLaFamille.getVNr2Ergaenzend().add(enr01.getSecondNoAssComplementaire());
+            membresDeLaFamille.getVNr2Ergaenzend().add(
+                    testSiNullouZero(new BigDecimal(enr01.getSecondNoAssComplementaire()).toString()));
         }
         if (!JadeStringUtil.isBlank(enr01.getCantonEtatDomicile())) {
             personne.setWohnkantonStaat(Integer.valueOf(enr01.getCantonEtatDomicile()).toString());
@@ -134,29 +139,32 @@ public abstract class REAbstractAnnonceXmlService {
     }
 
     public XMLGregorianCalendar retourneXMLGregorianCalendarFromMonth(String dateMmYy) throws Exception {
-
+        XMLGregorianCalendar returnCalendar;
         GregorianCalendar gregory;
         if (new Integer(dateMmYy.substring(2)) > 48) {
             gregory = new GregorianCalendar(new Integer(dateMmYy.substring(2)) + 1900, Integer.valueOf(dateMmYy
-                    .substring(0, 2)), 0);
+                    .substring(0, 2)) - 1, 1);
         } else {
             gregory = new GregorianCalendar(new Integer(dateMmYy.substring(2)) + 2000, Integer.valueOf(dateMmYy
-                    .substring(0, 2)), 0);
+                    .substring(0, 2)) - 1, 1);
         }
-
-        return DatatypeFactory.newInstance().newXMLGregorianCalendar(gregory);
+        returnCalendar = DatatypeFactory.newInstance().newXMLGregorianCalendar(gregory);
+        returnCalendar.setTimezone(DatatypeConstants.FIELD_UNDEFINED);
+        return returnCalendar;
     }
 
     public XMLGregorianCalendar retourneXMLGregorianCalendarFromYear(String dateYy) throws Exception {
-
+        XMLGregorianCalendar returnCalendar;
         GregorianCalendar gregory;
         if (new Integer(dateYy) > 48) {
-            gregory = new GregorianCalendar(Integer.valueOf(dateYy) + 1900, 0, 0);
+            gregory = new GregorianCalendar(Integer.valueOf(dateYy) + 1900, 0, 1);
         } else {
-            gregory = new GregorianCalendar(Integer.valueOf(dateYy) + 2000, 0, 0);
+            gregory = new GregorianCalendar(Integer.valueOf(dateYy) + 2000, 0, 1);
         }
+        returnCalendar = DatatypeFactory.newInstance().newXMLGregorianCalendar(gregory);
+        returnCalendar.setTimezone(DatatypeConstants.FIELD_UNDEFINED);
 
-        return DatatypeFactory.newInstance().newXMLGregorianCalendar(gregory);
+        return returnCalendar;
     }
 
     protected String testSiNullouZero(String valeur) {
@@ -264,17 +272,48 @@ public abstract class REAbstractAnnonceXmlService {
      */
     protected RentenaufschubType rempliRentenaufschubType(REAnnoncesAbstractLevel2A enr02) throws Exception {
         RentenaufschubType ajournement = factoryType.createRentenaufschubType();
-        ajournement.setAbrufdatum(retourneXMLGregorianCalendarFromMonth(enr02.getDateRevocationAjournement()));
-        ajournement.setAufschubsdauer(new BigDecimal(testSiNullouZero(enr02.getDureeAjournement())));
-        ajournement.setAufschubszuschlag(new BigDecimal(testSiNullouZero(enr02.getSupplementAjournement())));
+        if (!JadeStringUtil.isBlank(enr02.getDateRevocationAjournement())) {
+            ajournement.setAbrufdatum(retourneXMLGregorianCalendarFromMonth(enr02.getDateRevocationAjournement()));
+        }
+        if (!JadeStringUtil.isBlank(enr02.getDureeAjournement())) {
+            ajournement.setAufschubsdauer(formatDeuxDecimale(enr02.getDureeAjournement()));
+        }
+        if (!JadeStringUtil.isBlank(enr02.getSupplementAjournement())) {
+            ajournement.setAufschubszuschlag(new BigDecimal(testSiNullouZero(enr02.getSupplementAjournement())));
+        }
         return ajournement;
     }
 
     protected RentenaufschubWeakType rempliRentenaufschubTypeWeak(REAnnoncesAbstractLevel2A enr02) throws Exception {
         RentenaufschubWeakType ajournement = factoryType.createRentenaufschubWeakType();
-        ajournement.setAbrufdatum(retourneXMLGregorianCalendarFromMonth(enr02.getDateRevocationAjournement()));
-        ajournement.setAufschubsdauer(new BigDecimal(testSiNullouZero(enr02.getDureeAjournement())));
-        ajournement.setAufschubszuschlag(new BigDecimal(testSiNullouZero(enr02.getSupplementAjournement())));
+        if (!JadeStringUtil.isBlank(enr02.getDateRevocationAjournement())) {
+            ajournement.setAbrufdatum(retourneXMLGregorianCalendarFromMonth(enr02.getDateRevocationAjournement()));
+        }
+        if (!JadeStringUtil.isBlank(enr02.getDureeAjournement())) {
+            ajournement.setAufschubsdauer(formatDeuxDecimale(enr02.getDureeAjournement()));
+        }
+        if (!JadeStringUtil.isBlank(enr02.getSupplementAjournement())) {
+            ajournement.setAufschubszuschlag(new BigDecimal(testSiNullouZero(enr02.getSupplementAjournement())));
+        }
         return ajournement;
     }
+
+    protected BigDecimal formatuneDecimale(String duree) {
+        if (!JadeStringUtil.isBlankOrZero(duree)) {
+            return new BigDecimal(duree).divide(new BigDecimal(10)).setScale(1);
+        } else {
+            return new BigDecimal(0.00);
+        }
+
+    }
+
+    protected BigDecimal formatDeuxDecimale(String duree) {
+        if (!JadeStringUtil.isBlankOrZero(duree)) {
+            return new BigDecimal(duree).divide(new BigDecimal(100)).setScale(2);
+        } else {
+            return new BigDecimal(0.00);
+        }
+
+    }
+
 }
