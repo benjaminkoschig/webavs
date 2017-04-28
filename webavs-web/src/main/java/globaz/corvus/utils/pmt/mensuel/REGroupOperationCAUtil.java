@@ -31,6 +31,7 @@ import globaz.globall.util.JADate;
 import globaz.globall.util.JANumberFormatter;
 import globaz.jade.client.util.JadeNumericUtil;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.log.JadeLogger;
 import globaz.osiris.api.APICompteAnnexe;
 import globaz.osiris.api.APIEcriture;
 import globaz.osiris.api.APIGestionComptabiliteExterne;
@@ -50,6 +51,7 @@ import globaz.prestation.tauxImposition.api.IPRTauxImposition;
 import globaz.prestation.tools.PRAssert;
 import globaz.prestation.tools.PRDateFormater;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
+import globaz.pyxis.db.tiers.TITiersViewBean;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -700,6 +702,20 @@ public class REGroupOperationCAUtil {
         return null;
     }
 
+    private TITiersViewBean findTiers(BSession session, String idTiers) {
+        TITiersViewBean t = new TITiersViewBean();
+        t.setSession(session);
+        t.setIdTiers(idTiers);
+
+        try {
+            t.retrieve();
+        } catch (Exception e) {
+            JadeLogger.error(this, "Unabled to find tiers with idTiers = " + idTiers);
+        }
+
+        return t;
+    }
+
     /**
      * Génère les opérations comptable du groupe d'opération considéré, a savoir : ecritures comptables et ordre de
      * versement Les rentes accordées avec retenue ou blocage ne sont pas traitées ici !!! Cette méthode est 'atomique',
@@ -739,7 +755,9 @@ public class REGroupOperationCAUtil {
             }
 
             if (JadeStringUtil.isBlankOrZero(ov.idAdrPmt) && ((ov.montant != null) && ov.montant.isPositive())) {
-                throw new Exception("Aucune adresse de pmt trouvée pour idTiers : " + idTiersBeneficiaire);
+                TITiersViewBean tiers = findTiers(session, idTiersBeneficiaire);
+                throw new Exception("Aucune adresse de pmt trouvée pour idTiers : " + idTiersBeneficiaire
+                        + " / Infos tiers : " + tiers.getNumAvsNomPrenom());
             }
 
             if (motif == null) {
