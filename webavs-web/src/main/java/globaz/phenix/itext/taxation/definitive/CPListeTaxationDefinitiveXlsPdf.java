@@ -114,22 +114,22 @@ public class CPListeTaxationDefinitiveXlsPdf extends BProcess {
         File fileXls = builder.asXls().build();
         builder.close();
 
+        Set<String> mails = new HashSet<String>();
         String groupMail = CPProperties.LISTE_TAXATION_DEFINITIVE_GROUP_MAIL.getValue();
         if (groupMail != null) {
             groupMail = groupMail.trim();
-            Set<String> mails = new HashSet<String>();
-
             if (!groupMail.isEmpty() && fromFacturation) {
-                List<String> mailList = UsersMail
-                        .resolveMailsByGroupId(CPProperties.LISTE_TAXATION_DEFINITIVE_GROUP_MAIL.getValue());
-                mails.addAll(mailList);
+                List<String> mailList = UsersMail.resolveMailsByGroupId(groupMail);
+                if (mailList.isEmpty()) {
+                    mails.add(getEMailAddress());
+                }
             }
-
-            mails.add(getEMailAddress());
-
-            documentInfoPdf.setPublishProperty(JadePublishDocumentInfo.MAILS_TO, Joiner.on(";").join(mails));
-            documentInfoXls.setPublishProperty(JadePublishDocumentInfo.MAILS_TO, Joiner.on(";").join(mails));
         }
+        if (mails.isEmpty()) {
+            mails.add(getEMailAddress());
+        }
+        documentInfoPdf.setPublishProperty(JadePublishDocumentInfo.MAILS_TO, Joiner.on(";").join(mails));
+        documentInfoXls.setPublishProperty(JadePublishDocumentInfo.MAILS_TO, Joiner.on(";").join(mails));
 
         this.registerAttachedDocument(documentInfoPdf, filePdf.getAbsolutePath());
         this.registerAttachedDocument(documentInfoXls, fileXls.getAbsolutePath());
