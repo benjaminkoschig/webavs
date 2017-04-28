@@ -232,7 +232,7 @@ class LoadTaxationsDefinitives {
         final String designation = getDesignation(session, elem);
         final Date dateDebutPrestation = new Date(elem.getDateDebut());
         final Date dateFinPrestation = new Date(elem.getDateFin());
-        final String typePrestation = session.getCodeLibelle(elem.getTypePrestation());
+        final String typePrestation = session.getCode(elem.getTypePrestation());
         final double ecartType = computEcart(elem).roundFloorInt().doubleValue();
 
         final Integer nbJoursIndemnisation = dateDebutPrestation.getNbDaysBetween(dateFinPrestation) + 1;

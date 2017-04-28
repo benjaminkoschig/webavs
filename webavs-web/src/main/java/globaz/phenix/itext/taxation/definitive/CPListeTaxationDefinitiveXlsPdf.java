@@ -95,7 +95,7 @@ public class CPListeTaxationDefinitiveXlsPdf extends BProcess {
 
         Details details = new Details();
         details.add(nomCaise, "");
-        details.add("N°", NUM_REF_INFOROM_LISTE_TAXA_DEF);
+        details.add(getSession().getLabel("LISTE_STATS_OFAS_NO"), NUM_REF_INFOROM_LISTE_TAXA_DEF);
         details.newLigne();
 
         SimpleOutputListBuilderJade builder = SimpleOutputListBuilderJade.newInstance();
@@ -108,7 +108,7 @@ public class CPListeTaxationDefinitiveXlsPdf extends BProcess {
         } else {
             builder.classElementList(TaxationDefinitiveWithoutRadieForList.class);
         }
-        builder.addHeaderDetails(details).addTitle("Liste des taxations définitives APG/Maternité", Align.CENTER);
+        builder.addHeaderDetails(details).addTitle(getSession().getLabel("LISTE_TAX_DEF_TITRE_DOCUMENT"), Align.CENTER);
 
         File filePdf = builder.asPdf().build();
         File fileXls = builder.asXls().build();
