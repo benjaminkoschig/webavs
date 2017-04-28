@@ -80,7 +80,7 @@ public class REDeblocageAjaxViewBean extends BJadePersistentObjectViewBean imple
     public void update() throws Exception {
         RELigneDeblocage ligneDeblocage = toReLigneDeblocage(lingeDeblocage);
         ReLigneDeclocageServices services = new ReLigneDeclocageServices((BSession) getISession());
-        if (ligneDeblocage.getMontant().isZero()) {
+        if (ligneDeblocage.getMontant().isZero() && !ligneDeblocage.isCreancier()) {
             services.delete(ligneDeblocage);
             lingeDeblocage.setIdLigneDeblocage(null);
             lingeDeblocage.setSpy(null);

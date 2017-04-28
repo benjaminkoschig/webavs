@@ -40,7 +40,8 @@ public class ReLigneDeclocageServices {
     }
 
     private void checkCreancier(RELigneDeblocage ligneDeblocage) {
-        if (ligneDeblocage.getType().isCreancier() && ligneDeblocage.getIdApplicationAdressePaiement() != null) {
+        if (ligneDeblocage.getType().isCreancier()) {
+
             if (ligneDeblocage.getIdTiersCreancier() == null || ligneDeblocage.getIdTiersCreancier() == 0) {
                 session.getCurrentThreadTransaction().addErrors(session.getLabel("ERROR_DEBLOCAGE_CREANCIER_VIDE"));
             } else if (ligneDeblocage.getIdTiersAdressePaiement() == null
@@ -48,6 +49,7 @@ public class ReLigneDeclocageServices {
                 session.getCurrentThreadTransaction().addErrors(
                         session.getLabel("ERROR_DEBLOCAGE_ADRESSE_CREANCIER_VIDE"));
             }
+
         }
     }
 
@@ -62,6 +64,8 @@ public class ReLigneDeclocageServices {
         if (ligneDeblocage == null) {
             throw new IllegalArgumentException("To update ligneDeblocage, ligneDeblocage must be not null");
         }
+
+        checkMontant(ligneDeblocage);
         checkCreancier(ligneDeblocage);
         ligneDeblocage.setSession(session);
         try {
@@ -74,6 +78,12 @@ public class ReLigneDeclocageServices {
         }
 
         return ligneDeblocage;
+    }
+
+    private void checkMontant(RELigneDeblocage ligneDeblocage) {
+        if (ligneDeblocage.getMontant() == null || ligneDeblocage.getMontant().isZero()) {
+            session.getCurrentThreadTransaction().addErrors(session.getLabel("ERROR_DEBLOCAGE_MONTANT_VIDE"));
+        }
     }
 
     private void checkDette(RELigneDeblocage ligneDeblocage) {
@@ -135,6 +145,9 @@ public class ReLigneDeclocageServices {
         if (ligneDeblocage.isNew()) {
             throw new IllegalArgumentException("To update ligneDeblocage, ligneDeblocage must be not new");
         }
+
+        checkMontant(ligneDeblocage);
+
         checkCreancier(ligneDeblocage);
 
         ligneDeblocage.setSession(session);
