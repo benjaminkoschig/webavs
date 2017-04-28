@@ -264,7 +264,12 @@ public class CPImpressionCommunicationRetour_Doc extends FWIDocumentManager {
                 super.setParametres(CPIListeCommunicationRetourParam.PARAM_CAPITAL_ENTREPRISE,
                         communication.getCapitalEntreprise());
             }
-            super.setParametres(CPIListeCommunicationRetourParam.PARAM_SALAIRE, communication.getSalaire());
+            // Si TSE on ne doit pas afficher le salaire, qui est le même que le revenu agricole
+            if (CPDecision.CS_TSE.equalsIgnoreCase(communication.getGenreAffilie())) {
+                super.setParametres(CPIListeCommunicationRetourParam.PARAM_SALAIRE, "0");
+            } else {
+                super.setParametres(CPIListeCommunicationRetourParam.PARAM_SALAIRE, communication.getSalaire());
+            }
             super.setParametres(CPIListeCommunicationRetourParam.PARAM_AUTRE_REV, communication.getAutreRevenu());
             super.setParametres(CPIListeCommunicationRetourParam.PARAM_RACHAT_LPP, communication.getRachatLpp());
             super.setParametres(CPIListeCommunicationRetourParam.PARAM_RACHAT_LPP_CJT, communication.getRachatLppCjt());
