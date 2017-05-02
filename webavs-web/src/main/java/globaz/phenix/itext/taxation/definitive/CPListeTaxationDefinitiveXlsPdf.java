@@ -120,9 +120,7 @@ public class CPListeTaxationDefinitiveXlsPdf extends BProcess {
             groupMail = groupMail.trim();
             if (!groupMail.isEmpty() && fromFacturation) {
                 List<String> mailList = UsersMail.resolveMailsByGroupId(groupMail);
-                if (mailList.isEmpty()) {
-                    mails.add(getEMailAddress());
-                }
+                mails.addAll(mailList);
             }
         }
         if (mails.isEmpty()) {
