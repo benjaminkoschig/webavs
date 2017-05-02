@@ -122,10 +122,13 @@ public class CAJournalOperationLettrer extends BProcess {
                 return false;
             } else {
                 if (!atLeastOne) {
-                    getMemoryLog().logMessage(getSession().getLabel("LETTRAGE_INFO_AUCUN_SOLDE"),
-                            FWMessage.INFORMATION, this.getClass().getName());
+                    getMemoryLog().logMessage(
+                            getSession().getLabel("LETTRAGE_INFO_AUCUN_SOLDE") + " \r\n "
+                                    + getCompteAnnexe().getIdExterneRole() + " " + getCompteAnnexeDescription() + " - "
+                                    + getSection(getIdSourceSection()).getFullDescription(), FWMessage.FATAL,
+                            this.getClass().getName());
                 }
-                return true;
+                return false;
             }
         } else {
             return false;
