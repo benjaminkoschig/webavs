@@ -344,9 +344,9 @@ globazGlobal.isRenteBloque = ${viewBean.isRenteBloque()};
 							</div>
 							<div class="span1 right">
 								<input data-g-amount="" class="input-mini liveSum" name="montant" />
-		
-								 <input class="idTiersCreancier" type="hidden">
-								 <input class="idAvoirPaiementUnique" type="hidden">
+								<input class="idApplicationAdressePaiement" type="hidden">
+								<input class="idTiersCreancier" type="hidden">
+								<input class="idAvoirPaiementUnique" type="hidden">
 							</div>
 							<div class="span1">
 								<button type="button"  class="save globazIconButton"></button>

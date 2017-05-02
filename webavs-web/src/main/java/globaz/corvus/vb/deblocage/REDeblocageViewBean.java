@@ -10,7 +10,9 @@ import globaz.corvus.db.lignedeblocage.RELigneDeblocageVersement;
 import globaz.corvus.db.lignedeblocage.RELigneDeblocages;
 import globaz.corvus.db.lignedeblocage.constantes.RELigneDeblocageType;
 import globaz.corvus.db.rentesaccordees.RERenteAccordeeJoinInfoComptaJoinPrstDues;
+import globaz.corvus.servlet.IREActions;
 import globaz.externe.IPRConstantesExternes;
+import globaz.framework.secure.FWSecureConstants;
 import globaz.jade.client.util.JadeNumericUtil;
 import globaz.osiris.db.comptes.CASectionJoinCompteAnnexeJoinTiersManager;
 import globaz.prestation.vb.PRAbstractViewBeanSupport;
@@ -278,4 +280,14 @@ public class REDeblocageViewBean extends PRAbstractViewBeanSupport {
         return "devalider";
     }
 
+    public boolean hasCUDRight() {
+        if (getSession().hasRight(IREActions.ACTION_DEBLOQUER_MONTANT_RENTE_ACCORDEE, FWSecureConstants.ADD)) {
+            return true;
+        } else if (getSession().hasRight(IREActions.ACTION_DEBLOQUER_MONTANT_RENTE_ACCORDEE, FWSecureConstants.UPDATE)) {
+            return true;
+        } else if (getSession().hasRight(IREActions.ACTION_DEBLOQUER_MONTANT_RENTE_ACCORDEE, FWSecureConstants.REMOVE)) {
+            return true;
+        }
+        return false;
+    }
 }

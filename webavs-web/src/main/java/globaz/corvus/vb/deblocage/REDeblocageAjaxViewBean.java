@@ -69,10 +69,10 @@ public class REDeblocageAjaxViewBean extends BJadePersistentObjectViewBean imple
             libererDevalider.devalider(Long.valueOf(idRenteAccordee));
         } else {
             RELigneDeblocage ligneDeblocage = toReLigneDeblocage(lingeDeblocage);
-            ReLigneDeclocageServices services = new ReLigneDeclocageServices((BSession) getISession());
+            readAdresseAndSetIdApplicationAndIdTiers(ligneDeblocage);
 
+            ReLigneDeclocageServices services = new ReLigneDeclocageServices((BSession) getISession());
             lingeDeblocage = fromReLigneDeblocage(services.add(ligneDeblocage));
-            readAdresse(ligneDeblocage);
         }
     }
 
@@ -110,8 +110,8 @@ public class REDeblocageAjaxViewBean extends BJadePersistentObjectViewBean imple
         }
     }
 
-    private void readAdresse(RELigneDeblocage ligneDeblocage) throws JadeApplicationServiceNotAvailableException,
-            JadePersistenceException, JadeApplicationException {
+    private void readAdresseAndSetIdApplicationAndIdTiers(RELigneDeblocage ligneDeblocage)
+            throws JadeApplicationServiceNotAvailableException, JadePersistenceException, JadeApplicationException {
         if (!JadeStringUtil.isEmpty(idAvoirPaiementUnique)) {
 
             AvoirPaiementSimpleModel avoirPaiementSimpleModel = new AvoirPaiementSimpleModel();
