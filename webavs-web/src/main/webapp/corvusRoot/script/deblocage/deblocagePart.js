@@ -429,6 +429,11 @@ $(function () {
 		that.readAdresse(this.value, this);
 	});
 	
+
+	$('html').on("change",".refPaiement",function () {
+		$(this).closest(".areaDetail").find(".save").find(".ui-icon").css("background-image", "url(theme/jquery/images/ui-icons_f9bd01_256x240.png)");
+	});
+	
 	if(globazGlobal.isUpdatable) {
 		readAdressePaiement.init();
 		$(".areaDetail").each(function () {

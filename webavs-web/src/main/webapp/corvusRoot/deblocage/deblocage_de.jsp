@@ -13,8 +13,16 @@
 
     REDeblocageViewBean viewBean = (REDeblocageViewBean) session.getAttribute("viewBean");
 	userActionValue = IREActions.ACTION_DEBLOQUER_MONTANT_RENTE_ACCORDEE + ".executer";
+	String actionPart = IREActions.ACTION_DEBLOQUER_MONTANT_RENTE_ACCORDEE;
+	String disabled = "";
+	if(!viewBean.hasCUDRight()){
+ 		disabled = "disabled=\"disabled\"";
+	}
+	
 %>
 <%@ include file="/theme/detail_ajax/javascripts.jspf" %>
+<c:set var="disabled" value="<%=disabled%>"/>
+
 <c:set var="rootPath" value="${pageContext.request.contextPath}${requestScope.mainServletPath}Root"/>
 <link rel="stylesheet" type="text/css" href="<%=servletContext%>/theme/widget.css"/>
 <link rel="stylesheet" type="text/css" href="${rootPath}/css/dataTableStyle.css"/>
@@ -209,13 +217,17 @@ globazGlobal.isRenteBloque = ${viewBean.isRenteBloque()};
 								<div class="span1 right">
 									<span class="value mnt">${entry.montanDette.toStringFormat()}</span>
 								</div>
-								<div class="span1 right">
-									<input data-g-amount="" class="input-mini liveSum" name="montant"  value="${entry.montant.toStringFormat()}"/>
+								<div class="span1 right">						
+									<input data-g-amount=" "  ${disabled} class="input-mini liveSum" name="montant"  value="${entry.montant.toStringFormat()}"/>
+									<ct:ifhasright element="<%=actionPart%>" crud="cud">
 									<input type="hidden" class="idSectionCompensee" value="${entry.idSectionCompensee}" />
 									<input type="hidden" class="idRoleSection" value="${entry.idRoleSection}" />
+									</ct:ifhasright>
 								</div>
 								<div class="span1">
+								<ct:ifhasright element="<%=actionPart%>" crud="cud">
 									<button type="button"  class="save globazIconButton"></button>
+								</ct:ifhasright>	
 								</div>
 							</div>
 						</div>
@@ -251,15 +263,17 @@ globazGlobal.isRenteBloque = ${viewBean.isRenteBloque()};
 								<c:choose>
 									<c:when  test="${entry.etat.isEnregistre()}">
 										<div class="span3">
-											<textarea class="refPaiement" data-g-string="sizeMax:140" rows="3" cols="20">${entry.refPaiement}</textarea>	
+											<textarea class="refPaiement" ${disabled} data-g-string="sizeMax:140" rows="3" cols="20">${entry.refPaiement}</textarea>	
 										</div>
 										<div class="span1 right">
-											<input data-g-amount="" class="input-mini liveSum" name="montant" value="${entry.montant.toStringFormat()}" />
+											<input data-g-amount="" ${disabled}  class="input-mini liveSum" name="montant" value="${entry.montant.toStringFormat()}" />
 										</div>
 										<div class="span1">
+										    <ct:ifhasright element="<%=actionPart%>" crud="cud">
 											<input class="idAvoirPaiementUnique" type="hidden" value="${entry.adressePaiement.idAvoirPaiementUnique}">
 											<button type="button" class="save globazIconButton"></button>
 											<button type="button" class="del globazIconButton"></button>
+											</ct:ifhasright>
 										</div>
 									</c:when >
 									<c:otherwise>
@@ -282,7 +296,10 @@ globazGlobal.isRenteBloque = ${viewBean.isRenteBloque()};
 						</div>
 						</c:forEach>
 					</div>
+	                <ct:ifhasright element="<%=actionPart%>" crud="cud">
+					
 					<hr />
+					
 					<div class="areaDetail" style="background-color: white!important;" >
 						<div class="row-fluid " >
 							<div class="span4">
@@ -336,6 +353,7 @@ globazGlobal.isRenteBloque = ${viewBean.isRenteBloque()};
 							</div>
 						</div>
 					</div>
+					</ct:ifhasright>
 				</div>
 
 				<!--  ************************* Zone *************************  -->
@@ -368,10 +386,12 @@ globazGlobal.isRenteBloque = ${viewBean.isRenteBloque()};
 								<span class="lbl">${viewBean.versementBeneficiaire.descriptionTiers}</span>
 							</div>
 							<div class="span1 right">
-								<input data-g-amount="" class="input-mini liveSum" name="montant" value="${viewBean.versementBeneficiaire.montant.toStringFormat()}"/>
+								<input data-g-amount=" " ${disabled}  class="input-mini liveSum" name="montant" value="${viewBean.versementBeneficiaire.montant.toStringFormat()}"/>
 							</div>
-							<div class="span1">		
+							<div class="span1">
+								<ct:ifhasright element="<%=actionPart%>" crud="cud">	
 								<button type="button"  class="save globazIconButton"></button>
+								</ct:ifhasright>
 							</div>
 						</div>
 					</div>
@@ -408,10 +428,16 @@ globazGlobal.isRenteBloque = ${viewBean.isRenteBloque()};
 								<span class="lbl"><ct:FWLabel key="JSP_RE_DEBLOCAGE_MONTANT_A_RETENIR_IMPOT"/></span>
 							</div>
 							<div class="span1 right">
-								<input data-g-amount="" class="input-mini liveSum" name="montant" value="${viewBean.impotSource.montant.toStringFormat()}"/>
+							<ct:ifhasright element="<%=actionPart%>" crud="cud">
+								<input data-g-amount=" " ${disabled} class="input-mini liveSum" name="montant" value="${viewBean.impotSource.montant.toStringFormat()}"/>
+							</ct:ifhasright>
+
+							
 							</div>
-							<div class="span1">		
+							<div class="span1">
+								<ct:ifhasright element="<%=actionPart%>" crud="cud">	
 								<button type="button"  class="save globazIconButton"></button>
+								</ct:ifhasright>
 							</div>
 						</div>
 					</div>
@@ -437,7 +463,7 @@ globazGlobal.isRenteBloque = ${viewBean.isRenteBloque()};
 				</div>
 			</div>	
 			<div class="right"> 
-				<ct:ifhasright element="<%=partialUserActionAction%>" crud="cud">
+				<ct:ifhasright element="<%=actionPart%>" crud="cud">
 						<button type="button" id="ValiderLiberation" class=""><ct:FWLabel key="JSP_RE_DEBLOCAGE_VALIDER_LIBERATION"/></button>
 					<c:if test="${viewBean.isDevalidable}">
 						<button type="button" id="DeValiderLiberation" class=""><ct:FWLabel key="JSP_RE_DEBLOCAGE_DEVALIDER_LIBERATION"/></button>

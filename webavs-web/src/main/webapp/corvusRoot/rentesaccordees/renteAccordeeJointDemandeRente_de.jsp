@@ -783,22 +783,26 @@ $('html').bind(eventConstant.JADE_FW_ACTION_DONE, function(){
 						<%-- /tpl:put --%>
 <%@ include file="/theme/detail/bodyButtons.jspf" %>
 				<%-- tpl:put name="zoneButtons" --%>
-				<%if((IRERenteAccordee.CS_ETAT_VALIDE.equals(viewBean.getCsEtat()) ||
-					  IRERenteAccordee.CS_ETAT_PARTIEL.equals(viewBean.getCsEtat())) && 
-					 controller.getSession().hasRight(IREActions.ACTION_RENTE_ACCORDEE_JOINT_DEMANDE_RENTE, FWSecureConstants.UPDATE) ){
+				<%if(IRERenteAccordee.CS_ETAT_VALIDE.equals(viewBean.getCsEtat()) || IRERenteAccordee.CS_ETAT_PARTIEL.equals(viewBean.getCsEtat())  ){
 
 					String valueBlkRA = "";
 					
 					 	if (viewBean.getIsPrestationBloquee()!=null && !viewBean.getIsPrestationBloquee().booleanValue()) {
 					 		valueBlkRA = viewBean.getSession().getLabel("JSP_RAC_D_BLOQUER");
 					 		%>
+					 		<ct:ifhasright element="<%=IREActions.ACTION_RENTE_ACCORDEE_JOINT_DEMANDE_RENTE%>" crud="u">
 					 		<INPUT name="boutonBlocageRA" type="button" value="<%=valueBlkRA%>" onclick="actionBlocageRA()">
+					 		</ct:ifhasright>
 					 	<%}%>
 				 		
 				 		<%if (viewBean.isMontantADebloquer()) {%>
+				 			<ct:ifhasright element="<%=IREActions.ACTION_RENTE_ACCORDEE_JOINT_DEMANDE_RENTE%>" crud="r">
 				 			<INPUT name="boutonDeblocageMontant" type="button" value="<%=viewBean.getSession().getLabel("JSP_RAC_D_DEBLOQUER_MNT")%>" onclick="actionDeblocageMontant()">
+				 			</ct:ifhasright>
 				 		<%} else if (viewBean.isDesactiverBlocageOnly()) {%>
+				 			<ct:ifhasright element="<%=IREActions.ACTION_RENTE_ACCORDEE_JOINT_DEMANDE_RENTE%>" crud="u">
 				 			<INPUT name="boutonDeblocageMontant" type="button" value="<%=viewBean.getSession().getLabel("JSP_RAC_D_DEBLOQUER")%>" onclick="actionDesactiverBloquage()">
+				 			</ct:ifhasright>
 				 		<%} %>
 				<%}%>
 				<%-- /tpl:put --%>
