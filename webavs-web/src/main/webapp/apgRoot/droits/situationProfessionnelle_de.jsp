@@ -600,8 +600,8 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
 						</TR>
 						<TR>
 							<TD class="withoutAdressePaiement" colspan="2">&nbsp;</TD>
-							<TD class="withAdressePaiement"><ct:FWLabel key="JSP_ADRESSE_DE_PAIEMENT"/><input type="hidden" name="crNomPrenom" value="crNomPrenom"/></TD>
-							<% Object[] adresseParams= new Object[]{new String[]{"idTiersEmployeur","idTiers"}, new String[]{"nomEmployeur","cr1Text"}, new String[]{"crNomPrenom", "cr1"} }; %>
+							<TD class="withAdressePaiement"><ct:FWLabel key="JSP_ADRESSE_DE_PAIEMENT"/><input type="hidden" name="crNomPrenom" value="crNomPrenom"/><input type="hidden" name="nomEmployeurAvecVirgule" value="<%=viewBean.getNomEmployeurAvecVirgule()%>"/></TD>
+							<% Object[] adresseParams= new Object[]{new String[]{"idTiersEmployeur","idTiers"}, new String[]{"nomEmployeurAvecVirgule","cr1Text"}, new String[]{"crNomPrenom", "cr1"} }; %>
 							
 							<TD class="withAdressePaiement">
 								<ct:FWSelectorTag name="selecteurAdresses"

@@ -44,6 +44,7 @@ import globaz.prestation.db.demandes.PRDemande;
 import globaz.prestation.db.employeurs.PRDepartement;
 import globaz.prestation.db.employeurs.PRDepartementManager;
 import globaz.prestation.interfaces.af.IPRAffilie;
+import globaz.prestation.interfaces.af.PRAffiliationHelper;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.tools.PRCodeSystem;
@@ -147,6 +148,8 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
     private boolean isActionRechercherAffilie = false;
     // champ relatifs a l'employeur
     private String nomEmployeur = "";
+
+    private String nomEmployeurAvecVirgule = "";
 
     private String numAffilieEmployeur = "";
     private String numAffilieEtTypeAffiliationEmployeur = "";
@@ -693,6 +696,11 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
         }
 
         return nomEmployeur;
+    }
+
+    public String getNomEmployeurAvecVirgule() {
+        loadNomEmployeurAvecVirgule(getIdTiersEmployeur(), getIdAffilieEmployeur());
+        return nomEmployeurAvecVirgule;
     }
 
     /**
@@ -1443,6 +1451,8 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
     public void setIdTiersEmployeurDepuisPyxis(final String idTiersEmployeur) {
         setIdTiersEmployeur(idTiersEmployeur);
         setIdAffilieEmployeur("");
+        setIdTiersPaiementEmployeur("");
+        setIdDomainePaiementEmployeur("");
         numAffilieEmployeur = "";
         numAffilieEtTypeAffiliationEmployeur = "";
         genreAffiliation = "";
@@ -1480,6 +1490,95 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
      */
     public void setNomEmployeur(final String string) {
         nomEmployeur = string;
+    }
+
+    public void loadNomEmployeurAvecVirgule(String idTiers, String idAffilie) {
+        String result = "";
+
+        try {
+            if (JadeStringUtil.isIntegerEmpty(idTiers)) {
+                nomEmployeurAvecVirgule = result;
+                return;
+            }
+
+            if (JadeStringUtil.isIntegerEmpty(idAffilie)) {
+
+                PRTiersWrapper tiers = PRTiersHelper.getTiersParId(getSession(), idTiers);
+                if (tiers != null) {
+                    result = tiers.getProperty(PRTiersWrapper.PROPERTY_NOM);
+                    result += "," + tiers.getProperty(PRTiersWrapper.PROPERTY_PRENOM);
+                    result = result.trim();
+
+                } else {
+                    tiers = PRTiersHelper.getAdministrationParId(getSession(), idTiers);
+                    if (tiers != null) {
+                        String temp = tiers.getProperty(PRTiersWrapper.PROPERTY_NOM);
+                        if (!JadeStringUtil.isBlank(temp)) {
+                            result = temp.trim();
+                        }
+                        temp = tiers.getProperty(PRTiersWrapper.PROPERTY_PRENOM);
+                        if (!JadeStringUtil.isBlank(temp)) {
+                            result += "," + temp.trim();
+                        }
+                        temp = tiers.getProperty(PRTiersWrapper.PROPERTY_DESIGNATION_3);
+                        if (!JadeStringUtil.isBlank(temp)) {
+                            result += "," + temp.trim();
+                        }
+                    }
+                }
+
+            } else {
+                IPRAffilie affilie = PRAffiliationHelper.getEmployeurParIdAffilie(getSession(), getSession()
+                        .getCurrentThreadTransaction(), idAffilie, idTiers);
+
+                if (affilie != null) {
+                    result = affilie.getNom();
+
+                    // Dans le cas d'un independant, il y a aussi un prenom
+                    if (!JadeStringUtil.isEmpty(result) && !JadeStringUtil.isEmpty(affilie.getNoAVS())) {
+
+                        PRTiersWrapper tiers = PRTiersHelper.getTiersParId(getSession(), idTiers);
+
+                        if (tiers != null && !JadeStringUtil.isEmpty(tiers.getProperty(PRTiersWrapper.PROPERTY_NOM))) {
+                            result += "," + tiers.getProperty(PRTiersWrapper.PROPERTY_PRENOM);
+                        }
+                    }
+                }
+            }
+
+            // Supression des caractères spéciaux dans les noms des employeurs, car
+            // si existant le fichier batch généré va s'interrompre, car non supporté par la commande DOS : ECHO
+            result = cleanNomEmployeur(result);
+
+        } catch (final Exception e) {
+            _addError(getSession().getCurrentThreadTransaction(),
+                    getSession().getLabel(APSituationProfessionnelleViewBean.ERREUR_EMPLOYEUR_INTROUVABLE));
+        }
+
+        nomEmployeurAvecVirgule = result;
+    }
+
+    /**
+     * élimine les caractère spéciaux pouvant créer des problèmes</br>
+     * Supression des caractères spéciaux dans les noms des employeurs, car
+     * si existant
+     * le fichier batch généré va s'interrompre, car non supporté par la
+     * commande DOS : ECHO
+     * 
+     * @param result
+     * @return
+     */
+    private String cleanNomEmployeur(String result) {
+        result = result.replace('&', ' ');
+        result = result.replace('<', ' ');
+        result = result.replace('>', ' ');
+        result = result.replace('\'', ' ');
+        result = result.replace('"', ' ');
+        return result;
+    }
+
+    public void setNomEmployeurAvecVirgule(final String string) {
+        nomEmployeurAvecVirgule = string;
     }
 
     /**
