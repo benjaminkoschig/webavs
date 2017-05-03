@@ -45,7 +45,7 @@ public class ReLigneDeclocageServices {
             if (ligneDeblocage.getIdTiersCreancier() == null || ligneDeblocage.getIdTiersCreancier() == 0) {
                 session.getCurrentThreadTransaction().addErrors(session.getLabel("ERROR_DEBLOCAGE_CREANCIER_VIDE"));
             } else if (ligneDeblocage.getIdTiersAdressePaiement() == null
-                    && ligneDeblocage.getIdTiersAdressePaiement() == 0) {
+                    || ligneDeblocage.getIdTiersAdressePaiement() == 0) {
                 session.getCurrentThreadTransaction().addErrors(
                         session.getLabel("ERROR_DEBLOCAGE_ADRESSE_CREANCIER_VIDE"));
             }
