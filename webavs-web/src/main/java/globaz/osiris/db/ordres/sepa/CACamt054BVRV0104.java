@@ -131,15 +131,15 @@ public class CACamt054BVRV0104 extends AbstractCamt054Version<iso.std.iso._20022
     }
 
     private String getDateTraitement(final ReportEntry4 entry, final SimpleDateFormat sdf) {
-        if (entry.getValDt() != null && entry.getValDt().getDt() != null) {
-            return sdf.format(entry.getValDt().getDt().toGregorianCalendar().getTime());
+        if (entry.getBookgDt() != null && entry.getBookgDt().getDt() != null) {
+            return sdf.format(entry.getBookgDt().getDt().toGregorianCalendar().getTime());
         }
         return null;
     }
 
     private String getDateInscription(final ReportEntry4 entry, final SimpleDateFormat sdf) {
-        if (entry.getBookgDt() != null && entry.getBookgDt().getDt() != null) {
-            return sdf.format(entry.getBookgDt().getDt().toGregorianCalendar().getTime());
+        if (entry.getValDt() != null && entry.getValDt().getDt() != null) {
+            return sdf.format(entry.getValDt().getDt().toGregorianCalendar().getTime());
         }
         return null;
     }
