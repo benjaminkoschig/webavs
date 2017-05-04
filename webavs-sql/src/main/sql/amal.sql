@@ -55,7 +55,6 @@ insert into SCHEMA.FWCOUP (pcosid,plaide,pcouid,pcolut, pspy) values ( 42003823,
 -- SQL Script for create table (MAPERNPP)
 -- Simple model's class name : (ch.globaz.amal.business.models.simplepersonneanepaspoursuivre.SimplePersonneANePasPoursuivre)
 --========================================================================================================================
-DROP TABLE SCHEMA.MAPERNPP;
 CREATE TABLE SCHEMA.MAPERNPP
 (
 ID  NUMERIC(15,0)  NOT NULL, 
@@ -98,7 +97,6 @@ COMMENT ON COLUMN SCHEMA.MAPERNPP.FLAG_REPONSE is 'Flag réponse';
 -- SQL Script for create table (MASDXCO)
 -- Simple model's class name : (ch.globaz.amal.business.models.annoncesedexco.SimpleAnnonceSedexCO)
 --========================================================================================================================
-DROP TABLE SCHEMA.MASDXCO;
 CREATE TABLE SCHEMA.MASDXCO
 (
 ID NUMERIC(15,0) NOT NULL,
@@ -149,7 +147,6 @@ COMMENT ON COLUMN SCHEMA.MASDXCO.STATEMENT_YEAR is 'Année du décompte';
 -- SQL Script for create table (MASDXCOPA)
 -- Simple model's class name : (ch.globaz.amal.business.models.annoncesedexco.SimpleAnnonceSedexCOAssure)
 --========================================================================================================================
-DROP TABLE SCHEMA.MASDXCOPA;
 CREATE TABLE SCHEMA.MASDXCOPA
 (
 ID NUMERIC(15,0) NOT NULL,
@@ -198,7 +195,6 @@ COMMENT ON COLUMN SCHEMA.MASDXCOPA.COST_SHARING_PRIME_FIN is 'COST_SHARING_PRIME
 -- SQL Script for create table (MASDXCODEB)
 -- Simple model's class name : (ch.globaz.amal.business.models.annoncesedexco.SimpleAnnonceSedexCODebiteur)
 --========================================================================================================================
-DROP TABLE SCHEMA.MASDXCODEB;
 CREATE TABLE SCHEMA.MASDXCODEB
 (
 ID NUMERIC(15,0) NOT NULL,
@@ -239,7 +235,6 @@ COMMENT ON COLUMN SCHEMA.MASDXCODEB.NSS_DEBITEUR is 'NSS DEBITEUR';
 -- SQL Script for create table (MASDXCOP)
 -- Simple model's class name : (ch.globaz.amal.business.models.annoncesedexco.SimpleAnnonceSedexCOPersonne)
 --========================================================================================================================
-DROP TABLE SCHEMA.MASDXCOP;
 CREATE TABLE SCHEMA.MASDXCOP
 (
 ID NUMERIC(15,0) NOT NULL,
@@ -262,7 +257,6 @@ COMMENT ON COLUMN SCHEMA.MASDXCOP.CSPY is 'spy - Champ espion, défini quand et q
 -- SQL Script for create table (MASDXCO_XML)
 -- Simple model's class name : (ch.globaz.amal.business.models.annoncesedexco.SimpleAnnonceSedexCOXML)
 --========================================================================================================================
-DROP TABLE SCHEMA.MASDXCO_XML;
 CREATE TABLE SCHEMA.MASDXCO_XML
 (
 ID NUMERIC(15,0) NOT NULL,
@@ -286,7 +280,6 @@ COMMENT ON COLUMN SCHEMA.MASDXCO_XML.CSPY is 'spy - Champ espion, défini quand e
 -- SQL Script for create table (MASDXCOPMT)
 -- Simple model's class name : (ch.globaz.amal.business.models.annoncesedexco.SimpleAnnonceSedexCOPaiements)
 --========================================================================================================================
-DROP TABLE SCHEMA.MASDXCOPMT;
 CREATE TABLE SCHEMA.MASDXCOPMT
 (
 ID  NUMERIC(15,0)  NOT NULL, 
