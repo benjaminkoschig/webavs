@@ -158,7 +158,12 @@ public class CASepaCommonUtils {
         if (!isXsdRegexIbanValid(numCmp) || !isValidIban(numCmp)) {
             GenericAccountIdentification1CH other = new GenericAccountIdentification1CH();
             try {
-                other.setId(JACCP.formatNoDash(numCmp));
+                String numCmpFormated = numCmp;
+                if (IntAdressePaiement.CCP.equals(adp.getTypeAdresse())) {
+                    numCmpFormated = JACCP.formatNoDash(numCmp);
+                }
+
+                other.setId(numCmpFormated);
             } catch (Exception e) {
                 logger.debug("cannot unformat this as a CCP:" + numCmp, e);
                 other.setId(numCmp);
