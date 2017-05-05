@@ -103,7 +103,9 @@ public class AFExtraitDS extends BEntity {
     }
 
     public String getSalaire() {
-        return salaire;
+        Montant montantSalaire = new Montant(salaire);
+
+        return montantSalaire.toStringFormat();
     }
 
     public String getAnnee() {

@@ -156,7 +156,9 @@ public class AFQuestionnaireLPP_Doc extends AFAbstractTiersDocument {
         processListeExtraitDS.setEmployeur(employeur);
         processListeExtraitDS.setAdresseEmployeur(adresseEmployeur);
         processListeExtraitDS.setAnnee(String.valueOf(annee));
+        processListeExtraitDS.setLangueIso(employeur.getTiers().getLangueIso());
         processListeExtraitDS.executeProcess();
+        // date ?
 
         pathListeExtraitDS = processListeExtraitDS.getPath();
         documentInfoListeExtraitDS = processListeExtraitDS.getDocumentInfoPdf();

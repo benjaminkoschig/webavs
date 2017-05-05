@@ -7,6 +7,7 @@ import globaz.caisse.report.helper.ACaisseReportHelper;
 import globaz.framework.printing.itext.fill.FWIImportProperties;
 import globaz.globall.db.BProcess;
 import globaz.globall.db.GlobazJobQueue;
+import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.client.util.JadeUUIDGenerator;
 import globaz.jade.common.Jade;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
@@ -72,13 +73,17 @@ public class AFListeExtraitDS extends BProcess {
     private HSSFWorkbook wb;
     private HSSFSheet sheet;
 
+    private String langueIso;
+
+    private String date;
+
     private JadePublishDocumentInfo documentInfoPdf;
     private String path;
 
     public AFListeExtraitDS() {
     }
 
-    private void createListPDF() {
+    private void createListPDF() throws Exception {
         try {
             createTableauSalarie(NUM_INFORMOM + "_" + JadeUUIDGenerator.createStringUUID());
         } catch (DocumentException e) {
@@ -94,6 +99,7 @@ public class AFListeExtraitDS extends BProcess {
         wb = new HSSFWorkbook();
         sheet = wb.createSheet("Sheet");
         sheet.setColumnWidth((short) 1, (short) (256 * 27));
+        sheet.getPrintSetup().setLandscape(true);
     }
 
     private void initFonts() {
@@ -112,6 +118,7 @@ public class AFListeExtraitDS extends BProcess {
         JadePublishDocumentInfo documentInfo = createDocumentInfo();
         documentInfo.setPublishDocument(true);
         documentInfo.setDocumentTypeNumber(NUM_INFORMOM);
+
         return documentInfo;
     }
 
@@ -143,7 +150,8 @@ public class AFListeExtraitDS extends BProcess {
             row.createCell(CELL_SALARIE_NSS).setCellValue(listeDS.get(i).getNss());
             row.createCell(CELL_SALARIE_NOM).setCellValue(listeDS.get(i).getNomSalarie());
             row.createCell(CELL_SALARIE_PERIODE).setCellValue(
-                    listeDS.get(i).getMoisDebut() + " - " + listeDS.get(i).getMoisFin());
+                    JadeStringUtil.fillWithZeroes(listeDS.get(i).getMoisDebut(), 2) + " - "
+                            + JadeStringUtil.fillWithZeroes(listeDS.get(i).getMoisFin(), 2));
             row.createCell(CELL_SALARIE_SALAIRE).setCellValue(listeDS.get(i).getSalaire());
             row.createCell(CELL_SALARIE_SEUIL).setCellValue(listeDS.get(i).getSeuilEntree());
 
@@ -157,10 +165,9 @@ public class AFListeExtraitDS extends BProcess {
      * 
      * @param fileName
      * @param listeSalarie
-     * @throws DocumentException
-     * @throws IOException
+     * @throws Exception
      */
-    private void createTableauSalarie(String fileName) throws DocumentException, IOException {
+    private void createTableauSalarie(String fileName) throws Exception {
         // nouveau document pdf
         Document out = new Document(PageSize.LETTER.rotate());
 
@@ -204,8 +211,9 @@ public class AFListeExtraitDS extends BProcess {
      * 
      * @param font
      * @return
+     * @throws Exception
      */
-    private PdfPTable createEnteteFeuilleTable(Font font) {
+    private PdfPTable createEnteteFeuilleTable(Font font) throws Exception {
         // tableau de base
         PdfPTable table = new PdfPTable(3);
         // largeur 100
@@ -218,8 +226,8 @@ public class AFListeExtraitDS extends BProcess {
         table.addCell(cell);
 
         // date, ajouter la date voulue
-        cell = new PdfPCell(new Phrase(
-                getSession().getLabel("NAOS_LISTE_EXTRAIT_DS_DATE") + Date.now().getSwissValue(), font));
+        cell = new PdfPCell(new Phrase(getSession().getApplication().getLabel("NAOS_LISTE_EXTRAIT_DS_DATE", langueIso)
+                + Date.now().getSwissValue(), font));
         cell.setBorder(Rectangle.NO_BORDER);
         table.addCell(cell);
 
@@ -248,12 +256,14 @@ public class AFListeExtraitDS extends BProcess {
      * 
      * @param tableHeaderFont
      * @return
+     * @throws Exception
      */
-    private PdfPTable createTitreFeuilleTable(Font tableHeaderFont) {
+    private PdfPTable createTitreFeuilleTable(Font tableHeaderFont) throws Exception {
         // En tete titre détaié
         PdfPTable table = new PdfPTable(1);
         table.setWidthPercentage(100);
-        PdfPCell cell = new PdfPCell(new Phrase(getSession().getLabel("NAOS_LISTE_EXTRAIT_DS_TITRE"), tableHeaderFont));
+        PdfPCell cell = new PdfPCell(new Phrase(getSession().getApplication().getLabel("NAOS_LISTE_EXTRAIT_DS_TITRE",
+                langueIso), tableHeaderFont));
         cell.setHorizontalAlignment(Element.ALIGN_CENTER);
         table.addCell(cell);
         // ligne vide
@@ -269,8 +279,9 @@ public class AFListeExtraitDS extends BProcess {
      * @param header
      * @param standard
      * @return
+     * @throws Exception
      */
-    private PdfPTable createBlocEmployeurFeuilleTable(Font header, Font standard) {
+    private PdfPTable createBlocEmployeurFeuilleTable(Font header, Font standard) throws Exception {
 
         // récupération d'une ligne
         HSSFRow ligneEmployeur = listeRowSalarie.get(0);
@@ -279,7 +290,8 @@ public class AFListeExtraitDS extends BProcess {
         PdfPTable tableau = new PdfPTable(8);
         tableau.setWidthPercentage(100.00f);
         // ligne employeur
-        PdfPCell cell = new PdfPCell(new Phrase(getSession().getLabel("NAOS_LISTE_EXTRAIT_DS_EMPLOYEUR"), header));
+        PdfPCell cell = new PdfPCell(new Phrase(getSession().getApplication().getLabel(
+                "NAOS_LISTE_EXTRAIT_DS_EMPLOYEUR", langueIso), header));
         cell.setBorder(Rectangle.NO_BORDER);
         cell.setHorizontalAlignment(Element.ALIGN_LEFT);
         cell.setColspan(8);
@@ -287,16 +299,22 @@ public class AFListeExtraitDS extends BProcess {
 
         // **** En tete employeur, en tete du tableau
 
-        cell = new PdfPCell(new Phrase(getSession().getLabel("NAOS_LISTE_EXTRAIT_DS_NOM"), header));
+        cell = new PdfPCell(new Phrase(getSession().getApplication().getLabel("NAOS_LISTE_EXTRAIT_DS_NOM", langueIso),
+                header));
         cell.setColspan(2);
         tableau.addCell(cell);
-        cell = new PdfPCell(new Phrase(getSession().getLabel("NAOS_LISTE_EXTRAIT_DS_RUE"), header));
+        cell = new PdfPCell(new Phrase(getSession().getApplication().getLabel("NAOS_LISTE_EXTRAIT_DS_RUE", langueIso),
+                header));
         cell.setColspan(2);
         tableau.addCell(cell);
-        tableau.addCell(new Phrase(getSession().getLabel("NAOS_LISTE_EXTRAIT_DS_NPA"), header));
-        tableau.addCell(new Phrase(getSession().getLabel("NAOS_LISTE_EXTRAIT_DS_LOCALITE"), header));
-        tableau.addCell(new Phrase(getSession().getLabel("NAOS_LISTE_EXTRAIT_DS_NUMAFFI"), header));
-        tableau.addCell(new Phrase(getSession().getLabel("NAOS_LISTE_EXTRAIT_DS_ANNEE_DECOMPTE"), header));
+        tableau.addCell(new Phrase(getSession().getApplication().getLabel("NAOS_LISTE_EXTRAIT_DS_NPA", langueIso),
+                header));
+        tableau.addCell(new Phrase(getSession().getApplication().getLabel("NAOS_LISTE_EXTRAIT_DS_LOCALITE", langueIso),
+                header));
+        tableau.addCell(new Phrase(getSession().getApplication().getLabel("NAOS_LISTE_EXTRAIT_DS_NUMAFFI", langueIso),
+                header));
+        tableau.addCell(new Phrase(getSession().getApplication().getLabel("NAOS_LISTE_EXTRAIT_DS_ANNEE_DECOMPTE",
+                langueIso), header));
 
         // Valeurs de la cellule employeur
 
@@ -339,14 +357,16 @@ public class AFListeExtraitDS extends BProcess {
      * @param standard
      * @param listeSalarie
      * @return
+     * @throws Exception
      */
-    private PdfPTable createBlocSalarieFeuilleTable(Font header, Font standard) {
+    private PdfPTable createBlocSalarieFeuilleTable(Font header, Font standard) throws Exception {
 
         // tableau de 8 colones
         PdfPTable tableau = new PdfPTable(6);
         tableau.setWidthPercentage(100.00f);
         // ligne employeur
-        PdfPCell cell = new PdfPCell(new Phrase(getSession().getLabel("NAOS_LISTE_EXTRAIT_DS_SALARIE"), header));
+        PdfPCell cell = new PdfPCell(new Phrase(getSession().getApplication().getLabel("NAOS_LISTE_EXTRAIT_DS_SALARIE",
+                langueIso), header));
         cell.setBorder(Rectangle.NO_BORDER);
         cell.setHorizontalAlignment(Element.ALIGN_LEFT);
         cell.setColspan(8);
@@ -354,28 +374,33 @@ public class AFListeExtraitDS extends BProcess {
 
         // en tete du tableau
         // nss
-        cell = new PdfPCell(new Phrase(getSession().getLabel("NAOS_LISTE_EXTRAIT_DS_NSS"), header));
+        cell = new PdfPCell(new Phrase(getSession().getApplication().getLabel("NAOS_LISTE_EXTRAIT_DS_NSS", langueIso),
+                header));
         cell.setHorizontalAlignment(Element.ALIGN_CENTER);
         tableau.addCell(cell);
 
         // nom du salarie
-        cell = new PdfPCell(new Phrase(getSession().getLabel("NAOS_LISTE_EXTRAIT_DS_NOM_SALARIE"), header));
+        cell = new PdfPCell(new Phrase(getSession().getApplication().getLabel("NAOS_LISTE_EXTRAIT_DS_NOM_SALARIE",
+                langueIso), header));
         cell.setColspan(2);
         cell.setHorizontalAlignment(Element.ALIGN_LEFT);
         tableau.addCell(cell);
 
         // Période
-        cell = new PdfPCell(new Phrase(getSession().getLabel("NAOS_LISTE_EXTRAIT_DS_PERIODE"), header));
+        cell = new PdfPCell(new Phrase(getSession().getApplication().getLabel("NAOS_LISTE_EXTRAIT_DS_PERIODE",
+                langueIso), header));
         cell.setHorizontalAlignment(Element.ALIGN_CENTER);
         tableau.addCell(cell);
 
         // montant salaire
-        cell = new PdfPCell(new Phrase(getSession().getLabel("NAOS_LISTE_EXTRAIT_DS_SALAIRE_AVS"), header));
+        cell = new PdfPCell(new Phrase(getSession().getApplication().getLabel("NAOS_LISTE_EXTRAIT_DS_SALAIRE_AVS",
+                langueIso), header));
         cell.setHorizontalAlignment(Element.ALIGN_CENTER);
         tableau.addCell(cell);
 
         // Deduction
-        cell = new PdfPCell(new Phrase(getSession().getLabel("NAOS_LISTE_EXTRAIT_DS_SEUIL_LPP"), header));
+        cell = new PdfPCell(new Phrase(getSession().getApplication().getLabel("NAOS_LISTE_EXTRAIT_DS_SEUIL_LPP",
+                langueIso), header));
         cell.setHorizontalAlignment(Element.ALIGN_CENTER);
         tableau.addCell(cell);
 
@@ -454,6 +479,10 @@ public class AFListeExtraitDS extends BProcess {
         return documentInfoPdf;
     }
 
+    public String getLangueIso() {
+        return langueIso;
+    }
+
     // Setters
 
     public void setEmployeur(AFAffiliation employeur) {
@@ -488,6 +517,10 @@ public class AFListeExtraitDS extends BProcess {
         this.path = path;
     }
 
+    public void setLangueIso(String langueIso) {
+        this.langueIso = langueIso;
+    }
+
     @Override
     protected void _executeCleanUp() {
         //
@@ -495,6 +528,7 @@ public class AFListeExtraitDS extends BProcess {
 
     @Override
     protected boolean _executeProcess() throws Exception {
+
         setDocumentInfoPdf(createDocInfo());
 
         setNomCaisse(FWIImportProperties.getInstance().getProperty(getDocumentInfoPdf(),
