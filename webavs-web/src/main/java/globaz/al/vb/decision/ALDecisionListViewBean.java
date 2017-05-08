@@ -17,6 +17,9 @@ import ch.globaz.al.business.services.ALServiceLocator;
 
 public class ALDecisionListViewBean extends BJadePersistentObjectViewBean {
 
+    private static String PERIODICITE_MENSUELLE = "men";
+    private static String PERIODICITE_TRIMERSTRIELLE = "tri";
+
     /**
      * Date période à par défaut date de prochaine facturation
      */
@@ -32,16 +35,27 @@ public class ALDecisionListViewBean extends BJadePersistentObjectViewBean {
      */
     private String email = null;
 
+    private String choixPeriodicite = null;
+
     public ALDecisionListViewBean() {
         super();
     }
 
     @Override
     public void add() throws Exception {
+        String codeSystemePeriodicite;
+
+        if (PERIODICITE_MENSUELLE.equals(choixPeriodicite)) {
+            codeSystemePeriodicite = globaz.naos.translation.CodeSystem.PERIODICITE_MENSUELLE;
+        } else {
+            codeSystemePeriodicite = globaz.naos.translation.CodeSystem.PERIODICITE_TRIMESTRIELLE;
+        }
+
         ALListDecisionProcess listDecision = new ALListDecisionProcess();
         listDecision.setEmail(getEmail());
         listDecision.setDateDebut(getDatePeriodeDe());
         listDecision.setDateFin(getDatePeriodeA());
+        listDecision.setCsPeriodicite(codeSystemePeriodicite);
         listDecision.setSession(getSession());
         BProcessLauncher.start(listDecision, false);
     }
@@ -160,6 +174,14 @@ public class ALDecisionListViewBean extends BJadePersistentObjectViewBean {
 
     @Override
     public void update() throws Exception {
+    }
+
+    public String getChoixPeriodicite() {
+        return choixPeriodicite;
+    }
+
+    public void setChoixPeriodicite(String choixPeriodicite) {
+        this.choixPeriodicite = choixPeriodicite;
     }
 
 }

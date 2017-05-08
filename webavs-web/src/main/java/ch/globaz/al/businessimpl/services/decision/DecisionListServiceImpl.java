@@ -8,16 +8,22 @@ import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.persistence.model.JadeAbstractModel;
 import globaz.jade.persistence.model.JadeAbstractSearchModel;
+import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import globaz.journalisation.constantes.JOConstantes;
+import globaz.naos.translation.CodeSystem;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import ch.globaz.al.business.constantes.ALCSPrestation;
 import ch.globaz.al.business.constantes.ALConstJournalisation;
 import ch.globaz.al.business.exceptions.decision.ALDecisionException;
 import ch.globaz.al.business.models.dossier.DossierComplexModel;
 import ch.globaz.al.business.models.dossier.DossierComplexSearchModel;
 import ch.globaz.al.business.models.dossier.DossierModel;
+import ch.globaz.al.business.models.prestation.DeclarationVersementDetailleComplexModel;
 import ch.globaz.al.business.models.prestation.DeclarationVersementDetailleSearchComplexModel;
 import ch.globaz.al.business.services.ALServiceLocator;
 import ch.globaz.al.business.services.decision.DecisionListService;
@@ -27,6 +33,9 @@ import ch.globaz.libra.business.model.Journalisation;
 import ch.globaz.libra.business.model.JournalisationSearch;
 import ch.globaz.libra.business.services.LibraServiceLocator;
 import ch.globaz.libra.constantes.ILIConstantesExternes;
+import ch.globaz.queryexec.bridge.jade.SCM;
+import com.google.common.base.Joiner;
+import com.google.common.collect.Lists;
 
 /**
  * Classe d'implémentatiion de DecisionListService Implémentation
@@ -149,7 +158,8 @@ public class DecisionListServiceImpl implements DecisionListService {
 
     @Override
     public DossierComplexSearchModel getListDossierRetroActif(String dateDebut, String dateFin,
-            ArrayList<String> listDossier) throws JadePersistenceException, JadeApplicationException {
+            ArrayList<String> listDossier, String csPeriodicite) throws JadePersistenceException,
+            JadeApplicationException {
         // contrôle des paramètres
         if (!JadeDateUtil.isGlobazDate(dateDebut)) {
             throw new ALDecisionException("DecisionListServiceImpl#getListDossierretroActif: dateDebut: " + dateDebut
@@ -165,29 +175,34 @@ public class DecisionListServiceImpl implements DecisionListService {
             throw new ALDecisionException("DecisionListServiceImpl#getListDossierretroActif: listDossier is null");
         }
 
-        // si présence de droit date de début antérieure recherche de prestations antérieures
-        // list de dossier
-        ArrayList<String> listDossierRetroAfaire = new ArrayList<String>();
-        for (String idDossier : listDossier) {
+        // Todo : check la périodicité ici
+        List<List<String>> splitedlistDossierRetroAfaire = Lists.partition(new ArrayList<String>(listDossier), 1000);
+        List<String> listHasPeriodicite = new ArrayList<String>();
 
-            DeclarationVersementDetailleSearchComplexModel prestationSearch = new DeclarationVersementDetailleSearchComplexModel();
+        for (List<String> idsDossier : splitedlistDossierRetroAfaire) {
 
-            prestationSearch.setForIdDossier(idDossier);
-            prestationSearch.setForEtat(ALCSPrestation.ETAT_SA);
-            prestationSearch.setForDateDebut(dateDebut.substring(3));
-            prestationSearch.setWhereKey("prestaRetroActives");
-            prestationSearch.setDefinedSearchSize(JadeAbstractSearchModel.SIZE_NOLIMIT);
-            prestationSearch = ALImplServiceLocator.getDeclarationVersementDetailleComplexModelService().search(
-                    prestationSearch);
+            List<String> listIdNotfound = loadIdDossierAndFilterByIdNotLoaded(dateDebut, idsDossier, csPeriodicite);
 
-            // si pour un des droits aucune prestation n'a été versée récupérer l'id du dossier (parcouri la liste pour
-            // voir si il existe et le récupéer s'il n'existe pas
-            if (prestationSearch.getSize() == 0) {
-                if (!listDossierRetroAfaire.contains(idDossier)) {
-                    listDossierRetroAfaire.add(idDossier);
-                }
+            if (!listIdNotfound.isEmpty()) {
+                listHasPeriodicite
+                        .addAll(SCM
+                                .newInstance(String.class)
+                                .query("SELECT distinct MATPER as periodicite, schema.ALDOS.EID as idDossier FROM schema.AFAFFIP "
+                                        + "INNER JOIN schema.ALDOS ON schema.AFAFFIP.MALNAF = schema.ALDOS.MALNAF "
+                                        + "WHERE schema.ALDOS.EID in ("
+                                        + Joiner.on(",").join(listIdNotfound)
+                                        + ") and MATPER = " + csPeriodicite).execute());
             }
 
+        }
+
+        Set<String> listDossierRetroAfaire = new HashSet<String>();
+        for (String idDossier : listDossier) {
+            // si pour un des droits aucune prestation n'a été versée récupérer l'id du dossier (parcouri la liste pour
+            // voir si il existe et le récupéer s'il n'existe pas
+            if (listHasPeriodicite.contains(idDossier)) {
+                listDossierRetroAfaire.add(idDossier);
+            }
         }
 
         // on recharge les dossiers selon les id stockés en appliquant le tri désiré
@@ -203,6 +218,45 @@ public class DecisionListServiceImpl implements DecisionListService {
         }
 
         return listDossierComplex;
+    }
+
+    private List<String> loadIdDossierAndFilterByIdNotLoaded(String dateDebut, List<String> idsDossier,
+            String periodicite) throws JadeApplicationException, JadePersistenceException,
+            JadeApplicationServiceNotAvailableException {
+        // si présence de droit date de début antérieure recherche de prestations antérieures
+        // list de dossier
+        DeclarationVersementDetailleSearchComplexModel prestationSearch = new DeclarationVersementDetailleSearchComplexModel();
+
+        prestationSearch.setInIdDossier(idsDossier);
+
+        prestationSearch.setForEtat(ALCSPrestation.ETAT_SA);
+        prestationSearch.setForDateDebut(dateDebut.substring(3));
+
+        // Check du mode de traitement (mensuel ou trimestriel)
+        if (CodeSystem.PERIODICITE_MENSUELLE.equals(periodicite)) {
+            prestationSearch.setWhereKey("prestaRetroActives");
+        } else {
+            prestationSearch.setWhereKey("prestaRetroActivesTrimestriel");
+        }
+
+        prestationSearch.setDefinedSearchSize(JadeAbstractSearchModel.SIZE_NOLIMIT);
+        prestationSearch = ALImplServiceLocator.getDeclarationVersementDetailleComplexModelService().search(
+                prestationSearch);
+
+        List<String> existedID = new ArrayList<String>();
+        for (JadeAbstractModel model : prestationSearch.getSearchResults()) {
+            DeclarationVersementDetailleComplexModel declaration = (DeclarationVersementDetailleComplexModel) model;
+            existedID.add(declaration.getIdDossier());
+        }
+
+        List<String> idsNotFound = new ArrayList<String>();
+
+        for (String id : idsDossier) {
+            if (!existedID.contains(id)) {
+                idsNotFound.add(id);
+            }
+        }
+        return idsNotFound;
     }
 
     private boolean isDossierCheckable(String idDossier, String dateCtrl) {

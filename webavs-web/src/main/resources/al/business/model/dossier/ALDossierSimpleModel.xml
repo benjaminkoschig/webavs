@@ -23,6 +23,7 @@
 				<search-field name="forIdAllocataire" field-ref="idAllocataire" operation="EQUALS"/>
 				<search-field name="forEtatDossier" field-ref="etatDossier" operation="EQUALS"/>
 				<search-field name="forStatut" field-ref="statut" operation="EQUALS"/>
+				<search-field name="forIdTiersBeneficiaire" field-ref="idTiersBeneficiaire" operation="EQUALS"/>
 			</search-group>
 		</search-definition>
 	</simple-model>

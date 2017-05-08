@@ -93,6 +93,7 @@ function postInit(){
 			                   	<ul>
 									<li>" Date période de " correspond à la date à laquelle le dernier processus métier a été exécuté
 									<li>" Date période à " correspond à la date jusqu'à laquelle le test doit être effectué
+									<li>Les radions boutons " Périodicité " permettent de choisir quels dossiers doivent être traités (dossiers mensuels ou trimestriels).
 								</ul>
 								Les dossiers ressortis dans ce traitement cumulent les critères suivants :
 								<ul>
@@ -134,14 +135,19 @@ function postInit(){
 	                	</td>
 	                	
 				</tr>
-					<tr>
-						<td> <ct:FWLabel key="AL0028_DATE_FIN"/></td>
-						<td>
-	                		<input tabindex="4" class="clearable" type="text"
-							name="datePeriodeA" value="<%= viewBean.getDatePeriodeA() != null ? viewBean.getDatePeriodeA() : "" %>"
-							data-g-calendar="mandatory:false" />	
-	                	</td>
-	                	
+				<tr>
+					<td> <ct:FWLabel key="AL0028_DATE_FIN"/></td>
+					<td>
+                		<input tabindex="4" class="clearable" type="text"
+						name="datePeriodeA" value="<%= viewBean.getDatePeriodeA() != null ? viewBean.getDatePeriodeA() : "" %>"
+						data-g-calendar="mandatory:false" />	
+                	</td>	                	
+				</tr>
+				<tr>
+					<td>
+						<input type="radio" name="choixPeriodicite" value="men" checked> <ct:FWLabel key="AL0028_PERIODICITE_M"/> <br>
+						<input type="radio" name="choixPeriodicite" value="tri"> <ct:FWLabel key="AL0028_PERIODICITE_T"/> <br>
+					</td>
 				</tr>
 				</table>
 					</td>

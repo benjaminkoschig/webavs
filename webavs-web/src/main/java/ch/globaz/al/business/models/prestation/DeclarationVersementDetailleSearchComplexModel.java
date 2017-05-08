@@ -1,6 +1,7 @@
 package ch.globaz.al.business.models.prestation;
 
 import globaz.jade.persistence.model.JadeSearchComplexModel;
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -51,6 +52,8 @@ public class DeclarationVersementDetailleSearchComplexModel extends JadeSearchCo
      * recherche sur le type de bonification de la prestation
      */
     Collection<String> inBonification = null;
+
+    Collection<String> inIdDossier = new ArrayList<String>();
 
     /**
      * recherche sur les tiers autre que
@@ -179,6 +182,14 @@ public class DeclarationVersementDetailleSearchComplexModel extends JadeSearchCo
     @Override
     public Class<DeclarationVersementDetailleComplexModel> whichModelClass() {
         return (DeclarationVersementDetailleComplexModel.class);
+    }
+
+    public Collection<String> getInIdDossier() {
+        return inIdDossier;
+    }
+
+    public void setInIdDossier(Collection<String> inIdDossier) {
+        this.inIdDossier = inIdDossier;
     }
 
 }

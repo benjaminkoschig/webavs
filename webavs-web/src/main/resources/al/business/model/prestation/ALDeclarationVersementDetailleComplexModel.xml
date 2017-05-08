@@ -19,6 +19,7 @@
 		</select-fields>
 
 		<root-model name="detailPrestationModel" model-ref="ch.globaz.al.business.models.prestation.DetailPrestationModel" select-fields="false"/>
+		
 		<linked-model name="entetePrestationModel" model-ref="ch.globaz.al.business.models.prestation.EntetePrestationModel" join-type="INNER" select-fields="false">
 		<join-group operator="AND">
 				<join-field name="idEntete" field-ref="detailPrestationModel.idEntete"/>
@@ -30,9 +31,16 @@
 			<join-field name="droitModel.idDroit" field-ref="detailPrestationModel.idDroit"/>
 		</join-group>
 		</linked-model>
+		
+		<linked-model name="dossierModel" model-ref="ch.globaz.al.business.models.dossier.DossierFkModel" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDossier" field-ref="entetePrestationModel.idDossier"/>
+			</join-group>
+		</linked-model>
+		
 		<search-definition>
 			<search-group operator="AND">				
-				<search-field name="forIdDossier" field-ref="entetePrestationModel.idDossier" operation="EQUALS"/>		
+				<search-field name="forIdDossier" field-ref="entetePrestationModel.idDossier" operation="EQUALS"/>	
 				<search-field name="forEtat" field-ref="entetePrestationModel.etatPrestation" operation="EQUALS"/>
 				<search-field name="inBonification" field-ref="entetePrestationModel.bonification" operation="IN"/>
 				<search-field name="forDateDebut" field-ref="entetePrestationModel.dateVersComp" operation="GREATER_OR_EQUALS"/>
@@ -52,9 +60,20 @@
 		
 		<search-definition name="prestaRetroActives">
 			<search-group operator="AND">
+				<search-field name="inIdDossier" field-ref="entetePrestationModel.idDossier" operation="IN"/>				
 				<search-field name="forIdDossier" field-ref="entetePrestationModel.idDossier" operation="EQUALS"/>			
 				<search-field name="forDateDebut" field-ref="detailPrestationModel.periodeValidite" operation="LESS_OR_EQUALS"/>
 				<search-field name="forEtat" field-ref="entetePrestationModel.etatPrestation" operation="EQUALS"/>
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="prestaRetroActivesTrimestriel">
+			<search-group operator="AND">
+				<search-field name="inIdDossier" field-ref="entetePrestationModel.idDossier" operation="IN"/>				
+				<search-field name="forIdDossier" field-ref="entetePrestationModel.idDossier" operation="EQUALS"/>			
+				<search-field name="forDateDebut" field-ref="detailPrestationModel.periodeValidite" operation="LESS_OR_EQUALS"/>
+				<search-field name="forEtat" field-ref="entetePrestationModel.etatPrestation" operation="EQUALS"/>
+				<search-field name="forTiers" field-ref="dossierModel.idTiersBeneficiaire" operation="EQUALS"/>				
 			</search-group>
 		</search-definition>
 		

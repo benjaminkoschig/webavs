@@ -16,6 +16,7 @@ import globaz.jade.publish.document.JadePublishDocumentInfo;
 import globaz.jade.publish.message.JadePublishDocumentMessage;
 import globaz.jade.service.exception.JadeServiceActivatorException;
 import globaz.jade.service.exception.JadeServiceLocatorException;
+import globaz.naos.translation.CodeSystem;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -49,6 +50,8 @@ public class ALListDecisionProcess extends ALAbsrtactProcess {
      * email (par défaut celle de l'utilisateur)
      */
     private String email = null;
+
+    private String csPeriodicite = null;
 
     /**
      * Méthode qui créer et envoi les fichiers
@@ -108,11 +111,19 @@ public class ALListDecisionProcess extends ALAbsrtactProcess {
      */
 
     private void envoiDocument(String fileName) throws IOException {
+
+        String textePeriodicite;
+        if (CodeSystem.PERIODICITE_MENSUELLE.equals(csPeriodicite)) {
+            textePeriodicite = " - traitement mensuel";
+        } else {
+            textePeriodicite = " - traitement trimestriel";
+        }
+
         JadePublishDocumentInfo logInfo = new JadePublishDocumentInfo();
         // // logInfo.setOwnerId(JadeThread.currentUserId());
         logInfo.setOwnerEmail(getEmail());
-        logInfo.setDocumentTitle("Liste des dossiers rétroactifs");
-        logInfo.setDocumentSubject("Liste des dossiers rétroactifs");
+        logInfo.setDocumentTitle("Liste des dossiers rétroactifs" + textePeriodicite);
+        logInfo.setDocumentSubject("Liste des dossiers rétroactifs" + textePeriodicite);
         logInfo.setArchiveDocument(false);
         JadePublishDocument docInfoCSV = new JadePublishDocument(fileName, logInfo);
 
@@ -199,7 +210,9 @@ public class ALListDecisionProcess extends ALAbsrtactProcess {
             if (listDossierJournaliser.size() > ALConstDecisions.DECISION_NBRE_JOURNALISER) {
                 // TODO:gérer aussi les certifications de radiation, prest CO et SA
                 listDossierRetro = ALServiceLocator.getDecisionListService().getListDossierRetroActif(dateDebut,
-                        dateFin, listDossierJournaliser);
+                        dateFin, listDossierJournaliser, getCsPeriodicite());
+
+                // sdfsdf
             }
 
             donnesListDossierRetro = ALServiceLocator.getDecisionListService().getDonneesListDossier(listDossierRetro,
@@ -247,6 +260,14 @@ public class ALListDecisionProcess extends ALAbsrtactProcess {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getCsPeriodicite() {
+        return csPeriodicite;
+    }
+
+    public void setCsPeriodicite(String csPeriodicite) {
+        this.csPeriodicite = csPeriodicite;
     }
 
 }

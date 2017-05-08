@@ -60,6 +60,8 @@ public interface DecisionListService extends JadeApplicationService {
      *            Date limmite supérieure
      * @param listDossier
      *            lsit des dossiers à prendre en compte
+     * @param csPeriodicite
+     *            code systeme représentant la périodicité d'une Affiliation
      * @throws JadeApplicationException
      *             Exception levée par la couche métier lorsqu'elle n'a pu effectuer l'opération souhaitée
      * @throws JadePersistenceException
@@ -68,6 +70,7 @@ public interface DecisionListService extends JadeApplicationService {
      */
 
     public DossierComplexSearchModel getListDossierRetroActif(String dateDebut, String dateFin,
-            ArrayList<String> listDossier) throws JadePersistenceException, JadeApplicationException;
+            ArrayList<String> listDossier, String csPeriodicite) throws JadePersistenceException,
+            JadeApplicationException;
 
 }

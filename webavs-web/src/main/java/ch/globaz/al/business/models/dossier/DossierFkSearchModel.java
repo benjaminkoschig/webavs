@@ -31,6 +31,11 @@ public class DossierFkSearchModel extends JadeSearchSimpleModel {
     private String forIdDossier = null;
 
     /**
+     * Recherche par l'id tiers beneficiaire
+     */
+    private String forIdTiersBeneficiaire = null;
+
+    /**
      * recherche par le statut
      */
 
@@ -65,6 +70,10 @@ public class DossierFkSearchModel extends JadeSearchSimpleModel {
         return forStatut;
     }
 
+    public String getForIdTiersBeneficiaire() {
+        return forIdTiersBeneficiaire;
+    }
+
     /**
      * 
      * @param forEtatDossier
@@ -96,6 +105,10 @@ public class DossierFkSearchModel extends JadeSearchSimpleModel {
      */
     public void setForStatut(String forStatut) {
         this.forStatut = forStatut;
+    }
+
+    public void setForIdTiersBeneficiaire(String forIdTiersBeneficiaire) {
+        this.forIdTiersBeneficiaire = forIdTiersBeneficiaire;
     }
 
     /*
