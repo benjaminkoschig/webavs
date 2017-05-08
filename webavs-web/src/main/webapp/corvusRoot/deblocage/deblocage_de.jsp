@@ -121,11 +121,11 @@ globazGlobal.isRenteBloque = ${viewBean.isRenteBloque()};
 						<div class="span2">
 							<span class="lbl"><ct:FWLabel key="JSP_RE_DEBLOCAGE_GENRE_RENTE"/></span>
 						</div>
-						<div class="span3">
+						<div class="span1">
 							<span class="value">${viewBean.genre}</span>
 						</div>
 	
-						<div class="span2">
+						<div class="span3">
 							<span class="lbl"><ct:FWLabel key="JSP_RE_DEBLOCAGE_MONTANT_RENTE"/></span>
 						</div>
 						<div class="span1 right">
@@ -139,14 +139,14 @@ globazGlobal.isRenteBloque = ${viewBean.isRenteBloque()};
 				<div class="titre">
 					<h1 class="ui-widget-header "><ct:FWLabel key="JSP_RE_DEBLOCAGE_HEADER_ENTETE_BLOCAGE"/></h1>
 					<div  style="padding-top:5px;" class="row-fluid">
-						<div class="span4 ">
+						<div class="span4">
 							<span class="lbl"><ct:FWLabel key="JSP_RE_DEBLOCAGE_MONTANT_TOTALE_A_DEBLOQUER"/></span>
 							
 							<span class="value">${viewBean.montantToUsedForDeblocage}</span>
 						</div>
-						<div class="span4"></div>
-						<div class="span2">
-							<span class="lbl"><ct:FWLabel key="JSP_RE_DEBLOCAGE_MONTANT_DEBLOQUER"/></span>
+						<div class="span2"></div>
+						<div class="span3">
+							<span class="lbl"><ct:FWLabel key="JSP_RE_DEBLOCAGE_MONTANT_DEBLOQUER"/></span>							
 						</div>
 						<div class="span1 right">
 							<span class="value">${viewBean.montantBloque}</span>
