@@ -1,6 +1,0 @@
--- S160809_008 : Rachat LPP
-ALTER TABLE SCHEMA.CPDOENP ADD IDRLPP DECIMAL(10,2);
-reorg table SCHEMA.CPDOENP;
-
-
-INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL) VALUES ('phenix.liste.taxation.definitive.group.mail','');
