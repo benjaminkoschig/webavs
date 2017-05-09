@@ -120,6 +120,10 @@ public abstract class JadeEntity extends BEntity implements Comparable<JadeEntit
 
         if (aliasTable != null) {
             columnName = aliasTable + "_" + columnName;
+
+            if (columnName.length() > 30) {
+                columnName = columnName.substring(0, 30);
+            }
         }
 
         if (Integer.class.equals(tableDefinition.getType())) {

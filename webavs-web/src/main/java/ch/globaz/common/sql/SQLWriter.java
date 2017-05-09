@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import org.apache.commons.lang.StringUtils;
+import ch.globaz.common.business.exceptions.CommonTechnicalException;
 import ch.globaz.common.domaine.CodeSystemEnum;
 import ch.globaz.common.domaine.Date;
 import ch.globaz.common.jadedb.TableDefinition;
@@ -31,6 +32,8 @@ public class SQLWriter {
     private static final String CONST_SCHEMA = "schema.";
     private boolean addComma = false;
     private Locale locale;
+
+    private List<String> truncateAliases = new ArrayList<String>();
 
     private SQLWriter(String schema) {
         this.schema = schema;
@@ -143,9 +146,20 @@ public class SQLWriter {
         writer.append(".");
         writer.append(nameField);
         writer.append(" as ");
-        writer.append(aliasTable);
-        writer.append("_");
-        writer.append(nameField);
+
+        String alias = aliasTable + "_" + nameField;
+        if (alias.length() > 30) {
+            alias = alias.substring(0, 30);
+            if (!truncateAliases.contains(alias)) {
+                truncateAliases.add(alias);
+                writer.append(alias);
+            } else {
+                throw new CommonTechnicalException("The field name : " + alias
+                        + " is greater than the AS400 limit (30 chars)");
+            }
+        } else {
+            writer.append(alias);
+        }
     }
 
     /**
@@ -964,5 +978,13 @@ public class SQLWriter {
 
     private boolean hasSchema() {
         return schema != null;
+    }
+
+    public List<String> getTruncateAliases() {
+        return truncateAliases;
+    }
+
+    public void setTruncateAliases(List<String> truncateAliases) {
+        this.truncateAliases = truncateAliases;
     }
 }

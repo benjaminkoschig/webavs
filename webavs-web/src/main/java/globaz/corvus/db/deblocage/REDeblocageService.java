@@ -7,6 +7,11 @@ import globaz.corvus.db.rentesaccordees.REEnteteBlocage;
 import globaz.corvus.db.rentesaccordees.RERenteAccordeeJoinInfoComptaJoinPrstDues;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
+import globaz.hera.api.ISFMembreFamille;
+import globaz.hera.api.ISFMembreFamilleRequerant;
+import globaz.hera.api.ISFSituationFamiliale;
+import globaz.hera.db.famille.SFMembreFamille;
+import globaz.hera.external.SFSituationFamilialeFactory;
 import globaz.hera.utils.SFFamilleUtils;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.osiris.api.APISection;
@@ -48,7 +53,7 @@ public class REDeblocageService {
         RELigneDeblocages lignesDeblocages = ligneDeclocageServices.searchByIdRenteAndCompleteInfo(
                 idPrestationAccordee, idTiers, tiersDescription);
 
-        List<CASectionJoinCompteAnnexeJoinTiers> sections = findSection(beneficiaires.getIdTiers());
+        List<CASectionJoinCompteAnnexeJoinTiers> sections = findFamilySection(beneficiaires.getIdTiers());
 
         List<ReRetour> retours = findRetours(idTiers);
 
@@ -74,6 +79,79 @@ public class REDeblocageService {
             } catch (Exception e1) {
                 throw new REDeblocageException("Unable to search the dette en compta ", e1);
             }
+        }
+        return new ArrayList<CASectionJoinCompteAnnexeJoinTiers>();
+    }
+
+    private ISFMembreFamilleRequerant[] getMembresFamille(String idTiersBeneficiaire) {
+        // On créé une liste d'idTiers de la famille du idTiersBeneficiaire
+        try {
+            // Récupération des membres de la famille du tiers requérant
+            ISFSituationFamiliale sf;
+            sf = SFSituationFamilialeFactory.getSituationFamiliale(session, ISFSituationFamiliale.CS_DOMAINE_RENTES,
+                    idTiersBeneficiaire);
+
+            // on cherche le membreFamille pour le tiers
+            PRTiersWrapper tw = PRTiersHelper.getTiersParId(session, idTiersBeneficiaire);
+
+            SFMembreFamille mf = new SFMembreFamille();
+            mf.setSession(session);
+            mf.setAlternateKey(SFMembreFamille.ALTERNATE_KEY_IDTIERS);
+            mf.setId(tw.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS));
+            mf.setCsDomaineApplication(ISFSituationFamiliale.CS_DOMAINE_RENTES);
+            mf.retrieve();
+
+            if (mf.isNew()) {
+                mf.setCsDomaineApplication(ISFSituationFamiliale.CS_DOMAINE_STANDARD);
+                mf.retrieve();
+            }
+
+            ISFMembreFamille[] membres = sf.getMembresFamilleEtendue(mf.getIdMembreFamille(), true);
+
+            for (int i = 0; i < membres.length; i++) {
+                // Si un membre est de relation parent, on recupère la liste des membres de la famille via le parent
+                if (ISFSituationFamiliale.CS_TYPE_RELATION_PARENT.equals(membres[i].getRelationAuLiant())) {
+                    return sf.getMembresFamille(membres[i].getIdTiers());
+                }
+            }
+            // On est dans un cas de parents, on retourne sa propre liste
+            return sf.getMembresFamille(idTiersBeneficiaire);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new REDeblocageException("Unable to retrieve the family of the beneficiaire. ", e);
+        }
+    }
+
+    private List<CASectionJoinCompteAnnexeJoinTiers> findFamilySection(String idTiersBeneficiaire) {
+        if (!idTiersBeneficiaire.isEmpty()) {
+
+            List<CASectionJoinCompteAnnexeJoinTiers> listSections = new ArrayList<CASectionJoinCompteAnnexeJoinTiers>();
+
+            ISFMembreFamilleRequerant[] membres = getMembresFamille(idTiersBeneficiaire);
+
+            for (int i = 0; i < membres.length; i++) {
+                try {
+                    CASectionJoinCompteAnnexeJoinTiersManager mgr = new CASectionJoinCompteAnnexeJoinTiersManager();
+                    mgr.setForIdTiersIn(membres[i].getIdTiers());
+                    mgr.setSession(session);
+                    mgr.setForSoldeNegatif(true);
+                    mgr.setForTypeSection(APISection.ID_TYPE_SECTION_BLOCAGE);
+                    mgr.setForCategorie(APISection.ID_CATEGORIE_SECTION_PRESTATIONS_BLOQUEES);
+                    mgr.find(BManager.SIZE_NOLIMIT);
+                    List<CASectionJoinCompteAnnexeJoinTiers> temp = mgr.toList();
+
+                    for (int j = 0; j < temp.size(); j++) {
+                        listSections.add(temp.get(j));
+                    }
+
+                } catch (Exception e1) {
+                    e1.printStackTrace();
+                    throw new REDeblocageException("Unable to search the dette en compta ", e1);
+                }
+            }
+
+            return listSections;
         }
         return new ArrayList<CASectionJoinCompteAnnexeJoinTiers>();
     }

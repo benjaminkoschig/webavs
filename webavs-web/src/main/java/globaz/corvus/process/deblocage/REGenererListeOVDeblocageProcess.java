@@ -88,7 +88,8 @@ public class REGenererListeOVDeblocageProcess extends BProcess {
                             + " : " + adr.getBanque().getClearing() + "\n" + adr.getBanque().getDesignation1() + "\n"
                             + adr.getBanque().getNpa() + " " + adr.getBanque().getLocalite());
 
-                    con.setAdresseBeneficiaire(adr.getTiers().getDesignation1() + "\n" + adr.getTiers().getRue() + " "
+                    con.setAdresseBeneficiaire(adr.getTiers().getDesignation1() + " "
+                            + adr.getTiers().getDesignation2() + "\n" + adr.getTiers().getRue() + " "
                             + adr.getTiers().getNumero() + "\n" + adr.getTiers().getNpa() + " "
                             + adr.getTiers().getLocalite());
 

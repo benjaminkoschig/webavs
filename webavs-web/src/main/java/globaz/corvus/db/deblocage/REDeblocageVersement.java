@@ -58,9 +58,6 @@ public class REDeblocageVersement extends BEntity {
 
         idRenteAccordee = statement.dbReadNumeric(REPrestationsAccordees.FIELDNAME_ID_PRESTATION_ACCORDEE);
         codeRenteAccordee = statement.dbReadNumeric(REPrestationsAccordees.FIELDNAME_CODE_PRESTATION);
-        idTiersAdressePaiement = statement.dbReadNumeric(REInformationsComptabilite.FIELDNAME_ID_TIERS_ADRESSE_PMT);
-        idApplicationAdressePaiement = statement
-                .dbReadNumeric(REInformationsComptabilite.FIELDNAME_ID_DOMAINE_APPLICATION);
         idTiersBeneficiaire = statement.dbReadNumeric(REPrestationsAccordees.FIELDNAME_ID_TIERS_BENEFICIAIRE);
 
         ligneDeblocage.readFromStatement(statement, "ld");
@@ -111,11 +108,11 @@ public class REDeblocageVersement extends BEntity {
     }
 
     public String getIdTiersAdressePaiement() {
-        return idTiersAdressePaiement;
+        return ligneDeblocage.getIdTiersAdressePaiement().toString();
     }
 
     public String getIdApplicationAdressePaiement() {
-        return idApplicationAdressePaiement;
+        return ligneDeblocage.getIdApplicationAdressePaiement().toString();
     }
 
     public String getIdTiersBeneficiaire() {
