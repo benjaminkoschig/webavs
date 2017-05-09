@@ -335,22 +335,22 @@
 													<input type="hidden" name="idTiersAyantDroit_<%=i%>" value="<%=viewBean.isRetourDepuisPyxis()?viewBean.getIdTiersAyantDroitDepuisPyxis():curRassCi.getIdTiersAyantDroit()%>">
 													<input type="hidden" name="retourDepuisPyxis" value="<%=false%>">
 													&nbsp;
-													<ct:FWLabel key="JSP_DRA_L_AYANT_DROIT"/>
-													<re:PRDisplayRequerantInfoTag 
-														session="<%=(BSession) controller.getSession()%>" 
-														idTiers="<%=viewBean.isRetourDepuisPyxis() ? viewBean.getIdTiersAyantDroitDepuisPyxis() : curRassCi.getIdTiersAyantDroit()%>"
-														style="<%=PRDisplayRequerantInfoTag.STYLE_CONDENSED_WITHOUT_LABEL%>"/>
-<%			if (JadeStringUtil.isIntegerEmpty(curRassCi.getCsEtat())) { %>
-														<ct:FWSelectorTag
-															name="selecteurAyantDroit"
-															methods="<%=viewBean.getMethodesSelectionAyantDroit()%>"
-															providerApplication="pyxis"
-															providerPrefix="TI"
-															providerAction="pyxis.tiers.tiers.chercher"
-															target="fr_main"
-															redirectUrl="<%=mainServletPath%>"/>
-<%			} %>
-												</td>
+<%-- 													<ct:FWLabel key="JSP_DRA_L_AYANT_DROIT"/> --%>
+<%-- 													<re:PRDisplayRequerantInfoTag  --%>
+<%-- 														session="<%=(BSession) controller.getSession()%>"  --%>
+<%-- 														idTiers="<%=viewBean.isRetourDepuisPyxis() ? viewBean.getIdTiersAyantDroitDepuisPyxis() : curRassCi.getIdTiersAyantDroit()%>" --%>
+<%-- 														style="<%=PRDisplayRequerantInfoTag.STYLE_CONDENSED_WITHOUT_LABEL%>"/> --%>
+<%-- <%			if (JadeStringUtil.isIntegerEmpty(curRassCi.getCsEtat())) { %> --%>
+<%-- 														<ct:FWSelectorTag --%>
+<%-- 															name="selecteurAyantDroit" --%>
+<%-- 															methods="<%=viewBean.getMethodesSelectionAyantDroit()%>" --%>
+<%-- 															providerApplication="pyxis" --%>
+<%-- 															providerPrefix="TI" --%>
+<%-- 															providerAction="pyxis.tiers.tiers.chercher" --%>
+<%-- 															target="fr_main" --%>
+<%-- 															redirectUrl="<%=mainServletPath%>"/> --%>
+<%-- <%			} %> --%>
+<!-- 												</td> -->
 											</tr>
 										</table>
 									</td>	
