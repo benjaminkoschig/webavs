@@ -1,12 +1,15 @@
-/**
- * 
+/*
+ * Globaz SA
  */
 package globaz.naos.listes.pdf.extraitDS;
 
 import globaz.caisse.report.helper.ACaisseReportHelper;
+import globaz.docinfo.TIDocumentInfoHelper;
 import globaz.framework.printing.itext.fill.FWIImportProperties;
 import globaz.globall.db.BProcess;
 import globaz.globall.db.GlobazJobQueue;
+import globaz.globall.db.GlobazServer;
+import globaz.globall.format.IFormatData;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.client.util.JadeUUIDGenerator;
 import globaz.jade.common.Jade;
@@ -16,6 +19,7 @@ import globaz.naos.db.affiliation.AFAffiliation;
 import globaz.naos.db.controleLpp.AFExtraitDS;
 import globaz.pyxis.adresse.datasource.TIAbstractAdresseDataSource;
 import globaz.pyxis.adresse.datasource.TIAdresseDataSource;
+import globaz.pyxis.api.ITIRole;
 import java.awt.Color;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -25,12 +29,13 @@ import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import ch.globaz.common.domaine.Date;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import ch.globaz.common.business.exceptions.CommonTechnicalException;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Element;
 import com.lowagie.text.Font;
-import com.lowagie.text.PageSize;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.BaseFont;
@@ -46,32 +51,32 @@ import com.lowagie.text.pdf.PdfWriter;
  */
 public class AFListeExtraitDS extends BProcess {
 
+    private final Logger LOG = LoggerFactory.getLogger(this.getClass());
     private static final long serialVersionUID = 251609627022834101L;
 
-    private static String NUM_INFORMOM = "0324CAF";
+    private static final String NUM_INFORMOM = "0324CAF";
 
-    private static short CELL_EMPLOYEUR_NOM = 0;
-    private static short CELL_EMPLOYEUR_RUE = 1;
-    private static short CELL_EMPLOYEUR_NPA = 2;
-    private static short CELL_EMPLOYEUR_LOCALITE = 3;
-    private static short CELL_EMPLOYEUR_NUM_AFFI = 4;
+    private static final short CELL_EMPLOYEUR_NOM = 0;
+    private static final short CELL_EMPLOYEUR_RUE = 1;
+    private static final short CELL_EMPLOYEUR_NPA = 2;
+    private static final short CELL_EMPLOYEUR_LOCALITE = 3;
+    private static final short CELL_EMPLOYEUR_NUM_AFFI = 4;
 
-    private static short CELL_SALARIE_NSS = 0;
-    private static short CELL_SALARIE_NOM = 1;
-    private static short CELL_SALARIE_PERIODE = 2;
-    private static short CELL_SALARIE_SALAIRE = 3;
-    private static short CELL_SALARIE_SEUIL = 4;
+    private static final short CELL_SALARIE_NSS = 0;
+    private static final short CELL_SALARIE_NOM = 1;
+    private static final short CELL_SALARIE_PERIODE = 2;
+    private static final short CELL_SALARIE_SALAIRE = 3;
+    private static final short CELL_SALARIE_SEUIL = 4;
 
     private List<AFExtraitDS> listeDS;
-    private List<HSSFRow> listeRowSalarie = null;
+    private transient List<HSSFRow> listeRowSalarie = null;
     private AFAffiliation employeur;
-    private TIAdresseDataSource adresseEmployeur;
+    private transient TIAdresseDataSource adresseEmployeur;
     private String nomCaisse;
     private String adresseCaisse;
     private String annee;
-    private BaseFont font = null;
-    private HSSFWorkbook wb;
-    private HSSFSheet sheet;
+    private transient BaseFont font = null;
+    private transient HSSFSheet sheet;
 
     private String langueIso;
 
@@ -81,45 +86,61 @@ public class AFListeExtraitDS extends BProcess {
     private String path;
 
     public AFListeExtraitDS() {
+        // Nothing
     }
 
     private void createListPDF() throws Exception {
-        try {
-            createTableauSalarie(NUM_INFORMOM + "_" + JadeUUIDGenerator.createStringUUID());
-        } catch (DocumentException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        createTableauSalarie(NUM_INFORMOM + "_" + JadeUUIDGenerator.createStringUUID());
     }
 
     private void initSheet() {
-        wb = new HSSFWorkbook();
+        HSSFWorkbook wb = new HSSFWorkbook();
         sheet = wb.createSheet("Sheet");
         sheet.setColumnWidth((short) 1, (short) (256 * 27));
-        sheet.getPrintSetup().setLandscape(true);
+
     }
 
     private void initFonts() {
         try {
             font = BaseFont.createFont("Helvetica", BaseFont.WINANSI, false);
         } catch (DocumentException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOG.error(e.toString());
+            throw new CommonTechnicalException(e);
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOG.error(e.toString());
+            throw new CommonTechnicalException(e);
         }
     }
 
-    private JadePublishDocumentInfo createDocInfo() {
+    private JadePublishDocumentInfo createDocInfo() throws Exception {
         JadePublishDocumentInfo documentInfo = createDocumentInfo();
         documentInfo.setPublishDocument(true);
         documentInfo.setDocumentTypeNumber(NUM_INFORMOM);
+        documentInfo.setDocumentProperty("numero.affilie.formatte", employeur.getAffilieNumero());
+        documentInfo.setDocumentProperty("annee", getAnnee());
+
+        String numAffNonFormatte = formatNumAffilie(employeur.getAffilieNumero());
+
+        documentInfo.setDocumentProperty("numero.affilie.non.formatte", numAffNonFormatte);
+
+        TIDocumentInfoHelper.fill(documentInfo, employeur.getIdTiers(), getSession(), ITIRole.CS_AFFILIE,
+                employeur.getAffilieNumero(), numAffNonFormatte);
 
         return documentInfo;
+    }
+
+    private String formatNumAffilie(String numAffilie) throws Exception {
+        String numAffNonFormatte;
+        IFormatData affilieFormater = ((AFApplication) GlobazServer.getCurrentSystem().getApplication(
+                AFApplication.DEFAULT_APPLICATION_NAOS)).getAffileFormater();
+
+        try {
+            numAffNonFormatte = affilieFormater.unformat(numAffilie);
+        } catch (Exception e) {
+            numAffNonFormatte = numAffilie;
+            LOG.warn("Unabled to format numAffilie : " + numAffilie, e);
+        }
+        return numAffNonFormatte;
     }
 
     /***
@@ -168,8 +189,9 @@ public class AFListeExtraitDS extends BProcess {
      * @throws Exception
      */
     private void createTableauSalarie(String fileName) throws Exception {
-        // nouveau document pdf
-        Document out = new Document(PageSize.LETTER.rotate());
+        // nouveau document pdf, on défini un nouveau rectangle inversant les taille du format A4 pour l'avoir en format
+        // paysage
+        Document out = new Document(new Rectangle(842.0F, 595.0F));
 
         // // création des fonts, standard et header (gras)
         Font tableStandardFont = new Font(font);
@@ -227,7 +249,7 @@ public class AFListeExtraitDS extends BProcess {
 
         // date, ajouter la date voulue
         cell = new PdfPCell(new Phrase(getSession().getApplication().getLabel("NAOS_LISTE_EXTRAIT_DS_DATE", langueIso)
-                + Date.now().getSwissValue(), font));
+                + date, font));
         cell.setBorder(Rectangle.NO_BORDER);
         table.addCell(cell);
 
@@ -483,6 +505,10 @@ public class AFListeExtraitDS extends BProcess {
         return langueIso;
     }
 
+    public String getDate() {
+        return date;
+    }
+
     // Setters
 
     public void setEmployeur(AFAffiliation employeur) {
@@ -521,6 +547,10 @@ public class AFListeExtraitDS extends BProcess {
         this.langueIso = langueIso;
     }
 
+    public void setDate(String date) {
+        this.date = date;
+    }
+
     @Override
     protected void _executeCleanUp() {
         //
@@ -545,6 +575,7 @@ public class AFListeExtraitDS extends BProcess {
         createListPDF();
 
         return true;
+
     }
 
     @Override

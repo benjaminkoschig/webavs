@@ -76,7 +76,7 @@ public class AFQuestionnaireLPP_Doc extends AFAbstractTiersDocument {
         super.createDataSource();
 
         // Lancement du process pour générer la liste extrait de salaires
-        initAndLaunchProcessListExtraitDS(getIdAffiliation(), Integer.parseInt(getPeriode()));
+        initAndLaunchProcessListExtraitDS(getIdAffiliation(), Integer.parseInt(getPeriode()), getDateImpression());
 
         fillDocInfo();
     }
@@ -117,7 +117,8 @@ public class AFQuestionnaireLPP_Doc extends AFAbstractTiersDocument {
         //
     }
 
-    private void initAndLaunchProcessListExtraitDS(String numAffilie, int annee) throws Exception {
+    private void initAndLaunchProcessListExtraitDS(String numAffilie, int annee, String dateImpression)
+            throws Exception {
         AFExtraitDSManager mgr = new AFExtraitDSManager();
         mgr.setSession(getSession());
         mgr.setForAnnee(annee);
@@ -157,6 +158,7 @@ public class AFQuestionnaireLPP_Doc extends AFAbstractTiersDocument {
         processListeExtraitDS.setAdresseEmployeur(adresseEmployeur);
         processListeExtraitDS.setAnnee(String.valueOf(annee));
         processListeExtraitDS.setLangueIso(employeur.getTiers().getLangueIso());
+        processListeExtraitDS.setDate(dateImpression);
         processListeExtraitDS.executeProcess();
         // date ?
 
