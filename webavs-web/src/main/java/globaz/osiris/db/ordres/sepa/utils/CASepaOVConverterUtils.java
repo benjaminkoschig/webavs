@@ -263,17 +263,4 @@ public class CASepaOVConverterUtils {
         }
         return other;
     }
-
-    private static boolean isAdherentBvr5(IntAdressePaiement adp) {
-
-        // Si no adhérent BVR à 5 positions
-        if (adp.getTypeAdresse().equals(IntAdressePaiement.BVR)) {
-            if (adp.getNumCompte().length() == 5) {
-                return true;
-            }
-        }
-
-        // Faux dans les autres cas
-        return false;
-    }
 }

@@ -140,7 +140,12 @@ public class CASepaCommonUtils {
     }
 
     protected static String getIntAdressePaiementIBAN(IntAdressePaiement adp) {
-        final String numCmp = adp.getNumCompte();
+        if (adp.getNumCompte() == null) {
+            return null;
+        }
+
+        final String numCmp = adp.getNumCompte().trim();
+
         if (isValidIban(numCmp) && isXsdRegexIbanValid(numCmp)) {
             return formater.unformat(numCmp);
         }
@@ -154,7 +159,12 @@ public class CASepaCommonUtils {
     }
 
     protected static GenericAccountIdentification1CH getNotIban(IntAdressePaiement adp) {
-        final String numCmp = adp.getNumCompte();
+        if (adp.getNumCompte() == null) {
+            return null;
+        }
+
+        final String numCmp = adp.getNumCompte().trim();
+
         if (!isXsdRegexIbanValid(numCmp) || !isValidIban(numCmp)) {
             GenericAccountIdentification1CH other = new GenericAccountIdentification1CH();
             try {
