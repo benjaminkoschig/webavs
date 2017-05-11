@@ -78,7 +78,7 @@ public class REGenererListeOVDeblocageProcess extends BProcess {
 
             if (dv.getLigneDeblocage().getType().isNotCompensation()) {
                 REOVDeblocageForListContainer con = new REOVDeblocageForListContainer();
-                con.setMontant(dv.getMontant());
+                con.setMontant(dv.getMontantVentil());
 
                 try {
                     AdressePaiement adr = dv.loadAdressePaiement();

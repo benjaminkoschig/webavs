@@ -176,4 +176,8 @@ public class REDeblocageVersement extends BEntity {
         return loader.searchAdressePaiement(getLigneDeblocage().getIdTiersAdressePaiement(), getLigneDeblocage()
                 .getIdApplicationAdressePaiement());
     }
+
+    public Montant getMontantVentil() {
+        return ligneDeblocageVentilation.getMontant();
+    }
 }
