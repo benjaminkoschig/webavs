@@ -14,6 +14,7 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ch.globaz.common.properties.PropertiesException;
@@ -144,9 +145,9 @@ public class CASepaCommonUtils {
             return null;
         }
 
-        final String numCmp = adp.getNumCompte().trim();
+        final String numCmp = StringUtils.deleteWhitespace(adp.getNumCompte());
 
-        if (isValidIban(numCmp) && isXsdRegexIbanValid(numCmp)) {
+        if (isFullValidIban(numCmp)) {
             return formater.unformat(numCmp);
         }
         return null;
@@ -163,9 +164,9 @@ public class CASepaCommonUtils {
             return null;
         }
 
-        final String numCmp = adp.getNumCompte().trim();
+        final String numCmp = StringUtils.deleteWhitespace(adp.getNumCompte());
 
-        if (!isXsdRegexIbanValid(numCmp) || !isValidIban(numCmp)) {
+        if (!isFullValidIban(numCmp)) {
             GenericAccountIdentification1CH other = new GenericAccountIdentification1CH();
             try {
                 String numCmpFormated = numCmp;
@@ -181,6 +182,21 @@ public class CASepaCommonUtils {
             return other;
         }
         return null;
+    }
+
+    private static boolean isFullValidIban(String numCmp) {
+        boolean isIbanOk = false;
+
+        if (numCmp == null) {
+            return false;
+        }
+
+        final String numCmpTrimed = StringUtils.deleteWhitespace(numCmp);
+
+        isIbanOk |= isXsdRegexIbanValid(numCmpTrimed) && isValidIban(numCmpTrimed);
+        isIbanOk |= isXsdRegexIbanValid(numCmpTrimed) && numCmpTrimed.startsWith("LI");
+
+        return isIbanOk;
     }
 
     /**
