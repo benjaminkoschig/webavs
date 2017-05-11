@@ -51,7 +51,7 @@ import com.lowagie.text.pdf.PdfWriter;
  */
 public class AFListeExtraitDS extends BProcess {
 
-    private final Logger LOG = LoggerFactory.getLogger(this.getClass());
+    private final transient Logger LOG = LoggerFactory.getLogger(this.getClass());
     private static final long serialVersionUID = 251609627022834101L;
 
     private static final String NUM_INFORMOM = "0324CAF";
