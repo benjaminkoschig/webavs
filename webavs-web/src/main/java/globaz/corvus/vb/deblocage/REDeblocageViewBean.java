@@ -50,7 +50,7 @@ public class REDeblocageViewBean extends PRAbstractViewBeanSupport {
 
         idTiersBeneficiaire = deblocage.getBeneficiaire().getIdTiers();
         tiersBeneficiaireInfo = deblocage.getDescriptonTier();
-        periode = deblocage.getPracc().getDateDebutDroit() + " - " + deblocage.getPracc().getDateDebutDroit();
+        periode = deblocage.getPracc().getDateDebutDroit() + " - " + deblocage.getPracc().getDateFinDroit();
         genre = deblocage.getPracc().getCodePrestation();
         retours = deblocage.getRetours();
 
