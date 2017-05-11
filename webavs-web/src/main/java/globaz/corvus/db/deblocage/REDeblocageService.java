@@ -24,10 +24,15 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ch.globaz.common.sql.SQLWriter;
 import ch.globaz.queryexec.bridge.jade.SCM;
 
 public class REDeblocageService {
+
+    private final transient Logger LOG = LoggerFactory.getLogger(this.getClass());
+
     private BSession session;
     private ReLigneDeclocageServices ligneDeclocageServices;
 
@@ -65,24 +70,6 @@ public class REDeblocageService {
         return ligneDeclocageServices.searchByIdLot(idLot).size();
     }
 
-    private List<CASectionJoinCompteAnnexeJoinTiers> findSection(String idTiers) {
-        if (!idTiers.isEmpty()) {
-            try {
-                CASectionJoinCompteAnnexeJoinTiersManager mgr = new CASectionJoinCompteAnnexeJoinTiersManager();
-                mgr.setForIdTiersIn(idTiers);
-                mgr.setSession(session);
-                mgr.setForSoldeNegatif(true);
-                mgr.setForTypeSection(APISection.ID_TYPE_SECTION_BLOCAGE);
-                mgr.setForCategorie(APISection.ID_CATEGORIE_SECTION_PRESTATIONS_BLOQUEES);
-                mgr.find(BManager.SIZE_NOLIMIT);
-                return mgr.toList();
-            } catch (Exception e1) {
-                throw new REDeblocageException("Unable to search the dette en compta ", e1);
-            }
-        }
-        return new ArrayList<CASectionJoinCompteAnnexeJoinTiers>();
-    }
-
     private ISFMembreFamilleRequerant[] getMembresFamille(String idTiersBeneficiaire) {
         // On créé une liste d'idTiers de la famille du idTiersBeneficiaire
         try {
@@ -118,7 +105,7 @@ public class REDeblocageService {
             return sf.getMembresFamille(idTiersBeneficiaire);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error(e.toString());
             throw new REDeblocageException("Unable to retrieve the family of the beneficiaire. ", e);
         }
     }
@@ -146,7 +133,7 @@ public class REDeblocageService {
                     }
 
                 } catch (Exception e1) {
-                    e1.printStackTrace();
+                    LOG.error(e1.toString());
                     throw new REDeblocageException("Unable to search the dette en compta ", e1);
                 }
             }

@@ -32,7 +32,7 @@ public class RELigneDeblocage extends JadeEntity {
         this.write(RELigneDeblocageTableDef.ID_RENTE_ACCORDEE, idRenteAccordee);
         this.write(RELigneDeblocageTableDef.ID_TIERS_CREANCIER, idTiersCreancier);
         this.write(RELigneDeblocageTableDef.ID_TIERS_ADRESSE_PAIEMENT, idTiersAdressePaiement);
-        this.write(RELigneDeblocageTableDef.ID_APPLICATION_ADRESSE_PAIEMENT, idApplicationAdressePaiement);
+        this.write(RELigneDeblocageTableDef.ID_APP_ADRESSE_PAIEMENT, idApplicationAdressePaiement);
         this.write(RELigneDeblocageTableDef.ID_SECTION_COMPENSEE, idSectionCompensee);
         this.write(RELigneDeblocageTableDef.ID_ROLE_SECTION, idRoleSection);
         this.write(RELigneDeblocageTableDef.CS_ETAT, etat);
@@ -48,7 +48,7 @@ public class RELigneDeblocage extends JadeEntity {
         idRenteAccordee = this.read(RELigneDeblocageTableDef.ID_RENTE_ACCORDEE);
         idTiersCreancier = this.read(RELigneDeblocageTableDef.ID_TIERS_CREANCIER);
         idTiersAdressePaiement = this.read(RELigneDeblocageTableDef.ID_TIERS_ADRESSE_PAIEMENT);
-        idApplicationAdressePaiement = this.read(RELigneDeblocageTableDef.ID_APPLICATION_ADRESSE_PAIEMENT);
+        idApplicationAdressePaiement = this.read(RELigneDeblocageTableDef.ID_APP_ADRESSE_PAIEMENT);
         idSectionCompensee = this.read(RELigneDeblocageTableDef.ID_SECTION_COMPENSEE);
         idRoleSection = this.read(RELigneDeblocageTableDef.ID_ROLE_SECTION);
         type = this.read(RELigneDeblocageTableDef.CS_TYPE_DEBLOCAGE, RELigneDeblocageType.class);
