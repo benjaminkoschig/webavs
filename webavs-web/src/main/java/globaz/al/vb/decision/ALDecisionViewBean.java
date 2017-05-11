@@ -1,5 +1,15 @@
 package globaz.al.vb.decision;
 
+import globaz.globall.db.BSession;
+import globaz.globall.db.BSessionUtil;
+import globaz.globall.db.BSpy;
+import globaz.globall.vb.BJadePersistentObjectViewBean;
+import globaz.jade.client.util.JadeDateUtil;
+import globaz.jade.client.util.JadeNumericUtil;
+import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.exception.JadeApplicationException;
+import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import java.util.Date;
 import ch.globaz.al.business.constantes.ALCSCopie;
 import ch.globaz.al.business.exceptions.decision.ALDecisionException;
@@ -11,20 +21,10 @@ import ch.globaz.al.business.models.dossier.CopieComplexSearchModel;
 import ch.globaz.al.business.models.dossier.DossierDecisionComplexModel;
 import ch.globaz.al.business.models.dossier.DossierModel;
 import ch.globaz.al.business.services.ALServiceLocator;
-import globaz.globall.db.BSession;
-import globaz.globall.db.BSessionUtil;
-import globaz.globall.db.BSpy;
-import globaz.globall.vb.BJadePersistentObjectViewBean;
-import globaz.jade.client.util.JadeDateUtil;
-import globaz.jade.client.util.JadeNumericUtil;
-import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.exception.JadeApplicationException;
-import globaz.jade.exception.JadePersistenceException;
-import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 
 /**
  * Viewbean gérant un modèle représentant une décision
- *
+ * 
  * @author JER
  */
 public class ALDecisionViewBean extends BJadePersistentObjectViewBean {
@@ -127,7 +127,7 @@ public class ALDecisionViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Constructeur de la classe
-     *
+     * 
      * @param _dossierDecisionComplexModel
      *            Un dossier d'allocation familiale
      */
@@ -169,8 +169,8 @@ public class ALDecisionViewBean extends BJadePersistentObjectViewBean {
      * @return Le modèle complexe de copie situé à l'indexe
      */
     public CopieComplexModel getCopieAt(int idx) {
-        return idx < copieComplexSearchModel.getSize()
-                ? (CopieComplexModel) copieComplexSearchModel.getSearchResults()[idx] : new CopieComplexModel();
+        return idx < copieComplexSearchModel.getSize() ? (CopieComplexModel) copieComplexSearchModel.getSearchResults()[idx]
+                : new CopieComplexModel();
     }
 
     /**
@@ -218,7 +218,7 @@ public class ALDecisionViewBean extends BJadePersistentObjectViewBean {
     }
 
     /**
-     *
+     * 
      * @return idCopieToDelete
      */
     public String getIdCopieToDelete() {
@@ -245,7 +245,7 @@ public class ALDecisionViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Retourne le libellé à afficher pour la copie en question
-     *
+     * 
      * @param idx
      *            index dans la copie dans la liste des copies à l'écran
      * @return le libellé
@@ -298,8 +298,8 @@ public class ALDecisionViewBean extends BJadePersistentObjectViewBean {
 
     @Override
     public BSpy getSpy() {
-        return (dossierDecisionComplexModel != null) && !dossierDecisionComplexModel.isNew()
-                ? new BSpy(dossierDecisionComplexModel.getSpy()) : new BSpy(getSession());
+        return (dossierDecisionComplexModel != null) && !dossierDecisionComplexModel.isNew() ? new BSpy(
+                dossierDecisionComplexModel.getSpy()) : new BSpy(getSession());
     }
 
     /**
@@ -317,8 +317,8 @@ public class ALDecisionViewBean extends BJadePersistentObjectViewBean {
         return typeDecompte;
     }
 
-    public String idDossierForDecompte(String idDecompte)
-            throws JadeApplicationServiceNotAvailableException, JadeApplicationException, JadePersistenceException {
+    public String idDossierForDecompte(String idDecompte) throws JadeApplicationServiceNotAvailableException,
+            JadeApplicationException, JadePersistenceException {
         return idDossier = ALServiceLocator.getAdiDecompteComplexModelService().read(idDecompte).getDecompteAdiModel()
                 .getIdDossier();
     }
@@ -516,8 +516,10 @@ public class ALDecisionViewBean extends BJadePersistentObjectViewBean {
             dossierDecisionComplexModel.getDossierModel().setIdGestionnaire(null);
         }
 
-        dossierDecisionComplexModel.setDossierModel(
-                ALServiceLocator.getDossierModelService().update(dossierDecisionComplexModel.getDossierModel()));
+        dossierDecisionComplexModel.setDossierModel(ALServiceLocator.getDossierModelService().read(
+                dossierDecisionComplexModel.getDossierModel().getIdDossier()));
+        dossierDecisionComplexModel.setDossierModel(ALServiceLocator.getDossierModelService().update(
+                dossierDecisionComplexModel.getDossierModel()));
 
         // Mise à jour du texte libre
         if (!JadeStringUtil.isEmpty(commentaireModel.getTexte())) {

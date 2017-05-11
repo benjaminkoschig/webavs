@@ -1080,7 +1080,7 @@ var MAIN_URL = "<%=(servletContext + mainServletPath)%>";
 	                		<%
 	                			if(!viewBean.getDossierComplexModel().isNew()){
 	                		%>
-		                		<a title='<ct:FWLabel key="LINK_DECISION_DESC"/>' href="<%=servletContext + mainServletPath + "?userAction=al.decision.decision.afficher&_method=upd&selectedId="+viewBean.getId()%>">
+		                		<a title='<ct:FWLabel key="LINK_DECISION_DESC"/>' href="<%=servletContext + mainServletPath + "?userAction=al.decision.decision.afficher&selectedId="+viewBean.getId()%>">
 		                			<ct:FWLabel key="LINK_DECISION"/>
 		                		</a> | 
 		                		
