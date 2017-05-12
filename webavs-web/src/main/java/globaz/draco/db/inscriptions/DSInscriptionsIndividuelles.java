@@ -40,6 +40,10 @@ public class DSInscriptionsIndividuelles extends BEntity {
     private static final long serialVersionUID = 1562021393146632677L;
     private static final String CS_PARAMETRES_IM = "12000006";
 
+    private static final String PERIODE_SPECIALE_66 = "66";
+    private static final String PERIODE_SPECIALE_77 = "77";
+    private static final String PERIODE_SPECIALE_99 = "99";
+
     private String aCI = new String();
     private String aCII = new String();
     private String anneeInsc = "";
@@ -541,8 +545,10 @@ public class DSInscriptionsIndividuelles extends BEntity {
         try {
             parsePeriode();
 
-            if (Integer.parseInt(jourFin) > Integer.parseInt(determineJourFin()) && Integer.parseInt(jourFin) != 66
-                    && Integer.parseInt(jourFin) != 77 && Integer.parseInt(jourFin) != 99) {
+            if (Integer.parseInt(jourFin) > Integer.parseInt(determineJourFin())
+                    && Integer.parseInt(jourFin) != Integer.parseInt(PERIODE_SPECIALE_66)
+                    && Integer.parseInt(jourFin) != Integer.parseInt(PERIODE_SPECIALE_77)
+                    && Integer.parseInt(jourFin) != Integer.parseInt(PERIODE_SPECIALE_99)) {
 
                 _addError(statement.getTransaction(), getSession().getLabel("PERIODE_INVALIDE"));
             }
@@ -739,7 +745,8 @@ public class DSInscriptionsIndividuelles extends BEntity {
             anneeInsc = declaration.getAnnee();
         }
 
-        if ("66".equals(jourDebut) || "77".equals(jourDebut) || "99".equals(jourDebut)) {
+        if (PERIODE_SPECIALE_66.equals(jourDebut) || PERIODE_SPECIALE_77.equals(jourDebut)
+                || PERIODE_SPECIALE_99.equals(jourDebut)) {
             isPeriodeSpeciale = true;
 
             // Prend soit 66,77 ou 99
@@ -755,29 +762,8 @@ public class DSInscriptionsIndividuelles extends BEntity {
             periodeFin = jourFin + "." + moisFin;
         }
 
-        // Maintenant il faut savoir si la personne est soumise à l'AC
-        if (getSoumis().booleanValue() && !numeroAvs.startsWith("00000")) {
-            String dateRetraite = CIUtil.getDateRetraiteAc(numeroAvs, Integer.parseInt(anneeInsc), getSession());
+        checkSiSoumisOuCasSpecial();
 
-            String dateDebut = jourDebut + "." + moisDebut + "." + anneeInsc;
-            String dateFin = jourFin + "." + moisFin + "." + anneeInsc;
-
-            if (BSessionUtil.compareDateFirstLowerOrEqual(getSession(), dateFin, dateRetraite)) {
-                // soumis car la date de fin est plus petite que la date de
-                // retraite
-                setSoumis(new Boolean(true));
-            } else {
-                // il faut regarder si l'inscritption est après => non soumis
-                // (date début>= date retraite)
-                // et si l'inscription chevauche cas spécial à signaler
-                if (BSessionUtil.compareDateFirstGreaterOrEqual(getSession(), dateDebut, dateRetraite)) {
-                    setSoumis(new Boolean(false));
-                    setACI("0.00");
-                } else {
-                    setCasSpecial(new Boolean(true));
-                }
-            }
-        }
         if (JadeStringUtil.isIntegerEmpty(aCI) && !JadeStringUtil.isIntegerEmpty(montant) && getSoumis().booleanValue()) {
             // Recherche des plafonds AC1 et AC2
             FWFindParameterManager param = new FWFindParameterManager();
@@ -838,6 +824,7 @@ public class DSInscriptionsIndividuelles extends BEntity {
                         // Dans ce cas là, on ne peut pas calculer l'AC => on
                         // sort
                         setCasSpecial(new Boolean(true));
+                        resetPeriodeSpeciale(isPeriodeSpeciale, periodeSpeciale);
                         return;
                     }
                     // Si code extourne = 1 => montant négatif
@@ -884,56 +871,114 @@ public class DSInscriptionsIndividuelles extends BEntity {
             montantSoumis = montantSoumis.multiply(plafondAc);
             montantSoumis = montantSoumis.divide(new BigDecimal("360"), 10, BigDecimal.ROUND_DOWN);
             montantSoumis = JANumberFormatter.round(montantSoumis, 0.05, 2, JANumberFormatter.NEAR);
-            // Si on est dans un cas différé on ne tient PAS compte des antécédents
-            if (globaz.draco.translation.CodeSystem.CS_SALAIRE_DIFFERES.equals(declaration.getTypeDeclaration())) {
-                // On compare pour savoir si le montant avs est supérieur au plafond
-                BigDecimal acIISoumis = new BigDecimal("0");
-                if (montantAvs.compareTo(montantSoumis) < 0) {
-                    aCI = montantAvs.toString();
-                    // Restituer si trop payé pour l'ACII
-                    if (calculAcII) {
-                        acIISoumis = new BigDecimal("0");
-                        aCII = acIISoumis.toString();
-                    }
-                } else {
-                    aCI = montantSoumis.toString();
-                    if (calculAcII) {
-                        if (montantAvs.compareTo(montantSoumisACII) < 0) {
-                            acIISoumis = montantAvs.subtract(montantSoumis);
-                        } else {
-                            acIISoumis = montantSoumisACII;
-                        }
-                        aCII = acIISoumis.toString();
-                    }
-                }
-            } else {
-                montantAvs = montantAvs.add(montantCIAvantInscEnCours);
-                BigDecimal acIISoumis = new BigDecimal("0");
-                //
-                // On compare pour savoir si le montant avs est supérieur au plafond
-                if (montantAvs.compareTo(montantSoumis) < 0) {
-                    aCI = montantAvs.subtract(montantSoumisAvantInscEnCours).toString();
-                    // Restituer si trop payé pour l'ACII
-                    if (calculAcII) {
-                        acIISoumis = new BigDecimal("0");
-                        aCII = acIISoumis.subtract(montantACIIAvantInscEnCours).toString();
-                    }
-                } else {
-                    aCI = montantSoumis.subtract(montantSoumisAvantInscEnCours).toString();
-                    if (calculAcII) {
-                        if (montantAvs.compareTo(montantSoumisACII) < 0) {
-                            acIISoumis = montantAvs.subtract(new BigDecimal(aCI).add(montantSoumisAvantInscEnCours));
-                        } else {
-                            acIISoumis = montantSoumisACII.subtract(new BigDecimal(aCI)
-                                    .add(montantSoumisAvantInscEnCours));
-                        }
-                        aCII = acIISoumis.subtract(montantACIIAvantInscEnCours).toString();
-                    }
-                }
-            }
+
+            calculDesACSelonAntecedents(calculAcII, montantAvs, montantSoumis, montantSoumisAvantInscEnCours,
+                    montantCIAvantInscEnCours, montantACIIAvantInscEnCours, montantSoumisACII);
             // On a le montant pour la période
         }
 
+        resetPeriodeSpeciale(isPeriodeSpeciale, periodeSpeciale);
+    }
+
+    /***
+     * Contrôle et set de booleans si il s'agit d'un cas soumis à l'AC
+     * 
+     * @throws Exception
+     */
+    private void checkSiSoumisOuCasSpecial() throws Exception {
+        if (getSoumis().booleanValue() && !numeroAvs.startsWith("00000")) {
+            String dateRetraite = CIUtil.getDateRetraiteAc(numeroAvs, Integer.parseInt(anneeInsc), getSession());
+
+            String dateDebut = jourDebut + "." + moisDebut + "." + anneeInsc;
+            String dateFin = jourFin + "." + moisFin + "." + anneeInsc;
+
+            if (BSessionUtil.compareDateFirstLowerOrEqual(getSession(), dateFin, dateRetraite)) {
+                // soumis car la date de fin est plus petite que la date de
+                // retraite
+                setSoumis(new Boolean(true));
+            } else {
+                // il faut regarder si l'inscritption est après => non soumis
+                // (date début>= date retraite)
+                // et si l'inscription chevauche cas spécial à signaler
+                if (BSessionUtil.compareDateFirstGreaterOrEqual(getSession(), dateDebut, dateRetraite)) {
+                    setSoumis(new Boolean(false));
+                    setACI("0.00");
+                } else {
+                    setCasSpecial(new Boolean(true));
+                }
+            }
+        }
+    }
+
+    /***
+     * Calcul les plafonds selon le montants AVS et les antécédents (déclarations pour la même année)
+     * 
+     * @param calculAcII
+     * @param montantAvs
+     * @param montantSoumis
+     * @param montantSoumisAvantInscEnCours
+     * @param montantCIAvantInscEnCours
+     * @param montantACIIAvantInscEnCours
+     * @param montantSoumisACII
+     */
+    private void calculDesACSelonAntecedents(boolean calculAcII, BigDecimal montantAvs, BigDecimal montantSoumis,
+            BigDecimal montantSoumisAvantInscEnCours, BigDecimal montantCIAvantInscEnCours,
+            BigDecimal montantACIIAvantInscEnCours, BigDecimal montantSoumisACII) {
+        // Si on est dans un cas différé on ne tient PAS compte des antécédents
+        if (globaz.draco.translation.CodeSystem.CS_SALAIRE_DIFFERES.equals(declaration.getTypeDeclaration())) {
+            // On compare pour savoir si le montant avs est supérieur au plafond
+            BigDecimal acIISoumis = new BigDecimal("0");
+            if (montantAvs.compareTo(montantSoumis) < 0) {
+                aCI = montantAvs.toString();
+                // Restituer si trop payé pour l'ACII
+                if (calculAcII) {
+                    acIISoumis = new BigDecimal("0");
+                    aCII = acIISoumis.toString();
+                }
+            } else {
+                aCI = montantSoumis.toString();
+                if (calculAcII) {
+                    if (montantAvs.compareTo(montantSoumisACII) < 0) {
+                        acIISoumis = montantAvs.subtract(montantSoumis);
+                    } else {
+                        acIISoumis = montantSoumisACII;
+                    }
+                    aCII = acIISoumis.toString();
+                }
+            }
+        } else {
+            montantAvs = montantAvs.add(montantCIAvantInscEnCours);
+            BigDecimal acIISoumis = new BigDecimal("0");
+            //
+            // On compare pour savoir si le montant avs est supérieur au plafond
+            if (montantAvs.compareTo(montantSoumis) < 0) {
+                aCI = montantAvs.subtract(montantSoumisAvantInscEnCours).toString();
+                // Restituer si trop payé pour l'ACII
+                if (calculAcII) {
+                    acIISoumis = new BigDecimal("0");
+                    aCII = acIISoumis.subtract(montantACIIAvantInscEnCours).toString();
+                }
+            } else {
+                aCI = montantSoumis.subtract(montantSoumisAvantInscEnCours).toString();
+                if (calculAcII) {
+                    if (montantAvs.compareTo(montantSoumisACII) < 0) {
+                        acIISoumis = montantAvs.subtract(new BigDecimal(aCI).add(montantSoumisAvantInscEnCours));
+                    } else {
+                        acIISoumis = montantSoumisACII.subtract(new BigDecimal(aCI).add(montantSoumisAvantInscEnCours));
+                    }
+                    aCII = acIISoumis.subtract(montantACIIAvantInscEnCours).toString();
+                }
+            }
+        }
+    }
+
+    /***
+     * Méthode pour repasser les jours / mois début/fin à 66,77 ou 99
+     * 
+     * @param isPeriodeSpeciale
+     * @param periodeSpeciale
+     */
+    private void resetPeriodeSpeciale(boolean isPeriodeSpeciale, String periodeSpeciale) {
         // On remet les nombre à 66,77 ou 99 pour l'inscription dans la BDD
         if (isPeriodeSpeciale) {
             jourDebut = periodeSpeciale;
@@ -1474,9 +1519,9 @@ public class DSInscriptionsIndividuelles extends BEntity {
      */
     private void parsePeriode() {
         ArrayList<Integer> listePeriodeNombreSpeciaux = new ArrayList<Integer>();
-        listePeriodeNombreSpeciaux.add(66);
-        listePeriodeNombreSpeciaux.add(77);
-        listePeriodeNombreSpeciaux.add(99);
+        listePeriodeNombreSpeciaux.add(Integer.parseInt(PERIODE_SPECIALE_66));
+        listePeriodeNombreSpeciaux.add(Integer.parseInt(PERIODE_SPECIALE_77));
+        listePeriodeNombreSpeciaux.add(Integer.parseInt(PERIODE_SPECIALE_99));
 
         int indexPointDebut = periodeDebut.indexOf('.');
         int indexPointFin = periodeFin.indexOf('.');
