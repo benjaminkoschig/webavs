@@ -884,26 +884,51 @@ public class DSInscriptionsIndividuelles extends BEntity {
             montantSoumis = montantSoumis.multiply(plafondAc);
             montantSoumis = montantSoumis.divide(new BigDecimal("360"), 10, BigDecimal.ROUND_DOWN);
             montantSoumis = JANumberFormatter.round(montantSoumis, 0.05, 2, JANumberFormatter.NEAR);
-            montantAvs = montantAvs.add(montantCIAvantInscEnCours);
-            BigDecimal acIISoumis = new BigDecimal("0");
-            //
-            // On compare pour savoir si le montant avs est supérieur au plafond
-            if (montantAvs.compareTo(montantSoumis) < 0) {
-                aCI = montantAvs.subtract(montantSoumisAvantInscEnCours).toString();
-                // Restituer si trop payé pour l'ACII
-                if (calculAcII) {
-                    acIISoumis = new BigDecimal("0");
-                    aCII = acIISoumis.subtract(montantACIIAvantInscEnCours).toString();
+            // Si on est dans un cas différé on ne tient PAS compte des antécédents
+            if (globaz.draco.translation.CodeSystem.CS_SALAIRE_DIFFERES.equals(declaration.getTypeDeclaration())) {
+                // On compare pour savoir si le montant avs est supérieur au plafond
+                BigDecimal acIISoumis = new BigDecimal("0");
+                if (montantAvs.compareTo(montantSoumis) < 0) {
+                    aCI = montantAvs.toString();
+                    // Restituer si trop payé pour l'ACII
+                    if (calculAcII) {
+                        acIISoumis = new BigDecimal("0");
+                        aCII = acIISoumis.toString();
+                    }
+                } else {
+                    aCI = montantSoumis.toString();
+                    if (calculAcII) {
+                        if (montantAvs.compareTo(montantSoumisACII) < 0) {
+                            acIISoumis = montantAvs.subtract(montantSoumis);
+                        } else {
+                            acIISoumis = montantSoumisACII;
+                        }
+                        aCII = acIISoumis.toString();
+                    }
                 }
             } else {
-                aCI = montantSoumis.subtract(montantSoumisAvantInscEnCours).toString();
-                if (calculAcII) {
-                    if (montantAvs.compareTo(montantSoumisACII) < 0) {
-                        acIISoumis = montantAvs.subtract(new BigDecimal(aCI).add(montantSoumisAvantInscEnCours));
-                    } else {
-                        acIISoumis = montantSoumisACII.subtract(new BigDecimal(aCI).add(montantSoumisAvantInscEnCours));
+                montantAvs = montantAvs.add(montantCIAvantInscEnCours);
+                BigDecimal acIISoumis = new BigDecimal("0");
+                //
+                // On compare pour savoir si le montant avs est supérieur au plafond
+                if (montantAvs.compareTo(montantSoumis) < 0) {
+                    aCI = montantAvs.subtract(montantSoumisAvantInscEnCours).toString();
+                    // Restituer si trop payé pour l'ACII
+                    if (calculAcII) {
+                        acIISoumis = new BigDecimal("0");
+                        aCII = acIISoumis.subtract(montantACIIAvantInscEnCours).toString();
                     }
-                    aCII = acIISoumis.subtract(montantACIIAvantInscEnCours).toString();
+                } else {
+                    aCI = montantSoumis.subtract(montantSoumisAvantInscEnCours).toString();
+                    if (calculAcII) {
+                        if (montantAvs.compareTo(montantSoumisACII) < 0) {
+                            acIISoumis = montantAvs.subtract(new BigDecimal(aCI).add(montantSoumisAvantInscEnCours));
+                        } else {
+                            acIISoumis = montantSoumisACII.subtract(new BigDecimal(aCI)
+                                    .add(montantSoumisAvantInscEnCours));
+                        }
+                        aCII = acIISoumis.subtract(montantACIIAvantInscEnCours).toString();
+                    }
                 }
             }
             // On a le montant pour la période
