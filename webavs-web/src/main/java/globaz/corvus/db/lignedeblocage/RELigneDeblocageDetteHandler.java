@@ -91,6 +91,8 @@ class RELigneDeblocageDetteHandler {
                 dette.setMontanDette(detteComptat.getMontanDette());
                 dette.setIdRoleSection(detteComptat.getIdRoleSection());
                 dette.setIdSectionCompensee(detteComptat.getIdSectionCompensee());
+                dette.setIdTiersAdressePaiement(ligne.getIdTiersAdressePaiement());
+                dette.setIdApplicationAdressePaiement(ligne.getIdApplicationAdressePaiement());
                 list.add(dette);
                 keyMatch.add(key);
             }
@@ -169,6 +171,8 @@ class RELigneDeblocageDetteHandler {
             dette.setMontant(Montant.ZERO);
             dette.setMontanDette(new Montant(section.getSolde()));
             dette.setType(RELigneDeblocageType.DETTE_EN_COMPTA);
+            dette.setIdTiersAdressePaiement((long) 0);
+            dette.setIdApplicationAdressePaiement((long) 0);
             idsSection.add(section.getIdSection());
             list.add(dette);
         }

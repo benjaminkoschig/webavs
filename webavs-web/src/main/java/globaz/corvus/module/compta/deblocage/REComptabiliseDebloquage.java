@@ -67,10 +67,11 @@ public class REComptabiliseDebloquage extends AREModuleComptable {
         }
         for (REDeblocageVersement versement : deblocageVersements) {
             PRTiersWrapper tw = PRTiersHelper.getTiersParId(session, versement.getIdTiersBeneficiaire());
-            String motifVersement = getMotifVersementDeblocage(session, tw, versement.getRefPaiement(),
-                    versement.getCodeRenteAccordee(), versement.getIdTiersAdressePaiement());
 
             if (versement.getType().isCreancier() || versement.getType().isVersementBeneficiaire()) {
+                String motifVersement = getMotifVersementDeblocage(session, tw, versement.getRefPaiement(),
+                        versement.getCodeRenteAccordee(), versement.getIdTiersAdressePaiement());
+
                 AdressePaiement adr = versement.loadAdressePaiement();
                 doOrdreVersement(session, compta, versement.getIdCompteAnnexe(), versement
                         .getLigneDeblocageVentilation().getIdSectionSource().toString(), versement.getMontant()
