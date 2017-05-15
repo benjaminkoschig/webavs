@@ -22,7 +22,7 @@ function DeblocageAjax(m_options) {
 			map["currentEntity."+key] = param[key];
 		}
 		
-		if(param.idAvoirPaiementUnique === ''){
+		if(param['avoirPaiement.idAdrPmtIntUnique']){
 			map["idAvoirPaiementUnique"] = param['avoirPaiement.idAdrPmtIntUnique'];
 		}else{
 			map["idAvoirPaiementUnique"] = param.idAvoirPaiementUnique;
