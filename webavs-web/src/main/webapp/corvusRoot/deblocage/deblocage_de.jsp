@@ -324,7 +324,7 @@ globazGlobal.isRenteBloque = ${viewBean.isRenteBloque()};
 									<input type="text" id="widgetAdmin" name="widgetAdmin" class="jadeAutocompleteAjax widgetAdmin" 
 									   data-g-autocomplete="service:¦ch.globaz.pyxis.business.service.AdministrationService¦,
 									   method:¦find¦,
-									   criterias:¦{'forDesignation1Like':'DES1','forCodeAdministrationLike':'DES2','forCanton':'CANTON'}¦,
+									   criterias:¦{'forDesignation1Like':'<ct:FWLabel key="JSP_RE_DEBLOCAGE_DES1"/>','forCodeAdministrationLike':'<ct:FWLabel key="JSP_RE_DEBLOCAGE_DES2"/>','forCanton':'<ct:FWLabel key="JSP_RE_DEBLOCAGE_CANTON"/>'}¦,
 									   lineFormatter:¦#{tiers.designation2} #{tiers.designation1}, #{tiers.idTiers} ¦,
 									   modelReturnVariables:¦tiers.designation1,tiers.designation2,tiers.id¦,
 									   nbReturn:¦20¦,
@@ -336,7 +336,7 @@ globazGlobal.isRenteBloque = ${viewBean.isRenteBloque()};
 							</div>
 							<div class="span3">
 								<span class="lbl"><ct:FWLabel key="JSP_RE_DEBLOCAGE_ADRESSE_PAIEMENT"/></span>
-								<div data-g-adresse="service:findAdressePaiement,initThreadContext:true">
+								<div data-g-adresse="service:findAdressePaiement,initThreadContext:true" id="adrPmtCreancier" style="display: none;">
 								    <input class="avoirPaiement.idTiers" type="hidden">
 								    <input class="avoirPaiement.idApplication" type="hidden">
 								    <input class="avoirPaiement.idExterne" type="hidden">

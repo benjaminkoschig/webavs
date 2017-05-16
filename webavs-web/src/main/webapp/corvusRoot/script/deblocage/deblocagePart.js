@@ -183,7 +183,27 @@ var readAdressePaiement = {
 				that.readAdresse(this.value, this);
 				setTimeout(function () {
 					that.b_temporise = true;
-				}, 200);
+				}, 200);				
+			}
+		});
+		$(".widgetTiers").change(function(){
+			if($.trim(this.value) != '')
+			{
+				$("#adrPmtCreancier").show();
+			}
+			else
+			{
+				$("#adrPmtCreancier").hide();
+			}
+		});
+		$(".widgetAdmin").change(function(){
+			if($.trim(this.value) != '')
+			{
+				$("#adrPmtCreancier").show();
+			}
+			else
+			{
+				$("#adrPmtCreancier").hide();
 			}
 		});
 	},
@@ -191,11 +211,15 @@ var readAdressePaiement = {
 	displayAdresse: function (data,element) {
 	
 		if(data && data.adresseFormate) {
+			$("#adrPmtCreancier").show();
 			var $container = $(element).closest('.areaDetail');
 			var html = data.adresseFormate.replace(/[\r\n]/g, '<br />');
 			$container.find(".adresse").html(html);
 			$container.find(".idAvoirPaiementUnique").val(data.fields.id_avoir_paiement_unique);
 		}
+		else{
+				$("#adrPmtCreancier").hide();
+			}
 	},
 
 	readAdresse: function (idTiers, element) {
