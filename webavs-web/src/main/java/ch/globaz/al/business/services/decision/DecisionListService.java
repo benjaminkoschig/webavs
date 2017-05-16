@@ -25,12 +25,14 @@ public interface DecisionListService extends JadeApplicationService {
      *            début de la période
      * @param dateFin
      *            fin de la période
+     * @param periodicite
+     *            String qui permet d'ajouter dans le fichier la notion de periodicite
      * @return StringBuffer contenant des donnéées des dossiers
      * @throws JadePersistenceException
      * @throws JadeApplicationException
      */
-    public StringBuffer getDonneesListDossier(DossierComplexSearchModel listDossier, String dateDebut, String dateFin)
-            throws JadePersistenceException, JadeApplicationException;
+    public StringBuffer getDonneesListDossier(DossierComplexSearchModel listDossier, String dateDebut, String dateFin,
+            String periodicite) throws JadePersistenceException, JadeApplicationException;
 
     /**
      * Méthode qui retourne la liste de dossier ayant fait l'objet d'une journalisation décision GED dans l'intervalle

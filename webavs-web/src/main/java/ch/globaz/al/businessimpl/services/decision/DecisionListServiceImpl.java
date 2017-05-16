@@ -46,8 +46,8 @@ import com.google.common.collect.Lists;
 public class DecisionListServiceImpl implements DecisionListService {
 
     @Override
-    public StringBuffer getDonneesListDossier(DossierComplexSearchModel listDossier, String dateDebut, String dateFin)
-            throws JadePersistenceException, JadeApplicationException {
+    public StringBuffer getDonneesListDossier(DossierComplexSearchModel listDossier, String dateDebut, String dateFin,
+            String periodicite) throws JadePersistenceException, JadeApplicationException {
         // contrôle des paramètres
         if (!JadeDateUtil.isGlobazDate(dateDebut)) {
             throw new ALDecisionException("DecisionListServiceImpl#getDonneesListDossier: dateDebut: " + dateDebut
@@ -65,7 +65,8 @@ public class DecisionListServiceImpl implements DecisionListService {
 
         StringBuffer donnees = new StringBuffer();
 
-        donnees.append("Liste des rétroactifs pour la période du " + dateDebut + " au " + dateFin + ";" + "\n");
+        donnees.append("Liste des rétroactifs (" + periodicite + ") pour la période du " + dateDebut + " au " + dateFin
+                + ";" + "\n");
         if (listDossier.getSize() == 0) {
             donnees = donnees.append("Aucun dossier trouvé pour cette période");
         } else {

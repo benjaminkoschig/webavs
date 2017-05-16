@@ -90,7 +90,15 @@ public class ALListDecisionProcess extends ALAbsrtactProcess {
      */
     private void creationEtEnvoiFichier(String listDossierRetro) throws JadeApplicationException,
             JadePersistenceException {
-        String fileNameDetail = "ListeDossiersRetroactifs.csv";
+
+        String fileNameDetail;
+        if (CodeSystem.PERIODICITE_MENSUELLE.equals(csPeriodicite)) {
+            fileNameDetail = getSession().getLabel("NOM_LISTE_RETRO_PERIODICITE_M");
+        } else {
+            fileNameDetail = getSession().getLabel("NOM_LISTE_RETRO_PERIODICITE_T");
+        }
+
+        // String fileNameDetail = "ListeDossiersRetroactifs.csv";
         createFileCsv(listDossierRetro, fileNameDetail);
         try {
             envoiDocument(fileNameDetail);
@@ -112,18 +120,18 @@ public class ALListDecisionProcess extends ALAbsrtactProcess {
 
     private void envoiDocument(String fileName) throws IOException {
 
-        String textePeriodicite;
+        String documentTitle;
         if (CodeSystem.PERIODICITE_MENSUELLE.equals(csPeriodicite)) {
-            textePeriodicite = " - traitement mensuel";
+            documentTitle = getSession().getLabel("TITRE_LISTE_RETRO_PERIODICITE_M");
         } else {
-            textePeriodicite = " - traitement trimestriel";
+            documentTitle = getSession().getLabel("TITRE_LISTE_RETRO_PERIODICITE_T");
         }
 
         JadePublishDocumentInfo logInfo = new JadePublishDocumentInfo();
         // // logInfo.setOwnerId(JadeThread.currentUserId());
         logInfo.setOwnerEmail(getEmail());
-        logInfo.setDocumentTitle("Liste des dossiers rétroactifs" + textePeriodicite);
-        logInfo.setDocumentSubject("Liste des dossiers rétroactifs" + textePeriodicite);
+        logInfo.setDocumentTitle(documentTitle);
+        logInfo.setDocumentSubject(documentTitle);
         logInfo.setArchiveDocument(false);
         JadePublishDocument docInfoCSV = new JadePublishDocument(fileName, logInfo);
 
@@ -211,12 +219,17 @@ public class ALListDecisionProcess extends ALAbsrtactProcess {
                 // TODO:gérer aussi les certifications de radiation, prest CO et SA
                 listDossierRetro = ALServiceLocator.getDecisionListService().getListDossierRetroActif(dateDebut,
                         dateFin, listDossierJournaliser, getCsPeriodicite());
+            }
 
-                // sdfsdf
+            String periode;
+            if (CodeSystem.PERIODICITE_MENSUELLE.equals(csPeriodicite)) {
+                periode = getSession().getLabel("AL0028_PERIODICITE_M");
+            } else {
+                periode = getSession().getLabel("AL0028_PERIODICITE_T");
             }
 
             donnesListDossierRetro = ALServiceLocator.getDecisionListService().getDonneesListDossier(listDossierRetro,
-                    dateDebut, dateFin);
+                    dateDebut, dateFin, periode);
 
         } catch (Exception e) {
             errorInProcess = true;
