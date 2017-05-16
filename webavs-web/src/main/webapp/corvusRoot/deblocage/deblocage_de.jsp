@@ -21,6 +21,11 @@
 	
 %>
 <%@ include file="/theme/detail_ajax/javascripts.jspf" %>
+
+<ct:menuChange displayId="menu" menuId="corvus-menuprincipal"/>
+<ct:menuChange displayId="options" menuId="corvus-optionslotDeblocage" showTab="options">
+</ct:menuChange>
+
 <c:set var="disabled" value="<%=disabled%>"/>
 
 <c:set var="rootPath" value="${pageContext.request.contextPath}${requestScope.mainServletPath}Root"/>
