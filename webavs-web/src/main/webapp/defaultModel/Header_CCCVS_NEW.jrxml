@@ -62,7 +62,7 @@
 			</band>
 		</title>
 		<pageHeader>
-			<band height="214"  isSplitAllowed="true" >
+			<band height="197"  isSplitAllowed="true" >
 				<image  scaleImage="RetainShape" vAlign="Top" hAlign="Left" isUsingCache="false" evaluationTime="Now" hyperlinkType="None">					<reportElement
 						mode="Transparent"
 						x="3"
@@ -103,8 +103,8 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="308"
-						y="112"
-						width="250"
+						y="95"
+						width="274"
 						height="101"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -249,7 +249,7 @@
 						x="308"
 						y="30"
 						width="16"
-						height="9"
+						height="11"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
 						key="textField-12"
@@ -367,8 +367,8 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
 						x="308"
-						y="94"
-						width="274"
+						y="80"
+						width="273"
 						height="18"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
