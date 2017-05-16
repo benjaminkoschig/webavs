@@ -722,6 +722,8 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
         if (!montantControle.equals(montantTotal)) {
             groupTxMessage.addMessage(Level.SEVERE, getSession().getLabel("5336") + " " + montantTotal.toStringFormat()
                     + " / " + montantControle.toStringFormat());
+        } else {
+            groupTxMessage.addMessage(Level.INFO, getSession().getLabel("5347") + montantTotal.toStringFormat());
         }
     }
 
