@@ -783,6 +783,11 @@ public class REPreValiderDecisionViewBean extends PRAbstractViewBeanSupport {
         boolean isRoleValider = false;
         String[] sRoles = JadeAdminServiceLocatorProvider.getLocator().getRoleService()
                 .findAllIdRoleForIdUser(getSession().getUserId());
+
+        if (sRoles == null) {
+            return isRoleValider;
+        }
+
         for (int i = 0; i < sRoles.length; i++) {
             if ("rREValider".equals(sRoles[i])) {
                 isRoleValider = true;
