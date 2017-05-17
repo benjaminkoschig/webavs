@@ -1,3 +1,6 @@
+/*
+ * Globaz SA.
+ */
 package ch.globaz.orion.businessimpl.services.dan;
 
 import globaz.globall.db.BSession;
@@ -9,6 +12,7 @@ import ch.globaz.xmlns.eb.dan.Dan;
 import ch.globaz.xmlns.eb.dan.DanStatutEnum;
 import ch.globaz.xmlns.eb.dan.EBDanException_Exception;
 import ch.globaz.xmlns.eb.dan.LienInstitution;
+import ch.globaz.xmlns.eb.partnerweb.PartnerWebService;
 import ch.globaz.xmlns.eb.partnerweb.User;
 
 /**
@@ -19,8 +23,8 @@ public class DanServiceImpl {
 
     public static byte[] downloadFile(String id, String type, String loginName, String userEmail, String langueIso)
             throws Exception {
-        DANService serviceDan = null;
-        User usr = null;
+        DANService serviceDan;
+        User usr;
 
         usr = ServicesProviders.partnerWebServiceProvide(loginName, userEmail, langueIso)
                 .readActivUserOrAdminByLoginName(loginName);
@@ -53,8 +57,11 @@ public class DanServiceImpl {
 
     public static void updateStatusDan(String idDan, DanStatutEnum danStatutEnum, BSession session) {
         DANService serviceDan = ServicesProviders.danServiceProvide(session);
+        PartnerWebService servicePartner = ServicesProviders.partnerWebServiceProvide(session);
+
         try {
-            serviceDan.updateStatusDan(Integer.valueOf(idDan), Integer.valueOf(session.getUserId()), danStatutEnum);
+            User user = servicePartner.readActivUserOrAdminByLoginName(session.getUserId());
+            serviceDan.updateStatusDan(Integer.valueOf(idDan), user.getUserId(), danStatutEnum);
         } catch (NumberFormatException e) {
             throw new RuntimeException(e);
         } catch (EBDanException_Exception e) {
@@ -90,7 +97,7 @@ public class DanServiceImpl {
     public static void preRempliDan(Dan dan, String noAffilie, List<ch.globaz.xmlns.eb.dan.Salaire> salaires,
             int annee, String idInstLaa, String idInstLpp, String login, boolean override, BSession session)
             throws EBDanException_Exception {
-        DANService serviceDan = null;
+        DANService serviceDan;
         serviceDan = ServicesProviders.danServiceProvide(session);
         serviceDan.preRempliDan(dan, noAffilie, salaires, annee, idInstLaa, idInstLpp, login, override);
 
@@ -99,7 +106,7 @@ public class DanServiceImpl {
     public static void preRempliDan(Dan dan, String noAffilie, List<ch.globaz.xmlns.eb.dan.Salaire> salaires,
             int annee, String idInstLaa, String idInstLpp, String login, boolean override, String userEmail)
             throws EBDanException_Exception {
-        DANService serviceDan = null;
+        DANService serviceDan;
         // on passe "fr" comme langue car n'a pas d'impact pour le pré-remplissage
         serviceDan = ServicesProviders.danServiceProvide(login, userEmail, "fr");
         serviceDan.preRempliDan(dan, noAffilie, salaires, annee, idInstLaa, idInstLpp, login, override);
