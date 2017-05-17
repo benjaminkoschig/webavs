@@ -16,7 +16,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import ch.globaz.common.domaine.AdressePaiement;
 import ch.globaz.common.domaine.Montant;
 import ch.globaz.common.jadedb.exception.JadeDataBaseException;
 import ch.globaz.common.services.AdressePaiementLoader;
@@ -328,11 +327,10 @@ public class ReLigneDeclocageServices {
         }
         AdressePaiementLoader loader = new AdressePaiementLoader(session);
 
-        Map<Long, AdressePaiement> mapAdresses = loader.searchAdressePaiement(map);
-
         for (RELigneDeblocage reLigneDeblocage : lignesDeblocages) {
             RELigneDeblocageCreancier ligne = new RELigneDeblocageCreancier();
-            ligne.setAdressePaiement(mapAdresses.get(reLigneDeblocage.getIdTiersAdressePaiement()));
+            ligne.setAdressePaiement(loader.searchAdressePaiement(reLigneDeblocage.getIdTiersAdressePaiement(),
+                    reLigneDeblocage.getIdApplicationAdressePaiement()));
             TITiers tiers = loadTiers(reLigneDeblocage.getIdTiersCreancier());
             ligne.setDesignationTiers1(tiers.getDesignation1());
             ligne.setDesignationTiers2(tiers.getDesignation2());
