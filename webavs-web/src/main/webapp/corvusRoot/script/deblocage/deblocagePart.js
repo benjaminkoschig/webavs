@@ -185,27 +185,7 @@ var readAdressePaiement = {
 					that.b_temporise = true;
 				}, 200);				
 			}
-		});
-		$(".widgetTiers").change(function(){
-			if($.trim(this.value) != '')
-			{
-				$("#adrPmtCreancier").show();
-			}
-			else
-			{
-				$("#adrPmtCreancier").hide();
-			}
-		});
-		$(".widgetAdmin").change(function(){
-			if($.trim(this.value) != '')
-			{
-				$("#adrPmtCreancier").show();
-			}
-			else
-			{
-				$("#adrPmtCreancier").hide();
-			}
-		});
+		});		
 	},
 
 	displayAdresse: function (data,element) {
@@ -217,9 +197,6 @@ var readAdressePaiement = {
 			$container.find(".adresse").html(html);
 			$container.find(".idAvoirPaiementUnique").val(data.fields.id_avoir_paiement_unique);
 		}
-		else{
-				$("#adrPmtCreancier").hide();
-			}
 	},
 
 	readAdresse: function (idTiers, element) {
