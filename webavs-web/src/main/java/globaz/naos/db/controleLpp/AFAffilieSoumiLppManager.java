@@ -52,7 +52,8 @@ public class AFAffilieSoumiLppManager extends BManager {
         sqlFrom.append(_getCollection() + "AFAFFIP af ");
 
         sqlFrom.append("LEFT OUTER JOIN ( SELECT * FROM " + _getCollection()
-                + "AFSUAFP	WHERE MYTGEN = 830003 AND (MYDFIN > " + getForAnnee() + "0101 OR (MYDDEB < " + getForAnnee()
+                + "AFSUAFP	WHERE MYTGEN = 830003 AND ((MYDFIN > " + getForAnnee() + "0101 AND MYDDEB < "
+                + getForAnnee() + "1231) OR (MYDDEB < " + getForAnnee()
                 + "1231 AND MYDFIN = 0))) suiv on suiv.MAIAFF = af.MAIAFF ");
         sqlFrom.append("INNER JOIN " + _getCollection() + "CIECRIP ecr on ecr.KBITIE = af.MAIAFF ");
         sqlFrom.append("LEFT JOIN " + _getCollection() + "CIINDIP ci on ecr.KAIIND = ci.KAIIND ");
