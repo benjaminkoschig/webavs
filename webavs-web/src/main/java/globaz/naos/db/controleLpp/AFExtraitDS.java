@@ -63,7 +63,8 @@ public class AFExtraitDS extends BEntity {
      * Méthode qui permet de calculer le seuil LPP en fonction des valeurs dans les tabels de valeurs
      */
     public void calculSeuilLPP() {
-        int periode = JadeStringUtil.toInt(getMoisFin()) - JadeStringUtil.toInt(getMoisDebut());
+        // - 1 pour tenir compte du mois en question
+        int periode = JadeStringUtil.toInt(getMoisFin()) - (JadeStringUtil.toInt(getMoisDebut()) - 1);
 
         try {
             FWFindParameterManager manager = new FWFindParameterManager();
