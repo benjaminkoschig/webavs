@@ -335,7 +335,11 @@ public class IJBaseIndemnisationServiceImpl implements IJBaseIndemnisationServic
             baseIndemnisation.setCsMotifInterruption(entity.getMotifInterruption());
             baseIndemnisation.setCsCantonImpotSource(entity.getCsCantonImposition());
             baseIndemnisation.setTauxImpotSource(entity.getTauxImposition());
-            baseIndemnisation.setRemarque(entity.getRemarque());
+
+            // Ajouter un espace avant le retour à la ligne
+            // parce que JASPER n'arrive pas à interpréter deux retours à la ligne successive
+            String remarque = entity.getRemarque().replaceAll("\r\n", " \r\n");
+            baseIndemnisation.setRemarque(remarque);
 
             BITransaction transaction = session.newTransaction();
             try {
