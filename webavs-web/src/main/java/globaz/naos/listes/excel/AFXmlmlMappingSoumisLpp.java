@@ -15,6 +15,7 @@ import globaz.pyxis.adresse.datasource.TIAbstractAdresseDataSource;
 import globaz.pyxis.adresse.datasource.TIAdresseDataSource;
 import globaz.pyxis.db.tiers.TITiers;
 import globaz.webavs.common.CommonExcelmlContainer;
+import ch.globaz.common.domaine.Date;
 
 public class AFXmlmlMappingSoumisLpp {
 
@@ -126,7 +127,7 @@ public class AFXmlmlMappingSoumisLpp {
         CommonExcelmlContainer container = new CommonExcelmlContainer();
 
         // Chargement du header du document
-        AFXmlmlMappingSoumisLpp.loadHeader(container, process.getDateImpression(), nomListe, process.getAnneeDebut(),
+        AFXmlmlMappingSoumisLpp.loadHeader(container, new Date().getSwissValue(), nomListe, process.getAnneeDebut(),
                 process.getAnneeFin(), numInforom, process.getSession().getUserName(), process.getSession());
 
         String[] listAffilie = conteneur.getTableauAffilie();

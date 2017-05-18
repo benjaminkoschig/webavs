@@ -83,7 +83,6 @@ public class AFControleLppAnnuelProcess extends BProcess {
     private AFAffilieSoumiLppConteneur casSoumisFinal;
 
     private StringBuilder corpsMessage;
-    private String dateImpression;
     private String email;
     // true = simulation
     private Boolean modeControle = true;
@@ -179,7 +178,6 @@ public class AFControleLppAnnuelProcess extends BProcess {
             this._addError(getTransaction(), getSession().getLabel("EXECUTION_CONTROLE_LPP_ANNUEL_ERREUR"));
 
             String messageInformation = "Annees du controle : " + getAnneeDebut() + " à " + getAnneeFin() + "\n";
-            messageInformation += "dateImpression : " + getDateImpression() + "\n";
             messageInformation += "modeControle : " + isModeControleSimulation() + "\n";
             messageInformation += AFUtil.stack2string(e);
 
@@ -488,8 +486,6 @@ public class AFControleLppAnnuelProcess extends BProcess {
         // Cröation du corps du message
         corpsMessage.append(getSession().getLabel("ANNEES")).append(" : ").append(getAnneeDebut()).append(" - ")
                 .append(getAnneeFin()).append("\n");
-        corpsMessage.append(getSession().getLabel("DATE_IMPRESSION")).append(" : ").append(getDateImpression())
-                .append("\n");
         corpsMessage.append(getSession().getLabel("MODE_CONTROLE")).append(" : ").append(isModeControleSimulation())
                 .append("\n").append("\n\n");
         corpsMessage.append(getSession().getLabel("NBR_CAS_REJETES")).append(nbCasRejetes).append("\n");
@@ -610,10 +606,6 @@ public class AFControleLppAnnuelProcess extends BProcess {
 
         // Etape terminé, on incremente le compteur
         incProgressCounter();
-    }
-
-    public String getDateImpression() {
-        return dateImpression;
     }
 
     public String getEmail() {
@@ -803,10 +795,6 @@ public class AFControleLppAnnuelProcess extends BProcess {
     @Override
     public GlobazJobQueue jobQueue() {
         return GlobazJobQueue.UPDATE_LONG;
-    }
-
-    public void setDateImpression(String dateImpression) {
-        this.dateImpression = dateImpression;
     }
 
     public void setEmail(String email) {

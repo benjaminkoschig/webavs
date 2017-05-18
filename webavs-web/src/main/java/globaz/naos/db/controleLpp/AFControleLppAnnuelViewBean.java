@@ -15,17 +15,12 @@ public class AFControleLppAnnuelViewBean extends AFAbstractViewBean {
 
     private String anneeDebut;
     private String anneeFin;
-    private String dateImpression;
     private String email;
     private String filename;
 
     // true = simulation
     private boolean modeControle = true;
     private String typeAdresse;
-
-    public String getDateImpression() {
-        return dateImpression;
-    }
 
     public String getEmail() {
         if (JadeStringUtil.isBlank(email)) {
@@ -41,10 +36,6 @@ public class AFControleLppAnnuelViewBean extends AFAbstractViewBean {
 
     public boolean isModeControleSimulation() {
         return modeControle;
-    }
-
-    public void setDateImpression(String dateImpression) {
-        this.dateImpression = dateImpression;
     }
 
     public void setEmail(String email) {

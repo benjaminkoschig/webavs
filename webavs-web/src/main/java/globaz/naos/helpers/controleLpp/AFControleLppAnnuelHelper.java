@@ -41,7 +41,6 @@ public class AFControleLppAnnuelHelper extends FWHelper {
                 process.setAnneeFin(vb.getAnneeFin());
 
                 process.setTypeAdresse(vb.getTypeAdresse());
-                process.setDateImpression(vb.getDateImpression());
                 process.setModeControle(vb.isModeControleSimulation());
                 process.setEMailAddress(vb.getEmail());
 

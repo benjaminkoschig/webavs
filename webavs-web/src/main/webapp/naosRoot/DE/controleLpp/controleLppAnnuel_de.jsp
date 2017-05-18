@@ -20,7 +20,6 @@
 	formEncType = "'multipart/form-data' method='post'";
     
     String strSimulation = viewBean.isModeControleSimulation() ? "checked=\"checked\"" : "";
-    String dateImpression = viewBean.getDateImpression() != null ? viewBean.getDateImpression() : "";
 %>
 
 <%-- /tpl:put --%>

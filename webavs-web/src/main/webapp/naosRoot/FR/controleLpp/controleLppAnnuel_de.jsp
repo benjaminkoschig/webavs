@@ -20,7 +20,6 @@
 	formEncType = "'multipart/form-data' method='post'";
     
     String strSimulation = viewBean.isModeControleSimulation() ? "checked=\"checked\"" : "";
-    String dateImpression = viewBean.getDateImpression() != null ? viewBean.getDateImpression() : "";
 %>
 
 <%-- /tpl:put --%>
@@ -93,7 +92,7 @@ function postInit() {
 			<OPTION value="courrier" <%="courrier".equals(viewBean.getTypeAdresse())?"selected":""%>><ct:FWLabel key="COURRIER"/></OPTION>
 		</SELECT>
 	</TD>
-</TR>  					
+</TR>  				
 <tr>
 	<TD><ct:FWLabel key="MODE_CONTROLE"/></TD>
 	<TD><input type="checkbox" id="modeControle" name="modeControle" <%=strSimulation%>></TD>
