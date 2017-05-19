@@ -941,6 +941,7 @@
 					<parameter name="noDemandeRente" />
 					<parameter name="idRenteAccordee" />
 					<parameter name="idTierRequerant" />
+					<parameter name="idTiersBeneficiaire" />
 					<parameter name="idTiersVueGlobale" />
 					<parameter name="montantRenteAccordee" />
 					<parameter name="idBaseCalcul" />
