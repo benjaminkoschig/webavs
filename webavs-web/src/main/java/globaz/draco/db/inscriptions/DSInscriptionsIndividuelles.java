@@ -816,10 +816,14 @@ public class DSInscriptionsIndividuelles extends BEntity {
             BigDecimal montantSoumisAvantInscEnCours = new BigDecimal("0");
             BigDecimal montantCIAvantInscEnCours = new BigDecimal("0");
             BigDecimal montantACIIAvantInscEnCours = new BigDecimal("0");
+
+            String idDeclarationAncienneInscription = "";
+
             if ((mgr.size() > 0) && !numeroAvs.startsWith("000000")) {
 
                 for (int i = 0; i < mgr.size(); i++) {
                     DSInscriptionsIndividuelles inscAChecker = (DSInscriptionsIndividuelles) mgr.get(i);
+                    idDeclarationAncienneInscription = inscAChecker.getIdDeclaration();
                     if (checkChevauchement(inscAChecker)) {
                         // Dans ce cas là, on ne peut pas calculer l'AC => on
                         // sort
@@ -873,7 +877,8 @@ public class DSInscriptionsIndividuelles extends BEntity {
             montantSoumis = JANumberFormatter.round(montantSoumis, 0.05, 2, JANumberFormatter.NEAR);
 
             calculDesACSelonAntecedents(calculAcII, montantAvs, montantSoumis, montantSoumisAvantInscEnCours,
-                    montantCIAvantInscEnCours, montantACIIAvantInscEnCours, montantSoumisACII);
+                    montantCIAvantInscEnCours, montantACIIAvantInscEnCours, montantSoumisACII,
+                    idDeclarationAncienneInscription);
             // On a le montant pour la période
         }
 
@@ -912,6 +917,7 @@ public class DSInscriptionsIndividuelles extends BEntity {
 
     /***
      * Calcul les plafonds selon le montants AVS et les antécédents (déclarations pour la même année)
+     * Sauf si il s'agit de la même déclaration (plusieurs entrées pour le meme affilié dans la meme déclaration)
      * 
      * @param calculAcII
      * @param montantAvs
@@ -920,12 +926,15 @@ public class DSInscriptionsIndividuelles extends BEntity {
      * @param montantCIAvantInscEnCours
      * @param montantACIIAvantInscEnCours
      * @param montantSoumisACII
+     * @param idDeclarationAncienneInscription
      */
     private void calculDesACSelonAntecedents(boolean calculAcII, BigDecimal montantAvs, BigDecimal montantSoumis,
             BigDecimal montantSoumisAvantInscEnCours, BigDecimal montantCIAvantInscEnCours,
-            BigDecimal montantACIIAvantInscEnCours, BigDecimal montantSoumisACII) {
+            BigDecimal montantACIIAvantInscEnCours, BigDecimal montantSoumisACII,
+            String idDeclarationAncienneInscription) {
         // Si on est dans un cas différé on ne tient PAS compte des antécédents
-        if (globaz.draco.translation.CodeSystem.CS_SALAIRE_DIFFERES.equals(declaration.getTypeDeclaration())) {
+        if (globaz.draco.translation.CodeSystem.CS_SALAIRE_DIFFERES.equals(declaration.getTypeDeclaration())
+                && !idDeclarationAncienneInscription.equals(getIdDeclaration())) {
             // On compare pour savoir si le montant avs est supérieur au plafond
             BigDecimal acIISoumis = new BigDecimal("0");
             if (montantAvs.compareTo(montantSoumis) < 0) {
