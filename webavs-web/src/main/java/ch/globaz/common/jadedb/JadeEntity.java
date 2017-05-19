@@ -24,6 +24,9 @@ import ch.globaz.common.jadedb.converter.ConverterDB;
 import ch.globaz.common.jadedb.converter.MontantConverterDB;
 import ch.globaz.common.jadedb.exception.JadeDataBaseException;
 
+/**
+ * Attention : le field de la clé primaire doit nécessairement se nommer "ID" !
+ */
 public abstract class JadeEntity extends BEntity implements Comparable<JadeEntity> {
 
     private static final long serialVersionUID = 1L;
@@ -372,6 +375,9 @@ public abstract class JadeEntity extends BEntity implements Comparable<JadeEntit
             if (id != null && !StringUtils.isEmpty(String.valueOf(id))) {
                 this.writeKey(defPrimaryKey, id);
                 writeNumber(defPrimaryKey, id);
+            } else if (getId() != null) {
+                writeKey(defPrimaryKey, getId());
+                writeNumber(defPrimaryKey, getId());
             }
         } catch (IllegalArgumentException e) {
             throw new JadeDataBaseException(e);
