@@ -5,6 +5,7 @@
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@page import="globaz.corvus.servlet.IREActions"%>
 <%@page import="globaz.corvus.vb.deblocage.REDeblocageViewBean"%>
+<%@page import="globaz.framework.secure.FWSecureConstants"%>
 
 <%-- tpl:put name="zoneInit" --%>
 <link rel="stylesheet" type="text/css" href="<%=servletContext%><%=(mainServletPath+"Root")%>/css/bootstrap.css"/>
@@ -18,6 +19,9 @@
 	if(!viewBean.hasCUDRight()){
  		disabled = "disabled=\"disabled\"";
 	}
+	
+	boolean hasComptaUpdateRight = objSession.hasRight("osiris.retours.retours.afficher", FWSecureConstants.UPDATE);
+	
 	
 %>
 <%@ include file="/theme/detail_ajax/javascripts.jspf" %>
@@ -168,9 +172,15 @@ globazGlobal.isRenteBloque = ${viewBean.isRenteBloque()};
 						<div>
 							<div  style="padding-top:5px;" class="row-fluid" >
 								<div class="span5"> 
+								<% if(hasComptaUpdateRight){								%>
 									<a  class="lbl" href="osiris?userAction=osiris.retours.retours.afficher&selectedId=${entry.idRetour}">	
 										<span id="valRequerant">${entry.descriptionTiers}</span>
 									</a>
+								<% }
+								else{ %> 
+									<span class="lbl" id="valRequerant">${entry.descriptionTiers}</span>
+								<% } %>
+									
 								</div>
 								<div class="span3">
 									<span class="lbl">${entry.libelle}</span>
