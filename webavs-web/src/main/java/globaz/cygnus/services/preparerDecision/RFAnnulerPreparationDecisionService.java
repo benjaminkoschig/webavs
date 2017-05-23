@@ -30,6 +30,7 @@ import globaz.cygnus.db.qds.RFQdPrincipaleManager;
 import globaz.cygnus.db.qds.RFQdSoldeExcedentDeRevenuManager;
 import globaz.cygnus.utils.RFPropertiesUtils;
 import globaz.cygnus.utils.RFUtils;
+import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BTransaction;
 import globaz.jade.client.util.JadeStringUtil;
@@ -84,7 +85,7 @@ public class RFAnnulerPreparationDecisionService {
      * @throws Exception
      */
     public static void annulerPreparationDecision(String idGestionnaire, String forIdExecutionProcessAvasadDecision,
-            BSession session, BTransaction transaction) throws Exception {
+            String idQdPrincipale, BSession session, BTransaction transaction) throws Exception {
 
         // Initialisation de la liste des Qds à mettre à jour
         RFAnnulerPreparationDecisionService.idsQdPrincipaleSet = new HashSet<String>();
@@ -107,8 +108,12 @@ public class RFAnnulerPreparationDecisionService {
         if (RFPropertiesUtils.utiliserGestionnaireViewBeanAnnulationDemandes()) {
             rfDecJointDemJointAssJointMotMgr.setForIdGestionnaire(idGestionnaire);
         }
-        rfDecJointDemJointAssJointMotMgr.changeManagerSize(0);
-        rfDecJointDemJointAssJointMotMgr.find();
+
+        if (RFPropertiesUtils.annulerUniquementDecisionsLieesAuxQd()) {
+            rfDecJointDemJointAssJointMotMgr.setForIdQdPrincipale(idQdPrincipale);
+        }
+
+        rfDecJointDemJointAssJointMotMgr.find(BManager.SIZE_NOLIMIT);
 
         Iterator<RFDecisionJointDemandeJointAssMotifRefusJointMotifDeRefus> rfDecJointDemJointAssJointMotItr = rfDecJointDemJointAssJointMotMgr
                 .iterator();
@@ -249,7 +254,7 @@ public class RFAnnulerPreparationDecisionService {
         }
 
         rfQdAssMgr.changeManagerSize(0);
-        rfQdAssMgr.find();
+        rfQdAssMgr.find(BManager.SIZE_NOLIMIT);
 
         Iterator<RFQdAssure> rfQdAssItr = rfQdAssMgr.iterator();
         while (rfQdAssItr.hasNext()) {
@@ -323,7 +328,7 @@ public class RFAnnulerPreparationDecisionService {
         }
 
         rfQdPriMgr.changeManagerSize(0);
-        rfQdPriMgr.find();
+        rfQdPriMgr.find(BManager.SIZE_NOLIMIT);
 
         Iterator<RFQdPrincipale> rfQdPriItr = rfQdPriMgr.iterator();
         while (rfQdPriItr.hasNext()) {
@@ -402,7 +407,7 @@ public class RFAnnulerPreparationDecisionService {
         }
 
         rfPreAccMgr.changeManagerSize(0);
-        rfPreAccMgr.find();
+        rfPreAccMgr.find(BManager.SIZE_NOLIMIT);
 
         Iterator<RFPrestationAccordee> rfPreAccItr = rfPreAccMgr.iterator();
 
@@ -619,7 +624,7 @@ public class RFAnnulerPreparationDecisionService {
             rfPrestMgr.setSession(session);
             rfPrestMgr.setForIdDecision(rfDec.getIdDecision());
             rfPrestMgr.changeManagerSize(0);
-            rfPrestMgr.find();
+            rfPrestMgr.find(BManager.SIZE_NOLIMIT);
 
             Iterator<RFPrestation> rfPrestItr = rfPrestMgr.iterator();
 
@@ -644,7 +649,7 @@ public class RFAnnulerPreparationDecisionService {
             rfPrestAccRfmMgr.setSession(session);
             rfPrestAccRfmMgr.setForIdDecision(rfDec.getIdDecision());
             rfPrestAccRfmMgr.changeManagerSize(0);
-            rfPrestAccRfmMgr.find();
+            rfPrestAccRfmMgr.find(BManager.SIZE_NOLIMIT);
             Iterator<RFPrestationAccordee> rfPrestAccRfmItr = rfPrestAccRfmMgr.iterator();
 
             while (rfPrestAccRfmItr.hasNext()) {
@@ -674,7 +679,7 @@ public class RFAnnulerPreparationDecisionService {
             rfAssDecOvMgr.setSession(session);
             rfAssDecOvMgr.setForIdDecision(rfDec.getIdDecision());
             rfAssDecOvMgr.changeManagerSize(0);
-            rfAssDecOvMgr.find();
+            rfAssDecOvMgr.find(BManager.SIZE_NOLIMIT);
 
             Iterator<RFAssDecOv> rfAssDecOvItr = rfAssDecOvMgr.iterator();
 

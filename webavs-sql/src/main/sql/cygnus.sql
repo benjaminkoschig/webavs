@@ -1,0 +1,2 @@
+--K161004_001 - Demandes au statut refusé ou partiellement accepté avec motif FRQ- Maximum par assuré dépassé
+INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL) VALUES ('cygnus.annuler.uniquement.decisions.liees.aux.qds','false');

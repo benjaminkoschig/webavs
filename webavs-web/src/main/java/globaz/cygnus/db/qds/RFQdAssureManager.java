@@ -7,46 +7,24 @@ import globaz.jade.client.util.JadeStringUtil;
 
 public class RFQdAssureManager extends BManager {
 
-    // ~ Static fields/initializers
-    // -------------------------------------------------------------------------------------
-
-    /**
-     * 
-     */
     private static final long serialVersionUID = 1L;
-
     public static final String CLE_DROITS_TOUS = "";
-
-    // ~ Instance fields
-    // ------------------------------------------------------------------------------------------------
 
     private String forIdGesModSolExcAugQdPreDec = "";
     private Boolean forIdGesModSolExcAugQdPreDecNotNull = Boolean.FALSE;
 
     private transient String fromClause = null;
 
-    // ~ Constructors
-    // ---------------------------------------------------------------------------------------------------
-
-    /**
-     * Crée une nouvelle instance de la classe RFDemandeManager.
-     */
     public RFQdAssureManager() {
         super();
         wantCallMethodBeforeFind(true);
     }
 
-    // ~ Methods
-    // --------------------------------------------------------------------------------------------------------
-
-    /**
-     * @see globaz.globall.db.BManager#_getFrom(globaz.globall.db.BStatement)
-     */
     @Override
     protected String _getFrom(BStatement statement) {
 
         if (fromClause == null) {
-            StringBuffer from = new StringBuffer();
+            StringBuilder from = new StringBuilder();
 
             from.append(_getCollection());
             from.append(RFQdAssure.TABLE_NAME);
@@ -65,7 +43,7 @@ public class RFQdAssureManager extends BManager {
     @Override
     protected String _getWhere(BStatement statement) {
 
-        StringBuffer sqlWhere = new StringBuffer();
+        StringBuilder sqlWhere = new StringBuilder();
 
         if (!JadeStringUtil.isEmpty(forIdGesModSolExcAugQdPreDec)) {
             if (sqlWhere.length() != 0) {
@@ -94,9 +72,6 @@ public class RFQdAssureManager extends BManager {
         return sqlWhere.toString();
     }
 
-    /**
-     * Définition de l'entité (RFDemande)
-     */
     @Override
     protected BEntity _newEntity() throws Exception {
         return new RFQdAssure();

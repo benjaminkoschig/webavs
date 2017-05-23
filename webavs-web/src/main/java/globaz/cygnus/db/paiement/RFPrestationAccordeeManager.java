@@ -16,9 +16,6 @@ import java.util.Set;
  */
 public class RFPrestationAccordeeManager extends PRAbstractManager {
 
-    /**
-     * 
-     */
     private static final long serialVersionUID = 1L;
     private String forCsTypesPrestationsAccordees = "";
     private Boolean forDateFinDroitInitialeNotNull = Boolean.FALSE;
@@ -28,10 +25,7 @@ public class RFPrestationAccordeeManager extends PRAbstractManager {
     private String forIdRFMAccordee = "";
     private Set<String> forNotIdsRfPrestationAccordee = null;
     private String forOrderBy = "";
-    private transient String fromClause = null;
 
-    // ~ Constructors
-    // ---------------------------------------------------------------------------------------------------
     public RFPrestationAccordeeManager() {
         super();
         wantCallMethodBeforeFind(true);
@@ -40,23 +34,17 @@ public class RFPrestationAccordeeManager extends PRAbstractManager {
     @Override
     protected String _getOrder(BStatement statement) {
 
-        StringBuffer sqlOrder = new StringBuffer();
+        StringBuilder sqlOrder = new StringBuilder();
         if (!JadeStringUtil.isEmpty(forOrderBy)) {
             sqlOrder.append(forOrderBy);
         }
         return sqlOrder.toString();
     }
 
-    /**
-     * Redéfinition de la méthode _getWhere du parent afin de générer le WHERE de la requête en fonction des besoins
-     * 
-     * @param statement
-     */
     @Override
     protected String _getWhere(BStatement statement) {
 
-        StringBuffer sqlWhere = new StringBuffer();
-        String schema = _getCollection();
+        StringBuilder sqlWhere = new StringBuilder();
 
         if (!JadeStringUtil.isEmpty(forIdRFMAccordee)) {
             if (sqlWhere.length() != 0) {
@@ -146,7 +134,6 @@ public class RFPrestationAccordeeManager extends PRAbstractManager {
 
     @Override
     protected BEntity _newEntity() throws Exception {
-        // TODO Auto-generated method stub
         return new RFPrestationAccordee();
     }
 
@@ -178,11 +165,8 @@ public class RFPrestationAccordeeManager extends PRAbstractManager {
         return forNotIdsRfPrestationAccordee;
     }
 
-    // ~ Methods
-    // ---------------------------------------------------------------------------------------------------
     @Override
     public String getOrderByDefaut() {
-        // TODO Auto-generated method stub
         return null;
     }
 

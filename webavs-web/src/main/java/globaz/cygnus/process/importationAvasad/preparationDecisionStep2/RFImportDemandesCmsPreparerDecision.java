@@ -93,7 +93,7 @@ public class RFImportDemandesCmsPreparerDecision implements JadeProcessStepInter
 
             // Annulation du calcul
             RFAnnulerPreparationDecisionService.annulerPreparationDecision(BSessionUtil.getSessionFromThreadContext()
-                    .getUserId(), step.getIdExecutionProcess(), BSessionUtil.getSessionFromThreadContext(),
+                    .getUserId(), step.getIdExecutionProcess(), null, BSessionUtil.getSessionFromThreadContext(),
                     (BTransaction) transactionPreparerDecProcess);
 
             RFPreparerDecisionsService rfPreDecSer = new RFPreparerDecisionsService(null, JACalendar.todayJJsMMsAAAA(),

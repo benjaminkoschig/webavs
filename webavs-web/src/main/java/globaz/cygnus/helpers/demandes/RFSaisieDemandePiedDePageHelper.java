@@ -460,7 +460,7 @@ public class RFSaisieDemandePiedDePageHelper extends PRAbstractHelper {
                     // annulé
                     if (IRFDemande.CALCULE.equals(vb.getCsEtat())) {
                         RFAnnulerPreparationDecisionService.annulerPreparationDecision(vb.getGestionnaire(), "",
-                                (BSession) session, (BTransaction) transaction);
+                                vb.getIdQdPrincipale(), (BSession) session, (BTransaction) transaction);
                         vb.setCsEtat(IRFDemande.ENREGISTRE);
 
                         if (transaction.hasErrors() || transaction.isRollbackOnly()) {
@@ -1404,7 +1404,7 @@ public class RFSaisieDemandePiedDePageHelper extends PRAbstractHelper {
                             // annulé
                             if (IRFDemande.CALCULE.equals(vb.getCsEtat())) {
                                 RFAnnulerPreparationDecisionService.annulerPreparationDecision(vb.getGestionnaire(),
-                                        "", (BSession) session, (BTransaction) transaction);
+                                        "", vb.getIdQdPrincipale(), (BSession) session, (BTransaction) transaction);
                                 vb.setCsEtat(IRFDemande.ENREGISTRE);
 
                                 if (transaction.hasErrors() || transaction.isRollbackOnly()) {

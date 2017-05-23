@@ -8,6 +8,7 @@ import globaz.globall.db.BEntity;
 import globaz.globall.db.BStatement;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.db.PRAbstractManager;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * 
@@ -27,6 +28,7 @@ public class RFDecisionJointDemandeJointAssMotifRefusJointMotifDeRefusManager ex
     private transient String forIdGestionnaire = "";
     private transient boolean forIsNotDecisionAvasad = false;
     private transient String fromClause = null;
+    private String forIdQdPrincipale;
 
     // ~ Constructors
     // ---------------------------------------------------------------------------------------------------
@@ -42,7 +44,7 @@ public class RFDecisionJointDemandeJointAssMotifRefusJointMotifDeRefusManager ex
     protected String _getFrom(BStatement statement) {
 
         if (fromClause == null) {
-            StringBuffer from = new StringBuffer(
+            StringBuilder from = new StringBuilder(
                     RFDecisionJointDemandeJointAssMotifRefusJointMotifDeRefus.createFromClause(_getCollection()));
 
             fromClause = from.toString();
@@ -54,7 +56,7 @@ public class RFDecisionJointDemandeJointAssMotifRefusJointMotifDeRefusManager ex
     @Override
     protected String _getOrder(BStatement statement) {
 
-        StringBuffer sqlOrder = new StringBuffer();
+        StringBuilder sqlOrder = new StringBuilder();
 
         sqlOrder.append(RFDecision.FIELDNAME_ID_DECISION);
         sqlOrder.append(",");
@@ -71,7 +73,7 @@ public class RFDecisionJointDemandeJointAssMotifRefusJointMotifDeRefusManager ex
     @Override
     protected String _getWhere(BStatement statement) {
 
-        StringBuffer sqlWhere = new StringBuffer();
+        StringBuilder sqlWhere = new StringBuilder();
         String schema = _getCollection();
 
         if (!JadeStringUtil.isEmpty(forIdGestionnaire)) {
@@ -104,6 +106,13 @@ public class RFDecisionJointDemandeJointAssMotifRefusJointMotifDeRefusManager ex
             sqlWhere.append(RFDecision.FIELDNAME_ID_EXECUTION_PROCESS);
             sqlWhere.append(" = 0");
             sqlWhere.append(") ");
+
+            if (StringUtils.isNotEmpty(forIdQdPrincipale)) {
+                sqlWhere.append(" AND ");
+                sqlWhere.append(RFDemande.FIELDNAME_ID_QD_PRINCIPALE);
+                sqlWhere.append(" = ").append(forIdQdPrincipale);
+            }
+
         } else {
             if (!JadeStringUtil.isBlankOrZero(forIdExecutionProcessAvasadDecision)) {
                 if (sqlWhere.length() != 0) {
@@ -144,7 +153,6 @@ public class RFDecisionJointDemandeJointAssMotifRefusJointMotifDeRefusManager ex
     // ---------------------------------------------------------------------------------------------------
     @Override
     public String getOrderByDefaut() {
-        // TODO Auto-generated method stub
         return null;
     }
 
@@ -170,6 +178,14 @@ public class RFDecisionJointDemandeJointAssMotifRefusJointMotifDeRefusManager ex
 
     public void setFromClause(String fromClause) {
         this.fromClause = fromClause;
+    }
+
+    public String getForIdQdPrincipale() {
+        return forIdQdPrincipale;
+    }
+
+    public void setForIdQdPrincipale(String forIdQdPrincipale) {
+        this.forIdQdPrincipale = forIdQdPrincipale;
     }
 
 }

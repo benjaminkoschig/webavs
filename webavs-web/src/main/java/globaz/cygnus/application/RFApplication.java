@@ -70,6 +70,7 @@ public class RFApplication extends PRAbstractApplication {
     public static final String PROPERTY_VERIFIER_CONVENTION_POTENCE = "verificationConvention.sousTypesSoins.convention.ajouter.potence";
     public static final String PROPERTY_VERIFIER_SI_CALCUL_CONCERNE_AUTRE_GESTIONNAIRE = "preparerDecision.verifierSiCalcul.concerne.autreGestionnaire";
     public static final String PROPERTY_VERIFIER_SI_DEVIS_RATTACHE_AUTRES_DEMANDES = "verification.siDevis.rattache.autres.demandes";
+    public static final String PROPERTY_ANNULER_UNIQUEMENT_DECISIONS_LIEES_AU_QDS = "annuler.uniquement.decisions.liees.aux.qds";
 
     /**
      * Crée une nouvelle instance de la classe REApplication.

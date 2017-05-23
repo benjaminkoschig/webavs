@@ -624,4 +624,16 @@ public class RFPropertiesUtils {
         return RFPropertiesUtils.checkProperty(RFApplication.PROPERTY_VERIFIER_SI_CALCUL_CONCERNE_AUTRE_GESTIONNAIRE);
     }
 
+    /**
+     * Méthode permettant de savoir si on doit annuler uniquement les décisions liées à la même QD (Et donc aux petites
+     * QDs liées) au lieu d'annuler toutes les décisions à l'état NON_VALIDER
+     * 
+     * @return True si on doit annuler uniquement les décisions non validées du bénéficiaire, False si on annule toutes
+     *         les décisions non validées
+     * @throws Exception
+     */
+    public static Boolean annulerUniquementDecisionsLieesAuxQd() throws Exception {
+        return RFPropertiesUtils.checkProperty(RFApplication.PROPERTY_ANNULER_UNIQUEMENT_DECISIONS_LIEES_AU_QDS);
+    }
+
 }
