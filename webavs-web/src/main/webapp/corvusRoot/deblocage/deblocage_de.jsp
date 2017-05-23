@@ -334,7 +334,7 @@ globazGlobal.isRenteBloque = ${viewBean.isRenteBloque()};
 									<input type="text" id="widgetAdmin" name="widgetAdmin" class="jadeAutocompleteAjax widgetAdmin" 
 									   data-g-autocomplete="service:¦ch.globaz.pyxis.business.service.AdministrationService¦,
 									   method:¦find¦,
-									   criterias:¦{'forDesignation1Like':'<ct:FWLabel key="JSP_RE_DEBLOCAGE_DES1"/>','forCodeAdministrationLike':'<ct:FWLabel key="JSP_RE_DEBLOCAGE_DES2"/>','forCanton':'<ct:FWLabel key="JSP_RE_DEBLOCAGE_CANTON"/>'}¦,
+									   criterias:¦{'forDesignation1Like':'<ct:FWLabel key="JSP_RE_DEBLOCAGE_DES1"/>','forCodeAdministrationLike':'<ct:FWLabel key="JSP_RE_DEBLOCAGE_CODE"/>','forCanton':'<ct:FWLabel key="JSP_RE_DEBLOCAGE_CANTON"/>'}¦,
 									   lineFormatter:¦#{tiers.designation2} #{tiers.designation1}, #{tiers.idTiers} ¦,
 									   modelReturnVariables:¦tiers.designation1,tiers.designation2,tiers.id¦,
 									   nbReturn:¦20¦,
