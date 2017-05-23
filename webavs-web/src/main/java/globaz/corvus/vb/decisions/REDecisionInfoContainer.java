@@ -1,6 +1,7 @@
 package globaz.corvus.vb.decisions;
 
 import globaz.corvus.api.decisions.IREDecision;
+import globaz.corvus.db.basescalcul.REBasesCalcul;
 import globaz.corvus.db.decisions.REDecisionEntity;
 import globaz.corvus.db.decisions.RERemarqueGroupePeriode;
 import globaz.corvus.db.decisions.RERemarqueGroupePeriodeManager;
@@ -213,7 +214,7 @@ public class REDecisionInfoContainer implements Serializable {
 
                         // BZ 6328 : Décision, détail : pour les API, l'office AI de Berne ne vient pas en allemand.
                         nomOfficeAI = findNomCaisseParCantonEtLangueTiers(session, langueBeneficiairePrincipal,
-                                idCantonDomicileBeneficiaire, demandeApi.getIdDemandeRente());
+                                idCantonDomicileBeneficiaire, demandeApi.getIdDemandeRente(), ra.getIdBaseCalcul());
 
                     } catch (Exception e) {
                         throw new Exception("erreur dans la recherche des offices AI");
@@ -310,58 +311,58 @@ public class REDecisionInfoContainer implements Serializable {
     }
 
     private String findNomCaisseParCantonEtLangueTiers(final BSession session,
-            final String langueBeneficiairePrincipal, final String idCantonDomicileBeneficiaire, final String idDemande)
-            throws Exception {
+            final String langueBeneficiairePrincipal, final String idCantonDomicileBeneficiaire,
+            final String idDemande, String idBaseCalcul) throws Exception {
 
         String nomCaisse = "";
-        TIAdministrationManager tiAdministrationMgr = new TIAdministrationManager();
 
-        // Recherche des administrations selon le genre
-        tiAdministrationMgr.setSession(session);
-        tiAdministrationMgr.setForGenreAdministration(RESaisieDemandeRenteViewBean.CS_ADMIN_GENRE_OFFICE_AI);
-        tiAdministrationMgr.changeManagerSize(0);
+        REBasesCalcul baseCalculEntity = new REBasesCalcul();
+        baseCalculEntity.setIdBasesCalcul(idBaseCalcul);
+        baseCalculEntity.retrieve();
 
-        tiAdministrationMgr.find();
+        if ((baseCalculEntity != null) && !JadeStringUtil.isBlankOrZero(baseCalculEntity.getCodeOfficeAi())) {
+            PRTiersWrapper[] tabTiers = PRTiersHelper.getAdministrationActiveForGenreAndCode(session,
+                    RESaisieDemandeRenteViewBean.CS_ADMIN_GENRE_OFFICE_AI, baseCalculEntity.getCodeOfficeAi());
 
-        // Recherche du nom de la caisse selon le canton
-        if (tiAdministrationMgr.size() > 0) {
-            for (Iterator<TIAdministrationViewBean> iterAdministration = tiAdministrationMgr.iterator(); iterAdministration
-                    .hasNext();) {
-                TIAdministrationViewBean tiAdministration = iterAdministration.next();
+            if (tabTiers != null) {
 
-                if ((tiAdministration.getCanton().equals(idCantonDomicileBeneficiaire))
-                        && (tiAdministration.getLangue().equals(langueBeneficiairePrincipal))) {
-                    nomCaisse = tiAdministration.getDesignation1();
-                    break;
-                }
-            }
-        }
-
-        // Sinon, recherche de la caisse selon code de l'office AI de la demande
-        if (nomCaisse == "") {
-            REDemandeRenteAPI reDemandeRente = new REDemandeRenteAPI();
-            reDemandeRente.setSession(session);
-            reDemandeRente.setIdDemandeRente(idDemande);
-            reDemandeRente.retrieve();
-
-            if ((reDemandeRente != null) && !JadeStringUtil.isBlankOrZero(reDemandeRente.getCodeOfficeAI())) {
-                PRTiersWrapper[] tabTiers = PRTiersHelper.getAdministrationActiveForGenreAndCode(session,
-                        RESaisieDemandeRenteViewBean.CS_ADMIN_GENRE_OFFICE_AI, reDemandeRente.getCodeOfficeAI());
-
-                if (tabTiers != null) {
-
-                    for (PRTiersWrapper tiersW : tabTiers) {
-                        if (tiersW != null) {
-                            nomCaisse = tiersW.getNom();
-                        }
+                for (PRTiersWrapper tiersW : tabTiers) {
+                    if (tiersW != null) {
+                        nomCaisse = tiersW.getNom();
                     }
                 }
             }
         }
 
-        // Sinon, recherche de la caisse selon la langue du tiers
+        // Si on ne trouve pas le nom de l'office AI selon la base de calcul on passe par le tiers
         if (nomCaisse == "") {
-            nomCaisse = findNomCaisseByLangage(session, tiAdministrationMgr, langueBeneficiairePrincipal, nomCaisse);
+            TIAdministrationManager tiAdministrationMgr = new TIAdministrationManager();
+
+            // Recherche des administrations selon le genre
+            tiAdministrationMgr.setSession(session);
+            tiAdministrationMgr.setForGenreAdministration(RESaisieDemandeRenteViewBean.CS_ADMIN_GENRE_OFFICE_AI);
+            tiAdministrationMgr.changeManagerSize(0);
+
+            tiAdministrationMgr.find();
+
+            // Recherche du nom de l'office AI selon le canton
+            if (tiAdministrationMgr.size() > 0) {
+                for (Iterator<TIAdministrationViewBean> iterAdministration = tiAdministrationMgr.iterator(); iterAdministration
+                        .hasNext();) {
+                    TIAdministrationViewBean tiAdministration = iterAdministration.next();
+
+                    if ((tiAdministration.getCanton().equals(idCantonDomicileBeneficiaire))
+                            && (tiAdministration.getLangue().equals(langueBeneficiairePrincipal))) {
+                        nomCaisse = tiAdministration.getDesignation1();
+                        break;
+                    }
+                }
+            }
+
+            // Sinon, recherche de la caisse selon la langue du tiers
+            if (nomCaisse == "") {
+                nomCaisse = findNomCaisseByLangage(session, tiAdministrationMgr, langueBeneficiairePrincipal, nomCaisse);
+            }
         }
 
         return nomCaisse;
