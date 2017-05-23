@@ -158,7 +158,7 @@ globazGlobal.isRenteBloque = ${viewBean.isRenteBloque()};
 							<span class="lbl"><ct:FWLabel key="JSP_RE_DEBLOCAGE_MONTANT_DEBLOQUER"/></span>							
 						</div>
 						<div class="span1 right">
-							<span class="value">${viewBean.montantBloque}</span>
+							<span class="value">${viewBean.diffMontantBloqueDebloque}</span>
 						</div>
 						<div class="span1"></div>
 					</div>

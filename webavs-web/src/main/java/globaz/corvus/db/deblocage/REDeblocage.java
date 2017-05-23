@@ -34,6 +34,10 @@ public class REDeblocage {
         montantDebloquer = new Montant(enteteBlocage.getMontantDebloque());
     }
 
+    public Montant computeDiffMontantBloqueMontantDebloque() {
+        return new Montant(enteteBlocage.getMontantBloque()).substract(new Montant(enteteBlocage.getMontantDebloque()));
+    }
+
     public Montant computeMontantAdebloquerEntete() {
         return new Montant(enteteBlocage.getMontantBloque()).substract(montantDebloquer);
     }
