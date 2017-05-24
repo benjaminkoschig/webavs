@@ -10,7 +10,6 @@ import globaz.jade.client.util.JadeStringUtil;
 import globaz.naos.db.affiliation.AFAffiliation;
 import globaz.naos.db.affiliation.AFAffiliationManager;
 import globaz.osiris.db.comptes.CACompteAnnexe;
-import globaz.osiris.db.comptes.CACompteAnnexeManager;
 import globaz.osiris.db.comptes.CASection;
 import globaz.osiris.db.comptes.CASectionManager;
 import java.math.BigDecimal;
@@ -85,8 +84,8 @@ public class COImprimerJournalContentieuxInfoComplementaireExcelml extends COAbs
             // La date de radiation de l'affiliation
             infosSupp.put(EXCELML_MODEL_COL_DATE_RADIATION, resolveDateFinAffiliation(affiliation));
 
-            // Le texte de la remarque sur le compte annexe
-            infosSupp.put(EXCELML_MODEL_COL_REMARQUE_CA, findRemarque(session, idCompteAnnexe, numeroAffilie));
+            // Le texte de la remarque de la section
+            infosSupp.put(EXCELML_MODEL_COL_REMARQUE_CA, findRemarque(section));
 
             for (Map.Entry<String, String> entry : infosSupp.entrySet()) {
                 getContainerJournalContentieuxExcelml().put(entry.getKey(), entry.getValue());
@@ -202,33 +201,20 @@ public class COImprimerJournalContentieuxInfoComplementaireExcelml extends COAbs
     }
 
     /**
-     * Recherche la remarque du compte annexe
+     * Recherche la remarque de la section
      * 
      * @param session
      * @param idCompteAnnexe
      * @param numeroAffilie
      * @return
      */
-    private String findRemarque(BSession session, String idCompteAnnexe, String numeroAffilie) {
+    private String findRemarque(CASection section) {
 
-        CACompteAnnexeManager managerCpt = new CACompteAnnexeManager();
-        managerCpt.setSession(session);
-        managerCpt.setForIdCompteAnnexeIn(idCompteAnnexe);
-
-        String remarque = "";
-        try {
-            managerCpt.find(BManager.SIZE_NOLIMIT);
-
-            if (managerCpt.size() > 0) {
-                CACompteAnnexe cptAnnexe = (CACompteAnnexe) managerCpt.getFirstEntity();
-                remarque = cptAnnexe.getRemarque();
-            }
-
+        String remarque = section.getRemarqueEcran();
+        if (remarque == null) {
+            return "";
+        } else {
             return remarque;
-
-        } catch (Exception e) {
-            throw new CommonTechnicalException(
-                    "Impossible de récupérer la remarque pour le compte annexe de l'affilié : " + numeroAffilie, e);
         }
 
     }

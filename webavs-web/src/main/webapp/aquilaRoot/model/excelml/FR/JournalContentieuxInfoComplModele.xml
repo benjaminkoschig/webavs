@@ -351,7 +351,7 @@
     <Cell ss:StyleID="s83"><Data ss:Type="String">Section plus récente payée</Data></Cell>
     <Cell ss:StyleID="s83"><Data ss:Type="String">Crédit existant</Data></Cell>
     <Cell ss:StyleID="s83"><Data ss:Type="String">Date radiation</Data></Cell>
-    <Cell ss:StyleID="s83"><Data ss:Type="String">Remarque du compte annexe</Data></Cell>
+    <Cell ss:StyleID="s83"><Data ss:Type="String">Remarque de la section</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="72.75" ss:StyleID="s85">
     <Cell ss:StyleID="s87"><Data ss:Type="String"> </Data><NamedCell
