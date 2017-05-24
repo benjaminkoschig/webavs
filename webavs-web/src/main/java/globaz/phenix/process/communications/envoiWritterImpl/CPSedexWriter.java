@@ -1002,142 +1002,154 @@ public class CPSedexWriter {
                 process.incProgressCounter();
                 entity = (CPCommunicationFiscaleAffichage) manager.getEntity(j);
 
-                // Sauvegarde du cas traité pour éventuellement le mettre en erreur
-                // si la validation du fichier xml a échoué
-                if (entity.isNew() != false) {
-                    continue;
-                }
+                // [EST] D0202 - Controle de l'état du SEDEX, si 'non traité' ou 'abandonné' on ne le traite pas
+                boolean isEtatRejetNonTraiteAbandonne = isEtatRejetSedexNonTraiteAbandonne(process.getSession(),
+                        entity.getIdCommunication());
+                if (!isEtatRejetNonTraiteAbandonne) {
 
-                communicationTraitee.add(entity.getNumAffilie());
-                process.incProgressCounter();
-                message101 = objFac101.createMessage();
-
-                if (message102.getContent() == null) {
-                    ch.eahv_iv.xmlns.eahv_iv_2011_000102._3.ContentType con = objFac102.createContentType();
-                    message102.setContent(con);
-                }
-
-                idTiers = entity.getIdTiers();
-                affiliation = CPSedexWriter.loadAffiliation(entity);
-
-                // On recherche la décision qui a généré la demande pour retrouver l'idConjoint
-
-                CPDecisionManager decM = new CPDecisionManager();
-                decM.setSession(process.getSession());
-                decM.setForIdAffiliation(entity.getIdAffiliation());
-                decM.setForAnneeDecision(entity.getAnneeDecision());
-                decM.setForIsActive(Boolean.TRUE);
-                decM.find();
-                if (decM.size() == 0) {
-                    if (JadeStringUtil.isEmpty(affiliation.getAffilieNumero()) == false) {
-                        transaction.addErrors(entity.getSession().getLabel("CP_SEDEX_MSG2")
-                                + entity.getIdCommunication() + " - " + affiliation.getAffilieNumero() + " - "
-                                + entity.getAnneeDecision());
-                    } else {
-                        transaction.addErrors(process.getSession().getLabel("CP_SEDEX_MSG2")
-                                + entity.getIdCommunication());
+                    // Sauvegarde du cas traité pour éventuellement le mettre en erreur
+                    // si la validation du fichier xml a échoué
+                    if (entity.isNew() != false) {
+                        continue;
                     }
 
-                } else {
-                    decision = (CPDecision) decM.getFirstEntity();
-                    idConjoint = decision.getIdConjoint();
-                    if ((JadeStringUtil.isBlankOrZero(idConjoint) == false)
-                            || decision.getDivision2().equals(Boolean.TRUE)) {
-                        isMaried = true;
-                    }
-                    // Selon les directives Sedex:
-                    // Le contribuable est toujours le mari ==> si une communication a un tiers
-                    // de sexe féminin et qui a un conjoint, on inverse les rôles, le contribuable passe conjoint
-                    // (même si l'homme est inconnu à la caisse)
-                    // Selon le mode VD -> Le tiers (homme ou femme) est le contribuable
-                    String modeEnvoiSedex = CPParametreCanton.findCodeWhitTypeAndCanton(process.getSession(),
-                            entity.getCanton(), CPParametreCanton.CS_MODE_ENVOI_SEDEX, JACalendar.todayJJsMMsAAAA());
+                    communicationTraitee.add(entity.getNumAffilie());
+                    process.incProgressCounter();
+                    message101 = objFac101.createMessage();
 
-                    boolean changeAffilie = false;
-                    if (!CPParametreCanton.CS_SEDEXENVOI_MODE_VD.equalsIgnoreCase(modeEnvoiSedex)
-                            && entity.getSexe().equalsIgnoreCase(TITiersViewBean.CS_FEMME)
-                            && (!JadeStringUtil.isBlankOrZero(idConjoint) || decision.getDivision2().equals(
-                                    Boolean.TRUE))) {
-                        idTiers = idConjoint;
-                        idConjoint = entity.getIdTiers();
-                        affiliationConjoint = CPSedexWriter.loadAffiliation(entity);
-                        affiliation = null;
-                        changeAffilie = true;
+                    if (message102.getContent() == null) {
+                        ch.eahv_iv.xmlns.eahv_iv_2011_000102._3.ContentType con = objFac102.createContentType();
+                        message102.setContent(con);
                     }
 
-                    // Rechercher du tiers
-                    TITiersViewBean tiers = null;
-                    if ((JadeStringUtil.isBlankOrZero(idTiers) == false) && ("100".equalsIgnoreCase(idTiers) == false)) {
-                        tiers = CPSedexWriter.loadTiers(idTiers, process.getSession());
-                    }
-                    if ((JadeStringUtil.isBlankOrZero(idConjoint) == false)
-                            && ("100".equalsIgnoreCase(idConjoint) == false)) {
-                        conjoint = CPSedexWriter.loadTiers(idConjoint, process.getSession());
-                        // On va rechercher l'affiliation du conjoint si elle n'est pas renseignée (cas ou le tiers
-                        // de la décision est une femme)
-                        if (conjoint != null) {
-                            if (!changeAffilie) {
-                                affiliationConjoint = CPToolBox.returnAffiliation(entity.getSession(), transaction,
-                                        conjoint.getIdTiers(), entity.getAnneeDecision(), "", 1);
-                            }
+                    idTiers = entity.getIdTiers();
+                    affiliation = CPSedexWriter.loadAffiliation(entity);
+
+                    // On recherche la décision qui a généré la demande pour retrouver l'idConjoint
+
+                    CPDecisionManager decM = new CPDecisionManager();
+                    decM.setSession(process.getSession());
+                    decM.setForIdAffiliation(entity.getIdAffiliation());
+                    decM.setForAnneeDecision(entity.getAnneeDecision());
+                    decM.setForIsActive(Boolean.TRUE);
+                    decM.find();
+                    if (decM.size() == 0) {
+                        if (JadeStringUtil.isEmpty(affiliation.getAffilieNumero()) == false) {
+                            transaction.addErrors(entity.getSession().getLabel("CP_SEDEX_MSG2")
+                                    + entity.getIdCommunication() + " - " + affiliation.getAffilieNumero() + " - "
+                                    + entity.getAnneeDecision());
+                        } else {
+                            transaction.addErrors(process.getSession().getLabel("CP_SEDEX_MSG2")
+                                    + entity.getIdCommunication());
                         }
-                    }
 
-                    String messageId = creationDemande(objFac101, objFac102, message101, message102, transaction,
-                            entity, tiers, affiliation, conjoint, affiliationConjoint, isMaried);
-                    // Mise à jour de la date d'envoi
-                    if (!transaction.hasErrors()) {
-                        // Si il n'y a pas d'erreurs on ajoute le message 101 au 102
-                        message102.getContent().getMessage().add(message101);
-                        // sauvegarde de la date d'envoi et création du lien entre la communication et le message
-                        // Sedex (utile pour les rejets)
-                        comFis = CPSedexWriter.updateDateCommunicationEtLienSedex(transaction, message101, entity,
-                                messageId);
-                    }
-                }
-                // Ce ne sont pas des erreurs mais des warnings
-                if (transaction.hasErrors()) {
-                    // Parfois des messages sont remonté à double, on va donc tenter de les filtrer
+                    } else {
+                        decision = (CPDecision) decM.getFirstEntity();
+                        idConjoint = decision.getIdConjoint();
+                        if ((JadeStringUtil.isBlankOrZero(idConjoint) == false)
+                                || decision.getDivision2().equals(Boolean.TRUE)) {
+                            isMaried = true;
+                        }
+                        // Selon les directives Sedex:
+                        // Le contribuable est toujours le mari ==> si une communication a un tiers
+                        // de sexe féminin et qui a un conjoint, on inverse les rôles, le contribuable passe conjoint
+                        // (même si l'homme est inconnu à la caisse)
+                        // Selon le mode VD -> Le tiers (homme ou femme) est le contribuable
+                        String modeEnvoiSedex = CPParametreCanton
+                                .findCodeWhitTypeAndCanton(process.getSession(), entity.getCanton(),
+                                        CPParametreCanton.CS_MODE_ENVOI_SEDEX, JACalendar.todayJJsMMsAAAA());
 
-                    String message = transaction.getErrors().toString();
-                    List<String> fileredMessage = new ArrayList<String>();
+                        boolean changeAffilie = false;
+                        if (!CPParametreCanton.CS_SEDEXENVOI_MODE_VD.equalsIgnoreCase(modeEnvoiSedex)
+                                && entity.getSexe().equalsIgnoreCase(TITiersViewBean.CS_FEMME)
+                                && (!JadeStringUtil.isBlankOrZero(idConjoint) || decision.getDivision2().equals(
+                                        Boolean.TRUE))) {
+                            idTiers = idConjoint;
+                            idConjoint = entity.getIdTiers();
+                            affiliationConjoint = CPSedexWriter.loadAffiliation(entity);
+                            affiliation = null;
+                            changeAffilie = true;
+                        }
 
-                    // On try/catch afin d'assurer qu'une erreur à ce niveau (formattage des messages) ne casse pas
-                    // l'exécution du processus
-                    try {
-                        // On recherche le caractère de saut de ligne pour voir si plusieurs messages sont présents
-                        if (message.contains("\n")) {
-                            String[] values = message.split("\n");
-                            for (String val : values) {
-                                if (!JadeStringUtil.isBlank(val)) {
-                                    if (!fileredMessage.contains(val)) {
-                                        fileredMessage.add(val);
-                                    }
+                        // Rechercher du tiers
+                        TITiersViewBean tiers = null;
+                        if ((JadeStringUtil.isBlankOrZero(idTiers) == false)
+                                && ("100".equalsIgnoreCase(idTiers) == false)) {
+                            tiers = CPSedexWriter.loadTiers(idTiers, process.getSession());
+                        }
+                        if ((JadeStringUtil.isBlankOrZero(idConjoint) == false)
+                                && ("100".equalsIgnoreCase(idConjoint) == false)) {
+                            conjoint = CPSedexWriter.loadTiers(idConjoint, process.getSession());
+                            // On va rechercher l'affiliation du conjoint si elle n'est pas renseignée (cas ou le tiers
+                            // de la décision est une femme)
+                            if (conjoint != null) {
+                                if (!changeAffilie) {
+                                    affiliationConjoint = CPToolBox.returnAffiliation(entity.getSession(), transaction,
+                                            conjoint.getIdTiers(), entity.getAnneeDecision(), "", 1);
                                 }
                             }
-                        } else {
-                            fileredMessage.add(message);
                         }
 
-                        StringBuilder formatedMessage = new StringBuilder();
-                        formatedMessage.append(process.getSession().getLabel("CP_WARNING") + " "
-                                + entity.getNumAffilie() + " : ");
-                        for (int ctr = 0; ctr < fileredMessage.size(); ctr++) {
-                            formatedMessage.append(fileredMessage.get(ctr));
-                            if ((ctr + 1) < fileredMessage.size()) {
-                                formatedMessage.append(". ");
-                            }
+                        String messageId = creationDemande(objFac101, objFac102, message101, message102, transaction,
+                                entity, tiers, affiliation, conjoint, affiliationConjoint, isMaried);
+                        // Mise à jour de la date d'envoi
+                        if (!transaction.hasErrors()) {
+                            // Si il n'y a pas d'erreurs on ajoute le message 101 au 102
+                            message102.getContent().getMessage().add(message101);
+                            // sauvegarde de la date d'envoi et création du lien entre la communication et le message
+                            // Sedex (utile pour les rejets)
+                            comFis = CPSedexWriter.updateDateCommunicationEtLienSedex(transaction, message101, entity,
+                                    messageId);
                         }
-                        // Attention au factoring de l'append de l id communication, sans vérifié ou est utiliser la
-                        // constante car on l'utilise avec une recherche contains.
-                        result.addWarning(formatedMessage.toString() + ", "
-                                + CPXmlmlMappingCommunicationEnvoiProcess.CONCAT_ID_COMMUNICATION
-                                + entity.getIdCommunication());
-                    } catch (Exception e) {
-                        JadeLogger.error(this, e);
                     }
+                    // Ce ne sont pas des erreurs mais des warnings
+                    if (transaction.hasErrors()) {
+                        // Parfois des messages sont remonté à double, on va donc tenter de les filtrer
 
-                    transaction.clearErrorBuffer();
+                        String message = transaction.getErrors().toString();
+                        List<String> fileredMessage = new ArrayList<String>();
+
+                        // On try/catch afin d'assurer qu'une erreur à ce niveau (formattage des messages) ne casse pas
+                        // l'exécution du processus
+                        try {
+                            // On recherche le caractère de saut de ligne pour voir si plusieurs messages sont présents
+                            if (message.contains("\n")) {
+                                String[] values = message.split("\n");
+                                for (String val : values) {
+                                    if (!JadeStringUtil.isBlank(val)) {
+                                        if (!fileredMessage.contains(val)) {
+                                            fileredMessage.add(val);
+                                        }
+                                    }
+                                }
+                            } else {
+                                fileredMessage.add(message);
+                            }
+
+                            StringBuilder formatedMessage = new StringBuilder();
+                            formatedMessage.append(process.getSession().getLabel("CP_WARNING") + " "
+                                    + entity.getNumAffilie() + " : ");
+                            for (int ctr = 0; ctr < fileredMessage.size(); ctr++) {
+                                formatedMessage.append(fileredMessage.get(ctr));
+                                if ((ctr + 1) < fileredMessage.size()) {
+                                    formatedMessage.append(". ");
+                                }
+                            }
+                            // Attention au factoring de l'append de l id communication, sans vérifié ou est utiliser la
+                            // constante car on l'utilise avec une recherche contains.
+                            result.addWarning(formatedMessage.toString() + ", "
+                                    + CPXmlmlMappingCommunicationEnvoiProcess.CONCAT_ID_COMMUNICATION
+                                    + entity.getIdCommunication());
+                        } catch (Exception e) {
+                            JadeLogger.error(this, e);
+                        }
+
+                        transaction.clearErrorBuffer();
+                        communicationEnErreur.add(entity.getIdCommunication());
+                    }
+                }
+                // Ajout des demandes en erreur pour avoir l'état "non envoyé" dans la liste
+                else {
                     communicationEnErreur.add(entity.getIdCommunication());
                 }
             }
