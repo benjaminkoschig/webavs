@@ -33,6 +33,7 @@ public class REDeblocageViewBean extends PRAbstractViewBeanSupport {
     private String montantBloque;
     private String montantDebloque;
     private String montantRente;
+    private String montantEnComptat;
     private String diffMontantBloqueDebloque;
     private boolean retourDepuisPyxis = false;
     private String tiersBeneficiaireInfo;
@@ -60,6 +61,8 @@ public class REDeblocageViewBean extends PRAbstractViewBeanSupport {
         montantDebloque = new Montant(deblocage.getEnteteBlocage().getMontantDebloque()).toStringFormat();
         montantADebloquer = deblocage.computeMontantToUseForDeblocage().toStringFormat();
         diffMontantBloqueDebloque = deblocage.computeDiffMontantBloqueMontantDebloque().toStringFormat();
+
+        montantEnComptat = deblocage.getMontantEnComptat().toStringFormat();
     }
 
     public String getGenre() {
@@ -271,6 +274,10 @@ public class REDeblocageViewBean extends PRAbstractViewBeanSupport {
         this.retours = retours;
     }
 
+    public void setMontantEnComptat(String montantEnComptat) {
+        this.montantEnComptat = montantEnComptat;
+    }
+
     public boolean isRenteBloque() {
         return pracc.getIsPrestationBloquee();
     }
@@ -285,6 +292,10 @@ public class REDeblocageViewBean extends PRAbstractViewBeanSupport {
 
     public String getParamActionDeValider() {
         return "devalider";
+    }
+
+    public String getMontantEnComptat() {
+        return montantEnComptat;
     }
 
     public boolean hasCUDRight() {

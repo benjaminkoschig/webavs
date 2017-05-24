@@ -23,6 +23,7 @@
 	boolean hasComptaUpdateRight = objSession.hasRight("osiris.retours.retours.afficher", FWSecureConstants.UPDATE);
 	
 	
+	
 %>
 <%@ include file="/theme/detail_ajax/javascripts.jspf" %>
 
@@ -120,17 +121,11 @@ globazGlobal.isRenteBloque = ${viewBean.isRenteBloque()};
 						</div>
 					</div>
 					<div  style="padding-top:5px;" class="row-fluid">
-						<div class="span1">
-							<span class="lbl"><ct:FWLabel key="JSP_RE_DEBLOCAGE_PERIODE"/></span>
-						</div>
-						<div class="span2">
-							<span class="value">${viewBean.periode}</span>
-						</div>
-
-						<div class="span2">
+						
+						<div class="span3">
 							<span class="lbl"><ct:FWLabel key="JSP_RE_DEBLOCAGE_GENRE_RENTE"/></span>
 						</div>
-						<div class="span1">
+						<div class="span3">
 							<span class="value">${viewBean.genre}</span>
 						</div>
 	
@@ -151,7 +146,7 @@ globazGlobal.isRenteBloque = ${viewBean.isRenteBloque()};
 						<div class="span4">
 							<span class="lbl"><ct:FWLabel key="JSP_RE_DEBLOCAGE_MONTANT_TOTALE_A_DEBLOQUER"/></span>
 							
-							<span class="value">${viewBean.montantToUsedForDeblocage}</span>
+							<span class="value">${viewBean.montantEnComptat}</span>
 						</div>
 						<div class="span2"></div>
 						<div class="span3">
