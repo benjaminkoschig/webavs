@@ -369,21 +369,23 @@ public class APRepartitionPaiements extends BEntity implements PRHierarchique {
             situation.retrieve();
 
             if (!situation.isNew()) {
-                idDomainePaiement = situation.getIdDomainePaiementEmployeur();
-                idTiersPaiement = situation.getIdTiersPaiementEmployeur();
-            }
-        } else {
-            // chercher adresse de paiement
-            APPrestation prestation = new APPrestation();
-            prestation.setSession(getSession());
-            prestation.setIdPrestationApg(getIdPrestationApg());
-            prestation.retrieve(transaction);
 
-            if (IAPDroitMaternite.CS_REVISION_MATERNITE_2005.equals(prestation.getNoRevision())) {
-                idDomainePaiement = IPRConstantesExternes.TIERS_CS_DOMAINE_MATERNITE;
-            } else {
-                idDomainePaiement = IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_APG;
+                if (!JadeStringUtil.isBlankOrZero(situation.getIdDomainePaiementEmployeur())) {
+                    idDomainePaiement = situation.getIdDomainePaiementEmployeur();
+                } else {
+                    idDomainePaiement = idDomaineAdressePaiement;
+                }
+
+                if (!JadeStringUtil.isBlankOrZero(situation.getIdTiersPaiementEmployeur())) {
+                    idTiersPaiement = situation.getIdTiersPaiementEmployeur();
+                } else {
+                    idTiersPaiement = idTiersAdressePaiement;
+                }
             }
+        }
+
+        if (JadeStringUtil.isBlankOrZero(idDomainePaiement)) {
+            idDomainePaiement = giveDomaineDefaut(transaction);
         }
 
         if (JadeStringUtil.isBlankOrZero(idTiersPaiement)) {
@@ -392,6 +394,20 @@ public class APRepartitionPaiements extends BEntity implements PRHierarchique {
 
         setAdressePaiement(PRTiersHelper.getAdressePaiementData(getSession(), transaction, idTiersPaiement,
                 idDomainePaiement, idAffilie, JACalendar.todayJJsMMsAAAA()));
+    }
+
+    private String giveDomaineDefaut(BTransaction transaction) throws Exception {
+        // chercher adresse de paiement
+        APPrestation prestation = new APPrestation();
+        prestation.setSession(getSession());
+        prestation.setIdPrestationApg(getIdPrestationApg());
+        prestation.retrieve(transaction);
+
+        if (IAPDroitMaternite.CS_REVISION_MATERNITE_2005.equals(prestation.getNoRevision())) {
+            return IPRConstantesExternes.TIERS_CS_DOMAINE_MATERNITE;
+        } else {
+            return IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_APG;
+        }
     }
 
     /**
