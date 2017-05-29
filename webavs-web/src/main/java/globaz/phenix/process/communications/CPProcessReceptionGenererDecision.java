@@ -1076,7 +1076,7 @@ public class CPProcessReceptionGenererDecision extends BProcess {
                 }
 
                 float calculCotisation = 0f;
-                if (!JadeStringUtil.isDecimalEmpty(newDecision.getRachatLPP())) {
+                if (!JadeStringUtil.isDecimalEmpty(JANumberFormatter.deQuote(newDecision.getRachatLPP()))) {
                     float rachatLpp = Float.parseFloat(JANumberFormatter.deQuote(newDecision.getRachatLPP()));
                     float revenuPourCalcul = Float.parseFloat(JANumberFormatter.deQuote(revenu)) - rachatLpp;
 
