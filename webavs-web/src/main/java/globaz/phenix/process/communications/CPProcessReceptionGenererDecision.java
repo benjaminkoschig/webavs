@@ -1074,10 +1074,22 @@ public class CPProcessReceptionGenererDecision extends BProcess {
                     tauxCalcul = Float.parseFloat(new FWCurrency(100 - Float.parseFloat(JANumberFormatter.deQuote(tInd
                             .getTaux())), 4).toString());
                 }
-                float calculCotisation = (((Float.parseFloat(JANumberFormatter.deQuote(revenu)) * 100)
-                        - (mFranchise * Float.parseFloat(JANumberFormatter.deQuote(tInd.getTaux()))) - (mInteretcapital * Float
-                        .parseFloat(JANumberFormatter.deQuote(tInd.getTaux())))) / tauxCalcul)
-                        - Float.parseFloat(JANumberFormatter.deQuote(revenu));
+
+                float calculCotisation = 0f;
+                if (!JadeStringUtil.isDecimalEmpty(newDecision.getRachatLPP())) {
+                    float rachatLpp = Float.parseFloat(JANumberFormatter.deQuote(newDecision.getRachatLPP()));
+                    float revenuPourCalcul = Float.parseFloat(JANumberFormatter.deQuote(revenu)) - rachatLpp;
+
+                    calculCotisation = (((revenuPourCalcul * 100)
+                            - (mFranchise * Float.parseFloat(JANumberFormatter.deQuote(tInd.getTaux()))) - (mInteretcapital * Float
+                            .parseFloat(JANumberFormatter.deQuote(tInd.getTaux())))) / tauxCalcul) - revenuPourCalcul;
+                } else {
+
+                    calculCotisation = (((Float.parseFloat(JANumberFormatter.deQuote(revenu)) * 100)
+                            - (mFranchise * Float.parseFloat(JANumberFormatter.deQuote(tInd.getTaux()))) - (mInteretcapital * Float
+                            .parseFloat(JANumberFormatter.deQuote(tInd.getTaux())))) / tauxCalcul)
+                            - Float.parseFloat(JANumberFormatter.deQuote(revenu));
+                }
                 newDecision.setCotisation1(JANumberFormatter.round(Float.toString(calculCotisation), 1, 2,
                         JANumberFormatter.INF));
 
