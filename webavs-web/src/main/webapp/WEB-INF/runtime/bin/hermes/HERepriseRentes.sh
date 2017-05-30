@@ -57,5 +57,5 @@ else
     find $BATCH_DIR/$VERSION/logs -name ${MODULE}.log.* -ctime +15 -exec rm {} \;
     if [ -f $LOGFILE ]; then cp $LOGFILE ${LOGFILE}.$TIMESTAMP; fi
     nice -n $NICELEVEL $CALL_JAVA_PROCESS_1 > $LOGFILE 2>&1
-	nice -n $NICELEVEL $CALL_JAVA_PROCESS_2 > $LOGFILE 2>&1
+	nice -n $NICELEVEL $CALL_JAVA_PROCESS_2 >> $LOGFILE 2>&1
 fi
