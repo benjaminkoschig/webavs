@@ -1071,7 +1071,7 @@ public class CAComptabiliserJournal {
             CAInteretMoratoire interet = im.getInteretMoratoire();
             try {
                 interet.retrieve(context.getTransaction());
-                if (liste.size() == 1) {
+                if (liste.size() == 1 && !interet.isNouveauRegime()) {
                     interet.setMotifcalcul(CAInteretMoratoire.CS_SOUMIS);
                 } else {
                     interet.setMotifcalcul(CAInteretMoratoire.CS_EXEMPTE);

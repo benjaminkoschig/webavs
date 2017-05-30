@@ -382,6 +382,7 @@ public class CAProcessInteretMoratoireManuel extends BProcess {
             if (!CAInteretTardif.isOfficeExcluDuNouveauRegime(cantonOfficePoursuite, getSession())) {
                 dateExecution = JadeDateUtil.addDays(sectionAuxPoursuite.getHistorique().getDateExecution(), 1);
                 dateCalculDebutInteret = new JADate(dateExecution);
+                interet.setNouveauRegime(true);
             } else {
                 dateCalculDebutInteret = interetTardif.getDateCalculDebutInteret(getSession(), getTransaction());
             }

@@ -129,6 +129,7 @@ public class CAInteretMoratoire extends BEntity {
     private CASection section = null;
 
     private String warningVerifierCompensation = "";
+    private boolean nouveauRegime = false;
 
     public static String getStatus(FAPassage passage, String motifCalcul) {
         // si la décision d'IM ne possede pas de facture on ne suit pas les
@@ -1136,6 +1137,14 @@ public class CAInteretMoratoire extends BEntity {
                 return;
             }
         }
+    }
+
+    public boolean isNouveauRegime() {
+        return nouveauRegime;
+    }
+
+    public void setNouveauRegime(boolean nouveauRegime) {
+        this.nouveauRegime = nouveauRegime;
     }
 
 }
