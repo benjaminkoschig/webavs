@@ -1792,9 +1792,6 @@ public class CPProcessReceptionGenererDecision extends BProcess {
         if (donnee.getEmploymentIncome() != "") {
             revenu = Integer.parseInt(JANumberFormatter.deQuote(donnee.getIncomeFromSelfEmployment()));
         }
-        if (donnee.getMainIncomeInAgriculture() != "") {
-            revenuAgricole = Integer.parseInt(JANumberFormatter.deQuote(donnee.getMainIncomeInAgriculture()));
-        }
 
         double revenus = ((double) revenu + revenuAgricole);
 
