@@ -1,7 +1,7 @@
 package globaz.corvus.process.deblocage;
 
 import ch.globaz.common.domaine.Montant;
-import ch.globaz.common.listoutput.converterImplemented.MontantConverterToDouble;
+import ch.globaz.common.listoutput.converterImplemented.MontantConverter;
 import ch.globaz.simpleoutputlist.annotation.Aggregate;
 import ch.globaz.simpleoutputlist.annotation.AggregateFunction;
 import ch.globaz.simpleoutputlist.annotation.Column;
@@ -9,7 +9,7 @@ import ch.globaz.simpleoutputlist.annotation.ColumnValueConverter;
 import ch.globaz.simpleoutputlist.annotation.style.Align;
 import ch.globaz.simpleoutputlist.annotation.style.ColumnStyle;
 
-@ColumnValueConverter({ MontantConverterToDouble.class })
+@ColumnValueConverter({ MontantConverter.class })
 public class REOVDeblocageForListContainer {
 
     private String desciption;
