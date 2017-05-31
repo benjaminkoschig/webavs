@@ -180,7 +180,7 @@ public class CAProcessFormatOrdreSEPA extends CAOrdreFormateur {
                 postalAdr.setTwnNm(town.isEmpty() ? null : town);
             } else {
 
-                final String rue = getRue(ov);
+                final String rue = getRueComplet(ov);
                 if (!rue.isEmpty()) {
                     postalAdr.getAdrLine().add(CASepaCommonUtils.limit70(rue));
 
@@ -257,6 +257,19 @@ public class CAProcessFormatOrdreSEPA extends CAOrdreFormateur {
             logger.debug("added clevel to blevel [{}] contain now {}", key.getKeyString(), bLevels.get(key).size());
         }
         return null;
+    }
+
+    private String getRueComplet(final APICommonOdreVersement ov) throws Exception {
+        String rue = CASepaCommonUtils.limit70(ov.getAdressePaiement().getAdresseCourrier().getRue().trim());
+
+        if (JadeStringUtil.isEmpty(rue)) {
+            rue = CASepaCommonUtils.limit70(ov.getAdressePaiement().getAdresseCourrier().getAdresse()[0]);
+            if (!JadeStringUtil.isEmpty(rue)) {
+                rue = rue.trim();
+            }
+        }
+
+        return rue;
     }
 
     private String getRue(final APICommonOdreVersement ov) throws Exception {
