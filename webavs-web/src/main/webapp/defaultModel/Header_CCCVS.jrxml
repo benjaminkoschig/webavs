@@ -62,7 +62,7 @@
 			</band>
 		</title>
 		<pageHeader>
-			<band height="214"  isSplitAllowed="true" >
+			<band height="193"  isSplitAllowed="true" >
 				<image  scaleImage="RetainShape" vAlign="Top" hAlign="Left" isUsingCache="false" evaluationTime="Now" hyperlinkType="None">					<reportElement
 						mode="Transparent"
 						x="3"
@@ -103,9 +103,9 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="308"
-						y="112"
+						y="103"
 						width="250"
-						height="101"
+						height="86"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
 						key="textField-3"
@@ -114,7 +114,7 @@
 						isPrintRepeatedValues="true"
 						isRemoveLineWhenBlank="false"
 						isPrintInFirstWholeBand="false"
-						isPrintWhenDetailOverflows="false">
+						isPrintWhenDetailOverflows="true">
 							<printWhenExpression><![CDATA[new Boolean($P{P_HEADER_ADRESSE}!=null)]]></printWhenExpression>
 						</reportElement>
 					<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
@@ -367,7 +367,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
 						x="308"
-						y="94"
+						y="83"
 						width="274"
 						height="18"
 						forecolor="#000000"
