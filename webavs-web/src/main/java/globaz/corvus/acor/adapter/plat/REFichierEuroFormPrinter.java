@@ -169,6 +169,13 @@ public class REFichierEuroFormPrinter implements PRFichierACORPrinter {
 
             data.append(putValue(codePays));
         }
+        // Si pas d'adresse on insère des tabulations pour éviter un décalage dans Acor
+        else {
+            data.append(" " + FIELD_DEPARATOR);
+            data.append(" " + FIELD_DEPARATOR);
+            data.append(" " + FIELD_DEPARATOR);
+            data.append(" " + FIELD_DEPARATOR);
+        }
 
         // Adresse paiement du tiers
         if (adressePaiement != null) {
