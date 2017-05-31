@@ -171,22 +171,13 @@ public class CAProcessFormatOrdreSEPA extends CAOrdreFormateur {
                 final String rue = getRue(ov);
 
                 postalAdr.setStrtNm(rue.isEmpty() ? null : rue);
-                // FIXME besoin de modif des interfaces PIXYS
+                postalAdr.setBldgNb(getNumeroRue(ov));
                 final String postCode = CASepaCommonUtils.limit16(ov.getAdressePaiement().getAdresseCourrier()
                         .getNumPostal());
                 postalAdr.setPstCd(postCode.isEmpty() ? null : postCode);
                 final String town = CASepaCommonUtils.limit35(ov.getAdressePaiement().getAdresseCourrier()
                         .getLocalite());
                 postalAdr.setTwnNm(town.isEmpty() ? null : town);
-
-                // String rue = CASepaCommonUtils.limit70(ov.getAdressePaiement().getAdresseCourrier().getRueSansNum());
-                // String numeroRue =
-                // CASepaCommonUtils.limit16(ov.getAdressePaiement().getAdresseCourrier().getNumeroRue());
-                // postalAdr.setStrtNm((rue.isEmpty() ? null : rue));
-                // postalAdr.setBldgNb((numeroRue.isEmpty() ? null : numeroRue));
-                // postalAdr.setPstCd(CASepaCommonUtils.limit16(ov.getAdressePaiement().getAdresseCourrier().getNumPostal()));
-                // postalAdr.setTwnNm(CASepaCommonUtils.limit35(ov.getAdressePaiement().getAdresseCourrier().getLocalite()));
-                // postalAdr.setCtry(ov.getAdressePaiement().getAdresseCourrier().getPaysISO());
             } else {
 
                 final String rue = getRue(ov);
@@ -269,7 +260,7 @@ public class CAProcessFormatOrdreSEPA extends CAOrdreFormateur {
     }
 
     private String getRue(final APICommonOdreVersement ov) throws Exception {
-        String rue = CASepaCommonUtils.limit70(ov.getAdressePaiement().getAdresseCourrier().getRue().trim());
+        String rue = CASepaCommonUtils.limit70(ov.getAdressePaiement().getAdresseCourrier().getRueSansNumero().trim());
 
         if (JadeStringUtil.isEmpty(rue)) {
             rue = CASepaCommonUtils.limit70(ov.getAdressePaiement().getAdresseCourrier().getAdresse()[0]);
@@ -279,6 +270,16 @@ public class CAProcessFormatOrdreSEPA extends CAOrdreFormateur {
         }
 
         return rue;
+    }
+
+    private String getNumeroRue(final APICommonOdreVersement ov) throws Exception {
+        String numeroRue = ov.getAdressePaiement().getAdresseCourrier().getNumeroRue();
+
+        if (!JadeStringUtil.isEmpty(numeroRue)) {
+            return numeroRue;
+        }
+
+        return null;
     }
 
     @Override

@@ -251,6 +251,16 @@ public class TIAdresseCourrierOSI implements IntAdresseCourrier {
         return adresse.getRue() + " " + adresse.getNumeroRue();
     }
 
+    @Override
+    public String getRueSansNumero() {
+        return adresse.getRue();
+    }
+
+    @Override
+    public String getNumeroRue() {
+        return adresse.getNumeroRue();
+    }
+
     /**
      * Insérez la description de la méthode ici. Date de création : (28.11.2001 07:32:46)
      * 

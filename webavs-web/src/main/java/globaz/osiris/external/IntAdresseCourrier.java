@@ -78,6 +78,13 @@ public interface IntAdresseCourrier extends BIEntity {
     String getNumCommuneOfs();
 
     /**
+     * Insérez la description de la méthode ici. Date de création : (28.11.2001 07:32:46)
+     * 
+     * @return java.lang.String
+     */
+    String getNumeroRue();
+
+    /**
      * Insérez la description de la méthode ici. Date de création : (28.11.2001 07:34:58)
      * 
      * @return java.lang.String
@@ -105,10 +112,12 @@ public interface IntAdresseCourrier extends BIEntity {
      */
     String getRue();
 
-    // TODO waiting for SEPA
-    // String getRueSansNum();
-    //
-    // String getNumeroRue();
+    /**
+     * Insérez la description de la méthode ici. Date de création : (28.11.2001 07:32:46)
+     * 
+     * @return java.lang.String
+     */
+    String getRueSansNumero();
 
     /**
      * Insérez la description de la méthode ici. Date de création : (28.11.2001 07:32:46)
