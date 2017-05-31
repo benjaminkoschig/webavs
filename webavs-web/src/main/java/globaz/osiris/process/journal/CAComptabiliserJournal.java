@@ -416,7 +416,8 @@ public class CAComptabiliserJournal {
             if (APIOperation.PROVPMT_SOLDEOP.equals(ecrPmt.getProvenancePmt())
                     || APIOperation.PROVPMT_SOLDEOF.equals(ecrPmt.getProvenancePmt())) {
 
-                ArrayList<CAInteretManuelVisualComponent> liste = calculIMManuel(context, ecrPmt, false);
+                ArrayList<CAInteretManuelVisualComponent> liste = calculIMManuel(context, context.getSession(), ecrPmt,
+                        false);
                 if (soldeSection.isNegative() && !liste.isEmpty()) {
                     FWCurrency totalIM = interetTotalIM(liste);
                     BigDecimal diff = soldeSection.getBigDecimalValue().abs().subtract(totalIM.getBigDecimalValue());
@@ -437,7 +438,7 @@ public class CAComptabiliserJournal {
                 // POAVS-223
                 if (CAInteretTardif.isNouveauCalculPoursuite(context.getSession(), ecrPmt.getSection())) {
                     // Simuler IM
-                    calculIMManuel(context, ecrPmt, true);
+                    calculIMManuel(context, context.getSession(), ecrPmt, true);
                 }
             }
         }
@@ -463,7 +464,7 @@ public class CAComptabiliserJournal {
                 // POAVS-223
                 if (CAInteretTardif.isNouveauCalculPoursuite(context.getSession(), ecr.getSection())) {
                     // Simuler IM
-                    calculIMManuel(context, ecr, true);
+                    calculIMManuel(null, context.getSession(), ecr, true);
                 }
             }
         }
@@ -500,11 +501,11 @@ public class CAComptabiliserJournal {
      * @return
      * @throws Exception
      */
-    private ArrayList<CAInteretManuelVisualComponent> calculIMManuel(BProcess context, CAEcriture ecr,
-            boolean forceExempte) throws Exception {
+    private ArrayList<CAInteretManuelVisualComponent> calculIMManuel(BProcess context, BSession session,
+            CAEcriture ecr, boolean forceExempte) throws Exception {
         // Calcul IM
         CAProcessInteretMoratoireManuel process = new CAProcessInteretMoratoireManuel();
-        process.setSession(context.getSession());
+        process.setSession(session);
         process.setParent(context);
         process.setDateFin(ecr.getDate());
         process.setIdSection(ecr.getIdSection());
@@ -514,6 +515,9 @@ public class CAComptabiliserJournal {
 
         try {
             process.executeProcess();
+            if (context == null && process.getMemoryLog().hasMessages()) {
+                throw new Exception(process.getMemoryLog().getMessagesInString());
+            }
         } catch (Exception e) {
             JadeLogger.error(this, e);
             throw new Exception("Error : lors du calcul d'interet manuel à l'activation de l'écriture. "
