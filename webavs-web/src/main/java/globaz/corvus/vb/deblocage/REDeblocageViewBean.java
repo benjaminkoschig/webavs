@@ -270,6 +270,14 @@ public class REDeblocageViewBean extends PRAbstractViewBeanSupport {
         return retours;
     }
 
+    public boolean isVersementNonComptabilise() {
+        return !deblocages.getLigneDeblocageVersementBeneficiaire().filtreValides().isEmpty();
+    }
+
+    public boolean isImpotSourceNonComptabilise() {
+        return !deblocages.getLigneDeblocageImpotsSource().filtreValides().isEmpty();
+    }
+
     public void setRetours(List<ReRetour> retours) {
         this.retours = retours;
     }
