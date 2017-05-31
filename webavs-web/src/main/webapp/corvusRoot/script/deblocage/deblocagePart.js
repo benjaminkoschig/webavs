@@ -109,6 +109,9 @@ function DeblocageAjax(m_options) {
 			this.mainContainer.find(".save").find(".ui-icon").css("background-image", "url(theme/jquery/images/ui-icons_green_256x240.png)");
 		}
 		this.mainContainer.css("color","");
+		this.mainContainer.prop("notSave",false);
+		liveSum.sumAndChangeValue();
+
 	};
 
 	this.getParentViewBean = function () {
@@ -142,6 +145,7 @@ function DeblocageAjax(m_options) {
 			if(filterCharForFloat(event)) {
 				that.mainContainer.find(".save").find(".ui-icon").css("background-image", "url(theme/jquery/images/ui-icons_f9bd01_256x240.png)");
 				that.mainContainer.css("color","#29769F");
+				that.mainContainer.prop("notSave",true);
 			}
 		});
 		this.tempateCreancier = $("#templateCreancier").html();
@@ -262,12 +266,24 @@ liveSum = {
 	},
 	
 	sumAndChangeValue: function () {
-		var sum, solde;
+		var sum, solde, hasNotSave = false;
 		sum = this.sum();
 		solde =  globazNotation.utilsFormatter.amountTofloat(this.montantBlocage)-sum;
-		if(solde < 0){
+		
+		$(".areaDetail").each(function (){
+			if (this.notSave){
+				hasNotSave= true; 
+			}
+		});
+		
+		if(solde < 0 || hasNotSave ){
 			this.$validerButton.button("disable");
-			this.$resultLiveSum.addClass("errorSum");
+			if(solde < 0){
+				this.$resultLiveSum.addClass("errorSum");
+			}	
+			else{
+				this.$resultLiveSum.removeClass("errorSum");
+			}	
 		} else {
 			this.$validerButton.button("enable");
 			this.$resultLiveSum.removeClass("errorSum");
@@ -282,7 +298,6 @@ liveSum = {
 		$("#detailDeblocage").on("keyup",'.liveSum', function () {
 			that.sumAndChangeValue();
 		});
-
 	}
 };
 
