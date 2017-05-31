@@ -121,6 +121,7 @@ function DeblocageAjax(m_options) {
 	
 	this.onDelete = function (data){
 		this.mainContainer.remove();
+		liveSum.sumAndChangeValue();
 	};
 
 	// Hack temporaire, voir probleme AbstractSimpleAJAXDetailZone (wiki)
@@ -129,7 +130,7 @@ function DeblocageAjax(m_options) {
 		this.isModifyingEntity = true;
 		ajaxUtils.addFocusOnFirstElement(this.mainContainer);
 		this.mainContainer.addClass(this.modifiedZoneClass);
-		this.triggerEvent()
+		this.triggerEvent();
 	}
 	
 	
@@ -280,7 +281,8 @@ liveSum = {
 		var that = this;
 		$("#detailDeblocage").on("keyup",'.liveSum', function () {
 			that.sumAndChangeValue();
-		});	
+		});
+
 	}
 };
 

@@ -22,7 +22,7 @@
 	
 	boolean hasComptaUpdateRight = objSession.hasRight("osiris.retours.retours.afficher", FWSecureConstants.UPDATE);
 	
-	
+	boolean hasVersementNotComptabilise = false;
 	
 %>
 <%@ include file="/theme/detail_ajax/javascripts.jspf" %>
@@ -32,6 +32,7 @@
 </ct:menuChange>
 
 <c:set var="disabled" value="<%=disabled%>"/>
+<c:set var="hasVersementNotComptabilise" value="<%=hasVersementNotComptabilise%>"/>
 
 <c:set var="rootPath" value="${pageContext.request.contextPath}${requestScope.mainServletPath}Root"/>
 <link rel="stylesheet" type="text/css" href="<%=servletContext%>/theme/widget.css"/>
@@ -280,9 +281,9 @@ globazGlobal.isRenteBloque = ${viewBean.isRenteBloque()};
 										</div>
 										<div class="span1">
 										    <ct:ifhasright element="<%=actionPart%>" crud="cud">
-											<input class="idAvoirPaiementUnique" type="hidden" value="${entry.adressePaiement.idAvoirPaiementUnique}">
-											<button type="button" class="save globazIconButton"></button>
-											<button type="button" class="del globazIconButton"></button>
+												<input class="idAvoirPaiementUnique" type="hidden" value="${entry.adressePaiement.idAvoirPaiementUnique}">
+												<button type="button" class="save globazIconButton"></button>
+												<button type="button" class="del globazIconButton"></button>
 											</ct:ifhasright>
 										</div>
 									</c:when >
@@ -370,6 +371,7 @@ globazGlobal.isRenteBloque = ${viewBean.isRenteBloque()};
 				<div class="titre"  id="csType_${viewBean.typeDelocageBeneficiaire}">
 					<h1 class="ui-widget-header "><ct:FWLabel key="JSP_RE_DEBLOCAGE_HEADER_VERSEMENT_BENEFICIARE"/></h1>
 					<c:forEach var="entry" items="${viewBean.versementBeneficiaires}">
+						
 						<div class="notUpdatable"  idEntity = "${entry.idEntity}">
 							<div class="row-fluid">
 								<div class="span10">
@@ -379,7 +381,7 @@ globazGlobal.isRenteBloque = ${viewBean.isRenteBloque()};
 									<span vlaue="value amountToSum"> ${entry.montant.toStringFormat()} </span>
 								</div>
 								<div class="span1">
-									<c:if test="${!entry.etat.isComptabilise()}">
+									<c:if test="${!entry.etat.isComptabilise()}">									
 										<span data-g-bubble="wantMarker:false,text:<ct:FWLabel key="JSP_RE_DEBLOCAGE_NON_COMPTABILISER"/>" >
 											<img class="imgDesynchronise" width="20px" src ="<%=servletContext%><%=(mainServletPath+"Root")%>/deblocage/desCompta24.png" alt="<ct:FWLabel key="JSP_RE_DEBLOCAGE_PAS_ENCORE_COMPTABILISER_IMPOT"/>"/>
 										</span>
@@ -391,20 +393,27 @@ globazGlobal.isRenteBloque = ${viewBean.isRenteBloque()};
 					<hr /> 
 					<div class="areaDetail"  idEntity = "${viewBean.versementBeneficiaire.idEntity}">
 						<div class="row-fluid">
-						
-							<div class="span10">
-								<span class="lbl">${viewBean.versementBeneficiaire.descriptionTiers}</span>
-							</div>
-							<div class="span1 right">
-								<input data-g-amount=" " ${disabled}  class="input-mini liveSum" name="montant" value="${viewBean.versementBeneficiaire.montant.toStringFormat()}"/>
-							</div>
-							<div class="span1">
-								<ct:ifhasright element="<%=actionPart%>" crud="cud">	
-								<button type="button"  class="save globazIconButton"></button>
-								</ct:ifhasright>
-							</div>
+							<c:if test="${!viewBean.isVersementNonComptabilise()}">						
+								<div class="span10">
+									<span class="lbl">${viewBean.versementBeneficiaire.descriptionTiers}</span>
+								</div>
+								<div class="span1 right">
+									<input data-g-amount=" " ${disabled}  class="input-mini liveSum" name="montant" value="${viewBean.versementBeneficiaire.montant.toStringFormat()}"/>
+								</div>
+								<div class="span1">
+									<ct:ifhasright element="<%=actionPart%>" crud="cud">	
+									<button type="button"  class="save globazIconButton"></button>
+									</ct:ifhasright>
+								</div>
+							</c:if>
+							<c:if test="${viewBean.isVersementNonComptabilise()}">
+								<div class="span12">
+									<div class="lbl" data-g-boxmessage="type:WARN"><ct:FWLabel key="JSP_RE_DEBLOCAGE_WARN_VERSEMENT_BENEFICIAIRE"/></div>
+								</div>
+							</c:if>
 						</div>
 					</div>
+
 				</div>
 				
 				
@@ -433,22 +442,26 @@ globazGlobal.isRenteBloque = ${viewBean.isRenteBloque()};
 					<hr /> 
 					<div class="areaDetail"  idEntity = "${viewBean.impotSource.idEntity}">
 						<div class="row-fluid">
-						
-							<div class="span10">
-								<span class="lbl"><ct:FWLabel key="JSP_RE_DEBLOCAGE_MONTANT_A_RETENIR_IMPOT"/></span>
-							</div>
-							<div class="span1 right">
-							<ct:ifhasright element="<%=actionPart%>" crud="cud">
-								<input data-g-amount=" " ${disabled} class="input-mini liveSum" name="montant" value="${viewBean.impotSource.montant.toStringFormat()}"/>
-							</ct:ifhasright>
-
-							
-							</div>
-							<div class="span1">
-								<ct:ifhasright element="<%=actionPart%>" crud="cud">	
-								<button type="button"  class="save globazIconButton"></button>
-								</ct:ifhasright>
-							</div>
+							<c:if test="${!viewBean.isImpotSourceNonComptabilise()}">			
+								<div class="span10">
+									<span class="lbl"><ct:FWLabel key="JSP_RE_DEBLOCAGE_MONTANT_A_RETENIR_IMPOT"/></span>
+								</div>
+								<div class="span1 right">
+								<ct:ifhasright element="<%=actionPart%>" crud="cud">
+									<input data-g-amount=" " ${disabled} class="input-mini liveSum" name="montant" value="${viewBean.impotSource.montant.toStringFormat()}"/>
+								</ct:ifhasright>					
+								</div>
+								<div class="span1">
+									<ct:ifhasright element="<%=actionPart%>" crud="cud">	
+									<button type="button"  class="save globazIconButton"></button>
+									</ct:ifhasright>
+								</div>
+							</c:if>
+							<c:if test="${viewBean.isImpotSourceNonComptabilise()}">
+								<div class="span12">
+									<div class="lbl" data-g-boxmessage="type:WARN"><ct:FWLabel key="JSP_RE_DEBLOCAGE_WARN_IMPOT_SOURCE"/></div>
+								</div>
+							</c:if>
 						</div>
 					</div>
 				</div>
