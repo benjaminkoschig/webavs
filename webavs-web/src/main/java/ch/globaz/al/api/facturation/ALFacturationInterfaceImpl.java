@@ -2,6 +2,7 @@ package ch.globaz.al.api.facturation;
 
 import globaz.globall.context.BJadeThreadActivator;
 import globaz.globall.context.exception.BJadeMultipleJdbcConnectionInSameThreadException;
+import globaz.globall.db.BSessionUtil;
 import globaz.globall.db.BTransaction;
 import globaz.jade.client.util.JadeCodesSystemsUtil;
 import globaz.jade.client.util.JadeDateUtil;
@@ -40,7 +41,7 @@ public class ALFacturationInterfaceImpl implements ALFacturationInterface {
 
     @Override
     public String getNumProcessusAFLie(String idPassage, BTransaction transaction) throws JadeApplicationException,
-            JadePersistenceException {
+            JadePersistenceException, ArrayIndexOutOfBoundsException {
         ProcessusPeriodiqueSearchModel searchProcessusPassage = new ProcessusPeriodiqueSearchModel();
         searchProcessusPassage.setForIdPassageFactu(idPassage);
         // TODO: logger
@@ -58,8 +59,11 @@ public class ALFacturationInterfaceImpl implements ALFacturationInterface {
                     .search(searchProcessusPassage).getSearchResults()[0];
             numProcessusAF = processusAFLie.getIdProcessusPeriodique();
 
-        } catch (Exception e) {
-            throw new ALCompensationPrestationException("ALFacturationInterfaceImpl#getNumProcessusAFLie : ", e);
+        } catch (ArrayIndexOutOfBoundsException e1) {
+            throw new ALCompensationPrestationException(BSessionUtil.getSessionFromThreadContext().getLabel(
+                    "FACTURATION_AF_PROCESSUS_NON_COMPLETE"), e1);
+        } catch (Exception e2) {
+            throw new ALCompensationPrestationException("ALFacturationInterfaceImpl#getNumProcessusAFLie : ", e2);
         } finally {
             BJadeThreadActivator.stopUsingContext(transaction);
         }
