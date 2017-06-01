@@ -190,7 +190,7 @@ var hideTimeout;
     <DIV align="CENTER"><B><FONT face="Lucida Sans Unicode"><A href="javascript:showMainMenu();">Anwendungen...</A></FONT></B></DIV>
   </TD>
   <td align='right' nowrap>
-	<input  style="width:0mm;height:0mm;font-size:0pt;display:none" type ="button" accesskey="q" onclick="top.fr_main.location.href='<%=request.getContextPath()%>/pyxis?userAction=pyxis.tiers.summary.afficher'">
+	<input  style="position: absolute; top: -9999px" type ="button" accesskey="q" onclick="top.fr_main.location.href='<%=request.getContextPath()%>/pyxis?userAction=pyxis.tiers.summary.afficher'">
    	<a href="#" onclick="top.fr_main.location.href='<%=request.getContextPath()%>/pyxis?userAction=pyxis.tiers.summary.afficher'"><IMG id="icon_help" SRC="<%=request.getContextPath()%>/images/evr_find.png" ALT="Überblick [ALT+Q]" border="0"/></a>
 
   <%
