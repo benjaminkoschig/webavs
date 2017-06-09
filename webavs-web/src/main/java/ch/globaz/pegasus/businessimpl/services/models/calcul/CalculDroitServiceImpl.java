@@ -144,10 +144,17 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
             String[] datesPlageCalcul = PegasusImplServiceLocator.getPeriodesService().recherchePlageCalcul(droit);
             datePlageCalcul = datesPlageCalcul[0];
 
-            // Si la date de fin est vide, et que la date de fin de la demande est églement -->prochain paiement
+            // Si la date de fin est vide, et que la date de fin de la demande est également -->prochain paiement
             if (JadeStringUtil.isEmpty(datesPlageCalcul[1])
                     && JadeStringUtil.isBlank(droit.getDemande().getSimpleDemande().getDateFin())) {
                 dateFinPlageCalcul = JadeDateUtil.addDays(dateProchainPaiement, -1);
+
+                if (JadeDateUtil.isDateAfter(datePlageCalcul, dateFinPlageCalcul)) {
+                    // Si la date de début de la plage de calcul est plus grande que la date de fin, on lève une erreur
+                    // demandant de faire un calcul a effet mois suivant
+                    throw new CalculBusinessException("pegasus.calcul.periodes.plagedate.superposition",
+                            datePlageCalcul, dateProchainPaiement);
+                }
             }
             // Si la date de fin de la demande n'est pas vide, on plaffone la plage de calcul avec
             else if (!JadeStringUtil.isBlank(droit.getDemande().getSimpleDemande().getDateFin())) {

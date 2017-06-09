@@ -552,6 +552,7 @@ public class PeriodesServiceImpl extends PegasusAbstractServiceImpl implements
     public String[] recherchePlageCalcul(Droit droit) throws JadePersistenceException, CalculException,
             DemandeException, JadeApplicationServiceNotAvailableException {
         String[] result = null;
+        ch.globaz.common.domaine.Date dateDebutPlage = null;
         // Si on a une demande purement rétroactive, on ne considèe pas la plage comme initiale car on a déja une date
         // de fin
         if ((Integer.parseInt(droit.getSimpleVersionDroit().getNoVersion()) == 1)
@@ -568,7 +569,7 @@ public class PeriodesServiceImpl extends PegasusAbstractServiceImpl implements
         // la date de debut ne doit pas etre null
         if (result[0] != null) {
             // arrondit la date au premier jour du mois
-            result[0] = "01" + result[0].substring(2);
+            dateDebutPlage = new ch.globaz.common.domaine.Date(result[0]).getFirstDayOfMonth();
         } else {
             throw new CalculException("Date plage calcul shouldn't be null!");
         }
@@ -583,21 +584,32 @@ public class PeriodesServiceImpl extends PegasusAbstractServiceImpl implements
 
         for (JadeAbstractModel absDonnee : search.getSearchResults()) {
             CalculPlagesExistantes donnee = (CalculPlagesExistantes) absDonnee;
-
+            ch.globaz.common.domaine.Date dateFindDemande = null;
+            ch.globaz.common.domaine.Date dateDebutDemande = null;
             if (!donnee.getIdVersionDroit().equals(droit.getSimpleVersionDroit().getIdVersionDroit())) {
 
                 if (JadeStringUtil.isEmpty(donnee.getDateFin())) {
                     throw new CalculException("The dateFin from donnee (CalculPagesExistantes) is empty");
                 } else {
-                    if (JadeDateUtil.isDateBefore(result[0], donnee.getDateFin())) {
-                        result[0] = donnee.getDateFin();
+                    dateFindDemande = new ch.globaz.common.domaine.Date(donnee.getDateFin()).getFirstDayOfMonth();
+                    dateDebutDemande = new ch.globaz.common.domaine.Date(donnee.getDateDebut()).getFirstDayOfMonth();
+
+                    // Si la date de debut de la demande est plus grande que la date de fin de la demande ET que la date
+                    // de début de la demande est égale à la date de début de la plage de calcul, on augment cette
+                    // dernière de 1 mois pour éviter les superpositions
+                    if (dateDebutDemande.after(dateFindDemande) && dateDebutPlage.beforeOrEquals(dateDebutDemande)) {
+                        dateDebutPlage = dateDebutDemande.addMonth(1);
+                    }
+                    if (dateDebutPlage.before(dateFindDemande)) {
+                        dateDebutPlage = dateFindDemande;
+                    } else if (dateDebutPlage.equals(dateFindDemande)) {
+                        // On augmente la fate de début de la plage de calcul d'un mois pour éviter les superpositions
+                        dateDebutPlage = dateDebutPlage.addMonth(1);
                     }
                 }
             }
-
         }
-
+        result[0] = dateDebutPlage.getFirstDayOfMonth().getSwissValue();
         return result;
     }
-
 }

@@ -12,7 +12,7 @@
 		
 		<search-definition>
 			<search-group operator="AND">
-				<search-field name="forIdRequerant" field-ref="versionDroit.demande.dossier.demandePrestation.demandePrestation.idTiers" operation="EQUALS" value="2"/>
+				<search-field name="forIdRequerant" field-ref="versionDroit.demande.dossier.demandePrestation.demandePrestation.idTiers" operation="EQUALS"/>
 			</search-group>
 		</search-definition>		
 		
