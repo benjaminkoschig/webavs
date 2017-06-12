@@ -70,6 +70,7 @@ import javax.xml.namespace.QName;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.Service;
 import org.apache.axis.types.NonNegativeInteger;
+import ch.globaz.common.properties.PropertiesException;
 
 public class IDEServiceCallUtil {
 
@@ -96,7 +97,7 @@ public class IDEServiceCallUtil {
     }
 
     public static final IPartnerServices initService() throws JadeDecryptionNotSupportedException,
-            JadeEncrypterNotFoundException, Exception {
+            JadeEncrypterNotFoundException, PropertiesException, Exception {
         final String userWebservice;
         final String passwordWebservice;
         final String wsdlWebservice;
@@ -134,6 +135,13 @@ public class IDEServiceCallUtil {
                 localPartWebservice));
 
         IPartnerServices port = service.getPort(IPartnerServices.class);
+
+        // Si la propriété ide.webservice.url.endpoint existe on surcharge l'adresse du endpoint
+        if (!AFProperties.IDE_URL_ENDPOINT.getValue().isEmpty() && AFProperties.IDE_URL_ENDPOINT.getValue() != null) {
+            String endpoint = AFProperties.IDE_URL_ENDPOINT.getValue();
+            BindingProvider bp = (BindingProvider) port;
+            bp.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, endpoint);
+        }
 
         Map<String, Object> req_ctx = ((BindingProvider) port).getRequestContext();
         req_ctx.put(BindingProvider.USERNAME_PROPERTY, userWebservice);

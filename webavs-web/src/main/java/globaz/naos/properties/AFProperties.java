@@ -37,7 +37,8 @@ public enum AFProperties implements IProperties {
     IDE_PLAN_AFFILIATION_VERIFICATION_INACTIF("ide.planAffiliation.verificationInactif",
             "Prise en compte ou non des plans d'affiliation inactif lors d'annonce IDE"),
     IDE_COTISATION_VERIFICATION_TAXE_SOUS("ide.cotisation.verificationTaxeSous",
-            "Prise en compte ou non des plans d'affiliation de l'affiliation qui détient une autre affiliation");
+            "Prise en compte ou non des plans d'affiliation de l'affiliation qui détient une autre affiliation"),
+    IDE_URL_ENDPOINT("ide.webservice.url.endpoint", "Adresse Endpoint IDE");
 
     private String description;
     private String propertyName;
