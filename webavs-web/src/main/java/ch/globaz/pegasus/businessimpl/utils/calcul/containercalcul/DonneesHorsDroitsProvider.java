@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import ch.globaz.pegasus.business.exceptions.models.calcul.CalculException;
 import ch.globaz.pegasus.business.exceptions.models.monnaieetrangere.MonnaieEtrangereException;
+import ch.globaz.pegasus.business.exceptions.models.pmtmensuel.PmtMensuelException;
 import ch.globaz.pegasus.business.models.calcul.CalculVariableMetierSearch;
 import ch.globaz.pegasus.business.models.monnaieetrangere.MonnaieEtrangereSearch;
 import ch.globaz.pegasus.business.services.PegasusServiceLocator;
@@ -30,6 +31,8 @@ public class DonneesHorsDroitsProvider {
     private List<VariableMetier> listeVariablesMetiers = null;
 
     private VariableMetier tauxOFAS = null;
+
+    private String dateProchainPaiement = null;
 
     private DonneesHorsDroitsProvider() {
         listeMonnaiesEtrangeres = new ArrayList<MonnaieEtrangere>();
@@ -65,6 +68,10 @@ public class DonneesHorsDroitsProvider {
         tauxOFAS = varMetProv.getTauxOFAS();
     }
 
+    private void retrieveDateProchainPaiement() throws PmtMensuelException, JadeApplicationServiceNotAvailableException {
+        dateProchainPaiement = "01." + PegasusServiceLocator.getPmtMensuelService().getDateProchainPmt();
+    }
+
     public List<MonnaieEtrangere> getListeMonnaiesEtrangeres() {
         return listeMonnaiesEtrangeres;
     }
@@ -77,14 +84,22 @@ public class DonneesHorsDroitsProvider {
         return tauxOFAS;
     }
 
+    public String getDateProchainPaiement() {
+        return dateProchainPaiement;
+    }
+
     public void init() throws CalculException, JadeApplicationServiceNotAvailableException, JadePersistenceException,
-            MonnaieEtrangereException {
+            MonnaieEtrangereException, PmtMensuelException {
         fillMonnaiesEtrangeresProvider();
         fillVariablesMetierProvider();
+        retrieveDateProchainPaiement();
     }
 
     public void setTauxOFAS(VariableMetier tauxOFAS) {
         this.tauxOFAS = tauxOFAS;
     }
 
+    public void setDateProchainPaiement(String dateProchainPaiement) {
+        this.dateProchainPaiement = dateProchainPaiement;
+    }
 }

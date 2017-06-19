@@ -56,9 +56,9 @@ import ch.globaz.pegasus.business.services.PegasusServiceLocator;
 import ch.globaz.pegasus.businessimpl.services.PegasusAbstractServiceImpl;
 import ch.globaz.pegasus.businessimpl.services.PegasusImplServiceLocator;
 import ch.globaz.pegasus.businessimpl.utils.PegasusDateUtil;
-import ch.globaz.pegasus.businessimpl.utils.calcul.ConditionPartageFactory;
-import ch.globaz.pegasus.businessimpl.utils.calcul.IConditionPartagePeriode;
 import ch.globaz.pegasus.businessimpl.utils.calcul.PeriodePCAccordee;
+import ch.globaz.pegasus.businessimpl.utils.calcul.condition.ConditionPartageFactory;
+import ch.globaz.pegasus.businessimpl.utils.calcul.condition.IConditionPartagePeriode;
 import ch.globaz.pegasus.businessimpl.utils.calcul.containercalcul.DonneesHorsDroitsProvider;
 
 /**
