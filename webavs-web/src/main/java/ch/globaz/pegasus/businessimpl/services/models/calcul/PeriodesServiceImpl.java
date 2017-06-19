@@ -588,18 +588,17 @@ public class PeriodesServiceImpl extends PegasusAbstractServiceImpl implements
             ch.globaz.common.domaine.Date dateDebutDemande = null;
             if (!donnee.getIdVersionDroit().equals(droit.getSimpleVersionDroit().getIdVersionDroit())) {
 
-                if (JadeStringUtil.isEmpty(donnee.getDateFin())) {
-                    throw new CalculException("The dateFin from donnee (CalculPagesExistantes) is empty");
-                } else {
-                    dateFindDemande = new ch.globaz.common.domaine.Date(donnee.getDateFin()).getFirstDayOfMonth();
-                    dateDebutDemande = new ch.globaz.common.domaine.Date(donnee.getDateDebut()).getFirstDayOfMonth();
-
+                if (!JadeStringUtil.isEmpty(donnee.getDateFin())) {
                     // Si la date de debut de la demande est plus grande que la date de fin de la demande ET que la date
                     // de début de la demande est égale à la date de début de la plage de calcul, on augment cette
                     // dernière de 1 mois pour éviter les superpositions
+                    dateDebutDemande = new ch.globaz.common.domaine.Date(donnee.getDateDebut()).getFirstDayOfMonth();
+                    dateFindDemande = new ch.globaz.common.domaine.Date(donnee.getDateFin()).getFirstDayOfMonth();
+
                     if (dateDebutDemande.after(dateFindDemande) && dateDebutPlage.beforeOrEquals(dateDebutDemande)) {
                         dateDebutPlage = dateDebutDemande.addMonth(1);
                     }
+
                     if (dateDebutPlage.before(dateFindDemande)) {
                         dateDebutPlage = dateFindDemande;
                     } else if (dateDebutPlage.equals(dateFindDemande)) {
