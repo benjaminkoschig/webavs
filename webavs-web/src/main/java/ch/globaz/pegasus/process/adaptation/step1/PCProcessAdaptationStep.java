@@ -25,6 +25,7 @@ import ch.globaz.jade.process.business.models.entity.SimpleEntitySearch;
 import ch.globaz.pegasus.business.constantes.IPCDroits;
 import ch.globaz.pegasus.business.exceptions.models.calcul.CalculException;
 import ch.globaz.pegasus.business.exceptions.models.monnaieetrangere.MonnaieEtrangereException;
+import ch.globaz.pegasus.business.exceptions.models.pmtmensuel.PmtMensuelException;
 import ch.globaz.pegasus.business.models.droit.VersionDroit;
 import ch.globaz.pegasus.business.models.droit.VersionDroitSearch;
 import ch.globaz.pegasus.business.services.PegasusServiceLocator;
@@ -117,7 +118,7 @@ public class PCProcessAdaptationStep implements JadeProcessStepInterface, JadePr
     }
 
     private void loadContainerGlobalCalcul() throws JadePersistenceException, CalculException,
-            JadeApplicationServiceNotAvailableException, MonnaieEtrangereException {
+            JadeApplicationServiceNotAvailableException, MonnaieEtrangereException, PmtMensuelException {
         if (containerGlobal == null) {
             containerGlobal = DonneesHorsDroitsProvider.getInstance();
             containerGlobal.init();

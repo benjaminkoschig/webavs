@@ -20,6 +20,7 @@ import ch.globaz.jade.process.business.models.entity.SimpleEntitySearch;
 import ch.globaz.jade.process.utils.JadeProcessCommonUtils;
 import ch.globaz.pegasus.business.exceptions.models.calcul.CalculException;
 import ch.globaz.pegasus.business.exceptions.models.monnaieetrangere.MonnaieEtrangereException;
+import ch.globaz.pegasus.business.exceptions.models.pmtmensuel.PmtMensuelException;
 import ch.globaz.pegasus.business.services.process.statistiquesofas.StatistiquesOFASService;
 import ch.globaz.pegasus.businessimpl.utils.calcul.containercalcul.DonneesHorsDroitsProvider;
 
@@ -76,7 +77,7 @@ public class PCProcessStatistiquesOFASStep1 implements JadeProcessStepInterface,
     }
 
     private void loadContainerGlobalCalcul() throws JadePersistenceException, CalculException,
-            JadeApplicationServiceNotAvailableException, MonnaieEtrangereException {
+            JadeApplicationServiceNotAvailableException, MonnaieEtrangereException, PmtMensuelException {
 
         if (containerGlobal == null) {
             containerGlobal = DonneesHorsDroitsProvider.getInstance();
