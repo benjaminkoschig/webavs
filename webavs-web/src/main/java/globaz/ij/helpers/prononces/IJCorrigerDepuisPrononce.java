@@ -167,17 +167,20 @@ public class IJCorrigerDepuisPrononce {
         // On déplace les BI référencés par baseIndemniteEnfant
         int index;
         for (int i = 0; i < baseIndemniteEnfant.size(); i++) {
-            index = baseIndemniteId.indexOf(baseIndemniteEnfant.get(i));
 
-            baseIndemniteTmp.get(index).setIdPrononce(prononce2.getIdPrononce());
-            baseIndemniteTmp.get(index).update();
+            if (baseIndemniteId.indexOf(baseIndemniteEnfant.get(i)) != -1) {
+                index = baseIndemniteId.indexOf(baseIndemniteEnfant.get(i));
 
-            if (!JadeStringUtil.isBlankOrZero(baseIndemniteTmp.get(i).getIdCorrection())) {
-                baseIndemniteEnfant.add(baseIndemniteTmp.get(i).getIdCorrection());
+                baseIndemniteTmp.get(index).setIdPrononce(prononce2.getIdPrononce());
+                baseIndemniteTmp.get(index).update();
+
+                if (!JadeStringUtil.isBlankOrZero(baseIndemniteTmp.get(i).getIdCorrection())) {
+                    baseIndemniteEnfant.add(baseIndemniteTmp.get(i).getIdCorrection());
+                }
+
+                baseIndemniteTmp.remove(index);
+                baseIndemniteId.remove(index);
             }
-
-            baseIndemniteTmp.remove(index);
-            baseIndemniteId.remove(index);
         }
     }
 
@@ -287,14 +290,16 @@ public class IJCorrigerDepuisPrononce {
         int index;
         // Suppression des BI qui ne sont pas déplacés
         for (int i = 0; i < baseIndemniteEnfantATuer.size(); i++) {
-            index = baseIndemniteId.indexOf(baseIndemniteEnfantATuer.get(i));
+            if (baseIndemniteId.indexOf(baseIndemniteEnfantATuer.get(i)) != -1) {
+                index = baseIndemniteId.indexOf(baseIndemniteEnfantATuer.get(i));
 
-            if (!JadeStringUtil.isBlankOrZero(baseIndemniteTmp.get(index).getIdCorrection())) {
-                baseIndemniteEnfantATuer.add(baseIndemniteTmp.get(index).getIdCorrection());
+                if (!JadeStringUtil.isBlankOrZero(baseIndemniteTmp.get(index).getIdCorrection())) {
+                    baseIndemniteEnfantATuer.add(baseIndemniteTmp.get(index).getIdCorrection());
+                }
+
+                baseIndemniteTmp.remove(index);
+                baseIndemniteId.remove(index);
             }
-
-            baseIndemniteTmp.remove(index);
-            baseIndemniteId.remove(index);
         }
     }
 
