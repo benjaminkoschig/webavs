@@ -78,7 +78,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import ch.globaz.orion.business.domaine.pucs.DeclarationSalaire;
@@ -86,6 +85,7 @@ import ch.globaz.orion.business.domaine.pucs.DeclarationSalaireProvenance;
 import ch.globaz.orion.service.EBEbusinessInterface;
 import ch.globaz.orion.service.EBPucsFileService;
 import ch.swissdec.schema.sd._20130514.salarydeclarationconsumercontainer.DeclareSalaryConsumerType;
+import ch.swissdec.schema.sd._20130514.salarydeclarationcontainer.SalaryDeclarationRequestType;
 import com.google.common.base.Splitter;
 
 public class CIDeclaration extends BProcess {
@@ -296,10 +296,32 @@ public class CIDeclaration extends BProcess {
     private DeclareSalaryConsumerType unmarshallDeclareSalaryConsumerTypeFromSoapBody(String path) throws SAXException,
             IOException, ParserConfigurationException, JAXBException {
         Element element = getSoapBodyPayloadElement(path);
+
         JAXBContext jc = JAXBContext.newInstance(DeclareSalaryConsumerType.class);
-        DeclareSalaryConsumerType value = jc.createUnmarshaller().unmarshal(element, DeclareSalaryConsumerType.class)
-                .getValue();
-        return value;
+        DeclareSalaryConsumerType valueDeclareSalaryConsumerType = jc.createUnmarshaller()
+                .unmarshal(element, DeclareSalaryConsumerType.class).getValue();
+
+        if (valueDeclareSalaryConsumerType.getDeclareSalary() == null) {
+            addDeclareSalary(element, valueDeclareSalaryConsumerType);
+        }
+        return valueDeclareSalaryConsumerType;
+    }
+
+    /***
+     * Ajout les informations de la balise DeclareSalary si le fichier SwissDec ne contient pas de balise
+     * DeclareSalaryConsumer
+     * 
+     * @param element
+     * @param valueDeclareSalaryConsumerType
+     * @throws JAXBException
+     */
+    private void addDeclareSalary(Element element, DeclareSalaryConsumerType valueDeclareSalaryConsumerType)
+            throws JAXBException {
+        JAXBContext jcSalaryDeclarationType = JAXBContext.newInstance(SalaryDeclarationRequestType.class);
+        SalaryDeclarationRequestType valueSalaryDeclarationRequestType = jcSalaryDeclarationType.createUnmarshaller()
+                .unmarshal(element, SalaryDeclarationRequestType.class).getValue();
+
+        valueDeclareSalaryConsumerType.setDeclareSalary(valueSalaryDeclarationRequestType);
     }
 
     private DeclarationSalaire convertPucs4FileToDeclarationSalaire() throws SAXException, IOException,

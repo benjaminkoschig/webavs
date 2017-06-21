@@ -61,15 +61,26 @@ public class PUCS4SalaryConverter {
 
         DeclarationSalaire result = new DeclarationSalaire();
         result.setProvenance(DeclarationSalaireProvenance.SWISS_DEC);
-        DistributorRequestContextType distributorRequestContext = param.getDistributorRequestContext();
-
         result.setAnnee(param.getDeclareSalary().getSalaryDeclaration().getGeneralSalaryDeclarationDescription()
                 .getAccountingPeriod().getYear());
-        result.setTransmissionDate(new Date(distributorRequestContext.getTransmissionDate().toGregorianCalendar()
-                .getTime()));
-        result.setTest(distributorRequestContext.getTestCase() != null);
-        result.setDuplicate(distributorRequestContext.getDuplicate() != null);
-        result.setSubstitution(distributorRequestContext.getSubstitutionMapping() != null);
+
+        DistributorRequestContextType distributorRequestContext = param.getDistributorRequestContext();
+
+        // Si distributorRequestContext est null ça veut dire qu'on à pas le node
+        // DistributorRequestContext dans le fichier xml
+        if (distributorRequestContext != null) {
+            result.setTransmissionDate(new Date(distributorRequestContext.getTransmissionDate().toGregorianCalendar()
+                    .getTime()));
+            result.setTest(distributorRequestContext.getTestCase() != null);
+            result.setDuplicate(distributorRequestContext.getDuplicate() != null);
+            result.setSubstitution(distributorRequestContext.getSubstitutionMapping() != null);
+        } else {
+            result.setTransmissionDate(new Date(param.getDeclareSalary().getRequestContext().getTransmissionDate()
+                    .toGregorianCalendar().getTime()));
+            result.setTest(false);
+            result.setDuplicate(false);
+            result.setSubstitution(false);
+        }
 
         /*
          * FIXME comment mapper tout ça?
