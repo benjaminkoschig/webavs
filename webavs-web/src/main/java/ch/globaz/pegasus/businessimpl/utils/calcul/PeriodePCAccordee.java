@@ -20,6 +20,7 @@ import ch.globaz.pegasus.business.constantes.IPCPCAccordee;
 import ch.globaz.pegasus.business.constantes.IPCTypePrimeAssuranceMaladie;
 import ch.globaz.pegasus.business.constantes.IPCValeursPlanCalcul;
 import ch.globaz.pegasus.business.constantes.IPCVariableMetier;
+import ch.globaz.pegasus.business.constantes.donneesfinancieres.IPCRenteAvsAi;
 import ch.globaz.pegasus.business.exceptions.models.calcul.CalculBusinessException;
 import ch.globaz.pegasus.business.exceptions.models.calcul.CalculException;
 import ch.globaz.pegasus.business.models.calcul.CalculDonneesCC;
@@ -136,11 +137,12 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
             put(IPCVariableMetier.CS_FRACTIONS_FRAIS_ENTRETIEN_IMMEUBLE_MOINS_10_ANS,
                     Attribut.FRAIS_ENTRETIEN_IMMEUBLE_MOINS_10_ANS);
             put(IPCVariableMetier.CS_MONTANT_TYPE_CHAMBRE_EPS, Attribut.MONTANT_TYPE_CHAMBRE_EPS);
-			put(IPCVariableMetier.TAUX_IMPUTATIONS_VALEUR_LOCATIVE_BRUT,
+            put(IPCVariableMetier.TAUX_IMPUTATIONS_VALEUR_LOCATIVE_BRUT,
                     Attribut.TAUX_BIEN_IMMO_FRACTION_VALEUR_LOCATIVE_BRUTE);
             put(IPCVariableMetier.TAUX_IMPUTATIONS_VALEUR_LOCATIVE_BRUT_M10,
                     Attribut.TAUX_BIEN_IMMO_FRACTION_VALEUR_LOCATIVE_BRUTE_M10);
-            put(IPCVariableMetier.TAUX_IMPUTATIONS_LOYER_EFFECTIF, Attribut.TAUX_BIEN_IMMO_FRACTION_LOYER_EFFECTIF);        }
+            put(IPCVariableMetier.TAUX_IMPUTATIONS_LOYER_EFFECTIF, Attribut.TAUX_BIEN_IMMO_FRACTION_LOYER_EFFECTIF);
+        }
     };
     private final static Map<String, Attribut> mappageVarMetFinalisation = new HashMap<String, Attribut>() {
         /**
@@ -1156,15 +1158,19 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
         for (CalculComparatif cc : calculsComparatifs) {
             // TODO gérer cas de couple séparé par maladie
             if (cc.isPlanRetenu()) {
-                typeRentePc = cc.getMontants().getEnfants().get(IPCValeursPlanCalcul.CLE_INTER_TYPE_RENTE_REQUERANT)
-                        .getLegende();
+                try {
+                    if (cc.getMontants().getEnfants().containsKey(IPCValeursPlanCalcul.CLE_INTER_TYPE_RENTE_REQUERANT)) {
+                        typeRentePc = cc.getMontants().getEnfants()
+                                .get(IPCValeursPlanCalcul.CLE_INTER_TYPE_RENTE_REQUERANT).getLegende();
+                    } else if (cc.getMontants().getEnfants().containsKey(IPCValeursPlanCalcul.CLE_REVEN_AUTREREV_IJAI)) {
+                        typeRentePc = IPCRenteAvsAi.CS_TYPE_RENTE_IJAI;
+                    }
+                } catch (NullPointerException e) {
+                    // Exeption, aucun calcul retenu
+                    throw new CalculBusinessException("pegasus.calcul.persistance.typePC.typeRente.noPcRetenu",
+                            strDateDebut, strDateFin);
+                }
             }
-        }
-
-        // Exeption, aucun calcul retenu
-        if (typeRentePc == null) {
-            throw new CalculBusinessException("pegasus.calcul.persistance.typePC.typeRente.noPcRetenu", strDateDebut,
-                    strDateFin);
         }
 
         String typePc = null;
@@ -1174,12 +1180,7 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
             typePc = IPCPCAccordee.CS_TYPE_PC_SURVIVANT;
         } else if (TypeRenteMap.listeCsRenteVieillesse.contains(typeRentePc)) {
             typePc = IPCPCAccordee.CS_TYPE_PC_VIELLESSE;
-        }
-        // else if (typeRentePc == null) {
-        // throw new CalculBusinessException("pegasus.calcul.persistance.typePC.typeRente.mandatory",
-        // this.strDateDebut, this.strDateFin);
-        // }
-        else {
+        } else {
             throw new CalculBusinessException("pegasus.calcul.persistance.typePC.typeRente.integrity", typeRentePc,
                     strDateDebut, strDateFin);
         }

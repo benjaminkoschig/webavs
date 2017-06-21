@@ -2,6 +2,7 @@ package ch.globaz.pegasus.businessimpl.utils.calcul.strategiesFinalisation.reven
 
 import java.util.Date;
 import ch.globaz.pegasus.business.constantes.IPCValeursPlanCalcul;
+import ch.globaz.pegasus.business.constantes.donneesfinancieres.IPCRenteAvsAi;
 import ch.globaz.pegasus.business.exceptions.models.calcul.CalculBusinessException;
 import ch.globaz.pegasus.business.exceptions.models.calcul.CalculException;
 import ch.globaz.pegasus.businessimpl.utils.calcul.CalculContext;
@@ -93,6 +94,13 @@ public class StrategieFinalRevenuTotalDeterminant implements StrategieCalculFina
         if (donnee.getEnfants().containsKey(IPCValeursPlanCalcul.CLE_INTER_TYPE_RENTE_REQUERANT)) {
             typeRenteRequerant = donnee.getEnfants().get(IPCValeursPlanCalcul.CLE_INTER_TYPE_RENTE_REQUERANT)
                     .getLegende();
+            // Si en plus d'une rente on a des IJAI on fait péter une exception car c'est pas censé arriver
+            if (donnee.getEnfants().containsKey(IPCValeursPlanCalcul.CLE_REVEN_AUTREREV_IJAI)) {
+                throw new CalculBusinessException(
+                        "pegasus.calcul.strategie.revenuTotal.typeRenteRequerant.chevauchement");
+            }
+        } else if (donnee.getEnfants().containsKey(IPCValeursPlanCalcul.CLE_REVEN_AUTREREV_IJAI)) {
+            typeRenteRequerant = IPCRenteAvsAi.CS_TYPE_RENTE_IJAI;
         } else {
             String dateDebutPeriode = (String) context.get(Attribut.DATE_DEBUT_PERIODE);
             throw new CalculBusinessException("pegasus.calcul.strategie.revenuTotal.typeRenteRequerant.integrity",

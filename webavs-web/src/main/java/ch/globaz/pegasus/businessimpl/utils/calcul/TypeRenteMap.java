@@ -27,6 +27,7 @@ public final class TypeRenteMap {
             this.add(IPCRenteAvsAi.CS_TYPE_RENTE_74);
             this.add(IPCRenteAvsAi.CS_TYPE_RENTE_75);
             this.add(IPCRenteAvsAi.CS_TYPE_RENTE_76);
+            this.add(IPCRenteAvsAi.CS_TYPE_RENTE_IJAI);
             this.add(IPCRenteAvsAi.CS_TYPE_SANS_RENTE_INVALIDITE);
             this.add(IPCApiAvsAi.CS_TYPE_API_81);
             this.add(IPCApiAvsAi.CS_TYPE_API_82);
