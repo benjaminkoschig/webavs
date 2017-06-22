@@ -127,6 +127,8 @@ public class REMainServletAction {
         // REMainServletAction.ACTIONS.put(IREActions.ACTION_DEBLOCAGE, REDeblocageAction.class);
         REMainServletAction.ACTIONS.put(IREActions.ACTION_DEBLOCAGE_AJAX, REDeblocageAction.class);
         REMainServletAction.ACTIONS.put(IREActions.ACTION_BASES_DE_CALCUL, REBasesCalculAction.class);
+        REMainServletAction.ACTIONS.put(IREActions.ACTION_SAISIE_COMMUNICATION_MUTATION_OAI,
+                RECommunicationMutationOaiAction.class);
     }
 
     /**
