@@ -115,6 +115,13 @@ public class AFFigerTaxeCo2Manager extends BManager implements Serializable {
             sqlWhere += "AF.MAIAFF >" + this._dbWriteNumeric(statement.getTransaction(), getFromAffiliationId());
         }
 
+        if (getForAffiliationId().length() != 0) {
+            if (sqlWhere.length() != 0) {
+                sqlWhere += " AND ";
+            }
+            sqlWhere += "AF.MAIAFF =" + this._dbWriteNumeric(statement.getTransaction(), getForAffiliationId());
+        }
+
         if (sqlWhere.length() != 0) {
             sqlWhere += " AND ";
         }

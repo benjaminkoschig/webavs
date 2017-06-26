@@ -26,6 +26,8 @@ public interface ILEConstantes extends ENConstantes {
     String CS_CATEGORIE_SUIVI_RELEVES = "6700005";
     String CS_CATEGORIE_SUIVI_SALAIRES = "6700004";
     String CS_CATEGORIES_NOUVELLE_AFFILIATION = "6700006";
+    String CS_CATEGORIE_NON_CERTIFIES_CONFORMES = "6700014";
+
     /************************************************************/
     /******** DATES *******************************************/
     String CS_DATE_DEBUT = "6701003";
@@ -175,5 +177,8 @@ public interface ILEConstantes extends ENConstantes {
 
     /******* Définition de formule LPP ********/
     String CS_DEBUT_SUIVI_ANNUEL_LPP = "6200074";
+
+    /******* Définition de formule LPP ********/
+    String CS_DEBUT_SUIVI_NCC = "6200079";
 
 }

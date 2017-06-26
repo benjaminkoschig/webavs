@@ -126,6 +126,12 @@
 							<parameter name="userAction" value="hercule.controleEmployeur.employeurRadie.afficher"/>
 						</action>
 					</node>
+					<node>
+						<label refId="MENU_LISTE_NCC"/>
+						<action command="/hercule" responseTarget="fr_main">
+							<parameter name="userAction" value="hercule.controleEmployeur.listeNcc.afficher"/>
+						</action>
+					</node>
 				</nodes>
 			</node>
 
@@ -164,12 +170,6 @@
 				<label refId="MENU_DECLARATION_STRUCTUREES" />
 				<nodes>
 					<node>
-						<label refId="MENU_DS_DEBUT_SUIVI" />
-						<action command="/hercule" responseTarget="fr_main">
-							<parameter name="userAction" value="hercule.declarationStructuree.generationSuivi.afficher" />
-						</action>
-					</node>
-					<node>
 						<label refId="MENU_DS_SAISIE_MASSE_RECEPTION" />
 						<action command="/hercule" responseTarget="fr_main">
 							<parameter name="userAction" value="hercule.declarationStructuree.saisieMasseReception.afficher" />
@@ -178,6 +178,26 @@
 					</node>
 				</nodes>
 			</node>
+			
+			<node open="no">
+				<label refId="MENU_NON_CERTIFIES_CONFORMES" />
+				<nodes>
+					<node>
+						<label refId="MENU_NCC_DEBUT_SUIVI" />
+						<action command="/hercule" responseTarget="fr_main">
+							<parameter name="userAction" value="hercule.noncertifiesconformes.generationSuiviNCC.afficher" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_NCC_SAISIE_MASSE_RECEPTION" />
+						<action command="/hercule" responseTarget="fr_main">
+							<parameter name="userAction" value="hercule.noncertifiesconformes.saisieReceptionNCC.afficher" />
+							<parameter name="_method" value="upd" />
+						</action>
+					</node>
+				</nodes>
+			</node>
+			
 			<node>
 				<label refId="MENU_STAT_OFAS" />
 				<action command="/hercule" responseTarget="fr_main">

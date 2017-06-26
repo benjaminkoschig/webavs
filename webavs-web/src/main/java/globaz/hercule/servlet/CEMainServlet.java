@@ -47,6 +47,7 @@ public class CEMainServlet extends FWServlet {
         ACTION_TO_CLASS.put("hercule.controleEmployeur.controlesAttribues", CEActionControlesAttribues.class);
         ACTION_TO_CLASS.put("hercule.controleEmployeur.controlesAEffectuer", CEActionControlesAEffectuer.class);
         ACTION_TO_CLASS.put("hercule.declarationStructuree.saisieMasseReception", CEActionSaisieMasseReception.class);
+        ACTION_TO_CLASS.put("hercule.noncertifiesconformes.saisieReceptionNCC", CEActionSaisieReceptionNCC.class);
         ACTION_TO_CLASS.put("hercule.groupement.membre", CEActionGroupementMembre.class);
         ACTION_TO_CLASS.put("widget.action", FWJadeWidgetServletAction.class);
         // ACTION_TO_CLASS.put("hercule.controleEmployeur.controles5PourCent",
