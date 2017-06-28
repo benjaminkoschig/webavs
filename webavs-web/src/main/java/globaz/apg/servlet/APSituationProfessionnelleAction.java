@@ -352,7 +352,7 @@ public class APSituationProfessionnelleAction extends PRDefaultAction {
         try {
             APSituationProfessionnelleViewBean spViewBean = (APSituationProfessionnelleViewBean) viewBean;
 
-            // Fait pour les anciens situations professionnelles, car on ne passe pas forcement par 
+            // Fait pour les anciens situations professionnelles, car on ne passe pas forcement par
             // l ecran pour remplir les nouveaux deux champs id domaine paiement et id tiers paiement.
             updateAdresseSituationProfessionnelle(idDroit, spViewBean);
 
@@ -405,7 +405,7 @@ public class APSituationProfessionnelleAction extends PRDefaultAction {
 
     private void updateAdresseSituationProfessionnelle(String idDroit, APSituationProfessionnelleViewBean spViewBean)
             throws Exception {
-        
+
         final APSituationProfessionnelleManager managerSituation = new APSituationProfessionnelleManager();
         managerSituation.setSession(spViewBean.getSession());
         managerSituation.setForIdDroit(idDroit);
@@ -501,6 +501,8 @@ public class APSituationProfessionnelleAction extends PRDefaultAction {
             spViewBean.setDateFinAffiliation(spViewBean.getDateFin());
             spViewBean.setDateDebut(dateDebut);
             spViewBean.setDateFin(dateFin);
+
+            spViewBean.setAdressePaiementEmployeur(null);
 
             /*
              * on sauve de toutes facons le viewBean dans la requete meme s'il est deja en session car c'est la que la
