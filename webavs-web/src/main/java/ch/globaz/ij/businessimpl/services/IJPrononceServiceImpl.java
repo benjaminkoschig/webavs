@@ -1,11 +1,13 @@
 package ch.globaz.ij.businessimpl.services;
 
+import globaz.ij.api.prononces.IIJPrononce;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.log.JadeLogger;
 import globaz.jade.persistence.JadePersistenceManager;
 import globaz.jade.persistence.model.JadeAbstractModel;
+import globaz.prestation.utils.PRDateUtils;
 import ch.globaz.ij.business.models.IJPrononceJointDemande;
 import ch.globaz.ij.business.models.IJPrononceJointDemandeSearchModel;
 import ch.globaz.ij.business.services.IJPrononceService;
@@ -14,6 +16,18 @@ import ch.globaz.ij.businessimpl.services.Exception.ServiceTechnicalException;
 import ch.globaz.jade.JadeBusinessServiceLocator;
 
 public class IJPrononceServiceImpl implements IJPrononceService {
+
+    private IJPrononceJointDemande calculerJoursSiBesoin(IJPrononceJointDemande prononce) {
+
+        if (IIJPrononce.CS_ATTENTE_READAPTATION.equals(prononce.getCsGenreReadaptation())
+                && !JadeStringUtil.isBlankOrZero(prononce.getDateFinPrononce())
+                && !JadeStringUtil.isBlankOrZero(prononce.getDateDebutPrononce())) {
+            prononce.setJours(PRDateUtils.getNbDayBetween(prononce.getDateDebutPrononce(),
+                    prononce.getDateFinPrononce()) + 1);
+        }
+
+        return prononce;
+    }
 
     private IJPrononceJointDemande chargerCodeSystemeGenreReabilitation(IJPrononceJointDemande prononce) {
         if ((prononce != null) && (prononce.getGenreReabilitation() == null)
@@ -77,7 +91,8 @@ public class IJPrononceServiceImpl implements IJPrononceService {
         IJPrononceJointDemande prononce = new IJPrononceJointDemande();
         prononce.setId(idEntity);
         try {
-            return chargerCodeSystemeGenreReabilitation((IJPrononceJointDemande) JadePersistenceManager.read(prononce));
+            return calculerJoursSiBesoin(chargerCodeSystemeGenreReabilitation((IJPrononceJointDemande) JadePersistenceManager
+                    .read(prononce)));
         } catch (JadePersistenceException e) {
             throw new ServiceTechnicalException(e.getMessage(), e);
         }
@@ -92,6 +107,7 @@ public class IJPrononceServiceImpl implements IJPrononceService {
 
         for (JadeAbstractModel unResultat : returnedModel.getSearchResults()) {
             chargerCodeSystemeGenreReabilitation((IJPrononceJointDemande) unResultat);
+            calculerJoursSiBesoin((IJPrononceJointDemande) unResultat);
         }
 
         return returnedModel;
