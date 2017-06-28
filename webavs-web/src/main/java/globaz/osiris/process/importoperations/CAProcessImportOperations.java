@@ -826,6 +826,7 @@ public class CAProcessImportOperations extends BProcess implements APIProcessUpl
     /**
      * @return
      */
+    @Override
     public String getFileName() {
         return fileName;
     }
@@ -920,5 +921,65 @@ public class CAProcessImportOperations extends BProcess implements APIProcessUpl
             operation.setEtat(APIOperation.ETAT_ERREUR);
             getMemoryLog().logMessage(operation.getMemoryLog());
         }
+    }
+
+    @Override
+    public String getDateValeur() {
+        return "";
+    }
+
+    @Override
+    public boolean getEchoToConsole() {
+        return false;
+    }
+
+    @Override
+    public String getIdOrganeExecution() {
+        return "";
+    }
+
+    @Override
+    public String getIdYellowReportFile() {
+        return "";
+    }
+
+    @Override
+    public String getLibelle() {
+        return "";
+    }
+
+    @Override
+    public Boolean getSimulation() {
+        return false;
+    }
+
+    @Override
+    public void setDateValeur(String newDateValeur) {
+        // Rien a faire
+    }
+
+    @Override
+    public void setEchoToConsole(boolean newEchoToConsole) {
+        // Rien a faire
+    }
+
+    @Override
+    public void setIdOrganeExecution(String idOrgarneExecution) {
+        // Rien a faire
+    }
+
+    @Override
+    public void setIdYellowReportFile(String id) {
+        // Rien a faire
+    }
+
+    @Override
+    public void setLibelle(String newLibelle) {
+        // Rien a faire
+    }
+
+    @Override
+    public void setSimulation(Boolean simulation) {
+        // Rien a faire
     }
 }

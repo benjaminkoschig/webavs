@@ -354,6 +354,7 @@ public class CAProcessPaiementEtranger extends BProcess implements APIProcessUpl
      * 
      * @return String
      */
+    @Override
     public String getDateValeur() {
         return dateValeur;
     }
@@ -363,6 +364,7 @@ public class CAProcessPaiementEtranger extends BProcess implements APIProcessUpl
      * 
      * @return boolean
      */
+    @Override
     public boolean getEchoToConsole() {
         return echoToConsole;
     }
@@ -400,6 +402,7 @@ public class CAProcessPaiementEtranger extends BProcess implements APIProcessUpl
      * 
      * @return java.lang.String
      */
+    @Override
     public java.lang.String getFileName() {
         return fileName;
     }
@@ -409,6 +412,7 @@ public class CAProcessPaiementEtranger extends BProcess implements APIProcessUpl
      * 
      * @return java.lang.String
      */
+    @Override
     public java.lang.String getIdOrganeExecution() {
         return idOrganeExecution;
     }
@@ -418,6 +422,7 @@ public class CAProcessPaiementEtranger extends BProcess implements APIProcessUpl
      * 
      * @return String
      */
+    @Override
     public String getLibelle() {
         return libelle;
     }
@@ -427,6 +432,7 @@ public class CAProcessPaiementEtranger extends BProcess implements APIProcessUpl
      * 
      * @return Boolean
      */
+    @Override
     public Boolean getSimulation() {
         return simulation;
     }
@@ -739,6 +745,7 @@ public class CAProcessPaiementEtranger extends BProcess implements APIProcessUpl
      * @param dateValeur
      *            The dateValeur to set
      */
+    @Override
     public void setDateValeur(String dateValeur) {
         this.dateValeur = dateValeur;
     }
@@ -749,6 +756,7 @@ public class CAProcessPaiementEtranger extends BProcess implements APIProcessUpl
      * @param newEchoToConsole
      *            boolean
      */
+    @Override
     public void setEchoToConsole(boolean newEchoToConsole) {
         echoToConsole = newEchoToConsole;
     }
@@ -770,6 +778,7 @@ public class CAProcessPaiementEtranger extends BProcess implements APIProcessUpl
      * @param newOrganeExecution
      *            java.lang.String
      */
+    @Override
     public void setIdOrganeExecution(java.lang.String newIdOrganeExecution) {
         idOrganeExecution = newIdOrganeExecution;
     }
@@ -780,6 +789,7 @@ public class CAProcessPaiementEtranger extends BProcess implements APIProcessUpl
      * @param libelle
      *            The libelle to set
      */
+    @Override
     public void setLibelle(String libelle) {
         this.libelle = libelle;
     }
@@ -790,6 +800,7 @@ public class CAProcessPaiementEtranger extends BProcess implements APIProcessUpl
      * @param simulation
      *            The simulation to set
      */
+    @Override
     public void setSimulation(Boolean simulation) {
         this.simulation = simulation;
     }
@@ -839,6 +850,16 @@ public class CAProcessPaiementEtranger extends BProcess implements APIProcessUpl
             }
         }
         return;
+    }
+
+    @Override
+    public String getIdYellowReportFile() {
+        return "";
+    }
+
+    @Override
+    public void setIdYellowReportFile(String id) {
+        // Rien a faire
     }
 
 }

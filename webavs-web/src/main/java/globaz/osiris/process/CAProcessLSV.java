@@ -6,7 +6,6 @@ import globaz.globall.db.GlobazJobQueue;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.osiris.api.OsirisDef;
 import globaz.osiris.api.process.APIProcessUpload;
-import globaz.osiris.api.process.APIProcessUploadBVR;
 import globaz.osiris.db.ordres.CAOrganeExecution;
 
 /**
@@ -14,7 +13,7 @@ import globaz.osiris.db.ordres.CAOrganeExecution;
  * 
  * @author: Administrator
  */
-public class CAProcessLSV extends BProcess implements APIProcessUpload, APIProcessUploadBVR {
+public class CAProcessLSV extends BProcess implements APIProcessUpload {
     /**
      * 
      */
