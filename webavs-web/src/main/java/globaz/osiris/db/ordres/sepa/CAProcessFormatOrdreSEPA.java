@@ -7,6 +7,7 @@ import globaz.jade.common.Jade;
 import globaz.osiris.api.ordre.APICommonOdreVersement;
 import globaz.osiris.api.ordre.APIOrdreGroupe;
 import globaz.osiris.db.comptes.CAOperationOrdreRecouvrement;
+import globaz.osiris.db.ordres.exception.AucuneAdressePaiementException;
 import globaz.osiris.db.ordres.format.CAOrdreFormateur;
 import globaz.osiris.db.ordres.sepa.AbstractSepa.SepaException;
 import globaz.osiris.db.ordres.sepa.utils.CASepaCommonUtils;
@@ -351,6 +352,11 @@ public class CAProcessFormatOrdreSEPA extends CAOrdreFormateur {
                 .createFinancialInstitutionIdentification7CHBicOrClrId();
         finInstnId.setBIC(CASepaOGConverterUtils.getDbtrAgtBIC(adpf));
         dbtrAgt.setFinInstnId(finInstnId);
+
+        if (og.getOrganeExecution().getAdresseDebitTaxes() == null
+                || og.getOrganeExecution().getAdresseDebitTaxes().isNew()) {
+            throw new AucuneAdressePaiementException(getSession().getLabel("7404"));
+        }
 
         CashAccount16CHIdAndCurrency chrgsAcct = CASepaOGConverterUtils.getChrgsAcct(og);
 
