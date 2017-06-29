@@ -2,7 +2,7 @@ package globaz.musca.itext.list;
 
 import ch.globaz.common.domaine.Montant;
 
- class DecompteRecap {
+class DecompteRecap {
     private Montant montantTotal = Montant.ZERO;
     private Montant montantPositif = Montant.ZERO;
     private Montant montantNegatif = Montant.ZERO;
@@ -15,7 +15,7 @@ import ch.globaz.common.domaine.Montant;
         if (montant.isPositive()) {
             montantPositif = montantPositif.add(montant);
         } else {
-            montantPositif = montantNegatif.add(montant);
+            montantNegatif = montantNegatif.add(montant);
         }
     }
 
