@@ -528,6 +528,9 @@ public class CAPaiementBVR extends CAPaiement implements APIPaiementBVR {
             setIdOrganeExecution(oper.getIdOrganeExecution());
             setReferenceBVR(oper.getReferenceBVR());
             setReferenceInterne(oper.getReferenceInterne());
+            setBankTransactionCode(oper.getBankTransactionCode());
+            setAccountServicerReference(oper.getAccountServicerReference());
+            setDebtor(oper.getDebtor());
         }
     }
 
