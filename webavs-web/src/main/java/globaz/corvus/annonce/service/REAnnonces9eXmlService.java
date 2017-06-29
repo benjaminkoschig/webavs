@@ -440,8 +440,9 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
         }
 
         description.setMutationscode(Integer.valueOf(enr01.getCodeMutation()).shortValue());
-
-        description.setMonatsbetrag(new BigDecimal(testSiNullouZero(enr01.getMensualitePrestationsFrancs())));
+        if (!JadeStringUtil.isBlank(enr01.getMensualitePrestationsFrancs())) {
+            description.setMonatsbetrag(new BigDecimal(testSiNullouZero(enr01.getMensualitePrestationsFrancs())));
+        }
 
         // Base de calcul
         AenderungsmeldungAO9Type.Leistungsbeschreibung.Berechnungsgrundlagen baseDeCalcul = factoryType
