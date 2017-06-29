@@ -139,7 +139,8 @@ public class CASepaOGConverterUtils {
     }
 
     public static CashAccount16CHIdAndCurrency getChrgsAcct(APIOrdreGroupe og) throws Exception {
-        if (og.getOrganeExecution().getAdresseDebitTaxes().isNew()
+        if (og.getOrganeExecution().getAdresseDebitTaxes() == null
+                || og.getOrganeExecution().getAdresseDebitTaxes().isNew()
                 || og.getOrganeExecution().getAdresseDebitTaxes().getId()
                         .equals(og.getOrganeExecution().getAdressePaiement().getId())) {
             return null;
