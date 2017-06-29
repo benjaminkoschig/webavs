@@ -385,10 +385,12 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
         DJE9BeschreibungWeakType ram = rempliDJE9BeschreibungWeakType(enr02);
         baseDeCalcul.setDJEBeschreibung(ram);
         // Si pas d'office AI pas de bloc AI
-
-        baseDeCalcul.setIVDaten(rempliIVDatenType9AssureWeak(enr02));
-
-        baseDeCalcul.setIVDatenEhefrau(rempliIVDatenType9ConjointWeak(enr02));
+        if (!JadeStringUtil.isBlank(enr02.getOfficeAICompetent())) {
+            baseDeCalcul.setIVDaten(rempliIVDatenType9AssureWeak(enr02));
+        }
+        if (!JadeStringUtil.isBlank(enr02.getOfficeAiCompEpouse())) {
+            baseDeCalcul.setIVDatenEhefrau(rempliIVDatenType9ConjointWeak(enr02));
+        }
 
         if (wantGenerateAjournement(enr02)) {
             // Ajournement
@@ -461,10 +463,12 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
         DJE9BeschreibungWeakType ram = rempliDJE9BeschreibungWeakType(enr02);
         baseDeCalcul.setDJEBeschreibung(ram);
         // Si pas d'office AI pas de bloc AI
-
-        baseDeCalcul.setIVDaten(rempliIVDatenType9AssureWeak(enr02));
-
-        baseDeCalcul.setIVDatenEhefrau(rempliIVDatenType9ConjointWeak(enr02));
+        if (!JadeStringUtil.isBlank(enr02.getOfficeAICompetent())) {
+            baseDeCalcul.setIVDaten(rempliIVDatenType9AssureWeak(enr02));
+        }
+        if (!JadeStringUtil.isBlank(enr02.getOfficeAiCompEpouse())) {
+            baseDeCalcul.setIVDatenEhefrau(rempliIVDatenType9ConjointWeak(enr02));
+        }
 
         description.getSonderfallcodeRente().addAll(rempliCasSpecial(enr02));
         if (!JadeStringUtil.isBlank(enr02.getReduction())) {
@@ -786,8 +790,9 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
             donneeAI.setGebrechensschluessel(Integer.valueOf(StringUtils.left(codeInfirmite, 3)));
             donneeAI.setFunktionsausfallcode(Integer.valueOf(StringUtils.right(codeInfirmite, 2)).shortValue());
         }
-        if (!JadeStringUtil.isBlank(enr02.getSurvenanceEvenAssure())) {
-            donneeAI.setDatumVersicherungsfall(retourneXMLGregorianCalendarFromMonth(enr02.getSurvenanceEvenAssure()));
+        if (!JadeStringUtil.isBlank(enr02.getSurvenanceEvtAssureEpouse())) {
+            donneeAI.setDatumVersicherungsfall(retourneXMLGregorianCalendarFromMonth(enr02
+                    .getSurvenanceEvtAssureEpouse()));
         }
         if (!JadeStringUtil.isBlank(enr02.getAgeDebutInvaliditeEpouse())) {
             donneeAI.setIstFruehInvalid(convertIntToBoolean(enr02.getAgeDebutInvaliditeEpouse()));
@@ -804,13 +809,14 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
         if (!JadeStringUtil.isBlank(enr02.getDegreInvaliditeEpouse())) {
             donneeAI.setInvaliditaetsgrad(Integer.valueOf(enr02.getDegreInvaliditeEpouse()).shortValue());
         }
-        if (!JadeStringUtil.isBlank(enr02.getCodeInfirmite())) {
-            String codeInfirmite = StringUtils.leftPad(enr02.getCodeInfirmite(), 5);
+        if (!JadeStringUtil.isBlank(enr02.getCodeInfirmiteEpouse())) {
+            String codeInfirmite = StringUtils.leftPad(enr02.getCodeInfirmiteEpouse(), 5);
             donneeAI.setGebrechensschluessel(Integer.valueOf(StringUtils.left(codeInfirmite, 3)));
             donneeAI.setFunktionsausfallcode(Integer.valueOf(StringUtils.right(codeInfirmite, 2)).shortValue());
         }
-        if (!JadeStringUtil.isBlank(enr02.getSurvenanceEvenAssure())) {
-            donneeAI.setDatumVersicherungsfall(retourneXMLGregorianCalendarFromMonth(enr02.getSurvenanceEvenAssure()));
+        if (!JadeStringUtil.isBlank(enr02.getSurvenanceEvtAssureEpouse())) {
+            donneeAI.setDatumVersicherungsfall(retourneXMLGregorianCalendarFromMonth(enr02
+                    .getSurvenanceEvtAssureEpouse()));
         }
         if (!JadeStringUtil.isBlank(enr02.getAgeDebutInvaliditeEpouse())) {
             donneeAI.setIstFruehInvalid(convertIntToBoolean(enr02.getAgeDebutInvaliditeEpouse()));
