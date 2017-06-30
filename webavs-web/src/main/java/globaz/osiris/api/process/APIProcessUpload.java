@@ -1,8 +1,9 @@
 package globaz.osiris.api.process;
 
+import globaz.framework.bean.FWViewBeanInterface;
 import globaz.globall.db.BSession;
 
-public interface APIProcessUpload {
+public interface APIProcessUpload extends FWViewBeanInterface {
 
     public String getDateValeur();
 
