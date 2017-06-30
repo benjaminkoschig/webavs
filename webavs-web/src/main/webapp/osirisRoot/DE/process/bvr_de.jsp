@@ -1,11 +1,12 @@
  
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<%-- tpl:insert page="/theme/process.jtpl" --%><%@ page language="java" errorPage="/errorPage.jsp" import="globaz.globall.http.*" contentType="text/html;charset=ISO-8859-1" %>
+<%-- tpl:insert page="/theme/process.jtpl" --%><%@page import="globaz.osiris.api.process.APIProcessUpload"%>
+<%@ page language="java" errorPage="/errorPage.jsp" import="globaz.globall.http.*" contentType="text/html;charset=ISO-8859-1" %>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ include file="/theme/process/header.jspf" %>
 <%-- tpl:put name="zoneInit" --%> 
 <%	idEcran = "GCA3008";
-	globaz.osiris.api.process.APIProcessUploadBVR viewBean = (globaz.osiris.api.process.APIProcessUploadBVR) session.getAttribute(globaz.osiris.servlet.action.CADefaultServletAction.VB_ELEMENT);
+	APIProcessUpload viewBean = (APIProcessUpload) session.getAttribute(globaz.osiris.servlet.action.CADefaultServletAction.VB_ELEMENT);
 	userActionValue = "osiris.process.bvr.executer";
 
 	formAction = request.getContextPath()+mainServletPath+"Root/"+languePage+"/process/bvrChargementFile_de.jsp";
