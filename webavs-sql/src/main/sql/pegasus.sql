@@ -1,3 +1,7 @@
 insert into SCHEMA.FWCOSP (pcosid,pptygr,pconcs,pptycn,pptycl,pptysa,pcosli,pcosdf,pcosdm,pcosdp,pcoian,pcoide,pcodfi,pcoitc,pcoise, pspy) values ( 64006038, 'PCGENRREN', 38 ,1,0,0, 'REN_IJAI', 2,1,2,2,2, 2 , 63000006 ,0, (replace(char(current date), '-', '') concat replace(char(current time), '.', '') concat user) ); 
 insert into SCHEMA.FWCOUP (pcosid,plaide,pcouid,pcolut, pspy) values ( 64006038, 'F', 'IJAI', 'IJAI', (replace(char(current date), '-', '') concat replace(char(current time), '.', '') concat user) ); 
-insert into SCHEMA.FWCOUP (pcosid,plaide,pcouid,pcolut, pspy) values ( 64006038, 'D', 'IJAI', 'IV-TG', (replace(char(current date), '-', '') concat replace(char(current time), '.', '') concat user) ); 
+insert into SCHEMA.FWCOUP (pcosid,plaide,pcouid,pcolut, pspy) values ( 64006038, 'D', 'IJAI', 'IV-TG', (replace(char(current date), '-', '') concat replace(char(current time), '.', '') concat user) );
+
+insert into SCHEMA.FWCOSP (pcosid,pptygr,pconcs,pptycn,pptycl,pptysa,pcosli,pcosdf,pcosdm,pcosdp,pcoian,pcoide,pcodfi,pcoitc,pcoise, pspy) values ( 64039152, 'PCKYVPC', 1 ,1,0,0, 'KEY_REV_ACT_LUCRATIVE_REVENU_PRIS_COMPTE', 2,1,2,2,2, 2 , 63000039 ,0, (replace(char(current date), '-', '') concat replace(char(current time), '.', '') concat user) ); 
+insert into SCHEMA.FWCOUP (pcosid,plaide,pcouid,pcolut, pspy) values ( 64039152, 'F', '', 'Revenu pris en compte', (replace(char(current date), '-', '') concat replace(char(current time), '.', '') concat user) ); 
+insert into SCHEMA.FWCOUP (pcosid,plaide,pcouid,pcolut, pspy) values ( 64039152, 'D', '', 'Massgebendes Einkommen', (replace(char(current date), '-', '') concat replace(char(current time), '.', '') concat user) ); 

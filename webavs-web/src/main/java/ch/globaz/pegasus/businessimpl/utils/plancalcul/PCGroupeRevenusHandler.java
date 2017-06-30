@@ -74,7 +74,8 @@ public class PCGroupeRevenusHandler extends PCGroupeAbstractHandler {
             IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_DEDUCTION_LPP,
             IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_FRAIS_OBTENTION_REVENU,
             IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_DEDUCTION_FORFAITAIRE_REVENU,
-            IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_REVENU_PRIVILEGIE };
+            IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_REVENU_PRIVILEGIE,
+            IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_REVENU_PRIS_EN_COMPTE };
     String[] REV_REVENUS_FORTUNE_IMMOBILIERE = { IPCValeursPlanCalcul.CLE_REVEN_RENFORMO_TOTAL,
             IPCValeursPlanCalcul.CLE_REVEN_RENFORMO_VALEUR_LOCATIVE,
             IPCValeursPlanCalcul.CLE_REVEN_RENFORMO_DROIT_HABITATION,
@@ -350,13 +351,30 @@ public class PCGroupeRevenusHandler extends PCGroupeAbstractHandler {
 
         // SI valeur diff de 0
         if (((getValeur(keyRevenuNonPlaffone) <= 0f) || (getValeur(cs) != 0f))) {
-            // iteration sur les membres
+            // iteration sur les membres¨
+            boolean afficherForfaitActiviteLucr = false;
+            boolean hasRevenuPriviligie = false;
             for (int cpt = 1; cpt < tabCategorie.length; cpt++) {
                 String csMembre = tabCategorie[cpt];
                 String legendeMembre = getLegende(csMembre);
                 Float valMembre = getValeur(csMembre);
-                // si valeur != 0, on traite
-                if ((valMembre != 0f) || csMembre.equals(IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_REVENU_PRIVILEGIE)) {
+
+                // Si on a une activité lucrative de quelque sorte != 0, on affiche le forfait même si il est égal à 0
+                if ((csMembre.equals(IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_ACTIVITE_DEPENDANTE)
+                        || csMembre.equals(IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_ACTIVITE_INDEPENDANTE) || csMembre
+                            .equals(IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_ACTIVITE_INDEPENDANTE_AGRICOLE))
+                        && valMembre != 0f) {
+                    afficherForfaitActiviteLucr = true;
+                }
+
+                if (csMembre.equals(IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_REVENU_PRIVILEGIE) && valMembre != 0f) {
+                    hasRevenuPriviligie = true;
+                }
+
+                // si valeur != 0, on traite si = 0 mais activité lucrative on affiche quand même le forfait à 0
+                // (pour la ligne9
+                if (valMembre != 0f
+                        || (IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_DEDUCTION_FORFAITAIRE_REVENU.equals(csMembre) && afficherForfaitActiviteLucr)) {
                     // traitement deduction
                     if (csMembre.equals(IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_DEDUCTION_SOCIALES)
                             || csMembre.equals(IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_DEDUCTION_LPP)
@@ -379,7 +397,8 @@ public class PCGroupeRevenusHandler extends PCGroupeAbstractHandler {
                         groupList.add(ligne);
 
                     } else {
-                        if (csMembre.equals(IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_REVENU_PRIVILEGIE)) {
+                        if (csMembre.equals(IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_REVENU_PRIVILEGIE)
+                                || (csMembre.equals(IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_REVENU_PRIS_EN_COMPTE) && !hasRevenuPriviligie)) {
                             // valeur revenu privilegie
                             PCValeurPlanCalculHandler valeurRevPriv = createValeurPlanCalcul(csMembre,
                                     valMembre.toString(), ADDITION, NO_CSS_CLASS);
@@ -392,7 +411,11 @@ public class PCGroupeRevenusHandler extends PCGroupeAbstractHandler {
                                     VALEUR_VIDE));
 
                         } else {
-                            groupList.add(createLigneForGroupeList(csMembre, legendeMembre, valMembre, 1));
+                            // Si on a un revenu pris en compte ici ç aveut dire qu'on a un revenu pris au 2/3 et on
+                            // doit pas afficher le revenu complet
+                            if (!csMembre.equals(IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_REVENU_PRIS_EN_COMPTE)) {
+                                groupList.add(createLigneForGroupeList(csMembre, legendeMembre, valMembre, 1));
+                            }
                         }
                     }
                 }

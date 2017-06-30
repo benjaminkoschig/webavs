@@ -102,6 +102,7 @@ public interface IPCValeursPlanCalcul {
     public final static String CLE_REVEN_ACT_LUCR_FRAIS_OBTENTION_REVENU = "64039041";
     public final static String CLE_REVEN_ACT_LUCR_REVENU_HYPOTHETIQUE = "64039038";
     public final static String CLE_REVEN_ACT_LUCR_REVENU_PRIVILEGIE = "64039043";
+    public final static String CLE_REVEN_ACT_LUCR_REVENU_PRIS_EN_COMPTE = "64039152";
     public final static String CLE_REVEN_ACT_LUCR_TOTAL = "64039112";
     public final static String CLE_REVEN_ACT_LUCR_TOTAL_NON_PLAFFONNE = "64039070";
     public final static String CLE_REVEN_ALLOCAPI_AUTRE_API = "64039056";

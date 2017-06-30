@@ -44,14 +44,26 @@ public class StrategieFinalRevenuTotalDeterminant implements StrategieCalculFina
         // ajout du rendement de la fortune immobiliere
         somme += donnee.getValeurEnfant(IPCValeursPlanCalcul.CLE_REVEN_RENFORMO_TOTAL);
 
-        // ajout du revenu de l'activité lucrative
-        float revenuPrivilegie = Math.round(donnee.getValeurEnfant(IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_TOTAL)
-                * TAUX_REVENU_ACTIVITE_LUCRATIVE);
-        somme += revenuPrivilegie;
-        TupleDonneeRapport tupleActiviteLucrativeRevenuPrivilegie = new TupleDonneeRapport(
-                IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_REVENU_PRIVILEGIE, revenuPrivilegie);
-        tupleActiviteLucrativeRevenuPrivilegie.setLegende(TAUX_REVENU_ACTIVITE_LUCRATIVE_LEGENDE);
+        // ajout du revenu de l'activité lucrative arrondi si aucunes IJAJ ET activite lucrative simultanément
+        float revenuPrivilegie = donnee.getValeurEnfant(IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_TOTAL);
+        TupleDonneeRapport tupleActiviteLucrativeRevenuPrivilegie;
+
+        if (!donnee.getEnfants().containsKey(IPCValeursPlanCalcul.CLE_REVEN_AUTREREV_IJAI)
+                && isActiviteLucrative(donnee)) {
+            revenuPrivilegie = Math.round(donnee.getValeurEnfant(IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_TOTAL)
+                    * TAUX_REVENU_ACTIVITE_LUCRATIVE);
+
+            tupleActiviteLucrativeRevenuPrivilegie = new TupleDonneeRapport(
+                    IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_REVENU_PRIVILEGIE, revenuPrivilegie);
+            tupleActiviteLucrativeRevenuPrivilegie.setLegende(TAUX_REVENU_ACTIVITE_LUCRATIVE_LEGENDE);
+
+        } else {
+            tupleActiviteLucrativeRevenuPrivilegie = new TupleDonneeRapport(
+                    IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_REVENU_PRIS_EN_COMPTE, revenuPrivilegie);
+        }
         donnee.addEnfantTuple(tupleActiviteLucrativeRevenuPrivilegie);
+
+        somme += revenuPrivilegie;
 
         // ajout des rentes avs ai
         somme += donnee.getValeurEnfant(IPCValeursPlanCalcul.CLE_REVEN_RENAVSAI_TOTAL);
@@ -218,5 +230,18 @@ public class StrategieFinalRevenuTotalDeterminant implements StrategieCalculFina
                 .setLegende(((ControlleurVariablesMetier) context.get(legende)).getLegendeCourante());
 
         return tupleImputationFortuneNette;
+    }
+
+    /***
+     * Méthode qui permet de savoir si on est dans un cas ou l'on a une activité lucrative
+     * (K141106_001)
+     * 
+     * @param donnee
+     * @return
+     */
+    private boolean isActiviteLucrative(TupleDonneeRapport donnee) {
+        return (donnee.getEnfants().containsKey(IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_ACTIVITE_DEPENDANTE)
+                || donnee.getEnfants().containsKey(IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_ACTIVITE_INDEPENDANTE) || donnee
+                .getEnfants().containsKey(IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_ACTIVITE_INDEPENDANTE_AGRICOLE));
     }
 }

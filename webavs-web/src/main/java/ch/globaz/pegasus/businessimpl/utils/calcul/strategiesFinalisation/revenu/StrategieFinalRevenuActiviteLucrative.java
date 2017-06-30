@@ -43,18 +43,25 @@ public class StrategieFinalRevenuActiviteLucrative implements StrategieCalculFin
             somme += donnee.getValeurEnfant(champ);
         }
 
-        // déduction forfaitaire
-        if (somme > 0) {
-            int nbPersonnes = (Integer) context.get(Attribut.NB_PERSONNES);
-            if (nbPersonnes > 1) {
-                deductionForfaitaireRevenu = Float.parseFloat(((ControlleurVariablesMetier) context
-                        .get(Attribut.CS_FRANCHISE_REVENUS_PRIVILEGIERS_FAMILLE)).getValeurCourante());
-            } else {
-                deductionForfaitaireRevenu = Float.parseFloat(((ControlleurVariablesMetier) context
-                        .get(Attribut.CS_FRANCHISE_REVENUS_PRIVILEGIERS_CELIBATAIRES)).getValeurCourante());
-            }
+        // déduction forfaitaire si IJAJ et activite lucrative simultanément
+        if (donnee.getEnfants().containsKey(IPCValeursPlanCalcul.CLE_REVEN_AUTREREV_IJAI)
+                && isActiviteLucrative(donnee)) {
             donnee.addEnfantTuple(new TupleDonneeRapport(
                     IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_DEDUCTION_FORFAITAIRE_REVENU, deductionForfaitaireRevenu));
+        } else {
+            if (somme > 0) {
+                int nbPersonnes = (Integer) context.get(Attribut.NB_PERSONNES);
+                if (nbPersonnes > 1) {
+                    deductionForfaitaireRevenu = Float.parseFloat(((ControlleurVariablesMetier) context
+                            .get(Attribut.CS_FRANCHISE_REVENUS_PRIVILEGIERS_FAMILLE)).getValeurCourante());
+                } else {
+                    deductionForfaitaireRevenu = Float.parseFloat(((ControlleurVariablesMetier) context
+                            .get(Attribut.CS_FRANCHISE_REVENUS_PRIVILEGIERS_CELIBATAIRES)).getValeurCourante());
+                }
+                donnee.addEnfantTuple(new TupleDonneeRapport(
+                        IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_DEDUCTION_FORFAITAIRE_REVENU,
+                        deductionForfaitaireRevenu));
+            }
         }
 
         // autres champs à déduire systématiquement
@@ -66,21 +73,38 @@ public class StrategieFinalRevenuActiviteLucrative implements StrategieCalculFin
             somme = 0;
         }
 
-        // ajout du revenu de l'activité lucrative
-        float revenuPrivilegie = Math.round(somme * TAUX_REVENU_ACTIVITE_LUCRATIVE);
-        // sommeRevenuCommun += revenuPrivilegie;
+        // ajout du revenu de l'activité lucrative arrondi si IJAJ ET pas d'activite lucrative simultanément
+        float revenuPrivilegie = somme;
+        TupleDonneeRapport tupleActiviteLucrativeRevenuPrivilegie;
 
-        // Ajout revenu privilgié
-        // if (revenuPrivilegie > 0.0f) {
-        TupleDonneeRapport tupleActiviteLucrativeRevenuPrivilegie = new TupleDonneeRapport(
-                IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_REVENU_PRIVILEGIE, revenuPrivilegie);
-        tupleActiviteLucrativeRevenuPrivilegie.setLegende(TAUX_REVENU_ACTIVITE_LUCRATIVE_LEGENDE);
+        if (donnee.getEnfants().containsKey(IPCValeursPlanCalcul.CLE_REVEN_AUTREREV_IJAI)
+                && !isActiviteLucrative(donnee)) {
+            somme = Math.round(somme * TAUX_REVENU_ACTIVITE_LUCRATIVE);
+
+            tupleActiviteLucrativeRevenuPrivilegie = new TupleDonneeRapport(
+                    IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_REVENU_PRIVILEGIE, revenuPrivilegie);
+            tupleActiviteLucrativeRevenuPrivilegie.setLegende(TAUX_REVENU_ACTIVITE_LUCRATIVE_LEGENDE);
+        } else {
+            tupleActiviteLucrativeRevenuPrivilegie = new TupleDonneeRapport(
+                    IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_REVENU_PRIS_EN_COMPTE, revenuPrivilegie);
+        }
         donnee.addEnfantTuple(tupleActiviteLucrativeRevenuPrivilegie);
-        // }
 
         donnee.addEnfantTuple(new TupleDonneeRapport(IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_TOTAL_NON_PLAFFONNE, somme));
         donnee.addEnfantTuple(new TupleDonneeRapport(IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_TOTAL, somme));
 
     }
 
+    /***
+     * Méthode qui permet de savoir si on est dans un cas ou l'on a une activité lucrative
+     * (K141106_001)
+     * 
+     * @param donnee
+     * @return
+     */
+    private boolean isActiviteLucrative(TupleDonneeRapport donnee) {
+        return (donnee.getEnfants().containsKey(IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_ACTIVITE_DEPENDANTE)
+                || donnee.getEnfants().containsKey(IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_ACTIVITE_INDEPENDANTE) || donnee
+                .getEnfants().containsKey(IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_ACTIVITE_INDEPENDANTE_AGRICOLE));
+    }
 }
