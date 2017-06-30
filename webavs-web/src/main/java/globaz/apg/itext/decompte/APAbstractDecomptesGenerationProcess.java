@@ -16,6 +16,7 @@ import globaz.apg.enums.APTypeDePrestation;
 import globaz.apg.groupdoc.ccju.GroupdocPropagateUtil;
 import globaz.apg.itext.decompte.utils.APDecompte;
 import globaz.apg.itext.decompte.utils.APTypeDeDecompte;
+import globaz.apg.properties.APProperties;
 import globaz.babel.api.ICTDocument;
 import globaz.babel.api.ICTTexte;
 import globaz.caisse.helper.CaisseHelperFactory;
@@ -452,7 +453,9 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                 crBean.setAdresse(adresse);
                 crBean.setNoAvs(tiers.getNSS());
                 crBean.setDate(JACalendar.format(JACalendar.format(getDateDocument()), getCodeIsoLangue()));
-                crBean.setNomCollaborateur(getSession().getUserFullName());
+                if (APProperties.PROPERTY_AFFICHER_TRAITE_PAR.getBooleanValue()) {
+                    crBean.setNomCollaborateur(getSession().getUserFullName());
+                }
                 // nom du document
                 setDocumentTitle(tiers.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL) + " - "
                         + tiers.getProperty(PRTiersWrapper.PROPERTY_NOM).toUpperCase() + " "

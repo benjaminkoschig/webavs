@@ -9,6 +9,7 @@ import globaz.apg.db.prestation.APPrestation;
 import globaz.apg.db.prestation.APRepartitionPaiements;
 import globaz.apg.process.APGenererAttestationsProcess;
 import globaz.apg.process.APGenererAttestationsProcess.AttestationsInfos;
+import globaz.apg.properties.APProperties;
 import globaz.babel.api.ICTDocument;
 import globaz.babel.api.ICTTexte;
 import globaz.caisse.helper.CaisseHelperFactory;
@@ -325,7 +326,10 @@ public class APAttestations extends FWIDocumentManager {
             codeIsoLangue = PRUtil.getISOLangueTiers(codeIsoLangue);
 
             crBean.setDate(JACalendar.format(date, codeIsoLangue));
-            crBean.setNomCollaborateur(getSession().getUserFullName());
+
+            if (APProperties.PROPERTY_AFFICHER_TRAITE_PAR.getBooleanValue()) {
+                crBean.setNomCollaborateur(getSession().getUserFullName());
+            }
             // bz-3737
             /*
              * crBean.setNoAvs(tiers.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL ) + "\n" +
