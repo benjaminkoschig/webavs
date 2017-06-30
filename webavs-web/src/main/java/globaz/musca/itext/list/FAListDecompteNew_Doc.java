@@ -39,7 +39,7 @@ public class FAListDecompteNew_Doc extends FWIDocumentManager {
      * 
      */
     private static final long serialVersionUID = 1L;
-    public final static String NUM_REF_INFOROM_LISTE_DECOMPTE = "0098CFA";
+    public static final String NUM_REF_INFOROM_LISTE_DECOMPTE = "0098CFA";
     private globaz.musca.db.facturation.FAEnteteFacture enteteFacture;
     private java.lang.String idPassage = new String();
     private java.lang.String idSousType = new String();
@@ -326,9 +326,12 @@ public class FAListDecompteNew_Doc extends FWIDocumentManager {
         details.add(getSession().getLabel("DATEECHEANCE"), getPassage().getDateEcheance());
         details.newLigne();
 
+        details.add(toLabel("LISDEC_RECAPNDECOMPTE"),
+                Integer.toString(decompteRecap.getCompteur().getMontantSansCentimes()));
+        details.newLigne();
+
         List<DecompteInfos> decomtpeInfos = new ArrayList<DecompteInfos>();
 
-        decomtpeInfos.add(new DecompteInfos(toLabel("LISDEC_RECAPNDECOMPTE"), decompteRecap.getCompteur()));
         decomtpeInfos.add(new DecompteInfos(toLabel("LISDEC_RECAPPOSITIF"), decompteRecap.getMontantPositif()));
         decomtpeInfos.add(new DecompteInfos(toLabel("LISDEC_RECAPCREDIT"), decompteRecap.getMontantNegatif()));
         decomtpeInfos.add(new DecompteInfos(toLabel("TOTAUX"), decompteRecap.getMontantTotal()));
