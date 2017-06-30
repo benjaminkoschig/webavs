@@ -487,7 +487,9 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
 
                 crBean.setNoAffilie(affilie.getNumAffilie());
                 crBean.setAdresse(adresse);
-                crBean.setNomCollaborateur(getSession().getUserFullName());
+                if (APProperties.PROPERTY_AFFICHER_TRAITE_PAR.getBooleanValue()) {
+                    crBean.setNomCollaborateur(getSession().getUserFullName());
+                }
                 crBean.setDate(JACalendar.format(JACalendar.format(getDateDocument()), getCodeIsoLangue()));
 
                 // nom du document
