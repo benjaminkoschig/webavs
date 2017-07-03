@@ -199,7 +199,7 @@
 <%
 	if (!viewBean.canDoNext() && !viewBean.canDoPrev()) {
 %>		<tr>
-			<td colspan="4" style="font-style: italic; background-color: #dddddd;">
+			<td colspan="5" style="font-style: italic; background-color: #dddddd;">
 				<ct:FWLabel key="JSP_TOTAUX" />&nbsp;
 			</td>
 			<td class="mtd" nowrap align="right" style="font-style: italic; background-color: #dddddd;border-style:double;border-top-width:3; border-left-width:0; border-right-width:0; border-bottom-width:0;border-color:black;">
