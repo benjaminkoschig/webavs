@@ -77,10 +77,15 @@ public class PrepareDonneForJourAppoint {
                                                 .getMontantMensuelConjoint())) {
                                             montantPrecedant = calculComparatifPrecedant.getMontantMensuelConjoint();
                                         }
+
+                                        periode.setJoursAppointConjoint(generateJoursAppoint(dateEntreeHomePersonne,
+                                                periode.getCCRetenu()[1], montantPrecedant, true));
+                                    } else {
+                                        periode.setJoursAppointConjoint(generateJoursAppoint(dateEntreeHomePersonne,
+                                                periode.getCCRetenu()[1], "0", true));
+
                                     }
 
-                                    periode.setJoursAppointConjoint(generateJoursAppoint(dateEntreeHomePersonne,
-                                            periode.getCCRetenu()[1], montantPrecedant, true));
                                 } else if (personne.isRequerant()) {
 
                                     if (!pcaReqConj.isRequerantEmpty()) {
