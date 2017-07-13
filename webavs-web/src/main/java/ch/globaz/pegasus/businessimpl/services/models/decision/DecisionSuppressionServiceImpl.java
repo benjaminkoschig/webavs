@@ -1,5 +1,5 @@
-/**
- * 
+/*
+ * Globaz SA.
  */
 package ch.globaz.pegasus.businessimpl.services.models.decision;
 
@@ -12,9 +12,11 @@ import globaz.jade.exception.JadeCloneModelException;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.persistence.JadePersistenceManager;
 import globaz.jade.persistence.model.JadeAbstractModel;
+import globaz.jade.persistence.model.JadeAbstractSearchModel;
 import globaz.jade.persistence.util.JadePersistenceUtil;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import java.util.ArrayList;
+import java.util.List;
 import ch.globaz.corvus.business.models.rentesaccordees.SimpleInformationsComptabilite;
 import ch.globaz.corvus.business.models.rentesaccordees.SimplePrestationsAccordees;
 import ch.globaz.corvus.business.services.CorvusServiceLocator;
@@ -30,6 +32,8 @@ import ch.globaz.pegasus.business.models.decision.SimpleValidationDecision;
 import ch.globaz.pegasus.business.models.decision.SimpleValidationDecisionSearch;
 import ch.globaz.pegasus.business.models.pcaccordee.PCAccordee;
 import ch.globaz.pegasus.business.models.pcaccordee.PCAccordeeSearch;
+import ch.globaz.pegasus.business.models.pcaccordee.SimpleJoursAppoint;
+import ch.globaz.pegasus.business.models.pcaccordee.SimpleJoursAppointSearch;
 import ch.globaz.pegasus.business.models.pcaccordee.SimplePCAccordee;
 import ch.globaz.pegasus.business.models.pcaccordee.SimplePlanDeCalcul;
 import ch.globaz.pegasus.business.models.pcaccordee.SimplePlanDeCalculSearch;
@@ -38,6 +42,7 @@ import ch.globaz.pegasus.business.services.models.decision.DecisionSuppressionSe
 import ch.globaz.pegasus.businessimpl.checkers.decision.DecisionSuppressionChecker;
 import ch.globaz.pegasus.businessimpl.services.PegasusAbstractServiceImpl;
 import ch.globaz.pegasus.businessimpl.services.PegasusImplServiceLocator;
+import ch.globaz.pegasus.businessimpl.utils.PersistenceUtil;
 
 /**
  * @author SCE
@@ -105,17 +110,10 @@ public class DecisionSuppressionServiceImpl extends PegasusAbstractServiceImpl i
         }
 
         DecisionApresCalculSearch decisionApresCalculSearch = new DecisionApresCalculSearch();
-        // decisionApresCalculSearch.setWhereKey("forSpecificVersionDroit");
         decisionApresCalculSearch.setForIdVersionDroit(idVersionDroit);
         return JadePersistenceManager.count(decisionApresCalculSearch);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @seech.globaz.pegasus.business.services.models.decision. SimpleDecisionSuppressionService
-     * #create(ch.globaz.pegasus.business.models. decision.SimpleDecisionSuppression)
-     */
     @Override
     public DecisionSuppression create(DecisionSuppression decision) throws JadePersistenceException,
             JadeApplicationException, JadeCloneModelException {
@@ -198,11 +196,15 @@ public class DecisionSuppressionServiceImpl extends PegasusAbstractServiceImpl i
 
         }
 
+        // Complément pour rechercher les jours d'appoint
+        searchComplementAddJoursAppoints(pcaSearch);
+
         // itération sur les pca retournés
         for (int cpt = 0; cpt < pcaSearch.getSearchResults().length; cpt++) {
 
             PCAccordee pcaToDeal = (PCAccordee) pcaSearch.getSearchResults()[cpt];
             PCAccordee nextPcaToDeal = null;
+
             // Si il y a emcore des pc dans le tableau
             if ((pcaSearch.getSearchResults().length - 1) > cpt) {
                 // on prend la pca suivante
@@ -236,7 +238,7 @@ public class DecisionSuppressionServiceImpl extends PegasusAbstractServiceImpl i
                 decision.getDecisionHeader().getSimpleDecisionHeader()
                         .setDateFinDecision(pcaToDeal.getSimplePCAccordee().getDateFin());
                 couranteTraite = true;
-                // isCoupleSepareParMaladie = false;
+
                 idPcaCourantes.add(pcaToDeal.getId());
                 // Si la pc suivante a une date de debut egal, cas de la séparation par la maladie
                 if ((nextPcaToDeal != null)
@@ -275,6 +277,40 @@ public class DecisionSuppressionServiceImpl extends PegasusAbstractServiceImpl i
 
         }
         return idPcaCourantes;
+    }
+
+    private void searchComplementAddJoursAppoints(PCAccordeeSearch pcaSearch) throws JadePersistenceException,
+            PCAccordeeException, JadeApplicationServiceNotAvailableException {
+
+        List<String> listIdPca = new ArrayList<String>();
+        for (int cpt = 0; cpt < pcaSearch.getSearchResults().length; cpt++) {
+            PCAccordee pca = (PCAccordee) pcaSearch.getSearchResults()[cpt];
+            listIdPca.add(pca.getId());
+        }
+
+        // Search des jours d'appoint sur la liste des Id PCA
+        List<SimpleJoursAppoint> listeJoursAppoint = new ArrayList<SimpleJoursAppoint>();
+        if (!listIdPca.isEmpty()) {
+            SimpleJoursAppointSearch search = new SimpleJoursAppointSearch();
+            search.setInIdsPca(listIdPca);
+            search.setDefinedSearchSize(JadeAbstractSearchModel.SIZE_NOLIMIT);
+            search = PegasusImplServiceLocator.getSimpleJoursAppointService().search(search);
+            listeJoursAppoint = PersistenceUtil.typeSearch(search, search.whichModelClass());
+        }
+
+        for (SimpleJoursAppoint joursAppoint : listeJoursAppoint) {
+
+            String idPca = joursAppoint.getIdPCAccordee();
+
+            for (int cpt = 0; cpt < pcaSearch.getSearchResults().length; cpt++) {
+                PCAccordee pca = (PCAccordee) pcaSearch.getSearchResults()[cpt];
+
+                if (pca.getId().equals(idPca)) {
+                    pca.addJoursAppoint(joursAppoint);
+                    break;
+                }
+            }
+        }
     }
 
     /**
@@ -402,7 +438,6 @@ public class DecisionSuppressionServiceImpl extends PegasusAbstractServiceImpl i
             PegasusImplServiceLocator.getSimpleDecisionHeaderService().delete(
                     decision.getDecisionHeader().getSimpleDecisionHeader());
 
-            // return this.delete(decision);
         } catch (JadeApplicationServiceNotAvailableException e) {
             throw new DecisionException("Service not found!", e);
         }
@@ -502,7 +537,6 @@ public class DecisionSuppressionServiceImpl extends PegasusAbstractServiceImpl i
             generateNewInfoComptaForPersist(simpleInfoCompta);
             simpleInfoCompta = CorvusServiceLocator.getSimpleInformationsComptabiliteService().create(simpleInfoCompta);
 
-            // simplePrestToSaveReq.setCsEtat(IREPrestationAccordee.CS_ETAT_CALCULE);
             simplePrestToSaveReq.setIdInfoCompta(simpleInfoCompta.getIdInfoCompta());
             dealPrestationsAccordee(simplePrestToSaveReq, simplePcaToSave, isCourante);
 
@@ -513,15 +547,31 @@ public class DecisionSuppressionServiceImpl extends PegasusAbstractServiceImpl i
         }
 
         // Save pca
-        // simplePcaToSave.setCsEtatPC(IPCPCAccordee.CS_ETAT_PCA_CALCULE);
         simplePcaToSave = PegasusImplServiceLocator.getSimplePCAccordeeService().create(simplePcaToSave);
+
+        // Création des jours d'appoints
+        copieJoursAppoints(pcaToSave.getListeJoursAppoint(), simplePcaToSave);
 
         // on set le plan de calcul pour la courante
         if (isCourante) {
             copiePlanCalcul(idPcaOriginal, simplePcaToSave.getIdPCAccordee());
-
         }
 
+    }
+
+    private void copieJoursAppoints(List<SimpleJoursAppoint> joursAppoint, SimplePCAccordee simplePcaToSave)
+            throws PCAccordeeException, JadePersistenceException, JadeApplicationServiceNotAvailableException {
+
+        for (SimpleJoursAppoint japp : joursAppoint) {
+            SimpleJoursAppoint joursAppointCopie;
+            try {
+                joursAppointCopie = (SimpleJoursAppoint) JadePersistenceUtil.clone(japp);
+            } catch (JadeCloneModelException e) {
+                throw new PCAccordeeException("Unable to clone the model simpleJoursAppoint", e);
+            }
+            joursAppointCopie.setIdPCAccordee(simplePcaToSave.getId());
+            PegasusImplServiceLocator.getSimpleJoursAppointService().create(joursAppointCopie);
+        }
     }
 
     /*
@@ -551,9 +601,6 @@ public class DecisionSuppressionServiceImpl extends PegasusAbstractServiceImpl i
         if (decision == null) {
             throw new DecisionException("Unable to update decisionSupression, the model passed is null");
         }
-
-        // set state enregistre
-        // decision.getDecisionHeader().getSimpleDecisionHeader().setCsEtatDecision(IPCDecision.CS_ETAT_ENREGISTRE);
 
         // header
         decision.getDecisionHeader().setSimpleDecisionHeader(
