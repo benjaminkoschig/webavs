@@ -49,7 +49,7 @@
 		<TD></TD>
 	</TR>
 	<TR>
-		<TD><ct:FWLabel key="ANNEE_IMPRESSION"/></TD>
+		<TD><ct:FWLabel key="JSP_ANNEE_IMPRESSION"/></TD>
 		<TD><INPUT id="annee" type="text" onkeypress="return filterCharForPositivInteger(window.event);" name="annee" maxlength="4" size="4" value="<%=viewBean.getAnnee()%>"></TD>
 	</TR>
 	<TR>

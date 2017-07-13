@@ -1,3 +1,6 @@
+/*
+ * Globaz SA.
+ */
 package globaz.hercule.db.controleEmployeur;
 
 import globaz.globall.db.BEntity;
@@ -14,20 +17,35 @@ import globaz.hercule.utils.CodeSystem;
 public class CEControlesExtraOrdinairesEffectuesManager extends BManager {
 
     private static final long serialVersionUID = -7923385583332408124L;
-    private static String MONTANT_MAX_CVS1 = "100000";
-    private static String MONTANT_MIN_CVS1 = "0";
     private String forAnnee;
 
     @Override
     protected String _getFields(final BStatement statement) {
-        return " cont.htitie, cont.maiaff, cont.malnaf, tiers.htlde1,tiers.htlde2, maddeb, madfin,MDTGEN,MDDEFF,MDDPRE,GROUPE.CELGRP,COUP.PCOUID AS CODESUVA,COUP.PCOLUT AS LIBELLESUVA";
+
+        StringBuilder sqlFields = new StringBuilder();
+
+        sqlFields.append(" cont.htitie,");
+        sqlFields.append(" cont.maiaff,");
+        sqlFields.append(" cont.malnaf, ");
+        sqlFields.append(" tiers.htlde1,");
+        sqlFields.append(" tiers.htlde2,");
+        sqlFields.append(" maddeb,");
+        sqlFields.append(" madfin,");
+        sqlFields.append(" MDTGEN,");
+        sqlFields.append(" MDDEFF,");
+        sqlFields.append(" MDDPRE,");
+        sqlFields.append(" GROUPE.CELGRP,");
+        sqlFields.append(" COUP.PCOUID AS CODESUVA,");
+        sqlFields.append(" COUP.PCOLUT AS LIBELLESUVA");
+
+        return sqlFields.toString();
     }
 
     @Override
     protected String _getFrom(final BStatement statement) {
         String idRole = CEAffiliationService.getRoleForAffilieParitaire(getSession());
 
-        StringBuffer sqlFrom = new StringBuffer();
+        StringBuilder sqlFrom = new StringBuilder();
 
         sqlFrom.append(_getCollection() + "cecontp cont ");
         sqlFrom.append("LEFT OUTER JOIN " + _getCollection()
@@ -52,21 +70,20 @@ public class CEControlesExtraOrdinairesEffectuesManager extends BManager {
     protected String _getWhere(final BStatement statement) {
         String idRubriques = CEUtils.getIdRubrique(getSession());
 
-        StringBuffer sqlWhere = new StringBuffer();
+        StringBuilder sqlWhere = new StringBuilder();
 
         sqlWhere.append("mdbfdr = '1' ");
         sqlWhere.append("and SUBSTR(CAST(MDDEFF AS char(8)),1,4) = '" + CEUtils.subAnnee(getForAnnee(), 1) + "' ");
         sqlWhere.append("and MDTGEN <> " + CodeSystem.TYPE_CONTROLE_5_POURCENT + " ");
         sqlWhere.append("and ");
-        sqlWhere.append("(" + CEControlesExtraOrdinairesEffectuesManager.MONTANT_MIN_CVS1
-                + " < (SELECT SUM(CUMULMASSE) FROM " + _getCollection() + "CACPTRP AS CPTR1 WHERE ANNEE = "
+        sqlWhere.append("((SELECT SUM(CUMULMASSE) FROM " + _getCollection() + "CACPTRP AS CPTR1 WHERE ANNEE = "
                 + CEUtils.subAnnee(getForAnnee(), 1) + " AND CPTR1.IDRUBRIQUE IN( " + idRubriques
-                + ")  AND CA.IDCOMPTEANNEXE = CPTR1.IDCOMPTEANNEXE))");
+                + ")  AND CA.IDCOMPTEANNEXE = CPTR1.IDCOMPTEANNEXE) >= 0)");
         sqlWhere.append("and ");
         sqlWhere.append("((SELECT SUM(CUMULMASSE) FROM " + _getCollection() + "CACPTRP AS CPTR1 WHERE ANNEE = "
                 + CEUtils.subAnnee(getForAnnee(), 1) + " AND CPTR1.IDRUBRIQUE IN( " + idRubriques
-                + ")  AND CA.IDCOMPTEANNEXE = CPTR1.IDCOMPTEANNEXE) < "
-                + CEControlesExtraOrdinairesEffectuesManager.MONTANT_MAX_CVS1 + ")");
+                + ")  AND CA.IDCOMPTEANNEXE = CPTR1.IDCOMPTEANNEXE) < " + CEUtils.MONTANT_MAX_POUR_CALCUL_5_POUR_CENT
+                + ")");
 
         return sqlWhere.toString();
     }

@@ -19,3 +19,7 @@ INSERT INTO SCHEMA.ENPPFO1 (PFO1ID, PDEFID, PFO1LA, PFO1RV, PFO1IG, PFO1SI, PFO1
 INSERT INTO SCHEMA.ENPPFO2 (PFO2ID, PFO1ID, PFO2FO, PFO2VA, PSPY) VALUES ((SELECT max(PFO2ID)+1 FROM SCHEMA.ENPPFO2), (SELECT PDEFID FROM SCHEMA.ENPPDEF WHERE PDEFDO = 6200079), 16000013, 6300001, '20170613Globaz   ');
 INSERT INTO SCHEMA.ENPPFO2 (PFO2ID, PFO1ID, PFO2FO, PFO2VA, PSPY) VALUES ((SELECT max(PFO2ID)+1 FROM SCHEMA.ENPPFO2), (SELECT PDEFID FROM SCHEMA.ENPPDEF WHERE PDEFDO = 6200079), 16000007, 6700014, '20170613Globaz   ');
 
+--Nouveau type de contrôle
+INSERT INTO SCHEMA.FWCOSP (pcosid,pptygr,pconcs,pptycn,pptycl,pptysa,pcosli,pcosdf,pcosdm,pcosdp,pcoian,pcoide,pcodfi,pcoitc,pcoise,pspy) VALUES ( 811014, 'VEGENRECON', 1 ,2,0,0, 'Contrôle non cert. conforme', 2,2,2,2,2, 2 , 10800011 ,0,'20170701Globaz'); 
+INSERT INTO SCHEMA.FWCOUP (pcosid,plaide,pcouid,pcolut,pspy) VALUES ( 811014, 'D', 'NCC', '?Contrôle non cert. conforme' ,'20170701Globaz'); 
+INSERT INTO SCHEMA.FWCOUP (pcosid,plaide,pcouid,pcolut,pspy) VALUES ( 811014, 'F', 'NCC', 'Contrôle non cert. conforme' ,'20170701Globaz'); 

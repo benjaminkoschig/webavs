@@ -1,3 +1,6 @@
+/*
+ * Globaz SA.
+ */
 package globaz.hercule.utils;
 
 /**
@@ -60,12 +63,12 @@ public class CodeSystem {
     public static final String TYPE_LETTRE_DECISION = "836031";
     public static final String TYPE_LETTRE_LIBRE = "836030";
     public static final String TYPE_LETTRE_PROCHAIN_CONTROLE = "836029";
+    public static final String TYPE_CONTROLE_NON_CERTIFIE_CONFORME = "811014";
 
     /**
      * Constructeur de CodeSystem
      */
     protected CodeSystem() {
-        throw new UnsupportedOperationException(); // prevents calls from
-        // subclass
+        throw new UnsupportedOperationException();
     }
 }

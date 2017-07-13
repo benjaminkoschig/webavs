@@ -68,6 +68,7 @@ public interface ICEListeColumns {
     public static final String HEADER_CONT_5_POURCENT = "headerControle5PourCent";
     public static final String HEADER_CONT_EXTRA = "headerControleExtraOrdinaire";
     public static final String HEADER_CONT_RESTANT = "headerControlesRestant";
+    public static final String HEADER_CONT_NCC = "headerNombreNCC";
     public static final String HEADER_DATE_RADIATION = "headerDateRadiation";
     // header
     public static final String HEADER_DATE_VISA = "DATE_VISA";

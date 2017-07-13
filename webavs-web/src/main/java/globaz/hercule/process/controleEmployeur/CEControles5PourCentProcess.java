@@ -1,3 +1,6 @@
+/*
+ * Globaz SA.
+ */
 package globaz.hercule.process.controleEmployeur;
 
 import globaz.globall.db.BManager;
@@ -20,23 +23,21 @@ import globaz.webavs.common.CommonExcelmlContainer;
 public class CEControles5PourCentProcess extends BProcess {
 
     private static final long serialVersionUID = 399667172700392967L;
-    public final static String MODEL_NAME = "pourcent.xml";
+    public static final String MODEL_NAME = "pourcent.xml";
     public static final String NUM_INFOROM = "0242CCE";
 
-    private String annee = "";
-    private boolean aucunControle = false;
-    private String genreControle = "";
-    private String typeAdresse = "";
+    private String annee;
+    private boolean aucunControle;
+    private String genreControle;
+    private String typeAdresse;
 
-    /**
-     * Constructeur de CEControles5PourCentProcess
-     */
     public CEControles5PourCentProcess() {
         super();
     }
 
     @Override
     protected void _executeCleanUp() {
+        // Nothing
     }
 
     @Override
@@ -47,15 +48,20 @@ public class CEControles5PourCentProcess extends BProcess {
         int nombreControles5PourCent = 0;
 
         try {
+
+            // Recherche du nombre de contrôle à effectuer
             int nombre5PourCent = CEUtils.getNombre5PourCent(getTransaction(), getAnnee(), getSession());
+            int nombreControleNCC = CEUtils.getNombreControleNCCCat0Et1(getTransaction(), getAnnee(), getSession());
+
+            int nombreAControler = nombre5PourCent - nombreControleNCC;
 
             // Récupération des controles extraordinaires
-            CEControlesExtraOrdinairesEffectuesManager managerExtraOrdinaires = new CEControlesExtraOrdinairesEffectuesManager();
-            managerExtraOrdinaires.setSession(getSession());
-            managerExtraOrdinaires.setForAnnee(getAnnee());
-            managerExtraOrdinaires.find(getTransaction(), BManager.SIZE_NOLIMIT);
+            CEControlesExtraOrdinairesEffectuesManager mngExOr = new CEControlesExtraOrdinairesEffectuesManager();
+            mngExOr.setSession(getSession());
+            mngExOr.setForAnnee(getAnnee());
+            mngExOr.find(getTransaction(), BManager.SIZE_NOLIMIT);
 
-            nombreControlesExtraordinaires = managerExtraOrdinaires.getCount();
+            nombreControlesExtraordinaires = mngExOr.getCount();
 
             // Récupération des controles 5%
             CEControles5PourCentManager manager5PourCent = new CEControles5PourCentManager();
@@ -67,10 +73,10 @@ public class CEControles5PourCentProcess extends BProcess {
 
             // Si on a au moins un controle, on crée le document
             if ((nombreControlesExtraordinaires != 0) || (nombreControles5PourCent != 0)) {
-                setProgressScaleValue(nombreControles5PourCent + nombreControlesExtraordinaires);
+                setProgressScaleValue((long) nombreControles5PourCent + nombreControlesExtraordinaires);
                 CommonExcelmlContainer container = CEXmlmlMappingControles5Pourcent.loadResults(manager5PourCent,
-                        managerExtraOrdinaires, nombre5PourCent, nombreControles5PourCent,
-                        nombreControlesExtraordinaires, this);
+                        mngExOr, nombreAControler, nombreControles5PourCent, nombreControlesExtraordinaires,
+                        nombreControleNCC, this);
 
                 if (isAborted()) {
                     return false;
@@ -78,8 +84,9 @@ public class CEControles5PourCentProcess extends BProcess {
 
                 // On génère le doc
                 String nomDoc = getSession().getLabel("LISTE_CONTROLE_5_POURCENT");
-                String docPath = CEExcelmlUtils.createDocumentExcel(getSession().getIdLangueISO().toUpperCase() + "/"
-                        + CEControles5PourCentProcess.MODEL_NAME, nomDoc, container);
+                String nomModel = getSession().getIdLangueISO().toUpperCase() + "/"
+                        + CEControles5PourCentProcess.MODEL_NAME;
+                String docPath = CEExcelmlUtils.createDocumentExcel(nomModel, nomDoc, container);
 
                 // Publication du document
                 JadePublishDocumentInfo docInfo = createDocumentInfo();

@@ -42,8 +42,8 @@ import javax.servlet.http.HttpSession;
  */
 public class CEUtils {
     private static final String AND = " AND ";
-    private static final String MONTANT_MAX_POUR_CALCUL_5_POUR_CENT = "100000";
-    private static final String MONTANT_MIN_POUR_CALCUL_5_POUR_CENT = "50000";
+    public static final String MONTANT_MAX_POUR_CALCUL_5_POUR_CENT = "150000";
+    public static final String MONTANT_MIN_POUR_CALCUL_5_POUR_CENT = "100000";
 
     /**
      * Permet d'ajouter une durée (en année) a une date passée en string
@@ -324,35 +324,41 @@ public class CEUtils {
     }
 
     /**
-     * return le 5% des employeurs ayant une masse pour l'année-1 entre 50000 et 100000.-
+     * Return le 5% des employeurs à contrôler
+     * 5% ayant une masse pour l'année-1 entre 100'000 inclus et 150'000.-
      * 
      * @param transaction
      * @param anneeCptr
      * @param session
-     * @return le 5% des employeurs ayant une masse pour l'année-1 entre 50000 et 100000.-
+     * @return le 5% des employeurs ayant une masse pour l'année-1 entre 100000 et 150000.-
      */
     public static int getNombre5PourCent(BTransaction transaction, String annee, BSession session) {
         int nombreEmployeur = 0;
         String idRole = CEAffiliationService.getRoleForAffilieParitaire(session);
         String idRubriques = CEUtils.getIdRubrique(session);
 
-        BStatement statement = new BStatement(transaction);
         String schema = Jade.getInstance().getDefaultJdbcSchema();
 
-        StringBuffer sql = new StringBuffer("select count(*) from " + schema + ".afaffip affiliation ");
-        sql.append("LEFT OUTER JOIN "
-                + schema
-                + ".CACPTAP AS CA ON (affiliation.MALNAF = CA.IDEXTERNEROLE AND CA.IDTIERS = affiliation.HTITIE  AND CA.IDROLE = "
+        // Sous select permettant de récupérer la masse salariale
+        StringBuilder sousSelectMasse = new StringBuilder("SELECT SUM(CUMULMASSE) ");
+        sousSelectMasse.append("FROM ");
+        sousSelectMasse.append(schema + ".CACPTRP AS CPTR1 ");
+        sousSelectMasse.append("WHERE ");
+        sousSelectMasse.append("ANNEE = " + CEUtils.getAnneePrecedente(annee));
+        sousSelectMasse.append(" AND CPTR1.IDRUBRIQUE IN(" + idRubriques + ")");
+        sousSelectMasse.append(" AND CA.IDCOMPTEANNEXE = CPTR1.IDCOMPTEANNEXE");
+
+        StringBuilder sql = new StringBuilder("select count(*) from " + schema + ".afaffip affiliation ");
+        sql.append("LEFT OUTER JOIN " + schema + ".CACPTAP AS CA ON ");
+        sql.append("(affiliation.MALNAF = CA.IDEXTERNEROLE AND CA.IDTIERS = affiliation.HTITIE  AND CA.IDROLE = "
                 + idRole + ") ");
-        sql.append("where MATTAF in (" + CodeSystem.TYPE_AFFILI_EMPLOY + ", " + CodeSystem.TYPE_AFFILI_INDEP_EMPLOY
-                + ", " + CodeSystem.TYPE_AFFILI_EMPLOY_D_F + ") ");
-        sql.append("and (" + CEUtils.MONTANT_MIN_POUR_CALCUL_5_POUR_CENT + " < (SELECT SUM(CUMULMASSE) FROM " + schema
-                + ".CACPTRP AS CPTR1 WHERE ANNEE = " + CEUtils.getAnneePrecedente(annee) + " AND CPTR1.IDRUBRIQUE IN("
-                + idRubriques + ")  AND CA.IDCOMPTEANNEXE = CPTR1.IDCOMPTEANNEXE)) ");
-        sql.append("and ((SELECT SUM(CUMULMASSE) FROM " + schema + ".CACPTRP AS CPTR1 WHERE ANNEE = "
-                + CEUtils.getAnneePrecedente(annee) + " AND CPTR1.IDRUBRIQUE IN(" + idRubriques
-                + ")  AND CA.IDCOMPTEANNEXE = CPTR1.IDCOMPTEANNEXE) < " + CEUtils.MONTANT_MAX_POUR_CALCUL_5_POUR_CENT
-                + ") ");
+        sql.append("WHERE ");
+        sql.append("MATTAF in (" + CodeSystem.TYPE_AFFILI_EMPLOY + ", " + CodeSystem.TYPE_AFFILI_INDEP_EMPLOY + ", "
+                + CodeSystem.TYPE_AFFILI_EMPLOY_D_F + ") ");
+        sql.append(" AND (").append(sousSelectMasse).append(") >= " + CEUtils.MONTANT_MIN_POUR_CALCUL_5_POUR_CENT);
+        sql.append(" AND (").append(sousSelectMasse).append(") < " + CEUtils.MONTANT_MAX_POUR_CALCUL_5_POUR_CENT);
+
+        BStatement statement = new BStatement(transaction);
         try {
             statement.createStatement();
             ResultSet result = statement.executeQuery(sql.toString());
@@ -365,10 +371,52 @@ public class CEUtils {
             return 0;
         }
 
-        double pourcentage = ((nombreEmployeur * 5.0) / 100.0);
+        double pourcentage = (nombreEmployeur * 5.0) / 100.0;
         double pourcentageArrondi = Math.rint(pourcentage);
-        int val5PourCent = (int) pourcentageArrondi;
-        return val5PourCent;
+        return (int) pourcentageArrondi;
+    }
+
+    public static int getNombreControleNCCCat0Et1(BTransaction transaction, String annee, BSession session) {
+        String idRole = CEAffiliationService.getRoleForAffilieParitaire(session);
+        String idRubriques = CEUtils.getIdRubrique(session);
+
+        String schema = Jade.getInstance().getDefaultJdbcSchema();
+
+        // Sous select permettant de récupérer la masse salariale
+        StringBuilder sousSelectMasse = new StringBuilder("SELECT SUM(CUMULMASSE) ");
+        sousSelectMasse.append(" FROM ");
+        sousSelectMasse.append(schema + ".CACPTRP AS CPTR1 ");
+        sousSelectMasse.append(" WHERE ");
+        sousSelectMasse.append(" ANNEE = " + CEUtils.getAnneePrecedente(annee));
+        sousSelectMasse.append(" AND CPTR1.IDRUBRIQUE IN(" + idRubriques + ")");
+        sousSelectMasse.append(" AND CA.IDCOMPTEANNEXE = CPTR1.IDCOMPTEANNEXE");
+
+        StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM " + schema + ".cecontp controle");
+        sql.append(" LEFT OUTER JOIN " + schema + ".CACPTAP AS CA ");
+
+        sql.append(" ON (controle.MALNAF = CA.IDEXTERNEROLE AND CA.IDTIERS = controle.HTITIE  AND CA.IDROLE = "
+                + idRole + ") ");
+        sql.append(" WHERE ");
+        sql.append("controle.MDTGEN = " + globaz.hercule.utils.CodeSystem.TYPE_CONTROLE_NON_CERTIFIE_CONFORME);
+        sql.append(" AND mdbfdr = '1' ");
+        sql.append(" AND SUBSTR(CAST(MDDEFF AS char(8)),1,4) = '" + CEUtils.subAnnee(annee, 1) + "' ");
+        sql.append(" AND (").append(sousSelectMasse).append(") >= 0 ");
+        sql.append(" AND (").append(sousSelectMasse).append(") < " + CEUtils.MONTANT_MAX_POUR_CALCUL_5_POUR_CENT);
+
+        BStatement statement = new BStatement(transaction);
+        int nombreControle = 0;
+        try {
+            statement.createStatement();
+            ResultSet result = statement.executeQuery(sql.toString());
+            while (result.next()) {
+                nombreControle = result.getInt(1);
+            }
+            statement.closeStatement();
+        } catch (Exception e) {
+            return 0;
+        }
+
+        return nombreControle;
     }
 
     /**

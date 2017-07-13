@@ -116,13 +116,16 @@ public class CEXmlmlMappingControles5Pourcent {
      * @param nombreControlesExtraordinaires
      */
     private static void loadHeader(final CommonExcelmlContainer container, final CEControles5PourCentProcess process,
-            final int nombre5PourCent, final int nombreControles5PourCent, final int nombreControlesExtraordinaires) {
+            final int nombre5PourCent, final int nombreControles5PourCent, final int nombreControlesExtraordinaires,
+            final int nombreControleNCC) {
 
         // On set le header
         CEExcelmlUtils.remplirColumn(container, ICEListeColumns.HEADER_ANNEE, process.getAnnee(), "");
         CEExcelmlUtils.remplirColumn(container, ICEListeColumns.HEADER_NB_MINI, String.valueOf(nombre5PourCent), "0");
         CEExcelmlUtils.remplirColumn(container, ICEListeColumns.HEADER_CONT_EXTRA,
                 String.valueOf(nombreControlesExtraordinaires), "0");
+        CEExcelmlUtils
+                .remplirColumn(container, ICEListeColumns.HEADER_CONT_NCC, String.valueOf(nombreControleNCC), "0");
         container.put(ICEListeColumns.HEADER_DATE_VISA, TimeHelper.getCurrentTime() + " - "
                 + process.getSession().getUserName());
         CEExcelmlUtils.remplirColumn(container, ICEListeColumns.HEADER_CONT_5_POURCENT,
@@ -195,7 +198,7 @@ public class CEXmlmlMappingControles5Pourcent {
      */
     public static CommonExcelmlContainer loadResults(final CEControles5PourCentManager manager5PourCent,
             final CEControlesExtraOrdinairesEffectuesManager managerExtraOrdinaires, final int nombre5PourCent,
-            final int nombreControles5PourCent, final int nombreControlesExtraordinaires,
+            final int nombreControles5PourCent, final int nombreControlesExtraordinaires, final int nombreControleNCC,
             final CEControles5PourCentProcess process) throws Exception {
 
         CommonExcelmlContainer container = new CommonExcelmlContainer();
@@ -204,7 +207,8 @@ public class CEXmlmlMappingControles5Pourcent {
         loadLabel(container, process.getSession());
 
         // On remplit le header
-        loadHeader(container, process, nombre5PourCent, nombreControles5PourCent, nombreControlesExtraordinaires);
+        loadHeader(container, process, nombre5PourCent, nombreControles5PourCent, nombreControlesExtraordinaires,
+                nombreControleNCC);
 
         // On remplit d'abord les contrôles extraordinaires déjà effectués
         loadDetailControlesExtras(container, managerExtraOrdinaires, process);

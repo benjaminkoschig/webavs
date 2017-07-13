@@ -1,3 +1,6 @@
+/*
+ * Globaz SA.
+ */
 package globaz.hercule.db.controleEmployeur;
 
 import globaz.globall.db.BEntity;
@@ -12,13 +15,29 @@ public class CEControles5PourCentManager extends BManager {
 
     @Override
     protected String _getFields(final BStatement statement) {
-        return " cont.htitie, cont.maiaff,cont.malnaf, tiers.htlde1,tiers.htlde2, maddeb, madfin,MDTGEN,MDDEFF,MDDPRE,GROUPE.CELGRP,COUP.PCOUID AS CODESUVA,COUP.PCOLUT AS LIBELLESUVA";
+        StringBuilder sqlFields = new StringBuilder();
+
+        sqlFields.append(" cont.htitie,");
+        sqlFields.append(" cont.maiaff,");
+        sqlFields.append(" cont.malnaf, ");
+        sqlFields.append(" tiers.htlde1,");
+        sqlFields.append(" tiers.htlde2,");
+        sqlFields.append(" maddeb,");
+        sqlFields.append(" madfin,");
+        sqlFields.append(" MDTGEN,");
+        sqlFields.append(" MDDEFF,");
+        sqlFields.append(" MDDPRE,");
+        sqlFields.append(" GROUPE.CELGRP,");
+        sqlFields.append(" COUP.PCOUID AS CODESUVA,");
+        sqlFields.append(" COUP.PCOLUT AS LIBELLESUVA");
+
+        return sqlFields.toString();
     }
 
     @Override
     protected String _getFrom(final BStatement statement) {
 
-        StringBuffer sqlFrom = new StringBuffer();
+        StringBuilder sqlFrom = new StringBuilder();
 
         sqlFrom.append(_getCollection() + "cecontp cont ");
         sqlFrom.append("INNER JOIN " + _getCollection() + "titierp AS tiers ON (tiers.htitie = cont.htitie) ");
@@ -38,7 +57,7 @@ public class CEControles5PourCentManager extends BManager {
 
     @Override
     protected String _getWhere(final BStatement statement) {
-        StringBuffer sqlWhere = new StringBuffer();
+        StringBuilder sqlWhere = new StringBuilder();
 
         sqlWhere.append("mdbfdr = '1' ");
         sqlWhere.append("and SUBSTR(CAST(MDDPRE AS char(8)),1,4) = '" + getAnneePourAnneeSuivante(1) + "' ");
