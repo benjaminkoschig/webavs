@@ -1,4 +1,5 @@
-<%-- tpl:insert page="/theme/detail.jtpl" --%><%@page import="globaz.naos.util.AFIDEUtil"%>
+<%-- tpl:insert page="/theme/detail.jtpl" --%><%@page import="globaz.prestation.interfaces.util.nss.PRUtil"%>
+<%@page import="globaz.naos.util.AFIDEUtil"%>
 <%@page import="globaz.naos.translation.CodeSystem"%>
 <%@page import="globaz.naos.db.affiliation.AFAffiliation"%>
 <%@page import="globaz.naos.util.AFUtil"%>
@@ -11,14 +12,16 @@
 <%-- tpl:put name="zoneInit" --%> 
 <!-- Creer l'enregistrement si il n'existe pas -->
 <%
-	Vector listeConventions = ConventionViewService.getAllConventions();
-
 	idEcran = "CAF0003";
 	globaz.naos.db.affiliation.AFAffiliationViewBean viewBean = (globaz.naos.db.affiliation.AFAffiliationViewBean)session.getAttribute ("viewBean");	
 	key="globaz.naos.db.affiliation.AFAffiliationViewBean-affiliationId"+viewBean.getAffiliationId();
 	String method = request.getParameter("_method");
 	String jspLocation = servletContext + mainServletPath + "Root/ide_select.jsp";
 	
+	Vector listeConventions = ConventionViewService.getAllConventions();	
+	
+	String langue = PRUtil.getISOLangueTiers(viewBean.getSession().getIdLangueISO()).toLowerCase();
+	String linkNoga =  viewBean.getSession().getApplication().getProperty("exploitation.codeNOGA.URL") + "/Default?lang=" + langue + "-CH";	
 %>
 <%@page import="globaz.jade.client.util.JadeStringUtil"%>
 <SCRIPT language="JavaScript">
@@ -62,7 +65,6 @@ function upd() {
 }
 	
 
-
 function updateChampIde(tag){
 	
 	if(tag.select && tag.select.selectedIndex != -1){ 
@@ -80,8 +82,8 @@ function updateChampIde(tag){
 		document.getElementById("libelleStatutIde").value = '';
 }
 	displayFieldIDEPassif();
-	}
-	
+}
+
 function validate() {
 	
 	// si attendre sur popup?
@@ -91,12 +93,12 @@ function validate() {
 	
 	if(document.forms[0].elements('affilieNumero').value != '<%= viewBean.getAffilieNumero()%>' && '<%= viewBean.getAffilieNumero()%>'!='' ) 
 	{
-		if(!window.confirm("Sie sind dabei, die Nummer eines Mitgliedes zu ändern! Wollen Sie fortfahren?"))
+		if(!window.confirm("Vous êtes sur le point de modifier le numéro d'un affilié ! Voulez-vous continuer?"))
 		{
 			return ;
 		}
 	}
-
+	
 	var exit = true;
     state = validateFields();
 
@@ -105,6 +107,8 @@ function validate() {
         document.forms[0].elements('userAction').value="naos.affiliation.affiliation.ajouter";
     else
         document.forms[0].elements('userAction').value="naos.affiliation.affiliation.modifier";
+	
+	
 	return (exit && state);
 }
 
@@ -116,7 +120,7 @@ function cancel() {
 }
 
 function del() {
-	if (window.confirm("Sie sind dabei, das Detail der ausgewählten Erfassungsperiode zu löschen! Wollen Sie fortfahren?")) {
+	if (window.confirm("Vous êtes sur le point de supprimer le détail de la période d'affiliation sélectionnée! Voulez-vous continuer?")) {
 		document.forms[0].elements('userAction').value="naos.affiliation.affiliation.supprimer";
 		document.forms[0].submit();
 	}
@@ -129,7 +133,7 @@ function updateGenreAff (data){
 	if(data==<%=globaz.naos.translation.CodeSystem.TYPE_AFFILI_PROVIS%>){
 		document.forms[0].elements('traitement').checked = true;
 	}
-
+	
 	if(oldData==<%=globaz.naos.translation.CodeSystem.TYPE_AFFILI_PROVIS%> && data != <%=globaz.naos.translation.CodeSystem.TYPE_AFFILI_PROVIS%>){
 		document.forms[0].elements('traitement').checked = false;
 	}
@@ -141,6 +145,7 @@ function confirmerMutationActivite(){
 	// n'est pas une création	
 	if (document.forms[0].elements('_method').value != "add"){
 		// si l'activité a changé
+		//ignorer les retour charriot et single quote qui feraient peter le javascript de la page
 		if(document.forms[0].elements('activite').value.replace(/\r|\n|'/gi,'') != '<%=viewBean.getActivite().replaceAll("(\\r|\\n|\')", "")%>' && document.forms[0].elements('activite').value != "" ) 
 		{
 			if(document.forms[0].elements('numeroIDESansCHE').value != '' && !document.getElementById('ideAnnoncePassive').checked &&
@@ -467,7 +472,6 @@ function rebuildNoga(idCode) {
 		categorieCode.style.display='none';
 		categorie.selectedIndex = categorieSelected;
 	}
-
 	//redesign
 	categorie.style.width='40px';
 	oSelect.style.width='350px';
@@ -507,7 +511,7 @@ function maxLength(zone,max)
 <%@ include file="/theme/detail/bodyStart.jspf" %>
 			<%-- tpl:put name="zoneTitle" --%>
 			<span class="postItIcon"><ct:FWNote sourceId="<%=viewBean.getAffiliationId()%>" tableSource="globaz.naos.db.affiliation.AFAffiliationViewBean"/></span>
-			Erfassung - Detail 
+			Affiliation - D&eacute;tail 
 			<%-- /tpl:put --%>
 <%@ include file="/theme/detail/bodyStart2.jspf" %>
 						<%-- tpl:put name="zoneMain" --%> 
@@ -524,12 +528,13 @@ function maxLength(zone,max)
 						</div>
 						
 						<INPUT type="hidden" id="idAnnonceIdeCreationLiee" name="idAnnonceIdeCreationLiee" value="<%=viewBean.getIdAnnonceIdeCreationLiee()%>">
+						
 						<TR> 
 						<TD> 
 						<TABLE border="0" cellspacing="0" cellpadding="0">
 						<TBODY> 
 							<TR> 
-								<TD nowrap width="161"><A href="<%=request.getContextPath()%>\pyxis?userAction=pyxis.tiers.tiers.diriger&selectedId=<%=viewBean.getIdTiers()%>" class="external_link">Partner</A>
+								<TD nowrap width="161"><A href="<%=request.getContextPath()%>\pyxis?userAction=pyxis.tiers.tiers.diriger&selectedId=<%=viewBean.getIdTiers()%>" class="external_link">Tiers</A>
 								</TD>
 								<TD nowrap colspan="3"> 
 									<INPUT type="hidden" name="selectedId" value="<%=viewBean.getAffiliationId()%>">
@@ -564,35 +569,35 @@ function maxLength(zone,max)
 										}
 									%>
 							<TR>
-								<TD>Firma (lang)</TD>
-								<TD colspan="3"><input type="text" name="raisonSociale" size="100" maxlength="100" value="<%=globaz.jade.client.util.JadeStringUtil.change(designationLong,"\"","&quot;")%>" tabindex="-1" ></TD> 
+								<TD>Raison sociale (long)</TD>
+								<TD colspan="3"><input type="text" id="raisonSociale" name="raisonSociale" size="100" maxlength="100" value="<%=globaz.jade.client.util.JadeStringUtil.change(designationLong,"\"","&quot;")%>" tabindex="-1" ></TD> 
 							</TR>
 
 							<TR> 
-								<TD nowrap>Abr.-Nr.</TD>
+								<TD nowrap>N&deg; d'affili&eacute;</TD>
 								<TD nowrap> 
 									<INPUT name="affilieNumero" size="20" maxlength="20" type="text" value="<%=viewBean.getAffilieNumero()%>">
 								</TD>
-								<TD nowrap>Alte Abr.-Nr.</TD>
+								<TD nowrap>Ancien n&deg; d'affili&eacute;</TD>
 								<TD nowrap>
 									<INPUT name="ancienAffilieNumero" type="text" size="20" maxlength="20" value="<%=viewBean.getAncienAffilieNumero()%>">
 								</TD>
 							</TR>
 							<TR>
-								<TD nowrap height="31"  width="161">Periode<%=libDateDebutReelle%></TD>
+								<TD nowrap height="31"  width="161">P&eacute;riode<%=libDateDebutReelle%></TD>
 								<TD nowrap>
 									<ct:FWCalendarTag name="dateDebut" doClientValidation="CALENDAR" value="<%=viewBean.getDateDebut()%>" /> 
-									bis
+									&agrave;
 									<ct:FWCalendarTag name="dateFin" doClientValidation="CALENDAR" value="<%=viewBean.getDateFin()%>" /> 
 								</TD>
-								<TD nowrap>Erfassungsart</TD>
+								<TD nowrap>Genre d'affiliation</TD>
 								<TD nowrap>
 									<ct:FWCodeSelectTag 
 		                				name="typeAffiliation" 
 										defaut="<%=viewBean.getTypeAffiliation()%>"
 										codeType="VETYPEAFFI"/> 
 										<script>
-										document.getElementById("typeAffiliation").onchange = new Function("","return updateGenreAff(document.getElementById('typeAffiliation').options[document.getElementById('typeAffiliation').selectedIndex].value);");
+											document.getElementById("typeAffiliation").onchange = new Function("","return updateGenreAff(document.getElementById('typeAffiliation').options[document.getElementById('typeAffiliation').selectedIndex].value);");
 											
 										</script>
 								</TD>
@@ -608,21 +613,21 @@ function maxLength(zone,max)
 						<TABLE border="0" cellspacing="0" cellpadding="0" id="tPartie1">
 						<TBODY>
 							<TR> 
-								<TD nowrap height="31"  width="161">Firma (kurz)</TD>
+								<TD nowrap height="31"  width="161">Raison sociale (court)</TD>
 								<TD nowrap colspan="2">
 									<input type="text" name="raisonSocialeCourt" size="30" maxlength="30" value="<%=globaz.jade.client.util.JadeStringUtil.change(designationCourt,"\"","&quot;")%>">
 								</TD>
-								<TD nowrap>Erfassungsantrag</TD>
+								<TD nowrap>Demande affiliation</TD>
 								<TD nowrap>
 									<ct:FWCalendarTag name="dateDemandeAffiliation" value="<%=viewBean.getDateDemandeAffiliation()%>" /> 									
 								</TD>
 							</TR>
 							<TR> 
-								<TD nowrap height="31"  width="161">Erfassungsgrund</TD>
+								<TD nowrap height="31"  width="161">Motif de cr&eacute;ation</TD>
 								<TD nowrap colspan="2">
 									<ct:FWCodeSelectTag name="motifCreation" defaut="<%=viewBean.getMotifCreation()%>" codeType="VEMOTIFAFF" />
 								</TD>
-								<TD nowrap>Abgangsgrund</TD>
+								<TD nowrap>Motif de fin</TD>
 								<TD nowrap>
 									<ct:FWCodeSelectTag 
 		                				name="motifFin" 
@@ -633,7 +638,7 @@ function maxLength(zone,max)
 								</TD>
 							</TR>
 							<TR> 
-								<TD nowrap height="31" width="161">Rechtsform</TD>
+								<TD nowrap height="31" width="161">Personnalit&eacute; juridique</TD>
 								<TD nowrap colspan="2">
 									<ct:FWCodeSelectTag 
 		                				name="personnaliteJuridique"
@@ -645,7 +650,7 @@ function maxLength(zone,max)
 											document.getElementById("personnaliteJuridique").onchange = new Function("","return displayFieldIDEPassif();");
 										</script> 									
 								</TD>
-								<TD nowrap>Geschäftspartnertyp</TD>
+								<TD nowrap>Type d'associé</TD>
 								<TD nowrap> 
 									<TABLE border="0" cellspacing="0" cellpadding="0" id="typeAssocieDisplay">
 									<TBODY>
@@ -669,7 +674,7 @@ function maxLength(zone,max)
 								</TD>
 							</TR>
 							<TR> 
-								<TD nowrap width="161" height="31">Periodizität</TD>
+								<TD nowrap width="161" height="31">P&eacute;riodicit&eacute;</TD>
 								<TD nowrap colspan="2">
 									<ct:FWCodeSelectTag 
 		                				name="periodicite" 
@@ -677,7 +682,7 @@ function maxLength(zone,max)
 										codeType="VEPERIODIC"
 										wantBlank="true"/>
 								</TD> 									
-								<TD nowrap width="100">Lohnbescheinigung</TD>
+								<TD nowrap width="100">D&eacute;cl. salaires</TD>
 								<TD nowrap>
 									<ct:FWCodeSelectTag 
 		                				name="declarationSalaire" 
@@ -687,7 +692,7 @@ function maxLength(zone,max)
 								</TD>
 							</TR>
 							<TR> 
-								<TD nowrap height="31" width="161">Erwerbszweig</TD>
+								<TD nowrap height="31" width="161">Branche &eacute;conomique</TD>
 								<TD nowrap colspan="3">
 									<ct:FWCodeSelectTag 
 		                				name="brancheEconomique" 
@@ -697,19 +702,19 @@ function maxLength(zone,max)
 										codeType="VEBRANCHEE"/> 									
 								</TD>
 								<%
-								if(listeConventions.size() > 1){
+								if (listeConventions.size() > 1) {
 								%>				
-								<TD>Konvention
+								<TD>Convention
 									<ct:FWListSelectTag name="convention"
 									defaut="<%=viewBean.getConvention()%>"
 	            					data="<%=listeConventions%>"
 	            					/>
 				
 								</TD>
-								<%} %>
+								<% } %>
 							</TR>
 							<TR>
-								<TD nowrap height="31" width="161">Noga Code</TD>
+								<TD nowrap height="31" width="161">Code Noga</TD>
 								<TD nowrap colspan="2"> 
 									<ct:FWCodeSelectTag 
 		                				name="categorieNoga"
@@ -729,37 +734,37 @@ function maxLength(zone,max)
 										document.getElementById("categorieNogaCode").onchange = new Function("","rebuildNoga()");
 										rebuildNoga(<%=viewBean.getCodeNoga()%>);
 									</script>
-																	
-								</TD>
-								<TD nowrap>&nbsp;Aktivit&auml;t(en)</TD>
+									<a href="<%= linkNoga %>" target="new"><ct:FWLabel key="NAOS_JSP_NOGA_LISTE_AFFILIES_CODE_NOGA_LIEN"/></a>								
+								</TD>								
+								<TD nowrap>&nbsp;Activit&eacute;(s)</TD>
 								<td>
 									<TEXTAREA name="activite" rows="5" cols="40" onkeyup="maxLength(this, 254);"><%=viewBean.getActivite()%></TEXTAREA>
 									<INPUT type="hidden" name="confirmerAnnonceActivite" value="<%=viewBean.getConfirmerAnnonceActivite()%>"/>
-								</td>
-							</TR>
+								</td>				
+							</TR>							
 							<TR> 
-								<TD nowrap width="161">Fakturierung</TD>
-								<TD nowrap width="210"> per Auszug</TD>
+								<TD nowrap width="161">Facturation</TD>
+								<TD nowrap width="210"> par relev&eacute;</TD>
 								<TD nowrap width="100"> 
 									<INPUT type="checkbox" name="releveParitaire" onclick="resetEAAVisibility()" <%=(viewBean.isReleveParitaire().booleanValue())? "checked" : ""%> >
 								</TD>
 								<TD rowspan="2" colspan="2">
 									<DIV id="eaa" style="display: none">
 										<INPUT type="checkbox" name="envoiAutomatiqueAnnonceSalaires" <%=(viewBean.getEnvoiAutomatiqueAnnonceSalaires().booleanValue())? "checked" : ""%> >&nbsp;
-										Automatischer Versand
-										der Arbeitgeberauszüge</DIV>
+										Envoi automatique des
+									relevés à blanc</DIV>
 								</TD>
 							</TR>
 							<TR> 
 								<TD nowrap width="161">&nbsp;</TD>
-								<TD nowrap width="210">für die persönlichen Beiträge</TD>
+								<TD nowrap width="210">acomptes à la carte</TD>
 								<TD nowrap width="100"> 
 									<INPUT type="checkbox" name="relevePersonnel" onclick="compteaLaCarte()" <%=(viewBean.isRelevePersonnel().booleanValue())? "checked" : ""%> >
 								</TD>
 							</TR>
 							<TR> 
 								<TD nowrap width="161">&nbsp;</TD>
-								<TD nowrap width="210">Fakturierungscode</TD>
+								<TD nowrap width="210">Code facturation</TD>
 							
 								<TD nowrap> 
 									<ct:FWCodeSelectTag 
@@ -770,7 +775,7 @@ function maxLength(zone,max)
 								</TD>
 							</TR>
 							<TR> 
-								<TD width="161">UVG/BVG Kontrolle</TD>
+								<TD width="161">Contrôle LAA/LPP</TD>
 								<TD nowrap colspan="2">
 									<script>
 									//document.getElementById("typeAffiliation").onchange = new Function("","checkEnvoiAutomatique()");
@@ -778,27 +783,27 @@ function maxLength(zone,max)
 									</script>
 								<INPUT type="hidden" name=wantGenerationSuiviLAALPP value="true"/>
 								<% if (method != null && method.equals("add")) { %>
-									<INPUT type="checkbox" name="envoiAutomatiqueLAA" <%=(viewBean.getEnvoiAutomatiqueLAA().booleanValue())? "checked" : ""%> >UVG &nbsp;
-									<INPUT type="checkbox" name="envoiAutomatiqueLPP" <%=(viewBean.getEnvoiAutomatiqueLPP().booleanValue())? "checked" : ""%> >BVG
+									<INPUT type="checkbox" name="envoiAutomatiqueLAA" <%=(viewBean.getEnvoiAutomatiqueLAA().booleanValue())? "checked" : ""%> >LAA &nbsp;
+									<INPUT type="checkbox" name="envoiAutomatiqueLPP" <%=(viewBean.getEnvoiAutomatiqueLPP().booleanValue())? "checked" : ""%> >LPP
 								<% } else { 
 								       if (viewBean.isEnvoiAutomatiqueLAA().booleanValue()) {
 								%>
-									<INPUT type="checkbox" name="envoiAutomatiqueLAAReadOnly" checked tabindex="-1" readonly disabled>UVG &nbsp;
+									<INPUT type="checkbox" name="envoiAutomatiqueLAAReadOnly" checked tabindex="-1" readonly disabled>LAA &nbsp;
 								<%     } else { %> 
-									<INPUT type="checkbox" name="envoiAutomatiqueLAA">UVG &nbsp;
+									<INPUT type="checkbox" name="envoiAutomatiqueLAA">LAA &nbsp;
 								<%     } 
 									   if (viewBean.hasLPPetMotif()==true){
 										   
 											if (viewBean.isEnvoiAutomatiqueLPP().booleanValue()){   %>
-												<INPUT type="checkbox" name="envoiAutomatiqueLPPReadOnly" checked tabindex="-1" readonly disabled>BVG
+												<INPUT type="checkbox" name="envoiAutomatiqueLPPReadOnly" checked tabindex="-1" readonly disabled>LPP
 										<%	} else { %>
-												<INPUT type="checkbox" name="envoiAutomatiqueLPPReadOnly" tabindex="-1" readonly disabled>BVG
+												<INPUT type="checkbox" name="envoiAutomatiqueLPPReadOnly" tabindex="-1" readonly disabled>LPP
 										<%	} %>
 								<%   } else {
 											if(viewBean.isEnvoiAutomatiqueLPP().booleanValue()) {%>
-												<INPUT type="checkbox" name="envoiAutomatiqueLPPReadOnly" checked tabindex="-1" readonly disabled>BVG
+												<INPUT type="checkbox" name="envoiAutomatiqueLPPReadOnly" checked tabindex="-1" readonly disabled>LPP
 										<%	} else { %>
-												<INPUT type="checkbox" name="envoiAutomatiqueLPP">BVG
+												<INPUT type="checkbox" name="envoiAutomatiqueLPP">LPP
 								<%     } 
 								   } 
 								 }%>
@@ -810,21 +815,21 @@ function maxLength(zone,max)
 								<!--TD nowrap></TD-->
 								<TD nowrap colspan="3"> 
 									<INPUT type="checkbox" name="occasionnel" <%=(viewBean.isOccasionnel().booleanValue())? "checked" : ""%> >
-									Gelegentliches Personal
+									Personnel occasionnel
 										<script>
 									document.getElementById("occasionnel").onchange = new Function("","checkEnvoiAutomatique()");
 									</script>
 								</TD>
 							</TR>
 							<TR>
-								<TD nowrap width="161" >Befreiung Art. 5 Ab. 5</TD>
+								<TD nowrap width="161" >Exon&eacute;ration art.5 al.5</TD>
 								<TD nowrap colspan="2"> 
 									<INPUT type="checkbox" name="exonerationGenerale" <%=(viewBean.isExonerationGenerale().booleanValue())? "checked" : ""%> >
 								</TD>
 								<!--TD nowrap></TD-->
 								<TD nowrap colspan="3"> 
-									<INPUT type="checkbox" name="traitement" <%=(viewBean.isTraitement().booleanValue())? "checked" : ""%>>
-									Provisorische Erfassung
+									<INPUT type="checkbox" name="traitement" <%=(viewBean.isTraitement().booleanValue())? "checked" : ""%> onclick="displayFieldIDEPassif()">
+									Affiliation provisoire
 								</TD>
 								<!--TD nowrap>&nbsp;Bonus/malus</TD>
 								<TD nowrap> 
@@ -967,9 +972,9 @@ function maxLength(zone,max)
 								<!--TD nowrap colspan="2"></TD>
 								<TD nowrap height="31"></TD-->
 								<TD nowrap colspan="4">
-									<B><A href="javascript:showPartie1()">Seite 1</A></B> 
+									<B><A href="javascript:showPartie1()">Page 1</A></B> 
 									-- 
-									<A href="javascript:showPartie2()">Seite 2</A>
+									<A href="javascript:showPartie2()">Page 2</A>
 									
 									<%String urlGestionEnvoi = "\\leo?userAction=leo.envoi.envoi.chercher&"+
 									globaz.leo.db.envoi.LEEnvoiViewBean.SRC_typeProv1+"="+globaz.leo.constantes.ILEConstantes.CS_PARAM_GEN_NUMERO+
@@ -989,7 +994,7 @@ function maxLength(zone,max)
 									"&"+globaz.leo.db.envoi.LEEnvoiViewBean.SRC_GO_BACK+"=\\naos?userAction=naos.affiliation.affiliation.afficher";%>
 									<ct:ifhasright element="leo.envoi.envoi.chercher" crud="r">
 									-- 
-									<A href="<%=request.getContextPath()%><%=urlGestionEnvoi%>">Versandverwaltung</A>
+									<A href="<%=request.getContextPath()%><%=urlGestionEnvoi%>">Gestion des envois</A>
 									 </ct:ifhasright>
 								</TD>
 							</TR>
@@ -1042,12 +1047,12 @@ function maxLength(zone,max)
 								<TD nowrap colspan="4" width="900">
 									<TABLE border="0" cellspacing="0" cellpadding="0">
 									<TBODY>
-								<TR style="font-weight: bold">
-										<TD nowrap width="160" height="14">Nachfolge der Kassen</TD>
-										<TD nowrap width="150">Externe Abr.-Nr.</TD>
-										<TD nowrap width="130">Begindatum</TD>
-										<TD nowrap width="130">Enddatum</TD>
-										<TD nowrap width="*">Nummer und Kassenname</TD>
+									<TR style="font-weight: bold">
+										<TD nowrap width="160" height="14">Suivi des caisses</TD>
+										<TD nowrap width="150" >N&deg; d'affili&eacute; externe</TD>
+										<TD nowrap width="130">D&eacute;but</TD>
+										<TD nowrap width="130">Fin</TD>
+										<TD nowrap width="*">Num&eacute;ro et Nom de caisse</TD>
 									</TR>
 									</TBODY> 
 									</TABLE>
@@ -1060,7 +1065,7 @@ function maxLength(zone,max)
 								String libelleGenre = globaz.naos.translation.CodeSystem.getLibelle(session,suiviCaisse.getGenreCaisse());
 								if(suiviCaisse.getAccessoire()){
 									style = "style=font-style:italic";
-									libelleGenre += " (Zusatzkasse)";
+									libelleGenre += " (accessoire)";
 								}
 							%>
 							<TR>
@@ -1098,7 +1103,7 @@ function maxLength(zone,max)
 							<% for (int i=0 ; i < (6 -suivi.size()); i++) { 
 								 if (suivi.size() == 0 && i == 1) {%>						    
 							<TR>
-								<TD nowrap colspan="3" align="center"><B>Keine Nachfolge.</B></TD>
+								<TD nowrap colspan="2" align="center"><B>Aucun suivi.</B></TD>
 							</TR>
 							<% } else {%>
 							<TR>
@@ -1106,8 +1111,8 @@ function maxLength(zone,max)
 							</TR>
 							<% }} %>
 							<tr> 
-            					<td>Geschützte Erfassung (IK)</td>
-           						 <td colspan=3> 
+            					<td width="150" nowrap="nowrap">Affiliation sécurisée (CI)</td>
+           						 <td width="150" nowrap="nowrap"> 
 								<% if (viewBean.hasRightAccesSecurity()) {%> 
 									<ct:FWCodeSelectTag name="accesSecurite" defaut="<%=viewBean.getAccesSecurite()%>" codeType="CISECURI" wantBlank="false"/> 
 								<% } else { %>
@@ -1125,7 +1130,7 @@ function maxLength(zone,max)
 									wantBlank="true"
 									libelle="" /> 
 								</td>
-							</TR>							
+							</TR>
 							<TR>
 								<TD nowrap height="31" colspan="3">&nbsp;</TD>
 							</TR>
@@ -1134,12 +1139,12 @@ function maxLength(zone,max)
 								<!--TD nowrap width="310"></TD>
 								<TD nowrap height="31" width="140" ></TD-->
 								<TD nowrap colspan="3">
-									<A href="javascript:showPartie1()">Seite 1</A> 
+									<A href="javascript:showPartie1()">Page 1</A> 
 									-- 
-									<B><A href="javascript:showPartie2()">Seite 2</A></B> 
+									<B><A href="javascript:showPartie2()">Page 2</A></B> 
 									<ct:ifhasright element="leo.envoi.envoi.chercher" crud="r">
 									-- 
-									<A href="<%=request.getContextPath()%><%=urlGestionEnvoi%>">Versandverwaltung</A>
+									<A href="<%=request.getContextPath()%><%=urlGestionEnvoi%>">Gestion des envois</A>
 									</ct:ifhasright>
 								</TD>
 							</TR>

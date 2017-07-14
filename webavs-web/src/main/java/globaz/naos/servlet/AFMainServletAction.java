@@ -165,6 +165,9 @@ public class AFMainServletAction extends FWActionHandlerFactoryMapSupport {
         AFMainServletAction.hActionsTable.put("naos.ide.ideAnnonce", AFActionIdeAnnonce.class);
         AFMainServletAction.hActionsTable.put("naos.ide.ideTraitementAnnonce", FWDefaultServletAction.class);
         AFMainServletAction.hActionsTable.put("naos.ide.ideSyncRegistre", FWDefaultServletAction.class);
+
+        // D0198
+        AFMainServletAction.hActionsTable.put("naos.noga.listeAffiliesCodeNoga", AFActionListeAffilieCodeNoga.class);
     }
 
     /**

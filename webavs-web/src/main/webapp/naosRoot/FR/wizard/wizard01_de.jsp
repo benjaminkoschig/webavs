@@ -1,5 +1,6 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <%-- tpl:insert page="/theme/detail.jtpl" --%>
+<%@page import="globaz.prestation.interfaces.util.nss.PRUtil"%>
 <%@page import="globaz.naos.util.AFUtil"%>
 <%@page import="globaz.framework.controller.FWDefaultServletAction"%>
 <%@page import="globaz.naos.util.AFIDEUtil"%>
@@ -22,7 +23,9 @@
 	bButtonValidate = false;
 	bButtonCancel 	= false;	
 	String jspLocation = servletContext + mainServletPath + "Root/ide_select.jsp";
-
+	
+	String langue = PRUtil.getISOLangueTiers(viewBean.getSession().getIdLangueISO()).toLowerCase();
+	String linkNoga =  viewBean.getSession().getApplication().getProperty("exploitation.codeNOGA.URL") + "/Default?lang=" + langue + "-CH";
 %>
 <%-- /tpl:put --%>
 <%-- tpl:put name="zoneBusiness" --%>
@@ -667,7 +670,7 @@ function maxLength(zone,max)
 										document.getElementById("categorieNogaCode").onchange = new Function("","rebuildNoga()");
 										rebuildNoga(<%=viewBean.getCodeNoga()%>);
 									</script>
-																	
+									<a href="<%= linkNoga %>" target="new"><ct:FWLabel key="NAOS_JSP_NOGA_LISTE_AFFILIES_CODE_NOGA_LIEN"/></a>						
 								</TD>
 								<TD nowrap >&nbsp;Activit&eacute;(s)</TD>
 								<td>

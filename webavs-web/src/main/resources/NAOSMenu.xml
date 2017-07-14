@@ -447,6 +447,12 @@
 							<parameter name="userAction" value="naos.affiliation.listeNbrAssuresByAffiliation.afficher"/>
 						</action>
 					</node>
+					<node>
+						<label refId="NAOS_MENU_LISTE_CODE_NOGA"/>
+						<action command="/naos" responseTarget="fr_main">
+							<parameter name="userAction" value="naos.noga.listeAffiliesCodeNoga.afficher"/>
+						</action>
+					</node>
 				</nodes>
 			</node>
 			<node open="no">

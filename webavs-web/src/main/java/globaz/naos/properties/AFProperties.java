@@ -38,7 +38,11 @@ public enum AFProperties implements IProperties {
             "Prise en compte ou non des plans d'affiliation inactif lors d'annonce IDE"),
     IDE_COTISATION_VERIFICATION_TAXE_SOUS("ide.cotisation.verificationTaxeSous",
             "Prise en compte ou non des plans d'affiliation de l'affiliation qui détient une autre affiliation"),
-    IDE_URL_ENDPOINT("ide.webservice.url.endpoint", "Adresse Endpoint IDE");
+    IDE_URL_ENDPOINT("ide.webservice.url.endpoint", "Adresse Endpoint IDE"),
+    NOGA_SYNCHRO_REGISTRE("exploitation.codeNOGA.IDE.SynchroRegistre",
+            "Mettre à jour le code NOGA depuis la synchro IDE"),
+    NOGA_UPDATE_ANNONCE_IDE("exploitation.codeNOGA.IDE.InfoABO",
+            "Mettre à jour le code NOGA depuis lors d'une annonce IDE");
 
     private String description;
     private String propertyName;

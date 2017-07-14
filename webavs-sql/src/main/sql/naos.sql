@@ -66,3 +66,8 @@ INSERT INTO SCHEMA.ENPPRAP (PRAPID,PFO1ID,PDEFID,PRAPTA,PRAPUN,PSPY) VALUES ((SE
 -- Creation de la propriete
 DELETE FROM SCHEMA.JADEPROP WHERE PROPNAME = 'naos.ide.webservice.url.endpoint';
 INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL) VALUES ('naos.ide.webservice.url.endpoint','');
+
+-- S160622_004
+INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL) VALUES ('naos.exploitation.codeNOGA.IDE.SynchroRegistre','false');
+INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL) VALUES ('naos.exploitation.codeNOGA.IDE.InfoABO','false');
+INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL) VALUES ('naos.exploitation.codeNOGA.URL','http://www.kubb2008.bfs.admin.ch');

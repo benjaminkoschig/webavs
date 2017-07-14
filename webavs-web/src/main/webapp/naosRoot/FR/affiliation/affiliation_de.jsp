@@ -1,4 +1,5 @@
-<%-- tpl:insert page="/theme/detail.jtpl" --%><%@page import="globaz.naos.util.AFIDEUtil"%>
+<%-- tpl:insert page="/theme/detail.jtpl" --%><%@page import="globaz.prestation.interfaces.util.nss.PRUtil"%>
+<%@page import="globaz.naos.util.AFIDEUtil"%>
 <%@page import="globaz.naos.translation.CodeSystem"%>
 <%@page import="globaz.naos.db.affiliation.AFAffiliation"%>
 <%@page import="globaz.naos.util.AFUtil"%>
@@ -17,8 +18,10 @@
 	String method = request.getParameter("_method");
 	String jspLocation = servletContext + mainServletPath + "Root/ide_select.jsp";
 	
-	Vector listeConventions = ConventionViewService.getAllConventions();
+	Vector listeConventions = ConventionViewService.getAllConventions();	
 	
+	String langue = PRUtil.getISOLangueTiers(viewBean.getSession().getIdLangueISO()).toLowerCase();
+	String linkNoga =  viewBean.getSession().getApplication().getProperty("exploitation.codeNOGA.URL") + "/Default?lang=" + langue + "-CH";	
 %>
 <%@page import="globaz.jade.client.util.JadeStringUtil"%>
 <SCRIPT language="JavaScript">
@@ -731,15 +734,14 @@ function maxLength(zone,max)
 										document.getElementById("categorieNogaCode").onchange = new Function("","rebuildNoga()");
 										rebuildNoga(<%=viewBean.getCodeNoga()%>);
 									</script>
-																	
-								</TD>
+									<a href="<%= linkNoga %>" target="new"><ct:FWLabel key="NAOS_JSP_NOGA_LISTE_AFFILIES_CODE_NOGA_LIEN"/></a>								
+								</TD>								
 								<TD nowrap>&nbsp;Activit&eacute;(s)</TD>
 								<td>
 									<TEXTAREA name="activite" rows="5" cols="40" onkeyup="maxLength(this, 254);"><%=viewBean.getActivite()%></TEXTAREA>
 									<INPUT type="hidden" name="confirmerAnnonceActivite" value="<%=viewBean.getConfirmerAnnonceActivite()%>"/>
-								</td>
-								
-							</TR>
+								</td>				
+							</TR>							
 							<TR> 
 								<TD nowrap width="161">Facturation</TD>
 								<TD nowrap width="210"> par relev&eacute;</TD>
