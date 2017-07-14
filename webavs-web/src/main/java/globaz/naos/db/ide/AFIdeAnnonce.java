@@ -104,6 +104,8 @@ public class AFIdeAnnonce extends BEntity implements Serializable {
     private String messageErreurForBusinessUser = "";
     private String messageErreurForTechnicalUser = "";
 
+    private boolean isErreurNoga = false;
+
     public String getNumeroIdeRemplacement() {
         return numeroIdeRemplacement;
     }
@@ -256,8 +258,13 @@ public class AFIdeAnnonce extends BEntity implements Serializable {
         this.messageErreurForTechnicalUser = messageErreurForTechnicalUser;
     }
 
+    /***
+     * On ignore l'erreur de type NOGA pour éviter d'avoir l'annonce en erreur
+     * 
+     * @return
+     */
     public boolean hasAnnonceErreur() {
-        return !JadeStringUtil.isBlankOrZero(messageErreurForBusinessUser)
+        return (!JadeStringUtil.isBlankOrZero(messageErreurForBusinessUser) && !isErreurNoga)
                 || !JadeStringUtil.isBlankOrZero(messageErreurForTechnicalUser);
     }
 
@@ -594,6 +601,14 @@ public class AFIdeAnnonce extends BEntity implements Serializable {
 
     public void setHistNumeroAffilie(String histNumeroAffilie) {
         this.histNumeroAffilie = histNumeroAffilie;
+    }
+
+    public boolean isErreurNoga() {
+        return isErreurNoga;
+    }
+
+    public void setErreurNoga(boolean isErreurNoga) {
+        this.isErreurNoga = isErreurNoga;
     }
 
 }

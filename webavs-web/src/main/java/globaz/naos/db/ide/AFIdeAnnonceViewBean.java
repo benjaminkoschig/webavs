@@ -1,7 +1,10 @@
 package globaz.naos.db.ide;
 
 import globaz.framework.bean.FWViewBeanInterface;
+import globaz.framework.util.FWMessageFormat;
+import globaz.globall.db.BManager;
 import globaz.globall.db.BTransaction;
+import globaz.globall.parameters.FWParametersSystemCodeManager;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.naos.db.affiliation.AFAffiliation;
 import globaz.naos.translation.CodeSystem;
@@ -12,6 +15,8 @@ import globaz.pyxis.db.tiers.TITiersViewBean;
 public class AFIdeAnnonceViewBean extends AFIdeAnnonce implements FWViewBeanInterface {
 
     private static final long serialVersionUID = 418565569484029155L;
+
+    private static final String CODE_NOGA_INCONNU = "990099";
 
     private AFAffiliation affiliation = null;
     private TITiersViewBean tiers = null;
@@ -32,6 +37,7 @@ public class AFIdeAnnonceViewBean extends AFIdeAnnonce implements FWViewBeanInte
      * code noga selon le registre != code noga dans l'affiliation
      */
     private String noga = "";
+    private String erreurNoga = "";
     private String prenomNom = "";
 
     public boolean isTraite() {
@@ -73,6 +79,18 @@ public class AFIdeAnnonceViewBean extends AFIdeAnnonce implements FWViewBeanInte
             activite = getHistActivite();
             noga = AFIDEUtil.formatNogaRegistre(getHistNoga(), transaction.getSession());
 
+            if (!isCodeNogaKnown(noga)) {
+                if (CODE_NOGA_INCONNU.equals(noga)) {
+                    erreurNoga = FWMessageFormat.format(
+                            getSession().getApplication().getLabel("NAOS_CODE_NOGA_INCONNU",
+                                    getSession().getIdLangueISO()), noga);
+                } else {
+                    erreurNoga = FWMessageFormat.format(
+                            getSession().getApplication().getLabel("NAOS_CODE_NOGA_INDEFINI",
+                                    getSession().getIdLangueISO()), noga);
+                }
+            }
+
         } else {
 
             TIAdresseDataSource adresseDataSource = AFIDEUtil.loadAdresseForIde(getSession(), affiliation);
@@ -96,6 +114,27 @@ public class AFIdeAnnonceViewBean extends AFIdeAnnonce implements FWViewBeanInte
 
         }
 
+    }
+
+    /***
+     * Méthode qui permet de récupérer l'id d'un code noga
+     * 
+     * @param ideDataBean
+     * @throws Exception
+     */
+    private boolean isCodeNogaKnown(String codeNoga) throws Exception {
+        FWParametersSystemCodeManager param = new FWParametersSystemCodeManager();
+
+        param.setSession(getSession());
+        param.setForCodeUtilisateur(codeNoga);
+
+        param.find(BManager.SIZE_NOLIMIT);
+
+        if (param.size() == 0) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
     public String getAdresse() {
@@ -190,4 +229,7 @@ public class AFIdeAnnonceViewBean extends AFIdeAnnonce implements FWViewBeanInte
         return prenomNom;
     }
 
+    public String getErreurNoga() {
+        return erreurNoga;
+    }
 }

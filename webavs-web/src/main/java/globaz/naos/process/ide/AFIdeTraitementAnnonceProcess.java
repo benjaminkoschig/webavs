@@ -6,6 +6,8 @@ import globaz.framework.util.FWMessageFormat;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BProcess;
 import globaz.globall.db.GlobazJobQueue;
+import globaz.globall.parameters.FWParametersSystemCode;
+import globaz.globall.parameters.FWParametersSystemCodeManager;
 import globaz.globall.util.JACalendar;
 import globaz.jade.client.util.JadeFilenameUtil;
 import globaz.jade.client.util.JadeStringUtil;
@@ -68,6 +70,8 @@ public class AFIdeTraitementAnnonceProcess extends BProcess implements FWViewBea
 
     private static final String PATH_SEDEX_FILE_EXEMPLE = "D:\\sedexMessage";
     private static final String MAIL_OBJECT_ANNONCE_IDE = "MAIL_OBJECT_ANNONCE_IDE";
+
+    public static final String CODE_NOGA_INCONNU = "990099";
 
     // private final static String MAIL_NOTIFICATION_PROPERTY = "naos.ide.webservice.mailnotification.group";
 
@@ -786,6 +790,7 @@ public class AFIdeTraitementAnnonceProcess extends BProcess implements FWViewBea
             AFIdeAnnonce ideAnnonceEntrante) throws Exception {
 
         String numeroIDE = ideAnnonceEntrante.getHistNumeroIde();
+        String idCodeNoga = null;
         if (AFIDEUtil.isAnnonceAnnulationDoublon(ideAnnonceEntrante)) {
             numeroIDE = ideAnnonceEntrante.getNumeroIdeRemplacement();
         }
@@ -810,6 +815,15 @@ public class AFIdeTraitementAnnonceProcess extends BProcess implements FWViewBea
                 aAffiliation.setNumeroIDE(ideDataBean.getNumeroIDE());
                 aAffiliation.setIdeRaisonSociale(ideDataBean.getRaisonSociale());
                 aAffiliation.setIdeStatut(ideDataBean.getStatut());
+
+                // Dans ce cas là la MAJ du code noga se base sur le fichier XML
+                if (!AFProperties.NOGA_UPDATE_ANNONCE_IDE.getValue().isEmpty()
+                        && AFProperties.NOGA_UPDATE_ANNONCE_IDE.getValue() != null
+                        && AFProperties.NOGA_UPDATE_ANNONCE_IDE.getBooleanValue()) {
+                    idCodeNoga = getidCodePourCodeNoga(ideAnnonceEntrante.getHistNoga());
+                    aAffiliation.setCodeNoga(idCodeNoga);
+                }
+
                 aAffiliation.setRulesByPass(true);
                 AFAffiliationUtil.disableExtraProcessingForAffiliation(aAffiliation);
                 aAffiliation.update(getTransaction());
@@ -819,12 +833,49 @@ public class AFIdeTraitementAnnonceProcess extends BProcess implements FWViewBea
                 // D0181 générer une annonce d'enregistrement Actif pour le numéro ide de remplacement
                 AFIDEUtil.generateAnnonceEnregistrementActif(getSession(), listAffiliation.get(0), null);
             }
+
+            // On throw une erreur que lorsque le code NOGA n'a pas été trouvé, si = null ça veut dire que la propriété
+            // est à false et donc on remonte pas d'erreur
+            if ("0".equals(idCodeNoga)) {
+                if (CODE_NOGA_INCONNU.equals(ideDataBean.getNogaCode())) {
+                    ideAnnonceEntrante.setErreurNoga(true);
+                    ideAnnonceEntrante.setMessageErreurForBusinessUser(FWMessageFormat.format(getSession()
+                            .getApplication().getLabel("NAOS_CODE_NOGA_INCONNU", getSession().getIdLangueISO()),
+                            ideAnnonceEntrante.getHistNoga()));
+                } else {
+                    ideAnnonceEntrante.setErreurNoga(true);
+                    ideAnnonceEntrante.setMessageErreurForBusinessUser(FWMessageFormat.format(getSession()
+                            .getApplication().getLabel("NAOS_CODE_NOGA_INDEFINI", getSession().getIdLangueISO()),
+                            ideAnnonceEntrante.getHistNoga()));
+                }
+            }
         } else {
             throw new Exception(
                     "AFIdeTraitementAnnonceProcess.updateAffiliationWithAnnonceEntrante : unable to update affiliation because no entity IDE founded in register for number "
                             + numeroIDE);
         }
 
+    }
+
+    /***
+     * Méthode qui permet de récupérer l'id d'un code noga
+     * 
+     * @param ideDataBean
+     * @throws Exception
+     */
+    private String getidCodePourCodeNoga(String codeNoga) throws Exception {
+        FWParametersSystemCodeManager param = new FWParametersSystemCodeManager();
+
+        param.setSession(getSession());
+        param.setForCodeUtilisateur(codeNoga);
+
+        param.find(BManager.SIZE_NOLIMIT);
+
+        if (param.size() == 0) {
+            return "0";
+        } else {
+            return ((FWParametersSystemCode) param.getFirstEntity()).getIdCode();
+        }
     }
 
     private void updateAffiliationAfterTraitementAnnonceSortante(IDEDataBean ideDataBean, AFIdeAnnonce ideAnnonce)

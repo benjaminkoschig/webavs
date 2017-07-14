@@ -1,10 +1,13 @@
 package globaz.naos.process.ide;
 
 import globaz.framework.util.FWMessage;
+import globaz.framework.util.FWMessageFormat;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BProcess;
 import globaz.globall.db.BSession;
 import globaz.globall.db.GlobazJobQueue;
+import globaz.globall.parameters.FWParametersSystemCode;
+import globaz.globall.parameters.FWParametersSystemCodeManager;
 import globaz.jade.client.util.JadeFilenameUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.common.Jade;
@@ -17,6 +20,7 @@ import globaz.naos.application.AFApplication;
 import globaz.naos.db.affiliation.AFAffiliation;
 import globaz.naos.db.affiliation.AFAffiliationUtil;
 import globaz.naos.db.ide.AFIdeAffiliationManager;
+import globaz.naos.properties.AFProperties;
 import globaz.naos.util.AFIDEUtil;
 import globaz.naos.util.IDEDataBean;
 import globaz.naos.util.IDEServiceCallUtil;
@@ -25,12 +29,14 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.xml.ws.WebServiceException;
 import org.apache.commons.io.IOUtils;
+import ch.globaz.naos.exception.NaosException;
 
 public class AFIdeSyncRegistreProcess extends BProcess {
 
     private static final long serialVersionUID = 3679015353882576640L;
 
     public static final String NAME_CSV_FILE_RECAP_SYNCHRO_REGISTRE = "recapitulatifSynchroRegistre.csv";
+    public static final String CODE_NOGA_INCONNU = "990099";
     private boolean modeForceAllStatus;
 
     @Override
@@ -60,6 +66,8 @@ public class AFIdeSyncRegistreProcess extends BProcess {
                     errmsg.append(cte.getMessage());
                 } catch (WebServiceException wse) {
                     throw wse;
+                } catch (NaosException e) {
+                    errmsg.append(e.getMessage());
                 } catch (Exception e) {
                     errmsg.append(e.getMessage());
                 } finally {
@@ -141,12 +149,59 @@ public class AFIdeSyncRegistreProcess extends BProcess {
      * @throws Exception
      */
     private void updateAffiliationAfterFind(IDEDataBean ideDataBean, AFAffiliation affiliation) throws Exception {
+        String idCodeNoga = null;
+
         affiliation.setNumeroIDE(ideDataBean.getNumeroIDE());
         affiliation.setIdeRaisonSociale(ideDataBean.getRaisonSociale());
         affiliation.setIdeStatut(ideDataBean.getStatut());
+
+        if (!AFProperties.NOGA_SYNCHRO_REGISTRE.getValue().isEmpty()
+                && AFProperties.NOGA_SYNCHRO_REGISTRE.getValue() != null
+                && AFProperties.NOGA_SYNCHRO_REGISTRE.getBooleanValue()) {
+            idCodeNoga = getidCodePourCodeNoga(ideDataBean.getNogaCode());
+            affiliation.setCodeNoga(idCodeNoga);
+        }
+
         affiliation.setRulesByPass(true);
         AFAffiliationUtil.disableExtraProcessingForAffiliation(affiliation);
         affiliation.update(getTransaction());
+
+        // On throw une erreur que lorsque le code NOGA n'a pas été trouvé, si = null ça veut dire que la propriété est
+        // à false et donc on remonte pas d'erreur
+        if ("0".equals(idCodeNoga)) {
+            if (CODE_NOGA_INCONNU.equals(ideDataBean.getNogaCode())) {
+                throw new NaosException(
+                        FWMessageFormat.format(
+                                getSession().getApplication().getLabel("NAOS_CODE_NOGA_INCONNU",
+                                        getSession().getIdLangueISO()), ideDataBean.getNogaCode()));
+            } else {
+                throw new NaosException(FWMessageFormat.format(
+                        getSession().getApplication()
+                                .getLabel("NAOS_CODE_NOGA_INDEFINI", getSession().getIdLangueISO()), ideDataBean
+                                .getNogaCode()));
+            }
+        }
+    }
+
+    /***
+     * Méthode qui permet de récupérer l'id d'un code noga
+     * 
+     * @param ideDataBean
+     * @throws Exception
+     */
+    private String getidCodePourCodeNoga(String codeNoga) throws Exception {
+        FWParametersSystemCodeManager param = new FWParametersSystemCodeManager();
+
+        param.setSession(getSession());
+        param.setForCodeUtilisateur(codeNoga);
+
+        param.find(BManager.SIZE_NOLIMIT);
+
+        if (param.size() == 0) {
+            return "0";
+        } else {
+            return ((FWParametersSystemCode) param.getFirstEntity()).getIdCode();
+        }
     }
 
     /**
