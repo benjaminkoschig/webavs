@@ -180,7 +180,12 @@ function init() {
         	<TD nowrap width="140"></TD>
         	<TD nowrap width="300"></TD>
         	<TD nowrap width="140"><ct:FWLabel key="NAOS_JSP_IDE_ANNONCE_CODE_NOGA"/></TD>
-        	<TD nowrap width="300"><INPUT name="" type="text" value="<%=viewBean.getNoga()%>" class="libelleLongDisabled" readonly></TD>
+        	<% if(viewBean.getErreurNoga().isEmpty()){%>
+        		<TD nowrap width="300"><INPUT name="" type="text" value="<%=viewBean.getNoga()%>" class="libelleLong10Disabled" readonly></TD>
+        	<%} else{%>
+        		<TD nowrap width="300"><INPUT name="" type="text" value="<%=viewBean.getErreurNoga()%>" class="libelleLong10Disabled" readonly style="color:red"></TD>
+        	<%}%>
+      
 		</TR>
 		
 		<TR>
