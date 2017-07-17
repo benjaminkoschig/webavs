@@ -433,10 +433,16 @@ function sortStandardTable ($th) {
 			style: 'display:inline-block; position:relative; left: 15%'
 		}));
 		
+		$table.find("tr").each(function(i){
+			$(this).attr("initialRowIndex",i);
+		})
+
+		var nbClick = 0;
 		$th.each(function (column) {
 			var $this = $(this);
 			$this.attr('nowrap', 'nowrap');
 			$this.addClass('sortable ' + that.hoverRowClass).click(function () {
+				nbClick++;
 				var sortDirection = $this.is('.sorted-asc') ? -1 : 1,
 				$uiIconsNotWithThis = $th.not(this).find('.ui-icon'),
 				$uiIcon = $this.find('.ui-icon'),
@@ -470,6 +476,15 @@ function sortStandardTable ($th) {
 				});
 
 				if ($this.hasClass('dateSortable')) {
+					if(nbClick % 3===0 && nbClick!=1){
+						$uiIcon.removeClass('ui-icon-arrowthick-1-n ui-icon-arrowthick-1-s');
+						$uiIcon.addClass('ui-icon-arrowthick-2-n-s');
+
+						$rows.sort(function (date1, date2) {
+							return $(date1).closest("tr").attr("initialRowIndex") - $(date2).closest("tr").attr("initialRowIndex");
+						});
+
+					} else { 
 					$rows.sort(function (date1, date2) {
 						if (date1.notSortable || date2.notSortable) {
 							return 0;
@@ -501,6 +516,7 @@ function sortStandardTable ($th) {
 						}
 						return 0;
 					});
+					  }
 				} else {
 					//compare and sort the rows alphabetically
 					$rows.sort(function (a, b) {
