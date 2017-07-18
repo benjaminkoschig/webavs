@@ -251,7 +251,10 @@ public class REFichierEuroFormPrinter implements PRFichierACORPrinter {
      * @return la chaîne de caractère si non null, sinon une chaîne vide
      */
     private String manageValue(String value) {
-        return JadeStringUtil.isBlank(value) ? "" : value;
+        // Permet de supprimer les double quotes " dans les données
+        String valueSansdoubleQuote = value.replaceAll("\"", "");
+
+        return JadeStringUtil.isBlank(valueSansdoubleQuote) ? "" : valueSansdoubleQuote;
     }
 
     @Override
