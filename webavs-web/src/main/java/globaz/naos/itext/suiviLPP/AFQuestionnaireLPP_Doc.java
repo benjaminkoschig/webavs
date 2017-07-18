@@ -2,24 +2,12 @@ package globaz.naos.itext.suiviLPP;
 
 import globaz.caisse.report.helper.ICaisseReportHelper;
 import globaz.framework.printing.itext.fill.FWIImportManager;
-import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
-import globaz.hercule.service.CETiersService;
 import globaz.jade.common.Jade;
 import globaz.jade.log.JadeLogger;
-import globaz.jade.publish.document.JadePublishDocumentInfo;
 import globaz.naos.application.AFApplication;
-import globaz.naos.db.affiliation.AFAffiliation;
-import globaz.naos.db.affiliation.AFAffiliationManager;
-import globaz.naos.db.controleLpp.AFExtraitDS;
-import globaz.naos.db.controleLpp.AFExtraitDSManager;
 import globaz.naos.itext.AFAbstractTiersDocument;
-import globaz.naos.listes.pdf.extraitDS.AFListeExtraitDS;
 import globaz.naos.translation.CodeSystem;
-import globaz.pyxis.adresse.datasource.TIAdresseDataSource;
-import globaz.pyxis.db.tiers.TITiers;
-import java.util.ArrayList;
-import java.util.List;
 
 public class AFQuestionnaireLPP_Doc extends AFAbstractTiersDocument {
 
@@ -28,9 +16,6 @@ public class AFQuestionnaireLPP_Doc extends AFAbstractTiersDocument {
     private String modelFr = "NAOS_QUESTIONNAIRE_LPP_VERSO_FR";
 
     private String modelPath = "model/static/";
-
-    private String pathListeExtraitDS;
-    private JadePublishDocumentInfo documentInfoListeExtraitDS;
 
     public AFQuestionnaireLPP_Doc() throws Exception {
         super();
@@ -51,10 +36,6 @@ public class AFQuestionnaireLPP_Doc extends AFAbstractTiersDocument {
                 addDocument(m.importReport(modelFr, Jade.getInstance().getExternalModelDir()
                         + AFApplication.DEFAULT_APPLICATION_NAOS_REP + "//" + modelPath));
             }
-
-            // Ajout du fichier d'extrait de salaire.
-            registerAttachedDocument(documentInfoListeExtraitDS, pathListeExtraitDS);
-
         } catch (Exception e) {
             JadeLogger.error(this, e);
         }
@@ -74,10 +55,6 @@ public class AFQuestionnaireLPP_Doc extends AFAbstractTiersDocument {
     @Override
     public void createDataSource() throws Exception {
         super.createDataSource();
-
-        // Lancement du process pour générer la liste extrait de salaires
-        initAndLaunchProcessListExtraitDS(getIdAffiliation(), Integer.parseInt(getPeriode()), getDateImpression());
-
         fillDocInfo();
     }
 
@@ -114,72 +91,6 @@ public class AFQuestionnaireLPP_Doc extends AFAbstractTiersDocument {
 
     @Override
     protected void initDocument(String isoLangueTiers) throws Exception {
-        //
-    }
-
-    private void initAndLaunchProcessListExtraitDS(String numAffilie, int annee, String dateImpression)
-            throws Exception {
-        AFExtraitDSManager mgr = new AFExtraitDSManager();
-        mgr.setSession(getSession());
-        mgr.setForAnnee(annee);
-        mgr.setForIdAffilie(numAffilie);
-        mgr.find(BManager.SIZE_NOLIMIT);
-
-        List<AFExtraitDS> listeDS = new ArrayList<AFExtraitDS>();
-
-        if (mgr.getSize() > 0) {
-            for (int i = 0; i < mgr.getSize(); i++) {
-                AFExtraitDS extraitDS = (AFExtraitDS) mgr.getEntity(i);
-                extraitDS.calculSeuilLPP();
-                listeDS.add(extraitDS);
-            }
-        }
-
-        AFAffiliation employeur;
-
-        AFAffiliationManager affiliationManager = new AFAffiliationManager();
-        affiliationManager.setSession(getSession());
-        affiliationManager.setForAffiliationId(numAffilie);
-        affiliationManager.find(BManager.SIZE_NOLIMIT);
-
-        if (affiliationManager.size() == 1) {
-            employeur = (AFAffiliation) affiliationManager.get(0);
-        } else {
-            throw new Exception("L'affiliation correspondant au numéro " + numAffilie + " n'a pas été trouvée");
-        }
-
-        TIAdresseDataSource adresseEmployeur = getAdresseFromItTiersEmployeur(getSession(), "20",
-                employeur.getIdTiers(), numAffilie);
-
-        AFListeExtraitDS processListeExtraitDS = new AFListeExtraitDS();
-        processListeExtraitDS.setSession(getSession());
-        processListeExtraitDS.setListeDS(listeDS);
-        processListeExtraitDS.setEmployeur(employeur);
-        processListeExtraitDS.setAdresseEmployeur(adresseEmployeur);
-        processListeExtraitDS.setAnnee(String.valueOf(annee));
-        processListeExtraitDS.setLangueIso(employeur.getTiers().getLangueIso());
-        processListeExtraitDS.setDate(dateImpression);
-        processListeExtraitDS.executeProcess();
-        // date ?
-
-        pathListeExtraitDS = processListeExtraitDS.getPath();
-        documentInfoListeExtraitDS = processListeExtraitDS.getDocumentInfoPdf();
-    }
-
-    private TIAdresseDataSource getAdresseFromItTiersEmployeur(BSession session, String typeAdresse, String idTiers,
-            String numAffilie) throws Exception {
-
-        TITiers tiers = CETiersService.retrieveTiers(session, idTiers);
-
-        TIAdresseDataSource d;
-
-        try {
-            d = CETiersService.retrieveAdresseDataSource(typeAdresse, tiers, numAffilie);
-        } catch (Exception e) {
-            throw new Exception("Technical Exception, Unabled to retrieve the adresse ( idTiers = " + idTiers + ")", e);
-        }
-
-        return d;
     }
 
     @Override
