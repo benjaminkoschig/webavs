@@ -83,7 +83,7 @@ public class AFControleLppAnnuelProcess extends BProcess {
     private AFAffilieSoumiLppConteneur casSoumisFinal;
 
     private StringBuilder corpsMessage;
-    private String email;
+
     // true = simulation
     private Boolean modeControle = true;
     private int nbCasRejetes;
@@ -93,6 +93,10 @@ public class AFControleLppAnnuelProcess extends BProcess {
     private String typeAdresse;
 
     private String fileName;
+
+    public AFControleLppAnnuelProcess() {
+        super();
+    }
 
     @Override
     protected void _executeCleanUp() {
@@ -549,6 +553,7 @@ public class AFControleLppAnnuelProcess extends BProcess {
         // execute le process de génération
         LEGenererEnvoi gen = new LEGenererEnvoi();
         gen.setSession(getSession());
+        // gen.setEMailAddress(getEMailAddress());
         gen.setCsDocument(ILEConstantes.CS_DEBUT_SUIVI_ANNUEL_LPP);
         gen.setParamEnvoiList(params);
         gen.setSendCompletionMail(false);
@@ -608,32 +613,37 @@ public class AFControleLppAnnuelProcess extends BProcess {
         incProgressCounter();
     }
 
-    public String getEmail() {
-        return email;
-    }
-
     @Override
     protected String getEMailObject() {
+
+        String emailObject;
+
         if (fileName.isEmpty()) {
             // Information sur l'année de traitement
             String anneeTraitement = " (" + getAnneeDebut() + " - " + getAnneeFin() + ")";
 
             // Information sur le type de traitement
-            String simulation = isModeControleSimulation() ? getSession().getLabel("CONTROLE_LPP_SIMULATION") + " - "
-                    : "";
+            String simulation = "";
+            if (isModeControleSimulation()) {
+                simulation = (getSession().getLabel("CONTROLE_LPP_SIMULATION") + " - ");
+            }
 
             // Construction de l'object
             if (isAborted()) {
-                return simulation + getSession().getLabel("IMPRESSION_CONTROLE_LPP_ANNUEL_ABORTED") + anneeTraitement;
+                emailObject = simulation + getSession().getLabel("IMPRESSION_CONTROLE_LPP_ANNUEL_ABORTED")
+                        + anneeTraitement;
             } else if (isOnError() || getSession().hasErrors()) {
-                return simulation + getSession().getLabel("IMPRESSION_CONTROLE_LPP_ANNUEL_ERREUR") + anneeTraitement;
+                emailObject = simulation + getSession().getLabel("IMPRESSION_CONTROLE_LPP_ANNUEL_ERREUR")
+                        + anneeTraitement;
             } else {
-                return simulation + getSession().getLabel("IMPRESSION_CONTROLE_LPP_ANNUEL_OK") + anneeTraitement;
+                emailObject = simulation + getSession().getLabel("IMPRESSION_CONTROLE_LPP_ANNUEL_OK") + anneeTraitement;
             }
         } else {
-            return getSession().getLabel("IMPRESSION_CONTROLE_LPP_ANNUEL_OK") + " ("
+            emailObject = getSession().getLabel("IMPRESSION_CONTROLE_LPP_ANNUEL_OK") + " ("
                     + getSession().getLabel("MENU_REINJECTION_LISTE_EXCEL") + ")";
         }
+
+        return emailObject;
     }
 
     public Boolean getModeControle() {
@@ -797,10 +807,6 @@ public class AFControleLppAnnuelProcess extends BProcess {
         return GlobazJobQueue.UPDATE_LONG;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
     public void setModeControle(Boolean modeControle) {
         this.modeControle = modeControle;
     }
@@ -955,7 +961,7 @@ public class AFControleLppAnnuelProcess extends BProcess {
         double salaire = Double.parseDouble(sal.getMontant());
 
         // Test du seuil annuel
-        if (salaire >= seuilAnnuel) {
+        if (salaire > seuilAnnuel) {
             // Il dépasse le seuil annuel
             return true;
         }
