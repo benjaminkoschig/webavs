@@ -3,8 +3,6 @@
  */
 package globaz.naos.process;
 
-import globaz.globall.api.BISession;
-import globaz.globall.api.GlobazSystem;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BProcess;
 import globaz.globall.db.BSession;
@@ -232,23 +230,6 @@ public class AFControleLppAnnuelProcess extends BProcess {
         }
 
         return true;
-    }
-
-    private BSession getSessionLeo() throws Exception {
-        BSession local = getSession();
-        BISession remoteSession = (BISession) local.getAttribute("sessionLeo");
-        if (remoteSession == null) {
-            // pas encore de session pour l'application demandé
-            remoteSession = GlobazSystem.getApplication("LEO").newSession(local);
-            local.setAttribute("sessionLeo", remoteSession);
-        }
-        if (!remoteSession.isConnected()) {
-            local.connectSession(remoteSession);
-        }
-        // vide le buffer d'erreur
-        remoteSession.getErrors();
-        return (BSession) remoteSession;
-
     }
 
     @Override
