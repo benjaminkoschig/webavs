@@ -552,7 +552,10 @@ public class AFControleLppAnnuelProcess extends BProcess {
         ComparaisonDePeriode comp = periodeDuSuivi.comparerChevauchementMois(periodeDeTest);
 
         if (comp == ComparaisonDePeriode.LES_PERIODES_SE_CHEVAUCHENT) {
-            return true;
+
+            if (periodeDuSuivi.isDateDansLaPeriode("01." + periodeDeTest.getDateFin())) {
+                return true;
+            }
         }
 
         return false;
