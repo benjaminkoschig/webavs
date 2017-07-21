@@ -19,7 +19,7 @@ public class AFAffilieSoumiLpp extends BEntity {
     private String idAffilie;
     private String idCompteIndividuel;
     private String idTiers;
-    private boolean isExtourne = false;
+    private boolean isExtourne;
     private String moisDebut;
     private String moisFin;
     private String montant;
@@ -30,6 +30,10 @@ public class AFAffilieSoumiLpp extends BEntity {
     private String numeroAffilie;
     private String sexe;
     private String motifSuivi;
+
+    public AFAffilieSoumiLpp() {
+        super();
+    }
 
     @Override
     protected String _getTableName() {
@@ -50,26 +54,27 @@ public class AFAffilieSoumiLpp extends BEntity {
         moisDebut = statement.dbReadString("KBNMOD");
         moisFin = statement.dbReadString("KBNMOF");
         genreEcriture = statement.dbReadString("KBTGEN");
-        dateFinSuivi = statement.dbReadString("MYDFIN");
         dateFinAffiliation = statement.dbReadString("MADFIN");
         idCompteIndividuel = statement.dbReadNumeric("KAIIND");
         nivSecuCI = statement.dbReadNumeric("KATSEC");
         if (!JadeStringUtil.isBlankOrZero(statement.dbReadNumeric("KBTEXT"))) {
             isExtourne = true;
         }
-        motifSuivi = statement.dbReadNumeric("MYTMOT");
     }
 
     @Override
     protected void _validate(BStatement statement) throws Exception {
+        // Not implemented
     }
 
     @Override
     protected void _writePrimaryKey(BStatement statement) throws Exception {
+        // Not implemented
     }
 
     @Override
     protected void _writeProperties(BStatement statement) throws Exception {
+        // Not implemented
     }
 
     public String getDateFinAffiliation() {
@@ -140,74 +145,6 @@ public class AFAffilieSoumiLpp extends BEntity {
         return isExtourne;
     }
 
-    public void setDateFinAffiliation(String dateFinAffiliation) {
-        this.dateFinAffiliation = dateFinAffiliation;
-    }
-
-    public void setDateFinSuivi(String dateFinSuivi) {
-        this.dateFinSuivi = dateFinSuivi;
-    }
-
-    public void setDateNaissance(String dateNaissance) {
-        this.dateNaissance = dateNaissance;
-    }
-
-    public void setExtourne(boolean isExtourne) {
-        this.isExtourne = isExtourne;
-    }
-
-    public void setGenreEcriture(String genreEcriture) {
-        this.genreEcriture = genreEcriture;
-    }
-
-    public void setIdAffilie(String idAffilie) {
-        this.idAffilie = idAffilie;
-    }
-
-    public void setIdCompteIndividuel(String idCompteIndividuel) {
-        this.idCompteIndividuel = idCompteIndividuel;
-    }
-
-    public void setIdTiers(String idTiers) {
-        this.idTiers = idTiers;
-    }
-
-    public void setMoisDebut(String moisDebut) {
-        this.moisDebut = moisDebut;
-    }
-
-    public void setMoisFin(String moisFin) {
-        this.moisFin = moisFin;
-    }
-
-    public void setMontant(String montant) {
-        this.montant = montant;
-    }
-
-    public void setNivSecuAffilie(String nivSecuAffilie) {
-        this.nivSecuAffilie = nivSecuAffilie;
-    }
-
-    public void setNivSecuCI(String nivSecuCI) {
-        this.nivSecuCI = nivSecuCI;
-    }
-
-    public void setNom(String nom) {
-        this.nom = nom;
-    }
-
-    public void setNss(String nss) {
-        this.nss = nss;
-    }
-
-    public void setNumeroAffilie(String numeroAffilie) {
-        this.numeroAffilie = numeroAffilie;
-    }
-
-    public void setSexe(String sexe) {
-        this.sexe = sexe;
-    }
-
     public String getMotifSuivi() {
         return motifSuivi;
     }
@@ -215,5 +152,4 @@ public class AFAffilieSoumiLpp extends BEntity {
     public void setMotifSuivi(String motifSuivi) {
         this.motifSuivi = motifSuivi;
     }
-
 }

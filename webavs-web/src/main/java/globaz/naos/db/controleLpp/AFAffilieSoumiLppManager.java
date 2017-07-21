@@ -37,8 +37,6 @@ public class AFAffilieSoumiLppManager extends BManager {
         AFUtil.sqlAddField(sqlFields, "ecr.KBNMOF");
         AFUtil.sqlAddField(sqlFields, "ecr.KBTGEN");
         AFUtil.sqlAddField(sqlFields, "ecr.KAIIND");
-        AFUtil.sqlAddField(sqlFields, "suiv.MYDFIN");
-        AFUtil.sqlAddField(sqlFields, "suiv.MYTMOT");
         AFUtil.sqlAddField(sqlFields, "af.MADFIN");
         AFUtil.sqlAddField(sqlFields, "ecr.KBTEXT");
 
@@ -50,11 +48,6 @@ public class AFAffilieSoumiLppManager extends BManager {
         StringBuilder sqlFrom = new StringBuilder();
 
         sqlFrom.append(_getCollection() + "AFAFFIP af ");
-
-        sqlFrom.append("LEFT OUTER JOIN ( SELECT * FROM " + _getCollection()
-                + "AFSUAFP	WHERE MYTGEN = 830003 AND ((MYDFIN > " + getForAnnee() + "0101 AND MYDDEB < "
-                + getForAnnee() + "1231) OR (MYDDEB < " + getForAnnee()
-                + "1231 AND MYDFIN = 0))) suiv on suiv.MAIAFF = af.MAIAFF ");
         sqlFrom.append("INNER JOIN " + _getCollection() + "CIECRIP ecr on ecr.KBITIE = af.MAIAFF ");
         sqlFrom.append("LEFT JOIN " + _getCollection() + "CIINDIP ci on ecr.KAIIND = ci.KAIIND ");
 
@@ -67,9 +60,6 @@ public class AFAffilieSoumiLppManager extends BManager {
 
         // WHERE ecr.KBNANN = 2010
         AFUtil.sqlAddCondition(sqlWhere, "ecr.KBNANN = " + getForAnnee());
-
-        // AND (suiv.MYISUA IS NULL OR suiv.mytmot <> 0)
-        AFUtil.sqlAddCondition(sqlWhere, "(suiv.MYISUA IS NULL OR suiv.MYTMOT <> 0) ");
 
         // AND af.MATTAF in (804002, 804012, 804005)
         AFUtil.sqlAddCondition(sqlWhere, "af.MATTAF in (804002, 804012, 804005)");

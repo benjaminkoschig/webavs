@@ -19,6 +19,7 @@ import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.client.zip.JadeZipUtil;
 import globaz.jade.common.Jade;
 import globaz.jade.fs.JadeFsFacade;
+import globaz.jade.log.JadeLogger;
 import globaz.jade.publish.client.JadePublishDocument;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
 import globaz.leo.constantes.ILEConstantes;
@@ -34,6 +35,8 @@ import globaz.naos.db.controleLpp.AFAffilieSoumiLppConteneur.Salarie;
 import globaz.naos.db.controleLpp.AFAffilieSoumiLppManager;
 import globaz.naos.db.controleLpp.AFLineCi;
 import globaz.naos.db.controleLpp.AFLineCiManager;
+import globaz.naos.db.controleLpp.AFSuiviCaisseForControleLpp;
+import globaz.naos.db.controleLpp.AFSuiviCaisseForControleLppManager;
 import globaz.naos.db.cotisation.AFCotisationManager;
 import globaz.naos.listes.excel.AFXmlmlMappingSoumisLpp;
 import globaz.naos.listes.excel.util.AFExcelmlUtils;
@@ -57,6 +60,9 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import org.apache.commons.lang.StringUtils;
 import ch.globaz.common.business.exceptions.CommonTechnicalException;
+import ch.globaz.common.domaine.Date;
+import ch.globaz.common.domaine.Periode;
+import ch.globaz.common.domaine.Periode.ComparaisonDePeriode;
 
 /**
  * Processus de gestion LPP. Permet de rechercher suivant l'année donnée, tous les affiliés sans LPP active et qui ont
@@ -238,7 +244,7 @@ public class AFControleLppAnnuelProcess extends BProcess {
                 boolean salarieSoumis = true;
 
                 // 1.Controle date <18 ans et retraite
-                salarieSoumis = testAge(anneeControle, idAffSoumis, sal);
+                salarieSoumis = testAgeIsSoumis(anneeControle, idAffSoumis, sal);
 
                 // 2. Controle + de 3 mois de suite
                 // => si pas 3 mois verif les années avant et apres
@@ -439,6 +445,14 @@ public class AFControleLppAnnuelProcess extends BProcess {
 
         setProcessDescription("Génération des données");
 
+        // Récupération des suivis
+        AFSuiviCaisseForControleLppManager mSuivi = new AFSuiviCaisseForControleLppManager();
+        mSuivi.setForAnnee(forAnnee);
+        mSuivi.setSession(getSession());
+        mSuivi.find(getTransaction(), BManager.SIZE_NOLIMIT);
+
+        List<AFSuiviCaisseForControleLpp> objSuiviCaisse = mSuivi.toList();
+
         // -------------
         // Récupération de la liste des affiliés potentiellement soumis
         // et qui n'ont pas de caisse LPP
@@ -452,6 +466,32 @@ public class AFControleLppAnnuelProcess extends BProcess {
 
         // Pour chaque ligne de la requete, on les regroupe par affilié
         for (AFAffilieSoumiLpp affSoumis : objListAf) {
+
+            boolean isCouvertParUneCaisse = false;
+
+            // Test si couvert par un suivi caisse
+            for (AFSuiviCaisseForControleLpp caisseLpp : objSuiviCaisse) {
+                if (caisseLpp.getIdAffilie().equals(affSoumis.getIdAffilie())) {
+
+                    isCouvertParUneCaisse = testIsCouvert(forAnnee, affSoumis.getMoisDebut(), affSoumis.getMoisFin(),
+                            caisseLpp.getDateDebut(), caisseLpp.getDateFin());
+
+                    // Si couvert par une caisse et pas de motif de non soumission
+                    if (isCouvertParUneCaisse && "0".equals(caisseLpp.getMotifSuivi())) {
+                        break;
+                    } else if (isCouvertParUneCaisse) {
+                        affSoumis.setMotifSuivi(caisseLpp.getMotifSuivi());
+                        break;
+                    }
+                    isCouvertParUneCaisse = false;
+                }
+
+            }
+
+            // Si couvert par une caisse, on passe au suivant.
+            if (isCouvertParUneCaisse && JadeStringUtil.isEmpty(affSoumis.getMotifSuivi())) {
+                continue;
+            }
 
             // Si il l'affilié n'a pas de cotisation AVS, on le prend pas en compte
             // BUG:7202
@@ -470,6 +510,52 @@ public class AFControleLppAnnuelProcess extends BProcess {
 
         // Etape terminé, on incremente le compteur
         incProgressCounter();
+    }
+
+    static boolean testIsCouvert(int forAnnee, String moisDebut, String moisFin, String dateDebutSuivi,
+            String dateFinSuivi) {
+
+        // Contruction de la période de suivi
+        String debutPeriodeSuivi = "";
+        if (JadeStringUtil.isBlankOrZero(dateDebutSuivi)) {
+            debutPeriodeSuivi = "01." + forAnnee;
+        } else {
+            Date d = new Date(dateDebutSuivi);
+            debutPeriodeSuivi = d.getSwissMonthValue();
+        }
+
+        String finPeriodeSuivi = "";
+        if (JadeStringUtil.isBlankOrZero(dateFinSuivi)) {
+            finPeriodeSuivi = "12." + forAnnee;
+        } else {
+            Date d = new Date(dateFinSuivi);
+            finPeriodeSuivi = d.getSwissMonthValue();
+        }
+        Periode periodeDuSuivi = new Periode(debutPeriodeSuivi, finPeriodeSuivi);
+
+        // Cosntruction de la périod de test
+        String debutPeriodeTest = "";
+        if (JadeStringUtil.isBlankOrZero(moisDebut)) {
+            debutPeriodeTest = "01." + forAnnee;
+        } else {
+            debutPeriodeTest = StringUtils.leftPad(moisDebut, 2, "0") + "." + forAnnee;
+        }
+        String finPeriodeTest = "";
+        if (JadeStringUtil.isBlankOrZero(moisFin)) {
+            finPeriodeTest = "12." + forAnnee;
+        } else {
+            finPeriodeTest = StringUtils.leftPad(moisFin, 2, "0") + "." + forAnnee;
+        }
+        Periode periodeDeTest = new Periode(debutPeriodeTest, finPeriodeTest);
+
+        // Comparaison des périodes
+        ComparaisonDePeriode comp = periodeDuSuivi.comparerChevauchementMois(periodeDeTest);
+
+        if (comp == ComparaisonDePeriode.LES_PERIODES_SE_CHEVAUCHENT) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -705,7 +791,7 @@ public class AFControleLppAnnuelProcess extends BProcess {
      * @return
      * @throws HerculeException
      */
-    private boolean hasCotisationAVS(String idAffilie, int annee) throws Exception {
+    private boolean hasCotisationAVS(String idAffilie, int annee) {
 
         if (JadeStringUtil.isEmpty(idAffilie)) {
             throw new IllegalArgumentException("Unabled to find cotisation AVS. idAffilie is null or empty");
@@ -822,27 +908,46 @@ public class AFControleLppAnnuelProcess extends BProcess {
      * @return
      * @throws JAException
      */
-    private boolean testAge(int anneeControle, String idAffilie, AFAffilieSoumiLppConteneur.Salarie sal)
-            throws JAException {
+    private boolean testAgeIsSoumis(int anneeControle, String idAffilie, AFAffilieSoumiLppConteneur.Salarie sal) {
 
         // Test si date de naissance existante et sexe
-        if (JadeStringUtil.isEmpty(sal.getDateNaissance()) || JadeStringUtil.isEmpty(sal.getSexe())) {
+        if (JadeStringUtil.isEmpty(sal.getDateNaissance()) || JadeStringUtil.isEmpty(sal.getSexe())
+                || !Date.isValid(sal.getDateNaissance())) {
             casRejetes.addSalarie(idAffilie, sal);
             return false;
         }
 
-        int anneeNaissance = CEUtils.stringDateToAnnee(sal.getDateNaissance());
-        JADate dateNaissance = new JADate(sal.getDateNaissance());
-
-        // Test si + de 17 ans et pas en retraite
-        if (((anneeControle - anneeNaissance) >= 18) && !CIUtil.isRetraite(dateNaissance, sal.getSexe(), anneeControle)) {
-            return true;
-
+        // Test si il a l'âge légal
+        // Try / catch pour d'éventuelle problème, (genre une date 00.00.1958)
+        try {
+            return testCalculAgeIsSoumis(anneeControle, sal.getDateNaissance(), sal.getSexe(),
+                    StringUtils.leftPad(sal.getMoisDebut(), 2, "0"));
+        } catch (Exception e) {
+            JadeLogger.info(this, e.getMessage() + " // Nss : " + sal.getNss());
+            casRejetes.addSalarie(idAffilie, sal);
+            return false;
         }
 
-        // Test si on est dans l'année de retraite
-        if (CIUtil.isAnneeRetraite(dateNaissance, sal.getSexe(), anneeControle)) {
-            return true;
+    }
+
+    static boolean testCalculAgeIsSoumis(int anneeControle, String dNaissance, String sexe, String moisDebutSalaire) {
+        Date dateNaissance = new Date(dNaissance);
+
+        // Test si + de 17 ans
+        if ((anneeControle - dateNaissance.getYear()) >= 18) {
+
+            // Il ne doit pas être en retraite
+            if (!CIUtil.isRetraite(dateNaissance.getYear(), sexe, anneeControle)) {
+                return true;
+
+            } else if (CIUtil.isAnneeRetraite(dateNaissance.getYear(), sexe, anneeControle)) {
+                // Si année de retraite, on regarde si la période est avant le mois de retraite
+                Date dateAControler = new Date(anneeControle + moisDebutSalaire + "01");
+                Date dateAComparer = new Date(anneeControle + dateNaissance.getMois() + dateNaissance.getJour());
+                if (dateAControler.before(dateAComparer)) {
+                    return true;
+                }
+            }
         }
 
         return false;

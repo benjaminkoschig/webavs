@@ -2103,6 +2103,14 @@ public class CIUtil {
         return false;
     }
 
+    public static boolean isAnneeRetraite(int anneeNaissance, String sexeCS, int anneeReference) {
+        int sexe = 5;
+        if (CICompteIndividuel.CS_HOMME.equals(sexeCS)) {
+            sexe = 1;
+        }
+        return CIUtil.isAnneeRetraite(anneeReference, sexe, anneeNaissance);
+    }
+
     public static boolean isAnneeRetraite(JADate date, String sexeCS, int annee) {
         int sexe = 5;
         if (CICompteIndividuel.CS_HOMME.equals(sexeCS)) {
@@ -2282,6 +2290,14 @@ public class CIUtil {
             return true;
         }
         return false;
+    }
+
+    public static boolean isRetraite(int anneeNaissance, String sexeCS, int anneeReference) {
+        int sexe = 5;
+        if (CICompteIndividuel.CS_HOMME.equals(sexeCS)) {
+            sexe = 1;
+        }
+        return CIUtil.isRetraite(anneeReference, sexe, anneeNaissance);
     }
 
     public static boolean isRetraite(JADate date, String sexeCS, int annee) {
