@@ -644,6 +644,9 @@ public class AFControleLppAnnuelProcess extends BProcess {
             JadePublishDocumentInfo documentInfo = createDocumentInfo();
             documentInfo.setDocumentType("");
             documentInfo.setDocumentTypeNumber("");
+            documentInfo.setArchiveDocument(false);
+            documentInfo.setPublishDocument(true);
+
             this.registerAttachedDocument(documentInfo, zipFilename);
             zipOutput.flush();
         } finally {
