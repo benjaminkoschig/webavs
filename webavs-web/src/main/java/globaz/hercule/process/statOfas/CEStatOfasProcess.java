@@ -9,6 +9,7 @@ import globaz.globall.db.BPreparedStatement;
 import globaz.globall.db.BProcess;
 import globaz.globall.db.GlobazJobQueue;
 import globaz.globall.util.JADate;
+import globaz.hercule.db.ICEControleEmployeur;
 import globaz.hercule.db.controleEmployeur.CEControleEmployeur;
 import globaz.hercule.db.controleEmployeur.CEControleEmployeurManager;
 import globaz.hercule.db.reviseur.CEReviseur;
@@ -163,7 +164,7 @@ public class CEStatOfasProcess extends BProcess {
             throws HerculeException, Exception {
         String categorieSalariale = CEControleEmployeurService.findCategorieMasse(getSession(), controlEmployeur
                 .getAffiliation().getAffilieNumero(), annee, annee, 0);
-        if (categorieSalariale.equals("1A") || categorieSalariale.equals("1B")) {
+        if (ICEControleEmployeur.CATEGORIE_MASSE_1.equals(categorieSalariale)) {
             categorieSalariale = CEStatOfasStructure.CATEGORIE_1;
         }
         return categorieSalariale;

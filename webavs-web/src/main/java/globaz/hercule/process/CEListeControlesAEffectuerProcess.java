@@ -67,6 +67,7 @@ public class CEListeControlesAEffectuerProcess extends BProcess implements FWVie
 
     @Override
     protected void _executeCleanUp() {
+        // Not implemented
     }
 
     @Override

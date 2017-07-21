@@ -1,3 +1,6 @@
+/*
+ * Globaz SA.
+ */
 package globaz.hercule.process.traitement;
 
 import globaz.framework.util.FWCurrency;
@@ -32,38 +35,26 @@ public class CERattrapageAnnuelProcess extends BProcess {
     private static final int NB_ANNEE_RECHERCHE_MASSE_SALARIALE = 3;
 
     private String annee;
-
-    private String anneePrecedente;
     private String collaborationC;
     private String collaborationM;
-
     private String collaborationTM;
 
-    private Map<String, CEMembre> membreGroupe;
-
-    /**
-     * Constructeur de CERattrapageAnnuelProcess
-     */
     public CERattrapageAnnuelProcess() {
         super();
     }
 
-    /**
-     * @see globaz.globall.db.BProcess#_executeCleanUp()
-     */
     @Override
     protected void _executeCleanUp() {
+        // Not implemented
     }
 
-    /**
-     * @see globaz.globall.db.BProcess#_executeProcess()
-     */
     @Override
     protected boolean _executeProcess() throws Exception {
 
         String numAffilieTraite = "";
+        String anneePrecedente;
         boolean status = true;
-        StringBuffer messageTransactionError = new StringBuffer();
+        StringBuilder messageTransactionError = new StringBuilder();
 
         try {
 
@@ -75,13 +66,6 @@ public class CERattrapageAnnuelProcess extends BProcess {
                     ICEControleEmployeur.COLLABORATION_TM))).intValue());
 
             anneePrecedente = CEUtils.getAnneePrecedente(getAnnee());
-            membreGroupe = CEControleEmployeurService.loadMapMembreGroupe(getSession());
-
-            // ****************************************
-            // Récupération des parametres pour le calcul de la période
-            // ****************************************
-            Map<String, String> params = CEControleEmployeurService.retrieveParamTableauPeriode(getSession(),
-                    getAnnee());
 
             // ****************************************
             // On fait la liste les employeurs actifs (affilié paritaire) pour
@@ -115,13 +99,12 @@ public class CERattrapageAnnuelProcess extends BProcess {
                 // ****************************************
                 // Recalcul de la note de collaboration
                 // ****************************************
-                String noteCollaboration = "";
                 Integer nbrPoints = null;
 
                 // Si pas d'attribution de point , on ne fait pas recalcul de
                 // note
                 if (!JadeStringUtil.isBlankOrZero(affControle.getIdAttributionPts())) {
-                    noteCollaboration = CEControleEmployeurService.reCalculNotesCollaboration(getSession(),
+                    String noteCollaboration = CEControleEmployeurService.reCalculNotesCollaboration(getSession(),
                             getTransaction(), affControle, getAnnee(), anneePrecedente, getCollaborationM(),
                             getCollaborationC(), getCollaborationTM());
 
@@ -143,21 +126,29 @@ public class CERattrapageAnnuelProcess extends BProcess {
                 // ****************************************
                 String anneeFinControle = null;
                 if (!JadeStringUtil.isEmpty(affControle.getDateFinControle())) {
-                    anneeFinControle = "" + CEUtils.stringDateToAnnee(affControle.getDateFinControle());
+                    anneeFinControle = Integer.toString(CEUtils.stringDateToAnnee(affControle.getDateFinControle()));
                 }
 
-                String categorie = CEControleEmployeurService.findCategorieMasse(getSession(),
+                double masseSalariale = CEControleEmployeurService.findMasseSalariale(getSession(),
                         affControle.getNumeroAffilie(), anneePrecedente, anneeFinControle,
                         NB_ANNEE_RECHERCHE_MASSE_SALARIALE);
+
+                String categorie = CEControleEmployeurService.findCategorie(masseSalariale);
 
                 // 3. Pour chaque affilié de la requete en 1., on regarde sa
                 // masse salariale pour voir si il n'a pas changé de catégorie
 
                 // ****************************************
+                // Récupération des parametres pour le calcul de la période
+                // ****************************************
+                Map<String, String> params = CEControleEmployeurService.retrieveParamTableauPeriode(getSession(),
+                        getAnnee());
+
+                // ****************************************
                 // Recalcul de la période de couverture
                 // ****************************************
                 String anneeCouverture = CEControleEmployeurService.calculCouverture(getSession(), getTransaction(),
-                        affControle, nbrPoints, categorie, getAnnee(), params,
+                        affControle, nbrPoints, categorie, masseSalariale, getAnnee(), params,
                         CEUtils.transformeStringToInt(affControle.getParticulariteDerogation()));
 
                 // mise a jour de la couverture si changé
@@ -173,10 +164,10 @@ public class CERattrapageAnnuelProcess extends BProcess {
                 // un groupe
                 // Et si la catégorie est supérieur a 0 ou 1
                 // ****************************************
+                Map<String, CEMembre> membreGroupe = CEControleEmployeurService.loadMapMembreGroupe(getSession());
                 if (membreGroupe.containsKey(affControle.getIdAffilie())
                         && !ICEControleEmployeur.CATEGORIE_MASSE_0.equals(categorie)
-                        && !ICEControleEmployeur.CATEGORIE_MASSE_1A.equals(categorie)
-                        && !ICEControleEmployeur.CATEGORIE_MASSE_1B.equals(categorie)) {
+                        && !ICEControleEmployeur.CATEGORIE_MASSE_1.equals(categorie)) {
                     CEControleEmployeurService.updateDateCouvertureGroupe(getSession(), getTransaction(),
                             membreGroupe.get(affControle.getIdAffilie()), anneeCouverture);
                 }
@@ -225,9 +216,6 @@ public class CERattrapageAnnuelProcess extends BProcess {
         return status;
     }
 
-    /**
-     * @see globaz.globall.db.BProcess#_validate()
-     */
     @Override
     protected void _validate() throws Exception {
 
@@ -240,9 +228,6 @@ public class CERattrapageAnnuelProcess extends BProcess {
         }
     }
 
-    /**
-     * Ajoute des informations dans l'email.
-     */
     private void addMailInformations(int size) throws Exception {
         getMemoryLog().logMessage(getSession().getLabel("TOTAL_AFFILIE") + size, FWMessage.INFORMATION,
                 getClass().getName());
@@ -256,10 +241,6 @@ public class CERattrapageAnnuelProcess extends BProcess {
         return collaborationC;
     }
 
-    // *******************************************************
-    // Getter
-    // *******************************************************
-
     public String getCollaborationM() {
         return collaborationM;
     }
@@ -268,9 +249,6 @@ public class CERattrapageAnnuelProcess extends BProcess {
         return collaborationTM;
     }
 
-    /**
-     * @see globaz.globall.db.BProcess#getEMailObject()
-     */
     @Override
     protected String getEMailObject() {
         if (isOnError() || getSession().hasErrors() || isAborted()) {
@@ -280,17 +258,10 @@ public class CERattrapageAnnuelProcess extends BProcess {
         }
     }
 
-    /**
-     * @see globaz.globall.db.BProcess#jobQueue()
-     */
     @Override
     public GlobazJobQueue jobQueue() {
         return GlobazJobQueue.UPDATE_LONG;
     }
-
-    // *******************************************************
-    // Setter
-    // *******************************************************
 
     public void setAnnee(String annee) {
         this.annee = annee;

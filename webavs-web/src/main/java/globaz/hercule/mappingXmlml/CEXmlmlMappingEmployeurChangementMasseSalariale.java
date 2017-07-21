@@ -28,9 +28,9 @@ public class CEXmlmlMappingEmployeurChangementMasseSalariale {
      */
     private static void loadDetail(final CommonExcelmlContainer container,
             final CEEmployeurChangementMasseSalariale entity, final CEEmployeurChangementMasseSalarialeProcess process)
-            throws HerculeException, Exception {
-        float masseSalariale = Float.valueOf(entity.getMasseSalariale()).floatValue();
-        float ancienneMasseSalariale = Float.valueOf(entity.getAncienneMasseSalariale()).floatValue();
+            throws Exception {
+        double masseSalariale = Double.parseDouble(entity.getMasseSalariale());
+        double ancienneMasseSalariale = Double.parseDouble(entity.getAncienneMasseSalariale());
 
         if (!CEControleEmployeurService.findCategorie(masseSalariale).equalsIgnoreCase(
                 CEControleEmployeurService.findCategorie(ancienneMasseSalariale))) {
@@ -55,7 +55,6 @@ public class CEXmlmlMappingEmployeurChangementMasseSalariale {
         }
     }
 
-    // TODO SCO : A Passer en multilangue
     /**
      * Methode permettant de remplir le header
      * 

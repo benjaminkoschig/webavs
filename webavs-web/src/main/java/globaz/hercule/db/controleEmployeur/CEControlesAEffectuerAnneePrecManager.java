@@ -21,14 +21,13 @@ public class CEControlesAEffectuerAnneePrecManager extends BManager {
 
     private String forAnnee = "";
     private String forAnneeCptr = "";
-    private String idRubriques = "";
 
     @Override
     protected String _getFields(final BStatement statement) {
 
-        idRubriques = CEUtils.getIdRubrique(getSession());
+        String idRubriques = CEUtils.getIdRubrique(getSession());
 
-        StringBuffer sqlSelect = new StringBuffer();
+        StringBuilder sqlSelect = new StringBuilder();
 
         sqlSelect
                 .append("couverture.CEICOU, cont.mdicon, aff.malnaf, aff.maiaff, tiers.htitie,TIERS.HTLDE1,TIERS.HTLDE2,groupe.celgrp,aff.MADDEB,aff.madfin,aff.MATBRA,aff.MATCDN,");
@@ -77,7 +76,7 @@ public class CEControlesAEffectuerAnneePrecManager extends BManager {
     protected String _getFrom(final BStatement statement) {
         String idRole = CEAffiliationService.getRoleForAffilieParitaire(getSession());
 
-        StringBuffer sqlFrom = new StringBuffer();
+        StringBuilder sqlFrom = new StringBuilder();
 
         sqlFrom.append(_getCollection() + "afaffip aff ");
         sqlFrom.append(" left outer join " + _getCollection()
@@ -103,7 +102,7 @@ public class CEControlesAEffectuerAnneePrecManager extends BManager {
     @Override
     protected String _getWhere(final BStatement statement) {
 
-        StringBuffer sqlWhere = new StringBuffer();
+        StringBuilder sqlWhere = new StringBuilder();
 
         sqlWhere.append(" CONT.MDDPRE < " + getForAnnee() + "0101 ");
         sqlWhere.append(" AND CONT.MDBFDR = '1'");

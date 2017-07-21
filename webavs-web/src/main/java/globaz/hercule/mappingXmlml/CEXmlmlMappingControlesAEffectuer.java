@@ -371,7 +371,7 @@ public class CEXmlmlMappingControlesAEffectuer {
         container.put(ICEListeColumns.CI_1, entity.getNbCI1());
 
         if (!JadeStringUtil.isEmpty(entity.getMasse1())) {
-            float masse = Float.valueOf(entity.getMasse1()).floatValue();
+            double masse = Double.parseDouble(entity.getMasse1());
             container.put(ICEListeColumns.CVS, CEControleEmployeurService.findCategorie(masse));
         } else {
             container.put(ICEListeColumns.CVS, "0");

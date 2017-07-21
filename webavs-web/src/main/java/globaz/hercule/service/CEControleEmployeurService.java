@@ -100,8 +100,9 @@ public class CEControleEmployeurService {
      *            Les parametres du tableau du calcul de la période de couverture
      */
     public static String calculCouverture(final BSession session, final BTransaction transaction,
-            final CEAffilieControle affControle, final Integer nbrPoints, final String categorie, final String annee,
-            final Map<String, String> params, final int periode1Derogation) throws HerculeException, JAException {
+            final CEAffilieControle affControle, final Integer nbrPoints, final String categorie,
+            final double masseSalariale, final String annee, final Map<String, String> params,
+            final int periode1Derogation) throws HerculeException, JAException {
 
         if (JadeStringUtil.isEmpty(categorie)) {
             throw new HerculeException("Unabled to calculate the couverture. categorie is null or empty");
@@ -115,12 +116,11 @@ public class CEControleEmployeurService {
             throw new HerculeException("Unabled to calculate the couverture. session is null");
         }
 
-        String dateCouverture = null;
+        String dateCouverture;
 
         if (!ICEControleEmployeur.CATEGORIE_MASSE_0.equals(categorie)
-                && !ICEControleEmployeur.CATEGORIE_MASSE_1A.equals(categorie)
-                && !ICEControleEmployeur.CATEGORIE_MASSE_1B.equals(categorie)) {
-            // Si masse salariale != 0 et != 1A et != 1B
+                && !ICEControleEmployeur.CATEGORIE_MASSE_1.equals(categorie)) {
+            // Si masse salariale != 0 et != 1
             // => évaluation existante ?
             if (nbrPoints != null) {
                 // OUI, on lance le recalcul suivant le tableau
@@ -130,8 +130,8 @@ public class CEControleEmployeurService {
                             + affControle.getIdAffilie() + " have no ending date de controle");
                 }
 
-                int nbrAnnee = CEControleEmployeurService.calculPeriodeCouverture(session, nbrPoints, categorie,
-                        params, periode1Derogation);
+                int nbrAnnee = CEControleEmployeurService.calculPeriodeCouverture(nbrPoints, categorie, params,
+                        periode1Derogation);
                 dateCouverture = CEUtils.addAnneeToDate(affControle.getDateFinControle(), nbrAnnee);
 
                 dateCouverture = CEControleEmployeurService.regleGestionAnneeCouverture(annee, dateCouverture);
@@ -158,9 +158,8 @@ public class CEControleEmployeurService {
                 // affControle.getAnneCouverture()
                 dateCouverture = affControle.getAnneCouverture();
             } else {
-                // NON => masse salariale == 0 ou == 1A ?
-                if (ICEControleEmployeur.CATEGORIE_MASSE_0.equals(categorie)
-                        || ICEControleEmployeur.CATEGORIE_MASSE_1A.equals(categorie)) {
+                // NON => masseSalriale < 100000
+                if (masseSalariale < 100000.00) {
 
                     if (JadeStringUtil.isEmpty(affControle.getDateDebutAffiliation())) {
                         throw new HerculeException("Unabled to calculate the couverture. The affilie id : "
@@ -172,7 +171,7 @@ public class CEControleEmployeurService {
                     int anneCalcule = CEUtils.stringDateToAnnee(affControle.getDateDebutAffiliation()) + 3;
 
                     if (anneCalcule > Integer.parseInt(annee)) {
-                        dateCouverture = "" + anneCalcule;
+                        dateCouverture = Integer.toString(anneCalcule);
                     } else {
                         dateCouverture = annee;
                     }
@@ -184,7 +183,7 @@ public class CEControleEmployeurService {
 
                             CEControleEmployeurService.createControle(session, transaction, affControle.getIdAffilie(),
                                     affControle.getNumeroAffilie(), affControle.getDateDebutAffiliation(), annee);
-                            dateCouverture = "" + (CEUtils.stringDateToAnnee(annee) + 4);
+                            dateCouverture = Integer.toString(CEUtils.stringDateToAnnee(annee) + 4);
                         } else {
                             dateCouverture = annee;
                         }
@@ -234,8 +233,7 @@ public class CEControleEmployeurService {
         String dateCouverture = null;
 
         if (!ICEControleEmployeur.CATEGORIE_MASSE_0.equals(categorie)
-                && !ICEControleEmployeur.CATEGORIE_MASSE_1A.equals(categorie)
-                && !ICEControleEmployeur.CATEGORIE_MASSE_1B.equals(categorie)) {
+                && !ICEControleEmployeur.CATEGORIE_MASSE_1.equals(categorie)) {
             // Si masse salariale != 0 et != 1A et != 1B
             // => évaluation existante ?
             if (nbrPoints != null) {
@@ -246,8 +244,8 @@ public class CEControleEmployeurService {
                             + affControle.getIdAffilie() + " have no ending date de controle");
                 }
 
-                int nbrAnnee = CEControleEmployeurService.calculPeriodeCouverture(session, nbrPoints, categorie,
-                        params, periode1Derogation);
+                int nbrAnnee = CEControleEmployeurService.calculPeriodeCouverture(nbrPoints, categorie, params,
+                        periode1Derogation);
                 dateCouverture = CEUtils.addAnneeToDate(affControle.getDateFinControle(), nbrAnnee);
 
                 dateCouverture = CEControleEmployeurService.regleGestionAnneeCouverture(annee, dateCouverture);
@@ -322,8 +320,7 @@ public class CEControleEmployeurService {
         String dateCouverture = null;
 
         if (!ICEControleEmployeur.CATEGORIE_MASSE_0.equals(categorie)
-                && !ICEControleEmployeur.CATEGORIE_MASSE_1A.equals(categorie)
-                && !ICEControleEmployeur.CATEGORIE_MASSE_1B.equals(categorie)) {
+                && !ICEControleEmployeur.CATEGORIE_MASSE_1.equals(categorie)) {
             // Si masse salariale != 0 et != 1A et != 1B
             // => évaluation existante ?
             if (nbrPoints != null) {
@@ -334,8 +331,8 @@ public class CEControleEmployeurService {
                             + affControle.getIdAffilie() + " have no date de fin de controle");
                 }
 
-                int nbrAnnee = CEControleEmployeurService.calculPeriodeCouverture(session, nbrPoints, categorie,
-                        params, periode1Derogation);
+                int nbrAnnee = CEControleEmployeurService.calculPeriodeCouverture(nbrPoints, categorie, params,
+                        periode1Derogation);
                 dateCouverture = CEUtils.addAnneeToDate(affControle.getDateFinControle(), nbrAnnee);
 
                 dateCouverture = CEControleEmployeurService.regleGestionAnneeCouverture(annee, dateCouverture);
@@ -505,7 +502,7 @@ public class CEControleEmployeurService {
         mgrDS.setForAnneeFin(annee);
         mgrDS.setLikeNumAffilie(affControle.getNumeroAffilie());
         mgrDS.setIsDeclarationSalaireOrTaxation(Boolean.FALSE);
-        mgrDS.find(transaction);
+        mgrDS.find(transaction, BManager.SIZE_USEDEFAULT);
 
         // si une taxation existe, la note est maximale, on retourne donc cette
         // note
@@ -527,7 +524,7 @@ public class CEControleEmployeurService {
      *            La catégorie de masse salariale (0, 1A, 1B, 2, ....)
      * @return
      */
-    public static int calculPeriodeCouverture(final BSession session, final Integer nbrPoints, final String categorie,
+    public static int calculPeriodeCouverture(final Integer nbrPoints, final String categorie,
             final Map<String, String> params, final int periode1Derogation) {
 
         int periode1 = (new FWCurrency(params.get(ICEControleEmployeur.PERIODE1))).intValue();
@@ -542,7 +539,8 @@ public class CEControleEmployeurService {
         }
 
         if (ICEControleEmployeur.CATEGORIE_MASSE_2.equals(categorie)) {
-
+            // Si plus petit que 11 points, on ajoute le temps de la période 2
+            // Si plus petit que 6 points, on ajoute le temps de la période 3
             if (nbrPoints.intValue() < 11) {
                 periodeCouverture += periode2;
             }
@@ -551,19 +549,19 @@ public class CEControleEmployeurService {
             }
 
         } else if (ICEControleEmployeur.CATEGORIE_MASSE_3.equals(categorie)) {
-
-            if (nbrPoints.intValue() < 9) {
+            // Si plus petit que 7 points, on ajoute le temps de la période 2
+            // Si plus petit que 3 points, on ajoute le temps de la période 3
+            if (nbrPoints.intValue() < 7) {
                 periodeCouverture += periode2;
             }
-            if (nbrPoints.intValue() < 4) {
+            if (nbrPoints.intValue() < 3) {
                 periodeCouverture += periode3;
             }
 
         } else if (ICEControleEmployeur.CATEGORIE_MASSE_4.equals(categorie)) {
+            // Dans tous les cas, on contrôle suivant la période 1
+            periodeCouverture = periode1;
 
-            if (nbrPoints.intValue() < 6) {
-                periodeCouverture += periode2;
-            }
         }
 
         return periodeCouverture;
@@ -707,7 +705,7 @@ public class CEControleEmployeurService {
         manager.setIsActif(Boolean.TRUE);
 
         try {
-            manager.find();
+            manager.find(BManager.SIZE_USEDEFAULT);
         } catch (Exception e) {
             throw new HerculeException("Unabled to find the couverture (for numAffiliation : " + numAffiliation + ")",
                     e);
@@ -732,80 +730,27 @@ public class CEControleEmployeurService {
         if (masseSalariale <= 0.0) {
             return ICEControleEmployeur.CATEGORIE_MASSE_0;
         } else if ((masseSalariale > 0.0) && (masseSalariale < ICEControleEmployeur.CATEGORIE_MASSE_PALIER_0)) {
+            // Masse comprise entre 0 et le palier 0
             return ICEControleEmployeur.CATEGORIE_MASSE_1;
         } else if ((masseSalariale >= ICEControleEmployeur.CATEGORIE_MASSE_PALIER_0)
                 && (masseSalariale < ICEControleEmployeur.CATEGORIE_MASSE_PALIER_I)) {
+            // Masse comprise entre le palier 0 (compris) et le palier 1
             return ICEControleEmployeur.CATEGORIE_MASSE_1;
         } else if ((masseSalariale >= ICEControleEmployeur.CATEGORIE_MASSE_PALIER_I)
                 && (masseSalariale < ICEControleEmployeur.CATEGORIE_MASSE_PALIER_II)) {
+            // Masse comprise entre le palier 1 (compris) et le palier 2
             return ICEControleEmployeur.CATEGORIE_MASSE_2;
         } else if ((masseSalariale >= ICEControleEmployeur.CATEGORIE_MASSE_PALIER_II)
                 && (masseSalariale < ICEControleEmployeur.CATEGORIE_MASSE_PALIER_III)) {
+            // Masse comprise entre le palier 2 (compris) et le palier 3
             return ICEControleEmployeur.CATEGORIE_MASSE_3;
         } else if (masseSalariale >= ICEControleEmployeur.CATEGORIE_MASSE_PALIER_III) {
+            // Masse plus grand ou égale au palier 4
             return ICEControleEmployeur.CATEGORIE_MASSE_4;
         } else {
             return "";
         }
-    }
 
-    /**
-     * Récupération de la catégorie salariale suivant la masse salariale
-     * 
-     * @param masseSalariale
-     * @return
-     */
-    public static String findCategorie(final float masseSalariale) {
-        // Retour de la catégorie de la masse salariale
-        if (masseSalariale <= 0.0) {
-            return ICEControleEmployeur.CATEGORIE_MASSE_0;
-        } else if ((masseSalariale > 0.0) && (masseSalariale < ICEControleEmployeur.CATEGORIE_MASSE_PALIER_0)) {
-            return ICEControleEmployeur.CATEGORIE_MASSE_1;
-        } else if ((masseSalariale >= ICEControleEmployeur.CATEGORIE_MASSE_PALIER_0)
-                && (masseSalariale < ICEControleEmployeur.CATEGORIE_MASSE_PALIER_I)) {
-            return ICEControleEmployeur.CATEGORIE_MASSE_1;
-        } else if ((masseSalariale >= ICEControleEmployeur.CATEGORIE_MASSE_PALIER_I)
-                && (masseSalariale < ICEControleEmployeur.CATEGORIE_MASSE_PALIER_II)) {
-            return ICEControleEmployeur.CATEGORIE_MASSE_2;
-        } else if ((masseSalariale >= ICEControleEmployeur.CATEGORIE_MASSE_PALIER_II)
-                && (masseSalariale < ICEControleEmployeur.CATEGORIE_MASSE_PALIER_III)) {
-            return ICEControleEmployeur.CATEGORIE_MASSE_3;
-        } else if (masseSalariale >= ICEControleEmployeur.CATEGORIE_MASSE_PALIER_III) {
-            return ICEControleEmployeur.CATEGORIE_MASSE_4;
-        } else {
-            return "";
-        }
-    }
-
-    /**
-     * Récupération de la catégorie salariale suivant la masse salariale
-     * 
-     * @param masseSalariale
-     * @return
-     */
-    public static String findCategorieDetaillee(final double masseSalariale) {
-        // Retour de la catégorie de la masse salariale
-        if (masseSalariale == 0) {
-            return ICEControleEmployeur.CATEGORIE_MASSE_0;
-        } else if ((masseSalariale > 0) && (masseSalariale < ICEControleEmployeur.CATEGORIE_MASSE_PALIER_0)) {
-            return ICEControleEmployeur.CATEGORIE_MASSE_1A; // cette catégorie
-            // est détaillée en
-            // 2 partie, 1a et
-            // 1b
-        } else if ((masseSalariale >= ICEControleEmployeur.CATEGORIE_MASSE_PALIER_0)
-                && (masseSalariale < ICEControleEmployeur.CATEGORIE_MASSE_PALIER_I)) {
-            return ICEControleEmployeur.CATEGORIE_MASSE_1B;
-        } else if ((masseSalariale >= ICEControleEmployeur.CATEGORIE_MASSE_PALIER_I)
-                && (masseSalariale < ICEControleEmployeur.CATEGORIE_MASSE_PALIER_II)) {
-            return ICEControleEmployeur.CATEGORIE_MASSE_2;
-        } else if ((masseSalariale >= ICEControleEmployeur.CATEGORIE_MASSE_PALIER_II)
-                && (masseSalariale < ICEControleEmployeur.CATEGORIE_MASSE_PALIER_III)) {
-            return ICEControleEmployeur.CATEGORIE_MASSE_3;
-        } else if (masseSalariale >= ICEControleEmployeur.CATEGORIE_MASSE_PALIER_III) {
-            return ICEControleEmployeur.CATEGORIE_MASSE_4;
-        }
-
-        return ICEControleEmployeur.CATEGORIE_MASSE_0;
     }
 
     public static String findCategorieMasseForGenerationSuivi(final BSession session, final String numeroAffilie,
@@ -854,7 +799,7 @@ public class CEControleEmployeurService {
         }
 
         // Retour de la catégorie de la masse salariale
-        return CEControleEmployeurService.findCategorieDetaillee(masseSalariale);
+        return CEControleEmployeurService.findCategorie(masseSalariale);
     }
 
     /**
@@ -872,6 +817,16 @@ public class CEControleEmployeurService {
      */
     public static String findCategorieMasse(final BSession session, final String numeroAffilie, final String annee,
             final String anneFinControle, final int anneeEnArriere) throws HerculeException {
+
+        double masseSalariale = findMasseSalariale(session, numeroAffilie, annee, anneFinControle, anneeEnArriere);
+
+        // Retour de la catégorie de la masse salariale
+        return CEControleEmployeurService.findCategorie(masseSalariale);
+    }
+
+    public static double findMasseSalariale(final BSession session, final String numeroAffilie, final String annee,
+            final String anneFinControle, final int anneeEnArriere) throws HerculeException {
+
         // SI null ou exception, on considere que la masse salariale vaut 0
 
         if (JadeStringUtil.isEmpty(numeroAffilie)) {
@@ -887,19 +842,19 @@ public class CEControleEmployeurService {
         }
 
         double masseSalariale = 0;
-        double masseSalarialeRecherche = 0;
-        int anneeDeDepart = 0;
-        int int_annee = CEUtils.transformeStringToInt(annee);
+        double masseSalarialeRecherche;
+        int anneeDeDepart;
+        int intAnnee = CEUtils.transformeStringToInt(annee);
 
         // On recherche la masse la plus élevé depuis la fin de controle ou
         // depuis les 4 dernieres années
         if (!JadeStringUtil.isIntegerEmpty(anneFinControle)) {
             anneeDeDepart = CEUtils.transformeStringToInt(anneFinControle);
         } else {
-            anneeDeDepart = int_annee - anneeEnArriere;
+            anneeDeDepart = intAnnee - anneeEnArriere;
         }
 
-        for (int i = 0; i <= (int_annee - anneeDeDepart); i++) {
+        for (int i = 0; i <= (intAnnee - anneeDeDepart); i++) {
 
             int anneeDeRecherche = anneeDeDepart + i;
 
@@ -911,8 +866,7 @@ public class CEControleEmployeurService {
             }
         }
 
-        // Retour de la catégorie de la masse salariale
-        return CEControleEmployeurService.findCategorieDetaillee(masseSalariale);
+        return masseSalariale;
     }
 
     /**
@@ -984,7 +938,7 @@ public class CEControleEmployeurService {
         manager.setForIdAffiliation(idAffilie);
 
         try {
-            manager.find(transaction);
+            manager.find(transaction, BManager.SIZE_USEDEFAULT);
 
             if (!manager.isEmpty()) {
                 membre = (CEMembreGroupe) manager.getFirstEntity();
@@ -1017,7 +971,7 @@ public class CEControleEmployeurService {
         manager.setIsActif(Boolean.TRUE);
 
         try {
-            manager.find();
+            manager.find(BManager.SIZE_USEDEFAULT);
         } catch (Exception e) {
             throw new HerculeException("Unabled to find the couverture (for numAffiliation : " + numAffiliation + ")",
                     e);
@@ -1058,7 +1012,7 @@ public class CEControleEmployeurService {
         manager.setForIdAffiliation(idAffilie);
 
         try {
-            manager.find(transaction);
+            manager.find(transaction, BManager.SIZE_USEDEFAULT);
 
             if (!manager.isEmpty()) {
                 CEMembre membre = (CEMembre) manager.getFirstEntity();
@@ -1136,7 +1090,7 @@ public class CEControleEmployeurService {
         manager.setForNumAffilie(numAffilie);
 
         try {
-            manager.find();
+            manager.find(BManager.SIZE_USEDEFAULT);
 
             if (manager.size() >= 1) {
                 return true;
@@ -1262,7 +1216,7 @@ public class CEControleEmployeurService {
         contMana.setForNotId(idControle);
 
         try {
-            contMana.find(transaction);
+            contMana.find(transaction, BManager.SIZE_NOLIMIT);
 
             for (int i = 0; i < contMana.size(); i++) {
 
@@ -1454,14 +1408,14 @@ public class CEControleEmployeurService {
             CEMembreManager membreManager = new CEMembreManager();
             membreManager.setSession(session);
             membreManager.setForIdAffiliation(idAffiliation);
-            membreManager.find();
+            membreManager.find(BManager.SIZE_USEDEFAULT);
 
             CEMembre membre = (CEMembre) membreManager.getFirstEntity();
 
             CEGroupeManager groupeManager = new CEGroupeManager();
             groupeManager.setSession(session);
             groupeManager.setForIdGroupe(membre.getIdGroupe());
-            groupeManager.find();
+            groupeManager.find(BManager.SIZE_USEDEFAULT);
 
             CEGroupe groupe = (CEGroupe) groupeManager.getFirstEntity();
             anneeCouverture = groupe.getAnneeCouvertureMinimal();
@@ -1488,7 +1442,7 @@ public class CEControleEmployeurService {
             CEGroupeManager manager = new CEGroupeManager();
             manager.setSession(session);
             manager.setForLibelle(forLibelle);
-            manager.find();
+            manager.find(BManager.SIZE_USEDEFAULT);
 
             if (!manager.isEmpty()) {
                 CEGroupe groupe = (CEGroupe) manager.getFirstEntity();
@@ -1594,7 +1548,7 @@ public class CEControleEmployeurService {
         params.setIdCleDiffere(ICEControleEmployeur.PERIODE1);
 
         try {
-            params.find();
+            params.find(BManager.SIZE_USEDEFAULT);
         } catch (Exception e) {
             throw new HerculeException("Technical exception, unabled to retrieve parameter of tableau periode (annee :"
                     + annee, e);
@@ -1610,7 +1564,7 @@ public class CEControleEmployeurService {
         params.setIdCleDiffere(ICEControleEmployeur.PERIODE2);
 
         try {
-            params.find();
+            params.find(BManager.SIZE_USEDEFAULT);
         } catch (Exception e) {
             throw new HerculeException("Technical exception, unabled to retrieve parameter of tableau periode (annee :"
                     + annee, e);
@@ -1626,7 +1580,7 @@ public class CEControleEmployeurService {
         params.setIdCleDiffere(ICEControleEmployeur.PERIODE3);
 
         try {
-            params.find();
+            params.find(BManager.SIZE_USEDEFAULT);
         } catch (Exception e) {
             throw new HerculeException("Technical exception, unabled to retrieve parameter of tableau periode (annee :"
                     + annee, e);
@@ -1905,9 +1859,9 @@ public class CEControleEmployeurService {
             }
 
             int anneeCouvertureGroupe = CEUtils.transformeStringToInt(annee);
-            Object[] list_Obj = manager.getContainer().toArray();
+            Object[] listObj = manager.getContainer().toArray();
 
-            for (Object obj : list_Obj) {
+            for (Object obj : listObj) {
                 CEMembreCouverture mbr = (CEMembreCouverture) obj;
                 int anneeMembre = CEUtils.transformeStringToInt(mbr.getAnnee());
 
@@ -1960,7 +1914,7 @@ public class CEControleEmployeurService {
         manager.setForIdAttributionPts(idattributionPts);
 
         try {
-            manager.find(transaction);
+            manager.find(transaction, BManager.SIZE_USEDEFAULT);
 
             if (manager.size() == 1) {
 
@@ -2022,7 +1976,6 @@ public class CEControleEmployeurService {
      * Constructeur de CEControleEmployeurService
      */
     protected CEControleEmployeurService() {
-        throw new UnsupportedOperationException(); // prevents calls from
-        // subclass
+        throw new UnsupportedOperationException();
     }
 }

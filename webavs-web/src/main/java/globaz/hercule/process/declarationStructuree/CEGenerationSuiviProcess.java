@@ -145,8 +145,7 @@ public class CEGenerationSuiviProcess extends BProcess {
 
                     // Si la masse est différente de 0 ou I, on génère un début
                     // de suivi
-                    if (ICEControleEmployeur.CATEGORIE_MASSE_1A.equals(categorie)
-                            || ICEControleEmployeur.CATEGORIE_MASSE_1B.equals(categorie)
+                    if (ICEControleEmployeur.CATEGORIE_MASSE_1.equals(categorie)
                             || ICEControleEmployeur.CATEGORIE_MASSE_0.equals(categorie)) {
 
                         // On test si il n'existe pas déjà un début de suivi

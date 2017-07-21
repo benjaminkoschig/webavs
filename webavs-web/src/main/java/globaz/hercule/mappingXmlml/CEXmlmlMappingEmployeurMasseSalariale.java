@@ -61,8 +61,8 @@ public class CEXmlmlMappingEmployeurMasseSalariale {
         if (JadeStringUtil.isIntegerEmpty(entity.getCaisseAVS())) {
             xmlLine.setCaisseAvs(entity.getCaisseAVS());
         }
-        xmlLine.setCategorie(CEControleEmployeurService.findCategorie(Float.valueOf(
-                entity.getMasseSalarialeAnneeMoins1()).floatValue()));
+        xmlLine.setCategorie(CEControleEmployeurService.findCategorie(Double.parseDouble(entity
+                .getMasseSalarialeAnneeMoins1())));
 
         xmlLine.setCodeSuva(entity.getCodeSuva());
         xmlLine.setLibelle(entity.getLibelleSuva());
