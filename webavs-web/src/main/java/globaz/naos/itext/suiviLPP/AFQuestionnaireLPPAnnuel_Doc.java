@@ -52,9 +52,6 @@ public class AFQuestionnaireLPPAnnuel_Doc extends AFAbstractTiersDocument {
                         + AFApplication.DEFAULT_APPLICATION_NAOS_REP + "//" + modelPath));
             }
 
-            // Ajout du fichier d'extrait de salaire.
-            registerAttachedDocument(documentInfoListeExtraitDS, pathListeExtraitDS);
-
         } catch (Exception e) {
             JadeLogger.error(this, e);
         }
@@ -84,6 +81,8 @@ public class AFQuestionnaireLPPAnnuel_Doc extends AFAbstractTiersDocument {
     @Override
     protected void fillDocInfo() {
         getDocumentInfo().setDocumentTypeNumber("0108CAF");
+        getDocumentInfo().setPublishDocument(false);
+        getDocumentInfo().setArchiveDocument(true);
         super.fillDocInfo();
     }
 
@@ -165,16 +164,9 @@ public class AFQuestionnaireLPPAnnuel_Doc extends AFAbstractTiersDocument {
 
         pathListeExtraitDS = processListeExtraitDS.getPath();
         documentInfoListeExtraitDS = processListeExtraitDS.getDocumentInfoPdf();
-    }
 
-    @Override
-    public void afterExecuteReport() {
-        // Fusionne tous les documents en 1 seul document
-        try {
-            zipAttachedFiles(getDocumentInfo());
-        } catch (Exception e) {
-            JadeLogger.error(this, e);
-        }
+        // Ajout du fichier d'extrait de salaire.
+        registerAttachedDocument(documentInfoListeExtraitDS, pathListeExtraitDS);
     }
 
     private TIAdresseDataSource getAdresseFromItTiersEmployeur(BSession session, String typeAdresse, String idTiers,

@@ -87,6 +87,7 @@ public class AFControleLppAnnuelProcessTest {
         assertTrue(AFControleLppAnnuelProcess.testIsCouvert(2010, "", "", "", ""));
 
         assertTrue(AFControleLppAnnuelProcess.testIsCouvert(2010, "1", "12", "20100501", "20101231"));
+        assertFalse(AFControleLppAnnuelProcess.testIsCouvert(2010, "1", "12", "20100501", "20101130"));
 
     }
 }

@@ -3,6 +3,8 @@
  */
 package globaz.naos.process;
 
+import globaz.globall.api.BISession;
+import globaz.globall.api.GlobazSystem;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BProcess;
 import globaz.globall.db.BSession;
@@ -19,11 +21,15 @@ import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.client.zip.JadeZipUtil;
 import globaz.jade.common.Jade;
 import globaz.jade.fs.JadeFsFacade;
+import globaz.jade.job.message.JadeJobInfo;
 import globaz.jade.log.JadeLogger;
 import globaz.jade.publish.client.JadePublishDocument;
+import globaz.jade.publish.client.JadePublishServerFacade;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
+import globaz.jade.publish.message.JadePublishDocumentMessage;
 import globaz.leo.constantes.ILEConstantes;
 import globaz.leo.process.LEGenererEnvoi;
+import globaz.leo.process.LEGenererEtapesSuivantes;
 import globaz.lupus.db.data.LUProvenanceDataSource;
 import globaz.lupus.db.journalisation.LUJournalListViewBean;
 import globaz.lupus.db.journalisation.LUJournalViewBean;
@@ -52,6 +58,7 @@ import globaz.webavs.common.op.CommonExcelDocumentParser;
 import globaz.webavs.common.op.CommonExcelFilterNotSupportedException;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -183,6 +190,34 @@ public class AFControleLppAnnuelProcess extends BProcess {
                 creationListes();
             }
 
+            if (!isModeControleSimulation()) {
+                // Tout est ok, on lance l'execution de l'étape "Questionnaire"
+                LEGenererEtapesSuivantes etapes = new LEGenererEtapesSuivantes();
+                etapes.setSession(getSession());
+                etapes.setTransaction(getTransaction());
+
+                etapes.setSendMailToAffiliee(false);
+                etapes.setEMailAddress(getEMailAddress());
+
+                ArrayList<String> b = new ArrayList<String>();
+                b.add(ILEConstantes.CS_QUESTIONNAIRE_ANNUEL_LPP);
+                etapes.setCsFormule(b);
+
+                etapes.setDateImpression(new Date().getSwissValue());
+                etapes.setDatePriseEnCompte(new Date().getSwissValue());
+                etapes.setCategorie(ILEConstantes.CS_CATEGORIE_SUIVI_LPP_ANNUEL);
+                etapes.setSimulation(false);
+                etapes.setCommentaire("Génération par le contrôle annuel LPP");
+                etapes.setWantArchiveDocument(false);
+                etapes.executeProcess();
+
+                for (Iterator<JadePublishDocument> iter = etapes.getAttachedDocuments().iterator(); iter.hasNext();) {
+                    JadePublishDocument document = iter.next();
+                    JadeJobInfo attachedJob = JadePublishServerFacade.publishDocument(new JadePublishDocumentMessage(
+                            document));
+                }
+            }
+
         } catch (Exception e) {
 
             this._addError(getTransaction(), getSession().getLabel("EXECUTION_CONTROLE_LPP_ANNUEL_ERREUR"));
@@ -197,6 +232,23 @@ public class AFControleLppAnnuelProcess extends BProcess {
         }
 
         return true;
+    }
+
+    private BSession getSessionLeo() throws Exception {
+        BSession local = getSession();
+        BISession remoteSession = (BISession) local.getAttribute("sessionLeo");
+        if (remoteSession == null) {
+            // pas encore de session pour l'application demandé
+            remoteSession = GlobazSystem.getApplication("LEO").newSession(local);
+            local.setAttribute("sessionLeo", remoteSession);
+        }
+        if (!remoteSession.isConnected()) {
+            local.connectSession(remoteSession);
+        }
+        // vide le buffer d'erreur
+        remoteSession.getErrors();
+        return (BSession) remoteSession;
+
     }
 
     @Override
@@ -646,7 +698,7 @@ public class AFControleLppAnnuelProcess extends BProcess {
         gen.setCsDocument(ILEConstantes.CS_DEBUT_SUIVI_ANNUEL_LPP);
         gen.setParamEnvoiList(params);
         gen.setSendCompletionMail(false);
-        gen.setGenerateEtapeSuivante(Boolean.TRUE);
+        gen.setGenerateEtapeSuivante(Boolean.FALSE);
 
         gen.executeProcess();
     }

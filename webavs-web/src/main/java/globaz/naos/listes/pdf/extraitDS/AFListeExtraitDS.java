@@ -114,7 +114,8 @@ public class AFListeExtraitDS extends BProcess {
 
     private JadePublishDocumentInfo createDocInfo() throws Exception {
         JadePublishDocumentInfo documentInfo = createDocumentInfo();
-        documentInfo.setPublishDocument(true);
+        documentInfo.setPublishDocument(false);
+        documentInfo.setArchiveDocument(true);
         documentInfo.setDocumentTypeNumber(NUM_INFORMOM);
         documentInfo.setDocumentProperty("numero.affilie.formatte", employeur.getAffilieNumero());
         documentInfo.setDocumentProperty("annee", getAnnee());

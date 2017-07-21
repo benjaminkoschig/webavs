@@ -68,6 +68,7 @@ public class LEGenererEtapesSuivantes extends BProcess {
     private Map<String, String> mapNumerosAffilieMail = new HashMap<String, String>();
     private List<String> listEmailEtNumAffDesRappelsEnvoyes = new ArrayList<String>();
     private Collection<String> forNumerosAffilie = new ArrayList<String>();
+    private boolean wantArchiveDocument = true;
 
     @Override
     protected void _executeCleanUp() {
@@ -248,8 +249,10 @@ public class LEGenererEtapesSuivantes extends BProcess {
                     try {
                         JadePublishDocumentInfo docInfo = createDocumentInfo();
                         docInfo.setDocumentTypeNumber(retrieveDocumentTypeNumber());
+                        docInfo.setArchiveDocument(wantArchiveDocument);
 
                         this.mergePDF(docInfo, getSimulation(), Integer.parseInt(nbDocument), false, null);
+
                     } catch (Exception e) {
                         getMemoryLog().logMessage(e.getMessage(), FWMessage.FATAL,
                                 "globaz.leo.process.LEGenererEtapesSuivantes");
@@ -520,4 +523,9 @@ public class LEGenererEtapesSuivantes extends BProcess {
     public List<String> getListEmailEtNumAffDesRappelsEnvoyes() {
         return listEmailEtNumAffDesRappelsEnvoyes;
     }
+
+    public void setWantArchiveDocument(boolean wantArchiveDocument) {
+        this.wantArchiveDocument = wantArchiveDocument;
+    }
+
 }
