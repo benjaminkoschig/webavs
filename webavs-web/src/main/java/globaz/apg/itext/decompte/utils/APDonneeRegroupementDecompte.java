@@ -4,8 +4,10 @@ import globaz.apg.api.prestation.IAPRepartitionPaiements;
 import globaz.apg.db.droits.APSituationProfessionnelle;
 import globaz.apg.db.prestation.APRepartitionJointPrestation;
 import globaz.apg.enums.APTypeDePrestation;
+import globaz.jade.log.JadeLogger;
 import globaz.prestation.db.employeurs.PRDepartement;
 import globaz.prestation.tools.PRBlankBNumberFormater;
+import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,6 +40,7 @@ public class APDonneeRegroupementDecompte {
     private boolean isIndependant;
     private boolean isEmployeur;
     private boolean isModuleCompensationPorteEnCompteActif;
+    private String idAdressePaiement;
 
     /**
      * Mapping utilisé pour le regroupement des prestations Standard et ACM_NE
@@ -97,6 +100,9 @@ public class APDonneeRegroupementDecompte {
             key.append("-");
         }
 
+        key.append(idAdressePaiement);
+        key.append("-");
+
         switch (methodeRegroupement) {
             case SEPARE:
                 key.append(APDonneeRegroupementDecompte.regroupementSepare.get(typeDePrestation));
@@ -152,6 +158,20 @@ public class APDonneeRegroupementDecompte {
         this.departement = determinerDepartement(isPaiementEmployeur, situationProfessionnelle, departement);
 
         this.isModuleCompensationPorteEnCompteActif = isModuleCompensationPorteEnCompteActif;
+
+        TIAdressePaiementData adresse;
+        try {
+            adresse = repartitionJointPrestation.loadAdressePaiement(null);
+            if (adresse == null) {
+                idAdressePaiement = "";
+            } else {
+                idAdressePaiement = adresse.getIdAvoirPaiementUnique();
+            }
+        } catch (Exception e) {
+            idAdressePaiement = "";
+            JadeLogger.error(this, e);
+        }
+
     }
 
     /**
@@ -244,6 +264,10 @@ public class APDonneeRegroupementDecompte {
         return isPaiementEmployeur;
     }
 
+    public String getIdAdressePaiement() {
+        return idAdressePaiement;
+    }
+
     /**
      * @return the departement
      */
@@ -276,30 +300,7 @@ public class APDonneeRegroupementDecompte {
 
     public String genererCleDeTriDesPrestations(final APMethodeRegroupement methodeRegroupement) {
         final String noAffilieFormatte = PRBlankBNumberFormater.getEmptyNoAffilieFormatte();
-        // String noAvsFormatte = PRBlankBNumberFormater.getEmptyNssFormatte(this.getSession().getApplication());
-        //
-        // if (!JadeStringUtil.isIntegerEmpty(idAffilie)) {
-        // IPRAffilie affilie = PRAffiliationHelper.getEmployeurParIdAffilie(this.getSession(), this.getTransaction(),
-        // idAffilie, idTiers);
-        // if (affilie != null) {
-        // noAffilieFormatte = affilie.getNumAffilie();
-        // }
-        // }
-        //
-        // if (!JadeStringUtil.isIntegerEmpty(idTiers)) {
-        // PRTiersWrapper tierWrapper = PRTiersHelper.getTiersParId(this.getSession(), idTiers);
-        //
-        // if (tierWrapper == null) {
-        // tierWrapper = PRTiersHelper.getAdministrationParId(this.getSession(), idTiers);
-        // }
-        //
-        // if ((tierWrapper != null)
-        // && !JadeStringUtil.isEmpty(tierWrapper.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL))) {
-        // noAvsFormatte = tierWrapper.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL);
-        // }
-        // }
-        // TODO
-        return noAffilieFormatte + "-"; // + noAvsFormatte;
+        return noAffilieFormatte + "-";
     }
 
     public APSituationProfessionnelle getSituationProfessionnelle() {

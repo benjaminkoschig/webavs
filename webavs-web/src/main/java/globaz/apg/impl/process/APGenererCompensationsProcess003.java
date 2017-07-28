@@ -304,7 +304,7 @@ public class APGenererCompensationsProcess003 extends BProcess implements IAPGen
 
                     Key key = new Key(repartitionPaiementsJointEmployeur.getIdTiers(),
                             repartitionPaiementsJointEmployeur.getIdAffilie(), "0",
-                            repartitionPaiementsJointEmployeur.getIdParticularite(), genre, false, false);
+                            repartitionPaiementsJointEmployeur.getIdParticularite(), genre, false, false, "");
 
                     key.idDomaineAdressePaiement = repartitionPaiementsJointEmployeur.getIdDomaineAdressePaiement();
                     key.idTiersAdressePaiement = repartitionPaiementsJointEmployeur.getIdTiersAdressePaiement();

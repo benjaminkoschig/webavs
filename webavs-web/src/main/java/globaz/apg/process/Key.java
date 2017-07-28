@@ -22,18 +22,13 @@ package globaz.apg.process;
 public final class Key implements Comparable {
 
     public String genrePrestation = "";
-
     public String idAffilie = "";
-
     public String idExtra1 = "";
-
     public String idExtra2 = "";
-
     public String idTiers = "";
-
     public Boolean isIndependant = false;
-
     public Boolean isEmployeur = false;
+    public String idAdressePaiement = "";
 
     /**
      * non pris en compte pour le regroupement, sert à retrouver l'idAdressePaiement
@@ -45,8 +40,8 @@ public final class Key implements Comparable {
      */
     public String idTiersAdressePaiement = "";
 
-    public Key(String idTiers, String idAffilie, String idExtra1, String idExtra2,
-            String genrePrestation, boolean isEmployeur, boolean isIndependant) {
+    public Key(String idTiers, String idAffilie, String idExtra1, String idExtra2, String genrePrestation,
+            boolean isEmployeur, boolean isIndependant, String idAdressePaiement) {
         this.idTiers = idTiers;
         this.idAffilie = idAffilie;
         this.idExtra1 = idExtra1;
@@ -54,6 +49,7 @@ public final class Key implements Comparable {
         this.genrePrestation = genrePrestation;
         this.isEmployeur = isEmployeur;
         this.isIndependant = isIndependant;
+        this.idAdressePaiement = idAdressePaiement;
     }
 
     @Override
@@ -74,6 +70,8 @@ public final class Key implements Comparable {
             return isEmployeur.compareTo(key.isEmployeur);
         } else if (isIndependant.compareTo(key.isIndependant) != 0) {
             return isIndependant.compareTo(key.isIndependant);
+        } else if (idAdressePaiement.compareTo(key.idAdressePaiement) != 0) {
+            return idAdressePaiement.compareTo(key.idAdressePaiement);
         } else {
             return 0;
         }
@@ -89,11 +87,14 @@ public final class Key implements Comparable {
 
         return ((key.idTiers.equals(idTiers)) && (key.idAffilie.equals(idAffilie)) && (key.idExtra1.equals(idExtra1))
                 && (key.idExtra2.equals(idExtra2)) && key.genrePrestation.equals(genrePrestation))
-                && key.isEmployeur.equals(isEmployeur) && key.isIndependant.equals(isIndependant);
+                && key.isEmployeur.equals(isEmployeur)
+                && key.isIndependant.equals(isIndependant)
+                && key.idAdressePaiement.equals(idAdressePaiement);
     }
 
     @Override
     public int hashCode() {
-        return (idTiers + idAffilie + idExtra1 + idExtra2 + genrePrestation + isEmployeur + isIndependant).hashCode();
+        return (idTiers + idAffilie + idExtra1 + idExtra2 + genrePrestation + isEmployeur + isIndependant + idAdressePaiement)
+                .hashCode();
     }
 }

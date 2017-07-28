@@ -2604,14 +2604,14 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
             if (idAssureDeBase.equals(idTiers)) {
                 // choix de la section
                 repartition.section = getSection(idTiers, idAffilie, isRestitution);
-                key = new Key(idTiers, idAffilie, "0", "0", "0", false, false);
+                key = new Key(idTiers, idAffilie, "0", "0", "0", false, false, repartition.idAdressePaiement);
 
             }
             // Cas ou le bénéficiaire est un affilié
             else if (!JadeStringUtil.isIntegerEmpty(idAffilie)) {
                 // choix de la section
                 repartition.section = getSection(idTiers, idAffilie, isRestitution);
-                key = new Key(idTiers, idAffilie, "0", "0", "0", false, false);
+                key = new Key(idTiers, idAffilie, "0", "0", "0", false, false, repartition.idAdressePaiement);
 
             }
             // Cas ou le bénéficiaire est un employeur non affilié,
@@ -2623,7 +2623,7 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
             else {
                 // choix de la section
                 repartition.section = getSection(idAssureDeBase, idAffilie, isRestitution);
-                key = new Key(idAssureDeBase, "0", idTiers, "0", "0", false, false);
+                key = new Key(idAssureDeBase, "0", idTiers, "0", "0", false, false, repartition.idAdressePaiement);
             }
 
             if (repartitions.containsKey(key)) {
