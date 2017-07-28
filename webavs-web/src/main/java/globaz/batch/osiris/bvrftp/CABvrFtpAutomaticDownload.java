@@ -71,7 +71,7 @@ public class CABvrFtpAutomaticDownload extends BProcess {
         processBvr.setLibelle(session.getLabel("BVRFTP_AUTO_DOWNLOAD_LIBELLE") + " " + dateValeur.toStr("."));
 
         processBvr.setFileName(bvrFile.getName());
-        processBvr.setRetrieveBvrFromDataBase(false);
+        processBvr.setRetrieveFromDataBase(false);
 
         processBvr.executeProcess();
 

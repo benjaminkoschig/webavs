@@ -17,9 +17,9 @@ import org.slf4j.LoggerFactory;
  * @author cel
  * 
  */
-public class CAProcessFormatOrdreSEPALite extends CAProcessFormatOrdreSEPA {
+public class CAFormatVersementISOLite extends CAFormatVersementISO {
 
-    private final static Logger logger = LoggerFactory.getLogger(CAProcessFormatOrdreSEPALite.class);
+    private final static Logger logger = LoggerFactory.getLogger(CAFormatVersementISOLite.class);
 
     @Override
     public void executeOrdreVersement(CAOrdreGroupe og, CAProcessOrdre context) throws Exception {

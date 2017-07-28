@@ -16,6 +16,7 @@ public class CAOrganeExecutionManager extends BManager implements Serializable {
     private String fromNom = new String();
     private boolean forIdTypeTraitementOG = false;
     private boolean typeBVRCAMT054Only = false;
+    private boolean typeLSVCAMT054Only = false;
 
     /**
      * retourne la clause FROM de la requete SQL (la table)
@@ -81,6 +82,14 @@ public class CAOrganeExecutionManager extends BManager implements Serializable {
                 sqlWhere += " AND ";
             }
             sqlWhere += "IDTYPETRAITEMENTBV IN (" + APIOrganeExecution.BVR_CAMT054 + ")";
+        }
+
+        if (isTypeLSVCAMT054Only()) {
+            if (sqlWhere.length() != 0) {
+                sqlWhere += " AND ";
+            }
+            sqlWhere += "IDTYPETRAITEMENTLS IN (" + APIOrganeExecution.LSV_CAMT054_CHDD + ", "
+                    + APIOrganeExecution.LSV_CAMT054_CHTA + ")";
         }
 
         return sqlWhere;
@@ -180,5 +189,13 @@ public class CAOrganeExecutionManager extends BManager implements Serializable {
      */
     public void setTypeBVRCAMT054Only(boolean typeBVRCAMT054Only) {
         this.typeBVRCAMT054Only = typeBVRCAMT054Only;
+    }
+
+    public boolean isTypeLSVCAMT054Only() {
+        return typeLSVCAMT054Only;
+    }
+
+    public void setTypeLSVCAMT054Only(boolean typeLSVCAMT054Only) {
+        this.typeLSVCAMT054Only = typeLSVCAMT054Only;
     }
 }

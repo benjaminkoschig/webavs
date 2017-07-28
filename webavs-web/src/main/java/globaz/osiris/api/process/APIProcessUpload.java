@@ -1,7 +1,9 @@
 package globaz.osiris.api.process;
 
 import globaz.framework.bean.FWViewBeanInterface;
+import globaz.framework.util.FWMemoryLog;
 import globaz.globall.db.BSession;
+import globaz.globall.db.BTransaction;
 
 public interface APIProcessUpload extends FWViewBeanInterface {
 
@@ -10,6 +12,10 @@ public interface APIProcessUpload extends FWViewBeanInterface {
     public boolean getEchoToConsole();
 
     public String getEMailAddress();
+
+    public void setMemoryLogProcess(FWMemoryLog newMemoryLog);
+
+    public FWMemoryLog getMemoryLogProcess();
 
     public String getFileName();
 
@@ -38,4 +44,10 @@ public interface APIProcessUpload extends FWViewBeanInterface {
     public void setSession(BSession newSession);
 
     public void setSimulation(Boolean simulation);
+
+    public void setProgressScaleValueProcess(long value);
+
+    public BTransaction getTransactionProcess();
+
+    public boolean isAbortedProcess();
 }

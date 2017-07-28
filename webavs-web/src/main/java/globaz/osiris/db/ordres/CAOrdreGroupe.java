@@ -4,6 +4,7 @@ import globaz.framework.util.FWCurrency;
 import globaz.framework.util.FWLog;
 import globaz.framework.util.FWMemoryLog;
 import globaz.framework.util.FWMessage;
+import globaz.framework.util.FWMessageFormat;
 import globaz.globall.db.BEntity;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
@@ -31,6 +32,7 @@ import globaz.osiris.db.comptes.CAOperationOrdreRecouvrement;
 import globaz.osiris.db.comptes.CAOperationOrdreRecouvrementManager;
 import globaz.osiris.db.comptes.CAOperationOrdreVersement;
 import globaz.osiris.db.comptes.CAOperationOrdreVersementManager;
+import globaz.osiris.db.ordres.exception.CAOGOVMaxISODepassement;
 import globaz.osiris.db.ordres.exception.CAOGRegroupISODepassement;
 import globaz.osiris.db.ordres.format.CAOrdreFormateur;
 import globaz.osiris.db.ordres.format.CAProcessFormatOrdreDTA;
@@ -39,8 +41,10 @@ import globaz.osiris.db.ordres.format.CAProcessFormatOrdreLSVBanque;
 import globaz.osiris.db.ordres.format.CAProcessFormatOrdreOPAE;
 import globaz.osiris.db.ordres.format.opt.CAProcessFormatOrdreOPAELite;
 import globaz.osiris.db.ordres.sepa.AbstractSepa.SepaException;
-import globaz.osiris.db.ordres.sepa.CAProcessFormatOrdreSEPA;
-import globaz.osiris.db.ordres.sepa.CAProcessFormatOrdreSEPALite;
+import globaz.osiris.db.ordres.sepa.CAFormatRecouvrementISOCHDD;
+import globaz.osiris.db.ordres.sepa.CAFormatRecouvrementISOCHTA;
+import globaz.osiris.db.ordres.sepa.CAFormatVersementISO;
+import globaz.osiris.db.ordres.sepa.CAFormatVersementISOLite;
 import globaz.osiris.db.ordres.sepa.SepaSendOrderProcessor;
 import globaz.osiris.db.ordres.sepa.utils.CASepaCommonUtils;
 import globaz.osiris.db.ordres.utils.CAOrdreGroupeFtpUtils;
@@ -59,10 +63,14 @@ import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Serializable;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.slf4j.LoggerFactory;
+import ch.globaz.common.properties.PropertiesException;
+import ch.globaz.osiris.business.constantes.CAProperties;
 
 /**
  * CA ordre groupé Date de création : (13.12.2001 10:20:46)
@@ -262,8 +270,19 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
             setIdLog("0");
             if (getMemoryLog().hasMessages()) {
 
-                // Demander la sauvegarde
-                log = getMemoryLog().saveToFWLog(transaction);
+                FWMemoryLog tmpMemoryLog = new FWMemoryLog();
+                java.util.Enumeration enumeration = getMemoryLog().enumMessages();
+                while (enumeration.hasMoreElements()) {
+                    FWMessage message = (FWMessage) enumeration.nextElement();
+                    if (JadeStringUtil.isBlankOrZero(message.getId())) {
+                        tmpMemoryLog.logMessage(message);
+                    }
+                }
+
+                if (tmpMemoryLog.hasMessages()) {
+                    // Demander la sauvegarde
+                    log = tmpMemoryLog.saveToFWLog(transaction);
+                }
 
                 // En cas d'erreur, on signale que la sauvegarde du log a échoué
                 if (hasErrors()) {
@@ -768,10 +787,11 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
      * 
      * @param param
      *            CAProcessAttacherOrdre
+     * @throws CAOGOVMaxISODepassement
      */
     public void executeAttacherOrdre(CAProcessAttacherOrdre context, String idJournalSource)
-            throws CAOGRegroupISODepassement {
-
+            throws CAOGRegroupISODepassement, CAOGOVMaxISODepassement {
+        boolean depassementOGOV = false;
         // On accèpte si l'ordre est en traiement
         if (!getEtat().equals(CAOrdreGroupe.TRAITEMENT)) {
             _addError(null, getSession().getLabel("5222"));
@@ -791,12 +811,15 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
 
         } catch (CAOGRegroupISODepassement depassement) {
             throw depassement;
+        } catch (CAOGOVMaxISODepassement depassement) {
+            depassementOGOV = true;
+            throw depassement;
             // Récupérer les exceptions
         } catch (Exception e) {
             _addError(null, e.getMessage());
         } finally {
             // Si aucune transaction, on donne un message d'erreur
-            if (JadeStringUtil.isIntegerEmpty(getNombreTransactions())) {
+            if (JadeStringUtil.isIntegerEmpty(getNombreTransactions()) && !depassementOGOV) {
                 getMemoryLog().logMessage("5404", null, FWMessage.ERREUR, this.getClass().getName());
             }
 
@@ -811,14 +834,16 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
         return;
     }
 
-    private void executeAttacherOrdreRecouvrement(CAProcessAttacherOrdre context) {
+    private void executeAttacherOrdreRecouvrement(CAProcessAttacherOrdre context) throws CAOGRegroupISODepassement,
+            CAOGOVMaxISODepassement {
         // Initialiser
         FWCurrency cTotal = new FWCurrency();
         long lNTransactions = 0;
         String lastIdOperation = "0";
-
+        long maxOVforThisOG = Long.MAX_VALUE;
         // Sous contrôle d'exception
         try {
+            maxOVforThisOG = CASepaCommonUtils.getOvMaxByOG(this);
             // Instancier un manager
             CAOperationOrdreRecouvrementManager mgr = new CAOperationOrdreRecouvrementManager();
             mgr.setSession(context.getSession());
@@ -846,6 +871,7 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
                 // Récupérer les prochaines transactions
                 mgr.clear();
                 mgr.find(context.getTransaction(), BManager.SIZE_NOLIMIT);
+
                 if (mgr.hasErrors()) {
                     _addError(context.getTransaction(), getSession().getLabel("5403"));
                     return;
@@ -856,6 +882,9 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
                     break;
                 }
 
+                // Test des nombres d'OG
+                controleMaxOG(mgr.size());
+
                 // Vérifier condition de sortie
                 if (context.isAborted()) {
                     return;
@@ -863,6 +892,9 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
 
                 // Parcourir les ordres
                 for (int i = 0; i < mgr.size(); i++) {
+                    if (lNTransactions == maxOVforThisOG) {
+                        throw new CAOGRegroupISODepassement();
+                    }
 
                     // Vérifier condition de sortie
                     if (context.isAborted()) {
@@ -880,10 +912,28 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
                     if (JadeStringUtil.isIntegerEmpty(oper.getIdOrganeExecution())
                             || oper.getIdOrganeExecution().equals(getIdOrganeExecution())) {
 
+                        /**
+                         * Afin de contrer les IBAN postaux
+                         */
+                        if (oper.getAdressePaiement() == null) {
+                            String message = FWMessageFormat
+                                    .prepareQuotes(context.getSession().getLabel("5603"), false);
+
+                            message = MessageFormat.format(message, oper.getMotif());
+                            oper.setEstBloque(true);
+                            oper.wantCallMethodBefore(false);
+                            oper.update(context.getTransaction());
+                            JadeLogger.error(this, message + " with operation id : " + oper.getId());
+                            continue;
+                        }
+
+                        CAAdressePaiementFormatter adresse = new CAAdressePaiementFormatter(oper.getAdressePaiement());
+                        final String typeAdresse = CASepaCommonUtils.getTypeAdresseWithIBANPostalEnable(adresse);
+
                         // Contrôler s'il s'agit d'un CCP ou d'une banque
                         if (getOrganeExecution().getGenre().equals(APIOrganeExecution.BANQUE)) {
                             try {
-                                if (!oper.getAdressePaiement().getTypeAdresse().equals(IntAdressePaiement.BANQUE)) {
+                                if (!typeAdresse.equals(IntAdressePaiement.BANQUE)) {
                                     continue;
                                 }
                             } catch (Exception e) {
@@ -891,7 +941,7 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
                             }
                         } else if (getOrganeExecution().getGenre().equals(APIOrganeExecution.POSTE)) {
                             try {
-                                if (!oper.getAdressePaiement().getTypeAdresse().equals(IntAdressePaiement.CCP)) {
+                                if (!typeAdresse.equals(IntAdressePaiement.CCP)) {
                                     continue;
                                 }
                             } catch (Exception e) {
@@ -922,14 +972,40 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
 
             }
 
-            // Stocker le nombre total de transactions et le montant versé
-            setTotal(cTotal.toString());
-            setNombreTransactions(String.valueOf(lNTransactions));
+        } catch (CAOGRegroupISODepassement dep) {
+            throw dep;
+        } catch (CAOGOVMaxISODepassement dep) {
+            throw dep;
 
             // Piéger les exception
         } catch (Exception e) {
             _addError(context.getTransaction(), e.getMessage());
             return;
+        } finally {
+            // Stocker le nombre total de transactions et le montant versé
+            setTotal(cTotal.toString());
+            setNombreTransactions(String.valueOf(lNTransactions));
+
+        }
+
+    }
+
+    private void controleMaxOG(int nombreDeVersementRecouvrementAVerser) throws CAOGOVMaxISODepassement {
+        try {
+            int maxOVforThisOG = Integer.parseInt(CAProperties.ISO_SEPA_MAX_OVPAROG.getValue());
+            int numberOG = Integer.parseInt(CAProperties.ISO_SEPA_MAX_MULTIOG.getValue());
+            Long totMax = (long) (numberOG * maxOVforThisOG);
+            if (nombreDeVersementRecouvrementAVerser > totMax) {
+                throw new CAOGOVMaxISODepassement(
+                        "Impossible de traiter les ordres groupés. Le nombre de recouvrements / versements ["
+                                + nombreDeVersementRecouvrementAVerser + "] dépasse le nombre d'OG max [" + numberOG
+                                + "] de chacun " + maxOVforThisOG + " OV défini dans les propriétés");
+            }
+        } catch (NumberFormatException e) {
+            throw new CAOGOVMaxISODepassement(
+                    "Impossible de déterminer le nombre maximum d'OV selon les propriétés de l'ISO");
+        } catch (PropertiesException e) {
+            throw new CAOGOVMaxISODepassement("Impossible de trouver les propriétés de l'ISO");
         }
 
     }
@@ -991,6 +1067,9 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
                 if (mgr.size() == 0) {
                     break;
                 }
+
+                // Test des nombres d'OG
+                controleMaxOG(mgr.size());
 
                 // Vérifier condition de sortie
                 if (context.isAborted()) {
@@ -1102,71 +1181,31 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
      *            CAProcessContext les paramètres pour l'exécution de l'ordre
      */
     public void executeOrdre(CAProcessOrdre context) {
-
-        // Initialiser
         String sLocalFilename = null;
 
-        // On accèpte si l'ordre est en traiement
+        /*** L'état de l'OG est à TRAITEMENT, on ne va pas plus loin. */
         if (!getEtat().equals(CAOrdreGroupe.TRAITEMENT)) {
             _addError(context.getTransaction(), getSession().getLabel("5222"));
             return;
         }
 
-        // Par défaut, il y a des erreurs....
+        /*** Mettre par défaut l'état en ERREUR... */
         setEtat(CAOrdreGroupe.ERREUR);
 
-        // Sous controle d'exceptions
         try {
 
-            // Instancier un formatteur selon le type d'ordre
             CAOrdreFormateur of = null;
-            boolean isSepa = false;
+            boolean isSepa = APIOrganeExecution.OG_ISO_20022.equals(getOrganeExecution().getCSTypeTraitementOG());
+
             if (getTypeOrdreGroupe().equals(CAOrdreGroupe.VERSEMENT)) {
-
-                // Bug 6504
-                // Bug 3972
                 traitementJournalCommit(context);
-                if (getOrganeExecution().getCSTypeTraitementOG().equals(APIOrganeExecution.OG_ISO_20022)) {
-                    isSepa = true;
-                    if (CAOrdreGroupe.isForceOPAEV1(getSession()) || (getJournal() == null)
-                            || !getJournal().getEtat().equals(CAJournal.COMPTABILISE)) {
-                        of = new CAProcessFormatOrdreSEPA();
-                    } else {
-                        of = new CAProcessFormatOrdreSEPALite();
-                    }
-                } else {
-                    if (getOrganeExecution().getGenre().equals(APIOrganeExecution.BANQUE)) {
-                        of = new CAProcessFormatOrdreDTA();
-                    } else if (getOrganeExecution().getGenre().equals(APIOrganeExecution.POSTE)) {
-                        if (CAOrdreGroupe.isForceOPAEV1(getSession()) || (getJournal() == null)
-                                || !getJournal().getEtat().equals(CAJournal.COMPTABILISE)) {
-                            /*
-                             * Si le journal associé a l'ordre groupé n'est pas encore comptabilisé, ou que l'on force
-                             * l'utilisation de la première implémentation.
-                             */
-                            of = new CAProcessFormatOrdreOPAE();
-                        } else {
-                            /*
-                             * Dans le cas ou le journal associé a l'ordre groupé est déjà comptabilisé, on peut donc
-                             * utiliser le formateur OPAE "lite" qui ne fait que sortir le fichier OPAE, sans aucune
-                             * opération comptable. La version lite ne traite que les transaction 22 (poste suisse),
-                             * 24(mandat suisse) et 27 (banque suisse).
-                             * 
-                             * A noter également que les transactions 28 ne sont par supportées pour le moment.
-                             */
-                            of = new CAProcessFormatOrdreOPAELite();
-
-                        }
-
-                    }
-                }
+                /*** Instanciation d'un formateur de versement */
+                of = instanciateFormaterVersement();
             } else if (getTypeOrdreGroupe().equals(CAOrdreGroupe.RECOUVREMENT)) {
                 context.setComptabiliserOrdre(false);
-                if (getOrganeExecution().getGenre().equals(APIOrganeExecution.POSTE)) {
-                    of = new CAProcessFormatOrdreLSV();
-                } else if (getOrganeExecution().getGenre().equals(APIOrganeExecution.BANQUE)) {
-                    of = new CAProcessFormatOrdreLSVBanque();
-                }
+
+                /*** Instanciation d'un formateur de recouvrement */
+                of = instanciateFormaterRecouvrement();
             }
 
             // Si le formatteur n'a pas été trouvé, on sort
@@ -1296,45 +1335,29 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
             // Si tout est ok
             if (!context.isAborted() && !hasErrors()
                     && (getMemoryLog().getErrorLevel().compareTo(FWMessage.ERREUR) < 0)) {
+
                 // Le fichier a été généré
                 setEtat(CAOrdreGroupe.GENERE);
                 setDateTransmission(JACalendar.format(JACalendar.today(), JACalendar.FORMAT_DDsMMsYYYY));
 
                 // Mise à jour
                 this.update(context.getTransaction());
+
                 if (isNew() || hasErrors()) {
                     context.getMemoryLog().logStringBuffer(getSession().getErrors(), this.getClass().getName());
                     context.getMemoryLog().logMessage("5205", null, FWMessage.FATAL, this.getClass().getName());
                 }
 
                 if (context.getGenererFichierEchange()) {
+
+                    // Fichier OPAE
                     if (getOrganeExecution().getCSTypeTraitementOG().equals(APIOrganeExecution.OG_OPAE_DTA)) {
+
                         CAOrdreGroupeFtpUtils.sendOrRegisterFile(context, this, getOrganeExecution(),
                                 context.getFileName());
                     } else if (getOrganeExecution().getCSTypeTraitementOG().equals(APIOrganeExecution.OG_ISO_20022)) {
 
-                        InputStream is = null;
-                        try {
-                            SepaSendOrderProcessor sendProcessor = new SepaSendOrderProcessor();
-                            is = new FileInputStream(context.getFileName());
-
-                            if (organeExecution.getModeTransfert().equals(APIOrganeExecution.CS_BY_FTPPOST)) {
-                                sendProcessor.sendOrdreGroupeByFtp(getSession(), is, "ordreGroupe" + getIdOrdreGroupe()
-                                        + ".xml");
-                                setIsoCsOrdreStatutExec(ISO_ORDRE_STATUS_TRANSMIS);
-                            } else {
-                                context.registerAttachedDocument(context.getFileName());
-                                // quand envoyé par mail, ne doit pas prendre l'état "transmis"
-                                setIsoCsOrdreStatutExec(ISO_ORDRE_STATUS_A_TRANSMETTRE);
-                            }
-                        } catch (SepaException e) {
-                            getSession().addWarning(getSession().getLabel("SERVER_FTP_UNVAILABLE"));
-                            context.registerAttachedDocument(context.getFileName());
-                            setIsoCsOrdreStatutExec(ISO_ORDRE_STATUS_A_TRANSMETTRE);
-
-                        } finally {
-                            IOUtils.closeQuietly(is);
-                        }
+                        sendXMLSepa(context);
                     }
                 }
             }
@@ -1351,6 +1374,119 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
 
         // Fin de la procédure
         return;
+    }
+
+    private void sendXMLSepa(CAProcessOrdre context) throws Exception {
+        InputStream is = null;
+
+        try {
+            SepaSendOrderProcessor sendProcessor = new SepaSendOrderProcessor();
+            is = new FileInputStream(context.getFileName());
+
+            if (organeExecution.getModeTransfert().equals(APIOrganeExecution.CS_BY_FTPPOST)) {
+
+                // Prendre le bon dossier selon la nature de l'OG
+                CAProperties properties = CAProperties.ISO_SEPA_FTP_001_FOLDER;
+                if (getTypeOrdreGroupe().equals(CAOrdreGroupe.RECOUVREMENT)) {
+                    properties = CAProperties.ISO_SEPA_FTP_008_FOLDER;
+                }
+
+                sendProcessor.sendOrdreGroupeByFtp(is, "og" + getIdOrdreGroupe() + ".xml", properties);
+
+                setIsoCsOrdreStatutExec(ISO_ORDRE_STATUS_TRANSMIS);
+            } else {
+                context.registerAttachedDocument(context.getFileName());
+                // quand envoyé par mail, ne doit pas prendre l'état "transmis"
+                setIsoCsOrdreStatutExec(ISO_ORDRE_STATUS_A_TRANSMETTRE);
+            }
+        } catch (SepaException e) {
+            getSession().addWarning(getSession().getLabel("SERVER_FTP_UNVAILABLE"));
+            getMemoryLog().logMessage(e.getMessage(), FWMessage.ERREUR, this.getClass().getName());
+            LoggerFactory.getLogger(CAOrdreGroupe.class.getName()).error(e.getMessage(), e);
+            context.registerAttachedDocument(context.getFileName());
+            setIsoCsOrdreStatutExec(ISO_ORDRE_STATUS_A_TRANSMETTRE);
+        } finally {
+            IOUtils.closeQuietly(is);
+        }
+        // Mise à jour
+        this.update(context.getTransaction());
+    }
+
+    private CAOrdreFormateur instanciateFormaterRecouvrement() throws Exception {
+        CAOrdreFormateur of = null;
+
+        /**
+         * RECOUVREMENT
+         * 1. si l'organe d'éxécution est ISO
+         * 1.1 on fait du formatage pain.008
+         * 2 sinon
+         * 2.1 on fait du formatage poste ou banque LSV
+         */
+        final String genre = getOrganeExecution().getGenre();
+        final String typeTraitement = getOrganeExecution().getCSTypeTraitementOG();
+
+        if (APIOrganeExecution.OG_ISO_20022.equals(typeTraitement)) {
+            if (APIOrganeExecution.POSTE.equals(genre)) {
+                of = new CAFormatRecouvrementISOCHDD();
+            } else if (APIOrganeExecution.BANQUE.equals(genre)) {
+                of = new CAFormatRecouvrementISOCHTA();
+            }
+        } else {
+            if (APIOrganeExecution.POSTE.equals(genre)) {
+                of = new CAProcessFormatOrdreLSV();
+            } else if (APIOrganeExecution.BANQUE.equals(genre)) {
+                of = new CAProcessFormatOrdreLSVBanque();
+            }
+        }
+        return of;
+    }
+
+    private CAOrdreFormateur instanciateFormaterVersement() throws Exception {
+        CAOrdreFormateur of = null;
+        /**
+         * VERSEMENT
+         * 1. générer ou récupérer un journal
+         * 2. si l'organe d'éxécution est ISO
+         * 2.1 on fait du formatage pain.001 standard ou lite
+         * 3 sinon
+         * 3.1 on fait du formatage poste ou banque OPAE
+         */
+        if (getOrganeExecution().getCSTypeTraitementOG().equals(APIOrganeExecution.OG_ISO_20022)) {
+            if (CAOrdreGroupe.isForceOPAEV1(getSession()) || (getJournal() == null)
+                    || !getJournal().getEtat().equals(CAJournal.COMPTABILISE)) {
+
+                of = new CAFormatVersementISO();
+            } else {
+
+                of = new CAFormatVersementISOLite();
+            }
+        } else {
+            if (getOrganeExecution().getGenre().equals(APIOrganeExecution.BANQUE)) {
+                of = new CAProcessFormatOrdreDTA();
+            } else if (getOrganeExecution().getGenre().equals(APIOrganeExecution.POSTE)) {
+                if (CAOrdreGroupe.isForceOPAEV1(getSession()) || (getJournal() == null)
+                        || !getJournal().getEtat().equals(CAJournal.COMPTABILISE)) {
+                    /**
+                     * Si le journal associé a l'ordre groupé n'est pas encore comptabilisé, ou que l'on force
+                     * l'utilisation de la première implémentation.
+                     */
+                    of = new CAProcessFormatOrdreOPAE();
+                } else {
+                    /**
+                     * Dans le cas ou le journal associé a l'ordre groupé est déjà comptabilisé, on peut donc
+                     * utiliser le formateur OPAE "lite" qui ne fait que sortir le fichier OPAE, sans aucune
+                     * opération comptable. La version lite ne traite que les transaction 22 (poste suisse),
+                     * 24(mandat suisse) et 27 (banque suisse).
+                     * 
+                     * A noter également que les transactions 28 ne sont par supportées pour le moment.
+                     */
+                    of = new CAProcessFormatOrdreOPAELite();
+                }
+
+            }
+        }
+
+        return of;
     }
 
     /**
@@ -1401,6 +1537,7 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
                 if (or.getMemoryLog().getErrorLevel().compareTo(FWMessage.ERREUR) >= 0) {
                     getMemoryLog().logMessage("5204", or.getNumTransaction(), FWMessage.ERREUR,
                             this.getClass().getName());
+                    getMemoryLog().logMessage(or.getMemoryLog());
                 } else {
 
                     // Déclencher le recouvrement

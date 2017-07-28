@@ -1,7 +1,5 @@
 package globaz.osiris.parser;
 
-import globaz.framework.util.FWMemoryLog;
-import globaz.globall.db.BSession;
 import java.io.BufferedReader;
 
 /**

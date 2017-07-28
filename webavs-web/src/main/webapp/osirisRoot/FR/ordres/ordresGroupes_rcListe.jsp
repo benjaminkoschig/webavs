@@ -47,6 +47,8 @@ detailLink ="osiris?userAction=osiris.ordres.ordresGroupes.afficher&selectedId="
 			image.append("<img title=\"" + _ordre.getSession().getCodeLibelle(_ordre.getIsoCsTransmissionStatutExec()) + "\" src=\"" + request.getContextPath()+"/images/circle-16-red.gif\">&nbsp;&nbsp;&nbsp;&nbsp;");
 		} else if (_ordre.getIsoCsTransmissionStatutExec().equals(globaz.osiris.db.ordres.CAOrdreGroupe.ISO_TRANSAC_STATUS_COMPLET)) {
 			image.append("<img title=\"" + _ordre.getSession().getCodeLibelle(_ordre.getIsoCsTransmissionStatutExec()) + "\" src=\"" + request.getContextPath()+"/images/circle-16-green.gif\">&nbsp;&nbsp;&nbsp;&nbsp;");
+		} else if (_ordre.getIsoCsTransmissionStatutExec().equals(globaz.osiris.db.ordres.CAOrdreGroupe.ISO_TRANSAC_STATUS_VALIDE)) {
+			image.append("<img title=\"" + _ordre.getSession().getCodeLibelle(_ordre.getIsoCsTransmissionStatutExec()) + "\" src=\"" + request.getContextPath()+"/images/dialog-ok-apply.png\">&nbsp;&nbsp;&nbsp;&nbsp;");
 		}
 	}
 	
@@ -84,6 +86,10 @@ detailLink ="osiris?userAction=osiris.ordres.ordresGroupes.afficher&selectedId="
 		
 		<% if(APIOrdreGroupe.ISO_TRANSAC_STATUS_COMPLET.equals(_ordre.getIsoCsTransmissionStatutExec()) || !_ordre.hasOrdreRejetes()){ %>
 			<ct:menuExcludeNode nodeId="<%=CAUtil.ID_MENU_NODE_CA_ORDRES_REJETER_IMPRIMER %>"/>
+		<% } %>
+				
+		<% if(!APIOrdreGroupe.ISO_TRANSAC_STATUS_PARTIEL.equals(_ordre.getIsoCsTransmissionStatutExec()) && !APIOrdreGroupe.ISO_TRANSAC_STATUS_REJETE.equals(_ordre.getIsoCsTransmissionStatutExec())){ %>
+			<ct:menuExcludeNode nodeId="<%=CAUtil.ID_MENU_NODE_CA_ORDRES_VALIDATION_MANUELLE %>"/>
 		<% } %>
     </ct:menuPopup>
 	</TD>

@@ -1,28 +1,42 @@
 package globaz.osiris.db.ordres.sepa;
 
-import globaz.globall.db.BSession;
 import java.io.InputStream;
 import ch.globaz.common.properties.PropertiesException;
 import ch.globaz.osiris.business.constantes.CAProperties;
 import com.jcraft.jsch.ChannelSftp;
 
 public class SepaSendOrderProcessor extends AbstractSepa {
-    public static final String NAMESPACE_PAIN001 = "http://www.six-interbank-clearing.com/de/pain.001.001.03.ch.02.xsd";
+    private static final long serialVersionUID = 8134276795047494813L;
 
-    public void sendOrdreGroupeByFtp(BSession session, InputStream is, String filename) throws PropertiesException {
+    public void sendOrdreGroupeByFtp(InputStream is, String filename, CAProperties propertiesFolder)
+            throws PropertiesException {
         ChannelSftp client = null;
         try {
             client = getClient();
 
-            // prefixpath
-            String folder = CAProperties.ISO_SEPA_FTP_001_FOLDER.getValue();
-            // make a zip?
-            if (CAProperties.ISO_SEPA_FTP_HOST.getValue().startsWith("isotest")) {
-                // zip. prefix filename by ???
-            }
-            sendData(is, client, folder + filename);
+            sendData(is, client, propertiesFolder.getValue() + filename);
         } finally {
             disconnectQuietly(client);
         }
+    }
+
+    @Override
+    protected CAProperties getHost() {
+        return CAProperties.ISO_SEPA_FTP_HOST;
+    }
+
+    @Override
+    protected CAProperties getPort() {
+        return CAProperties.ISO_SEPA_FTP_PORT;
+    }
+
+    @Override
+    protected CAProperties getUser() {
+        return CAProperties.ISO_SEPA_FTP_USER;
+    }
+
+    @Override
+    protected CAProperties getPassword() {
+        return CAProperties.ISO_SEPA_FTP_PASS;
     }
 }

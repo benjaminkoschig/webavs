@@ -8,19 +8,18 @@
 <%	idEcran = "GCA3008";
 	APIProcessUpload viewBean = (APIProcessUpload) session.getAttribute(globaz.osiris.servlet.action.CADefaultServletAction.VB_ELEMENT);
 	userActionValue = "osiris.process.bvr.executer";
+ 	formAction = request.getContextPath()+mainServletPath+"Root/"+languePage+"/process/bvrChargementFile_de.jsp";
+ 	
+ 	if (!globaz.jade.client.util.JadeStringUtil.isBlank(request.getParameter("typeBvrFtp"))) {
+ 		if (request.getParameter("typeBvrFtp").equals("bvr")) {
+ 			userActionValue = "osiris.process.bvr.executer";
+ 		} else {
+ 			userActionValue = "osiris.process.recouvrementDirect.executer";
+ 		}
+ 	}
 
-	formAction = request.getContextPath()+mainServletPath+"Root/"+languePage+"/process/bvrChargementFile_de.jsp";
-	
-	if (!globaz.jade.client.util.JadeStringUtil.isBlank(request.getParameter("typeBvrFtp"))) {
-		if (request.getParameter("typeBvrFtp").equals("bvr")) {
-			userActionValue = "osiris.process.bvr.executer";
-		} else {
-			userActionValue = "osiris.process.recouvrementDirect.executer";
-		}
-	}
-
-	formEncType = "multipart/form-data";
-%>
+ 	formEncType = "multipart/form-data";
+ %>
 <%-- /tpl:put --%>
 <%-- tpl:put name="zoneBusiness" --%> <%-- /tpl:put --%>
 <%@ include file="/theme/process/javascripts.jspf" %>

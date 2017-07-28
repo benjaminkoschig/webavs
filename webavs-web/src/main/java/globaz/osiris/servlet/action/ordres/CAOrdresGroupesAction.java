@@ -95,6 +95,23 @@ public class CAOrdresGroupesAction extends CADefaultServletAction {
 
     }
 
+    @Override
+    protected void actionCustom(HttpSession session, HttpServletRequest request, HttpServletResponse response,
+            FWDispatcher dispatcher) throws ServletException, IOException {
+        String action = request.getParameter("userAction");
+        String id = request.getParameter("selectedId");
+
+        CAOrdreGroupeViewBean viewBean = new CAOrdreGroupeViewBean();
+        viewBean.setId(id);
+        if ((action != null) && (action.indexOf("osiris.ordres.ordresGroupes.valider") > -1)) {
+            dispatcher.dispatch(viewBean, FWAction.newInstance(request.getParameter("userAction")));
+            servlet.getServletContext().getRequestDispatcher(getRelativeURL(request, session) + "_rc.jsp")
+                    .forward(request, response);
+        } else {
+            super.actionCustom(session, request, response, dispatcher);
+        }
+    }
+
     /**
      * @see globaz.osiris.servlet.action.CADefaultServletAction#destinationAfterAjouter(HttpSession, HttpServletRequest,
      *      HttpServletResponse, FWDispatcher)

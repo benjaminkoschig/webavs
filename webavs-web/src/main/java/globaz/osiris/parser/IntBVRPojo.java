@@ -29,6 +29,8 @@ public interface IntBVRPojo {
 
     public String getMontant();
 
+    public String getCodeMonnaie();
+
     public String getNumeroAdherent();
 
     public String getNumeroReference();
@@ -45,6 +47,8 @@ public interface IntBVRPojo {
 
     public String getDebtor();
 
+    public String getEndToEndId();
+
     public FWMemoryLog getMemoryLog();
 
     public void setMemoryLog(FWMemoryLog newMemoryLog);
@@ -52,5 +56,4 @@ public interface IntBVRPojo {
     BSession getSession();
 
     void setSession(BSession session);
-
 }

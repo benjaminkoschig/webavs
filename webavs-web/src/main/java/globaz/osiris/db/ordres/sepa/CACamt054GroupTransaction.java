@@ -15,6 +15,7 @@ import java.util.List;
 public class CACamt054GroupTransaction {
     private String ntryRef;
     private FWCurrency ctrlAmount;
+    private String ctrlCodeMonnaie;
     private String crdtDbtIndicator;
     private int nbTransactions;
     private String noAdherent;
@@ -141,5 +142,13 @@ public class CACamt054GroupTransaction {
         }
 
         return bxTxCdEntry;
+    }
+
+    public String getCtrlCodeMonnaie() {
+        return ctrlCodeMonnaie;
+    }
+
+    public void setCtrlCodeMonnaie(String ctrlCodeMonnaie) {
+        this.ctrlCodeMonnaie = ctrlCodeMonnaie;
     }
 }

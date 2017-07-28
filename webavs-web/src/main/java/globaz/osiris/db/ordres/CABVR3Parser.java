@@ -35,6 +35,7 @@ public final class CABVR3Parser implements IntBVRFlatFileParser {
     private String taxeTraitement = new String();
     private String taxeVersement = new String();
     private String typeTransaction = new String();
+    private String codeMonnaie = new String();
 
     /**
      * Insérez la description de la méthode ici. Date de création : (14.02.2002 17:08:43)
@@ -515,6 +516,16 @@ public final class CABVR3Parser implements IntBVRFlatFileParser {
 
     @Override
     public String getDebtor() {
+        return null;
+    }
+
+    @Override
+    public String getCodeMonnaie() {
+        return codeMonnaie;
+    }
+
+    @Override
+    public String getEndToEndId() {
         return null;
     }
 }

@@ -4,6 +4,7 @@
 package globaz.osiris.process.importoperations;
 
 import globaz.framework.bean.FWViewBeanInterface;
+import globaz.framework.util.FWMemoryLog;
 import globaz.framework.util.FWMessageFormat;
 import globaz.globall.db.BProcess;
 import globaz.globall.db.BSession;
@@ -981,5 +982,30 @@ public class CAProcessImportOperations extends BProcess implements APIProcessUpl
     @Override
     public void setSimulation(Boolean simulation) {
         // Rien a faire
+    }
+
+    @Override
+    public BTransaction getTransactionProcess() {
+        return getTransaction();
+    }
+
+    @Override
+    public void setProgressScaleValueProcess(long value) {
+        setProgressScaleValue(value);
+    }
+
+    @Override
+    public void setMemoryLogProcess(FWMemoryLog newMemoryLog) {
+        setMemoryLog(newMemoryLog);
+    }
+
+    @Override
+    public FWMemoryLog getMemoryLogProcess() {
+        return getMemoryLog();
+    }
+
+    @Override
+    public boolean isAbortedProcess() {
+        return isAborted();
     }
 }

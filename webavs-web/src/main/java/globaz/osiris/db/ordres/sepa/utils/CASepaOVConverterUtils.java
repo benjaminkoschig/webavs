@@ -110,7 +110,7 @@ public class CASepaOVConverterUtils {
         return null;
     }
 
-    public static LocalInstrument2Choice getLclInstrm(CASepaGroupeOGKey key) throws Exception {
+    public static LocalInstrument2Choice getLclInstrm(CASepaPain001GroupeOGKey key) throws Exception {
         LocalInstrument2Choice lclInstrm = new LocalInstrument2Choice();
         lclInstrm.setCd(ExternalLocalInstrument1_CPP);
         if (key.isTypeVirement(CASepaCommonUtils.TYPE_VIREMENT_MANDAT)) {
@@ -180,7 +180,7 @@ public class CASepaOVConverterUtils {
         return name;
     }
 
-    public static PaymentMethod3Code getPmtMtd(CASepaGroupeOGKey key) throws Exception {
+    public static PaymentMethod3Code getPmtMtd(CASepaPain001GroupeOGKey key) throws Exception {
         if (key.isTypeVirement(CASepaCommonUtils.TYPE_VIREMENT_MANDAT)) {
             return PaymentMethod3Code.CHK;
         }
@@ -211,7 +211,7 @@ public class CASepaOVConverterUtils {
         return CASepaCommonUtils.escapeInvalidBasicTextCH(motif);
     }
 
-    public static boolean isBVR(CASepaGroupeOGKey key) throws Exception {
+    public static boolean isBVR(CASepaPain001GroupeOGKey key) throws Exception {
         return key.isTypeVersement(CASepaOVConverterUtils.ORDRE_VERSEMENT_BVR);
     }
 
@@ -223,7 +223,7 @@ public class CASepaOVConverterUtils {
         return null;
     }
 
-    public static boolean isCLevelBicRequired(CASepaGroupeOGKey ovKey) {
+    public static boolean isCLevelBicRequired(CASepaPain001GroupeOGKey ovKey) {
         return ovKey.isTypeVirement(CASepaCommonUtils.TYPE_VIREMENT_BANCAIRE);
     }
 

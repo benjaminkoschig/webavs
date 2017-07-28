@@ -1,13 +1,15 @@
 package globaz.osiris.process;
 
+import globaz.framework.util.FWMemoryLog;
 import globaz.framework.util.FWMessage;
 import globaz.globall.db.BProcess;
+import globaz.globall.db.BTransaction;
 import globaz.globall.db.GlobazJobQueue;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.osiris.api.OsirisDef;
 import globaz.osiris.api.process.APIProcessUpload;
-import globaz.osiris.db.ordres.CACamt054GroupsMessage;
 import globaz.osiris.db.ordres.CAOrganeExecution;
+import globaz.osiris.db.ordres.sepa.CACamt054GroupsMessage;
 import java.util.List;
 
 /**
@@ -28,7 +30,7 @@ public class CAProcessBVR extends BProcess implements APIProcessUpload {
     private String libelle = new String();
     private String idYellowReportFile = new String();
 
-    private boolean retrieveBvrFromDataBase = true;
+    private boolean retrieveFileFromDataBase = true;
     private Boolean simulation = new Boolean(false);
 
     private CACamt054GroupsMessage groupesMessage = new CACamt054GroupsMessage();
@@ -98,7 +100,7 @@ public class CAProcessBVR extends BProcess implements APIProcessUpload {
             }
 
             // Demander le traitement du BVR
-            organeExecution.setRetrieveBvrFromDataBase(isRetrieveBvrFromDataBase());
+            organeExecution.setRetrieveFromDataBase(isRetrieveFromDataBase());
             organeExecution.setMemoryLog(getMemoryLog());
             idJournauxBvr = organeExecution.executeBVR(this);
 
@@ -248,8 +250,8 @@ public class CAProcessBVR extends BProcess implements APIProcessUpload {
         return simulation;
     }
 
-    public boolean isRetrieveBvrFromDataBase() {
-        return retrieveBvrFromDataBase;
+    public boolean isRetrieveFromDataBase() {
+        return retrieveFileFromDataBase;
     }
 
     /**
@@ -318,8 +320,8 @@ public class CAProcessBVR extends BProcess implements APIProcessUpload {
         libelle = newLibelle;
     }
 
-    public void setRetrieveBvrFromDataBase(boolean retrieveBvrFromDataBase) {
-        this.retrieveBvrFromDataBase = retrieveBvrFromDataBase;
+    public void setRetrieveFromDataBase(boolean retrieveFileFromDataBase) {
+        this.retrieveFileFromDataBase = retrieveFileFromDataBase;
     }
 
     /**
@@ -350,4 +352,30 @@ public class CAProcessBVR extends BProcess implements APIProcessUpload {
     public void setIdJournauxBvr(List<String> idJournauxBvr) {
         this.idJournauxBvr = idJournauxBvr;
     }
+
+    @Override
+    public BTransaction getTransactionProcess() {
+        return getTransaction();
+    }
+
+    @Override
+    public void setProgressScaleValueProcess(long value) {
+        setProgressScaleValue(value);
+    }
+
+    @Override
+    public void setMemoryLogProcess(FWMemoryLog newMemoryLog) {
+        setMemoryLog(newMemoryLog);
+    }
+
+    @Override
+    public FWMemoryLog getMemoryLogProcess() {
+        return getMemoryLog();
+    }
+
+    @Override
+    public boolean isAbortedProcess() {
+        return isAborted();
+    }
+
 }

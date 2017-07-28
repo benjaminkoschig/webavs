@@ -11,9 +11,9 @@ import globaz.osiris.db.ordres.exception.AucuneAdressePaiementException;
 import globaz.osiris.db.ordres.format.CAOrdreFormateur;
 import globaz.osiris.db.ordres.sepa.AbstractSepa.SepaException;
 import globaz.osiris.db.ordres.sepa.utils.CASepaCommonUtils;
-import globaz.osiris.db.ordres.sepa.utils.CASepaGroupeOGKey;
 import globaz.osiris.db.ordres.sepa.utils.CASepaOGConverterUtils;
 import globaz.osiris.db.ordres.sepa.utils.CASepaOVConverterUtils;
+import globaz.osiris.db.ordres.sepa.utils.CASepaPain001GroupeOGKey;
 import globaz.osiris.db.utils.CAAdressePaiementFormatter;
 import java.io.File;
 import java.io.IOException;
@@ -71,13 +71,13 @@ import com.six_interbank_clearing.de.pain_001_001_03_ch_02.StructuredRemittanceI
  * @author cel
  * 
  */
-public class CAProcessFormatOrdreSEPA extends CAOrdreFormateur {
+public class CAFormatVersementISO extends CAOrdreFormateur {
 
     private static final String CODE_PAYS_REGEX = "[A-Z]{2,2}";
     private static final String XSD_FOLDER = "/schema/com/six_interbank_clearing/de/pain.001.001.03.ch.02.xsd/";
     private static final String XSD_FILE_NAME = "pain.001.001.03.ch.02.xsd";
     private final static String MARSHALLED_XML = "marshalled.xml";
-    private final static Logger logger = LoggerFactory.getLogger(CAProcessFormatOrdreSEPA.class);
+    private final static Logger logger = LoggerFactory.getLogger(CAFormatVersementISO.class);
 
     private com.six_interbank_clearing.de.pain_001_001_03_ch_02.ObjectFactory factory = new ObjectFactory();
 
@@ -87,7 +87,7 @@ public class CAProcessFormatOrdreSEPA extends CAOrdreFormateur {
 
     private Priority2Code instrPrty;
 
-    private HashMap<CASepaGroupeOGKey, List<CreditTransferTransactionInformation10CH>> bLevels = new HashMap<CASepaGroupeOGKey, List<CreditTransferTransactionInformation10CH>>();
+    private HashMap<CASepaPain001GroupeOGKey, List<CreditTransferTransactionInformation10CH>> bLevels = new HashMap<CASepaPain001GroupeOGKey, List<CreditTransferTransactionInformation10CH>>();
 
     @Override
     public StringBuffer format(final APICommonOdreVersement ov) throws Exception {
@@ -97,7 +97,7 @@ public class CAProcessFormatOrdreSEPA extends CAOrdreFormateur {
         final boolean isBVR = CASepaOVConverterUtils.getTypeVersement(ov, adpf).equals(
                 CASepaOVConverterUtils.ORDRE_VERSEMENT_BVR);
 
-        CASepaGroupeOGKey key = new CASepaGroupeOGKey(ov.getCodeISOMonnaieBonification(),
+        CASepaPain001GroupeOGKey key = new CASepaPain001GroupeOGKey(ov.getCodeISOMonnaieBonification(),
                 CASepaOVConverterUtils.getTypeVersement(ov, adpf), CASepaOVConverterUtils.getTypeVirement(adpf),
                 CASepaOVConverterUtils.getPaysDestination(adpf));
 
@@ -319,7 +319,7 @@ public class CAProcessFormatOrdreSEPA extends CAOrdreFormateur {
                             getSession().getLabel("ISO20022_ERROR_OE_NO_PAIEMENT_ADDRESS"), true), og
                             .getOrganeExecution().getNom()));
         }
-        final String nomCaisse = CASepaOGConverterUtils.getNomCaisse70(og);
+        final String nomCaisse = CASepaOGConverterUtils.getNomCaisse70(og.getOrganeExecution());
         // set validation fields
         grpHeader.setNbOfTxs(og.getNbTransactions());
         grpHeader.setCtrlSum(new BigDecimal(og.getTotal()));
@@ -360,7 +360,7 @@ public class CAProcessFormatOrdreSEPA extends CAOrdreFormateur {
 
         CashAccount16CHIdAndCurrency chrgsAcct = CASepaOGConverterUtils.getChrgsAcct(og);
 
-        for (Entry<CASepaGroupeOGKey, List<CreditTransferTransactionInformation10CH>> entry : bLevels.entrySet()) {
+        for (Entry<CASepaPain001GroupeOGKey, List<CreditTransferTransactionInformation10CH>> entry : bLevels.entrySet()) {
             PaymentInstructionInformation3CH bLevelData = entry.getKey().getbLevel();
             // Besoin d'unicité
             bLevelData.setPmtInfId(og.getNumLivraison() + bLevelData.getPmtInfId());

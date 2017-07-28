@@ -1,31 +1,11 @@
 package globaz.osiris.db.ordres.sepa;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.helpers.DefaultValidationEventHandler;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.Result;
-import javax.xml.transform.Source;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.TransformerFactoryConfigurationError;
-import javax.xml.transform.dom.DOMResult;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.slf4j.Logger;
@@ -34,7 +14,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
+import ch.globaz.common.properties.PropertiesException;
 import ch.globaz.osiris.business.constantes.CAProperties;
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelSftp;
@@ -44,13 +24,16 @@ import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpException;
 
-public abstract class AbstractSepa {
-    /** Where to look to find a ssh private key (legacy file from Jade) */
+public abstract class AbstractSepa implements Serializable {
+    private static final long serialVersionUID = 187651144454673616L;
+
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractSepa.class);
+
     public static final String LEGACY_JADE_CONFIG_FILE = "/JadeFsServer.xml";
     public static final String PROTOCOL_NAME = "JadeFsServiceSftp";
     public static final String PRIVATEKEY_NODENAME_PREFIX = "private.key.";
 
-    public static/* final */class SepaException extends RuntimeException {
+    public static class SepaException extends RuntimeException {
         private static final long serialVersionUID = 1L;
 
         public SepaException() {
@@ -70,80 +53,7 @@ public abstract class AbstractSepa {
         }
     }
 
-    private static final Logger LOG = LoggerFactory.getLogger(AbstractSepa.class);
-    ChannelSftp client = null;
-
-    // XML ---------------------------------------------------------
-
-    protected InputStream toInputStream(Document doc) {
-        ByteArrayOutputStream outputStream = null;
-        try {
-            outputStream = new ByteArrayOutputStream();
-            Source xmlSource = new DOMSource(doc);
-            Result outputTarget = new StreamResult(outputStream);
-            TransformerFactory.newInstance().newTransformer().transform(xmlSource, outputTarget);
-            return new ByteArrayInputStream(outputStream.toByteArray());
-        } catch (TransformerConfigurationException e) {
-            throw new SepaException(e);
-        } catch (TransformerException e) {
-            throw new SepaException(e);
-        } catch (TransformerFactoryConfigurationError e) {
-            throw new SepaException(e);
-        } finally {
-            IOUtils.closeQuietly(outputStream);
-        }
-    }
-
-    public static Document parseDocument(InputStream source) {
-        Document doc;
-        try {
-            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            dbf.setNamespaceAware(true);
-            DocumentBuilder documentBuilder = dbf.newDocumentBuilder();
-            doc = documentBuilder.parse(source);
-        } catch (ParserConfigurationException e) {
-            throw new SepaException("XML Parser error: " + e, e);
-        } catch (SAXException e) {
-            throw new SepaException("XML Error: " + e, e);
-        } catch (IOException e) {
-            throw new SepaException("IO error trying to parse source stream: " + e, e);
-        }
-        return doc;
-    }
-
-    // how to convert xml document/node/elements into java objects
-    public static <T> T unmarshall(Document doc, Class<? extends T> clazz) {
-        try {
-            JAXBContext jc = JAXBContext.newInstance(clazz);
-
-            Unmarshaller unmarshaller = jc.createUnmarshaller();
-            unmarshaller.setEventHandler(new DefaultValidationEventHandler());
-
-            return unmarshaller.unmarshal(doc, clazz).getValue();
-        } catch (JAXBException e) {
-            throw new SepaException("unable to convert xml document to java object of class " + clazz.getName() + ": "
-                    + e, e);
-        }
-    }
-
-    // how to convert xml document/node/elements into java objects
-    protected Document marshall(Object input) {
-        try {
-            JAXBContext jc = JAXBContext.newInstance(input.getClass());
-
-            Marshaller marshaller = jc.createMarshaller();
-            marshaller.setEventHandler(new DefaultValidationEventHandler());
-
-            DOMResult result = new DOMResult();
-            marshaller.marshal(input, result);
-            return result.getNode().getOwnerDocument();
-        } catch (JAXBException e) {
-            throw new SepaException("unable to convert java object of class " + input.getClass().getName()
-                    + " to an xml document: " + e, e);
-        }
-    }
-
-    // FTP -------------------------------------------
+    private ChannelSftp client = null;
 
     /**
      * Connecte au serveur SFTP spécifié, et retourne la canal utilisé pour transmettre les informations. Il faut
@@ -163,16 +73,17 @@ public abstract class AbstractSepa {
         Validate.isTrue((StringUtils.isBlank(password) || keyFiles.isEmpty())
                 && (StringUtils.isNotBlank(password) || !keyFiles.isEmpty()),
                 "you must specify a password or a key file, but not both");
+
         for (String keyFile : keyFiles) {
             if (StringUtils.isNotBlank(keyFile)) {
                 Validate.isTrue(new File(keyFile).isFile(), "keyFile does not exist");
             }
         }
-        JSch jsch = new JSch();
 
+        final JSch jsch = new JSch();
         Session session;
+
         try {
-            // if specified, set an identity (yet a private ssh key file)
             for (String keyFile : keyFiles) {
                 if (StringUtils.isNotBlank(keyFile)) {
                     try {
@@ -187,26 +98,28 @@ public abstract class AbstractSepa {
 
             session = port == null ? jsch.getSession(user, server) : jsch.getSession(user, server, port);
 
-            // if specified, set the password
             if (StringUtils.isNotBlank(password)) {
                 session.setPassword(password);
             }
 
-            // XXX FIXME CRITICAL SECURITY BREACH!!!
-            // as per original code in globaz.jade.fs.service.jsch.JadeFsService#~576, we need to explicitly
-            // disable strict host key checks, making us vulnerable to man-in-the-middle attacks (ref.
-            // http://stackoverflow.com/questions/30178936/jsch-sftp-security-with-session-setconfigstricthostkeychecking-no).
-            // And since we are transferring financial informations over the public internet (to PostFinance...), this
-            // is terribly embarrassing and should be fixed ASAP: it is blocker, should prevent any deployment to
-            // production and send shame on us. But as ever, nobody really cares...
+            /**
+             * FIXME CRITICAL SECURITY BREACH!!!
+             * as per original code in globaz.jade.fs.service.jsch.JadeFsService#~576, we need to explicitly
+             * disable strict host key checks, making us vulnerable to man-in-the-middle attacks (ref.
+             * http://stackoverflow.com/questions/30178936/jsch-sftp-security-with-session-
+             * setconfigstricthostkeychecking-no).
+             * And since we are transferring financial informations over the public internet (to PostFinance...), this
+             * is terribly embarrassing and should be fixed ASAP: it is blocker, should prevent any deployment to
+             * production and send shame on us. But as ever, nobody really cares...
+             */
             session.setConfig("StrictHostKeyChecking", "no");
-
-            // pfiou we are connected, pop the champaign
             session.connect();
+
             LOG.info("successfully connected to {}", server);
 
             Channel channel = session.openChannel("sftp");
             channel.connect();
+
             return (ChannelSftp) channel;
         } catch (JSchException e) {
             throw new SepaException("unable to connect to ftp: " + e, e);
@@ -242,8 +155,9 @@ public abstract class AbstractSepa {
 
     protected String[] listFiles(ChannelSftp client, String foldername) {
         try {
-            List<String> result = new ArrayList<String>();
-            List<LsEntry> found = new ArrayList<LsEntry>(client.ls(foldername));
+            final List<String> result = new ArrayList<String>();
+            final List<LsEntry> found = new ArrayList<LsEntry>(client.ls(foldername));
+
             for (LsEntry entry : found) {
                 result.add(entry.getFilename());
             }
@@ -255,13 +169,11 @@ public abstract class AbstractSepa {
     }
 
     protected void retrieveData(ChannelSftp client, String filename, OutputStream target) {
-
         try {
             client.get(filename, target);
         } catch (SftpException e) {
             throw new SepaException("unable to get file from ftp: " + e, e);
         }
-
     }
 
     protected void disconnectQuietly(ChannelSftp ftp) {
@@ -271,18 +183,19 @@ public abstract class AbstractSepa {
     }
 
     protected List<String> loadPrivateKeyPathFromJadeConfigFile() {
-        // try fetching a private ssh key from legacy config files, mimic Jade behavior
-        InputStream jadeFsServerConfig = getClass().getResourceAsStream(LEGACY_JADE_CONFIG_FILE);
+        /*** try fetching a private ssh key from legacy config files, mimic Jade behavior */
+        final InputStream jadeFsServerConfig = getClass().getResourceAsStream(LEGACY_JADE_CONFIG_FILE);
 
         if (jadeFsServerConfig == null) {
             LOG.info("file {} not found. skipping retrieval of private ssh key for connecting to SFTP",
                     LEGACY_JADE_CONFIG_FILE);
-            return null;
+            return new ArrayList<String>();
         }
-        List<String> privateKeyList = new ArrayList<String>();
 
-        Document doc = parseDocument(jadeFsServerConfig);
-        NodeList allProtocols = doc.getDocumentElement().getElementsByTagName("protocols");
+        final List<String> privateKeyList = new ArrayList<String>();
+
+        final Document doc = CAJaxbUtil.parseDocument(jadeFsServerConfig);
+        final NodeList allProtocols = doc.getDocumentElement().getElementsByTagName("protocols");
 
         for (int i = 0; i < allProtocols.getLength(); i++) {
             Element protocols = (Element) allProtocols.item(i);
@@ -321,7 +234,7 @@ public abstract class AbstractSepa {
     /** Connecte sur le ftp cible, dans le folder adapté à l'envoi de messages SEPA. */
     protected ChannelSftp getClient() {
         if (client == null) {
-            List<String> privateKeyList = loadPrivateKeyPathFromJadeConfigFile();
+            final List<String> privateKeyList = loadPrivateKeyPathFromJadeConfigFile();
 
             // try fetching configuration from database
             String login = null;
@@ -329,15 +242,15 @@ public abstract class AbstractSepa {
             Integer port = null;
             String host = null;
             try {
-                host = CAProperties.ISO_SEPA_FTP_HOST.getValue();
-                String sport = CAProperties.ISO_SEPA_FTP_PORT.getValue();
+                host = getValueProperties(getHost());
+                String sport = getValueProperties(getPort());
 
                 if (StringUtils.isNotBlank(sport)) {
                     port = Integer.parseInt(sport);
                 }
 
-                login = CAProperties.ISO_SEPA_FTP_USER.getValue();
-                password = CAProperties.ISO_SEPA_FTP_PASS.getValue();
+                login = getValueProperties(getUser());
+                password = getValueProperties(getPassword());
 
             } catch (Exception e) {
                 throw new SepaException("unable to retrieve ftp config: " + e, e);
@@ -350,4 +263,40 @@ public abstract class AbstractSepa {
         // go connect
         return client;
     }
+
+    private String getValueProperties(final CAProperties property) throws PropertiesException {
+        if (property == null) {
+            return "";
+        }
+
+        return property.getValue();
+    }
+
+    /**
+     * Le fils doit définir le host
+     * 
+     * @return La propriété HOST
+     */
+    protected abstract CAProperties getHost();
+
+    /**
+     * Le fils doit définir le port
+     * 
+     * @return La propriété PORT
+     */
+    protected abstract CAProperties getPort();
+
+    /**
+     * Le fils doit définir le user
+     * 
+     * @return La propriété USER
+     */
+    protected abstract CAProperties getUser();
+
+    /**
+     * Le fils peut définir le mot de passe
+     * 
+     * @return La propriété PASSWORD
+     */
+    protected abstract CAProperties getPassword();
 }

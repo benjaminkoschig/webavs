@@ -1284,6 +1284,13 @@
 					<parameter name="selectedId"/>
 				</action>
 			</node>
+			<node id="CA-OrdresGroupeValidationManuelle">
+				<label refId="OPTIONS_ORDRE_VALIDATION_MANUELLE"/>
+				<action responseTarget="fr_main" command="/osiris">
+					<parameter value="osiris.ordres.ordresGroupes.valider" name="userAction"/>
+					<parameter name="selectedId"/>
+				</action>
+			</node>
 		</nodes>
 	</menu>
 

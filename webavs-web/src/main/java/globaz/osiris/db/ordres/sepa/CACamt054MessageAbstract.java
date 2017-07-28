@@ -1,4 +1,4 @@
-package globaz.osiris.db.ordres;
+package globaz.osiris.db.ordres.sepa;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -6,16 +6,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
-public abstract class AbstractCACamt054Message<T> {
+public abstract class CACamt054MessageAbstract<T> {
 
     protected static final String RETURN_LINE = "\r\n ";
 
     protected String enteteLevel = null;
     protected Map<Level, List<String>> messages = null;
 
-    public AbstractCACamt054Message(final T object) {
+    public CACamt054MessageAbstract(final T object, final String numeroReference) {
         messages = new HashMap<Level, List<String>>();
-        enteteLevel = getFormattedEnteteLevel(object);
+        enteteLevel = getFormattedEnteteLevel(object, numeroReference);
     }
 
     protected boolean checkAcceptedLevel(final Level level) {
@@ -66,7 +66,8 @@ public abstract class AbstractCACamt054Message<T> {
      * Obtenir un message d'entête formaté (selon la méthodologie de la classe d'implémentation)
      * 
      * @param object Un objet typé.
+     * @param numeroReference Le numéro de référence qui fait fois.
      * @return Une chaîne de caractères (ne retourne jamais null).
      */
-    public abstract String getFormattedEnteteLevel(final T object);
+    public abstract String getFormattedEnteteLevel(final T object, final String numeroReference);
 }

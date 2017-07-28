@@ -3,6 +3,7 @@ package globaz.osiris.db.ordres;
 import globaz.framework.util.FWCurrency;
 import globaz.framework.util.FWMemoryLog;
 import globaz.framework.util.FWMessage;
+import globaz.framework.util.FWMessageFormat;
 import globaz.globall.db.BEntity;
 import globaz.globall.db.BManager;
 import globaz.globall.db.GlobazServer;
@@ -21,23 +22,29 @@ import globaz.osiris.api.APIEcriture;
 import globaz.osiris.api.APIOperation;
 import globaz.osiris.api.APISection;
 import globaz.osiris.api.ordre.APIOrganeExecution;
+import globaz.osiris.api.process.APIProcessUpload;
 import globaz.osiris.application.CAApplication;
 import globaz.osiris.db.access.recouvrement.CAPlanRecouvrement;
 import globaz.osiris.db.comptes.CAJournal;
 import globaz.osiris.db.comptes.CAJournalISODetail;
 import globaz.osiris.db.comptes.CAOperation;
+import globaz.osiris.db.comptes.CAOperationOrdreRecouvrement;
 import globaz.osiris.db.comptes.CAPaiementBVR;
 import globaz.osiris.db.comptes.CARecouvrement;
 import globaz.osiris.db.comptes.CARubrique;
 import globaz.osiris.db.comptes.CARubriqueManager;
 import globaz.osiris.db.comptes.CASection;
-import globaz.osiris.db.ordres.sepa.AbstractSepa;
-import globaz.osiris.db.ordres.sepa.CACamt054BVRVersionResolver;
+import globaz.osiris.db.ordres.sepa.CACamt054BaliseType;
 import globaz.osiris.db.ordres.sepa.CACamt054DefinitionType;
+import globaz.osiris.db.ordres.sepa.CACamt054DetailMessage;
 import globaz.osiris.db.ordres.sepa.CACamt054GroupTransaction;
+import globaz.osiris.db.ordres.sepa.CACamt054GroupTxMessage;
+import globaz.osiris.db.ordres.sepa.CACamt054GroupsMessage;
 import globaz.osiris.db.ordres.sepa.CACamt054Notification;
 import globaz.osiris.db.ordres.sepa.CACamt054Processor;
-import globaz.osiris.db.ordres.sepa.CaCamtDefinitionType;
+import globaz.osiris.db.ordres.sepa.CACamt054Statistiques;
+import globaz.osiris.db.ordres.sepa.CACamt054VersionResolver;
+import globaz.osiris.db.ordres.sepa.CAJaxbUtil;
 import globaz.osiris.db.ordres.sepa.exceptions.CACamt054UnsupportedVersionException;
 import globaz.osiris.db.yellowreportfile.CAYellowReportFile;
 import globaz.osiris.db.yellowreportfile.CAYellowReportFileService;
@@ -123,7 +130,7 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
     private String nomClasseParserLSV = new String();
     private String numeroRubrique;
     private String numInterneLsv = new String();
-    private boolean retrieveBvrFromDataBase = true;
+    private boolean retrieveFromDataBase = true;
     // création des variable de travail
     private globaz.osiris.db.comptes.CARubrique rubrique = null;
     private long totTransactionErreur = 0;
@@ -408,38 +415,6 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
     }
 
     /**
-     * Date de création : (18.02.2002 10:55:57)
-     * 
-     * @param context
-     *            globaz.osiris.process.CAProcessBVR
-     */
-    public List<String> executeBVR(globaz.osiris.process.CAProcessBVR context) {
-
-        if (getIdTypeTraitementBV().equals(APIOrganeExecution.BVR_TYPE3)) {
-            String idJournal = executeFlatFileBVR(context);
-
-            if (idJournal != null) {
-                List<String> idJouraux = new ArrayList<String>();
-                idJouraux.add(idJournal);
-                return idJouraux;
-            }
-
-            return null;
-        } else if (getIdTypeTraitementBV().equals(APIOrganeExecution.BVR_CAMT054)) {
-            return executeCAMT054BVR(context);
-        } else {
-            try {
-                getMemoryLog().logMessage("5325", getIdTypeTraitementBV(), FWMessage.FATAL, this.getClass().getName());
-
-            } catch (Exception e) {
-                _addError(context.getTransaction(), e.toString());
-            }
-        }
-
-        return null;
-    }
-
-    /**
      * Mise à jour du yellow report file (si on en fait et qu'on est pas en mode simulation)
      * 
      * @param state L'état souhaité.
@@ -465,32 +440,33 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
 
     private List<String> executeCAMT054BVR(globaz.osiris.process.CAProcessBVR context) {
         final List<String> idJournaux = new ArrayList<String>();
+        final CACamt054DefinitionType type = CACamt054DefinitionType.BVR;
 
         try {
-            final IntReferenceBVRParser refBVR = initRefBvr(context);
+            final IntReferenceBVRParser refBVR = initReference(context, CACamt054DefinitionType.BVR);
             final InputStream source = resolveFileFromProcessContext(context);
-            final Document doc = AbstractSepa.parseDocument(source);
+            final Document doc = CAJaxbUtil.parseDocument(source);
 
             // Mettre le yellow report file en traitement (si on en fait)
             majYellowReportFile(CAYellowReportFileState.IN_TREATMENT, context.getIdYellowReportFile(),
                     context.getSimulation(), null);
 
             // Savoir si le fichier est un CAMT054 (ISO) supporté dans l'application
-            if (!CACamt054BVRVersionResolver.isSupportedVersion(doc.getDocumentElement().getNamespaceURI())) {
+            if (!CACamt054VersionResolver.isSupportedVersion(doc.getDocumentElement().getNamespaceURI(), type)) {
                 getMemoryLog().logMessage("5350", context.getFileName(), FWMessage.ERREUR, this.getClass().getName());
                 // Lancer une exception pour que dans le catch du bas, cela met le yellow report file en erreur
                 throw new CACamt054UnsupportedVersionException(getSession().getLabel("5350"));
             }
 
             // Création du journal CA
-            CAJournal journal = initJournal(context);
+            CAJournal journal = createJournal(context);
 
-            final Map<String, CAOrganeExecution> organesExecutions = getOrganesExecutionsBVRCamt054();
-            final List<CACamt054Notification> notifications = getNotifications(context, doc);
+            final Map<String, CAOrganeExecution> organesExecutions = getOrganesExecutions(true, false);
+            final List<CACamt054Notification> notifications = getNotifications(context, doc, type);
 
             // Boucle sur chaque notification (B LEVEL)
             for (CACamt054Notification notification : notifications) {
-                CACamt054GroupTxMessage groupMessage = manageNotification(context, idJournaux, refBVR, notification,
+                CACamt054GroupTxMessage groupMessage = manageNotificationBVR(context, idJournaux, refBVR, notification,
                         journal, organesExecutions);
                 groupesMessage.addGroup(groupMessage);
             }
@@ -516,12 +492,13 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
         }
     }
 
-    private Map<String, CAOrganeExecution> getOrganesExecutionsBVRCamt054() throws Exception {
+    private Map<String, CAOrganeExecution> getOrganesExecutions(boolean isBvr, boolean isLsv) throws Exception {
         final Map<String, CAOrganeExecution> organesExecutions = new HashMap<String, CAOrganeExecution>();
 
         final CAOrganeExecutionManager manager = new CAOrganeExecutionManager();
         manager.setSession(getSession());
-        manager.setTypeBVRCAMT054Only(true);
+        manager.setTypeBVRCAMT054Only(isBvr);
+        manager.setTypeLSVCAMT054Only(isLsv);
         manager.find(BManager.SIZE_NOLIMIT);
 
         for (int i = 0; i < manager.getSize(); i++) {
@@ -532,8 +509,7 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
         return organesExecutions;
     }
 
-    private void businessErrorStateForStateYellowReportFile(globaz.osiris.process.CAProcessBVR context)
-            throws Exception {
+    private void businessErrorStateForStateYellowReportFile(APIProcessUpload context) throws Exception {
         if (groupesMessage.hasErrors() || getMemoryLog().hasErrors()) {
             majYellowReportFile(CAYellowReportFileState.PARTIAL, context.getIdYellowReportFile(),
                     context.getSimulation(), getMessageForYellowReportFile(context.getEMailAddress()));
@@ -549,13 +525,14 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
                 JadeDateUtil.getGlobazFormattedDateTime(new Date()));
     }
 
-    private List<CACamt054Notification> getNotifications(globaz.osiris.process.CAProcessBVR context, final Document doc) {
+    private List<CACamt054Notification> getNotifications(APIProcessUpload context, final Document doc,
+            final CACamt054DefinitionType type) {
 
         List<CACamt054Notification> notifications = new ArrayList<CACamt054Notification>();
 
         try {
             // Permet de récupérer la liste des notifications sans savoir la version du document que l'on a.
-            notifications = CACamt054BVRVersionResolver.resolveDocument(doc, context.getFileName());
+            notifications = CACamt054VersionResolver.resolveDocument(doc, context.getFileName(), type);
 
             if (notifications.isEmpty()) {
                 getMemoryLog().logMessage("CAMT054EmptyBlevelException", context.getFileName(), FWMessage.ERREUR,
@@ -563,7 +540,7 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
             }
 
             // Mettre le nombre maximum d'entité à performer
-            context.setProgressScaleValue(countAll(notifications));
+            context.setProgressScaleValueProcess(countAll(notifications));
 
         } catch (CACamt054UnsupportedVersionException exception) {
             JadeLogger.error(exception, exception.getMessage());
@@ -573,7 +550,7 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
         return notifications;
     }
 
-    private CACamt054GroupTxMessage manageNotification(globaz.osiris.process.CAProcessBVR context,
+    private CACamt054GroupTxMessage manageNotificationBVR(globaz.osiris.process.CAProcessBVR context,
             final List<String> idJournaux, final IntReferenceBVRParser refBVR,
             final CACamt054Notification notification, final CAJournal journal,
             final Map<String, CAOrganeExecution> organesExecutions) throws Exception {
@@ -594,7 +571,7 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
             int nbTransactionTotal = 0;
 
             // Validation du C LEVEL
-            boolean isValid = validationCLevel(groupTx, groupTxMessage, organesExecutions);
+            boolean isValid = validationCLevel(groupTx, groupTxMessage, organesExecutions, CACamt054DefinitionType.BVR);
             if (!isValid) {
                 context.setProgressCounter(context.getProgressCounter() + groupTx.getListTransactions().size());
                 continue;
@@ -604,10 +581,11 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
             for (IntBVRPojo txDetail : groupTx.getListTransactions()) {
 
                 // Validation du D LEVEL
-                validationDLevel(context, groupTx);
+                validationDLevelBVR(context, groupTx);
 
                 // Gestion de la transaction D LEVEL
-                final CACamt054DetailMessage detailMessage = manageTx(context, refBVR, txDetail, montantTotal, journal);
+                final CACamt054DetailMessage detailMessage = manageTxBVR(context, refBVR, txDetail, montantTotal,
+                        journal);
                 groupTxMessage.addDetail(detailMessage);
 
                 nbTransactionTotal++;
@@ -625,16 +603,34 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
         return groupTxMessage;
     }
 
-    private boolean validationDLevel(globaz.osiris.process.CAProcessBVR context, CACamt054GroupTransaction groupTx) {
+    private boolean validationDLevelBVR(APIProcessUpload context, CACamt054GroupTransaction groupTx) {
         boolean isValid = true;
 
-        // On met en erreur les transactions quand le C Level est de type CAJT (contre passation) et que le reversal
-        // indication est à true
-        if (groupTx.getSubFamilyCode().equals(CaCamtDefinitionType.SUBFAMILY_CAJT.getCode())
+        /***
+         * On met en erreur les transactions quand le C Level est de type CAJT (contre passation) et que le reversal
+         * indication est à true
+         */
+        if (groupTx.getSubFamilyCode().equals(CACamt054BaliseType.SUBFA_CAJT.getCode())
                 && groupTx.isReversalIndication()) {
             isValid = false;
-            context.getMemoryLog().logMessage(getSession().getLabel("5601"), FWMessage.ERREUR,
+            context.getMemoryLogProcess().logMessage(getSession().getLabel("5601"), FWMessage.ERREUR,
                     this.getClass().getName());
+        }
+
+        return isValid;
+    }
+
+    private boolean validationDLevelLSV(IntBVRPojo txDetail, CACamt054GroupTransaction groupTx) {
+        boolean isValid = true;
+
+        /***
+         * On met en erreur les transactions quand le C Level a un reversal indication est à true
+         */
+        if (groupTx.isReversalIndication()) {
+            isValid = false;
+            FWMemoryLog memoryLog = new FWMemoryLog();
+            memoryLog.logMessage(getSession().getLabel("5602"), FWMessage.ERREUR, this.getClass().getName());
+            txDetail.setMemoryLog(memoryLog);
         }
 
         return isValid;
@@ -665,11 +661,18 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
     }
 
     protected boolean validationCLevel(final CACamt054GroupTransaction groupTx,
-            final CACamt054GroupTxMessage groupTxMessage, final Map<String, CAOrganeExecution> organesExecutions) {
+            final CACamt054GroupTxMessage groupTxMessage, final Map<String, CAOrganeExecution> organesExecutions,
+            final CACamt054DefinitionType type) {
         boolean isOk = true;
 
-        // Si le même numéro d'adhérent n'est pas le même que l'organe d'exécution
-        if (!getNoAdherentBVR().equals(groupTx.getNoAdherent())) {
+        /*** Si le même numéro d'adhérent n'est pas le même que l'organe d'exécution */
+        if ((!getNoAdherentBVR().equals(groupTx.getNoAdherent()) && CACamt054DefinitionType.BVR.equals(type))
+                || (!getNoAdherent().equals(groupTx.getNoAdherent()) && CACamt054DefinitionType.LSV.equals(type))) {
+
+            String noAdherentOrganeExecution = getNoAdherentBVR();
+            if (CACamt054DefinitionType.LSV.equals(type)) {
+                noAdherentOrganeExecution = getNoAdherent();
+            }
 
             final StringBuilder messageAdherent = new StringBuilder();
 
@@ -679,26 +682,28 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
             }
 
             messageAdherent.append(MessageFormat.format(getSession().getLabel("5339"), groupTx.getNoAdherent(),
-                    getNoAdherentBVR(), nomAdherent));
+                    nomAdherent, noAdherentOrganeExecution + " " + getNom()));
 
             groupTxMessage.addMessage(Level.WARNING, messageAdherent.toString());
 
-            isOk = false;
+            isOk &= false;
         }
 
-        // Nous acceptons que les groupes ayant le status BOOK
+        /*** Nous acceptons que les groupes ayant le status BOOK */
         if (!"BOOK".equalsIgnoreCase(groupTx.getStatus())) {
             groupTxMessage.addMessage(Level.WARNING, getSession().getLabel("5356") + " (" + groupTx.getStatus() + ")");
-            isOk = false;
+            isOk &= false;
         }
 
-        // Ne pas faire l'entry quand il n'est pas de type BVR
-        if (!(new CACamt054Processor().checkEntryForGoodType(CACamt054DefinitionType.CAMT054_BVR, groupTx))) {
-            final String message = MessageFormat.format(getSession().getLabel("5361"), groupTx.getNtryRef(),
+        /*** Ne pas faire l'entry quand il n'est pas de type qui existe (soit LSV ou BVR) */
+        if (!(new CACamt054Processor().checkEntryForGoodType(type, groupTx))) {
+            final String messageBasic = CACamt054DefinitionType.LSV.equals(type) ? "5362" : "5361";
+
+            final String message = MessageFormat.format(getSession().getLabel(messageBasic), groupTx.getNtryRef(),
                     groupTx.getBxTxCdEntry(), groupTx.getCtrlAmount());
 
             groupTxMessage.addMessage(Level.WARNING, message);
-            isOk = false;
+            isOk &= false;
         }
 
         return isOk;
@@ -725,9 +730,10 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
         } else {
             groupTxMessage.addMessage(Level.INFO, getSession().getLabel("5347") + montantTotal.toStringFormat());
         }
+
     }
 
-    private CACamt054DetailMessage manageTx(globaz.osiris.process.CAProcessBVR context,
+    private CACamt054DetailMessage manageTxBVR(globaz.osiris.process.CAProcessBVR context,
             final IntReferenceBVRParser refBVR, IntBVRPojo txDetail, final FWCurrency fTotal, CAJournal jrn)
             throws Exception {
 
@@ -809,7 +815,7 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
         }
     }
 
-    private InputStream resolveFileFromProcessContext(CAProcessBVR context) throws Exception {
+    private InputStream resolveFileFromProcessContext(APIProcessUpload context) throws Exception {
         FileInputStream fileInput;
 
         if (!context.getIdYellowReportFile().isEmpty()) {
@@ -822,7 +828,7 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
             return new ByteArrayInputStream(service.readContentFromIdBlob(read.getIdBlobContent()));
         } else {
             try {
-                if (retrieveBvrFromDataBase) {
+                if (retrieveFromDataBase) {
                     JadeFsFacade.copyFile(
                             "jdbc://" + Jade.getInstance().getDefaultJdbcSchema() + "/" + context.getFileName(), Jade
                                     .getInstance().getHomeDir() + "work/" + context.getFileName());
@@ -873,11 +879,6 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
     }
 
     private String executeFlatFileBVR(globaz.osiris.process.CAProcessBVR context) {
-
-        // TODO modifier le traitement si Opération auxiliaire
-
-        // TODO si OE flat mais file iso -> KO
-
         long totTransactionTraitee = 0;
         totTransactionOk = 0;
         totTransactionErreur = 0;
@@ -892,9 +893,9 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
             IntBVRFlatFileParser parser = initParser(context);
             // Instancier la classe qui permet de décomposer le numéro de
             // référence
-            IntReferenceBVRParser refBVR = initRefBvr(context);
+            IntReferenceBVRParser refBVR = initReference(context, CACamt054DefinitionType.BVR);
             // Créer un nouveau journal
-            CAJournal jrn = initJournal(context);
+            CAJournal jrn = createJournal(context);
 
             // Vérifier la condition de sortie
             if (context.isAborted() || (parser == null) || (refBVR == null) || (jrn == null)) {
@@ -1020,17 +1021,335 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
     }
 
     /**
+     * Date de création : (18.02.2002 10:55:57)
+     * 
+     * @param context
+     *            globaz.osiris.process.CAProcessBVR
+     */
+    public List<String> executeBVR(globaz.osiris.process.CAProcessBVR context) {
+
+        if (getIdTypeTraitementBV().equals(APIOrganeExecution.BVR_TYPE3)) {
+            String idJournal = executeFlatFileBVR(context);
+
+            if (idJournal != null) {
+                List<String> idJouraux = new ArrayList<String>();
+                idJouraux.add(idJournal);
+                return idJouraux;
+            }
+
+            return null;
+        } else if (getIdTypeTraitementBV().equals(APIOrganeExecution.BVR_CAMT054)) {
+            return executeCAMT054BVR(context);
+        } else {
+            try {
+                getMemoryLog().logMessage("5325", getIdTypeTraitementBV(), FWMessage.FATAL, this.getClass().getName());
+
+            } catch (Exception e) {
+                _addError(context.getTransaction(), e.toString());
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Insérez la description de la méthode ici. Date de création : (18.02.2002 10:55:57)
      * 
      * @param context
      *            globaz.osiris.process.CAProcessLSV
      */
     public void executeLSV(globaz.osiris.process.CAProcessLSV context) {
+
+        if (getIdTypeTraitementLS().equals(APIOrganeExecution.LSV_CAMT054_CHDD)
+                || getIdTypeTraitementLS().equals(APIOrganeExecution.LSV_CAMT054_CHTA)) {
+            executeCamt054LSV(context);
+        } else {
+            executeFlatFileLSV(context);
+        }
+    }
+
+    private void executeCamt054LSV(globaz.osiris.process.CAProcessLSV context) {
+
+        try {
+            final InputStream source = resolveFileFromProcessContext(context);
+            final Document doc = CAJaxbUtil.parseDocument(source);
+            final String nameSpace = doc.getDocumentElement().getNamespaceURI();
+            final CACamt054DefinitionType type = CACamt054DefinitionType.LSV;
+
+            /*** Mettre le yellow report file en traitement (si on en fait) */
+            majYellowReportFile(CAYellowReportFileState.IN_TREATMENT, context.getIdYellowReportFile(),
+                    context.getSimulation(), null);
+
+            /*** Contrôle si l'application supporte la version du fichier selon le type */
+            if (!CACamt054VersionResolver.isSupportedVersion(nameSpace, CACamt054DefinitionType.LSV)) {
+
+                getMemoryLog().logMessage("5350", context.getFileName(), FWMessage.ERREUR, this.getClass().getName());
+                throw new CACamt054UnsupportedVersionException(getSession().getLabel("5350"));
+            }
+
+            /*** Récupérer le parser de référence */
+            final IntReferenceBVRParser parser = initReference(context, CACamt054DefinitionType.LSV);
+
+            /*** Création d'un journal CA */
+            final CAJournal journal = createJournal(context);
+
+            /*** Récupération des objets métiers camt054 selon le type */
+            final List<CACamt054Notification> notifications = getNotifications(context, doc, type);
+            final Map<String, CAOrganeExecution> organesExecutions = getOrganesExecutions(true, false);
+
+            /*** Boucle sur chaque B-Level */
+            for (CACamt054Notification notification : notifications) {
+
+                final CACamt054GroupTxMessage groupTxMessage = manageNotificationLSV(context, journal, notification,
+                        organesExecutions, parser);
+
+                groupesMessage.addGroup(groupTxMessage);
+            }
+
+            /*** Lors d'erreurs métiers, nous mettons le yellow report file en partiel sinon en exécuté */
+            businessErrorStateForStateYellowReportFile(context);
+        } catch (Exception e) {
+            JadeLogger.error(this, e);
+
+            try {
+                getMemoryLog().logMessage(e.getMessage(), FWMessage.ERREUR, this.getClass().getName());
+
+                // Nous mettons le yellow report file en erreur, car c'est un erreur de niveau technique
+                majYellowReportFile(CAYellowReportFileState.FAILED, context.getIdYellowReportFile(),
+                        context.getSimulation(), getMessageForYellowReportFile(context.getEMailAddress()));
+            } catch (Exception ex) {
+                JadeLogger.error(this, ex);
+            }
+        }
+
+    }
+
+    private CACamt054GroupTxMessage manageNotificationLSV(globaz.osiris.process.CAProcessLSV context,
+            CAJournal journal, CACamt054Notification notification,
+            final Map<String, CAOrganeExecution> organesExecutions, IntReferenceBVRParser parser) throws Exception {
+
+        final CACamt054GroupTxMessage groupTxMessage = new CACamt054GroupTxMessage(notification);
+        CACamt054Statistiques statistiques = new CACamt054Statistiques();
+
+        /*** Vérification du IBAN */
+        checkIBANBLevel(notification, groupTxMessage);
+
+        /*** Ajoute des informations au journal CA */
+        if (!context.getSimulation().booleanValue()) {
+            addCamt054InfoToJrn(notification, journal);
+        }
+
+        /*** Boucle sur chaque C-Level */
+        for (CACamt054GroupTransaction groupTx : notification.getListGroupTxs()) {
+            final FWCurrency montantTotal = new FWCurrency();
+            statistiques.initStatGroupTransaction();
+
+            /*** Validation du C-Level */
+            boolean isValid = validationCLevelLSV(context, groupTx, groupTxMessage, organesExecutions,
+                    CACamt054DefinitionType.LSV);
+
+            if (!isValid) {
+                context.setProgressCounter(context.getProgressCounter() + groupTx.getListTransactions().size());
+                continue;
+            }
+
+            /*** Boucle sur chaque D-Level */
+            for (IntBVRPojo txDetail : groupTx.getListTransactions()) {
+
+                /*** Validation du D-Level */
+                validationDLevelLSV(txDetail, groupTx);
+
+                /*** Gestion du D-Level */
+                final CACamt054DetailMessage detailMessage = manageTxLSV(context, txDetail, montantTotal, journal,
+                        parser, statistiques);
+                groupTxMessage.addDetail(detailMessage);
+
+            }
+
+            /*** Vérification des champs de contrôle */
+            validationVerificationFields(groupTxMessage, groupTx, montantTotal, statistiques.getNbTxTreated());
+        }
+
+        /*** Exécuter la mise en compte */
+        miseEnCompte(context, statistiques.getTotTransactionErrors(), journal, groupTxMessage);
+
+        return groupTxMessage;
+    }
+
+    protected boolean validationCLevelLSV(globaz.osiris.process.CAProcessLSV context,
+            final CACamt054GroupTransaction groupTx, final CACamt054GroupTxMessage groupTxMessage,
+            final Map<String, CAOrganeExecution> organesExecutions, final CACamt054DefinitionType type) {
+
+        boolean isValid = true;
+
+        /*** Seule la devise CHF est acceptée */
+        if (type == CACamt054DefinitionType.LSV && !validationCodeMonnaie(groupTx.getCtrlCodeMonnaie())) {
+            groupTxMessage.addMessage(
+                    Level.SEVERE,
+                    MessageFormat.format(FWMessageFormat.prepareQuotes(getSession().getLabel("5411"), false),
+                            groupTx.getStatus()));
+            isValid &= false;
+        }
+
+        isValid &= validationCLevel(groupTx, groupTxMessage, organesExecutions, type);
+
+        return isValid;
+    }
+
+    private CACamt054DetailMessage manageTxLSV(final globaz.osiris.process.CAProcessLSV context,
+            final IntBVRPojo txDetail, final FWCurrency montantTotal, CAJournal jrn, IntReferenceBVRParser parser,
+            CACamt054Statistiques statistiques) {
+
+        final CACamt054DetailMessage txDetailMessage = new CACamt054DetailMessage(txDetail, getNumeroReferenceBrut(
+                txDetail, getIdTypeTraitementLS()));
+
+        try {
+            final String numReference = getNumeroRefLSV(txDetail, getIdTypeTraitementLS());
+            parser.setReference(numReference, getSession(), getNumInterneLsv());
+
+            final CARecouvrement oper = initOperation(context, numReference, jrn, txDetail, parser);
+
+            oper.validerFromLSV(context.getTransaction());
+
+            /*** Ajout de l'écriture */
+            addOperationIfNeeded(context, oper);
+
+            /*** Incrémente, additionne le montant total */
+            doStatsAndOthersThings(context, montantTotal, statistiques, oper);
+        } catch (Exception e) {
+            JadeLogger.error(e, e.getMessage());
+
+            try {
+                getMemoryLog().logMessage(e.getMessage(), FWMessage.ERREUR, this.getClass().getName());
+
+                /*** Nous mettons le yellow report file en erreur, car c'est un erreur de niveau technique */
+                majYellowReportFile(CAYellowReportFileState.FAILED, context.getIdYellowReportFile(),
+                        context.getSimulation(), getMessageForYellowReportFile(context.getEMailAddress()));
+            } catch (Exception ex) {
+                JadeLogger.error(ex, ex.getMessage());
+            }
+        } finally {
+            if (context.getSimulation()) {
+                /***
+                 * Pour éviter trop de lourdeur dans le code, je reprend les memorylog générés dans les processus
+                 * d'avant et je les réinjecte dans notre txDetailMessage pour le mail (uniquement en mode simulation)
+                 */
+                transformMemoryLogToDetailMessage(txDetail.getMemoryLog(), txDetailMessage);
+                transformMemoryLogToDetailMessage(context.getMemoryLog(), txDetailMessage);
+            }
+
+            txDetail.getMemoryLog().clear();
+            context.getMemoryLog().clear();
+        }
+
+        return txDetailMessage;
+    }
+
+    private CARecouvrement initOperation(final globaz.osiris.process.CAProcessLSV context, String numReference,
+            CAJournal jrn, final IntBVRPojo txDetail, IntReferenceBVRParser parser) {
+        final CARecouvrement oper = new CARecouvrement();
+        oper.setSession(context.getSession());
+        oper.setMemoryLog(txDetail.getMemoryLog());
+        oper.setIdJournal(jrn.getIdJournal());
+        oper.setIdOrganeExecution(getIdOrganeExecution());
+        oper.setGenreTransaction(txDetail.getGenreTransaction());
+        oper.setReference(numReference);
+        oper.setDateEcheance(txDetail.getDateTraitement());
+        oper.setIdSection(parser.getIdSection());
+        oper.setIdCompteAnnexe(parser.getIdCompteAnnexe());
+
+        oper.setAccountServicerReference(txDetail.getAccountServicerReference());
+        oper.setDebtor(txDetail.getDebtor());
+        oper.setBankTransactionCode(txDetail.getBankTransactionCode());
+
+        setMontantAndCodeDebitCredit(txDetail, oper);
+
+        return oper;
+    }
+
+    private void setMontantAndCodeDebitCredit(final IntBVRPojo txDetail, CARecouvrement oper) {
+        if (txDetail.getGenreEcriture().equals(IntBVRPojo.GENRE_CREDIT)) {
+            oper.setCodeDebitCredit(APIEcriture.CREDIT);
+        } else {
+            oper.setCodeDebitCredit(APIEcriture.DEBIT);
+        }
+
+        oper.setMontant(txDetail.getMontant());
+    }
+
+    private void doStatsAndOthersThings(final globaz.osiris.process.CAProcessLSV context,
+            final FWCurrency montantTotal, CACamt054Statistiques statistiques, final CARecouvrement oper) {
+        if (oper.getMemoryLog().hasErrors()) {
+            statistiques.incNbTxErrors();
+            statistiques.incTotTransactionErrors();
+        } else {
+            statistiques.incNbTxValidated();
+        }
+
+        /*** Incrémenter le montant total */
+        montantTotal.sub(oper.getMontant());
+
+        statistiques.incNbTxTreated();
+        context.incProgressCounter();
+    }
+
+    private void addOperationIfNeeded(final globaz.osiris.process.CAProcessLSV context, final CARecouvrement oper)
+            throws Exception {
+        if (!context.getSimulation().booleanValue()) {
+            oper.add(context.getTransaction());
+            if (oper.hasErrors() || oper.isNew()) {
+                _addError(context.getTransaction(), getSession().getLabel("5331"));
+            }
+        }
+    }
+
+    private String getNumeroReferenceBrut(final IntBVRPojo txDetail, String typeLSV) {
+        String numRef = null;
+
+        if (typeLSV.equals(APIOrganeExecution.LSV_CAMT054_CHTA)) {
+            numRef = txDetail.getNumeroReference();
+        } else if (typeLSV.equals(APIOrganeExecution.LSV_CAMT054_CHDD)) {
+            numRef = txDetail.getEndToEndId();
+        }
+
+        return numRef;
+    }
+
+    private String getNumeroRefLSV(final IntBVRPojo txDetail, String typeLSV) throws Exception {
+        String numRef = null;
+        if (typeLSV.equals(APIOrganeExecution.LSV_CAMT054_CHTA)) {
+            numRef = txDetail.getNumeroReference();
+        } else if (typeLSV.equals(APIOrganeExecution.LSV_CAMT054_CHDD)) {
+            try {
+                CAOperationOrdreRecouvrement recouvrement = new CAOperationOrdreRecouvrement();
+                recouvrement.setSession(getSession());
+                recouvrement.setIdOperation(txDetail.getEndToEndId());
+                recouvrement.retrieve();
+                if (!recouvrement.isNew()) {
+                    numRef = recouvrement.getReferenceBVR();
+                }
+            } catch (Exception e) {
+                // L'id de l'ordre de recouvrement n'a pas été trouvé donc on le considère comme le n° réf
+                return txDetail.getEndToEndId();
+            }
+        }
+        return numRef;
+    }
+
+    private boolean validationCodeMonnaie(String devise) {
+        boolean isValid = true;
+        if (!("CHF").equals(devise)) {
+            isValid = false;
+        }
+        return isValid;
+    }
+
+    private void executeFlatFileLSV(globaz.osiris.process.CAProcessLSV context) {
         // Sous contrôle d'exceptions
         try {
             // Initialiser
             IntBVRDDType2Parser parser = null;
-            IntReferenceBVRParser refLSV = null;
+            IntReferenceBVRParser refLSV = initReference(context, CACamt054DefinitionType.LSV);
 
             // Partager le log du contexte fourni
             setMemoryLog(context.getMemoryLog());
@@ -1040,7 +1359,6 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
                 return;
             }
 
-            // Instancier un parser en fonction du type
             if (getIdTypeTraitementLS().equals(APIOrganeExecution.LSV_POSTE)) {
                 parser = new CABVRDD2Parser();
             } else {
@@ -1063,27 +1381,6 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
             } catch (FileNotFoundException ex) {
                 _addError(context.getTransaction(), getSession().getLabel("5264") + " " + context.getFileName());
                 return;
-            }
-
-            // Vérifier la condition de sortie
-            if (context.isAborted()) {
-                return;
-            }
-
-            // Instancier la classe qui permet de décomposer le numéro de
-            // référence
-            if (JadeStringUtil.isBlank(getNomClasseParserLSV())) {
-                _addError(context.getTransaction(), getSession().getLabel("5332"));
-                return;
-            } else {
-                try {
-                    Class<?> cl = Class.forName(getNomClasseParserLSV());
-                    refLSV = (IntReferenceBVRParser) cl.newInstance();
-                    refLSV.setISession(context.getSession());
-                } catch (Exception ex) {
-                    _addError(context.getTransaction(), getSession().getLabel("5333"));
-                    return;
-                }
             }
 
             // Créer un nouveau journal
@@ -1738,14 +2035,14 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
      * @param jrn
      * @throws Exception
      */
-    private CAJournal initJournal(globaz.osiris.process.CAProcessBVR context) throws Exception {
+    private CAJournal createJournal(APIProcessUpload context) throws Exception {
         CAJournal jrn = new CAJournal();
         if (!context.getSimulation().booleanValue()) {
             jrn.setSession(context.getSession());
             jrn.setLibelle(context.getLibelle());
             jrn.setDateValeurCG(context.getDateValeur());
             jrn.setTypeJournal(CAJournal.TYPE_AUTOMATIQUE);
-            jrn.add(context.getTransaction());
+            jrn.add(context.getTransactionProcess());
 
             if (jrn.hasErrors()) {
                 throw new Exception(getSession().getLabel("5225"));
@@ -1834,7 +2131,7 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
 
             // Instancier un stream de lecture
             try {
-                if (retrieveBvrFromDataBase) {
+                if (retrieveFromDataBase) {
                     JadeFsFacade.copyFile(
                             "jdbc://" + Jade.getInstance().getDefaultJdbcSchema() + "/" + context.getFileName(), Jade
                                     .getInstance().getHomeDir() + "work/" + context.getFileName());
@@ -1862,20 +2159,26 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
      * @return
      * @throws CAOrganeExecutionException
      */
-    private IntReferenceBVRParser initRefBvr(globaz.osiris.process.CAProcessBVR context) throws Exception {
+    private IntReferenceBVRParser initReference(final APIProcessUpload context, CACamt054DefinitionType type)
+            throws Exception {
         IntReferenceBVRParser refBVR;
 
         // Vérifier la condition de sortie
-        if (context.isAborted()) {
+        if (context.isAbortedProcess()) {
             throw new Exception();
         }
 
         // Instancier la classe qui permet de décomposer le numéro de référence
-        if (JadeStringUtil.isBlank(getNomClasseParserBvr())) {
+        String nomClasseParser = getNomClasseParserBvr();
+        if (CACamt054DefinitionType.LSV.equals(type)) {
+            nomClasseParser = getNomClasseParserLSV();
+        }
+
+        if (JadeStringUtil.isBlank(nomClasseParser)) {
             throw new Exception(getSession().getLabel("5332"));
         } else {
             try {
-                Class<?> cl = Class.forName(getNomClasseParserBvr());
+                Class<?> cl = Class.forName(nomClasseParser);
                 refBVR = (IntReferenceBVRParser) cl.newInstance();
                 refBVR.setISession(context.getSession());
             } catch (Exception ex) {
@@ -1885,8 +2188,8 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
         return refBVR;
     }
 
-    public boolean isRetrieveBvrFromDataBase() {
-        return retrieveBvrFromDataBase;
+    public boolean isRetrieveFromDataBase() {
+        return retrieveFromDataBase;
     }
 
     /**
@@ -1898,7 +2201,7 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
      * @param jrn
      * @throws Exception
      */
-    private void miseEnCompte(globaz.osiris.process.CAProcessBVR context, long lStatKO, CAJournal jrn,
+    private void miseEnCompte(APIProcessUpload context, long lStatKO, CAJournal jrn,
             CACamt054GroupTxMessage groupTxMessage) throws Exception {
         if (!context.getSimulation().booleanValue() && !getMemoryLog().isOnFatalLevel()) {
             // Comptabiliser s'il n'y a aucune erreur
@@ -1909,7 +2212,7 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
             }
 
             // Mettre a jour
-            jrn.update(context.getTransaction());
+            jrn.update(context.getTransactionProcess());
             if (jrn.isNew() || jrn.hasErrors()) {
                 throw new Exception(getSession().getLabel("5225"));
             }
@@ -2046,8 +2349,8 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
         this.numInterneLsv = numInterneLsv;
     }
 
-    public void setRetrieveBvrFromDataBase(boolean retrieveBvrFromDataBase) {
-        this.retrieveBvrFromDataBase = retrieveBvrFromDataBase;
+    public void setRetrieveFromDataBase(boolean retrieveFromDataBase) {
+        this.retrieveFromDataBase = retrieveFromDataBase;
     }
 
     /**

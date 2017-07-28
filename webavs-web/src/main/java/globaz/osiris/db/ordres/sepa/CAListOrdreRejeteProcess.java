@@ -13,6 +13,8 @@ import globaz.jade.context.JadeThreadActivator;
 import globaz.jade.context.JadeThreadContext;
 import globaz.osiris.api.ordre.APIOrdreGroupe;
 import globaz.osiris.db.comptes.CAOperationManager;
+import globaz.osiris.db.comptes.CAOperationOrdreRecouvrement;
+import globaz.osiris.db.comptes.CAOperationOrdreRecouvrementManager;
 import globaz.osiris.db.comptes.CAOperationOrdreVersement;
 import globaz.osiris.db.comptes.CAOperationOrdreVersementManager;
 import globaz.osiris.db.ordres.CAOVforOR;
@@ -69,7 +71,7 @@ public class CAListOrdreRejeteProcess extends BProcess {
 
         Map<String, List<CAOrdreRejete>> mapOrdreRej = getOrdreRejeteForOG(getOrdreGroupe());
 
-        Map<String, CAOVforOR> opMap = getOpMapOVfromOG(getOrdreGroupe(), mapOrdreRej.keySet());
+        Map<String, CAOVforOR> opMap = getOpMapfromOG(getOrdreGroupe(), mapOrdreRej.keySet());
 
         for (Map.Entry<String, List<CAOrdreRejete>> entryOR : mapOrdreRej.entrySet()) {
 
@@ -152,7 +154,7 @@ public class CAListOrdreRejeteProcess extends BProcess {
         return mapOrdreRej;
     }
 
-    private Map<String, CAOVforOR> getOpMapOVfromOG(CAOrdreGroupe og, Set<String> idSet) {
+    private Map<String, CAOVforOR> getOpMapfromOG(CAOrdreGroupe og, Set<String> idSet) {
         Map<String, CAOVforOR> ovsMap = new HashMap<String, CAOVforOR>();
         List<String> idList = new ArrayList<String>();
         idList.addAll(idSet);
@@ -167,37 +169,60 @@ public class CAListOrdreRejeteProcess extends BProcess {
             if (!(idList == null)) {
                 inIds = StringUtils.join(idList.subList(i * 1000, max), ",");
             }
-            CAOperationOrdreVersement ordreV = null;
-            CAOperationOrdreVersementManager mgr = new CAOperationOrdreVersementManager();
-            mgr.setSession(getSession());
-            mgr.setForIdOrdreGroupe(og.getIdOrdreGroupe());
-            mgr.setInIdOperation(inIds);
-            mgr.setOrderBy(CAOperationManager.ORDER_IDOPERATION);
-            // try {
-            // mgr.find(BManager.SIZE_NOLIMIT);
-            // } catch (Exception e) {
-            // throw new SepaException("could not search for transactions: " + og.getIdOrdreGroupe() + ": " + e, e);
-            // }
 
-            // for (int j = 0; j < mgr.size(); j++) {
-            BStatement cursorOpen;
-            try {
-                cursorOpen = mgr.cursorOpen(getSession().getCurrentThreadTransaction());
+            if (CAOrdreGroupe.VERSEMENT.equals(og.getTypeOrdreGroupe())) {
 
-                while ((ordreV = (CAOperationOrdreVersement) mgr.cursorReadNext(cursorOpen)) != null) {
-                    // CAOperationOrdreVersement ov = (CAOperationOrdreVersement) mgr.getEntity(j);
-                    try {
-                        CAOVforOR pojo = new CAOVforOR(ordreV);
-                        ovsMap.put(ordreV.getIdOperation(), pojo);
-                    } catch (Exception e) {
-                        logger.error(
-                                "impossible de construire les info pour la ligne de détail sur l'OV"
-                                        + ordreV.getIdOperation(), e);
+                CAOperationOrdreVersement ordreV = null;
+                CAOperationOrdreVersementManager mgr = new CAOperationOrdreVersementManager();
+                mgr.setSession(getSession());
+                mgr.setForIdOrdreGroupe(og.getIdOrdreGroupe());
+                mgr.setInIdOperation(inIds);
+                mgr.setOrderBy(CAOperationManager.ORDER_IDOPERATION);
+
+                BStatement cursorOpen;
+                try {
+                    cursorOpen = mgr.cursorOpen(getSession().getCurrentThreadTransaction());
+
+                    while ((ordreV = (CAOperationOrdreVersement) mgr.cursorReadNext(cursorOpen)) != null) {
+                        try {
+                            CAOVforOR pojo = new CAOVforOR(ordreV);
+                            ovsMap.put(ordreV.getIdOperation(), pojo);
+                        } catch (Exception e) {
+                            logger.error(
+                                    "impossible de construire les info pour la ligne de détail sur l'OV"
+                                            + ordreV.getIdOperation(), e);
+                        }
                     }
+                } catch (Exception e) {
+                    throw new SepaException(
+                            "Impossible de récuperer les detail d'OrdreVersement pour constituer la liste", e);
                 }
-            } catch (Exception e) {
-                throw new SepaException("Impossible de récuperer les detail d'OrdreVersement pour constituer la lsite",
-                        e);
+            } else {
+                CAOperationOrdreRecouvrement ordreR = null;
+                CAOperationOrdreRecouvrementManager mgr = new CAOperationOrdreRecouvrementManager();
+                mgr.setSession(getSession());
+                mgr.setForIdOrdreGroupe(og.getIdOrdreGroupe());
+                mgr.setInIdOperation(inIds);
+                mgr.setOrderBy(CAOperationManager.ORDER_IDOPERATION);
+
+                BStatement cursorOpen;
+                try {
+                    cursorOpen = mgr.cursorOpen(getSession().getCurrentThreadTransaction());
+
+                    while ((ordreR = (CAOperationOrdreRecouvrement) mgr.cursorReadNext(cursorOpen)) != null) {
+                        try {
+                            CAOVforOR pojo = new CAOVforOR(ordreR);
+                            ovsMap.put(ordreR.getIdOperation(), pojo);
+                        } catch (Exception e) {
+                            logger.error(
+                                    "impossible de construire les info pour la ligne de détail sur l'OR"
+                                            + ordreR.getIdOperation(), e);
+                        }
+                    }
+                } catch (Exception e) {
+                    throw new SepaException(
+                            "Impossible de récuperer les detail d'OrdreVersement pour constituer la liste", e);
+                }
             }
         }
         return ovsMap;
@@ -255,7 +280,8 @@ public class CAListOrdreRejeteProcess extends BProcess {
         title = session.getLabel("LIST_OSIRIS_ORDREREJETE_TITLE");
 
         Details detail = new Details();
-        detail.add(session.getLabel("LIST_OSIRIS_ORDREREJETE_DETAIL_CAISSE"), CASepaOGConverterUtils.getNomCaisse70(og));
+        detail.add(session.getLabel("LIST_OSIRIS_ORDREREJETE_DETAIL_CAISSE"),
+                CASepaOGConverterUtils.getNomCaisse70(og.getOrganeExecution()));
         detail.newLigne();
         detail.add(session.getLabel("LIST_OSIRIS_ORDREREJETE_DETAIL_NUM_OG"), og.getIdOrdreGroupe());
         detail.newLigne();

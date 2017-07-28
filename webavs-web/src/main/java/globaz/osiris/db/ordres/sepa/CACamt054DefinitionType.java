@@ -4,30 +4,25 @@ import java.util.Arrays;
 import java.util.List;
 
 public enum CACamt054DefinitionType {
-    CAMT054_BVR(CaCamtDefinitionType.DOMAINE_PAIEMENT, CaCamtDefinitionType.FAMILY_CREDIT, Arrays.asList(
-            CaCamtDefinitionType.SUBFAMILY_VCOM, CaCamtDefinitionType.SUBFAMILY_CAJT)),
-    CAMT054_DD(CaCamtDefinitionType.DOMAINE_EMPTY, CaCamtDefinitionType.FAMILY_EMPTY, Arrays
-            .asList(CaCamtDefinitionType.SUBFAMILY_EMPTY)),
-    UNKNOWN(CaCamtDefinitionType.DOMAINE_EMPTY, CaCamtDefinitionType.FAMILY_EMPTY, Arrays
-            .asList(CaCamtDefinitionType.SUBFAMILY_EMPTY));
+    BVR(CACamt054BaliseType.DOM_PMNT, Arrays.asList(CACamt054BaliseType.FA_RCDT), Arrays.asList(
+            CACamt054BaliseType.SUBFA_VCOM, CACamt054BaliseType.SUBFA_CAJT)),
+    LSV(CACamt054BaliseType.DOM_PMNT, Arrays.asList(CACamt054BaliseType.FA_IDDT, CACamt054BaliseType.FA_RDDT), null),
+    UNKNOWN(CACamt054BaliseType.DOM_EMPTY, Arrays.asList(CACamt054BaliseType.FA_EMPTY), Arrays
+            .asList(CACamt054BaliseType.SUBFA_EMPTY));
 
-    final CaCamtDefinitionType domainCode;
-    final CaCamtDefinitionType familyCode;
-    final List<CaCamtDefinitionType> listSubFamilyCode;
+    final CACamt054BaliseType domainCode;
+    final List<CACamt054BaliseType> listFamilyCode;
+    final List<CACamt054BaliseType> listSubFamilyCode;
 
-    private CACamt054DefinitionType(final CaCamtDefinitionType domainCode, final CaCamtDefinitionType familyCode,
-            final List<CaCamtDefinitionType> listSubFamilyCode) {
+    private CACamt054DefinitionType(final CACamt054BaliseType domainCode, final List<CACamt054BaliseType> familyCode,
+            final List<CACamt054BaliseType> listSubFamilyCode) {
         this.domainCode = domainCode;
-        this.familyCode = familyCode;
+        listFamilyCode = familyCode;
         this.listSubFamilyCode = listSubFamilyCode;
     }
 
     public String getDomainCode() {
         return domainCode.getCode();
-    }
-
-    public String getFamilyCode() {
-        return familyCode.getCode();
     }
 
     public boolean isDefinitionMatching(final String domainCode, final String familyCode, final String subFamilyCode) {
@@ -37,12 +32,23 @@ public enum CACamt054DefinitionType {
         }
 
         boolean isSameValues = getDomainCode().equals(domainCode);
-        isSameValues &= getFamilyCode().equals(familyCode);
+
+        boolean hasFamily = false;
+        for (CACamt054BaliseType family : listFamilyCode) {
+            if (family.getCode().equals(familyCode)) {
+                hasFamily = true;
+            }
+        }
+        isSameValues &= hasFamily;
 
         boolean hasSubFamily = false;
-        for (CaCamtDefinitionType subFamily : listSubFamilyCode) {
-            if (subFamily.getCode().equals(subFamilyCode)) {
-                hasSubFamily = true;
+        if (listSubFamilyCode == null) {
+            hasSubFamily = true;
+        } else {
+            for (CACamt054BaliseType subFamily : listSubFamilyCode) {
+                if (subFamily.getCode().equals(subFamilyCode)) {
+                    hasSubFamily = true;
+                }
             }
         }
         isSameValues &= hasSubFamily;

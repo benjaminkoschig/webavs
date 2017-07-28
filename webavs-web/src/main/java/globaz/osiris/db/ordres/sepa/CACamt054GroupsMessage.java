@@ -1,4 +1,4 @@
-package globaz.osiris.db.ordres;
+package globaz.osiris.db.ordres.sepa;
 
 import java.util.ArrayList;
 import java.util.List;

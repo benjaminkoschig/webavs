@@ -14,6 +14,7 @@ import globaz.osiris.db.bvrftp.CABvrFtpListViewBean;
 import globaz.osiris.db.bvrftp.log.CABvrFtpLog;
 import globaz.osiris.db.ordres.CAOrdreGroupe;
 import java.io.IOException;
+import org.slf4j.LoggerFactory;
 
 public class CAOrdreGroupeFtpUtils {
 
@@ -107,7 +108,7 @@ public class CAOrdreGroupeFtpUtils {
             }
         } catch (Exception e) {
             session.addError(e.getMessage());
-
+            LoggerFactory.getLogger(CAOrdreGroupeFtpUtils.class.getName()).error(e.getMessage(), e);
             return false;
         }
     }

@@ -9,8 +9,10 @@ import globaz.osiris.api.ordre.APICommonOdreVersement;
 import globaz.osiris.api.ordre.APIOrdreGroupe;
 import globaz.osiris.db.comptes.CAOperationOrdreRecouvrement;
 import globaz.osiris.db.ordres.format.utils.CAOrdreFormatterUtils;
+import globaz.osiris.db.ordres.sepa.utils.CASepaCommonUtils;
 import globaz.osiris.db.utils.CAAdressePaiementFormatter;
 import globaz.osiris.external.IntAdressePaiement;
+import ch.globaz.osiris.business.constantes.CAProperties;
 
 /**
  * Insérez la description du type ici. Date de création : (08.04.2002 09:05:57)
@@ -226,12 +228,24 @@ public final class CAProcessFormatOrdreLSVBanque extends CAOrdreFormateur {
             CAAdressePaiementFormatter adp = new CAAdressePaiementFormatter();
             adp.setAdressePaiement(or.getAdressePaiement());
 
-            // Sélection fonction du genre d'adresse de paiement
-            if (adp.getTypeAdresse().equals(IntAdressePaiement.BANQUE)) {
-                sb = _formatBanque(or, ordreGroupe);
+            if (CAProperties.ISO_SEPA_ENABLE_IBAN_POSTAL.getBooleanValue()) {
+                String typeAdresse = CASepaCommonUtils.getTypeAdresseWithIBANPostalEnable(adp);
+                if (IntAdressePaiement.BANQUE.equals(typeAdresse)) {
+                    sb = _formatBanque(or, ordreGroupe);
+                } else {
+                    getMemoryLog()
+                            .logMessage("5206", adp.getTypeAdresse(), FWMessage.ERREUR, this.getClass().getName());
+                    return null;
+                }
             } else {
-                getMemoryLog().logMessage("5206", adp.getTypeAdresse(), FWMessage.ERREUR, this.getClass().getName());
-                return null;
+                // Sélection fonction du genre d'adresse de paiement
+                if (adp.getTypeAdresse().equals(IntAdressePaiement.BANQUE)) {
+                    sb = _formatBanque(or, ordreGroupe);
+                } else {
+                    getMemoryLog()
+                            .logMessage("5206", adp.getTypeAdresse(), FWMessage.ERREUR, this.getClass().getName());
+                    return null;
+                }
             }
 
             // Insérer un retour chariot
@@ -349,10 +363,18 @@ public final class CAProcessFormatOrdreLSVBanque extends CAOrdreFormateur {
             adp.setAdressePaiement(og.getOrganeExecution().getAdressePaiement());
             adp.checkAdressePaiement(getSession());
 
-            // Vérifier que l'adresse de paiement est une adresse bancaire
-            if (!adp.getTypeAdresse().equals(IntAdressePaiement.BANQUE)) {
-                getMemoryLog().logMessage("5228", null, FWMessage.FATAL, this.getClass().getName());
-                return null;
+            if (CAProperties.ISO_SEPA_ENABLE_IBAN_POSTAL.getBooleanValue()) {
+                String typeAdresse = CASepaCommonUtils.getTypeAdresseWithIBANPostalEnable(adp);
+                if (!IntAdressePaiement.BANQUE.equals(typeAdresse)) {
+                    getMemoryLog().logMessage("5228", null, FWMessage.FATAL, this.getClass().getName());
+                    return null;
+                }
+            } else {
+                // Vérifier que l'adresse de paiement est une adresse bancaire
+                if (!adp.getTypeAdresse().equals(IntAdressePaiement.BANQUE)) {
+                    getMemoryLog().logMessage("5228", null, FWMessage.FATAL, this.getClass().getName());
+                    return null;
+                }
             }
 
             // Construire l'header

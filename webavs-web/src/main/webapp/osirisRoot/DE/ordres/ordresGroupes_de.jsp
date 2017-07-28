@@ -37,6 +37,7 @@ function add() {
   	document.forms[0].elements('userAction').value="osiris.ordres.ordresGroupes.ajouter";
 
 }
+
 function upd() {
 	if (document.forms[0].etat.value == document.forms[0].transmis.value) {
 		document.forms[0].idOrganeExecution.disabled = true;
@@ -46,6 +47,7 @@ function upd() {
   	document.forms[0].elements('userAction').value="osiris.ordres.ordresGroupes.modifier";
 
 }
+
 function validate() {
     state = validateFields();
     if (document.forms[0].elements('_method').value == "add")
@@ -66,34 +68,63 @@ function validate() {
     return state;
 
 }
+
 function cancel() {
 	if (document.forms[0].elements('_method').value == "add")
 		document.forms[0].elements('userAction').value="back";
 	else
 		document.forms[0].elements('userAction').value="osiris.ordres.ordresGroupes.afficher";
 }
+
 function del() {
 	if (window.confirm("Sie sind dabei, den ausgewählten Sammelauftrag zu löschen! Wollen Sie fortfahren?")) {
         document.forms[0].elements('userAction').value="osiris.ordres.ordresGroupes.supprimer";
         document.forms[0].submit();
     }
 }
+
 function init(){
 	selectChangeISO20022(document.getElementById("idOrganeExecution"));
+	selectChangeAffichage();
 	selectChangePriority(document.getElementById("isoHighPriority"));
 }
+
+function postInit(){
+	selectChangeAffichage();
+}
+
 function changeAffichage(){
-	if (document.getElementById("typeOrdreGroupe").value==207002){
+	if (document.getElementById("typeOrdreGroupe").value==207002){ // VERSEMENT
+		
 		document.getElementById("tdVersement").style.display="block";
 		document.getElementById("tdRecouvrement").style.display="none";
-	} else {
+		
+		if($('#idOrganeExecution').find(':selected').attr('id') == 258003){
+			$('#trIsoHighPriority').show();
+		}
+	} else { // RECOUVREMENT
+		
 		document.getElementById("tdRecouvrement").style.display="block";
-		document.getElementById("tdVersement").style.display="none";			
+		document.getElementById("tdVersement").style.display="none";	
+		
+		if(document.forms[0].elements('_method').value == "add"){
+			$('#natureOrdresLivres option:selected').removeAttr('selected');
+			$("#natureOrdresLivres option[value='" + <%=CAOrdreGroupeViewBean.NATURE_VERSEMENT_RECOUVREMENT_COT%> + "']").attr('selected','selected');
+		}
+		
+		$('#trIsoHighPriority').hide();
 	}
 }
+
+function selectChangeAffichage(){
+	changeAffichage();
+}
+
 function selectChangeISO20022(s) {
 	changeAffichageISO20022(s[s.selectedIndex].id);
+	selectChangeAffichage();
 }
+
 function changeAffichageISO20022(cs) {
 	if(cs==258003){ // 258003 traitement ISO20022
 		$('.classIso').css('display', 'block'); $('.classNonIso').css('display', 'none');
@@ -101,9 +132,11 @@ function changeAffichageISO20022(cs) {
 		$('.classNonIso').css('display', 'block'); $('.classIso').css('display', 'none');
 	} 
 }
+
 function selectChangePriority(s) {
 	showPriorWarning(s[s.selectedIndex].value);
 }
+
 function showPriorWarning(val){
 	if(val==1){
 		$('.classPrioWarn').css('display', 'block');
@@ -175,7 +208,7 @@ function showPriorWarning(val){
 				_CsOrganeExecution.setForIdTypeTraitementOG(true);
 				_CsOrganeExecution.setSession(objSession);
 				_CsOrganeExecution .find(); %>
-               <select name="idOrganeExecution" onchange="selectChangeISO20022(this)">
+               <select id="idOrganeExecution" name="idOrganeExecution" onchange="selectChangeISO20022(this)">
                 <%	for (int i=0; i < _CsOrganeExecution.size(); i++) {
 				_organeExecution = (CAOrganeExecution) _CsOrganeExecution.getEntity(i);
 				if (_organeExecution .getIdOrganeExecution().equalsIgnoreCase(viewBean.getIdOrganeExecution())) { %>
@@ -222,7 +255,7 @@ function showPriorWarning(val){
               <%viewBean.getCsNaturesOrdresLivres();
 		FWParametersCode _csNatureOrdresLivres = null;
 %>
-              <SELECT name="natureOrdresLivres">
+              <SELECT id="natureOrdresLivres" name="natureOrdresLivres">
               <option value=""></option>
                 <%			for (int i=0; i < viewBean.getCsNaturesOrdresLivres().size(); i++) {
 				_csNatureOrdresLivres = (FWParametersCode) viewBean.getCsNaturesOrdresLivres().getEntity(i);
@@ -261,7 +294,7 @@ function showPriorWarning(val){
               <input type="text" name="isoGestionnaire" value="<%=viewBean.getIsoGestionnaire()%>" maxlength="25">
             </TD>
           </TR>
-          <TR class="classIso">
+          <TR id="trIsoHighPriority" class="classIso">
             <TD width="153">Ausführungspriorität</TD>
             <TD width="10"></TD>
             <TD nowrap width="289">
@@ -374,6 +407,7 @@ changeAffichage();
 	<ct:menuActivateNode active="yes" nodeId="<%=CAUtil.ID_MENU_NODE_CA_ORDRES_GROUPES_EXECUTION %>"/>
 	<ct:menuActivateNode active="yes" nodeId="<%=CAUtil.ID_MENU_NODE_CA_ORDRES_GROUPES_ANNULER %>"/>
 	<ct:menuActivateNode active="yes" nodeId="<%=CAUtil.ID_MENU_NODE_CA_ORDRES_REJETER_IMPRIMER %>"/>
+	<ct:menuActivateNode active="yes" nodeId="<%=CAUtil.ID_MENU_NODE_CA_ORDRES_VALIDATION_MANUELLE %>"/>
 	
 	<% if (!"0".equals(viewBean.getEtat())) { %>
 		<ct:menuActivateNode active="no" nodeId="<%=CAUtil.ID_MENU_NODE_CA_ORDRES_GROUPES_PREPARATION %>"/>
@@ -386,6 +420,9 @@ changeAffichage();
 	
 	<% if(APIOrdreGroupe.ISO_TRANSAC_STATUS_COMPLET.equals(viewBean.getIsoCsTransmissionStatutExec()) || !viewBean.hasOrdreRejetes()){ %>
 		<ct:menuActivateNode active="no" nodeId="<%=CAUtil.ID_MENU_NODE_CA_ORDRES_REJETER_IMPRIMER %>"/>
+	<% } %>
+	<% if(!APIOrdreGroupe.ISO_TRANSAC_STATUS_PARTIEL.equals(viewBean.getIsoCsTransmissionStatutExec()) && !APIOrdreGroupe.ISO_TRANSAC_STATUS_REJETE.equals(viewBean.getIsoCsTransmissionStatutExec())){ %>
+		<ct:menuActivateNode active="no" nodeId="<%=CAUtil.ID_MENU_NODE_CA_ORDRES_VALIDATION_MANUELLE %>"/>
 	<% } %>
 </ct:menuChange>
  

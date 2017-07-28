@@ -4,6 +4,8 @@ import globaz.globall.util.JADate;
 import globaz.globall.util.JAException;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.osiris.api.ordre.APIOrdreGroupe;
+import globaz.osiris.api.ordre.APIOrganeExecution;
+import globaz.osiris.db.comptes.CAOperationOrdreRecouvrement;
 import globaz.osiris.db.utils.CAAdressePaiementFormatter;
 import globaz.osiris.external.IntAdressePaiement;
 import javax.xml.datatype.DatatypeConfigurationException;
@@ -13,6 +15,7 @@ import com.six_interbank_clearing.de.pain_001_001_03_ch_02.AccountIdentification
 import com.six_interbank_clearing.de.pain_001_001_03_ch_02.CashAccount16CHIdAndCurrency;
 import com.six_interbank_clearing.de.pain_001_001_03_ch_02.GenericAccountIdentification1CH;
 import com.six_interbank_clearing.de.pain_001_001_03_ch_02.Priority2Code;
+import com.six_interbank_clearing.de.pain_008_001_02_ch_03.GenericAccountIdentification1;
 
 public class CASepaOGConverterUtils {
 
@@ -62,17 +65,17 @@ public class CASepaOGConverterUtils {
      * @return
      * @throws Exception
      */
-    public static String getNomCaisse70(APIOrdreGroupe og) throws Exception {
+    public static String getNomCaisse70(APIOrganeExecution organeExecution) throws Exception {
         String name;
         // fallback picoré dans les OV
-        if (!JadeStringUtil.isBlank(og.getOrganeExecution().getAdressePaiement().getAdresseCourrier().getAutreNom())) {
-            name = og.getOrganeExecution().getAdressePaiement().getAdresseCourrier().getAutreNom();
+        if (!JadeStringUtil.isBlank(organeExecution.getAdressePaiement().getAdresseCourrier().getAutreNom())) {
+            name = organeExecution.getAdressePaiement().getAdresseCourrier().getAutreNom();
         } else {
-            name = og.getOrganeExecution().getAdressePaiement().getNomTiersAdrPmt();
+            name = organeExecution.getAdressePaiement().getNomTiersAdrPmt();
         }
         // fallback ajouté pour la ccvs
         if (name == null || name.isEmpty()) {
-            name = og.getOrganeExecution().getAdressePaiement().getTiers().getNom();
+            name = organeExecution.getAdressePaiement().getTiers().getNom();
         }
         return CASepaCommonUtils.limit70(name);
     }
@@ -86,6 +89,10 @@ public class CASepaOGConverterUtils {
      */
     public static String getDbtrIBAN(APIOrdreGroupe og) throws Exception {
         return getIntAdressePaiementIBAN(og.getOrganeExecution().getAdressePaiement());
+    }
+
+    public static String getDbtrIBAN(CAOperationOrdreRecouvrement or) throws Exception {
+        return getIntAdressePaiementIBAN(or.getAdressePaiement());
     }
 
     /**
@@ -109,6 +116,14 @@ public class CASepaOGConverterUtils {
      */
     public static GenericAccountIdentification1CH getDbtrNotIBAN(APIOrdreGroupe og) throws Exception {
         return getNotIban(og.getOrganeExecution().getAdressePaiement());
+    }
+
+    public static GenericAccountIdentification1 getDbtrNotIBANPain008(APIOrdreGroupe og) throws Exception {
+        return CASepaCommonUtils.getNotIbanPain008(og.getOrganeExecution().getAdresseDebitTaxes());
+    }
+
+    public static GenericAccountIdentification1 getDbtrNotIBANPain008(CAOperationOrdreRecouvrement or) throws Exception {
+        return CASepaCommonUtils.getNotIbanPain008(or.getAdressePaiement());
     }
 
     /**

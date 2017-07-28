@@ -544,4 +544,34 @@ public class CARecouvrement extends CAPaiement implements APIRecouvrement {
 
     }
 
+    @Override
+    public String getDebtor() {
+        return transactionRecouvrement.getDebtor();
+    }
+
+    @Override
+    public String getBankTransactionCode() {
+        return transactionRecouvrement.getBankTransactionCode();
+    }
+
+    @Override
+    public String getAccountServicerReference() {
+        return transactionRecouvrement.getAccountServicerReference();
+    }
+
+    @Override
+    public void setBankTransactionCode(String bankTransactionCode) {
+        transactionRecouvrement.setBankTransactionCode(bankTransactionCode);
+    }
+
+    @Override
+    public void setDebtor(String debtor) {
+        transactionRecouvrement.setDebtor(debtor);
+    }
+
+    @Override
+    public void setAccountServicerReference(String accountServicerReference) {
+        transactionRecouvrement.setAccountServicerReference(accountServicerReference);
+    }
+
 }

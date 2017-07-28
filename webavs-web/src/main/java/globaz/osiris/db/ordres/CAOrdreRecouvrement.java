@@ -224,7 +224,7 @@ public class CAOrdreRecouvrement extends globaz.globall.db.BEntity implements ja
     public void _valider() {
 
         // Vérifier l'id paiement
-        if (JadeStringUtil.isIntegerEmpty(getIdAdressePaiement())) {
+        if (JadeStringUtil.isIntegerEmpty(getIdAdressePaiement()) && !getEstBloque()) {
             getMemoryLog().logMessage("5137", null, FWMessage.ERREUR, this.getClass().getName());
         }
 
@@ -253,10 +253,12 @@ public class CAOrdreRecouvrement extends globaz.globall.db.BEntity implements ja
                 getMemoryLog().logMessage("5142", null, FWMessage.ERREUR, this.getClass().getName());
             }
 
+            // Ne pas tenir compte de l'adresse de paiement si l'on souhaite bloqué l'ordre
+            // Ce cas permet de bloquer l'ordre même si l'adresse de paiement a été supprimé
             // Vérifier l'adresse de paiement
-            if (getAdressePaiement() == null) {
+            if (getAdressePaiement() == null && !getEstBloque()) {
                 getMemoryLog().logMessage("5146", getIdAdressePaiement(), FWMessage.ERREUR, this.getClass().getName());
-            } else {
+            } else if (getAdressePaiement() != null) {
                 setCodeISOPays(getAdressePaiement().getCodeISOPays());
                 setNoCompte(getAdressePaiement().getNumCompte());
                 setIdBanque(getAdressePaiement().getIdBanque());

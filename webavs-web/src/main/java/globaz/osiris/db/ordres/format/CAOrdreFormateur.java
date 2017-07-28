@@ -159,12 +159,40 @@ public abstract class CAOrdreFormateur {
 
     }
 
+    /**
+     * Formate un ordre de versement selon l'implémentation.
+     * 
+     * @param ov Un ordre de versement.
+     * @return Une chaîne de caractère sur les informations concernant l'ordre de versement.
+     * @throws Exception Une exception non gérée.
+     */
     public abstract StringBuffer format(APICommonOdreVersement ov) throws Exception;
 
+    /**
+     * Formate un ordre de recouvrement selon l'implémentation.
+     * 
+     * @param or Un ordre de recouvrement.
+     * @return Une chaîne de caractère sur les informations concernant l'ordre de recouvrement.
+     * @throws Exception Une exception non gérée.
+     */
     public abstract StringBuffer format(CAOperationOrdreRecouvrement or) throws Exception;
 
+    /**
+     * Formate en fin de ligne (ou fin de processus) selon l'implémentation.
+     * 
+     * @param og Un ordre groupé.
+     * @return Une chaîne de caractère en référence de fin de ligne (ou fin de processus).
+     * @throws Exception Une exception non gérée.
+     */
     public abstract StringBuffer formatEOF(APIOrdreGroupe og) throws Exception;
 
+    /**
+     * Formate en début de ligne (ou début de processus) selon l'implémentation.
+     * 
+     * @param og Un ordre groupé.
+     * @return Une chaîne de caractère en référence de début de ligne (ou début de processus).
+     * @throws Exception Une exception non gérée.
+     */
     public abstract StringBuffer formatHeader(APIOrdreGroupe og) throws Exception;
 
     /**

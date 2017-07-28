@@ -27,6 +27,10 @@ public class CATransactionRecouvrement extends globaz.globall.db.BEntity impleme
 
     private java.lang.String reference = new String();
 
+    private java.lang.String accountServicerReference = new String();
+    private java.lang.String bankTransactionCode = new String();
+    private java.lang.String debtor = new String();
+
     // code systeme
 
     /**
@@ -56,6 +60,10 @@ public class CATransactionRecouvrement extends globaz.globall.db.BEntity impleme
         monnaieISO = statement.dbReadString("MONNAIEISO");
         idOrganeExecution = statement.dbReadNumeric("IDORGANEEXECUTION");
         codeRefus = statement.dbReadNumeric("CODEREFUS");
+
+        accountServicerReference = statement.dbReadString("ACCTSVCRREF");
+        bankTransactionCode = statement.dbReadString("BKTXCD");
+        debtor = statement.dbReadString("DBTR");
     }
 
     /**
@@ -105,6 +113,36 @@ public class CATransactionRecouvrement extends globaz.globall.db.BEntity impleme
                 this._dbWriteNumeric(statement.getTransaction(), getIdOrganeExecution(), "idOrganeExecution"));
         statement
                 .writeField("CODEREFUS", this._dbWriteNumeric(statement.getTransaction(), getCodeRefus(), "codeRefus"));
+
+        statement.writeField("ACCTSVCRREF", this._dbWriteString(statement.getTransaction(),
+                getAccountServicerReference(), "account servicer reference"));
+        statement.writeField("BKTXCD",
+                this._dbWriteString(statement.getTransaction(), getBankTransactionCode(), "bank transaction code"));
+        statement.writeField("DBTR", this._dbWriteString(statement.getTransaction(), getDebtor(), "debtor"));
+    }
+
+    public void setBankTransactionCode(java.lang.String bankTransactionCode) {
+        this.bankTransactionCode = bankTransactionCode;
+    }
+
+    public void setDebtor(java.lang.String debtor) {
+        this.debtor = debtor;
+    }
+
+    public void setAccountServicerReference(java.lang.String accountServicerReference) {
+        this.accountServicerReference = accountServicerReference;
+    }
+
+    public java.lang.String getBankTransactionCode() {
+        return bankTransactionCode;
+    }
+
+    public java.lang.String getAccountServicerReference() {
+        return accountServicerReference;
+    }
+
+    public java.lang.String getDebtor() {
+        return debtor;
     }
 
     /**

@@ -2,9 +2,11 @@ package globaz.osiris.db.ordres;
 
 import static org.junit.Assert.*;
 import globaz.framework.util.FWMessageFormat;
-import globaz.osiris.db.ordres.sepa.AbstractSepa;
-import globaz.osiris.db.ordres.sepa.CACamt054BVRVersionResolver;
+import globaz.osiris.db.ordres.sepa.CACamt054DefinitionType;
+import globaz.osiris.db.ordres.sepa.CACamt054GroupTxMessage;
 import globaz.osiris.db.ordres.sepa.CACamt054Notification;
+import globaz.osiris.db.ordres.sepa.CACamt054VersionResolver;
+import globaz.osiris.db.ordres.sepa.CAJaxbUtil;
 import globaz.osiris.db.ordres.sepa.exceptions.CACamt054UnsupportedVersionException;
 import java.util.List;
 import java.util.logging.Level;
@@ -47,8 +49,8 @@ public class CAOrganeExecutionTest {
     @BeforeClass
     public static void init() throws CACamt054UnsupportedVersionException {
         organeExecution = new CAOrganeExecution();
-        Document camt054Bvr = AbstractSepa.parseDocument(CAOrganeExecutionTest.class
+        Document camt054Bvr = CAJaxbUtil.parseDocument(CAOrganeExecutionTest.class
                 .getResourceAsStream("/globaz/osiris/db/ordres/sepa/camt.054-BVR.xml"));
-        notifications = CACamt054BVRVersionResolver.resolveDocument(camt054Bvr, "");
+        notifications = CACamt054VersionResolver.resolveDocument(camt054Bvr, "", CACamt054DefinitionType.BVR);
     }
 }

@@ -4,7 +4,6 @@ import globaz.jade.client.util.JadeListUtil;
 import globaz.jade.log.JadeLogger;
 import globaz.osiris.db.ordres.sepa.exceptions.CACamt054UnsupportedVersionException;
 import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.w3c.dom.Document;
@@ -13,6 +12,8 @@ import ch.globaz.osiris.business.constantes.CAProperties;
 import com.jcraft.jsch.SftpException;
 
 public class CACamt054Processor extends AbstractSepa {
+
+    private static final long serialVersionUID = -3284528414276418236L;
 
     public List<String> getListFiles() throws PropertiesException {
 
@@ -35,20 +36,18 @@ public class CACamt054Processor extends AbstractSepa {
     }
 
     public boolean isCamt054AndWantedType(final CACamt054DefinitionType type, final Document document) {
-        boolean isSupportedAndWantedType = false;
+        boolean isSupportedAndWantedType = true;
 
-        // Savoir si les versions de camt054 sont supportées par l'application
-        if (CACamt054DefinitionType.CAMT054_BVR.equals(type)) {
-            List<CACamt054Notification> notifications = new ArrayList<CACamt054Notification>();
+        try {
+            final String namespace = document.getDocumentElement().getNamespaceURI();
+            final List<CACamt054Notification> notifications = CACamt054VersionResolver.resolveDocument(document, "",
+                    type);
 
-            try {
-                notifications = CACamt054BVRVersionResolver.resolveDocument(document, "");
-            } catch (CACamt054UnsupportedVersionException exception) {
-                JadeLogger.info(exception, exception.getMessage());
-            }
-
-            isSupportedAndWantedType = CACamt054BVRVersionResolver.isSupportedVersion(document.getDocumentElement()
-                    .getNamespaceURI()) && checkNotificationsForGoodType(type, notifications);
+            isSupportedAndWantedType &= CACamt054VersionResolver.isSupportedVersion(namespace, type);
+            isSupportedAndWantedType &= checkNotificationsForGoodType(type, notifications);
+        } catch (CACamt054UnsupportedVersionException exception) {
+            JadeLogger.info(exception, exception.getMessage());
+            isSupportedAndWantedType = false;
         }
 
         return isSupportedAndWantedType;
@@ -57,31 +56,31 @@ public class CACamt054Processor extends AbstractSepa {
     public boolean checkNotificationsForGoodType(final CACamt054DefinitionType type,
             final List<CACamt054Notification> notifications) {
 
-        boolean isCamt054Bvr = false;
+        boolean isCamt054Matching = false;
         for (final CACamt054Notification notification : notifications) {
             for (CACamt054GroupTransaction group : notification.getListGroupTxs()) {
-                if (!isCamt054Bvr) {
-                    isCamt054Bvr = checkEntryForGoodType(type, group);
+                if (!isCamt054Matching) {
+                    isCamt054Matching = checkEntryForGoodType(type, group);
                 }
             }
         }
 
-        return isCamt054Bvr;
+        return isCamt054Matching;
     }
 
     public boolean checkEntryForGoodType(final CACamt054DefinitionType type, final CACamt054GroupTransaction group) {
-        boolean isCamt054Bvr = false;
+        boolean isCamt054Matching = false;
 
         if (group != null
                 && type.isDefinitionMatching(group.getDomainCode(), group.getFamilyCode(), group.getSubFamilyCode())) {
-            isCamt054Bvr = true;
+            isCamt054Matching = true;
         }
 
-        return isCamt054Bvr;
+        return isCamt054Matching;
     }
 
     private String getFolderName() throws PropertiesException {
-        String folder = CAProperties.ISO_SEPA_FTP_002_FOLDER.getValue();
+        String folder = CAProperties.ISO_SEPA_FTP_CAMT054_FOLDER.getValue();
         String foldername = ".";
 
         if (!folder.isEmpty()) {
@@ -89,5 +88,25 @@ public class CACamt054Processor extends AbstractSepa {
         }
 
         return foldername;
+    }
+
+    @Override
+    protected CAProperties getHost() {
+        return CAProperties.ISO_SEPA_FTP_CAMT054_HOST;
+    }
+
+    @Override
+    protected CAProperties getPort() {
+        return CAProperties.ISO_SEPA_FTP_CAMT054_PORT;
+    }
+
+    @Override
+    protected CAProperties getUser() {
+        return CAProperties.ISO_SEPA_FTP_CAMT054_USER;
+    }
+
+    @Override
+    protected CAProperties getPassword() {
+        return CAProperties.ISO_SEPA_FTP_CAMT054_PASS;
     }
 }

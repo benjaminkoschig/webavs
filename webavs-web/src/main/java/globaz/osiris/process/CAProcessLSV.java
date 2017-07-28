@@ -1,12 +1,15 @@
 package globaz.osiris.process;
 
+import globaz.framework.util.FWMemoryLog;
 import globaz.framework.util.FWMessage;
 import globaz.globall.db.BProcess;
+import globaz.globall.db.BTransaction;
 import globaz.globall.db.GlobazJobQueue;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.osiris.api.OsirisDef;
 import globaz.osiris.api.process.APIProcessUpload;
 import globaz.osiris.db.ordres.CAOrganeExecution;
+import globaz.osiris.db.ordres.sepa.CACamt054GroupsMessage;
 
 /**
  * Traitement d'un fichier de recouvrement direct. Date de création : (18.11.2002 10:35:46)
@@ -25,6 +28,7 @@ public class CAProcessLSV extends BProcess implements APIProcessUpload {
     private String libelle = new String();
     private Boolean simulation = new Boolean(false);
     private String idYellowReportFile = new String();
+    private CACamt054GroupsMessage groupesMessage = new CACamt054GroupsMessage();
 
     /**
      * Commentaire relatif au constructeur CAProcessLSV.
@@ -41,6 +45,15 @@ public class CAProcessLSV extends BProcess implements APIProcessUpload {
      */
     public CAProcessLSV(BProcess parent) {
         super(parent);
+    }
+
+    @Override
+    public String getSubjectDetail() {
+        StringBuilder builder = new StringBuilder();
+        builder.append(groupesMessage.getMessage());
+        builder.append("\r\n\r\n");
+        builder.append(super.getSubjectDetail());
+        return builder.toString();
     }
 
     /**
@@ -65,7 +78,7 @@ public class CAProcessLSV extends BProcess implements APIProcessUpload {
         }
 
         // Vérifier le nom du fichier
-        if (JadeStringUtil.isBlank(getFileName())) {
+        if (JadeStringUtil.isBlank(getFileName()) && JadeStringUtil.isBlank(getIdYellowReportFile())) {
             getMemoryLog().logMessage("5324", null, FWMessage.FATAL, this.getClass().getName());
             return false;
         }
@@ -89,7 +102,7 @@ public class CAProcessLSV extends BProcess implements APIProcessUpload {
 
         // Libellé par défaut si vide
         if (JadeStringUtil.isBlank(getLibelle())) {
-            setLibelle(getSession().getLabel("5328"));
+            setLibelle(getSession().getLabel("53281"));
         }
 
         // Sous controle d'exceptions
@@ -110,6 +123,8 @@ public class CAProcessLSV extends BProcess implements APIProcessUpload {
             // Demander le traitement du BVR
             organeExecution.setMemoryLog(getMemoryLog());
             organeExecution.executeLSV(this);
+
+            groupesMessage = organeExecution.getGroupesMessage();
 
             // Tester si abort
             if (isAborted()) {
@@ -170,16 +185,20 @@ public class CAProcessLSV extends BProcess implements APIProcessUpload {
     protected String getEMailObject() {
 
         // Déterminer l'objet du message en fonction du code erreur
-        String obj;
+        String title;
 
         if (getMemoryLog().hasErrors()) {
-            obj = getSession().getLabel("5285");
+            title = getSession().getLabel("5285");
         } else {
-            obj = getSession().getLabel("5284");
+            title = getSession().getLabel("5284");
+        }
+
+        if (simulation) {
+            title += " - " + getSession().getLabel("SIMULATION");
         }
 
         // Restituer l'objet
-        return obj;
+        return title;
 
     }
 
@@ -297,6 +316,31 @@ public class CAProcessLSV extends BProcess implements APIProcessUpload {
     @Override
     public String getIdYellowReportFile() {
         return idYellowReportFile;
+    }
+
+    @Override
+    public BTransaction getTransactionProcess() {
+        return getTransaction();
+    }
+
+    @Override
+    public void setProgressScaleValueProcess(long value) {
+        setProgressScaleValue(value);
+    }
+
+    @Override
+    public void setMemoryLogProcess(FWMemoryLog newMemoryLog) {
+        setMemoryLog(newMemoryLog);
+    }
+
+    @Override
+    public FWMemoryLog getMemoryLogProcess() {
+        return getMemoryLog();
+    }
+
+    @Override
+    public boolean isAbortedProcess() {
+        return isAborted();
     }
 
 }

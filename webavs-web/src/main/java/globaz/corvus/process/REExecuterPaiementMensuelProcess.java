@@ -323,8 +323,15 @@ public class REExecuterPaiementMensuelProcess extends AREPmtMensuel {
                 // Creation des journaux
                 compta.createJournal(getSession(), transaction, getDescription() + " ", "01." + getMoisPaiement());
 
-                compta.createOrdreGroupe(getSession(), transaction, getSession().getLabel("PMT_MENSUEL_OG") + " "
-                        + getDescription() + " ", getDateEcheancePaiement(), getNumeroOG(), getIdOrganeExecution());
+                String libelleOG = getDescription();
+                if (isIso20022(getIdOrganeExecution(), getSession())) {
+                    libelleOG = "ISO20022 - " + libelleOG + " ";
+                } else {
+                    libelleOG = getSession().getLabel("PMT_MENSUEL_OG") + " " + libelleOG + " ";
+                }
+
+                compta.createOrdreGroupe(getSession(), transaction, libelleOG, getDateEcheancePaiement(),
+                        getNumeroOG(), getIdOrganeExecution());
 
                 initComptaExterne(transaction, false);
 

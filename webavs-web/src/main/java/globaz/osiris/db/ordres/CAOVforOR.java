@@ -1,6 +1,8 @@
 package globaz.osiris.db.ordres;
 
 import globaz.osiris.api.ordre.APICommonOdreVersement;
+import globaz.osiris.db.comptes.CAOperationOrdreRecouvrement;
+import globaz.osiris.db.ordres.sepa.utils.CASepaORConverterUtils;
 import globaz.osiris.db.ordres.sepa.utils.CASepaOVConverterUtils;
 import globaz.osiris.external.IntAdressePaiement;
 import ch.globaz.common.domaine.Montant;
@@ -24,6 +26,19 @@ public class CAOVforOR {
         Montant montantOp = new Montant(op.getMontant());
         setMontant(montantOp);
         numTrans = op.getNumTransaction();
+    }
+
+    public CAOVforOR(CAOperationOrdreRecouvrement recouvrement) throws Exception {
+        IntAdressePaiement adp = recouvrement.getAdressePaiement();
+        beneficiaire = CASepaORConverterUtils.getBeneficiaire(recouvrement) + ", "
+                + adp.getAdresseCourrier().getPaysISO() + "-" + adp.getAdresseCourrier().getNumPostal() + " "
+                + adp.getAdresseCourrier().getLocalite();
+        compteAnnexe = recouvrement.getCompteAnnexe().getTiers().getNomPrenom();
+        adresseVersement = adp.getNumCompte();
+        natureVersement = recouvrement.getMotif();
+        Montant montantOp = new Montant(recouvrement.getMontant());
+        setMontant(montantOp);
+        numTrans = recouvrement.getNumTransaction();
     }
 
     public String getBeneficiaire() {

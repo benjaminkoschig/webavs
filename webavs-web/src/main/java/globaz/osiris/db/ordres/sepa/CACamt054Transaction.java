@@ -23,11 +23,13 @@ public class CACamt054Transaction implements IntBVRPojo {
     private String genreEcriture;
     private String genreTransaction;
     private String montant;
+    private String codeMonnaie;
     private String numeroAdherent;
     private String numeroReference;
     private String referenceInterne;
     private String taxeTraitement;
     private String taxeVersement;
+    private String endToEndId;
     private String accountServicerReference;
     private String debtor;
     private String bankTransactionCode;
@@ -184,6 +186,30 @@ public class CACamt054Transaction implements IntBVRPojo {
         this.debtor = debtor;
     }
 
+    /**
+     * @return the codeMontant
+     */
+    @Override
+    public String getCodeMonnaie() {
+        return codeMonnaie;
+    }
+
+    /**
+     * @param codeMontant the codeMontant to set
+     */
+    public void setCodeMonnaie(String codeMonnaie) {
+        this.codeMonnaie = codeMonnaie;
+    }
+
+    public void setEndToEndId(String endToEndId) {
+        this.endToEndId = endToEndId;
+    }
+
+    @Override
+    public String getEndToEndId() {
+        return endToEndId;
+    }
+
     @Override
     public FWMemoryLog getMemoryLog() {
         if (memoryLog == null) {
@@ -218,5 +244,4 @@ public class CACamt054Transaction implements IntBVRPojo {
     public BSession getSession() {
         return session;
     }
-
 }

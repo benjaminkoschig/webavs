@@ -6,6 +6,7 @@ import globaz.globall.db.BTransaction;
 import globaz.globall.db.GlobazJobQueue;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.osiris.db.ordres.CAOrdreGroupe;
+import globaz.osiris.db.ordres.exception.CAOGOVMaxISODepassement;
 import globaz.osiris.db.ordres.exception.CAOGRegroupISODepassement;
 import java.util.ArrayList;
 import java.util.List;
@@ -115,6 +116,8 @@ public class CAProcessAttacherOrdre extends BProcess {
                     ordreGroupe.executeAttacherOrdre(this, idJournalSource);
                 } catch (CAOGRegroupISODepassement e) {
                     isNotLast = true;
+                } catch (CAOGOVMaxISODepassement e) {
+                    throw e;
                 }
                 if (ordreGroupe.isNew() || ordreGroupe.hasErrors()) {
                     getMemoryLog().logStringBuffer(getTransaction().getErrors(), ordreGroupe.getClass().getName());
@@ -162,8 +165,9 @@ public class CAProcessAttacherOrdre extends BProcess {
     private void prepareForNext(BTransaction transaction) throws Exception {
 
         if ((1 + listOg.size()) >= Integer.parseInt(CAProperties.ISO_SEPA_MAX_MULTIOG.getValue())) {
-            getMemoryLog().logMessage("SEPA_PREPARATION_MAX_MULTI_OG", CAProperties.ISO_SEPA_MAX_MULTIOG.getValue(),
-                    FWMessage.FATAL, this.getClass().getName());
+            getMemoryLog().logMessage(
+                    getSession().getLabel("SEPA_PREPARATION_MAX_MULTI_OG")
+                            + CAProperties.ISO_SEPA_MAX_MULTIOG.getValue(), FWMessage.FATAL, this.getClass().getName());
         }
 
         CAOrdreGroupe newOrdreGroupe = new CAOrdreGroupe();

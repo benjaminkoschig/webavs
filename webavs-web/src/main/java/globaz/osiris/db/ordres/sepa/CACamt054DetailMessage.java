@@ -1,17 +1,21 @@
-package globaz.osiris.db.ordres;
+package globaz.osiris.db.ordres.sepa;
 
 import globaz.osiris.parser.IntBVRPojo;
 import java.text.MessageFormat;
 import java.util.logging.Level;
 
-public class CACamt054DetailMessage extends AbstractCACamt054Message<IntBVRPojo> {
+public class CACamt054DetailMessage extends CACamt054MessageAbstract<IntBVRPojo> {
 
     public CACamt054DetailMessage(final IntBVRPojo object) {
-        super(object);
+        super(object, null);
+    }
+
+    public CACamt054DetailMessage(final IntBVRPojo object, final String numeroReference) {
+        super(object, numeroReference);
     }
 
     @Override
-    public String getFormattedEnteteLevel(IntBVRPojo object) {
+    public String getFormattedEnteteLevel(IntBVRPojo object, String numeroReference) {
         final StringBuilder builder = new StringBuilder();
 
         builder.append(RETURN_LINE);
@@ -29,7 +33,8 @@ public class CACamt054DetailMessage extends AbstractCACamt054Message<IntBVRPojo>
         builder.append(RETURN_LINE);
         builder.append("- banktransactioncode = {3}");
 
-        return MessageFormat.format(builder.toString(), object.getNumeroReference(), object.getMontant(),
+        return MessageFormat.format(builder.toString(),
+                numeroReference != null ? numeroReference : object.getNumeroReference(), object.getMontant(),
                 object.getAccountServicerReference(), object.getBankTransactionCode());
     }
 

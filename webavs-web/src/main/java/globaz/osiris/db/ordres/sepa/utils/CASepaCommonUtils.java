@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import ch.globaz.common.properties.PropertiesException;
 import ch.globaz.osiris.business.constantes.CAProperties;
 import com.six_interbank_clearing.de.pain_001_001_03_ch_02.GenericAccountIdentification1CH;
+import com.six_interbank_clearing.de.pain_008_001_02_ch_03.GenericAccountIdentification1;
 
 public class CASepaCommonUtils {
 
@@ -29,6 +30,7 @@ public class CASepaCommonUtils {
     public static final String TYPE_VIREMENT_BANCAIRE = "bankANDccp";
     public static final String TYPE_VIREMENT_POSTAL = "bankANDccp";
     public static final String TYPE_VIREMENT_MANDAT = "mandat";
+    public static final String CLEARING_POSTAL = "09000";
 
     private static TIIbanFormater formater = new TIIbanFormater();
 
@@ -107,9 +109,7 @@ public class CASepaCommonUtils {
     }
 
     public static XMLGregorianCalendar getCurrentTime() throws DatatypeConfigurationException {
-        XMLGregorianCalendar returnCalendar = DatatypeFactory.newInstance().newXMLGregorianCalendar(
-                new GregorianCalendar());
-        return returnCalendar;
+        return DatatypeFactory.newInstance().newXMLGregorianCalendar(new GregorianCalendar());
     }
 
     /**
@@ -138,6 +138,34 @@ public class CASepaCommonUtils {
         }
         return null;
 
+    }
+
+    public static String getTypeAdresseWithIBANPostalEnable(CAAdressePaiementFormatter adp) {
+        final String iban = getCAAdressePaiementIBAN(adp);
+        if (iban != null) {
+            final String numClearing = iban.substring(4, 9);
+            // correspond-t-il à un n° de clearing de PostFinance
+            if (CASepaCommonUtils.CLEARING_POSTAL.equals(numClearing)) {
+                return IntAdressePaiement.CCP;
+            } else {
+                return IntAdressePaiement.BANQUE;
+            }
+        }
+
+        return adp.getTypeAdresse();
+    }
+
+    protected static String getCAAdressePaiementIBAN(CAAdressePaiementFormatter adp) {
+        if (adp.getNumCompte() == null) {
+            return null;
+        }
+
+        final String numCmp = StringUtils.deleteWhitespace(adp.getNumCompte());
+
+        if (isFullValidIban(numCmp)) {
+            return formater.unformat(numCmp);
+        }
+        return null;
     }
 
     protected static String getIntAdressePaiementIBAN(IntAdressePaiement adp) {
@@ -197,6 +225,32 @@ public class CASepaCommonUtils {
         isIbanOk |= isXsdRegexIbanValid(numCmpTrimed) && numCmpTrimed.startsWith("LI");
 
         return isIbanOk;
+    }
+
+    protected static GenericAccountIdentification1 getNotIbanPain008(IntAdressePaiement adp) {
+        if (adp.getNumCompte() == null) {
+            return null;
+        }
+
+        final String numCmp = StringUtils.deleteWhitespace(adp.getNumCompte());
+
+        if (!isFullValidIban(numCmp)) {
+            GenericAccountIdentification1 other = new GenericAccountIdentification1();
+            try {
+                String numCmpFormated = numCmp;
+                if (IntAdressePaiement.CCP.equals(adp.getTypeAdresse())) {
+                    numCmpFormated = JACCP.formatNoDash(numCmp);
+                }
+
+                other.setId(numCmpFormated);
+            } catch (Exception e) {
+                logger.debug("cannot unformat this as a CCP:" + numCmp, e);
+                other.setId(numCmp);
+            }
+            return other;
+        }
+
+        return null;
     }
 
     /**

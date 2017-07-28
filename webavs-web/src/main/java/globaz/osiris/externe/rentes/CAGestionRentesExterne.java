@@ -200,6 +200,11 @@ public class CAGestionRentesExterne implements APIGestionRentesExterne {
         if ((1 + listOg.size()) >= Integer.parseInt(CAProperties.ISO_SEPA_MAX_MULTIOG.getValue())) {
             throw new Exception(session.getLabel("SEPA_PREPARATION_MAX_MULTI_OG"));
         }
+        // Ajout d'un indicatif d'OG multiple
+        String suffixMultiOG = "";
+        if (!listOg.isEmpty()) {
+            suffixMultiOG = "(" + listOg.size() + 1 + ") ";
+        }
 
         CAOrdreGroupe newOrdreGroupe = new CAOrdreGroupe();
         newOrdreGroupe.setSession(session);
@@ -210,7 +215,7 @@ public class CAGestionRentesExterne implements APIGestionRentesExterne {
         newOrdreGroupe.setNatureOrdresLivres(ordreGroupe.getNatureOrdresLivres());
         newOrdreGroupe.setIsoGestionnaire(ordreGroupe.getIsoGestionnaire());
         newOrdreGroupe.setIsoHighPriority(ordreGroupe.getIsoHighPriority());
-        newOrdreGroupe.setMotif(ordreGroupe.getMotif());
+        newOrdreGroupe.setMotif(ordreGroupe.getMotif() + suffixMultiOG);
 
         newOrdreGroupe.setDateCreation(JACalendar.todayJJsMMsAAAA());
         newOrdreGroupe.setEtat(CAOrdreGroupe.TRAITEMENT);

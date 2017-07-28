@@ -15,6 +15,7 @@ public interface APIOrdreGroupe {
     public final static String ISO_TRANSAC_STATUS_COMPLET = "260002";
     public final static String ISO_TRANSAC_STATUS_PARTIEL = "260003";
     public final static String ISO_TRANSAC_STATUS_REJETE = "260004";
+    public final static String ISO_TRANSAC_STATUS_VALIDE = "260005";
 
     public String getDateCreation();
 

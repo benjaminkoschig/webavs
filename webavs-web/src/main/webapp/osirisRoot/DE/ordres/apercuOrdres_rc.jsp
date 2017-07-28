@@ -105,7 +105,9 @@ if (ordreGroupe==null)
             <TD nowrap colspan="2">
               <INPUT type="text" name="forNomCacheLike" value="<%if (request.getParameter("fromNomCache") != null)%><%=request.getParameter("fromNomCache")%>" class="libelleStandard" tabindex=1>
             </TD>
-            <TD align="right">&nbsp;</TD>
+            <TD align="right">Identifizierung&nbsp;
+              <INPUT type="text" name="forIdOperation" value="<%if (request.getParameter("forIdOperation") != null)%><%=request.getParameter("forIdOperation")%>">
+            </TD>
           </TR>
           
           <TR>

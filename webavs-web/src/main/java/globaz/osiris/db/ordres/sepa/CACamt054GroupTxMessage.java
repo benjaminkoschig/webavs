@@ -1,16 +1,15 @@
-package globaz.osiris.db.ordres;
+package globaz.osiris.db.ordres.sepa;
 
-import globaz.osiris.db.ordres.sepa.CACamt054Notification;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
-public class CACamt054GroupTxMessage extends AbstractCACamt054Message<CACamt054Notification> {
+public class CACamt054GroupTxMessage extends CACamt054MessageAbstract<CACamt054Notification> {
     private List<CACamt054DetailMessage> details = null;
 
     public CACamt054GroupTxMessage(final CACamt054Notification object) {
-        super(object);
+        super(object, null);
         details = new ArrayList<CACamt054DetailMessage>();
     }
 
@@ -54,7 +53,7 @@ public class CACamt054GroupTxMessage extends AbstractCACamt054Message<CACamt054N
     }
 
     @Override
-    public String getFormattedEnteteLevel(CACamt054Notification object) {
+    public String getFormattedEnteteLevel(CACamt054Notification object, String numeroReference) {
         final StringBuilder builder = new StringBuilder();
 
         builder.append(RETURN_LINE);

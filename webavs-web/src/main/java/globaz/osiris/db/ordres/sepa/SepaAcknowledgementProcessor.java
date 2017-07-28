@@ -4,15 +4,20 @@ import globaz.globall.db.BSession;
 import globaz.globall.db.BStatement;
 import globaz.osiris.api.ordre.APIOrdreGroupe;
 import globaz.osiris.db.comptes.CAOperationManager;
+import globaz.osiris.db.comptes.CAOperationOrdreRecouvrement;
+import globaz.osiris.db.comptes.CAOperationOrdreRecouvrementManager;
 import globaz.osiris.db.comptes.CAOperationOrdreVersement;
 import globaz.osiris.db.comptes.CAOperationOrdreVersementManager;
 import globaz.osiris.db.ordres.CAOrdreGroupe;
 import globaz.osiris.db.ordres.CAOrdreGroupeManager;
+import globaz.osiris.db.ordres.CAOrdreRecouvrement;
 import globaz.osiris.db.ordres.CAOrdreRejete;
 import globaz.osiris.db.ordres.CAOrdreVersement;
 import globaz.osiris.db.ordres.OrdreGroupeWrapper;
-import globaz.osiris.db.ordres.sepa.utils.CASepaGroupeOGKey;
+import globaz.osiris.db.ordres.sepa.utils.CASepaORConverterUtils;
 import globaz.osiris.db.ordres.sepa.utils.CASepaOVConverterUtils;
+import globaz.osiris.db.ordres.sepa.utils.CASepaPain001GroupeOGKey;
+import globaz.osiris.db.ordres.sepa.utils.CASepaPain008GroupeOGKey;
 import globaz.osiris.db.utils.CAAdressePaiementFormatter;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -28,6 +33,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
+import ch.globaz.common.properties.PropertiesException;
 import ch.globaz.osiris.business.constantes.CAProperties;
 import com.jcraft.jsch.ChannelSftp;
 import com.six_interbank_clearing.de.pain_002_001_03_ch_02.CustomerPaymentStatusReportV03CH;
@@ -44,7 +50,8 @@ public class SepaAcknowledgementProcessor extends AbstractSepa {
 
     public static final String NAMESPACE_PAIN002 = "http://www.six-interbank-clearing.com/de/pain.002.001.03.ch.02.xsd";
 
-    private static final String TRANSACTION_PREFIX = CASepaOVConverterUtils.INSTRUCTION_ID_PREFIX;
+    private static final String TRANSACTION_PREFIX_PAIN002 = CASepaOVConverterUtils.INSTRUCTION_ID_PREFIX;
+    private static final String TRANSACTION_PREFIX_PAIN008 = CASepaORConverterUtils.INSTRUCTION_ID_PREFIX;
     private BSession session;
 
     private static final class RemoteAck {
@@ -54,22 +61,38 @@ public class SepaAcknowledgementProcessor extends AbstractSepa {
 
     public void findAndProcessAllAcknowledgements(BSession session) throws Exception {
         setSession(session);
-        ChannelSftp client = getClient();
-        String[] listFiles;
+        final ChannelSftp client = getClient();
 
-        Map<String, OrdreGroupeWrapper> ogProcessed = new HashMap<String, OrdreGroupeWrapper>();
-        String folder = CAProperties.ISO_SEPA_FTP_002_FOLDER.getValue();
-        String foldername = null;
-        if (folder.isEmpty()) {
-            foldername = ".";
+        final String propFolderPain002FromP001 = CAProperties.ISO_SEPA_FTP_002_FROM_PAIN001_FOLDER.getValue();
+        final String propFolderPain002FromP008 = CAProperties.ISO_SEPA_FTP_002_FROM_PAIN008_FOLDER.getValue();
+
+        String folderPain002FromP001 = null;
+        if (propFolderPain002FromP001.isEmpty()) {
+            folderPain002FromP001 = ".";
         } else {
-            foldername = "./" + folder;
+            folderPain002FromP001 = "./" + propFolderPain002FromP001;
         }
 
-        // get all available files,
-        List<RemoteAck> remoteAcks = new ArrayList<RemoteAck>();
+        boolean usingPain002FromPain008 = false;
 
-        listFiles = listFiles(client, foldername);
+        String folderPain002FromP008 = null;
+        if (!propFolderPain002FromP008.isEmpty() && propFolderPain002FromP008.trim().length() > 0) {
+            folderPain002FromP008 = "./" + propFolderPain002FromP008;
+            usingPain002FromPain008 = true;
+        }
+
+        processListFiles(session, client, listFiles(client, folderPain002FromP001), folderPain002FromP001);
+
+        if (usingPain002FromPain008) {
+            processListFiles(session, client, listFiles(client, folderPain002FromP008), folderPain002FromP008);
+        }
+    }
+
+    private void processListFiles(BSession session, ChannelSftp client, String[] listFiles, String foldername)
+            throws Exception, PropertiesException {
+
+        List<RemoteAck> remoteAcks = new ArrayList<RemoteAck>();
+        Map<String, OrdreGroupeWrapper> ogProcessed = new HashMap<String, OrdreGroupeWrapper>();
 
         for (String file : listFiles) {
             String originalFilename = foldername + file;
@@ -87,7 +110,7 @@ public class SepaAcknowledgementProcessor extends AbstractSepa {
                 retrieveData(client, originalFilename, baos);
 
                 bais = new ByteArrayInputStream(baos.toByteArray());
-                Document doc = parseDocument(bais);
+                Document doc = CAJaxbUtil.parseDocument(bais);
 
                 // 04. Vérifier s’il s’agit d’une réponse pain.002
                 if (!NAMESPACE_PAIN002.equals(doc.getDocumentElement().getNamespaceURI())) {
@@ -97,7 +120,7 @@ public class SepaAcknowledgementProcessor extends AbstractSepa {
 
                 LOG.info("queuing file with name {}", originalFilename);
 
-                com.six_interbank_clearing.de.pain_002_001_03_ch_02.Document ack = unmarshall(doc,
+                com.six_interbank_clearing.de.pain_002_001_03_ch_02.Document ack = CAJaxbUtil.unmarshall(doc,
                         com.six_interbank_clearing.de.pain_002_001_03_ch_02.Document.class);
 
                 RemoteAck remoteAck = new RemoteAck();
@@ -167,13 +190,13 @@ public class SepaAcknowledgementProcessor extends AbstractSepa {
      */
     public void processAcknowledgement(InputStream source) {
         // 03. Vérifier la présence de quittances
-        Document doc = parseDocument(source);
+        Document doc = CAJaxbUtil.parseDocument(source);
 
         // 04. Vérifier s’il s’agit d’une réponse pain.002
         if (!NAMESPACE_PAIN002.equals(doc.getDocumentElement().getNamespaceURI())) {
             throw new SepaException("the provided document is not a PAIN002 - Acknowledgement response");
         }
-        com.six_interbank_clearing.de.pain_002_001_03_ch_02.Document ack = unmarshall(doc,
+        com.six_interbank_clearing.de.pain_002_001_03_ch_02.Document ack = CAJaxbUtil.unmarshall(doc,
                 com.six_interbank_clearing.de.pain_002_001_03_ch_02.Document.class);
 
         processAcknowledgement(ack);
@@ -304,43 +327,64 @@ public class SepaAcknowledgementProcessor extends AbstractSepa {
                          * - La valeur de la balise <OrgnlInstrId>ne commence pas par TR-
                          */
                         String transactionId = transactionInformations.getOrgnlInstrId();
-                        if (!transactionId.startsWith(TRANSACTION_PREFIX)) {
+
+                        String prefixFound = getPrefixTransaction(transactionId);
+
+                        if (prefixFound == null) {
                             LOG.debug(
-                                    "Transaction Rejetée - {}/{}\nLa transaction {}  ne commence pas par le préfixe attendu '{}'",
-                                    transactionId, orderTxId, transactionId, TRANSACTION_PREFIX);
+                                    "Transaction Rejetée - {}/{}\nLa transaction {}  ne commence pas par les préfixes attendus '{}'",
+                                    transactionId, orderTxId, transactionId, TRANSACTION_PREFIX_PAIN002 + ","
+                                            + TRANSACTION_PREFIX_PAIN008);
                             continue;
                         }
 
-                        String transactionIdNoPrefix = transactionId.substring(TRANSACTION_PREFIX.length());
+                        String transactionIdNoPrefix = transactionId.substring(prefixFound.length());
 
-                        /* - La transaction n’est pas trouvée dans CAOPOVP.idOrdre */
-                        CAOrdreVersement ov = getOrdreVersement(transactionIdNoPrefix);
-                        if (ov == null) {
-                            // TODO décider du comportement si la transaction n'est pas trouvée!
-                            LOG.warn(
-                                    "Transaction Rejetée - {}/{}\nLa transaction {} n'a pas pu être trouvée dans la base de données.",
-                                    transactionId, orderTxId, transactionId);
-                            continue;
+                        String idOrdre;
+                        if (CAOrdreGroupe.VERSEMENT.equals(ogWrapper.getOrdreGroupe().getTypeOrdreGroupe())) {
+                            CAOrdreVersement ov = getOrdreVersement(transactionIdNoPrefix);
+                            if (ov == null) {
+                                LOG.warn(
+                                        "Transaction Rejetée - {}/{}\nLa transaction {} n'a pas pu être trouvée dans la base de données.",
+                                        transactionId, orderTxId, transactionId);
+                                continue;
+                            }
+
+                            if (!StringUtils.equals(ogWrapper.getOrdreGroupe().getIdOrdreGroupe(), ov.getOrdreGroupe()
+                                    .getIdOrdreGroupe())) {
+                                LOG.error(
+                                        "Transaction Rejetée - {}/{}\nLa transaction {} n'appartient pas à l'ordre groupé {}, mais à {}",
+                                        transactionId, orderTxId, transactionId, ogWrapper.getOrdreGroupe()
+                                                .getIdOrdreGroupe(), ov.getOrdreGroupe().getIdOrdreGroupe());
+                                continue;
+                            }
+                            idOrdre = ov.getIdOrdre();
+                        } else {
+                            CAOrdreRecouvrement or = getOrdreRecouvrement(transactionIdNoPrefix);
+                            if (or == null) {
+                                LOG.warn(
+                                        "Transaction Rejetée - {}/{}\nLa transaction OR {} n'a pas pu être trouvée dans la base de données.",
+                                        transactionId, orderTxId, transactionId);
+                                continue;
+                            }
+
+                            if (!StringUtils.equals(ogWrapper.getOrdreGroupe().getIdOrdreGroupe(), or.getOrdreGroupe()
+                                    .getIdOrdreGroupe())) {
+                                LOG.error(
+                                        "Transaction Rejetée - {}/{}\nLa transaction OV {} n'appartient pas à l'ordre groupé {}, mais à {}",
+                                        transactionId, orderTxId, transactionId, ogWrapper.getOrdreGroupe()
+                                                .getIdOrdreGroupe(), or.getOrdreGroupe().getIdOrdreGroupe());
+                                continue;
+                            }
+                            idOrdre = or.getIdOrdre();
                         }
-
-                        /* - La transaction est trouvée mais n’appartient pas à cet ordre groupé */
-                        if (!StringUtils.equals(ogWrapper.getOrdreGroupe().getIdOrdreGroupe(), ov.getOrdreGroupe()
-                                .getIdOrdreGroupe())) {
-                            LOG.error(
-                                    "Transaction Rejetée - {}/{}\nLa transaction {} n'appartient pas à l'ordre groupé {}, mais à {}",
-                                    transactionId, orderTxId, transactionId, ogWrapper.getOrdreGroupe()
-                                            .getIdOrdreGroupe(), ov.getOrdreGroupe().getIdOrdreGroupe());
-                            continue;
-                        }
-
-                        // OriginalTransactionReference13CH sss = transactionInformations.getOrgnlTxRef();
 
                         // Si l’identification réussit, enregistrer le motif de rejet en base de données
                         List<StatusReasonInformation8CH> cLevelReasons = transactionInformations.getStsRsnInf();
                         for (StatusReasonInformation8CH xxx : cLevelReasons) {
                             CAOrdreRejete rejected = new CAOrdreRejete();
                             rejected.setSession(getSession());
-                            rejected.setIdOperation(ov.getIdOrdre());
+                            rejected.setIdOperation(idOrdre);
                             rejected.setIdOrdreGroupe(ogWrapper.getOrdreGroupe().getIdOrdreGroupe());
                             StatusReason6Choice rsn = xxx.getRsn();
                             rejected.setCode(rsn.getCd());
@@ -361,6 +405,19 @@ public class SepaAcknowledgementProcessor extends AbstractSepa {
         }
     }
 
+    private String getPrefixTransaction(String transactionId) {
+        if (transactionId == null) {
+            return null;
+        }
+
+        String prefixFound = transactionId.startsWith(TRANSACTION_PREFIX_PAIN002) ? TRANSACTION_PREFIX_PAIN002 : null;
+
+        if (prefixFound == null) {
+            prefixFound = transactionId.startsWith(TRANSACTION_PREFIX_PAIN008) ? TRANSACTION_PREFIX_PAIN008 : null;
+        }
+        return prefixFound;
+    }
+
     private String generateORfotKey(CAOrdreGroupe og, String key, List<StatusReasonInformation8CH> reasons) {
         // extract error code and message once
         List<String> rsnCodes = new ArrayList<String>();
@@ -375,26 +432,47 @@ public class SepaAcknowledgementProcessor extends AbstractSepa {
         final String rsnProprietary = StringUtils.join(rsnProprietarys, '|');
         final String rsnAddInfo = StringUtils.join(rsnAddInfos, '|');
 
-        // iterate on Operation to create each Error if match the key
-        CAOperationOrdreVersement ordreV = null;
-        CAOperationOrdreVersementManager mgr = new CAOperationOrdreVersementManager();
-        mgr.setSession(getSession());
-        mgr.setForIdOrdreGroupe(og.getIdOrdreGroupe());
-        mgr.setOrderBy(CAOperationManager.ORDER_IDOPERATION);
-        BStatement cursorOpen;
-        try {
-            cursorOpen = mgr.cursorOpen(getSession().getCurrentThreadTransaction());
+        if (CAOrdreGroupe.VERSEMENT.equals(og.getTypeOrdreGroupe())) {
+            // iterate on Operation to create each Error if match the key
+            CAOperationOrdreVersement ordreV = null;
+            CAOperationOrdreVersementManager mgr = new CAOperationOrdreVersementManager();
+            mgr.setSession(getSession());
+            mgr.setForIdOrdreGroupe(og.getIdOrdreGroupe());
+            mgr.setOrderBy(CAOperationManager.ORDER_IDOPERATION);
+            BStatement cursorOpen;
+            try {
+                cursorOpen = mgr.cursorOpen(getSession().getCurrentThreadTransaction());
 
-            while ((ordreV = (CAOperationOrdreVersement) mgr.cursorReadNext(cursorOpen)) != null) {
-
-                rejectOnMatchGroupKey(og, key, rsnCode, rsnProprietary, rsnAddInfo, ordreV);
-
+                while ((ordreV = (CAOperationOrdreVersement) mgr.cursorReadNext(cursorOpen)) != null) {
+                    rejectOnMatchGroupKey(og, key, rsnCode, rsnProprietary, rsnAddInfo, ordreV);
+                }
+            } catch (Exception e) {
+                LOG.error("error in accessing DB on OperationOrdreVersement ", e);
+                throw new SepaException("error in accessing DB on OperationOrdreVersement", e);
             }
-        } catch (Exception e) {
-            LOG.error("error in accessing DB on OperationOrdreVersement ", e);
-            throw new SepaException("error in accessing DB on OperationOrdreVersement", e);
+            mgr.clear();
+        } else {
+            // iterate on Operation to create each Error if match the key
+            CAOperationOrdreRecouvrement ordreR = null;
+            CAOperationOrdreRecouvrementManager mgr = new CAOperationOrdreRecouvrementManager();
+            mgr.setSession(getSession());
+            mgr.setForIdOrdreGroupe(og.getIdOrdreGroupe());
+            mgr.setOrderBy(CAOperationManager.ORDER_IDOPERATION);
+
+            BStatement cursorOpen;
+            try {
+                cursorOpen = mgr.cursorOpen(getSession().getCurrentThreadTransaction());
+
+                while ((ordreR = (CAOperationOrdreRecouvrement) mgr.cursorReadNext(cursorOpen)) != null) {
+                    rejectOnMatchGroupKey(og, key, rsnCode, rsnProprietary, rsnAddInfo, ordreR);
+                }
+            } catch (Exception e) {
+                LOG.error("error in accessing DB on OperationOrdreVersement ", e);
+                throw new SepaException("error in accessing DB on OperationOrdreVersement", e);
+            }
+            mgr.clear();
         }
-        mgr.clear();
+
         return rsnAddInfo;
     }
 
@@ -415,11 +493,41 @@ public class SepaAcknowledgementProcessor extends AbstractSepa {
         try {
             final CAAdressePaiementFormatter adpf = new CAAdressePaiementFormatter();
             adpf.setAdressePaiement(ordreV.getAdressePaiement());
-            CASepaGroupeOGKey messageIdKey = new CASepaGroupeOGKey(ordreV, adpf);
+            CASepaPain001GroupeOGKey messageIdKey = new CASepaPain001GroupeOGKey(ordreV, adpf);
             if (key.equals(messageIdKey.getKeyString())) {
                 CAOrdreRejete rejected = new CAOrdreRejete();
                 rejected.setSession(getSession());
                 rejected.setIdOperation(ordreV.getIdOperation());
+                rejected.setIdOrdreGroupe(og.getIdOrdreGroupe());
+                rejected.setCode(rsnCode);
+                rejected.setProprietary(rsnProprietary);
+                rejected.setAdditionalInformations(rsnAddInfo);
+                try {
+                    rejected.add();
+                } catch (Exception e) {
+                    throw new SepaException("could not save CAOrdreRejete.", e);
+                }
+            }
+        } catch (Exception e) {
+            throw new SepaException("could not verify Blevel GroupKey of OV.", e);
+        }
+    }
+
+    private void rejectOnMatchGroupKey(CAOrdreGroupe og, String key, final String rsnCode, final String rsnProprietary,
+            final String rsnAddInfo, CAOperationOrdreRecouvrement ordreR) {
+        try {
+            final CAAdressePaiementFormatter adpf = new CAAdressePaiementFormatter();
+            adpf.setAdressePaiement(ordreR.getAdressePaiement());
+
+            CASepaPain008GroupeOGKey messageIdKeyCHTA = new CASepaPain008GroupeOGKey(ordreR, adpf,
+                    CAFormatRecouvrementISOCHTA.MODE);
+            CASepaPain008GroupeOGKey messageIdKeyCHDD = new CASepaPain008GroupeOGKey(ordreR, adpf,
+                    CAFormatRecouvrementISOCHDD.MODE);
+
+            if (key.equals(messageIdKeyCHTA.getKeyString()) || key.equals(messageIdKeyCHDD.getKeyString())) {
+                CAOrdreRejete rejected = new CAOrdreRejete();
+                rejected.setSession(getSession());
+                rejected.setIdOperation(ordreR.getIdOperation());
                 rejected.setIdOrdreGroupe(og.getIdOrdreGroupe());
                 rejected.setCode(rsnCode);
                 rejected.setProprietary(rsnProprietary);
@@ -445,7 +553,20 @@ public class SepaAcknowledgementProcessor extends AbstractSepa {
             ordreVersement.retrieve();
             return ordreVersement;
         } catch (Exception e) {
-            // _addError(tx, e.getMessage());
+            throw new SepaException(e.getClass().getName(), e);
+        }
+    }
+
+    private CAOrdreRecouvrement getOrdreRecouvrement(String transactionIdNoPrefix) {
+
+        CAOrdreRecouvrement ordreRecouvrement = new CAOrdreRecouvrement();
+        ordreRecouvrement.setSession(getSession());
+        ordreRecouvrement.setIdOrdre(transactionIdNoPrefix);
+
+        try {
+            ordreRecouvrement.retrieve();
+            return ordreRecouvrement;
+        } catch (Exception e) {
             throw new SepaException(e.getClass().getName(), e);
         }
     }
@@ -481,24 +602,33 @@ public class SepaAcknowledgementProcessor extends AbstractSepa {
     }
 
     private void markOrdreGroupeTransmissionStatus(CAOrdreGroupe ordre, String newStatus) {
-        // mettre à jour les status de transaction cumulé comme suit
-        // .|ACPR status à appliquer sur:
-        // A|=vvv aucun
-        // C|x=vv complet
-        // P|xx=v partiel
-        // R|xxx= rejeté
         if (newStatus != null && !newStatus.isEmpty()) {
-            // rejeté s'applique toujours
-            if (APIOrdreGroupe.ISO_TRANSAC_STATUS_REJETE.equals(newStatus)) {
+
+            /*** Si le statut de l'ordre est VALIDE, on remplace direct par le statut du XML */
+            if (APIOrdreGroupe.ISO_TRANSAC_STATUS_VALIDE.equals(ordre.getIsoCsTransmissionStatutExec())) {
                 ordre.setIsoCsTransmissionStatutExec(newStatus);
-                // partiel partout sauf sur rejete
-            } else if (APIOrdreGroupe.ISO_TRANSAC_STATUS_PARTIEL.equals(newStatus)
-                    && !APIOrdreGroupe.ISO_TRANSAC_STATUS_REJETE.equals(ordre.getIsoCsTransmissionStatutExec())) {
-                ordre.setIsoCsTransmissionStatutExec(newStatus);
-                // Complet que sur aucun
-            } else if (APIOrdreGroupe.ISO_TRANSAC_STATUS_COMPLET.equals(newStatus)
-                    && APIOrdreGroupe.ISO_TRANSAC_STATUS_AUCUNE.equals(ordre.getIsoCsTransmissionStatutExec())) {
-                ordre.setIsoCsTransmissionStatutExec(newStatus);
+            } else {
+
+                /*** Si le statut du XML est REJETE, on change directement le statut de l'ordre par REJETE */
+                if (APIOrdreGroupe.ISO_TRANSAC_STATUS_REJETE.equals(newStatus)) {
+                    ordre.setIsoCsTransmissionStatutExec(newStatus);
+
+                    /***
+                     * Si le statut du XML est PARTIEL et le statut de l'ordre est différent de REJETE, on change
+                     * directement le statut de l'ordre par PARTIEL
+                     */
+                } else if (APIOrdreGroupe.ISO_TRANSAC_STATUS_PARTIEL.equals(newStatus)
+                        && !APIOrdreGroupe.ISO_TRANSAC_STATUS_REJETE.equals(ordre.getIsoCsTransmissionStatutExec())) {
+                    ordre.setIsoCsTransmissionStatutExec(newStatus);
+
+                    /***
+                     * Si le statut du XML est COMPLET et le statut de l'ordre est différent de AUCUN, on change
+                     * directement le statut de l'ordre par COMPLET
+                     */
+                } else if (APIOrdreGroupe.ISO_TRANSAC_STATUS_COMPLET.equals(newStatus)
+                        && APIOrdreGroupe.ISO_TRANSAC_STATUS_AUCUNE.equals(ordre.getIsoCsTransmissionStatutExec())) {
+                    ordre.setIsoCsTransmissionStatutExec(newStatus);
+                }
             }
             // then alway set confirmed and save
             markOrdreGroupeConfirmed(ordre);
@@ -537,5 +667,25 @@ public class SepaAcknowledgementProcessor extends AbstractSepa {
 
     public void setSession(BSession session) {
         this.session = session;
+    }
+
+    @Override
+    protected CAProperties getHost() {
+        return CAProperties.ISO_SEPA_FTP_HOST;
+    }
+
+    @Override
+    protected CAProperties getPort() {
+        return CAProperties.ISO_SEPA_FTP_PORT;
+    }
+
+    @Override
+    protected CAProperties getUser() {
+        return CAProperties.ISO_SEPA_FTP_USER;
+    }
+
+    @Override
+    protected CAProperties getPassword() {
+        return CAProperties.ISO_SEPA_FTP_PASS;
     }
 }

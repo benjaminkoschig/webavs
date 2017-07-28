@@ -4,9 +4,9 @@ import globaz.globall.db.BManager;
 import globaz.globall.db.BProcess;
 import globaz.globall.db.GlobazJobQueue;
 import globaz.jade.log.JadeLogger;
-import globaz.osiris.db.ordres.sepa.AbstractSepa;
 import globaz.osiris.db.ordres.sepa.CACamt054DefinitionType;
 import globaz.osiris.db.ordres.sepa.CACamt054Processor;
+import globaz.osiris.db.ordres.sepa.CAJaxbUtil;
 import globaz.osiris.db.ordres.sepa.exceptions.CAYellowReportFileException;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -63,11 +63,12 @@ public class CAYellowReportFileProcess extends BProcess {
                 serviceFtp.retrieveFile(file, baos);
 
                 bais = new ByteArrayInputStream(baos.toByteArray());
-                Document document = AbstractSepa.parseDocument(bais);
+                Document document = CAJaxbUtil.parseDocument(bais);
 
                 // Nous allons persisté en DB les XML qui sont accepté par l'application
-                // Actuellement, nous acceptons que le type CAMT054 BVR
-                manageAcceptedCamt054Type(CACamt054DefinitionType.CAMT054_BVR, document, file, baos.toByteArray());
+                // Une fois pour les types BVR et une autre pour les LSV
+                manageAcceptedCamt054Type(CACamt054DefinitionType.BVR, document, file, baos.toByteArray());
+                manageAcceptedCamt054Type(CACamt054DefinitionType.LSV, document, file, baos.toByteArray());
 
                 // Nous créons dans tous les cas en DB dans une table des fichiers identifié par le processus afin de
                 // ne plus les retraiter plus tard (gain de performance)
@@ -116,7 +117,7 @@ public class CAYellowReportFileProcess extends BProcess {
             return fileNames;
         } catch (Exception e) {
             throw new CAYellowReportFileException("Problem during the research of yellow report files : "
-                    + e.getMessage());
+                    + e.getMessage(), e);
         }
     }
 

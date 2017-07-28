@@ -198,9 +198,17 @@ public class REExecuterRentesEnErreurProcess extends AREPmtMensuel {
 
             // Creation des journaux
             compta.createJournal(getSession(), innerTransaction, getDescription() + " ", "01." + getMoisPaiement());
-            compta.createOrdreGroupe(getSession(), innerTransaction, getSession().getLabel("PMT_MENSUEL_OG") + " "
-                    + getDescription() + " ", getDateEcheancePaiement(), getNumeroOG(), getSession().getApplication()
-                    .getProperty(REApplication.PROPERTY_ID_ORGANE_EXECUTION));
+            String libelleOGPrincipal = getDescription();
+
+            if (isIso20022(getSession().getApplication().getProperty(REApplication.PROPERTY_ID_ORGANE_EXECUTION),
+                    getSession())) {
+                libelleOGPrincipal = "ISO20022 - " + libelleOGPrincipal + " ";
+            } else {
+                libelleOGPrincipal = getSession().getLabel("PMT_MENSUEL_OG") + " " + libelleOGPrincipal + " ";
+            }
+            compta.createOrdreGroupe(getSession(), innerTransaction, libelleOGPrincipal, getDateEcheancePaiement(),
+                    getNumeroOG(), getSession().getApplication()
+                            .getProperty(REApplication.PROPERTY_ID_ORGANE_EXECUTION));
 
             // reservation de la plage d'increment pour les ecritures en CA
             // inclure retenue et exclure blocage

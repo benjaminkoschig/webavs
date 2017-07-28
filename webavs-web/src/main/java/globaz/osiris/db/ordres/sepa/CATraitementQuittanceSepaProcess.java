@@ -126,7 +126,7 @@ public class CATraitementQuittanceSepaProcess extends BProcess {
 
         try {
             stream = new FileInputStream(f);
-            return AbstractSepa.unmarshall(AbstractSepa.parseDocument(stream), Document.class);
+            return CAJaxbUtil.unmarshall(CAJaxbUtil.parseDocument(stream), Document.class);
         } catch (Exception e) {
             JadeLogger.warn(this, "unable to process file " + f);
         } finally {

@@ -16,4 +16,16 @@ public interface APIRecouvrement extends APIPaiement {
     public void setIdOrganeExecution(String newIdOrganeExecution);
 
     public void setReference(String newReference);
+
+    public String getBankTransactionCode();
+
+    public String getAccountServicerReference();
+
+    public String getDebtor();
+
+    public void setBankTransactionCode(java.lang.String bankTransactionCode);
+
+    public void setDebtor(java.lang.String debtor);
+
+    public void setAccountServicerReference(java.lang.String accountServicerReference);
 }

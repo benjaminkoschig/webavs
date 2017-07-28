@@ -12,8 +12,10 @@ package globaz.osiris.process;
  */
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.util.FWCurrency;
+import globaz.framework.util.FWMemoryLog;
 import globaz.framework.util.FWMessage;
 import globaz.globall.db.BProcess;
+import globaz.globall.db.BTransaction;
 import globaz.globall.db.GlobazJobQueue;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JACalendarGregorian;
@@ -860,6 +862,31 @@ public class CAProcessPaiementEtranger extends BProcess implements APIProcessUpl
     @Override
     public void setIdYellowReportFile(String id) {
         // Rien a faire
+    }
+
+    @Override
+    public BTransaction getTransactionProcess() {
+        return getTransaction();
+    }
+
+    @Override
+    public void setProgressScaleValueProcess(long value) {
+        setProgressScaleValue(value);
+    }
+
+    @Override
+    public void setMemoryLogProcess(FWMemoryLog newMemoryLog) {
+        setMemoryLog(newMemoryLog);
+    }
+
+    @Override
+    public FWMemoryLog getMemoryLogProcess() {
+        return getMemoryLog();
+    }
+
+    @Override
+    public boolean isAbortedProcess() {
+        return isAborted();
     }
 
 }

@@ -343,6 +343,7 @@ public class CAApplication extends globaz.globall.db.BApplication implements Ser
         FWAction.registerActionCustom("osiris.lettrage.main.annulerVersementSection", FWSecureConstants.UPDATE);
         FWAction.registerActionCustom("osiris.lettrage.main.reportSection", FWSecureConstants.UPDATE);
 
+        FWAction.registerActionCustom("osiris.ordres.ordresGroupes.valider", FWSecureConstants.UPDATE);
     }
 
     @Override

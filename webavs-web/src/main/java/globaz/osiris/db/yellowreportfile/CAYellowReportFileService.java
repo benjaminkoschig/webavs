@@ -4,9 +4,12 @@ import globaz.common.util.CommonBlobUtils;
 import globaz.globall.db.BSession;
 import globaz.jade.client.util.JadeUUIDGenerator;
 import globaz.osiris.db.ordres.sepa.exceptions.CAYellowReportFileException;
+import java.io.Serializable;
 import java.util.Date;
 
-public class CAYellowReportFileService {
+public class CAYellowReportFileService implements Serializable {
+
+    private static final long serialVersionUID = 6247801465245915200L;
 
     private BSession session;
 
@@ -27,7 +30,7 @@ public class CAYellowReportFileService {
     public CAYellowReportFile create(final String fileName, final CAYellowReportFileType type, final byte[] content)
             throws Exception {
 
-        CAYellowReportFile reportFile = createWithoutDb(fileName, type);
+        final CAYellowReportFile reportFile = createWithoutDb(fileName, type);
         reportFile.setSession(session);
         reportFile.add(session.getCurrentThreadTransaction());
 

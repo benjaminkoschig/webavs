@@ -15,9 +15,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CACamt054BVRV0104 extends CACamt054VersionAbstract<iso.std.iso._20022.tech.xsd.camt_054_001.Document> {
+public class CACamt054LSVV0104 extends CACamt054VersionAbstract<iso.std.iso._20022.tech.xsd.camt_054_001.Document> {
 
-    public CACamt054BVRV0104() {
+    public CACamt054LSVV0104() {
         super(iso.std.iso._20022.tech.xsd.camt_054_001.Document.class);
     }
 
@@ -54,6 +54,7 @@ public class CACamt054BVRV0104 extends CACamt054VersionAbstract<iso.std.iso._200
                 final CACamt054GroupTransaction groupTx = new CACamt054GroupTransaction();
                 groupTx.setNtryRef(entry.getNtryRef());
                 groupTx.setCtrlAmount(getMontantControle(entry));
+                groupTx.setCtrlCodeMonnaie(getCodeMonnaieControle(entry));
                 groupTx.setCrdtDbtIndicator(getCreditOrDebitInterne(entry.getCdtDbtInd()));
                 groupTx.setNoAdherent(entry.getNtryRef());
                 groupTx.setStatus(getStatusEntry(entry));
@@ -71,6 +72,7 @@ public class CACamt054BVRV0104 extends CACamt054VersionAbstract<iso.std.iso._200
                 final String noAdherent = entry.getNtryRef();
                 final String referenceInterne = entry.getAcctSvcrRef();
                 final String dateInscription = getDateInscription(entry, sdf);
+                // dateTraitement = date d'échéance
                 final String dateTraitement = getDateTraitement(entry, sdf);
 
                 for (EntryDetails3 detail : entry.getNtryDtls()) {
@@ -90,10 +92,12 @@ public class CACamt054BVRV0104 extends CACamt054VersionAbstract<iso.std.iso._200
                         pojo.setGenreTransaction(managePrtryTp(tx));
 
                         pojo.setMontant(getMontantTx(tx));
+                        pojo.setCodeMonnaie(getCodeMonnaieTx(tx));
                         pojo.setNumeroAdherent(noAdherent);
 
                         pojo.setNumeroReference(manageCdtrRefInf(tx));
                         pojo.setReferenceInterne(referenceInterne);
+                        pojo.setEndToEndId(tx.getRefs().getEndToEndId());
                         pojo.setBankTransactionCode(getBxTxCdTransaction(bxTxCd, tx));
                         pojo.setAccountServicerReference(manageAccountServierRef(accountServicerRef, tx));
                         pojo.setDebtor(manageDebtor(tx.getRltdPties()));
@@ -119,6 +123,13 @@ public class CACamt054BVRV0104 extends CACamt054VersionAbstract<iso.std.iso._200
     private String getMontantTx(EntryTransaction4 tx) {
         if (tx.getAmt() != null && tx.getAmt().getValue() != null) {
             return String.valueOf(tx.getAmt().getValue());
+        }
+        return null;
+    }
+
+    private String getCodeMonnaieTx(EntryTransaction4 tx) {
+        if (tx.getAmt().getCcy() != null) {
+            return tx.getAmt().getCcy();
         }
         return null;
     }
@@ -176,6 +187,13 @@ public class CACamt054BVRV0104 extends CACamt054VersionAbstract<iso.std.iso._200
     private FWCurrency getMontantControle(final ReportEntry4 entry) {
         if (entry.getAmt() != null && entry.getAmt().getValue() != null) {
             return new FWCurrency(entry.getAmt().getValue().doubleValue());
+        }
+        return null;
+    }
+
+    private String getCodeMonnaieControle(final ReportEntry4 entry) {
+        if (entry.getAmt().getCcy() != null) {
+            return entry.getAmt().getCcy();
         }
         return null;
     }
@@ -348,6 +366,6 @@ public class CACamt054BVRV0104 extends CACamt054VersionAbstract<iso.std.iso._200
 
     @Override
     public CACamt054DefinitionType getType() {
-        return CACamt054DefinitionType.BVR;
+        return CACamt054DefinitionType.LSV;
     }
 }
