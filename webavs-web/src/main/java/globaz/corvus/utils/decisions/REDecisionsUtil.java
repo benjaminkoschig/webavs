@@ -1,12 +1,15 @@
 package globaz.corvus.utils.decisions;
 
 import globaz.corvus.api.basescalcul.IREPrestationAccordee;
+import globaz.corvus.api.creances.IRECreancier;
 import globaz.corvus.api.decisions.IREDecision;
 import globaz.corvus.api.demandes.IREDemandeRente;
 import globaz.corvus.api.lots.IRELot;
 import globaz.corvus.api.ordresversements.IREOrdresVersements;
 import globaz.corvus.api.prestations.IREPrestations;
 import globaz.corvus.dao.REDeleteCascadeDemandeAPrestationsDues;
+import globaz.corvus.db.creances.RECreancier;
+import globaz.corvus.db.creances.RECreancierManager;
 import globaz.corvus.db.decisions.REAnnexeDecision;
 import globaz.corvus.db.decisions.REAnnexeDecisionManager;
 import globaz.corvus.db.decisions.RECopieDecision;
@@ -346,6 +349,8 @@ public class REDecisionsUtil {
 
         Map<String, FWCurrency> mapSoldeDispoParIdPrestation = new HashMap<String, FWCurrency>();
 
+        REDecisionEntity dec = new REDecisionEntity();
+
         // Pour chacune des prestations
         for (String idPrst : idsPrestations) {
 
@@ -356,7 +361,7 @@ public class REDecisionsUtil {
             PRAssert.notIsNew(prst, null);
 
             // On récupère la décision
-            REDecisionEntity dec = new REDecisionEntity();
+            dec = new REDecisionEntity();
             dec.setSession(session);
             dec.setIdDecision(prst.getIdDecision());
             dec.retrieve(transaction);
@@ -389,7 +394,6 @@ public class REDecisionsUtil {
                 }
             }
             // TODO ajouter un test pour garantir qu0il n'y en ait pas 2 ???
-
             FWCurrency soldeDispoPourPrestation = new FWCurrency(montantBP.toString());
 
             // On parcours tous les OV de la prestation qu'on est en train de traiter
@@ -435,6 +439,7 @@ public class REDecisionsUtil {
 
                     // Si c'est une dette on soustrait le montant de la dette
                     soldeDispoPourPrestation.sub(unOrdreDeVersement.getMontantDette());
+
                 }
             }
 
@@ -501,6 +506,36 @@ public class REDecisionsUtil {
                             montantCompensableP = new FWCurrency(soldeMontantACompenserABS.toString());
                         }
 
+                        // calculer la somme des montant créancier
+
+                        double sommeMontantCreancier = 0;
+
+                        // récupérer tout les créancier
+                        RECreancierManager creMgr = new RECreancierManager();
+                        creMgr.setSession(session);
+                        creMgr.setForIdDemandeRente(dec.getIdDemandeRente().toString());
+                        creMgr.find(transaction);
+
+                        for (RECreancier cre : creMgr.getContainerAsList()) {
+
+                            // sauf les types impôts à la source
+                            if (!cre.getCsType().equals(IRECreancier.CS_IMPOT_SOURCE)) {
+
+                                // Si le montant revendiqué est à zéro, ne pas mettre dans les copies
+                                if (!(new FWCurrency(cre.getMontantRevandique()).isZero())) {
+                                    sommeMontantCreancier = sommeMontantCreancier
+                                            + Double.parseDouble(cre.getMontantRevandique());
+                                }
+                            }
+                        }
+
+                        // definir le montant a compenser
+                        if ((soldeCourantP.doubleValue() - sommeMontantCreancier) >= montantCompensableP.doubleValue()) {
+                            montantCompensableP = montantCompensableP;
+                        } else if ((soldeCourantP.doubleValue() - sommeMontantCreancier) >= 0) {
+                            montantCompensableP = new FWCurrency(soldeCourantP.doubleValue() - sommeMontantCreancier);
+                        }
+
                         soldeMontantACompenserN.add(montantCompensableP);
                         soldeMontantACompenserABS = new FWCurrency(soldeMontantACompenserN.toString());
                         soldeMontantACompenserABS.abs();
@@ -548,9 +583,11 @@ public class REDecisionsUtil {
                         }
                         currentElem.addDettesExtACompenser(ovidCourant.getIdTiers(), idOV,
                                 montantCompensableP.toString(), idTiersCompensationInterDecision);
+
                     }
                 }
             }
+
         }
 
         try {
@@ -581,29 +618,29 @@ public class REDecisionsUtil {
                             o.setIsCompense(Boolean.FALSE);
                         } else {
                             o.setIsCompense(Boolean.TRUE);
+
+                            o.setMontant(elm.getMontantCompense().toString());
+                            o.setMontantDette(elm.getMontantCompense().toString());
+                            o.setIdSection(null);
+
+                            o.setIdTiers(elm.getIdTiers());
+                            o.setIdTiersAdressePmt(null);
+                            o.setIdDomaineApplication(null);
+                            o.setIsCompensationInterDecision(Boolean.TRUE);
+                            o.setIsValide(Boolean.TRUE);
+                            o.add(transaction);
+
+                            // Ajout des compensations interDecision
+
+                            RECompensationInterDecisions cid = new RECompensationInterDecisions();
+                            cid.setSession(session);
+                            cid.setIdOrdreVersement(elm.getIdOV());
+                            cid.setIdOVCompensation(o.getIdOrdreVersement());
+                            cid.setIdTiers(elm.getIdTiersCompensationInterDecision());
+                            cid.setMontant(elm.getMontantCompense().toString());
+                            cid.add(transaction);
+                            // }
                         }
-
-                        o.setMontant(elm.getMontantCompense().toString());
-                        o.setMontantDette(elm.getMontantCompense().toString());
-                        o.setIdSection(null);
-
-                        o.setIdTiers(elm.getIdTiers());
-                        o.setIdTiersAdressePmt(null);
-                        o.setIdDomaineApplication(null);
-                        o.setIsCompensationInterDecision(Boolean.TRUE);
-                        o.setIsValide(Boolean.TRUE);
-                        o.add(transaction);
-
-                        // Ajout des compensations interDecision
-
-                        RECompensationInterDecisions cid = new RECompensationInterDecisions();
-                        cid.setSession(session);
-                        cid.setIdOrdreVersement(elm.getIdOV());
-                        cid.setIdOVCompensation(o.getIdOrdreVersement());
-                        cid.setIdTiers(elm.getIdTiersCompensationInterDecision());
-                        cid.setMontant(elm.getMontantCompense().toString());
-                        cid.add(transaction);
-                        // }
                     }
                 } else {
                     ;
