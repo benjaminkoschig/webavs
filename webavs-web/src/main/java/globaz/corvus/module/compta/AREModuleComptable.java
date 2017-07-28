@@ -1045,9 +1045,10 @@ public abstract class AREModuleComptable implements Comparator<IREModuleComptabl
                 Integer.toString(renteAccordeePrincipale.getCodePrestation().getCodePrestation()), isoLangFromIdTiers);
 
         // Périodes
-        final String dateFin = JadeStringUtil.isBlankOrZero(renteAccordeePrincipale.getMoisFin()) ? REPmtMensuel
-                .getDateDernierPmt(session) : renteAccordeePrincipale.getMoisFin();
-        final String periode = renteAccordeePrincipale.getMoisDebut() + " - " + dateFin;
+
+        final String dateFin = decision.getMoisFinRetro();
+        final String periode = decision.getMoisDebutRetro() + " - " + dateFin;
+
 
         // Message décisions
         String msgDecision = MotifVersementUtil.getTranslatedLabelFromIsolangue(isoLangFromIdTiers,
