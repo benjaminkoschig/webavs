@@ -33,13 +33,16 @@ public class StrategieAutresAPI extends StrategieCalculRevenu implements IStrate
             if (determineIfApiPrisEnCompte(donnee, context)) {
                 dealTypeApiAutre(donnee, resultatExistant, montant);
             }
+            addIsAPI_EncodeForAutresAPI(resultatExistant);
         } else {
             String cleRevenuAutresApi = null;
 
             if (IPCAutresAPI.CS_TYPE_AUTRES_API_ACCIDENT.equals(csType)) {
                 cleRevenuAutresApi = IPCValeursPlanCalcul.CLE_REVEN_ALLOCAPI_LAA;
+                addIsAPI_EncodeForAutresAPI(resultatExistant);
             } else if (IPCAutresAPI.CS_TYPE_AUTRES_API_MILITAIRE.equals(csType)) {
                 cleRevenuAutresApi = IPCValeursPlanCalcul.CLE_REVEN_ALLOCAPI_LAM;
+                addIsAPI_EncodeForAutresAPI(resultatExistant);
             } else {
                 throw new CalculException("Invalid csTypeRevenu of AllocationPourImpotant : " + csType);
             }
@@ -47,9 +50,17 @@ public class StrategieAutresAPI extends StrategieCalculRevenu implements IStrate
             if (determineIfApiPrisEnCompte(donnee, context)) {
                 this.getOrCreateChild(resultatExistant, cleRevenuAutresApi, montant);
             }
-
         }
         return resultatExistant;
+    }
+
+    /***
+     * K160212_001 : ajout les "autres API" pour le calcul de la déduction sur les biens immobiliers
+     * 
+     * @param resultatExistant
+     */
+    private void addIsAPI_EncodeForAutresAPI(TupleDonneeRapport resultatExistant) {
+        this.getOrCreateChild(resultatExistant, IPCValeursPlanCalcul.CLE_IS_API_ENCODE, 1f);
     }
 
     /**
