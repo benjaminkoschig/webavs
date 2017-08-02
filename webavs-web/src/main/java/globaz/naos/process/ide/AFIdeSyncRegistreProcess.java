@@ -212,9 +212,17 @@ public class AFIdeSyncRegistreProcess extends BProcess {
      */
     private List<AFAffiliation> getListAffiliationAvecIDE() throws Exception {
 
+        Boolean isUpdateCodeNoga = false;
+        if (AFProperties.NOGA_SYNCHRO_REGISTRE.getValue() != null
+                && !AFProperties.NOGA_SYNCHRO_REGISTRE.getValue().isEmpty()
+                && AFProperties.NOGA_SYNCHRO_REGISTRE.getBooleanValue()) {
+            isUpdateCodeNoga = true;
+        }
+
         AFIdeAffiliationManager manager = new AFIdeAffiliationManager();
         manager.setSession(getSession());
         manager.setModeForceAllStatus(isModeForceAllStatus());
+        manager.setUpdateCodeNoga(isUpdateCodeNoga);
         manager.find(BManager.SIZE_NOLIMIT);
         List<AFAffiliation> listAffiliation = new ArrayList<AFAffiliation>();
         for (int i = 0; i < manager.size(); i++) {

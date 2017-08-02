@@ -21,6 +21,7 @@ public class AFIdeAffiliationManager extends BManager implements Serializable {
     private static final long serialVersionUID = -2359708126575161032L;
 
     private boolean modeForceAllStatus;
+    private boolean updateCodeNoga;
 
     @Override
     protected BEntity _newEntity() throws Exception {
@@ -40,7 +41,7 @@ public class AFIdeAffiliationManager extends BManager implements Serializable {
     protected String _getWhere(BStatement statement) {
         StringBuffer sqlWhere = new StringBuffer();
         sqlWhere.append(AFAffiliation.FIELDNAME_NUMERO_IDE + " <> ''");
-        sqlWhere.append(" AND ");
+        sqlWhere.append(" AND (");
         sqlWhere.append(AFAffiliation.FIELDNAME_NUMERO_IDE + " IS NOT NULL");
         if (!modeForceAllStatus) {
             sqlWhere.append(" AND ( ");
@@ -49,6 +50,11 @@ public class AFIdeAffiliationManager extends BManager implements Serializable {
             sqlWhere.append(AFAffiliation.FIELDNAME_STATUT_IDE + " IS NULL");
             sqlWhere.append(" )");
         }
+        // Si la propriété de synchro du code NOGA est à true, on récupère les affiliations qui ont pas de code NOGA
+        if (updateCodeNoga) {
+            sqlWhere.append(" OR (MATCDN = 0 OR MATCDN IS NULL) ");
+        }
+        sqlWhere.append(" )");
 
         return sqlWhere.toString();
     }
@@ -60,5 +66,13 @@ public class AFIdeAffiliationManager extends BManager implements Serializable {
 
     public void setModeForceAllStatus(boolean modeForceAllStatus) {
         this.modeForceAllStatus = modeForceAllStatus;
+    }
+
+    public boolean isUpdateCodeNoga() {
+        return updateCodeNoga;
+    }
+
+    public void setUpdateCodeNoga(boolean updateCodeNoga) {
+        this.updateCodeNoga = updateCodeNoga;
     }
 }
