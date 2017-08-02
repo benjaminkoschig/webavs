@@ -9,6 +9,7 @@ import globaz.jade.client.util.JadeStringUtil;
 import globaz.naos.db.affiliation.AFAffiliation;
 import globaz.naos.translation.CodeSystem;
 import globaz.naos.util.AFIDEUtil;
+import globaz.pyxis.adresse.datasource.TIAbstractAdresseDataSource;
 import globaz.pyxis.adresse.datasource.TIAdresseDataSource;
 import globaz.pyxis.db.tiers.TITiersViewBean;
 
@@ -51,18 +52,18 @@ public class AFIdeAnnonceViewBean extends AFIdeAnnonce implements FWViewBeanInte
     @Override
     public void _afterRetrieve(BTransaction transaction) throws Exception {
         // -------- Recherche des données de l'affilié --------
-        AFAffiliation affiliation = new AFAffiliation();
-        affiliation.setSession(getSession());
-        affiliation.setAffiliationId(getIdeAnnonceIdAffiliation());
-        affiliation.retrieve();
-        setAffiliation(affiliation);
+        AFAffiliation affiliationRetrieved = new AFAffiliation();
+        affiliationRetrieved.setSession(getSession());
+        affiliationRetrieved.setAffiliationId(getIdeAnnonceIdAffiliation());
+        affiliationRetrieved.retrieve();
+        setAffiliation(affiliationRetrieved);
         // -------- Recherche des données de l'affilié --------
         if (!getAffiliation().isNew()) {
-            TITiersViewBean tiers = new TITiersViewBean();
-            tiers.setSession(getSession());
-            tiers.setIdTiers(getAffiliation().getIdTiers());
-            tiers.retrieve();
-            setTiers(tiers);
+            TITiersViewBean tiersRetrieved = new TITiersViewBean();
+            tiersRetrieved.setSession(getSession());
+            tiersRetrieved.setIdTiers(getAffiliation().getIdTiers());
+            tiersRetrieved.retrieve();
+            setTiers(tiersRetrieved);
         }
 
         if (isTraite() || CodeSystem.CATEGORIE_ANNONCE_IDE_RECEPTION.equalsIgnoreCase(getIdeAnnonceCategorie())) {
@@ -92,26 +93,33 @@ public class AFIdeAnnonceViewBean extends AFIdeAnnonce implements FWViewBeanInte
             }
 
         } else {
+            TIAdresseDataSource adresseDataSource = AFIDEUtil.loadAdresseFromCascadeIde(affiliation);
 
-            TIAdresseDataSource adresseDataSource = AFIDEUtil.loadAdresseForIde(getSession(), affiliation);
-            if (adresseDataSource != null) {
+            if (!adresseDataSource.getData().get(TIAbstractAdresseDataSource.ADRESSE_ID_ADRESSE).isEmpty()) {
                 adresse = AFIDEUtil.formatAdresseForIde(adresseDataSource);
                 rue = adresseDataSource.rue + " " + adresseDataSource.numeroRue;
                 npa = adresseDataSource.localiteNpa;
                 localite = adresseDataSource.localiteNom;
                 canton = adresseDataSource.canton_court;
+            } else {
+
+                setMessageErreurForTechnicalUser(getSession().getLabel(
+                        "NAOS_ANNONCE_IDE_CREATION_MUTATION_MANDATORY_ERREUR_ADRESSE_TIERS_BLANK"));
+
+                setMessageErreurForBusinessUser(getSession().getLabel(
+                        "NAOS_ANNONCE_IDE_CREATION_MUTATION_MANDATORY_ERREUR_ADRESSE_TIERS_BLANK"));
+
+                formeJuridique = CodeSystem.getLibelle(getSession(), affiliationRetrieved.getPersonnaliteJuridique());
+                langueTiers = tiers.getLangueIso().toUpperCase();
+                brancheEconomique = CodeSystem.getLibelle(getSession(), affiliationRetrieved.getBrancheEconomique());
+
+                activite = affiliationRetrieved.getActivite();
+                if (tiers.getPersonnePhysique()) {
+                    naissance = tiers.getDateNaissance();
+                    prenomNom = tiers.getPrenomNom();
+                }
+
             }
-
-            formeJuridique = CodeSystem.getLibelle(getSession(), affiliation.getPersonnaliteJuridique());
-            langueTiers = tiers.getLangueIso().toUpperCase();
-            brancheEconomique = CodeSystem.getLibelle(getSession(), affiliation.getBrancheEconomique());
-
-            activite = affiliation.getActivite();
-            if (tiers.getPersonnePhysique()) {
-                naissance = tiers.getDateNaissance();
-                prenomNom = tiers.getPrenomNom();
-            }
-
         }
 
     }
@@ -190,7 +198,7 @@ public class AFIdeAnnonceViewBean extends AFIdeAnnonce implements FWViewBeanInte
     }
 
     public boolean canUpdateAnnonce() {
-        return (AFIDEUtil.getListEtatAnnonceIdeEnCours().contains(getIdeAnnonceEtat()));
+        return AFIDEUtil.getListEtatAnnonceIdeEnCours().contains(getIdeAnnonceEtat());
     }
 
     public AFAffiliation getAffiliation() {

@@ -42,7 +42,9 @@ public enum AFProperties implements IProperties {
     NOGA_SYNCHRO_REGISTRE("exploitation.codeNOGA.IDE.SynchroRegistre",
             "Mettre à jour le code NOGA depuis la synchro IDE"),
     NOGA_UPDATE_ANNONCE_IDE("exploitation.codeNOGA.IDE.InfoABO",
-            "Mettre à jour le code NOGA depuis lors d'une annonce IDE");
+            "Mettre à jour le code NOGA depuis lors d'une annonce IDE"),
+    IDE_CASCADE_ADRESSE_MORALE("ide.cascade.adresse.morale", "Cascade d'adresse IDE pour personnes morales"),
+    IDE_CASCADE_ADRESSE_PHYSIQUE("ide.cascade.adresse.physique", "Cascade d'adresse IDE pour personnes physiques");
 
     private String description;
     private String propertyName;

@@ -23,4 +23,10 @@ public abstract class AFBusinessServiceLocator {
     public static AssuranceService getAssuranceService() throws JadeApplicationServiceNotAvailableException {
         return (AssuranceService) JadeApplicationServiceLocator.getInstance().getServiceImpl(AssuranceService.class);
     }
+
+    public static CascadeAdresseIdeService getCascadeAdresseIdeService()
+            throws JadeApplicationServiceNotAvailableException {
+        return (CascadeAdresseIdeService) JadeApplicationServiceLocator.getInstance().getServiceImpl(
+                CascadeAdresseIdeService.class);
+    }
 }

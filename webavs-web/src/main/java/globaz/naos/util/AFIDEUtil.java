@@ -14,6 +14,7 @@ import globaz.jade.admin.user.bean.JadeUser;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.log.JadeLogger;
+import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import globaz.naos.application.AFApplication;
 import globaz.naos.db.affiliation.AFAffiliation;
 import globaz.naos.db.affiliation.AFAffiliationUtil;
@@ -28,6 +29,7 @@ import globaz.naos.db.planAffiliation.AFPlanAffiliationManager;
 import globaz.naos.exceptions.AFIdeNumberNoMatchException;
 import globaz.naos.properties.AFProperties;
 import globaz.naos.translation.CodeSystem;
+import globaz.pyxis.adresse.datasource.TIAbstractAdresseDataSource;
 import globaz.pyxis.adresse.datasource.TIAdresseDataSource;
 import globaz.pyxis.constantes.IConstantes;
 import globaz.pyxis.db.tiers.TITiersViewBean;
@@ -39,6 +41,7 @@ import java.util.List;
 import javax.servlet.http.HttpSession;
 import javax.xml.datatype.XMLGregorianCalendar;
 import ch.globaz.common.properties.PropertiesException;
+import ch.globaz.naos.business.service.AFBusinessServiceLocator;
 
 /**
  * Classe utilitaire de gestion du numéro IDE, des annonces IDE
@@ -513,7 +516,7 @@ public class AFIDEUtil {
 
         }
 
-        if (!AFIDEUtil.hasTiersAdresseForIde(session, affiliation)) {
+        if (!AFIDEUtil.hasTiersAdresseForIdeOrFromCascade(session, affiliation)) {
             if (errorBuffer.length() > 0) {
                 errorBuffer.append(" / ");
             }
@@ -597,18 +600,19 @@ public class AFIDEUtil {
 
         TITiersViewBean tiers = loadTiers(session, ideAnnonce.getIdTiers());
         AFAffiliation affiliation = AFAffiliationUtil.getAffiliation(ideAnnonce.getIdeAnnonceIdAffiliation(), session);
-        TIAdresseDataSource adresseDataSouce = loadAdresseForIde(session, affiliation);
+
+        TIAdresseDataSource adresseDataSource = loadAdresseFromCascadeIde(affiliation);
 
         IDEDataBean ideDataBean = new IDEDataBean();
 
-        if (adresseDataSouce != null) {
-            ideDataBean.setAdresse(AFIDEUtil.formatAdresseForIde(adresseDataSouce));
-            ideDataBean.setCanton(adresseDataSouce.canton_court);
-            ideDataBean.setLocalite(adresseDataSouce.localiteNom);
-            ideDataBean.setNpa(adresseDataSouce.localiteNpa);
-            ideDataBean.setRue(adresseDataSouce.rue);
-            ideDataBean.setNumeroRue(adresseDataSouce.numeroRue);
-            ideDataBean.setCareOf(adresseDataSouce.attention);
+        if (adresseDataSource != null) {
+            ideDataBean.setAdresse(AFIDEUtil.formatAdresseForIde(adresseDataSource));
+            ideDataBean.setCanton(adresseDataSource.canton_court);
+            ideDataBean.setLocalite(adresseDataSource.localiteNom);
+            ideDataBean.setNpa(adresseDataSource.localiteNpa);
+            ideDataBean.setRue(adresseDataSource.rue);
+            ideDataBean.setNumeroRue(adresseDataSource.numeroRue);
+            ideDataBean.setCareOf(adresseDataSource.attention);
         }
 
         ideDataBean.setLangue(tiers.getLangueIso().toUpperCase());
@@ -798,12 +802,54 @@ public class AFIDEUtil {
         return tiAdrssDataSource;
     }
 
-    public static boolean hasTiersAdresseForIde(BSession session, AFAffiliation affiliation) throws Exception {
+    public static TIAdresseDataSource loadAdresseFromCascadeIde(AFAffiliation affiliation) throws PropertiesException,
+            JadeApplicationServiceNotAvailableException {
+        return AFBusinessServiceLocator.getCascadeAdresseIdeService().getAdresseFromCascadeIde(
+                affiliation.getTiers().getPersonneMorale(), affiliation.getAffilieNumero(), affiliation.getIdTiers());
+    }
 
-        TIAdresseDataSource adresseDataSource = loadAdresseForIde(session, affiliation);
+    /***
+     * Méthode qui retourne une adresse, soit via la cascade normale ou via les cascade IDE si les deux sont définies
+     * dans les propriétés.
+     * 
+     * @param session
+     * @param affiliation
+     * @return
+     * @throws PropertiesException
+     * @throws JadeApplicationServiceNotAvailableException
+     * @throws Exception
+     */
+    public static TIAdresseDataSource loadAdresseForIdeOrFromCascadeIde(BSession session, AFAffiliation affiliation)
+            throws Exception {
 
-        return adresseDataSource != null;
+        TIAdresseDataSource adresseDataSource;
 
+        // Si une des deux propriétés est vide on utilise l'ancienne méthode pour retrouver l'adresse
+        if (AFProperties.IDE_CASCADE_ADRESSE_PHYSIQUE.getValue().isEmpty()
+                || AFProperties.IDE_CASCADE_ADRESSE_MORALE.getValue().isEmpty()) {
+            adresseDataSource = loadAdresseForIde(session, affiliation);
+        } else {
+            adresseDataSource = loadAdresseFromCascadeIde(affiliation);
+        }
+
+        return adresseDataSource;
+    }
+
+    /***
+     * Permet de savoir si l'affilaition à une adresse.
+     * Si les propriétés cascade IDE sont renseignés on cherche une adresse via les cascades
+     * 
+     * @param session
+     * @param affiliation
+     * @return
+     * @throws Exception
+     */
+    public static boolean hasTiersAdresseForIdeOrFromCascade(BSession session, AFAffiliation affiliation)
+            throws Exception {
+        TIAdresseDataSource adresseDataSource = loadAdresseFromCascadeIde(affiliation);
+
+        // Si pas d'id_adresse ça veut dire pas d'adresse
+        return !adresseDataSource.getData().get(TIAbstractAdresseDataSource.ADRESSE_ID_ADRESSE).isEmpty();
     }
 
     public static boolean hasDroitEnregistrementActif(AFAffiliation affiliation) throws PropertiesException {

@@ -71,3 +71,7 @@ INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL) VALUES ('naos.ide.webservice.url.
 INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL) VALUES ('naos.exploitation.codeNOGA.IDE.SynchroRegistre','false');
 INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL) VALUES ('naos.exploitation.codeNOGA.IDE.InfoABO','false');
 INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL) VALUES ('naos.exploitation.codeNOGA.URL','http://www.kubb2008.bfs.admin.ch');
+
+-- S170614_005 : cascade d'adresse IDE
+INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL) VALUES ('naos.ide.cascade.adresse.morale','');
+INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL) VALUES ('naos.ide.cascade.adresse.physique','');

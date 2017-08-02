@@ -412,7 +412,7 @@ public class AFIdeAnnonce extends BEntity implements Serializable {
     @Override
     protected void _validate(final BStatement statement) throws Exception {
 
-        // todo
+        //
     }
 
     @Override

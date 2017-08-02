@@ -6,6 +6,7 @@ import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BTransaction;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import globaz.naos.db.affiliation.AFAffiliation;
 import globaz.naos.db.affiliation.AFAffiliationManager;
 import globaz.naos.util.AFIDEUtil;
@@ -17,6 +18,8 @@ import globaz.pyxis.db.adressecourrier.TIAvoirAdresseViewBean;
 import globaz.pyxis.db.adressecourrier.TILocalite;
 import globaz.pyxis.db.tiers.TITiersViewBean;
 import java.util.Hashtable;
+import ch.globaz.common.properties.PropertiesException;
+import ch.globaz.naos.business.service.AFBusinessServiceLocator;
 
 /**
  * Classe servant au trigger ExternalService utilisé par le FW</br>
@@ -42,34 +45,35 @@ public class AFAnnonceIde extends BAbstractEntityExternalService {
 
     @Override
     public void afterDelete(BEntity entity) throws Throwable {
-        // TODO Auto-generated method stub
+        //
 
     }
 
     @Override
     public void afterRetrieve(BEntity entity) throws Throwable {
-        // TODO Auto-generated method stub
+        //
 
     }
 
     @Override
     public void afterUpdate(BEntity entity) throws Throwable {
+        //
     }
 
     @Override
     public void beforeAdd(BEntity entity) throws Throwable {
-
+        //
     }
 
     @Override
     public void beforeDelete(BEntity entity) throws Throwable {
-        // TODO Auto-generated method stub
+        //
 
     }
 
     @Override
     public void beforeRetrieve(BEntity entity) throws Throwable {
-        // TODO Auto-generated method stub
+        //
 
     }
 
@@ -148,13 +152,47 @@ public class AFAnnonceIde extends BAbstractEntityExternalService {
                 // Champs modifiés devant être annoncé
                 if (!tiersAvantModif.getLangue().equalsIgnoreCase(tiers.getLangue())
                         || (tiers.getPersonnePhysique() && (!tiersAvantModif.getDateNaissance().equalsIgnoreCase(
-                                tiers.getDateNaissance()) || !tiersAvantModif.getNom().equalsIgnoreCase(tiers.getNom())))) {
+                                tiers.getDateNaissance()) || !tiersAvantModif.getNom().equalsIgnoreCase(tiers.getNom())))
+                        || isChangementPersonnePhysiqueAndAdresseDifferente(tiersAvantModif, tiers)) {
                     // Création d'une mutation pour chaque les affiliations non provisoire qui ont un numéro IDE
                     // différent
                     findAffiliatioAndGenerateMutation(tiers, "");
                 }
 
             }
+        }
+    }
+
+    /***
+     * Méthode qui permet de définir si un changement entre personne physique / morale à été effectué.
+     * Si oui on va comparer les adresses récupérées via les cascades d'adresses, si elle sont différentes on retourne
+     * true pour pouvoir générer une annonce IDE.
+     * 
+     * @param tiersAvantModif
+     * @param tiers
+     * @throws JadeApplicationServiceNotAvailableException
+     * @throws PropertiesException
+     */
+    private Boolean isChangementPersonnePhysiqueAndAdresseDifferente(TITiersViewBean tiersAvantModif,
+            TITiersViewBean tiers) throws PropertiesException, JadeApplicationServiceNotAvailableException {
+
+        // Si il y a eu un changement
+        if (!tiersAvantModif.getPersonnePhysique().equals(tiers.getPersonnePhysique())) {
+            TIAdresseDataSource adresseMorale = AFBusinessServiceLocator.getCascadeAdresseIdeService()
+                    .getAdresseFromCascadeIde(true, tiers.getNumAffilieActuel(), tiers.getIdTiers());
+
+            TIAdresseDataSource adressePhysique = AFBusinessServiceLocator.getCascadeAdresseIdeService()
+                    .getAdresseFromCascadeIde(false, tiers.getNumAffilieActuel(), tiers.getIdTiers());
+
+            // Si les deux ID adresses sont null (pas d'adresse trouvée) on génèe quand même une annonce
+            if (adresseMorale.id_adresse.isEmpty() && adressePhysique.id_adresse.isEmpty()) {
+                return true;
+            }
+
+            // Si les ID sont les mêmes, les adresses sont les mêmes, donc pas d'annonces à générer.
+            return !adresseMorale.id_adresse.equals(adressePhysique.id_adresse);
+        } else {
+            return false;
         }
     }
 
@@ -176,11 +214,10 @@ public class AFAnnonceIde extends BAbstractEntityExternalService {
                 // l'on a modifie. Comme cette méthode est aussi appelé lors de la modification d'un tiers, ce test
                 // n'est pas concerné (idAdresseModifie vide)
                 if (!JadeStringUtil.isEmpty(idAdresseModifie)) {
-                    // Test si l'adresse modifiée est celle utilisée par l'affiliation
-                    TIAdresseDataSource adresseUtiliseDansNaos = AFIDEUtil.loadAdresseForIde(tiers.getSession(),
-                            affiliation);
-                    if (adresseUtiliseDansNaos != null) {
-                        Hashtable<?, ?> dataAdresse = adresseUtiliseDansNaos.getData();
+                    TIAdresseDataSource adresseDataSource = AFIDEUtil.loadAdresseFromCascadeIde(affiliation);
+
+                    if (adresseDataSource != null) {
+                        Hashtable<?, ?> dataAdresse = adresseDataSource.getData();
                         String idAdresseUtiliseDansNaos = (String) dataAdresse
                                 .get(TIAbstractAdresseDataSource.ADRESSE_ID_ADRESSE);
                         if (!idAdresseModifie.equalsIgnoreCase(idAdresseUtiliseDansNaos)) {
@@ -246,14 +283,12 @@ public class AFAnnonceIde extends BAbstractEntityExternalService {
 
     @Override
     public void init(BEntity entity) throws Throwable {
-        // TODO Auto-generated method stub
-
+        //
     }
 
     @Override
     public void validate(BEntity entity) throws Throwable {
-        // TODO Auto-generated method stub
-
+        //
     }
 
 }
