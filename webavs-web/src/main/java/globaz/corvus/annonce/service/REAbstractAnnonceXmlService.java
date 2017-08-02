@@ -141,6 +141,9 @@ public abstract class REAbstractAnnonceXmlService {
     public XMLGregorianCalendar retourneXMLGregorianCalendarFromMonth(String dateMmYy) throws Exception {
         XMLGregorianCalendar returnCalendar;
         GregorianCalendar gregory;
+        if (dateMmYy.length() < 4) {
+            return null;
+        }
         if (new Integer(dateMmYy.substring(2)) > 48) {
             gregory = new GregorianCalendar(new Integer(dateMmYy.substring(2)) + 1900, Integer.valueOf(dateMmYy
                     .substring(0, 2)) - 1, 1);
