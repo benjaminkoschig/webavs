@@ -92,6 +92,7 @@ public class ListeExcelRevisions extends PegasusAbstractExcelServiceImpl {
         if (!JadeStringUtil.isBlankOrZero(moisAnnee)) {
             listRevisionsSearch.setForMoisAnnee(moisAnnee);
             listRevisionsSearch.setForDateFin(moisAnnee);
+
             dateTitre += moisAnnee;
         } else {
             listRevisionsSearch.setForMoisAnneeGreaterOrEquals("01." + annee);
@@ -99,6 +100,11 @@ public class ListeExcelRevisions extends PegasusAbstractExcelServiceImpl {
             listRevisionsSearch.setForDateFin("12." + annee);
             dateTitre += annee;
         }
+
+        // K160811_003 :
+        // si on précise pas la date début à 0 la requete va contrôler que la date est soit null soit = à 0, mais pas
+        // plus grand
+        listRevisionsSearch.setForDateDebut("0");
 
         try {
             listRevisionsSearch = PegasusServiceLocator.getDemandeService().searchRevisions(listRevisionsSearch);
