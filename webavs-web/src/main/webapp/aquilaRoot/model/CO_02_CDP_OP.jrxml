@@ -132,7 +132,7 @@
 						backcolor="#FFFFFF"
 						key="subreport-2"
 						stretchType="NoStretch"
-						positionType="FixRelativeToTop"
+						positionType="Float"
 						isPrintRepeatedValues="true"
 						isRemoveLineWhenBlank="false"
 						isPrintInFirstWholeBand="false"
