@@ -8,6 +8,8 @@ import globaz.corvus.api.lots.IRELot;
 import globaz.corvus.api.ordresversements.IREOrdresVersements;
 import globaz.corvus.api.prestations.IREPrestations;
 import globaz.corvus.dao.REDeleteCascadeDemandeAPrestationsDues;
+import globaz.corvus.db.creances.RECreanceAccordee;
+import globaz.corvus.db.creances.RECreanceAccordeeManager;
 import globaz.corvus.db.creances.RECreancier;
 import globaz.corvus.db.creances.RECreancierManager;
 import globaz.corvus.db.decisions.REAnnexeDecision;
@@ -56,6 +58,7 @@ import globaz.jade.client.util.JadeNumericUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.tools.PRAssert;
 import globaz.prestation.tools.PRDateFormater;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -508,7 +511,31 @@ public class REDecisionsUtil {
 
                         // calculer la somme des montant créancier
 
+                        // double sommeMontantCreancier = 0;
+                        //
+                        // // récupérer tout les créancier
+                        // RECreancierManager creMgr = new RECreancierManager();
+                        // creMgr.setSession(session);
+                        // creMgr.setForIdDemandeRente(dec.getIdDemandeRente().toString());
+                        // creMgr.find(transaction);
+                        //
+                        // for (RECreancier cre : creMgr.getContainerAsList()) {
+                        //
+                        // // sauf les types impôts à la source
+                        // if (!cre.getCsType().equals(IRECreancier.CS_IMPOT_SOURCE)) {
+                        //
+                        // // Si le montant revendiqué est à zéro, ne pas mettre dans les copies
+                        // if (!(new FWCurrency(cre.getMontantRevandique()).isZero())) {
+                        // sommeMontantCreancier = sommeMontantCreancier
+                        // + Double.parseDouble(cre.getMontantRevandique());
+                        // }
+                        // }
+                        // }
+
+                        // YMA nouveau test début
                         double sommeMontantCreancier = 0;
+                        BigDecimal montantReparti = new BigDecimal("0.00");
+                        ;
 
                         // récupérer tout les créancier
                         RECreancierManager creMgr = new RECreancierManager();
@@ -521,19 +548,30 @@ public class REDecisionsUtil {
                             // sauf les types impôts à la source
                             if (!cre.getCsType().equals(IRECreancier.CS_IMPOT_SOURCE)) {
 
-                                // Si le montant revendiqué est à zéro, ne pas mettre dans les copies
-                                if (!(new FWCurrency(cre.getMontantRevandique()).isZero())) {
-                                    sommeMontantCreancier = sommeMontantCreancier
-                                            + Double.parseDouble(cre.getMontantRevandique());
+                                // récupérer montant reparti
+                                RECreanceAccordeeManager caManager = new RECreanceAccordeeManager();
+                                caManager.setSession(session);
+                                caManager.setForIdCreancier(cre.getId());
+                                try {
+                                    montantReparti = caManager.getSum(RECreanceAccordee.FIELDNAME_MONTANT);
+                                } catch (Exception e) {
+                                    montantReparti = new BigDecimal("0.00");
                                 }
+
+                                sommeMontantCreancier = sommeMontantCreancier + montantReparti.doubleValue();
+
                             }
                         }
+
+                        // YMA fin test
 
                         // definir le montant a compenser
                         if ((soldeCourantP.doubleValue() - sommeMontantCreancier) >= montantCompensableP.doubleValue()) {
                             montantCompensableP = montantCompensableP;
                         } else if ((soldeCourantP.doubleValue() - sommeMontantCreancier) >= 0) {
                             montantCompensableP = new FWCurrency(soldeCourantP.doubleValue() - sommeMontantCreancier);
+                        } else {
+                            montantCompensableP = new FWCurrency(0);
                         }
 
                         soldeMontantACompenserN.add(montantCompensableP);
