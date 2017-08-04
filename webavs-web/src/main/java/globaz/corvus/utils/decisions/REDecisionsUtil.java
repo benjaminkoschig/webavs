@@ -509,30 +509,6 @@ public class REDecisionsUtil {
                             montantCompensableP = new FWCurrency(soldeMontantACompenserABS.toString());
                         }
 
-                        // calculer la somme des montant créancier
-
-                        // double sommeMontantCreancier = 0;
-                        //
-                        // // récupérer tout les créancier
-                        // RECreancierManager creMgr = new RECreancierManager();
-                        // creMgr.setSession(session);
-                        // creMgr.setForIdDemandeRente(dec.getIdDemandeRente().toString());
-                        // creMgr.find(transaction);
-                        //
-                        // for (RECreancier cre : creMgr.getContainerAsList()) {
-                        //
-                        // // sauf les types impôts à la source
-                        // if (!cre.getCsType().equals(IRECreancier.CS_IMPOT_SOURCE)) {
-                        //
-                        // // Si le montant revendiqué est à zéro, ne pas mettre dans les copies
-                        // if (!(new FWCurrency(cre.getMontantRevandique()).isZero())) {
-                        // sommeMontantCreancier = sommeMontantCreancier
-                        // + Double.parseDouble(cre.getMontantRevandique());
-                        // }
-                        // }
-                        // }
-
-                        // YMA nouveau test début
                         double sommeMontantCreancier = 0;
                         BigDecimal montantReparti = new BigDecimal("0.00");
                         ;
@@ -562,8 +538,6 @@ public class REDecisionsUtil {
 
                             }
                         }
-
-                        // YMA fin test
 
                         // definir le montant a compenser
                         if ((soldeCourantP.doubleValue() - sommeMontantCreancier) >= montantCompensableP.doubleValue()) {
