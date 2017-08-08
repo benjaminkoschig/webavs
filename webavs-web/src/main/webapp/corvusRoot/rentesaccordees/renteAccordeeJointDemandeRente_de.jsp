@@ -795,7 +795,7 @@ $('html').bind(eventConstant.JADE_FW_ACTION_DONE, function(){
 					 		</ct:ifhasright>
 					 	<%}%>
 				 		
-				 		<%if (viewBean.isMontantADebloquer()) {%>
+				 		<%if (viewBean.isMontantADebloquer() && !viewBean.isLotDeblocageEnTraitement()) {%>
 				 			<ct:ifhasright element="<%=IREActions.ACTION_RENTE_ACCORDEE_JOINT_DEMANDE_RENTE%>" crud="r">
 				 			<INPUT name="boutonDeblocageMontant" type="button" value="<%=viewBean.getSession().getLabel("JSP_RAC_D_DEBLOQUER_MNT")%>" onclick="actionDeblocageMontant()">
 				 			</ct:ifhasright>

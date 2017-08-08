@@ -5,7 +5,9 @@ package globaz.corvus.vb.rentesaccordees;
 
 import globaz.commons.nss.NSUtil;
 import globaz.corvus.api.basescalcul.IREPrestationAccordee;
+import globaz.corvus.api.lots.IRELot;
 import globaz.corvus.db.demandes.REDemandeRente;
+import globaz.corvus.db.lots.RELotManager;
 import globaz.corvus.db.rentesaccordees.REDecisionJointDemandeRente;
 import globaz.corvus.db.rentesaccordees.REDecisionJointDemandeRenteManager;
 import globaz.corvus.db.rentesaccordees.REEnteteBlocage;
@@ -705,6 +707,29 @@ public class RERenteAccordeeJointDemandeRenteViewBean extends RERenteAccJoinTblT
             }
             FWCurrency mntB = new FWCurrency(blocage.getMontantBloque());
             return mntB.isPositive();
+        }
+    }
+
+    /***
+     * Permet de savoir si un lot de déblocage est en traitement
+     * 
+     * @return
+     */
+    public boolean isLotDeblocageEnTraitement() {
+        RELotManager lotMgr = new RELotManager();
+        lotMgr.setSession(getSession());
+        lotMgr.setForCsType(IRELot.CS_TYP_LOT_DEBLOCAGE_RA);
+        lotMgr.setForCsEtat(IRELot.CS_ETAT_LOT_EN_TRAITEMENT);
+
+        try {
+            lotMgr.find(1);
+
+            return lotMgr.getFirstEntity() != null;
+
+        } catch (Exception e) {
+            // should never happend
+            e.printStackTrace();
+            return false;
         }
     }
 

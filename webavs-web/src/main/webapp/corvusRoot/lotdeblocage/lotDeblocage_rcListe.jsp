@@ -12,6 +12,8 @@
 
 	RELotDeblocageListViewBean viewBean = (RELotDeblocageListViewBean) request.getAttribute("viewBean");
 	size = viewBean.size();
+	
+	String csEtatLot = request.getParameter("csEtatLot");
 		
 	detailLink = "corvus?userAction=corvus.deblocage.deblocage.afficher&selectedId=";
 	menuDetailLabel = viewBean.getSession().getLabel("MENU_OPTION_DETAIL");
@@ -37,16 +39,21 @@
   	RELotDeblocageViewBean line = (RELotDeblocageViewBean) viewBean.getEntity(i);
   	actionDetail = targetLocation + "='" + detailLink + line.getIdRenteAccordee();
   %>
-    <TD class="mtd" width="">
-	   	<ct:menuPopup menu="corvus-optionprestationsdeblocage" detailLabelId="MENU_OPTION_DEBLOCAGE" detailLink="<%=detailLink + line.getIdRenteAccordee()%>">
-			<ct:menuParam key="selectedId" value=""/>
-		</ct:menuPopup>
-    </TD>
-    <TD class="mtd" nowrap="nowrap" onClick="<%=actionDetail%>"><%=line.formatInformationCompte()%>&nbsp;</TD>
-    <TD class="mtd" nowrap="nowrap" onClick="<%=actionDetail%>" align="center"><%=line.getIdExterneSextion()%>&nbsp;</TD>
-	<TD class="mtd" nowrap="nowrap" onClick="<%=actionDetail%>" align="right"><%=line.getMontantACompenser() %>&nbsp;</TD>
-	<TD class="mtd" nowrap="nowrap" onClick="<%=actionDetail%>"><%=line.getAdresseDePaiement()%>&nbsp;</TD>
-	<TD class="mtd" nowrap="nowrap" onClick="<%=actionDetail%>" align="right"><%=line.getMontantAPayer() %>&nbsp;</TD>
+  	    <TD class="mtd" width="">
+  <%if (globaz.corvus.api.lots.IRELot.CS_ETAT_LOT_EN_TRAITEMENT.equals(csEtatLot)) {%>		
+	<%} else{%>
+
+		   	<ct:menuPopup menu="corvus-optionprestationsdeblocage" detailLabelId="MENU_OPTION_DEBLOCAGE" detailLink="<%=detailLink + line.getIdRenteAccordee()%>">
+				<ct:menuParam key="selectedId" value=""/>
+			</ct:menuPopup>
+
+    <%}%>
+    	    </TD>
+	    <TD class="mtd" nowrap="nowrap" onClick="<%=actionDetail%>"><%=line.formatInformationCompte()%>&nbsp;</TD>
+	    <TD class="mtd" nowrap="nowrap" onClick="<%=actionDetail%>" align="center"><%=line.getIdExterneSextion()%>&nbsp;</TD>
+		<TD class="mtd" nowrap="nowrap" onClick="<%=actionDetail%>" align="right"><%=line.getMontantACompenser() %>&nbsp;</TD>
+		<TD class="mtd" nowrap="nowrap" onClick="<%=actionDetail%>"><%=line.getAdresseDePaiement()%>&nbsp;</TD>
+		<TD class="mtd" nowrap="nowrap" onClick="<%=actionDetail%>" align="right"><%=line.getMontantAPayer() %>&nbsp;</TD>
 
 <%-- /tpl:put --%>
 <%@ include file="/theme/list/lineEnd.jspf" %>
