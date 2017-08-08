@@ -106,12 +106,16 @@ public class StrategieFinalRevenuTotalDeterminant implements StrategieCalculFina
         if (donnee.getEnfants().containsKey(IPCValeursPlanCalcul.CLE_INTER_TYPE_RENTE_REQUERANT)) {
             typeRenteRequerant = donnee.getEnfants().get(IPCValeursPlanCalcul.CLE_INTER_TYPE_RENTE_REQUERANT)
                     .getLegende();
-            // Si en plus d'une rente on a des IJAI on fait péter une exception car c'est pas censé arriver
-            if (donnee.getEnfants().containsKey(IPCValeursPlanCalcul.CLE_REVEN_AUTREREV_IJAI)) {
-                throw new CalculBusinessException(
-                        "pegasus.calcul.strategie.revenuTotal.typeRenteRequerant.chevauchement");
+
+            // K141111_003 si on a une SR avec une IJAJ on met un message d'erreur
+            if ((typeRenteRequerant.equals(IPCRenteAvsAi.CS_TYPE_SANS_RENTE_INVALIDITE)
+                    || typeRenteRequerant.equals(IPCRenteAvsAi.CS_TYPE_SANS_RENTE_VIEILLESSE) || typeRenteRequerant
+                        .equals(IPCRenteAvsAi.CS_TYPE_SANS_RENTE_SURVIVANT))
+                    && donnee.getEnfants().containsKey(IPCValeursPlanCalcul.CLE_REVEN_AUTREREV_IJAI)) {
+                throw new CalculBusinessException("pegasus.calcul.strategie.revenuTotal.typeRenteRequerant.srijai");
             }
         } else if (donnee.getEnfants().containsKey(IPCValeursPlanCalcul.CLE_REVEN_AUTREREV_IJAI)) {
+            // K141111_003
             typeRenteRequerant = IPCRenteAvsAi.CS_TYPE_RENTE_IJAI;
         } else {
             String dateDebutPeriode = (String) context.get(Attribut.DATE_DEBUT_PERIODE);
