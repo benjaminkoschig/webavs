@@ -110,7 +110,6 @@ function DeblocageAjax(m_options) {
 		}
 		this.mainContainer.css("color","");
 		this.mainContainer.prop("notSave",false);
-		liveSum.sumAndChangeValue();
 
 	};
 
