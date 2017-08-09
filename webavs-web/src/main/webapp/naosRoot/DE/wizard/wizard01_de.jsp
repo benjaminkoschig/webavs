@@ -81,22 +81,22 @@ function validate() {
 	var exit = true;
     state = validateFields();
     
-	var message = "ERREUR : Tous les champs obligatoires ne sont pas remplis !";
+	var message = "FEHLER : Alle obligatorischen Felder sind nicht ausgefüllt !";
 
 	if (trim(document.forms[0].elements('idTiers').value) == "")
 	{
-		message = message + "\nVous n'avez pas saisi le tiers !";
+		message = message + "\nSie haben den Partner nicht eingegeben !";
 		exit = false;
 	}
 	/*if (trim(document.forms[0].elements('affilieNumero').value) == "")
 	{
-		message = message + "\nVous n'avez pas saisi le numéro d'affilié !";
+		message = message + "\nSie haben die Abr.-Nr. nicht eingegeben !";
 		exit = false;
 	}
 	
 	if (trim(document.forms[0].elements('dateDebut').value) == "")
 	{
-		message = message + "\nVous n'avez pas saisi la date de début !";
+		message = message + "\nSie haben das Beginndatum nicht eingegeben !";
 		exit = false;
 	}*/
 	
@@ -420,7 +420,7 @@ function maxLength(zone,max)
 <%-- /tpl:put --%>
 <%@ include file="/theme/detail/bodyStart.jspf" %>
 			<%-- tpl:put name="zoneTitle" --%>
-					Saisie de donn&eacute;es de l'Affiliation - 01
+					Eingabe der Erfassungsdaten - 01
 					<%-- /tpl:put --%>
 <%@ include file="/theme/detail/bodyStart2.jspf" %>
 						<%-- tpl:put name="zoneMain" --%> 
@@ -438,9 +438,9 @@ function maxLength(zone,max)
 						<TBODY> 
 							<TR>
 								<% if (viewBean.getTiers() != null) { %>
-								<TD nowrap width="161"><A href="<%=request.getContextPath()%>\pyxis?userAction=pyxis.tiers.tiers.diriger&selectedId=<%=viewBean.getIdTiers()%>">Tiers</A></TD>
+								<TD nowrap width="161"><A href="<%=request.getContextPath()%>\pyxis?userAction=pyxis.tiers.tiers.diriger&selectedId=<%=viewBean.getIdTiers()%>">Partner</A></TD>
 								<% } else { %>
-								<TD nowrap width="161">Tiers</TD>
+								<TD nowrap width="161">Partner</TD>
 								<% } %>
 								<TD nowrap colspan="3"> 
 									<%
@@ -518,27 +518,27 @@ function maxLength(zone,max)
 							</TR>
 							<TR>
 							<TR>
-								<TD nowrap>Raison sociale (long)</TD>
+								<TD nowrap>Firma (lang)</TD>
 								<TD nowrap colspan="3"><input type="text" name="raisonSociale" size="100" maxlength="100" value="<%=globaz.jade.client.util.JadeStringUtil.change(designationLong,"\"","&quot;")%>" tabindex="-1" ></TD> 
 							</TR>
 							<TR>
-								<TD nowrap>N&deg; d'affili&eacute;</TD>
+								<TD nowrap>Abr.-Nr.</TD>
 								<TD nowrap> 
 									<INPUT name="affilieNumero" size="20" maxlength="20" type="text" value="<%=viewBean.getAffilieNumero()%>">
 								</TD>
-								<TD nowrap>Ancien n&deg; d'affili&eacute;</TD>
+								<TD nowrap>Alte Abr.-Nr.</TD>
 								<TD nowrap> 
 									<INPUT name="ancienAffilieNumero" type="text" size="20" maxlength="20" value="<%=viewBean.getAncienAffilieNumero()%>">
 								</TD>
 							</TR>
 							<TR> 
-								<TD nowrap height="31" >P&eacute;riode</TD>
+								<TD nowrap height="31" >Periode</TD>
 								<TD nowrap> 
 									<ct:FWCalendarTag name="dateDebut" doClientValidation="CALENDAR" value="<%=viewBean.getDateDebut()%>" /> 
-									&agrave; 
+									bis
 									<ct:FWCalendarTag name="dateFin" doClientValidation="CALENDAR" value="<%=viewBean.getDateFin()%>" /> 
 								</TD>
-								<TD nowrap>Genre d'affiliation</TD>
+								<TD nowrap>Erfassungsart</TD>
 								<TD nowrap> 
 									<ct:FWCodeSelectTag 
 		                				name="typeAffiliation" 
@@ -560,24 +560,24 @@ function maxLength(zone,max)
 						<TABLE border="0" cellspacing="0" cellpadding="0" id="tPartie1">
 						<TBODY>
 							<TR> 
-								<TD nowrap height="31"  width="161">Raison sociale (court)</TD>
+								<TD nowrap height="31"  width="161">Firma (kurz)</TD>
 								<TD nowrap colspan="2">
 									<input type="text" name="raisonSocialeCourt" size="30" maxlength="30" value="<%=globaz.jade.client.util.JadeStringUtil.change(designationCourt,"\"","&quot;")%>">
 								</TD>
-								<TD nowrap>Demande affiliation</TD>
+								<TD nowrap>Erfassungsantrag</TD>
 								<TD nowrap>
 									<ct:FWCalendarTag name="dateDemandeAffiliation" value="<%=viewBean.getDateDemandeAffiliation()%>" /> 									
 								</TD>
 							</TR>
 							<TR>
-								<TD nowrap width="161" height="31">Motif de cr&eacute;ation</TD>
+								<TD nowrap width="161" height="31">Erfassungsgrund</TD>
 								<TD nowrap colspan="2">
 									<ct:FWCodeSelectTag 
 		                				name="motifCreation" 
 										defaut="<%=viewBean.getMotifCreation()%>"
 										codeType="VEMOTIFAFF"/> 									
 								</TD>
-								<TD nowrap width="100">Motif de fin</TD>
+								<TD nowrap width="100">Abgangsgrund</TD>
 								<TD nowrap>
 									<ct:FWCodeSelectTag 
 		                				name="motifFin" 
@@ -588,7 +588,7 @@ function maxLength(zone,max)
 								</TD>
 							</TR>
 							<TR> 
-								<TD nowrap width="161" height="31">Personnalit&eacute; juridique</TD>
+								<TD nowrap width="161" height="31">Rechtsform</TD>
 								<TD nowrap colspan="2">
 									<ct:FWCodeSelectTag 
 		                				name="personnaliteJuridique"
@@ -600,7 +600,7 @@ function maxLength(zone,max)
 											document.getElementById("personnaliteJuridique").onchange = new Function("","return displayFieldIDEPassif();");
 										</script> 										
 								</TD>
-								<TD nowrap>Type d'associé</TD>
+								<TD nowrap>Art der Verbindung</TD>
 								<TD nowrap> 
 									<ct:FWCodeSelectTag 
 		                				name="typeAssocie"
@@ -610,7 +610,7 @@ function maxLength(zone,max)
 								</TD>
 							</TR>
 							<TR> 
-								<TD nowrap width="161" height="31">P&eacute;riodicit&eacute;</TD>
+								<TD nowrap width="161" height="31">Periodizität</TD>
 								<TD nowrap colspan="2">
 									<ct:FWCodeSelectTag 
 		                				name="periodicite" 
@@ -618,7 +618,7 @@ function maxLength(zone,max)
 										codeType="VEPERIODIC"
 										wantBlank="true"/>
 								</TD> 									
-								<TD nowrap>D&eacute;cl. salaires</TD>
+								<TD nowrap>Lohnbescheinigung</TD>
 								<TD nowrap>
 									<ct:FWCodeSelectTag 
 		                				name="declarationSalaire" 
@@ -628,7 +628,7 @@ function maxLength(zone,max)
 								</TD>
 							</TR>
 							<TR> 
-								<TD nowrap width="161" height="31">Branche &eacute;conomique</TD>
+								<TD nowrap width="161" height="31">Erwerbszweig</TD>
 								<TD nowrap colspan="3">
 									<ct:FWCodeSelectTag 
 		                				name="brancheEconomique" 
@@ -640,7 +640,7 @@ function maxLength(zone,max)
 								<%
 									if (listeConventions.size() > 1) {
 								%>				
-								<TD>Convention
+								<TD>Konvention
 									<ct:FWListSelectTag name="convention"
 									defaut="<%=viewBean.getConvention()%>"
 	            					data="<%=listeConventions%>"
@@ -650,7 +650,7 @@ function maxLength(zone,max)
 								<%} %>
 							</TR>
 							<TR>
-								<TD nowrap height="31" width="161">Code Noga</TD>
+								<TD nowrap height="31" width="161">Noga Code</TD>
 								<TD nowrap colspan="2"> 
 									<ct:FWCodeSelectTag 
 		                				name="categorieNoga"
@@ -672,34 +672,34 @@ function maxLength(zone,max)
 									</script>
 									<a href="<%= linkNoga %>" target="new"><ct:FWLabel key="NAOS_JSP_NOGA_LISTE_AFFILIES_CODE_NOGA_LIEN"/></a>						
 								</TD>
-								<TD nowrap >&nbsp;Activit&eacute;(s)</TD>
+								<TD nowrap >&nbsp;Aktivit&auml;t(en)</TD>
 								<td>
 									<TEXTAREA name="activite" rows="5" cols="40" onkeyup="maxLength(this, 254);"><%=viewBean.getActivite()%></TEXTAREA>
 								</td>
 							</TR>
 						<TR> 
-								<TD nowrap width="161">Facturation</TD>
-								<TD nowrap width="210"> par relev&eacute;</TD>
+								<TD nowrap width="161">Fakturierung</TD>
+								<TD nowrap width="210"> per Auszug</TD>
 								<TD nowrap width="100"> 
 									<INPUT type="checkbox" name="releveParitaire" onclick="resetEAAVisibility()" <%=(viewBean.isReleveParitaire().booleanValue())? "checked" : ""%> >
 								</TD>
 								<TD rowspan="2" colspan="2">
 									<DIV id="eaa" style="display: none">
 										<INPUT type="checkbox" name="envoiAutomatiqueAnnonceSalaires" <%=(viewBean.getEnvoiAutomatiqueAnnonceSalaires().booleanValue())? "checked" : ""%> >&nbsp;
-										Envoi automatique des
-									relevés à blanc</DIV>
+										Automatischer Versand
+									der leeren Auszüge</DIV>
 								</TD>
 							</TR>
 							<TR> 
 								<TD nowrap width="161">&nbsp;</TD>
-								<TD nowrap width="210">accomptes à la carte</TD>
+								<TD nowrap width="210">Flexible Akonti</TD>
 								<TD nowrap width="100"> 
 									<INPUT type="checkbox" name="relevePersonnel" onclick="compteaLaCarte()" <%=(viewBean.isRelevePersonnel().booleanValue())? "checked" : ""%> >
 								</TD>
 							</TR>
 							<TR> 
 								<TD nowrap width="161">&nbsp;</TD>
-								<TD nowrap width="210">Code facturation</TD>
+								<TD nowrap width="210">Fakturierungscode</TD>
 							
 								<TD nowrap> 
 									<ct:FWCodeSelectTag 
@@ -710,18 +710,18 @@ function maxLength(zone,max)
 								</TD>
 							</TR>
 							<TR> 
-								<TD width="161">Contrôle LAA/LPP</TD>
+								<TD width="161">UVG/BVG Kontrolle</TD>
 								<TD nowrap colspan="2">
 									<script>
 									//document.getElementById("typeAffiliation").onchange = new Function("","checkEnvoiAutomatique()");
 									</script>
-									<INPUT type="checkbox" name="envoiAutomatiqueLAA" <%=(viewBean.getEnvoiAutomatiqueLAA().booleanValue())? "checked" : ""%> >LAA &nbsp;
-									<INPUT type="checkbox" name="envoiAutomatiqueLPP" <%=(viewBean.getEnvoiAutomatiqueLPP().booleanValue())? "checked" : ""%> >LPP
+									<INPUT type="checkbox" name="envoiAutomatiqueLAA" <%=(viewBean.getEnvoiAutomatiqueLAA().booleanValue())? "checked" : ""%> >UVG &nbsp;
+									<INPUT type="checkbox" name="envoiAutomatiqueLPP" <%=(viewBean.getEnvoiAutomatiqueLPP().booleanValue())? "checked" : ""%> >BVG
 								</TD>
-								<!-- TD nowrap>Personnel occasionnel</TD-->
+								<!-- TD nowrap>Gelegentliches Personal</TD-->
 								<TD nowrap colspan="3"> 
 									<INPUT type="checkbox" name="occasionnel" <%=(viewBean.isOccasionnel().booleanValue())? "checked" : ""%> >
-									Personnel occasionnel
+									Gelegentliches Personal
 									<script>
 									//document.getElementById("occasionnel").onchange = new Function("","checkEnvoiAutomatique()");
 									</script>
@@ -732,14 +732,14 @@ function maxLength(zone,max)
 								</TD-->
 							</TR>
 							<TR> 
-								<TD nowrap width="161">Exon&eacute;ration art.5 al.5</TD>
+								<TD nowrap width="161">Befreiung Art. 5 Ab. 5</TD>
 								<TD nowrap colspan="2"> 
 									<INPUT type="checkbox" name="exonerationGenerale" <%=(viewBean.isExonerationGenerale().booleanValue())? "checked" : ""%> >
 								</TD>
 								<!--TD nowrap width="161"></TD-->
 								<TD nowrap colspan="3"> 
 									<INPUT type="checkbox" name="traitement" <%=(viewBean.isTraitement().booleanValue())? "checked" : ""%>  onclick="displayFieldIDEPassif()">
-									Affiliation provisoire
+									Provisorische Erfassung
 								</TD>
 
 							</TR>
@@ -869,9 +869,9 @@ function maxLength(zone,max)
 								<!--TD nowrap colspan="2"></TD>
 								<TD nowrap width="140" ></TD-->
 								<TD nowrap colspan="4">
-									<B><A href="javascript:showPartie1()">Page 1</A></B> 
+									<B><A href="javascript:showPartie1()">Seite 1</A></B> 
 									-- 
-									<A href="javascript:showPartie2()">Page 2</A></TD>
+									<A href="javascript:showPartie2()">Seite 2</A></TD>
 							</TR>
 						</TBODY> 
 						</TABLE>
@@ -896,7 +896,7 @@ function maxLength(zone,max)
 								</TD>
 							</TR>
 							<TR> 
-								<TD width="161" height="31" >Contrôle LAA</TD>
+								<TD width="161" height="31" >UVG Kontrolle</TD>
 								<TD nowrap colspan="3">
 									<INPUT type="checkbox" name="envoiAutomatiqueLAA" <%=(viewBean.getEnvoiAutomatiqueLAA().booleanValue())? "checked" : ""%> >
 								</TD>
@@ -918,8 +918,8 @@ function maxLength(zone,max)
 							</TR>
 							<TR> 
 								<TD nowrap >&nbsp;</TD>
-								<TD nowrap colspan="3"><A href="javascript:showPartie1()">Page 
-									1</A> -- <B><A href="javascript:showPartie2()">Page 
+								<TD nowrap colspan="3"><A href="javascript:showPartie1()">Seite 
+									1</A> -- <B><A href="javascript:showPartie2()">Seite 
 									2</A></B> </TD>
 							</TR>
 						</TBODY> 
