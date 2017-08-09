@@ -73,7 +73,16 @@ public class REComptabiliseDebloquage extends AREModuleComptable {
                         versement.getCodeRenteAccordee(), versement.getIdTiersAdressePaiement());
 
                 AdressePaiement adr = versement.loadAdressePaiement();
-                doOrdreVersement(session, compta, versement.getIdCompteAnnexe(), versement
+
+                String idSection = versement.getLigneDeblocageVentilation().getIdSectionSource().toString();
+                CASectionJoinCompteAnnexeJoinTiersManager mgr = new CASectionJoinCompteAnnexeJoinTiersManager();
+                mgr.setForIdSection(idSection);
+                mgr.setSession(session);
+                mgr.find(1);
+                List<CASectionJoinCompteAnnexeJoinTiers> sectionsLigneVentil = mgr.toList();
+
+                // K170719_001 : on récupère le compte annexe de la section et pas du versement
+                doOrdreVersement(session, compta, sectionsLigneVentil.get(0).getIdCompteAnnexe(), versement
                         .getLigneDeblocageVentilation().getIdSectionSource().toString(), versement.getMontant()
                         .toStringFormat(), adr.getIdAvoirPaiementUnique(), motifVersement, dateValeurComptable, false,
                         idOrganeExecution);
