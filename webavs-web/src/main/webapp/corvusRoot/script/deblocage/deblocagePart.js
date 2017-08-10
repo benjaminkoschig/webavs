@@ -73,6 +73,7 @@ function DeblocageAjax(m_options) {
 		 var part = newAjaxDeblocage($html)
 		 $("#creanciers").append($html);
 		 $html.find(".save").find(".ui-icon").css("background-image", "url(theme/jquery/images/ui-icons_green_256x240.png)");
+
 	};
 	
 	this.onUpdate = function (data, action) {
@@ -106,10 +107,11 @@ function DeblocageAjax(m_options) {
 		if(globazGlobal.CS_TYPE_CREANCIER === data.lingeDeblocage.typeDeblocage && action == 'add'){
 			this.mainContainer.find(".save").find(".ui-icon").css("background-image", "");
 		}else{
-			this.mainContainer.find(".save").find(".ui-icon").css("background-image", "url(theme/jquery/images/ui-icons_green_256x240.png)");
+			this.mainContainer.find(".save").find(".ui-icon").css("background-image", "url(theme/jquery/images/ui-icons_green_256x240.png)");			
 		}
 		this.mainContainer.css("color","");
 		this.mainContainer.prop("notSave",false);
+		liveSum.disableEnbaledValidButton();
 
 	};
 
@@ -245,9 +247,10 @@ liveSum = {
 	init: function ($validerButton) {
 		this.$validerButton = $validerButton;
 		this.$resultLiveSum = $("#resultLiveSum");
-		this.montantBlocage = globazGlobal.montantBlocage;
+		this.montantBlocage = globazNotation.utilsFormatter.amountTofloat(globazGlobal.montantBlocage);
 		this.bindEvent();
 		this.sumAndChangeValue();
+		this.disableEnbaledValidButton();
 	},
 	
 	sum: function () {
@@ -264,11 +267,9 @@ liveSum = {
 		return sum;
 	},
 	
-	sumAndChangeValue: function () {
-		var sum, solde, hasNotSave = false;
-		sum = this.sum();
-		solde =  globazNotation.utilsFormatter.amountTofloat(this.montantBlocage)-sum;
-		
+	disableEnbaledValidButton: function () {
+		var hasNotSave = false;
+		var solde = this.computeSolde();
 		$(".areaDetail").each(function (){
 			if (this.notSave){
 				hasNotSave= true; 
@@ -288,14 +289,24 @@ liveSum = {
 			this.$resultLiveSum.removeClass("errorSum");
 		}
 		
-		$("#montantLiberer").text( globazNotation.utilsFormatter.formatStringToAmout(sum));
-		this.$resultLiveSum.text( globazNotation.utilsFormatter.formatStringToAmout(solde));
+	},
+	
+	computeSolde: function () {
+		var sum, solde;
+		sum = this.sum();
+		return this.montantBlocage-sum;
+	},
+	
+	sumAndChangeValue: function () {
+		$("#montantLiberer").text( globazNotation.utilsFormatter.formatStringToAmout(this.sum()));
+		this.$resultLiveSum.text( globazNotation.utilsFormatter.formatStringToAmout(this.computeSolde()));
 	},
 	
 	bindEvent: function () {
 		var that = this;
 		$("#detailDeblocage").on("keyup",'.liveSum', function () {
 			that.sumAndChangeValue();
+			that.disableEnbaledValidButton();
 		});
 	}
 };
