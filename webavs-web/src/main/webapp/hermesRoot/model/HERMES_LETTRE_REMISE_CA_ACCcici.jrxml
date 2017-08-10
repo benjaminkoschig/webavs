@@ -274,7 +274,7 @@
 				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
 						x="60"
-						y="279"
+						y="310"
 						width="259"
 						height="23"
 						forecolor="#000000"
@@ -294,7 +294,7 @@
 				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
 						x="60"
-						y="310"
+						y="279"
 						width="300"
 						height="23"
 						forecolor="#000000"
