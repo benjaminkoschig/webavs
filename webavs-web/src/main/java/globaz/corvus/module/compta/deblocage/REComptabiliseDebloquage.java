@@ -104,10 +104,19 @@ public class REComptabiliseDebloquage extends AREModuleComptable {
                                 .getLigneDeblocageVentilation().getIdSectionSource().toString(), dateValeurComptable,
                         null);
             } else if (versement.getType().isImpotsSource()) {
+
+                // K170719_001 : on récupère le compte annexe de la section et pas du versement
+                String idSection = versement.getLigneDeblocageVentilation().getIdSectionSource().toString();
+                CASectionJoinCompteAnnexeJoinTiersManager mgr = new CASectionJoinCompteAnnexeJoinTiersManager();
+                mgr.setForIdSection(idSection);
+                mgr.setSession(session);
+                mgr.find(1);
+                List<CASectionJoinCompteAnnexeJoinTiers> sectionsLigneVentil = mgr.toList();
+
                 doEcriture(session, compta, versement.getMontant().negate().toStringValue(),
-                        REModuleComptableFactory.getInstance().IMPOT_SOURCE, versement.getIdCompteAnnexe(), versement
-                                .getLigneDeblocageVentilation().getIdSectionSource().toString(), dateValeurComptable,
-                        null);
+                        REModuleComptableFactory.getInstance().IMPOT_SOURCE, sectionsLigneVentil.get(0)
+                                .getIdCompteAnnexe(), versement.getLigneDeblocageVentilation().getIdSectionSource()
+                                .toString(), dateValeurComptable, null);
             } else {
                 throw new REDeblocageException("Type of versement not know :" + versement.toStringEntity());
             }
