@@ -69,6 +69,10 @@ public class AFIdeSearchListViewBean extends BAccessBean implements FWViewBeanIn
         this.forNumeroIDE = forNumeroIDE;
     }
 
+    public String getForNumeroIDE() {
+        return forNumeroIDE;
+    }
+
     public String getForNpa() {
         return forNpa;
     }
@@ -140,6 +144,10 @@ public class AFIdeSearchListViewBean extends BAccessBean implements FWViewBeanIn
 
     public final int getCount() {
         return listIdeDataBean.size();
+    }
+
+    public String getCodeNogaForIndex(int index) {
+        return listIdeDataBean.get(index).getNogaCode();
     }
 
     public final int getOffset() {

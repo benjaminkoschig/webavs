@@ -54,6 +54,10 @@ function updateChampIde(tag){
 		document.getElementById("ideRaisonSociale").value = element.raisonSociale;
 		document.getElementById("ideStatut").value = element.ideStatut;
 		document.getElementById("libelleStatutIde").value = element.libelleStatutIde;
+		
+		document.getElementById("categorieNoga").value = element.categorieNoga;
+ 		document.getElementById("categorieNogaCode").value = element.categorieNoga;		
+ 		rebuildNoga(element.csCodeNoga);
 	}else{
 		document.getElementById("numeroIDE").value = '';
 		document.getElementById("ideRaisonSociale").value = '';

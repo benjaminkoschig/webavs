@@ -7,6 +7,8 @@ import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
 import globaz.globall.db.BTransaction;
 import globaz.globall.db.GlobazServer;
+import globaz.globall.parameters.FWParametersSystemCode;
+import globaz.globall.parameters.FWParametersSystemCodeManager;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JAStringFormatter;
 import globaz.jade.admin.JadeAdminServiceLocatorProvider;
@@ -2216,6 +2218,48 @@ public class AFIDEUtil {
         return JAStringFormatter.format(unformattedSource, IDE_FORMAT_SANS_CHE);
     }
 
+    /***
+     * Méthode qui permet de récupérer l'id d'un code noga
+     * 
+     * @param ideDataBean
+     * @throws Exception
+     */
+    private static String getidCodePourCodeNoga(String codeNoga, BSession bsession) throws Exception {
+        FWParametersSystemCodeManager param = new FWParametersSystemCodeManager();
+
+        param.setSession(bsession);
+        param.setForCodeUtilisateur(codeNoga);
+
+        param.find(BManager.SIZE_NOLIMIT);
+
+        if (param.size() == 0) {
+            return "0";
+        } else {
+            return ((FWParametersSystemCode) param.getFirstEntity()).getIdCode();
+        }
+    }
+
+    /***
+     * Méthode qui permet de récupérer l'id d'une la catégorie d'un csCodeNoga
+     * 
+     * @param ideDataBean
+     * @throws Exception
+     */
+    private static String getidCategoriePourCodeNoga(String codeNoga, BSession bsession) throws Exception {
+        FWParametersSystemCodeManager param = new FWParametersSystemCodeManager();
+
+        param.setSession(bsession);
+        param.setForCodeUtilisateur(codeNoga);
+
+        param.find(BManager.SIZE_NOLIMIT);
+
+        if (param.size() == 0) {
+            return "0";
+        } else {
+            return ((FWParametersSystemCode) param.getFirstEntity()).getIdSelection();
+        }
+    }
+
     public static String getIde(String like, BSession bsession) {
 
         String numIdeUnformatedWithoutPrefix = AFIDEUtil.giveMeNumIdeUnformatedWithoutPrefix(like);
@@ -2237,6 +2281,16 @@ public class AFIDEUtil {
 
                 String codeSystemStatutIde = aIdeData.getStatut();
 
+                String csCodeNoga = "0";
+                String csCategorieNoga = "0";
+
+                if (!AFProperties.NOGA_SYNCHRO_REGISTRE.getValue().isEmpty()
+                        && AFProperties.NOGA_SYNCHRO_REGISTRE.getValue() != null
+                        && AFProperties.NOGA_SYNCHRO_REGISTRE.getBooleanValue()) {
+                    csCodeNoga = getidCodePourCodeNoga(aIdeData.getNogaCode(), bsession);
+                    csCategorieNoga = getidCategoriePourCodeNoga(aIdeData.getNogaCode(), bsession);
+                }
+
                 options.append("<option numeroIdeFormatedWithoutPrefix=\"");
                 options.append(AFIDEUtil.giveMeNumIdeFormatedWithoutPrefix(aIdeData.getNumeroIDE()));
                 options.append("\" numeroIdeUnformatedWithPrefix= \"");
@@ -2248,6 +2302,10 @@ public class AFIDEUtil {
                 options.append("\"");
                 options.append("\" libelleStatutIde=\"");
                 options.append(CodeSystem.getLibelle(bsession, codeSystemStatutIde));
+                options.append("\" categorieNoga=\"");
+                options.append(csCategorieNoga);
+                options.append("\" csCodeNoga=\"");
+                options.append(csCodeNoga);
                 options.append("\"");
                 options.append(">");
                 options.append(AFIDEUtil.giveMeNumIdeFormatedWithoutPrefix(aIdeData.getNumeroIDE()));

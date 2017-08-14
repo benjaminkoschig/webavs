@@ -5,6 +5,14 @@ import globaz.framework.controller.FWController;
 import globaz.framework.controller.FWDefaultServletAction;
 import globaz.framework.controller.FWDispatcher;
 import globaz.framework.servlets.FWServlet;
+import globaz.globall.db.BManager;
+import globaz.globall.db.BSession;
+import globaz.globall.parameters.FWParametersSystemCode;
+import globaz.globall.parameters.FWParametersSystemCodeManager;
+import globaz.jade.log.JadeLogger;
+import globaz.naos.db.affiliation.AFAffiliation;
+import globaz.naos.db.ide.AFIdeSearchListViewBean;
+import globaz.naos.properties.AFProperties;
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -13,6 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import org.apache.commons.codec.binary.Base64;
+import ch.globaz.common.properties.PropertiesException;
 
 /**
  * Classe permettant la gestion des actions pour l'entité Affiliation. Avec l'ajonction de la fonctionnalité d'encodage
@@ -27,6 +36,78 @@ public class AFIdeDefaultActionChercher extends AFDefaultActionChercher {
 
     public AFIdeDefaultActionChercher(FWServlet servlet) {
         super(servlet);
+    }
+
+    /***
+     * Surcharge pour ajouter le cs du code Noga de l'IDE choisi via le bouton [...]
+     */
+    @Override
+    protected void actionChoisir(HttpSession session, HttpServletRequest request, HttpServletResponse response,
+            FWDispatcher mainDispatcher) throws ServletException, IOException {
+        try {
+            if (!AFProperties.NOGA_SYNCHRO_REGISTRE.getValue().isEmpty()
+                    && AFProperties.NOGA_SYNCHRO_REGISTRE.getValue() != null
+                    && AFProperties.NOGA_SYNCHRO_REGISTRE.getBooleanValue()) {
+
+                AFIdeSearchListViewBean listViewBean = (AFIdeSearchListViewBean) session.getAttribute("listViewBean");
+                int selectedIndex = Integer.parseInt(request.getParameter("selectedIndex"));
+
+                // On récupère l'id selectionner et on récupère le code noga dans la liste des résultats
+                String codeNoga = listViewBean.getCodeNogaForIndex(selectedIndex);
+
+                BSession bsession = (BSession) ((FWController) session.getAttribute("objController")).getSession();
+                String csCodeNoga = retrieveCsCodeNoga(codeNoga, bsession);
+
+                // Finalement on set le csCodeNoga du viewBean de l'écran d'affiliation
+                AFAffiliation viewBean;
+                try {
+                    viewBean = (AFAffiliation) session.getAttribute("viewBean");
+                    viewBean.setCodeNoga(csCodeNoga);
+                    session.setAttribute("viewBean", viewBean);
+                } catch (Exception e) {
+                    // Si le viewBean n'est pas trouvé ça veut dire on vient de l'écran CAF0044
+                    globaz.naos.db.wizard.AFWizard viewBeanNew = (globaz.naos.db.wizard.AFWizard) session
+                            .getAttribute("viewBean");
+                    viewBeanNew.setCodeNoga(csCodeNoga);
+                    session.setAttribute("viewBean", viewBeanNew);
+                }
+            }
+        } catch (NumberFormatException e) {
+            JadeLogger.info(e, e.getMessage());
+        } catch (PropertiesException e) {
+            JadeLogger.info(e, e.getMessage());
+        }
+
+        super.actionChoisir(session, request, response, mainDispatcher);
+    }
+
+    /***
+     * Permet de retrouver le code système du code Noga dans les familles de paramètre, si on le trouve pas on retourne
+     * 0
+     * 
+     * @param codeNoga
+     * @param bsession
+     * @return
+     */
+    private String retrieveCsCodeNoga(String codeNoga, BSession bsession) {
+        String csCodeNoga;
+        try {
+            FWParametersSystemCodeManager param = new FWParametersSystemCodeManager();
+
+            param.setSession(bsession);
+            param.setForCodeUtilisateur(codeNoga);
+
+            param.find(BManager.SIZE_NOLIMIT);
+
+            if (param.size() == 0) {
+                csCodeNoga = "0";
+            } else {
+                csCodeNoga = ((FWParametersSystemCode) param.getFirstEntity()).getIdCode();
+            }
+        } catch (Exception e) {
+            csCodeNoga = "0";
+        }
+        return csCodeNoga;
     }
 
     /**

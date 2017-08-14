@@ -75,6 +75,11 @@ function updateChampIde(tag){
 		document.getElementById("ideRaisonSociale").value = element.raisonSociale;
 		document.getElementById("ideStatut").value = element.ideStatut;
 		document.getElementById("libelleStatutIde").value = element.libelleStatutIde;
+		
+		document.getElementById("categorieNoga").value = element.categorieNoga;
+ 		document.getElementById("categorieNogaCode").value = element.categorieNoga;
+ 		rebuildNoga(element.csCodeNoga);
+		
 	}else{
 		document.getElementById("numeroIDE").value = '';
 		document.getElementById("ideRaisonSociale").value = '';
@@ -314,8 +319,6 @@ function init(){
 		<%viewBean.setWarningMessageAnnonceIdeCreationNotAdded("");%>
 	<%}%>
 	
-	
-	
 }
 function showPartie1() {
 	document.all('tPartie2').style.display='none';
@@ -444,6 +447,7 @@ var optionsList = new Array();
 <%  } %>
 
 function rebuildNoga(idCode) {
+
 	// effacer le code noga
 	var oSelect = document.getElementById("codeNoga");
 	while(oSelect.length != 0){
@@ -949,9 +953,7 @@ function maxLength(zone,max)
 									<INPUT type="hidden" id="ideStatut" name="ideStatut"  value="<%=viewBean.getIdeStatut()%>">
 								</TD>
 								
-							</TR>
-							
-							
+							</TR>							
 							<TR id="displayIDEAnnoncePassive">
 							<TD nowrap width="161"><ct:FWLabel key="NAOS_JSP_AFFILIATION_IDE_CHECKBOX_PASSIVE"/></TD>
 							<TD nowrap colspan="2"> 
