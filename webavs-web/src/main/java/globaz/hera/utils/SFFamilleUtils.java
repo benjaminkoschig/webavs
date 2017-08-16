@@ -210,12 +210,8 @@ public class SFFamilleUtils {
             throw new Exception("L'id tiers doit être renseigné");
         }
 
-        return SFFamilleUtils.getRelationsInTypeRelation(
-                session,
-                csDomaine,
-                idTiers,
-                new HashSet<String>(Arrays.asList(ISFSituationFamiliale.CS_REL_CONJ_DIVORCE,
-                        ISFSituationFamiliale.CS_REL_CONJ_SEPARE_JUDICIAIREMENT)));
+        return SFFamilleUtils.getRelationsInTypeRelation(session, csDomaine, idTiers,
+                new HashSet<String>(Arrays.asList(ISFSituationFamiliale.CS_REL_CONJ_DIVORCE)));
     }
 
     /**
