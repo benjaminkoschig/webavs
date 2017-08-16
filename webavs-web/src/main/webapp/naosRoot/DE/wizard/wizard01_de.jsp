@@ -909,7 +909,7 @@ function maxLength(zone,max)
 								<TD nowrap colspan="4" height="253"></TD>
 							</TR>
 							<tr> 
-            					<td>Affiliation sécurisée (CI)</td>
+            					<td>Geschützte Erfassung (IK)</td>
            						 <td colspan=3> 
 									<ct:FWCodeSelectTag name="accesSecurite" defaut="317000" codeType="CISECURI" wantBlank="false"/> 
             					</td>
