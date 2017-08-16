@@ -376,6 +376,11 @@ public class REGenererTransfertDossierValideProcess extends REAbstractInfoComplP
                 demandeRente.update();
             } else {
                 Set<String> idTiersExConjoints = chargerExConjoints(demandePrestation.getIdTiers());
+                // K150602_001 : si la rente est de type "Survivant", il faut également transférer les rentes des ex-conjoints
+                if (IREDemandeRente.CS_TYPE_DEMANDE_RENTE_SURVIVANT.equals(demandeRente.getCsTypeDemandeRente())) {
+                    idTiersExConjoints.clear();
+                }
+
                 Set<PRTiersWrapper> enfants = SFFamilleUtils.getEnfantsDuTiers(getSession(), getIdTiersDemande());
                 for (int i = 0; i < renteAccManager.size(); i++) {
                     RERenteAccordeeFamille ra = (RERenteAccordeeFamille) renteAccManager.get(i);
