@@ -604,8 +604,12 @@ function validateFields() {
      }			
 	
      if (i>0) {
-	alert("le formulaire n'est pas valide (plusieurs valeurs pour un même groupe)");
-	return false;
+    	 var message = "le formulaire n'est pas valide (plusieurs valeurs pour un même groupe)";
+    	 if(jQuery && jQuery.i18n){
+    		 message = jQuery.i18n.prop("utils.formulaire.non.valide");
+    	 }
+    	 alert(message);
+    	 return false;
      }
 
      
@@ -629,8 +633,12 @@ function validateFields() {
  
      
      if (state == false) {
-        alert("un ou plusieurs champs obligatoires ne sont pas remplis ou ne sont pas valides");
-	return false;
+    	 var message = "un ou plusieurs champs obligatoires ne sont pas remplis ou ne sont pas valides";
+    	 if(jQuery && jQuery.i18n){
+    		 message = jQuery.i18n.prop("utils.formulaire.champs.obligatoires");
+    	 }
+    	 alert(message);
+        return false;
      } 
 
 
