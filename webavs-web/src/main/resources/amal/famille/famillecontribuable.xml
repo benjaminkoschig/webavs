@@ -24,6 +24,7 @@
 			<search-group operator="AND">
 				<search-field name="forIdContribuable" field-ref="simpleFamille.idContribuable" operation="EQUALS" />
 				<search-field name="forIsContribuable" field-ref="simpleFamille.isContribuable" operation="EQUALS"/>
+				<search-field name="forIsCarteCulture" field-ref="simpleFamille.carteCulture" operation="EQUALS"/>
 				<search-field name="forIdTier" field-ref="simpleFamille.idTier" operation="EQUALS"/>		
 				<search-field name="forAnneeHistorique" field-ref="simpleDetailFamille.anneeHistorique" operation="EQUALS"/>
 				<search-field name="forIdFamille" field-ref="simpleFamille.idFamille" operation="EQUALS"/>

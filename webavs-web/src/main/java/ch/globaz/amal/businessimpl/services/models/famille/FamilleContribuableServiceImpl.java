@@ -859,7 +859,12 @@ public class FamilleContribuableServiceImpl implements FamilleContribuableServic
                 } catch (ContribuableException e) {
                     throw new FamilleException("Error reading contribuable for update contribuable.IdTiers ");
                 }
+
             }
+
+            // mise à jour de la simple famille
+            AmalImplServiceLocator.getSimpleFamilleService().update(simpleFamille);
+
         } catch (JadeApplicationServiceNotAvailableException e) {
             throw new FamilleException("Service not available (Looking for all principals contribuables) - "
                     + e.getMessage());

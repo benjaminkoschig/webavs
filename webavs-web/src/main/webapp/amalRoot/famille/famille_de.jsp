@@ -503,7 +503,7 @@ function delDetailFamille(finalUrl){
 						<td width="180px">
 							<ct:FWLabel key="JSP_AM_FA_D_TYPE_MEMBRE"/>
 						</td>
-						<td width="300px">
+						<td width="400px">
 							<ct:FWCodeSelectTag tabindex="1" codeType="AMTYMEMBRE" name="familleContribuable.simpleFamille.pereMereEnfant" wantBlank="false" defaut='<%=(!viewBeanIsNew?viewBean.getFamilleContribuable().getSimpleFamille().getPereMereEnfant():IAMCodeSysteme.CS_TYPE_ENFANT)%>'/>
 						</td>
 						<td width="170px">
@@ -517,9 +517,16 @@ function delDetailFamille(finalUrl){
 						</td>
 					</tr>
 					<tr>
-						<td><ct:FWLabel key="JSP_AM_FA_D_DATE_SORTIE"/></td>
-						<td colspan="3">
+						<td width="180px"><ct:FWLabel key="JSP_AM_FA_D_DATE_SORTIE"/></td>
+						<td width="400px">
 							<input disabled="disabled" tabindex="2" type="text" data-g-calendar="type:month" name="familleContribuable.simpleFamille.finDefinitive" value='<%=(!viewBeanIsNew?viewBean.getFamilleContribuable().getSimpleFamille().getFinDefinitive():"")%>'/>
+						</td>
+						<td width="170px"><ct:FWLabel key="JSP_AM_FA_D_CARTE_CULTURE"/></td>
+						<td>
+							<select id="isCarteCulture" disabled="disabled" name="contribuable.famille.carteCulture">
+								<option <%=(viewBeanIsNew || (!viewBeanIsNew && !viewBean.getContribuable().getFamille().getCarteCulture())?"selected=\"selected\"":"")%> value="false"><ct:FWLabel key="JSP_LISTE_DEROULANTE_NON"/></option>																							
+								<option <%=(!viewBeanIsNew && viewBean.getContribuable().getFamille().getCarteCulture()?"selected=\"selected\"":"")%> value="true"><ct:FWLabel key="JSP_LISTE_DEROULANTE_OUI"/></option>
+							</select>
 						</td>
 					</tr>
 					<tr>

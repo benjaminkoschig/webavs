@@ -26,6 +26,8 @@ public class AMStatistiquesServletAction extends AMAbstractServletAction {
         String inTypeDemande = request.getParameter("hidden_inTypeDemande");
         String inNumeroContribuable = request.getParameter("hidden_inNumeroContribuable");
         String wantOnlyContribuablePrincipal = request.getParameter("wantOnlyContribuablePrincipal");
+       
+        String wantOnlyCasAvecCarteCulture = request.getParameter("wantOnlyCasAvecCarteCulture");
         String wantOnlySubsidesActifs = request.getParameter("wantOnlySubsidesActifs");
         boolean isContribuable = false;
         if ("yes".equals(wantOnlyContribuablePrincipal)) {
@@ -35,6 +37,11 @@ public class AMStatistiquesServletAction extends AMAbstractServletAction {
         boolean isCodeActif = true;
         if (!"yes".equals(wantOnlySubsidesActifs)) {
             isCodeActif = false;
+        }
+
+        boolean isCarteCulture = false;
+        if ("yes".equals(wantOnlyCasAvecCarteCulture)) {
+            isCarteCulture = true;
         }
 
         int iRecordsSize;
@@ -49,6 +56,7 @@ public class AMStatistiquesServletAction extends AMAbstractServletAction {
         listesViewBean.setInTypeDemande(inTypeDemande);
         listesViewBean.setInNumeroContribuable(inNumeroContribuable);
         listesViewBean.setIsContribuable(isContribuable);
+        listesViewBean.setIsCarteCulture(isCarteCulture);
         listesViewBean.setCodeActif(isCodeActif);
         listesViewBean.setRecordsSize(iRecordsSize);
         listesViewBean.launchListePublipostage();

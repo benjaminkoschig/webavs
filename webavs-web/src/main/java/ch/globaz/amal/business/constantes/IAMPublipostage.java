@@ -47,6 +47,24 @@ public interface IAMPublipostage {
         }
     }
 
+    public enum AMPublipostageCarteCulture {
+
+        CARTECULTURE("CarteCulture");
+
+        // Value storage
+        private final String value;
+
+        // Default private constructor
+        private AMPublipostageCarteCulture(String value) {
+            this.value = value;
+        }
+
+        // value getter
+        public String getValue() {
+            return value;
+        }
+    }
+
     public enum AMPublipostageSimpleDetailFamille {
         ASSUREUR("Assureur"),
         CODE_ACTIF("Code actif"),
@@ -79,6 +97,7 @@ public interface IAMPublipostage {
         DATENAISSANCE_YYYYMMDD("DateNaissanceYYYYMMDD"),
         IDCONTRIBUABLE("idContribuable"),
         ISCONTRIBUABLEPRINCIPAL("isContribuablePrincipal"),
+        ISCARTECULTURE("isCarteCulture"),
         NOMPRENOM("NomPrenom"),
         NOPERSONNE("NoPersonne"),
         PEREMEREENFANT("PereMereEnfant"),

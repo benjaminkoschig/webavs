@@ -24,11 +24,13 @@
 			<field name="isContribuable" column="ISCONT" type="BOOLEAN" mandatory="false" comment="Is contribuable"/>
 			<field name="tauxDeductIc" column="TAUXIC" type="NUMERIC" dataType="NUMERIC(3,0)" mandatory="false" comment="Taux deduction IC"/>
 			<field name="tauxDeductIfd" column="TXDIFD" type="NUMERIC" dataType="NUMERIC(3,0)" mandatory="false" comment="Taux deduction IFD"/>
+			<field name="carteCulture" column="CARTEC" type="BOOLEAN" mandatory="false" comment="Is carteCulture"/>
 		</fields>
 		<search-definition>
 			<search-group operator="AND">
 				<search-field name="forIdFamille" field-ref="idFamille" operation="EQUALS"/>
 				<search-field name="isContribuable" field-ref="isContribuable" operation="EQUALS"/>
+				<!--<search-field name="forIsCarteCulture" field-ref="carteCulture" operation="EQUALS"/> -->
 				<search-field name="forIdContribuable" field-ref="idContribuable" operation="EQUALS"/>		
 				<search-field name="likeNoAVS" field-ref="noAVS" operation="EQUALS"/>		
 				<search-field name="likeNomPrenom" field-ref="nomPrenomUpper" operation="LIKE"/>		

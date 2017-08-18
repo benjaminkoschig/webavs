@@ -30,6 +30,7 @@ public class FamilleContribuableSearch extends JadeSearchComplexModel {
     private String forIdFamille = null;
     private String forIdTier = null;
     private Boolean forIsContribuable = null;
+    private Boolean forIsCarteCulture = null;
     private String forNNSS = null;
     private String forNumeroContribuable = null;
     private List inNumerosContribuables = null;
@@ -77,6 +78,10 @@ public class FamilleContribuableSearch extends JadeSearchComplexModel {
 
     public Boolean getForIsContribuable() {
         return forIsContribuable;
+    }
+
+    public Boolean getForIsCarteCulture() {
+        return forIsCarteCulture;
     }
 
     public String getForNNSS() {
@@ -178,6 +183,10 @@ public class FamilleContribuableSearch extends JadeSearchComplexModel {
 
     public void setForIsContribuable(Boolean forIsContribuable) {
         this.forIsContribuable = forIsContribuable;
+    }
+
+    public void setForIsCarteCulture(Boolean forIsCarteCulture) {
+        this.forIsCarteCulture = forIsCarteCulture;
     }
 
     public void setForNNSS(String forNNSS) {

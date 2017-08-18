@@ -10,6 +10,7 @@ public class AMPublipostageViewBean extends BJadePersistentObjectViewBean {
     private String inTypeDemande = new String();
     private boolean isCodeActif = false;
     private boolean isContribuable = false;
+    private boolean isCarteCulture = false;
     private int recordsSize = 0;
     private String wantedFields = new String();
     private String wantedNpa = new String();
@@ -71,6 +72,10 @@ public class AMPublipostageViewBean extends BJadePersistentObjectViewBean {
         return isContribuable;
     }
 
+    public boolean isCarteCulture() {
+        return isCarteCulture;
+    }
+
     public void launchListePublipostage() {
         AMStatistiquesPublipostageProcess publipostageProcess = new AMStatistiquesPublipostageProcess();
         publipostageProcess.setSession(BSessionUtil.getSessionFromThreadContext());
@@ -81,6 +86,7 @@ public class AMPublipostageViewBean extends BJadePersistentObjectViewBean {
         publipostageProcess.setInTypeDemande(inTypeDemande);
         publipostageProcess.setInNumeroContribuable(inNumeroContribuable);
         publipostageProcess.setIsContribuable(isContribuable);
+        publipostageProcess.setIsCarteCulture(isCarteCulture);
         publipostageProcess.setCodeActif(isCodeActif);
         publipostageProcess.run();
     }
@@ -111,6 +117,10 @@ public class AMPublipostageViewBean extends BJadePersistentObjectViewBean {
 
     public void setIsContribuable(boolean isContribuable) {
         this.isContribuable = isContribuable;
+    }
+
+    public void setIsCarteCulture(boolean isCarteCulture) {
+        this.isCarteCulture = isCarteCulture;
     }
 
     public void setRecordsSize(int recordsSize) {

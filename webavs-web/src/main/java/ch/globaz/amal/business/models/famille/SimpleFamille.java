@@ -33,6 +33,15 @@ public class SimpleFamille extends JadeSimpleModel implements Cloneable {
     private String tauxDeductIfd = null;
     private String typeAvisRIP = null;
     private String typeNoPersonne = null;
+    private Boolean carteCulture = null;
+
+    public Boolean getCarteCulture() {
+        return carteCulture;
+    }
+
+    public void setCarteCulture(Boolean carteCulture) {
+        this.carteCulture = carteCulture;
+    }
 
     @Override
     public SimpleFamille clone() throws CloneNotSupportedException {

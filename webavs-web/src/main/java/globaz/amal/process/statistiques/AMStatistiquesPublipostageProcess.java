@@ -26,6 +26,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import ch.globaz.amal.business.constantes.IAMPublipostage.AMPublipostageAdresse;
+import ch.globaz.amal.business.constantes.IAMPublipostage.AMPublipostageCarteCulture;
 import ch.globaz.amal.business.constantes.IAMPublipostage.AMPublipostagePyxis;
 import ch.globaz.amal.business.constantes.IAMPublipostage.AMPublipostageSimpleDetailFamille;
 import ch.globaz.amal.business.constantes.IAMPublipostage.AMPublipostageSimpleFamille;
@@ -51,6 +52,7 @@ public class AMStatistiquesPublipostageProcess extends AMALabstractProcess {
     private String inTypeDemande = new String();
     private boolean isCodeActif = false;
     private boolean isContribuable = false;
+    private boolean isCarteCulture = false;
     private ArrayList<String> listValues = new ArrayList<String>();
     private int recordsSize = 0;
     private StringBuffer sbCols = new StringBuffer();
@@ -318,6 +320,17 @@ public class AMStatistiquesPublipostageProcess extends AMALabstractProcess {
                 .getPersonneEtendue().getNumAvsActuel());
     }
 
+    /**
+     * Récupération des valeurs CARTECULTURE
+     * 
+     * @param mapValues
+     * @param familleContribuable
+     */
+    private void getCarteCultureValues(Map<String, String> mapValues, FamilleContribuable familleContribuable) {
+        mapValues.put(AMPublipostageCarteCulture.CARTECULTURE.getValue(), familleContribuable.getSimpleFamille()
+                .getCarteCulture() ? "Oui" : "Non");
+    }
+
     public int getRecordsSize() {
         return recordsSize;
     }
@@ -375,6 +388,8 @@ public class AMStatistiquesPublipostageProcess extends AMALabstractProcess {
                 .getIdContribuable());
         mapValues.put(AMPublipostageSimpleFamille.ISCONTRIBUABLEPRINCIPAL.getValue(), familleContribuable
                 .getSimpleFamille().getIsContribuable() ? "Oui" : "Non");
+        // mapValues.put(AMPublipostageSimpleFamille.ISCARTECULTURE.getValue(), familleContribuable.getSimpleFamille()
+        // .getIsCarteCulture() ? "Oui" : "Non");
         mapValues.put(AMPublipostageSimpleFamille.NOMPRENOM.getValue(), familleContribuable.getSimpleFamille()
                 .getNomPrenom());
         mapValues.put(AMPublipostageSimpleFamille.PEREMEREENFANT.getValue(),
@@ -431,6 +446,10 @@ public class AMStatistiquesPublipostageProcess extends AMALabstractProcess {
         return isContribuable;
     }
 
+    public boolean isCarteCulture() {
+        return isCarteCulture;
+    }
+
     @Override
     protected void process() {
         Map<String, String> mapValues = new LinkedHashMap<String, String>();
@@ -453,6 +472,9 @@ public class AMStatistiquesPublipostageProcess extends AMALabstractProcess {
                 }
                 if (isContribuable) {
                     familleContribuableSearch.setForIsContribuable(true);
+                }
+                if (isCarteCulture) {
+                    familleContribuableSearch.setForIsCarteCulture(true);
                 }
                 if (isCodeActif) {
                     familleContribuableSearch.setForCodeActif(true);
@@ -505,6 +527,9 @@ public class AMStatistiquesPublipostageProcess extends AMALabstractProcess {
 
                     // *************************RECUPERATION ADRESSE***********************************//
                     getAdresseValues(mapValues, idContribuable, adresseTiersDetail);
+
+                    // *************************RECUPERATION CARTECULTURE***********************************//
+                    getCarteCultureValues(mapValues, familleContribuable);
 
                     List listNpa = traitementWantedNpa();
                     if (!JadeStringUtil.isBlankOrZero(wantedNpa)
@@ -562,6 +587,11 @@ public class AMStatistiquesPublipostageProcess extends AMALabstractProcess {
         } else {
             message += "Uniquement contribuable principal ? : Non \n";
         }
+        if (isCarteCulture) {
+            message += "Uniquement cas avec CarteCulture ? : Oui \n";
+        } else {
+            message += "Uniquement cas avec CarteCulture  ? : Non \n";
+        }
         if (isCodeActif) {
             message += "Uniquement subside actifs ? : Oui \n";
         }
@@ -610,6 +640,10 @@ public class AMStatistiquesPublipostageProcess extends AMALabstractProcess {
 
     public void setIsContribuable(boolean isContribuable) {
         this.isContribuable = isContribuable;
+    }
+
+    public void setIsCarteCulture(boolean isCarteCulture) {
+        this.isCarteCulture = isCarteCulture;
     }
 
     public void setRecordsSize(int recordsSize) {

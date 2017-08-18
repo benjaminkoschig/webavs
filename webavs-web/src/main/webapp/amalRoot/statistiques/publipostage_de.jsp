@@ -1,5 +1,6 @@
 <%@page import="ch.globaz.amal.business.constantes.IAMCodeSysteme"%>
 <%@page import="ch.globaz.amal.business.constantes.IAMPublipostage.AMPublipostageAdresse"%>
+<%@page import="ch.globaz.amal.business.constantes.IAMPublipostage.AMPublipostageCarteCulture"%>
 <%@page import="ch.globaz.amal.business.constantes.IAMPublipostage.AMPublipostagePyxis"%>
 <%@page import="ch.globaz.amal.business.constantes.IAMPublipostage.AMPublipostageSimpleDetailFamille"%>
 <%@page import="ch.globaz.amal.business.constantes.IAMPublipostage.AMPublipostageSimpleFamille"%>
@@ -78,6 +79,7 @@ function postInit(){
 	$("#sizeRecords").removeProp('disabled');
 	$("#wantedNpa").removeProp('disabled');
 	$("#wantOnlyContribuablePrincipal").removeProp('disabled');
+	$("#wantOnlyCasAvecCarteCulture").removeProp('disabled');
 	$("#wantOnlySubsidesActifs").removeProp('disabled');
 	$("#forNumeroContribuable").removeProp('disabled');
 	$("#b_addNoContribuable").removeProp('disabled');
@@ -423,6 +425,17 @@ Liste publipostage
 										</ct:ifhasright>
 									</td>
 									<td>&nbsp;</td>
+									<td>Uniq. cas avec CarteCulture</td>
+									<td><input type="checkbox" name="wantOnlyCasAvecCarteCulture" id="wantOnlyCasAvecCarteCulture" value="yes"></td>
+									
+								</tr>
+								<tr>
+									<td width="20%">&nbsp;</td>
+									<td>
+										<select multiple="multiple" name="selectInNumeroContribuable" id="selectInNumeroContribuable">
+										</select>
+									</td>
+									<td>&nbsp;</td>
 									<td>Type</td>
 									<td>
 										<select multiple="multiple" name="TypeDemandePubli" id="selectTypeDemandePublipostage" >
@@ -436,11 +449,8 @@ Liste publipostage
 								</tr>
 								<tr>
 									<td width="20%">&nbsp;</td>
-									<td>
-										<select multiple="multiple" name="selectInNumeroContribuable" id="selectInNumeroContribuable">
-										</select>
-									</td>
-									<td>&nbsp;</td>
+									<td width="20%">&nbsp;</td>
+									<td width="10%">&nbsp;</td>
 									<td>Champs</td>
 									<td>
 										<select multiple="multiple" name="fieldsPubli" id="selectFieldsPublipostage" >
@@ -484,6 +494,9 @@ Liste publipostage
 												<option selected="selected" value="<%=AMPublipostageAdresse.CASEPOSTALE.getValue()%>">Case postale</option>
 												<option selected="selected" value="<%=AMPublipostageAdresse.NPA.getValue()%>">NPA</option>
 												<option selected="selected" value="<%=AMPublipostageAdresse.LOCALITE.getValue()%>">Localite</option>
+											</optgroup>
+											<optgroup label="CarteCulture">
+												<option  value="<%=AMPublipostageCarteCulture.CARTECULTURE.getValue()%>">CarteCulture</option>
 											</optgroup>
 										</select>
 									</td>
