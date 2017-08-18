@@ -46,17 +46,17 @@ public class AFAffiliesCodeNOGAContainer {
         return raisonSociale;
     }
 
-    @Column(name = "LISTE_CODE_NOGA_CODE_CAT", order = 4)
+    @Column(name = "LISTE_CODE_NOGA_CODE_CAT", order = 5)
     public String getCodeCategorie() {
         return codeCategorie;
     }
 
-    @Column(name = "LISTE_CODE_NOGA_CODE_CAT_TXT", order = 5)
+    @Column(name = "LISTE_CODE_NOGA_CODE_CAT_TXT", order = 6)
     public String getTxtCategorie() {
         return txtCategorie;
     }
 
-    @Column(name = "LISTE_CODE_NOGA_CODE", order = 6)
+    @Column(name = "LISTE_CODE_NOGA_CODE", order = 4)
     public String getCodeNoga() {
         return codeNoga;
     }
