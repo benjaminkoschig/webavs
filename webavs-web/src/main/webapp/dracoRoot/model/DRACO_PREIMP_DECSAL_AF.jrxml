@@ -1644,27 +1644,6 @@
 		</pageFooter>
 		<summary>
 			<band height="0"  isSplitAllowed="true" >
-				<staticText>
-					<reportElement
-						mode="Opaque"
-						x="221"
-						y="72"
-						width="0"
-						height="0"
-						forecolor="#000000"
-						backcolor="#FFFFFF"
-						key="staticText-1"
-						stretchType="NoStretch"
-						positionType="FixRelativeToTop"
-						isPrintRepeatedValues="true"
-						isRemoveLineWhenBlank="false"
-						isPrintInFirstWholeBand="false"
-						isPrintWhenDetailOverflows="false"/>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
-						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
-					</textElement>
-				<text><![CDATA[Static text]]></text>
-				</staticText>
 			</band>
 		</summary>
 </jasperReport>
