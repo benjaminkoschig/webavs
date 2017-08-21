@@ -27,7 +27,7 @@ public class AFAffiliesCodeNOGAContainer {
     private String txtNoga;
     private String genreAffi;
     private Montant masseSalariale;
-    private int nbAssures;
+    private Integer nbAssures;
 
     // Getters
 
@@ -78,7 +78,7 @@ public class AFAffiliesCodeNOGAContainer {
     }
 
     @Column(name = "LISTE_CODE_NOGA_NB_ASSURES", order = 10)
-    public int getNbAssures() {
+    public Integer getNbAssures() {
         return nbAssures;
     }
 
@@ -120,7 +120,7 @@ public class AFAffiliesCodeNOGAContainer {
         this.masseSalariale = masseSalariale;
     }
 
-    public void setNbAssures(int nbAssures) {
+    public void setNbAssures(Integer nbAssures) {
         this.nbAssures = nbAssures;
     }
 }
