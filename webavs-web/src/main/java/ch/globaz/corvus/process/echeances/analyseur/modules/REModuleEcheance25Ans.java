@@ -1,9 +1,14 @@
 package ch.globaz.corvus.process.echeances.analyseur.modules;
 
+import globaz.corvus.db.echeances.RERenteJoinDemandeEcheance;
 import globaz.globall.api.BISession;
 import globaz.jade.client.util.JadeDateUtil;
+import java.util.ArrayList;
+import java.util.List;
 import ch.globaz.corvus.business.models.echeances.IREEcheances;
+import ch.globaz.corvus.business.models.echeances.IRERenteEcheances;
 import ch.globaz.corvus.business.models.echeances.REMotifEcheance;
+import ch.globaz.prestation.domaine.CodePrestation;
 
 /**
  * Module vérifiant les échéances en rapport avec un enfant, dont l'âge est de 25 ans dans le mois courant, ou a déjà 25
@@ -42,6 +47,22 @@ public class REModuleEcheance25Ans extends REModuleAnalyseEcheance {
             return REReponseModuleAnalyseEcheance.Faux;
         }
 
+        // Récupérer tout les rentes pour enfant
+        List<IRERenteEcheances> rentesPourEnfant = new ArrayList<IRERenteEcheances>();
+        for (IRERenteEcheances uneRenteDuTiers : echeancesPourUnTiers.getRentesDuTiers()) {
+            CodePrestation codePrestation = CodePrestation.getCodePrestation(Integer.parseInt(uneRenteDuTiers
+                    .getCodePrestation()));
+
+            if (codePrestation.isRenteComplementairePourEnfant()) {
+                rentesPourEnfant.add(uneRenteDuTiers);
+            }
+        }
+        IRERenteEcheances rente = new RERenteJoinDemandeEcheance();
+
+        if (!rentesPourEnfant.isEmpty()) {
+            rente = rentesPourEnfant.get(0);
+        }
+
         // si le tiers est au bénéfice d'une rente d'enfant
         if (moduleRentePourEnfant.analyserEcheance(echeancesPourUnTiers).isListerEcheance()) {
             // selon l'âge...
@@ -50,16 +71,16 @@ public class REModuleEcheance25Ans extends REModuleAnalyseEcheance {
                 switch (reponseSelonAge.getMotif()) {
                     case Interne_AgeVouluDepasseDansMoisCourant:
                         // si déjà 25 ans
-                        return REReponseModuleAnalyseEcheance.Vrai(reponseSelonAge.getRente(),
-                                REMotifEcheance.Echeance25ansDepassee, echeancesPourUnTiers.getIdTiers());
+                        return REReponseModuleAnalyseEcheance.Vrai(rente, REMotifEcheance.Echeance25ansDepassee,
+                                echeancesPourUnTiers.getIdTiers());
                     case Interne_AgeVouluDansMoisCourant:
                         if (utiliseMotifRenteBloquee && echeancesPourUnTiers.hasPrestationBloquee()) {
                             // si 25 ans dans le mois courant mais rente bloquée
-                            return REReponseModuleAnalyseEcheance.Vrai(reponseSelonAge.getRente(),
+                            return REReponseModuleAnalyseEcheance.Vrai(rente,
                                     REMotifEcheance.Echeance25ansRenteBloquee, echeancesPourUnTiers.getIdTiers());
                         } else {
-                            return REReponseModuleAnalyseEcheance.Vrai(reponseSelonAge.getRente(),
-                                    REMotifEcheance.Echeance25ans, echeancesPourUnTiers.getIdTiers());
+                            return REReponseModuleAnalyseEcheance.Vrai(rente, REMotifEcheance.Echeance25ans,
+                                    echeancesPourUnTiers.getIdTiers());
                         }
                     default:
                         break;
