@@ -145,7 +145,7 @@ public class AFAffilieCodeNOGAProcess extends BProcess {
         requeteSQL.append("'");
         requeteSQL.append(" INNER JOIN SCHEMA.AFAFFIP afi on afi.MATCDN = code.PCOSID");
         requeteSQL
-                .append(" INNER JOIN SCHEMA.AFADHEP adh on adh.MAIAFF = afi.MAIAFF and (adh.mrdfin <> 0 and adh.mrdfin = (SELECT max(adhtemp.mrdfin) FROM ccjuweb.AFADHEP adhtemp where adhtemp.MAIAFF =  adh.MAIAFF)) ");
+                .append(" INNER JOIN SCHEMA.AFADHEP adh on adh.MAIAFF = afi.MAIAFF and (adh.mrdfin <> 0 and adh.mrdfin = (SELECT max(adhtemp.mrdfin) FROM SCHEMA.AFADHEP adhtemp where adhtemp.MAIAFF =  adh.MAIAFF)) ");
         requeteSQL.append(" INNER JOIN SCHEMA.AFCOTIP cot on cot.MRIADH = adh.MRIADH");
         requeteSQL
                 .append(" LEFT JOIN SCHEMA.FWCOUP coupGenreAfi ON afi.MATTAF = coupGenreAfi.PCOSID AND coupGenreAfi.PLAIDE = '");
