@@ -131,6 +131,11 @@ public class CEApplication extends BApplication {
         FWAction.registerActionCustom("hercule.groupement.groupe.afficher", FWSecureConstants.UPDATE);
         FWAction.registerActionCustom("hercule.groupement.membre.afficher", FWSecureConstants.READ);
 
+        // Non certifié conforme
+        FWAction.registerActionCustom("hercule.noncertifiesconformes.generationSuiviNCC.afficher",
+                FWSecureConstants.UPDATE);
+        FWAction.registerActionCustom("hercule.noncertifiesconformes.generationSuiviNCC.afficher",
+                FWSecureConstants.UPDATE);
     }
 
     /**
