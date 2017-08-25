@@ -721,13 +721,16 @@ globazNotation.calendar = {
 		} else {
 			isMonthDateValid = this.isMonthDateValid(value);
 		}
-
-		return {
+		
+		var obj = {
 			preValue : prevValue,
 			value : value,
 			changed : value !== prevValue,
 			error : !isMonthDateValid
 		};
+
+		that.$elementToPutObject.trigger(eventConstant.CALENDAR_CHANGE, obj);
+		return obj;
 	},
 
 	formatStandardCalendarField: function () {
@@ -796,12 +799,15 @@ globazNotation.calendar = {
 			isDateValid = this.isDateValid(value);
 		}
 		
-		return {
+		var obj =  {
 			preValue : prevValue,
 			value : value,
 			changed : value !== prevValue,
 			error : !isDateValid
 		};
+
+		that.$elementToPutObject.trigger(eventConstant.CALENDAR_CHANGE, obj);
+		return obj;
 	},
 
 	validate: function () {

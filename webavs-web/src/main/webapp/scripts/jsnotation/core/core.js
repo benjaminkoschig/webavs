@@ -27,6 +27,7 @@ var eventConstant = {
 	DOWNLOAD_SUCESS: 'sucess.download',
 	WIDGET_FORCE_LOAD: 'forceLoad.ajax',
 	UPLOAD_RETURN: 'return.upload', 
+	CALENDAR_CHANGE: 'changeValue.calendar',
 
 	// autocomplétion
 	AJAX_SELECT_SUGGESTION : 'onSelectSuggestion.ajax',
