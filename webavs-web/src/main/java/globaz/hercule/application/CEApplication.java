@@ -134,7 +134,7 @@ public class CEApplication extends BApplication {
         // Non certifié conforme
         FWAction.registerActionCustom("hercule.noncertifiesconformes.generationSuiviNCC.afficher",
                 FWSecureConstants.UPDATE);
-        FWAction.registerActionCustom("hercule.noncertifiesconformes.generationSuiviNCC.afficher",
+        FWAction.registerActionCustom("hercule.noncertifiesconformes.saisieReceptionNCC.afficher",
                 FWSecureConstants.UPDATE);
     }
 
