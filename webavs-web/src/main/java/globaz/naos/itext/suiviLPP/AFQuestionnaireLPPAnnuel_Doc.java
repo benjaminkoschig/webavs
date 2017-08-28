@@ -182,6 +182,10 @@ public class AFQuestionnaireLPPAnnuel_Doc extends AFAbstractTiersDocument {
             throw new Exception("Technical Exception, Unabled to retrieve the adresse ( idTiers = " + idTiers + ")", e);
         }
 
+        if (d == null) {
+            throw new Exception("Unabled to retrieve the adresse ( Num Affilie = " + numAffilie + ")");
+        }
+
         return d;
     }
 
