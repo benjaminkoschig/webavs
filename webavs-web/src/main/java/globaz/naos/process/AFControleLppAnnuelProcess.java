@@ -506,8 +506,14 @@ public class AFControleLppAnnuelProcess extends BProcess {
             for (AFSuiviCaisseForControleLpp caisseLpp : objSuiviCaisse) {
                 if (caisseLpp.getIdAffilie().equals(affSoumis.getIdAffilie())) {
 
-                    isCouvertParUneCaisse = testIsCouvert(forAnnee, affSoumis.getMoisDebut(), affSoumis.getMoisFin(),
-                            caisseLpp.getDateDebut(), caisseLpp.getDateFin());
+                    try {
+                        isCouvertParUneCaisse = testIsCouvert(forAnnee, affSoumis.getMoisDebut(),
+                                affSoumis.getMoisFin(), caisseLpp.getDateDebut(), caisseLpp.getDateFin());
+                    } catch (Exception e) {
+                        throw new Exception(
+                                "Error dans le test de couverture de l'affiliation par une caisse (Affilie : "
+                                        + affSoumis.getNumeroAffilie() + ") : " + e.getMessage(), e);
+                    }
 
                     // Si couvert par une caisse et pas de motif de non soumission
                     if (isCouvertParUneCaisse && "0".equals(caisseLpp.getMotifSuivi())) {
