@@ -264,6 +264,8 @@ public class Doc2_preImpressionDeclaration extends FWIDocumentManager {
                     getSession().getApplication().getLabel("ENVOI_TOTAL_SALAIRE", langueIsoTiers));
             super.setParametres(Doc1_PreImp_Param.P_CERTIFIE,
                     getSession().getApplication().getLabel("ENVOI_EXACT_COMPLET", langueIsoTiers));
+            super.setParametres(Doc1_PreImp_Param.P_CERTIFIE_2,
+                    getSession().getApplication().getLabel("ENVOI_EXACT_COMPLET_LIEN", langueIsoTiers));
             super.setParametres(Doc1_PreImp_Param.P_CERTIFIE_AF,
                     getSession().getApplication().getLabel("ENVOI_EXACT_COMPLET_AF", langueIsoTiers));
             super.setParametres(Doc1_PreImp_Param.P_DATE,

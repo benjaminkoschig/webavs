@@ -70,6 +70,7 @@ public class Doc1_PreImp_Param extends FWIImportParametre {
     public static final String P_CANTON = "P_CANTON";
     public static final String P_CATEGORIE_PERSONNE = "P_CATEGORIE_PERSONNE";
     public static final String P_CERTIFIE = "P_CERTIFIE";
+    public static final String P_CERTIFIE_2 = "P_CERTIFIE_2";
     public static final String P_CERTIFIE_AF = "P_CERTIFIE_AF";
     public static final String P_CONCERNE = "P_CONCERNE";
     public static final String P_CORPS = "P_CORPS";

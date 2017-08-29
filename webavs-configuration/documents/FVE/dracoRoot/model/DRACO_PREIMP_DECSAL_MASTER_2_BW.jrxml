@@ -79,6 +79,7 @@
 	<parameter name="L_18" isForPrompting="false" class="java.lang.String"/>
 	<parameter name="P_SI_CHANGE" isForPrompting="true" class="java.lang.String"/>
 	<parameter name="P_PAS_PERSO" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="P_CERTIFIE_2" isForPrompting="false" class="java.lang.String"/>
 	<field name="COL_1" class="java.lang.String"/>
 	<field name="pageDebut" class="java.lang.String"/>
 	<field name="COL_2" class="java.lang.String"/>
@@ -2302,6 +2303,26 @@
 						isPrintWhenDetailOverflows="false"/>
 					<graphicElement stretchType="NoStretch" pen="1Point" fill="Solid" />
 				</rectangle>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Transparent"
+						x="14"
+						y="-37"
+						width="462"
+						height="12"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-76"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_CERTIFIE_2}]]></textFieldExpression>
+				</textField>
 			</band>
 		</lastPageFooter>
 		<summary>
