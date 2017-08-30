@@ -10,8 +10,10 @@ import globaz.corvus.db.recap.access.RERecapInfo;
 import globaz.corvus.db.rentesaccordees.REDecisionJointDemandeRente;
 import globaz.corvus.db.rentesaccordees.REDecisionJointDemandeRenteManager;
 import globaz.corvus.db.rentesaccordees.REPrestationsAccordees;
+import globaz.corvus.db.rentesaccordees.RERenteAccordeeJoinInfoComptaJoinPrstDues;
 import globaz.corvus.db.rentesaccordees.RERenteAccordeeJoinInfoComptaJoinPrstDuesJoinDecisions;
 import globaz.corvus.db.rentesaccordees.RERenteAccordeeJoinInfoComptaJoinPrstDuesJoinDecisionsManager;
+import globaz.corvus.db.rentesaccordees.RERenteAccordeeJoinInfoComptaJoinPrstDuesManager;
 import globaz.corvus.utils.REPmtMensuel;
 import globaz.corvus.utils.enumere.genre.prestations.REGenrePrestationEnum;
 import globaz.corvus.utils.enumere.genre.prestations.REGenresPrestations;
@@ -1045,10 +1047,17 @@ public abstract class AREModuleComptable implements Comparator<IREModuleComptabl
                 Integer.toString(renteAccordeePrincipale.getCodePrestation().getCodePrestation()), isoLangFromIdTiers);
 
         // Périodes
+        RERenteAccordeeJoinInfoComptaJoinPrstDuesManager manager = new RERenteAccordeeJoinInfoComptaJoinPrstDuesManager();
+        manager.setForIdTiersBeneficiaire(idTiersPrincipal);
+        manager.setForIdRenteAccordee(renteAccordeePrincipale.getId().toString());
+        manager.find(BManager.SIZE_NOLIMIT);
 
-        final String dateFin = decision.getMoisFinRetro();
-        final String periode = decision.getMoisDebutRetro() + " - " + dateFin;
+        RERenteAccordeeJoinInfoComptaJoinPrstDues re = (RERenteAccordeeJoinInfoComptaJoinPrstDues) manager
+                .getFirstEntity();
 
+        final String dateFin = JadeStringUtil.isBlankOrZero(re.getDateFinDroit()) ? REPmtMensuel
+                .getDateDernierPmt(session) : re.getDateFinDroit();
+        final String periode = re.getDateDebutDroit() + " - " + dateFin;
 
         // Message décisions
         String msgDecision = MotifVersementUtil.getTranslatedLabelFromIsolangue(isoLangFromIdTiers,
