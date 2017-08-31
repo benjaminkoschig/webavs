@@ -46,6 +46,7 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
@@ -584,6 +585,7 @@ public class REEnvoyerAnnoncesXMLProcess extends BProcess {
     private String getFileNameTimeStamp() throws Exception {
         String fileName = "M_" + REProperties.RACINE_NOM_FICHIER_OUTPUT_ZAS.getValue();
         fileName = JadeFilenameUtil.addFilenameSuffixDateTimeDecimals(fileName);
+        fileName = StringUtils.left(fileName, fileName.length() - 7) + "_" + StringUtils.right(fileName, 7);
         fileName = fileName + ".xml";
         return fileName;
     }
