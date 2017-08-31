@@ -15,7 +15,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ch.globaz.al.liste.process.ALIndeRevenuMinNonAtteintProcess;
@@ -64,20 +66,26 @@ public class AFAffilieCodeNOGAProcess extends BProcess {
         if (!isOnlyAffiliesActifs) {
             listAffiliesWithCodeNoga.addAll(SCM.newInstance(AFAffiliesCodeNOGAContainer.class).session(getSession())
                     .query(getSqlRequestNonActifs()).execute());
-
-            Collections.sort(listAffiliesWithCodeNoga, new Comparator<AFAffiliesCodeNOGAContainer>() {
-
-                @Override
-                public int compare(AFAffiliesCodeNOGAContainer o1, AFAffiliesCodeNOGAContainer o2) {
-                    int codeNogaCmp = o1.getCodeNoga().compareTo(o2.getCodeNoga());
-                    if (codeNogaCmp != 0) {
-                        return codeNogaCmp;
-                    }
-
-                    return o1.getRaisonSociale().compareTo(o2.getRaisonSociale());
-                }
-            });
         }
+
+        // On enlève les doublons
+        Set<AFAffiliesCodeNOGAContainer> hs = new HashSet<AFAffiliesCodeNOGAContainer>();
+        hs.addAll(listAffiliesWithCodeNoga);
+        listAffiliesWithCodeNoga.clear();
+        listAffiliesWithCodeNoga.addAll(hs);
+
+        // On tire par codeNoga
+        Collections.sort(listAffiliesWithCodeNoga, new Comparator<AFAffiliesCodeNOGAContainer>() {
+
+            @Override
+            public int compare(AFAffiliesCodeNOGAContainer o1, AFAffiliesCodeNOGAContainer o2) {
+                int codeNogaCmp = o1.getCodeNoga().compareTo(o2.getCodeNoga());
+                if (codeNogaCmp != 0) {
+                    return codeNogaCmp;
+                }
+                return o1.getRaisonSociale().compareTo(o2.getRaisonSociale());
+            }
+        });
 
         File file = genererFileExcel(listAffiliesWithCodeNoga);
         // Envoi du mail
@@ -102,7 +110,14 @@ public class AFAffilieCodeNOGAProcess extends BProcess {
     private String getSqlRequestActifs() throws ParseException {
         StringBuilder requeteSQL = new StringBuilder();
         requeteSQL
-                .append("SELECT afi.MALFED as NUM_IDE, afi.MALNAF as NUM_AFFILIE, afi.MADESL as RAISON_SOCIALE, cat.PCOUID  as CODE_CATEGORIE, cat.PCOLUT as TXT_CATEGORIE, val.PCOUID as CODE_NOGA, val.PCOLUT as TXT_NOGA, coupGenreAfi.PCOLUT as GENRE_AFFI ,cot.MEMMAP as MASSE_SALARIALE,nassure.MVNNBR as NB_ASSURES");
+                .append("SELECT afi.MALFED as NUM_IDE, afi.MALNAF as NUM_AFFILIE, afi.MADESL as RAISON_SOCIALE, cat.PCOUID  as CODE_CATEGORIE, cat.PCOLUT as TXT_CATEGORIE, val.PCOUID as CODE_NOGA, val.PCOLUT as TXT_NOGA, coupGenreAfi.PCOLUT as GENRE_AFFI ,cot.MEMMAP as MASSE_SALARIALE,");
+        requeteSQL
+                .append("(SELECT COUNT(DISTINCT ind.KAIIND) FROM schema.CIECRIP ecr"
+                        + " inner join schema.afaffip aff on aff.maiaff = ecr.KBITIE"
+                        + " inner join schema.ciindip ind on ind.KAIIND = ecr.KAIIND"
+                        + " inner join (SELECT schema.CIECRIP.KBITIE, MAX(schema.CIECRIP.KBNANN) AS maxAnnee FROM schema.CIECRIP GROUP BY KBITIE) sousSelect"
+                        + " on ecr.KBNANN = sousSelect.maxAnnee " + "and aff.maiaff = sousSelect.KBITIE"
+                        + " WHERE aff.malnaf = afi.malnaf) as NB_ASSURES");
         requeteSQL.append(" FROM SCHEMA.FWCOSP code ");
         requeteSQL.append(" INNER JOIN SCHEMA.fwcoup val on val.pcosid = code.pcosid and val.plaide = '");
         requeteSQL.append(retrieveLettreLangueUser());
@@ -119,7 +134,6 @@ public class AFAffilieCodeNOGAProcess extends BProcess {
         requeteSQL.append("'");
         requeteSQL
                 .append(" INNER JOIN SCHEMA.AFASSUP ass on (ass.MBIASS = cot.MBIASS AND MBTGEN = 801001 AND MBTTYP=812001)");
-        requeteSQL.append(" LEFT JOIN SCHEMA.AFNASSP as nassure on nassure.MAIAFF = afi.MAIAFF");
         requeteSQL.append(" WHERE cot.MEDFIN = 0");
 
         requeteSQL.append(" AND (afi.MADFIN = 0 OR afi.MADFIN > " + retrieveDateJourAsInt() + ")");
@@ -135,7 +149,14 @@ public class AFAffilieCodeNOGAProcess extends BProcess {
     private String getSqlRequestNonActifs() throws ParseException {
         StringBuilder requeteSQL = new StringBuilder();
         requeteSQL
-                .append("SELECT afi.MALFED as NUM_IDE, afi.MALNAF as NUM_AFFILIE, afi.MADESL as RAISON_SOCIALE, cat.PCOUID  as CODE_CATEGORIE, cat.PCOLUT as TXT_CATEGORIE, val.PCOUID as CODE_NOGA, val.PCOLUT as TXT_NOGA, coupGenreAfi.PCOLUT as GENRE_AFFI ,cot.MEMMAP as MASSE_SALARIALE,nassure.MVNNBR as NB_ASSURES");
+                .append("SELECT afi.MALFED as NUM_IDE, afi.MALNAF as NUM_AFFILIE, afi.MADESL as RAISON_SOCIALE, cat.PCOUID  as CODE_CATEGORIE, cat.PCOLUT as TXT_CATEGORIE, val.PCOUID as CODE_NOGA, val.PCOLUT as TXT_NOGA, coupGenreAfi.PCOLUT as GENRE_AFFI ,cot.MEMMAP as MASSE_SALARIALE,");
+        requeteSQL
+                .append("(SELECT COUNT(DISTINCT ind.KAIIND) FROM schema.CIECRIP ecr"
+                        + " inner join schema.afaffip aff on aff.maiaff = ecr.KBITIE"
+                        + " inner join schema.ciindip ind on ind.KAIIND = ecr.KAIIND"
+                        + " inner join (SELECT schema.CIECRIP.KBITIE, MAX(schema.CIECRIP.KBNANN) AS maxAnnee FROM schema.CIECRIP GROUP BY KBITIE) sousSelect"
+                        + " on ecr.KBNANN = sousSelect.maxAnnee " + "and aff.maiaff = sousSelect.KBITIE"
+                        + " WHERE aff.malnaf = afi.malnaf) as NB_ASSURES");
         requeteSQL.append(" FROM SCHEMA.FWCOSP code ");
         requeteSQL.append(" INNER JOIN SCHEMA.fwcoup val on val.pcosid = code.pcosid and val.plaide = '");
         requeteSQL.append(retrieveLettreLangueUser());
@@ -153,7 +174,6 @@ public class AFAffilieCodeNOGAProcess extends BProcess {
         requeteSQL.append("'");
         requeteSQL
                 .append(" INNER JOIN SCHEMA.AFASSUP ass on (ass.MBIASS = cot.MBIASS AND MBTGEN = 801001 AND MBTTYP=812001)");
-        requeteSQL.append(" LEFT JOIN SCHEMA.AFNASSP as nassure on nassure.MAIAFF = afi.MAIAFF");
 
         // On contrôle que l'affiliation à une date de fin et plus petite que la date du jour
         requeteSQL.append(" WHERE (afi.MADFIN <> 0 AND afi.MADFIN < " + retrieveDateJourAsInt() + ")");

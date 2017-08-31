@@ -123,4 +123,106 @@ public class AFAffiliesCodeNOGAContainer {
     public void setNbAssures(Integer nbAssures) {
         this.nbAssures = nbAssures;
     }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((codeCategorie == null) ? 0 : codeCategorie.hashCode());
+        result = prime * result + ((codeNoga == null) ? 0 : codeNoga.hashCode());
+        result = prime * result + ((genreAffi == null) ? 0 : genreAffi.hashCode());
+        result = prime * result + ((masseSalariale == null) ? 0 : masseSalariale.hashCode());
+        result = prime * result + ((nbAssures == null) ? 0 : nbAssures.hashCode());
+        result = prime * result + ((numAffilie == null) ? 0 : numAffilie.hashCode());
+        result = prime * result + ((numIde == null) ? 0 : numIde.hashCode());
+        result = prime * result + ((raisonSociale == null) ? 0 : raisonSociale.hashCode());
+        result = prime * result + ((txtCategorie == null) ? 0 : txtCategorie.hashCode());
+        result = prime * result + ((txtNoga == null) ? 0 : txtNoga.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        AFAffiliesCodeNOGAContainer other = (AFAffiliesCodeNOGAContainer) obj;
+        if (codeCategorie == null) {
+            if (other.codeCategorie != null) {
+                return false;
+            }
+        } else if (!codeCategorie.equals(other.codeCategorie)) {
+            return false;
+        }
+        if (codeNoga == null) {
+            if (other.codeNoga != null) {
+                return false;
+            }
+        } else if (!codeNoga.equals(other.codeNoga)) {
+            return false;
+        }
+        if (genreAffi == null) {
+            if (other.genreAffi != null) {
+                return false;
+            }
+        } else if (!genreAffi.equals(other.genreAffi)) {
+            return false;
+        }
+        if (masseSalariale == null) {
+            if (other.masseSalariale != null) {
+                return false;
+            }
+        } else if (!masseSalariale.equals(other.masseSalariale)) {
+            return false;
+        }
+        if (nbAssures == null) {
+            if (other.nbAssures != null) {
+                return false;
+            }
+        } else if (!nbAssures.equals(other.nbAssures)) {
+            return false;
+        }
+        if (numAffilie == null) {
+            if (other.numAffilie != null) {
+                return false;
+            }
+        } else if (!numAffilie.equals(other.numAffilie)) {
+            return false;
+        }
+        if (numIde == null) {
+            if (other.numIde != null) {
+                return false;
+            }
+        } else if (!numIde.equals(other.numIde)) {
+            return false;
+        }
+        if (raisonSociale == null) {
+            if (other.raisonSociale != null) {
+                return false;
+            }
+        } else if (!raisonSociale.equals(other.raisonSociale)) {
+            return false;
+        }
+        if (txtCategorie == null) {
+            if (other.txtCategorie != null) {
+                return false;
+            }
+        } else if (!txtCategorie.equals(other.txtCategorie)) {
+            return false;
+        }
+        if (txtNoga == null) {
+            if (other.txtNoga != null) {
+                return false;
+            }
+        } else if (!txtNoga.equals(other.txtNoga)) {
+            return false;
+        }
+        return true;
+    }
 }
