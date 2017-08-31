@@ -44,7 +44,10 @@ public enum AFProperties implements IProperties {
     NOGA_UPDATE_ANNONCE_IDE("exploitation.codeNOGA.IDE.InfoABO",
             "Mettre à jour le code NOGA depuis lors d'une annonce IDE"),
     IDE_CASCADE_ADRESSE_MORALE("ide.cascade.adresse.morale", "Cascade d'adresse IDE pour personnes morales"),
-    IDE_CASCADE_ADRESSE_PHYSIQUE("ide.cascade.adresse.physique", "Cascade d'adresse IDE pour personnes physiques");
+    IDE_CASCADE_ADRESSE_PHYSIQUE("ide.cascade.adresse.physique", "Cascade d'adresse IDE pour personnes physiques"),
+    CONTROLE_ANNUEL_LPP_GENERATION_EXTRAIT_DS("lpp.annuel.generation.extrait",
+            "Generation de l'extrait de décompte lors de l'envoi du questionnaire LPP pour le suivi annuel");
+    ;
 
     private String description;
     private String propertyName;

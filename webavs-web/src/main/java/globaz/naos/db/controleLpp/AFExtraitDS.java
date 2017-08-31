@@ -26,6 +26,7 @@ public class AFExtraitDS extends BEntity {
     private String annee;
     private String moisFin;
     private String salaire;
+    private String nivSecu;
 
     private String seuilEntree;
 
@@ -42,6 +43,7 @@ public class AFExtraitDS extends BEntity {
         moisFin = statement.dbReadString("KBNMOF");
         annee = statement.dbReadString("KBNANN");
         salaire = statement.dbReadString("KBMMON");
+        nivSecu = statement.dbReadString("KATSEC");
     }
 
     @Override
@@ -145,6 +147,10 @@ public class AFExtraitDS extends BEntity {
 
     public void setSeuilEntree(String seuilEntree) {
         this.seuilEntree = seuilEntree;
+    }
+
+    public String getNivSecu() {
+        return nivSecu;
     }
 
 }

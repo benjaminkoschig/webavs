@@ -15,6 +15,7 @@ import globaz.naos.db.controleLpp.AFExtraitDS;
 import globaz.naos.db.controleLpp.AFExtraitDSManager;
 import globaz.naos.itext.AFAbstractTiersDocument;
 import globaz.naos.listes.pdf.extraitDS.AFListeExtraitDS;
+import globaz.naos.properties.AFProperties;
 import globaz.naos.translation.CodeSystem;
 import globaz.pyxis.adresse.datasource.TIAdresseDataSource;
 import globaz.pyxis.db.tiers.TITiers;
@@ -73,7 +74,9 @@ public class AFQuestionnaireLPPAnnuel_Doc extends AFAbstractTiersDocument {
         super.createDataSource();
 
         // Lancement du process pour générer la liste extrait de salaires
-        initAndLaunchProcessListExtraitDS(getIdAffiliation(), Integer.parseInt(getPeriode()), getDateImpression());
+        if (AFProperties.CONTROLE_ANNUEL_LPP_GENERATION_EXTRAIT_DS.getBooleanValue()) {
+            initAndLaunchProcessListExtraitDS(getIdAffiliation(), Integer.parseInt(getPeriode()), getDateImpression());
+        }
 
         fillDocInfo();
     }

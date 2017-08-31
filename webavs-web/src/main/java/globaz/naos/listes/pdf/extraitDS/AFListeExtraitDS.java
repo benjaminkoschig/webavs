@@ -6,6 +6,7 @@ package globaz.naos.listes.pdf.extraitDS;
 import globaz.caisse.report.helper.ACaisseReportHelper;
 import globaz.docinfo.TIDocumentInfoHelper;
 import globaz.framework.printing.itext.fill.FWIImportProperties;
+import globaz.framework.secure.user.FWSecureUserDetail;
 import globaz.globall.db.BProcess;
 import globaz.globall.db.GlobazJobQueue;
 import globaz.globall.db.GlobazServer;
@@ -17,6 +18,7 @@ import globaz.jade.publish.document.JadePublishDocumentInfo;
 import globaz.naos.application.AFApplication;
 import globaz.naos.db.affiliation.AFAffiliation;
 import globaz.naos.db.controleLpp.AFExtraitDS;
+import globaz.pavo.db.compte.CICompteIndividuel;
 import globaz.pyxis.adresse.datasource.TIAbstractAdresseDataSource;
 import globaz.pyxis.adresse.datasource.TIAdresseDataSource;
 import globaz.pyxis.api.ITIRole;
@@ -81,6 +83,8 @@ public class AFListeExtraitDS extends BProcess {
     private String langueIso;
 
     private String date;
+
+    private int nivSecuUser = 0;
 
     private JadePublishDocumentInfo documentInfoPdf;
     private String path;
@@ -174,11 +178,50 @@ public class AFListeExtraitDS extends BProcess {
             row.createCell(CELL_SALARIE_PERIODE).setCellValue(
                     JadeStringUtil.fillWithZeroes(listeDS.get(i).getMoisDebut(), 2) + " - "
                             + JadeStringUtil.fillWithZeroes(listeDS.get(i).getMoisFin(), 2));
-            row.createCell(CELL_SALARIE_SALAIRE).setCellValue(listeDS.get(i).getSalaire());
+            // Test si code secu
+            if (isUserHasRightToShowSalaire(listeDS.get(i).getNivSecu())) {
+                row.createCell(CELL_SALARIE_SALAIRE).setCellValue(listeDS.get(i).getSalaire());
+            } else {
+                row.createCell(CELL_SALARIE_SALAIRE).setCellValue(getSession().getLabel("NAOS_CACHE"));
+            }
             row.createCell(CELL_SALARIE_SEUIL).setCellValue(listeDS.get(i).getSeuilEntree());
-
             // i + 1 car la première ligne est réservé aux informations de l'employeur
             listeRowSalarie.add(i + 1, row);
+        }
+    }
+
+    private boolean isUserHasRightToShowSalaire(String niveauSecuCi) {
+        int nivSecuCI = 0;
+        int nivSecuAffilie = 0;
+        try {
+            nivSecuAffilie = Character.getNumericValue(employeur.getAccesSecurite().charAt(
+                    employeur.getAccesSecurite().length() - 1));
+        } catch (Exception e) {
+            nivSecuAffilie = 0;
+        }
+
+        try {
+            nivSecuCI = Character.getNumericValue(niveauSecuCi.charAt(niveauSecuCi.length() - 1));
+        } catch (Exception e) {
+            nivSecuCI = 0;
+        }
+
+        if ((nivSecuUser < nivSecuAffilie) || (nivSecuUser < nivSecuCI)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private void retrieveNivSecuUser() throws Exception {
+        FWSecureUserDetail user = new FWSecureUserDetail();
+        user.setSession(getSession());
+        user.setUser(getSession().getUserId());
+        user.setLabel(CICompteIndividuel.SECURITE_LABEL);
+        user.retrieve(getTransaction());
+
+        if (!user.isNew()) {
+            nivSecuUser = Integer.parseInt(user.getData());
         }
     }
 
@@ -560,6 +603,8 @@ public class AFListeExtraitDS extends BProcess {
     @Override
     protected boolean _executeProcess() throws Exception {
 
+        retrieveNivSecuUser();
+
         setDocumentInfoPdf(createDocInfo());
 
         setNomCaisse(FWIImportProperties.getInstance().getProperty(getDocumentInfoPdf(),
@@ -588,5 +633,4 @@ public class AFListeExtraitDS extends BProcess {
     public GlobazJobQueue jobQueue() {
         return null;
     }
-
 }
