@@ -891,11 +891,12 @@ public class AFControleLppAnnuelProcess extends BProcess {
      * @param session
      * @param idAffiliation
      * @param numAffilie
-     * @param annee
+     * @param valeurCodeSystem
      * @return
      * @throws Exception
      */
-    public boolean isDejaJournalise(BSession session, String idAffiliation, String numAffilie) throws Exception {
+    public boolean isDejaJournaliseforSuivi(BSession session, String idAffiliation, String numAffilie,
+            String valeurCodeSystem) throws Exception {
 
         // On sette les critères qui font que l'envoi est unique
         LUProvenanceDataSource provenanceCriteres = new LUProvenanceDataSource();
@@ -909,7 +910,7 @@ public class AFControleLppAnnuelProcess extends BProcess {
         viewBean.setSession(session);
         viewBean.setProvenance(provenanceCriteres);
         viewBean.setForCsTypeCodeSysteme(ILEConstantes.CS_DEF_FORMULE_GROUPE);
-        viewBean.setForValeurCodeSysteme(ILEConstantes.CS_DEBUT_SUIVI_ANNUEL_LPP);
+        viewBean.setForValeurCodeSysteme(valeurCodeSystem);
         viewBean.find(getTransaction(), BManager.SIZE_USEDEFAULT);
 
         // Si le viewBean retourne un enregistrement c'est que l'envoi a déjà
@@ -926,6 +927,22 @@ public class AFControleLppAnnuelProcess extends BProcess {
         }
 
         return false;
+
+    }
+
+    /**
+     * Regarde si il existe pas un suivi LPP ou suivi LPP annuel
+     * 
+     * @param session
+     * @param idAffiliation
+     * @param numAffilie
+     * @return
+     * @throws Exception
+     */
+    public boolean isDejaJournalise(BSession session, String idAffiliation, String numAffilie) throws Exception {
+
+        return isDejaJournaliseforSuivi(session, idAffiliation, numAffilie, ILEConstantes.CS_DEBUT_SUIVI_ANNUEL_LPP)
+                || isDejaJournaliseforSuivi(session, idAffiliation, numAffilie, ILEConstantes.CS_DEBUT_SUIVI_LPP);
 
     }
 
