@@ -110,14 +110,7 @@ public class AFAffilieCodeNOGAProcess extends BProcess {
     private String getSqlRequestActifs() throws ParseException {
         StringBuilder requeteSQL = new StringBuilder();
         requeteSQL
-                .append("SELECT afi.MALFED as NUM_IDE, afi.MALNAF as NUM_AFFILIE, afi.MADESL as RAISON_SOCIALE, cat.PCOUID  as CODE_CATEGORIE, cat.PCOLUT as TXT_CATEGORIE, val.PCOUID as CODE_NOGA, val.PCOLUT as TXT_NOGA, coupGenreAfi.PCOLUT as GENRE_AFFI ,cot.MEMMAP as MASSE_SALARIALE,");
-        requeteSQL
-                .append("(SELECT COUNT(DISTINCT ind.KAIIND) FROM schema.CIECRIP ecr"
-                        + " inner join schema.afaffip aff on aff.maiaff = ecr.KBITIE"
-                        + " inner join schema.ciindip ind on ind.KAIIND = ecr.KAIIND"
-                        + " inner join (SELECT schema.CIECRIP.KBITIE, MAX(schema.CIECRIP.KBNANN) AS maxAnnee FROM schema.CIECRIP GROUP BY KBITIE) sousSelect"
-                        + " on ecr.KBNANN = sousSelect.maxAnnee " + "and aff.maiaff = sousSelect.KBITIE"
-                        + " WHERE aff.malnaf = afi.malnaf) as NB_ASSURES");
+                .append("SELECT afi.MALFED as NUM_IDE, afi.MALNAF as NUM_AFFILIE, afi.MADESL as RAISON_SOCIALE, cat.PCOUID  as CODE_CATEGORIE, cat.PCOLUT as TXT_CATEGORIE, val.PCOUID as CODE_NOGA, val.PCOLUT as TXT_NOGA, coupGenreAfi.PCOLUT as GENRE_AFFI ,temp.MASSE_SALARIALE, temp.NB_ASSURES ");
         requeteSQL.append(" FROM SCHEMA.FWCOSP code ");
         requeteSQL.append(" INNER JOIN SCHEMA.fwcoup val on val.pcosid = code.pcosid and val.plaide = '");
         requeteSQL.append(retrieveLettreLangueUser());
@@ -128,6 +121,21 @@ public class AFAffilieCodeNOGAProcess extends BProcess {
         requeteSQL.append(" INNER JOIN SCHEMA.AFAFFIP afi on afi.MATCDN = code.PCOSID");
         requeteSQL.append(" INNER JOIN SCHEMA.AFADHEP adh on adh.MAIAFF = afi.MAIAFF");
         requeteSQL.append(" INNER JOIN SCHEMA.AFCOTIP cot on cot.MRIADH = adh.MRIADH");
+
+        requeteSQL
+                .append(" LEFT JOIN ( select count(kaiind) as NB_ASSURES, malnaf, sum(SUMMONTANT) as MASSE_SALARIALE from ( SELECT kaiind, malnaf, SUM(kbmmon) as SUMMONTANT from ("
+                        + " SELECT ecr.KAIIND, case when kbtext <> 0 then -kbmmon else kbmmon end as KBMMON, malnaf FROM SCHEMA.CIECRIP ecr"
+                        + " inner join SCHEMA.afaffip aff on aff.maiaff = ecr.KBITIE inner join SCHEMA.ciindip ind on ind.KAIIND = ecr.KAIIND"
+                        + " inner join ("
+                        + " SELECT SCHEMA.CIECRIP.KBITIE, MAX(SCHEMA.CIECRIP.KBNANN) AS maxAnnee"
+                        + " FROM SCHEMA.CIECRIP"
+                        + " WHERE SCHEMA.CIECRIP.KBNANN <> "
+                        + Date.now().getAnnee()
+                        + " GROUP BY KBITIE) sousSelect on ecr.KBNANN = sousSelect.maxAnnee and aff.maiaff = sousSelect.KBITIE AND (aff.MADFIN = 0 OR aff.MADFIN > "
+                        + retrieveDateJourAsInt()
+                        + " ) and KBTGEN in (310001,310006))"
+                        + " group by kaiind, malnaf having sum(kbmmon)> 0) group by malnaf) as temp on temp.malnaf = afi.malnaf");
+
         requeteSQL
                 .append(" LEFT JOIN SCHEMA.FWCOUP coupGenreAfi ON afi.MATTAF = coupGenreAfi.PCOSID AND coupGenreAfi.PLAIDE = '");
         requeteSQL.append(retrieveLettreLangueUser());
@@ -135,7 +143,6 @@ public class AFAffilieCodeNOGAProcess extends BProcess {
         requeteSQL
                 .append(" INNER JOIN SCHEMA.AFASSUP ass on (ass.MBIASS = cot.MBIASS AND MBTGEN = 801001 AND MBTTYP=812001)");
         requeteSQL.append(" WHERE cot.MEDFIN = 0");
-
         requeteSQL.append(" AND (afi.MADFIN = 0 OR afi.MADFIN > " + retrieveDateJourAsInt() + ")");
         if (idCScodeNoga != null && !idCScodeNoga.isEmpty() && !"0".equals(idCScodeNoga)) {
             requeteSQL.append(" AND code.PCOSID = " + idCScodeNoga);
@@ -146,17 +153,19 @@ public class AFAffilieCodeNOGAProcess extends BProcess {
         return requeteSQL.toString();
     }
 
+    /***
+     * Requête qui récupère les affiliés avec code Noga.
+     * La masse salariale et le nombre d'assuré viennent des CI, pour la dernière année inscrite au CI sauf l'année en
+     * cours.
+     * Seuls les écritures salariés sont comptés (genre 1 et 6 (extourne)).
+     * 
+     * @return
+     * @throws ParseException
+     */
     private String getSqlRequestNonActifs() throws ParseException {
         StringBuilder requeteSQL = new StringBuilder();
         requeteSQL
-                .append("SELECT afi.MALFED as NUM_IDE, afi.MALNAF as NUM_AFFILIE, afi.MADESL as RAISON_SOCIALE, cat.PCOUID  as CODE_CATEGORIE, cat.PCOLUT as TXT_CATEGORIE, val.PCOUID as CODE_NOGA, val.PCOLUT as TXT_NOGA, coupGenreAfi.PCOLUT as GENRE_AFFI ,cot.MEMMAP as MASSE_SALARIALE,");
-        requeteSQL
-                .append("(SELECT COUNT(DISTINCT ind.KAIIND) FROM schema.CIECRIP ecr"
-                        + " inner join schema.afaffip aff on aff.maiaff = ecr.KBITIE"
-                        + " inner join schema.ciindip ind on ind.KAIIND = ecr.KAIIND"
-                        + " inner join (SELECT schema.CIECRIP.KBITIE, MAX(schema.CIECRIP.KBNANN) AS maxAnnee FROM schema.CIECRIP GROUP BY KBITIE) sousSelect"
-                        + " on ecr.KBNANN = sousSelect.maxAnnee " + "and aff.maiaff = sousSelect.KBITIE"
-                        + " WHERE aff.malnaf = afi.malnaf) as NB_ASSURES");
+                .append("SELECT afi.MALFED as NUM_IDE, afi.MALNAF as NUM_AFFILIE, afi.MADESL as RAISON_SOCIALE, cat.PCOUID  as CODE_CATEGORIE, cat.PCOLUT as TXT_CATEGORIE, val.PCOUID as CODE_NOGA, val.PCOLUT as TXT_NOGA, coupGenreAfi.PCOLUT as GENRE_AFFI ,temp.MASSE_SALARIALE, temp.NB_ASSURES ");
         requeteSQL.append(" FROM SCHEMA.FWCOSP code ");
         requeteSQL.append(" INNER JOIN SCHEMA.fwcoup val on val.pcosid = code.pcosid and val.plaide = '");
         requeteSQL.append(retrieveLettreLangueUser());
@@ -168,6 +177,21 @@ public class AFAffilieCodeNOGAProcess extends BProcess {
         requeteSQL
                 .append(" INNER JOIN SCHEMA.AFADHEP adh on adh.MAIAFF = afi.MAIAFF and (adh.mrdfin <> 0 and adh.mrdfin = (SELECT max(adhtemp.mrdfin) FROM SCHEMA.AFADHEP adhtemp where adhtemp.MAIAFF =  adh.MAIAFF)) ");
         requeteSQL.append(" INNER JOIN SCHEMA.AFCOTIP cot on cot.MRIADH = adh.MRIADH");
+
+        requeteSQL
+                .append(" LEFT JOIN ( select count(kaiind) as NB_ASSURES, malnaf, sum(SUMMONTANT) as MASSE_SALARIALE from ( SELECT kaiind, malnaf, SUM(kbmmon) as SUMMONTANT from ("
+                        + " SELECT ecr.KAIIND, case when kbtext <> 0 then -kbmmon else kbmmon end as KBMMON, malnaf FROM SCHEMA.CIECRIP ecr"
+                        + " inner join SCHEMA.afaffip aff on aff.maiaff = ecr.KBITIE inner join SCHEMA.ciindip ind on ind.KAIIND = ecr.KAIIND"
+                        + " inner join ("
+                        + " SELECT SCHEMA.CIECRIP.KBITIE, MAX(SCHEMA.CIECRIP.KBNANN) AS maxAnnee"
+                        + " FROM SCHEMA.CIECRIP"
+                        + " WHERE SCHEMA.CIECRIP.KBNANN <> "
+                        + Date.now().getAnnee()
+                        + " GROUP BY KBITIE ) sousSelect on ecr.KBNANN = sousSelect.maxAnnee and aff.maiaff = sousSelect.KBITIE AND (aff.MADFIN <> 0 AND aff.MADFIN < "
+                        + retrieveDateJourAsInt()
+                        + " )  and KBTGEN in (310001,310006))"
+                        + " group by kaiind, malnaf having sum(kbmmon)> 0) group by malnaf) as temp on temp.malnaf = afi.malnaf");
+
         requeteSQL
                 .append(" LEFT JOIN SCHEMA.FWCOUP coupGenreAfi ON afi.MATTAF = coupGenreAfi.PCOSID AND coupGenreAfi.PLAIDE = '");
         requeteSQL.append(retrieveLettreLangueUser());
