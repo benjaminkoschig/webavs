@@ -1,10 +1,12 @@
 package globaz.pegasus.vb.habitat;
 
+import globaz.globall.parameters.FWParametersSystemCode;
 import globaz.pegasus.vb.droit.PCAbstractRequerantDonneeFinanciereViewBean;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import ch.globaz.orion.ws.service.UtilsService;
 import ch.globaz.pegasus.business.models.droit.DroitMembreFamille;
 import ch.globaz.pegasus.business.models.habitat.Habitat;
 import ch.globaz.pegasus.business.models.habitat.HabitatSearch;
@@ -42,5 +44,18 @@ public class PCLoyerViewBean extends PCAbstractRequerantDonneeFinanciereViewBean
                 donneesMembre.add(donnee);
             }
         }
+    }
+
+    public String getDescriptionFromCsDeplafonnement(String csDeplafonnement) {
+        FWParametersSystemCode csEntity = new FWParametersSystemCode();
+        csEntity.setSession(UtilsService.initSession());
+        csEntity.setIdCode(csDeplafonnement);
+        try {
+            csEntity.retrieve();
+        } catch (Exception e) {
+            return null;
+        }
+
+        return csEntity.getCurrentCodeUtilisateur().getLibelle();
     }
 }

@@ -26,6 +26,7 @@ public class SimpleLoyer extends JadeSimpleModel {
     private String pensionNonReconnue;
     private String revenuSousLocation;
     private String taxeJournalierePensionNonReconnue;
+    private String csDeplafonnementAppartementPartage;
 
     /**
      * @return the csMotifChangementLoyer
@@ -128,6 +129,10 @@ public class SimpleLoyer extends JadeSimpleModel {
      */
     public String getTaxeJournalierePensionNonReconnue() {
         return taxeJournalierePensionNonReconnue;
+    }
+
+    public String getCsDeplafonnementAppartementPartage() {
+        return csDeplafonnementAppartementPartage;
     }
 
     /**
@@ -247,4 +252,7 @@ public class SimpleLoyer extends JadeSimpleModel {
         this.taxeJournalierePensionNonReconnue = taxeJournalierePensionNonReconnue;
     }
 
+    public void setCsDeplafonnementAppartementPartage(String csDeplafonnementAppartementPartage) {
+        this.csDeplafonnementAppartementPartage = csDeplafonnementAppartementPartage;
+    }
 }

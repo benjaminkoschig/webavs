@@ -21,6 +21,7 @@
 			<field name="isTenueMenage" column="CRBTEM" type="BOOLEAN"  mandatory="false"  comment="IS_TENUE_MENAGE"/>
 			<field name="pensionNonReconnue" column="CRLPNR" type="STRING"  mandatory="false"  comment="PENSION_NON_RECONNUE"/>
 			<field name="taxeJournalierePensionNonReconnue" column="CRMTPN" type="NUMERIC"  mandatory="false"  comment="TAXE_JOURNALIERE_PENSION_NON_RECONNUE"/>
+			<field name="csDeplafonnementAppartementPartage" column="CRDAPA" type="NUMERIC" mandatory="false" comment="CS_DEPLAFONNEMENT_APPARTEMENT_PARTAGE" />
 		</fields>
 		<search-definition>
 			<search-group operator="AND">

@@ -34,6 +34,8 @@
 <%@page import="ch.globaz.pegasus.business.constantes.IPCHabitat"%>
 
 <%@page import="globaz.pegasus.utils.PCCommonHandler"%>
+
+<%@page import="globaz.jade.properties.JadePropertiesService"%>
 <%
 	//Les labels de cette page commencent par le préfix "JSP_PC_HABITAT"
 	idEcran="PPC0013";
@@ -56,6 +58,13 @@
 	}
 	
 	 //String rootPath = servletContext+(mainServletPath+"Root");
+	 
+	String listeDeplafonnementAppartementPro = JadePropertiesService.getInstance().getProperty("pegasus.loyer.option.deplafonnement.appartement.protege");
+	String[] tabDeplafonnementAppartementPro;
+	/* delimiter */
+	String delimiter = ",";
+	/* given string will be split by the argument delimiter provided. */
+	tabDeplafonnementAppartementPro = listeDeplafonnementAppartementPro.split(delimiter);
 	
 %>
 <%-- /tpl:put --%>
@@ -287,29 +296,52 @@
 											</script>										
 										</ct:widgetJSReturnFunction>
 									</ct:widgetService>
-								</ct:widget>
-								
-											
-											<!--<ct:widget id='<%="compagnieWidget"+membreFamille.getId()%>' name='<%="compagnieWidget"+membreFamille.getId()%>' styleClass="libelleLong nomBailleurRegie">
-												<ct:widgetService methodName="find" className="<%=AdministrationService.class.getName()%>">
-													<ct:widgetCriteria criteria="forDesignation1Like" label="JSP_PC_ASSURANCE_RENTE_VIAGERE_W_TIERS_DESIGNATION"/>								
-													<ct:widgetCriteria criteria="forCodeAdministrationLike" label="JSP_PC_ASSURANCE_RENTE_VIAGERE_W_TIERS_CS_ADMIN"/>								
-													<ct:widgetCriteria criteria="forGenreAdministration" label="JSP_PC_ASSURANCE_RENTE_VIAGERE_W_TIERS_TYPE_ADMIN"/>								
-													<ct:widgetLineFormatter format="#{tiers.designation2} #{tiers.designation1}, #{tiers.idTiers}  - (#{cs(admin.codeAdministration)} #{admin.genreAdministration})"/>
-													<ct:widgetJSReturnFunction>
-														<script type="text/javascript">
-															function(element){
-																$(this).parents('.areaMembre').find('.idBailleurRegie').val($(element).attr('tiers.id'));
-																this.value=$(element).attr('tiers.designation1') +' '+$(element).attr('tiers.designation2');
-															}
-														</script>										
-													</ct:widgetJSReturnFunction>
-												</ct:widgetService>
-											</ct:widget>-->
+								</ct:widget>					
+								<!--<ct:widget id='<%="compagnieWidget"+membreFamille.getId()%>' name='<%="compagnieWidget"+membreFamille.getId()%>' styleClass="libelleLong nomBailleurRegie">
+									<ct:widgetService methodName="find" className="<%=AdministrationService.class.getName()%>">
+										<ct:widgetCriteria criteria="forDesignation1Like" label="JSP_PC_ASSURANCE_RENTE_VIAGERE_W_TIERS_DESIGNATION"/>								
+										<ct:widgetCriteria criteria="forCodeAdministrationLike" label="JSP_PC_ASSURANCE_RENTE_VIAGERE_W_TIERS_CS_ADMIN"/>								
+										<ct:widgetCriteria criteria="forGenreAdministration" label="JSP_PC_ASSURANCE_RENTE_VIAGERE_W_TIERS_TYPE_ADMIN"/>								
+										<ct:widgetLineFormatter format="#{tiers.designation2} #{tiers.designation1}, #{tiers.idTiers}  - (#{cs(admin.codeAdministration)} #{admin.genreAdministration})"/>
+										<ct:widgetJSReturnFunction>
+											<script type="text/javascript">
+												function(element){
+													$(this).parents('.areaMembre').find('.idBailleurRegie').val($(element).attr('tiers.id'));
+													this.value=$(element).attr('tiers.designation1') +' '+$(element).attr('tiers.designation2');
+												}
+											</script>										
+										</ct:widgetJSReturnFunction>
+									</ct:widgetService>
+								</ct:widget>-->
 										</div>
 									  </td>
 									  	<td><ct:FWLabel key="JSP_PC_HABITAT_FAUTEUILLE_ROULANT"/></td>
 										<td><input type="checkbox" class="isFauteuilRoulant" /></td>
+									
+										<%if(listeDeplafonnementAppartementPro.length() != 0 && listeDeplafonnementAppartementPro != null){ %>
+										<td colspan="2">
+											<ct:FWLabel key="JSP_PC_HABITAT_DEPLAFONNEMENT_APPARTEMENT_PROTEGE"/>
+											<input type="checkbox" class="isAppartementProtege" />
+											<p><% listeDeplafonnementAppartementPro.toString(); %></p>
+										</td>										
+										<td>
+											<div class="nbPieces" style="display:none">
+												<ct:FWLabel key="JSP_PC_HABITAT_NOMBRE_DE_PIECES"/>
+											</div>
+										</td>
+										<td>
+										<div class="nbPieces" style="display:none" >											
+											<ct:select name="csDeplafonnementAppartementPartage"  notation="data-g-select='mandatory:false'">
+												<% for(int i =0; i < tabDeplafonnementAppartementPro.length ; i++){
+												    
+													String descriptionDeplafonnementAppPro = viewBean.getDescriptionFromCsDeplafonnement(tabDeplafonnementAppartementPro[i]);
+												%>
+													<option value="<%=tabDeplafonnementAppartementPro[i]%>" label="<%=descriptionDeplafonnementAppPro%>"/>
+												<%}%> 
+											</ct:select>
+										</div>										
+										</td>		
+										<%} %>																																		
 									</tr>
 
 									<tr class="nonPensionNonReconnue">

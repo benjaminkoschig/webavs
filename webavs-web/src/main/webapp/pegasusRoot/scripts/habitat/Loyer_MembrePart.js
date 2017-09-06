@@ -32,9 +32,11 @@ function Loyer(container){
 					.find('.pensionNonReconnue').val($data.find('pensionNonReconnue').text()).change().end()
 					.find('.taxeJournalierePensionNonReconnue').val($data.find('taxeJournalierePensionNonReconnue').text()).change().end()
 					.find('[name=dateDebut]').val($data.find('dateDebut').text()).end()
-					.find('[name=dateFin]').val($data.find('dateFin').text()).end();
+					.find('[name=dateFin]').val($data.find('dateFin').text()).end()
+		 			.find('[name=csDeplafonnementAppartementPartage]').val($data.find('csDeplafonnementAppartementPartage').text()).change().end();
 		 this.detail.find('.lblCompagnie').text($data.find('nomBailleurRegie').text());
 		//this.showOrHideDetail();
+		this.checkIfAppartementProtegeAlreadySet($data.find('csDeplafonnementAppartementPartage').text());
 		this.calculSurAn();
 		b_isMainChangeExecuted = false;
 	};
@@ -44,6 +46,7 @@ function Loyer(container){
 	this.getParametres=function($data){
 		var csTypeLoyer = this.detail.find('[name=csTypeLoyer]');
 		var montantCharges = this.detail.find('.montantCharges');
+		var csDeplafonnement = this.detail.find('[name=csDeplafonnementAppartementPartage]').val();
 		(CS_LOYER_NET_AVEC_CHARGE != csTypeLoyer.val())?montantCharges.val(''):null;
 		if(CS_VALEUR_LOCATIVE_CHEZ_PROPRIETAIRE == csTypeLoyer.val()) {
 			this.detail.find('.montantLoyerNet').val('');
@@ -54,6 +57,15 @@ function Loyer(container){
 		} else {
 			this.detail.find('.taxeJournalierePensionNonReconnue').val('');
 			this.detail.find('.montantLoyerAnulle').val('');	
+		}
+		
+		if(!this.detail.find(".isAppartementProtege").prop("checked")) {
+			csDeplafonnement = '';
+			this.detail.find(".isAppartementProtege").prop('checked', false);
+		}
+		else
+		{
+			this.detail.find(".isAppartementProtege").prop('checked', true);
 		}
 		
 		return {
@@ -71,6 +83,7 @@ function Loyer(container){
 			'loyer.simpleLoyer.taxeJournalierePensionNonReconnue'  : this.detail.find('.taxeJournalierePensionNonReconnue').val(),
 			'loyer.simpleDonneeFinanciereHeader.dateDebut':this.detail.find('[name=dateDebut]').val(),
 			'loyer.simpleDonneeFinanciereHeader.dateFin':this.detail.find('[name=dateFin]').val(),
+			'loyer.simpleLoyer.csDeplafonnementAppartementPartage': csDeplafonnement,
 			'doAddPeriode':this.doAddPeriode,
 			'idDroitMembreFamille':this.membreId
 		};
@@ -138,6 +151,20 @@ function Loyer(container){
 		
 	};
 	
+	this.checkIfAppartementProtegeAlreadySet = function(val){
+		if(val == '0' || val == null)
+		{
+			this.detail.find(".isAppartementProtege").prop('checked', false);
+			this.detail.find('.nbPieces').hide();
+
+		}
+		else
+		{
+			this.detail.find(".isAppartementProtege").prop('checked', true);
+			this.detail.find('.nbPieces').show();
+		}
+	}
+	
 	this.calculSurAn = function () {
 		
 		var csTypeLoyer = parseInt(this.detail.find('[name=csTypeLoyer]').val());
@@ -185,7 +212,13 @@ function Loyer(container){
 	};
 	
 	
-	
+	this.checkIsAppartementProtege= function () {
+	    if(this.detail.find(".isAppartementProtege").prop("checked")) {
+	    	this.detail.find('.nbPieces').show();
+	    } else{
+	    	this.detail.find('.nbPieces').hide();
+    	}
+	};
 	
 	this.showOrHideDetail = function(){
 		var value = this.detail.find('[name=csTypeLoyer]').val();
@@ -208,9 +241,14 @@ function Loyer(container){
 				this.onAddTableEvent();
 				this.colorTableRows(false);
 				this.addCsTypeChangeEvent();
+				this.detail.find(".isAppartementProtege").change(function() {
+					that.checkIsAppartementProtege();
+				});
 			}
 		);
 }
+
+
 
 
 $(function(){	
