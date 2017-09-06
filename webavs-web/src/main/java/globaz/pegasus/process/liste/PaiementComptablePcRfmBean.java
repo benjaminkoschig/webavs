@@ -7,7 +7,7 @@ public class PaiementComptablePcRfmBean {
     public String idTiers;
     public Montant montant;
     public String codeDebitCredit;
-    public String referenceRubrique;
+    public String numeroRubrique;
 
     public String getCodeDebitCredit() {
         return codeDebitCredit;
@@ -33,11 +33,11 @@ public class PaiementComptablePcRfmBean {
         this.montant = montant;
     }
 
-    public String getReferenceRubrique() {
-        return referenceRubrique;
+    public String getNumeroRubrique() {
+        return numeroRubrique;
     }
 
-    public void setReferenceRubrique(String referenceRubrique) {
-        this.referenceRubrique = referenceRubrique;
+    public void setNumeroRubrique(String numeroRubrique) {
+        this.numeroRubrique = numeroRubrique;
     }
 }

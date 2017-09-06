@@ -96,23 +96,24 @@ public class PCListeRecapTotauxPcRfmParCommunePolitiqueProcess extends PCAbstrac
 
     private void findDataCompta() throws PropertiesException, JAException {
 
-        String codeReferencePC = EPCProperties.COMMUNE_POLITIQUE_CODE_REFERENCE_RUBRIQUE_PC.getValue();
-        String codeReferenceRFM = EPCProperties.COMMUNE_POLITIQUE_CODE_REFERENCE_RUBRIQUE_RFM.getValue();
+        String idRubriquePC = EPCProperties.COMMUNE_POLITIQUE_NUMERO_RUBRIQUE_PC.getValue();
+        String idRubriqueRFM = EPCProperties.COMMUNE_POLITIQUE_NUMERO_RUBRIQUE_RFM.getValue();
 
-        List<String> listCodeReferencePC = Arrays.asList(codeReferencePC.trim().split("\\s*,\\s*"));
-        List<String> listCodeReferenceRFM = Arrays.asList(codeReferenceRFM.trim().split("\\s*,\\s*"));
+        List<String> listIdRubriquePC = Arrays.asList(idRubriquePC.trim().split("\\s*,\\s*"));
+        List<String> listIdRubriqueRFM = Arrays.asList(idRubriqueRFM.trim().split("\\s*,\\s*"));
 
-        List<PaiementComptablePcRfmBean> listPaiementPcRfm = QueryExecutor.execute(
-                getSqlOperationCompta(codeReferencePC, codeReferenceRFM), PaiementComptablePcRfmBean.class);
+        List<PaiementComptablePcRfmBean> listPaiementPcRfmFromRubrique = QueryExecutor.execute(
+                getSqlOperationComptaFromIdRubrique(listIdRubriquePC, listIdRubriqueRFM),
+                PaiementComptablePcRfmBean.class);
 
-        for (PaiementComptablePcRfmBean bean : listPaiementPcRfm) {
+        for (PaiementComptablePcRfmBean bean : listPaiementPcRfmFromRubrique) {
 
             ContainerByTiers con = recapTotauxByIdtiers.get(bean.getIdTiers());
             if (con == null) {
                 con = new ContainerByTiers(bean.getIdTiers());
             }
 
-            if (listCodeReferencePC.contains(bean.getReferenceRubrique().trim())) {
+            if (listIdRubriquePC.contains(bean.getNumeroRubrique().trim())) {
                 // Si crédit = sort de la caisse, donc paiement
                 if (APIEcriture.CREDIT.equals(bean.getCodeDebitCredit())) {
                     con.addMontantPaiementPC(bean.getMontant());
@@ -121,7 +122,7 @@ public class PCListeRecapTotauxPcRfmParCommunePolitiqueProcess extends PCAbstrac
                 if (APIEcriture.DEBIT.equals(bean.getCodeDebitCredit())) {
                     con.addMontantRestitutionPC(bean.getMontant());
                 }
-            } else if (listCodeReferenceRFM.contains(bean.getReferenceRubrique().trim())) {
+            } else if (listIdRubriqueRFM.contains(bean.getNumeroRubrique().trim())) {
                 // Si crédit = sort de la caisse, donc paiement
                 if (APIEcriture.CREDIT.equals(bean.getCodeDebitCredit())) {
                     con.addMontantPaiementRFM(bean.getMontant());
@@ -131,7 +132,7 @@ public class PCListeRecapTotauxPcRfmParCommunePolitiqueProcess extends PCAbstrac
                     con.addMontantRestitutionRFM(bean.getMontant());
                 }
             } else {
-                JadeLogger.warn(this, "Code référence inconnue : " + bean.getReferenceRubrique());
+                JadeLogger.warn(this, "Code référence inconnue : " + bean.getNumeroRubrique());
             }
 
             recapTotauxByIdtiers.put(bean.getIdTiers(), con);
@@ -195,8 +196,28 @@ public class PCListeRecapTotauxPcRfmParCommunePolitiqueProcess extends PCAbstrac
 
     }
 
-    private String getSqlOperationCompta(String codeReferencePC, String codeReferenceRFM) throws PropertiesException,
-            JAException {
+    private String getSqlOperationComptaFromIdRubrique(List<String> idRubriquePC, List<String> idRubriqueRFM)
+            throws PropertiesException, JAException {
+
+        StringBuilder sbIdRubriquePC = new StringBuilder();
+        for (int i = 0; i < idRubriquePC.size(); i++) {
+            sbIdRubriquePC.append("'");
+            sbIdRubriquePC.append(idRubriquePC.get(i));
+            sbIdRubriquePC.append("'");
+            if (i < idRubriquePC.size() - 1) {
+                sbIdRubriquePC.append(",");
+            }
+        }
+
+        StringBuilder sbIdRubriqueRFM = new StringBuilder();
+        for (int i = 0; i < idRubriqueRFM.size(); i++) {
+            sbIdRubriqueRFM.append("'");
+            sbIdRubriqueRFM.append(idRubriqueRFM.get(i));
+            sbIdRubriqueRFM.append("'");
+            if (i < idRubriqueRFM.size() - 1) {
+                sbIdRubriqueRFM.append(",");
+            }
+        }
 
         String dateDebut = new Date(dateMonthDebut).getValueMonth();
         String dateFin = new Date().getValue();
@@ -212,7 +233,7 @@ public class PCListeRecapTotauxPcRfmParCommunePolitiqueProcess extends PCAbstrac
         sql.append("    schema.CACPTAP.IDTIERS AS idtiers,  ");
         sql.append("    sum(schema.CAOPERP.MONTANT) as MONTANT,  ");
         sql.append("    schema.CAOPERP.CODEDEBITCREDIT as CODEDEBITCREDIT,  ");
-        sql.append("    schema.carerup.IDCODEREFERENCE as REFERENCERUBRIQUE  ");
+        sql.append("    schema.CARUBRP.IDEXTERNE as NUMERORUBRIQUE  ");
         sql.append("FROM   schema.cacptap  ");
         sql.append("    INNER JOIN schema.CAOPERP ON schema.CAOPERP.IDCOMPTEANNEXE = schema.CACPTAP.IDCOMPTEANNEXE  ");
         sql.append("    INNER JOIN schema.CARUBRP on schema.CARUBRP.IDRUBRIQUE = schema.CAOPERP.IDCOMPTE  ");
@@ -223,11 +244,11 @@ public class PCListeRecapTotauxPcRfmParCommunePolitiqueProcess extends PCAbstrac
         sql.append(dateFin);
         sql.append("  and schema.caoperp.ETAT = 205002 ");
         sql.append("  and schema.caoperp.IDTYPEOPERATION like 'E%' ");
-        sql.append("  and schema.carerup.IDCODEREFERENCE in (" + codeReferencePC);
-        if (!JadeStringUtil.isEmpty(codeReferenceRFM)) {
-            sql.append(",").append(codeReferenceRFM);
+        sql.append("  and schema.CARUBRP.IDEXTERNE in (" + sbIdRubriquePC.toString());
+        if (!JadeStringUtil.isEmpty(sbIdRubriqueRFM.toString())) {
+            sql.append(",").append(sbIdRubriqueRFM.toString());
         }
-        sql.append(") GROUP BY schema.CACPTAP.IDTIERS, schema.CAOPERP.CODEDEBITCREDIT, schema.carerup.IDCODEREFERENCE ");
+        sql.append(") GROUP BY schema.CACPTAP.IDTIERS, schema.CAOPERP.CODEDEBITCREDIT, schema.CARUBRP.IDEXTERNE");
 
         return sql.toString();
     }

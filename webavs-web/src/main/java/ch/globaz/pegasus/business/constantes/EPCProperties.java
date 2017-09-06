@@ -45,8 +45,8 @@ public enum EPCProperties implements IProperties {
     ADAPTATION_LEVEL_PASAGE_AVS_AI("pegasus.adaptation.level.passage.avsai"),
     LVPC("pegasus.loi.pc.vaud"),
     CHRYSAOR("pegasus.chrysaor.enabled"),
-    COMMUNE_POLITIQUE_CODE_REFERENCE_RUBRIQUE_PC("commune.politique.code.reference.rubrique.pc"),
-    COMMUNE_POLITIQUE_CODE_REFERENCE_RUBRIQUE_RFM("commune.politique.code.reference.rubrique.rfm"),
+    COMMUNE_POLITIQUE_NUMERO_RUBRIQUE_PC("commune.politique.numero.rubrique.pc"),
+    COMMUNE_POLITIQUE_NUMERO_RUBRIQUE_RFM("commune.politique.numero.rubrique.rfm"),
     MAILS_DEBUG("analyse.error.sendMail"),
     LOI_CANTONALE_PC("canton.loi.pc");
 
