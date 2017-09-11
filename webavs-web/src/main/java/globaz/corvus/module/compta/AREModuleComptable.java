@@ -1055,9 +1055,14 @@ public abstract class AREModuleComptable implements Comparator<IREModuleComptabl
         RERenteAccordeeJoinInfoComptaJoinPrstDues re = (RERenteAccordeeJoinInfoComptaJoinPrstDues) manager
                 .getFirstEntity();
 
-        final String dateFin = JadeStringUtil.isBlankOrZero(re.getDateFinDroit()) ? REPmtMensuel
-                .getDateDernierPmt(session) : re.getDateFinDroit();
-        final String periode = re.getDateDebutDroit() + " - " + dateFin;
+        String periode;
+        if (re != null) {
+            String dateFin = JadeStringUtil.isBlankOrZero(re.getDateFinDroit()) ? REPmtMensuel
+                    .getDateDernierPmt(session) : re.getDateFinDroit();
+            periode = re.getDateDebutDroit() + " - " + dateFin;
+        } else {
+            periode = " ";
+        }
 
         // Message décisions
         String msgDecision = MotifVersementUtil.getTranslatedLabelFromIsolangue(isoLangFromIdTiers,
