@@ -2275,10 +2275,18 @@
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_SIGNE}]]></textFieldExpression>
 				</textField>
+			</band>
+		</columnFooter>
+		<pageFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</pageFooter>
+		<lastPageFooter>
+			<band height="1"  isSplitAllowed="true" >
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
 						x="14"
-						y="19"
+						y="-49"
 						width="462"
 						height="12"
 						forecolor="#000000"
@@ -2298,7 +2306,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
 						x="14"
-						y="32"
+						y="-36"
 						width="462"
 						height="12"
 						forecolor="#000000"
@@ -2315,14 +2323,6 @@
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_CERTIFIE_2}]]></textFieldExpression>
 				</textField>
-			</band>
-		</columnFooter>
-		<pageFooter>
-			<band height="0"  isSplitAllowed="true" >
-			</band>
-		</pageFooter>
-		<lastPageFooter>
-			<band height="1"  isSplitAllowed="true" >
 				<rectangle radius="0" >
 					<reportElement
 						mode="Transparent"

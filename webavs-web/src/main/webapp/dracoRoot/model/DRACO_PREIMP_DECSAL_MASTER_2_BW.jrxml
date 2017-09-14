@@ -2261,6 +2261,10 @@
 		</columnFooter>
 		<pageFooter>
 			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</pageFooter>
+		<lastPageFooter>
+			<band height="1"  isSplitAllowed="true" >
 				<rectangle radius="0" >
 					<reportElement
 						mode="Transparent"
@@ -2279,10 +2283,6 @@
 						isPrintWhenDetailOverflows="false"/>
 					<graphicElement stretchType="NoStretch" pen="1Point" fill="Solid" />
 				</rectangle>
-			</band>
-		</pageFooter>
-		<lastPageFooter>
-			<band height="1"  isSplitAllowed="true" >
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
 						x="14"
