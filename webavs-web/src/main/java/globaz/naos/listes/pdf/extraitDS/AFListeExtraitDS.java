@@ -247,8 +247,7 @@ public class AFListeExtraitDS extends BProcess {
         tableHeaderFont.setStyle("bold");
 
         // Construction nom fichier et path
-        setPath(Jade.getInstance().getExternalModelDir() + AFApplication.DEFAULT_APPLICATION_NAOS_REP + "//work//"
-                + fileName + ".pdf");
+        setPath(Jade.getInstance().getPersistenceDir() + fileName + ".pdf");
 
         FileOutputStream file = new FileOutputStream(getPath());
 
