@@ -176,7 +176,7 @@ public class DecisionListServiceImpl implements DecisionListService {
             throw new ALDecisionException("DecisionListServiceImpl#getListDossierretroActif: listDossier is null");
         }
 
-        // Todo : check la périodicité ici
+        // check de la périodicité ici
         List<List<String>> splitedlistDossierRetroAfaire = Lists.partition(new ArrayList<String>(listDossier), 1000);
         List<String> listHasPeriodicite = new ArrayList<String>();
 
@@ -185,14 +185,26 @@ public class DecisionListServiceImpl implements DecisionListService {
             List<String> listIdNotfound = loadIdDossierAndFilterByIdNotLoaded(dateDebut, idsDossier, csPeriodicite);
 
             if (!listIdNotfound.isEmpty()) {
-                listHasPeriodicite
-                        .addAll(SCM
-                                .newInstance(String.class)
-                                .query("SELECT distinct MATPER as periodicite, schema.ALDOS.EID as idDossier FROM schema.AFAFFIP "
-                                        + "INNER JOIN schema.ALDOS ON schema.AFAFFIP.MALNAF = schema.ALDOS.MALNAF "
-                                        + "WHERE schema.ALDOS.EID in ("
-                                        + Joiner.on(",").join(listIdNotfound)
-                                        + ") and MATPER = " + csPeriodicite).execute());
+                if (CodeSystem.PERIODICITE_MENSUELLE.equals(csPeriodicite)) {
+                    listHasPeriodicite
+                            .addAll(SCM
+                                    .newInstance(String.class)
+                                    .query("SELECT distinct MATPER as periodicite, schema.ALDOS.EID as idDossier FROM schema.AFAFFIP "
+                                            + "INNER JOIN schema.ALDOS ON schema.AFAFFIP.MALNAF = schema.ALDOS.MALNAF "
+                                            + "WHERE schema.ALDOS.EID in ("
+                                            + Joiner.on(",").join(listIdNotfound)
+                                            + ") and (MATPER = " + csPeriodicite + ") OR (IDTIBE <> 0)").execute());
+                } else {
+                    listHasPeriodicite
+                            .addAll(SCM
+                                    .newInstance(String.class)
+                                    .query("SELECT distinct MATPER as periodicite, schema.ALDOS.EID as idDossier FROM schema.AFAFFIP "
+                                            + "INNER JOIN schema.ALDOS ON schema.AFAFFIP.MALNAF = schema.ALDOS.MALNAF "
+                                            + "WHERE schema.ALDOS.EID in ("
+                                            + Joiner.on(",").join(listIdNotfound)
+                                            + ") and MATPER = " + csPeriodicite + " AND IDTIBE = 0").execute());
+                }
+
             }
 
         }
