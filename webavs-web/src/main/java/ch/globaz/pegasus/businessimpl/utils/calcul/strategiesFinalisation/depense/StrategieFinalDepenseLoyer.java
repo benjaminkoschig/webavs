@@ -1,10 +1,17 @@
 package ch.globaz.pegasus.businessimpl.utils.calcul.strategiesFinalisation.depense;
 
+import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.context.JadeThread;
+import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.persistence.JadePersistenceManager;
+import globaz.jade.persistence.model.JadeAbstractModel;
 import java.util.Date;
 import ch.globaz.pegasus.business.constantes.IPCDroits;
 import ch.globaz.pegasus.business.constantes.IPCValeursPlanCalcul;
 import ch.globaz.pegasus.business.exceptions.models.calcul.CalculException;
+import ch.globaz.pegasus.business.models.variablemetier.SimpleVariableMetier;
+import ch.globaz.pegasus.business.models.variablemetier.SimpleVariableMetierSearch;
+import ch.globaz.pegasus.businessimpl.utils.PegasusDateUtil;
 import ch.globaz.pegasus.businessimpl.utils.calcul.CalculContext;
 import ch.globaz.pegasus.businessimpl.utils.calcul.CalculContext.Attribut;
 import ch.globaz.pegasus.businessimpl.utils.calcul.TupleDonneeRapport;
@@ -37,6 +44,12 @@ public class StrategieFinalDepenseLoyer extends UtilStrategieBienImmobillier imp
         float plafond = 0f;
         boolean isFauteuilRoulant = false;
 
+        float deplafonnementAppartementProtege = 0f;
+        String csAppartementProtege = "";
+
+        ch.globaz.common.domaine.Date dateDebutD = new ch.globaz.common.domaine.Date(dateDebut);
+        ch.globaz.common.domaine.Date now = ch.globaz.common.domaine.Date.now();
+
         TupleDonneeRapport tupleLoyers = donnee.getEnfants().get(IPCValeursPlanCalcul.CLE_INTER_LOYERS);
         if (tupleLoyers != null) {
             for (TupleDonneeRapport tupleLoyer : tupleLoyers.getEnfants().values()) {
@@ -47,7 +60,34 @@ public class StrategieFinalDepenseLoyer extends UtilStrategieBienImmobillier imp
                 float forfaitFraisChauffage = tupleLoyer
                         .getValeurEnfant(IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_FRAIS_CHAUFFAGE);
 
-                // donnee.getOrCreateEnfant(IPCValeursPlanCalcul.CLE_DEPENSE_FORFAIT_CHARGES).addValeur(charges);
+                // S160704_002 : Déplafonnement de loyer appartement protegé
+                csAppartementProtege = tupleLoyer
+                        .getLegendeEnfant(IPCValeursPlanCalcul.CLE_INTER_LOYER_CS_DEPLAFONNEMENT_APPARTEMENT_PARTAGE);
+
+                SimpleVariableMetierSearch variableMetierSearch = new SimpleVariableMetierSearch();
+                variableMetierSearch.setForforCsTypeVariableMetier(csAppartementProtege);
+                try {
+                    variableMetierSearch = (SimpleVariableMetierSearch) JadePersistenceManager
+                            .search(variableMetierSearch);
+                } catch (JadePersistenceException e) {
+                    throw new CalculException("pegasus.calcul.habitat.deplafonnement.erreur.variable.metier");
+                }
+
+                for (JadeAbstractModel absVar : variableMetierSearch.getSearchResults()) {
+                    SimpleVariableMetier varMet = (SimpleVariableMetier) absVar;
+                    long timeDateDebutVarMetier = JadeDateUtil.getGlobazCalendar(
+                            PegasusDateUtil.convertToJadeDate(varMet.getDateDebut())).getTimeInMillis();
+                    long timeDateFinVarMetier = 0;
+
+                    if (!varMet.getDateFin().isEmpty()) {
+                        timeDateFinVarMetier = JadeDateUtil.getGlobazCalendar(
+                                PegasusDateUtil.convertToJadeDate(varMet.getDateFin())).getTimeInMillis();
+                    }
+                    if ((timeDateFinVarMetier >= dateDebutD.getTime() || timeDateFinVarMetier == 0)
+                            && timeDateDebutVarMetier <= dateDebutD.getTime() && timeDateDebutVarMetier < now.getTime()) {
+                        deplafonnementAppartementProtege = Float.parseFloat(varMet.getMontant());
+                    }
+                }
 
                 String roleHabitant = tupleLoyer
                         .getLegendeEnfant(IPCValeursPlanCalcul.CLE_INTER_LOYER_ROLE_PROPRIETAIRE);
@@ -103,13 +143,20 @@ public class StrategieFinalDepenseLoyer extends UtilStrategieBienImmobillier imp
             donnee.getOrCreateEnfant(IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_CHARGES_FORFAITAIRES).addValeur(forfait);
 
         }
-        // calcul du plafond max
 
+        // calcul du plafond max
         int nbPersonnes = (Integer) context.get(Attribut.NB_PERSONNES);
         if (nbPersonnes > 1) {
             plafond = plafondCouple;
         } else {
             plafond = plafondCelibataire;
+        }
+        if (!csAppartementProtege.isEmpty() && !csAppartementProtege.equals("0")) {
+            if (deplafonnementAppartementProtege > 0f) {
+                plafond += deplafonnementAppartementProtege;
+            } else {
+                throw new CalculException("pegasus.calcul.habitat.deplafonnement.erreur.periode");
+            }
         }
 
         if (isFauteuilRoulant) {
@@ -127,10 +174,46 @@ public class StrategieFinalDepenseLoyer extends UtilStrategieBienImmobillier imp
 
         donnee.addEnfantTuple(new TupleDonneeRapport(IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_TOTAL_NON_PLAFONNE, somme));
 
+        // Calcul et enregistrement de la différence apportée par le déplafonnement de loyer
+        if (deplafonnementAppartementProtege > 0f) {
+            float diffCantonale = calculDiffPartCantonale(deplafonnementAppartementProtege, plafond, somme);
+            donnee.addEnfantTuple(new TupleDonneeRapport(IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_DIFF_PART_CANTONALE,
+                    diffCantonale));
+        }
+
         somme = Math.min(somme, plafond);
 
         donnee.addEnfantTuple(new TupleDonneeRapport(IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_TOTAL, somme));
 
+    }
+
+    /***
+     * Méthode qui calcul la différence apporté par la part cantonale en CHF, pour calculer le pourcentage plus loin
+     * dans le calcul
+     * 
+     * @param deplafonnementAppartementProtege
+     * @param plafond
+     * @param sommeLoyers
+     * @return
+     */
+    private float calculDiffPartCantonale(float deplafonnementAppartementProtege, float plafondAvecDeplafonnement,
+            float sommeLoyers) {
+        float diffPartCantonale;
+
+        if (sommeLoyers < plafondAvecDeplafonnement - deplafonnementAppartementProtege) {
+            // Pas de part communale car la somme des loyers est plus petite que le plafond sans le montant déplafonné
+            diffPartCantonale = 0f;
+        } else {
+            if (plafondAvecDeplafonnement - sommeLoyers <= 0f) {
+                // Si le plafond avec le montant déplafonné moins la somme des loyers < 0 c'est à dire qu'on est au max
+                // du déplafonnement, le montant est donc égal au déplafonnement
+                diffPartCantonale = deplafonnementAppartementProtege;
+            } else {
+                diffPartCantonale = sommeLoyers - (plafondAvecDeplafonnement - deplafonnementAppartementProtege);
+            }
+        }
+
+        return diffPartCantonale;
     }
 
     private float checkAndCreateProrataForPersonns(float nbHabitants, int nbPersonnesCalcul, boolean forLoyer,

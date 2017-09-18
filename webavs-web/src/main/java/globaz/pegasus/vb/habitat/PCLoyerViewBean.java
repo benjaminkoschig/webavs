@@ -58,4 +58,8 @@ public class PCLoyerViewBean extends PCAbstractRequerantDonneeFinanciereViewBean
 
         return csEntity.getCurrentCodeUtilisateur().getLibelle();
     }
+
+    public String getCsRoleFamilleRequerant() {
+        return requerant.getSimpleDroitMembreFamille().getCsRoleFamillePC();
+    }
 }

@@ -166,6 +166,8 @@ public class CalculDonneesCC extends JadeComplexModel {
 
     private String loyerTaxeJournalierePensionNonReconnue = null;
 
+    private String loyerCsDeplafonnementAppartementPartage = null;
+
     private String marchandiseStockCsTypePropriete = null;
 
     private String marchandiseStockFractionDenominateur = null;
@@ -884,6 +886,10 @@ public class CalculDonneesCC extends JadeComplexModel {
 
     public String getLoyerTaxeJournalierePensionNonReconnue() {
         return loyerTaxeJournalierePensionNonReconnue;
+    }
+
+    public String getLoyerCsDeplafonnementAppartementPartage() {
+        return loyerCsDeplafonnementAppartementPartage;
     }
 
     public String getMarchandiseStockCsTypePropriete() {
@@ -1860,6 +1866,10 @@ public class CalculDonneesCC extends JadeComplexModel {
 
     public void setLoyerTaxeJournalierePensionNonReconnue(String loyerTaxeJournalierePensionNonReconnue) {
         this.loyerTaxeJournalierePensionNonReconnue = loyerTaxeJournalierePensionNonReconnue;
+    }
+
+    public void setLoyerCsDeplafonnementAppartementPartage(String loyerCsDeplafonnementAppartementPartage) {
+        this.loyerCsDeplafonnementAppartementPartage = loyerCsDeplafonnementAppartementPartage;
     }
 
     public void setMarchandiseStockCsTypePropriete(String marchandiseStockCsTypePropriete) {

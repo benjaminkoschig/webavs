@@ -62,4 +62,12 @@ public interface IPCVariableMetier {
     public static final String TAUX_IMPUTATIONS_VALEUR_LOCATIVE_BRUT_M10 = "64008053";
     public static final String TAUX_IMPUTATIONS_LOYER_EFFECTIF = "64008054";
 
+    // S160704_002
+    public static final String CS_LOYER_DEPLA_APP_SEUL_1_15 = "64008058";
+    public static final String CS_LOYER_DEPLA_APP_SEUL_2_25 = "64008059";
+    public static final String CS_LOYER_DEPLA_APP_SEUL_3 = "64008060";
+    public static final String CS_LOYER_DEPLA_APP_COUPLE_1_15 = "64008061";
+    public static final String CS_LOYER_DEPLA_APP_COUPLE_2_25 = "64008062";
+    public static final String CS_LOYER_DEPLA_APP_COUPLE_3 = "64008063";
+
 }

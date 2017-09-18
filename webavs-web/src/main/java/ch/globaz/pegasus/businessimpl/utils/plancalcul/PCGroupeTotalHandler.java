@@ -25,6 +25,7 @@ public class PCGroupeTotalHandler extends PCGroupeAbstractHandler {
     private static final String TOTAL_CC = IPCValeursPlanCalcul.CLE_TOTAL_CC;
     private static final String TOTAL_CC_DEDUIT = IPCValeursPlanCalcul.CLE_TOTAL_CC_DEDUIT;
     private static final String TOTAL_CC_DEDUIT_MENS = IPCValeursPlanCalcul.CLE_TOTAL_CC_DEDUIT_MENSUEL;
+    private static final String PART_CANTONALE = IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_PART_CANTONALE;
     ArrayList<PCLignePlanCalculHandler> groupList = new ArrayList<PCLignePlanCalculHandler>(0);
 
     /**
@@ -104,6 +105,35 @@ public class PCGroupeTotalHandler extends PCGroupeAbstractHandler {
         return ligne;
     }
 
+    /***
+     * Génère une ligne précisant la part cantonale d'une PC
+     * 
+     * @param langueTiers
+     * @param session
+     */
+    private PCLignePlanCalculHandler generatePartCantonaleLigne(String langueTiers, BSession session) {
+        PCLignePlanCalculHandler ligne = null;
+        String cs = PCGroupeTotalHandler.TOTAL_CC;
+        Float valPc = getValeur(cs);
+
+        String csPartCantonale = IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_PART_CANTONALE;
+        // Valeur
+        PCValeurPlanCalculHandler valeurPartCantonale = createValeurPlanCalcul(csPartCantonale,
+                getValeur(PCGroupeTotalHandler.PART_CANTONALE).toString(), ADDITION, "");
+
+        float valPartCantonale = getValeur(csPartCantonale);
+
+        if (valPartCantonale > 0f) {
+            // Ligne
+            String labelPartCantonale = LanguageResolver.resolveLibelleFromLabel(langueTiers,
+                    "JSP_PC_PLANCALCUL_D_PART_CANTONALE", session);
+            ligne = createLignePlancalcul(labelPartCantonale, "", CSS_INCREMENT_DEDUCTION, VALEUR_VIDE, VALEUR_VIDE,
+                    valeurPartCantonale);
+        }
+
+        return ligne;
+    }
+
     private void generateLignesProcess(String langueTiers, BSession session) {
         groupList.add(generateMainLigne(langueTiers, session));
 
@@ -113,6 +143,12 @@ public class PCGroupeTotalHandler extends PCGroupeAbstractHandler {
             groupList.add(generateAssuranceMaladieLigne(langueTiers, session));
         }
         groupList.add(generateLastLigne(langueTiers, session));
+
+        // S160704_002 : ajout de la ligne pour la part cantonale
+        PCLignePlanCalculHandler partCantonaleLigne = generatePartCantonaleLigne(langueTiers, session);
+        if (partCantonaleLigne != null) {
+            groupList.add(partCantonaleLigne);
+        }
     }
 
     /**

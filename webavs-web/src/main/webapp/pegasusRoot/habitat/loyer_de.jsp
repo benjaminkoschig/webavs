@@ -317,31 +317,32 @@
 									  </td>
 									  	<td><ct:FWLabel key="JSP_PC_HABITAT_FAUTEUILLE_ROULANT"/></td>
 										<td><input type="checkbox" class="isFauteuilRoulant" /></td>
+										
+										<% if(IPCDroits.CS_ROLE_FAMILLE_REQUERANT.equals(membreFamille.getDroitMembreFamille().getSimpleDroitMembreFamille().getCsRoleFamillePC())){ %>
 									
-										<%if(listeDeplafonnementAppartementPro.length() != 0 && listeDeplafonnementAppartementPro != null){ %>
-										<td colspan="2">
-											<ct:FWLabel key="JSP_PC_HABITAT_DEPLAFONNEMENT_APPARTEMENT_PROTEGE"/>
-											<input type="checkbox" class="isAppartementProtege" />
-											<p><% listeDeplafonnementAppartementPro.toString(); %></p>
-										</td>										
-										<td>
-											<div class="nbPieces" style="display:none">
-												<ct:FWLabel key="JSP_PC_HABITAT_NOMBRE_DE_PIECES"/>
-											</div>
-										</td>
-										<td>
-										<div class="nbPieces" style="display:none" >											
-											<ct:select name="csDeplafonnementAppartementPartage"  notation="data-g-select='mandatory:false'">
-												<% for(int i =0; i < tabDeplafonnementAppartementPro.length ; i++){
-												    
-													String descriptionDeplafonnementAppPro = viewBean.getDescriptionFromCsDeplafonnement(tabDeplafonnementAppartementPro[i]);
-												%>
-													<option value="<%=tabDeplafonnementAppartementPro[i]%>" label="<%=descriptionDeplafonnementAppPro%>"/>
-												<%}%> 
-											</ct:select>
-										</div>										
-										</td>		
-										<%} %>																																		
+											<%if(listeDeplafonnementAppartementPro.length() != 0 && listeDeplafonnementAppartementPro != null){ %>
+											<td colspan="2">
+												<ct:FWLabel key="JSP_PC_HABITAT_DEPLAFONNEMENT_APPARTEMENT_PROTEGE"/>
+												<input type="checkbox" class="isAppartementProtege"/>
+											</td>										
+											<td>
+												<div class="nbPieces" style="display:none">
+													<ct:FWLabel key="JSP_PC_HABITAT_NOMBRE_DE_PIECES"/>
+												</div>
+											</td>
+											<td>
+											<div class="nbPieces" style="display:none" >											
+												<ct:select name="csDeplafonnementAppartementPartage"  notation="data-g-select='mandatory:false'">
+													<% for(int i =0; i < tabDeplafonnementAppartementPro.length ; i++){
+													    
+														String descriptionDeplafonnementAppPro = viewBean.getDescriptionFromCsDeplafonnement(tabDeplafonnementAppartementPro[i]);
+													%>
+														<option value="<%=tabDeplafonnementAppartementPro[i]%>" label="<%=descriptionDeplafonnementAppPro%>"/>
+													<%}%> 
+												</ct:select>
+											</div>										
+											</td>		
+											<%}} %>																																		
 									</tr>
 
 									<tr class="nonPensionNonReconnue">

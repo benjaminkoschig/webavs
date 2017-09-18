@@ -54,6 +54,18 @@ public class StrategieFinalTotal implements StrategieCalculFinalisation {
             // on ajoute la clé
             donnee.addEnfantTuple(new TupleDonneeRapport(IPCValeursPlanCalcul.CLE_TOTAL_CC_DEDUIT_MENSUEL, pcMensuel));
 
+            float diffPartCantonale = donnee
+                    .getValeurEnfant(IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_DIFF_PART_CANTONALE);
+
+            float partCantonale = diffPartCantonale / 12;
+
+            if (partCantonale > pcMensuel) {
+                partCantonale = pcMensuel;
+            }
+
+            donnee.addEnfantTuple(new TupleDonneeRapport(IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_PART_CANTONALE,
+                    partCantonale));
+
             // cas de couple à domicile avec 2 rentes principales
             if (PegasusCalculUtil.isRentesPrincipalesCoupleADom(context)) {
 

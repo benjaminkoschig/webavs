@@ -162,6 +162,7 @@
 			<select-field name="loyerMontantSousLocations" field-ref="simpleLoyer.revenuSousLocation"/>
 			<select-field name="loyerNbPersonnes" field-ref="simpleLoyer.nbPersonnes"/>
 			<select-field name="loyerTaxeJournalierePensionNonReconnue" field-ref="simpleLoyer.taxeJournalierePensionNonReconnue"/>
+			<select-field name="loyerCsDeplafonnementAppartementPartage" field-ref="simpleLoyer.csDeplafonnementAppartementPartage"/>
 			<select-field name="isDessaisissementFortune" field-ref="simpleDonneeFinanciereHeader.isDessaisissementFortune"/>
 			<select-field name="isDessaisissementRevenu" field-ref="simpleDonneeFinanciereHeader.isDessaisissementRevenu"/>
 			<select-field name="autreRentesEtrangeresCSTypeDevise" field-ref="simpleAutreRente.csMonnaie"/> 

@@ -38,6 +38,8 @@ public class StrategieLoyer extends StrategieCalculDepense {
         String csTypeLoyer = donnee.getLoyerCsTypeLoyer();
         float loyerMontantMensuel = Float.parseFloat(donnee.getLoyerMontant());
 
+        String csDeplafonnementAppartementPartage = donnee.getLoyerCsDeplafonnementAppartementPartage();
+
         float montantChargesMensuels = 0f;
         String chargeStr = donnee.getLoyerMontantCharges();
         if (JadeNumericUtil.isNumeric(chargeStr)) {
@@ -125,6 +127,18 @@ public class StrategieLoyer extends StrategieCalculDepense {
                 montantTaxeJournalierePNReconnue);
         if (isFauteuilRoulant) {
             this.getOrCreateChild(tupleLoyerActuel, IPCValeursPlanCalcul.CLE_INTER_LOYER_IS_FAUTEUIL_ROULANT, 1f);
+        }
+
+        // S160704_002 : déplafonnement appartement partagé
+        if (csDeplafonnementAppartementPartage != "0" && csDeplafonnementAppartementPartage != null) {
+            TupleDonneeRapport nodeCsAppartementProtege = this.getOrCreateChild(tupleLoyerActuel,
+                    IPCValeursPlanCalcul.CLE_INTER_LOYER_CS_DEPLAFONNEMENT_APPARTEMENT_PARTAGE,
+                    csDeplafonnementAppartementPartage);
+            nodeCsAppartementProtege.setLegende(csDeplafonnementAppartementPartage);
+        } else {
+            TupleDonneeRapport nodeCsAppartementProtege = this.getOrCreateChild(tupleLoyerActuel,
+                    IPCValeursPlanCalcul.CLE_INTER_LOYER_CS_DEPLAFONNEMENT_APPARTEMENT_PARTAGE, "0");
+            nodeCsAppartementProtege.setLegende("0");
         }
 
         // charges
