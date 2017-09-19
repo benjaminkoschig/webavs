@@ -5,12 +5,20 @@ import globaz.framework.bean.FWListViewBeanInterface;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSpy;
+import globaz.jade.context.JadeThread;
+import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import globaz.pegasus.vb.droit.PCDonneeFinanciereAjaxViewBean;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
+import ch.globaz.pegasus.business.exceptions.models.droit.DroitException;
 import ch.globaz.pegasus.business.models.droit.SimpleDonneeFinanciereHeader;
+import ch.globaz.pegasus.business.models.habitat.Habitat;
+import ch.globaz.pegasus.business.models.habitat.HabitatSearch;
 import ch.globaz.pegasus.business.models.habitat.Loyer;
 import ch.globaz.pegasus.business.models.habitat.LoyerSearch;
+import ch.globaz.pegasus.business.models.habitat.SimpleLoyer;
 import ch.globaz.pegasus.business.services.PegasusServiceLocator;
 
 public class PCLoyerAjaxViewBean extends PCDonneeFinanciereAjaxViewBean implements FWAJAXViewBeanInterface {
@@ -36,7 +44,7 @@ public class PCLoyerAjaxViewBean extends PCDonneeFinanciereAjaxViewBean implemen
     public void add() throws Exception {
 
         loyer = PegasusServiceLocator.getDroitService().createLoyer(getDroit(), getInstanceDroitMembreFamille(), loyer);
-
+        controleSiLoyerDeplafonneDejaPresent();
         this.updateListe();
     }
 
@@ -136,7 +144,12 @@ public class PCLoyerAjaxViewBean extends PCDonneeFinanciereAjaxViewBean implemen
             loyer = (PegasusServiceLocator.getDroitService().updateLoyer(getDroit(), getInstanceDroitMembreFamille(),
                     loyer));
         }
+        controleSiLoyerDeplafonneDejaPresent();
         this.updateListe();
+
+    }
+
+    public void beforeUpdate() {
 
     }
 
@@ -167,4 +180,31 @@ public class PCLoyerAjaxViewBean extends PCDonneeFinanciereAjaxViewBean implemen
         }
     }
 
+    private void controleSiLoyerDeplafonneDejaPresent() throws DroitException,
+            JadeApplicationServiceNotAvailableException, JadePersistenceException {
+
+        HabitatSearch search = new HabitatSearch();
+
+        search.setForIdDroit(getDroit().getId());
+        search.setForNumeroVersion(getNoVersion());
+        search.setWhereKey("forVersionedLoyer");
+        search = PegasusServiceLocator.getDroitService().searchHabitat(search);
+
+        for (Iterator it = Arrays.asList(search.getSearchResults()).iterator(); it.hasNext();) {
+            Habitat donnee = (Habitat) it.next();
+            if (donnee.getDonneeFinanciere() instanceof SimpleLoyer) {
+                SimpleLoyer loyerExistant = (SimpleLoyer) donnee.getDonneeFinanciere();
+
+                // si le loyer trouvé a un CS pour appartement partagé, est différent du loyer qu'on update ou créé, et
+                // que le loyer a ajouté a un CS pour l'appartement partagé ->
+                // message d'erreur
+                if (!loyerExistant.getId().equals(loyer.getSimpleLoyer().getId())
+                        && !"0".equals(loyerExistant.getCsDeplafonnementAppartementPartage())
+                        && !"".equals(loyer.getSimpleLoyer().getCsDeplafonnementAppartementPartage())) {
+                    JadeThread.logError(getClass().getName(), "pegasus.simpleLoyer.deplafonnement.deja.existant");
+                }
+
+            }
+        }
+    }
 }

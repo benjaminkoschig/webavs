@@ -317,9 +317,6 @@
 									  </td>
 									  	<td><ct:FWLabel key="JSP_PC_HABITAT_FAUTEUILLE_ROULANT"/></td>
 										<td><input type="checkbox" class="isFauteuilRoulant" /></td>
-										
-										<% if(IPCDroits.CS_ROLE_FAMILLE_REQUERANT.equals(membreFamille.getDroitMembreFamille().getSimpleDroitMembreFamille().getCsRoleFamillePC())){ %>
-									
 											<%if(listeDeplafonnementAppartementPro.length() != 0 && listeDeplafonnementAppartementPro != null){ %>
 											<td colspan="2">
 												<ct:FWLabel key="JSP_PC_HABITAT_DEPLAFONNEMENT_APPARTEMENT_PROTEGE"/>
@@ -342,7 +339,7 @@
 												</ct:select>
 											</div>										
 											</td>		
-											<%}} %>																																		
+											<%}%>																																
 									</tr>
 
 									<tr class="nonPensionNonReconnue">
