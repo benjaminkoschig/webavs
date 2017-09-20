@@ -74,7 +74,7 @@ public class REEProcess extends AbstractJadeJob {
     private String modeExecution;
 
     @Override
-    public void run() throws RuntimeException {
+    public void run() {
         processStartDate = new Date();
         LOG.info("{} run()", getClass().getSimpleName());
 
@@ -283,11 +283,8 @@ public class REEProcess extends AbstractJadeJob {
         int nombreLiensAffilies = pam_5053_102.getBusinessMessages().size();
         int nombreDePaquetsLiensAffilies = sendProtocol53_102.getNombreLot();
 
-        Protocol5053 protocol5053 = new Protocol5053(pam_5053_101, sendProtocol53_101, pam_5053_102,
-                sendProtocol53_102, infoCaisse, sedexInfo, nombreAffilie, nombreDePaquetAffilies, nombreLiensAffilies,
-                nombreDePaquetsLiensAffilies);
-
-        return protocol5053;
+        return new Protocol5053(pam_5053_101, sendProtocol53_101, pam_5053_102, sendProtocol53_102, infoCaisse,
+                sedexInfo, nombreAffilie, nombreDePaquetAffilies, nombreLiensAffilies, nombreDePaquetsLiensAffilies);
     }
 
     /**
@@ -295,7 +292,7 @@ public class REEProcess extends AbstractJadeJob {
      * 
      * @throws PropertiesException
      */
-    public void validate() throws IllegalArgumentException {
+    public void validate() {
         LOG.info("validate()");
         try {
             validateProperties();
@@ -313,8 +310,8 @@ public class REEProcess extends AbstractJadeJob {
             numeroCaisseFormate = PRStringFormatter.indentLeft(numeroCaisseFormate, 3, "0");
             numeroAgenceFormate = PRStringFormatter.indentLeft(numeroAgenceFormate, 3, "0");
 
-            int numeroCaisse = Integer.valueOf(numeroCaisseFormate);
-            int numeroAgence = Integer.valueOf(numeroAgenceFormate);
+            int numeroCaisse = Integer.parseInt(numeroCaisseFormate);
+            int numeroAgence = Integer.parseInt(numeroAgenceFormate);
 
             infoCaisse = new InfoCaisse(numeroCaisse, numeroAgence, numeroCaisseFormate, numeroAgenceFormate);
 
@@ -357,7 +354,7 @@ public class REEProcess extends AbstractJadeJob {
         this.modeExecution = modeExecution;
     }
 
-    private ExecutionMode getExecutionMode() throws IllegalArgumentException {
+    private ExecutionMode getExecutionMode() {
         return ExecutionMode.parseUserArg(getModeExecution());
     }
 
@@ -378,7 +375,7 @@ public class REEProcess extends AbstractJadeJob {
     public void sendMessages(List<File> files) throws JadeSedexMessageNotSentException {
 
         JadeSedexService service = JadeSedexService.getInstance();
-        SimpleSedexMessage sms = null;
+        SimpleSedexMessage sms;
         for (File file : files) {
             sms = new SimpleSedexMessage();
             sms.fileLocation = file.getAbsolutePath();
@@ -386,7 +383,7 @@ public class REEProcess extends AbstractJadeJob {
         }
     }
 
-    protected void validateProperties() throws IllegalArgumentException {
+    protected void validateProperties() {
         // name, phone, mail et paquet obligatoire
         if (properties.getName() == null || properties.getName().isEmpty()) {
             throw new IllegalArgumentException("Properties [Name] value cannot be empty");

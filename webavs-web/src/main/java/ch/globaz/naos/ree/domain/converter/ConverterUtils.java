@@ -3,7 +3,6 @@ package ch.globaz.naos.ree.domain.converter;
 import globaz.jade.client.util.JadeStringUtil;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.math.RoundingMode;
 import java.util.GregorianCalendar;
 import java.util.regex.Pattern;
 import javax.xml.datatype.DatatypeConfigurationException;
@@ -196,21 +195,17 @@ class ConverterUtils {
 
     /**
      * Permet de formater le revenu determinant.
-     * - Revenu sans les centimes
+     * - Revenu avec les centimes
      * - Si code extourne, revenu négatif.
      * 
      * @param montant Un montant
      * @param codeExtourne Un code extourne
-     * @return Le revenu sans les centimes
+     * @return Le revenu avec les centimes
      * @throws REEBusinessException
      */
     protected static BigDecimal formatRevenu(String montant, String codeExtourne) throws REEBusinessException {
 
-        if (JadeStringUtil.isBlank(montant)) {
-            throw new REEBusinessException("Erreur de données, impossible de définir le montant du revenu " + montant);
-        }
-
-        BigDecimal revenu = new BigDecimal(montant).abs().setScale(0, RoundingMode.DOWN);
+        BigDecimal revenu = formatRevenu(montant);
 
         if ("311001".equals(codeExtourne)) {
             return revenu.negate();
@@ -221,19 +216,17 @@ class ConverterUtils {
 
     /**
      * Permet deformater le revenu determinant.
-     * - Revenu sans les centimes
      * 
      * @param montant Un montant
-     * @return Le revenu sans les centimes
+     * @return Le revenu avec les centimes
      * @throws REEBusinessException
      */
     protected static BigDecimal formatRevenu(String montant) throws REEBusinessException {
-        // TODO a tester
         if (JadeStringUtil.isBlank(montant)) {
             throw new REEBusinessException("Erreur de données, impossible de définir le montant du revenu " + montant);
         }
-        BigDecimal revenu = new BigDecimal(montant).abs().setScale(0, RoundingMode.DOWN);
-        return revenu;
+
+        return new BigDecimal(montant).abs();
     }
 
     /**

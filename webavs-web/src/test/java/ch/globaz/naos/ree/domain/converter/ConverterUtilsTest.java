@@ -5,8 +5,6 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import javax.xml.datatype.DatatypeConstants;
 import org.junit.Test;
-import ch.globaz.naos.ree.domain.converter.ConverterUtils;
-import ch.globaz.naos.ree.domain.converter.REEBusinessException;
 
 public class ConverterUtilsTest {
 
@@ -121,11 +119,11 @@ public class ConverterUtilsTest {
     public void testFormatRevenu() throws Exception {
         String codeExtourne = "311001";
 
-        assertEquals(BigDecimal.valueOf(250), ConverterUtils.formatRevenu("250.25", ""));
-        assertEquals(BigDecimal.valueOf(250), ConverterUtils.formatRevenu("250.99", ""));
-        assertEquals(BigDecimal.valueOf(250), ConverterUtils.formatRevenu("250.00", ""));
+        assertEquals(BigDecimal.valueOf(250.25), ConverterUtils.formatRevenu("250.25", ""));
+        assertEquals(BigDecimal.valueOf(250.99), ConverterUtils.formatRevenu("250.99", ""));
+        assertEquals(new BigDecimal("250.00"), ConverterUtils.formatRevenu("250.00", ""));
 
-        assertEquals(BigDecimal.valueOf(-250), ConverterUtils.formatRevenu("250.00", codeExtourne));
+        assertEquals(new BigDecimal("-250.00"), ConverterUtils.formatRevenu("250.00", codeExtourne));
         assertEquals(BigDecimal.valueOf(250), ConverterUtils.formatRevenu("250", ""));
         assertEquals(BigDecimal.valueOf(250), ConverterUtils.formatRevenu("250", "0"));
         assertEquals(BigDecimal.valueOf(250), ConverterUtils.formatRevenu("250", null));

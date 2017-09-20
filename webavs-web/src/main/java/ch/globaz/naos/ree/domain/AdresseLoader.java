@@ -30,6 +30,8 @@ import ch.globaz.pegasus.businessimpl.services.adresse.TechnicalExceptionWithTie
  */
 public class AdresseLoader {
 
+    private static final String TYPE_EXPLOITATION = "508021";
+
     private Map<String, List<TIAbstractAdresseData>> cache = new ConcurrentHashMap<String, List<TIAbstractAdresseData>>();
     private BSession session;
 
@@ -134,10 +136,10 @@ public class AdresseLoader {
 
                     addresse = new Adresse(data.getLocalite(), data.getCasePostale(), data.getAttention(),
                             data.getNpa(), data.getPaysIso(), data.getIdCanton(), data.getTitre_adr(), data.getRue(),
-                            data.getNumero(), data.getDesignation1_adr(), data.getDesignation2_adr(),
-                            data.getDesignation3_adr(), data.getDesignation4_adr(), data.getIdAdresseUnique(),
-                            data.getDesignation1_tiers(), data.getDesignation2_tiers(), data.getDesignation3_tiers(),
-                            data.getDesignation4_tiers(), data.getTitre_tiers());
+                            subStringField(data.getNumero(), 0, 12), data.getDesignation1_adr(),
+                            data.getDesignation2_adr(), data.getDesignation3_adr(), data.getDesignation4_adr(),
+                            data.getIdAdresseUnique(), data.getDesignation1_tiers(), data.getDesignation2_tiers(),
+                            data.getDesignation3_tiers(), data.getDesignation4_tiers(), data.getTitre_tiers());
                     map.put(data.getIdTiers(), addresse);
                 } catch (Exception e) {
                     throw new TechnicalExceptionWithTiers("Impossible de charger l'adresse id:"
@@ -147,6 +149,14 @@ public class AdresseLoader {
         }
 
         return map;
+    }
+
+    static String subStringField(String fields, int begin, int end) {
+        if (fields != null && fields.length() > end) {
+            return fields.substring(begin, end);
+        } else {
+            return fields;
+        }
     }
 
     /*
@@ -200,6 +210,12 @@ public class AdresseLoader {
                                             // 9) domaine std, type domicile
                                             data = findAdresse(adresses4Tiers, IConstantes.CS_APPLICATION_DEFAUT,
                                                     IConstantes.CS_AVOIR_ADRESSE_DOMICILE);
+                                            if (data == null) {
+                                                // 9) domaine std, type exploitation
+                                                data = findAdresse(adresses4Tiers, IConstantes.CS_APPLICATION_DEFAUT,
+                                                        TYPE_EXPLOITATION);
+
+                                            }
                                         }
                                     }
                                 }

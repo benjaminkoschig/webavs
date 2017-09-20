@@ -146,7 +146,8 @@ public class REEProcess5053_101 extends AbstractREEProcess {
         sql.append("aff.mattaf not in (804007,804009,804013)");// --Exclusion de affiliés de type « fichier central », «
                                                                // non soumis » et « provisoire »
         sql.append("AND aff.MADDEB <> aff.MADFIN ");// --Exclusion des affiliations erronées
-        sql.append("AND (aff.MADFIN = 0 OR aff.MADFIN >= ").append(threeYearsAgo).append(")");
+        sql.append("AND (aff.MADFIN = 0 OR aff.MADFIN >= ").append(threeYearsAgo).append(") ");
+        sql.append("AND aff.MABTRA = 2 "); // Exclure les affiliations provisoires (la case à cocher).
         // --Pas de date de radiation ou il contient une
         // date de radiation supérieure ou égale à l’année
         // en cours – 3 ans")
