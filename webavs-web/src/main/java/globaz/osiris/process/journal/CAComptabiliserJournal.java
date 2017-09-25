@@ -20,7 +20,11 @@ import globaz.helios.process.journal.CAJournalProcessUtils;
 import globaz.jade.client.util.JadeListUtil;
 import globaz.jade.client.util.JadeListUtil.LotExec;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.context.JadeThread;
+import globaz.jade.i18n.JadeI18n;
 import globaz.jade.log.JadeLogger;
+import globaz.jade.log.business.JadeBusinessMessage;
+import globaz.jade.log.business.JadeBusinessMessageLevels;
 import globaz.musca.application.FAApplication;
 import globaz.osiris.api.APIEcriture;
 import globaz.osiris.api.APIOperation;
@@ -685,6 +689,19 @@ public class CAComptabiliserJournal {
                 try {
                     if (readTransaction.hasErrors()) {
                         readTransaction.rollback();
+
+                        // Ajout de plus de clarté dans les erreurs
+                        JadeBusinessMessage[] messages = JadeThread
+                                .logMessagesFromLevel(JadeBusinessMessageLevels.ERROR);
+                        StringBuilder message = new StringBuilder();
+                        for (int i = 0; i < messages.length; i++) {
+                            message.append(JadeI18n.getInstance().getMessage(journal.getSession().getIdLangueISO(),
+                                    messages[i].getMessageId()));
+                            if (i < messages.length - 1) {
+                                message.append("\n");
+                            }
+                        }
+                        context.getTransaction().addErrors(message.toString());
                     }
                 } catch (Exception e) {
                     JadeLogger.warn(this, "Problem in closeTransaction()");
