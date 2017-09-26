@@ -14,6 +14,7 @@ import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAv
 import globaz.journalisation.constantes.JOConstantes;
 import globaz.naos.translation.CodeSystem;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -195,6 +196,10 @@ public class DecisionListServiceImpl implements DecisionListService {
                                             + Joiner.on(",").join(listIdNotfound)
                                             + ") and (MATPER = " + csPeriodicite + ") OR (IDTIBE <> 0)").execute());
                 } else {
+
+                    String dateCompleteFinDernierTrimestre = JadeDateUtil.getYMDDate(JadeDateUtil
+                            .getGlobazDate(JadeDateUtil.getLastDateOfMonth(getDateFinPrecedentTrimestre(dateDebut))));
+
                     listHasPeriodicite
                             .addAll(SCM
                                     .newInstance(String.class)
@@ -202,7 +207,10 @@ public class DecisionListServiceImpl implements DecisionListService {
                                             + "INNER JOIN schema.ALDOS ON schema.AFAFFIP.MALNAF = schema.ALDOS.MALNAF "
                                             + "WHERE schema.ALDOS.EID in ("
                                             + Joiner.on(",").join(listIdNotfound)
-                                            + ") and MATPER = " + csPeriodicite + " AND IDTIBE = 0").execute());
+                                            + ") and MATPER = "
+                                            + csPeriodicite
+                                            + " AND IDTIBE = 0 AND EDVAL <= "
+                                            + dateCompleteFinDernierTrimestre).execute());
                 }
 
             }
@@ -243,12 +251,14 @@ public class DecisionListServiceImpl implements DecisionListService {
         prestationSearch.setInIdDossier(idsDossier);
 
         prestationSearch.setForEtat(ALCSPrestation.ETAT_SA);
-        prestationSearch.setForDateDebut(dateDebut.substring(3));
 
         // Check du mode de traitement (mensuel ou trimestriel)
         if (CodeSystem.PERIODICITE_MENSUELLE.equals(periodicite)) {
+            prestationSearch.setForDateDebut(dateDebut.substring(3));
             prestationSearch.setWhereKey("prestaRetroActives");
         } else {
+            String dateFinPrecedentTrimestriel = getDateFinPrecedentTrimestre(dateDebut);
+            prestationSearch.setForDateDebut(dateFinPrecedentTrimestriel);
             prestationSearch.setWhereKey("prestaRetroActivesTrimestriel");
         }
 
@@ -270,6 +280,34 @@ public class DecisionListServiceImpl implements DecisionListService {
             }
         }
         return idsNotFound;
+    }
+
+    private String getDateFinPrecedentTrimestre(String dateDebut) {
+        HashMap<String, String> finTrimestreAvant = new HashMap<String, String>();
+        finTrimestreAvant.put("01", "12");
+        finTrimestreAvant.put("02", "12");
+        finTrimestreAvant.put("03", "12");
+        finTrimestreAvant.put("04", "03");
+        finTrimestreAvant.put("05", "03");
+        finTrimestreAvant.put("06", "03");
+        finTrimestreAvant.put("07", "06");
+        finTrimestreAvant.put("08", "06");
+        finTrimestreAvant.put("09", "06");
+        finTrimestreAvant.put("10", "09");
+        finTrimestreAvant.put("11", "09");
+        finTrimestreAvant.put("12", "09");
+
+        String anneeDebut = dateDebut.substring(6);
+        String moisDebut = dateDebut.substring(3, 5);
+
+        String moisFinTrimestre = finTrimestreAvant.get(moisDebut);
+
+        if ("12".equals(moisFinTrimestre)) {
+            anneeDebut = String.valueOf((Integer.parseInt(anneeDebut) - 1));
+        }
+
+        return moisFinTrimestre + "." + anneeDebut;
+
     }
 
     private boolean isDossierCheckable(String idDossier, String dateCtrl) {
