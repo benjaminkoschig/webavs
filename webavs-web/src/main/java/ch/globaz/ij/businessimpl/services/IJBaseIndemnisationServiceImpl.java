@@ -338,7 +338,7 @@ public class IJBaseIndemnisationServiceImpl implements IJBaseIndemnisationServic
 
             // Ajouter un espace avant le retour à la ligne
             // parce que JASPER n'arrive pas à interpréter deux retours à la ligne successive
-            String remarque = entity.getRemarque().replaceAll("\r\n", " \r\n");
+            String remarque = entity.getRemarque().replaceAll("\r\n", " \n");
             baseIndemnisation.setRemarque(remarque);
 
             BITransaction transaction = session.newTransaction();
