@@ -108,18 +108,17 @@ public class AFIdeAnnonceViewBean extends AFIdeAnnonce implements FWViewBeanInte
 
                 setMessageErreurForBusinessUser(getSession().getLabel(
                         "NAOS_ANNONCE_IDE_CREATION_MUTATION_MANDATORY_ERREUR_ADRESSE_TIERS_BLANK"));
-
-                formeJuridique = CodeSystem.getLibelle(getSession(), affiliationRetrieved.getPersonnaliteJuridique());
-                langueTiers = tiers.getLangueIso().toUpperCase();
-                brancheEconomique = CodeSystem.getLibelle(getSession(), affiliationRetrieved.getBrancheEconomique());
-
-                activite = affiliationRetrieved.getActivite();
-                if (tiers.getPersonnePhysique()) {
-                    naissance = tiers.getDateNaissance();
-                    prenomNom = tiers.getPrenomNom();
-                }
-
             }
+            formeJuridique = CodeSystem.getLibelle(getSession(), affiliationRetrieved.getPersonnaliteJuridique());
+            langueTiers = tiers.getLangueIso().toUpperCase();
+            brancheEconomique = CodeSystem.getLibelle(getSession(), affiliationRetrieved.getBrancheEconomique());
+
+            activite = affiliationRetrieved.getActivite();
+            if (tiers.getPersonnePhysique()) {
+                naissance = tiers.getDateNaissance();
+                prenomNom = tiers.getPrenomNom();
+            }
+
         }
 
     }
