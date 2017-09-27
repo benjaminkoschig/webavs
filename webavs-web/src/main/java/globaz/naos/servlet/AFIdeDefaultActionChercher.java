@@ -49,27 +49,33 @@ public class AFIdeDefaultActionChercher extends AFDefaultActionChercher {
                     && AFProperties.NOGA_SYNCHRO_REGISTRE.getValue() != null
                     && AFProperties.NOGA_SYNCHRO_REGISTRE.getBooleanValue()) {
 
-                AFIdeSearchListViewBean listViewBean = (AFIdeSearchListViewBean) session.getAttribute("listViewBean");
-                int selectedIndex = Integer.parseInt(request.getParameter("selectedIndex"));
-
-                // On récupère l'id selectionner et on récupère le code noga dans la liste des résultats
-                String codeNoga = listViewBean.getCodeNogaForIndex(selectedIndex);
-
-                BSession bsession = (BSession) ((FWController) session.getAttribute("objController")).getSession();
-                String csCodeNoga = retrieveCsCodeNoga(codeNoga, bsession);
-
-                // Finalement on set le csCodeNoga du viewBean de l'écran d'affiliation
-                AFAffiliation viewBean;
+                String csCodeNoga;
                 try {
-                    viewBean = (AFAffiliation) session.getAttribute("viewBean");
-                    viewBean.setCodeNoga(csCodeNoga);
-                    session.setAttribute("viewBean", viewBean);
-                } catch (Exception e) {
-                    // Si le viewBean n'est pas trouvé ça veut dire on vient de l'écran CAF0044
-                    globaz.naos.db.wizard.AFWizard viewBeanNew = (globaz.naos.db.wizard.AFWizard) session
-                            .getAttribute("viewBean");
-                    viewBeanNew.setCodeNoga(csCodeNoga);
-                    session.setAttribute("viewBean", viewBeanNew);
+                    AFIdeSearchListViewBean listViewBean = (AFIdeSearchListViewBean) session
+                            .getAttribute("listViewBean");
+                    int selectedIndex = Integer.parseInt(request.getParameter("selectedIndex"));
+
+                    // On récupère l'id selectionner et on récupère le code noga dans la liste des résultats
+                    String codeNoga = listViewBean.getCodeNogaForIndex(selectedIndex);
+
+                    BSession bsession = (BSession) ((FWController) session.getAttribute("objController")).getSession();
+                    csCodeNoga = retrieveCsCodeNoga(codeNoga, bsession);
+
+                    // Finalement on set le csCodeNoga du viewBean de l'écran d'affiliation
+                    AFAffiliation viewBean;
+                    try {
+                        viewBean = (AFAffiliation) session.getAttribute("viewBean");
+                        viewBean.setCodeNoga(csCodeNoga);
+                        session.setAttribute("viewBean", viewBean);
+                    } catch (Exception e) {
+                        // Si le viewBean n'est pas trouvé ça veut dire on vient de l'écran CAF0044
+                        globaz.naos.db.wizard.AFWizard viewBeanNew = (globaz.naos.db.wizard.AFWizard) session
+                                .getAttribute("viewBean");
+                        viewBeanNew.setCodeNoga(csCodeNoga);
+                        session.setAttribute("viewBean", viewBeanNew);
+                    }
+                } catch (ClassCastException e1) {
+                    // Si une erreur de cast intervient -> on vient pas de la sélection IDE
                 }
             }
         } catch (NumberFormatException e) {
