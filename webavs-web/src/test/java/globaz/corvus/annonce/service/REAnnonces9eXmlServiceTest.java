@@ -121,7 +121,7 @@ public class REAnnonces9eXmlServiceTest {
         codeRevenuSplitte = "0";
         dureeCotPourDetRAM = "2000";
         anneeNiveau = "96";
-        nombreAnneeBTE = "0500";
+        nombreAnneeBTE = "16";
         // FIXME pourquoi 350 non valable?
         officeAICompetent = "35";
         degreInvalidite = "47";
