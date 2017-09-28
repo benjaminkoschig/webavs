@@ -91,19 +91,19 @@ function postInit(){
 							<td style="padding:5px;">
 			                   	<h4>Description</h4><br>
 			                   	<ul>
-									<li>" Date période de " correspond à la date à laquelle le dernier processus métier a été exécuté;
-									<li>" Date période à " correspond à la date jusqu'à laquelle le test doit être effectué;
-									<li>Les boutons radios " Périodicité " permettent de choisir quels dossiers doivent être traités (dossiers mensuels ou trimestriels) :
+									<li>" Date période de journalisation " correspond à la date à laquelle le dernier processus métier a été exécuté;
+									<li>" Date période à " correspond à la date jusqu'à laquelle la liste va être prise en compte;
+									<li>Les boutons radios " Périodicité mensuelle / trimestrielle " permettent de choisir quels dossiers doivent être traités (dossiers mensuels ou trimestriels) :
 									<ul>
-										<li>Le traitement <b>mensuel</b> retourne les dossiers comme tel : Pmt direct -> tous les dossier / Pmt indirect -> affilié avec périodicité mensuelle;
-										<li>Le traitement <b>trimestriel</b> retourne les dossiers comme tel : Pmt direct -> aucun / Pmt indirect -> affilié avec périodicité trimestrielle.
+										<li>Le traitement <b>mensuel</b> retourne les dossiers comme tel : paiement direct -> tous les dossiers / paiement indirect -> affiliés avec périodicité mensuelle;
+										<li>Le traitement <b>trimestriel</b> retourne les dossiers comme tel : paiement direct -> aucun / paiement indirect -> affiliés avec périodicité trimestrielle.
 									</ul>
 								</ul>
 								Les dossiers ressortis dans ce traitement cumulent les critères suivants :
 								<ul>
-								<li>Une journalisation a été créée durant la période définie par l'utilisateur (décision mise en ged)</li>
-								<li>La date de début de validité du dossier est &lt;/= à la date " période de " pour la periodicité <b>mensuel</b>, et  &lt;/= à la date de fin du dernier <b>trimestriel</b> avant la date " période de "</li>
-								<li>Aucune prestation en SA n'existe pour une période &lt;/= au mois de génération de la date " période de "</li>
+								<li>Une journalisation a été créée durant la période définie par l'utilisateur (décision mise en GED);</li>
+								<li>La date de début de validité du dossier est &lt;= à la date " période de " pour la périodicité <b>mensuelle</b>, et  &lt;= à la date de fin du dernier <b>trimestre</b> avant la date " période de ";</li>
+								<li>Aucune prestation en SA n'existe pour une période &lt;= au mois de génération de la date " période de ".</li>
 								</ul>
  
 								 Attention, les dossiers radiés ne sont pas gérés par ce traitement.
