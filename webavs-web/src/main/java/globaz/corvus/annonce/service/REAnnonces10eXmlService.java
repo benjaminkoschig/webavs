@@ -711,7 +711,7 @@ public class REAnnonces10eXmlService extends REAbstractAnnonceXmlService impleme
             bte.setAnzahlErziehungsgutschrift(convertAAMMtoBigDecimal(enr02.getNombreAnneeBTE()));
         }
         if (!JadeStringUtil.isBlank(enr02.getNbreAnneeBTA())) {
-            bte.setAnzahlBetreuungsgutschrift(formatuneDecimale(enr02.getNbreAnneeBTA()));
+            bte.setAnzahlBetreuungsgutschrift(convertAAMMtoBigDecimal(enr02.getNbreAnneeBTA()));
         }
         if (!JadeStringUtil.isBlank(enr02.getNbreAnneeBonifTrans())) {
             if (!JadeStringUtil.isBlankOrZero(enr02.getNbreAnneeBonifTrans())) {
