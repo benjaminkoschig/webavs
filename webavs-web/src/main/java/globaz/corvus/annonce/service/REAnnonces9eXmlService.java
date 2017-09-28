@@ -677,7 +677,7 @@ public class REAnnonces9eXmlService extends REAbstractAnnonceXmlService implemen
             bte.setAngerechneteErziehungsgutschrift(new BigDecimal(testSiNullouZero(enr02.getBteMoyennePrisEnCompte())));
         }
         if (!JadeStringUtil.isBlank(enr02.getNombreAnneeBTE())) {
-            bte.setAnzahlErziehungsgutschrift(convertAAMMtoBigDecimal(enr02.getNombreAnneeBTE()).shortValue());
+            bte.setAnzahlErziehungsgutschrift(new BigDecimal(enr02.getNombreAnneeBTE()).shortValue());
         }
         return bte;
     }
