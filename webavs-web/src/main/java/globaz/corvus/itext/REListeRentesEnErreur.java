@@ -536,7 +536,8 @@ public class REListeRentesEnErreur extends FWIAbstractManagerDocumentList {
 
                     // si - de 18 ans
 
-                    if (BSessionUtil.compareDateFirstLowerOrEqual(getSession(), dateDebut, dateNaissance)) {
+                    if (enfant.getDateDeces().isEmpty()
+                            && BSessionUtil.compareDateFirstLowerOrEqual(getSession(), dateDebut, dateNaissance)) {
 
                         // si idTiers
                         if (!JadeStringUtil.isIntegerEmpty(enfant.getIdTiers())) {

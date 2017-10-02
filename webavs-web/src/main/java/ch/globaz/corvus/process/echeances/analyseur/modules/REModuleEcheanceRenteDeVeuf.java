@@ -6,6 +6,8 @@ import globaz.globall.api.BISession;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.pyxis.api.ITIPersonne;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import ch.globaz.corvus.business.models.echeances.IREEcheances;
 import ch.globaz.corvus.business.models.echeances.IREEnfantEcheances;
 import ch.globaz.corvus.business.models.echeances.IRERenteEcheances;
@@ -39,44 +41,54 @@ public class REModuleEcheanceRenteDeVeuf extends REModuleAnalyseEcheance {
                 && !ITIPersonne.CS_HOMME.equals(echeancesPourUnTiers.getCsSexeTiers())) {
             return REReponseModuleAnalyseEcheance.Faux;
         }
-
         for (IRERenteEcheances uneRenteDuTiers : echeancesPourUnTiers.getRentesDuTiers()) {
             Integer codePrestationRente = Integer.parseInt(uneRenteDuTiers.getCodePrestation());
             if (((REGenresPrestations.RENTE_PRINCIPALE_SURVIVANT_ORDINAIRE == codePrestationRente) || (REGenresPrestations.RENTE_PRINCIPALE_SURVIVANT_EXTRAORDINAIRE == codePrestationRente))
                     && IREPrestationAccordee.CS_ETAT_VALIDE.equals(uneRenteDuTiers.getCsEtat())
                     && JadeStringUtil.isBlankOrZero(uneRenteDuTiers.getDateFinDroit())) {
 
-                if (echeancesPourUnTiers.getEnfantsDuTiers().size() == 0) {
+                if (echeancesPourUnTiers.getEnfantsDuTiers().isEmpty()) {
                     // si le tiers n'a pas d'enfant et une rente de veuf, motif : rente de veuf sans enfant
                     return REReponseModuleAnalyseEcheance.Vrai(uneRenteDuTiers, REMotifEcheance.RenteDeVeufSansEnfant,
                             echeancesPourUnTiers.getIdTiers());
-                }
-
-                // s'il y a des enfants, on vérifie la date de naissance du plus jeune
-                if (echeancesPourUnTiers.getEnfantsDuTiers().size() > 0) {
-                    IREEnfantEcheances enfantLePlusJeune = echeancesPourUnTiers.getEnfantsDuTiers().last();
-                    Integer nbMoisVieEnfant = JadeDateUtil.getNbMonthsBetween(enfantLePlusJeune.getDateNaissance(),
-                            "01." + getMoisTraitement());
-                    if ((18 * 12) == nbMoisVieEnfant) {
-                        // s'il a 18 ans ou plus dans le mois de traitement, motif : rente de veuf
-                        return REReponseModuleAnalyseEcheance.Vrai(uneRenteDuTiers, REMotifEcheance.RenteDeVeuf,
-                                echeancesPourUnTiers.getIdTiers());
-                        // Si l'enfant à  plus de 18 ans, on le sort mais sous un autre motif
-                    } else if ((18 * 12) < nbMoisVieEnfant) {
-                        return REReponseModuleAnalyseEcheance.Vrai(uneRenteDuTiers,
-                                REMotifEcheance.RenteDeVeufSansEnfant, echeancesPourUnTiers.getIdTiers());
-                    }
-                } else {
-                    // Il n'y a pas d'enfant
-                    if (ITIPersonne.CS_HOMME.equals(echeancesPourUnTiers.getCsSexeTiers())) {
-                        return REReponseModuleAnalyseEcheance.Vrai(uneRenteDuTiers,
-                                REMotifEcheance.RenteDeVeufSansEnfant, echeancesPourUnTiers.getIdTiers());
-                    }
+                }// s'il y a des enfants, on vérifie la date de naissance du plus jeune
+                else {
+                    return resolveYoungerChildBirthDate(echeancesPourUnTiers, uneRenteDuTiers);
                 }
             }
         }
-        // si pas de rente de veuf ou pas d'enfant, au bénéfice d'une complémentaire de la rente de veuf,
+        // Si pas de rente de veuf ou pas d'enfant, au bénéfice d'une complémentaire de la rente de veuf,
         // atteignant leurs 18 ans dans le mois de traitement : aucune échéance à retenir
         return REReponseModuleAnalyseEcheance.Faux;
+    }
+
+    private REReponseModuleAnalyseEcheance resolveYoungerChildBirthDate(final IREEcheances echeancesPourUnTiers,
+            IRERenteEcheances uneRenteDuTiers) {
+        Integer nbMoisVieEnfant = null;
+        REReponseModuleAnalyseEcheance responseAnalyseModuleEcheance = REReponseModuleAnalyseEcheance.Vrai(
+                uneRenteDuTiers, REMotifEcheance.RenteDeVeufSansEnfant, echeancesPourUnTiers.getIdTiers());
+        // Instanciation et chargement d'une liste temporaire -> Permet de dépiler sans modifier le contenu de la liste
+        // originale
+        SortedSet<IREEnfantEcheances> tempChildList = new TreeSet<IREEnfantEcheances>();
+        tempChildList.addAll(echeancesPourUnTiers.getEnfantsDuTiers());
+        while (nbMoisVieEnfant == null && !tempChildList.isEmpty()) {
+            IREEnfantEcheances enfantLePlusJeune = tempChildList.last();
+            if (JadeStringUtil.isBlankOrZero(enfantLePlusJeune.getDateDeces())) {
+                nbMoisVieEnfant = JadeDateUtil.getNbMonthsBetween(enfantLePlusJeune.getDateNaissance(), "01."
+                        + getMoisTraitement());
+            }
+            tempChildList.remove(enfantLePlusJeune);
+        }
+        if (nbMoisVieEnfant != null && ((18 * 12) == nbMoisVieEnfant)) {
+            // s'il a 18 ans dans le mois de traitement, motif : rente de veuf
+            responseAnalyseModuleEcheance = REReponseModuleAnalyseEcheance.Vrai(uneRenteDuTiers,
+                    REMotifEcheance.RenteDeVeuf, echeancesPourUnTiers.getIdTiers());
+            // Si l'enfant a  moins de 18 ans, on ne le sort pas
+        } else if (nbMoisVieEnfant != null && ((18 * 12) > nbMoisVieEnfant)) {
+
+            responseAnalyseModuleEcheance = REReponseModuleAnalyseEcheance.Faux;
+        }
+
+        return responseAnalyseModuleEcheance;
     }
 }

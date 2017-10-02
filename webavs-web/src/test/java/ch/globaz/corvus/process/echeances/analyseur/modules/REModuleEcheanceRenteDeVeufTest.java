@@ -73,6 +73,34 @@ public class REModuleEcheanceRenteDeVeufTest extends REModuleAnalyseEcheanceTest
     }
 
     @Test
+    public void plusieursEnfantsDontUnAvecDateDeces() {
+        // Test réalisé suite à la correction de K160318_005
+        // Premier enfant plus jeune mais décédé
+        enfant.setDateNaissance("01.01.2005");
+        enfant.setDateDeces("01.01.2016");
+        renteEnfant.setCodePrestation("15");
+        enfant.getRentes().add(renteEnfant);
+
+        // Deuxième enfant -> 18 ans le mois courant
+        REEnfantEcheances enfant2 = new REEnfantEcheances();
+        enfant2.setIdTiers("2");
+        enfant2.setDateNaissance("01.01.2000");
+        entity.getEnfantsDuTiers().add(enfant2);
+
+        RERenteJoinDemandeEcheance renteEnfant2 = new RERenteJoinDemandeEcheance();
+        renteEnfant2.setIdPrestationAccordee("3");
+        renteEnfant2.setCodePrestation("15");
+        renteEnfant2.setDateDebutDroit("01.2011");
+        enfant2.getRentes().add(renteEnfant2);
+        assertTrue(module, entity, "01.2018", REMotifEcheance.RenteDeVeuf);
+
+        // Si le premier enfant n'a pas de date de décès, il ne devrait pas y avoir des fin de rente
+        enfant.setDateDeces("");
+        assertFalse(module, entity, "01.2018");
+
+    }
+
+    @Test
     public void plusieursEnfantDontUnAyant18ansDansLeMois() {
         enfant.setDateNaissance("01.01.1994");
         enfant.getRentes().add(renteEnfant);
