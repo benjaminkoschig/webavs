@@ -4,6 +4,8 @@ import globaz.corvus.api.basescalcul.IREPrestationAccordee;
 import globaz.corvus.db.echeances.REEcheancesEntity;
 import globaz.corvus.db.echeances.RERenteJoinDemandeEcheance;
 import globaz.pyxis.api.ITIPersonne;
+import java.util.HashSet;
+import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 import ch.globaz.corvus.business.models.echeances.REMotifEcheance;
@@ -32,8 +34,15 @@ public class REModuleEcheanceAjournementTest extends REModuleAnalyseEcheanceTest
 
         rente.setCsEtat(IREPrestationAccordee.CS_ETAT_DIMINUE);
         assertFalse(module, entity, "01.2012");
-
+        /*
+         * le cas ci-dessous permet de vérifier qu'un ajournement n'est valide qu'avec le code cas special 08
+         */
         rente.setCsEtat(IREPrestationAccordee.CS_ETAT_VALIDE);
+        Set<String> codesCasSpeciaux = new HashSet<String>();
+        codesCasSpeciaux.add("02");
+        codesCasSpeciaux.add("05");
+        codesCasSpeciaux.add("108");
+        rente.setCodesCasSpeciaux(codesCasSpeciaux);
         assertFalse(module, entity, "01.2012");
     }
 
@@ -85,6 +94,7 @@ public class REModuleEcheanceAjournementTest extends REModuleAnalyseEcheanceTest
         assertFalse(module, entity, "01.2012");
 
         rente.setCsEtat(IREPrestationAccordee.CS_ETAT_VALIDE);
+        rente.setCodesCasSpeciaux(new HashSet<String>());
         assertFalse(module, entity, "01.2012");
     }
 
@@ -144,6 +154,7 @@ public class REModuleEcheanceAjournementTest extends REModuleAnalyseEcheanceTest
         assertFalse(module, entity, "01.2012");
 
         rente.setCsEtat(IREPrestationAccordee.CS_ETAT_VALIDE);
+        rente.setCodesCasSpeciaux(new HashSet<String>());
         assertFalse(module, entity, "01.2012");
 
         rente.setDateEcheance("01.2012");
@@ -155,6 +166,7 @@ public class REModuleEcheanceAjournementTest extends REModuleAnalyseEcheanceTest
         assertFalse(module, entity, "01.2012");
 
         rente.setCsEtat(IREPrestationAccordee.CS_ETAT_VALIDE);
+        rente.setCodesCasSpeciaux(new HashSet<String>());
         assertFalse(module, entity, "01.2012");
 
         rente.setDateEcheance("02.2012");
@@ -166,6 +178,8 @@ public class REModuleEcheanceAjournementTest extends REModuleAnalyseEcheanceTest
         assertFalse(module, entity, "01.2012");
 
         rente.setCsEtat(IREPrestationAccordee.CS_ETAT_VALIDE);
+        // Test en ayant la liste de codes cas spéciaux à null
+        rente.setCodesCasSpeciaux(null);
         assertFalse(module, entity, "01.2012");
     }
 
@@ -177,7 +191,10 @@ public class REModuleEcheanceAjournementTest extends REModuleAnalyseEcheanceTest
 
         rente = new RERenteJoinDemandeEcheance();
         rente.setIdPrestationAccordee("1");
-        rente.setCsEtat(IREPrestationAccordee.CS_ETAT_AJOURNE);
+        rente.setCsEtat(IREPrestationAccordee.CS_ETAT_VALIDE);
+        Set<String> codesCasSpeciaux = new HashSet<String>();
+        codesCasSpeciaux.add("08");
+        rente.setCodesCasSpeciaux(codesCasSpeciaux);
         entity.getRentesDuTiers().add(rente);
     }
 }

@@ -320,8 +320,12 @@ public class REModuleAnalyseEcheanceUtils {
      */
     public static REReponseModuleAnalyseEcheance isRenteAjournee(IRERenteEcheances rente, String dateNaissanceTiers,
             String csSexeTiers, String mois) {
-        // si la rente n'est pas ajournée, on l'ignore
-        if (!IREPrestationAccordee.CS_ETAT_AJOURNE.equals(rente.getCsEtat())) {
+        // Si la rente n'est pas à l'état validée, on ne la prend pas
+        if (!IREPrestationAccordee.CS_ETAT_VALIDE.equals(rente.getCsEtat())) {
+            return REReponseModuleAnalyseEcheance.Faux;
+        }
+        // Si la rente ne contient pas le code cas spécial 08, on ne la prend pas
+        if (rente.getCodesCasSpeciaux() == null || !rente.getCodesCasSpeciaux().contains("08")) {
             return REReponseModuleAnalyseEcheance.Faux;
         }
         // si une date d'échéance est présente

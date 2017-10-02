@@ -6,6 +6,8 @@ import globaz.corvus.db.echeances.REEcheancesEntity;
 import globaz.corvus.db.echeances.RERenteJoinDemandeEcheance;
 import globaz.pyxis.api.ITIPersonne;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 import ch.globaz.corvus.business.models.echeances.REMotifEcheance;
@@ -319,8 +321,12 @@ public class REModuleEcheanceHommeAgeAvsTest extends REModuleAnalyseEcheanceTest
         // test avec une rente ajournée dans le mois, et un homme ayant déjà 65 ans dans ce mois
         entity.setDateNaissanceTiers("01.01.1947");
         rente.setCodePrestation("10");
-        rente.setCsEtat(IREPrestationAccordee.CS_ETAT_AJOURNE);
+        rente.setCsEtat(IREPrestationAccordee.CS_ETAT_VALIDE);
+        Set<String> codeCasSpeciaux = new HashSet<String>();
+        codeCasSpeciaux.add("08");
+        rente.setCodesCasSpeciaux(codeCasSpeciaux);
         assertFalse(module, entity, "01.2013");
+        rente.setCsEtat(IREPrestationAccordee.CS_ETAT_AJOURNE);
 
         // avec révocation de l'ajournement dans le mois de traitement
         // pas encore géré par le module d'ajournement -> homme âge AVS dépassé
