@@ -321,6 +321,16 @@ public class REDiminutionRentePourEnfantProcess extends LYAbstractEcheanceProces
             ra.retrieve(transaction);
             PRAssert.notIsNew(ra, null);
 
+            /**
+             * si la prestation est bloquée, il faut s'assurer que le flag ZTBPRB est à 2 (false)
+             * (résolution K170302_001)
+             **/
+
+            if (ra.getIsPrestationBloquee()) {
+                ra.setIsPrestationBloquee(false);
+                ra.update(transaction);
+            }
+
             // Si la RA est New, elle sera détectée dans le process du coup on la laisse passer
             if (!ra.isNew()) {
                 if (ra.contientCodeCasSpecial("02")) {
