@@ -13,7 +13,6 @@ import globaz.corvus.db.rentesaccordees.REPrestationsAccordees;
 import globaz.corvus.db.rentesaccordees.RERenteAccordeeJoinInfoComptaJoinPrstDues;
 import globaz.corvus.db.rentesaccordees.RERenteAccordeeJoinInfoComptaJoinPrstDuesJoinDecisions;
 import globaz.corvus.db.rentesaccordees.RERenteAccordeeJoinInfoComptaJoinPrstDuesJoinDecisionsManager;
-import globaz.corvus.db.rentesaccordees.RERenteAccordeeJoinInfoComptaJoinPrstDuesManager;
 import globaz.corvus.utils.REPmtMensuel;
 import globaz.corvus.utils.enumere.genre.prestations.REGenrePrestationEnum;
 import globaz.corvus.utils.enumere.genre.prestations.REGenresPrestations;
@@ -30,6 +29,7 @@ import globaz.globall.db.BTransaction;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JACalendarGregorian;
 import globaz.globall.util.JADate;
+import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.osiris.api.APIEcriture;
 import globaz.osiris.api.APIGestionComptabiliteExterne;
@@ -1047,22 +1047,41 @@ public abstract class AREModuleComptable implements Comparator<IREModuleComptabl
                 Integer.toString(renteAccordeePrincipale.getCodePrestation().getCodePrestation()), isoLangFromIdTiers);
 
         // Périodes
-        RERenteAccordeeJoinInfoComptaJoinPrstDuesManager manager = new RERenteAccordeeJoinInfoComptaJoinPrstDuesManager();
-        manager.setForIdTiersBeneficiaire(idTiersPrincipal);
-        manager.setForIdRenteAccordee(renteAccordeePrincipale.getId().toString());
+        RERenteAccordeeJoinInfoComptaJoinPrstDuesJoinDecisionsManager manager = new RERenteAccordeeJoinInfoComptaJoinPrstDuesJoinDecisionsManager();
+        manager.setForIdDecision(decision.getId().toString());
         manager.find(BManager.SIZE_NOLIMIT);
 
-        RERenteAccordeeJoinInfoComptaJoinPrstDues re = (RERenteAccordeeJoinInfoComptaJoinPrstDues) manager
-                .getFirstEntity();
+        String dateDebut = "";
+        String dateFin = "";
+
+        for (int j = 0; j < manager.size(); j++) {
+            RERenteAccordeeJoinInfoComptaJoinPrstDues elem = (RERenteAccordeeJoinInfoComptaJoinPrstDues) manager
+                    .getEntity(j);
+
+            String tmpDebut = elem.getDateDebutDroit();
+            String tmpFin = elem.getDateFinDroit();
+
+            if (dateDebut.isEmpty()
+                    || JadeDateUtil.getGlobazCalendar(JadeDateUtil.getFirstDateOfMonth(tmpDebut)).getTimeInMillis() < JadeDateUtil
+                            .getGlobazCalendar(JadeDateUtil.getFirstDateOfMonth(dateDebut)).getTimeInMillis()) {
+                dateDebut = elem.getDateDebutDroit();
+            }
+
+            if ("0".equals(tmpFin) || tmpFin.isEmpty() || "0".equals(dateFin)) {
+                dateFin = "0";
+            } else {
+                if (dateFin.isEmpty()
+                        || JadeDateUtil.getGlobazCalendar(JadeDateUtil.getLastDateOfMonth(tmpFin)).getTimeInMillis() > JadeDateUtil
+                                .getGlobazCalendar(JadeDateUtil.getLastDateOfMonth(dateFin)).getTimeInMillis()) {
+                    dateFin = elem.getDateFinDroit();
+                }
+            }
+        }
 
         String periode;
-        if (re != null) {
-            String dateFin = JadeStringUtil.isBlankOrZero(re.getDateFinDroit()) ? REPmtMensuel
-                    .getDateDernierPmt(session) : re.getDateFinDroit();
-            periode = re.getDateDebutDroit() + " - " + dateFin;
-        } else {
-            periode = " ";
-        }
+
+        dateFin = JadeStringUtil.isBlankOrZero(dateFin) ? REPmtMensuel.getDateDernierPmt(session) : dateFin;
+        periode = dateDebut + " - " + dateFin;
 
         // Message décisions
         String msgDecision = MotifVersementUtil.getTranslatedLabelFromIsolangue(isoLangFromIdTiers,
