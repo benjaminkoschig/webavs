@@ -376,7 +376,8 @@ public class REGenererTransfertDossierValideProcess extends REAbstractInfoComplP
                 demandeRente.update();
             } else {
                 Set<String> idTiersExConjoints = chargerExConjoints(demandePrestation.getIdTiers());
-                // K150602_001 : si la rente est de type "Survivant", il faut également transférer les rentes des ex-conjoints
+                // K150602_001 : si la rente est de type "Survivant", il faut également transférer les rentes des
+                // ex-conjoints
                 if (IREDemandeRente.CS_TYPE_DEMANDE_RENTE_SURVIVANT.equals(demandeRente.getCsTypeDemandeRente())) {
                     idTiersExConjoints.clear();
                 }
@@ -499,18 +500,25 @@ public class REGenererTransfertDossierValideProcess extends REAbstractInfoComplP
 
                     RERenteAccordeeFamille ra = list.get(0);
 
-                    // Dans le cas de rentes de survivants, on recherche le nss de la base de calcul (cas particulier
-                    // des rentes de survivants)
+                    // Dans le cas de rentes de survivants, on recherche le nss du requerant ou de la base de calcul
+                    // (cas particulier des rentes de survivants)
                     String idTiersChangementCaisse = null;
                     boolean isSurvivant = PRCodePrestationSurvivant.isCodePrestationSurvivant(ra.getCodePrestation());
                     if (isSurvivant) {
-                        idTiersChangementCaisse = ra.getIdTiersBaseCalcul();
-                        if (JadeStringUtil.isBlankOrZero(idTiersChangementCaisse)) {
-                            REBasesCalcul bc = new REBasesCalcul();
-                            bc.setSession(getSession());
-                            bc.setIdBasesCalcul(ra.getIdBaseCalcul());
-                            bc.retrieve();
-                            idTiersChangementCaisse = bc.getIdTiersBaseCalcul();
+                        PRTiersWrapper tiersDateDeces = PRTiersHelper.getTiersById(getSession(),
+                                demandePrestation.getIdTiers());
+                        // WEBAVS-4620 : Nss du requerant si le requerant est décédé
+                        if (tiersDateDeces.getDateDeces() != null) {
+                            idTiersChangementCaisse = demandePrestation.getIdTiers();
+                        } else {
+                            idTiersChangementCaisse = ra.getIdTiersBaseCalcul();
+                            if (JadeStringUtil.isBlankOrZero(idTiersChangementCaisse)) {
+                                REBasesCalcul bc = new REBasesCalcul();
+                                bc.setSession(getSession());
+                                bc.setIdBasesCalcul(ra.getIdBaseCalcul());
+                                bc.retrieve();
+                                idTiersChangementCaisse = bc.getIdTiersBaseCalcul();
+                            }
                         }
                     } else {
                         idTiersChangementCaisse = ra.getIdTiersBeneficiaire();
