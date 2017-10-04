@@ -4,6 +4,7 @@
 package ch.globaz.pegasus.businessimpl.services.models.calcul;
 
 import globaz.corvus.api.basescalcul.IREPrestationAccordee;
+import globaz.corvus.db.ventilation.constantes.REVentilationType;
 import globaz.corvus.utils.enumere.genre.prestations.REGenresPrestations;
 import globaz.framework.util.FWCurrency;
 import globaz.globall.db.BSessionUtil;
@@ -30,9 +31,11 @@ import java.util.List;
 import java.util.Map;
 import ch.globaz.common.properties.CommonProperties;
 import ch.globaz.common.properties.PropertiesException;
+import ch.globaz.corvus.business.exceptions.CorvusException;
 import ch.globaz.corvus.business.exceptions.models.RentesAccordeesException;
 import ch.globaz.corvus.business.models.rentesaccordees.SimpleInformationsComptabilite;
 import ch.globaz.corvus.business.models.rentesaccordees.SimplePrestationsAccordees;
+import ch.globaz.corvus.business.models.ventilation.SimpleVentilation;
 import ch.globaz.corvus.business.services.CorvusServiceLocator;
 import ch.globaz.pegasus.business.constantes.Compteurs;
 import ch.globaz.pegasus.business.constantes.ConstantesCalcul;
@@ -315,18 +318,47 @@ public class CalculPersistanceServiceImpl extends PegasusAbstractServiceImpl imp
         }
 
         // prerequis: le simpleinfocompta[0] est toujours celui du requerant. le 2e est celui du conjoint.
-        result.add(createSimplePrestationAccordee(periode, simpleInformationsComptabilite.get(0),
-                periode.getCCRetenu()[0], false, anciennePcaRequerant)); // pour requerant
+        SimplePrestationsAccordees simplePrestationAccordeeRequerant = createSimplePrestationAccordee(periode,
+
+        simpleInformationsComptabilite.get(0), periode.getCCRetenu()[0], false, anciennePcaRequerant);
+        result.add(simplePrestationAccordeeRequerant); // pour requerant
+        createVentilationPartCantonalePC(simplePrestationAccordeeRequerant.getId(),
+                periode.getCCRetenu()[0].getMontantPartCantonale());
+
         if (TypeSeparationCC.CALCUL_SEPARE_MALADIE.equals(periode.getTypeSeparationCC())) {
 
-            result.add(createSimplePrestationAccordee(periode, simpleInformationsComptabilite.get(1),
-                    periode.getCCRetenu()[1], true, anciennePcaConjoint)); // pour conjoint
+            SimplePrestationsAccordees simplePrestationAccordeeConjoint = createSimplePrestationAccordee(periode,
+                    simpleInformationsComptabilite.get(1), periode.getCCRetenu()[1], true, anciennePcaConjoint);
+
+            result.add(simplePrestationAccordeeConjoint); // pour conjoint
+            createVentilationPartCantonalePC(simplePrestationAccordeeConjoint.getId(),
+                    periode.getCCRetenu()[1].getMontantPartCantonale());
+
         } else if (TypeSeparationCC.CALCUL_DOM2_PRINCIPALE.equals(periode.getTypeSeparationCC())) {
-            result.add(createSimplePrestationAccordee(periode, simpleInformationsComptabilite.get(1),
-                    periode.getCCRetenu()[0], true, anciennePcaRequerant)); // pour conjoint
+            SimplePrestationsAccordees simplePrestationAccordeeConjoint = createSimplePrestationAccordee(periode,
+                    simpleInformationsComptabilite.get(1), periode.getCCRetenu()[0], true, anciennePcaRequerant);
+
+            result.add(simplePrestationAccordeeConjoint); // pour conjoint
+            createVentilationPartCantonalePC(simplePrestationAccordeeConjoint.getId(),
+                    periode.getCCRetenu()[1].getMontantPartCantonale());
         }
 
         return result;
+    }
+
+    private SimpleVentilation createVentilationPartCantonalePC(String idPrestatoinAccordee, String montantPartCantonale)
+            throws CorvusException, JadeApplicationServiceNotAvailableException, JadePersistenceException {
+        // S160704_002 : si on a une part cantonale on créé une écriture dans la table de ventilation des rentes /
+        // prestations accordées
+        if (!"0.0".equals(montantPartCantonale)) {
+            SimpleVentilation ventilationPartCantonale = new SimpleVentilation();
+            ventilationPartCantonale.setCsTypeVentilation(REVentilationType.PART_CANTONALE.getValue());
+            ventilationPartCantonale.setMontantVentile(montantPartCantonale);
+            ventilationPartCantonale.setIdPrestationAccordee(idPrestatoinAccordee);
+
+            return CorvusServiceLocator.getSimpleVentilationService().create(ventilationPartCantonale);
+        }
+        return null;
     }
 
     private SimplePrestationsAccordees createSimplePrestationAccordee(PeriodePCAccordee periode,

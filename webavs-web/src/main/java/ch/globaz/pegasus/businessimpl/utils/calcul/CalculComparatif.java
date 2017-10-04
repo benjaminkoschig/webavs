@@ -29,6 +29,7 @@ public class CalculComparatif implements ICalculComparatif {
     private String montantPCMensuel = null;
     private String montantPrixHome;
     private String montantRentesAvsAi;
+    private String montantPartCantonale = null;
     private TupleDonneeRapport montants = null;
     private String nbEnfants;
     private List<PersonnePCAccordee> personnes = null;
@@ -58,6 +59,7 @@ public class CalculComparatif implements ICalculComparatif {
         cc.montantPrixHome = montantPrixHome;
         cc.montantRentesAvsAi = montantRentesAvsAi;
         cc.montantPrixHome = montantPrixHome;
+        cc.montantPartCantonale = montantPartCantonale;
         cc.montants = montants;
         cc.nbEnfants = nbEnfants;
         cc.personnes = personnes;
@@ -164,6 +166,10 @@ public class CalculComparatif implements ICalculComparatif {
         return montantRentesAvsAi;
     }
 
+    public String getMontantPartCantonale() {
+        return montantPartCantonale;
+    }
+
     /**
      * @return the montants
      */
@@ -227,6 +233,10 @@ public class CalculComparatif implements ICalculComparatif {
         this.montantMensuelRequerant = montantMensuelRequerant;
     }
 
+    public void setMontantPartCantonale(String montantPartCantonale) {
+        this.montantPartCantonale = montantPartCantonale;
+    }
+
     /**
      * @param montantPCMensuel
      *            the montantPCMensuel to set
@@ -270,6 +280,9 @@ public class CalculComparatif implements ICalculComparatif {
 
         float montantPrixHome = montants.getValeurEnfant(IPCValeursPlanCalcul.CLE_DEPEN_TAXEHOME_TOTAL);
         this.montantPrixHome = String.valueOf(montantPrixHome);
+
+        float montantPartCantonale = montants.getValeurEnfant(IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_PART_CANTONALE);
+        this.montantPartCantonale = String.valueOf(montantPartCantonale);
 
         float nbEnfants = 0;
         if (personnes != null) {

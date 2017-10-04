@@ -10,6 +10,7 @@ import ch.globaz.corvus.business.services.models.pcaccordee.SimpleRetenuePayemen
 import ch.globaz.corvus.business.services.models.rentesaccordees.REDiminutionRenteEnfantService;
 import ch.globaz.corvus.business.services.models.rentesaccordees.RenteAccordeeService;
 import ch.globaz.corvus.business.services.models.rentesaccordees.SimpleInformationsComptabiliteService;
+import ch.globaz.corvus.business.services.models.ventilation.SimpleVentilationService;
 import ch.globaz.corvus.businessimpl.services.models.decisions.DecisionServiceImpl;
 import ch.globaz.corvus.businessimpl.services.models.demande.DemandeRenteServiceImpl;
 import ch.globaz.corvus.businessimpl.services.models.rentesaccordees.RenteAccordeeServiceImpl;
@@ -90,5 +91,11 @@ public abstract class CorvusServiceLocator {
             throws JadeApplicationServiceNotAvailableException {
         return (SimpleRetenuePayementService) JadeApplicationServiceLocator.getInstance().getServiceImpl(
                 SimpleRetenuePayementService.class);
+    }
+
+    public static SimpleVentilationService getSimpleVentilationService()
+            throws JadeApplicationServiceNotAvailableException {
+        return (SimpleVentilationService) JadeApplicationServiceLocator.getInstance().getServiceImpl(
+                SimpleVentilationService.class);
     }
 }

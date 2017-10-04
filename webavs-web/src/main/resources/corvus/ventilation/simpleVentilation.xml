@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.corvus.business.models.ventilation.SimpleVentilation">
+		<description>Ventilation</description>
+		<table name="RE_VENTILATION" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idVentilation" column="ID_VENTILATION" comment="ID_VENTILATION"/>
+			
+			<field name="idPrestationAccordee" type="NUMERIC" column="ID_REPRACC" comment="ID_REPRACC" />
+			<field name="montantVentile" type="NUMERIC" column="MONTANT_VENTILE" comment="MONTANT_VENTILE" />
+			<field name="csTypeVentilation" type="NUMERIC" column="CS_TYPE_VENTILATION" comment="CODE_SYSTEME_TYPE_VENTILATION" />			
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field operation="EQUALS" name="forIdPrestationAccordee" field-ref="idPrestationAccordee" />				
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>
