@@ -34,6 +34,9 @@ import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang.NotImplementedException;
 import ch.globaz.common.properties.PropertiesException;
+import ch.globaz.corvus.business.models.ventilation.SimpleVentilation;
+import ch.globaz.corvus.business.models.ventilation.SimpleVentilationSearch;
+import ch.globaz.corvus.business.services.CorvusServiceLocator;
 import ch.globaz.pegasus.business.constantes.EPCProperties;
 import ch.globaz.pegasus.business.constantes.IPCActions;
 import ch.globaz.pegasus.business.constantes.IPCDroits;
@@ -50,6 +53,8 @@ import ch.globaz.pegasus.business.models.pcaccordee.PlanDeCalculWitMembreFamille
 import ch.globaz.pegasus.business.models.pcaccordee.PlanDeCalculWitMembreFamilleSearch;
 import ch.globaz.pegasus.business.models.pcaccordee.SimpleAllocationNoel;
 import ch.globaz.pegasus.business.models.pcaccordee.SimpleJoursAppoint;
+import ch.globaz.pegasus.business.models.pcaccordee.SimplePCAccordee;
+import ch.globaz.pegasus.business.models.pcaccordee.SimplePCAccordeeSearch;
 import ch.globaz.pegasus.business.models.pcaccordee.SimplePlanDeCalcul;
 import ch.globaz.pegasus.business.services.PegasusServiceLocator;
 import ch.globaz.pegasus.businessimpl.services.PegasusImplServiceLocator;
@@ -919,6 +924,31 @@ public class PCPcAccordeeDetailViewBean extends BJadePersistentObjectViewBean {
      */
     public void setPcAccordee(PCAccordee pcAccordee) {
         this.pcAccordee = pcAccordee;
+    }
+
+    /**
+     * Recupére la part cantonale
+     * 
+     * @return
+     * @throws JadeApplicationException, JadePersistenceException
+     */
+    public String getPartCantonale(SimplePlanDeCalcul plancalcul) throws JadeApplicationException,
+            JadePersistenceException {
+
+        SimplePCAccordeeSearch pcasearch = new SimplePCAccordeeSearch();
+        pcasearch.setForIdPCAccordee(plancalcul.getIdPCAccordee());
+        PegasusServiceLocator.getSimplePcaccordeeService().search(pcasearch);
+        if (pcasearch.getSearchResults().length != 0) {
+            SimplePCAccordee pca = (SimplePCAccordee) pcasearch.getSearchResults()[0];
+            SimpleVentilationSearch ventilationSearch = new SimpleVentilationSearch();
+            ventilationSearch.setForIdPrestationAccordee(pca.getIdPrestationAccordee());
+            ventilationSearch = CorvusServiceLocator.getSimpleVentilationService().search(ventilationSearch);
+            if (ventilationSearch.getSearchResults().length != 0) {
+                return ((SimpleVentilation) ventilationSearch.getSearchResults()[0]).getMontantVentile();
+            }
+        }
+
+        return "";
     }
 
     /*

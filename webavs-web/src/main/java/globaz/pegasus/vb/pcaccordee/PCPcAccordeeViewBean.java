@@ -7,9 +7,15 @@ import globaz.globall.db.BSessionUtil;
 import globaz.globall.db.BSpy;
 import globaz.globall.vb.BJadePersistentObjectViewBean;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.exception.JadeApplicationException;
+import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.persistence.model.JadeAbstractModel;
 import globaz.pegasus.utils.PCPCAccordeeHandler;
 import globaz.prestation.tools.PRStringUtils;
 import ch.globaz.common.properties.PropertiesException;
+import ch.globaz.corvus.business.models.ventilation.SimpleVentilation;
+import ch.globaz.corvus.business.models.ventilation.SimpleVentilationSearch;
+import ch.globaz.corvus.business.services.CorvusServiceLocator;
 import ch.globaz.pegasus.business.constantes.EPCProperties;
 import ch.globaz.pegasus.business.constantes.IPCValeursPlanCalcul;
 import ch.globaz.pegasus.business.exceptions.models.pcaccordee.PCAccordeeException;
@@ -212,6 +218,24 @@ public class PCPcAccordeeViewBean extends BJadePersistentObjectViewBean {
 
         }
 
+    }
+
+    /**
+     * Recupére la part cantonale
+     * 
+     * @return
+     * @throws JadeApplicationException, JadePersistenceException
+     */
+    public String getPartCantonale() throws JadeApplicationException, JadePersistenceException {
+        SimpleVentilationSearch ventilationSearch = new SimpleVentilationSearch();
+        ventilationSearch.setForIdPrestationAccordee(pcAccordee.getIdPrestationAccordee());
+        ventilationSearch = CorvusServiceLocator.getSimpleVentilationService().search(ventilationSearch);
+        if (ventilationSearch.getSearchResults().length != 0) {
+            for (JadeAbstractModel result : ventilationSearch.getSearchResults()) {
+                return ((SimpleVentilation) result).getMontantVentile();
+            }
+        }
+        return "";
     }
 
     public BSession getSession() {

@@ -545,6 +545,7 @@
 								<th>
 									<ct:FWLabel key="JSP_PCACCORDE_D_MONTANT"/>
 								</th>
+								<th class="casretenus"><ct:FWLabel key="JSP_PCACCORDE_D_PART_CANT"/></th>
 								<th class="casretenus"><ct:FWLabel key="JSP_PCACCORDE_D_AFFICHER"/></th>
 							</tr>
 							
@@ -593,6 +594,10 @@
 											</c:otherwise>
 										</c:choose>
 									</td>
+									<!--  part cantonale -->
+									<td class="pcantonale ${isRetenu?'retenu':''}" data-g-amountformatter=" " style="text-align:right">
+										<c:out value="${viewBean.getPartCantonale(planCalcul)}"/>
+									</td>									
 								<!--  generation url image pcal -->
 								<c:choose>
 									<%-- si plan de calcul existant (pas reprise), affichage de limage et du lien --%>

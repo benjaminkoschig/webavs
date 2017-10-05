@@ -5,11 +5,13 @@ package ch.globaz.corvus.businessimpl.services.models.ventilation;
 
 import globaz.corvus.db.ventilation.REVentilation;
 import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.persistence.JadePersistenceManager;
 import ch.globaz.corvus.business.models.lots.SimpleLotSearch;
 import ch.globaz.corvus.business.models.ventilation.SimpleVentilation;
 import ch.globaz.corvus.business.models.ventilation.SimpleVentilationSearch;
 import ch.globaz.corvus.business.models.ventilation.VentilationException;
 import ch.globaz.corvus.business.services.models.ventilation.SimpleVentilationService;
+import ch.globaz.pegasus.business.exceptions.models.process.AdaptationException;
 import ch.globaz.pyxis.common.Messages;
 
 /**
@@ -123,6 +125,20 @@ public class SimpleVentilationServiceImpl implements SimpleVentilationService {
     @Override
     public SimpleVentilation update(SimpleVentilation simpleVentilation) throws JadePersistenceException {
         return null;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * #search(ch.globaz.corvus.business.models.ventilation.SimpleVentilationSearch)
+     */
+    @Override
+    public SimpleVentilationSearch search(SimpleVentilationSearch search) throws JadePersistenceException,
+            AdaptationException {
+        if (search == null) {
+            throw new AdaptationException("Unable to search simpleVentilationSearch, the model passed is null!");
+        }
+        return (SimpleVentilationSearch) JadePersistenceManager.search(search);
     }
 
 }

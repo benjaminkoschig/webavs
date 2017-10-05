@@ -6,4 +6,5 @@
 	<model-mapping import="corvus/recapinfo/recapinfopackage.xml" />
 	<model-mapping import="corvus/blocage/blocagepackage.xml" />
 	<model-mapping import="corvus/ordresversements/ordreVersementPackage.xml" />
+	<model-mapping import="corvus/ventilation/ventilationpackage.xml" />
 </model-mapping>

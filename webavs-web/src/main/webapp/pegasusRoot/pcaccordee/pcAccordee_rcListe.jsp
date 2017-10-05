@@ -70,6 +70,7 @@ var openGedWindow = function (url){
    	<%} %>
    	<TH><ct:FWLabel key="JSP_PC_PCACCORDEE_L_CC"/></TH>
    	<TH><ct:FWLabel key="JSP_PC_PCACCORDEE_L_MONTANT"/></TH>
+   	<TH><ct:FWLabel key="JSP_PC_PCACCORDEE_L_PART_CANTONALE"/></TH>
    	<TH><ct:FWLabel key="JSP_PC_PCACCORDEE_L_BLOCAGE"/></TH>
    	<TH><ct:FWLabel key="JSP_PC_PCACCORDEE_L_PERIODE"/></TH>
    	<TH><ct:FWLabel key="JSP_PC_PCACCORDEE_L_ETAT"/></TH>
@@ -167,7 +168,7 @@ var openGedWindow = function (url){
 		<TD class="mtd <%= cssToTd %>" nowrap onClick="<%=detailUrl%>"><% if(line.getPcAccordee().getSimplePCAccordee().getHasCalculComparatif()){%>
 		<IMG src="<%=request.getContextPath()+"/images/ok.gif" %>"/><%}else {%>&nbsp;<%}%></TD>
 		<TD class="mtd <%= cssToTd %>" style="text-align:right;" nowrap onClick="<%=detailUrl%>" data-g-amountformatter=" "><%= line.getPCAResultState() %></TD>
-				
+		<TD class="mtd <%= cssToTd %>" style="text-align:right;" nowrap onClick="<%=detailUrl%>" data-g-amountformatter="blankAsZero:false"><%= line.getPartCantonale()%></TD>				
 		<TD class="mtd <%= cssToTd %>" nowrap onClick="<%=detailUrl%>"><%=line.getRetenueBlocageLibelle()%>&nbsp;</TD>
 		
 		<TD class="mtd <%= cssToTd %>" nowrap onClick="<%=detailUrl%>" data-g-periodformatter=" "><%= line.getDateDebut() %> - <%= line.getDateFin() %></TD>		

@@ -11,15 +11,25 @@ import globaz.jade.persistence.model.JadeSearchSimpleModel;
  */
 public class SimpleVentilationSearch extends JadeSearchSimpleModel {
 
+    private static final long serialVersionUID = 1L;
+    private String forIdPrestationAccordee = null;
+
+    public String getForIdPrestationAccordee() {
+        return forIdPrestationAccordee;
+    }
+
+    public void setForIdPrestationAccordee(String forIdPrestationAccordee) {
+        this.forIdPrestationAccordee = forIdPrestationAccordee;
+    }
+
     /*
      * (non-Javadoc)
      * 
      * @see globaz.jade.persistence.model.JadeAbstractSearchModel#whichModelClass()
      */
     @Override
-    public Class whichModelClass() {
-        // TODO Auto-generated method stub
-        return null;
+    public Class<SimpleVentilation> whichModelClass() {
+        return SimpleVentilation.class;
     }
 
 }

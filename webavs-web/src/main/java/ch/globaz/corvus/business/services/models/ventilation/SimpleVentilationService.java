@@ -9,6 +9,7 @@ import ch.globaz.corvus.business.exceptions.CorvusException;
 import ch.globaz.corvus.business.models.lots.SimpleLotSearch;
 import ch.globaz.corvus.business.models.ventilation.SimpleVentilation;
 import ch.globaz.corvus.business.models.ventilation.SimpleVentilationSearch;
+import ch.globaz.pegasus.business.exceptions.models.process.AdaptationException;
 
 /**
  * @author est
@@ -28,5 +29,8 @@ public interface SimpleVentilationService extends JadeApplicationService {
 
     public SimpleVentilation update(SimpleVentilation simpleVentilation) throws CorvusException,
             JadePersistenceException;
+
+    public SimpleVentilationSearch search(SimpleVentilationSearch search) throws JadePersistenceException,
+            AdaptationException;
 
 }
