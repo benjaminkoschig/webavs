@@ -508,7 +508,7 @@ public class REGenererTransfertDossierValideProcess extends REAbstractInfoComplP
                         PRTiersWrapper tiersDateDeces = PRTiersHelper.getTiersById(getSession(),
                                 demandePrestation.getIdTiers());
                         // WEBAVS-4620 : Nss du requerant si le requerant est décédé
-                        if (tiersDateDeces.getDateDeces() != null) {
+                        if (tiersDateDeces.getDateDeces() != null && !tiersDateDeces.getDateDeces().isEmpty()) {
                             idTiersChangementCaisse = demandePrestation.getIdTiers();
                         } else {
                             idTiersChangementCaisse = ra.getIdTiersBaseCalcul();
