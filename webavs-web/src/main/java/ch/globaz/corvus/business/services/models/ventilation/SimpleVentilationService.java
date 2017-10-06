@@ -3,6 +3,7 @@
  */
 package ch.globaz.corvus.business.services.models.ventilation;
 
+import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.service.provider.application.JadeApplicationService;
 import ch.globaz.corvus.business.exceptions.CorvusException;
@@ -32,5 +33,8 @@ public interface SimpleVentilationService extends JadeApplicationService {
 
     public SimpleVentilationSearch search(SimpleVentilationSearch search) throws JadePersistenceException,
             AdaptationException;
+
+    public SimpleVentilation getMontantVentileFromIdPca(String idPca) throws JadeApplicationException,
+            JadePersistenceException;
 
 }
