@@ -62,10 +62,10 @@ public class CEControlesAEffectuerAnneePrecManager extends BManager {
         sqlSelect.append("(SELECT COUNT(*) FROM " + _getCollection()
                 + "CIECRIP AS CI WHERE aff.MAIAFF = CI.KBITIE AND CI.KBNANN = "
                 + CEUtils.subAnnee(getForAnneeCptr(), 4) + ") AS NBCI5,");
-        sqlSelect.append("(select MFDDEB from " + _getCollection() + "afpartp as particularite where mftpar = "
+        sqlSelect.append("(select max(MFDDEB) from " + _getCollection() + "afpartp as particularite where mftpar = "
                 + CodeSystem.PARTIC_AFFILIE_SANS_PERSONNEL + " and mfddeb >= " + getForAnnee() + "0101 and mfdfin <= "
                 + getForAnnee() + "1231 and aff.maiaff=particularite.maiaff) AS SANSPERSDEB,");
-        sqlSelect.append("(select MFDFIN from " + _getCollection() + "afpartp as particularite where mftpar = "
+        sqlSelect.append("(select min(MFDFIN) from " + _getCollection() + "afpartp as particularite where mftpar = "
                 + CodeSystem.PARTIC_AFFILIE_SANS_PERSONNEL + " and mfddeb >= " + getForAnnee() + "0101 and mfdfin <= "
                 + getForAnnee() + "1231 and aff.maiaff=particularite.maiaff) AS SANSPERSFIN");
 
