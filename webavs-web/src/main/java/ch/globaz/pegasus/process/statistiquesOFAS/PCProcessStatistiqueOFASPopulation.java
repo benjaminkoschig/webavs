@@ -115,7 +115,7 @@ public class PCProcessStatistiqueOFASPopulation implements JadeProcessPopulation
             JadeApplicationServiceNotAvailableException, JadePersistenceException {
         // On a du sélectionner les pca en refus a cause de couple séparer. Afin de determiner le type de la pca.
         // Mais il ne faut pas faire de statistique sur les pcas en refus
-        // S160704_002 :  ne pas prendre la part fédérale si refus
+        // S160704_002 : ne pas prendre la part fédérale si refus
         if (!IPCValeursPlanCalcul.STATUS_REFUS.equals(pcAccordee.getSimplePlanDeCalcul().getEtatPC())
                 && !isRefusPartFederal(pcAccordee)) {
             JadeProcessEntity entity = new JadeProcessEntity();
@@ -129,7 +129,7 @@ public class PCProcessStatistiqueOFASPopulation implements JadeProcessPopulation
         }
     }
 
-    // S160704_002 - filtre les refus de la part Fédérale 
+    // S160704_002 - filtre les refus de la part Fédérale
     private boolean isRefusPartFederal(VersionDroitPCAPlanDeCacule pcAccordee) throws JadePersistenceException,
             AdaptationException, JadeApplicationServiceNotAvailableException {
         SimpleVentilationSearch ventilationSearch = new SimpleVentilationSearch();
@@ -144,27 +144,20 @@ public class PCProcessStatistiqueOFASPopulation implements JadeProcessPopulation
         TupleDonneeRapport tupleRoot;
 
         // charge le plan de calcul
-        if (pcAccordee.getSimplePlanDeCalcul().getResultatCalcul() == null) {
-            SimplePlanDeCalculSearch planSearch = new SimplePlanDeCalculSearch();
-            planSearch.setForIdPlanDeCalcul(pcAccordee.getSimplePlanDeCalcul().getIdPlanDeCalcul());
-            planSearch = (SimplePlanDeCalculSearch) JadePersistenceManager.search(planSearch, true);
-            if (planSearch.getSearchResults().length > 0
-                    && ((SimplePlanDeCalcul) planSearch.getSearchResults()[0]).getResultatCalcul() != null) {
-                SimplePlanDeCalcul simplePlanCalcul = (SimplePlanDeCalcul) planSearch.getSearchResults()[0];
-                pcAccordee.setSimplePlanDeCalcul(simplePlanCalcul);
-            } else {
-                return false;
-            }
+        SimplePlanDeCalculSearch planSearch = new SimplePlanDeCalculSearch();
+        planSearch.setForIdPlanDeCalcul(pcAccordee.getSimplePlanDeCalcul().getIdPlanDeCalcul());
+        planSearch = (SimplePlanDeCalculSearch) JadePersistenceManager.search(planSearch, true);
+        if (planSearch.getSearchResults().length == 0
+                || ((SimplePlanDeCalcul) planSearch.getSearchResults()[0]).getResultatCalcul() == null) {
+            return false;
         }
-        String byteArrayToString = new String(pcAccordee.getSimplePlanDeCalcul().getResultatCalcul());
+        SimplePlanDeCalcul simplePlanCalcul = (SimplePlanDeCalcul) planSearch.getSearchResults()[0];
+        String byteArrayToString = new String(simplePlanCalcul.getResultatCalcul());
         tupleRoot = PegasusImplServiceLocator.getCalculPersistanceService().deserialiseDonneesCcXML(byteArrayToString);
 
         // récupère le statut de la part Fédérale
         String statutFederal = tupleRoot.getLegendeEnfant(IPCValeursPlanCalcul.CLE_TOTAL_CC_STATUS_FEDERAL);
-        if (IPCValeursPlanCalcul.STATUS_REFUS.equals(statutFederal)) {
-            return true;
-        }
-        return false;
+        return IPCValeursPlanCalcul.STATUS_REFUS.equals(statutFederal);
 
     }
 
