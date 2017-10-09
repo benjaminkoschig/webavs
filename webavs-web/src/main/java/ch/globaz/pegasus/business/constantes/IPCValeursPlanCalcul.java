@@ -159,6 +159,7 @@ public interface IPCValeursPlanCalcul {
     public static final String CLE_TOTAL_CC_DEDUIT = "64039123";
     public static final String CLE_TOTAL_CC_DEDUIT_MENSUEL = "64039124";
     public static final String CLE_TOTAL_CC_STATUS = "64039144";
+    public static final String CLE_TOTAL_CC_STATUS_FEDERAL = "64039156";
     public static final String CLE_TOTAL_DEDUIT_MENSUEL_CONJOINT = "64039142";
     public static final String CLE_TOTAL_DEDUIT_MENSUEL_REQ = "64039141";
     public static final String CLE_TOTAL_PRIMEMAL_REQUERANT = "64039146";

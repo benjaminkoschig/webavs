@@ -27,6 +27,13 @@ public class StrategieFinalTotal implements StrategieCalculFinalisation {
 
         final String statusCalcul;
 
+        float diffPartCantonale = donnee.getValeurEnfant(IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_DIFF_PART_CANTONALE);
+
+        // S160704_002 - enregistre le statut de la part fédérale, s'il y a une part cantonale 
+        if (diffPartCantonale > 0) {
+            calcStatutPartFederal(donnee, somme - diffPartCantonale, primeMoyenneAssMaladie);
+        }
+
         // ******************** Traitement du status du calcul
         // excedant de revenu - amal < 0 --> REFUS
         if (sommeDeduit < 0) {
@@ -53,9 +60,6 @@ public class StrategieFinalTotal implements StrategieCalculFinalisation {
             }
             // on ajoute la clé
             donnee.addEnfantTuple(new TupleDonneeRapport(IPCValeursPlanCalcul.CLE_TOTAL_CC_DEDUIT_MENSUEL, pcMensuel));
-
-            float diffPartCantonale = donnee
-                    .getValeurEnfant(IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_DIFF_PART_CANTONALE);
 
             float partCantonale = diffPartCantonale / 12;
 
@@ -85,6 +89,26 @@ public class StrategieFinalTotal implements StrategieCalculFinalisation {
                 typeSeparation.toString()));
         donnee.addEnfantTuple(new TupleDonneeRapport(IPCValeursPlanCalcul.CLE_TOTAL_CC_STATUS, 0f, statusCalcul));
         donnee.addEnfantTuple(new TupleDonneeRapport(IPCValeursPlanCalcul.CLE_TOTAL_CC_DEDUIT, sommeDeduit));
+    }
+
+    // S160704_002 - enregistre le statut de la part fédérale, s'il y a une part cantonale 
+    private void calcStatutPartFederal(TupleDonneeRapport donnee, float somme, float prime) {
+        float sommeDeduit = somme + prime;
+        final String statusCalcul;
+        if (sommeDeduit < 0) {
+            statusCalcul = IPCValeursPlanCalcul.STATUS_REFUS;
+        }
+        // Octroi partiel
+        else if (somme < 0) {
+            // excedant faible de revenu - droit partiel
+            // Tous les champs sont déjà fournis. TOTAL_CC_DEDUIT = 0
+            statusCalcul = IPCValeursPlanCalcul.STATUS_OCTROI_PARTIEL;
+        } else {
+            statusCalcul = IPCValeursPlanCalcul.STATUS_OCTROI;
+        }
+
+        donnee.addEnfantTuple(new TupleDonneeRapport(IPCValeursPlanCalcul.CLE_TOTAL_CC_STATUS_FEDERAL, 0f, statusCalcul));
+
     }
 
 }

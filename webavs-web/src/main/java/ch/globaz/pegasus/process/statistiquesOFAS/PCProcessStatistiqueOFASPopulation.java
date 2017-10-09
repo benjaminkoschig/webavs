@@ -4,12 +4,15 @@ import globaz.jade.client.util.JadeListUtil;
 import globaz.jade.client.util.JadeListUtil.Key;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.persistence.JadePersistenceManager;
 import globaz.jade.persistence.model.JadeAbstractSearchModel;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import ch.globaz.corvus.business.models.ventilation.SimpleVentilationSearch;
+import ch.globaz.corvus.business.services.CorvusServiceLocator;
 import ch.globaz.jade.process.business.bean.JadeProcessEntity;
 import ch.globaz.jade.process.business.interfaceProcess.population.JadeProcessPopulationInterface;
 import ch.globaz.jade.process.business.interfaceProcess.population.JadeProcessPopulationNeedProperties;
@@ -17,11 +20,16 @@ import ch.globaz.pegasus.business.constantes.IPCDroits;
 import ch.globaz.pegasus.business.constantes.IPCPCAccordee;
 import ch.globaz.pegasus.business.constantes.IPCValeursPlanCalcul;
 import ch.globaz.pegasus.business.exceptions.models.pcaccordee.PCAccordeeException;
+import ch.globaz.pegasus.business.exceptions.models.process.AdaptationException;
 import ch.globaz.pegasus.business.models.pcaccordee.PCAccordee;
+import ch.globaz.pegasus.business.models.pcaccordee.SimplePlanDeCalcul;
+import ch.globaz.pegasus.business.models.pcaccordee.SimplePlanDeCalculSearch;
 import ch.globaz.pegasus.business.models.pcaccordee.VersionDroitPCAPlanDeCacule;
 import ch.globaz.pegasus.business.models.pcaccordee.VersionDroitPCAPlanDeCaculeSearch;
 import ch.globaz.pegasus.business.services.PegasusServiceLocator;
+import ch.globaz.pegasus.businessimpl.services.PegasusImplServiceLocator;
 import ch.globaz.pegasus.businessimpl.utils.PersistenceUtil;
+import ch.globaz.pegasus.businessimpl.utils.calcul.TupleDonneeRapport;
 
 public class PCProcessStatistiqueOFASPopulation implements JadeProcessPopulationInterface,
         JadeProcessPopulationNeedProperties<PCProcessStatistiquesOFASEnum> {
@@ -59,7 +67,8 @@ public class PCProcessStatistiqueOFASPopulation implements JadeProcessPopulation
         return pca.getSimplePCAccordee().getCsRoleBeneficiaire().equals(IPCDroits.CS_ROLE_FAMILLE_REQUERANT);
     }
 
-    public List<JadeProcessEntity> getPopulation() throws PCAccordeeException {
+    public List<JadeProcessEntity> getPopulation() throws PCAccordeeException, AdaptationException,
+            JadeApplicationServiceNotAvailableException, JadePersistenceException {
         List<JadeProcessEntity> list = new ArrayList<JadeProcessEntity>();
 
         List<VersionDroitPCAPlanDeCacule> listPca = PersistenceUtil.typeSearch(versionDroitPCAPlanDeCaculeSearch,
@@ -102,10 +111,13 @@ public class PCProcessStatistiqueOFASPopulation implements JadeProcessPopulation
     }
 
     private void peupleListe(List<JadeProcessEntity> list, VersionDroitPCAPlanDeCacule pcAccordee,
-            Boolean isCoupleSepareParLaMaladie, String csGenrePcConjoint) {
+            Boolean isCoupleSepareParLaMaladie, String csGenrePcConjoint) throws AdaptationException,
+            JadeApplicationServiceNotAvailableException, JadePersistenceException {
         // On a du sélectionner les pca en refus a cause de couple séparer. Afin de determiner le type de la pca.
         // Mais il ne faut pas faire de statistique sur les pcas en refus
-        if (!IPCValeursPlanCalcul.STATUS_REFUS.equals(pcAccordee.getSimplePlanDeCalcul().getEtatPC())) {
+        // S160704_002 :  ne pas prendre la part fédérale si refus
+        if (!IPCValeursPlanCalcul.STATUS_REFUS.equals(pcAccordee.getSimplePlanDeCalcul().getEtatPC())
+                && !isRefusPartFederal(pcAccordee)) {
             JadeProcessEntity entity = new JadeProcessEntity();
             entity.setDescription(pcAccordee.getPersonneEtendue().getPersonneEtendue().getNumAvsActuel() + " "
                     + pcAccordee.getPersonneEtendue().getTiers().getDesignation1() + " "
@@ -115,6 +127,45 @@ public class PCProcessStatistiqueOFASPopulation implements JadeProcessPopulation
                     + "," + csGenrePcConjoint);
             list.add(entity);
         }
+    }
+
+    // S160704_002 - filtre les refus de la part Fédérale 
+    private boolean isRefusPartFederal(VersionDroitPCAPlanDeCacule pcAccordee) throws JadePersistenceException,
+            AdaptationException, JadeApplicationServiceNotAvailableException {
+        SimpleVentilationSearch ventilationSearch = new SimpleVentilationSearch();
+        ventilationSearch.setForIdPrestationAccordee(pcAccordee.getSimplePCAccordee().getIdPrestationAccordee());
+        CorvusServiceLocator.getSimpleVentilationService().search(ventilationSearch);
+
+        // verifie s'il y a une part cantonale
+        if (ventilationSearch.getSearchResults().length == 0) {
+            return false;
+        }
+
+        TupleDonneeRapport tupleRoot;
+
+        // charge le plan de calcul
+        if (pcAccordee.getSimplePlanDeCalcul().getResultatCalcul() == null) {
+            SimplePlanDeCalculSearch planSearch = new SimplePlanDeCalculSearch();
+            planSearch.setForIdPlanDeCalcul(pcAccordee.getSimplePlanDeCalcul().getIdPlanDeCalcul());
+            planSearch = (SimplePlanDeCalculSearch) JadePersistenceManager.search(planSearch, true);
+            if (planSearch.getSearchResults().length > 0
+                    && ((SimplePlanDeCalcul) planSearch.getSearchResults()[0]).getResultatCalcul() != null) {
+                SimplePlanDeCalcul simplePlanCalcul = (SimplePlanDeCalcul) planSearch.getSearchResults()[0];
+                pcAccordee.setSimplePlanDeCalcul(simplePlanCalcul);
+            } else {
+                return false;
+            }
+        }
+        String byteArrayToString = new String(pcAccordee.getSimplePlanDeCalcul().getResultatCalcul());
+        tupleRoot = PegasusImplServiceLocator.getCalculPersistanceService().deserialiseDonneesCcXML(byteArrayToString);
+
+        // récupère le statut de la part Fédérale
+        String statutFederal = tupleRoot.getLegendeEnfant(IPCValeursPlanCalcul.CLE_TOTAL_CC_STATUS_FEDERAL);
+        if (IPCValeursPlanCalcul.STATUS_REFUS.equals(statutFederal)) {
+            return true;
+        }
+        return false;
+
     }
 
     @Override

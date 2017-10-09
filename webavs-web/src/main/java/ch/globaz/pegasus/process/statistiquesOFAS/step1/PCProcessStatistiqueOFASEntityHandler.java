@@ -420,6 +420,12 @@ public class PCProcessStatistiqueOFASEntityHandler implements JadeProcessEntityI
         return data;
     }
 
+    private void removePartCantonale(StatistiquesOFAData data, TupleDonneeRapport tupleRoot) {
+        float diffPartCantonale = tupleRoot
+                .getValeurEnfant(IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_DIFF_PART_CANTONALE);
+        data.setMontantPc(data.getMontantPc() - diffPartCantonale);
+    }
+
     private StatistiquesOFASDepense mapDepense(TupleDonneeRapport tupleRoot) throws PropertiesException {
         StatistiquesOFASDepense depense = new StatistiquesOFASDepense();
 
@@ -657,6 +663,8 @@ public class PCProcessStatistiqueOFASEntityHandler implements JadeProcessEntityI
             StatistiquesOFAData data = mapData(tupleRoot, search, pcAccordee);
             data.setSansPlanDeCalcul(isSansPlanDeCalcul);
             testDeControleDeDonnees(data, simplePlanDeCalcul.getMontantPCMensuelle());
+            // S160704_002 - retirer la part cantonale pour les stats OFAS
+            removePartCantonale(data, tupleRoot);
 
             this.data = new HashMap<PCProcessStatistiquesOFASEnum, String>();
             this.data.put(PCProcessStatistiquesOFASEnum.OBJET_JSON_STATISTIQUESOFAS, gson.toJson(data));
