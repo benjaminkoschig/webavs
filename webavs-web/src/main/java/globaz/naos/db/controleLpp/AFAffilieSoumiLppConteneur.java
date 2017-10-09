@@ -237,6 +237,7 @@ public class AFAffilieSoumiLppConteneur {
                     } else {
                         salMontant.add(salarieMontant);
                     }
+                    sal.setMontant(salMontant.toString());
 
                     if (salMontant.isNegative()) {
                         sal.setNegatif(true);
