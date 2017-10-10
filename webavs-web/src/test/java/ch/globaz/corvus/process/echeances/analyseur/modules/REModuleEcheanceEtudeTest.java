@@ -302,7 +302,7 @@ public class REModuleEcheanceEtudeTest extends REModuleAnalyseEcheanceTest {
         rente.setDateEcheance("03.2014");
 
         // 18 ans + 1 mois : motif sans période d'étude
-        assertTrue(module, entity, "04.2014", REMotifEcheance.EcheanceEtudesAucunePeriode);
+        assertTrue(module, entity, "04.2014", REMotifEcheance.EcheanceFinEtudesDepassees);
     }
 
     @Test
