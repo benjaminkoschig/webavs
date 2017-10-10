@@ -89,6 +89,40 @@ function cancel() {
 function init(){
 }
 
+function verifyDateEcheanceValidty(){
+	
+	var groupLevel = document.getElementById('groupLevelRequerant').value;
+	//si le grouplevel est 5, on fait le contrôle de l'âge du tiers 
+	if(groupLevel == 5){
+		
+		var dateEcheance = document.getElementById('dateEcheance').value;
+		var age25Ans = document.getElementById('dateAge25ansRequerant').value;
+		
+		var mois25ans = age25Ans.substring(0,2);
+		var annee25ans = age25Ans.substring(3,7);
+		var moisDateEcheance = dateEcheance.substring(0,2);
+		var anneeDateEcheance = dateEcheance.substring(3,7);
+		var placeWarning = false;
+		
+		if(anneeDateEcheance > annee25ans){
+			placeWarning = true;
+		}else if(anneeDateEcheance == annee25ans){
+			if(moisDateEcheance > mois25ans){
+				placeWarning = true;
+			}
+		}
+		
+		if(placeWarning){
+			document.getElementById('dateEcheance').value = age25Ans;
+			var warningLabel = document.getElementById('warningAge25ans').value;
+			alert(warningLabel);
+		}
+		
+	}
+	
+
+}
+
  </SCRIPT>
  
 <%-- /tpl:put --%>
@@ -120,10 +154,15 @@ function init(){
 						<TR>
 							<TD><ct:FWLabel key="JSP_SDE_DATE_ECHEANCE"/></TD>
 							<TD>
+							   <input type="hidden" value="<%=viewBean.getDateAge25Requerant()%>" id="dateAge25ansRequerant"/>
+							   <input type="hidden" value="<%=viewBean.getGroupLevelRenteRequerant()%>" id="groupLevelRequerant"/>
+							   <input type="hidden" value="<%=viewBean.get25AnsWarningLabel()%>" id="warningAge25ans"/> 
 								<input	id="dateEcheance"
 										name="dateEcheance"
 										data-g-calendar="type:month"
-										value="<%=viewBean.getDateEcheance()%>" />
+										value="<%=viewBean.getDateEcheance()%>"
+							   			onchange="verifyDateEcheanceValidty()" />
+
 							</TD>
 							<TD colspan="2">&nbsp;</TD>
 						</TR>
