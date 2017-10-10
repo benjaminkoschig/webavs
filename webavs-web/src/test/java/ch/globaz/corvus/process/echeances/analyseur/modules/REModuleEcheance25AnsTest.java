@@ -34,6 +34,57 @@ public class REModuleEcheance25AnsTest extends REModuleAnalyseEcheanceTest {
         assertFalse(module, entity, "09.2011");
     }
 
+    @Test
+    public void avecDateEcheance() {
+
+        rente.setCodePrestation("34");
+        entity.setDateNaissanceTiers("15.08.1989");
+        // 25 ans en août 2014 avec une date d'échéance de rente inférieure à août 2014
+        rente.setDateEcheance("06.2014");
+        assertFalse(module, entity, "08.2014");
+
+        // 25 ans en août 2014 avec une date d'échéance vide -> doit passer
+        rente.setDateEcheance("");
+        assertTrue(module, entity, "08.2014", REMotifEcheance.Echeance25ans);
+
+        // 25 ans en août 2014 avec une date d'échéance égale au mois de traitement mais pas de périodes d'études -> ne
+        // doit pas passer
+        rente.setDateEcheance("08.2014");
+        assertFalse(module, entity, "08.2014");
+        // Cas ou la date d'échéance est plus grande que le mois de traitement et les 25 ans (ne doit pas arriver car
+        // l'écran est blindé pour éviter de mettre une date supérieure aux 25 ans de l'enfant
+        rente.setDateEcheance("10.2014");
+        assertFalse(module, entity, "08.2014");
+
+    }
+
+    @Test
+    public void enqueteIntermediaire() {
+
+        rente.setCodePrestation("34");
+        entity.setDateNaissanceTiers("15.08.1989");
+        // 25 ans en août 2014 avec une date d'échéance égale au mois de traitement
+        rente.setDateEcheance("08.2014");
+        // le mois de fin de la période d'étude la plus récente est égal au mois de traitement. Ce cas doit passer.
+        entity.getPeriodes().add(
+                new REPeriodeEcheances("3", "01.03.2012", "30.08.2014", ISFPeriode.CS_TYPE_PERIODE_ETUDE));
+        entity.getPeriodes().add(
+                new REPeriodeEcheances("1", "01.11.2011", "01.02.2012", ISFPeriode.CS_TYPE_PERIODE_ETUDE));
+        // Cette période ne doit pas être prise en compte par l'échéancier car c'est pas le type études
+        entity.getPeriodes().add(
+                new REPeriodeEcheances("1", "01.11.2014", "31.12.2016", ISFPeriode.CS_TYPE_PERIODE_AFFILIATION));
+        assertTrue(module, entity, "08.2014", REMotifEcheance.Echeance25ans);
+
+        entity.getPeriodes().clear();
+        entity.getPeriodes().add(
+                new REPeriodeEcheances("3", "01.03.2012", "27.07.2013", ISFPeriode.CS_TYPE_PERIODE_ETUDE));
+        entity.getPeriodes().add(
+                new REPeriodeEcheances("1", "01.11.2011", "01.02.2012", ISFPeriode.CS_TYPE_PERIODE_ETUDE));
+        // Ce cas ne doit pas passer car il s'agit d'une enquête intermédiaire
+        assertFalse(module, entity, "08.2014");
+
+    }
+
     @Before
     public void setUp() {
         module = new REModuleEcheance25Ans(session, "09.2011", false);
