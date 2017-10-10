@@ -39,7 +39,7 @@ public class REModuleEcheanceEtude extends REModuleAnalyseEcheance {
     @Override
     protected REReponseModuleAnalyseEcheance analyserEcheance(IREEcheances echeancesPourUnTiers) {
 
-        // si le tiers n'as pas de date de naissance définie, ou une date de décis, aucune échéance à retenir
+        // si le tiers n'a pas de date de naissance définie, ou une date de décès, aucune échéance à retenir
         if (JadeStringUtil.isBlankOrZero(echeancesPourUnTiers.getDateNaissanceTiers())
                 || !JadeStringUtil.isBlankOrZero(echeancesPourUnTiers.getDateDecesTiers())) {
             return REReponseModuleAnalyseEcheance.Faux;
@@ -197,7 +197,7 @@ public class REModuleEcheanceEtude extends REModuleAnalyseEcheance {
                             } else {
                                 // cas des périodes précédant l'arrivée à l'âge de 18 ans
                                 return REReponseModuleAnalyseEcheance.Vrai(rentePourEnfantLaPlusRecente,
-                                        REMotifEcheance.EcheanceEtudesAucunePeriode, echeancesPourUnTiers.getIdTiers());
+                                        REMotifEcheance.EcheanceFinEtudesDepassees, echeancesPourUnTiers.getIdTiers());
                             }
                         }
 
