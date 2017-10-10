@@ -4,12 +4,25 @@ import globaz.corvus.utils.REPmtMensuel;
 import globaz.globall.db.BSessionUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.exception.JadeApplicationException;
+import globaz.jade.exception.JadeCloneModelException;
+import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.log.JadeLogger;
+import globaz.jade.persistence.util.JadePersistenceUtil;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import ch.globaz.common.util.prestations.MotifVersementUtil;
+import ch.globaz.corvus.business.models.ventilation.SimpleVentilation;
+import ch.globaz.corvus.business.services.CorvusServiceLocator;
 import ch.globaz.osiris.business.model.SectionSimpleModel;
 import ch.globaz.pegasus.business.exceptions.models.lot.ComptabiliserLotException;
 import ch.globaz.pegasus.business.models.lot.OrdreVersementForList;
+import ch.globaz.pegasus.business.models.pcaccordee.SimplePCAccordeeSearch;
+import ch.globaz.pegasus.business.services.PegasusServiceLocator;
 import ch.globaz.pegasus.businessimpl.services.models.lot.comptabilisation.process.GeneratePerstationPeriodeDecompte;
 
 /**
@@ -38,8 +51,17 @@ class GenerateOperationsApresCalcul implements GenerateOperations {
             String dateForOv, String dateEcheance, PrestationOvDecompte decompteIni) throws JadeApplicationException {
         operations = new Operations();
         MontantDispo montantDispo = null;
+        PrestationOvDecompte decompte = null;
 
-        PrestationOvDecompte decompte = GeneratePerstationPeriodeDecompte.generatePersationPeriode(ovs, decompteIni);
+        ArrayList<String> listIdPca = getListIdPcaFromOvs(ovs);
+        HashMap<String, SimpleVentilation> mapSimpleVentilation = getMapSimpleVentilationForListIdPca(listIdPca);
+
+        if (!mapSimpleVentilation.isEmpty()) {
+            List<OrdreVersementForList> ovsSplit = changeOvsIfPrestationVentile(mapSimpleVentilation, ovs);
+            decompte = GeneratePerstationPeriodeDecompte.generatePersationPeriode(ovsSplit, decompteIni);
+        } else {
+            decompte = GeneratePerstationPeriodeDecompte.generatePersationPeriode(ovs, decompteIni);
+        }
 
         GenerateEcrituresResitutionBeneficiareForDecisionAc ac = gernerateEcrituresStandard(decompte);
 
@@ -56,6 +78,94 @@ class GenerateOperationsApresCalcul implements GenerateOperations {
         computControlAmount(decompte.getPrestationAmount());
 
         return operations;
+    }
+
+    private ArrayList<String> getListIdPcaFromOvs(List<OrdreVersementForList> ovs) {
+        Set<String> setIdPca = new HashSet<String>();
+        for (int i = 0; i < ovs.size(); i++) {
+            setIdPca.add(ovs.get(i).getSimpleOrdreVersement().getIdPca());
+        }
+
+        return new ArrayList<String>(setIdPca);
+    }
+
+    private HashMap<String, SimpleVentilation> getMapSimpleVentilationForListIdPca(ArrayList<String> listIdPca)
+            throws JadeApplicationException {
+        Map<String, SimpleVentilation> mapStringSimpleVentilations = new HashMap<String, SimpleVentilation>();
+
+        SimplePCAccordeeSearch pcasearch = new SimplePCAccordeeSearch();
+
+        for (int i = 0; i < listIdPca.size(); i++) {
+            pcasearch.setForIdPCAccordee(listIdPca.get(i));
+            try {
+                PegasusServiceLocator.getSimplePcaccordeeService().search(pcasearch);
+
+                if (pcasearch.getSearchResults().length != 0) {
+                    SimpleVentilation simpleVentil = CorvusServiceLocator.getSimpleVentilationService()
+                            .getMontantVentileFromIdPca(listIdPca.get(i));
+
+                    if (simpleVentil != null) {
+                        mapStringSimpleVentilations.put(listIdPca.get(i), simpleVentil);
+                    }
+                }
+            } catch (JadePersistenceException e) {
+                JadeLogger.error(GenerateOperationsApresCalcul.class,
+                        "Problem in GenerateOperationsApresCalcul, reason : " + e.toString());
+            }
+        }
+        return (HashMap<String, SimpleVentilation>) mapStringSimpleVentilations;
+    }
+
+    private List<OrdreVersementForList> changeOvsIfPrestationVentile(HashMap<String, SimpleVentilation> map,
+            List<OrdreVersementForList> ovs) {
+        Set<OrdreVersementForList> ovsModif = new HashSet<OrdreVersementForList>();
+
+        for (OrdreVersementForList ordreVersementForList : ovs) {
+            // Si l'id d'une PCA est la même que la map, on doit splitter pour faire la différence avec la part
+            // cantonale
+            if (map.containsKey(ordreVersementForList.getSimpleOrdreVersement().getIdPca())) {
+                // On récupère le nombre de mois à payer pour la prestation
+                int dateDebut = Integer.parseInt(ordreVersementForList.getDateDebut().substring(0, 2));
+                int dateFin = Integer.parseInt(ordreVersementForList.getDateFin().substring(0, 2));
+
+                int nbMois = dateFin + 1 - dateDebut;
+                // On créé un nouvel ordre de versement pour la part cantonale
+                OrdreVersementForList ordreVersementForListPartCantonale;
+                try {
+                    ordreVersementForListPartCantonale = (OrdreVersementForList) JadePersistenceUtil
+                            .clone(ordreVersementForList);
+                } catch (JadeCloneModelException e) {
+                    JadeLogger.error(GenerateOperationsApresCalcul.class,
+                            "Problem in GenerateOperationsApresCalcul, reason : " + e.toString());
+
+                    throw new RuntimeException(e.toString());
+                }
+                float montantPartCantonalePourOv = Float.parseFloat(map.get(
+                        ordreVersementForList.getSimpleOrdreVersement().getIdPca()).getMontantVentile())
+                        * nbMois;
+                ordreVersementForListPartCantonale.getSimpleOrdreVersement().setMontant(
+                        String.valueOf(montantPartCantonalePourOv));
+
+                // Set boolean pour l'écriture plus loin
+                ordreVersementForListPartCantonale.getSimpleOrdreVersement().setPartCantonale(true);
+
+                // on supprime la partie part cantonale de l'OV déja présent
+                float montantSimpleOVPartFederale = Float.parseFloat(ordreVersementForList.getSimpleOrdreVersement()
+                        .getMontant());
+
+                ordreVersementForList.getSimpleOrdreVersement().setMontant(
+                        String.valueOf(montantSimpleOVPartFederale - montantPartCantonalePourOv));
+
+                // On ajoute les ov dans la liste qu'on va retourner
+                ovsModif.add(ordreVersementForListPartCantonale);
+                ovsModif.add(ordreVersementForList);
+            } else {
+                ovsModif.add(ordreVersementForList);
+            }
+        }
+
+        return new ArrayList<OrdreVersementForList>(ovsModif);
+
     }
 
     private MontantDispo generateEcrituresCompensation(GenerateEcrituresResitutionBeneficiareForDecisionAc ac,

@@ -38,7 +38,8 @@ public class HandlerRubrique {
                 String genrePresation = HandlerRubrique.resolveGenrePrestaion(ov.getCsTypeDomaine());
 
                 rubrique = PRRubriqueComptableResolver.getCSRubriqueComptablePCRFMStandard(genrePresation,
-                        ov.getSousTypeGenrePrestation());
+                        ov.getSousTypeGenrePrestation(), ov.isPartCantonale());
+
             }
         } catch (Exception e) {
             throw new ComptabiliserLotException("Unable to find the rubrique whit this soustypeGrenrePresation: "
@@ -65,7 +66,7 @@ public class HandlerRubrique {
 
         try {
             rubrique = PRRubriqueComptableResolver.getCSRubriqueComptablePCRFMrestitution(genrePresation,
-                    ov.getSousTypeGenrePrestation());
+                    ov.getSousTypeGenrePrestation(), ov.isPartCantonale());
         } catch (Exception e) {
             throw new ComptabiliserLotException("Unable to find the rubrique whit this soustypeGrenrePresation: "
                     + ov.getSousTypeGenrePrestation(), e);

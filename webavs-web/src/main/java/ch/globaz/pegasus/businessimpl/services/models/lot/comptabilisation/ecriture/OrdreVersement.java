@@ -19,6 +19,7 @@ public class OrdreVersement {
     private BigDecimal montant = null;
     private String sousTypeGenrePrestation = null;
     private String refPaiement;
+    private boolean isPartCantonale;
 
     public String getRefPaiement() {
         return refPaiement;
@@ -36,6 +37,17 @@ public class OrdreVersement {
             String idTiers, String idTiersAdressePaiement, String idTiersAdressePaiementConjoint,
             String idTiersOwnerDetteCreance, String montant, String sousTypeGenrePrestation,
             String idDomaineApplication, String idDomaineApplicationConjoint, String idTiersConjoint, String refPaiement) {
+
+        this(id, csType, csTypeDomaine, idSectionDetteEnCompta, idTiers, idTiersAdressePaiement,
+                idTiersAdressePaiementConjoint, idTiersOwnerDetteCreance, montant, sousTypeGenrePrestation,
+                idDomaineApplication, idDomaineApplicationConjoint, idTiersConjoint, refPaiement, false);
+    }
+
+    public OrdreVersement(String id, String csType, String csTypeDomaine, String idSectionDetteEnCompta,
+            String idTiers, String idTiersAdressePaiement, String idTiersAdressePaiementConjoint,
+            String idTiersOwnerDetteCreance, String montant, String sousTypeGenrePrestation,
+            String idDomaineApplication, String idDomaineApplicationConjoint, String idTiersConjoint,
+            String refPaiement, boolean isPartCantonale) {
         super();
         this.csType = csType;
         this.csTypeDomaine = csTypeDomaine;
@@ -51,6 +63,8 @@ public class OrdreVersement {
         this.idDomaineApplicationConjoint = idDomaineApplicationConjoint;
         this.idTiersConjoint = idTiersConjoint;
         this.refPaiement = refPaiement;
+        this.isPartCantonale = isPartCantonale;
+
     }
 
     public String getCsType() {
@@ -103,6 +117,10 @@ public class OrdreVersement {
 
     public String getSousTypeGenrePrestation() {
         return sousTypeGenrePrestation;
+    }
+
+    public boolean isPartCantonale() {
+        return isPartCantonale;
     }
 
     public boolean isDom2R() {
@@ -163,6 +181,10 @@ public class OrdreVersement {
 
     public void setSousTypeGenrePrestation(String sousTypeGenrePrestation) {
         this.sousTypeGenrePrestation = sousTypeGenrePrestation;
+    }
+
+    public void setPartCantonale(boolean isPartCantonale) {
+        this.isPartCantonale = isPartCantonale;
     }
 
     @Override

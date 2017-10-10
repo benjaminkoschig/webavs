@@ -63,4 +63,10 @@ public class SimpleVentilation extends JadeSimpleModel {
         idVentilation = id;
     }
 
+    @Override
+    public String toString() {
+        return "Ventilation[idPAccordee = " + idPrestationAccordee + ", montant = " + montantVentile + ", type = "
+                + csTypeVentilation + "]";
+    }
+
 }

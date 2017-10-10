@@ -178,7 +178,7 @@ public class PRRubriqueComptableResolver {
         }
     };
 
-    private static String getCSRubrique(String codePrestation, String sousTypeCodePrestation,
+    private static String getCSRubrique(String codePrestation, String sousTypeCodePrestation, boolean isPartCantonale,
             Map<String, String> mapRupriquePC, Map<String, String> mapRupriqueRFM, boolean forRestitution)
             throws Exception {
 
@@ -191,7 +191,7 @@ public class PRRubriqueComptableResolver {
                         + ") is defined as he should be empty. Can not resolve the code system of rubrique comptable");
             }
             return PRRubriqueComptableResolver.getCsRubriqueSousTypeCodeDesactive(codePrestation,
-                    sousTypeCodePrestation, forRestitution);
+                    sousTypeCodePrestation, isPartCantonale, forRestitution);
         }
 
         // La caisse travaille avec des sous-types pour les genre de prestation PC et RFM
@@ -213,10 +213,10 @@ public class PRRubriqueComptableResolver {
      * @throws Exception
      *             Si le genre de prestation ou le sous-type genre prestation sont null ou invalides
      */
-    public static String getCSRubriqueComptablePCRFMrestitution(String codePrestation, String sousTypeCodePrestation)
-            throws Exception {
+    public static String getCSRubriqueComptablePCRFMrestitution(String codePrestation, String sousTypeCodePrestation,
+            boolean isPartCantonale) throws Exception {
 
-        return PRRubriqueComptableResolver.getCSRubrique(codePrestation, sousTypeCodePrestation,
+        return PRRubriqueComptableResolver.getCSRubrique(codePrestation, sousTypeCodePrestation, isPartCantonale,
                 PRRubriqueComptableResolver.mapRubriqueRestitutionPC,
                 PRRubriqueComptableResolver.mapRubriqueRestiutionRFM, true);
     }
@@ -234,12 +234,31 @@ public class PRRubriqueComptableResolver {
      * @throws Exception
      *             Si le genre de prestation ou le sous-type genre prestation sont null ou invalides
      */
-    public static String getCSRubriqueComptablePCRFMStandard(String codePrestation, String sousTypeCodePrestation)
-            throws Exception {
+    public static String getCSRubriqueComptablePCRFMStandard(String codePrestation, String sousTypeCodePrestation,
+            boolean isPartCantonale) throws Exception {
 
-        return PRRubriqueComptableResolver.getCSRubrique(codePrestation, sousTypeCodePrestation,
+        return PRRubriqueComptableResolver.getCSRubrique(codePrestation, sousTypeCodePrestation, isPartCantonale,
                 PRRubriqueComptableResolver.mapRubriquePC, PRRubriqueComptableResolver.mapRubriqueRFM, false);
 
+    }
+
+    /**
+     * Retourne la rubrique comptable correspondante au genre de prestation et au sous-type de prestation. Le boolean
+     * permet de prendre en compte le split rubrique comptable pour les PC avec part cantonale </br>
+     * <strong>Le genre de prestation et le sous-type de prestation doivent être renseigné sinon une exception sera
+     * lancée</strong>
+     * 
+     * @param codePrestation
+     * @param sousTypeCodePrestation
+     * @param isPartCantonale
+     * @return
+     * @throws Exception
+     */
+    public static String getCSRubriqueComptablePCRFMStandardWithPartCantonale(String codePrestation,
+            String sousTypeCodePrestation, boolean isPartCantonale) throws Exception {
+
+        return PRRubriqueComptableResolver.getCSRubrique(codePrestation, sousTypeCodePrestation, isPartCantonale,
+                PRRubriqueComptableResolver.mapRubriquePC, PRRubriqueComptableResolver.mapRubriqueRFM, false);
     }
 
     private static String getCsRubriqueSousTypeCodeActive(String codePrestation, String sousTypeCodePrestation,
@@ -275,7 +294,7 @@ public class PRRubriqueComptableResolver {
     }
 
     private static String getCsRubriqueSousTypeCodeDesactive(String codePrestation, String sousTypeCodePrestation,
-            boolean forRestitution) throws Exception {
+            boolean isPartCantonale, boolean forRestitution) throws Exception {
 
         if (!JadeStringUtil.isBlankOrZero(sousTypeCodePrestation)) {
             throw new Exception("Error : sousTypeCodePrestation [" + sousTypeCodePrestation
@@ -298,9 +317,17 @@ public class PRRubriqueComptableResolver {
             }
         } else {
             if (PRCodePrestationPC.isCodePrestationAI(codePrestation)) {
-                return APIReferenceRubrique.PC_AI;
+                if (isPartCantonale) {
+                    return APIReferenceRubrique.PC_AI_PART_CANTONALE;
+                } else {
+                    return APIReferenceRubrique.PC_AI;
+                }
             } else if (PRCodePrestationPC.isCodePrestationAVS(codePrestation)) {
-                return APIReferenceRubrique.PC_AVS;
+                if (isPartCantonale) {
+                    return APIReferenceRubrique.PC_AVS_PART_CANTONALE;
+                } else {
+                    return APIReferenceRubrique.PC_AVS;
+                }
             } else if (PRCodePrestationRFM.isCodePrestationAI(codePrestation)) {
                 return APIReferenceRubrique.RFM_AI;
             } else if (PRCodePrestationRFM.isCodePrestationAVS(codePrestation)) {

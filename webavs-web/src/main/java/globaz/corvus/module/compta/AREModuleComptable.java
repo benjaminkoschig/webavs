@@ -482,7 +482,7 @@ public abstract class AREModuleComptable implements Comparator<IREModuleComptabl
                         }
                     } else {
                         codeRubrique = PRRubriqueComptableResolver.getCSRubriqueComptablePCRFMStandard(genrePrestation,
-                                sousTypeGenrePrestation);
+                                sousTypeGenrePrestation, false);
                     }
                     if (codeRubrique == null) {
                         throw new Exception(
@@ -513,7 +513,7 @@ public abstract class AREModuleComptable implements Comparator<IREModuleComptabl
             switch (typeRubrique) {
                 case TYPE_RUBRIQUE_NORMAL:
                     String codeRubrique = PRRubriqueComptableResolver.getCSRubriqueComptablePCRFMStandard(
-                            genrePrestation, sousTypeGenrePrestation);
+                            genrePrestation, sousTypeGenrePrestation, false);
                     return REModuleComptableFactory.getInstance().getRubriqueComptableRFM(codeRubrique);
                 default:
                     throw new Exception("Type de rubrique inconnu : " + typeRubrique);
@@ -534,7 +534,7 @@ public abstract class AREModuleComptable implements Comparator<IREModuleComptabl
             switch (typeRubrique) {
                 case TYPE_RUBRIQUE_NORMAL:
                     String codeRubrique = PRRubriqueComptableResolver.getCSRubriqueComptablePCRFMStandard(
-                            genrePrestation, sousTypeGenrePrestation);
+                            genrePrestation, sousTypeGenrePrestation, false);
                     return REModuleComptableFactory.getInstance().getRubriqueComptablePC(codeRubrique);
                 default:
                     throw new Exception("Type de rubrique inconnu : " + typeRubrique);
@@ -556,7 +556,7 @@ public abstract class AREModuleComptable implements Comparator<IREModuleComptabl
             switch (typeRubrique) {
                 case TYPE_RUBRIQUE_NORMAL:
                     String codeRubrique = PRRubriqueComptableResolver.getCSRubriqueComptablePCRFMStandard(
-                            genrePrestation, sousTypeGenrePrestation);
+                            genrePrestation, sousTypeGenrePrestation, false);
                     return REModuleComptableFactory.getInstance().getRubriqueComptableRFM(codeRubrique);
                 default:
                     throw new Exception("Type de rubrique inconnu : " + typeRubrique);
@@ -577,7 +577,7 @@ public abstract class AREModuleComptable implements Comparator<IREModuleComptabl
             switch (typeRubrique) {
                 case TYPE_RUBRIQUE_NORMAL:
                     String codeRubrique = PRRubriqueComptableResolver.getCSRubriqueComptablePCRFMStandard(
-                            genrePrestation, sousTypeGenrePrestation);
+                            genrePrestation, sousTypeGenrePrestation, false);
                     return REModuleComptableFactory.getInstance().getRubriqueComptableRFM(codeRubrique);
                 default:
                     throw new Exception("Type de rubrique inconnu : " + typeRubrique);

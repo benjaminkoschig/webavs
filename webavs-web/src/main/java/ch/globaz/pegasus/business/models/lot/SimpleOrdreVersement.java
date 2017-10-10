@@ -37,6 +37,8 @@ public class SimpleOrdreVersement extends JadeSimpleModel {
     private String sousTypeGenrePrestation = null;
     private String refPaiement; // seulement utilisé pour les créanciers
 
+    private boolean isPartCantonale = false;
+
     public String getCsType() {
         return csType;
     }
@@ -248,5 +250,13 @@ public class SimpleOrdreVersement extends JadeSimpleModel {
 
     public void setRefPaiement(String refPaiement) {
         this.refPaiement = refPaiement;
+    }
+
+    public boolean isPartCantonale() {
+        return isPartCantonale;
+    }
+
+    public void setPartCantonale(boolean isPartCantonale) {
+        this.isPartCantonale = isPartCantonale;
     }
 }

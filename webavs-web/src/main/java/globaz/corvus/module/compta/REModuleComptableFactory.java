@@ -74,6 +74,7 @@ public class REModuleComptableFactory {
     public APIRubrique PC_AI_HOME_EPS = null;
     public APIRubrique PC_AI_HOME_EPS_HORS_CANTON = null;
     public APIRubrique PC_AI_EN_HOME = null;
+    public APIRubrique PC_AI_PART_CANTONALE = null;
     /**
      * Rubrique PC AVS standard
      */
@@ -90,6 +91,7 @@ public class REModuleComptableFactory {
     public APIRubrique PC_AVS_EN_HOME_HORS_CANTON_EPS = null;
     public APIRubrique PC_AVS_EN_HOME_EPS = null;
     public APIRubrique PC_AVS_EN_HOME = null;
+    public APIRubrique PC_AVS_PART_CANTONALE = null;
 
     public APIRubrique PRST_AI_RESTITUER = null;
     public APIRubrique PRST_API_AI_RESTITUER = null;
@@ -364,6 +366,8 @@ public class REModuleComptableFactory {
             return PC_AI_HOME_EPS;
         } else if (codeRubrique.equals(APIReferenceRubrique.PC_AI_EN_HOME_HORS_CANTON_EPS)) {
             return PC_AI_HOME_EPS_HORS_CANTON;
+        } else if (codeRubrique.equals(APIReferenceRubrique.PC_AI_PART_CANTONALE)) {
+            return PC_AI_PART_CANTONALE;
         }
 
         // AVS
@@ -387,6 +391,8 @@ public class REModuleComptableFactory {
             return PC_AVS_EN_HOME_EPS;
         } else if (codeRubrique.equals(APIReferenceRubrique.PC_AVS_EN_HOME_HORS_CANTON_EPS)) {
             return PC_AVS_EN_HOME_HORS_CANTON_EPS;
+        } else if (codeRubrique.equals(APIReferenceRubrique.PC_AVS_PART_CANTONALE)) {
+            return PC_AVS_PART_CANTONALE;
         }
 
         throw new Exception("Can not return an APIRubrique for requested rubrique [" + codeRubrique
@@ -515,6 +521,7 @@ public class REModuleComptableFactory {
         PC_AI_HOME_EPS_HORS_CANTON = referenceRubrique
                 .getRubriqueByCodeReference(APIReferenceRubrique.PC_AI_EN_HOME_HORS_CANTON_EPS);
         PC_AI_EN_HOME = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PC_AI_EN_HOME);
+        PC_AI_PART_CANTONALE = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PC_AI_PART_CANTONALE);
 
         // PC AVS rubrique Initialization
         PC_AVS_ALLOCATIONS_DE_NOEL = referenceRubrique
@@ -531,6 +538,8 @@ public class REModuleComptableFactory {
         PC_AVS_EN_HOME_EPS = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PC_AVS_EN_HOME_EPS);
         PC_AVS_EN_HOME_HORS_CANTON_EPS = referenceRubrique
                 .getRubriqueByCodeReference(APIReferenceRubrique.PC_AVS_EN_HOME_HORS_CANTON_EPS);
+        PC_AVS_PART_CANTONALE = referenceRubrique
+                .getRubriqueByCodeReference(APIReferenceRubrique.PC_AVS_PART_CANTONALE);
 
         PC_AVS_EN_HOME = referenceRubrique.getRubriqueByCodeReference(APIReferenceRubrique.PC_AVS_EN_HOME);
 

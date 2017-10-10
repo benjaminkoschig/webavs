@@ -164,7 +164,7 @@ public class GeneratePerstationPeriodeDecompte {
                 ov.getIdTiers(), ov.getIdTiersAdressePaiement(), ov.getIdTiersAdressePaiementConjoint(),
                 ov.getIdTiersOwnerDetteCreance(), montant, ov.getSousTypeGenrePrestation(),
                 ov.getIdDomaineApplication(), ov.getIdDomaineApplicationConjoint(), ov.getIdTiersConjoint(),
-                refPaiement);
+                refPaiement, ov.isPartCantonale());
     }
 
     /**

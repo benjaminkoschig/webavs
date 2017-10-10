@@ -174,6 +174,7 @@ public interface APIReferenceRubrique {
     public static final String PC_AI_RESTITUTION_EN_HOME_SASH = "237213";
     public static final String PC_AI_RESTITUTION_EN_HOME_SPAS = "237215";
     public static final String PC_AI_RESTITUTION_EN_HOME = "237306";
+    public static final String PC_AI_PART_CANTONALE = "237593";
 
     public static final String PC_AVS_EN_HOME_EPS = "237309";
     public static final String PC_AVS_EN_HOME_HORS_CANTON_EPS = "237310";
@@ -202,6 +203,7 @@ public interface APIReferenceRubrique {
     public static final String PC_AVS_RESTITUTION_EN_HOME_SASH = "237223";
     public static final String PC_AVS_RESTITUTION_EN_HOME_SPAS = "237225";
     public static final String PC_AVS_RESTITUTION_EN_HOME = "237305";
+    public static final String PC_AVS_PART_CANTONALE = "237592";
 
     // Clé alternée
     public static final String PC_COMPTE_COURANT_BLOCAGE = "237233";

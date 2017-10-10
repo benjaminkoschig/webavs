@@ -16,7 +16,7 @@ public class PRRubriqueComptableResolverTest {
             for (PRSousTypeCodePrestationPC stcp : PRSousTypeCodePrestationPC.values()) {
                 String genrePrestation = PRCodePrestationPC._110.getCodePrestationAsString();
                 String csRubriqueCompty = PRRubriqueComptableResolver.getCSRubriqueComptablePCRFMStandard(
-                        genrePrestation, stcp.getSousTypeCodePrestationAsString());
+                        genrePrestation, stcp.getSousTypeCodePrestationAsString(), false);
                 PRRubriqueComptableResolverTest.print(genrePrestation, stcp.getSousTypeCodePrestationAsString(),
                         csRubriqueCompty);
             }
@@ -25,7 +25,7 @@ public class PRRubriqueComptableResolverTest {
             for (PRSousTypeCodePrestationPC stcp : PRSousTypeCodePrestationPC.values()) {
                 String genrePrestation = PRCodePrestationPC._113.getCodePrestationAsString();
                 String csRubriqueCompty = PRRubriqueComptableResolver.getCSRubriqueComptablePCRFMStandard(
-                        genrePrestation, stcp.getSousTypeCodePrestationAsString());
+                        genrePrestation, stcp.getSousTypeCodePrestationAsString(), false);
                 PRRubriqueComptableResolverTest.print(genrePrestation, stcp.getSousTypeCodePrestationAsString(),
                         csRubriqueCompty);
             }
@@ -34,7 +34,7 @@ public class PRRubriqueComptableResolverTest {
             for (PRSousTypeCodePrestationPC stcp : PRSousTypeCodePrestationPC.values()) {
                 String genrePrestation = PRCodePrestationPC._150.getCodePrestationAsString();
                 String csRubriqueCompty = PRRubriqueComptableResolver.getCSRubriqueComptablePCRFMStandard(
-                        genrePrestation, stcp.getSousTypeCodePrestationAsString());
+                        genrePrestation, stcp.getSousTypeCodePrestationAsString(), false);
                 PRRubriqueComptableResolverTest.print(genrePrestation, stcp.getSousTypeCodePrestationAsString(),
                         csRubriqueCompty);
             }
@@ -43,7 +43,7 @@ public class PRRubriqueComptableResolverTest {
             for (PRSousTypeCodePrestationRFM stcp : PRSousTypeCodePrestationRFM.values()) {
                 String genrePrestation = PRCodePrestationRFM._210.getCodePrestationAsString();
                 String csRubriqueCompty = PRRubriqueComptableResolver.getCSRubriqueComptablePCRFMStandard(
-                        genrePrestation, stcp.getSousTypeCodePrestationAsString());
+                        genrePrestation, stcp.getSousTypeCodePrestationAsString(), false);
                 PRRubriqueComptableResolverTest.print(genrePrestation, stcp.getSousTypeCodePrestationAsString(),
                         csRubriqueCompty);
             }
@@ -52,7 +52,7 @@ public class PRRubriqueComptableResolverTest {
             for (PRSousTypeCodePrestationRFM stcp : PRSousTypeCodePrestationRFM.values()) {
                 String genrePrestation = PRCodePrestationRFM._213.getCodePrestationAsString();
                 String csRubriqueCompty = PRRubriqueComptableResolver.getCSRubriqueComptablePCRFMStandard(
-                        genrePrestation, stcp.getSousTypeCodePrestationAsString());
+                        genrePrestation, stcp.getSousTypeCodePrestationAsString(), false);
                 PRRubriqueComptableResolverTest.print(genrePrestation, stcp.getSousTypeCodePrestationAsString(),
                         csRubriqueCompty);
             }
@@ -61,7 +61,7 @@ public class PRRubriqueComptableResolverTest {
             for (PRSousTypeCodePrestationRFM stcp : PRSousTypeCodePrestationRFM.values()) {
                 String genrePrestation = PRCodePrestationRFM._250.getCodePrestationAsString();
                 String csRubriqueCompty = PRRubriqueComptableResolver.getCSRubriqueComptablePCRFMStandard(
-                        genrePrestation, stcp.getSousTypeCodePrestationAsString());
+                        genrePrestation, stcp.getSousTypeCodePrestationAsString(), false);
                 PRRubriqueComptableResolverTest.print(genrePrestation, stcp.getSousTypeCodePrestationAsString(),
                         csRubriqueCompty);
             }
