@@ -1,5 +1,6 @@
 package globaz.corvus.db.rentesaccordees;
 
+import globaz.corvus.utils.beneficiaire.principal.REBeneficiairePrincipal;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.globall.db.BConstants;
 import globaz.globall.db.BEntity;
@@ -500,6 +501,27 @@ public class REPrestationsAccordees extends BEntity {
             PRAssert.notIsNew(infoCompta, null);
             return infoCompta;
         }
+    }
+
+    /**
+     * Permet de définir le groupe Level en fonction de la rente en cours.
+     * 
+     * @return 1, 2, 3, 4, ou 5 (selon methode getGroupLevel de la classe REBeneficiairePrincipal
+     * @throws Exception
+     */
+    public int getGroupLevelRente() throws Exception {
+        return REBeneficiairePrincipal.getGroupLevel(getSession(), getSession().getCurrentThreadTransaction(),
+                getIdPrestationAccordee());
+    }
+
+    /**
+     * Permet d'obtenir le label de warning de l'âge des 25 ans dépassés pour le tiers
+     * 
+     * @return label de warning de l'âge des 25 ans dépassés
+     * @throws Exception
+     */
+    public String get25AnsWarningLabel() {
+        return getSession().getLabel("WARNING_AGE_25_ANS_DEPASSES");
     }
 
     /**

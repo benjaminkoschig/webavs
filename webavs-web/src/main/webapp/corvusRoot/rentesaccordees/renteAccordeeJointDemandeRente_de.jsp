@@ -25,6 +25,7 @@
 	selectedIdValue = viewBean.getIdPrestationAccordee();
 	String noDemandeRente = request.getParameter("noDemandeRente");
 	String idTierRequerant = request.getParameter("idTierRequerant");
+	String rootPath = servletContext+(mainServletPath+"Root");
 
 	java.util.List codesPrestations = globaz.prestation.tools.PRCodeSystem.getCUCS(viewBean.getSession(), globaz.corvus.api.basescalcul.IRERenteAccordee.CS_GROUPE_GENRE_PRESTATION_02_0);
 	java.util.List codesCasSpeciaux = globaz.prestation.tools.PRCodeSystem.getCUCS(viewBean.getSession(), globaz.corvus.api.basescalcul.IRERenteAccordee.CS_GROUPE_CAS_SPECIAUX_RENTE_01);
@@ -444,6 +445,7 @@ $('html').bind(eventConstant.JADE_FW_ACTION_DONE, function(){
 });
 
 </script>
+<script type="text/javascript" src="<%=rootPath %>/script/rentesaccordees/verifierDateEcheance.js"></script>
 <%-- /tpl:put --%>
 <%@ include file="/theme/detail/bodyStart.jspf" %>
 			<%-- tpl:put name="zoneTitle" --%>
@@ -762,10 +764,14 @@ $('html').bind(eventConstant.JADE_FW_ACTION_DONE, function(){
 										</TD>
 										<TD><ct:FWLabel key="JSP_RAC_L_DATE_ECHEANCE"/></TD>
 										<TD>
+										<input type="hidden" value="<%=viewBean.getDateNaissanceTiersBeneficiaire()%>" id="dateNaissanceTiers"/>
+							   		    <input type="hidden" value="<%=viewBean.getGroupLevelRente()%>" id="groupLevelRequerant"/>
+							  			<input type="hidden" value="<%=viewBean.get25AnsWarningLabel()%>" id="warningAge25ans"/> 
 											<input	id="dateEcheance"
 													name="dateEcheance"
 													data-g-calendar="type:month"
-													value="<%=viewBean.getDateEcheance()%>" />
+													value="<%=viewBean.getDateEcheance()%>" 
+													onchange="verifyDateEcheanceValidity()"/>	
 										</TD>																						
 										</TD>
 									</TR>
