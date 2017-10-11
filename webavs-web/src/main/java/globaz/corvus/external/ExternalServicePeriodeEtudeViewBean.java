@@ -247,6 +247,12 @@ public class ExternalServicePeriodeEtudeViewBean extends BAbstractEntityExternal
             SFPeriodeViewBean pViewBean = (SFPeriodeViewBean) entity;
 
             if (JadeStringUtil.isBlankOrZero(pViewBean.getDateFin())) {
+
+                if (ISFSituationFamiliale.CS_TYPE_PERIODE_ETUDE.equals(pViewBean.getType())) {
+                    pViewBean.setMsgType(FWViewBeanInterface.ERROR);
+                    pViewBean.setMessage(entity.getSession().getLabel("PERIODE_ETUDE_SANS_DATE_FIN"));
+                }
+
                 return;
             }
 
