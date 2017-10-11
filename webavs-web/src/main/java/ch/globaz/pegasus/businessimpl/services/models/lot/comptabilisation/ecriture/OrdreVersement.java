@@ -19,7 +19,7 @@ public class OrdreVersement {
     private BigDecimal montant = null;
     private String sousTypeGenrePrestation = null;
     private String refPaiement;
-    private boolean isPartCantonale;
+    private boolean isVentile;
 
     public String getRefPaiement() {
         return refPaiement;
@@ -47,7 +47,7 @@ public class OrdreVersement {
             String idTiers, String idTiersAdressePaiement, String idTiersAdressePaiementConjoint,
             String idTiersOwnerDetteCreance, String montant, String sousTypeGenrePrestation,
             String idDomaineApplication, String idDomaineApplicationConjoint, String idTiersConjoint,
-            String refPaiement, boolean isPartCantonale) {
+            String refPaiement, boolean isVentile) {
         super();
         this.csType = csType;
         this.csTypeDomaine = csTypeDomaine;
@@ -63,7 +63,7 @@ public class OrdreVersement {
         this.idDomaineApplicationConjoint = idDomaineApplicationConjoint;
         this.idTiersConjoint = idTiersConjoint;
         this.refPaiement = refPaiement;
-        this.isPartCantonale = isPartCantonale;
+        this.isVentile = isVentile;
 
     }
 
@@ -119,8 +119,8 @@ public class OrdreVersement {
         return sousTypeGenrePrestation;
     }
 
-    public boolean isPartCantonale() {
-        return isPartCantonale;
+    public boolean isVentile() {
+        return isVentile;
     }
 
     public boolean isDom2R() {
@@ -183,8 +183,8 @@ public class OrdreVersement {
         this.sousTypeGenrePrestation = sousTypeGenrePrestation;
     }
 
-    public void setPartCantonale(boolean isPartCantonale) {
-        this.isPartCantonale = isPartCantonale;
+    public void setVentile(boolean isVentile) {
+        this.isVentile = isVentile;
     }
 
     @Override

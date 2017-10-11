@@ -37,7 +37,7 @@ public class SimpleOrdreVersement extends JadeSimpleModel {
     private String sousTypeGenrePrestation = null;
     private String refPaiement; // seulement utilisé pour les créanciers
 
-    private boolean isPartCantonale = false;
+    private boolean isVentile = false;
 
     public String getCsType() {
         return csType;
@@ -252,11 +252,11 @@ public class SimpleOrdreVersement extends JadeSimpleModel {
         this.refPaiement = refPaiement;
     }
 
-    public boolean isPartCantonale() {
-        return isPartCantonale;
+    public boolean isVentile() {
+        return isVentile;
     }
 
-    public void setPartCantonale(boolean isPartCantonale) {
-        this.isPartCantonale = isPartCantonale;
+    public void setVentile(boolean isVentile) {
+        this.isVentile = isVentile;
     }
 }

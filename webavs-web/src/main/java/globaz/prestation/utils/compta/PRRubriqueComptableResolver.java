@@ -178,7 +178,7 @@ public class PRRubriqueComptableResolver {
         }
     };
 
-    private static String getCSRubrique(String codePrestation, String sousTypeCodePrestation, boolean isPartCantonale,
+    private static String getCSRubrique(String codePrestation, String sousTypeCodePrestation, boolean isVentile,
             Map<String, String> mapRupriquePC, Map<String, String> mapRupriqueRFM, boolean forRestitution)
             throws Exception {
 
@@ -191,7 +191,7 @@ public class PRRubriqueComptableResolver {
                         + ") is defined as he should be empty. Can not resolve the code system of rubrique comptable");
             }
             return PRRubriqueComptableResolver.getCsRubriqueSousTypeCodeDesactive(codePrestation,
-                    sousTypeCodePrestation, isPartCantonale, forRestitution);
+                    sousTypeCodePrestation, isVentile, forRestitution);
         }
 
         // La caisse travaille avec des sous-types pour les genre de prestation PC et RFM
@@ -214,9 +214,9 @@ public class PRRubriqueComptableResolver {
      *             Si le genre de prestation ou le sous-type genre prestation sont null ou invalides
      */
     public static String getCSRubriqueComptablePCRFMrestitution(String codePrestation, String sousTypeCodePrestation,
-            boolean isPartCantonale) throws Exception {
+            boolean isVentile) throws Exception {
 
-        return PRRubriqueComptableResolver.getCSRubrique(codePrestation, sousTypeCodePrestation, isPartCantonale,
+        return PRRubriqueComptableResolver.getCSRubrique(codePrestation, sousTypeCodePrestation, isVentile,
                 PRRubriqueComptableResolver.mapRubriqueRestitutionPC,
                 PRRubriqueComptableResolver.mapRubriqueRestiutionRFM, true);
     }
@@ -235,9 +235,9 @@ public class PRRubriqueComptableResolver {
      *             Si le genre de prestation ou le sous-type genre prestation sont null ou invalides
      */
     public static String getCSRubriqueComptablePCRFMStandard(String codePrestation, String sousTypeCodePrestation,
-            boolean isPartCantonale) throws Exception {
+            boolean isVentile) throws Exception {
 
-        return PRRubriqueComptableResolver.getCSRubrique(codePrestation, sousTypeCodePrestation, isPartCantonale,
+        return PRRubriqueComptableResolver.getCSRubrique(codePrestation, sousTypeCodePrestation, isVentile,
                 PRRubriqueComptableResolver.mapRubriquePC, PRRubriqueComptableResolver.mapRubriqueRFM, false);
 
     }
@@ -250,14 +250,14 @@ public class PRRubriqueComptableResolver {
      * 
      * @param codePrestation
      * @param sousTypeCodePrestation
-     * @param isPartCantonale
+     * @param isVentile
      * @return
      * @throws Exception
      */
     public static String getCSRubriqueComptablePCRFMStandardWithPartCantonale(String codePrestation,
-            String sousTypeCodePrestation, boolean isPartCantonale) throws Exception {
+            String sousTypeCodePrestation, boolean isVentile) throws Exception {
 
-        return PRRubriqueComptableResolver.getCSRubrique(codePrestation, sousTypeCodePrestation, isPartCantonale,
+        return PRRubriqueComptableResolver.getCSRubrique(codePrestation, sousTypeCodePrestation, isVentile,
                 PRRubriqueComptableResolver.mapRubriquePC, PRRubriqueComptableResolver.mapRubriqueRFM, false);
     }
 
@@ -294,7 +294,7 @@ public class PRRubriqueComptableResolver {
     }
 
     private static String getCsRubriqueSousTypeCodeDesactive(String codePrestation, String sousTypeCodePrestation,
-            boolean isPartCantonale, boolean forRestitution) throws Exception {
+            boolean isVentile, boolean forRestitution) throws Exception {
 
         if (!JadeStringUtil.isBlankOrZero(sousTypeCodePrestation)) {
             throw new Exception("Error : sousTypeCodePrestation [" + sousTypeCodePrestation
@@ -317,13 +317,13 @@ public class PRRubriqueComptableResolver {
             }
         } else {
             if (PRCodePrestationPC.isCodePrestationAI(codePrestation)) {
-                if (isPartCantonale) {
+                if (isVentile) {
                     return APIReferenceRubrique.PC_AI_PART_CANTONALE;
                 } else {
                     return APIReferenceRubrique.PC_AI;
                 }
             } else if (PRCodePrestationPC.isCodePrestationAVS(codePrestation)) {
-                if (isPartCantonale) {
+                if (isVentile) {
                     return APIReferenceRubrique.PC_AVS_PART_CANTONALE;
                 } else {
                     return APIReferenceRubrique.PC_AVS;

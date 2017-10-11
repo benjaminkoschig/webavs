@@ -140,6 +140,13 @@ class GenerateOperationsApresCalcul implements GenerateOperations {
 
                     throw new RuntimeException(e.toString());
                 }
+
+                // On modifie le numéro de groupe période poru que le nouvel OV apparaissent dans les écritures
+                int noGroupePeriode = Integer.parseInt(ordreVersementForListPartCantonale.getSimpleOrdreVersement()
+                        .getNoGroupePeriode());
+                ordreVersementForListPartCantonale.getSimpleOrdreVersement().setNoGroupePeriode(
+                        String.valueOf(noGroupePeriode + 1));
+
                 float montantPartCantonalePourOv = Float.parseFloat(map.get(
                         ordreVersementForList.getSimpleOrdreVersement().getIdPca()).getMontantVentile())
                         * nbMois;
@@ -147,7 +154,7 @@ class GenerateOperationsApresCalcul implements GenerateOperations {
                         String.valueOf(montantPartCantonalePourOv));
 
                 // Set boolean pour l'écriture plus loin
-                ordreVersementForListPartCantonale.getSimpleOrdreVersement().setPartCantonale(true);
+                ordreVersementForListPartCantonale.getSimpleOrdreVersement().setVentile(true);
 
                 // on supprime la partie part cantonale de l'OV déja présent
                 float montantSimpleOVPartFederale = Float.parseFloat(ordreVersementForList.getSimpleOrdreVersement()
