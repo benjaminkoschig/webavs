@@ -89,7 +89,7 @@ class GenerateOperationsApresCalcul implements GenerateOperations {
         return new ArrayList<String>(setIdPca);
     }
 
-    private HashMap<String, SimpleVentilation> getMapSimpleVentilationForListIdPca(ArrayList<String> listIdPca)
+    protected HashMap<String, SimpleVentilation> getMapSimpleVentilationForListIdPca(ArrayList<String> listIdPca)
             throws JadeApplicationException {
         Map<String, SimpleVentilation> mapStringSimpleVentilations = new HashMap<String, SimpleVentilation>();
 

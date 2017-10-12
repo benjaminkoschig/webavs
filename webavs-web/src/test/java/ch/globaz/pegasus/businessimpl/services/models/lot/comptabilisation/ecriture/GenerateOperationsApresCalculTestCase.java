@@ -5,6 +5,7 @@ import globaz.jade.client.util.JadeListUtil;
 import globaz.jade.exception.JadeApplicationException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.junit.Assert;
@@ -15,6 +16,7 @@ import org.mockito.Matchers;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
+import ch.globaz.corvus.business.models.ventilation.SimpleVentilation;
 import ch.globaz.osiris.business.model.SectionSimpleModel;
 import ch.globaz.pegasus.business.models.lot.OrdreVersementForList;
 import ch.globaz.pegasus.businessimpl.services.models.lot.comptabilisation.process.ComptabilisationTreatTestCase;
@@ -61,6 +63,8 @@ public class GenerateOperationsApresCalculTestCase {
         GenerateOperationsApresCalcul generate = new GenerateOperationsApresCalcul();
         GenerateOperationsApresCalcul spy = Mockito.spy(generate);
         Mockito.doReturn(newGenerateEcritures()).when(spy).newEcritureBasic();
+        Mockito.doReturn(new HashMap<String, SimpleVentilation>()).when(spy)
+                .getMapSimpleVentilationForListIdPca(Matchers.any(ArrayList.class));
         return spy;
     }
 
