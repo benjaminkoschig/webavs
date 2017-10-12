@@ -17,6 +17,7 @@ import globaz.corvus.itext.REListeRecapitulativePaiementPC_RFM;
 import globaz.corvus.itext.REListeRetenuesBlocages;
 import globaz.corvus.itext.RERecapitulationPaiementAdapter;
 import globaz.corvus.module.compta.AREModuleComptable;
+import globaz.corvus.module.compta.REModuleComptableFactory;
 import globaz.corvus.process.paiement.mensuel.Key;
 import globaz.corvus.process.paiement.mensuel.ResultatTraitementRente;
 import globaz.corvus.utils.REPmtMensuel;
@@ -39,8 +40,11 @@ import globaz.globall.util.JAVector;
 import globaz.jade.client.util.JadeNumericUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.context.JadeThread;
+import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.persistence.JadePersistenceManager;
+import globaz.jade.persistence.model.JadeAbstractModel;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
+import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import globaz.osiris.api.APIGestionRentesExterne;
 import globaz.osiris.api.APIRubrique;
 import globaz.osiris.api.APISection;
@@ -63,11 +67,17 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.apache.commons.beanutils.BeanUtilsBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ch.globaz.common.domaine.Montant;
 import ch.globaz.common.properties.CommonProperties;
 import ch.globaz.common.properties.PropertiesException;
+import ch.globaz.corvus.business.models.ventilation.SimpleVentilation;
+import ch.globaz.corvus.business.models.ventilation.SimpleVentilationSearch;
+import ch.globaz.corvus.business.services.CorvusServiceLocator;
 import ch.globaz.osiris.business.constantes.CAProperties;
+import ch.globaz.pegasus.business.exceptions.models.process.AdaptationException;
 import ch.globaz.prestation.business.constantes.CodeRecapitulationPcRfm;
 import ch.globaz.prestation.business.models.recap.RecapitulationPcRfm;
 import ch.globaz.prestation.business.models.recap.SimpleRecapitulationPcRfm;
@@ -453,6 +463,7 @@ public class REExecuterPaiementMensuelProcess extends AREPmtMensuel {
                         }
                         ResultatTraitementRente resultat = traiterRente(rente, grpOP, increment, dateDernierPmt,
                                 datePmtEnCours);
+                        increment = resultat.getIncrement();
 
                         String label = "La rente avec l'id [" + rente.getIdRenteAccordee() + "] ";
                         if (resultat.getResult()) {
@@ -467,7 +478,7 @@ public class REExecuterPaiementMensuelProcess extends AREPmtMensuel {
                                 + rente.getIdRenteAccordee() + "]. Erreur :" + e.toString();
                         logger.error(message, e);
                         renteTraiterAvecErreurs.add(new ResultatTraitementRente(rente.getIdRenteAccordee(), false,
-                                message));
+                                message, increment));
 
                         doMiseEnErreurRA(getSession(), rente.getIdRenteAccordee(), message);
                     }
@@ -1012,6 +1023,7 @@ public class REExecuterPaiementMensuelProcess extends AREPmtMensuel {
         logger.info("traiterRente(...) : Traitement de la rente avec l'id [" + rente.getIdRenteAccordee() + "]");
         boolean result = false;
         List<String> errors = new ArrayList<String>();
+        long inc = increment;
 
         try {
             APIRubrique rubriqueComptable = AREModuleComptable.getRubriqueWithInit(initSessionOsiris(),
@@ -1026,8 +1038,17 @@ public class REExecuterPaiementMensuelProcess extends AREPmtMensuel {
                 doMiseEnErreurRA(getSession(), rente.getIdRenteAccordee(), message);
 
             } else {
+                // test des montants ventilés uniquement sur les PC_AI et PC_AVS pour limiter l'accès de la recherche à
+                // la base
+                // à supprimer si montant ventilé sur d'autres rubriques
+                if (rubriqueComptable.equals(REModuleComptableFactory.getInstance().PC_AI)
+                        || rubriqueComptable.equals(REModuleComptableFactory.getInstance().PC_AVS)) {
+
+                    // mise à jour de l'incrément par rapport au nombre de montant ventilé
+                    inc = hasVentilation(rente, grpOP, increment, dateDernierPmt, datePmtEnCours, rubriqueComptable);
+                }
                 String libelle = rente.getNomTBE() + " " + rente.getPrenomTBE() + " " + rente.getCodePrestation();
-                grpOP.traiterEcriture(getSession(), rente, libelle, increment, rubriqueComptable.getIdRubrique(),
+                grpOP.traiterEcriture(getSession(), rente, libelle, inc, rubriqueComptable.getIdRubrique(),
                         dateDernierPmt, datePmtEnCours, false);
                 result = true;
             }
@@ -1039,8 +1060,64 @@ public class REExecuterPaiementMensuelProcess extends AREPmtMensuel {
             errors.add(message);
             doMiseEnErreurRA(getSession(), rente.getIdRenteAccordee(), message);
         }
-        return new ResultatTraitementRente(rente.getIdRenteAccordee(), result, errors);
+        return new ResultatTraitementRente(rente.getIdRenteAccordee(), result, errors, inc);
 
+    }
+
+    /**
+     * 
+     * Ajoute une ecriture pour chaque montant ventilé
+     * 
+     * @param rente
+     * @param grpOP
+     * @param inc
+     * @param dateDernierPmt
+     * @param datePmtEnCours
+     * @param rubriqueComptable
+     * @return
+     * @throws Exception
+     */
+    private long hasVentilation(REPaiementRentes rente, REGroupOperationCAUtil grpOP, long inc, String dateDernierPmt,
+            String datePmtEnCours, APIRubrique rubriqueComptable) throws Exception {
+        long increment = inc;
+        JadeAbstractModel[] ventilations = getVentilations(rente.getIdRenteAccordee());
+        if (ventilations.length != 0) {
+            Montant montant = Montant.valueOf(rente.getMontant());
+            for (JadeAbstractModel model : ventilations) {
+                SimpleVentilation ventilation = (SimpleVentilation) model;
+
+                REPaiementRentes renteVentile = (REPaiementRentes) BeanUtilsBean.getInstance().cloneBean(rente);
+
+                Montant montantVentilation = Montant.valueOf(ventilation.getMontantVentile());
+
+                // A modifier si d'autres type de ventilation que les parts cantonales
+                APIRubrique rubriqueComptable2;
+                if (rubriqueComptable.equals(REModuleComptableFactory.getInstance().PC_AI)) {
+                    rubriqueComptable2 = REModuleComptableFactory.getInstance().PC_AI_PART_CANTONALE;
+                } else {
+                    rubriqueComptable2 = REModuleComptableFactory.getInstance().PC_AVS_PART_CANTONALE;
+                }
+
+                renteVentile.setMontant(ventilation.getMontantVentile());
+                String libelle = renteVentile.getNomTBE() + " " + renteVentile.getPrenomTBE() + " "
+                        + renteVentile.getCodePrestation();
+                grpOP.traiterEcriture(getSession(), renteVentile, libelle, increment,
+                        rubriqueComptable2.getIdRubrique(), dateDernierPmt, datePmtEnCours, false);
+                increment++;
+                montant = montant.substract(montantVentilation);
+            }
+            // Mets à jour le montant restant
+            rente.setMontant(montant.getValue());
+        }
+        return increment;
+    }
+
+    private JadeAbstractModel[] getVentilations(String idRa) throws AdaptationException,
+            JadeApplicationServiceNotAvailableException, JadePersistenceException {
+        SimpleVentilationSearch ventilationSearch = new SimpleVentilationSearch();
+        ventilationSearch.setForIdPrestationAccordee(idRa);
+        ventilationSearch = CorvusServiceLocator.getSimpleVentilationService().search(ventilationSearch);
+        return ventilationSearch.getSearchResults();
     }
 
     /**

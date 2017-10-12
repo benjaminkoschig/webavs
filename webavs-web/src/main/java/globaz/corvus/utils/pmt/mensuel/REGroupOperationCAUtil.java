@@ -37,6 +37,7 @@ import globaz.osiris.api.APIEcriture;
 import globaz.osiris.api.APIGestionComptabiliteExterne;
 import globaz.osiris.api.APIGestionRentesExterne;
 import globaz.osiris.api.APIOperationOrdreVersement;
+import globaz.osiris.api.APIReferenceRubrique;
 import globaz.osiris.api.APIRubrique;
 import globaz.osiris.api.APISection;
 import globaz.osiris.db.comptes.CACompteAnnexe;
@@ -633,8 +634,15 @@ public class REGroupOperationCAUtil {
         ra.setIsAttenteMajRetenue(Boolean.FALSE);
         ra.update(transaction);
 
-        APIRubrique rubrique = AREModuleComptable.getRubrique(ra.getCodePrestation(), ra.getSousTypeGenrePrestation(),
-                AREModuleComptable.TYPE_RUBRIQUE_NORMAL);
+        APIRubrique rubrique;
+
+        if (APIReferenceRubrique.PC_AI_PART_CANTONALE.equals(ecriture.idRubrique)
+                || APIReferenceRubrique.PC_AVS_PART_CANTONALE.equals(ecriture.idRubrique)) {
+            rubrique = REModuleComptableFactory.getInstance().getRubriqueComptablePC(ecriture.idRubrique);
+        } else {
+            rubrique = AREModuleComptable.getRubrique(ra.getCodePrestation(), ra.getSousTypeGenrePrestation(),
+                    AREModuleComptable.TYPE_RUBRIQUE_NORMAL);
+        }
 
         REInformationsComptabilite ic = ra.loadInformationsComptabilite();
         PRAssert.notIsNew(ic, null);
