@@ -1,3 +1,9 @@
+-- K170622_002 : Ajout param : statut de la part fédérale
+
+insert into SCHEMA.FWCOSP (pcosid,pptygr,pconcs,pptycn,pptycl,pptysa,pcosli,pcosdf,pcosdm,pcosdp,pcoian,pcoide,pcodfi,pcoitc,pcoise, pspy) values ( 64039156, 'PCKYVPC', 1 ,1,0,0, 'CLE_TOTAL_CC_STATUS_FEDERAL', 2,1,2,2,2, 2 , 63000039 ,0, (replace(char(current date), '-', '') concat replace(char(current time), '.', '') concat user) ); 
+insert into SCHEMA.FWCOUP (pcosid,plaide,pcouid,pcolut, pspy) values ( 64039156, 'F', '', 'STATUS TOTAL CC FEDERALE', (replace(char(current date), '-', '') concat replace(char(current time), '.', '') concat user) ); 
+insert into SCHEMA.FWCOUP (pcosid,plaide,pcouid,pcolut, pspy) values ( 64039156, 'D', '', 'STATUS GESAMT CC AUSGLEICHKASSE', (replace(char(current date), '-', '') concat replace(char(current time), '.', '') concat user) ); 
+
 -- K170622_002 : liste de répartition par commune politique
 DELETE FROM schema.JADEPROP WHERE PROPNAME = 'pegasus.commune.politique.code.reference.rubrique.pc';
 DELETE FROM schema.JADEPROP WHERE PROPNAME = 'pegasus.commune.politique.code.reference.rubrique.rfm';
@@ -28,3 +34,4 @@ insert into SCHEMA.JADEPROP (PROPNAME,PROPVAL) VALUES ('pegasus.loyer.option.dep
 
 ALTER TABLE SCHEMA.PCLOYER ADD CRDAPA DECIMAL(15,0) DEFAULT 0;
 REORG TABLE SCHEMA.PCLOYER;
+
