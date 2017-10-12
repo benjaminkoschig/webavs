@@ -7,6 +7,7 @@ import globaz.globall.db.BEntity;
 import globaz.globall.db.BStatement;
 import globaz.globall.db.BTransaction;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.log.JadeLogger;
 import globaz.prestation.tools.PRAssert;
 import globaz.prestation.tools.PRDateFormater;
 import globaz.prestation.tools.PRDateValidator;
@@ -507,11 +508,19 @@ public class REPrestationsAccordees extends BEntity {
      * Permet de définir le groupe Level en fonction de la rente en cours.
      * 
      * @return 1, 2, 3, 4, ou 5 (selon methode getGroupLevel de la classe REBeneficiairePrincipal
-     * @throws Exception
+     *         retourne 0 si une exception est subvenue lors de la récupération du group level
      */
-    public int getGroupLevelRente() throws Exception {
-        return REBeneficiairePrincipal.getGroupLevel(getSession(), getSession().getCurrentThreadTransaction(),
-                getIdPrestationAccordee());
+    public int getGroupLevelRente() {
+        try {
+            return REBeneficiairePrincipal.getGroupLevel(getSession(), getSession().getCurrentThreadTransaction(),
+                    getIdPrestationAccordee());
+        } catch (Exception e) {
+            // Cette méthode est utilisée au chargement d'un écran des rentes. Pour éviter de lancer une exception au
+            // chargement, on
+            // retourne un group level à 0.
+            JadeLogger.error(this, e.getMessage());
+            return 0;
+        }
     }
 
     /**
