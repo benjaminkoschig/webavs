@@ -33,8 +33,6 @@
 			<field name="sousTypeGenrePrestation" column="CZNSTG" type="NUMERIC" mandatory="true" comment="SOUS_TYPE_GENRE_PRESTATION"/>
 			<field name="refPaiement" column="CZREFP" type="STRING" mandatory="false" comment="REFERENCE_PAIEMENT"/>
 			
-			<field name="isVentile" column="" type="STRING" mandatory="false" comment="IS_VENTILE"/>
-			
 		</fields>
 		<search-definition>
 			<search-group operator="AND">
