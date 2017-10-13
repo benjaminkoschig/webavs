@@ -8,6 +8,7 @@ import globaz.jade.exception.JadeCloneModelException;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.log.JadeLogger;
 import globaz.jade.persistence.util.JadePersistenceUtil;
+import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,7 +21,9 @@ import ch.globaz.corvus.business.models.ventilation.SimpleVentilation;
 import ch.globaz.corvus.business.services.CorvusServiceLocator;
 import ch.globaz.osiris.business.model.SectionSimpleModel;
 import ch.globaz.pegasus.business.exceptions.models.lot.ComptabiliserLotException;
+import ch.globaz.pegasus.business.exceptions.models.pcaccordee.PCAccordeeException;
 import ch.globaz.pegasus.business.models.lot.OrdreVersementForList;
+import ch.globaz.pegasus.business.models.pcaccordee.SimplePCAccordee;
 import ch.globaz.pegasus.business.models.pcaccordee.SimplePCAccordeeSearch;
 import ch.globaz.pegasus.business.services.PegasusServiceLocator;
 import ch.globaz.pegasus.businessimpl.services.models.lot.comptabilisation.process.GeneratePerstationPeriodeDecompte;
@@ -111,22 +114,27 @@ class GenerateOperationsApresCalcul implements GenerateOperations {
             } catch (JadePersistenceException e) {
                 JadeLogger.error(GenerateOperationsApresCalcul.class,
                         "Problem in GenerateOperationsApresCalcul, reason : " + e.toString());
+
+                throw new PCAccordeeException("Unable to find the PC accordee", e);
             }
         }
         return (HashMap<String, SimpleVentilation>) mapStringSimpleVentilations;
     }
 
     private List<OrdreVersementForList> changeOvsIfPrestationVentile(HashMap<String, SimpleVentilation> map,
-            List<OrdreVersementForList> ovs) {
+            List<OrdreVersementForList> ovs) throws JadeApplicationException {
         Set<OrdreVersementForList> ovsModif = new HashSet<OrdreVersementForList>();
 
         for (OrdreVersementForList ordreVersementForList : ovs) {
             // Si l'id d'une PCA est la même que la map, on doit splitter pour faire la différence avec la part
             // cantonale
             if (map.containsKey(ordreVersementForList.getSimpleOrdreVersement().getIdPca())) {
+                SimplePCAccordee pca = retrievePca(ordreVersementForList);
+                String dateDeFin = JadeStringUtil.isBlankOrZero(pca.getDateFin()) ? ordreVersementForList.getDateFin()
+                        : pca.getDateFin();
                 // On récupère le nombre de mois à payer pour la prestation
-                int dateDebut = Integer.parseInt(ordreVersementForList.getDateDebut().substring(0, 2));
-                int dateFin = Integer.parseInt(ordreVersementForList.getDateFin().substring(0, 2));
+                int dateDebut = Integer.parseInt(pca.getDateDebut().substring(0, 2));
+                int dateFin = Integer.parseInt(dateDeFin.substring(0, 2));
 
                 int nbMois = dateFin + 1 - dateDebut;
                 // On créé un nouvel ordre de versement pour la part cantonale
@@ -141,7 +149,7 @@ class GenerateOperationsApresCalcul implements GenerateOperations {
                     throw new RuntimeException(e.toString());
                 }
 
-                // On modifie le numéro de groupe période poru que le nouvel OV apparaissent dans les écritures
+                // On modifie le numéro de groupe période pour que le nouvel OV apparaissent dans les écritures
                 int noGroupePeriode = Integer.parseInt(ordreVersementForListPartCantonale.getSimpleOrdreVersement()
                         .getNoGroupePeriode());
                 ordreVersementForListPartCantonale.getSimpleOrdreVersement().setNoGroupePeriode(
@@ -173,6 +181,23 @@ class GenerateOperationsApresCalcul implements GenerateOperations {
 
         return new ArrayList<OrdreVersementForList>(ovsModif);
 
+    }
+
+    private SimplePCAccordee retrievePca(OrdreVersementForList ordreVersementForList) throws PCAccordeeException {
+        SimplePCAccordeeSearch simplePCAccordeesSearch = new SimplePCAccordeeSearch();
+        simplePCAccordeesSearch.setForIdPCAccordee(ordreVersementForList.getSimpleOrdreVersement().getIdPca());
+        try {
+            PegasusServiceLocator.getSimplePcaccordeeService().search(simplePCAccordeesSearch);
+        } catch (JadeApplicationServiceNotAvailableException e) {
+            JadeLogger.error(GenerateOperationsApresCalcul.class,
+                    "PegasusServiceLocator : simplePcAccordee service not avalable, reason : " + e.toString());
+            throw new PCAccordeeException("PegasusServiceLocator : simplePcAccordee service not avalable", e);
+        } catch (JadePersistenceException e) {
+            JadeLogger.error(GenerateOperationsApresCalcul.class,
+                    "Unable to find the PC accordee, reason : " + e.toString());
+            throw new PCAccordeeException("Unable to find the PC accordee", e);
+        }
+        return (SimplePCAccordee) simplePCAccordeesSearch.getSearchResults()[0];
     }
 
     private MontantDispo generateEcrituresCompensation(GenerateEcrituresResitutionBeneficiareForDecisionAc ac,

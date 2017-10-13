@@ -242,25 +242,6 @@ public class PRRubriqueComptableResolver {
 
     }
 
-    /**
-     * Retourne la rubrique comptable correspondante au genre de prestation et au sous-type de prestation. Le boolean
-     * permet de prendre en compte le split rubrique comptable pour les PC avec part cantonale </br>
-     * <strong>Le genre de prestation et le sous-type de prestation doivent être renseigné sinon une exception sera
-     * lancée</strong>
-     * 
-     * @param codePrestation
-     * @param sousTypeCodePrestation
-     * @param isVentile
-     * @return
-     * @throws Exception
-     */
-    public static String getCSRubriqueComptablePCRFMStandardWithPartCantonale(String codePrestation,
-            String sousTypeCodePrestation, boolean isVentile) throws Exception {
-
-        return PRRubriqueComptableResolver.getCSRubrique(codePrestation, sousTypeCodePrestation, isVentile,
-                PRRubriqueComptableResolver.mapRubriquePC, PRRubriqueComptableResolver.mapRubriqueRFM, false);
-    }
-
     private static String getCsRubriqueSousTypeCodeActive(String codePrestation, String sousTypeCodePrestation,
             Map<String, String> mapRupriquePC, Map<String, String> mapRupriqueRFM) throws Exception {
         if (JadeStringUtil.isEmpty(codePrestation)) {
