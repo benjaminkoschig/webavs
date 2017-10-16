@@ -18,3 +18,10 @@ insert into SCHEMA.FWCOUP (pcosid,plaide,pcouid,pcolut, pspy) values ( 51800065,
 insert into SCHEMA.FWCOSP (pcosid,pptygr,pconcs,pptycn,pptycl,pptysa,pcosli,pcosdf,pcosdm,pcosdp,pcoian,pcoide,pcodfi,pcoitc,pcoise, pspy) values ( 52865001, 'REVENTIL', 1 ,1,0,0, 'TYPE_VENTILATION_PART_CANTONALE', 2,1,2,2,2, 2 , 51800065 ,0, 'spy'); 
 insert into SCHEMA.FWCOUP (pcosid,plaide,pcouid,pcolut, pspy) values ( 52865001, 'F', '1', 'Part cantonale', 'spy' ); 
 insert into SCHEMA.FWCOUP (pcosid,plaide,pcouid,pcolut, pspy) values ( 52865001, 'D', '1', 'Monatlicher kantonaler', 'spy' ); 
+
+-- Définit si on est en mode test
+INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL) VALUES ('corvus.centrale.test','true');
+-- Définit l'url où le fichier doit être déposé
+INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL) VALUES ('corvus.centrale.url','');
+--Définit la racine du fichier à déposer
+INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL) VALUES ('corvus.racine.nom.fichier.centrale','');
