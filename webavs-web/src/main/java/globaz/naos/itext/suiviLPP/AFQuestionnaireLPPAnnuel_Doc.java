@@ -4,6 +4,8 @@ import globaz.caisse.report.helper.ICaisseReportHelper;
 import globaz.framework.printing.itext.fill.FWIImportManager;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
+import globaz.globall.db.FWFindParameter;
+import globaz.globall.db.FWFindParameterManager;
 import globaz.hercule.service.CETiersService;
 import globaz.jade.common.Jade;
 import globaz.jade.log.JadeLogger;
@@ -11,8 +13,8 @@ import globaz.jade.publish.document.JadePublishDocumentInfo;
 import globaz.naos.application.AFApplication;
 import globaz.naos.db.affiliation.AFAffiliation;
 import globaz.naos.db.affiliation.AFAffiliationManager;
-import globaz.naos.db.controleLpp.AFExtraitDS;
-import globaz.naos.db.controleLpp.AFExtraitDSManager;
+import globaz.naos.db.controleLpp.AFSuiviLppAnnuelSalarie;
+import globaz.naos.db.controleLpp.AFSuiviLppAnnuelSalariesManager;
 import globaz.naos.itext.AFAbstractTiersDocument;
 import globaz.naos.listes.pdf.extraitDS.AFListeExtraitDS;
 import globaz.naos.properties.AFProperties;
@@ -21,9 +23,11 @@ import globaz.pyxis.adresse.datasource.TIAdresseDataSource;
 import globaz.pyxis.db.tiers.TITiers;
 import java.util.ArrayList;
 import java.util.List;
+import ch.globaz.common.domaine.Montant;
 
 public class AFQuestionnaireLPPAnnuel_Doc extends AFAbstractTiersDocument {
 
+    private static final String NUM_INFOROM_QUESTIONNAIRE = "0108CAF";
     private static final long serialVersionUID = 4255258269940535901L;
     private String modelDe = "NAOS_QUESTIONNAIRE_LPP_VERSO_DE";
     private String modelFr = "NAOS_QUESTIONNAIRE_LPP_VERSO_FR";
@@ -83,10 +87,10 @@ public class AFQuestionnaireLPPAnnuel_Doc extends AFAbstractTiersDocument {
 
     @Override
     protected void fillDocInfo() {
-        getDocumentInfo().setDocumentTypeNumber("0108CAF");
+        super.fillDocInfo();
+        getDocumentInfo().setDocumentTypeNumber(NUM_INFOROM_QUESTIONNAIRE);
         getDocumentInfo().setPublishDocument(false);
         getDocumentInfo().setArchiveDocument(true);
-        super.fillDocInfo();
     }
 
     @Override
@@ -121,19 +125,20 @@ public class AFQuestionnaireLPPAnnuel_Doc extends AFAbstractTiersDocument {
 
     private void initAndLaunchProcessListExtraitDS(String numAffilie, int annee, String dateImpression)
             throws Exception {
-        AFExtraitDSManager mgr = new AFExtraitDSManager();
+
+        AFSuiviLppAnnuelSalariesManager mgr = new AFSuiviLppAnnuelSalariesManager();
         mgr.setSession(getSession());
+        mgr.setForIdAffiliation(Long.parseLong(numAffilie));
         mgr.setForAnnee(annee);
-        mgr.setForIdAffilie(numAffilie);
         mgr.find(BManager.SIZE_NOLIMIT);
 
-        List<AFExtraitDS> listeDS = new ArrayList<AFExtraitDS>();
+        List<AFSuiviLppAnnuelSalarie> listeSalarie = new ArrayList<AFSuiviLppAnnuelSalarie>();
 
         if (mgr.getSize() > 0) {
             for (int i = 0; i < mgr.getSize(); i++) {
-                AFExtraitDS extraitDS = (AFExtraitDS) mgr.getEntity(i);
-                extraitDS.calculSeuilLPP();
-                listeDS.add(extraitDS);
+                AFSuiviLppAnnuelSalarie salarie = (AFSuiviLppAnnuelSalarie) mgr.getEntity(i);
+                calculSeuilLPP(salarie);
+                listeSalarie.add(salarie);
             }
         }
 
@@ -155,7 +160,7 @@ public class AFQuestionnaireLPPAnnuel_Doc extends AFAbstractTiersDocument {
 
         AFListeExtraitDS processListeExtraitDS = new AFListeExtraitDS();
         processListeExtraitDS.setSession(getSession());
-        processListeExtraitDS.setListeDS(listeDS);
+        processListeExtraitDS.setListeSalarie(listeSalarie);
         processListeExtraitDS.setEmployeur(employeur);
         processListeExtraitDS.setAdresseEmployeur(adresseEmployeur);
         processListeExtraitDS.setAnnee(String.valueOf(annee));
@@ -170,6 +175,29 @@ public class AFQuestionnaireLPPAnnuel_Doc extends AFAbstractTiersDocument {
 
         // Ajout du fichier d'extrait de salaire.
         registerAttachedDocument(documentInfoListeExtraitDS, pathListeExtraitDS);
+    }
+
+    public void calculSeuilLPP(AFSuiviLppAnnuelSalarie salarie) {
+        // - 1 pour tenir compte du mois en question
+        int periode = salarie.getMoisFin() - (salarie.getMoisDebut() - 1);
+
+        try {
+            FWFindParameterManager manager = new FWFindParameterManager();
+            manager.setSession(getSession());
+            manager.setIdCodeSysteme(CodeSystem.CS_SEUIL_LPP);
+            manager.setIdCleDiffere("SEUILLPP");
+            manager.setDateDebutValidite("01.01." + salarie.getAnnee());
+            manager.find(BManager.SIZE_NOLIMIT);
+
+            Montant valeurSeuil = new Montant(((FWFindParameter) manager.getFirstEntity()).getValeurNumParametre());
+
+            valeurSeuil = valeurSeuil.multiply(periode / 12.0);
+
+            salarie.setSeuilEntree(valeurSeuil);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Error when retrieving the 'plage de valeur' with key 'SEUILLPP' ("
+                    + e.getMessage() + ")");
+        }
     }
 
     private TIAdresseDataSource getAdresseFromItTiersEmployeur(BSession session, String typeAdresse, String idTiers,
@@ -255,6 +283,24 @@ public class AFQuestionnaireLPPAnnuel_Doc extends AFAbstractTiersDocument {
 
         }
 
+    }
+
+    @Override
+    public void afterExecuteReport() {
+
+        if (getParent() == null) {
+            JadePublishDocumentInfo docInfo = createDocumentInfo();
+            docInfo.setDocumentTypeNumber(NUM_INFOROM_QUESTIONNAIRE);
+            docInfo.setPublishDocument(true);
+            docInfo.setArchiveDocument(false);
+
+            try {
+                this.mergePDF(docInfo, false, 0, false, null);
+            } catch (Exception e) {
+                JadeLogger.error(e, "Unabled to merge PDF for Suivi LPP Annuel");
+            }
+        }
+        super.afterExecuteReport();
     }
 
 }

@@ -17,7 +17,7 @@ import globaz.jade.common.Jade;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
 import globaz.naos.application.AFApplication;
 import globaz.naos.db.affiliation.AFAffiliation;
-import globaz.naos.db.controleLpp.AFExtraitDS;
+import globaz.naos.db.controleLpp.AFSuiviLppAnnuelSalarie;
 import globaz.pavo.db.compte.CICompteIndividuel;
 import globaz.pyxis.adresse.datasource.TIAbstractAdresseDataSource;
 import globaz.pyxis.adresse.datasource.TIAdresseDataSource;
@@ -70,7 +70,7 @@ public class AFListeExtraitDS extends BProcess {
     private static final short CELL_SALARIE_SALAIRE = 3;
     private static final short CELL_SALARIE_SEUIL = 4;
 
-    private List<AFExtraitDS> listeDS;
+    private List<AFSuiviLppAnnuelSalarie> listeSalarie;
     private transient List<HSSFRow> listeRowSalarie = null;
     private AFAffiliation employeur;
     private transient TIAdresseDataSource adresseEmployeur;
@@ -153,7 +153,7 @@ public class AFListeExtraitDS extends BProcess {
      * 
      * @param listeDS
      */
-    private void fillRowsList(List<AFExtraitDS> listeDS) {
+    private void fillRowsList(List<AFSuiviLppAnnuelSalarie> listeSalarie) {
         listeRowSalarie = new ArrayList<HSSFRow>();
 
         HSSFRow rowEmployeur = sheet.createRow(0);
@@ -169,28 +169,28 @@ public class AFListeExtraitDS extends BProcess {
 
         listeRowSalarie.add(0, rowEmployeur);
 
-        for (int i = 0; i < listeDS.size(); i++) {
+        for (int i = 0; i < listeSalarie.size(); i++) {
             // i + 1 car la première ligne est réservé aux informations de l'employeur
             HSSFRow row = sheet.createRow(i + 1);
             row.setHeightInPoints(10 * 15);
-            row.createCell(CELL_SALARIE_NSS).setCellValue(listeDS.get(i).getNss());
-            row.createCell(CELL_SALARIE_NOM).setCellValue(listeDS.get(i).getNomSalarie());
+            row.createCell(CELL_SALARIE_NSS).setCellValue(listeSalarie.get(i).getNss());
+            row.createCell(CELL_SALARIE_NOM).setCellValue(listeSalarie.get(i).getNomSalarie());
             row.createCell(CELL_SALARIE_PERIODE).setCellValue(
-                    JadeStringUtil.fillWithZeroes(listeDS.get(i).getMoisDebut(), 2) + " - "
-                            + JadeStringUtil.fillWithZeroes(listeDS.get(i).getMoisFin(), 2));
+                    JadeStringUtil.fillWithZeroes(listeSalarie.get(i).getMoisDebut().toString(), 2) + " - "
+                            + JadeStringUtil.fillWithZeroes(listeSalarie.get(i).getMoisFin().toString(), 2));
             // Test si code secu
-            if (isUserHasRightToShowSalaire(listeDS.get(i).getNivSecu())) {
-                row.createCell(CELL_SALARIE_SALAIRE).setCellValue(listeDS.get(i).getSalaire());
+            if (isUserHasRightToShowSalaire(listeSalarie.get(i).getNiveauSecurite())) {
+                row.createCell(CELL_SALARIE_SALAIRE).setCellValue(listeSalarie.get(i).getSalaire().toStringFormat());
             } else {
                 row.createCell(CELL_SALARIE_SALAIRE).setCellValue(getSession().getLabel("NAOS_CACHE"));
             }
-            row.createCell(CELL_SALARIE_SEUIL).setCellValue(listeDS.get(i).getSeuilEntree());
+            row.createCell(CELL_SALARIE_SEUIL).setCellValue(listeSalarie.get(i).getSeuilEntree().toStringFormat());
             // i + 1 car la première ligne est réservé aux informations de l'employeur
             listeRowSalarie.add(i + 1, row);
         }
     }
 
-    private boolean isUserHasRightToShowSalaire(String niveauSecuCi) {
+    private boolean isUserHasRightToShowSalaire(Integer niveauSecuCi) {
         int nivSecuCI = 0;
         int nivSecuAffilie = 0;
         try {
@@ -201,7 +201,7 @@ public class AFListeExtraitDS extends BProcess {
         }
 
         try {
-            nivSecuCI = Character.getNumericValue(niveauSecuCi.charAt(niveauSecuCi.length() - 1));
+            nivSecuCI = Character.getNumericValue(niveauSecuCi.toString().charAt(niveauSecuCi.toString().length() - 1));
         } catch (Exception e) {
             nivSecuCI = 0;
         }
@@ -532,8 +532,8 @@ public class AFListeExtraitDS extends BProcess {
         return adresseCaisse;
     }
 
-    public List<AFExtraitDS> getListeDS() {
-        return listeDS;
+    public List<AFSuiviLppAnnuelSalarie> getListeSalarie() {
+        return listeSalarie;
     }
 
     public String getPath() {
@@ -574,8 +574,8 @@ public class AFListeExtraitDS extends BProcess {
         this.adresseCaisse = adresseCaisse;
     }
 
-    public void setListeDS(List<AFExtraitDS> listeDS) {
-        this.listeDS = listeDS;
+    public void setListeSalarie(List<AFSuiviLppAnnuelSalarie> listeSalarie) {
+        this.listeSalarie = listeSalarie;
     }
 
     public void setDocumentInfoPdf(JadePublishDocumentInfo documentInfoPdf) {
@@ -615,7 +615,7 @@ public class AFListeExtraitDS extends BProcess {
 
         initSheet();
 
-        fillRowsList(getListeDS());
+        fillRowsList(getListeSalarie());
 
         createListPDF();
 

@@ -41,6 +41,8 @@ import globaz.naos.db.controleLpp.AFLineCi;
 import globaz.naos.db.controleLpp.AFLineCiManager;
 import globaz.naos.db.controleLpp.AFSuiviCaisseForControleLpp;
 import globaz.naos.db.controleLpp.AFSuiviCaisseForControleLppManager;
+import globaz.naos.db.controleLpp.AFSuiviLppAnnuelSalarie;
+import globaz.naos.db.controleLpp.AFSuiviLppAnnuelSalariesManager;
 import globaz.naos.db.cotisation.AFCotisationManager;
 import globaz.naos.listes.excel.AFXmlmlMappingSoumisLpp;
 import globaz.naos.listes.excel.util.AFExcelmlUtils;
@@ -66,6 +68,7 @@ import java.util.zip.ZipOutputStream;
 import org.apache.commons.lang.StringUtils;
 import ch.globaz.common.business.exceptions.CommonTechnicalException;
 import ch.globaz.common.domaine.Date;
+import ch.globaz.common.domaine.Montant;
 import ch.globaz.common.domaine.Periode;
 import ch.globaz.common.domaine.Periode.ComparaisonDePeriode;
 
@@ -417,7 +420,7 @@ public class AFControleLppAnnuelProcess extends BProcess {
                 String numeroAffilie = returnValeurHashMapWithNumAffilie(IAFListeColumns.NUM_AFFILIE, lineMap,
                         getTransaction(), "");
 
-                String nom = returnValeurHashMapWithNumAffilie(IAFListeColumns.NOM, lineMap, getTransaction(),
+                String nom = returnValeurHashMapWithNumAffilie(IAFListeColumns.NOM_SALARIE, lineMap, getTransaction(),
                         numeroAffilie);
                 String motif = returnValeurHashMapWithNumAffilie(IAFListeColumns.MOTIF, lineMap, getTransaction(),
                         numeroAffilie);
@@ -728,20 +731,61 @@ public class AFControleLppAnnuelProcess extends BProcess {
             // 2. Si pas de suivi, on en crée un .
 
             if (!isModeControleSimulation()) {
+
+                // Suppression des cas existants dans le cadre d'une re-réinjection.
+                deleteSalarie(idAffSoumis, listSalarie);
+
+                // Parcours de tous les salariés de l'affilié et stockage en base de données
+                for (AFAffilieSoumiLppConteneur.Salarie sal : listSalarie) {
+                    sal.setSuivi(true);
+                    addSalarieInDb(idAffSoumis, sal);
+                }
+
                 // Si pas en simulation
                 generationSuiviLpp(listSalarie[0].getIdTiers(), listSalarie[0].getNumeroAffilie(), idAffSoumis,
                         listSalarie[0].getAnnee());
-
-                // Parcours de tous les salariés de l'affilié
-                for (AFAffilieSoumiLppConteneur.Salarie sal : listSalarie) {
-                    sal.setSuivi(true);
-                }
             }
 
         }
 
         // Etape terminé, on incremente le compteur
         incProgressCounter();
+    }
+
+    private void deleteSalarie(String idAffSoumis, Salarie[] listSalarie) throws Exception {
+        AFSuiviLppAnnuelSalariesManager manager = new AFSuiviLppAnnuelSalariesManager();
+        manager.setSession(getSession());
+        manager.setForAnnee(listSalarie[0].getAnnee());
+        manager.setForIdAffiliation(Long.parseLong(idAffSoumis));
+        manager.find(BManager.SIZE_NOLIMIT);
+
+        List<AFSuiviLppAnnuelSalarie> listSal = manager.toList();
+        for (AFSuiviLppAnnuelSalarie sal : listSal) {
+            sal.delete(getTransaction());
+        }
+    }
+
+    private void addSalarieInDb(String idAffiliation, AFAffilieSoumiLppConteneur.Salarie sal) {
+
+        AFSuiviLppAnnuelSalarie salarie = new AFSuiviLppAnnuelSalarie();
+        salarie.setIdAffiliation(Long.parseLong(idAffiliation));
+        salarie.setNumeroAffiliation(sal.getNumeroAffilie());
+        salarie.setNss(sal.getNss());
+        salarie.setNomSalarie(sal.getNom());
+        salarie.setMoisDebut(Integer.parseInt(sal.getMoisDebut()));
+        salarie.setMoisFin(Integer.parseInt(sal.getMoisFin()));
+        salarie.setAnnee(sal.getAnnee());
+        salarie.setSalaire(new Montant(sal.getMontant()));
+        if (StringUtils.isNotEmpty(sal.getNivSecuCI())) {
+            salarie.setNiveauSecurite(Integer.parseInt(sal.getNivSecuCI()));
+        }
+        try {
+            salarie.add(getTransaction());
+        } catch (Exception e) {
+            JadeLogger.error(e, "Unabled to add Salarie in DB for Suivi Annuel LPP");
+            throw new CommonTechnicalException(e);
+        }
+
     }
 
     @Override

@@ -42,8 +42,12 @@ public class AFAffilieSoumiLppConteneur {
             this.nss = nss;
             this.sexe = sexe;
             this.numeroAffilie = numeroAffilie;
-            this.moisDebut = moisDebut;
-            this.moisFin = moisFin;
+            if (moisDebut != null) {
+                this.moisDebut = moisDebut.trim();
+            }
+            if (moisFin != null) {
+                this.moisFin = moisFin.trim();
+            }
             this.dateNaissance = dateNaissance;
             this.genreEcriture = genreEcriture;
             this.montant = montant;
