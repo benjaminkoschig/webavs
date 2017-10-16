@@ -340,7 +340,7 @@ public class CalculPersistanceServiceImpl extends PegasusAbstractServiceImpl imp
 
             result.add(simplePrestationAccordeeConjoint); // pour conjoint
             createVentilationPartCantonalePC(simplePrestationAccordeeConjoint.getId(),
-                    periode.getCCRetenu()[1].getMontantPartCantonale());
+                    periode.getCCRetenu()[0].getMontantPartCantonale());
         }
 
         return result;
