@@ -26,6 +26,7 @@ import ch.globaz.corvus.business.models.lots.SimpleLot;
 import ch.globaz.corvus.business.models.rentesaccordees.SimplePrestationsAccordees;
 import ch.globaz.corvus.business.models.rentesaccordees.SimplePrestationsAccordeesSearch;
 import ch.globaz.corvus.business.services.CorvusServiceLocator;
+import ch.globaz.jade.process.business.enumProcess.JadeProcessStepStateEnum;
 import ch.globaz.pegasus.business.constantes.EPCProperties;
 import ch.globaz.pegasus.business.constantes.IPCDecision;
 import ch.globaz.pegasus.business.constantes.IPCDemandes;
@@ -627,6 +628,22 @@ public class DecisionServiceImpl extends PegasusAbstractServiceImpl implements D
             throw new DecisionException("Unable to searchForDelete search, the model passed is null!");
         }
         return (ForDeleteDecisionSearch) JadePersistenceManager.search(search);
+    }
+
+    @Override
+    public boolean isNextValidationDecisionNotValidate(String nextDate) throws JadePersistenceException {
+        // récupère le statut de l'étape "valider les décisions" du traitement d'adaptation prévu à la date en paramètre
+        String sql = "SELECT CSSTAT FROM {schema}.JAPRSTEP,{schema}.JAPRPROP where PROKEY LIKE 'DATE_ADAPTATION' AND PROVAL LIKE '"
+                + nextDate + "' and  {schema}.JAPRSTEP.IDEXPR = {schema}.JAPRPROP.IDEXPR AND KEYSTP = '6'";
+        sql = sql.replace("{schema}", JadePersistenceUtil.getDbSchema());
+        ArrayList<HashMap<String, Object>> result = PersistenceUtil.executeQuery(sql, this.getClass());
+        if (result.isEmpty()) {
+            // pas de resultat donc pas encore crée/initialisé
+            return true;
+        } else {
+            String stat = (String) result.get(0).get("CSSTAT");
+            return !JadeProcessStepStateEnum.VALIDATE.toString().equals(stat);
+        }
     }
 
 }

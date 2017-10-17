@@ -86,6 +86,11 @@ var csMotifDroit = <%= viewBean.getDroit().getSimpleVersionDroit().getCsMotif() 
 
 var $zoneDonneeFinancieres;
 
+//blocage effet mois suivant si janvier
+var isEffetMoisSuivantBloque = <%=viewBean.isEffetMoisSuivantBloque()%>;
+var titreMoisSuivantBlocked = "<%=objSession.getLabel("JSP_CMS_SUIVANT_BLOCKED_WARN_TITLE")%>";
+var contentMoisSuivantBlocked = "<%=objSession.getLabel("JSP_CMS_SUIVANT_BLOCKED_WARN_CONTENT")%>";
+
 //blocage du calcul pour droit motif adaptation
 var calculInterditMotifDroitAdaptation = (csMotifDroit === motifAdaptation);
 

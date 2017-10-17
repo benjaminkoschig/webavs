@@ -124,9 +124,17 @@ $(function(){
 			$('#typeDeCalcule_STANDARD').attr('checked','checked');
 			//Affichage message avertissemetn blocage cms 
 			//gestion messages demande close cms bloqué
-			$("<div class='msgDemandeCloseBox' data-g-boxmessage='type:WARN'><strong>"+titreCMSDemandeCloseWarn+"</strong><br>"+contentCMSDemandeCloseWarn+"</div>").insertAfter('.ligneForcerCalcul');
-			
+			$("<div class='msgDemandeCloseBox' data-g-boxmessage='type:WARN'><strong>"+titreCMSDemandeCloseWarn+"</strong><br>"+contentCMSDemandeCloseWarn+"</div>").insertAfter('.typeCalculSansRetro');
 		}
+	}
+	
+	if($('.typeCalculSansRetro').is(":visible") && isEffetMoisSuivantBloque){
+			$('.typeCalculSansRetro').hide();
+			$(".ligneForcerCalcul").hide();
+			$("<div class='msgDemandeCloseBox' data-g-boxmessage='type:WARN'><strong>"+titreMoisSuivantBlocked+"</strong><br>"+contentMoisSuivantBlocked+"</div>").insertAfter('.typeCalculSansRetro');
+			if(!$('.typeDeCalculStandard').is(":visible")){
+				$("#zone_bouton_calcul").hide();
+			}
 	}
 	
 	

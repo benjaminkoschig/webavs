@@ -15,15 +15,11 @@ import globaz.prestation.tools.PRStringUtils;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.lang.StringUtils;
-import ch.globaz.common.properties.PropertiesException;
 import ch.globaz.pegasus.business.constantes.EPCProperties;
 import ch.globaz.pegasus.business.constantes.IPCDemandes;
 import ch.globaz.pegasus.business.constantes.IPCDroits;
 import ch.globaz.pegasus.business.exceptions.models.calcul.CalculException;
-import ch.globaz.pegasus.business.exceptions.models.demande.DemandeException;
-import ch.globaz.pegasus.business.exceptions.models.droit.DonneeFinanciereException;
 import ch.globaz.pegasus.business.exceptions.models.droit.DroitException;
-import ch.globaz.pegasus.business.exceptions.models.habitat.TaxeJournaliereHomeException;
 import ch.globaz.pegasus.business.exceptions.models.pcaccordee.PCAccordeeException;
 import ch.globaz.pegasus.business.exceptions.models.pmtmensuel.PmtMensuelException;
 import ch.globaz.pegasus.business.models.calcul.CalculMoisSuivant;
@@ -71,6 +67,8 @@ public class PCCalculDroitViewBean extends BJadePersistentObjectViewBean {
     private boolean isCMSBloqueDFClorePeriode = false;
 
     private Boolean isDfModifForVersion = false;
+
+    private boolean isEffetMoisSuivantBloque = false;
 
     /** Liste des données financières modifiés pour la version */
     private List<CalculMoisSuivant> listeDFModifieForVersion = null;
@@ -145,9 +143,7 @@ public class PCCalculDroitViewBean extends BJadePersistentObjectViewBean {
 
     }
 
-    private void checkWichTypeCalculAllowed() throws PmtMensuelException, JadeApplicationServiceNotAvailableException,
-            PropertiesException, TaxeJournaliereHomeException, DonneeFinanciereException, JadePersistenceException,
-            CalculException, DemandeException, PCAccordeeException {
+    private void checkWichTypeCalculAllowed() throws Exception {
         String dateMoisSuivant = PegasusServiceLocator.getPmtMensuelService().getDateProchainPmt();
 
         // Blocage mois suivant si demande close
@@ -191,6 +187,14 @@ public class PCCalculDroitViewBean extends BJadePersistentObjectViewBean {
             }
         }
 
+        String dateProchainPaiement = getDateProchainPaiement();
+        // l'option effet mois suivant est bloqué quand :
+        // - le prochain mois est le mois de janvier
+        // - la validation des décisions de l'adaptation annuelle n'est pas pas validé
+        // - la pca n'est pas retroactive
+        isEffetMoisSuivantBloque = dateProchainPaiement.startsWith("01")
+                && isNextValidationDecisionNotValidate(dateProchainPaiement) && isNotRetroactive();
+
         boolean hasDateDebutHomSameHasDateProchainPmt = false;
 
         if (EPCProperties.GESTION_JOURS_APPOINTS.getBooleanValue()) {
@@ -212,6 +216,16 @@ public class PCCalculDroitViewBean extends BJadePersistentObjectViewBean {
 
     }
 
+    private boolean isNotRetroactive() throws PCAccordeeException, JadeApplicationServiceNotAvailableException,
+            JadePersistenceException {
+        PCAccordee pca = PegasusServiceLocator.getPCAccordeeService().findLastestPca(
+                droit.getDemande().getSimpleDemande().getIdDemande());
+        if (pca != null) {
+            return pca.getSimplePCAccordee().getDateFin() == null || pca.getSimplePCAccordee().getDateFin().isEmpty();
+        }
+        return true;
+    }
+
     public String getMotifDroitAdapatation() {
         return IPCDroits.CS_MOTIF_DROIT_ADAPTATION;
     }
@@ -231,6 +245,11 @@ public class PCCalculDroitViewBean extends BJadePersistentObjectViewBean {
 
     public String getDateProchainPaiement() throws Exception {
         return PegasusServiceLocator.getPmtMensuelService().getDateProchainPmt();
+    }
+
+    private boolean isNextValidationDecisionNotValidate(String date)
+            throws JadeApplicationServiceNotAvailableException, JadePersistenceException {
+        return PegasusServiceLocator.getDecisionService().isNextValidationDecisionNotValidate(date);
     }
 
     public String getdFForVersionListHtml() {
@@ -444,6 +463,14 @@ public class PCCalculDroitViewBean extends BJadePersistentObjectViewBean {
 
     public boolean isCalculInterdit() {
         return isCalculInterdit;
+    }
+
+    public boolean isEffetMoisSuivantBloque() {
+        return isEffetMoisSuivantBloque;
+    }
+
+    public void setEffetMoisSuivantBloque(boolean isEffetMoisSuivantBloque) {
+        this.isEffetMoisSuivantBloque = isEffetMoisSuivantBloque;
     }
 
 }
