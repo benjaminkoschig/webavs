@@ -1808,6 +1808,9 @@ public class CIImportPucs4Process extends BProcess {
                         declarationDraco.calculeTotauxAcAf();
 
                         FWCurrency montantControleDec = (FWCurrency) hMontantTotalControle.get(key);
+                        if (montantControleDec == null) {
+                            montantControleDec = new FWCurrency("0");
+                        }
                         declarationDraco.setTotalControleDS(montantControleDec.toString());
                         journal.setTotalControle(montantControleDec.toString());
 
@@ -1876,7 +1879,7 @@ public class CIImportPucs4Process extends BProcess {
                     journal.setIdJournal(journal.getIdJournal());
                     journal.setSession(getSession());
                     journal.retrieve();
-                    if (!JadeStringUtil.isDecimalEmpty(montantTotal.toString())) {
+                    if (montantTotal != null && !JadeStringUtil.isDecimalEmpty(montantTotal.toString())) {
                         journal.setTotalControle(montantTotal.toString());
                     }
                     journal.update();
