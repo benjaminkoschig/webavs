@@ -1,5 +1,5 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<%-- tpl:insert page="/theme/find.jtpl" --%><%@page import="com.ibm.db2.jcc.am.bf"%>
+<%-- tpl:insert page="/theme/find.jtpl" --%>
 <%@page import="globaz.naos.translation.CodeSystem"%>
 <%@ page language="java" errorPage="/errorPage.jsp" import="globaz.globall.http.*" %>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
