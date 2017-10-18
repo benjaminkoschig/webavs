@@ -4,9 +4,11 @@ import globaz.babel.api.ICTDocument;
 import globaz.docinfo.TIDocumentInfoHelper;
 import globaz.externe.IPRConstantesExternes;
 import globaz.framework.util.FWCurrency;
+import globaz.globall.db.BSessionUtil;
 import globaz.jade.admin.user.bean.JadeUser;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.log.JadeLogger;
 import globaz.jade.print.server.JadePrintDocumentContainer;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
@@ -16,6 +18,8 @@ import java.util.Map;
 import ch.globaz.common.business.exceptions.CommonTechnicalException;
 import ch.globaz.common.business.language.LanguageResolver;
 import ch.globaz.common.business.models.CTDocumentImpl;
+import ch.globaz.common.codesystem.CodeSystem;
+import ch.globaz.common.codesystem.CodeSystemUtils;
 import ch.globaz.jade.business.models.Langues;
 import ch.globaz.pegasus.business.constantes.IPCCatalogueTextes;
 import ch.globaz.pegasus.business.constantes.IPCValeursPlanCalcul;
@@ -128,8 +132,10 @@ public class SingleAdaptationBuilder extends AbstractPegasusBuilder {
         data.addData("TITRE",
                 babelDoc.getTextes(1).getTexte(1).getDescription().replace("{DATE_GENERATION}", dateGeneration));
         String formulePolitesse = "";
+        String tiersLangue = LanguageResolver.resolveCodeSystemFromLanguage(tiersBeneficiaire.getLangue());
+        String tiersLangueIso = tiersBeneficiaire.getLangueIso();
+
         try {
-            String tiersLangue = LanguageResolver.resolveCodeSystemFromLanguage(tiersBeneficiaire.getLangue());
             formulePolitesse = tiersBeneficiaire.getFormulePolitesse(tiersLangue);
         } catch (Exception e) {
             throw new CommonTechnicalException(
@@ -164,13 +170,13 @@ public class SingleAdaptationBuilder extends AbstractPegasusBuilder {
         // plan de calcul
         // // fortune
         data.addData("LABEL_FORTUNE", babelDoc.getTextes(3).getTexte(2).getDescription());
-        buildZoneFortune(data);
+        buildZoneFortune(data, tiersLangueIso);
         // // revenus
         data.addData("LABEL_REVENUS", babelDoc.getTextes(3).getTexte(3).getDescription());
-        buildZoneRevenus(data);
+        buildZoneRevenus(data, tiersLangueIso);
         // // dépenses
         data.addData("LABEL_DEPENSES", babelDoc.getTextes(3).getTexte(4).getDescription());
-        buildZoneDepenses(data);
+        buildZoneDepenses(data, tiersLangueIso);
 
         data.addData("CONTENU2", babelDoc.getTextes(1).getTexte(3).getDescription());
         data.addData("CONTENU3", babelDoc.getTextes(1).getTexte(4).getDescription());
@@ -261,7 +267,7 @@ public class SingleAdaptationBuilder extends AbstractPegasusBuilder {
         return data;
     }
 
-    private DocumentData buildZoneDepenses(DocumentData data) {
+    private DocumentData buildZoneDepenses(DocumentData data, String tiersLangueIso) {
 
         final String[] fields;
 
@@ -280,14 +286,23 @@ public class SingleAdaptationBuilder extends AbstractPegasusBuilder {
 
         for (String field : fields) {
             String valeur = planCalcul.get(field);
-            addLignePlanCalcul(table, "DEPENSES", getSession().getCodeLibelle(field).replace("@", " "), valeur);
+            String libelle = "";
+            try {
+                CodeSystem csLibelle = CodeSystemUtils.searchCodeSystemTraduction(field,
+                        BSessionUtil.getSessionFromThreadContext(), tiersLangueIso);
+                libelle = csLibelle.getTraduction().replace("@", " ");
+            } catch (Exception e) {
+                JadeLogger.warn(e, e.getMessage());
+                libelle = BSessionUtil.getSessionFromThreadContext().getCodeLibelle(field).replace("@", " ");
+            }
+            addLignePlanCalcul(table, "DEPENSES", libelle, valeur);
         }
 
         data.add(table);
         return data;
     }
 
-    private DocumentData buildZoneFortune(DocumentData data) {
+    private DocumentData buildZoneFortune(DocumentData data, String tiersLangueIso) {
 
         final String[] fields = { IPCValeursPlanCalcul.CLE_FORTU_FOR_MOBI_TOTAL,
                 IPCValeursPlanCalcul.CLE_FORTU_FOR_IMMO_TOTAL, IPCValeursPlanCalcul.CLE_FORTU_FOR_DESS_TOTAL };
@@ -297,7 +312,16 @@ public class SingleAdaptationBuilder extends AbstractPegasusBuilder {
 
         for (String field : fields) {
             String valeur = planCalcul.get(field);
-            addLignePlanCalcul(table, "FORTUNE", getSession().getCodeLibelle(field).replace("@", " "), valeur);
+            String libelle = "";
+            try {
+                CodeSystem csLibelle = CodeSystemUtils.searchCodeSystemTraduction(field,
+                        BSessionUtil.getSessionFromThreadContext(), tiersLangueIso);
+                libelle = csLibelle.getTraduction().replace("@", " ");
+            } catch (Exception e) {
+                JadeLogger.warn(e, e.getMessage());
+                libelle = BSessionUtil.getSessionFromThreadContext().getCodeLibelle(field).replace("@", " ");
+            }
+            addLignePlanCalcul(table, "FORTUNE", libelle, valeur);
         }
 
         data.add(table);
@@ -332,7 +356,7 @@ public class SingleAdaptationBuilder extends AbstractPegasusBuilder {
         return data;
     }
 
-    private DocumentData buildZoneRevenus(DocumentData data) {
+    private DocumentData buildZoneRevenus(DocumentData data, String tiersLangueIso) {
 
         final String[] fields = { IPCValeursPlanCalcul.CLE_REVEN_INTFORMO_TOTAL,
                 IPCValeursPlanCalcul.CLE_REVEN_RENFORMO_TOTAL, IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_TOTAL,
@@ -344,7 +368,16 @@ public class SingleAdaptationBuilder extends AbstractPegasusBuilder {
 
         for (String field : fields) {
             String valeur = planCalcul.get(field);
-            addLignePlanCalcul(table, "REVENUS", getSession().getCodeLibelle(field).replace("@", " "), valeur);
+            String libelle = "";
+            try {
+                CodeSystem csLibelle = CodeSystemUtils.searchCodeSystemTraduction(field,
+                        BSessionUtil.getSessionFromThreadContext(), tiersLangueIso);
+                libelle = csLibelle.getTraduction().replace("@", " ");
+            } catch (Exception e) {
+                JadeLogger.warn(e, e.getMessage());
+                libelle = BSessionUtil.getSessionFromThreadContext().getCodeLibelle(field).replace("@", " ");
+            }
+            addLignePlanCalcul(table, "REVENUS", libelle, valeur);
         }
 
         data.add(table);

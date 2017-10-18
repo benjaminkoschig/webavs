@@ -3,11 +3,13 @@ package ch.globaz.pegasus.process.adaptation.imprimerDecisions;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import ch.globaz.common.constantes.CommonConstLangue;
 import ch.globaz.pegasus.business.constantes.IPCPCAccordee;
 import ch.globaz.pegasus.business.exceptions.models.pcaccordee.PCAccordeeException;
 import ch.globaz.pegasus.business.models.pcaccordee.PCAccordeeAdaptationImpression;
@@ -39,9 +41,11 @@ public class CommunicationAdaptationElement implements Serializable {
         public String designation, nomBeneficiaire, nssBeneficiaire, montantMensuelPrecendent, montantMensuel;
     }
 
-    private final static String PC_LIBELLE = "PC";
+    private final static String PC_LIBELLE_FR = "PC";
+    private final static String PC_LIBELLE_DE = "EL";
     private final static String PC_MOITIE = " (1/2)";
-    private final static String REGIME_RFM_LIBELLE = "Régime";
+    private final static String REGIME_RFM_LIBELLE_FR = "Régime";
+    private final static String REGIME_RFM_LIBELLE_DE = "Diätkosten";
 
     private String dateSurDocument = null;
 
@@ -69,10 +73,32 @@ public class CommunicationAdaptationElement implements Serializable {
     public void addPCAccordee(PCAccordeeAdaptationImpression pca, PCAccordeeAdaptationImpressionAncienne pcaPrecedente)
             throws PCAccordeeException {
 
+        BSession session = BSessionUtil.getSessionFromThreadContext();
+        String tiersLangue = null;
+
         if (!pca.isPrecedent()) {
 
+            try {
+                tiersLangue = PRTiersHelper.getTiersById(session, pca.getIdTiers()).getLangue();
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
             // s'il y a une prestation du conjoint, c'est c'est un pc a domicile avec 2 rentes principales.
-            String designation = CommunicationAdaptationElement.PC_LIBELLE;
+
+            String designation = null;
+
+            if (tiersLangue != null) {
+                if (CommonConstLangue.LANGUE_SYSTEM_CODE_FR.equals(tiersLangue)) {
+                    designation = CommunicationAdaptationElement.PC_LIBELLE_FR;
+                } else if (CommonConstLangue.LANGUE_SYSTEM_CODE_DE.equals(tiersLangue)) {
+                    designation = CommunicationAdaptationElement.PC_LIBELLE_DE;
+                }
+            }
+
+            if (designation == null) {
+                designation = CommunicationAdaptationElement.PC_LIBELLE_FR;
+            }
 
             isHome = IPCPCAccordee.CS_GENRE_PC_HOME.equals(pca.getCsGenrePC());
 
@@ -157,7 +183,26 @@ public class CommunicationAdaptationElement implements Serializable {
         ResumePrestations entite = new ResumePrestations();
         entite.nomBeneficiaire = getNomBeneficiaireFromPCForRFMLigne();
         entite.nssBeneficiaire = getNSSBeneficiaireFromPCForRFMLigne();
-        entite.designation = CommunicationAdaptationElement.REGIME_RFM_LIBELLE;
+
+        BSession session = BSessionUtil.getSessionFromThreadContext();
+        String tiersLangue = null;
+
+        try {
+            tiersLangue = PRTiersHelper.getTiersById(session, regimeRFM.getIdTiers()).getLangue();
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        if (tiersLangue != null) {
+            if (tiersLangue == CommonConstLangue.LANGUE_SYSTEM_CODE_FR) {
+                entite.designation = CommunicationAdaptationElement.REGIME_RFM_LIBELLE_FR;
+            } else if (tiersLangue.equals(CommonConstLangue.LANGUE_SYSTEM_CODE_DE)) {
+                entite.designation = CommunicationAdaptationElement.REGIME_RFM_LIBELLE_DE;
+            }
+        } else {
+            entite.designation = CommunicationAdaptationElement.REGIME_RFM_LIBELLE_FR;
+        }
 
         // gestion du montant
         entite.montantMensuel = regimeRFM.getMontantPrestation();
