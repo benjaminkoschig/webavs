@@ -73,8 +73,8 @@ public class REModuleEcheance18Ans extends REModuleAnalyseEcheance {
                     && (!JadeStringUtil.isEmpty(rentePrincipale.getDateEcheance()) && JadeDateUtil.areDatesEquals("01."
                             + rentePrincipale.getDateEcheance(), "01." + getMoisTraitement()))) {
 
-                return REReponseModuleAnalyseEcheance.Vrai(rentePrincipale, REMotifEcheance.Echeance18ans,
-                        echeancesPourUnTiers.getIdTiers());
+                return REReponseModuleAnalyseEcheance.Vrai(rentePrincipale, REMotifEcheance.EnqueteIntermediaire,
+                        echeancesPourUnTiers.getIdTiers(), "en " + rentePrincipale.getDateEcheance());
             }
         }
         return REReponseModuleAnalyseEcheance.Faux;

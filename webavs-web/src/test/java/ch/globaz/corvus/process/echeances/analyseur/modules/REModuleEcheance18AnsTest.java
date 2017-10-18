@@ -46,10 +46,10 @@ public class REModuleEcheance18AnsTest extends REModuleAnalyseEcheanceTest {
         assertTrue(module, entity, "01.2012", REMotifEcheance.Echeance18ans);
 
         // l'enfant a déjà eu 18 ans, n'a pas de période d'études et la date d'échéance de sa rente arrive à terme dans
-        // le mois courant
+        // le mois courant -> c'est une enquête intermédiaire
         entity.setDateNaissanceTiers("01.01.1993");
         rente.setDateEcheance("01.2012");
-        assertTrue(module, entity, "01.2012", REMotifEcheance.Echeance18ans);
+        assertTrue(module, entity, "01.2012", REMotifEcheance.EnqueteIntermediaire);
 
         // l'enfant a déjà eu 18 ans, n'a pas de période d'études et la date d'échéance de sa rente n'arrive pas encore
         // à terme dans le mois courant
