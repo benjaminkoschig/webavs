@@ -211,10 +211,21 @@ $(document).ready(function(){
 						<dl class="dl-horizontal">
 							<dt><strong><ct:FWLabel key="ORION_JSP_GEB0004_FICHIER"/></strong></dt>
 							<dd>${viewBean.pucsFile.filename}.xml</dd>
+							<c:if test="${!(viewBean.decSal.transmissionDate == null)}">
 							<dt><strong><ct:FWLabel key="ORION_JSP_GEB0004_TRANSMIS_LE"/></strong></dt>
 							<dd>${viewBean.decSal.transmissionDate}</dd>
+							</c:if>
 							<dt><strong><ct:FWLabel key="ORION_JSP_GEB0004_ANNEE"/></strong></dt>
 							<dd>${viewBean.decSal.annee}</dd>
+							<dt><strong><ct:FWLabel key="ORION_JSP_GEB0004_ANNEE_VERSEMENT"/></strong></dt>
+							<dd>${viewBean.pucsFile.anneeVersement}</dd>
+							<dt><strong><ct:FWLabel key="ORION_JSP_GEB0004_TYPE"/></strong></dt>
+							<c:if test="${viewBean.pucsFile.isDeclarationPrincipale()}">
+							<dd><ct:FWLabel key="JSP_GEB0001_TYPE_DECLARATION_PRINCIPALE"/></dd>
+							</c:if>
+							<c:if test="${viewBean.pucsFile.isDeclarationComplementaire()}">
+							<dd><ct:FWLabel key="JSP_GEB0001_TYPE_DECLARATION_COMPLEMENTAIRE"/></dd>
+							</c:if>
 						</dl>
 					</div>
 				</div>
@@ -225,14 +236,14 @@ $(document).ready(function(){
 						<strong><ct:FWLabel key="ORION_JSP_GEB0004_SWISSDEC"/></strong>
 						<div class="text-right" style="margin: 0; padding: 0; float: right; position: relative;bottom: 7px; right: -12px">
 							<a data-g-download="docType:pdf,
-										parametres:¦${viewBean.currentId},<%=DeclarationSalaireProvenance.SWISS_DEC%>,<%=etatSwissDecPucsFile%>¦,
+										parametres:¦${viewBean.currentId},${viewBean.pucsFile.provenance},<%=etatSwissDecPucsFile%>¦,
 					                    serviceClassName:ch.globaz.orion.business.services.pucs.PucsService,
 					                    displayOnlyImage:true,
 					                    serviceMethodName:pucFileLisible,
 					                    docName:${viewBean.numeroInforom}_${viewBean.decSal.numeroAffilie}_${viewBean.decSal.annee}_declarationSalaire"
 							></a>
 							<a data-g-download="docType:xls,
-										parametres:¦${viewBean.currentId},<%=DeclarationSalaireProvenance.SWISS_DEC%>,<%=etatSwissDecPucsFile%>¦,
+										parametres:¦${viewBean.currentId},${viewBean.pucsFile.provenance},<%=etatSwissDecPucsFile%>¦,
 					                    serviceClassName:ch.globaz.orion.business.services.pucs.PucsService,
 					                    displayOnlyImage:true,
 					                    serviceMethodName:pucFileLisibleXls,
@@ -240,7 +251,7 @@ $(document).ready(function(){
 					                    byPassExtentionXml: true"
 							></a>
 							<a data-g-download="docType:xml,
-										parametres:¦${viewBean.currentId},<%=DeclarationSalaireProvenance.SWISS_DEC%>,<%=etatSwissDecPucsFile%>¦,
+										parametres:¦${viewBean.currentId},${viewBean.pucsFile.provenance},<%=etatSwissDecPucsFile%>¦,
 					                    serviceClassName:ch.globaz.orion.business.services.pucs.PucsService,
 					                    displayOnlyImage:true,
 					                    serviceMethodName:pucFileLisibleXml,
@@ -441,16 +452,22 @@ $(document).ready(function(){
 			<div class="row-fluid">
 				  <div class="span12 text-right">
 				  	<c:if test="${viewBean.isAffiliationExistante()}">
+				  	<ct:ifhasright element="orion.swissdec.pucsValidationDetail.accepter" crud="cud">	
 				   	<button type="button" id="accepter" class="btn btn-success"><strong><ct:FWLabel key="ORION_JSP_GEB0004_ACCEPTER"/></strong></button>
+				   	</ct:ifhasright>
 				  	</c:if>
+				  	<ct:ifhasright element="orion.swissdec.pucsValidationDetail.refuser" crud="cud">	
 					<button type="button" id="refuser" class="btn btn-warning"><strong><ct:FWLabel key="ORION_JSP_GEB0004_REJETER"/></strong></button>
+					</ct:ifhasright>
 				  </div>
 			</div>
 			</c:if> 
 			<c:if test="${viewBean.isRefuser() && viewBean.swissDec}">
 			<div class="row-fluid">
 				<div class="span12 text-right">
+					<ct:ifhasright element="orion.swissdec.pucsValidationDetail.annulerRefus" crud="cud">
 					<button type="button" id="annulerRefus" class="btn btn-danger"><strong><ct:FWLabel key="ORION_JSP_GEB0004_ANNULER_REFUS"/></strong></button>
+					</ct:ifhasright>
 				</div>
 			</div>
 			</c:if> 
