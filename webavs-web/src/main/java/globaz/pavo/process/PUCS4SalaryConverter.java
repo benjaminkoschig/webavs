@@ -195,7 +195,9 @@ public class PUCS4SalaryConverter {
             ParticularsType particulars = person.getParticulars();
 
             Employee targetEmployee = new Employee();
-            targetEmployee.setDateNaissance(new Date(particulars.getDateOfBirth().toGregorianCalendar().getTime()));
+            if (particulars.getDateOfBirth() != null) {
+                targetEmployee.setDateNaissance(new Date(particulars.getDateOfBirth().toGregorianCalendar().getTime()));
+            }
             targetEmployee.setNom(particulars.getLastname());
             targetEmployee.setPrenom(particulars.getFirstname());
             targetEmployee.setNss(particulars.getSocialInsuranceIdentification().getSVASNumber());
