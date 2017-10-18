@@ -5,12 +5,15 @@ import globaz.framework.bean.FWListViewBeanInterface;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSpy;
+import globaz.globall.util.JAException;
+import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.context.JadeThread;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import globaz.pegasus.vb.droit.PCDonneeFinanciereAjaxViewBean;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Iterator;
 import ch.globaz.pegasus.business.exceptions.models.droit.DroitException;
 import ch.globaz.pegasus.business.models.droit.SimpleDonneeFinanciereHeader;
@@ -181,7 +184,7 @@ public class PCLoyerAjaxViewBean extends PCDonneeFinanciereAjaxViewBean implemen
     }
 
     private void controleSiLoyerDeplafonneDejaPresent() throws DroitException,
-            JadeApplicationServiceNotAvailableException, JadePersistenceException {
+            JadeApplicationServiceNotAvailableException, JadePersistenceException, JAException {
 
         HabitatSearch search = new HabitatSearch();
 
@@ -194,13 +197,29 @@ public class PCLoyerAjaxViewBean extends PCDonneeFinanciereAjaxViewBean implemen
             Habitat donnee = (Habitat) it.next();
             if (donnee.getDonneeFinanciere() instanceof SimpleLoyer) {
                 SimpleLoyer loyerExistant = (SimpleLoyer) donnee.getDonneeFinanciere();
+                SimpleDonneeFinanciereHeader donneeFinanciereExistante = donnee.getSimpleDonneeFinanciereHeader();
+
+                Calendar dateFinLoyerExistant = JadeDateUtil.getGlobazCalendar(JadeDateUtil
+                        .getLastDateOfMonth(donneeFinanciereExistante.getDateFin()));
+
+                long dateFinLoyerExistantMillis;
+                if (dateFinLoyerExistant == null) {
+                    dateFinLoyerExistantMillis = 0;
+                } else {
+                    dateFinLoyerExistantMillis = dateFinLoyerExistant.getTimeInMillis();
+                }
+
+                long dateDebutLoyerMillis = JadeDateUtil.getGlobazCalendar(
+                        JadeDateUtil.getFirstDateOfMonth(loyer.getSimpleDonneeFinanciereHeader().getDateDebut()))
+                        .getTimeInMillis();
 
                 // si le loyer trouvé a un CS pour appartement partagé, est différent du loyer qu'on update ou créé, et
                 // que le loyer a ajouté a un CS pour l'appartement partagé ->
                 // message d'erreur
                 if (!loyerExistant.getId().equals(loyer.getSimpleLoyer().getId())
                         && !"0".equals(loyerExistant.getCsDeplafonnementAppartementPartage())
-                        && !"".equals(loyer.getSimpleLoyer().getCsDeplafonnementAppartementPartage())) {
+                        && !"".equals(loyer.getSimpleLoyer().getCsDeplafonnementAppartementPartage())
+                        && dateDebutLoyerMillis <= dateFinLoyerExistantMillis) {
                     JadeThread.logError(getClass().getName(), "pegasus.simpleLoyer.deplafonnement.deja.existant");
                 }
 
