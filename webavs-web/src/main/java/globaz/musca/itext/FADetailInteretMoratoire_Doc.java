@@ -428,6 +428,9 @@ public class FADetailInteretMoratoire_Doc extends FAImpressionFacturation {
             // getDocumentInfo().setDocumentDate(getDateImpression());
             getDocumentInfo().setDocumentDate(getPassage().getDateFacturation());
 
+            getDocumentInfo().setDocumentProperty("osiris.section.idExterne",
+                    getInteretMoratoire().getSection().getIdExterne());
+
         } catch (Exception e) {
             getDocumentInfo().setDocumentProperty("numero.affilie.non.formatte", numAff);
         }

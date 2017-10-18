@@ -182,8 +182,6 @@ public class CIImpressionRappelBta_Doc extends FWIDocumentManager implements ILE
 
     @Override
     public void createDataSource() throws Exception {
-        // remplissage du docInfo
-        fillDocInfo();
 
         for (int i = 0; i < docCourant.size(); i++) {
             LEParamEnvoiDataSource.paramEnvoi p = docCourant.getParamEnvoi(i);
@@ -192,6 +190,9 @@ public class CIImpressionRappelBta_Doc extends FWIDocumentManager implements ILE
 
         // récupération du requerant en cours et du tiers correspondant
         TITiersViewBean tiers = getTiers(idTiers);
+
+        // remplissage du docInfo
+        fillDocInfo(tiers.getNumAvsActuel());
 
         // récupération de la langue du tiers
         langueIsoRequerant = tiers.getLangueIso();
@@ -253,11 +254,12 @@ public class CIImpressionRappelBta_Doc extends FWIDocumentManager implements ILE
         caisseReportHelper.addSignatureParameters(this, signBean);
     }
 
-    private void fillDocInfo() throws JAException {
+    private void fillDocInfo(String nss) throws JAException {
         getDocumentInfo().setDocumentTypeNumber(CIImpressionRappelBta_Doc.NUM_INFOROM);
         getDocumentInfo().setArchiveDocument(true);
         getDocumentInfo().setPublishDocument(isPublishDocument());
         getDocumentInfo().setDocumentDate(getDateDocument());
+        getDocumentInfo().setDocumentProperty("numero.avs.formatte", nss);
     }
 
     /**

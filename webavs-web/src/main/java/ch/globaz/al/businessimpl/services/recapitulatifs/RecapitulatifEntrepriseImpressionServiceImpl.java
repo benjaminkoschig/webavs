@@ -468,6 +468,12 @@ public class RecapitulatifEntrepriseImpressionServiceImpl extends ALAbstractBusi
         String numAffilieNonFormatte = RecapitulatifEntrepriseImpressionServiceImpl.removePointToNumAff(numAffilie);
         pubInfosRecapitulation.setPublishProperty("numero.affilie.formatte", numAffilie);
         pubInfosRecapitulation.setPublishProperty("id.recap", idRecap);
+
+        DossierComplexModel dossier = ALServiceLocator.getDossierComplexModelService().read(
+                ((RecapitulatifEntrepriseImpressionComplexModel) recapitulatifsTemp.get(0)).getIdDossier());
+        pubInfosRecapitulation.setDocumentProperty("type.dossier", ALServiceLocator.getGedBusinessService()
+
+        .getTypeSousDossier(dossier.getDossierModel()));
         pubInfosRecapitulation.setOwnerId(JadeThread.currentUserId());
 
         // FIXME:bz5857
