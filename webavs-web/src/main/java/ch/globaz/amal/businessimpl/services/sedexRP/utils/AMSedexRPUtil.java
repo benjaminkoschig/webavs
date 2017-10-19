@@ -99,12 +99,10 @@ public class AMSedexRPUtil {
             moyenCommunicationManager.setForMoyenLike(sedexId);
             moyenCommunicationManager.find();
 
-            if (moyenCommunicationManager.getContainer().size() == 1) {
-                TIMoyenCommunication moyenCommunication = new TIMoyenCommunication();
-                moyenCommunication = (TIMoyenCommunication) moyenCommunicationManager.get(0);
+            // S170201_010 - prendre le premier id tiers trouvé d'un même sedex-id
+            if (!moyenCommunicationManager.getContainer().isEmpty()) {
+                TIMoyenCommunication moyenCommunication = (TIMoyenCommunication) moyenCommunicationManager.get(0);
                 return moyenCommunication.getIdContact();
-            } else if (moyenCommunicationManager.getContainer().size() > 1) {
-                throw new AnnonceSedexException("Multiple SedexId defined for id tiers : " + sedexId);
             } else {
                 throw new AnnonceSedexException("No SedexId defined for id tiers : " + sedexId);
             }
@@ -135,6 +133,7 @@ public class AMSedexRPUtil {
             avoirContactManager.find(2);
 
             if (avoirContactManager.getContainer().size() == 0) {
+
                 throw new AnnonceSedexException("Error searching idSedex : no SedexId defined for id tiers : "
                         + idAdministration);
             }
