@@ -361,11 +361,7 @@ public class AMFamilleViewBean extends BJadePersistentObjectViewBean {
      */
     @Override
     public void update() throws Exception {
-
-        familleContribuable.getSimpleFamille().setCarteCulture(contribuable.getFamille().getCarteCulture());
         familleContribuable = AmalServiceLocator.getFamilleContribuableService().update(familleContribuable);
-
-        // contribuable = AmalServiceLocator.getContribuableService().update(contribuable);
     }
 
 }

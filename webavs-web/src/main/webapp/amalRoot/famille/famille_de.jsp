@@ -523,9 +523,9 @@ function delDetailFamille(finalUrl){
 						</td>
 						<td width="170px"><ct:FWLabel key="JSP_AM_FA_D_CARTE_CULTURE"/></td>
 						<td>
-							<select id="isCarteCulture" disabled="disabled" name="contribuable.famille.carteCulture">
-								<option <%=(viewBeanIsNew || (!viewBeanIsNew && !viewBean.getContribuable().getFamille().getCarteCulture())?"selected=\"selected\"":"")%> value="false"><ct:FWLabel key="JSP_LISTE_DEROULANTE_NON"/></option>																							
-								<option <%=(!viewBeanIsNew && viewBean.getContribuable().getFamille().getCarteCulture()?"selected=\"selected\"":"")%> value="true"><ct:FWLabel key="JSP_LISTE_DEROULANTE_OUI"/></option>
+							<select id="isCarteCulture" disabled="disabled" name="familleContribuable.simpleFamille.carteCulture">
+								<option <%=((viewBeanIsNew && !viewBean.getContribuable().getFamille().getCarteCulture()) ||(!viewBeanIsNew && !viewBean.getFamilleContribuable().getSimpleFamille().getCarteCulture())?"selected=\"selected\"":"")%> value="false"><ct:FWLabel key="JSP_LISTE_DEROULANTE_NON"/></option>																							
+								<option <%=((viewBeanIsNew && viewBean.getContribuable().getFamille().getCarteCulture()) ||(!viewBeanIsNew && viewBean.getFamilleContribuable().getSimpleFamille().getCarteCulture())?"selected=\"selected\"":"")%> value="true"><ct:FWLabel key="JSP_LISTE_DEROULANTE_OUI"/></option>
 							</select>
 						</td>
 					</tr>
