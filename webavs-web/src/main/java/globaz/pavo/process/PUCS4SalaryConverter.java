@@ -77,7 +77,7 @@ public class PUCS4SalaryConverter {
         } else {
             result.setTransmissionDate(new Date(param.getDeclareSalary().getRequestContext().getTransmissionDate()
                     .toGregorianCalendar().getTime()));
-            result.setTest(false);
+            result.setTest(param.getDeclareSalary().getRequestContext().getTestCase() != null);
             result.setDuplicate(false);
             result.setSubstitution(false);
         }
