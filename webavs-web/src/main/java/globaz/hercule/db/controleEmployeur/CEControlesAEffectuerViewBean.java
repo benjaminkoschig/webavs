@@ -13,59 +13,26 @@ public class CEControlesAEffectuerViewBean extends CEListeControlesAEffectuerPro
 
     private static final long serialVersionUID = -8391526121818485527L;
 
-    private String annee = "";
-    private String anneeCptr = "";
-    private String genreControle = "";
-    private Boolean isAvecReviseur = null;
     private String masseSalA = "";
     private String masseSalDe = "";
-    private String typeAdresse = "";
 
-    public CEControlesAEffectuerViewBean() throws Exception {
+    public CEControlesAEffectuerViewBean() {
+        // nothing
     }
 
     @Override
     public void add() throws Exception {
-
+        // nothing
     }
 
     @Override
     public void delete() throws Exception {
-
-    }
-
-    /**
-     * @return
-     */
-    @Override
-    public String getAnnee() {
-        return annee;
-    }
-
-    @Override
-    public String getAnneeCptr() {
-        return anneeCptr;
-    }
-
-    /**
-     * @return
-     */
-    @Override
-    public String getGenreControle() {
-        return genreControle;
+        // nothing
     }
 
     @Override
     public String getId() {
         return null;
-    }
-
-    /**
-     * @return
-     */
-    @Override
-    public Boolean getIsAvecReviseur() {
-        return isAvecReviseur;
     }
 
     /**
@@ -83,47 +50,13 @@ public class CEControlesAEffectuerViewBean extends CEListeControlesAEffectuerPro
     }
 
     @Override
-    public String getTypeAdresse() {
-        return typeAdresse;
-    }
-
-    @Override
     public void retrieve() throws Exception {
 
     }
 
-    /**
-     * @param string
-     */
-    @Override
-    public void setAnnee(String string) {
-        annee = string;
-    }
-
-    @Override
-    public void setAnneeCptr(String anneeCptr) {
-        this.anneeCptr = anneeCptr;
-    }
-
-    /**
-     * @param string
-     */
-    @Override
-    public void setGenreControle(String string) {
-        genreControle = string;
-    }
-
     @Override
     public void setId(String newId) {
-
-    }
-
-    /**
-     * @param boolean1
-     */
-    @Override
-    public void setIsAvecReviseur(Boolean boolean1) {
-        isAvecReviseur = boolean1;
+        // nothing
     }
 
     /**
@@ -141,13 +74,8 @@ public class CEControlesAEffectuerViewBean extends CEListeControlesAEffectuerPro
     }
 
     @Override
-    public void setTypeAdresse(String typeAdresse) {
-        this.typeAdresse = typeAdresse;
-    }
-
-    @Override
     public void update() throws Exception {
-
+        // nothing
     }
 
 }
