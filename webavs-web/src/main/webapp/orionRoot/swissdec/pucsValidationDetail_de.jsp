@@ -217,15 +217,6 @@ $(document).ready(function(){
 							</c:if>
 							<dt><strong><ct:FWLabel key="ORION_JSP_GEB0004_ANNEE"/></strong></dt>
 							<dd>${viewBean.decSal.annee}</dd>
-							<dt><strong><ct:FWLabel key="ORION_JSP_GEB0004_ANNEE_VERSEMENT"/></strong></dt>
-							<dd>${viewBean.pucsFile.anneeVersement}</dd>
-							<dt><strong><ct:FWLabel key="ORION_JSP_GEB0004_TYPE"/></strong></dt>
-							<c:if test="${viewBean.pucsFile.isDeclarationPrincipale()}">
-							<dd><ct:FWLabel key="JSP_GEB0001_TYPE_DECLARATION_PRINCIPALE"/></dd>
-							</c:if>
-							<c:if test="${viewBean.pucsFile.isDeclarationComplementaire()}">
-							<dd><ct:FWLabel key="JSP_GEB0001_TYPE_DECLARATION_COMPLEMENTAIRE"/></dd>
-							</c:if>
 						</dl>
 					</div>
 				</div>
