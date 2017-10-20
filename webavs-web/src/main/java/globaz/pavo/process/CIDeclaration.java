@@ -276,11 +276,18 @@ public class CIDeclaration extends BProcess {
             fileInputStream = new FileInputStream(filePath);
             Document doc = dbf.newDocumentBuilder().parse(fileInputStream);
 
-            NodeList nodes = doc.getElementsByTagNameNS("http://schemas.xmlsoap.org/soap/envelope/", "Body");
-            nodes = nodes.item(0).getChildNodes();
+            NodeList nodes = doc.getElementsByTagNameNS(
+                    "http://www.swissdec.ch/schema/sd/20130514/SalaryDeclarationConsumerServiceTypes", "*");
+
+            if (nodes == null || nodes.getLength() == 0) {
+                nodes = doc.getElementsByTagNameNS(
+                        "http://www.swissdec.ch/schema/sd/20130514/SalaryDeclarationServiceTypes", "*");
+            }
 
             for (int i = 0; i < nodes.getLength(); i++) {
-                if (nodes.item(i).getNodeType() == Node.ELEMENT_NODE) {
+                if (nodes.item(i).getNodeType() == Node.ELEMENT_NODE
+                        && ("DeclareSalaryConsumer".equalsIgnoreCase(nodes.item(i).getLocalName()) || "DeclareSalary"
+                                .equalsIgnoreCase(nodes.item(i).getLocalName()))) {
                     return (Element) nodes.item(i);
                 }
             }
