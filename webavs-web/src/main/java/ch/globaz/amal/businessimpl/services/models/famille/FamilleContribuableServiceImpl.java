@@ -295,6 +295,7 @@ public class FamilleContribuableServiceImpl implements FamilleContribuableServic
             }
             simpleFamille.setNoAVS(noAVSWithoutPoints);
             simpleFamille.setNnssContribuable(noAVSWithoutPoints);
+            simpleFamille.setCarteCulture(Boolean.FALSE);
             simpleFamille = AmalImplServiceLocator.getSimpleFamilleService().create(simpleFamille);
             familleContribuable.setSimpleFamille(simpleFamille);
 
