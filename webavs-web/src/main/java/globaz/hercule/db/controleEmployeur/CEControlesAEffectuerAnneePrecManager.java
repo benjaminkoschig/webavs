@@ -30,7 +30,7 @@ public class CEControlesAEffectuerAnneePrecManager extends BManager {
         StringBuilder sqlSelect = new StringBuilder();
 
         sqlSelect
-                .append("couverture.CEICOU, cont.mdicon, aff.malnaf, aff.maiaff, tiers.htitie,TIERS.HTLDE1,TIERS.HTLDE2,groupe.celgrp,aff.MADDEB,aff.madfin,aff.MATBRA,aff.MATCDN,");
+                .append("couverture.CEICOU, cont.mdicon, aff.malnaf, aff.maiaff, tiers.htitie,TIERS.HTLDE1,TIERS.HTLDE2,groupe.celgrp,aff.MADDEB,aff.madfin,aff.MATBRA,aff.MATCDN,aff.MALFED,");
         sqlSelect.append("COUP.PCOUID AS CODESUVA,COUP.PCOLUT AS LIBELLESUVA,");
         sqlSelect.append("(SELECT SUM(CUMULMASSE) FROM " + _getCollection() + "CACPTRP AS CPTR1 WHERE ANNEE = "
                 + CEUtils.subAnnee(getForAnneeCptr(), 0) + " AND CPTR1.IDRUBRIQUE IN( " + idRubriques

@@ -93,25 +93,25 @@ public interface ICEListeColumns {
     public static final String HEADER_REVISEUR = "headerReviseur";
     public static final String HEADER_TO_DATE_IMPRESSION = "headerToDateImpr";
     public static final String HEADER_VISA_REVISEUR = "headerVisaReviseur";
-    public static final String[] listeNoms = { ICEListeColumns.NUM_AFFILIE, ICEListeColumns.NOM, ICEListeColumns.NPA,
-            ICEListeColumns.RUE, ICEListeColumns.LOCALITE, ICEListeColumns.CASE_POSTALE,
-            ICEListeColumns.DEBUT_PERIODE_AFFILIATION, ICEListeColumns.FIN_PERIODE_AFFILIATION,
-            ICEListeColumns.PERIODE_AFFILIATION, ICEListeColumns.NOM_GROUPE, ICEListeColumns.DATE_DERNIER_CONTROLE,
-            ICEListeColumns.PERIODE_CONTROLEE, ICEListeColumns.SANS_PERSONNEL_DEPUIS, ICEListeColumns.ANNEE_PREVUE,
-            ICEListeColumns.REVISEUR, ICEListeColumns.DATE_EFFECTIVE, ICEListeColumns.BRANCHE_ECONOMIQUE,
-            ICEListeColumns.CODE_NOGA, ICEListeColumns.DATE_PARTICULARITE_SANS_PERSONNEL,
-            ICEListeColumns.DATE_DERNIER_RAPPORT, ICEListeColumns.NUMERO_RAPPORT, ICEListeColumns.PREMIERE_PERIODE,
-            ICEListeColumns.DERNIERE_PERIODE, ICEListeColumns.MASSE_AVS, ICEListeColumns.MASSE_AVS_NEG,
-            ICEListeColumns.CORRECTION, ICEListeColumns.TEMPS_JOURS, ICEListeColumns.NOTE_DERNIERE_REVISION,
-            ICEListeColumns.NOTE_QUALITE_RH, ICEListeColumns.NOTE_COLLABORATION,
-            ICEListeColumns.NOTE_CRITERES_SPECIAUX, ICEListeColumns.NOTE_TOTAL, ICEListeColumns.MASSE_5,
-            ICEListeColumns.MASSE_4, ICEListeColumns.MASSE_3, ICEListeColumns.MASSE_2, ICEListeColumns.MASSE_1,
-            ICEListeColumns.MASSE, ICEListeColumns.MASSE_AF, ICEListeColumns.CI_5, ICEListeColumns.CI_4,
-            ICEListeColumns.CI_3, ICEListeColumns.CI_2, ICEListeColumns.CI_1, ICEListeColumns.CI, ICEListeColumns.CVS,
-            ICEListeColumns.TYPE_CONTROLE, ICEListeColumns.DATE_PREVUE, ICEListeColumns.DATE_IMPRESSION,
-            ICEListeColumns.ANCIENNE_CATEGORIE, ICEListeColumns.ANCIENNE_MASSE, ICEListeColumns.CATEGORIE,
-            ICEListeColumns.DATE_AFFILIATION, ICEListeColumns.DATE_RADIATION, ICEListeColumns.MASSE_SALARIALE,
-            ICEListeColumns.MOTIF_RADIATION, ICEListeColumns.CAISSE_AVS };
+    public static final String[] listeNoms = { ICEListeColumns.NUM_AFFILIE, ICEListeColumns.NUM_IDE,
+            ICEListeColumns.NOM, ICEListeColumns.NPA, ICEListeColumns.RUE, ICEListeColumns.LOCALITE,
+            ICEListeColumns.CASE_POSTALE, ICEListeColumns.DEBUT_PERIODE_AFFILIATION,
+            ICEListeColumns.FIN_PERIODE_AFFILIATION, ICEListeColumns.PERIODE_AFFILIATION, ICEListeColumns.NOM_GROUPE,
+            ICEListeColumns.DATE_DERNIER_CONTROLE, ICEListeColumns.PERIODE_CONTROLEE,
+            ICEListeColumns.SANS_PERSONNEL_DEPUIS, ICEListeColumns.ANNEE_PREVUE, ICEListeColumns.REVISEUR,
+            ICEListeColumns.DATE_EFFECTIVE, ICEListeColumns.BRANCHE_ECONOMIQUE, ICEListeColumns.CODE_NOGA,
+            ICEListeColumns.DATE_PARTICULARITE_SANS_PERSONNEL, ICEListeColumns.DATE_DERNIER_RAPPORT,
+            ICEListeColumns.NUMERO_RAPPORT, ICEListeColumns.PREMIERE_PERIODE, ICEListeColumns.DERNIERE_PERIODE,
+            ICEListeColumns.MASSE_AVS, ICEListeColumns.MASSE_AVS_NEG, ICEListeColumns.CORRECTION,
+            ICEListeColumns.TEMPS_JOURS, ICEListeColumns.NOTE_DERNIERE_REVISION, ICEListeColumns.NOTE_QUALITE_RH,
+            ICEListeColumns.NOTE_COLLABORATION, ICEListeColumns.NOTE_CRITERES_SPECIAUX, ICEListeColumns.NOTE_TOTAL,
+            ICEListeColumns.MASSE_5, ICEListeColumns.MASSE_4, ICEListeColumns.MASSE_3, ICEListeColumns.MASSE_2,
+            ICEListeColumns.MASSE_1, ICEListeColumns.MASSE, ICEListeColumns.MASSE_AF, ICEListeColumns.CI_5,
+            ICEListeColumns.CI_4, ICEListeColumns.CI_3, ICEListeColumns.CI_2, ICEListeColumns.CI_1, ICEListeColumns.CI,
+            ICEListeColumns.CVS, ICEListeColumns.TYPE_CONTROLE, ICEListeColumns.DATE_PREVUE,
+            ICEListeColumns.DATE_IMPRESSION, ICEListeColumns.ANCIENNE_CATEGORIE, ICEListeColumns.ANCIENNE_MASSE,
+            ICEListeColumns.CATEGORIE, ICEListeColumns.DATE_AFFILIATION, ICEListeColumns.DATE_RADIATION,
+            ICEListeColumns.MASSE_SALARIALE, ICEListeColumns.MOTIF_RADIATION, ICEListeColumns.CAISSE_AVS };
     public static final String LOCALITE = "localite";
     // années en arrière
     public static final String MASSE = "masse"; // la masse salariale de 1
@@ -156,6 +156,7 @@ public interface ICEListeColumns {
     public static final String NPA = "npa";
     // detail
     public static final String NUM_AFFILIE = "numAffilie";
+    public static final String NUM_IDE = "numeroIde";
     public static final String NUMERO_RAPPORT = "numRapport";
     public static final String PERIODE_AFFILIATION = "periodeAffiliation";
     public static final String PERIODE_CONTROLEE = "periodeControlee";

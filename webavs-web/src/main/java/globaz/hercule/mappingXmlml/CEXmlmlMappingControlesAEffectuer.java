@@ -20,6 +20,7 @@ import globaz.hercule.service.CEControleEmployeurService;
 import globaz.hercule.utils.CEExcelmlUtils;
 import globaz.hercule.utils.CEUtils;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.naos.util.AFIDEUtil;
 import globaz.webavs.common.CommonExcelmlContainer;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -97,7 +98,7 @@ public class CEXmlmlMappingControlesAEffectuer {
 
             // On regarde qu'il ne soit pas en DS
             String anneeFinControle = null;
-            String categorieMasse = "";
+            String categorieMasse;
 
             if (dernierControle != null && !JadeStringUtil.isEmpty(dernierControle.getDateFinControle())) {
                 anneeFinControle = String.valueOf(CEUtils.stringDateToAnnee(dernierControle.getDateFinControle()));
@@ -199,13 +200,13 @@ public class CEXmlmlMappingControlesAEffectuer {
         CEControleEmployeurManager manager = new CEControleEmployeurManager();
         manager.setSession(processParent.getSession());
         manager.setForControleEmployeurId(entity.getIdControle());
-        manager.find();
+        manager.find(BManager.SIZE_USEDEFAULT);
 
         if (manager.size() > 0) {
             CEControleEmployeur controle = (CEControleEmployeur) manager.getFirstEntity();
 
             CEExcelmlUtils.remplirColumn(container, ICEListeColumns.DATE_PREVUE, controle.getDatePrevue(), "01.01."
-                    + String.valueOf((Integer.valueOf(processParent.getAnnee()).intValue())));
+                    + (Integer.valueOf(processParent.getAnnee()).intValue()));
             container.put(ICEListeColumns.PREMIERE_PERIODE, controle.getDateDebutControle());
 
             container.put(ICEListeColumns.DERNIERE_PERIODE, controle.getDateFinControle());
@@ -328,6 +329,13 @@ public class CEXmlmlMappingControlesAEffectuer {
     private void fillContainerInfosAffilie(final CEControlesAEffectuer entity) throws HerculeException {
         // num affilié
         container.put(ICEListeColumns.NUM_AFFILIE, entity.getNumAffilie());
+
+        // Numero IDE
+        if (!JadeStringUtil.isEmpty(entity.getNumeroIDE())) {
+            container.put(ICEListeColumns.NUM_IDE, AFIDEUtil.formatNumIDE(entity.getNumeroIDE()));
+        } else {
+            container.put(ICEListeColumns.NUM_IDE, "");
+        }
         // Nom
         container.put(ICEListeColumns.NOM, entity.getNom());
         // On recherche l'adresse

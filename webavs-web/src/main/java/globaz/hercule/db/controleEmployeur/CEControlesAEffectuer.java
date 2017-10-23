@@ -48,6 +48,7 @@ public class CEControlesAEffectuer extends BEntity {
     private String idControle = "";
     private String codeSuva = "";
     private String libelleSuva = "";
+    private String numeroIDE;
 
     @Override
     protected boolean _allowAdd() {
@@ -66,7 +67,7 @@ public class CEControlesAEffectuer extends BEntity {
 
     @Override
     protected String _getTableName() {
-        return null; // PAS DE TABLES !!!
+        return null;
     }
 
     @Override
@@ -97,6 +98,7 @@ public class CEControlesAEffectuer extends BEntity {
         idControle = statement.dbReadNumeric("MDICON");
         codeSuva = statement.dbReadString("CODESUVA");
         libelleSuva = statement.dbReadString("LIBELLESUVA");
+        numeroIDE = statement.dbReadString("MALFED");
     }
 
     @Override
@@ -367,5 +369,9 @@ public class CEControlesAEffectuer extends BEntity {
      */
     public void setLibelleSuva(final String libelleSuva) {
         this.libelleSuva = libelleSuva;
+    }
+
+    public String getNumeroIDE() {
+        return numeroIDE;
     }
 }

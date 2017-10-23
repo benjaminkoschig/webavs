@@ -20,17 +20,16 @@ public class CEControlesAEffectuerManager extends BManager {
     private String forAnneeCptr = "";
     private String forGenreControle = "";
     private List<String> idAffilies = null;
-    private String idRubriques = "";
 
     @Override
     protected String _getFields(final BStatement statement) {
 
-        idRubriques = CEUtils.getIdRubrique(getSession());
+        String idRubriques = CEUtils.getIdRubrique(getSession());
 
-        StringBuffer sqlSelect = new StringBuffer();
+        StringBuilder sqlSelect = new StringBuilder();
 
         sqlSelect
-                .append("couverture.CEICOU, aff.malnaf, aff.maiaff, tiers.htitie,TIERS.HTLDE1,TIERS.HTLDE2,groupe.celgrp,aff.MADDEB,aff.madfin,aff.MATBRA,aff.MATCDN,");
+                .append("couverture.CEICOU, aff.malnaf, aff.maiaff, tiers.htitie,TIERS.HTLDE1,TIERS.HTLDE2,groupe.celgrp,aff.MADDEB,aff.madfin,aff.MATBRA,aff.MATCDN,aff.MALFED,");
         sqlSelect.append("COUP.PCOUID AS CODESUVA,COUP.PCOLUT AS LIBELLESUVA,");
         sqlSelect.append("(SELECT SUM(CUMULMASSE) FROM " + _getCollection() + "CACPTRP AS CPTR1 WHERE ANNEE = "
                 + CEUtils.subAnnee(getForAnneeCptr(), 0) + " AND CPTR1.IDRUBRIQUE IN( " + idRubriques
@@ -76,7 +75,7 @@ public class CEControlesAEffectuerManager extends BManager {
     protected String _getFrom(final BStatement statement) {
         String idRole = CEAffiliationService.getRoleForAffilieParitaire(getSession());
 
-        StringBuffer sqlFrom = new StringBuffer();
+        StringBuilder sqlFrom = new StringBuilder();
 
         sqlFrom.append(_getCollection() + "afaffip aff ");
         sqlFrom.append(" left outer join " + _getCollection()
@@ -102,7 +101,7 @@ public class CEControlesAEffectuerManager extends BManager {
     @Override
     protected String _getWhere(final BStatement statement) {
 
-        StringBuffer sqlWhere = new StringBuffer();
+        StringBuilder sqlWhere = new StringBuilder();
         sqlWhere.append("aff.maiaff in (");
 
         List<String> listId = getIdAffilies();
