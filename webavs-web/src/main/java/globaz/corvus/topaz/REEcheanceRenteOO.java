@@ -18,6 +18,7 @@ import globaz.corvus.utils.REGedUtils;
 import globaz.corvus.utils.REGedUtils.TypeRente;
 import globaz.docinfo.TIDocumentInfoHelper;
 import globaz.externe.IPRConstantesExternes;
+import globaz.globall.db.BManager;
 import globaz.globall.parameters.FWParametersUserCode;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JACalendarGregorian;
@@ -187,7 +188,7 @@ public class REEcheanceRenteOO extends AbstractJadeJob {
         }
     }
 
-    private void chargementDonneesLettre() throws Exception {
+    private void chargementDonneesLettre(boolean hasDoubleRowObject) throws Exception {
         if (null != tiersBeneficiaire) {
             nomBeneficiaire = tiersBeneficiaire.getProperty(PRTiersWrapper.PROPERTY_NOM) + " "
                     + tiersBeneficiaire.getProperty(PRTiersWrapper.PROPERTY_PRENOM);
@@ -196,11 +197,11 @@ public class REEcheanceRenteOO extends AbstractJadeJob {
         }
 
         if (REMotifEcheance.Echeance18ans.name().equals(echeanceCourrante.getMotifLettre())) {
-            chargementDonneesMotif18ans();
+            chargementDonneesMotif18ans(hasDoubleRowObject);
         } else if (REMotifEcheance.Echeance25ans.name().equals(echeanceCourrante.getMotifLettre())) {
-            chargementDonneesMotif25ans();
+            chargementDonneesMotif25ans(hasDoubleRowObject);
         } else if (REMotifEcheance.EcheanceFinEtudes.name().equals(echeanceCourrante.getMotifLettre())) {
-            chargementDonneesMotifFinEtudes();
+            chargementDonneesMotifFinEtudes(hasDoubleRowObject);
         } else if (ifMotifAgeAVS(echeanceCourrante)) {
             chargementDonneesMotifAgeAVS(echeanceCourrante.getMotifLettre());
         } else if (REMotifEcheance.ConjointArrivantAgeAvs.name().equals(echeanceCourrante.getMotifLettre())) {
@@ -214,66 +215,22 @@ public class REEcheanceRenteOO extends AbstractJadeJob {
         }
     }
 
-    private void chargementDonneesMotif18ans() throws Exception {
+    private void chargementDonneesMotif18ans(boolean hasDoubleRowObject) throws Exception {
         data = new DocumentData();
         data.addData("idProcess", "REEcheanceRenteOO");
-        String concerne = "";
-
-        // Traitement du concerne, j'insere les valeurs type de rente, montant, prenom/nom et date anniversaire en
-        // fonction du sexe de l'enfant
-        if (PRACORConst.CS_HOMME.equals(echeanceCourrante.getCsSexe())) {
-            concerne = PRStringUtils.replaceString(document.getTextes(2).getTexte(1).getDescription(),
-                    REEcheanceRenteOO.CDT_BENEFICIAIRE, nomBeneficiaire);
-        } else if (PRACORConst.CS_FEMME.equals(echeanceCourrante.getCsSexe())) {
-            concerne = PRStringUtils.replaceString(document.getTextes(2).getTexte(2).getDescription(),
-                    REEcheanceRenteOO.CDT_BENEFICIAIRE, nomBeneficiaire);
-        } else {
-            throw new Exception("Internal error : Le sexe du bénéficiaire n'a pas pu être trouvé");
-        }
-
-        String pourRechercheCodeSysteme = echeanceCourrante.getCodePrestation();
-
-        if (JadeStringUtil.isEmpty(echeanceCourrante.getFractionRente())) {
-            pourRechercheCodeSysteme += ".0";
-        } else {
-            pourRechercheCodeSysteme += "." + echeanceCourrante.getFractionRente();
-        }
-
-        // Récupération du code système en fonction de codeIsoLangue et non en fonction de la langue de l'utilisateur
-        FWParametersUserCode userCode = new FWParametersUserCode();
-        userCode.setSession(getSession());
-        userCode.setIdCodeSysteme(getSession().getSystemCode("REGENRPRST", pourRechercheCodeSysteme));
-
-        if (codeIsoLangue.equals("IT")) {
-            userCode.setIdLangue("I");
-        } else if (codeIsoLangue.equals("DE")) {
-            userCode.setIdLangue("D");
-        } else {
-            userCode.setIdLangue("F");
-        }
-
-        userCode.retrieve();
 
         RERenteAccordee rd = new RERenteAccordee();
         rd.setSession(getSession());
         rd.setId(echeanceCourrante.getIdRenteAccordee());
         rd.retrieve();
 
-        // Ajout du mot (AVS) ou (AI) à la fin du genre de prestation (utilisé pour le classement par les caisses)
-        if (rd.isRAVieillesse().equals(Boolean.TRUE)) {
-            concerne = PRStringUtils.replaceString(concerne, REEcheanceRenteOO.CDT_GENTREPREST, userCode.getLibelle()
-                    + " " + document.getTextes(9).getTexte(4));
-        } else if (rd.isRAInvalidite().equals(Boolean.TRUE)) {
-            concerne = PRStringUtils.replaceString(concerne, REEcheanceRenteOO.CDT_GENTREPREST, userCode.getLibelle()
-                    + " " + document.getTextes(9).getTexte(5));
-        } else {
-            concerne = PRStringUtils.replaceString(concerne, REEcheanceRenteOO.CDT_GENTREPREST, userCode.getLibelle());
-        }
+        String concerne = resolveDocumentObject(rd, echeanceCourrante);
 
-        concerne = PRStringUtils.replaceString(concerne, REEcheanceRenteOO.CDT_MONTANTPREST,
-                echeanceCourrante.getMontantPrestation());
-        concerne = PRStringUtils.replaceString(concerne, REEcheanceRenteOO.CDT_DATENAISSANCE,
-                JACalendar.format(echeanceCourrante.getDateNaissance(), codeIsoLangue));
+        if (hasDoubleRowObject && !echeanceCourrante.getListeEcheanceLiees().isEmpty()) {
+            // il ne peut y avoir que 2 objets
+            String concerne2 = resolveDocumentObject(rd, echeanceCourrante.getListeEcheanceLiees().get(0));
+            concerne += "\n" + "\n" + concerne2;
+        }
 
         data.addData("LETTRE_CONCERNE", concerne);
 
@@ -382,33 +339,31 @@ public class REEcheanceRenteOO extends AbstractJadeJob {
 
     }
 
-    private void chargementDonneesMotif25ans() throws Exception {
-
-        data = new DocumentData();
-
-        data.addData("idProcess", "REEcheanceRenteOO");
-
+    private String resolveDocumentObject(RERenteAccordee rd, REListerEcheanceRenteJoinMembresFamille echeanceToResolve)
+            throws Exception {
         String concerne = "";
 
         // Traitement du concerne, j'insere les valeurs type de rente, montant, prenom/nom et date anniversaire en
         // fonction du sexe de l'enfant
-        if (PRACORConst.CS_HOMME.equals(echeanceCourrante.getCsSexe())) {
+        if (PRACORConst.CS_HOMME.equals(echeanceToResolve.getCsSexe())) {
             concerne = PRStringUtils.replaceString(document.getTextes(2).getTexte(1).getDescription(),
                     REEcheanceRenteOO.CDT_BENEFICIAIRE, nomBeneficiaire);
-        } else {
+        } else if (PRACORConst.CS_FEMME.equals(echeanceToResolve.getCsSexe())) {
             concerne = PRStringUtils.replaceString(document.getTextes(2).getTexte(2).getDescription(),
                     REEcheanceRenteOO.CDT_BENEFICIAIRE, nomBeneficiaire);
+        } else {
+            throw new Exception("Internal error : Le sexe du bénéficiaire n'a pas pu être trouvé");
         }
 
-        String pourRechercheCodeSysteme = echeanceCourrante.getCodePrestation();
+        String pourRechercheCodeSysteme = echeanceToResolve.getCodePrestation();
 
-        if (JadeStringUtil.isEmpty(echeanceCourrante.getFractionRente())) {
+        if (JadeStringUtil.isEmpty(echeanceToResolve.getFractionRente())) {
             pourRechercheCodeSysteme += ".0";
         } else {
-            pourRechercheCodeSysteme += "." + echeanceCourrante.getFractionRente();
+            pourRechercheCodeSysteme += "." + echeanceToResolve.getFractionRente();
         }
 
-        // Recuperation du code système en fonction de codeIsoLangue et non en fonction de la langue de l'utilisateur
+        // Récupération du code système en fonction de codeIsoLangue et non en fonction de la langue de l'utilisateur
         FWParametersUserCode userCode = new FWParametersUserCode();
         userCode.setSession(getSession());
         userCode.setIdCodeSysteme(getSession().getSystemCode("REGENRPRST", pourRechercheCodeSysteme));
@@ -423,11 +378,6 @@ public class REEcheanceRenteOO extends AbstractJadeJob {
 
         userCode.retrieve();
 
-        RERenteAccordee rd = new RERenteAccordee();
-        rd.setSession(getSession());
-        rd.setId(echeanceCourrante.getIdRenteAccordee());
-        rd.retrieve();
-
         // Ajout du mot (AVS) ou (AI) à la fin du genre de prestation (utilisé pour le classement par les caisses)
         if (rd.isRAVieillesse().equals(Boolean.TRUE)) {
             concerne = PRStringUtils.replaceString(concerne, REEcheanceRenteOO.CDT_GENTREPREST, userCode.getLibelle()
@@ -440,9 +390,32 @@ public class REEcheanceRenteOO extends AbstractJadeJob {
         }
 
         concerne = PRStringUtils.replaceString(concerne, REEcheanceRenteOO.CDT_MONTANTPREST,
-                echeanceCourrante.getMontantPrestation());
-        concerne = PRStringUtils.replaceString(concerne, REEcheanceRenteOO.CDT_DATENAISSANCE,
-                JACalendar.format(echeanceCourrante.getDateNaissance(), codeIsoLangue));
+                echeanceToResolve.getMontantPrestation());
+        concerne = PRStringUtils.replaceString(concerne.toString(), REEcheanceRenteOO.CDT_DATENAISSANCE,
+                JACalendar.format(echeanceToResolve.getDateNaissance(), codeIsoLangue));
+
+        return concerne;
+    }
+
+    private void chargementDonneesMotif25ans(boolean hasDoubleRowObject) throws Exception {
+
+        data = new DocumentData();
+
+        data.addData("idProcess", "REEcheanceRenteOO");
+
+        RERenteAccordee rd = new RERenteAccordee();
+        rd.setSession(getSession());
+        rd.setId(echeanceCourrante.getIdRenteAccordee());
+        rd.retrieve();
+
+        String concerne = resolveDocumentObject(rd, echeanceCourrante);
+
+        if (hasDoubleRowObject && !echeanceCourrante.getListeEcheanceLiees().isEmpty()) {
+            // il ne peut y avoir que 2 objets
+            String concerne2 = resolveDocumentObject(rd, echeanceCourrante.getListeEcheanceLiees().get(0));
+            concerne += "\n" + "\n" + concerne2;
+        }
+
         data.addData("LETTRE_CONCERNE", concerne);
 
         // Traitement du titre, en fonction du tiers de l'adresse
@@ -948,63 +921,22 @@ public class REEcheanceRenteOO extends AbstractJadeJob {
         }
     }
 
-    private void chargementDonneesMotifFinEtudes() throws Exception {
+    private void chargementDonneesMotifFinEtudes(boolean hasDoubleRowObject) throws Exception {
         data = new DocumentData();
         data.addData("idProcess", "REEcheanceRenteOO");
-        String concerne = "";
-
-        // Traitement du concerne, j'insere les valeurs type de rente, montant, prénom/nom et date anniversaire en
-        // fonction du sexe de l'enfant
-        if (PRACORConst.CS_HOMME.equals(echeanceCourrante.getCsSexe())) {
-            concerne = PRStringUtils.replaceString(document.getTextes(2).getTexte(1).getDescription(),
-                    REEcheanceRenteOO.CDT_BENEFICIAIRE, nomBeneficiaire);
-        } else {
-            concerne = PRStringUtils.replaceString(document.getTextes(2).getTexte(2).getDescription(),
-                    REEcheanceRenteOO.CDT_BENEFICIAIRE, nomBeneficiaire);
-        }
-
-        String pourRechercheCodeSysteme = echeanceCourrante.getCodePrestation();
-        if (JadeStringUtil.isEmpty(echeanceCourrante.getFractionRente())) {
-            pourRechercheCodeSysteme += ".0";
-        } else {
-            pourRechercheCodeSysteme += "." + echeanceCourrante.getFractionRente();
-        }
-
-        // Recuperation du code système en fonction de codeIsoLangue et non en fonction de la langue de l'utilisateur
-        FWParametersUserCode userCode = new FWParametersUserCode();
-        userCode.setSession(getSession());
-        userCode.setIdCodeSysteme(getSession().getSystemCode("REGENRPRST", pourRechercheCodeSysteme));
-
-        System.out.println();
-        if (codeIsoLangue.equals("IT")) {
-            userCode.setIdLangue("I");
-        } else if (codeIsoLangue.equals("DE")) {
-            userCode.setIdLangue("D");
-        } else {
-            userCode.setIdLangue("F");
-        }
-        userCode.retrieve();
 
         RERenteAccordee rd = new RERenteAccordee();
         rd.setSession(getSession());
         rd.setId(echeanceCourrante.getIdRenteAccordee());
         rd.retrieve();
 
-        // Ajout du mot (AVS) ou (AI) à la fin du genre de prestation (utilisé pour le classement par les caisses)
-        if (rd.isRAVieillesse().equals(Boolean.TRUE)) {
-            concerne = PRStringUtils.replaceString(concerne, REEcheanceRenteOO.CDT_GENTREPREST, userCode.getLibelle()
-                    + " " + document.getTextes(9).getTexte(4));
-        } else if (rd.isRAInvalidite().equals(Boolean.TRUE)) {
-            concerne = PRStringUtils.replaceString(concerne, REEcheanceRenteOO.CDT_GENTREPREST, userCode.getLibelle()
-                    + " " + document.getTextes(9).getTexte(5));
-        } else {
-            concerne = PRStringUtils.replaceString(concerne, REEcheanceRenteOO.CDT_GENTREPREST, userCode.getLibelle());
-        }
+        String concerne = resolveDocumentObject(rd, echeanceCourrante);
 
-        concerne = PRStringUtils.replaceString(concerne, REEcheanceRenteOO.CDT_MONTANTPREST,
-                echeanceCourrante.getMontantPrestation());
-        concerne = PRStringUtils.replaceString(concerne, REEcheanceRenteOO.CDT_DATENAISSANCE,
-                JACalendar.format(echeanceCourrante.getDateNaissance(), codeIsoLangue));
+        if (hasDoubleRowObject && !echeanceCourrante.getListeEcheanceLiees().isEmpty()) {
+            // il ne peut y avoir que 2 objets -> on prend donc la première échéance liée
+            String concerne2 = resolveDocumentObject(rd, echeanceCourrante.getListeEcheanceLiees().get(0));
+            concerne += "\n" + "\n" + concerne2;
+        }
         data.addData("LETTRE_CONCERNE", concerne);
 
         // Traitement du titre, en fonction du tiers de l'adresse
@@ -1322,253 +1254,32 @@ public class REEcheanceRenteOO extends AbstractJadeJob {
 
             allDoc.setMergedDocDestination(pubInfosDestination);
 
-            if ((null != echeances) && (echeances.size() > 0)) {
+            if ((null != echeances) && (!echeances.isEmpty())) {
                 echeancesIterator = echeances.iterator();
                 while (echeancesIterator.hasNext()) {
                     try {
                         echeanceCourrante = echeancesIterator.next();
-                        data = new DocumentData();
-                        data.addData("idProcess", "REEcheanceRenteOO");
-
-                        // Valeur à null pour ne pas garder en mémoire les valeurs du tiers precedent
-                        tiersAdresse = null;
-                        tiersBeneficiaire = null;
-                        tiersBeneficiaire = PRTiersHelper.getTiersParId(getSession(), getEcheanceCourrante()
-                                .getIdTiers());
-                        if (tiersBeneficiaire == null) {
-                            tiersBeneficiaire = PRTiersHelper.getAdministrationParId(getSession(),
-                                    getEcheanceCourrante().getIdTiers());
-                        }
-
-                        // Recherche d'une adresse pour le tiers bénéficiaire
-                        // BZ 5220, recherche de l'adresse en cascade en fonction du paramètre isWantAdresseCourrier
-                        // se trouvant dans le fichier corvus.properties
-                        adresse = PRTiersHelper.getAdresseCourrierFormateeRente(getSession(),
-                                tiersBeneficiaire.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS),
-                                REApplication.CS_DOMAINE_ADRESSE_CORVUS, "", "", null, "");
-
-                        // Si le tiers beneficiaire n'a pas d'adresse, je recherche toutes les rentes accordées dans un
-                        // état
-                        // valide de la famille
-                        if (JadeStringUtil.isEmpty(adresse)) {
-                            RERenteAccJoinTblTiersJoinDemRenteManager renteAccManager = new RERenteAccJoinTblTiersJoinDemRenteManager();
-                            renteAccManager.setSession(getSession());
-
-                            String navs = tiersBeneficiaire.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL);
-                            if (navs.length() > 14) {
-                                renteAccManager.setLikeNumeroAVSNNSS("true");
+                        // S'il s'agit du type échéance enfant, on va vérifier s'il faut créer plusieurs documents ou
+                        // plusieurs objets dans un document
+                        if (isEnfantEcheance()) {
+                            // Si on n'a pas la même adresse de paiement, on créer un document par entité
+                            if (!echeanceCourrante.isHasSameIdAdressePaiement()) {
+                                // préparation d'un premier document pour l'échéance courrante
+                                prepareDocumentEcheanceFromEcheanceCourrante(false);
+                                for (REListerEcheanceRenteJoinMembresFamille echeanceLiee : echeanceCourrante
+                                        .getListeEcheanceLiees()) {
+                                    // préparation des documents des échéances liées
+                                    echeanceCourrante = echeanceLiee;
+                                    prepareDocumentEcheanceFromEcheanceCourrante(false);
+                                }
                             } else {
-                                renteAccManager.setLikeNumeroAVSNNSS("false");
-                            }
-
-                            // ce manager qui cherche dans l'idTiers parent en boucle !
-                            renteAccManager.setLikeNumeroAVS(navs);
-                            renteAccManager.wantCallMethodBeforeFind(true);
-                            renteAccManager.setRechercheFamille(true);
-                            renteAccManager.setForCsEtatIn(IREPrestationAccordee.CS_ETAT_VALIDE);
-                            renteAccManager.find();
-
-                            // Liste Pour les rentes accordées non principale
-                            List<RERenteAccordee> listeMemeAdPmtNonPrincipale = new ArrayList<RERenteAccordee>();
-
-                            for (int i = 0; i < renteAccManager.size(); i++) {
-                                RERenteAccJoinTblTiersJoinDemandeRente elm = (RERenteAccJoinTblTiersJoinDemandeRente) renteAccManager
-                                        .get(i);
-
-                                REInformationsComptabilite ic = new REInformationsComptabilite();
-                                ic.setSession(getSession());
-                                ic.setIdInfoCompta(echeanceCourrante.getIdInfoCompta());
-                                ic.retrieve();
-
-                                // Uniquement les rentes accordées dont l'adresse de paiement est identique à l'écheance
-                                // courante et sans date de fin de droit
-                                if (elm.getIdTierAdressePmt().equals(ic.getIdTiersAdressePmt())
-                                        && JadeStringUtil.isEmpty(elm.getDateFinDroit())) {
-
-                                    RERenteAccordee ra = new RERenteAccordee();
-                                    ra.setSession(getSession());
-                                    ra.setIdPrestationAccordee(elm.getIdPrestationAccordee());
-                                    ra.retrieve();
-
-                                    // Si la rente est principale je l'utilise, sinon je l'insere dans la liste pour les
-                                    // rentes accordées non principale
-                                    if (ra.getCodePrestation().equals("10") || ra.getCodePrestation().equals("20")
-                                            || ra.getCodePrestation().equals("13")
-                                            || ra.getCodePrestation().equals("23")
-                                            || ra.getCodePrestation().equals("50")
-                                            || ra.getCodePrestation().equals("70")
-                                            || ra.getCodePrestation().equals("72")) {
-
-                                        REInformationsComptabilite infoCompt = ra.loadInformationsComptabilite();
-                                        tiersAdresse = PRTiersHelper.getTiersParId(getSession(),
-                                                infoCompt.getIdTiersAdressePmt());
-                                        if (tiersAdresse == null) {
-                                            tiersAdresse = PRTiersHelper.getAdministrationParId(getSession(),
-                                                    infoCompt.getIdTiersAdressePmt());
-                                        }
-                                        // je recherche une adresse de courrier pour le tiers de l'adresse de paiement
-                                        adr = PRTiersHelper.getAdressePaiementData(getSession(), getTransaction(),
-                                                infoCompt.getIdTiersAdressePmt(),
-                                                IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_RENTE, "",
-                                                JACalendar.todayJJsMMsAAAA());
-
-                                        // BZ 5220, recherche de l'adresse en cascade en fonction du parametre
-                                        // isWantAdresseCourrier
-                                        // se trouvant dans le fichier corvus.properties
-                                        adresse = PRTiersHelper.getAdresseCourrierFormateeRente(getSession(),
-                                                adr.getIdTiers(), REApplication.CS_DOMAINE_ADRESSE_CORVUS, "", "",
-                                                null, "");
-
-                                        // Si une adresse est trouvée, je recherche le titre du tiers del'adresse de
-                                        // paiement
-                                        if (!JadeStringUtil.isEmpty(adresse)) {
-                                            ITITiers tiersTitre = (ITITiers) getSession().getAPIFor(ITITiers.class);
-                                            Hashtable<String, String> params = new Hashtable<String, String>();
-                                            params.put(ITITiers.FIND_FOR_IDTIERS, adr.getIdTiers());
-                                            ITITiers[] t = tiersTitre.findTiers(params);
-                                            if ((t != null) && (t.length > 0)) {
-                                                tiersTitre = t[0];
-                                            }
-
-                                            titre = tiersTitre.getFormulePolitesse(tiersAdresse
-                                                    .getProperty(PRTiersWrapper.PROPERTY_LANGUE));
-                                            break;
-                                        }
-                                    } else {
-                                        listeMemeAdPmtNonPrincipale.add(ra);
-                                    }
-                                }
-                            }
-
-                            // Si aucune adresse n'est trouvée, je recherche dans la liste des rentes accrodées non
-                            // principale
-                            if (JadeStringUtil.isEmpty(adresse)) {
-                                if (!listeMemeAdPmtNonPrincipale.isEmpty()) {
-                                    for (Iterator<RERenteAccordee> iterator = listeMemeAdPmtNonPrincipale.iterator(); iterator
-                                            .hasNext();) {
-                                        RERenteAccordee ra = iterator.next();
-                                        REInformationsComptabilite infoCompt = ra.loadInformationsComptabilite();
-                                        tiersAdresse = PRTiersHelper.getTiersParId(getSession(),
-                                                infoCompt.getIdTiersAdressePmt());
-                                        if (tiersAdresse == null) {
-                                            tiersAdresse = PRTiersHelper.getAdministrationParId(getSession(),
-                                                    infoCompt.getIdTiersAdressePmt());
-                                        }
-
-                                        // je recherche une adresse de courrier pour le tiers de l'adresse de paiement
-                                        adr = PRTiersHelper.getAdressePaiementData(getSession(), getTransaction(),
-                                                infoCompt.getIdTiersAdressePmt(),
-                                                IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_RENTE, "",
-                                                JACalendar.todayJJsMMsAAAA());
-                                        // BZ 5220, recherche de l'adresse en cascade en fonction du parametre
-                                        // isWantAdresseCourrier
-                                        // se trouvant dans le fichier corvus.properties
-                                        adresse = PRTiersHelper.getAdresseCourrierFormateeRente(getSession(),
-                                                adr.getIdTiers(), REApplication.CS_DOMAINE_ADRESSE_CORVUS, "", "",
-                                                null, "");
-
-                                        // Si une adresse est trouvée, je recherche le titre du tiers de l'adresse de
-                                        // paiement
-                                        if (!JadeStringUtil.isEmpty(adresse)) {
-                                            ITITiers tiersTitre = (ITITiers) getSession().getAPIFor(ITITiers.class);
-                                            Hashtable<String, String> params = new Hashtable<String, String>();
-                                            params.put(ITITiers.FIND_FOR_IDTIERS, adr.getIdTiers());
-                                            ITITiers[] t = tiersTitre.findTiers(params);
-                                            if ((t != null) && (t.length > 0)) {
-                                                tiersTitre = t[0];
-                                            }
-
-                                            titre = tiersTitre.getFormulePolitesse(tiersAdresse
-                                                    .getProperty(PRTiersWrapper.PROPERTY_LANGUE));
-                                            break;
-                                        }
-                                    }
-                                }
+                                // Si l'adresse de paiement est la même, on change uniquement l'objet du document en
+                                // fonction des entités liées à l'échéances courrante.
+                                prepareDocumentEcheanceFromEcheanceCourrante(true);
                             }
                         } else {
-                            // Comme une adresse a été trouvée, je recherche le titre du tiers beneficiaire
-                            ITITiers tiersTitre = (ITITiers) getSession().getAPIFor(ITITiers.class);
-                            Hashtable<String, String> params = new Hashtable<String, String>();
-                            params.put(ITITiers.FIND_FOR_IDTIERS,
-                                    tiersBeneficiaire.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS));
-                            ITITiers[] t = tiersTitre.findTiers(params);
-                            if ((t != null) && (t.length > 0)) {
-                                tiersTitre = t[0];
-                            }
-                            titre = tiersTitre.getFormulePolitesse(tiersBeneficiaire
-                                    .getProperty(PRTiersWrapper.PROPERTY_LANGUE));
+                            prepareDocumentEcheanceFromEcheanceCourrante(false);
 
-                            if (JadeStringUtil.isEmpty(titre)) {
-                                TITiers tiers = new TITiers();
-                                tiers.setSession(getSession());
-                                tiers.setIdTiers(echeanceCourrante.getIdTiers());
-                                tiers.retrieve();
-
-                                TIAdresseDataSource Ads = tiers.getAdresseAsDataSource(
-                                        IConstantes.CS_AVOIR_ADRESSE_COURRIER,
-                                        IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_RENTE,
-                                        JACalendar.todayJJsMMsAAAA(), true);
-
-                                if (null != Ads) {
-                                    titre = Ads.getData().get(TIAbstractAdresseDataSource.ADRESSE_VAR_TITRE);
-                                }
-                            }
-                        }
-
-                        // Si aucun titre n'est trouvé, je force un titre par défaut (celui de la caisse)
-                        if (JadeStringUtil.isEmpty(titre)) {
-
-                            TIAdministrationManager tiAdminCaisseMgr = new TIAdministrationManager();
-                            tiAdminCaisseMgr.setSession(getSession());
-                            tiAdminCaisseMgr.setForCodeAdministration(CaisseHelperFactory.getInstance()
-                                    .getNoCaisseFormatee(getSession().getApplication()));
-                            tiAdminCaisseMgr.setForGenreAdministration(CaisseHelperFactory.CS_CAISSE_COMPENSATION);
-                            tiAdminCaisseMgr.find();
-
-                            TIAdministrationViewBean tiAdminCaisse = (TIAdministrationViewBean) tiAdminCaisseMgr
-                                    .getFirstEntity();
-
-                            String idTiersCaisse = "";
-                            if (tiAdminCaisse != null) {
-                                idTiersCaisse = tiAdminCaisse.getIdTiersAdministration();
-                            }
-
-                            // retrieve du tiers
-                            PRTiersWrapper tier = PRTiersHelper.getTiersAdresseParId(getSession(), idTiersCaisse);
-
-                            if (null == tier) {
-                                tier = PRTiersHelper.getAdministrationParId(getSession(), idTiersCaisse);
-                            }
-
-                            // Insertion du titre du tiers
-                            ITITiers tiersTitre = (ITITiers) getSession().getAPIFor(ITITiers.class);
-                            Hashtable<String, String> params = new Hashtable<String, String>();
-                            params.put(ITITiers.FIND_FOR_IDTIERS, tier.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS));
-                            ITITiers[] t = tiersTitre.findTiers(params);
-                            if ((t != null) && (t.length > 0)) {
-                                tiersTitre = t[0];
-                            }
-                            titre = tiersTitre.getFormulePolitesse(tier.getProperty(PRTiersWrapper.PROPERTY_LANGUE));
-
-                        }
-
-                        // Si aucune adresse n'est trouvée pour le tiers et dans les rentes accordées, un mail d'erreur
-                        // est
-                        // envoyé à l'utilisateur
-                        if (JadeStringUtil.isEmpty(adresse)) {
-                            getLogSession()
-                                    .addMessage(
-                                            new JadeBusinessMessage(JadeBusinessMessageLevels.WARN,
-                                                    "REEcheanceRenteOO", getSession().getLabel("ERREUR_TIER_ADRESSE")
-                                                            + " "
-                                                            + tiersBeneficiaire
-                                                                    .getProperty(PRTiersWrapper.PROPERTY_PRENOM)
-                                                            + " "
-                                                            + tiersBeneficiaire
-                                                                    .getProperty(PRTiersWrapper.PROPERTY_NOM)));
-                        } else {
-                            chargementCatalogueTexte();
-                            chargementDonneesLettre();
                         }
 
                     } catch (Exception exception) {
@@ -1597,6 +1308,259 @@ public class REEcheanceRenteOO extends AbstractJadeJob {
             } catch (Exception e) {
                 System.out.println(getSession().getLabel("ERREUR_ENVOI_MAIL_COMPLETION"));
             }
+        }
+    }
+
+    private boolean isEnfantEcheance() {
+
+        if (REMotifEcheance.Echeance18ans.name().equals(echeanceCourrante.getMotifLettre())
+                || REMotifEcheance.Echeance25ans.name().equals(echeanceCourrante.getMotifLettre())
+                || REMotifEcheance.EcheanceFinEtudes.name().equals(echeanceCourrante.getMotifLettre())) {
+
+            return true;
+        }
+
+        return false;
+    }
+
+    private void prepareDocumentEcheanceFromEcheanceCourrante(boolean hasDoubleRowObject) throws Exception {
+        data = new DocumentData();
+        data.addData("idProcess", "REEcheanceRenteOO");
+
+        // Valeur à null pour ne pas garder en mémoire les valeurs du tiers precedent
+        tiersAdresse = null;
+        tiersBeneficiaire = null;
+        tiersBeneficiaire = PRTiersHelper.getTiersParId(getSession(), getEcheanceCourrante().getIdTiers());
+        if (tiersBeneficiaire == null) {
+            tiersBeneficiaire = PRTiersHelper.getAdministrationParId(getSession(), getEcheanceCourrante().getIdTiers());
+        }
+
+        PRTiersWrapper tiersAdressePaiement = PRTiersHelper.getTiersParId(getSession(), getEcheanceCourrante()
+                .getIdTiersAdressePaiement());
+
+        // Recherche d'une adresse pour le tiers bénéficiaire
+        // BZ 5220, recherche de l'adresse en cascade en fonction du paramètre isWantAdresseCourrier
+        // se trouvant dans le fichier corvus.properties
+        if (tiersAdressePaiement != null) {
+            // On prend l'adresse du tiers adresse de paiement, s'il est renseigné.
+            adresse = PRTiersHelper.getAdresseCourrierFormateeRente(getSession(),
+                    tiersAdressePaiement.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS),
+                    REApplication.CS_DOMAINE_ADRESSE_CORVUS, "", "", null, "");
+        } else {
+            // Sinon, on va prendre celle du tiers bénéficiaire.
+            adresse = PRTiersHelper.getAdresseCourrierFormateeRente(getSession(),
+                    tiersBeneficiaire.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS),
+                    REApplication.CS_DOMAINE_ADRESSE_CORVUS, "", "", null, "");
+        }
+
+        // Si le tiers beneficiaire n'a pas d'adresse, je recherche toutes les rentes accordées dans un
+        // état
+        // valide de la famille
+        if (JadeStringUtil.isEmpty(adresse)) {
+            RERenteAccJoinTblTiersJoinDemRenteManager renteAccManager = new RERenteAccJoinTblTiersJoinDemRenteManager();
+            renteAccManager.setSession(getSession());
+
+            String navs = tiersBeneficiaire.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL);
+            if (navs.length() > 14) {
+                renteAccManager.setLikeNumeroAVSNNSS("true");
+            } else {
+                renteAccManager.setLikeNumeroAVSNNSS("false");
+            }
+
+            // ce manager qui cherche dans l'idTiers parent en boucle !
+            renteAccManager.setLikeNumeroAVS(navs);
+            renteAccManager.wantCallMethodBeforeFind(true);
+            renteAccManager.setRechercheFamille(true);
+            renteAccManager.setForCsEtatIn(IREPrestationAccordee.CS_ETAT_VALIDE);
+            renteAccManager.find(BManager.SIZE_NOLIMIT);
+
+            // Liste Pour les rentes accordées non principale
+            List<RERenteAccordee> listeMemeAdPmtNonPrincipale = new ArrayList<RERenteAccordee>();
+
+            for (int i = 0; i < renteAccManager.size(); i++) {
+                RERenteAccJoinTblTiersJoinDemandeRente elm = (RERenteAccJoinTblTiersJoinDemandeRente) renteAccManager
+                        .get(i);
+
+                REInformationsComptabilite ic = new REInformationsComptabilite();
+                ic.setSession(getSession());
+                ic.setIdInfoCompta(echeanceCourrante.getIdInfoCompta());
+                ic.retrieve();
+
+                // Uniquement les rentes accordées dont l'adresse de paiement est identique à l'écheance
+                // courante et sans date de fin de droit
+                if (elm.getIdTierAdressePmt().equals(ic.getIdTiersAdressePmt())
+                        && JadeStringUtil.isEmpty(elm.getDateFinDroit())) {
+
+                    RERenteAccordee ra = new RERenteAccordee();
+                    ra.setSession(getSession());
+                    ra.setIdPrestationAccordee(elm.getIdPrestationAccordee());
+                    ra.retrieve();
+
+                    // Si la rente est principale je l'utilise, sinon je l'insere dans la liste pour les
+                    // rentes accordées non principale
+                    if (ra.getCodePrestation().equals("10") || ra.getCodePrestation().equals("20")
+                            || ra.getCodePrestation().equals("13") || ra.getCodePrestation().equals("23")
+                            || ra.getCodePrestation().equals("50") || ra.getCodePrestation().equals("70")
+                            || ra.getCodePrestation().equals("72")) {
+
+                        REInformationsComptabilite infoCompt = ra.loadInformationsComptabilite();
+                        tiersAdresse = PRTiersHelper.getTiersParId(getSession(), infoCompt.getIdTiersAdressePmt());
+                        if (tiersAdresse == null) {
+                            tiersAdresse = PRTiersHelper.getAdministrationParId(getSession(),
+                                    infoCompt.getIdTiersAdressePmt());
+                        }
+                        // je recherche une adresse de courrier pour le tiers de l'adresse de paiement
+                        adr = PRTiersHelper.getAdressePaiementData(getSession(), getTransaction(),
+                                infoCompt.getIdTiersAdressePmt(),
+                                IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_RENTE, "",
+                                JACalendar.todayJJsMMsAAAA());
+
+                        // BZ 5220, recherche de l'adresse en cascade en fonction du parametre
+                        // isWantAdresseCourrier
+                        // se trouvant dans le fichier corvus.properties
+                        adresse = PRTiersHelper.getAdresseCourrierFormateeRente(getSession(), adr.getIdTiers(),
+                                REApplication.CS_DOMAINE_ADRESSE_CORVUS, "", "", null, "");
+
+                        // Si une adresse est trouvée, je recherche le titre du tiers del'adresse de
+                        // paiement
+                        if (!JadeStringUtil.isEmpty(adresse)) {
+                            ITITiers tiersTitre = (ITITiers) getSession().getAPIFor(ITITiers.class);
+                            Hashtable<String, String> params = new Hashtable<String, String>();
+                            params.put(ITITiers.FIND_FOR_IDTIERS, adr.getIdTiers());
+                            ITITiers[] t = tiersTitre.findTiers(params);
+                            if ((t != null) && (t.length > 0)) {
+                                tiersTitre = t[0];
+                            }
+
+                            titre = tiersTitre.getFormulePolitesse(tiersAdresse
+                                    .getProperty(PRTiersWrapper.PROPERTY_LANGUE));
+                            break;
+                        }
+                    } else {
+                        listeMemeAdPmtNonPrincipale.add(ra);
+                    }
+                }
+            }
+
+            // Si aucune adresse n'est trouvée, je recherche dans la liste des rentes accrodées non
+            // principale
+            if (JadeStringUtil.isEmpty(adresse)) {
+                if (!listeMemeAdPmtNonPrincipale.isEmpty()) {
+                    for (Iterator<RERenteAccordee> iterator = listeMemeAdPmtNonPrincipale.iterator(); iterator
+                            .hasNext();) {
+                        RERenteAccordee ra = iterator.next();
+                        REInformationsComptabilite infoCompt = ra.loadInformationsComptabilite();
+                        tiersAdresse = PRTiersHelper.getTiersParId(getSession(), infoCompt.getIdTiersAdressePmt());
+                        if (tiersAdresse == null) {
+                            tiersAdresse = PRTiersHelper.getAdministrationParId(getSession(),
+                                    infoCompt.getIdTiersAdressePmt());
+                        }
+
+                        // je recherche une adresse de courrier pour le tiers de l'adresse de paiement
+                        adr = PRTiersHelper.getAdressePaiementData(getSession(), getTransaction(),
+                                infoCompt.getIdTiersAdressePmt(),
+                                IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_RENTE, "",
+                                JACalendar.todayJJsMMsAAAA());
+                        // BZ 5220, recherche de l'adresse en cascade en fonction du parametre
+                        // isWantAdresseCourrier
+                        // se trouvant dans le fichier corvus.properties
+                        adresse = PRTiersHelper.getAdresseCourrierFormateeRente(getSession(), adr.getIdTiers(),
+                                REApplication.CS_DOMAINE_ADRESSE_CORVUS, "", "", null, "");
+
+                        // Si une adresse est trouvée, je recherche le titre du tiers de l'adresse de
+                        // paiement
+                        if (!JadeStringUtil.isEmpty(adresse)) {
+                            ITITiers tiersTitre = (ITITiers) getSession().getAPIFor(ITITiers.class);
+                            Hashtable<String, String> params = new Hashtable<String, String>();
+                            params.put(ITITiers.FIND_FOR_IDTIERS, adr.getIdTiers());
+                            ITITiers[] t = tiersTitre.findTiers(params);
+                            if ((t != null) && (t.length > 0)) {
+                                tiersTitre = t[0];
+                            }
+
+                            titre = tiersTitre.getFormulePolitesse(tiersAdresse
+                                    .getProperty(PRTiersWrapper.PROPERTY_LANGUE));
+                            break;
+                        }
+                    }
+                }
+            }
+        } else {
+            // Comme une adresse a été trouvée, je recherche le titre du tiers beneficiaire
+            ITITiers tiersTitre = (ITITiers) getSession().getAPIFor(ITITiers.class);
+            Hashtable<String, String> params = new Hashtable<String, String>();
+            params.put(ITITiers.FIND_FOR_IDTIERS, tiersBeneficiaire.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS));
+            ITITiers[] t = tiersTitre.findTiers(params);
+            if ((t != null) && (t.length > 0)) {
+                tiersTitre = t[0];
+            }
+            titre = tiersTitre.getFormulePolitesse(tiersBeneficiaire.getProperty(PRTiersWrapper.PROPERTY_LANGUE));
+
+            if (JadeStringUtil.isEmpty(titre)) {
+                TITiers tiers = new TITiers();
+                tiers.setSession(getSession());
+                tiers.setIdTiers(echeanceCourrante.getIdTiers());
+                tiers.retrieve();
+
+                TIAdresseDataSource Ads = tiers.getAdresseAsDataSource(IConstantes.CS_AVOIR_ADRESSE_COURRIER,
+                        IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_RENTE, JACalendar.todayJJsMMsAAAA(), true);
+
+                if (null != Ads) {
+                    titre = Ads.getData().get(TIAbstractAdresseDataSource.ADRESSE_VAR_TITRE);
+                }
+            }
+        }
+
+        // Si aucun titre n'est trouvé, je force un titre par défaut (celui de la caisse)
+        if (JadeStringUtil.isEmpty(titre)) {
+
+            TIAdministrationManager tiAdminCaisseMgr = new TIAdministrationManager();
+            tiAdminCaisseMgr.setSession(getSession());
+            tiAdminCaisseMgr.setForCodeAdministration(CaisseHelperFactory.getInstance().getNoCaisseFormatee(
+                    getSession().getApplication()));
+            tiAdminCaisseMgr.setForGenreAdministration(CaisseHelperFactory.CS_CAISSE_COMPENSATION);
+            tiAdminCaisseMgr.find(BManager.SIZE_NOLIMIT);
+
+            TIAdministrationViewBean tiAdminCaisse = (TIAdministrationViewBean) tiAdminCaisseMgr.getFirstEntity();
+
+            String idTiersCaisse = "";
+            if (tiAdminCaisse != null) {
+                idTiersCaisse = tiAdminCaisse.getIdTiersAdministration();
+            }
+
+            // retrieve du tiers
+            PRTiersWrapper tier = PRTiersHelper.getTiersAdresseParId(getSession(), idTiersCaisse);
+
+            if (null == tier) {
+                tier = PRTiersHelper.getAdministrationParId(getSession(), idTiersCaisse);
+            }
+
+            // Insertion du titre du tiers
+            ITITiers tiersTitre = (ITITiers) getSession().getAPIFor(ITITiers.class);
+            Hashtable<String, String> params = new Hashtable<String, String>();
+            params.put(ITITiers.FIND_FOR_IDTIERS, tier.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS));
+            ITITiers[] t = tiersTitre.findTiers(params);
+            if ((t != null) && (t.length > 0)) {
+                tiersTitre = t[0];
+            }
+            titre = tiersTitre.getFormulePolitesse(tier.getProperty(PRTiersWrapper.PROPERTY_LANGUE));
+
+        }
+
+        // Si aucune adresse n'est trouvée pour le tiers et dans les rentes accordées, un mail d'erreur
+        // est
+        // envoyé à l'utilisateur
+        if (JadeStringUtil.isEmpty(adresse)) {
+            getLogSession().addMessage(
+                    new JadeBusinessMessage(JadeBusinessMessageLevels.WARN, "REEcheanceRenteOO", getSession().getLabel(
+                            "ERREUR_TIER_ADRESSE")
+                            + " "
+                            + tiersBeneficiaire.getProperty(PRTiersWrapper.PROPERTY_PRENOM)
+                            + " "
+                            + tiersBeneficiaire.getProperty(PRTiersWrapper.PROPERTY_NOM)));
+        } else {
+            chargementCatalogueTexte();
+            chargementDonneesLettre(hasDoubleRowObject);
         }
     }
 

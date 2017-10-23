@@ -59,6 +59,7 @@ public class REAttestationProlongationEtudeOO {
     private StringBuffer errorBuffer = new StringBuffer("");
     private String idTiers;
     private RERenteAccJoinTblTiersJoinDemandeRente ra;
+    private RERenteAccJoinTblTiersJoinDemandeRente ra2 = null;
     private BSession session;
     private PRTiersWrapper tiers;
     private PRTiersWrapper tiersAdresse;
@@ -105,6 +106,35 @@ public class REAttestationProlongationEtudeOO {
         tiers = PRTiersHelper.getTiersParId(getSession(), getIdTiers());
         String nomBeneficiaire = tiers.getProperty(PRTiersWrapper.PROPERTY_PRENOM) + " "
                 + tiers.getProperty(PRTiersWrapper.PROPERTY_NOM);
+        concerne = buildDocumentObject(nomBeneficiaire, getRa());
+        // dans le cas d'une seconde rente accordée pour la même adresse de paiement, on double l'objet
+        if (getRa2() != null) {
+
+            concerne += "\n" + "\n" + buildDocumentObject(nomBeneficiaire, getRa2());
+        }
+
+        data.addData("LETTRE_CONCERNE", concerne);
+
+        if (codeIsoLangue.equals("DE")) {
+            data.addData("titreTiers", titreTiers);
+        } else {
+            data.addData("titreTiers", titreTiers + ",");
+        }
+
+        data.addData("LETTRE_PARA1", document.getTextes(3).getTexte(1).getDescription());
+        data.addData("LETTRE_PARA2", PRStringUtils.replaceString(document.getTextes(4).getTexte(1).getDescription(),
+                REAttestationProlongationEtudeOO.CDT_DATEECHEANCE, getDateEcheance()));
+        data.addData("LETTRE_PARA3", document.getTextes(5).getTexte(1).getDescription());
+        data.addData("LETTRE_PARA4", document.getTextes(6).getTexte(1).getDescription());
+        data.addData("LETTRE_PARA5", PRStringUtils.replaceString(document.getTextes(7).getTexte(1).getDescription(),
+                REAttestationProlongationEtudeOO.CDT_TITRETIERS, titreTiers));
+
+        setDocumentData(data);
+    }
+
+    private String buildDocumentObject(String nomBeneficiaire, RERenteAccJoinTblTiersJoinDemandeRente ra)
+            throws Exception {
+        String concerne;
         if (PRACORConst.CS_HOMME.equals(tiers.getProperty(PRTiersWrapper.PROPERTY_SEXE))) {
             concerne = PRStringUtils.replaceString(document.getTextes(2).getTexte(1).getDescription(),
                     REAttestationProlongationEtudeOO.CDT_BENEFICIAIRE, nomBeneficiaire);
@@ -143,23 +173,7 @@ public class REAttestationProlongationEtudeOO {
                 ra.getMontantPrestation());
         concerne = PRStringUtils.replaceString(concerne, REAttestationProlongationEtudeOO.CDT_DATENAISSANCE,
                 JACalendar.format(ra.getDateNaissanceBenef(), codeIsoLangue));
-        data.addData("LETTRE_CONCERNE", concerne);
-
-        if (codeIsoLangue.equals("DE")) {
-            data.addData("titreTiers", titreTiers);
-        } else {
-            data.addData("titreTiers", titreTiers + ",");
-        }
-
-        data.addData("LETTRE_PARA1", document.getTextes(3).getTexte(1).getDescription());
-        data.addData("LETTRE_PARA2", PRStringUtils.replaceString(document.getTextes(4).getTexte(1).getDescription(),
-                REAttestationProlongationEtudeOO.CDT_DATEECHEANCE, getDateEcheance()));
-        data.addData("LETTRE_PARA3", document.getTextes(5).getTexte(1).getDescription());
-        data.addData("LETTRE_PARA4", document.getTextes(6).getTexte(1).getDescription());
-        data.addData("LETTRE_PARA5", PRStringUtils.replaceString(document.getTextes(7).getTexte(1).getDescription(),
-                REAttestationProlongationEtudeOO.CDT_TITRETIERS, titreTiers));
-
-        setDocumentData(data);
+        return concerne;
     }
 
     public void ChargementEnTeteEtSalutationLettre() {
@@ -214,13 +228,23 @@ public class REAttestationProlongationEtudeOO {
                 tiersBeneficiaire = PRTiersHelper.getAdministrationParId(getSession(), ra.getIdTiersBeneficiaire());
             }
 
+            PRTiersWrapper tiersAdressePaiement = PRTiersHelper.getTiersParId(getSession(), ra.getIdTiersAdressePmt());
+
             // Recherche d'une adresse pour le tiers beneficaire
 
             // BZ 5220, recherche de l'adresse en cascade en fonction du parametre isWantAdresseCourrier
             // se trouvant dans le fichier corvus.properties
-            adresseTiers = PRTiersHelper.getAdresseCourrierFormateeRente(getSession(),
-                    tiersBeneficiaire.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS),
-                    REApplication.CS_DOMAINE_ADRESSE_CORVUS, "", "", null, "");
+            if (tiersAdressePaiement != null) {
+
+                adresseTiers = PRTiersHelper.getAdresseCourrierFormateeRente(getSession(),
+                        tiersAdressePaiement.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS),
+                        REApplication.CS_DOMAINE_ADRESSE_CORVUS, "", "", null, "");
+
+            } else {
+                adresseTiers = PRTiersHelper.getAdresseCourrierFormateeRente(getSession(),
+                        tiersBeneficiaire.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS),
+                        REApplication.CS_DOMAINE_ADRESSE_CORVUS, "", "", null, "");
+            }
 
             // Si le tiers beneficiaire n'a pas d'adresse, je recherche toutes les rentes accordées dans un état valide
             // de la famille
@@ -484,5 +508,13 @@ public class REAttestationProlongationEtudeOO {
 
     public void setSession(BSession session) {
         this.session = session;
+    }
+
+    public RERenteAccJoinTblTiersJoinDemandeRente getRa2() {
+        return ra2;
+    }
+
+    public void setRa2(RERenteAccJoinTblTiersJoinDemandeRente ra2) {
+        this.ra2 = ra2;
     }
 }

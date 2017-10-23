@@ -12,6 +12,8 @@ import globaz.prestation.tools.PRDateFormater;
 import globaz.pyxis.db.tiers.ITIPersonneAvsDefTable;
 import globaz.pyxis.db.tiers.ITIPersonneDefTable;
 import globaz.pyxis.db.tiers.ITITiersDefTable;
+import java.util.ArrayList;
+import java.util.List;
 import ch.globaz.corvus.business.models.echeances.REMotifEcheance;
 
 /**
@@ -76,6 +78,9 @@ public class REListerEcheanceRenteJoinMembresFamille extends BEntity {
     private String relationDateFin = "";
     private String relationType = "";
     private String sexeConjoint = "";
+    private boolean hasSameIdAdressePaiement = true;
+    private String idTiersAdressePaiement = "";
+    private List<REListerEcheanceRenteJoinMembresFamille> listeEcheanceLiees = new ArrayList<REListerEcheanceRenteJoinMembresFamille>();
 
     @Override
     protected boolean _allowAdd() {
@@ -595,6 +600,30 @@ public class REListerEcheanceRenteJoinMembresFamille extends BEntity {
 
     public void setSexeConjoint(String sexeConjoint) {
         this.sexeConjoint = sexeConjoint;
+    }
+
+    public List<REListerEcheanceRenteJoinMembresFamille> getListeEcheanceLiees() {
+        return listeEcheanceLiees;
+    }
+
+    public void setListeEcheanceLiees(List<REListerEcheanceRenteJoinMembresFamille> listeEcheanceLiees) {
+        this.listeEcheanceLiees = listeEcheanceLiees;
+    }
+
+    public boolean isHasSameIdAdressePaiement() {
+        return hasSameIdAdressePaiement;
+    }
+
+    public void setHasSameIdAdressePaiement(boolean hasSameIdAdressePaiement) {
+        this.hasSameIdAdressePaiement = hasSameIdAdressePaiement;
+    }
+
+    public String getIdTiersAdressePaiement() {
+        return idTiersAdressePaiement;
+    }
+
+    public void setIdTiersAdressePaiement(String idAdressePaiement) {
+        idTiersAdressePaiement = idAdressePaiement;
     }
 
 }

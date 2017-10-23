@@ -32,13 +32,17 @@ public class REGenererAttestationProlongationEtudeProcess extends AbstractJadeJo
     private String idTiers = "";
     private Boolean isSendToGed = Boolean.FALSE;
 
-    private REAttestationProlongationEtudeOO createDocument(RERenteAccJoinTblTiersJoinDemandeRente ra) throws Exception {
+    private REAttestationProlongationEtudeOO createDocument(RERenteAccJoinTblTiersJoinDemandeRente ra,
+            RERenteAccJoinTblTiersJoinDemandeRente ra2) throws Exception {
 
         REAttestationProlongationEtudeOO attestationProlongationEtude = new REAttestationProlongationEtudeOO();
 
         attestationProlongationEtude.setSession(getSession());
         attestationProlongationEtude.setIdTiers(getIdTiers());
         attestationProlongationEtude.setRa(ra);
+        if (ra2 != null) {
+            attestationProlongationEtude.setRa2(ra2);
+        }
         attestationProlongationEtude.setDateEcheance(JACalendar.format(getDateEcheanceEtude(),
                 JACalendar.FORMAT_MMsYYYY));
 
@@ -123,22 +127,32 @@ public class REGenererAttestationProlongationEtudeProcess extends AbstractJadeJo
             renteAccMgr.find();
 
             if (!renteAccMgr.isEmpty()) {
+
+                String tempIDAdressePaiement = "";
+                boolean needToSplitDocument = false;
+                List<RERenteAccJoinTblTiersJoinDemandeRente> rentesAccordeesTiersBenef = new ArrayList<RERenteAccJoinTblTiersJoinDemandeRente>();
                 for (int i = 0; i < renteAccMgr.size(); i++) {
 
                     RERenteAccJoinTblTiersJoinDemandeRente ra = (RERenteAccJoinTblTiersJoinDemandeRente) renteAccMgr
                             .get(i);
 
+                    if (JadeStringUtil.isBlankOrZero(tempIDAdressePaiement)) {
+                        tempIDAdressePaiement = ra.getIdTiersAdressePmt();
+                    }
+
+                    if (!tempIDAdressePaiement.equals(ra.getIdTiersAdressePmt())) {
+                        needToSplitDocument = true;
+                    }
+
                     if (!JadeStringUtil.isEmpty(ra.getDateFinDroit())) {
                         continue;
                     }
 
-                    REAttestationProlongationEtudeOO attProEtude = this.createDocument(ra);
-                    allDoc.addDocument(attProEtude.getDocumentData(), pubInfos);
+                    rentesAccordeesTiersBenef.add(ra);
 
-                    if (!JadeStringUtil.isBlankOrZero(attProEtude.getErrorBuffer().toString())) {
-                        errorBuffer.append(attProEtude.getErrorBuffer() + "\n");
-                    }
                 }
+                generateDocumentsFromRaData(allDoc, pubInfos, needToSplitDocument, rentesAccordeesTiersBenef);
+
             }
 
             if (errorBuffer.length() > 0) {
@@ -155,6 +169,30 @@ public class REGenererAttestationProlongationEtudeProcess extends AbstractJadeJo
             getLogSession().addMessage(
                     new JadeBusinessMessage(JadeBusinessMessageLevels.ERROR,
                             "REGenerationAttestationProlongationEtudeOO", e.toString()));
+        }
+    }
+
+    private void generateDocumentsFromRaData(JadePrintDocumentContainer allDoc, JadePublishDocumentInfo pubInfos,
+            boolean needToSplitDocument, List<RERenteAccJoinTblTiersJoinDemandeRente> rentesAccordeesTiersBenef)
+            throws Exception {
+        if (needToSplitDocument || rentesAccordeesTiersBenef.size() < 2) {
+            for (RERenteAccJoinTblTiersJoinDemandeRente ra : rentesAccordeesTiersBenef) {
+                callDocumentGenerator(allDoc, pubInfos, ra, null);
+            }
+        } else {
+            // On ne créé qu'un document si les adresses de paiement sont les mêmes. Le document devra contenir
+            // 2 objets (un objet par rente)
+            callDocumentGenerator(allDoc, pubInfos, rentesAccordeesTiersBenef.get(0), rentesAccordeesTiersBenef.get(1));
+        }
+    }
+
+    private void callDocumentGenerator(JadePrintDocumentContainer allDoc, JadePublishDocumentInfo pubInfos,
+            RERenteAccJoinTblTiersJoinDemandeRente ra, RERenteAccJoinTblTiersJoinDemandeRente ra2) throws Exception {
+        REAttestationProlongationEtudeOO attProEtude = this.createDocument(ra, ra2);
+        allDoc.addDocument(attProEtude.getDocumentData(), pubInfos);
+
+        if (!JadeStringUtil.isBlankOrZero(attProEtude.getErrorBuffer().toString())) {
+            errorBuffer.append(attProEtude.getErrorBuffer() + "\n");
         }
     }
 

@@ -6,6 +6,7 @@ import globaz.corvus.application.REApplication;
 import globaz.corvus.db.echeances.REEcheancesEntity;
 import globaz.corvus.db.echeances.REEcheancesManager;
 import globaz.corvus.db.echeances.RERelationEcheances;
+import globaz.corvus.db.rentesaccordees.REInformationsComptabilite;
 import globaz.corvus.db.rentesaccordees.REListerEcheanceRenteJoinMembresFamille;
 import globaz.corvus.db.rentesaccordees.REPrestationsAccordees;
 import globaz.corvus.utils.RETiersForJspUtils;
@@ -243,80 +244,112 @@ public abstract class REListeEcheanceDocumentGenerator extends LYAbstractListGen
         for (REReponseModuleAnalyseEcheance reponse : reponseModulesAnalyse) {
             // Si on ne retrouve pas la rente qui à provoqué le motif, on ne pourra pas convertir tout cela...
             if (reponse.getRente() != null) {
-                boolean doAdd = true;
-                REListerEcheanceRenteJoinMembresFamille newEntity = new REListerEcheanceRenteJoinMembresFamille();
+                REListerEcheanceRenteJoinMembresFamille echeanceEnCours = prepareOldEcheanceObject(ireEcheances,
+                        reponse.getRente(), reponse);
 
-                // LGA : Bon c'est litigieux... Comment se comporter dans le cas ou une exception est
-                // lancée lors du formatage de la date de naissance. Le choix (arbitraire) est de positionner la date
-                // formatée
-                // à 00000000, si le formatage déclenche une exception on interrompt pas le processus mais on vas se
-                // trouver avec une
-                // date incohérente dans les documents qui 'devrait' arracher un oeil à la personne qui le lira...
-                String dateNaissanceTiers = "00000000";
+                if (echeanceEnCours != null) {
+                    // on récupère les autres rentes, on exclue la rente déjà transformée. On transforme les autres et
+                    // on les ajoute à la liste des rentes dépendantes de echeanceEnCours
+                    for (IRERenteEcheances echeance : ireEcheances.getRentesDuTiers()) {
 
-                // Petit Ack ici, on ne connais pas forcément la date d'échéance de la période car on ne connais pas
-                // la période correspondante à la prestation qui à soulevé le motif.
-                // Ce qu'on sait, (vu avec RJE) c'est que cette date correspondra toujours au mois de traitement
-                // donc... on va pas s'en...... la life mais attention :
-                // Periode.dateDeFin : jj.mm.aaaa
-                // moisTraitement : mm.aaaa
-                String periodeDateDeFin = "00000000";
-                try {
-                    dateNaissanceTiers = PRDateFormater.convertDate_JJxMMxAAAA_to_AAAAMMJJ(ireEcheances
-                            .getDateNaissanceTiers());
-                    periodeDateDeFin = PRDateFormater.convertDate_JJxMMxAAAA_to_AAAAMMJJ("01." + getMoisTraitement());
-                } catch (JAException e) {
+                        if (!echeanceEnCours.getIdRenteAccordee().equals(echeance.getIdPrestationAccordee())) {
 
-                    e.printStackTrace();
-                }
+                            REListerEcheanceRenteJoinMembresFamille echeanceDependante = prepareOldEcheanceObject(
+                                    ireEcheances, echeance, reponse);
+                            if (echeanceDependante != null) {
 
-                // Données du tiers reprise de IREEchecance
-                newEntity.setIdTiers(ireEcheances.getIdTiers());
-                newEntity.setNss(ireEcheances.getNssTiers());
-                newEntity.setCsSexe(ireEcheances.getCsSexeTiers());
-                newEntity.setNom(ireEcheances.getNomTiers());
-                newEntity.setPrenom(ireEcheances.getPrenomTiers());
-                newEntity.setDateNaissance(dateNaissanceTiers);
-                newEntity.setDateDeces(ireEcheances.getDateDecesTiers());
-                newEntity.setSexeConjoint(getSexeConjoint(ireEcheances));
+                                if (!echeanceDependante.getIdTiersAdressePaiement().equals(
+                                        echeanceEnCours.getIdTiersAdressePaiement())) {
+                                    echeanceEnCours.setHasSameIdAdressePaiement(false);
+                                }
 
-                // Données liées à la prestation reprise depuis la rente renseignée dans le motif
-                newEntity.setDateDebutDroit(reponse.getRente().getDateDebutDroit());
-                newEntity.setDateEcheanceRenteAccordee(reponse.getRente().getDateEcheance());
-                newEntity.setDateRevocationAjournement(reponse.getRente().getDateRevocationAjournement());
-                newEntity.setIdRenteAccordee(reponse.getRente().getIdPrestationAccordee());
-                newEntity.setCodePrestation(reponse.getRente().getCodePrestation());
-                newEntity.setCsTypeInfoComplementaire(reponse.getRente().getCsTypeInfoComplementaire());
-                newEntity.setDateRevocationAjournement(reponse.getRente().getDateRevocationAjournement());
-                newEntity.setMontantPrestation(reponse.getRente().getMontant());
-                newEntity.setMotifLettre(reponse.getMotif().name());
-                newEntity.setPeriodeDateFin(periodeDateDeFin);
-                newEntity.setMotifEcheance(reponse.getMotif());
-
-                // Les données étant remontée Par REEcheanceManager, il faut rechercher 2 - 3 info en plus
-                REPrestationsAccordees prestation = null;
-                try {
-                    prestation = new REPrestationsAccordees();
-                    prestation.setSession(getSession());
-                    prestation.setIdPrestationAccordee(reponse.getRente().getIdPrestationAccordee());
-                    prestation.retrieve();
-                } catch (Exception e) {
-                    // TODO best logging
-                    doAdd = false;
-                    e.printStackTrace();
-                }
-                doAdd = doAdd && !prestation.isNew();
-                if (doAdd) {
-                    newEntity.setMontantPrestation(prestation.getMontantPrestation()); // doublon
-                    newEntity.setFractionRente(prestation.getFractionRente()); // Needed
-                    newEntity.setIdInfoCompta(prestation.getIdInfoCompta());
-                }
-                if (doAdd) {
-                    newList.add(newEntity);
+                                echeanceEnCours.getListeEcheanceLiees().add(echeanceDependante);
+                            }
+                        }
+                    }
+                    newList.add(echeanceEnCours);
                 }
             }
         }
         return newList;
+    }
+
+    private REListerEcheanceRenteJoinMembresFamille prepareOldEcheanceObject(IREEcheances ireEcheances,
+            IRERenteEcheances renteEnCours, REReponseModuleAnalyseEcheance reponse) {
+        boolean doAdd = true;
+        REListerEcheanceRenteJoinMembresFamille newEntity = new REListerEcheanceRenteJoinMembresFamille();
+
+        // Le choix est de positionner la date formatée à 00000000, si le formatage déclenche une exception
+        // on interrompt pas le processus mais on vas se trouver avec une
+        // date incohérente dans les documents
+        String dateNaissanceTiers = "00000000";
+
+        // On ne connait pas forcément la date d'échéance de la période car on ne connait pas
+        // la période correspondante à la prestation qui à soulevé le motif.
+        // Ce qu'on sait, (vu avec RJE) c'est que cette date correspondra toujours au mois de traitement.
+        String periodeDateDeFin = "00000000";
+        try {
+            dateNaissanceTiers = PRDateFormater
+                    .convertDate_JJxMMxAAAA_to_AAAAMMJJ(ireEcheances.getDateNaissanceTiers());
+            periodeDateDeFin = PRDateFormater.convertDate_JJxMMxAAAA_to_AAAAMMJJ("01." + getMoisTraitement());
+        } catch (JAException e) {
+
+            e.printStackTrace();
+        }
+
+        // Données du tiers reprise de IREEchecance
+        newEntity.setIdTiers(ireEcheances.getIdTiers());
+        newEntity.setNss(ireEcheances.getNssTiers());
+        newEntity.setCsSexe(ireEcheances.getCsSexeTiers());
+        newEntity.setNom(ireEcheances.getNomTiers());
+        newEntity.setPrenom(ireEcheances.getPrenomTiers());
+        newEntity.setDateNaissance(dateNaissanceTiers);
+        newEntity.setDateDeces(ireEcheances.getDateDecesTiers());
+        newEntity.setSexeConjoint(getSexeConjoint(ireEcheances));
+
+        // Données liées à la prestation reprise depuis la rente renseignée dans le motif
+        newEntity.setDateDebutDroit(renteEnCours.getDateDebutDroit());
+        newEntity.setDateEcheanceRenteAccordee(renteEnCours.getDateEcheance());
+        newEntity.setDateRevocationAjournement(renteEnCours.getDateRevocationAjournement());
+        newEntity.setIdRenteAccordee(renteEnCours.getIdPrestationAccordee());
+        newEntity.setCodePrestation(renteEnCours.getCodePrestation());
+        newEntity.setCsTypeInfoComplementaire(renteEnCours.getCsTypeInfoComplementaire());
+        newEntity.setDateRevocationAjournement(renteEnCours.getDateRevocationAjournement());
+        newEntity.setMontantPrestation(renteEnCours.getMontant());
+        newEntity.setMotifLettre(reponse.getMotif().name());
+        newEntity.setPeriodeDateFin(periodeDateDeFin);
+        newEntity.setMotifEcheance(reponse.getMotif());
+
+        // Les données étant remontée Par REEcheanceManager, il faut rechercher 2 - 3 info en plus
+        REPrestationsAccordees prestation = null;
+        try {
+            prestation = new REPrestationsAccordees();
+            prestation.setSession(getSession());
+            prestation.setIdPrestationAccordee(renteEnCours.getIdPrestationAccordee());
+            prestation.retrieve();
+
+            REInformationsComptabilite infoCompta = new REInformationsComptabilite();
+            infoCompta.setIdInfoCompta(prestation.getIdInfoCompta());
+            infoCompta.setSession(getSession());
+            infoCompta.retrieve();
+            newEntity.setIdTiersAdressePaiement(infoCompta.getIdTiersAdressePmt());
+
+        } catch (Exception e) {
+            // TODO best logging
+            doAdd = false;
+            e.printStackTrace();
+        }
+        doAdd = doAdd && !prestation.isNew();
+        if (doAdd) {
+            newEntity.setMontantPrestation(prestation.getMontantPrestation()); // doublon
+            newEntity.setFractionRente(prestation.getFractionRente()); // Needed
+            newEntity.setIdInfoCompta(prestation.getIdInfoCompta());
+        }
+        if (doAdd) {
+            return newEntity;
+        }
+
+        return null;
     }
 
     public final List<REListerEcheanceRenteJoinMembresFamille> getEcheancesRetenues() {
