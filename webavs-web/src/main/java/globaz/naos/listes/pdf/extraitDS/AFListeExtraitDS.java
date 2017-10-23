@@ -4,6 +4,7 @@
 package globaz.naos.listes.pdf.extraitDS;
 
 import globaz.caisse.report.helper.ACaisseReportHelper;
+import globaz.commons.nss.NSUtil;
 import globaz.docinfo.TIDocumentInfoHelper;
 import globaz.framework.printing.itext.fill.FWIImportProperties;
 import globaz.framework.secure.user.FWSecureUserDetail;
@@ -173,7 +174,11 @@ public class AFListeExtraitDS extends BProcess {
             // i + 1 car la première ligne est réservé aux informations de l'employeur
             HSSFRow row = sheet.createRow(i + 1);
             row.setHeightInPoints(10 * 15);
-            row.createCell(CELL_SALARIE_NSS).setCellValue(listeSalarie.get(i).getNss());
+            if (!JadeStringUtil.isEmpty(listeSalarie.get(i).getNss())) {
+                row.createCell(CELL_SALARIE_NSS).setCellValue(NSUtil.formatAVSNewNum(listeSalarie.get(i).getNss()));
+            } else {
+                row.createCell(CELL_SALARIE_NSS).setCellValue(listeSalarie.get(i).getNss());
+            }
             row.createCell(CELL_SALARIE_NOM).setCellValue(listeSalarie.get(i).getNomSalarie());
             row.createCell(CELL_SALARIE_PERIODE).setCellValue(
                     JadeStringUtil.fillWithZeroes(listeSalarie.get(i).getMoisDebut().toString(), 2) + " - "
