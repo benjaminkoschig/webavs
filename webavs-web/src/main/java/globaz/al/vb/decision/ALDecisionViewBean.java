@@ -443,7 +443,7 @@ public class ALDecisionViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * définit l'id tiers destinataire récupéré de la séléction via [...]
-     *
+     * 
      * @param idDest
      *            l'id récupéré
      */
@@ -494,11 +494,16 @@ public class ALDecisionViewBean extends BJadePersistentObjectViewBean {
     @Override
     public void update() throws Exception {
 
+        String reference = dossierDecisionComplexModel.getDossierModel().getReference();
+        dossierDecisionComplexModel.setDossierModel(ALServiceLocator.getDossierModelService().read(
+                dossierDecisionComplexModel.getDossierModel().getIdDossier()));
+
         // On ne met pas à jour le modèle complexe complet, mais uniquement le
         // dossierModel (pour le champ référence et la case à cocher file d'attente, seuls champs éditables)
+        dossierDecisionComplexModel.getDossierModel().setReference(reference);
 
-        DossierModel oldDossier = ALServiceLocator.getDossierModelService()
-                .read(dossierDecisionComplexModel.getDossierModel().getId());
+        DossierModel oldDossier = ALServiceLocator.getDossierModelService().read(
+                dossierDecisionComplexModel.getDossierModel().getId());
 
         // Analyse de l'enavien état de la case à cocher 'file d'attente'
         boolean oldValue = !JadeStringUtil.isEmpty(oldDossier.getIdGestionnaire());
@@ -506,8 +511,8 @@ public class ALDecisionViewBean extends BJadePersistentObjectViewBean {
         // Dans le case ou aucun idGestionnaire état stocké et, que la case à cocher est désormais sélectionnée, on
         // stocke l'id du gestionnaire qui à coché la case à cochée
         if (!oldValue && getIsFileAttente()) {
-            dossierDecisionComplexModel.getDossierModel()
-                    .setIdGestionnaire(BSessionUtil.getSessionFromThreadContext().getUserId());
+            dossierDecisionComplexModel.getDossierModel().setIdGestionnaire(
+                    BSessionUtil.getSessionFromThreadContext().getUserId());
         }
 
         // Dans le cas inverse, ou la case était précédemment sélectionnée mais plus maintenant, on met l'idGestionnaire
@@ -516,8 +521,6 @@ public class ALDecisionViewBean extends BJadePersistentObjectViewBean {
             dossierDecisionComplexModel.getDossierModel().setIdGestionnaire(null);
         }
 
-        dossierDecisionComplexModel.setDossierModel(ALServiceLocator.getDossierModelService().read(
-                dossierDecisionComplexModel.getDossierModel().getIdDossier()));
         dossierDecisionComplexModel.setDossierModel(ALServiceLocator.getDossierModelService().update(
                 dossierDecisionComplexModel.getDossierModel()));
 
