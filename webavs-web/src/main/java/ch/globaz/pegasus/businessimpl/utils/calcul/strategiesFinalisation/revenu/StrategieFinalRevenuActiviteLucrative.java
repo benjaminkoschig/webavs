@@ -78,16 +78,17 @@ public class StrategieFinalRevenuActiviteLucrative implements StrategieCalculFin
         TupleDonneeRapport tupleActiviteLucrativeRevenuPrivilegie;
 
         if (donnee.getEnfants().containsKey(IPCValeursPlanCalcul.CLE_REVEN_AUTREREV_IJAI)
-                && !isActiviteLucrative(donnee)) {
-            somme = Math.round(somme * TAUX_REVENU_ACTIVITE_LUCRATIVE);
+                && isActiviteLucrative(donnee)) {
+            tupleActiviteLucrativeRevenuPrivilegie = new TupleDonneeRapport(
+                    IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_REVENU_PRIS_EN_COMPTE, revenuPrivilegie);
+        } else {
+            revenuPrivilegie = Math.round(somme * TAUX_REVENU_ACTIVITE_LUCRATIVE);
 
             tupleActiviteLucrativeRevenuPrivilegie = new TupleDonneeRapport(
                     IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_REVENU_PRIVILEGIE, revenuPrivilegie);
             tupleActiviteLucrativeRevenuPrivilegie.setLegende(TAUX_REVENU_ACTIVITE_LUCRATIVE_LEGENDE);
-        } else {
-            tupleActiviteLucrativeRevenuPrivilegie = new TupleDonneeRapport(
-                    IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_REVENU_PRIS_EN_COMPTE, revenuPrivilegie);
         }
+
         donnee.addEnfantTuple(tupleActiviteLucrativeRevenuPrivilegie);
 
         donnee.addEnfantTuple(new TupleDonneeRapport(IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_TOTAL_NON_PLAFFONNE, somme));
