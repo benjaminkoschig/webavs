@@ -40,8 +40,8 @@ import ch.globaz.pegasus.business.models.calcul.CalculDonneesDroitSearch;
 import ch.globaz.pegasus.business.models.calcul.CalculMembreFamilleSearch;
 import ch.globaz.pegasus.business.models.calcul.CalculPlageInitial;
 import ch.globaz.pegasus.business.models.calcul.CalculPlageInitialSearch;
-import ch.globaz.pegasus.business.models.calcul.CalculPlagesExistantes;
-import ch.globaz.pegasus.business.models.calcul.CalculPlagesExistantesSearch;
+import ch.globaz.pegasus.business.models.calcul.CalculPlagesExistantesWithIdDemande;
+import ch.globaz.pegasus.business.models.calcul.CalculPlagesExistantesWithIdDemandeSearch;
 import ch.globaz.pegasus.business.models.demande.Demande;
 import ch.globaz.pegasus.business.models.demande.DemandeSearch;
 import ch.globaz.pegasus.business.models.droit.DonneeFinanciereHeader;
@@ -577,19 +577,21 @@ public class PeriodesServiceImpl extends PegasusAbstractServiceImpl implements
         // verification que la plage de calcul ne soit pas déjà occupée, et réduire la plage si besoin
         String idRequerant = droit.getDemande().getDossier().getDemandePrestation().getDemandePrestation().getIdTiers();
 
-        CalculPlagesExistantesSearch search = new CalculPlagesExistantesSearch();
+        CalculPlagesExistantesWithIdDemandeSearch search = new CalculPlagesExistantesWithIdDemandeSearch();
         search.setForIdRequerant(idRequerant);
         search.setDefinedSearchSize(JadeAbstractSearchModel.SIZE_NOLIMIT);
-        search = (CalculPlagesExistantesSearch) JadePersistenceManager.search(search);
+        search = (CalculPlagesExistantesWithIdDemandeSearch) JadePersistenceManager.search(search);
 
         for (JadeAbstractModel absDonnee : search.getSearchResults()) {
-            CalculPlagesExistantes donnee = (CalculPlagesExistantes) absDonnee;
+            CalculPlagesExistantesWithIdDemande donnee = (CalculPlagesExistantesWithIdDemande) absDonnee;
             ch.globaz.common.domaine.Date dateFindDemande = null;
             ch.globaz.common.domaine.Date dateDebutDemande = null;
-            if (!donnee.getIdVersionDroit().equals(droit.getSimpleVersionDroit().getIdVersionDroit())) {
+            if (!donnee.getIdVersionDroit().equals(droit.getSimpleVersionDroit().getIdVersionDroit())
+                    && !donnee.getIdDemande().equals(droit.getDemande().getId())) {
 
                 if (!JadeStringUtil.isEmpty(donnee.getDateFin())) {
-                    // Si la date de debut de la demande est plus grande que la date de fin de la demande ET que la date
+                    // Si la date de debut de la nouvelle demande est plus grande que la date de fin de la demande ET
+                    // que la date
                     // de début de la demande est égale à la date de début de la plage de calcul, on augment cette
                     // dernière de 1 mois pour éviter les superpositions
                     dateDebutDemande = new ch.globaz.common.domaine.Date(donnee.getDateDebut()).getFirstDayOfMonth();

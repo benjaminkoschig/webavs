@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.pegasus.business.models.calcul.CalculPlagesExistantesWithIdDemande">
+	
+		<root-model name="versionDroit" model-ref="ch.globaz.pegasus.business.models.droit.VersionDroit" select-fields="false"/>
+		
+		<select-fields>
+			<select-field name="idDemande"					field-ref="versionDroit.demande.simpleDemande.idDemande"/>
+			<select-field name="idVersionDroit"				field-ref="versionDroit.simpleVersionDroit.idVersionDroit"/>
+			<select-field name="dateDebut" 					field-ref="versionDroit.demande.simpleDemande.dateDebut"/>
+			<select-field name="dateFin" 					field-ref="versionDroit.demande.simpleDemande.dateFin"/>
+		</select-fields>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdRequerant" field-ref="versionDroit.demande.dossier.demandePrestation.demandePrestation.idTiers" operation="EQUALS"/>
+			</search-group>
+		</search-definition>		
+		
+	</complexe-model>
+</model-mapping>

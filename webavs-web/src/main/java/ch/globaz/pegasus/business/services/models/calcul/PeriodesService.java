@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import ch.globaz.hera.business.exceptions.models.PeriodeException;
 import ch.globaz.pegasus.business.exceptions.models.calcul.CalculException;
+import ch.globaz.pegasus.business.exceptions.models.decision.DecisionException;
 import ch.globaz.pegasus.business.exceptions.models.demande.DemandeException;
 import ch.globaz.pegasus.business.exceptions.models.droit.DroitException;
 import ch.globaz.pegasus.business.exceptions.models.monnaieetrangere.MonnaieEtrangereException;
@@ -48,6 +49,7 @@ public interface PeriodesService extends JadeApplicationService {
      * @throws CalculException
      * @throws JadeApplicationServiceNotAvailableException
      * @throws DemandeException
+     * @throws DecisionException
      */
     public String[] recherchePlageCalcul(Droit droit) throws JadePersistenceException, CalculException,
             DemandeException, JadeApplicationServiceNotAvailableException;
