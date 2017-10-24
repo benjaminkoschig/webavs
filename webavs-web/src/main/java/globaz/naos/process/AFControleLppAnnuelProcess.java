@@ -3,6 +3,7 @@
  */
 package globaz.naos.process;
 
+import globaz.commons.nss.NSUtil;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BProcess;
 import globaz.globall.db.BSession;
@@ -71,6 +72,7 @@ import ch.globaz.common.domaine.Date;
 import ch.globaz.common.domaine.Montant;
 import ch.globaz.common.domaine.Periode;
 import ch.globaz.common.domaine.Periode.ComparaisonDePeriode;
+import ch.globaz.common.sql.QueryExecutor;
 
 /**
  * Processus de gestion LPP. Permet de rechercher suivant l'année donnée, tous les affiliés sans LPP active et qui ont
@@ -130,7 +132,9 @@ public class AFControleLppAnnuelProcess extends BProcess {
 
             if (!fileName.isEmpty() && !modeControle) {
                 // On va réinjecter les données via le fichier renseigné
-                reinjectionDonnees();
+                if (!reinjectionDonnees()) {
+                    return false;
+                }
 
                 // On gére la gestion de suivi
                 gestionSuivisLpp();
@@ -440,9 +444,18 @@ public class AFControleLppAnnuelProcess extends BProcess {
                 AFAffiliation affi = AFAffiliationServices.getAffiliationParitaireByNumero(numeroAffilie, annee,
                         getSession());
 
+                // Petit hack pour les cas ou on reinjecte un montant "caché"
+                // Message à l'utilisateur de retirer toutes les lignes de l'affilié et de réinjecter la liste
+                try {
+                    new Montant(montant);
+                } catch (Exception e) {
+                    corpsMessage.append(getSession().getLabel("EXECUTION_CONTROLE_LPP_ANNUEL_MASSE_CACHEE"));
+                    return false;
+                }
+
                 casSoumis.addSalarieFromReinjection(affi.getIdTiers(), affi.getAffiliationId(), numeroAffilie, motif,
                         nom, sexe, nss, pediode.split("-")[0], pediode.split("-")[1], Integer.parseInt(annee),
-                        dateNaissance, montant);
+                        dateNaissance, montant, affi.getAccesSecurite(), findSecureCodeForNss(nss));
             }
         }
 
@@ -450,6 +463,17 @@ public class AFControleLppAnnuelProcess extends BProcess {
         incProgressCounter();
 
         return status;
+    }
+
+    private String findSecureCodeForNss(String nss) {
+        List<String> secureCodeCI = QueryExecutor.execute("SELECT katsec FROM schema.ciindip where kanavs like '"
+                + NSUtil.unFormatAVS(nss) + "%' order by pspy desc fetch first row only", String.class, getSession());
+
+        String secureCode = "317000";
+        if (!secureCodeCI.isEmpty()) {
+            secureCode = secureCodeCI.get(0);
+        }
+        return secureCode;
     }
 
     /***

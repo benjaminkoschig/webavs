@@ -300,9 +300,9 @@ public class AFAffilieSoumiLppConteneur {
      */
     public void addSalarieFromReinjection(String idTiers, String idAffilie, String numeroAffilie, String motif,
             String nom, String sexe, String nss, String moisDebut, String moisFin, int annee, String dateNaissance,
-            String montant) {
+            String montant, String nivSecuAffi, String niveauSecuCi) {
         Salarie salarie = new Salarie(idTiers, numeroAffilie, motif, nom, sexe, nss, moisDebut, moisFin, annee,
-                dateNaissance, "", "", montant, false, "", "");
+                dateNaissance, "", "", montant, false, nivSecuAffi, niveauSecuCi);
 
         this.addSalarie(idAffilie, salarie);
     }
