@@ -30,7 +30,7 @@ insert into SCHEMA.FWCOSP (pcosid,pptygr,pconcs,pptycn,pptycl,pptysa,pcosli,pcos
 insert into SCHEMA.FWCOUP (pcosid,plaide,pcouid,pcolut, pspy) values ( 64008063, 'F', '', 'Couple - 3 pièces et plus', (replace(char(current date), '-', '') concat replace(char(current time), '.', '') concat user) ); 
 insert into SCHEMA.FWCOUP (pcosid,plaide,pcouid,pcolut, pspy) values ( 64008063, 'D', '', 'Ehepaar - 3 Zimmer une mehr', (replace(char(current date), '-', '') concat replace(char(current time), '.', '') concat user) );
 
-insert into SCHEMA.JADEPROP (PROPNAME,PROPVAL) VALUES ('pegasus.loyer.option.deplafonnement.appartement.protege','64008058,64008059,64008060,64008061,64008062,64008063');
+insert into SCHEMA.JADEPROP (PROPNAME,PROPVAL) VALUES ('pegasus.loyer.option.deplafonnement.appartement.protege','');
 
 ALTER TABLE SCHEMA.PCLOYER ADD CRDAPA DECIMAL(15,0) DEFAULT 0;
 REORG TABLE SCHEMA.PCLOYER;
