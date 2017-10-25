@@ -85,8 +85,8 @@ public class AMStatistiquesPublipostageProcess extends AMALabstractProcess {
                     }
                     listValues.add(sb.toString());
                     sb = new StringBuffer();
+                    pos++;
                 }
-                pos++;
             }
         } catch (Exception e) {
             throw new Exception("Erreur génération fichier publipostage ! ==> " + e.getMessage());
