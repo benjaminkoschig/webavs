@@ -127,7 +127,7 @@ public class PCGroupeTotalHandler extends PCGroupeAbstractHandler {
             // Ligne
             String labelPartCantonale = LanguageResolver.resolveLibelleFromLabel(langueTiers,
                     "JSP_PC_PLANCALCUL_D_PART_CANTONALE", session);
-            ligne = createLignePlancalcul(labelPartCantonale, "", CSS_INCREMENT_DEDUCTION, VALEUR_VIDE, VALEUR_VIDE,
+            ligne = createLignePlancalcul(labelPartCantonale, "", NO_CSS_CLASS, VALEUR_VIDE, VALEUR_VIDE,
                     valeurPartCantonale);
         }
 
