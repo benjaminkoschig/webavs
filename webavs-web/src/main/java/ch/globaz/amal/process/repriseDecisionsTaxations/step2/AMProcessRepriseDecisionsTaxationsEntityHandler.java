@@ -2426,6 +2426,7 @@ public class AMProcessRepriseDecisionsTaxationsEntityHandler implements JadeProc
                     conjoint.setNoPersonne(currentContribuableConjoint.getNip().toString());
                     conjoint.setSexe(getSexeCS(currentContribuableConjoint.getSexe().toString()));
                     conjoint.setPereMereEnfant(getPereMereSelonSexe(conjoint.getSexe()));
+                    conjoint.setCarteCulture(Boolean.FALSE);
                     conjoint = AmalImplServiceLocator.getSimpleFamilleService().create(conjoint);
                     familleContribuable = AmalServiceLocator.getFamilleContribuableService().read(conjoint.getId());
                     JadeThread.logInfo("INFO", "Menbre famille conjoint crée !");

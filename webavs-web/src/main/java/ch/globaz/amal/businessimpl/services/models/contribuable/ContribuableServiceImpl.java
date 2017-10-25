@@ -126,6 +126,7 @@ public class ContribuableServiceImpl implements ContribuableService {
                     simpleFamille.setNoAVS(noAVSWithoutPoints);
                     simpleFamille.setNnssContribuable(noAVSWithoutPoints);
                 }
+                simpleFamille.setCarteCulture(Boolean.FALSE);
                 simpleFamille = AmalImplServiceLocator.getSimpleFamilleService().create(simpleFamille);
                 contribuable.setFamille(simpleFamille);
             } else {
