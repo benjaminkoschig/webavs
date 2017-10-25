@@ -259,7 +259,7 @@ public class CIImpressionRappelBta_Doc extends FWIDocumentManager implements ILE
         getDocumentInfo().setArchiveDocument(true);
         getDocumentInfo().setPublishDocument(isPublishDocument());
         getDocumentInfo().setDocumentDate(getDateDocument());
-        getDocumentInfo().setDocumentProperty("numero.avs.formatte", nss);
+        getDocumentInfo().setDocumentProperty("pyxis.tiers.numero.avs.formatte", nss);
     }
 
     /**
