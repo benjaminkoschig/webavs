@@ -80,6 +80,10 @@
 	globazGlobal.dateDertnierPaiement = "<%=viewBean.getDateDernierPaiement()%>";
 	globazGlobal.isUpdatable = <%=viewBean.isUpdatable()%>;
 	globazGlobal.messageAvantProchaiementPaiement = "<%=viewBean.getMessageAvantProchaiementPaiement()%>";
+	
+	function disableTypeRetenue(){
+		$("#idSelectTypeRetenue").prop('disabled', true);
+	}
 </script>
 <script type="text/javascript" src="<%=servletContext%><%=(mainServletPath + "Root")%>/scripts/retenues/retenues_MembrePart.js"/></script>
 <script type="text/javascript" src="<%=servletContext%>/scripts/widget/globazwidget.js"></script>
@@ -163,7 +167,7 @@
 										   <input type="hidden" id="simpleRetenuePayement.idRenteAccordee" />
 											<ct:FWLabel key="JSP_PC_RETENUE_TYPE"/>
 										</div>
-										<div class="span3">
+										<div class="span3" id="idSelectTypeRetenue">
 											<ct:select id="simpleRetenuePayement.csTypeRetenue"  name="simpleRetenuePayement.csTypeRetenue" >
 												<ct:optionsCodesSystems csFamille="RETYPRET">
 													<ct:excludeCode code="<%=IPCRetenues.CS_IMPOT_SOURCE%>" />
@@ -356,8 +360,8 @@
 								<ct:ifhasright element="pegasus.retenues.retenues" crud="cud">
 									<input class="btnAjaxDelete" type="button" value="<%=btnDelLabel%>">									
 									<input class="btnAjaxValidate" type="button" value="<%=btnValLabel%>">
-									<input class="btnAjaxCancel" type="button" value="<%=objSession.getLabel("JSP_PC_SGL_D_ANNULER")%>">									
-									<input class="btnAjaxUpdate" type="button" value="<%=btnUpdLabel%>">
+									<input class="btnAjaxCancel" type="button" value="<%=objSession.getLabel("JSP_PC_SGL_D_ANNULER")%>" >									
+									<input class="btnAjaxUpdate" type="button" value="<%=btnUpdLabel%>" onclick="disableTypeRetenue()">
 									<input class="btnAjaxAdd" type="button" value="<%=btnNewLabel%>">
 								</ct:ifhasright>
 							</div>		
