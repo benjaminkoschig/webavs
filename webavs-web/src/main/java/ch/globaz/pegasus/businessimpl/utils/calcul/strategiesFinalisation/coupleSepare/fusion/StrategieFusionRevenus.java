@@ -22,7 +22,11 @@ public class StrategieFusionRevenus implements StrategieCalculFusion {
 
             TupleDonneeRapport tuple = new TupleDonneeRapport(champ);
 
-            tuple.setValeur(donneeAvecEnfants.getValeurEnfant(champ));
+            if (IPCValeursPlanCalcul.CLE_REVEN_AUTREREV_CONTRAT_ENTRETIEN_VIAGER.equals(champ)) {
+                tuple.setValeur(donneeCommun.getValeurEnfant(champ));
+            } else {
+                tuple.setValeur(donneeAvecEnfants.getValeurEnfant(champ));
+            }
 
             donneeFusionne.addEnfantTuple(tuple);
 

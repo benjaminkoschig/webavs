@@ -7,8 +7,7 @@ import ch.globaz.pegasus.businessimpl.utils.calcul.TupleDonneeRapport;
 import ch.globaz.pegasus.businessimpl.utils.calcul.strategiesFinalisation.StrategieCalculFinalisation;
 
 public class StrategieFinalRevenuAutresSeul implements StrategieCalculFinalisation {
-    private final static String[] champs = { IPCValeursPlanCalcul.CLE_REVEN_AUTREREV_IJ_LCA,
-            IPCValeursPlanCalcul.CLE_REVEN_AUTREREV_CONTRAT_ENTRETIEN_VIAGER };
+    private final static String[] champs = { IPCValeursPlanCalcul.CLE_REVEN_AUTREREV_IJ_LCA };
 
     @Override
     public void calcule(TupleDonneeRapport donnee, CalculContext context, Date dateDebut) {

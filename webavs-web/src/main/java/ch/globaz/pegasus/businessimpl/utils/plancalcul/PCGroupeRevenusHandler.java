@@ -83,8 +83,8 @@ public class PCGroupeRevenusHandler extends PCGroupeAbstractHandler {
             IPCValeursPlanCalcul.CLE_REVEN_RENFORMO_REVENUS_SOUS_LOCATIONS,
             IPCValeursPlanCalcul.CLE_REVEN_RENFORMO_BIENS_IMMO_NON_HABITABLES };
     String[] REV_TOTAL_PERSONNE_PROPRE = { IPCValeursPlanCalcul.CLE_REVEN_RENFORMO_VALEUR_LOCATIVE,
-            IPCValeursPlanCalcul.CLE_REVEN_ALLOCAPI_AVS_AI, IPCValeursPlanCalcul.CLE_REVEN_AUTREREV_IJ_LCA,
-            IPCValeursPlanCalcul.CLE_REVEN_AUTREREV_CONTRAT_ENTRETIEN_VIAGER };
+            IPCValeursPlanCalcul.CLE_REVEN_ALLOCAPI_AVS_AI, IPCValeursPlanCalcul.CLE_REVEN_AUTREREV_IJ_LCA };// ,
+    // IPCValeursPlanCalcul.CLE_REVEN_AUTREREV_CONTRAT_ENTRETIEN_VIAGER };
 
     /************************ FIN CONSTANTES CATEGORIE ***********************************************/
 
@@ -205,7 +205,7 @@ public class PCGroupeRevenusHandler extends PCGroupeAbstractHandler {
 
                 } else {// Sinon si couple séparé, et clé autre que propre et revenu diff de 0
                     if (!(csMembre.equals(IPCValeursPlanCalcul.CLE_REVEN_AUTREREV_IJ_LCA))
-                            && !(csMembre.equals(IPCValeursPlanCalcul.CLE_REVEN_AUTREREV_CONTRAT_ENTRETIEN_VIAGER))
+                    // && !(csMembre.equals(IPCValeursPlanCalcul.CLE_REVEN_AUTREREV_CONTRAT_ENTRETIEN_VIAGER))
                             && (valMembre != 0f)) {
                         groupList.add(createLigneForGroupeList(csMembre, legendeMembre, valMembre, 2));
                     }

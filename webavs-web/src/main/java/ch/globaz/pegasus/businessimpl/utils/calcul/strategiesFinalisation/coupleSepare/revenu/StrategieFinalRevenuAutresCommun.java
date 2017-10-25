@@ -12,7 +12,8 @@ public class StrategieFinalRevenuAutresCommun implements StrategieCalculFinalisa
             IPCValeursPlanCalcul.CLE_REVEN_AUTREREV_IJ_LAM, IPCValeursPlanCalcul.CLE_REVEN_AUTREREV_IJ_LAMAL,
             IPCValeursPlanCalcul.CLE_REVEN_AUTREREV_APG, IPCValeursPlanCalcul.CLE_REVEN_AUTREREV_AUTRE_IJ,
             IPCValeursPlanCalcul.CLE_REVEN_AUTREREV_ALLOCATIONS_FAMILLIALES,
-            IPCValeursPlanCalcul.CLE_REVEN_AUTREREV_PENSION_ALIM_RECUE };
+            IPCValeursPlanCalcul.CLE_REVEN_AUTREREV_PENSION_ALIM_RECUE,
+            IPCValeursPlanCalcul.CLE_REVEN_AUTREREV_CONTRAT_ENTRETIEN_VIAGER };
 
     @Override
     public void calcule(TupleDonneeRapport donnee, CalculContext context, Date dateDebut) {
