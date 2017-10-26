@@ -15,7 +15,7 @@
 <script type="text/javascript" src="properties.js"></script>
 </head>
 <body>
-	<h1>JADE Properties - Filter: <input id="filter" name="filter"/><a class="refresh" style="cursor: pointer;"><img src="images/refresh.jpg" width="24px" style="vertical-align: bottom"/></a></h1>
+	<h1>JADE Properties - Filter: <input id="filter" name="filter"/><a id="refreshlink" class="refresh" style="cursor: pointer;"><img src="images/refresh.jpg" width="24px" style="vertical-align: bottom"/></a></h1>
 	<div id="add" title="New property">
 		<table>
 			<tr><td>Name</td><td><input id="addName" value="" size="50px"/></td></tr>
@@ -27,5 +27,13 @@
 		<tr><th width="35%">Property<a class="add" style="cursor: pointer;">&nbsp;<img src="images/add.jpg" width="12px" style="vertical-align: bottom"/></a></th><th width="65%">Value</th></tr>
 		<tbody id=properties></tbody>
 	</table>
+	
+	<script type="text/javascript">
+		$("#filter").keyup(function(event){
+		    if(event.keyCode == 13){
+		        $("#refreshlink").click();
+		    }
+		});
+	</script>		
 </body>
-</html> 
+</html> 	
