@@ -85,6 +85,21 @@ public class CompteBancairePostal extends DonneeFinanciere implements Fortune, F
     }
 
     @Override
+    public Montant computeRevenuAnnuel() {
+        return interet.substract(frais).annualise();
+    }
+
+    @Override
+    public Montant computeRevenuAnnuelBrut() {
+        return interet.annualise();
+    }
+
+    @Override
+    public Montant computeFortunePartPropriete() {
+        return montant.multiply(part);
+    }
+
+    @Override
     public String toString() {
         return "CompteBancairePostal [montant=" + montant + ", frais=" + frais + ", interet=" + interet + ", part="
                 + part + ", typePropriete=" + typePropriete + ", sansInteret=" + sansInteret + ", parent="
@@ -151,21 +166,6 @@ public class CompteBancairePostal extends DonneeFinanciere implements Fortune, F
             return false;
         }
         return true;
-    }
-
-    @Override
-    public Montant computeRevenuAnnuel() {
-        return interet.substract(frais).annualise();
-    }
-
-    @Override
-    public Montant computeRevenuAnnuelBrut() {
-        return interet.annualise();
-    }
-
-    @Override
-    public Montant computeFortunePartPropriete() {
-        return montant.multiply(part);
     }
 
 }

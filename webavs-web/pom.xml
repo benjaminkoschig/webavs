@@ -176,6 +176,7 @@
 							<schemaIncludes>
 								<include>ree/*.xsd</include>
 								<include>P2020/annoncesRC/*.xsd</include>
+								<include>rpc/*.xsd</include>
 							</schemaIncludes>
 							<bindingDirectory>src/main/resources/xjb</bindingDirectory>
 							<bindingIncludes>

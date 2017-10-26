@@ -80,15 +80,31 @@ public class IndemniteJournaliereApg extends DonneeFinanciere implements Revenu 
     public Montant computeRevenuAnnuel() {
         Montant montantAnnuelIjNEt = Montant.ZERO_ANNUEL;
         if (genre.isIjChomage()) {
-            Montant iJannulalise = montantChomage.annualise();
-            Montant deductionAvs = iJannulalise.multiply(tauxAvs);
-            Montant deductionAa = iJannulalise.multiply(tauxAa);
-            Montant montantLPP = cotisationLpp.divide(nbJour).annualise();
-            Montant deductionsTotal = deductionAvs.add(deductionAa).add(montantLPP);
-            montantAnnuelIjNEt = iJannulalise.substract(deductionsTotal).substract(gainIntermediaireAnnuel);
+            montantAnnuelIjNEt = computeIjChomageNet();
         } else {
             montantAnnuelIjNEt = montant.multiply(nbJour).addAnnuelPeriodicity();
         }
+        return montantAnnuelIjNEt;
+    }
+
+    public Montant computeRevenuAnnuel(int nbDayInYear) {
+        Montant montantAnnuelIjNEt = Montant.ZERO_ANNUEL;
+        if (genre.isIjChomage()) {
+            montantAnnuelIjNEt = computeIjChomageNet();
+        } else {
+            montantAnnuelIjNEt = montant.multiply(nbDayInYear).addAnnuelPeriodicity();
+        }
+        return montantAnnuelIjNEt;
+    }
+
+    private Montant computeIjChomageNet() {
+        Montant montantAnnuelIjNEt;
+        Montant iJannulalise = montantChomage.annualise();
+        Montant deductionAvs = iJannulalise.multiply(tauxAvs);
+        Montant deductionAa = iJannulalise.multiply(tauxAa);
+        Montant montantLPP = cotisationLpp.divide(nbJour).addJournalierPeriodicity().annualise();
+        Montant deductionsTotal = deductionAvs.add(deductionAa).add(montantLPP);
+        montantAnnuelIjNEt = iJannulalise.substract(deductionsTotal).substract(gainIntermediaireAnnuel);
         return montantAnnuelIjNEt;
     }
 

@@ -17,11 +17,13 @@ import ch.globaz.pegasus.business.constantes.EPCProperties;
 import ch.globaz.pegasus.business.domaine.dossier.IdDossier;
 import ch.globaz.pegasus.business.exceptions.models.pcaccordee.AllocationDeNoelException;
 import ch.globaz.pegasus.business.exceptions.models.pcaccordee.PCAccordeeException;
+import ch.globaz.pegasus.business.models.droit.SimpleVersionDroit;
 import ch.globaz.pegasus.business.models.pcaccordee.ListPCAccordee;
 import ch.globaz.pegasus.business.models.pcaccordee.ListPCAccordeeSearch;
 import ch.globaz.pegasus.business.models.pcaccordee.SimpleAllocationNoel;
 import ch.globaz.pegasus.business.models.pcaccordee.SimpleAllocationNoelSearch;
 import ch.globaz.pegasus.business.services.PegasusServiceLocator;
+import ch.globaz.pegasus.businessimpl.services.PegasusImplServiceLocator;
 import ch.globaz.pegasus.businessimpl.utils.PersistenceUtil;
 
 public class PCPcAccordeeListViewBean extends BJadePersistentObjectListViewBean {
@@ -32,6 +34,7 @@ public class PCPcAccordeeListViewBean extends BJadePersistentObjectListViewBean 
     private String idDemande = null;
     private String idDossier = null;
     private String idDroit = null;
+    private String idVersionDroit;
     private String noVersion = null;
     private ListPCAccordeeSearch pcAccordeesSearch = null;
     private String whereKey = null;
@@ -40,6 +43,14 @@ public class PCPcAccordeeListViewBean extends BJadePersistentObjectListViewBean 
         super();
         pcAccordeesSearch = new ListPCAccordeeSearch();
 
+    }
+
+    public String getIdVersionDroit() {
+        return idVersionDroit;
+    }
+
+    public void setIdVersionDroit(String idVersionDroit) {
+        this.idVersionDroit = idVersionDroit;
     }
 
     public String getGedLabel() {
@@ -60,6 +71,13 @@ public class PCPcAccordeeListViewBean extends BJadePersistentObjectListViewBean 
             pcAccordeesSearch.setWhereKey("forVersionnedPca");
         } else {
             pcAccordeesSearch.setWhereKey("");
+        }
+
+        if (idVersionDroit != null && !idVersionDroit.isEmpty()) {
+            SimpleVersionDroit simpleVersionDroit = PegasusImplServiceLocator.getSimpleVersionDroitService().read(
+                    idVersionDroit);
+            idDroit = simpleVersionDroit.getIdDroit();
+            noVersion = simpleVersionDroit.getNoVersion();
         }
 
         // Si on vient du droit, idDroit et noVesrion setter

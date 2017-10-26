@@ -11,6 +11,7 @@
 		<search-definition>
 			<search-group operator="AND">
 				<search-field name="forIdDemandePrestation" field-ref="idDemandePrestation" operation="EQUALS"/>
+				<search-field name="forIdDossier" field-ref="idDossier" operation="EQUALS"/>
 			</search-group>
 		</search-definition>
 	</simple-model>

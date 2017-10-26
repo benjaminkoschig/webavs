@@ -1,0 +1,33 @@
+Les schema location ont été volontairement ajoutées ou modifiées (sans référence http externe) afin de les confiner au workspace et rendre la gémération xjc possible
+
+Lors de la modification des xsd pour monter de version, bien vérifier que la minor version en constante est mise à jour (1.5 où 5 est la minor)
+
+ch.globaz.pegasus.rpc.businessImpl.sedex.AbstractSedex.IMPLEMENTED_MESSAGE_MINOR_VERSION
+
+webavs_web/pom.xml
+<plugin>
+	<groupId>org.jvnet.jaxb2.maven2</groupId>
+	<artifactId>maven-jaxb2-plugin</artifactId>
+	<version>0.13.1</version>
+	<executions>
+		<execution>
+			<id>generate</id>
+			<goals>
+				<goal>generate</goal>
+			</goals>
+			<configuration>
+				<specVersion>2.1</specVersion>
+				<schemaDirectory>src/main/resources/xsd</schemaDirectory>
+				<schemaIncludes>
+					<include>ree/*.xsd</include>
+					<include>P2020/annoncesRC/*.xsd</include>
+					<include>rpc/*.xsd</include>
+				</schemaIncludes>
+				<bindingDirectory>src/main/resources/xjb</bindingDirectory>
+				<bindingIncludes>
+					<include>ree-bindings.xjb</include>
+				</bindingIncludes>
+			</configuration>
+		</execution>
+	</executions>
+</plugin>

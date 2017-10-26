@@ -16,7 +16,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.io.IOUtils;
-import ch.globaz.common.business.exceptions.CommonTechnicalException;
+import ch.globaz.common.exceptions.CommonTechnicalException;
 
 public class CIControleCIInactifInvalideProcess extends BProcess {
 

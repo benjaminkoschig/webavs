@@ -34,6 +34,7 @@ public interface IPCDecision {
     public final static String CS_MOTIF_REFUS_WITH_SM = "64043012";
     public final static String CS_MOTIF_SUPPR_WITH_SM_1 = "64045007";
     public final static String CS_MOTIF_SUPPR_WITH_SM_2 = "64045008";
+    public final static String CS_MOTIF_SUPPR_DECES = "64045015";
 
     public final static String CS_MOTIF_SUPPRESSION_DECES = "64045015";
     public final static String CS_MOTIF_SUPPRESSION_TRANSFERT_DOSSIER = "64045014";

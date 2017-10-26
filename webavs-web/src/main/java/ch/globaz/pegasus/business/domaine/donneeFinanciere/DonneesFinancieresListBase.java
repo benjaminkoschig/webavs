@@ -6,4 +6,5 @@ public class DonneesFinancieresListBase<T extends DonneeFinanciere> extends
     public DonneesFinancieresListBase() {
         super(DonneesFinancieresListBase.class);
     }
+
 }

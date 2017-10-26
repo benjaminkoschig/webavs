@@ -15,11 +15,11 @@ import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAv
 import globaz.prestation.tools.PRStringUtils;
 import globaz.pyxis.db.tiers.TITiers;
 import java.util.Map;
-import ch.globaz.common.business.exceptions.CommonTechnicalException;
 import ch.globaz.common.business.language.LanguageResolver;
 import ch.globaz.common.business.models.CTDocumentImpl;
 import ch.globaz.common.codesystem.CodeSystem;
 import ch.globaz.common.codesystem.CodeSystemUtils;
+import ch.globaz.common.exceptions.CommonTechnicalException;
 import ch.globaz.jade.business.models.Langues;
 import ch.globaz.pegasus.business.constantes.IPCCatalogueTextes;
 import ch.globaz.pegasus.business.constantes.IPCValeursPlanCalcul;

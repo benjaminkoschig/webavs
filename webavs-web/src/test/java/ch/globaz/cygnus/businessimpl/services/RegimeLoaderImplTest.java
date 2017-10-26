@@ -58,9 +58,9 @@ public class RegimeLoaderImplTest {
 
         rgl = new RegimeLoaderImpl();
 
-        dfReq = new DonneeFinanciereHeader(RoleMembreFamille.REQUERANT, new Date(), null, "1");
-        dfConj = new DonneeFinanciereHeader(RoleMembreFamille.CONJOINT, new Date(), null, "2");
-        dfEnf = new DonneeFinanciereHeader(RoleMembreFamille.ENFANT, new Date(), null, "3");
+        dfReq = new DonneeFinanciereHeader(RoleMembreFamille.REQUERANT, new Date(), null, "1", "4");
+        dfConj = new DonneeFinanciereHeader(RoleMembreFamille.CONJOINT, new Date(), null, "2", "4");
+        dfEnf = new DonneeFinanciereHeader(RoleMembreFamille.ENFANT, new Date(), null, "3", "4");
 
         regime01 = new Regime(new Montant(100), IRFCodeTypesDeSoins.SOUS_TYPE_2_1_REGIME_ALIMENTAIRE, dfReq);
         regime02 = new Regime(new Montant(250), IRFCodeTypesDeSoins.SOUS_TYPE_2_2_REGIME_DIABETIQUE, dfConj);

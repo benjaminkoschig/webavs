@@ -25,7 +25,7 @@ public interface IPCActions {
     public static final String ACTION_CREANCE_ACCORDEE = "pegasus.creancier.creanceAccordee";
     public static final String ACTION_CREANCIER = "pegasus.creancier.creancier";
     public static final String ACTION_CREANCIER_AJAX = "pegasus.creancier.creancierAjax";
-    static final String ACTION_BLOCAGE_DEBLOCAGE = "pegasus.blocage.deblocage";
+    public static final String ACTION_BLOCAGE_DEBLOCAGE = "pegasus.blocage.deblocage";
     public static final String ACTION_BLOCAGE_DEBLOCAGE_AJAX = "pegasus.blocage.deblocageAjax";
     public static final String ACTION_BLOCAGE_ENTENTE = "pegasus.blocage.enteteBlocage";
     public static final String ACTION_BLOCAGE_ENTENTE_AJAX = "pegasus.blocage.enteteBlocageAjax";
@@ -156,7 +156,7 @@ public interface IPCActions {
     public static final String ACTION_PARAMETRES_ZONE_LOCALITE = "pegasus.parametre.zoneLocalite";
     public static final String ACTION_PCACCORDEE = "pegasus.pcaccordee.pcAccordee";
     public static final String ACTION_PCACCORDEE_DETAIL = "pegasus.pcaccordee.pcAccordeeDetail";
-    public static final String ACTION_PCACCORDEE_PLANCLACULE = "pegasus.pcaccordee.planCalcul";
+    public static final String ACTION_PCACCORDEE_PLANCALCUL = "pegasus.pcaccordee.planCalcul";
     public static final String ACTION_PCACCORDEES_LIST = "pegasus.pcaccordee.pcAccordee";
     public static final String ACTION_PRIX_CHAMBRE = "pegasus.home.prixChambre";
     public static final String ACTION_PRIX_CHAMBRE_AJAX = "pegasus.home.prixChambreAjax";
@@ -168,6 +168,10 @@ public interface IPCActions {
     public static final String ACTION_TRAITMENT_DE_MASSE_LISTE_ACTION_AJAX = "pegasus.traitementdemasse.listeActionAjax";
     public static final String ACTION_TYPE_CHAMBRE = "pegasus.home.typeChambre";
     public static final String ACTION_WIDGET_CHERCHE_TIERS = "widget.pyxis.chercheTiers";
+
+    public static final String ACTION_RPC_ANNONCE = "pegasus.rpc.annonces";
+    public static final String ACTION_RPC_ANNONCE_AJAX = "pegasus.rpc.annoncesAjax";
+    public static final String ACTION_RPC_DETAIL_ANNONCE_AJAX = "pegasus.rpc.detailAnnonceAjax";
 
     public static final String PARAM_ACTION_DEBLOCAGE_DEVALIDER_LIBERATION = "devalider";
     public static final String PARAM_ACTION_DEBLOCAGE_VALIDER_LIBERATION = "liberer";

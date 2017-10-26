@@ -12,7 +12,8 @@ public enum EtatCivil {
     LPART(515007),
     LPART_DISSOUT(515008),
     LPART_DIS_DECES(515009),
-    LPART_SEP_FAIT(515010),
+    LPART_SEPARE_FAIT(515010),
+    // LPART_SEPARE(515011),
     UNDEFINED(0);
 
     private Integer codeSystem;

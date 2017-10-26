@@ -24,6 +24,7 @@ public class ListPCAccordeeSearch extends JadeSearchComplexModel {
     private String forIdDemande = null;
     private String forIdDossier = null;
     private String forIdDroit = null;
+    private String forIdVersionDroit;
     private String forIdPCAccordee = null;
     private String forIdTiers = null;
     private Boolean forIsSupprime = null;
@@ -228,13 +229,21 @@ public class ListPCAccordeeSearch extends JadeSearchComplexModel {
         this.likePrenom = likePrenom != null ? JadeStringUtil.convertSpecialChars(likePrenom).toUpperCase() : null;
     }
 
+    public String getForIdVersionDroit() {
+        return forIdVersionDroit;
+    }
+
+    public void setForIdVersionDroit(String forIdVersionDroit) {
+        this.forIdVersionDroit = forIdVersionDroit;
+    }
+
     /*
      * (non-Javadoc)
      * 
      * @see globaz.jade.persistence.model.JadeAbstractSearchModel#whichModelClass()
      */
     @Override
-    public Class whichModelClass() {
+    public Class<ListPCAccordee> whichModelClass() {
         return ListPCAccordee.class;
     }
 

@@ -177,11 +177,10 @@ class ConvertAllDonneeFinanciere {
             list.add(loyer);
         } else if (dft.isTaxeJournalierHome()) {
             Date dateEntreeHome = DonneeFinanciereConverter.toDate(dr.getTaxeJournaliereDateEntreeHome());
-            // TODO dr.getTaxeJournaliereIdTypeChambre();
             Montant montantJournalierLca = toMontant(dr.getTaxeJournaliereMontantJournalierLCA());
             Montant primeAPayer = toMontant(dr.getTaxeJournalierePrimeAPayer());
             TaxeJournaliereHome taxeJournalierHome = new TaxeJournaliereHome(montantJournalierLca, primeAPayer,
-                    dr.getTaxeJournaliereIsParticipationLCA(), dateEntreeHome, df);
+                    dr.getTaxeJournaliereIsParticipationLCA(), dateEntreeHome, dr.getTaxeJournaliereIdTypeChambre(), df);
             list.add(taxeJournalierHome);
         } else if (dft.isCompteBancairePostal()) {
 
@@ -248,7 +247,7 @@ class ConvertAllDonneeFinanciere {
             Montant valeurDeRachat = toMontant(dr.getAssuranceRenteViagereMontantValeurRachat());
 
             AssuranceRenteViagere assuranceRenteViagere = new AssuranceRenteViagere(montant, excedant, valeurDeRachat,
-                    df);
+                    dr.getIsDessaisissementFortune(), dr.getIsDessaisissementRevenu(), df);
             list.add(assuranceRenteViagere);
 
         } else if (dft.isNumeraire()) {

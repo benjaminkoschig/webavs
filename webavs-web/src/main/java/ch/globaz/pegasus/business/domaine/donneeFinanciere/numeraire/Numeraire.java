@@ -78,6 +78,21 @@ public class Numeraire extends DonneeFinanciere implements Fortune, FortunePartP
     }
 
     @Override
+    public Montant computeRevenuAnnuel() {
+        return interet.annualise();
+    }
+
+    @Override
+    public Montant computeRevenuAnnuelBrut() {
+        return interet.annualise();
+    }
+
+    @Override
+    public Montant computeFortunePartPropriete() {
+        return montant.multiply(part);
+    }
+
+    @Override
     public String toString() {
         return "Numeraire [montant=" + montant + ", interet=" + interet + ", part=" + part + ", proprieteType="
                 + proprieteType + ", sansInteret=" + sansInteret + ", parent=" + super.toString() + "]";
@@ -135,21 +150,6 @@ public class Numeraire extends DonneeFinanciere implements Fortune, FortunePartP
             return false;
         }
         return true;
-    }
-
-    @Override
-    public Montant computeRevenuAnnuel() {
-        return interet.annualise();
-    }
-
-    @Override
-    public Montant computeRevenuAnnuelBrut() {
-        return interet.annualise();
-    }
-
-    @Override
-    public Montant computeFortunePartPropriete() {
-        return montant.multiply(part);
     }
 
 }

@@ -285,7 +285,7 @@ public class PaiementDirectServiceTest {
      * {@link ch.globaz.al.businessimpl.services.paiement.PaiementDirectServiceImpl#preparerPaiementDirect(java.lang.String)}
      * .
      */
-    @Ignore
+    @Ignore("lance une instance jade. WTF")
     @Test
     public void testPreparerPaiementDirect() {
         try {

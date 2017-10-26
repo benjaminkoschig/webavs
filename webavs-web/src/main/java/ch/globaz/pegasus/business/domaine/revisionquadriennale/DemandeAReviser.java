@@ -1,6 +1,7 @@
 package ch.globaz.pegasus.business.domaine.revisionquadriennale;
 
 import ch.globaz.common.domaine.Adresse;
+import ch.globaz.common.domaine.Date;
 import ch.globaz.common.domaine.Montant;
 import ch.globaz.common.domaine.Taux;
 import ch.globaz.jade.business.models.Langues;
@@ -16,7 +17,7 @@ import ch.globaz.pegasus.business.domaine.membreFamille.MembresFamilles;
 import ch.globaz.pegasus.business.domaine.parametre.Parameters;
 import ch.globaz.pegasus.business.domaine.parametre.variableMetier.VariableMetierType;
 import ch.globaz.pegasus.business.domaine.pca.PcaRequerantConjoint;
-import ch.globaz.pegasus.business.domaine.pca.PcaSitutation;
+import ch.globaz.pegasus.business.domaine.pca.PcaSituation;
 import ch.globaz.pegasus.business.models.revisionquadriennale.ListrevisionWithPcaRequerantConjoint;
 import ch.globaz.pyxis.domaine.Pays;
 import ch.globaz.pyxis.domaine.PersonneAVS;
@@ -225,7 +226,7 @@ public class DemandeAReviser implements RevisionCsv {
     }
 
     @Override
-    public PcaSitutation getCasPca() {
+    public PcaSituation getCasPca() {
         return pcas.resolveCasPca();
     }
 
@@ -454,16 +455,18 @@ public class DemandeAReviser implements RevisionCsv {
 
     @Override
     public Montant getRevenuRenteEtrangereRequerant() {
+        //TODO Passer la date de la décision au lieux de new Date()
         AutresRentes autresRentes = donneesFinancieres.getAutresRentes().getAutresRentesByGenre(
                 AutreRenteGenre.RENTE_ETRANGERE);
-        return autresRentes.getDonneesForRequerant().sumAndComputeDevise(parameters.getMonnaiesEtrangere());
+        return autresRentes.getDonneesForRequerant().sumAndComputeDevise(parameters.getMonnaiesEtrangere(), new Date());
     }
 
     @Override
     public Montant getRevenuRenteEtrangereConjEnf() {
-
+        //TODO Passer la date de la décision au lieux de new Date()
         AutresRentes autresRentes = donneesFinancieres.getAutresRentes(AutreRenteGenre.RENTE_ETRANGERE);
-        return autresRentes.getDonneesForConjointEnfant().sumAndComputeDevise(parameters.getMonnaiesEtrangere());
+        return autresRentes.getDonneesForConjointEnfant().sumAndComputeDevise(parameters.getMonnaiesEtrangere(),
+                new Date());
 
     }
 
@@ -742,20 +745,21 @@ public class DemandeAReviser implements RevisionCsv {
 
     @Override
     public Montant getDeductionChargesAnnuelesRequerant() {
+        //TODO Remonter la charge forfaitaire Attention aux date, regarder aux place comment filtrer sur la date 
         return donneesFinancieres.getLoyers().getDonneesForRequerant().sum(new Each<Loyer>() {
             @Override
             public Montant getMontant(Loyer loyer) {
-                return loyer.computeCharge();
+                return loyer.computeCharge(Montant.ZERO_ANNUEL);
             }
         });
     }
 
     @Override
     public Montant getDeductionChargesAnnuelesConjEnf() {
-        return donneesFinancieres.getLoyers().getDonneesForConjointEnfant().sum(new Each<Loyer>() {
+        //TODO Remonter la charge forfaitaire Attention aux date, regarder aux place comment filtrer sur la date         return donneesFinancieres.getLoyers().getDonneesForConjointEnfant().sum(new Each<Loyer>() {
             @Override
             public Montant getMontant(Loyer loyer) {
-                return loyer.computeCharge();
+                return loyer.computeCharge(Montant.ZERO_ANNUEL);
             }
         });
     }
@@ -831,7 +835,7 @@ public class DemandeAReviser implements RevisionCsv {
     public Montant getDeductionFraisEntretiensImmeubleRequerant() {
         return donneesFinancieres
                 .getAllBiensImmobilier()
-                .getBiensImmobiliersByProprieteType(ProprieteType.CO_PROPRIETAIRE, ProprieteType.NU_PROPRIETAIRE,
+                .filtreByProprieteType(ProprieteType.CO_PROPRIETAIRE, ProprieteType.NU_PROPRIETAIRE,
                         ProprieteType.PROPRIETAIRE, ProprieteType.USUFRUITIER).getDonneesForRequerant()
                 .sumFraisEntretientBrut(parameters.getVariablesMetier());
     }
@@ -840,7 +844,7 @@ public class DemandeAReviser implements RevisionCsv {
     public Montant getDeductionFraisEntretiensImmeubleConjEnf() {
         return donneesFinancieres
                 .getAllBiensImmobilier()
-                .getBiensImmobiliersByProprieteType(ProprieteType.CO_PROPRIETAIRE, ProprieteType.NU_PROPRIETAIRE,
+                .filtreByProprieteType(ProprieteType.CO_PROPRIETAIRE, ProprieteType.NU_PROPRIETAIRE,
                         ProprieteType.PROPRIETAIRE, ProprieteType.USUFRUITIER).getDonneesForConjointEnfant()
                 .sumFraisEntretientBrut(parameters.getVariablesMetier());
     }

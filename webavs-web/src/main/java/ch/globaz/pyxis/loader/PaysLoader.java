@@ -1,7 +1,5 @@
 package ch.globaz.pyxis.loader;
 
-import globaz.globall.db.BSession;
-import globaz.globall.db.BSessionUtil;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.persistence.model.JadeAbstractSearchModel;
@@ -17,16 +15,15 @@ import ch.globaz.pyxis.business.model.PaysSimpleModel;
 import ch.globaz.pyxis.business.service.AdresseService;
 import ch.globaz.pyxis.business.service.TIBusinessServiceLocator;
 import ch.globaz.pyxis.domaine.Pays;
+import ch.globaz.pyxis.domaine.PaysList;
 import ch.globaz.pyxis.domaine.constantes.CodeIsoPays;
 
 public class PaysLoader {
 
     private Map<String, Pays> mapPaysByid = new HashMap<String, Pays>();
     private Map<String, Pays> mapPaysByCodeCentrale = new HashMap<String, Pays>();
-
+    private PaysList paysList = new PaysList();
     private AdresseService adresseService;
-    private BSession session;
-    private boolean isContextextInitlisied = false;
 
     PaysLoader(AdresseService adresseService) {
         this.adresseService = adresseService;
@@ -35,20 +32,19 @@ public class PaysLoader {
 
     public PaysLoader() {
         try {
-            initContext();
             adresseService = TIBusinessServiceLocator.getAdresseService();
         } catch (JadeApplicationServiceNotAvailableException e) {
             throw new RuntimeException(e);
-        } finally {
-            if (isContextextInitlisied) {
-                stopContext();
-            }
         }
         loadPays();
     }
 
-    public void setSession(BSession session) {
-        this.session = session;
+    public PaysList getPaysList() {
+        return paysList;
+    }
+
+    public void setPaysList(PaysList paysList) {
+        this.paysList = paysList;
     }
 
     public Pays resolveById(String idPays) {
@@ -76,9 +72,9 @@ public class PaysLoader {
     }
 
     void group(List<PaysSimpleModel> listPays) {
-        Map<String, Pays> map = new HashMap<String, Pays>();
         for (PaysSimpleModel paysSimpleModel : listPays) {
             Pays pays = convert(paysSimpleModel);
+            paysList.add(pays);
             mapPaysByid.put(paysSimpleModel.getId(), pays);
             mapPaysByCodeCentrale.put(paysSimpleModel.getCodeCentrale(), pays);
         }
@@ -125,23 +121,6 @@ public class PaysLoader {
             throw new RuntimeException(e);
         } catch (JadeApplicationException e) {
             throw new RuntimeException(e);
-        }
-    }
-
-    private void stopContext() {
-        if (session != null && adresseService != null) {
-            BSessionUtil.stopUsingContext(this);
-        }
-    }
-
-    private void initContext() {
-        if (session != null && adresseService != null) {
-            isContextextInitlisied = true;
-            try {
-                BSessionUtil.initContext(session, this);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
         }
     }
 

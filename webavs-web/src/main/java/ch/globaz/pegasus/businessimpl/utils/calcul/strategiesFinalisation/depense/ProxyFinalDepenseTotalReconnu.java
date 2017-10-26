@@ -26,7 +26,6 @@ public class ProxyFinalDepenseTotalReconnu implements StrategieCalculFinalisatio
         } else {
             new StrategieFinalDepenseTotalReconnu().calcule(donnee, context, dateDebut);
         }
-
     }
 
     // Définis si la stratégie est applicable pour la LVPC à partie de 2015

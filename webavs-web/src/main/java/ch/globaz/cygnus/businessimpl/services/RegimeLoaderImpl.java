@@ -113,7 +113,8 @@ public class RegimeLoaderImpl implements RegimeLoader {
                             dateFin = new Date(prestAcc.getDateFinDroit());
                         }
                         DonneeFinanciere df = new DonneeFinanciereHeader(membreFamille.getRoleMembreFamille(),
-                                new Date(prestAcc.getDateDebutDroit()), dateFin, prestAcc.getId());
+                                new Date(prestAcc.getDateDebutDroit()), dateFin, prestAcc.getId(),
+                                membreFamille.getId());
 
                         regimes.put(idTiers, createRFRegimePrestationAccordee(prestAcc, df));
                     }

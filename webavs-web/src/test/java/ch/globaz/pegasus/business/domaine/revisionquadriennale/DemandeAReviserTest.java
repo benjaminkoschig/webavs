@@ -5,6 +5,7 @@ import static org.mockito.Mockito.*;
 import org.junit.Before;
 import org.junit.Test;
 import ch.globaz.common.domaine.Adresse;
+import ch.globaz.common.domaine.Canton;
 import ch.globaz.common.domaine.Montant;
 import ch.globaz.common.domaine.Part;
 import ch.globaz.common.domaine.Taux;
@@ -114,9 +115,9 @@ public class DemandeAReviserTest {
         container.add(new AssuranceVie(M_1000, DF_REQ));
         container.add(new AssuranceVie(M_2000, DF_CONJ));
         container.add(new AssuranceVie(M_2000, DF_ENF));
-        container.add(new AssuranceRenteViagere(M_1000, M_20, M_1000, DF_REQ));
-        container.add(new AssuranceRenteViagere(M_2000, M_20, M_2000, DF_CONJ));
-        container.add(new AssuranceRenteViagere(M_2000, M_20, M_2000, DF_ENF));
+        container.add(new AssuranceRenteViagere(M_1000, M_20, M_1000, false, false, DF_REQ));
+        container.add(new AssuranceRenteViagere(M_2000, M_20, M_2000, false, false, DF_CONJ));
+        container.add(new AssuranceRenteViagere(M_2000, M_20, M_2000, false, false, DF_ENF));
 
         container.add(new DessaisissementFortune(M_1000, M_100, DF_REQ));
         container.add(new DessaisissementRevenu(M_1000, M_100, DF_REQ));
@@ -780,9 +781,10 @@ public class DemandeAReviserTest {
     }
 
     private Adresse buildAdresse() {
-        Adresse adresse = new Adresse("localite", "casePostale", "attention", "npa", "pays", "cantonOFAS", "csTitre",
-                "rue", "rueNumero", "designation1", "designation2", "designation3", "designation4", "idAdresse",
-                "designationTiers1", "designationTiers2", "designationTiers3", "designationTiers4", "csTitreTiers");
+        Adresse adresse = new Adresse("localite", "casePostale", "attention", "npa", "pays", new Canton("NE"),
+                "csTitre", "rue", "rueNumero", "designation1", "designation2", "designation3", "designation4",
+                "idAdresse", "designationTiers1", "designationTiers2", "designationTiers3", "designationTiers4",
+                "csTitreTiers");
         return adresse;
     }
 

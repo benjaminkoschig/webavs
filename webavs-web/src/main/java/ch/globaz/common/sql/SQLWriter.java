@@ -6,9 +6,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import org.apache.commons.lang.StringUtils;
-import ch.globaz.common.business.exceptions.CommonTechnicalException;
 import ch.globaz.common.domaine.CodeSystemEnum;
 import ch.globaz.common.domaine.Date;
+import ch.globaz.common.exceptions.CommonTechnicalException;
 import ch.globaz.common.jadedb.TableDefinition;
 
 /**
@@ -91,6 +91,16 @@ public class SQLWriter {
      */
     public SQLWriter select() {
         query.append("select ");
+        return this;
+    }
+
+    /**
+     * Ajout le mot select à la requête.
+     * 
+     * @return SQLWriter utilisé
+     */
+    public SQLWriter distinct() {
+        query.append("distinct ");
         return this;
     }
 
@@ -414,6 +424,27 @@ public class SQLWriter {
             String params = toStrForIn(list);
             paramsToUse.add(params);
             query.append(" in (?)");
+        } else {
+            rollback();
+        }
+        return this;
+    }
+
+    public SQLWriter notIn(String values) {
+        if (values != null && !values.isEmpty()) {
+            paramsToUse.add(values);
+            query.append(" not in (?)");
+        } else {
+            rollback();
+        }
+        return this;
+    }
+
+    public SQLWriter notIn(Collection<?> list) {
+        if (list != null && !list.isEmpty()) {
+            String params = toStrForIn(list);
+            paramsToUse.add(params);
+            query.append(" not in (?)");
         } else {
             rollback();
         }
@@ -788,6 +819,30 @@ public class SQLWriter {
     }
 
     /**
+     * Ajoute le mot 'inner join' à la requête et ajoute le fragment SQL à la requête.
+     * 
+     * @param sqlFragment Le fragment SQL à ajouter à la requête.
+     * @return SQLWriter utilisé
+     */
+    public SQLWriter join(String table1, String table2, String field1, String field2) {
+        query.append(" inner join ").append(addSchemaToSql(table1)).append(" on ").append(addSchemaToSql(table1))
+                .append(".").append(field1).append(" = ").append(addSchemaToSql(table2)).append(".").append(field2);
+        return this;
+    }
+
+    /**
+     * Ajoute le mot 'inner join' à la requête et ajoute le fragment SQL à la requête.
+     * 
+     * @param sqlFragment Le fragment SQL à ajouter à la requête.
+     * @return SQLWriter utilisé
+     */
+    public SQLWriter join(String table1, String alias1, String alias2, String field1, String field2) {
+        query.append(" inner join ").append(addSchemaToSql(table1)).append(" as ").append(alias1).append(" on ")
+                .append(alias1).append(".").append(field1).append(" = ").append(alias2).append(".").append(field2);
+        return this;
+    }
+
+    /**
      * Ajoute le mot 'inner join' à la requête et ajoute le fragment SQL à la requête si la condition est vrais.
      * 
      * @param sqlFragment Le fragment SQL à ajouter à la requête.
@@ -891,19 +946,19 @@ public class SQLWriter {
         return true;
     }
 
-    static String toStrForIn(Collection<?> params) {
+    public static String toStrForIn(Collection<?> params) {
         return StringUtils.join(params, ",");
     }
 
-    static String toStringForIn(Integer... params) {
+    public static String toStringForIn(Integer... params) {
         return StringUtils.join(params, ",");
     }
 
-    static String toStringForIn(String... params) {
+    public static String toStringForIn(String... params) {
         return "\'" + StringUtils.join(params, "','") + "\'";
     }
 
-    static String toStringForIn(Collection<String> params) {
+    public static String toStringForIn(Collection<String> params) {
         return "\'" + StringUtils.join(params, "','") + "\'";
     }
 

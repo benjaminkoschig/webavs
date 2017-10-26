@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import ch.globaz.common.business.exceptions.CommonTechnicalException;
+import ch.globaz.common.exceptions.CommonTechnicalException;
 
 class Converters {
 

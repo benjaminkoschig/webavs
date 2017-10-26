@@ -11,9 +11,11 @@ public class AssuranceRenteViagere extends DonneeFinanciere implements Revenu, F
     private final Montant montant;
     private final Montant excedant;
     private final Montant valeurDeRachat;
+    private final boolean hasDessaisissementFortune;
+    private final boolean hasDessaisissementRevenu;
 
     public AssuranceRenteViagere(Montant montant, Montant excedant, Montant valeurDeRachat,
-            DonneeFinanciere donneeFinanciere) {
+            Boolean hasDessaisissementFortune, Boolean hasDessaisissementRevenu, DonneeFinanciere donneeFinanciere) {
         super(donneeFinanciere);
         Checkers.checkNotNull(montant, "montant");
         Checkers.checkNotNull(excedant, "excedant");
@@ -22,6 +24,8 @@ public class AssuranceRenteViagere extends DonneeFinanciere implements Revenu, F
         this.excedant = excedant.addAnnuelPeriodicity();
         this.valeurDeRachat = valeurDeRachat.addAnnuelPeriodicity();
         this.montant = montant.addAnnuelPeriodicity();
+        this.hasDessaisissementFortune = hasDessaisissementFortune;
+        this.hasDessaisissementRevenu = hasDessaisissementRevenu;
     }
 
     public Montant getMontant() {
@@ -34,6 +38,14 @@ public class AssuranceRenteViagere extends DonneeFinanciere implements Revenu, F
 
     public Montant getValeurDeRachat() {
         return valeurDeRachat;
+    }
+
+    public boolean hasDessaisissementFortune() {
+        return hasDessaisissementFortune;
+    }
+
+    public boolean hasDessaisissementRevenu() {
+        return hasDessaisissementRevenu;
     }
 
     @Override

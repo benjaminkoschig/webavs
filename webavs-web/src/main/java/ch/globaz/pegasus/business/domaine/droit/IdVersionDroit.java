@@ -3,6 +3,12 @@ package ch.globaz.pegasus.business.domaine.droit;
 import ch.globaz.common.domaine.Checkers;
 
 public class IdVersionDroit {
+    private String idVersionDroit = null;
+
+    public IdVersionDroit(String idVersionDroit) {
+        Checkers.checkNotNull(idVersionDroit, "The paramneter idVersionDroit can't be null");
+        this.idVersionDroit = idVersionDroit;
+    }
 
     @Override
     public int hashCode() {
@@ -37,13 +43,6 @@ public class IdVersionDroit {
     @Override
     public String toString() {
         return "IdVersionDroit [idVersionDroit=" + idVersionDroit + "]";
-    }
-
-    private String idVersionDroit = null;
-
-    public IdVersionDroit(String idVersionDroit) {
-        Checkers.checkNotNull(idVersionDroit, "The paramneter idVersionDroit can't be null");
-        this.idVersionDroit = idVersionDroit;
     }
 
     public String get() {

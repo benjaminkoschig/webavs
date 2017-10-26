@@ -6,7 +6,7 @@ public interface Revenu {
     /**
      * Calcul le montant du revenu annuel en fonction des différentes informations à prendre en compte.
      * 
-     * @return Montan
+     * @return Montant
      */
     public abstract Montant computeRevenuAnnuel();
 

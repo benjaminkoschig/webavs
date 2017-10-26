@@ -14,9 +14,9 @@ public class PcaRequerantConjointTest {
         pcas.setRequerant(pcaRequerant);
         pcas.setConjoint(null);
 
-        PcaSitutation pcaCas = pcas.resolveCasPca();
+        PcaSituation pcaCas = pcas.resolveCasPca();
         assertNotNull(pcaCas);
-        assertEquals(PcaSitutation.HOME, pcaCas);
+        assertEquals(PcaSituation.HOME, pcaCas);
     }
 
     @Test
@@ -24,9 +24,9 @@ public class PcaRequerantConjointTest {
         PcaRequerantConjoint pcas = new PcaRequerantConjoint();
         pcas.setRequerant(null);
         pcas.setConjoint(null);
-        PcaSitutation pcaCas = pcas.resolveCasPca();
+        PcaSituation pcaCas = pcas.resolveCasPca();
         assertNotNull(pcaCas);
-        assertEquals(PcaSitutation.INDEFINIT, pcaCas);
+        assertEquals(PcaSituation.INDEFINIT, pcaCas);
     }
 
     @Test
@@ -34,9 +34,9 @@ public class PcaRequerantConjointTest {
         PcaRequerantConjoint pcas = new PcaRequerantConjoint();
         pcas.setRequerant(new Pca());
         pcas.setConjoint(new Pca());
-        PcaSitutation pcaCas = pcas.resolveCasPca();
+        PcaSituation pcaCas = pcas.resolveCasPca();
         assertNotNull(pcaCas);
-        assertEquals(PcaSitutation.INDEFINIT, pcaCas);
+        assertEquals(PcaSituation.INDEFINIT, pcaCas);
     }
 
     @Test
@@ -51,9 +51,9 @@ public class PcaRequerantConjointTest {
         pcas.setConjoint(pcaConjoint);
         pcaConjoint.setId("2");
 
-        PcaSitutation pcaCas = pcas.resolveCasPca();
+        PcaSituation pcaCas = pcas.resolveCasPca();
         assertNotNull(pcaCas);
-        assertEquals(PcaSitutation.COUPLE_SEPARE_DEUX_EN_HOME, pcaCas);
+        assertEquals(PcaSituation.COUPLE_SEPARE_DEUX_EN_HOME, pcaCas);
     }
 
     @Test
@@ -69,9 +69,9 @@ public class PcaRequerantConjointTest {
         pcaRequerant.setId("1");
         pcas.setConjoint(pcaConjoint);
 
-        PcaSitutation pcaCas = pcas.resolveCasPca();
+        PcaSituation pcaCas = pcas.resolveCasPca();
         assertNotNull(pcaCas);
-        assertEquals(PcaSitutation.DOM2R, pcaCas);
+        assertEquals(PcaSituation.DOM2R, pcaCas);
     }
 
     @Test

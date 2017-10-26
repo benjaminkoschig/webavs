@@ -54,6 +54,7 @@
 			<search-group operator="AND">
 				<search-field name="forCsTypePrime" operation="EQUALS" field-ref="simpleForfaitPrimesAssuranceMaladie.csTypePrime"/>
 				<search-field name="forIdLocalite" operation="EQUALS"  field-ref="simpleLienZoneLocalite.idLocalite"/>
+				<search-field name="forIdsLocalite" operation="IN"  field-ref="simpleLienZoneLocalite.idLocalite"/>
 				<search-field name="forDateFin" operation="LESS_OR_EQUALS" field-ref="simpleForfaitPrimesAssuranceMaladie.dateDebut"/>
 			<!--	<search-field name="forDateDebut" operation="GREATER_OR_EQUALS" field-ref="simpleForfaitPrimesAssuranceMaladie.dateDebut"/> -->
 				<search-group operator="AND">
@@ -69,6 +70,7 @@
 			<search-group operator="AND">
 				<search-field name="forCsTypePrime" operation="EQUALS" field-ref="simpleForfaitPrimesAssuranceMaladie.csTypePrime"/>
 				<search-field name="forIdLocalite" operation="EQUALS"  field-ref="simpleLienZoneLocalite.idLocalite"/>
+				<search-field name="forIdsLocalite" operation="IN"  field-ref="simpleLienZoneLocalite.idLocalite"/>
 				<search-field name="forDateDebut" operation="GREATER_OR_EQUALS" field-ref="simpleForfaitPrimesAssuranceMaladie.dateDebut"/>
 			</search-group>
 		</search-definition>

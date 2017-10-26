@@ -6,6 +6,11 @@ public class IdDossier {
 
     private String idDossier = null;
 
+    public IdDossier(String idDossier) {
+        Checkers.checkNotNull(idDossier, "The parameter idDossier can't be null");
+        this.idDossier = idDossier;
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -39,11 +44,6 @@ public class IdDossier {
     @Override
     public String toString() {
         return "idDossier [idDossier=" + idDossier + "]";
-    }
-
-    public IdDossier(String idDossier) {
-        Checkers.checkNotNull(idDossier, "The parameter idDossier can't be null");
-        this.idDossier = idDossier;
     }
 
     public String get() {

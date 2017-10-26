@@ -41,18 +41,34 @@ public class TransactionWrapper implements Closeable {
      * @return une nouvelle transaction
      */
     public static TransactionWrapper forforceCommit(BSession session) {
-        JadeBusinessMessage[] logs = JadeThread.logMessages();
-        JadeThread.logClear();
+        TransactionWrapper transaction = new TransactionWrapper(session);
         String errors = session.getErrors().toString();
         String warnings = session.getWarnings().toString();
-
-        TransactionWrapper transaction = new TransactionWrapper(session);
         transaction.autonome = true;
         transaction.errorsInSession = errors;
         transaction.warningsInSession = warnings;
-        transaction.logMessages = logs;
         transaction.session = session;
+        transaction.clearThreadLog();
         return transaction;
+    }
+
+    public void clearThreadLog() {
+        logMessages = JadeThread.logMessages();
+        JadeThread.logClear();
+    }
+
+    public void addThreadLog() throws JadeNoBusinessLogSessionError {
+        if (logMessages != null) {
+            for (JadeBusinessMessage message : logMessages) {
+                if (JadeBusinessMessageLevels.ERROR == (message.getLevel())) {
+                    JadeThread.logError(message.getSource(), message.getMessageId(), message.getParameters());
+                } else if (JadeBusinessMessageLevels.WARN == (message.getLevel())) {
+                    JadeThread.logWarn(message.getSource(), message.getMessageId(), message.getParameters());
+                } else if (JadeBusinessMessageLevels.INFO == (message.getLevel())) {
+                    JadeThread.logInfo(message.getSource(), message.getMessageId(), message.getParameters());
+                }
+            }
+        }
     }
 
     private BTransaction resolveTransaction(BSession session) {
@@ -118,7 +134,7 @@ public class TransactionWrapper implements Closeable {
             }
             if (autonome) {
 
-                addThreatLog();
+                addThreadLog();
 
                 addSessionLog();
             }
@@ -134,20 +150,6 @@ public class TransactionWrapper implements Closeable {
             }
             if (warningsInSession != null && !warningsInSession.isEmpty()) {
                 session.addWarning(warningsInSession);
-            }
-        }
-    }
-
-    private void addThreatLog() throws JadeNoBusinessLogSessionError {
-        if (logMessages != null) {
-            for (JadeBusinessMessage message : logMessages) {
-                if (JadeBusinessMessageLevels.ERROR == (message.getLevel())) {
-                    JadeThread.logError(message.getSource(), message.getMessageId(), message.getParameters());
-                } else if (JadeBusinessMessageLevels.WARN == (message.getLevel())) {
-                    JadeThread.logWarn(message.getSource(), message.getMessageId(), message.getParameters());
-                } else if (JadeBusinessMessageLevels.INFO == (message.getLevel())) {
-                    JadeThread.logInfo(message.getSource(), message.getMessageId(), message.getParameters());
-                }
             }
         }
     }

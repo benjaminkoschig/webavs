@@ -23,6 +23,8 @@ public class ValiderDecisionAcChecker {
             JadeApplicationServiceNotAvailableException, SimpleRetenuePayementException, JadePersistenceException,
             DecisionException, PmtMensuelException, JadeNoBusinessLogSessionError {
 
+        // if (!ValiderDecisionAcChecker.checkIfOldDecisionHasReturnToTreat(data.getDecisionsApresCalcul(),
+
         if (!ValiderDecisionAcChecker.checkIfCoherenceRetenue(data.getDecisionsApresCalcul(),
                 data.getRentuesPayements())) {
             throw new DecisionException("pegasus.validationDecision.coherenceRetenue");
@@ -185,5 +187,23 @@ public class ValiderDecisionAcChecker {
         DecisionApresCalcul dc = ValiderDecisionUtils.resolvedLastDecisionRequerant(data.getDecisionsApresCalcul(),
                 data.getDateDebut());
         return dc;
+    }
+
+    /**
+     * 
+     * Verifie que la précédente décision n'a pas des retours en warning non traités
+     * 
+     * @param decisionApresCalculSearch
+     * @return
+     * @throws RetenuePayementException
+     * @throws JadeApplicationServiceNotAvailableException
+     * @throws SimpleRetenuePayementException
+     * @throws JadePersistenceException
+     */
+    private static Boolean checkIfOldDecisionHasReturnToTreat(List<DecisionApresCalcul> decisions)
+            throws RetenuePayementException, JadeApplicationServiceNotAvailableException,
+            SimpleRetenuePayementException, JadePersistenceException {
+
+        return true;
     }
 }

@@ -10,15 +10,24 @@ public class TaxeJournaliereHome extends DonneeFinanciere {
     private final Montant primeAPayer;
     private final boolean participationLca;
     private final Date dateEntreeHome;
+    private final String idTypeChambre;
 
     public TaxeJournaliereHome(Montant montantJournalierLca, Montant primeAPayer, boolean participationLca,
-            Date dateEntreeHome, DonneeFinanciere donneeFinanciere) {
+            Date dateEntreeHome, String idTypeChambre, DonneeFinanciere donneeFinanciere) {
         super(donneeFinanciere);
         this.dateEntreeHome = dateEntreeHome;
         this.participationLca = participationLca;
+        this.idTypeChambre = idTypeChambre;
 
         this.montantJournalierLca = montantJournalierLca.addJournalierPeriodicity();
         this.primeAPayer = primeAPayer.addMensuelPeriodicity();
+    }
+
+    public Montant computMontantContributionLcaAnnuel(int nbDayInYear) {
+        if (participationLca) {
+            return montantJournalierLca.annualise(nbDayInYear).substract(primeAPayer.annualise());
+        }
+        return Montant.ZERO_ANNUEL;
     }
 
     public Montant getMontantJournalierLca() {
@@ -35,6 +44,10 @@ public class TaxeJournaliereHome extends DonneeFinanciere {
 
     public Date getDateEntreeHome() {
         return dateEntreeHome;
+    }
+
+    public String getIdTypeChambre() {
+        return idTypeChambre;
     }
 
     @Override

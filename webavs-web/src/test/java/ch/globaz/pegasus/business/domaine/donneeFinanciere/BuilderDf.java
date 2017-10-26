@@ -9,13 +9,11 @@ public class BuilderDf {
     public static SimpleDateFormat ddsMMsYYYY = new SimpleDateFormat("dd.MM.yyyy");
 
     public static DonneeFinanciere createDF(RoleMembreFamille roleMembreFamille) {
+        return new DonneeFinanciereHeader(roleMembreFamille, new Date("01.2014"), null, "20", "1");
+    }
 
-        DonneeFinanciere df = null;
-        Date date = new Date("01.2014");
-
-        df = new DonneeFinanciereHeader(roleMembreFamille, date, null, "20");
-
-        return df;
+    public static DonneeFinanciere createDF(Date debut, Date fin) {
+        return new DonneeFinanciereHeader(RoleMembreFamille.REQUERANT, debut, fin, "20", "1");
     }
 
     public static DonneeFinanciere createDfRequerant() {
@@ -31,12 +29,6 @@ public class BuilderDf {
     }
 
     public static DonneeFinanciere createDF() {
-
-        DonneeFinanciere df = null;
-
-        Date date = new Date("01.2014");
-        df = new DonneeFinanciereHeader(RoleMembreFamille.REQUERANT, date, null, "20");
-
-        return df;
+        return new DonneeFinanciereHeader(RoleMembreFamille.REQUERANT, new Date("01.2014"), null, "20", "1");
     }
 }

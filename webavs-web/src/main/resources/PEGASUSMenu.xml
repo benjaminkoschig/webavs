@@ -11,6 +11,7 @@
 				- Demandes 
 				- PC accordees
 				- Decisions
+				- Annonces
 				- Lots
 				> Revisions quadrienales:
 					- Liste des revisions
@@ -59,6 +60,12 @@
 				<label refId="MENU_DECISION"/>
 				<action command="/pegasus" responseTarget="fr_main">					
 					<parameter name="userAction" value="pegasus.decision.decision.chercher"/>						
+				</action>				
+			</node>
+			<node>				
+				<label refId="MENU_ANNONCES"/>
+				<action command="/pegasus" responseTarget="fr_main">					
+					<parameter name="userAction" value="pegasus.rpc.annonces.afficher"/>						
 				</action>				
 			</node>
 			<node>				

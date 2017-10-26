@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.pegasus.rpc.business.models.SimpleRetourAnnonce">
+		<description>Retour des annonces</description>
+		<table name="PC_RPC_RETOUR_ANNONCE" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="id" column="ID" comment="ID"/>
+			<field name="idLien" column="ID_LIEN_AN_DE" type="NUMERIC" mandatory="false" comment="ID_LIEN_AN_DE"/>
+			<field name="csCategoriePlausi" column="CS_CATE_PLAUSI" type="NUMERIC" mandatory="false" comment="CS_CATE_PLAUSI"/>	
+			<field name="csTypePlausi" column="CS_TYPE_PLAUSI" type="NUMERIC" mandatory="false" comment="CS_TYPE_PLAUSI"/>	
+			<field name="csTypeViolationPlausi" column="CS_TYPE_VIOL_PLAU" type="NUMERIC" mandatory="false" comment="CS_TYPE_VIOL_PLAU"/>	
+			<field name="codePlausi" column="CODE_PLAUSI" type="STRING" mandatory="false" comment="CODE_PLAUSI"/>	
+			<field name="officePC" column="OFFICE_PC" type="STRING" mandatory="false" comment="OFFICE_PC"/>	
+			<field name="officePCConflit" column="OFFICE_PC_CONFLIT" type="STRING" mandatory="false" comment="OFFICE_PC_CONFLIT"/>	
+			<field name="nssAnnonce" column="NSS_ANNONCE" type="STRING" mandatory="false" comment="NSS_ANNONCE"/>	
+			<field name="nssPersonne" column="NSS_PERSON" type="STRING" mandatory="false" comment="NSS_PERSON"/>	
+			<field name="caseIdConflit" column="CASE_ID_RPC_CONFLIT" type="STRING" mandatory="false" comment="CASE_ID_RPC_CONFLIT"/>	
+			<field name="decisionIdConflit" column="ID_DECISION_CONFLIT" type="STRING" mandatory="false" comment="ID_DECISION_CONFLIT"/>	
+			<field name="validFromConflit" column="VALID_FROM_CONFLIT" type="DATE" mandatory="false" comment="VALID_FROM_CONFLIT"/>	
+			<field name="validToConflit" column="VALID_TO_CONFLIT" type="DATE" mandatory="false" comment="VALID_TO_CONFLIT"/>	
+			<field name="csStatusRetour" column="CS_STATUS_RETOUR" type="NUMERIC" mandatory="false" comment="CS_STATUS_RETOUR"/>
+			<field name="remarqueRetour" column="REMARQUE_RETOUR" type="STRING" mandatory="false" comment="REMARQUE_RETOUR"/>
+		</fields>
+	</simple-model>
+</model-mapping>

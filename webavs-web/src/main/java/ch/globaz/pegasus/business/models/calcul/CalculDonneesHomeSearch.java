@@ -2,7 +2,7 @@ package ch.globaz.pegasus.business.models.calcul;
 
 import globaz.jade.persistence.model.JadeSearchComplexModel;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 
 public class CalculDonneesHomeSearch extends JadeSearchComplexModel {
 
@@ -19,7 +19,7 @@ public class CalculDonneesHomeSearch extends JadeSearchComplexModel {
 
     private String forIdVersionDroit = null;
 
-    private List<String> inIdTypeChambre = new ArrayList<String>();
+    private Collection<String> inIdTypeChambre = new ArrayList<String>();
 
     public String getForDateDebut() {
         return forDateDebut;
@@ -45,7 +45,7 @@ public class CalculDonneesHomeSearch extends JadeSearchComplexModel {
         return forIdVersionDroit;
     }
 
-    public List<String> getInIdTypeChambre() {
+    public Collection<String> getInIdTypeChambre() {
         return inIdTypeChambre;
     }
 
@@ -73,12 +73,12 @@ public class CalculDonneesHomeSearch extends JadeSearchComplexModel {
         this.forIdVersionDroit = forIdVersionDroit;
     }
 
-    public void setInIdTypeChambre(List<String> inIdTypeChambre) {
+    public void setInIdTypeChambre(Collection<String> inIdTypeChambre) {
         this.inIdTypeChambre = inIdTypeChambre;
     }
 
     @Override
-    public Class whichModelClass() {
+    public Class<CalculDonneesHome> whichModelClass() {
         return CalculDonneesHome.class;
     }
 

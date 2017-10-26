@@ -50,6 +50,15 @@ public class MapWithListSortedByDateTest {
         parameters.getParameters(ParametreType.UN).resolveCourant(new Date("01.2013"));
     }
 
+    @Test
+    public void testFiltreByPeriode() throws Exception {
+        ParametresForTest parametres = build();
+        ParametresForTest parameter = parametres.filtreByPeriode(new Date("09.2014"));
+        assertEquals(2, parameter.size());
+        assertEquals("08.2014", parameter.getParameters(ParametreType.UN).resolveMostRecent().getDateDebut()
+                .getSwissMonthValue());
+    }
+
     private ParametresForTest build() {
         ParametresForTest parameters = new ParametresForTest();
         parameters.add(buildUn("01.2014", "5"));

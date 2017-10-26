@@ -8,7 +8,7 @@ import ch.globaz.pegasus.business.domaine.donneeFinanciere.DonneeFinanciereType;
 
 public class AssuranceRenteViagereTest {
     private static AssuranceRenteViagere df = new AssuranceRenteViagere(new Montant(55), new Montant(5), new Montant(
-            1000), BuilderDf.createDF());
+            1000), false, false, BuilderDf.createDF());
 
     @Test
     public void testComputeRevenuAnnuel() throws Exception {

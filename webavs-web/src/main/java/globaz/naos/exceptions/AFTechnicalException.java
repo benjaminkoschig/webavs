@@ -1,6 +1,6 @@
 package globaz.naos.exceptions;
 
-import ch.globaz.common.business.exceptions.CommonTechnicalException;
+import ch.globaz.common.exceptions.CommonTechnicalException;
 
 /**
  * Exception due à une erreur technique dans le module de l'affiliation

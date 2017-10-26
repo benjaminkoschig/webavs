@@ -8,7 +8,7 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 
 @SuiteClasses({
-    PcaSitutationTest.class, 
+    PcaSituationTest.class, 
     PcaGenreTest.class,
     PcaRequerantConjointTest.class
   })

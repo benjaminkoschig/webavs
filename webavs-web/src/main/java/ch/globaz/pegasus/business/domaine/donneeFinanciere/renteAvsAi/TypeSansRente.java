@@ -24,6 +24,10 @@ public enum TypeSansRente implements CodeSystemEnum<TypeSansRente> {
         }
     }
 
+    public boolean isIndefinit() {
+        return INDEFINIT.equals(this);
+    }
+
     @Override
     public String getValue() {
         return value;

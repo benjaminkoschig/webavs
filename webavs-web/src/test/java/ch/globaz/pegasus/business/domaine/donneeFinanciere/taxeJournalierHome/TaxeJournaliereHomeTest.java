@@ -9,7 +9,7 @@ import ch.globaz.pegasus.business.domaine.donneeFinanciere.DonneeFinanciereType;
 
 public class TaxeJournaliereHomeTest {
     private static final TaxeJournaliereHome df = new TaxeJournaliereHome(new Montant(100), new Montant(50), true,
-            new Date("01.01.2015"), BuilderDf.createDF());
+            new Date("01.01.2015"), "1", BuilderDf.createDF());
 
     @Test
     public void testDefinedTypeDonneeFinanciere() throws Exception {

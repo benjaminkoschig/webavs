@@ -38,24 +38,23 @@
 var userAction = "<%=IPCActions.ACTION_DEMANDE_TRANSFERT_DOSSIER_TRANSFERT %>.executer";
 
 $(function(){
-    $("#btnCtrlJade").hide();
-    
-    $("#printCommBtn").click(function(){
-          $("[name=userAction]").val(userAction);
-          $("[name=annexes]").val(getSelectOptionValues($('#annexeSelect')));
-          $("[name=copies]").val(getSelectOptionValues($('#copieSelect')));
-          $("[name=mainForm]").submit();
-    });
+	$("#btnCtrlJade").hide();
+	
+	$("#printCommBtn").click(function(){
+		$("[name=userAction]").val(userAction);
+		$("[name=annexes]").val(getSelectOptionValues($('#annexeSelect')));
+		$("[name=copies]").val(getSelectOptionValues($('#copieSelect')));
+		$("[name=mainForm]").submit();
+	});
 });
 
 function getSelectOptionValues($select){
-    var results=[];
-    $select.find('option').each(function(){
-          results.push(this.value);
-    });
-    return results.join('¦');
+	var results=[];
+	$select.find('option').each(function(){
+		results.push(this.value);
+	});
+	return results.join('¦');
 }
-
 
 function init(){}
 function add(){}

@@ -35,6 +35,7 @@ import ch.globaz.pegasus.businessimpl.utils.calcul.containercalcul.ControlleurVa
 public abstract class StrategieCalcul {
 
     protected static final float NB_MOIS = 12;
+    protected static final float tauxChangePrecision = 100000;
 
     /**
      * ajoute un montant à la valeur d'un tuple. Si le tuple est null, il est créé avec la clé et le montant en
@@ -240,6 +241,14 @@ public abstract class StrategieCalcul {
 
     protected final CalculVariableMetierSearch getVariablesMetier(Map<String, JadeAbstractSearchModel> cacheDonnees) {
         return (CalculVariableMetierSearch) cacheDonnees.get(ConstantesCalcul.CONTAINER_DONNEES_VARIABLES_METIER);
+    }
+
+    protected float setTauxDeChange(String tauxChange) throws CalculException {
+        return Float.parseFloat(checkAmount(tauxChange)) * tauxChangePrecision;
+    }
+
+    protected String getTauxDeChange(String tauxChange) throws CalculException {
+        return String.valueOf(Float.parseFloat(checkAmount(tauxChange)) / tauxChangePrecision);
     }
 
     protected Boolean isDroitHabitation(String csTypePropriete) {

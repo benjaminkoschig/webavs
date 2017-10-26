@@ -602,7 +602,6 @@ public class AMEnvoiData extends EnvoiData {
         // 2012 à 2014 ==> DECMPC7 (default)
         // 2016 à 2017 ==> DECMPC7_2016
         // 2018 et après ==> DECMPC7_2018
-
         // ---------------------------------------------------------------------------------
         if (getIdProcess().contains("DECMPC7")) {
             // Depuis les objects chargés, on récupère le current détail famille

@@ -7,9 +7,9 @@ import globaz.jade.log.business.JadeBusinessMessage;
 import globaz.jade.log.business.JadeBusinessMessageLevels;
 import java.util.List;
 import ch.globaz.common.business.exceptions.CommonJobException;
-import ch.globaz.common.business.exceptions.CommonTechnicalException;
 import ch.globaz.common.business.services.TraitementMasseService;
 import ch.globaz.common.businessimpl.models.UnitTask;
+import ch.globaz.common.exceptions.CommonTechnicalException;
 
 public class TraitementMasseServiceImpl implements TraitementMasseService {
 

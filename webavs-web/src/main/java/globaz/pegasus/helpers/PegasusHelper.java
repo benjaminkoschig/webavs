@@ -4,6 +4,7 @@ import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.controller.FWHelper;
 import globaz.jade.context.JadeThread;
 import ch.globaz.pegasus.business.exceptions.PegasusException;
+import ch.globaz.pegasus.rpc.businessImpl.converter.RpcBusinessException;
 
 public abstract class PegasusHelper extends FWHelper {
 
@@ -17,10 +18,13 @@ public abstract class PegasusHelper extends FWHelper {
 
         if (e instanceof PegasusException) {
             setPegasusExceptionMessage(e);
+        } else if (e instanceof RpcBusinessException) {
+            setRPCExceptionMessage(e);
         } else {
             JadeThread.logError("", e.toString());
         }
 
+        // Next 2 lines are overriden by FWHelper.class on afterExecute() method
         viewBean.setMessage(e.toString());
         viewBean.setMsgType(FWViewBeanInterface.ERROR);
         e.printStackTrace();
@@ -32,4 +36,12 @@ public abstract class PegasusHelper extends FWHelper {
         JadeThread.logError("", pc.getMessage(), pc.getParameters());
     }
 
+    private void setRPCExceptionMessage(final Throwable t) {
+        RpcBusinessException rpc = (RpcBusinessException) t;
+        if (rpc.getLabelMessage().isEmpty()) {
+            JadeThread.logError("", t.toString());
+        } else {
+            JadeThread.logError("", rpc.getLabelMessage());
+        }
+    }
 }

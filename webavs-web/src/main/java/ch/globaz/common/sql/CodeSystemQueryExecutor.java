@@ -2,10 +2,10 @@ package ch.globaz.common.sql;
 
 import globaz.globall.db.BSession;
 import java.util.List;
-import ch.globaz.common.business.exceptions.CommonTechnicalException;
 import ch.globaz.common.business.language.LanguageResolver;
 import ch.globaz.common.codesystem.CodeSystem;
 import ch.globaz.common.domaine.Checkers;
+import ch.globaz.common.exceptions.CommonTechnicalException;
 
 /**
  * Cette classe a été créée dans le but de lancer des requêtes sur la table FWCOUP pour récupérer les codes systèmes

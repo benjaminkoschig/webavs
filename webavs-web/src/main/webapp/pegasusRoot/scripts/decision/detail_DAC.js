@@ -405,7 +405,7 @@ var setPreValidBouton = function (preValid,libelle) {
 				if(validateDecision()){
 					$(this).hide();
 					action(COMMIT);
-				} 
+				}
 		}
 		}).prependTo('#btnCtrlJade');
 	}
@@ -455,6 +455,27 @@ var showConfirmDialogForDevalidateDecision = function () {
         }
     });
 };
+/**
+ * Affichage de la liste des plausi en warning ou info
+ * @returns
+ */
+var showPlausiWarningDialog = function (msg) {
+	$( "#dialog-plausi-warning" ).dialog({
+        resizable: true,
+        height:500,
+        width:500,
+        modal: true,
+        
+        
+        buttons: {
+        	"OK": function() {
+                $( this ).dialog( "close" );
+            }
+        }
+    });
+	$("#dialog-plausi-warning-list").html(msg);
+};
+
 //***************************** GEstion bouton modifier **************************
 var setUpdateBouton = function (valid){
 	if(valid){

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<!-- modeles simple -->
+	<model-mapping import="pegasus/rpc/simpleannonce.xml" />
+	<model-mapping import="pegasus/rpc/simplelienannoncedecision.xml" />
+	<model-mapping import="pegasus/rpc/simplelotannonce.xml" />
+	<model-mapping import="pegasus/rpc/simpleretourannonce.xml" />
+	
+	<!-- modeles complexes -->
+	<model-mapping import="pegasus/rpc/rpcdecionsprisedanslemois.xml" />
+	<model-mapping import="pegasus/rpc/personneannonce.xml" />
+	<model-mapping import="pegasus/rpc/annoncedecision.xml" />
+	<model-mapping import="pegasus/rpc/lienannoncedecision.xml" />
+	<model-mapping import="pegasus/rpc/retourannonce.xml" />
+	<model-mapping import="pegasus/rpc/lotdossierdecision.xml" />
+	
+</model-mapping>

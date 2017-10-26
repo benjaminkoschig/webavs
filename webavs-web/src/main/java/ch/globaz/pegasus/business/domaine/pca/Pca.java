@@ -9,7 +9,7 @@ public class Pca {
     private static final long serialVersionUID = 1L;
     private PcaEtat etat;
     private PcaEtatCalcul etatCalcul;
-    private PcaGenre Genre;
+    private PcaGenre genre;
     private RoleMembreFamille roleBeneficiaire;
     private PcaType type;
     private Date dateDebut;
@@ -17,7 +17,6 @@ public class Pca {
     private Boolean hasCalculComparatif;
     private Boolean hasJoursAppoint;
     private String id;
-    // private Pca idPcaParent = null;
     private PersonneAVS beneficiaire = new PersonneAVS();
     private PersonneAVS beneficiaireConjointDom2R = new PersonneAVS();
     private String idVersionDroit;
@@ -25,6 +24,8 @@ public class Pca {
     private Boolean isCalculRetro;
     private Boolean isSupprime;
     private String sousCode;
+    private Calcul calcul;
+    private Date dateDernierPaiement;
 
     private Montant montant = Montant.ZERO;
 
@@ -37,11 +38,11 @@ public class Pca {
     }
 
     public PcaGenre getGenre() {
-        return Genre;
+        return genre;
     }
 
     public void setGenre(PcaGenre genre) {
-        Genre = genre;
+        this.genre = genre;
     }
 
     public RoleMembreFamille getRoleBeneficiaire() {
@@ -168,22 +169,42 @@ public class Pca {
         this.sousCode = sousCode;
     }
 
-    @Override
-    public String toString() {
-        return "Pca [etat=" + etat + ", Genre=" + Genre + ", roleBeneficiaire=" + roleBeneficiaire + ", type=" + type
-                + ", dateDebut=" + dateDebut + ", dateFin=" + dateFin + ", hasCalculComparatif=" + hasCalculComparatif
-                + ", hasJoursAppoint=" + hasJoursAppoint + ", id=" + id + ", beneficiaire=" + beneficiaire
-                + ", beneficiaireConjointDom2R=" + beneficiaireConjointDom2R + ", idVersionDroit=" + idVersionDroit
-                + ", isCalculManuel=" + isCalculManuel + ", isCalculRetro=" + isCalculRetro + ", isSupprime="
-                + isSupprime + ", sousCode=" + sousCode + ", montant=" + montant + "]";
-    }
-
     public PcaEtatCalcul getEtatCalcul() {
         return etatCalcul;
     }
 
     public void setEtatCalcul(PcaEtatCalcul etatCalcul) {
         this.etatCalcul = etatCalcul;
+    }
+
+    public Calcul getCalcul() {
+        return calcul;
+    }
+
+    public void setCalcul(Calcul calcul) {
+        this.calcul = calcul;
+    }
+
+    public Date getDateDernierPaiement() {
+        return dateDernierPaiement;
+    }
+
+    public void setDateDernierPaiement(Date dateDernierPaiement) {
+        this.dateDernierPaiement = dateDernierPaiement;
+    }
+
+    public boolean hasCurrent() {
+        return dateFin == null;
+    }
+
+    @Override
+    public String toString() {
+        return "Pca [etat=" + etat + ", genre=" + genre + ", roleBeneficiaire=" + roleBeneficiaire + ", type=" + type
+                + ", dateDebut=" + dateDebut + ", dateFin=" + dateFin + ", hasCalculComparatif=" + hasCalculComparatif
+                + ", hasJoursAppoint=" + hasJoursAppoint + ", id=" + id + ", beneficiaire=" + beneficiaire
+                + ", beneficiaireConjointDom2R=" + beneficiaireConjointDom2R + ", idVersionDroit=" + idVersionDroit
+                + ", isCalculManuel=" + isCalculManuel + ", isCalculRetro=" + isCalculRetro + ", isSupprime="
+                + isSupprime + ", sousCode=" + sousCode + ", Calcul=" + calcul + ", montant=" + montant + "]";
     }
 
 }

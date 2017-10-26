@@ -86,6 +86,21 @@ public class Titre extends DonneeFinanciere implements Fortune, FortunePartPropr
     }
 
     @Override
+    public Montant computeRevenuAnnuel() {
+        return rendement.annualise();
+    }
+
+    @Override
+    public Montant computeRevenuAnnuelBrut() {
+        return rendement.annualise();
+    }
+
+    @Override
+    public Montant computeFortunePartPropriete() {
+        return montant.multiply(part);
+    }
+
+    @Override
     public String toString() {
         return "Titre [montant=" + montant + ", droitGarde=" + droitGarde + ", rendement=" + rendement
                 + ", proprieteType=" + proprieteType + ", part=" + part + ", sansRendement=" + sansRendement
@@ -152,21 +167,6 @@ public class Titre extends DonneeFinanciere implements Fortune, FortunePartPropr
             return false;
         }
         return true;
-    }
-
-    @Override
-    public Montant computeRevenuAnnuel() {
-        return rendement.annualise();
-    }
-
-    @Override
-    public Montant computeRevenuAnnuelBrut() {
-        return rendement.annualise();
-    }
-
-    @Override
-    public Montant computeFortunePartPropriete() {
-        return montant.multiply(part);
     }
 
 }

@@ -15,6 +15,22 @@ public enum PcaEtatCalcul implements CodeSystemEnum<PcaEtatCalcul> {
         this.value = value;
     }
 
+    public boolean isOctroiePartiel() {
+        return PcaEtatCalcul.OCTROY_PARTIEL.equals(this);
+    }
+
+    public boolean isOctroie() {
+        return PcaEtatCalcul.OCTROYE.equals(this);
+    }
+
+    public boolean isRefus() {
+        return PcaEtatCalcul.REFUSE.equals(this);
+    }
+
+    public boolean isOctroieOuOctroiePartiel() {
+        return isOctroie() || isOctroiePartiel();
+    }
+
     public static PcaEtatCalcul fromValue(String value) {
         return CodeSystemEnumUtils.valueOfById(value, PcaEtatCalcul.class);
     }

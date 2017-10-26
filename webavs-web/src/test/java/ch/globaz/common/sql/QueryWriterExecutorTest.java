@@ -2,7 +2,7 @@ package ch.globaz.common.sql;
 
 import static org.fest.assertions.api.Assertions.*;
 import org.junit.Test;
-import ch.globaz.common.business.exceptions.CommonTechnicalException;
+import ch.globaz.common.exceptions.CommonTechnicalException;
 
 public class QueryWriterExecutorTest {
 

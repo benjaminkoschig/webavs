@@ -94,7 +94,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
-import ch.globaz.common.business.exceptions.CommonTechnicalException;
+import ch.globaz.common.exceptions.CommonTechnicalException;
 import ch.globaz.corvus.process.echeances.analyseur.modules.REModuleAnalyseEcheanceUtils;
 
 /**

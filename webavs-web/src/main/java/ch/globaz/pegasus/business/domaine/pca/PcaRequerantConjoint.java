@@ -9,7 +9,6 @@ package ch.globaz.pegasus.business.domaine.pca;
 public class PcaRequerantConjoint {
     private Pca requerant = new Pca();
     private Pca conjoint = new Pca();
-    private PcaSitutation pcaCas = PcaSitutation.INDEFINIT;
 
     public Pca getRequerant() {
         return requerant;
@@ -51,18 +50,17 @@ public class PcaRequerantConjoint {
         }
     }
 
-    public PcaSitutation resolveCasPca() {
+    public PcaSituation resolveCasPca() {
+        PcaSituation pcaCas = PcaSituation.INDEFINIT;
         if (hasRequerant()) {
             if (hasConjoint()) {
-                pcaCas = PcaSitutation.resolve(requerant.getGenre(), conjoint.getGenre(), requerant
+                pcaCas = PcaSituation.resolve(requerant.getGenre(), conjoint.getGenre(), requerant
                         .getBeneficiaireConjointDom2R().estInitialisee());
             } else {
-                pcaCas = PcaSitutation.resolve(requerant.getGenre(), null, requerant.getBeneficiaireConjointDom2R()
+                pcaCas = PcaSituation.resolve(requerant.getGenre(), null, requerant.getBeneficiaireConjointDom2R()
                         .estInitialisee());
             }
-        } else {
-            pcaCas = PcaSitutation.INDEFINIT;
-        }
+        } 
         return pcaCas;
     }
 }

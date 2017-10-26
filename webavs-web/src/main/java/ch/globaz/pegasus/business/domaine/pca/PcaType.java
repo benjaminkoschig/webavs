@@ -22,4 +22,12 @@ public enum PcaType implements CodeSystemEnum<PcaType> {
     public String getValue() {
         return value;
     }
+
+    public boolean isAi() {
+        return INVALIDITE.equals(this);
+    }
+
+    public boolean isAvs() {
+        return VIELLESSE.equals(this) || SURVIVANT.equals(this);
+    }
 }

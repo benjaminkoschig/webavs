@@ -51,7 +51,7 @@ import ch.globaz.al.business.constantes.ALCSDossier;
 import ch.globaz.al.business.constantes.ALCSDroit;
 import ch.globaz.al.business.constantes.ALCSPrestation;
 import ch.globaz.al.business.constantes.ALCSTarif;
-import ch.globaz.common.business.exceptions.CommonTechnicalException;
+import ch.globaz.common.exceptions.CommonTechnicalException;
 import ch.globaz.naos.business.beans.StatOfasAFAgricoleBean;
 
 /**

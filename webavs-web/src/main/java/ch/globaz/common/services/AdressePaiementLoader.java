@@ -9,10 +9,10 @@ import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import ch.globaz.common.business.exceptions.CommonTechnicalException;
 import ch.globaz.common.domaine.AdressePaiement;
 import ch.globaz.common.domaine.Banque;
 import ch.globaz.common.domaine.Tiers;
+import ch.globaz.common.exceptions.CommonTechnicalException;
 
 public class AdressePaiementLoader {
 

@@ -21,6 +21,7 @@ public class Adresse {
     private final String designation3;
     private final String designation4;
     private final String idAdresse;
+    private final Canton canton;
 
     private final String csTitreTiers;
     private final String designationTiers1;
@@ -28,12 +29,12 @@ public class Adresse {
     private final String designationTiers3;
     private final String designationTiers4;
 
-    public Adresse(String localite, String casePostale, String attention, String npa, String pays, String cantonOFAS,
+    public Adresse(String localite, String casePostale, String attention, String npa, String pays, Canton canton,
             String csTitre, String rue, String rueNumero, String designation1, String designation2,
             String designation3, String designation4, String idAdresse, String designationTiers1,
             String designationTiers2, String designationTiers3, String designationTiers4, String csTitreTiers) {
         this.localite = localite;
-
+        this.canton = canton;
         this.casePostale = casePostale;
         this.attention = attention;
         this.npa = npa;
@@ -61,6 +62,7 @@ public class Adresse {
     }
 
     public Adresse() {
+        canton = null;
         localite = "";
         casePostale = "";
         attention = "";
@@ -243,12 +245,19 @@ public class Adresse {
         return idAdresse;
     }
 
+    public Canton getCanton() {
+        return canton;
+    }
+
     @Override
     public String toString() {
         return "Adresse [localite=" + localite + ", casePostale=" + casePostale + ", attention=" + attention + ", npa="
                 + npa + ", pays=" + pays + ", csTitre=" + csTitre + ", rue=" + rue + ", rueNumero=" + rueNumero
                 + ", designation1=" + designation1 + ", designation2=" + designation2 + ", designation3="
-                + designation3 + ", designation4=" + designation4 + ", idAdresse=" + idAdresse + "]";
+                + designation3 + ", designation4=" + designation4 + ", idAdresse=" + idAdresse + ", canton=" + canton
+                + ", csTitreTiers=" + csTitreTiers + ", designationTiers1=" + designationTiers1
+                + ", designationTiers2=" + designationTiers2 + ", designationTiers3=" + designationTiers3
+                + ", designationTiers4=" + designationTiers4 + "]";
     }
 
 }

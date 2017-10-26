@@ -16,9 +16,9 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
-import ch.globaz.common.business.exceptions.CommonTechnicalException;
 import ch.globaz.common.domaine.Date;
 import ch.globaz.common.domaine.Montant;
+import ch.globaz.common.exceptions.CommonTechnicalException;
 import com.sun.star.uno.RuntimeException;
 
 public class ElementsDomParser {

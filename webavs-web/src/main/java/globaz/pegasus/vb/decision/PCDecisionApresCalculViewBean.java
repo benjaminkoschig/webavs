@@ -901,8 +901,19 @@ public class PCDecisionApresCalculViewBean extends BJadePersistentObjectViewBean
             PegasusServiceLocator.getValidationDecisionService().checkAdresses(decisionApresCalcul);
         }
 
+        checkPlausi(decisionApresCalcul.getDecisionHeader().getId());
+
         // update
         decisionApresCalcul = PegasusServiceLocator.getDecisionApresCalculService().update(decisionApresCalcul);
+    }
+
+    /**
+     * Methode de test des plausi
+     * 
+     * @throws JadeApplicationServiceNotAvailableException
+     */
+    public void checkPlausi(String idDecision) throws JadeApplicationServiceNotAvailableException {
+        PegasusServiceLocator.getRpcService().testPlausiForDecision(idDecision);
     }
 
     /**

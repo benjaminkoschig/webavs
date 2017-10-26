@@ -201,10 +201,63 @@ public class BienImmobilierServantHabitationPrincipaleTest {
     @Test
     public void testComputeRevenuAnnuelBrut() throws Exception {
         BienImmobilierServantHabitationPrincipale df1 = new BienImmobilierServantHabitationPrincipale(new Montant(
+                300000), new Montant(0), new Montant(1500), new Montant(100), new Montant(100), new Montant(100000), 2,
+                BienImmobilierHabitableType.APPARTEMENT, new Part(1, 2), ProprieteType.NU_PROPRIETAIRE,
+                BuilderDf.createDF());
+        assertEquals(Montant.newAnnuel(200), df1.computeRevenuAnnuelBrut());
+    }
+
+    @Test
+    public void testComputeLoyersEnCaissesPartPropriete() throws Exception {
+        BienImmobilierServantHabitationPrincipale df1 = new BienImmobilierServantHabitationPrincipale(new Montant(
+                300000), new Montant(100), new Montant(1500), new Montant(100), new Montant(100), new Montant(100000),
+                2, BienImmobilierHabitableType.APPARTEMENT, new Part(1, 1), ProprieteType.PROPRIETAIRE,
+                BuilderDf.createDF());
+        assertEquals(Montant.newAnnuel(100), df1.computeLoyersEnCaissesPartPropriete());
+    }
+
+    @Test
+    public void testComputeLoyersEnCaisssePartPropriete1() throws Exception {
+        BienImmobilierServantHabitationPrincipale df1 = new BienImmobilierServantHabitationPrincipale(new Montant(
+                300000), new Montant(100), new Montant(1500), new Montant(100), new Montant(100), new Montant(100000),
+                2, BienImmobilierHabitableType.APPARTEMENT, new Part(1, 2), ProprieteType.PROPRIETAIRE,
+                BuilderDf.createDF());
+        assertEquals(Montant.newAnnuel(50), df1.computeLoyersEnCaissesPartPropriete());
+    }
+
+    @Test
+    public void testComputeLoyersEnCaissesPartPropriete2() throws Exception {
+        BienImmobilierServantHabitationPrincipale df1 = new BienImmobilierServantHabitationPrincipale(new Montant(
                 300000), new Montant(100), new Montant(1500), new Montant(100), new Montant(100), new Montant(100000),
                 2, BienImmobilierHabitableType.APPARTEMENT, new Part(1, 2), ProprieteType.NU_PROPRIETAIRE,
                 BuilderDf.createDF());
-        assertEquals(Montant.newAnnuel(300), df1.computeRevenuAnnuelBrut());
+        assertEquals(Montant.newAnnuel(0), df1.computeLoyersEnCaissesPartPropriete());
     }
 
+    @Test
+    public void testComputeRevenuAnnuelProprietaire() throws Exception {
+        BienImmobilierServantHabitationPrincipale df1 = new BienImmobilierServantHabitationPrincipale(new Montant(
+                300000), new Montant(100), new Montant(1500), new Montant(100), new Montant(100), new Montant(100000),
+                2, BienImmobilierHabitableType.APPARTEMENT, new Part(1, 1), ProprieteType.PROPRIETAIRE,
+                BuilderDf.createDF());
+        assertEquals(Montant.newAnnuel(200), df1.computeRevenuAnnuel());
+    }
+
+    @Test
+    public void testComputeRevenuAnnuelProprietairePart() throws Exception {
+        BienImmobilierServantHabitationPrincipale df1 = new BienImmobilierServantHabitationPrincipale(new Montant(
+                300000), new Montant(100), new Montant(1500), new Montant(100), new Montant(100), new Montant(100000),
+                2, BienImmobilierHabitableType.APPARTEMENT, new Part(1, 2), ProprieteType.PROPRIETAIRE,
+                BuilderDf.createDF());
+        assertEquals(Montant.newAnnuel(100), df1.computeRevenuAnnuel());
+    }
+
+    @Test
+    public void testComputeRevenuAnnuelNuProprietaire() throws Exception {
+        BienImmobilierServantHabitationPrincipale df1 = new BienImmobilierServantHabitationPrincipale(new Montant(
+                300000), new Montant(100), new Montant(1500), new Montant(100), new Montant(100), new Montant(100000),
+                2, BienImmobilierHabitableType.APPARTEMENT, new Part(1, 1), ProprieteType.NU_PROPRIETAIRE,
+                BuilderDf.createDF());
+        assertEquals(Montant.newAnnuel(0), df1.computeRevenuAnnuel());
+    }
 }

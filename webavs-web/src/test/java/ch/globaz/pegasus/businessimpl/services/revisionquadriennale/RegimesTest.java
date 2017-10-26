@@ -21,7 +21,7 @@ public class RegimesTest {
     private DonneeFinanciere df = null;
 
     public RegimesTest() {
-        df = new DonneeFinanciereHeader(RoleMembreFamille.REQUERANT, new Date(), new Date(), "1");
+        df = new DonneeFinanciereHeader(RoleMembreFamille.REQUERANT, new Date(), new Date(), "1", "2");
 
         regime = new Regime(new Montant(100), IRFCodeTypesDeSoins.SOUS_TYPE_2_1_REGIME_ALIMENTAIRE, df);
 

@@ -1,6 +1,6 @@
 package ch.globaz.auriga.business.exceptions;
 
-import ch.globaz.common.business.exceptions.CommonTechnicalException;
+import ch.globaz.common.exceptions.CommonTechnicalException;
 
 /**
  * Exception pour les erreurs techniques uniquement

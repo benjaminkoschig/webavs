@@ -10,6 +10,16 @@ public class Loyers extends DonneesFinancieresList<Loyer, Loyers> {
         super(Loyers.class);
     }
 
+    public Montant sumLoyerBrut(final Montant forfait) {
+        return sum(new Each<Loyer>() {
+
+            @Override
+            public Montant getMontant(Loyer donnneeFianciere) {
+                return donnneeFianciere.getMontant().annualise().add(donnneeFianciere.computeCharge(forfait));
+            }
+        });
+    }
+
     public Montant sumSousLocation() {
         return sum(new Each<Loyer>() {
 

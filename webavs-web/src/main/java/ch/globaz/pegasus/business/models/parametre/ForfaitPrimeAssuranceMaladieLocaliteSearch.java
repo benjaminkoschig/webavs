@@ -1,6 +1,7 @@
 package ch.globaz.pegasus.business.models.parametre;
 
 import globaz.jade.persistence.model.JadeSearchSimpleModel;
+import java.util.Collection;
 
 public class ForfaitPrimeAssuranceMaladieLocaliteSearch extends JadeSearchSimpleModel {
     /**
@@ -8,15 +9,14 @@ public class ForfaitPrimeAssuranceMaladieLocaliteSearch extends JadeSearchSimple
      */
     private static final long serialVersionUID = 1L;
 
-    public final static String WITH_PERIODE_CS_TYPE_PRIME = "withPeriodeCsTypePrime";
+    public static final String WITH_PERIODE_CS_TYPE_PRIME = "withPeriodeCsTypePrime";
 
-    private String forCsTypePrime = null;
-    private String forDateDebut = null;
-    private String forDateFin = null;
-
-    private String forDateValable = null;
-
-    private String forIdLocalite = null;
+    private String forCsTypePrime;
+    private String forDateDebut;
+    private String forDateFin;
+    private Collection<String> forIdsLocalite;
+    private String forDateValable;
+    private String forIdLocalite;
 
     /**
      * @return the forCsTypePrime
@@ -91,6 +91,14 @@ public class ForfaitPrimeAssuranceMaladieLocaliteSearch extends JadeSearchSimple
      */
     public void setForIdLocalite(String forIdLocalite) {
         this.forIdLocalite = forIdLocalite;
+    }
+
+    public Collection<String> getForIdsLocalite() {
+        return forIdsLocalite;
+    }
+
+    public void setForIdsLocalite(Collection<String> forIdsLocalite) {
+        this.forIdsLocalite = forIdsLocalite;
     }
 
     @Override

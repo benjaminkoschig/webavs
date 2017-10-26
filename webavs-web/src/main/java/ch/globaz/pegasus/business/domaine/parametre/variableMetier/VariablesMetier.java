@@ -19,6 +19,30 @@ public class VariablesMetier extends MapWithListSortedByDate<VariableMetierType,
         return getParameters(VariableMetierType.TAUX_OFAS);
     }
 
+    public VariablesMetier getForfaitTenueMenage() {
+        return getParameters(VariableMetierType.FORFAIT_REVENU_NATURE_TENUE_MENAGE);
+    }
+
+    public VariablesMetier getPlafondAnnuelEms() {
+        return getParameters(VariableMetierType.PLAFOND_ANNUEL_EMS);
+    }
+
+    public VariablesMetier getPlafondAnnuelInstitution() {
+        return getParameters(VariableMetierType.PLAFOND_ANNUEL_INSTITUTION);
+    }
+
+    public VariablesMetier getPlafondAnnuelListAttente() {
+        return getParameters(VariableMetierType.PLAFOND_ANNUEL_LITS_ATTENTE);
+    }
+
+    public VariablesMetier getForfaitFraitChauffage() {
+        return getParameters(VariableMetierType.FORFAIT_FRAIS_CHAUFFAGE);
+    }
+
+    public VariablesMetier getForfaitCharge() {
+        return getParameters(VariableMetierType.FORFAIT_CHARGES);
+    }
+
     @Override
     public Class<VariablesMetier> getTypeClass() {
         return VariablesMetier.class;

@@ -10,6 +10,7 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Matchers;
 import org.mockito.Mockito;
@@ -22,6 +23,7 @@ import ch.admin.zas.rc.SkalaBerechnungType;
 import ch.admin.zas.rc.ZuwachsmeldungO9Type;
 import ch.globaz.common.exceptions.ValidationException;
 
+@Ignore("take too long due to marshalling process")
 public class REEnvoyerAnnoncesXMLProcessTest {
 
     private String numeroAgence = "";

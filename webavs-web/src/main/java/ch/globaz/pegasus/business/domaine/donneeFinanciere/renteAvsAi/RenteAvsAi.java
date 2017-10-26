@@ -33,6 +33,10 @@ public class RenteAvsAi extends DonneeFinanciere implements Revenu {
         return typeSansRente;
     }
 
+    public boolean isSansRente() {
+        return !typeSansRente.isIndefinit();
+    }
+
     @Override
     public Montant computeRevenuAnnuel() {
         throw new RuntimeException("not yet implmented");

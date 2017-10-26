@@ -36,7 +36,7 @@ public class PcaConverter {
 
             if (simplePlanDeCalcul != null) {
                 if (!simplePlanDeCalcul.getMontantPCMensuelle().trim().isEmpty()) {
-                    pca.setMontant(new Montant(simplePlanDeCalcul.getMontantPCMensuelle()));
+                    pca.setMontant(Montant.newMensuel(simplePlanDeCalcul.getMontantPCMensuelle()));
                 }
                 pca.setEtatCalcul(PcaEtatCalcul.fromValue(simplePlanDeCalcul.getEtatPC()));
             }

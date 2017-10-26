@@ -45,6 +45,24 @@ public class SQLWriterTest {
     }
 
     @Test
+    public void testJoinWithFields() throws Exception {
+        assertThat(SQLWriter.writeWithSchema().join("table1", "table2", "id", "fk").toSql()).isEqualTo(
+                " inner join schema.table1 on schema.table1.id = schema.table2.fk");
+        //
+        assertThat(SQLWriter.write().join("table1", "table2", "id", "fk").toSql()).isEqualTo(
+                " inner join table1 on table1.id = table2.fk");
+    }
+
+    @Test
+    public void testJoinWithFieldsAlias() throws Exception {
+        assertThat(SQLWriter.writeWithSchema().join("table1", "t1", "t2", "id", "fk").toSql()).isEqualTo(
+                " inner join schema.table1 as t1 on t1.id = t2.fk");
+        //
+        assertThat(SQLWriter.write().join("table1", "t1", "t2", "id", "fk").toSql()).isEqualTo(
+                " inner join table1 as t1 on t1.id = t2.fk");
+    }
+
+    @Test
     public void testLeftJoin() throws Exception {
         assertThat(SQLWriter.write().leftJoin("table1 on tabl1.id = table2.fk").toSql()).isEqualTo(
                 " left join table1 on tabl1.id = table2.fk");

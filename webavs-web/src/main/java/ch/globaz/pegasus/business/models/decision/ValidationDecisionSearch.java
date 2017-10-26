@@ -10,6 +10,7 @@ public class ValidationDecisionSearch extends JadeSearchComplexModel {
     private static final long serialVersionUID = 1L;
     private String forCsTypePreparation = null;
     private String forIdPca = null;
+    private String forIdDecision = null;
 
     public String getForCsTypePreparation() {
         return forCsTypePreparation;
@@ -25,6 +26,14 @@ public class ValidationDecisionSearch extends JadeSearchComplexModel {
 
     public void setForIdPca(String forIdPca) {
         this.forIdPca = forIdPca;
+    }
+
+    public String getForIdDecision() {
+        return forIdDecision;
+    }
+
+    public void setForIdDecision(String forIdDecision) {
+        this.forIdDecision = forIdDecision;
     }
 
     @Override

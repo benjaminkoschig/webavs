@@ -3,7 +3,7 @@ package ch.globaz.pegasus.businessimpl.utils.topazbuilder.transfertDossier;
 import globaz.pyxis.db.tiers.TITiers;
 import java.util.ArrayList;
 import java.util.List;
-import ch.globaz.common.business.exceptions.CommonTechnicalException;
+import ch.globaz.common.exceptions.CommonTechnicalException;
 import ch.globaz.pegasus.businessimpl.utils.topazbuilder.AbstractPegasusBuilder;
 import ch.globaz.pyxis.business.service.AdresseService;
 

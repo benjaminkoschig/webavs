@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.pegasus.rpc.business.models.LienAnnonceDecision">
+	
+		<root-model name="lienAnnonceDecision" model-ref="ch.globaz.pegasus.rpc.business.models.SimpleLienAnnonceDecision" select-fields="true" />
+
+	    <linked-model name="decisionHeader" model-ref="ch.globaz.pegasus.business.models.decision.SimpleDecisionHeader" join-type="INNER" >
+			<join-group operator="AND">
+				<join-field name="idDecisionHeader" operation="EQUALS" field-ref="lienAnnonceDecision.idDecision"/>
+			</join-group>		
+		</linked-model>
+
+		<search-definition>
+			<search-group operator="AND">	
+				<search-field name="forIdsAnnonce" operation="IN" field-ref="lienAnnonceDecision.idAnnonce"/>
+			</search-group>
+		</search-definition>
+		
+	</complexe-model>
+</model-mapping>

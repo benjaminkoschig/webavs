@@ -9,6 +9,7 @@
 				<join-field name="simpleDecisionHeader.idDecisionHeader" operation="EQUALS" field-ref="simpleDecisionRefus.idDecisionHeader"/>
 			</join-group>
 		</linked-model>
+		
 		<!-- demande lie la decision de refus -->
 		<linked-model name="demande" model-ref="ch.globaz.pegasus.business.models.demande.Demande" join-type="INNER">
 			<join-group operator="AND">
@@ -21,8 +22,25 @@
 				<search-field name="forIdDecisionHeader" operation="EQUALS" field-ref="simpleDecisionRefus.idDecisionHeader"/>
 				<search-field name="forIdDecisionRefus" operation="EQUALS" field-ref="simpleDecisionRefus.idDecisionRefus"/>
 				<search-field name="forIdDemande" operation="EQUALS" field-ref="simpleDecisionRefus.idDemandePc"/>
-				</search-group>
+			</search-group>
 		</search-definition>
+		
+		<search-definition name="RPC">
+			<search-group operator="AND">
+				<search-field name="forIdDecisionHeader" operation="EQUALS" field-ref="simpleDecisionRefus.idDecisionHeader"/>	
+				<search-field name="forDateDecisionMin" operation="GREATER_OR_EQUALS" field-ref="decisionHeader.simpleDecisionHeader.dateDecision"/>
+				<search-group operator="OR"> 
+					<search-field name="forDateDecisionMax" operation="LESS_OR_EQUALS"  field-ref="decisionHeader.simpleDecisionHeader.dateDecision"/>
+				</search-group>		
+				<search-field name="forCsEtat" operation="EQUALS" field-ref="decisionHeader.simpleDecisionHeader.csEtatDecision" value="64028003" />
+				<search-field name="forIdsDecisionHeader" operation="IN" field-ref="decisionHeader.simpleDecisionHeader.idDecisionHeader"  />
+			</search-group>
+		</search-definition>
+		
+		<order-by name="ID_DEMANDE">
+			<order-field field-ref="demande.simpleDemande.idDemande" order="DESC"/>
+			<order-field field-ref="decisionHeader.simpleDecisionHeader.idDecisionHeader" order="DESC"/>
+		</order-by>	
 		
 	</complexe-model>
 	

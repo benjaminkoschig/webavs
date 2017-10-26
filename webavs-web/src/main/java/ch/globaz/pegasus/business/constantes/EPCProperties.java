@@ -1,9 +1,13 @@
 package ch.globaz.pegasus.business.constantes;
 
+import java.lang.reflect.Type;
+import java.util.Map;
 import ch.globaz.common.properties.CommonPropertiesUtils;
 import ch.globaz.common.properties.IProperties;
 import ch.globaz.common.properties.PropertiesException;
 import ch.globaz.pegasus.utils.PCApplicationUtil;
+import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
 
 public enum EPCProperties implements IProperties {
     ALLOCATION_NOEL("pegasus.allocation.noel"),
@@ -48,7 +52,12 @@ public enum EPCProperties implements IProperties {
     COMMUNE_POLITIQUE_NUMERO_RUBRIQUE_PC("commune.politique.numero.rubrique.pc"),
     COMMUNE_POLITIQUE_NUMERO_RUBRIQUE_RFM("commune.politique.numero.rubrique.rfm"),
     MAILS_DEBUG("analyse.error.sendMail"),
-    LOI_CANTONALE_PC("canton.loi.pc");
+    LOI_CANTONALE_PC("canton.loi.pc"),
+    RPC_LOAD_PARTION_SIZE("rpc.load.partion.size"),
+    RPC_DESTINATAIRE("rpc.message.header.recipient.id"),
+    RPC_ELOFFICE("rpc.message.header.eloffice"),
+    RPC_GROUPE_RESPONSABLE("rpc.groupresponsable"),
+    RPC_LIMIT_DAY_GENERATION("rpc.limit.day.generation");
 
     private String property;
 
@@ -85,4 +94,14 @@ public enum EPCProperties implements IProperties {
         return CommonPropertiesUtils.getValue(this);
     }
 
+    public int getValueInt() throws PropertiesException {
+        return Integer.valueOf(CommonPropertiesUtils.getValue(this));
+    }
+
+    public Map<String, String> getValueJson() throws PropertiesException {
+        Type type = new TypeToken<Map<String, String>>() {
+        }.getType();
+        Gson gson = new Gson();
+        return gson.fromJson("{" + getValue() + "}", type);
+    }
 }

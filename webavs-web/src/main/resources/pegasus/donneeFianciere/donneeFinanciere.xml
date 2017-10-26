@@ -9,6 +9,7 @@
 			<select-field name="idDonneeFinanciereHeader" field-ref="simpleDonneeFinanciereHeader.idDonneeFinanciereHeader"/>
 			<select-field name="idDroitMembreFamille" field-ref="simpleDroitMembreFamille.idDroitMembreFamille"/>
 			<select-field name="idDroit" field-ref="simpleDroitMembreFamille.idDroit"/>
+			<select-field name="idVersionDroit" field-ref="simpleDonneeFinanciereHeader.idVersionDroit"/>
 			<select-field name="idMembreFamilleSF" field-ref="simpleDroitMembreFamille.idMembreFamilleSF"/>
 			<select-field name="csRoleFamille" field-ref="simpleDroitMembreFamille.csRoleFamillePC"/>
 			<select-field name="numeraireMontant" field-ref="simpleNumeraire.montant"/>
@@ -172,11 +173,24 @@
 			<select-field name="isDessaisissementFortune" field-ref="simpleDonneeFinanciereHeader.isDessaisissementFortune"/>
 			<select-field name="isDessaisissementRevenu" field-ref="simpleDonneeFinanciereHeader.isDessaisissementRevenu"/>
 			<select-field name="autreRentesEtrangeresCSTypeDevise" field-ref="simpleAutreRente.csMonnaie"/> 
+			<select-field name="idVersionDroitMax" field-ref="simpleVersionDroitMax.idVersionDroit"/> 
 		</select-fields>
 		
 		<linked-model name="simpleDonneeFinanciereHeader" model-ref="ch.globaz.pegasus.business.models.droit.SimpleDonneeFinanciereHeader" join-type="INNER" select-fields="false">
 			<join-group operator="AND">
 				<join-field name="idDroitMembreFamille" operation="EQUALS" field-ref="simpleDroitMembreFamille.idDroitMembreFamille"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="simpleVersionDroitDF" model-ref="ch.globaz.pegasus.business.models.droit.SimpleVersionDroit" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idVersionDroit" operation="EQUALS" field-ref="simpleDonneeFinanciereHeader.idVersionDroit"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="simpleVersionDroitMax" model-ref="ch.globaz.pegasus.business.models.droit.SimpleVersionDroit" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDroit" operation="EQUALS" field-ref="simpleVersionDroitDF.idDroit"/>
 			</join-group>
 		</linked-model>
 
@@ -388,7 +402,6 @@
 			<search-group operator="AND">
 				<search-field name="forIdMembreFamilleSFIn" operation="IN" field-ref="simpleDroitMembreFamille.idMembreFamilleSF" />
 				<search-field name="forIsSupprime" field-ref="simpleDonneeFinanciereHeader.isSupprime" operation="EQUALS" value="2"/>
-				<search-field name="forIdDroitIn" operation="IN" field-ref="simpleDroitMembreFamille.idDroit"/>
 				<search-field name="forCsTypeIn" operation="IN" field-ref="simpleDonneeFinanciereHeader.csTypeDonneeFinanciere"/>
 				
 				<search-field name="forIdDroit" operation="EQUALS" field-ref="simpleDroitMembreFamille.idDroit" /> 
@@ -410,10 +423,34 @@
 									inner join  @{donneeFinanciereHeader} on ( #{versionDroit.idVersionDroit} = #{donneeFinanciereHeader.idVersionDroit} )
 									where #{simpleDonneeFinanciereHeader.idEntity} = #{donneeFinanciereHeader.idEntity}
 							)
+						#{simpleVersionDroitDF.idVersionDroit} = #{simpleVersionDroitMax.idVersionDroit}
 					 ]]>
 				</search-literal>
 			</search-group>
-		</search-definition>		
+		</search-definition>
+		
+		
+		<search-definition name="versionDroit">
+			<search-group operator="AND">
+				<search-field name="forIdDroitIn" operation="IN" field-ref="simpleDroitMembreFamille.idDroit"/>
+				<search-field name="forIdsVersionDroit" operation="IN" field-ref="simpleVersionDroitMax.idVersionDroit"/>
+				<search-literal>
+					<declare-model name="versionDroit" model-ref="ch.globaz.pegasus.business.models.droit.SimpleVersionDroit"/>
+					<declare-model name="donneeFinanciereHeader" model-ref="ch.globaz.pegasus.business.models.droit.SimpleDonneeFinanciereHeader"/>
+					<![CDATA[ 
+					    #{simpleDonneeFinanciereHeader.isSupprime} = 2 AND
+						#{simpleDonneeFinanciereHeader.idVersionDroit} =
+							(
+								select MAX( #{versionDroit.idVersionDroit} ) from @{versionDroit} 
+									inner join  @{donneeFinanciereHeader} on ( #{versionDroit.idVersionDroit} = #{donneeFinanciereHeader.idVersionDroit} )
+									where #{simpleDonneeFinanciereHeader.idEntity} = #{donneeFinanciereHeader.idEntity} 
+									and #{simpleVersionDroitMax.idDroit}=#{versionDroit.idDroit}
+									and #{simpleVersionDroitMax.noVersion}>=#{versionDroit.noVersion}
+							)
+					 ]]>
+				</search-literal>
+			</search-group>
+		</search-definition>				
 		
 	</complexe-model>
 </model-mapping>

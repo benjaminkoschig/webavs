@@ -26,7 +26,19 @@ public class IjAi extends DonneeFinanciere implements Revenu {
 
     @Override
     public Montant computeRevenuAnnuel() {
-        return montant.multiply(nbJour).addAnnuelPeriodicity();
+        if (nbJour == 0) {
+            return montant.addJournalierPeriodicity();
+        } else {
+            return montant.multiply(nbJour).addAnnuelPeriodicity();
+        }
+    }
+
+    public Montant computeRevenuAnnuel(int nbDayInYear) {
+        if (nbJour == 0) {
+            return montant.addJournalierPeriodicity().multiply(nbDayInYear).addAnnuelPeriodicity();
+        } else {
+            return montant.multiply(nbJour).addAnnuelPeriodicity();
+        }
     }
 
     @Override

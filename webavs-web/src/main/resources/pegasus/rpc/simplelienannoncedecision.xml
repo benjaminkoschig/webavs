@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.pegasus.rpc.business.models.SimpleLienAnnonceDecision">
+		<description>Lien entre les annonces et les décisions</description>
+		<table name="PC_RPC_LIEN_AN_DE" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="false"/>
+		<fields>
+			<primary-key name="id" column="ID" comment="ID"/>
+			<field name="idAnnonce" column="ID_ANNONCE" type="NUMERIC" mandatory="true" comment="ID_ANNONCE"/>
+			<field name="idDecision" column="ID_DECISION" type="NUMERIC" mandatory="true" comment="ID_DECISION"/>	
+			<field name="idPlanCalcul" column="ID_PLAN_CAL" type="NUMERIC" mandatory="false" comment="ID_PLAN_CALCUL"/>
+			<field name="csRole" column="CS_ROLE" type="NUMERIC" mandatory="false" comment="CS_ROLE"/>	
+		</fields>
+		<search-definition>
+			<search-group operator="AND">	
+				<search-field name="forId" operation="EQUALS" field-ref="id"/>
+			</search-group>
+		</search-definition>
+	</simple-model>
+</model-mapping>

@@ -26,7 +26,7 @@ public class PersonneAVS extends Personne {
      */
     public NumeroSecuriteSociale getNss() {
         if (nss == null) {
-            throw new IllegalStateException("No social security number found for this person");
+            throw new IllegalStateException("No social security number found for this person :" + toString());
         }
         return nss;
     }
@@ -50,11 +50,12 @@ public class PersonneAVS extends Personne {
         stringBuilder.append("PersonneAVS(");
 
         stringBuilder.append("id:").append(getId()).append(", ");
-        stringBuilder.append("nss:").append(getNss()).append(", ");
+        stringBuilder.append("nss:").append(nss).append(", ");
         stringBuilder.append("last name:").append(getNom()).append(", ");
         stringBuilder.append("first name:").append(getPrenom());
 
         stringBuilder.append(")");
         return stringBuilder.toString();
     }
+
 }

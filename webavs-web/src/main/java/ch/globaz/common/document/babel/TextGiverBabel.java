@@ -6,9 +6,9 @@ import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
 import java.util.HashMap;
 import java.util.Map;
-import ch.globaz.common.business.exceptions.CommonTechnicalException;
 import ch.globaz.common.document.TextGiver;
 import ch.globaz.common.domaine.Checkers;
+import ch.globaz.common.exceptions.CommonTechnicalException;
 import ch.globaz.jade.business.models.Langues;
 
 public class TextGiverBabel implements TextGiver<BabelTextDefinition> {

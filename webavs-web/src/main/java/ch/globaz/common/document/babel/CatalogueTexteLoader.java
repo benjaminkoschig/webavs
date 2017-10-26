@@ -17,9 +17,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import ch.globaz.common.business.exceptions.CommonTechnicalException;
 import ch.globaz.common.business.models.CTDocumentImpl;
 import ch.globaz.common.domaine.Checkers;
+import ch.globaz.common.exceptions.CommonTechnicalException;
 import ch.globaz.jade.business.models.Langues;
 import ch.globaz.pegasus.business.exceptions.models.decision.BabelException;
 

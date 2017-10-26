@@ -25,8 +25,10 @@ import ch.globaz.pegasus.business.constantes.IPCValeursPlanCalcul;
 import ch.globaz.pegasus.business.exceptions.PegasusException;
 import ch.globaz.pegasus.business.exceptions.models.decision.DecisionException;
 import ch.globaz.pegasus.business.exceptions.models.decompte.DecompteException;
+import ch.globaz.pegasus.business.exceptions.models.droit.DroitException;
 import ch.globaz.pegasus.business.exceptions.models.pcaccordee.PCAccordeeException;
 import ch.globaz.pegasus.business.models.decision.DecisionApresCalcul;
+import ch.globaz.pegasus.business.models.decision.DecisionApresCalculSearch;
 import ch.globaz.pegasus.business.models.decision.SimpleDecisionHeader;
 import ch.globaz.pegasus.business.models.demande.SimpleDemande;
 import ch.globaz.pegasus.business.models.lot.SimpleOrdreVersement;
@@ -35,11 +37,13 @@ import ch.globaz.pegasus.business.models.pcaccordee.PCAccordee;
 import ch.globaz.pegasus.business.models.pcaccordee.PcaForDecompte;
 import ch.globaz.pegasus.business.models.pcaccordee.SimpleAllocationNoel;
 import ch.globaz.pegasus.business.models.pcaccordee.SimpleJoursAppoint;
+import ch.globaz.pegasus.business.services.PegasusServiceLocator;
 import ch.globaz.pegasus.business.vo.pcaccordee.PcaDecompte;
 import ch.globaz.pegasus.businessimpl.services.PegasusImplServiceLocator;
 import ch.globaz.pegasus.businessimpl.services.models.lot.ordreVersement.DataForGenerateOvs;
 import ch.globaz.pegasus.businessimpl.services.models.lot.ordreVersement.GenerateOrdversement;
 import ch.globaz.pegasus.businessimpl.services.pca.DecomptePca;
+import ch.globaz.pegasus.rpc.businessImpl.repositoriesjade.annonce.RetourAnnonceRepository;
 
 public class ValiderDecisionAcTreat {
 
@@ -189,6 +193,24 @@ public class ValiderDecisionAcTreat {
     private void changePrestationsReplaced() throws JadePersistenceException, JadeApplicationException {
         for (PcaForDecompte pca : data.getPcasReplaced()) {
             changePrestationReplaced(pca);
+        }
+    }
+
+    /**
+     * Mets à jour les retours de l'ancienne decision si modification droit est lié à des retours d'annonce
+     */
+    private void changeRetourAnnonce() throws DroitException, JadeApplicationServiceNotAvailableException,
+            JadePersistenceException, DecisionException {
+        if (data.getSimpleVersionDroitNew().getCsMotif() != null
+                && data.getSimpleVersionDroitNew().getMotif().isRetourRegistre()) {
+            DecisionApresCalculSearch search = new DecisionApresCalculSearch();
+            search.setForIdVersionDroit(data.getSimpleVersionDroitReplaced().getId());
+            PegasusServiceLocator.getDecisionApresCalculService().search(search);
+            if (search.getSize() > 0) {
+                DecisionApresCalcul decision = (DecisionApresCalcul) search.getSearchResults()[0];
+                new RetourAnnonceRepository().updateAnnonceByOldIdDecision(decision.getDecisionHeader().getId());
+            }
+
         }
     }
 
@@ -390,6 +412,8 @@ public class ValiderDecisionAcTreat {
         changeEtatVersionDroitNew();
 
         changeEtatAndDateDecision();
+
+        changeRetourAnnonce();
 
         return data;
     }

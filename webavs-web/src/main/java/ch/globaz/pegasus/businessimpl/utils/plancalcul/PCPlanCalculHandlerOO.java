@@ -11,11 +11,11 @@ import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAv
 import globaz.prestation.tools.PRStringUtils;
 import globaz.pyxis.db.tiers.TITiers;
 import java.util.ArrayList;
-import ch.globaz.common.business.exceptions.CommonTechnicalException;
 import ch.globaz.common.business.language.LanguageResolver;
 import ch.globaz.common.document.TextMerger;
 import ch.globaz.common.document.babel.BabelTextDefinition;
 import ch.globaz.common.document.babel.TextMergerBabelTopaz;
+import ch.globaz.common.exceptions.CommonTechnicalException;
 import ch.globaz.pegasus.business.constantes.IPCCatalogueTextes;
 import ch.globaz.pegasus.business.constantes.IPCDroits;
 import ch.globaz.pegasus.business.constantes.IPCValeursPlanCalcul;

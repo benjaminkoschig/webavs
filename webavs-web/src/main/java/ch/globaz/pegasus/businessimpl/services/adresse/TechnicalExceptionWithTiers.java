@@ -42,7 +42,8 @@ public class TechnicalExceptionWithTiers extends RuntimeException {
 
     private static String generateTiersMessage(PersonneEtendueComplexModel personne) {
         String msg = "Tiers: " + personne.getPersonneEtendue().getNumAvsActuel() + " "
-                + personne.getTiers().getDesignation1() + " " + personne.getTiers().getDesignation2();
+                + personne.getTiers().getDesignation1() + " " + personne.getTiers().getDesignation2()
+                + ", nationatlité: " + personne.getTiers().getIdPays();
         return msg;
     }
 

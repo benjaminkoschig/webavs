@@ -51,12 +51,15 @@ public class StrategieFinalTotal implements StrategieCalculFinalisation {
             // ************* Calcul du montant de la pc mensuelle
             // on divise l'excedent de dépenses par 12
             pcMensuel = (float) Math.ceil(somme / 12);
+            donnee.addEnfantTuple(new TupleDonneeRapport(IPCValeursPlanCalcul.CLE_TOTAL_CC_MENSUEL_CALCULE, pcMensuel));
             // récupération du montant minimale de la pc mensuelle
             float montantMinimale = Float.parseFloat(((ControlleurVariablesMetier) context
                     .get(Attribut.MONTANT_MINIMALE_PC)).getValeurCourante());
             // Si la pc mensuelle plus petite, on plafonne
             if ((pcMensuel > 0) && (pcMensuel < montantMinimale)) {
                 pcMensuel = montantMinimale;
+                donnee.addEnfantTuple(new TupleDonneeRapport(
+                        IPCValeursPlanCalcul.CLE_TOTAL_CC_MENSUEL_MINIMAL_APPLIQUE, 1));
             }
             // on ajoute la clé
             donnee.addEnfantTuple(new TupleDonneeRapport(IPCValeursPlanCalcul.CLE_TOTAL_CC_DEDUIT_MENSUEL, pcMensuel));

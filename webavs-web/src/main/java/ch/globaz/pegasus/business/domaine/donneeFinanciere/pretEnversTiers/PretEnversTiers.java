@@ -79,6 +79,21 @@ public class PretEnversTiers extends DonneeFinanciere implements Fortune, Fortun
     }
 
     @Override
+    public Montant computeRevenuAnnuel() {
+        return interet.annualise();
+    }
+
+    @Override
+    public Montant computeRevenuAnnuelBrut() {
+        return interet.annualise();
+    }
+
+    @Override
+    public Montant computeFortunePartPropriete() {
+        return montant.multiply(part);
+    }
+
+    @Override
     public String toString() {
         return "PretEnversTiers [montant=" + montant + ", interet=" + interet + ", part=" + part + ", proprieteType="
                 + proprieteType + ", sansInteret=" + sansInteret + ", parent=" + super.toString() + "]";
@@ -138,18 +153,4 @@ public class PretEnversTiers extends DonneeFinanciere implements Fortune, Fortun
         return true;
     }
 
-    @Override
-    public Montant computeRevenuAnnuel() {
-        return interet.annualise();
-    }
-
-    @Override
-    public Montant computeRevenuAnnuelBrut() {
-        return interet.annualise();
-    }
-
-    @Override
-    public Montant computeFortunePartPropriete() {
-        return montant.multiply(part);
-    }
 }

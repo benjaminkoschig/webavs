@@ -9,8 +9,9 @@ public class DonneeFinanciereHeader extends DonneeFinanciere {
         super(donneeFinanciere);
     }
 
-    public DonneeFinanciereHeader(RoleMembreFamille membreFamille, Date debut, Date fin, String id) {
-        super(membreFamille, debut, fin, id);
+    public DonneeFinanciereHeader(RoleMembreFamille membreFamille, Date debut, Date fin, String id,
+            String idDroitMembreFamille) {
+        super(membreFamille, debut, fin, id, idDroitMembreFamille);
     }
 
     @Override

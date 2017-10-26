@@ -31,6 +31,7 @@ import ch.globaz.hera.business.exceptions.models.MembreFamilleException;
 import ch.globaz.hera.business.services.HeraServiceLocator;
 import ch.globaz.hera.business.vo.famille.MembreFamilleVO;
 import ch.globaz.pegasus.business.constantes.Compteurs;
+import ch.globaz.pegasus.business.constantes.IPCDecision;
 import ch.globaz.pegasus.business.constantes.IPCDemandes;
 import ch.globaz.pegasus.business.constantes.IPCDroits;
 import ch.globaz.pegasus.business.exceptions.PegasusException;
@@ -432,7 +433,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
         DecisionSuppression decisionSuppression = new DecisionSuppression();
         decisionSuppression.getSimpleDecisionSuppression().setIdDecisionSuppression(droit.getId());
         decisionSuppression.getDecisionHeader().getSimpleDecisionHeader().setDateDecision(dateDecision);
-        decisionSuppression.getSimpleDecisionSuppression().setCsMotif(csMotif);
+        decisionSuppression.getSimpleDecisionSuppression().setCsMotif(IPCDecision.CS_MOTIF_SUPPR_DECES);
         decisionSuppression.getSimpleDecisionSuppression().setDateSuppression(dateSuppression);
         decisionSuppression.getDecisionHeader().getSimpleDecisionHeader().setPreparationPar(currentUserId);
         decisionSuppression.setVersionDroit(PegasusServiceLocator.getDroitService().readVersionDroit(

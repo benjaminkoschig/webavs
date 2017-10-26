@@ -41,7 +41,7 @@ public class BiensImmobiliersNonPrincipale extends
     }
 
     public Montant sumMontantValeurLocativePartPropriete(ProprieteType type) {
-        return getBiensImmobiliersByProprieteType(type).sum(new Each<BienImmobilierNonPrincipale>() {
+        return filtreByProprieteType(type).sum(new Each<BienImmobilierNonPrincipale>() {
             @Override
             public Montant getMontant(BienImmobilierNonPrincipale donnneeFianciere) {
                 return donnneeFianciere.computeValLocativePartPropriete();
@@ -59,7 +59,7 @@ public class BiensImmobiliersNonPrincipale extends
     }
 
     public Montant sumMontantValeurLocative(ProprieteType type) {
-        return getBiensImmobiliersByProprieteType(type).sum(new Each<BienImmobilierNonPrincipale>() {
+        return filtreByProprieteType(type).sum(new Each<BienImmobilierNonPrincipale>() {
             @Override
             public Montant getMontant(BienImmobilierNonPrincipale donnneeFianciere) {
                 return donnneeFianciere.getValeurLocative();

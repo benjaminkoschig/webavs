@@ -14,6 +14,7 @@ public class PlanDeCalculWitMembreFamille extends JadeComplexModel {
     private SimplePersonneDansPlanCalcul simplePersonneDansPlanCalcul = null;
     private SimplePlanDeCalcul simplePlanDeCalcul = null;
     private SimpleDonneesPersonnelles simpleDonneesPersonnelles = null;
+    private String idVersionDroit;
 
     public PlanDeCalculWitMembreFamille() {
         super();
@@ -25,6 +26,14 @@ public class PlanDeCalculWitMembreFamille extends JadeComplexModel {
 
     public DroitMembreFamille getDroitMembreFamille() {
         return droitMembreFamille;
+    }
+
+    public String getIdVersionDroit() {
+        return idVersionDroit;
+    }
+
+    public void setIdVersionDroit(String idVersionDroit) {
+        this.idVersionDroit = idVersionDroit;
     }
 
     @Override

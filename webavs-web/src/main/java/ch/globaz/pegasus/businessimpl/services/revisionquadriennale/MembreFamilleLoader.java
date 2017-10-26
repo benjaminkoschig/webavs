@@ -7,16 +7,24 @@ import globaz.jade.persistence.model.JadeAbstractSearchModel;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import ch.globaz.hera.domaine.relationconjoint.RelationsConjoints;
+import ch.globaz.hera.loader.RelationsConjointsLoader;
 import ch.globaz.jade.JadeBusinessServiceLocator;
-import ch.globaz.jade.business.models.Langues;
-import ch.globaz.jade.business.models.codesysteme.JadeCodeSysteme;
-import ch.globaz.jade.business.services.codesysteme.JadeCodeSystemeService;
+import ch.globaz.pegasus.business.domaine.membreFamille.DonneesPersonnelles;
 import ch.globaz.pegasus.business.domaine.membreFamille.MembreFamille;
 import ch.globaz.pegasus.business.domaine.membreFamille.MembresFamilles;
 import ch.globaz.pegasus.business.domaine.membreFamille.RoleMembreFamille;
+import ch.globaz.pegasus.business.domaine.membreFamille.StatusRefugieApatride;
+import ch.globaz.pegasus.business.exceptions.models.pcaccordee.PersonneDansPlanCalculException;
+import ch.globaz.pegasus.business.models.droit.SimpleDonneesPersonnelles;
 import ch.globaz.pegasus.business.models.pcaccordee.PlanDeCalculWitMembreFamille;
 import ch.globaz.pegasus.business.models.pcaccordee.PlanDeCalculWitMembreFamilleSearch;
 import ch.globaz.pegasus.business.services.PegasusServiceLocator;
@@ -24,38 +32,38 @@ import ch.globaz.pegasus.businessimpl.services.adresse.TechnicalExceptionWithTie
 import ch.globaz.pegasus.businessimpl.utils.PersistenceUtil;
 import ch.globaz.pegasus.businessimpl.utils.PersistenceUtil.SearchLotExecutor;
 import ch.globaz.pyxis.business.model.PersonneEtendueComplexModel;
-import ch.globaz.pyxis.business.model.TiersSimpleModel;
-import ch.globaz.pyxis.domaine.NumeroSecuriteSociale;
-import ch.globaz.pyxis.domaine.Pays;
+import ch.globaz.pyxis.converter.PersonneAvsConverter;
+import ch.globaz.pyxis.domaine.PaysList;
 import ch.globaz.pyxis.domaine.PersonneAVS;
-import ch.globaz.pyxis.domaine.Sexe;
 
 public class MembreFamilleLoader {
 
-    private final Map<String, Pays> pays;
-    private final JadeCodeSystemeService codeSystemeService;
+    private static final Logger LOG = LoggerFactory.getLogger(MembreFamilleLoader.class);
 
-    public MembreFamilleLoader(Map<String, Pays> pays) {
-        this.pays = pays;
+    private final PersonneAvsConverter personneConverter;
+
+    public MembreFamilleLoader(PaysList paysList) {
         try {
-            codeSystemeService = JadeBusinessServiceLocator.getCodeSystemeService();
+            personneConverter = new PersonneAvsConverter(paysList, JadeBusinessServiceLocator.getCodeSystemeService());
         } catch (JadeApplicationServiceNotAvailableException e) {
             throw new RuntimeException(e);
         }
     }
 
     public MembreFamilleLoader() {
-        pays = new HashMap<String, Pays>();
         try {
-            codeSystemeService = JadeBusinessServiceLocator.getCodeSystemeService();
+            personneConverter = new PersonneAvsConverter(new PaysList(),
+                    JadeBusinessServiceLocator.getCodeSystemeService());
         } catch (JadeApplicationServiceNotAvailableException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public Map<String, MembresFamilles> loadMembreFamilleComprisDansLeCalculAndGroupByIdDroit(List<String> idPca) {
+    public Map<String, MembresFamilles> loadMembreFamilleComprisDansLeCalculAndGroupByIdDroit(Collection<String> idPca) {
+        List<PlanDeCalculWitMembreFamille> list = PersistenceUtil.typeSearch(search(idPca, null),
+                PlanDeCalculWitMembreFamille.class);
         Map<String, MembresFamilles> map = new HashMap<String, MembresFamilles>();
-        List<PlanDeCalculWitMembreFamille> list = loadMembreFamilleComprisDansLeCalcul(idPca, null);
+
         for (PlanDeCalculWitMembreFamille planDeCalculWitMembreFamille : list) {
             String idDroit = planDeCalculWitMembreFamille.getDroitMembreFamille().getSimpleDroitMembreFamille()
                     .getIdDroit();
@@ -67,10 +75,59 @@ public class MembreFamilleLoader {
                 map.get(idDroit).add(convert(planDeCalculWitMembreFamille));
             } catch (Exception e) {
                 throw new TechnicalExceptionWithTiers(
-                        "Impossible de convertir le memrbe de famille idDroitMembreFamille:"
+                        "Impossible de convertir le memerbe de famille idDroitMembreFamille:"
                                 + planDeCalculWitMembreFamille.getDroitMembreFamille().getId(),
                         planDeCalculWitMembreFamille.getDroitMembreFamille().getMembreFamille().getPersonneEtendue(), e);
             }
+        }
+        return map;
+    }
+
+    public Map<String, Map<String, MembresFamilles>> loadMembreFamilleComprisDansLeCalculAndGroupByIdVersionDroit(
+            Map<String, Set<String>> mapIdPcaIdVersion, Map<String, String> mapIdPcaIdPcaOriginale) {
+        List<PlanDeCalculWitMembreFamille> list = PersistenceUtil.typeSearch(search(mapIdPcaIdVersion.keySet(), null),
+                PlanDeCalculWitMembreFamille.class);
+        Map<String, Map<String, MembresFamilles>> map = new HashMap<String, Map<String, MembresFamilles>>();
+        Set<String> idTiers = new HashSet<String>();
+
+        for (PlanDeCalculWitMembreFamille planDeCalculWitMembreFamille : list) {
+            if (!planDeCalculWitMembreFamille.getDroitMembreFamille().getMembreFamille().getPersonneEtendue()
+                    .getTiers().getIdTiers().trim().isEmpty()) {
+                idTiers.add(planDeCalculWitMembreFamille.getDroitMembreFamille().getMembreFamille()
+                        .getPersonneEtendue().getTiers().getIdTiers());
+            }
+        }
+
+        RelationsConjoints relationsConjoints = RelationsConjointsLoader.build().load(idTiers).toListMetiers();
+        LOG.info("Nb relation conjoint loaded: {}", relationsConjoints.size());
+        personneConverter.setRelationsConjoints(relationsConjoints);
+
+        // personneConverter.setTitre()
+        for (PlanDeCalculWitMembreFamille planDeCalculWitMembreFamille : list) {
+            String idPca = planDeCalculWitMembreFamille.getSimplePlanDeCalcul().getIdPCAccordee();
+            Set<String> idsVersionDroit = mapIdPcaIdVersion.get(idPca);
+            for (String idVersionDroit : idsVersionDroit) {
+                // on fait cela car si un calcul est une copie on à pas la bonne version de droit
+                if (!map.containsKey(idVersionDroit)) {
+                    map.put(idVersionDroit, new HashMap<String, MembresFamilles>());
+                }
+                try {
+                    Map<String, MembresFamilles> mapMembreFam = map.get(idVersionDroit);
+                    String idPcaOrigin = mapIdPcaIdPcaOriginale.get(idPca + "_" + idVersionDroit);
+                    if (!mapMembreFam.containsKey(idPcaOrigin)) {
+                        mapMembreFam.put(idPcaOrigin, new MembresFamilles());
+                    }
+                    mapMembreFam.get(idPcaOrigin).add(convert(planDeCalculWitMembreFamille));
+
+                } catch (Exception e) {
+                    throw new TechnicalExceptionWithTiers(
+                            "Impossible de convertir le membre de famille idDroitMembreFamille:"
+                                    + planDeCalculWitMembreFamille.getDroitMembreFamille().getId(),
+                            planDeCalculWitMembreFamille.getDroitMembreFamille().getMembreFamille()
+                                    .getPersonneEtendue(), e);
+                }
+            }
+
         }
         return map;
     }
@@ -97,7 +154,31 @@ public class MembreFamilleLoader {
         return map;
     }
 
-    List<PlanDeCalculWitMembreFamille> loadMembreFamilleComprisDansLeCalcul(List<String> idPca,
+    private JadeAbstractSearchModel search(Collection<String> idsPca, List<RoleMembreFamille> rolesMembreFamile) {
+        PlanDeCalculWitMembreFamilleSearch search = new PlanDeCalculWitMembreFamilleSearch();
+        search.setInIdPCAccordee(idsPca);
+        search.setForIsPlanRetenu(true);
+        search.setForComprisPcal(true);
+        if (rolesMembreFamile != null) {
+            List<String> csRoleFamille = new ArrayList<String>();
+            for (RoleMembreFamille role : rolesMembreFamile) {
+                csRoleFamille.add(role.getValue());
+            }
+            search.setInCsRoleFamille(csRoleFamille);
+        }
+        search.setDefinedSearchSize(JadeAbstractSearchModel.SIZE_NOLIMIT);
+        try {
+            return PegasusServiceLocator.getPCAccordeeService().search(search);
+        } catch (PersonneDansPlanCalculException e) {
+            throw new RuntimeException(e);
+        } catch (JadeApplicationServiceNotAvailableException e) {
+            throw new RuntimeException(e);
+        } catch (JadePersistenceException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    List<PlanDeCalculWitMembreFamille> loadMembreFamilleComprisDansLeCalcul(Collection<String> idPca,
             final List<RoleMembreFamille> rolesMembreFamile) {
         List<PlanDeCalculWitMembreFamille> list = new ArrayList<PlanDeCalculWitMembreFamille>();
         if (!idPca.isEmpty()) {
@@ -106,19 +187,7 @@ public class MembreFamilleLoader {
                     @Override
                     public JadeAbstractSearchModel execute(List<String> ids) throws JadeApplicationException,
                             JadePersistenceException {
-                        PlanDeCalculWitMembreFamilleSearch search = new PlanDeCalculWitMembreFamilleSearch();
-                        search.setInIdPCAccordee(ids);
-                        search.setForIsPlanRetenu(true);
-                        search.setForComprisPcal(true);
-                        if (rolesMembreFamile != null) {
-                            List<String> csRoleFamille = new ArrayList<String>();
-                            for (RoleMembreFamille role : rolesMembreFamile) {
-                                csRoleFamille.add(role.getValue());
-                            }
-                            search.setInCsRoleFamille(csRoleFamille);
-                        }
-                        search.setDefinedSearchSize(JadeAbstractSearchModel.SIZE_NOLIMIT);
-                        return PegasusServiceLocator.getPCAccordeeService().search(search);
+                        return search(ids, rolesMembreFamile);
                     }
                 }, 2000);
             } catch (JadePersistenceException e) {
@@ -134,51 +203,34 @@ public class MembreFamilleLoader {
         MembreFamille membreFamille = new MembreFamille();
         membreFamille.setRoleMembreFamille(RoleMembreFamille.fromValue(planDeCalculWitMembreFamille
                 .getDroitMembreFamille().getSimpleDroitMembreFamille().getCsRoleFamillePC()));
+        membreFamille.setId(planDeCalculWitMembreFamille.getDroitMembreFamille().getSimpleDroitMembreFamille()
+                .getIdDroitMembreFamille());
         PersonneAVS personne = new PersonneAVS();
         PersonneEtendueComplexModel personneEtendue = planDeCalculWitMembreFamille.getDroitMembreFamille()
                 .getMembreFamille().getPersonneEtendue();
+
+        // FIXME: work around beacause personne.setDateDeces !!!!!
+        // src\main\java\ch\globaz\pyxis\domaine\Personne.java
+        if (personneEtendue.getPersonne().getDateDeces().startsWith("00.00.")) {
+            personneEtendue.getPersonne().setDateDeces(
+                    personneEtendue.getPersonne().getDateDeces().replace("00.00.", "01.01."));
+        }
+
         if (!JadeStringUtil.isBlank(personneEtendue.getPersonne().getIdTiers())) {
-
-            personne.setId(Long.valueOf(personneEtendue.getPersonne().getIdTiers()));
-
-            personne.setDateDeces(personneEtendue.getPersonne().getDateDeces());
-            personne.setDateNaissance(personneEtendue.getPersonne().getDateNaissance());
-            personne.setNom(personneEtendue.getTiers().getDesignation1());
-            personne.setPrenom(personneEtendue.getTiers().getDesignation2());
-            try {
-                personne.setNss(new NumeroSecuriteSociale(personneEtendue.getPersonneEtendue().getNumAvsActuel()));
-            } catch (IllegalArgumentException e) {
-
-            }
-            personne.setSexe(Sexe.parseAllowEmpyOrZeroValue(personneEtendue.getPersonne().getSexe()));
-            if (pays != null && !pays.isEmpty()) {
-                personne.setPays(pays.get(personneEtendue.getTiers().getIdPays()));
-            }
-            personne.setTitreParLangue(convertTitre(personneEtendue.getTiers()));
+            personne = personneConverter.convertToDomain(personneEtendue);
         }
         membreFamille.setPersonne(personne);
+        SimpleDonneesPersonnelles simpleDonneesPersonnelles = planDeCalculWitMembreFamille
+                .getSimpleDonneesPersonnelles();
+        DonneesPersonnelles donneesPersonnelles = new DonneesPersonnelles();
+        donneesPersonnelles.setStatusRefugieApatride(StatusRefugieApatride.fromValue(simpleDonneesPersonnelles
+                .getCsStatusRefugieApatride()));
+        donneesPersonnelles.setIsRepresentantLegal(simpleDonneesPersonnelles.getIsRepresentantLegal());
+        donneesPersonnelles.setNoCaisseAvs(simpleDonneesPersonnelles.getNoCaisseAvs());
+        donneesPersonnelles.setIdDernierDomicileLegale(simpleDonneesPersonnelles.getIdDernierDomicileLegale());
+        membreFamille.setDonneesPersonnelles(donneesPersonnelles);
 
         return membreFamille;
     }
 
-    private Map<Langues, String> convertTitre(TiersSimpleModel tiers) {
-        JadeCodeSysteme csTitreTiers;
-        try {
-            Map<Langues, String> titreTiers = new HashMap<Langues, String>();
-            csTitreTiers = codeSystemeService.getCodeSysteme(tiers.getTitreTiers());
-            if (csTitreTiers != null) {
-                for (Langues uneLangue : Langues.values()) {
-                    if (csTitreTiers.getTraduction(uneLangue) != null) {
-                        titreTiers.put(uneLangue, csTitreTiers.getTraduction(uneLangue));
-                    }
-                }
-            }
-            return titreTiers;
-        } catch (JadePersistenceException e) {
-            throw new RuntimeException("Impossible de convertir le titre(" + tiers.getTitreTiers()
-                    + ") pour la personne suivante-> " + tiers.getDesignation1() + " " + tiers.getDesignation2()
-                    + " idTiers: " + tiers.getId(), e);
-        }
-
-    }
 }

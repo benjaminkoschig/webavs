@@ -20,6 +20,7 @@
 			<search-group operator="AND">
 				<search-field name="forIdPca" field-ref="simpleValidationDecision.idPCAccordee" operation="EQUALS" />
 				<search-field name="forCsTypePreparation" field-ref="simpleDecisionApresCalcul.csTypePreparation" operation="EQUALS" />
+				<search-field name="forIdDecision" field-ref="simpleDecisionApresCalcul.idDecisionHeader" operation="EQUALS" />
 			</search-group>
 		</search-definition>
 	</complexe-model>

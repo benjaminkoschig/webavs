@@ -1,6 +1,7 @@
 package ch.globaz.pegasus.business.models.pcaccordee;
 
 import globaz.jade.persistence.model.JadeSearchComplexModel;
+import java.util.Collection;
 import java.util.List;
 
 public class PlanDeCalculWitMembreFamilleSearch extends JadeSearchComplexModel {
@@ -14,7 +15,7 @@ public class PlanDeCalculWitMembreFamilleSearch extends JadeSearchComplexModel {
     private String forIdPCAccordee = null;
     private String forIdPcal = null;
     private Boolean forIsPlanRetenu = null;
-    private List<String> inIdPCAccordee = null;
+    private Collection<String> inIdPCAccordee = null;
     private List<String> inCsRoleFamille = null;
 
     public Boolean getForComprisPcal() {
@@ -62,11 +63,11 @@ public class PlanDeCalculWitMembreFamilleSearch extends JadeSearchComplexModel {
         this.forIsPlanRetenu = forIsPlanRetenu;
     }
 
-    public List<String> getInIdPCAccordee() {
+    public Collection<String> getInIdPCAccordee() {
         return inIdPCAccordee;
     }
 
-    public void setInIdPCAccordee(List<String> inIdPCAccordee) {
+    public void setInIdPCAccordee(Collection<String> inIdPCAccordee) {
         this.inIdPCAccordee = inIdPCAccordee;
     }
 

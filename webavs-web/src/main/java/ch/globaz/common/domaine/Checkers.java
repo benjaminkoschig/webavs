@@ -71,7 +71,8 @@ public class Checkers {
                     throw new IllegalArgumentException("[" + nomParametre + "] is invaldid");
                 }
             } else {
-                throw new IllegalArgumentException("[" + nomParametre + "] must be a full date (DD.MM.YYYY)");
+                throw new IllegalArgumentException("[" + nomParametre + "] must be a full date (DD.MM.YYYY) "
+                        + fullDate);
             }
         }
     }

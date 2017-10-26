@@ -10,6 +10,7 @@ import globaz.globall.db.BSession;
 import globaz.globall.db.BSpy;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Matchers;
 import org.mockito.Mockito;
@@ -17,6 +18,7 @@ import org.mockito.Spy;
 import ch.admin.zas.rc.RRMeldung9Type;
 import ch.globaz.common.exceptions.ValidationException;
 
+@Ignore("take too long due to marshalling process")
 public class REAnnonces9eXmlServiceTest {
 
     private String ageDebutInvalidite = "";

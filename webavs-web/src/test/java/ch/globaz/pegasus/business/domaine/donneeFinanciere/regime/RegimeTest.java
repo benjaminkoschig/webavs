@@ -11,7 +11,7 @@ import ch.globaz.pegasus.business.domaine.donneeFinanciere.DonneeFinanciereType;
 import ch.globaz.pegasus.business.domaine.membreFamille.RoleMembreFamille;
 
 public class RegimeTest {
-    DonneeFinanciere df = new DonneeFinanciereHeader(RoleMembreFamille.REQUERANT, new Date(), new Date(), "1");
+    DonneeFinanciere df = new DonneeFinanciereHeader(RoleMembreFamille.REQUERANT, new Date(), new Date(), "1", "2");
     Regime regime = new Regime(new Montant(150), IRFCodeTypesDeSoins.SOUS_TYPE_2_1_REGIME_ALIMENTAIRE, df);
 
     @Test

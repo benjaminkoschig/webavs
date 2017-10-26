@@ -41,7 +41,7 @@ public class BiensImmobiliersNonHabitable extends
     }
 
     public Montant sumMontantRendementPartPropriete(ProprieteType type) {
-        return getBiensImmobiliersByProprieteType(type).sum(new Each<BienImmobilierNonHabitable>() {
+        return filtreByProprieteType(type).sum(new Each<BienImmobilierNonHabitable>() {
             @Override
             public Montant getMontant(BienImmobilierNonHabitable donnneeFianciere) {
                 return donnneeFianciere.computeRendementPartPropriete();

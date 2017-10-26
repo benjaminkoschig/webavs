@@ -8,6 +8,7 @@ public class SimpleDossierSearch extends JadeSearchSimpleModel {
      */
     private static final long serialVersionUID = 1L;
     private String forIdDemandePrestation = null;
+    private String forIdDossier = null;
 
     /**
      * @return the forIdDemandePrestation
@@ -22,6 +23,14 @@ public class SimpleDossierSearch extends JadeSearchSimpleModel {
      */
     public void setForIdDemandePrestation(String forIdDemandePrestation) {
         this.forIdDemandePrestation = forIdDemandePrestation;
+    }
+
+    public String getForIdDossier() {
+        return forIdDossier;
+    }
+
+    public void setForIdDossier(String forIdDossier) {
+        this.forIdDossier = forIdDossier;
     }
 
     /*

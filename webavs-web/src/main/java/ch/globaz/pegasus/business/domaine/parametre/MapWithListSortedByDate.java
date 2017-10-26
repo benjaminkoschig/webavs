@@ -2,6 +2,7 @@ package ch.globaz.pegasus.business.domaine.parametre;
 
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -29,6 +30,10 @@ public abstract class MapWithListSortedByDate<E, T extends Parametre<E>, L exten
         return parametre;
     }
 
+    public boolean isEmpty() {
+        return this.map.isEmpty();
+    }
+
     @SuppressWarnings("unchecked")
     public L addAll(Collection<T> map) {
         for (T parametre : map) {
@@ -42,31 +47,42 @@ public abstract class MapWithListSortedByDate<E, T extends Parametre<E>, L exten
         return map.get(map.firstKey()).first();
     }
 
-    private void checkIfExisteInMap(E parametreType) {
-        if (!map.containsKey(parametreType)) {
-            throw new RuntimeException("Aucun valeur existe dans la map, pour la class suivante: "
-                    + this.clazz.getSimpleName());
-        }
-    }
-
     public Set<T> getValues() {
-        Set<T> map = newTreeSet();
+        Set<T> newMap = newTreeSet();
         for (Set<T> vms : this.map.values()) {
-            map.addAll(vms);
+            newMap.addAll(vms);
         }
-        return map;
+        return newMap;
     }
 
     public Set<T> getValues(E parametreType) {
         return map.get(parametreType);
     }
 
+    public int size() {
+        int nb = 0;
+        for (Set<T> vms : this.map.values()) {
+            nb = nb + vms.size();
+        }
+        return nb;
+    }
+
+    public boolean hasParameter(E parametreType) {
+        return map.containsKey(parametreType);
+    }
+
     public L getParameters(E parametreType) {
         checkIfExisteInMap(parametreType);
+        L l = newInstance();
+
+        l.addAll(this.map.get(parametreType));
+        return l;
+    }
+
+    private L newInstance() {
         L l = null;
         try {
             l = clazz.newInstance();
-            l.addAll(this.map.get(parametreType));
         } catch (InstantiationException e) {
             throw new RuntimeException(e);
         } catch (IllegalAccessException e) {
@@ -79,6 +95,23 @@ public abstract class MapWithListSortedByDate<E, T extends Parametre<E>, L exten
         return l;
     }
 
+    public L filtreByPeriode(Date dateDebut) {
+        L l = newInstance();
+        for (Entry<E, TreeSet<T>> entry : this.map.entrySet()) {
+            long debut = dateDebut.getTime();
+            TreeSet<T> params = entry.getValue();
+            for (T parametre : params) {
+                // Si la date de la periode est plus grande ou egale a la varaiable metier
+                if (debut >= parametre.getDateDebut().getTime()
+                        && (parametre.getDateFin() == null || parametre.getDateFin().getTime() >= dateDebut.getTime())
+                        && !l.map.containsKey(parametre.getType())) {
+                    l.add(parametre);
+                }
+            }
+        }
+        return l;
+    }
+
     public T resolveCourant(Date dateValidite) {
         if (this.map.size() > 1) {
             throw new RuntimeException(
@@ -86,16 +119,24 @@ public abstract class MapWithListSortedByDate<E, T extends Parametre<E>, L exten
         }
         long debut = dateValidite.getTime();
         TreeSet<T> params = map.firstEntry().getValue();
-        T param = null;
+        T param;
         for (T parametre : params) {
             // Si la date de la periode est plus grande ou egale a la varaiable metier
             param = parametre;
-            if (debut >= parametre.getDateDebut().getTime()) {
+            if (debut >= parametre.getDateDebut().getTime()
+                    && (parametre.getDateFin() == null || parametre.getDateFin().getTime() >= debut)) {
                 return param;
             }
         }
         throw new RuntimeException("Aucune paramétre n'est valable pour la date donnée en paramétre: " + dateValidite
                 + ", pour la class suivante : " + this.clazz.getSimpleName());
+    }
+
+    private void checkIfExisteInMap(E parametreType) {
+        if (!map.containsKey(parametreType)) {
+            throw new RuntimeException("Aucune valeur (" + parametreType + ") existe dans la map (size:"
+                    + this.map.size() + "), pour la class suivante: " + this.clazz.getSimpleName());
+        }
     }
 
     private TreeSet<T> newTreeSet() {

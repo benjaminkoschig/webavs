@@ -70,7 +70,7 @@
 
 
 <SCRIPT language="JavaScript">
-	bFind = <%=!JadeStringUtil.isBlankOrZero(idDossier)||!JadeStringUtil.isBlankOrZero(idDemande)||!JadeStringUtil.isBlankOrZero(idDroit)%>;
+	bFind = <%=!JadeStringUtil.isBlankOrZero(idDossier)||!JadeStringUtil.isBlankOrZero(idDemande)||!JadeStringUtil.isBlankOrZero(idDroit)||!JadeStringUtil.isBlankOrZero(idVersionDroit)%>;
 	usrAction = "<%=IPCActions.ACTION_PCACCORDEE%>.lister";
 	
 	function clearFields () {
@@ -105,15 +105,22 @@
 			});
 		<%}%>
 		
-		//id dossier
-		<%if (JadeStringUtil.isEmpty(idDossier)) {%>
-		$('#tdLblDossier,#tdInputDossier').hide();
+		//id demande vide
+		<%if (JadeStringUtil.isEmpty(idDemande)) {%>
+			$('#tdLblDemande,#tdInputDemande').hide();
 		<%}else{%>
-			$('[for=forIdDossier]').wrap('<a id="toDossierLink" href="" />');
-			$('#toDossierLink').click(function () {
-				window.location.href='pegasus?userAction=pegasus.dossier.dossier.chercher&idDossier=<%=idDossier%>';
+			$('[for=forIdDemande]').wrap('<a id="toDemandeLink" href="" />');
+			$('#toDemandeLink').click(function () {
+				window.location.href='pegasus?userAction=pegasus.demande.demande.chercher&idDemandePc=<%=idDemande%>';
 			});
 		<%}%>
+		
+<%-- 		//id idVersionDroit 
+		<%if (!JadeStringUtil.isEmpty(idVersionDroit)) {%>
+			//$('#toDroitLink').click(function () {
+				window.location.href='pegasus?userAction=pegasus.dossier.dossier.chercher&idVersionDroit=<%=idVersionDroit%>';
+			//});
+		<%}%> --%>
 		//lien prep dac
 		<%if(!JadeStringUtil.isEmpty(idDroit)&&(!JadeStringUtil.isEmpty(noVersion))&&(!JadeStringUtil.isEmpty(isReadyForDac))) {
 		%>$('#linkToPrepDac').attr('href','pegasus?userAction=pegasus.decision.prepDecisionApresCalcul.afficher&idDroit=<%=idDroit%>&csTypeDecisionPrep=64042003&noVersion=<%=noVersion%>&idVersionDroit=<%=idVersionDroit%>');
@@ -204,7 +211,11 @@
 				key="JSP_PC_PCACCORDEE_R_NO_VERSIONDROIT" /></LABEL>&nbsp;</TD>
 			<TD><INPUT type="text" name="pcAccordeesSearch.forNoVersion"
 				id="forNoVersion" value="<%=noVersion%>" class="disabled" readonly
-				tabindex="-1"></TD>
+				tabindex="-1">
+				<INPUT type="text" name="pcAccordeesSearch.forIdVersionDroit"
+				id="forIdVersionDroit" value="<%=idVersionDroit%>" class="disabled" readonly
+				tabindex="-1">
+			</TD>
 
 		</TR>
 		<TR>
@@ -216,8 +227,10 @@
 			<TD><INPUT type="checkbox" id="forCacherHistorique"
 				name="pcAccordeesSearch.forCacherHistorique" checked="checked" /> <input
 				type="hidden" name="whereKey" value="<%=whereKey%>" /> <input
-				type="hidden" name="idDemande" value="<%=idDemande%>" /> <input
-				type="hidden" name="idDossier" value="<%=idDossier%>" /></TD>
+				type="hidden" name="idDemande" value="<%=idDemande%>" /> 
+				<inpu type="hidden" name="idDossier" value="<%=idDossier%>" />
+				<inpu type="hidden" name="idVersionDroit" value="<%=idVersionDroit%>" />
+				</TD>
 		</TR>
 		<TR>
 			<TD colspan="6">&nbsp;</TD>

@@ -85,6 +85,7 @@
 				<search-field name="forNoVersion" operation="EQUALS" field-ref="simpleVersionDroit.noVersion"/>
 				<search-field name="forDateNaissance" operation="EQUALS" field-ref="personneEtendue.personne.dateNaissance"/>		
 				<search-field name="forIsSupprime" operation="EQUALS" field-ref="simplePCAccordee.isSupprime" value="2"/>
+				<search-field name="forIdVersionDroit" operation="EQUALS" field-ref="simpleVersionDroit.idVersionDroit"/>
 			</search-group>
 		</search-definition>
 		
@@ -98,7 +99,8 @@
 				<search-field name="forIdDemande" operation="EQUALS" field-ref="simpleDemande.idDemande"/> 
 				<search-field name="forIdDossier" operation="EQUALS" field-ref="simpleDossier.idDossier"/> 
 				<search-field name="forNoVersion" operation="EQUALS" field-ref="simpleVersionDroit.noVersion"/>
-				<search-field name="forIdDroit" operation="EQUALS" field-ref="simpleDroit.idDroit"/>		
+				<search-field name="forIdDroit" operation="EQUALS" field-ref="simpleDroit.idDroit"/>
+				<search-field name="forIdVersionDroit" operation="EQUALS" field-ref="simpleVersionDroit.idVersionDroit"/>		
 				<search-field name="forIdDemande" operation="EQUALS" field-ref="simpleDemande.idDemande"/> 
 				<search-field name="forDateNaissance" operation="EQUALS" field-ref="personneEtendue.personne.dateNaissance"/>		
 				<search-literal>

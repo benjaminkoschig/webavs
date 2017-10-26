@@ -77,4 +77,20 @@ public class TypeDecisionTest {
     public void testIsRefusSansCalculFalse() throws Exception {
         assertThat(TypeDecision.SUPPRESSION_SANS_CALCUL.isRefusSansCalcul()).isFalse();
     }
+
+    @Test
+    public void testIsRefusOrSuppression() throws Exception {
+        assertThat(TypeDecision.OCTROI_APRES_CALCUL.isRefus()).isFalse();
+        assertThat(TypeDecision.PARTIEL_APRES_CALCUL.isRefus()).isFalse();
+        assertThat(TypeDecision.ADAPTATION_APRES_CALCUL.isRefus()).isFalse();
+        assertThat(TypeDecision.REFUS_APRES_CALCUL.isRefus()).isTrue();
+        assertThat(TypeDecision.REFUS_SANS_CALCUL.isRefus()).isTrue();
+        assertThat(TypeDecision.SUPPRESSION_SANS_CALCUL.isRefus()).isFalse();
+    }
+
+    @Test
+    public void testIsOctroiOrPartiel() throws Exception {
+        assertThat(TypeDecision.OCTROI_APRES_CALCUL.isOctroiOrPartiel()).isTrue();
+        assertThat(TypeDecision.PARTIEL_APRES_CALCUL.isOctroiOrPartiel()).isTrue();
+    }
 }

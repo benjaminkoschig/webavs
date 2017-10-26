@@ -16,9 +16,8 @@ class DonneeFinanciereConverter implements DomaineConverterComplexJade<DonneeFin
         Date debut;
         debut = toDate(model.getDateDebutDonneeFinanciere());
         Date fin = toDate(model.getDateFinDonneeFinanciere());
-        DonneeFinanciere donneeFinanciere = new DonneeFinanciereHeader(role, debut, fin,
-                model.getIdDonneeFinanciereHeader());
-        return donneeFinanciere;
+        return new DonneeFinanciereHeader(role, debut, fin, model.getIdDonneeFinanciereHeader(),
+                model.getIdDroitMembreFamille());
     }
 
     static Date toDate(String date) {

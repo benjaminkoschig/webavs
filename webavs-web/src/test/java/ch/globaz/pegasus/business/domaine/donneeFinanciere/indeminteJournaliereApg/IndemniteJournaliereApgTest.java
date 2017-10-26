@@ -35,7 +35,7 @@ public class IndemniteJournaliereApgTest {
         IndemniteJournaliereApg dfAc2 = new IndemniteJournaliereApg(new Montant(0), new Montant(40), new Montant(5),
                 new Montant(8), IndemniteJournaliereApgGenre.IJ_CHOMAGE, 5, new Taux(1.1), new Taux(5.5), "libelle",
                 BuilderDf.createDF());
-        assertEquals(Montant.newAnnuel(9708.544), dfAc2.computeRevenuAnnuel());
+        assertEquals(Montant.newAnnuel(9460.144), dfAc2.computeRevenuAnnuel());
 
     }
 

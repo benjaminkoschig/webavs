@@ -25,42 +25,42 @@ public class LoyerTest {
 
     @Test
     public void testComputeCharge() throws Exception {
-        assertEquals(Montant.newAnnuel(600), df.computeCharge());
+        assertEquals(Montant.newAnnuel(600), df.computeCharge(Montant.ZERO));
     }
 
     @Test
     public void testComputeChargeBrut() throws Exception {
         Loyer df1 = new Loyer(new Montant(1000), new Montant(50), new Montant(30), new Montant(5),
                 LoyerType.BRUT_CHARGES_COMPRISES, 1, false, false, BuilderDf.createDF());
-        assertEquals(Montant.ZERO_ANNUEL, df1.computeCharge());
+        assertEquals(Montant.ZERO_ANNUEL, df1.computeCharge(Montant.ZERO));
     }
 
     @Test
     public void testComputeChargeForfaitaire() throws Exception {
         Loyer df1 = new Loyer(new Montant(1000), new Montant(50), new Montant(30), new Montant(5),
                 LoyerType.NET_AVEC_CHARGE_FORFAITAIRES, 1, false, false, BuilderDf.createDF());
-        assertEquals(Montant.ZERO_ANNUEL, df1.computeCharge());
+        assertEquals(Montant.ZERO_ANNUEL, df1.computeCharge(Montant.ZERO_ANNUEL));
     }
 
     @Test
     public void testComputeChargeSansCharge() throws Exception {
         Loyer df1 = new Loyer(new Montant(1000), new Montant(50), new Montant(30), new Montant(5),
                 LoyerType.NET_SANS_CHARGE, 1, false, false, BuilderDf.createDF());
-        assertEquals(Montant.ZERO_ANNUEL, df1.computeCharge());
+        assertEquals(Montant.ZERO_ANNUEL, df1.computeCharge(Montant.ZERO));
     }
 
     @Test
     public void testComputeChargePensionNonRecounue() throws Exception {
         Loyer df1 = new Loyer(new Montant(1000), new Montant(50), new Montant(30), new Montant(5),
                 LoyerType.PENSION_NON_RECONNUE, 1, false, false, BuilderDf.createDF());
-        assertEquals(Montant.ZERO_ANNUEL, df1.computeCharge());
+        assertEquals(Montant.ZERO_ANNUEL, df1.computeCharge(Montant.ZERO));
     }
 
     @Test
     public void testComputeChargeValeurLocativeChezProprietaire() throws Exception {
         Loyer df1 = new Loyer(new Montant(1000), new Montant(50), new Montant(30), new Montant(5),
                 LoyerType.VALEUR_LOCATIVE_CHEZ_PROPRIETAIRE, 1, false, false, BuilderDf.createDF());
-        assertEquals(Montant.ZERO_ANNUEL, df1.computeCharge());
+        assertEquals(Montant.ZERO_ANNUEL, df1.computeCharge(Montant.ZERO));
     }
 
 }

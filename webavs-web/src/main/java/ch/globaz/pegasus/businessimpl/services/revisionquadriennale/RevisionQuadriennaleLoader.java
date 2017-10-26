@@ -22,7 +22,7 @@ import ch.globaz.pegasus.business.domaine.donneeFinanciere.DonneesFinancieresCon
 import ch.globaz.pegasus.business.domaine.membreFamille.MembresFamilles;
 import ch.globaz.pegasus.business.domaine.parametre.Parameters;
 import ch.globaz.pegasus.business.domaine.pca.PcaRequerantConjoint;
-import ch.globaz.pegasus.business.domaine.pca.PcaSitutation;
+import ch.globaz.pegasus.business.domaine.pca.PcaSituation;
 import ch.globaz.pegasus.business.domaine.revisionquadriennale.DemandeAReviser;
 import ch.globaz.pegasus.business.domaine.revisionquadriennale.RevisionQuadriennale;
 import ch.globaz.pegasus.business.exceptions.models.demande.DemandeException;
@@ -31,6 +31,7 @@ import ch.globaz.pegasus.business.models.revisionquadriennale.ListrevisionWithPc
 import ch.globaz.pegasus.businessimpl.services.adresse.AdresseLoader;
 import ch.globaz.pegasus.businessimpl.services.adresse.TechnicalExceptionWithTiers;
 import ch.globaz.pegasus.businessimpl.services.donneeFinanciere.DonneeFinanciereLoader;
+import ch.globaz.pegasus.businessimpl.services.loader.ParametersLoader;
 import ch.globaz.pegasus.businessimpl.utils.PersistenceUtil;
 import ch.globaz.pyxis.business.service.AdresseService;
 import ch.globaz.pyxis.domaine.Pays;
@@ -49,7 +50,7 @@ public class RevisionQuadriennaleLoader {
 
             List<String> listeIdDroitAReviser = getIdsDroit(demandeGroupByIdDroit);
             Map<String, DonneesFinancieresContainer> donnerFianciereGroupByIdDroit = DonneeFinanciereLoader
-                    .LoadByIdsDroitAndGroupByIdDroit(listeIdDroitAReviser);
+                    .loadByIdsDroitAndGroupByIdDroit(listeIdDroitAReviser);
 
             List<String> idsTiersForAdresse = resolveIdsTiersForAdresse(mapPcas);
             AdresseLoader adresseLoader = new AdresseLoader();
@@ -61,7 +62,7 @@ public class RevisionQuadriennaleLoader {
                     idsTiersForAdresse, IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_RENTE,
                     AdresseService.CS_TYPE_DOMICILE);
 
-            ParameterLoader parameterLoader = new ParameterLoader();
+            ParametersLoader parameterLoader = new ParametersLoader();
             Parameters parameters = parameterLoader.load();
             PaysLoader paysLoader = new PaysLoader();
 
@@ -112,7 +113,7 @@ public class RevisionQuadriennaleLoader {
 
     String resolveIdTierToUsedForAdresse(PcaRequerantConjoint pcas) {
         String id = null;
-        PcaSitutation pcaCas = pcas.resolveCasPca();
+        PcaSituation pcaCas = pcas.resolveCasPca();
         if (pcaCas.isCoupleSepareRequerantEnHome()) {
             id = String.valueOf(pcas.getConjoint().getBeneficiaire().getId());
         } else {

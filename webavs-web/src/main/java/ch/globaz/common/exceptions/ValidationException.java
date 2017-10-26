@@ -3,6 +3,12 @@ package ch.globaz.common.exceptions;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ * Classe d'exception pour la validation xsd du marshaller JAXB
+ * 
+ * @author cel
+ * 
+ */
 public class ValidationException extends Exception {
 
     private static final long serialVersionUID = 1L;

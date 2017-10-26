@@ -1,7 +1,7 @@
 package globaz.pavo.db.process;
 
 import globaz.pavo.vb.CIAbstractPersistentViewBean;
-import ch.globaz.common.business.exceptions.CommonTechnicalException;
+import ch.globaz.common.exceptions.CommonTechnicalException;
 
 /**
  * @author mmo

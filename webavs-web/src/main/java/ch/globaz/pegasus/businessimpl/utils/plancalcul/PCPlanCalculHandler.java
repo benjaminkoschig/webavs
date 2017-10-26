@@ -14,9 +14,9 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
-import ch.globaz.common.business.exceptions.CommonTechnicalException;
 import ch.globaz.common.business.language.LanguageResolver;
 import ch.globaz.common.constantes.CommonConstLangue;
+import ch.globaz.common.exceptions.CommonTechnicalException;
 import ch.globaz.jade.business.models.Langues;
 import ch.globaz.jade.business.models.codesysteme.JadeCodeSysteme;
 import ch.globaz.jade.business.services.codesysteme.JadeCodeSystemeService;
@@ -366,7 +366,9 @@ public class PCPlanCalculHandler {
             lib = session.getCodeLibelle(ligne.getCsCode()).split("@");
         } else {
             try {
-                codeSystem = codeSystemService.getCodeSysteme(ligne.getCsCode());
+                if (ligne.getCsCode() != null && !ligne.getCsCode().isEmpty()) {
+                    codeSystem = codeSystemService.getCodeSysteme(ligne.getCsCode());
+                }
             } catch (JadePersistenceException e) {
                 throw new CommonTechnicalException("An error happened while trying to load the system code", e);
             }

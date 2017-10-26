@@ -11,4 +11,7 @@ public class PegasusTechnicalDomainException extends RuntimeException {
         super(msg, t);
     }
 
+    public PegasusTechnicalDomainException(String msg) {
+        super(msg);
+    }
 }

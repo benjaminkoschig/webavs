@@ -34,7 +34,7 @@ public class BiensImmobiliers<T extends BienImmobilier, L extends BiensImmobilie
         });
     }
 
-    public L getBiensImmobiliersByProprieteType(ProprieteType... types) {
+    public L filtreByProprieteType(ProprieteType... types) {
         L biensImmobiliers = newInstance();
         List<ProprieteType> listType = Arrays.asList(types);
         for (T bienImmobilier : getList()) {

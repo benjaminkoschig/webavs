@@ -4,6 +4,8 @@
 package ch.globaz.pegasus.business.models.decision;
 
 import globaz.jade.persistence.model.JadeSearchComplexModel;
+import java.util.Collection;
+import java.util.HashSet;
 
 /**
  * @author SCE
@@ -19,6 +21,43 @@ public class DecisionRefusSearch extends JadeSearchComplexModel {
     private String forIdDecisionHeader = null;
     private String forIdDecisionRefus = null;
     private String forIdDemande = null;
+    private String forDateDecisionMin;
+    private String forDateDecisionMax;
+    private Collection<String> forIdsDecisionHeader = new HashSet<String>();
+
+    public DecisionRefusSearch whereKeyForRpc() {
+        setWhereKey("RPC");
+        return this;
+    }
+
+    public DecisionRefusSearch orderByIdDemande() {
+        setOrderKey("ID_DEMANDE");
+        return this;
+    }
+
+    public String getForDateDecisionMin() {
+        return forDateDecisionMin;
+    }
+
+    public void setForDateDecisionMin(String forDateDecisionMin) {
+        this.forDateDecisionMin = forDateDecisionMin;
+    }
+
+    public String getForDateDecisionMax() {
+        return forDateDecisionMax;
+    }
+
+    public void setForDateDecisionMax(String forDateDecisionMax) {
+        this.forDateDecisionMax = forDateDecisionMax;
+    }
+
+    public Collection<String> getForIdsDecisionHeader() {
+        return forIdsDecisionHeader;
+    }
+
+    public void setForIdsDecisionHeader(Collection<String> forIdsDecisionHeader) {
+        this.forIdsDecisionHeader = forIdsDecisionHeader;
+    }
 
     /**
      * @return the forIdDemande
@@ -65,13 +104,8 @@ public class DecisionRefusSearch extends JadeSearchComplexModel {
         this.forIdDemande = forIdDemande;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see globaz.jade.persistence.model.JadeAbstractSearchModel#whichModelClass()
-     */
     @Override
-    public Class whichModelClass() {
+    public Class<DecisionRefus> whichModelClass() {
         return DecisionRefus.class;
     }
 

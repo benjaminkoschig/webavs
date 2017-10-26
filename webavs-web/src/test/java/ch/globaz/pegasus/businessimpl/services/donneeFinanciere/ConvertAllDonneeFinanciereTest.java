@@ -214,7 +214,7 @@ public class ConvertAllDonneeFinanciereTest {
         dr.setTaxeJournalierePrimeAPayer("123");
         TaxeJournaliereHome result = convert(dr).getTaxesJournaliereHome().get(0);
         TaxeJournaliereHome expected = new TaxeJournaliereHome(new Montant(11), new Montant(123), true, new Date(
-                "21.01.2015"), BuilderDf.createDF());
+                "21.01.2015"), "1", BuilderDf.createDF());
 
         assertEquals(expected, result);
     }
@@ -327,7 +327,7 @@ public class ConvertAllDonneeFinanciereTest {
 
         AssuranceRenteViagere result = convert(dr).getAssurancesRentesViageres().get(0);
         AssuranceRenteViagere expected = new AssuranceRenteViagere(new Montant(150), new Montant(5), new Montant(3000),
-                BuilderDf.createDF());
+                false, false, BuilderDf.createDF());
 
         assertEquals(expected, result);
     }
@@ -633,6 +633,7 @@ public class ConvertAllDonneeFinanciereTest {
         dr.setDateDebutDonneeFinanciere("01.2014");
         dr.setDateFinDonneeFinanciere(null);
         dr.setIdDonneeFinanciereHeader("20");
+        dr.setIdDroitMembreFamille("1");
         return dr;
     }
 

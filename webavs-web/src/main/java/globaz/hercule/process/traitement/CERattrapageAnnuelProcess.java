@@ -68,6 +68,12 @@ public class CERattrapageAnnuelProcess extends BProcess {
             anneePrecedente = CEUtils.getAnneePrecedente(getAnnee());
 
             // ****************************************
+            // Récupération des parametres pour le calcul de la période
+            // ****************************************
+            Map<String, String> params = CEControleEmployeurService.retrieveParamTableauPeriode(getSession(),
+                    getAnnee());
+
+            // ****************************************
             // On fait la liste les employeurs actifs (affilié paritaire) pour
             // l'année précédente
             // ****************************************
@@ -137,12 +143,6 @@ public class CERattrapageAnnuelProcess extends BProcess {
 
                 // 3. Pour chaque affilié de la requete en 1., on regarde sa
                 // masse salariale pour voir si il n'a pas changé de catégorie
-
-                // ****************************************
-                // Récupération des parametres pour le calcul de la période
-                // ****************************************
-                Map<String, String> params = CEControleEmployeurService.retrieveParamTableauPeriode(getSession(),
-                        getAnnee());
 
                 // ****************************************
                 // Recalcul de la période de couverture

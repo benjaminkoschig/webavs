@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
-import ch.globaz.common.business.exceptions.CommonTechnicalException;
+import ch.globaz.common.exceptions.CommonTechnicalException;
 
 /**
  * Le but de cette class est de pouvoir générer une requête sql et de l'exectuter en utilisant le {@link QueryExecutor}

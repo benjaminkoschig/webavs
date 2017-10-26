@@ -36,4 +36,8 @@ public class InfoCaisse {
         return numeroCaisseFormate;
     }
 
+    public boolean hasAgency() {
+        return numeroAgenceFormate != null && numeroAgenceFormate.isEmpty();
+    }
+
 }

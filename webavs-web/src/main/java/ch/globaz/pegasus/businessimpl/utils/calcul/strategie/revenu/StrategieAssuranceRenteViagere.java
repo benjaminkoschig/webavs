@@ -3,6 +3,7 @@
  */
 package ch.globaz.pegasus.businessimpl.utils.calcul.strategie.revenu;
 
+import ch.globaz.common.domaine.Montant;
 import ch.globaz.pegasus.business.constantes.IPCValeursPlanCalcul;
 import ch.globaz.pegasus.business.exceptions.models.calcul.CalculException;
 import ch.globaz.pegasus.business.models.calcul.CalculDonneesCC;
@@ -53,6 +54,12 @@ public class StrategieAssuranceRenteViagere extends StrategieCalculRevenu implem
         // ajout execdant
         float montant = montantSansExcedant + checkAmountAndParseAsFloat(excedant);
         return montant;
+    }
+
+    public static Montant calculRevenu(Montant montantRente, Montant excedant) {
+        Montant montantSansExcedant = montantRente.multiply(StrategieAssuranceRenteViagere.facteurMontant);
+        // ajout execdant
+        return montantSansExcedant.add(excedant);
     }
 
 }

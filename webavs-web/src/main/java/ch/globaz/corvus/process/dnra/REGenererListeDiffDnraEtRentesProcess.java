@@ -277,7 +277,7 @@ public class REGenererListeDiffDnraEtRentesProcess extends REAbstractJadeJob {
                     put(ISFSituationFamiliale.CS_ETAT_CIVIL_PARTENARIAT_ENREGISTRE, EtatCivil.LPART);
                     put(ISFSituationFamiliale.CS_ETAT_CIVIL_PARTENARIAT_DISSOUS_DECES, EtatCivil.LPART_DIS_DECES);
                     put(ISFSituationFamiliale.CS_ETAT_CIVIL_PARTENARIAT_DISSOUS_JUDICIAIREMENT, EtatCivil.LPART_DISSOUT);
-                    put(ISFSituationFamiliale.CS_ETAT_CIVIL_PARTENARIAT_SEPARE_DE_FAIT, EtatCivil.LPART_SEP_FAIT);
+                    put(ISFSituationFamiliale.CS_ETAT_CIVIL_PARTENARIAT_SEPARE_DE_FAIT, EtatCivil.LPART_SEPARE_FAIT);
                 }
             };
 

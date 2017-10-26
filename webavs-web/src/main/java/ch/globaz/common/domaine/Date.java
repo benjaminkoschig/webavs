@@ -19,6 +19,7 @@ public class Date implements Comparable<Date> {
 
     private static final String EXCEPTION_DATE_NULL = "La date ne peut être null";
     private static final String EXCEPTION_DATE_FORMATS_RESPECT = "La date '%s' doit respecter un des formats suivants : yyyyMMdd ; dd.MM.yyyy ; MM.yyyy ; yyyyMM ou n'est pas une date valable !";
+
     private static final String EXCEPTION_DATE_FORMATS_RESPECT_ONE = "La date '%s' doit respecter le format suivants : %s ou n'est pas une date valable !";
 
     public static final String DATE_PATTERN = "yyyyMMdd";
@@ -26,6 +27,7 @@ public class Date implements Comparable<Date> {
     public static final String DATE_PATTERN_MONTH = "yyyyMM";
     public static final String DATE_PATTERN_MONTH_SWISS = "MM.yyyy";
     public static final String DATE_PATTERN_ddMMyyyy = "ddMMyyyy";
+    public static final String DATE_PATTERN_YEAR = "yyyy";
 
     private static final String NULL_DATE_ALIAS = "";
 
@@ -59,7 +61,70 @@ public class Date implements Comparable<Date> {
 
     protected final java.util.Date date;
 
+    private String initialPartialDate;
+
     public static final String UNDEFINED_DATE_DEBUT = "01.01.1990";
+
+    private Date(java.util.Date date, String initialPartialDate, boolean isPartial) {
+        this.date = date;
+        if (isPartial) {
+            this.initialPartialDate = initialPartialDate;
+        }
+    }
+
+    public Date(String date, final String pattern) {
+        this.pattern = pattern;
+        if (isNull(date)) {
+            throw new IllegalArgumentException(EXCEPTION_DATE_NULL);
+        }
+        final SimpleDateFormat dateFormat = new SimpleDateFormat(pattern);
+        date = changeDate(date);
+        if (isDateOf(date, dateFormat)) {
+            try {
+                this.date = dateFormat.parse(date);
+            } catch (ParseException e) {
+                throw new IllegalArgumentException(String.format(EXCEPTION_DATE_FORMATS_RESPECT_ONE, date, pattern));
+            }
+        } else {
+            throw new IllegalArgumentException(String.format(EXCEPTION_DATE_FORMATS_RESPECT_ONE, date, pattern));
+        }
+    }
+
+    /**
+     * Création d'une date à partir d'une chaîne de caractères les formats
+     * définis
+     * 
+     * @param date
+     *            Date au format "yyyyMMdd"
+     * @throws IllegalArgumentException()
+     */
+    public Date(String date) {
+        date = changeDate(date);
+        SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_PATTERN);
+        SimpleDateFormat dateFormatSwiss = new SimpleDateFormat(DATE_PATTERN_SWISS);
+        SimpleDateFormat dateFormatMonth = new SimpleDateFormat(DATE_PATTERN_MONTH);
+        SimpleDateFormat dateFormatSwissMonth = new SimpleDateFormat(DATE_PATTERN_MONTH_SWISS);
+
+        if (isNull(date)) {
+            throw new IllegalArgumentException(EXCEPTION_DATE_NULL);
+        }
+
+        try {
+            if (isDateOf(date, dateFormat)) {
+                this.date = dateFormat.parse(date);
+            } else if (isDateOf(date, dateFormatSwiss)) {
+                this.date = dateFormatSwiss.parse(date);
+            } else if (isDateOf(date, dateFormatSwissMonth)) {
+                this.date = dateFormatSwissMonth.parse(date);
+            } else if (isDateOf(date, dateFormatMonth)) {
+                this.date = dateFormatMonth.parse(date);
+            } else {
+                throw new IllegalArgumentException(String.format(EXCEPTION_DATE_FORMATS_RESPECT, date));
+            }
+        } catch (ParseException e) {
+            throw new IllegalArgumentException(String.format(EXCEPTION_DATE_FORMATS_RESPECT, date));
+        }
+    }
 
     /**
      * Création d'un date à partir de la date du jour
@@ -137,60 +202,6 @@ public class Date implements Comparable<Date> {
 
     protected String changeDate(String date) {
         return date;
-    }
-
-    public Date(String date, final String pattern) {
-        this.pattern = pattern;
-        if (isNull(date)) {
-            throw new IllegalArgumentException(EXCEPTION_DATE_NULL);
-        }
-        final SimpleDateFormat dateFormat = new SimpleDateFormat(pattern);
-        date = changeDate(date);
-        if (isDateOf(date, dateFormat)) {
-            try {
-                this.date = dateFormat.parse(date);
-            } catch (ParseException e) {
-                throw new IllegalArgumentException(String.format(EXCEPTION_DATE_FORMATS_RESPECT_ONE, date, pattern));
-            }
-        } else {
-            throw new IllegalArgumentException(String.format(EXCEPTION_DATE_FORMATS_RESPECT_ONE, date, pattern));
-        }
-    }
-
-    /**
-     * Création d'une date à partir d'une chaîne de caractères les formats
-     * définis
-     * 
-     * @param date
-     *            Date au format "yyyyMMdd"
-     * @throws IllegalArgumentException()
-     */
-    public Date(String date) {
-        date = changeDate(date);
-        SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_PATTERN);
-        SimpleDateFormat dateFormatSwiss = new SimpleDateFormat(DATE_PATTERN_SWISS);
-        SimpleDateFormat dateFormatMonth = new SimpleDateFormat(DATE_PATTERN_MONTH);
-        SimpleDateFormat dateFormatSwissMonth = new SimpleDateFormat(DATE_PATTERN_MONTH_SWISS);
-
-        if (isNull(date)) {
-            throw new IllegalArgumentException(EXCEPTION_DATE_NULL);
-        }
-
-        try {
-            if (isDateOf(date, dateFormat)) {
-                this.date = dateFormat.parse(date);
-            } else if (isDateOf(date, dateFormatSwiss)) {
-                this.date = dateFormatSwiss.parse(date);
-            } else if (isDateOf(date, dateFormatSwissMonth)) {
-                this.date = dateFormatSwissMonth.parse(date);
-            } else if (isDateOf(date, dateFormatMonth)) {
-                this.date = dateFormatMonth.parse(date);
-            } else {
-                throw new IllegalArgumentException(String.format(EXCEPTION_DATE_FORMATS_RESPECT, date));
-            }
-        } catch (ParseException e) {
-            throw new IllegalArgumentException(String.format(EXCEPTION_DATE_FORMATS_RESPECT, date));
-        }
     }
 
     /***
@@ -752,21 +763,30 @@ public class Date implements Comparable<Date> {
      * @return String représentant l'année et le mois formatté.
      */
     public String getMoisAnneeFormatte() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(getMois());
-        sb.append(".");
-        sb.append(getAnnee());
-        return sb.toString();
+        return getSwissMonthValue();
     }
 
     public boolean isSunday() {
         return isDayName(Calendar.SUNDAY);
     }
 
+    public Date toMonthYear() {
+        if (isMoisAnnuel()) {
+            return this;
+        }
+        return new Date(getSwissMonthValue());
+    }
+
     boolean isDayName(int day) {
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
         return cal.get(Calendar.DAY_OF_WEEK) == day;
+    }
+
+    public int getNbDaysInYear() {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        return cal.getActualMaximum(Calendar.DAY_OF_YEAR);
     }
 
     /**
@@ -799,5 +819,35 @@ public class Date implements Comparable<Date> {
     @Override
     public int compareTo(Date o) {
         return date.compareTo(o.getDate());
+    }
+
+    /**
+     * @param partialDate
+     * @return
+     * @throws
+     */
+    public static Date forPartialDate(String partialDate) {
+
+        if (isNull(partialDate)) {
+            throw new IllegalArgumentException(EXCEPTION_DATE_NULL);
+        }
+
+        String fin = partialDate.substring(4, 8);
+        if (fin.equals("0000")) {
+            SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_PATTERN_YEAR);
+            String annee = partialDate.substring(0, 4);
+            try {
+                return new Date(dateFormat.parse(annee), partialDate, true);
+            } catch (ParseException e) {
+                throw new IllegalArgumentException(String.format(EXCEPTION_DATE_FORMATS_RESPECT, partialDate));
+            }
+        }
+        fin = partialDate.substring(6, 8);
+        if (fin.equals("00")) {
+            String yearMonth = partialDate.substring(0, 6);
+            return new Date(yearMonth);
+        }
+
+        return new Date(partialDate);
     }
 }

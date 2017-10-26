@@ -8,6 +8,8 @@ import globaz.framework.utils.urls.FWUrlsStack;
 import globaz.framework.utils.urls.rules.FWRemoveActionsEndingWith;
 import globaz.framework.utils.urls.rules.FWSuppressSameUserActions;
 import globaz.jade.log.JadeLogger;
+import java.util.ArrayList;
+import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -86,6 +88,11 @@ public class PCMainServlet extends FWJadeServlet {
 
         FWRemoveActionsEndingWith listeCommunePolitque = new FWRemoveActionsEndingWith(
                 ".listeRepartitionCommunePolitique.executer");
+        // Ecran RPC
+        List<String> listRPCNotStackAction = new ArrayList<String>();
+        listRPCNotStackAction.add("detailAnnonceAjax.executer");
+        listRPCNotStackAction.add("detailAnnonceAjax.reAfficher");
+        FWRemoveActionsEndingWith rpcNotStackAction = new FWRemoveActionsEndingWith(listRPCNotStackAction);
 
         aStack.addRule(removeLister);
         aStack.addRule(removeMotifier);
@@ -119,6 +126,8 @@ public class PCMainServlet extends FWJadeServlet {
         aStack.addRule(removeScreenValider);
 
         aStack.addRule(listeCommunePolitque);
+        aStack.addRule(rpcNotStackAction);
+
         // Evite de garder 2 fois la même page
         aStack.addRule(new FWSuppressSameUserActions());
     }
@@ -173,6 +182,7 @@ public class PCMainServlet extends FWJadeServlet {
         registerActionMapping("pegasus.habitat", PCDroitServletAction.class);
         registerActionMapping("pegasus.decision", PCDecisionServletAction.class);
         // PCRenteijapiServletAction.class);
+        registerActionMapping("pegasus.rpc", PCRpcServletAction.class);
         registerActionMapping("pegasus.lot", PCLotServletAction.class);
 
         registerActionMapping("pegasus.parametre", PCParametreServletAction.class);

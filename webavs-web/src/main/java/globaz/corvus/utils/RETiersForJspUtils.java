@@ -129,7 +129,7 @@ public class RETiersForJspUtils {
         if (!JadeStringUtil.isBlank(dateDeces)) {
             details.append("( ");
             if (avecBaliseHTML) {
-                details.append("<span style=font-family:wingdings>U</span> ");
+                details.append("<span style='font-family:wingdings'>U</span> ");
             } else {
                 details.append("† "); // caractères CP152 pour une croix
             }

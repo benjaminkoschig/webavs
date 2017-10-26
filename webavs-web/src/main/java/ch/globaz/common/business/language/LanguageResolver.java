@@ -1,8 +1,8 @@
 package ch.globaz.common.business.language;
 
 import globaz.globall.db.BSession;
-import ch.globaz.common.business.exceptions.CommonTechnicalException;
 import ch.globaz.common.constantes.CommonConstLangue;
+import ch.globaz.common.exceptions.CommonTechnicalException;
 import ch.globaz.jade.business.models.Langues;
 
 /**

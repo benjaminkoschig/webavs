@@ -1,7 +1,9 @@
 package ch.globaz.pegasus.business.models.revisionquadriennale;
 
 import globaz.jade.persistence.model.JadeSearchComplexModel;
+import java.util.Collection;
 import java.util.List;
+import ch.globaz.common.sql.SQLWriter;
 
 public class DonneeFinanciereSearch extends JadeSearchComplexModel {
 
@@ -9,18 +11,19 @@ public class DonneeFinanciereSearch extends JadeSearchComplexModel {
      * 
      */
     private static final long serialVersionUID = 1L;
-    private String forDateDebut = null;
-    private String forDateFin = null;
-    private String forIdDroit = null;
-    private List<String> forIdMembreFamilleSFIn = null;
-    private List<String> forIdDroitIn = null;
+    private String forDateDebut;
+    private String forDateFin;
+    private String forIdDroit;
+    private List<String> forIdMembreFamilleSFIn;
+    private Collection<String> forIdDroitIn;
     private List<String> forCsTypeIn;
+    private Collection<String> forIdsVersionDroit;
 
-    public List<String> getForIdDroitIn() {
+    public Collection<String> getForIdDroitIn() {
         return forIdDroitIn;
     }
 
-    public void setForIdDroitIn(List<String> forIdDroitIn) {
+    public void setForIdDroitIn(Collection<String> forIdDroitIn) {
         this.forIdDroitIn = forIdDroitIn;
     }
 
@@ -81,6 +84,18 @@ public class DonneeFinanciereSearch extends JadeSearchComplexModel {
 
     public void setForCsTypeIn(List<String> forCsTypeIn) {
         this.forCsTypeIn = forCsTypeIn;
+    }
+
+    public String getForIdsVersionDroitInString() {
+        return SQLWriter.toStrForIn(forIdsVersionDroit);
+    }
+
+    public Collection<String> getForIdsVersionDroit() {
+        return forIdsVersionDroit;
+    }
+
+    public void setForIdsVersionDroit(Collection<String> forIdsVersionDroit) {
+        this.forIdsVersionDroit = forIdsVersionDroit;
     }
 
 }

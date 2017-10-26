@@ -20,6 +20,7 @@ import java.util.Locale;
 public class Montant implements Serializable {
     public final static Montant ZERO = new Montant(BigDecimal.ZERO, MontantTypePeriode.SANS_PERIODE);
     public final static Montant ZERO_ANNUEL = new Montant(BigDecimal.ZERO, MontantTypePeriode.ANNUEL);
+    private final static BigDecimal DOUZE = new BigDecimal(12);
 
     private static final long serialVersionUID = 1L;
     private final static MathContext mathContext = new MathContext(16, RoundingMode.HALF_UP);
@@ -153,17 +154,28 @@ public class Montant implements Serializable {
         return typePeriode.isSansPeriode();
     }
 
-    public Montant annualise() {
+    private Montant annualise(BigDecimal nbJoursMonth) {
         if (isJouranlier()) {
-            return new Montant(currency.multiply(menuslisationJour).multiply(new BigDecimal(12)),
-                    MontantTypePeriode.ANNUEL);
+            return new Montant(currency.multiply(nbJoursMonth).multiply(DOUZE), MontantTypePeriode.ANNUEL);
         } else if (isMensuel()) {
-            return new Montant(currency.multiply(new BigDecimal(12)), MontantTypePeriode.ANNUEL);
+            return new Montant(currency.multiply(DOUZE), MontantTypePeriode.ANNUEL);
         } else if (isAnnuel()) {
             return new Montant(currency, typePeriode);
         } else {
             throw new IllegalStateException("Imposible d'anulaiser le montant. Le type de période est non définit");
         }
+    }
+
+    public Montant annualise(Date date) {
+        return annualise(date.getNbDaysInYear());
+    }
+
+    public Montant annualise(int nbJourInYear) {
+        return new Montant(currency.multiply(new BigDecimal(nbJourInYear)), MontantTypePeriode.ANNUEL);
+    }
+
+    public Montant annualise() {
+        return this.annualise(menuslisationJour);
     }
 
     /**
@@ -288,11 +300,15 @@ public class Montant implements Serializable {
     }
 
     public Montant multiply(final int valueToMultiply) {
-        return new Montant(currency.multiply(new BigDecimal(valueToMultiply)), typePeriode);
+        return new Montant(currency.multiply(BigDecimal.valueOf(valueToMultiply)), typePeriode);
     }
 
     public Montant multiply(final double valueToMultiply) {
-        return new Montant(currency.multiply(new BigDecimal(valueToMultiply)), typePeriode);
+        return new Montant(currency.multiply(BigDecimal.valueOf(valueToMultiply)), typePeriode);
+    }
+
+    public Montant multiply(final float valueToMultiply) {
+        return new Montant(currency.multiply(BigDecimal.valueOf(valueToMultiply)), typePeriode);
     }
 
     public Montant multiply(final Montant montant) {
@@ -424,15 +440,41 @@ public class Montant implements Serializable {
 
     /**
      * Arrondi le montant a un entier supérieur:
-     * 100.12 -> 100.00
-     * 100.44 -> 100.00
+     * 1.12 -> 1.00
+     * 1.44 -> 1.00
+     * 1.50 -> 2.00
+     * 1.75 -> 2.00
+     * 
+     * @return
+     */
+    public Montant arrondiAUnIntier() {
+        return new Montant(getBigDecimalArrondiAUnIntier(), typePeriode);
+    }
+
+    /**
+     * Arrondi le montant a un entier supérieur:
+     * 100.12 -> 101.00
+     * 100.44 -> 101.00
      * 100.50 -> 101.00
      * 100.75 -> 101.00
      * 
      * @return
      */
-    public Montant arrondiAUnIntier() {
-        return new Montant(getBigDecimalArrondiAUnIntier());
+    public Montant arrondiAUnIntierSupperior() {
+        return new Montant(currency.setScale(0, RoundingMode.CEILING), typePeriode);
+    }
+
+    /**
+     * Arrondi le montant a un entier supérieur:
+     * 1.12 -> 1.00
+     * 1.44 -> 1.00
+     * 1.50 -> 1.00
+     * 1.75 -> 1.00
+     * 
+     * @return
+     */
+    public Montant arrondiAUnIntierInferior() {
+        return new Montant(currency.setScale(0, RoundingMode.FLOOR), typePeriode);
     }
 
     private BigDecimal getBigDecimalArrondiAUnIntier() {
@@ -480,6 +522,17 @@ public class Montant implements Serializable {
     }
 
     /**
+     * Retourne si le montant passé en paramètre est plus petit au montant actuel.
+     * 
+     * @param montant à comparer
+     * @return true si plus grand, false si plus petit ou égal
+     */
+    public boolean less(int montant) {
+        Montant montantCompare = substract(new Montant(montant));
+        return montantCompare.isNegative();
+    }
+
+    /**
      * @return le montant absolu
      */
     public Montant getMontantAbsolu() {
@@ -492,6 +545,10 @@ public class Montant implements Serializable {
 
     public int intValue() {
         return currency.intValue();
+    }
+
+    public Long longValue() {
+        return getValueDouble().longValue();
     }
 
     BigDecimal getCurrency() {

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.pegasus.rpc.business.models.SimpleLotAnnonce">
+		<description>Lot des annonces RPC</description>
+		<table name="PC_RPC_LOT_ANNONCE" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="id" column="ID" comment="ID"/>
+			<field name="idJob" column="ID_JOB" type="NUMERIC" mandatory="true" comment="ID_JOB"/>	
+			<field name="csEtat" column="CS_ETAT" type="NUMERIC" mandatory="true" comment="CS_ETAT"/>
+			<field name="csType" column="CS_TYPE" type="NUMERIC" mandatory="true" comment="CS_TYPE"/>
+			<field name="dateEnvoi" column="DATE_ENVOI" type="DATE" mandatory="false" comment="DATE_ENVOI"/>	
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forId" operation="EQUALS" field-ref="id"/>
+				<search-field name="forDate" operation="GREATER_OR_EQUALS" field-ref="dateEnvoi"/>
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="byPeriod">
+			<search-group operator="AND">
+				<search-field name="forStartDate" operation="GREATER_OR_EQUALS" field-ref="dateEnvoi"/>
+				<search-field name="forEndDate" operation="LESS_OR_EQUALS" field-ref="dateEnvoi"/>
+			</search-group>
+		</search-definition>
+		<order-by name="OrderByDateEnvoiDESC">
+			<order-field field-ref="dateEnvoi" order="DESC"/>
+		</order-by>
+		<order-by name="OrderByIdLotDESC">
+			<order-field field-ref="id" order="DESC"/>
+		</order-by>
+	</simple-model>
+</model-mapping>

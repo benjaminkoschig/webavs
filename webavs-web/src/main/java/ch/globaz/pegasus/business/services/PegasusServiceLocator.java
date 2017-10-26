@@ -61,6 +61,7 @@ import ch.globaz.pegasus.business.services.process.adaptation.SimpleRenteAdaptat
 import ch.globaz.pegasus.business.services.process.statistiquesofas.StatistiquesOFASService;
 import ch.globaz.pegasus.business.services.recap.RecapService;
 import ch.globaz.pegasus.business.services.revisionquadriennale.RevisionQuadriennaleService;
+import ch.globaz.pegasus.business.services.rpc.RpcService;
 import ch.globaz.pegasus.business.services.transfertDossier.TransfertDossierBuilderProviderService;
 import ch.globaz.pegasus.business.services.transfertDossier.TransfertDossierPCProviderService;
 import ch.globaz.pegasus.business.services.transfertDossier.TransfertRentePCProviderService;
@@ -630,5 +631,13 @@ public abstract class PegasusServiceLocator {
     public static VariableMetierService getVariableMetierService() throws JadeApplicationServiceNotAvailableException {
         return (VariableMetierService) JadeApplicationServiceLocator.getInstance().getServiceImpl(
                 VariableMetierService.class);
+    }
+
+    /**
+     * @return Implémentation du service de gestion des annonces rpc
+     * @throws JadeApplicationServiceNotAvailableException
+     */
+    public static RpcService getRpcService() throws JadeApplicationServiceNotAvailableException {
+        return (RpcService) JadeApplicationServiceLocator.getInstance().getServiceImpl(RpcService.class);
     }
 }

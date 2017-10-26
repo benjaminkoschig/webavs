@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <model-mapping>
 	<complexe-model className="ch.globaz.pegasus.business.models.pcaccordee.PlanDeCalculWitMembreFamille">
-	
+		<select-fields>
+			<select-field name="idVersionDroit" field-ref="simplePCAccordee.idVersionDroit" />
+		</select-fields>	
 		<root-model name="simplePlanDeCalcul" model-ref="ch.globaz.pegasus.business.models.pcaccordee.SimplePlanDeCalcul"/>
 		
 		<linked-model name="simplePersonneDansPlanCalcul" model-ref="ch.globaz.pegasus.business.models.pcaccordee.SimplePersonneDansPlanCalcul" join-type="INNER">
@@ -19,6 +21,12 @@
 		<linked-model name="simpleDonneesPersonnelles" model-ref="ch.globaz.pegasus.business.models.droit.SimpleDonneesPersonnelles" join-type="INNER">
 			<join-group operator="AND">
 				<join-field name="idDonneesPersonnelles" operation="EQUALS" field-ref="droitMembreFamille.simpleDroitMembreFamille.idDonneesPersonnelles"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="simplePCAccordee" model-ref="ch.globaz.pegasus.business.models.pcaccordee.SimplePCAccordee" join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idPCAccordee" operation="EQUALS" field-ref="simplePlanDeCalcul.idPCAccordee"/>
 			</join-group>
 		</linked-model>
 		

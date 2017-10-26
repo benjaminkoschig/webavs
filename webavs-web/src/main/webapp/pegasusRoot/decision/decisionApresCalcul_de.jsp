@@ -32,6 +32,7 @@
 <%@page import="ch.globaz.pegasus.business.constantes.IPCDecision"%>
 <%@page import="ch.globaz.pegasus.business.constantes.EPCProperties"%>
 <%@page import="ch.globaz.pegasus.business.constantes.decision.DecisionTypes"%>
+<%@page import="globaz.jade.log.business.JadeBusinessMessageLevels"%>
 <script type="text/javascript" src="<%=servletContext%>/scripts/nss.js"></script>
 <link rel="stylesheet" type="text/css" href="<%=servletContext%><%=(mainServletPath+"Root")%>/css/decision/detail.css"/>
 <%@ taglib uri="/WEB-INF/nss.tld" prefix="nss" %>
@@ -169,8 +170,13 @@ $(function () {
 		userAction=$('[name=userAction]',document.forms[0])[0];
 	
 		//gestion des erreurs
-		pegasusErrorsUtils.dealErrors(<%= request.getParameter("decisionErrorMsg") %>,"<%= titleErroxBox %>");
-		
+		var errors = <%= request.getParameter("decisionErrorMsg") %>;
+		var maxlevel = pegasusErrorsUtils.maxLevel(errors);
+		if(maxlevel === 3) {
+			pegasusErrorsUtils.dealErrors(errors,"<%= titleErroxBox %>");
+		} else if(maxlevel === 2) {
+			showPlausiWarningDialog(pegasusErrorsUtils.getMessages(errors));
+		}
 		
 		//Varaiables
 		initVariables();
@@ -190,10 +196,15 @@ $(function () {
 		setDeValidBouton(<%= viewBean.isDevalidable()%>,"<%= deValidLibelle %>");
 		//gestion liens conjoints
 		setConjointLink(<%= viewBean.getIdDecisionConjoint()%>,actionNavigator);
+		
 		},500)
 	});
 
-
+function showWarnings(msg) {
+	var warningObj = new Object();
+	warningObj.text = msg; 
+	showModalDialog('<%=servletContext%>/warningModalDlg.jsp',warningObj,'dialogHeight:20;dialogWidth:25;status:no;resizable:no');
+}	
 
 
 function cancel() {
@@ -670,6 +681,10 @@ var openGedWindow = function (url){
     			<%=objSession.getLabel("JSP_PC_DECALCUL_D_MESSAGE_DEVALIDER")%>
     	</p>
 	</div>
+	
+	<div id="dialog-plausi-warning" title="<%= objSession.getLabel("JSP_PC_PREVALIDATION_DECISION_PLAUSI_WARNING")%>" >
+    	<div id="dialog-plausi-warning-list"></div>
+	</div>	
 	<input type="hidden" id="inhValidAction" name="validAction" value=""/>
 	<input type="hidden" name="idVersionDroit" value="<%=viewBean.getIdVersionDroit()%>"/>
 	<input type="hidden" name="idDroit" value="<%=viewBean.getIdDroit()%>"/>

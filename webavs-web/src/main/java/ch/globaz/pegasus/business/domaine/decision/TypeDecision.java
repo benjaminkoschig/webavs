@@ -30,6 +30,10 @@ public enum TypeDecision implements CodeSystemEnum<TypeDecision> {
         return value;
     }
 
+    public boolean isRefus() {
+        return isRefusApresCalcul() || isRefusSansCalcul();
+    }
+
     public boolean isSuppression() {
         return SUPPRESSION_SANS_CALCUL.equals(this);
     }
@@ -40,6 +44,10 @@ public enum TypeDecision implements CodeSystemEnum<TypeDecision> {
 
     public boolean isOctroi() {
         return OCTROI_APRES_CALCUL.equals(this);
+    }
+
+    public boolean isOctroiOrPartiel() {
+        return isOctroi() || isPartiel();
     }
 
     public boolean isPartiel() {

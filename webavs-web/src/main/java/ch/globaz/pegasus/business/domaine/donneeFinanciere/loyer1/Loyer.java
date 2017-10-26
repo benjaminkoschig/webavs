@@ -25,8 +25,12 @@ public class Loyer extends DonneeFinanciere implements Depense {
         this.nbPersonnne = nbPersonnne;
         this.fauteuilRoulant = fauteuilRoulant;
         this.tenueMenage = tenueMenage;
+        if (type.isValeurLocativeChezProprietaire()) {
+            this.montant = montant.addAnnuelPeriodicity();
+        } else {
+            this.montant = montant.addMensuelPeriodicity();
+        }
 
-        this.montant = montant.addMensuelPeriodicity();
         this.charge = charge.addMensuelPeriodicity();
         this.sousLocation = sousLocation.addMensuelPeriodicity();
         this.taxeJournalierePensionNonReconnue = taxeJournalierePensionNonReconnue.addJournalierPeriodicity();
@@ -64,14 +68,14 @@ public class Loyer extends DonneeFinanciere implements Depense {
         return tenueMenage;
     }
 
-    public Montant computeCharge() {
+    public Montant computeCharge(Montant forfait) {
         Montant charge = Montant.ZERO_ANNUEL;
         if (type.isBrutChargesComprises()) {
             charge = Montant.ZERO_ANNUEL;
         } else if (type.isNetAvecCharge()) {
             charge = this.charge.annualise();
         } else if (type.isNetAvecChargeForfaitaires()) {
-            charge = Montant.ZERO_ANNUEL;
+            charge = forfait;
         } else if (type.isNetSansCharge()) {
             charge = Montant.ZERO_ANNUEL;
         } else if (type.isPensionsNonRecounnue()) {

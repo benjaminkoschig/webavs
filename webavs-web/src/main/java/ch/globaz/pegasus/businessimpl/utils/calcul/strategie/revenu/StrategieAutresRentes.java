@@ -58,6 +58,8 @@ public class StrategieAutresRentes extends StrategieCalculRevenu implements IStr
         String autresRentesCsGenre = donnee.getAutresRentesCsGenre();
 
         String montant = "";
+        String tauxChange = "";
+        String codeDevise = "";
 
         // Si rente étrangère conversion
         if (IPCRenteijapi.CS_AUTRES_RENTES_GENRE_RENTE_ETRANGERE.equals(autresRentesCsGenre)) {
@@ -89,10 +91,13 @@ public class StrategieAutresRentes extends StrategieCalculRevenu implements IStr
                                 donnee.getDateDebutDonneeFinanciere());
                     }
                     taux = Float.parseFloat(tauxForPeriod);
+                    tauxChange = tauxForPeriod;
+                    codeDevise = donnee.getAutreRentesEtrangeresCSTypeDevise();
                 }
 
                 Float mont = checkAmoutAndParseAsFloat(donnee.getAutresRentesMontant()) * taux;
                 montant = mont.toString();
+
             }
         } else {
             montant = donnee.getAutresRentesMontant();
@@ -112,8 +117,20 @@ public class StrategieAutresRentes extends StrategieCalculRevenu implements IStr
         } else {
             String cle = StrategieAutresRentes.mappingGenre.get(autresRentesCsGenre);
             this.getOrCreateChild(resultatExistant, cle, montant);
+            if (!tauxChange.isEmpty()
+                    && IPCRenteijapi.CS_AUTRES_RENTES_GENRE_RENTE_ETRANGERE.equals(autresRentesCsGenre)) {
+
+                // Add taux change key in tuple if doesn't exist
+                TupleDonneeRapport tupleTaux = this.getOrCreateChild(resultatExistant,
+                        IPCValeursPlanCalcul.CLE_REVEN_RENAUTRE_RENTE_ETRANGERE_TAUX_CHANGE, 0f);
+                tupleTaux.setLabel(IPCValeursPlanCalcul.CLE_REVEN_RENAUTRE_RENTE_ETRANGERE_TAUX_CHANGE.toString());
+
+                // Add taux conversion for devise. One key for each currency
+                if (!tupleTaux.containsValeurEnfant(codeDevise)) {
+                    this.getOrCreateChild(tupleTaux, codeDevise, setTauxDeChange(tauxChange));
+                }
+            }
         }
         return resultatExistant;
     }
-
 }

@@ -4,7 +4,7 @@ import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import java.util.Locale;
-import ch.globaz.common.business.exceptions.CommonTechnicalException;
+import ch.globaz.common.exceptions.CommonTechnicalException;
 import ch.globaz.simpleoutputlist.converter.Translater;
 import com.google.common.base.CaseFormat;
 

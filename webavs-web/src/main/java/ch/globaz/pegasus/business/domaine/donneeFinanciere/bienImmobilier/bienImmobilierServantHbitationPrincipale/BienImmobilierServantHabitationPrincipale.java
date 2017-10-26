@@ -58,15 +58,34 @@ public class BienImmobilierServantHabitationPrincipale extends BienImmobilier im
         return Montant.ZERO_ANNUEL;
     }
 
+    public Montant computeLoyersEnCaissesPartPropriete() {
+        if (proprieteType.isUsufruit() || proprieteType.isProprietaire()) {
+            return loyerEncaisse.multiply(part);
+        }
+        return Montant.ZERO_ANNUEL;
+    }
+
+    public Montant computeSousLocationPartPropriete() {
+        if (proprieteType.isUsufruit() || proprieteType.isProprietaire()) {
+            return sousLocation.multiply(part);
+        }
+        return Montant.ZERO_ANNUEL;
+    }
+
     @Override
     public Montant computeRevenuAnnuel() {
-        throw new RuntimeException("Not yet implemented");
+        Montant sum = Montant.ZERO_ANNUEL;
+        if (proprieteType.isUsufruit() || proprieteType.isProprietaire()) {
+            sum = sum.add(sousLocation).add(loyerEncaisse);
+            sum = sum.multiply(part);
+        }
+        return sum.annualise();
     }
 
     @Override
     public Montant computeRevenuAnnuelBrut() {
         Montant sum = Montant.ZERO_ANNUEL;
-        sum = sum.add(valeurLocative).add(sousLocation).add(loyerEncaisse);
+        sum = sum.add(sousLocation).add(loyerEncaisse).add(valeurLocative);
         return sum.annualise();
     }
 

@@ -55,7 +55,7 @@ public class PCPCAccordeeServletAction extends PCAbstractServletAction {
             FWDispatcher mainDispatcher) throws ServletException, IOException {
 
         // on n'utilise pas la session pour afficher le plan de calcule, car il se trouvera dans un nouvelle onglet
-        if (getAction().getElement().contains(IPCActions.ACTION_PCACCORDEE_PLANCLACULE)) {
+        if (getAction().getElement().contains(IPCActions.ACTION_PCACCORDEE_PLANCALCUL)) {
             String destination = "";
 
             try {

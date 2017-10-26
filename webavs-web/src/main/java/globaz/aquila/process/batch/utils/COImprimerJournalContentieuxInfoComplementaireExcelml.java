@@ -17,8 +17,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import ch.globaz.common.business.exceptions.CommonTechnicalException;
 import ch.globaz.common.domaine.Date;
+import ch.globaz.common.exceptions.CommonTechnicalException;
 import ch.globaz.common.sql.QueryExecutor;
 
 public class COImprimerJournalContentieuxInfoComplementaireExcelml extends COAbstractJournalContentieuxExcelml {

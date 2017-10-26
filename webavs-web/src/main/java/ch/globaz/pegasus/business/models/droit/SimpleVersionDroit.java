@@ -2,6 +2,7 @@ package ch.globaz.pegasus.business.models.droit;
 
 import globaz.jade.persistence.model.JadeSimpleModel;
 import ch.globaz.pegasus.business.domaine.droit.EtatDroit;
+import ch.globaz.pegasus.business.domaine.droit.MotifDroit;
 
 public class SimpleVersionDroit extends JadeSimpleModel {
 
@@ -147,6 +148,10 @@ public class SimpleVersionDroit extends JadeSimpleModel {
 
     public EtatDroit getEtat() {
         return EtatDroit.fromValue(csEtatDroit);
+    }
+
+    public MotifDroit getMotif() {
+        return MotifDroit.fromValue(csMotif);
     }
 
 }

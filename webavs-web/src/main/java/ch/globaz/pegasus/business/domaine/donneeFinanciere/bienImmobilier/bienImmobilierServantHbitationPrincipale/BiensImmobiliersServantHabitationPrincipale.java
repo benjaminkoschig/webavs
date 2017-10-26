@@ -40,7 +40,7 @@ public class BiensImmobiliersServantHabitationPrincipale extends
     @Override
     public Montant sumMontantValeurLocative(ProprieteType type) {
 
-        return getBiensImmobiliersByProprieteType(type).sum(new Each<BienImmobilierServantHabitationPrincipale>() {
+        return filtreByProprieteType(type).sum(new Each<BienImmobilierServantHabitationPrincipale>() {
             @Override
             public Montant getMontant(BienImmobilierServantHabitationPrincipale donnneeFianciere) {
                 return donnneeFianciere.getValeurLocative();
@@ -73,7 +73,7 @@ public class BiensImmobiliersServantHabitationPrincipale extends
     @Override
     public Montant sumMontantValeurLocativePartPropriete(ProprieteType type) {
 
-        return getBiensImmobiliersByProprieteType(type).sum(new Each<BienImmobilierServantHabitationPrincipale>() {
+        return filtreByProprieteType(type).sum(new Each<BienImmobilierServantHabitationPrincipale>() {
             @Override
             public Montant getMontant(BienImmobilierServantHabitationPrincipale donnneeFianciere) {
                 return donnneeFianciere.computeValLocativePartPropriete();
@@ -88,6 +88,36 @@ public class BiensImmobiliersServantHabitationPrincipale extends
             @Override
             public Montant getMontant(BienImmobilierServantHabitationPrincipale donnneeFianciere) {
                 return donnneeFianciere.getSousLocation();
+            }
+        });
+    }
+
+    public Montant sumSousLocationPartPorietaire() {
+
+        return this.sum(new Each<BienImmobilierServantHabitationPrincipale>() {
+            @Override
+            public Montant getMontant(BienImmobilierServantHabitationPrincipale donnneeFianciere) {
+                return donnneeFianciere.computeSousLocationPartPropriete();
+            }
+        });
+    }
+
+    public Montant sumLoyersEnCaissesPartPorietaire() {
+
+        return this.sum(new Each<BienImmobilierServantHabitationPrincipale>() {
+            @Override
+            public Montant getMontant(BienImmobilierServantHabitationPrincipale donnneeFianciere) {
+                return donnneeFianciere.computeLoyersEnCaissesPartPropriete();
+            }
+        });
+    }
+
+    public Montant sumDepense(final Montant forfaitCharge) {
+        return this.sum(new Each<BienImmobilierServantHabitationPrincipale>() {
+            @Override
+            public Montant getMontant(BienImmobilierServantHabitationPrincipale donnneeFianciere) {
+                return donnneeFianciere.computeDepense().isPositive() ? donnneeFianciere.computeDepense().add(
+                        forfaitCharge) : Montant.ZERO_ANNUEL;
             }
         });
     }

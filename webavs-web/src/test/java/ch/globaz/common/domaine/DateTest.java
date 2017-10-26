@@ -446,4 +446,35 @@ public class DateTest {
         assertEquals("201507", new Date("05.07.2015").getValueMonth());
     }
 
+    @Test
+    public void testToMonthYear() throws Exception {
+        assertEquals(new Date("07.2015"), new Date("05.07.2015").toMonthYear());
+        assertEquals(new Date("07.2015"), new Date("07.2015").toMonthYear());
+    }
+
+    @Test
+    public void testGetNbDaysInYear() throws Exception {
+        Date date = new Date("10.10.2016");
+        assertEquals(366, date.getNbDaysInYear());
+        date = new Date("10.10.2015");
+        assertEquals(365, date.getNbDaysInYear());
+    }
+
+    @Test
+    public void testForPartialDate0000() throws Exception {
+        Date date = Date.forPartialDate("20160000");
+        assertEquals(new Date("01.01.2016"), date);
+    }
+
+    @Test
+    public void testForPartialDate00() throws Exception {
+        Date date = Date.forPartialDate("20160400");
+        assertEquals(new Date("01.04.2016"), date);
+    }
+
+    @Test
+    public void testForPartialDateGeneric() throws Exception {
+        Date date = Date.forPartialDate("20160410");
+        assertEquals(new Date("10.04.2016"), date);
+    }
 }

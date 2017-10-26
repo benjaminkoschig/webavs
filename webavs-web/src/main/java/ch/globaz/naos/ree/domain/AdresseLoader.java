@@ -135,7 +135,7 @@ public class AdresseLoader {
                 try {
 
                     addresse = new Adresse(data.getLocalite(), data.getCasePostale(), data.getAttention(),
-                            data.getNpa(), data.getPaysIso(), data.getIdCanton(), data.getTitre_adr(), data.getRue(),
+                            data.getNpa(), data.getPaysIso(), null, data.getTitre_adr(), data.getRue(),
                             subStringField(data.getNumero(), 0, 12), data.getDesignation1_adr(),
                             data.getDesignation2_adr(), data.getDesignation3_adr(), data.getDesignation4_adr(),
                             data.getIdAdresseUnique(), data.getDesignation1_tiers(), data.getDesignation2_tiers(),

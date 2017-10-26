@@ -67,7 +67,7 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import org.apache.commons.lang.StringUtils;
-import ch.globaz.common.business.exceptions.CommonTechnicalException;
+import ch.globaz.common.exceptions.CommonTechnicalException;
 import ch.globaz.common.domaine.Date;
 import ch.globaz.common.domaine.Montant;
 import ch.globaz.common.domaine.Periode;

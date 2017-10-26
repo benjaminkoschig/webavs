@@ -25,7 +25,7 @@ public class DonneeFinanciereConverterTest {
         DonneeFinanciere df = converter.convertToDomain(dr);
 
         DonneeFinanciere dfExepected = new DonneeFinanciereHeader(
-                RoleMembreFamille.fromValue(IPCDroits.CS_ROLE_FAMILLE_REQUERANT), new Date("01.2014"), null, "20");
+                RoleMembreFamille.fromValue(IPCDroits.CS_ROLE_FAMILLE_REQUERANT), new Date("01.2014"), null, "20", "1");
 
         assertEquals(dfExepected.getDebut(), df.getDebut());
         assertEquals(dfExepected.getFin(), df.getFin());

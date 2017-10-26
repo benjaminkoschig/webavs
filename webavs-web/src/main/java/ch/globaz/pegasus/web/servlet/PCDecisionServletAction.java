@@ -736,7 +736,8 @@ public class PCDecisionServletAction extends PCAbstractServletAction {
         viewBean = dispatcher.dispatch(viewBean, getAction());
 
         // Si erreur
-        if (JadeThread.logHasMessagesFromLevel(JadeBusinessMessageLevels.ERROR)) {
+        if (JadeThread.logHasMessagesFromLevel(JadeBusinessMessageLevels.ERROR)
+                || JadeThread.logHasMessagesFromLevel(JadeBusinessMessageLevels.WARN)) {
             return generateJadeThreadErrorLevelUrl(viewBean, getAction().getApplicationPart(), request);
 
         } else if (FWViewBeanInterface.ERROR.equals(viewBean.getMsgType())) {

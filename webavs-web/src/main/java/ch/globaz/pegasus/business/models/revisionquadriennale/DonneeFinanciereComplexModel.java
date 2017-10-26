@@ -106,6 +106,7 @@ public class DonneeFinanciereComplexModel extends JadeComplexModel {
     private String IJAIMontant = null;
     private String IJAPGAutreGenre = null;
     private String idDroit = null;
+    private String idVersionDroit;
 
     public String getIdDroit() {
         return idDroit;
@@ -113,6 +114,14 @@ public class DonneeFinanciereComplexModel extends JadeComplexModel {
 
     public void setIdDroit(String idDroit) {
         this.idDroit = idDroit;
+    }
+
+    public String getIdVersionDroit() {
+        return idVersionDroit;
+    }
+
+    public void setIdVersionDroit(String idVersionDroit) {
+        this.idVersionDroit = idVersionDroit;
     }
 
     private String IJAPGcotisationLPPMens = null;
@@ -229,6 +238,20 @@ public class DonneeFinanciereComplexModel extends JadeComplexModel {
     private String vehiculeFractionNumerateur = null;
 
     private String vehiculeMontant = null;
+
+    private String idVersionDroitMax;
+
+    public String getIdVersionDroitMax() {
+        return idVersionDroitMax;
+    }
+
+    public void setIdVersionDroitMax(String idVersionDroitMax) {
+        this.idVersionDroitMax = idVersionDroitMax;
+    }
+
+    public static long getSerialversionuid() {
+        return serialVersionUID;
+    }
 
     /**
      * @return the allocationFamilialeMontantMensuel

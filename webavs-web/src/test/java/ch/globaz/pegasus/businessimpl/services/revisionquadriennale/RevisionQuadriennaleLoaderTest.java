@@ -5,7 +5,7 @@ import static org.mockito.Mockito.*;
 import org.junit.Test;
 import ch.globaz.pegasus.business.domaine.pca.Pca;
 import ch.globaz.pegasus.business.domaine.pca.PcaRequerantConjoint;
-import ch.globaz.pegasus.business.domaine.pca.PcaSitutation;
+import ch.globaz.pegasus.business.domaine.pca.PcaSituation;
 import ch.globaz.pyxis.domaine.PersonneAVS;
 
 public class RevisionQuadriennaleLoaderTest {
@@ -14,41 +14,41 @@ public class RevisionQuadriennaleLoaderTest {
 
     @Test
     public void testResolveIdTierToUsedForAdresseDomicile() throws Exception {
-        PcaRequerantConjoint pcas = buildPca(PcaSitutation.DOMICILE);
+        PcaRequerantConjoint pcas = buildPca(PcaSituation.DOMICILE);
         assertEquals("1", loader.resolveIdTierToUsedForAdresse(pcas));
     }
 
     @Test
     public void testResolveIdTierToUsedForAdresseHome() throws Exception {
-        PcaRequerantConjoint pcas = buildPca(PcaSitutation.HOME);
+        PcaRequerantConjoint pcas = buildPca(PcaSituation.HOME);
         assertEquals("1", loader.resolveIdTierToUsedForAdresse(pcas));
     }
 
     @Test
     public void testResolveIdTierToUsedForAdresseDom2R() throws Exception {
-        PcaRequerantConjoint pcas = buildPca(PcaSitutation.DOM2R);
+        PcaRequerantConjoint pcas = buildPca(PcaSituation.DOM2R);
         assertEquals("1", loader.resolveIdTierToUsedForAdresse(pcas));
     }
 
     @Test
     public void testResolveIdTierToUsedForAdresseCoupleSepareConjoint() throws Exception {
-        PcaRequerantConjoint pcas = buildPca(PcaSitutation.COUPLE_SEPARE_CONJOINT_HOME);
+        PcaRequerantConjoint pcas = buildPca(PcaSituation.COUPLE_SEPARE_CONJOINT_HOME);
         assertEquals("1", loader.resolveIdTierToUsedForAdresse(pcas));
     }
 
     @Test
     public void testResolveIdTierToUsedForAdresseCoupleSepareRequerant() throws Exception {
-        PcaRequerantConjoint pcas = buildPca(PcaSitutation.COUPLE_SEPARE_REQUERANT_HOME);
+        PcaRequerantConjoint pcas = buildPca(PcaSituation.COUPLE_SEPARE_REQUERANT_HOME);
         assertEquals("2", loader.resolveIdTierToUsedForAdresse(pcas));
     }
 
     @Test
     public void testResolveIdTierToUsedForAdresseCoupleSepareLes2() throws Exception {
-        PcaRequerantConjoint pcas = buildPca(PcaSitutation.COUPLE_SEPARE_DEUX_EN_HOME);
+        PcaRequerantConjoint pcas = buildPca(PcaSituation.COUPLE_SEPARE_DEUX_EN_HOME);
         assertEquals("1", loader.resolveIdTierToUsedForAdresse(pcas));
     }
 
-    private PcaRequerantConjoint buildPca(PcaSitutation pcaCas) {
+    private PcaRequerantConjoint buildPca(PcaSituation pcaCas) {
         PcaRequerantConjoint pcas = new PcaRequerantConjoint();
         pcas.setRequerant(new Pca());
         pcas.setConjoint(new Pca());

@@ -34,6 +34,37 @@ var pegasusErrorsUtils = {
 				var s_error = this.renderLogs(o_errorContainer);
 				globazNotation.utils.consoleError(s_error,title);
 			}
+		},
+		
+		/**
+		 * Méthode à appeler dans la jsp
+		 * On passe le message json généré
+		 * @param jsonErrorsMsg
+		 */
+		getMessages : function (jsonErrorsMsg){
+			
+			if(jsonErrorsMsg){
+				//objet container
+				var o_errorContainer = {};
+				//objet log du container
+				o_errorContainer.logs = jsonErrorsMsg;
+				//chaine généré
+				return this.renderLogs(o_errorContainer);
+			}
+			return null;
+		},
+		
+		maxLevel : function (jsonErrorsMsg) {
+			var max = 0;
+			if(jsonErrorsMsg){
+				for(var key in jsonErrorsMsg) {
+					msg = jsonErrorsMsg[key];
+					if(msg.level > max){
+						max = msg.level;
+					}
+				}
+			}
+			return max;
 		}
 		
 }

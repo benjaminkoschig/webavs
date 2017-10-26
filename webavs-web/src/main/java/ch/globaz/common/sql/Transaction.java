@@ -2,7 +2,7 @@ package ch.globaz.common.sql;
 
 import globaz.globall.db.BSession;
 import globaz.globall.db.BTransaction;
-import ch.globaz.common.business.exceptions.CommonTechnicalException;
+import ch.globaz.common.exceptions.CommonTechnicalException;
 
 final class Transaction {
     private boolean newTransactionCreated = false;

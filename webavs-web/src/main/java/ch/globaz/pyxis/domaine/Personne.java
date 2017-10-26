@@ -23,13 +23,22 @@ public class Personne extends Tiers {
     /** JJ.MM.AAAA */
     private String dateNaissance;
     private Sexe sexe;
+    private EtatCivil etatCivil = EtatCivil.UNDEFINED;
 
     public Personne() {
         super();
-
         dateDeces = "";
         dateNaissance = "";
         sexe = null;
+    }
+
+    public EtatCivil getEtatCivil() {
+        return etatCivil;
+    }
+
+    public void setEtatCivil(EtatCivil etatCivil) {
+        Checkers.checkNotNull(etatCivil, "personne.etatCivil");
+        this.etatCivil = etatCivil;
     }
 
     /**
@@ -37,6 +46,10 @@ public class Personne extends Tiers {
      */
     public String getDateDeces() {
         return dateDeces;
+    }
+
+    public boolean isDecede() {
+        return !(dateDeces == null || dateDeces.isEmpty());
     }
 
     /**

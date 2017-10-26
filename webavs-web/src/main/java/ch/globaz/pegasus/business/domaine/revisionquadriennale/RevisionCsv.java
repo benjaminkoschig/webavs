@@ -2,7 +2,7 @@ package ch.globaz.pegasus.business.domaine.revisionquadriennale;
 
 import ch.globaz.common.domaine.Montant;
 import ch.globaz.common.listoutput.converterImplemented.MontantConverterToDouble;
-import ch.globaz.pegasus.business.domaine.pca.PcaSitutation;
+import ch.globaz.pegasus.business.domaine.pca.PcaSituation;
 import ch.globaz.simpleoutputlist.annotation.Column;
 import ch.globaz.simpleoutputlist.annotation.ColumnValueConverter;
 import ch.globaz.simpleoutputlist.annotation.style.Align;
@@ -111,7 +111,7 @@ public interface RevisionCsv {
     public String getAdresseDomicileCasePostal();
 
     @Column(name = "CasPca", order = 34)
-    public PcaSitutation getCasPca();
+    public PcaSituation getCasPca();
 
     @Column(name = "Nb Adulte", order = 35)
     public Integer getNbAdulte();

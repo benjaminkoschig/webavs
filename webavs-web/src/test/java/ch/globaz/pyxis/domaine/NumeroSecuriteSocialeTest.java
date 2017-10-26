@@ -1,5 +1,6 @@
 package ch.globaz.pyxis.domaine;
 
+import static org.fest.assertions.api.Assertions.*;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -103,4 +104,20 @@ public class NumeroSecuriteSocialeTest {
             // ok
         }
     }
+
+    @Test
+    public void testNSSinconnue() {
+        try {
+            new NumeroSecuriteSociale("000.0000.0000.00");
+        } catch (Exception ex) {
+            Assert.fail();
+        }
+    }
+
+    @Test
+    public void testFormatNssInLong() throws Exception {
+        NumeroSecuriteSociale nss = new NumeroSecuriteSociale("756.1234.5678.97");
+        assertThat(nss.formatInLong()).isEqualTo(7561234567897L);
+    }
+
 }

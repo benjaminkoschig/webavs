@@ -22,11 +22,81 @@ import ch.globaz.common.domaine.Checkers;
  */
 public class NumeroSecuriteSociale implements Serializable {
 
-    /**
-     * 
-     */
     private static final long serialVersionUID = 1L;
     private static final String REGEX_NSS = "756\\.[0-9]{4}\\.[0-9]{4}\\.[0-9]{2}";
+    private static final String NSS_INCONNUE = "000.0000.0000.00";
+    private final String nss;
+
+    public NumeroSecuriteSociale() {
+        nss = "";
+    }
+
+    /**
+     * Vérifie la validité du numéro de sécurité sociale passé en paramètre avant de construire cet objet.<br/>
+     * Un numéro est valide si :
+     * <ul>
+     * <li>il est sous la forme 756.xxxx.xxxx.xx où x sont des numéros.</li>
+     * <li>le dernier numéro, qui est la somme de contrôle, doit être égal à
+     * 
+     * <pre>
+     * ( 10 - ( (3 * somme des nombre à index impaires + somme des nombres à index paires) % 10 ) ) % 10
+     * </pre>
+     * 
+     * @param nss
+     * @throws IllegalArgumentException
+     *             si une des conditions citées plus haut n'est pas remplie
+     */
+    public NumeroSecuriteSociale(final String nss) {
+        Checkers.checkNotNull(nss, "nss");
+        NumeroSecuriteSociale.validate(nss);
+
+        this.nss = nss;
+    }
+
+    /**
+     * <p>
+     * Contrôle la validité du numéro de sécurité sociale passé en paramètre.
+     * </p>
+     * <p>
+     * Un numéro est valide si :
+     * <ul>
+     * <li>il est sous la forme 756.xxxx.xxxx.xx où x sont des numéros.</li>
+     * <li>le dernier numéro, qui est la somme de contrôle, doit être égal à
+     * 
+     * <pre>
+     * ( 10 - ( (3 * somme des nombre à index impaires + somme des nombres à index paires) % 10 ) ) % 10
+     * </pre>
+     * 
+     * </li>
+     * </ul>
+     * </p>
+     * 
+     * @param nss
+     *            un numéro de sécurité de sociale dont on veut valider la forme
+     * @throws IllegalArgumentException
+     *             si une des conditions citées plus haut n'est pas remplie
+     * @see #checkSumEAN13(String)
+     */
+    public static void validate(final String nss) throws IllegalArgumentException {
+        if (!NSS_INCONNUE.equals(nss)) {
+            NumeroSecuriteSociale.checkFormat(nss);
+            NumeroSecuriteSociale.checkSumEAN13(nss);
+        }
+    }
+
+    /**
+     * Convert a formated Nss as required to long
+     * 
+     * @param nss, formated in string
+     * @return null if input is empty
+     */
+    public Long formatInLong() {
+        Long nssL = Long.valueOf(nss.replaceAll("\\.", "").trim());
+        if (nssL > 7569999999999L || nssL <= 7560000000000L) {
+            throw new IllegalArgumentException("Le NSS n'est pas valide [" + nss + "].");
+        }
+        return nssL;
+    }
 
     private static void checkFormat(final String nss) {
         if (!nss.matches(NumeroSecuriteSociale.REGEX_NSS)) {
@@ -96,59 +166,6 @@ public class NumeroSecuriteSociale implements Serializable {
         }
 
         return sum;
-    }
-
-    /**
-     * <p>
-     * Contrôle la validité du numéro de sécurité sociale passé en paramètre.
-     * </p>
-     * <p>
-     * Un numéro est valide si :
-     * <ul>
-     * <li>il est sous la forme 756.xxxx.xxxx.xx où x sont des numéros.</li>
-     * <li>le dernier numéro, qui est la somme de contrôle, doit être égal à
-     * 
-     * <pre>
-     * ( 10 - ( (3 * somme des nombre à index impaires + somme des nombres à index paires) % 10 ) ) % 10
-     * </pre>
-     * 
-     * </li>
-     * </ul>
-     * </p>
-     * 
-     * @param nss
-     *            un numéro de sécurité de sociale dont on veut valider la forme
-     * @throws IllegalArgumentException
-     *             si une des conditions citées plus haut n'est pas remplie
-     * @see #checkSumEAN13(String)
-     */
-    public static void validate(final String nss) throws IllegalArgumentException {
-        NumeroSecuriteSociale.checkFormat(nss);
-        NumeroSecuriteSociale.checkSumEAN13(nss);
-    }
-
-    private final String nss;
-
-    /**
-     * Vérifie la validité du numéro de sécurité sociale passé en paramètre avant de construire cet objet.<br/>
-     * Un numéro est valide si :
-     * <ul>
-     * <li>il est sous la forme 756.xxxx.xxxx.xx où x sont des numéros.</li>
-     * <li>le dernier numéro, qui est la somme de contrôle, doit être égal à
-     * 
-     * <pre>
-     * ( 10 - ( (3 * somme des nombre à index impaires + somme des nombres à index paires) % 10 ) ) % 10
-     * </pre>
-     * 
-     * @param nss
-     * @throws IllegalArgumentException
-     *             si une des conditions citées plus haut n'est pas remplie
-     */
-    public NumeroSecuriteSociale(final String nss) {
-        Checkers.checkNotNull(nss, "nss");
-        NumeroSecuriteSociale.validate(nss);
-
-        this.nss = nss;
     }
 
     @Override

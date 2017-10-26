@@ -1,7 +1,6 @@
 package ch.globaz.pegasus.business.domaine.membreFamille;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -54,7 +53,7 @@ public class MembresFamilles {
         return getMembresFamilles().size();
     }
 
-    public Collection<MembreFamille> getMembresFamilles() {
+    public List<MembreFamille> getMembresFamilles() {
         List<MembreFamille> list = new ArrayList<MembreFamille>();
         if (!membresFamilles.isEmpty()) {
             for (List<MembreFamille> membres : membresFamilles.values()) {

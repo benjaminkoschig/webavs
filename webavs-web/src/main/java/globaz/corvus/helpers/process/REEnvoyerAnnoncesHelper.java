@@ -16,7 +16,7 @@ import globaz.globall.api.BISession;
 import globaz.globall.db.BSession;
 import globaz.globall.util.JADate;
 import globaz.globall.util.JAException;
-import ch.globaz.common.business.exceptions.CommonTechnicalException;
+import ch.globaz.common.exceptions.CommonTechnicalException;
 
 /**
  * <H1>Description</H1>

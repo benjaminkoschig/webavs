@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.pegasus.rpc.business.models.RetourAnnonce">
+
+	    <root-model name="simpleAnnonce" model-ref="ch.globaz.pegasus.rpc.business.models.SimpleAnnonce" select-fields="true" />
+
+	    <linked-model name="simpleLienAnnonceDecision" model-ref="ch.globaz.pegasus.rpc.business.models.SimpleLienAnnonceDecision" join-type="INNER" >
+			<join-group operator="AND">
+				<join-field name="idAnnonce" operation="EQUALS" field-ref="simpleAnnonce.id"/>
+			</join-group>		
+		</linked-model>
+		
+		<linked-model name="simpleDecisionHeader" model-ref="ch.globaz.pegasus.business.models.decision.SimpleDecisionHeader" join-type="INNER" >
+			<join-group operator="AND">
+				<join-field name="idDecisionHeader" operation="EQUALS" field-ref="simpleLienAnnonceDecision.idDecision"/>
+			</join-group>		
+		</linked-model>
+		
+		<linked-model name="simpleRetourAnnonce" model-ref="ch.globaz.pegasus.rpc.business.models.SimpleRetourAnnonce" join-type="INNER" >
+			<join-group operator="AND">
+				<join-field name="idLien" operation="EQUALS" field-ref="simpleLienAnnonceDecision.id"/>
+			</join-group>		
+		</linked-model>
+		
+		<search-definition>
+			<search-group operator="AND">	
+				<search-field name="forIdAnnonce" operation="EQUALS" field-ref="simpleAnnonce.id"/>
+				<search-field name="forIdLot" operation="EQUALS" field-ref="simpleAnnonce.idLot"/>
+				<search-field name="forIdDecision" operation="EQUALS" field-ref="simpleLienAnnonceDecision.idDecision"/>
+				<search-field name="forCategoryPlausi" operation="EQUALS" field-ref="simpleRetourAnnonce.csCategoriePlausi"/>
+				<search-field name="forAnnonceCodeTraitement" operation="EQUALS" field-ref="simpleAnnonce.csCodeTraitement"/>
+			</search-group>
+		</search-definition>
+	</complexe-model>
+</model-mapping>

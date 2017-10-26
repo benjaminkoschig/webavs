@@ -271,6 +271,16 @@ public class MontantTest {
     }
 
     @Test
+    public void testAnnualiseByDate() throws Exception {
+        Montant montant = Montant.newMensuel(1);
+        Montant montantAnualise = montant.annualise(new Date("10.10.2016"));
+        assertEquals(new BigDecimal(366), montantAnualise.getCurrency());
+        assertTrue(montantAnualise.isAnnuel());
+        montantAnualise = montant.annualise(new Date("10.10.2015"));
+        assertEquals(new BigDecimal(365), montantAnualise.getCurrency());
+    }
+
+    @Test
     public void testAnnualiseJournalier() throws Exception {
         Montant montant = Montant.newJouranlier("10");
         Montant montantAnualise = montant.annualise();
@@ -405,5 +415,12 @@ public class MontantTest {
     public void testAbs() throws Exception {
         assertEquals("5.00", new Montant(5).abs().toStringFormat());
         assertEquals("5.00", new Montant(-5).abs().toStringFormat());
+    }
+
+    @Test
+    public void testArrondiAUnIntierSupperior() throws Exception {
+        assertEquals("6.00", new Montant(5.01).arrondiAUnIntierSupperior().toStringFormat());
+        assertEquals("6.00", new Montant(5.75).arrondiAUnIntierSupperior().toStringFormat());
+        assertEquals("6.00", new Montant(5.5).arrondiAUnIntierSupperior().toStringFormat());
     }
 }

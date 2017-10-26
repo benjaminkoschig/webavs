@@ -8,17 +8,17 @@ import java.util.Map;
 
 public abstract class ProcessItem implements Runnable {
     private Map<String, List<String>> errors = new HashMap<String, List<String>>();
-    private Exception exception;
+    private Throwable exception;
 
     public abstract void treat() throws Exception;
 
     public abstract String getDescription();
 
-    public Exception getException() {
+    public Throwable getException() {
         return exception;
     }
 
-    public void catchException(Exception exception) {
+    public void catchException(Throwable exception) {
         this.exception = exception;
     }
 
@@ -53,7 +53,7 @@ public abstract class ProcessItem implements Runnable {
     public void run() {
         try {
             treat();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             catchException(e);
         }
     }

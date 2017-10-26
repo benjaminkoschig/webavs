@@ -23,7 +23,7 @@ import ch.globaz.pegasus.business.domaine.membreFamille.MembresFamilles;
 import ch.globaz.pegasus.business.domaine.membreFamille.RoleMembreFamille;
 import ch.globaz.pegasus.business.domaine.pca.Pca;
 import ch.globaz.pegasus.business.domaine.pca.PcaRequerantConjoint;
-import ch.globaz.pegasus.business.domaine.pca.PcaSitutation;
+import ch.globaz.pegasus.business.domaine.pca.PcaSituation;
 import ch.globaz.pegasus.business.models.pcaccordee.NouvelleEtAnciennePcaCourante;
 import ch.globaz.pegasus.business.models.pcaccordee.NouvelleEtAnciennePcaCouranteSearch;
 import ch.globaz.pegasus.business.models.pcaccordee.SimplePlanDeCalcul;
@@ -344,7 +344,7 @@ public class PcaLoader {
 
     String resolveIdTierToUsedForAdresse(PcaRequerantConjoint pcas) {
         String id = null;
-        PcaSitutation pcaCas = pcas.resolveCasPca();
+        PcaSituation pcaCas = pcas.resolveCasPca();
         if (pcaCas.isCoupleSepareRequerantEnHome()) {
             id = String.valueOf(pcas.getConjoint().getBeneficiaire().getId());
         } else {
