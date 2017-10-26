@@ -4,8 +4,8 @@
 	<!--adminEmailAddress: adresse email de l'administrateur (vide par defaut)-->
 	<!--senderEmailAddress: adresse email de l'expediteur des mails (vide par defaut)-->
 	<!--backupEmailAddress: adresse email du compte de backup (vide par defaut)-->
-	<adminEmailAddress>info@globaz.ch</adminEmailAddress>
-	<senderEmailAddress>info@globaz.ch</senderEmailAddress>
+	<adminEmailAddress>integration@globaz.ch</adminEmailAddress>
+	<senderEmailAddress>integration@globaz.ch</senderEmailAddress>
 	<backupEmailAddress></backupEmailAddress>
 	<!--domains: liste des domaines de messagerie autorises-->
 	<domains>
