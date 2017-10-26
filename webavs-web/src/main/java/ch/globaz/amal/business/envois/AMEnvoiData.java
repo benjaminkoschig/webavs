@@ -595,11 +595,14 @@ public class AMEnvoiData extends EnvoiData {
         // Particularité DECMPC7
         // Ajout d'une particularité : DES 2015 (S140922_008) (22.09.2014)
         // Ajout d'une particularité : DES 2016 (S150923_008) (08.10.2015)
+        // Ajout d'une particularité : DES 2018 (S171020_001) (27.10.2017)
 
         // Récapitulatif :
         // 2011 et avant + 2015 ==> DECMPC7_2011
         // 2012 à 2014 ==> DECMPC7 (default)
-        // 2016 et après ==> DECMPC7_2016
+        // 2016 à 2017 ==> DECMPC7_2016
+        // 2018 et après ==> DECMPC7_2018
+
         // ---------------------------------------------------------------------------------
         if (getIdProcess().contains("DECMPC7")) {
             // Depuis les objects chargés, on récupère le current détail famille
@@ -611,8 +614,10 @@ public class AMEnvoiData extends EnvoiData {
                 iAnneeHistorique = Integer.parseInt(anneHistorique);
                 if (iAnneeHistorique < 2012 || iAnneeHistorique == 2015) {
                     setIdProcess("DECMPC7_2011");
-                } else if (iAnneeHistorique >= 2016) {
+                } else if (iAnneeHistorique >= 2016 && iAnneeHistorique < 2018) {
                     setIdProcess("DECMPC7_2016");
+                } else if (iAnneeHistorique >= 2018) {
+                    setIdProcess("DECMPC7_2018");
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -622,11 +627,13 @@ public class AMEnvoiData extends EnvoiData {
         // Particularité DECMPCM
         // Ajout d'une particularité : DES 2015 (S140922_008) (22.09.2014)
         // Ajout d'une particularité : DES 2016 (S150923_008) (08.10.2015)
+        // Ajout d'une particularité : DES 2018 (S171020_001) (27.10.2017)
 
         // Récapitulatif :
         // 2011 et avant + 2015 ==> DECMPCM_2011
         // 2012 à 2014 ==> DECMPCM (default)
-        // 2016 et après ==> DECMPCM_2016
+        // 2016 à 2017 ==> DECMPCM_2016
+        // 2018 et après ==> DECMPCM_2018
         // ---------------------------------------------------------------------------------
         if (getIdProcess().contains("DECMPCM")) {
             // Depuis les objects chargés, on récupère le current détail famille
@@ -638,8 +645,10 @@ public class AMEnvoiData extends EnvoiData {
                 iAnneeHistorique = Integer.parseInt(anneHistorique);
                 if (iAnneeHistorique < 2012 || iAnneeHistorique == 2015) {
                     setIdProcess("DECMPCM_2011");
-                } else if (iAnneeHistorique >= 2016) {
+                } else if (iAnneeHistorique >= 2016 && iAnneeHistorique < 2018) {
                     setIdProcess("DECMPCM_2016");
+                } else if (iAnneeHistorique >= 2018) {
+                    setIdProcess("DECMPCM_2018");
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();

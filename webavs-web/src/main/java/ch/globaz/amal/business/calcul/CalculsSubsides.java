@@ -527,8 +527,10 @@ public class CalculsSubsides {
             }
 
             boolean isAssiste = IAMCodeSysteme.AMTypeDemandeSubside.ASSISTE.getValue().equals(typeDemande);
-            boolean isYear2015 = Integer.parseInt(simpleDetailFamille.getAnneeHistorique()) == 2015;
-            boolean isYearDes2016 = Integer.parseInt(simpleDetailFamille.getAnneeHistorique()) >= 2016;
+            int anneHistorique = Integer.parseInt(simpleDetailFamille.getAnneeHistorique());
+            boolean isYear2015 = anneHistorique == 2015;
+            boolean isYearDes2016 = anneHistorique >= 2016 && anneHistorique < 2018;
+            boolean isYearDes2018 = anneHistorique >= 2018;
             boolean isPC = IAMCodeSysteme.AMTypeDemandeSubside.PC.getValue().equals(typeDemande);
 
             String montantA = null;
@@ -540,6 +542,9 @@ public class CalculsSubsides {
                 } else if (isYearDes2016) {
                     montantA = simplePrimeAvantageuse.getMontantPrimeEnfant();
                     montantP = simplePrimeAvantageuse.getMontantPrimeEnfant();
+                } else if (isYearDes2018) {
+                    montantA = simplePrimeAvantageuse.getMontantPrimeEnfant();
+                    montantP = simplePrimeMoyenne.getMontantPrimeEnfant();
                 } else {
                     montantA = simplePrimeMoyenne.getMontantPrimeEnfant();
                 }
@@ -550,6 +555,9 @@ public class CalculsSubsides {
                 } else if (isYearDes2016) {
                     montantA = simplePrimeAvantageuse.getMontantPrimeFormation();
                     montantP = simplePrimeAvantageuse.getMontantPrimeFormation();
+                } else if (isYearDes2018) {
+                    montantA = simplePrimeAvantageuse.getMontantPrimeFormation();
+                    montantP = simplePrimeMoyenne.getMontantPrimeFormation();
                 } else {
                     montantA = simplePrimeMoyenne.getMontantPrimeFormation();
                 }
@@ -561,6 +569,9 @@ public class CalculsSubsides {
                     } else if (isYearDes2016) {
                         montantA = simplePrimeAvantageuse.getMontantPrimeAdulte();
                         montantP = simplePrimeAvantageuse.getMontantPrimeAdulte();
+                    } else if (isYearDes2018) {
+                        montantA = simplePrimeAvantageuse.getMontantPrimeAdulte();
+                        montantP = simplePrimeMoyenne.getMontantPrimeAdulte();
                     } else {
                         montantA = simplePrimeMoyenne.getMontantPrimeAdulte();
                     }
