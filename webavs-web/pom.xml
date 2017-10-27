@@ -7,7 +7,7 @@
 		<version>1.19.1-ALPHA-SNAPSHOT</version>
 	</parent>
 
-	<packaging>war</packaging>
+<packaging>war</packaging>
 	<artifactId>webavs-web</artifactId>
 
 	<name>WebAVS</name>
