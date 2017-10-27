@@ -63,6 +63,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import ch.globaz.common.properties.PropertiesException;
 
 public class AFIdeTraitementAnnonceProcess extends BProcess implements FWViewBeanInterface {
 
@@ -787,7 +788,7 @@ public class AFIdeTraitementAnnonceProcess extends BProcess implements FWViewBea
     }
 
     private void updateAffiliationWithAnnonceEntrante(List<AFAffiliation> listAffiliation,
-            AFIdeAnnonce ideAnnonceEntrante) throws Exception {
+            AFIdeAnnonce ideAnnonceEntrante, boolean isAnnoncePassive) throws Exception {
 
         String numeroIDE = ideAnnonceEntrante.getHistNumeroIde();
         String idCodeNoga = null;
@@ -812,22 +813,19 @@ public class AFIdeTraitementAnnonceProcess extends BProcess implements FWViewBea
 
             for (AFAffiliation aAffiliation : listAffiliation) {
 
-                aAffiliation.setNumeroIDE(ideDataBean.getNumeroIDE());
-                aAffiliation.setIdeRaisonSociale(ideDataBean.getRaisonSociale());
-                aAffiliation.setIdeStatut(ideDataBean.getStatut());
+                if (isAnnoncePassive) {
+                    miseAJourCodeNoga(ideAnnonceEntrante, idCodeNoga, aAffiliation);
+                } else {
+                    aAffiliation.setNumeroIDE(ideDataBean.getNumeroIDE());
+                    aAffiliation.setIdeRaisonSociale(ideDataBean.getRaisonSociale());
+                    aAffiliation.setIdeStatut(ideDataBean.getStatut());
 
-                // Dans ce cas là la MAJ du code noga se base sur le fichier XML
-                if (!AFProperties.NOGA_UPDATE_ANNONCE_IDE.getValue().isEmpty()
-                        && AFProperties.NOGA_UPDATE_ANNONCE_IDE.getValue() != null
-                        && AFProperties.NOGA_UPDATE_ANNONCE_IDE.getBooleanValue()) {
-                    idCodeNoga = getidCodePourCodeNoga(ideAnnonceEntrante.getHistNoga());
-                    aAffiliation.setCodeNoga(idCodeNoga);
+                    miseAJourCodeNoga(ideAnnonceEntrante, idCodeNoga, aAffiliation);
                 }
 
                 aAffiliation.setRulesByPass(true);
                 AFAffiliationUtil.disableExtraProcessingForAffiliation(aAffiliation);
                 aAffiliation.update(getTransaction());
-
             }
             if (AFIDEUtil.isAnnonceAnnulationDoublon(ideAnnonceEntrante)) {
                 // D0181 générer une annonce d'enregistrement Actif pour le numéro ide de remplacement
@@ -855,6 +853,17 @@ public class AFIdeTraitementAnnonceProcess extends BProcess implements FWViewBea
                             + numeroIDE);
         }
 
+    }
+
+    private void miseAJourCodeNoga(AFIdeAnnonce ideAnnonceEntrante, String idCodeNoga, AFAffiliation aAffiliation)
+            throws PropertiesException, Exception {
+        // Dans ce cas là la MAJ du code noga se base sur le fichier XML
+        if (!AFProperties.NOGA_UPDATE_ANNONCE_IDE.getValue().isEmpty()
+                && AFProperties.NOGA_UPDATE_ANNONCE_IDE.getValue() != null
+                && AFProperties.NOGA_UPDATE_ANNONCE_IDE.getBooleanValue()) {
+            idCodeNoga = getidCodePourCodeNoga(ideAnnonceEntrante.getHistNoga());
+            aAffiliation.setCodeNoga(idCodeNoga);
+        }
     }
 
     /***
@@ -1060,16 +1069,14 @@ public class AFIdeTraitementAnnonceProcess extends BProcess implements FWViewBea
     private void doUpdateAfterTraitementAnnonceEntrante(AFIdeAnnonce ideAnnonceEntrante, boolean isAnnoncePassive,
             List<AFAffiliation> listAffiliationToUpdate, boolean errorMustFlagAnnonceAsSuccess) throws Exception {
 
-        if (!ideAnnonceEntrante.hasAnnonceErreur()) {
-            if (!isAnnoncePassive) {
-                updateAffiliationWithAnnonceEntrante(listAffiliationToUpdate, ideAnnonceEntrante);
-            }
+        if (!ideAnnonceEntrante.hasAnnonceErreur()
+                && (!isAnnoncePassive || (isAnnoncePassive && !ideAnnonceEntrante.getNumeroAffilie().isEmpty()))) {
+            updateAffiliationWithAnnonceEntrante(listAffiliationToUpdate, ideAnnonceEntrante, isAnnoncePassive);
         }
 
         updateAnnonceAfterTraitementAnnonceEntrante(ideAnnonceEntrante,
                 AFIDEUtil.giveMeStatusAnnonceApresTraitementAccordingToError(ideAnnonceEntrante,
                         errorMustFlagAnnonceAsSuccess));
-
     }
 
     private String logTechnicalErrorMessage(String idAnnonce) {
