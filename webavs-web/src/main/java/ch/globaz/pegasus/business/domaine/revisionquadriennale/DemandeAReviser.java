@@ -455,7 +455,7 @@ public class DemandeAReviser implements RevisionCsv {
 
     @Override
     public Montant getRevenuRenteEtrangereRequerant() {
-        //TODO Passer la date de la décision au lieux de new Date()
+        // TODO Passer la date de la décision au lieux de new Date()
         AutresRentes autresRentes = donneesFinancieres.getAutresRentes().getAutresRentesByGenre(
                 AutreRenteGenre.RENTE_ETRANGERE);
         return autresRentes.getDonneesForRequerant().sumAndComputeDevise(parameters.getMonnaiesEtrangere(), new Date());
@@ -463,7 +463,7 @@ public class DemandeAReviser implements RevisionCsv {
 
     @Override
     public Montant getRevenuRenteEtrangereConjEnf() {
-        //TODO Passer la date de la décision au lieux de new Date()
+        // TODO Passer la date de la décision au lieux de new Date()
         AutresRentes autresRentes = donneesFinancieres.getAutresRentes(AutreRenteGenre.RENTE_ETRANGERE);
         return autresRentes.getDonneesForConjointEnfant().sumAndComputeDevise(parameters.getMonnaiesEtrangere(),
                 new Date());
@@ -745,7 +745,7 @@ public class DemandeAReviser implements RevisionCsv {
 
     @Override
     public Montant getDeductionChargesAnnuelesRequerant() {
-        //TODO Remonter la charge forfaitaire Attention aux date, regarder aux place comment filtrer sur la date 
+        // TODO Remonter la charge forfaitaire Attention aux date, regarder aux place comment filtrer sur la date
         return donneesFinancieres.getLoyers().getDonneesForRequerant().sum(new Each<Loyer>() {
             @Override
             public Montant getMontant(Loyer loyer) {
@@ -756,7 +756,8 @@ public class DemandeAReviser implements RevisionCsv {
 
     @Override
     public Montant getDeductionChargesAnnuelesConjEnf() {
-        //TODO Remonter la charge forfaitaire Attention aux date, regarder aux place comment filtrer sur la date         return donneesFinancieres.getLoyers().getDonneesForConjointEnfant().sum(new Each<Loyer>() {
+        // TODO Remonter la charge forfaitaire Attention aux date, regarder aux place comment filtrer sur la date
+        return donneesFinancieres.getLoyers().getDonneesForConjointEnfant().sum(new Each<Loyer>() {
             @Override
             public Montant getMontant(Loyer loyer) {
                 return loyer.computeCharge(Montant.ZERO_ANNUEL);
