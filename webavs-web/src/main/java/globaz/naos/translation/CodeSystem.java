@@ -480,6 +480,7 @@ public class CodeSystem {
     public static final String TYPE_CAT_RAPPEL_LPP = "836008";
     public static final String TYPE_CAT_SOMMATION_LAA = "836013";
     public static final String TYPE_CAT_SOMMATION_LPP = "836009";
+    public static final String TYPE_CAT_CONTROLE_LPP = "836400";
     // Type Afact
     public static final String TYPE_FACT_FACT_STANDARD = "904001";
     public static final String TYPE_LETTRE_DECISION = "836031";

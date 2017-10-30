@@ -1,16 +1,13 @@
 package globaz.naos.itext.suiviLPP;
 
 import globaz.caisse.report.helper.ICaisseReportHelper;
-import globaz.framework.printing.itext.fill.FWIImportManager;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
 import globaz.globall.db.FWFindParameter;
 import globaz.globall.db.FWFindParameterManager;
 import globaz.hercule.service.CETiersService;
-import globaz.jade.common.Jade;
 import globaz.jade.log.JadeLogger;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
-import globaz.naos.application.AFApplication;
 import globaz.naos.db.affiliation.AFAffiliation;
 import globaz.naos.db.affiliation.AFAffiliationManager;
 import globaz.naos.db.controleLpp.AFSuiviLppAnnuelSalarie;
@@ -29,10 +26,6 @@ public class AFQuestionnaireLPPAnnuel_Doc extends AFAbstractTiersDocument {
 
     private static final String NUM_INFOROM_QUESTIONNAIRE = "0108CAF";
     private static final long serialVersionUID = 4255258269940535901L;
-    private String modelDe = "NAOS_QUESTIONNAIRE_LPP_VERSO_DE";
-    private String modelFr = "NAOS_QUESTIONNAIRE_LPP_VERSO_FR";
-
-    private String modelPath = "model/static/";
 
     private String pathListeExtraitDS;
     private JadePublishDocumentInfo documentInfoListeExtraitDS;
@@ -42,24 +35,11 @@ public class AFQuestionnaireLPPAnnuel_Doc extends AFAbstractTiersDocument {
     }
 
     public AFQuestionnaireLPPAnnuel_Doc(BSession session) throws Exception {
-        super(session, session.getLabel(AFQuestionnaireLPP_Param.L_NOMDOC));
+        super(session, session.getLabel(AFControleLPPAnnuel_Param.L_NOMDOC));
     }
 
     @Override
     public void afterBuildReport() {
-        FWIImportManager m = new FWIImportManager();
-        try {
-            if ("DE".equals(getIsoLangueDestinataire())) {
-                addDocument(m.importReport(modelDe, Jade.getInstance().getExternalModelDir()
-                        + AFApplication.DEFAULT_APPLICATION_NAOS_REP + "//" + modelPath));
-            } else {
-                addDocument(m.importReport(modelFr, Jade.getInstance().getExternalModelDir()
-                        + AFApplication.DEFAULT_APPLICATION_NAOS_REP + "//" + modelPath));
-            }
-
-        } catch (Exception e) {
-            JadeLogger.error(this, e);
-        }
     }
 
     @Override
@@ -95,7 +75,7 @@ public class AFQuestionnaireLPPAnnuel_Doc extends AFAbstractTiersDocument {
 
     @Override
     public String getCategorie() {
-        return CodeSystem.TYPE_CAT_QUEST_LPP;
+        return CodeSystem.TYPE_CAT_CONTROLE_LPP;
     }
 
     @Override
@@ -105,17 +85,17 @@ public class AFQuestionnaireLPPAnnuel_Doc extends AFAbstractTiersDocument {
 
     @Override
     public int getNbLevel() {
-        return AFQuestionnaireLPP_Param.NB_LEVEL;
+        return AFControleLPPAnnuel_Param.NB_LEVEL;
     }
 
     @Override
     public String getNomDoc() throws Exception {
-        return getSession().getLabel(AFQuestionnaireLPP_Param.L_NOMDOC);
+        return getSession().getLabel(AFControleLPPAnnuel_Param.L_NOMDOC);
     }
 
     @Override
     protected String getTemplate() {
-        return AFQuestionnaireLPP_Param.TEMPLATE_QUEST_LPP;
+        return AFControleLPPAnnuel_Param.TEMPLATE_CONTROLE_ANNUEL_LPP;
     }
 
     @Override
@@ -224,62 +204,65 @@ public class AFQuestionnaireLPPAnnuel_Doc extends AFAbstractTiersDocument {
     public void setFieldToCatTexte(int i, String value) throws Exception {
         switch (i) {
             case 1:
-                this.setParametres(AFQuestionnaireLPP_Param.P_TITLE, value);
+                this.setParametres(AFControleLPPAnnuel_Param.P_TITLE, value);
                 break;
             case 2:
-                this.setParametres(AFQuestionnaireLPP_Param.P_CORPS, format(value, getParams("", getSession())));
+                this.setParametres(AFControleLPPAnnuel_Param.P_POLITESSE, format(value, getParams("", getSession())));
                 break;
             case 3:
-                this.setParametres(AFQuestionnaireLPP_Param.P_SIGN_LETTRE, value);
+                this.setParametres(AFControleLPPAnnuel_Param.P_TEXTE, value);
                 break;
             case 4:
-                this.setParametres(AFQuestionnaireLPP_Param.P_QUESTGAUCHE, value);
+                this.setParametres(AFControleLPPAnnuel_Param.P_TEXTE2, value);
                 break;
             case 5:
-                this.setParametres(AFQuestionnaireLPP_Param.P_TITLEQUEST, value);
+                this.setParametres(AFControleLPPAnnuel_Param.P_TEXTE3, value);
                 break;
             case 6:
-                this.setParametres(AFQuestionnaireLPP_Param.P_QUEST, value);
+                this.setParametres(AFControleLPPAnnuel_Param.P_TEXTE4, value);
                 break;
             case 7:
-                this.setParametres(AFQuestionnaireLPP_Param.P_OUI, value);
+                this.setParametres(AFControleLPPAnnuel_Param.P_TEXTE5, format(value, getParams("", getSession())));
                 break;
             case 8:
-                this.setParametres(AFQuestionnaireLPP_Param.P_NON, value);
+                this.setParametres(AFControleLPPAnnuel_Param.P_SIGN_LETTRE, value);
                 break;
             case 9:
-                this.setParametres(AFQuestionnaireLPP_Param.P_QUESTDROITE, value);
+                this.setParametres(AFControleLPPAnnuel_Param.P_ANNEXE, value);
                 break;
             case 10:
-                this.setParametres(AFQuestionnaireLPP_Param.P_QUESTDROITE2, value);
+                this.setParametres(AFControleLPPAnnuel_Param.P_ANNEXE2, value);
                 break;
             case 11:
-                this.setParametres(AFQuestionnaireLPP_Param.P_QUESTDROITE3, value);
+                this.setParametres(AFControleLPPAnnuel_Param.P_TEXTE6, value);
                 break;
             case 12:
-                this.setParametres(AFQuestionnaireLPP_Param.P_MOTIF, value);
+                this.setParametres(AFControleLPPAnnuel_Param.P_TEXTE7, value);
                 break;
             case 13:
-                this.setParametres(AFQuestionnaireLPP_Param.P_QUESTGAUCHE2, value);
+                this.setParametres(AFControleLPPAnnuel_Param.P_ASTERISQUE, value);
                 break;
             case 14:
-                this.setParametres(AFQuestionnaireLPP_Param.P_QUESTGAUCHEJOIN, value);
+                this.setParametres(AFControleLPPAnnuel_Param.P_DESLE, value);
                 break;
             case 15:
-                this.setParametres(AFQuestionnaireLPP_Param.P_QUESTGAUCHE3, value);
+                this.setParametres(AFControleLPPAnnuel_Param.P_DATE, value);
                 break;
             case 16:
-                this.setParametres(AFQuestionnaireLPP_Param.P_LIEUDATELIBELLE, value);
+                this.setParametres(AFControleLPPAnnuel_Param.P_SIGNATURE, value);
                 break;
             case 17:
-                this.setParametres(AFQuestionnaireLPP_Param.P_SIGNATURE, value);
+                this.setParametres(AFControleLPPAnnuel_Param.P_NIP, value);
                 break;
             case 18:
-                this.setParametres(AFQuestionnaireLPP_Param.P_COMMENTSIGN, value);
+                this.setParametres(AFControleLPPAnnuel_Param.P_WARNING, value);
+                break;
+            case 19:
+                this.setParametres(AFControleLPPAnnuel_Param.P_WARNING2, value);
                 break;
             default:
                 throw new Exception("Ce paramètre ne peut pas être pris en compte. "
-                        + "Veuillez sélectionner des niveaux compris entre 1 et 18");
+                        + "Veuillez sélectionner des niveaux compris entre 1 et 19");
 
         }
 
