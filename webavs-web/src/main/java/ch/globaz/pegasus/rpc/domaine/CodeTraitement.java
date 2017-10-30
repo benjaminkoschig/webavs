@@ -5,5 +5,6 @@ public enum CodeTraitement {
     REFUS_CORRIGE,
     RETOUR_A_TRAITER,
     RETOUR_CORRIGE,
-    RETOUR_ACCEPTE
+    RETOUR_ACCEPTE,
+    RETOUR_AVERTISEMENT
 }

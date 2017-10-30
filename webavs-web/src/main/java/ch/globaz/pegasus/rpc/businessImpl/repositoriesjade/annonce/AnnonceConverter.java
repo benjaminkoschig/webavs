@@ -38,6 +38,7 @@ public class AnnonceConverter implements DomaineConverterJade<AnnonceRpc, Simple
         codeTraitementConverter.put("64075003", CodeTraitement.RETOUR_A_TRAITER);
         codeTraitementConverter.put("64075004", CodeTraitement.RETOUR_ACCEPTE);
         codeTraitementConverter.put("64075005", CodeTraitement.RETOUR_CORRIGE);
+        codeTraitementConverter.put("64075006", CodeTraitement.RETOUR_AVERTISEMENT);
 
         typeConverter.put("64077001", TypeAnnonce.PARTIEL);
         typeConverter.put("64077002", TypeAnnonce.COMPLET);

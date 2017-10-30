@@ -42,6 +42,7 @@ import ch.globaz.pegasus.rpc.domaine.StatusRetourAnnonce;
 import ch.globaz.pegasus.rpc.domaine.TypeAnnonce;
 import ch.globaz.pegasus.rpc.domaine.plausi.AnnoncePlausiRetour;
 import ch.globaz.pegasus.rpc.domaine.plausi.PlausiRetour;
+import ch.globaz.pegasus.rpc.plausi.core.RpcPlausiCategory;
 
 public class RetourAnnonceRepository extends RepositoryJade<RetourAnnonceRpc, SimpleRetourAnnonce> {
 
@@ -126,7 +127,7 @@ public class RetourAnnonceRepository extends RepositoryJade<RetourAnnonceRpc, Si
             SimpleAnnonce simpleAnnonce = repo.findModelById(annoncesLien.get(0).getSimpleAnnonce().getId());
             AnnonceRpc annonceRpc = repo.getConverter().convertToDomain(simpleAnnonce);
             annonceRpc.setEtat(EtatAnnonce.CORRECTION);
-            annonceRpc.setCodeTraitement(CodeTraitement.RETOUR_A_TRAITER);
+            annonceRpc.setCodeTraitement(getCodeTraitement(annonce));
             repo.update(annonceRpc);
         }
         return annoncesLien.get(0).getSimpleLienAnnonceDecision();
@@ -135,7 +136,7 @@ public class RetourAnnonceRepository extends RepositoryJade<RetourAnnonceRpc, Si
     private SimpleLienAnnonceDecision createAnnonce(AnnoncePlausiRetour annonceRetour, PlausiRetour decision) {
         Annonce annonce = new Annonce();
         annonce.setEtat(EtatAnnonce.CORRECTION);
-        annonce.setCodeTraitement(CodeTraitement.RETOUR_A_TRAITER);
+        annonce.setCodeTraitement(getCodeTraitement(annonceRetour));
         annonce.setType(TypeAnnonce.COMPLET);
 
         SimpleLotAnnonce lot = findLotByDate(decision.getReceiptMonth().getSwissValue());
@@ -168,6 +169,22 @@ public class RetourAnnonceRepository extends RepositoryJade<RetourAnnonceRpc, Si
             throw new GlobazTechnicalException(ExceptionMessage.ERREUR_TECHNIQUE, e);
         }
         return lien;
+    }
+
+    private CodeTraitement getCodeTraitement(AnnoncePlausiRetour annonceRetour) {
+        boolean isRetourAvertisement = true;
+        if (annonceRetour != null && !annonceRetour.getPlausiRetours().isEmpty()) {
+            for (PlausiRetour plausi : annonceRetour.getPlausiRetours()) {
+                for (ch.globaz.pegasus.rpc.domaine.RetourAnnonce retour : plausi.getRetours()) {
+                    if (retour.getCategoriePlausi() != RpcPlausiCategory.WARNING
+                            && retour.getCategoriePlausi() != RpcPlausiCategory.INFO) {
+                        isRetourAvertisement = false;
+                    }
+                }
+
+            }
+        }
+        return isRetourAvertisement ? CodeTraitement.RETOUR_AVERTISEMENT : CodeTraitement.RETOUR_A_TRAITER;
     }
 
     private SimpleLotAnnonce findLotByDate(String date) {

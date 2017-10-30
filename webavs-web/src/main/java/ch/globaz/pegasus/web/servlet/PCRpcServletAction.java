@@ -19,9 +19,11 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import org.apache.commons.lang.StringUtils;
 import ch.globaz.common.domaine.Date;
+import ch.globaz.common.process.byitem.ProcessItemsService;
 import ch.globaz.common.properties.PropertiesException;
 import ch.globaz.pegasus.business.constantes.EPCProperties;
 import ch.globaz.pegasus.businessimpl.utils.PCproperties;
+import ch.globaz.pegasus.rpc.process.GenererAnnoncesProcess;
 
 public class PCRpcServletAction extends PCAbstractServletAction {
 
@@ -81,7 +83,10 @@ public class PCRpcServletAction extends PCAbstractServletAction {
         } else if (viewBean instanceof PCAnnoncesViewBean) {
             boolean hasRightsForGroupResponsableRPC = hasRightsForGroupResponsableRPC((BSession) viewBean.getISession());
             boolean canGenerateAnnonces = canGenerateAnnonces();
+            Boolean isProcessLaunched = ProcessItemsService.isProcessRunnig(GenererAnnoncesProcess.KEY);
 
+            // TODO: set search parameters for persistance in navigation
+            request.setAttribute("processLaunched", isProcessLaunched);
             request.setAttribute("hasRightsForGroupResponsableRPC", hasRightsForGroupResponsableRPC);
             request.setAttribute("canGenerateAnnonces", canGenerateAnnonces);
         }

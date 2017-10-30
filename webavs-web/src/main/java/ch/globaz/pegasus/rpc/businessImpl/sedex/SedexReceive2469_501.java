@@ -140,7 +140,6 @@ public class SedexReceive2469_501 {
                         mapTypeViolation.put(plausi.getTypeViolationPlausi(),
                                 mapTypeViolation.get(plausi.getTypeViolationPlausi()) + 1);
                     }
-
                 }
             }
         }
