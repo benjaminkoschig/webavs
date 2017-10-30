@@ -159,7 +159,7 @@
 	<!--externalHelpProvider: fournisseur du systeme d'aide externe (seul fournisseur accepte: myTeacherLx)-->
 	<externalHelpProvider>myTeacherLx</externalHelpProvider>
 	<!--externalHelpUrl: URL du systeme d'aide externe (remplacer le 20.09.2013 pour aller sur inforom)-->
-	<externalHelpUrl>https://extranet.inforom.ch</externalHelpUrl>
+	<externalHelpUrl>https://www.inforom.ch/portail/?id=inforom_webavs</externalHelpUrl>
 	<!--<externalHelpUrl>http://localhost:8080/webavs/fx?userAction=framework.dump.cookies</externalHelpUrl>-->
 	<!--externalHelpGlobazApplicationId: ID application de l'application GLOBAZ dans le systeme d'aide externe-->
 	<externalHelpGlobazApplicationId>ABC</externalHelpGlobazApplicationId>
