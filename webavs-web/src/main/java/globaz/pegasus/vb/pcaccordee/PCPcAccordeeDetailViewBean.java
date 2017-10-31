@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang.NotImplementedException;
 import ch.globaz.common.properties.PropertiesException;
+import ch.globaz.corvus.business.models.ventilation.SimpleVentilation;
 import ch.globaz.corvus.business.services.CorvusServiceLocator;
 import ch.globaz.pegasus.business.constantes.EPCProperties;
 import ch.globaz.pegasus.business.constantes.IPCActions;
@@ -930,9 +931,9 @@ public class PCPcAccordeeDetailViewBean extends BJadePersistentObjectViewBean {
      */
     public String getPartCantonale(SimplePlanDeCalcul plancalcul) throws JadeApplicationException,
             JadePersistenceException {
-
-        return CorvusServiceLocator.getSimpleVentilationService()
-                .getMontantVentileFromIdPca(plancalcul.getIdPCAccordee()).getMontantVentile();
+        SimpleVentilation ventilation = CorvusServiceLocator.getSimpleVentilationService().getMontantVentileFromIdPca(
+                plancalcul.getIdPCAccordee());
+        return ventilation != null ? ventilation.getMontantVentile() : null;
 
     }
 
