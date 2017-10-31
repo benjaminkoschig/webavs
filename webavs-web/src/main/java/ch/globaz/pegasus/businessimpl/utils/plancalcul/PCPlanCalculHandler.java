@@ -362,6 +362,7 @@ public class PCPlanCalculHandler {
      */
     private String[] resolveSystemCode(String langueTiers, PCLignePlanCalculHandler ligne) throws RemoteException {
         String[] lib = null;
+        codeSystem = null;
         if (langueTiers == null) {
             lib = session.getCodeLibelle(ligne.getCsCode()).split("@");
         } else {
