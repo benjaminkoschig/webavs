@@ -83,7 +83,7 @@ if(hasManyService) {
 			<% if (hasManyService) {%>
 			<select name="serviceNameId">
 			<%   for(java.util.Map.Entry<String, java.util.List> entry : mService.entrySet()){%>
-			    <option value="<%=entry.getKey()%>" label="<%=entry.getKey()%>"><%=entry.getKey()%></option>
+			    <option value="<%=entry.getKey()%>" label="<%=entry.getKey()%>" disabled><%=entry.getKey()%></option>
 			    <%   for(Object oservice  : entry.getValue()){
 			        globaz.jade.ged.message.JadeGedService service = (globaz.jade.ged.message.JadeGedService) oservice;
 			        	if (service == null) { %>
