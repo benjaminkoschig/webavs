@@ -23,7 +23,7 @@ public class PersonneAnnonceSearch extends JadeSearchComplexModel {
     }
 
     public String getLikeNom() {
-        return (isWereKeyRechercheFamille()) ? likeNom + "%" : likeNom;
+        return (likeNom == null ? "" : likeNom) + "%";
     }
 
     public void setLikeNom(String likeNom) {
@@ -31,7 +31,7 @@ public class PersonneAnnonceSearch extends JadeSearchComplexModel {
     }
 
     public String getLikePrenom() {
-        return (isWereKeyRechercheFamille()) ? likePrenom + "%" : likePrenom;
+        return (likePrenom == null ? "" : likePrenom) + "%";
     }
 
     public void setLikePrenom(String likePrenom) {
