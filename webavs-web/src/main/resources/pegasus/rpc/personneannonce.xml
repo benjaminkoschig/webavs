@@ -1,60 +1,96 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <model-mapping>
 	<complexe-model className="ch.globaz.pegasus.rpc.business.models.PersonneAnnonce">
-	
-		<root-model name="simpleAnnonce" model-ref="ch.globaz.pegasus.rpc.business.models.SimpleAnnonce" select-fields="true" />
 
-	    <linked-model name="simpleLotAnnonce" model-ref="ch.globaz.pegasus.rpc.business.models.SimpleLotAnnonce" join-type="INNER" >
-			<join-group operator="AND">
-				<join-field name="id" operation="EQUALS" field-ref="simpleAnnonce.idLot"/>
-			</join-group>		
-		</linked-model>
+		<root-model name="simpleAnnonce"
+			model-ref="ch.globaz.pegasus.rpc.business.models.SimpleAnnonce"
+			select-fields="true" />
 
-	    <linked-model name="simpleDossier" model-ref="ch.globaz.pegasus.business.models.dossier.SimpleDossier" join-type="INNER" select-fields="false">
+		<linked-model name="simpleLotAnnonce"
+			model-ref="ch.globaz.pegasus.rpc.business.models.SimpleLotAnnonce"
+			join-type="INNER">
 			<join-group operator="AND">
-				<join-field name="idDossier" operation="EQUALS" field-ref="simpleAnnonce.idDossier"/>
-			</join-group>		
-		</linked-model>
-		
-		<linked-model name="simpleDemandePrestation" model-ref="ch.globaz.prestation.business.models.demande.SimpleDemandePrestation" join-type="INNER" select-fields="false">
-			<join-group operator="AND">
-				<join-field name="idDemande" operation="EQUALS" field-ref="simpleDossier.idDemandePrestation"/>
-			</join-group>		
-		</linked-model>
-		
-		<linked-model name="personne" model-ref="ch.globaz.pyxis.business.model.PersonneEtendueComplexModel" join-type="INNER">
-			<join-group operator="AND">
-				<join-field name="personneEtendue.idTiers" operation="EQUALS" field-ref="simpleDemandePrestation.idTiers"/>
+				<join-field name="id" operation="EQUALS" field-ref="simpleAnnonce.idLot" />
 			</join-group>
 		</linked-model>
-		
+
+		<linked-model name="simpleDossier"
+			model-ref="ch.globaz.pegasus.business.models.dossier.SimpleDossier"
+			join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDossier" operation="EQUALS"
+					field-ref="simpleAnnonce.idDossier" />
+			</join-group>
+		</linked-model>
+
+		<linked-model name="simpleDemandePrestation"
+			model-ref="ch.globaz.prestation.business.models.demande.SimpleDemandePrestation"
+			join-type="INNER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idDemande" operation="EQUALS"
+					field-ref="simpleDossier.idDemandePrestation" />
+			</join-group>
+		</linked-model>
+
+		<linked-model name="personne"
+			model-ref="ch.globaz.pyxis.business.model.PersonneEtendueComplexModel"
+			join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="personneEtendue.idTiers" operation="EQUALS"
+					field-ref="simpleDemandePrestation.idTiers" />
+			</join-group>
+		</linked-model>
+
 		<search-definition>
-			<search-group operator="AND">	
-				<search-field name="likeNom" operation="LIKE" field-ref="personne.tiers.designation1"/>
-				<search-field name="likePrenom" operation="LIKE" field-ref="personne.tiers.designation2"/>
-				<search-field name="likeNss" operation="LIKE" field-ref="personne.personneEtendue.numAvsActuel"/>
-				<search-field name="forIdAnnonce" operation="EQUALS" field-ref="simpleAnnonce.id"/>
-				<search-field name="forEtat" operation="EQUALS" field-ref="simpleAnnonce.csEtat"/>
-				<search-field name="forCodeTraitement" operation="EQUALS" field-ref="simpleAnnonce.csCodeTraitement"/>
-				<search-field name="forPeriodeDateDebut" operation="GREATER_OR_EQUALS" field-ref="simpleLotAnnonce.dateEnvoi"/>
-				<search-field name="forPeriodeDateFin" operation="LESS_OR_EQUALS" field-ref="simpleLotAnnonce.dateEnvoi"/>
+			<search-group operator="AND">
+				<search-literal>
+					<![CDATA[
+						TRANSLATE(UPPER(#{personne.tiers.designation1}),'AAAEEEIIIOOOUUU','ÁÀÄÉÈËÍÌÏÓÒÖÚÙÜ') 
+						like TRANSLATE(UPPER(${likeNom:personne.tiers.designation1}),'AAAEEEIIIOOOUUU','ÁÀÄÉÈËÍÌÏÓÒÖÚÙÜ')
+						 AND 
+						TRANSLATE(UPPER(#{personne.tiers.designation2}),'AAAEEEIIIOOOUUU','ÁÀÄÉÈËÍÌÏÓÒÖÚÙÜ') 
+						like TRANSLATE(UPPER(${likePrenom:personne.tiers.designation2}),'AAAEEEIIIOOOUUU','ÁÀÄÉÈËÍÌÏÓÒÖÚÙÜ') 
+					]]>
+				</search-literal>
+				<search-field name="likeNss" operation="LIKE"
+					field-ref="personne.personneEtendue.numAvsActuel" />
+				<search-field name="forIdAnnonce" operation="EQUALS"
+					field-ref="simpleAnnonce.id" />
+				<search-field name="forEtat" operation="EQUALS"
+					field-ref="simpleAnnonce.csEtat" />
+				<search-field name="forCodeTraitement" operation="EQUALS"
+					field-ref="simpleAnnonce.csCodeTraitement" />
+				<search-field name="forPeriodeDateDebut" operation="GREATER_OR_EQUALS"
+					field-ref="simpleLotAnnonce.dateEnvoi" />
+				<search-field name="forPeriodeDateFin" operation="LESS_OR_EQUALS"
+					field-ref="simpleLotAnnonce.dateEnvoi" />
 			</search-group>
 		</search-definition>
-		
+
 		<search-definition name="rechercheFamille">
-			<search-group operator="AND">	
-				<search-field name="forEtat" operation="EQUALS" field-ref="simpleAnnonce.csEtat"/>
-				<search-field name="forCodeTraitement" operation="EQUALS" field-ref="simpleAnnonce.csCodeTraitement"/>
-				<search-field name="forPeriodeDateDebut" operation="GREATER_OR_EQUALS" field-ref="simpleLotAnnonce.dateEnvoi"/>
-				<search-field name="forPeriodeDateFin" operation="LESS_OR_EQUALS" field-ref="simpleLotAnnonce.dateEnvoi"/>
-				
+			<search-group operator="AND">
+				<search-field name="forEtat" operation="EQUALS"
+					field-ref="simpleAnnonce.csEtat" />
+				<search-field name="forCodeTraitement" operation="EQUALS"
+					field-ref="simpleAnnonce.csCodeTraitement" />
+				<search-field name="forPeriodeDateDebut" operation="GREATER_OR_EQUALS"
+					field-ref="simpleLotAnnonce.dateEnvoi" />
+				<search-field name="forPeriodeDateFin" operation="LESS_OR_EQUALS"
+					field-ref="simpleLotAnnonce.dateEnvoi" />
+
 				<search-literal>
-					<declare-model name="sDemandeDroit" model-ref="ch.globaz.pegasus.business.models.demande.SimpleDemande"/>
-					<declare-model name="sDroit" model-ref="ch.globaz.pegasus.business.models.droit.SimpleDroit"/>
-					<declare-model name="sDroitMembreFamille" model-ref="ch.globaz.pegasus.business.models.droit.SimpleDroitMembreFamille"/>
-					<declare-model name="sMembreFamille" model-ref="ch.globaz.hera.business.models.famille.SimpleMembreFamille"/>
-					<declare-model name="sTiers" model-ref="ch.globaz.pyxis.business.model.TiersSimpleModel"/>
-					<declare-model name="sPersonne" model-ref="ch.globaz.pyxis.business.model.PersonneEtendueSimpleModel"/>
+					<declare-model name="sDemandeDroit"
+						model-ref="ch.globaz.pegasus.business.models.demande.SimpleDemande" />
+					<declare-model name="sDroit"
+						model-ref="ch.globaz.pegasus.business.models.droit.SimpleDroit" />
+					<declare-model name="sDroitMembreFamille"
+						model-ref="ch.globaz.pegasus.business.models.droit.SimpleDroitMembreFamille" />
+					<declare-model name="sMembreFamille"
+						model-ref="ch.globaz.hera.business.models.famille.SimpleMembreFamille" />
+					<declare-model name="sTiers"
+						model-ref="ch.globaz.pyxis.business.model.TiersSimpleModel" />
+					<declare-model name="sPersonne"
+						model-ref="ch.globaz.pyxis.business.model.PersonneEtendueSimpleModel" />
 					<![CDATA[ 
 						 0 < ( select count(#{sDemandeDroit.idDossier}) from @{sDemandeDroit}
 									inner join @{sDroit} on (#{sDemandeDroit.idDemande} = #{sDroit.idDemandePC})
@@ -63,35 +99,38 @@
 									inner join @{sTiers} on (#{sMembreFamille.idTiers} = #{sTiers.idTiers})
 									inner join @{sPersonne} on (#{sMembreFamille.idTiers} = #{sPersonne.idTiers})
 									where #{simpleDossier.idDossier} = #{sDemandeDroit.idDossier} AND
-										  #{sTiers.designationUpper1} like ${likeNom:sTiers.designationUpper1} AND		
-										  #{sTiers.designationUpper2} like ${likePrenom:sTiers.designationUpper2} AND								  
+										  TRANSLATE(UPPER(#{sTiers.designationUpper1}),'AAAEEEIIIOOOUUU','ÁÀÄÉÈËÍÌÏÓÒÖÚÙÜ') like TRANSLATE(UPPER(${likeNom:sTiers.designationUpper1}),'AAAEEEIIIOOOUUU','ÁÀÄÉÈËÍÌÏÓÒÖÚÙÜ') AND		
+										  TRANSLATE(UPPER(#{sTiers.designationUpper2}),'AAAEEEIIIOOOUUU','ÁÀÄÉÈËÍÌÏÓÒÖÚÙÜ') like TRANSLATE(UPPER(${likePrenom:sTiers.designationUpper2}),'AAAEEEIIIOOOUUU','ÁÀÄÉÈËÍÌÏÓÒÖÚÙÜ') AND								  
 										  #{sPersonne.numAvsActuel} like ${likeNss:sPersonne.numAvsActuel}								  							  
 						)	
 					 ]]>
-				</search-literal> 
+				</search-literal>
 			</search-group>
 		</search-definition>
 		<order-by>
 			<order-field field-ref="simpleLotAnnonce.id" order="DESC" />
 		</order-by>
 		<order-by name="date">
-			<order-field field-ref="simpleLotAnnonce.dateEnvoi" order="DESC" />
-						<order-field field-ref="personne.tiers.designationUpper1"/>
-			<order-field field-ref="personne.tiers.designationUpper2"/>
-		</order-by>		
+			<order-field field-ref="simpleLotAnnonce.dateEnvoi"
+				order="DESC" />
+			<order-field field-ref="personne.tiers.designationUpper1" />
+			<order-field field-ref="personne.tiers.designationUpper2" />
+		</order-by>
 		<order-by name="nomPrenomDesc">
-			<order-field field-ref="personne.tiers.designationUpper1" order="DESC"/>
-			<order-field field-ref="personne.tiers.designationUpper2" order="DESC"/>
+			<order-field field-ref="personne.tiers.designationUpper1"
+				order="DESC" />
+			<order-field field-ref="personne.tiers.designationUpper2"
+				order="DESC" />
 			<order-field field-ref="simpleLotAnnonce.id" order="DESC" />
-		</order-by>	
+		</order-by>
 		<order-by name="nomPrenomAsc">
-			<order-field field-ref="personne.tiers.designationUpper1"/>
-			<order-field field-ref="personne.tiers.designationUpper2"/>
+			<order-field field-ref="personne.tiers.designationUpper1" />
+			<order-field field-ref="personne.tiers.designationUpper2" />
 			<order-field field-ref="simpleLotAnnonce.id" order="DESC" />
-		</order-by>	
+		</order-by>
 		<order-by name="nss">
-			<order-field field-ref="personne.personneEtendue.numAvsActuel"/>
+			<order-field field-ref="personne.personneEtendue.numAvsActuel" />
 			<order-field field-ref="simpleLotAnnonce.id" order="DESC" />
-		</order-by>	
+		</order-by>
 	</complexe-model>
 </model-mapping>
