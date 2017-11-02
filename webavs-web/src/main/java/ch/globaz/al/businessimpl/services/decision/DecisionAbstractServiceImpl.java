@@ -758,7 +758,7 @@ public abstract class DecisionAbstractServiceImpl extends AbstractDocument imple
             // lettre accompagnement
             if (genererPageAccompagnement(dossier, idTiers)) {
                 copies.add(sCopies.loadData(new ProtocoleLogger(), idTiers, ALCSCopie.TYPE_DECISION, dossier.getId(),
-                        langueDocument).getDocument());
+                        langueDocument, dateImpression).getDocument());
             }
             // TODO faire appel à méthode avec également numéro d'affiliée si le tiers destinataire correspond au tiers
             // affilié

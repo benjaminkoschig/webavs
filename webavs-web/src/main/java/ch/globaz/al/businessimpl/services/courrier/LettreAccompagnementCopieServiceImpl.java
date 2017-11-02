@@ -38,6 +38,13 @@ public class LettreAccompagnementCopieServiceImpl extends AbstractDocument imple
     @Override
     public DocumentDataContainer loadData(ProtocoleLogger logger, String IdTiersDestinataireCopie, String typeCopie,
             String idDossier, String langueDocument) throws JadePersistenceException, JadeApplicationException {
+        return loadData(logger, IdTiersDestinataireCopie, typeCopie, idDossier, langueDocument, null);
+    }
+
+    @Override
+    public DocumentDataContainer loadData(ProtocoleLogger logger, String IdTiersDestinataireCopie, String typeCopie,
+            String idDossier, String langueDocument, String dateImpression) throws JadePersistenceException,
+            JadeApplicationException {
 
         // vérification des paramètres
         if (JadeStringUtil.isEmpty(IdTiersDestinataireCopie)) {
@@ -77,11 +84,13 @@ public class LettreAccompagnementCopieServiceImpl extends AbstractDocument imple
                 ALServiceLocator.getDossierModelService().read(idDossier).getNumeroAffilie());
         try {
             if (JadeStringUtil.equals(idTiersAffilie, IdTiersDestinataireCopie, false)) {
-                this.addDateAdresse(lettreAccompagnement, JadeDateUtil.getGlobazFormattedDate(new Date()),
+                this.addDateAdresse(lettreAccompagnement,
+                        dateImpression != null ? dateImpression : JadeDateUtil.getGlobazFormattedDate(new Date()),
                         IdTiersDestinataireCopie, langueDocument,
                         ALServiceLocator.getDossierModelService().read(idDossier).getNumeroAffilie());
             } else {
-                this.addDateAdresse(lettreAccompagnement, JadeDateUtil.getGlobazFormattedDate(new Date()),
+                this.addDateAdresse(lettreAccompagnement,
+                        dateImpression != null ? dateImpression : JadeDateUtil.getGlobazFormattedDate(new Date()),
                         IdTiersDestinataireCopie, langueDocument, null);
             }
         } catch (ALDocumentAddressException e) {
@@ -237,4 +246,5 @@ public class LettreAccompagnementCopieServiceImpl extends AbstractDocument imple
         lettreAccompagnement.addData("accomp_annexe_texte",
                 this.getText("al.accompagnement.annexeMentionnee.texte", langueDocument));
     }
+
 }
