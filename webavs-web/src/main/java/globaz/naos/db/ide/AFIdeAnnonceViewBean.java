@@ -113,6 +113,22 @@ public class AFIdeAnnonceViewBean extends AFIdeAnnonce implements FWViewBeanInte
             langueTiers = tiers.getLangueIso().toUpperCase();
             brancheEconomique = CodeSystem.getLibelle(getSession(), affiliationRetrieved.getBrancheEconomique());
 
+            noga = AFIDEUtil.getCodeNogaFromCsCodeNoga(affiliationRetrieved.getCodeNoga(), transaction.getSession());
+
+            if (!noga.isEmpty()) {
+                if (!isCodeNogaKnown(noga)) {
+
+                    if (CODE_NOGA_INCONNU.equals(noga)) {
+                        erreurNoga = FWMessageFormat.format(
+                                getSession().getApplication().getLabel("NAOS_CODE_NOGA_INCONNU",
+                                        getSession().getIdLangueISO()), noga);
+                    } else {
+                        erreurNoga = FWMessageFormat.format(
+                                getSession().getApplication().getLabel("NAOS_CODE_NOGA_INDEFINI",
+                                        getSession().getIdLangueISO()), noga);
+                    }
+                }
+            }
             activite = affiliationRetrieved.getActivite();
             if (tiers.getPersonnePhysique()) {
                 naissance = tiers.getDateNaissance();

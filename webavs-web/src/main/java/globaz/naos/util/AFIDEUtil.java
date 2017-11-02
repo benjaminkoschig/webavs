@@ -9,6 +9,7 @@ import globaz.globall.db.BTransaction;
 import globaz.globall.db.GlobazServer;
 import globaz.globall.parameters.FWParametersSystemCode;
 import globaz.globall.parameters.FWParametersSystemCodeManager;
+import globaz.globall.parameters.FWParametersUserCode;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JAStringFormatter;
 import globaz.jade.admin.JadeAdminServiceLocatorProvider;
@@ -2258,6 +2259,40 @@ public class AFIDEUtil {
         } else {
             return ((FWParametersSystemCode) param.getFirstEntity()).getIdSelection();
         }
+    }
+
+    /**
+     * Recherche du libelle du code noga suivant le code system de celui ci
+     * 
+     * @return
+     */
+    public static String getCodeNogaFromCsCodeNoga(String csCodeNoga, BSession bsession) {
+        String codeNogaLibelle = "";
+        if (!JadeStringUtil.isIntegerEmpty(csCodeNoga)) {
+            try {
+                FWParametersSystemCodeManager systemCodeManager = new FWParametersSystemCodeManager();
+                systemCodeManager.setForGroupLike("VENOGAVAL");
+                systemCodeManager.setSession(bsession);
+                systemCodeManager.find(BManager.SIZE_NOLIMIT);
+                for (int i = 0; i < systemCodeManager.size(); i++) {
+                    FWParametersSystemCode code = (FWParametersSystemCode) systemCodeManager.get(i);
+
+                    if (csCodeNoga.equals(code.getIdCode())) {
+
+                        FWParametersUserCode userCode = new FWParametersUserCode();
+                        userCode.setSession(bsession);
+                        userCode.setIdCodeSysteme(code.getIdSelection());
+                        userCode.setIdLangue(bsession.getIdLangue());
+                        userCode.retrieve();
+
+                        codeNogaLibelle = code.getCurrentCodeUtilisateur().getCodeUtilisateur();
+                    }
+                }
+            } catch (Exception e) {
+                JadeLogger.error("Unabled to retrieve code noga", e);
+            }
+        }
+        return codeNogaLibelle;
     }
 
     public static String getIde(String like, BSession bsession) {
