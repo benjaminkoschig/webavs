@@ -26,10 +26,17 @@ public class RpcServiceImpl implements RpcService {
             String[] params = new String[e.getParams().size()];
 
             for (int i = 0; i < e.getParams().size(); i++) {
-                params[i] = String.valueOf(e.getParams().get(i));
+                params[i] = String.valueOf(e.getParams().get(i).toString());
             }
 
             JadeThread.logError(this.getClass().getName(), e.getLabelMessage(), params);
+        } catch (RuntimeException e) {
+            String[] params = new String[e.getStackTrace().length];
+            for (int i = 0; i < e.getStackTrace().length; i++) {
+                params[i] = String.valueOf(e.getStackTrace()[i].getClassName() + " : "
+                        + e.getStackTrace()[i].getMethodName());
+            }
+            JadeThread.logError(this.getClass().getName(), e.getMessage(), params);
         } finally {
             // IOUtils.closeQuietly(annonceGenerator);
         }

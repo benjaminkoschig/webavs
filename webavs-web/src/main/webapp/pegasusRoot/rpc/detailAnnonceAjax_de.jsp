@@ -121,7 +121,10 @@ jsManager.addAfter(function (){
 				<table width="100%">
 					<tr>
 						<td width="200"><label for="annonceId"><ct:FWLabel key="JSP_PC_RPC_RETOUR_ANNONCE_ID"/></label></td>
-						<td><input id="annonceId" value='${viewBean.annonceId}' disabled="disabled"/></td>
+						<td><input id="annonceId" value='${viewBean.annonceId}' disabled="disabled"/>
+						<input id="idDossier" value='${viewBean.idDossier}' disabled="disabled" style="visibility: hidden"/>
+						<input id="idVersion" value='${viewBean.idVersion}' disabled="disabled" style="visibility: hidden"/>
+						</td>
 						<td width ="60" rowspan="4" style="vertical-align:top;">
 							<a data-g-download="docType:xml,
 								parametres:¦${viewBean.annonceId}¦,
@@ -157,7 +160,8 @@ jsManager.addAfter(function (){
 				<table class="areaTable" width="100%">
 					<thead>
 						<tr>
-							<th class="notSortable"><ct:FWLabel key="JSP_PC_RPC_RETOUR_ANNONCE_DECISION"/></th>
+							<th class="notSortable"><ct:FWLabel key="JSP_PC_RPC_ANNONCE_DEMANDE"/></th>
+							<th class="notSortable"><ct:FWLabel key="JSP_PC_RPC_ANNONCE_DROIT"/></th>
 							<th class="notSortable"><ct:FWLabel key="JSP_PC_RPC_RETOUR_ANNONCE_STATUT_PLAUSI"/></th>
 							<th class="notSortable"><ct:FWLabel key="JSP_PC_RPC_RETOUR_ANNONCE_CODE_PLAUSI"/></th>
 							<th class="notSortable"><ct:FWLabel key="JSP_PC_RPC_RETOUR_ANNONCE_CAT_PLAUSI"/></th>

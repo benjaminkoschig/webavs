@@ -4,7 +4,6 @@ public enum EtatAnnonce {
 
     ERROR,
     OUVERT,
-    ENVOYE,
     CORRECTION,
     POUR_ENVOI,
     PLAUSI_KO;

@@ -20,6 +20,8 @@ public class PCDetailAnnonceAjaxViewBean extends JadeAbstractAjaxFindRawSQLForDo
     private RetourAnnonce retourAnnonce = new RetourAnnonce();
     private PersonneAnnonceRpc personneAnnonce = null;
     private String annonceId;
+    private String idDossier;
+    private String idVersion;
     private Integer counterId = 0;
     private Boolean updateCodeTraitement = false;
 
@@ -133,6 +135,26 @@ public class PCDetailAnnonceAjaxViewBean extends JadeAbstractAjaxFindRawSQLForDo
 
     public String getAnnonceId() {
         return annonceId;
+    }
+
+    public String getIdDossier() {
+        return idDossier;
+    }
+
+    public void setIdDossier(String idDossier) {
+        if (idDossier != null) {
+            this.idDossier = idDossier;
+        }
+    }
+
+    public String getIdVersion() {
+        return idVersion;
+    }
+
+    public void setIdVersion(String idVersion) {
+        if (idVersion != null) {
+            this.idVersion = idVersion;
+        }
     }
 
     public String getCounterId() {

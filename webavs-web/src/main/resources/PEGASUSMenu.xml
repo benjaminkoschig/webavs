@@ -63,7 +63,7 @@
 				</action>				
 			</node>
 			<node>				
-				<label refId="MENU_ANNONCES"/>
+				<label refId="MENU_PC_ANNONCES"/>
 				<action command="/pegasus" responseTarget="fr_main">					
 					<parameter name="userAction" value="pegasus.rpc.annonces.afficher"/>						
 				</action>				

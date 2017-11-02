@@ -6,10 +6,10 @@
 <liste>
 	<c:forEach var="annonce" items="${viewBean.annonces}">
 		<tr idEntity="${annonce.id}">
-			<td id="annonceDetail_${annonce.id}" class="showAnnonceDetail left">${annonce.personneDetail}</td>
-			<td id="annonceDetail_${annonce.id}" class="showAnnonceDetail">${annonce.dateAnnonce}</td>
-			<td id="annonceDetail_${annonce.id}" class="showAnnonceDetail"><c:out value="${annonce.etat}"/></td>
-			<td id="annonceDetail_${annonce.id}" class="showAnnonceDetail left">${annonce.codeTraitement}</td>
+			<td id="annonceDetail_${annonce.id}_${annonce.idDossier}_${annonce.idVersionDroit}" class="showAnnonceDetail left">${annonce.personneDetail}</td>
+			<td id="annonceDetail_${annonce.id}_${annonce.idDossier}_${annonce.idVersionDroit}" class="showAnnonceDetail">${annonce.dateAnnonce}</td>
+			<td id="annonceDetail_${annonce.id}_${annonce.idDossier}_${annonce.idVersionDroit}" class="showAnnonceDetail"><c:out value="${annonce.etat}"/></td>
+			<td id="annonceDetail_${annonce.id}_${annonce.idDossier}_${annonce.idVersionDroit}" class="showAnnonceDetail left">${annonce.codeTraitement}</td>
 			<td> 				
 				<a data-g-download="docType:xml,
 								parametres:¦${annonce.id}¦,

@@ -87,8 +87,10 @@ var annonce ={
 		
 		// Method called when user press over element with class = showAnnonceDetail
 		afficherAnnonceDetail : function(idAnnonceToSplit){
-			var idAnnonce = idAnnonceToSplit.split("_")[1];
-			window.location.href='pegasus?userAction=pegasus.rpc.detailAnnonceAjax.afficher&annonceId=' + idAnnonce;
+			var idAnnonce = '&annonceId=' + idAnnonceToSplit.split("_")[1];
+			var idDossier = '&idDossier=' + idAnnonceToSplit.split("_")[2];
+			var idVersion = '&idVersion=' + idAnnonceToSplit.split("_")[3];
+			window.location.href='pegasus?userAction=pegasus.rpc.detailAnnonceAjax.afficher' + idAnnonce + idDossier + idVersion;
 		},
 		
 		formatNss: function(numAVS) {

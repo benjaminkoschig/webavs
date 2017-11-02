@@ -28,13 +28,10 @@ public class AnnonceConverter implements DomaineConverterJade<AnnonceRpc, Simple
     static {
         etatConverter.put("64074001", EtatAnnonce.ERROR);
         etatConverter.put("64074002", EtatAnnonce.OUVERT);
-        etatConverter.put("64074003", EtatAnnonce.ENVOYE);
         etatConverter.put("64074004", EtatAnnonce.CORRECTION);
         etatConverter.put("64074005", EtatAnnonce.POUR_ENVOI);
         etatConverter.put("64074006", EtatAnnonce.PLAUSI_KO);
 
-        codeTraitementConverter.put("64075001", CodeTraitement.REFUS);
-        codeTraitementConverter.put("64075002", CodeTraitement.REFUS_CORRIGE);
         codeTraitementConverter.put("64075003", CodeTraitement.RETOUR_A_TRAITER);
         codeTraitementConverter.put("64075004", CodeTraitement.RETOUR_ACCEPTE);
         codeTraitementConverter.put("64075005", CodeTraitement.RETOUR_CORRIGE);
@@ -43,6 +40,7 @@ public class AnnonceConverter implements DomaineConverterJade<AnnonceRpc, Simple
         typeConverter.put("64077001", TypeAnnonce.PARTIEL);
         typeConverter.put("64077002", TypeAnnonce.COMPLET);
         typeConverter.put("64077003", TypeAnnonce.ANNULATION);
+
         all.putAll(etatConverter.toMapEnum());
         all.putAll(typeConverter.toMapEnum());
         all.putAll(codeTraitementConverter.toMapEnum());

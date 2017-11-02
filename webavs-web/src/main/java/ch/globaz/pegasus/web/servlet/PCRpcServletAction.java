@@ -28,6 +28,8 @@ import ch.globaz.pegasus.rpc.process.GenererAnnoncesProcess;
 public class PCRpcServletAction extends PCAbstractServletAction {
 
     private String idAnnonce = null;
+    private String idDossier = null;
+    private String idVersion = null;
 
     /**
      * Constructeur
@@ -73,9 +75,13 @@ public class PCRpcServletAction extends PCAbstractServletAction {
         if ((viewBean instanceof PCDetailAnnonceAjaxViewBean)) {
             PCDetailAnnonceAjaxViewBean vb = (PCDetailAnnonceAjaxViewBean) viewBean;
             idAnnonce = request.getParameter("annonceId");
+            idDossier = request.getParameter("idDossier");
+            idVersion = request.getParameter("idVersion");
 
             try {
                 vb.setAnnonceId(idAnnonce);
+                vb.setIdDossier(idDossier);
+                vb.setIdVersion(idVersion);
                 viewBean = vb;
             } catch (Exception e) {
                 e.printStackTrace();

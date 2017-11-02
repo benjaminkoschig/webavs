@@ -6,7 +6,16 @@
 <liste>
 	<c:forEach var="detailAnnonce" items="${viewBean.retoursAnnonce}">
 		<tr idEntity="${detailAnnonce.id}">
-			<td>${detailAnnonce.idDecision}</td>
+			<td>
+				<a style="text-align:center" href='<c:out value="${pageContext.request.contextPath}/pegasus?userAction=pegasus.demande.demande.chercher&idDossier=${viewBean.idDossier}" />'> 
+					${viewBean.idDossier}
+		        </a>
+	        </td>
+			<td>
+				<a style="text-align:center" href='<c:out value="${pageContext.request.contextPath}/pegasus?userAction=pegasus.pcaccordee.pcAccordee.chercher&idVersionDroit=${viewBean.idVersion}" />'> 
+					${viewBean.idVersion}
+		        </a>
+	        </td>
 			<td>${detailAnnonce.etat}</td>
 			<td>${detailAnnonce.codePlausi}</td>
 			<td>${detailAnnonce.categorieString}</td>
