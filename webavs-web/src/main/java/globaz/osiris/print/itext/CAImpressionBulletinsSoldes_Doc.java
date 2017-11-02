@@ -224,7 +224,7 @@ public class CAImpressionBulletinsSoldes_Doc extends CADocumentManager {
 
             getDocumentInfo().setDocumentType(CAImpressionBulletinsSoldes_Doc.NUM_REF_INFOROM_BVR_SOLDE);
 
-            getDocumentInfo().setDocumentProperty("osiris.section.idExterne", section.getIdExterne());
+            getDocumentInfo().setDocumentProperty("osiris.section.idExterne", afact.getIdExterneFactureCompensation());
 
             if ((afact != null) && !JadeStringUtil.isBlankOrZero(afact.getIdEnteteFacture())) {
                 FAEnteteFacture entete = new FAEnteteFacture();
