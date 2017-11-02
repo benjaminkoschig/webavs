@@ -12,6 +12,7 @@ import globaz.jade.smtp.JadeSmtpClient;
 import java.util.ArrayList;
 import java.util.List;
 import ch.globaz.common.LabelCommonProvider;
+import ch.globaz.common.process.byitem.ProcessItemsHandlerJadeJob;
 import com.google.common.base.Throwables;
 import com.google.gson.Gson;
 import com.sun.star.lang.IllegalArgumentException;
@@ -58,7 +59,10 @@ public class ProcessMailUtils {
         BSession session;
         String processName;
 
-        if (processObject instanceof AbstractJadeJob) {
+        if (processObject instanceof ProcessItemsHandlerJadeJob) {
+            session = ((ProcessItemsHandlerJadeJob) processObject).getSession();
+            processName = session.getLabel(((ProcessItemsHandlerJadeJob) processObject).getName());
+        } else if (processObject instanceof AbstractJadeJob) {
             session = ((AbstractJadeJob) processObject).getSession();
             processName = ((AbstractJadeJob) processObject).getName();
         } else if (processObject instanceof BProcess) {
