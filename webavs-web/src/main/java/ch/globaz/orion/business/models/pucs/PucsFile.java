@@ -29,6 +29,9 @@ public class PucsFile implements Serializable {
     private String idAffiliation;
     private File file;
     private Integer codeSecuriteCi;
+    private Boolean certifieExact;
+    private String dateValidation;
+    private String nomValidation;
 
     public File getFile() {
         return file;
@@ -239,5 +242,29 @@ public class PucsFile implements Serializable {
                 + ", provenance=" + provenance + ", sizeFileInKo=" + sizeFileInKo + ", isAfSeul=" + isAfSeul
                 + ", isForTest=" + isForTest + ", lock=" + lock + ", isAffiliationExistante=" + isAffiliationExistante
                 + ", duplicate=" + duplicate + "]";
+    }
+
+    public Boolean getCertifieExact() {
+        return certifieExact;
+    }
+
+    public void setCertifieExact(Boolean certifieExact) {
+        this.certifieExact = certifieExact;
+    }
+
+    public String getDateValidation() {
+        return dateValidation;
+    }
+
+    public void setDateValidation(String dateValidation) {
+        this.dateValidation = dateValidation;
+    }
+
+    public String getNomValidation() {
+        return nomValidation;
+    }
+
+    public void setNomValidation(String nomValidation) {
+        this.nomValidation = nomValidation;
     }
 }

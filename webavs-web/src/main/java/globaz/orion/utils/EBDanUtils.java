@@ -313,6 +313,10 @@ public class EBDanUtils {
         pucsRetour.setTotalControle(montantAvs.toStringFormat());
         pucsRetour.setNbSalaires(String.valueOf(pucsTemp.getNombreSalaire()));
 
+        pucsRetour.setNomValidation(pucsTemp.getNomValidation());
+        pucsRetour.setDateValidation(pucsRetour.getDateValidation());
+        pucsRetour.setCertifieExact(pucsTemp.isCertifieExact());
+
         return pucsRetour;
     }
 
@@ -337,6 +341,9 @@ public class EBDanUtils {
         pucsRetour.setTotalControle(montantAvs.toStringFormat());
         pucsRetour.setNbSalaires(String.valueOf(pucsTemp.getDefinedNbOfSalaries()));
 
+        pucsRetour.setNomValidation(pucsTemp.getSoumisPar());
+        pucsRetour.setDateValidation(pucsTemp.getSoumissionLabel());
+        pucsRetour.setCertifieExact(pucsTemp.isCertifieExact());
         return pucsRetour;
     }
 

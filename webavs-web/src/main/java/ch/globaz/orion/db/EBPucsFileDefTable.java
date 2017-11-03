@@ -24,7 +24,10 @@ public enum EBPucsFileDefTable implements TableDefinition {
     SAL_INF_LIMIT("SAL_INF_LIMIT", Boolean.class),
     NIVEAU_SECURITE("NIVEAU_SECURITE", Integer.class),
     FOR_TEST("FOR_TEST", Boolean.class),
-    SEARCH_STRING("SEARCH_STRING", String.class);
+    SEARCH_STRING("SEARCH_STRING", String.class),
+    CERTIFIE_EXACT("CERTIFIE_EXACT", Boolean.class),
+    DATE_VALIDATION("DATE_VALIDATION", Date.class),
+    NOM_VALIDATION("NOM_VALIDATION", String.class);
 
     public static final String TABLE = "EBPUCS_FILE";
     private String column;

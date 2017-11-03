@@ -41,6 +41,9 @@ public class EBPucsFileEntity extends JadeEntity {
     private File file;
     private String searchString;
     private boolean forTest;
+    private boolean certifieExact;
+    private Date dateValidation;
+    private String nomValidation;
 
     @Override
     protected void writeProperties() {
@@ -63,6 +66,9 @@ public class EBPucsFileEntity extends JadeEntity {
         write(EBPucsFileDefTable.SAL_INF_LIMIT, salaireInferieurLimite);
         write(EBPucsFileDefTable.SEARCH_STRING, searchString);
         write(EBPucsFileDefTable.FOR_TEST, forTest);
+        write(EBPucsFileDefTable.CERTIFIE_EXACT, certifieExact);
+        write(EBPucsFileDefTable.DATE_VALIDATION, dateValidation);
+        write(EBPucsFileDefTable.NOM_VALIDATION, nomValidation);
     }
 
     @Override
@@ -87,6 +93,9 @@ public class EBPucsFileEntity extends JadeEntity {
         salaireInferieurLimite = read(EBPucsFileDefTable.SAL_INF_LIMIT);
         searchString = readString(EBPucsFileDefTable.SEARCH_STRING);
         forTest = read(EBPucsFileDefTable.FOR_TEST);
+        certifieExact = read(EBPucsFileDefTable.CERTIFIE_EXACT);
+        dateValidation = read(EBPucsFileDefTable.DATE_VALIDATION);
+        nomValidation = read(EBPucsFileDefTable.NOM_VALIDATION);
     }
 
     public static void deleteFileOnWorkDirectory(String idFileName) {
@@ -315,6 +324,30 @@ public class EBPucsFileEntity extends JadeEntity {
 
     public void setForTest(boolean forTest) {
         this.forTest = forTest;
+    }
+
+    public boolean isCertifieExact() {
+        return certifieExact;
+    }
+
+    public void setCertifieExact(boolean certifieExact) {
+        this.certifieExact = certifieExact;
+    }
+
+    public Date getDateValidation() {
+        return dateValidation;
+    }
+
+    public void setDateValidation(Date dateValidation) {
+        this.dateValidation = dateValidation;
+    }
+
+    public String getNomValidation() {
+        return nomValidation;
+    }
+
+    public void setNomValidation(String nomValidation) {
+        this.nomValidation = nomValidation;
     }
 
 }
