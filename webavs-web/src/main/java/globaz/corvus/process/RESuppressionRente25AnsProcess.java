@@ -92,7 +92,8 @@ public class RESuppressionRente25AnsProcess extends LYAbstractEcheanceProcess {
             for (REReponseModuleAnalyseEcheance uneReponse : analyseur.analyserEcheance(uneEcheance)) {
                 switch (uneReponse.getMotif()) {
                     case Echeance25ans:
-                    case Echeance25ansDepassee:
+                        // case Echeance25ansDepassee: -> retiré car on ne devrait jamais reprendre les 25 ans qui sont
+                        // dépassés. Ces cas nécessitent un traitement manuel.
                     case Echeance25ansRenteBloquee:
                         echeances.add(uneEcheance);
                         break;

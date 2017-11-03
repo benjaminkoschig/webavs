@@ -32,8 +32,12 @@ import ch.globaz.prestation.domaine.CodePrestation;
  */
 public class REModuleEcheanceEtude extends REModuleAnalyseEcheance {
 
+    private REModuleEcheance25Ans module25ans;
+
     public REModuleEcheanceEtude(BISession session, String moisTraitement) {
         super(session, moisTraitement);
+
+        module25ans = new REModuleEcheance25Ans(getSession(), moisTraitement, false);
     }
 
     @Override
@@ -70,7 +74,9 @@ public class REModuleEcheanceEtude extends REModuleAnalyseEcheance {
 
         // si le tiers n'as pas entre 18 et 24 ans, ou s'il n'est pas bénéficiaire d'une complémentaire
         // pour enfant, aucune échéance d'étude à retenir
-        if ((rentesPourEnfant.size() == 0) || (nbMoisVieDuTiers <= (18 * 12)) || (nbMoisVieDuTiers >= (25 * 12))) {
+
+        if ((rentesPourEnfant.size() == 0) || (nbMoisVieDuTiers <= (18 * 12)) || (nbMoisVieDuTiers > (25 * 12))
+                || !shouldBeTestedForStudies(nbMoisVieDuTiers, echeancesPourUnTiers)) {
             return REReponseModuleAnalyseEcheance.Faux;
         } else {
 
@@ -240,4 +246,20 @@ public class REModuleEcheanceEtude extends REModuleAnalyseEcheance {
         }
         return REReponseModuleAnalyseEcheance.Faux;
     }
+
+    private boolean shouldBeTestedForStudies(int nbMoisVieDuTiers, IREEcheances echeancesPourUnTiers) {
+        boolean shouldBeVerifiedInStudies = true;
+        // si le tiers a 25 ans, on vérifie s'il est listé dans les 25 ans
+        if (nbMoisVieDuTiers == (25 * 12)) {
+
+            REReponseModuleAnalyseEcheance reponse = module25ans.analyserEcheance(echeancesPourUnTiers);
+            // si le cas ressort dans les listes des 25 ans, on ne le traite pas dans les études
+            if (reponse.isListerEcheance()) {
+                shouldBeVerifiedInStudies = false;
+            }
+        }
+        return shouldBeVerifiedInStudies;
+
+    }
+
 }

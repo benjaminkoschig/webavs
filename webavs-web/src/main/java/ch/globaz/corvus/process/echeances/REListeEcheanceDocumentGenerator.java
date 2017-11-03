@@ -10,6 +10,7 @@ import globaz.corvus.db.rentesaccordees.REInformationsComptabilite;
 import globaz.corvus.db.rentesaccordees.REListerEcheanceRenteJoinMembresFamille;
 import globaz.corvus.db.rentesaccordees.REPrestationsAccordees;
 import globaz.corvus.utils.RETiersForJspUtils;
+import globaz.corvus.utils.beneficiaire.principal.REBeneficiairePrincipal;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.printing.itext.exception.FWIException;
 import globaz.framework.printing.itext.fill.FWIImportProperties;
@@ -252,7 +253,8 @@ public abstract class REListeEcheanceDocumentGenerator extends LYAbstractListGen
                     // on les ajoute à la liste des rentes dépendantes de echeanceEnCours
                     for (IRERenteEcheances echeance : ireEcheances.getRentesDuTiers()) {
 
-                        if (!echeanceEnCours.getIdRenteAccordee().equals(echeance.getIdPrestationAccordee())) {
+                        if (!echeanceEnCours.getIdRenteAccordee().equals(echeance.getIdPrestationAccordee())
+                                && (REBeneficiairePrincipal.determineGroupLevel(echeance.getCodePrestation()) == 5)) {
 
                             REListerEcheanceRenteJoinMembresFamille echeanceDependante = prepareOldEcheanceObject(
                                     ireEcheances, echeance, reponse);

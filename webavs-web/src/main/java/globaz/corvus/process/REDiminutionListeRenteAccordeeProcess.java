@@ -185,14 +185,11 @@ public class REDiminutionListeRenteAccordeeProcess extends BProcess {
                             StringBuilder messageErreur = new StringBuilder("\n");
                             messageErreur.append("<strong>" + getSession().getLabel("ERREUR_RENTE_BLOQUEE")
                                     + "</strong>");
-                            messageErreur.append("\n&nbsp;&nbsp;&nbsp;&nbsp;R").append(
-                                    echeanceCourrante.getCodePrestation());
-                            messageErreur.append("\n&nbsp;&nbsp;&nbsp;&nbsp;ID: ").append(
-                                    echeanceCourrante.getIdRenteAccordee());
-                            messageErreur.append("\n&nbsp;&nbsp;&nbsp;&nbsp;NSS: ").append(echeanceCourrante.getNss());
-                            messageErreur.append("\n&nbsp;&nbsp;&nbsp;&nbsp;Nom: ").append(echeanceCourrante.getNom());
-                            messageErreur.append("\n&nbsp;&nbsp;&nbsp;&nbsp;Prénom: ").append(
-                                    echeanceCourrante.getPrenom());
+                            messageErreur.append("\n&nbsp;R").append(echeanceCourrante.getCodePrestation());
+                            messageErreur.append("\n&nbsp;ID: ").append(echeanceCourrante.getIdRenteAccordee());
+                            messageErreur.append("\n&nbsp;NSS: ").append(echeanceCourrante.getNss());
+                            messageErreur.append("\n&nbsp;Nom - Prénom : ").append(echeanceCourrante.getNom())
+                                    .append("&nbsp").append(echeanceCourrante.getPrenom());
 
                             getMemoryLog().logMessage(messageErreur.toString(), FWMessage.INFORMATION,
                                     this.getClass().getSimpleName());

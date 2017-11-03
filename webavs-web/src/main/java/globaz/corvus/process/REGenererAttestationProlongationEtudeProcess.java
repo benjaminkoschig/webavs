@@ -5,6 +5,7 @@ import globaz.corvus.api.topaz.IRENoDocumentInfoRom;
 import globaz.corvus.db.rentesaccordees.RERenteAccJoinTblTiersJoinDemRenteManager;
 import globaz.corvus.db.rentesaccordees.RERenteAccJoinTblTiersJoinDemandeRente;
 import globaz.corvus.topaz.REAttestationProlongationEtudeOO;
+import globaz.corvus.utils.REPmtMensuel;
 import globaz.docinfo.TIDocumentInfoHelper;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JADate;
@@ -124,6 +125,9 @@ public class REGenererAttestationProlongationEtudeProcess extends AbstractJadeJo
             renteAccMgr.setForIdTiersBeneficiaire(getIdTiers());
             renteAccMgr.setForCsEtatIn(IREPrestationAccordee.CS_ETAT_VALIDE + ", "
                     + IREPrestationAccordee.CS_ETAT_PARTIEL);
+            JADate date = new JADate(REPmtMensuel.getDateDernierPmt(getSession()));
+            renteAccMgr.setForEnCoursAtMois(String.valueOf(date.getMonth()) + "." + String.valueOf(date.getYear()));
+
             renteAccMgr.find();
 
             if (!renteAccMgr.isEmpty()) {

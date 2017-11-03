@@ -229,7 +229,7 @@ public class REEcheanceRenteOO extends AbstractJadeJob {
         if (hasDoubleRowObject && !echeanceCourrante.getListeEcheanceLiees().isEmpty()) {
             // il ne peut y avoir que 2 objets
             String concerne2 = resolveDocumentObject(rd, echeanceCourrante.getListeEcheanceLiees().get(0));
-            concerne += "\n" + "\n" + concerne2;
+            concerne += " / " + concerne2;
         }
 
         data.addData("LETTRE_CONCERNE", concerne);
@@ -413,7 +413,7 @@ public class REEcheanceRenteOO extends AbstractJadeJob {
         if (hasDoubleRowObject && !echeanceCourrante.getListeEcheanceLiees().isEmpty()) {
             // il ne peut y avoir que 2 objets
             String concerne2 = resolveDocumentObject(rd, echeanceCourrante.getListeEcheanceLiees().get(0));
-            concerne += "\n" + "\n" + concerne2;
+            concerne += " / " + concerne2;
         }
 
         data.addData("LETTRE_CONCERNE", concerne);
@@ -935,7 +935,7 @@ public class REEcheanceRenteOO extends AbstractJadeJob {
         if (hasDoubleRowObject && !echeanceCourrante.getListeEcheanceLiees().isEmpty()) {
             // il ne peut y avoir que 2 objets -> on prend donc la première échéance liée
             String concerne2 = resolveDocumentObject(rd, echeanceCourrante.getListeEcheanceLiees().get(0));
-            concerne += "\n" + "\n" + concerne2;
+            concerne += " / " + concerne2;
         }
         data.addData("LETTRE_CONCERNE", concerne);
 

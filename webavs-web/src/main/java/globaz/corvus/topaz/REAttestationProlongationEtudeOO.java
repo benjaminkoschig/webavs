@@ -98,7 +98,7 @@ public class REAttestationProlongationEtudeOO {
 
     private void ChargementDonneesLettre() throws Exception {
 
-        String concerne = "";
+        String concerne;
 
         // Traitement du concerne, j'insere les valeurs type de rente, montant, prenom/nom et date anniversaire en
         // fonction du sexe de l'enfant
@@ -110,7 +110,7 @@ public class REAttestationProlongationEtudeOO {
         // dans le cas d'une seconde rente accordée pour la même adresse de paiement, on double l'objet
         if (getRa2() != null) {
 
-            concerne += "\n" + "\n" + buildDocumentObject(nomBeneficiaire, getRa2());
+            concerne += " / " + buildDocumentObject(nomBeneficiaire, getRa2());
         }
 
         data.addData("LETTRE_CONCERNE", concerne);

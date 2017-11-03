@@ -227,6 +227,38 @@ public class REBeneficiairePrincipal {
         return groupLevel;
     }
 
+    /**
+     * Permet de determiner le groupe level du genre de rente en fonction du code prestation
+     * 
+     * @param codePrestation
+     * @return le niveau
+     */
+    public static int determineGroupLevel(String codePrestation) {
+        // Récupération du bénéficiaire principal
+        // Priorité au groupe 1, puis 2, 4 et 5
+
+        int groupLevel = 100;
+
+        if (REGenrePrestationEnum.groupe1.contains(codePrestation)) {
+            groupLevel = 1;
+
+        } else if (REGenrePrestationEnum.groupe2.contains(codePrestation)) {
+            if (groupLevel > 2) {
+                groupLevel = 2;
+            }
+        } else if (REGenrePrestationEnum.groupe4.contains(codePrestation)) {
+            if (groupLevel > 4) {
+                groupLevel = 4;
+            }
+        } else if (REGenrePrestationEnum.groupe5.contains(codePrestation)) {
+
+            if (groupLevel > 5) {
+                groupLevel = 5;
+            }
+        }
+        return groupLevel;
+    }
+
     // Retourne la plus grande date de fin de toutes les RA passée en paramètres
     // null si pas de date de fin
     private static JADate getMaxDateFinRentesAccordees(BSession session, BITransaction transaction,
