@@ -97,11 +97,7 @@ public class PucsSwissDecItem extends ProcessItem {
 
             DeclarationSalaire ds = DeclarationSalaireBuilder.builOnlyHead(parser);
             pucsFile.setAnneeDeclaration(String.valueOf(ds.getAnnee()));
-            if (ds.getNbSalaire() != null) {
-                pucsFile.setNbSalaires(String.valueOf(ds.getNbSalaire()));
-            } else {
-                pucsFile.setNbSalaires("0");
-            }
+            pucsFile.setNbSalaires(String.valueOf(ds.getNbSalaire()));
             pucsFile.setNomAffilie(ds.getNom());
             pucsFile.setNumeroAffilie(ds.getNumeroAffilie());
             pucsFile.setTotalControle(ds.getMontantAvs().toStringFormat());
