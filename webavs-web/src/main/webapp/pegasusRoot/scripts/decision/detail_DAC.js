@@ -432,29 +432,35 @@ var setDeValidBouton = function (deValid,libelle) {
 	}
 };
 /**
- * Affichage de la boite de dialogue de confirmation de dévalidation
+ * Affichage de la boite de dialogue de confirmation de dévalidation avec traductions 
  * @returns
  */
-var showConfirmDialogForDevalidateDecision = function () {
+var showConfirmDialogForDevalidateDecision = function (lblBtnConfirmer, lblBtnAnnuler) {
 	$( "#dialog-devalid-confim" ).dialog({
         resizable: false,
         height:250,
         width:500,
         modal: true,
-        
-        buttons: {
-        	"Confirmer": function() {
-                $( this ).dialog( "close" );
-                $('#btnDeValid').hide();
-                userAction.value=ACTION_DECISION_DEVALIDE;
-        		action(COMMIT);
-            },
-            "Annuler": function() {
-                $( this ).dialog( "close" );
-            }
-        }
+        buttons: [
+                  {
+	        		text: lblBtnConfirmer,
+	        		click: function() {
+	        			$( this ).dialog( "close" );
+	        			$('#btnDeValid').hide();
+	        			userAction.value=ACTION_DECISION_DEVALIDE;
+	        			action(COMMIT);
+	        		}
+                  },
+                  {
+                	  text: lblBtnAnnuler,
+                	  click:function() {
+                          $( this ).dialog( "close" );
+                	  }
+                  }
+                 ]
     });
 };
+
 /**
  * Affichage de la liste des plausi en warning ou info
  * @returns

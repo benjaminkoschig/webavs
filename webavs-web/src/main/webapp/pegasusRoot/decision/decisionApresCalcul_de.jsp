@@ -45,6 +45,8 @@
 	String btnAddAnnexes = objSession.getLabel("JSP_PC_DECALCUL_BTNADDANNEXE");//bouton annexes
 	String preValidLibelle = objSession.getLabel("JSP_PC_DECALCUL_D_BTN_PREVALIDER");//bouton preValid
 	String deValidLibelle = objSession.getLabel("JSP_PC_DECALCUL_D_BTN_DEVALIDER");//bouton preValid
+	String lblBtnConfirmer = objSession.getLabel("JSP_PC_DECALCUL_D_MESSAGE_DEVALIDER_CONFIRM");
+	String lblBtnAnnuler = objSession.getLabel("JSP_PC_DECALCUL_D_MESSAGE_DEVALIDER_CANCEL");
 	String alertEmptyString = objSession.getLabel("JSP_PC_DECALCUL_ERRORMSG_ANNEXE");
 	String titleErroxBox = objSession.getLabel("JSP_GLOBAL_ERROR_BOX_TITLE");//titre box erreur
 	//Message erreur si saisie annexe vide
@@ -193,7 +195,7 @@ $(function () {
 		//Set bouton update, on cache si valider
 		setUpdateBouton(<%= viewBean.isValider()%>);
 		//Init bouton devalid
-		setDeValidBouton(<%= viewBean.isDevalidable()%>,"<%= deValidLibelle %>");
+		setDeValidBouton(<%= viewBean.isDevalidable()%>,"<%= deValidLibelle %>","<%= lblBtnConfirmer %>","<%= lblBtnAnnuler%>");
 		//gestion liens conjoints
 		setConjointLink(<%= viewBean.getIdDecisionConjoint()%>,actionNavigator);
 		
