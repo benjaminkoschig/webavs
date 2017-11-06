@@ -46,10 +46,22 @@ function doActionOk() {
 }
 </SCRIPT>
 <%
-java.util.List services = globaz.jade.ged.client.JadeGedFacade.getServicesList();
 java.util.ListIterator iter = null;
-if (services != null) {
-	iter = services.listIterator();
+java.util.List services = null;
+java.util.Map <String, java.util.List> mService = null;
+boolean hasManyService = "true".equals(globaz.jade.properties.JadePropertiesService.getInstance().getProperty("common.many.ged.actives"));
+if(hasManyService) {
+    String[] adaptersName = globaz.jade.properties.JadePropertiesService.getInstance().getProperty("common.many.ged.adapter").split(",");
+    mService = new java.util.HashMap();
+    for(String adapterName : adaptersName){
+        java.util.List aservices = globaz.jade.ged.client.JadeGedFacade.getServicesList(adapterName);
+        mService.put(adapterName, aservices);
+    }
+} else {
+	services = globaz.jade.ged.client.JadeGedFacade.getServicesList();
+	if (services != null) {
+		iter = services.listIterator();
+	}
 }
 %>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
@@ -78,6 +90,23 @@ if (services != null) {
 			<TD width="5">&nbsp;</TD>
 			<TD valign="top">
 			<ct:FWLabel key="FW_GED_SERVICE_PLEASE_CHOOSE"/>
+			<% if (hasManyService) {%>
+			<select name="serviceNameId">
+			<%   for(java.util.Map.Entry<String, java.util.List> entry : mService.entrySet()){%>
+			    <option value="<%=entry.getKey()%>" label="<%=entry.getKey()%>" disabled><%=entry.getKey()%></option>
+			    <%   for(Object oservice  : entry.getValue()){
+			        globaz.jade.ged.message.JadeGedService service = (globaz.jade.ged.message.JadeGedService) oservice;
+			        	if (service == null) { %>
+							<option value="(-)" label="(-)">(-)</option>
+						<% } else { %>
+							<option value="<%=service.toString()%>" label="&nbsp;&nbsp;&nbsp;<%=service.getText()%>">&nbsp;&nbsp;&nbsp;<%=service.getText()%></option>
+						<%
+						}
+					}
+			    } %>
+			    </select>
+			    <%
+			} else { %>
 			<% if (iter == null) {%>
 				(iter: <%=iter%> and services: <%=services%>)
 			<% } else { %>
@@ -102,7 +131,7 @@ if (services != null) {
 					}
 				</script>
 			<% 
-				
+				}
 			
 			} // fin du else
 			
