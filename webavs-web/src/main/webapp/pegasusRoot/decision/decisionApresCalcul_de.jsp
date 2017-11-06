@@ -546,7 +546,7 @@ var openGedWindow = function (url){
 					</div>
 					<input type="hidden" name="listeAnnexesString" id="listeAnnexesString" value=""/>
 					<input type="hidden" name="annexesIsChanged" id="annexesIsChanged" value="0"/>
-					<input id="btnSupprimer" type="button" value="Supprimer"/><br /><br />
+					<input id="btnSupprimer" type="button" value="<ct:FWLabel key="JSP_PC_BOUTON_DEL"/>"/><br /><br />
 					<input id="chmAjouter" type="text" />
 					<input id="btnAjouter" type="button" value="<%=btnAddAnnexes%>">
 						

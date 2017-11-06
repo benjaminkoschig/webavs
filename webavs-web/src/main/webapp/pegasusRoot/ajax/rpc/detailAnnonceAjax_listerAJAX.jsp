@@ -31,8 +31,8 @@
 				</td>
 				<td width="180">
 					<ct:ifhasright element="${action}" crud="cud">
-						<input style="width=80px;" class="btnTraiter" id="traiter_${detailAnnonce.id}" type="button" name="traiter" value="Traiter"/>
-						<input style="width=80px;" class="btnAccepter" id="accepter_${detailAnnonce.id}" type="button" name="accepter" value="Accepter"/>
+						<input style="width=85px;" class="btnTraiter" id="traiter_${detailAnnonce.id}" type="button" name="traiter" value="<ct:FWLabel key="JSP_PC_RPC_BTN_TRAITER"/>"/>
+						<input style="width=85px;" class="btnAccepter" id="accepter_${detailAnnonce.id}" type="button" name="accepter" value="<ct:FWLabel key="JSP_PC_RPC_BTN_ACCEPTER"/>"/>
 					</ct:ifhasright>
 				</td>
 			</c:if>
