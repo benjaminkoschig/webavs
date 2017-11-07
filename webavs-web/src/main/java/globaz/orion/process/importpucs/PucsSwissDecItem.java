@@ -107,6 +107,7 @@ public class PucsSwissDecItem extends ProcessItem {
             pucsFile.setCurrentStatus(EtatPucsFile.A_VALIDE);
             pucsFile.setDuplicate(ds.isDuplicate());
             pucsFile.setFile(file);
+            pucsFile.setCertifieExact(Boolean.FALSE);
             if (ds.isAfSeul()) {
                 pucsFile.setTotalControle(ds.getMontantCaf().toStringFormat());
             }

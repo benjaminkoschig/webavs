@@ -311,7 +311,7 @@ public class PucsServiceImpl implements PucsService {
 
         paramsData.newLigne();
 
-        if (entity != null && entity.getDateValidation() != null) {
+        if (entity != null && entity.getDateValidation() != null && entity.isCertifieExact()) {
 
             paramsData.add(session.getLabel("CERTIFIE_EXACT_LE"), new Date(entity.getDateValidation()).getSwissValue()
                     + " " + session.getLabel("CERTIFIE_EXACT_PAR") + " " + entity.getNomValidation());
