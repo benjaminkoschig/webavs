@@ -24,7 +24,7 @@ public class ListPCAccordeeSearch extends JadeSearchComplexModel {
     private String forIdDemande = null;
     private String forIdDossier = null;
     private String forIdDroit = null;
-    private String forIdVersionDroit;
+    private String forIdVersionDroit = null;
     private String forIdPCAccordee = null;
     private String forIdTiers = null;
     private Boolean forIsSupprime = null;

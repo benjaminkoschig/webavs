@@ -67,7 +67,9 @@ public class PCPcAccordeeListViewBean extends BJadePersistentObjectListViewBean 
         if ((whereKey != null) && !("".equals(whereKey))) {
             pcAccordeesSearch.setWhereKey(whereKey);
             pcAccordeesSearch.setForIdDemande(idDemande);
-            pcAccordeesSearch.setForIdDossier(idDossier);
+            if (idDossier != null && !idDossier.isEmpty()) {
+                pcAccordeesSearch.setForIdDossier(idDossier);
+            }
             pcAccordeesSearch.setWhereKey("forVersionnedPca");
         } else {
             pcAccordeesSearch.setWhereKey("");

@@ -204,7 +204,7 @@
 			<td id="tdInputDroit"><INPUT type="text"
 				name="pcAccordeesSearch.forIdDroit" id="forIdDroit"
 				value="<%=idDroit%>" class="disabled" readonly tabindex="-1"></TD>
-			<td id="tdInputDossier"><input type="text" id="forDossier"
+			<td id="tdInputDossier"><input type="text" id="forIdDossier" name="pcAccordeesSearch.forIdDossier"
 				value="<%=idDossier%>" class="disabled" readonly tabindex="-1"></td>
 
 			<TD><LABEL for="forNoVersion"><ct:FWLabel
