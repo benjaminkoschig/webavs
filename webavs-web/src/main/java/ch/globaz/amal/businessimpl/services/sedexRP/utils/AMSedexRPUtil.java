@@ -1,5 +1,7 @@
 package ch.globaz.amal.businessimpl.services.sedexRP.utils;
 
+import globaz.globall.db.BSession;
+import globaz.globall.util.JAUtil;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeNumericUtil;
 import globaz.jade.client.util.JadeStringUtil;
@@ -7,12 +9,15 @@ import globaz.pyxis.db.tiers.TIAvoirContact;
 import globaz.pyxis.db.tiers.TIAvoirContactManager;
 import globaz.pyxis.db.tiers.TIMoyenCommunication;
 import globaz.pyxis.db.tiers.TIMoyenCommunicationManager;
+import globaz.pyxis.db.tiers.TIRole;
+import globaz.pyxis.db.tiers.TIRoleManager;
 import java.util.Iterator;
 import javax.xml.datatype.XMLGregorianCalendar;
 import ch.globaz.amal.business.constantes.IAMCodeSysteme;
 import ch.globaz.amal.business.exceptions.models.annoncesedex.AnnonceSedexException;
 import ch.globaz.amal.businessimpl.utils.AMGestionTiers;
 import ch.globaz.amal.businessimpl.utils.SessionProvider;
+import ch.globaz.vulpecula.external.models.pyxis.Role;
 
 /**
  * Class utilitaire pour la gestion, construction et réception des annonces RP AMAL
@@ -99,8 +104,15 @@ public class AMSedexRPUtil {
             moyenCommunicationManager.setForMoyenLike(sedexId);
             moyenCommunicationManager.find();
 
-            // S170201_010 - prendre le premier id tiers trouvé d'un même sedex-id
-            if (!moyenCommunicationManager.getContainer().isEmpty()) {
+            // S170201_010 - s'il y a plusieur idSedex prendre le premier qui n'a pas de date de fin pour son role
+            // administration
+            if (moyenCommunicationManager.getContainer().size() > 1) {
+                String id = findTiers(moyenCommunicationManager);
+                if (id == null) {
+                    throw new AnnonceSedexException("No SedexId defined for id tiers : " + sedexId);
+                }
+                return id;
+            } else if (!moyenCommunicationManager.getContainer().isEmpty()) {
                 TIMoyenCommunication moyenCommunication = (TIMoyenCommunication) moyenCommunicationManager.get(0);
                 return moyenCommunication.getIdContact();
             } else {
@@ -110,6 +122,49 @@ public class AMSedexRPUtil {
             throw new AnnonceSedexException("Error searching idTiers for sedexId: " + sedexId + " ==> "
                     + e.getMessage());
         }
+    }
+
+    /**
+     * Retour l'id contact de la caisse qui n'a pas de date de fin dans le role administration
+     * 
+     * @param moyenCommunicationManager
+     *            la liste des contacts trouvés
+     * @return id du contact
+     * @throws Exception
+     */
+    private static String findTiers(TIMoyenCommunicationManager moyenCommunicationManager) throws Exception {
+        for (Object com : moyenCommunicationManager.getContainer().toArray()) {
+
+            BSession session = SessionProvider.findSession();
+
+            String idContact = ((TIMoyenCommunication) com).getIdContact();
+
+            TIAvoirContactManager avoirContactManager = new TIAvoirContactManager();
+            avoirContactManager.setSession(session);
+            avoirContactManager.setForIdContact(idContact);
+            avoirContactManager.find(2);
+            if (avoirContactManager.getContainer().isEmpty()) {
+                return null;
+            }
+            TIAvoirContact contact = (TIAvoirContact) avoirContactManager.get(0);
+
+            TIRoleManager roles = new TIRoleManager();
+            roles.setSession(session);
+            roles.setForIdTiers(contact.getIdTiers());
+            // Pour le role "administration"
+            roles.setForRole(Role.ADMINISTRATION.getValue());
+            roles.find();
+            if (roles.getContainer().isEmpty()) {
+                return idContact;
+            }
+            for (int i = 0; i < roles.getSize(); i++) {
+                TIRole role = (TIRole) roles.getEntity(i);
+                if (JAUtil.isDateEmpty(role.getFinRole())) {
+                    return idContact;
+                }
+            }
+        }
+        return null;
     }
 
     /**
