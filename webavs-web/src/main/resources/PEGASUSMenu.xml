@@ -247,7 +247,7 @@
 		
 	<!-- Menu Option Dossier -->
 	<menu id="pegasus-optionsdossiers">
-		<label refId="MENU_OPTION_TITRE"/>
+		<label refId="MENU_PC_OPTION_TITRE"/>
 	  	<nodes>
 			<node>
 				<label refId="MENU_OPTION_DOSSIERS_DEMANDES_DU_DOSSIER"/>
@@ -275,7 +275,7 @@
 	</menu>
 	
 	<menu id="pegasus-optionscreanciers">
-		<label refId="MENU_OPTION_TITRE"/>
+		<label refId="MENU_PC_OPTION_TITRE"/>
 	  	<nodes>
 			<node id="DETAIL_DECISION">
 				<label refId="MENU_OPTION_CREANCIERS_TO_DECISION"/>
@@ -289,7 +289,7 @@
 	
 	<!-- Menu Option Demande -->
 	<menu id="pegasus-optionsdemandes">
-		<label refId="MENU_OPTION_TITRE"/>
+		<label refId="MENU_PC_OPTION_TITRE"/>
 	  	<nodes>
 	  		<node>
 				<label refId="MENU_OPTION_DEMANDES_DROITS"/>
@@ -416,7 +416,7 @@
 	
 	<!-- Menu Option Droits Detail (dans rcListe et detail) -->
 	<menu id="pegasus-optionsdroitsdetail" >
-		<label refId="MENU_OPTION_TITRE"/>
+		<label refId="MENU_PC_OPTION_TITRE"/>
 	  	<nodes>
 	  		<node>
 				<label refId="MENU_OPTION_DROITS_DONNEES_PERSONELLES"/>
@@ -523,7 +523,7 @@
 	
 	<!-- Menu Option Droits (Donnees financieres et personnelles)-->
 	<menu id="pegasus-optionsdroits">
-		<label refId="MENU_OPTION_TITRE"/>
+		<label refId="MENU_PC_OPTION_TITRE"/>
 	  	<nodes>
 	  		<node>
 				<label refId="MENU_OPTION_DROITS_DONNEES_PERSONELLES"/>
@@ -661,7 +661,7 @@
 		
 	<!-- Menu Option Home -->
 	<menu id="pegasus-optionshomes">
-		<label refId="MENU_OPTION_TITRE"/>
+		<label refId="MENU_PC_OPTION_TITRE"/>
 	  	<nodes>
 			<node>
 				<label refId="MENU_OPTION_HOMES_TYPE_CHAMBRE"/>
@@ -686,7 +686,7 @@
 	
 	<!-- Menu Option Types de chambres -->
 	<menu id="pegasus-optionstypeschambres">
-		<label refId="MENU_OPTION_TITRE"/>
+		<label refId="MENU_PC_OPTION_TITRE"/>
 	  	<nodes>
 			<node>
 				<label refId="MENU_OPTION_HOMES_PRIX_CHAMBRE"/>
@@ -704,7 +704,7 @@
 	
 		<!-- Menu forfaitPrimesAssurance -->
 	<menu id="pegasus-forfaitPrimesAssuranceMaladie">
-		<label refId="MENU_OPTION_TITRE"/>
+		<label refId="MENU_PC_OPTION_TITRE"/>
 	  	<nodes>
 			<node>
 				<label refId="MENU_OPTION_FORFAIS_ASSURANCE_MALADIE"/>
@@ -718,7 +718,7 @@
 	</menu>
 	
 	<menu id="pegasus-forfaitPrimesAssuranceMaladieZone">
-		<label refId="MENU_OPTION_TITRE"/>
+		<label refId="MENU_PC_OPTION_TITRE"/>
 	  	<nodes>
 			<node>
 				<label refId="MENU_OPTION_FORFAIS_ZONE_LOCALITE"/>
@@ -739,7 +739,7 @@
 	
 	<!-- Menu Option decision -->
 	<menu id="pegasus-optionsdecision" >
-		<label refId="MENU_OPTION_TITRE"/>
+		<label refId="MENU_PC_OPTION_TITRE"/>
 		<nodes>
 			<node id="DECISION_DETAIL">
 				<label refId="MENU_OPTION_DECISION_DETAIL"/>
@@ -835,7 +835,7 @@
 	
 	<!--  menu option decision impression -->
 	<menu id="pegasus-optionsdecimpression">
-		<label refId="MENU_OPTION_TITRE"/>
+		<label refId="MENU_PC_OPTION_TITRE"/>
 		<nodes>
 			<node id="BACK_DETAIL">
 				<label refId="MENU_OPTION_RETOUR_DETAIL"/>
@@ -858,7 +858,7 @@
 	</menu>
 	<!--  menu option imprimer billag -->
 	<menu id="pegasus-optionsbillagimpression">
-		<label refId="MENU_OPTION_TITRE"/>
+		<label refId="MENU_PC_OPTION_TITRE"/>
 		<nodes>
 			<node id="BACK_LIST">
 				<label refId="MENU_OPTION_RETOUR_LISTE_DEMANDE"/>
@@ -871,7 +871,7 @@
 	</menu>
 	<!-- MENU OPTIONS PCACCORDES RCListe td et détail-->
 	<menu id="pegasus-optionspcaccorde">
-		<label refId="MENU_OPTION_TITRE"/>
+		<label refId="MENU_PC_OPTION_TITRE"/>
 		<nodes>
 			<node id="pcParent">
 				<label refId="MENU_OPTION_PCORIGINAL" />
@@ -917,7 +917,7 @@
 	</menu>
 	<!-- Menu Option lot -->
 	<menu id="pegasus-optionslot">
-		<label refId="MENU_OPTION_TITRE"/>
+		<label refId="MENU_PC_OPTION_TITRE"/>
 		<nodes>
 			<node id="prestation">
 				<label refId="MENU_OPTION_PRESTATIONS"/>
@@ -951,7 +951,7 @@
 	
 	<!-- Menu Option Prestations  -->
 	<menu id="pegasus-optionsprestation">
-		<label refId="MENU_OPTION_TITRE"/>
+		<label refId="MENU_PC_OPTION_TITRE"/>
 		<nodes>
 			<node>
 				<label refId="MENU_OPTION_ORDRE_DE_VERSEMENT"/>
@@ -988,7 +988,7 @@
 	
 		<!-- Menu Option Ordre de Versement -->
 	<menu id="pegasus-optionsordresversements">
-		<label refId="MENU_OPTION_TITRE"/>
+		<label refId="MENU_PC_OPTION_TITRE"/>
 		<nodes>
 			<!--<node>
 				<label refId="MENU_OPTION_CREANCIERS"/>
@@ -1006,6 +1006,6 @@
 	<!-- Menu Option empty		    -->
 	<!-- ************************** -->
 	<menu id="pegasus-optionsempty">
-		<label refId="MENU_OPTION_TITRE" />
+		<label refId="MENU_PC_OPTION_TITRE" />
 	</menu>
 </menus>
