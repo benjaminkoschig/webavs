@@ -2,6 +2,7 @@
 <%@ page isELIgnored ="false" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <c:url var="imgCalculOk" value="/images/calcule.png" scope="page"/>
+<c:url var="imgCalculError" value="/images/small_error.png" scope="page"/>
 
 <liste>
 	<c:forEach var="annonce" items="${viewBean.annonces}">
@@ -24,9 +25,14 @@
 					R<img src="${imgCalculOk}" />  
 				</a>
 				<c:if test="${annonce.isCoupleSepare}">
-		    	<a class="btnDisplayPCAL" id="btnDisplayCal_${annonce.idPlanCalculConjoint}_${annonce.idTiersConjoint}">
-					C<img src="${imgCalculOk}" />
-					</a> 
+		    		<c:if test="${not empty annonce.idPlanCalculConjoint && not empty annonce.idTiersConjoint}">
+			    		<a class="btnDisplayPCAL" id="btnDisplayCal_${annonce.idPlanCalculConjoint}_${annonce.idTiersConjoint}">
+							C<img src="${imgCalculOk}" />
+						</a>
+					</c:if>
+					<c:if test="${empty annonce.idPlanCalculConjoint || empty annonce.idTiersConjoint}">
+						C<img src="${imgCalculError}" />
+					</c:if> 
 				</c:if>
 
 		    </td>
