@@ -4,12 +4,6 @@ insert into SCHEMA.FWCOSP (pcosid,pptygr,pconcs,pptycn,pptycl,pptysa,pcosli,pcos
 insert into SCHEMA.FWCOUP (pcosid,plaide,pcouid,pcolut, pspy) values ( 64039156, 'F', '', 'STATUS TOTAL CC FEDERALE', (replace(char(current date), '-', '') concat replace(char(current time), '.', '') concat user) ); 
 insert into SCHEMA.FWCOUP (pcosid,plaide,pcouid,pcolut, pspy) values ( 64039156, 'D', '', 'STATUS GESAMT CC AUSGLEICHKASSE', (replace(char(current date), '-', '') concat replace(char(current time), '.', '') concat user) ); 
 
--- K170622_002 : liste de répartition par commune politique
-DELETE FROM schema.JADEPROP WHERE PROPNAME = 'pegasus.commune.politique.code.reference.rubrique.pc';
-DELETE FROM schema.JADEPROP WHERE PROPNAME = 'pegasus.commune.politique.code.reference.rubrique.rfm';
-INSERT INTO schema.JADEPROP (PROPNAME,PROPVAL) VALUES ('pegasus.commune.politique.numero.rubrique.pc','4110.3080.0000,4110.3080.1000,4110.3330.0000,4110.3370.0000,4110.4609.0000,4110.4609.1000,4110.4650.0000,4210.3080.0000,4210.3080.1000,4210.3330.0000,4210.3370.0000,4210.4609.0000,4210.4609.1000,4210.4650.0000');
-INSERT INTO schema.JADEPROP (PROPNAME,PROPVAL) VALUES ('pegasus.commune.politique.numero.rubrique.rfm','4120.3080.0000,4120.3080.1000,4120.3080.2000,4120.3330.0000,4120.3370.0000,4120.4609.0000,4120.4650.0000,4220.3080.0000,4220.3080.1000,4220.3080.2000,4220.3330.0000,4220.3370.0000,4220.4609.0000,4220.4609.1000,4220.4650.0000');
-
 -- S160704_002 - PC - Déplafonnement de loyer - 1.19.1
 insert into SCHEMA.FWCOSP (pcosid,pptygr,pconcs,pptycn,pptycl,pptysa,pcosli,pcosdf,pcosdm,pcosdp,pcoian,pcoide,pcodfi,pcoitc,pcoise, pspy) values ( 64008058, 'PCTYPVMET', 49 ,1,0,0, 'DEPLAFONNEMENT_SEULE_STUDIO', 2,1,2,2,2, 2 , 63000008 ,0, (replace(char(current date), '-', '') concat replace(char(current time), '.', '') concat user) ); 
 insert into SCHEMA.FWCOUP (pcosid,plaide,pcouid,pcolut, pspy) values ( 64008058, 'F', '', 'Personne seule - Studio à 1,5 pièce', (replace(char(current date), '-', '') concat replace(char(current time), '.', '') concat user) ); 
