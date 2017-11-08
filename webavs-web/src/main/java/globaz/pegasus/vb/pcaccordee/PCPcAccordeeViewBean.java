@@ -9,12 +9,10 @@ import globaz.globall.vb.BJadePersistentObjectViewBean;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
-import globaz.jade.persistence.model.JadeAbstractModel;
 import globaz.pegasus.utils.PCPCAccordeeHandler;
 import globaz.prestation.tools.PRStringUtils;
 import ch.globaz.common.properties.PropertiesException;
 import ch.globaz.corvus.business.models.ventilation.SimpleVentilation;
-import ch.globaz.corvus.business.models.ventilation.SimpleVentilationSearch;
 import ch.globaz.corvus.business.services.CorvusServiceLocator;
 import ch.globaz.pegasus.business.constantes.EPCProperties;
 import ch.globaz.pegasus.business.constantes.IPCValeursPlanCalcul;
@@ -227,13 +225,20 @@ public class PCPcAccordeeViewBean extends BJadePersistentObjectViewBean {
      * @throws JadeApplicationException, JadePersistenceException
      */
     public String getPartCantonale() throws JadeApplicationException, JadePersistenceException {
-        SimpleVentilationSearch ventilationSearch = new SimpleVentilationSearch();
-        ventilationSearch.setForIdPrestationAccordee(pcAccordee.getIdPrestationAccordee());
-        ventilationSearch = CorvusServiceLocator.getSimpleVentilationService().search(ventilationSearch);
-        if (ventilationSearch.getSearchResults().length != 0) {
-            for (JadeAbstractModel result : ventilationSearch.getSearchResults()) {
-                return ((SimpleVentilation) result).getMontantVentile();
-            }
+        String idPcAccordee;
+
+        if ("0".equals(pcAccordee.getSimplePCAccordee().getIdPcaParent())) {
+            idPcAccordee = pcAccordee.getSimplePCAccordee().getIdPCAccordee();
+        }// cas de copie si idPcaParent
+        else {
+            idPcAccordee = pcAccordee.getSimplePCAccordee().getIdPcaParent();
+        }
+
+        SimpleVentilation ventilation = CorvusServiceLocator.getSimpleVentilationService().getMontantVentileFromIdPca(
+                idPcAccordee);
+
+        if (ventilation != null) {
+            return ventilation.getMontantVentile();
         }
         return "";
     }
