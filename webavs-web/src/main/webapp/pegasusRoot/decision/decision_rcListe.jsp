@@ -17,6 +17,8 @@
 	menuName = "pegasus-menuprincipal";	
 	//detailLink = baseLink + "afficher";
 	detailLink = "pegasus?userAction=";
+	String warnTitle = objSession.getLabel("DECISION_ADAPTATION_WARNING_TITLE");
+	String warnContent = objSession.getLabel("DECISION_ADAPTATION_WARNING_CONTENT");
 %>
 
 <%-- /tpl:put --%>
@@ -32,12 +34,8 @@ $(function () {
 	$('.64042006, .reprise').prop('onclick',null);
 	
 	$('.64042006').click(function () {
-		
-		globazNotation.growl.warn("Décision d'adaptation","La présente décision est une décision d'adaptation, aucun détail n'est disponible");
+		globazNotation.growl.warn("<%= warnTitle%>", "<%= warnContent%>");
 	});
-	
-	
-	
 });
 </script>
 <%@page import="ch.globaz.pyxis.business.model.PersonneEtendueComplexModel"%>
