@@ -414,7 +414,7 @@ var setPreValidBouton = function (preValid,libelle) {
 	}
 };
 //*********************************** Gestion bouton deValid *******************
-var setDeValidBouton = function (deValid,libelle) {
+var setDeValidBouton = function (deValid,libelle, labelOk, labelCancel) {
 	//alert(deValid);
 	if(deValid){
 		$('<input/>',{
@@ -422,7 +422,7 @@ var setDeValidBouton = function (deValid,libelle) {
 			value:libelle,
 			id:'btnDeValid',
 			click:function(){
-				showConfirmDialogForDevalidateDecision();
+				showConfirmDialogForDevalidateDecision(labelOk, labelCancel);
 				$(this).hide();
 			}
 		}).prependTo('#btnCtrlJade');
