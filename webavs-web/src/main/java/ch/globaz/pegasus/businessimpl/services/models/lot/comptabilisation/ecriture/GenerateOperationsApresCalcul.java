@@ -37,6 +37,8 @@ import ch.globaz.pegasus.businessimpl.services.models.lot.comptabilisation.proce
  * 
  */
 class GenerateOperationsApresCalcul implements GenerateOperations {
+    private static final Integer NUM_VENTILATION = 100;
+
     private Operations operations = new Operations();
 
     private void computControlAmount(BigDecimal amountPrestation) {
@@ -153,7 +155,7 @@ class GenerateOperationsApresCalcul implements GenerateOperations {
                 int noGroupePeriode = Integer.parseInt(ordreVersementForListPartCantonale.getSimpleOrdreVersement()
                         .getNoGroupePeriode());
                 ordreVersementForListPartCantonale.getSimpleOrdreVersement().setNoGroupePeriode(
-                        String.valueOf(noGroupePeriode + 1));
+                        String.valueOf(noGroupePeriode + NUM_VENTILATION));
 
                 float montantPartCantonalePourOv = Float.parseFloat(map.get(
                         ordreVersementForList.getSimpleOrdreVersement().getIdPca()).getMontantVentile())
