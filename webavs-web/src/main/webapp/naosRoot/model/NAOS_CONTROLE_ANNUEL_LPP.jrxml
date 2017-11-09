@@ -78,7 +78,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="296"
-						y="356"
+						y="379"
 						width="228"
 						height="18"
 						forecolor="#000000"
@@ -98,7 +98,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="22"
-						y="230"
+						y="253"
 						width="502"
 						height="18"
 						forecolor="#000000"
@@ -118,7 +118,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="22"
-						y="179"
+						y="202"
 						width="502"
 						height="18"
 						forecolor="#000000"
@@ -138,7 +138,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="22"
-						y="255"
+						y="278"
 						width="502"
 						height="18"
 						forecolor="#000000"
@@ -158,7 +158,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="22"
-						y="280"
+						y="303"
 						width="502"
 						height="18"
 						forecolor="#000000"
@@ -178,7 +178,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="22"
-						y="305"
+						y="328"
 						width="502"
 						height="18"
 						forecolor="#000000"
@@ -198,7 +198,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="22"
-						y="330"
+						y="353"
 						width="502"
 						height="18"
 						forecolor="#000000"
@@ -218,7 +218,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="22"
-						y="205"
+						y="228"
 						width="502"
 						height="18"
 						forecolor="#000000"
@@ -239,12 +239,12 @@
 					<reportElement
 						mode="Opaque"
 						x="23"
-						y="197"
-						width="501"
-						height="1"
+						y="221"
+						width="502"
+						height="0"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
-						key="line-1"
+						key="line-2"
 						stretchType="NoStretch"
 						positionType="FixRelativeToTop"
 						isPrintRepeatedValues="true"
@@ -276,7 +276,7 @@
 			</band>
 		</columnFooter>
 		<pageFooter>
-			<band height="186"  isSplitAllowed="true" >
+			<band height="210"  isSplitAllowed="true" >
 				<rectangle radius="0" >
 					<reportElement
 						mode="Opaque"
