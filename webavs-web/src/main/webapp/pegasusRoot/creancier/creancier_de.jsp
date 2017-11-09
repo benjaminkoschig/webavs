@@ -163,7 +163,7 @@
 	 <tr>
 	 	<td colspan="3">
  		 	<div class="ui-widget">
-				<h1 class="ui-widget-header">Infos Spécifique</h1>
+				<h1 class="ui-widget-header"><ct:FWLabel key="JSP_PC_CREANCIER_R_INFOS_SPECIFIQUES" /></h1>
 				<div class="ui-widget-content">
 					<label><ct:FWLabel key="JSP_PC_CREANCIER_R_ID_DEMANDE" /></label>
 					<span><%= idDemande%></span>

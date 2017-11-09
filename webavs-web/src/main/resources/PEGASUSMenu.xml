@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
-<menus xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="menu.xsd">
+<menus xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="menu.xsd">
 
 	<!-- ************** -->
 	<!-- Menu Principal -->
@@ -36,974 +37,995 @@
 	-->
 	<!-- ************** -->
 	<menu id="pegasus-menuprincipal">
-		<label refId="MENU_PRINCIPAL"/>
+		<label refId="MENU_PRINCIPAL" />
 		<nodes>
 			<node>
-				<label refId="MENU_DOSSIERS"/>
+				<label refId="MENU_DOSSIERS" />
 				<action command="/pegasus" responseTarget="fr_main">
-					<parameter name="userAction" value="pegasus.dossier.dossier.chercher"/>
+					<parameter name="userAction" value="pegasus.dossier.dossier.chercher" />
 				</action>
 			</node>
 			<node>
-				<label refId="MENU_DEMANDES"/>
+				<label refId="MENU_DEMANDES" />
 				<action command="/pegasus" responseTarget="fr_main">
-					<parameter name="userAction" value="pegasus.demande.demande.chercher"/>
+					<parameter name="userAction" value="pegasus.demande.demande.chercher" />
 				</action>
 			</node>
-			<node>				
-				<label refId="MENU_PC_ACCORDEE"/>
-				<action command="/pegasus" responseTarget="fr_main">					
-					<parameter name="userAction" value="pegasus.pcaccordee.pcAccordee.chercher"/>					
-				</action>				
+			<node>
+				<label refId="MENU_PC_ACCORDEE" />
+				<action command="/pegasus" responseTarget="fr_main">
+					<parameter name="userAction" value="pegasus.pcaccordee.pcAccordee.chercher" />
+				</action>
 			</node>
-			<node>				
-				<label refId="MENU_DECISION"/>
-				<action command="/pegasus" responseTarget="fr_main">					
-					<parameter name="userAction" value="pegasus.decision.decision.chercher"/>						
-				</action>				
+			<node>
+				<label refId="MENU_DECISION" />
+				<action command="/pegasus" responseTarget="fr_main">
+					<parameter name="userAction" value="pegasus.decision.decision.chercher" />
+				</action>
 			</node>
-			<node>				
-				<label refId="MENU_PC_ANNONCES"/>
-				<action command="/pegasus" responseTarget="fr_main">					
-					<parameter name="userAction" value="pegasus.rpc.annonces.afficher"/>						
-				</action>				
+			<node>
+				<label refId="MENU_PC_ANNONCES" />
+				<action command="/pegasus" responseTarget="fr_main">
+					<parameter name="userAction" value="pegasus.rpc.annonces.afficher" />
+				</action>
 			</node>
-			<node>				
-				<label refId="MENU_LOTS"/>
-				<action command="/pegasus" responseTarget="fr_main">					
-					<parameter name="userAction" value="pegasus.lot.lot.chercher"/>						
-				</action>				
+			<node>
+				<label refId="MENU_LOTS" />
+				<action command="/pegasus" responseTarget="fr_main">
+					<parameter name="userAction" value="pegasus.lot.lot.chercher" />
+				</action>
 			</node>
-			
-			<node>				
-				<label refId="MENU_AVANCES"/>
-				<action command="/pegasus" responseTarget="fr_main">					
-					<parameter name="userAction" value="pegasus.avance.executerAvances.afficher"/>						
-					<parameter name="_method" value="add"/>						
-					
-				</action>				
+
+			<node>
+				<label refId="MENU_AVANCES" />
+				<action command="/pegasus" responseTarget="fr_main">
+					<parameter name="userAction" value="pegasus.avance.executerAvances.afficher" />
+					<parameter name="_method" value="add" />
+
+				</action>
 			</node>
-			
+
 			<!-- Menu Parametres -->
 			<node>
-				<label refId="MENU_PARAMETRES"/>
+				<label refId="MENU_PARAMETRES" />
 				<nodes>
 					<node>
-						<label refId="MENU_OPTION_CATALOGUES_TEXTES"/>
+						<label refId="MENU_OPTION_CATALOGUES_TEXTES" />
 						<action command="/babel" responseTarget="fr_main">
-							<parameter name="userAction" value="babel.cat.document.chercher"/>
-							<parameter name="csGroupeDomaines" value="PCDOMAINES"/>
-							<parameter name="csGroupeTypesDocuments" value="PCTYPES"/>
+							<parameter name="userAction" value="babel.cat.document.chercher" />
+							<parameter name="csGroupeDomaines" value="PCDOMAINES" />
+							<parameter name="csGroupeTypesDocuments" value="PCTYPES" />
 						</action>
 					</node>
-					
+
 					<node>
-						<label refId="MENU_MONNAIES_ETRANGERES"/>
+						<label refId="MENU_MONNAIES_ETRANGERES" />
 						<action command="/pegasus" responseTarget="fr_main">
-							<parameter name="userAction" value="pegasus.monnaieetrangere.monnaieEtrangere.chercher"/>
-						</action>
-					</node>
-					<node>
-						<label refId="MENU_VARIABLES_METIER"/>
-						<action command="/pegasus" responseTarget="fr_main">
-							<parameter name="userAction" value="pegasus.variablemetier.variableMetier.chercher"/>
+							<parameter name="userAction"
+								value="pegasus.monnaieetrangere.monnaieEtrangere.chercher" />
 						</action>
 					</node>
 					<node>
-					<label refId="MENU_CONVERSION_RENTE"/>
+						<label refId="MENU_VARIABLES_METIER" />
 						<action command="/pegasus" responseTarget="fr_main">
-							<parameter name="userAction" value="pegasus.parametre.conversionRente.chercher"/>
+							<parameter name="userAction"
+								value="pegasus.variablemetier.variableMetier.chercher" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_CONVERSION_RENTE" />
+						<action command="/pegasus" responseTarget="fr_main">
+							<parameter name="userAction"
+								value="pegasus.parametre.conversionRente.chercher" />
 						</action>
 					</node>
 					<node open="no">
-						<label refId="MENU_GESTION_HOMES"/>
-						<nodes >
-						<node>
-							<label refId="MENU_HOMES"/>
-							<action command="/pegasus" responseTarget="fr_main">
-								<parameter name="userAction" value="pegasus.home.chercher"/>
-							</action>
-						</node>
+						<label refId="MENU_GESTION_HOMES" />
+						<nodes>
+							<node>
+								<label refId="MENU_HOMES" />
+								<action command="/pegasus" responseTarget="fr_main">
+									<parameter name="userAction" value="pegasus.home.chercher" />
+								</action>
+							</node>
 						</nodes>
 					</node>
 					<node open="no">
-						<label refId="MENU_FORFAIT_PRIME_ASSURANCE_MALADIE"/>
-						<nodes >
+						<label refId="MENU_FORFAIT_PRIME_ASSURANCE_MALADIE" />
+						<nodes>
 							<node>
-								<label refId="MENU_ZONE_FORFAIT"/>
+								<label refId="MENU_ZONE_FORFAIT" />
 								<action command="/pegasus" responseTarget="fr_main">
-									<parameter name="userAction" value="pegasus.parametre.zoneForfaits.chercher"/>
+									<parameter name="userAction"
+										value="pegasus.parametre.zoneForfaits.chercher" />
 								</action>
 							</node>
 							<node>
-								<label refId="MENU_LIEN_ZONE_LOCALITE"/>
+								<label refId="MENU_LIEN_ZONE_LOCALITE" />
 								<action command="/pegasus" responseTarget="fr_main">
-									<parameter name="userAction" value="pegasus.parametre.zoneLocalite.chercher"/>
+									<parameter name="userAction"
+										value="pegasus.parametre.zoneLocalite.chercher" />
 								</action>
 							</node>
 							<node>
-								<label refId="MENU_FOFAIT_PRIME"/>
+								<label refId="MENU_FOFAIT_PRIME" />
 								<action command="/pegasus" responseTarget="fr_main">
-									<parameter name="userAction" value="pegasus.parametre.forfaitPrimesAssuranceMaladie.chercher"/>
+									<parameter name="userAction"
+										value="pegasus.parametre.forfaitPrimesAssuranceMaladie.chercher" />
 								</action>
 							</node>
 						</nodes>
 					</node>
 				</nodes>
-			</node>			
-			<node open="no">				
-				<label refId="MENU_ANNONCE"/>
+			</node>
+			<node open="no">
+				<label refId="MENU_ANNONCE" />
 				<nodes>
 					<node>
-						<label refId="MENU_ANNONCE_COMMUNICATION_OCC"/>
+						<label refId="MENU_ANNONCE_COMMUNICATION_OCC" />
 						<action command="/pegasus" responseTarget="fr_main">
-						    <parameter name="userAction" value="pegasus.annonce.genererCommunicationOCC.afficher" />					
+							<parameter name="userAction"
+								value="pegasus.annonce.genererCommunicationOCC.afficher" />
 						</action>
 					</node>
 					<node>
-						<label refId="MENU_ANNONCE_LAPRAMS"/>
+						<label refId="MENU_ANNONCE_LAPRAMS" />
 						<action command="/pegasus" responseTarget="fr_main">
-						    <parameter name="userAction" value="pegasus.annonce.genererAnnonceLaprams.afficher" />					
+							<parameter name="userAction"
+								value="pegasus.annonce.genererAnnonceLaprams.afficher" />
 						</action>
 					</node>
 				</nodes>
 			</node>
-			<node open="no">				
-				<label refId="MENU_PROCESS"/>
+			<node open="no">
+				<label refId="MENU_PROCESS" />
 				<nodes>
 					<node>
-						<label refId="MENU_PROCESS_ADAPTATION"/>
+						<label refId="MENU_PROCESS_ADAPTATION" />
 						<action command="/fx" responseTarget="fr_main">
 							<parameter name="userAction" value="fx.process.jadeProcessList.afficher" />
-							<parameter name="keyProcess" value="Pegasus.AdaptationPC" /> 
+							<parameter name="keyProcess" value="Pegasus.AdaptationPC" />
 						</action>
 					</node>
-						<node>
-						<label refId="MENU_PROCESS_ADAPTATION_HOME"/>
+					<node>
+						<label refId="MENU_PROCESS_ADAPTATION_HOME" />
 						<action command="/fx" responseTarget="fr_main">
 							<parameter name="userAction" value="fx.process.jadeProcessList.afficher" />
 							<parameter name="keyProcess" value="Pegasus.AdaptationHomePC" />
 						</action>
 					</node>
 					<node>
-						<label refId="MENU_PROCESS_STATISTIQUE_OFAS"/>
+						<label refId="MENU_PROCESS_STATISTIQUE_OFAS" />
 						<action command="/fx" responseTarget="fr_main">
 							<parameter name="userAction" value="fx.process.jadeProcessList.afficher" />
 							<parameter name="keyProcess" value="Pegasus.StatistiquesOFAS" />
 						</action>
 					</node>
 					<node id="NODE_ALLOCATION_NOEL">
-						<label refId="MENU_PROCESS_ALLOCATIONS_NOEL"/>
+						<label refId="MENU_PROCESS_ALLOCATIONS_NOEL" />
 						<action command="/fx" responseTarget="fr_main">
 							<parameter name="userAction" value="fx.process.jadeProcessList.afficher" />
 							<parameter name="keyProcess" value="Pegasus.allocationsNoel" />
 						</action>
 					</node>
-				</nodes>	
+				</nodes>
 			</node>
-			<node open="no">				
-				<label refId="MENU_LISTE"/>
+			<node open="no">
+				<label refId="MENU_LISTE" />
 				<nodes>
 					<node id="listeMutation">
-						<label refId="MENU_LIST_RECAP_PC"/>
+						<label refId="MENU_LIST_RECAP_PC" />
 						<action command="/pegasus" responseTarget="fr_main">
-						    <parameter name="userAction" value="pegasus.lot.list.afficher" />					
+							<parameter name="userAction" value="pegasus.lot.list.afficher" />
 						</action>
 					</node>
 					<node id="listeCasAF">
-						<label refId="MENU_LIST_CAS_AF"/>
+						<label refId="MENU_LIST_CAS_AF" />
 						<action command="/pegasus" responseTarget="fr_main">
-						    <parameter name="userAction" value="pegasus.revenusdepenses.listAllocationsFamiliales.afficher" />					
+							<parameter name="userAction"
+								value="pegasus.revenusdepenses.listAllocationsFamiliales.afficher" />
 						</action>
 					</node>
 					<node id="listeDemandesPC">
-						<label refId="MENU_LIST_DEMANDES_PC"/>
+						<label refId="MENU_LIST_DEMANDES_PC" />
 						<action command="/pegasus" responseTarget="fr_main">
-						    <parameter name="userAction" value="pegasus.demande.listDemandesPC.afficher" />					
+							<parameter name="userAction"
+								value="pegasus.demande.listDemandesPC.afficher" />
 						</action>
 					</node>
 					<node id="listeDecisionsValidees">
-						<label refId="MENU_LIST_DECISIONS_VALIDEES"/>
+						<label refId="MENU_LIST_DECISIONS_VALIDEES" />
 						<action command="/pegasus" responseTarget="fr_main">
-						    <parameter name="userAction" value="pegasus.decision.listDecisionsValidees.afficher" />					
+							<parameter name="userAction"
+								value="pegasus.decision.listDecisionsValidees.afficher" />
 						</action>
 					</node>
-					<node>				
-						<label refId="MENU_LISTE_REVISIONS"/>
+					<node>
+						<label refId="MENU_LISTE_REVISIONS" />
 						<action command="/pegasus" responseTarget="fr_main">
-							<parameter name="userAction" value="pegasus.demande.genererListeRevisions.afficher"/>
+							<parameter name="userAction"
+								value="pegasus.demande.genererListeRevisions.afficher" />
 						</action>
 					</node>
-					<node id="NODE_LISTE_REPARTITION_COMMUNE_POLITIQUE">				
-						<label refId="MENU_LISTE_REPARTITION_COMMUNE_POLITIQUE"/>
+					<node id="NODE_LISTE_REPARTITION_COMMUNE_POLITIQUE">
+						<label refId="MENU_LISTE_REPARTITION_COMMUNE_POLITIQUE" />
 						<action command="/pegasus" responseTarget="fr_main">
-							<parameter name="userAction" value="pegasus.liste.listeRepartitionCommunePolitique.afficher"/>
+							<parameter name="userAction"
+								value="pegasus.liste.listeRepartitionCommunePolitique.afficher" />
 						</action>
 					</node>
 				</nodes>
-			</node>			
+			</node>
 		</nodes>
 	</menu>
-		
+
 	<!-- Menu Option Dossier -->
 	<menu id="pegasus-optionsdossiers">
-		<label refId="MENU_PC_OPTION_TITRE"/>
-	  	<nodes>
+		<label refId="MENU_PC_OPTION_TITRE" />
+		<nodes>
 			<node>
-				<label refId="MENU_OPTION_DOSSIERS_DEMANDES_DU_DOSSIER"/>
+				<label refId="MENU_OPTION_DOSSIERS_DEMANDES_DU_DOSSIER" />
 				<action command="/pegasus" responseTarget="fr_main">
-					<parameter name="userAction" value="pegasus.demande.demande.chercher"/>
-					<parameter name="idDossier"/>
+					<parameter name="userAction" value="pegasus.demande.demande.chercher" />
+					<parameter name="idDossier" />
 				</action>
 			</node>
 			<node>
-				<label refId="MENU_OPTION_DOSSIERS_PC_ACCORDEE"/>
+				<label refId="MENU_OPTION_DOSSIERS_PC_ACCORDEE" />
 				<action command="/pegasus" responseTarget="fr_main">
-					<parameter name="userAction" value="pegasus.pcaccordee.pcAccordee.chercher"/>
-					<parameter name="idDossier"/>
-					<parameter name="whereKey" value="forVersionnedPca"/>			
+					<parameter name="userAction" value="pegasus.pcaccordee.pcAccordee.chercher" />
+					<parameter name="idDossier" />
+					<parameter name="whereKey" value="forVersionnedPca" />
 				</action>
-			</node>	
+			</node>
 			<node>
-				<label refId="MENU_OPTION_DOSSIERS_DECISION"/>
+				<label refId="MENU_OPTION_DOSSIERS_DECISION" />
 				<action command="/pegasus" responseTarget="fr_main">
-					<parameter name="userAction" value="pegasus.decision.decision.chercher"/>
-					<parameter name="idDossier"/>			
+					<parameter name="userAction" value="pegasus.decision.decision.chercher" />
+					<parameter name="idDossier" />
 				</action>
-			</node>		
+			</node>
 		</nodes>
 	</menu>
-	
+
 	<menu id="pegasus-optionscreanciers">
-		<label refId="MENU_PC_OPTION_TITRE"/>
-	  	<nodes>
+		<label refId="MENU_PC_OPTION_TITRE" />
+		<nodes>
 			<node id="DETAIL_DECISION">
-				<label refId="MENU_OPTION_CREANCIERS_TO_DECISION"/>
+				<label refId="MENU_OPTION_PC_CREANCIERS_TO_DECISION" />
 				<action command="/pegasus" responseTarget="fr_main">
-					<parameter name="userAction" value="pegasus.decision.decisionApresCalcul.afficher"/>
-					<parameter name="idDecision"/>
-				</action>
-			</node>		
-		</nodes>
-	</menu>
-	
-	<!-- Menu Option Demande -->
-	<menu id="pegasus-optionsdemandes">
-		<label refId="MENU_PC_OPTION_TITRE"/>
-	  	<nodes>
-	  		<node>
-				<label refId="MENU_OPTION_DEMANDES_DROITS"/>
-				<action command="/pegasus" responseTarget="fr_main">
-					<parameter name="userAction" value="pegasus.droit.droit.chercher"/>
-					<parameter name="idDemandePc"/>
-					<parameter name="idDossier"/>
-					<parameter name="isFratrie"/>		
-				</action>
-			</node>
-	  		<node>
-				<label refId="MENU_OPTION_DEMANDES_PC_ACCORDEE"/>
-				<action command="/pegasus" responseTarget="fr_main">
-					<parameter name="userAction" value="pegasus.pcaccordee.pcAccordee.chercher"/>
-					<parameter name="idDemandePc"/>
-					<parameter name="whereKey" value="forVersionnedPca"/>			
-				</action>
-			</node>		
-			<node>
-				<label refId="MENU_OPTION_DEMANDES_DECISION"/>
-				<action command="/pegasus" responseTarget="fr_main">
-					<parameter name="userAction" value="pegasus.decision.decision.chercher"/>
-					<parameter name="idDemandePc"/>			
-				</action>
-			</node>
-			<node>
-				<label refId="MENU_OPTION_DEMANDES_SITUATION_FAMILIALE"/>
-				<action command="/pegasus" responseTarget="fr_main">
-					<parameter name="userAction" value="pegasus.situationFamiliale.modifier"/>
-					<parameter name="idTiers"/>
-					<parameter name="idDossier"/>
-				</action>
-			</node>
-			<node>
-				<label refId="MENU_OPTION_CREANCIER"/>
-				<action command="/pegasus" responseTarget="fr_main">
-					<parameter name="userAction" value="pegasus.creancier.creancier.afficher"/>
-					<parameter name="idDemandePc"/>
+					<parameter name="userAction"
+						value="pegasus.decision.decisionApresCalcul.afficher" />
 					<parameter name="idDecision" />
 				</action>
-			</node>	
+			</node>
+		</nodes>
+	</menu>
+
+	<!-- Menu Option Demande -->
+	<menu id="pegasus-optionsdemandes">
+		<label refId="MENU_PC_OPTION_TITRE" />
+		<nodes>
+			<node>
+				<label refId="MENU_OPTION_DEMANDES_DROITS" />
+				<action command="/pegasus" responseTarget="fr_main">
+					<parameter name="userAction" value="pegasus.droit.droit.chercher" />
+					<parameter name="idDemandePc" />
+					<parameter name="idDossier" />
+					<parameter name="isFratrie" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_DEMANDES_PC_ACCORDEE" />
+				<action command="/pegasus" responseTarget="fr_main">
+					<parameter name="userAction" value="pegasus.pcaccordee.pcAccordee.chercher" />
+					<parameter name="idDemandePc" />
+					<parameter name="whereKey" value="forVersionnedPca" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_DEMANDES_DECISION" />
+				<action command="/pegasus" responseTarget="fr_main">
+					<parameter name="userAction" value="pegasus.decision.decision.chercher" />
+					<parameter name="idDemandePc" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_DEMANDES_SITUATION_FAMILIALE" />
+				<action command="/pegasus" responseTarget="fr_main">
+					<parameter name="userAction" value="pegasus.situationFamiliale.modifier" />
+					<parameter name="idTiers" />
+					<parameter name="idDossier" />
+				</action>
+			</node>
+			<node>
+				<label refId="MENU_OPTION_CREANCIER" />
+				<action command="/pegasus" responseTarget="fr_main">
+					<parameter name="userAction" value="pegasus.creancier.creancier.afficher" />
+					<parameter name="idDemandePc" />
+					<parameter name="idDecision" />
+				</action>
+			</node>
 
 			<node id="DECREFUS">
-				<label refId="MENU_OPTION_PREPARER_DEC_REFUS"/>
+				<label refId="MENU_OPTION_PREPARER_DEC_REFUS" />
 				<action command="/pegasus" responseTarget="fr_main">
-					<parameter name="userAction" value="pegasus.decision.prepDecisionRefus.afficher"/>
-					<parameter name="idDemandePc"/>
+					<parameter name="userAction"
+						value="pegasus.decision.prepDecisionRefus.afficher" />
+					<parameter name="idDemandePc" />
 					<parameter name="csTypeDecisionPrep" />
 				</action>
 			</node>
 			<node id="DECREFUS_DE">
-				<label refId="MENU_OPTION_AFFICHER_DEC_REFUS"/>
+				<label refId="MENU_OPTION_AFFICHER_DEC_REFUS" />
 				<action command="/pegasus" responseTarget="fr_main">
-					<parameter name="userAction" value="pegasus.decision.decisionRefus.afficher"/>
-					<parameter name="idDemandePc"/>
+					<parameter name="userAction" value="pegasus.decision.decisionRefus.afficher" />
+					<parameter name="idDemandePc" />
 					<parameter name="idDecision" />
 				</action>
 			</node>
 
 			<node id="AVANCES">
-				<label refId="MENU_OPTION_AVANCES"/>
+				<label refId="MENU_OPTION_AVANCES" />
 				<action command="/pegasus" responseTarget="fr_main">
-					<parameter name="userAction" value="pegasus.avance.listeAvances.afficher"/>
-					<parameter name="idDemandePc"/>
-					<parameter name="idTiers"/>
+					<parameter name="userAction" value="pegasus.avance.listeAvances.afficher" />
+					<parameter name="idDemandePc" />
+					<parameter name="idTiers" />
 				</action>
 			</node>
-			
+
 			<node id="MENU_OPTION_IMPRESSIONS_BILLAG">
-				<label refId="MENU_OPTION_DECISION_IMPRIMER_BILLAG"/>
+				<label refId="MENU_OPTION_DECISION_IMPRIMER_BILLAG" />
 				<action command="/pegasus" responseTarget="fr_main">
-					<parameter name="userAction" value="pegasus.demande.imprimerBillag.afficher"/>
-					<parameter name="idDossier"/>
-					<parameter name="idDemandePc"/>
-					<parameter name="_method" value="upd"/>
+					<parameter name="userAction" value="pegasus.demande.imprimerBillag.afficher" />
+					<parameter name="idDossier" />
+					<parameter name="idDemandePc" />
+					<parameter name="_method" value="upd" />
 				</action>
 			</node>
 			<node id="DOSSIERS_TRANSFERT">
-				<label refId="MENU_OPTION_DOSSIERS_TRANSFERT"/>
+				<label refId="MENU_OPTION_DOSSIERS_TRANSFERT" />
 				<action command="/pegasus" responseTarget="fr_main">
-					<parameter name="userAction" value="pegasus.transfertdossier.demandeTransfertDossier.afficher"/>
-					<parameter name="idDemandePc"/>
-					<parameter name="idGestionnaire"/>
+					<parameter name="userAction"
+						value="pegasus.transfertdossier.demandeTransfertDossier.afficher" />
+					<parameter name="idDemandePc" />
+					<parameter name="idGestionnaire" />
 				</action>
 			</node>
 			<node id="SYNCHRO_FAMILLE">
-				<label refId="MENU_OPTION_DROITS_SYNCHRONISER"/>
+				<label refId="MENU_OPTION_DROITS_SYNCHRONISER" />
 				<action command="/pegasus" responseTarget="fr_main">
-					<parameter name="userAction" value="pegasus.droit.droit.synchroniser"/>
-					<parameter name="idDemandePc"/>
-					<parameter name="idDossier"/>
-					<parameter name="noVersionDroit"/>
+					<parameter name="userAction" value="pegasus.droit.droit.synchroniser" />
+					<parameter name="idDemandePc" />
+					<parameter name="idDossier" />
+					<parameter name="noVersionDroit" />
 				</action>
-			</node>	
+			</node>
 			<node id="TRANSFERT_RENTE">
-				<label refId="MENU_OPTION_DEMANDE_TRANSFERT_RENTE"/>
+				<label refId="MENU_OPTION_DEMANDE_TRANSFERT_RENTE" />
 				<action command="/pegasus" responseTarget="fr_main">
-					<parameter name="userAction" value="pegasus.transfertdossier.demandeTransfertRente.afficher"/>
-					<parameter name="idDossier"/>
-					<parameter name="idDemandePc"/>
-					<parameter name="idGestionnaire"/>
+					<parameter name="userAction"
+						value="pegasus.transfertdossier.demandeTransfertRente.afficher" />
+					<parameter name="idDossier" />
+					<parameter name="idDemandePc" />
+					<parameter name="idGestionnaire" />
 				</action>
-			</node>	
+			</node>
 			<node id="DEMANDE_RENSEIGNEMENT">
-				<label refId="MENU_OPTION_DEMANDE_DEMANDE_RENSEIGNEMENT"/>
+				<label refId="MENU_OPTION_DEMANDE_DEMANDE_RENSEIGNEMENT" />
 				<action command="/pegasus" responseTarget="fr_main">
-					<parameter name="userAction" value="pegasus.demanderenseignement.demandeRenseignement.afficher"/>
-					<parameter name="idDossier"/>
-					<parameter name="idDemandePc"/>
-					<parameter name="idGestionnaire"/>
+					<parameter name="userAction"
+						value="pegasus.demanderenseignement.demandeRenseignement.afficher" />
+					<parameter name="idDossier" />
+					<parameter name="idDemandePc" />
+					<parameter name="idGestionnaire" />
 				</action>
-			</node>	
+			</node>
 			<node>
-				<label refId="MENU_OPTION_DOSSIERS_BLOCAGE"/>
+				<label refId="MENU_OPTION_DOSSIERS_BLOCAGE" />
 				<action command="/pegasus" responseTarget="fr_main">
-					<parameter name="userAction" value="pegasus.blocage.enteteBlocage.afficher"/>
-					<parameter name="idDossier"/>
-					<parameter name="idDemandePc"/>
+					<parameter name="userAction" value="pegasus.blocage.enteteBlocage.afficher" />
+					<parameter name="idDossier" />
+					<parameter name="idDemandePc" />
 				</action>
 			</node>
 		</nodes>
 	</menu>
 
-	
+
 	<!-- Menu Option Droits Detail (dans rcListe et detail) -->
-	<menu id="pegasus-optionsdroitsdetail" >
-		<label refId="MENU_PC_OPTION_TITRE"/>
-	  	<nodes>
-	  		<node>
-				<label refId="MENU_OPTION_DROITS_DONNEES_PERSONELLES"/>
+	<menu id="pegasus-optionsdroitsdetail">
+		<label refId="MENU_PC_OPTION_TITRE" />
+		<nodes>
+			<node>
+				<label refId="MENU_OPTION_DROITS_DONNEES_PERSONELLES" />
 				<action command="/pegasus" responseTarget="fr_main">
-					<parameter name="userAction" value="pegasus.droit.saisieDonneesPersonnelles.afficher"/>
-					<parameter name="selectedId"/>
-					<parameter name="idDemandePc"/>
-					<parameter name="idDroit"/>
-					<parameter name="idDossier"/>		
-					<parameter name="noVersion"/>
-					<parameter name="idVersionDroit"/>
-					<parameter name="idTitreMenu" value="MENU_OPTION_DROITS_DONNEES_PERSONELLES"/>
-					<parameter name="idTitreOnglet" value="MENU_ONGLET_DROITS_LOYER"/>
+					<parameter name="userAction"
+						value="pegasus.droit.saisieDonneesPersonnelles.afficher" />
+					<parameter name="selectedId" />
+					<parameter name="idDemandePc" />
+					<parameter name="idDroit" />
+					<parameter name="idDossier" />
+					<parameter name="noVersion" />
+					<parameter name="idVersionDroit" />
+					<parameter name="idTitreMenu" value="MENU_OPTION_DROITS_DONNEES_PERSONELLES" />
+					<parameter name="idTitreOnglet" value="MENU_ONGLET_DROITS_LOYER" />
 				</action>
 			</node>
 			<node>
-				<label refId="MENU_OPTION_DROITS_DONNEES_FINANCIERES"/>
+				<label refId="MENU_OPTION_DROITS_DONNEES_FINANCIERES" />
 				<action command="/pegasus" responseTarget="fr_main">
-					<parameter name="userAction" value="pegasus.renteijapi.renteAvsAi.afficher"/>
-					<parameter name="selectedId"/>
-					<parameter name="idDemandePc"/>
-					<parameter name="idDroit"/>
-					<parameter name="idDossier"/>		
-					<parameter name="noVersion"/>
-					<parameter name="idVersionDroit"/>
-					<parameter name="idTitreMenu" value="MENU_OPTION_DROITS_RENTES_AJ_API"/>
-					<parameter name="idTitreOnglet" value="MENU_ONGLET_DROITS_RENTE_AVS_API"/>
+					<parameter name="userAction" value="pegasus.renteijapi.renteAvsAi.afficher" />
+					<parameter name="selectedId" />
+					<parameter name="idDemandePc" />
+					<parameter name="idDroit" />
+					<parameter name="idDossier" />
+					<parameter name="noVersion" />
+					<parameter name="idVersionDroit" />
+					<parameter name="idTitreMenu" value="MENU_OPTION_DROITS_RENTES_AJ_API" />
+					<parameter name="idTitreOnglet" value="MENU_ONGLET_DROITS_RENTE_AVS_API" />
 				</action>
-			</node> 			
+			</node>
 			<node id="pcDroitSupprimer">
-				<label refId="MENU_OPTION_DROITS_SUPPRIMER"/>
+				<label refId="MENU_OPTION_DROITS_SUPPRIMER" />
 				<action command="/pegasus" responseTarget="fr_main">
-					<parameter name="userAction" value="pegasus.droit.droit.supprimer"/>
-					<parameter name="selectedId"/>
-					<parameter name="idDemandePc"/>
-					<parameter name="idDroit"/>
-					<parameter name="noVersion"/>
-					<parameter name="idVersionDroit"/>
-					<parameter name="idTitreMenu" value="MENU_OPTION_DROITS_SUPPRIMER"/>
+					<parameter name="userAction" value="pegasus.droit.droit.supprimer" />
+					<parameter name="selectedId" />
+					<parameter name="idDemandePc" />
+					<parameter name="idDroit" />
+					<parameter name="noVersion" />
+					<parameter name="idVersionDroit" />
+					<parameter name="idTitreMenu" value="MENU_OPTION_DROITS_SUPPRIMER" />
 				</action>
 			</node>
 			<node id="pcDroitCorriger">
-				<label refId="MENU_OPTION_DROITS_CORRIGER"/>
+				<label refId="MENU_OPTION_DROITS_CORRIGER" />
 				<action command="/pegasus" responseTarget="fr_main">
-					<parameter name="userAction" value="pegasus.droit.corrigerDroit.afficher"/>
-					<parameter name="_method" value="upd"/>
-					<parameter name="selectedId"/>
-					<parameter name="idDemandePc"/>
-					<parameter name="idDroit"/>
-					<parameter name="noVersion"/>
-					<parameter name="idVersionDroit"/>
-				    <parameter name="idTitreMenu" value="MENU_OPTION_DROITS_CORRIGER"/>
+					<parameter name="userAction" value="pegasus.droit.corrigerDroit.afficher" />
+					<parameter name="_method" value="upd" />
+					<parameter name="selectedId" />
+					<parameter name="idDemandePc" />
+					<parameter name="idDroit" />
+					<parameter name="noVersion" />
+					<parameter name="idVersionDroit" />
+					<parameter name="idTitreMenu" value="MENU_OPTION_DROITS_CORRIGER" />
 				</action>
 			</node>
 			<node id="pcPcAccordesLister">
-				<label refId="MENU_OPTION_DROITS_PCACCORDER_LISTER"/>
+				<label refId="MENU_OPTION_DROITS_PCACCORDER_LISTER" />
 				<action command="/pegasus" responseTarget="fr_main">
-					<parameter name="userAction" value="pegasus.pcaccordee.pcAccordee.chercher"/>
-					<parameter name="idDroit"/>
-					<parameter name="noVersion"/>
+					<parameter name="userAction" value="pegasus.pcaccordee.pcAccordee.chercher" />
+					<parameter name="idDroit" />
+					<parameter name="noVersion" />
 				</action>
 			</node>
 			<node>
-				<label refId="MENU_OPTION_DROITS_DECISION"/>
+				<label refId="MENU_OPTION_DROITS_DECISION" />
 				<action command="/pegasus" responseTarget="fr_main">
-					<parameter name="userAction" value="pegasus.decision.decision.chercher"/>
-					<parameter name="idDroit"/>
-					<parameter name="idVersionDroit"/>			
+					<parameter name="userAction" value="pegasus.decision.decision.chercher" />
+					<parameter name="idDroit" />
+					<parameter name="idVersionDroit" />
 				</action>
-			</node>		
+			</node>
 			<node id="DECSUPP">
-				<label refId="MENU_OPTION_DROITS_PREPARER_DECISION_SUPPRESSION"/>
+				<label refId="MENU_OPTION_DROITS_PREPARER_DECISION_SUPPRESSION" />
 				<action command="/pegasus" responseTarget="fr_main">
-					<parameter name="userAction" value="pegasus.decision.prepDecisionSuppression.afficher"/>
-					<parameter name="selectedId"/>
-					<parameter name="idVersionDroit"/>
-					<parameter name="idDroit"/>
+					<parameter name="userAction"
+						value="pegasus.decision.prepDecisionSuppression.afficher" />
+					<parameter name="selectedId" />
+					<parameter name="idVersionDroit" />
+					<parameter name="idDroit" />
 					<parameter name="csTypeDecisionPrep" />
 				</action>
 			</node>
 			<node id="DECAPCA">
-				<label refId="MENU_OPTION_DROITS_PREPARER_DEC_APCALCUL"/>
+				<label refId="MENU_OPTION_DROITS_PREPARER_DEC_APCALCUL" />
 				<action command="/pegasus" responseTarget="fr_main">
-					<parameter name="userAction" value="pegasus.decision.prepDecisionApresCalcul.afficher"/>
-					<parameter name="idDroit"/>
-					<parameter name="idVersionDroit"/>
+					<parameter name="userAction"
+						value="pegasus.decision.prepDecisionApresCalcul.afficher" />
+					<parameter name="idDroit" />
+					<parameter name="idVersionDroit" />
 					<parameter name="csTypeDecisionPrep" />
 					<parameter name="noVersion" />
 				</action>
 			</node>
 			<node id="pcDroitCalcul">
-				<label refId="MENU_OPTION_DROITS_CALCULER"/>
+				<label refId="MENU_OPTION_DROITS_CALCULER" />
 				<action command="/pegasus" responseTarget="fr_main">
-					<parameter name="userAction" value="pegasus.droit.calculDroit.afficher"/>
-					<parameter name="idDroit"/>
-					<parameter name="_method" value="upd"/>
-					<parameter name="idVersionDroit"/>
+					<parameter name="userAction" value="pegasus.droit.calculDroit.afficher" />
+					<parameter name="idDroit" />
+					<parameter name="_method" value="upd" />
+					<parameter name="idVersionDroit" />
 					<parameter name="noVersion" />
-					<parameter name="idDemandePc"/>
+					<parameter name="idDemandePc" />
 				</action>
 			</node>
 		</nodes>
 	</menu>
-	
-	<!-- Menu Option Droits (Donnees financieres et personnelles)-->
+
+	<!-- Menu Option Droits (Donnees financieres et personnelles) -->
 	<menu id="pegasus-optionsdroits">
-		<label refId="MENU_PC_OPTION_TITRE"/>
-	  	<nodes>
-	  		<node>
-				<label refId="MENU_OPTION_DROITS_DONNEES_PERSONELLES"/>
+		<label refId="MENU_PC_OPTION_TITRE" />
+		<nodes>
+			<node>
+				<label refId="MENU_OPTION_DROITS_DONNEES_PERSONELLES" />
 				<action command="/pegasus" responseTarget="fr_main">
-					<parameter name="userAction" value="pegasus.droit.saisieDonneesPersonnelles.afficher"/>
-					<parameter name="selectedId"/>
-					<parameter name="idDemandePc"/>
-					<parameter name="idDossier"/>	
-					<parameter name="idDroit"/>
-					<parameter name="noVersion"/>
-					<parameter name="idDossier"/>		
-					<parameter name="idVersionDroit"/>
-					<parameter name="idTitreMenu" value="MENU_OPTION_DROITS_DONNEES_PERSONELLES"/>
-					<parameter name="idTitreOnglet" value="MENU_ONGLET_DROITS_LOYER"/>
+					<parameter name="userAction"
+						value="pegasus.droit.saisieDonneesPersonnelles.afficher" />
+					<parameter name="selectedId" />
+					<parameter name="idDemandePc" />
+					<parameter name="idDossier" />
+					<parameter name="idDroit" />
+					<parameter name="noVersion" />
+					<parameter name="idDossier" />
+					<parameter name="idVersionDroit" />
+					<parameter name="idTitreMenu" value="MENU_OPTION_DROITS_DONNEES_PERSONELLES" />
+					<parameter name="idTitreOnglet" value="MENU_ONGLET_DROITS_LOYER" />
 				</action>
 			</node>
 			<node>
-				<label refId="MENU_OPTION_DROITS_RENTES_AJ_API"/>
+				<label refId="MENU_OPTION_DROITS_RENTES_AJ_API" />
 				<action command="/pegasus" responseTarget="fr_main">
-					<parameter name="userAction" value="pegasus.renteijapi.renteAvsAi.afficher"/>
-					<parameter name="selectedId"/>
-					<parameter name="idDemandePc"/>
-					<parameter name="idDossier"/>	
-					<parameter name="idDroit"/>
-					<parameter name="noVersion"/>
-					<parameter name="idDossier"/>		
-					<parameter name="idVersionDroit"/>
-					<parameter name="idTitreMenu" value="MENU_OPTION_DROITS_RENTES_AJ_API"/>
-					<parameter name="idTitreOnglet" value="MENU_ONGLET_DROITS_RENTE_AVS_API"/>
-				</action>
-			</node> 
-			<node>
-				<label refId="MENU_OPTION_DROITS_HABITAT"/>
-				<action command="/pegasus" responseTarget="fr_main">
-					<parameter name="userAction" value="pegasus.habitat.loyer.afficher"/>
-					<parameter name="selectedId"/>
-					<parameter name="idDemandePc"/>
-					<parameter name="idDossier"/>	
-					<parameter name="idDroit"/>
-					<parameter name="noVersion"/>
-					<parameter name="idVersionDroit"/>
-					<parameter name="idTitreMenu" value="MENU_OPTION_DROITS_HABITAT"/>
-					<parameter name="idTitreOnglet" value="MENU_ONGLET_DROITS_LOYER"/>
+					<parameter name="userAction" value="pegasus.renteijapi.renteAvsAi.afficher" />
+					<parameter name="selectedId" />
+					<parameter name="idDemandePc" />
+					<parameter name="idDossier" />
+					<parameter name="idDroit" />
+					<parameter name="noVersion" />
+					<parameter name="idDossier" />
+					<parameter name="idVersionDroit" />
+					<parameter name="idTitreMenu" value="MENU_OPTION_DROITS_RENTES_AJ_API" />
+					<parameter name="idTitreOnglet" value="MENU_ONGLET_DROITS_RENTE_AVS_API" />
 				</action>
 			</node>
 			<node>
-				<label refId="MENU_OPTION_DROITS_FORTUNE_USUELLE"/>
+				<label refId="MENU_OPTION_DROITS_HABITAT" />
 				<action command="/pegasus" responseTarget="fr_main">
-					<parameter name="userAction" value="pegasus.fortuneusuelle.compteBancaireCCP.afficher"/>
-					<parameter name="selectedId"/>
-					<parameter name="idDemandePc"/>
-					<parameter name="idDossier"/>		
-					<parameter name="idDroit"/>
-					<parameter name="noVersion"/>
-					<parameter name="idVersionDroit"/>
-					<parameter name="idTitreMenu" value="MENU_OPTION_DROITS_FORTUNE_USUELLE"/>
-					<parameter name="idTitreOnglet" value="MENU_ONGLET_DROITS_COMPTE_BANCAIRE_CCP"/>
+					<parameter name="userAction" value="pegasus.habitat.loyer.afficher" />
+					<parameter name="selectedId" />
+					<parameter name="idDemandePc" />
+					<parameter name="idDossier" />
+					<parameter name="idDroit" />
+					<parameter name="noVersion" />
+					<parameter name="idVersionDroit" />
+					<parameter name="idTitreMenu" value="MENU_OPTION_DROITS_HABITAT" />
+					<parameter name="idTitreOnglet" value="MENU_ONGLET_DROITS_LOYER" />
 				</action>
 			</node>
 			<node>
-				<label refId="MENU_OPTION_DROITS_FORTUNE_PARTICULIERE"/>
+				<label refId="MENU_OPTION_DROITS_FORTUNE_USUELLE" />
 				<action command="/pegasus" responseTarget="fr_main">
-					<parameter name="userAction" value="pegasus.fortuneparticuliere.pretEnversTiers.afficher"/>
-					<parameter name="selectedId"/>
-					<parameter name="idDemandePc"/>
-					<parameter name="idDossier"/>		
-					<parameter name="idDroit"/>
-					<parameter name="noVersion"/>
-					<parameter name="idVersionDroit"/>
-					<parameter name="idTitreMenu" value="MENU_OPTION_DROITS_FORTUNE_PARTICULIERE"/>
-					<parameter name="idTitreOnglet" value="MENU_ONGLET_DROITS_PRET_ENVERS_TIERS"/>
+					<parameter name="userAction"
+						value="pegasus.fortuneusuelle.compteBancaireCCP.afficher" />
+					<parameter name="selectedId" />
+					<parameter name="idDemandePc" />
+					<parameter name="idDossier" />
+					<parameter name="idDroit" />
+					<parameter name="noVersion" />
+					<parameter name="idVersionDroit" />
+					<parameter name="idTitreMenu" value="MENU_OPTION_DROITS_FORTUNE_USUELLE" />
+					<parameter name="idTitreOnglet" value="MENU_ONGLET_DROITS_COMPTE_BANCAIRE_CCP" />
 				</action>
 			</node>
 			<node>
-				<label refId="MENU_OPTION_DROITS_REVENUS_DEPENSES"/>
+				<label refId="MENU_OPTION_DROITS_FORTUNE_PARTICULIERE" />
 				<action command="/pegasus" responseTarget="fr_main">
-					<parameter name="userAction" value="pegasus.revenusdepenses.revenuActiviteLucrativeDependante.afficher"/>
-					<parameter name="selectedId"/>
-					<parameter name="idDemandePc"/>
-					<parameter name="idDossier"/>	
-					<parameter name="idDroit"/>
-					<parameter name="noVersion"/>
-					<parameter name="idVersionDroit"/>
-					<parameter name="idTitreMenu" value="MENU_OPTION_DROITS_REVENUS_DEPENSES"/>
-					<parameter name="idTitreOnglet" value="MENU_ONGLET_DROITS_REVENU_ACTIVITE_LUCRATIVE_DEPENDANTE"/>
+					<parameter name="userAction"
+						value="pegasus.fortuneparticuliere.pretEnversTiers.afficher" />
+					<parameter name="selectedId" />
+					<parameter name="idDemandePc" />
+					<parameter name="idDossier" />
+					<parameter name="idDroit" />
+					<parameter name="noVersion" />
+					<parameter name="idVersionDroit" />
+					<parameter name="idTitreMenu" value="MENU_OPTION_DROITS_FORTUNE_PARTICULIERE" />
+					<parameter name="idTitreOnglet" value="MENU_ONGLET_DROITS_PRET_ENVERS_TIERS" />
 				</action>
-			</node>		
+			</node>
 			<node>
-				<label refId="MENU_OPTION_DROITS_DESSAISISSEMENTS"/>
+				<label refId="MENU_OPTION_DROITS_REVENUS_DEPENSES" />
 				<action command="/pegasus" responseTarget="fr_main">
-					<parameter name="userAction" value="pegasus.dessaisissement.dessaisissementFortune.afficher"/>
-					<parameter name="selectedId"/>
-					<parameter name="idDemandePc"/>
-					<parameter name="idDossier"/>		
-					<parameter name="idDroit"/>
-					<parameter name="noVersion"/>
-					<parameter name="idVersionDroit"/>
-					<parameter name="idTitreOnglet" value="MENU_ONGLET_DROITS_DESSAISISSEMENT_REVENU"/>
-					<parameter name="idTitreMenu" value="MENU_OPTION_DROITS_DESSAISISSEMENTS"/>
+					<parameter name="userAction"
+						value="pegasus.revenusdepenses.revenuActiviteLucrativeDependante.afficher" />
+					<parameter name="selectedId" />
+					<parameter name="idDemandePc" />
+					<parameter name="idDossier" />
+					<parameter name="idDroit" />
+					<parameter name="noVersion" />
+					<parameter name="idVersionDroit" />
+					<parameter name="idTitreMenu" value="MENU_OPTION_DROITS_REVENUS_DEPENSES" />
+					<parameter name="idTitreOnglet"
+						value="MENU_ONGLET_DROITS_REVENU_ACTIVITE_LUCRATIVE_DEPENDANTE" />
 				</action>
-			</node>		
+			</node>
+			<node>
+				<label refId="MENU_OPTION_DROITS_DESSAISISSEMENTS" />
+				<action command="/pegasus" responseTarget="fr_main">
+					<parameter name="userAction"
+						value="pegasus.dessaisissement.dessaisissementFortune.afficher" />
+					<parameter name="selectedId" />
+					<parameter name="idDemandePc" />
+					<parameter name="idDossier" />
+					<parameter name="idDroit" />
+					<parameter name="noVersion" />
+					<parameter name="idVersionDroit" />
+					<parameter name="idTitreOnglet"
+						value="MENU_ONGLET_DROITS_DESSAISISSEMENT_REVENU" />
+					<parameter name="idTitreMenu" value="MENU_OPTION_DROITS_DESSAISISSEMENTS" />
+				</action>
+			</node>
 			<node id="pcRetourDemande ">
 				<label refId="MENU_OPTION_DROITS_DEMANDE" />
 				<action command="/pegasus" responseTarget="fr_main">
-					<parameter name="userAction" value="pegasus.demande.demande.chercher"/>
-					<parameter name="idDroit"/>
-					<parameter name="idDossier"/>
+					<parameter name="userAction" value="pegasus.demande.demande.chercher" />
+					<parameter name="idDroit" />
+					<parameter name="idDossier" />
 				</action>
 			</node>
 			<node id="pcRetourDroit ">
 				<label refId="MENU_OPTION_DROITS_RETOUR_DROIT" />
 				<action command="/pegasus" responseTarget="fr_main">
-					<parameter name="userAction" value="pegasus.droit.droit.chercher"/>
-					<parameter name="idDroit"/>
-					<parameter name="idDemandePc"/>
-					<parameter name="noVersion"/>
-					<parameter name="idDossier"/>
-					<parameter name="idVersionDroit"/>
+					<parameter name="userAction" value="pegasus.droit.droit.chercher" />
+					<parameter name="idDroit" />
+					<parameter name="idDemandePc" />
+					<parameter name="noVersion" />
+					<parameter name="idDossier" />
+					<parameter name="idVersionDroit" />
 				</action>
-			</node>								
-		
+			</node>
+
 			<node id="pcCalculerDroit">
 				<label refId="MENU_OPTION_DROITS_CALCULER_DROIT" />
 				<action command="/pegasus" responseTarget="fr_main">
-					<parameter name="userAction" value="pegasus.droit.calculDroit.afficher"/>
-					<parameter name="_method" value="upd"/>
-					<parameter name="idDroit"/>
-					<parameter name="noVersion"/>
-					<parameter name="idDossier"/>
-					<parameter name="idVersionDroit"/>
+					<parameter name="userAction" value="pegasus.droit.calculDroit.afficher" />
+					<parameter name="_method" value="upd" />
+					<parameter name="idDroit" />
+					<parameter name="noVersion" />
+					<parameter name="idDossier" />
+					<parameter name="idVersionDroit" />
 				</action>
-			</node>		
+			</node>
 		</nodes>
 	</menu>
-		
+
 	<!-- Menu Option Home -->
 	<menu id="pegasus-optionshomes">
-		<label refId="MENU_PC_OPTION_TITRE"/>
-	  	<nodes>
+		<label refId="MENU_PC_OPTION_TITRE" />
+		<nodes>
 			<node>
-				<label refId="MENU_OPTION_HOMES_TYPE_CHAMBRE"/>
+				<label refId="MENU_OPTION_HOMES_TYPE_CHAMBRE" />
 				<action command="/pegasus" responseTarget="fr_main">
-					<parameter name="userAction" value="pegasus.home.homeTypeChambre.afficher"/>
-					<parameter name="idHome"/>
-					<parameter name="nomHome"/>
+					<parameter name="userAction" value="pegasus.home.homeTypeChambre.afficher" />
+					<parameter name="idHome" />
+					<parameter name="nomHome" />
 				</action>
 			</node>
 			<node>
-				<label refId="MENU_OPTION_HOMES_PRIX_CHAMBRE"/>
+				<label refId="MENU_OPTION_HOMES_PRIX_CHAMBRE" />
 				<action command="/pegasus" responseTarget="fr_main">
-					<parameter name="userAction" value="pegasus.home.prixChambre.afficher"/>
-					<parameter name="idHome"/>
-					<parameter name="nomHome"/>
+					<parameter name="userAction" value="pegasus.home.prixChambre.afficher" />
+					<parameter name="idHome" />
+					<parameter name="nomHome" />
 				</action>
 			</node>
 		</nodes>
 	</menu>
-	
-	
-	
+
+
+
 	<!-- Menu Option Types de chambres -->
 	<menu id="pegasus-optionstypeschambres">
-		<label refId="MENU_PC_OPTION_TITRE"/>
-	  	<nodes>
+		<label refId="MENU_PC_OPTION_TITRE" />
+		<nodes>
 			<node>
-				<label refId="MENU_OPTION_HOMES_PRIX_CHAMBRE"/>
+				<label refId="MENU_OPTION_HOMES_PRIX_CHAMBRE" />
 				<action command="/pegasus" responseTarget="fr_main">
-					<parameter name="userAction" value="pegasus.home.prixChambre.afficher"/>
-					<parameter name="idHome"/>
-					<parameter name="nomHome"/>
-					<parameter name="idTypeChambre"/>
-					<parameter name="designationTypeChambre"/>
+					<parameter name="userAction" value="pegasus.home.prixChambre.afficher" />
+					<parameter name="idHome" />
+					<parameter name="nomHome" />
+					<parameter name="idTypeChambre" />
+					<parameter name="designationTypeChambre" />
 				</action>
 			</node>
 		</nodes>
 	</menu>
-	
-	
-		<!-- Menu forfaitPrimesAssurance -->
+
+
+	<!-- Menu forfaitPrimesAssurance -->
 	<menu id="pegasus-forfaitPrimesAssuranceMaladie">
-		<label refId="MENU_PC_OPTION_TITRE"/>
-	  	<nodes>
+		<label refId="MENU_PC_OPTION_TITRE" />
+		<nodes>
 			<node>
-				<label refId="MENU_OPTION_FORFAIS_ASSURANCE_MALADIE"/>
+				<label refId="MENU_OPTION_FORFAIS_ASSURANCE_MALADIE" />
 				<action command="/pegasus" responseTarget="fr_main">
-					<parameter name="userAction" value="pegasus.parametre.zoneLocalite.chercher"/>
-					<parameter name="zoneLocalite.simpleLienZoneLocalite.idZoneForfait"/>
-					<parameter name="zoneLocalite.simpleLienZoneLocalite.anneeDebut"/>
+					<parameter name="userAction" value="pegasus.parametre.zoneLocalite.chercher" />
+					<parameter name="zoneLocalite.simpleLienZoneLocalite.idZoneForfait" />
+					<parameter name="zoneLocalite.simpleLienZoneLocalite.anneeDebut" />
 				</action>
 			</node>
 		</nodes>
 	</menu>
-	
+
 	<menu id="pegasus-forfaitPrimesAssuranceMaladieZone">
-		<label refId="MENU_PC_OPTION_TITRE"/>
-	  	<nodes>
+		<label refId="MENU_PC_OPTION_TITRE" />
+		<nodes>
 			<node>
-				<label refId="MENU_OPTION_FORFAIS_ZONE_LOCALITE"/>
+				<label refId="MENU_OPTION_FORFAIS_ZONE_LOCALITE" />
 				<action command="/pegasus" responseTarget="fr_main">
-					<parameter name="userAction" value="pegasus.parametre.zoneLocalite.chercher"/>
-					<parameter name="zoneLocalite.simpleLienZoneLocalite.idZoneForfait"/>
+					<parameter name="userAction" value="pegasus.parametre.zoneLocalite.chercher" />
+					<parameter name="zoneLocalite.simpleLienZoneLocalite.idZoneForfait" />
 				</action>
 			</node>
-			<node> 
-				<label refId="MENU_OPTION_FORFAIS_ZONE_PRIME"/>
+			<node>
+				<label refId="MENU_OPTION_FORFAIS_ZONE_PRIME" />
 				<action command="/pegasus" responseTarget="fr_main">
-					<parameter name="userAction" value="pegasus.parametre.forfaitPrimesAssuranceMaladie.chercher"/>
-					<parameter name="zoneLocalite.simpleLienZoneLocalite.idZoneForfait"/>
+					<parameter name="userAction"
+						value="pegasus.parametre.forfaitPrimesAssuranceMaladie.chercher" />
+					<parameter name="zoneLocalite.simpleLienZoneLocalite.idZoneForfait" />
 				</action>
 			</node>
 		</nodes>
 	</menu>
-	
+
 	<!-- Menu Option decision -->
-	<menu id="pegasus-optionsdecision" >
-		<label refId="MENU_PC_OPTION_TITRE"/>
+	<menu id="pegasus-optionsdecision">
+		<label refId="MENU_PC_OPTION_TITRE" />
 		<nodes>
 			<node id="DECISION_DETAIL">
-				<label refId="MENU_OPTION_DECISION_DETAIL"/>
+				<label refId="MENU_OPTION_DECISION_DETAIL" />
 				<action command="/pegasus" responseTarget="fr_main">
-					<parameter name="userAction" value="pegasus.decision.decisionApresCalcul.afficher"/>
-				    <parameter name="idVersionDroit"/>
-					<parameter name="idDroit"/>
-					<parameter name="noVersion"/>
-					<parameter name="idDecision"/>
-					<parameter name="idDemandePc"/>
+					<parameter name="userAction"
+						value="pegasus.decision.decisionApresCalcul.afficher" />
+					<parameter name="idVersionDroit" />
+					<parameter name="idDroit" />
+					<parameter name="noVersion" />
+					<parameter name="idDecision" />
+					<parameter name="idDemandePc" />
 				</action>
 			</node>
 			<node id="VALIDATIONS">
-				<label refId="MENU_OPTION_VALIDATION_DECISION"/>
+				<label refId="MENU_OPTION_VALIDATION_DECISION" />
 				<action command="/pegasus" responseTarget="fr_main">
-					<parameter name="userAction" value="pegasus.decision.validationDecisions.afficher"/>
-				    <parameter name="idVersionDroit"/>
-					<parameter name="idDroit"/>
-					<parameter name="noVersion"/>
-					<!--  <parameter name="idDemande"/>-->
-					<parameter name="_method" value="upd"/>
+					<parameter name="userAction"
+						value="pegasus.decision.validationDecisions.afficher" />
+					<parameter name="idVersionDroit" />
+					<parameter name="idDroit" />
+					<parameter name="noVersion" />
+					<!-- <parameter name="idDemande"/> -->
+					<parameter name="_method" value="upd" />
 				</action>
 			</node>
 			<node id="DECOMPTE">
 				<label refId="MENU_OPTION_DECISION_DECOMPT" />
 				<action command="/pegasus" responseTarget="fr_main">
-					<parameter name="userAction" value="pegasus.decision.decompt.afficher"/>
-					<parameter name="idDroit"/>
-					<parameter name="idVersionDroit"/>
-					<parameter name="noVersion"/>
-					<parameter name="idDecision"/>
-					<parameter name="idDemandePc"/>
+					<parameter name="userAction" value="pegasus.decision.decompt.afficher" />
+					<parameter name="idDroit" />
+					<parameter name="idVersionDroit" />
+					<parameter name="noVersion" />
+					<parameter name="idDecision" />
+					<parameter name="idDemandePc" />
 				</action>
 			</node>
-			 <node id="DETTE_EN_COMPTAT">
+			<node id="DETTE_EN_COMPTAT">
 				<label refId="MENU_OPTION_DECISION_DETTE_EN_COMPTAT" />
 				<action command="/pegasus" responseTarget="fr_main">
-					<parameter name="userAction" value="pegasus.dettecomptatcompense.detteComptatCompense.afficher"/>
-					<parameter name="idDroit"/>
-					<parameter name="idVersionDroit"/>
-					<parameter name="noVersion"/>
-					<parameter name="idDecision"/>
-					<parameter name="idDemandePc"/>
+					<parameter name="userAction"
+						value="pegasus.dettecomptatcompense.detteComptatCompense.afficher" />
+					<parameter name="idDroit" />
+					<parameter name="idVersionDroit" />
+					<parameter name="noVersion" />
+					<parameter name="idDecision" />
+					<parameter name="idDemandePc" />
 				</action>
 			</node>
 			<node id="CREANCE_ACCORDEE">
-				<label refId="MENU_OPTION_CREANCIER"/>
+				<label refId="MENU_OPTION_CREANCIER" />
 				<action command="/pegasus" responseTarget="fr_main">
-					<parameter name="userAction" value="pegasus.creancier.creanceAccordee.afficher"/>
-					<parameter name="idDemandePc"/>
-					<parameter name="idDecision"/>
+					<parameter name="userAction"
+						value="pegasus.creancier.creanceAccordee.afficher" />
+					<parameter name="idDemandePc" />
+					<parameter name="idDecision" />
 				</action>
-			</node>	
+			</node>
 			<node id="IMPRESSIONS">
-				<label refId="MENU_OPTION_DECISION_IMPRIMER"/>
+				<label refId="MENU_OPTION_DECISION_IMPRIMER" />
 				<action command="/pegasus" responseTarget="fr_main">
-					<parameter name="userAction" value="pegasus.decision.imprimerDecisions.afficher"/>
-					<parameter name="idDecision"/>
-					<parameter name="idVersionDroit"/>
-					<parameter name="idDroit"/>
-					<parameter name="noVersion"/>
-					<parameter name="isMostRecent"/>
-					<parameter name="_method" value="upd"/>
+					<parameter name="userAction"
+						value="pegasus.decision.imprimerDecisions.afficher" />
+					<parameter name="idDecision" />
+					<parameter name="idVersionDroit" />
+					<parameter name="idDroit" />
+					<parameter name="noVersion" />
+					<parameter name="isMostRecent" />
+					<parameter name="_method" value="upd" />
 				</action>
 			</node>
 			<node id="pcRetourDroit ">
 				<label refId="MENU_OPTION_DROITS_RETOUR_DROIT" />
 				<action command="/pegasus" responseTarget="fr_main">
-					<parameter name="userAction" value="pegasus.droit.droit.chercher"/>
-					<parameter name="idDroit"/>
-					<parameter name="idDemandePc"/>
-					<parameter name="noVersion"/>
-					<parameter name="idDossier"/>
-					<parameter name="idVersionDroit"/>
+					<parameter name="userAction" value="pegasus.droit.droit.chercher" />
+					<parameter name="idDroit" />
+					<parameter name="idDemandePc" />
+					<parameter name="noVersion" />
+					<parameter name="idDossier" />
+					<parameter name="idVersionDroit" />
 				</action>
-			</node>	
+			</node>
 			<node id="RETOUR_LIST">
 				<label refId="MENU_OPTION_DECISION_LIST" />
 				<action command="/pegasus" responseTarget="fr_main">
-					<parameter name="userAction" value="pegasus.decision.decision.chercher"/>
-					<parameter name="idDroit"/>
-					<parameter name="idDemandePc"/>
-					<parameter name="noVersion"/>
-					<parameter name="idDossier"/>
-					<parameter name="idVersionDroit"/>
+					<parameter name="userAction" value="pegasus.decision.decision.chercher" />
+					<parameter name="idDroit" />
+					<parameter name="idDemandePc" />
+					<parameter name="noVersion" />
+					<parameter name="idDossier" />
+					<parameter name="idVersionDroit" />
 				</action>
 			</node>
-			
-		
-			
+
+
+
 		</nodes>
 	</menu>
-	
-	<!--  menu option decision impression -->
+
+	<!-- menu option decision impression -->
 	<menu id="pegasus-optionsdecimpression">
-		<label refId="MENU_PC_OPTION_TITRE"/>
+		<label refId="MENU_PC_OPTION_TITRE" />
 		<nodes>
 			<node id="BACK_DETAIL">
-				<label refId="MENU_OPTION_RETOUR_DETAIL"/>
+				<label refId="MENU_OPTION_RETOUR_DETAIL" />
 				<action command="/pegasus" responseTarget="fr_main">
-					<parameter name="userAction" value="pegasus.decision.decisionApresCalcul.afficher"/>
-				    <parameter name="idVersionDroit"/>
-					<parameter name="idDroit"/>
-					<parameter name="noVersion"/>
-					<parameter name="idDemandePc"/>
-					<parameter name="idDecision"/>
+					<parameter name="userAction"
+						value="pegasus.decision.decisionApresCalcul.afficher" />
+					<parameter name="idVersionDroit" />
+					<parameter name="idDroit" />
+					<parameter name="noVersion" />
+					<parameter name="idDemandePc" />
+					<parameter name="idDecision" />
 				</action>
 			</node>
 			<node id="BACK_LISTE">
-				<label refId="MENU_OPTION_RETOUR_LISTE_DEC"/>
+				<label refId="MENU_OPTION_RETOUR_LISTE_DEC" />
 				<action command="/pegasus" responseTarget="fr_main">
-					<parameter name="userAction" value="pegasus.decision.decision.chercher"/>
+					<parameter name="userAction" value="pegasus.decision.decision.chercher" />
 				</action>
 			</node>
 		</nodes>
 	</menu>
-	<!--  menu option imprimer billag -->
+	<!-- menu option imprimer billag -->
 	<menu id="pegasus-optionsbillagimpression">
-		<label refId="MENU_PC_OPTION_TITRE"/>
+		<label refId="MENU_PC_OPTION_TITRE" />
 		<nodes>
 			<node id="BACK_LIST">
-				<label refId="MENU_OPTION_RETOUR_LISTE_DEMANDE"/>
+				<label refId="MENU_OPTION_RETOUR_LISTE_DEMANDE" />
 				<action command="/pegasus" responseTarget="fr_main">
-					<parameter name="idDossier"/>
-					<parameter name="userAction" value="pegasus.demande.demande.chercher"/>
+					<parameter name="idDossier" />
+					<parameter name="userAction" value="pegasus.demande.demande.chercher" />
 				</action>
 			</node>
 		</nodes>
 	</menu>
-	<!-- MENU OPTIONS PCACCORDES RCListe td et détail-->
+	<!-- MENU OPTIONS PCACCORDES RCListe td et détail -->
 	<menu id="pegasus-optionspcaccorde">
-		<label refId="MENU_PC_OPTION_TITRE"/>
+		<label refId="MENU_PC_OPTION_TITRE" />
 		<nodes>
 			<node id="pcParent">
 				<label refId="MENU_OPTION_PCORIGINAL" />
 				<action command="/pegasus" responseTarget="fr_main">
-					<parameter name="userAction" value="pegasus.pcaccordee.pcAccordeeDetail.afficher"/>
-					<parameter name="selectedId"/>
-					<parameter name="idChild"/>
+					<parameter name="userAction"
+						value="pegasus.pcaccordee.pcAccordeeDetail.afficher" />
+					<parameter name="selectedId" />
+					<parameter name="idChild" />
 				</action>
-			</node>	
+			</node>
 			<node id="pcEnfant">
 				<label refId="MENU_OPTION_PCCOPIE" />
 				<action command="/pegasus" responseTarget="fr_main">
-					<parameter name="userAction" value="pegasus.pcaccordee.pcAccordeeDetail.afficher"/>
-					<parameter name="selectedId"/>
-					<parameter name="idChild"/>
+					<parameter name="userAction"
+						value="pegasus.pcaccordee.pcAccordeeDetail.afficher" />
+					<parameter name="selectedId" />
+					<parameter name="idChild" />
 				</action>
-			</node>	
-			
+			</node>
+
 			<node id="pcRetenues">
 				<label refId="MENU_OPTION_RETENUES" />
 				<action command="/pegasus" responseTarget="fr_main">
-					<parameter name="userAction" value="pegasus.retenues.retenues.afficher"/>
-					<parameter name="selectedId"/>
-					<parameter name="idDroit"/>
-					<parameter name="idDemandePc"/>
-					<parameter name="noVersion"/>
-					<parameter name="idDossier"/>
-					<parameter name="idVersionDroit"/>
+					<parameter name="userAction" value="pegasus.retenues.retenues.afficher" />
+					<parameter name="selectedId" />
+					<parameter name="idDroit" />
+					<parameter name="idDemandePc" />
+					<parameter name="noVersion" />
+					<parameter name="idDossier" />
+					<parameter name="idVersionDroit" />
 				</action>
-			</node>	
+			</node>
 			<node id="pcRetourDroit ">
 				<label refId="MENU_OPTION_DROITS_RETOUR_DROIT" />
 				<action command="/pegasus" responseTarget="fr_main">
-					<parameter name="userAction" value="pegasus.droit.droit.chercher"/>
-					<parameter name="idDroit"/>
-					<parameter name="idDemandePc"/>
-					<parameter name="noVersion"/>
-					<parameter name="idDossier"/>
-					<parameter name="idVersionDroit"/>
+					<parameter name="userAction" value="pegasus.droit.droit.chercher" />
+					<parameter name="idDroit" />
+					<parameter name="idDemandePc" />
+					<parameter name="noVersion" />
+					<parameter name="idDossier" />
+					<parameter name="idVersionDroit" />
 				</action>
-			</node>	
+			</node>
 		</nodes>
 	</menu>
 	<!-- Menu Option lot -->
 	<menu id="pegasus-optionslot">
-		<label refId="MENU_PC_OPTION_TITRE"/>
+		<label refId="MENU_PC_OPTION_TITRE" />
 		<nodes>
 			<node id="prestation">
-				<label refId="MENU_OPTION_PRESTATIONS"/>
+				<label refId="MENU_OPTION_PRESTATIONS" />
 				<action command="/pegasus" responseTarget="fr_main">
-					<parameter name="userAction" value="pegasus.lot.prestation.chercher"/>
-					<parameter name="selectedId"/>
-					<parameter name="csTypeLot"/>
-					<parameter name="csEtatLot"/>
-					<parameter name="descriptionLot"/>
+					<parameter name="userAction" value="pegasus.lot.prestation.chercher" />
+					<parameter name="selectedId" />
+					<parameter name="csTypeLot" />
+					<parameter name="csEtatLot" />
+					<parameter name="descriptionLot" />
 				</action>
 			</node>
-			<node id="listeOrdresVersement"> 
-				<label refId="MENU_OPTION_LIST_ORDRES_VERSEMENT"/>
+			<node id="listeOrdresVersement">
+				<label refId="MENU_OPTION_LIST_ORDRES_VERSEMENT" />
 				<action command="/pegasus" responseTarget="fr_main">
-					<parameter name="userAction" value="pegasus.lot.genererListeOrdresVersement.afficher"/>
-					<parameter name="selectedId"/>
+					<parameter name="userAction"
+						value="pegasus.lot.genererListeOrdresVersement.afficher" />
+					<parameter name="selectedId" />
 				</action>
 			</node>
-			<node id="comptabliser"> 
-				<label refId="MENU_OPTION_LIST_COMPTABILISER"/>
+			<node id="comptabliser">
+				<label refId="MENU_OPTION_LIST_COMPTABILISER" />
 				<action command="/pegasus" responseTarget="fr_main">
-					<parameter name="userAction" value="pegasus.lot.comptabiliser.afficher"/>
-					<parameter name="selectedId"/>
-					<parameter name="csTypeLot"/>
-					<parameter name="csEtatLot"/>
-					<parameter name="descriptionLot"/>
-				</action> 
+					<parameter name="userAction" value="pegasus.lot.comptabiliser.afficher" />
+					<parameter name="selectedId" />
+					<parameter name="csTypeLot" />
+					<parameter name="csEtatLot" />
+					<parameter name="descriptionLot" />
+				</action>
 			</node>
 		</nodes>
 	</menu>
-	
-	<!-- Menu Option Prestations  -->
+
+	<!-- Menu Option Prestations -->
 	<menu id="pegasus-optionsprestation">
-		<label refId="MENU_PC_OPTION_TITRE"/>
+		<label refId="MENU_PC_OPTION_TITRE" />
 		<nodes>
 			<node>
-				<label refId="MENU_OPTION_ORDRE_DE_VERSEMENT"/>
+				<label refId="MENU_OPTION_ORDRE_DE_VERSEMENT" />
 				<action command="/pegasus" responseTarget="fr_main">
-					<parameter name="userAction" value="pegasus.lot.ordreVersement.afficher"/>
-					<parameter name="selectedId"/>
-					<parameter name="idTierRequerant"/>
-					<parameter name="montantPrestation"/>
+					<parameter name="userAction" value="pegasus.lot.ordreVersement.afficher" />
+					<parameter name="selectedId" />
+					<parameter name="idTierRequerant" />
+					<parameter name="montantPrestation" />
 				</action>
 			</node>
-			<!--<node id="imprimerOrdresVersement">
-				<label refId="MENU_OPTION_IMPRIMER_ORDRES_VERSEMENT"/>
-				<action command="/pegasus" responseTarget="fr_main">
-					<parameter name="userAction" value="pegasus.process.genererListeOrdresVersements.afficher"/>
-					<parameter name="selectedId"/>
-					<parameter name="csTypeLot"/>
-					<parameter name="csEtatLot"/>
-					<parameter name="descriptionLot"/>
-				</action>
-			</node>
-			
-			<node id="comptabiliser">
-				<label refId="MENU_OPTION_COMPTABILISER"/>
-				<action command="/pegasus" responseTarget="fr_main">
-					<parameter name="userAction" value="pegasus.process.validerLot.afficher"/>
-					<parameter name="selectedId"/>
-					<parameter name="csEtatLot"/>
-					<parameter name="csTypeLot"/>
-					<parameter name="descriptionLot"/>
-				</action>
-			</node>-->
+			<!--<node id="imprimerOrdresVersement"> <label refId="MENU_OPTION_IMPRIMER_ORDRES_VERSEMENT"/> 
+				<action command="/pegasus" responseTarget="fr_main"> <parameter name="userAction" 
+				value="pegasus.process.genererListeOrdresVersements.afficher"/> <parameter 
+				name="selectedId"/> <parameter name="csTypeLot"/> <parameter name="csEtatLot"/> 
+				<parameter name="descriptionLot"/> </action> </node> <node id="comptabiliser"> 
+				<label refId="MENU_OPTION_COMPTABILISER"/> <action command="/pegasus" responseTarget="fr_main"> 
+				<parameter name="userAction" value="pegasus.process.validerLot.afficher"/> 
+				<parameter name="selectedId"/> <parameter name="csEtatLot"/> <parameter name="csTypeLot"/> 
+				<parameter name="descriptionLot"/> </action> </node> -->
 		</nodes>
 	</menu>
-	
-		<!-- Menu Option Ordre de Versement -->
+
+	<!-- Menu Option Ordre de Versement -->
 	<menu id="pegasus-optionsordresversements">
-		<label refId="MENU_PC_OPTION_TITRE"/>
+		<label refId="MENU_PC_OPTION_TITRE" />
 		<nodes>
-			<!--<node>
-				<label refId="MENU_OPTION_CREANCIERS"/>
-				<action command="/corvus" responseTarget="fr_main">
-					<parameter name="userAction" value="pegasus.creancier.creancier.chercher"/>
-					<parameter name="selectedId"/>
-					<parameter name="noDemandeRente"/>
-					<parameter name="idTierRequerant"/>
-				</action>
-			</node> -->
+			<!--<node> <label refId="MENU_OPTION_CREANCIERS"/> <action command="/corvus" 
+				responseTarget="fr_main"> <parameter name="userAction" value="pegasus.creancier.creancier.chercher"/> 
+				<parameter name="selectedId"/> <parameter name="noDemandeRente"/> <parameter 
+				name="idTierRequerant"/> </action> </node> -->
 		</nodes>
 	</menu>
 
 	<!-- ************************** -->
-	<!-- Menu Option empty		    -->
+	<!-- Menu Option empty -->
 	<!-- ************************** -->
 	<menu id="pegasus-optionsempty">
 		<label refId="MENU_PC_OPTION_TITRE" />
