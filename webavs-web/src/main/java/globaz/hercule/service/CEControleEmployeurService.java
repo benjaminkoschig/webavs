@@ -48,12 +48,15 @@ import globaz.jade.log.JadeLogger;
 import globaz.naos.db.cotisation.AFCotisationManager;
 import java.util.HashMap;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author SCO
  * @since 16 juin 2010
  */
 public class CEControleEmployeurService {
+    private static final Logger logger = LoggerFactory.getLogger(CEControleEmployeurService.class);
 
     /**
      * Permet de compter le nombre de cotisation AF d'un affilie
@@ -176,15 +179,22 @@ public class CEControleEmployeurService {
                         dateCouverture = annee;
                     }
                 } else {
-                    // NON, On crée un contrôle si et seulement si la date d'affiliation est supérieure auu 01.01.2008
+                    // NON, On crée un contrôle si et seulement si la date d'affiliation est supérieure au 01.01.2008
                     // et que l'affilié n'a jamais été contrôlé
                     try {
-                        if (JadeStringUtil.isBlankOrZero(affControle.getDateFinControle())
-                                && BSessionUtil.compareDateFirstGreaterOrEqual(session,
-                                        affControle.getDateDebutAffiliation(), "01.01.2008")) {
-                            CEControleEmployeurService.createControle(session, transaction, affControle.getIdAffilie(),
-                                    affControle.getNumeroAffilie(), affControle.getDateDebutAffiliation(), annee);
-                            dateCouverture = Integer.toString(CEUtils.stringDateToAnnee(annee) + 4);
+                        if (BSessionUtil.compareDateFirstGreaterOrEqual(session, affControle.getDateDebutAffiliation(),
+                                "01.01.2008")) {
+                            logger.debug("affilie sans couverture ou dont la couverture est dépassée et dont la masse salariale est > 100000 : "
+                                    + affControle.getNumeroAffilie());
+                            if (JadeStringUtil.isBlankOrZero(affControle.getDateFinControle())) {
+                                logger.debug("creation du controle");
+                                CEControleEmployeurService.createControle(session, transaction,
+                                        affControle.getIdAffilie(), affControle.getNumeroAffilie(),
+                                        affControle.getDateDebutAffiliation(), annee);
+                                dateCouverture = Integer.toString(CEUtils.stringDateToAnnee(annee) + 4);
+                            } else {
+                                dateCouverture = annee;
+                            }
                         } else {
                             dateCouverture = annee;
                         }
