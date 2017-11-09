@@ -315,8 +315,11 @@ public class EBDanUtils {
 
         pucsRetour.setNomValidation(pucsTemp.getNomValidation());
         pucsRetour.setDateValidation(pucsRetour.getDateValidation());
-        pucsRetour.setCertifieExact(pucsTemp.isCertifieExact());
-
+        if (pucsTemp.isCertifieExact() != null) {
+            pucsRetour.setCertifieExact(pucsTemp.isCertifieExact());
+        } else {
+            pucsRetour.setCertifieExact(Boolean.FALSE);
+        }
         return pucsRetour;
     }
 
