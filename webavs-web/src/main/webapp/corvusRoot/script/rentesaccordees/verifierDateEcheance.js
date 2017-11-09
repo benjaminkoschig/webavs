@@ -1,5 +1,5 @@
 function verifyDateEcheanceValidity(){
-	
+	var state = true;
 	var groupLevel = $('#groupLevelRequerant').val();
 	//si le grouplevel est 5, on fait le contrôle de l'âge du tiers 
 	if(groupLevel == 5){
@@ -27,10 +27,11 @@ function verifyDateEcheanceValidity(){
 		
 		if(placeWarning){
 			var warningToPrint = $('#warningAge25ans').val().replace("{0}", moisNaissance + "." + annee25ans);
+			state = false;
 			$('#dateEcheance').val(moisNaissance + "." + annee25ans);
 			globazNotation.utils.consoleWarn(warningToPrint,jQuery.i18n.prop('notation.avertissement.message'),true);
 		}
 		
 	}
-	
+	return state;
 }

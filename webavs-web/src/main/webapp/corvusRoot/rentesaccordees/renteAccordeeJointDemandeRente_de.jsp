@@ -202,6 +202,7 @@
     }else{
         document.forms[0].elements('userAction').value="<%=globaz.corvus.servlet.IREActions.ACTION_RENTE_ACCORDEE_JOINT_DEMANDE_RENTE%>" + ".modifier";
     }
+    state = verifyDateEcheanceValidity();
     return state;
   }
 

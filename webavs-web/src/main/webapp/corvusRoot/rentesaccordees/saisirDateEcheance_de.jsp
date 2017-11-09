@@ -79,6 +79,8 @@ function validate() {
 	state = true;
 	    
     document.forms[0].elements('userAction').value="corvus.rentesaccordees.saisirDateEcheance.modifier";
+    
+    state = verifyDateEcheanceValidity();
 
     return state;
 }
