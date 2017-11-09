@@ -25,10 +25,10 @@ import ch.globaz.orion.business.constantes.EBProperties;
 import ch.globaz.orion.business.domaine.pucs.DeclarationSalaire;
 import ch.globaz.orion.business.domaine.pucs.DeclarationSalaireProvenance;
 import ch.globaz.orion.business.exceptions.OrionPucsException;
+import ch.globaz.orion.business.models.pucs.PucsFile;
 import ch.globaz.orion.business.services.pucs.PucsService;
 import ch.globaz.orion.businessimpl.services.ServicesProviders;
 import ch.globaz.orion.businessimpl.services.dan.DanServiceImpl;
-import ch.globaz.orion.db.EBPucsFileEntity;
 import ch.globaz.orion.service.EBPucsFileService;
 import ch.globaz.orion.ws.service.UtilsService;
 import ch.globaz.simpleoutputlist.annotation.style.Align;
@@ -188,22 +188,9 @@ public class PucsServiceImpl implements PucsService {
 
         SimpleOutputListBuilder builder = SimpleOutputListBuilder.newInstance().local(locale).asXls();
         ElementsDomParser parser = new ElementsDomParser(EBPucsFileService.retriveFileAsInputStream(id, session));
-        EBPucsFileEntity entity = findPucsFileEntryById(id, session);
-        File file = out(DeclarationSalaireProvenance.valueOf(provenance), builder, parser, entity, session);
+        PucsFile pucsfile = EBPucsFileService.read(id, session);
+        File file = out(DeclarationSalaireProvenance.valueOf(provenance), builder, parser, pucsfile, session);
         return JadeFilenameUtil.normalizePathComponents(file.getAbsolutePath());
-    }
-
-    public static EBPucsFileEntity findPucsFileEntryById(String id, BSession session) {
-        EBPucsFileEntity entity = new EBPucsFileEntity();
-        entity.setSession(session);
-        entity.setId(id);
-        try {
-            entity.retrieve();
-        } catch (Exception e) {
-            throw new CommonTechnicalException(e);
-        }
-
-        return entity;
     }
 
     public static String pucFileLisiblePdfByXml(File fileXml, DeclarationSalaireProvenance provenance, BSession session) {
@@ -218,8 +205,8 @@ public class PucsServiceImpl implements PucsService {
         Locale locale = buildLocale(session);
         SimpleOutputListBuilder builder = SimpleOutputListBuilder.newInstance().asPdf().local(locale);
         ElementsDomParser parser = new ElementsDomParser(EBPucsFileService.retriveFileAsInputStream(id, session));
-        EBPucsFileEntity entity = findPucsFileEntryById(id, session);
-        File file = out(provenance, builder, parser, entity, session);
+        PucsFile pucsfile = EBPucsFileService.read(id, session);
+        File file = out(provenance, builder, parser, pucsfile, session);
         return JadeFilenameUtil.normalizePathComponents(file.getAbsolutePath());
     }
 
@@ -241,10 +228,10 @@ public class PucsServiceImpl implements PucsService {
     }
 
     public static String pucFileLisiblePdf(DeclarationSalaireProvenance provenance, ElementsDomParser parser,
-            BSession session) {
+            PucsFile pucsFile, BSession session) {
         Locale locale = buildLocale(session);
         SimpleOutputListBuilder builder = SimpleOutputListBuilder.newInstance().asPdf().local(locale);
-        File file = out(provenance, builder, parser, session);
+        File file = out(provenance, builder, parser, pucsFile, session);
 
         return JadeFilenameUtil.normalizePathComponents(file.getAbsolutePath());
     }
@@ -280,7 +267,7 @@ public class PucsServiceImpl implements PucsService {
     }
 
     private static File out(DeclarationSalaireProvenance provenance, SimpleOutputListBuilder builder,
-            ElementsDomParser parser, EBPucsFileEntity entity, BSession session) {
+            ElementsDomParser parser, PucsFile file, BSession session) {
 
         Translater translater = new LabelTranslater(session, "DS_PUCS");
         DeclarationSalaire ds = DeclarationSalaireBuilder.build(parser, provenance);
@@ -311,10 +298,10 @@ public class PucsServiceImpl implements PucsService {
 
         paramsData.newLigne();
 
-        if (entity != null && entity.getDateValidation() != null && entity.isCertifieExact()) {
+        if (file != null && file.getDateValidation() != null && file.getCertifieExact()) {
 
-            paramsData.add(session.getLabel("CERTIFIE_EXACT_LE"), new Date(entity.getDateValidation()).getSwissValue()
-                    + " " + session.getLabel("CERTIFIE_EXACT_PAR") + " " + entity.getNomValidation());
+            paramsData.add(session.getLabel("CERTIFIE_EXACT_LE"), new Date(file.getDateValidation()).getSwissValue()
+                    + " " + session.getLabel("CERTIFIE_EXACT_PAR") + " " + file.getNomValidation());
             paramsData.newLigne();
         }
 

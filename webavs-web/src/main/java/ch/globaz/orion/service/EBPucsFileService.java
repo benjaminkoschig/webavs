@@ -270,6 +270,9 @@ public class EBPucsFileService {
         pucsFile.setIdAffiliation(entity.getIdAffiliation());
         pucsFile.setIdDb(entity.getIdEntity());
         pucsFile.setCodeSecuriteCi(entity.getNiveauSecurite());
+        pucsFile.setCertifieExact(entity.isCertifieExact());
+        pucsFile.setNomValidation(entity.getNomValidation());
+        pucsFile.setDateValidation(new Date(entity.getDateValidation()).getSwissValue());
         return pucsFile;
     }
 

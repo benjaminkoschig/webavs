@@ -510,7 +510,7 @@ public class EBTreatPucsFiles extends BProcess {
                                 ElementsDomParser parser = PucsServiceImpl.buildElementDomParser(pucs.getIdDb(),
                                         getSession());
                                 String filePath = PucsServiceImpl.pucFileLisiblePdf(pucsFile.getProvenance(), parser,
-                                        getSession());
+                                        pucs, getSession());
                                 filesPath.put(filePath, parser);
                             }
                         } finally {
