@@ -151,14 +151,14 @@ public class CEControleEmployeurService {
                 }
             }
         } else {
-            // => annee de couverture présente ou > que l'annee en cours ?
+            // => annee de couverture présente et > que l'annee en cours ?
             if (!JadeStringUtil.isEmpty(affControle.getAnneCouverture())
                     && (Integer.parseInt(affControle.getAnneCouverture()) > Integer.parseInt(annee))) {
                 // OUI, on recalcule pas, on retourne l'année
                 // affControle.getAnneCouverture()
                 dateCouverture = affControle.getAnneCouverture();
             } else {
-                // NON => masseSalriale < 100000
+                // NON => masseSalariale < 100000
                 if (masseSalariale < 100000.00) {
 
                     if (JadeStringUtil.isEmpty(affControle.getDateDebutAffiliation())) {
@@ -176,11 +176,12 @@ public class CEControleEmployeurService {
                         dateCouverture = annee;
                     }
                 } else {
-                    // NON, On crée un controle si et seulement si la date d'affiliation est supérieure auu 01.01.2008
+                    // NON, On crée un contrôle si et seulement si la date d'affiliation est supérieure auu 01.01.2008
+                    // et que l'affilié n'a jamais été contrôlé
                     try {
-                        if (BSessionUtil.compareDateFirstGreaterOrEqual(session, affControle.getDateDebutAffiliation(),
-                                "01.01.2008")) {
-
+                        if (JadeStringUtil.isBlankOrZero(affControle.getDateFinControle())
+                                && BSessionUtil.compareDateFirstGreaterOrEqual(session,
+                                        affControle.getDateDebutAffiliation(), "01.01.2008")) {
                             CEControleEmployeurService.createControle(session, transaction, affControle.getIdAffilie(),
                                     affControle.getNumeroAffilie(), affControle.getDateDebutAffiliation(), annee);
                             dateCouverture = Integer.toString(CEUtils.stringDateToAnnee(annee) + 4);
