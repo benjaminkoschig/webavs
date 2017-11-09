@@ -14,6 +14,7 @@ public class PlanDeCalculWitMembreFamille extends JadeComplexModel {
     private SimplePersonneDansPlanCalcul simplePersonneDansPlanCalcul = null;
     private SimplePlanDeCalcul simplePlanDeCalcul = null;
     private SimpleDonneesPersonnelles simpleDonneesPersonnelles = null;
+    private SimplePCAccordee simplePCAccordee = null;
     private String idVersionDroit;
 
     public PlanDeCalculWitMembreFamille() {
@@ -22,6 +23,8 @@ public class PlanDeCalculWitMembreFamille extends JadeComplexModel {
         simplePlanDeCalcul = new SimplePlanDeCalcul();
         droitMembreFamille = new DroitMembreFamille();
         simpleDonneesPersonnelles = new SimpleDonneesPersonnelles();
+        setSimplePCAccordee(new SimplePCAccordee());
+
     }
 
     public DroitMembreFamille getDroitMembreFamille() {
@@ -52,6 +55,14 @@ public class PlanDeCalculWitMembreFamille extends JadeComplexModel {
     @Override
     public String getSpy() {
         return simplePlanDeCalcul.getSpy();
+    }
+
+    public SimplePCAccordee getSimplePCAccordee() {
+        return simplePCAccordee;
+    }
+
+    public void setSimplePCAccordee(SimplePCAccordee simplePCAccordee) {
+        this.simplePCAccordee = simplePCAccordee;
     }
 
     public void setDroitMembreFamille(DroitMembreFamille droitMembreFamille) {
