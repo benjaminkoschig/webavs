@@ -44,8 +44,7 @@ public class StrategieFinalRevenuActiviteLucrative implements StrategieCalculFin
         }
 
         // déduction forfaitaire si IJAJ et activite lucrative simultanément
-        if (donnee.getEnfants().containsKey(IPCValeursPlanCalcul.CLE_REVEN_AUTREREV_IJAI)
-                && isActiviteLucrative(donnee)) {
+        if (donnee.getEnfants().containsKey(IPCValeursPlanCalcul.CLE_REVEN_AUTREREV_IJAI)) {
             donnee.addEnfantTuple(new TupleDonneeRapport(
                     IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_DEDUCTION_FORFAITAIRE_REVENU, deductionForfaitaireRevenu));
         } else {
@@ -77,8 +76,7 @@ public class StrategieFinalRevenuActiviteLucrative implements StrategieCalculFin
         float revenuPrivilegie = somme;
         TupleDonneeRapport tupleActiviteLucrativeRevenuPrivilegie;
 
-        if (donnee.getEnfants().containsKey(IPCValeursPlanCalcul.CLE_REVEN_AUTREREV_IJAI)
-                && isActiviteLucrative(donnee)) {
+        if (donnee.getEnfants().containsKey(IPCValeursPlanCalcul.CLE_REVEN_AUTREREV_IJAI)) {
             tupleActiviteLucrativeRevenuPrivilegie = new TupleDonneeRapport(
                     IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_REVENU_PRIS_EN_COMPTE, revenuPrivilegie);
         } else {
@@ -96,16 +94,4 @@ public class StrategieFinalRevenuActiviteLucrative implements StrategieCalculFin
 
     }
 
-    /***
-     * Méthode qui permet de savoir si on est dans un cas ou l'on a une activité lucrative
-     * (K141106_001)
-     * 
-     * @param donnee
-     * @return
-     */
-    private boolean isActiviteLucrative(TupleDonneeRapport donnee) {
-        return (donnee.getEnfants().containsKey(IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_ACTIVITE_DEPENDANTE)
-                || donnee.getEnfants().containsKey(IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_ACTIVITE_INDEPENDANTE) || donnee
-                .getEnfants().containsKey(IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_ACTIVITE_INDEPENDANTE_AGRICOLE));
-    }
 }
