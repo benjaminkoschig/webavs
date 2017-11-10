@@ -536,7 +536,8 @@ globazNotation.echeance = {
 			btnNewLabel : this.i18n("btnNewLabel"),
 			labelRemarque : this.i18n("remarque"),
 			labelLibelle : this.i18n("libelle"),
-			labelDateRappel : this.i18n("labelDateRappel")
+			labelDateRappel : this.i18n("labelDateRappel"),
+			labelMembreFamille : this.i18n("labelMembreFamille")
 		};
 
 		if (echeance) {
@@ -551,8 +552,8 @@ globazNotation.echeance = {
 		$html = $(s_html);
 		var nb = 0;
 		if (this.options.tiers) {
-			var htmlSelect = '<div>	<label class="labelColor" for="notationEcheanceIdTiers">Membre de famille </label>'
-					+ '<select  style="width:100%" name="notationEcheanceIdTiers" id="notationEcheanceIdTiers" >';
+			var htmlSelect = '<div>	<label class="labelColor" for="notationEcheanceIdTiers">' + o_data.labelMembreFamille
+			+ '</label><select  style="width:100%" name="notationEcheanceIdTiers" id="notationEcheanceIdTiers" >';
 			for ( var key in this.options.tiers) {
 				htmlSelect = htmlSelect + '<option value="' + key + '">'
 						+ this.options.tiers[key] + '</option>';
