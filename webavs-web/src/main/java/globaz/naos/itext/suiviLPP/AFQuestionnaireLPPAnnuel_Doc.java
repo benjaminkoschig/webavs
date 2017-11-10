@@ -24,7 +24,7 @@ import ch.globaz.common.domaine.Montant;
 
 public class AFQuestionnaireLPPAnnuel_Doc extends AFAbstractTiersDocument {
 
-    private static final String NUM_INFOROM_QUESTIONNAIRE = "0108CAF";
+    private static final String NUM_INFOROM_QUESTIONNAIRE = "0327CAF";
     private static final long serialVersionUID = 4255258269940535901L;
 
     private String pathListeExtraitDS;
