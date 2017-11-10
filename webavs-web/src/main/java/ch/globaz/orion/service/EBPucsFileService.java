@@ -272,7 +272,12 @@ public class EBPucsFileService {
         pucsFile.setCodeSecuriteCi(entity.getNiveauSecurite());
         pucsFile.setCertifieExact(entity.isCertifieExact());
         pucsFile.setNomValidation(entity.getNomValidation());
-        pucsFile.setDateValidation(new Date(entity.getDateValidation()).getSwissValue());
+        if (entity.getDateValidation() == null) {
+            pucsFile.setDateValidation(new Date().getSwissValue());
+        } else {
+            pucsFile.setDateValidation(new Date(entity.getDateValidation()).getSwissValue());
+        }
+
         return pucsFile;
     }
 
