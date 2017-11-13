@@ -52,6 +52,17 @@ var annonce ={
 			this.$searchButon = $('#searchButton');
 			this.$send = $("#send");
 			this.$simulate = $('#simulate')
+			
+			this.$nss = $('#nss');
+			this.$nom = $('#nom');
+			this.$prenom = $('#prenom');
+			this.$etat = $('#etat');
+			this.$code = $('#codeTraitement');
+			this.$periodDebut = $('#periodeDateDebut');
+			this.$periodFin = $('#periodeDateFin');
+			this.$sortBy = $('#order');
+			this.$rechercheFamille = $('#rechercheFamille');
+
 			this.initializeButtons();
 			var that  = this;
 			
@@ -72,7 +83,21 @@ var annonce ={
 		
 		initializeButtons: function(){
 			var that  = this;
-			this.$searchButon.button();
+			
+			this.$searchButon.button().click(function () {
+				
+				
+				var stringHref = 'pegasus?userAction=pegasus.rpc.annonces.afficher&nss=' + that.$nss[0].value;
+				stringHref += '&nom=' + that.$nom[0].value;
+				stringHref += '&prenom=' + that.$prenom[0].value;
+				stringHref += '&etat=' + that.$etat[0].value;
+				stringHref += '&codeTraitement=' + that.$code[0].value;
+				stringHref += '&periodeDateDebut=' + that.$periodDebut[0].value;
+				stringHref += '&periodeDateFin=' + that.$periodFin[0].value;
+				stringHref += '&order=' + that.$sortBy[0].value;
+				stringHref += '&rechercheFamille=' + that.$rechercheFamille[0].checked;
+				window.location.href = stringHref;
+			});
 			
 			this.$send.button().click(function () {
 				that.$send.prop('disabled', true);
@@ -129,11 +154,11 @@ jsManager.addAfter(function (){
 				<table width="100%">
 					<tr>
 						<td><label for="nss"><ct:FWLabel key="JSP_PC_RPC_ANNONCE_NSS"/></label></td>
-						<td><input value="756." disabled="disabled" size="2"/><input id="nss" class="nss form-control" size="14" /></td>
+						<td><input value="756." disabled="disabled" size="2"/><input id="nss" class="nss form-control" size="14"  value="${viewBean.nss}" /></td>
 						<td><label for="nom"><ct:FWLabel key="JSP_PC_RPC_ANNONCE_NOM"/></label></td>
-						<td><input id="nom" class="nom form-control" /></td>
+						<td><input id="nom" class="nom form-control"  value="${viewBean.nom}" /></td>
 						<td><label for="prenom"><ct:FWLabel key="JSP_PC_RPC_ANNONCE_PRENOM"/></label></td>
-						<td><input id="prenom" class="prenom form-control" /></td>
+						<td><input id="prenom" class="prenom form-control"  value="${viewBean.prenom}" /></td>
 					</tr>
 					<tr>
 						<td><label for="etat"><ct:FWLabel key="JSP_PC_RPC_ANNONCE_ETAT"/></label></td>
@@ -154,19 +179,41 @@ jsManager.addAfter(function (){
 							 	<ct:optionsCodesSystems csFamille="PCRPCCT"/>
 							</ct:select></td>
 						<td><label> <ct:FWLabel key="JSP_PC_RPC_ANNONCE_PERIODE"/></label></td>
-						<td><input id="periodeDateDebut" class="periode" data-g-calendar=" " /> <input id="periodeDateFin" class="periode" data-g-calendar=" " /> </td>
+						<td><input id="periodeDateDebut" class="periode" value="${viewBean.periodDebut}" data-g-calendar=" " /> <input id="periodeDateFin" class="periode"  value="${viewBean.periodFin}" data-g-calendar=" " /> </td>
 					</tr>
 					<tr>
 						<td><label for="order"><ct:FWLabel key="JSP_PC_RPC_ANNONCE_TRIER_PAR"/></label></td>
 						<td>
 							<select id="order">
 								<option value=""></option>
-								<option value="nss"><ct:FWLabel key="JSP_PC_RPC_ANNONCE_TRIER_PAR_NSS"/></option>
-								<option value="date"><ct:FWLabel key="JSP_PC_RPC_ANNONCE_TRIER_PAR_DATE"/></option>
+								<c:if test="${viewBean.sortBy == 'nss'}">
+									<option value="nss" selected>
+								</c:if>
+								<c:if test="${viewBean.sortBy != 'nss'}">
+									<option value="nss">
+								</c:if>
+									<ct:FWLabel key="JSP_PC_RPC_ANNONCE_TRIER_PAR_NSS"/>
+								</option>
+									
+								<c:if test="${viewBean.sortBy == 'date'}">
+									<option value="date" selected>
+								</c:if>
+								<c:if test="${viewBean.sortBy != 'date'}">
+									<option value="date">
+								</c:if>
+									<ct:FWLabel key="JSP_PC_RPC_ANNONCE_TRIER_PAR_DATE"/>
+								</option>
 							</select>
 						</td>
 						<td><label for="rechercheFamille"><ct:FWLabel key="JSP_PC_RPC_ANNONCE_RECHERCHE_FAMILLE"/></label></td>
-						<td><input id="rechercheFamille" class="rechercheFamille form-control" type="checkbox"/></td>
+						<td>
+						<c:if test="${viewBean.rechercheFamille}">
+							<input id="rechercheFamille" class="rechercheFamille form-control" type="checkbox" checked="checked" />
+						</c:if>
+						<c:if test="${not viewBean.rechercheFamille}">
+							<input id="rechercheFamille" class="rechercheFamille form-control" type="checkbox" />
+						</c:if>
+						</td>
 						<td colspan="2" align="right"><input type="button" id="searchButton" name="searchButton" value='<ct:FWLabel key="JSP_RECHERCHER"/>'/></td>
 					</tr>
 				</table>

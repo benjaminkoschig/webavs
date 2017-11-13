@@ -29,10 +29,6 @@ $(function () {
 		
 		init: function () {	
 			this.capage(15, [20, 30, 50, 100]);
-			
-			defaultTableAjax.optionsDefinit.$search.find('#searchButton').click(function (){
-				t[0].ajaxFind();
-			})
 		}
 	});
 });

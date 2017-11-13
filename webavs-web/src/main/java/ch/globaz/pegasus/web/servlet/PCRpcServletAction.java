@@ -31,6 +31,17 @@ public class PCRpcServletAction extends PCAbstractServletAction {
     private String idDossier = null;
     private String idVersion = null;
 
+    private String defaultEtat = null;
+    private String defaultCode = null;
+    private String mode = null;
+    private String nss = null;
+    private String nom = null;
+    private String prenom = null;
+    private String periodDebut = null;
+    private String periodFin = null;
+    private String sortBy = null;
+    private boolean rechercheFamille = false;
+
     /**
      * Constructeur
      * 
@@ -87,11 +98,42 @@ public class PCRpcServletAction extends PCAbstractServletAction {
                 e.printStackTrace();
             }
         } else if (viewBean instanceof PCAnnoncesViewBean) {
+
+            PCAnnoncesViewBean vb = (PCAnnoncesViewBean) viewBean;
             boolean hasRightsForGroupResponsableRPC = hasRightsForGroupResponsableRPC((BSession) viewBean.getISession());
             boolean canGenerateAnnonces = canGenerateAnnonces();
             Boolean isProcessLaunched = ProcessItemsService.isProcessRunnig(GenererAnnoncesProcess.KEY);
 
-            // TODO: set search parameters for persistance in navigation
+            nss = request.getParameter("nss");
+            nom = request.getParameter("nom");
+            prenom = request.getParameter("prenom");
+            defaultEtat = request.getParameter("etat");
+            defaultCode = request.getParameter("codeTraitement");
+            periodDebut = request.getParameter("periodeDateDebut");
+            periodFin = request.getParameter("periodeDateFin");
+            sortBy = request.getParameter("order");
+            rechercheFamille = Boolean.parseBoolean(request.getParameter("rechercheFamille"));
+
+            try {
+                if (defaultEtat != null) {
+                    vb.setDefaultEtat(defaultEtat);
+                }
+                if (defaultCode != null) {
+                    vb.setDefaultCode(defaultCode);
+                }
+
+                vb.setNss(nss);
+                vb.setNom(nom);
+                vb.setPrenom(prenom);
+                vb.setPeriodDebut(periodDebut);
+                vb.setPeriodFin(periodFin);
+                vb.setSortBy(sortBy);
+                vb.setRechercheFamille(rechercheFamille);
+                viewBean = vb;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
             request.setAttribute("processLaunched", isProcessLaunched);
             request.setAttribute("hasRightsForGroupResponsableRPC", hasRightsForGroupResponsableRPC);
             request.setAttribute("canGenerateAnnonces", canGenerateAnnonces);

@@ -13,9 +13,33 @@ import ch.globaz.pegasus.rpc.domaine.LotRpcWithNbAnnonces;
 public class PCAnnoncesViewBean extends BJadePersistentObjectViewBean {
 
     private final transient LotAnnonceRepository lotAnnonceRepository = new LotAnnonceRepository();
-    private String mode;
+
     private String defaultEtat = AnnonceConverter.toCsCode(EtatAnnonce.CORRECTION);
     private String defaultCode = AnnonceConverter.toCsCode(CodeTraitement.RETOUR_A_TRAITER);
+    private String mode = null;
+    private String nss = null;
+    private String nom = null;
+    private String prenom = null;
+    private String periodDebut = null;
+    private String periodFin = null;
+    private String sortBy = null;
+    private boolean rechercheFamille = false;
+
+    public String getDefaultEtat() {
+        return defaultEtat;
+    }
+
+    public void setDefaultEtat(String defaultEtat) {
+        this.defaultEtat = defaultEtat;
+    }
+
+    public String getDefaultCode() {
+        return defaultCode;
+    }
+
+    public void setDefaultCode(String defaultCode) {
+        this.defaultCode = defaultCode;
+    }
 
     public String getMode() {
         return mode;
@@ -25,12 +49,60 @@ public class PCAnnoncesViewBean extends BJadePersistentObjectViewBean {
         this.mode = mode;
     }
 
-    public String getDefaultEtat() {
-        return defaultEtat;
+    public String getNss() {
+        return nss;
     }
 
-    public String getDefaultCode() {
-        return defaultCode;
+    public void setNss(String nss) {
+        this.nss = nss;
+    }
+
+    public String getNom() {
+        return nom;
+    }
+
+    public void setNom(String nom) {
+        this.nom = nom;
+    }
+
+    public String getPrenom() {
+        return prenom;
+    }
+
+    public void setPrenom(String prenom) {
+        this.prenom = prenom;
+    }
+
+    public String getPeriodDebut() {
+        return periodDebut;
+    }
+
+    public void setPeriodDebut(String periodDebut) {
+        this.periodDebut = periodDebut;
+    }
+
+    public String getPeriodFin() {
+        return periodFin;
+    }
+
+    public void setPeriodFin(String periodFin) {
+        this.periodFin = periodFin;
+    }
+
+    public String getSortBy() {
+        return sortBy;
+    }
+
+    public void setSortBy(String sortBy) {
+        this.sortBy = sortBy;
+    }
+
+    public boolean isRechercheFamille() {
+        return rechercheFamille;
+    }
+
+    public void setRechercheFamille(boolean rechercheFamille) {
+        this.rechercheFamille = rechercheFamille;
     }
 
     public boolean isCurentMonthGenerated() {
