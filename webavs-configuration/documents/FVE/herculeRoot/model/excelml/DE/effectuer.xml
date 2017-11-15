@@ -32,7 +32,7 @@
    <NumberFormat/>
    <Protection/>
   </Style>
-  <Style ss:ID="s129" ss:Name="Normal 2">
+  <Style ss:ID="s62" ss:Name="Normal 2">
    <Alignment ss:Vertical="Bottom"/>
    <Borders/>
    <Font ss:FontName="Arial" x:Family="Swiss"/>
@@ -40,49 +40,34 @@
    <NumberFormat/>
    <Protection/>
   </Style>
-  <Style ss:ID="s62" ss:Name="Normal_Feuil1">
+  <Style ss:ID="s63" ss:Name="Normal_Feuil1">
    <Alignment ss:Vertical="Bottom"/>
    <Borders/>
    <Font ss:FontName="Arial" x:Family="Swiss"/>
    <Interior/>
    <NumberFormat/>
    <Protection/>
-  </Style>
-  <Style ss:ID="s63">
-   <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
   </Style>
   <Style ss:ID="s64">
    <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
-   <NumberFormat/>
   </Style>
   <Style ss:ID="s65">
-   <Alignment ss:Horizontal="Right" ss:Vertical="Bottom"/>
+   <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
+   <NumberFormat/>
   </Style>
   <Style ss:ID="s66">
+   <Alignment ss:Horizontal="Right" ss:Vertical="Bottom"/>
+  </Style>
+  <Style ss:ID="s67">
    <Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="11" ss:Color="#000000"
     ss:Bold="1"/>
   </Style>
-  <Style ss:ID="s67">
-   <Borders>
-    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
-    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
-    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
-    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
-   </Borders>
-   <Font ss:FontName="Arial" x:Family="Swiss" ss:Bold="1"/>
-  </Style>
   <Style ss:ID="s68">
-   <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
-   <Borders>
-    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
-    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
-    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
-    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
-   </Borders>
-   <Font ss:FontName="Arial" x:Family="Swiss" ss:Bold="1"/>
+   <Alignment ss:Vertical="Center"/>
+   <Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="11" ss:Color="#FF0000"
+    ss:Bold="1"/>
   </Style>
   <Style ss:ID="s69">
-   <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
    <Borders>
     <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
     <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
@@ -90,10 +75,9 @@
     <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
    </Borders>
    <Font ss:FontName="Arial" x:Family="Swiss" ss:Bold="1"/>
-   <NumberFormat/>
   </Style>
   <Style ss:ID="s70">
-   <Alignment ss:Horizontal="Left" ss:Vertical="Bottom"/>
+   <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
    <Borders>
     <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
     <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
@@ -111,10 +95,10 @@
     <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
    </Borders>
    <Font ss:FontName="Arial" x:Family="Swiss" ss:Bold="1"/>
-   <Interior ss:Color="#FFFFFF" ss:Pattern="Solid"/>
    <NumberFormat/>
   </Style>
   <Style ss:ID="s72">
+   <Alignment ss:Horizontal="Left" ss:Vertical="Bottom"/>
    <Borders>
     <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
     <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
@@ -122,7 +106,6 @@
     <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
    </Borders>
    <Font ss:FontName="Arial" x:Family="Swiss" ss:Bold="1"/>
-   <Interior ss:Color="#FFFFFF" ss:Pattern="Solid"/>
   </Style>
   <Style ss:ID="s73">
    <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
@@ -134,9 +117,9 @@
    </Borders>
    <Font ss:FontName="Arial" x:Family="Swiss" ss:Bold="1"/>
    <Interior ss:Color="#FFFFFF" ss:Pattern="Solid"/>
+   <NumberFormat/>
   </Style>
   <Style ss:ID="s74">
-   <Alignment ss:Horizontal="Left" ss:Vertical="Bottom"/>
    <Borders>
     <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
     <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
@@ -147,6 +130,28 @@
    <Interior ss:Color="#FFFFFF" ss:Pattern="Solid"/>
   </Style>
   <Style ss:ID="s75">
+   <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+   </Borders>
+   <Font ss:FontName="Arial" x:Family="Swiss" ss:Bold="1"/>
+   <Interior ss:Color="#FFFFFF" ss:Pattern="Solid"/>
+  </Style>
+  <Style ss:ID="s76">
+   <Alignment ss:Horizontal="Left" ss:Vertical="Bottom"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+   </Borders>
+   <Font ss:FontName="Arial" x:Family="Swiss" ss:Bold="1"/>
+   <Interior ss:Color="#FFFFFF" ss:Pattern="Solid"/>
+  </Style>
+  <Style ss:ID="s77">
    <Borders>
     <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
     <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
@@ -155,42 +160,7 @@
    </Borders>
    <Font ss:FontName="Arial" x:Family="Swiss" ss:Bold="1" ss:Italic="1"/>
   </Style>
-  <Style ss:ID="s77">
-   <Alignment ss:Horizontal="Left" ss:Vertical="Bottom"/>
-  </Style>
-  <Style ss:ID="s79">
-   <Alignment ss:Horizontal="Left" ss:Vertical="Bottom"/>
-   <Borders/>
-  </Style>
-  <Style ss:ID="s80">
-   <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
-   <Borders/>
-   <NumberFormat/>
-  </Style>
-  <Style ss:ID="s81">
-   <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
-   <Borders/>
-   <NumberFormat ss:Format="Short Date"/>
-  </Style>
-  <Style ss:ID="s83" ss:Parent="s62">
-   <Alignment ss:Horizontal="Left" ss:Vertical="Bottom"/>
-   <Borders/>
-   <Font ss:FontName="Arial" x:Family="Swiss"/>
-   <Interior/>
-  </Style>
-  <Style ss:ID="s84">
-   <Alignment ss:Horizontal="Right" ss:Vertical="Bottom"/>
-   <NumberFormat ss:Format="Standard"/>
-  </Style>
-  <Style ss:ID="s85">
-   <Alignment ss:Horizontal="Right" ss:Vertical="Bottom"/>
-   <NumberFormat ss:Format="Fixed"/>
-  </Style>
-  <Style ss:ID="s86">
-   <Alignment ss:Horizontal="Right" ss:Vertical="Bottom"/>
-   <NumberFormat ss:Format="0"/>
-  </Style>
-  <Style ss:ID="s142" ss:Parent="s129">
+  <Style ss:ID="s79" ss:Parent="s62">
    <Borders>
     <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
     <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
@@ -201,263 +171,402 @@
    <Interior/>
    <NumberFormat ss:Format="Standard"/>
   </Style>
-  <Style ss:ID="s151" ss:Parent="s129">
+  <Style ss:ID="s80">
+   <Alignment ss:Horizontal="Left" ss:Vertical="Bottom"/>
+  </Style>
+  <Style ss:ID="s82">
+   <Alignment ss:Horizontal="Left" ss:Vertical="Bottom"/>
+   <Borders/>
+  </Style>
+  <Style ss:ID="s83">
+   <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
+   <Borders/>
+   <NumberFormat/>
+  </Style>
+  <Style ss:ID="s84">
+   <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
+   <Borders/>
+   <NumberFormat ss:Format="Short Date"/>
+  </Style>
+  <Style ss:ID="s86" ss:Parent="s63">
+   <Alignment ss:Horizontal="Left" ss:Vertical="Bottom"/>
+   <Borders/>
+   <Font ss:FontName="Arial" x:Family="Swiss"/>
+   <Interior/>
+  </Style>
+  <Style ss:ID="s87">
+   <Alignment ss:Horizontal="Right" ss:Vertical="Bottom"/>
+   <NumberFormat ss:Format="Standard"/>
+  </Style>
+  <Style ss:ID="s88">
+   <Alignment ss:Horizontal="Right" ss:Vertical="Bottom"/>
+   <NumberFormat ss:Format="Fixed"/>
+  </Style>
+  <Style ss:ID="s89">
+   <Alignment ss:Horizontal="Right" ss:Vertical="Bottom"/>
+   <NumberFormat ss:Format="0"/>
+  </Style>
+  <Style ss:ID="s90" ss:Parent="s62">
    <Alignment ss:Horizontal="Left" ss:Vertical="Bottom"/>
    <Interior/>
   </Style>
  </Styles>
  <Names>
-  <NamedRange ss:Name="branche" ss:RefersTo="=Feuil1!R8C10"/>
+  <NamedRange ss:Name="branche" ss:RefersTo="=Feuil1!R8C11"/>
   <NamedRange ss:Name="casePostale" ss:RefersTo="=Feuil1!R8C4"/>
-  <NamedRange ss:Name="codeSUVA" ss:RefersTo="=Feuil1!R8C40"/>
-  <NamedRange ss:Name="correction" ss:RefersTo="=Feuil1!R8C18"/>
-  <NamedRange ss:Name="cvs" ss:RefersTo="=Feuil1!R8C37"/>
-  <NamedRange ss:Name="DATE_VISA" ss:RefersTo="=Feuil1!R1C38"/>
-  <NamedRange ss:Name="datePrevue" ss:RefersTo="=Feuil1!R8C17"/>
-  <NamedRange ss:Name="dateRapport" ss:RefersTo="=Feuil1!R8C13"/>
+  <NamedRange ss:Name="codeSUVA" ss:RefersTo="=Feuil1!R8C41"/>
+  <NamedRange ss:Name="col_branche" ss:RefersTo="=Feuil1!C11"/>
+  <NamedRange ss:Name="col_casePostale" ss:RefersTo="=Feuil1!C4"/>
+  <NamedRange ss:Name="col_codeSUVA" ss:RefersTo="=Feuil1!C41"/>
+  <NamedRange ss:Name="col_correction" ss:RefersTo="=Feuil1!C19"/>
+  <NamedRange ss:Name="col_cvs" ss:RefersTo="=Feuil1!C38"/>
+  <NamedRange ss:Name="col_datePrevue" ss:RefersTo="=Feuil1!C18"/>
+  <NamedRange ss:Name="col_dateRapport" ss:RefersTo="=Feuil1!C14"/>
+  <NamedRange ss:Name="col_debutPeriodeAffiliation" ss:RefersTo="=Feuil1!C8"/>
+  <NamedRange ss:Name="col_dernierePeriode" ss:RefersTo="=Feuil1!C17"/>
+  <NamedRange ss:Name="col_finPeriodeAffiliation" ss:RefersTo="=Feuil1!C9"/>
+  <NamedRange ss:Name="col_libelleSUVA" ss:RefersTo="=Feuil1!C42"/>
+  <NamedRange ss:Name="col_localite" ss:RefersTo="=Feuil1!C6"/>
+  <NamedRange ss:Name="col_masse1" ss:RefersTo="=Feuil1!C36"/>
+  <NamedRange ss:Name="col_masse2" ss:RefersTo="=Feuil1!C34"/>
+  <NamedRange ss:Name="col_masse3" ss:RefersTo="=Feuil1!C32"/>
+  <NamedRange ss:Name="col_masse4" ss:RefersTo="=Feuil1!C30"/>
+  <NamedRange ss:Name="col_masse5" ss:RefersTo="=Feuil1!C28"/>
+  <NamedRange ss:Name="col_masseAVS" ss:RefersTo="=Feuil1!C20"/>
+  <NamedRange ss:Name="col_masseAVSNeg" ss:RefersTo="=Feuil1!C21"/>
+  <NamedRange ss:Name="col_nbCI1" ss:RefersTo="=Feuil1!C37"/>
+  <NamedRange ss:Name="col_nbCI2" ss:RefersTo="=Feuil1!C35"/>
+  <NamedRange ss:Name="col_nbCI3" ss:RefersTo="=Feuil1!C33"/>
+  <NamedRange ss:Name="col_nbCI4" ss:RefersTo="=Feuil1!C31"/>
+  <NamedRange ss:Name="col_nbCI5" ss:RefersTo="=Feuil1!C29"/>
+  <NamedRange ss:Name="col_noga" ss:RefersTo="=Feuil1!C12"/>
+  <NamedRange ss:Name="col_nom" ss:RefersTo="=Feuil1!C2"/>
+  <NamedRange ss:Name="col_nomGroupe" ss:RefersTo="=Feuil1!C7"/>
+  <NamedRange ss:Name="col_note1" ss:RefersTo="=Feuil1!C23"/>
+  <NamedRange ss:Name="col_note2" ss:RefersTo="=Feuil1!C24"/>
+  <NamedRange ss:Name="col_note3" ss:RefersTo="=Feuil1!C25"/>
+  <NamedRange ss:Name="col_note4" ss:RefersTo="=Feuil1!C26"/>
+  <NamedRange ss:Name="col_npa" ss:RefersTo="=Feuil1!C5"/>
+  <NamedRange ss:Name="col_numAffilie" ss:RefersTo="=Feuil1!C1"/>
+  <NamedRange ss:Name="col_numeroIde" ss:RefersTo="=Feuil1!C10"/>
+  <NamedRange ss:Name="col_numRapport" ss:RefersTo="=Feuil1!C15"/>
+  <NamedRange ss:Name="col_personnel" ss:RefersTo="=Feuil1!C13"/>
+  <NamedRange ss:Name="col_premierePeriode" ss:RefersTo="=Feuil1!C16"/>
+  <NamedRange ss:Name="col_reviseur" ss:RefersTo="=Feuil1!C40"/>
+  <NamedRange ss:Name="col_rue" ss:RefersTo="=Feuil1!C3"/>
+  <NamedRange ss:Name="col_temps" ss:RefersTo="=Feuil1!C22"/>
+  <NamedRange ss:Name="col_totalnotes" ss:RefersTo="=Feuil1!C27"/>
+  <NamedRange ss:Name="col_typeControle" ss:RefersTo="=Feuil1!C39"/>
+  <NamedRange ss:Name="correction" ss:RefersTo="=Feuil1!R8C19"/>
+  <NamedRange ss:Name="cvs" ss:RefersTo="=Feuil1!R8C38"/>
+  <NamedRange ss:Name="DATE_VISA" ss:RefersTo="=Feuil1!R1C39"/>
+  <NamedRange ss:Name="datePrevue" ss:RefersTo="=Feuil1!R8C18"/>
+  <NamedRange ss:Name="dateRapport" ss:RefersTo="=Feuil1!R8C14"/>
   <NamedRange ss:Name="debutPeriodeAffiliation" ss:RefersTo="=Feuil1!R8C8"/>
-  <NamedRange ss:Name="dernierePeriode" ss:RefersTo="=Feuil1!R8C16"/>
+  <NamedRange ss:Name="dernierePeriode" ss:RefersTo="=Feuil1!R8C17"/>
   <NamedRange ss:Name="finPeriodeAffiliation" ss:RefersTo="=Feuil1!R8C9"/>
   <NamedRange ss:Name="headerAnnee" ss:RefersTo="=Feuil1!R3C4"/>
   <NamedRange ss:Name="headerAnneeCptr" ss:RefersTo="=Feuil1!R4C4"/>
   <NamedRange ss:Name="headerBlank1" ss:RefersTo="=Feuil1!R5C1"/>
   <NamedRange ss:Name="headerBlank2" ss:RefersTo="=Feuil1!R6C1"/>
-  <NamedRange ss:Name="headerColonneLabelCodeSuva" ss:RefersTo="=Feuil1!R7C40"/>
-  <NamedRange ss:Name="headerColonneLabelLibelleSuva" ss:RefersTo="=Feuil1!R7C41"/>
+  <NamedRange ss:Name="headerColonneLabelCodeSuva" ss:RefersTo="=Feuil1!R7C41"/>
+  <NamedRange ss:Name="headerColonneLabelLibelleSuva" ss:RefersTo="=Feuil1!R7C42"/>
   <NamedRange ss:Name="headerGenre" ss:RefersTo="=Feuil1!R2C4"/>
-  <NamedRange ss:Name="headerMasse1" ss:RefersTo="=Feuil1!R7C35"/>
-  <NamedRange ss:Name="headerMasse2" ss:RefersTo="=Feuil1!R7C33"/>
-  <NamedRange ss:Name="headerMasse3" ss:RefersTo="=Feuil1!R7C31"/>
-  <NamedRange ss:Name="headerMasse4" ss:RefersTo="=Feuil1!R7C29"/>
-  <NamedRange ss:Name="headerMasse5" ss:RefersTo="=Feuil1!R7C27"/>
-  <NamedRange ss:Name="headerNbci1" ss:RefersTo="=Feuil1!R7C36"/>
-  <NamedRange ss:Name="headerNbci2" ss:RefersTo="=Feuil1!R7C34"/>
-  <NamedRange ss:Name="headerNbci3" ss:RefersTo="=Feuil1!R7C32"/>
-  <NamedRange ss:Name="headerNbci4" ss:RefersTo="=Feuil1!R7C30"/>
-  <NamedRange ss:Name="headerNbci5" ss:RefersTo="=Feuil1!R7C28"/>
+  <NamedRange ss:Name="headerMasse1" ss:RefersTo="=Feuil1!R7C36"/>
+  <NamedRange ss:Name="headerMasse2" ss:RefersTo="=Feuil1!R7C34"/>
+  <NamedRange ss:Name="headerMasse3" ss:RefersTo="=Feuil1!R7C32"/>
+  <NamedRange ss:Name="headerMasse4" ss:RefersTo="=Feuil1!R7C30"/>
+  <NamedRange ss:Name="headerMasse5" ss:RefersTo="=Feuil1!R7C28"/>
+  <NamedRange ss:Name="headerNbci1" ss:RefersTo="=Feuil1!R7C37"/>
+  <NamedRange ss:Name="headerNbci2" ss:RefersTo="=Feuil1!R7C35"/>
+  <NamedRange ss:Name="headerNbci3" ss:RefersTo="=Feuil1!R7C33"/>
+  <NamedRange ss:Name="headerNbci4" ss:RefersTo="=Feuil1!R7C31"/>
+  <NamedRange ss:Name="headerNbci5" ss:RefersTo="=Feuil1!R7C29"/>
   <NamedRange ss:Name="headerNumInforom" ss:RefersTo="=Feuil1!R1C1"/>
-  <NamedRange ss:Name="libelleSUVA" ss:RefersTo="=Feuil1!R8C41"/>
+  <NamedRange ss:Name="libelleSUVA" ss:RefersTo="=Feuil1!R8C42"/>
   <NamedRange ss:Name="localite" ss:RefersTo="=Feuil1!R8C6"/>
-  <NamedRange ss:Name="masse1" ss:RefersTo="=Feuil1!R8C35"/>
-  <NamedRange ss:Name="masse2" ss:RefersTo="=Feuil1!R8C33"/>
-  <NamedRange ss:Name="masse3" ss:RefersTo="=Feuil1!R8C31"/>
-  <NamedRange ss:Name="masse4" ss:RefersTo="=Feuil1!R8C29"/>
-  <NamedRange ss:Name="masse5" ss:RefersTo="=Feuil1!R8C27"/>
-  <NamedRange ss:Name="masseAVS" ss:RefersTo="=Feuil1!R8C19"/>
-  <NamedRange ss:Name="masseAVSNeg" ss:RefersTo="=Feuil1!R8C20"/>
-  <NamedRange ss:Name="nbCI1" ss:RefersTo="=Feuil1!R8C36"/>
-  <NamedRange ss:Name="nbCI2" ss:RefersTo="=Feuil1!R8C34"/>
-  <NamedRange ss:Name="nbCI3" ss:RefersTo="=Feuil1!R8C32"/>
-  <NamedRange ss:Name="nbCI4" ss:RefersTo="=Feuil1!R8C30"/>
-  <NamedRange ss:Name="nbCI5" ss:RefersTo="=Feuil1!R8C28"/>
-  <NamedRange ss:Name="noga" ss:RefersTo="=Feuil1!R8C11"/>
+  <NamedRange ss:Name="masse1" ss:RefersTo="=Feuil1!R8C36"/>
+  <NamedRange ss:Name="masse2" ss:RefersTo="=Feuil1!R8C34"/>
+  <NamedRange ss:Name="masse3" ss:RefersTo="=Feuil1!R8C32"/>
+  <NamedRange ss:Name="masse4" ss:RefersTo="=Feuil1!R8C30"/>
+  <NamedRange ss:Name="masse5" ss:RefersTo="=Feuil1!R8C28"/>
+  <NamedRange ss:Name="masseAVS" ss:RefersTo="=Feuil1!R8C20"/>
+  <NamedRange ss:Name="masseAVSNeg" ss:RefersTo="=Feuil1!R8C21"/>
+  <NamedRange ss:Name="nbCI1" ss:RefersTo="=Feuil1!R8C37"/>
+  <NamedRange ss:Name="nbCI2" ss:RefersTo="=Feuil1!R8C35"/>
+  <NamedRange ss:Name="nbCI3" ss:RefersTo="=Feuil1!R8C33"/>
+  <NamedRange ss:Name="nbCI4" ss:RefersTo="=Feuil1!R8C31"/>
+  <NamedRange ss:Name="nbCI5" ss:RefersTo="=Feuil1!R8C29"/>
+  <NamedRange ss:Name="noga" ss:RefersTo="=Feuil1!R8C12"/>
   <NamedRange ss:Name="nom" ss:RefersTo="=Feuil1!R8C2"/>
   <NamedRange ss:Name="nomGroupe" ss:RefersTo="=Feuil1!R8C7"/>
-  <NamedRange ss:Name="note1" ss:RefersTo="=Feuil1!R8C22"/>
-  <NamedRange ss:Name="note2" ss:RefersTo="=Feuil1!R8C23"/>
-  <NamedRange ss:Name="note3" ss:RefersTo="=Feuil1!R8C24"/>
-  <NamedRange ss:Name="note4" ss:RefersTo="=Feuil1!R8C25"/>
+  <NamedRange ss:Name="note1" ss:RefersTo="=Feuil1!R8C23"/>
+  <NamedRange ss:Name="note2" ss:RefersTo="=Feuil1!R8C24"/>
+  <NamedRange ss:Name="note3" ss:RefersTo="=Feuil1!R8C25"/>
+  <NamedRange ss:Name="note4" ss:RefersTo="=Feuil1!R8C26"/>
   <NamedRange ss:Name="npa" ss:RefersTo="=Feuil1!R8C5"/>
   <NamedRange ss:Name="numAffilie" ss:RefersTo="=Feuil1!R8C1"/>
-  <NamedRange ss:Name="numRapport" ss:RefersTo="=Feuil1!R8C14"/>
-  <NamedRange ss:Name="personnel" ss:RefersTo="=Feuil1!R8C12"/>
-  <NamedRange ss:Name="premierePeriode" ss:RefersTo="=Feuil1!R8C15"/>
-  <NamedRange ss:Name="reviseur" ss:RefersTo="=Feuil1!R8C39"/>
+  <NamedRange ss:Name="numeroIde" ss:RefersTo="=Feuil1!R8C10"/>
+  <NamedRange ss:Name="numRapport" ss:RefersTo="=Feuil1!R8C15"/>
+  <NamedRange ss:Name="personnel" ss:RefersTo="=Feuil1!R8C13"/>
+  <NamedRange ss:Name="premierePeriode" ss:RefersTo="=Feuil1!R8C16"/>
+  <NamedRange ss:Name="reviseur" ss:RefersTo="=Feuil1!R8C40"/>
+  <NamedRange ss:Name="row_tableDefinition" ss:RefersTo="=Feuil1!R7"/>
   <NamedRange ss:Name="rue" ss:RefersTo="=Feuil1!R8C3"/>
-  <NamedRange ss:Name="temps" ss:RefersTo="=Feuil1!R8C21"/>
-  <NamedRange ss:Name="totalnotes" ss:RefersTo="=Feuil1!R8C26"/>
-  <NamedRange ss:Name="typeControle" ss:RefersTo="=Feuil1!R8C38"/>
+  <NamedRange ss:Name="temps" ss:RefersTo="=Feuil1!R8C22"/>
+  <NamedRange ss:Name="totalnotes" ss:RefersTo="=Feuil1!R8C27"/>
+  <NamedRange ss:Name="typeControle" ss:RefersTo="=Feuil1!R8C39"/>
  </Names>
  <Worksheet ss:Name="Feuil1">
-  <Table ss:ExpandedColumnCount="41" ss:ExpandedRowCount="8" x:FullColumns="1"
+  <Table ss:ExpandedColumnCount="42" ss:ExpandedRowCount="8" x:FullColumns="1"
    x:FullRows="1" ss:DefaultColumnWidth="60" ss:DefaultRowHeight="15">
    <Column ss:Index="2" ss:AutoFitWidth="0" ss:Width="184.5"/>
    <Column ss:AutoFitWidth="0" ss:Width="138"/>
    <Column ss:AutoFitWidth="0" ss:Width="105"/>
-   <Column ss:StyleID="s63" ss:AutoFitWidth="0" ss:Width="47.25"/>
+   <Column ss:StyleID="s64" ss:AutoFitWidth="0" ss:Width="47.25"/>
    <Column ss:AutoFitWidth="0" ss:Width="124.5"/>
    <Column ss:Width="90.75"/>
-   <Column ss:StyleID="s64" ss:AutoFitWidth="0" ss:Width="75" ss:Span="1"/>
-   <Column ss:Index="10" ss:AutoFitWidth="0" ss:Width="184.5"/>
+   <Column ss:StyleID="s65" ss:AutoFitWidth="0" ss:Width="75" ss:Span="1"/>
+   <Column ss:Index="10" ss:StyleID="s65" ss:AutoFitWidth="0" ss:Width="82.5"/>
+   <Column ss:AutoFitWidth="0" ss:Width="184.5"/>
    <Column ss:AutoFitWidth="0" ss:Width="117"/>
    <Column ss:AutoFitWidth="0" ss:Width="119.25"/>
-   <Column ss:StyleID="s64" ss:AutoFitWidth="0" ss:Width="81.75"/>
+   <Column ss:StyleID="s65" ss:AutoFitWidth="0" ss:Width="81.75"/>
    <Column ss:AutoFitWidth="0" ss:Width="107.25"/>
-   <Column ss:StyleID="s64" ss:AutoFitWidth="0" ss:Width="75"/>
-   <Column ss:StyleID="s64" ss:AutoFitWidth="0" ss:Width="87"/>
-   <Column ss:StyleID="s64" ss:AutoFitWidth="0" ss:Width="94.5"/>
+   <Column ss:StyleID="s65" ss:AutoFitWidth="0" ss:Width="75"/>
+   <Column ss:StyleID="s65" ss:AutoFitWidth="0" ss:Width="87"/>
+   <Column ss:StyleID="s65" ss:AutoFitWidth="0" ss:Width="94.5"/>
    <Column ss:AutoFitWidth="0" ss:Width="60.75"/>
-   <Column ss:StyleID="s65" ss:Width="132"/>
-   <Column ss:StyleID="s65" ss:Width="126.75"/>
-   <Column ss:StyleID="s65" ss:AutoFitWidth="0" ss:Width="45.75"/>
-   <Column ss:StyleID="s65" ss:AutoFitWidth="0" ss:Width="37.5" ss:Span="3"/>
-   <Column ss:Index="26" ss:StyleID="s65" ss:Width="54"/>
-   <Column ss:StyleID="s65" ss:AutoFitWidth="0" ss:Width="90" ss:Span="9"/>
-   <Column ss:Index="37" ss:StyleID="s65" ss:AutoFitWidth="0" ss:Width="27.75"/>
+   <Column ss:StyleID="s66" ss:Width="132"/>
+   <Column ss:StyleID="s66" ss:Width="126.75"/>
+   <Column ss:StyleID="s66" ss:AutoFitWidth="0" ss:Width="45.75"/>
+   <Column ss:StyleID="s66" ss:AutoFitWidth="0" ss:Width="37.5" ss:Span="3"/>
+   <Column ss:Index="27" ss:StyleID="s66" ss:Width="54"/>
+   <Column ss:StyleID="s66" ss:AutoFitWidth="0" ss:Width="90" ss:Span="9"/>
+   <Column ss:Index="38" ss:StyleID="s66" ss:AutoFitWidth="0" ss:Width="27.75"/>
    <Column ss:AutoFitWidth="0" ss:Width="110.25"/>
-   <Column ss:Index="41" ss:AutoFitWidth="0" ss:Width="120.75"/>
+   <Column ss:Index="42" ss:AutoFitWidth="0" ss:Width="120.75"/>
    <Row ss:AutoFitHeight="0">
     <Cell><Data ss:Type="String">0244CCE</Data><NamedCell
-      ss:Name="headerNumInforom"/></Cell>
-    <Cell ss:StyleID="s66"><Data ss:Type="String">Liste mit den ausstehenden Kontrollen</Data></Cell>
-    <Cell ss:Index="38"><Data ss:Type="String">DATE_VISA</Data><NamedCell
-      ss:Name="DATE_VISA"/></Cell>
+      ss:Name="headerNumInforom"/><NamedCell ss:Name="col_numAffilie"/></Cell>
+    <Cell ss:StyleID="s67"><Data ss:Type="String">Liste mit den ausstehenden Kontrollen</Data><NamedCell
+      ss:Name="col_nom"/></Cell>
+    <Cell ss:Index="39"><Data ss:Type="String">DATE_VISA</Data><NamedCell
+      ss:Name="DATE_VISA"/><NamedCell ss:Name="col_typeControle"/></Cell>
    </Row>
    <Row ss:AutoFitHeight="0">
-    <Cell ss:Index="3"><Data ss:Type="String">Kontrollart</Data></Cell>
-    <Cell><Data ss:Type="String">genre</Data><NamedCell ss:Name="headerGenre"/></Cell>
+    <Cell ss:Index="3"><Data ss:Type="String">Kontrollart</Data><NamedCell
+      ss:Name="col_rue"/></Cell>
+    <Cell><Data ss:Type="String">genre</Data><NamedCell ss:Name="headerGenre"/><NamedCell
+      ss:Name="col_casePostale"/></Cell>
    </Row>
    <Row ss:AutoFitHeight="0">
-    <Cell ss:Index="3"><Data ss:Type="String">Kontrolljahr</Data></Cell>
+    <Cell ss:Index="3"><Data ss:Type="String">Kontrolljahr</Data><NamedCell
+      ss:Name="col_rue"/></Cell>
     <Cell><Data ss:Type="String">année de ctrl</Data><NamedCell
-      ss:Name="headerAnnee"/></Cell>
+      ss:Name="headerAnnee"/><NamedCell ss:Name="col_casePostale"/></Cell>
    </Row>
    <Row ss:AutoFitHeight="0">
-    <Cell ss:Index="3"><Data ss:Type="String">Zählerjahr</Data></Cell>
+    <Cell ss:Index="3"><Data ss:Type="String">Zählerjahr</Data><NamedCell
+      ss:Name="col_rue"/></Cell>
     <Cell><Data ss:Type="String">année des compteurs</Data><NamedCell
-      ss:Name="headerAnneeCptr"/></Cell>
+      ss:Name="headerAnneeCptr"/><NamedCell ss:Name="col_casePostale"/></Cell>
    </Row>
    <Row ss:AutoFitHeight="0">
     <Cell><Data ss:Type="String">headerBlank1</Data><NamedCell
-      ss:Name="headerBlank1"/></Cell>
+      ss:Name="headerBlank1"/><NamedCell ss:Name="col_numAffilie"/></Cell>
+    <Cell ss:Index="3" ss:StyleID="s68"><NamedCell ss:Name="col_rue"/></Cell>
    </Row>
    <Row ss:AutoFitHeight="0">
     <Cell><Data ss:Type="String">headerBlank2</Data><NamedCell
-      ss:Name="headerBlank2"/></Cell>
+      ss:Name="headerBlank2"/><NamedCell ss:Name="col_numAffilie"/></Cell>
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="12.75">
-    <Cell ss:StyleID="s67"><Data ss:Type="String">Mitglied-Nr.</Data></Cell>
-    <Cell ss:StyleID="s67"><Data ss:Type="String">Name</Data></Cell>
-    <Cell ss:StyleID="s67"><Data ss:Type="String">Strasse Nr.</Data></Cell>
-    <Cell ss:StyleID="s67"><Data ss:Type="String">Postfach</Data></Cell>
-    <Cell ss:StyleID="s68"><Data ss:Type="String">PLZ</Data></Cell>
-    <Cell ss:StyleID="s67"><Data ss:Type="String">Ort</Data></Cell>
-    <Cell ss:StyleID="s67"><Data ss:Type="String">Name der Gruppe</Data></Cell>
-    <Cell ss:StyleID="s69"><Data ss:Type="String">Erfassung</Data></Cell>
-    <Cell ss:StyleID="s69"><Data ss:Type="String">Abgang</Data></Cell>
-    <Cell ss:StyleID="s70"><Data ss:Type="String">Erwerbzweig</Data></Cell>
-    <Cell ss:StyleID="s67"><Data ss:Type="String">NOGA</Data></Cell>
-    <Cell ss:StyleID="s67"><Data ss:Type="String">Ohne Personal</Data></Cell>
-    <Cell ss:StyleID="s71"><Data ss:Type="String">Rapportdatum</Data></Cell>
-    <Cell ss:StyleID="s72"><Data ss:Type="String">Rapport-Nr.</Data></Cell>
-    <Cell ss:StyleID="s71"><Data ss:Type="String">Erste Periode</Data></Cell>
-    <Cell ss:StyleID="s71"><Data ss:Type="String">Letzte Periode</Data></Cell>
-    <Cell ss:StyleID="s71"><Data ss:Type="String">Geplantes Datum</Data></Cell>
-    <Cell ss:StyleID="s72"><Data ss:Type="String">Korrektur</Data></Cell>
-    <Cell ss:StyleID="s73"><Data ss:Type="String">Lohnsumme übernommen</Data></Cell>
-    <Cell ss:StyleID="s73"><Data ss:Type="String">Lohnsumme rückerstattet</Data></Cell>
-    <Cell ss:StyleID="s74"><Data ss:Type="String">Zeit</Data></Cell>
-    <Cell ss:StyleID="s73"><Data ss:Type="String">Note 1</Data></Cell>
-    <Cell ss:StyleID="s73"><Data ss:Type="String">Note 2</Data></Cell>
-    <Cell ss:StyleID="s73"><Data ss:Type="String">Note 3</Data></Cell>
-    <Cell ss:StyleID="s73"><Data ss:Type="String">Note 4</Data></Cell>
-    <Cell ss:StyleID="s74"><Data ss:Type="String">Tot. Noten</Data></Cell>
-    <Cell ss:StyleID="s70"><Data ss:Type="String">Lohnsumme-5</Data><NamedCell
-      ss:Name="headerMasse5"/></Cell>
-    <Cell ss:StyleID="s70"><Data ss:Type="String">Anz. IK-5</Data><NamedCell
-      ss:Name="headerNbci5"/></Cell>
-    <Cell ss:StyleID="s70"><Data ss:Type="String">Lohnsumme-4</Data><NamedCell
-      ss:Name="headerMasse4"/></Cell>
-    <Cell ss:StyleID="s70"><Data ss:Type="String">Anz. IK-4</Data><NamedCell
-      ss:Name="headerNbci4"/></Cell>
-    <Cell ss:StyleID="s70"><Data ss:Type="String">Lohnsumme-3</Data><NamedCell
-      ss:Name="headerMasse3"/></Cell>
-    <Cell ss:StyleID="s70"><Data ss:Type="String">Anz. IK-3</Data><NamedCell
-      ss:Name="headerNbci3"/></Cell>
-    <Cell ss:StyleID="s70"><Data ss:Type="String">Lohnsumme2</Data><NamedCell
-      ss:Name="headerMasse2"/></Cell>
-    <Cell ss:StyleID="s70"><Data ss:Type="String">Anz. IK-2</Data><NamedCell
-      ss:Name="headerNbci2"/></Cell>
-    <Cell ss:StyleID="s70"><Data ss:Type="String">Lohnsumme1</Data><NamedCell
-      ss:Name="headerMasse1"/></Cell>
-    <Cell ss:StyleID="s70"><Data ss:Type="String">Anz. IK-1</Data><NamedCell
-      ss:Name="headerNbci1"/></Cell>
-    <Cell ss:StyleID="s70"><Data ss:Type="String">LSK</Data></Cell>
-    <Cell ss:StyleID="s67"><Data ss:Type="String">Kontrolltyp</Data></Cell>
-    <Cell ss:StyleID="s75"><Data ss:Type="String">Revisor</Data></Cell>
-    <Cell ss:StyleID="s142"><Data ss:Type="String">Code SUVA</Data><NamedCell
-      ss:Name="headerColonneLabelCodeSuva"/></Cell>
-    <Cell ss:StyleID="s142"><Data ss:Type="String">Libellé</Data><NamedCell
-      ss:Name="headerColonneLabelLibelleSuva"/></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">Mitglied-Nr.</Data><NamedCell
+      ss:Name="row_tableDefinition"/><NamedCell ss:Name="col_numAffilie"/></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">Name</Data><NamedCell
+      ss:Name="row_tableDefinition"/><NamedCell ss:Name="col_nom"/></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">Strasse Nr.</Data><NamedCell
+      ss:Name="row_tableDefinition"/><NamedCell ss:Name="col_rue"/></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">Postfach</Data><NamedCell
+      ss:Name="row_tableDefinition"/><NamedCell ss:Name="col_casePostale"/></Cell>
+    <Cell ss:StyleID="s70"><Data ss:Type="String">PLZ</Data><NamedCell
+      ss:Name="row_tableDefinition"/><NamedCell ss:Name="col_npa"/></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">Ort</Data><NamedCell
+      ss:Name="row_tableDefinition"/><NamedCell ss:Name="col_localite"/></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">Name der Gruppe</Data><NamedCell
+      ss:Name="row_tableDefinition"/><NamedCell ss:Name="col_nomGroupe"/></Cell>
+    <Cell ss:StyleID="s71"><Data ss:Type="String">Erfassung</Data><NamedCell
+      ss:Name="row_tableDefinition"/><NamedCell
+      ss:Name="col_debutPeriodeAffiliation"/></Cell>
+    <Cell ss:StyleID="s71"><Data ss:Type="String">Abgang</Data><NamedCell
+      ss:Name="row_tableDefinition"/><NamedCell ss:Name="col_finPeriodeAffiliation"/></Cell>
+    <Cell ss:StyleID="s71"><Data ss:Type="String">UID</Data><NamedCell
+      ss:Name="row_tableDefinition"/><NamedCell ss:Name="col_numeroIde"/></Cell>
+    <Cell ss:StyleID="s72"><Data ss:Type="String">Erwerbzweig</Data><NamedCell
+      ss:Name="row_tableDefinition"/><NamedCell ss:Name="col_branche"/></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">NOGA</Data><NamedCell
+      ss:Name="row_tableDefinition"/><NamedCell ss:Name="col_noga"/></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">Ohne Personal</Data><NamedCell
+      ss:Name="row_tableDefinition"/><NamedCell ss:Name="col_personnel"/></Cell>
+    <Cell ss:StyleID="s73"><Data ss:Type="String">Rapportdatum</Data><NamedCell
+      ss:Name="row_tableDefinition"/><NamedCell ss:Name="col_dateRapport"/></Cell>
+    <Cell ss:StyleID="s74"><Data ss:Type="String">Rapport-Nr.</Data><NamedCell
+      ss:Name="row_tableDefinition"/><NamedCell ss:Name="col_numRapport"/></Cell>
+    <Cell ss:StyleID="s73"><Data ss:Type="String">Erste Periode</Data><NamedCell
+      ss:Name="row_tableDefinition"/><NamedCell ss:Name="col_premierePeriode"/></Cell>
+    <Cell ss:StyleID="s73"><Data ss:Type="String">Letzte Periode</Data><NamedCell
+      ss:Name="row_tableDefinition"/><NamedCell ss:Name="col_dernierePeriode"/></Cell>
+    <Cell ss:StyleID="s73"><Data ss:Type="String">Geplantes Datum</Data><NamedCell
+      ss:Name="row_tableDefinition"/><NamedCell ss:Name="col_datePrevue"/></Cell>
+    <Cell ss:StyleID="s74"><Data ss:Type="String">Korrektur</Data><NamedCell
+      ss:Name="row_tableDefinition"/><NamedCell ss:Name="col_correction"/></Cell>
+    <Cell ss:StyleID="s75"><Data ss:Type="String">Lohnsumme übernommen</Data><NamedCell
+      ss:Name="row_tableDefinition"/><NamedCell ss:Name="col_masseAVS"/></Cell>
+    <Cell ss:StyleID="s75"><Data ss:Type="String">Lohnsumme rückerstattet</Data><NamedCell
+      ss:Name="row_tableDefinition"/><NamedCell ss:Name="col_masseAVSNeg"/></Cell>
+    <Cell ss:StyleID="s76"><Data ss:Type="String">Zeit</Data><NamedCell
+      ss:Name="row_tableDefinition"/><NamedCell ss:Name="col_temps"/></Cell>
+    <Cell ss:StyleID="s75"><Data ss:Type="String">Note 1</Data><NamedCell
+      ss:Name="row_tableDefinition"/><NamedCell ss:Name="col_note1"/></Cell>
+    <Cell ss:StyleID="s75"><Data ss:Type="String">Note 2</Data><NamedCell
+      ss:Name="row_tableDefinition"/><NamedCell ss:Name="col_note2"/></Cell>
+    <Cell ss:StyleID="s75"><Data ss:Type="String">Note 3</Data><NamedCell
+      ss:Name="row_tableDefinition"/><NamedCell ss:Name="col_note3"/></Cell>
+    <Cell ss:StyleID="s75"><Data ss:Type="String">Note 4</Data><NamedCell
+      ss:Name="row_tableDefinition"/><NamedCell ss:Name="col_note4"/></Cell>
+    <Cell ss:StyleID="s76"><Data ss:Type="String">Tot. Noten</Data><NamedCell
+      ss:Name="row_tableDefinition"/><NamedCell ss:Name="col_totalnotes"/></Cell>
+    <Cell ss:StyleID="s72"><Data ss:Type="String">Lohnsumme-5</Data><NamedCell
+      ss:Name="headerMasse5"/><NamedCell ss:Name="row_tableDefinition"/><NamedCell
+      ss:Name="col_masse5"/></Cell>
+    <Cell ss:StyleID="s72"><Data ss:Type="String">Anz. IK-5</Data><NamedCell
+      ss:Name="headerNbci5"/><NamedCell ss:Name="row_tableDefinition"/><NamedCell
+      ss:Name="col_nbCI5"/></Cell>
+    <Cell ss:StyleID="s72"><Data ss:Type="String">Lohnsumme-4</Data><NamedCell
+      ss:Name="headerMasse4"/><NamedCell ss:Name="row_tableDefinition"/><NamedCell
+      ss:Name="col_masse4"/></Cell>
+    <Cell ss:StyleID="s72"><Data ss:Type="String">Anz. IK-4</Data><NamedCell
+      ss:Name="headerNbci4"/><NamedCell ss:Name="row_tableDefinition"/><NamedCell
+      ss:Name="col_nbCI4"/></Cell>
+    <Cell ss:StyleID="s72"><Data ss:Type="String">Lohnsumme-3</Data><NamedCell
+      ss:Name="headerMasse3"/><NamedCell ss:Name="row_tableDefinition"/><NamedCell
+      ss:Name="col_masse3"/></Cell>
+    <Cell ss:StyleID="s72"><Data ss:Type="String">Anz. IK-3</Data><NamedCell
+      ss:Name="headerNbci3"/><NamedCell ss:Name="row_tableDefinition"/><NamedCell
+      ss:Name="col_nbCI3"/></Cell>
+    <Cell ss:StyleID="s72"><Data ss:Type="String">Lohnsumme2</Data><NamedCell
+      ss:Name="headerMasse2"/><NamedCell ss:Name="row_tableDefinition"/><NamedCell
+      ss:Name="col_masse2"/></Cell>
+    <Cell ss:StyleID="s72"><Data ss:Type="String">Anz. IK-2</Data><NamedCell
+      ss:Name="headerNbci2"/><NamedCell ss:Name="row_tableDefinition"/><NamedCell
+      ss:Name="col_nbCI2"/></Cell>
+    <Cell ss:StyleID="s72"><Data ss:Type="String">Lohnsumme1</Data><NamedCell
+      ss:Name="headerMasse1"/><NamedCell ss:Name="row_tableDefinition"/><NamedCell
+      ss:Name="col_masse1"/></Cell>
+    <Cell ss:StyleID="s72"><Data ss:Type="String">Anz. IK-1</Data><NamedCell
+      ss:Name="headerNbci1"/><NamedCell ss:Name="row_tableDefinition"/><NamedCell
+      ss:Name="col_nbCI1"/></Cell>
+    <Cell ss:StyleID="s72"><Data ss:Type="String">LSK</Data><NamedCell
+      ss:Name="row_tableDefinition"/><NamedCell ss:Name="col_cvs"/></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">Kontrolltyp</Data><NamedCell
+      ss:Name="row_tableDefinition"/><NamedCell ss:Name="col_typeControle"/></Cell>
+    <Cell ss:StyleID="s77"><Data ss:Type="String">Revisor</Data><NamedCell
+      ss:Name="row_tableDefinition"/><NamedCell ss:Name="col_reviseur"/></Cell>
+    <Cell ss:StyleID="s79"><Data ss:Type="String">Code SUVA</Data><NamedCell
+      ss:Name="headerColonneLabelCodeSuva"/><NamedCell
+      ss:Name="row_tableDefinition"/><NamedCell ss:Name="col_codeSUVA"/></Cell>
+    <Cell ss:StyleID="s79"><Data ss:Type="String">Libellé</Data><NamedCell
+      ss:Name="headerColonneLabelLibelleSuva"/><NamedCell
+      ss:Name="row_tableDefinition"/><NamedCell ss:Name="col_libelleSUVA"/></Cell>
    </Row>
-   <Row ss:AutoFitHeight="0" ss:StyleID="s77">
-    <Cell ss:StyleID="s79"><Data ss:Type="String">numAffilie</Data><NamedCell
-      ss:Name="numAffilie"/></Cell>
-    <Cell ss:StyleID="s79"><Data ss:Type="String">nom</Data><NamedCell
-      ss:Name="nom"/></Cell>
-    <Cell ss:StyleID="s79"><Data ss:Type="String">rue</Data><NamedCell
-      ss:Name="rue"/></Cell>
-    <Cell ss:StyleID="s79"><Data ss:Type="String">case postale</Data><NamedCell
-      ss:Name="casePostale"/></Cell>
-    <Cell ss:StyleID="s80"><Data ss:Type="String">npa</Data><NamedCell
-      ss:Name="npa"/></Cell>
-    <Cell ss:StyleID="s79"><Data ss:Type="String">localité</Data><NamedCell
-      ss:Name="localite"/></Cell>
-    <Cell ss:StyleID="s79"><Data ss:Type="String">nom du groupe</Data><NamedCell
-      ss:Name="nomGroupe"/></Cell>
-    <Cell ss:StyleID="s81"><Data ss:Type="DateTime">2010-01-01T00:00:00.000</Data><NamedCell
-      ss:Name="debutPeriodeAffiliation"/></Cell>
-    <Cell ss:StyleID="s81"><Data ss:Type="DateTime">2010-01-01T00:00:00.000</Data><NamedCell
-      ss:Name="finPeriodeAffiliation"/></Cell>
-    <Cell ss:StyleID="s83"><Data ss:Type="String">branche eco</Data><NamedCell
-      ss:Name="branche"/></Cell>
-    <Cell ss:StyleID="s79"><Data ss:Type="String">code noga</Data><NamedCell
-      ss:Name="noga"/></Cell>
-    <Cell ss:StyleID="s79"><Data ss:Type="String">particularité</Data><NamedCell
-      ss:Name="personnel"/></Cell>
-    <Cell ss:StyleID="s81"><Data ss:Type="DateTime">2010-01-01T00:00:00.000</Data><NamedCell
-      ss:Name="dateRapport"/></Cell>
-    <Cell><Data ss:Type="String">numRapport</Data><NamedCell ss:Name="numRapport"/></Cell>
-    <Cell ss:StyleID="s81"><Data ss:Type="DateTime">2010-01-01T00:00:00.000</Data><NamedCell
-      ss:Name="premierePeriode"/></Cell>
-    <Cell ss:StyleID="s81"><Data ss:Type="DateTime">2010-01-01T00:00:00.000</Data><NamedCell
-      ss:Name="dernierePeriode"/></Cell>
-    <Cell ss:StyleID="s81"><Data ss:Type="DateTime">2010-01-01T00:00:00.000</Data><NamedCell
-      ss:Name="datePrevue"/></Cell>
-    <Cell><Data ss:Type="String">correction</Data><NamedCell ss:Name="correction"/></Cell>
-    <Cell ss:StyleID="s84"><Data ss:Type="Number">0</Data><NamedCell
-      ss:Name="masseAVS"/></Cell>
-    <Cell ss:StyleID="s84"><Data ss:Type="Number">0</Data><NamedCell
-      ss:Name="masseAVSNeg"/></Cell>
-    <Cell ss:StyleID="s85"><Data ss:Type="Number">0</Data><NamedCell
-      ss:Name="temps"/></Cell>
-    <Cell ss:StyleID="s86"><Data ss:Type="Number">0</Data><NamedCell
-      ss:Name="note1"/></Cell>
-    <Cell ss:StyleID="s86"><Data ss:Type="Number">0</Data><NamedCell
-      ss:Name="note2"/></Cell>
-    <Cell ss:StyleID="s86"><Data ss:Type="Number">0</Data><NamedCell
-      ss:Name="note3"/></Cell>
-    <Cell ss:StyleID="s86"><Data ss:Type="Number">0</Data><NamedCell
-      ss:Name="note4"/></Cell>
-    <Cell ss:StyleID="s86"><Data ss:Type="Number">0</Data><NamedCell
-      ss:Name="totalnotes"/></Cell>
-    <Cell ss:StyleID="s84"><Data ss:Type="Number">0</Data><NamedCell
-      ss:Name="masse5"/></Cell>
-    <Cell ss:StyleID="s86"><Data ss:Type="Number">0</Data><NamedCell
-      ss:Name="nbCI5"/></Cell>
-    <Cell ss:StyleID="s84"><Data ss:Type="Number">0</Data><NamedCell
-      ss:Name="masse4"/></Cell>
-    <Cell ss:StyleID="s86"><Data ss:Type="Number">0</Data><NamedCell
-      ss:Name="nbCI4"/></Cell>
-    <Cell ss:StyleID="s84"><Data ss:Type="Number">0</Data><NamedCell
-      ss:Name="masse3"/></Cell>
-    <Cell ss:StyleID="s86"><Data ss:Type="Number">0</Data><NamedCell
-      ss:Name="nbCI3"/></Cell>
-    <Cell ss:StyleID="s84"><Data ss:Type="Number">0</Data><NamedCell
-      ss:Name="masse2"/></Cell>
-    <Cell ss:StyleID="s86"><Data ss:Type="Number">0</Data><NamedCell
-      ss:Name="nbCI2"/></Cell>
-    <Cell ss:StyleID="s84"><Data ss:Type="Number">0</Data><NamedCell
-      ss:Name="masse1"/></Cell>
-    <Cell ss:StyleID="s86"><Data ss:Type="Number">0</Data><NamedCell
-      ss:Name="nbCI1"/></Cell>
-    <Cell ss:StyleID="s86"><Data ss:Type="Number">0</Data><NamedCell ss:Name="cvs"/></Cell>
-    <Cell><Data ss:Type="String">type</Data><NamedCell ss:Name="typeControle"/></Cell>
-    <Cell><Data ss:Type="String">reviseur</Data><NamedCell ss:Name="reviseur"/></Cell>
-    <Cell ss:StyleID="s151"><Data ss:Type="String">codeSUVA</Data><NamedCell
-      ss:Name="codeSUVA"/></Cell>
-    <Cell ss:StyleID="s129"><Data ss:Type="String">libelleSUVA</Data><NamedCell
-      ss:Name="libelleSUVA"/></Cell>
+   <Row ss:AutoFitHeight="0" ss:StyleID="s80">
+    <Cell ss:StyleID="s82"><Data ss:Type="String">numAffilie</Data><NamedCell
+      ss:Name="numAffilie"/><NamedCell ss:Name="col_numAffilie"/></Cell>
+    <Cell ss:StyleID="s82"><Data ss:Type="String">nom</Data><NamedCell
+      ss:Name="nom"/><NamedCell ss:Name="col_nom"/></Cell>
+    <Cell ss:StyleID="s82"><Data ss:Type="String">rue</Data><NamedCell
+      ss:Name="rue"/><NamedCell ss:Name="col_rue"/></Cell>
+    <Cell ss:StyleID="s82"><Data ss:Type="String">case postale</Data><NamedCell
+      ss:Name="casePostale"/><NamedCell ss:Name="col_casePostale"/></Cell>
+    <Cell ss:StyleID="s83"><Data ss:Type="String">npa</Data><NamedCell
+      ss:Name="npa"/><NamedCell ss:Name="col_npa"/></Cell>
+    <Cell ss:StyleID="s82"><Data ss:Type="String">localité</Data><NamedCell
+      ss:Name="localite"/><NamedCell ss:Name="col_localite"/></Cell>
+    <Cell ss:StyleID="s82"><Data ss:Type="String">nom du groupe</Data><NamedCell
+      ss:Name="nomGroupe"/><NamedCell ss:Name="col_nomGroupe"/></Cell>
+    <Cell ss:StyleID="s84"><Data ss:Type="DateTime">2010-01-01T00:00:00.000</Data><NamedCell
+      ss:Name="debutPeriodeAffiliation"/><NamedCell
+      ss:Name="col_debutPeriodeAffiliation"/></Cell>
+    <Cell ss:StyleID="s84"><Data ss:Type="DateTime">2010-01-01T00:00:00.000</Data><NamedCell
+      ss:Name="finPeriodeAffiliation"/><NamedCell
+      ss:Name="col_finPeriodeAffiliation"/></Cell>
+    <Cell ss:StyleID="s84"><Data ss:Type="String">CHE-XXXX</Data><NamedCell
+      ss:Name="numeroIde"/><NamedCell ss:Name="col_numeroIde"/></Cell>
+    <Cell ss:StyleID="s86"><Data ss:Type="String">branche eco</Data><NamedCell
+      ss:Name="branche"/><NamedCell ss:Name="col_branche"/></Cell>
+    <Cell ss:StyleID="s82"><Data ss:Type="String">code noga</Data><NamedCell
+      ss:Name="noga"/><NamedCell ss:Name="col_noga"/></Cell>
+    <Cell ss:StyleID="s82"><Data ss:Type="String">particularité</Data><NamedCell
+      ss:Name="personnel"/><NamedCell ss:Name="col_personnel"/></Cell>
+    <Cell ss:StyleID="s84"><Data ss:Type="DateTime">2010-01-01T00:00:00.000</Data><NamedCell
+      ss:Name="dateRapport"/><NamedCell ss:Name="col_dateRapport"/></Cell>
+    <Cell><Data ss:Type="String">numRapport</Data><NamedCell ss:Name="numRapport"/><NamedCell
+      ss:Name="col_numRapport"/></Cell>
+    <Cell ss:StyleID="s84"><Data ss:Type="DateTime">2010-01-01T00:00:00.000</Data><NamedCell
+      ss:Name="premierePeriode"/><NamedCell ss:Name="col_premierePeriode"/></Cell>
+    <Cell ss:StyleID="s84"><Data ss:Type="DateTime">2010-01-01T00:00:00.000</Data><NamedCell
+      ss:Name="dernierePeriode"/><NamedCell ss:Name="col_dernierePeriode"/></Cell>
+    <Cell ss:StyleID="s84"><Data ss:Type="DateTime">2010-01-01T00:00:00.000</Data><NamedCell
+      ss:Name="datePrevue"/><NamedCell ss:Name="col_datePrevue"/></Cell>
+    <Cell><Data ss:Type="String">correction</Data><NamedCell ss:Name="correction"/><NamedCell
+      ss:Name="col_correction"/></Cell>
+    <Cell ss:StyleID="s87"><Data ss:Type="Number">0</Data><NamedCell
+      ss:Name="masseAVS"/><NamedCell ss:Name="col_masseAVS"/></Cell>
+    <Cell ss:StyleID="s87"><Data ss:Type="Number">0</Data><NamedCell
+      ss:Name="masseAVSNeg"/><NamedCell ss:Name="col_masseAVSNeg"/></Cell>
+    <Cell ss:StyleID="s88"><Data ss:Type="Number">0</Data><NamedCell
+      ss:Name="temps"/><NamedCell ss:Name="col_temps"/></Cell>
+    <Cell ss:StyleID="s89"><Data ss:Type="Number">0</Data><NamedCell
+      ss:Name="note1"/><NamedCell ss:Name="col_note1"/></Cell>
+    <Cell ss:StyleID="s89"><Data ss:Type="Number">0</Data><NamedCell
+      ss:Name="note2"/><NamedCell ss:Name="col_note2"/></Cell>
+    <Cell ss:StyleID="s89"><Data ss:Type="Number">0</Data><NamedCell
+      ss:Name="note3"/><NamedCell ss:Name="col_note3"/></Cell>
+    <Cell ss:StyleID="s89"><Data ss:Type="Number">0</Data><NamedCell
+      ss:Name="note4"/><NamedCell ss:Name="col_note4"/></Cell>
+    <Cell ss:StyleID="s89"><Data ss:Type="Number">0</Data><NamedCell
+      ss:Name="totalnotes"/><NamedCell ss:Name="col_totalnotes"/></Cell>
+    <Cell ss:StyleID="s87"><Data ss:Type="Number">0</Data><NamedCell
+      ss:Name="masse5"/><NamedCell ss:Name="col_masse5"/></Cell>
+    <Cell ss:StyleID="s89"><Data ss:Type="Number">0</Data><NamedCell
+      ss:Name="nbCI5"/><NamedCell ss:Name="col_nbCI5"/></Cell>
+    <Cell ss:StyleID="s87"><Data ss:Type="Number">0</Data><NamedCell
+      ss:Name="masse4"/><NamedCell ss:Name="col_masse4"/></Cell>
+    <Cell ss:StyleID="s89"><Data ss:Type="Number">0</Data><NamedCell
+      ss:Name="nbCI4"/><NamedCell ss:Name="col_nbCI4"/></Cell>
+    <Cell ss:StyleID="s87"><Data ss:Type="Number">0</Data><NamedCell
+      ss:Name="masse3"/><NamedCell ss:Name="col_masse3"/></Cell>
+    <Cell ss:StyleID="s89"><Data ss:Type="Number">0</Data><NamedCell
+      ss:Name="nbCI3"/><NamedCell ss:Name="col_nbCI3"/></Cell>
+    <Cell ss:StyleID="s87"><Data ss:Type="Number">0</Data><NamedCell
+      ss:Name="masse2"/><NamedCell ss:Name="col_masse2"/></Cell>
+    <Cell ss:StyleID="s89"><Data ss:Type="Number">0</Data><NamedCell
+      ss:Name="nbCI2"/><NamedCell ss:Name="col_nbCI2"/></Cell>
+    <Cell ss:StyleID="s87"><Data ss:Type="Number">0</Data><NamedCell
+      ss:Name="masse1"/><NamedCell ss:Name="col_masse1"/></Cell>
+    <Cell ss:StyleID="s89"><Data ss:Type="Number">0</Data><NamedCell
+      ss:Name="nbCI1"/><NamedCell ss:Name="col_nbCI1"/></Cell>
+    <Cell ss:StyleID="s89"><Data ss:Type="Number">0</Data><NamedCell ss:Name="cvs"/><NamedCell
+      ss:Name="col_cvs"/></Cell>
+    <Cell><Data ss:Type="String">type</Data><NamedCell ss:Name="typeControle"/><NamedCell
+      ss:Name="col_typeControle"/></Cell>
+    <Cell><Data ss:Type="String">reviseur</Data><NamedCell ss:Name="reviseur"/><NamedCell
+      ss:Name="col_reviseur"/></Cell>
+    <Cell ss:StyleID="s90"><Data ss:Type="String">codeSUVA</Data><NamedCell
+      ss:Name="codeSUVA"/><NamedCell ss:Name="col_codeSUVA"/></Cell>
+    <Cell ss:StyleID="s62"><Data ss:Type="String">libelleSUVA</Data><NamedCell
+      ss:Name="libelleSUVA"/><NamedCell ss:Name="col_libelleSUVA"/></Cell>
    </Row>
   </Table>
   <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
