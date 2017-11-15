@@ -931,11 +931,10 @@ public class PCPcAccordeeDetailViewBean extends BJadePersistentObjectViewBean {
      */
     public String getPartCantonale(SimplePlanDeCalcul plancalcul) throws JadeApplicationException,
             JadePersistenceException {
-        SimpleVentilation ventilation = CorvusServiceLocator.getSimpleVentilationService().getMontantVentileFromIdPca(
-                plancalcul.getIdPCAccordee());
-        return ventilation != null ? ventilation.getMontantVentile() : null;
-
+        return CorvusServiceLocator.getSimpleVentilationService().getPartCantonaleTotal(plancalcul.getIdPCAccordee());
     }
+
+
 
     /*
      * (non-Javadoc)

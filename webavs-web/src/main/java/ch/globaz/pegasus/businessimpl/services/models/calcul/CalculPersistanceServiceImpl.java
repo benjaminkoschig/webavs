@@ -322,7 +322,7 @@ public class CalculPersistanceServiceImpl extends PegasusAbstractServiceImpl imp
 
         simpleInformationsComptabilite.get(0), periode.getCCRetenu()[0], false, anciennePcaRequerant);
         result.add(simplePrestationAccordeeRequerant); // pour requerant
-        createVentilationPartCantonalePC(simplePrestationAccordeeRequerant.getId(),
+        createVentilationPartCantonalePC(periode, simplePrestationAccordeeRequerant.getId(), false,
                 periode.getCCRetenu()[0].getMontantPartCantonale());
 
         if (TypeSeparationCC.CALCUL_SEPARE_MALADIE.equals(periode.getTypeSeparationCC())) {
@@ -331,7 +331,7 @@ public class CalculPersistanceServiceImpl extends PegasusAbstractServiceImpl imp
                     simpleInformationsComptabilite.get(1), periode.getCCRetenu()[1], true, anciennePcaConjoint);
 
             result.add(simplePrestationAccordeeConjoint); // pour conjoint
-            createVentilationPartCantonalePC(simplePrestationAccordeeConjoint.getId(),
+            createVentilationPartCantonalePC(periode, simplePrestationAccordeeConjoint.getId(), true,
                     periode.getCCRetenu()[1].getMontantPartCantonale());
 
         } else if (TypeSeparationCC.CALCUL_DOM2_PRINCIPALE.equals(periode.getTypeSeparationCC())) {
@@ -339,26 +339,46 @@ public class CalculPersistanceServiceImpl extends PegasusAbstractServiceImpl imp
                     simpleInformationsComptabilite.get(1), periode.getCCRetenu()[0], true, anciennePcaRequerant);
 
             result.add(simplePrestationAccordeeConjoint); // pour conjoint
-            createVentilationPartCantonalePC(simplePrestationAccordeeConjoint.getId(),
+            createVentilationPartCantonalePC(periode, simplePrestationAccordeeConjoint.getId(), true,
                     periode.getCCRetenu()[0].getMontantPartCantonale());
         }
 
         return result;
     }
 
-    private SimpleVentilation createVentilationPartCantonalePC(String idPrestatoinAccordee, String montantPartCantonale)
-            throws CorvusException, JadeApplicationServiceNotAvailableException, JadePersistenceException {
+    private SimpleVentilation createVentilationPartCantonalePC(PeriodePCAccordee periode, String idPrestatoinAccordee,
+            boolean isConjoint, String montantPartCantonale) throws CorvusException,
+            JadeApplicationServiceNotAvailableException, JadePersistenceException {
         // S160704_002 : si on a une part cantonale on créé une écriture dans la table de ventilation des rentes /
         // prestations accordées
         if (!"0.0".equals(montantPartCantonale)) {
+
             SimpleVentilation ventilationPartCantonale = new SimpleVentilation();
             ventilationPartCantonale.setCsTypeVentilation(REVentilationType.PART_CANTONALE.getValue());
-            ventilationPartCantonale.setMontantVentile(montantPartCantonale);
             ventilationPartCantonale.setIdPrestationAccordee(idPrestatoinAccordee);
+
+            if (TypeSeparationCC.CALCUL_DOM2_PRINCIPALE.equals(periode.getTypeSeparationCC())) {
+                if (!JadeNumericUtil.isEmptyOrZero(montantPartCantonale)) {
+                    ventilationPartCantonale.setMontantVentile(calculPartCantonaleConjoint(isConjoint,
+                            montantPartCantonale));
+                }
+            } else {
+                ventilationPartCantonale.setMontantVentile(montantPartCantonale);
+            }
 
             return CorvusServiceLocator.getSimpleVentilationService().create(ventilationPartCantonale);
         }
         return null;
+    }
+
+    // S160704_002 :Il faut splitter la part cantonal entre les 2 conjoints
+    private String calculPartCantonaleConjoint(boolean isConjoint, String montant) {
+        float value = Float.valueOf(montant);
+
+        float partRequerant = (float) Math.ceil(value / 2f);
+        float partConjoint = value - partRequerant;
+
+        return isConjoint ? String.valueOf(partConjoint) : String.valueOf(partRequerant);
     }
 
     private SimplePrestationsAccordees createSimplePrestationAccordee(PeriodePCAccordee periode,

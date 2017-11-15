@@ -6,6 +6,7 @@ package ch.globaz.corvus.business.services.models.ventilation;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.service.provider.application.JadeApplicationService;
+import java.util.List;
 import ch.globaz.corvus.business.exceptions.CorvusException;
 import ch.globaz.corvus.business.models.lots.SimpleLotSearch;
 import ch.globaz.corvus.business.models.ventilation.SimpleVentilation;
@@ -34,7 +35,9 @@ public interface SimpleVentilationService extends JadeApplicationService {
     public SimpleVentilationSearch search(SimpleVentilationSearch search) throws JadePersistenceException,
             AdaptationException;
 
-    public SimpleVentilation getMontantVentileFromIdPca(String idPca) throws JadeApplicationException,
+    public List<SimpleVentilation> getMontantVentileFromIdPca(String idPca) throws JadeApplicationException,
             JadePersistenceException;
+
+    public String getPartCantonaleTotal(String idPca) throws JadeApplicationException, JadePersistenceException;
 
 }

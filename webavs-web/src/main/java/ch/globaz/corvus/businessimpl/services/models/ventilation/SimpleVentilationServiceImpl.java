@@ -7,6 +7,8 @@ import globaz.corvus.db.ventilation.REVentilation;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.persistence.JadePersistenceManager;
+import java.util.ArrayList;
+import java.util.List;
 import ch.globaz.corvus.business.models.lots.SimpleLotSearch;
 import ch.globaz.corvus.business.models.ventilation.SimpleVentilation;
 import ch.globaz.corvus.business.models.ventilation.SimpleVentilationSearch;
@@ -147,22 +149,44 @@ public class SimpleVentilationServiceImpl implements SimpleVentilationService {
     }
 
     @Override
-    public SimpleVentilation getMontantVentileFromIdPca(String idPca) throws JadeApplicationException,
+    public List<SimpleVentilation> getMontantVentileFromIdPca(String idPca) throws JadeApplicationException,
             JadePersistenceException {
         SimplePCAccordeeSearch pcasearch = new SimplePCAccordeeSearch();
         pcasearch.setForIdPCAccordee(idPca);
         PegasusServiceLocator.getSimplePcaccordeeService().search(pcasearch);
+        List<SimpleVentilation> list = new ArrayList<SimpleVentilation>();
         if (pcasearch.getSearchResults().length != 0) {
             SimplePCAccordee pca = (SimplePCAccordee) pcasearch.getSearchResults()[0];
             SimpleVentilationSearch ventilationSearch = new SimpleVentilationSearch();
             ventilationSearch.setForIdPrestationAccordee(pca.getIdPrestationAccordee());
             ventilationSearch = CorvusServiceLocator.getSimpleVentilationService().search(ventilationSearch);
             if (ventilationSearch.getSearchResults().length != 0) {
-                return ((SimpleVentilation) ventilationSearch.getSearchResults()[0]);
+                list.add((SimpleVentilation) ventilationSearch.getSearchResults()[0]);
             }
-
+            if (pca.getIdPrestationAccordeeConjoint() != null && !pca.getIdPrestationAccordeeConjoint().isEmpty()) {
+                ventilationSearch = new SimpleVentilationSearch();
+                ventilationSearch.setForIdPrestationAccordee(pca.getIdPrestationAccordeeConjoint());
+                ventilationSearch = CorvusServiceLocator.getSimpleVentilationService().search(ventilationSearch);
+                if (ventilationSearch.getSearchResults().length != 0) {
+                    list.add((SimpleVentilation) ventilationSearch.getSearchResults()[0]);
+                }
+            }
         }
-        return null;
+        return list;
     }
 
+    public String getPartCantonaleTotal(String idPca) throws JadeApplicationException, JadePersistenceException {
+        List<SimpleVentilation> ventilations = getMontantVentileFromIdPca(idPca);
+        if (ventilations.isEmpty()) {
+            return null;
+        } else if (ventilations.size() > 1) {
+            Float montant = 0f;
+            for (SimpleVentilation ventilation : ventilations) {
+                montant += Float.valueOf(ventilation.getMontantVentile());
+            }
+            return montant.toString();
+        } else {
+            return ventilations.get(0).getMontantVentile();
+        }
+    }
 }

@@ -12,7 +12,6 @@ import globaz.jade.exception.JadePersistenceException;
 import globaz.pegasus.utils.PCPCAccordeeHandler;
 import globaz.prestation.tools.PRStringUtils;
 import ch.globaz.common.properties.PropertiesException;
-import ch.globaz.corvus.business.models.ventilation.SimpleVentilation;
 import ch.globaz.corvus.business.services.CorvusServiceLocator;
 import ch.globaz.pegasus.business.constantes.EPCProperties;
 import ch.globaz.pegasus.business.constantes.IPCValeursPlanCalcul;
@@ -234,13 +233,8 @@ public class PCPcAccordeeViewBean extends BJadePersistentObjectViewBean {
             idPcAccordee = pcAccordee.getSimplePCAccordee().getIdPcaParent();
         }
 
-        SimpleVentilation ventilation = CorvusServiceLocator.getSimpleVentilationService().getMontantVentileFromIdPca(
-                idPcAccordee);
-
-        if (ventilation != null) {
-            return ventilation.getMontantVentile();
-        }
-        return "";
+        String partCantonale = CorvusServiceLocator.getSimpleVentilationService().getPartCantonaleTotal(idPcAccordee);
+        return partCantonale == null ? "" : partCantonale;
     }
 
     public BSession getSession() {

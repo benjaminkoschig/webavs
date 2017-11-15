@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import ch.globaz.common.util.prestations.MotifVersementUtil;
-import ch.globaz.corvus.business.models.ventilation.SimpleVentilation;
 import ch.globaz.corvus.business.services.CorvusServiceLocator;
 import ch.globaz.osiris.business.model.SectionSimpleModel;
 import ch.globaz.pegasus.business.exceptions.models.lot.ComptabiliserLotException;
@@ -59,7 +58,7 @@ class GenerateOperationsApresCalcul implements GenerateOperations {
         PrestationOvDecompte decompte = null;
 
         ArrayList<String> listIdPca = getListIdPcaFromOvs(ovs);
-        HashMap<String, SimpleVentilation> mapSimpleVentilation = getMapSimpleVentilationForListIdPca(listIdPca);
+        HashMap<String, String> mapSimpleVentilation = getMapSimpleVentilationForListIdPca(listIdPca);
 
         if (!mapSimpleVentilation.isEmpty()) {
             List<OrdreVersementForList> ovsSplit = changeOvsIfPrestationVentile(mapSimpleVentilation, ovs);
@@ -94,9 +93,9 @@ class GenerateOperationsApresCalcul implements GenerateOperations {
         return new ArrayList<String>(setIdPca);
     }
 
-    protected HashMap<String, SimpleVentilation> getMapSimpleVentilationForListIdPca(ArrayList<String> listIdPca)
+    protected HashMap<String, String> getMapSimpleVentilationForListIdPca(ArrayList<String> listIdPca)
             throws JadeApplicationException {
-        Map<String, SimpleVentilation> mapStringSimpleVentilations = new HashMap<String, SimpleVentilation>();
+        Map<String, String> mapStringSimpleVentilations = new HashMap<String, String>();
 
         SimplePCAccordeeSearch pcasearch = new SimplePCAccordeeSearch();
 
@@ -106,8 +105,8 @@ class GenerateOperationsApresCalcul implements GenerateOperations {
                 PegasusServiceLocator.getSimplePcaccordeeService().search(pcasearch);
 
                 if (pcasearch.getSearchResults().length != 0) {
-                    SimpleVentilation simpleVentil = CorvusServiceLocator.getSimpleVentilationService()
-                            .getMontantVentileFromIdPca(listIdPca.get(i));
+                    String simpleVentil = CorvusServiceLocator.getSimpleVentilationService().getPartCantonaleTotal(
+                            listIdPca.get(i));
 
                     if (simpleVentil != null) {
                         mapStringSimpleVentilations.put(listIdPca.get(i), simpleVentil);
@@ -120,10 +119,10 @@ class GenerateOperationsApresCalcul implements GenerateOperations {
                 throw new PCAccordeeException("Unable to find the PC accordee", e);
             }
         }
-        return (HashMap<String, SimpleVentilation>) mapStringSimpleVentilations;
+        return (HashMap<String, String>) mapStringSimpleVentilations;
     }
 
-    private List<OrdreVersementForList> changeOvsIfPrestationVentile(HashMap<String, SimpleVentilation> map,
+    private List<OrdreVersementForList> changeOvsIfPrestationVentile(HashMap<String, String> map,
             List<OrdreVersementForList> ovs) throws JadeApplicationException {
         Set<OrdreVersementForList> ovsModif = new HashSet<OrdreVersementForList>();
 
@@ -157,9 +156,8 @@ class GenerateOperationsApresCalcul implements GenerateOperations {
                 ordreVersementForListPartCantonale.getSimpleOrdreVersement().setNoGroupePeriode(
                         String.valueOf(noGroupePeriode + NUM_VENTILATION));
 
-                float montantPartCantonalePourOv = Float.parseFloat(map.get(
-                        ordreVersementForList.getSimpleOrdreVersement().getIdPca()).getMontantVentile())
-                        * nbMois;
+                float montantPartCantonalePourOv = Float.parseFloat(map.get(ordreVersementForList
+                        .getSimpleOrdreVersement().getIdPca())) * nbMois;
                 ordreVersementForListPartCantonale.getSimpleOrdreVersement().setMontant(
                         String.valueOf(montantPartCantonalePourOv));
 
