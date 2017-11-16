@@ -217,6 +217,10 @@ $(document).ready(function(){
 							</c:if>
 							<dt><strong><ct:FWLabel key="ORION_JSP_GEB0004_ANNEE"/></strong></dt>
 							<dd>${viewBean.decSal.annee}</dd>
+							<c:if test="${(viewBean.pucsFile.getCertifieExact() && viewBean.pucsFile.getDateValidation() != null)}">
+							<dt><strong><ct:FWLabel key="ORION_JSP_GEB0004_CERTIFIE_EXACT_LE"/></strong></dt>
+							<dd>${viewBean.pucsFile.getDateValidation()} <ct:FWLabel key="ORION_JSP_GEB0004_CERTIFIE_EXACT_PAR"/> ${viewBean.pucsFile.getNomValidation()} </dd>
+							</c:if>						
 						</dl>
 					</div>
 				</div>
