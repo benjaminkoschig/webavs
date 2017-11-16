@@ -78,25 +78,27 @@ public class ContainerByCommunePolitique implements Comparable<ContainerByCommun
         this.communePolitique = communePolitique;
     }
 
+    // WEBAVS-4858 : POAVS-738-K170622_002-CCVS : Les chiffres qui devraient être en négatifs sortent en positifs
+    // -> changement du abs() en negate()
     @Column(name = "Total", order = 9)
     @ColumnStyle(align = Align.RIGHT, format = "#,##0.00")
     @Aggregate(AggregateFunction.SUM)
     public BigDecimal getTotal() {
-        return total.getBigDecimalValue().abs();
+        return total.getBigDecimalValue().negate();
     }
 
     @Column(name = "TotalPc", order = 5)
     @ColumnStyle(align = Align.RIGHT, format = "#,##0.00")
     @Aggregate(AggregateFunction.SUM)
     public BigDecimal getTotalPC() {
-        return totalPC.getBigDecimalValue().abs();
+        return totalPC.getBigDecimalValue().negate();
     }
 
     @Column(name = "TotalRfm", order = 8)
     @ColumnStyle(align = Align.RIGHT, format = "#,##0.00")
     @Aggregate(AggregateFunction.SUM)
     public BigDecimal getTotalRFM() {
-        return totalRFM.getBigDecimalValue().abs();
+        return totalRFM.getBigDecimalValue().negate();
     }
 
     public void setTotal(Montant total) {
