@@ -92,6 +92,8 @@ public class PCMainServlet extends FWJadeServlet {
         List<String> listRPCNotStackAction = new ArrayList<String>();
         listRPCNotStackAction.add("detailAnnonceAjax.executer");
         listRPCNotStackAction.add("detailAnnonceAjax.reAfficher");
+        listRPCNotStackAction.add("rpc.annonces.executer");
+        listRPCNotStackAction.add("rpc.annonces.reAfficher");
         FWRemoveActionsEndingWith rpcNotStackAction = new FWRemoveActionsEndingWith(listRPCNotStackAction);
 
         aStack.addRule(removeLister);

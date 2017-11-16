@@ -9,6 +9,12 @@
 <%-- labels n° ecran et titre --%>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 
+<%
+String processStarted = request.getParameter("process");
+boolean processLaunchedReafficher = "launched".equalsIgnoreCase(processStarted);
+%>
+
+<c:set var="processLaunchedReafficher"  value="<%=processLaunchedReafficher%>" />
 <c:set var="idEcran" value="PPC4001" />
 <c:set var="labelTitreEcran" value="JSP_RECHERCHER_GENERER_ANNONCES" />
 <c:url var="imgCalculOk" value="/images/calcule.png" scope="page"/>
@@ -218,23 +224,29 @@ jsManager.addAfter(function (){
 					</tr>
 				</table>
 			</div>	
-			<c:if test="${not processLaunched and hasRightsForGroupResponsableRPC}">	
-				<div align="right"  style="padding-right:10px;padding-top:10px;padding-bottom:10px;">
+			<c:if test="${not processLaunched and not processLaunchedReafficher}">
+				<c:if test="${hasRightsForGroupResponsableRPC}">
+					<div align="right"  style="padding-right:10px;padding-top:10px;padding-bottom:10px;">
+				</c:if>
+				<c:if test="${not hasRightsForGroupResponsableRPC}">
+					<div align="right"  style="padding-right:10px;padding-top:10px;padding-bottom:10px;" disabled="true">
+				</c:if>	
+						<ct:ifhasright element="${action}" crud="cud">
+							<input id="simulate" type="button" name="simulate" value='<ct:FWLabel key="JSP_PC_RPC_SIMULATE"/>'/>
+							<c:if test="${canGenerateAnnonces}">
+								<c:if test="${not viewBean.isCurentMonthGenerated()}">
+									<input id="send" type="button" name="send" value='<ct:FWLabel key="JSP_PC_RPC_ENVOI"/>'/>
+								</c:if>
+								<c:if test="${viewBean.isCurentMonthGenerated()}">
+									<input id="send" type="button" name="send" value='<ct:FWLabel key="JSP_RELANCER"/>'/>
+								</c:if>
+							</c:if>
+						</ct:ifhasright>
+						
+					</div>
 					
-					<ct:ifhasright element="${action}" crud="cud">
-						<input id="simulate" type="button" name="simulate" value='<ct:FWLabel key="JSP_PC_RPC_SIMULATE"/>'/>
-						<c:if test="${canGenerateAnnonces}">
-							<c:if test="${not viewBean.isCurentMonthGenerated()}">
-								<input id="send" type="button" name="send" value='<ct:FWLabel key="JSP_PC_RPC_ENVOI"/>'/>
-							</c:if>
-							<c:if test="${viewBean.isCurentMonthGenerated()}">
-								<input id="send" type="button" name="send" value='<ct:FWLabel key="JSP_RELANCER"/>'/>
-							</c:if>
-						</c:if>
-					</ct:ifhasright>
-				</div>
 			</c:if>	
-			<c:if test="${processLaunched}">
+			<c:if test="${processLaunched or processLaunchedReafficher}">
 				<div style="margin-top:20px;vertical-align:middle; color: white; font-weight: bold; text-align: center;background-color: green">
 					<ct:FWLabel key="FW_PROCESS_STARTED"/>
 				</div>
