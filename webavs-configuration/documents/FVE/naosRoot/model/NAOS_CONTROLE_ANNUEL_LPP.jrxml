@@ -23,7 +23,7 @@
 	<property name="com.jaspersoft.studio.unit.height" value="pixel" />
 	<property name="com.jaspersoft.studio.unit.height" value="pixel" />
 	<property name="ireport.scriptlethandling" value="2" />
-	<parameter name="P_SUBREPORT_HEADER" isForPrompting="true" class="java.lang.String">
+	<parameter name="P_SUBREPORT_HEADER" isForPrompting="false" class="java.lang.String">
 		<defaultValueExpression ><![CDATA["Header_Caisse_Federale_Compensation.jasper"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="P_FALSE" isForPrompting="true" class="java.lang.Boolean">
@@ -50,12 +50,13 @@
 	<parameter name="P_WARNING2" isForPrompting="false" class="java.lang.String"/>
 	<parameter name="P_POLITESSE" isForPrompting="false" class="java.lang.String"/>
 	<parameter name="P_TEXTE7" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_SUBREPORT_SIGNATURE" isForPrompting="false" class="java.lang.String"/>
 		<background>
 			<band height="0"  isSplitAllowed="true" >
 			</band>
 		</background>
 		<title>
-			<band height="407"  isSplitAllowed="true" >
+			<band height="442"  isSplitAllowed="true" >
 				<subreport  isUsingCache="true">
 					<reportElement
 						mode="Opaque"
@@ -77,35 +78,15 @@
 				</subreport>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
-						x="296"
-						y="379"
-						width="228"
-						height="18"
-						forecolor="#000000"
-						backcolor="#FFFFFF"
-						key="textField-30"
-						stretchType="NoStretch"
-						positionType="Float"
-						isPrintRepeatedValues="true"
-						isRemoveLineWhenBlank="false"
-						isPrintInFirstWholeBand="false"
-						isPrintWhenDetailOverflows="false"/>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" isStyledText="true" lineSpacing="Single">
-						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
-					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_SIGN_LETTRE}]]></textFieldExpression>
-				</textField>
-				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
-						mode="Opaque"
 						x="22"
-						y="253"
+						y="237"
 						width="502"
 						height="18"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
 						key="textField-31"
 						stretchType="NoStretch"
-						positionType="FixRelativeToTop"
+						positionType="Float"
 						isPrintRepeatedValues="true"
 						isRemoveLineWhenBlank="false"
 						isPrintInFirstWholeBand="false"
@@ -118,14 +99,14 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="22"
-						y="202"
+						y="187"
 						width="502"
 						height="18"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
 						key="textField-32"
 						stretchType="NoStretch"
-						positionType="FixRelativeToTop"
+						positionType="Float"
 						isPrintRepeatedValues="true"
 						isRemoveLineWhenBlank="false"
 						isPrintInFirstWholeBand="false"
@@ -138,7 +119,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="22"
-						y="278"
+						y="262"
 						width="502"
 						height="18"
 						forecolor="#000000"
@@ -158,7 +139,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="22"
-						y="303"
+						y="287"
 						width="502"
 						height="18"
 						forecolor="#000000"
@@ -178,7 +159,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="22"
-						y="328"
+						y="312"
 						width="502"
 						height="18"
 						forecolor="#000000"
@@ -198,7 +179,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="22"
-						y="353"
+						y="337"
 						width="502"
 						height="18"
 						forecolor="#000000"
@@ -218,14 +199,14 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="22"
-						y="228"
+						y="212"
 						width="502"
 						height="18"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
 						key="textField-47"
 						stretchType="NoStretch"
-						positionType="FixRelativeToTop"
+						positionType="Float"
 						isPrintRepeatedValues="true"
 						isRemoveLineWhenBlank="false"
 						isPrintInFirstWholeBand="false"
@@ -238,21 +219,40 @@
 				<line direction="TopDown">
 					<reportElement
 						mode="Opaque"
-						x="23"
-						y="221"
+						x="22"
+						y="205"
 						width="502"
 						height="0"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
 						key="line-2"
 						stretchType="NoStretch"
-						positionType="FixRelativeToTop"
+						positionType="Float"
 						isPrintRepeatedValues="true"
 						isRemoveLineWhenBlank="false"
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="false"/>
 					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
 				</line>
+				<subreport  isUsingCache="true">
+					<reportElement
+						mode="Opaque"
+						x="2"
+						y="362"
+						width="549"
+						height="73"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="subreport-2"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<parametersMapExpression><![CDATA[new java.util.HashMap($P{REPORT_PARAMETERS_MAP})]]></parametersMapExpression>
+					<subreportExpression  class="java.lang.String"><![CDATA[$P{P_SUBREPORT_SIGNATURE}]]></subreportExpression>
+				</subreport>
 			</band>
 		</title>
 		<pageHeader>
@@ -276,12 +276,12 @@
 			</band>
 		</columnFooter>
 		<pageFooter>
-			<band height="210"  isSplitAllowed="true" >
+			<band height="199"  isSplitAllowed="true" >
 				<rectangle radius="0" >
 					<reportElement
 						mode="Opaque"
 						x="23"
-						y="40"
+						y="34"
 						width="504"
 						height="110"
 						forecolor="#000000"
@@ -298,7 +298,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
 						x="30"
-						y="126"
+						y="120"
 						width="234"
 						height="18"
 						forecolor="#000000"
@@ -318,7 +318,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
 						x="270"
-						y="126"
+						y="120"
 						width="150"
 						height="18"
 						forecolor="#000000"
@@ -338,7 +338,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
 						x="433"
-						y="126"
+						y="120"
 						width="80"
 						height="18"
 						forecolor="#000000"
@@ -358,7 +358,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
 						x="30"
-						y="44"
+						y="38"
 						width="484"
 						height="26"
 						forecolor="#000000"
@@ -378,7 +378,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
 						x="30"
-						y="100"
+						y="94"
 						width="233"
 						height="18"
 						forecolor="#000000"
@@ -398,7 +398,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
 						x="23"
-						y="14"
+						y="8"
 						width="504"
 						height="14"
 						forecolor="#000000"
@@ -418,7 +418,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
 						x="30"
-						y="76"
+						y="70"
 						width="483"
 						height="18"
 						forecolor="#000000"
@@ -438,7 +438,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
 						x="25"
-						y="160"
+						y="154"
 						width="502"
 						height="20"
 						forecolor="#000000"
