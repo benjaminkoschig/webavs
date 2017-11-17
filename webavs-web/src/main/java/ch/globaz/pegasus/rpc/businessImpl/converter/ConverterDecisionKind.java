@@ -18,6 +18,7 @@ public class ConverterDecisionKind {
 
         motif1.add(MotifDecision.AUCUN_DROIT_DOMICILLE);
         motif1.add(MotifDecision.AUCUN_DROIT_EMS);
+        motif1.add(MotifDecision.AUCUN_DROIT_EMS2);
         motif1.add(MotifDecision.DELAI_CARENCE);
         motif1.add(MotifDecision.DOMICILLE_PAR_RECONNU);
         motif1.add(MotifDecision.DROIT_INDEMNITE_AI);
