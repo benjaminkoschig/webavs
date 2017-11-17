@@ -601,7 +601,8 @@ public class PeriodesServiceImpl extends PegasusAbstractServiceImpl implements
                         dateDebutPlage = dateDebutDemande.addMonth(1);
                     }
 
-                    if (dateDebutPlage.before(dateFindDemande)) {
+                    // Mets à jour la date de début seulement si la date de début fait partie de la plage des données
+                    if (dateDebutPlage.before(dateFindDemande) && !dateDebutPlage.before(dateDebutDemande)) {
                         dateDebutPlage = dateFindDemande;
                     } else if (dateDebutPlage.equals(dateFindDemande)) {
                         // On augmente la fate de début de la plage de calcul d'un mois pour éviter les superpositions
