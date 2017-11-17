@@ -56,7 +56,7 @@
 			</band>
 		</background>
 		<title>
-			<band height="442"  isSplitAllowed="true" >
+			<band height="416"  isSplitAllowed="true" >
 				<subreport  isUsingCache="true">
 					<reportElement
 						mode="Opaque"
@@ -79,7 +79,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="22"
-						y="237"
+						y="231"
 						width="502"
 						height="18"
 						forecolor="#000000"
@@ -99,7 +99,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="22"
-						y="187"
+						y="181"
 						width="502"
 						height="18"
 						forecolor="#000000"
@@ -119,7 +119,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="22"
-						y="262"
+						y="256"
 						width="502"
 						height="18"
 						forecolor="#000000"
@@ -139,7 +139,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="22"
-						y="287"
+						y="281"
 						width="502"
 						height="18"
 						forecolor="#000000"
@@ -159,7 +159,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="22"
-						y="312"
+						y="306"
 						width="502"
 						height="18"
 						forecolor="#000000"
@@ -179,7 +179,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="22"
-						y="337"
+						y="331"
 						width="502"
 						height="18"
 						forecolor="#000000"
@@ -199,7 +199,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="22"
-						y="212"
+						y="206"
 						width="502"
 						height="18"
 						forecolor="#000000"
@@ -220,7 +220,7 @@
 					<reportElement
 						mode="Opaque"
 						x="22"
-						y="205"
+						y="199"
 						width="502"
 						height="0"
 						forecolor="#000000"
@@ -238,9 +238,9 @@
 					<reportElement
 						mode="Opaque"
 						x="2"
-						y="362"
+						y="356"
 						width="549"
-						height="73"
+						height="56"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
 						key="subreport-2"
@@ -276,7 +276,7 @@
 			</band>
 		</columnFooter>
 		<pageFooter>
-			<band height="199"  isSplitAllowed="true" >
+			<band height="195"  isSplitAllowed="true" >
 				<rectangle radius="0" >
 					<reportElement
 						mode="Opaque"
