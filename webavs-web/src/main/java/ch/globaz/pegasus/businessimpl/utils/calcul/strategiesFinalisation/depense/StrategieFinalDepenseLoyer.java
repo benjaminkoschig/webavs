@@ -84,7 +84,7 @@ public class StrategieFinalDepenseLoyer extends UtilStrategieBienImmobillier imp
                                 PegasusDateUtil.convertToJadeDate(varMet.getDateFin())).getTimeInMillis();
                     }
                     if ((timeDateFinVarMetier >= dateDebutD.getTime() || timeDateFinVarMetier == 0)
-                            && timeDateDebutVarMetier <= dateDebutD.getTime() && timeDateDebutVarMetier < now.getTime()) {
+                            && timeDateDebutVarMetier <= dateDebutD.getTime()) {
                         deplafonnementAppartementProtege = Float.parseFloat(varMet.getMontant());
                     }
                 }
