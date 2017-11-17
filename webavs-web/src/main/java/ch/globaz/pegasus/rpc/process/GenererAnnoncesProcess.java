@@ -213,36 +213,45 @@ public class GenererAnnoncesProcess extends ProcessItemsHandlerJadeJob<AnnonceIt
     private boolean hasTooMuchDifferenceAnnoncesWithOlderLots(final long nbCurrentAnnonces) {
         boolean hasTooMuchDiff = false;
 
-        // Recherche le dernier lot avec son nombre d'annonce
-        final List<LotRpcWithNbAnnonces> olderLots = lotAnnonceRepository.searchLastsLots(1);
+        // Recherche les derniers 2 lots avec son nombre d'annonce (si un lot est a etais déjà genere est encore en DB!)
+        final List<LotRpcWithNbAnnonces> olderLots = lotAnnonceRepository.searchLastsLots(2);
 
         double currentLotSize = nbCurrentAnnonces;
+        double olderLotSize = 0;
+        double solde = 1;
+        double biggerNumber = 1;
+        Date dateEnvoi = Date.now();
 
         // Pour chaque ancien lot, nous allons comparer le nombre de ces annonces avec celui qui est courant afin de
         // savoir si il y a trop de différence afin d'avertir l'utilisateur plus tard
         for (LotRpcWithNbAnnonces olderLot : olderLots) {
 
-            double olderLotSize = olderLot.getNbAnnonces();
-            double solde;
-            double biggerNumber;
+            dateEnvoi = olderLot.getLot().getDateEnvoi();
+            String annonceMonth = dateEnvoi.getMois();
+            String currentMonth = Date.now().getMois();
 
-            // Nous prenons le nombre le plus grand avant de le soustraire et l'utiliser comme nombre pour la division
-            if (currentLotSize <= olderLotSize) {
-                solde = olderLotSize - currentLotSize;
-                biggerNumber = olderLotSize;
-            } else {
-                solde = currentLotSize - olderLotSize;
-                biggerNumber = currentLotSize;
-            }
+            if (!annonceMonth.equals(currentMonth)) {
+                olderLotSize = olderLot.getNbAnnonces();
 
-            // Si il y a le pourcentage de la tolerance ou plus de différence.
-            if (olderLotSize > 0 && solde / biggerNumber >= toleranceAnnonces.getToleranceAnnonce()) {
-                LOG.info("Nb annonces {} for older lot with sent date : {}", olderLotSize, olderLot.getLot()
-                        .getDateEnvoi());
-                LOG.info("Nb annonces {} for current lot", currentLotSize);
-                LOG.info("There is a pourcentage of {} between these lots", solde / biggerNumber * 100);
-                hasTooMuchDiff = true;
+                // Nous prenons le nombre le plus grand avant de le soustraire et l'utiliser comme nombre pour la
+                // division
+                if (currentLotSize <= olderLotSize) {
+                    solde = olderLotSize - currentLotSize;
+                    biggerNumber = olderLotSize;
+                } else {
+                    solde = currentLotSize - olderLotSize;
+                    biggerNumber = currentLotSize;
+                }
+                break;
             }
+        }
+
+        // Si il y a le pourcentage de la tolerance ou plus de différence.
+        if (olderLotSize > 0 && solde / biggerNumber >= toleranceAnnonces.getToleranceAnnonce()) {
+            LOG.info("Nb annonces {} for older lot with sent date : {}", olderLotSize, dateEnvoi);
+            LOG.info("Nb annonces {} for current lot", currentLotSize);
+            LOG.info("There is a pourcentage of {} between these lots", solde / biggerNumber * 100);
+            hasTooMuchDiff = true;
         }
 
         return hasTooMuchDiff;
