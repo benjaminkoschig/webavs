@@ -28,7 +28,7 @@ public class RpcPlausiPI008 extends RpcPlausiCommonCalcul {
         plausiData.FC8 = decision.getAmountWithHC();
         plausiData.FC9 = decision.getElLimit();
 
-        buildRevenu(decision, plausiData);
+        buildRevenu(decision, plausiData, data);
         buildDepense(decision, plausiData, true);
 
         return plausiData;

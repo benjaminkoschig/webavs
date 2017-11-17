@@ -16,7 +16,7 @@ public class RpcPlausiPI009 extends RpcPlausiCommonCalcul {
     public RpcPlausiCommonCalculData buildPlausi(AnnonceDecision decision, AnnonceCase data) {
         final RpcPlausiPI009Data plausiData = new RpcPlausiPI009Data(this);
 
-        buildRevenu(decision, plausiData);
+        buildRevenu(decision, plausiData, data);
         buildDepense(decision, plausiData, true);
 
         return plausiData;
