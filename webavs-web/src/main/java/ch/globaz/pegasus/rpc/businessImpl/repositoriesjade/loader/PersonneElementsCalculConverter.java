@@ -158,12 +158,16 @@ public class PersonneElementsCalculConverter {
         perElCal.setLivingAddress(livingAddress);
         perElCal.setTypeRenteCS(resolveMaxType(dfFiltre));
 
-        perElCal.setUsufructIncome(df.getBiensImmobiliersServantHbitationPrincipale()
-                .filtreByProprieteType(ProprieteType.USUFRUITIER, ProprieteType.DROIT_HABITATION)
-                .sumMontantValeurLocativePartPropriete());
+        perElCal.setUsufructIncome((df.getBiensImmobiliersServantHbitationPrincipale().filtreByProprieteType(
+                ProprieteType.USUFRUITIER, ProprieteType.DROIT_HABITATION).sumMontantValeurLocativePartPropriete())
+                .add(df.getBiensImmobiliersNonPrincipale()
+                        .filtreByProprieteType(ProprieteType.USUFRUITIER, ProprieteType.DROIT_HABITATION)
+                        .sumMontantValeurLocativePartPropriete()));
 
-        perElCal.setValeurLocativeProprietaire(df.getBiensImmobiliersServantHbitationPrincipale()
-                .filtreByProprieteType(ProprieteType.PROPRIETAIRE).sumMontantValeurLocativePartPropriete());
+        perElCal.setValeurLocativeProprietaire((df.getBiensImmobiliersServantHbitationPrincipale()
+                .filtreByProprieteType(ProprieteType.PROPRIETAIRE).sumMontantValeurLocativePartPropriete()).add(df
+                .getBiensImmobiliersNonPrincipale().filtreByProprieteType(ProprieteType.PROPRIETAIRE)
+                .sumMontantValeurLocativePartPropriete()));
 
         // Si les APi sont prisent en compte dans le calcul
         if (perElCal.getHomeTaxeHomeTotal().isPositive()) {// !perElCal.getHomeIsApiFacturee() &&
