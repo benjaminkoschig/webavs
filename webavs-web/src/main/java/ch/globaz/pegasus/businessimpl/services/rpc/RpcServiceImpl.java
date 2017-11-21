@@ -49,7 +49,6 @@ public class RpcServiceImpl implements RpcService {
         RpcData rpcData = loader.loadByIdDecision(idDecision);
         Set<RpcPlausiCategory> inCategory = new HashSet<RpcPlausiCategory>();
         inCategory.add(RpcPlausiCategory.BLOCKING);
-        inCategory.add(RpcPlausiCategory.WARNING);
         inCategory.add(RpcPlausiCategory.ERROR);
         PlausisResults results = PlausiContainer.buildPlausisInCategory(rpcData, inCategory);
         if (!results.isAllPlausiOk()) {
