@@ -55,7 +55,6 @@ public class RpcPlausiPI004 implements RpcPlausiMetier<RpcPlausiPI004Data> {
             {
                 add(RpcPlausiApplyToDecision.POSITIVE);
                 add(RpcPlausiApplyToDecision.REJECT_FULL);
-                add(RpcPlausiApplyToDecision.REJECT_SMALL);
             }
         };
     }
