@@ -25,6 +25,13 @@ public class StrategieFusionTotal implements StrategieCalculFusion {
 
         final String statusCalcul;
 
+        float diffPartCantonale = donnee.getValeurEnfant(IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_DIFF_PART_CANTONALE);
+
+        // S160704_002 - enregistre le statut de la part fédérale, s'il y a une part cantonale
+        if (diffPartCantonale > 0) {
+            calcStatutPartFederal(donnee, somme - diffPartCantonale, primeMoyenneAssMaladie);
+        }
+
         if (sommeDeduit < 0) {
             // excedant de revenu - refus
             statusCalcul = IPCValeursPlanCalcul.STATUS_REFUS;
@@ -49,6 +56,15 @@ public class StrategieFusionTotal implements StrategieCalculFusion {
                 IPCValeursPlanCalcul.STATUS_CALCUL_SEPARE_MALADIE));
         donnee.addEnfantTuple(new TupleDonneeRapport(IPCValeursPlanCalcul.CLE_TOTAL_CC_STATUS, 0f, statusCalcul));
         donnee.addEnfantTuple(new TupleDonneeRapport(IPCValeursPlanCalcul.CLE_TOTAL_CC_DEDUIT_MENSUEL, pcMensuel));
+
+        float partCantonale = diffPartCantonale / 12;
+
+        if (partCantonale > pcMensuel) {
+            partCantonale = pcMensuel;
+        }
+
+        donnee.addEnfantTuple(new TupleDonneeRapport(IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_PART_CANTONALE,
+                partCantonale));
     }
 
     @Override
@@ -56,6 +72,26 @@ public class StrategieFusionTotal implements StrategieCalculFusion {
             TupleDonneeRapport donneeSeul, TupleDonneeRapport donneeFusionne, CalculContext context, Date dateDebut)
             throws CalculException {
         this.calcule(donneeFusionne, context, dateDebut);
+
+    }
+
+    // S160704_002 - enregistre le statut de la part fédérale, s'il y a une part cantonale
+    private void calcStatutPartFederal(TupleDonneeRapport donnee, float somme, float prime) {
+        float sommeDeduit = somme + prime;
+        final String statusCalcul;
+        if (sommeDeduit < 0) {
+            statusCalcul = IPCValeursPlanCalcul.STATUS_REFUS;
+        }
+        // Octroi partiel
+        else if (somme < 0) {
+            // excedant faible de revenu - droit partiel
+            // Tous les champs sont déjà fournis. TOTAL_CC_DEDUIT = 0
+            statusCalcul = IPCValeursPlanCalcul.STATUS_OCTROI_PARTIEL;
+        } else {
+            statusCalcul = IPCValeursPlanCalcul.STATUS_OCTROI;
+        }
+
+        donnee.addEnfantTuple(new TupleDonneeRapport(IPCValeursPlanCalcul.CLE_TOTAL_CC_STATUS_FEDERAL, 0f, statusCalcul));
 
     }
 

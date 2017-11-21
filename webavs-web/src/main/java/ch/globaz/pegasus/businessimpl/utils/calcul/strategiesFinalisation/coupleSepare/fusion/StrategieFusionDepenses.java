@@ -49,7 +49,8 @@ public class StrategieFusionDepenses implements StrategieCalculFusion {
             IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_TOTAL_NON_PLAFONNE,
             IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_PLAFOND, IPCValeursPlanCalcul.CLE_DEPEN_PENSVERS_TOTAL,
             IPCValeursPlanCalcul.CLE_TOTAL_PRIMEMAL_TOTAL, IPCValeursPlanCalcul.CLE_DEPEN_TAXEHOME_TOTAL,
-            IPCValeursPlanCalcul.CLE_DEPEN_DEP_RECO_TOTAL, IPCValeursPlanCalcul.CLE_DEPEN_FRAISIMM_TOTAL_PLAFONNE };
+            IPCValeursPlanCalcul.CLE_DEPEN_DEP_RECO_TOTAL, IPCValeursPlanCalcul.CLE_DEPEN_FRAISIMM_TOTAL_PLAFONNE,
+            IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_DIFF_PART_CANTONALE };
 
     @Override
     public void calcule(TupleDonneeRapport donneeCommun, TupleDonneeRapport donneeAvecEnfants,
