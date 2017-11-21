@@ -18,6 +18,7 @@ public class ConverterDecisionCause {
                 case DIVORCE:
                 case MARRIAGE:
                 case MODIFICATIONS_DIVERSES:
+                case MODIFICATION_RETOUR_REGISTRE:
                 case REPRISE:
 
                     return toBigInt(2);
