@@ -1,12 +1,5 @@
 -- SCRIPT de RPC tiré de la 1.19.0-4
 
---RPC
---DROP TABLE SCHEMA.PC_RPC_LOT_ANNONCE;
---DROP TABLE SCHEMA.PC_RPC_ANNONCE;
---DROP TABLE SCHEMA.PC_RPC_LIEN_AN_DE;
---DROP TABLE SCHEMA.PC_RPC_RETOUR_ANNONCE;
-
-
 insert into SCHEMA.JADEPROP (PROPNAME,PROPVAL) values ('pegasus.rpc.message.header.eloffice', '');
 insert into SCHEMA.JADEPROP (PROPNAME,PROPVAL) values ('pegasus.rpc.message.header.recipient.id', '');
 insert into SCHEMA.JADEPROP (PROPNAME,PROPVAL) values ('pegasus.rpc.load.partion.size', 'all:2000,blob:350');
@@ -609,6 +602,9 @@ insert into SCHEMA.JADEPROP (PROPNAME, PROPVAL) values ('pegasus.rpc.limit.day.g
 insert into SCHEMA.FWCOSP (pcosid,pptygr,pconcs,pptycn,pptycl,pptysa,pcosli,pcosdf,pcosdm,pcosdp,pcoian,pcoide,pcodfi,pcoitc,pcoise, pspy) values ( 64039156, 'PCKYVPC', 1 ,1,0,0, 'CLE_TOTAL_CC_STATUS_FEDERAL', 2,1,2,2,2, 2 , 63000039 ,0, (replace(char(current date), '-', '') concat replace(char(current time), '.', '') concat user) ); 
 insert into SCHEMA.FWCOUP (pcosid,plaide,pcouid,pcolut, pspy) values ( 64039156, 'F', '', 'STATUS TOTAL CC FEDERALE', (replace(char(current date), '-', '') concat replace(char(current time), '.', '') concat user) ); 
 insert into SCHEMA.FWCOUP (pcosid,plaide,pcouid,pcolut, pspy) values ( 64039156, 'D', '', 'STATUS GESAMT CC AUSGLEICHKASSE', (replace(char(current date), '-', '') concat replace(char(current time), '.', '') concat user) ); 
+insert into SCHEMA.FWCOSP (pcosid,pptygr,pconcs,pptycn,pptycl,pptysa,pcosli,pcosdf,pcosdm,pcosdp,pcoian,pcoide,pcodfi,pcoitc,pcoise, pspy) values ( 64039157, 'PCKYVPC', 1 ,1,0,0, 'CLE_DEPEN_GR_LOYER_PLAFOND_FEDERAL', 2,1,2,2,2, 2 , 63000039 ,0, (replace(char(current date), '-', '') concat replace(char(current time), '.', '') concat user) ); 
+insert into SCHEMA.FWCOUP (pcosid,plaide,pcouid,pcolut, pspy) values ( 64039157, 'F', '', 'plafond de loyer fédéral', (replace(char(current date), '-', '') concat replace(char(current time), '.', '') concat user) ); 
+insert into SCHEMA.FWCOUP (pcosid,plaide,pcouid,pcolut, pspy) values ( 64039157, 'D', '', '[de]plafond de loyer fédéral', (replace(char(current date), '-', '') concat replace(char(current time), '.', '') concat user) ); 
 
 -- S160704_002 - PC - Déplafonnement de loyer - 1.19.1
 /* type_variables_metier : */

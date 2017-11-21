@@ -151,6 +151,8 @@ public class StrategieFinalDepenseLoyer extends UtilStrategieBienImmobillier imp
         } else {
             plafond = plafondCelibataire;
         }
+        donnee.getOrCreateEnfant(IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_PLAFOND_FEDERAL).addValeur(plafond);
+
         if (!csAppartementProtege.isEmpty() && !csAppartementProtege.equals("0")) {
             if (deplafonnementAppartementProtege > 0f) {
                 plafond += deplafonnementAppartementProtege;

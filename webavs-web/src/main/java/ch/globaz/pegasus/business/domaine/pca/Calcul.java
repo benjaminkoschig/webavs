@@ -50,6 +50,13 @@ public class Calcul {
     }
 
     /**
+     * CLE_TOTAL_CC_MENSUEL_CALCULE_FEDERAL
+     */
+    public Montant getTotalFederalMensuel() {
+        return Montant.newMensuel(tuple.getValeurEnfant(IPCValeursPlanCalcul.CLE_TOTAL_CC_MENSUEL_CALCULE_FEDERAL));
+    }
+
+    /**
      * CLE_TOTAL_PRIMEMAL_TOTAL
      */
     public Montant getTotalPrimeMaladie() {
@@ -58,9 +65,10 @@ public class Calcul {
 
     /**
      * FC9
+     * que fédéral
      */
     public Float getCasMinimumGaranti() {
-        return tuple.getValeurEnfant(IPCValeursPlanCalcul.CLE_TOTAL_CC_MENSUEL_MINIMAL_APPLIQUE);
+        return tuple.getValeurEnfant(IPCValeursPlanCalcul.CLE_TOTAL_CC_MENSUEL_MINIMAL_APPLIQUE_FEDERAL);
     }
 
     /**
@@ -498,6 +506,21 @@ public class Calcul {
      */
     public PcaEtatCalcul getEtatCalcul() {
         return PcaEtatCalcul.fromValue(tuple.getLegendeEnfant(IPCValeursPlanCalcul.CLE_TOTAL_CC_STATUS));
+    }
+
+    /**
+     * CLE_DEPEN_GR_LOYER_PLAFOND_FEDERAL
+     */
+    public Montant getPlafondFederal() {
+        return Montant.newAnnuel(tuple.getValeurEnfant(IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_PLAFOND_FEDERAL));
+    }
+
+    /**
+     * Mensuel cantonal Anualisé
+     */
+    public Montant getPartCantonaleAnnuelle() {
+        return Montant.newMensuel(tuple.getValeurEnfant(IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_PART_CANTONALE))
+                .annualise();
     }
 
 }

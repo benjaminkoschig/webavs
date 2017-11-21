@@ -13,7 +13,6 @@ public class AnnonceHousingOwner {
         selfInhabitedProperty = annonce.getRpcCalcul().getValeurImmeubleHabitation();
         selfInhabitedPropertyDeductible = annonce.getRpcCalcul().getFranchiseImmeubleHabitation();
         rentalValue = annonce.getPersonsElementsCalcul().sumValeurLocativeProprietaire();
-        // rentalValue = annonce.getRpcCalcul().getRevenuValeurLocativeAppHabitePrincipale();
     }
 
     public Montant getSelfInhabitedProperty() {

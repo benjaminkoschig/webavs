@@ -29,7 +29,7 @@ public class StrategieFinalTotal implements StrategieCalculFinalisation {
 
         float diffPartCantonale = donnee.getValeurEnfant(IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_DIFF_PART_CANTONALE);
 
-        // S160704_002 - enregistre le statut de la part fédérale, s'il y a une part cantonale 
+        // S160704_002 - enregistre le statut de la part fédérale, s'il y a une part cantonale
         if (diffPartCantonale > 0) {
             calcStatutPartFederal(donnee, somme - diffPartCantonale, primeMoyenneAssMaladie);
         }
@@ -51,15 +51,13 @@ public class StrategieFinalTotal implements StrategieCalculFinalisation {
             // ************* Calcul du montant de la pc mensuelle
             // on divise l'excedent de dépenses par 12
             pcMensuel = (float) Math.ceil(somme / 12);
-            donnee.addEnfantTuple(new TupleDonneeRapport(IPCValeursPlanCalcul.CLE_TOTAL_CC_MENSUEL_CALCULE, pcMensuel));
+
             // récupération du montant minimale de la pc mensuelle
             float montantMinimale = Float.parseFloat(((ControlleurVariablesMetier) context
                     .get(Attribut.MONTANT_MINIMALE_PC)).getValeurCourante());
             // Si la pc mensuelle plus petite, on plafonne
             if ((pcMensuel > 0) && (pcMensuel < montantMinimale)) {
                 pcMensuel = montantMinimale;
-                donnee.addEnfantTuple(new TupleDonneeRapport(
-                        IPCValeursPlanCalcul.CLE_TOTAL_CC_MENSUEL_MINIMAL_APPLIQUE, 1));
             }
             // on ajoute la clé
             donnee.addEnfantTuple(new TupleDonneeRapport(IPCValeursPlanCalcul.CLE_TOTAL_CC_DEDUIT_MENSUEL, pcMensuel));
@@ -69,6 +67,15 @@ public class StrategieFinalTotal implements StrategieCalculFinalisation {
             if (partCantonale > pcMensuel) {
                 partCantonale = pcMensuel;
             }
+            // RPC (valeur purement fédérales)
+            float pcMensuelFederal = pcMensuel - partCantonale;
+            if ((pcMensuelFederal > 0) && (pcMensuelFederal < montantMinimale)) {
+                pcMensuelFederal = montantMinimale;
+                donnee.addEnfantTuple(new TupleDonneeRapport(
+                        IPCValeursPlanCalcul.CLE_TOTAL_CC_MENSUEL_MINIMAL_APPLIQUE_FEDERAL, 1));
+            }
+            donnee.addEnfantTuple(new TupleDonneeRapport(IPCValeursPlanCalcul.CLE_TOTAL_CC_MENSUEL_CALCULE_FEDERAL,
+                    pcMensuelFederal));
 
             donnee.addEnfantTuple(new TupleDonneeRapport(IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_PART_CANTONALE,
                     partCantonale));
@@ -94,7 +101,7 @@ public class StrategieFinalTotal implements StrategieCalculFinalisation {
         donnee.addEnfantTuple(new TupleDonneeRapport(IPCValeursPlanCalcul.CLE_TOTAL_CC_DEDUIT, sommeDeduit));
     }
 
-    // S160704_002 - enregistre le statut de la part fédérale, s'il y a une part cantonale 
+    // S160704_002 - enregistre le statut de la part fédérale, s'il y a une part cantonale
     private void calcStatutPartFederal(TupleDonneeRapport donnee, float somme, float prime) {
         float sommeDeduit = somme + prime;
         final String statusCalcul;

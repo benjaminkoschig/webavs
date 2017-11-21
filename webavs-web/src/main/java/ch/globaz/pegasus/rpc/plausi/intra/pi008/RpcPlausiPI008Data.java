@@ -18,7 +18,7 @@ class RpcPlausiPI008Data extends RpcPlausiCommonCalculData {
     @Override
     public boolean isValide() {
         if (FC9 != 0) {
-            return false;
+            return true;
         } else {
             resolveX2();
             diff = FC8.substract(X2).abs();

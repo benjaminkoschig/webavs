@@ -19,6 +19,11 @@ public class RpcCalcul {
      * FC7
      */
     public Montant getMontantSansAssuranceMaladie() {
+
+        Montant partcanton = getPartCantonaleAnnuelle();
+        if (partcanton != null && partcanton.greater(Montant.ZERO)) {
+            return calcul.getTotalFederalMensuel().annualise();
+        }
         return calcul.getTotalCaisseCompDeduitMensuel().annualise();
     }
 
@@ -26,6 +31,10 @@ public class RpcCalcul {
      * FC8
      */
     public Montant getMontantAvecAssuranceMaladie() {
+        Montant partcanton = getPartCantonaleAnnuelle();
+        if (partcanton != null && partcanton.greater(Montant.ZERO)) {
+            return calcul.getTotalFederalMensuel().annualise().add(calcul.getTotalPrimeMaladie());
+        }
         return calcul.getTotalCaisseCompDeduitMensuel().annualise().add(calcul.getTotalPrimeMaladie());
     }
 
@@ -173,7 +182,6 @@ public class RpcCalcul {
         sum = sum.add(calcul.getRevenusBiensImmoNonHabitable());
 
         return divideByTwoIfCoupleSepare(sum).addAnnuelPeriodicity();
-        // return (sum).addAnnuelPeriodicity();
     }
 
     /**
@@ -214,8 +222,11 @@ public class RpcCalcul {
     }
 
     /**
-     * FC22
+     * @deprecated
+     *             cette valeur n'est pas exploitable car regroupe FC22 et FC23 + l'immobilier secondaire
      */
+
+    @Deprecated
     public Montant getRevenuValeurLocativeAppHabitePrincipale() {
         if (isCoupleSepare) {
             return calcul.getRevenuValeurLocativeAppHabitePrincipale();
@@ -228,9 +239,15 @@ public class RpcCalcul {
 
     /**
      * FC19
+     * plafonné Fédéral (sans déplafonnement loyer)
      */
     public Montant getLoyerBrutEnCompte() {
-        return calcul.getDepensesLoyerTotal();
+        Montant loyerEnCompte = calcul.getDepensesLoyerTotal();
+        Montant plafond = getLoyerMaximum();
+        if (loyerEnCompte.greater(plafond)) {
+            return plafond;
+        }
+        return loyerEnCompte;
     }
 
     /**
@@ -242,8 +259,13 @@ public class RpcCalcul {
 
     /**
      * FC29
+     * plafonné Fédéral (sans déplafonnement loyer)
      */
     public Montant getLoyerMaximum() {
+        Montant plafondFed = getPlafondFederal();
+        if (plafondFed != null && plafondFed.greater(Montant.ZERO)) {
+            return plafondFed;
+        }
         return calcul.getLegendeDepensesLoyerPlafonne();
     }
 
@@ -347,6 +369,24 @@ public class RpcCalcul {
      */
     public Montant getLoyerMontantNet() {
         return calcul.getLoyerMontantNet();
+    }
+
+    /**
+     * Depalfonnement de loyer
+     * 
+     * @return la clé additionnele de plafond fédéral
+     */
+    public Montant getPlafondFederal() {
+        return calcul.getPlafondFederal();
+    }
+
+    /**
+     * * Depalfonnement de loyer
+     * 
+     * @return la part cantonale annuelel
+     */
+    public Montant getPartCantonaleAnnuelle() {
+        return calcul.getPartCantonaleAnnuelle();
     }
 
     public Montant getTotalCalcul() {

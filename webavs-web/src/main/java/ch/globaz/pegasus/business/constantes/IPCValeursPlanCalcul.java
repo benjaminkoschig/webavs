@@ -24,6 +24,7 @@ public interface IPCValeursPlanCalcul {
     public static final String CLE_INTER_BIEN_IMMOBILIER_HABITATION_PRINCIPALE_MOINS_DE_10_ANS = "BIEN_IMMOBILIER_HABITATION_PRINCIPALE_MOINS_DE_10_ANS";
 
     public static final String CLE_DEPEN_GR_LOYER_PLAFOND = "64039138";
+    public static final String CLE_DEPEN_GR_LOYER_PLAFOND_FEDERAL = "64039157";
     public static final String CLE_DEPEN_GR_LOYER_DIFF_PART_CANTONALE = "DIFF_PART_CANTONALE";
     public static final String CLE_DEPEN_GR_LOYER_PART_CANTONALE = "PART_CANTONALE";
     public final static String CLE_DEPEN_GR_LOYER_TAXES_PENSION_NON_RECONNUE = "64039080";
@@ -159,8 +160,8 @@ public interface IPCValeursPlanCalcul {
     public static final String CLE_TOTAL_CC = "64039120";
     public static final String CLE_TOTAL_CC_DEDUIT = "64039123";
     public static final String CLE_TOTAL_CC_DEDUIT_MENSUEL = "64039124";
-    public static final String CLE_TOTAL_CC_MENSUEL_CALCULE = "64039152";
-    public static final String CLE_TOTAL_CC_MENSUEL_MINIMAL_APPLIQUE = "64039153";
+    public static final String CLE_TOTAL_CC_MENSUEL_CALCULE_FEDERAL = "64039152";
+    public static final String CLE_TOTAL_CC_MENSUEL_MINIMAL_APPLIQUE_FEDERAL = "64039153";
     public static final String CLE_TOTAL_CC_STATUS = "64039144";
     public static final String CLE_TOTAL_CC_STATUS_FEDERAL = "64039156";
     public static final String CLE_TOTAL_DEDUIT_MENSUEL_CONJOINT = "64039142";
