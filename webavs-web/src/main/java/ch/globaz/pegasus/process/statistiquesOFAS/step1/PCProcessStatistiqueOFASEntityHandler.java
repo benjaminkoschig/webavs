@@ -423,7 +423,14 @@ public class PCProcessStatistiqueOFASEntityHandler implements JadeProcessEntityI
     private void removePartCantonale(StatistiquesOFAData data, TupleDonneeRapport tupleRoot) {
         float diffPartCantonale = tupleRoot
                 .getValeurEnfant(IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_DIFF_PART_CANTONALE);
-        data.setMontantPc(data.getMontantPc() - diffPartCantonale);
+        if (diffPartCantonale > 0) {
+            data.setMontantPc(data.getMontantPc() - diffPartCantonale);
+            float plafondPartFederal = tupleRoot
+                    .getValeurEnfant(IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_PLAFOND_FEDERAL);
+            if (plafondPartFederal > 0 && data.getDepense().getLoyerCompte() > plafondPartFederal) {
+                data.getDepense().setLoyerCompte(plafondPartFederal);
+            }
+        }
     }
 
     private StatistiquesOFASDepense mapDepense(TupleDonneeRapport tupleRoot) throws PropertiesException {
