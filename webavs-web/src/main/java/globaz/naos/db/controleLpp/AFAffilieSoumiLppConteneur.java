@@ -224,7 +224,8 @@ public class AFAffilieSoumiLppConteneur {
         // On regarde le cas des extournes
         for (Salarie sal : listeSalarie) {
             if (!JadeStringUtil.isEmpty(sal.getNss()) && sal.getNss().equals(salarie.getNss())) {
-                if (sal.getMoisDebut().equals(salarie.getMoisDebut()) && sal.getMoisFin().equals(salarie.getMoisFin())) {
+                if (sal.getMoisDebut().equals(salarie.getMoisDebut()) && sal.getMoisFin().equals(salarie.getMoisFin())
+                        && sal.getAnnee() == salarie.getAnnee()) {
 
                     FWCurrency salMontant = new FWCurrency(sal.getMontant());
                     FWCurrency salarieMontant = new FWCurrency(salarie.getMontant());
