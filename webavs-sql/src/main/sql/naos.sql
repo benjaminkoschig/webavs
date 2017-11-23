@@ -1,3 +1,7 @@
+--K171024_003
+delete from SCHEMA.JADEPROP where PROPNAME in('naos.ide.extension.contexts');
+insert into SCHEMA.JADEPROP (propname,propval) values ('naos.ide.extension.contexts','');
+
 --S170906_001 D0204-1 Avenant: Amélioration du contrôle LAA/LPP
 CREATE TABLE SCHEMA.AF_SUIVI_LPP_ANN_SALARIES
 (
