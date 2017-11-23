@@ -26,6 +26,7 @@ import globaz.hera.api.ISFMembreFamilleRequerant;
 import globaz.hera.api.ISFSituationFamiliale;
 import globaz.hera.external.SFSituationFamilialeFactory;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.log.JadeLogger;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.tools.PRDateFormater;
@@ -728,7 +729,7 @@ public class RERenteAccordeeJointDemandeRenteViewBean extends RERenteAccJoinTblT
 
         } catch (Exception e) {
             // should never happend
-            e.printStackTrace();
+            JadeLogger.error(this, e.getMessage());
             return false;
         }
     }

@@ -79,7 +79,7 @@ public class PRAbstractHelper extends FWHelper {
                     return (FWViewBeanInterface) retValue;
                 }
             } catch (InvocationTargetException ie) {
-                ie.printStackTrace();
+                JadeLogger.error(this, ie.getMessage());
                 if (ie.getTargetException() != null) {
                     ((BSession) session).addError(ie.getTargetException().getMessage());
                 } else {
@@ -87,7 +87,7 @@ public class PRAbstractHelper extends FWHelper {
                     ((BSession) session).addError(ie.getMessage());
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                JadeLogger.error(this, e.getMessage());
                 JadeLogger.error(e, e.getMessage());
                 ((BSession) session).addError(e.getMessage());
             }
