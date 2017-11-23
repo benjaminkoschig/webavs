@@ -14,6 +14,7 @@ import globaz.ged.AirsConstants;
 import globaz.globall.api.BIApplication;
 import globaz.globall.db.BApplication;
 import globaz.globall.db.BEntity;
+import globaz.globall.db.BIEntityExternalService;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BProcess;
 import globaz.globall.db.BProcessLauncher;
@@ -70,6 +71,7 @@ import globaz.naos.db.planAffiliation.AFPlanAffiliation;
 import globaz.naos.db.planAffiliation.AFPlanAffiliationManager;
 import globaz.naos.db.suiviCaisseAffiliation.AFSuiviCaisseAffiliation;
 import globaz.naos.db.suiviCaisseAffiliation.AFSuiviCaisseAffiliationManager;
+import globaz.naos.properties.AFProperties;
 import globaz.naos.suivi.AFSuiviLAA;
 import globaz.naos.suivi.AFSuiviLPP;
 import globaz.naos.translation.CodeSystem;
@@ -96,6 +98,7 @@ import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -104,6 +107,8 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
 import org.apache.commons.codec.binary.Base64;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ch.globaz.aries.business.constantes.ARDecisionEtat;
 import ch.globaz.aries.business.models.DecisionCGASSearchModel;
 import ch.globaz.aries.business.services.AriesServiceLocator;
@@ -116,12 +121,36 @@ import ch.globaz.xmlns.eb.dan.DANService;
 public class AFAffiliation extends BEntity implements Serializable {
 
     private static final long serialVersionUID = 972086630099382983L;
+    private static final Logger logger = LoggerFactory.getLogger(AFAffiliation.class);
 
     public enum Genre {
         AUTRE,
         PARITAIRE,
         PARITAIRE_ET_PERSONNEL,
         PERSONNEL
+    }
+
+    public void callExtensionContextsAfterUpdate() {
+
+        try {
+            String extensionContexts = AFProperties.IDE_EXTENSION_CONTEXTS.getValue();
+
+            if (JadeStringUtil.isBlankOrZero(extensionContexts)) {
+                return;
+            }
+
+            List<String> listExtensionContexts = Arrays.asList(extensionContexts.split(","));
+
+            for (BIEntityExternalService externalService : (List<BIEntityExternalService>) getExternalServices()) {
+
+                if (listExtensionContexts.contains(externalService.getContextName())) {
+                    externalService.afterUpdate(this);
+                }
+
+            }
+        } catch (Throwable e) {
+            logger.error("unable to call after update of external extensions", e);
+        }
     }
 
     public static final String FIELDNAME_NUMERO_IDE = "MALFED";

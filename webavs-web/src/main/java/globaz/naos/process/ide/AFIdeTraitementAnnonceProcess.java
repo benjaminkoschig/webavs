@@ -826,6 +826,7 @@ public class AFIdeTraitementAnnonceProcess extends BProcess implements FWViewBea
                 aAffiliation.setRulesByPass(true);
                 AFAffiliationUtil.disableExtraProcessingForAffiliation(aAffiliation);
                 aAffiliation.update(getTransaction());
+                aAffiliation.callExtensionContextsAfterUpdate();
             }
             if (AFIDEUtil.isAnnonceAnnulationDoublon(ideAnnonceEntrante)) {
                 // D0181 générer une annonce d'enregistrement Actif pour le numéro ide de remplacement

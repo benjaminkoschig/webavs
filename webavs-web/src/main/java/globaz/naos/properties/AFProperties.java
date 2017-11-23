@@ -7,6 +7,7 @@ import ch.globaz.common.properties.PropertiesException;
 
 public enum AFProperties implements IProperties {
 
+    IDE_EXTENSION_CONTEXTS("ide.extension.contexts", "extensions du service IDE"),
     SERVICE_USER_PROPERTY("ide.webservice.user", "login de connection WebService"),
     SERVICE_PASSWORD_PROPERTY("ide.webservice.password", "passwd de connection webService"),
     ANNONCE_GENERER("ide.annonce.generation", "determine si les annonces doivent êtres générées"),
