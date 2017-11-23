@@ -32,7 +32,9 @@ class ForfaitsPrimesAssuranceMaladieLoader {
         ForfaitPrimeAssuranceMaladieLocaliteSearch assuranceMaladieLocaliteSearch = new ForfaitPrimeAssuranceMaladieLocaliteSearch();
         assuranceMaladieLocaliteSearch.setForDateDebut("01.01.2000");
         assuranceMaladieLocaliteSearch.setForIdsLocalite(idsLocalite);
-        assuranceMaladieLocaliteSearch.setForDateFin(new Date().getSwissValue());
+        // ajout d'une année pour reprendre les forfais pour les decisions futures
+        // la date de fin est obligatoire
+        assuranceMaladieLocaliteSearch.setForDateFin(new Date().addYear(1).getSwissValue());
 
         assuranceMaladieLocaliteSearch.setDefinedSearchSize(JadeAbstractSearchModel.SIZE_NOLIMIT);
         try {

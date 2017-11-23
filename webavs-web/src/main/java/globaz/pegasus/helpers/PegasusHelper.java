@@ -41,7 +41,7 @@ public abstract class PegasusHelper extends FWHelper {
         if (rpc.getLabelMessage().isEmpty()) {
             JadeThread.logError("", t.toString());
         } else {
-            JadeThread.logError("", rpc.getLabelMessage());
+            JadeThread.logError("", rpc.getLabelMessage(), rpc.getParams().toArray(new String[0]));
         }
     }
 }
