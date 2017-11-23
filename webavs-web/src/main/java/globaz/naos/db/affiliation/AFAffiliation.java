@@ -130,29 +130,6 @@ public class AFAffiliation extends BEntity implements Serializable {
         PERSONNEL
     }
 
-    public void callExtensionContextsAfterUpdate() {
-
-        try {
-            String extensionContexts = AFProperties.IDE_EXTENSION_CONTEXTS.getValue();
-
-            if (JadeStringUtil.isBlankOrZero(extensionContexts)) {
-                return;
-            }
-
-            List<String> listExtensionContexts = Arrays.asList(extensionContexts.split(","));
-
-            for (BIEntityExternalService externalService : (List<BIEntityExternalService>) getExternalServices()) {
-
-                if (listExtensionContexts.contains(externalService.getContextName())) {
-                    externalService.afterUpdate(this);
-                }
-
-            }
-        } catch (Throwable e) {
-            logger.error("unable to call after update of external extensions", e);
-        }
-    }
-
     public static final String FIELDNAME_NUMERO_IDE = "MALFED";
     public static final String FIELDNAME_NUMERO_AFFILIE = "MALNAF";
     public static final String FIELDNAME_STATUT_IDE = "MATSTA";
@@ -3886,5 +3863,29 @@ public class AFAffiliation extends BEntity implements Serializable {
 
     public void setConvention(java.lang.String convention) {
         this.convention = convention;
+    }
+
+    /**
+     * Permet d'appeler un service d'extension définit dans le fichier globazProduct.xml
+     */
+    public void callExtensionContextsAfterUpdate() {
+        try {
+            String extensionContexts = AFProperties.IDE_EXTENSION_CONTEXTS.getValue();
+
+            if (JadeStringUtil.isBlankOrZero(extensionContexts)) {
+                return;
+            }
+
+            List<String> listExtensionContexts = Arrays.asList(extensionContexts.split(","));
+
+            for (BIEntityExternalService externalService : (List<BIEntityExternalService>) getExternalServices()) {
+                logger.debug("context name : " + externalService.getContextName());
+                if (listExtensionContexts.contains(externalService.getContextName())) {
+                    externalService.afterUpdate(this);
+                }
+            }
+        } catch (Throwable e) {
+            logger.error("unable to call after update of external extensions", e);
+        }
     }
 }
