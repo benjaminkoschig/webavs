@@ -3,6 +3,7 @@ package ch.globaz.pegasus.process.adaptation.imprimerDecisions;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.log.JadeLogger;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -81,8 +82,7 @@ public class CommunicationAdaptationElement implements Serializable {
             try {
                 tiersLangue = PRTiersHelper.getTiersById(session, pca.getIdTiers()).getLangue();
             } catch (Exception e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                JadeLogger.error(this, e);
             }
             // s'il y a une prestation du conjoint, c'est c'est un pc a domicile avec 2 rentes principales.
 
@@ -190,8 +190,7 @@ public class CommunicationAdaptationElement implements Serializable {
         try {
             tiersLangue = PRTiersHelper.getTiersById(session, regimeRFM.getIdTiers()).getLangue();
         } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            JadeLogger.error(this, e);
         }
 
         if (tiersLangue != null) {
