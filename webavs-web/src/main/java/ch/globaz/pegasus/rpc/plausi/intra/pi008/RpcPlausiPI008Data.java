@@ -1,5 +1,6 @@
 package ch.globaz.pegasus.rpc.plausi.intra.pi008;
 
+import java.math.BigInteger;
 import ch.globaz.common.domaine.Montant;
 import ch.globaz.pegasus.rpc.plausi.common.RpcPlausiCommonCalculData;
 import ch.globaz.pegasus.rpc.plausi.core.RpcPlausi;
@@ -10,6 +11,7 @@ class RpcPlausiPI008Data extends RpcPlausiCommonCalculData {
     Montant tolerance;
     Montant FC8;
     int FC9;
+    BigInteger FC2;
 
     public RpcPlausiPI008Data(RpcPlausi<RpcPlausiCommonCalculData> plausi) {
         super(plausi);
@@ -17,7 +19,7 @@ class RpcPlausiPI008Data extends RpcPlausiCommonCalculData {
 
     @Override
     public boolean isValide() {
-        if (FC9 != 0) {
+        if (FC9 != 0 || !FC2.equals(BigInteger.valueOf(6))) {
             return true;
         } else {
             resolveX2();

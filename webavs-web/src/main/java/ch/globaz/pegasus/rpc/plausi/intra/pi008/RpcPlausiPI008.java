@@ -24,7 +24,7 @@ public class RpcPlausiPI008 extends RpcPlausiCommonCalcul {
         final RpcPlausiPI008Data plausiData = new RpcPlausiPI008Data(this);
 
         plausiData.tolerance = tolerance;
-
+        plausiData.FC2 = decision.getDecisionKind();
         plausiData.FC8 = decision.getAmountWithHC();
         plausiData.FC9 = decision.getElLimit();
 

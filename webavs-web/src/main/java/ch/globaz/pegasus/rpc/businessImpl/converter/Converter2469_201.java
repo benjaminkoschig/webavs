@@ -38,7 +38,7 @@ public class Converter2469_201 implements Converter<RpcData, ContentType> {
             dot.setElAgency(infoCaisse.getNumeroAgence());
         }
         masterData.setDeliveryOffice(dot);
-        masterData.setDecisionKind(ConverterDecisionKind.convert(decision.getType(), decision.getMotif()));
+        masterData.setDecisionKind(ConverterDecisionKind.convert(decision.getType(), decision.getMotif(), null));
         masterData.setBusinessCaseIdRPC(businessData.getDossier().getId());
         masterData.getVn().add(pcaDecision.getDecision().getTiersBeneficiaire().getNss().formatInLong());
         return masterData;

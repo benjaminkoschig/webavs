@@ -28,7 +28,7 @@ public class RpcPlausiCalcul implements RpcPlausi<RpcPlausiCalculData> {
         plausiData.pcaGenre = data.getPcaDecision().getPca().getGenre();
         plausiData.pca = data.getPcaDecision().getPca().getMontant();
         plausiData.desc = "idPca:" + data.getPcaDecision().getPca().getId();
-        plausiData.etat = data.getCalcul().getEtatCalcul();
+        plausiData.etat = data.getCalcul().getEtatCalculFederal();
         plausiData.montantCalculateur = data.getCalcul().getTotalCalcul();
 
         buildRevenu(data.getCalcul(), data.getPersonsElementsCalcul(), plausiData);

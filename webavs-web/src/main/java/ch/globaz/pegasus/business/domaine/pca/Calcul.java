@@ -502,9 +502,13 @@ public class Calcul {
     }
 
     /**
-     * CLE_TOTAL_CC_DEDUIT
+     * CLE_TOTAL_CC_STATUS_FEDERAL
      */
-    public PcaEtatCalcul getEtatCalcul() {
+    public PcaEtatCalcul getEtatCalculFederal() {
+        String etatCalculFederal = tuple.getLegendeEnfant(IPCValeursPlanCalcul.CLE_TOTAL_CC_STATUS_FEDERAL);
+        if (etatCalculFederal != null) {
+            return PcaEtatCalcul.fromValue(etatCalculFederal);
+        }
         return PcaEtatCalcul.fromValue(tuple.getLegendeEnfant(IPCValeursPlanCalcul.CLE_TOTAL_CC_STATUS));
     }
 

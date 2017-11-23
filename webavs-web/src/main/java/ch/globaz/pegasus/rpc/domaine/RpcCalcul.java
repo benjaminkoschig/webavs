@@ -393,8 +393,8 @@ public class RpcCalcul {
         return calcul.getTotalCalculDeduit();
     }
 
-    public PcaEtatCalcul getEtatCalcul() {
-        return calcul.getEtatCalcul();
+    public PcaEtatCalcul getEtatCalculFederal() {
+        return calcul.getEtatCalculFederal();
     }
 
     public String getId() {

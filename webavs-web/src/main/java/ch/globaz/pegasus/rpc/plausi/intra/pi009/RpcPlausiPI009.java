@@ -15,7 +15,7 @@ public class RpcPlausiPI009 extends RpcPlausiCommonCalcul {
     @Override
     public RpcPlausiCommonCalculData buildPlausi(AnnonceDecision decision, AnnonceCase data) {
         final RpcPlausiPI009Data plausiData = new RpcPlausiPI009Data(this);
-
+        plausiData.FC2 = decision.getDecisionKind();
         buildRevenu(decision, plausiData, data);
         buildDepense(decision, plausiData, true);
 

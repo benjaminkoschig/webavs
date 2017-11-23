@@ -10,6 +10,7 @@ import ch.globaz.naos.ree.tools.InfoCaisse;
 import ch.globaz.pegasus.business.domaine.decision.Decision;
 import ch.globaz.pegasus.business.domaine.membreFamille.RoleMembreFamille;
 import ch.globaz.pegasus.business.domaine.pca.Pca;
+import ch.globaz.pegasus.business.domaine.pca.PcaEtatCalcul;
 import ch.globaz.pegasus.rpc.businessImpl.converter.ConverterDecisionCause;
 import ch.globaz.pegasus.rpc.businessImpl.converter.ConverterDecisionKind;
 import ch.globaz.pegasus.rpc.domaine.PersonElementsCalcul;
@@ -38,7 +39,8 @@ public class AnnonceDecision {
     public AnnonceDecision(RpcDecisionAnnonceComplete annonce) {
         this.annonce = annonce;
         final Decision decision = annonce.getPcaDecision().getDecision();
-
+        final PcaEtatCalcul etatCalculFederal = decision.getType().isRefusSansCalcul() ? PcaEtatCalcul.REFUSE : annonce
+                .getRpcCalcul().getEtatCalculFederal();
         final Pca pca = annonce.getPcaDecision().getPca();
         if (pca != null) {
             pcaDecisionId = pca.getId();
@@ -48,7 +50,7 @@ public class AnnonceDecision {
         decisionDate = decision.getDateDecision();
         validFrom = decision.getDateDebut();
 
-        decisionKind = ConverterDecisionKind.convert(decision.getType(), decision.getMotif());
+        decisionKind = ConverterDecisionKind.convert(decision.getType(), decision.getMotif(), etatCalculFederal);
         // null pour les annonces partielles
         if (annonce.getVersionDroit() != null) {
             decisionCause = ConverterDecisionCause.convert(annonce.getVersionDroit());

@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 import ch.globaz.pegasus.business.domaine.decision.MotifDecision;
 import ch.globaz.pegasus.business.domaine.decision.TypeDecision;
+import ch.globaz.pegasus.business.domaine.pca.PcaEtatCalcul;
 
 public class ConverterDecisionKind {
 
@@ -26,7 +27,8 @@ public class ConverterDecisionKind {
         motif1.add(MotifDecision.DROIT_ENTRETIEN);
     }
 
-    public static BigInteger convert(TypeDecision typeDecision, MotifDecision motifDecision) {
+    public static BigInteger convert(TypeDecision typeDecision, MotifDecision motifDecision,
+            PcaEtatCalcul etatCalculFederal) {
 
         if (typeDecision.isRefusSansCalcul()) {
             if (MotifDecision.RENONCIATION.equals(motifDecision)) {
@@ -37,10 +39,10 @@ public class ConverterDecisionKind {
                 return toBigInt(1);
             }
         } else {
-            if (typeDecision.isOctroiOrPartiel() || typeDecision.isAdaptation()) {
-                return toBigInt(6);
-            } else if (typeDecision.isRefusApresCalcul()) {
+            if ((etatCalculFederal != null && etatCalculFederal.isRefus()) || typeDecision.isRefusApresCalcul()) {
                 return toBigInt(2);
+            } else if (typeDecision.isOctroiOrPartiel() || typeDecision.isAdaptation()) {
+                return toBigInt(6);
             } else if (typeDecision.isSuppression()) {
                 return toBigInt(3);
             }
