@@ -95,7 +95,7 @@ public class PCRpcServletAction extends PCAbstractServletAction {
                 vb.setIdVersion(idVersion);
                 viewBean = vb;
             } catch (Exception e) {
-                e.printStackTrace();
+                JadeLogger.error(this, e.getMessage());
             }
         } else if (viewBean instanceof PCAnnoncesViewBean) {
 
@@ -131,7 +131,7 @@ public class PCRpcServletAction extends PCAbstractServletAction {
                 vb.setRechercheFamille(rechercheFamille);
                 viewBean = vb;
             } catch (Exception e) {
-                e.printStackTrace();
+                JadeLogger.error(this, e.getMessage());
             }
 
             request.setAttribute("processLaunched", isProcessLaunched);

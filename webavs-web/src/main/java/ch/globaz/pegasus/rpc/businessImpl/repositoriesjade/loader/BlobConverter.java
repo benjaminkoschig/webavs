@@ -1,6 +1,7 @@
 package ch.globaz.pegasus.rpc.businessImpl.repositoriesjade.loader;
 
 import globaz.jade.client.zip.JadeZipUtil;
+import globaz.jade.log.JadeLogger;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -25,15 +26,13 @@ public class BlobConverter implements ConverterDb<Object> {
             try {
                 zipFiles = JadeZipUtil.unzip(bais);
             } catch (Exception e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                JadeLogger.error(this, e.getMessage());
             }
         } finally {
             try {
                 bais.close();
             } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                JadeLogger.error(this, e.getMessage());
             }
         }
         // Première version, on stocke un seul fichier dans le blob
@@ -52,7 +51,7 @@ public class BlobConverter implements ConverterDb<Object> {
                         ois = new ObjectInputStream(unzipBais);
                         return ois.readObject();
                     } catch (ClassNotFoundException e) {
-                        e.printStackTrace();
+                        JadeLogger.error(this, e.getMessage());
                     } finally {
                         ois.close();
                     }
@@ -61,7 +60,7 @@ public class BlobConverter implements ConverterDb<Object> {
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            JadeLogger.error(this, e.getMessage());
         }
         return null;
     }

@@ -370,8 +370,8 @@ public class AMContribuableViewBean extends BJadePersistentObjectViewBean {
         currentSearch.setForIdContribuable(idContribuable);
         try {
             currentSearch = AmalServiceLocator.getComplexAnnonceSedexCO2Service().search(currentSearch);
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        } catch (Exception e) {
+            JadeLogger.error(this, e.getMessage());
         }
         return currentSearch;
     }
@@ -391,8 +391,8 @@ public class AMContribuableViewBean extends BJadePersistentObjectViewBean {
         currentSearch.setForIdContribuable(idContribuable);
         try {
             currentSearch = AmalServiceLocator.getComplexAnnonceSedexCO4Service().search(currentSearch);
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        } catch (Exception e) {
+            JadeLogger.error(this, e.getMessage());
         }
         return currentSearch;
     }
