@@ -35,6 +35,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * @deprecated use SCM instead.
+ */
+@Deprecated
 public final class PersistenceUtil {
 
     private static final String SERIAL_VERSION_UID_TO_EXCLUDE = "serialVersionUID";

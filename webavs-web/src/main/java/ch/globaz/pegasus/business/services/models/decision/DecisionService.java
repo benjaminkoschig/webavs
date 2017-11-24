@@ -111,5 +111,5 @@ public interface DecisionService extends JadeApplicationService {
     public boolean hasOnlyRefus(String idDemande) throws PCAccordeeException, JadePersistenceException,
             JadeApplicationServiceNotAvailableException;
 
-    public boolean isNextValidationDecisionNotValidate(String nextDate) throws JadePersistenceException;
+    public boolean isAdaptationAnnuelleNotValidate(String nextDate) throws JadePersistenceException;
 }

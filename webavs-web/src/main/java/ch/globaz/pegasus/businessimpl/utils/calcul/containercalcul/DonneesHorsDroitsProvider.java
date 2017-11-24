@@ -5,6 +5,7 @@ import globaz.jade.persistence.model.JadeAbstractSearchModel;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import java.util.ArrayList;
 import java.util.List;
+import ch.globaz.common.domaine.Date;
 import ch.globaz.pegasus.business.exceptions.models.calcul.CalculException;
 import ch.globaz.pegasus.business.exceptions.models.monnaieetrangere.MonnaieEtrangereException;
 import ch.globaz.pegasus.business.exceptions.models.pmtmensuel.PmtMensuelException;
@@ -68,8 +69,17 @@ public class DonneesHorsDroitsProvider {
         tauxOFAS = varMetProv.getTauxOFAS();
     }
 
-    private void retrieveDateProchainPaiement() throws PmtMensuelException, JadeApplicationServiceNotAvailableException {
-        dateProchainPaiement = "01." + PegasusServiceLocator.getPmtMensuelService().getDateProchainPmt();
+    private void retrieveDateProchainPaiement() throws PmtMensuelException,
+            JadeApplicationServiceNotAvailableException, JadePersistenceException {
+        String date = PegasusServiceLocator.getPmtMensuelService().getDateProchainPmt();
+        Date dateProPaiement = new Date(date).getFirstDayOfMonth();
+
+        if (PegasusServiceLocator.getDecisionService().isAdaptationAnnuelleNotValidate(date)
+                && dateProPaiement.isMoisJanvier()) {
+            dateProPaiement = dateProPaiement.addMonth(-1);
+        }
+
+        dateProchainPaiement = dateProPaiement.getSwissValue();
     }
 
     public List<MonnaieEtrangere> getListeMonnaiesEtrangeres() {
@@ -78,6 +88,7 @@ public class DonneesHorsDroitsProvider {
 
     public List<VariableMetier> getListeVariablesMetiers() {
         return listeVariablesMetiers;
+
     }
 
     public VariableMetier getTauxOFAS() {
@@ -99,7 +110,8 @@ public class DonneesHorsDroitsProvider {
         this.tauxOFAS = tauxOFAS;
     }
 
-    public void setDateProchainPaiement(String dateProchainPaiement) {
+    // Pour test
+    void setDateProchainPaiement(String dateProchainPaiement) {
         this.dateProchainPaiement = dateProchainPaiement;
     }
 }

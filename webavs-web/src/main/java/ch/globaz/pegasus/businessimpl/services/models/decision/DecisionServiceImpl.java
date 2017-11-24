@@ -71,6 +71,7 @@ import ch.globaz.pegasus.businessimpl.services.PegasusImplServiceLocator;
 import ch.globaz.pegasus.businessimpl.services.models.decision.validation.EtatDemandeResolver;
 import ch.globaz.pegasus.businessimpl.services.models.pcaccordee.PcaPrecedante;
 import ch.globaz.pegasus.businessimpl.utils.PersistenceUtil;
+import ch.globaz.queryexec.bridge.jade.SCM;
 import ch.globaz.utils.periode.GroupePeriodesResolver;
 import ch.globaz.utils.periode.GroupePeriodesResolver.EachPeriode;
 
@@ -631,19 +632,18 @@ public class DecisionServiceImpl extends PegasusAbstractServiceImpl implements D
     }
 
     @Override
-    public boolean isNextValidationDecisionNotValidate(String nextDate) throws JadePersistenceException {
+    public boolean isAdaptationAnnuelleNotValidate(String nextDate) throws JadePersistenceException {
         // récupère le statut de l'étape "valider les décisions" du traitement d'adaptation prévu à la date en paramètre
-        String sql = "SELECT CSSTAT FROM {schema}.JAPRSTEP,{schema}.JAPRPROP where PROKEY LIKE 'DATE_ADAPTATION' AND PROVAL LIKE '"
-                + nextDate + "' and  {schema}.JAPRSTEP.IDEXPR = {schema}.JAPRPROP.IDEXPR AND KEYSTP = '6'";
-        sql = sql.replace("{schema}", JadePersistenceUtil.getDbSchema());
-        ArrayList<HashMap<String, Object>> result = PersistenceUtil.executeQuery(sql, this.getClass());
-        if (result.isEmpty()) {
-            // pas de resultat donc pas encore crée/initialisé
-            return true;
-        } else {
-            String stat = (String) result.get(0).get("CSSTAT");
-            return !JadeProcessStepStateEnum.VALIDATE.toString().equals(stat);
-        }
+        String sql = "SELECT COUNT(*) as NB FROM SCHEMA.JAPRSTEP INNER JOIN SCHEMA.JAPRPROP on SCHEMA.JAPRSTEP.IDEXPR = SCHEMA.JAPRPROP.IDEXPR "
+                + " INNER JOIN SCHEMA.JAPREXPR on SCHEMA.JAPREXPR.IDEXPR = SCHEMA.JAPRSTEP.IDEXPR"
+                + " WHERE PROKEY = 'DATE_ADAPTATION'"
+                + " AND SCHEMA.JAPREXPR.EXNAME = 'Pegasus.AdaptationPC' "
+                + " AND SCHEMA.JAPRSTEP.CSSTAT = '"
+                + JadeProcessStepStateEnum.VALIDATE.toString()
+                + "'"
+                + " AND PROVAL = '" + nextDate + "' AND KEYSTP = '6'";
+        List<Integer> listCount = SCM.newInstance(Integer.class).query(sql).execute();
+        Integer count = listCount.get(0);
+        return count == 0;
     }
-
 }

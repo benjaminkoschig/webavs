@@ -850,4 +850,8 @@ public class Date implements Comparable<Date> {
 
         return new Date(partialDate);
     }
+
+    public boolean isMoisJanvier() {
+        return getNumeroMois() == MOIS_JANVIER;
+    }
 }

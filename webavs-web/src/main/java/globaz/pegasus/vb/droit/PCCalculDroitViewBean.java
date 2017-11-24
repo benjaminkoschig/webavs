@@ -249,7 +249,7 @@ public class PCCalculDroitViewBean extends BJadePersistentObjectViewBean {
 
     private boolean isNextValidationDecisionNotValidate(String date)
             throws JadeApplicationServiceNotAvailableException, JadePersistenceException {
-        return PegasusServiceLocator.getDecisionService().isNextValidationDecisionNotValidate(date);
+        return PegasusServiceLocator.getDecisionService().isAdaptationAnnuelleNotValidate(date);
     }
 
     public String getdFForVersionListHtml() {
