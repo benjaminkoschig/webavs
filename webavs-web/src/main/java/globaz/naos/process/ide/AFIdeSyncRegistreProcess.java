@@ -165,6 +165,7 @@ public class AFIdeSyncRegistreProcess extends BProcess {
         affiliation.setRulesByPass(true);
         AFAffiliationUtil.disableExtraProcessingForAffiliation(affiliation);
         affiliation.update(getTransaction());
+        affiliation.callExtensionContextsAfterUpdate();
 
         // On throw une erreur que lorsque le code NOGA n'a pas été trouvé, si = null ça veut dire que la propriété est
         // à false et donc on remonte pas d'erreur
