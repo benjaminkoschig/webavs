@@ -111,7 +111,7 @@ public class DonneesHorsDroitsProvider {
     }
 
     // Pour test
-    void setDateProchainPaiement(String dateProchainPaiement) {
+    public void setDateProchainPaiement(String dateProchainPaiement) {
         this.dateProchainPaiement = dateProchainPaiement;
     }
 }
