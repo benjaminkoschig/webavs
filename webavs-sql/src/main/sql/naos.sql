@@ -73,17 +73,17 @@ INSERT INTO SCHEMA.CTTEXTES (CDIELE, CDITXT, CDLCIL, CDLDES, PSPY) VALUES (71500
 INSERT INTO SCHEMA.CTTEXTES (CDIELE, CDITXT, CDLCIL, CDLDES, PSPY) VALUES (71500000005+0+1, 71500000005+0+3, 'it', '', '20171027103838ccjuglo');
 
 INSERT INTO SCHEMA.CTELEMEN (CCIDOC, CCIELE, CCNPOS, CCNNIV, CCBDES, CCBSEL, CCBSBD, CCBEDI, PSPY) VALUES (71500000005+0+1, 71500000005+0+2, 1, 2, '', '2', '2', '2', '20171027112342ccjuglo');
-INSERT INTO SCHEMA.CTTEXTES (CDIELE, CDITXT, CDLCIL, CDLDES, PSPY) VALUES (71500000005+0+2, 71500000005+0+4, 'de', 'Alle Arbeitgeber, die obligatorisch zu versichernde Arbeitnehmer beschäftigen, sind verpflichtet, sich einer Vorsorgeeinrichtung der beruflichen Vorsorge anzuschliesen. (Art. 11 Abs. 1 BVG). Die AHV-Ausgleichskassen sind für diese Kontrollen verantwortlich.', '20171027112342ccjuglo');
+INSERT INTO SCHEMA.CTTEXTES (CDIELE, CDITXT, CDLCIL, CDLDES, PSPY) VALUES (71500000005+0+2, 71500000005+0+4, 'de', '{0}', '20171027112342ccjuglo');
 INSERT INTO SCHEMA.CTTEXTES (CDIELE, CDITXT, CDLCIL, CDLDES, PSPY) VALUES (71500000005+0+2, 71500000005+0+5, 'fr', '{0},', '20171027112342ccjuglo');
 INSERT INTO SCHEMA.CTTEXTES (CDIELE, CDITXT, CDLCIL, CDLDES, PSPY) VALUES (71500000005+0+2, 71500000005+0+6, 'it', '', '20171027112342ccjuglo');
 
 INSERT INTO SCHEMA.CTELEMEN (CCIDOC, CCIELE, CCNPOS, CCNNIV, CCBDES, CCBSEL, CCBSBD, CCBEDI, PSPY) VALUES (71500000005+0+1, 71500000005+0+3, 1, 3, '', '2', '2', '2', '20171030151307ccjuglo');
-INSERT INTO SCHEMA.CTTEXTES (CDIELE, CDITXT, CDLCIL, CDLDES, PSPY) VALUES (71500000005+0+3, 71500000005+0+7, 'de', 'Aus Ihrer Lohnabrechung ist nun ersichtlich, dass Sie Arbeitnehmer beschäftigt haben, die der obligatorischen Versicherung unterstellt werden müssen. Sie haben uns noch keine Bestätigung Ihres BVG-Versicherers zugestellt.', '20171030151307ccjuglo');
+INSERT INTO SCHEMA.CTTEXTES (CDIELE, CDITXT, CDLCIL, CDLDES, PSPY) VALUES (71500000005+0+3, 71500000005+0+7, 'de', 'Alle Arbeitgeber, die obligatorisch zu versichernde Arbeitnehmer beschäftigen, sind verpflichtet, sich einer Vorsorgeeinrichtung der beruflichen Vorsorge anzuschliesen. (Art. 11 Abs. 1 BVG). Die AHV-Ausgleichskassen sind für diese Kontrollen verantwortlich.', '20171030151307ccjuglo');
 INSERT INTO SCHEMA.CTTEXTES (CDIELE, CDITXT, CDLCIL, CDLDES, PSPY) VALUES (71500000005+0+3, 71500000005+0+8, 'fr', 'Conformément à la loi fédérale du 25 juin 1982 sur la prévoyance professionnelle vieillesse, survivants et invalidité (LPP), tous les employeurs occupant des salariés soumis à l¬assurance obligatoire doivent être affiliés à une institution de prévoyance inscrite dans le registre de la prévoyance professionnelle <style isItalic=¬true¬>(art. 11, al.1 LPP))</style>. Les Caisses de compensation AVS sont chargées du contrôle de ces dispositions.', '20171030151307ccjuglo');
 INSERT INTO SCHEMA.CTTEXTES (CDIELE, CDITXT, CDLCIL, CDLDES, PSPY) VALUES (71500000005+0+3, 71500000005+0+9, 'it', '', '20171030151307ccjuglo');
 
 INSERT INTO SCHEMA.CTELEMEN (CCIDOC, CCIELE, CCNPOS, CCNNIV, CCBDES, CCBSEL, CCBSBD, CCBEDI, PSPY) VALUES (71500000005+0+1, 71500000005+0+4, 1, 4, '', '2', '2', '2', '20171030130631ccjuglo');
-INSERT INTO SCHEMA.CTTEXTES (CDIELE, CDITXT, CDLCIL, CDLDES, PSPY) VALUES (71500000005+0+4, 71500000005+0+10, 'de', 'Wenn Sie noch keinen Vertrag abgeschlossen haben, verstossen Sie gegen die berufliche Vorsorge (BVG).', '20171030130631ccjuglo');
+INSERT INTO SCHEMA.CTTEXTES (CDIELE, CDITXT, CDLCIL, CDLDES, PSPY) VALUES (71500000005+0+4, 71500000005+0+10, 'de', 'Aus Ihrer Lohnabrechung ist nun ersichtlich, dass Sie Arbeitnehmer beschäftigt haben, die der obligatorischen Versicherung unterstellt werden müssen. Sie haben uns noch keine Bestätigung Ihres BVG-Versicherers zugestellt. Wenn Sie noch keinen Vertrag abgeschlossen haben, verstossen Sie gegen die berufliche Vorsorge (BVG).', '20171030130631ccjuglo');
 INSERT INTO SCHEMA.CTTEXTES (CDIELE, CDITXT, CDLCIL, CDLDES, PSPY) VALUES (71500000005+0+4, 71500000005+0+11, 'fr', 'Or vous avez occupé des salariés soumis à l¬assurance obligatoire, ainsi qu¬en témoigne l¬extrait de votre (vos) déclaration(s) et ne nous avez pas remis l¬attestation de votre assureur LPP.', '20171030130631ccjuglo');
 INSERT INTO SCHEMA.CTTEXTES (CDIELE, CDITXT, CDLCIL, CDLDES, PSPY) VALUES (71500000005+0+4, 71500000005+0+12, 'it', '', '20171030130631ccjuglo');
 
@@ -104,7 +104,7 @@ INSERT INTO SCHEMA.CTTEXTES (CDIELE, CDITXT, CDLCIL, CDLDES, PSPY) VALUES (71500
 
 INSERT INTO SCHEMA.CTELEMEN (CCIDOC, CCIELE, CCNPOS, CCNNIV, CCBDES, CCBSEL, CCBSBD, CCBEDI, PSPY) VALUES (71500000005+0+1, 71500000005+0+8, 1, 8, '', '2', '2', '2', '20171030130548ccjuglo');
 INSERT INTO SCHEMA.CTTEXTES (CDIELE, CDITXT, CDLCIL, CDLDES, PSPY) VALUES (71500000005+0+8, 71500000005+0+22, 'de', 'Freundliche Grüsse', '20171030130548ccjuglo');
-INSERT INTO SCHEMA.CTTEXTES (CDIELE, CDITXT, CDLCIL, CDLDES, PSPY) VALUES (71500000005+0+8, 71500000005+0+23, 'fr', 'SERVICE AFFILIATION/COTISATION', '20171030130548ccjuglo');
+INSERT INTO SCHEMA.CTTEXTES (CDIELE, CDITXT, CDLCIL, CDLDES, PSPY) VALUES (71500000005+0+8, 71500000005+0+23, 'fr', '', '20171030130548ccjuglo');
 INSERT INTO SCHEMA.CTTEXTES (CDIELE, CDITXT, CDLCIL, CDLDES, PSPY) VALUES (71500000005+0+8, 71500000005+0+24, 'it', '', '20171030130548ccjuglo');
 
 INSERT INTO SCHEMA.CTELEMEN (CCIDOC, CCIELE, CCNPOS, CCNNIV, CCBDES, CCBSEL, CCBSBD, CCBEDI, PSPY) VALUES (71500000005+0+1, 71500000005+0+9, 1, 9, '', '2', '2', '2', '20171030142932ccjuglo');
