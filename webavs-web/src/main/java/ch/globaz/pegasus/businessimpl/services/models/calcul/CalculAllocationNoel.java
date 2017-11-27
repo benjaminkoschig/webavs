@@ -69,26 +69,25 @@ class CalculAllocationNoel {
                         PeriodePCAccordee periodePCA = getPcToDealAllocationDeNoel(anneeAPrendreEnCompte,
                                 listePCAccordes);
                         List<PCAccordee> pcasForAllocNoel = null;
-
-                        boolean isCoupleSepareParMaladie = periodePCA.getTypeSeparationCC().equals(
-                                TypeSeparationCC.CALCUL_SEPARE_MALADIE);
-
-                        List<String> idsPcaToFind = new ArrayList<String>();
-                        idsPcaToFind.add(periodePCA.getIdSimplePcAccordee());
-
-                        if (!JadeStringUtil.isBlank(periodePCA.getIdSimplePcAccordeeConjoint())) {
-                            idsPcaToFind.add(periodePCA.getIdSimplePcAccordeeConjoint());
-                        }
-
                         if (periodePCA != null) {
+                            boolean isCoupleSepareParMaladie = periodePCA.getTypeSeparationCC().equals(
+                                    TypeSeparationCC.CALCUL_SEPARE_MALADIE);
+
+                            List<String> idsPcaToFind = new ArrayList<String>();
+                            idsPcaToFind.add(periodePCA.getIdSimplePcAccordee());
+
+                            if (!JadeStringUtil.isBlank(periodePCA.getIdSimplePcAccordeeConjoint())) {
+                                idsPcaToFind.add(periodePCA.getIdSimplePcAccordeeConjoint());
+                            }
+
                             pcasForAllocNoel = PegasusImplServiceLocator.getPCAccordeeService().findPcaForPeriode(
                                     idsPcaToFind);
-                        }
 
-                        for (PCAccordee pca : pcasForAllocNoel) {
-                            pca.loadPlanCalculs();
-                            createAllocationDeNoel(droit, containerGlobal, anneeAPrendreEnCompte, pca,
-                                    isCoupleSepareParMaladie);
+                            for (PCAccordee pca : pcasForAllocNoel) {
+                                pca.loadPlanCalculs();
+                                createAllocationDeNoel(droit, containerGlobal, anneeAPrendreEnCompte, pca,
+                                        isCoupleSepareParMaladie);
+                            }
                         }
 
                     }
