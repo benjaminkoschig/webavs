@@ -26,7 +26,7 @@ public class RFXmlmlMappingLogAdaptationJournaliere {
     private static void loadDetail(RFXmlmlContainer container, String[] logCourant,
             RFAdaptationsJournalieresProcess process) throws RFXmlmlException, Exception {
 
-        if (process.isAjouterCommunePolitique()) {
+        if (process != null && process.isAjouterCommunePolitique()) {
             container.put(IRFAdaptationsJournalieresListeColumns.DETAIL_COMMUNE_POLITIQUE, logCourant[7]);
         }
         container.put(IRFAdaptationsJournalieresListeColumns.DETAIL_DESCRIPTION, logCourant[4]);
@@ -70,7 +70,7 @@ public class RFXmlmlMappingLogAdaptationJournaliere {
 
         container.put(IRFAdaptationsJournalieresListeColumns.HEADER_DATE_EXECUTION, JACalendar.todayJJsMMsAAAA());
 
-        if (process.isAjouterCommunePolitique()) {
+        if (process != null && process.isAjouterCommunePolitique()) {
             container.put(IRFAdaptationsJournalieresListeColumns.HEADER_USER, process.getSession().getUserId());
         }
     }
