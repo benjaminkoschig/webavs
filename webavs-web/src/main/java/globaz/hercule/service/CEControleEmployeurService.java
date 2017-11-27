@@ -170,8 +170,8 @@ public class CEControleEmployeurService {
                     }
 
                     // OUI, annee couverture =
-                    // affControle.getDateDebutAffiliation() + 3
-                    int anneCalcule = CEUtils.stringDateToAnnee(affControle.getDateDebutAffiliation()) + 3;
+                    // affControle.getDateDebutAffiliation() + 4
+                    int anneCalcule = CEUtils.stringDateToAnnee(affControle.getDateDebutAffiliation()) + 4;
 
                     if (anneCalcule > Integer.parseInt(annee)) {
                         dateCouverture = Integer.toString(anneCalcule);
