@@ -56,14 +56,14 @@
 			</band>
 		</background>
 		<title>
-			<band height="442"  isSplitAllowed="true" >
+			<band height="295"  isSplitAllowed="true" >
 				<subreport  isUsingCache="true">
 					<reportElement
 						mode="Opaque"
 						x="2"
 						y="0"
 						width="549"
-						height="172"
+						height="53"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
 						key="subreport-1"
@@ -79,7 +79,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="22"
-						y="237"
+						y="116"
 						width="502"
 						height="18"
 						forecolor="#000000"
@@ -99,7 +99,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="22"
-						y="187"
+						y="66"
 						width="502"
 						height="18"
 						forecolor="#000000"
@@ -119,7 +119,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="22"
-						y="262"
+						y="141"
 						width="502"
 						height="18"
 						forecolor="#000000"
@@ -139,7 +139,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="22"
-						y="287"
+						y="166"
 						width="502"
 						height="18"
 						forecolor="#000000"
@@ -159,7 +159,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="22"
-						y="312"
+						y="191"
 						width="502"
 						height="18"
 						forecolor="#000000"
@@ -179,7 +179,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="22"
-						y="337"
+						y="216"
 						width="502"
 						height="18"
 						forecolor="#000000"
@@ -199,7 +199,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="22"
-						y="212"
+						y="91"
 						width="502"
 						height="18"
 						forecolor="#000000"
@@ -220,7 +220,7 @@
 					<reportElement
 						mode="Opaque"
 						x="22"
-						y="205"
+						y="84"
 						width="502"
 						height="0"
 						forecolor="#000000"
@@ -238,9 +238,9 @@
 					<reportElement
 						mode="Opaque"
 						x="2"
-						y="362"
+						y="266"
 						width="549"
-						height="73"
+						height="24"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
 						key="subreport-2"
@@ -253,6 +253,26 @@
 					<parametersMapExpression><![CDATA[new java.util.HashMap($P{REPORT_PARAMETERS_MAP})]]></parametersMapExpression>
 					<subreportExpression  class="java.lang.String"><![CDATA[$P{P_SUBREPORT_SIGNATURE}]]></subreportExpression>
 				</subreport>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="22"
+						y="241"
+						width="502"
+						height="18"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-60"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="true"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Justified" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_SIGN_LETTRE}]]></textFieldExpression>
+				</textField>
 			</band>
 		</title>
 		<pageHeader>
