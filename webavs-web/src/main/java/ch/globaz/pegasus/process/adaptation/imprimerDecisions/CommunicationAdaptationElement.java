@@ -194,12 +194,14 @@ public class CommunicationAdaptationElement implements Serializable {
         }
 
         if (tiersLangue != null) {
-            if (tiersLangue == CommonConstLangue.LANGUE_SYSTEM_CODE_FR) {
+            if (CommonConstLangue.LANGUE_SYSTEM_CODE_FR.equals(tiersLangue)) {
                 entite.designation = CommunicationAdaptationElement.REGIME_RFM_LIBELLE_FR;
-            } else if (tiersLangue.equals(CommonConstLangue.LANGUE_SYSTEM_CODE_DE)) {
+            } else if (CommonConstLangue.LANGUE_SYSTEM_CODE_DE.equals(tiersLangue)) {
                 entite.designation = CommunicationAdaptationElement.REGIME_RFM_LIBELLE_DE;
             }
-        } else {
+        }
+
+        if (entite.designation == null) {
             entite.designation = CommunicationAdaptationElement.REGIME_RFM_LIBELLE_FR;
         }
 
