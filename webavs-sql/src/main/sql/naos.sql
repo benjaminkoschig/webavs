@@ -166,7 +166,7 @@ DELETE FROM SCHEMA.FWINCP WHERE PINCID = 'CTTEXTES' AND PCOSID = 836400;
 INSERT INTO SCHEMA.FWINCP (PINCID,PCOSID,PINCAN,PINCLI,PINCVA,PSPY) VALUES ('CTTEXTES',836400,0,'',0,'');
 UPDATE SCHEMA.FWINCP SET PINCVA= ((SELECT MAX (CDITXT) FROM SCHEMA.CTTEXTES WHERE CDIELE IN (SELECT CCIELE FROM SCHEMA.CTELEMEN WHERE CCIDOC IN (SELECT CBIDOC FROM SCHEMA.CTDOCUME WHERE CBITYD = 18000))) - (SELECT DISTINCT min(CANBIN) FROM SCHEMA.CTTYPDOC WHERE CATTYP = 836400 and  CATDOM = 835003)) WHERE PCOSID= 836400 AND PINCID= 'CTTEXTES';
 
-DELETE SCHEMA.FWCOSP WHERE pcosid = 836400;
+DELETE FROM SCHEMA.FWCOSP WHERE pcosid = 836400;
 INSERT INTO SCHEMA.FWCOSP (pcosid,pptygr,pconcs,pptycn,pptycl,pptysa,pcosli,pcosdf,pcosdm,pcosdp,pcoian,pcoide,pcodfi,pcoitc,pcoise, pspy) values ( 836400, 'VETYPDOCS', 1,2,0,0, 'LPP-Contrôle', 2,2,2,2,2,2,10800036,0,(replace(char(current date), '-', '') concat replace(char(current time), '.', '') concat user));
 INSERT INTO SCHEMA.FWCOUP (pcosid,plaide,pcouid,pcolut, pspy) values ( 836400, 'F', '1', 'LPP-Contrôle', (replace(char(current date), '-', '') concat replace(char(current time), '.', '') concat user) ); 
 INSERT INTO SCHEMA.FWCOUP (pcosid,plaide,pcouid,pcolut, pspy) values ( 836400, 'D', '1', '[DE]LPP-Contrôle', (replace(char(current date), '-', '') concat replace(char(current time), '.', '') concat user) );
