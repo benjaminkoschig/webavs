@@ -36,7 +36,11 @@
 			<!--  name [REQUIRED]: nom de l'adaptateur-->
 			<adapter name="airs"/>
 		</resource>
-		
+		<resource name="therefore" archiving="true" class="globaz.jade.publish.provider.ged.JadePublishResourceImpl">
+			<!--adapter: adaptateur a utiliser; si pas declare ou vide, on utilise l'adaptateur JadeGedFacade-->
+			<!--  name [REQUIRED]: nom de l'adaptateur-->
+			<adapter name="therefore"/>
+		</resource>
 		<resource name="Sort" class="globaz.jade.publish.provider.sort.JadePublishResourceImpl">
 			<!--next.resource [REQUIRED]: nom de la ressource a laquelle transmettre le document apres le tri-->
 			<next.resource>MailWithWatermarkDev</next.resource>

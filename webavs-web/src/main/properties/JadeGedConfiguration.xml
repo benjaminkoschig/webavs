@@ -1,0 +1,101 @@
+<adapter name="therefore" class="globaz.jade.ged.adapter.therefore.JadeGedAdapter" verbose="true">
+                    <!--simulate: mode simulation (aucun appel au serveur GED), par defaut: false -->
+                    <!--select.service.jsp: page JSP pour selectionner un service, par defaut: common/ged/selectService.jsp -->
+                    <!--import.url [REQUIRED]: URL ou deposer les fichiers pour importation dans le GED -->
+                    <!--gedos.path [REQUIRED]: chemin du repertoire ou deposer les fichiers a indexer -->
+                    <simulate>false</simulate>
+                    <select.service.jsp>common/ged/selectService.jsp</select.service.jsp>
+                    <import.url>/job/jobadm1/batch/printing/ged</import.url>
+                    <client.import.url>D:\ged</client.import.url>
+                    <therefore.url>http://sh517gd1.intranet-heb.ch/TWA/Client/WEB/Main.aspx</therefore.url>
+                    <caisse.numero>51</caisse.numero>
+                    <services>
+                          <service name="AF_SOUS_SERVICE" text="Allocations Familiales avec sous-service" ged="DOCUMENT_ASSURE">
+								<index name="AL_CCJU_SERV">412</index>
+								<index name="N_AFF">numero.role.formatte</index>
+								<index name="N_NSS">pyxis.tiers.numero.avs.formatte</index>
+								<index name="S_SERVICE">type.dossier</index>
+								<index name="DATE_DOCUMENT">creation.date</index>
+						</service>
+                    </services>
+                    <documents>
+				         <!--Certificat de radiation -->
+						<document application="3003WAF" ged="1858">
+						   <services>
+								   <service name="AF_SOUS_SERVICE"/>
+						   </services>
+						</document>
+						<!--Liste des récapitulations aux employeurs (format pdf) -->
+						<document application="RecapEntreprise01" ged="1964">
+						   <services>
+								   <service name="AF_SOUS_SERVICE"/>
+						   </services>
+						</document>
+						<!--Liste des récapitulations aux employeurs (format pdf) -->
+						<document application="3004WAF" ged="1964">
+						   <services>
+								   <service name="AF_SOUS_SERVICE"/>
+						   </services>
+						</document>
+								<!--Liste des récapitulations aux employeurs (format pdf) -->
+						<document application="3005WAF" ged="1964">
+						   <services>
+								   <service name="AF_SOUS_SERVICE"/>
+						   </services>
+						</document>
+						<!--Avis d'échéance - Liste à l'affilié -->
+						<document application="3006WAF" ged="1925">
+						   <services>
+								   <service name="AF_SOUS_SERVICE"/>
+						   </services>
+						</document>
+						<!--Avis d'échéance - Lettre pour l'allocataire (envoyée à l'affilié)-->
+						<document application="3007WAF" ged="1925">
+						   <services>
+								   <service name="AF_SOUS_SERVICE"/>
+						   </services>
+						</document>
+						<!--Avis d'échéance - Liste à l'affilié-->
+						<document application="3008WAF" ged="1925">
+						   <services>
+								   <service name="AF_SOUS_SERVICE"/>
+						   </services>
+						</document>
+						<!--Avis d'échéance - Lettre à l'allocataire (envoyée à l'allocataire)-->
+						<document application="3009WAF" ged="1925">
+						   <services>
+								   <service name="AF_SOUS_SERVICE"/>
+						   </services>
+						</document>
+						<!--Décision à paiement direct, indirect ou un tiers bénéficiaire-->
+						<document application="DecisionAF" ged="1858">
+						   <services>
+								   <service name="AF_SOUS_SERVICE"/>
+						   </services>
+						</document>
+						<!--Décision à paiement direct, indirect ou un tiers bénéficiaire-->
+						<document application="3010WAF" ged="1858">
+						   <services>
+								   <service name="AF_SOUS_SERVICE"/>
+						   </services>
+						</document>
+						<!--Décompte ADI-->
+						<document application="Adi" ged="1873">
+						   <services>
+								   <service name="AF_SOUS_SERVICE"/>
+						   </services>
+						</document>
+						<!--Décompte ADI récapitulatif-->
+						<document application="3012WAF" ged="1873">
+						   <services>
+								   <service name="AF_SOUS_SERVICE"/>
+						   </services>
+						</document>
+						<!--Décompte ADI détaillé-->
+						<document application="3013WAF" ged="1873">
+						   <services>
+								   <service name="AF_SOUS_SERVICE"/>
+						   </services>
+						</document>
+                    </documents>
+           </adapter>

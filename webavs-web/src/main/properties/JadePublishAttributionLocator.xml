@@ -11,6 +11,7 @@
 				<!--resource: declaration d'une ressource a utiliser -->
 				<!--  name [REQUIRED]: nom de la ressource -->
 				<resource name="MailWithWatermarkDev"/>
+				<resource name="therefore"/>
 			</resources>
 		</attribution>
 		<attribution name="document.globaz.phenix.process.communications.CPProcessAsciiWritter">
