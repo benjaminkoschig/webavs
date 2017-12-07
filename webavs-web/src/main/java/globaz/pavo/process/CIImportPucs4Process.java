@@ -73,6 +73,7 @@ import ch.globaz.orion.business.domaine.pucs.SalaryAvs;
 import ch.globaz.orion.business.domaine.pucs.SalaryCaf;
 import ch.globaz.orion.service.EBEbusinessInterface;
 import ch.globaz.orion.service.EBPucsFileService;
+import ch.swissdec.schema.sd._20130514.salarydeclaration.CantonAndEXType;
 import com.google.common.base.Splitter;
 
 /**
@@ -1936,9 +1937,55 @@ public class CIImportPucs4Process extends BProcess {
     }
 
     private void sendResultMail(String[] filesPath) throws Exception {
-
+        setContentMail();
         JadeSmtpClient.getInstance().sendMail(getEMailAddress(), getEMailObject(), getSubjectDetail(), filesPath);
 
+    }
+
+    private void setContentMail() {
+        if (!declarationSalaire.getMontantAVSDiff().isEmpty()) {
+            getMemoryLog().logMessage(
+                    FWMessageFormat.format(
+                            getSession().getLabel("IMPORT_PUCS_4_WARNING_MONTANT_AVS_DIFF"),
+                            declarationSalaire.getMontantAvs().getValue()
+                                    + getListMontant(declarationSalaire.getMontantAVSDiff())), FWMessage.AVERTISSEMENT,
+                    this.getClass().getName());
+        }
+
+        if (!declarationSalaire.getMontantAFDiff().isEmpty()) {
+            for (Entry<CantonAndEXType, List<String>> canton : declarationSalaire.getMontantAFDiff().entrySet()) {
+                getMemoryLog().logMessage(
+                        FWMessageFormat.format(getSession().getLabel("IMPORT_PUCS_4_WARNING_MONTANT_AF_DIFF"), canton
+                                .getKey().value(), declarationSalaire.getMontantCaf(canton.getKey().value()).getValue()
+                                + getListMontant(canton.getValue())), FWMessage.AVERTISSEMENT,
+                        this.getClass().getName());
+            }
+        }
+
+        if (!declarationSalaire.getMontantAVSDuplicate().isEmpty()) {
+            getMemoryLog().logMessage(
+                    FWMessageFormat.format(getSession().getLabel("IMPORT_PUCS_4_WARNING_MONTANT_AVS_DUPP"),
+                            declarationSalaire.getMontantAvs().getValue()), FWMessage.AVERTISSEMENT,
+                    this.getClass().getName());
+        }
+
+        if (!declarationSalaire.getMontantAFDuplicate().isEmpty()) {
+            for (CantonAndEXType canton : declarationSalaire.getMontantAFDuplicate().keySet()) {
+                getMemoryLog().logMessage(
+                        FWMessageFormat.format(getSession().getLabel("IMPORT_PUCS_4_WARNING_MONTANT_AF_DUPP"),
+                                canton.value(), declarationSalaire.getMontantCaf(canton.value()).getValue()),
+                        FWMessage.AVERTISSEMENT, this.getClass().getName());
+            }
+        }
+    }
+
+    private String getListMontant(List<String> montants) {
+        StringBuilder lmontant = new StringBuilder();
+        for (String montant : montants) {
+            lmontant.append(", ");
+            lmontant.append(montant);
+        }
+        return lmontant.toString();
     }
 
     private void prepareDataForResumePartInResultList() {
@@ -2050,6 +2097,7 @@ public class CIImportPucs4Process extends BProcess {
                     getMemoryLog().logStringBuffer(getTransaction().getErrors(), this.getClass().getName());
                 }
             }
+
         } catch (Exception e) {
             JadeLogger.warn(this, "ERROR in process " + this.getClass().getName() + " (" + e.toString() + ")");
             JadeLogger.warn(this, e);

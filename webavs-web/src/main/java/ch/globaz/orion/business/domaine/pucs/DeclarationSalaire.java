@@ -2,6 +2,7 @@ package ch.globaz.orion.business.domaine.pucs;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -12,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ch.globaz.common.domaine.Date;
 import ch.globaz.common.domaine.Montant;
+import ch.swissdec.schema.sd._20130514.salarydeclaration.CantonAndEXType;
 
 public class DeclarationSalaire {
     private static final Logger LOG = LoggerFactory.getLogger(DeclarationSalaire.class);
@@ -35,6 +37,13 @@ public class DeclarationSalaire {
                           // swissDec)
     private boolean duplicate;
     private boolean substitution;
+
+    private List<String> montantAVSDuplicate = new ArrayList<String>();
+    private List<String> montantAVSDiff = new ArrayList<String>();
+    private Map<CantonAndEXType, List<String>> montantAFDuplicate = new EnumMap<CantonAndEXType, List<String>>(
+            CantonAndEXType.class);
+    private Map<CantonAndEXType, List<String>> montantAFDiff = new EnumMap<CantonAndEXType, List<String>>(
+            CantonAndEXType.class);
 
     public boolean isAfSeul() {
         return isAfSeul;
@@ -220,6 +229,38 @@ public class DeclarationSalaire {
         this.adresse = adresse;
     }
 
+    public List<String> getMontantAVSDuplicate() {
+        return montantAVSDuplicate;
+    }
+
+    public void setMontantAVSDuplicate(List<String> montantAVSDuplicate) {
+        this.montantAVSDuplicate = montantAVSDuplicate;
+    }
+
+    public List<String> getMontantAVSDiff() {
+        return montantAVSDiff;
+    }
+
+    public void setMontantAVSDiff(List<String> montantAVSDiff) {
+        this.montantAVSDiff = montantAVSDiff;
+    }
+
+    public Map<CantonAndEXType, List<String>> getMontantAFDuplicate() {
+        return montantAFDuplicate;
+    }
+
+    public void setMontantAFDuplicate(Map<CantonAndEXType, List<String>> montantAFDuplicate) {
+        this.montantAFDuplicate = montantAFDuplicate;
+    }
+
+    public Map<CantonAndEXType, List<String>> getMontantAFDiff() {
+        return montantAFDiff;
+    }
+
+    public void setMontantAFDiff(Map<CantonAndEXType, List<String>> montantAFDiff) {
+        this.montantAFDiff = montantAFDiff;
+    }
+
     /**
      * @return
      */
@@ -237,4 +278,5 @@ public class DeclarationSalaire {
         }
         return cantons;
     }
+
 }

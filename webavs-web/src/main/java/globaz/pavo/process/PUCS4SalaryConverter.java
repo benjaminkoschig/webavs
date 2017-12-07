@@ -120,9 +120,17 @@ public class PUCS4SalaryConverter {
         // -----------------------
         List<AHVAVSTotalsType> ahvavs = company.getSalaryTotals().getAHVAVSTotals();
         if (ahvavs.size() > 1) {
-            throw new UnsupportedOperationException("found " + ahvavs.size() + " nodes!");
+            AHVAVSTotalsType first = ahvavs.get(0);
+            result.setMontantAvs(Montant.valueOf(first.getTotalAHVAVSIncomes()));
+            for (int i = 1; i < ahvavs.size(); i++) {
+                AHVAVSTotalsType avs = ahvavs.get(i);
+                if (first.getTotalAHVAVSIncomes().compareTo(avs.getTotalAHVAVSIncomes()) != 0) {
+                    result.getMontantAVSDiff().add(avs.getTotalAHVAVSIncomes().toString());
+                } else {
+                    result.getMontantAVSDuplicate().add(avs.getTotalAHVAVSIncomes().toString());
+                }
+            }
         } else if (!ahvavs.isEmpty()) {
-            // FIXME on fait quoi quand il y a plusieurs noeuds?
             AHVAVSTotalsType totalAvs = ahvavs.get(0);
             result.setMontantAvs(Montant.valueOf(totalAvs.getTotalAHVAVSIncomes()));
         }
@@ -134,15 +142,9 @@ public class PUCS4SalaryConverter {
          */
         // -----------------------
         List<FAKCAFTotalsType> fakcaf = company.getSalaryTotals().getFAKCAFTotals();
-        if (fakcaf.size() > 1) {
-            throw new UnsupportedOperationException("found " + fakcaf.size() + " nodes!");
-        } else if (!fakcaf.isEmpty()) {
-            // FIXME on fait quoi quand il y a plusieurs noeuds?
-            FAKCAFTotalsType totalCaf = fakcaf.get(0);
-
-            for (TotalFAKCAFPerCantonType canton : totalCaf.getTotalFAKCAFPerCanton()) {
-                result.setMontantCaf(canton.getCanton().value(),
-                        Montant.valueOf(canton.getTotalFAKCAFContributorySalary()));
+        for (FAKCAFTotalsType compare : fakcaf) {
+            for (TotalFAKCAFPerCantonType canton : compare.getTotalFAKCAFPerCanton()) {
+                updateCAF(canton, result);
             }
         }
 
@@ -184,6 +186,30 @@ public class PUCS4SalaryConverter {
         checkAllPlausi(result);
 
         return result;
+    }
+
+    private void updateCAF(TotalFAKCAFPerCantonType canton, DeclarationSalaire result) {
+        if (result.getMontantCaf(canton.getCanton().value()) != null) {
+            // montant déjà présent pour ce canton
+            if (!result.getMontantCaf(canton.getCanton().value())
+                    .substract(Montant.valueOf(canton.getTotalFAKCAFContributorySalary())).isZero()) {
+                // valeur différente pour un même canton
+                if (result.getMontantAFDiff().get(canton.getCanton()) == null) {
+                    result.getMontantAFDiff().put(canton.getCanton(), new ArrayList<String>());
+                }
+                result.getMontantAFDiff().get(canton.getCanton())
+                        .add(canton.getTotalFAKCAFContributorySalary().toString());
+            } else {
+                // valeur dupliquée pour un même canton
+                if (result.getMontantAFDuplicate().get(canton.getCanton()) == null) {
+                    result.getMontantAFDuplicate().put(canton.getCanton(), new ArrayList<String>());
+                }
+                result.getMontantAFDuplicate().get(canton.getCanton())
+                        .add(canton.getTotalFAKCAFContributorySalary().toString());
+            }
+        } else {
+            result.setMontantCaf(canton.getCanton().value(), Montant.valueOf(canton.getTotalFAKCAFContributorySalary()));
+        }
     }
 
     private void convertEmployeesAndSetIsAfSeulFlag(DeclarationSalaire result, PersonsType staff) {
