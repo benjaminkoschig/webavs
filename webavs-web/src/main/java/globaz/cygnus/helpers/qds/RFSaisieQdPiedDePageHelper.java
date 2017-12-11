@@ -1251,7 +1251,7 @@ public class RFSaisieQdPiedDePageHelper extends PRAbstractHelper {
             RFRetrieveLimiteAnnuelleSousTypeDeSoinService rfLimAnnSouTypDeSoiSer = new RFRetrieveLimiteAnnuelleSousTypeDeSoinService();
             String resultat[] = rfLimAnnSouTypDeSoiSer.getLimiteAnnuelleTypeDeSoinIdTiers(vb.getSession(),
                     vb.getCodeTypeDeSoinList(), vb.getCodeSousTypeDeSoinList(), vb.getIdTiers(), vb.getDateDebut(),
-                    null, vb.getCsTypeBeneficiaire(), vb.getCsGenrePCAccordee());
+                    null, vb.getCsTypeBeneficiaire(), vb.getCsGenrePCAccordee(), vb.getDateNaissance());
 
             if (!JadeStringUtil.isBlankOrZero(resultat[0]) && !JadeStringUtil.isBlankOrZero(resultat[1])) {
                 vb.setLimiteAnnuelle(resultat[0]);
@@ -1446,7 +1446,7 @@ public class RFSaisieQdPiedDePageHelper extends PRAbstractHelper {
             String[] resultat = rfRetrieveLimiteAnnuelleSousTypeDeSoinService.getLimiteAnnuelleTypeDeSoinIdTiers(
                     viewBean.getSession(), viewBean.getCodeTypeDeSoinList(), viewBean.getCodeSousTypeDeSoinList(),
                     viewBean.getIdTiers(), viewBean.getDateDebut(), null, viewBean.getCsTypeBeneficiaire(),
-                    viewBean.getCsTypePCAccordee());
+                    viewBean.getCsTypePCAccordee(), viewBean.getDateNaissance());
 
             if (!JadeStringUtil.isBlankOrZero(resultat[0])) {
                 RFUtils.setMsgErreurViewBean(viewBean, "ERREUR_RF_QD_S_QDASSURE_NON_PLAFONEE_LIMITE_SOUS_TYPE");

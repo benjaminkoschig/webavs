@@ -3,10 +3,12 @@ package globaz.cygnus.services.saisieDemande;
 import globaz.cygnus.api.qds.IRFQd;
 import globaz.cygnus.db.qds.RFAssQdDossierJointDossierJointTiers;
 import globaz.cygnus.db.qds.RFAssQdDossierJointDossierJointTiersManager;
+import globaz.cygnus.db.qds.RFQd;
 import globaz.cygnus.db.qds.RFQdAssureJointDossierJointTiers;
 import globaz.cygnus.db.qds.RFQdAssureJointDossierJointTiersManager;
 import globaz.cygnus.db.qds.RFQdJointPeriodeValiditeJointDossierJointTiersJointDemande;
 import globaz.cygnus.db.qds.RFQdJointPeriodeValiditeJointDossierJointTiersJointDemandeManager;
+import globaz.cygnus.services.RFRetrieveLimiteAnnuelleSousTypeDeSoinService;
 import globaz.cygnus.services.demande.RFDemandeService;
 import globaz.cygnus.utils.RFUtils;
 import globaz.framework.util.FWCurrency;
@@ -33,11 +35,13 @@ public class RFRechercherDescriptionsQdsMembresFamillesService {
             RFDescriptionsQdsMembresFamillesData descriptionData,
             RFQdJointPeriodeValiditeJointDossierJointTiersJointDemandeManager rfPerValQdPriMgr,
             String etatFormulaireDemande, String forDateDebutBetweenPeriode, String idTiersRequerant,
-            String idAdressePaiement, String codeTypeDeSoinList, String codeSousTypeDeSoinList, BISession session)
-            throws Exception {
+            String idAdressePaiement, String codeTypeDeSoinList, String codeSousTypeDeSoinList, BISession session,
+            BITransaction transaction) throws Exception {
 
         StringBuffer mntResiduelQdHtmlBuffer = new StringBuffer();
         String idQdPrincipal = "";
+        String typeBeneficiaire = "";
+        String genrePCAccordee = "";
 
         if (rfPerValQdPriMgr.size() > 0) {
 
@@ -74,6 +78,9 @@ public class RFRechercherDescriptionsQdsMembresFamillesService {
                 }
 
                 idQdPrincipal = rfDernierePeriodeValiditeQdPrincipale.getIdQdPrincipale();
+
+                typeBeneficiaire = rfDernierePeriodeValiditeQdPrincipale.getCsTypeBeneficiaire();
+                genrePCAccordee = rfDernierePeriodeValiditeQdPrincipale.getCsGenrePCAccordee();
             }
 
         } else {
@@ -93,6 +100,10 @@ public class RFRechercherDescriptionsQdsMembresFamillesService {
 
                 RFQdAssureJointDossierJointTiers rfQdAssureJointPotType = (RFQdAssureJointDossierJointTiers) rfQdAssureJointPotTypeMgr
                         .getFirstEntity();
+
+                updateLimiteForMajeur(rfQdAssureJointPotType, typeBeneficiaire, genrePCAccordee,
+                        forDateDebutBetweenPeriode, codeTypeDeSoinList, codeSousTypeDeSoinList, (BSession) session,
+                        transaction);
 
                 if (null != rfQdAssureJointPotType) {
                     if (rfQdAssureJointPotType.getIsPlafonnee()) {
@@ -126,6 +137,36 @@ public class RFRechercherDescriptionsQdsMembresFamillesService {
         descriptionData.setDescriptionQd(mntResiduelQdHtmlBuffer.toString());
 
         return descriptionData;
+    }
+
+    /**
+     * Test s'il faut mettre à jour la limite de la QD
+     */
+    private void updateLimiteForMajeur(RFQdAssureJointDossierJointTiers rfQdAssureJointPotType,
+            String csTypeBeneficiairePC, String csGenrePCAccordee, String date, String codeTypeDeSoinList,
+            String codeSousTypeDeSoinList, BSession session, BITransaction transaction) throws Exception {
+
+        if (!csTypeBeneficiairePC.isEmpty() && !csGenrePCAccordee.isEmpty()) {
+            RFRetrieveLimiteAnnuelleSousTypeDeSoinService rfLimAnnSouTypDeSoiSer = new RFRetrieveLimiteAnnuelleSousTypeDeSoinService();
+            String montant = rfLimAnnSouTypDeSoiSer.getLimiteAnnuelleTypeDeSoinIdTiers(session, codeTypeDeSoinList,
+                    codeSousTypeDeSoinList, rfQdAssureJointPotType.getIdTiers(), date, (BTransaction) transaction,
+                    csTypeBeneficiairePC, csGenrePCAccordee, null)[0];
+
+            if (!montant.equals(rfQdAssureJointPotType.getLimiteAnnuelle())) {
+                // il faut mettre à jour le montant de la petite qd
+                rfQdAssureJointPotType.setLimiteAnnuelle(montant);
+                RFQd qdBase = new RFQd();
+                qdBase.setSession(session);
+                qdBase.setIdQd(rfQdAssureJointPotType.getIdQd());
+                qdBase.retrieve();
+
+                if (!qdBase.isNew()) {
+                    qdBase.setLimiteAnnuelle(montant);
+                    qdBase.update(transaction);
+                    transaction.commit();
+                }
+            }
+        }
     }
 
     private String getDescMembresFamilleHtml(List<String[]> membresFamilleCcList, String idTiers,
@@ -375,7 +416,7 @@ public class RFRechercherDescriptionsQdsMembresFamillesService {
 
                 descriptionData = buildDescQdInnerHtml(descriptionData, rfPerValQdPriMgr, etatFormulaireDemande,
                         dateFacture, idTiersRequerant, idAdressePaiement, codeTypeDeSoinList, codeSousTypeDeSoinList,
-                        session);
+                        session, transaction);
 
                 if (rfPerValQdPriMgr.size() > 0) {
 

@@ -1,6 +1,8 @@
 package globaz.cygnus.services;
 
 import globaz.cygnus.api.IRFTypesBeneficiairePc;
+import globaz.cygnus.db.qds.RFTierDateNaisanceManager;
+import globaz.cygnus.db.qds.RFTierDateNaissance;
 import globaz.cygnus.db.typeDeSoins.RFSousTypeDeSoinJointAssPeriodeJointPotAssure;
 import globaz.cygnus.db.typeDeSoins.RFSousTypeDeSoinJointAssPeriodeJointPotAssureManager;
 import globaz.globall.api.BISession;
@@ -8,6 +10,7 @@ import globaz.globall.db.BSession;
 import globaz.globall.db.BTransaction;
 import globaz.jade.client.util.JadeStringUtil;
 import ch.globaz.pegasus.business.constantes.IPCPCAccordee;
+import ch.globaz.vulpecula.domain.models.common.Date;
 
 /**
  * @author JJE
@@ -23,9 +26,12 @@ public class RFRetrieveLimiteAnnuelleSousTypeDeSoinService {
      * 
      * @throws Exception
      */
+
+    public static final int MAJORITY = 18;
+
     public String[] getLimiteAnnuelleTypeDeSoinIdTiers(BISession session, String codeTypeDeSoin,
             String codeSousTypeDeSoin, String idTiers, String date, BTransaction transaction,
-            String csTypeBeneficiairePC, String csGenrePCAccordee) throws Exception {
+            String csTypeBeneficiairePC, String csGenrePCAccordee, String dateNaissance) throws Exception {
 
         String[] resultat = new String[2];
         if (!JadeStringUtil.isBlankOrZero(csTypeBeneficiairePC)) {
@@ -37,6 +43,18 @@ public class RFRetrieveLimiteAnnuelleSousTypeDeSoinService {
             rfTypeDeSoinJointSousTypeDeSoinMgr.setForDateBetweenPeriode(date);
             rfTypeDeSoinJointSousTypeDeSoinMgr.changeManagerSize(0);
             rfTypeDeSoinJointSousTypeDeSoinMgr.find(transaction);
+
+            if (dateNaissance == null) {
+                RFTierDateNaisanceManager mgrDateNaissance = new RFTierDateNaisanceManager();
+                mgrDateNaissance.setSession((BSession) session);
+                mgrDateNaissance.setForIdTiers(idTiers);
+                mgrDateNaissance.changeManagerSize(0);
+                mgrDateNaissance.find();
+                if (mgrDateNaissance.size() == 1) {
+                    RFTierDateNaissance tiers = (RFTierDateNaissance) mgrDateNaissance.getFirstEntity();
+                    dateNaissance = tiers.getDatenaissance();
+                }
+            }
 
             if (rfTypeDeSoinJointSousTypeDeSoinMgr.size() == 1) {
                 RFSousTypeDeSoinJointAssPeriodeJointPotAssure rfTypeDeSoinJointSousTypeDeSoin = (RFSousTypeDeSoinJointAssPeriodeJointPotAssure) rfTypeDeSoinJointSousTypeDeSoinMgr
@@ -96,21 +114,39 @@ public class RFRetrieveLimiteAnnuelleSousTypeDeSoinService {
                             }
 
                         } else if (csTypeBeneficiairePC.equals(IRFTypesBeneficiairePc.ENFANTS_VIVANT_SEPARES)) {
-
-                            if (csGenrePCAccordee.equals(IPCPCAccordee.CS_GENRE_PC_DOMICILE)) {
-                                resultat[0] = rfTypeDeSoinJointSousTypeDeSoin.getMontantPlafondEnfantsSepares();
+                            // Adaptation des petites QD pour les jeunes adultes
+                            if (isAdulte(new Date(date), new Date(dateNaissance))) {
+                                if (csGenrePCAccordee.equals(IPCPCAccordee.CS_GENRE_PC_DOMICILE)) {
+                                    resultat[0] = rfTypeDeSoinJointSousTypeDeSoin.getMontantPlafondPersonneSeule();
+                                } else {
+                                    resultat[0] = rfTypeDeSoinJointSousTypeDeSoin
+                                            .getMontantPlafondPensionnairePersonneSeule();
+                                }
                             } else {
-                                resultat[0] = rfTypeDeSoinJointSousTypeDeSoin
-                                        .getMontantPlafondPensionnaireEnfantsSepares();
+                                if (csGenrePCAccordee.equals(IPCPCAccordee.CS_GENRE_PC_DOMICILE)) {
+                                    resultat[0] = rfTypeDeSoinJointSousTypeDeSoin.getMontantPlafondEnfantsSepares();
+                                } else {
+                                    resultat[0] = rfTypeDeSoinJointSousTypeDeSoin
+                                            .getMontantPlafondPensionnaireEnfantsSepares();
+                                }
                             }
 
                         } else if (csTypeBeneficiairePC.equals(IRFTypesBeneficiairePc.ENFANTS_AVEC_ENFANTS)) {
-
-                            if (csGenrePCAccordee.equals(IPCPCAccordee.CS_GENRE_PC_DOMICILE)) {
-                                resultat[0] = rfTypeDeSoinJointSousTypeDeSoin.getMontantPlafondEnfantsEnfants();
+                            // Adaptation des petites QD pour les jeunes adultes
+                            if (isAdulte(new Date(date), new Date(dateNaissance))) {
+                                if (csGenrePCAccordee.equals(IPCPCAccordee.CS_GENRE_PC_DOMICILE)) {
+                                    resultat[0] = rfTypeDeSoinJointSousTypeDeSoin.getMontantPlafondPersonneSeule();
+                                } else {
+                                    resultat[0] = rfTypeDeSoinJointSousTypeDeSoin
+                                            .getMontantPlafondPensionnairePersonneSeule();
+                                }
                             } else {
-                                resultat[0] = rfTypeDeSoinJointSousTypeDeSoin
-                                        .getMontantPlafondPensionnaireEnfantsEnfants();
+                                if (csGenrePCAccordee.equals(IPCPCAccordee.CS_GENRE_PC_DOMICILE)) {
+                                    resultat[0] = rfTypeDeSoinJointSousTypeDeSoin.getMontantPlafondEnfantsEnfants();
+                                } else {
+                                    resultat[0] = rfTypeDeSoinJointSousTypeDeSoin
+                                            .getMontantPlafondPensionnaireEnfantsEnfants();
+                                }
                             }
                         }
 
@@ -127,6 +163,10 @@ public class RFRetrieveLimiteAnnuelleSousTypeDeSoinService {
         }
 
         return resultat;
+    }
+
+    public boolean isAdulte(Date date, Date dateNaissance) {
+        return date.getYear() - dateNaissance.getYear() > MAJORITY;
     }
 
 }

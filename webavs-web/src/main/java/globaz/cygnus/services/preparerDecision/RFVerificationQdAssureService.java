@@ -228,7 +228,7 @@ public class RFVerificationQdAssureService {
                             "RFVerificationQdAssureService.montantQdAssure() : impossible de retrouver la petite Qd");
                 }
             }
-
+            
             if (hasPetiteQdPlafonnee) {
 
                 chargeRFMAutresQdBigDec = chargeTotaleAutresQds(arrayListQdsMemeAnnee, limiteAnnuelleBigDec);
@@ -255,7 +255,7 @@ public class RFVerificationQdAssureService {
                         .getCodeTypeDeSoin(), data.getCodeSousTypeDeSoin(), data.getIdTiers(),
                         !JadeStringUtil.isBlankOrZero(data.getDateDebutTraitement()) ? data.getDateDebutTraitement()
                                 : data.getDateFacture(), (BTransaction) transaction, csTypeBeneficiairePetiteQd,
-                        csGenrePcAccordee);
+                        csGenrePcAccordee, null);
 
                 if (!JadeStringUtil.isBlankOrZero(resultat[0])) {
 
