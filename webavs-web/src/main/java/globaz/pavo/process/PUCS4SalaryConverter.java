@@ -126,8 +126,6 @@ public class PUCS4SalaryConverter {
                 AHVAVSTotalsType avs = ahvavs.get(i);
                 if (first.getTotalAHVAVSIncomes().compareTo(avs.getTotalAHVAVSIncomes()) != 0) {
                     result.getMontantAVSDiff().add(avs.getTotalAHVAVSIncomes().toString());
-                } else {
-                    result.getMontantAVSDuplicate().add(avs.getTotalAHVAVSIncomes().toString());
                 }
             }
         } else if (!ahvavs.isEmpty()) {
@@ -198,13 +196,6 @@ public class PUCS4SalaryConverter {
                     result.getMontantAFDiff().put(canton.getCanton(), new ArrayList<String>());
                 }
                 result.getMontantAFDiff().get(canton.getCanton())
-                        .add(canton.getTotalFAKCAFContributorySalary().toString());
-            } else {
-                // valeur dupliquée pour un même canton
-                if (result.getMontantAFDuplicate().get(canton.getCanton()) == null) {
-                    result.getMontantAFDuplicate().put(canton.getCanton(), new ArrayList<String>());
-                }
-                result.getMontantAFDuplicate().get(canton.getCanton())
                         .add(canton.getTotalFAKCAFContributorySalary().toString());
             }
         } else {

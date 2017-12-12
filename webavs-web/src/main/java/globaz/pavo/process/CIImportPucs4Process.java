@@ -1943,40 +1943,34 @@ public class CIImportPucs4Process extends BProcess {
     }
 
     private void setContentMail() {
-        if (!declarationSalaire.getMontantAVSDiff().isEmpty()) {
-            getMemoryLog().logMessage(
-                    FWMessageFormat.format(
-                            getSession().getLabel("IMPORT_PUCS_4_WARNING_MONTANT_AVS_DIFF"),
-                            declarationSalaire.getMontantAvs().getValue()
-                                    + getListMontant(declarationSalaire.getMontantAVSDiff())), FWMessage.AVERTISSEMENT,
-                    this.getClass().getName());
-        }
+        if (!declarationSalaire.getMontantAVSDiff().isEmpty() || !declarationSalaire.getMontantAFDiff().isEmpty()) {
+            getMemoryLog().logMessage(getSession().getLabel("IMPORT_PUCS_4_WARNING_MONTANT_TITRE_DIFF"),
+                    FWMessage.AVERTISSEMENT, this.getClass().getName());
+            getMemoryLog()
+                    .logMessage(
+                            "---------------------------------------------------------------------------------------------------------------------------------",
+                            FWMessage.AVERTISSEMENT, this.getClass().getName());
 
-        if (!declarationSalaire.getMontantAFDiff().isEmpty()) {
-            for (Entry<CantonAndEXType, List<String>> canton : declarationSalaire.getMontantAFDiff().entrySet()) {
+            if (!declarationSalaire.getMontantAVSDiff().isEmpty()) {
                 getMemoryLog().logMessage(
-                        FWMessageFormat.format(getSession().getLabel("IMPORT_PUCS_4_WARNING_MONTANT_AF_DIFF"), canton
-                                .getKey().value(), declarationSalaire.getMontantCaf(canton.getKey().value()).getValue()
-                                + getListMontant(canton.getValue())), FWMessage.AVERTISSEMENT,
-                        this.getClass().getName());
-            }
-        }
-
-        if (!declarationSalaire.getMontantAVSDuplicate().isEmpty()) {
-            getMemoryLog().logMessage(
-                    FWMessageFormat.format(getSession().getLabel("IMPORT_PUCS_4_WARNING_MONTANT_AVS_DUPP"),
-                            declarationSalaire.getMontantAvs().getValue()), FWMessage.AVERTISSEMENT,
-                    this.getClass().getName());
-        }
-
-        if (!declarationSalaire.getMontantAFDuplicate().isEmpty()) {
-            for (CantonAndEXType canton : declarationSalaire.getMontantAFDuplicate().keySet()) {
-                getMemoryLog().logMessage(
-                        FWMessageFormat.format(getSession().getLabel("IMPORT_PUCS_4_WARNING_MONTANT_AF_DUPP"),
-                                canton.value(), declarationSalaire.getMontantCaf(canton.value()).getValue()),
+                        FWMessageFormat.format(
+                                getSession().getLabel("IMPORT_PUCS_4_WARNING_MONTANT_AVS_DIFF"),
+                                declarationSalaire.getMontantAvs().getValue()
+                                        + getListMontant(declarationSalaire.getMontantAVSDiff())),
                         FWMessage.AVERTISSEMENT, this.getClass().getName());
             }
+
+            if (!declarationSalaire.getMontantAFDiff().isEmpty()) {
+                for (Entry<CantonAndEXType, List<String>> canton : declarationSalaire.getMontantAFDiff().entrySet()) {
+                    getMemoryLog().logMessage(
+                            FWMessageFormat.format(getSession().getLabel("IMPORT_PUCS_4_WARNING_MONTANT_AF_DIFF"),
+                                    canton.getKey().value(), declarationSalaire.getMontantCaf(canton.getKey().value())
+                                            .getValue() + getListMontant(canton.getValue())), FWMessage.AVERTISSEMENT,
+                            this.getClass().getName());
+                }
+            }
         }
+
     }
 
     private String getListMontant(List<String> montants) {
