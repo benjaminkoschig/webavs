@@ -55,6 +55,7 @@ import globaz.pavo.util.CIUtil;
 import globaz.webavs.common.CommonExcelmlContainer;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -1955,29 +1956,32 @@ public class CIImportPucs4Process extends BProcess {
                 getMemoryLog().logMessage(
                         FWMessageFormat.format(
                                 getSession().getLabel("IMPORT_PUCS_4_WARNING_MONTANT_AVS_DIFF"),
-                                declarationSalaire.getMontantAvs().getValue()
-                                        + getListMontant(declarationSalaire.getMontantAVSDiff())),
-                        FWMessage.AVERTISSEMENT, this.getClass().getName());
+                                getListMontant(declarationSalaire.getMontantAvs().getValue(),
+                                        declarationSalaire.getMontantAVSDiff())), FWMessage.AVERTISSEMENT,
+                        this.getClass().getName());
             }
 
             if (!declarationSalaire.getMontantAFDiff().isEmpty()) {
                 for (Entry<CantonAndEXType, List<String>> canton : declarationSalaire.getMontantAFDiff().entrySet()) {
                     getMemoryLog().logMessage(
-                            FWMessageFormat.format(getSession().getLabel("IMPORT_PUCS_4_WARNING_MONTANT_AF_DIFF"),
-                                    canton.getKey().value(), declarationSalaire.getMontantCaf(canton.getKey().value())
-                                            .getValue() + getListMontant(canton.getValue())), FWMessage.AVERTISSEMENT,
-                            this.getClass().getName());
+                            FWMessageFormat.format(
+                                    getSession().getLabel("IMPORT_PUCS_4_WARNING_MONTANT_AF_DIFF"),
+                                    canton.getKey().value(),
+                                    getListMontant(
+                                            declarationSalaire.getMontantCaf(canton.getKey().value()).getValue(),
+                                            canton.getValue())), FWMessage.AVERTISSEMENT, this.getClass().getName());
                 }
             }
         }
-
     }
 
-    private String getListMontant(List<String> montants) {
+    private String getListMontant(String first, List<String> montants) {
+        NumberFormat nf = NumberFormat.getInstance();
         StringBuilder lmontant = new StringBuilder();
+        lmontant.append(nf.format(Double.valueOf(first)));
         for (String montant : montants) {
-            lmontant.append(", ");
-            lmontant.append(montant);
+            lmontant.append(" / ");
+            lmontant.append(nf.format(Double.valueOf(montant)));
         }
         return lmontant.toString();
     }
