@@ -93,6 +93,9 @@ class RELigneDeblocageVentilator {
      */
     private List<CASectionJoinCompteAnnexeJoinTiers> getSectionsCompteAnnexeFirst(
             List<CASectionJoinCompteAnnexeJoinTiers> sections, String idCompteAnnexe, Montant montant) {
+        if (idCompteAnnexe == null) {
+            return sections;
+        }
         List<CASectionJoinCompteAnnexeJoinTiers> sectionsTiers = new ArrayList<CASectionJoinCompteAnnexeJoinTiers>();
         List<CASectionJoinCompteAnnexeJoinTiers> sectionsFamily = new ArrayList<CASectionJoinCompteAnnexeJoinTiers>();
         for (CASectionJoinCompteAnnexeJoinTiers section : sections) {
