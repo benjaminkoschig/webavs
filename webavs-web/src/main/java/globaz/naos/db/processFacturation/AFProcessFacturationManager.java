@@ -455,8 +455,12 @@ public class AFProcessFacturationManager extends BManager implements Serializabl
                         + this._dbWriteNumeric(statement.getTransaction(), dateFinMoisFacturation.toStrAMJ())
                         + " AND (" + _getCollection() + "AFADHEP.MRDFIN >= "
                         + this._dbWriteNumeric(statement.getTransaction(), dateDebutMoisFacturation.toStrAMJ())
-                        + " OR " + _getCollection() + "AFADHEP.MRDFIN = 0)) or (" + _getCollection()
-                        + "AFADHEP.MRIADH is null))";
+                        + " OR " + _getCollection()
+                        + "AFADHEP.MRDFIN = 0"
+                        // ajout cas : si radié avant la fin de la période
+                        + " OR " + _getCollection() + "AFCOTIP.METPER = "
+                        + this._dbWriteNumeric(statement.getTransaction(), CodeSystem.PERIODICITE_TRIMESTRIELLE)
+                        + ")) or (" + _getCollection() + "AFADHEP.MRIADH is null))";
             } catch (Exception e) {
                 e.printStackTrace();
             }
