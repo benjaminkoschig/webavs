@@ -59,7 +59,7 @@ public class RELibererDevaliderDeblocage {
         deblocagesEnregistre.changeEtatToValide().changeIdLot(idLot);
 
         deblocagesEnregistre.getLigneDeblocageVersementBeneficiaire().changeIdTiersAdressePaiementAndApplication(
-                idTiersAdressePaiement, idApplication);
+                idTiersAdressePaiement, idApplication, deblocage.getPracc().getIdCompteAnnexe());
 
         deblocagesEnregistre.getLigneDeblocageImpotsSource().changeSection(
                 Long.valueOf(APIReferenceRubrique.IMPOT_A_LA_SOURCE));

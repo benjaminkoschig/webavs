@@ -148,10 +148,12 @@ public class RELigneDeblocages extends ArrayList<RELigneDeblocage> {
         return this;
     }
 
-    public RELigneDeblocages changeIdTiersAdressePaiementAndApplication(Long idTiers, Long idApplication) {
+    public RELigneDeblocages changeIdTiersAdressePaiementAndApplication(Long idTiers, Long idApplication,
+            String idCompteAnnexe) {
         for (RELigneDeblocage ligne : this) {
             ligne.setIdTiersAdressePaiement(idTiers);
             ligne.setIdApplicationAdressePaiement(idApplication);
+            ligne.setIdCompteAnnexe(idCompteAnnexe);
         }
         return this;
     }

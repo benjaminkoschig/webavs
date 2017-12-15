@@ -58,8 +58,11 @@ class RELigneDeblocageVentilator {
     private List<RELigneDeblocageVentilation> ventilBySection(RELigneDeblocage ligne) {
         List<RELigneDeblocageVentilation> ventiliations = new ArrayList<RELigneDeblocageVentilation>();
         Montant montantAVantiler = ligne.getMontant();
+        Collections.sort(sections, new SectionsComparator());
+        List<CASectionJoinCompteAnnexeJoinTiers> orderSections = getSectionsCompteAnnexeFirst(sections,
+                ligne.getIdCompteAnnexe(), montantAVantiler);
 
-        for (CASectionJoinCompteAnnexeJoinTiers section : sections) {
+        for (CASectionJoinCompteAnnexeJoinTiers section : orderSections) {
             Montant resteInSection = new Montant(section.getSolde()).abs();
             if (Montant.ZERO.less(resteInSection)) {
                 if (!resteInSection.greaterOrEquals(montantAVantiler)) {
@@ -77,6 +80,46 @@ class RELigneDeblocageVentilator {
             }
         }
         return ventiliations;
+    }
+
+    /**
+     * Retourne la liste des sections avec en premier : les sections correspondantes au compte annexe puis les sections
+     * avec le montant correspondant
+     * 
+     * @param sections
+     * @param idCompteAnnexe
+     * @param montant
+     * @return
+     */
+    private List<CASectionJoinCompteAnnexeJoinTiers> getSectionsCompteAnnexeFirst(
+            List<CASectionJoinCompteAnnexeJoinTiers> sections, String idCompteAnnexe, Montant montant) {
+        List<CASectionJoinCompteAnnexeJoinTiers> sectionsTiers = new ArrayList<CASectionJoinCompteAnnexeJoinTiers>();
+        List<CASectionJoinCompteAnnexeJoinTiers> sectionsFamily = new ArrayList<CASectionJoinCompteAnnexeJoinTiers>();
+        for (CASectionJoinCompteAnnexeJoinTiers section : sections) {
+            if (idCompteAnnexe.equals(section.getIdCompteAnnexe())) {
+                if (section.getSolde().equals(montant.negate().toStringValue())) {
+                    sectionsTiers.add(0, section);
+                } else {
+                    sectionsTiers.add(section);
+                }
+            } else {
+                if (section.getSolde().equals(montant.negate().toStringValue())) {
+                    sectionsFamily.add(0, section);
+                } else {
+                    sectionsFamily.add(section);
+                }
+            }
+        }
+        sectionsTiers.addAll(sectionsFamily);
+        return sectionsTiers;
+    }
+
+    class SectionsComparator implements Comparator<CASectionJoinCompteAnnexeJoinTiers> {
+        @Override
+        public int compare(CASectionJoinCompteAnnexeJoinTiers a, CASectionJoinCompteAnnexeJoinTiers b) {
+            return Integer.valueOf(a.getIdSection()) < Integer.valueOf(b.getIdSection()) ? -1 : Integer.valueOf(a
+                    .getIdSection()) == Integer.valueOf(b.getIdSection()) ? 0 : 1;
+        }
     }
 
     private RELigneDeblocageVentilation newVentilation(CASectionJoinCompteAnnexeJoinTiers section,

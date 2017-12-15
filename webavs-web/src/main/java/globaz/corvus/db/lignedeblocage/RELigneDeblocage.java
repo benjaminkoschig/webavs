@@ -25,6 +25,7 @@ public class RELigneDeblocage extends JadeEntity {
     private RELigneDeblocageEtat etat;
     private Montant montant;
     private String refPaiement;
+    private String idCompteAnnexe;
 
     @Override
     protected void writeProperties() {
@@ -213,6 +214,14 @@ public class RELigneDeblocage extends JadeEntity {
                 throw new REDeblocageException("It is not possible to change the stat from enregistre to comtpabilisé!");
             }
         }
+    }
+
+    public String getIdCompteAnnexe() {
+        return idCompteAnnexe;
+    }
+
+    public void setIdCompteAnnexe(String idCompteAnnexe) {
+        this.idCompteAnnexe = idCompteAnnexe;
     }
 
 }
