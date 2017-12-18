@@ -34,14 +34,14 @@ public class EBPucsFileEntity extends JadeEntity {
     private String provenance;
     private BigDecimal totalControle;
     private Double sizeFileInKo;
-    private boolean afSeul;
-    private boolean duplicate;
+    private Boolean afSeul;
+    private Boolean duplicate;
     private Integer niveauSecurite;
     private Boolean salaireInferieurLimite;
     private File file;
     private String searchString;
-    private boolean forTest;
-    private boolean certifieExact;
+    private Boolean forTest;
+    private Boolean certifieExact;
     private Date dateValidation;
     private String nomValidation;
 
