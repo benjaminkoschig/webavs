@@ -1,0 +1,96 @@
+<jaxb:bindings xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" version="2.1">
+
+    <!-- Configure our custom xsd -->
+    <jaxb:bindings schemaLocation="../xsd/rpc/eahv-iv-2469-000101-1-5.xsd"
+        node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="rpc.ch.eahv_iv.xmlns.eahv_iv_2469_000101._1" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+
+    <jaxb:bindings schemaLocation="../xsd/rpc/eahv-iv-2469-000201-1-5.xsd"
+        node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="rpc.ch.eahv_iv.xmlns.eahv_iv_2469_000201._1" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+
+     <jaxb:bindings schemaLocation="../xsd/rpc/eahv-iv-2469-000301-1-5.xsd"
+        node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="rpc.ch.eahv_iv.xmlns.eahv_iv_2469_000301._1" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+
+    <jaxb:bindings schemaLocation="../xsd/rpc/eahv-iv-2469-000501-1-5.xsd"
+        node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="rpc.ch.eahv_iv.xmlns.eahv_iv_2469_000501._1" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+    
+    <jaxb:bindings schemaLocation="../xsd/rpc/eahv-iv-2469-common-1-5.xsd"
+        node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="rpc.ch.eahv_iv.xmlns.eahv_iv_2469_common._1" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+
+    <jaxb:bindings schemaLocation="../xsd/rpc/eCH-0006-2-0.xsd"
+        node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="rpc.ch.ech.xmlns.ech_0006._2" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+
+    <jaxb:bindings schemaLocation="../xsd/rpc/eCH-0007-5-0.xsd"
+        node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="rpc.ch.ech.xmlns.ech_0007._5" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+
+    <jaxb:bindings schemaLocation="../xsd/rpc/eCH-0008-3-0.xsd"
+        node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="rpc.ch.ech.xmlns.ech_0008._3" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+    
+    <jaxb:bindings schemaLocation="../xsd/rpc/eCH-0010-5-0.xsd"
+        node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="rpc.ch.ech.xmlns.ech_0010._5" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+    
+    <jaxb:bindings schemaLocation="../xsd/rpc/eCH-0011-8-0.xsd"
+        node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="rpc.ch.ech.xmlns.ech_0011._8" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+    
+    <jaxb:bindings schemaLocation="../xsd/rpc/eCH-0044-4-0.xsd"
+        node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="rpc.ch.ech.xmlns.ech_0044._4" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+    
+    <jaxb:bindings schemaLocation="../xsd/rpc/eCH-0058-5-0.xsd"
+        node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="rpc.ch.ech.xmlns.ech_0058._5" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+    
+    <jaxb:bindings schemaLocation="../xsd/rpc/eCH-0135-1-0.xsd"
+        node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="rpc.ch.ech.xmlns.ech_0135._1" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+    
+</jaxb:bindings>

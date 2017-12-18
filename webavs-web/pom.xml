@@ -181,6 +181,7 @@
 							<bindingDirectory>src/main/resources/xjb</bindingDirectory>
 							<bindingIncludes>
 								<include>ree-bindings.xjb</include>
+								<include>rpc-bindings.xjb</include>
 							</bindingIncludes>
 						</configuration>
 					</execution>

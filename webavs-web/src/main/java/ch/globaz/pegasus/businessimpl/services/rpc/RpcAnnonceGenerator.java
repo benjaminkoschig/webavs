@@ -10,7 +10,7 @@ import java.lang.reflect.Type;
 import java.util.Map.Entry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ch.ech.xmlns.ech_0058._5.SendingApplicationType;
+import rpc.ch.ech.xmlns.ech_0058._5.SendingApplicationType;
 import ch.globaz.common.domaine.Montant;
 import ch.globaz.common.exceptions.ValidationException;
 import ch.globaz.common.properties.PropertiesException;
@@ -42,9 +42,9 @@ import com.google.gson.JsonSerializationContext;
 public class RpcAnnonceGenerator implements Closeable {
     private static final Logger LOG = LoggerFactory.getLogger(RpcAnnonceGenerator.class);
 
-    private final SedexGeneratorConvertor<ch.eahv_iv.xmlns.eahv_iv_2469_000101._1.ContentType> sedexConvertor101;
-    private final SedexGeneratorConvertor<ch.eahv_iv.xmlns.eahv_iv_2469_000201._1.ContentType> sedexConvertor201;
-    private final SedexGeneratorConvertor<ch.eahv_iv.xmlns.eahv_iv_2469_000301._1.ContentType> sedexConvertor301;
+    private final SedexGeneratorConvertor<rpc.ch.eahv_iv.xmlns.eahv_iv_2469_000101._1.ContentType> sedexConvertor101;
+    private final SedexGeneratorConvertor<rpc.ch.eahv_iv.xmlns.eahv_iv_2469_000201._1.ContentType> sedexConvertor201;
+    private final SedexGeneratorConvertor<rpc.ch.eahv_iv.xmlns.eahv_iv_2469_000301._1.ContentType> sedexConvertor301;
     private final InfoCaisse infoCaisse;
 
     public RpcAnnonceGenerator() {
@@ -65,15 +65,15 @@ public class RpcAnnonceGenerator implements Closeable {
         sedexConvertor301 = buildSedex301Convertor(sendingApplicationType, sedexSender);
     }
 
-    public SedexGeneratorConvertor<ch.eahv_iv.xmlns.eahv_iv_2469_000101._1.ContentType> getSedexConvertor101() {
+    public SedexGeneratorConvertor<rpc.ch.eahv_iv.xmlns.eahv_iv_2469_000101._1.ContentType> getSedexConvertor101() {
         return sedexConvertor101;
     }
 
-    public SedexGeneratorConvertor<ch.eahv_iv.xmlns.eahv_iv_2469_000201._1.ContentType> getSedexConvertor201() {
+    public SedexGeneratorConvertor<rpc.ch.eahv_iv.xmlns.eahv_iv_2469_000201._1.ContentType> getSedexConvertor201() {
         return sedexConvertor201;
     }
 
-    public SedexGeneratorConvertor<ch.eahv_iv.xmlns.eahv_iv_2469_000301._1.ContentType> getSedexConvertor301() {
+    public SedexGeneratorConvertor<rpc.ch.eahv_iv.xmlns.eahv_iv_2469_000301._1.ContentType> getSedexConvertor301() {
         return sedexConvertor301;
     }
 
@@ -125,25 +125,25 @@ public class RpcAnnonceGenerator implements Closeable {
         sedexConvertor301.sendMessages();
     }
 
-    private SedexGeneratorConvertor<ch.eahv_iv.xmlns.eahv_iv_2469_000101._1.ContentType> buildSedex101Convertor(
+    private SedexGeneratorConvertor<rpc.ch.eahv_iv.xmlns.eahv_iv_2469_000101._1.ContentType> buildSedex101Convertor(
             SendingApplicationType sendingApplicationType, SedexSender sedexSender) {
         Sedex2469_101 sedex101 = new Sedex2469_101(sedexSender, infoCaisse, sendingApplicationType, "RPC_101");
-        return new SedexGeneratorConvertor<ch.eahv_iv.xmlns.eahv_iv_2469_000101._1.ContentType>(sedex101,
+        return new SedexGeneratorConvertor<rpc.ch.eahv_iv.xmlns.eahv_iv_2469_000101._1.ContentType>(sedex101,
                 new Converter2469_101(infoCaisse));
     }
 
-    private SedexGeneratorConvertor<ch.eahv_iv.xmlns.eahv_iv_2469_000201._1.ContentType> buildSedex201Convertor(
+    private SedexGeneratorConvertor<rpc.ch.eahv_iv.xmlns.eahv_iv_2469_000201._1.ContentType> buildSedex201Convertor(
             SendingApplicationType sendingApplicationType, SedexSender sedexSender) {
         Sedex2469_201 sedex201 = new Sedex2469_201(sedexSender, infoCaisse, sendingApplicationType,
                 sedexConvertor101.getSedexInfo());
-        return new SedexGeneratorConvertor<ch.eahv_iv.xmlns.eahv_iv_2469_000201._1.ContentType>(sedex201,
+        return new SedexGeneratorConvertor<rpc.ch.eahv_iv.xmlns.eahv_iv_2469_000201._1.ContentType>(sedex201,
                 new Converter2469_201(infoCaisse));
     }
 
-    private SedexGeneratorConvertor<ch.eahv_iv.xmlns.eahv_iv_2469_000301._1.ContentType> buildSedex301Convertor(
+    private SedexGeneratorConvertor<rpc.ch.eahv_iv.xmlns.eahv_iv_2469_000301._1.ContentType> buildSedex301Convertor(
             SendingApplicationType sendingApplicationType, SedexSender sedexSender) {
         Sedex2469_301 sedex301 = new Sedex2469_301(sedexSender, infoCaisse, sendingApplicationType, "RPC_301");
-        return new SedexGeneratorConvertor<ch.eahv_iv.xmlns.eahv_iv_2469_000301._1.ContentType>(sedex301,
+        return new SedexGeneratorConvertor<rpc.ch.eahv_iv.xmlns.eahv_iv_2469_000301._1.ContentType>(sedex301,
                 new Converter2469_301(infoCaisse));
     }
 

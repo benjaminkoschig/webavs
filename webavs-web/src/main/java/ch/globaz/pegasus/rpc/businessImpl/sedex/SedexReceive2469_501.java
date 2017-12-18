@@ -23,7 +23,7 @@ import java.util.Properties;
 import javax.xml.bind.JAXBException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ch.eahv_iv.xmlns.eahv_iv_2469_000501._1.Message;
+import rpc.ch.eahv_iv.xmlns.eahv_iv_2469_000501._1.Message;
 import ch.globaz.common.listoutput.SimpleOutputListBuilderJade;
 import ch.globaz.common.properties.CommonProperties;
 import ch.globaz.common.properties.PropertiesException;

@@ -4,26 +4,26 @@ import java.math.BigDecimal;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ch.eahv_iv.xmlns.eahv_iv_2469_000101._1.AddressType;
-import ch.eahv_iv.xmlns.eahv_iv_2469_000101._1.CalculationElementsType;
-import ch.eahv_iv.xmlns.eahv_iv_2469_000101._1.CaseType;
-import ch.eahv_iv.xmlns.eahv_iv_2469_000101._1.CompensationOfficeType;
-import ch.eahv_iv.xmlns.eahv_iv_2469_000101._1.ContentType;
-import ch.eahv_iv.xmlns.eahv_iv_2469_000101._1.DecisionType;
-import ch.eahv_iv.xmlns.eahv_iv_2469_000101._1.DecisionsType;
-import ch.eahv_iv.xmlns.eahv_iv_2469_000101._1.ElAmountsType;
-import ch.eahv_iv.xmlns.eahv_iv_2469_000101._1.HousingOwnerType;
-import ch.eahv_iv.xmlns.eahv_iv_2469_000101._1.ObjectFactory;
-import ch.eahv_iv.xmlns.eahv_iv_2469_000101._1.PensionType;
-import ch.eahv_iv.xmlns.eahv_iv_2469_000101._1.PersonType;
-import ch.eahv_iv.xmlns.eahv_iv_2469_000101._1.PersonalCalculationElementsType;
-import ch.eahv_iv.xmlns.eahv_iv_2469_000101._1.PersonalCalculationElementsType.PensionCategory;
-import ch.eahv_iv.xmlns.eahv_iv_2469_000101._1.PersonsType;
-import ch.eahv_iv.xmlns.eahv_iv_2469_000101._1.RealPropertyType;
-import ch.eahv_iv.xmlns.eahv_iv_2469_000101._1.RentsType;
-import ch.eahv_iv.xmlns.eahv_iv_2469_000101._1.ResidenceCostsType;
-import ch.eahv_iv.xmlns.eahv_iv_2469_common._1.DeliveryOfficeType;
-import ch.ech.xmlns.ech_0007._5.CantonAbbreviationType;
+import rpc.ch.eahv_iv.xmlns.eahv_iv_2469_000101._1.AddressType;
+import rpc.ch.eahv_iv.xmlns.eahv_iv_2469_000101._1.CalculationElementsType;
+import rpc.ch.eahv_iv.xmlns.eahv_iv_2469_000101._1.CaseType;
+import rpc.ch.eahv_iv.xmlns.eahv_iv_2469_000101._1.CompensationOfficeType;
+import rpc.ch.eahv_iv.xmlns.eahv_iv_2469_000101._1.ContentType;
+import rpc.ch.eahv_iv.xmlns.eahv_iv_2469_000101._1.DecisionType;
+import rpc.ch.eahv_iv.xmlns.eahv_iv_2469_000101._1.DecisionsType;
+import rpc.ch.eahv_iv.xmlns.eahv_iv_2469_000101._1.ElAmountsType;
+import rpc.ch.eahv_iv.xmlns.eahv_iv_2469_000101._1.HousingOwnerType;
+import rpc.ch.eahv_iv.xmlns.eahv_iv_2469_000101._1.ObjectFactory;
+import rpc.ch.eahv_iv.xmlns.eahv_iv_2469_000101._1.PensionType;
+import rpc.ch.eahv_iv.xmlns.eahv_iv_2469_000101._1.PersonType;
+import rpc.ch.eahv_iv.xmlns.eahv_iv_2469_000101._1.PersonalCalculationElementsType;
+import rpc.ch.eahv_iv.xmlns.eahv_iv_2469_000101._1.PersonalCalculationElementsType.PensionCategory;
+import rpc.ch.eahv_iv.xmlns.eahv_iv_2469_000101._1.PersonsType;
+import rpc.ch.eahv_iv.xmlns.eahv_iv_2469_000101._1.RealPropertyType;
+import rpc.ch.eahv_iv.xmlns.eahv_iv_2469_000101._1.RentsType;
+import rpc.ch.eahv_iv.xmlns.eahv_iv_2469_000101._1.ResidenceCostsType;
+import rpc.ch.eahv_iv.xmlns.eahv_iv_2469_common._1.DeliveryOfficeType;
+import rpc.ch.ech.xmlns.ech_0007._5.CantonAbbreviationType;
 import ch.globaz.naos.ree.tools.InfoCaisse;
 import ch.globaz.pegasus.rpc.domaine.PersonElementsCalcul;
 import ch.globaz.pegasus.rpc.domaine.RpcAddress;
@@ -88,7 +88,7 @@ public class Converter2469_101 implements Converter<RpcData, ContentType> {
     }
 
     private DecisionType convertDecision(AnnonceDecision annonceDecision) {
-        ch.eahv_iv.xmlns.eahv_iv_2469_common._1.ObjectFactory commonFactory = new ch.eahv_iv.xmlns.eahv_iv_2469_common._1.ObjectFactory();
+        rpc.ch.eahv_iv.xmlns.eahv_iv_2469_common._1.ObjectFactory commonFactory = new rpc.ch.eahv_iv.xmlns.eahv_iv_2469_common._1.ObjectFactory();
 
         DecisionType xmlDeci = factory.createDecisionType();
         xmlDeci.setDecisionId(annonceDecision.getDecisionId());
