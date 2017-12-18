@@ -221,6 +221,11 @@ public class RpcDataLoader {
         return load(mapDecision, decisionsRefus);
     }
 
+    /**
+     * only if decision positive
+     * 
+     * @param currentPca
+     */
     private void removeDateFin(List<RPCDecionsPriseDansLeMois> currentPca) {
         for (RPCDecionsPriseDansLeMois rpcDecionsPriseDansLeMois : currentPca) {
             rpcDecionsPriseDansLeMois.getSimplePCAccordee().setDateFin(null);
@@ -482,7 +487,7 @@ public class RpcDataLoader {
         search.setForCsEtatPca(PcaEtat.VALIDE.getValue());
         // Ou date ultérieur au mois paiement
         search.setForDateFinMoisFutur(dateDernierPaiement.getSwissMonthValue());
-
+        search.getForCsEtatDemandeMoisFutur().add(IPCDemandes.CS_REFUSE);
         // search.getForCsMotifNotIn().add(MotifDroit.ADAPTATION.getValue());
         search.setForIdsVersionDroitNotIn(idsVersionDroitNotIn);
         LOG.info("requête loadPcaCourante");

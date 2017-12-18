@@ -34,6 +34,7 @@ public enum RpcPlausiCaissesCompensation {
     CCC_150(150, "Jura"),
     CCC_261(26, 1, "Caisse fédérale de compensation CFC"),
     CCC_27(27, "Caisse suisse de compensation CSC"),
+    CCC_272(27, 2, "SAK assurance facultative"),
     // Caisses professionnelles
     CCP_28(28, "medisuisse"),
     CCP_30(30, "Imorek"),

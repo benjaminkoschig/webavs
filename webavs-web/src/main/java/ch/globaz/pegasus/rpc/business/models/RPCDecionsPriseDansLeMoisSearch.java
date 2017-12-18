@@ -17,6 +17,7 @@ public class RPCDecionsPriseDansLeMoisSearch extends JadeSearchComplexModel {
     private String forDateFinPca;
     private String forIdDemande;
     private Collection<String> forCsMotifNotIn = new ArrayList<String>();
+    private Collection<String> forCsEtatDemandeMoisFutur = new ArrayList<String>();
     private Collection<String> forIdsVersionDroit = new ArrayList<String>();
     private Collection<String> forIdsVersionDroitNotIn = new ArrayList<String>();
     private Collection<String> forIdsDecsion = new ArrayList<String>();
@@ -152,6 +153,14 @@ public class RPCDecionsPriseDansLeMoisSearch extends JadeSearchComplexModel {
 
     public void setForIdDemande(String forIdDemande) {
         this.forIdDemande = forIdDemande;
+    }
+
+    public Collection<String> getForCsEtatDemandeMoisFutur() {
+        return forCsEtatDemandeMoisFutur;
+    }
+
+    public void setForCsEtatDemandeMoisFutur(Collection<String> forCsEtatDemandeMoisFutur) {
+        this.forCsEtatDemandeMoisFutur = forCsEtatDemandeMoisFutur;
     }
 
     @Override
