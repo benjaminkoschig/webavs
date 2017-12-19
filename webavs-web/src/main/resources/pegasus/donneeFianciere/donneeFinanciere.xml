@@ -162,6 +162,7 @@
 			<select-field name="taxeJournaliereMontantJournalierLCA" field-ref="simpleTaxeJournaliereHome.montantJournalierLCA"/>
 			<select-field name="taxeJournalierePrimeAPayer" field-ref="simpleTaxeJournaliereHome.primeAPayer"/>
 			<select-field name="taxeJournaliereDateEntreeHome" field-ref="simpleTaxeJournaliereHome.dateEntreeHome"/>
+			<select-field name="taxeJournaliereLongueDuree" field-ref="simpleTaxeJournaliereHome.montantFraisLongueDuree"/>
 			<select-field name="loyerMontant" field-ref="simpleLoyer.montantLoyerNet"/>
 			<select-field name="loyerMontantCharges" field-ref="simpleLoyer.montantCharges"/>
 			<select-field name="loyerIsFauteuilRoulant" field-ref="simpleLoyer.isFauteuilRoulant"/>

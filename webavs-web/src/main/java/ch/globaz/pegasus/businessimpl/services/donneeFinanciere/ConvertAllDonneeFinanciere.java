@@ -179,8 +179,11 @@ class ConvertAllDonneeFinanciere {
             Date dateEntreeHome = DonneeFinanciereConverter.toDate(dr.getTaxeJournaliereDateEntreeHome());
             Montant montantJournalierLca = toMontant(dr.getTaxeJournaliereMontantJournalierLCA());
             Montant primeAPayer = toMontant(dr.getTaxeJournalierePrimeAPayer());
+            Montant fraisLongueDuree = toMontant(dr.getTaxeJournaliereLongueDuree());
+
             TaxeJournaliereHome taxeJournalierHome = new TaxeJournaliereHome(montantJournalierLca, primeAPayer,
-                    dr.getTaxeJournaliereIsParticipationLCA(), dateEntreeHome, dr.getTaxeJournaliereIdTypeChambre(), df);
+                    dr.getTaxeJournaliereIsParticipationLCA(), dateEntreeHome, dr.getTaxeJournaliereIdTypeChambre(),
+                    fraisLongueDuree, df);
             list.add(taxeJournalierHome);
         } else if (dft.isCompteBancairePostal()) {
 

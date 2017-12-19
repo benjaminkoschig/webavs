@@ -125,11 +125,18 @@ public class PersonneElementsCalculConverter {
 
             TypeChambrePrix typeChambrePrix = resolveTypeChambre(parameters, dateDebut, taxeJournaliereHome);
             Montant homeTaxeHomeTotal = typeChambrePrix.getPrix().annualise(dateDebut);
+
             perElCal.setHomeTaxeHomeTotal(homeTaxeHomeTotal);
             Montant plafond = isCantonValais ? resolvePlafondHome(parameters.getVariablesMetier(),
                     typeChambrePrix.getServiceEtat()).annualise(dateDebut) : Montant.ZERO_ANNUEL;
             perElCal.setHomeTaxeHomePrisEnCompte(homeTaxeHomeTotal.greater(plafond) && !plafond.isZero() ? plafond
                     : homeTaxeHomeTotal);
+            if (isCantonValais) {
+                perElCal.setHomeTaxeHomePrisEnCompte(perElCal.getHomeTaxeHomePrisEnCompte().add(
+                        taxeJournaliereHome.getFraisLongueDuree().annualise(dateDebut)));
+                perElCal.setHomeTaxeHomeTotal(perElCal.getHomeTaxeHomeTotal().add(
+                        taxeJournaliereHome.getFraisLongueDuree().annualise(dateDebut)));
+            }
             perElCal.setHomeDepensesPersonnelles(resolveArgentDepoche(typeChambrePrix.getCategorieArgentPoche(),
                     typeChambrePrix.getCategorie(), parameters.getVariablesMetier(), dateDebut, isLvpc));
             // TODO

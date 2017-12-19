@@ -216,6 +216,7 @@ public class DonneeFinanciereComplexModel extends JadeComplexModel {
     private Boolean taxeJournaliereIsParticipationLCA = null;
     private String taxeJournaliereMontantJournalierLCA = null;
     private String taxeJournalierePrimeAPayer = null;
+    private String taxeJournaliereLongueDuree = null;
 
     private String titreCsTypePropriete = null;
 
@@ -1095,6 +1096,10 @@ public class DonneeFinanciereComplexModel extends JadeComplexModel {
 
     public String getTaxeJournalierePrimeAPayer() {
         return taxeJournalierePrimeAPayer;
+    }
+
+    public String getTaxeJournaliereLongueDuree() {
+        return taxeJournaliereLongueDuree;
     }
 
     /**
@@ -2094,6 +2099,10 @@ public class DonneeFinanciereComplexModel extends JadeComplexModel {
 
     public void setTaxeJournalierePrimeAPayer(String taxeJournalierePrimeAPayer) {
         this.taxeJournalierePrimeAPayer = taxeJournalierePrimeAPayer;
+    }
+
+    public void setTaxeJournaliereLongueDuree(String taxeJournaliereLongueDuree) {
+        this.taxeJournaliereLongueDuree = taxeJournaliereLongueDuree;
     }
 
     /**
