@@ -205,7 +205,7 @@ $(function(){
 					<td colspan="6">
 						<ct:select wantBlank="true" 
 						           name="csPermis" 
-						           defaultValue="<%=donnee.getSimpleDonneesPersonnelles().getCsLienRepondant()%>" 
+						           defaultValue="<%=donnee.getSimpleDonneesPersonnelles().getCsPermis()%>" 
 						           styleClass="csPermis">
 							<ct:optionsCodesSystems csFamille="PCPERMIS"/>
 						</ct:select>
