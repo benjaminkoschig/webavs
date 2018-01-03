@@ -65,7 +65,7 @@ public class RELibererDevaliderDeblocage {
                 Long.valueOf(APIReferenceRubrique.IMPOT_A_LA_SOURCE));
 
         RELigneDeblocageVentilator ventilator = new RELigneDeblocageVentilator(deblocagesEnregistre,
-                deblocage.getSections());
+                deblocage.getSections(), deblocage.getPracc().getIdCompteAnnexe());
 
         ventilationService.save(ventilator.ventil());
         deblocageService.update(deblocagesEnregistre);

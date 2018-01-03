@@ -15,10 +15,12 @@ class RELigneDeblocageVentilator {
     private final RELigneDeblocages lignesDeblocages;
     private final List<CASectionJoinCompteAnnexeJoinTiers> sections;
     private final Montant sumDeblocage;
+    private final String idCompteAnnexe;
 
     public RELigneDeblocageVentilator(RELigneDeblocages lignesDeblocages,
-            List<CASectionJoinCompteAnnexeJoinTiers> sections) {
+            List<CASectionJoinCompteAnnexeJoinTiers> sections, String idCompteAnnexe) {
 
+        this.idCompteAnnexe = idCompteAnnexe;
         sumDeblocage = sumDeblocage(lignesDeblocages).abs();
         Montant sumSection = sumSection(sections).abs();
 
@@ -59,8 +61,8 @@ class RELigneDeblocageVentilator {
         List<RELigneDeblocageVentilation> ventiliations = new ArrayList<RELigneDeblocageVentilation>();
         Montant montantAVantiler = ligne.getMontant();
         Collections.sort(sections, new SectionsComparator());
-        List<CASectionJoinCompteAnnexeJoinTiers> orderSections = getSectionsCompteAnnexeFirst(sections,
-                ligne.getIdCompteAnnexe(), montantAVantiler);
+        List<CASectionJoinCompteAnnexeJoinTiers> orderSections = getSectionsCompteAnnexeFirst(sections, idCompteAnnexe,
+                montantAVantiler);
 
         for (CASectionJoinCompteAnnexeJoinTiers section : orderSections) {
             Montant resteInSection = new Montant(section.getSolde()).abs();

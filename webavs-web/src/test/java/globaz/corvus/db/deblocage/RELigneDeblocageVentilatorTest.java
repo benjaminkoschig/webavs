@@ -23,7 +23,7 @@ public class RELigneDeblocageVentilatorTest {
         List<CASectionJoinCompteAnnexeJoinTiers> sections = new ArrayList<CASectionJoinCompteAnnexeJoinTiers>();
         sections.add(createSection(100, 2));
 
-        RELigneDeblocageVentilator ventilator = new RELigneDeblocageVentilator(deblocages, sections);
+        RELigneDeblocageVentilator ventilator = new RELigneDeblocageVentilator(deblocages, sections, null);
         List<RELigneDeblocageVentilation> ventilations = ventilator.ventil();
         assertThat(ventilations).hasSize(1);
         assertThat(ventilations).contains(newVentialtion(1, 2, 10));
@@ -49,7 +49,7 @@ public class RELigneDeblocageVentilatorTest {
         sections.add(createSection(10, 1));
         sections.add(createSection(100, 3));
 
-        RELigneDeblocageVentilator ventilator = new RELigneDeblocageVentilator(deblocages, sections);
+        RELigneDeblocageVentilator ventilator = new RELigneDeblocageVentilator(deblocages, sections, null);
         List<RELigneDeblocageVentilation> ventilations = ventilator.ventil();
         assertThat(ventilations).hasSize(2);
         assertThat(ventilations).contains(newVentialtion(1, 2, 10), newVentialtion(1, 3, 5));
@@ -66,7 +66,7 @@ public class RELigneDeblocageVentilatorTest {
         List<CASectionJoinCompteAnnexeJoinTiers> sections = new ArrayList<CASectionJoinCompteAnnexeJoinTiers>();
         sections.add(createSection(10, 1));
 
-        RELigneDeblocageVentilator ventilator = new RELigneDeblocageVentilator(deblocages, sections);
+        RELigneDeblocageVentilator ventilator = new RELigneDeblocageVentilator(deblocages, sections, null);
         assertThat(ventilator.ventil()).hasSize(1);
     }
 
@@ -84,7 +84,7 @@ public class RELigneDeblocageVentilatorTest {
         sections.add(createSection(10, 3));
         sections.add(createSection(16, 4));
 
-        RELigneDeblocageVentilator ventilator = new RELigneDeblocageVentilator(deblocages, sections);
+        RELigneDeblocageVentilator ventilator = new RELigneDeblocageVentilator(deblocages, sections, null);
         assertThat(ventilator.ventil()).hasSize(3);
     }
 
@@ -99,7 +99,7 @@ public class RELigneDeblocageVentilatorTest {
         List<CASectionJoinCompteAnnexeJoinTiers> sections = new ArrayList<CASectionJoinCompteAnnexeJoinTiers>();
         sections.add(createSection(10, 1));
 
-        RELigneDeblocageVentilator ventilator = new RELigneDeblocageVentilator(deblocages, sections);
+        RELigneDeblocageVentilator ventilator = new RELigneDeblocageVentilator(deblocages, sections, null);
         assertThat(ventilator.ventil()).hasSize(1);
     }
 
