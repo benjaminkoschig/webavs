@@ -70,6 +70,7 @@ class RELigneDeblocageVentilator {
                 if (!resteInSection.greaterOrEquals(montantAVantiler)) {
                     montantAVantiler = montantAVantiler.substract(resteInSection);
                     ventiliations.add(newVentilation(section, ligne.getIdEntity(), resteInSection));
+                    resteInSection = Montant.ZERO;
                 } else {
                     resteInSection = resteInSection.substract(montantAVantiler);
                     ventiliations.add(newVentilation(section, ligne.getIdEntity(), montantAVantiler));
