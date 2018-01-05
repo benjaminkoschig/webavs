@@ -1,3 +1,4 @@
+var showWarn = false;
 var fieldsForMotifDecesHandler = {
 		$csMotif: null,
 		$dateSuppressionTr: null,
@@ -35,6 +36,7 @@ var fieldsForMotifDecesHandler = {
 				this.$dateSuppressionTr.show();
 				this.$dateDecisionTr.show();
 				this.$montantRestitutionTr.show();
+				showWarn = true;
 			}else{
 				this.$dateSuppressionTr.hide();
 				this.$dateDecisionTr.hide();
@@ -42,6 +44,7 @@ var fieldsForMotifDecesHandler = {
 				this.$dateSuppression.val("");
 				this.$dateDecision.val("");
 				this.$montantRestitution.val("");
+				showWarn = false;
 			}
 		},
 		
@@ -74,17 +77,43 @@ $(document).ready(function(){
 	  $('#btnVal').off("click");
 	  $('#btnVal').removeAttr('onclick');
 	  $('#btnVal').click(function(e) { 
-		  if(validate()) {
-			  if($('#csMotif').val() == globazGlobal.csMotifDeces && parseFloat($('#montantRestitution').val()) > 0) {
-				  showConfirmDialogForCreateLot();
-			  } else {
-				  action(COMMIT);
-			  }
+		  if(showWarn) {
+			  showConfirmDialog();
+		  } else {
+			  validateCorrigerDroit();
 		  }
 	  });
 	  
-
   });
+
+function validateCorrigerDroit(){
+	  if(validate()) {
+		  if($('#csMotif').val() == globazGlobal.csMotifDeces && parseFloat($('#montantRestitution').val()) > 0) {
+			  showConfirmDialogForCreateLot();
+		  } else {
+			 action(COMMIT);
+		  }
+	  }
+}
+
+var showConfirmDialog = function () {
+	$( "#dialog-warningRFM-confirm" ).dialog({
+        resizable: false,
+        height:300,
+        width:500,
+        modal: true,
+        
+        buttons: {
+        	"OK": function() {
+              $( this ).dialog( "close" );
+              validateCorrigerDroit();
+            },
+            "Annuler": function() {
+                $( this ).dialog( "close" );
+            }
+        }
+    });
+};
   
   var showConfirmDialogForCreateLot = function () {
 		$( "#dialog-confirm-creation-lot" ).dialog({

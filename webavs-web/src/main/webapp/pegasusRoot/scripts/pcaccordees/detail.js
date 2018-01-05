@@ -15,3 +15,23 @@ var setConjointInfosState = function (displayState) {
 		$('#zoneAdressePaiementCon').hide();
 	}
 }
+
+var showConfirmDialogForBlocage = function () {
+	$( "#dialog-warningRFM-confirm" ).dialog({
+        resizable: false,
+        height:300,
+        width:500,
+        modal: true,
+        
+        buttons: {
+        	"OK": function() {
+                $( this ).dialog( "close" );
+                //userAction.value=ACTION_DECISION_DEVALIDE;
+        		action(COMMIT);
+            },
+            "Annuler": function() {
+                $( this ).dialog( "close" );
+            }
+        }
+    });
+};

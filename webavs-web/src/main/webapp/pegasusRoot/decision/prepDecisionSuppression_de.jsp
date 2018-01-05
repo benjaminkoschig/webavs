@@ -42,6 +42,20 @@ String titleErroxBox = objSession.getLabel("JSP_GLOBAL_ERROR_BOX_TITLE");//titre
 <%@ include file="/theme/process/javascripts.jspf" %>
 <%@ include file="/pegasusRoot/ajax/javascriptsAndCSS.jspf" %>
 <link rel="stylesheet" type="text/css" href="<%=rootPath%>/css/decision/preparation.css"/>
+<style type="text/css">
+	#dialog-warningRFM-confirm{
+		display:none;
+	}
+	
+	#preparer_btn_sup1{
+		display:auto;
+	}
+	
+	#preparer_btn_sup2{
+		display:none;
+	}
+	
+</style>
 <%-- ********************************** HACK CACHER LE LIEN AFFICHER LES ERREURS ********************** --%>
 <% 
 vBeanHasErrors = false;
@@ -53,6 +67,7 @@ vBeanHasErrors = false;
 -->
 <!--  notation spécifique pc -->
 <script type="text/javascript" src="<%=servletContext%><%=(mainServletPath+"Root")%>/scripts/notationsCandidate/globazPreventDoubleClick.js"></script>
+<script type="text/javascript" src="<%=servletContext%>/pegasusRoot/scripts/decision/prepDecisionSup.js"></script>
 <script type="text/javascript">
 
 var ACTION_DECISION = "pegasus.decision.prepDecisionSuppression";
@@ -101,11 +116,11 @@ $(function(){
 	pegasusErrorsUtils.dealErrors(<%= request.getParameter("decisionErrorMsg") %>,"<%= titleErroxBox %>");
 	
 	//Action préparation des décisions
-	$('#preparer_btn_sup').one('click',function () {
+	$('#preparer_btn_sup1').bind('click',function () {
 		$('[name=idVersionDroit]').val('<%= viewBean.getIdVersionDroit()%>');
-		state = true;
 		userAction.value=ACTION_DECISION+".preparer";
-		document.forms[0].submit();	
+		//document.forms[0].submit();
+		showConfirmDialogForSuppression();
 	});
 	
 
@@ -275,7 +290,8 @@ var initValue = {"masterValue":"","childValue":""};
 			if (showProcessButton) { %>
 		<tr>
 			<td bgcolor="#FFFFFF" colspan="3" align="center">
-				<input id="preparer_btn_sup" type="button" value="<%= objSession.getLabel("JSP_PC_PREP_DECISION_SUPPR_DE_TITRE") %>" data-g-preventdoubleclick="label:<%= objSession.getLabel("JSP_PC_PREP_DECISION_CALCUL_DE_PROCESS_MSG") %>,labelCssClass:lbl_process_running" />
+				<input id="preparer_btn_sup1" type="button" value="<%= objSession.getLabel("JSP_PC_PREP_DECISION_SUPPR_DE_TITRE") %>" />
+				<input id="preparer_btn_sup2" type="button" data-g-preventdoubleclick="label:<%= objSession.getLabel("JSP_PC_PREP_DECISION_CALCUL_DE_PROCESS_MSG") %>,labelCssClass:lbl_process_running" />
 			</td>
 		</tr>
 		<% } %>
@@ -295,6 +311,12 @@ var initValue = {"masterValue":"","childValue":""};
 		</TR>
 	</TBODY>
 </TABLE>
+
+<!-- **************************** Warning sur l'existance de prestations dans RFM -->
+<div id="dialog-warningRFM-confirm" title="">
+	<p><span class="ui-icon ui-icon-alert" style="float: left; margin: 0 7px 20px 0;"></span><%= objSession.getLabel("JSP_PC_WARNING_PRESTATIONS_RFM")%></p>
+</div>
+
 <%-- tpl:put name="zoneEndPage" --%><%	if (request.getParameter("_back") != null && request.getParameter("_back").equals("sl")) { %> <%	}%> <%-- /tpl:put --%>
 <%@ include file="/theme/process/bodyClose.jspf" %>
 <%-- /tpl:insert --%>

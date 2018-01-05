@@ -12,6 +12,7 @@
 <%@ page isELIgnored ="false" %>
 <%@page import="ch.globaz.pegasus.businessimpl.utils.PCGedUtils"%>
 <%@page import="globaz.pegasus.vb.pcaccordee.PCPcAccordeeDetailViewBean"%>
+<%@ include file="/theme/detail/header.jspf" %>
 <%-- ***********************************************************  variables de pages ****************************************************--%>
 <c:set var="userActionUpd" value="pegasus.pcaccordee.pcAccordeeDetail.modifier" scope="page"/>
 <c:set var="userActionDel" value="pegasus.pcaccordee.pcAccordeeDetail.supprimer" scope="page"/>
@@ -128,6 +129,12 @@
 	<script type="text/javascript" src="${rootPath}/scripts/pegasusErrorsUtil.js"></script> 
 	<script type="text/javascript" src="${pageContext.request.contextPath}/scripts/growl/src/jquery.notify.js"></script>
 	
+	<style type="text/css">
+		#dialog-warningRFM-confirm{
+			display:none;
+		}
+	</style>
+	
 	<script type="text/javascript"> 
 		var errorObj = new Object();
 		errorObj.text = "";
@@ -226,7 +233,7 @@
 		
 	 	function actionBlocagePC(){
 			document.forms[0].elements('userAction').value = "pegasus.pcaccordee.pcAccordeeDetail.actionBloquerPC";
-	  		document.forms[0].submit();
+			showConfirmDialogForBlocage();
 	 	}
 	  	
 	  	function actionDeblocagePC(){
@@ -700,6 +707,11 @@
 		</tr>
 	</tbody>
 </table>
+
+	<!-- **************************** Warning sur l'existance de prestations dans RFM -->
+	<div id="dialog-warningRFM-confirm" title="">
+		<p><span class="ui-icon ui-icon-alert" style="float: left; margin: 0 7px 20px 0;"></span><%= objSession.getLabel("JSP_PC_WARNING_PRESTATIONS_RFM")%></p>
+	</div>
 
 <SCRIPT>
 if(top.fr_error!=null) {

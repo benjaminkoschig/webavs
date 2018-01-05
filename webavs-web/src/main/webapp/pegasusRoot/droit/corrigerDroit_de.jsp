@@ -43,6 +43,10 @@
 #dialog-confirm-creation-lot{
 	display:none;
 }
+
+#dialog-warningRFM-confirm{
+	display:none;
+}
 </style>
 
 <script type="text/javascript">
@@ -117,6 +121,11 @@
 <%--     					<%= objSession.getLabel("JSP_VALID_LOT_D_EMAIL")%> --%>
 <%-- 						<INPUT type="text" name="mailProcessCompta" value="<%=viewBean.getMailProcessCompta()%>" class="libelleLong"> --%>
 <!-- 					</p> -->
+			</div>
+			
+			<!-- **************************** Warning sur l'existance de prestations dans RFM -->
+			<div id="dialog-warningRFM-confirm" title="">
+				<p><span class="ui-icon ui-icon-alert" style="float: left; margin: 0 7px 20px 0;"></span><%= objSession.getLabel("JSP_PC_WARNING_PRESTATIONS_RFM")%></p>
 			</div>
 			
 			<input type="hidden" name="isComptabilisationAuto" id="isComptabilisationAuto" value="<%=viewBean.isComptabilisationAuto()%>"/>
