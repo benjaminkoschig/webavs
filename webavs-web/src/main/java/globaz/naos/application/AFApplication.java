@@ -65,6 +65,7 @@ public class AFApplication extends BApplication {
     public static final String PROPERTY_NO_DOCUMENT_DS_RADIATION = "modelDsRadiation";
     public final static String PROPERTY_QUITTANCE_PCG_CONTROLE_NBRE_QUITTANCES = "quittancePcgControleNbre";
     public static final String PROPERTY_RESTITUTION_TAXE_CO2_NON_JUIN = "restituerTaxeCO2NonJuin";
+    public static final String PROPERTY_RESTITUTION_TAXE_CO2_MONTH = "restituerTaxeCO2Mois";
     public static final String PROPERTY_ATTESTATION_RUBRIQUES_COMPLEMENTAIRES = "attestation.rubriques.complementaires";
 
     public final static String SYNCHROTAUX = "synchroTaux";
