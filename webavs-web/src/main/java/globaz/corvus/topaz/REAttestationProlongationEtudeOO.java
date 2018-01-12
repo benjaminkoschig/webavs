@@ -64,6 +64,7 @@ public class REAttestationProlongationEtudeOO {
     private PRTiersWrapper tiers;
     private PRTiersWrapper tiersAdresse;
     private PRTiersWrapper tiersBeneficiaire;
+    private PRTiersWrapper tiersAdressePaiement;
     private String titreTiers;
 
     private void chargementCatalogueTexte() throws Exception {
@@ -72,6 +73,8 @@ public class REAttestationProlongationEtudeOO {
 
         if (tiersAdresse != null) {
             codeIsoLangue = getSession().getCode(tiersAdresse.getProperty(PRTiersWrapper.PROPERTY_LANGUE));
+        } else if (tiersAdressePaiement != null) {
+            codeIsoLangue = getSession().getCode(tiersAdressePaiement.getProperty(PRTiersWrapper.PROPERTY_LANGUE));
         } else {
             codeIsoLangue = getSession().getCode(tiersBeneficiaire.getProperty(PRTiersWrapper.PROPERTY_LANGUE));
         }
@@ -228,7 +231,7 @@ public class REAttestationProlongationEtudeOO {
                 tiersBeneficiaire = PRTiersHelper.getAdministrationParId(getSession(), ra.getIdTiersBeneficiaire());
             }
 
-            PRTiersWrapper tiersAdressePaiement = PRTiersHelper.getTiersParId(getSession(), ra.getIdTiersAdressePmt());
+            setTiersAdressePaiement(PRTiersHelper.getTiersParId(getSession(), ra.getIdTiersAdressePmt()));
 
             // Recherche d'une adresse pour le tiers beneficaire
 
@@ -377,13 +380,16 @@ public class REAttestationProlongationEtudeOO {
                 // Comme une adresse a été trouvée, je recherche le titre du tiers beneficiaire
                 ITITiers tiersTitre = (ITITiers) getSession().getAPIFor(ITITiers.class);
                 Hashtable<String, String> params = new Hashtable<String, String>();
-                params.put(ITITiers.FIND_FOR_IDTIERS, tiersBeneficiaire.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS));
+                PRTiersWrapper tiersForTitre = tiersBeneficiaire;
+                if (tiersAdressePaiement != null) {
+                    tiersForTitre = tiersAdressePaiement;
+                }
+                params.put(ITITiers.FIND_FOR_IDTIERS, tiersForTitre.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS));
                 ITITiers[] t = tiersTitre.findTiers(params);
                 if ((t != null) && (t.length > 0)) {
                     tiersTitre = t[0];
                 }
-                titreTiers = tiersTitre.getFormulePolitesse(tiersBeneficiaire
-                        .getProperty(PRTiersWrapper.PROPERTY_LANGUE));
+                titreTiers = tiersTitre.getFormulePolitesse(tiersForTitre.getProperty(PRTiersWrapper.PROPERTY_LANGUE));
 
                 if (JadeStringUtil.isEmpty(titreTiers)) {
                     TITiers tiers = new TITiers();
@@ -516,5 +522,13 @@ public class REAttestationProlongationEtudeOO {
 
     public void setRa2(RERenteAccJoinTblTiersJoinDemandeRente ra2) {
         this.ra2 = ra2;
+    }
+
+    public PRTiersWrapper getTiersAdressePaiement() {
+        return tiersAdressePaiement;
+    }
+
+    public void setTiersAdressePaiement(PRTiersWrapper tiersAdressePaiement) {
+        this.tiersAdressePaiement = tiersAdressePaiement;
     }
 }
