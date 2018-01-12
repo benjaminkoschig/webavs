@@ -20,6 +20,7 @@ import globaz.prestation.ged.PRGedHelper;
 import globaz.prestation.utils.ged.PRGedUtils;
 import java.util.ArrayList;
 import java.util.List;
+import ch.globaz.common.domaine.Date;
 
 public class REGenererAttestationProlongationEtudeProcess extends AbstractJadeJob {
 
@@ -125,8 +126,8 @@ public class REGenererAttestationProlongationEtudeProcess extends AbstractJadeJo
             renteAccMgr.setForIdTiersBeneficiaire(getIdTiers());
             renteAccMgr.setForCsEtatIn(IREPrestationAccordee.CS_ETAT_VALIDE + ", "
                     + IREPrestationAccordee.CS_ETAT_PARTIEL);
-            JADate date = new JADate(REPmtMensuel.getDateDernierPmt(getSession()));
-            renteAccMgr.setForEnCoursAtMois(String.valueOf(date.getMonth()) + "." + String.valueOf(date.getYear()));
+            Date date = new Date(REPmtMensuel.getDateDernierPmt(getSession()));
+            renteAccMgr.setForEnCoursAtMois(date.getMoisAnneeFormatte());
 
             renteAccMgr.find();
 
