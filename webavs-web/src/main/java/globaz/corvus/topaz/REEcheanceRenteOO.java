@@ -107,6 +107,7 @@ public class REEcheanceRenteOO extends AbstractJadeJob {
     private boolean renteDeVeufGED;
     private PRTiersWrapper tiersAdresse;
     private PRTiersWrapper tiersBeneficiaire;
+    private PRTiersWrapper tiersAdressePaiement;
     private String titre;
 
     public REEcheanceRenteOO() {
@@ -167,6 +168,8 @@ public class REEcheanceRenteOO extends AbstractJadeJob {
         // tiers bénéficiaire
         if (tiersAdresse != null) {
             codeIsoLangue = getSession().getCode(tiersAdresse.getProperty(PRTiersWrapper.PROPERTY_LANGUE));
+        } else if (tiersAdressePaiement != null) {
+            codeIsoLangue = getSession().getCode(tiersAdressePaiement.getProperty(PRTiersWrapper.PROPERTY_LANGUE));
         } else {
             codeIsoLangue = getSession().getCode(tiersBeneficiaire.getProperty(PRTiersWrapper.PROPERTY_LANGUE));
         }
@@ -1335,8 +1338,8 @@ public class REEcheanceRenteOO extends AbstractJadeJob {
             tiersBeneficiaire = PRTiersHelper.getAdministrationParId(getSession(), getEcheanceCourrante().getIdTiers());
         }
 
-        PRTiersWrapper tiersAdressePaiement = PRTiersHelper.getTiersParId(getSession(), getEcheanceCourrante()
-                .getIdTiersAdressePaiement());
+        setTiersAdressePaiement(PRTiersHelper.getTiersParId(getSession(), getEcheanceCourrante()
+                .getIdTiersAdressePaiement()));
 
         // Recherche d'une adresse pour le tiers bénéficiaire
         // BZ 5220, recherche de l'adresse en cascade en fonction du paramètre isWantAdresseCourrier
@@ -1489,12 +1492,16 @@ public class REEcheanceRenteOO extends AbstractJadeJob {
             // Comme une adresse a été trouvée, je recherche le titre du tiers beneficiaire
             ITITiers tiersTitre = (ITITiers) getSession().getAPIFor(ITITiers.class);
             Hashtable<String, String> params = new Hashtable<String, String>();
-            params.put(ITITiers.FIND_FOR_IDTIERS, tiersBeneficiaire.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS));
+            PRTiersWrapper tiersForTitre = tiersBeneficiaire;
+            if (tiersAdressePaiement != null) {
+                tiersForTitre = tiersAdressePaiement;
+            }
+            params.put(ITITiers.FIND_FOR_IDTIERS, tiersForTitre.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS));
             ITITiers[] t = tiersTitre.findTiers(params);
             if ((t != null) && (t.length > 0)) {
                 tiersTitre = t[0];
             }
-            titre = tiersTitre.getFormulePolitesse(tiersBeneficiaire.getProperty(PRTiersWrapper.PROPERTY_LANGUE));
+            titre = tiersTitre.getFormulePolitesse(tiersForTitre.getProperty(PRTiersWrapper.PROPERTY_LANGUE));
 
             if (JadeStringUtil.isEmpty(titre)) {
                 TITiers tiers = new TITiers();
@@ -1614,5 +1621,13 @@ public class REEcheanceRenteOO extends AbstractJadeJob {
 
     public void setRenteDeVeufGED(boolean renteDeVeufGED) {
         this.renteDeVeufGED = renteDeVeufGED;
+    }
+
+    public PRTiersWrapper getTiersAdressePaiement() {
+        return tiersAdressePaiement;
+    }
+
+    public void setTiersAdressePaiement(PRTiersWrapper tiersAdressePaiement) {
+        this.tiersAdressePaiement = tiersAdressePaiement;
     }
 }
