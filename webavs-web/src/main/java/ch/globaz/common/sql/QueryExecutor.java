@@ -554,4 +554,61 @@ public class QueryExecutor {
         return converter;
     }
 
+    // Begin update query without a class cast
+    public static Boolean executeUpdate(String query, BSession session) {
+        Transaction transaction = new Transaction(session);
+        try {
+            long currentTime = System.currentTimeMillis();
+            query = createUpdateQuery(query, JadePersistenceUtil.getDbSchema());
+            Boolean queryResult = executeUpdate(query, transaction.getTransaction().getConnection());
+            long timeQuery = System.currentTimeMillis() - currentTime;
+            currentTime = System.currentTimeMillis();
+
+            if (JadeModelMappingProvider.getInstance().isVerbose()) {
+                JadeLogger.info(JadePersistenceManager.class, "Exec. time (" + timeQuery + "ms) - Query : " + query);
+            }
+
+            return queryResult;
+        } finally {
+            // dans tous les cas, si on a ouvert une nouvelle transaction, on la clôture.
+            if (transaction != null) {
+                transaction.closeOpenedTransaction();
+            }
+        }
+    }
+
+    private static String createUpdateQuery(String query, String schema) {
+        if (query == null || query.trim().isEmpty()) {
+            throw new CommonTechnicalException("Unable to execute empty query (" + query + ")");
+        } else if (!query.toLowerCase().contains("schema")) {
+            throw new CommonTechnicalException("schema is not specified in this query: " + query);
+        }
+
+        String sql = query.replace("schema", schema);
+        sql = sql.replace("SCHEMA", schema);
+        sql = sql.replaceAll("\n", " ").replaceAll("\t", " ");
+        return sql;
+    }
+
+    private static Boolean executeUpdate(String sql, Connection connection) {
+        Boolean isOk = false;
+        Statement stmt = null;
+        try {
+            stmt = connection.createStatement();
+            isOk = stmt.execute(sql);
+        } catch (SQLException e) {
+            throw new CommonTechnicalException("Unable to execute update query (" + sql + "), a SQLException happend!",
+                    e);
+        } finally {
+            if (stmt != null) {
+                try {
+                    stmt.close();
+                } catch (SQLException e) {
+                    JadeLogger.warn(JadePersistenceManager.class,
+                            "Problem to close statement in persistence manager, reason : " + e.toString());
+                }
+            }
+        }
+        return isOk;
+    }
 }

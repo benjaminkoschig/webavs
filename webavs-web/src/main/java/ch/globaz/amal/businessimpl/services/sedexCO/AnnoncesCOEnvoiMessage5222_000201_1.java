@@ -83,6 +83,7 @@ import ch.globaz.amal.businessimpl.services.sedexRP.utils.AMSedexRPUtil;
 import ch.globaz.amal.businessimpl.utils.AMGestionTiers;
 import ch.globaz.common.domaine.Date;
 import ch.globaz.common.listoutput.SimpleOutputListBuilderJade;
+import ch.globaz.common.sql.QueryExecutor;
 import ch.globaz.pyxis.business.model.AdministrationComplexModel;
 import ch.globaz.pyxis.business.model.AdresseTiersDetail;
 import ch.globaz.pyxis.business.model.PaysSearchSimpleModel;
@@ -271,13 +272,42 @@ public class AnnoncesCOEnvoiMessage5222_000201_1 extends AMALabstractProcess {
     private SimpleAnnonceSedexCOXML saveXml(Class<?>[] addClasses, Message message,
             SimpleAnnonceSedexCO simpleAnnonceSedexCO) throws JAXBException, SAXException, IOException,
             JAXBValidationError, JAXBValidationWarning, JadePersistenceException {
-        StringWriter sw = new StringWriter();
-        JAXBServices.getInstance().marshal(message, sw, false, true, addClasses);
+
+        StringWriter swFull = new StringWriter();
+        List<String> splitXml = new ArrayList<String>();
+        JAXBServices.getInstance().marshal(message, swFull, false, true, addClasses);
+        String fullXml = swFull.toString();
+        int iCounter = 0;
+        StringWriter swSplitted = new StringWriter();
+        for (int idx = 0; idx < fullXml.length(); idx++) {
+            String currentChar = String.valueOf(fullXml.charAt(idx));
+            if (currentChar.equals("'")) {
+                swSplitted.append("''");
+            } else {
+                swSplitted.append(fullXml.charAt(idx));
+            }
+            if (iCounter == 20000) {
+                iCounter = 0;
+                splitXml.add(swSplitted.toString());
+                swSplitted = new StringWriter();
+            }
+            iCounter++;
+        }
+        if (swSplitted.toString().length() > 0) {
+            splitXml.add(swSplitted.toString());
+        }
+
         SimpleAnnonceSedexCOXML annonceSedexCOXML = new SimpleAnnonceSedexCOXML();
         annonceSedexCOXML.setIdAnnonceSedex(simpleAnnonceSedexCO.getIdAnnonceSedexCO());
         annonceSedexCOXML.setMessageId(message.getHeader().getMessageId());
-        annonceSedexCOXML.setXml(sw.toString());
+        annonceSedexCOXML.setXml(splitXml.get(0));
         JadePersistenceManager.add(annonceSedexCOXML);
+        for (int idx = 1; idx < splitXml.size(); idx++) {
+            String query = "UPDATE SCHEMA.MASDXCO_XML SET XML=CONCAT(XML, '" + splitXml.get(idx)
+                    + "') WHERE IDSEDEX = " + simpleAnnonceSedexCO.getIdAnnonceSedexCO() + " AND MSGID = '"
+                    + message.getHeader().getMessageId() + "'";
+            QueryExecutor.executeUpdate(query, getSession());
+        }
         return annonceSedexCOXML;
     }
 

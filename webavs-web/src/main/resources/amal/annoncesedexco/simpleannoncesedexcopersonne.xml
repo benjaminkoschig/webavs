@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<simple-model className="ch.globaz.amal.business.models.annoncesedexco.SimpleAnnonceSedexCOPersonne">
+		<description>Enregistrement Annonce Sedex contentieux (personnes)</description>
+		<table name="MASDXCOP" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idAnnonceSedexCOP" column="ID" comment="clé primaire"/>
+			<field name="idAnnonceSedexCO" column="IDSEDEX" type="NUMERIC" dataType="NUMERIC(15,0)" comment="Id sedex"/>
+			<field name="idContribuable" column="IDCONT" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="true" comment="ID_CONTRIBUABLE_DOSSIER"/>
+			<field name="idFamille" column="IDFAMI" type="NUMERIC" dataType="NUMERIC(15,0)" mandatory="true" comment="ID_MEMBRE_FAMILLE"/>
+		</fields>
+	</simple-model>
+	
+	<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdFamille" field-ref="idFamille" operation="EQUALS"/>
+				<search-field name="forIdContribuable" field-ref="idContribuable" operation="EQUALS"/>
+				<search-field name="forIdAnnonceSedexCO" field-ref="idAnnonceSedexCO" operation="EQUALS"/>
+			</search-group>
+		</search-definition>
+</model-mapping>

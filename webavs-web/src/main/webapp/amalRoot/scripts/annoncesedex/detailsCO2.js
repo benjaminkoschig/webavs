@@ -1,20 +1,20 @@
 //------------------------------------------------------------
 // Clean and load the modal dialog
 //------------------------------------------------------------
-function showdetailCO2(_sedexId){
+function showdetailCO2(_annonceIdx){
 	// Clean up previous information of DIV container
 	var tblContainer = document.getElementById("dlgAnnonceDetailCO2");
 	var oldTable = document.getElementById("tblAnnonceContainerCO2");
 	tblContainer.removeChild(oldTable);
 
 	if(annonceDetail != undefined){
-		var titreAnnonce = annonceDetail.title;
-		var subtitreAnnonce = annonceDetail.subtitle;
-		var avsDebiteur = annonceDetail.debiteur.avs;
-		var nomPrenomDebiteur = annonceDetail.debiteur.nomPrenom;
-		var interets = annonceDetail.interets;
-		var frais = annonceDetail.frais;
-		var total = annonceDetail.total;
+		var titreAnnonce = annonceDetail[_annonceIdx].title;
+		var subtitreAnnonce = annonceDetail[_annonceIdx].subtitle;
+		var avsDebiteur = annonceDetail[_annonceIdx].debiteur.avs;
+		var nomPrenomDebiteur = annonceDetail[_annonceIdx].debiteur.nomPrenom;
+		var interets = annonceDetail[_annonceIdx].interets;
+		var frais = annonceDetail[_annonceIdx].frais;
+		var total = annonceDetail[_annonceIdx].total;
 
 		$('#dlgAnnonceDetailCO2').dialog('option', 'title', titreAnnonce); // Set dialog title
 		var textToInsert = '<table id="tblAnnonceContainerCO2" width="100%">';
@@ -35,8 +35,8 @@ function showdetailCO2(_sedexId){
 		textToInsert += emptyRow + emptyRow + emptyRow;
 
 		// Assure collection section
-		for(var i=0; i<annonceDetail.assure.length;i++){
-			var currentAssure = annonceDetail.assure[i];
+		for(var i=0; i<annonceDetail[_annonceIdx].assure.length;i++){
+			var currentAssure = annonceDetail[_annonceIdx].assure[i];
 			if(i==0){
 				textToInsert += '<tr><td></td><td>Assur&eacute;</td>';	
 			}else{

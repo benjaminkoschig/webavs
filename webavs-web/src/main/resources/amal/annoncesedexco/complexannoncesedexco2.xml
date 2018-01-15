@@ -1,18 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <model-mapping>
 	<complexe-model className="ch.globaz.amal.business.models.annoncesedexco.ComplexAnnonceSedexCO2">
-
-		<root-model name="simpleAnnonceSedexCOAssure" model-ref="ch.globaz.amal.business.models.annoncesedexco.SimpleAnnonceSedexCOAssure"/>
-
-		<linked-model name="simpleAnnonceSedexCODebiteur" model-ref="ch.globaz.amal.business.models.annoncesedexco.SimpleAnnonceSedexCODebiteur" join-type="LEFT_OUTER">
-			<join-group operator="AND">
-				<join-field name="idAnnonceSedexCODebiteur" operation="EQUALS" field-ref="simpleAnnonceSedexCOAssure.idAnnonceSedexCODebiteur"/>
-			</join-group>
-		</linked-model>
-
+		<root-model  name="simplePersonne" model-ref="ch.globaz.amal.business.models.annoncesedexco.SimpleAnnonceSedexCOPersonne"/>
+		
 		<linked-model name="simpleAnnonceSedexCO" model-ref="ch.globaz.amal.business.models.annoncesedexco.SimpleAnnonceSedexCO" join-type="LEFT_OUTER">
 			<join-group operator="AND">
-				<join-field name="idAnnonceSedexCO" operation="EQUALS" field-ref="simpleAnnonceSedexCODebiteur.idAnnonceSedexCO"/>
+				<join-field name="idAnnonceSedexCO" operation="EQUALS" field-ref="simplePersonne.idAnnonceSedexCO"/>
 			</join-group>
 		</linked-model>
 		
@@ -24,7 +17,7 @@
 
 		<search-definition>
 			<search-group operator="AND">
-				<search-field name="forIdContribuable" field-ref="simpleAnnonceSedexCODebiteur.idContribuable" operation="EQUALS"/>
+				<search-field name="forIdContribuable" field-ref="simplePersonne.idContribuable" operation="EQUALS"/>
 				<search-field name="inSDXMessageSubType" field-ref="simpleAnnonceSedexCO.messageSubType" operation="IN"/>
 			</search-group>
 		</search-definition>

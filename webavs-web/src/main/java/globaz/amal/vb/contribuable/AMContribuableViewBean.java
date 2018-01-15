@@ -3,6 +3,7 @@
  */
 package globaz.amal.vb.contribuable;
 
+import globaz.amal.utils.AMContribuableHistoriqueHelper;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSpy;
 import globaz.globall.parameters.FWParametersCode;
@@ -34,8 +35,16 @@ import ch.globaz.amal.business.exceptions.models.parametreModel.ParametreModelEx
 import ch.globaz.amal.business.exceptions.models.revenu.RevenuException;
 import ch.globaz.amal.business.models.annoncesedex.ComplexAnnonceSedex;
 import ch.globaz.amal.business.models.annoncesedex.ComplexAnnonceSedexSearch;
+import ch.globaz.amal.business.models.annoncesedexco.AnnonceSedexCO2AssureContainer;
+import ch.globaz.amal.business.models.annoncesedexco.AnnonceSedexCO2Detail;
+import ch.globaz.amal.business.models.annoncesedexco.ComplexAnnonceSedexCO2;
 import ch.globaz.amal.business.models.annoncesedexco.ComplexAnnonceSedexCO2Search;
 import ch.globaz.amal.business.models.annoncesedexco.ComplexAnnonceSedexCO4Search;
+import ch.globaz.amal.business.models.annoncesedexco.ComplexAnnonceSedexCODebiteursAssures;
+import ch.globaz.amal.business.models.annoncesedexco.ComplexAnnonceSedexCODebiteursAssuresSearch;
+import ch.globaz.amal.business.models.annoncesedexco.SimpleAnnonceSedexCO;
+import ch.globaz.amal.business.models.annoncesedexco.SimpleAnnonceSedexCOAssure;
+import ch.globaz.amal.business.models.annoncesedexco.SimpleAnnonceSedexCODebiteur;
 import ch.globaz.amal.business.models.contribuable.Contribuable;
 import ch.globaz.amal.business.models.contribuable.ContribuableOnly;
 import ch.globaz.amal.business.models.contribuable.ContribuableRCListe;
@@ -59,9 +68,14 @@ import ch.globaz.amal.business.models.revenu.SimpleRevenuContribuable;
 import ch.globaz.amal.business.models.revenu.SimpleRevenuSourcier;
 import ch.globaz.amal.business.services.AmalServiceLocator;
 import ch.globaz.amal.businessimpl.services.AmalImplServiceLocator;
+import ch.globaz.common.domaine.Date;
 import ch.globaz.envoi.business.exceptions.models.parametrageEnvoi.FormuleListException;
+import ch.globaz.pyxis.business.model.AdministrationComplexModel;
 import ch.globaz.pyxis.business.model.PersonneEtendueComplexModel;
+import ch.globaz.pyxis.business.model.PersonneEtendueSimpleModel;
+import ch.globaz.pyxis.business.model.TiersSimpleModel;
 import ch.globaz.pyxis.business.service.TIBusinessServiceLocator;
+import ch.globaz.utils.CommonNSSFormater;
 
 /**
  * @author CBU
@@ -350,7 +364,7 @@ public class AMContribuableViewBean extends BJadePersistentObjectViewBean {
         try {
             currentSearch = AmalServiceLocator.getComplexAnnonceSedexService().search(currentSearch);
         } catch (Exception ex) {
-            ex.printStackTrace();
+            JadeLogger.error(this, ex.getMessage());
         }
         return currentSearch;
     }
@@ -360,7 +374,8 @@ public class AMContribuableViewBean extends BJadePersistentObjectViewBean {
      * 
      * @return
      */
-    public ComplexAnnonceSedexCO2Search getAnnonceSedexCO2() {
+    public List<AnnonceSedexCO2Detail> getAnnoncesSedexCO2() {
+        List<AnnonceSedexCO2Detail> listCO2 = new ArrayList<AnnonceSedexCO2Detail>();
         ComplexAnnonceSedexCO2Search currentSearch = new ComplexAnnonceSedexCO2Search();
         String idContribuable = getId();
         ArrayList<String> subType = new ArrayList<String>();
@@ -370,10 +385,87 @@ public class AMContribuableViewBean extends BJadePersistentObjectViewBean {
         currentSearch.setForIdContribuable(idContribuable);
         try {
             currentSearch = AmalServiceLocator.getComplexAnnonceSedexCO2Service().search(currentSearch);
+            CommonNSSFormater nssFormater = new CommonNSSFormater();
+            for (JadeAbstractModel model_AnnonceCO2 : currentSearch.getSearchResults()) {
+                ComplexAnnonceSedexCO2 currentAnnonceCO2 = (ComplexAnnonceSedexCO2) model_AnnonceCO2;
+                SimpleAnnonceSedexCO annoceSedexCO = currentAnnonceCO2.getSimpleAnnonceSedexCO();
+                AdministrationComplexModel caisseMaladie = currentAnnonceCO2.getCaisseMaladie();
+                Date daAnnonce = new Date(annoceSedexCO.getDateAnnonce());
+                Boolean isCreance = annoceSedexCO.getMessageSubType() == AMMessagesSubTypesAnnonceSedexCO.CREANCE_AVEC_GARANTIE_DE_PRISE_EN_CHARGE
+                        .getValue();
+
+                AnnonceSedexCO2Detail detailCO2 = new AnnonceSedexCO2Detail();
+                detailCO2.setIdSedex(annoceSedexCO.getMessageId());
+                detailCO2.setIdAnnonceCO(annoceSedexCO.getIdAnnonceSedexCO());
+                detailCO2.setIsCreance(isCreance);
+                detailCO2.setStatus(annoceSedexCO.getStatus());
+                detailCO2.setAnneeAnnonce(daAnnonce.getAnnee());
+                detailCO2.setDaAnnonce(daAnnonce.getSwissValue());
+                detailCO2.setCaisseMaladie(caisseMaladie.getTiers().getDesignation1());
+                AnnonceSedexCO2AssureContainer debiteur = new AnnonceSedexCO2AssureContainer();
+
+                if (contribuable != null && contribuable.getPersonneEtendue() != null) {
+                    PersonneEtendueSimpleModel personne = contribuable.getPersonneEtendue().getPersonneEtendue();
+                    TiersSimpleModel tiers = contribuable.getPersonneEtendue().getTiers();
+                    debiteur.setFormattedNss(nssFormater.format(personne.getNumAvsActuel()));
+
+                    String nomMembre = tiers.getDesignation1();
+                    nomMembre += " " + tiers.getDesignation2();
+                    debiteur.setFormattedName(nomMembre);
+                    AMContribuableHistoriqueHelper.loadDataFromHistorique(contribuable.getId());
+                    if (AMContribuableHistoriqueHelper.getContribuableInfos() != null) {
+                        nomMembre = AMContribuableHistoriqueHelper.getContribuableInfos().getNom();
+                        nomMembre += " " + AMContribuableHistoriqueHelper.getContribuableInfos().getPrenom();
+                        debiteur.setFormattedNameReprise(nomMembre);
+                    }
+                }
+                detailCO2.setDebiteur(debiteur);
+                detailCO2.setLibelleAnnonce(annoceSedexCO.getMessageSubTypeLibelle());
+
+                // Load créance détail
+                if (isCreance) {
+                    setCreanceInformation(detailCO2, annoceSedexCO.getIdAnnonceSedexCO());
+                }
+                listCO2.add(detailCO2);
+            }
         } catch (Exception e) {
             JadeLogger.error(this, e.getMessage());
         }
-        return currentSearch;
+        return listCO2;
+    }
+
+    private void setCreanceInformation(AnnonceSedexCO2Detail detailCO2, String idSedexCO) {
+        CommonNSSFormater nssFormater = new CommonNSSFormater();
+        List<AnnonceSedexCO2AssureContainer> assureList = new ArrayList<AnnonceSedexCO2AssureContainer>();
+        ComplexAnnonceSedexCODebiteursAssuresSearch debiteurSearch = new ComplexAnnonceSedexCODebiteursAssuresSearch();
+        debiteurSearch.setForIdSedexCO(idSedexCO);
+        for (JadeAbstractModel model_debiteurItem : debiteurSearch.getSearchResults()) {
+            ComplexAnnonceSedexCODebiteursAssures debiteurItem = (ComplexAnnonceSedexCODebiteursAssures) model_debiteurItem;
+            SimpleAnnonceSedexCODebiteur simpleDebiteur = debiteurItem.getSimpleAnnonceSedexCODebiteur();
+            SimpleAnnonceSedexCOAssure simpleAssure = debiteurItem.getSimpleAnnonceSedexCOAssure();
+
+            AnnonceSedexCO2AssureContainer assureItem = new AnnonceSedexCO2AssureContainer();
+            assureItem.setDaDebutParticipation(new Date(simpleAssure.getCostSharingPeriodeDebut()));
+            assureItem.setDaFinParticipation(new Date(simpleAssure.getCostSharingPeriodeFin()));
+            assureItem.setMontantParticipation(simpleAssure.getCostSharingMontant());
+            assureItem.setDaDebutPrime(new Date(simpleAssure.getPrimePeriodeDebut()));
+            assureItem.setDaFinPrime(new Date(simpleAssure.getPrimePeriodeFin()));
+            assureItem.setMontantPrime(simpleAssure.getPrimeMontant());
+            assureItem.setFormattedName(simpleAssure.getNomPrenomAssure());
+            assureItem.setFormattedNameReprise(simpleAssure.getNomPrenomAssure());
+            try {
+                assureItem.setFormattedNss(nssFormater.format(simpleAssure.getNssAssure()));
+            } catch (Exception e) {
+                JadeLogger.error(this, e.getMessage());
+                assureItem.setFormattedNss(simpleAssure.getNssAssure());
+            }
+            assureList.add(assureItem);
+
+            detailCO2.setFrais(simpleDebiteur.getFrais());
+            detailCO2.setInterets(simpleDebiteur.getInterets());
+            detailCO2.setTotalCreance(simpleDebiteur.getTotal());
+        }
+        detailCO2.setAssureList(assureList);
     }
 
     /**

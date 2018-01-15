@@ -15,8 +15,7 @@ public class ComplexAnnonceSedexCO2 extends JadeComplexModel {
     private static final long serialVersionUID = 1L;
     private SimpleAnnonceSedexCO simpleAnnonceSedexCO;
     private AdministrationComplexModel caisseMaladie;
-    private SimpleAnnonceSedexCODebiteur simpleAnnonceSedexCODebiteur;
-    private SimpleAnnonceSedexCOAssure simpleAnnonceSedexCOAssure;
+    private SimpleAnnonceSedexCOPersonne simplePersonne;
 
     /**
      * Default constructor
@@ -26,8 +25,7 @@ public class ComplexAnnonceSedexCO2 extends JadeComplexModel {
         super();
         simpleAnnonceSedexCO = new SimpleAnnonceSedexCO();
         caisseMaladie = new AdministrationComplexModel();
-        simpleAnnonceSedexCODebiteur = new SimpleAnnonceSedexCODebiteur();
-        simpleAnnonceSedexCOAssure = new SimpleAnnonceSedexCOAssure();
+        simplePersonne = new SimpleAnnonceSedexCOPersonne();
     }
 
     /*
@@ -99,30 +97,17 @@ public class ComplexAnnonceSedexCO2 extends JadeComplexModel {
     }
 
     /**
-     * @return the simpleAnnonceSedexCODebiteur
+     * @return the simplePersonne
      */
-    public SimpleAnnonceSedexCODebiteur getSimpleAnnonceSedexCODebiteur() {
-        return simpleAnnonceSedexCODebiteur;
+    public SimpleAnnonceSedexCOPersonne getSimplePersonne() {
+        return simplePersonne;
     }
 
     /**
-     * @param simpleAnnonceSedexCODebiteur the simpleAnnonceSedexCODebiteur to set
+     * @param simplePersonne the simplePersonne to set
      */
-    public void setSimpleAnnonceSedexCODebiteur(SimpleAnnonceSedexCODebiteur simpleAnnonceSedexCODebiteur) {
-        this.simpleAnnonceSedexCODebiteur = simpleAnnonceSedexCODebiteur;
+    public void setSimplePersonne(SimpleAnnonceSedexCOPersonne simplePersonne) {
+        this.simplePersonne = simplePersonne;
     }
 
-    /**
-     * @return the simpleAnnonceSedexCOAssure
-     */
-    public SimpleAnnonceSedexCOAssure getSimpleAnnonceSedexCOAssure() {
-        return simpleAnnonceSedexCOAssure;
-    }
-
-    /**
-     * @param simpleAnnonceSedexCOAssure the simpleAnnonceSedexCOAssure to set
-     */
-    public void setSimpleAnnonceSedexCOAssure(SimpleAnnonceSedexCOAssure simpleAnnonceSedexCOAssure) {
-        this.simpleAnnonceSedexCOAssure = simpleAnnonceSedexCOAssure;
-    }
 }
