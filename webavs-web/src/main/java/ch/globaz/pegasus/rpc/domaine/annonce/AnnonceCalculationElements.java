@@ -36,10 +36,10 @@ public class AnnonceCalculationElements {
         wealthIncomeRate = BigDecimal.valueOf(annonce.getRpcCalcul().getPartDesRevenusdeLaFortunePrisEnCompte());
         vitalNeeds = annonce.getRpcCalcul().getBesoinsVitaux();
         children = annonce.getMembresFamilleWithDonneesFinanciere().getNombreEnfants();
-        if (annonce.hasImmobilier() || annonce.hasInteretsHypotecaire()) {
+        if (annonce.hasImmobilier() || annonce.hasInteretsHypotecaire() || annonce.hasDettesHypotecaire()) {
             realProperty = new AnnonceRealProperty(annonce);
         }
-        if (annonce.isProrietaire()) {
+        if (annonce.isProrietaire() || annonce.isConjointProprietaire()) {
             housingOwner = new AnnonceHousingOwner(annonce);
         }
         if (annonce.hasLoyers()) {

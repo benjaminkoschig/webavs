@@ -46,8 +46,10 @@ public class MembresFamilleWithDonneesFinanciere {
         for (MembreFamilleWithDonneesFinanciere membre : membresFamilleWithDonneesFinanciere) {
             loyerM = loyerM.add(membre.getDonneesFinancieres().getLoyers()
                     .sumLoyerBrut(variablesMetier.getForfaitFraitChauffage().resolveMostRecent().getMontant()));
-            loyerM = loyerM.add(membre.getDonneesFinancieres().getBiensImmobiliersServantHbitationPrincipale()
-                    .sumDepense(variablesMetier.getForfaitCharge().resolveMostRecent().getMontant()));
+            loyerM = loyerM.add(membre.getDonneesFinancieres().getBiensImmobiliersServantHbitationPrincipale().sumMontantValeurLocative().isPositive() ?
+                    membre.getDonneesFinancieres().getBiensImmobiliersServantHbitationPrincipale().sumMontantValeurLocative()
+                        .add(variablesMetier.getForfaitCharge().resolveMostRecent().getMontant()) 
+                    : Montant.ZERO_ANNUEL);
         }
         return loyerM.arrondiAUnIntierSupperior();
     }

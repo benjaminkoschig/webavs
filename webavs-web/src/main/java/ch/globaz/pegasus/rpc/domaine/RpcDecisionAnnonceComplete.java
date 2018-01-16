@@ -154,4 +154,12 @@ public class RpcDecisionAnnonceComplete {
     public Demande getDemande() {
         return demande;
     }
+
+    public boolean isConjointProprietaire() {
+        return !rpcCalcul.getValeurImmeubleHabitation().isZero();
+    }
+
+    public boolean hasDettesHypotecaire() {
+        return !rpcCalcul.getDettesHypothequaires().isZero();
+    }
 }
