@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<simple-model className="ch.globaz.amal.business.models.annoncesedexco.SimpleAnnonceSedexCOAssure">
+		<description>Enregistrement Annonce Sedex contentieux personne assurée</description>
+		<table name="MASDXCOPA" hasSpy="true" hasCreationSpy="true" alwaysIncrementPrimaryKey="true"/>
+		<fields>
+			<primary-key name="idAnnonceSedexCOPersonneAssuree" column="ID" comment="clé primaire"/>
+			<field name="idAnnonceSedexCODebiteur" column="ID_DEBITEUR" type="NUMERIC" dataType="NUMERIC(15)" mandatory="true" comment="IDSEDEX"/>
+			<field name="idFamille" column="ID_FAMILLE" type="NUMERIC" dataType="NUMERIC(15)" mandatory="true" comment="IDFAMILLE"/>
+			<field name="idContribuable" column="ID_CONTRIBUABLE" type="NUMERIC" dataType="NUMERIC(15)" mandatory="true" comment="id contribuable"/>
+			<field name="idDetailFamille" column="ID_DETAIL_FAMILLE" type="NUMERIC" dataType="NUMERIC(15)" mandatory="true" comment="id detail famille"/>
+			<field name="nssAssure" column="NSS_ASSURE" type="STRING" dataType="VARCHAR(16)" mandatory="false" comment="NSS ASSURE"/>
+			<field name="nomPrenomAssure" column="NOM_PRENOM_ASSURE" type="STRING" dataType="VARCHAR(100)" mandatory="false" comment="NOM_PRENOM_ASSURE"/>
+			<field name="npaLocaliteAssure" column="NPA_LOCALITE_ASSURE" type="STRING" dataType="VARCHAR(100)" mandatory="false" comment="NPA localité assuré"/>
+			<field name="rueNumeroAssure" column="RUE_NUMERO_ASSURE" type="STRING" dataType="VARCHAR(100)"  mandatory="false" comment="Rue numéro assuré"/>
+			<field name="primePeriodeDebut" column="PRIME_PERIODE_DEBUT" type="DATE" mandatory="false" comment="PRIME_PERIODE_DEBUT"/>
+			<field name="primePeriodeFin" column="PRIME_PERIODE_FIN" type="DATE" mandatory="false" comment="PRIME_PERIODE_FIN"/>
+			<field name="primeMontant" column="PRIME_MONTANT" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="PRIME_MONTANT"/>
+			<field name="costSharingPeriodeDebut" column="COST_SHARING_PRIME_DEBUT" type="DATE" mandatory="false" comment="COST_SHARING_PRIME_DEBUT"/>
+			<field name="costSharingPeriodeFin" column="COST_SHARING_PRIME_FIN" type="DATE" mandatory="false" comment="COST_SHARING_PRIME_FIN"/>
+			<field name="costSharingMontant" column="COST_SHARING_MONTANT" type="NUMERIC"  dataType="NUMERIC(15,2)" mandatory="false" comment="COST_SHARING_MONTANT"/>
+			<field name="message" column="MESSAGE_ASSURE" type="STRING" dataType="VARCHAR(255)" mandatory="false" comment="MESSAGE_ASSURE"/>
+			<field name="typeSubside" column="TYPE_SUBSIDE" type="STRING" dataType="VARCHAR(1)" mandatory="false" comment="Type de subside"/>
+		</fields>
+	</simple-model>
+</model-mapping>

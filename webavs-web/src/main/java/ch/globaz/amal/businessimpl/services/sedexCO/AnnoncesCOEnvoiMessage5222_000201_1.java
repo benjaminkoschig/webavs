@@ -272,7 +272,6 @@ public class AnnoncesCOEnvoiMessage5222_000201_1 extends AMALabstractProcess {
     private SimpleAnnonceSedexCOXML saveXml(Class<?>[] addClasses, Message message,
             SimpleAnnonceSedexCO simpleAnnonceSedexCO) throws JAXBException, SAXException, IOException,
             JAXBValidationError, JAXBValidationWarning, JadePersistenceException {
-
         StringWriter swFull = new StringWriter();
         List<String> splitXml = new ArrayList<String>();
         JAXBServices.getInstance().marshal(message, swFull, false, true, addClasses);

@@ -62,6 +62,7 @@ import ch.globaz.common.domaine.Montant;
 import ch.globaz.common.domaine.Periode;
 import ch.globaz.common.domaine.Taux;
 import ch.globaz.common.listoutput.SimpleOutputListBuilderJade;
+import ch.globaz.common.sql.QueryExecutor;
 import ch.globaz.simpleoutputlist.annotation.style.Align;
 import ch.globaz.simpleoutputlist.configuration.Configuration;
 import ch.globaz.simpleoutputlist.configuration.RowDecorator;
@@ -412,13 +413,46 @@ public class AnnoncesCOReceptionMessage5234_000401_1 extends AnnoncesCODefault {
     private void saveXml(Message message, Class<?>[] addClasses, SimpleAnnonceSedexCO simpleAnnonceCO)
             throws JAXBException, SAXException, IOException, JAXBValidationError, JAXBValidationWarning,
             JadePersistenceException {
-        StringWriter sw = new StringWriter();
-        jaxbs.marshal(message, sw, false, true, addClasses);
+        StringWriter swFull = new StringWriter();
+        List<String> splitXml = new ArrayList<String>();
+        JAXBServices.getInstance().marshal(message, swFull, false, true, addClasses);
+        String fullXml = swFull.toString();
+        int iCounter = 0;
+        StringWriter swSplitted = new StringWriter();
+        for (int idx = 0; idx < fullXml.length(); idx++) {
+            String currentChar = String.valueOf(fullXml.charAt(idx));
+            if (currentChar.equals("'")) {
+                swSplitted.append("''");
+            } else {
+                swSplitted.append(fullXml.charAt(idx));
+            }
+            if (iCounter == 20000) {
+                iCounter = 0;
+                splitXml.add(swSplitted.toString());
+                swSplitted = new StringWriter();
+            }
+            iCounter++;
+        }
+        if (swSplitted.toString().length() > 0) {
+            splitXml.add(swSplitted.toString());
+        }
+
         SimpleAnnonceSedexCOXML annonceSedexCOXML = new SimpleAnnonceSedexCOXML();
         annonceSedexCOXML.setIdAnnonceSedex(simpleAnnonceCO.getIdAnnonceSedexCO());
         annonceSedexCOXML.setMessageId(message.getHeader().getMessageId());
-        annonceSedexCOXML.setXml(sw.toString());
+        annonceSedexCOXML.setXml(splitXml.get(0));
         JadePersistenceManager.add(annonceSedexCOXML);
+        for (int idx = 1; idx < splitXml.size(); idx++) {
+            String query = "UPDATE SCHEMA.MASDXCO_XML SET XML=CONCAT(XML, '" + splitXml.get(idx)
+                    + "') WHERE IDSEDEX = " + simpleAnnonceCO.getIdAnnonceSedexCO() + " AND MSGID = '"
+                    + message.getHeader().getMessageId() + "'";
+            try {
+                QueryExecutor.executeUpdate(query, getSession());
+            } catch (Exception e) {
+                logErrors("AnnoncesCOReceptionMessage5234_000401_1.saveXml()", "Not possible to call QueryExecutor : "
+                        + e.getMessage(), e);
+            }
+        }
         checkJadeThreadErrors();
     }
 

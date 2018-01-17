@@ -63,6 +63,7 @@ import ch.globaz.amal.businessimpl.services.sedexRP.utils.AMSedexRPUtil;
 import ch.globaz.common.domaine.Date;
 import ch.globaz.common.domaine.Montant;
 import ch.globaz.common.listoutput.SimpleOutputListBuilderJade;
+import ch.globaz.common.sql.QueryExecutor;
 import ch.globaz.simpleoutputlist.annotation.style.Align;
 import ch.globaz.simpleoutputlist.core.Details;
 import ch.globaz.simpleoutputlist.outimpl.SimpleOutputListBuilder;
@@ -142,13 +143,46 @@ public class AnnoncesCOReceptionMessage5232_000202_1 extends AnnoncesCODefault {
     private SimpleAnnonceSedexCOXML saveXml(Class<?>[] addClasses, SimpleAnnonceSedexCO annonceSedexCO)
             throws JAXBException, SAXException, IOException, JAXBValidationError, JAXBValidationWarning,
             JadePersistenceException {
-        StringWriter sw = new StringWriter();
-        jaxbs.marshal(message, sw, false, true, addClasses);
+        StringWriter swFull = new StringWriter();
+        List<String> splitXml = new ArrayList<String>();
+        JAXBServices.getInstance().marshal(message, swFull, false, true, addClasses);
+        String fullXml = swFull.toString();
+        int iCounter = 0;
+        StringWriter swSplitted = new StringWriter();
+        for (int idx = 0; idx < fullXml.length(); idx++) {
+            String currentChar = String.valueOf(fullXml.charAt(idx));
+            if (currentChar.equals("'")) {
+                swSplitted.append("''");
+            } else {
+                swSplitted.append(fullXml.charAt(idx));
+            }
+            if (iCounter == 20000) {
+                iCounter = 0;
+                splitXml.add(swSplitted.toString());
+                swSplitted = new StringWriter();
+            }
+            iCounter++;
+        }
+        if (swSplitted.toString().length() > 0) {
+            splitXml.add(swSplitted.toString());
+        }
+
         SimpleAnnonceSedexCOXML annonceSedexCOXML = new SimpleAnnonceSedexCOXML();
-        annonceSedexCOXML.setMessageId(message.getHeader().getMessageId());
         annonceSedexCOXML.setIdAnnonceSedex(annonceSedexCO.getIdAnnonceSedexCO());
-        annonceSedexCOXML.setXml(sw.toString());
+        annonceSedexCOXML.setMessageId(message.getHeader().getMessageId());
+        annonceSedexCOXML.setXml(splitXml.get(0));
         JadePersistenceManager.add(annonceSedexCOXML);
+        for (int idx = 1; idx < splitXml.size(); idx++) {
+            String query = "UPDATE SCHEMA.MASDXCO_XML SET XML=CONCAT(XML, '" + splitXml.get(idx)
+                    + "') WHERE IDSEDEX = " + annonceSedexCO.getIdAnnonceSedexCO() + " AND MSGID = '"
+                    + message.getHeader().getMessageId() + "'";
+            try {
+                QueryExecutor.executeUpdate(query, getSession());
+            } catch (Exception e) {
+                logErrors("AnnoncesCOReceptionMessage5232_000402_1.saveXml()", "Not possible to call QueryExecutor : "
+                        + e.getMessage(), e);
+            }
+        }
         checkJadeThreadErrors();
         return annonceSedexCOXML;
     }
@@ -682,43 +716,4 @@ public class AnnoncesCOReceptionMessage5232_000202_1 extends AnnoncesCODefault {
                 personneANePasPoursuivreSearch);
         return personneANePasPoursuivreSearch;
     }
-
-    // private void sendMail(File file) {
-    // String subject = "Contentieux Amal : réception des annonces de prise en charge effectuée avec succès !";
-    // StringBuilder body = new StringBuilder();
-    //
-    // if (!personnesNotFound.isEmpty()) {
-    // if (personnesNotFound.size() > 1) {
-    // subject = "Contentieux Amal : " + personnesNotFound.size()
-    // + " personnes non connues détectées lors de la réception des annonces de prise en charge !";
-    // } else {
-    // subject =
-    // "Contentieux Amal : 1 personne non connue détectée lors de la réception des annonces de prise en charge !";
-    // }
-    // body.append("Liste des débiteurs / personnes non trouvées :\n");
-    //
-    // for (String personne : personnesNotFound) {
-    // body.append("   -" + personne + "\n");
-    // }
-    //
-    // if (!errors.isEmpty()) {
-    // body.append("\nErreur(s) rencontrée(s) ");
-    // for (String erreur : errors) {
-    // body.append("   -" + erreur + "\n");
-    // }
-    // }
-    // }
-    //
-    // String[] files = new String[1];
-    // if (file != null) {
-    // files[0] = file.getPath();
-    // }
-    //
-    // try {
-    // JadeSmtpClient.getInstance().sendMail(BSessionUtil.getSessionFromThreadContext().getUserEMail(), subject,
-    // body.toString(), files);
-    // } catch (Exception e) {
-    // JadeThread.logError(this.getClass().getName(), "Erreur lors de l'envoi du mail ! => " + e.getMessage());
-    // }
-    // }
 }
