@@ -267,13 +267,7 @@ public class AFIdeAnnonceManager extends BManager implements Serializable {
     }
 
     public void setLikeNumeroIde(String likeNumeroIde) {
-
-        if (!JadeStringUtil.isBlankOrZero(likeNumeroIde)) {
-            likeNumeroIde = likeNumeroIde.replaceAll("[^\\d]", "");
-            likeNumeroIde = "CHE" + likeNumeroIde;
-            this.likeNumeroIde = likeNumeroIde;
-        }
-
+        this.likeNumeroIde = likeNumeroIde;
     }
 
     public String getForIdAffiliation() {
@@ -359,14 +353,17 @@ public class AFIdeAnnonceManager extends BManager implements Serializable {
                 sqlWhere.append(" AND ");
             }
 
-            likeNumeroIde = likeNumeroIde + "%";
-            likeNumeroIde = _dbWriteString(theTransaction, likeNumeroIde);
+            String likeNumeroIdeMod = likeNumeroIde.replaceAll("[^\\d]", "");
+            likeNumeroIdeMod = "CHE" + likeNumeroIdeMod;
+
+            likeNumeroIdeMod = likeNumeroIdeMod + "%";
+            likeNumeroIdeMod = _dbWriteString(theTransaction, likeNumeroIdeMod);
 
             sqlWhere.append(" ( " + ALIAS_TABLE_AFFILIATION + AFAffiliation.FIELDNAME_NUMERO_IDE + " LIKE "
-                    + likeNumeroIde + " OR " + ALIAS_TABLE_ANNONCE
-                    + AFIdeAnnonce.IDE_ANNONCE_FIELD_HISTORIQUE_NUMERO_IDE + " LIKE " + likeNumeroIde + " OR "
+                    + likeNumeroIdeMod + " OR " + ALIAS_TABLE_ANNONCE
+                    + AFIdeAnnonce.IDE_ANNONCE_FIELD_HISTORIQUE_NUMERO_IDE + " LIKE " + likeNumeroIdeMod + " OR "
                     + ALIAS_TABLE_ANNONCE + AFIdeAnnonce.IDE_ANNONCE_FIELD_NUMERO_IDE_REMPLACEMENT + " LIKE "
-                    + likeNumeroIde + " ) ");
+                    + likeNumeroIdeMod + " ) ");
 
         }
 
@@ -375,12 +372,12 @@ public class AFIdeAnnonceManager extends BManager implements Serializable {
                 sqlWhere.append(" AND ");
             }
 
-            likeNumeroAffilie = "%" + likeNumeroAffilie + "%";
-            likeNumeroAffilie = _dbWriteString(theTransaction, likeNumeroAffilie);
+            String likeNumeroAffilieMod = "%" + likeNumeroAffilie + "%";
+            likeNumeroAffilieMod = _dbWriteString(theTransaction, likeNumeroAffilieMod);
 
             sqlWhere.append(" ( " + ALIAS_TABLE_AFFILIATION + AFAffiliation.FIELDNAME_NUMERO_AFFILIE + " LIKE "
-                    + likeNumeroAffilie + " OR " + ALIAS_TABLE_ANNONCE
-                    + AFIdeAnnonce.IDE_ANNONCE_FIELD_LIST_NUMERO_AFFILIE_LIEE + " LIKE " + likeNumeroAffilie + " ) ");
+                    + likeNumeroAffilieMod + " OR " + ALIAS_TABLE_ANNONCE
+                    + AFIdeAnnonce.IDE_ANNONCE_FIELD_LIST_NUMERO_AFFILIE_LIEE + " LIKE " + likeNumeroAffilieMod + " ) ");
 
         }
 
