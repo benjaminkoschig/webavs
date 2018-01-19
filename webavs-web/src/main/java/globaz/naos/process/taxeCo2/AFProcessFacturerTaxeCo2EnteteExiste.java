@@ -77,8 +77,14 @@ public final class AFProcessFacturerTaxeCo2EnteteExiste extends AFProcessFacture
 
     @Override
     boolean isMoisFacturationOk(String moisFacturation) throws Exception {
-        return Integer.valueOf(moisFacturation) == Integer.valueOf(getNaosSession().getApplication().getProperty(
-                AFApplication.PROPERTY_RESTITUTION_TAXE_CO2_MONTH, "9"));
+        int month;
+        try {
+            month = Integer.valueOf(getNaosSession().getApplication().getProperty(
+                    AFApplication.PROPERTY_RESTITUTION_TAXE_CO2_MONTH, "9"));
+        } catch (NumberFormatException e) {
+            month = 9;
+        }
+        return Integer.valueOf(moisFacturation) == month;
     }
 
     @Override
