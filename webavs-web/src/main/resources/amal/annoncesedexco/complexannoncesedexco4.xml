@@ -33,6 +33,7 @@
 			<order-field field-ref="simpleAnnonceSedexCO.dateAnnonce" order="DESC"/>
 			<order-field field-ref="caisseMaladie.admin.codeAdministration" order="ASC"/> 
 			<order-field field-ref="simpleAnnonceSedexCO.idAnnonceSedexCO" order="DESC" />
+			<order-field field-ref="simpleAnnonceSedexCOAssure.primePeriodeDebut" order="ASC"/>
 		</order-by>
 
 	</complexe-model>

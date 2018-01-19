@@ -127,6 +127,7 @@ function callBackPrintList() {
 	String csMess = "";
 	String title = "";
 	String subtitle = "";
+	String period = "";
 	String interets = "";
 	String frais = "";
 	String total = "";
@@ -150,13 +151,18 @@ function callBackPrintList() {
 	    String assureNss = currentAssure.getNssAssure();
 	    String debiteurNss = currentDebiteur.getNssDebiteur();
 	    String messSubType = annoceSedex.getMessageSubType();
+	    String currentIdDebiteur = currentDebiteur.getId();
 		
 		boolean isDebiteur = debiteurNss.equals(assureNss);
 		annonceId = csMess;
 		if(isDebiteur){
 			subtypeLibelle = annoceSedex.getMessageSubTypeLibelle();
 			title = "Détail annonce # " + csMess;
-			subtitle = subtypeLibelle + " " + annoceSedex.getStatementStartDate() + " - "+ annoceSedex.getStatementEndDate();
+			if(annoceSedex.getMessageSubType().equals("402")){
+				subtitle = subtypeLibelle + " " + annoceSedex.getStatementStartDate() + " - " + annoceSedex.getStatementEndDate();
+			} else { 
+			    subtitle = subtypeLibelle + " " + currentAssure.getPrimePeriodeDebut() + " - " + currentAssure.getPrimePeriodeFin();
+			}
 			interets = currentDebiteur.getInterets();
 			frais = currentDebiteur.getFrais();
 			total = currentDebiteur.getTotal();
@@ -203,45 +209,40 @@ function callBackPrintList() {
 		    startDate = currentAssure.getCostSharingPeriodeDebut();
 		    endDate = currentAssure.getCostSharingPeriodeFin();
 		%>
-			<script>
-				detailAssure['<%=countElement%>'] = new DetailFinance('<%=description%>', '<%=startDate%>', '<%=endDate%>', '<%=value%>');
-			</script>
-		<%}	%>
+		<script>
+			detailAssure['<%=countElement%>'] = new DetailFinance('<%=description%>', '<%=startDate%>', '<%=endDate%>', '<%=value%>');
+		</script>
+		<%
+		countElement++;
+		}	%>
 	<!-- Load assure information -->
 	<script>
 		var assure = new Personne('<%=avsAssure%>','<%=nomPrenomAssure%>');
 		assureArray['<%=assureCounter%>'] = new DetailAssure(assure, detailAssure);
 	</script>
-
-	<%
-		// Check if next message have same id
-		String nextMessage = "";
-		if(nbItems > iAnnonce + 1){
+		    
+	    <%
+	    String nextIdDebiteur = "";
+	    if(iAnnonce + 1 < nbItems){
 		    ComplexAnnonceSedexCO4 tmpAnnonce = (ComplexAnnonceSedexCO4)annoncesCO4Search.getSearchResults()[iAnnonce + 1];
-		    nextMessage = tmpAnnonce.getSimpleAnnonceSedexCO().getIdAnnonceSedexCO();
-		    if(!nextMessage.equals(csMess)){
+		    nextIdDebiteur = tmpAnnonce.getSimpleAnnonceSedexCODebiteur().getId();
+	    }
+	    
+	    if(!nextIdDebiteur.equals(currentIdDebiteur)){
     %>
-		        <script> 
-			        var debiteur = new Personne('<%=noAvs%>','<%=nomPrenom%>');
-			    	var annonce = new Annonce('<%=csMess%>', '<%=title%>', '<%=subtitle%>','<%=interets%>','<%=frais%>','<%=total%>', debiteur, assureArray);
-			    	annoncesCO4['<%=annonceCounter%>'] = new AnnonceCO4(annonce,'<%=csMess%>', '<%=caisse%>', '<%=dateAnnonce%>');
-			    	assureArray = new Array; // Reset object
-		    	</script>
+        <script> 
+	        var debiteur = new Personne('<%=noAvs%>','<%=nomPrenom%>');
+	    	var annonce = new Annonce('<%=csMess%>', '<%=title%>', '<%=subtitle%>','<%=interets%>','<%=frais%>','<%=total%>', debiteur, assureArray);
+	    	annoncesCO4['<%=annonceCounter%>'] = new AnnonceCO4(annonce,'<%=csMess%>', '<%=caisse%>', '<%=dateAnnonce%>');
+	    	assureArray = new Array; // Reset object
+    	</script>
    	<%
-   				assureCounter = 0;
-		    	annonceCounter++;
-		    }
-		}
+ 			assureCounter = 0;
+	    	annonceCounter++;
+	  }
 		assureCounter++;
 	}// End for
 %>
-<script>
-	var debiteur = new Personne('<%=noAvs%>','<%=nomPrenom%>');
-	var annonce = new Annonce('<%=csMess%>', '<%=title%>', '<%=subtitle%>','<%=interets%>','<%=frais%>','<%=total%>', debiteur, assureArray);
-	annoncesCO4['<%=annonceCounter%>'] = new AnnonceCO4(annonce,'<%=csMess%>', '<%=caisse%>', '<%=dateAnnonce%>');
-	assureArray = new Array; // Reset object
-</script>
-
 <!-- /////////////////////////////////////////////////////////////////////////////////////////////////////// -->
 <!-- ////////////////////////		End: Popup section related   /////////////////////////////////////////// -->
 <!-- /////////////////////////////////////////////////////////////////////////////////////////////////////// -->
@@ -333,6 +334,7 @@ function callBackPrintList() {
 				<td colspan="12"/>
 			</tr>
 			<%
+			int lineCounter = 0;
 			for(int iAnnonce = 0; iAnnonce<annoncesCO4Search.getSize();iAnnonce++){
 			    ComplexAnnonceSedexCO4 currentAnnonce = (ComplexAnnonceSedexCO4)annoncesCO4Search.getSearchResults()[iAnnonce];
 			    SimpleAnnonceSedexCODebiteur currentDebiteur = (SimpleAnnonceSedexCODebiteur)currentAnnonce.getSimpleAnnonceSedexCODebiteur();
@@ -349,7 +351,7 @@ function callBackPrintList() {
 					interets = currentAnnonce.getSimpleAnnonceSedexCODebiteur().getInterets();
 					frais = currentAnnonce.getSimpleAnnonceSedexCODebiteur().getFrais();
 					total = currentAnnonce.getSimpleAnnonceSedexCODebiteur().getTotal();
-					
+					period = currentAssure.getPrimePeriodeDebut() + " - " + currentAssure.getPrimePeriodeFin();
 					dateAnnonce = currentAnnonce.getSimpleAnnonceSedexCO().getDateAnnonce();
 					caisse = currentAnnonce.getCaisseMaladie().getTiers().getDesignation1();
 					
@@ -363,7 +365,7 @@ function callBackPrintList() {
 				        statementYear = statementDate.substring(6); 
 				    }
 				        
-					if(iAnnonce%2==0){
+				    if(lineCounter%2==0){
 						rowStyle = "amalRow";
 					}else{
 						rowStyle = "amalRowOdd";
@@ -384,13 +386,14 @@ function callBackPrintList() {
 				<td>
 					<%
 					%>
-					<a style="color:blue" onclick="showdetailCO4(<%=csMess%>);" href="#<%=csMess%>">
-							<%=subtypeLibelle%>
+					<a style="color:blue" onclick="showdetailCO4(<%=lineCounter%>);" href="#<%=csMess%>">
+						<%=subtypeLibelle%>
 					</a>
 				</td>
 				
 				<!-- Status -->
 				<td><%
+						lineCounter++;
 						String status = currentAnnonce.getSimpleAnnonceSedexCO().getStatus();
 						String imgName = AMStatutAnnonceSedex.getStatusImageName(status);
 						String libelleImg = AMStatutAnnonceSedex.getStatusImageLabel(status);
@@ -404,7 +407,7 @@ function callBackPrintList() {
 				</td>
 				
 				<!-- Période -->
-				<td></td>
+				<td><%=period%></td>
 				
 				<!-- Intérêts -->
 				<td><%=interets%></td>

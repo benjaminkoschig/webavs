@@ -36,8 +36,8 @@ import ch.globaz.amal.business.exceptions.models.parametreModel.ParametreModelEx
 import ch.globaz.amal.business.exceptions.models.revenu.RevenuException;
 import ch.globaz.amal.business.models.annoncesedex.ComplexAnnonceSedex;
 import ch.globaz.amal.business.models.annoncesedex.ComplexAnnonceSedexSearch;
-import ch.globaz.amal.business.models.annoncesedexco.AnnonceSedexCO2AssureContainer;
 import ch.globaz.amal.business.models.annoncesedexco.AnnonceSedexCO2Detail;
+import ch.globaz.amal.business.models.annoncesedexco.AnnonceSedexCOAssureContainer;
 import ch.globaz.amal.business.models.annoncesedexco.ComplexAnnonceSedexCO2;
 import ch.globaz.amal.business.models.annoncesedexco.ComplexAnnonceSedexCO2Search;
 import ch.globaz.amal.business.models.annoncesedexco.ComplexAnnonceSedexCO4Search;
@@ -406,7 +406,7 @@ public class AMContribuableViewBean extends BJadePersistentObjectViewBean {
                     detailCO2.setAnneeAnnonce(daAnnonce.getAnnee());
                     detailCO2.setDaAnnonce(daAnnonce.getSwissValue());
                     detailCO2.setCaisseMaladie(caisseMaladie.getTiers().getDesignation1());
-                    AnnonceSedexCO2AssureContainer debiteur = new AnnonceSedexCO2AssureContainer();
+                    AnnonceSedexCOAssureContainer debiteur = new AnnonceSedexCOAssureContainer();
 
                     if (contribuable != null && contribuable.getPersonneEtendue() != null) {
                         PersonneEtendueSimpleModel personne = contribuable.getPersonneEtendue().getPersonneEtendue();
@@ -441,7 +441,7 @@ public class AMContribuableViewBean extends BJadePersistentObjectViewBean {
 
     private void setCreanceInformation(AnnonceSedexCO2Detail detailCO2, String idSedexCO) {
         CommonNSSFormater nssFormater = new CommonNSSFormater();
-        List<AnnonceSedexCO2AssureContainer> assureList = new ArrayList<AnnonceSedexCO2AssureContainer>();
+        List<AnnonceSedexCOAssureContainer> assureList = new ArrayList<AnnonceSedexCOAssureContainer>();
         ComplexAnnonceSedexCODebiteursAssuresSearch debiteurSearch = new ComplexAnnonceSedexCODebiteursAssuresSearch();
         debiteurSearch.setForIdSedexCO(idSedexCO);
         debiteurSearch.setForIdContribuable(contribuable.getId());
@@ -453,7 +453,7 @@ public class AMContribuableViewBean extends BJadePersistentObjectViewBean {
                 SimpleAnnonceSedexCODebiteur simpleDebiteur = debiteurItem.getSimpleAnnonceSedexCODebiteur();
                 SimpleAnnonceSedexCOAssure simpleAssure = debiteurItem.getSimpleAnnonceSedexCOAssure();
 
-                AnnonceSedexCO2AssureContainer assureItem = new AnnonceSedexCO2AssureContainer();
+                AnnonceSedexCOAssureContainer assureItem = new AnnonceSedexCOAssureContainer();
                 assureItem.setDaDebutParticipation(new Date(simpleAssure.getCostSharingPeriodeDebut()));
                 assureItem.setDaFinParticipation(new Date(simpleAssure.getCostSharingPeriodeFin()));
                 assureItem.setMontantParticipation(simpleAssure.getCostSharingMontant());

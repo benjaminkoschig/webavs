@@ -10,8 +10,8 @@ import java.util.List;
  * 
  */
 public class AnnonceSedexCO2Detail {
-    private AnnonceSedexCO2AssureContainer debiteur;
-    private List<AnnonceSedexCO2AssureContainer> assureList;
+    private AnnonceSedexCOAssureContainer debiteur;
+    private List<AnnonceSedexCOAssureContainer> assureList;
     private Boolean isCreance;
     private String idAnnonceCO;
     private String idSedex;
@@ -83,28 +83,28 @@ public class AnnonceSedexCO2Detail {
     /**
      * @return the débiteur
      */
-    public AnnonceSedexCO2AssureContainer getDebiteur() {
+    public AnnonceSedexCOAssureContainer getDebiteur() {
         return debiteur;
     }
 
     /**
      * @param debiteur the débiteur to set
      */
-    public void setDebiteur(AnnonceSedexCO2AssureContainer debiteur) {
+    public void setDebiteur(AnnonceSedexCOAssureContainer debiteur) {
         this.debiteur = debiteur;
     }
 
     /**
      * @return the assureList
      */
-    public List<AnnonceSedexCO2AssureContainer> getAssureList() {
+    public List<AnnonceSedexCOAssureContainer> getAssureList() {
         return assureList;
     }
 
     /**
      * @param assureList the assureList to set
      */
-    public void setAssureList(List<AnnonceSedexCO2AssureContainer> assureList) {
+    public void setAssureList(List<AnnonceSedexCOAssureContainer> assureList) {
         this.assureList = assureList;
     }
 

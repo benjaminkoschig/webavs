@@ -3,7 +3,7 @@
 <%@page import="globaz.amal.utils.AMContribuableHistoriqueHelper"%>
 <%@page	import="ch.globaz.amal.business.models.annoncesedexco.SimpleAnnonceSedexCOAssure"%>
 <%@page	import="ch.globaz.amal.business.models.annoncesedexco.ComplexAnnonceSedexCO2"%>
-<%@page	import="ch.globaz.amal.business.models.annoncesedexco.AnnonceSedexCO2AssureContainer"%>
+<%@page	import="ch.globaz.amal.business.models.annoncesedexco.AnnonceSedexCOAssureContainer"%>
 <%@page	import="ch.globaz.amal.business.models.annoncesedexco.AnnonceSedexCO2Detail"%>
 <%@page	import="ch.globaz.amal.business.models.annoncesedexco.ComplexAnnonceSedexCO2Search"%>
 <%@page import="java.util.HashMap"%>
@@ -57,63 +57,62 @@
 			<th>Total créance</th>
 		</tr>
 		<%
-			String rowStyle = "amalRowOdd";
-			List<AnnonceSedexCO2Detail> annoncesCO2List = viewBean.getAnnoncesSedexCO2();
+		    String rowStyle = "amalRowOdd";
+					List<AnnonceSedexCO2Detail> annoncesCO2List = viewBean.getAnnoncesSedexCO2();
 		%>
 		<!-- /////////////////////////////////////////////////////////////////////////////////////////////////////// -->
 		<!-- ////////////////////////		Start: Load Popup data /////////////////////////////////////////// -->
 		<!-- /////////////////////////////////////////////////////////////////////////////////////////////////////// -->
-		<%	
-			String csMess = "";
-			String title = "";
-			String subtitle = "";
-			String interets = "";
-			String frais = "";
-			String total = "";
-			String nssDebiteur = "";
-			String nomPrenomDebiteur = "";
-			int annonceIdx = 0;
-			%>
+		<%
+		    String csMess = "";
+					String title = "";
+					String subtitle = "";
+					String interets = "";
+					String frais = "";
+					String total = "";
+					String nssDebiteur = "";
+					String nomPrenomDebiteur = "";
+					int annonceIdx = 0;
+		%>
 			<script>
 				var annonceDetail = new Array; 
 			</script>
 			<%
-			
-			for (AnnonceSedexCO2Detail itemCO2Detail : annoncesCO2List) { 
-		    	csMess = itemCO2Detail.getIdAnnonceCO();
-				String subtypeLibelle = itemCO2Detail.getLibelleAnnonce();
-				title = "Détail annonce # " + csMess;
-				nssDebiteur = itemCO2Detail.getDebiteur().getFormattedNss();
-				if (!contribReprise) {
-				    nomPrenomDebiteur = itemCO2Detail.getDebiteur().getFormattedName();
-				} else {
-				    nomPrenomDebiteur = itemCO2Detail.getDebiteur().getFormattedNameReprise();
-				}
-				if(itemCO2Detail.getIsCreance()){
-					subtitle = itemCO2Detail.getLibelleAnnonce();
-					interets = itemCO2Detail.getInterets();
-					frais = itemCO2Detail.getFrais();
-					total = itemCO2Detail.getTotalCreance();
-					%>
+			    for (AnnonceSedexCO2Detail itemCO2Detail : annoncesCO2List) { 
+					    	csMess = itemCO2Detail.getIdAnnonceCO();
+							String subtypeLibelle = itemCO2Detail.getLibelleAnnonce();
+							title = "Détail annonce # " + csMess;
+							nssDebiteur = itemCO2Detail.getDebiteur().getFormattedNss();
+							if (!contribReprise) {
+							    nomPrenomDebiteur = itemCO2Detail.getDebiteur().getFormattedName();
+							} else {
+							    nomPrenomDebiteur = itemCO2Detail.getDebiteur().getFormattedNameReprise();
+							}
+							if(itemCO2Detail.getIsCreance()){
+								subtitle = itemCO2Detail.getLibelleAnnonce();
+								interets = itemCO2Detail.getInterets();
+								frais = itemCO2Detail.getFrais();
+								total = itemCO2Detail.getTotalCreance();
+			%>
 					<script>
 						var detailAssure = new Array; 
 					</script>
 					<%
-					String description = "";
-					String startDate = "";
-					String endDate = "";
-					String value = "";
-					int assureIdx = 0;
-					for(AnnonceSedexCO2AssureContainer assureItem : itemCO2Detail.getAssureList()){
-					    int detailIdx = 0;
-						String nssAssure = assureItem.getFormattedNss();
-						String nomAssure = assureItem.getFormattedName();
-						if(!assureItem.getMontantPrime().isEmpty()){
-					        description = "Prime";
-							startDate = assureItem.getDaDebutPrime().getSwissValue();
-							endDate = assureItem.getDaFinPrime().getSwissValue();
-							value = assureItem.getMontantPrime();
-							%>
+					    String description = "";
+										String startDate = "";
+										String endDate = "";
+										String value = "";
+										int assureIdx = 0;
+										for(AnnonceSedexCOAssureContainer assureItem : itemCO2Detail.getAssureList()){
+										    int detailIdx = 0;
+											String nssAssure = assureItem.getFormattedNss();
+											String nomAssure = assureItem.getFormattedName();
+											if(!assureItem.getMontantPrime().isEmpty()){
+										        description = "Prime";
+												startDate = assureItem.getDaDebutPrime().getSwissValue();
+												endDate = assureItem.getDaFinPrime().getSwissValue();
+												value = assureItem.getMontantPrime();
+					%>
 							<script>
 								detailAssure['<%=detailIdx%>'] = new DetailFinance('<%=description%>', '<%=startDate%>', '<%=endDate%>', '<%=value%>');
 							</script>
