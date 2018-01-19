@@ -228,11 +228,16 @@ public class AFIdeAnnonceManager extends BManager implements Serializable {
             if (!operation.contains("IN")) {
                 if (CREATE_CONDITION_STRING.equalsIgnoreCase(typeCondition)) {
 
-                    if ("LIKE".equalsIgnoreCase(operation)) {
+                    if ("LIKE".equalsIgnoreCase(operation) || "LIKE_WITHOUT_CASSE".equalsIgnoreCase(operation)) {
                         valeur = valeur + "%";
                     }
 
                     theValeur = _dbWriteString(transaction, valeur);
+                    if ("LIKE_WITHOUT_CASSE".equalsIgnoreCase(operation)) {
+                        operation = "LIKE";
+                        theValeur = "UPPER(" + theValeur + ")";
+                        column = "UPPER(" + column + ")";
+                    }
                 } else if (CREATE_CONDITION_NUMERIC.equalsIgnoreCase(typeCondition)) {
                     theValeur = _dbWriteNumeric(transaction, valeur);
                 } else if (CREATE_CONDITION_DATE.equalsIgnoreCase(typeCondition)) {
@@ -395,7 +400,7 @@ public class AFIdeAnnonceManager extends BManager implements Serializable {
         }
 
         createCondition(theTransaction, CREATE_CONDITION_STRING, sqlWhere, ALIAS_TABLE_ANNONCE
-                + AFIdeAnnonce.IDE_ANNONCE_FIELD_HISTORIQUE_RAISON_SOCIALE, "LIKE", likeRaisonSociale);
+                + AFIdeAnnonce.IDE_ANNONCE_FIELD_HISTORIQUE_RAISON_SOCIALE, "LIKE_WITHOUT_CASSE", likeRaisonSociale);
 
         createCondition(theTransaction, CREATE_CONDITION_STRING, sqlWhere, ALIAS_TABLE_ANNONCE
                 + AFIdeAnnonce.IDE_ANNONCE_FIELD_HISTORIQUE_STATUT_IDE, "=", forStatut);
