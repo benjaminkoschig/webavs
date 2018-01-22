@@ -813,15 +813,11 @@ public class AFIdeTraitementAnnonceProcess extends BProcess implements FWViewBea
 
             for (AFAffiliation aAffiliation : listAffiliation) {
 
-                if (isAnnoncePassive) {
-                    miseAJourCodeNoga(ideAnnonceEntrante, idCodeNoga, aAffiliation);
-                } else {
-                    aAffiliation.setNumeroIDE(ideDataBean.getNumeroIDE());
-                    aAffiliation.setIdeRaisonSociale(ideDataBean.getRaisonSociale());
-                    aAffiliation.setIdeStatut(ideDataBean.getStatut());
+                aAffiliation.setNumeroIDE(ideDataBean.getNumeroIDE());
+                aAffiliation.setIdeRaisonSociale(ideDataBean.getRaisonSociale());
+                aAffiliation.setIdeStatut(ideDataBean.getStatut());
 
-                    miseAJourCodeNoga(ideAnnonceEntrante, idCodeNoga, aAffiliation);
-                }
+                miseAJourCodeNoga(ideAnnonceEntrante, idCodeNoga, aAffiliation);
 
                 aAffiliation.setRulesByPass(true);
                 AFAffiliationUtil.disableExtraProcessingForAffiliation(aAffiliation);
