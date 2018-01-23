@@ -117,7 +117,13 @@ function init() {
 		</TR>
 		
 		<TR>
-			<TD nowrap width="140"><ct:FWLabel key="NAOS_JSP_IDE_ANNONCE_NUMERO_AFFILIE"/></TD>
+			<TD nowrap width="140">
+			<%if (viewBean.getNumeroAffilie() != null && !viewBean.getNumeroAffilie().isEmpty()) {%>
+				<A href="<%=(servletContext + mainServletPath)%>?userAction=naos.affiliation.autreDossier.modifier&numAffilie=<%=viewBean.getNumeroAffilie()%>" ><ct:FWLabel key="NAOS_JSP_IDE_ANNONCE_NUMERO_AFFILIE"/></A>
+			<%}  else {%>
+				<ct:FWLabel key="NAOS_JSP_IDE_ANNONCE_NUMERO_AFFILIE"/>
+			<%} %>
+			</TD>
         	<TD nowrap width="300"><INPUT name="" type="text" value="<%=AFIDEUtil.giveMeAllNumeroAffilieInAnnonceSeparatedByVirgul(viewBean)%>" class="libelleLongDisabled" readonly></TD>
         	<%if (CodeSystem.CATEGORIE_ANNONCE_IDE_ENVOI.equals(viewBean.getIdeAnnonceCategorie())) {%>
         	<TD nowrap width="140"><ct:FWLabel key="NAOS_JSP_IDE_ANNONCE_LEGALFORM"/></TD>
