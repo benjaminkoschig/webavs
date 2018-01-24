@@ -422,7 +422,7 @@ public class AFIdeAnnonceManager extends BManager implements Serializable {
 
         createCondition(theTransaction, CREATE_CONDITION_NUMERIC, sqlWhere, ALIAS_TABLE_ANNONCE
                 + AFIdeAnnonce.IDE_ANNONCE_FIELD_TYPE, "=", forType);
-
+        
         createCondition(theTransaction, CREATE_CONDITION_NUMERIC, sqlWhere, ALIAS_TABLE_ANNONCE
                 + AFIdeAnnonce.IDE_ANNONCE_FIELD_ETAT, "=", forEtat);
 

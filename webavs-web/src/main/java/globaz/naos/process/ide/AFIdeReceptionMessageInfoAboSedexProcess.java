@@ -1,5 +1,12 @@
 package globaz.naos.process.ide;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.util.Properties;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
 import globaz.globall.api.GlobazSystem;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BTransaction;
@@ -20,13 +27,6 @@ import globaz.naos.util.AFIDEUtil;
 import globaz.naos.util.IDEDataBean;
 import globaz.naos.util.IDEServiceCallUtil;
 import idech.admin.bfs.xmlns.bfs_5102_000001._2.Message;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.util.Properties;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
 
 public class AFIdeReceptionMessageInfoAboSedexProcess {
 
@@ -67,17 +67,17 @@ public class AFIdeReceptionMessageInfoAboSedexProcess {
     }
 
     private IDEDataBean formatdata(Message message) {
-        IDEDataBean ideDataBean = IDEServiceCallUtil.formatdata(message.getRegisterModification()
-                .getRegisterOrganisationData());
+        IDEDataBean ideDataBean = IDEServiceCallUtil
+                .formatdata(message.getRegisterModification().getRegisterOrganisationData());
 
-        ideDataBean.setTypeAnnonceIde(AFIDEUtil
-                .translateInfoAboMessageTypeInTypeAnnonceIde(getInfoAboMessageType(message)));
+        ideDataBean.setTypeAnnonceIde(
+                AFIDEUtil.translateInfoAboMessageTypeInTypeAnnonceIde(getInfoAboMessageType(message)));
 
         return ideDataBean;
     }
 
-    private IDEDataBean readInfoAboMessage(SedexMessage messageSedexInfoAbo) throws FileNotFoundException,
-            JAXBException {
+    private IDEDataBean readInfoAboMessage(SedexMessage messageSedexInfoAbo)
+            throws FileNotFoundException, JAXBException {
 
         InputStream fileInputStream = new FileInputStream(messageSedexInfoAbo.getFileLocation());
 
@@ -89,8 +89,8 @@ public class AFIdeReceptionMessageInfoAboSedexProcess {
     }
 
     @Setup
-    public void setUp(Properties properties) throws JadeDecryptionNotSupportedException,
-            JadeEncrypterNotFoundException, Exception {
+    public void setUp(Properties properties)
+            throws JadeDecryptionNotSupportedException, JadeEncrypterNotFoundException, Exception {
 
         String encryptedUser = properties.getProperty("userSedex");
         if (encryptedUser == null) {
@@ -155,9 +155,7 @@ public class AFIdeReceptionMessageInfoAboSedexProcess {
                 transaction.closeTransaction();
                 throw new Exception(
                         "AFIdeReceptionMessageInfoAboSedexProcess.generateAnnonceIdeEntrante : unable to add annonce due to error/warning in transaction : "
-                                + transaction.getErrors().toString()
-                                + " / "
-                                + transaction.getWarnings().toString()
+                                + transaction.getErrors().toString() + " / " + transaction.getWarnings().toString()
                                 + " you must check sedexMessage in error and put them one more in Inbox");
             } else {
                 transaction.commit();

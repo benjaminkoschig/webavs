@@ -1,12 +1,12 @@
 package globaz.naos.translation;
 
+import java.util.ArrayList;
+import java.util.List;
+import javax.servlet.http.HttpSession;
 import globaz.framework.controller.FWController;
 import globaz.globall.api.BISession;
 import globaz.globall.db.BSession;
 import globaz.globall.parameters.FWParametersSystemCode;
-import java.util.ArrayList;
-import java.util.List;
-import javax.servlet.http.HttpSession;
 
 /**
  * Insérez la description du type ici. Date de création : (10.06.2002 10:42:09)
@@ -566,6 +566,8 @@ public class CodeSystem {
     public static final String TYPE_ANNONCE_IDE_CREATION_INFO_ABO = "857012";
     public static final String TYPE_ANNONCE_IDE_MUTATION_INFO_ABO = "857013";
     public static final String TYPE_ANNONCE_IDE_RADIATION = "857014";
+    public static final String TYPE_ANNONCE_IDE_FOSC = "857015";
+    public static final String TYPE_ANNONCE_IDE_FAILLITE = "857016";
 
     public static final String ETAT_ANNONCE_IDE_ENREGISTRE = "858001";
     public static final String ETAT_ANNONCE_IDE_SUSPENDU = "858002";
