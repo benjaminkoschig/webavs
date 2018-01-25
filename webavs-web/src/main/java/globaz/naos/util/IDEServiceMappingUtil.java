@@ -39,11 +39,29 @@ public class IDEServiceMappingUtil {
         return getNumeroIDE(registerDeregisterItem.getUid());
     }
 
+    /**
+     * extract data from ech_0108_f._3.OrganisationType
+     * 
+     * @param organisationType
+     * @return
+     */
     public static final String getNumeroIDE(idech.ech.xmlns.ech_0108_f._3.OrganisationType organisationType) {
-        return String.valueOf(organisationType.getOrganisation().getOrganisationIdentification().getUid()
-                .getUidOrganisationIdCategorie())
+        return String
+                .valueOf(organisationType.getOrganisation().getOrganisationIdentification().getUid()
+                        .getUidOrganisationIdCategorie())
                 + String.valueOf(organisationType.getOrganisation().getOrganisationIdentification().getUid()
                         .getUidOrganisationId());
+    }
+
+    /**
+     * extract data from ech0097_1.UidStructureType
+     * 
+     * @param uidStructureType
+     * @return
+     */
+    public static final String getNumeroIDE(ch.ech.xmlns.ech_0097._1.UidStructureType uidStructureType) {
+        return String.valueOf(uidStructureType.getUidOrganisationIdCategorie())
+                + String.valueOf(uidStructureType.getUidOrganisationId());
     }
 
     public static final String getDateJJMMYYYY(XMLGregorianCalendar scheduledDate) {
@@ -57,7 +75,8 @@ public class IDEServiceMappingUtil {
                 + String.valueOf(uidStruct.getUidOrganisationId());
     }
 
-    public static final String getNumeroIDERemplacement(idech.ech.xmlns.ech_0108_f._3.OrganisationType organisationType) {
+    public static final String getNumeroIDERemplacement(
+            idech.ech.xmlns.ech_0108_f._3.OrganisationType organisationType) {
 
         UidStructureType uidStructureType = organisationType.getUidregInformation().getUidReplacement();
 
@@ -181,8 +200,8 @@ public class IDEServiceMappingUtil {
     }
 
     public static final String getStatut(idech.ech.xmlns.ech_0108_f._3.OrganisationType organisationType) {
-        return String.valueOf(AFIDEUtil.translateCodeStatut(Integer.valueOf(organisationType.getUidregInformation()
-                .getUidregStatusEnterpriseDetail())));
+        return String.valueOf(AFIDEUtil.translateCodeStatut(
+                Integer.valueOf(organisationType.getUidregInformation().getUidregStatusEnterpriseDetail())));
     }
 
     public static final OrganisationType getStructureForUpdateEntiteIde(IDEDataBean ideDataBean) {
@@ -190,8 +209,8 @@ public class IDEServiceMappingUtil {
         OrganisationType organisationType = getStructureCommonForCreateUpdateEntiteIde(ideDataBean);
 
         UidStructureType uidStruct = new UidStructureType();
-        NonNegativeInteger uid = new NonNegativeInteger(AFIDEUtil.giveMeNumIdeUnformatedWithoutPrefix(ideDataBean
-                .getNumeroIDE()));
+        NonNegativeInteger uid = new NonNegativeInteger(
+                AFIDEUtil.giveMeNumIdeUnformatedWithoutPrefix(ideDataBean.getNumeroIDE()));
 
         uidStruct.setUidOrganisationIdCategorie(UidOrganisationIdCategorieType.CHE);
         uidStruct.setUidOrganisationId(uid);
@@ -208,8 +227,8 @@ public class IDEServiceMappingUtil {
         organisationType.setOrganisation(new idech.ech.xmlns.ech_0098_f._3.OrganisationType());
 
         UidStructureType uidStruct = new UidStructureType();
-        NonNegativeInteger uid = new NonNegativeInteger(AFIDEUtil.giveMeNumIdeUnformatedWithoutPrefix(ideDataBean
-                .getNumeroIDE()));
+        NonNegativeInteger uid = new NonNegativeInteger(
+                AFIDEUtil.giveMeNumIdeUnformatedWithoutPrefix(ideDataBean.getNumeroIDE()));
 
         uidStruct.setUidOrganisationIdCategorie(UidOrganisationIdCategorieType.CHE);
         uidStruct.setUidOrganisationId(uid);
@@ -220,8 +239,8 @@ public class IDEServiceMappingUtil {
 
         // Indication du motif de fin
         UidregInformationType uidregInformationType = new UidregInformationType();
-        uidregInformationType.setUidregLiquidationReason(AFIDEUtil.translateMotifFinGlobazVersIDE(ideDataBean
-                .getMotifFin()));
+        uidregInformationType
+                .setUidregLiquidationReason(AFIDEUtil.translateMotifFinGlobazVersIDE(ideDataBean.getMotifFin()));
         organisationType.setUidregInformation(uidregInformationType);
 
         return organisationType;
@@ -231,8 +250,8 @@ public class IDEServiceMappingUtil {
     public static final UidStructureType getStructureForReactivateEntiteIde(IDEDataBean ideDataBean) {
         UidStructureType uidStruct = new UidStructureType();
 
-        NonNegativeInteger uid = new NonNegativeInteger(AFIDEUtil.giveMeNumIdeUnformatedWithoutPrefix(ideDataBean
-                .getNumeroIDE()));
+        NonNegativeInteger uid = new NonNegativeInteger(
+                AFIDEUtil.giveMeNumIdeUnformatedWithoutPrefix(ideDataBean.getNumeroIDE()));
         uidStruct.setUidOrganisationIdCategorie(UidOrganisationIdCategorieType.CHE);
         uidStruct.setUidOrganisationId(uid);
         return uidStruct;
@@ -268,8 +287,9 @@ public class IDEServiceMappingUtil {
         adresseInformation.setCountry(country);
 
         if (!JadeStringUtil.isEmpty(ideDataBean.getNpa())) {
-            JAXBElement<String> swissZipCodeJaxB = new JAXBElement<String>(new QName(
-                    "http://www.ech.ch/xmlns/eCH-0010-f/6", "swissZipCode"), String.class, ideDataBean.getNpa());
+            JAXBElement<String> swissZipCodeJaxB = new JAXBElement<String>(
+                    new QName("http://www.ech.ch/xmlns/eCH-0010-f/6", "swissZipCode"), String.class,
+                    ideDataBean.getNpa());
             adresseInformation.getForeignZipCodeOrSwissZipCodeIdOrSwissZipCode().add(swissZipCodeJaxB);
         }
 
@@ -304,8 +324,8 @@ public class IDEServiceMappingUtil {
             FoundationType foundation = new FoundationType();
             DatePartiallyKnownType dateNaissance = new DatePartiallyKnownType();
             try {
-                dateNaissance.setYearMonthDay(IDEServiceCallUtil.convertDateAMJtoXMLDateGregorian(ideDataBean
-                        .getNaissance()));
+                dateNaissance.setYearMonthDay(
+                        IDEServiceCallUtil.convertDateAMJtoXMLDateGregorian(ideDataBean.getNaissance()));
             } catch (ParseException e) {
                 logger.error("Unable to parse ideDataBean.getNaissance() into XMLGregorianCalendar", e);
             } catch (DatatypeConfigurationException e) {
@@ -318,8 +338,8 @@ public class IDEServiceMappingUtil {
 
         // Type d'entité IDE
         UidregInformationType uidregInformationType = new UidregInformationType();
-        uidregInformationType.setUidregOrganisationType(AFIDEUtil
-                .translateTypeEntrepriseVersOrganisationType(ideDataBean.getPersonnaliteJuridique()));
+        uidregInformationType.setUidregOrganisationType(
+                AFIDEUtil.translateTypeEntrepriseVersOrganisationType(ideDataBean.getPersonnaliteJuridique()));
 
         organisationType.setUidregInformation(uidregInformationType);
 
@@ -339,7 +359,8 @@ public class IDEServiceMappingUtil {
         return root;
     }
 
-    public static final idech.ech.xmlns.ech_0108_f._3.OrganisationType getStructureForSearchByNumeroIDE(String numeroIDE) {
+    public static final idech.ech.xmlns.ech_0108_f._3.OrganisationType getStructureForSearchByNumeroIDE(
+            String numeroIDE) {
         String numeroIDEWithoutPrefixe = IDEUtils.removePrefixeFromNumeroIDE(numeroIDE);
 
         UidStructureType uidStruct = new UidStructureType();
@@ -383,8 +404,8 @@ public class IDEServiceMappingUtil {
 
         // SET du NPA
         if (!JadeStringUtil.isEmpty(forNpa)) {
-            JAXBElement<String> swissZipCodeJaxB = new JAXBElement<String>(new QName(
-                    "http://www.ech.ch/xmlns/eCH-0010-f/6", "swissZipCode"), String.class, forNpa);
+            JAXBElement<String> swissZipCodeJaxB = new JAXBElement<String>(
+                    new QName("http://www.ech.ch/xmlns/eCH-0010-f/6", "swissZipCode"), String.class, forNpa);
             adresseInformation.getForeignZipCodeOrSwissZipCodeIdOrSwissZipCode().add(swissZipCodeJaxB);
         }
 

@@ -64,17 +64,15 @@ public class AFIdeReceptionSedex5050Process {
         this.userSedex = userSedex;
     }
 
-    private List<IDEDataBean> readFoscMessage(SedexMessage messageSedex) throws FileNotFoundException,
-            JAXBException {
+    private List<IDEDataBean> readFoscMessage(SedexMessage messageSedex) throws FileNotFoundException, JAXBException {
 
         InputStream fileInputStream = new FileInputStream(messageSedex.getFileLocation());
 
         Message message = (Message) unmarshaller.unmarshal(fileInputStream);
-        
-        
+
         List<IDEDataBean> ideDataBeanList = new ArrayList<IDEDataBean>();
-        
-        for(SHABMsgType msgFosc: message.getContent().getSHABMeldung() ) {
+
+        for (SHABMsgType msgFosc : message.getContent().getSHABMeldung()) {
             ideDataBeanList.add(IDEFoscConverter.formatdata(msgFosc));
         }
 
@@ -82,8 +80,8 @@ public class AFIdeReceptionSedex5050Process {
     }
 
     @Setup
-    public void setUp(Properties properties) throws JadeDecryptionNotSupportedException,
-            JadeEncrypterNotFoundException, Exception {
+    public void setUp(Properties properties)
+            throws JadeDecryptionNotSupportedException, JadeEncrypterNotFoundException, Exception {
 
         String encryptedUser = properties.getProperty("userSedex");
         if (encryptedUser == null) {
@@ -110,47 +108,48 @@ public class AFIdeReceptionSedex5050Process {
     }
 
     private void generateAnnoncesEntrante(List<IDEDataBean> ideDataBeans) throws Exception {
-        for(IDEDataBean ideDataBean: ideDataBeans) {
-        
+        for (IDEDataBean ideDataBean : ideDataBeans) {
+
             BTransaction transaction = null;
-    
+
             try {
-    
+
                 transaction = new BTransaction(session);
                 transaction.openTransaction();
-    
+
                 // Création annonce
                 AFIdeAnnonce annonce = new AFIdeAnnonce();
                 annonce.setSession(session);
                 annonce.setIdeAnnonceCategorie(CodeSystem.CATEGORIE_ANNONCE_IDE_RECEPTION);
-                annonce.setIdeAnnonceType(ideDataBean.getTypeAnnonceIde());
+                annonce.setIdeAnnonceType(CodeSystem.TYPE_ANNONCE_IDE_FOSC);
                 annonce.setIdeAnnonceEtat(CodeSystem.ETAT_ANNONCE_IDE_ENREGISTRE);
                 annonce.setIdeAnnonceDateCreation(JACalendar.todayJJsMMsAAAA());
                 annonce.setNumeroIde(ideDataBean.getNumeroIDE());
+                annonce.setHistNumeroIde(ideDataBean.getNumeroIDE());
                 annonce.setStatutIde(ideDataBean.getStatut());
-                //annonce.setNumeroAffilie(numeroAffilie);
-                annonce.setRaisonSociale(ideDataBean.getRaisonSociale());
-                annonce.setHistAdresse(ideDataBean.getAdresse());
+                annonce.setHistRaisonSociale(ideDataBean.getRaisonSociale());
+                annonce.setHistRue(ideDataBean.getRue());
+                annonce.setHistNPA(ideDataBean.getNpa());
+                annonce.setHistCanton(ideDataBean.getCanton());
+                annonce.setHistLocalite(ideDataBean.getLocalite());
                 annonce.setHistNoga(ideDataBean.getNogaCode());
-                annonce.setMessage(ideDataBean.getMessage());
+                annonce.setMessageSedex50(ideDataBean.getMessageSedex50());
                 annonce.add(transaction);
-    
+
             } finally {
-    
+
                 if (transaction.hasErrors() || transaction.hasWarnings()) {
                     transaction.rollback();
                     transaction.closeTransaction();
                     throw new Exception(
-                            "AFIdeReceptionMessageSedex5050Process.generateAnnonceIdeEntrante : unable to add annonce due to error/warning in transaction : "
-                                    + transaction.getErrors().toString()
-                                    + " / "
-                                    + transaction.getWarnings().toString()
+                            "AFIdeReceptionMessageSedex5050Process.generateAnnoncesEntrante : unable to add annonce due to error/warning in transaction : "
+                                    + transaction.getErrors().toString() + " / " + transaction.getWarnings().toString()
                                     + " you must check sedexMessage in error and put them one more in Inbox");
                 } else {
                     transaction.commit();
                     transaction.closeTransaction();
                 }
-    
+
             }
         }
     }
@@ -171,7 +170,7 @@ public class AFIdeReceptionSedex5050Process {
 
     private void receiveAsSimpleMessage(SedexMessage messageSedex) throws Exception {
         List<IDEDataBean> ideDataBeans = readFoscMessage(messageSedex);
-        
+
         generateAnnoncesEntrante(ideDataBeans);
     }
 

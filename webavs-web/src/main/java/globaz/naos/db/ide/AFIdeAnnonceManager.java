@@ -1,5 +1,7 @@
 package globaz.naos.db.ide;
 
+import java.io.Serializable;
+import java.util.List;
 import globaz.globall.db.BEntity;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BStatement;
@@ -8,8 +10,6 @@ import globaz.jade.client.util.JadeStringUtil;
 import globaz.naos.db.affiliation.AFAffiliation;
 import globaz.naos.db.cotisation.AFCotisation;
 import globaz.naos.util.AFIDEUtil;
-import java.io.Serializable;
-import java.util.List;
 
 public class AFIdeAnnonceManager extends BManager implements Serializable {
 
@@ -106,8 +106,8 @@ public class AFIdeAnnonceManager extends BManager implements Serializable {
 
         StringBuffer sqlFrom = new StringBuffer();
 
-        sqlFrom.append(_getCollection() + AFIdeAnnonce.IDE_ANNONCE_TABLE_NAME + " AS "
-                + ALIAS_TABLE_ANNONCE_WITHOUT_POINT);
+        sqlFrom.append(
+                _getCollection() + AFIdeAnnonce.IDE_ANNONCE_TABLE_NAME + " AS " + ALIAS_TABLE_ANNONCE_WITHOUT_POINT);
         sqlFrom.append(" LEFT OUTER JOIN ");
         sqlFrom.append(_getCollection() + AFAffiliation.TABLE_NAME + " AS " + ALIAS_TABLE_AFFILIATION_WITHOUT_POINT);
         sqlFrom.append(" ON(" + ALIAS_TABLE_AFFILIATION + AFAffiliation.FIELDNAME_AFFILIATION_ID + " = "
@@ -133,6 +133,11 @@ public class AFIdeAnnonceManager extends BManager implements Serializable {
         return wantAnnoncePassive;
     }
 
+    /**
+     * si on désire les annonces passive de l'infoAbo et les annonces FOSC Faillite
+     * 
+     * @param wantAnnoncePassive
+     */
     public void setWantAnnoncePassive(boolean wantAnnoncePassive) {
         this.wantAnnoncePassive = wantAnnoncePassive;
     }
@@ -194,20 +199,21 @@ public class AFIdeAnnonceManager extends BManager implements Serializable {
     private String _getDeleteWhere(BStatement statement) {
         StringBuffer sqlWhere = new StringBuffer();
         BTransaction theTransaction = statement.getTransaction();
-        createCondition(theTransaction, CREATE_CONDITION_NUMERIC, sqlWhere, ALIAS_TABLE_ANNONCE
-                + AFIdeAnnonce.IDE_ANNONCE_FIELD_ID_AFFILIATION, "=", forIdAffiliation);
-        createCondition(theTransaction, CREATE_CONDITION_NUMERIC, sqlWhere, ALIAS_TABLE_ANNONCE
-                + AFIdeAnnonce.IDE_ANNONCE_FIELD_TYPE, "=", forType);
-        createCondition(theTransaction, CREATE_CONDITION_NUMERIC, sqlWhere, ALIAS_TABLE_ANNONCE
-                + AFIdeAnnonce.IDE_ANNONCE_FIELD_ETAT, "IN",
+        createCondition(theTransaction, CREATE_CONDITION_NUMERIC, sqlWhere,
+                ALIAS_TABLE_ANNONCE + AFIdeAnnonce.IDE_ANNONCE_FIELD_ID_AFFILIATION, "=", forIdAffiliation);
+        createCondition(theTransaction, CREATE_CONDITION_NUMERIC, sqlWhere,
+                ALIAS_TABLE_ANNONCE + AFIdeAnnonce.IDE_ANNONCE_FIELD_TYPE, "=", forType);
+        createCondition(theTransaction, CREATE_CONDITION_NUMERIC, sqlWhere,
+                ALIAS_TABLE_ANNONCE + AFIdeAnnonce.IDE_ANNONCE_FIELD_ETAT, "IN",
                 transformListEnInValues(getInEtat(), CREATE_CONDITION_NUMERIC));
         if (isDeleteDesenregActif()) {
-            createCondition(theTransaction, CREATE_CONDITION_STRING, sqlWhere, ALIAS_TABLE_ANNONCE
-                    + AFIdeAnnonce.IDE_ANNONCE_FIELD_NUMERO_IDE_REMPLACEMENT, "=", getForDesenregActif());
+            createCondition(theTransaction, CREATE_CONDITION_STRING, sqlWhere,
+                    ALIAS_TABLE_ANNONCE + AFIdeAnnonce.IDE_ANNONCE_FIELD_NUMERO_IDE_REMPLACEMENT, "=",
+                    getForDesenregActif());
         } else if (isDeleteOnJoinAff()) {
 
-            createCondition(theTransaction, CREATE_CONDITION_STRING, sqlWhere, ALIAS_TABLE_ANNONCE
-                    + AFIdeAnnonce.IDE_ANNONCE_FIELD_ID_AFFILIATION, "IN",
+            createCondition(theTransaction, CREATE_CONDITION_STRING, sqlWhere,
+                    ALIAS_TABLE_ANNONCE + AFIdeAnnonce.IDE_ANNONCE_FIELD_ID_AFFILIATION, "IN",
                     ("( SELECT AFF." + AFAffiliation.FIELDNAME_AFFILIATION_ID + " FROM " + _getCollection()
                             + AFAffiliation.TABLE_NAME + " AS " + ALIAS_TABLE_AFFILIATION_WITHOUT_POINT
                             + " WHERE AFF.MALFED =" + _dbWriteString(theTransaction, getForNumeroIde()) + " ) "));
@@ -350,7 +356,9 @@ public class AFIdeAnnonceManager extends BManager implements Serializable {
         BTransaction theTransaction = statement.getTransaction();
 
         if (!isWantAnnoncePassive()) {
-            setNotInType(AFIDEUtil.getListTypeAnnoncePassive());
+            List<String> annoncesPassiveEtFoscFaillite = AFIDEUtil.getListTypeAnnonceEntranteAutreInfoAbo();
+            annoncesPassiveEtFoscFaillite.addAll(AFIDEUtil.getListTypeAnnoncePassive());
+            setNotInType(annoncesPassiveEtFoscFaillite);
         }
 
         if (!JadeStringUtil.isBlankOrZero(likeNumeroIde)) {
@@ -382,7 +390,8 @@ public class AFIdeAnnonceManager extends BManager implements Serializable {
 
             sqlWhere.append(" ( " + ALIAS_TABLE_AFFILIATION + AFAffiliation.FIELDNAME_NUMERO_AFFILIE + " LIKE "
                     + likeNumeroAffilieMod + " OR " + ALIAS_TABLE_ANNONCE
-                    + AFIdeAnnonce.IDE_ANNONCE_FIELD_LIST_NUMERO_AFFILIE_LIEE + " LIKE " + likeNumeroAffilieMod + " ) ");
+                    + AFIdeAnnonce.IDE_ANNONCE_FIELD_LIST_NUMERO_AFFILIE_LIEE + " LIKE " + likeNumeroAffilieMod
+                    + " ) ");
 
         }
 
@@ -399,71 +408,72 @@ public class AFIdeAnnonceManager extends BManager implements Serializable {
 
         }
 
-        createCondition(theTransaction, CREATE_CONDITION_STRING, sqlWhere, ALIAS_TABLE_ANNONCE
-                + AFIdeAnnonce.IDE_ANNONCE_FIELD_HISTORIQUE_RAISON_SOCIALE, "LIKE_WITHOUT_CASSE", likeRaisonSociale);
+        createCondition(theTransaction, CREATE_CONDITION_STRING, sqlWhere,
+                ALIAS_TABLE_ANNONCE + AFIdeAnnonce.IDE_ANNONCE_FIELD_HISTORIQUE_RAISON_SOCIALE, "LIKE_WITHOUT_CASSE",
+                likeRaisonSociale);
 
-        createCondition(theTransaction, CREATE_CONDITION_STRING, sqlWhere, ALIAS_TABLE_ANNONCE
-                + AFIdeAnnonce.IDE_ANNONCE_FIELD_HISTORIQUE_STATUT_IDE, "=", forStatut);
+        createCondition(theTransaction, CREATE_CONDITION_STRING, sqlWhere,
+                ALIAS_TABLE_ANNONCE + AFIdeAnnonce.IDE_ANNONCE_FIELD_HISTORIQUE_STATUT_IDE, "=", forStatut);
 
-        createCondition(theTransaction, CREATE_CONDITION_NUMERIC, sqlWhere, ALIAS_TABLE_ANNONCE
-                + AFIdeAnnonce.IDE_ANNONCE_FIELD_ID_AFFILIATION, "=", forIdAffiliation);
+        createCondition(theTransaction, CREATE_CONDITION_NUMERIC, sqlWhere,
+                ALIAS_TABLE_ANNONCE + AFIdeAnnonce.IDE_ANNONCE_FIELD_ID_AFFILIATION, "=", forIdAffiliation);
 
-        createCondition(theTransaction, CREATE_CONDITION_NUMERIC, sqlWhere, ALIAS_TABLE_AFFILIATION
-                + AFAffiliation.FIELDNAME_TIER_ID, "=", forIdTiers);
+        createCondition(theTransaction, CREATE_CONDITION_NUMERIC, sqlWhere,
+                ALIAS_TABLE_AFFILIATION + AFAffiliation.FIELDNAME_TIER_ID, "=", forIdTiers);
 
-        createCondition(theTransaction, CREATE_CONDITION_NUMERIC, sqlWhere, ALIAS_TABLE_ANNONCE
-                + AFIdeAnnonce.IDE_ANNONCE_FIELD_CATEGORIE, "=", forCategorie);
+        createCondition(theTransaction, CREATE_CONDITION_NUMERIC, sqlWhere,
+                ALIAS_TABLE_ANNONCE + AFIdeAnnonce.IDE_ANNONCE_FIELD_CATEGORIE, "=", forCategorie);
 
-        createCondition(theTransaction, CREATE_CONDITION_STRING, sqlWhere, ALIAS_TABLE_AFFILIATION
-                + AFAffiliation.FIELDNAME_NUMERO_AFFILIE, "=", getForNumeroAffilie());
+        createCondition(theTransaction, CREATE_CONDITION_STRING, sqlWhere,
+                ALIAS_TABLE_AFFILIATION + AFAffiliation.FIELDNAME_NUMERO_AFFILIE, "=", getForNumeroAffilie());
 
-        createCondition(theTransaction, CREATE_CONDITION_STRING, sqlWhere, ALIAS_TABLE_AFFILIATION
-                + AFAffiliation.FIELDNAME_NUMERO_IDE, "=", getForNumeroIde());
+        createCondition(theTransaction, CREATE_CONDITION_STRING, sqlWhere,
+                ALIAS_TABLE_AFFILIATION + AFAffiliation.FIELDNAME_NUMERO_IDE, "=", getForNumeroIde());
 
-        createCondition(theTransaction, CREATE_CONDITION_NUMERIC, sqlWhere, ALIAS_TABLE_ANNONCE
-                + AFIdeAnnonce.IDE_ANNONCE_FIELD_TYPE, "=", forType);
-        
-        createCondition(theTransaction, CREATE_CONDITION_NUMERIC, sqlWhere, ALIAS_TABLE_ANNONCE
-                + AFIdeAnnonce.IDE_ANNONCE_FIELD_ETAT, "=", forEtat);
+        createCondition(theTransaction, CREATE_CONDITION_NUMERIC, sqlWhere,
+                ALIAS_TABLE_ANNONCE + AFIdeAnnonce.IDE_ANNONCE_FIELD_TYPE, "=", forType);
 
-        createCondition(theTransaction, CREATE_CONDITION_NUMERIC, sqlWhere, ALIAS_TABLE_ANNONCE
-                + AFIdeAnnonce.IDE_ANNONCE_FIELD_CATEGORIE, "IN",
+        createCondition(theTransaction, CREATE_CONDITION_NUMERIC, sqlWhere,
+                ALIAS_TABLE_ANNONCE + AFIdeAnnonce.IDE_ANNONCE_FIELD_ETAT, "=", forEtat);
+
+        createCondition(theTransaction, CREATE_CONDITION_NUMERIC, sqlWhere,
+                ALIAS_TABLE_ANNONCE + AFIdeAnnonce.IDE_ANNONCE_FIELD_CATEGORIE, "IN",
                 transformListEnInValues(getInCategorie(), CREATE_CONDITION_NUMERIC));
 
-        createCondition(theTransaction, CREATE_CONDITION_NUMERIC, sqlWhere, ALIAS_TABLE_ANNONCE
-                + AFIdeAnnonce.IDE_ANNONCE_FIELD_TYPE, "IN",
+        createCondition(theTransaction, CREATE_CONDITION_NUMERIC, sqlWhere,
+                ALIAS_TABLE_ANNONCE + AFIdeAnnonce.IDE_ANNONCE_FIELD_TYPE, "IN",
                 transformListEnInValues(getInType(), CREATE_CONDITION_NUMERIC));
 
-        createCondition(theTransaction, CREATE_CONDITION_NUMERIC, sqlWhere, ALIAS_TABLE_ANNONCE
-                + AFIdeAnnonce.IDE_ANNONCE_FIELD_ETAT, "IN",
+        createCondition(theTransaction, CREATE_CONDITION_NUMERIC, sqlWhere,
+                ALIAS_TABLE_ANNONCE + AFIdeAnnonce.IDE_ANNONCE_FIELD_ETAT, "IN",
                 transformListEnInValues(getInEtat(), CREATE_CONDITION_NUMERIC));
 
-        createCondition(theTransaction, CREATE_CONDITION_NUMERIC, sqlWhere, ALIAS_TABLE_ANNONCE
-                + AFIdeAnnonce.IDE_ANNONCE_FIELD_CATEGORIE, "NOT IN",
+        createCondition(theTransaction, CREATE_CONDITION_NUMERIC, sqlWhere,
+                ALIAS_TABLE_ANNONCE + AFIdeAnnonce.IDE_ANNONCE_FIELD_CATEGORIE, "NOT IN",
                 transformListEnInValues(getNotInCategorie(), CREATE_CONDITION_NUMERIC));
 
-        createCondition(theTransaction, CREATE_CONDITION_NUMERIC, sqlWhere, ALIAS_TABLE_AFFILIATION
-                + AFAffiliation.FIELDNAME_STATUT_IDE, "NOT IN",
+        createCondition(theTransaction, CREATE_CONDITION_NUMERIC, sqlWhere,
+                ALIAS_TABLE_AFFILIATION + AFAffiliation.FIELDNAME_STATUT_IDE, "NOT IN",
                 transformListEnInValues(notInStatutIDEAffiliation, CREATE_CONDITION_NUMERIC));
 
-        createCondition(theTransaction, CREATE_CONDITION_NUMERIC, sqlWhere, ALIAS_TABLE_ANNONCE
-                + AFIdeAnnonce.IDE_ANNONCE_FIELD_TYPE, "NOT IN",
+        createCondition(theTransaction, CREATE_CONDITION_NUMERIC, sqlWhere,
+                ALIAS_TABLE_ANNONCE + AFIdeAnnonce.IDE_ANNONCE_FIELD_TYPE, "NOT IN",
                 transformListEnInValues(getNotInType(), CREATE_CONDITION_NUMERIC));
 
-        createCondition(theTransaction, CREATE_CONDITION_DATE, sqlWhere, ALIAS_TABLE_ANNONCE
-                + AFIdeAnnonce.IDE_ANNONCE_FIELD_DATE_CREATION, ">=", fromDateCreation);
+        createCondition(theTransaction, CREATE_CONDITION_DATE, sqlWhere,
+                ALIAS_TABLE_ANNONCE + AFIdeAnnonce.IDE_ANNONCE_FIELD_DATE_CREATION, ">=", fromDateCreation);
 
-        createCondition(theTransaction, CREATE_CONDITION_DATE, sqlWhere, ALIAS_TABLE_ANNONCE
-                + AFIdeAnnonce.IDE_ANNONCE_FIELD_DATE_CREATION, "<=", untilDateCreation);
+        createCondition(theTransaction, CREATE_CONDITION_DATE, sqlWhere,
+                ALIAS_TABLE_ANNONCE + AFIdeAnnonce.IDE_ANNONCE_FIELD_DATE_CREATION, "<=", untilDateCreation);
 
-        createCondition(theTransaction, CREATE_CONDITION_DATE, sqlWhere, ALIAS_TABLE_ANNONCE
-                + AFIdeAnnonce.IDE_ANNONCE_FIELD_DATE_TRAITEMENT, ">=", fromDateTraitement);
+        createCondition(theTransaction, CREATE_CONDITION_DATE, sqlWhere,
+                ALIAS_TABLE_ANNONCE + AFIdeAnnonce.IDE_ANNONCE_FIELD_DATE_TRAITEMENT, ">=", fromDateTraitement);
 
-        createCondition(theTransaction, CREATE_CONDITION_DATE, sqlWhere, ALIAS_TABLE_ANNONCE
-                + AFIdeAnnonce.IDE_ANNONCE_FIELD_DATE_TRAITEMENT, "<=", untilDateTraitement);
+        createCondition(theTransaction, CREATE_CONDITION_DATE, sqlWhere,
+                ALIAS_TABLE_ANNONCE + AFIdeAnnonce.IDE_ANNONCE_FIELD_DATE_TRAITEMENT, "<=", untilDateTraitement);
 
-        createCondition(theTransaction, CREATE_CONDITION_NUMERIC, sqlWhere, ALIAS_TABLE_ANNONCE
-                + AFIdeAnnonce.IDE_ANNONCE_FIELD_ID_ANNONCE, "IN",
+        createCondition(theTransaction, CREATE_CONDITION_NUMERIC, sqlWhere,
+                ALIAS_TABLE_ANNONCE + AFIdeAnnonce.IDE_ANNONCE_FIELD_ID_ANNONCE, "IN",
                 transformListEnInValues(getInIdAnnonce(), CREATE_CONDITION_NUMERIC));
 
         return sqlWhere.toString();

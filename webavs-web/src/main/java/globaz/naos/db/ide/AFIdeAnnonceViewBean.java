@@ -255,4 +255,6 @@ public class AFIdeAnnonceViewBean extends AFIdeAnnonce implements FWViewBeanInte
     public String getErreurNoga() {
         return erreurNoga;
     }
+    
+    
 }

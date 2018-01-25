@@ -302,6 +302,16 @@ function init() {
       		<TD nowrap width="140"><ct:FWLabel key="NAOS_JSP_IDE_ANNONCE_DATE_TRAITEMENT"/></TD>
 			<TD><INPUT type="text" name="" class="dateDisabled" readonly  value="<%=viewBean.getIdeAnnonceDateTraitement()%>"></TD>
 		</TR>
+		<TR>
+			<TD nowrap width="140">&nbsp;</TD>
+        	<TD nowrap width="300"></TD>
+        	<TD nowrap width="140"></TD>
+        	<TD nowrap width="300"></TD>
+		</TR>
+		<TR>
+			<TD nowrap width="140"><ct:FWLabel key="NAOS_JSP_IDE_ANNONCE_MESSAGE_SEDEX_50"/></TD>
+        	<TD nowrap width="740" colspan="3"><TEXTAREA name="" rows="4" cols="150" type="text" readonly><%=viewBean.getMessageSedex50()%></TEXTAREA></TD>
+		</TR>
 					
 <%-- /tpl:put --%>
 <%@ include file="/theme/detail/bodyButtons.jspf" %>

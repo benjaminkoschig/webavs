@@ -1,5 +1,6 @@
 package globaz.naos.db.ide;
 
+import java.io.Serializable;
 import globaz.globall.db.BEntity;
 import globaz.globall.db.BStatement;
 import globaz.globall.db.BTransaction;
@@ -9,7 +10,6 @@ import globaz.jade.client.util.JadeStringUtil;
 import globaz.naos.db.affiliation.AFAffiliation;
 import globaz.naos.db.cotisation.AFCotisation;
 import globaz.naos.translation.CodeSystem;
-import java.io.Serializable;
 
 public class AFIdeAnnonce extends BEntity implements Serializable {
 
@@ -57,6 +57,7 @@ public class AFIdeAnnonce extends BEntity implements Serializable {
 
     public static final String IDE_ANNONCE_FIELD_LIST_ID_AFFILIATION_LIEE = "AIDELA";
     public static final String IDE_ANNONCE_FIELD_LIST_NUMERO_AFFILIE_LIEE = "AIDENA";
+    public static final String IDE_ANNONCE_FIELD_MESSAGE_SEDEX_50 = "AIDEMS";
 
     private String ideAnnonceIdAnnonce = "";
     private String ideAnnonceIdAffiliation = "";
@@ -81,6 +82,8 @@ public class AFIdeAnnonce extends BEntity implements Serializable {
     // D0181
     private String histNaissance = "";
     private String histActivite = "";
+    // FOSC, Faillite
+    private String messageSedex50 = "";
     /**
      * code noga selon le registre != code noga dans l'affiliation
      */
@@ -277,8 +280,8 @@ public class AFIdeAnnonce extends BEntity implements Serializable {
 
         StringBuffer sqlFrom = new StringBuffer();
 
-        sqlFrom.append(_getCollection() + AFIdeAnnonce.IDE_ANNONCE_TABLE_NAME + " AS "
-                + ALIAS_TABLE_ANNONCE_WITHOUT_POINT);
+        sqlFrom.append(
+                _getCollection() + AFIdeAnnonce.IDE_ANNONCE_TABLE_NAME + " AS " + ALIAS_TABLE_ANNONCE_WITHOUT_POINT);
         sqlFrom.append(" LEFT OUTER JOIN ");
         sqlFrom.append(_getCollection() + AFAffiliation.TABLE_NAME + " AS " + ALIAS_TABLE_AFFILIATION_WITHOUT_POINT);
         sqlFrom.append(" ON(" + ALIAS_TABLE_AFFILIATION + AFAffiliation.FIELDNAME_AFFILIATION_ID + " = "
@@ -385,6 +388,9 @@ public class AFIdeAnnonce extends BEntity implements Serializable {
         histNaissance = statement.dbReadDateAMJ(AFIdeAnnonce.IDE_ANNONCE_FIELD_HISTORIQUE_NAISSANCE);
         histActivite = statement.dbReadString(AFIdeAnnonce.IDE_ANNONCE_FIELD_HISTORIQUE_ACTIVITE);
 
+        // FOSC / Faillite
+        messageSedex50 = statement.dbReadString(AFIdeAnnonce.IDE_ANNONCE_FIELD_MESSAGE_SEDEX_50);
+
         numeroIde = statement.dbReadString(AFAffiliation.FIELDNAME_NUMERO_IDE);
         numeroAffilie = statement.dbReadString(AFAffiliation.FIELDNAME_NUMERO_AFFILIE);
         raisonSociale = statement.dbReadString(AFAffiliation.FIELDNAME_RAISON_SOCIALE);
@@ -485,6 +491,9 @@ public class AFIdeAnnonce extends BEntity implements Serializable {
                 this._dbWriteString(statement.getTransaction(), histNoga, "histNoga"));
         statement.writeField(AFIdeAnnonce.IDE_ANNONCE_FIELD_HISTORIQUE_ACTIVITE,
                 this._dbWriteString(statement.getTransaction(), histActivite, "histActivite"));
+        // FOSC, Faillite
+        statement.writeField(AFIdeAnnonce.IDE_ANNONCE_FIELD_MESSAGE_SEDEX_50,
+                this._dbWriteString(statement.getTransaction(), messageSedex50, "messageSedex50"));
 
     }
 
@@ -609,6 +618,15 @@ public class AFIdeAnnonce extends BEntity implements Serializable {
 
     public void setErreurNoga(boolean isErreurNoga) {
         this.isErreurNoga = isErreurNoga;
+    }
+
+    public void setMessageSedex50(String messageSedex50) {
+        this.messageSedex50 = messageSedex50;
+
+    }
+
+    public String getMessageSedex50() {
+        return messageSedex50;
     }
 
 }

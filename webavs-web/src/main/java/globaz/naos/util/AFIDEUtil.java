@@ -71,7 +71,7 @@ public class AFIDEUtil {
     }
 
     /**
-     * retourne les types d'annonce ENTRANTE qui sont passive
+     * retourne les types d'annonce ENTRANTE INFOABO qui sont passive
      * 
      * @return List<String>
      */
@@ -86,7 +86,7 @@ public class AFIDEUtil {
     }
 
     /**
-     * retourne les types d'annonce ENTRANTE qui sont passive
+     * retourne les types d'annonce ENTRANTE autre que INFOABO qui sont passive
      * 
      * @return List<String>
      */

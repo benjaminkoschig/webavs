@@ -21,6 +21,8 @@ public class IDEDataBean {
     private String naissance = "";
     private String activite = "";
     private String numeroAffilie = "";
+    // FOSC,Faillite
+    private String messageSedex50 = "";
     /**
      * code noga selon le registre != code noga dans l'affiliation
      */
@@ -191,9 +193,17 @@ public class IDEDataBean {
         this.personnaliteJuridique = personnaliteJuridique;
     }
 
-    public String getMessage() {
-        // TODO Auto-generated method stub
-        return null;
+    public void setMessageSedex50(String meldungtx) {
+        this.messageSedex50 = meldungtx;
+    }
+
+    /**
+     * champs message réservé à la remontées des info des message 5050(FOSC) et 5051(Faillite) de sedex
+     * 
+     * @return
+     */
+    public String getMessageSedex50() {
+        return messageSedex50;
     }
 
 }
