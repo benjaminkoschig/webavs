@@ -104,6 +104,12 @@ class RELigneDeblocageDetteHandler {
                 mapDettes.remove(key);
             }
         }
+
+        for (String key : keyMatch) {
+            if (mapDettes.get(key) != null && mapDettes.get(key).getMontant().isZero()) {
+                mapDettes.remove(key);
+            }
+        }
         list.addAll(mapDettes.values());
         return list;
     }

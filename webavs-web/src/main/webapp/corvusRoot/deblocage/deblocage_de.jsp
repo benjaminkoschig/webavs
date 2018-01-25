@@ -217,7 +217,7 @@ globazGlobal.isRenteBloque = ${viewBean.isRenteBloque()};
 					<hr /> 
 					
 					<c:forEach var="entry" items="${viewBean.dettesUpdateable}">
-						<div class="areaDetail" idEntity = "${entry.idEntity}" >
+						<div class="areaDetail" idEntity = "${entry.idEntity}" ${viewBean.isDetteEnregistreesKO(entry) ?  'notSave="false"': ''}>
 							<div class="row-fluid " >
 								<div class="span7">
 									<span class="lbl">${entry.description} (${entry.descriptionCompteAnnexe})</span>
@@ -237,7 +237,7 @@ globazGlobal.isRenteBloque = ${viewBean.isRenteBloque()};
 								</div>
 								<div class="span1">
 								<ct:ifhasright element="<%=actionPart%>" crud="cud">
-									<button type="button"  class="save globazIconButton"></button>
+									<button id="buttonDette" type="button"  class="save globazIconButton"></button>
 								</ct:ifhasright>	
 								</div>
 							</div>
@@ -487,7 +487,7 @@ globazGlobal.isRenteBloque = ${viewBean.isRenteBloque()};
 			</div>	
 			<div class="right"> 
 				<ct:ifhasright element="<%=actionPart%>" crud="cud">
-						<button type="button" id="ValiderLiberation" class=""><ct:FWLabel key="JSP_RE_DEBLOCAGE_VALIDER_LIBERATION"/></button>
+						<button type="button" id="ValiderLiberation" class="" ><ct:FWLabel key="JSP_RE_DEBLOCAGE_VALIDER_LIBERATION"/></button>
 					<c:if test="${viewBean.isDevalidable}">
 						<button type="button" id="DeValiderLiberation" class=""><ct:FWLabel key="JSP_RE_DEBLOCAGE_DEVALIDER_LIBERATION"/></button>
 					</c:if>

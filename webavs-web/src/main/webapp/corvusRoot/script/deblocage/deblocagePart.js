@@ -160,6 +160,13 @@ function DeblocageAjax(m_options) {
 			that.validateEdition();
 		});
 		
+		$(".areaDetail").each(function (){
+			if (this.notSave){
+				$(this).find(".save").find(".ui-icon").css("background-image", "url(theme/jquery/images/ui-icons_f9bd01_256x240.png)");
+			}
+		});
+		
+		
 		var mainContainer = this.mainContainer;
 		
 		this.mainContainer.find(".del").button({

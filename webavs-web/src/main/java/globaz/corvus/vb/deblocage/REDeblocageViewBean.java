@@ -8,11 +8,13 @@ import globaz.corvus.db.lignedeblocage.RELigneDeblocageCreancier;
 import globaz.corvus.db.lignedeblocage.RELigneDeblocageDette;
 import globaz.corvus.db.lignedeblocage.RELigneDeblocageVersement;
 import globaz.corvus.db.lignedeblocage.RELigneDeblocages;
+import globaz.corvus.db.lignedeblocage.ReLigneDeclocageServices;
 import globaz.corvus.db.lignedeblocage.constantes.RELigneDeblocageType;
 import globaz.corvus.db.rentesaccordees.RERenteAccordeeJoinInfoComptaJoinPrstDues;
 import globaz.corvus.servlet.IREActions;
 import globaz.externe.IPRConstantesExternes;
 import globaz.framework.secure.FWSecureConstants;
+import globaz.globall.db.BSession;
 import globaz.jade.client.util.JadeNumericUtil;
 import globaz.osiris.db.comptes.CASectionJoinCompteAnnexeJoinTiersManager;
 import globaz.prestation.vb.PRAbstractViewBeanSupport;
@@ -63,6 +65,7 @@ public class REDeblocageViewBean extends PRAbstractViewBeanSupport {
         diffMontantBloqueDebloque = deblocage.computeDiffMontantBloqueMontantDebloque().toStringFormat();
 
         montantEnComptat = deblocage.getMontantEnComptat().toStringFormat();
+
     }
 
     public String getGenre() {
@@ -217,7 +220,16 @@ public class REDeblocageViewBean extends PRAbstractViewBeanSupport {
         List<RELigneDeblocageDette> dettes = deblocages.getLigneDeblocageDetteEnCompta().filtreEnregistresAndNone()
                 .toListDette();
         List<RELigneDeblocageDette> l = new ArrayList<RELigneDeblocageDette>();
+
+        ReLigneDeclocageServices services = new ReLigneDeclocageServices((BSession) getISession());
+
         for (RELigneDeblocageDette reLigneDeblocageDette : dettes) {
+
+            RELigneDeblocages deblocage = services.searchByIdSection(reLigneDeblocageDette.getIdSectionCompensee(),
+                    reLigneDeblocageDette.getIdRoleSection());
+            Montant montant = deblocage.filtreValides().sumMontants();
+            reLigneDeblocageDette.setMontanDette(reLigneDeblocageDette.getMontanDette().substract(montant));
+
             if (reLigneDeblocageDette.getMontanDette().isPositive()) {
                 l.add(reLigneDeblocageDette);
             }
@@ -240,6 +252,10 @@ public class REDeblocageViewBean extends PRAbstractViewBeanSupport {
             return versement;
         }
         return deblocages.getLigneDeblocageVersementBeneficiaire().filtreEnregistres().toListVersement().get(0);
+    }
+
+    public boolean isDetteEnregistreesKO(RELigneDeblocageDette dette) {
+        return dette.getMontant().greater(dette.getMontanDette());
     }
 
     public List<RELigneDeblocage> getImpotSources() {

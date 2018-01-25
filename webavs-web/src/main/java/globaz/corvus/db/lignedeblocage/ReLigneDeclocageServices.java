@@ -70,7 +70,7 @@ public class ReLigneDeclocageServices {
         try {
             if (!session.getCurrentThreadTransaction().hasErrors()) {
                 ligneDeblocage.add();
-                checkDette(ligneDeblocage);
+                checkDettePartielle(ligneDeblocage);
             }
         } catch (Exception e) {
             throw new JadeDataBaseException("Unabled to add ligne de déblocage", e);
@@ -101,6 +101,26 @@ public class ReLigneDeclocageServices {
                             .toStringFormat(), dette.getMontanDette().toStringFormat());
                     session.getCurrentThreadTransaction().addErrors(message);
                 }
+            }
+        }
+    }
+
+    public void checkDettePartielle(RELigneDeblocage ligneDeblocage) {
+        if (ligneDeblocage.isDetteEnCompta()) {
+            RELigneDeblocages deblocage = searchByIdSection(ligneDeblocage.getIdSectionCompensee(),
+                    ligneDeblocage.getIdRoleSection());
+            Montant montant = deblocage.filtreValides().sumMontants();
+            RELigneDeblocageDetteHandler deblocageDetteHandler = new RELigneDeblocageDetteHandler(session);
+            RELigneDeblocageDette dette = deblocageDetteHandler.readDetteComptabiliser(
+                    ligneDeblocage.getIdSectionCompensee(), ligneDeblocage.getIdRoleSection());
+
+            Montant detteRestant = dette.getMontanDette().substract(montant);
+
+            if (detteRestant.less(ligneDeblocage.getMontant())) {
+                String message = MessageFormat.format(FWMessageFormat.prepareQuotes(
+                        session.getLabel("ERROR_DEBLOCAGE_DETTE_MONTANT_TROP_GRAND"), false), ligneDeblocage
+                        .getMontant().toStringFormat(), detteRestant.toStringFormat());
+                session.getCurrentThreadTransaction().addErrors(message);
             }
         }
     }
@@ -153,7 +173,7 @@ public class ReLigneDeclocageServices {
         try {
             if (!session.getCurrentThreadTransaction().hasErrors()) {
                 ligneDeblocage.update();
-                checkDette(ligneDeblocage);
+                checkDettePartielle(ligneDeblocage);
             }
         } catch (Exception e) {
             throw new JadeDataBaseException("Unabled to add ligne de déblocage", e);
