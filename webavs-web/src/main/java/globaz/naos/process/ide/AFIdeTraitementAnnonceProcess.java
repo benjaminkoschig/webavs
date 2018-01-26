@@ -1,5 +1,13 @@
 package globaz.naos.process.ide;
 
+import java.net.MalformedURLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import ch.globaz.common.properties.PropertiesException;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.util.FWMessage;
 import globaz.framework.util.FWMessageFormat;
@@ -56,14 +64,6 @@ import idech.admin.uid.xmlns.uid_wse.IPartnerServicesSubscribeSecurityFaultFault
 import idech.admin.uid.xmlns.uid_wse.IPartnerServicesUnsubscribeBusinessFaultFaultFaultMessage;
 import idech.admin.uid.xmlns.uid_wse.IPartnerServicesUnsubscribeInfrastructureFaultFaultFaultMessage;
 import idech.admin.uid.xmlns.uid_wse.IPartnerServicesUnsubscribeSecurityFaultFaultFaultMessage;
-import java.net.MalformedURLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import ch.globaz.common.properties.PropertiesException;
 
 public class AFIdeTraitementAnnonceProcess extends BProcess implements FWViewBeanInterface {
 
@@ -206,11 +206,11 @@ public class AFIdeTraitementAnnonceProcess extends BProcess implements FWViewBea
                 }
                 List<AFIdeAnnonce> listAnnonceEntrante = new ArrayList<AFIdeAnnonce>();
                 listAnnonceEntrante = initialiseListAnnonceEntranteInfoAbo();
+                listAnnonceEntrante = traiterAnnonceEntranteInfoAbo(listAnnonceEntrante);
                 List<AFIdeAnnonce> listAnnonceEntranteNotInfoAbo = initialiseListAnnonceEntranteNonInfoAbo();
-                listAnnonceEntrante = traiterAnnonceEntrante(listAnnonceEntrante);
 
                 genererExcelResultTraitementAnnonceEntranteActive(listAnnonceEntrante);
-                // fusion avec les nonInfoAbo
+                // fusion passive avec les nonInfoAbo
                 listAnnonceEntrante.addAll(listAnnonceEntranteNotInfoAbo);
                 genererExcelResultTraitementAnnonceEntrantePassive(listAnnonceEntrante);
             }
@@ -1010,7 +1010,7 @@ public class AFIdeTraitementAnnonceProcess extends BProcess implements FWViewBea
 
     }
 
-    private List<AFIdeAnnonce> traiterAnnonceEntrante(List<AFIdeAnnonce> listAnnonceIde) throws Exception {
+    private List<AFIdeAnnonce> traiterAnnonceEntranteInfoAbo(List<AFIdeAnnonce> listAnnonceIde) throws Exception {
 
         for (AFIdeAnnonce ideAnnonceEntrante : listAnnonceIde) {
 
