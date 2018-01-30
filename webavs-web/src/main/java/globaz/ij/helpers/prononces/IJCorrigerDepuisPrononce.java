@@ -188,7 +188,8 @@ public class IJCorrigerDepuisPrononce {
             List<IJBaseIndemnisation> baseIndemniteTmp) throws JAException, Exception {
         // On déplace toutes les BI qui sont dans l'état ANNULER et qui ne corrigent personne
         for (int i = 0; i < baseIndemniteTmp.size(); i++) {
-            if ((myJACalendar.compare(baseIndemniteTmp.get(i).getDateFinPeriode(), dateCorrection) == (JACalendar.COMPARE_FIRSTUPPER))
+            if ((myJACalendar.compare(baseIndemniteTmp.get(i).getDateFinPeriode(), dateCorrection) == (JACalendar.COMPARE_FIRSTUPPER) || (myJACalendar
+                    .compare(baseIndemniteTmp.get(i).getDateFinPeriode(), dateCorrection) == JACalendar.COMPARE_EQUALS))
                     && (JadeStringUtil.isBlankOrZero(baseIndemniteTmp.get(i).getIdCorrection()))) {
                 baseIndemniteTmp.get(i).setIdPrononce(prononce2.getIdPrononce());
                 baseIndemniteTmp.get(i).update();
@@ -224,7 +225,8 @@ public class IJCorrigerDepuisPrononce {
                 baseIndemniteTmp.add(baseIndemnisation);
                 baseIndemniteId.add(baseIndemnisation.getIdBaseIndemisation());
 
-            } else if (myJACalendar.compare(baseIndemnisation.getDateFinPeriode(), dateCorrection) == (JACalendar.COMPARE_FIRSTUPPER)) {
+            } else if (myJACalendar.compare(baseIndemnisation.getDateFinPeriode(), dateCorrection) == (JACalendar.COMPARE_FIRSTUPPER)
+                    || (myJACalendar.compare(baseIndemnisation.getDateFinPeriode(), dateCorrection) == JACalendar.COMPARE_EQUALS)) {
                 baseIndemnisation.setIdPrononce(prononce2.getIdPrononce());
                 baseIndemnisation.update();
 
