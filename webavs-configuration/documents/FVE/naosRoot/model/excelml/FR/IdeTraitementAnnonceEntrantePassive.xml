@@ -176,7 +176,7 @@
   <NamedRange ss:Name="DATE_TRAITEMENT" ss:RefersTo="=Feuil1!R4C2"/>
   <NamedRange ss:Name="ETAT_ANNNOCE" ss:RefersTo="=Feuil1!R7C2"/>
   <NamedRange ss:Name="LOCALITE" ss:RefersTo="=Feuil1!R7C10"/>
-  <NamedRange ss:Name="MESSAGE_ERREUR" ss:RefersTo="=Feuil1!R7C14"/>
+  <NamedRange ss:Name="MESSAGE_ERREUR" ss:RefersTo="=Feuil1!R7C15"/>
   <NamedRange ss:Name="NPA" ss:RefersTo="=Feuil1!R7C9"/>
   <NamedRange ss:Name="NUM_AFFILIATION" ss:RefersTo="=Feuil1!R7C6"/>
   <NamedRange ss:Name="NUM_IDE" ss:RefersTo="=Feuil1!R7C4"/>
@@ -188,12 +188,13 @@
   <NamedRange ss:Name="TYPE_ANNONCE" ss:RefersTo="=Feuil1!R7C1"/>
   <NamedRange ss:Name="NAISSANCE" ss:RefersTo="=Feuil1!R7C12"/>
   <NamedRange ss:Name="NOGA" ss:RefersTo="=Feuil1!R7C13"/>
+  <NamedRange ss:Name="MESSAGE" ss:RefersTo="=Feuil1!R7C14"/>
  </Names>
  <Worksheet ss:Name="Feuil1">
   <Names>
    <NamedRange ss:Name="_FilterDatabase" ss:RefersTo="=Feuil1!#REF!" ss:Hidden="1"/>
   </Names>
-  <Table ss:ExpandedColumnCount="14" ss:ExpandedRowCount="7" x:FullColumns="1"
+  <Table ss:ExpandedColumnCount="15" ss:ExpandedRowCount="7" x:FullColumns="1"
    x:FullRows="1" ss:StyleID="s62" ss:DefaultColumnWidth="60"
    ss:DefaultRowHeight="11.25">
    <Column ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="75.75"/>
@@ -257,6 +258,7 @@
     <Cell ss:StyleID="s74"><Data ss:Type="String">Canton</Data></Cell>
     <Cell ss:StyleID="s74"><Data ss:Type="String">Date de naissance</Data></Cell>
     <Cell ss:StyleID="s74"><Data ss:Type="String">Code Noga</Data></Cell>
+    <Cell ss:StyleID="s74"><Data ss:Type="String">Message</Data></Cell>
     <Cell ss:StyleID="s74"><Data ss:Type="String">Message d'erreur</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0">
@@ -286,6 +288,8 @@
       ss:Name="NAISSANCE"/></Cell>
     <Cell ss:StyleID="s78"><Data ss:Type="String">Noga</Data><NamedCell
       ss:Name="NOGA"/></Cell>
+      <Cell ss:StyleID="s78"><Data ss:Type="String">message</Data><NamedCell
+      ss:Name="MESSAGE"/></Cell>
     <Cell ss:StyleID="s78"><Data ss:Type="String">error</Data><NamedCell
       ss:Name="MESSAGE_ERREUR"/></Cell>
    </Row>

@@ -188,13 +188,14 @@
   <NamedRange ss:Name="CANTON" ss:RefersTo="=Feuil1!R7C11"/>
     <NamedRange ss:Name="NAISSANCE" ss:RefersTo="=Feuil1!R7C12"/>
   <NamedRange ss:Name="NOGA" ss:RefersTo="=Feuil1!R7C13"/>
-  <NamedRange ss:Name="MESSAGE_ERREUR" ss:RefersTo="=Feuil1!R7C14"/>
+  <NamedRange ss:Name="MESSAGE" ss:RefersTo="=Feuil1!R7C14"/>
+  <NamedRange ss:Name="MESSAGE_ERREUR" ss:RefersTo="=Feuil1!R7C15"/>
  </Names>
  <Worksheet ss:Name="Feuil1">
   <Names>
    <NamedRange ss:Name="_FilterDatabase" ss:RefersTo="=Feuil1!#REF!" ss:Hidden="1"/>
   </Names>
-  <Table ss:ExpandedColumnCount="14" ss:ExpandedRowCount="7" x:FullColumns="1"
+  <Table ss:ExpandedColumnCount="15" ss:ExpandedRowCount="7" x:FullColumns="1"
    x:FullRows="1" ss:StyleID="s62" ss:DefaultColumnWidth="60"
    ss:DefaultRowHeight="11.25">
    <Column ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="75.75"/>
@@ -286,6 +287,8 @@
       ss:Name="NAISSANCE"/></Cell>
     <Cell ss:StyleID="s85"><Data ss:Type="String">Noga</Data><NamedCell
       ss:Name="NOGA"/></Cell>
+      <Cell ss:StyleID="s85"><Data ss:Type="String">message</Data><NamedCell
+      ss:Name="MESSAGE"/></Cell>
     <Cell ss:StyleID="s85"><Data ss:Type="String">error</Data><NamedCell
       ss:Name="MESSAGE_ERREUR"/></Cell>
    </Row>

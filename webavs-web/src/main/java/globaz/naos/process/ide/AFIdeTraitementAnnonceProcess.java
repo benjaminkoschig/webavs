@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import ch.globaz.common.properties.PropertiesException;
+import ch.globaz.common.sql.QueryExecutor;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.util.FWMessage;
 import globaz.framework.util.FWMessageFormat;
@@ -111,23 +112,25 @@ public class AFIdeTraitementAnnonceProcess extends BProcess implements FWViewBea
 
     private List<AFIdeAnnonce> reloadListAnnonce(List<AFIdeAnnonce> listAnnonceIde) throws Exception {
 
-        if (listAnnonceIde.size() > 0) {
+        if (!listAnnonceIde.isEmpty()) {
 
             List<String> listIdAnnonceToReload = new ArrayList<String>();
 
             for (AFIdeAnnonce ideAnnonce : listAnnonceIde) {
                 listIdAnnonceToReload.add(ideAnnonce.getIdeAnnonceIdAnnonce());
             }
-
-            AFIdeAnnonceManager ideAnnonceManager = new AFIdeAnnonceManager();
-            ideAnnonceManager.setSession(getSession());
-            ideAnnonceManager.setInIdAnnonce(listIdAnnonceToReload);
-            ideAnnonceManager.find(BManager.SIZE_NOLIMIT);
-
             listAnnonceIde.clear();
+            List<List<String>> splitList = QueryExecutor.split(listIdAnnonceToReload, 1000);
+            for (List<String> splited : splitList) {
 
-            for (int i = 0; i < ideAnnonceManager.size(); i++) {
-                listAnnonceIde.add((AFIdeAnnonce) ideAnnonceManager.getEntity(i));
+                AFIdeAnnonceManager ideAnnonceManager = new AFIdeAnnonceManager();
+                ideAnnonceManager.setSession(getSession());
+                ideAnnonceManager.setInIdAnnonce(listIdAnnonceToReload);
+                ideAnnonceManager.find(BManager.SIZE_NOLIMIT);
+
+                for (int i = 0; i < ideAnnonceManager.size(); i++) {
+                    listAnnonceIde.add((AFIdeAnnonce) ideAnnonceManager.getEntity(i));
+                }
             }
         }
 
@@ -208,11 +211,9 @@ public class AFIdeTraitementAnnonceProcess extends BProcess implements FWViewBea
                 listAnnonceEntrante = initialiseListAnnonceEntranteInfoAbo();
                 listAnnonceEntrante = traiterAnnonceEntranteInfoAbo(listAnnonceEntrante);
                 List<AFIdeAnnonce> listAnnonceEntranteNotInfoAbo = initialiseListAnnonceEntranteNonInfoAbo();
-
+                listAnnonceEntranteNotInfoAbo = traiterAnnonceEntranteFoscFaillite(listAnnonceEntranteNotInfoAbo);
                 genererExcelResultTraitementAnnonceEntranteActive(listAnnonceEntrante);
-                // fusion passive avec les nonInfoAbo
-                listAnnonceEntrante.addAll(listAnnonceEntranteNotInfoAbo);
-                genererExcelResultTraitementAnnonceEntrantePassive(listAnnonceEntrante);
+                genererExcelResultTraitementAnnonceEntrantePassive(listAnnonceEntrante, listAnnonceEntranteNotInfoAbo);
             }
 
             if (JadeStringUtil.isBlankOrZero(forTypeTraitement)
@@ -1010,6 +1011,76 @@ public class AFIdeTraitementAnnonceProcess extends BProcess implements FWViewBea
 
     }
 
+    private List<AFIdeAnnonce> traiterAnnonceEntranteFoscFaillite(List<AFIdeAnnonce> listAnnonceIde) throws Exception {
+
+        for (AFIdeAnnonce ideAnnonceEntrante : listAnnonceIde) {
+            // considerer ces annonces comme passives(lors de la recherche d'affilié)
+            boolean isAnnoncePassive = true;
+            // ces annonces doivent toujours passer à l'état traité (purement info, pas d'update d'affilié)
+            boolean errorMustFlagAnnonceAsSuccess = true;
+            try {
+                linkNumAffilieToAnnonceEntrante(ideAnnonceEntrante, isAnnoncePassive);
+            } catch (Exception e) {
+                AFIDEUtil.handleError(getSession(), e, ideAnnonceEntrante);
+            } finally {
+                try {
+                    doUpdateAnnonceEntrante(ideAnnonceEntrante, errorMustFlagAnnonceAsSuccess);
+                } catch (Exception e2) {
+                    AFIDEUtil.logExceptionAndCreateMessageForUser(getSession(), e2);
+                    getTransaction().addErrors(e2.getMessage());
+                } finally {
+                    handleTransaction(ideAnnonceEntrante.getIdeAnnonceIdAnnonce());
+                }
+
+            }
+
+        }
+
+        return reloadListAnnonce(listAnnonceIde);
+
+    }
+
+    private List<AFAffiliation> linkNumAffilieToAnnonceEntrante(AFIdeAnnonce ideAnnonceEntrante,
+            boolean isAnnoncePassive) throws Exception {
+        List<AFAffiliation> listAffiliation = null;
+        viderErreurProcess();
+
+        ideAnnonceEntrante.setMessageErreurForBusinessUser(
+                AFIDEUtil.checkAnnonceEntranteMandatory(getSession(), ideAnnonceEntrante));
+
+        if (!ideAnnonceEntrante.hasAnnonceErreur()) {
+            ideAnnonceEntrante.setIdeAnnonceIdAffiliation("");
+            ideAnnonceEntrante.setNumeroAffilie("");
+            ideAnnonceEntrante.setIdeAnnonceListIdAffiliationLiee("");
+            ideAnnonceEntrante.setIdeAnnonceListNumeroAffilieLiee("");
+            listAffiliation = AFAffiliationUtil.loadAffiliationUsingNumeroIde(getSession(),
+                    ideAnnonceEntrante.getHistNumeroIde(), isAnnoncePassive);
+            if (listAffiliation != null) {
+                String listIdAffiliationLiee = "";
+                String listNumeroAffilieLiee = "";
+                for (AFAffiliation aAffiliation : listAffiliation) {
+                    if (JadeStringUtil.isBlankOrZero(ideAnnonceEntrante.getIdeAnnonceIdAffiliation())) {
+                        ideAnnonceEntrante.setIdeAnnonceIdAffiliation(aAffiliation.getAffiliationId());
+                        ideAnnonceEntrante.setNumeroAffilie(aAffiliation.getAffilieNumero());
+                    } else {
+                        if (!JadeStringUtil.isBlankOrZero(listIdAffiliationLiee)) {
+                            listIdAffiliationLiee = listIdAffiliationLiee + ",";
+                        }
+                        listIdAffiliationLiee = listIdAffiliationLiee + aAffiliation.getAffiliationId();
+
+                        if (!JadeStringUtil.isBlankOrZero(listNumeroAffilieLiee)) {
+                            listNumeroAffilieLiee = listNumeroAffilieLiee + ",";
+                        }
+                        listNumeroAffilieLiee = listNumeroAffilieLiee + aAffiliation.getAffilieNumero();
+                    }
+                }
+                ideAnnonceEntrante.setIdeAnnonceListIdAffiliationLiee(listIdAffiliationLiee);
+                ideAnnonceEntrante.setIdeAnnonceListNumeroAffilieLiee(listNumeroAffilieLiee);
+            }
+        }
+        return listAffiliation;
+    }
+
     private List<AFIdeAnnonce> traiterAnnonceEntranteInfoAbo(List<AFIdeAnnonce> listAnnonceIde) throws Exception {
 
         for (AFIdeAnnonce ideAnnonceEntrante : listAnnonceIde) {
@@ -1018,54 +1089,7 @@ public class AFIdeTraitementAnnonceProcess extends BProcess implements FWViewBea
             boolean errorMustFlagAnnonceAsSuccess = false;
             List<AFAffiliation> listAffiliationToUpdate = null;
             try {
-                viderErreurProcess();
-
-                ideAnnonceEntrante.setMessageErreurForBusinessUser(
-                        AFIDEUtil.checkAnnonceEntranteMandatory(getSession(), ideAnnonceEntrante));
-
-                if (!ideAnnonceEntrante.hasAnnonceErreur()) {
-
-                    ideAnnonceEntrante.setIdeAnnonceIdAffiliation("");
-                    ideAnnonceEntrante.setNumeroAffilie("");
-
-                    ideAnnonceEntrante.setIdeAnnonceListIdAffiliationLiee("");
-                    ideAnnonceEntrante.setIdeAnnonceListNumeroAffilieLiee("");
-
-                    listAffiliationToUpdate = AFAffiliationUtil.loadAffiliationUsingNumeroIde(getSession(),
-                            ideAnnonceEntrante.getHistNumeroIde(), isAnnoncePassive);
-
-                    if (listAffiliationToUpdate != null) {
-
-                        String listIdAffiliationLiee = "";
-                        String listNumeroAffilieLiee = "";
-
-                        for (AFAffiliation aAffiliation : listAffiliationToUpdate) {
-
-                            if (JadeStringUtil.isBlankOrZero(ideAnnonceEntrante.getIdeAnnonceIdAffiliation())) {
-                                ideAnnonceEntrante.setIdeAnnonceIdAffiliation(aAffiliation.getAffiliationId());
-                                ideAnnonceEntrante.setNumeroAffilie(aAffiliation.getAffilieNumero());
-                            } else {
-
-                                if (!JadeStringUtil.isBlankOrZero(listIdAffiliationLiee)) {
-                                    listIdAffiliationLiee = listIdAffiliationLiee + ",";
-                                }
-                                listIdAffiliationLiee = listIdAffiliationLiee + aAffiliation.getAffiliationId();
-
-                                if (!JadeStringUtil.isBlankOrZero(listNumeroAffilieLiee)) {
-                                    listNumeroAffilieLiee = listNumeroAffilieLiee + ",";
-                                }
-                                listNumeroAffilieLiee = listNumeroAffilieLiee + aAffiliation.getAffilieNumero();
-
-                            }
-
-                        }
-
-                        ideAnnonceEntrante.setIdeAnnonceListIdAffiliationLiee(listIdAffiliationLiee);
-                        ideAnnonceEntrante.setIdeAnnonceListNumeroAffilieLiee(listNumeroAffilieLiee);
-
-                    }
-
-                }
+                listAffiliationToUpdate = linkNumAffilieToAnnonceEntrante(ideAnnonceEntrante, isAnnoncePassive);
 
             } catch (AFIdeNumberNoMatchException e) {
                 // D0181 si l'annonce entrantes de type ANNULE (avec ou sans le remplacement) renseignent un
@@ -1093,9 +1117,14 @@ public class AFIdeTraitementAnnonceProcess extends BProcess implements FWViewBea
             }
 
         }
-
         return reloadListAnnonce(listAnnonceIde);
+    }
 
+    private void doUpdateAnnonceEntrante(AFIdeAnnonce ideAnnonceEntrante, boolean errorMustFlagAnnonceAsSuccess)
+            throws Exception {
+
+        updateAnnonceAfterTraitementAnnonceEntrante(ideAnnonceEntrante, AFIDEUtil
+                .giveMeStatusAnnonceApresTraitementAccordingToError(ideAnnonceEntrante, errorMustFlagAnnonceAsSuccess));
     }
 
     private void doUpdateAfterTraitementAnnonceEntrante(AFIdeAnnonce ideAnnonceEntrante, boolean isAnnoncePassive,
@@ -1105,9 +1134,7 @@ public class AFIdeTraitementAnnonceProcess extends BProcess implements FWViewBea
                 && (!isAnnoncePassive || (isAnnoncePassive && !ideAnnonceEntrante.getNumeroAffilie().isEmpty()))) {
             updateAffiliationWithAnnonceEntrante(listAffiliationToUpdate, ideAnnonceEntrante, isAnnoncePassive);
         }
-
-        updateAnnonceAfterTraitementAnnonceEntrante(ideAnnonceEntrante, AFIDEUtil
-                .giveMeStatusAnnonceApresTraitementAccordingToError(ideAnnonceEntrante, errorMustFlagAnnonceAsSuccess));
+        doUpdateAnnonceEntrante(ideAnnonceEntrante, errorMustFlagAnnonceAsSuccess);
     }
 
     private String logTechnicalErrorMessage(String idAnnonce) {
@@ -1178,12 +1205,13 @@ public class AFIdeTraitementAnnonceProcess extends BProcess implements FWViewBea
 
     }
 
-    private void genererExcelResultTraitementAnnonceEntrantePassive(List<AFIdeAnnonce> listAnnonceEntrante)
-            throws Exception {
+    private void genererExcelResultTraitementAnnonceEntrantePassive(List<AFIdeAnnonce> listAnnonceEntrante,
+            List<AFIdeAnnonce> listAnnonceEntranteNotInfoAbo) throws Exception {
 
         AFXmlmlIdeTraitementAnnonceEntrantePassive xmlml = new AFXmlmlIdeTraitementAnnonceEntrantePassive();
 
         createDataForExcelAnnonceEntrantePassive(xmlml, listAnnonceEntrante);
+        addLignesExcelPassive(xmlml, listAnnonceEntranteNotInfoAbo);
 
         String xmlModelPath = Jade.getInstance().getExternalModelDir() + AFApplication.DEFAULT_APPLICATION_NAOS_REP
                 + "/model/excelml/" + getSession().getIdLangueISO().toUpperCase() + "/"
@@ -1243,6 +1271,12 @@ public class AFIdeTraitementAnnonceProcess extends BProcess implements FWViewBea
         xmlml.putData(AFXmlmlIdeTraitementAnnonceEntrantePassive.DATA_EXCEL_TITRE_DOC,
                 getSession().getLabel("NAOS_PROCESS_IDE_TRAITEMENT_ANNONCE_ENTRANTE_PASSIVE_EXCEL_TITRE_DOCUMENT"));
 
+        addLignesExcelPassive(xmlml, listAnnonceEntrante);
+
+    }
+
+    private void addLignesExcelPassive(AFXmlmlIdeTraitementAnnonceEntrantePassive xmlml,
+            List<AFIdeAnnonce> listAnnonceEntrante) {
         for (AFIdeAnnonce aIdeAnnonce : listAnnonceEntrante) {
 
             if (AFIDEUtil.isAnnoncePassive(aIdeAnnonce) || AFIDEUtil.isAnnoncePassiveNonInfoAbo(aIdeAnnonce)) {
@@ -1256,11 +1290,9 @@ public class AFIdeTraitementAnnonceProcess extends BProcess implements FWViewBea
                         aIdeAnnonce.getHistRaisonSociale(), aIdeAnnonce.getHistRue(), aIdeAnnonce.getHistNPA(),
                         aIdeAnnonce.getHistLocalite(), aIdeAnnonce.getHistCanton(), aIdeAnnonce.getHistNaissance(),
                         AFIDEUtil.formatNogaRegistre(aIdeAnnonce.getHistNoga(), getSession()),
-                        aIdeAnnonce.getMessageErreurForBusinessUser());
+                        aIdeAnnonce.getMessageSedex50(), aIdeAnnonce.getMessageErreurForBusinessUser());
             }
-
         }
-
     }
 
     private void createDataForExcelAnnonceEntranteActive(AFXmlmlIdeTraitementAnnonceEntranteActive xmlml,
