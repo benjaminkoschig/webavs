@@ -15,13 +15,13 @@ public class IDEFoscConverter {
         dataBean.setNumeroIDERemplacement(IDEServiceMappingUtil.getNumeroIDE(msgFosc.getUid()));
         dataBean.setNumeroIDE(IDEServiceMappingUtil.getNumeroIDE(msgFosc.getUid()));
         dataBean.setStatut(AFIDEUtil.translateCodeStatut(msgFosc.getMBSTATUSCD().intValue()));
-        dataBean.setRaisonSociale(msgFosc.getNAMEOLDTX());
-        dataBean.setRue(msgFosc.getSTREETTX());
-        dataBean.setNpa(msgFosc.getZIP1CD());
-        dataBean.setLocalite(msgFosc.getTOWNTX());
-        dataBean.setCanton(msgFosc.getKANTONTX());
-        dataBean.setNogaCode(msgFosc.getBurNoga2008());
-        dataBean.setMessageSedex50(msgFosc.getMELDUNGTX());
+        dataBean.setRaisonSociale(IDESedexDefensiv.defendStdString(msgFosc.getNAMEOLDTX()));
+        dataBean.setRue(IDESedexDefensiv.defendStdString(msgFosc.getSTREETTX()));
+        dataBean.setNpa(IDESedexDefensiv.defendStdString(msgFosc.getZIP1CD()));
+        dataBean.setLocalite(IDESedexDefensiv.defendStdString(msgFosc.getTOWNTX()));
+        dataBean.setCanton(IDESedexDefensiv.defendStdString(msgFosc.getKANTONTX()));
+        dataBean.setNogaCode(IDESedexDefensiv.defendNoga(msgFosc.getBurNoga2008()));
+        dataBean.setMessageSedex50(IDESedexDefensiv.defendMessage(msgFosc.getMELDUNGTX()));
         return dataBean;
     }
 

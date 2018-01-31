@@ -6,7 +6,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import ch.globaz.common.properties.PropertiesException;
 import ch.globaz.common.sql.QueryExecutor;
 import globaz.framework.bean.FWViewBeanInterface;
@@ -21,12 +20,8 @@ import globaz.globall.util.JACalendar;
 import globaz.jade.client.util.JadeFilenameUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.common.Jade;
-import globaz.jade.crypto.JadeDecryptionNotSupportedException;
-import globaz.jade.crypto.JadeEncrypterNotFoundException;
-import globaz.jade.fs.JadeFsFacade;
 import globaz.jade.publish.client.JadePublishDocument;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
-import globaz.jade.sedex.message.SimpleSedexMessage;
 import globaz.jade.smtp.JadeSmtpClient;
 import globaz.naos.application.AFApplication;
 import globaz.naos.db.affiliation.AFAffiliation;
@@ -70,7 +65,6 @@ public class AFIdeTraitementAnnonceProcess extends BProcess implements FWViewBea
 
     private static final long serialVersionUID = 6232985970478302658L;
 
-    private static final String PATH_SEDEX_FILE_EXEMPLE = "D:\\sedexMessage";
     private static final String MAIL_OBJECT_ANNONCE_IDE = "MAIL_OBJECT_ANNONCE_IDE";
 
     public static final String CODE_NOGA_INCONNU = "990099";
@@ -79,16 +73,7 @@ public class AFIdeTraitementAnnonceProcess extends BProcess implements FWViewBea
 
     private String mailObject;
     private String forTypeTraitement;
-    private Boolean modeTestSedex;
     private IPartnerServices port = null;
-
-    public Boolean getModeTestSedex() {
-        return modeTestSedex;
-    }
-
-    public void setModeTestSedex(Boolean modeTestSedex) {
-        this.modeTestSedex = modeTestSedex;
-    }
 
     public String getForTypeTraitement() {
         return forTypeTraitement;
@@ -101,7 +86,6 @@ public class AFIdeTraitementAnnonceProcess extends BProcess implements FWViewBea
     public AFIdeTraitementAnnonceProcess() {
         super();
         mailObject = MAIL_OBJECT_ANNONCE_IDE;
-        modeTestSedex = Boolean.FALSE;
         forTypeTraitement = "";
 
     }
@@ -125,7 +109,7 @@ public class AFIdeTraitementAnnonceProcess extends BProcess implements FWViewBea
 
                 AFIdeAnnonceManager ideAnnonceManager = new AFIdeAnnonceManager();
                 ideAnnonceManager.setSession(getSession());
-                ideAnnonceManager.setInIdAnnonce(listIdAnnonceToReload);
+                ideAnnonceManager.setInIdAnnonce(splited);
                 ideAnnonceManager.find(BManager.SIZE_NOLIMIT);
 
                 for (int i = 0; i < ideAnnonceManager.size(); i++) {
@@ -204,9 +188,10 @@ public class AFIdeTraitementAnnonceProcess extends BProcess implements FWViewBea
             if (JadeStringUtil.isBlankOrZero(forTypeTraitement)
                     || CodeSystem.CATEGORIE_ANNONCE_IDE_RECEPTION.equalsIgnoreCase(forTypeTraitement)) {
 
-                if (modeTestSedex) {
-                    genererAnnonceEntrante();
-                }
+                // if (modeTestSedex) {
+                // genererAnnonceEntrante();
+                // }
+
                 List<AFIdeAnnonce> listAnnonceEntrante = new ArrayList<AFIdeAnnonce>();
                 listAnnonceEntrante = initialiseListAnnonceEntranteInfoAbo();
                 listAnnonceEntrante = traiterAnnonceEntranteInfoAbo(listAnnonceEntrante);
@@ -281,17 +266,6 @@ public class AFIdeTraitementAnnonceProcess extends BProcess implements FWViewBea
 
     }
 
-    private List<AFIdeAnnonce> extractOtherThanInfoAbo(List<AFIdeAnnonce> listAnnonceEntrante) {
-        List<AFIdeAnnonce> annonceNotInfoAbo = new ArrayList<AFIdeAnnonce>();
-        for (AFIdeAnnonce annonceEntrante : listAnnonceEntrante) {
-            if (AFIDEUtil.isAnnoncePassiveNonInfoAbo(annonceEntrante)) {
-                listAnnonceEntrante.remove(annonceEntrante);
-                annonceNotInfoAbo.add(annonceEntrante);
-            }
-        }
-        return annonceNotInfoAbo;
-    }
-
     private List<String> giveMeListDestinataire(List<String> listDestinataire) throws Exception {
 
         listDestinataire = AFIDEUtil.giveMeUserGroupMail(AFProperties.MAIL_NOTIFICATION_PROPERTY.getValue());
@@ -320,37 +294,35 @@ public class AFIdeTraitementAnnonceProcess extends BProcess implements FWViewBea
     }
 
     /**
-     * <b>For internal use ONLY</b>
-     * </br>
-     * Génération de test de SEDEX (simulation depuis un folder local) à des fins de testing, simulation et
-     * réalisation
+     * par non infoAbo sont entendu les nouveaux types d'annonces FOSC et Faillite qui sont des annonces entrantes qui
+     * en doivent pas modifier de données au traitement
      * 
-     * @throws JadeDecryptionNotSupportedException
-     * @throws JadeEncrypterNotFoundException
+     * @return
      * @throws Exception
      */
-    private void genererAnnonceEntrante()
-            throws JadeDecryptionNotSupportedException, JadeEncrypterNotFoundException, Exception {
-        List<String> listPathInfoAboSedexFile = JadeFsFacade.getFolderChildren(PATH_SEDEX_FILE_EXEMPLE);
-        AFIdeReceptionMessageInfoAboSedexProcess ideReceptionMessageInfoAboSedexProcess = new AFIdeReceptionMessageInfoAboSedexProcess();
-        Properties properties = new Properties();
-        properties.setProperty("userSedex", "S7FNHNEbzm4=");
-        properties.setProperty("passSedex", "d5UwBcw1VTk=");
-        ideReceptionMessageInfoAboSedexProcess.setUp(properties);
-        for (String aPathInfoAboSedexFile : listPathInfoAboSedexFile) {
-            SimpleSedexMessage sedexMessge = new SimpleSedexMessage();
-            sedexMessge.fileLocation = aPathInfoAboSedexFile;
-            ideReceptionMessageInfoAboSedexProcess.onReceive(sedexMessge);
-        }
-
-    }
-
     private List<AFIdeAnnonce> initialiseListAnnonceEntranteNonInfoAbo() throws Exception {
 
         return initialiseListAnnonceEntrante(false);
 
     }
 
+    /**
+     * par infoAbo sont entendu les Annonces entrantes "d'origine".</br>
+     * Qui viennent en retour d'une annonce sortante ou
+     * d'une inscription active ou passive au registre
+     * , càd types d'annonces :
+     * <b>
+     * <li>CodeSystem.TYPE_ANNONCE_IDE_CREATION_INFO_ABO;</li>
+     * <li>CodeSystem.TYPE_ANNONCE_IDE_MUTATION_INFO_ABO;</li>
+     * <li>CodeSystem.TYPE_ANNONCE_IDE_MUTATION_REJETEE;</li>
+     * <li>CodeSystem.TYPE_ANNONCE_IDE_MUTATION_CONFIRMEE;</li>
+     * <li>CodeSystem.TYPE_ANNONCE_IDE_ANNULEE;</li>
+     * <li>CodeSystem.TYPE_ANNONCE_IDE_CREATION_CONFIRMEE;</li>
+     * </b>
+     * 
+     * @return
+     * @throws Exception
+     */
     private List<AFIdeAnnonce> initialiseListAnnonceEntranteInfoAbo() throws Exception {
 
         return initialiseListAnnonceEntrante(true);

@@ -309,8 +309,10 @@ function init() {
         	<TD nowrap width="300"></TD>
 		</TR>
 		<TR>
+		<%if (CodeSystem.TYPE_ANNONCE_IDE_FAILLITE.equals(viewBean.getIdeAnnonceType())||CodeSystem.TYPE_ANNONCE_IDE_FOSC.equals(viewBean.getIdeAnnonceType())) {%>
 			<TD nowrap width="140"><ct:FWLabel key="NAOS_JSP_IDE_ANNONCE_MESSAGE_SEDEX_50"/></TD>
-        	<TD nowrap width="740" colspan="3"><TEXTAREA name="" rows="4" cols="150" type="text" readonly><%=viewBean.getMessageSedex50()%></TEXTAREA></TD>
+        	<TD nowrap width="740" colspan="3"><TEXTAREA name="" rows="4" cols="150" type="text" disabled="disabled" readonly><%=viewBean.getMessageSedex50()%></TEXTAREA></TD>
+		<% } %>
 		</TR>
 					
 <%-- /tpl:put --%>
