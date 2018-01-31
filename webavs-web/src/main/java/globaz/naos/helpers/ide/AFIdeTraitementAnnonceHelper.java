@@ -22,7 +22,6 @@ public class AFIdeTraitementAnnonceHelper extends FWHelper {
 
             process.setSession((BSession) session);
             process.setForTypeTraitement(vb.getForTypeTraitement());
-            process.setModeTestSedex(vb.getModeTestSedex());
             process.setEMailAddress(vb.getEmail());
             process.start();
 

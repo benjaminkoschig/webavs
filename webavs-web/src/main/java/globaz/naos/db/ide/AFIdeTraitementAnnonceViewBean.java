@@ -8,15 +8,6 @@ public class AFIdeTraitementAnnonceViewBean extends AFAbstractViewBean {
 
     private String email;
     private String forTypeTraitement;
-    private Boolean modeTestSedex;
-
-    public Boolean getModeTestSedex() {
-        return modeTestSedex;
-    }
-
-    public void setModeTestSedex(Boolean modeTestSedex) {
-        this.modeTestSedex = modeTestSedex;
-    }
 
     public String getForTypeTraitement() {
         return forTypeTraitement;
