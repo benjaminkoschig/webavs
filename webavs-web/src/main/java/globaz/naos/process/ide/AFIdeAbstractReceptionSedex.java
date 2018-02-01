@@ -26,6 +26,15 @@ import globaz.naos.db.ide.AFIdeAnnonce;
 import globaz.naos.translation.CodeSystem;
 import globaz.naos.util.IDEDataBean;
 
+/**
+ * Abstraction de class de reception de sedex pour les annonces IDE entrante hors INFOABO</br>
+ * <b>ATTENTION</b> il faut implémenter l'interface dans les classe enfant (imposé par l'héritage)</br>
+ * 
+ * 
+ * @author cel
+ *
+ * @param <T> l'objet message propre a la XSD du message sedex
+ */
 public abstract class AFIdeAbstractReceptionSedex<T> implements AFIdeReceptionSedexInterface<T> {
 
     protected BSession session = null;

@@ -1,10 +1,12 @@
 package globaz.naos.util.ide;
 
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import javax.xml.datatype.XMLGregorianCalendar;
 import org.apache.commons.lang.StringUtils;
 import ch.ech.xmlns.ech_0097._1.UidStructureType;
 import ch.globaz.common.domaine.Date;
+import globaz.naos.util.AFIDEUtil;
 import globaz.naos.util.IDEServiceMappingUtil;
 
 /**
@@ -62,6 +64,10 @@ public class IDESedexDefensiv {
     protected static String defendRaisonSociale(String entrepriseRS, String nomInde, String prenomInde) {
         return defendStdString(
                 entrepriseRS == null || entrepriseRS.trim().isEmpty() ? nomInde + " " + prenomInde : entrepriseRS);
+    }
+
+    protected static String defendCodeStatut(BigDecimal statusCode) {
+        return AFIDEUtil.translateCodeStatut(statusCode == null ? 0 : statusCode.intValue());
     }
 
     private static String avoidNull(String nullable) {

@@ -2,9 +2,7 @@ package globaz.naos.util.ide;
 
 import ch.admin.bfs.xmlns.bfs_5050_000101._1.SHABMsgType;
 import globaz.naos.translation.CodeSystem;
-import globaz.naos.util.AFIDEUtil;
 import globaz.naos.util.IDEDataBean;
-import globaz.naos.util.IDEServiceMappingUtil;
 
 public class IDEFoscConverter {
 
@@ -12,9 +10,9 @@ public class IDEFoscConverter {
         IDEDataBean dataBean = new IDEDataBean();
 
         dataBean.setTypeAnnonceIde(CodeSystem.TYPE_ANNONCE_IDE_FOSC);
-        dataBean.setNumeroIDERemplacement(IDEServiceMappingUtil.getNumeroIDE(msgFosc.getUid()));
-        dataBean.setNumeroIDE(IDEServiceMappingUtil.getNumeroIDE(msgFosc.getUid()));
-        dataBean.setStatut(AFIDEUtil.translateCodeStatut(msgFosc.getMBSTATUSCD().intValue()));
+        dataBean.setNumeroIDERemplacement(IDESedexDefensiv.defendUid(msgFosc.getUid()));
+        dataBean.setNumeroIDE(IDESedexDefensiv.defendUid(msgFosc.getUid()));
+        dataBean.setStatut(IDESedexDefensiv.defendCodeStatut(msgFosc.getMBSTATUSCD()));
         dataBean.setRaisonSociale(IDESedexDefensiv.defendStdString(msgFosc.getNAMEOLDTX()));
         dataBean.setRue(IDESedexDefensiv.defendStdString(msgFosc.getSTREETTX()));
         dataBean.setNpa(IDESedexDefensiv.defendStdString(msgFosc.getZIP1CD()));

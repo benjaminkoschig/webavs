@@ -79,4 +79,9 @@ public class IDESedexDefensivTest {
 
     }
 
+    @Test
+    public void testDefendCodeStatut() throws Exception {
+        assertTrue(IDESedexDefensiv.defendCodeStatut(null) != null);
+    }
+
 }
