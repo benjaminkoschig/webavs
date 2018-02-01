@@ -59,7 +59,12 @@ public class IDESedexDefensiv {
         return StringUtils.left(noga, NOGA_SIZE);
     }
 
-    public static String defendRaisonSociale(String entrepriseRS, String nomInde, String prenomInde) {
-        return entrepriseRS == null || entrepriseRS.trim().isEmpty() ? nomInde + " " + prenomInde : entrepriseRS;
+    protected static String defendRaisonSociale(String entrepriseRS, String nomInde, String prenomInde) {
+        return defendStdString(
+                entrepriseRS == null || entrepriseRS.trim().isEmpty() ? nomInde + " " + prenomInde : entrepriseRS);
+    }
+
+    private static String avoidNull(String nullable) {
+        return (nullable == null ? "" : nullable);
     }
 }
