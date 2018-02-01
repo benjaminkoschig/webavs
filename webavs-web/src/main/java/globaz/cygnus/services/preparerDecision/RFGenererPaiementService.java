@@ -893,10 +893,8 @@ public class RFGenererPaiementService {
                     premierPassage = false;
                 }
 
-                if (decision.isHasTraiterDecision()) {
-                    traiterDecision(decision, demandesAimputerMap, qdsAimputerMap, decision.getMontantTotalBigDec(),
-                            idQdIdsDossierMap);
-                }
+                traiterDecision(decision, demandesAimputerMap, qdsAimputerMap, decision.getMontantTotalBigDec(),
+                        idQdIdsDossierMap);
 
                 if (decision.isHasTraiterRestitutions()) {
                     traiterRestitutions(decision, demandesAimputerMap, qdsAimputerMap,

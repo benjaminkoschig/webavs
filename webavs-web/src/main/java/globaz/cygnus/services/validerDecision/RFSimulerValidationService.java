@@ -17,8 +17,10 @@ import globaz.globall.api.BITransaction;
 import globaz.globall.db.BSession;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import ch.globaz.common.domaine.Montant;
 import ch.globaz.common.properties.CommonProperties;
 import ch.globaz.pegasus.business.constantes.IPCDroits;
 
@@ -175,6 +177,8 @@ public class RFSimulerValidationService {
 
             List<RFSimulerValidationDecision> validationDecisionList = RFSimulerValidationService.simulationManager
                     .getContainerAsList();
+            validationDecisionList = filtreNotNull(validationDecisionList);
+
             RFSimulerValidationService.createDocument(validationDecisionList, idLotFirstEntity, idTiersFondationSas);
         } else {
             RFSimulerValidationService.memoryLog.logMessage(((BSession) RFSimulerValidationService.getSession())
@@ -184,6 +188,16 @@ public class RFSimulerValidationService {
 
         return RFSimulerValidationService.docInfo;
 
+    }
+
+    private static List<RFSimulerValidationDecision> filtreNotNull(List<RFSimulerValidationDecision> decisionArray) {
+        List<RFSimulerValidationDecision> tmpArray = new ArrayList<RFSimulerValidationDecision>();
+        for (RFSimulerValidationDecision decision : decisionArray) {
+            if (!Montant.valueOf(decision.getMontantPrestation()).isZero()) {
+                tmpArray.add(decision);
+            }
+        }
+        return tmpArray;
     }
 
     public static void setDateEcheanceDernierPaiement(String dateEcheanceDernierPaiement) {

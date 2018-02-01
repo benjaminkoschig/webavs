@@ -317,8 +317,6 @@ public class RFValiderDecisionMiseAJourEntitiesService {
                                                 IntRole.ROLE_RENTIER,
                                                 tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL));
                                     }
-                                } else {
-                                    throw new Exception("RFValiderDecisionProcess.run(): OV introuvable");
                                 }
 
                             } else {
