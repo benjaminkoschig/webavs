@@ -1092,6 +1092,13 @@ public class AFIdeTraitementAnnonceProcess extends BProcess implements FWViewBea
         return reloadListAnnonce(listAnnonceIde);
     }
 
+    /**
+     * MAJ d'une annonce entrante apres son traitement (lien vers son/ses nimero affilié)
+     * 
+     * @param ideAnnonceEntrante
+     * @param errorMustFlagAnnonceAsSuccess
+     * @throws Exception
+     */
     private void doUpdateAnnonceEntrante(AFIdeAnnonce ideAnnonceEntrante, boolean errorMustFlagAnnonceAsSuccess)
             throws Exception {
 
@@ -1099,6 +1106,16 @@ public class AFIdeTraitementAnnonceProcess extends BProcess implements FWViewBea
                 .giveMeStatusAnnonceApresTraitementAccordingToError(ideAnnonceEntrante, errorMustFlagAnnonceAsSuccess));
     }
 
+    /**
+     * MAJ de l'annonces entrante INFOABO et des affilié lié (récupération des info de l'annonces vers affiliation et
+     * maj de l'annonce elle-même)
+     * 
+     * @param ideAnnonceEntrante
+     * @param isAnnoncePassive
+     * @param listAffiliationToUpdate
+     * @param errorMustFlagAnnonceAsSuccess
+     * @throws Exception
+     */
     private void doUpdateAfterTraitementAnnonceEntrante(AFIdeAnnonce ideAnnonceEntrante, boolean isAnnoncePassive,
             List<AFAffiliation> listAffiliationToUpdate, boolean errorMustFlagAnnonceAsSuccess) throws Exception {
 

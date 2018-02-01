@@ -2,16 +2,16 @@ package globaz.naos.util.ide;
 
 import static org.junit.Assert.*;
 import org.junit.Test;
-import ch.admin.bfs.xmlns.bfs_5051_000102._1.DebtRestructuringAgreementType;
+import ch.admin.bfs.xmlns.bfs_5051_000101._1.BankruptcyType;
 import globaz.naos.translation.CodeSystem;
 import globaz.naos.util.IDEDataBean;
 
-public class IDEFaillite102ConverterTest {
+public class IDEFaillite101ConverterTest {
 
     @Test
     public void testFormatdata() throws Exception {
-        DebtRestructuringAgreementType mockMsgFaillite = new DebtRestructuringAgreementType();
-        IDEDataBean dataBean = IDEFaillite102Converter.formatdata(mockMsgFaillite);
+        BankruptcyType mockMsgFaillite = new BankruptcyType();
+        IDEDataBean dataBean = IDEFaillite101Converter.formatdata(mockMsgFaillite);
         assertTrue(dataBean != null);
         assertTrue(CodeSystem.TYPE_ANNONCE_IDE_FAILLITE.equals(dataBean.getTypeAnnonceIde()));
     }
