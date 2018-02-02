@@ -119,6 +119,9 @@ public class REImporterCIProcess extends BProcess {
                 throw new Exception("Wrong number of arguments");
             }
 
+            // démarrage en mode CommandeLineJob pour ne pas exécuter les processus SEDEX
+            Jade.getInstanceForCommandLineJob();
+
             // recuperation des arguments
             myProcess.setUserID(args[0]);
             myProcess.setPwd(args[1]);

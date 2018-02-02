@@ -128,6 +128,10 @@ public class HEGetFile {
             System.exit(-1);
         }
         System.out.println("**********  FTPGet executing  **********");
+
+        // démarrage en mode CommandeLineJob pour ne pas exécuter les processus SEDEX
+        Jade.getInstanceForCommandLineJob();
+
         try {
             BSession session = (BSession) GlobazServer.getCurrentSystem().getApplication("HERMES")
                     .newSession(args[0], args[1]);

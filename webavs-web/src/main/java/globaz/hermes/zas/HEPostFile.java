@@ -54,6 +54,10 @@ public class HEPostFile {
         /*
          * je prends le ftp.file.input
          */
+
+        // démarrage en mode CommandeLineJob pour ne pas exécuter les processus SEDEX
+        Jade.getInstanceForCommandLineJob();
+
         try {
             BSession session = (BSession) GlobazServer.getCurrentSystem().getApplication("HERMES")
                     .newSession(args[0], args[1]);

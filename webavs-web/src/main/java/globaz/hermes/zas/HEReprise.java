@@ -159,6 +159,9 @@ public class HEReprise extends BProcess {
                 throw new Exception("Wrong number of arguments");
             }
 
+            // démarrage en mode CommandeLineJob pour ne pas exécuter les processus SEDEX
+            Jade.getInstanceForCommandLineJob();
+
             //
             BSession session = (BSession) GlobazServer.getCurrentSystem().getApplication("HERMES")
                     .newSession(args[2], args[3]);
