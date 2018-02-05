@@ -636,4 +636,16 @@ public class RFPropertiesUtils {
         return RFPropertiesUtils.checkProperty(RFApplication.PROPERTY_ANNULER_UNIQUEMENT_DECISIONS_LIEES_AU_QDS);
     }
 
+    /**
+     * Methode permettant de contrôler si les décisions sans remboursement doivent être mises en GED
+     * 
+     * @param session
+     * @return True si les décisions sans remboursements doivent aller en GED
+     * @throws Exception
+     * 
+     */
+    public static Boolean miseEnGedDesDecisionsAZero() throws Exception {
+        return RFPropertiesUtils.checkProperty(RFApplication.PROPERTY_MISE_EN_GED_DES_DECISIONS_SANS_REMBOURSEMENT);
+    }
+
 }

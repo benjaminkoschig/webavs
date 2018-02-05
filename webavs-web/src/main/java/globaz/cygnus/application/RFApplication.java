@@ -71,6 +71,7 @@ public class RFApplication extends PRAbstractApplication {
     public static final String PROPERTY_VERIFIER_SI_CALCUL_CONCERNE_AUTRE_GESTIONNAIRE = "preparerDecision.verifierSiCalcul.concerne.autreGestionnaire";
     public static final String PROPERTY_VERIFIER_SI_DEVIS_RATTACHE_AUTRES_DEMANDES = "verification.siDevis.rattache.autres.demandes";
     public static final String PROPERTY_ANNULER_UNIQUEMENT_DECISIONS_LIEES_AU_QDS = "annuler.uniquement.decisions.liees.aux.qds";
+    public static final String PROPERTY_MISE_EN_GED_DES_DECISIONS_SANS_REMBOURSEMENT = "decision.zero.ged";
 
     /**
      * Crée une nouvelle instance de la classe REApplication.

@@ -1,10 +1,14 @@
 package globaz.cygnus.services.comptabilite;
 
+import globaz.cygnus.db.paiement.RFPrestation;
+import globaz.cygnus.db.paiement.RFPrestationManager;
 import globaz.cygnus.process.RFGenererDecisionsGedComptabilisationProcess;
+import globaz.cygnus.utils.RFPropertiesUtils;
 import globaz.framework.util.FWMemoryLog;
 import globaz.globall.db.BProcessLauncher;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BTransaction;
+import java.util.Iterator;
 import java.util.Set;
 
 /**
@@ -65,8 +69,15 @@ public class RFComptabiliserMiseEnGedService {
     public void miseEnGedDesDecisionsDuLot(String idLot, Set<RFPrestationData> prestationsSet) throws Exception {
 
         // Récupération des id décisions contenu dans le lot
-        String[] listeIdsDecisions = new String[prestationsSet.size()];
-        listeIdsDecisions = getListeIdDecisions(prestationsSet);
+        String[] listeIdsDecisions;
+        // On prend uniquement
+        if (RFPropertiesUtils.miseEnGedDesDecisionsAZero()) {
+            listeIdsDecisions = rechercheIDDecisionDuLot(idLot);
+        } else {
+            // Récupération des id décisions contenu dans le lot
+            listeIdsDecisions = new String[prestationsSet.size()];
+            listeIdsDecisions = getListeIdDecisions(prestationsSet);
+        }
 
         if ((listeIdsDecisions != null) && (listeIdsDecisions.length > 0)) {
             RFGenererDecisionsGedComptabilisationProcess process = new RFGenererDecisionsGedComptabilisationProcess();
@@ -83,6 +94,32 @@ public class RFComptabiliserMiseEnGedService {
             throw new Exception(
                     "Aucuns id decision trouvé : RFComptabiliserMiseEnGedService / miseEnGedDesDecisionsDuLot");
         }
+    }
+
+    /**
+     * Methode qui permet de retrouver tous les ID décisions d'un lot
+     * 
+     * @throws Exception
+     */
+    private String[] rechercheIDDecisionDuLot(String idLot) throws Exception {
+        RFPrestationManager prestationsDuLotMgr = new RFPrestationManager();
+        prestationsDuLotMgr.setSession(getSession());
+        prestationsDuLotMgr.setForIdLot(idLot);
+        prestationsDuLotMgr.changeManagerSize(0);
+        prestationsDuLotMgr.find();
+
+        int i = 0;
+        String[] listeIds = new String[prestationsDuLotMgr.size()];
+
+        Iterator<RFPrestation> rfPreItr = prestationsDuLotMgr.iterator();
+
+        while (rfPreItr.hasNext()) {
+            RFPrestation rfPrestationitr = rfPreItr.next();
+            listeIds[i] = rfPrestationitr.getIdDecision();
+            i++;
+        }
+
+        return listeIds;
     }
 
     public void setAdresseMail(String adresseMail) {
