@@ -177,7 +177,9 @@ public class RFSimulerValidationService {
 
             List<RFSimulerValidationDecision> validationDecisionList = RFSimulerValidationService.simulationManager
                     .getContainerAsList();
-            validationDecisionList = filtreNotNull(validationDecisionList);
+            if (RFPropertiesUtils.miseEnGedDesDecisionsAZero()) {
+                validationDecisionList = filtreNotNull(validationDecisionList);
+            }
 
             RFSimulerValidationService.createDocument(validationDecisionList, idLotFirstEntity, idTiersFondationSas);
         } else {

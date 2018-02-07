@@ -46,6 +46,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import ch.globaz.common.domaine.Montant;
 
 public class RFValiderDecisionMiseAJourEntitiesService {
 
@@ -317,6 +318,9 @@ public class RFValiderDecisionMiseAJourEntitiesService {
                                                 IntRole.ROLE_RENTIER,
                                                 tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL));
                                     }
+                                } else if (!RFPropertiesUtils.miseEnGedDesDecisionsAZero()
+                                        || !Montant.valueOf(rfDecJoiPre.getMontantTotal()).isZero()) {
+                                    throw new Exception("RFValiderDecisionProcess.run(): OV introuvable");
                                 }
 
                             } else {
