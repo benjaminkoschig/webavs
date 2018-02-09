@@ -29,6 +29,7 @@ public interface IPCDemandes {
     public final static String CS_REVISION = "64001008";
     public final static String CS_SUPPRIME = "64001004";
     public final static String CS_TRANSFERE = "64001005";
+    public final static String CS_ANNULE = "64001010";
     // TYPE DEMANDE
     public static final String CS_TYPE_DEMANDE = "PCTYPEDEM";
 

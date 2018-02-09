@@ -118,6 +118,8 @@ public interface IPCDroits {
 
     public static final String CS_VEHICULE = "64007019";
 
+    public static final String CS_ANNULE = "64003007";
+
     // ONGLETS DE MENU DESSAISISSEMENT
     public static final String[][] ONGLETS_DESSAISISSEMENTS = {
             { "MENU_ONGLET_DROITS_DESSAISISSEMENT_REVENU", "MENU_ONGLET_DROITS_DESSAISISSEMENT_REVENU_ABREV",

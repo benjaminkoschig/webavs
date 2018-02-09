@@ -287,6 +287,25 @@ public interface DroitService extends JadeApplicationService {
             throws DroitException, JadePersistenceException, JadeApplicationServiceNotAvailableException;
 
     /**
+     * Crée une nouvelle version du droit passé en paramètre, génère et valide directement la décision de suppression
+     * pour un une annulation de demande
+     * 
+     * @param droit
+     * @param dateAnnonce
+     * @param csMotif
+     * @param dateSuppression
+     * @param dateDecision
+     * @param currentUserId
+     * @return
+     * @throws DroitException
+     * @throws JadePersistenceException
+     * @throws JadeApplicationServiceNotAvailableException
+     */
+    public Droit corrigerDroitAnnulation(Droit droit, String dateAnnonce, String dateSuppression, String dateDecision,
+            String currentUserId, boolean comptabilisationAuto, String mailProcessCompta) throws DroitException,
+            JadePersistenceException, JadeApplicationServiceNotAvailableException;
+
+    /**
      * Permet de compter le nombre d'enregistrements correspondant au modèle de recherche
      * 
      * @param search

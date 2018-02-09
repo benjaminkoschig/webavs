@@ -44,6 +44,18 @@ public interface DecisionSuppressionService extends JadeApplicationService {
             JadeApplicationException, JadeCloneModelException;
 
     /**
+     * Création d'une entité DecisionSuppression
+     * 
+     * @param decision
+     * @return l'entité crée
+     * @throws JadePersistenceException
+     * @throws DecisionException
+     * @throws JadeApplicationException
+     */
+    public DecisionSuppression create(DecisionSuppression decision, boolean checkForCreate)
+            throws JadePersistenceException, DecisionException, JadeApplicationException, JadeCloneModelException;
+
+    /**
      * Suppression d'une entité
      * 
      * @param decision

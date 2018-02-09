@@ -200,6 +200,7 @@ public abstract class SimpleDemandeChecker extends PegasusAbstractChecker {
         search.setForDateFin(simpleDemande.getDateFin());
         search.setForIdDossier(simpleDemande.getIdDossier());
         search.setForNotIdDemande(simpleDemande.getIdDemande());
+        search.setForNotCsEtatDemande(IPCDemandes.CS_ANNULE);
         try {
             return PegasusImplServiceLocator.getSimpleDemandeService().count(search) > 0;
         } catch (JadeApplicationServiceNotAvailableException e) {

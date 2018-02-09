@@ -344,7 +344,8 @@ public class ValiderDecisionAcTreat {
 
     private boolean isEtatDemandeModifialbe() {
         return !(IPCDemandes.CS_SUPPRIME.equals(data.getSimpleDemande().getCsEtatDemande())
-                || IPCDemandes.CS_REFUSE.equals(data.getSimpleDemande().getCsEtatDemande()) || IPCDemandes.CS_TRANSFERE
+                || IPCDemandes.CS_REFUSE.equals(data.getSimpleDemande().getCsEtatDemande())
+                || IPCDemandes.CS_TRANSFERE.equals(data.getSimpleDemande().getCsEtatDemande()) || IPCDemandes.CS_ANNULE
                     .equals(data.getSimpleDemande().getCsEtatDemande()));
     }
 
