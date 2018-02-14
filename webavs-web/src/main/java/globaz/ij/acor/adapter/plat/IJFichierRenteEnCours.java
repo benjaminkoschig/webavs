@@ -455,7 +455,7 @@ public class IJFichierRenteEnCours extends PRAbstractFichierPlatPrinter {
             writeChampVide(cmd);
 
             // 41. Transférée (non utilisé dans ce cas)
-            writeChampVide(cmd);
+            writeBoolean(cmd, false);
 
             // 42. Droit appliqué (toujours 10 dans cet exemple)
             writeEntier(cmd, "10");
