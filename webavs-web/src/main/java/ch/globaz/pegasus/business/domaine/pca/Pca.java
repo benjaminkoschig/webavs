@@ -25,7 +25,7 @@ public class Pca {
     private Boolean isSupprime;
     private String sousCode;
     private Calcul calcul;
-    private Date dateDernierPaiement;
+    private Date dateAnnonceComptable;
 
     private Montant montant = Montant.ZERO;
 
@@ -185,12 +185,12 @@ public class Pca {
         this.calcul = calcul;
     }
 
-    public Date getDateDernierPaiement() {
-        return dateDernierPaiement;
+    public Date getDateAnnonceComptable() {
+        return dateAnnonceComptable;
     }
 
-    public void setDateDernierPaiement(Date dateDernierPaiement) {
-        this.dateDernierPaiement = dateDernierPaiement;
+    public void setDateAnnonceComptable(Date dateAnnonceComptable) {
+        this.dateAnnonceComptable = dateAnnonceComptable;
     }
 
     public boolean hasCurrent() {

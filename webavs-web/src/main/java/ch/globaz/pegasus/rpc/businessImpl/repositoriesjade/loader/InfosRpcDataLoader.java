@@ -7,6 +7,7 @@ import ch.globaz.common.domaine.Date;
 public class InfosRpcDataLoader {
 
     private Date dateDernierPaiement;
+    private Date dateMoisAnnoncesPrise;
     private int nbDecisionsRefus;
     private int nbDecisionAc;
     private int nbPcaCourante;
@@ -52,6 +53,14 @@ public class InfosRpcDataLoader {
 
     public void setDateDernierPaiement(Date dateDernierPaiement) {
         this.dateDernierPaiement = dateDernierPaiement;
+    }
+
+    public Date getDateMoisAnnoncesPrise() {
+        return dateMoisAnnoncesPrise;
+    }
+
+    public void setDateMoisAnnoncesPrise(Date dateMoisAnnoncesPrise) {
+        this.dateMoisAnnoncesPrise = dateMoisAnnoncesPrise;
     }
 
     public int getNbDecisionsRefus() {

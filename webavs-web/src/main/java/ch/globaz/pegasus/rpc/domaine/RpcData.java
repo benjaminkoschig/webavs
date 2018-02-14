@@ -52,8 +52,8 @@ public class RpcData {
     }
 
     public String descriptionHtml() {
-        String description = formatPersonne(rpcDecisionRequerantConjoints.get(0).getRequerant().getDecision()
-                .getTiersBeneficiaire());
+        String description = formatPersonne(
+                rpcDecisionRequerantConjoints.get(0).getRequerant().getDecision().getTiersBeneficiaire());
 
         if (hasVersionDroit()) {
             description += " - Num droit:" + versionDroit.getNumero();
@@ -171,7 +171,8 @@ public class RpcData {
     }
 
     public boolean isSuppressionDecesRequerant() {
-        return isCoupleSepare() && isMotifDeces() && isRequerantDecede() && isSansDateDeFin() && isDecisionSuppRetro() ? true
+        return isCoupleSepare() && isMotifDeces() && isRequerantDecede() && isSansDateDeFin() && isDecisionSuppRetro()
+                ? true
                 : false;
     }
 
@@ -193,7 +194,8 @@ public class RpcData {
      * Requérant décédé
      */
     private boolean isRequerantDecede() {
-        return rpcDecisionRequerantConjoints.get(0).getRequerant().getDecision().getTiersBeneficiaire().getDateDeces() != null;
+        return rpcDecisionRequerantConjoints.get(0).getRequerant().getDecision().getTiersBeneficiaire()
+                .getDateDeces() != null;
     }
 
     /**
@@ -207,7 +209,10 @@ public class RpcData {
      * Décision de suppression rétroactive
      */
     private boolean isDecisionSuppRetro() {
-        return rpcDecisionRequerantConjoints.get(0).getRequerant().getPca().getDateDernierPaiement()
+        if (rpcDecisionRequerantConjoints.get(0).getRequerant().getDecision().getDateFin() == null) {
+            return false;
+        }
+        return rpcDecisionRequerantConjoints.get(0).getRequerant().getPca().getDateAnnonceComptable()
                 .after(rpcDecisionRequerantConjoints.get(0).getRequerant().getDecision().getDateFin());
     }
 

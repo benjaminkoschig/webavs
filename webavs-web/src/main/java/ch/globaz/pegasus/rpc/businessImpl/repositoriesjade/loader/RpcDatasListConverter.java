@@ -35,11 +35,11 @@ public class RpcDatasListConverter implements Iterator<RpcDataConverter>, Iterab
             Map<String, RpcAddress> mapAdressesDomicile,
             Map<String, Map<String, List<MembreFamilleWithDonneesFinanciere>>> mapMembresFamilles,
             Map<String, Calcul> mapIdPlanCalculWithCalcul, PersonneAvsConverter personneAvsConverter,
-            Parameters parameters, Date dateDernierPaiement) {
+            Parameters parameters, Date dateAnnonceComptable) {
 
         rpcDecisionRequerantConjoint = new RpcDecisionRequerantConjointConverter(mapAdressesCourrier,
                 mapAdressesDomicile, personneAvsConverter, mapMembresFamilles, mapIdPlanCalculWithCalcul, parameters,
-                dateDernierPaiement);
+                dateAnnonceComptable);
         decisions = mapDecision.entrySet().iterator();
         this.decisionsRefus = decisionsRefus.iterator();
     }

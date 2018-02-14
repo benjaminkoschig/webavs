@@ -1,8 +1,5 @@
 package ch.globaz.pegasus.rpc.process;
 
-import globaz.framework.util.FWMessageFormat;
-import globaz.globall.db.BSession;
-import globaz.jade.smtp.JadeSmtpClient;
 import java.lang.reflect.Type;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
@@ -15,6 +12,11 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializationContext;
 import ch.globaz.common.domaine.Montant;
 import ch.globaz.common.process.byitem.ProcessItemsJobInfos;
 import ch.globaz.naos.ree.tools.InfoCaisse;
@@ -24,11 +26,9 @@ import ch.globaz.pegasus.rpc.businessImpl.repositoriesjade.loader.PcaSummer;
 import ch.globaz.pegasus.rpc.businessImpl.sedex.ExecutionMode;
 import ch.globaz.pegasus.rpc.plausi.core.PlausiResult;
 import ch.globaz.pegasus.rpc.plausi.core.RpcPlausiSummary;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonPrimitive;
-import com.google.gson.JsonSerializationContext;
+import globaz.framework.util.FWMessageFormat;
+import globaz.globall.db.BSession;
+import globaz.jade.smtp.JadeSmtpClient;
 
 class Protocol2469 {
     private static final Logger LOG = LoggerFactory.getLogger(Protocol2469.class);
@@ -126,8 +126,8 @@ class Protocol2469 {
             if (pahtFilePlausiKo != null) {
                 files = new String[] { pahtFilePlausiKo };
             }
-            JadeSmtpClient.getInstance().sendMail(session.getUserEMail(), session.getLabel(resolveSubject(false)),
-                    body, files);
+            JadeSmtpClient.getInstance().sendMail(session.getUserEMail(), session.getLabel(resolveSubject(false)), body,
+                    files);
         } catch (Exception e) {
             LOG.error("impossible d'envoyer le protocole d'execution", e);
         }
@@ -171,6 +171,8 @@ class Protocol2469 {
         if (infosRpcDataLoader != null) {
             data.add(translateWithIndent("RPC_PROTOCOL_DETAIL_DATE_DERNIER_PAIEMENT") + " : "
                     + infosRpcDataLoader.getDateDernierPaiement());
+            data.add(translateWithIndent("RPC_PROTOCOL_DETAIL_ANNONCES_PRISE_DANS_MOIS") + " : "
+                    + infosRpcDataLoader.getDateMoisAnnoncesPrise().getSwissMonthValue());
         }
         data.add(translateWithIndent("RPC_PROTOCOL_DETAIL_ENVOI_SM") + " : " + formatter.format(sendingStartDate));
         data.add(translateWithIndent("RPC_PROTOCOL_DETAIL_NOMBRE_ANNONCE_101") + " : " + getNombreAvecCalcul());
@@ -283,8 +285,9 @@ class Protocol2469 {
             final String messageFormated = FWMessageFormat.prepareQuotes(message, false);
 
             data.add("<b>"
-                    + translateWithIndentWithoutSession(MessageFormat.format(messageFormated,
-                            toleranceAnnonces.getToleranceAnnonce() * 100)) + "</b>");
+                    + translateWithIndentWithoutSession(
+                            MessageFormat.format(messageFormated, toleranceAnnonces.getToleranceAnnonce() * 100))
+                    + "</b>");
             data.add("");
         }
     }
@@ -314,9 +317,8 @@ class Protocol2469 {
 
     public String buildMailBody(boolean hasError) {
         try {
-            return StringUtils.join(
-                    generateProtocolContent(resolveSubject(hasError), new java.util.Date(), new java.util.Date(),
-                            session).toArray(), "\n\r");
+            return StringUtils.join(generateProtocolContent(resolveSubject(hasError), new java.util.Date(),
+                    new java.util.Date(), session).toArray(), "\n\r");
         } catch (Exception e) {
             LOG.error("impossible de construire le protocole d'execution", e);
         }

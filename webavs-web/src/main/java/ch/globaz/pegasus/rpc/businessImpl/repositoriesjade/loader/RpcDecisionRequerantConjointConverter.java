@@ -1,6 +1,5 @@
 package ch.globaz.pegasus.rpc.businessImpl.repositoriesjade.loader;
 
-import globaz.jade.client.util.JadeStringUtil;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -37,6 +36,7 @@ import ch.globaz.pegasus.utils.PCApplicationUtil;
 import ch.globaz.pegasus.utils.RpcUtil;
 import ch.globaz.pyxis.converter.PersonneAvsConverter;
 import ch.globaz.pyxis.domaine.PersonneAVS;
+import globaz.jade.client.util.JadeStringUtil;
 
 class RpcDecisionRequerantConjointConverter {
     private static final Logger LOG = LoggerFactory.getLogger(RpcDecisionRequerantConjointConverter.class);
@@ -50,19 +50,19 @@ class RpcDecisionRequerantConjointConverter {
     private final Map<String, Map<String, List<MembreFamilleWithDonneesFinanciere>>> membresFamilles;
     private final Map<String, Calcul> mapIdPlanCalculWithCalcul;
     private final Parameters parameters;
-    private final Date dateDernierPaiement;
+    private final Date dateAnnonceComptable;
 
     public RpcDecisionRequerantConjointConverter(Map<String, RpcAddress> mapAdressesCourrier,
             Map<String, RpcAddress> mapAdressesDomicile, PersonneAvsConverter personneAvsConverter,
             Map<String, Map<String, List<MembreFamilleWithDonneesFinanciere>>> mapMembresFamilles,
-            Map<String, Calcul> mapIdPlanCalculWithCalcul, Parameters parameters, Date dateDernierPaiement) {
+            Map<String, Calcul> mapIdPlanCalculWithCalcul, Parameters parameters, Date dateAnnonceComptable) {
         this.mapAdressesCourrier = mapAdressesCourrier;
         this.mapAdressesDomicile = mapAdressesDomicile;
         membresFamilles = mapMembresFamilles;
         this.mapIdPlanCalculWithCalcul = mapIdPlanCalculWithCalcul;
         this.parameters = parameters;
         toPersonneAvs = personneAvsConverter;
-        this.dateDernierPaiement = dateDernierPaiement;
+        this.dateAnnonceComptable = dateAnnonceComptable;
     }
 
     public RpcDecisionRequerantConjoint convert(List<RPCDecionsPriseDansLeMois> models, VersionDroit versionDroit,
@@ -77,7 +77,8 @@ class RpcDecisionRequerantConjointConverter {
             dateFin = new Date(decsion.getDateFinDecision());
         }
         Map<String, List<MembreFamilleWithDonneesFinanciere>> mapMembresFamilleWithDF = new HashMap<String, List<MembreFamilleWithDonneesFinanciere>>();
-        for (Entry<String, List<MembreFamilleWithDonneesFinanciere>> entry : membresFamilleDonneesFinanciere.entrySet()) {
+        for (Entry<String, List<MembreFamilleWithDonneesFinanciere>> entry : membresFamilleDonneesFinanciere
+                .entrySet()) {
             if (!mapMembresFamilleWithDF.containsKey(entry.getKey())) {
                 mapMembresFamilleWithDF.put(entry.getKey(), new ArrayList<MembreFamilleWithDonneesFinanciere>());
             }
@@ -85,8 +86,8 @@ class RpcDecisionRequerantConjointConverter {
                 mapMembresFamilleWithDF.get(entry.getKey()).add(membreFamille.filtreForPeriode(dateDebut, dateFin));
             }
         }
-        List<MembreFamilleWithDonneesFinanciere> membresFam = mapMembresFamilleWithDF.get(models.get(0)
-                .getIdPCAccordee());
+        List<MembreFamilleWithDonneesFinanciere> membresFam = mapMembresFamilleWithDF
+                .get(models.get(0).getIdPCAccordee());
         Parameters para = parameters.filtreByPeriode(dateDebut);
 
         if (models.size() == 1) {
@@ -125,8 +126,8 @@ class RpcDecisionRequerantConjointConverter {
             if (!JadeStringUtil.isBlankOrZero(modelR.getSimplePCAccordee().getIdPrestationAccordeeConjoint())) {
                 RpcCalcul rpcCalculR = new RpcCalcul(calculR, false);
 
-                pcaDecisionR.getPca().setBeneficiaireConjointDom2R(
-                        converToPcaDecision(modelC).getDecision().getTiersBeneficiaire());
+                pcaDecisionR.getPca()
+                        .setBeneficiaireConjointDom2R(converToPcaDecision(modelC).getDecision().getTiersBeneficiaire());
                 PersonsElementsCalcul personsElementsCalculs = convertToPersonElementsCalcul(membresFam, dateDebut,
                         tauxChangeRentesEtrangere);
 
@@ -156,8 +157,8 @@ class RpcDecisionRequerantConjointConverter {
             }
 
         } else {
-            throw new RpcTechnicalException("Trop de décisions trouvées pour cette version droit: "
-                    + versionDroit.getId());
+            throw new RpcTechnicalException(
+                    "Trop de décisions trouvées pour cette version droit: " + versionDroit.getId());
         }
         return decisionRequerantConjoint;
     }
@@ -208,9 +209,9 @@ class RpcDecisionRequerantConjointConverter {
             RpcAddress domicile = resolveRpcAddress(mapAdressesDomicile, membreFamilleWithDonneesFinanciere,
                     membresFamilleWithDonneesFinanciere, true);
 
-            personsElementsCalculs.add(personneElementsCalculConverter.convert(membreFamilleWithDonneesFinanciere,
-                    para, dateDebut, isCantonValais, isLvpc, domicile, new RpcAddress(), roleMembreFamille,
-                    isCoupleSepare, tauxChangeRentesEtrangere));
+            personsElementsCalculs.add(personneElementsCalculConverter.convert(membreFamilleWithDonneesFinanciere, para,
+                    dateDebut, isCantonValais, isLvpc, domicile, new RpcAddress(), roleMembreFamille, isCoupleSepare,
+                    tauxChangeRentesEtrangere));
         }
 
         return new PersonsElementsCalcul(personsElementsCalculs);// .fusionElementsRequerantConjoint(roleMembreFamille);
@@ -219,8 +220,8 @@ class RpcDecisionRequerantConjointConverter {
     private RpcAddress resolveRpcAddress(Map<String, RpcAddress> mapAdresses,
             MembreFamilleWithDonneesFinanciere membreFamilleWithDonneesFinanciere,
             List<MembreFamilleWithDonneesFinanciere> membresFamilleWithDonneesFinanciere, boolean mandatory) {
-        RpcAddress address = mapAdresses.get(String.valueOf(membreFamilleWithDonneesFinanciere.getFamille()
-                .getPersonne().getId()));
+        RpcAddress address = mapAdresses
+                .get(String.valueOf(membreFamilleWithDonneesFinanciere.getFamille().getPersonne().getId()));
         // recherche complémentaire si c'est un enfant
         if (mandatory && (address == null || address.isEmpty())) {
             for (MembreFamilleWithDonneesFinanciere membreFamille : membresFamilleWithDonneesFinanciere) {
@@ -251,10 +252,11 @@ class RpcDecisionRequerantConjointConverter {
         decisionsRefus.getDecisionHeader().getSimpleDecisionHeader()
                 .setDateFinDecision(decisionsRefus.getDemande().getSimpleDemande().getDateFin());
 
-        Decision decision = decisionConverter.convertToDomain(decisionsRefus.getDecisionHeader()
-                .getSimpleDecisionHeader(), decisionsRefus.getSimpleDecisionRefus().getCsMotif());
-        decision.setTiersBeneficiaire(toPersonneAvs.convertToDomain(decisionsRefus.getDecisionHeader()
-                .getPersonneEtendue()));
+        Decision decision = decisionConverter.convertToDomain(
+                decisionsRefus.getDecisionHeader().getSimpleDecisionHeader(),
+                decisionsRefus.getSimpleDecisionRefus().getCsMotif());
+        decision.setTiersBeneficiaire(
+                toPersonneAvs.convertToDomain(decisionsRefus.getDecisionHeader().getPersonneEtendue()));
 
         Demande demande = new Demande();
         demande.setId(decisionsRefus.getDemande().getId());
@@ -283,7 +285,7 @@ class RpcDecisionRequerantConjointConverter {
         decision.setTiersBeneficiaire(personneAVS);
         Pca pca = pcaConverter.convert(model.getSimplePCAccordee(), model.getSimplePlanDeCalcul(), null);
         pca.setBeneficiaire(decision.getTiersBeneficiaire());
-        pca.setDateDernierPaiement(dateDernierPaiement);
+        pca.setDateAnnonceComptable(dateAnnonceComptable);
 
         return new PcaDecision(pca, decision);
     }

@@ -1,8 +1,5 @@
 package ch.globaz.pegasus.rpc.businessImpl.repositoriesjade.loader;
 
-import globaz.externe.IPRConstantesExternes;
-import globaz.jade.persistence.model.JadeAbstractSearchModel;
-import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import java.beans.XMLDecoder;
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
@@ -16,6 +13,8 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.google.common.base.Preconditions;
+import com.google.gson.JsonSyntaxException;
 import ch.globaz.common.domaine.Date;
 import ch.globaz.common.exceptions.CommonTechnicalException;
 import ch.globaz.common.persistence.RepositoryJade;
@@ -55,10 +54,21 @@ import ch.globaz.pyxis.business.service.AdresseService;
 import ch.globaz.pyxis.converter.PersonneAvsConverter;
 import ch.globaz.pyxis.domaine.PaysList;
 import ch.globaz.pyxis.loader.PaysLoader;
-import com.google.common.base.Preconditions;
-import com.google.gson.JsonSyntaxException;
+import globaz.externe.IPRConstantesExternes;
+import globaz.jade.persistence.model.JadeAbstractSearchModel;
+import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 
 public class RpcDataLoader {
+
+    /**
+     * Délais à retirer à la date du dernier paiement pour <b>assurer le fait que la date obtenue soit dans le mois
+     * courrant des annonces RPC</b> à annoncer </br>
+     * </br>
+     * <i>résolution de BUG : </i>Les annonces prisent dans le mois sont du même mois que le mois d'annonces si la date
+     * du denier paiement est comptabilisée le premier du mois suivant (globalement toujours le cas car le mois
+     * comptable ouvert est le mois suivant au moment des paiements mensuels)
+     */
+    private static final int RENTE_DATE_PAIEMENT_DELAIS = -15;
 
     private static final Logger LOG = LoggerFactory.getLogger(RpcDataLoader.class);
 
@@ -68,6 +78,7 @@ public class RpcDataLoader {
     private final Integer partitionBlobSize;
     private final Integer limitSize;
     private final Date dateDernierPaiement;
+    private final Date dateMoisAnnoncesPrise;
     private final Double toleranceDifferenceAnnonces;
     private Boolean parallel = true;
 
@@ -95,8 +106,11 @@ public class RpcDataLoader {
             }
 
             dateDernierPaiement = loadDateDernierPaiement();
+            dateMoisAnnoncesPrise = offsetDateToMoisAnnoncesPrise(dateDernierPaiement);
             infos.setDateDernierPaiement(dateDernierPaiement);
+            infos.setDateMoisAnnoncesPrise(dateMoisAnnoncesPrise);
             LOG.info("Date dérnier paiement: {}", dateDernierPaiement.getSwissValue());
+            LOG.info("Mois des annonces: {}", dateMoisAnnoncesPrise.getSwissMonthValue());
             LOG.info(
                     "This parmeters will be use to load RPC datas: partitionSize[{}],partitionBlobSize[{}],limitSize[{}],parallel[{}]",
                     partitionSize, partitionBlobSize, limitSize, parallel);
@@ -179,17 +193,18 @@ public class RpcDataLoader {
 
         List<DecisionRefus> decisionsRefus = new ArrayList<DecisionRefus>();
         if (limitSize == JadeAbstractSearchModel.SIZE_NOLIMIT) {
-            decisionsRefus = loadDecisionsRefus(dateDernierPaiement);
+            decisionsRefus = loadDecisionsRefus(dateMoisAnnoncesPrise);
             infos.setNbDecisionsRefus(decisionsRefus.size());
             LOG.info("Decisions refus SC loaded: {}", infos.getNbDecisionsRefus());
         }
 
-        List<RPCDecionsPriseDansLeMois> decionsPriseDansLeMois = loadDecisionPriseDansLeMois(dateDernierPaiement);
+        List<RPCDecionsPriseDansLeMois> decionsPriseDansLeMois = loadDecisionPriseDansLeMois(dateMoisAnnoncesPrise);
         infos.setNbDecisionAc(decionsPriseDansLeMois.size());
         LOG.info("Decisions AC loaded for the month : {}", infos.getNbDecisionAc());
 
         /* Control de population: Retours annonce en erreur dans le lot precedent et avec fin de droit */
-        List<RPCDecionsPriseDansLeMois> decionsEnErreurMoisPrecedent = loadDecisionEnErreurMoisPrecedent(dateDernierPaiement);
+        List<RPCDecionsPriseDansLeMois> decionsEnErreurMoisPrecedent = loadDecisionEnErreurMoisPrecedent(
+                dateMoisAnnoncesPrise);
         infos.setNbErrorRetoursAnnoncePreviousMonth(decionsEnErreurMoisPrecedent.size());
         LOG.info("Retours decisions en erreur : {}", infos.getNbErrorRetoursAnnoncePreviousMonth());
         decionsPriseDansLeMois.addAll(decionsEnErreurMoisPrecedent);
@@ -202,7 +217,7 @@ public class RpcDataLoader {
             }
         }
 
-        List<RPCDecionsPriseDansLeMois> currentPca = loadPcaCourante(idsVersionDroitNotIn, dateDernierPaiement);
+        List<RPCDecionsPriseDansLeMois> currentPca = loadPcaCourante(idsVersionDroitNotIn, dateMoisAnnoncesPrise);
 
         removeDateFin(currentPca);
         infos.setNbPcaCourante(currentPca.size());
@@ -221,11 +236,6 @@ public class RpcDataLoader {
         return load(mapDecision, decisionsRefus);
     }
 
-    /**
-     * only if decision positive
-     * 
-     * @param currentPca
-     */
     private void removeDateFin(List<RPCDecionsPriseDansLeMois> currentPca) {
         for (RPCDecionsPriseDansLeMois rpcDecionsPriseDansLeMois : currentPca) {
             rpcDecionsPriseDansLeMois.getSimplePCAccordee().setDateFin(null);
@@ -251,8 +261,8 @@ public class RpcDataLoader {
             @Override
             public MembresFamilleContainer transform(IdsContainer idsContainer) {
                 MembresFamilleContainer container = new MembresFamilleContainer();
-                container.setMapMembresFamilles(loadMembreFamilleWithDonneesFinancieres(idsContainer,
-                        paysLoader.getPaysList()));
+                container.setMapMembresFamilles(
+                        loadMembreFamilleWithDonneesFinancieres(idsContainer, paysLoader.getPaysList()));
                 container.setIdsTiersDomicile(IdsContainer.resolveIdsTiersMembreFamille(
                         container.getMapMembresFamilles(), idsContainer.getIdsTiersDomicile()));
                 container.setIdsTiersCourrier(IdsContainer.resolveIdsTiersMembreFamille(
@@ -266,11 +276,11 @@ public class RpcDataLoader {
         RpcAdresseLoader adresseLoader = RpcAdresseLoader.build().partitionSize(partitionSize).parallel(parallel)
                 .load(container.getAllIdTiersForAdresse());
 
-        Map<String, RpcAddress> mapAdressesDomicile = adresseLoader.resolve(
-                IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_RENTE, AdresseService.CS_TYPE_DOMICILE);
+        Map<String, RpcAddress> mapAdressesDomicile = adresseLoader
+                .resolve(IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_RENTE, AdresseService.CS_TYPE_DOMICILE);
 
-        Map<String, RpcAddress> mapAdressesCourrier = adresseLoader.resolve(
-                IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_RENTE, AdresseService.CS_TYPE_COURRIER);
+        Map<String, RpcAddress> mapAdressesCourrier = adresseLoader
+                .resolve(IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_RENTE, AdresseService.CS_TYPE_COURRIER);
 
         infos.setNbAdresseCourrier(mapAdressesCourrier.size());
         LOG.info("Addresse courrier loaded nb: {}", infos.getNbAdresseCourrier());
@@ -289,7 +299,7 @@ public class RpcDataLoader {
 
         return new RpcDatasListConverter(mapDecision, decisionsRefus, mapAdressesCourrier, mapAdressesDomicile,
                 container.getMapMembresFamilles(), mapIdPlanCalculWithCalcul, personneAvsConverter, parameters,
-                dateDernierPaiement);
+                dateMoisAnnoncesPrise);
     }
 
     private Parameters loadParamters(MembresFamilleContainer container) {
@@ -297,8 +307,8 @@ public class RpcDataLoader {
 
         if (container.getMapMembresFamilles().size() < 100) {
             Set<String> idsTypeChambre = IdsContainer.resolveIdsTypeChambreHome(container.getMapMembresFamilles());
-            Set<String> idsLocalite = IdsContainer.resolveIdsLocaliteDernierDomicileLegale(container
-                    .getMapMembresFamilles());
+            Set<String> idsLocalite = IdsContainer
+                    .resolveIdsLocaliteDernierDomicileLegale(container.getMapMembresFamilles());
             parametersLoader = new ParametersLoader(idsTypeChambre, idsLocalite);
         }
 
@@ -368,11 +378,9 @@ public class RpcDataLoader {
                 map.put(idVersionDroit, new HashMap<String, List<MembreFamilleWithDonneesFinanciere>>());
                 DonneesFinancieresContainer container = mapDonneesFinancieres.get(idVersionDroit);
                 if (container == null) {
-                    LOG.error("Aucune données fiancières trouvées avec cette idVersionDroit: "
-                            + idVersionDroit
-                            + " NSS "
-                            + entry.getValue().entrySet().iterator().next().getValue().getRequerant().getPersonne()
-                                    .getNss());
+                    LOG.error("Aucune données fiancières trouvées avec cette idVersionDroit: " + idVersionDroit
+                            + " NSS " + entry.getValue().entrySet().iterator().next().getValue().getRequerant()
+                                    .getPersonne().getNss());
                 } else {
                     for (Entry<String, MembresFamilles> mapFam : entry.getValue().entrySet()) {
                         for (MembreFamille membreFamille : mapFam.getValue().getMembresFamilles()) {
@@ -405,13 +413,19 @@ public class RpcDataLoader {
         return mapCalcule;
     }
 
-    private List<RPCDecionsPriseDansLeMois> loadDecisionPriseDansLeMois(Date dateDernierPaiement) {
+    /**
+     * possibility to test in test local/internal use to set <code>search.setForIdDemande("idDem");</code>
+     * please take care ton not commit this
+     * 
+     */
+    private List<RPCDecionsPriseDansLeMois> loadDecisionPriseDansLeMois(Date dateMoisAnnoncesPrise) {
         RPCDecionsPriseDansLeMoisSearch search = new RPCDecionsPriseDansLeMoisSearch();
-        search.setForDateDecisionMax(dateDernierPaiement.getLastDayOfMonth().getSwissValue());
-        search.setForDateDecisionMin(dateDernierPaiement.getFirstDayOfMonth().getSwissValue());
-        search.setForDateDecisionMaxMoins1(dateDernierPaiement.addMonth(-1).getLastDayOfMonth().getSwissValue());
-        search.setForDateDecisionMinMoins1(dateDernierPaiement.addMonth(-1).getFirstDayOfMonth().getSwissValue());
-        search.setForDateDecisionMoisAnneMoins1(dateDernierPaiement.addMonth(-1).getSwissMonthValue());
+        search.setForDateDecisionMax(dateMoisAnnoncesPrise.getLastDayOfMonth().getSwissValue());
+        search.setForDateDecisionMin(dateMoisAnnoncesPrise.getFirstDayOfMonth().getSwissValue());
+        search.setForDateDecisionMaxMoins1(dateMoisAnnoncesPrise.addMonth(-1).getLastDayOfMonth().getSwissValue());
+        search.setForDateDecisionMinMoins1(dateMoisAnnoncesPrise.addMonth(-1).getFirstDayOfMonth().getSwissValue());
+        search.setForDateDecisionMoisAnneMoins1(dateMoisAnnoncesPrise.addMonth(-1).getSwissMonthValue());
+
         LOG.info("requête loadDecisionPriseDansLeMois");
         return RepositoryJade.searchForAndFetch(search, limitSize);
     }
@@ -440,8 +454,8 @@ public class RpcDataLoader {
             if (!decisionsEnErreur.isEmpty()) {
                 RPCDecionsPriseDansLeMoisSearch search = new RPCDecionsPriseDansLeMoisSearch();
                 search.setWhereKey("avecDateFin");
-                search.setForDateDecisionMoisAnneMoins1(dateDernierPaiement.addMonth(-1).getLastDayOfMonth()
-                        .getSwissMonthValue());
+                search.setForDateDecisionMoisAnneMoins1(
+                        dateDernierPaiement.addMonth(-1).getLastDayOfMonth().getSwissMonthValue());
                 search.setForIdsDecsion(decisionsEnErreur);
                 LOG.info("requête loadDecisionEnErreurMoisPrecedent");
                 return RepositoryJade.searchForAndFetch(search, limitSize);
@@ -479,12 +493,22 @@ public class RpcDataLoader {
         return dateDernierPaiement;
     }
 
-    private List<RPCDecionsPriseDansLeMois> loadPcaCourante(Set<String> idsVersionDroitNotIn, Date dateDernierPaiement) {
+    private Date offsetDateToMoisAnnoncesPrise(Date dateDernierPaiement) {
+        return dateDernierPaiement.addDays(RENTE_DATE_PAIEMENT_DELAIS).getFirstDayOfMonth();
+    }
+
+    /**
+     * possibility to test in test local/internal use to set <code>search.setForIdDemande("idDem");</code>
+     * please take care ton not commit this
+     */
+    private List<RPCDecionsPriseDansLeMois> loadPcaCourante(Set<String> idsVersionDroitNotIn,
+            Date dateDernierPaiement) {
         RPCDecionsPriseDansLeMoisSearch search = new RPCDecionsPriseDansLeMoisSearch();
         search.setForCsEtatDemande(IPCDemandes.CS_OCTROYE);
         search.setWhereKey("pcaCourante");
         search.setForCsEtatDroit(EtatDroit.VALIDE.getValue());
         search.setForCsEtatPca(PcaEtat.VALIDE.getValue());
+
         // Ou date ultérieur au mois paiement
         search.setForDateFinMoisFutur(dateDernierPaiement.getSwissMonthValue());
         search.getForCsEtatDemandeMoisFutur().add(IPCDemandes.CS_REFUSE);
