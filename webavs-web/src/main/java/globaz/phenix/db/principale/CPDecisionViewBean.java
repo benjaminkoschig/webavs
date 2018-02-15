@@ -35,6 +35,7 @@ import globaz.phenix.db.divers.CPTableIndependant;
 import globaz.phenix.db.divers.CPTableNonActif;
 import globaz.phenix.toolbox.CPToolBox;
 import globaz.phenix.translation.CodeSystem;
+import globaz.phenix.util.CPProperties;
 import globaz.phenix.util.CPUtil;
 import globaz.pyxis.adresse.datasource.TIAbstractAdresseDataSource;
 import globaz.pyxis.adresse.datasource.TIAdresseDataSource;
@@ -1058,7 +1059,8 @@ public class CPDecisionViewBean extends CPDecision implements FWViewBeanInterfac
                     } catch (Exception e) {
                         _addError(getSession().getCurrentThreadTransaction(), getSession().getLabel("CP_MSG_0068"));
                     }
-                } else if ("515002".equalsIgnoreCase(persAvs.getEtatCivil())) {
+                    // } else if ("515002".equalsIgnoreCase(persAvs.getEtatCivil())) {
+                } else if (CPProperties.ETAT_CIVIL_SIMUL_CONJOINT.getValue().contains(persAvs.getEtatCivil())) {
                     // Si conjoint non renseigné=> regarder si le code état
                     // civil== Marié et dans ce cas mettre simuleConjoint=true
                     // Ce cas de figure est utile pour les caisses qui ne
