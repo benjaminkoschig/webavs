@@ -21,9 +21,15 @@
 					></a>
 			</td>
 		    <td>
-		    	<a class="btnDisplayPCAL" id="btnDisplayCal_${annonce.idPlanCalculRequerant}_${annonce.idTiersRequerant}">
-					R<img src="${imgCalculOk}" />  
-				</a>
+		    
+		    	<c:if test="${empty annonce.idPlanCalculRequerant || empty annonce.idTiersRequerant}">
+						R<img src="${imgCalculError}" />
+				</c:if> 
+				<c:if test="${not empty annonce.idPlanCalculRequerant && not empty annonce.idTiersRequerant}">
+			    	<a class="btnDisplayPCAL" id="btnDisplayCal_${annonce.idPlanCalculRequerant}_${annonce.idTiersRequerant}">
+						R<img src="${imgCalculOk}" />  
+					</a>
+				</c:if>
 				<c:if test="${annonce.isCoupleSepare}">
 		    		<c:if test="${not empty annonce.idPlanCalculConjoint && not empty annonce.idTiersConjoint}">
 			    		<a class="btnDisplayPCAL" id="btnDisplayCal_${annonce.idPlanCalculConjoint}_${annonce.idTiersConjoint}">

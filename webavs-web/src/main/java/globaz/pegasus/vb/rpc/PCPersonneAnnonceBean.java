@@ -1,8 +1,5 @@
 package globaz.pegasus.vb.rpc;
 
-import globaz.corvus.utils.RETiersForJspUtils;
-import globaz.globall.api.BISession;
-import globaz.globall.db.BSession;
 import java.io.Serializable;
 import ch.globaz.common.domaine.repository.DomainEntity;
 import ch.globaz.pegasus.rpc.businessImpl.repositoriesjade.annonce.AnnonceConverter;
@@ -10,6 +7,9 @@ import ch.globaz.pegasus.rpc.domaine.Annonce;
 import ch.globaz.pegasus.rpc.domaine.AnnonceRpc;
 import ch.globaz.pegasus.rpc.domaine.RpcDecisionWithIdPlanCal;
 import ch.globaz.pyxis.domaine.PersonneAVS;
+import globaz.corvus.utils.RETiersForJspUtils;
+import globaz.globall.api.BISession;
+import globaz.globall.db.BSession;
 
 public class PCPersonneAnnonceBean implements Serializable, DomainEntity {
     /**
@@ -81,13 +81,16 @@ public class PCPersonneAnnonceBean implements Serializable, DomainEntity {
     }
 
     private RpcDecisionWithIdPlanCal resolveDecisionRequerant() {
-        RpcDecisionWithIdPlanCal decision = annonce.getDecisions().iterator().next();
-        if (decision.getRoleMembreFamille().isRequerant()) {
-            return decision;
-        } else if (annonce.getDecisions().size() > 1) {
-            return annonce.getDecisions().iterator().next();
+        if (annonce.getDecisions() != null && !annonce.getDecisions().isEmpty()) {
+            RpcDecisionWithIdPlanCal decision = annonce.getDecisions().iterator().next();
+            if (decision.getRoleMembreFamille().isRequerant()) {
+                return decision;
+            } else if (annonce.getDecisions().size() > 1) {
+                return annonce.getDecisions().iterator().next();
+            }
         }
         return null;
+
     }
 
     public String getIdTiersRequerant() {
@@ -123,7 +126,7 @@ public class PCPersonneAnnonceBean implements Serializable, DomainEntity {
     }
 
     public boolean getIsCoupleSepare() {
-        return annonce.getDecisions().size() > 1;
+        return annonce.getDecisions() != null && annonce.getDecisions().size() > 1;
     }
 
     public boolean getHasVersionDroit() {
