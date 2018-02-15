@@ -368,6 +368,7 @@ public class AFStatistiquesOfasProcess extends BProcess {
     public static final String REQUETE_AF_AGRICOLE_COL_NAME_NOMBRE_ALLOCATION = "NOMBRE_ALLOCATION";
     public static final String REQUETE_AF_AGRICOLE_COL_NAME_PAYS_ALLOCATAIRE = "PAYS_ALLOCATAIRE";
     public static final String REQUETE_AF_AGRICOLE_COL_NAME_PAYS_ENFANT = "PAYS_ENFANT";
+    public static final String REQUETE_AF_AGRICOLE_COL_NAME_ID_ENFANT = "ID_ENFANT";
     public static final String REQUETE_AF_AGRICOLE_COL_NAME_TYPE_ACTIVITE = "TYPE_ACTIVITE";
 
     public static final String REQUETE_AF_AGRICOLE_COL_NAME_TYPE_ALLOCATION = "TYPE_ALLOCATION";
@@ -1046,7 +1047,7 @@ public class AFStatistiquesOfasProcess extends BProcess {
 
     private void afAgricole() throws Exception {
 
-        String sqlQueryAFAgricole = getSqlAFAgricole();
+        String sqlQueryAFAgricole = getSqlAFAgricoleNew();
         List<Map<String, String>> listMapResultQueryAFAgricole = executeQuery(sqlQueryAFAgricole);
 
         Map<String, StatOfasAFAgricoleBean> mapStatOfasAFAgricoleBean = new HashMap<String, StatOfasAFAgricoleBean>();
@@ -1066,6 +1067,8 @@ public class AFStatistiquesOfasProcess extends BProcess {
         mapStatOfasAFAgricoleBean.put(AFStatistiquesOfasProcess.KEY_PECHEUR, new StatOfasAFAgricoleBean());
 
         String idEntetePrestationPrecedent = "";
+        Map<String, String> listeEnfantType = new HashMap<String, String>();
+        Map<String, String> listeDossierType = new HashMap<String, String>();
         for (Map<String, String> aMapRowResultQueryAFAgricole : listMapResultQueryAFAgricole) {
 
             String idEntetePrestation = aMapRowResultQueryAFAgricole
@@ -1087,10 +1090,20 @@ public class AFStatistiquesOfasProcess extends BProcess {
                     .get(AFStatistiquesOfasProcess.REQUETE_AF_AGRICOLE_COL_NAME_PAYS_ALLOCATAIRE);
             String paysEnfant = aMapRowResultQueryAFAgricole
                     .get(AFStatistiquesOfasProcess.REQUETE_AF_AGRICOLE_COL_NAME_PAYS_ENFANT);
+            String idEnfant = aMapRowResultQueryAFAgricole
+                    .get(AFStatistiquesOfasProcess.REQUETE_AF_AGRICOLE_COL_NAME_ID_ENFANT);
 
             String nombreAllocationString = aMapRowResultQueryAFAgricole
                     .get(AFStatistiquesOfasProcess.REQUETE_AF_AGRICOLE_COL_NAME_NOMBRE_ALLOCATION);
             int nombreAllocation = Integer.valueOf(nombreAllocationString);
+            // Vérification d'au moins une allocation par type durant l'année
+            if (nombreAllocation >= 1) {
+                nombreAllocation = 1;
+            }
+            if (checkDoublonsEnfantsDossiersType(listeEnfantType, listeDossierType, idEnfant, typeAllocation,
+                    idEntetePrestation)) {
+                nombreAllocation = nombreAllocation - 1;
+            }
 
             String montantAllocationString = aMapRowResultQueryAFAgricole
                     .get(AFStatistiquesOfasProcess.REQUETE_AF_AGRICOLE_COL_NAME_MONTANT_ALLOCATION);
@@ -1150,8 +1163,9 @@ public class AFStatistiquesOfasProcess extends BProcess {
                 // throw new CommonTechnicalException("Not implemented");
                 continue;
             }
+            // if (!idEntetePrestation.equalsIgnoreCase(idEntetePrestationPrecedent) && (nombreAllocation >= 1)) {
 
-            if (!idEntetePrestation.equalsIgnoreCase(idEntetePrestationPrecedent) && (nombreAllocation >= 1)) {
+            if ((nombreAllocation >= 1)) {
 
                 statOfasAFAgricoleBean.setNombreAyantDroit(statOfasAFAgricoleBean.getNombreAyantDroit() + 1);
 
@@ -1160,7 +1174,7 @@ public class AFStatistiquesOfasProcess extends BProcess {
                             .getNombreAyantDroitEtranger() + 1);
                 }
 
-                idEntetePrestationPrecedent = idEntetePrestation;
+                // idEntetePrestationPrecedent = idEntetePrestation;
             }
 
             statOfasAFAgricoleBean.setNombreTotalAllocation(statOfasAFAgricoleBean.getNombreTotalAllocation()
@@ -1624,6 +1638,46 @@ public class AFStatistiquesOfasProcess extends BProcess {
         mapStatOfas.put(AFStatistiquesOfasProcess.KEY_696_MAP_STAT_OFAS,
                 statOfasAFAgricoleBean.getMontantTotalAllocationDifferentielleString());
 
+    }
+
+    /**
+     * Retourne vrai si l'ID enfant ainsi que son type existe déjà dans la liste passée en paramètre
+     * Sinon, l'ajoute dans la liste et retourne false
+     * 
+     * @param listeEnfantType
+     * @param idEnfant
+     * @param csType
+     * @return true si ID Enfant et CsType existe dans listeEnfantType
+     */
+    private Boolean checkDoublonsEnfantsDossiersType(Map<String, String> listeEnfantType,
+            Map<String, String> listeDossierType, String idEnfant, String csType, String idDossier) {
+        if (checkDoublonsDossier(listeDossierType, csType, idDossier)) {
+            return checkDoublonsEnfants(listeEnfantType, idEnfant, csType);
+        } else {
+            return false;
+        }
+    }
+
+    private Boolean checkDoublonsEnfants(Map<String, String> listeEnfantType, String idEnfant, String csType) {
+        if (!listeEnfantType.containsKey(idEnfant)
+                || (listeEnfantType.containsKey(idEnfant) && !listeEnfantType.get(idEnfant).equals(csType))) {
+            listeEnfantType.put(idEnfant, csType);
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    private Boolean checkDoublonsDossier(Map<String, String> listeDossierType, String csType, String idDossier) {
+        if (ALCSDroit.TYPE_MEN.equals(csType)) {
+            if (!listeDossierType.containsKey(idDossier)) {
+                listeDossierType.put(idDossier, csType);
+                return false;
+            } else {
+                return true;
+            }
+        }
+        return true;
     }
 
     private void apg() throws Exception {
@@ -2740,6 +2794,45 @@ public class AFStatistiquesOfasProcess extends BProcess {
         }
 
         sql += " group by cstype,enf.hnipay,tia.hnipay,dos.cscaal,cscata,numcpt,ent.eid,etocc,ent.cstatu, eactacc "
+                + " order by ent.eid ";
+
+        sql = replaceSchemaInSqlQuery(sql);
+
+        return sql;
+    }
+
+    private String getSqlAFAgricoleNew() {
+
+        String sqlInValuesTypeActivite = getSqlInValuesFromListForNumericColumn(listTypeActiviteAFAgriculture);
+        String sqlInValuesTypeAllocation = getSqlInValuesFromListForNumericColumn(listTypeAllocationAFAgriculture);
+
+        String sql = " SELECT cstype as " + AFStatistiquesOfasProcess.REQUETE_AF_AGRICOLE_COL_NAME_TYPE_ALLOCATION
+                + ", enf.hnipay as " + AFStatistiquesOfasProcess.REQUETE_AF_AGRICOLE_COL_NAME_PAYS_ENFANT
+                + ", tia.hnipay as " + AFStatistiquesOfasProcess.REQUETE_AF_AGRICOLE_COL_NAME_PAYS_ALLOCATAIRE
+                + ", dos.cscaal as " + AFStatistiquesOfasProcess.REQUETE_AF_AGRICOLE_COL_NAME_TYPE_ACTIVITE
+                + ", cscata as " + AFStatistiquesOfasProcess.REQUETE_AF_AGRICOLE_COL_NAME_TYPE_LOI
+                + ", numcpt, ent.eid as " + AFStatistiquesOfasProcess.REQUETE_AF_AGRICOLE_COL_NAME_ID_ENTETE_PRESTATION
+                + ", eactacc as " + AFStatistiquesOfasProcess.REQUETE_AF_AGRICOLE_COL_NAME_ACTIVITE_ACCESSOIRE
+                + ", ent.cstatu as " + AFStatistiquesOfasProcess.REQUETE_AF_AGRICOLE_COL_NAME_GENRE_ALLOCATION
+                + ", sum(nmont) as " + AFStatistiquesOfasProcess.REQUETE_AF_AGRICOLE_COL_NAME_MONTANT_ALLOCATION
+                + ", count(DISTINCT(dro.FID)) as "
+                + AFStatistiquesOfasProcess.REQUETE_AF_AGRICOLE_COL_NAME_NOMBRE_ALLOCATION + ", enf.cid as "
+                + AFStatistiquesOfasProcess.REQUETE_AF_AGRICOLE_COL_NAME_ID_ENFANT + " FROM SCHEMA.aldetpre det "
+                + " LEFT OUTER JOIN SCHEMA.alentpre ent ON ent.mid = det.mid "
+                + " LEFT OUTER JOIN SCHEMA.aldos dos ON dos.eid = ent.eid "
+                + " LEFT OUTER JOIN SCHEMA.aldroit dro ON dro.fid = det.fid "
+                + " LEFT OUTER JOIN SCHEMA.alenfant enf ON enf.cid = dro.cid "
+                + " LEFT OUTER JOIN SCHEMA.titierp ti ON ti.htitie = enf.htitie "
+                + " LEFT OUTER JOIN SCHEMA.alalloc alloc ON alloc.bid = dos.bid "
+                + " LEFT OUTER JOIN SCHEMA.titierp tia on tia.htitie=alloc.htitie " + " WHERE dos.cscaal IN("
+                + sqlInValuesTypeActivite + ") AND cstype IN(" + sqlInValuesTypeAllocation + ") AND mdvc BETWEEN "
+                + annee + "0101 AND " + annee + "1231 ";
+
+        if (isSansRestitution()) {
+            sql += " AND ( numCpt not like '____.46%' ) ";
+        }
+
+        sql += " group by cstype,enf.hnipay,tia.hnipay,dos.cscaal,cscata,numcpt,ent.eid,etocc,ent.cstatu, eactacc, enf.cid "
                 + " order by ent.eid ";
 
         sql = replaceSchemaInSqlQuery(sql);
