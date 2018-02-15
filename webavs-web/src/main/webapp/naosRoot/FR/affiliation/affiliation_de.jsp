@@ -937,6 +937,14 @@ function maxLength(zone,max)
 								</TD>
 							</TR>
 							<%}%>
+							<%if (viewBean.isIDEPartage()){ %>
+							<TR> 
+								<TD >&nbsp;</TD>
+								<TD colspan="3"> 
+									<B><ct:FWLabel key="NAOS_JSP_AFFILIATION_MESSAGE_IDE_PARTAGE"/></B>
+								</TD>
+							</TR>
+							<%}%>
 							
 							<tr>
 								<TD nowrap width="161" height="31"><ct:FWLabel key="NAOS_JSP_AFFILIATION_IDE_RAISON_SOCIALE"/></TD>

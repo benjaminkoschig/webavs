@@ -1,5 +1,6 @@
 package globaz.naos.db.affiliation;
 
+import java.util.List;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BTransaction;
@@ -10,7 +11,6 @@ import globaz.naos.translation.CodeSystem;
 import globaz.naos.util.AFIDEUtil;
 import globaz.naos.util.IDEDataBean;
 import globaz.naos.util.IDEServiceCallUtil;
-import java.util.List;
 
 public class AFAffiliationViewBean extends AFAffiliation implements FWViewBeanInterface {
     /**
@@ -27,6 +27,7 @@ public class AFAffiliationViewBean extends AFAffiliation implements FWViewBeanIn
 
     private boolean isIdeReadOnly = false;
     private boolean isInMutationOnly = false;
+    private boolean isIDEPartage = false;
 
     private boolean isMessageAnnonceIdeCreationAjouteeToDisplay = false;
 
@@ -59,13 +60,26 @@ public class AFAffiliationViewBean extends AFAffiliation implements FWViewBeanIn
         this.isIdeReadOnly = isIdeReadOnly;
     }
 
+    public boolean isIDEPartage() {
+        return isIDEPartage;
+    }
+
+    // commence par souligné afin de ne pas être prise par jspSetBeanProperties
+    public void _setIDEPartage(boolean isIDEPartage) {
+        this.isIDEPartage = isIDEPartage;
+    }
+
     @Override
     protected void _afterRetrieve(BTransaction transaction) throws Exception {
         super._afterRetrieve(transaction);
         int nbAnnonce = AFIDEUtil.countAffiliationAnnonceEnCours(getSession(), getAffiliationId());
         boolean hasAffiliationAnnonceLieeEnCours = AFIDEUtil.hasAffiliationAnnonceLieeEnCours(getSession(),
                 getAffiliationId());
-
+        List<AFAffiliation> affiliationsMemeIDE = null;
+        if (getNumeroIDE() != null && !getNumeroIDE().isEmpty()) {
+            affiliationsMemeIDE = AFAffiliationUtil.loadAffiliationUsingNumeroIde(getSession(), getNumeroIDE(), false);
+        }
+        isIDEPartage = affiliationsMemeIDE != null && !affiliationsMemeIDE.isEmpty() && affiliationsMemeIDE.size() > 1;
         isInMutationOnly = false;
         isIdeReadOnly = false;
         if (nbAnnonce >= 1 || hasAffiliationAnnonceLieeEnCours) {
