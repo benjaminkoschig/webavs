@@ -2,17 +2,21 @@ package globaz.naos.db.ide;
 
 import java.io.Serializable;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import globaz.globall.db.BEntity;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BStatement;
 import globaz.globall.db.BTransaction;
+import globaz.globall.format.IFormatData;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.properties.JadePropertiesService;
 import globaz.naos.db.affiliation.AFAffiliation;
 import globaz.naos.db.cotisation.AFCotisation;
 import globaz.naos.util.AFIDEUtil;
 
 public class AFIdeAnnonceManager extends BManager implements Serializable {
-
+    private static final Logger LOG = LoggerFactory.getLogger(AFIdeAnnonceManager.class);
     private static final long serialVersionUID = -6424923065533092073L;
 
     private static final String CREATE_CONDITION_NUMERIC = "CREATE_CONDITION_NUMERIC";
@@ -381,11 +385,24 @@ public class AFIdeAnnonceManager extends BManager implements Serializable {
         }
 
         if (!JadeStringUtil.isBlankOrZero(likeNumeroAffilie)) {
+            String NumAffFormatte;
+            try {
+                String classNameNumAffFormatter = JadePropertiesService.getInstance()
+                        .getProperty("common.formatNumAffilie");
+                IFormatData formatterNumAffilie;
+
+                formatterNumAffilie = (IFormatData) Class.forName(classNameNumAffFormatter).newInstance();
+
+                NumAffFormatte = formatterNumAffilie.format(likeNumeroAffilie);
+            } catch (Exception e) {
+                LOG.warn("Impossible to format NumAff before Search Annonce IDE", e);
+                NumAffFormatte = likeNumeroAffilie;
+            }
             if (sqlWhere.length() != 0) {
                 sqlWhere.append(" AND ");
             }
 
-            String likeNumeroAffilieMod = "%" + likeNumeroAffilie + "%";
+            String likeNumeroAffilieMod = "%" + NumAffFormatte + "%";
             likeNumeroAffilieMod = _dbWriteString(theTransaction, likeNumeroAffilieMod);
 
             sqlWhere.append(" ( " + ALIAS_TABLE_AFFILIATION + AFAffiliation.FIELDNAME_NUMERO_AFFILIE + " LIKE "
