@@ -1,0 +1,2 @@
+-- Cette propriété permet d'avoir la case "simule conjoint" automatiquement coché en fonction de l'état civile (515002 = MARIE)
+INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL) VALUES ('phenix.etatCivilCodeSimulConjoint','515002')
