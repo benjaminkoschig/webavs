@@ -37,7 +37,6 @@ public class REPrestationDue extends BEntity {
     public static final String FIELDNAME_MONTANT_SUPPLEMENT_AJOURNEMENT = "YMMSUA";
 
     public static final String FIELDNAME_RAM = "YMMRAM";
-    public static final String FIELDNAME_TAUX_REDUCTION_ANTICIPATION = "YMMTRA";
     public static final String TABLE_NAME_PRESTATIONS_DUES = "REPRSDU";
 
     // ~ Instance fields
@@ -59,7 +58,6 @@ public class REPrestationDue extends BEntity {
 
     private String montantSupplementAjournement = "";
     private String ram = "";
-    private String tauxReductionAnticipation = "";
 
     // ~ Methods
     // --------------------------------------------------------------------------------------------------------
@@ -113,7 +111,6 @@ public class REPrestationDue extends BEntity {
 
         montantSupplementAjournement = statement.dbReadNumeric(FIELDNAME_MONTANT_SUPPLEMENT_AJOURNEMENT);
         montantReductionAnticipation = statement.dbReadNumeric(FIELDNAME_MONTANT_REDUCTION_ANTICIPATION);
-        tauxReductionAnticipation = statement.dbReadNumeric(FIELDNAME_TAUX_REDUCTION_ANTICIPATION);
 
         ram = statement.dbReadNumeric(FIELDNAME_RAM);
         csTypePaiement = statement.dbReadNumeric(FIELDNAME_CS_TYPE_PAIEMENT);
@@ -207,8 +204,6 @@ public class REPrestationDue extends BEntity {
                 FIELDNAME_MONTANT_SUPPLEMENT_AJOURNEMENT,
                 _dbWriteNumeric(statement.getTransaction(), montantSupplementAjournement,
                         "montantSupplementAjournement"));
-        statement.writeField(FIELDNAME_TAUX_REDUCTION_ANTICIPATION,
-                _dbWriteNumeric(statement.getTransaction(), tauxReductionAnticipation, "tauxReductionAnticipation"));
 
         statement.writeField(FIELDNAME_RAM, _dbWriteNumeric(statement.getTransaction(), ram, "ram"));
         statement.writeField(FIELDNAME_CS_TYPE_PAIEMENT,
@@ -299,10 +294,6 @@ public class REPrestationDue extends BEntity {
         return ram;
     }
 
-    public String getTauxReductionAnticipation() {
-        return tauxReductionAnticipation;
-    }
-
     /*
      * (non-Javadoc)
      * 
@@ -390,10 +381,6 @@ public class REPrestationDue extends BEntity {
      */
     public void setRam(String string) {
         ram = string;
-    }
-
-    public void setTauxReductionAnticipation(String tauxReductionAnticipation) {
-        this.tauxReductionAnticipation = tauxReductionAnticipation;
     }
 
 }

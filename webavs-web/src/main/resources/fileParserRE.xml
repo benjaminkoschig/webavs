@@ -232,6 +232,8 @@
 		<text-field id="DEBUT_PAIEMENT" beginPos="37" endPos="43"/>								
 		<text-field id="MONTANT" beginPos="43" endPos="49"/>				
 		<text-field id="RAM" beginPos="49" endPos="57"/>				
+		<text-field id="MONTANT_REDUC_ANTICI" beginPos="57" endPos="60"/>				
+		<text-field id="MONTANT_SUPPL_AJOURN" beginPos="60" endPos="63"/>
 	</file>
 	
 	<file id="ANNONCE_41_42_43_01" type="TEXT" source="n/a">

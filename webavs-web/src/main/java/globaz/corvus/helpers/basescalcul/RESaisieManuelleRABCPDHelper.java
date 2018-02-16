@@ -596,7 +596,6 @@ public class RESaisieManuelleRABCPDHelper extends PRAbstractHelper {
         pd.setIdRenteAccordee(renteAccordee.getIdPrestationAccordee());
         pd.setMontantReductionAnticipation(renteAccordee.getMontantReducationAnticipation());
         pd.setMontantSupplementAjournement(renteAccordee.getSupplementAjournement());
-        pd.setTauxReductionAnticipation(renteAccordee.getTauxReductionAnticipation());
 
         // Par défaut, dans l'état en attente.
         // La validation de la décision mettre la prestation due dans l'état ACTIF

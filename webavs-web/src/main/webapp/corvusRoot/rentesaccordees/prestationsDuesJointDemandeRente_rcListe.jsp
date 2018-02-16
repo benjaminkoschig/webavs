@@ -31,6 +31,8 @@
     <TH><ct:FWLabel key="JSP_MVE_L_GENRE_RENTE"/></TH>
     <TH><ct:FWLabel key="JSP_MVE_L_RAM"/></TH>
 	<TH><ct:FWLabel key="JSP_MVE_L_MONTANT"/></TH>
+	<TH><ct:FWLabel key="JSP_MVE_L_MONTANT_REDUCTION_ANTICIPATION"/></TH>
+	<TH><ct:FWLabel key="JSP_MVE_L_MONTANT_SUPPLEMENT_AJOURNEMENT"/></TH>
 	<TH><ct:FWLabel key="JSP_MVE_L_ETAT"/></TH>
 	<TH><ct:FWLabel key="JSP_MVE_L_TYPE"/></TH>
 	<TH><ct:FWLabel key="JSP_MVE_R_NO"/></TH>
@@ -65,6 +67,8 @@
 			<TD class="mtd" nowrap onClick="<%=detailUrl%>"><%=courant.getCodePrestation()%>&nbsp;</TD>
 			<TD class="mtd" nowrap onClick="<%=detailUrl%>" align="right"><%=new globaz.framework.util.FWCurrency(courant.getRam()).toStringFormat()%>&nbsp;</TD>
 			<TD class="mtd" nowrap onClick="<%=detailUrl%>" align="right"><%=new globaz.framework.util.FWCurrency(courant.getMontant()).toStringFormat()%>&nbsp;</TD>
+			<TD class="mtd" nowrap onClick="<%=detailUrl%>" align="right"><%=new globaz.framework.util.FWCurrency(courant.getMontantReductionAnticipation()).toStringFormat()%>&nbsp;</TD>
+			<TD class="mtd" nowrap onClick="<%=detailUrl%>" align="right"><%=new globaz.framework.util.FWCurrency(courant.getMontantSupplementAjournement()).toStringFormat()%>&nbsp;</TD>
 			<TD class="mtd" nowrap onClick="<%=detailUrl%>"><%=courant.getCsEtatLibelle()%>&nbsp;</TD>
 			<TD class="mtd" nowrap onClick="<%=detailUrl%>"><%=courant.getCsTypeLibelle()%>&nbsp;</TD>
 			<TD class="mtd" nowrap onClick="<%=detailUrl%>"><%=courant.getIdPrestationDue()%>&nbsp;</TD>

@@ -221,15 +221,6 @@
 										onchange="validateFloatNumber(this);" 
 										onkeypress="return filterCharForFloat(window.event);" />
 							</td>
-							<td>
-								<ct:FWLabel key="JSP_MVE_D_MONTANT_TAUX_REDUC_ANT" />
-							</td>
-							<td>
-								<input	type="text" 
-										class="montant" 
-										name="tauxReductionAnticipation" 
-										value="<%=viewBean.getTauxReductionAnticipation()%>" />
-							</td>
 						</tr>
 						<tr>
 							<td>

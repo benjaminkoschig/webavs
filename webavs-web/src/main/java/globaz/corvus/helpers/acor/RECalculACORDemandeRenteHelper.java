@@ -2284,7 +2284,6 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
                                         mgr.find(transaction);
                                         for (int k = 0; k < mgr.size(); k++) {
                                             REPrestationDue pd = (REPrestationDue) mgr.getEntity(k);
-                                            pd.setTauxReductionAnticipation(bcXML.getTauxReductionAnticipation());
                                             pd.update(transaction);
                                         }
                                     }

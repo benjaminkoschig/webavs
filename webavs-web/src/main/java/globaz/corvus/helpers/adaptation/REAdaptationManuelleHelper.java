@@ -421,7 +421,6 @@ public class REAdaptationManuelleHelper extends FWHelper {
                 newPd.setMontant(ra.getMontantPrestation());
                 newPd.setCsEtat(IREPrestationDue.CS_ETAT_ACTIF);
                 newPd.setDateFinPaiement("");
-                newPd.setTauxReductionAnticipation(pd.getTauxReductionAnticipation());
                 newPd.setCsType(pd.getCsType());
                 newPd.setIdRenteAccordee(ra.getIdPrestationAccordee());
                 newPd.add(transaction);

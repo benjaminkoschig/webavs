@@ -135,7 +135,6 @@ public class REACORParser extends REACORAbstractFlatFileParser {
         }
     }
 
-    
     private static final int CAS_NOUVEAU_CALCUL = 1;
     private static final int CAS_RECALCUL_DEMANDE_NON_VALIDEE = 3;
     private static final int CAS_RECALCUL_DEMANDE_VALIDEE = 2;
@@ -769,8 +768,10 @@ public class REACORParser extends REACORAbstractFlatFileParser {
         if (line.startsWith(REACORAbstractFlatFileParser.CODE_PRESTATION_DUE_MENSUEL)) {
             pd.setCsType(IREPrestationDue.CS_TYPE_PMT_MENS);
             pd.setCsEtat(IREPrestationDue.CS_ETAT_ATTENTE);
-            pd.setMontantSupplementAjournement(ra.getSupplementAjournement());
-            pd.setMontantReductionAnticipation(ra.getMontantReducationAnticipation());
+            pd.setMontantSupplementAjournement(REACORAbstractFlatFileParser.getField(line, fields,
+                    "MONTANT_SUPPL_AJOURN"));
+            pd.setMontantReductionAnticipation(REACORAbstractFlatFileParser.getField(line, fields,
+                    "MONTANT_REDUC_ANTICI"));
 
         } else if (line.startsWith(REACORAbstractFlatFileParser.CODE_PRESTATION_DUE_RETROACTIF)) {
             pd.setCsType(IREPrestationDue.CS_TYPE_MNT_TOT);
@@ -947,7 +948,6 @@ public class REACORParser extends REACORAbstractFlatFileParser {
         return ra;
     }
 
-  
     /**
      * Parse le fichier annonce.pay (reader) et insere dans la base les prestations qui s'y trouvent.
      * 
