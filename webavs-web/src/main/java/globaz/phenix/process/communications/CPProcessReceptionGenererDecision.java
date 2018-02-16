@@ -47,6 +47,7 @@ import globaz.phenix.interfaces.ICommunicationRetour;
 import globaz.phenix.interfaces.ICommunicationrRetourManager;
 import globaz.phenix.process.CPProcessCalculCotisation;
 import globaz.phenix.toolbox.CPToolBox;
+import globaz.phenix.util.CPProperties;
 import globaz.pyxis.constantes.IConstantes;
 import globaz.pyxis.db.tiers.TICompositionTiers;
 import globaz.pyxis.db.tiers.TICompositionTiersManager;
@@ -728,8 +729,8 @@ public class CPProcessReceptionGenererDecision extends BProcess {
                         newDecision.setDivision2(Boolean.TRUE);
                     }
                     // Si on a pas de conjoint renseigné, mais que l'état civil
-                    // est marié on divise également par 2.
-                    if (TITiersViewBean.CS_MARIE.equalsIgnoreCase(this.getTiers().getEtatCivil())) {
+                    // fait partie de la propriété "Etat civil conjoint"
+                    if (CPProperties.ETAT_CIVIL_SIMUL_CONJOINT.getValue().contains(this.getTiers().getEtatCivil())) {
                         newDecision.setDivision2(Boolean.TRUE);
                     }
                 }
