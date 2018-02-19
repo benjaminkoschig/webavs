@@ -728,11 +728,11 @@ public class CPProcessReceptionGenererDecision extends BProcess {
                     if (cjt.size() > 0) {
                         newDecision.setDivision2(Boolean.TRUE);
                     }
-                    // Si on a pas de conjoint renseigné, mais que l'état civil
-                    // fait partie de la propriété "Etat civil conjoint"
-                    if (CPProperties.ETAT_CIVIL_SIMUL_CONJOINT.getValue().contains(this.getTiers().getEtatCivil())) {
-                        newDecision.setDivision2(Boolean.TRUE);
-                    }
+                }
+                // Si on a pas de conjoint renseigné, mais que l'état civil
+                // fait partie de la propriété "Etat civil conjoint"
+                if (CPProperties.ETAT_CIVIL_SIMUL_CONJOINT.getValue().contains(this.getTiers().getEtatCivil())) {
+                    newDecision.setDivision2(Boolean.TRUE);
                 }
                 // Initialisation des données pour le calcul
                 _initDonneeBase(newDecision, retour);
