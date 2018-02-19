@@ -107,6 +107,9 @@ var langue = "<%=languePage%>";
 
 	//bButtonValidate = !SimpleDemandeChecker.existeDemandeInVlalidEtatWithOutException(viewBean.getDemande().getSimpleDemande().getIdDossier());
 	bButtonDelete = !SimpleDemandeChecker.existDroitForDemandeWithOutException(viewBean.getDemande().getSimpleDemande());
+	boolean lotCompta = SimpleDemandeChecker.isLotAnnuleComptabilise(viewBean.getDemande().getSimpleDemande());
+	bButtonUpdate = bButtonUpdate & !lotCompta;
+	bButtonDelete = bButtonDelete & !lotCompta;
 	
 	if (viewBean.getDemande().isNew()) {
 		viewBean.getDemande().getSimpleDemande().setIsPurRetro(
