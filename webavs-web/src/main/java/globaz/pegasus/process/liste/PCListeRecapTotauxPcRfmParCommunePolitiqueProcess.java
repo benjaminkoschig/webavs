@@ -237,7 +237,6 @@ public class PCListeRecapTotauxPcRfmParCommunePolitiqueProcess extends PCAbstrac
         sql.append("FROM   schema.cacptap  ");
         sql.append("    INNER JOIN schema.CAOPERP ON schema.CAOPERP.IDCOMPTEANNEXE = schema.CACPTAP.IDCOMPTEANNEXE  ");
         sql.append("    INNER JOIN schema.CARUBRP on schema.CARUBRP.IDRUBRIQUE = schema.CAOPERP.IDCOMPTE  ");
-        sql.append("    INNER JOIN schema.CARERUP on schema.CARERUP.IDRUBRIQUE = schema.CARUBRP.IDRUBRIQUE  ");
         sql.append("WHERE  ");
         sql.append("  schema.cacptap.IDROLE = 517038 ");
         sql.append("  and schema.CAOPERP.date BETWEEN ").append(dateDebut).append("01 AND ");
