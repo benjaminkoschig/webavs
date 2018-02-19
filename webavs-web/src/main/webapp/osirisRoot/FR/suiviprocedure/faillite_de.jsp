@@ -64,6 +64,7 @@ function del() {
 function init() {}
 
 top.document.title = "Détail Suivi de la procédure - Faillite - " + top.location.href;
+
 </script>
 <%-- /tpl:put --%>
 <%@ include file="/theme/detail/bodyStart.jspf" %>
@@ -90,14 +91,14 @@ top.document.title = "Détail Suivi de la procédure - Faillite - " + top.location
 %>
 
 <tr>
-	<td class="label">
+	<td class="label"  width="10%" >
 		<input type="hidden" name="forIdCompteAnnexe" value="<%=compteAnnexeViewBean.getIdCompteAnnexe()%>">
 		<input type="hidden" name="idCompteAnnexe" value="<%=compteAnnexeViewBean.getIdCompteAnnexe()%>">
 		Compte
 	</td>
 	<td nowrap></td>
-	<td class="control" rowspan="2"><textarea rows="4" class="disabled" readonly><%=compteAnnexeTitulaireEntete%></textarea></td>
-	<td class="label">&nbsp;Affiliation</td>
+	<td class="control" width="10%" rowspan="2"><textarea rows="4" class="disabled" readonly><%=compteAnnexeTitulaireEntete%></textarea></td>
+	<td class="label" width="10%" >&nbsp;Affiliation</td>
 	<td nowrap class="control">&nbsp;<input type="text" value="<%=compteAnnexeRoleDateDebutDateFin%>" class="libelleLongDisabled" readonly></td>
 	<td>&nbsp;</td>
 </tr>
@@ -225,6 +226,12 @@ top.document.title = "Détail Suivi de la procédure - Faillite - " + top.location
 	<td nowrap>&nbsp;</td>
 	<td nowrap>&nbsp;</td>
 	<td nowrap>&nbsp;</td>
+</tr>
+
+<tr>
+	<td class="label" >Commentaire</td>
+	<td  style="min-width:30px;">&nbsp;</td>
+	<td  colspan="4" nowrap style="max-width:600px;"><input type="text" name="commentaire" value="<%=viewBean.getCommentaire()%>" class="commentaire" maxlength="4000" style="width:100%;"</td>
 </tr>
 
 <%-- /tpl:put --%>

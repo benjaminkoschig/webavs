@@ -90,14 +90,14 @@ top.document.title = "Detail Verfolgung des Verfahrens - Konkurs - " + top.locat
 %>
 
 <tr>
-	<td class="label">
+	<td class="label"  width="10%" >
 		<input type="hidden" name="forIdCompteAnnexe" value="<%=compteAnnexeViewBean.getIdCompteAnnexe()%>">
 		<input type="hidden" name="idCompteAnnexe" value="<%=compteAnnexeViewBean.getIdCompteAnnexe()%>">
 		Konto
 	</td>
 	<td nowrap></td>
-	<td class="control" rowspan="2"><textarea rows="4" class="disabled" readonly><%=compteAnnexeTitulaireEntete%></textarea></td>
-	<td class="label">&nbsp;Erfassung</td>
+	<td class="control" width="10%" rowspan="2"><textarea rows="4" class="disabled" readonly><%=compteAnnexeTitulaireEntete%></textarea></td>
+	<td class="label" width="10%" >&nbsp;Erfassung</td>
 	<td nowrap class="control">&nbsp;<input type="text" value="<%=compteAnnexeRoleDateDebutDateFin%>" class="libelleLongDisabled" readonly></td>
 	<td>&nbsp;</td>
 </tr>
@@ -225,6 +225,12 @@ top.document.title = "Detail Verfolgung des Verfahrens - Konkurs - " + top.locat
 	<td nowrap>&nbsp;</td>
 	<td nowrap>&nbsp;</td>
 	<td nowrap>&nbsp;</td>
+</tr>
+
+<tr>
+	<td class="label">Kommentare</td>
+	<td width="30">&nbsp;</td>
+	<td  colspan="4" nowrap><input type="text" name="commentaire" value="<%=viewBean.getCommentaire()%>" class="commentaire" maxlength="4000" style="width:100%;"></td>
 </tr>
 
 <%-- /tpl:put --%>

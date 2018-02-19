@@ -13,7 +13,6 @@ public class CAFaillite extends BEntity {
     private static final long serialVersionUID = 1L;
     public static final String FIELD_DATE_ANNULATION_PRODUCTION = "dateAnnulProd";
     public static final String FIELD_DATE_CLOTURE_FAILLITE = "dateCloture";
-
     public static final String FIELD_DATE_ETAT_COLLOCATION = "dateEtatColloc";
     public static final String FIELD_DATE_FAILLITE = "dateFaillite";
     public static final String FIELD_DATE_MODIFICATION_ETAT_COLLOCATION = "dateModifColloc";
@@ -24,6 +23,7 @@ public class CAFaillite extends BEntity {
     public static final String FIELD_ID_COMPTEANNEXE = "idCompteAnnexe";
     public static final String FIELD_ID_FAILLITE = "idFaillite";
     public static final String FIELD_MONTANT_PRODUCTION = "montantProd";
+    public static final String FIELD_COMMENTAIRE = "commentaire";
     private static final String LABEL_DATE_FAILLITE_DOSSIER = "DATE_FAILLITE_DOSSIER";
     private static final String LABEL_DATE_FAILLITE_NON_RENSEIGNEE = "DATE_FAILLITE_NON_RENSEIGNEE";
 
@@ -42,6 +42,7 @@ public class CAFaillite extends BEntity {
     private String idCompteAnnexe = new String();
     private String idFaillite = new String();
     private String montantProduction = new String();
+    private String commentaire = new String();
 
     /**
      * @see globaz.globall.db.BEntity#_beforeAdd(globaz.globall.db.BTransaction)
@@ -92,6 +93,7 @@ public class CAFaillite extends BEntity {
         dateClotureFaillite = statement.dbReadDateAMJ(CAFaillite.FIELD_DATE_CLOTURE_FAILLITE);
         montantProduction = statement.dbReadNumeric(CAFaillite.FIELD_MONTANT_PRODUCTION, 2);
         idCompteAnnexe = statement.dbReadNumeric(CAFaillite.FIELD_ID_COMPTEANNEXE);
+        commentaire = statement.dbReadString(CAFaillite.FIELD_COMMENTAIRE);
     }
 
     /**
@@ -139,6 +141,8 @@ public class CAFaillite extends BEntity {
                 this._dbWriteNumeric(statement.getTransaction(), montantProduction, "montantProduction"));
         statement.writeField(CAFaillite.FIELD_ID_COMPTEANNEXE,
                 this._dbWriteNumeric(statement.getTransaction(), idCompteAnnexe, "idCompteAnnexe"));
+        statement.writeField(CAFaillite.FIELD_COMMENTAIRE,
+                this._dbWriteString(statement.getTransaction(), commentaire, "commentaire"));
     }
 
     private boolean checkForBlank(BTransaction transaction) throws Exception {
@@ -202,6 +206,10 @@ public class CAFaillite extends BEntity {
      */
     public String getMontantProduction() {
         return montantProduction;
+    }
+
+    public String getCommentaire() {
+        return commentaire;
     }
 
     private CAFailliteManager getTestManager() throws Exception {
@@ -268,6 +276,10 @@ public class CAFaillite extends BEntity {
      */
     public void setMontantProduction(String montantProduction) {
         this.montantProduction = montantProduction;
+    }
+
+    public void setCommentaire(String commentaire) {
+        this.commentaire = commentaire;
     }
 
 }
