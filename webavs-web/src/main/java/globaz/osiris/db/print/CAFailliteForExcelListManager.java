@@ -5,6 +5,7 @@ import globaz.globall.db.BManager;
 import globaz.globall.db.BStatement;
 import globaz.globall.util.JACalendar;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.naos.db.affiliation.AFAffiliation;
 import globaz.osiris.db.comptes.CACompteAnnexe;
 import globaz.osiris.db.suiviprocedure.CAFaillite;
 
@@ -16,6 +17,7 @@ public class CAFailliteForExcelListManager extends BManager {
     private static final long serialVersionUID = 1L;
     private static final String ALIAS_TABLE_COMPTE_ANNEXE = "C";
     private static final String ALIAS_TABLE_FAILLITE = "F";
+    private static final String ALIAS_TABLE_AFFILIATION = "AFF";
     protected static final String AND = " AND ";
     protected static final String AS_FIELD = " AS ";
     protected static final String BETWEEN = " BETWEEN ";
@@ -52,6 +54,7 @@ public class CAFailliteForExcelListManager extends BManager {
     protected static final String SMALLER_DB_OPERAND = " < ";
     protected static final String SUBSTRING = " SUBSTR ";
     private static final String TABLE_COMPTE_ANNEXE = "CACPTAP";
+    private static final String TABLE_AFFILIATION = "AFAFFIP";
     private static final String TABLE_NAME = "CAFAILP";
     protected static final String UNION = " UNION ";
     protected static final String UNION_ALL = " UNION ALL ";
@@ -67,15 +70,18 @@ public class CAFailliteForExcelListManager extends BManager {
         StringBuffer sqlFields = new StringBuffer();
         addField(sqlFields, CACompteAnnexe.FIELD_IDEXTERNEROLE); // idexternerole
         addField(sqlFields, CACompteAnnexe.FIELD_IDROLE); // idexternerole
+        addField(sqlFields, AFAffiliation.FIELDNAME_AFFILIATION_TYPE); // type affiliation
         addField(sqlFields, CACompteAnnexe.FIELD_DESCRIPTION); // description
-        addField(sqlFields, CAFaillite.FIELD_DATE_FAILLITE); // date de la
-        // faillite
-        addField(sqlFields, CAFaillite.FIELD_DATE_ETAT_COLLOCATION); // date
-        // etat
-        // colloc
-        addField(sqlFields, CAFaillite.FIELD_DATE_SUSPENSION_FAILLITE); // date
-        // de
-        // suspension
+        addField(sqlFields, CAFaillite.FIELD_DATE_FAILLITE); // date de la faillite
+        addField(sqlFields, CAFaillite.FIELD_DATE_PRODUCTION); // date production
+        addField(sqlFields, CAFaillite.FIELD_DATE_PRODUCTION_DEFINITIVE); // date production définitive
+        addField(sqlFields, CAFaillite.FIELD_DATE_ANNULATION_PRODUCTION); // date annulation
+        addField(sqlFields, CAFaillite.FIELD_DATE_REVOCATION); // date de révocation rétractation
+        addField(sqlFields, CAFaillite.FIELD_DATE_SUSPENSION_FAILLITE); // date de suspension
+        addField(sqlFields, CAFaillite.FIELD_DATE_ETAT_COLLOCATION); // date etat colloc
+        addField(sqlFields, CAFaillite.FIELD_DATE_MODIFICATION_ETAT_COLLOCATION); // modif état colloc
+        addField(sqlFields, CAFaillite.FIELD_DATE_CLOTURE_FAILLITE); // date cloture faillite
+        addField(sqlFields, CAFaillite.FIELD_MONTANT_PRODUCTION); // montant production
         addField(sqlFields, CAFailliteForExcelListManager.FIELD_COMMENTAIRE); // commentaire
         return sqlFields.toString();
     }
@@ -92,7 +98,7 @@ public class CAFailliteForExcelListManager extends BManager {
     protected String _getOrder(BStatement statement) {
         StringBuffer order = new StringBuffer();
 
-        order.append(CACompteAnnexe.FIELD_IDROLE);
+        order.append(CACompteAnnexe.FIELD_IDEXTERNEROLE);
         return order.toString();
     }
 
@@ -162,6 +168,7 @@ public class CAFailliteForExcelListManager extends BManager {
     }
 
     private void addTableLink(StringBuffer buffer) {
+        // Join de la table compte annexe
         buffer.append(CAFailliteForExcelListManager.INNER_JOIN);
         buffer.append(_getCollection() + CAFailliteForExcelListManager.TABLE_COMPTE_ANNEXE
                 + CAFailliteForExcelListManager.ESPACE + CAFailliteForExcelListManager.ALIAS_TABLE_COMPTE_ANNEXE);
@@ -171,6 +178,16 @@ public class CAFailliteForExcelListManager extends BManager {
         buffer.append(CAFailliteForExcelListManager.EGAL);
         buffer.append(CAFailliteForExcelListManager.ALIAS_TABLE_COMPTE_ANNEXE + CAFailliteForExcelListManager.POINT
                 + CACompteAnnexe.FIELD_IDCOMPTEANNEXE);
+        // Join de la table affiliation
+        buffer.append(CAFailliteForExcelListManager.INNER_JOIN);
+        buffer.append(_getCollection() + CAFailliteForExcelListManager.TABLE_AFFILIATION
+                + CAFailliteForExcelListManager.ESPACE + CAFailliteForExcelListManager.ALIAS_TABLE_AFFILIATION);
+        buffer.append(CAFailliteForExcelListManager.ON);
+        buffer.append(CAFailliteForExcelListManager.ALIAS_TABLE_AFFILIATION + CAFailliteForExcelListManager.POINT
+                + AFAffiliation.FIELDNAME_TIER_ID);
+        buffer.append(CAFailliteForExcelListManager.EGAL);
+        buffer.append(CAFailliteForExcelListManager.ALIAS_TABLE_COMPTE_ANNEXE + CAFailliteForExcelListManager.POINT
+                + CACompteAnnexe.FIELD_IDTIERS);
     }
 
     public String getForIdCategorie() {

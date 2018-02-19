@@ -4,6 +4,7 @@ import globaz.globall.db.BSession;
 import globaz.globall.db.BStatement;
 import globaz.globall.db.BTransaction;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.log.JadeLogger;
 import globaz.osiris.db.print.CAFailliteForExcelList;
 import globaz.osiris.db.print.CAFailliteForExcelListManager;
 import java.util.ArrayList;
@@ -11,6 +12,9 @@ import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
+import ch.globaz.common.domaine.Date;
+import ch.globaz.common.properties.CommonPropertiesUtils;
+import ch.globaz.common.properties.PropertiesException;
 
 public class CAListFailliteExcel extends CAAbstractListExcel {
 
@@ -23,57 +27,47 @@ public class CAListFailliteExcel extends CAAbstractListExcel {
         super(session, session.getLabel("LIST_TITLE_SHORT"), session.getLabel("LIST_TITLE_LONG"));
     }
 
-    public String getForIdCategorie() {
-        return forIdCategorie;
-    }
-
-    public String getForSelectionRole() {
-        return forSelectionRole;
-    }
-
     @Override
     public String getNumeroInforom() {
         return CAListFailliteExcel.NUMERO_REFERENCE_INFOROM;
     }
 
     private void initCritere() {
+        try {
+            createRow();
+            this.createCell(getSession().getLabel("NUMERO_CAISSE"), getStyleCritereTitle());
+            this.createCell(CommonPropertiesUtils.getValue(ch.globaz.common.properties.CommonProperties.KEY_NO_CAISSE),
+                    getStyleCritere());
 
-        if (!JadeStringUtil.isBlank(getForSelectionRole())) {
-            if (JadeStringUtil.contains(getForSelectionRole(), ",")) {
-                createRow();
-                this.createCell(getSession().getLabel("ROLE"), getStyleCritereTitle());
-                this.createCell(getSession().getLabel("TOUS"), getStyleCritere());
-            } else {
-                createRow();
-                this.createCell(getSession().getLabel("ROLE"), getStyleCritereTitle());
-                this.createCell(getSession().getCodeLibelle(getForSelectionRole()), getStyleCritere());
-            }
+        } catch (PropertiesException e) {
+            this.createCell("");
+            JadeLogger.info(e, e.getMessage());
         }
 
-        if (!JadeStringUtil.isBlank(getForIdCategorie())) {
-            if (JadeStringUtil.contains(getForIdCategorie(), ",")) {
-                createRow();
-                this.createCell(getSession().getLabel("CATEGORIE"), getStyleCritereTitle());
-                this.createCell(getSession().getLabel("TOUS"), getStyleCritere());
-            } else {
-                createRow();
-                this.createCell(getSession().getLabel("CATEGORIE"), getStyleCritereTitle());
-                this.createCell(getSession().getCodeLibelle(getForIdCategorie()), getStyleCritere());
-            }
-        }
+        createRow();
+        this.createCell(getSession().getLabel("DATE_ETABLISSEMENT"), getStyleCritereTitle());
+        this.createCell(new Date().getSwissValue(), getStyleCritere());
     }
 
     private void initListe() {
         ArrayList colTitles = new ArrayList();
         colTitles.add(getSession().getLabel("NUMERO"));
         colTitles.add(getSession().getLabel("ROLE"));
+        colTitles.add(getSession().getLabel("CATEGORIE"));
         colTitles.add(getSession().getLabel("SOCIETE"));
         colTitles.add(getSession().getLabel("DATE_FAILLITE"));
-        colTitles.add(getSession().getLabel("ETAT_COLLOCATION"));
+        colTitles.add(getSession().getLabel("DATE_PRODUCTION"));
+        colTitles.add(getSession().getLabel("DATE_PRODUCTION_DEFINITIVE"));
+        colTitles.add(getSession().getLabel("DATE_ANNULATION_PRODUCTION"));
+        colTitles.add(getSession().getLabel("DATE_REVOCATION_RETRACTATION"));
         colTitles.add(getSession().getLabel("SUSPENSION_FAILLITE"));
+        colTitles.add(getSession().getLabel("ETAT_COLLOCATION"));
+        colTitles.add(getSession().getLabel("MODIF_ETAT_COLLOCATION"));
+        colTitles.add(getSession().getLabel("CLOTURE_FAILLITE"));
+        colTitles.add(getSession().getLabel("MONTANT_PRODUCTION"));
         colTitles.add(getSession().getLabel("COMMENTAIRE"));
 
-        createSheet(getSession().getLabel("LISTE"));
+        createSheet(getSession().getLabel("LISTE_FAILLITE"));
 
         initCritere();
         initTitleRow(colTitles);
@@ -82,18 +76,20 @@ public class CAListFailliteExcel extends CAAbstractListExcel {
         createFooter(CAListFailliteExcel.NUMERO_REFERENCE_INFOROM);
 
         int numCol = 0;
-        currentSheet.setColumnWidth((short) numCol++, (short) 5000); // Numéro
-        // Administrateur
-        currentSheet.setColumnWidth((short) numCol++, (short) 5000); // Nom
-        // Administrateur
+        currentSheet.setColumnWidth((short) numCol++, (short) 5000); // Numéro Administrateur
+        currentSheet.setColumnWidth((short) numCol++, (short) 5000); // Role
+        currentSheet.setColumnWidth((short) numCol++, (short) 5000); // Catégorie
         currentSheet.setColumnWidth((short) numCol++, (short) 20000); // Société
-        currentSheet.setColumnWidth((short) numCol++, (short) 3000); // Date
-        // Plainte
-        currentSheet.setColumnWidth((short) numCol++, (short) 3000); // date
-        // etat
-        // colloc
-        currentSheet.setColumnWidth((short) numCol++, (short) 3000); // date de
-        // suspension
+        currentSheet.setColumnWidth((short) numCol++, (short) 3000); // Date faillite
+        currentSheet.setColumnWidth((short) numCol++, (short) 3000); // Date production
+        currentSheet.setColumnWidth((short) numCol++, (short) 3000); // Date production définitive
+        currentSheet.setColumnWidth((short) numCol++, (short) 3000); // Date annulation production
+        currentSheet.setColumnWidth((short) numCol++, (short) 3000); // Date révocation rétractation
+        currentSheet.setColumnWidth((short) numCol++, (short) 3000); // date de suspension
+        currentSheet.setColumnWidth((short) numCol++, (short) 3000); // date etat colloc
+        currentSheet.setColumnWidth((short) numCol++, (short) 3000); // date modif état colloc
+        currentSheet.setColumnWidth((short) numCol++, (short) 3000); // date cloture faillite
+        currentSheet.setColumnWidth((short) numCol++, (short) 3000); // montant production
         currentSheet.setColumnWidth((short) numCol++, (short) 15000); // commentaire
     }
 
@@ -137,32 +133,31 @@ public class CAListFailliteExcel extends CAAbstractListExcel {
         while (((faillite = (CAFailliteForExcelList) manager.cursorReadNext(statement)) != null) && !faillite.isNew()) {
             if (faillite != null) {
                 createRow();
-                this.createCell(faillite.getNumAdmin(), getStyleListLeft()); // numéro
-                // admin
+                this.createCell(faillite.getNumAdmin(), getStyleListLeft()); // numéro admin
                 this.createCell(getSession().getCodeLibelle(faillite.getRole()), getStyleListLeft()); // role
+                this.createCell(getSession().getCodeLibelle(faillite.getTypeAffiliation()), getStyleListLeft()); // Catégorie
                 this.createCell(faillite.getSociete(), getStyleListLeft()); // société
-                this.createCell(faillite.getDateFaillite(), getStyleListLeft()); // date
-                // de
-                // la
-                // faillite
-                this.createCell(faillite.getDateEtatColloc(), getStyleListLeft()); // etat
-                // de
-                // collocation
-                this.createCell(faillite.getDateSuspension(), getStyleListLeft());// suspension
-                // de
-                // la
-                // faillite
+                this.createCell(faillite.getDateFaillite(), getStyleListLeft()); // date de la faillite
+                this.createCell(faillite.getDateProduction(), getStyleListLeft()); // date de production
+                this.createCell(faillite.getDateProductionDefinitive(), getStyleListLeft()); // date de produciton
+                                                                                             // définitive
+                this.createCell(faillite.getDateAnnulationProduction(), getStyleListLeft()); // date d'annulation
+                                                                                             // production
+                this.createCell(faillite.getDateRevocation(), getStyleListLeft()); // date de révocation
+                this.createCell(faillite.getDateSuspension(), getStyleListLeft());// suspension de la faillite
+                this.createCell(faillite.getDateEtatColloc(), getStyleListLeft()); // etat de collocation
+                this.createCell(faillite.getDateModificationCollocation(), getStyleListLeft()); // date de modification
+                                                                                                // d'état collocation
+                this.createCell(faillite.getDateCloture(), getStyleListLeft()); // date de cloture faillite
+                if (JadeStringUtil.isBlank(faillite.getMontantProduction())) {
+                    this.createCell(0, getStyleMontant()); // Montant production
+                } else {
+                    this.createCell(new Double(faillite.getMontantProduction()), getStyleMontant());
+                }
+
                 this.createCell(faillite.getCommentaire(), getStyleListLeft()); // commentaire
             }
         }
         return currentSheet;
-    }
-
-    public void setForIdCategorie(String forIdCategorie) {
-        this.forIdCategorie = forIdCategorie;
-    }
-
-    public void setForSelectionRole(String forSelectionRole) {
-        this.forSelectionRole = forSelectionRole;
     }
 }

@@ -30,8 +30,6 @@ public class CAProcessListFailliteExcel extends BProcess implements FWViewBeanIn
         try {
             CAFailliteForExcelListManager manager = new CAFailliteForExcelListManager();
             manager.setSession(getSession());
-            manager.setForSelectionRole(getForSelectionRole());
-            manager.setForIdCategorie(getForIdCategorie());
             manager.find();
 
             if (manager.size() == 0) {
@@ -39,8 +37,6 @@ public class CAProcessListFailliteExcel extends BProcess implements FWViewBeanIn
             }
 
             CAListFailliteExcel excelDoc = new CAListFailliteExcel(getSession());
-            excelDoc.setForSelectionRole(getForSelectionRole());
-            excelDoc.setForIdCategorie(getForIdCategorie());
             excelDoc.setDocumentInfo(createDocumentInfo());
             excelDoc.populateSheetListe(manager, getTransaction());
             this.registerAttachedDocument(excelDoc.getDocumentInfo(), excelDoc.getOutputFile());

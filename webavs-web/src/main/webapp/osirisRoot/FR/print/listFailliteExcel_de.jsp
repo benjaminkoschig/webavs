@@ -38,20 +38,6 @@ top.document.title = "Liste des faillites" + top.location.href;
 			<input type="text" name="eMailAddress" value="<%=viewBean.getEMailAddress()%>" class="libelleLong">
 		</td>
 </tr>
-<tr>
-        <TD width="128">R&ocirc;le</TD>
-        <TD colspan="3">
-              <select name="forSelectionRole">
-              	<%=CARoleViewBean.createOptionsTags(objSession, request.getParameter("forSelectionRole"))%>
-              </select>
-            </TD>
-</tr>
-<tr>
-		<td width"128">Cat&eacute;gorie&nbsp;</td>
-		<td colspan="3">
-			<%=CASelectBlockParser.getForIdCategorieSelectBlock(objSession, true) %>
-		</td>
-</tr>
 <%-- /tpl:put --%>
 <%@ include file="/theme/process/footer.jspf" %>
 <%-- tpl:put name="zoneEndPage" --%> 
