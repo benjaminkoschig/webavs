@@ -395,22 +395,24 @@ public class CalculDroitServiceImpl extends PegasusAbstractServiceImpl implement
      * Log un warning pour les prestations accordées dans les RFM
      */
     private void checkIfWarnForRFM(List<PCAccordeePlanCalcul> pcaNew, CalculPcaReplaceSearch anciennePca) {
-        CalculPcaReplace oldPca = (CalculPcaReplace) anciennePca.getSearchResults()[0];
-        // log un warn si passage d'octroi -> refus
-        if (!IPCValeursPlanCalcul.STATUS_REFUS.equals(oldPca.getSimplePlanDeCalcul().getEtatPC())) {
-            for (PCAccordeePlanCalcul newPca : pcaNew) {
-                if (IPCValeursPlanCalcul.STATUS_REFUS.equals(newPca.getSimplePlanDeCalcul().getEtatPC())) {
-                    JadeThread.logWarn("", "pegasus.pc.warning.prestations.rfm");
-                    return;
+        if (anciennePca.getSize() > 0) {
+            CalculPcaReplace oldPca = (CalculPcaReplace) anciennePca.getSearchResults()[0];
+            // log un warn si passage d'octroi -> refus
+            if (!IPCValeursPlanCalcul.STATUS_REFUS.equals(oldPca.getSimplePlanDeCalcul().getEtatPC())) {
+                for (PCAccordeePlanCalcul newPca : pcaNew) {
+                    if (IPCValeursPlanCalcul.STATUS_REFUS.equals(newPca.getSimplePlanDeCalcul().getEtatPC())) {
+                        JadeThread.logWarn("", "pegasus.pc.warning.prestations.rfm");
+                        return;
+                    }
                 }
             }
-        }
-        // log un warn si passage de domicile -> home
-        if (IPCPCAccordee.CS_GENRE_PC_DOMICILE.equals(oldPca.getSimplePCAccordee().getCsGenrePC())) {
-            for (PCAccordeePlanCalcul newPca : pcaNew) {
-                if (IPCPCAccordee.CS_GENRE_PC_HOME.equals(newPca.getSimplePCAccordee().getCsGenrePC())) {
-                    JadeThread.logWarn("", "pegasus.pc.warning.prestations.rfm");
-                    return;
+            // log un warn si passage de domicile -> home
+            if (IPCPCAccordee.CS_GENRE_PC_DOMICILE.equals(oldPca.getSimplePCAccordee().getCsGenrePC())) {
+                for (PCAccordeePlanCalcul newPca : pcaNew) {
+                    if (IPCPCAccordee.CS_GENRE_PC_HOME.equals(newPca.getSimplePCAccordee().getCsGenrePC())) {
+                        JadeThread.logWarn("", "pegasus.pc.warning.prestations.rfm");
+                        return;
+                    }
                 }
             }
         }
