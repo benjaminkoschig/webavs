@@ -66,6 +66,7 @@ function init() {}
 top.document.title = "Détail Suivi de la procédure - Faillite - " + top.location.href;
 
 </script>
+
 <%-- /tpl:put --%>
 <%@ include file="/theme/detail/bodyStart.jspf" %>
 <%-- tpl:put name="zoneTitle" --%>D&eacute;tail Suivi de la procédure - Faillite<%-- /tpl:put --%>
@@ -131,11 +132,11 @@ top.document.title = "Détail Suivi de la procédure - Faillite - " + top.location
 </tr>
 
 <tr>
-	<td colspan="6"><br/><hr noshade size="3"><br/></td>
+	<td colspan="5"><br/><hr noshade size="3"><br/></td>
 </tr>
 
 <tr>
-	<td width="125" class="label"><b>Date faillite</b></td>
+	<td width="125" class="label"><b style="WIDTH: 180px">Date faillite</b></td>
 	<td width="30">&nbsp;<input type="hidden" name="idFaillite" value="<%=viewBean.getIdFaillite()%>"/></td>
 	<td nowrap><ct:FWCalendarTag name="dateFaillite" doClientValidation="CALENDAR" value="<%=viewBean.getDateFaillite()%>"/></td>
 	<td nowrap></td>
@@ -221,7 +222,7 @@ top.document.title = "Détail Suivi de la procédure - Faillite - " + top.location
 
 <tr>
 	<td class="label">Montant de production</td>
-	<td width="30">&nbsp;</td>
+	<td width="30"nowrap>&nbsp;</td>
 	<td class="control"><input type="text" name="montantProduction" value="<%=JANumberFormatter.formatNoRound(viewBean.getMontantProduction(), 2)%>" class="montant" onchange="validateFloatNumber(this);" onkeypress="return filterCharForFloat(window.event);"></td>
 	<td nowrap>&nbsp;</td>
 	<td nowrap>&nbsp;</td>
@@ -229,9 +230,9 @@ top.document.title = "Détail Suivi de la procédure - Faillite - " + top.location
 </tr>
 
 <tr>
-	<td class="label" >Commentaire</td>
-	<td  style="min-width:30px;">&nbsp;</td>
-	<td  colspan="4" nowrap style="max-width:600px;"><input type="text" name="commentaire" value="<%=viewBean.getCommentaire()%>" class="commentaire" maxlength="4000" style="width:100%;"</td>
+	<td class="label" style="width:300px;">Commentaire</td>
+	<td  style="width:30px">&nbsp;</td>
+	<td  class="control" colspan="4" nowrap><input type="text" name="commentaire" value="<%=viewBean.getCommentaire()%>" class="commentaire" maxlength="4000" style="width:1500;max-width:1500;"</td>
 </tr>
 
 <%-- /tpl:put --%>

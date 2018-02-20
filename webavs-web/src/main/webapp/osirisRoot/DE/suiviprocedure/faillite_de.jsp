@@ -134,7 +134,7 @@ top.document.title = "Detail Verfolgung des Verfahrens - Konkurs - " + top.locat
 </tr>
 
 <tr>
-	<td width="125" class="label"><b>Konkurssdatum</b></td>
+	<td width="125" class="label"><b style="WIDTH: 180px">Konkurssdatum</b></td>
 	<td width="30">&nbsp;<input type="hidden" name="idFaillite" value="<%=viewBean.getIdFaillite()%>"/></td>
 	<td nowrap><ct:FWCalendarTag name="dateFaillite" doClientValidation="CALENDAR" value="<%=viewBean.getDateFaillite()%>"/></td>
 	<td nowrap></td>
@@ -228,9 +228,9 @@ top.document.title = "Detail Verfolgung des Verfahrens - Konkurs - " + top.locat
 </tr>
 
 <tr>
-	<td class="label">Kommentare</td>
-	<td width="30">&nbsp;</td>
-	<td  colspan="4" nowrap><input type="text" name="commentaire" value="<%=viewBean.getCommentaire()%>" class="commentaire" maxlength="4000" style="width:100%;"></td>
+	<td class="label" style="width:300px;">Kommentare</td>
+	<td  style="width:30px">&nbsp;</td>
+	<td  colspan="4" nowrap><input type="text" name="commentaire" value="<%=viewBean.getCommentaire()%>" class="commentaire" maxlength="4000" style="width:1500;max-width:1500;"></td>
 </tr>
 
 <%-- /tpl:put --%>
