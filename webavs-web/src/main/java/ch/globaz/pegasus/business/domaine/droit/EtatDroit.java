@@ -11,7 +11,8 @@ public enum EtatDroit implements CodeSystemEnum<EtatDroit> {
     AU_CALCUL(IPCDroits.CS_AU_CALCUL),
     HISTORISE(IPCDroits.CS_HISTORISE),
     COURANT_VALIDE(IPCDroits.CS_COURANT_VALIDE), // N'est pas utilisé en production
-    CALCULE(IPCDroits.CS_CALCULE);
+    CALCULE(IPCDroits.CS_CALCULE),
+    ANNULE(IPCDroits.CS_ANNULE);
 
     private String value;
 
@@ -46,6 +47,10 @@ public enum EtatDroit implements CodeSystemEnum<EtatDroit> {
 
     public boolean isHistorise() {
         return HISTORISE.equals(this);
+    }
+
+    public boolean isAnnule() {
+        return ANNULE.equals(this);
     }
 
 }

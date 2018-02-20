@@ -187,7 +187,8 @@ public abstract class PCAbstractRequerantDonneeFinanciereViewBean extends BJadeP
 
     public boolean isModifiable() {
         return !(IPCDroits.CS_VALIDE.equals(droit.getSimpleVersionDroit().getCsEtatDroit())
-                || IPCDroits.CS_COURANT_VALIDE.equals(droit.getSimpleVersionDroit().getCsEtatDroit()) || IPCDroits.CS_HISTORISE
+                || IPCDroits.CS_COURANT_VALIDE.equals(droit.getSimpleVersionDroit().getCsEtatDroit())
+                || IPCDroits.CS_HISTORISE.equals(droit.getSimpleVersionDroit().getCsEtatDroit()) || IPCDroits.CS_ANNULE
                     .equals(droit.getSimpleVersionDroit().getCsEtatDroit()));
     }
 
