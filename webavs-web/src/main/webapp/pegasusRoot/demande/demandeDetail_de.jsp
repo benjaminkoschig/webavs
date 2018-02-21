@@ -365,7 +365,7 @@ $(function(){
 				<tr>
 					<td class="standardLabel"><ct:FWLabel key="JSP_PC_DEM_D_DATE_REDUCTION_FIN"/></td>
 					<TD>
-						<input type="text" name="dateReduction" value="<%=JadeStringUtil.toNotNullString(viewBean.getDemande().getSimpleDemande().getDateDepot())%>" data-g-calendar="mandatory:true"/>
+						<input type="text" name="dateReduction" >" data-g-calendar="mandatory:true"/>
 					</TD>
 				</tr>
 				<TR><TD colspan="6">&nbsp;<HR class="separator" ></TD></TR>
