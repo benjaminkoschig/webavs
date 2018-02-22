@@ -230,7 +230,7 @@ top.document.title = "Detail Verfolgung des Verfahrens - Konkurs - " + top.locat
 <tr>
 	<td class="label" style="width:300px;">Kommentare</td>
 	<td  style="width:30px">&nbsp;</td>
-	<td  colspan="4" nowrap><input type="text" name="commentaire" value="<%=viewBean.getCommentaire()%>" class="commentaire" maxlength="4000" style="width:1500;max-width:1500;"></td>
+	<td  colspan="4" nowrap><textarea type="text" name="commentaire" class="commentaire" maxlength="4000" style="width:1500;max-width:1500;height:100;"><%=viewBean.getCommentaire()%></textarea></td>
 </tr>
 
 <%-- /tpl:put --%>

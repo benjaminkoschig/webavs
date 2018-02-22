@@ -232,7 +232,7 @@ top.document.title = "Détail Suivi de la procédure - Faillite - " + top.location
 <tr>
 	<td class="label" style="width:300px;">Commentaire</td>
 	<td  style="width:30px">&nbsp;</td>
-	<td  class="control" colspan="4" nowrap><input type="text" name="commentaire" value="<%=viewBean.getCommentaire()%>" class="commentaire" maxlength="4000" style="width:1500;max-width:1500;"</td>
+	<td  class="control" colspan="4" nowrap><textarea type="text" name="commentaire" class="commentaire" maxlength="4000" style="width:1500;max-width:1500;height:100;"><%=viewBean.getCommentaire()%></textarea></td>
 </tr>
 
 <%-- /tpl:put --%>
