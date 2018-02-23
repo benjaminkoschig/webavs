@@ -24,6 +24,7 @@ import globaz.cygnus.db.paiement.RFLotManager;
 import globaz.cygnus.db.paiement.RFPrestation;
 import globaz.cygnus.db.qds.RFAssQdDossier;
 import globaz.cygnus.db.qds.RFAssQdDossierJointDossierJointTiersManager;
+import globaz.cygnus.db.qds.RFAssQdDossierManager;
 import globaz.cygnus.db.qds.RFQdAssureJointDossierJointTiersManager;
 import globaz.cygnus.db.qds.RFQdAugmentation;
 import globaz.cygnus.db.qds.RFQdAugmentationManager;
@@ -1175,5 +1176,43 @@ public class RFUtils {
             }
         }
         return dateEnvoiLot;
+    }
+
+    /**
+     * Recherche si le bénéficiaire concerne un enfant
+     * 
+     * @param session
+     * @param idTier
+     * @param idQd
+     * @return
+     * @throws Exception
+     */
+    public static boolean isEnfant(BSession session, String idTier, String idQd) throws Exception {
+
+        RFAssQdDossierManager rfAssQdDosMgr = new RFAssQdDossierManager();
+        rfAssQdDosMgr.setSession(session);
+        rfAssQdDosMgr.setForIdQdBase(idQd);
+        String idDossier = RFUtils.getDossierJointPrDemande(idTier, session).getIdDossier();
+        if (null != idDossier) {
+            rfAssQdDosMgr.setForIdDossier(idDossier);
+            rfAssQdDosMgr.changeManagerSize(0);
+            rfAssQdDosMgr.find();
+            if (rfAssQdDosMgr.size() == 1) {
+                RFAssQdDossier rfAssQdDos = (RFAssQdDossier) rfAssQdDosMgr.getFirstEntity();
+                if (null != rfAssQdDos) {
+                    if (IPCDroits.CS_ROLE_FAMILLE_ENFANT.equals(rfAssQdDos.getTypeRelation())) {
+                        return true;
+                    }
+                } else {
+                    throw new Exception("RFValidationDemandeService.montantsQdAssure(): RFAssQdDossier null");
+                }
+            } else {
+                throw new Exception("RFValidationDemandeService.montantsQdAssure(): RFAssQdDossier introuvable");
+            }
+        } else {
+            throw new Exception("RFValidationDemandeService.montantsQdAssure(): Dossier introuvable");
+        }
+
+        return false;
     }
 }

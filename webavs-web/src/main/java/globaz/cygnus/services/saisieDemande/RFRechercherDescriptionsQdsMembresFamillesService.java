@@ -1,5 +1,6 @@
 package globaz.cygnus.services.saisieDemande;
 
+import globaz.cygnus.api.IRFTypesBeneficiairePc;
 import globaz.cygnus.api.qds.IRFQd;
 import globaz.cygnus.db.qds.RFAssQdDossierJointDossierJointTiers;
 import globaz.cygnus.db.qds.RFAssQdDossierJointDossierJointTiersManager;
@@ -101,6 +102,14 @@ public class RFRechercherDescriptionsQdsMembresFamillesService {
                 RFQdAssureJointDossierJointTiers rfQdAssureJointPotType = (RFQdAssureJointDossierJointTiers) rfQdAssureJointPotTypeMgr
                         .getFirstEntity();
 
+                // Si le sous-type de soin est lié à une seule personne et que le bénéficiare de la demande est un
+                // enfant (voir grande Qd) on prend le pot de l'enfant vivant séparé
+                if (!(RFUtils
+                        .isSousTypeDeSoinCodeConcernePlusieursPersonnes(codeTypeDeSoinList, codeSousTypeDeSoinList))
+                        && RFUtils.isEnfant((BSession) session, rfQdAssureJointPotType.getIdTiers(), idQdPrincipal)) {
+                    typeBeneficiaire = IRFTypesBeneficiairePc.ENFANTS_VIVANT_SEPARES;
+                }
+
                 updateLimiteForMajeur(rfQdAssureJointPotType, typeBeneficiaire, genrePCAccordee,
                         forDateDebutBetweenPeriode, codeTypeDeSoinList, codeSousTypeDeSoinList, (BSession) session,
                         transaction);
@@ -148,6 +157,7 @@ public class RFRechercherDescriptionsQdsMembresFamillesService {
 
         if (!csTypeBeneficiairePC.isEmpty() && !csGenrePCAccordee.isEmpty()) {
             RFRetrieveLimiteAnnuelleSousTypeDeSoinService rfLimAnnSouTypDeSoiSer = new RFRetrieveLimiteAnnuelleSousTypeDeSoinService();
+
             String montant = rfLimAnnSouTypDeSoiSer.getLimiteAnnuelleTypeDeSoinIdTiers(session, codeTypeDeSoinList,
                     codeSousTypeDeSoinList, rfQdAssureJointPotType.getIdTiers(), date, (BTransaction) transaction,
                     csTypeBeneficiairePC, csGenrePCAccordee, null)[0];

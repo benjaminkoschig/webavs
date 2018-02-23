@@ -8,8 +8,6 @@ import globaz.cygnus.api.demandes.IRFDemande;
 import globaz.cygnus.api.motifsRefus.IRFMotifsRefus;
 import globaz.cygnus.db.attestations.RFMaintienDomicile;
 import globaz.cygnus.db.demandes.RFPrDemandeJointDossier;
-import globaz.cygnus.db.qds.RFAssQdDossier;
-import globaz.cygnus.db.qds.RFAssQdDossierManager;
 import globaz.cygnus.services.RFSetEtatProcessService;
 import globaz.cygnus.services.preparerDecision.RFCalculMontantAPayerData;
 import globaz.cygnus.services.preparerDecision.RFVerificationAttestationsService;
@@ -41,7 +39,6 @@ import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
 import ch.globaz.cygnus.business.constantes.ERFProperties;
-import ch.globaz.pegasus.business.constantes.IPCDroits;
 
 /**
  * 
@@ -540,31 +537,7 @@ public class RFValidationDemandeService {
         if (!viewBean.getMsgType().equals(FWViewBeanInterface.ERROR) && !JadeStringUtil.isEmpty(idQdPrincipale)) {
 
             // Recherche si le bénéficiaire concerne un enfant
-            boolean isEnfant = false;
-            RFAssQdDossierManager rfAssQdDosMgr = new RFAssQdDossierManager();
-            rfAssQdDosMgr.setSession(viewBean.getSession());
-            rfAssQdDosMgr.setForIdQdBase(idQdPrincipale);
-            String idDossier = RFUtils.getDossierJointPrDemande(viewBean.getIdTiers(), viewBean.getSession())
-                    .getIdDossier();
-            if (null != idDossier) {
-                rfAssQdDosMgr.setForIdDossier(idDossier);
-                rfAssQdDosMgr.changeManagerSize(0);
-                rfAssQdDosMgr.find();
-                if (rfAssQdDosMgr.size() == 1) {
-                    RFAssQdDossier rfAssQdDos = (RFAssQdDossier) rfAssQdDosMgr.getFirstEntity();
-                    if (null != rfAssQdDos) {
-                        if (rfAssQdDos.getTypeRelation().equals(IPCDroits.CS_ROLE_FAMILLE_ENFANT)) {
-                            isEnfant = true;
-                        }
-                    } else {
-                        throw new Exception("RFValidationDemandeService.montantsQdAssure(): RFAssQdDossier null");
-                    }
-                } else {
-                    throw new Exception("RFValidationDemandeService.montantsQdAssure(): RFAssQdDossier introuvable");
-                }
-            } else {
-                throw new Exception("RFValidationDemandeService.montantsQdAssure(): Dossier introuvable");
-            }
+            boolean isEnfant = RFUtils.isEnfant(viewBean.getSession(), viewBean.getIdTiers(), idQdPrincipale);
 
             RFVerificationQdAssureService rfVerificationQdAssureService = new RFVerificationQdAssureService();
             RFCalculMontantAPayerData idsMotifRefus = rfVerificationQdAssureService.montantQdAssure(
