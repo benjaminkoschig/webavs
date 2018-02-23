@@ -37,6 +37,7 @@ import java.util.Map;
 import org.apache.commons.io.IOUtils;
 import ch.globaz.al.business.constantes.ALCSDossier;
 import ch.globaz.al.business.constantes.ALCSDroit;
+import ch.globaz.al.business.constantes.ALCSPrestation;
 import ch.globaz.al.business.constantes.ALCSTarif;
 import ch.globaz.al.web.application.ALApplication;
 
@@ -60,11 +61,13 @@ public class ALStatistiquesOfasProcess extends BProcess {
     public static final String KEY_35C_MAP_STAT_OFAS = "35C";
     public static final String KEY_35D_MAP_STAT_OFAS = "35D";
     public static final String KEY_35E_MAP_STAT_OFAS = "35E";
+    public static final String KEY_35F_MAP_STAT_OFAS = "35F";
     public static final String KEY_36A_MAP_STAT_OFAS = "36A";
     public static final String KEY_36B_MAP_STAT_OFAS = "36B";
     public static final String KEY_36C_MAP_STAT_OFAS = "36C";
     public static final String KEY_36D_MAP_STAT_OFAS = "36D";
     public static final String KEY_36E_MAP_STAT_OFAS = "36E";
+    public static final String KEY_36F_MAP_STAT_OFAS = "36F";
     public static final String KEY_37A_MAP_STAT_OFAS = "37A";
     public static final String KEY_37B_MAP_STAT_OFAS = "37B";
     public static final String KEY_37C_MAP_STAT_OFAS = "37C";
@@ -81,12 +84,14 @@ public class ALStatistiquesOfasProcess extends BProcess {
     public static final String KEY_40D_MAP_STAT_OFAS = "40D";
     public static final String KEY_40E_MAP_STAT_OFAS = "40E";
     public static final String KEY_40F_MAP_STAT_OFAS = "40F";
+    public static final String KEY_40G_MAP_STAT_OFAS = "40G";
     public static final String KEY_41A_MAP_STAT_OFAS = "41A";
     public static final String KEY_41B_MAP_STAT_OFAS = "41B";
     public static final String KEY_41C_MAP_STAT_OFAS = "41C";
     public static final String KEY_41D_MAP_STAT_OFAS = "41D";
     public static final String KEY_41E_MAP_STAT_OFAS = "41E";
     public static final String KEY_41F_MAP_STAT_OFAS = "41F";
+    public static final String KEY_41G_MAP_STAT_OFAS = "41G";
     public static final String KEY_42A_MAP_STAT_OFAS = "42A";
     public static final String KEY_42B_MAP_STAT_OFAS = "42B";
     public static final String KEY_42C_MAP_STAT_OFAS = "42C";
@@ -118,6 +123,7 @@ public class ALStatistiquesOfasProcess extends BProcess {
     public static final String REQUETE_AF_COL_NAME_CANTON = "COL_CANTON";
     public static final String REQUETE_AF_COL_NAME_CATEGORIE_TARIF = "COL_CSCATA";
     public static final String REQUETE_AF_COL_NAME_CS_UNIT = "COL_CSUNIT";
+    private static final String REQUETE_AF_COL_NAME_ENFANT = "ID_ENFANT";
     public static final String REQUETE_AF_COL_NAME_GENRE_ASS = "COL_MBTGEN";
     public static final String REQUETE_AF_COL_NAME_NUMCPT = "COL_NUMCPT";
     public static final String REQUETE_AF_COL_NAME_NUMERO_DOSSIER = "COL_EID";
@@ -132,6 +138,7 @@ public class ALStatistiquesOfasProcess extends BProcess {
     public static final String REQUETE_AF_COL_NAME_TYPE_ALLOC = "COL_CSTYPE";
     public static final String REQUETE_AF_COL_TYPE_AFF = "COL_MATTAF";
     public static final String REQUETE_AF_COL_VAL = "COL_VAL";
+    public static final String REQUETE_AF_COL_SOMME = "COL_SOMME";
     public static final String REQUETE_CAISSES_AF = "CAISSES_AF";
     public static final String REQUETE_CANTONS = "CANTONS";
     public static final String REQUETE_NB_ENFANTS = "COL_NB_ENF";
@@ -267,25 +274,49 @@ public class ALStatistiquesOfasProcess extends BProcess {
         mapStatOfas.put(ALStatistiquesOfasProcess.KEY_37E_MAP_STAT_OFAS, String.valueOf(getVal));
     }
 
-    private void compterADIAllocEnfantsFormProf(Map<String, String> mapStatOfas, String numeroCaisse,
+    private void compterADIADCAllocEnfantsFormProf(Map<String, String> mapStatOfas, String numeroCaisse,
             List<Map<String, String>> listAllocEnfantsAllocADI) {
-        double getVal = 0.0;
-        double getVal2 = 0.0;
+        double getValCSEnfant = 0.0;
+        double getValCSFormation = 0.0;
+        double getValISEnfant = 0.0;
+        double getValISFormation = 0.0;
 
         for (Map<String, String> mapAlloc : listAllocEnfantsAllocADI) {
 
-            if (ALCSDroit.TYPE_ENF.equals(mapAlloc.get(ALStatistiquesOfasProcess.REQUETE_AF_COL_NAME_TYPE_ALLOC))) {
+            if (ALCSDroit.TYPE_ENF.equals(mapAlloc.get(ALStatistiquesOfasProcess.REQUETE_AF_COL_NAME_TYPE_ALLOC))
+                    && ALCSPrestation.STATUT_ADC.equals(mapAlloc
+                            .get(ALStatistiquesOfasProcess.REQUETE_AF_COL_NAME_STATUT))
+                    && (Double.valueOf(mapAlloc.get(ALStatistiquesOfasProcess.REQUETE_AF_COL_VAL)) > 0)) {
+                getValCSEnfant++;
 
-                getVal += sommerValue(mapAlloc.get(ALStatistiquesOfasProcess.REQUETE_AF_COL_VAL));
+            }
+            if (ALCSDroit.TYPE_FORM.equals(mapAlloc.get(ALStatistiquesOfasProcess.REQUETE_AF_COL_NAME_TYPE_ALLOC))
+                    && ALCSPrestation.STATUT_ADC.equals(mapAlloc
+                            .get(ALStatistiquesOfasProcess.REQUETE_AF_COL_NAME_STATUT))
+                    && (Double.valueOf(mapAlloc.get(ALStatistiquesOfasProcess.REQUETE_AF_COL_VAL)) > 0)) {
+                getValCSFormation++;
+
             }
 
-            if (ALCSDroit.TYPE_FORM.equals(mapAlloc.get(ALStatistiquesOfasProcess.REQUETE_AF_COL_NAME_TYPE_ALLOC))) {
+            if (ALCSDroit.TYPE_ENF.equals(mapAlloc.get(ALStatistiquesOfasProcess.REQUETE_AF_COL_NAME_TYPE_ALLOC))
+                    && ALCSPrestation.STATUT_ADI.equals(mapAlloc
+                            .get(ALStatistiquesOfasProcess.REQUETE_AF_COL_NAME_STATUT))
+                    && (Double.valueOf(mapAlloc.get(ALStatistiquesOfasProcess.REQUETE_AF_COL_VAL)) > 0)) {
+                getValISEnfant++;
 
-                getVal2 += sommerValue(mapAlloc.get(ALStatistiquesOfasProcess.REQUETE_AF_COL_VAL));
+            }
+            if (ALCSDroit.TYPE_FORM.equals(mapAlloc.get(ALStatistiquesOfasProcess.REQUETE_AF_COL_NAME_TYPE_ALLOC))
+                    && ALCSPrestation.STATUT_ADI.equals(mapAlloc
+                            .get(ALStatistiquesOfasProcess.REQUETE_AF_COL_NAME_STATUT))
+                    && (Double.valueOf(mapAlloc.get(ALStatistiquesOfasProcess.REQUETE_AF_COL_VAL)) > 0)) {
+                getValISFormation++;
+
             }
         }
-        mapStatOfas.put(ALStatistiquesOfasProcess.KEY_35E_MAP_STAT_OFAS, String.valueOf(getVal));
-        mapStatOfas.put(ALStatistiquesOfasProcess.KEY_36E_MAP_STAT_OFAS, String.valueOf(getVal2));
+        mapStatOfas.put(ALStatistiquesOfasProcess.KEY_35E_MAP_STAT_OFAS, String.valueOf(getValCSEnfant));
+        mapStatOfas.put(ALStatistiquesOfasProcess.KEY_35F_MAP_STAT_OFAS, String.valueOf(getValISEnfant));
+        mapStatOfas.put(ALStatistiquesOfasProcess.KEY_36E_MAP_STAT_OFAS, String.valueOf(getValCSFormation));
+        mapStatOfas.put(ALStatistiquesOfasProcess.KEY_36F_MAP_STAT_OFAS, String.valueOf(getValISFormation));
     }
 
     private void compterFormProfSalarieTSE(Map<String, String> mapStatOfas, String numeroCaisse,
@@ -556,19 +587,27 @@ public class ALStatistiquesOfasProcess extends BProcess {
         mapStatOfas.put(ALStatistiquesOfasProcess.KEY_026C_MAP_STAT_OFAS, String.valueOf(getVal3));
     }
 
-    private void compterSommeAllocFamilialesADI(Map<String, String> mapStatOfas, String numeroCaisse,
+    private void compterSommeAllocFamilialesADIADC(Map<String, String> mapStatOfas, String numeroCaisse,
             List<Map<String, String>> listAlloc) {
 
         double getVal = 0.0;
-
+        double getVal2 = 0.0;
         for (Map<String, String> mapAlloc : listAlloc) {
 
-            if (ALCSDroit.TYPE_ENF.equals(mapAlloc.get(ALStatistiquesOfasProcess.REQUETE_AF_COL_NAME_TYPE_ALLOC))) {
+            if (ALCSDroit.TYPE_ENF.equals(mapAlloc.get(ALStatistiquesOfasProcess.REQUETE_AF_COL_NAME_TYPE_ALLOC))
+                    && ALCSPrestation.STATUT_ADC.equals(mapAlloc
+                            .get(ALStatistiquesOfasProcess.REQUETE_AF_COL_NAME_STATUT))) {
                 getVal += sommerValue(mapAlloc.get(ALStatistiquesOfasProcess.REQUETE_AF_COL_VAL));
+            }
+            if (ALCSDroit.TYPE_ENF.equals(mapAlloc.get(ALStatistiquesOfasProcess.REQUETE_AF_COL_NAME_TYPE_ALLOC))
+                    && ALCSPrestation.STATUT_ADI.equals(mapAlloc
+                            .get(ALStatistiquesOfasProcess.REQUETE_AF_COL_NAME_STATUT))) {
+                getVal2 += sommerValue(mapAlloc.get(ALStatistiquesOfasProcess.REQUETE_AF_COL_VAL));
             }
         }
 
         mapStatOfas.put(ALStatistiquesOfasProcess.KEY_40F_MAP_STAT_OFAS, String.valueOf(getVal));
+        mapStatOfas.put(ALStatistiquesOfasProcess.KEY_40G_MAP_STAT_OFAS, String.valueOf(getVal2));
     }
 
     private void compterSommeAllocFamilialesAdoptionNaissanceAudelaMontantsCantonaux(Map<String, String> mapStatOfas,
@@ -607,19 +646,28 @@ public class ALStatistiquesOfasProcess extends BProcess {
         mapStatOfas.put(ALStatistiquesOfasProcess.KEY_40E_MAP_STAT_OFAS, String.valueOf(getVal));
     }
 
-    private void compterSommeAllocFamilialesFormProfADI(Map<String, String> mapStatOfas, String numeroCaisse,
+    private void compterSommeAllocFamilialesFormProfADIADC(Map<String, String> mapStatOfas, String numeroCaisse,
             List<Map<String, String>> listAlloc) {
 
         double getVal = 0.0;
+        double getVal2 = 0.0;
 
         for (Map<String, String> mapAlloc : listAlloc) {
 
-            if (ALCSDroit.TYPE_FORM.equals(mapAlloc.get(ALStatistiquesOfasProcess.REQUETE_AF_COL_NAME_TYPE_ALLOC))) {
+            if (ALCSDroit.TYPE_FORM.equals(mapAlloc.get(ALStatistiquesOfasProcess.REQUETE_AF_COL_NAME_TYPE_ALLOC))
+                    && ALCSPrestation.STATUT_ADC.equals(mapAlloc
+                            .get(ALStatistiquesOfasProcess.REQUETE_AF_COL_NAME_STATUT))) {
                 getVal += sommerValue(mapAlloc.get(ALStatistiquesOfasProcess.REQUETE_AF_COL_VAL));
+            }
+            if (ALCSDroit.TYPE_FORM.equals(mapAlloc.get(ALStatistiquesOfasProcess.REQUETE_AF_COL_NAME_TYPE_ALLOC))
+                    && ALCSPrestation.STATUT_ADI.equals(mapAlloc
+                            .get(ALStatistiquesOfasProcess.REQUETE_AF_COL_NAME_STATUT))) {
+                getVal2 += sommerValue(mapAlloc.get(ALStatistiquesOfasProcess.REQUETE_AF_COL_VAL));
             }
         }
 
         mapStatOfas.put(ALStatistiquesOfasProcess.KEY_41F_MAP_STAT_OFAS, String.valueOf(getVal));
+        mapStatOfas.put(ALStatistiquesOfasProcess.KEY_41G_MAP_STAT_OFAS, String.valueOf(getVal2));
     }
 
     private void compterSommeAllocFamilialesFormProfAudelaMontantsCantonaux(Map<String, String> mapStatOfas,
@@ -1017,6 +1065,8 @@ public class ALStatistiquesOfasProcess extends BProcess {
 
         addAStatistiqueLineInListCSVLine(ALStatistiquesOfasProcess.KEY_35E_MAP_STAT_OFAS, mapStatOfas, listCSVLine);
 
+        addAStatistiqueLineInListCSVLine(ALStatistiquesOfasProcess.KEY_35F_MAP_STAT_OFAS, mapStatOfas, listCSVLine);
+
         addALineInListCSVLine(
                 getSession().getLabel(
                         ALStatistiquesOfasProcess.LABEL_STATISTIQUE_OFAS_FIX_PART
@@ -1031,6 +1081,8 @@ public class ALStatistiquesOfasProcess extends BProcess {
         addAStatistiqueLineInListCSVLine(ALStatistiquesOfasProcess.KEY_36D_MAP_STAT_OFAS, mapStatOfas, listCSVLine);
 
         addAStatistiqueLineInListCSVLine(ALStatistiquesOfasProcess.KEY_36E_MAP_STAT_OFAS, mapStatOfas, listCSVLine);
+
+        addAStatistiqueLineInListCSVLine(ALStatistiquesOfasProcess.KEY_36F_MAP_STAT_OFAS, mapStatOfas, listCSVLine);
 
         addALineInListCSVLine(
                 getSession().getLabel(
@@ -1085,6 +1137,8 @@ public class ALStatistiquesOfasProcess extends BProcess {
 
         addAStatistiqueLineInListCSVLine(ALStatistiquesOfasProcess.KEY_40F_MAP_STAT_OFAS, mapStatOfas, listCSVLine);
 
+        addAStatistiqueLineInListCSVLine(ALStatistiquesOfasProcess.KEY_40G_MAP_STAT_OFAS, mapStatOfas, listCSVLine);
+
         addALineInListCSVLine(
                 getSession().getLabel(ALStatistiquesOfasProcess.LABEL_STATISTIQUE_OFAS_FIX_PART + "ALLOC_FORM_PROF"),
                 " ", listCSVLine);
@@ -1100,6 +1154,8 @@ public class ALStatistiquesOfasProcess extends BProcess {
         addAStatistiqueLineInListCSVLine(ALStatistiquesOfasProcess.KEY_41E_MAP_STAT_OFAS, mapStatOfas, listCSVLine);
 
         addAStatistiqueLineInListCSVLine(ALStatistiquesOfasProcess.KEY_41F_MAP_STAT_OFAS, mapStatOfas, listCSVLine);
+
+        addAStatistiqueLineInListCSVLine(ALStatistiquesOfasProcess.KEY_41G_MAP_STAT_OFAS, mapStatOfas, listCSVLine);
 
         addALineInListCSVLine(
                 getSession().getLabel(
@@ -1221,11 +1277,11 @@ public class ALStatistiquesOfasProcess extends BProcess {
         return results;
     }
 
-    private List<Map<String, String>> fillListAllocationADI(String numeroCaisse, String canton)
+    private List<Map<String, String>> fillListAllocationADIADC(String numeroCaisse, String canton)
             throws JadePersistenceException {
-        String sqlQueryListageTotalAllocationsADI = getSqlNbAllocationsADI(numeroCaisse, canton);
-        List<Map<String, String>> listMapResultQueryListageAllocationADI = executeQuery(sqlQueryListageTotalAllocationsADI);
-        return listMapResultQueryListageAllocationADI;
+        String sqlQueryListageTotalAllocationsADIADC = getSqlNbAllocationsADIADC(numeroCaisse, canton);
+        List<Map<String, String>> listMapResultQueryListageAllocationADIADC = executeQuery(sqlQueryListageTotalAllocationsADIADC);
+        return listMapResultQueryListageAllocationADIADC;
     }
 
     private List<Map<String, String>> fillListNBAffilies(String numeroCaisse, String canton)
@@ -1296,11 +1352,11 @@ public class ALStatistiquesOfasProcess extends BProcess {
         return listMapResultQueryListageSommeAllocFamiliales;
     }
 
-    private List<Map<String, String>> fillListSommeAllocFamilialesADI(String numeroCaisse, String canton)
+    private List<Map<String, String>> fillListSommeAllocFamilialesADIADC(String numeroCaisse, String canton)
             throws JadePersistenceException {
-        String sqlQueryListageSommeAllocFamilialesADI = getSqlSommeAllocationsADI(numeroCaisse, canton);
-        List<Map<String, String>> listMapResultQueryListageSommeAllocFamilialesADI = executeQuery(sqlQueryListageSommeAllocFamilialesADI);
-        return listMapResultQueryListageSommeAllocFamilialesADI;
+        String sqlQueryListageSommeAllocFamilialesADIADC = getNewSqlSommeAllocationsADIADC(numeroCaisse, canton);
+        List<Map<String, String>> listMapResultQueryListageSommeAllocFamilialesADIADC = executeQuery(sqlQueryListageSommeAllocFamilialesADIADC);
+        return listMapResultQueryListageSommeAllocFamilialesADIADC;
     }
 
     private List<Map<String, String>> fillListSommeAllocFamilialesAudelaMontantsCantonaux(String numeroCaisse,
@@ -1342,6 +1398,7 @@ public class ALStatistiquesOfasProcess extends BProcess {
         mapStatOfas.put(ALStatistiquesOfasProcess.KEY_40D_MAP_STAT_OFAS, "0");
         mapStatOfas.put(ALStatistiquesOfasProcess.KEY_40E_MAP_STAT_OFAS, "0");
         mapStatOfas.put(ALStatistiquesOfasProcess.KEY_40F_MAP_STAT_OFAS, "0");
+        mapStatOfas.put(ALStatistiquesOfasProcess.KEY_40G_MAP_STAT_OFAS, "0");
         mapStatOfas.put(ALStatistiquesOfasProcess.KEY_41A_MAP_STAT_OFAS, "0");
         mapStatOfas.put(ALStatistiquesOfasProcess.KEY_41B_MAP_STAT_OFAS, "0");
         mapStatOfas.put(ALStatistiquesOfasProcess.KEY_41C_MAP_STAT_OFAS, "0");
@@ -1555,17 +1612,23 @@ public class ALStatistiquesOfasProcess extends BProcess {
 
     }
 
-    private String getSqlNbAllocationsADI(String numeroCaisse, String canton) {
+    private String getSqlNbAllocationsADIADC(String numeroCaisse, String canton) {
         String sql = "SELECT ppacdi as "
                 + ALStatistiquesOfasProcess.REQUETE_AF_COL_NAME_PARAM
-                + ", cast(substr(CAST(nvalid AS CHAR(6)),1,4)as int)"
                 + ", count(*) as "
                 + ALStatistiquesOfasProcess.REQUETE_AF_COL_VAL
                 + ", cstype as "
                 + ALStatistiquesOfasProcess.REQUETE_AF_COL_NAME_TYPE_ALLOC
+                + ", cscaal as "
+                + ALStatistiquesOfasProcess.REQUETE_AF_COL_NAME_ACTIVITE_ALLOC
+                + ", ent.CSTATU as "
+                + ALStatistiquesOfasProcess.REQUETE_AF_COL_NAME_STATUT
+                + ", enf.CID as "
+                + ALStatistiquesOfasProcess.REQUETE_AF_COL_NAME_ENFANT
                 + " FROM schema.aldetpre det LEFT OUTER "
                 + "JOIN schema.alentpre ent ON ent.mid = det.mid LEFT OUTER "
                 + "JOIN schema.aldroit dro ON dro.fid=det.fid LEFT OUTER "
+                + "JOIN CCJUWEB.alenfant enf ON enf.cid = dro.cid LEFT OUTER "
                 + "JOIN schema.aldos dos ON dos.eid=dro.eid LEFT OUTER "
                 + "JOIN schema.fwcoup cs ON cs.pcosid=ent.cscant and cs.PLAIDE = 'F' "
                 + "left outer join schema.alparam param on param.pparva=det.numcpt AND param.ppacdi LIKE 'rubrique.multicaisse.%'"
@@ -1576,13 +1639,11 @@ public class ALStatistiquesOfasProcess extends BProcess {
         if (!JadeStringUtil.isBlank(numeroCaisse)) {
             sql += " AND ( ppacdi like 'rubrique.multicaisse." + numeroCaisse + ".%' ) ";
         }
-        sql += " AND nvalid = " + annee + "12" + " AND cstype  IN (" + ALCSDroit.TYPE_ENF + ", " + ALCSDroit.TYPE_FORM
-                + ")" + " AND cscaal IN (" + ALCSDossier.ACTIVITE_SALARIE + ", " + ALCSDossier.ACTIVITE_INDEPENDANT
-                + ", " + ALCSDossier.ACTIVITE_NONACTIF + ")" + " AND ((ent.cstatu = 61230003)"
-                + " OR (ent.cstatu = 61230002 and mdvc between " + annee + "0101 " + "AND " + annee + "1231))"
-                + " AND PCOUID = " + "'" + canton + "'"
-                + " group by cstype, ppacdi, cast(substr(CAST(nvalid AS CHAR(6)),1,4)as int) "
-                + " order by cstype, ppacdi, cast(substr(CAST(nvalid AS CHAR(6)),1,4)as int) ";
+        sql += " AND cstype  IN (" + ALCSDroit.TYPE_ENF + ", " + ALCSDroit.TYPE_FORM + ")" + " AND cscaal IN ("
+                + ALCSDossier.ACTIVITE_SALARIE + ", " + ALCSDossier.ACTIVITE_INDEPENDANT + ", "
+                + ALCSDossier.ACTIVITE_NONACTIF + ")" + " AND (ent.cstatu = 61230003)" + " OR (ent.cstatu = 61230002)"
+                + " AND mdvc between " + annee + "0101 " + "AND " + annee + "1231" + " AND PCOUID = " + "'" + canton
+                + "'" + " group by cstype,cscaal, ppacdi,ent.CSTATU,enf.CID  " + " order by cstype, ppacdi ";
         sql = replaceSchemaInSqlQuery(sql);
 
         // System.out.println("--getSqlNbAllocationsADI");
@@ -1739,6 +1800,45 @@ public class ALStatistiquesOfasProcess extends BProcess {
         sql += " AND mdvc between " + annee + "0101 " + "AND " + annee + "1231"
                 + " AND ((ent.cstatu=61230003) OR (ent.cstatu=61230002))" + " AND PCOUID = " + "'" + canton + "'"
                 + " group by cstype, cscaal, ppacdi, cast(substr(CAST(nvalid AS CHAR(6)),1,4)as int) "
+                + " order by cstype, cscaal, ppacdi, cast(substr(CAST(nvalid AS CHAR(6)),1,4)as int) ";
+        sql = replaceSchemaInSqlQuery(sql);
+
+        // System.out.println("--getSqlSommeAllocationsADI");
+        // System.out.println(sql + ";");
+        return sql;
+
+    }
+
+    private String getNewSqlSommeAllocationsADIADC(String numeroCaisse, String canton) {
+        String sql = "SELECT  ppacdi as "
+                + ALStatistiquesOfasProcess.REQUETE_AF_COL_NAME_PARAM
+                + ", cast(substr(CAST(nvalid AS CHAR(6)),1,4)as int)"
+                + ", sum(nmont) as "
+                + ALStatistiquesOfasProcess.REQUETE_AF_COL_VAL
+                + ", cstype as "
+                + ALStatistiquesOfasProcess.REQUETE_AF_COL_NAME_TYPE_ALLOC
+                + ", cscaal as "
+                + ALStatistiquesOfasProcess.REQUETE_AF_COL_NAME_ACTIVITE_ALLOC
+                + ", ent.CSTATU as "
+                + ALStatistiquesOfasProcess.REQUETE_AF_COL_NAME_STATUT
+                + " FROM schema.aldetpre det LEFT OUTER "
+                + "JOIN schema.alentpre ent ON ent.mid = det.mid LEFT OUTER "
+                + "JOIN schema.aldos dos ON dos.eid=ent.eid LEFT OUTER "
+                + "JOIN schema.fwcoup cs ON cs.pcosid=ent.cscant and cs.PLAIDE = 'F' "
+                + "left outer join schema.alparam param on param.pparva=det.numcpt AND param.ppacdi LIKE 'rubrique.multicaisse.%'"
+                + " WHERE cstype  IN (" + ALCSDroit.TYPE_ENF + ", " + ALCSDroit.TYPE_FORM + ", " + ALCSDroit.TYPE_ACCE
+                + ", " + ALCSDroit.TYPE_NAIS + ")" + " AND cscaal IN (" + ALCSDossier.ACTIVITE_SALARIE + ", "
+                + ALCSDossier.ACTIVITE_NONACTIF + ", " + ALCSDossier.ACTIVITE_INDEPENDANT + ") AND " + "det.cstcai <> "
+                + ALCSTarif.CATEGORIE_SUP_HORLO + " ";
+        if (isSansRestitutions) {
+            sql += " AND ( numCpt not like '____.46%' ) ";
+        }
+        if (!JadeStringUtil.isBlank(numeroCaisse)) {
+            sql += " AND ( ppacdi like 'rubrique.multicaisse." + numeroCaisse + ".%' ) ";
+        }
+        sql += " AND mdvc between " + annee + "0101 " + "AND " + annee + "1231"
+                + " AND ((ent.cstatu=61230003) OR (ent.cstatu=61230002))" + " AND PCOUID = " + "'" + canton + "'"
+                + " group by cstype, cscaal, ppacdi, cast(substr(CAST(nvalid AS CHAR(6)),1,4)as int), ent.CSTATU "
                 + " order by cstype, cscaal, ppacdi, cast(substr(CAST(nvalid AS CHAR(6)),1,4)as int) ";
         sql = replaceSchemaInSqlQuery(sql);
 
@@ -2020,7 +2120,7 @@ public class ALStatistiquesOfasProcess extends BProcess {
             fillMapStatOfas(mapStatOfas);
 
             List<Map<String, String>> listAllocations = fillListNBAllocation(numeroCaisse, canton);
-            List<Map<String, String>> listAllocADI = fillListAllocationADI(numeroCaisse, canton);
+            List<Map<String, String>> listAllocADIADC = fillListAllocationADIADC(numeroCaisse, canton);
             List<Map<String, String>> listAllocAdoptionNaissance = fillListNBAllocationAdoptionNaissance(numeroCaisse,
                     canton);
             List<Map<String, String>> listAllocAdoptionNaissanceADI = fillListNBAllocationAdoptionNaissanceADI(
@@ -2032,7 +2132,7 @@ public class ALStatistiquesOfasProcess extends BProcess {
 
             List<Map<String, String>> listSommeAllocFamilialesAudelaMontantsCantonaux = fillListSommeAllocFamilialesAudelaMontantsCantonaux(
                     numeroCaisse, canton);
-            List<Map<String, String>> listSommeAllocFamilialesADI = fillListSommeAllocFamilialesADI(numeroCaisse,
+            List<Map<String, String>> listSommeAllocFamilialesADIADC = fillListSommeAllocFamilialesADIADC(numeroCaisse,
                     canton);
 
             List<Map<String, String>> listNBSommeAllocationOutUEAELE = fillListNBSommeAllocationOutUEAELE(numeroCaisse,
@@ -2050,8 +2150,8 @@ public class ALStatistiquesOfasProcess extends BProcess {
             compterPrestationStructureCaisse(mapStatOfas, numeroCaisse, listNBAffilies);
             // 35A + 35B + 35C + 35D
             compterNombreBeneficiaireAllocationEnfants(mapStatOfas, numeroCaisse, listAllocations);
-            // 35E + 36E
-            compterADIAllocEnfantsFormProf(mapStatOfas, numeroCaisse, listAllocADI);
+            // 35E + 35F + 36E + 36F
+            compterADIADCAllocEnfantsFormProf(mapStatOfas, numeroCaisse, listAllocADIADC);
             // 36A + 36B + 36C + 36D
             compterFormProfSalarieTSE(mapStatOfas, numeroCaisse, listAllocations);
             // 37A + 37B + 37C + 37D
@@ -2068,20 +2168,20 @@ public class ALStatistiquesOfasProcess extends BProcess {
             // 40E
             compterSommeAllocFamilialesAudelaMontantsCantonaux(mapStatOfas, numeroCaisse,
                     listSommeAllocFamilialesAudelaMontantsCantonaux);
-            // 40F
-            compterSommeAllocFamilialesADI(mapStatOfas, numeroCaisse, listSommeAllocFamilialesADI);
+            // 40F+ 40G
+            compterSommeAllocFamilialesADIADC(mapStatOfas, numeroCaisse, listSommeAllocFamilialesADIADC);
 
             // 41E
             compterSommeAllocFamilialesFormProfAudelaMontantsCantonaux(mapStatOfas, numeroCaisse,
                     listSommeAllocFamilialesAudelaMontantsCantonaux);
-            // 41F
-            compterSommeAllocFamilialesFormProfADI(mapStatOfas, numeroCaisse, listSommeAllocFamilialesADI);
+            // 41F+ 41G
+            compterSommeAllocFamilialesFormProfADIADC(mapStatOfas, numeroCaisse, listSommeAllocFamilialesADIADC);
 
             // 42E
             compterSommeAllocFamilialesAdoptionNaissanceAudelaMontantsCantonaux(mapStatOfas, numeroCaisse,
                     listSommeAllocFamilialesAudelaMontantsCantonaux);
             // 42F
-            compterSommeAllocFamilialesNaissanceAdoptionADI(mapStatOfas, numeroCaisse, listSommeAllocFamilialesADI);
+            compterSommeAllocFamilialesNaissanceAdoptionADI(mapStatOfas, numeroCaisse, listSommeAllocFamilialesADIADC);
             // 43A
             compterTotalIntermediaireB(mapStatOfas, numeroCaisse);
             // 44A et 45A + 46A et 47A
