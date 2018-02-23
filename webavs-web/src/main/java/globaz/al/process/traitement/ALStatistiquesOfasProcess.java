@@ -1690,7 +1690,6 @@ public class ALStatistiquesOfasProcess extends BProcess {
     private String getSqlNbBeneficiairesAllocationsEnfantFormationProf(String numeroCaisse, String canton) {
         String sql = "SELECT ppacdi as "
                 + ALStatistiquesOfasProcess.REQUETE_AF_COL_NAME_PARAM
-                + ", cast(substr(CAST(nvalid AS CHAR(6)),1,4)as int)"
                 + ", count(distinct(bid)) as "
                 + ALStatistiquesOfasProcess.REQUETE_AF_COL_VAL
                 + ", cscaal as "
@@ -1708,12 +1707,11 @@ public class ALStatistiquesOfasProcess extends BProcess {
         if (!JadeStringUtil.isBlank(numeroCaisse)) {
             sql += " AND ( ppacdi like 'rubrique.multicaisse." + numeroCaisse + ".%' ) ";
         }
-        sql += " AND nvalid = " + annee + "12" + " AND cstype  IN (" + ALCSDroit.TYPE_ENF + ", " + ALCSDroit.TYPE_FORM
-                + ")" + " AND cscaal IN (" + ALCSDossier.ACTIVITE_SALARIE + ", " + ALCSDossier.ACTIVITE_NONACTIF + ", "
+        sql += " AND cstype  IN (" + ALCSDroit.TYPE_ENF + ", " + ALCSDroit.TYPE_FORM + ")" + " AND cscaal IN ("
+                + ALCSDossier.ACTIVITE_SALARIE + ", " + ALCSDossier.ACTIVITE_NONACTIF + ", "
                 + ALCSDossier.ACTIVITE_INDEPENDANT + ")" + " AND ((mdvc between " + annee + "0101 " + "AND " + annee
                 + "1231) or (ent.cstatu = 61230003)) " + " AND PCOUID = " + "'" + canton + "'"
-                + " group by cscaal, ppacdi, cast(substr(CAST(nvalid AS CHAR(6)),1,4)as int) "
-                + " order by cscaal, ppacdi, cast(substr(CAST(nvalid AS CHAR(6)),1,4)as int) ";
+                + " group by cscaal, ppacdi" + " order by cscaal, ppacdi";
         sql = replaceSchemaInSqlQuery(sql);
 
         // System.out.println("--getSqlNbBeneficiairesAllocationsEnfantFormationProf");
