@@ -136,6 +136,10 @@ public class ALStatistiquesOfasProcess extends BProcess {
     public static final String REQUETE_AF_COL_NAME_SUM_NMONT = "COL_SUM_NMONT";
     public static final String REQUETE_AF_COL_NAME_TAUX_OCCUP = "COL_ETOCC";
     public static final String REQUETE_AF_COL_NAME_TYPE_ALLOC = "COL_CSTYPE";
+    public static final String REQUETE_AF_COL_NAME_ID_ENFANT = "ID_ENFANT";
+    public static final String REQUETE_AF_COL_NAME_ID_ALLOCATAIRE = "ID_ALLOCATAIRE";
+    public static final String REQUETE_AF_COL_NAME_STATUT_PRESTATION = "GENRE_ALLOCATION";
+    public static final String REQUETE_AF_COL_NAME_NUMERO_AFFILIE = "NUM_AFFILIE";
     public static final String REQUETE_AF_COL_TYPE_AFF = "COL_MATTAF";
     public static final String REQUETE_AF_COL_VAL = "COL_VAL";
     public static final String REQUETE_AF_COL_SOMME = "COL_SOMME";
@@ -324,31 +328,52 @@ public class ALStatistiquesOfasProcess extends BProcess {
         double getVal = 0.0;
         double getVal2 = 0.0;
         double getVal3 = 0.0;
+        double nbA = 0.0;
+        double nbB = 0.0;
+        double nbC = 0.0;
+        double nbAlloc;
+        List<String> listeClesAllocsEnfants = new ArrayList<String>();
 
         for (Map<String, String> mapAlloc : listAllocFormProfSalaries) {
+            // Création de la clé composé des informations pour un enfant
+            String idEnfant = mapAlloc.get(ALStatistiquesOfasProcess.REQUETE_AF_COL_NAME_ID_ENFANT);
+            String typeAllocation = mapAlloc.get(ALStatistiquesOfasProcess.REQUETE_AF_COL_NAME_TYPE_ALLOC);
+            String numAff = mapAlloc.get(ALStatistiquesOfasProcess.REQUETE_AF_COL_NAME_NUMERO_AFFILIE);
+            String keyActivite = mapAlloc.get(ALStatistiquesOfasProcess.REQUETE_AF_COL_NAME_ACTIVITE_ALLOC);
+            String genreAllocation = mapAlloc.get(ALStatistiquesOfasProcess.REQUETE_AF_COL_NAME_STATUT_PRESTATION);
+            String cleAllocsEnfant = idEnfant + typeAllocation + numAff + keyActivite + genreAllocation;
+            if (!listeClesAllocsEnfants.contains(cleAllocsEnfant)) {
+                listeClesAllocsEnfants.add(cleAllocsEnfant);
+                nbAlloc = 1;
+            } else {
+                nbAlloc = 0;
+            }
 
             if (ALCSDroit.TYPE_FORM.equals(mapAlloc.get(ALStatistiquesOfasProcess.REQUETE_AF_COL_NAME_TYPE_ALLOC))) {
 
                 if (ALCSDossier.ACTIVITE_SALARIE.equals(mapAlloc
                         .get(ALStatistiquesOfasProcess.REQUETE_AF_COL_NAME_ACTIVITE_ALLOC))) {
                     getVal += sommerValue(mapAlloc.get(ALStatistiquesOfasProcess.REQUETE_AF_COL_VAL));
+                    nbA += nbAlloc;
                 }
 
                 if (ALCSDossier.ACTIVITE_INDEPENDANT.equals(mapAlloc
                         .get(ALStatistiquesOfasProcess.REQUETE_AF_COL_NAME_ACTIVITE_ALLOC))) {
                     getVal2 += sommerValue(mapAlloc.get(ALStatistiquesOfasProcess.REQUETE_AF_COL_VAL));
+                    nbB += nbAlloc;
                 }
 
                 if (ALCSDossier.ACTIVITE_NONACTIF.equals(mapAlloc
                         .get(ALStatistiquesOfasProcess.REQUETE_AF_COL_NAME_ACTIVITE_ALLOC))) {
                     getVal3 += sommerValue(mapAlloc.get(ALStatistiquesOfasProcess.REQUETE_AF_COL_VAL));
+                    nbC += nbAlloc;
                 }
             }
         }
-        mapStatOfas.put(ALStatistiquesOfasProcess.KEY_36A_MAP_STAT_OFAS, String.valueOf(getVal));
-        mapStatOfas.put(ALStatistiquesOfasProcess.KEY_36B_MAP_STAT_OFAS, String.valueOf(getVal2));
-        mapStatOfas.put(ALStatistiquesOfasProcess.KEY_36C_MAP_STAT_OFAS, String.valueOf(getVal3));
-        mapStatOfas.put(ALStatistiquesOfasProcess.KEY_36D_MAP_STAT_OFAS, String.valueOf(getVal + getVal2 + getVal3));
+        mapStatOfas.put(ALStatistiquesOfasProcess.KEY_36A_MAP_STAT_OFAS, String.valueOf(nbA));
+        mapStatOfas.put(ALStatistiquesOfasProcess.KEY_36B_MAP_STAT_OFAS, String.valueOf(nbB));
+        mapStatOfas.put(ALStatistiquesOfasProcess.KEY_36C_MAP_STAT_OFAS, String.valueOf(nbC));
+        mapStatOfas.put(ALStatistiquesOfasProcess.KEY_36D_MAP_STAT_OFAS, String.valueOf(nbA + nbB + nbC));
     }
 
     private void compterNbBenefAllocEnfantFormationProf(Map<String, String> mapStatOfas, String numeroCaisse,
@@ -356,34 +381,50 @@ public class ALStatistiquesOfasProcess extends BProcess {
         double getVal = 0.0;
         double getVal2 = 0.0;
         double getVal3 = 0.0;
+        Integer nbSalaire = 0;
+        Integer nbIndependant = 0;
+        Integer nbNonActif = 0;
+        Integer nbAlloc;
+        List<String> listeClesAllocsEnfants = new ArrayList<String>();
 
         for (Map<String, String> mapAlloc : listAlloc) {
+            String idAllocataire = mapAlloc.get(ALStatistiquesOfasProcess.REQUETE_AF_COL_NAME_ID_ALLOCATAIRE);
+            String keyActivite = mapAlloc.get(ALStatistiquesOfasProcess.REQUETE_AF_COL_NAME_ACTIVITE_ALLOC);
+            String numAff = mapAlloc.get(ALStatistiquesOfasProcess.REQUETE_AF_COL_NAME_NUMERO_AFFILIE);
+            String cleAllocsEnfant = idAllocataire + numAff + keyActivite;
+            if (!listeClesAllocsEnfants.contains(cleAllocsEnfant)) {
+                listeClesAllocsEnfants.add(cleAllocsEnfant);
+                nbAlloc = 1;
+            } else {
+                nbAlloc = 0;
+            }
 
             if (ALCSDossier.ACTIVITE_SALARIE.equals(mapAlloc
                     .get(ALStatistiquesOfasProcess.REQUETE_AF_COL_NAME_ACTIVITE_ALLOC))) {
 
                 getVal += sommerValue(mapAlloc.get(ALStatistiquesOfasProcess.REQUETE_AF_COL_VAL));
-
+                nbSalaire += nbAlloc;
             }
 
             if (ALCSDossier.ACTIVITE_INDEPENDANT.equals(mapAlloc
                     .get(ALStatistiquesOfasProcess.REQUETE_AF_COL_NAME_ACTIVITE_ALLOC))) {
 
                 getVal2 += sommerValue(mapAlloc.get(ALStatistiquesOfasProcess.REQUETE_AF_COL_VAL));
-
+                nbIndependant += nbAlloc;
             }
 
             if (ALCSDossier.ACTIVITE_NONACTIF.equals(mapAlloc
                     .get(ALStatistiquesOfasProcess.REQUETE_AF_COL_NAME_ACTIVITE_ALLOC))) {
 
                 getVal3 += sommerValue(mapAlloc.get(ALStatistiquesOfasProcess.REQUETE_AF_COL_VAL));
-
+                nbNonActif += nbAlloc;
             }
         }
-        mapStatOfas.put(ALStatistiquesOfasProcess.KEY_39A_MAP_STAT_OFAS, String.valueOf(getVal));
-        mapStatOfas.put(ALStatistiquesOfasProcess.KEY_39B_MAP_STAT_OFAS, String.valueOf(getVal2));
-        mapStatOfas.put(ALStatistiquesOfasProcess.KEY_39C_MAP_STAT_OFAS, String.valueOf(getVal3));
-        mapStatOfas.put(ALStatistiquesOfasProcess.KEY_39D_MAP_STAT_OFAS, String.valueOf(getVal + getVal2 + getVal3));
+        mapStatOfas.put(ALStatistiquesOfasProcess.KEY_39A_MAP_STAT_OFAS, String.valueOf(nbSalaire));
+        mapStatOfas.put(ALStatistiquesOfasProcess.KEY_39B_MAP_STAT_OFAS, String.valueOf(nbIndependant));
+        mapStatOfas.put(ALStatistiquesOfasProcess.KEY_39C_MAP_STAT_OFAS, String.valueOf(nbNonActif));
+        mapStatOfas.put(ALStatistiquesOfasProcess.KEY_39D_MAP_STAT_OFAS,
+                String.valueOf(nbSalaire + nbIndependant + nbNonActif));
     }
 
     private void compterNbSommeAllocSuisse(Map<String, String> mapStatOfas, String numeroCaisse,
@@ -514,31 +555,50 @@ public class ALStatistiquesOfasProcess extends BProcess {
         double getVal = 0.0;
         double getVal2 = 0.0;
         double getVal3 = 0.0;
+        double nbA = 0.0;
+        double nbB = 0.0;
+        double nbC = 0.0;
+        double nbAlloc;
+
+        List<String> listeClesAllocsEnfants = new ArrayList<String>();
 
         for (Map<String, String> mapAlloc : listAllocEnfants) {
+            // Création de la clé composé des informations pour un enfant
+            String idEnfant = mapAlloc.get(ALStatistiquesOfasProcess.REQUETE_AF_COL_NAME_ID_ENFANT);
+            String typeAllocation = mapAlloc.get(ALStatistiquesOfasProcess.REQUETE_AF_COL_NAME_TYPE_ALLOC);
+            String numAff = mapAlloc.get(ALStatistiquesOfasProcess.REQUETE_AF_COL_NAME_NUMERO_AFFILIE);
+            String keyActivite = mapAlloc.get(ALStatistiquesOfasProcess.REQUETE_AF_COL_NAME_ACTIVITE_ALLOC);
+            String genreAllocation = mapAlloc.get(ALStatistiquesOfasProcess.REQUETE_AF_COL_NAME_STATUT_PRESTATION);
+            String cleAllocsEnfant = idEnfant + typeAllocation + numAff + keyActivite + genreAllocation;
+            if (!listeClesAllocsEnfants.contains(cleAllocsEnfant)) {
+                listeClesAllocsEnfants.add(cleAllocsEnfant);
+                nbAlloc = 1;
+            } else {
+                nbAlloc = 0;
+            }
 
             if (ALCSDroit.TYPE_ENF.equals(mapAlloc.get(ALStatistiquesOfasProcess.REQUETE_AF_COL_NAME_TYPE_ALLOC))) {
                 if (ALCSDossier.ACTIVITE_SALARIE.equals(mapAlloc
                         .get(ALStatistiquesOfasProcess.REQUETE_AF_COL_NAME_ACTIVITE_ALLOC))) {
-
+                    nbA += nbAlloc;
                     getVal += sommerValue(mapAlloc.get(ALStatistiquesOfasProcess.REQUETE_AF_COL_VAL));
                 }
                 if (ALCSDossier.ACTIVITE_INDEPENDANT.equals(mapAlloc
                         .get(ALStatistiquesOfasProcess.REQUETE_AF_COL_NAME_ACTIVITE_ALLOC))) {
-
+                    nbB += nbAlloc;
                     getVal2 += sommerValue(mapAlloc.get(ALStatistiquesOfasProcess.REQUETE_AF_COL_VAL));
                 }
                 if (ALCSDossier.ACTIVITE_NONACTIF.equals(mapAlloc
                         .get(ALStatistiquesOfasProcess.REQUETE_AF_COL_NAME_ACTIVITE_ALLOC))) {
-
+                    nbC += nbAlloc;
                     getVal3 += sommerValue(mapAlloc.get(ALStatistiquesOfasProcess.REQUETE_AF_COL_VAL));
                 }
             }
         }
-        mapStatOfas.put(ALStatistiquesOfasProcess.KEY_35A_MAP_STAT_OFAS, String.valueOf(getVal));
-        mapStatOfas.put(ALStatistiquesOfasProcess.KEY_35B_MAP_STAT_OFAS, String.valueOf(getVal2));
-        mapStatOfas.put(ALStatistiquesOfasProcess.KEY_35C_MAP_STAT_OFAS, String.valueOf(getVal3));
-        mapStatOfas.put(ALStatistiquesOfasProcess.KEY_35D_MAP_STAT_OFAS, String.valueOf(getVal + getVal2 + getVal3));
+        mapStatOfas.put(ALStatistiquesOfasProcess.KEY_35A_MAP_STAT_OFAS, String.valueOf(nbA));
+        mapStatOfas.put(ALStatistiquesOfasProcess.KEY_35B_MAP_STAT_OFAS, String.valueOf(nbB));
+        mapStatOfas.put(ALStatistiquesOfasProcess.KEY_35C_MAP_STAT_OFAS, String.valueOf(nbC));
+        mapStatOfas.put(ALStatistiquesOfasProcess.KEY_35D_MAP_STAT_OFAS, String.valueOf(nbA + nbB + nbC));
 
     }
 
@@ -1293,7 +1353,8 @@ public class ALStatistiquesOfasProcess extends BProcess {
 
     private List<Map<String, String>> fillListNBAllocation(String numeroCaisse, String canton)
             throws JadePersistenceException {
-        String sqlQueryListageTotalAllocations = getSqlNbAllocations(numeroCaisse, canton);
+        // String sqlQueryListageTotalAllocations = getSqlNbAllocations(numeroCaisse, canton);
+        String sqlQueryListageTotalAllocations = getSqlNbAllocationsNew(numeroCaisse, canton);
         List<Map<String, String>> listMapResultQueryListageAllocation = executeQuery(sqlQueryListageTotalAllocations);
         return listMapResultQueryListageAllocation;
     }
@@ -1641,12 +1702,52 @@ public class ALStatistiquesOfasProcess extends BProcess {
         }
         sql += " AND cstype  IN (" + ALCSDroit.TYPE_ENF + ", " + ALCSDroit.TYPE_FORM + ")" + " AND cscaal IN ("
                 + ALCSDossier.ACTIVITE_SALARIE + ", " + ALCSDossier.ACTIVITE_INDEPENDANT + ", "
-                + ALCSDossier.ACTIVITE_NONACTIF + ")" + " AND (ent.cstatu = 61230003)" + " OR (ent.cstatu = 61230002)"
+                + ALCSDossier.ACTIVITE_NONACTIF + ")" + " AND ent.cstatu IN (61230003, 61230002)"
                 + " AND mdvc between " + annee + "0101 " + "AND " + annee + "1231" + " AND PCOUID = " + "'" + canton
                 + "'" + " group by cstype,cscaal, ppacdi,ent.CSTATU,enf.CID  " + " order by cstype, ppacdi ";
         sql = replaceSchemaInSqlQuery(sql);
 
         // System.out.println("--getSqlNbAllocationsADI");
+        // System.out.println(sql + ";");
+        return sql;
+
+    }
+
+    private String getSqlNbAllocationsNew(String numeroCaisse, String canton) {
+        String sql = "SELECT ppacdi as COL_PARAM, cstype as COL_CSTYPE,"
+                + "cscaal as COL_CSCAAL,enf.CID as ID_ENFANT, det.cscata as TYPE_LOI,dos.MALNAF as NUM_AFFILIE,"
+                + "ent.EID as COL_EID,ent.CSTATU AS GENRE_ALLOCATION"
+                + " FROM schema.aldetpre det LEFT OUTER JOIN schema.alentpre ent ON ent.mid = det.mid "
+                + "LEFT OUTER JOIN schema.aldroit dro ON dro.fid=det.fid "
+                + "LEFT OUTER JOIN schema.alenfant enf ON enf.cid = dro.cid "
+                + "LEFT OUTER JOIN schema.titierp ti ON ti.htitie = enf.htitie "
+                + "LEFT OUTER JOIN schema.aldos dos ON dos.eid=dro.eid "
+                + "LEFT OUTER JOIN schema.fwcoup cs ON cs.pcosid=ent.cscant " + "and cs.PLAIDE = 'F' "
+                + "left outer join schema.alparam param on param.pparva=det.numcpt"
+                + " AND param.ppacdi LIKE 'rubrique.multicaisse.%'" + " WHERE nmont > 0"
+                + " AND det.cstcai <> 61190096";
+        if (isSansRestitutions) {
+            sql += " AND ( numCpt not like '____.46%' ) ";
+        }
+        if (!JadeStringUtil.isBlank(numeroCaisse)) {
+            sql += " AND ( ppacdi like 'rubrique.multicaisse." + numeroCaisse + ".%' ) ";
+        }
+        sql += " AND ( numCpt not like '____.46%' )"
+                + " AND cstype IN (61150002, 61150003)"
+                + " AND cscaal IN (61040005, 61040004, 61040003)"
+                + " AND ((mdvc between "
+                + annee
+                + "0101 AND "
+                + annee
+                + "1231))"
+                + "AND PCOUID = '"
+                + canton
+                + "'"
+                + " group by cstype, cscaal, ppacdi,dos.EID,enf.CID,ti.HTLDE2,dos.cscaal,det.cscata,ent.EID,ent.CSTATU,dos.MALNAF"
+                + " order by cstype, cscaal, ppacdi,dos.EID";
+        sql = replaceSchemaInSqlQuery(sql);
+
+        // System.out.println("--getSqlNbAllocationsNew");
         // System.out.println(sql + ";");
         return sql;
 
@@ -1690,10 +1791,12 @@ public class ALStatistiquesOfasProcess extends BProcess {
     private String getSqlNbBeneficiairesAllocationsEnfantFormationProf(String numeroCaisse, String canton) {
         String sql = "SELECT ppacdi as "
                 + ALStatistiquesOfasProcess.REQUETE_AF_COL_NAME_PARAM
-                + ", count(distinct(bid)) as "
-                + ALStatistiquesOfasProcess.REQUETE_AF_COL_VAL
+                + ", dos.BID as "
+                + ALStatistiquesOfasProcess.REQUETE_AF_COL_NAME_ID_ALLOCATAIRE
                 + ", cscaal as "
                 + ALStatistiquesOfasProcess.REQUETE_AF_COL_NAME_ACTIVITE_ALLOC
+                + ", dos.MALNAF as "
+                + ALStatistiquesOfasProcess.REQUETE_AF_COL_NAME_NUMERO_AFFILIE
                 + " FROM schema.aldetpre det LEFT OUTER "
                 + "JOIN schema.alentpre ent ON ent.mid = det.mid LEFT OUTER "
                 + "JOIN schema.aldroit dro ON dro.fid=det.fid LEFT OUTER "
@@ -1711,7 +1814,7 @@ public class ALStatistiquesOfasProcess extends BProcess {
                 + ALCSDossier.ACTIVITE_SALARIE + ", " + ALCSDossier.ACTIVITE_NONACTIF + ", "
                 + ALCSDossier.ACTIVITE_INDEPENDANT + ")" + " AND ((mdvc between " + annee + "0101 " + "AND " + annee
                 + "1231) or (ent.cstatu = 61230003)) " + " AND PCOUID = " + "'" + canton + "'"
-                + " group by cscaal, ppacdi" + " order by cscaal, ppacdi";
+                + " group by cscaal, ppacdi,dos.BID, dos.MALNAF" + " order by cscaal, ppacdi";
         sql = replaceSchemaInSqlQuery(sql);
 
         // System.out.println("--getSqlNbBeneficiairesAllocationsEnfantFormationProf");
@@ -2117,6 +2220,7 @@ public class ALStatistiquesOfasProcess extends BProcess {
             Map<String, String> mapStatOfas = new HashMap<String, String>();
             fillMapStatOfas(mapStatOfas);
 
+            List<Map<String, String>> listNBAffilies = fillListNBAffilies(numeroCaisse, canton);
             List<Map<String, String>> listAllocations = fillListNBAllocation(numeroCaisse, canton);
             List<Map<String, String>> listAllocADIADC = fillListAllocationADIADC(numeroCaisse, canton);
             List<Map<String, String>> listAllocAdoptionNaissance = fillListNBAllocationAdoptionNaissance(numeroCaisse,
@@ -2141,8 +2245,6 @@ public class ALStatistiquesOfasProcess extends BProcess {
 
             List<Map<String, String>> listSommeAllocENFduesPremiereFois = fillListSommeAllocENFduesPremiereFois(
                     numeroCaisse, canton);
-
-            List<Map<String, String>> listNBAffilies = fillListNBAffilies(numeroCaisse, canton);
 
             // 026A + 026B + 026C
             compterPrestationStructureCaisse(mapStatOfas, numeroCaisse, listNBAffilies);
