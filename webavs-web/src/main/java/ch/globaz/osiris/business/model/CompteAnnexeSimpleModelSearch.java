@@ -11,6 +11,7 @@ public class CompteAnnexeSimpleModelSearch extends JadeSearchComplexModel {
     private Collection<String> forIdCompteAnnexeIn;
     private Collection<String> forIdExterneRoleIn;
     private String forIdRole;
+    private String forIdTiers;
     private Collection<String> forIdRoleIn;
     private Collection<String> forIdTiersIn;
 
@@ -52,6 +53,14 @@ public class CompteAnnexeSimpleModelSearch extends JadeSearchComplexModel {
 
     public void setForIdTiersIn(Collection<String> forIdTiersIn) {
         this.forIdTiersIn = forIdTiersIn;
+    }
+
+    public String getForIdTiers() {
+        return forIdTiers;
+    }
+
+    public void setForIdTiers(String forIdTiers) {
+        this.forIdTiers = forIdTiers;
     }
 
     @Override

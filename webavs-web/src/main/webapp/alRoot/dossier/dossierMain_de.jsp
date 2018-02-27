@@ -257,7 +257,18 @@ function init(){
 			$("#complementActiviteAllocataire").css("width","80px");
 		}
 
-
+	var modePaiementDossier = document.getElementById("modePaiementDossier");
+	if(modePaiementDossier.value == "<%=ALCSDossier.PAIEMENT_DIRECT%>" || modePaiementDossier.value == "<%=ALCSDossier.PAIEMENT_TIERS%>"){
+		var inputSoldeCompteAnnexe = document.getElementById("idSoldeComptesAnnexes");
+		var soldeCompteAnnexe = parseFloat(inputSoldeCompteAnnexe.value);
+		if(soldeCompteAnnexe < 0){
+			inputSoldeCompteAnnexe.style.color = "red";
+		}
+	}else{
+		document.getElementById("idTdLblSoldeComptesAnnexes").style.display = "none";
+		document.getElementById("idTdFltSoldeComptesAnnexes").style.display = "none";
+	}
+	
 }
 
 function postInit(){
@@ -782,7 +793,7 @@ var MAIN_URL = "<%=(servletContext + mainServletPath)%>";
 	              </tr>
 	              <tr>
 	                	<td><ct:FWLabel key="AL0004_ALLOC_DESC"/></td>
-	                	<td>
+	                	<td colspan="3">
 		                	<%--ce champ n'est pas utilisé pour la persistence --%>
 		                	<input type="text" readonly="readonly" class="long readOnly" name="allocataireDesignation"
 		                		value="<%=viewBean.getDossierComplexModel().getAllocataireComplexModel().getPersonneEtendueComplexModel().getTiers().getDesignation1()%>&nbsp;<%=viewBean.getDossierComplexModel().getAllocataireComplexModel().getPersonneEtendueComplexModel().getTiers().getDesignation2()%> "
@@ -792,7 +803,7 @@ var MAIN_URL = "<%=(servletContext + mainServletPath)%>";
 	              </tr>
 	              <tr>
 	              		<td>&nbsp;</td>
-	                	<td>
+	                	<td colspan="3">
 	                		<%--ce champ n'est pas utilisé pour la persistence --%>
 	                		<%
 	                			String allocData = "";
@@ -814,7 +825,7 @@ var MAIN_URL = "<%=(servletContext + mainServletPath)%>";
 	              <tr>
 	                	
 	                	<td><ct:FWLabel key="AL0004_ALLOC_ACTIVITE"/></td>
-	                	<td class="longSelect" id="tdActivite">
+	                	<td class="longSelect" id="tdActivite" colspan="3">
 	                	<%
 	                		if (viewBean.hasAnnonceRafam()){
 	                	%>
@@ -884,7 +895,7 @@ var MAIN_URL = "<%=(servletContext + mainServletPath)%>";
 	              </tr>
 	              <tr>
 	                	<td><ct:FWLabel key="AL0004_ALLOC_NSS"/></td>
-	                	<td>
+	                	<td colspan="3">
       		
 	                	<%
       			                		if(viewBean.getDossierComplexModel().isNew()){
@@ -930,6 +941,10 @@ var MAIN_URL = "<%=(servletContext + mainServletPath)%>";
 		                <ct:inputHidden name="dossierComplexModel.allocataireComplexModel.allocataireModel.idPaysResidence"/>
 		                <ct:inputHidden name="dossierComplexModel.allocataireComplexModel.allocataireModel.cantonResidence"/>
 		              </td>
+		              <td id="idTdLblSoldeComptesAnnexes" width="150"><ct:FWLabel key="AL0004_ALLOC_SOLDE_COMPTE_ANNEXE"/></td>
+		              <td id="idTdFltSoldeComptesAnnexes"><input readonly="readonly" type="text" class="readOnly nss" style="text-align: right;" id="idSoldeComptesAnnexes" name="soldeComptesAnnexes"
+		                	value="<%=viewBean.getSoldeFormate() %>" />
+                	  </td>
 	              </tr>
 	          
 	           

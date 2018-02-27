@@ -258,6 +258,7 @@ public class CompteAnnexeServiceImpl implements CompteAnnexeService {
             manager.setForIdTiersIn(search.getForIdTiersIn());
             manager.setForIdExterneRoleIn(search.getForIdExterneRoleIn());
             manager.setForIdRole(search.getForIdRole());
+            manager.setForIdTiers(search.getForIdTiers());
             if (search.getForIdRoleIn() != null) {
                 manager.setForSelectionRole(jointWithComma(search.getForIdRoleIn()));
             }

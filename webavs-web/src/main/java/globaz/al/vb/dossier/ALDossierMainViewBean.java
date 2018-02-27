@@ -6,15 +6,19 @@ import globaz.globall.db.BSessionUtil;
 import globaz.globall.db.BSpy;
 import globaz.globall.parameters.FWParametersSystemCode;
 import globaz.globall.parameters.FWParametersSystemCodeManager;
+import globaz.globall.util.JANumberFormatter;
 import globaz.globall.vb.BJadePersistentObjectViewBean;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.i18n.JadeI18n;
+import globaz.jade.log.JadeLogger;
 import globaz.jade.log.business.JadeBusinessMessage;
 import globaz.jade.persistence.model.JadeAbstractModel;
 import globaz.jade.persistence.model.JadeAbstractSearchModel;
+import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import globaz.osiris.external.IntRole;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -41,7 +45,9 @@ import ch.globaz.naos.business.model.AffiliationSearchSimpleModel;
 import ch.globaz.naos.business.model.AffiliationSimpleModel;
 import ch.globaz.naos.business.service.AFBusinessServiceLocator;
 import ch.globaz.osiris.business.model.CompteAnnexeSimpleModel;
+import ch.globaz.osiris.business.model.CompteAnnexeSimpleModelSearch;
 import ch.globaz.osiris.business.service.CABusinessServiceLocator;
+import ch.globaz.osiris.exception.OsirisException;
 import ch.globaz.param.business.models.ParameterModel;
 import ch.globaz.param.business.service.ParamServiceLocator;
 import ch.globaz.pyxis.business.model.TiersSimpleModel;
@@ -149,6 +155,11 @@ public class ALDossierMainViewBean extends BJadePersistentObjectViewBean {
      * AssuranceInfo
      */
     private String typeAffilie = null;
+
+    /**
+     * Solde du ou des comptes annexes de l'allocataire
+     */
+    private BigDecimal soldeComptesAnnexes = BigDecimal.ZERO;
 
     /**
      * Constructeur du viewBean, initialise le dossier avec les valeurs par défaut
@@ -866,6 +877,9 @@ public class ALDossierMainViewBean extends BJadePersistentObjectViewBean {
             idCompteAnnexeAllocataire = compteAllocataire == null ? "0" : compteAllocataire.getIdCompteAnnexe();
         }
 
+        List<CompteAnnexeSimpleModel> comptesAnnexe = findComptesAnnexes();
+        calculSoldeComptesAnnexes(comptesAnnexe);
+
         EnteteAndDetailPrestationComplexSearchModel enteteAndDetailSearchModel = new EnteteAndDetailPrestationComplexSearchModel();
         enteteAndDetailSearchModel.setForIdDossier(getId());
         enteteAndDetailSearchModel.setDefinedSearchSize(JadeAbstractSearchModel.SIZE_NOLIMIT);
@@ -875,6 +889,43 @@ public class ALDossierMainViewBean extends BJadePersistentObjectViewBean {
         prestationHolder = new PrestationHolder(enteteAndDetailSearchModel);
 
         handleWarningsForPopup();
+    }
+
+    /**
+     * Additionne les soldes des comptes annexes passés en paramètre
+     * 
+     */
+    private void calculSoldeComptesAnnexes(List<CompteAnnexeSimpleModel> comptesAnnexe) {
+        for (CompteAnnexeSimpleModel compteAnnexe : comptesAnnexe) {
+            // Addition de la solde uniquement si c'est le compte annexe a un rôle différent
+            if (!JadeStringUtil.isBlankOrZero(compteAnnexe.getSolde())) {
+                soldeComptesAnnexes = soldeComptesAnnexes.add(new BigDecimal(compteAnnexe.getSolde()));
+            }
+        }
+    }
+
+    /**
+     * Recherche tous les comptes annexes d'un allocataire avec l'ID Tiers comme paramètre
+     * 
+     * @return Une liste des comptes annexes
+     */
+    private List<CompteAnnexeSimpleModel> findComptesAnnexes() {
+        try {
+            CompteAnnexeSimpleModelSearch modelSearch = new CompteAnnexeSimpleModelSearch();
+            modelSearch.setForIdTiers(dossierComplexModel.getAllocataireComplexModel().getAllocataireModel()
+                    .getIdTiersAllocataire());
+            modelSearch.setDefinedSearchSize(JadeAbstractSearchModel.SIZE_NOLIMIT);
+            return CABusinessServiceLocator.getCompteAnnexeService().search(modelSearch);
+        } catch (OsirisException e) {
+            JadeLogger.error(this, e.getMessage());
+            setMsgType(FWViewBeanInterface.ERROR);
+            setMessage("Erreur lors de la récupération des comptes annexes : " + e.toString());
+        } catch (JadeApplicationServiceNotAvailableException e) {
+            JadeLogger.error(this, e.getMessage());
+            setMsgType(FWViewBeanInterface.ERROR);
+            setMessage("Erreur lors de la récupération des comptes annexes : " + e.toString());
+        }
+        return new ArrayList<CompteAnnexeSimpleModel>();
     }
 
     public void setAddWarnings(String addWarnings) {
@@ -982,6 +1033,19 @@ public class ALDossierMainViewBean extends BJadePersistentObjectViewBean {
 
     public String getBeneficiaireAvantModification() {
         return beneficiaireAvantModification;
+    }
+
+    public BigDecimal getSoldeComptesAnnexes() {
+        return soldeComptesAnnexes;
+    }
+
+    public String getSoldeFormate() {
+        return globaz.globall.util.JANumberFormatter.formatNoRound(
+                JANumberFormatter.deQuote(getSoldeComptesAnnexes().toString()), 2);
+    }
+
+    public void setSoldeComptesAnnexes(BigDecimal soldeComptesAnnexes) {
+        this.soldeComptesAnnexes = soldeComptesAnnexes;
     }
 
 }
