@@ -1,6 +1,5 @@
 package globaz.naos.db.ide;
 
-import java.io.Serializable;
 import globaz.globall.db.BEntity;
 import globaz.globall.db.BStatement;
 import globaz.globall.db.BTransaction;
@@ -10,6 +9,7 @@ import globaz.jade.client.util.JadeStringUtil;
 import globaz.naos.db.affiliation.AFAffiliation;
 import globaz.naos.db.cotisation.AFCotisation;
 import globaz.naos.translation.CodeSystem;
+import java.io.Serializable;
 
 public class AFIdeAnnonce extends BEntity implements Serializable {
 
@@ -108,6 +108,8 @@ public class AFIdeAnnonce extends BEntity implements Serializable {
     private String messageErreurForTechnicalUser = "";
 
     private boolean isErreurNoga = false;
+
+    private boolean remove = false;
 
     public String getNumeroIdeRemplacement() {
         return numeroIdeRemplacement;
@@ -280,8 +282,8 @@ public class AFIdeAnnonce extends BEntity implements Serializable {
 
         StringBuffer sqlFrom = new StringBuffer();
 
-        sqlFrom.append(
-                _getCollection() + AFIdeAnnonce.IDE_ANNONCE_TABLE_NAME + " AS " + ALIAS_TABLE_ANNONCE_WITHOUT_POINT);
+        sqlFrom.append(_getCollection() + AFIdeAnnonce.IDE_ANNONCE_TABLE_NAME + " AS "
+                + ALIAS_TABLE_ANNONCE_WITHOUT_POINT);
         sqlFrom.append(" LEFT OUTER JOIN ");
         sqlFrom.append(_getCollection() + AFAffiliation.TABLE_NAME + " AS " + ALIAS_TABLE_AFFILIATION_WITHOUT_POINT);
         sqlFrom.append(" ON(" + ALIAS_TABLE_AFFILIATION + AFAffiliation.FIELDNAME_AFFILIATION_ID + " = "
@@ -627,6 +629,14 @@ public class AFIdeAnnonce extends BEntity implements Serializable {
 
     public String getMessageSedex50() {
         return messageSedex50;
+    }
+
+    public boolean isRemove() {
+        return remove;
+    }
+
+    public void setRemove(boolean remove) {
+        this.remove = remove;
     }
 
 }

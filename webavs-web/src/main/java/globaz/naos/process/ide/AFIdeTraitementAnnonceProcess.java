@@ -1,13 +1,5 @@
 package globaz.naos.process.ide;
 
-import java.net.MalformedURLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import ch.globaz.common.properties.PropertiesException;
-import ch.globaz.common.sql.QueryExecutor;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.util.FWMessage;
 import globaz.framework.util.FWMessageFormat;
@@ -42,24 +34,13 @@ import globaz.webavs.common.CommonExcelmlUtils;
 import idech.admin.bit.xmlns.uid_wse_shared._1.RegisterDeregisterStatus;
 import idech.admin.uid.xmlns.uid_wse.ArrayOfUidStructureType;
 import idech.admin.uid.xmlns.uid_wse.IPartnerServices;
-import idech.admin.uid.xmlns.uid_wse.IPartnerServicesDeregisterBusinessFaultFaultFaultMessage;
-import idech.admin.uid.xmlns.uid_wse.IPartnerServicesDeregisterInfrastructureFaultFaultFaultMessage;
-import idech.admin.uid.xmlns.uid_wse.IPartnerServicesDeregisterScheduledBusinessFaultFaultFaultMessage;
-import idech.admin.uid.xmlns.uid_wse.IPartnerServicesDeregisterScheduledInfrastructureFaultFaultFaultMessage;
-import idech.admin.uid.xmlns.uid_wse.IPartnerServicesDeregisterScheduledSecurityFaultFaultFaultMessage;
-import idech.admin.uid.xmlns.uid_wse.IPartnerServicesDeregisterSecurityFaultFaultFaultMessage;
-import idech.admin.uid.xmlns.uid_wse.IPartnerServicesRegisterBusinessFaultFaultFaultMessage;
-import idech.admin.uid.xmlns.uid_wse.IPartnerServicesRegisterInfrastructureFaultFaultFaultMessage;
-import idech.admin.uid.xmlns.uid_wse.IPartnerServicesRegisterScheduledBusinessFaultFaultFaultMessage;
-import idech.admin.uid.xmlns.uid_wse.IPartnerServicesRegisterScheduledInfrastructureFaultFaultFaultMessage;
-import idech.admin.uid.xmlns.uid_wse.IPartnerServicesRegisterScheduledSecurityFaultFaultFaultMessage;
-import idech.admin.uid.xmlns.uid_wse.IPartnerServicesRegisterSecurityFaultFaultFaultMessage;
-import idech.admin.uid.xmlns.uid_wse.IPartnerServicesSubscribeBusinessFaultFaultFaultMessage;
-import idech.admin.uid.xmlns.uid_wse.IPartnerServicesSubscribeInfrastructureFaultFaultFaultMessage;
-import idech.admin.uid.xmlns.uid_wse.IPartnerServicesSubscribeSecurityFaultFaultFaultMessage;
-import idech.admin.uid.xmlns.uid_wse.IPartnerServicesUnsubscribeBusinessFaultFaultFaultMessage;
-import idech.admin.uid.xmlns.uid_wse.IPartnerServicesUnsubscribeInfrastructureFaultFaultFaultMessage;
-import idech.admin.uid.xmlns.uid_wse.IPartnerServicesUnsubscribeSecurityFaultFaultFaultMessage;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import ch.globaz.common.properties.PropertiesException;
+import ch.globaz.common.sql.QueryExecutor;
 
 public class AFIdeTraitementAnnonceProcess extends BProcess implements FWViewBeanInterface {
 
@@ -133,15 +114,15 @@ public class AFIdeTraitementAnnonceProcess extends BProcess implements FWViewBea
                 boolean isAnnonceMutationToPutInAttente = CodeSystem.TYPE_ANNONCE_IDE_MUTATION
                         .equalsIgnoreCase(ideAnnonce.getIdeAnnonceType());
                 isAnnonceMutationToPutInAttente = isAnnonceMutationToPutInAttente
-                        && (CodeSystem.STATUT_IDE_PROVISOIRE.equalsIgnoreCase(ideAnnonce.getStatutIde())
-                                || CodeSystem.STATUT_IDE_MUTATION.equalsIgnoreCase(ideAnnonce.getStatutIde()));
+                        && (CodeSystem.STATUT_IDE_PROVISOIRE.equalsIgnoreCase(ideAnnonce.getStatutIde()) || CodeSystem.STATUT_IDE_MUTATION
+                                .equalsIgnoreCase(ideAnnonce.getStatutIde()));
                 boolean isAnnonceToPutInAttente = ideAnnonce.isAnnonceEnAttente();
 
                 if (isAnnonceMutationToPutInAttente) {
                     ideAnnonce.setIdeAnnonceEtat(CodeSystem.ETAT_ANNONCE_IDE_ATTENTE);
                     ideAnnonce.setIdeAnnonceDateTraitement(JACalendar.todayJJsMMsAAAA());
-                    ideAnnonce.setMessageErreurForBusinessUser(
-                            getSession().getLabel("NAOS_PROCESS_IDE_TRAITEMENT_ANNONCE_ANNONCE_MUTATION_EN_ATTENTE"));
+                    ideAnnonce.setMessageErreurForBusinessUser(getSession().getLabel(
+                            "NAOS_PROCESS_IDE_TRAITEMENT_ANNONCE_ANNONCE_MUTATION_EN_ATTENTE"));
                     ideAnnonce.update(getTransaction());
                 } else if (isAnnonceToPutInAttente) {
                     ideAnnonce.setIdeAnnonceEtat(CodeSystem.ETAT_ANNONCE_IDE_ATTENTE);
@@ -211,8 +192,7 @@ public class AFIdeTraitementAnnonceProcess extends BProcess implements FWViewBea
 
                 // Annonces sortantes d'enregistrement masse
                 listAnnonceSortanteEnregistrementMasse = initialiseListAnnonceSortanteEnregistrementEnMasse();
-                listAnnonceSortanteEnregistrementMasse = traiterAnnonceEnAttente(
-                        listAnnonceSortanteEnregistrementMasse);
+                listAnnonceSortanteEnregistrementMasse = traiterAnnonceEnAttente(listAnnonceSortanteEnregistrementMasse);
                 listAnnonceSortanteEnregistrementMasse = traiterAnnonceSortanteMasse(port,
                         listAnnonceSortanteEnregistrementMasse);
 
@@ -222,15 +202,13 @@ public class AFIdeTraitementAnnonceProcess extends BProcess implements FWViewBea
                         listAnnonceSortanteUnitaireCreation);
 
                 listAnnonceSortanteUnitaireExceptedCreation = initialiseListAnnonceSortanteUnitaireExceptedCreation();
-                listAnnonceSortanteUnitaireExceptedCreation = traiterAnnonceEnAttente(
-                        listAnnonceSortanteUnitaireExceptedCreation);
+                listAnnonceSortanteUnitaireExceptedCreation = traiterAnnonceEnAttente(listAnnonceSortanteUnitaireExceptedCreation);
                 listAnnonceSortanteUnitaireExceptedCreation = traiterAnnonceSortanteUnitaireExceptedCreation(port,
                         listAnnonceSortanteUnitaireExceptedCreation);
 
                 // Annonces sortantes de désenregistrement masse
                 listAnnonceSortanteDesenregistrementMasse = initialiseListAnnonceSortanteDesenregistrementEnMasse();
-                listAnnonceSortanteDesenregistrementMasse = traiterAnnonceEnAttente(
-                        listAnnonceSortanteDesenregistrementMasse);
+                listAnnonceSortanteDesenregistrementMasse = traiterAnnonceEnAttente(listAnnonceSortanteDesenregistrementMasse);
                 listAnnonceSortanteDesenregistrementMasse = traiterAnnonceSortanteMasse(port,
                         listAnnonceSortanteDesenregistrementMasse);
 
@@ -311,14 +289,9 @@ public class AFIdeTraitementAnnonceProcess extends BProcess implements FWViewBea
      * Qui viennent en retour d'une annonce sortante ou
      * d'une inscription active ou passive au registre
      * , càd types d'annonces :
-     * <b>
-     * <li>CodeSystem.TYPE_ANNONCE_IDE_CREATION_INFO_ABO;</li>
-     * <li>CodeSystem.TYPE_ANNONCE_IDE_MUTATION_INFO_ABO;</li>
-     * <li>CodeSystem.TYPE_ANNONCE_IDE_MUTATION_REJETEE;</li>
-     * <li>CodeSystem.TYPE_ANNONCE_IDE_MUTATION_CONFIRMEE;</li>
-     * <li>CodeSystem.TYPE_ANNONCE_IDE_ANNULEE;</li>
-     * <li>CodeSystem.TYPE_ANNONCE_IDE_CREATION_CONFIRMEE;</li>
-     * </b>
+     * <b> <li>CodeSystem.TYPE_ANNONCE_IDE_CREATION_INFO_ABO;</li> <li>CodeSystem.TYPE_ANNONCE_IDE_MUTATION_INFO_ABO;</li>
+     * <li>CodeSystem.TYPE_ANNONCE_IDE_MUTATION_REJETEE;</li> <li>CodeSystem.TYPE_ANNONCE_IDE_MUTATION_CONFIRMEE;</li>
+     * <li>CodeSystem.TYPE_ANNONCE_IDE_ANNULEE;</li> <li>CodeSystem.TYPE_ANNONCE_IDE_CREATION_CONFIRMEE;</li> </b>
      * 
      * @return
      * @throws Exception
@@ -614,46 +587,10 @@ public class AFIdeTraitementAnnonceProcess extends BProcess implements FWViewBea
     /**
      * Envoi des annonces en masse (annonce dont le paramètre de la méthode est une liste de numéro ide)
      * 
-     * @throws IPartnerServicesDeregisterSecurityFaultFaultFaultMessage
-     * @throws IPartnerServicesDeregisterInfrastructureFaultFaultFaultMessage
-     * @throws IPartnerServicesDeregisterBusinessFaultFaultFaultMessage
-     * @throws MalformedURLException
-     * @throws IPartnerServicesDeregisterScheduledSecurityFaultFaultFaultMessage
-     * @throws IPartnerServicesDeregisterScheduledInfrastructureFaultFaultFaultMessage
-     * @throws IPartnerServicesDeregisterScheduledBusinessFaultFaultFaultMessage
-     * @throws IPartnerServicesUnsubscribeSecurityFaultFaultFaultMessage
-     * @throws IPartnerServicesUnsubscribeInfrastructureFaultFaultFaultMessage
-     * @throws IPartnerServicesUnsubscribeBusinessFaultFaultFaultMessage
-     * @throws IPartnerServicesRegisterSecurityFaultFaultFaultMessage
-     * @throws IPartnerServicesRegisterInfrastructureFaultFaultFaultMessage
-     * @throws IPartnerServicesRegisterBusinessFaultFaultFaultMessage
-     * @throws IPartnerServicesRegisterScheduledSecurityFaultFaultFaultMessage
-     * @throws IPartnerServicesRegisterScheduledInfrastructureFaultFaultFaultMessage
-     * @throws IPartnerServicesRegisterScheduledBusinessFaultFaultFaultMessage
-     * @throws IPartnerServicesSubscribeSecurityFaultFaultFaultMessage
-     * @throws IPartnerServicesSubscribeInfrastructureFaultFaultFaultMessage
-     * @throws IPartnerServicesSubscribeBusinessFaultFaultFaultMessage
+     * @throws Exception
      */
     private List<AFIdeAnnonce> traiterAnnonceSortanteMasse(IPartnerServices port,
-            List<AFIdeAnnonce> listAnnonceSortanteMasse)
-            throws Exception, MalformedURLException, IPartnerServicesDeregisterBusinessFaultFaultFaultMessage,
-            IPartnerServicesDeregisterInfrastructureFaultFaultFaultMessage,
-            IPartnerServicesDeregisterSecurityFaultFaultFaultMessage,
-            IPartnerServicesDeregisterScheduledBusinessFaultFaultFaultMessage,
-            IPartnerServicesDeregisterScheduledInfrastructureFaultFaultFaultMessage,
-            IPartnerServicesDeregisterScheduledSecurityFaultFaultFaultMessage,
-            IPartnerServicesUnsubscribeBusinessFaultFaultFaultMessage,
-            IPartnerServicesUnsubscribeInfrastructureFaultFaultFaultMessage,
-            IPartnerServicesUnsubscribeSecurityFaultFaultFaultMessage,
-            IPartnerServicesRegisterBusinessFaultFaultFaultMessage,
-            IPartnerServicesRegisterInfrastructureFaultFaultFaultMessage,
-            IPartnerServicesRegisterSecurityFaultFaultFaultMessage,
-            IPartnerServicesRegisterScheduledBusinessFaultFaultFaultMessage,
-            IPartnerServicesRegisterScheduledInfrastructureFaultFaultFaultMessage,
-            IPartnerServicesRegisterScheduledSecurityFaultFaultFaultMessage,
-            IPartnerServicesSubscribeBusinessFaultFaultFaultMessage,
-            IPartnerServicesSubscribeInfrastructureFaultFaultFaultMessage,
-            IPartnerServicesSubscribeSecurityFaultFaultFaultMessage {
+            List<AFIdeAnnonce> listAnnonceSortanteMasse) throws Exception {
 
         Map<String, ArrayOfUidStructureType> mapTypeAnnonceListCas = new HashMap<String, ArrayOfUidStructureType>();
         Map<String, Map<String, AFIdeAnnonce>> mapTypeAnnonceMapNumIdeAnnonce = new HashMap<String, Map<String, AFIdeAnnonce>>();
@@ -667,22 +604,22 @@ public class AFIdeTraitementAnnonceProcess extends BProcess implements FWViewBea
 
                 try {
                     String businessErrorMessage = "";
-                    if (CodeSystem.TYPE_ANNONCE_IDE_ENREGISTREMENT_ACTIF
-                            .equalsIgnoreCase(ideAnnonce.getIdeAnnonceType())) {
+                    if (CodeSystem.TYPE_ANNONCE_IDE_ENREGISTREMENT_ACTIF.equalsIgnoreCase(ideAnnonce
+                            .getIdeAnnonceType())) {
                         businessErrorMessage = AFIDEUtil.checkEnvoiAnnonceEnregistrementActifMandatory(getSession(),
                                 ideAnnonce, ideAnnonce.getIdeAnnonceIdAffiliation());
-                    } else if (CodeSystem.TYPE_ANNONCE_IDE_ENREGISTREMENT_PASSIF
-                            .equalsIgnoreCase(ideAnnonce.getIdeAnnonceType())) {
+                    } else if (CodeSystem.TYPE_ANNONCE_IDE_ENREGISTREMENT_PASSIF.equalsIgnoreCase(ideAnnonce
+                            .getIdeAnnonceType())) {
                         businessErrorMessage = AFIDEUtil.checkEnvoiAnnonceEnregistrementPassifMandatory(getSession(),
                                 ideAnnonce, ideAnnonce.getIdeAnnonceIdAffiliation());
-                    } else if (CodeSystem.TYPE_ANNONCE_IDE_DESENREGISTREMENT_ACTIF
-                            .equalsIgnoreCase(ideAnnonce.getIdeAnnonceType())) {
+                    } else if (CodeSystem.TYPE_ANNONCE_IDE_DESENREGISTREMENT_ACTIF.equalsIgnoreCase(ideAnnonce
+                            .getIdeAnnonceType())) {
                         businessErrorMessage = AFIDEUtil.checkEnvoiAnnonceDesenregistrementActifMandatory(getSession(),
                                 ideAnnonce, ideAnnonce.getIdeAnnonceIdAffiliation());
-                    } else if (CodeSystem.TYPE_ANNONCE_IDE_DESENREGISTREMENT_PASSIF
-                            .equalsIgnoreCase(ideAnnonce.getIdeAnnonceType())) {
-                        businessErrorMessage = AFIDEUtil.checkEnvoiAnnonceDesenregistrementPassifMandatory(getSession(),
-                                ideAnnonce, ideAnnonce.getIdeAnnonceIdAffiliation());
+                    } else if (CodeSystem.TYPE_ANNONCE_IDE_DESENREGISTREMENT_PASSIF.equalsIgnoreCase(ideAnnonce
+                            .getIdeAnnonceType())) {
+                        businessErrorMessage = AFIDEUtil.checkEnvoiAnnonceDesenregistrementPassifMandatory(
+                                getSession(), ideAnnonce, ideAnnonce.getIdeAnnonceIdAffiliation());
                     }
 
                     ideAnnonce.setMessageErreurForBusinessUser(businessErrorMessage);
@@ -705,8 +642,8 @@ public class AFIdeTraitementAnnonceProcess extends BProcess implements FWViewBea
                     ideDataBean = AFIDEUtil.transformIdeAnnonceEnIdeDataBean(ideAnnonce, getSession());
                     AFIDEUtil.createHistoriqueDataInAnnonce(getSession(), ideDataBean, ideAnnonce);
 
-                    ArrayOfUidStructureType listCasForTypeAnnonce = mapTypeAnnonceListCas
-                            .get(ideAnnonce.getIdeAnnonceType());
+                    ArrayOfUidStructureType listCasForTypeAnnonce = mapTypeAnnonceListCas.get(ideAnnonce
+                            .getIdeAnnonceType());
                     if (listCasForTypeAnnonce == null) {
                         listCasForTypeAnnonce = new ArrayOfUidStructureType();
                         mapTypeAnnonceListCas.put(ideAnnonce.getIdeAnnonceType(), listCasForTypeAnnonce);
@@ -719,8 +656,8 @@ public class AFIdeTraitementAnnonceProcess extends BProcess implements FWViewBea
                         numeroIde = ideDataBean.getNumeroIDERemplacement();
                     }
 
-                    Map<String, AFIdeAnnonce> mapNumIdeAnnonce = mapTypeAnnonceMapNumIdeAnnonce
-                            .get(ideAnnonce.getIdeAnnonceType());
+                    Map<String, AFIdeAnnonce> mapNumIdeAnnonce = mapTypeAnnonceMapNumIdeAnnonce.get(ideAnnonce
+                            .getIdeAnnonceType());
 
                     if (mapNumIdeAnnonce == null) {
                         mapNumIdeAnnonce = new HashMap<String, AFIdeAnnonce>();
@@ -737,18 +674,33 @@ public class AFIdeTraitementAnnonceProcess extends BProcess implements FWViewBea
 
             Map<String, Map<String, RegisterDeregisterStatus>> mapRetourWebService = new HashMap<String, Map<String, RegisterDeregisterStatus>>();
 
-            if (CodeSystem.TYPE_ANNONCE_IDE_ENREGISTREMENT_ACTIF.equalsIgnoreCase(entry.getKey())) {
-                mapRetourWebService.put(CodeSystem.TYPE_ANNONCE_IDE_ENREGISTREMENT_ACTIF,
-                        IDEServiceCallUtil.enregistrementActif(getSession(), entry.getValue(), port));
-            } else if (CodeSystem.TYPE_ANNONCE_IDE_ENREGISTREMENT_PASSIF.equalsIgnoreCase(entry.getKey())) {
-                mapRetourWebService.put(CodeSystem.TYPE_ANNONCE_IDE_ENREGISTREMENT_PASSIF,
-                        IDEServiceCallUtil.enregistrementPassif(getSession(), entry.getValue(), port));
-            } else if (CodeSystem.TYPE_ANNONCE_IDE_DESENREGISTREMENT_ACTIF.equalsIgnoreCase(entry.getKey())) {
-                mapRetourWebService.put(CodeSystem.TYPE_ANNONCE_IDE_DESENREGISTREMENT_ACTIF,
-                        IDEServiceCallUtil.desenregistrementActif(getSession(), entry.getValue(), port));
-            } else if (CodeSystem.TYPE_ANNONCE_IDE_DESENREGISTREMENT_PASSIF.equalsIgnoreCase(entry.getKey())) {
-                mapRetourWebService.put(CodeSystem.TYPE_ANNONCE_IDE_DESENREGISTREMENT_PASSIF,
-                        IDEServiceCallUtil.desenregistrementPassif(getSession(), entry.getValue(), port));
+            try {
+
+                if (CodeSystem.TYPE_ANNONCE_IDE_ENREGISTREMENT_ACTIF.equalsIgnoreCase(entry.getKey())) {
+                    mapRetourWebService.put(CodeSystem.TYPE_ANNONCE_IDE_ENREGISTREMENT_ACTIF,
+                            IDEServiceCallUtil.enregistrementActif(getSession(), entry.getValue(), port));
+                } else if (CodeSystem.TYPE_ANNONCE_IDE_ENREGISTREMENT_PASSIF.equalsIgnoreCase(entry.getKey())) {
+                    mapRetourWebService.put(CodeSystem.TYPE_ANNONCE_IDE_ENREGISTREMENT_PASSIF,
+                            IDEServiceCallUtil.enregistrementPassif(getSession(), entry.getValue(), port));
+                } else if (CodeSystem.TYPE_ANNONCE_IDE_DESENREGISTREMENT_ACTIF.equalsIgnoreCase(entry.getKey())) {
+                    mapRetourWebService.put(CodeSystem.TYPE_ANNONCE_IDE_DESENREGISTREMENT_ACTIF,
+                            IDEServiceCallUtil.desenregistrementActif(getSession(), entry.getValue(), port));
+                } else if (CodeSystem.TYPE_ANNONCE_IDE_DESENREGISTREMENT_PASSIF.equalsIgnoreCase(entry.getKey())) {
+                    mapRetourWebService.put(CodeSystem.TYPE_ANNONCE_IDE_DESENREGISTREMENT_PASSIF,
+                            IDEServiceCallUtil.desenregistrementPassif(getSession(), entry.getValue(), port));
+                }
+            } catch (Exception e) {
+                for (Map.Entry<String, Map<String, RegisterDeregisterStatus>> entryMapRetourWebService : mapRetourWebService
+                        .entrySet()) {
+                    for (Map.Entry<String, RegisterDeregisterStatus> entryMapRetourWebServiceMapNumIdeStatus : entryMapRetourWebService
+                            .getValue().entrySet()) {
+                        AFIDEUtil.handleError(
+                                getSession(),
+                                e,
+                                mapTypeAnnonceMapNumIdeAnnonce.get(entryMapRetourWebService.getKey()).get(
+                                        entryMapRetourWebServiceMapNumIdeStatus.getKey()));
+                    }
+                }
             }
 
             for (Map.Entry<String, Map<String, RegisterDeregisterStatus>> entryMapRetourWebService : mapRetourWebService
@@ -760,10 +712,9 @@ public class AFIdeTraitementAnnonceProcess extends BProcess implements FWViewBea
                     viderErreurProcess();
 
                     try {
-
                         doUpdateAfterTraitementAnnonceSortanteMasse(
-                                mapTypeAnnonceMapNumIdeAnnonce.get(entryMapRetourWebService.getKey())
-                                        .get(entryMapRetourWebServiceMapNumIdeStatus.getKey()),
+                                mapTypeAnnonceMapNumIdeAnnonce.get(entryMapRetourWebService.getKey()).get(
+                                        entryMapRetourWebServiceMapNumIdeStatus.getKey()),
                                 entryMapRetourWebServiceMapNumIdeStatus.getValue());
 
                     } catch (Exception e) {
@@ -842,14 +793,14 @@ public class AFIdeTraitementAnnonceProcess extends BProcess implements FWViewBea
             if ("0".equals(idCodeNoga)) {
                 if (CODE_NOGA_INCONNU.equals(ideDataBean.getNogaCode())) {
                     ideAnnonceEntrante.setErreurNoga(true);
-                    ideAnnonceEntrante.setMessageErreurForBusinessUser(
-                            FWMessageFormat.format(getSession().getApplication().getLabel("NAOS_CODE_NOGA_INCONNU",
-                                    getSession().getIdLangueISO()), ideAnnonceEntrante.getHistNoga()));
+                    ideAnnonceEntrante.setMessageErreurForBusinessUser(FWMessageFormat.format(getSession()
+                            .getApplication().getLabel("NAOS_CODE_NOGA_INCONNU", getSession().getIdLangueISO()),
+                            ideAnnonceEntrante.getHistNoga()));
                 } else {
                     ideAnnonceEntrante.setErreurNoga(true);
-                    ideAnnonceEntrante.setMessageErreurForBusinessUser(
-                            FWMessageFormat.format(getSession().getApplication().getLabel("NAOS_CODE_NOGA_INDEFINI",
-                                    getSession().getIdLangueISO()), ideAnnonceEntrante.getHistNoga()));
+                    ideAnnonceEntrante.setMessageErreurForBusinessUser(FWMessageFormat.format(getSession()
+                            .getApplication().getLabel("NAOS_CODE_NOGA_INDEFINI", getSession().getIdLangueISO()),
+                            ideAnnonceEntrante.getHistNoga()));
                 }
             }
         } else {
@@ -1017,8 +968,8 @@ public class AFIdeTraitementAnnonceProcess extends BProcess implements FWViewBea
         List<AFAffiliation> listAffiliation = null;
         viderErreurProcess();
 
-        ideAnnonceEntrante.setMessageErreurForBusinessUser(
-                AFIDEUtil.checkAnnonceEntranteMandatory(getSession(), ideAnnonceEntrante));
+        ideAnnonceEntrante.setMessageErreurForBusinessUser(AFIDEUtil.checkAnnonceEntranteMandatory(getSession(),
+                ideAnnonceEntrante));
 
         if (!ideAnnonceEntrante.hasAnnonceErreur()) {
             ideAnnonceEntrante.setIdeAnnonceIdAffiliation("");
@@ -1102,8 +1053,9 @@ public class AFIdeTraitementAnnonceProcess extends BProcess implements FWViewBea
     private void doUpdateAnnonceEntrante(AFIdeAnnonce ideAnnonceEntrante, boolean errorMustFlagAnnonceAsSuccess)
             throws Exception {
 
-        updateAnnonceAfterTraitementAnnonceEntrante(ideAnnonceEntrante, AFIDEUtil
-                .giveMeStatusAnnonceApresTraitementAccordingToError(ideAnnonceEntrante, errorMustFlagAnnonceAsSuccess));
+        updateAnnonceAfterTraitementAnnonceEntrante(ideAnnonceEntrante,
+                AFIDEUtil.giveMeStatusAnnonceApresTraitementAccordingToError(ideAnnonceEntrante,
+                        errorMustFlagAnnonceAsSuccess));
     }
 
     /**
@@ -1134,8 +1086,8 @@ public class AFIdeTraitementAnnonceProcess extends BProcess implements FWViewBea
         technicalError.append("Transaction warnings : " + getTransaction().getWarnings() + "\n");
         technicalError.append("Session errors : " + getSession().getErrors() + "\n");
         technicalError.append("Session warnings : " + getSession().getWarnings() + "\n");
-        technicalError
-                .append("Memory Log (only fatal errors make rollbak) : " + getMemoryLog().getMessagesInString() + "\n");
+        technicalError.append("Memory Log (only fatal errors make rollbak) : " + getMemoryLog().getMessagesInString()
+                + "\n");
         if (isAborted()) {
             technicalError.append("Aborted" + "\n");
         }
@@ -1206,8 +1158,9 @@ public class AFIdeTraitementAnnonceProcess extends BProcess implements FWViewBea
                 + "/model/excelml/" + getSession().getIdLangueISO().toUpperCase() + "/"
                 + AFXmlmlIdeTraitementAnnonceEntrantePassive.XLS_DOC_NAME + ".xml";
 
-        String xlsDocPath = Jade.getInstance().getPersistenceDir() + JadeFilenameUtil
-                .addOrReplaceFilenameSuffixUID(AFXmlmlIdeTraitementAnnonceEntrantePassive.XLS_DOC_NAME + ".xml");
+        String xlsDocPath = Jade.getInstance().getPersistenceDir()
+                + JadeFilenameUtil
+                        .addOrReplaceFilenameSuffixUID(AFXmlmlIdeTraitementAnnonceEntrantePassive.XLS_DOC_NAME + ".xml");
 
         xlsDocPath = CommonExcelmlUtils.createDocumentExcel(xmlModelPath, xlsDocPath, xmlml.getContainer());
 
@@ -1233,8 +1186,9 @@ public class AFIdeTraitementAnnonceProcess extends BProcess implements FWViewBea
                 + "/model/excelml/" + getSession().getIdLangueISO().toUpperCase() + "/"
                 + AFXmlmlIdeTraitementAnnonceEntranteActive.XLS_DOC_NAME + ".xml";
 
-        String xlsDocPath = Jade.getInstance().getPersistenceDir() + JadeFilenameUtil
-                .addOrReplaceFilenameSuffixUID(AFXmlmlIdeTraitementAnnonceEntranteActive.XLS_DOC_NAME + ".xml");
+        String xlsDocPath = Jade.getInstance().getPersistenceDir()
+                + JadeFilenameUtil.addOrReplaceFilenameSuffixUID(AFXmlmlIdeTraitementAnnonceEntranteActive.XLS_DOC_NAME
+                        + ".xml");
 
         xlsDocPath = CommonExcelmlUtils.createDocumentExcel(xmlModelPath, xlsDocPath, xmlml.getContainer());
 
@@ -1270,16 +1224,15 @@ public class AFIdeTraitementAnnonceProcess extends BProcess implements FWViewBea
 
             if (AFIDEUtil.isAnnoncePassive(aIdeAnnonce) || AFIDEUtil.isAnnoncePassiveNonInfoAbo(aIdeAnnonce)) {
 
-                xmlml.createLigne(getSession().getCodeLibelle(aIdeAnnonce.getIdeAnnonceType()),
-                        getSession().getCodeLibelle(aIdeAnnonce.getIdeAnnonceEtat()),
-                        aIdeAnnonce.getIdeAnnonceDateCreation(),
-                        AFIDEUtil.giveMeNumIdeFormatedWithPrefix(aIdeAnnonce.getHistNumeroIde()),
-                        getSession().getCodeLibelle(aIdeAnnonce.getHistStatutIde()),
-                        AFIDEUtil.giveMeAllNumeroAffilieInAnnonceSeparatedByVirgul(aIdeAnnonce),
-                        aIdeAnnonce.getHistRaisonSociale(), aIdeAnnonce.getHistRue(), aIdeAnnonce.getHistNPA(),
+                xmlml.createLigne(getSession().getCodeLibelle(aIdeAnnonce.getIdeAnnonceType()), getSession()
+                        .getCodeLibelle(aIdeAnnonce.getIdeAnnonceEtat()), aIdeAnnonce.getIdeAnnonceDateCreation(),
+                        AFIDEUtil.giveMeNumIdeFormatedWithPrefix(aIdeAnnonce.getHistNumeroIde()), getSession()
+                                .getCodeLibelle(aIdeAnnonce.getHistStatutIde()), AFIDEUtil
+                                .giveMeAllNumeroAffilieInAnnonceSeparatedByVirgul(aIdeAnnonce), aIdeAnnonce
+                                .getHistRaisonSociale(), aIdeAnnonce.getHistRue(), aIdeAnnonce.getHistNPA(),
                         aIdeAnnonce.getHistLocalite(), aIdeAnnonce.getHistCanton(), aIdeAnnonce.getHistNaissance(),
-                        AFIDEUtil.formatNogaRegistre(aIdeAnnonce.getHistNoga(), getSession()),
-                        aIdeAnnonce.getMessageSedex50(), aIdeAnnonce.getMessageErreurForBusinessUser());
+                        AFIDEUtil.formatNogaRegistre(aIdeAnnonce.getHistNoga(), getSession()), aIdeAnnonce
+                                .getMessageSedex50(), aIdeAnnonce.getMessageErreurForBusinessUser());
             }
         }
     }
@@ -1300,21 +1253,20 @@ public class AFIdeTraitementAnnonceProcess extends BProcess implements FWViewBea
             if (!AFIDEUtil.isAnnoncePassive(aIdeAnnonce)) {
 
                 String numIde = AFIDEUtil.giveMeNumIdeFormatedWithPrefix(aIdeAnnonce.getHistNumeroIde());
-                String numIdeRemplacement = AFIDEUtil
-                        .giveMeNumIdeFormatedWithPrefix(aIdeAnnonce.getNumeroIdeRemplacement());
+                String numIdeRemplacement = AFIDEUtil.giveMeNumIdeFormatedWithPrefix(aIdeAnnonce
+                        .getNumeroIdeRemplacement());
                 if (!JadeStringUtil.isBlankOrZero(numIdeRemplacement)) {
                     numIde = numIdeRemplacement + " (" + numIde + ")";
                 }
 
-                xmlml.createLigne(getSession().getCodeLibelle(aIdeAnnonce.getIdeAnnonceType()),
-                        getSession().getCodeLibelle(aIdeAnnonce.getIdeAnnonceEtat()),
-                        aIdeAnnonce.getIdeAnnonceDateCreation(), numIde,
-                        getSession().getCodeLibelle(aIdeAnnonce.getHistStatutIde()),
-                        AFIDEUtil.giveMeAllNumeroAffilieInAnnonceSeparatedByVirgul(aIdeAnnonce),
-                        aIdeAnnonce.getHistRaisonSociale(), aIdeAnnonce.getHistRue(), aIdeAnnonce.getHistNPA(),
+                xmlml.createLigne(getSession().getCodeLibelle(aIdeAnnonce.getIdeAnnonceType()), getSession()
+                        .getCodeLibelle(aIdeAnnonce.getIdeAnnonceEtat()), aIdeAnnonce.getIdeAnnonceDateCreation(),
+                        numIde, getSession().getCodeLibelle(aIdeAnnonce.getHistStatutIde()), AFIDEUtil
+                                .giveMeAllNumeroAffilieInAnnonceSeparatedByVirgul(aIdeAnnonce), aIdeAnnonce
+                                .getHistRaisonSociale(), aIdeAnnonce.getHistRue(), aIdeAnnonce.getHistNPA(),
                         aIdeAnnonce.getHistLocalite(), aIdeAnnonce.getHistCanton(), aIdeAnnonce.getHistNaissance(),
-                        AFIDEUtil.formatNogaRegistre(aIdeAnnonce.getHistNoga(), getSession()),
-                        aIdeAnnonce.getMessageErreurForBusinessUser());
+                        AFIDEUtil.formatNogaRegistre(aIdeAnnonce.getHistNoga(), getSession()), aIdeAnnonce
+                                .getMessageErreurForBusinessUser());
             }
 
         }
@@ -1359,13 +1311,12 @@ public class AFIdeTraitementAnnonceProcess extends BProcess implements FWViewBea
                 statutIDE = aff.getIdeStatut();
             }
 
-            xmlml.createLigne(getSession().getCodeLibelle(aIdeAnnonce.getIdeAnnonceType()),
-                    getSession().getCodeLibelle(aIdeAnnonce.getIdeAnnonceEtat()),
-                    aIdeAnnonce.getIdeAnnonceDateCreation(), AFIDEUtil.giveMeNumIdeFormatedWithPrefix(numIDE),
-                    getSession().getCodeLibelle(statutIDE),
-                    AFIDEUtil.giveMeAllNumeroAffilieInAnnonceSeparatedByVirgul(aIdeAnnonce), raisonSoc,
-                    aIdeAnnonce.getHistRue(), aIdeAnnonce.getHistNPA(), aIdeAnnonce.getHistLocalite(),
-                    aIdeAnnonce.getHistCanton(), aIdeAnnonce.getHistNaissance(), aIdeAnnonce.getHistActivite(),
+            xmlml.createLigne(getSession().getCodeLibelle(aIdeAnnonce.getIdeAnnonceType()), getSession()
+                    .getCodeLibelle(aIdeAnnonce.getIdeAnnonceEtat()), aIdeAnnonce.getIdeAnnonceDateCreation(),
+                    AFIDEUtil.giveMeNumIdeFormatedWithPrefix(numIDE), getSession().getCodeLibelle(statutIDE), AFIDEUtil
+                            .giveMeAllNumeroAffilieInAnnonceSeparatedByVirgul(aIdeAnnonce), raisonSoc, aIdeAnnonce
+                            .getHistRue(), aIdeAnnonce.getHistNPA(), aIdeAnnonce.getHistLocalite(), aIdeAnnonce
+                            .getHistCanton(), aIdeAnnonce.getHistNaissance(), aIdeAnnonce.getHistActivite(),
                     aIdeAnnonce.getMessageErreurForBusinessUser());
         }
     }

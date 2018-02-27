@@ -12,6 +12,7 @@ String userActionNew = request.getParameter("userAction").substring(0,request.ge
 boolean bButtonNew = objSession.hasRight(userActionNew, "ADD");
 boolean bButtonFind = true;
 boolean bShowExportButton = false;
+boolean bButtonDelete = false;
 String userActionExport = null; // à modifier pour forcer une action d'exportation spécifique
 int subTableHeight = 100;
 String IFrameHeight = "350";
@@ -24,9 +25,11 @@ if (mainServletPath == null) {
 String btnFindLabel = "Rechercher";
 String btnNewLabel = "Nouveau";
 String btnExportLabel = "Export";
+String btnDelLabel = "Supprimer";
 if ("DE".equals(languePage)) {
 	btnFindLabel = "Suchen";
 	btnNewLabel = "Neu";
+	btnDelLabel = "L&ouml;schen";
 }
 boolean rememberSearchCriterias = false;
 boolean fromSL = request.getParameter("selectedIndex") != null;

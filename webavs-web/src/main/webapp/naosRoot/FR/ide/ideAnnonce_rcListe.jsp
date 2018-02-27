@@ -7,13 +7,34 @@
 <%
 	detailLink = "naos?userAction=naos.ide.ideAnnonce.afficher&selectedId=";
 	AFIdeAnnonceListViewBean viewBean = (AFIdeAnnonceListViewBean)request.getAttribute ("viewBean");
+	session.setAttribute("viewBean", viewBean);
 	size = viewBean.getSize ();
 %>
+<SCRIPT language="JavaScript">
+var liste = new Array();
+var compteur = 0;
+$('#btnDel', window.parent.document).get(0).disabled=true;
+
+function selectAll() {	
+	$('input[name=checkdelete]').attr('checked', $('#checkAll').is(':checked'));
+	onChange();
+}
+	
+function onChange() {	
+	 if( $('[name=checkdelete]:checked').length == 0) {
+		 $('#btnDel', window.parent.document).get(0).disabled=true;
+	 } else {
+		 $('#btnDel', window.parent.document).get(0).disabled=false;
+	 };
+}
+	
+
+</SCRIPT>
 <%-- /tpl:put --%>
 <%@ include file="/theme/list/javascripts.jspf" %>
 <%-- tpl:put name="zoneHeaders" --%>
 
-	<TH>&nbsp;</TH>
+	<TH>&nbsp;<INPUT id="checkAll" type="checkbox" onclick="selectAll();"></TH>
 	<TH><ct:FWLabel key="NAOS_JSP_IDE_ANNONCE_RC_LIST_NUMERO_IDE"/></TH>
 	<TH><ct:FWLabel key="NAOS_JSP_IDE_ANNONCE_STATUT_IDE"/></TH>
 	<TH><ct:FWLabel key="NAOS_JSP_IDE_ANNONCE_NUMERO_AFFILIE"/></TH>
@@ -34,7 +55,13 @@
 		actionDetail = targetLocation + "='" + detailLink + viewBean.getIdAnnonce(i)+"'";
 	%>
 	
-	<TD class="mtd">&nbsp;</TD>
+	<TD class="mtd" style="text-align:center;">
+	<%if (viewBean.isErreur(i)) {%>
+		<INPUT name="checkdelete" type="checkbox" value="<%=viewBean.getIdAnnonce(i)%>" onclick="onChange()">
+	<% } else {%>
+		&nbsp;
+	<% } %>
+	</TD>
 	<TD class="mtd" onClick="<%=actionDetail%>"><%=viewBean.getNumeroIde(i)%></TD>
 	<TD class="mtd" onClick="<%=actionDetail%>"><%=viewBean.getStatutIde(i)%></TD>
 	<TD class="mtd" onClick="<%=actionDetail%>"><%=viewBean.getNumeroAffilie(i)%></TD>

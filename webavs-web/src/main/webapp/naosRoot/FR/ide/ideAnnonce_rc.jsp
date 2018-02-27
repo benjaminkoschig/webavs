@@ -1,8 +1,11 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <%-- tpl:insert page="/theme/find.jtpl" --%>
+<%@page import="java.util.List"%>
+<%@page import="java.util.ArrayList"%>
 <%@page import="globaz.naos.db.ide.AFIdeAnnonceListViewBean"%>
 <%@page import="globaz.framework.bean.FWViewBeanInterface"%>
 <%@page import="globaz.naos.translation.CodeSystem"%>
+<%@page import="globaz.naos.db.ide.AFIdeListErrorAnnonce"%>
 <%@ page language="java" errorPage="/errorPage.jsp" import="globaz.globall.http.*" %>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ include file="/theme/find/header.jspf" %>
@@ -12,13 +15,15 @@
 	String numAffilie = request.getParameter("likeNumAffilie");
 	idEcran="CAF0075";
 	bButtonFind = true;
+	bButtonDelete = true;
 	bButtonNew = false;
+	btnDelLabel = objSession.getLabel("JSP_SUPPRESSION_SELECTION");
 	rememberSearchCriterias=true;
 	String initEtat = CodeSystem.ETAT_ANNONCE_IDE_ENREGISTRE;
-	Object viewbean = session.getAttribute ("listViewBean");
+	Object obBean = session.getAttribute ("listViewBean");
 	AFIdeAnnonceListViewBean viewBeanFind = null;
-	if(viewbean != null && viewbean instanceof AFIdeAnnonceListViewBean) {
-	    viewBeanFind = (AFIdeAnnonceListViewBean)viewbean;
+	if(obBean != null && obBean instanceof AFIdeAnnonceListViewBean) {
+	    viewBeanFind = (AFIdeAnnonceListViewBean)obBean;
 	}
 %>
 
@@ -38,7 +43,10 @@ function postInit() {
 	String forCategorie = "";
 	String forType = "";
 	String forEtat = "";
+	String forError = "";
 	Boolean wantAnnoncePassive = false;
+	List<AFIdeListErrorAnnonce> listError = new ArrayList<AFIdeListErrorAnnonce>();
+	listError = AFIdeAnnonceListViewBean.getListError(objSession);
 	
 	if(viewBeanFind != null) {
 		likeNumeroIde = viewBeanFind.getLikeNumeroIde();
@@ -53,6 +61,7 @@ function postInit() {
 		forType = viewBeanFind.getForType();
 		forEtat = viewBeanFind.getForEtat();
 		wantAnnoncePassive = viewBeanFind.isWantAnnoncePassive();
+		forError = viewBeanFind.getForError();
 	}
 	
 	 if(numAffilie != null && forEtat == "") {
@@ -62,6 +71,8 @@ function postInit() {
 	 }
 	 
 	 %>
+	 
+}
 
 </SCRIPT>
 <%-- /tpl:put --%>
@@ -85,9 +96,33 @@ function postInit() {
 		document.getElementsByName("forCategorie")[0].value="";
 		document.getElementsByName("forType")[0].value="";
 		document.getElementsByName("forEtat")[0].value="";
+		document.getElementsByName("forError")[0].value="";
 		document.getElementsByName("wantAnnoncePassive")[0].checked = false;
 		
 	};
+	
+	function del() {
+		if (window.confirm("<%=objSession.getLabel("NAOS_ANNONCE_IDE_CONFIRM_SUPPRESSION_ANNONCES")%>")) {
+			var listIdSupprimer = "";
+			var listCheckBox = $('[name=checkdelete]:checked',$('[name=fr_list]').contents()) ;
+
+			listCheckBox.each(function(checkBox){
+				listIdSupprimer = listIdSupprimer + $(this).val() + ",";
+			});
+			listIdSupprimer = listIdSupprimer.substring(0, listIdSupprimer.length - 1);
+
+			$("#listIdSupprimer").val(listIdSupprimer);
+			
+			var oldUserAction = document.forms[0].elements.userAction.value;
+			var exportAction = 'naos.ide.ideAnnonce.removeList';
+			setUserAction(exportAction);
+			var oldSubmit = document.forms[0].onsubmit;
+			document.forms[0].submit();
+			setUserAction(oldUserAction);
+			document.forms[0].onsubmit = oldSubmit;
+		}
+	}
+	
 </SCRIPT>
 
 <%-- /tpl:put --%>
@@ -95,6 +130,8 @@ function postInit() {
 <%-- tpl:put name="zoneTitle" --%><ct:FWLabel key="NAOS_JSP_IDE_ANNONCE_TITRE"/><%-- /tpl:put --%>
 <%@ include file="/theme/find/bodyStart2.jspf" %>
 <%-- tpl:put name="zoneMain" --%>
+
+		<input type="hidden" id="listIdSupprimer" name="listIdSupprimer" value=""/>
 
 	  	<TR>
             <TD><ct:FWLabel key="NAOS_JSP_IDE_ANNONCE_NUMERO_IDE"/></TD>
@@ -144,7 +181,16 @@ function postInit() {
       	<TR>
       		<TD><ct:FWLabel key="NAOS_JSP_IDE_ANNONCE_AFFICHER_ANNONCE_PASSIVE"/></TD>
       		<TD><input type="checkbox" id="wantAnnoncePassive" name="wantAnnoncePassive" <%=wantAnnoncePassive ? "checked" : ""%>/></TD>
-      		<TD colspan="4">&nbsp;</TD> 
+      		
+			<TD><ct:FWLabel key="NAOS_JSP_IDE_ANNONCE_TYPE_ERREUR"/></TD>
+			<TD>
+				<ct:select name="forError"  notation="data-g-select='mandatory:false'"  style='width : 300px'>
+					<% for(AFIdeListErrorAnnonce error : listError){%>
+					<option value="<%=error.getMessageErreurForBusinessUser()%>" label="<%=error.getMessageErreurForBusinessUser()%> " />
+					<%}%> 
+				</ct:select>
+			</TD>	
+      		<TD colspan="2">&nbsp;</TD> 
       	</TR>
       	
       	<TR>

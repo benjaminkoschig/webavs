@@ -13,6 +13,7 @@
 		</TR>
 		<TR>
 			<TD bgcolor="#FFFFFF" colspan="2" align="right">
+				<%if (bButtonDelete) {%><input class="btnCtrl" id="btnDel" type="button" value="<%=btnDelLabel%>" onclick="del();"><%}%>
 				<%if (bShowExportButton) {%>
 					<INPUT type="button" name="btnExport" value="<%=btnExportLabel%>" onClick="onExport();">
 				<%}%>

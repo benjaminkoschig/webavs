@@ -1,10 +1,14 @@
 package globaz.naos.db.ide;
 
 import globaz.framework.bean.FWViewBeanInterface;
+import globaz.globall.db.BManager;
+import globaz.globall.db.BSession;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.naos.translation.CodeSystem;
 import globaz.naos.util.AFIDEUtil;
 import globaz.pyxis.db.tiers.TITiersViewBean;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AFIdeAnnonceListViewBean extends AFIdeAnnonceManager implements FWViewBeanInterface {
 
@@ -94,6 +98,10 @@ public class AFIdeAnnonceListViewBean extends AFIdeAnnonceManager implements FWV
         return getCodeLibelle(((AFIdeAnnonce) getEntity(index)).getIdeAnnonceEtat());
     }
 
+    public boolean isErreur(final int index) {
+        return CodeSystem.ETAT_ANNONCE_IDE_ERREUR.equals(((AFIdeAnnonce) getEntity(index)).getIdeAnnonceEtat());
+    }
+
     public String getDateTraitement(final int index) {
         return ((AFIdeAnnonce) getEntity(index)).getIdeAnnonceDateTraitement();
     }
@@ -105,6 +113,21 @@ public class AFIdeAnnonceListViewBean extends AFIdeAnnonceManager implements FWV
             return "";
         }
 
+    }
+
+    public String getId(final int index) {
+        return getCodeLibelle(((AFIdeAnnonce) getEntity(index)).getIdeAnnonceIdAnnonce());
+    }
+
+    public static List<AFIdeListErrorAnnonce> getListError(BSession session) throws Exception {
+        AFIdeListErrorManager manager = new AFIdeListErrorManager();
+        manager.setSession(session);
+        manager.find(BManager.SIZE_NOLIMIT);
+        List<AFIdeListErrorAnnonce> list = new ArrayList<AFIdeListErrorAnnonce>();
+        for (int i = 0; i < manager.size(); i++) {
+            list.add((AFIdeListErrorAnnonce) manager.getEntity(i));
+        }
+        return list;
     }
 
 }

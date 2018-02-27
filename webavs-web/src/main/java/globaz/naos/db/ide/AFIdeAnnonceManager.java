@@ -1,9 +1,5 @@
 package globaz.naos.db.ide;
 
-import java.io.Serializable;
-import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import globaz.globall.db.BEntity;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BStatement;
@@ -14,6 +10,11 @@ import globaz.jade.properties.JadePropertiesService;
 import globaz.naos.db.affiliation.AFAffiliation;
 import globaz.naos.db.cotisation.AFCotisation;
 import globaz.naos.util.AFIDEUtil;
+import java.io.Serializable;
+import java.util.Arrays;
+import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class AFIdeAnnonceManager extends BManager implements Serializable {
     private static final Logger LOG = LoggerFactory.getLogger(AFIdeAnnonceManager.class);
@@ -44,6 +45,7 @@ public class AFIdeAnnonceManager extends BManager implements Serializable {
     private String forEtat;
     private String forStatut;
     private String forDesenregActif;
+    private String forError;
     private List<String> notInStatutIDEAffiliation;
 
     private List<String> inIdAnnonce;
@@ -65,6 +67,8 @@ public class AFIdeAnnonceManager extends BManager implements Serializable {
     private String untilDateTraitement;
 
     private String forNumeroIde;
+
+    private String listIdSupprimer;
 
     public String getForNumeroIde() {
         return forNumeroIde;
@@ -210,6 +214,9 @@ public class AFIdeAnnonceManager extends BManager implements Serializable {
         createCondition(theTransaction, CREATE_CONDITION_NUMERIC, sqlWhere, ALIAS_TABLE_ANNONCE
                 + AFIdeAnnonce.IDE_ANNONCE_FIELD_ETAT, "IN",
                 transformListEnInValues(getInEtat(), CREATE_CONDITION_NUMERIC));
+        createCondition(theTransaction, CREATE_CONDITION_NUMERIC, sqlWhere, ALIAS_TABLE_ANNONCE
+                + AFIdeAnnonce.IDE_ANNONCE_FIELD_ID_ANNONCE, "IN",
+                transformListEnInValues(Arrays.asList(listIdSupprimer.split("\\s*,\\s*")), CREATE_CONDITION_NUMERIC));
         if (isDeleteDesenregActif()) {
             createCondition(theTransaction, CREATE_CONDITION_STRING, sqlWhere, ALIAS_TABLE_ANNONCE
                     + AFIdeAnnonce.IDE_ANNONCE_FIELD_NUMERO_IDE_REMPLACEMENT, "=", getForDesenregActif());
@@ -406,8 +413,8 @@ public class AFIdeAnnonceManager extends BManager implements Serializable {
         if (!JadeStringUtil.isBlankOrZero(likeNumeroAffilie)) {
             String NumAffFormatte;
             try {
-                String classNameNumAffFormatter = JadePropertiesService.getInstance()
-                        .getProperty("common.formatNumAffilie");
+                String classNameNumAffFormatter = JadePropertiesService.getInstance().getProperty(
+                        "common.formatNumAffilie");
                 IFormatData formatterNumAffilie;
 
                 formatterNumAffilie = (IFormatData) Class.forName(classNameNumAffFormatter).newInstance();
@@ -511,6 +518,9 @@ public class AFIdeAnnonceManager extends BManager implements Serializable {
         createCondition(theTransaction, CREATE_CONDITION_NUMERIC, sqlWhere, ALIAS_TABLE_ANNONCE
                 + AFIdeAnnonce.IDE_ANNONCE_FIELD_ID_ANNONCE, "IN",
                 transformListEnInValues(getInIdAnnonce(), CREATE_CONDITION_NUMERIC));
+
+        createCondition(theTransaction, CREATE_CONDITION_STRING, sqlWhere, ALIAS_TABLE_ANNONCE
+                + AFIdeAnnonce.IDE_ANNONCE_FIELD_MESSAGE_ERREUR_BUSINESS, "LIKE", forError);
 
         return sqlWhere.toString();
     }
@@ -627,6 +637,22 @@ public class AFIdeAnnonceManager extends BManager implements Serializable {
 
     public void setUntilDateTraitement(String untilDateTraitement) {
         this.untilDateTraitement = untilDateTraitement;
+    }
+
+    public String getForError() {
+        return forError;
+    }
+
+    public void setForError(String forError) {
+        this.forError = forError;
+    }
+
+    public String getListIdSupprimer() {
+        return listIdSupprimer;
+    }
+
+    public void setListIdSupprimer(String listIdSupprimer) {
+        this.listIdSupprimer = listIdSupprimer;
     }
 
 }

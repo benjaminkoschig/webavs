@@ -5,6 +5,7 @@ import globaz.framework.controller.FWDefaultServletAction;
 import globaz.framework.controller.FWDispatcher;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.naos.db.affiliation.AFAffiliationViewBean;
+import globaz.naos.db.ide.AFIdeAnnonceListViewBean;
 import globaz.naos.db.wizard.AFWizardViewBean;
 import java.io.IOException;
 import javax.servlet.ServletException;
@@ -15,6 +16,7 @@ import javax.servlet.http.HttpSession;
 public class AFActionIdeAnnonce extends FWDefaultServletAction {
 
     public static final String ACTION_PART_CUSTOM_PREPARE_AJOUT_ANNONCE_IDE_CREATION = "prepareAjoutAnnonceIdeCreation";
+    public static final String ACTION_PART_CUSTOM_DELETE_LISTE = "removeList";
 
     public AFActionIdeAnnonce(globaz.framework.servlets.FWServlet servlet) {
         super(servlet);
@@ -26,8 +28,20 @@ public class AFActionIdeAnnonce extends FWDefaultServletAction {
 
         if (ACTION_PART_CUSTOM_PREPARE_AJOUT_ANNONCE_IDE_CREATION.equalsIgnoreCase(getAction().getActionPart())) {
             actionPrepareAjoutAnnonceIdeCreation(session, request, response, dispatcher);
+        } else if (ACTION_PART_CUSTOM_DELETE_LISTE.equalsIgnoreCase(getAction().getActionPart())) {
+            FWViewBeanInterface vbSession = (FWViewBeanInterface) session.getAttribute("viewBean");
+            String destination = getActionFullURL() + ".lister";
+            if (vbSession instanceof AFIdeAnnonceListViewBean) {
+                AFIdeAnnonceListViewBean viewBean = (AFIdeAnnonceListViewBean) session.getAttribute("viewBean");
+                try {
+                    globaz.globall.http.JSPUtils.setBeanProperties(request, viewBean);
+                    viewBean.delete();
+                } catch (Exception e) {
+                    destination = FWDefaultServletAction.ERROR_PAGE;
+                }
+            }
+            servlet.getServletContext().getRequestDispatcher(destination).forward(request, response);
         } else {
-
             super.actionCustom(session, request, response, dispatcher);
         }
 
