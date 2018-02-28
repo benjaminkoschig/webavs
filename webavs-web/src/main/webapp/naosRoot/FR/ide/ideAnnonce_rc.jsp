@@ -6,6 +6,7 @@
 <%@page import="globaz.framework.bean.FWViewBeanInterface"%>
 <%@page import="globaz.naos.translation.CodeSystem"%>
 <%@page import="globaz.naos.db.ide.AFIdeListErrorAnnonce"%>
+<%@page import="globaz.framework.secure.FWSecureConstants"%>
 <%@ page language="java" errorPage="/errorPage.jsp" import="globaz.globall.http.*" %>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ include file="/theme/find/header.jspf" %>
@@ -15,7 +16,7 @@
 	String numAffilie = request.getParameter("likeNumAffilie");
 	idEcran="CAF0075";
 	bButtonFind = true;
-	bButtonDelete = true;
+	bButtonDelete = objSession.hasRight("naos.ide.ideAnnonce.supprimer",FWSecureConstants.REMOVE);
 	bButtonNew = false;
 	btnDelLabel = objSession.getLabel("JSP_SUPPRESSION_SELECTION");
 	rememberSearchCriterias=true;
@@ -66,7 +67,7 @@ function postInit() {
 	
 	 if(numAffilie != null && forEtat == "") {
 	 	initEtat = "";
-	 } else if(forEtat != "") {
+	 } else if(viewBeanFind != null) {
 	     initEtat = forEtat;
 	 }
 	 
@@ -184,9 +185,9 @@ function postInit() {
       		
 			<TD><ct:FWLabel key="NAOS_JSP_IDE_ANNONCE_TYPE_ERREUR"/></TD>
 			<TD>
-				<ct:select name="forError"  notation="data-g-select='mandatory:false'"  style='width : 300px'>
+				<ct:select name="forError" defaultValue="<%=forError%>" notation="data-g-select='mandatory:false'"  style='width : 300px'>
 					<% for(AFIdeListErrorAnnonce error : listError){%>
-					<option value="<%=error.getMessageErreurForBusinessUser()%>" label="<%=error.getMessageErreurForBusinessUser()%> " />
+					<ct:option value="<%=error.getMessageErreurForBusinessUser()%>" label="<%=error.getMessageErreurForBusinessUser()%>" />
 					<%}%> 
 				</ct:select>
 			</TD>	
