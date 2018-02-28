@@ -18,6 +18,7 @@
 	bButtonDelete = viewBean.canDeleteAnnonce() && viewBean.getSession().hasRight("naos.ide.ideAnnonce.supprimer",FWSecureConstants.REMOVE);
 	bButtonUpdate = viewBean.canUpdateAnnonce() && viewBean.getSession().hasRight("naos.ide.ideAnnonce.modifier",FWSecureConstants.UPDATE);
 	boolean isTraite = viewBean.isTraite() ;
+	boolean isFoscFaillite = (CodeSystem.TYPE_ANNONCE_IDE_FAILLITE.equals(viewBean.getIdeAnnonceType())||CodeSystem.TYPE_ANNONCE_IDE_FOSC.equals(viewBean.getIdeAnnonceType()));
 %>
 <%-- /tpl:put --%>
 <%-- tpl:put name="zoneBusiness" --%><%-- /tpl:put --%>
@@ -219,7 +220,11 @@ function init() {
 			<TD nowrap width="140"><ct:FWLabel key="NAOS_JSP_IDE_ANNONCE_CANTON"/></TD>
         	<TD nowrap width="300"><INPUT name="" type="text" value="<%=viewBean.getCanton()%>" class="libelleLongDisabled" readonly></TD>
         	<TD nowrap width="140"><ct:FWLabel key="NAOS_JSP_IDE_ANNONCE_PAYS"/></TD>
+        	<%if (isFoscFaillite) {%>
+        	<TD nowrap width="300"><INPUT name="" type="text" value="" class="libelleLongDisabled" readonly></TD>
+        	<% } else { %>
         	<TD nowrap width="300"><INPUT name="" type="text" value="CHE" class="libelleLongDisabled" readonly></TD>
+        	<% } %>
 		</TR>
 		
 		<TR>
@@ -309,7 +314,7 @@ function init() {
         	<TD nowrap width="300"></TD>
 		</TR>
 		<TR>
-		<%if (CodeSystem.TYPE_ANNONCE_IDE_FAILLITE.equals(viewBean.getIdeAnnonceType())||CodeSystem.TYPE_ANNONCE_IDE_FOSC.equals(viewBean.getIdeAnnonceType())) {%>
+		<%if (isFoscFaillite) {%>
 			<TD nowrap width="140"><ct:FWLabel key="NAOS_JSP_IDE_ANNONCE_MESSAGE_SEDEX_50"/></TD>
         	<TD nowrap width="740" colspan="3"><TEXTAREA name="" rows="4" cols="150" type="text" disabled="disabled" readonly><%=viewBean.getMessageSedex50()%></TEXTAREA></TD>
 		<% } %>
