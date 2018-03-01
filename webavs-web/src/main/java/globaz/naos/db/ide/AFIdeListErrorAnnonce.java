@@ -11,6 +11,7 @@ public class AFIdeListErrorAnnonce extends BEntity implements Serializable {
 
     public static final String IDE_ANNONCE_TABLE_NAME = "AFANOIDE";
 
+    public static final String IDE_ANNONCE_FIELD_ETAT = "AIDEET";
     public static final String IDE_ANNONCE_FIELD_MESSAGE_ERREUR_BUSINESS = "AIDEMB";
     public static final String IDE_ANNONCE_FIELD_MESSAGE_ERREUR_TECHNICAL = "AIDEMT";
 
