@@ -75,11 +75,7 @@ public class AFAffiliationViewBean extends AFAffiliation implements FWViewBeanIn
         int nbAnnonce = AFIDEUtil.countAffiliationAnnonceEnCours(getSession(), getAffiliationId());
         boolean hasAffiliationAnnonceLieeEnCours = AFIDEUtil.hasAffiliationAnnonceLieeEnCours(getSession(),
                 getAffiliationId());
-        List<AFAffiliation> affiliationsMemeIDE = null;
-        if (getNumeroIDE() != null && !getNumeroIDE().isEmpty()) {
-            affiliationsMemeIDE = AFAffiliationUtil.loadAffiliationUsingNumeroIde(getSession(), getNumeroIDE(), false);
-        }
-        isIDEPartage = affiliationsMemeIDE != null && !affiliationsMemeIDE.isEmpty() && affiliationsMemeIDE.size() > 1;
+        isIDEPartage = AFIDEUtil.hasIDEMultipleAff(getSession(), getNumeroIDE());
         isInMutationOnly = false;
         isIdeReadOnly = false;
         if (nbAnnonce >= 1 || hasAffiliationAnnonceLieeEnCours) {
@@ -198,4 +194,15 @@ public class AFAffiliationViewBean extends AFAffiliation implements FWViewBeanIn
         ideRaisonSocialeFromWebServcice = raisonSocialeFromWebServcice;
     }
 
+    @Override
+    public void setIdeRaisonSocialeb64(String iDE_raisonSociale) {
+        try {
+            isIDEPartage = AFIDEUtil.hasIDEAllreadyAff(getSession(), getNumeroIDE());
+        } catch (Exception e) {
+            isIDEPartage = false;
+        } finally {
+            super.setIdeRaisonSocialeb64(iDE_raisonSociale);
+        }
+
+    }
 }

@@ -75,7 +75,16 @@ function updateChampIde(tag){
 		document.getElementById("ideRaisonSociale").value = element.raisonSociale;
 		document.getElementById("ideStatut").value = element.ideStatut;
 		document.getElementById("libelleStatutIde").value = element.libelleStatutIde;
-		
+		var compareTo ='<%=viewBean.getNumeroIDE()%>';
+		if(compareTo==element.numeroIdeUnformatedWithPrefix){
+			displayFieldIDEPartage();
+		}else{
+			if(element.isIdeAllreadyUsed){
+				document.getElementById("isIdePartage").style.display = "";
+			}else {
+				document.getElementById("isIdePartage").style.display = "none";
+			}
+		}
 		document.getElementById("categorieNoga").value = element.categorieNoga;
  		document.getElementById("categorieNogaCode").value = element.categorieNoga;
  		rebuildNoga(element.csCodeNoga);
@@ -85,7 +94,8 @@ function updateChampIde(tag){
 		document.getElementById("ideRaisonSociale").value = '';
 		document.getElementById("ideStatut").value = '';
 		document.getElementById("libelleStatutIde").value = '';
-}
+		document.getElementById("isIdePartage").style.display = "none";
+	}
 	displayFieldIDEPassif();
 }
 
@@ -312,12 +322,15 @@ function init(){
 	resetEAAVisibility();
 	displayFieldCodeSuva();
 	displayFieldIDEPassif();
+	displayFieldIDEPartage();
 	
 	
 	<%if(!JadeStringUtil.isBlankOrZero(viewBean.getWarningMessageAnnonceIdeCreationNotAdded())){%>
 		globazNotation.utils.consoleWarn("<%=viewBean.getWarningMessageAnnonceIdeCreationNotAdded()%>",'Avertissement',true);
 		<%viewBean.setWarningMessageAnnonceIdeCreationNotAdded("");%>
 	<%}%>
+	
+	
 	
 }
 function showPartie1() {
@@ -410,7 +423,13 @@ function displayFieldIDEPassif() {
 	}
 	messageSiPassif();
 }
-
+function displayFieldIDEPartage() {
+	if(<%=viewBean.isIDEPartage()%>){
+		document.getElementById("isIdePartage").style.display = "";
+	}else {
+		document.getElementById("isIdePartage").style.display = "none";
+	}
+}
 function contains(a, obj) {
     for (var i = 0; i < a.length; i++) {
         if (a[i] == obj) {
@@ -937,14 +956,12 @@ function maxLength(zone,max)
 								</TD>
 							</TR>
 							<%}%>
-							<%if (viewBean.isIDEPartage()){ %>
-							<TR> 
+							<TR id="isIdePartage"> 
 								<TD >&nbsp;</TD>
 								<TD colspan="3"> 
 									<B><ct:FWLabel key="NAOS_JSP_AFFILIATION_MESSAGE_IDE_PARTAGE"/></B>
 								</TD>
 							</TR>
-							<%}%>
 							
 							<tr>
 								<TD nowrap width="161" height="31"><ct:FWLabel key="NAOS_JSP_AFFILIATION_IDE_RAISON_SOCIALE"/></TD>

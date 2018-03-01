@@ -1,5 +1,9 @@
 package globaz.naos.db.wizard;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import globaz.globall.db.BEntity;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
@@ -15,11 +19,8 @@ import globaz.naos.db.couverture.AFCouverture;
 import globaz.naos.db.couverture.AFCouvertureListViewBean;
 import globaz.naos.db.planAffiliation.AFPlanAffiliation;
 import globaz.naos.translation.CodeSystem;
+import globaz.naos.util.AFIDEUtil;
 import globaz.pyxis.db.tiers.TITiersViewBean;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
 
 /**
  * La classe définissant les entités nécessaires a la création acccélérée d'une Affiliation(s).
@@ -62,12 +63,14 @@ public class AFWizard extends BEntity implements Serializable {
     private List<AFPlanAffiliation> planAffiliationList = new ArrayList<AFPlanAffiliation>();
 
     /**
-     * flag passé a false dans l'action actionAfficherSaisieAffiliation le temps du <i>JSPUtils.setBeanProperties()</i> <br/>
+     * flag passé a false dans l'action actionAfficherSaisieAffiliation le temps du <i>JSPUtils.setBeanProperties()</i>
+     * <br/>
      * permet de s'affranchir de la perte des valeur à la navigation du wizard
      */
     private boolean saveAffiliationProperties = true;
 
     private boolean isIdeReadOnly = false;
+    private boolean isIDEPartage = false;
 
     private boolean isMessageAnnonceIdeCreationAjouteeToDisplay = false;
 
@@ -91,6 +94,15 @@ public class AFWizard extends BEntity implements Serializable {
     // commence par souligné afin de ne pas être prise par jspSetBeanProperties
     public void _setIdeReadOnly(boolean isIdeReadOnly) {
         this.isIdeReadOnly = isIdeReadOnly;
+    }
+
+    public boolean isIDEPartage() {
+        return isIDEPartage;
+    }
+
+    // commence par souligné afin de ne pas être prise par jspSetBeanProperties
+    public void _setIDEPartage(boolean isIDEPartage) {
+        this.isIDEPartage = isIDEPartage;
     }
 
     public String getWarningMessageAnnonceIdeCreationNotAdded() {
@@ -384,9 +396,8 @@ public class AFWizard extends BEntity implements Serializable {
                             cotisation.setDateDebut(adhesion.getDateDebut());
                             cotisation.setDateFin(adhesion.getDateFin());
 
-                            if (!JadeStringUtil.isIntegerEmpty(affiliation.getDateFin())
-                                    && BSessionUtil.compareDateEqual(getSession(), affiliation.getDateFin(),
-                                            getDateFin())) {
+                            if (!JadeStringUtil.isIntegerEmpty(affiliation.getDateFin()) && BSessionUtil
+                                    .compareDateEqual(getSession(), affiliation.getDateFin(), getDateFin())) {
                                 cotisation.setMotifFin(affiliation.getMotifFin());
                             } else {
                                 cotisation.setMotifFin(CodeSystem.MOTIF_FIN_FIN_ADHESION);
@@ -399,9 +410,8 @@ public class AFWizard extends BEntity implements Serializable {
                             cotisation.setDateDebut(couverture.getDateDebut());
                             cotisation.setDateFin(adhesion.getDateFin());
 
-                            if (!JadeStringUtil.isIntegerEmpty(affiliation.getDateFin())
-                                    && BSessionUtil.compareDateEqual(getSession(), affiliation.getDateFin(),
-                                            getDateFin())) {
+                            if (!JadeStringUtil.isIntegerEmpty(affiliation.getDateFin()) && BSessionUtil
+                                    .compareDateEqual(getSession(), affiliation.getDateFin(), getDateFin())) {
                                 cotisation.setMotifFin(affiliation.getMotifFin());
                             } else {
                                 cotisation.setMotifFin(CodeSystem.MOTIF_FIN_FIN_ADHESION);
@@ -419,8 +429,8 @@ public class AFWizard extends BEntity implements Serializable {
                     for (int j = 0; j < adhesionCotisations.cotisationList.size(); j++) {
                         AFCotisation cotisation = adhesionCotisations.cotisationList.get(j);
 
-                        if (!(cotisation.getMotifFin().equals(CodeSystem.MOTIF_FIN_FIN_ADHESION) || cotisation
-                                .getMotifFin().equals(CodeSystem.MOTIF_FIN_FIN_COUV_ASSURANCE))) {
+                        if (!(cotisation.getMotifFin().equals(CodeSystem.MOTIF_FIN_FIN_ADHESION)
+                                || cotisation.getMotifFin().equals(CodeSystem.MOTIF_FIN_FIN_COUV_ASSURANCE))) {
                             cotisation.setMotifFin(affiliation.getMotifFin());
                         }
                     }
@@ -820,7 +830,13 @@ public class AFWizard extends BEntity implements Serializable {
      * @param iDE_raisonSociale
      */
     public void setIdeRaisonSocialeb64(String iDE_raisonSocialeb64) {
-        affiliation.setIdeRaisonSocialeb64(iDE_raisonSocialeb64);
+        try {
+            isIDEPartage = AFIDEUtil.hasIDEAllreadyAff(getSession(), getNumeroIDE());
+        } catch (Exception e) {
+            isIDEPartage = false;
+        } finally {
+            affiliation.setIdeRaisonSocialeb64(iDE_raisonSocialeb64);
+        }
     }
 
     public void setActivite(String activite) {
