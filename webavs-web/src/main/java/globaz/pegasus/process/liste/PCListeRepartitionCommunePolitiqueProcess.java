@@ -24,6 +24,7 @@ import java.util.TreeMap;
 import ch.globaz.common.domaine.Date;
 import ch.globaz.common.listoutput.SimpleOutputListBuilderJade;
 import ch.globaz.common.sql.QueryExecutor;
+import ch.globaz.pegasus.business.constantes.IPCValeursPlanCalcul;
 import ch.globaz.pegasus.business.domaine.pca.PcaEtat;
 import ch.globaz.prestation.domaine.CodePrestation;
 import ch.globaz.prestation.domaine.constantes.DomaineCodePrestation;
@@ -316,9 +317,14 @@ public class PCListeRepartitionCommunePolitiqueProcess extends PCAbstractJob {
         sql.append(" inner join SCHEMA.PCPCACC pcac on (prac.ZTIPRA = pcac.CUIPRA) ");
         sql.append(" inner join SCHEMA.TITIERP tier on (prac.ZTITBE = tier.HTITIE) ");
         sql.append(" inner join SCHEMA.TIPAVSP pavs on (pavs.htitie = tier.HTITIE) ");
+        // Ajout du plan calcul qui a un "isPlanRetenu" à true
+        sql.append(" inner join DB2COTT.PCPLCAL planc on (planc.CVIPCA = pcac.CUIPCA AND CVBPLR = 1) ");
         sql.append(" WHERE prac.ZTTGEN = " + IREPrestationAccordee.CS_GENRE_PC
                 + " and (prac.ZTDFDR = 0 or prac.ZTDFDR >= " + dateAM + ") and pcac.CUTETA = "
                 + PcaEtat.VALIDE.getValue());
+        // Sans récupérer les plans de calcul refusé
+        sql.append(" AND planc.CVLEPC <> " + IPCValeursPlanCalcul.STATUS_REFUS);
+        sql.append(" group by tier.HTITIE, pavs.HXNAVS, tier.HTLDE1, tier.HTLDE2, prac.ZTLCPR, prac.ZTMPRE");
 
         return sql.toString();
     }
