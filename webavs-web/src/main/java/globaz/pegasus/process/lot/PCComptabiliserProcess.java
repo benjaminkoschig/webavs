@@ -80,8 +80,9 @@ public class PCComptabiliserProcess extends PCAbstractJob {
         // si process pas en erreur
         if (!JadeThread.logHasMessagesFromLevel(JadeBusinessMessageLevels.ERROR)) {
 
-            // on check si c'est un lot de type decision
-            if (simpleLot.getCsTypeLot().equals(IRELot.CS_TYP_LOT_DECISION)) {
+            // on check si c'est un lot de type decision et décision de restitution
+            if (simpleLot.getCsTypeLot().equals(IRELot.CS_TYP_LOT_DECISION)
+                    || simpleLot.getCsTypeLot().equals(IRELot.CS_TYP_LOT_DECISION_RESTITUTION)) {
                 // on vide les logs, afin de logger les infos reltaives au process de mise en ged
                 // et de supprimer les logs relatifs à la comptabilisation des décisions
                 JadeThread.logClear();
