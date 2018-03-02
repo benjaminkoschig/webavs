@@ -918,7 +918,9 @@ function maxLength(zone,max)
 									    }
 									%>
 								</TD>
-							
+							<TD id="isIdePartage"> 
+									<div style="color:red">&nbsp;<ct:FWLabel key="NAOS_JSP_AFFILIATION_MESSAGE_IDE_PARTAGE"/></div>
+								</TD>
 								<TD>
 									<%
 									    if(!JadeStringUtil.isBlankOrZero(viewBean.getNumeroIDE())) {
@@ -952,12 +954,6 @@ function maxLength(zone,max)
 								</TD>
 							</TR>
 							<%}%>
-							<TR id="isIdePartage"> 
-								<TD >&nbsp;</TD>
-								<TD colspan="3"> 
-									<B><ct:FWLabel key="NAOS_JSP_AFFILIATION_MESSAGE_IDE_PARTAGE"/></B>
-								</TD>
-							</TR>
 							<tr>
 								<TD nowrap width="161" height="31"><ct:FWLabel key="NAOS_JSP_AFFILIATION_IDE_RAISON_SOCIALE"/></TD>
 								<td colspan="2">

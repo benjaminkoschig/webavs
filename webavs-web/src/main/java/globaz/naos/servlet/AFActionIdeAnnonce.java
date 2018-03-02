@@ -1,5 +1,10 @@
 package globaz.naos.servlet;
 
+import java.io.IOException;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.controller.FWDefaultServletAction;
 import globaz.framework.controller.FWDispatcher;
@@ -7,11 +12,6 @@ import globaz.jade.client.util.JadeStringUtil;
 import globaz.naos.db.affiliation.AFAffiliationViewBean;
 import globaz.naos.db.ide.AFIdeAnnonceListViewBean;
 import globaz.naos.db.wizard.AFWizardViewBean;
-import java.io.IOException;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 public class AFActionIdeAnnonce extends FWDefaultServletAction {
 
@@ -58,11 +58,13 @@ public class AFActionIdeAnnonce extends FWDefaultServletAction {
 
             if (vbSession instanceof AFAffiliationViewBean) {
                 ((AFAffiliationViewBean) vbSession)._setIdeReadOnly(true);
+                ((AFAffiliationViewBean) vbSession)._setIDEPartage(false);
                 ((AFAffiliationViewBean) vbSession)._setAnnonceIdeCreationToAdd(true);
                 ((AFAffiliationViewBean) vbSession)._setMessageAnnonceIdeCreationAjouteeToDisplay(true);
             } else {
                 ((AFWizardViewBean) vbSession).getAffiliation()._setAnnonceIdeCreationToAdd(true);
                 ((AFWizardViewBean) vbSession)._setIdeReadOnly(true);
+                ((AFWizardViewBean) vbSession)._setIDEPartage(false);
                 ((AFWizardViewBean) vbSession)._setMessageAnnonceIdeCreationAjouteeToDisplay(true);
             }
 
