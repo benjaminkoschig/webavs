@@ -214,9 +214,15 @@ public class AFIdeAnnonceManager extends BManager implements Serializable {
         createCondition(theTransaction, CREATE_CONDITION_NUMERIC, sqlWhere, ALIAS_TABLE_ANNONCE
                 + AFIdeAnnonce.IDE_ANNONCE_FIELD_ETAT, "IN",
                 transformListEnInValues(getInEtat(), CREATE_CONDITION_NUMERIC));
-        createCondition(theTransaction, CREATE_CONDITION_NUMERIC, sqlWhere, ALIAS_TABLE_ANNONCE
-                + AFIdeAnnonce.IDE_ANNONCE_FIELD_ID_ANNONCE, "IN",
-                transformListEnInValues(Arrays.asList(listIdSupprimer.split("\\s*,\\s*")), CREATE_CONDITION_NUMERIC));
+        if (!JadeStringUtil.isBlank(listIdSupprimer)) {
+            createCondition(
+                    theTransaction,
+                    CREATE_CONDITION_NUMERIC,
+                    sqlWhere,
+                    ALIAS_TABLE_ANNONCE + AFIdeAnnonce.IDE_ANNONCE_FIELD_ID_ANNONCE,
+                    "IN",
+                    transformListEnInValues(Arrays.asList(listIdSupprimer.split("\\s*,\\s*")), CREATE_CONDITION_NUMERIC));
+        }
         if (isDeleteDesenregActif()) {
             createCondition(theTransaction, CREATE_CONDITION_STRING, sqlWhere, ALIAS_TABLE_ANNONCE
                     + AFIdeAnnonce.IDE_ANNONCE_FIELD_NUMERO_IDE_REMPLACEMENT, "=", getForDesenregActif());
