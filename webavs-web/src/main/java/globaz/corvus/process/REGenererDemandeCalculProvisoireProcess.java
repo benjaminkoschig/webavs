@@ -2,7 +2,11 @@ package globaz.corvus.process;
 
 import globaz.corvus.api.demandes.IREDemandeRente;
 import globaz.corvus.api.topaz.IRENoDocumentInfoRom;
+import globaz.corvus.dao.REDeleteCascadeDemandeAPrestationsDues;
+import globaz.corvus.db.basescalcul.REBasesCalcul;
 import globaz.corvus.db.demandes.REDemandeRente;
+import globaz.corvus.db.rentesaccordees.RERenteAccJoinTblTiersJoinDemRenteManager;
+import globaz.corvus.db.rentesaccordees.RERenteAccJoinTblTiersJoinDemandeRente;
 import globaz.corvus.topaz.REDemandeCalculProvisoireOO;
 import globaz.jade.log.business.JadeBusinessMessage;
 import globaz.jade.log.business.JadeBusinessMessageLevels;
@@ -130,6 +134,27 @@ public class REGenererDemandeCalculProvisoireProcess extends REAbstractInfoCompl
             demandeRente.setSession(getSession());
             demandeRente.setIdDemandeRente(getIdDemandeRente());
             demandeRente.retrieve();
+
+            RERenteAccJoinTblTiersJoinDemRenteManager rdm = new RERenteAccJoinTblTiersJoinDemRenteManager();
+            rdm.setSession(getSession());
+            rdm.setForNoDemandeRente(demandeRente.getIdDemandeRente());
+            rdm.find();
+
+            if (!rdm.isEmpty()) {
+                RERenteAccJoinTblTiersJoinDemandeRente ra = (RERenteAccJoinTblTiersJoinDemandeRente) rdm
+                        .getFirstEntity();
+
+                for (int i = 0; i < rdm.size(); i++) {
+                    ra = (RERenteAccJoinTblTiersJoinDemandeRente) rdm.getEntity(i);
+                    REBasesCalcul bc = new REBasesCalcul();
+                    bc.setSession(getSession());
+                    bc.setIdBasesCalcul(ra.getIdBaseCalcul());
+                    bc.retrieve();
+                    REDeleteCascadeDemandeAPrestationsDues.supprimerBaseCalculCascade_noCommit(getSession(),
+                            getSession().getCurrentThreadTransaction(), bc);
+                }
+
+            }
 
             PRInfoCompl info = new PRInfoCompl();
             info.setSession(getSession());

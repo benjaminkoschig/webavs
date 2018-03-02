@@ -2,6 +2,7 @@ package globaz.corvus.process;
 
 import globaz.corvus.api.demandes.IREDemandeRente;
 import globaz.corvus.api.topaz.IRENoDocumentInfoRom;
+import globaz.corvus.dao.REDeleteCascadeDemandeAPrestationsDues;
 import globaz.corvus.db.basescalcul.REBasesCalcul;
 import globaz.corvus.db.demandes.REDemandeRente;
 import globaz.corvus.db.demandes.REDemandeRenteAPI;
@@ -170,6 +171,34 @@ public class REGenererTransfertDossierNonValideProcess extends REAbstractInfoCom
             demandeRente.setIdDemandeRente(getIdDemandeRente());
             demandeRente.retrieve();
 
+            RERenteAccJoinTblTiersJoinDemRenteManager rdm = new RERenteAccJoinTblTiersJoinDemRenteManager();
+            rdm.setSession(getSession());
+            rdm.setForNoDemandeRente(demandeRente.getIdDemandeRente());
+            rdm.find();
+
+            if (!rdm.isEmpty()) {
+                RERenteAccJoinTblTiersJoinDemandeRente ra = (RERenteAccJoinTblTiersJoinDemandeRente) rdm
+                        .getFirstEntity();
+
+                REBasesCalcul bc = new REBasesCalcul();
+                bc.setSession(getSession());
+                bc.setIdBasesCalcul(ra.getIdBaseCalcul());
+                bc.retrieve();
+                idOfficeAi = bc.getCodeOfficeAi();
+                REDeleteCascadeDemandeAPrestationsDues.supprimerBaseCalculCascade_noCommit(getSession(), getSession()
+                        .getCurrentThreadTransaction(), bc);
+                for (int i = 1; i < rdm.size(); i++) {
+                    ra = (RERenteAccJoinTblTiersJoinDemandeRente) rdm.getEntity(i);
+                    bc = new REBasesCalcul();
+                    bc.setSession(getSession());
+                    bc.setIdBasesCalcul(ra.getIdBaseCalcul());
+                    bc.retrieve();
+                    REDeleteCascadeDemandeAPrestationsDues.supprimerBaseCalculCascade_noCommit(getSession(),
+                            getSession().getCurrentThreadTransaction(), bc);
+                }
+
+            }
+
             // Utiliser pour la date du document car c'est celle de l'info
             // compl. qu'il faut afficher
             PRInfoCompl info = new PRInfoCompl();
@@ -236,11 +265,6 @@ public class REGenererTransfertDossierNonValideProcess extends REAbstractInfoCom
 
                 isCopieOfAi = true;
 
-                RERenteAccJoinTblTiersJoinDemRenteManager rdm = new RERenteAccJoinTblTiersJoinDemRenteManager();
-                rdm.setSession(getSession());
-                rdm.setForNoDemandeRente(demandeRente.getIdDemandeRente());
-                rdm.find();
-
                 if (rdm.isEmpty()) {
                     if (IREDemandeRente.CS_TYPE_DEMANDE_RENTE_INVALIDITE.equals(demandeRente.getCsTypeDemandeRente())) {
                         REDemandeRenteInvalidite demInv = new REDemandeRenteInvalidite();
@@ -255,15 +279,6 @@ public class REGenererTransfertDossierNonValideProcess extends REAbstractInfoCom
                         demAPI.retrieve();
                         idOfficeAi = demAPI.getCodeOfficeAI();
                     }
-                } else {
-                    RERenteAccJoinTblTiersJoinDemandeRente ra = (RERenteAccJoinTblTiersJoinDemandeRente) rdm
-                            .getFirstEntity();
-
-                    REBasesCalcul bc = new REBasesCalcul();
-                    bc.setSession(getSession());
-                    bc.setIdBasesCalcul(ra.getIdBaseCalcul());
-                    bc.retrieve();
-                    idOfficeAi = bc.getCodeOfficeAi();
                 }
 
                 TIAdministrationManager tiAdministrationMgr = new TIAdministrationManager();
