@@ -1689,7 +1689,7 @@ public class ALStatistiquesOfasProcess extends BProcess {
                 + " FROM schema.aldetpre det LEFT OUTER "
                 + "JOIN schema.alentpre ent ON ent.mid = det.mid LEFT OUTER "
                 + "JOIN schema.aldroit dro ON dro.fid=det.fid LEFT OUTER "
-                + "JOIN CCJUWEB.alenfant enf ON enf.cid = dro.cid LEFT OUTER "
+                + "JOIN schema.alenfant enf ON enf.cid = dro.cid LEFT OUTER "
                 + "JOIN schema.aldos dos ON dos.eid=dro.eid LEFT OUTER "
                 + "JOIN schema.fwcoup cs ON cs.pcosid=ent.cscant and cs.PLAIDE = 'F' "
                 + "left outer join schema.alparam param on param.pparva=det.numcpt AND param.ppacdi LIKE 'rubrique.multicaisse.%'"
