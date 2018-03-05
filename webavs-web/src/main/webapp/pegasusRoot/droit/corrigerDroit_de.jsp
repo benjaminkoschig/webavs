@@ -35,6 +35,48 @@
 <%-- tpl:put name="zoneBusiness" --%>
 <%-- /tpl:put --%>
 <%@ include file="/theme/detail/javascripts.jspf" %>
+<script type="text/javascript">
+var showConfirmDialog = function () {
+	$( "#dialog-warningRFM-confirm" ).dialog({
+        resizable: false,
+        height:300,
+        width:500,
+        modal: true,
+        
+        buttons: {
+        	
+        	<ct:FWLabel key='JSP_POPUP_OK'/>: function() {
+              $( this ).dialog( "close" );
+              validateCorrigerDroit();
+            },
+            <ct:FWLabel key='JSP_POPUP_ANNULER'/>: function() {
+                $( this ).dialog( "close" );
+            }
+        }
+    });
+};
+
+var showConfirmDialogForCreateLot = function () {
+	$( "#dialog-confirm-creation-lot" ).dialog({
+        resizable: false,
+        height:250,
+        width:500,
+        modal: true,
+        
+        buttons: {
+        	<ct:FWLabel key='JSP_POPUP_NON'/>: function() {
+                $( this ).dialog( "close" );
+                action(COMMIT);
+            },
+            <ct:FWLabel key='JSP_POPUP_OUI'/>: function() {
+                $( this ).dialog( "close" );
+                $('#isComptabilisationAuto').val("true");
+        		action(COMMIT);
+            }
+        }
+    });
+};
+</script>
 <script type="text/javascript" src="<%=servletContext%><%=(mainServletPath+"Root")%>/scripts/jadeBaseFormulaire.js"/></script>
 <script type="text/javascript" src="<%=servletContext%><%=(mainServletPath+"Root")%>/scripts/droit/corrigerDroit_de.js"/></script>
 <%-- tpl:put name="zoneScripts" --%>

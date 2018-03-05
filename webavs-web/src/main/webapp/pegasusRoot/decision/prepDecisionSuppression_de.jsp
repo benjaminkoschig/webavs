@@ -66,9 +66,33 @@ vBeanHasErrors = false;
 <script type="text/javascript" src="<%=servletContext%>/pegasusRoot/scripts/decision/decisionListHandlerPrep.js"></script>
 -->
 <!--  notation spécifique pc -->
+
 <script type="text/javascript" src="<%=servletContext%><%=(mainServletPath+"Root")%>/scripts/notationsCandidate/globazPreventDoubleClick.js"></script>
 <script type="text/javascript" src="<%=servletContext%>/pegasusRoot/scripts/decision/prepDecisionSup.js"></script>
 <script type="text/javascript">
+
+var showConfirmDialogForSuppression = function () {
+	$( "#dialog-warningRFM-confirm" ).dialog({
+        resizable: false,
+        height:300,
+        width:500,
+        modal: true,
+        
+        buttons: {
+        	<ct:FWLabel key='JSP_POPUP_OK'/>: function() {
+                $( this ).dialog( "close" );
+                state = true;
+                $( "#preparer_btn_sup1" ).hide();
+                $( "#preparer_btn_sup2" ).show();
+                $( "#preparer_btn_sup2" ).click();
+        		action(COMMIT);
+            },
+            <ct:FWLabel key='JSP_POPUP_ANNULER'/>: function() {
+                $( this ).dialog( "close" );
+            }
+        }
+    });
+};
 
 var ACTION_DECISION = "pegasus.decision.prepDecisionSuppression";
 var actionMethod;

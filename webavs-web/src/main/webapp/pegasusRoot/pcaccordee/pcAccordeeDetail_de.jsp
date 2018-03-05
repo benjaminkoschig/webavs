@@ -136,6 +136,27 @@
 	</style>
 	
 	<script type="text/javascript"> 
+	
+	var showConfirmDialogForBlocage = function () {
+		$( "#dialog-warningRFM-confirm" ).dialog({
+	        resizable: false,
+	        height:300,
+	        width:500,
+	        modal: true,
+	        
+	        buttons: {
+	        	<ct:FWLabel key='JSP_POPUP_OK'/>: function() {
+	                $( this ).dialog( "close" );
+	                //userAction.value=ACTION_DECISION_DEVALIDE;
+	        		action(COMMIT);
+	            },
+	            <ct:FWLabel key='JSP_POPUP_ANNULER'/>: function() {
+	                $( this ).dialog( "close" );
+	            }
+	        }
+	    });
+	};
+	
 		var errorObj = new Object();
 		errorObj.text = "";
 
