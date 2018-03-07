@@ -25,6 +25,7 @@ import org.apache.poi.hssf.usermodel.HSSFRichTextString;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import ch.globaz.common.domaine.Date;
 
 /**
  * Insérez la description du type ici. Date de création : (17.06.2003 14:38:38)
@@ -250,7 +251,8 @@ public class RentierDocument {
                 if (affiliation.getPeriodicite().equals(CodeSystem.PERIODICITE_ANNUELLE) == false) {
                     cotisation.setPeriodicite(CodeSystem.PERIODICITE_MENSUELLE);
                 } else {
-                    cotisation.setTraitementMoisAnnee("8370" + personne.getDateRentier().getMonth());
+                    String csTraitementMoisAnnee = initCsTraitementMoisAnnee(personne.getDateRentier().toStrAMJ());
+                    cotisation.setTraitementMoisAnnee(csTraitementMoisAnnee);
                 }
             }
             cotisation.setDateFin(personne.getDateRentier().toStr("."));
@@ -258,5 +260,14 @@ public class RentierDocument {
             cotisation.setSession(getSession);
             cotisation.update();
         }
+    }
+
+    /**
+     * @param jaDateRentier - String sous forme de YYYYMMAA (Exemple : 20181231)
+     * @return String - code système VEMOIS correspondant à un mois
+     */
+    private String initCsTraitementMoisAnnee(String jaDateRentier) {
+        Date dateRentier = new Date(jaDateRentier);
+        return "8370" + dateRentier.getMois();
     }
 }
