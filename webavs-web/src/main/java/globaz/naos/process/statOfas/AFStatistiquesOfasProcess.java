@@ -371,6 +371,7 @@ public class AFStatistiquesOfasProcess extends BProcess {
     public static final String REQUETE_AF_AGRICOLE_COL_NAME_ID_ENFANT = "ID_ENFANT";
     public static final String REQUETE_AF_AGRICOLE_COL_NAME_TYPE_ACTIVITE = "TYPE_ACTIVITE";
     public static final String REQUETE_AF_AGRICOLE_COL_NAME_NUM_AFFILIE = "NUMERO_AFFILIE";
+    public static final String REQUETE_AF_AGRICOLE_COL_NAME_ID_ALLOCATAIRE = "ID_ALLOCATAIRE";
 
     public static final String REQUETE_AF_AGRICOLE_COL_NAME_TYPE_ALLOCATION = "TYPE_ALLOCATION";
     public static final String REQUETE_AF_AGRICOLE_COL_NAME_TYPE_LOI = "TYPE_LOI";
@@ -1068,6 +1069,7 @@ public class AFStatistiquesOfasProcess extends BProcess {
         mapStatOfasAFAgricoleBean.put(AFStatistiquesOfasProcess.KEY_PECHEUR, new StatOfasAFAgricoleBean());
         List<String> listeClesAllocsEnfants = new ArrayList<String>();
         List<String> listeClesAllocsMenages = new ArrayList<String>();
+        List<String> listeClesAyantsDroits = new ArrayList<String>();
         for (Map<String, String> aMapRowResultQueryAFAgricole : listMapResultQueryAFAgricole) {
             String idEntetePrestation = aMapRowResultQueryAFAgricole
                     .get(AFStatistiquesOfasProcess.REQUETE_AF_AGRICOLE_COL_NAME_ID_ENTETE_PRESTATION);
@@ -1092,6 +1094,8 @@ public class AFStatistiquesOfasProcess extends BProcess {
                     .get(AFStatistiquesOfasProcess.REQUETE_AF_AGRICOLE_COL_NAME_ID_ENFANT);
             String numAff = aMapRowResultQueryAFAgricole
                     .get(AFStatistiquesOfasProcess.REQUETE_AF_AGRICOLE_COL_NAME_NUM_AFFILIE);
+            String idAllocataire = aMapRowResultQueryAFAgricole
+                    .get(AFStatistiquesOfasProcess.REQUETE_AF_AGRICOLE_COL_NAME_ID_ALLOCATAIRE);
 
             String montantAllocationString = aMapRowResultQueryAFAgricole
                     .get(AFStatistiquesOfasProcess.REQUETE_AF_AGRICOLE_COL_NAME_MONTANT_ALLOCATION);
@@ -1161,6 +1165,18 @@ public class AFStatistiquesOfasProcess extends BProcess {
                 continue;
             }
 
+            // Création de la clé composé des informations de l'ayant droit
+            String cleAyantsDroits = idAllocataire + idEntetePrestation + numAff + keyActivite;
+            if (!listeClesAyantsDroits.contains(cleAyantsDroits)) {
+                listeClesAyantsDroits.add(cleAyantsDroits);
+                statOfasAFAgricoleBean.setNombreAyantDroit(statOfasAFAgricoleBean.getNombreAyantDroit() + 1);
+
+                if (!AFStatistiquesOfasProcess.CODE_PAYS_SUISSE.equalsIgnoreCase(paysAllocataire)) {
+                    statOfasAFAgricoleBean.setNombreAyantDroitEtranger(statOfasAFAgricoleBean
+                            .getNombreAyantDroitEtranger() + 1);
+                }
+            }
+
             // Initialisation de la variable à 1 car on ne calcul plus directement le nombre depuis la requête SQL
             int nombreAllocation = 1;
 
@@ -1174,16 +1190,6 @@ public class AFStatistiquesOfasProcess extends BProcess {
                 listeClesAllocsEnfants.add(cleAllocsEnfant);
             } else {
                 nombreAllocation = 0;
-            }
-
-            if (nombreAllocation >= 1) {
-
-                statOfasAFAgricoleBean.setNombreAyantDroit(statOfasAFAgricoleBean.getNombreAyantDroit() + 1);
-
-                if (!AFStatistiquesOfasProcess.CODE_PAYS_SUISSE.equalsIgnoreCase(paysAllocataire)) {
-                    statOfasAFAgricoleBean.setNombreAyantDroitEtranger(statOfasAFAgricoleBean
-                            .getNombreAyantDroitEtranger() + 1);
-                }
             }
 
             statOfasAFAgricoleBean.setNombreTotalAllocation(statOfasAFAgricoleBean.getNombreTotalAllocation()
@@ -2787,7 +2793,8 @@ public class AFStatistiquesOfasProcess extends BProcess {
                 + ", count(DISTINCT(dro.FID)) as "
                 + AFStatistiquesOfasProcess.REQUETE_AF_AGRICOLE_COL_NAME_NOMBRE_ALLOCATION + ", enf.cid as "
                 + AFStatistiquesOfasProcess.REQUETE_AF_AGRICOLE_COL_NAME_ID_ENFANT + ", dos.MALNAF as "
-                + AFStatistiquesOfasProcess.REQUETE_AF_AGRICOLE_COL_NAME_NUM_AFFILIE + " FROM SCHEMA.aldetpre det "
+                + AFStatistiquesOfasProcess.REQUETE_AF_AGRICOLE_COL_NAME_NUM_AFFILIE + ", alloc.BID as "
+                + AFStatistiquesOfasProcess.REQUETE_AF_AGRICOLE_COL_NAME_ID_ALLOCATAIRE + " FROM SCHEMA.aldetpre det "
                 + " LEFT OUTER JOIN SCHEMA.alentpre ent ON ent.mid = det.mid "
                 + " LEFT OUTER JOIN SCHEMA.aldos dos ON dos.eid = ent.eid "
                 + " LEFT OUTER JOIN SCHEMA.aldroit dro ON dro.fid = det.fid "
@@ -2802,7 +2809,7 @@ public class AFStatistiquesOfasProcess extends BProcess {
             sql += " AND ( numCpt not like '____.46%' ) ";
         }
 
-        sql += " group by cstype,enf.hnipay,tia.hnipay,dos.cscaal,cscata,numcpt,ent.eid,etocc,ent.cstatu, eactacc, enf.cid, dos.MALNAF"
+        sql += " group by cstype,enf.hnipay,tia.hnipay,dos.cscaal,cscata,numcpt,ent.eid,etocc,ent.cstatu, eactacc, enf.cid, dos.MALNAF, alloc.BID"
                 + " order by ent.eid ";
 
         sql = replaceSchemaInSqlQuery(sql);
