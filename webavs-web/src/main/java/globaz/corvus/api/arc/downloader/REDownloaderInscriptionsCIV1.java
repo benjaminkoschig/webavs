@@ -39,7 +39,11 @@ import java.util.Map;
  */
 public class REDownloaderInscriptionsCIV1 extends REAbstractDownloader {
 
-    public static final Integer MAX_NB_DEMANDES = 100;
+    // Le nombre doit être assez grand pour prendre en compte toutes les demandes
+    // Des incidents étaient créés lorsque ce nombre était à 100 donc le meilleur
+    // moyen de résoudre ce problème sans trop d'impact est de mettre un chiffre
+    // que le nombre de demandes n'atteindra pas (déjà rare d'avoir plus de 100)
+    public static final Integer MAX_NB_DEMANDES = 1000;
 
     public static PRTiersWrapper getTiersFromNss(BSession session, BITransaction transaction, String nss)
             throws Exception {
