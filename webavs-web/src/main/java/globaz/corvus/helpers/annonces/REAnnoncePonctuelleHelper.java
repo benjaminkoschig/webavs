@@ -242,29 +242,12 @@ public class REAnnoncePonctuelleHelper extends PRAbstractHelper {
                 transaction.openTransaction();
             }
 
-            updateWithTransaction(vb, session, transaction);
-
             RERenteAccordee ra = new RERenteAccordee();
             ra.setSession(session);
             ra.setIdPrestationAccordee(vb.getIdRenteAccordee());
             ra.retrieve(transaction);
 
-            REBasesCalcul bc = new REBasesCalcul();
-            bc.setSession(session);
-            bc.setIdBasesCalcul(ra.getIdBaseCalcul());
-            bc.retrieve(transaction);
-
-            // Récupération de la date de début de la demande
-            RERenteCalculee rc = new RERenteCalculee();
-            rc.setSession(session);
-            rc.setIdRenteCalculee(bc.getIdRenteCalculee());
-            rc.retrieve(transaction);
-
-            REDemandeRente demande = new REDemandeRente();
-            demande.setSession(session);
-            demande.setIdRenteCalculee(rc.getIdRenteCalculee());
-            demande.setAlternateKey(REDemandeRente.ALTERNATE_KEY_ID_RENTE_CALCULEE);
-            demande.retrieve(transaction);
+            updateWithTransaction(vb, session, transaction);
 
             // BZ 5785 si la rente est une rentes principale, ou API, mise à jour du canton de domicile de toutes la
             // famille dans la situation familiale (si besoin)
@@ -1889,122 +1872,132 @@ public class REAnnoncePonctuelleHelper extends PRAbstractHelper {
 
         bc.update(transaction);
 
-        REDemandeRenteJointDemandeManager demrentemg = new REDemandeRenteJointDemandeManager();
-        demrentemg.setForIdTiersRequ(bc.getIdTiersBaseCalcul());
-        demrentemg.setSession(viewBean.getSession());
-        demrentemg.find(transaction);
+        REDemandeRente demande = new REDemandeRente();
+        demande.setSession(session);
+        demande.setIdRenteCalculee(bc.getIdRenteCalculee());
+        demande.setAlternateKey(REDemandeRente.ALTERNATE_KEY_ID_RENTE_CALCULEE);
+        demande.retrieve(transaction);
 
-        for (int i = 0; i < demrentemg.size(); i++) {
+        // Mise à jour des autres demandes uniquement si la demande initiale est une API ou invalidité
+        if (IREDemandeRente.CS_TYPE_DEMANDE_RENTE_API.equals(demande.getCsTypeDemandeRente())
+                || IREDemandeRente.CS_TYPE_DEMANDE_RENTE_INVALIDITE.equals(demande.getCsTypeDemandeRente())) {
+            REDemandeRenteJointDemandeManager demrentemg = new REDemandeRenteJointDemandeManager();
+            demrentemg.setForIdTiersRequ(bc.getIdTiersBaseCalcul());
+            demrentemg.setSession(viewBean.getSession());
+            demrentemg.find(transaction);
 
-            REDemandeRenteJointDemande red = (REDemandeRenteJointDemande) demrentemg.get(i);
+            for (int i = 0; i < demrentemg.size(); i++) {
 
-            if (IREDemandeRente.CS_TYPE_DEMANDE_RENTE_API.equals(red.getCsTypeDemande())
-                    || IREDemandeRente.CS_TYPE_DEMANDE_RENTE_INVALIDITE.equals(red.getCsTypeDemande())) {
+                REDemandeRenteJointDemande red = (REDemandeRenteJointDemande) demrentemg.get(i);
 
-                boolean isRaEnCours = false;
+                if (IREDemandeRente.CS_TYPE_DEMANDE_RENTE_API.equals(red.getCsTypeDemande())
+                        || IREDemandeRente.CS_TYPE_DEMANDE_RENTE_INVALIDITE.equals(red.getCsTypeDemande())) {
 
-                RERenteAccJoinTblTiersJoinDemRenteManager ram = new RERenteAccJoinTblTiersJoinDemRenteManager();
-                ram.setSession(session);
-                ram.setForNoDemandeRente(red.getIdDemandeRente());
-                ram.find(transaction);
+                    boolean isRaEnCours = false;
 
-                for (int j = 0; j < ram.size(); j++) {
-                    RERenteAccJoinTblTiersJoinDemandeRente a = (RERenteAccJoinTblTiersJoinDemandeRente) ram.get(j);
-                    if (JadeStringUtil.isEmpty(a.getDateFinDroit())) {
-                        isRaEnCours = true;
-                        break;
+                    RERenteAccJoinTblTiersJoinDemRenteManager ram = new RERenteAccJoinTblTiersJoinDemRenteManager();
+                    ram.setSession(session);
+                    ram.setForNoDemandeRente(red.getIdDemandeRente());
+                    ram.find(transaction);
+
+                    for (int j = 0; j < ram.size(); j++) {
+                        RERenteAccJoinTblTiersJoinDemandeRente a = (RERenteAccJoinTblTiersJoinDemandeRente) ram.get(j);
+                        if (JadeStringUtil.isEmpty(a.getDateFinDroit())) {
+                            isRaEnCours = true;
+                            break;
+                        }
                     }
-                }
 
-                if (isRaEnCours) {
+                    if (isRaEnCours) {
 
-                    REBasesCalculManager bcm = new REBasesCalculManager();
-                    String cleInfirmite = "";
-                    String atteinte = "";
+                        REBasesCalculManager bcm = new REBasesCalculManager();
+                        String cleInfirmite = "";
+                        String atteinte = "";
 
-                    if (IREDemandeRente.CS_TYPE_DEMANDE_RENTE_API.equals(red.getCsTypeDemande())) {
-                        REDemandeRenteAPI demAPI = new REDemandeRenteAPI();
-                        demAPI.setSession(session);
-                        demAPI.setIdDemandeRente(red.getIdDemandeRente());
-                        demAPI.retrieve(transaction);
+                        if (IREDemandeRente.CS_TYPE_DEMANDE_RENTE_API.equals(red.getCsTypeDemande())) {
+                            REDemandeRenteAPI demAPI = new REDemandeRenteAPI();
+                            demAPI.setSession(session);
+                            demAPI.setIdDemandeRente(red.getIdDemandeRente());
+                            demAPI.retrieve(transaction);
 
-                        if (viewBean.getCleInfirmite().length() == 5) {
-                            cleInfirmite = JadeStringUtil.substring(viewBean.getCleInfirmite(), 0, 3);
-                            atteinte = JadeStringUtil.substring(viewBean.getCleInfirmite(), 3, 2);
-                        } else {
-                            cleInfirmite = "";
-                            atteinte = "";
-                        }
-
-                        // IL FAUT RECUPERER LE CODE SYSTEME !
-                        demAPI.setCsInfirmite(getCsInfirmite(session, cleInfirmite));
-                        demAPI.setCsAtteinte(getCsAtteinte(session, atteinte));
-
-                        demAPI.setCodeOfficeAI(viewBean.getOfficeAI());
-                        demAPI.setDateSuvenanceEvenementAssure(viewBean.getSurvenanceEvenementAssure());
-
-                        demAPI.update(transaction);
-
-                        bcm.setSession(session);
-                        bcm.setForIdRenteCalculee(red.getIdRenteCalculee());
-                        bcm.find(transaction);
-
-                        if (!bcm.isEmpty()) {
-                            REBasesCalcul bcD = (REBasesCalcul) bcm.getFirstEntity();
-                            bcD.setRevenuAnnuelMoyen(viewBean.getRAM());
-                            bcD.setDegreInvalidite(viewBean.getDegreInvalidite());
-                            bcD.setCleInfirmiteAyantDroit(viewBean.getCleInfirmite());
-                            bcD.setSurvenanceEvtAssAyantDroit(viewBean.getSurvenanceEvenementAssure());
-                            bcD.setInvaliditePrecoce(viewBean.getIsInvaliditePrecoce());
-                            bcD.setCodeOfficeAi(viewBean.getOfficeAI());
-                            bcD.setIsDemandeRenteAPI(true);
-                            bcD.update(transaction);
-                        }
-
-                    } else if (JadeNumericUtil.isInteger(viewBean.getGenrePrestation())
-                            && !CodePrestation.getCodePrestation(Integer.parseInt(viewBean.getGenrePrestation()))
-                                    .isAPI()) {
-                        REDemandeRenteInvalidite demINV = new REDemandeRenteInvalidite();
-                        demINV.setSession(session);
-                        demINV.setIdDemandeRente(red.getIdDemandeRente());
-                        demINV.retrieve(transaction);
-
-                        if (viewBean.getCleInfirmite().length() == 5) {
-                            cleInfirmite = JadeStringUtil.substring(viewBean.getCleInfirmite(), 0, 3);
-                            atteinte = JadeStringUtil.substring(viewBean.getCleInfirmite(), 3, 2);
-                        } else {
-                            cleInfirmite = "";
-                            atteinte = "";
-                        }
-
-                        // IL FAUT RECUPERER LE CODE SYSTEME !
-                        demINV.setCsInfirmite(getCsInfirmite(session, cleInfirmite));
-                        demINV.setCsAtteinte(getCsAtteinte(session, atteinte));
-
-                        demINV.setDateSuvenanceEvenementAssure(viewBean.getSurvenanceEvenementAssure());
-                        demINV.setCodeOfficeAI(viewBean.getOfficeAI());
-
-                        for (REPeriodeInvalidite pInv : demINV.getPeriodesInvalidite()) {
-                            if (JadeStringUtil.isEmpty(pInv.getDateFinInvalidite())) {
-                                pInv.setDegreInvalidite(viewBean.getDegreInvalidite());
-                                pInv.update(transaction);
+                            if (viewBean.getCleInfirmite().length() == 5) {
+                                cleInfirmite = JadeStringUtil.substring(viewBean.getCleInfirmite(), 0, 3);
+                                atteinte = JadeStringUtil.substring(viewBean.getCleInfirmite(), 3, 2);
+                            } else {
+                                cleInfirmite = "";
+                                atteinte = "";
                             }
-                        }
-                        demINV.update(transaction);
 
-                        bcm.setSession(session);
-                        bcm.setForIdRenteCalculee(red.getIdRenteCalculee());
-                        bcm.find(transaction);
+                            // IL FAUT RECUPERER LE CODE SYSTEME !
+                            demAPI.setCsInfirmite(getCsInfirmite(session, cleInfirmite));
+                            demAPI.setCsAtteinte(getCsAtteinte(session, atteinte));
 
-                        if (!bcm.isEmpty()) {
-                            REBasesCalcul bcD = (REBasesCalcul) bcm.getFirstEntity();
-                            bcD.setRevenuAnnuelMoyen(viewBean.getRAM());
-                            bcD.setDegreInvalidite(viewBean.getDegreInvalidite());
-                            bcD.setCleInfirmiteAyantDroit(viewBean.getCleInfirmite());
-                            bcD.setSurvenanceEvtAssAyantDroit(viewBean.getSurvenanceEvenementAssure());
-                            bcD.setInvaliditePrecoce(viewBean.getIsInvaliditePrecoce());
-                            bcD.setCodeOfficeAi(viewBean.getOfficeAI());
-                            bcD.update(transaction);
+                            demAPI.setCodeOfficeAI(viewBean.getOfficeAI());
+                            demAPI.setDateSuvenanceEvenementAssure(viewBean.getSurvenanceEvenementAssure());
+
+                            demAPI.update(transaction);
+
+                            bcm.setSession(session);
+                            bcm.setForIdRenteCalculee(red.getIdRenteCalculee());
+                            bcm.find(transaction);
+
+                            if (!bcm.isEmpty()) {
+                                REBasesCalcul bcD = (REBasesCalcul) bcm.getFirstEntity();
+                                bcD.setRevenuAnnuelMoyen(viewBean.getRAM());
+                                bcD.setDegreInvalidite(viewBean.getDegreInvalidite());
+                                bcD.setCleInfirmiteAyantDroit(viewBean.getCleInfirmite());
+                                bcD.setSurvenanceEvtAssAyantDroit(viewBean.getSurvenanceEvenementAssure());
+                                bcD.setInvaliditePrecoce(viewBean.getIsInvaliditePrecoce());
+                                bcD.setCodeOfficeAi(viewBean.getOfficeAI());
+                                bcD.setIsDemandeRenteAPI(true);
+                                bcD.update(transaction);
+                            }
+
+                        } else if (JadeNumericUtil.isInteger(viewBean.getGenrePrestation())
+                                && !CodePrestation.getCodePrestation(Integer.parseInt(viewBean.getGenrePrestation()))
+                                        .isAPI()) {
+                            REDemandeRenteInvalidite demINV = new REDemandeRenteInvalidite();
+                            demINV.setSession(session);
+                            demINV.setIdDemandeRente(red.getIdDemandeRente());
+                            demINV.retrieve(transaction);
+
+                            if (viewBean.getCleInfirmite().length() == 5) {
+                                cleInfirmite = JadeStringUtil.substring(viewBean.getCleInfirmite(), 0, 3);
+                                atteinte = JadeStringUtil.substring(viewBean.getCleInfirmite(), 3, 2);
+                            } else {
+                                cleInfirmite = "";
+                                atteinte = "";
+                            }
+
+                            // IL FAUT RECUPERER LE CODE SYSTEME !
+                            demINV.setCsInfirmite(getCsInfirmite(session, cleInfirmite));
+                            demINV.setCsAtteinte(getCsAtteinte(session, atteinte));
+
+                            demINV.setDateSuvenanceEvenementAssure(viewBean.getSurvenanceEvenementAssure());
+                            demINV.setCodeOfficeAI(viewBean.getOfficeAI());
+
+                            for (REPeriodeInvalidite pInv : demINV.getPeriodesInvalidite()) {
+                                if (JadeStringUtil.isEmpty(pInv.getDateFinInvalidite())) {
+                                    pInv.setDegreInvalidite(viewBean.getDegreInvalidite());
+                                    pInv.update(transaction);
+                                }
+                            }
+                            demINV.update(transaction);
+
+                            bcm.setSession(session);
+                            bcm.setForIdRenteCalculee(red.getIdRenteCalculee());
+                            bcm.find(transaction);
+
+                            if (!bcm.isEmpty()) {
+                                REBasesCalcul bcD = (REBasesCalcul) bcm.getFirstEntity();
+                                bcD.setRevenuAnnuelMoyen(viewBean.getRAM());
+                                bcD.setDegreInvalidite(viewBean.getDegreInvalidite());
+                                bcD.setCleInfirmiteAyantDroit(viewBean.getCleInfirmite());
+                                bcD.setSurvenanceEvtAssAyantDroit(viewBean.getSurvenanceEvenementAssure());
+                                bcD.setInvaliditePrecoce(viewBean.getIsInvaliditePrecoce());
+                                bcD.setCodeOfficeAi(viewBean.getOfficeAI());
+                                bcD.update(transaction);
+                            }
                         }
                     }
                 }
