@@ -59,6 +59,29 @@ boolean vBeanHasErrors = false;
 <HEAD>
 <SCRIPT type="text/javascript">
 var langue = "<%=languePage%>"; 
+
+var showConfirmDialogAnnulation = function () {
+	
+	$( "#dialog-confirm-annulation" ).dialog({
+        resizable: false,
+        height:250,
+        width:500,
+        modal: true,
+        
+        buttons: {
+        	"<ct:FWLabel key='PROCESS_ADAPTATION_PC_OUI'/>": function() {
+                $( this ).dialog( "close" );
+                $('#comptabilisationAuto').val("true");
+        		action(COMMIT);
+            },
+            "<ct:FWLabel key='PROCESS_ADAPTATION_PC_NON'/>": function() {
+                $( this ).dialog( "close" );
+                $('#comptabilisationAuto').val("false");
+                action(COMMIT);
+            }
+        }
+    });
+};
 </SCRIPT>
 <% /*
 	Pour utiliser les postit, changez la valeur de la variable "key" (définie ci-dessus).
