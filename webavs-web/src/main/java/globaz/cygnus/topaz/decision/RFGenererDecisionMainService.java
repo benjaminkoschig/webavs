@@ -71,6 +71,8 @@ import ch.globaz.al.business.constantes.ALCSAllocataire;
 import ch.globaz.common.business.language.LanguageResolver;
 import ch.globaz.common.codesystem.CodeSystem;
 import ch.globaz.common.codesystem.CodeSystemUtils;
+import ch.globaz.common.properties.CommonProperties;
+import ch.globaz.common.properties.PropertiesException;
 import ch.globaz.cygnus.business.constantes.ERFProperties;
 import ch.globaz.jade.business.models.Langues;
 import ch.globaz.topaz.datajuicer.Collection;
@@ -83,6 +85,7 @@ import ch.globaz.topaz.datajuicer.DocumentData;
 public class RFGenererDecisionMainService extends RFAbstractDocumentOO implements IRFDecisions {
 
     public static final String FICHIER_MODELE_DOCUMENT_DECISION_RFM = "RF_DOCUMENT_DECISION";
+    public static final String NO_CAISSE_CCVD_AGLA = "022";
 
     private static final int NOM_PRENOM_SIZE = 20;
     private String adresse = "";
@@ -1620,7 +1623,7 @@ public class RFGenererDecisionMainService extends RFAbstractDocumentOO implement
 
     public void generationLettre(JadePrintDocumentContainer container, boolean miseEnGed, FWMemoryLog memoryLog,
             boolean isDecisionPonctuelle, boolean isDecisionMensuelle, boolean isDecisionRestitution,
-            ICTDocument documentHelper, Hashtable<String, ICTDocument> catalogueMultiLangue,
+            ICTDocument documentHelper, Hashtable<String, ICTDocument> catalogueMultiLangue, Boolean isComptaProcess,
             RFCopieDecisionsValidationData... copie) throws Exception {
         try {
             // Set la session à RFAbstractDocumentOO
@@ -1666,7 +1669,7 @@ public class RFGenererDecisionMainService extends RFAbstractDocumentOO implement
                 if (isDecisionRestitution) {
                     // appel de méthode de remplissage du document
                     remplirDocumentPaiementRestitution(container, miseEnGed, catalogueMultiLangue, formulePolitesse,
-                            copie);
+                            isComptaProcess, copie);
                     // Ajout des copies
                     ajoutCopiesAnnexes();
                 }
@@ -1674,7 +1677,8 @@ public class RFGenererDecisionMainService extends RFAbstractDocumentOO implement
                 // Sinon si décision ponctuelle
                 else if (isDecisionPonctuelle) {
                     // appel de méthode de remplissage du document
-                    remplirDocumentPaiementPonctuel(container, miseEnGed, catalogueMultiLangue, formulePolitesse, copie);
+                    remplirDocumentPaiementPonctuel(container, miseEnGed, catalogueMultiLangue, formulePolitesse,
+                            isComptaProcess, copie);
 
                     // Ajout des copies
                     ajoutCopiesAnnexes();
@@ -1689,7 +1693,7 @@ public class RFGenererDecisionMainService extends RFAbstractDocumentOO implement
                         initialiserChampsPaiementDecisionRegime();
                         // appel de méthode de remplissage du document
                         remplirDocumentPaiementMensuelRegime(container, miseEnGed, catalogueMultiLangue,
-                                formulePolitesse, copie);
+                                formulePolitesse, isComptaProcess, copie);
                         // Ajout des copies
                         ajoutCopiesAnnexes();
                     }
@@ -2539,8 +2543,8 @@ public class RFGenererDecisionMainService extends RFAbstractDocumentOO implement
      * @throws Exception
      */
     protected void remplirCorpsDocumentDecisionMensuelleRegime(JadePrintDocumentContainer container, boolean miseEnGed,
-            StringBuilder formatedDatesReception, String formulePolitesse, RFCopieDecisionsValidationData... copie)
-            throws Exception {
+            StringBuilder formatedDatesReception, String formulePolitesse, Boolean isComptaProcess,
+            RFCopieDecisionsValidationData... copie) throws Exception {
 
         // resumé décision
         data.addData(IRFGenererDocumentDecision.CAT_TEXTE_RESUME_DECISION_LIGNE1, PRStringUtils.replaceString(
@@ -2703,6 +2707,7 @@ public class RFGenererDecisionMainService extends RFAbstractDocumentOO implement
         docInfo.setDocumentTypeNumber(IPRConstantesExternes.RFM_DECISION_MENSUELLE_REGIME);
         docInfo.setDocumentType(IPRConstantesExternes.RFM_DECISION_MENSUELLE_REGIME);
         docInfo.setDocumentProperty("annee", JADate.getYear(dateSurDocument).toString());
+        setOwnerDependsOnProcess(isComptaProcess, decisionDocument, docInfo);
 
         // Récupération de la date sur document pour indexation GED
         if (dateSurDocument.isEmpty()) {
@@ -3563,8 +3568,8 @@ public class RFGenererDecisionMainService extends RFAbstractDocumentOO implement
      * @throws Exception
      */
     protected void remplirCorpsDocumentDecisionRestitution(JadePrintDocumentContainer container, boolean miseEnGed,
-            StringBuilder formatedDatesReception, String formulePolitesse, RFCopieDecisionsValidationData... copie)
-            throws Exception {
+            StringBuilder formatedDatesReception, String formulePolitesse, Boolean isComptaProcess,
+            RFCopieDecisionsValidationData... copie) throws Exception {
 
         try {
 
@@ -3576,7 +3581,6 @@ public class RFGenererDecisionMainService extends RFAbstractDocumentOO implement
             caisseHelper = CaisseHelperFactory.getInstance().getCaisseReportHelperOO(
                     getSessionCygnus().getApplication(), codeIsoLangue);
             caisseHelper.setTemplateName(RFGenererDecisionMainService.FICHIER_MODELE_DOCUMENT_DECISION_RFM);
-
             // adresse
             crBean.setAdresse(adresse);
 
@@ -3734,6 +3738,7 @@ public class RFGenererDecisionMainService extends RFAbstractDocumentOO implement
             docInfo.setDocumentTypeNumber(IPRConstantesExternes.RFM_DECISION_DE_RESTITUTION);
             docInfo.setDocumentType(IPRConstantesExternes.RFM_DECISION_DE_RESTITUTION);
             docInfo.setDocumentProperty("annee", JADate.getYear(dateSurDocument).toString());
+            setOwnerDependsOnProcess(isComptaProcess, decisionDocument, docInfo);
 
             // Récupération de la date sur document pour indexation GED
             if (dateSurDocument.isEmpty()) {
@@ -3832,8 +3837,8 @@ public class RFGenererDecisionMainService extends RFAbstractDocumentOO implement
     public JadePrintDocumentContainer remplirDecision(boolean miseEnGed, FWMemoryLog memoryLog,
             JadePrintDocumentContainer container, boolean isDecisionPonctuelle, boolean isDecisionMensuelle,
             boolean isDecisionRestitution, ICTDocument documentHelper,
-            Hashtable<String, ICTDocument> catalogueMultiLangue, RFCopieDecisionsValidationData... copie)
-            throws Exception {
+            Hashtable<String, ICTDocument> catalogueMultiLangue, Boolean isComptaProcess,
+            RFCopieDecisionsValidationData... copie) throws Exception {
         try {
 
             documentRestitutionEnErreur = false;
@@ -3841,7 +3846,7 @@ public class RFGenererDecisionMainService extends RFAbstractDocumentOO implement
             setIdTiers(decisionDocument.getIdTiers());
 
             this.generationLettre(container, miseEnGed, memoryLog, isDecisionPonctuelle, isDecisionMensuelle,
-                    isDecisionRestitution, documentHelper, catalogueMultiLangue, copie);
+                    isDecisionRestitution, documentHelper, catalogueMultiLangue, isComptaProcess, copie);
 
             if (getMontantCourant() != null) {
                 montantCourant = getMontantCourant();
@@ -3878,7 +3883,7 @@ public class RFGenererDecisionMainService extends RFAbstractDocumentOO implement
      * @throws Exception
      */
     public void remplirDocumentPaiementMensuelRegime(JadePrintDocumentContainer container, boolean miseEnGed,
-            Hashtable<String, ICTDocument> catalogueMultiLangue, String formulePolitesse,
+            Hashtable<String, ICTDocument> catalogueMultiLangue, String formulePolitesse, Boolean isComptaProcess,
             RFCopieDecisionsValidationData... copie) throws Exception {
         try {
 
@@ -3927,7 +3932,7 @@ public class RFGenererDecisionMainService extends RFAbstractDocumentOO implement
 
                 // Appel de la methode de construction de la décision
                 selectionnerMethodeDeRemplissageDecisionRegime(container, decisionToPrint, demande, miseEnGed,
-                        formatedDatesReception, formulePolitesse, copie);
+                        formatedDatesReception, formulePolitesse, isComptaProcess, copie);
 
                 // test si il faut ajout le tableau d'annexes et copies en bas de page
                 Boolean annexes = false;
@@ -3961,7 +3966,7 @@ public class RFGenererDecisionMainService extends RFAbstractDocumentOO implement
     }
 
     public void remplirDocumentPaiementPonctuel(JadePrintDocumentContainer container, boolean miseEnGed,
-            Hashtable<String, ICTDocument> catalogueMultiLangue, String formulePolitesse,
+            Hashtable<String, ICTDocument> catalogueMultiLangue, String formulePolitesse, Boolean isComptaProcess,
             RFCopieDecisionsValidationData... copie) throws Exception {
         try {
 
@@ -4035,6 +4040,7 @@ public class RFGenererDecisionMainService extends RFAbstractDocumentOO implement
             docInfo.setDocumentTypeNumber(IPRConstantesExternes.RFM_DECISION_PONCTUELLE);
             docInfo.setDocumentType(IPRConstantesExternes.RFM_DECISION_PONCTUELLE);
             docInfo.setDocumentProperty("annee", JADate.getYear(dateSurDocument).toString());
+            setOwnerDependsOnProcess(isComptaProcess, decisionDocument, docInfo);
 
             // Récupération de la date sur document pour indexation GED
             if (dateSurDocument.isEmpty()) {
@@ -4090,8 +4096,29 @@ public class RFGenererDecisionMainService extends RFAbstractDocumentOO implement
         }
     }
 
+    /**
+     * @param isComptaProcess
+     * @param decisionDocument
+     * @param docInfo
+     *            Set le gestionnaire de la décision dans l'attribut "ownerId" de la ligne technique du document
+     * @throws PropertiesException
+     */
+    private void setOwnerDependsOnProcess(Boolean isComptaProcess, RFDecisionDocumentData decisionDocument,
+            JadePublishDocumentInfo docInfo) throws PropertiesException {
+        // Concerne uniquement la CCVD et AGLA
+        try {
+            if (RFGenererDecisionMainService.NO_CAISSE_CCVD_AGLA.equals(CommonProperties.KEY_NO_CAISSE.getValue())
+                    && isComptaProcess) {
+                docInfo.setOwnerId(decisionDocument.getGestionnaire());
+            }
+        } catch (PropertiesException e) {
+            getSession().addError(getSession().getLabel("PROCESS_VALIDER_DECISION_PROPRIETE_INTROUVABLE"));
+            throw new PropertiesException(getSession().getLabel("PROCESS_VALIDER_DECISION_PROPRIETE_INTROUVABLE"));
+        }
+    }
+
     public void remplirDocumentPaiementRestitution(JadePrintDocumentContainer container, boolean miseEnGed,
-            Hashtable<String, ICTDocument> catalogueMultiLangue, String formulePolitesse,
+            Hashtable<String, ICTDocument> catalogueMultiLangue, String formulePolitesse, Boolean isComptaProcess,
             RFCopieDecisionsValidationData... copie) throws Exception {
         try {
 
@@ -4123,7 +4150,7 @@ public class RFGenererDecisionMainService extends RFAbstractDocumentOO implement
             setMainDocument(catalogueMultiLangue.get(IRFCatalogueTexte.CS_DECISION_RESTITUTION + "_" + codeIsoLangue));
 
             remplirCorpsDocumentDecisionRestitution(container, miseEnGed, formatedDatesReception, formulePolitesse,
-                    copie);
+                    isComptaProcess, copie);
 
             // test si il faut ajouter la signature au tiers en copie
             if ((copie.length == 0) || copie[0].getHasSignature()) {
@@ -4165,8 +4192,8 @@ public class RFGenererDecisionMainService extends RFAbstractDocumentOO implement
      */
     private void selectionnerMethodeDeRemplissageDecisionRegime(JadePrintDocumentContainer container,
             RFTypeDecisionEnum decisionEnum, RFDemandeValidationData demande, boolean miseEnGed,
-            StringBuilder formatedDatesReception, String formulePolitesse, RFCopieDecisionsValidationData... copie)
-            throws Exception {
+            StringBuilder formatedDatesReception, String formulePolitesse, Boolean isComptaProcess,
+            RFCopieDecisionsValidationData... copie) throws Exception {
 
         switch (decisionEnum) {
 
@@ -4182,7 +4209,7 @@ public class RFGenererDecisionMainService extends RFAbstractDocumentOO implement
 
             case RFM_DECISION_REGIME_SANS_EXCEDENT_OCTROI:
                 remplirCorpsDocumentDecisionMensuelleRegime(container, miseEnGed, formatedDatesReception,
-                        formulePolitesse, copie);
+                        formulePolitesse, isComptaProcess, copie);
                 hasTableauVersementEtDecompteCopie(copie);
                 break;
 

@@ -38,6 +38,8 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Set;
+import ch.globaz.common.properties.CommonProperties;
+import ch.globaz.common.properties.PropertiesException;
 import ch.globaz.topaz.datajuicer.DocumentData;
 
 /**
@@ -105,7 +107,7 @@ public class RFGenererDecisionServiceOO {
             RFGenererDecisionMainService rfGenererDecisionMainService, RFCopieDecisionsValidationData copie,
             JadePrintDocumentContainer documentContainer, FWMemoryLog memoryLog, boolean miseEnGed,
             boolean isDecisionPonctuelle, boolean isDecisionMensuelle, boolean isDecisionRestitution,
-            ICTDocument documentHelper) throws Exception {
+            ICTDocument documentHelper, Boolean isComptaProcess) throws Exception {
 
         // on ajoute la lettre d'entete que si page de garde vaut vrai
         if (copie.getHasPageDeGarde()) {
@@ -157,7 +159,7 @@ public class RFGenererDecisionServiceOO {
 
         documentContainer = rfGenererDecisionMainService.remplirDecision(miseEnGed, memoryLog, documentContainer,
                 isDecisionPonctuelle, isDecisionMensuelle, isDecisionRestitution, documentHelper, catalogueMultiLangue,
-                copie);
+                isComptaProcess, copie);
     }
 
     public String buildMessageWarningRegimeSansModele(BSession session, RFDecisionDocumentData decisionData) {
@@ -648,6 +650,7 @@ public class RFGenererDecisionServiceOO {
 
         Date d1 = new Date();
         JadePrintDocumentContainer documentContainer = null;
+        Boolean isComptaProcess = true;
 
         docInfoFinal = createDocInfoFinal(process, miseEnGed, isSimulation, idLot);
         if (isAvasad) {
@@ -674,6 +677,11 @@ public class RFGenererDecisionServiceOO {
         // initialisation de la map intervalDeLettreParGestionnaire
         RFPropertiesUtils.intervalDeLettreParGestMap.clear();
 
+        // Variable utilisé plus tard pour identifier quel gestionnaire mettre dans la ligne technique du document
+        if (JadeStringUtil.isBlank(idLot)) {
+            isComptaProcess = false;
+        }
+
         for (RFDecisionDocumentData decisionDocument : decisionArray) {
             // on vérifie qu'il a une adresse
             if (!JadeStringUtil.isBlankOrZero((decisionDocument.getIdTiers()))
@@ -684,7 +692,7 @@ public class RFGenererDecisionServiceOO {
                 if (decisionDocument.getIsRestitution()) {
 
                     traiterDecision(miseEnGed, getDocData(), decisionDocument, documentContainer, transaction,
-                            memoryLog, false, false, true);
+                            memoryLog, false, false, true, isComptaProcess);
                 }
 
                 // Traitement d'une d'écision de type mensuelle
@@ -692,7 +700,7 @@ public class RFGenererDecisionServiceOO {
                         && !decisionDocument.getIsRestitution()) {
 
                     traiterDecision(miseEnGed, getDocData(), decisionDocument, documentContainer, transaction,
-                            memoryLog, false, true, false);
+                            memoryLog, false, true, false, isComptaProcess);
                 }
 
                 // Traitement d'une d'écision de type ponctuelle
@@ -700,7 +708,7 @@ public class RFGenererDecisionServiceOO {
                         && !IRFTypesDeSoins.CS_REGIME_ALIMENTAIRE_02.equals(decisionDocument.getIdTypeSoin())
                         && !decisionDocument.getIsRestitution()) {
                     traiterDecision(miseEnGed, getDocData(), decisionDocument, documentContainer, transaction,
-                            memoryLog, true, false, false);
+                            memoryLog, true, false, false, isComptaProcess);
                 }
             }
             // Log message si pas d'adresse de paiement.
@@ -748,7 +756,7 @@ public class RFGenererDecisionServiceOO {
     protected void traiterDecision(boolean miseEnGed, DocumentData documentData,
             RFDecisionDocumentData decisionDocument, JadePrintDocumentContainer documentContainer,
             BTransaction transaction, FWMemoryLog memoryLog, boolean isDecisionPonctuelle, boolean isDecisionMensuelle,
-            boolean isDecisionRestitution) throws Exception {
+            boolean isDecisionRestitution, Boolean isComptaProcess) throws Exception {
 
         RFGenererDecisionMainService rfGenererDecisionMainService = initialiserGenerationPDFDecision(documentData,
                 decisionDocument, memoryLog, isDecisionPonctuelle, isDecisionMensuelle, isDecisionRestitution);
@@ -757,7 +765,8 @@ public class RFGenererDecisionServiceOO {
 
         // remplir la décision principale
         documentContainer = rfGenererDecisionMainService.remplirDecision(miseEnGed, memoryLog, documentContainer,
-                isDecisionPonctuelle, isDecisionMensuelle, isDecisionRestitution, documentHelper, catalogueMultiLangue);
+                isDecisionPonctuelle, isDecisionMensuelle, isDecisionRestitution, documentHelper, catalogueMultiLangue,
+                isComptaProcess);
 
         if (!JadeStringUtil.isBlank(rfGenererDecisionMainService.getMessageOv())) {
             messageOvDecisionrestitution = messageOvDecisionrestitution + "\n"
@@ -783,6 +792,7 @@ public class RFGenererDecisionServiceOO {
             docInfoBordereau.setArchiveDocument(false);
             docInfoBordereau.setDocumentTypeNumber(IPRConstantesExternes.RFM_BORDEREAU);
             docInfoBordereau.setDocumentType(IPRConstantesExternes.RFM_BORDEREAU);
+            setOwnerDependsOnProcess(isComptaProcess, decisionDocument, docInfoBordereau);
 
             if (RFPropertiesUtils.imprimerDecisionsRectoVerso()) {
                 docInfoBordereau.setDuplex(Boolean.TRUE);
@@ -846,7 +856,8 @@ public class RFGenererDecisionServiceOO {
             if (!JadeStringUtil.isBlankOrZero((copie.getIdDestinataire()))
                     && !JadeStringUtil.isBlankOrZero(decisionDocument.getAdresse())) {
                 ajoutCopie(decisionDocument, rfGenererDecisionMainService, copie, documentContainer, memoryLog,
-                        miseEnGed, isDecisionPonctuelle, isDecisionMensuelle, isDecisionRestitution, documentHelper);
+                        miseEnGed, isDecisionPonctuelle, isDecisionMensuelle, isDecisionRestitution, documentHelper,
+                        isComptaProcess);
             } else if (JadeStringUtil.isBlankOrZero(decisionDocument.getAdresse())) {
 
                 memoryLog.logMessage(
@@ -855,6 +866,27 @@ public class RFGenererDecisionServiceOO {
                 throw new Exception(getSession().getLabel("ERREUR_ADRESSE_MANQUANTE"));
 
             }
+        }
+    }
+
+    /**
+     * @param isComptaProcess
+     * @param decisionDocument
+     * @param docInfo
+     *            Set le gestionnaire de la décision dans l'attribut "ownerId" de la ligne technique du document
+     * @throws PropertiesException
+     */
+    private void setOwnerDependsOnProcess(Boolean isComptaProcess, RFDecisionDocumentData decisionDocument,
+            JadePublishDocumentInfo docInfo) throws PropertiesException {
+        // Concerne uniquement la CCVD et AGLA
+        try {
+            if (RFGenererDecisionMainService.NO_CAISSE_CCVD_AGLA.equals(CommonProperties.KEY_NO_CAISSE.getValue())
+                    && isComptaProcess) {
+                docInfo.setOwnerId(decisionDocument.getGestionnaire());
+            }
+        } catch (PropertiesException e) {
+            getSession().addError(getSession().getLabel("PROCESS_VALIDER_DECISION_PROPRIETE_INTROUVABLE"));
+            throw new PropertiesException(getSession().getLabel("PROCESS_VALIDER_DECISION_PROPRIETE_INTROUVABLE"));
         }
     }
 
