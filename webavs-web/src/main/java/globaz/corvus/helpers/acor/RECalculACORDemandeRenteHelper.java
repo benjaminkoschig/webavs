@@ -2480,6 +2480,10 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
             }
         }
 
+        // IMPORTANT : La suite n'est jamais exécutée ! v.ancienMontantRA n'est et ne sera jamais égal à
+        // v.nouveauMontantRA (les montants ne sont pas formatté de la même manière -> 2350.00 et 0002350)
+        // Cette partie n'est pas à corriger !!
+
         i = keys.iterator();
 
         // Si on arrive ici, on créé les annonces ponctuelles uniquement pour
