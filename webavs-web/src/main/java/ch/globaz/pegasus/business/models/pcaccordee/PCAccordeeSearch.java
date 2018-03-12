@@ -16,7 +16,6 @@ public class PCAccordeeSearch extends JadeSearchComplexModel {
     public static final String FOR_CURRENT_VERSIONED_WITHOUT_COPIE = "forCurrentVersionedWithoutCopie";
     public static final String FOR_DATE_VALABLE = "withDateValable";
     public static final String FOR_PCA_REPLACEC_BY_DECISION_SUPPRESSION = "forPcaReplacedByDecisionsSuppression";
-    public static final String FOR_PCA_REPLACEC_BY_DECISION_SUPPRESSION_ANNULATION = "forPcaReplacedByDecisionsSuppressionAnnulation";
     public static final String FOR_REPLACE_BY_NEW_PCA = "forReplaceByAnewPCA";
     public static final String FOR_SEARCH_WITH_DATE = "forSearchWithDate";
     public static final String ORDER_BY_DATE_DEBUT = "byDateDebut";

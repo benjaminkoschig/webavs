@@ -24,7 +24,6 @@ public class SimpleDemandeSearch extends JadeSearchSimpleModel {
     private String forDateFin = null;
     private String forIdDossier = null;
     private String forNotIdDemande = null;
-    private String forNotCsEtatDemande = null;
 
     /**
      * @return the forCsEtatDemandeIN
@@ -88,14 +87,6 @@ public class SimpleDemandeSearch extends JadeSearchSimpleModel {
     @Override
     public Class<SimpleDemande> whichModelClass() {
         return SimpleDemande.class;
-    }
-
-    public String getForNotCsEtatDemande() {
-        return forNotCsEtatDemande;
-    }
-
-    public void setForNotCsEtatDemande(String forNotCsEtatDemande) {
-        this.forNotCsEtatDemande = forNotCsEtatDemande;
     }
 
 }

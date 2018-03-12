@@ -70,10 +70,6 @@ public interface ValidationDecisionService extends JadeApplicationService {
             JadeApplicationServiceNotAvailableException, DemandeException, DossierException, PCAccordeeException,
             JadeCloneModelException, JadeApplicationException;
 
-    public void validerDecisionSuppression(DecisionSuppression decisionSuppression, boolean isComptabilisationAuto,
-            String mailProcessCompta, boolean isAnnulation) throws JadePersistenceException, DecisionException,
-            JadeCloneModelException, JadeApplicationException;
-
     /**
      * Permet une validation de toutes les décisions AC.
      * 

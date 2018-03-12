@@ -339,13 +339,6 @@ public class ValidationDecisionServiceImpl extends PegasusAbstractServiceImpl im
     public void validerDecisionSuppression(DecisionSuppression decisionSuppression, boolean isComptabilisationAuto,
             String mailProcessCompta) throws JadePersistenceException, DecisionException, JadeCloneModelException,
             JadeApplicationException {
-        validerDecisionSuppression(decisionSuppression, isComptabilisationAuto, mailProcessCompta, false);
-    }
-
-    @Override
-    public void validerDecisionSuppression(DecisionSuppression decisionSuppression, boolean isComptabilisationAuto,
-            String mailProcessCompta, boolean isAnnulation) throws JadePersistenceException, DecisionException,
-            JadeCloneModelException, JadeApplicationException {
 
         if (!PegasusServiceLocator.getPmtMensuelService().isValidationDecisionAuthorise()) {
             throw new DecisionException(BSessionUtil.getSessionFromThreadContext().getLabel(
@@ -358,8 +351,7 @@ public class ValidationDecisionServiceImpl extends PegasusAbstractServiceImpl im
 
         if (!JadeThread.logHasMessagesFromLevel(JadeBusinessMessageLevels.ERROR)) {
             ValiderDecisionSuppression validerDecisionSuppression = new ValiderDecisionSuppression();
-            String idLot = validerDecisionSuppression
-                    .valider(decisionSuppression, isComptabilisationAuto, isAnnulation);
+            String idLot = validerDecisionSuppression.valider(decisionSuppression, isComptabilisationAuto);
 
             if (EPCProperties.GESTION_ANNONCES_LAPRAMS.getBooleanValue()) {
                 PegasusImplServiceLocator.getPrepareAnnonceLapramsService().genereAnnonceLapramsSuppression(

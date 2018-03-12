@@ -1,10 +1,8 @@
 /**
- *
+ * 
  */
 package ch.globaz.pegasus.businessimpl.services.models.demande;
 
-import globaz.globall.db.BSessionUtil;
-import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.context.JadeThread;
 import globaz.jade.exception.JadeApplicationException;
@@ -19,7 +17,6 @@ import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAv
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -33,12 +30,10 @@ import ch.globaz.pegasus.business.exceptions.PegasusException;
 import ch.globaz.pegasus.business.exceptions.models.decision.DecisionException;
 import ch.globaz.pegasus.business.exceptions.models.demande.DemandeException;
 import ch.globaz.pegasus.business.exceptions.models.dossiers.DossierException;
-import ch.globaz.pegasus.business.exceptions.models.droit.DroitException;
 import ch.globaz.pegasus.business.models.demande.Demande;
 import ch.globaz.pegasus.business.models.demande.DemandeSearch;
 import ch.globaz.pegasus.business.models.demande.ListDemandes;
 import ch.globaz.pegasus.business.models.demande.ListDemandesSearch;
-import ch.globaz.pegasus.business.models.droit.Droit;
 import ch.globaz.pegasus.business.models.pcaccordee.PCAccordee;
 import ch.globaz.pegasus.business.models.pcaccordee.PCAccordeeSearch;
 import ch.globaz.pegasus.business.models.revisionquadriennale.ListRevisionsSearch;
@@ -198,7 +193,7 @@ public class DemandeServiceImpl extends PegasusAbstractServiceImpl implements De
         demSearch.setForIdTiers(idTiers);
         demSearch.setInCsEtatDemande(new ArrayList<String>() {
             /**
-             *
+             * 
              */
             private static final long serialVersionUID = 1L;
 
@@ -263,8 +258,7 @@ public class DemandeServiceImpl extends PegasusAbstractServiceImpl implements De
      * (non-Javadoc)
      * 
      * @see
-     * ch.globaz.pegasus.business.services.models.demande.DemandeService#searchDemandes(ch.globaz.pegasus.business.
-     * models
+     * ch.globaz.pegasus.business.services.models.demande.DemandeService#searchDemandes(ch.globaz.pegasus.business.models
      * .demande.ListDemandesSearch)
      */
     @Override
@@ -461,24 +455,6 @@ public class DemandeServiceImpl extends PegasusAbstractServiceImpl implements De
                 }
             }
         }
-        return demande;
-    }
-
-    @Override
-    public Demande annuler(Demande demande, Boolean comptabilisationAuto) throws JadePersistenceException,
-            DemandeException, DossierException, DroitException, JadeApplicationServiceNotAvailableException {
-
-        List<Droit> droits = PegasusServiceLocator.getDroitService().findCurrentVersionDroitByIdsDemande(
-                Arrays.asList(demande.getId()));
-        String today = JadeDateUtil.getGlobazFormattedDate(new Date());
-        String dateDeb = JadeDateUtil.addMonths("01." + demande.getSimpleDemande().getDateDebut(), -1).substring(3);
-        for (Droit droit : droits) {
-            droit = PegasusServiceLocator.getDroitService().corrigerDroitAnnulation(droit, today, dateDeb, today,
-                    BSessionUtil.getSessionFromThreadContext().getUserId(), comptabilisationAuto, null);
-        }
-        demande.getSimpleDemande().setCsEtatDemande(IPCDemandes.CS_ANNULE);
-        update(demande);
-
         return demande;
     }
 }

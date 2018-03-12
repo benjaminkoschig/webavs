@@ -1,8 +1,13 @@
 package globaz.pegasus.vb.demande;
 
+import globaz.globall.db.BSpy;
+import globaz.globall.vb.BJadePersistentObjectViewBean;
+import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.persistence.model.JadeAbstractModel;
+import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import java.util.HashMap;
 import java.util.Map;
-import com.google.gson.Gson;
 import ch.globaz.common.domaine.Echeance.EcheanceDomaine;
 import ch.globaz.common.domaine.Echeance.EcheanceType;
 import ch.globaz.hera.business.models.famille.MembreFamille;
@@ -13,12 +18,7 @@ import ch.globaz.pegasus.business.models.droit.DroitMembreFamilleEtendu;
 import ch.globaz.pegasus.business.models.droit.DroitMembreFamilleEtenduSearch;
 import ch.globaz.pegasus.business.services.PegasusServiceLocator;
 import ch.globaz.pegasus.businessimpl.checkers.demande.SimpleDemandeChecker;
-import globaz.globall.db.BSpy;
-import globaz.globall.vb.BJadePersistentObjectViewBean;
-import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.exception.JadePersistenceException;
-import globaz.jade.persistence.model.JadeAbstractModel;
-import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
+import com.google.gson.Gson;
 
 public class PCDemandeDetailViewBean extends BJadePersistentObjectViewBean {
 
@@ -27,8 +27,6 @@ public class PCDemandeDetailViewBean extends BJadePersistentObjectViewBean {
     private boolean isRouvrirPossible = false;
     private boolean isOnlyRetro;
     private boolean actionRefermerDemande = false;
-    private Boolean annule = false;
-    private Boolean comptabilisationAuto = false;
     private Map<String, String> membresFamille = new HashMap<String, String>();
 
     public PCDemandeDetailViewBean() {
@@ -41,7 +39,7 @@ public class PCDemandeDetailViewBean extends BJadePersistentObjectViewBean {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see globaz.globall.db.BIPersistentObject#add()
      */
     @Override
@@ -61,7 +59,7 @@ public class PCDemandeDetailViewBean extends BJadePersistentObjectViewBean {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see globaz.globall.db.BIPersistentObject#delete()
      */
     @Override
@@ -95,7 +93,7 @@ public class PCDemandeDetailViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Retourne l'id de la decision de refu liee ou 0 si pas de decision de refu
-     *
+     * 
      * @return
      */
     public String getIdDecisionRefus() {
@@ -121,7 +119,7 @@ public class PCDemandeDetailViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Return true si il existe une decision de refus pour cette demande (idDecisionRefus != 0)
-     *
+     * 
      * @return
      */
     public boolean hasDecisionDerefus() {
@@ -148,7 +146,7 @@ public class PCDemandeDetailViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Return true si la demande est transférable (demande dans les etats EN_ATTENTE_CALCUL ou EN_ATTENTE_JUSTIFICATIF)
-     *
+     * 
      * @return
      */
     public boolean isTransferable() {
@@ -159,20 +157,19 @@ public class PCDemandeDetailViewBean extends BJadePersistentObjectViewBean {
     /**
      * Retourne true si une décsion de refus peut être préparée (demande dans les etats EN_ATTENTE_CALCUL ou
      * EN_ATTENTE_JUSTIFICATIF) et pas de décisions de refus deja creee
-     *
+     * 
      * @return
      */
-    public boolean isValidForPrepDecisionRefus()
-            throws DroitException, JadeApplicationServiceNotAvailableException, JadePersistenceException {
-        return (IPCDemandes.CS_EN_ATTENTE_CALCUL.equals(getDemande().getSimpleDemande().getCsEtatDemande())
-                || IPCDemandes.CS_EN_ATTENTE_JUSTIFICATIFS.equals(getDemande().getSimpleDemande().getCsEtatDemande()))
-                && !hasDecisionDerefus();
+    public boolean isValidForPrepDecisionRefus() throws DroitException, JadeApplicationServiceNotAvailableException,
+            JadePersistenceException {
+        return (IPCDemandes.CS_EN_ATTENTE_CALCUL.equals(getDemande().getSimpleDemande().getCsEtatDemande()) || IPCDemandes.CS_EN_ATTENTE_JUSTIFICATIFS
+                .equals(getDemande().getSimpleDemande().getCsEtatDemande())) && !hasDecisionDerefus();
 
     }
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see globaz.globall.db.BIPersistentObject#retrieve()
      */
     @Override
@@ -225,7 +222,7 @@ public class PCDemandeDetailViewBean extends BJadePersistentObjectViewBean {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see globaz.globall.db.BIPersistentObject#update()
      */
     @Override
@@ -234,8 +231,7 @@ public class PCDemandeDetailViewBean extends BJadePersistentObjectViewBean {
             demande = PegasusServiceLocator.getDemandeService().rouvrir(demande);
         } else if (actionRefermerDemande) {
             demande = PegasusServiceLocator.getDemandeService().reFermer(demande);
-        } else if (annule) {
-            demande = PegasusServiceLocator.getDemandeService().annuler(demande, comptabilisationAuto);
+
         } else {
             demande = PegasusServiceLocator.getDemandeService().update(demande);
         }
@@ -271,21 +267,5 @@ public class PCDemandeDetailViewBean extends BJadePersistentObjectViewBean {
 
     public String getTypeEcheance() {
         return EcheanceType.DEMANDE.toString();
-    }
-
-    public boolean getAnnule() {
-        return annule;
-    }
-
-    public void setAnnule(boolean annule) {
-        this.annule = annule;
-    }
-
-    public Boolean getComptabilisationAuto() {
-        return comptabilisationAuto;
-    }
-
-    public void setComptabilisationAuto(Boolean comptabilisationAuto) {
-        this.comptabilisationAuto = comptabilisationAuto;
     }
 }

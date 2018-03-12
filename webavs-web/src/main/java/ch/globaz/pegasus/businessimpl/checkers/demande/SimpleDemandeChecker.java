@@ -1,28 +1,19 @@
 package ch.globaz.pegasus.businessimpl.checkers.demande;
 
-import globaz.corvus.api.lots.IRELot;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.context.JadeThread;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import ch.globaz.corvus.business.exceptions.models.LotException;
-import ch.globaz.corvus.business.models.lots.SimpleLot;
-import ch.globaz.corvus.business.services.CorvusServiceLocator;
 import ch.globaz.pegasus.business.constantes.IPCDemandes;
 import ch.globaz.pegasus.business.exceptions.models.demande.DemandeException;
 import ch.globaz.pegasus.business.exceptions.models.dossiers.DossierException;
 import ch.globaz.pegasus.business.exceptions.models.droit.DroitException;
-import ch.globaz.pegasus.business.exceptions.models.lot.PrestationException;
 import ch.globaz.pegasus.business.models.demande.SimpleDemande;
 import ch.globaz.pegasus.business.models.demande.SimpleDemandeSearch;
 import ch.globaz.pegasus.business.models.dossier.DossierSearch;
-import ch.globaz.pegasus.business.models.droit.Droit;
 import ch.globaz.pegasus.business.models.droit.SimpleDroitSearch;
-import ch.globaz.pegasus.business.models.lot.SimplePrestation;
-import ch.globaz.pegasus.business.models.lot.SimplePrestationSearch;
 import ch.globaz.pegasus.business.services.PegasusServiceLocator;
 import ch.globaz.pegasus.businessimpl.checkers.PegasusAbstractChecker;
 import ch.globaz.pegasus.businessimpl.services.PegasusImplServiceLocator;
@@ -141,27 +132,6 @@ public abstract class SimpleDemandeChecker extends PegasusAbstractChecker {
         return exit;
     }
 
-    public static boolean isLotAnnuleComptabilise(SimpleDemande demande) throws DroitException,
-            JadeApplicationServiceNotAvailableException, JadePersistenceException, PrestationException, LotException {
-        if (IPCDemandes.CS_ANNULE.equals(demande.getCsEtatDemande())) {
-            List<Droit> droits = PegasusServiceLocator.getDroitService().findCurrentVersionDroitByIdsDemande(
-                    Arrays.asList(demande.getId()));
-
-            if (droits != null && !droits.isEmpty()) {
-                SimplePrestationSearch simplePrestationSearch = new SimplePrestationSearch();
-                simplePrestationSearch.setForIdVersionDroit(droits.get(0).getSimpleVersionDroit().getId());
-                simplePrestationSearch = PegasusImplServiceLocator.getSimplePrestationService().search(
-                        simplePrestationSearch);
-                if (simplePrestationSearch.getSize() > 0) {
-                    SimplePrestation simplePrestation = (SimplePrestation) simplePrestationSearch.getSearchResults()[0];
-                    SimpleLot lot = CorvusServiceLocator.getLotService().read(simplePrestation.getIdLot());
-                    return !IRELot.CS_ETAT_LOT_OUVERT.equals(lot.getCsEtat());
-                }
-            }
-        }
-        return false;
-    }
-
     private static boolean existeDemandeInVlalidEtat(SimpleDemande demande) throws DemandeException {
         SimpleDemandeSearch search = new SimpleDemandeSearch();
         search.setWhereKey("demandeInCsEtat");
@@ -230,7 +200,6 @@ public abstract class SimpleDemandeChecker extends PegasusAbstractChecker {
         search.setForDateFin(simpleDemande.getDateFin());
         search.setForIdDossier(simpleDemande.getIdDossier());
         search.setForNotIdDemande(simpleDemande.getIdDemande());
-        search.setForNotCsEtatDemande(IPCDemandes.CS_ANNULE);
         try {
             return PegasusImplServiceLocator.getSimpleDemandeService().count(search) > 0;
         } catch (JadeApplicationServiceNotAvailableException e) {

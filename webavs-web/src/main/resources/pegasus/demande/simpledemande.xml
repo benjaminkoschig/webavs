@@ -43,7 +43,6 @@
 				<search-field name="forIdDossier" field-ref="idDossier" operation="EQUALS"/>
 			    <search-field name="forNotIdDemande" field-ref="idDemande" operation="NOT_EQUALS"/>
 			    <search-field name="forDateDebut" operation="NOT_NULL" field-ref="dateDebut"/>
-			    <search-field name="forNotCsEtatDemande" field-ref="csEtatDemande" operation="NOT_EQUALS"/>
 			    
 				<search-group operator="OR">					
 					<search-group operator="AND">					
