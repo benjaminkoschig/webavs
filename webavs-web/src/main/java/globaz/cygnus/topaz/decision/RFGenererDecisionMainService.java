@@ -2707,7 +2707,7 @@ public class RFGenererDecisionMainService extends RFAbstractDocumentOO implement
         docInfo.setDocumentTypeNumber(IPRConstantesExternes.RFM_DECISION_MENSUELLE_REGIME);
         docInfo.setDocumentType(IPRConstantesExternes.RFM_DECISION_MENSUELLE_REGIME);
         docInfo.setDocumentProperty("annee", JADate.getYear(dateSurDocument).toString());
-        setOwnerDependsOnProcess(isComptaProcess, decisionDocument, docInfo);
+        setOwnerDependsOnProcess(isComptaProcess, decisionDocument);
 
         // Récupération de la date sur document pour indexation GED
         if (dateSurDocument.isEmpty()) {
@@ -3738,7 +3738,7 @@ public class RFGenererDecisionMainService extends RFAbstractDocumentOO implement
             docInfo.setDocumentTypeNumber(IPRConstantesExternes.RFM_DECISION_DE_RESTITUTION);
             docInfo.setDocumentType(IPRConstantesExternes.RFM_DECISION_DE_RESTITUTION);
             docInfo.setDocumentProperty("annee", JADate.getYear(dateSurDocument).toString());
-            setOwnerDependsOnProcess(isComptaProcess, decisionDocument, docInfo);
+            setOwnerDependsOnProcess(isComptaProcess, decisionDocument);
 
             // Récupération de la date sur document pour indexation GED
             if (dateSurDocument.isEmpty()) {
@@ -4040,7 +4040,7 @@ public class RFGenererDecisionMainService extends RFAbstractDocumentOO implement
             docInfo.setDocumentTypeNumber(IPRConstantesExternes.RFM_DECISION_PONCTUELLE);
             docInfo.setDocumentType(IPRConstantesExternes.RFM_DECISION_PONCTUELLE);
             docInfo.setDocumentProperty("annee", JADate.getYear(dateSurDocument).toString());
-            setOwnerDependsOnProcess(isComptaProcess, decisionDocument, docInfo);
+            setOwnerDependsOnProcess(isComptaProcess, decisionDocument);
 
             // Récupération de la date sur document pour indexation GED
             if (dateSurDocument.isEmpty()) {
@@ -4103,8 +4103,8 @@ public class RFGenererDecisionMainService extends RFAbstractDocumentOO implement
      *            Set le gestionnaire de la décision dans l'attribut "ownerId" de la ligne technique du document
      * @throws PropertiesException
      */
-    private void setOwnerDependsOnProcess(Boolean isComptaProcess, RFDecisionDocumentData decisionDocument,
-            JadePublishDocumentInfo docInfo) throws PropertiesException {
+    private void setOwnerDependsOnProcess(Boolean isComptaProcess, RFDecisionDocumentData decisionDocument)
+            throws PropertiesException {
         // Concerne uniquement la CCVD et AGLA
         try {
             if (RFGenererDecisionMainService.NO_CAISSE_CCVD_AGLA.equals(CommonProperties.KEY_NO_CAISSE.getValue())
