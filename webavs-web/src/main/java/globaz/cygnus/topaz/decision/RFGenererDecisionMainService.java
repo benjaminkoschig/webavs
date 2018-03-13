@@ -4040,6 +4040,7 @@ public class RFGenererDecisionMainService extends RFAbstractDocumentOO implement
             docInfo.setDocumentTypeNumber(IPRConstantesExternes.RFM_DECISION_PONCTUELLE);
             docInfo.setDocumentType(IPRConstantesExternes.RFM_DECISION_PONCTUELLE);
             docInfo.setDocumentProperty("annee", JADate.getYear(dateSurDocument).toString());
+            docInfo.setOwnerId(decisionDocument.getGestionnaire());
             setOwnerDependsOnProcess(isComptaProcess, decisionDocument);
 
             // Récupération de la date sur document pour indexation GED

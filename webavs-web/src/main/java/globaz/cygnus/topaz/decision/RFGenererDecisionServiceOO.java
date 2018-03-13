@@ -792,6 +792,7 @@ public class RFGenererDecisionServiceOO {
             docInfoBordereau.setArchiveDocument(false);
             docInfoBordereau.setDocumentTypeNumber(IPRConstantesExternes.RFM_BORDEREAU);
             docInfoBordereau.setDocumentType(IPRConstantesExternes.RFM_BORDEREAU);
+            docInfoBordereau.setOwnerId(decisionDocument.getGestionnaire());
             if (RFGenererDecisionMainService.NO_CAISSE_CCVD_AGLA.equals(CommonProperties.KEY_NO_CAISSE.getValue())
                     && isComptaProcess) {
                 docInfoBordereau.setOwnerId(decisionDocument.getGestionnaire());
