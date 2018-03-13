@@ -285,7 +285,7 @@ public class GeneratePerstationPeriodeDecompte {
             public int compare(OrdreVersementForList o1, OrdreVersementForList o2) {
                 if (o2.getSimpleOrdreVersement().getNoGroupePeriode() == null) {
                     return -1;
-                } else if (o2.getSimpleOrdreVersement().getNoGroupePeriode() == null) {
+                } else if (o1.getSimpleOrdreVersement().getNoGroupePeriode() == null) {
                     return 1;
                 }
                 return o2.getSimpleOrdreVersement().getNoGroupePeriode()
