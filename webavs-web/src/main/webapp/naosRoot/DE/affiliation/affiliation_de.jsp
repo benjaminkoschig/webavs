@@ -970,8 +970,12 @@ function maxLength(zone,max)
 								</TD>
 								
 							</TR>
-							
-							
+							<TR >
+								<TD nowrap width="161"><ct:FWLabel key="NAOS_JSP_AFFILIATION_IDE_CHECKBOX_NON_ANNONCANTE"/></TD>
+								<TD nowrap colspan="2"> 
+									<INPUT id="ideNonAnnoncante" type="checkbox" name="ideNonAnnoncante" <%=(viewBean.isIdeNonAnnoncante().booleanValue())? "checked" : ""%> >
+								</TD>
+							</TR>							
 							<TR id="displayIDEAnnoncePassive">
 							<TD nowrap width="161"><ct:FWLabel key="NAOS_JSP_AFFILIATION_IDE_CHECKBOX_PASSIVE"/></TD>
 							<TD nowrap colspan="2"> 

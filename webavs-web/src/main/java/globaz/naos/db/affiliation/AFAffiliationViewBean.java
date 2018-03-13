@@ -1,6 +1,5 @@
 package globaz.naos.db.affiliation;
 
-import java.util.List;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BTransaction;
@@ -11,6 +10,7 @@ import globaz.naos.translation.CodeSystem;
 import globaz.naos.util.AFIDEUtil;
 import globaz.naos.util.IDEDataBean;
 import globaz.naos.util.IDEServiceCallUtil;
+import java.util.List;
 
 public class AFAffiliationViewBean extends AFAffiliation implements FWViewBeanInterface {
     /**

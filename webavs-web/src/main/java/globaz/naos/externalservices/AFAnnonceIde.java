@@ -225,7 +225,7 @@ public class AFAnnonceIde extends BAbstractEntityExternalService {
                         }
                     }
                 }
-                if (modifcationPermise && !affiliation.isIdeAnnoncePassive()) {
+                if (modifcationPermise && !affiliation.isIdeAnnoncePassive() && !affiliation.isIdeNonAnnoncante()) {
                     // Création annonce mutation
                     AFIDEUtil.generateAnnonceMutationIde(affiliation.getSession(), affiliation);
                 }

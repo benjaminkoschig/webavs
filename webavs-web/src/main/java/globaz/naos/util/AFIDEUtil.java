@@ -1,12 +1,5 @@
 package globaz.naos.util;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import javax.servlet.http.HttpSession;
-import javax.xml.datatype.XMLGregorianCalendar;
-import ch.globaz.common.properties.PropertiesException;
-import ch.globaz.naos.business.service.AFBusinessServiceLocator;
 import globaz.caisse.report.helper.CaisseHeaderReportBean;
 import globaz.framework.controller.FWController;
 import globaz.globall.db.BManager;
@@ -27,6 +20,7 @@ import globaz.jade.log.JadeLogger;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import globaz.naos.application.AFApplication;
 import globaz.naos.db.affiliation.AFAffiliation;
+import globaz.naos.db.affiliation.AFAffiliationManager;
 import globaz.naos.db.affiliation.AFAffiliationUtil;
 import globaz.naos.db.cotisation.AFCotisation;
 import globaz.naos.db.cotisation.AFCotisationManager;
@@ -75,6 +69,13 @@ import idech.admin.uid.xmlns.uid_wse.IPartnerServicesUnsubscribeSecurityFaultFau
 import idech.admin.uid.xmlns.uid_wse.IPartnerServicesUpdateBusinessFaultFaultFaultMessage;
 import idech.admin.uid.xmlns.uid_wse.IPartnerServicesUpdateInfrastructureFaultFaultFaultMessage;
 import idech.admin.uid.xmlns.uid_wse.IPartnerServicesUpdateSecurityFaultFaultFaultMessage;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import javax.servlet.http.HttpSession;
+import javax.xml.datatype.XMLGregorianCalendar;
+import ch.globaz.common.properties.PropertiesException;
+import ch.globaz.naos.business.service.AFBusinessServiceLocator;
 
 /**
  * Classe utilitaire de gestion du numéro IDE, des annonces IDE
@@ -261,8 +262,8 @@ public class AFIDEUtil {
         String numAff = ideAnnonce.getNumeroAffilie();
         String numAffLiee = ideAnnonce.getIdeAnnonceListNumeroAffilieLiee();
         // D0181 si j'ai un num affilié historisé sur l'annonce
-        String numAffForEcran = (ideAnnonce.getHistNumeroAffilie().isEmpty() ? numAff :
-                ideAnnonce.getHistNumeroAffilie());
+        String numAffForEcran = (ideAnnonce.getHistNumeroAffilie().isEmpty() ? numAff : ideAnnonce
+                .getHistNumeroAffilie());
         if (!JadeStringUtil.isBlankOrZero(numAff) && !JadeStringUtil.isBlankOrZero(numAffLiee)) {
             numAffForEcran = numAffForEcran + ",";
         }
@@ -295,8 +296,7 @@ public class AFIDEUtil {
 
                 }
 
-                if (CodeSystem.TYPE_ANNONCE_IDE_DESENREGISTREMENT_PASSIF
-                        .equalsIgnoreCase(annonce.getIdeAnnonceType())) {
+                if (CodeSystem.TYPE_ANNONCE_IDE_DESENREGISTREMENT_PASSIF.equalsIgnoreCase(annonce.getIdeAnnonceType())) {
                     for (AFAffiliation aAffiliation : listAffiliation) {
                         if (aAffiliation.isIdeAnnoncePassive()) {
                             return false;
@@ -332,8 +332,8 @@ public class AFIDEUtil {
                 return false;
             }
 
-            List<AFAffiliation> listAffiliation = AFAffiliationUtil
-                    .loadAffiliationUsingNumeroIdeForCheckMultiAff(session, numeroIde, ideAnnonceIdAffiliation);
+            List<AFAffiliation> listAffiliation = AFAffiliationUtil.loadAffiliationUsingNumeroIdeForCheckMultiAff(
+                    session, numeroIde, ideAnnonceIdAffiliation);
 
             if (listAffiliation != null) {
 
@@ -408,8 +408,8 @@ public class AFIDEUtil {
                 numeroIde);
     }
 
-    public static boolean hasAnnonceEnCoursMultiAff(BSession session, String ideAnnonceType, String ideAnnonceCategorie,
-            String numeroIde) throws Exception {
+    public static boolean hasAnnonceEnCoursMultiAff(BSession session, String ideAnnonceType,
+            String ideAnnonceCategorie, String numeroIde) throws Exception {
 
         if (JadeStringUtil.isBlankOrZero(numeroIde)) {
             return false;
@@ -440,6 +440,11 @@ public class AFIDEUtil {
 
     }
 
+    public static boolean isAnnonceReactivation(AFIdeAnnonce annonce, String ideStatut) {
+        return CodeSystem.TYPE_ANNONCE_IDE_CREATION_CONFIRMEE.equalsIgnoreCase(annonce.getIdeAnnonceType())
+                && CodeSystem.STATUT_IDE_REACTIVATION.equalsIgnoreCase(ideStatut);
+    }
+
     public static String checkAnnonceCreationMandatory(BSession session, String idAffiliation) throws Exception {
 
         AFAffiliation affiliation = AFAffiliationUtil.getAffiliation(idAffiliation, session);
@@ -451,16 +456,16 @@ public class AFIDEUtil {
             if (errorBuffer.length() > 0) {
                 errorBuffer.append(" / ");
             }
-            errorBuffer.append(
-                    session.getLabel("NAOS_ANNONCE_IDE_CREATION_MANDATORY_ERREUR_NUMERO_IDE_AFFILIATION_NOT_BLANK"));
+            errorBuffer.append(session
+                    .getLabel("NAOS_ANNONCE_IDE_CREATION_MANDATORY_ERREUR_NUMERO_IDE_AFFILIATION_NOT_BLANK"));
 
         }
         if (JadeStringUtil.isBlankOrZero(affiliation.getActivite())) {
             if (errorBuffer.length() > 0) {
                 errorBuffer.append(" / ");
             }
-            errorBuffer.append(
-                    session.getLabel("NAOS_ANNONCE_IDE_CREATION_MANDATORY_ERREUR_ACTIVITE_AFFILIATION_NOT_BLANK"));
+            errorBuffer.append(session
+                    .getLabel("NAOS_ANNONCE_IDE_CREATION_MANDATORY_ERREUR_ACTIVITE_AFFILIATION_NOT_BLANK"));
 
         }
 
@@ -472,8 +477,8 @@ public class AFIDEUtil {
         StringBuffer errorBuffer = new StringBuffer();
 
         if (JadeStringUtil.isBlankOrZero(ideAnnonceEntrante.getHistNumeroIde())) {
-            errorBuffer.append(
-                    session.getLabel("NAOS_IDE_UTIL_CHECK_ANNONCE_ENTRANTE_MANDATORY_ERREUR_NUMERO_IDE_BLANK_OR_ZERO"));
+            errorBuffer.append(session
+                    .getLabel("NAOS_IDE_UTIL_CHECK_ANNONCE_ENTRANTE_MANDATORY_ERREUR_NUMERO_IDE_BLANK_OR_ZERO"));
         }
 
         return errorBuffer.toString();
@@ -501,10 +506,9 @@ public class AFIDEUtil {
         ideAnnonce.setHistNoga(ideDataBean.getNogaCode());
 
         // si la date de validité OFS est dans le passé, alors la date du jour est persistée à la place
-        ideAnnonce.setHistTypeAnnonceDate(!JadeStringUtil.isBlankOrZero(ideAnnonce.getTypeAnnonceDate()) && BSessionUtil
-                .compareDateFirstGreater(session, ideAnnonce.getTypeAnnonceDate(), JACalendar.todayJJsMMsAAAA()) ?
-                        ideAnnonce.getTypeAnnonceDate() :
-                        JACalendar.todayJJsMMsAAAA());
+        ideAnnonce.setHistTypeAnnonceDate(!JadeStringUtil.isBlankOrZero(ideAnnonce.getTypeAnnonceDate())
+                && BSessionUtil.compareDateFirstGreater(session, ideAnnonce.getTypeAnnonceDate(),
+                        JACalendar.todayJJsMMsAAAA()) ? ideAnnonce.getTypeAnnonceDate() : JACalendar.todayJJsMMsAAAA());
     }
 
     public static void updateHistoriqueDataInAnnonce(IDEDataBean ideDataBean, AFIdeAnnonce ideAnnonce) {
@@ -541,24 +545,24 @@ public class AFIDEUtil {
         StringBuilder errorBuffer = new StringBuilder();
 
         if (affiliation.isTraitement()) {
-            errorBuffer.append(
-                    session.getLabel("NAOS_ANNONCE_IDE_CREATION_MUTATION_MANDATORY_ERREUR_AFFILIATION_PROVISOIRE"));
+            errorBuffer.append(session
+                    .getLabel("NAOS_ANNONCE_IDE_CREATION_MUTATION_MANDATORY_ERREUR_AFFILIATION_PROVISOIRE"));
         }
 
         if (affiliation.isIdeAnnoncePassive()) {
             if (errorBuffer.length() > 0) {
                 errorBuffer.append(" / ");
             }
-            errorBuffer.append(
-                    session.getLabel("NAOS_ANNONCE_IDE_CREATION_MUTATION_MANDATORY_AVERTISSEMENT_IDE_ANNONCE_PASSIVE"));
+            errorBuffer.append(session
+                    .getLabel("NAOS_ANNONCE_IDE_CREATION_MUTATION_MANDATORY_AVERTISSEMENT_IDE_ANNONCE_PASSIVE"));
         }
 
         if (!AFIDEUtil.getListGenreAffilieActif().contains(affiliation.getTypeAffiliation())) {
             if (errorBuffer.length() > 0) {
                 errorBuffer.append(" / ");
             }
-            errorBuffer.append(
-                    session.getLabel("NAOS_ANNONCE_IDE_CREATION_MUTATION_MANDATORY_ERREUR_GENRE_AFFILIE_NON_PERMIS"));
+            errorBuffer.append(session
+                    .getLabel("NAOS_ANNONCE_IDE_CREATION_MUTATION_MANDATORY_ERREUR_GENRE_AFFILIE_NON_PERMIS"));
         }
 
         if (JadeStringUtil.isBlankOrZero(affiliation.getRaisonSociale())) {
@@ -574,8 +578,8 @@ public class AFIDEUtil {
             if (errorBuffer.length() > 0) {
                 errorBuffer.append(" / ");
             }
-            errorBuffer
-                    .append(session.getLabel("NAOS_ANNONCE_IDE_CREATION_MUTATION_MANDATORY_ERREUR_LANGUE_TIERS_BLANK"));
+            errorBuffer.append(session
+                    .getLabel("NAOS_ANNONCE_IDE_CREATION_MUTATION_MANDATORY_ERREUR_LANGUE_TIERS_BLANK"));
 
         }
 
@@ -583,8 +587,8 @@ public class AFIDEUtil {
             if (errorBuffer.length() > 0) {
                 errorBuffer.append(" / ");
             }
-            errorBuffer.append(
-                    session.getLabel("NAOS_ANNONCE_IDE_CREATION_MUTATION_MANDATORY_ERREUR_ADRESSE_TIERS_BLANK"));
+            errorBuffer.append(session
+                    .getLabel("NAOS_ANNONCE_IDE_CREATION_MUTATION_MANDATORY_ERREUR_ADRESSE_TIERS_BLANK"));
 
         }
 
@@ -672,8 +676,8 @@ public class AFIDEUtil {
                 detail = ((IPartnerServicesDeregisterBusinessFaultFaultFaultMessage) e).getFaultInfo().getErrorDetail()
                         .getValue();
             } else if (e instanceof IPartnerServicesDeregisterScheduledSecurityFaultFaultFaultMessage) {
-                code = ((IPartnerServicesDeregisterScheduledSecurityFaultFaultFaultMessage) e).getFaultInfo().getError()
-                        .getValue();
+                code = ((IPartnerServicesDeregisterScheduledSecurityFaultFaultFaultMessage) e).getFaultInfo()
+                        .getError().getValue();
                 detail = ((IPartnerServicesDeregisterScheduledSecurityFaultFaultFaultMessage) e).getFaultInfo()
                         .getErrorDetail().getValue();
             } else if (e instanceof IPartnerServicesDeregisterScheduledInfrastructureFaultFaultFaultMessage) {
@@ -682,15 +686,15 @@ public class AFIDEUtil {
                 detail = ((IPartnerServicesDeregisterScheduledInfrastructureFaultFaultFaultMessage) e).getFaultInfo()
                         .getErrorDetail().getValue();
             } else if (e instanceof IPartnerServicesDeregisterScheduledBusinessFaultFaultFaultMessage) {
-                code = ((IPartnerServicesDeregisterScheduledBusinessFaultFaultFaultMessage) e).getFaultInfo().getError()
-                        .getValue();
+                code = ((IPartnerServicesDeregisterScheduledBusinessFaultFaultFaultMessage) e).getFaultInfo()
+                        .getError().getValue();
                 detail = ((IPartnerServicesDeregisterScheduledBusinessFaultFaultFaultMessage) e).getFaultInfo()
                         .getErrorDetail().getValue();
             } else if (e instanceof IPartnerServicesUnsubscribeSecurityFaultFaultFaultMessage) {
                 code = ((IPartnerServicesUnsubscribeSecurityFaultFaultFaultMessage) e).getFaultInfo().getError()
                         .getValue();
-                detail = ((IPartnerServicesUnsubscribeSecurityFaultFaultFaultMessage) e).getFaultInfo().getErrorDetail()
-                        .getValue();
+                detail = ((IPartnerServicesUnsubscribeSecurityFaultFaultFaultMessage) e).getFaultInfo()
+                        .getErrorDetail().getValue();
             } else if (e instanceof IPartnerServicesUnsubscribeInfrastructureFaultFaultFaultMessage) {
                 code = ((IPartnerServicesUnsubscribeInfrastructureFaultFaultFaultMessage) e).getFaultInfo().getError()
                         .getValue();
@@ -699,8 +703,8 @@ public class AFIDEUtil {
             } else if (e instanceof IPartnerServicesUnsubscribeBusinessFaultFaultFaultMessage) {
                 code = ((IPartnerServicesUnsubscribeBusinessFaultFaultFaultMessage) e).getFaultInfo().getError()
                         .getValue();
-                detail = ((IPartnerServicesUnsubscribeBusinessFaultFaultFaultMessage) e).getFaultInfo().getErrorDetail()
-                        .getValue();
+                detail = ((IPartnerServicesUnsubscribeBusinessFaultFaultFaultMessage) e).getFaultInfo()
+                        .getErrorDetail().getValue();
             } else if (e instanceof IPartnerServicesRegisterSecurityFaultFaultFaultMessage) {
                 code = ((IPartnerServicesRegisterSecurityFaultFaultFaultMessage) e).getFaultInfo().getError()
                         .getValue();
@@ -902,8 +906,8 @@ public class AFIDEUtil {
      * @param typeAnnonce (ex. CodeSystem.TYPE_ANNONCE_IDE_ENREGISTREMENT_ACTIF)
      * @param categorie (ex. CodeSystem.CATEGORIE_ANNONCE_IDE_ENVOI)
      */
-    public static boolean hasAnnonceEnCours(BSession session, String idAffiliation, String typeAnnonce,
-            String categorie) throws Exception {
+    public static boolean hasAnnonceEnCours(BSession session, String idAffiliation, String typeAnnonce, String categorie)
+            throws Exception {
 
         AFIdeAnnonceManager ideAnnonceManager = new AFIdeAnnonceManager();
         ideAnnonceManager.setSession(session);
@@ -952,8 +956,7 @@ public class AFIDEUtil {
     /**
      * si l'affiliation a déjà une annonce <b>d'envoi, en cours</b>
      */
-    public static boolean hasAffiliationAnnonceSortanteEnCours(BSession session, String idAffiliation)
-            throws Exception {
+    public static boolean hasAffiliationAnnonceSortanteEnCours(BSession session, String idAffiliation) throws Exception {
 
         AFIdeAnnonceManager ideAnnonceManager = new AFIdeAnnonceManager();
         ideAnnonceManager.setSession(session);
@@ -1049,8 +1052,8 @@ public class AFIDEUtil {
         return tiAdrssDataSource;
     }
 
-    public static TIAdresseDataSource loadAdresseFromCascadeIde(AFAffiliation affiliation)
-            throws PropertiesException, JadeApplicationServiceNotAvailableException {
+    public static TIAdresseDataSource loadAdresseFromCascadeIde(AFAffiliation affiliation) throws PropertiesException,
+            JadeApplicationServiceNotAvailableException {
         return AFBusinessServiceLocator.getCascadeAdresseIdeService().getAdresseFromCascadeIde(
                 affiliation.getTiers().getPersonneMorale(), affiliation.getAffilieNumero(), affiliation.getIdTiers());
     }
@@ -1246,9 +1249,10 @@ public class AFIDEUtil {
         try {
             value = Integer.valueOf(persJuri);
         } catch (Exception e) {
-            JadeLogger.error(AFIDEUtil.class,
-                    "Mapping [AFIDEUtil.translatePersJuriVersLegalForm] Impossible de récupérer la valeur numéraire de la personalité juridique "
-                            + persJuri + " : " + e.getMessage());
+            JadeLogger
+                    .error(AFIDEUtil.class,
+                            "Mapping [AFIDEUtil.translatePersJuriVersLegalForm] Impossible de récupérer la valeur numéraire de la personalité juridique "
+                                    + persJuri + " : " + e.getMessage());
         }
         switch (value) {
             case 806001:// Raison individuelle
@@ -1386,8 +1390,7 @@ public class AFIDEUtil {
         if (AFIDEUtil.isAnnonceRespectedMultiAffMandatoryMultiAff(session, CodeSystem.TYPE_ANNONCE_IDE_MUTATION,
                 CodeSystem.CATEGORIE_ANNONCE_IDE_ENVOI, affiliation.getAffiliationId(), affiliation.getNumeroIDE())) {
             if (isAffiliationRespectAnnonceMutationMandatory(session, affiliation)) {
-                deleteTypeAnnonceEnCoursMultiAff(session, CodeSystem.TYPE_ANNONCE_IDE_ENREGISTREMENT_ACTIF,
-                        affiliation);
+                deleteTypeAnnonceEnCoursMultiAff(session, CodeSystem.TYPE_ANNONCE_IDE_ENREGISTREMENT_ACTIF, affiliation);
                 deleteTypeAnnonceEnCoursMultiAff(session, CodeSystem.TYPE_ANNONCE_IDE_DESENREGISTREMENT_ACTIF,
                         affiliation);
                 deleteTypeAnnonceEnCoursMultiAff(session, CodeSystem.TYPE_ANNONCE_IDE_ENREGISTREMENT_PASSIF,
@@ -1406,8 +1409,7 @@ public class AFIDEUtil {
         if (AFIDEUtil.isAnnonceRespectedMultiAffMandatoryMultiAff(session, CodeSystem.TYPE_ANNONCE_IDE_RADIATION,
                 CodeSystem.CATEGORIE_ANNONCE_IDE_ENVOI, affiliation.getAffiliationId(), affiliation.getNumeroIDE())) {
             if (isAffiliationRespectAnnonceRadiationMandatory(session, affiliation)) {
-                deleteTypeAnnonceEnCoursMultiAff(session, CodeSystem.TYPE_ANNONCE_IDE_ENREGISTREMENT_ACTIF,
-                        affiliation);
+                deleteTypeAnnonceEnCoursMultiAff(session, CodeSystem.TYPE_ANNONCE_IDE_ENREGISTREMENT_ACTIF, affiliation);
                 deleteTypeAnnonceEnCoursMultiAff(session, CodeSystem.TYPE_ANNONCE_IDE_DESENREGISTREMENT_ACTIF,
                         affiliation);
                 deleteTypeAnnonceEnCoursMultiAff(session, CodeSystem.TYPE_ANNONCE_IDE_DESENREGISTREMENT_PASSIF,
@@ -1428,8 +1430,7 @@ public class AFIDEUtil {
         if (AFIDEUtil.isAnnonceRespectedMultiAffMandatoryMultiAff(session, CodeSystem.TYPE_ANNONCE_IDE_REACTIVATION,
                 CodeSystem.CATEGORIE_ANNONCE_IDE_ENVOI, affiliation.getAffiliationId(), affiliation.getNumeroIDE())) {
             if (isAffiliationRespectAnnonceReactivateMandatory(session, affiliation)) {
-                deleteTypeAnnonceEnCoursMultiAff(session, CodeSystem.TYPE_ANNONCE_IDE_ENREGISTREMENT_ACTIF,
-                        affiliation);
+                deleteTypeAnnonceEnCoursMultiAff(session, CodeSystem.TYPE_ANNONCE_IDE_ENREGISTREMENT_ACTIF, affiliation);
                 deleteTypeAnnonceEnCoursMultiAff(session, CodeSystem.TYPE_ANNONCE_IDE_DESENREGISTREMENT_ACTIF,
                         affiliation);
                 deleteTypeAnnonceEnCoursMultiAff(session, CodeSystem.TYPE_ANNONCE_IDE_ENREGISTREMENT_PASSIF,
@@ -1491,6 +1492,24 @@ public class AFIDEUtil {
     }
 
     /**
+     * Permet de créer un enregistrement d'annonce IDE si non annonçante -> annonçante
+     */
+    public static void generateAnnonceIDEAnnoncante(BSession session, AFAffiliation affiliation) throws Exception {
+        if (AFIDEUtil.isAnnonceRespectedMultiAffMandatoryMultiAff(session,
+                CodeSystem.TYPE_ANNONCE_IDE_DESENREGISTREMENT_PASSIF, CodeSystem.CATEGORIE_ANNONCE_IDE_ENVOI,
+                affiliation.getAffiliationId(), affiliation.getNumeroIDE())) {
+            if (isAffiliationRespectAnnoncePassiveCreationMandatory(session, affiliation)) {
+                deleteTypeAnnonceEnCoursMultiAff(session, CodeSystem.TYPE_ANNONCE_IDE_DESENREGISTREMENT_ACTIF,
+                        affiliation);
+                if (!deleteTypeAnnonceEnCoursMultiAff(session, CodeSystem.TYPE_ANNONCE_IDE_ENREGISTREMENT_PASSIF,
+                        affiliation)) {
+                    createNewAnnonce(session, CodeSystem.TYPE_ANNONCE_IDE_DESENREGISTREMENT_PASSIF, affiliation);
+                }
+            }
+        }
+    }
+
+    /**
      * Permet de créer un enregistrement d'annonce d'<b>enregistrement ACTIF</b> IDE </br>
      * 
      * @param cotisation si l'annonce provient d'une coti, maintenir le lien, sinon peut-être <b>null</b>
@@ -1506,13 +1525,13 @@ public class AFIDEUtil {
                 deleteTypeAnnonceEnCoursMultiAff(session, CodeSystem.TYPE_ANNONCE_IDE_ENREGISTREMENT_PASSIF,
                         affiliation);
                 boolean flagCreateAnnonce = true;
-                flagCreateAnnonce = flagCreateAnnonce && !deleteTypeAnnonceEnCoursMultiAff(session,
-                        CodeSystem.TYPE_ANNONCE_IDE_DESENREGISTREMENT_ACTIF, affiliation);
+                flagCreateAnnonce = flagCreateAnnonce
+                        && !deleteTypeAnnonceEnCoursMultiAff(session,
+                                CodeSystem.TYPE_ANNONCE_IDE_DESENREGISTREMENT_ACTIF, affiliation);
                 flagCreateAnnonce = !deleteTypeAnnonceEnCoursMultiAff(session, CodeSystem.TYPE_ANNONCE_IDE_RADIATION,
                         affiliation) && flagCreateAnnonce;
                 if (flagCreateAnnonce) {
-                    createNewAnnonce(session, CodeSystem.TYPE_ANNONCE_IDE_ENREGISTREMENT_ACTIF, affiliation,
-                            cotisation);
+                    createNewAnnonce(session, CodeSystem.TYPE_ANNONCE_IDE_ENREGISTREMENT_ACTIF, affiliation, cotisation);
                 }
             }
         }
@@ -1527,8 +1546,7 @@ public class AFIDEUtil {
                 CodeSystem.TYPE_ANNONCE_IDE_ENREGISTREMENT_PASSIF, CodeSystem.CATEGORIE_ANNONCE_IDE_ENVOI,
                 affiliation.getAffiliationId(), affiliation.getNumeroIDE())) {
             if (isAffiliationRespectAnnoncePassiveCreationMandatory(session, affiliation)) {
-                deleteTypeAnnonceEnCoursMultiAff(session, CodeSystem.TYPE_ANNONCE_IDE_ENREGISTREMENT_ACTIF,
-                        affiliation);
+                deleteTypeAnnonceEnCoursMultiAff(session, CodeSystem.TYPE_ANNONCE_IDE_ENREGISTREMENT_ACTIF, affiliation);
                 deleteTypeAnnonceEnCoursMultiAff(session, CodeSystem.TYPE_ANNONCE_IDE_REACTIVATION, affiliation);
                 deleteTypeAnnonceEnCoursMultiAff(session, CodeSystem.TYPE_ANNONCE_IDE_MUTATION, affiliation);
                 if (!deleteTypeAnnonceEnCoursMultiAff(session, CodeSystem.TYPE_ANNONCE_IDE_DESENREGISTREMENT_PASSIF,
@@ -1553,15 +1571,21 @@ public class AFIDEUtil {
         String erreurs = "";
         if (hasAffiliationAnnonceSortanteEnCours(session, affiliation.getAffiliationId())
                 || hasAffiliationAnnonceLieeEnCours(session, affiliation.getAffiliationId())) {
-            return session.getLabel("NAOS_ANNONCE_IDE_CREATION_ECHEC") + " " + session.getLabel(
-                    "NAOS_ANNONCE_IDE_CREATION_MUTATION_MANDATORY_ERREUR_EXISTE_DEJA_ANNONCE_CREATION_EN_COURS");
+            return session.getLabel("NAOS_ANNONCE_IDE_CREATION_ECHEC")
+                    + " "
+                    + session
+                            .getLabel("NAOS_ANNONCE_IDE_CREATION_MUTATION_MANDATORY_ERREUR_EXISTE_DEJA_ANNONCE_CREATION_EN_COURS");
+        }
+
+        if (affiliation.isIdeNonAnnoncante()) {
+            return JadeStringUtil.escapeXML(session.getLabel("NAOS_ANNONCE_IDE_CREATION_ECHEC") + " "
+                    + session.getLabel("NAOS_ANNONCE_IDE_CREATION_AVERTISSEMENT_IDE_NON_ANNONCANTE"));
         }
 
         erreurs = AFIDEUtil.checkAnnonceCreationMandatory(session, affiliation.getAffiliationId());
 
         if (JadeStringUtil.isBlankOrZero(erreurs)) {
             deleteTypeAnnonceEnCours(session, CodeSystem.TYPE_ANNONCE_IDE_ENREGISTREMENT_PASSIF, affiliation);
-
             if (JadeStringUtil.isBlankOrZero(affiliation.getIdAnnonceIdeCreationLiee())) {
                 createNewAnnonce(session, CodeSystem.TYPE_ANNONCE_IDE_CREATION, affiliation);
             } else {
@@ -1681,8 +1705,7 @@ public class AFIDEUtil {
                 CodeSystem.CATEGORIE_ANNONCE_IDE_ENVOI, affiliation.getAffiliationId(), affiliation.getNumeroIDE())) {
             AFIDEUtil.generateAnnonceDesenregistrementActif(session, affiliation, null);
             if (isAffiliationRespectAnnonceReactivateMandatory(session, affiliation)) {
-                deleteTypeAnnonceEnCoursMultiAff(session, CodeSystem.TYPE_ANNONCE_IDE_ENREGISTREMENT_ACTIF,
-                        affiliation);
+                deleteTypeAnnonceEnCoursMultiAff(session, CodeSystem.TYPE_ANNONCE_IDE_ENREGISTREMENT_ACTIF, affiliation);
                 deleteTypeAnnonceEnCoursMultiAff(session, CodeSystem.TYPE_ANNONCE_IDE_ENREGISTREMENT_PASSIF,
                         affiliation);
                 if (!deleteTypeAnnonceEnCoursMultiAff(session, CodeSystem.TYPE_ANNONCE_IDE_RADIATION, affiliation)) {
@@ -1887,13 +1910,39 @@ public class AFIDEUtil {
 
     }
 
+    public static boolean hasAffiliationCotisationRadiationAVS(BSession session, String idAffiliation) throws Exception {
+
+        if (idAffiliation == null || idAffiliation.isEmpty() || JadeStringUtil.isBlankOrZero(idAffiliation)) {
+            return false;
+        }
+
+        AFCotisationManager cotisMgr = initCotiManager(session, idAffiliation);
+        cotisMgr.setForDateDifferente(Boolean.FALSE);
+
+        return cotisMgr.getCount() >= 1;
+
+    }
+
     public static boolean hasDateDeFinAffililation(BSession session, String idAffiliation) throws Exception {
         return !JadeStringUtil.isBlankOrZero(AFAffiliationUtil.getAffiliation(idAffiliation, session).getDateFin());
     }
 
     public static boolean isCasRadieAnticipe(BSession session, AFAffiliation affiliation) throws Exception {
-        return CodeSystem.STATUT_IDE_RADIE.equalsIgnoreCase(affiliation.getIdeStatut()) && BSessionUtil
-                .compareDateFirstGreater(session, affiliation.getDateFin(), JACalendar.todayJJsMMsAAAA());
+        return CodeSystem.STATUT_IDE_RADIE.equalsIgnoreCase(affiliation.getIdeStatut())
+                && BSessionUtil
+                        .compareDateFirstGreater(session, affiliation.getDateFin(), JACalendar.todayJJsMMsAAAA());
+    }
+
+    public static boolean isNonAnnoncante(BSession session, String idAffiliation) throws Exception {
+        AFAffiliationManager affMng = new AFAffiliationManager();
+        affMng.setSession(session);
+        affMng.setForAffiliationId(idAffiliation);
+        affMng.find();
+        AFAffiliation affiliation = (AFAffiliation) affMng.getEntity(0);
+        if (affiliation != null) {
+            return affiliation.isIdeNonAnnoncante();
+        }
+        return false;
     }
 
     /**
@@ -1911,8 +1960,8 @@ public class AFIDEUtil {
                 && (CodeSystem.STATUT_IDE_PROVISOIRE.equalsIgnoreCase(affiliation.getIdeStatut())
                         || CodeSystem.STATUT_IDE_MUTATION.equalsIgnoreCase(affiliation.getIdeStatut())
                         || CodeSystem.STATUT_IDE_DEFINITIF.equalsIgnoreCase(affiliation.getIdeStatut())
-                        || CodeSystem.STATUT_IDE_RADIE.equalsIgnoreCase(affiliation.getIdeStatut())
-                        || isCasRadieAnticipe(session, affiliation));
+                        || CodeSystem.STATUT_IDE_RADIE.equalsIgnoreCase(affiliation.getIdeStatut()) || isCasRadieAnticipe(
+                            session, affiliation));
 
         return isAnnonceToCreate;
 
@@ -1932,8 +1981,8 @@ public class AFIDEUtil {
         isAnnonceToCreate = isAnnonceToCreate
                 && (CodeSystem.STATUT_IDE_PROVISOIRE.equalsIgnoreCase(affiliation.getIdeStatut())
                         || CodeSystem.STATUT_IDE_MUTATION.equalsIgnoreCase(affiliation.getIdeStatut())
-                        || CodeSystem.STATUT_IDE_DEFINITIF.equalsIgnoreCase(affiliation.getIdeStatut())
-                        || isCasRadieAnticipe(session, affiliation));
+                        || CodeSystem.STATUT_IDE_DEFINITIF.equalsIgnoreCase(affiliation.getIdeStatut()) || isCasRadieAnticipe(
+                            session, affiliation));
         isAnnonceToCreate = isAnnonceToCreate
                 && !hasAnnonceUnitaireEnCoursForAffiliation(session, affiliation.getAffiliationId());
 
@@ -1949,13 +1998,15 @@ public class AFIDEUtil {
 
         boolean isAnnonceToCreate = hasDroitEnregistrementActif(affiliation);
 
-        isAnnonceToCreate = isAnnonceToCreate && (!JadeStringUtil.isBlankOrZero(affiliation.getNumeroIDE())
-                || AFIDEUtil.hasAnnonceEnCours(session, affiliation.getAffiliationId(),
-                        CodeSystem.TYPE_ANNONCE_IDE_CREATION, CodeSystem.CATEGORIE_ANNONCE_IDE_ENVOI)
-                || AFIDEUtil.hasAffiliationAnnonceLieeEnCours(session, affiliation.getAffiliationId()));
+        isAnnonceToCreate = isAnnonceToCreate
+                && (!JadeStringUtil.isBlankOrZero(affiliation.getNumeroIDE())
+                        || AFIDEUtil.hasAnnonceEnCours(session, affiliation.getAffiliationId(),
+                                CodeSystem.TYPE_ANNONCE_IDE_CREATION, CodeSystem.CATEGORIE_ANNONCE_IDE_ENVOI) || AFIDEUtil
+                            .hasAffiliationAnnonceLieeEnCours(session, affiliation.getAffiliationId()));
 
-        isAnnonceToCreate = isAnnonceToCreate && !hasAnnonceEnCours(session, affiliation.getAffiliationId(),
-                CodeSystem.TYPE_ANNONCE_IDE_RADIATION, CodeSystem.CATEGORIE_ANNONCE_IDE_ENVOI);
+        isAnnonceToCreate = isAnnonceToCreate
+                && !hasAnnonceEnCours(session, affiliation.getAffiliationId(), CodeSystem.TYPE_ANNONCE_IDE_RADIATION,
+                        CodeSystem.CATEGORIE_ANNONCE_IDE_ENVOI);
 
         return isAnnonceToCreate;
 
@@ -1980,8 +2031,8 @@ public class AFIDEUtil {
         isAnnonceToCreate = isAnnonceToCreate
                 && (CodeSystem.STATUT_IDE_RADIE.equalsIgnoreCase(affiliation.getIdeStatut())
                         || CodeSystem.STATUT_IDE_DEFINITIF.equalsIgnoreCase(affiliation.getIdeStatut())
-                        || CodeSystem.STATUT_IDE_MUTATION.equalsIgnoreCase(affiliation.getIdeStatut())
-                        || CodeSystem.STATUT_IDE_PROVISOIRE.equalsIgnoreCase(affiliation.getIdeStatut()));
+                        || CodeSystem.STATUT_IDE_MUTATION.equalsIgnoreCase(affiliation.getIdeStatut()) || CodeSystem.STATUT_IDE_PROVISOIRE
+                            .equalsIgnoreCase(affiliation.getIdeStatut()));
 
         return isAnnonceToCreate;
 
@@ -2061,11 +2112,16 @@ public class AFIDEUtil {
 
         StringBuilder errorBuffer = new StringBuilder();
 
-        if (!hasAffiliationCotisationAVS(session, idAffiliation)) {
-            errorBuffer.append(session.getLabel("NAOS_ANNONCE_IDE_MANDATORY_ERREUR_PAS_COTISATION_AVS"));
-        }
+        if (isNonAnnoncante(session, idAffiliation)) {
+            errorBuffer.append(session.getLabel("NAOS_ANNONCE_IDE_NON_ANNONCANTE"));
+        } else {
 
-        errorBuffer.append(checkAnnonceCreationMandatory(session, idAffiliation));
+            if (!hasAffiliationCotisationAVS(session, idAffiliation)) {
+                errorBuffer.append(session.getLabel("NAOS_ANNONCE_IDE_MANDATORY_ERREUR_PAS_COTISATION_AVS"));
+            }
+
+            errorBuffer.append(checkAnnonceCreationMandatory(session, idAffiliation));
+        }
 
         return errorBuffer.toString();
     }
@@ -2075,7 +2131,7 @@ public class AFIDEUtil {
 
         StringBuffer errorBuffer = new StringBuffer();
 
-        if (!hasAffiliationCotisationAVS(session, idAffiliation)) {
+        if (!hasAffiliationCotisationRadiationAVS(session, idAffiliation)) {
             errorBuffer.append(session.getLabel("NAOS_ANNONCE_IDE_MANDATORY_ERREUR_PAS_COTISATION_AVS"));
         }
 
@@ -2177,6 +2233,13 @@ public class AFIDEUtil {
         errorBuffer.append(checkAnnonceMutationMandatory(session, idAffiliation));
 
         return errorBuffer.toString();
+    }
+
+    public static String checkIdeNonAnnoncante(BSession session, String idAffiliation) throws Exception {
+        if (isNonAnnoncante(session, idAffiliation)) {
+            return session.getLabel("NAOS_ANNONCE_IDE_NON_ANNONCANTE");
+        }
+        return "";
     }
 
     /**
@@ -2287,8 +2350,8 @@ public class AFIDEUtil {
      */
     public static List<String> getListGenreAffilieActif() throws PropertiesException {
 
-        List<String> listGenreAffilieActif = new ArrayList<String>(
-                Arrays.asList(AFProperties.GENRE_AFFILIE_ACTIF.getValue().split(",")));
+        List<String> listGenreAffilieActif = new ArrayList<String>(Arrays.asList(AFProperties.GENRE_AFFILIE_ACTIF
+                .getValue().split(",")));
 
         return listGenreAffilieActif;
 
@@ -2302,8 +2365,8 @@ public class AFIDEUtil {
      */
     public static List<String> getListGenreAffiliePassif() throws PropertiesException {
 
-        List<String> listGenreAffilieNonPermis = new ArrayList<String>(
-                Arrays.asList(AFProperties.GENRE_AFFILIE_PASSIF.getValue().split(",")));
+        List<String> listGenreAffilieNonPermis = new ArrayList<String>(Arrays.asList(AFProperties.GENRE_AFFILIE_PASSIF
+                .getValue().split(",")));
 
         return listGenreAffilieNonPermis;
 
@@ -2317,8 +2380,8 @@ public class AFIDEUtil {
      */
     public static List<String> getListMotifsFinCessation() throws PropertiesException {
 
-        List<String> listMotifsFinCessation = new ArrayList<String>(
-                Arrays.asList(AFProperties.MOTIFS_FIN_CESSATION.getValue().split(",")));
+        List<String> listMotifsFinCessation = new ArrayList<String>(Arrays.asList(AFProperties.MOTIFS_FIN_CESSATION
+                .getValue().split(",")));
 
         return listMotifsFinCessation;
 
@@ -2358,8 +2421,8 @@ public class AFIDEUtil {
     public static String giveMeLienRegistreIde(BSession session, String numeroIDE) {
         String langueISO = "&lang=";
         try {
-            AFApplication appAf = (AFApplication) GlobazServer.getCurrentSystem()
-                    .getApplication(AFApplication.DEFAULT_APPLICATION_NAOS);
+            AFApplication appAf = (AFApplication) GlobazServer.getCurrentSystem().getApplication(
+                    AFApplication.DEFAULT_APPLICATION_NAOS);
 
             return appAf.getLienRegistreIde() + giveMeNumIdeUnformatedWithPrefix(numeroIDE) + langueISO
                     + session.getIdLangueISO();
@@ -2466,8 +2529,8 @@ public class AFIDEUtil {
 
     public static String formatNumIDESansCHE(String numeroIdeSansCHE) {
 
-        String unformattedSource = (numeroIdeSansCHE.indexOf('.') < 0) ? numeroIdeSansCHE :
-                unformatNumIDE(numeroIdeSansCHE);
+        String unformattedSource = (numeroIdeSansCHE.indexOf('.') < 0) ? numeroIdeSansCHE
+                : unformatNumIDE(numeroIdeSansCHE);
         return JAStringFormatter.format(unformattedSource, IDE_FORMAT_SANS_CHE);
     }
 
@@ -2645,15 +2708,15 @@ public class AFIDEUtil {
          */
 
         // liste des types d'affiliation non modifiable
-        AFApplication appAf = (AFApplication) GlobazServer.getCurrentSystem()
-                .getApplication(AFApplication.DEFAULT_APPLICATION_NAOS);
+        AFApplication appAf = (AFApplication) GlobazServer.getCurrentSystem().getApplication(
+                AFApplication.DEFAULT_APPLICATION_NAOS);
         String listeTypeAffiliationNonModifiable = appAf.getListeIDETypeAffiliationNonModifiable();
         // liste des personnalités juridiques modifiables
         String listePersonnaliteJuridiqueModifiable = appAf.getListeIDEPersonnaliteJuridiqueModifiable();
         if (affiliation.getTraitement().equals(Boolean.FALSE)
                 && !listeTypeAffiliationNonModifiable.contains(affiliation.getTypeAffiliation())
-                && (listePersonnaliteJuridiqueModifiable.isEmpty()
-                        || listePersonnaliteJuridiqueModifiable.contains(affiliation.getPersonnaliteJuridique()))) {
+                && (listePersonnaliteJuridiqueModifiable.isEmpty() || listePersonnaliteJuridiqueModifiable
+                        .contains(affiliation.getPersonnaliteJuridique()))) {
             return true;
         }
         return false;
@@ -2769,10 +2832,9 @@ public class AFIDEUtil {
         try {
             aff = AFAffiliationUtil.loadAffiliation(session, idTiers, numAffilie, numDecompte, idRole);
         } catch (Exception e) {
-            JadeLogger.error(AFIDEUtil.class,
-                    "Impossible de récupérer le numéro IDE pour l'affilié " + numAffilie + "(idTiers: " + idTiers
-                            + " / numAffilie: " + numAffilie + " / numDecompte: " + numDecompte + " / idRole: " + idRole
-                            + e.getMessage());
+            JadeLogger.error(AFIDEUtil.class, "Impossible de récupérer le numéro IDE pour l'affilié " + numAffilie
+                    + "(idTiers: " + idTiers + " / numAffilie: " + numAffilie + " / numDecompte: " + numDecompte
+                    + " / idRole: " + idRole + e.getMessage());
         }
 
         if (aff != null) {

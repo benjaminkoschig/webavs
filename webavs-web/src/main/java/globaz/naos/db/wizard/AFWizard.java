@@ -1,9 +1,5 @@
 package globaz.naos.db.wizard;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
 import globaz.globall.db.BEntity;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
@@ -21,6 +17,10 @@ import globaz.naos.db.planAffiliation.AFPlanAffiliation;
 import globaz.naos.translation.CodeSystem;
 import globaz.naos.util.AFIDEUtil;
 import globaz.pyxis.db.tiers.TITiersViewBean;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 
 /**
  * La classe définissant les entités nécessaires a la création acccélérée d'une Affiliation(s).
@@ -63,8 +63,7 @@ public class AFWizard extends BEntity implements Serializable {
     private List<AFPlanAffiliation> planAffiliationList = new ArrayList<AFPlanAffiliation>();
 
     /**
-     * flag passé a false dans l'action actionAfficherSaisieAffiliation le temps du <i>JSPUtils.setBeanProperties()</i>
-     * <br/>
+     * flag passé a false dans l'action actionAfficherSaisieAffiliation le temps du <i>JSPUtils.setBeanProperties()</i> <br/>
      * permet de s'affranchir de la perte des valeur à la navigation du wizard
      */
     private boolean saveAffiliationProperties = true;
@@ -396,8 +395,9 @@ public class AFWizard extends BEntity implements Serializable {
                             cotisation.setDateDebut(adhesion.getDateDebut());
                             cotisation.setDateFin(adhesion.getDateFin());
 
-                            if (!JadeStringUtil.isIntegerEmpty(affiliation.getDateFin()) && BSessionUtil
-                                    .compareDateEqual(getSession(), affiliation.getDateFin(), getDateFin())) {
+                            if (!JadeStringUtil.isIntegerEmpty(affiliation.getDateFin())
+                                    && BSessionUtil.compareDateEqual(getSession(), affiliation.getDateFin(),
+                                            getDateFin())) {
                                 cotisation.setMotifFin(affiliation.getMotifFin());
                             } else {
                                 cotisation.setMotifFin(CodeSystem.MOTIF_FIN_FIN_ADHESION);
@@ -410,8 +410,9 @@ public class AFWizard extends BEntity implements Serializable {
                             cotisation.setDateDebut(couverture.getDateDebut());
                             cotisation.setDateFin(adhesion.getDateFin());
 
-                            if (!JadeStringUtil.isIntegerEmpty(affiliation.getDateFin()) && BSessionUtil
-                                    .compareDateEqual(getSession(), affiliation.getDateFin(), getDateFin())) {
+                            if (!JadeStringUtil.isIntegerEmpty(affiliation.getDateFin())
+                                    && BSessionUtil.compareDateEqual(getSession(), affiliation.getDateFin(),
+                                            getDateFin())) {
                                 cotisation.setMotifFin(affiliation.getMotifFin());
                             } else {
                                 cotisation.setMotifFin(CodeSystem.MOTIF_FIN_FIN_ADHESION);
@@ -429,8 +430,8 @@ public class AFWizard extends BEntity implements Serializable {
                     for (int j = 0; j < adhesionCotisations.cotisationList.size(); j++) {
                         AFCotisation cotisation = adhesionCotisations.cotisationList.get(j);
 
-                        if (!(cotisation.getMotifFin().equals(CodeSystem.MOTIF_FIN_FIN_ADHESION)
-                                || cotisation.getMotifFin().equals(CodeSystem.MOTIF_FIN_FIN_COUV_ASSURANCE))) {
+                        if (!(cotisation.getMotifFin().equals(CodeSystem.MOTIF_FIN_FIN_ADHESION) || cotisation
+                                .getMotifFin().equals(CodeSystem.MOTIF_FIN_FIN_COUV_ASSURANCE))) {
                             cotisation.setMotifFin(affiliation.getMotifFin());
                         }
                     }
@@ -739,6 +740,10 @@ public class AFWizard extends BEntity implements Serializable {
         return affiliation.isIdeAnnoncePassive();
     }
 
+    public java.lang.Boolean isIdeNonAnnoncante() {
+        return affiliation.isIdeNonAnnoncante();
+    }
+
     // ***********************************************
     // Setter
     // ***********************************************
@@ -1039,6 +1044,12 @@ public class AFWizard extends BEntity implements Serializable {
     public void setIdeAnnoncePassive(java.lang.Boolean ideAnnoncePassive) {
         if (saveAffiliationProperties) {
             affiliation.setIdeAnnoncePassive(ideAnnoncePassive);
+        }
+    }
+
+    public void setIdeNonAnnoncante(java.lang.Boolean ideNonAnnoncante) {
+        if (saveAffiliationProperties) {
+            affiliation.setIdeNonAnnoncante(ideNonAnnoncante);
         }
     }
 

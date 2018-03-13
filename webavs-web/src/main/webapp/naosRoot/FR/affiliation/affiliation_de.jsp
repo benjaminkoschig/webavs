@@ -95,7 +95,7 @@ function updateChampIde(tag){
 		document.getElementById("ideStatut").value = '';
 		document.getElementById("libelleStatutIde").value = '';
 		document.getElementById("isIdePartage").style.display = "none";
-	}
+}
 	displayFieldIDEPassif();
 }
 
@@ -329,8 +329,6 @@ function init(){
 		globazNotation.utils.consoleWarn("<%=viewBean.getWarningMessageAnnonceIdeCreationNotAdded()%>",'Avertissement',true);
 		<%viewBean.setWarningMessageAnnonceIdeCreationNotAdded("");%>
 	<%}%>
-	
-	
 	
 }
 function showPartie1() {
@@ -932,7 +930,6 @@ function maxLength(zone,max)
 										<div id="lienRegistreIde">
 											<a href="<%=AFIDEUtil.giveMeLienRegistreIde(viewBean.getSession(),viewBean.getNumeroIDE())%>" target="_blank"><ct:FWLabel key="NAOS_JSP_AFFILIATION_IDE_LIEN_REGISTRE"/></a> 
 										</div>
-										
 									<%}%>
 								</TD>
 							</TR>
@@ -975,7 +972,13 @@ function maxLength(zone,max)
 									<INPUT type="hidden" id="ideStatut" name="ideStatut"  value="<%=viewBean.getIdeStatut()%>">
 								</TD>
 								
-							</TR>							
+							</TR>		
+							<TR >
+								<TD nowrap width="161"><ct:FWLabel key="NAOS_JSP_AFFILIATION_IDE_CHECKBOX_NON_ANNONCANTE"/></TD>
+								<TD nowrap colspan="2"> 
+									<INPUT id="ideNonAnnoncante" type="checkbox" name="ideNonAnnoncante" <%=(viewBean.isIdeNonAnnoncante().booleanValue())? "checked" : ""%> >
+								</TD>
+							</TR>
 							<TR id="displayIDEAnnoncePassive">
 							<TD nowrap width="161"><ct:FWLabel key="NAOS_JSP_AFFILIATION_IDE_CHECKBOX_PASSIVE"/></TD>
 							<TD nowrap colspan="2"> 

@@ -7,6 +7,7 @@
 <%@page import="globaz.naos.translation.CodeSystem"%>
 <%@page import="globaz.naos.db.ide.AFIdeListErrorAnnonce"%>
 <%@page import="globaz.framework.secure.FWSecureConstants"%>
+<%@page import="globaz.jade.client.util.JadeStringUtil"%>
 <%@ page language="java" errorPage="/errorPage.jsp" import="globaz.globall.http.*" %>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ include file="/theme/find/header.jspf" %>
@@ -185,8 +186,9 @@ function postInit() {
 			<TD><ct:FWLabel key="NAOS_JSP_IDE_ANNONCE_TYPE_ERREUR"/></TD>
 			<TD>
 				<ct:select name="forError" defaultValue="<%=forError%>" notation="data-g-select='mandatory:false'"  style='width : 300px'>
+					<ct:option value="" label="" />
 					<% for(AFIdeListErrorAnnonce error : listError){%>
-					<ct:option value="<%=error.getMessageErreurForBusinessUser()%>" label="<%=error.getMessageErreurForBusinessUser()%>" />
+					<ct:option value="<%=error.getMessageErreurForBusinessUser()%>" label="<%=JadeStringUtil.escapeXML(error.getMessageErreurForBusinessUser())%>" />
 					<%}%> 
 				</ct:select>
 			</TD>	

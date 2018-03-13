@@ -26,7 +26,6 @@ public class AFIDERules {
             AFAffiliation oldAff) throws Exception {
 
         StringBuilder verbose = new StringBuilder();
-
         verbose.append("\n ruleReactNewAffiliation :" + ruleReactNewAffiliation(session, currentAff, oldAff));
         verbose.append("\n ruleReactReouvertureAffiliation :"
                 + ruleReactReouvertureAffiliation(session, currentAff, oldAff));
@@ -48,6 +47,7 @@ public class AFIDERules {
                 + ruleAnnonceEnregistrementPassive(session, currentAff, oldAff));
         verbose.append("\n ruleAnnonceDesenregistementPassive: "
                 + ruleAnnonceDesenregistementPassive(session, currentAff, oldAff));
+        verbose.append("\n ruleAnnonceIdeAnnoncante: " + ruleAnnonceIdeAnnoncante(session, currentAff, oldAff));
 
         verbose.append("\n ruleDesenregistrementActif: " + ruleDesenregistrementActif(session, currentAff, oldAff));
 
@@ -55,6 +55,7 @@ public class AFIDERules {
         // TODO utiliser le logger logback de la version 1.15.01
         // en l'absence de logger, sysout crado pour dev.
         // System.out.println(verbose);
+
         return null;
     }
 
@@ -156,13 +157,26 @@ public class AFIDERules {
     }
 
     /**
+     * Si on passe d'une entité IDE non annonçante à annonçante
+     * 
+     */
+    private static boolean ruleAnnonceIdeAnnoncante(BSession session, AFAffiliation currentAff, AFAffiliation oldAff)
+            throws Exception {
+        if (!isAnnonceIDENonAnnoncante(currentAff) && isAnnonceIDENonAnnoncante(oldAff)) {
+            AFIDEUtil.generateAnnonceIDEAnnoncante(session, currentAff);
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * Si l'affiliation était active et ne l'est plus,</br> <i>ou</i> que l'on a supprimé le numéro IDE;</br> -> générer
      * un
      * <b>Désenregistrement Actif</b>
      */
     private static boolean ruleDesenregistrementActif(BSession session, AFAffiliation currentAff, AFAffiliation oldAff)
             throws Exception {
-        if (!isAffiliationActive(currentAff) && isAffiliationActive(oldAff) && !isAnnonceIDEPassive(currentAff)) {
+        if (!isAffiliationActive(currentAff) && isAffiliationActive(oldAff) && isNotPassiveAnnoncante(currentAff)) {
             AFIDEUtil.generateAnnonceDesenregistrementActif(session, currentAff, null);
             return true;
         } else if (isIDENumberBlank(currentAff) && !isIDENumberBlank(oldAff) && isAffiliationActive(oldAff)
@@ -185,7 +199,7 @@ public class AFIDERules {
     private static boolean ruleEnregistrementAcif(BSession session, AFAffiliation currentAff, AFAffiliation oldAff)
             throws Exception {
         if (isAffiliationActive(currentAff)
-                && !isAnnonceIDEPassive(currentAff)
+                && isNotPassiveAnnoncante(currentAff)
                 && (isIDENumberBlank(oldAff) || isAnnonceIDEPassive(oldAff)
                         || (!hasDateDeFin(currentAff) && !isAffiliationActive(oldAff)) || (!hasDateDeFin(currentAff) && !isFirstAffiliationDateFin(oldAff)))) {
             if (!isNumeroIdeInactifRadie(currentAff)) {
@@ -206,7 +220,7 @@ public class AFIDERules {
     private static boolean ruleReactNewAffiliation(BSession session, AFAffiliation currentAff, AFAffiliation oldAff)
             throws Exception {
         if (isAffiliationActive(currentAff) && !hasDateDeFin(currentAff) && isNumeroIdeInactifRadie(currentAff)
-                && hasChangeFromInactifRadie(oldAff) && !isAnnonceIDEPassive(currentAff)) {
+                && hasChangeFromInactifRadie(oldAff) && isNotPassiveAnnoncante(currentAff)) {
             AFIDEUtil.generateAnnonceReactivationIde(session, currentAff);
             return true;
         }
@@ -220,7 +234,8 @@ public class AFIDERules {
     private static boolean ruleReactReouvertureAffiliation(BSession session, AFAffiliation currentAff,
             AFAffiliation oldAff) throws Exception {
         if (isAffiliationActive(currentAff) && !hasDateDeFin(currentAff) && !isFirstAffiliationDateFin(oldAff)
-                && isNumeroIdeInactifRadie(currentAff) && !isNewAffiliation(oldAff) && !isAnnonceIDEPassive(currentAff)) {
+                && isNumeroIdeInactifRadie(currentAff) && !isNewAffiliation(oldAff)
+                && isNotPassiveAnnoncante(currentAff)) {
             AFIDEUtil.generateAnnonceReactivationIde(session, currentAff);
             return true;
         }
@@ -234,7 +249,8 @@ public class AFIDERules {
     private static boolean ruleReactFinProvisoirAffiliation(BSession session, AFAffiliation currentAff,
             AFAffiliation oldAff) throws Exception {
         if (isAffiliationActive(currentAff) && !isAffiliationActive(oldAff) && !hasDateDeFin(currentAff)
-                && isNumeroIdeInactifRadie(currentAff) && !isNewAffiliation(oldAff) && !isAnnonceIDEPassive(currentAff)) {
+                && isNumeroIdeInactifRadie(currentAff) && !isNewAffiliation(oldAff)
+                && isNotPassiveAnnoncante(currentAff)) {
             AFIDEUtil.generateAnnonceReactivationIde(session, currentAff);
             return true;
         }
@@ -252,7 +268,7 @@ public class AFIDERules {
                 && hasDateDeFin(currentAff) // && !isMotifChangementCaisse(currentAff)
                                             // autre = !cessation
                 && !isMotifCessation(currentAff) && isFirstAffiliationDateFin(oldAff)
-                && !isAnnonceIDEPassive(currentAff)) {
+                && isNotPassiveAnnoncante(currentAff)) {
             AFIDEUtil.generateAnnonceDesenregistrementActif(session, currentAff, null);
             return true;
         }
@@ -267,7 +283,7 @@ public class AFIDERules {
     private static boolean ruleClotureAffiliationCessation(BSession session, AFAffiliation currentAff,
             AFAffiliation oldAff) throws Exception {
         if (isAffiliationActive(currentAff) && hasDateDeFin(currentAff) && isMotifCessation(currentAff)
-                && isFirstAffiliationDateFin(oldAff) && !isAnnonceIDEPassive(currentAff)) {
+                && isFirstAffiliationDateFin(oldAff) && isNotPassiveAnnoncante(currentAff)) {
             AFIDEUtil.generateAnnonceRadiationIde(session, currentAff);
             return true;
         }
@@ -282,7 +298,7 @@ public class AFIDERules {
             AFAffiliation oldAff) throws Exception {
         if (!isNewAffiliation(oldAff) && isAffiliationActive(currentAff) && hasDateDeFin(currentAff)
                 && isMotifCessation(currentAff) && isSameMotifFin(currentAff, oldAff)
-                && !isFirstAffiliationDateFin(oldAff) && !isAnnonceIDEPassive(currentAff)) {
+                && !isFirstAffiliationDateFin(oldAff) && isNotPassiveAnnoncante(currentAff)) {
             // do nothing
             return true;
         }
@@ -297,7 +313,7 @@ public class AFIDERules {
             AFAffiliation oldAff) throws Exception {
         if (!isNewAffiliation(oldAff) && isAffiliationActive(currentAff) && hasDateDeFin(currentAff)
                 && !isSameMotifFin(currentAff, oldAff) && isMotifCessation(oldAff) && !isMotifCessation(currentAff)
-                && !isFirstAffiliationDateFin(oldAff) && !isAnnonceIDEPassive(currentAff)) {
+                && !isFirstAffiliationDateFin(oldAff) && isNotPassiveAnnoncante(currentAff)) {
             AFIDEUtil.generateAnnoncesReactivation(session, currentAff);
             return true;
         }
@@ -312,7 +328,7 @@ public class AFIDERules {
             AFAffiliation oldAff) throws Exception {
         if (!isNewAffiliation(oldAff) && isAffiliationActive(currentAff) && hasDateDeFin(currentAff)
                 && !isSameMotifFin(currentAff, oldAff) && !isMotifCessation(oldAff) && isMotifCessation(currentAff)
-                && !isFirstAffiliationDateFin(oldAff) && !isAnnonceIDEPassive(currentAff)
+                && !isFirstAffiliationDateFin(oldAff) && isNotPassiveAnnoncante(currentAff)
                 && !isNumeroIdeInactifRadie(currentAff)) {
             AFIDEUtil.generateAnnoncesRadiation(session, currentAff);
             return true;
@@ -419,6 +435,20 @@ public class AFIDERules {
 
     private static boolean hasDateDeFin(AFAffiliation currentAff) {
         return !JadeStringUtil.isBlankOrZero(currentAff.getDateFin());
+    }
+
+    private static boolean isAnnonceIDENonAnnoncante(AFAffiliation currentAff) {
+        if (currentAff == null) {
+            return false;
+        }
+        return currentAff.isIdeNonAnnoncante();
+    }
+
+    private static boolean isNotPassiveAnnoncante(AFAffiliation currentAff) {
+        if (currentAff == null) {
+            return false;
+        }
+        return !currentAff.isIdeAnnoncePassive() && !currentAff.isIdeNonAnnoncante();
     }
 
     /**

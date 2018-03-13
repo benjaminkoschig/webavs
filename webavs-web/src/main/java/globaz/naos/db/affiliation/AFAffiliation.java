@@ -325,6 +325,7 @@ public class AFAffiliation extends BEntity implements Serializable {
     private boolean wantGenerationSuiviLAALPP = true;
     // D0050 - Champ IDE
     private java.lang.Boolean ideAnnoncePassive = new Boolean(false);
+    private java.lang.Boolean ideNonAnnoncante = new Boolean(false);
     private String ideStatut = "";
     private String ideRaisonSociale = "";
 
@@ -1656,6 +1657,7 @@ public class AFAffiliation extends BEntity implements Serializable {
         convention = statement.dbReadNumeric("MACONV");
         // D0050 - Cahmp IDE
         ideAnnoncePassive = statement.dbReadBoolean("MATPAS");
+        ideNonAnnoncante = statement.dbReadBoolean("MATNAN");
         ideStatut = statement.dbReadNumeric("MATSTA");
         ideRaisonSociale = statement.dbReadString("MATRSO");
         // D0181 - activité
@@ -2440,6 +2442,8 @@ public class AFAffiliation extends BEntity implements Serializable {
         // D0050 - Champs IDE
         statement.writeField("MATPAS",
                 this._dbWriteBoolean(statement.getTransaction(), isIdeAnnoncePassive(), "ideAnnoncePassive"));
+        statement.writeField("MATNAN",
+                this._dbWriteBoolean(statement.getTransaction(), isIdeNonAnnoncante(), "ideNonAnnoncante"));
         statement.writeField("MATSTA", this._dbWriteNumeric(statement.getTransaction(), getIdeStatut(), "ideStatut"));
         statement.writeField("MATRSO",
                 this._dbWriteString(statement.getTransaction(), getIdeRaisonSociale(), "ideRaisonSociale"));
@@ -2956,6 +2960,10 @@ public class AFAffiliation extends BEntity implements Serializable {
 
     public java.lang.Boolean isIdeAnnoncePassive() {
         return ideAnnoncePassive;
+    }
+
+    public java.lang.Boolean isIdeNonAnnoncante() {
+        return ideNonAnnoncante;
     }
 
     /**
@@ -3503,6 +3511,10 @@ public class AFAffiliation extends BEntity implements Serializable {
 
     public void setIdeAnnoncePassive(java.lang.Boolean _idePassif) {
         ideAnnoncePassive = _idePassif;
+    }
+
+    public void setIdeNonAnnoncante(java.lang.Boolean ideNonAnnoncante) {
+        this.ideNonAnnoncante = ideNonAnnoncante;
     }
 
     public void setIrrecouvrable(java.lang.Boolean newIrrecouvrable) {

@@ -8,6 +8,7 @@
 <%@page import="globaz.naos.translation.CodeSystem"%>
 <%@page import="globaz.naos.util.AFIDEUtil"%>
 <%@page import="globaz.naos.db.ide.AFIdeAnnonceViewBean"%>
+<%@page import="globaz.jade.client.util.JadeStringUtil"%>
 <%@ page language="java" errorPage="/errorPage.jsp" import="globaz.globall.http.*" contentType="text/html;charset=ISO-8859-1" %>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ include file="/theme/detail/header.jspf" %>
@@ -268,7 +269,7 @@ function init() {
 		</TR>
 		<TR>
 			<TD nowrap width="140"><ct:FWLabel key="NAOS_JSP_IDE_ANNONCE_MESSAGE_ERREUR_BUSINESS"/></TD>
-        	<TD nowrap width="740" colspan="3"><INPUT name="" type="text" value="<%=viewBean.getMessageErreurForBusinessUser()%>" class="libelleLong20Disabled" readonly></TD>
+        	<TD nowrap width="740" colspan="3"><INPUT name="" type="text" value="<%=JadeStringUtil.escapeXML(viewBean.getMessageErreurForBusinessUser())%>" class="libelleLong20Disabled" readonly></TD>
 		</TR>
 		
 		<TR>
