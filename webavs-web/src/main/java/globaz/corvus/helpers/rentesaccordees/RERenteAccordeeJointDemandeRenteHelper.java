@@ -907,28 +907,28 @@ public class RERenteAccordeeJointDemandeRenteHelper extends PRHybridHelper {
                 idCAToChange = mapIdCASortedByGroupLevel.get(bestLevel);
 
                 // Si on a pas d'idCompteAnnexe -> créer un compte annexe
-                if (idCAToChange.isEmpty()) {
+                if (JadeStringUtil.isBlankOrZero(idCAToChange)) {
                     idCAToChange = createCompteAnnexeAndReturnId(session, transaction, ra, ra.getIdTierAdressePmt());
                 }
             }
         }
 
         // Si TiersAdressePmt parmi les idTiersFamille
-        else if (!idTiersMembreFamilleSameAsIdTiersAdressePmt.isEmpty()) {
+        else if (!JadeStringUtil.isBlankOrZero(idTiersMembreFamilleSameAsIdTiersAdressePmt)) {
             idCAToChange = getIdCompteAnnexe(session, idTiersMembreFamilleSameAsIdTiersAdressePmt);
 
             // Si on a pas d'idCompteAnnexe -> créer un compte annexe
-            if (idCAToChange.isEmpty()) {
+            if (JadeStringUtil.isBlankOrZero(idCAToChange)) {
                 idCAToChange = createCompteAnnexeAndReturnId(session, transaction, ra,
                         idTiersMembreFamilleSameAsIdTiersAdressePmt);
             }
         }
         // Si il y a un plus jeune dans la famille
-        else if (!idTiersYoungestMembreFamilleSameIdTiersAdressePmt.isEmpty()) {
+        else if (!JadeStringUtil.isBlankOrZero(idTiersYoungestMembreFamilleSameIdTiersAdressePmt)) {
             idCAToChange = getIdCompteAnnexe(session, idTiersYoungestMembreFamilleSameIdTiersAdressePmt);
 
             // Si on a pas d'idCompteAnnexe -> créer un compte annexe
-            if (idCAToChange.isEmpty()) {
+            if (JadeStringUtil.isBlankOrZero(idCAToChange)) {
                 idCAToChange = createCompteAnnexeAndReturnId(session, transaction, ra,
                         idTiersYoungestMembreFamilleSameIdTiersAdressePmt);
             }
@@ -938,7 +938,7 @@ public class RERenteAccordeeJointDemandeRenteHelper extends PRHybridHelper {
             idCAToChange = getIdCompteAnnexe(session, ra.getIdTiersBeneficiaire());
 
             // Si on a pas d'idCompteAnnexe -> créer un compte annexe
-            if (idCAToChange.isEmpty()) {
+            if (JadeStringUtil.isBlankOrZero(idCAToChange)) {
                 idCAToChange = createCompteAnnexeAndReturnId(session, transaction, ra,
                         idTiersYoungestMembreFamilleSameIdTiersAdressePmt);
             }
