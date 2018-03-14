@@ -1,5 +1,11 @@
 package globaz.naos.process.ide;
 
+import java.net.MalformedURLException;
+import java.util.ArrayList;
+import java.util.List;
+import javax.xml.ws.WebServiceException;
+import org.apache.commons.io.IOUtils;
+import ch.globaz.naos.exception.NaosException;
 import globaz.framework.util.FWMessage;
 import globaz.framework.util.FWMessageFormat;
 import globaz.globall.db.BManager;
@@ -24,12 +30,6 @@ import globaz.naos.properties.AFProperties;
 import globaz.naos.util.AFIDEUtil;
 import globaz.naos.util.IDEDataBean;
 import globaz.naos.util.IDEServiceCallUtil;
-import java.net.MalformedURLException;
-import java.util.ArrayList;
-import java.util.List;
-import javax.xml.ws.WebServiceException;
-import org.apache.commons.io.IOUtils;
-import ch.globaz.naos.exception.NaosException;
 
 public class AFIdeSyncRegistreProcess extends BProcess {
 
@@ -62,8 +62,6 @@ public class AFIdeSyncRegistreProcess extends BProcess {
                     updateAffiliationAfterFind(data, aff);
                 } catch (MalformedURLException mue) {
                     throw mue;
-                } catch (com.sun.xml.internal.ws.client.ClientTransportException cte) {
-                    errmsg.append(cte.getMessage());
                 } catch (WebServiceException wse) {
                     throw wse;
                 } catch (NaosException e) {
