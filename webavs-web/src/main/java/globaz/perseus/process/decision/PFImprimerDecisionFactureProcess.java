@@ -1,16 +1,5 @@
 package globaz.perseus.process.decision;
 
-import globaz.globall.db.BSessionUtil;
-import globaz.jade.context.JadeThread;
-import globaz.jade.context.exception.JadeNoBusinessLogSessionError;
-import globaz.jade.exception.JadePersistenceException;
-import globaz.jade.log.JadeLogger;
-import globaz.jade.log.business.JadeBusinessMessage;
-import globaz.jade.log.business.JadeBusinessMessageLevels;
-import globaz.jade.print.server.JadePrintDocumentContainer;
-import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
-import globaz.jade.smtp.JadeSmtpClient;
-import globaz.perseus.process.PFAbstractJob;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -24,7 +13,17 @@ import ch.globaz.perseus.businessimpl.services.doc.excel.impl.PFStatsDecisionFac
 import ch.globaz.perseus.businessimpl.services.facture.ImprimerDecisionFactureBuilder;
 import ch.globaz.perseus.businessimpl.services.facture.ImprimerDecisionFactureRPBuilder;
 import ch.globaz.perseus.businessimpl.utils.PFTypeImpressionEnum;
-import com.sun.xml.internal.fastinfoset.util.StringArray;
+import globaz.globall.db.BSessionUtil;
+import globaz.jade.context.JadeThread;
+import globaz.jade.context.exception.JadeNoBusinessLogSessionError;
+import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.log.JadeLogger;
+import globaz.jade.log.business.JadeBusinessMessage;
+import globaz.jade.log.business.JadeBusinessMessageLevels;
+import globaz.jade.print.server.JadePrintDocumentContainer;
+import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
+import globaz.jade.smtp.JadeSmtpClient;
+import globaz.perseus.process.PFAbstractJob;
 
 public class PFImprimerDecisionFactureProcess extends PFAbstractJob {
     private static final long serialVersionUID = -4606095961880814539L;
@@ -66,16 +65,16 @@ public class PFImprimerDecisionFactureProcess extends PFAbstractJob {
 
             String body = BSessionUtil.getSessionFromThreadContext().getLabel("PROCESS_STATS_AGENCE_BODY");
 
-            StringArray listeStatistiquesAGenerer = new StringArray();
+            List<String> listeStatistiquesAGenerer = new ArrayList<String>();
             listeStatistiquesAGenerer.add(stats.createGeneralDocAndSave());
 
-            for (String unFichierStatsAgence : stats.createStatsParAgenceAndSave()._array) {
+            for (String unFichierStatsAgence : stats.createStatsParAgenceAndSave().toArray(new String[0])) {
                 listeStatistiquesAGenerer.add(unFichierStatsAgence);
             }
 
             JadeSmtpClient.getInstance().sendMail(adrMail,
                     BSessionUtil.getSessionFromThreadContext().getLabel("PROCESS_STATS_AGENCE_TITRE_MAIL"), body,
-                    listeStatistiquesAGenerer._array);
+                    listeStatistiquesAGenerer.toArray(new String[0]));
         } catch (Exception e) {
             JadeThread.logError(this.getClass().getName(), "perseus.process.decision.PFImprimerDecisionFactureProcess");
             JadeLogger.error(this, e.getMessage());

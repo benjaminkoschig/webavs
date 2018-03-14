@@ -1,12 +1,5 @@
 package ch.globaz.perseus.businessimpl.services.doc.excel.impl;
 
-import globaz.globall.db.BSession;
-import globaz.globall.db.BSessionUtil;
-import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.client.util.JadeUUIDGenerator;
-import globaz.op.common.merge.IMergingContainer;
-import globaz.op.excelml.model.document.ExcelmlWorkbook;
-import globaz.webavs.common.CommonExcelmlContainer;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -17,7 +10,13 @@ import ch.globaz.perseus.business.exceptions.doc.DocException;
 import ch.globaz.perseus.business.models.dossier.Dossier;
 import ch.globaz.perseus.business.models.qd.Facture;
 import ch.globaz.perseus.business.services.PerseusServiceLocator;
-import com.sun.xml.internal.fastinfoset.util.StringArray;
+import globaz.globall.db.BSession;
+import globaz.globall.db.BSessionUtil;
+import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.client.util.JadeUUIDGenerator;
+import globaz.op.common.merge.IMergingContainer;
+import globaz.op.excelml.model.document.ExcelmlWorkbook;
+import globaz.webavs.common.CommonExcelmlContainer;
 
 public class PFStatsDecisionFactureAgence extends PerseusAbstractExcelServiceImpl {
 
@@ -283,13 +282,13 @@ public class PFStatsDecisionFactureAgence extends PerseusAbstractExcelServiceImp
      * @return
      * @throws Exception
      */
-    public StringArray createStatsParAgenceAndSave() throws Exception {
+    public List<String> createStatsParAgenceAndSave() throws Exception {
         setStatParAgence(true);
         if ((listeDAgence == null)) {
             throw new DocException("Unable to execute createDoc, the idUserAgence is null !");
         }
 
-        StringArray listeNomFichiers = new StringArray();
+        List<String> listeNomFichiers = new ArrayList<String>();
 
         for (String uneAgence : listeDAgence) {
             ExcelmlWorkbook wk = createDoc();
