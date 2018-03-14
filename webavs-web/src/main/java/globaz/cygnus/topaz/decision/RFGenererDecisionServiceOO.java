@@ -39,7 +39,6 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Set;
 import ch.globaz.common.properties.CommonProperties;
-import ch.globaz.common.properties.PropertiesException;
 import ch.globaz.topaz.datajuicer.DocumentData;
 
 /**
@@ -792,7 +791,6 @@ public class RFGenererDecisionServiceOO {
             docInfoBordereau.setArchiveDocument(false);
             docInfoBordereau.setDocumentTypeNumber(IPRConstantesExternes.RFM_BORDEREAU);
             docInfoBordereau.setDocumentType(IPRConstantesExternes.RFM_BORDEREAU);
-            docInfoBordereau.setOwnerId(decisionDocument.getGestionnaire());
             if (RFGenererDecisionMainService.NO_CAISSE_CCVD_AGLA.equals(CommonProperties.KEY_NO_CAISSE.getValue())
                     && isComptaProcess) {
                 docInfoBordereau.setOwnerId(decisionDocument.getGestionnaire());
@@ -870,27 +868,6 @@ public class RFGenererDecisionServiceOO {
                 throw new Exception(getSession().getLabel("ERREUR_ADRESSE_MANQUANTE"));
 
             }
-        }
-    }
-
-    /**
-     * @param isComptaProcess
-     * @param decisionDocument
-     * @param docInfo
-     *            Set le gestionnaire de la décision dans l'attribut "ownerId" de la ligne technique du document
-     * @throws PropertiesException
-     */
-    private void setOwnerDependsOnProcess(Boolean isComptaProcess, RFDecisionDocumentData decisionDocument,
-            JadePublishDocumentInfo docInfo) throws PropertiesException {
-        // Concerne uniquement la CCVD et AGLA
-        try {
-            if (RFGenererDecisionMainService.NO_CAISSE_CCVD_AGLA.equals(CommonProperties.KEY_NO_CAISSE.getValue())
-                    && isComptaProcess) {
-                docInfo.setOwnerId(decisionDocument.getGestionnaire());
-            }
-        } catch (PropertiesException e) {
-            getSession().addError(getSession().getLabel("PROCESS_VALIDER_DECISION_PROPRIETE_INTROUVABLE"));
-            throw new PropertiesException(getSession().getLabel("PROCESS_VALIDER_DECISION_PROPRIETE_INTROUVABLE"));
         }
     }
 
