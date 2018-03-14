@@ -1,15 +1,15 @@
 package globaz.al.vb.prestation;
 
-import globaz.framework.bean.JadeAbstractAjaxFindViewBean;
-import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.persistence.model.JadeAbstractModel;
-import globaz.jade.persistence.model.JadeAbstractSearchModel;
 import java.util.List;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import org.apache.commons.lang.NotImplementedException;
 import ch.globaz.al.business.models.prestation.EntetePrestationListRecapComplexModel;
 import ch.globaz.al.business.models.prestation.EntetePrestationListRecapComplexSearchModel;
 import ch.globaz.al.business.services.ALServiceLocator;
 import ch.globaz.pegasus.businessimpl.utils.PersistenceUtil;
+import globaz.framework.bean.JadeAbstractAjaxFindViewBean;
+import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.persistence.model.JadeAbstractModel;
+import globaz.jade.persistence.model.JadeAbstractSearchModel;
 
 public class ALRecapAjaxViewBean extends JadeAbstractAjaxFindViewBean {
 

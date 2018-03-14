@@ -1,8 +1,8 @@
 package ch.globaz.hera.business.models.famille;
 
-import globaz.jade.persistence.model.JadeComplexModel;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import org.apache.commons.lang.NotImplementedException;
 import ch.globaz.pyxis.business.model.PersonneEtendueComplexModel;
+import globaz.jade.persistence.model.JadeComplexModel;
 
 public class DateNaissanceConjoint extends JadeComplexModel {
 

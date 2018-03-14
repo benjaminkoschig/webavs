@@ -1,11 +1,7 @@
 package ch.globaz.pegasus.businessimpl.utils.topazbuilder.decisions;
 
-import globaz.jade.admin.user.bean.JadeUser;
-import globaz.jade.exception.JadePersistenceException;
-import globaz.jade.print.server.JadePrintDocumentContainer;
-import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import java.util.ArrayList;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import org.apache.commons.lang.NotImplementedException;
 import ch.globaz.pegasus.business.constantes.IPCCatalogueTextes;
 import ch.globaz.pegasus.business.exceptions.models.decision.DecisionException;
 import ch.globaz.pegasus.business.models.decision.DecisionRefus;
@@ -13,6 +9,10 @@ import ch.globaz.pegasus.business.services.PegasusServiceLocator;
 import ch.globaz.pegasus.business.services.decision.DecisionBuilder;
 import ch.globaz.pegasus.businessimpl.services.models.decision.DACPublishHandler;
 import ch.globaz.topaz.datajuicer.DocumentData;
+import globaz.jade.admin.user.bean.JadeUser;
+import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.print.server.JadePrintDocumentContainer;
+import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 
 public class DecisionRefusBuilder extends AbstractDecisionBuilder implements DecisionBuilder {
 
