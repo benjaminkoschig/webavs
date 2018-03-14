@@ -1,5 +1,12 @@
 package globaz.naos.process.ide;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import ch.globaz.common.properties.PropertiesException;
+import ch.globaz.common.sql.QueryExecutor;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.util.FWMessage;
 import globaz.framework.util.FWMessageFormat;
@@ -34,13 +41,6 @@ import globaz.webavs.common.CommonExcelmlUtils;
 import idech.admin.bit.xmlns.uid_wse_shared._1.RegisterDeregisterStatus;
 import idech.admin.uid.xmlns.uid_wse.ArrayOfUidStructureType;
 import idech.admin.uid.xmlns.uid_wse.IPartnerServices;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import ch.globaz.common.properties.PropertiesException;
-import ch.globaz.common.sql.QueryExecutor;
 
 public class AFIdeTraitementAnnonceProcess extends BProcess implements FWViewBeanInterface {
 
@@ -954,18 +954,24 @@ public class AFIdeTraitementAnnonceProcess extends BProcess implements FWViewBea
 
         for (AFIdeAnnonce ideAnnonceEntrante : listAnnonceIde) {
             // considerer ces annonces comme passives(lors de la recherche d'affilié)
+            boolean hasAffiliation = false;
             boolean isAnnoncePassive = true;
             // ces annonces doivent toujours passer à l'état traité (purement info, pas d'update d'affilié)
             boolean errorMustFlagAnnonceAsSuccess = true;
             try {
-                linkNumAffilieToAnnonceEntrante(ideAnnonceEntrante, isAnnoncePassive);
+                List<AFAffiliation> listAffi = linkNumAffilieToAnnonceEntrante(ideAnnonceEntrante, isAnnoncePassive);
+                hasAffiliation = listAffi != null && !listAffi.isEmpty();
                 // TODO : refact upside method to allow ignore set error message for non verbose kind of ideAnnonce
                 ideAnnonceEntrante.setMessageErreurForBusinessUser("");
             } catch (Exception e) {
                 AFIDEUtil.handleError(getSession(), e, ideAnnonceEntrante);
             } finally {
                 try {
-                    doUpdateAnnonceEntrante(ideAnnonceEntrante, errorMustFlagAnnonceAsSuccess);
+                    if (hasAffiliation) {
+                        doUpdateAnnonceEntrante(ideAnnonceEntrante, errorMustFlagAnnonceAsSuccess);
+                    } else {
+                        ideAnnonceEntrante.delete(getTransaction());
+                    }
                 } catch (Exception e2) {
                     AFIDEUtil.logExceptionAndCreateMessageForUser(getSession(), e2);
                     getTransaction().addErrors(e2.getMessage());
