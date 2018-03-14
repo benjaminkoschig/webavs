@@ -1,5 +1,8 @@
 package globaz.pavo.servlet;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.controller.FWAction;
 import globaz.framework.controller.FWDefaultServletAction;
@@ -13,9 +16,6 @@ import globaz.pavo.db.splitting.CIDossierSplitting;
 import globaz.pavo.db.splitting.CIDossierSplittingViewBean;
 import globaz.pavo.db.splitting.CIImprimerAnalyseViewBean;
 import globaz.pavo.db.splitting.CIImprimerApercuViewBean;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 /**
  * Insérez la description du type ici. Date de création : (16.10.2002 09:56:57)
@@ -174,7 +174,7 @@ public class CIActionDossierSplitting extends CIActionCIDefault {
             CIImprimerAnalyseViewBean viewBean = (CIImprimerAnalyseViewBean) session.getAttribute("viewBean");
             JSPUtils.setBeanProperties(request, viewBean);
             FWAction action = getAction();
-            action.setRight(FWSecureConstants.READ);
+            action.setRight(FWSecureConstants.UPDATE);
 
             // appel du controlleur
             viewBean = (CIImprimerAnalyseViewBean) mainDispatcher.dispatch(viewBean, action);
@@ -185,7 +185,7 @@ public class CIActionDossierSplitting extends CIActionCIDefault {
                 _destination = getRelativeURLwithoutClassPart(request, session)
                         + "imprimerAnalyse_de.jsp?_valid=fail&_back=sl";
             } else {
-                _destination = getAction().getApplicationPart().toString()
+                _destination = "/" + getAction().getApplicationPart().toString()
                         + "?userAction=pavo.splitting.dossierSplitting.afficher&selectedId="
                         + viewBean.getIdDossierSplitting();
             }
@@ -205,7 +205,7 @@ public class CIActionDossierSplitting extends CIActionCIDefault {
             CIImprimerApercuViewBean viewBean = (CIImprimerApercuViewBean) session.getAttribute("viewBean");
             JSPUtils.setBeanProperties(request, viewBean);
             FWAction action = getAction();
-            action.setRight(FWSecureConstants.READ);
+            action.setRight(FWSecureConstants.UPDATE);
 
             // appel du controlleur
             viewBean = (CIImprimerApercuViewBean) mainDispatcher.dispatch(viewBean, action);
