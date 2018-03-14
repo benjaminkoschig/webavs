@@ -3356,7 +3356,7 @@ public class REPreValiderDecisionHelper extends PRHybridHelper {
             String idTierBenefPrinc = vb.getIdTiersBeneficiairePrincipal();
 
             // Si on est venu dans l'écran depuis la rcList des décisions (détail)
-            if (vb.getIsDepuisRcListDecision().booleanValue()) {
+            if (vb.getIsDepuisRcListDecision().booleanValue() || IREPreparationDecision.CS_TYP_PREP_DECISION_RETRO.equals(decision.getCsTypeDecision())) {
 
                 // chargement de la décision d'arrivée
                 REDecisionEntity deci = new REDecisionEntity();
