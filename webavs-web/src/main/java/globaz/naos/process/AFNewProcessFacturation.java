@@ -891,6 +891,7 @@ public final class AFNewProcessFacturation extends BProcess {
      */
     public static CACompteAnnexe getCompteAnnexe(String numAff, BSession sessionNaos, String roleAffilie)
             throws Exception {
+        AFNewProcessFacturation._compteAnnexe = null;
         // Chargement du manager
         CACompteAnnexeManager manager = new CACompteAnnexeManager();
         manager.setSession(sessionNaos);
