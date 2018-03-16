@@ -1,6 +1,7 @@
 package globaz.musca.process;
 
 import globaz.globall.db.BSession;
+import globaz.globall.db.BTransaction;
 import globaz.musca.api.IFAPassage;
 import globaz.musca.db.facturation.FAEnteteFacture;
 import globaz.osiris.db.comptes.CACompteAnnexe;
@@ -15,7 +16,8 @@ public class FANewInfoRom200PassageRemboursementProcess extends FAPassageRembour
 
     @Override
     protected void fixIdForModeRecouvrement(CACompteAnnexe compteAnnexe, IFAPassage passage,
-            FAEnteteFacture entFacture, Collection<?> sections, BSession session) throws Exception {
+            FAEnteteFacture entFacture, Collection<?> sections, BSession session, BTransaction transaction)
+            throws Exception {
 
         // par defaut on rembourse.
         entFacture.setIdModeRecouvrement(FAEnteteFacture.CS_MODE_REMBOURSEMENT);

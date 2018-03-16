@@ -30,6 +30,7 @@ public class FAAfactManager extends globaz.globall.db.BManager implements java.i
     private java.lang.String forIdPassage = new String();
     private java.lang.String forIdRemarque = new String();
     private java.lang.String forIdRoleDebiteurCompensation = new String();
+    private String forIdRoleDebCom = new String();
 
     private java.lang.String forIdRubrique = new String();
 
@@ -209,6 +210,13 @@ public class FAAfactManager extends globaz.globall.db.BManager implements java.i
             }
             sqlWhere += "FAAFACP.IDROLEDEBITEURCOMPENSATION="
                     + this._dbWriteNumeric(statement.getTransaction(), getForIdRoleDebiteurCompensation());
+        }
+
+        if (getForIdRoleDebCom().length() != 0) {
+            if (sqlWhere.length() != 0) {
+                sqlWhere += " AND ";
+            }
+            sqlWhere += "FAAFACP.IDROLDEBCOM=" + this._dbWriteNumeric(statement.getTransaction(), getForIdRoleDebCom());
         }
 
         if (getForIdExterneDebiteurCompensation().length() != 0) {
@@ -647,6 +655,14 @@ public class FAAfactManager extends globaz.globall.db.BManager implements java.i
 
     public void setForMontant(java.lang.String forMontant) {
         this.forMontant = forMontant;
+    }
+
+    public String getForIdRoleDebCom() {
+        return forIdRoleDebCom;
+    }
+
+    public void setForIdRoleDebCom(String forIdRoleDebCom) {
+        this.forIdRoleDebCom = forIdRoleDebCom;
     }
 
     /**

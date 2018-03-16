@@ -167,7 +167,8 @@ public class FAPassageRemboursementProcess extends FAGenericProcess {
     }
 
     protected void fixIdForModeRecouvrement(CACompteAnnexe compteAnnexe, IFAPassage passage,
-            FAEnteteFacture entFacture, Collection<?> sections, BSession session) throws Exception {
+            FAEnteteFacture entFacture, Collection<?> sections, BSession session, BTransaction transaction)
+            throws Exception {
 
         // par defaut on rembourse.
         entFacture.setIdModeRecouvrement(FAEnteteFacture.CS_MODE_REMBOURSEMENT);
@@ -331,7 +332,8 @@ public class FAPassageRemboursementProcess extends FAGenericProcess {
                                 Collection<?> sections = compteAnnexe
                                         .getListeSections(APICompteAnnexe.PC_ORDRE_PLUS_ANCIEN);
 
-                                fixIdForModeRecouvrement(compteAnnexe, passage, entFacture, sections, session);
+                                fixIdForModeRecouvrement(compteAnnexe, passage, entFacture, sections, session,
+                                        transaction);
 
                                 // if
                                 // (compteAnnexe.isASurveiller().booleanValue()
