@@ -4107,9 +4107,12 @@ public class RFGenererDecisionMainService extends RFAbstractDocumentOO implement
             throws PropertiesException {
         // Concerne uniquement la CCVD et AGLA
         try {
-            if (RFGenererDecisionMainService.NO_CAISSE_CCVD_AGLA.equals(CommonProperties.KEY_NO_CAISSE.getValue())
-                    && isComptaProcess) {
-                docInfo.setOwnerId(decisionDocument.getGestionnaire());
+            if (RFGenererDecisionMainService.NO_CAISSE_CCVD_AGLA.equals(CommonProperties.KEY_NO_CAISSE.getValue())) {
+                if (isComptaProcess) {
+                    docInfo.setOwnerId(decisionDocument.getGestionnaire());
+                } else {
+                    docInfo.setOwnerId(getSession().getUserId());
+                }
             }
         } catch (PropertiesException e) {
             getSession().addError(getSession().getLabel("PROCESS_VALIDER_DECISION_PROPRIETE_INTROUVABLE"));
