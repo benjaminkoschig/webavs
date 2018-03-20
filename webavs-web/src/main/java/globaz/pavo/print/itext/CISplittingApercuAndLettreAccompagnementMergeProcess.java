@@ -29,6 +29,7 @@ public class CISplittingApercuAndLettreAccompagnementMergeProcess extends BProce
     private String langueISOExConjoint = "";
     private String numeroAVSAssure = "";
     private String numeroAVSExConjoint = "";
+    private Boolean cache = false;
 
     @Override
     protected void _executeCleanUp() {
@@ -39,78 +40,82 @@ public class CISplittingApercuAndLettreAccompagnementMergeProcess extends BProce
     @Override
     protected boolean _executeProcess() throws Exception {
 
-        JadePublishDocumentInfo theMergedDocInfo = createDocumentInfo();
-        try {
+        if (!cache) {
 
-            if (getChkLettreAccompagnementAssure()) {
+            JadePublishDocumentInfo theMergedDocInfo = createDocumentInfo();
+            try {
 
-                CISplittingLettreAccompagnement_Doc lettreAccompagnementAssureDoc = new CISplittingLettreAccompagnement_Doc();
-                lettreAccompagnementAssureDoc.setParentWithCopy(this);
-                lettreAccompagnementAssureDoc.setNumeroAVS(getNumeroAVSAssure());
-                lettreAccompagnementAssureDoc.setFormulePolitesse(getFormulePolitesseAssure());
-                lettreAccompagnementAssureDoc.setAdresse(getAdresseAssure());
-                lettreAccompagnementAssureDoc.setLangueISO(getLangueISOAssure());
+                if (getChkLettreAccompagnementAssure()) {
 
-                lettreAccompagnementAssureDoc.executeProcess();
-                registerDocuments(lettreAccompagnementAssureDoc.getAttachedDocuments());
+                    CISplittingLettreAccompagnement_Doc lettreAccompagnementAssureDoc = new CISplittingLettreAccompagnement_Doc();
+                    lettreAccompagnementAssureDoc.setParentWithCopy(this);
+                    lettreAccompagnementAssureDoc.setNumeroAVS(getNumeroAVSAssure());
+                    lettreAccompagnementAssureDoc.setFormulePolitesse(getFormulePolitesseAssure());
+                    lettreAccompagnementAssureDoc.setAdresse(getAdresseAssure());
+                    lettreAccompagnementAssureDoc.setLangueISO(getLangueISOAssure());
+
+                    lettreAccompagnementAssureDoc.executeProcess();
+                    registerDocuments(lettreAccompagnementAssureDoc.getAttachedDocuments());
+                }
+
+                if (getChkLettreAccompagnementExConjoint()) {
+
+                    CISplittingLettreAccompagnement_Doc lettreAccompagnementExConjointDoc = new CISplittingLettreAccompagnement_Doc();
+                    lettreAccompagnementExConjointDoc.setParentWithCopy(this);
+                    lettreAccompagnementExConjointDoc.setNumeroAVS(getNumeroAVSExConjoint());
+                    lettreAccompagnementExConjointDoc.setFormulePolitesse(getFormulePolitesseExConjoint());
+                    lettreAccompagnementExConjointDoc.setAdresse(getAdresseExConjoint());
+                    lettreAccompagnementExConjointDoc.setLangueISO(getLangueISOExConjoint());
+
+                    lettreAccompagnementExConjointDoc.executeProcess();
+                    registerDocuments(lettreAccompagnementExConjointDoc.getAttachedDocuments());
+                }
+
+                CI_Spliting apercuSplittingDoc = new CI_Spliting();
+                apercuSplittingDoc.setParentWithCopy(this);
+
+                if (!JadeStringUtil.isIntegerEmpty(getIdAnnonceAssure())) {
+                    apercuSplittingDoc.setIdAnnonceAssure(getIdAnnonceAssure());
+                }
+
+                if (!JadeStringUtil.isIntegerEmpty(getIdAnnonceExConjoint())) {
+                    apercuSplittingDoc.setIdAnnonceConjoint(getIdAnnonceExConjoint());
+                }
+
+                apercuSplittingDoc.setNumeroAVSAssure(getNumeroAVSAssure());
+                apercuSplittingDoc.setNumeroAVSExConjoint(getNumeroAVSExConjoint());
+                apercuSplittingDoc.setAdresseAssure(getAdresseAssure());
+                apercuSplittingDoc.setAdresseExConjoint(getAdresseExConjoint());
+                apercuSplittingDoc.setCheck(isCheck());
+                apercuSplittingDoc.setLangueISO(getLangueISOAssure());
+                apercuSplittingDoc.setLangueISOConjoint(getLangueISOExConjoint());
+
+                apercuSplittingDoc.executeProcess();
+                registerDocuments(apercuSplittingDoc.getAttachedDocuments());
+
+                theMergedDocInfo.setPublishDocument(true);
+                this.mergePDF(theMergedDocInfo, true, 0, false, null);
+
+            } catch (Exception e) {
+
+                getSession().addError(
+                        getSession().getLabel("DOCUMENT_IMPRESSION_PROBLEME") + " : " + this.getClass().getName()
+                                + " : " + e.toString());
+
+                getMemoryLog().logMessage(
+                        getSession().getLabel("DOCUMENT_IMPRESSION_PROBLEME") + " : " + this.getClass().getName()
+                                + " : " + e.toString(), FWMessage.ERREUR, this.getClass().getName());
+
+                if (theMergedDocInfo != null) {
+                    theMergedDocInfo.setDocumentNotes(getMemoryLog().getMessagesInString());
+                }
+
+                return false;
             }
 
-            if (getChkLettreAccompagnementExConjoint()) {
-
-                CISplittingLettreAccompagnement_Doc lettreAccompagnementExConjointDoc = new CISplittingLettreAccompagnement_Doc();
-                lettreAccompagnementExConjointDoc.setParentWithCopy(this);
-                lettreAccompagnementExConjointDoc.setNumeroAVS(getNumeroAVSExConjoint());
-                lettreAccompagnementExConjointDoc.setFormulePolitesse(getFormulePolitesseExConjoint());
-                lettreAccompagnementExConjointDoc.setAdresse(getAdresseExConjoint());
-                lettreAccompagnementExConjointDoc.setLangueISO(getLangueISOExConjoint());
-
-                lettreAccompagnementExConjointDoc.executeProcess();
-                registerDocuments(lettreAccompagnementExConjointDoc.getAttachedDocuments());
-            }
-
-            CI_Spliting apercuSplittingDoc = new CI_Spliting();
-            apercuSplittingDoc.setParentWithCopy(this);
-
-            if (!JadeStringUtil.isIntegerEmpty(getIdAnnonceAssure())) {
-                apercuSplittingDoc.setIdAnnonceAssure(getIdAnnonceAssure());
-            }
-
-            if (!JadeStringUtil.isIntegerEmpty(getIdAnnonceExConjoint())) {
-                apercuSplittingDoc.setIdAnnonceConjoint(getIdAnnonceExConjoint());
-            }
-
-            apercuSplittingDoc.setNumeroAVSAssure(getNumeroAVSAssure());
-            apercuSplittingDoc.setNumeroAVSExConjoint(getNumeroAVSExConjoint());
-            apercuSplittingDoc.setAdresseAssure(getAdresseAssure());
-            apercuSplittingDoc.setAdresseExConjoint(getAdresseExConjoint());
-            apercuSplittingDoc.setCheck(isCheck());
-            apercuSplittingDoc.setLangueISO(getLangueISOAssure());
-            apercuSplittingDoc.setLangueISOConjoint(getLangueISOExConjoint());
-
-            apercuSplittingDoc.executeProcess();
-            registerDocuments(apercuSplittingDoc.getAttachedDocuments());
-
-            theMergedDocInfo.setPublishDocument(true);
-            this.mergePDF(theMergedDocInfo, true, 0, false, null);
-
-        } catch (Exception e) {
-
-            getSession().addError(
-                    getSession().getLabel("DOCUMENT_IMPRESSION_PROBLEME") + " : " + this.getClass().getName() + " : "
-                            + e.toString());
-
-            getMemoryLog().logMessage(
-                    getSession().getLabel("DOCUMENT_IMPRESSION_PROBLEME") + " : " + this.getClass().getName() + " : "
-                            + e.toString(), FWMessage.ERREUR, this.getClass().getName());
-
-            if (theMergedDocInfo != null) {
-                theMergedDocInfo.setDocumentNotes(getMemoryLog().getMessagesInString());
-            }
-
-            return false;
+            return !(isAborted() || isOnError() || getSession().hasErrors());
         }
-
-        return !(isAborted() || isOnError() || getSession().hasErrors());
+        return false;
 
     }
 
@@ -132,6 +137,10 @@ public class CISplittingApercuAndLettreAccompagnementMergeProcess extends BProce
 
     @Override
     protected String getEMailObject() {
+
+        if (cache) {
+            return getSession().getLabel("APERCU_SPLITTING_EMAIL_SUBJECT_DROIT_INSUFFISANT");
+        }
 
         if (!isAborted() && !isOnError() && !getSession().hasErrors()) {
             return getSession().getLabel("APERCU_SPLITTING_EMAIL_SUBJECT_SUCCES");
@@ -231,6 +240,14 @@ public class CISplittingApercuAndLettreAccompagnementMergeProcess extends BProce
 
     public void setNumeroAVSExConjoint(String numeroAVSExConjoint) {
         this.numeroAVSExConjoint = numeroAVSExConjoint;
+    }
+
+    public Boolean getCache() {
+        return cache;
+    }
+
+    public void setCache(Boolean cache) {
+        this.cache = cache;
     }
 
 }

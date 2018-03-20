@@ -25,6 +25,7 @@ import globaz.naos.util.AFUtil;
 import globaz.pavo.application.CIApplication;
 import globaz.pavo.db.compte.CICompteIndividuel;
 import globaz.pavo.db.compte.CICompteIndividuelManager;
+import globaz.pavo.db.compte.CIEcritureManager;
 import globaz.pavo.db.inscriptions.CIRemarque;
 import globaz.pavo.print.itext.CIAnalyseSplitting;
 import globaz.pavo.print.itext.CISplittingAccuseReception_Doc;
@@ -1358,6 +1359,9 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
             throw new CISplittingException(getSession().getLabel("MSG_DOSSIER_APERCU"));
         }
 
+        boolean isRevenuCache = isRevenuCache(getSession().getUserId(), getIdTiersAssure())
+                || isRevenuCache(getSession().getUserId(), getIdTiersConjoint());
+
         String refUniqueAssure = null;
         String refUniqueConjoint = null;
         // assuré
@@ -1366,11 +1370,13 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
         mandats.setForIdTiersPartenaire(getIdTiersAssure());
         mandats.setSession(getSession());
         mandats.find();
+
         for (int i = 0; (i < mandats.size()) && (refUniqueAssure == null); i++) {
             CIMandatSplitting entity = (CIMandatSplitting) mandats.getEntity(i);
             if (entity.isMandatAutomatique()) {
                 refUniqueAssure = entity.getIdArc();
             }
+
         }
         // conjoint
         mandats = new CIMandatSplittingManager();
@@ -1378,6 +1384,7 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
         mandats.setForIdTiersPartenaire(getIdTiersConjoint());
         mandats.setSession(getSession());
         mandats.find();
+
         for (int i = 0; (i < mandats.size()) && (refUniqueConjoint == null); i++) {
             CIMandatSplitting entity = (CIMandatSplitting) mandats.getEntity(i);
             if (entity.isMandatAutomatique()) {
@@ -1386,6 +1393,9 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
         }
 
         CISplittingApercuAndLettreAccompagnementMergeProcess apercuAndLettreAccompagnementMergeProcess = new CISplittingApercuAndLettreAccompagnementMergeProcess();
+
+        apercuAndLettreAccompagnementMergeProcess.setCache(isRevenuCache);
+
         apercuAndLettreAccompagnementMergeProcess.setSession(getSession());
         apercuAndLettreAccompagnementMergeProcess.setEMailAddress(email);
 
@@ -1448,6 +1458,76 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
         apercuAndLettreAccompagnementMergeProcess.setLangueISOExConjoint(theLangueISOExConjoint);
 
         apercuAndLettreAccompagnementMergeProcess.start();
+    }
+
+    public boolean isRevenuCache(String userId, String numAvs) {
+
+        try {
+            return isRevenuCache(userId, getSession(), numAvs);
+        } catch (Exception e) {
+            setMessage(e.getMessage());
+            e.printStackTrace();
+        }
+
+        return true;
+    }
+
+    public boolean isRevenuCache(String userId, BSession session, String numAVS) {
+        try {
+            // non on n'a pas déjà demandé le revenu pour cet instance
+            // recherche du compte individuel en relation avec l'annonce
+            CICompteIndividuelManager ciRecherche = new CICompteIndividuelManager();
+            // création d'une nouvelle session
+
+            BTransaction newTrans = null;
+            try {
+                newTrans = new BTransaction(session);
+                newTrans.openTransaction();
+                // recherche du ci avec ce numéro avs
+                ciRecherche.setSession(session);
+                ciRecherche.setForNumeroAvs(numAVS);
+                ciRecherche.find(newTrans);
+                if (ciRecherche.size() != 0) {
+                    // on a trouvé le ci dans PAVO !
+                    CICompteIndividuel ci = (CICompteIndividuel) ciRecherche.getEntity(0);
+                    // faire une nouvelle transaction
+                    if (ci.hasUserShowRight(newTrans, userId)
+                            && !existEcritureACacher(session, ci.getCompteIndividuelId())) {
+                        // l'utilisateur a les droits pour voir le revenu
+                        return false;
+                    } else {
+                        // l'utilisateur loggé n'a pas les droits
+                        return true;
+                    }
+                } else {
+                    // si le ci n'existe pas, on retourne le revenu
+                    return false;
+                }
+            } catch (Exception e) {
+                // _addError(newTrans, newTrans.getErrors().toString());
+                throw (e);
+            } finally {
+                if (newTrans != null) {
+                    newTrans.closeTransaction();
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return true;
+        }
+    }
+
+    private boolean existEcritureACacher(BSession session, String idCi) throws Exception {
+        boolean existEcritureACacher = false;
+        CIEcritureManager ecritureManager = new CIEcritureManager();
+        ecritureManager.setCacherEcritureProtege(1);
+        ecritureManager.setSession(session);
+        ecritureManager.setForCompteIndividuelId(idCi);
+        ecritureManager.find();
+        if ((ecritureManager.size() != 0) && ecritureManager.hasEcritureProtegeParAffiliation()) {
+            existEcritureACacher = true;
+        }
+        return existEcritureACacher;
     }
 
     public void imprimerApercuAndInvit() {

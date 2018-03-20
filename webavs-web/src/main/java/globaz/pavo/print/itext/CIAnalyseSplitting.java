@@ -40,6 +40,7 @@ public class CIAnalyseSplitting extends FWIDocumentManager {
     private String refAssure = "";
 
     private String refConjoint = "";
+    private boolean secureDenied = false;
 
     public CIAnalyseSplitting() throws Exception {
         this(new BSession(CIApplication.DEFAULT_APPLICATION_PAVO));
@@ -153,6 +154,10 @@ public class CIAnalyseSplitting extends FWIDocumentManager {
                 // années jeunesse et rente
                 CICompteIndividuel ci = ciManager.getCIRegistreAssures(dossier.getIdTiersAssure(), getTransaction());
                 if (ci != null) {
+                    if (!ci.hasUserShowRight(getTransaction())) {
+                        secureDenied = true;
+                        throw new Exception();
+                    }
                     if (BSessionUtil.compareDateFirstLowerOrEqual(getSession(),
                             "01.01." + String.valueOf(cumul.getAnnee().intValue() - 20), ci.getDateNaissance())) {
                         rci.setPeriodeJeunesseAssure(true);
@@ -201,6 +206,10 @@ public class CIAnalyseSplitting extends FWIDocumentManager {
                     CICompteIndividuel ci = ciManager.getCIRegistreAssures(dossier.getIdTiersConjoint(),
                             getTransaction());
                     if (ci != null) {
+                        if (!ci.hasUserShowRight(getTransaction())) {
+                            secureDenied = true;
+                            throw new Exception();
+                        }
                         if (BSessionUtil.compareDateFirstLowerOrEqual(getSession(),
                                 "01.01." + String.valueOf(cumul.getAnnee().intValue() - 20), ci.getDateNaissance())) {
                             rci.setPeriodeJeunesseConjoint(true);
@@ -415,6 +424,16 @@ public class CIAnalyseSplitting extends FWIDocumentManager {
             return true;
         }
         return false;
+    }
+
+    @Override
+    protected String getEMailObject() {
+        if (secureDenied) {
+            return getSession().getLabel("APERCU_SPLITTING_EMAIL_SUBJECT_DROIT_INSUFFISANT");
+        } else {
+            return super.getEMailObject();
+        }
+
     }
 
     /**
