@@ -34,6 +34,7 @@ import ch.globaz.pegasus.rpc.plausi.intra.pi046.RpcPlausiPI046;
 import ch.globaz.pegasus.rpc.plausi.intra.pi049.RpcPlausiPI049;
 import ch.globaz.pegasus.rpc.plausi.intra.pi064.RpcPlausiPI064;
 import ch.globaz.pegasus.rpc.plausi.simple.ps010.RpcPlausiPS010;
+import ch.globaz.pegasus.rpc.plausi.simple.ps011.RpcPlausiPS011;
 
 public class PlausiContainer {
 
@@ -63,6 +64,7 @@ public class PlausiContainer {
 
         listMetier.add(new RpcPlausiPI004());
         listMetier.add(new RpcPlausiPS010());
+        listMetier.add(new RpcPlausiPS011());
         listMetier.add(new RpcPlausiPI023());
         listMetier.add(new RpcPlausiPI024());
         listMetier.add(new RpcPlausiPI025(new Montant(19290), new Montant(28935), new Montant(19290),
