@@ -1359,8 +1359,8 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
             throw new CISplittingException(getSession().getLabel("MSG_DOSSIER_APERCU"));
         }
 
-        boolean isRevenuCache = isRevenuCache(getSession().getUserId(), getIdTiersAssure())
-                || isRevenuCache(getSession().getUserId(), getIdTiersConjoint());
+        boolean hasRight = hasRight(getSession().getUserId(), getIdTiersAssure())
+                || hasRight(getSession().getUserId(), getIdTiersConjoint());
 
         String refUniqueAssure = null;
         String refUniqueConjoint = null;
@@ -1394,7 +1394,7 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
 
         CISplittingApercuAndLettreAccompagnementMergeProcess apercuAndLettreAccompagnementMergeProcess = new CISplittingApercuAndLettreAccompagnementMergeProcess();
 
-        apercuAndLettreAccompagnementMergeProcess.setCache(isRevenuCache);
+        apercuAndLettreAccompagnementMergeProcess.setCache(hasRight);
 
         apercuAndLettreAccompagnementMergeProcess.setSession(getSession());
         apercuAndLettreAccompagnementMergeProcess.setEMailAddress(email);
@@ -1460,10 +1460,10 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
         apercuAndLettreAccompagnementMergeProcess.start();
     }
 
-    public boolean isRevenuCache(String userId, String numAvs) {
+    public boolean hasRight(String userId, String numAvs) {
 
         try {
-            return isRevenuCache(userId, getSession(), numAvs);
+            return hasRight(userId, getSession(), numAvs);
         } catch (Exception e) {
             setMessage(e.getMessage());
             e.printStackTrace();
@@ -1472,7 +1472,7 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
         return true;
     }
 
-    public boolean isRevenuCache(String userId, BSession session, String numAVS) {
+    public boolean hasRight(String userId, BSession session, String numAVS) {
         try {
             // non on n'a pas déjà demandé le revenu pour cet instance
             // recherche du compte individuel en relation avec l'annonce

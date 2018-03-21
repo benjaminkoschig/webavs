@@ -17,6 +17,7 @@ import globaz.globall.util.JACalendar;
 import globaz.globall.util.JAUtil;
 import globaz.hermes.utils.HEUtil;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.common.Jade;
 import globaz.jade.smtp.JadeSmtpClient;
 import globaz.naos.db.affiliation.AFAffiliation;
 import globaz.naos.util.AFUtil;
@@ -28,6 +29,7 @@ import globaz.pavo.util.CIUtil;
 import globaz.pyxis.db.tiers.TIAdministrationManager;
 import globaz.pyxis.db.tiers.TIAdministrationViewBean;
 import java.lang.reflect.Method;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -66,6 +68,7 @@ public class CICompteIndividuel extends BEntity {
     public static int FROM_RETRIEVE = 0;
     //
     public final static String SECURITE_LABEL = "SecureCode";
+    public final static String CS_ACCESS = "31700";
 
     /**
      * Charge le CI du tiers donné. Date de création : (15.11.2002 08:39:41)
@@ -647,7 +650,7 @@ public class CICompteIndividuel extends BEntity {
 
     /**
 
-	 */
+     */
     @Override
     protected void _writePrimaryKey(BStatement statement) throws Exception {
         statement.writeKey("KAIIND", this._dbWriteNumeric(statement.getTransaction(), getCompteIndividuelId(), ""));
@@ -2167,7 +2170,8 @@ public class CICompteIndividuel extends BEntity {
                 if (!user.isNew()) {
                     int accesUser = Integer.parseInt(user.getData());
                     int accesCI = Character.getNumericValue(getAccesSecurite().charAt(getAccesSecurite().length() - 1));
-                    if (accesUser < accesCI) {
+                    boolean accesAff = checkAffSecureCode(transaction, CS_ACCESS + accesUser);
+                    if ((accesUser < accesCI) || !accesAff) {
                         // sécurité utilisateur inférieure -> -> ecriture cachée
                         return false;
                     }
@@ -2185,6 +2189,28 @@ public class CICompteIndividuel extends BEntity {
             // si exception -> ecriture cachée
             return false;
         }
+    }
+
+    private boolean checkAffSecureCode(BTransaction transaction, String codeSecure) throws Exception {
+        BTransaction transactionSecureCode = null;
+
+        ResultSet resultSet = null;
+        BStatement psCheckAffSecureCode = new BStatement(transaction);
+        psCheckAffSecureCode.createStatement();
+        resultSet = psCheckAffSecureCode.executeQuery("SELECT count(*) as COUNT from "
+                + Jade.getInstance().getDefaultJdbcSchema() + ".CIECRIP ecr inner join "
+                + Jade.getInstance().getDefaultJdbcSchema() + ".CIINDIP ci on ecr.KAIIND=ci.KAIIND inner join "
+                + Jade.getInstance().getDefaultJdbcSchema() + ".AFAFFIP aff on ecr.KBITIE=aff.MAIAFF "
+                + "WHERE ci.KAIIND=" + getCompteIndividuelId() + " and aff.MATSEC<" + codeSecure);
+        resultSet.next();
+        String x = resultSet.getObject(1).toString();
+
+        if (Integer.parseInt(resultSet.getString(1)) > 0) {
+            return true;
+        } else {
+            return false;
+        }
+
     }
 
     public Boolean isCiOuvert() {
