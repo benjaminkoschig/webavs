@@ -1645,7 +1645,7 @@ public class AFIDEUtil {
 
     private static AFIdeAnnonce createNewAnnonce(BSession session, String typeAnnonce, AFAffiliation affiliation,
             AFCotisation cotisation) throws Exception {
-        if (AFProperties.ANNONCE_GENERER.getBooleanValue()) {
+        if (AFProperties.ANNONCE_GENERER.getBooleanValue() && createAnnonceForNonAnnoncante(typeAnnonce, affiliation)) {
 
             deleteTypeAnnonceEnCours(session, typeAnnonce, affiliation);
 
@@ -1670,6 +1670,16 @@ public class AFIDEUtil {
             return annonce;
         }
         return null;
+    }
+
+    private static boolean createAnnonceForNonAnnoncante(String typeAnnonce, AFAffiliation affiliation) {
+        if (!affiliation.isIdeNonAnnoncante()
+                || CodeSystem.TYPE_ANNONCE_IDE_DESENREGISTREMENT_PASSIF.equals(typeAnnonce)
+                || CodeSystem.TYPE_ANNONCE_IDE_ENREGISTREMENT_PASSIF.equals(typeAnnonce)) {
+            return true;
+        }
+        return false;
+
     }
 
     // ***********************************************************
