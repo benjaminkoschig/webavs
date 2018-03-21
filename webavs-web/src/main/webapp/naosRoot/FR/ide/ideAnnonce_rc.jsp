@@ -52,7 +52,11 @@ function postInit() {
 	
 	if(viewBeanFind != null) {
 		likeNumeroIde = viewBeanFind.getLikeNumeroIde();
-		likeNumAffilie = viewBeanFind.getLikeNumeroAffilie();
+		if(numAffilie != null ) {
+		    likeNumAffilie = numAffilie;
+		} else {
+			likeNumAffilie = viewBeanFind.getLikeNumeroAffilie();
+		}
 		likeRaisonSociale = viewBeanFind.getLikeRaisonSociale();
 		forStatut = viewBeanFind.getForStatut();
 		fromDateCreation = viewBeanFind.getFromDateCreation();
