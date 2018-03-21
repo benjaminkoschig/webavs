@@ -460,6 +460,65 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
     }
 
     @Override
+    public Droit corrigerDroitAnnulation(Droit droit, String dateAnnonce, String dateSuppression, String dateDecision,
+            String currentUserId, boolean comptabilisationAuto, String mailAdressCompta) throws DroitException,
+            JadePersistenceException, JadeApplicationServiceNotAvailableException {
+
+        BSession session = BSessionUtil.getSessionFromThreadContext();
+
+        // vérifier les paramètres d'entrées
+        Checkers.checkNotNull(droit, "droit");
+
+        if (JadeStringUtil.isBlankOrZero(currentUserId)) {
+            throw new IllegalArgumentException(session.getLabel("DROIT_VALIDE_UTILISATEUR"));
+        }
+
+        // vérification du droit
+        DroitChecker.checkForCorriger(droit);
+
+        // création de la nouvelle version du droit
+        SimpleVersionDroit newVersionDroit = new SimpleVersionDroit();
+        newVersionDroit.setIdDroit(droit.getId());
+        newVersionDroit
+                .setNoVersion(String.valueOf(Integer.parseInt(droit.getSimpleVersionDroit().getNoVersion()) + 1));
+        newVersionDroit.setDateAnnonce(dateAnnonce);
+        newVersionDroit.setCsMotif(IPCDroits.CS_MOTIF_DROIT_MODIFICATIONS_DIVERSES);
+        newVersionDroit.setCsEtatDroit(IPCDroits.CS_ANNULE);
+        droit.setSimpleVersionDroit(newVersionDroit);
+        droit.setSimpleVersionDroit(PegasusImplServiceLocator.getSimpleVersionDroitService().create(newVersionDroit));
+
+        // création de la décision de suppression
+        DecisionSuppression decisionSuppression = new DecisionSuppression();
+        decisionSuppression.getSimpleDecisionSuppression().setIdDecisionSuppression(droit.getId());
+        decisionSuppression.getDecisionHeader().getSimpleDecisionHeader().setDateDecision(dateDecision);
+        decisionSuppression.getSimpleDecisionSuppression().setCsMotif(IPCDecision.CS_MOTIF_SUPP_TEXTE_LIBRE);
+        decisionSuppression.getSimpleDecisionSuppression().setDateSuppression(dateSuppression);
+        decisionSuppression.getDecisionHeader().getSimpleDecisionHeader().setPreparationPar(currentUserId);
+        decisionSuppression.setVersionDroit(PegasusServiceLocator.getDroitService().readVersionDroit(
+                droit.getSimpleVersionDroit().getIdVersionDroit()));
+        decisionSuppression.getSimpleDecisionSuppression().setIsRestitution(false);
+        try {
+            decisionSuppression = PegasusServiceLocator.getDecisionSuppressionService().create(decisionSuppression,
+                    false);
+        } catch (Exception e) {
+            throw new DroitException("unable to create decision de suppression, an error occurred while creating", e);
+        }
+
+        // validation de la décision de suppression
+        decisionSuppression.getDecisionHeader().getSimpleDecisionHeader().setValidationPar(currentUserId);
+        decisionSuppression.getDecisionHeader().getSimpleDecisionHeader()
+                .setDateValidation(JadeDateUtil.getGlobazFormattedDate(new Date()));
+        try {
+            PegasusServiceLocator.getValidationDecisionService().validerDecisionSuppression(decisionSuppression,
+                    comptabilisationAuto, mailAdressCompta, true);
+        } catch (Exception e) {
+            throw new DroitException("unable to valid decision de suppression an error occured while validating", e);
+        }
+
+        return droit;
+    }
+
+    @Override
     public int count(DroitSearch search) throws DroitException, JadePersistenceException {
         if (search == null) {
             throw new DroitException("Unable to count dossiers, the search model passed is null!");

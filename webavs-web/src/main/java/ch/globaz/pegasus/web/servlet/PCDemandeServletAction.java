@@ -86,8 +86,11 @@ public class PCDemandeServletAction extends PCAbstractServletAction {
     protected String _getDestModifierEchec(HttpSession session, HttpServletRequest request,
             HttpServletResponse response, FWViewBeanInterface viewBean) {
         PCDemandeDetailViewBean vb = (PCDemandeDetailViewBean) viewBean;
+        idDossier = request.getParameter("idDossier");
+        String selectedId = request.getParameter("idDemandePc");
         vb.getDemande().getDossier().setId(idDossier);
-        return super._getDestModifierEchec(session, request, response, viewBean);
+        return "/" + getAction().getApplicationPart() + "?userAction=" + getAction().getApplicationPart() + "."
+                + getAction().getPackagePart() + "." + "demandeDetail" + ".reAfficher&_method=modify";
     }
 
     /*
@@ -131,9 +134,12 @@ public class PCDemandeServletAction extends PCAbstractServletAction {
     @Override
     protected void actionReAfficher(HttpSession session, HttpServletRequest request, HttpServletResponse response,
             FWDispatcher mainDispatcher) throws javax.servlet.ServletException, java.io.IOException {
-        String processLaunchedStr = request.getParameter("process");
+        String processLaunchedStr = request.getParameter("idDossier");
         boolean processSeemsOk = "launched".equals(processLaunchedStr);
-        String validFail = processSeemsOk ? "" : "?_valid=fail&_method=add";
+        String method = request.getParameter("_method");
+        String validFail = processSeemsOk ? "" : "modify".equals(method) ? "?_valid=fail&_method=upd"
+                : "?_valid=fail&_method=add";
+
         servlet.getServletContext().getRequestDispatcher(getRelativeURL(request, session) + "_de.jsp" + validFail)
                 .forward(request, response);
     }

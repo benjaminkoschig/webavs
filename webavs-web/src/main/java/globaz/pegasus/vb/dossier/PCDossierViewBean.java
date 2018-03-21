@@ -116,7 +116,7 @@ public class PCDossierViewBean extends BJadePersistentObjectViewBean {
         }
         if ((IPCDemandes.CS_RENONCE.equals(cs_etat)) || (IPCDemandes.CS_SUPPRIME.equals(cs_etat))
                 || (IPCDemandes.CS_TRANSFERE.equals(cs_etat)) || (IPCDemandes.CS_REFUSE.equals(cs_etat))
-                || IPCDemandes.CS_REOUVERT.equals(cs_etat)) {
+                || IPCDemandes.CS_REOUVERT.equals(cs_etat) || IPCDemandes.CS_ANNULE.equals(cs_etat)) {
             img = "small_error.png";
         }
         // il faut tenir compt de la révision
@@ -162,6 +162,9 @@ public class PCDossierViewBean extends BJadePersistentObjectViewBean {
         // il faut tenir compt de la révision
         if (IPCDemandes.CS_REVISION.equals(cs_etat)) {
             infobulle = getSession().getLabel("JSP_PC_DOS_L_ETAT_GEN_EN_REVISION");
+        }
+        if (IPCDemandes.CS_ANNULE.equals(cs_etat)) {
+            infobulle = getSession().getLabel("JSP_PC_DOS_L_ETAT_GEN_ANNULE");
         }
         return infobulle;
     }

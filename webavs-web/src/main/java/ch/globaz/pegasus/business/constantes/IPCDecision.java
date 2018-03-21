@@ -39,6 +39,7 @@ public interface IPCDecision {
     public final static String CS_MOTIF_SUPPRESSION_DECES = "64045015";
     public final static String CS_MOTIF_SUPPRESSION_TRANSFERT_DOSSIER = "64045014";
     public final static String CS_MOIF_REFUS_RENONCIATION = "64043013";
+
     // motifs transfert
     public final static String CS_MOTIF_TRANSFERT_SUPPRESSION_MAINLEVEE_TUTELLE = "64064002";
     public final static String CS_MOTIF_TRANSFERT_SUPPRESSION_NOMINATION_NOUVEAU_TUTEUR = "64064003";

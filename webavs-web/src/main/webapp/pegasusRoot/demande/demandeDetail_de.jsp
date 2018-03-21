@@ -59,6 +59,29 @@ boolean vBeanHasErrors = false;
 <HEAD>
 <SCRIPT type="text/javascript">
 var langue = "<%=languePage%>"; 
+
+var showConfirmDialogAnnulation = function () {
+	
+	$( "#dialog-confirm-annulation" ).dialog({
+        resizable: false,
+        height:250,
+        width:500,
+        modal: true,
+        
+        buttons: {
+        	"<ct:FWLabel key='PROCESS_ADAPTATION_PC_OUI'/>": function() {
+                $( this ).dialog( "close" );
+                $('#comptabilisationAuto').val("true");
+        		action(COMMIT);
+            },
+            "<ct:FWLabel key='PROCESS_ADAPTATION_PC_NON'/>": function() {
+                $( this ).dialog( "close" );
+                $('#comptabilisationAuto').val("false");
+                action(COMMIT);
+            }
+        }
+    });
+};
 </SCRIPT>
 <% /*
 	Pour utiliser les postit, changez la valeur de la variable "key" (définie ci-dessus).
@@ -107,6 +130,9 @@ var langue = "<%=languePage%>";
 
 	//bButtonValidate = !SimpleDemandeChecker.existeDemandeInVlalidEtatWithOutException(viewBean.getDemande().getSimpleDemande().getIdDossier());
 	bButtonDelete = !SimpleDemandeChecker.existDroitForDemandeWithOutException(viewBean.getDemande().getSimpleDemande());
+	boolean lotCompta = SimpleDemandeChecker.isLotAnnuleComptabilise(viewBean.getDemande().getSimpleDemande());
+	bButtonUpdate = bButtonUpdate & !lotCompta;
+	bButtonDelete = bButtonDelete & !lotCompta;
 	
 	if (viewBean.getDemande().isNew()) {
 		viewBean.getDemande().getSimpleDemande().setIsPurRetro(
@@ -123,8 +149,17 @@ var langue = "<%=languePage%>";
 <%-- tpl:put name="zoneBusiness" --%>
 <%-- /tpl:put --%>
 <%@ include file="/theme/detail/javascripts.jspf" %>
+<script type="text/javascript" src="<%=servletContext%><%=(mainServletPath+"Root")%>/scripts/demande/demandeDetail_de.js"/></script>
 <%-- tpl:put name="zoneScripts" --%>
 <style type="text/css">
+	#dialog-confirm-annulation{
+		display:none;
+	}
+	div #dialog-confirm-annulation, div #ui-dialog-title-dialog-confirm-annulation, .ui-dialog .ui-dialog-buttonpane BUTTON{
+ 	font-size: 1.3em;
+ }
+ 
+	
  td {
  		text-align: left;
  }
@@ -250,11 +285,18 @@ $(function(){
 
 	function validate() {
 	    state = true;
-	    if (actionMethod == "add"){
+	    
+		if($("#annule").is(':checked')) {
+			state = false;
+			showConfirmDialogAnnulation();
+		}
+
+		if (actionMethod == "add"){
 	    	userAction.value=ACTION_DEMANDE+".ajouter";
 	    }else{
 	    	userAction.value=ACTION_DEMANDE+".modifier";
 	    }
+		
 	    return state;
 	}    
 
@@ -281,7 +323,7 @@ $(function(){
 			<ct:FWLabel key="JSP_PC_DEM_D_TITRE"/>
 		<%-- /tpl:put --%>
 <%@ include file="/theme/detail/bodyStart2.jspf" %>
-<link rel="stylesheet" type="text/css" href="<%=servletContext%><%=(mainServletPath+"Root")%>/css/demande/detail.css"/>
+
 <%-- tpl:put name="zoneMain" --%>
 	<TR>
 	
@@ -289,6 +331,7 @@ $(function(){
 			<input type="hidden" name="idDossier" value="<%= viewBean.getDemande().getDossier().getId() %>" />
 			<input type="hidden" id="actionRouvrirDemande" name="actionRouvrirDemande" value="false" />
 			<input type="hidden" id="actionRefermerDemande" name="actionRefermerDemande" value="false" />
+			<input type="hidden" id="comptabilisationAuto" name="comptabilisationAuto" value="false" />
 			
 			<table width="90%">
 
@@ -331,6 +374,19 @@ $(function(){
 					<td colspan="5"><%= objSession.getCodeLibelle(viewBean.getDemande().getSimpleDemande().getCsEtatDemande()) %></td>
 				</tr>
 				<TR><TD colspan="6">&nbsp;<HR class="separator" ></TD></TR>
+				
+				<%if(IPCDemandes.CS_REFUSE.equals(viewBean.getDemande().getSimpleDemande().getCsEtatDemande()) 
+				        || IPCDemandes.CS_SUPPRIME.equals(viewBean.getDemande().getSimpleDemande().getCsEtatDemande())
+				        || IPCDemandes.CS_ANNULE.equals(viewBean.getDemande().getSimpleDemande().getCsEtatDemande())) {%> 
+				<tr>
+					<td class="standardLabel"><ct:FWLabel key="JSP_PC_DEM_D_FORCER_ANNULATION"/></td>
+					<td>
+						<input type="checkbox" name="annule" id="annule"
+				    		<%=IPCDemandes.CS_ANNULE.equals(viewBean.getDemande().getSimpleDemande().getCsEtatDemande())?" checked='checked' ":"" %> value="on">
+					</td>
+				</tr>
+				<TR><TD colspan="6">&nbsp;<HR class="separator" ></TD></TR>
+				<%}%> 
 				
 				<TR>
 					<TD class="standardLabel"><ct:FWLabel key="JSP_PC_DEM_D_TYPE_DEMANDE"/></TD>
@@ -394,6 +450,11 @@ $(function(){
 					</TD>
 				</TR>
 			</TABLE>
+			
+			<!-- **************************** Confirmation annulation  -->
+			<div id="dialog-confirm-annulation" title="<%= objSession.getLabel("JSP_PC_DECALCUL_D_CONFIRMATION_COMPTA_AUTO_TITRE")%>">
+    			<p><span class="ui-icon ui-icon-alert" style="float: left; margin: 0 7px 20px 0;"></span><%= objSession.getLabel("JSP_PC_DEM_D_FORCER_CONFIRMATION_COMPTA_AUTO")%></p>
+			</div>
 		</TD>
 	</TR>
 <%-- /tpl:put --%>

@@ -196,10 +196,14 @@ public class ValiderDecisionSuppression extends AbstractValiderDecision {
      * @throws JadeApplicationServiceNotAvailableException
      * @throws JadePersistenceException
      */
-    private void updateDroit() throws DroitException, JadeApplicationServiceNotAvailableException,
+    private void updateDroit(boolean isAnnulation) throws DroitException, JadeApplicationServiceNotAvailableException,
             JadePersistenceException {
         // Mise à jour des versionde droits
-        decisionSuppression.getVersionDroit().getSimpleVersionDroit().setCsEtatDroit(IPCDroits.CS_VALIDE);
+        if (isAnnulation) {
+            decisionSuppression.getVersionDroit().getSimpleVersionDroit().setCsEtatDroit(IPCDroits.CS_ANNULE);
+        } else {
+            decisionSuppression.getVersionDroit().getSimpleVersionDroit().setCsEtatDroit(IPCDroits.CS_VALIDE);
+        }
 
         decisionSuppression.getVersionDroit().setSimpleVersionDroit(
                 PegasusImplServiceLocator.getSimpleVersionDroitService().update(
@@ -242,13 +246,19 @@ public class ValiderDecisionSuppression extends AbstractValiderDecision {
      * @throws JadeCloneModelException
      * @throws JadeApplicationException
      */
-    private void updateOldPca() throws JadePersistenceException, DecisionException, JadeCloneModelException,
-            JadeApplicationException {
+    private void updateOldPca(boolean isAnnulation) throws JadePersistenceException, DecisionException,
+            JadeCloneModelException, JadeApplicationException {
         oldPcaSearch = new PCAccordeeSearch();
         oldPcaSearch.setForIdDroit(decisionSuppression.getVersionDroit().getSimpleDroit().getIdDroit());
         oldPcaSearch.setForDateValable(decisionSuppression.getSimpleDecisionSuppression().getDateSuppression());
         oldPcaSearch.setForNoVersionDroit(decisionSuppression.getVersionDroit().getSimpleVersionDroit().getNoVersion());
-        oldPcaSearch.setWhereKey(PCAccordeeSearch.FOR_PCA_REPLACEC_BY_DECISION_SUPPRESSION);
+        if (isAnnulation) {
+            oldPcaSearch.setForIsDeleted(false);
+            oldPcaSearch.setWhereKey(PCAccordeeSearch.FOR_PCA_REPLACEC_BY_DECISION_SUPPRESSION_ANNULATION);
+        } else {
+            oldPcaSearch.setWhereKey(PCAccordeeSearch.FOR_PCA_REPLACEC_BY_DECISION_SUPPRESSION);
+        }
+
         oldPcaSearch.setOrderKey("forDateDebutAsc");
         oldPcaSearch = PegasusServiceLocator.getPCAccordeeService().search(oldPcaSearch);
 
@@ -395,6 +405,21 @@ public class ValiderDecisionSuppression extends AbstractValiderDecision {
      */
     public String valider(DecisionSuppression decision, boolean forceCreateLotRestitution)
             throws JadePersistenceException, DecisionException, JadeCloneModelException, JadeApplicationException {
+        return valider(decision, forceCreateLotRestitution, false);
+    }
+
+    /**
+     * Point d'entrée publique pour la validation des décisions de suppression
+     * 
+     * @param decision
+     *            , la décision de suppression qui va être valider
+     * @throws JadePersistenceException
+     * @throws JadeApplicationException
+     * @throws JadeCloneModelException
+     * @throws DecisionException
+     */
+    public String valider(DecisionSuppression decision, boolean forceCreateLotRestitution, boolean isAnnulation)
+            throws JadePersistenceException, DecisionException, JadeCloneModelException, JadeApplicationException {
 
         // this.checkDecision(decision.getDecisionHeader().getSimpleDecisionHeader());
 
@@ -412,16 +437,18 @@ public class ValiderDecisionSuppression extends AbstractValiderDecision {
             updatePcaAndPrestations();
 
             // mise à jour des anciennes pca
-            updateOldPca();
+            updateOldPca(isAnnulation);
 
             // mise à jour de la demande
-            updateDemande();
+            if (!isAnnulation) {
+                updateDemande();
+            }
 
             // mise à jour du droit old
             updateOldDroit();
 
             // mise à jour du droit courant
-            updateDroit();
+            updateDroit(isAnnulation);
 
             // Si date de suppression antérieur à date dernier paiement, on crée prestations et OV, retro
             // if (!this.decisionSuppression.getSimpleDecisionSuppression().getDateSuppression()

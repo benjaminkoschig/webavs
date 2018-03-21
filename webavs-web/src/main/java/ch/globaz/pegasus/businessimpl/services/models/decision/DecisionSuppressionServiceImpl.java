@@ -117,11 +117,19 @@ public class DecisionSuppressionServiceImpl extends PegasusAbstractServiceImpl i
     @Override
     public DecisionSuppression create(DecisionSuppression decision) throws JadePersistenceException,
             JadeApplicationException, JadeCloneModelException {
+        return create(decision, true);
+    }
+
+    @Override
+    public DecisionSuppression create(DecisionSuppression decision, boolean checkForCreate)
+            throws JadePersistenceException, JadeApplicationException, JadeCloneModelException {
         if (decision == null) {
             throw new DecisionException("Unable to count, the search model passed is null!");
         }
 
-        DecisionSuppressionChecker.checkForCreate(decision);
+        if (checkForCreate) {
+            DecisionSuppressionChecker.checkForCreate(decision);
+        }
 
         try {
 

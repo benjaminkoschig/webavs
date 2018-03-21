@@ -99,13 +99,15 @@ public abstract class DroitChecker extends PegasusAbstractChecker {
             throw new DroitException("Unable to check, the etatDroit passed is null!");
         }
         return !IPCDroits.CS_VALIDE.equals(simpleVersionDroit.getCsEtatDroit())
-                && !IPCDroits.CS_HISTORISE.equals(simpleVersionDroit.getCsEtatDroit());
+                && !IPCDroits.CS_HISTORISE.equals(simpleVersionDroit.getCsEtatDroit())
+                && !IPCDroits.CS_ANNULE.equals(simpleVersionDroit.getCsEtatDroit());
     }
 
     public static boolean isDroitMembrefamilleSynchronisableWithOutException(Droit droit) {
         if ((Integer.valueOf(droit.getSimpleVersionDroit().getNoVersion()) > 1)
                 || IPCDroits.CS_VALIDE.equals(droit.getSimpleVersionDroit().getCsEtatDroit())
-                || IPCDroits.CS_HISTORISE.equals(droit.getSimpleVersionDroit().getCsEtatDroit())) {
+                || IPCDroits.CS_HISTORISE.equals(droit.getSimpleVersionDroit().getCsEtatDroit())
+                || IPCDroits.CS_ANNULE.equals(droit.getSimpleVersionDroit().getCsEtatDroit())) {
             return false;
         } else {
             return true;
