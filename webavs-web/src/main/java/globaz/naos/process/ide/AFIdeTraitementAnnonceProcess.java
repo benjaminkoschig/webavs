@@ -1,12 +1,5 @@
 package globaz.naos.process.ide;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import ch.globaz.common.properties.PropertiesException;
-import ch.globaz.common.sql.QueryExecutor;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.util.FWMessage;
 import globaz.framework.util.FWMessageFormat;
@@ -41,6 +34,13 @@ import globaz.webavs.common.CommonExcelmlUtils;
 import idech.admin.bit.xmlns.uid_wse_shared._1.RegisterDeregisterStatus;
 import idech.admin.uid.xmlns.uid_wse.ArrayOfUidStructureType;
 import idech.admin.uid.xmlns.uid_wse.IPartnerServices;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import ch.globaz.common.properties.PropertiesException;
+import ch.globaz.common.sql.QueryExecutor;
 
 public class AFIdeTraitementAnnonceProcess extends BProcess implements FWViewBeanInterface {
 
@@ -128,8 +128,8 @@ public class AFIdeTraitementAnnonceProcess extends BProcess implements FWViewBea
                     ideAnnonce.setIdeAnnonceEtat(CodeSystem.ETAT_ANNONCE_IDE_ATTENTE);
                     ideAnnonce.setIdeAnnonceDateTraitement(JACalendar.todayJJsMMsAAAA());
                     ideAnnonce.setMessageErreurForBusinessUser(FWMessageFormat.format(
-                            getSession().getLabel("NAOS_PROCESS_IDE_TRAITEMENT_ANNONCE_ANNONCE_EN_ATTENTE"),
-                            ideAnnonce.getTypeAnnonceDate()));
+                            getSession().getLabel("NAOS_PROCESS_IDE_TRAITEMENT_ANNONCE_ANNONCE_EN_ATTENTE").replace(
+                                    "'", "''"), ideAnnonce.getTypeAnnonceDate()));
                     ideAnnonce.update(getTransaction());
                 } else if (CodeSystem.ETAT_ANNONCE_IDE_ATTENTE.equalsIgnoreCase(ideAnnonce.getIdeAnnonceEtat())) {
                     ideAnnonce.setIdeAnnonceEtat(CodeSystem.ETAT_ANNONCE_IDE_ENREGISTRE);
