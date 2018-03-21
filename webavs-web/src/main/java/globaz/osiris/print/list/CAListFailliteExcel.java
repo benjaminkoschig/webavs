@@ -36,7 +36,8 @@ public class CAListFailliteExcel extends CAAbstractListExcel {
         try {
             createRow();
             this.createCell(getSession().getLabel("NUMERO_CAISSE"), getStyleCritereTitle());
-            this.createCell(CommonPropertiesUtils.getValue(ch.globaz.common.properties.CommonProperties.KEY_NO_CAISSE),
+            this.createCell(
+                    CommonPropertiesUtils.getValue(ch.globaz.common.properties.CommonProperties.KEY_NO_CAISSE_FORMATE),
                     getStyleCritere());
 
         } catch (PropertiesException e) {
