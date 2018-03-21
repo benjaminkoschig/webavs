@@ -5,6 +5,7 @@
 <%-- tpl:put name="zoneScripts" --%>
 <%@ page import="globaz.osiris.db.suiviprocedure.CAFailliteListViewBean" %>
 <%@ page import="globaz.osiris.db.suiviprocedure.CAFailliteViewBean" %>
+<%@ page import="globaz.globall.util.JANumberFormatter" %>
 <%
 	CAFailliteListViewBean viewBean = (CAFailliteListViewBean) session.getAttribute("listViewBean");
 	size = viewBean.size();
@@ -49,7 +50,7 @@
     <td class="mtd" nowrap onClick="<%=actionDetail%>" width="20"><%=faillite.getDateEtatCollocation()%>&nbsp;</td>
     <td class="mtd" nowrap onClick="<%=actionDetail%>" width="20"><%=faillite.getDateModificationEtatCollocation()%>&nbsp;</td>
     <td class="mtd" nowrap onClick="<%=actionDetail%>" width="20"><%=faillite.getDateClotureFaillite()%>&nbsp;</td>
-    <td class="mtd" nowrap onClick="<%=actionDetail%>" width="20"><%=faillite.getMontantProduction()%>&nbsp;</td>
+    <td class="mtd" nowrap onClick="<%=actionDetail%>" width="20"><%=JANumberFormatter.formatNoRound(faillite.getMontantProduction(), 2)%>&nbsp;</td>
 <%-- /tpl:put --%>
 <%@ include file="/theme/list/lineEnd.jspf" %>
 <%-- tpl:put name="zoneTableFooter" --%> <%-- /tpl:put --%>
