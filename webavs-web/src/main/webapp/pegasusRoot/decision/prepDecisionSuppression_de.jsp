@@ -337,7 +337,7 @@ var initValue = {"masterValue":"","childValue":""};
 </TABLE>
 
 <!-- **************************** Warning sur l'existance de prestations dans RFM -->
-<div id="dialog-warningRFM-confirm" title="">
+<div id="dialog-warningRFM-confirm" title="<%= objSession.getLabel("JSP_PC_ATTENTION")%>">
 	<p><span class="ui-icon ui-icon-alert" style="float: left; margin: 0 7px 20px 0;"></span><%= objSession.getLabel("JSP_PC_WARNING_PRESTATIONS_RFM")%></p>
 </div>
 
