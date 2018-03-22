@@ -384,7 +384,7 @@
 				<image  scaleImage="FillFrame" vAlign="Top" hAlign="Left" isUsingCache="false" evaluationTime="Now" hyperlinkType="None">					<reportElement
 						mode="Opaque"
 						x="18"
-						y="71"
+						y="80"
 						width="454"
 						height="181"
 						forecolor="#000000"
@@ -437,7 +437,7 @@
 				<image  scaleImage="FillFrame" vAlign="Top" hAlign="Left" isUsingCache="false" evaluationTime="Now" hyperlinkType="None">					<reportElement
 						mode="Opaque"
 						x="18"
-						y="70"
+						y="80"
 						width="454"
 						height="181"
 						forecolor="#000000"
