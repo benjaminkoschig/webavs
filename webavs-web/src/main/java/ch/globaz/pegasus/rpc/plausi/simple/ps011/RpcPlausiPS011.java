@@ -30,14 +30,12 @@ public class RpcPlausiPS011 implements RpcPlausiMetier<RpcPlausiPS011Data> {
 
     @Override
     public String getReferance() {
-        //TODO completer ces rubriques
-        return "Ajout futur";
+        return " ";
     }
 
     @Override
     public RpcPlausiCategory getCategory() {
-      //TODO completer ces rubriques
-        return RpcPlausiCategory.BLOCKING;
+        return RpcPlausiCategory.ERROR;
     }
 
     @Override
@@ -45,6 +43,8 @@ public class RpcPlausiPS011 implements RpcPlausiMetier<RpcPlausiPS011Data> {
         return new ArrayList<RpcPlausiApplyToDecision>() {
             {
                 add(RpcPlausiApplyToDecision.POSITIVE);
+                add(RpcPlausiApplyToDecision.REJECT_FULL);
+                add(RpcPlausiApplyToDecision.REJECT_SMALL);
             }
         };
     }
