@@ -50,13 +50,12 @@ function postInit() {
 	List<AFIdeListErrorAnnonce> listError = new ArrayList<AFIdeListErrorAnnonce>();
 	listError = AFIdeAnnonceListViewBean.getListError(objSession);
 	
-	if(viewBeanFind != null) {
+	if(numAffilie != null ) {
+	    likeNumAffilie = numAffilie;
+	    initEtat = "";
+	} else if(viewBeanFind != null) {
 		likeNumeroIde = viewBeanFind.getLikeNumeroIde();
-		if(numAffilie != null ) {
-		    likeNumAffilie = numAffilie;
-		} else {
-			likeNumAffilie = viewBeanFind.getLikeNumeroAffilie();
-		}
+		likeNumAffilie = viewBeanFind.getLikeNumeroAffilie();
 		likeRaisonSociale = viewBeanFind.getLikeRaisonSociale();
 		forStatut = viewBeanFind.getForStatut();
 		fromDateCreation = viewBeanFind.getFromDateCreation();
@@ -66,16 +65,11 @@ function postInit() {
 		forCategorie = viewBeanFind.getForCategorie();
 		forType = viewBeanFind.getForType();
 		forEtat = viewBeanFind.getForEtat();
+		initEtat = forEtat;
 		wantAnnoncePassive = viewBeanFind.isWantAnnoncePassive();
 		forError = viewBeanFind.getForError();
 	}
 	
-	 if(numAffilie != null && forEtat == "") {
-	 	initEtat = "";
-	 } else if(viewBeanFind != null) {
-	     initEtat = forEtat;
-	 }
-	 
 	 %>
 	 
 }
