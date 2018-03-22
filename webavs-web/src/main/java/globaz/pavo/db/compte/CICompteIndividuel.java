@@ -68,7 +68,7 @@ public class CICompteIndividuel extends BEntity {
     public static int FROM_RETRIEVE = 0;
     //
     public final static String SECURITE_LABEL = "SecureCode";
-    public final static String CS_ACCESS = "31700";
+    public final static int CS_ACCESS = 317000;
 
     /**
      * Charge le CI du tiers donné. Date de création : (15.11.2002 08:39:41)
@@ -2170,11 +2170,19 @@ public class CICompteIndividuel extends BEntity {
                 if (!user.isNew()) {
                     int accesUser = Integer.parseInt(user.getData());
                     int accesCI = Character.getNumericValue(getAccesSecurite().charAt(getAccesSecurite().length() - 1));
-                    boolean accesAff = checkAffSecureCode(transaction, CS_ACCESS + accesUser);
-                    if ((accesUser < accesCI) || !accesAff) {
-                        // sécurité utilisateur inférieure -> -> ecriture cachée
-                        return false;
+                    if (transaction != null) {
+                        boolean accesAff = checkAffSecureCode(transaction, CS_ACCESS + accesUser);
+                        if ((accesUser < accesCI) || !accesAff) {
+                            // sécurité utilisateur inférieure -> -> ecriture cachée
+                            return false;
+                        }
+                    } else {
+                        if ((accesUser < accesCI)) {
+                            // sécurité utilisateur inférieure -> -> ecriture cachée
+                            return false;
+                        }
                     }
+
                 } else {
                     // l'utilisateur n'a pas de code accès -> ecriture cachée
                     return false;
@@ -2191,7 +2199,7 @@ public class CICompteIndividuel extends BEntity {
         }
     }
 
-    private boolean checkAffSecureCode(BTransaction transaction, String codeSecure) throws Exception {
+    private boolean checkAffSecureCode(BTransaction transaction, int codeSecure) throws Exception {
         BTransaction transactionSecureCode = null;
 
         ResultSet resultSet = null;
