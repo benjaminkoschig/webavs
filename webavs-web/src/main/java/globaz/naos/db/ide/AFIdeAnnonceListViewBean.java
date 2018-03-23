@@ -130,4 +130,13 @@ public class AFIdeAnnonceListViewBean extends AFIdeAnnonceManager implements FWV
         return list;
     }
 
+    public static boolean hasEmptyMessage(List<AFIdeListErrorAnnonce> list) {
+        for (AFIdeListErrorAnnonce msg : list) {
+            if (msg.getMessageErreurForBusinessUser().isEmpty()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }

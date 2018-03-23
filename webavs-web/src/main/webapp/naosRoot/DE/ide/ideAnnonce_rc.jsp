@@ -190,7 +190,9 @@ function postInit() {
 			<TD><ct:FWLabel key="NAOS_JSP_IDE_ANNONCE_TYPE_ERREUR"/></TD>
 			<TD>
 				<ct:select name="forError" defaultValue="<%=forError%>" notation="data-g-select='mandatory:false'"  style='width : 300px'>
+					<% if(!AFIdeAnnonceListViewBean.hasEmptyMessage(listError)){%>
 					<ct:option value="" label="" />
+					<%}%>
 					<% for(AFIdeListErrorAnnonce error : listError){%>
 					<ct:option value="<%=error.getMessageErreurForBusinessUser()%>" label="<%=JadeStringUtil.escapeXML(error.getMessageErreurForBusinessUser())%>" />
 					<%}%> 
