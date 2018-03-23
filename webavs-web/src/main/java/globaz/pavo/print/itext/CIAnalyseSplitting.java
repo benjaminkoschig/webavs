@@ -10,6 +10,7 @@ import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
 import globaz.globall.db.GlobazJobQueue;
 import globaz.globall.util.JADate;
+import globaz.jade.client.util.JadeStringUtil;
 import globaz.pavo.application.CIApplication;
 import globaz.pavo.db.compte.CICompteIndividuel;
 import globaz.pavo.db.compte.CICompteIndividuelManager;
@@ -169,6 +170,11 @@ public class CIAnalyseSplitting extends FWIDocumentManager {
                 }
                 ci = ciManager.getCIRegistreAssures(dossier.getIdTiersConjoint(), getTransaction());
                 if (ci != null) {
+                    if (!ci.hasUserShowRight(getTransaction())) {
+                        secureDenied = true;
+                        throw new Exception(CIAnalyseSplitting.class
+                                + " : Droit insuffisant pour voir le montant du revenu");
+                    }
                     if (BSessionUtil.compareDateFirstLowerOrEqual(getSession(),
                             "01.01." + String.valueOf(cumul.getAnnee().intValue() - 20), ci.getDateNaissance())) {
                         rci.setPeriodeJeunesseConjoint(true);
@@ -429,8 +435,13 @@ public class CIAnalyseSplitting extends FWIDocumentManager {
 
     @Override
     protected String getEMailObject() {
+        String documentFileTitle = (JadeStringUtil.isBlank(getFileTitle()) ? getDocumentTitle() : getFileTitle());
+        StringBuffer buffer = new StringBuffer("L'impression du document '");
+        buffer.append(documentFileTitle);
         if (secureDenied) {
-            return getSession().getLabel("APERCU_SPLITTING_EMAIL_SUBJECT_DROIT_INSUFFISANT");
+            buffer.append("' s'est terminée avec échec : \r\n");
+            buffer.append(getSession().getLabel("APERCU_SPLITTING_EMAIL_SUBJECT_DROIT_INSUFFISANT"));
+            return buffer.toString();
         } else {
             return super.getEMailObject();
         }

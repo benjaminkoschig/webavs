@@ -2160,8 +2160,7 @@ public class CICompteIndividuel extends BEntity {
             if (JAUtil.isStringEmpty(getAccesSecurite())) {
                 // ci pas chargé correctement -> écriture cachée
                 return false;
-            } else if (!JAUtil.isIntegerEmpty(getAccesSecurite())
-                    && !CICompteIndividuel.CS_ACCESS_0.equals(getAccesSecurite())) {
+            } else if (!JAUtil.isIntegerEmpty(getAccesSecurite())) {
                 FWSecureUserDetail user = new FWSecureUserDetail();
                 user.setSession(getSession());
                 user.setUser(userId);
