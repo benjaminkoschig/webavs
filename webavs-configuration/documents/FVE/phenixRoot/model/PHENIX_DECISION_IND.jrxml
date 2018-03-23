@@ -390,15 +390,15 @@
 						forecolor="#000000"
 						backcolor="#FFFFFF"
 						key="image-4"
-						stretchType="RelativeToBandHeight"
-						positionType="FixRelativeToTop"
+						stretchType="NoStretch"
+						positionType="Float"
 						isPrintRepeatedValues="true"
 						isRemoveLineWhenBlank="false"
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="false">
 							<printWhenExpression><![CDATA[$P{P_DUPLICATA_FR}]]></printWhenExpression>
 						</reportElement>
-					<graphicElement stretchType="RelativeToBandHeight" pen="None" fill="Solid" />
+					<graphicElement stretchType="NoStretch" pen="None" fill="Solid" />
 					<imageExpression class="java.lang.String"><![CDATA[$P{P_DEFAULT_MODEL_PATH}+"/duplicata.jpg"]]></imageExpression>				</image>
 				<image  scaleImage="FillFrame" vAlign="Top" hAlign="Left" isUsingCache="false" evaluationTime="Now" hyperlinkType="None">					<reportElement
 						mode="Opaque"
@@ -443,15 +443,15 @@
 						forecolor="#000000"
 						backcolor="#FFFFFF"
 						key="image-5"
-						stretchType="RelativeToBandHeight"
-						positionType="FixRelativeToTop"
+						stretchType="NoStretch"
+						positionType="Float"
 						isPrintRepeatedValues="true"
 						isRemoveLineWhenBlank="false"
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="false">
 							<printWhenExpression><![CDATA[$P{P_DUPLICATA_DE}]]></printWhenExpression>
 						</reportElement>
-					<graphicElement stretchType="RelativeToBandHeight" pen="None" fill="Solid" />
+					<graphicElement stretchType="NoStretch" pen="None" fill="Solid" />
 					<imageExpression class="java.lang.String"><![CDATA[$P{P_DEFAULT_MODEL_PATH}+"/duplicataDE.jpg"]]></imageExpression>				</image>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
