@@ -125,18 +125,12 @@ public class AFIdeAnnonceListViewBean extends AFIdeAnnonceManager implements FWV
         manager.find(BManager.SIZE_NOLIMIT);
         List<AFIdeListErrorAnnonce> list = new ArrayList<AFIdeListErrorAnnonce>();
         for (int i = 0; i < manager.size(); i++) {
-            list.add((AFIdeListErrorAnnonce) manager.getEntity(i));
-        }
-        return list;
-    }
-
-    public static boolean hasEmptyMessage(List<AFIdeListErrorAnnonce> list) {
-        for (AFIdeListErrorAnnonce msg : list) {
-            if (msg.getMessageErreurForBusinessUser().isEmpty()) {
-                return true;
+            AFIdeListErrorAnnonce entity = (AFIdeListErrorAnnonce) manager.getEntity(i);
+            if (!entity.getMessageErreurForBusinessUser().isEmpty()) {
+                list.add(entity);
             }
         }
-        return false;
+        return list;
     }
 
 }
