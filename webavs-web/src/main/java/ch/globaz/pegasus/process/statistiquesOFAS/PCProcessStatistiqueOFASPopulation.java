@@ -116,7 +116,8 @@ public class PCProcessStatistiqueOFASPopulation implements JadeProcessPopulation
         // On a du sélectionner les pca en refus a cause de couple séparer. Afin de determiner le type de la pca.
         // Mais il ne faut pas faire de statistique sur les pcas en refus
         // S160704_002 : ne pas prendre la part fédérale si refus
-        if (!IPCValeursPlanCalcul.STATUS_REFUS.equals(pcAccordee.getSimplePlanDeCalcul().getEtatPC())
+        if ((!IPCValeursPlanCalcul.STATUS_REFUS.equals(pcAccordee.getSimplePlanDeCalcul().getEtatPC()) && !pcAccordee
+                .getSimpleVersionDroit().getCsEtatDroit().equals(IPCDroits.CS_ANNULE))
                 && !isRefusPartFederal(pcAccordee)) {
             JadeProcessEntity entity = new JadeProcessEntity();
             entity.setDescription(pcAccordee.getPersonneEtendue().getPersonneEtendue().getNumAvsActuel() + " "
