@@ -1014,7 +1014,7 @@ public class AFIDEUtil {
      */
     public static boolean hasIDEMultipleAff(BSession session, String numeroIde) throws Exception {
         List<AFAffiliation> affiliationsMemeIDE = null;
-        if (numeroIde != null && !numeroIde.isEmpty()) {
+        if (!JadeStringUtil.isBlankOrZero(numeroIde)) {
             affiliationsMemeIDE = AFAffiliationUtil.loadAffiliationUsingNumeroIde(session, numeroIde, false);
         }
         return affiliationsMemeIDE != null && !affiliationsMemeIDE.isEmpty() && affiliationsMemeIDE.size() > 1;
@@ -1030,7 +1030,7 @@ public class AFIDEUtil {
      */
     public static boolean hasIDEAllreadyAff(BSession session, String numeroIde) throws Exception {
         List<AFAffiliation> affiliationsMemeIDE = null;
-        if (numeroIde != null && !numeroIde.isEmpty()) {
+        if (!JadeStringUtil.isBlankOrZero(numeroIde)) {
             affiliationsMemeIDE = AFAffiliationUtil.loadAffiliationUsingNumeroIde(session, numeroIde, false);
         }
         return affiliationsMemeIDE != null && !affiliationsMemeIDE.isEmpty();
