@@ -55,10 +55,13 @@ if("DE".equals(languePage)) {
 String idEcran = null;
 boolean autoShowErrorPopup = session.getAttribute(globaz.framework.servlets.FWServlet.OBJ_NO_JSP_POPUP) == null;
 boolean vBeanHasErrors = false;
+boolean isCheck = false;
 %>
 <HEAD>
 <SCRIPT type="text/javascript">
 var langue = "<%=languePage%>"; 
+
+var dateFormate;
 
 var showConfirmDialogAnnulation = function () {
 	
@@ -82,6 +85,63 @@ var showConfirmDialogAnnulation = function () {
         }
     });
 };
+var showErrorDialogDateReduc = function () {
+	$( "#dialog-error-date-reduction" ).dialog({
+        resizable: false,
+        height:250,
+        width:500,
+        modal: true,
+        buttons: {
+        	"OK": function() {
+                $( this ).dialog( "close" );
+            }
+			
+        }
+    });
+};
+var showConfirmationDialogDateReduc = function () {
+	
+	$( "#dialog-date-reduction" ).dialog({
+        resizable: false,
+        height:250,
+        width:500,
+        modal: true,
+        buttons: {
+        	"<ct:FWLabel key='PROCESS_ADAPTATION_PC_OUI'/>": function() {
+                $( this ).dialog( "close" );
+                $('#comptabilisationAuto').val("true");
+                if(dateFinFormate < dateFormate || dateFormate < dateDebutFormat){
+                	showErrorDialogDateReduc();
+                }else{
+                    var dateTemp = document.getElementById("forDateFin").value;
+                    $('#forDateFin').val(document.getElementById("dateReduc").value);
+                    $('#dateReduc').val(dateTemp);
+                    action(COMMIT);
+                }
+      
+            },
+            "<ct:FWLabel key='PROCESS_ADAPTATION_PC_NON'/>": function() {
+                $( this ).dialog( "close" );
+        		if(dateFinFormate < dateFormate && dateFinInitialFormat < dateFormate || dateFormate < dateDebutFormat){
+    					showErrorDialogDateReduc();
+        		}else{
+        	         var dateTemp = document.getElementById("forDateFin").value;
+                     $('#forDateFin').val(document.getElementById("dateReduc").value);
+                     if(dateFinInitialFormat == ""){
+                     	  $('#dateReduc').val(dateTemp);
+                     }
+                    // action(COMMIT);
+        		}
+
+       
+            }
+/*             "<ct:FWLabel key='JSP_PC_BOUTON_CAN'/>": function() {
+                $( this ).dialog( "close" );
+            } */
+        }
+    });
+};
+
 </SCRIPT>
 <% /*
 	Pour utiliser les postit, changez la valeur de la variable "key" (définie ci-dessus).
@@ -111,6 +171,7 @@ var showConfirmDialogAnnulation = function () {
 
 <%@page import="ch.globaz.pyxis.business.model.PersonneEtendueComplexModel"%>
 <%@page import="ch.globaz.pegasus.businessimpl.checkers.demande.SimpleDemandeChecker"%>
+<%@page import="globaz.jade.client.util.JadeDateUtil" %>
 
 
 <%@ taglib uri="/WEB-INF/nss.tld" prefix="nss" %>
@@ -131,8 +192,10 @@ var showConfirmDialogAnnulation = function () {
 	//bButtonValidate = !SimpleDemandeChecker.existeDemandeInVlalidEtatWithOutException(viewBean.getDemande().getSimpleDemande().getIdDossier());
 	bButtonDelete = !SimpleDemandeChecker.existDroitForDemandeWithOutException(viewBean.getDemande().getSimpleDemande());
 	boolean lotCompta = SimpleDemandeChecker.isLotAnnuleComptabilise(viewBean.getDemande().getSimpleDemande());
-	bButtonUpdate = bButtonUpdate & !lotCompta;
-	bButtonDelete = bButtonDelete & !lotCompta;
+	boolean lotComptaDateReduc = SimpleDemandeChecker.isLotDateReducComptabilise(viewBean.getDemande().getSimpleDemande());
+	
+	bButtonUpdate = bButtonUpdate & (!lotCompta && !lotComptaDateReduc);
+	bButtonDelete = bButtonDelete & (!lotCompta && !lotComptaDateReduc);
 	
 	if (viewBean.getDemande().isNew()) {
 		viewBean.getDemande().getSimpleDemande().setIsPurRetro(
@@ -155,7 +218,13 @@ var showConfirmDialogAnnulation = function () {
 	#dialog-confirm-annulation{
 		display:none;
 	}
-	div #dialog-confirm-annulation, div #ui-dialog-title-dialog-confirm-annulation, .ui-dialog .ui-dialog-buttonpane BUTTON{
+	#dialog-error-date-reduction{
+		display:none;
+	}
+	#dialog-date-reduction{
+		display:none;
+	}
+	div #dialog-confirm-annulation, div #dialog-error-date-reduction,  div #dialog-date-reduction,div #ui-dialog-title-dialog-date-reduction,div #ui-dialog-title-dialog-error-date-reduction ,div #ui-dialog-title-dialog-confirm-annulation, .ui-dialog .ui-dialog-buttonpane BUTTON{
  	font-size: 1.3em;
  }
  
@@ -216,6 +285,42 @@ var isReFeremerPossible = <%=IPCDemandes.CS_REOUVERT.equals(viewBean.getDemande(
 
 var mapMembreFamille = <%=viewBean.getMembresFamilleJson()%>;
 
+var dateDebut = "<%=JadeStringUtil.toNotNullString(viewBean.getDemande().getSimpleDemande().getDateDebut())%>";
+
+var dateFin = "<%=JadeStringUtil.toNotNullString(viewBean.getDemande().getSimpleDemande().getDateFin())%>";
+
+var dateFinInitial ="<%=JadeStringUtil.toNotNullString(viewBean.getDemande().getSimpleDemande().getDateFinInitial())%>";
+
+var parts = dateFin.split('.');
+var dateFinFormate = new Date(parts[1],parts[0],'');
+parts = dateDebut.split('.');
+var dateDebutFormat =  new Date(parts[1],parts[0],'');
+parts = dateFinInitial.split('.');
+if(dateFinInitial!=""){
+    var dateFinInitialFormat = new Date(parts[1],parts[0],'');
+}else{
+    var dateFinInitialFormat = "";
+}
+
+function doDisableDate(checkboxElem) {
+	if(checkboxElem.checked){
+		document.getElementById("dateReduc").disabled = true;
+		 $('#dateReduc').data('notation_calendar').enableDisableInput();
+	}else{
+		document.getElementById("dateReduc").disabled = false;
+		 $('#dateReduc').data('notation_calendar').enableDisableInput();
+
+	}
+
+}
+function doDisableCheckbox(dateElem){
+	var ckbox = document.getElementById("annule");
+	if(dateElem.value==""){
+		ckbox.disabled = false;
+	}else{
+		ckbox.disabled = true;
+	}
+}
 $(function(){
 	actionMethod=$('[name=_method]',document.forms[0]).val();
 	userAction=$('[name=userAction]',document.forms[0])[0];
@@ -259,9 +364,7 @@ $(function(){
 	
 });
 
-
-
-	function readOnly(flag) {
+function readOnly(flag) {
 		// empeche la propriete disabled des elements etant de la classe css 'forceDisable' d'etre modifiee
 		var enabledNames=['csNationaliteAffiche','csSexeAffiche','csCantonAffiche','partiallikeNSS'];
 		$('input,select,textarea',document.forms[0]).each(function(){
@@ -272,24 +375,35 @@ $(function(){
 	          this.disabled = flag;
 			}
 	 	});		
-	}
+}
 
 
-	function cancel() {
+function cancel() {
 		if (actionMethod == "add"){
 			userAction.value=ACTION_DEMANDE+".chercher";
 	    }else{
 	    	userAction.value=ACTION_DEMANDE+".chercher";
 	    }
-	}  
+}  
 
-	function validate() {
+function validate() {
 	    state = true;
 	    
 		if($("#annule").is(':checked')) {
 			state = false;
 			showConfirmDialogAnnulation();
 		}
+		var date = document.getElementById("dateReduc");
+		if(date != null) {
+			var dateValue = date.value;
+			if (dateValue!=""){
+			  state = false;
+			  parts = dateValue.split('.');
+			  dateFormate = new Date(parts[1],parts[0],'');
+		      showConfirmationDialogDateReduc();
+			}
+		}
+		
 
 		if (actionMethod == "add"){
 	    	userAction.value=ACTION_DEMANDE+".ajouter";
@@ -311,9 +425,9 @@ $(function(){
 
 	}
 	
-	function postInit(){
+function postInit(){
 		$('#csNationaliteAffiche,#partiallikeNSS').attr('disabled','true');
-	}
+}
 	
 </script>
 <%-- /tpl:put --%>
@@ -332,7 +446,6 @@ $(function(){
 			<input type="hidden" id="actionRouvrirDemande" name="actionRouvrirDemande" value="false" />
 			<input type="hidden" id="actionRefermerDemande" name="actionRefermerDemande" value="false" />
 			<input type="hidden" id="comptabilisationAuto" name="comptabilisationAuto" value="false" />
-			
 			<table width="90%">
 
 				<TR>
@@ -376,17 +489,32 @@ $(function(){
 				<TR><TD colspan="6">&nbsp;<HR class="separator" ></TD></TR>
 				
 				<%if(IPCDemandes.CS_REFUSE.equals(viewBean.getDemande().getSimpleDemande().getCsEtatDemande()) 
-				        || IPCDemandes.CS_SUPPRIME.equals(viewBean.getDemande().getSimpleDemande().getCsEtatDemande())
 				        || IPCDemandes.CS_ANNULE.equals(viewBean.getDemande().getSimpleDemande().getCsEtatDemande())) {%> 
 				<tr>
 					<td class="standardLabel"><ct:FWLabel key="JSP_PC_DEM_D_FORCER_ANNULATION"/></td>
 					<td>
 						<input type="checkbox" name="annule" id="annule"
-				    		<%=IPCDemandes.CS_ANNULE.equals(viewBean.getDemande().getSimpleDemande().getCsEtatDemande())?" checked='checked' ":"" %> value="on">
+				    		<%=IPCDemandes.CS_ANNULE.equals(viewBean.getDemande().getSimpleDemande().getCsEtatDemande())?" checked='checked' ":"" %> value="on" onclick="doDisableDate(this)"/>
 					</td>
 				</tr>
 				<TR><TD colspan="6">&nbsp;<HR class="separator" ></TD></TR>
-				<%}%> 
+				<%}else if(IPCDemandes.CS_SUPPRIME.equals(viewBean.getDemande().getSimpleDemande().getCsEtatDemande())){ %>
+				<tr>
+					<td class="standardLabel"><ct:FWLabel key="JSP_PC_DEM_D_FORCER_ANNULATION"/></td>
+					<td>
+						<input type="checkbox" name="annule" id="annule"
+				    		<%=IPCDemandes.CS_ANNULE.equals(viewBean.getDemande().getSimpleDemande().getCsEtatDemande())?" checked='checked' ":"" %> value="on" onclick="doDisableDate(this)"/>
+					</td>
+				</tr>
+				<tr>
+					<td class="standardLabel"><ct:FWLabel key="JSP_PC_DEM_D_FORCER_ANNULATION_DATE"/></td>
+					<td id="dateReducTD">
+						<input type="text" name="dateReduc" id="dateReduc"  onchange="doDisableCheckbox(this)" data-g-calendar="mandatory:false,type:month" value="<%=!JadeStringUtil.isBlank(viewBean.getDemande().getSimpleDemande().getDateFinInitial())?JadeDateUtil.addMonths("01." + viewBean.getDemande().getSimpleDemande().getDateFin(), 1).substring(3):""%>" />
+					</td>
+				</tr>
+				<TR><TD colspan="6">&nbsp;<HR class="separator" ></TD></TR>
+				<%}%>
+	
 				
 				<TR>
 					<TD class="standardLabel"><ct:FWLabel key="JSP_PC_DEM_D_TYPE_DEMANDE"/></TD>
@@ -455,6 +583,14 @@ $(function(){
 			<div id="dialog-confirm-annulation" title="<%= objSession.getLabel("JSP_PC_DECALCUL_D_CONFIRMATION_COMPTA_AUTO_TITRE")%>">
     			<p><span class="ui-icon ui-icon-alert" style="float: left; margin: 0 7px 20px 0;"></span><%= objSession.getLabel("JSP_PC_DEM_D_FORCER_CONFIRMATION_COMPTA_AUTO")%></p>
 			</div>
+			<div id="dialog-error-date-reduction" title="<%= objSession.getLabel("JSP_PC_DEM_D_DATE_REDUCTION_FIN")%>">
+    			<p><span class="ui-icon ui-icon-alert" style="float: left; margin: 0 7px 20px 0;"></span><%= objSession.getLabel("JSP_PC_DEM_D_DATE_REDUCTION_ERROR")%></p>
+			</div>
+			<div id="dialog-date-reduction" title="<%= objSession.getLabel("JSP_PC_DEM_D_DATE_REDUCTION_FIN")%>">
+    			<p><span class="ui-icon ui-icon-alert" style="float: left; margin: 0 7px 20px 0;"></span><%= objSession.getLabel("JSP_PC_DEM_D_DATE_REDUCTION")%></p>
+			</div>
+	
+	
 		</TD>
 	</TR>
 <%-- /tpl:put --%>

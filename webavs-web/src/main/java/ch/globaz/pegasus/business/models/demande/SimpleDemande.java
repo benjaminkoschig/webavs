@@ -20,6 +20,7 @@ public class SimpleDemande extends JadeSimpleModel {
     private String dateDepot = null;
     private String dateFin = null;
     private String dateProchaineRevision = null;
+    private String dateFinInitial = null;
     private String idDemande = null;
     private String idDossier = null;
     private String idGestionnaire = null;
@@ -236,6 +237,14 @@ public class SimpleDemande extends JadeSimpleModel {
      */
     public void setTypeDemande(String typeDemande) {
         this.typeDemande = typeDemande;
+    }
+
+    public String getDateFinInitial() {
+        return dateFinInitial;
+    }
+
+    public void setDateFinInitial(String dateFinInitial) {
+        this.dateFinInitial = dateFinInitial;
     }
 
 }

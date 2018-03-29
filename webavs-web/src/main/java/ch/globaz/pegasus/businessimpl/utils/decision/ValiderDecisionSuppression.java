@@ -175,7 +175,9 @@ public class ValiderDecisionSuppression extends AbstractValiderDecision {
         // Mise à jour demande, set date fin avec dateSupression
         SimpleDemande simpleDemande = decisionSuppression.getVersionDroit().getDemande().getSimpleDemande();
 
+        // if (simpleDemande.getDateFinInitial() == "") {
         simpleDemande.setDateFin(decisionSuppression.getSimpleDecisionSuppression().getDateSuppression());
+        // }
 
         // date debut avec date de depot
         // BZ:8275

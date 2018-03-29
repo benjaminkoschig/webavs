@@ -1,5 +1,9 @@
 package ch.globaz.pegasus.business.services.models.demande;
 
+import globaz.jade.exception.JadeApplicationException;
+import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.service.provider.application.JadeApplicationService;
+import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import ch.globaz.pegasus.business.exceptions.PegasusException;
 import ch.globaz.pegasus.business.exceptions.models.decision.DecisionException;
 import ch.globaz.pegasus.business.exceptions.models.demande.DemandeException;
@@ -10,16 +14,12 @@ import ch.globaz.pegasus.business.models.demande.ListDemandes;
 import ch.globaz.pegasus.business.models.demande.ListDemandesSearch;
 import ch.globaz.pegasus.business.models.revisionquadriennale.ListRevisionsSearch;
 import ch.globaz.prestation.business.exceptions.models.DemandePrestationException;
-import globaz.jade.exception.JadeApplicationException;
-import globaz.jade.exception.JadePersistenceException;
-import globaz.jade.service.provider.application.JadeApplicationService;
-import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 
 public interface DemandeService extends JadeApplicationService {
 
     /**
      * Permet de compter le nombre d'enregistrements correspondant au modèle de recherche
-     *
+     * 
      * @param search
      *            modèle de recherche
      * @return nombre d'enregistrements trouvés
@@ -32,7 +32,7 @@ public interface DemandeService extends JadeApplicationService {
 
     /**
      * Permet la création d'une entité demande
-     *
+     * 
      * @param demande
      *            La demande à créer
      * @return La demande créé
@@ -42,12 +42,12 @@ public interface DemandeService extends JadeApplicationService {
      *             Levée en cas de problème métier dans l'exécution du service
      * @throws DossierException
      */
-    public Demande create(Demande demande)
-            throws JadePersistenceException, DemandeException, DemandePrestationException, DossierException;
+    public Demande create(Demande demande) throws JadePersistenceException, DemandeException,
+            DemandePrestationException, DossierException;
 
     /**
      * Permet la suppression d'une entité demande PC
-     *
+     * 
      * @param demande
      *            La demande PC à supprimer
      * @return La demande PC supprimé
@@ -60,19 +60,19 @@ public interface DemandeService extends JadeApplicationService {
 
     /**
      * Attention un order by fix est fait pour cette fonction
-     *
+     * 
      * @param searchModel
      * @return
      * @throws DecisionException
      * @throws JadePersistenceException
      */
-    public ListDemandesSearch findDemandeForList(ListDemandesSearch searchModel)
-            throws DecisionException, JadePersistenceException;
+    public ListDemandesSearch findDemandeForList(ListDemandesSearch searchModel) throws DecisionException,
+            JadePersistenceException;
 
     /**
      * Retourn true si le tiers donne possede une Demande PC en premiere instruction. Les demandes dans les etats
      * "En attente justificatifs" et "En attente calcul" sont considerees comme etant en premiere instruction.
-     *
+     * 
      * @param idTiers
      * @return
      * @throws JadeApplicationServiceNotAvailableException
@@ -84,7 +84,7 @@ public interface DemandeService extends JadeApplicationService {
 
     /**
      * Permet de charger en mémoire une demande PC
-     *
+     * 
      * @param idDemande
      *            L'identifiant de la demande à charger en mémoire
      * @return La demande chargée en mémoire
@@ -97,7 +97,7 @@ public interface DemandeService extends JadeApplicationService {
 
     /**
      * Permet le chargement d'une entité listDemandes pour la liste
-     *
+     * 
      * @param idDemande
      * @return
      * @throws JadePersistenceException
@@ -107,7 +107,7 @@ public interface DemandeService extends JadeApplicationService {
 
     /**
      * Permet de chercher des demandes selon un modèle de critères.
-     *
+     * 
      * @param demandeSearch
      *            Le modèle de critères
      * @return Le modèle de critère avec les résultats
@@ -120,29 +120,29 @@ public interface DemandeService extends JadeApplicationService {
 
     /**
      * Permet la recherche des listes de demandes pour le rcListe
-     *
+     * 
      * @param listDemandesSearch
      * @return
      * @throws DecisionException
      * @throws JadePersistenceException
      */
-    public ListDemandesSearch searchDemandes(ListDemandesSearch listDemandesSearch)
-            throws DecisionException, JadePersistenceException;
+    public ListDemandesSearch searchDemandes(ListDemandesSearch listDemandesSearch) throws DecisionException,
+            JadePersistenceException;
 
     /**
      * Permet la recheche des demandes devant etre revisiees (Utilise pour generer la liste des revisions)
-     *
+     * 
      * @param listRevisionsSearch
      * @return
      * @throws DemandeException
      * @throws JadePersistenceException
      */
-    public ListRevisionsSearch searchRevisions(ListRevisionsSearch listRevisionsSearch)
-            throws DemandeException, JadePersistenceException;
+    public ListRevisionsSearch searchRevisions(ListRevisionsSearch listRevisionsSearch) throws DemandeException,
+            JadePersistenceException;
 
     /**
      * Permet la mise à jour d'une entité demande
-     *
+     * 
      * @param demande
      *            La demande PC à mettre à jour
      * @return La demande PC mis à jour
@@ -175,8 +175,8 @@ public interface DemandeService extends JadeApplicationService {
      * @throws JadeApplicationServiceNotAvailableException
      * @throws JadePersistenceException
      */
-    public boolean isLastDemande(Demande demande)
-            throws DemandeException, JadeApplicationServiceNotAvailableException, JadePersistenceException;
+    public boolean isLastDemande(Demande demande) throws DemandeException, JadeApplicationServiceNotAvailableException,
+            JadePersistenceException;
 
     /**
      * Permet de refermer la demande si la demande a été rouverte
@@ -197,18 +197,21 @@ public interface DemandeService extends JadeApplicationService {
      * @throws JadeApplicationServiceNotAvailableException
      * @throws JadePersistenceException
      */
-    public boolean isDemandeReouvrable(Demande demande)
-            throws PegasusException, JadeApplicationServiceNotAvailableException, JadePersistenceException;
+    public boolean isDemandeReouvrable(Demande demande) throws PegasusException,
+            JadeApplicationServiceNotAvailableException, JadePersistenceException;
 
     /**
      * Annule la demande
-     *
+     * 
      * @param demande
      * @return
      * @throws JadePersistenceException
      * @throws JadeApplicationException
      */
-    public Demande annuler(Demande demande, Boolean comptabilisationAuto)
-            throws JadePersistenceException, JadeApplicationException;
+    public Demande annuler(Demande demande, Boolean comptabilisationAuto) throws JadePersistenceException,
+            JadeApplicationException;
+
+    public Demande dateReduction(Demande demande, Boolean comptabilisationAuto) throws JadePersistenceException,
+            JadeApplicationException;
 
 }

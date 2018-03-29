@@ -305,6 +305,10 @@ public interface DroitService extends JadeApplicationService {
             String currentUserId, boolean comptabilisationAuto, String mailProcessCompta) throws DroitException,
             JadePersistenceException, JadeApplicationServiceNotAvailableException;
 
+    public Droit corrigerDroitDateReduction(Droit droit, String dateAnnonce, String dateSuppression,
+            String dateDecision, String currentUserId, boolean comptabilisationAuto, String mailAdressCompta)
+            throws DroitException, JadePersistenceException, JadeApplicationServiceNotAvailableException;
+
     /**
      * Permet de compter le nombre d'enregistrements correspondant au modèle de recherche
      * 

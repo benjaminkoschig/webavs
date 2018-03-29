@@ -22,6 +22,7 @@ public class SimpleDemandeSearch extends JadeSearchSimpleModel {
     private List<String> forCsEtatDemandeIN = null;
     private String forDateDebut = null;
     private String forDateFin = null;
+    private String forDateFinInitial = null;
     private String forIdDossier = null;
     private String forNotIdDemande = null;
     private String forNotCsEtatDemande = null;
@@ -96,6 +97,14 @@ public class SimpleDemandeSearch extends JadeSearchSimpleModel {
 
     public void setForNotCsEtatDemande(String forNotCsEtatDemande) {
         this.forNotCsEtatDemande = forNotCsEtatDemande;
+    }
+
+    public String getForDateFinInitial() {
+        return forDateFinInitial;
+    }
+
+    public void setForDateFinInitial(String forDateFinInitial) {
+        this.forDateFinInitial = forDateFinInitial;
     }
 
 }
