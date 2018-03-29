@@ -162,6 +162,29 @@ public abstract class SimpleDemandeChecker extends PegasusAbstractChecker {
         return false;
     }
 
+    public static boolean isLotDateReducComptabilise(SimpleDemande demande) throws DroitException,
+            JadeApplicationServiceNotAvailableException, JadePersistenceException, PrestationException, LotException {
+        if (IPCDemandes.CS_SUPPRIME.equals(demande.getCsEtatDemande())
+
+        && demande.getDateFinInitial() != "") {
+            List<Droit> droits = PegasusServiceLocator.getDroitService().findCurrentVersionDroitByIdsDemande(
+                    Arrays.asList(demande.getId()));
+
+            if (droits != null && !droits.isEmpty()) {
+                SimplePrestationSearch simplePrestationSearch = new SimplePrestationSearch();
+                simplePrestationSearch.setForIdVersionDroit(droits.get(0).getSimpleVersionDroit().getId());
+                simplePrestationSearch = PegasusImplServiceLocator.getSimplePrestationService().search(
+                        simplePrestationSearch);
+                if (simplePrestationSearch.getSize() > 0) {
+                    SimplePrestation simplePrestation = (SimplePrestation) simplePrestationSearch.getSearchResults()[0];
+                    SimpleLot lot = CorvusServiceLocator.getLotService().read(simplePrestation.getIdLot());
+                    return !IRELot.CS_ETAT_LOT_OUVERT.equals(lot.getCsEtat());
+                }
+            }
+        }
+        return false;
+    }
+
     private static boolean existeDemandeInVlalidEtat(SimpleDemande demande) throws DemandeException {
         SimpleDemandeSearch search = new SimpleDemandeSearch();
         search.setWhereKey("demandeInCsEtat");
