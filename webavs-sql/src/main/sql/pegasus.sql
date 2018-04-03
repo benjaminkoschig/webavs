@@ -7,5 +7,5 @@ insert into SCHEMA.FWCOUP (pcosid,plaide,pcouid,pcolut, pspy) values ( 64003007,
 insert into SCHEMA.FWCOUP (pcosid,plaide,pcouid,pcolut, pspy) values ( 64003007, 'D', '', 'Annulliert', (replace(char(current date), '-', '') concat replace(char(current time), '.', '') concat user) );
 
 --Ajout d'un champ DataFin Initial
-ALTER TABLE SCHEMA.PCDEMPC ADD BDDFINB DECIMAL(6,0);
+ALTER TABLE SCHEMA.PCDEMPC ADD BBDFINB DECIMAL(6,0);
 REORG TABLE SCHEMA.PCDEMPC;
