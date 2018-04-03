@@ -14,6 +14,7 @@
 			<field name="dateArrivee" column="BBDACC" type="DATE" mandatory="false" comment="DATE_ARRIVEE_CC"/>
 			<field name="dateDebut" column="BBDDEB" type="MONTH_YEAR" mandatory="false" comment="DATE_DEBUT"/>
 			<field name="dateFin" column="BBDFIN" type="MONTH_YEAR" mandatory="false" comment="DATE_FIN"/>
+			<field name="dateFinInitial" column="BBDFINB" type="MONTH_YEAR" mandatory="false" comment="DATE_FIN_INITIAL"/>
 			<field name="isFratrie" column="BBBISF" type="BOOLEAN" mandatory="FALSE" comment="IS_FRATRIE"/>
 			<field name="isPurRetro" column="BCBRET" type="BOOLEAN" mandatory="FALSE" comment="IS_PUR_RETRO"/>
 			<field name="dateProchaineRevision" column="BBDPRV" type="MONTH_YEAR" mandatory="false" comment="DATE_PROCHAINE_REVISION"/>
