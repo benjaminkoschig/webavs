@@ -2204,18 +2204,23 @@ public class CICompteIndividuel extends BEntity {
         ResultSet resultSet = null;
         BStatement psCheckAffSecureCode = new BStatement(transaction);
         psCheckAffSecureCode.createStatement();
-        resultSet = psCheckAffSecureCode.executeQuery("SELECT count(*) as COUNT from "
+        resultSet = psCheckAffSecureCode.executeQuery("SELECT MATSEC as AFF_SEC from "
                 + Jade.getInstance().getDefaultJdbcSchema() + ".CIECRIP ecr inner join "
                 + Jade.getInstance().getDefaultJdbcSchema() + ".CIINDIP ci on ecr.KAIIND=ci.KAIIND inner join "
                 + Jade.getInstance().getDefaultJdbcSchema() + ".AFAFFIP aff on ecr.KBITIE=aff.MAIAFF "
-                + "WHERE ci.KAIIND=" + getCompteIndividuelId() + " and aff.MATSEC<" + codeSecure);
-        resultSet.next();
-        String x = resultSet.getObject(1).toString();
-
-        if (Integer.parseInt(resultSet.getString(1)) > 0) {
-            return true;
+                + "WHERE ci.KAIIND=" + getCompteIndividuelId());
+        // resultSet = psCheckAffSecureCode.executeQuery("SELECT MATSEC FROM" +
+        // Jade.getInstance().getDefaultJdbcSchema()
+        // + ".AFAFFIP WHERE MALNAF=" + getNoAffilie());
+        // String x = resultSet.getObject(1).toString();
+        if (resultSet.next()) {
+            if (Integer.parseInt(resultSet.getString(1)) < codeSecure) {
+                return true;
+            } else {
+                return false;
+            }
         } else {
-            return false;
+            return true;
         }
 
     }
