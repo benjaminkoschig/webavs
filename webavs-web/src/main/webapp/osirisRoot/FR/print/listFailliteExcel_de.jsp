@@ -29,7 +29,7 @@ top.document.title = "Liste des faillites" + top.location.href;
 </SCRIPT>
 <%-- /tpl:put --%>
 <%@ include file="/theme/process/bodyStart.jspf" %>
-			<%-- tpl:put name="zoneTitle" --%>Liste des Faillites (Excel)<%-- /tpl:put --%>
+			<%-- tpl:put name="zoneTitle" --%><ct:FWLabel key="LISTE_FAILLITE"/> (Excel)<%-- /tpl:put --%>
 <%@ include file="/theme/process/bodyStart2.jspf" %>
 <%-- tpl:put name="zoneMain" --%>
 <tr>

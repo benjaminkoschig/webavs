@@ -10,6 +10,7 @@ import globaz.osiris.db.print.CAFailliteForExcelListManager;
 import java.util.ArrayList;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
+import org.apache.poi.hssf.usermodel.HSSFPrintSetup;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import ch.globaz.common.domaine.Date;
@@ -73,6 +74,10 @@ public class CAListFailliteExcel extends CAAbstractListExcel {
         initCritere();
         initTitleRow(colTitles);
         initPage(true);
+        HSSFPrintSetup ps = currentSheet.getPrintSetup();
+        ps.setFitWidth((short) 1);
+        ps.setFitHeight((short) 0);
+        currentSheet.setAutobreaks(true);
         createHeader();
         createFooter(CAListFailliteExcel.NUMERO_REFERENCE_INFOROM);
 
@@ -90,7 +95,7 @@ public class CAListFailliteExcel extends CAAbstractListExcel {
         currentSheet.setColumnWidth((short) numCol++, (short) 3000); // date etat colloc
         currentSheet.setColumnWidth((short) numCol++, (short) 3000); // date modif état colloc
         currentSheet.setColumnWidth((short) numCol++, (short) 3000); // date cloture faillite
-        currentSheet.setColumnWidth((short) numCol++, (short) 3000); // montant production
+        currentSheet.setColumnWidth((short) numCol++, (short) 4000); // montant production
         currentSheet.setColumnWidth((short) numCol++, (short) 15000); // commentaire
     }
 
@@ -134,31 +139,36 @@ public class CAListFailliteExcel extends CAAbstractListExcel {
         while (((faillite = (CAFailliteForExcelList) manager.cursorReadNext(statement)) != null) && !faillite.isNew()) {
             if (faillite != null) {
                 createRow();
-                this.createCell(faillite.getNumAdmin(), getStyleListLeft()); // numéro admin
-                this.createCell(getSession().getCodeLibelle(faillite.getRole()), getStyleListLeft()); // role
-                this.createCell(getSession().getCodeLibelle(faillite.getTypeAffiliation()), getStyleListLeft()); // Catégorie
-                this.createCell(faillite.getSociete(), getStyleListLeft()); // société
-                this.createCell(faillite.getDateFaillite(), getStyleListLeft()); // date de la faillite
-                this.createCell(faillite.getDateProduction(), getStyleListLeft()); // date de production
-                this.createCell(faillite.getDateProductionDefinitive(), getStyleListLeft()); // date de produciton
-                                                                                             // définitive
-                this.createCell(faillite.getDateAnnulationProduction(), getStyleListLeft()); // date d'annulation
-                                                                                             // production
-                this.createCell(faillite.getDateRevocation(), getStyleListLeft()); // date de révocation
-                this.createCell(faillite.getDateSuspension(), getStyleListLeft());// suspension de la faillite
-                this.createCell(faillite.getDateEtatColloc(), getStyleListLeft()); // etat de collocation
-                this.createCell(faillite.getDateModificationCollocation(), getStyleListLeft()); // date de modification
-                                                                                                // d'état collocation
-                this.createCell(faillite.getDateCloture(), getStyleListLeft()); // date de cloture faillite
+                this.createCell(faillite.getNumAdmin(), getStyleListCenterVertical()); // numéro admin
+                this.createCell(getSession().getCodeLibelle(faillite.getRole()), getStyleListCenterVertical()); // role
+                this.createCell(getSession().getCodeLibelle(faillite.getTypeAffiliation()),
+                        getStyleListCenterVertical()); // Catégorie
+                this.createCell(faillite.getSociete(), getStyleListLeftVerticalCenter()); // société
+                this.createCell(faillite.getDateFaillite(), getStyleListCenterVertical()); // date de la faillite
+                this.createCell(faillite.getDateProduction(), getStyleListCenterVertical()); // date de production
+                this.createCell(faillite.getDateProductionDefinitive(), getStyleListCenterVertical()); // date de
+                                                                                                       // produciton
+                // définitive
+                this.createCell(faillite.getDateAnnulationProduction(), getStyleListCenterVertical()); // date
+                                                                                                       // d'annulation
+                // production
+                this.createCell(faillite.getDateRevocation(), getStyleListCenterVertical()); // date de révocation
+                this.createCell(faillite.getDateSuspension(), getStyleListCenterVertical());// suspension de la faillite
+                this.createCell(faillite.getDateEtatColloc(), getStyleListCenterVertical()); // etat de collocation
+                this.createCell(faillite.getDateModificationCollocation(), getStyleListCenterVertical()); // date de
+                // modification
+                // d'état collocation
+                this.createCell(faillite.getDateCloture(), getStyleListCenterVertical()); // date de cloture faillite
                 if (JadeStringUtil.isBlank(faillite.getMontantProduction())) {
                     this.createCell(0, getStyleMontant()); // Montant production
                 } else {
-                    this.createCell(new Double(faillite.getMontantProduction()), getStyleMontant());
+                    this.createCell(new Double(faillite.getMontantProduction()), getStyleMontantVerticalCenter());
                 }
 
-                this.createCell(faillite.getCommentaire(), getStyleListLeft()); // commentaire
+                this.createCell(faillite.getCommentaire(), getStyleListLeftTop()); // commentaire
             }
         }
         return currentSheet;
     }
+
 }

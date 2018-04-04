@@ -26,6 +26,7 @@ public class CAFaillite extends BEntity {
     public static final String FIELD_COMMENTAIRE = "commentaire";
     private static final String LABEL_DATE_FAILLITE_DOSSIER = "DATE_FAILLITE_DOSSIER";
     private static final String LABEL_DATE_FAILLITE_NON_RENSEIGNEE = "DATE_FAILLITE_NON_RENSEIGNEE";
+    private static final String LABEL_DATE_FAILLITE_COMMENTAIRE_LONG = "COMMENTAIRE_LONG";
 
     private static final String TABLE_NAME = "CAFAILP";
 
@@ -282,4 +283,11 @@ public class CAFaillite extends BEntity {
         this.commentaire = commentaire;
     }
 
+    public String getMessageErrorCommentaire() {
+        return getSession().getLabel(CAFaillite.LABEL_DATE_FAILLITE_COMMENTAIRE_LONG);
+    }
+
+    public String getMessageErrorDateFaillite() {
+        return getSession().getLabel(CAFaillite.LABEL_DATE_FAILLITE_NON_RENSEIGNEE);
+    }
 }

@@ -1,5 +1,6 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<%-- tpl:insert page="/theme/detail.jtpl" --%><%@ page language="java" errorPage="/errorPage.jsp" import="globaz.globall.http.*" contentType="text/html;charset=ISO-8859-1" %>
+<%-- tpl:insert page="/theme/detail.jtpl" --%><%@page import="globaz.osiris.db.suiviprocedure.CAFaillite"%>
+<%@ page language="java" errorPage="/errorPage.jsp" import="globaz.globall.http.*" contentType="text/html;charset=ISO-8859-1" %>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ include file="/theme/detail/header.jspf" %>
 <%-- tpl:put name="zoneInit" --%>
@@ -34,16 +35,46 @@ function add() {
 
 function upd() {
 }
+function validateCheckDateComment(){
+	var comment = document.getElementById("commentaire").value.length;
+	var dateFailliteText = document.getElementById("dateFaillite").value;
+	errorObj.text = "";
+    if(dateFailliteText == ""){
+    	errorObj.text ="<%=viewBean.getMessageErrorDateFaillite()%>";
+    }
+	if(comment > 4000){
+		if(errorObj.text == ""){
+			errorObj.text = "<%=viewBean.getMessageErrorCommentaire()%>";
+		}else{
+			errorObj.text = errorObj.text.concat('<br>'+"<%=viewBean.getMessageErrorCommentaire()%>");
+		}
+		
+	}
+    if(errorObj.text !=""){
+    	return true
+    }else{
+    	return false;
+    }
+
+
+
+}
+
 
 function validate() {
     state = validateFields();
-    if (document.forms[0].elements('_method').value == "add") {
-        document.forms[0].elements('userAction').value="osiris.suiviprocedure.faillite.ajouter";
-    } else {
-	    document.forms[0].elements('userAction').value="osiris.suiviprocedure.faillite.modifier";
-    }
-
-    return state;
+    if(validateCheckDateComment()){
+    	showModalDialog('<%=servletContext%>/errorModalDlg.jsp',errorObj,'dialogHeight:20;dialogWidth:25;status:no;resizable:no');	
+    }else{
+    	  if (document.forms[0].elements('_method').value == "add") {
+  	        document.forms[0].elements('userAction').value="osiris.suiviprocedure.faillite.ajouter";
+  	    } else {
+  		    document.forms[0].elements('userAction').value="osiris.suiviprocedure.faillite.modifier";
+  	    }
+  	    return state;
+      	
+      }
+  
 }
 
 function cancel() {
@@ -137,7 +168,7 @@ top.document.title = "Détail Suivi de la procédure - Faillite - " + top.location
 
 <tr>
 	<td width="125" class="label"><b style="WIDTH: 180px">Date faillite</b></td>
-	<td width="30">&nbsp;<input type="hidden" name="idFaillite" value="<%=viewBean.getIdFaillite()%>"/></td>
+	<td width="30">&nbsp;<input type="hidden" name="idFaillite"  value="<%=viewBean.getIdFaillite()%>"/></td>
 	<td nowrap><ct:FWCalendarTag name="dateFaillite" doClientValidation="CALENDAR" value="<%=viewBean.getDateFaillite()%>"/></td>
 	<td nowrap></td>
 	<td nowrap></td>
@@ -232,7 +263,7 @@ top.document.title = "Détail Suivi de la procédure - Faillite - " + top.location
 <tr>
 	<td class="label" style="width:300px;">Commentaire</td>
 	<td  style="width:30px">&nbsp;</td>
-	<td  class="control" colspan="4" nowrap><textarea type="text" name="commentaire" class="commentaire" maxlength="4000" style="width:1500;max-width:1500;height:100;"><%=viewBean.getCommentaire()%></textarea></td>
+	<td  class="control" colspan="4" nowrap><textarea type="text" id="commentaire" name="commentaire" class="commentaire" maxlength="3000" style="width:1500;max-width:1500;height:100;"><%=viewBean.getCommentaire()%></textarea></td>
 </tr>
 
 <%-- /tpl:put --%>

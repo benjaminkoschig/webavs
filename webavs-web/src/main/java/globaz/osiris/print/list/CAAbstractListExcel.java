@@ -193,9 +193,12 @@ public abstract class CAAbstractListExcel {
     private BSession session;
 
     private HSSFCellStyle styleCenter = null;
+    private HSSFCellStyle styleCenterVertical = null;
+    private HSSFCellStyle styleLeftVertical = null;
     private HSSFCellStyle styleCreance = null;
     private HSSFCellStyle styleGris25Pourcent = null;
     private HSSFCellStyle styleLeft = null;
+    private HSSFCellStyle styleLeftTop = null;
     private HSSFCellStyle styleListTitleCenter = null;
     private HSSFCellStyle styleListTitleLeft = null;
     private HSSFCellStyle styleListTitleRight = null;
@@ -726,6 +729,46 @@ public abstract class CAAbstractListExcel {
     }
 
     /**
+     * centré (vertical et horizontal); encadré(thin); wrap
+     * 
+     * @return le style liste centré
+     */
+    protected HSSFCellStyle getStyleListCenterVertical() {
+        if (styleCenterVertical == null) {
+            HSSFFont font = wb.createFont();
+            font.setFontHeightInPoints(getFontHeight());
+            styleCenterVertical = wb.createCellStyle();
+            styleCenterVertical.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
+            styleCenterVertical.setAlignment(HSSFCellStyle.ALIGN_CENTER);
+            styleCenterVertical.setFont(font);
+            initListBorderThin(styleCenterVertical);
+            styleCenterVertical.setWrapText(true); // La largeur de la cellule s'adapte
+            // au contenu
+        }
+        return styleCenterVertical;
+    }
+
+    /**
+     * gauche et centré vertical; encadré(thin); wrap
+     * 
+     * @return le style liste centré
+     */
+    protected HSSFCellStyle getStyleListLeftVerticalCenter() {
+        if (styleLeftVertical == null) {
+            HSSFFont font = wb.createFont();
+            font.setFontHeightInPoints(getFontHeight());
+            styleLeftVertical = wb.createCellStyle();
+            styleLeftVertical.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
+            styleLeftVertical.setAlignment(HSSFCellStyle.ALIGN_LEFT);
+            styleLeftVertical.setFont(font);
+            initListBorderThin(styleLeftVertical);
+            styleLeftVertical.setWrapText(true); // La largeur de la cellule s'adapte
+            // au contenu
+        }
+        return styleLeftVertical;
+    }
+
+    /**
      * gauche; encadré(thin); Wrap
      * 
      * @return le style liste aligné à gauche
@@ -742,6 +785,26 @@ public abstract class CAAbstractListExcel {
             // contenu
         }
         return styleLeft;
+    }
+
+    /**
+     * gauche; encadré(thin); Wrap
+     * 
+     * @return le style liste aligné à gauche
+     */
+    protected HSSFCellStyle getStyleListLeftTop() {
+        if (styleLeftTop == null) {
+            HSSFFont font = wb.createFont();
+            font.setFontHeightInPoints(getFontHeight());
+            styleLeftTop = wb.createCellStyle();
+            styleLeftTop.setAlignment(HSSFCellStyle.ALIGN_LEFT);
+            styleLeftTop.setVerticalAlignment(HSSFCellStyle.VERTICAL_TOP);
+            styleLeftTop.setFont(font);
+            initListBorderThin(styleLeftTop);
+            styleLeftTop.setWrapText(true); // La largeur de la cellule s'adapte au
+            // contenu
+        }
+        return styleLeftTop;
     }
 
     /**
@@ -988,6 +1051,29 @@ public abstract class CAAbstractListExcel {
             // setDataFormat((short) 4)
             styleMontant.setDataFormat(CAAbstractListExcel.FORMAT_MONTANT);
             styleMontant.setAlignment(HSSFCellStyle.ALIGN_RIGHT);
+            styleMontant.setFont(font);
+            initListBorderThin(styleMontant);
+            styleMontant.setWrapText(true); // La largeur de la cellule s'adapte
+            // au contenu
+        }
+        return styleMontant;
+    }
+
+    /**
+     * Montant : droite et centré vertical; encadré(thin); Wrap; format #,##0.00
+     * 
+     * @return le style liste pour un montant
+     */
+    protected HSSFCellStyle getStyleMontantVerticalCenter() {
+        if (styleMontant == null) {
+            HSSFFont font = wb.createFont();
+            font.setFontHeightInPoints(getFontHeight());
+            styleMontant = wb.createCellStyle();
+            // setDataFormat(wb.createDataFormat().getFormat("#,##0.00")) ==
+            // setDataFormat((short) 4)
+            styleMontant.setDataFormat(CAAbstractListExcel.FORMAT_MONTANT);
+            styleMontant.setAlignment(HSSFCellStyle.ALIGN_RIGHT);
+            styleMontant.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
             styleMontant.setFont(font);
             initListBorderThin(styleMontant);
             styleMontant.setWrapText(true); // La largeur de la cellule s'adapte

@@ -34,16 +34,39 @@ function add() {
 
 function upd() {
 }
+function validateCheckDateComment(){
+	var comment = document.getElementById("commentaire").value.length;
+	var dateFailliteText = document.getElementById("dateFaillite").value;
+	errorObj.text = "";
+    if(dateFailliteText == ""){
+    	errorObj.text ="<%=viewBean.getMessageErrorDateFaillite()%>";
+    }
+	if(comment > 4000){
+		if(errorObj.text == ""){
+			errorObj.text = "<%=viewBean.getMessageErrorCommentaire()%>";
+		}else{
+			errorObj.text = errorObj.text.concat('<br>'+"<%=viewBean.getMessageErrorCommentaire()%>");
+		}	
+	}
+    if(errorObj.text !=""){
+    	return true
+    }else{
+    	return false;
+    }
+}
 
 function validate() {
     state = validateFields();
-    if (document.forms[0].elements('_method').value == "add") {
-        document.forms[0].elements('userAction').value="osiris.suiviprocedure.faillite.ajouter";
-    } else {
-	    document.forms[0].elements('userAction').value="osiris.suiviprocedure.faillite.modifier";
-    }
-
-    return state;
+    if(validateCheckDateComment()){
+    	showModalDialog('<%=servletContext%>/errorModalDlg.jsp',errorObj,'dialogHeight:20;dialogWidth:25;status:no;resizable:no');	
+    }else{
+    	  if (document.forms[0].elements('_method').value == "add") {
+  	        document.forms[0].elements('userAction').value="osiris.suiviprocedure.faillite.ajouter";
+  	    } else {
+  		    document.forms[0].elements('userAction').value="osiris.suiviprocedure.faillite.modifier";
+  	    }
+  	    return state;
+      }
 }
 
 function cancel() {
