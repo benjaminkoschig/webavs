@@ -1060,7 +1060,8 @@ public class CPDecisionViewBean extends CPDecision implements FWViewBeanInterfac
                         _addError(getSession().getCurrentThreadTransaction(), getSession().getLabel("CP_MSG_0068"));
                     }
                     // } else if ("515002".equalsIgnoreCase(persAvs.getEtatCivil())) {
-                } else if (CPProperties.ETAT_CIVIL_SIMUL_CONJOINT.getValue().contains(persAvs.getEtatCivil())) {
+                } else if (CPProperties.ETAT_CIVIL_SIMUL_CONJOINT.getValue().contains(persAvs.getEtatCivil())
+                        && !JadeStringUtil.isBlankOrZero(persAvs.getEtatCivil())) {
                     // Si conjoint non renseigné=> regarder si le code état
                     // civil== Marié et dans ce cas mettre simuleConjoint=true
                     // Ce cas de figure est utile pour les caisses qui ne
