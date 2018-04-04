@@ -488,8 +488,8 @@ public class DemandeServiceImpl extends PegasusAbstractServiceImpl implements De
         List<Droit> droits = PegasusServiceLocator.getDroitService().findCurrentVersionDroitByIdsDemande(
                 Arrays.asList(demande.getId()));
         String today = JadeDateUtil.getGlobazFormattedDate(new Date());
-        String dateDeb = JadeDateUtil.addMonths("01." + demande.getSimpleDemande().getDateFin(), -1).substring(3);
-
+        // String dateDeb = JadeDateUtil.addMonths("01." + demande.getSimpleDemande().getDateFin(), -1).substring(3);
+        String dateDeb = demande.getSimpleDemande().getDateFin();
         for (Droit droit : droits) {
             droit.setDemande(demande);
             droit = PegasusServiceLocator.getDroitService().corrigerDroitDateReduction(droit, today, dateDeb, today,

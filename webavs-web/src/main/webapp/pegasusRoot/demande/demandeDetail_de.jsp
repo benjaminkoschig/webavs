@@ -509,7 +509,7 @@ function postInit(){
 				<tr>
 					<td class="standardLabel"><ct:FWLabel key="JSP_PC_DEM_D_FORCER_ANNULATION_DATE"/></td>
 					<td id="dateReducTD">
-						<input type="text" name="dateReduc" id="dateReduc"  onchange="doDisableCheckbox(this)" data-g-calendar="mandatory:false,type:month" value="<%=!JadeStringUtil.isBlank(viewBean.getDemande().getSimpleDemande().getDateFinInitial())?JadeDateUtil.addMonths("01." + viewBean.getDemande().getSimpleDemande().getDateFin(), 1).substring(3):""%>" />
+						<input type="text" name="dateReduc" id="dateReduc"  onchange="doDisableCheckbox(this)" data-g-calendar="mandatory:false,type:month" value="<%=!JadeStringUtil.isBlank(viewBean.getDemande().getSimpleDemande().getDateFinInitial())?viewBean.getDemande().getSimpleDemande().getDateFin():""%>" />
 					</td>
 				</tr>
 				<TR><TD colspan="6">&nbsp;<HR class="separator" ></TD></TR>
