@@ -1408,6 +1408,8 @@ public class REACORParser extends REACORAbstractFlatFileParser {
 
                     pd.setDateDebutPaiement(ra1.getDateDebutDroit());
                     pd.setMontant(ra1.getMontantPrestation());
+                    pd.setMontantReductionAnticipation(ra1.getMontantReducationAnticipation());
+                    pd.setMontantSupplementAjournement(ra1.getSupplementAjournement());
 
                     REBasesCalcul baseCal = new REBasesCalcul();
                     baseCal.setSession(session);

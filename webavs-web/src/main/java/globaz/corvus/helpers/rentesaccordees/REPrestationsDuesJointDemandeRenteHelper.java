@@ -154,6 +154,8 @@ public class REPrestationsDuesJointDemandeRenteHelper extends PRAbstractHelper {
                 pd.setMontant(vb.getMontant());
                 pd.setCsEtat(vb.getCsEtat());
                 pd.setCsType(vb.getCsType());
+                pd.setMontantReductionAnticipation(vb.getMontantReductionAnticipation());
+                pd.setMontantSupplementAjournement(vb.getMontantSupplementAjournement());
 
                 pd.add();
             }
@@ -170,6 +172,8 @@ public class REPrestationsDuesJointDemandeRenteHelper extends PRAbstractHelper {
             pd.setMontant(vb.getMontant());
             pd.setCsEtat(vb.getCsEtat());
             pd.setCsType(vb.getCsType());
+            pd.setMontantReductionAnticipation(vb.getMontantReductionAnticipation());
+            pd.setMontantSupplementAjournement(vb.getMontantSupplementAjournement());
 
             pd.add();
         }
@@ -353,6 +357,8 @@ public class REPrestationsDuesJointDemandeRenteHelper extends PRAbstractHelper {
                 pd.setMontant(vb.getMontant());
                 pd.setCsEtat(vb.getCsEtat());
                 pd.setCsType(vb.getCsType());
+                pd.setMontantReductionAnticipation(vb.getMontantReductionAnticipation());
+                pd.setMontantSupplementAjournement(vb.getMontantSupplementAjournement());
 
                 pd.update();
             }
@@ -372,6 +378,8 @@ public class REPrestationsDuesJointDemandeRenteHelper extends PRAbstractHelper {
             pd.setMontant(vb.getMontant());
             pd.setCsEtat(vb.getCsEtat());
             pd.setCsType(vb.getCsType());
+            pd.setMontantReductionAnticipation(vb.getMontantReductionAnticipation());
+            pd.setMontantSupplementAjournement(vb.getMontantSupplementAjournement());
 
             pd.update();
         }
