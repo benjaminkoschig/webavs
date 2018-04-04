@@ -30,6 +30,7 @@ public class APSituationProfessionnelleManager extends PRAbstractManager {
     private String forIdDroit = "";
     private Boolean isAllocationMax = null;
     private String notForIdSituationProfessionnelle = "";
+    private String forIdSituationProfessionnelle = "";
 
     // ~ Methods
     // --------------------------------------------------------------------------------------------------------
@@ -70,6 +71,15 @@ public class APSituationProfessionnelleManager extends PRAbstractManager {
 
             sqlWhere += APSituationProfessionnelle.FIELDNAME_IDSITUATIONPROF + "<>"
                     + _dbWriteNumeric(statement.getTransaction(), notForIdSituationProfessionnelle);
+        }
+
+        if (!JadeStringUtil.isIntegerEmpty(forIdSituationProfessionnelle)) {
+            if (sqlWhere.length() != 0) {
+                sqlWhere += " AND ";
+            }
+
+            sqlWhere += APSituationProfessionnelle.FIELDNAME_IDSITUATIONPROF + "="
+                    + _dbWriteNumeric(statement.getTransaction(), forIdSituationProfessionnelle);
         }
 
         if (isAllocationMax != null) {
@@ -417,6 +427,14 @@ public class APSituationProfessionnelleManager extends PRAbstractManager {
      */
     public void setNotForIdSituationProfessionnelle(String notForIdSituationProfessionnelle) {
         this.notForIdSituationProfessionnelle = notForIdSituationProfessionnelle;
+    }
+
+    public String getForIdSituationProfessionnelle() {
+        return forIdSituationProfessionnelle;
+    }
+
+    public void setForIdSituationProfessionnelle(String forIdSituationProfessionnelle) {
+        this.forIdSituationProfessionnelle = forIdSituationProfessionnelle;
     }
 
 }

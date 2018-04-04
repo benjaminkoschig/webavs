@@ -8,6 +8,7 @@ import globaz.apg.api.droits.IAPDroitMaternite;
 import globaz.apg.api.prestation.IAPRepartitionPaiements;
 import globaz.apg.db.droits.APDroitLAPG;
 import globaz.apg.db.droits.APSituationFamilialeMat;
+import globaz.apg.db.droits.APSituationProfessionnelle;
 import globaz.apg.db.lots.APFactureACompenser;
 import globaz.apg.db.lots.APFactureACompenserManager;
 import globaz.apg.db.lots.APLot;
@@ -2525,6 +2526,8 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
                     .getYear());
             repartition.genrePrestation = repartJointCotJointPrest.getGenrePrestation();
             repartition.idDepartement = repartJointCotJointPrest.getIdDepartement();
+            Boolean isPorteEnCompte = isSituationProfPorteEnCompte(repartJointCotJointPrest
+                    .getIdSituationProfessionnelle());
 
             final String idPrestation = repartJointCotJointPrest.getIdPrestationApg();
             // On regarde ce qu'on a a regarder pour chaque cotisation de cette
@@ -2604,14 +2607,15 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
             if (idAssureDeBase.equals(idTiers)) {
                 // choix de la section
                 repartition.section = getSection(idTiers, idAffilie, isRestitution);
-                key = new Key(idTiers, idAffilie, "0", "0", "0", false, false, repartition.idAdressePaiement);
+                key = new Key(idTiers, idAffilie, "0", "0", "0", false, false, repartition.idAdressePaiement, false);
 
             }
             // Cas ou le bénéficiaire est un affilié
             else if (!JadeStringUtil.isIntegerEmpty(idAffilie)) {
                 // choix de la section
                 repartition.section = getSection(idTiers, idAffilie, isRestitution);
-                key = new Key(idTiers, idAffilie, "0", "0", "0", false, false, repartition.idAdressePaiement);
+                key = new Key(idTiers, idAffilie, "0", "0", "0", false, false, repartition.idAdressePaiement,
+                        isPorteEnCompte);
 
             }
             // Cas ou le bénéficiaire est un employeur non affilié,
@@ -2623,7 +2627,8 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
             else {
                 // choix de la section
                 repartition.section = getSection(idAssureDeBase, idAffilie, isRestitution);
-                key = new Key(idAssureDeBase, "0", idTiers, "0", "0", false, false, repartition.idAdressePaiement);
+                key = new Key(idAssureDeBase, "0", idTiers, "0", "0", false, false, repartition.idAdressePaiement,
+                        false);
             }
 
             if (repartitions.containsKey(key)) {
@@ -2636,6 +2641,26 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
         }
 
         return repartitions;
+    }
+
+    /**
+     * Recherche la situation professionnelle avec son ID et récupère son champ isPorteEnCompte
+     * 
+     * @param idSituationProfessionnelle
+     *            Retourne true si la situation professionnelle passée en paramètre est portée en compte
+     * @throws Exception
+     */
+    private boolean isSituationProfPorteEnCompte(String idSituationProfessionnelle) throws Exception {
+        if (!JadeStringUtil.isBlankOrZero(idSituationProfessionnelle)) {
+            APSituationProfessionnelle situationPro = new APSituationProfessionnelle();
+            situationPro.setId(idSituationProfessionnelle);
+            situationPro.setSession(getSession());
+            situationPro.retrieve(getTransaction());
+            if (!situationPro.isNew()) {
+                return situationPro.getIsPorteEnCompte();
+            }
+        }
+        return false;
     }
 
     /**
