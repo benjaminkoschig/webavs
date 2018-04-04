@@ -39,6 +39,24 @@ public interface DecisionService extends JadeApplicationService {
     public void devalideDecisions(String idDroit, String idVersionDroit, String noVersion) throws DecisionException;
 
     /**
+     * Dévalide les décisions d'une version de droit, c.a.d. les remet dans l'état avant leur validation et supprime les
+     * prestations et ordres de versement liés.
+     * 
+     * @param idDroit
+     *            id du droit à dévalider
+     * @param idVersionDroit
+     *            id de la version du droit à dévalider
+     * @param noVersion
+     *            Numéro de la version du droit à dévalider
+     * @param forAnnulation
+     *            process a excuter pour une dévalidation d'annulation
+     * @throws DecisionException
+     *             en cas d'erreur
+     */
+    public void devalideDecisions(String idDroit, String idVersionDroit, String noVersion, Boolean forAnnulation)
+            throws DecisionException;
+
+    /**
      * Permet de savoir si on peut dévalider une décision
      * 
      * @param simpleDecisionHeader

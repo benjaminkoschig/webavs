@@ -166,7 +166,7 @@ public abstract class SimpleDemandeChecker extends PegasusAbstractChecker {
             JadeApplicationServiceNotAvailableException, JadePersistenceException, PrestationException, LotException {
         if (IPCDemandes.CS_SUPPRIME.equals(demande.getCsEtatDemande())
 
-        && demande.getDateFinInitial() != "") {
+        && !JadeStringUtil.isEmpty(demande.getDateFinInitial())) {
             List<Droit> droits = PegasusServiceLocator.getDroitService().findCurrentVersionDroitByIdsDemande(
                     Arrays.asList(demande.getId()));
 

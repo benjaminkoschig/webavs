@@ -15,6 +15,7 @@ import ch.globaz.hera.business.exceptions.models.MembreFamilleException;
 import ch.globaz.hera.business.vo.famille.MembreFamilleVO;
 import ch.globaz.pegasus.business.exceptions.PegasusException;
 import ch.globaz.pegasus.business.exceptions.models.calcul.CalculException;
+import ch.globaz.pegasus.business.exceptions.models.decision.DecisionException;
 import ch.globaz.pegasus.business.exceptions.models.demande.DemandeException;
 import ch.globaz.pegasus.business.exceptions.models.dessaisissement.DessaisissementFortuneException;
 import ch.globaz.pegasus.business.exceptions.models.dessaisissement.DessaisissementRevenuException;
@@ -309,6 +310,20 @@ public interface DroitService extends JadeApplicationService {
             String dateDecision, String currentUserId, boolean comptabilisationAuto, String mailAdressCompta)
             throws DroitException, JadePersistenceException, JadeApplicationServiceNotAvailableException;
 
+    /**
+     * Annule la décision de suppression lors d'une demande d'annulation
+     * 
+     * @param droit
+     * @throws DecisionException
+     * @throws JadeApplicationServiceNotAvailableException
+     * @throws JadePersistenceException
+     * @throws DonneeFinanciereException
+     * @throws DroitException
+     */
+    public void retourArriereAnnulation(Droit droit) throws DecisionException,
+            JadeApplicationServiceNotAvailableException, JadePersistenceException, DonneeFinanciereException,
+            DroitException;
+   
     /**
      * Permet de compter le nombre d'enregistrements correspondant au modèle de recherche
      * 
@@ -2710,6 +2725,21 @@ public interface DroitService extends JadeApplicationService {
      * @throws DroitException
      */
     Droit supprimerVersionDroit(Droit droit) throws DonneeFinanciereException,
+            JadeApplicationServiceNotAvailableException, JadePersistenceException, DroitException;
+
+    /**
+     * Supprime une version de droit à l'état annulé. Si il y a une seule version le droit, les membres de familles et
+     * les données
+     * personnel sont supprimé
+     * 
+     * @param droit
+     * @return
+     * @throws DonneeFinanciereException
+     * @throws JadeApplicationServiceNotAvailableException
+     * @throws JadePersistenceException
+     * @throws DroitException
+     */
+    Droit supprimerVersionDroitAnnule(Droit droit) throws DonneeFinanciereException,
             JadeApplicationServiceNotAvailableException, JadePersistenceException, DroitException;
 
     public Droit synchroniseMembresFamille(Droit droit) throws DroitException,

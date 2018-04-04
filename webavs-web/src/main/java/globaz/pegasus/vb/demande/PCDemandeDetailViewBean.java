@@ -233,10 +233,12 @@ public class PCDemandeDetailViewBean extends BJadePersistentObjectViewBean {
             demande = PegasusServiceLocator.getDemandeService().rouvrir(demande);
         } else if (actionRefermerDemande) {
             demande = PegasusServiceLocator.getDemandeService().reFermer(demande);
-        } else if (annule) {
+        } else if (annule && !IPCDemandes.CS_ANNULE.equals(demande.getSimpleDemande().getCsEtatDemande())) {
             demande = PegasusServiceLocator.getDemandeService().annuler(demande, comptabilisationAuto);
+        } else if (!annule && IPCDemandes.CS_ANNULE.equals(demande.getSimpleDemande().getCsEtatDemande())) {
+            demande = PegasusServiceLocator.getDemandeService().retourArriereAnnuler(demande);
         } else if (demande.getSimpleDemande().getDateFinInitial() != "") {
-            demande = PegasusServiceLocator.getDemandeService().dateReduction(demande, comptabilisationAuto);
+            demande = PegasusServiceLocator.getDemandeService().dateReduction(demande, comptabilisationAuto);            
         } else {
             demande = PegasusServiceLocator.getDemandeService().update(demande);
         }

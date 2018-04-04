@@ -782,7 +782,9 @@ public class PCDecisionSuppressionViewBean extends BJadePersistentObjectViewBean
             // dévalidable
             isLotOuvert = PegasusServiceLocator.getDecisionService().isDecisionDevalidable(
                     decisionSuppression.getDecisionHeader().getSimpleDecisionHeader(),
-                    decisionSuppression.getVersionDroit().getSimpleVersionDroit());
+                    decisionSuppression.getVersionDroit().getSimpleVersionDroit())
+                    && !IPCDroits.CS_ANNULE.equals(decisionSuppression.getVersionDroit().getSimpleVersionDroit()
+                            .getCsEtatDroit());
 
         } catch (PrestationException e) {
             throw new DecisionException("An error happened while retrieving prestation!", e);

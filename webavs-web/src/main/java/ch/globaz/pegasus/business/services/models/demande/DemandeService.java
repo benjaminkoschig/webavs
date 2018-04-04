@@ -8,6 +8,9 @@ import ch.globaz.pegasus.business.exceptions.PegasusException;
 import ch.globaz.pegasus.business.exceptions.models.decision.DecisionException;
 import ch.globaz.pegasus.business.exceptions.models.demande.DemandeException;
 import ch.globaz.pegasus.business.exceptions.models.dossiers.DossierException;
+import ch.globaz.pegasus.business.exceptions.models.droit.DonneeFinanciereException;
+import ch.globaz.pegasus.business.exceptions.models.droit.DroitException;
+import ch.globaz.pegasus.business.exceptions.models.pcaccordee.PCAccordeeException;
 import ch.globaz.pegasus.business.models.demande.Demande;
 import ch.globaz.pegasus.business.models.demande.DemandeSearch;
 import ch.globaz.pegasus.business.models.demande.ListDemandes;
@@ -158,7 +161,7 @@ public interface DemandeService extends JadeApplicationService {
      * La réouverture de la demande consite à : 1. Enlever la date de fin de la demande PC. 2. Passer l’état de la
      * demande PC en « Octroyé » 3. Supprimer la date de fin des PCA en refus (attention 2 PCA si le couple est séparé
      * par la maladie)
-     *
+     * 
      * @param demande
      * @return demande
      * @throws JadeApplicationException
@@ -168,7 +171,7 @@ public interface DemandeService extends JadeApplicationService {
 
     /**
      * Peremete de savoir s'il est possible de rouvrir la demande.
-     *
+     * 
      * @param demande
      * @return
      * @throws DemandeException
@@ -180,7 +183,7 @@ public interface DemandeService extends JadeApplicationService {
 
     /**
      * Permet de refermer la demande si la demande a été rouverte
-     *
+     * 
      * @param demande
      * @return
      * @throws JadePersistenceException
@@ -190,7 +193,7 @@ public interface DemandeService extends JadeApplicationService {
 
     /**
      * Service qui permet de savoir si il est possible de rouvri la demande
-     *
+     * 
      * @param demande
      * @return true s'il est possible d'ouvrir la demande
      * @throws PegasusException
@@ -211,7 +214,21 @@ public interface DemandeService extends JadeApplicationService {
     public Demande annuler(Demande demande, Boolean comptabilisationAuto) throws JadePersistenceException,
             JadeApplicationException;
 
-    public Demande dateReduction(Demande demande, Boolean comptabilisationAuto) throws JadePersistenceException,
-            JadeApplicationException;
+    /**
+     * Revient en arrière sur l'annulation d'une demande
+     * 
+     * @param demande
+     * @return
+     * @throws JadePersistenceException
+     * @throws DemandeException
+     * @throws DossierException
+     * @throws DroitException
+     * @throws JadeApplicationServiceNotAvailableException
+     */
+    public Demande retourArriereAnnuler(Demande demande) throws JadePersistenceException, DemandeException,
+            DossierException, DroitException, JadeApplicationServiceNotAvailableException, DecisionException,
+            DonneeFinanciereException, PCAccordeeException;
 
+    public Demande dateReduction(Demande demande, Boolean comptabilisationAuto) throws JadePersistenceException,
+    JadeApplicationException;
 }

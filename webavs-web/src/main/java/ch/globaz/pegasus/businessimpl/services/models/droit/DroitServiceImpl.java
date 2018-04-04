@@ -36,6 +36,7 @@ import ch.globaz.pegasus.business.constantes.IPCDemandes;
 import ch.globaz.pegasus.business.constantes.IPCDroits;
 import ch.globaz.pegasus.business.exceptions.PegasusException;
 import ch.globaz.pegasus.business.exceptions.models.calcul.CalculException;
+import ch.globaz.pegasus.business.exceptions.models.decision.DecisionException;
 import ch.globaz.pegasus.business.exceptions.models.demande.DemandeException;
 import ch.globaz.pegasus.business.exceptions.models.dessaisissement.DessaisissementFortuneException;
 import ch.globaz.pegasus.business.exceptions.models.dessaisissement.DessaisissementRevenuException;
@@ -80,6 +81,7 @@ import ch.globaz.pegasus.business.exceptions.models.revenusdepenses.SimpleLibell
 import ch.globaz.pegasus.business.exceptions.models.revenusdepenses.SimpleTypeFraisObtentionRevenuException;
 import ch.globaz.pegasus.business.exceptions.models.revenusdepenses.TypeFraisObtentionRevenuException;
 import ch.globaz.pegasus.business.models.decision.DecisionSuppression;
+import ch.globaz.pegasus.business.models.decision.DecisionSuppressionSearch;
 import ch.globaz.pegasus.business.models.demande.Demande;
 import ch.globaz.pegasus.business.models.dessaisissement.DessaisissementFortune;
 import ch.globaz.pegasus.business.models.dessaisissement.DessaisissementFortuneAutoSearch;
@@ -484,7 +486,6 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
         newVersionDroit.setDateAnnonce(dateAnnonce);
         newVersionDroit.setCsMotif(IPCDroits.CS_MOTIF_DROIT_MODIFICATIONS_DIVERSES);
         newVersionDroit.setCsEtatDroit(IPCDroits.CS_ANNULE);
-        droit.setSimpleVersionDroit(newVersionDroit);
         droit.setSimpleVersionDroit(PegasusImplServiceLocator.getSimpleVersionDroitService().create(newVersionDroit));
 
         // création de la décision de suppression
@@ -516,6 +517,20 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
         }
 
         return droit;
+    }
+
+    @Override
+    public void retourArriereAnnulation(Droit droit) throws DecisionException,
+            JadeApplicationServiceNotAvailableException, JadePersistenceException, DonneeFinanciereException,
+            DroitException {
+        if (IPCDroits.CS_ANNULE.equals(droit.getSimpleVersionDroit().getCsEtatDroit())) {
+            PegasusServiceLocator.getDecisionService().devalideDecisions(droit.getId(),
+                    droit.getSimpleVersionDroit().getId(), droit.getSimpleVersionDroit().getNoVersion(), true);
+            DecisionSuppressionSearch search = new DecisionSuppressionSearch();
+            search.setForIdVersionDroit(droit.getSimpleVersionDroit().getId());
+            PegasusImplServiceLocator.getDecisionSuppressionService().delete(search);
+            droit = PegasusServiceLocator.getDroitService().supprimerVersionDroitAnnule(droit);
+        }
     }
 
     @Override
@@ -577,8 +592,8 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
         }
 
         return droit;
-    }
-
+    }    
+    
     @Override
     public int count(DroitSearch search) throws DroitException, JadePersistenceException {
         if (search == null) {
@@ -4269,6 +4284,37 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
                         droit.getSimpleDroit().getIdDroit());
                 PegasusImplServiceLocator.getSimpleDroitService().delete(droit.getSimpleDroit());
             }
+        }
+
+        return droit;
+    }
+
+    @Override
+    public Droit supprimerVersionDroitAnnule(Droit droit) throws DonneeFinanciereException,
+            JadeApplicationServiceNotAvailableException, JadePersistenceException, DroitException {
+        // suppression des données financières
+        PegasusImplServiceLocator.getDonneeFinanciereHeaderService().deleteDonneFinancierByIdVersionDroit(
+                droit.getSimpleVersionDroit().getIdVersionDroit());
+
+        // suppression des pcAccodee et des calcule
+        try {
+            PegasusImplServiceLocator.getCalculPersistanceService().clearPCAccordee(droit);
+        } catch (PCAccordeeException e) {
+            throw new DroitException("Unable to delete PCAccordee", e);
+        } catch (JadeApplicationException e) {
+            throw new DroitException("Unable to delete PCAccordee", e);
+        }
+
+        // suppression de la version de droit
+        PegasusImplServiceLocator.getSimpleVersionDroitService().delete(droit.getSimpleVersionDroit());
+
+        // suppression du droit si il y une seule version
+        SimpleVersionDroitSearch search = new SimpleVersionDroitSearch();
+        search.setForIdDroit(droit.getSimpleDroit().getIdDroit());
+        if (PegasusImplServiceLocator.getSimpleVersionDroitService().count(search) == 0) {
+            PegasusImplServiceLocator.getDroitMembreFamilleService().deleteByIdDroit(
+                    droit.getSimpleDroit().getIdDroit());
+            PegasusImplServiceLocator.getSimpleDroitService().delete(droit.getSimpleDroit());
         }
 
         return droit;

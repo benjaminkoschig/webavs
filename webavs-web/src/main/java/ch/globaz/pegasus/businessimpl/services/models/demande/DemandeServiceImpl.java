@@ -33,7 +33,9 @@ import ch.globaz.pegasus.business.exceptions.PegasusException;
 import ch.globaz.pegasus.business.exceptions.models.decision.DecisionException;
 import ch.globaz.pegasus.business.exceptions.models.demande.DemandeException;
 import ch.globaz.pegasus.business.exceptions.models.dossiers.DossierException;
+import ch.globaz.pegasus.business.exceptions.models.droit.DonneeFinanciereException;
 import ch.globaz.pegasus.business.exceptions.models.droit.DroitException;
+import ch.globaz.pegasus.business.exceptions.models.pcaccordee.PCAccordeeException;
 import ch.globaz.pegasus.business.models.demande.Demande;
 import ch.globaz.pegasus.business.models.demande.DemandeSearch;
 import ch.globaz.pegasus.business.models.demande.ListDemandes;
@@ -483,6 +485,31 @@ public class DemandeServiceImpl extends PegasusAbstractServiceImpl implements De
     }
 
     @Override
+    public Demande retourArriereAnnuler(Demande demande) throws JadePersistenceException, DemandeException,
+            DossierException, DroitException, JadeApplicationServiceNotAvailableException, DecisionException,
+            DonneeFinanciereException, PCAccordeeException {
+
+        List<Droit> droits = PegasusServiceLocator.getDroitService().findCurrentVersionDroitByIdsDemande(
+                Arrays.asList(demande.getId()));
+        for (Droit droit : droits) {
+            PegasusServiceLocator.getDroitService().retourArriereAnnulation(droit);
+        }
+        droits = PegasusServiceLocator.getDroitService().findCurrentVersionDroitByIdsDemande(
+                Arrays.asList(demande.getId()));
+
+        if (PegasusServiceLocator.getDecisionService().hasOnlyRefus(demande.getId())) {
+            demande.getSimpleDemande().setCsEtatDemande(IPCDemandes.CS_REFUSE);
+        } else {
+            demande.getSimpleDemande().setCsEtatDemande(IPCDemandes.CS_SUPPRIME);
+        }
+        update(demande);
+        if (JadeThread.logHasMessages()) {
+            demande.getSimpleDemande().setCsEtatDemande(IPCDemandes.CS_ANNULE);
+        }
+        return demande;
+    }
+    
+    @Override
     public Demande dateReduction(Demande demande, Boolean comptabilisationAuto) throws JadePersistenceException,
             JadeApplicationException {
         List<Droit> droits = PegasusServiceLocator.getDroitService().findCurrentVersionDroitByIdsDemande(
@@ -497,5 +524,5 @@ public class DemandeServiceImpl extends PegasusAbstractServiceImpl implements De
         }
         // update(demande);
         return demande;
-    }
+    }    
 }

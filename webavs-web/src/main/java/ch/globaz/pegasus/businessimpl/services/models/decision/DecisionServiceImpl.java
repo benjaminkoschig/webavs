@@ -173,14 +173,17 @@ public class DecisionServiceImpl extends PegasusAbstractServiceImpl implements D
         }
         // }
 
-        // modifie version du droit courant -> état calculé, ou enregistré si c'est une decision de suppression
-        if (isDecisionSuppression) {
-            simpleVersionDroit.setCsEtatDroit(IPCDroits.CS_ENREGISTRE);
-        } else {
-            simpleVersionDroit.setCsEtatDroit(IPCDroits.CS_CALCULE);
-        }
+        // On ne met pas à jour la version de droit si elle est à l'Etat ANNULE car sera supprimé plus tard
+        if (!IPCDroits.CS_ANNULE.equals(simpleVersionDroit.getCsEtatDroit())) {
+            // modifie version du droit courant -> état calculé, ou enregistré si c'est une decision de suppression
+            if (isDecisionSuppression) {
+                simpleVersionDroit.setCsEtatDroit(IPCDroits.CS_ENREGISTRE);
+            } else {
+                simpleVersionDroit.setCsEtatDroit(IPCDroits.CS_CALCULE);
+            }
 
-        simpleVersionDroit = PegasusImplServiceLocator.getSimpleVersionDroitService().update(simpleVersionDroit);
+            simpleVersionDroit = PegasusImplServiceLocator.getSimpleVersionDroitService().update(simpleVersionDroit);
+        }
 
         // modifie décisions de la version du droit -> état enregistré
         SimpleDecisionHeaderSearch simpleDecisionHeaderSearch = new SimpleDecisionHeaderSearch();
@@ -283,6 +286,12 @@ public class DecisionServiceImpl extends PegasusAbstractServiceImpl implements D
 
     @Override
     public void devalideDecisions(String idDroit, String idVersionDroit, String noVersion) throws DecisionException {
+        devalideDecisions(idDroit, idVersionDroit, noVersion, false);
+    }
+
+    @Override
+    public void devalideDecisions(String idDroit, String idVersionDroit, String noVersion, Boolean forAnnulation)
+            throws DecisionException {
         try {
 
             VersionDroitSearch searchDroitSearch = new VersionDroitSearch();
@@ -291,8 +300,9 @@ public class DecisionServiceImpl extends PegasusAbstractServiceImpl implements D
             PegasusServiceLocator.getDroitService().searchVersionDroit(searchDroitSearch);
             if (searchDroitSearch.getSize() > 0) {
                 VersionDroit versionDroit = (VersionDroit) searchDroitSearch.getSearchResults()[0];
-                if (!(IPCDroits.CS_VALIDE.equals(versionDroit.getSimpleVersionDroit().getCsEtatDroit()) || IPCDroits.CS_COURANT_VALIDE
-                        .equals(versionDroit.getSimpleVersionDroit().getCsEtatDroit()))) {
+                if (!(IPCDroits.CS_VALIDE.equals(versionDroit.getSimpleVersionDroit().getCsEtatDroit())
+                        || IPCDroits.CS_COURANT_VALIDE.equals(versionDroit.getSimpleVersionDroit().getCsEtatDroit()) || IPCDroits.CS_ANNULE
+                            .equals(versionDroit.getSimpleVersionDroit().getCsEtatDroit()))) {
                     JadeThread.logError(this.getClass().getName(), "pegasus.deValidationDecision.droitExistant");
                 }
             }
@@ -308,7 +318,7 @@ public class DecisionServiceImpl extends PegasusAbstractServiceImpl implements D
 
                 isDecisionSuppression = simpleDecisionSuppressionSearch.getSize() > 0;
                 VersionDroit vd = PegasusServiceLocator.getDroitService().readVersionDroit(idVersionDroit);
-                if (isDecisionSuppression) {
+                if (isDecisionSuppression && !forAnnulation) {
                     boolean isLastDemande = PegasusServiceLocator.getDemandeService().isLastDemande(vd.getDemande());
                     if (!isLastDemande) {
                         JadeThread.logError(this.getClass().getName(), "pegasus.deValidationDecision.demandeNontLast");
@@ -367,7 +377,9 @@ public class DecisionServiceImpl extends PegasusAbstractServiceImpl implements D
                     }
                 }
 
-                simpleDemande = PegasusImplServiceLocator.getSimpleDemandeService().update(simpleDemande);
+                if (!forAnnulation) {
+                    simpleDemande = PegasusImplServiceLocator.getSimpleDemandeService().update(simpleDemande);
+                }
             }
 
         } catch (JadeApplicationServiceNotAvailableException e) {
