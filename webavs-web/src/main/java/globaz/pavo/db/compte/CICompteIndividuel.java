@@ -2214,7 +2214,7 @@ public class CICompteIndividuel extends BEntity {
         // + ".AFAFFIP WHERE MALNAF=" + getNoAffilie());
         // String x = resultSet.getObject(1).toString();
         if (resultSet.next()) {
-            if (Integer.parseInt(resultSet.getString(1)) < codeSecure) {
+            if (Integer.parseInt(resultSet.getString(1)) <= codeSecure) {
                 return true;
             } else {
                 return false;
