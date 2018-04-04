@@ -99,6 +99,20 @@ var showErrorDialogDateReduc = function () {
         }
     });
 };
+var showErrorDialogDateReducDebut = function () {
+	$( "#dialog-error-date-reduction-debut" ).dialog({
+        resizable: false,
+        height:250,
+        width:500,
+        modal: true,
+        buttons: {
+        	"OK": function() {
+                $( this ).dialog( "close" );
+            }
+			
+        }
+    });
+};
 var showConfirmationDialogDateReduc = function () {
 	
 	$( "#dialog-date-reduction" ).dialog({
@@ -110,8 +124,10 @@ var showConfirmationDialogDateReduc = function () {
         	"<ct:FWLabel key='PROCESS_ADAPTATION_PC_OUI'/>": function() {
                 $( this ).dialog( "close" );
                 $('#comptabilisationAuto').val("true");
-                if(dateFinFormate < dateFormate || dateFormate < dateDebutFormat){
+                if(dateFinFormate < dateFormate){
                 	showErrorDialogDateReduc();
+                }else if(dateFormate < dateDebutFormat){
+                	showErrorDialogDateReducDebut();
                 }else{
                     var dateTemp = document.getElementById("forDateFin").value;
                     $('#forDateFin').val(document.getElementById("dateReduc").value);
@@ -221,10 +237,13 @@ var showConfirmationDialogDateReduc = function () {
 	#dialog-error-date-reduction{
 		display:none;
 	}
+	#dialog-error-date-reduction-debut{
+		display:none;
+	}
 	#dialog-date-reduction{
 		display:none;
 	}
-	div #dialog-confirm-annulation, div #dialog-error-date-reduction,  div #dialog-date-reduction,div #ui-dialog-title-dialog-date-reduction,div #ui-dialog-title-dialog-error-date-reduction ,div #ui-dialog-title-dialog-confirm-annulation, .ui-dialog .ui-dialog-buttonpane BUTTON{
+	div #dialog-confirm-annulation, div #dialog-error-date-reduction,  div #dialog-date-reduction,div #ui-dialog-title-dialog-date-reduction,div #dialog-error-date-reduction-debut,div #ui-dialog-title-dialog-error-date-reduction ,div #ui-dialog-title-dialog-confirm-annulation, .ui-dialog .ui-dialog-buttonpane BUTTON{
  	font-size: 1.3em;
  }
  
@@ -584,10 +603,13 @@ function postInit(){
     			<p><span class="ui-icon ui-icon-alert" style="float: left; margin: 0 7px 20px 0;"></span><%= objSession.getLabel("JSP_PC_DEM_D_FORCER_CONFIRMATION_COMPTA_AUTO")%></p>
 			</div>
 			<div id="dialog-error-date-reduction" title="<%= objSession.getLabel("JSP_PC_DEM_D_DATE_REDUCTION_FIN")%>">
-    			<p><span class="ui-icon ui-icon-alert" style="float: left; margin: 0 7px 20px 0;"></span><%= objSession.getLabel("JSP_PC_DEM_D_DATE_REDUCTION_ERROR")%></p>
+    			<p><span class="ui-icon ui-icon-alert" style="float: left; margin: 0 7px 20px 0;"></span><%=objSession.getLabel("JSP_PC_DEM_D_DATE_REDUCTION_ERROR")%></p>
 			</div>
 			<div id="dialog-date-reduction" title="<%= objSession.getLabel("JSP_PC_DEM_D_DATE_REDUCTION_FIN")%>">
     			<p><span class="ui-icon ui-icon-alert" style="float: left; margin: 0 7px 20px 0;"></span><%= objSession.getLabel("JSP_PC_DEM_D_DATE_REDUCTION")%></p>
+			</div>
+			<div id="dialog-error-date-reduction-debut" title="<%= objSession.getLabel("JSP_PC_DEM_D_DATE_REDUCTION_FIN")%>">
+    			<p><span class="ui-icon ui-icon-alert" style="float: left; margin: 0 7px 20px 0;"></span><%= objSession.getLabel("JSP_PC_DEM_D_DATE_REDUCTION_ERROR_DATE_DEBUT")%></p>
 			</div>
 	
 	
