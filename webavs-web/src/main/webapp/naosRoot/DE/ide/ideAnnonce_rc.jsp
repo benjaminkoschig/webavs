@@ -20,7 +20,7 @@
 	bButtonDelete = objSession.hasRight("naos.ide.ideAnnonce.supprimer",FWSecureConstants.REMOVE);
 	bButtonNew = false;
 	btnDelLabel = objSession.getLabel("JSP_SUPPRESSION_SELECTION");
-	rememberSearchCriterias=true;
+	rememberSearchCriterias=false;
 	String initEtat = CodeSystem.ETAT_ANNONCE_IDE_ENREGISTRE;
 	Object obBean = session.getAttribute ("listViewBean");
 	AFIdeAnnonceListViewBean viewBeanFind = null;
