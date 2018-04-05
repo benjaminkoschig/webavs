@@ -163,7 +163,27 @@ public class AFIDERules {
     private static boolean ruleAnnonceIdeAnnoncante(BSession session, AFAffiliation currentAff, AFAffiliation oldAff)
             throws Exception {
         if (!isAnnonceIDENonAnnoncante(currentAff) && isAnnonceIDENonAnnoncante(oldAff)) {
-            AFIDEUtil.generateAnnonceIDEAnnoncante(session, currentAff);
+            // si radiation -> réactivation
+            if (isNumeroIdeInactifRadie(currentAff)) {
+                AFIDEUtil.generateAnnonceReactivationIde(session, currentAff);
+                // si définitif -> enregistrement actif
+            } else if (isDefinitif(currentAff)) {
+                AFIDEUtil.generateAnnonceEnregistrementActif(session, currentAff, null);
+                // non annonçante à annonçante + suppression du numéro IDE -> désenregistrement actif
+            } else if (isIDENumberBlank(currentAff) && !isIDENumberBlank(oldAff) && isAffiliationActive(oldAff)
+                    && hasIDENumberChanged(currentAff, oldAff)) {
+                // NB: Désenregisrement Actif sur la oldAFF,
+                // update de la valeur non annoçante pour oldAff pour forcer la génération de l 'annonce
+                oldAff.setIdeNonAnnoncante(currentAff.isIdeNonAnnoncante());
+                AFIdeAnnonce annonce = AFIDEUtil.generateAnnonceDesenregistrementActif(session, oldAff, null);
+                if (annonce != null) {
+                    annonce.setNumeroIdeRemplacement(oldAff.getNumeroIDE());
+                    annonce.update();
+                    return true;
+                } else {
+                    AFIDEUtil.generateAnnonceIDEAnnoncante(session, currentAff);
+                }
+            }
             return true;
         }
         return false;
@@ -497,6 +517,10 @@ public class AFIDERules {
 
     private static boolean isNumeroIdeInactifRadie(AFAffiliation currentAff) {
         return CodeSystem.STATUT_IDE_RADIE.equalsIgnoreCase(currentAff.getIdeStatut());
+    }
+
+    private static boolean isDefinitif(AFAffiliation currentAff) {
+        return CodeSystem.STATUT_IDE_DEFINITIF.equalsIgnoreCase(currentAff.getIdeStatut());
     }
 
     private static boolean hasChangeFromInactifRadie(AFAffiliation oldAff) {
