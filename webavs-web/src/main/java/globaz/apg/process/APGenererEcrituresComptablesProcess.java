@@ -2278,17 +2278,19 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
 
             if (isLotMaternite) {
                 switch (iNature) {
+                // AMAT et LAMAT ne doivent produire qu'un seul versement avec les montants cumulés
+                // On va donc mettre seulement un des deux types dans le typeMontant
                     case 0:
                         nature = getSession().getApplication().getProperty(
                                 APGenererEcrituresComptablesProcess.PROP_NATURE_VERSEMENT_AMAT);
                         typeMontant = Montants.TYPE_AMAT;
                         break;
+                    // case 1:
+                    // nature = getSession().getApplication().getProperty(
+                    // APGenererEcrituresComptablesProcess.PROP_NATURE_VERSEMENT_LAMAT);
+                    // typeMontant = Montants.TYPE_LAMAT;
+                    // break;
                     case 1:
-                        nature = getSession().getApplication().getProperty(
-                                APGenererEcrituresComptablesProcess.PROP_NATURE_VERSEMENT_LAMAT);
-                        typeMontant = Montants.TYPE_LAMAT;
-                        break;
-                    case 2:
                         nature = getSession().getApplication().getProperty(
                                 APGenererEcrituresComptablesProcess.PROP_NATURE_VERSEMENT_ACM_MAT);
                         typeMontant = Montants.TYPE_ACM;
@@ -2319,11 +2321,19 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
             if (iNature < 100) {
 
                 // versement effectif
-                final FWCurrency versement = montantsBrutTotal.getMontantCumule(typeMontant);
-
-                versement.add(new FWCurrency(totalCotisations.getMontantCumule(typeMontant).toString()));
-                versement.sub(new FWCurrency(compensationsTotale.getMontantCumule(typeMontant).toString()));
-                versement.sub(new FWCurrency(ventilationTotale.getMontantCumule(typeMontant).toString()));
+                FWCurrency versement = new FWCurrency(0);
+                // On regroupe les type AMAT (Fédéral) et LAMAT (Cantonal)
+                if (Montants.TYPE_AMAT.equals(typeMontant)) {
+                    versement = cumulMontantsParType(versement, montantsBrutTotal, totalCotisations,
+                            compensationsTotale, ventilationTotale, Montants.TYPE_AMAT);
+                    versement = cumulMontantsParType(versement, montantsBrutTotal, totalCotisations,
+                            compensationsTotale, ventilationTotale, Montants.TYPE_LAMAT);
+                } else {
+                    versement = montantsBrutTotal.getMontantCumule(typeMontant);
+                    versement.add(new FWCurrency(totalCotisations.getMontantCumule(typeMontant).toString()));
+                    versement.sub(new FWCurrency(compensationsTotale.getMontantCumule(typeMontant).toString()));
+                    versement.sub(new FWCurrency(ventilationTotale.getMontantCumule(typeMontant).toString()));
+                }
 
                 if (versement.isPositive()) {
                     doOrdreVersement(compta, compteAnnexeAPG.getIdCompteAnnexe(), sectionNormale.getIdSection(),
@@ -2355,6 +2365,15 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
         }
         return ci;
 
+    }
+
+    private FWCurrency cumulMontantsParType(FWCurrency versement, Montants montantsBrutTotal,
+            Montants totalCotisations, Montants compensationsTotale, Montants ventilationTotale, String typeAmat) {
+        versement.add(new FWCurrency(montantsBrutTotal.getMontantCumule(typeAmat).toString()));
+        versement.add(new FWCurrency(totalCotisations.getMontantCumule(typeAmat).toString()));
+        versement.sub(new FWCurrency(compensationsTotale.getMontantCumule(typeAmat).toString()));
+        versement.sub(new FWCurrency(ventilationTotale.getMontantCumule(typeAmat).toString()));
+        return versement;
     }
 
     private void putMontantIntoMap(Map<String, Montants> montantsInMap, Repartition repartition, String cotisation) {
