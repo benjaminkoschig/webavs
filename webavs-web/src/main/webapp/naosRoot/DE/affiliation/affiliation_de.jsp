@@ -79,7 +79,7 @@ function updateChampIde(tag){
 		if(compareTo==element.numeroIdeUnformatedWithPrefix){
 			displayFieldIDEPartage();
 		}else{
-			if(element.isIdeAllreadyUsed){
+			if(element.isIdeAllreadyUsed == "true"){
 				document.getElementById("isIdePartage").style.display = "";
 			}else {
 				document.getElementById("isIdePartage").style.display = "none";

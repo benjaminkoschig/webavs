@@ -197,7 +197,7 @@ public class AFAffiliationViewBean extends AFAffiliation implements FWViewBeanIn
     @Override
     public void setIdeRaisonSocialeb64(String iDE_raisonSociale) {
         try {
-            isIDEPartage = AFIDEUtil.hasIDEAllreadyAff(getSession(), getNumeroIDE());
+            isIDEPartage = AFIDEUtil.hasIDEAllreadyAff(getSession(), getNumeroIDE(), getAffilieNumero());
         } catch (Exception e) {
             isIDEPartage = false;
         } finally {

@@ -836,7 +836,7 @@ public class AFWizard extends BEntity implements Serializable {
      */
     public void setIdeRaisonSocialeb64(String iDE_raisonSocialeb64) {
         try {
-            isIDEPartage = AFIDEUtil.hasIDEAllreadyAff(getSession(), getNumeroIDE());
+            isIDEPartage = AFIDEUtil.hasIDEAllreadyAff(getSession(), getNumeroIDE(), getAffilieNumero());
         } catch (Exception e) {
             isIDEPartage = false;
         } finally {

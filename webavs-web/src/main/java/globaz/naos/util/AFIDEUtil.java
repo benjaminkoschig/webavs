@@ -1028,12 +1028,21 @@ public class AFIDEUtil {
      * @return
      * @throws Exception
      */
-    public static boolean hasIDEAllreadyAff(BSession session, String numeroIde) throws Exception {
+    public static boolean hasIDEAllreadyAff(BSession session, String numeroIde, String affilieNumero) throws Exception {
         List<AFAffiliation> affiliationsMemeIDE = null;
         if (!JadeStringUtil.isBlankOrZero(numeroIde)) {
-            affiliationsMemeIDE = AFAffiliationUtil.loadAffiliationUsingNumeroIde(session, numeroIde, false);
+            try {
+                affiliationsMemeIDE = AFAffiliationUtil.loadAffiliationUsingNumeroIde(session, numeroIde, false);
+            } catch (AFIdeNumberNoMatchException e) {
+                return false;
+            }
         }
-        return affiliationsMemeIDE != null && !affiliationsMemeIDE.isEmpty();
+        return affiliationsMemeIDE != null && !affiliationsMemeIDE.isEmpty()
+                && pasMemeNumeroQueLuiMeme(affiliationsMemeIDE, affilieNumero);
+    }
+
+    private static boolean pasMemeNumeroQueLuiMeme(List<AFAffiliation> affiliationsMemeIDE, String numeroAffilie) {
+        return !(affiliationsMemeIDE.size() == 1 && affiliationsMemeIDE.get(0).getAffilieNumero().equals(numeroAffilie));
     }
 
     public static boolean isAnnonceCreationEnregistre() {
@@ -2644,7 +2653,8 @@ public class AFIDEUtil {
                 String csCodeNoga = "0";
                 String csCategorieNoga = "0";
 
-                boolean isIdeAllreadyUsed = hasIDEAllreadyAff(bsession, numIdeUnformatedWithoutPrefix);
+                boolean isIdeAllreadyUsed = hasIDEAllreadyAff(bsession, numIdeUnformatedWithoutPrefix,
+                        aIdeData.getNumeroAffilie());
 
                 if (!AFProperties.NOGA_SYNCHRO_REGISTRE.getValue().isEmpty()
                         && AFProperties.NOGA_SYNCHRO_REGISTRE.getValue() != null
