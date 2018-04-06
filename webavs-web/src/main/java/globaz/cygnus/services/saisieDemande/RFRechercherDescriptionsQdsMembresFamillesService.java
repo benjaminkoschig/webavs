@@ -155,12 +155,16 @@ public class RFRechercherDescriptionsQdsMembresFamillesService {
             String csTypeBeneficiairePC, String csGenrePCAccordee, String date, String codeTypeDeSoinList,
             String codeSousTypeDeSoinList, BSession session, BITransaction transaction) throws Exception {
 
-        if (!csTypeBeneficiairePC.isEmpty() && !csGenrePCAccordee.isEmpty()) {
+        if (!csTypeBeneficiairePC.isEmpty() && !csGenrePCAccordee.isEmpty()
+                && forTypeBenificiaireEnfant(csTypeBeneficiairePC)) {
             RFRetrieveLimiteAnnuelleSousTypeDeSoinService rfLimAnnSouTypDeSoiSer = new RFRetrieveLimiteAnnuelleSousTypeDeSoinService();
+
+            String dateNaissance = RFRetrieveLimiteAnnuelleSousTypeDeSoinService.getDateNaissance(
+                    rfQdAssureJointPotType.getIdTiers(), session);
 
             String montant = rfLimAnnSouTypDeSoiSer.getLimiteAnnuelleTypeDeSoinIdTiers(session, codeTypeDeSoinList,
                     codeSousTypeDeSoinList, rfQdAssureJointPotType.getIdTiers(), date, (BTransaction) transaction,
-                    csTypeBeneficiairePC, csGenrePCAccordee, null)[0];
+                    csTypeBeneficiairePC, csGenrePCAccordee, dateNaissance)[0];
 
             if (!montant.equals(rfQdAssureJointPotType.getLimiteAnnuelle())) {
                 // il faut mettre à jour le montant de la petite qd
@@ -177,6 +181,11 @@ public class RFRechercherDescriptionsQdsMembresFamillesService {
                 }
             }
         }
+    }
+
+    private boolean forTypeBenificiaireEnfant(String typeBeneficiaire) {
+        return IRFTypesBeneficiairePc.ENFANTS_VIVANT_SEPARES.equals(typeBeneficiaire)
+                || IRFTypesBeneficiairePc.ENFANTS_AVEC_ENFANTS.equals(typeBeneficiaire);
     }
 
     private String getDescMembresFamilleHtml(List<String[]> membresFamilleCcList, String idTiers,

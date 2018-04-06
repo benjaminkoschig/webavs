@@ -44,18 +44,6 @@ public class RFRetrieveLimiteAnnuelleSousTypeDeSoinService {
             rfTypeDeSoinJointSousTypeDeSoinMgr.changeManagerSize(0);
             rfTypeDeSoinJointSousTypeDeSoinMgr.find(transaction);
 
-            if (dateNaissance == null) {
-                RFTierDateNaisanceManager mgrDateNaissance = new RFTierDateNaisanceManager();
-                mgrDateNaissance.setSession((BSession) session);
-                mgrDateNaissance.setForIdTiers(idTiers);
-                mgrDateNaissance.changeManagerSize(0);
-                mgrDateNaissance.find();
-                if (mgrDateNaissance.size() == 1) {
-                    RFTierDateNaissance tiers = (RFTierDateNaissance) mgrDateNaissance.getFirstEntity();
-                    dateNaissance = tiers.getDatenaissance();
-                }
-            }
-
             if (rfTypeDeSoinJointSousTypeDeSoinMgr.size() == 1) {
                 RFSousTypeDeSoinJointAssPeriodeJointPotAssure rfTypeDeSoinJointSousTypeDeSoin = (RFSousTypeDeSoinJointAssPeriodeJointPotAssure) rfTypeDeSoinJointSousTypeDeSoinMgr
                         .getFirstEntity();
@@ -115,7 +103,7 @@ public class RFRetrieveLimiteAnnuelleSousTypeDeSoinService {
 
                         } else if (csTypeBeneficiairePC.equals(IRFTypesBeneficiairePc.ENFANTS_VIVANT_SEPARES)) {
                             // Adaptation des petites QD pour les jeunes adultes
-                            if (isAdulte(new Date(date), new Date(dateNaissance))) {
+                            if (isAdulte(date, dateNaissance, idTiers, (BSession) session)) {
                                 if (csGenrePCAccordee.equals(IPCPCAccordee.CS_GENRE_PC_DOMICILE)) {
                                     resultat[0] = rfTypeDeSoinJointSousTypeDeSoin.getMontantPlafondPersonneSeule();
                                 } else {
@@ -133,7 +121,7 @@ public class RFRetrieveLimiteAnnuelleSousTypeDeSoinService {
 
                         } else if (csTypeBeneficiairePC.equals(IRFTypesBeneficiairePc.ENFANTS_AVEC_ENFANTS)) {
                             // Adaptation des petites QD pour les jeunes adultes
-                            if (isAdulte(new Date(date), new Date(dateNaissance))) {
+                            if (isAdulte(date, dateNaissance, idTiers, (BSession) session)) {
                                 if (csGenrePCAccordee.equals(IPCPCAccordee.CS_GENRE_PC_DOMICILE)) {
                                     resultat[0] = rfTypeDeSoinJointSousTypeDeSoin.getMontantPlafondPersonneSeule();
                                 } else {
@@ -165,7 +153,27 @@ public class RFRetrieveLimiteAnnuelleSousTypeDeSoinService {
         return resultat;
     }
 
-    public boolean isAdulte(Date date, Date dateNaissance) {
+    public static String getDateNaissance(String idTiers, BSession session) throws Exception {
+        String dateNaissance = null;
+        RFTierDateNaisanceManager mgrDateNaissance = new RFTierDateNaisanceManager();
+        mgrDateNaissance.setSession(session);
+        mgrDateNaissance.setForIdTiers(idTiers);
+        mgrDateNaissance.changeManagerSize(0);
+        mgrDateNaissance.find();
+        if (mgrDateNaissance.size() == 1) {
+            RFTierDateNaissance tiers = (RFTierDateNaissance) mgrDateNaissance.getFirstEntity();
+            dateNaissance = tiers.getDatenaissance();
+        }
+        return dateNaissance;
+    }
+
+    public static boolean isAdulte(String date, String dateNaissance, String idTiers, BSession session)
+            throws Exception {
+        return isAdulte(new Date(date), new Date(dateNaissance == null ? getDateNaissance(idTiers, session)
+                : dateNaissance));
+    }
+
+    public static boolean isAdulte(Date date, Date dateNaissance) {
         return date.getYear() - dateNaissance.getYear() > MAJORITY;
     }
 
