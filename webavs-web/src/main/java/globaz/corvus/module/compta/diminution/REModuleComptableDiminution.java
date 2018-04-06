@@ -259,6 +259,15 @@ public class REModuleComptableDiminution extends AREModuleComptable {
     private boolean doitOnCreerUneRestitutionEnCompta(final RERenteAccordee ra, JACalendar cal, JADate dateDernierPmt,
             JADate dateFinRA) {
         boolean creerRestitution = true;
+        REEnteteBlocage entete = new REEnteteBlocage();
+        try {
+            entete.setSession(ra.getSession());
+            entete.setIdEnteteBlocage(ra.getIdEnteteBlocage());
+            entete.retrieve();
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 
         /*
          * CONDITION 1
@@ -266,7 +275,8 @@ public class REModuleComptableDiminution extends AREModuleComptable {
          * n'est pas bloquée....
          */
         if ((cal.compare(dateDernierPmt, dateFinRA) == JACalendar.COMPARE_EQUALS)
-                && ((ra.getIsPrestationBloquee() != null) && !ra.getIsPrestationBloquee().booleanValue())) {
+                && (ra.getIsPrestationBloquee() != null) && (!ra.getIsPrestationBloquee().booleanValue())
+                && (entete.getMontantBloque().equals(entete.getMontantDebloque()))) {
             creerRestitution = false;
         }
 
