@@ -121,11 +121,13 @@ function init() {
 		
 		<TR>
 			<TD nowrap width="140">
-			<%if (viewBean.getNumeroAffilie() != null && !viewBean.getNumeroAffilie().isEmpty()) {%>
+				<%if (viewBean.getAffiliation().getAffiliationId()!=null && !viewBean.getAffiliation().getAffiliationId().isEmpty()) {%>
+				<A href="<%=(servletContext + mainServletPath)%>?userAction=naos.affiliation.affiliation.afficher&selectedId=<%=viewBean.getAffiliation().getAffiliationId()%>&idTiers=<%=viewBean.getTiers().getIdTiers()%>" ><ct:FWLabel key="NAOS_JSP_IDE_ANNONCE_NUMERO_AFFILIE"/></A>
+			<%} else if(viewBean.getNumeroAffilie() != null && !viewBean.getNumeroAffilie().isEmpty()) {%>
 				<A href="<%=(servletContext + mainServletPath)%>?userAction=naos.affiliation.autreDossier.modifier&numAffilie=<%=viewBean.getNumeroAffilie()%>" ><ct:FWLabel key="NAOS_JSP_IDE_ANNONCE_NUMERO_AFFILIE"/></A>
-			<%}  else {%>
-				<ct:FWLabel key="NAOS_JSP_IDE_ANNONCE_NUMERO_AFFILIE"/>
-			<%} %>
+			<%} else { %>
+	   			<ct:FWLabel key="NAOS_JSP_IDE_ANNONCE_NUMERO_AFFILIE"/>
+	   		<%} %>
 			</TD>
         	<TD nowrap width="300"><INPUT name="" type="text" value="<%=AFIDEUtil.giveMeAllNumeroAffilieInAnnonceSeparatedByVirgul(viewBean)%>" class="libelleLongDisabled" readonly></TD>
         	<%if (CodeSystem.CATEGORIE_ANNONCE_IDE_ENVOI.equals(viewBean.getIdeAnnonceCategorie())) {%>
