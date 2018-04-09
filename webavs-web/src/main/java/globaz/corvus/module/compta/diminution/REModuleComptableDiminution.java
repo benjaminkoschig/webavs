@@ -275,8 +275,7 @@ public class REModuleComptableDiminution extends AREModuleComptable {
          * n'est pas bloquée....
          */
         if ((cal.compare(dateDernierPmt, dateFinRA) == JACalendar.COMPARE_EQUALS)
-                && (ra.getIsPrestationBloquee() != null) && (!ra.getIsPrestationBloquee().booleanValue())
-                && (entete.getMontantBloque().equals(entete.getMontantDebloque()))) {
+                && (ra.getIsPrestationBloquee() != null) && (!ra.getIsPrestationBloquee().booleanValue())) {
             creerRestitution = false;
         }
 
@@ -305,6 +304,20 @@ public class REModuleComptableDiminution extends AREModuleComptable {
          */
         if (creerRestitution) {
             if (cal.compare(dateDernierPmt, dateFinRA) == JACalendar.COMPARE_FIRSTLOWER) {
+                creerRestitution = false;
+            }
+        }
+
+        /*
+         * CONDITION 4
+         * La restitution de montant et la création de journaux en compta n'est réalisé que si la date de fin est
+         * identique au mois comptable, la rente est bloqué
+         * que le montant de déblocage et blocage sont identiques
+         */
+        if (creerRestitution) {
+            if (cal.compare(dateDernierPmt, dateFinRA) == JACalendar.COMPARE_EQUALS
+                    && (ra.getIsPrestationBloquee() != null) && (ra.getIsPrestationBloquee())
+                    && entete.getMontantBloque().equalsIgnoreCase(entete.getMontantDebloque())) {
                 creerRestitution = false;
             }
         }
