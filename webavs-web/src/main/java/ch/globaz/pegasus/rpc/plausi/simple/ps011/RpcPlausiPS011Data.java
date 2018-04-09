@@ -21,7 +21,6 @@ public class RpcPlausiPS011Data extends RpcPlausiHeader {
         Date tmpvalidF = new Date(validFrom.getMois() + "." + validFrom.getYear());
         Date tmpAnnonce = new Date(new Date().getMois() + "." + new Date().getYear());
         return tmpvalidF.before(tmpAnnonce);
-
     }
 
 }

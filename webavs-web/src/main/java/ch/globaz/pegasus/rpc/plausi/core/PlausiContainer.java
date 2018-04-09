@@ -39,6 +39,7 @@ import ch.globaz.pegasus.rpc.plausi.simple.ps011.RpcPlausiPS011;
 public class PlausiContainer {
 
     private static final List<RpcPlausiMetier<? extends PlausiResult>> listMetier = new ArrayList<RpcPlausiMetier<? extends PlausiResult>>();
+    private static final List<RpcPlausiMetier<? extends PlausiResult>> plausisSkippedOnPrevalidation = new ArrayList<RpcPlausiMetier<? extends PlausiResult>>();
 
     static {
         listMetier.add(new RpcPlausiPI002(new Montant(300)));
@@ -64,7 +65,9 @@ public class PlausiContainer {
 
         listMetier.add(new RpcPlausiPI004());
         listMetier.add(new RpcPlausiPS010());
-        listMetier.add(new RpcPlausiPS011());
+        RpcPlausiPS011 plausi11 = new RpcPlausiPS011();
+        listMetier.add(plausi11);
+        plausisSkippedOnPrevalidation.add(plausi11);
         listMetier.add(new RpcPlausiPI023());
         listMetier.add(new RpcPlausiPI024());
         listMetier.add(new RpcPlausiPI025(new Montant(19290), new Montant(28935), new Montant(19290),
@@ -74,15 +77,17 @@ public class PlausiContainer {
 
     public static PlausisResults buildPlausis(RpcData rpcData) {
         Set<RpcPlausiCategory> inCategory = EnumSet.allOf(RpcPlausiCategory.class);
-        return buildPlausisInCategory(rpcData, inCategory);
+        return buildPlausisInCategory(rpcData, inCategory, false);
     }
 
-    public static PlausisResults buildPlausisInCategory(RpcData rpcData, Set<RpcPlausiCategory> inCategory) {
+    public static PlausisResults buildPlausisInCategory(RpcData rpcData, Set<RpcPlausiCategory> inCategory,
+            boolean skippedOnPrevalidation) {
 
         PlausisResults plausisResults = new PlausisResults();
 
         for (RpcPlausiMetier<? extends PlausiResult> plausi : listMetier) {
-            if (inCategory.contains(plausi.getCategory())) {
+            if (inCategory.contains(plausi.getCategory())
+                    && !(skippedOnPrevalidation && plausisSkippedOnPrevalidation.contains(plausi))) {
                 plausisResults.addAll(buildPlausisMetier(plausi, rpcData));
             }
         }

@@ -130,6 +130,33 @@
 						<search-field name="forDateDecisionMoisAnneMoins1" operation="EQUALS"  field-ref="simpleDecisionHeader.dateFinDecision"/>
 					</search-group>
 				</search-group>
+				<search-field name="forDebutDecision" operation="LESS_OR_EQUALS"  field-ref="simpleDecisionHeader.dateDebutDecision"/>
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="decisionMoisSuivantDuMoisPrecendant">
+			<search-group operator="AND">	
+				<search-field name="forCsEtat" operation="EQUALS" field-ref="simpleDecisionHeader.csEtatDecision" value="64028003" />
+				<search-field name="forIdsDecsion" operation="IN" field-ref="simpleDecisionHeader.idDecisionHeader"  />
+				<search-field name="forIdDemande" operation="EQUALS" field-ref="simpleDemande.idDemande"/>
+				<search-field name="inCsType" operation="IN" field-ref="simplePCAccordee.csTypePC"  />	
+				<search-field name="forIdsVersionDroit" operation="IN" field-ref="simpleVersionDroit.idVersionDroit"/>
+				<search-group operator="OR">
+					<search-group operator="AND">	
+						<search-field name="forDateDecisionMin" operation="GREATER_OR_EQUALS" field-ref="simpleDecisionHeader.dateDecision"/>
+						<search-group operator="OR"> 
+							<search-field name="forDateDecisionMax" operation="LESS_OR_EQUALS"  field-ref="simpleDecisionHeader.dateDecision"/>
+						</search-group>
+					</search-group>
+					<search-group operator="AND">	
+						<search-field name="forDateDecisionMinMoins1" operation="GREATER_OR_EQUALS" field-ref="simpleDecisionHeader.dateDecision"/>
+						<search-group operator="OR"> 
+							<search-field name="forDateDecisionMaxMoins1" operation="LESS_OR_EQUALS"  field-ref="simpleDecisionHeader.dateDecision"/>
+						</search-group>
+						<search-field name="forDateDecisionMoisAnneMoins1" operation="EQUALS"  field-ref="simpleDecisionHeader.dateFinDecision"/>
+					</search-group>
+				</search-group>
+				<search-field name="forDebutDecision" operation="EQUALS"  field-ref="simpleDecisionHeader.dateDebutDecision"/>
 			</search-group>
 		</search-definition>
 		
@@ -165,6 +192,7 @@
 						<search-field name="forDateFinPca" operation="NULL" field-ref="simplePCAccordee.dateFin"/>
 					</search-group>
 				</search-group>
+				<search-field name="forDebutDecision" operation="LESS_OR_EQUALS"  field-ref="simpleDecisionHeader.dateDebutDecision"/>
 			</search-group>
 		</search-definition>
 		

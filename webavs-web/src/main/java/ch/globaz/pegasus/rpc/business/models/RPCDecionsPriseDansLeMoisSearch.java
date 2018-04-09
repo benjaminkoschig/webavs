@@ -11,6 +11,7 @@ public class RPCDecionsPriseDansLeMoisSearch extends JadeSearchComplexModel {
     private String forDateDecisionMinMoins1;
     private String forDateDecisionMaxMoins1;
     private String forDateDecisionMoisAnneMoins1;
+    private String forDebutDecision;
     private String forCsEtatPca;
     private String forCsEtatDemande;
     private String forCsEtatDroit;
@@ -161,6 +162,14 @@ public class RPCDecionsPriseDansLeMoisSearch extends JadeSearchComplexModel {
 
     public void setForCsEtatDemandeMoisFutur(Collection<String> forCsEtatDemandeMoisFutur) {
         this.forCsEtatDemandeMoisFutur = forCsEtatDemandeMoisFutur;
+    }
+
+    public String getForDebutDecision() {
+        return forDebutDecision;
+    }
+
+    public void setForDebutDecision(String forDebutDecision) {
+        this.forDebutDecision = forDebutDecision;
     }
 
     @Override
