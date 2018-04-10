@@ -139,8 +139,12 @@ public class CISplittingApercuAndLettreAccompagnementMergeProcess extends BProce
     protected String getEMailObject() {
 
         if (cache) {
-            return getSession().getLabel("APERCU_SPLITTING_EMAIL_SUBJECT_DROIT_INSUFFISANT_ENTETE")
-                    + getSession().getLabel("APERCU_SPLITTING_EMAIL_SUBJECT_DROIT_INSUFFISANT");
+            StringBuffer buffer = new StringBuffer(getSession().getLabel(
+                    "APERCU_SPLITTING_EMAIL_SUBJECT_DROIT_INSUFFISANT_ENTETE"));
+            buffer.append(getSession().getLabel("MSG_APERCU_SPLITTING"));
+            buffer.append(getSession().getLabel("APERCU_SPLITTING_EMAIL_SUBJECT_DROIT_INSUFFISANT_ENTETE2"));
+            buffer.append(getSession().getLabel("APERCU_SPLITTING_EMAIL_SUBJECT_DROIT_INSUFFISANT"));
+            return buffer.toString();
         }
 
         if (!isAborted() && !isOnError() && !getSession().hasErrors()) {

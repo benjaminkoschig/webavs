@@ -437,10 +437,11 @@ public class CIAnalyseSplitting extends FWIDocumentManager {
     @Override
     protected String getEMailObject() {
         String documentFileTitle = (JadeStringUtil.isBlank(getFileTitle()) ? getDocumentTitle() : getFileTitle());
-        StringBuffer buffer = new StringBuffer("L'impression du document '");
+        StringBuffer buffer = new StringBuffer(getSession().getLabel(
+                "APERCU_SPLITTING_EMAIL_SUBJECT_DROIT_INSUFFISANT_ENTETE"));
         buffer.append(documentFileTitle);
         if (secureDenied) {
-            buffer.append("' s'est terminée avec échec : \r\n");
+            buffer.append(getSession().getLabel("APERCU_SPLITTING_EMAIL_SUBJECT_DROIT_INSUFFISANT_ENTETE2"));
             buffer.append(getSession().getLabel("APERCU_SPLITTING_EMAIL_SUBJECT_DROIT_INSUFFISANT"));
             return buffer.toString();
         } else {
