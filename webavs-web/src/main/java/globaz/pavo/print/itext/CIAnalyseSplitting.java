@@ -215,7 +215,8 @@ public class CIAnalyseSplitting extends FWIDocumentManager {
                     if (ci != null) {
                         if (!ci.hasUserShowRight(getTransaction())) {
                             secureDenied = true;
-                            throw new Exception();
+                            throw new Exception(CIAnalyseSplitting.class
+                                    + " : Droit insuffisant pour voir le montant du revenu");
                         }
                         if (BSessionUtil.compareDateFirstLowerOrEqual(getSession(),
                                 "01.01." + String.valueOf(cumul.getAnnee().intValue() - 20), ci.getDateNaissance())) {

@@ -14,6 +14,7 @@ import globaz.globall.db.GlobazServer;
 import globaz.globall.parameters.FWParametersSystemCode;
 import globaz.globall.parameters.FWParametersSystemCodeManager;
 import globaz.globall.util.JACalendar;
+import globaz.globall.util.JAStringFormatter;
 import globaz.globall.util.JAUtil;
 import globaz.hermes.utils.HEUtil;
 import globaz.jade.client.util.JadeStringUtil;
@@ -2200,7 +2201,7 @@ public class CICompteIndividuel extends BEntity {
 
     private boolean checkAffSecureCode(BTransaction transaction, int codeSecure) throws Exception {
         BTransaction transactionSecureCode = null;
-
+        boolean hasRight = false;
         ResultSet resultSet = null;
         BStatement psCheckAffSecureCode = new BStatement(transaction);
         psCheckAffSecureCode.createStatement();
@@ -2209,20 +2210,26 @@ public class CICompteIndividuel extends BEntity {
                 + Jade.getInstance().getDefaultJdbcSchema() + ".CIINDIP ci on ecr.KAIIND=ci.KAIIND inner join "
                 + Jade.getInstance().getDefaultJdbcSchema() + ".AFAFFIP aff on ecr.KBITIE=aff.MAIAFF "
                 + "WHERE ci.KAIIND=" + getCompteIndividuelId());
-        // resultSet = psCheckAffSecureCode.executeQuery("SELECT MATSEC FROM" +
-        // Jade.getInstance().getDefaultJdbcSchema()
-        // + ".AFAFFIP WHERE MALNAF=" + getNoAffilie());
-        // String x = resultSet.getObject(1).toString();
-        if (resultSet.next()) {
-            if (Integer.parseInt(resultSet.getString(1)) <= codeSecure) {
-                return true;
-            } else {
+        Object[] ciLies = getCILies();
+        while (resultSet.next()) {
+            if (Integer.parseInt(resultSet.getString(1)) > codeSecure) {
                 return false;
             }
-        } else {
-            return true;
         }
-
+        if (ciLies.length > 1) {
+            String[] nAVSStr = (String[]) ciLies[1];
+            resultSet = psCheckAffSecureCode.executeQuery("SELECT MATSEC as AFF_SEC from "
+                    + Jade.getInstance().getDefaultJdbcSchema() + ".CIECRIP ecr inner join "
+                    + Jade.getInstance().getDefaultJdbcSchema() + ".CIINDIP ci on ecr.KAIIND=ci.KAIIND inner join "
+                    + Jade.getInstance().getDefaultJdbcSchema() + ".AFAFFIP aff on ecr.KBITIE=aff.MAIAFF "
+                    + "WHERE ci.KANAVS=" + JAUtil.quotedString(JAStringFormatter.deformatAvs(nAVSStr[1])));
+        }
+        while (resultSet.next()) {
+            if (Integer.parseInt(resultSet.getString(1)) > codeSecure) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public Boolean isCiOuvert() {

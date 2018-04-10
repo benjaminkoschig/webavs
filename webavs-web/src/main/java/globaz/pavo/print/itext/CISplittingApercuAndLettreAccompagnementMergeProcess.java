@@ -16,7 +16,6 @@ public class CISplittingApercuAndLettreAccompagnementMergeProcess extends BProce
      * 
      */
     private static final long serialVersionUID = 1L;
-    private static final String MSG_ENTETE = "L'impression du document 'Aperçu de splitting' s'est terminée avec échec : \r\n";
     private String adresseAssure = "";
     private String adresseExConjoint = "";
     private boolean check = false;
@@ -140,7 +139,8 @@ public class CISplittingApercuAndLettreAccompagnementMergeProcess extends BProce
     protected String getEMailObject() {
 
         if (cache) {
-            return MSG_ENTETE + getSession().getLabel("APERCU_SPLITTING_EMAIL_SUBJECT_DROIT_INSUFFISANT");
+            return getSession().getLabel("APERCU_SPLITTING_EMAIL_SUBJECT_DROIT_INSUFFISANT_ENTETE")
+                    + getSession().getLabel("APERCU_SPLITTING_EMAIL_SUBJECT_DROIT_INSUFFISANT");
         }
 
         if (!isAborted() && !isOnError() && !getSession().hasErrors()) {
