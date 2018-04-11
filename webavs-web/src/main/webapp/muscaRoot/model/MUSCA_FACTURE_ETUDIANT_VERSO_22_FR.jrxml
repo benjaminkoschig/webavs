@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"  ?>
+<!-- Created with iReport - A designer for JasperReports -->
+<!DOCTYPE jasperReport PUBLIC "//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
+<jasperReport
+		 name="MUSCA_FACTURE_VERSO_106_FR"
+		 columnCount="1"
+		 printOrder="Vertical"
+		 orientation="Portrait"
+		 pageWidth="595"
+		 pageHeight="842"
+		 columnWidth="535"
+		 columnSpacing="0"
+		 leftMargin="30"
+		 rightMargin="30"
+		 topMargin="20"
+		 bottomMargin="20"
+		 whenNoDataType="NoPages"
+		 isTitleNewPage="false"
+		 isSummaryNewPage="false">
+	<property name="ireport.scriptlethandling" value="2" />
+		<background>
+			<band height="702"  isSplitAllowed="true" >
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="1"
+						y="89"
+						width="533"
+						height="567"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-2"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Justified" verticalAlignment="Top" rotation="None" isStyledText="true" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[La loi sur l’AVS prévoit, à son article 3, que les personnes sans activité lucrative sont soumises à l’obligation de cotiser, dès le 1er janvier de leur 21ème année. Les étudiants sont assimilés à des personnes sans activité lucrative, au sens de cette même loi. 
+
+Les établissements d’enseignement annoncent à la caisse AVS compétente (pour le canton de Vaud : l’agence d’assurances sociales de Lausanne) les données des étudiants ayant 21 ans révolus et plus. Les cotisations AVS d’étudiant sont versées auprès de la Caisse de compensation du canton sur le territoire duquel se trouve le siège de l’établissement d’enseignement et non sur la commune fiscale et civique.
+
+<style isBold="true">Exonération partielle ou totale</style> : Sur justification d’un revenu <style isBold="true">soumis</style> aux cotisations AVS (salaire, allocation APG, indemnité journalière de l’AI ou de l’assurance-chômage, etc.) pour l’année <style isBold="true">2017</style>, le montant cotisé AVS sera déduit. L’étudiant est exonéré dès que le revenu brut annuel atteint CHF. 4667.-.
+
+Pour les <style isBold="true">personnes mariées</style>, le revenu annuel du conjoint est pris en compte lorsqu’il est supérieur à CHF 9'334.-. Le cas échéant, l’étudiant marié n’aura pas de cotisations AVS à payer.
+
+Les étudiants étrangers au bénéfice d’un permis B séjour pour formation uniquement, ne sont pas soumis à cette disposition et seront exonérés sur présentation d’une copie dudit permis.
+
+Il appartient aux étudiants de produire les copies des pièces justificatives (<style isBold="true">certificat de salaire annuel</style>, décomptes de chômage ou d’indemnité journalière AI, décompte APG militaire ou maternité, etc.) pour obtenir une dispense partielle ou totale. En effet, les cotisations des assurés sont versées auprès de quatre-vingts caisses AVS réparties dans toute la Suisse et ne sont pas centralisées. Ce n’est qu’au moment de la réalisation d’un risque assuré (vieillesse, invalidité, décès) que toutes les données sont regroupées auprès d’une seule caisse AVS afin que les prestations puissent être calculées et versées.
+
+Les justificatifs peuvent être envoyés par <style isBold="true">courrier postal</style> ou par <style isBold="true">email</style>. Les courriels dont les pièces jointes <style isBold="true">excèdent 1Mb</style> ne nous sont pas délivrés et les fichiers partagés sur le Cloud ne pourront pas être consultés pour des raisons sécuritaires. L’envoi par messagerie électronique fait l’objet d’une confirmation automatique de réception par retour d’e-mail. Pour tous les documents envoyés, vous voudrez bien <style isBold="true">mentionner votre numéro d’affilié</style> que vous trouverez sur la facture. Les documents envoyés par courrier postal ne pourront pas être restitués. 
+
+La facture est payable dans les 30 jours, <style isBold="true">à l’exception</style> de l’étudiant qui a envoyé un justificatif de l’année 2017 pour obtenir une dispense totale ou partielle de la cotisation AVS. Une facture différentielle ou une confirmation de dispense est envoyée à l’étudiant <style isBold="true">dans les trois mois suivant</style> l’envoi des documents.
+
+Les étudiants de plus de 25 ans (dès le 1er janvier de l’année de leurs 26 ans) sont soumis aux règles applicables aux personnes sans activité lucrative (calcul des cotisations sur la base de la fortune et des revenus acquis sous forme de rentes). Si vous aviez 26 ans et plus en 2017 <style isBold="true">et que vous disposiez</style> durant l’année précitée d’une fortune égale ou supérieure à Fr. 300'000.-, et/ou de revenus sous forme de rentes supérieurs ou égaux à Fr. 15'000.- par an, nous vous prions de bien vouloir nous en informer afin que nous puissions déterminer le montant des cotisations AVS dues en fonction de votre situation.
+
+Nous vous remercions de votre collaboration.
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="220"
+						y="659"
+						width="244"
+						height="35"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-3"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[Agence d’assurances sociales 
+Lausanne]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="1"
+						y="31"
+						width="533"
+						height="27"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-4"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="true" isItalic="false" isUnderline="true" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[VOTRE FACTURE DE COTISATION AVS/AI/APG EN QUALITE D'ETUDIANT(E)]]></text>
+				</staticText>
+			</band>
+		</background>
+		<title>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</title>
+		<pageHeader>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</pageHeader>
+		<columnHeader>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</columnHeader>
+		<detail>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</detail>
+		<columnFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</columnFooter>
+		<pageFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</pageFooter>
+		<summary>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</summary>
+</jasperReport>
