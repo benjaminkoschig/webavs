@@ -398,7 +398,7 @@ public class IJFichierRenteEnCours extends PRAbstractFichierPlatPrinter {
             writeChampVide(cmd);
 
             // 25. Supplément d'ajournement (non utilisé dans ce cas)
-            writeChampVide(cmd);
+            writeEntier(cmd, "0");
 
             // 26. Date de révocation d'ajournement (non utilisé dans ce cas)
             writeChampVide(cmd);
@@ -429,7 +429,7 @@ public class IJFichierRenteEnCours extends PRAbstractFichierPlatPrinter {
 
             // 34. Montant de la réduction pour anticipation (non utilisé dans
             // ce cas)
-            writeChampVide(cmd);
+            writeEntier(cmd, "0");
 
             // 35. Date de début d'anticipation (non utilisé dans ce cas)
             writeChampVide(cmd);

@@ -768,10 +768,19 @@ public class REACORParser extends REACORAbstractFlatFileParser {
         if (line.startsWith(REACORAbstractFlatFileParser.CODE_PRESTATION_DUE_MENSUEL)) {
             pd.setCsType(IREPrestationDue.CS_TYPE_PMT_MENS);
             pd.setCsEtat(IREPrestationDue.CS_ETAT_ATTENTE);
-            pd.setMontantSupplementAjournement(REACORAbstractFlatFileParser.getField(line, fields,
-                    "MONTANT_SUPPL_AJOURN"));
-            pd.setMontantReductionAnticipation(REACORAbstractFlatFileParser.getField(line, fields,
-                    "MONTANT_REDUC_ANTICI"));
+            if (line.length() > 57) {
+                pd.setMontantReductionAnticipation(REACORAbstractFlatFileParser.getField(line, fields,
+                        "MONTANT_REDUC_ANTICI"));
+                if (line.length() > 60) {
+                    pd.setMontantSupplementAjournement(REACORAbstractFlatFileParser.getField(line, fields,
+                            "MONTANT_SUPPL_AJOURN"));
+                } else {
+                    pd.setMontantSupplementAjournement("0");
+                }
+            } else {
+                pd.setMontantReductionAnticipation("0");
+                pd.setMontantSupplementAjournement("0");
+            }
 
         } else if (line.startsWith(REACORAbstractFlatFileParser.CODE_PRESTATION_DUE_RETROACTIF)) {
             pd.setCsType(IREPrestationDue.CS_TYPE_MNT_TOT);
