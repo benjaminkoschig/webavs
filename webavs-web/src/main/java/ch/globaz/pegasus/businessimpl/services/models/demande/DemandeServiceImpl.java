@@ -508,21 +508,22 @@ public class DemandeServiceImpl extends PegasusAbstractServiceImpl implements De
         }
         return demande;
     }
-    
+
     @Override
     public Demande dateReduction(Demande demande, Boolean comptabilisationAuto) throws JadePersistenceException,
             JadeApplicationException {
         List<Droit> droits = PegasusServiceLocator.getDroitService().findCurrentVersionDroitByIdsDemande(
                 Arrays.asList(demande.getId()));
         String today = JadeDateUtil.getGlobazFormattedDate(new Date());
-        // String dateDeb = JadeDateUtil.addMonths("01." + demande.getSimpleDemande().getDateFin(), -1).substring(3);
         String dateDeb = demande.getSimpleDemande().getDateFin();
         for (Droit droit : droits) {
-            droit.setDemande(demande);
-            droit = PegasusServiceLocator.getDroitService().corrigerDroitDateReduction(droit, today, dateDeb, today,
-                    BSessionUtil.getSessionFromThreadContext().getUserId(), comptabilisationAuto, null);
+            droit = PegasusServiceLocator.getDroitService().corrigerDroitDateReduction(droit, demande, today, dateDeb,
+                    today, BSessionUtil.getSessionFromThreadContext().getUserId(), comptabilisationAuto, null);
         }
-        // update(demande);
+        if (dateDeb.equals(demande.getSimpleDemande().getDateFinInitial())) {
+            demande.getSimpleDemande().setDateFinInitial(null);
+            update(demande);
+        }
         return demande;
-    }    
+    }
 }

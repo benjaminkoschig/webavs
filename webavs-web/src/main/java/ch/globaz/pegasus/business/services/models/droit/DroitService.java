@@ -306,9 +306,10 @@ public interface DroitService extends JadeApplicationService {
             String currentUserId, boolean comptabilisationAuto, String mailProcessCompta) throws DroitException,
             JadePersistenceException, JadeApplicationServiceNotAvailableException;
 
-    public Droit corrigerDroitDateReduction(Droit droit, String dateAnnonce, String dateSuppression,
+    public Droit corrigerDroitDateReduction(Droit droit, Demande demande, String dateAnnonce, String dateSuppression,
             String dateDecision, String currentUserId, boolean comptabilisationAuto, String mailAdressCompta)
-            throws DroitException, JadePersistenceException, JadeApplicationServiceNotAvailableException;
+            throws DroitException, JadePersistenceException, JadeApplicationServiceNotAvailableException,
+            DecisionException, DonneeFinanciereException;
 
     /**
      * Annule la décision de suppression lors d'une demande d'annulation
@@ -323,7 +324,7 @@ public interface DroitService extends JadeApplicationService {
     public void retourArriereAnnulation(Droit droit) throws DecisionException,
             JadeApplicationServiceNotAvailableException, JadePersistenceException, DonneeFinanciereException,
             DroitException;
-   
+
     /**
      * Permet de compter le nombre d'enregistrements correspondant au modèle de recherche
      * 

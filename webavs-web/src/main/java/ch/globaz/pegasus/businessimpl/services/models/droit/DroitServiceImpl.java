@@ -523,7 +523,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
     public void retourArriereAnnulation(Droit droit) throws DecisionException,
             JadeApplicationServiceNotAvailableException, JadePersistenceException, DonneeFinanciereException,
             DroitException {
-        if (IPCDroits.CS_ANNULE.equals(droit.getSimpleVersionDroit().getCsEtatDroit())) {
+        if (IPCDroits.CS_ANNULE.equals(droit.getSimpleVersionDroit().getCsEtatDroit()) || hasDejaDateReduction(droit)) {
             PegasusServiceLocator.getDecisionService().devalideDecisions(droit.getId(),
                     droit.getSimpleVersionDroit().getId(), droit.getSimpleVersionDroit().getNoVersion(), true);
             DecisionSuppressionSearch search = new DecisionSuppressionSearch();
@@ -533,10 +533,15 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
         }
     }
 
+    private boolean hasDejaDateReduction(Droit droit) {
+        return !JadeStringUtil.isBlankOrZero(droit.getDemande().getSimpleDemande().getDateFinInitial());
+    }
+
     @Override
-    public Droit corrigerDroitDateReduction(Droit droit, String dateAnnonce, String dateSuppression,
+    public Droit corrigerDroitDateReduction(Droit droit, Demande demande, String dateAnnonce, String dateSuppression,
             String dateDecision, String currentUserId, boolean comptabilisationAuto, String mailAdressCompta)
-            throws DroitException, JadePersistenceException, JadeApplicationServiceNotAvailableException {
+            throws DroitException, JadePersistenceException, JadeApplicationServiceNotAvailableException,
+            DecisionException, DonneeFinanciereException {
         BSession session = BSessionUtil.getSessionFromThreadContext();
 
         // vérifier les paramètres d'entrées
@@ -545,6 +550,23 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
         if (JadeStringUtil.isBlankOrZero(currentUserId)) {
             throw new IllegalArgumentException(session.getLabel("DROIT_VALIDE_UTILISATEUR"));
         }
+
+        //
+        if (JadeStringUtil.isBlankOrZero(dateSuppression) && hasDejaDateReduction(droit)) {
+            dateSuppression = droit.getDemande().getSimpleDemande().getDateFinInitial();
+        }
+
+        // il y avait déjà une date de réduction, il faut annuler les restitutions et décisions précédentes
+        if (hasDejaDateReduction(droit)) {
+            retourArriereAnnulation(droit);
+            if (dateSuppression.equals(droit.getDemande().getSimpleDemande().getDateFinInitial())) {
+                return droit;
+            }
+            // mise à jour du droit (numéro de version, etc) suite aux suppressions précédentes
+            droit = PegasusServiceLocator.getDroitService().getCurrentVersionDroit(droit.getId());
+        }
+
+        droit.setDemande(demande);
 
         // vérification du droit
         DroitChecker.checkForCorriger(droit);
@@ -570,9 +592,6 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
                 droit.getSimpleVersionDroit().getIdVersionDroit()));
         decisionSuppression.getVersionDroit().setDemande(droit.getDemande());
         decisionSuppression.getSimpleDecisionSuppression().setIsRestitution(false);
-        if (droit.getDemande().getSimpleDemande().getDateFinInitial() != "") {
-
-        }
         try {
             decisionSuppression = PegasusServiceLocator.getDecisionSuppressionService().create(decisionSuppression,
                     false);
@@ -592,8 +611,8 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
         }
 
         return droit;
-    }    
-    
+    }
+
     @Override
     public int count(DroitSearch search) throws DroitException, JadePersistenceException {
         if (search == null) {

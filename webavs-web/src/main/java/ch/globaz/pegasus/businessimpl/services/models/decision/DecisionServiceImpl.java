@@ -84,9 +84,9 @@ public class DecisionServiceImpl extends PegasusAbstractServiceImpl implements D
     public static String PREFIX_DATE_FIN_VALIDATION_DECISION_PC = "31.12.";
 
     private void devalidationVersionCourante(String idVersionDroit, SimplePCAccordeeSearch simplePCAccordeeSearch,
-            SimpleDecisionSuppressionSearch simpleDecisionSuppressionSearch) throws PrestationException,
-            JadePersistenceException, JadeApplicationServiceNotAvailableException, OrdreVersementException,
-            DroitException, PCAccordeeException, JadeApplicationException, DecisionException {
+            SimpleDecisionSuppressionSearch simpleDecisionSuppressionSearch, boolean forAnnulation)
+            throws PrestationException, JadePersistenceException, JadeApplicationServiceNotAvailableException,
+            OrdreVersementException, DroitException, PCAccordeeException, JadeApplicationException, DecisionException {
 
         boolean isDecisionSuppression = false;
 
@@ -174,7 +174,7 @@ public class DecisionServiceImpl extends PegasusAbstractServiceImpl implements D
         // }
 
         // On ne met pas à jour la version de droit si elle est à l'Etat ANNULE car sera supprimé plus tard
-        if (!IPCDroits.CS_ANNULE.equals(simpleVersionDroit.getCsEtatDroit())) {
+        if (!forAnnulation) {
             // modifie version du droit courant -> état calculé, ou enregistré si c'est une decision de suppression
             if (isDecisionSuppression) {
                 simpleVersionDroit.setCsEtatDroit(IPCDroits.CS_ENREGISTRE);
@@ -338,7 +338,8 @@ public class DecisionServiceImpl extends PegasusAbstractServiceImpl implements D
 
                 List<PcaForDecompte> pcasReplaced = null;
 
-                devalidationVersionCourante(idVersionDroit, simplePCAccordeeSearch, simpleDecisionSuppressionSearch);
+                devalidationVersionCourante(idVersionDroit, simplePCAccordeeSearch, simpleDecisionSuppressionSearch,
+                        forAnnulation);
 
                 if (isDecisionSuppression) {
                     pcasReplaced = findPcaReplacedForSuppression(idDroit, noVersion, newPcas);

@@ -238,7 +238,7 @@ public class PCDemandeDetailViewBean extends BJadePersistentObjectViewBean {
         } else if (!annule && IPCDemandes.CS_ANNULE.equals(demande.getSimpleDemande().getCsEtatDemande())) {
             demande = PegasusServiceLocator.getDemandeService().retourArriereAnnuler(demande);
         } else if (demande.getSimpleDemande().getDateFinInitial() != "") {
-            demande = PegasusServiceLocator.getDemandeService().dateReduction(demande, comptabilisationAuto);            
+            demande = PegasusServiceLocator.getDemandeService().dateReduction(demande, comptabilisationAuto);
         } else {
             demande = PegasusServiceLocator.getDemandeService().update(demande);
         }
@@ -293,7 +293,9 @@ public class PCDemandeDetailViewBean extends BJadePersistentObjectViewBean {
     }
 
     public void setDateReduc(String dateReduc) {
-        demande.getSimpleDemande().setDateFinInitial(dateReduc);
+        if (JadeStringUtil.isBlankOrZero(demande.getSimpleDemande().getDateFinInitial())) {
+            demande.getSimpleDemande().setDateFinInitial(dateReduc);
+        }
     }
 
     public String getDateReduc() {

@@ -138,6 +138,7 @@ var showConfirmationDialogDateReduc = function () {
             },
             "<ct:FWLabel key='PROCESS_ADAPTATION_PC_NON'/>": function() {
                 $( this ).dialog( "close" );
+                $('#comptabilisationAuto').val("false");
         		if(dateFinFormate < dateFormate && dateFinInitialFormat < dateFormate || dateFormate < dateDebutFormat){
     					showErrorDialogDateReduc();
         		}else{
@@ -145,11 +146,12 @@ var showConfirmationDialogDateReduc = function () {
                      $('#forDateFin').val(document.getElementById("dateReduc").value);
                      if(dateFinInitialFormat == ""){
                      	  $('#dateReduc').val(dateTemp);
+                     } else {
+                    	 $('#dateReduc').val(dateFinInitial);
                      }
-                    // action(COMMIT);
-        		}
-
+                     action(COMMIT);
        
+            	}
             }
 /*             "<ct:FWLabel key='JSP_PC_BOUTON_CAN'/>": function() {
                 $( this ).dialog( "close" );
@@ -324,20 +326,23 @@ if(dateFinInitial!=""){
 function doDisableDate(checkboxElem) {
 	if(checkboxElem.checked){
 		document.getElementById("dateReduc").disabled = true;
-		 $('#dateReduc').data('notation_calendar').enableDisableInput();
+		var inputcal = $('#dateReduc').data('notation_calendar');
+		inputcal.enableDisableInput();
+		inputcal.$elementToPutObject.next().off('click');
 	}else{
 		document.getElementById("dateReduc").disabled = false;
 		 $('#dateReduc').data('notation_calendar').enableDisableInput();
-
 	}
 
 }
 function doDisableCheckbox(dateElem){
 	var ckbox = document.getElementById("annule");
-	if(dateElem.value==""){
-		ckbox.disabled = false;
-	}else{
-		ckbox.disabled = true;
+	if(!ckbox.readOnly) { 
+		if(dateElem.value==""){
+			ckbox.disabled = false;
+		}else{
+			ckbox.disabled = true;
+		}
 	}
 }
 $(function(){
@@ -420,8 +425,12 @@ function validate() {
 			  parts = dateValue.split('.');
 			  dateFormate = new Date(parts[1],parts[0],'');
 		      showConfirmationDialogDateReduc();
+			// zone remise à blanc reset de la date de réduction à la date initiale
+			} else if(dateFinInitialFormat != null) {
+				$('#forDateFin').val(dateFinInitial);
 			}
 		}
+
 		
 
 		if (actionMethod == "add"){
@@ -522,7 +531,10 @@ function postInit(){
 					<td class="standardLabel"><ct:FWLabel key="JSP_PC_DEM_D_FORCER_ANNULATION"/></td>
 					<td>
 						<input type="checkbox" name="annule" id="annule"
-				    		<%=IPCDemandes.CS_ANNULE.equals(viewBean.getDemande().getSimpleDemande().getCsEtatDemande())?" checked='checked' ":"" %> value="on" onclick="doDisableDate(this)"/>
+				    		<%=IPCDemandes.CS_ANNULE.equals(viewBean.getDemande().getSimpleDemande().getCsEtatDemande())? " checked='checked' ":"" %>
+ 				    		<%=!JadeStringUtil.isBlank(viewBean.getDemande().getSimpleDemande().getDateFinInitial())? " disabled='disabled' ":""%> 
+				    		<%=!JadeStringUtil.isBlank(viewBean.getDemande().getSimpleDemande().getDateFinInitial())?" readOnly  ":"" %>
+				    		value="on" onclick="doDisableDate(this)"/>
 					</td>
 				</tr>
 				<tr>

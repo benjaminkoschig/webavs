@@ -230,5 +230,5 @@ public interface DemandeService extends JadeApplicationService {
             DonneeFinanciereException, PCAccordeeException;
 
     public Demande dateReduction(Demande demande, Boolean comptabilisationAuto) throws JadePersistenceException,
-    JadeApplicationException;
+            JadeApplicationException;
 }
