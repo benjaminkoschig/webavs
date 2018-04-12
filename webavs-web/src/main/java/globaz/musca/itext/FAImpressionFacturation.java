@@ -38,6 +38,7 @@ public abstract class FAImpressionFacturation extends FWIDocumentManager {
     protected java.lang.String montantSansCentime;
     protected FAPassage passage;
     protected globaz.framework.util.FWCurrency totalMontant;
+    private Boolean isEbusiness = false;
 
     /**
      * Constructor for FAImpressionFacturation.
@@ -287,4 +288,13 @@ public abstract class FAImpressionFacturation extends FWIDocumentManager {
         }
         return headerOnEachPage;
     }
+
+    public Boolean getIsEbusiness() {
+        return isEbusiness;
+    }
+
+    public void setIsEbusiness(Boolean isEbusiness) {
+        this.isEbusiness = isEbusiness;
+    }
+
 }

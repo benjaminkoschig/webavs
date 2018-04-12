@@ -53,6 +53,13 @@ public class EBApplication extends BApplication {
         FWAction.registerActionCustom("orion.swissdec.pucsValidationDetail.refuser", FWSecureConstants.UPDATE);
         FWAction.registerActionCustom("orion.swissdec.pucsValidationDetail.annulerRefus", FWSecureConstants.UPDATE);
         FWAction.registerActionCustom("orion.sdd.saisieDecompte.afficher", FWSecureConstants.UPDATE);
+        FWAction.registerActionCustom("orion.recap.recapAf.valider", FWSecureConstants.UPDATE);
+        FWAction.registerActionCustom("orion.recap.recapAf.validerRadier", FWSecureConstants.UPDATE);
+        FWAction.registerActionCustom("orion.adi.recapDemandesTransmises.afficher", FWSecureConstants.UPDATE);
+        FWAction.registerActionCustom("orion.adi.recapDemandesTransmises.validerBatch", FWSecureConstants.UPDATE);
+        FWAction.registerActionCustom("orion.adi.recapDemandesTransmises.validerDemande", FWSecureConstants.UPDATE);
+        FWAction.registerActionCustom("orion.adi.recapDemandesTransmises.refuserDemande", FWSecureConstants.UPDATE);
+        FWAction.registerActionCustom("orion.adi.recapDemandesTransmises.quitterDemande", FWSecureConstants.UPDATE);
     }
 
     /**

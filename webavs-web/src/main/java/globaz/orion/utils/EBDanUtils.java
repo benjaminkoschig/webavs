@@ -20,10 +20,12 @@ import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
 import ch.globaz.orion.business.domaine.pucs.DeclarationSalaireProvenance;
+import ch.globaz.orion.business.domaine.pucs.DeclarationSalaireType;
 import ch.globaz.orion.business.domaine.pucs.EtatPucsFile;
 import ch.globaz.orion.business.models.pucs.PucsFile;
 import ch.globaz.xmlns.eb.dan.Dan;
 import ch.globaz.xmlns.eb.dan.DanStatutEnum;
+import ch.globaz.xmlns.eb.dan.DanTypeEnum;
 import ch.globaz.xmlns.eb.dan.SexeEnum;
 import ch.globaz.xmlns.eb.pucs.PucsEntrySummary;
 import ch.globaz.xmlns.eb.pucs.PucsStatusEnum;
@@ -289,14 +291,18 @@ public class EBDanUtils {
         PucsFile pucsRetour = new PucsFile();
 
         pucsRetour.setAnneeDeclaration(String.valueOf(pucsTemp.getAnnee()));
+        if (pucsTemp.getAnneeVersement() != null) {
+            pucsRetour.setAnneeVersement(String.valueOf(pucsTemp.getAnneeVersement()));
+        }
         pucsRetour.setCurrentStatus(EBDanUtils.converStatusDan(pucsTemp.getStatut()));
         String dateFromDan = String.valueOf(pucsTemp.getDate());
         JADate date = new JADate();
         date.setYear(Integer.parseInt(dateFromDan.substring(0, 4)));
         date.setMonth(Integer.parseInt(dateFromDan.substring(4, 6)));
         date.setDay(Integer.parseInt(dateFromDan.substring(6)));
+        String dateStr = globaz.globall.util.JACalendar.format(date, JACalendar.FORMAT_DDsMMsYYYY);
 
-        pucsRetour.setDateDeReception(globaz.globall.util.JACalendar.format(date, JACalendar.FORMAT_DDsMMsYYYY));
+        pucsRetour.setDateDeReception(dateStr);
         pucsRetour.setHandlingUser(pucsTemp.getHandLingUser());
         pucsRetour.setFilename(String.valueOf(pucsTemp.getIdDan())); //
         pucsRetour.setNbSalaires(String.valueOf(pucsTemp.getNombreSalaire()));
@@ -312,9 +318,14 @@ public class EBDanUtils {
         }
         pucsRetour.setTotalControle(montantAvs.toStringFormat());
         pucsRetour.setNbSalaires(String.valueOf(pucsTemp.getNombreSalaire()));
+        if (pucsTemp.getType() == null || pucsTemp.getType().equals(DanTypeEnum.PRINCIPALE)) {
+            pucsRetour.setTypeDeclaration(DeclarationSalaireType.PRINCIPALE);
+        } else if (pucsTemp.getType().equals(DanTypeEnum.COMPLEMENTAIRE)) {
+            pucsRetour.setTypeDeclaration(DeclarationSalaireType.COMPLEMENTAIRE);
+        }
 
         pucsRetour.setNomValidation(pucsTemp.getNomValidation());
-        pucsRetour.setDateValidation(pucsRetour.getDateValidation());
+        pucsRetour.setDateValidation(dateStr);
         if (pucsTemp.isCertifieExact() != null) {
             pucsRetour.setCertifieExact(pucsTemp.isCertifieExact());
         } else {
@@ -326,6 +337,7 @@ public class EBDanUtils {
     public static PucsFile mapPucsfile(PucsEntrySummary pucsTemp) {
         PucsFile pucsRetour = new PucsFile();
         pucsRetour.setAnneeDeclaration(String.valueOf(pucsTemp.getAnnee()));
+        pucsRetour.setAnneeVersement(String.valueOf(pucsTemp.getAnnee()));
         pucsRetour.setCurrentStatus(EBDanUtils.converStatus(pucsTemp.getStatusActuelLabel()));
         pucsRetour.setDateDeReception(pucsTemp.getSoumissionLabel());
         pucsRetour.setHandlingUser(pucsTemp.getHandlingUser());
@@ -343,6 +355,7 @@ public class EBDanUtils {
         }
         pucsRetour.setTotalControle(montantAvs.toStringFormat());
         pucsRetour.setNbSalaires(String.valueOf(pucsTemp.getDefinedNbOfSalaries()));
+        pucsRetour.setTypeDeclaration(DeclarationSalaireType.PRINCIPALE);
 
         pucsRetour.setNomValidation(pucsTemp.getSoumisPar());
         pucsRetour.setDateValidation(pucsTemp.getSoumissionLabel());

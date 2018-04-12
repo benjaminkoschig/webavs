@@ -73,6 +73,8 @@ public class CASectionManager extends BManager implements Serializable {
     private String orderBy = "";
     private String untilDate = "";
     private String untilIdExterne = "";
+    private String fromDateEcheance = "";
+    private String untilDateEcheance = "";
 
     @Override
     protected String _getFrom(BStatement statement) {
@@ -278,6 +280,24 @@ public class CASectionManager extends BManager implements Serializable {
             sql.append(CASectionManager.ALIAS_TABLE_SECTION).append(".").append(CASection.FIELD_DATESECTION);
             sql.append(">=");
             sql.append(this._dbWriteDateAMJ(statement.getTransaction(), getFromDate()));
+        }
+
+        if (!JadeStringUtil.isBlank(getUntilDateEcheance())) {
+            if (sql.length() != 0) {
+                sql.append(" AND ");
+            }
+            sql.append(CASectionManager.ALIAS_TABLE_SECTION).append(".").append(CASection.FIELD_DATEECHEANCE);
+            sql.append("<=");
+            sql.append(this._dbWriteDateAMJ(statement.getTransaction(), getUntilDateEcheance()));
+        }
+
+        if (!JadeStringUtil.isBlank(getFromDateEcheance())) {
+            if (sql.length() != 0) {
+                sql.append(" AND ");
+            }
+            sql.append(CASectionManager.ALIAS_TABLE_SECTION).append(".").append(CASection.FIELD_DATEECHEANCE);
+            sql.append(">=");
+            sql.append(this._dbWriteDateAMJ(statement.getTransaction(), getFromDateEcheance()));
         }
 
         if (!JadeStringUtil.isBlank(getUntilIdExterne())) {
@@ -814,5 +834,21 @@ public class CASectionManager extends BManager implements Serializable {
 
     public void setUntilIdExterne(String newUntilIdExterne) {
         untilIdExterne = newUntilIdExterne;
+    }
+
+    public String getFromDateEcheance() {
+        return fromDateEcheance;
+    }
+
+    public void setFromDateEcheance(String fromDateEcheance) {
+        this.fromDateEcheance = fromDateEcheance;
+    }
+
+    public String getUntilDateEcheance() {
+        return untilDateEcheance;
+    }
+
+    public void setUntilDateEcheance(String untilDateEcheance) {
+        this.untilDateEcheance = untilDateEcheance;
     }
 }

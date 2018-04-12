@@ -38,6 +38,11 @@ public class EBMainServlet extends FWJadeServlet {
         listeInterdits.add("widget.action.jade.download");
         listeInterdits.add("orion.swissdec.pucsValidationDetail.refuser");
         listeInterdits.add("orion.swissdec.pucsValidationDetail.accepter");
+        listeInterdits.add("orion.adi.demandesTransmises.valider");
+        listeInterdits.add("orion.recap.recapAf.valider");
+        listeInterdits.add("orion.recap.recapAf.validerRadier");
+        listeInterdits.add("orion.adi.demandesTransmises.refuserDemande");
+        listeInterdits.add("orion.adi.demandesTransmises.validerDemande");
         FWRemoveActionsEndingWith remRule = new FWRemoveActionsEndingWith(listeInterdits);
         stack.addRule(remRule);
 
@@ -70,5 +75,7 @@ public class EBMainServlet extends FWJadeServlet {
         registerActionMapping("orion.sdd", FWDefaultServletAction.class);
         registerActionMapping("orion.partnerWeb", FWDefaultServletAction.class);
         registerActionMapping("orion.swissdec", EBActionValidationSwissDec.class);
+        registerActionMapping("orion.recap", EBRecapAfAction.class);
+        registerActionMapping("orion.adi", EBDemandesTransmisesAction.class);
     }
 }

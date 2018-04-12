@@ -629,10 +629,18 @@ public class CPActionDecision extends FWDefaultServletAction {
                                         + request.getParameter("idDecision") + vb.getDocListe())
                         .forward(request, response);
             } else {
-                servlet.getServletContext()
-                        .getRequestDispatcher(
-                                getActionFullURL() + ".chercher&idTiers=" + vb.getIdTiers() + "&selectedId2="
-                                        + vb.getIdAffiliation() + vb.getDocListe()).forward(request, response);
+                String sourceDuplicata = request.getParameter("orionADISource");
+                if (sourceDuplicata != null && !sourceDuplicata.isEmpty()) {
+                    servlet.getServletContext()
+                            .getRequestDispatcher(
+                                    "/orion?userAction=orion.adi.demandesTransmises.afficher&selectedId="
+                                            + sourceDuplicata + vb.getDocListe()).forward(request, response);
+                } else {
+                    servlet.getServletContext()
+                            .getRequestDispatcher(
+                                    getActionFullURL() + ".chercher&idTiers=" + vb.getIdTiers() + "&selectedId2="
+                                            + vb.getIdAffiliation() + vb.getDocListe()).forward(request, response);
+                }
             }
         } catch (Exception e) {
             // goSendRedirect(ERROR_PAGE, request, response);

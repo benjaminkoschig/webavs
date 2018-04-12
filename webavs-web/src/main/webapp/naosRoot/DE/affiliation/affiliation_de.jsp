@@ -94,7 +94,7 @@ function updateChampIde(tag){
 		document.getElementById("ideStatut").value = '';
 		document.getElementById("libelleStatutIde").value = '';
 		document.getElementById("isIdePartage").style.display = "none";
-	}
+}
 	displayFieldIDEPassif();
 }
 
@@ -855,6 +855,17 @@ function maxLength(zone,max)
 									<INPUT type="checkbox" name="bonusMalus" <%=(viewBean.getBonusMalus().booleanValue())? "checked" : ""%>>
 								</TD-->
 							</TR>
+							
+							<%if(viewBean.isEbusinessConnected()){ %>
+							<TR id="isEBusiness">
+								<TD nowrap width="161"><ct:FWLabel key="NAOS_JSP_AFFILIATION_EBUSINESS_CHECKBOX_PASSIVE"/></TD>
+								<TD nowrap colspan="2"> 
+										<INPUT id="isActivAffilieEBusiness" type="checkbox" name="isActivAffilieEBusiness" <%=(viewBean.isActivAffilieEBusiness())? "checked" : ""%> disabled="disabled" readonly="readonly">
+								</TD>
+								<TD colspan="2"></TD>
+							</TR>
+							<%}%>
+							
 							<TR> 
 								<TD nowrap  height="11" colspan="4"> 
 									<hr size="3" width="100%">

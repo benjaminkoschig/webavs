@@ -6,12 +6,15 @@ import globaz.jade.log.JadeLogger;
 import ch.globaz.ebback.api.BackProvider;
 import ch.globaz.orion.EBApplication;
 import ch.globaz.xmlns.eb.acl.ACLService;
+import ch.globaz.xmlns.eb.adi.ADIService;
 import ch.globaz.xmlns.eb.dan.DANService;
+import ch.globaz.xmlns.eb.dossieraf.DossierAFService;
 import ch.globaz.xmlns.eb.mail.MailService;
 import ch.globaz.xmlns.eb.pac.PACService;
 import ch.globaz.xmlns.eb.partnerweb.PartnerWebService;
 import ch.globaz.xmlns.eb.partnerweb.User;
 import ch.globaz.xmlns.eb.pucs.PUCSService;
+import ch.globaz.xmlns.eb.recapaf.RecapAFService;
 import ch.globaz.xmlns.eb.sdd.SDDService;
 
 public class ServicesProviders {
@@ -173,6 +176,40 @@ public class ServicesProviders {
         }
     }
 
+    public static DossierAFService dossierAfServiceProvide(BSession session) {
+        User unConnectedUser = new User();
+        unConnectedUser.setNomLogin(session.getUserId());
+        unConnectedUser.setEmail(session.getUserEMail());
+        try {
+            EBApplication app = (EBApplication) GlobazServer.getCurrentSystem().getApplication(
+                    EBApplication.APPLICATION_ID);
+            String owner = app.getProperty("ebusiness.owner");
+
+            return BackProvider.getDossierAfService(unConnectedUser, owner, session.getIdLangueISO());
+        } catch (Exception e) {
+            // Problem général, le service n'est pas utilisable ...
+            JadeLogger.fatal(ServicesProviders.class, e);
+            throw new IllegalStateException(e);
+        }
+    }
+
+    public static RecapAFService recapAfServiceProvide(BSession session) {
+        User unConnectedUser = new User();
+        unConnectedUser.setNomLogin(session.getUserId());
+        unConnectedUser.setEmail(session.getUserEMail());
+        try {
+            EBApplication app = (EBApplication) GlobazServer.getCurrentSystem().getApplication(
+                    EBApplication.APPLICATION_ID);
+            String owner = app.getProperty("ebusiness.owner");
+
+            return BackProvider.getRecapAfService(unConnectedUser, owner, session.getIdLangueISO());
+        } catch (Exception e) {
+            // Problem général, le service n'est pas utilisable ...
+            JadeLogger.fatal(ServicesProviders.class, e);
+            throw new IllegalStateException(e);
+        }
+    }
+
     public static MailService mailServiceProvide(BSession session) {
         User unConnectedUser = new User();
         unConnectedUser.setNomLogin(session.getUserId());
@@ -183,6 +220,23 @@ public class ServicesProviders {
             String owner = app.getProperty("ebusiness.owner");
 
             return BackProvider.getMailService(unConnectedUser, owner, session.getIdLangueISO());
+        } catch (Exception e) {
+            // Problem général, le service n'est pas utilisable ...
+            JadeLogger.fatal(ServicesProviders.class, e);
+            throw new IllegalStateException(e);
+        }
+    }
+    
+    public static ADIService adiServiceProvide(BSession session) {
+        User unConnectedUser = new User();
+        unConnectedUser.setNomLogin(session.getUserId());
+        unConnectedUser.setEmail(session.getUserEMail());
+        try {
+            EBApplication app = (EBApplication) GlobazServer.getCurrentSystem().getApplication(
+                    EBApplication.APPLICATION_ID);
+            String owner = app.getProperty("ebusiness.owner");
+
+            return BackProvider.getAdiService(unConnectedUser, owner, session.getIdLangueISO());
         } catch (Exception e) {
             // Problem général, le service n'est pas utilisable ...
             JadeLogger.fatal(ServicesProviders.class, e);

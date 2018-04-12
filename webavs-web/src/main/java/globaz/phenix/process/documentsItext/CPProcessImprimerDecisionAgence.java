@@ -62,6 +62,9 @@ public class CPProcessImprimerDecisionAgence extends BProcess {
 
     private CPLettre_SalarieDispense_Doc salarieDispenseDocument;
 
+    private boolean isEbusiness = false;
+    private String pathFileEbusiness = "";
+
     public CPProcessImprimerDecisionAgence() {
         super();
     }
@@ -405,10 +408,16 @@ public class CPProcessImprimerDecisionAgence extends BProcess {
                     decisionIndDocument.setSession(getSession());
                     decisionIndDocument.setDuplicata(getDuplicata());
                     decisionIndDocument.setEnvoiGed(getEnvoiGed());
-                    decisionIndDocument.setWantLettreCouple(((CPApplication) getSession().getApplication())
-                            .isLettreCouple());
-                    decisionIndDocument.setAcompteDetailCalcul(((CPApplication) getSession().getApplication())
-                            .isAcompteDetailCalcul());
+                    if (!isEbusiness) {
+                        decisionIndDocument.setWantLettreCouple(((CPApplication) getSession().getApplication())
+                                .isLettreCouple());
+                        decisionIndDocument.setAcompteDetailCalcul(((CPApplication) getSession().getApplication())
+                                .isAcompteDetailCalcul());
+                    } else {
+                        decisionIndDocument.setWantLettreCouple(false);
+                        decisionIndDocument.setAcompteDetailCalcul(true);
+                        decisionIndDocument.setEbusiness(true);
+                    }
                     decisionIndDocument.setAffichageEcran(getAffichageEcran());
                     // EFL begin
                     decisionIndDocument.keepDocumentsInChild();
@@ -736,6 +745,22 @@ public class CPProcessImprimerDecisionAgence extends BProcess {
      */
     public void setIsShortProcess(boolean isShortProcess) {
         this.isShortProcess = isShortProcess;
+    }
+
+    public boolean isEbusiness() {
+        return isEbusiness;
+    }
+
+    public void setEbusiness(boolean isEbusiness) {
+        this.isEbusiness = isEbusiness;
+    }
+
+    public String getPathFileEbusiness() {
+        return pathFileEbusiness;
+    }
+
+    public void setPathFileEbusiness(String pathFileEbusiness) {
+        this.pathFileEbusiness = pathFileEbusiness;
     }
 
 }

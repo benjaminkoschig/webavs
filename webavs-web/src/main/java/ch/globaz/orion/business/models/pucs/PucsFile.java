@@ -3,12 +3,14 @@ package ch.globaz.orion.business.models.pucs;
 import java.io.File;
 import java.io.Serializable;
 import ch.globaz.orion.business.domaine.pucs.DeclarationSalaireProvenance;
+import ch.globaz.orion.business.domaine.pucs.DeclarationSalaireType;
 import ch.globaz.orion.business.domaine.pucs.EtatPucsFile;
 
 public class PucsFile implements Serializable {
 
     private static final long serialVersionUID = 1L;
     private String anneeDeclaration = null;
+    private String anneeVersement = null;
     private EtatPucsFile currentStatus = null;
     private String dateDeReception = null;
     private String handlingUser = null;
@@ -32,6 +34,7 @@ public class PucsFile implements Serializable {
     private Boolean certifieExact;
     private String dateValidation;
     private String nomValidation;
+    private DeclarationSalaireType typeDeclaration;
 
     public File getFile() {
         return file;
@@ -239,9 +242,37 @@ public class PucsFile implements Serializable {
                 + ", dateDeReception=" + dateDeReception + ", handlingUser=" + handlingUser + ", filename=" + filename
                 + ", nbSalaires=" + nbSalaires + ", nomAffilie=" + nomAffilie + ", numeroAffilie=" + numeroAffilie
                 + ", salaireInferieurLimite=" + salaireInferieurLimite + ", totalControle=" + totalControle
-                + ", provenance=" + provenance + ", sizeFileInKo=" + sizeFileInKo + ", isAfSeul=" + isAfSeul
-                + ", isForTest=" + isForTest + ", lock=" + lock + ", isAffiliationExistante=" + isAffiliationExistante
-                + ", duplicate=" + duplicate + "]";
+                + ", provenance=" + provenance + ", typeDeclaration=" + typeDeclaration + ", sizeFileInKo="
+                + sizeFileInKo + ", isAfSeul=" + isAfSeul + ", isForTest=" + isForTest + ", lock=" + lock
+                + ", isAffiliationExistante=" + isAffiliationExistante + ", duplicate=" + duplicate + "]";
+    }
+
+    public String getAnneeVersement() {
+        return anneeVersement;
+    }
+
+    public void setAnneeVersement(String anneeVersement) {
+        this.anneeVersement = anneeVersement;
+    }
+
+    public DeclarationSalaireType getTypeDeclaration() {
+        return typeDeclaration;
+    }
+
+    public void setTypeDeclaration(DeclarationSalaireType typeDeclaration) {
+        this.typeDeclaration = typeDeclaration;
+    }
+
+    public boolean isDeclarationComplementaire() {
+        return getTypeDeclaration().equals(DeclarationSalaireType.COMPLEMENTAIRE);
+    }
+
+    public boolean isDeclarationPrincipale() {
+        return getTypeDeclaration().equals(DeclarationSalaireType.PRINCIPALE);
+    }
+
+    public boolean isSalaireDifferes() {
+        return !anneeDeclaration.equals(anneeVersement);
     }
 
     public Boolean getCertifieExact() {

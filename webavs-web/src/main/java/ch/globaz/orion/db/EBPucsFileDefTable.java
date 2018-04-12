@@ -10,6 +10,7 @@ public enum EBPucsFileDefTable implements TableDefinition {
     ID_FILE_NAME("ID_FILE_NAME", String.class),
     ID_AFFILIATION("ID_AFFILIATION", String.class),
     ANNEE_DECLARATION("ANNEE_DECLARATION", Integer.class),
+    ANNEE_VERSEMENT("ANNEE_VERSEMENT", Integer.class),
     STATUS("STATUS", Integer.class),
     DATE_RECEPTION("DATE_RECEPTION", Date.class),
     HANDLING_USER("HANDLING_USER", String.class),
@@ -23,11 +24,12 @@ public enum EBPucsFileDefTable implements TableDefinition {
     DUPLICATE("DUPLICATE", Boolean.class),
     SAL_INF_LIMIT("SAL_INF_LIMIT", Boolean.class),
     NIVEAU_SECURITE("NIVEAU_SECURITE", Integer.class),
+    TYPE_DECLARATION("TYPE_DECLARATION", Integer.class),
     FOR_TEST("FOR_TEST", Boolean.class),
-    SEARCH_STRING("SEARCH_STRING", String.class),
     CERTIFIE_EXACT("CERTIFIE_EXACT", Boolean.class),
     DATE_VALIDATION("DATE_VALIDATION", Date.class),
-    NOM_VALIDATION("NOM_VALIDATION", String.class);
+    NOM_VALIDATION("NOM_VALIDATION", String.class),
+    SEARCH_STRING("SEARCH_STRING", String.class);
 
     public static final String TABLE = "EBPUCS_FILE";
     private String column;

@@ -67,6 +67,7 @@ public class FAImpressionFacture_BVR_Doc extends FAImpressionFacturation {
     private final static String CODEDECOMPTESALAIRE30 = "30";
     private final static String CODEDECOMPTESALAIRE33 = "33";
     private final static String HEADER_FILENAME = "header.filename.bvr";
+    private final static String HEADER_FILENAME_EBU = "header.filename.bvr.ebu";
     public final static String NUM_INFOROM_FACTURE_DECOMPTE_PARITAIRE = "0099CFA"; // Utilisé par défaut
     public final static String NUM_INFOROM_FACTURE_DECOMPTE_PERSONELLE = "0290CFA";
     public final static String NUM_INFOROM_FACTURE_PERIODIQUE = "0293CFA";
@@ -75,6 +76,7 @@ public class FAImpressionFacture_BVR_Doc extends FAImpressionFacturation {
     public final static String TEMPLATE_FILENAME = "MUSCA_BVR_1";
     public final static String TEMPLATE_FILENAME_BVR_NEUTRE = "MUSCA_BVR_NEUTRE";
     public final static String TEMPLATE_FILENAME4DECSAL = "MUSCA_BVR4DECSAL"; // Template
+    private Boolean isEbusiness = false;
 
     public static String getTemplateFilename(FAEnteteFacture entFacture) {
         if (FAImpressionFacture_BVR_Doc.CODEDECOMPTESALAIRE13.equalsIgnoreCase(entFacture.getIdExterneFacture()
@@ -700,18 +702,26 @@ public class FAImpressionFacture_BVR_Doc extends FAImpressionFacturation {
 
         caisseReportHelper.addHeaderParameters(this, headerBean);
 
-        // Implémenter la même fonctionalité des signatures pour les entêtes
-        // spécifiques aux documents et aux caisses...
-        if ("" != getTemplateProperty(getDocumentInfo(), FAImpressionFacture_BVR_Doc.HEADER_FILENAME)) {
-
+        if (isEbusiness) {
             getImporter().getParametre().put(
                     ICaisseReportHelper.PARAM_SUBREPORT_HEADER,
                     ((ACaisseReportHelper) caisseReportHelper).getDefaultModelPath() + "/"
-                            + getTemplateProperty(getDocumentInfo(), FAImpressionFacture_BVR_Doc.HEADER_FILENAME));
-            // pour la CICICAM, l'entête des BVRs n'a que la date, faire en
-            // sorte que pour les autres caisses,
-            // il y aie aussi le "lieu,le "...
+                            + getTemplateProperty(getDocumentInfo(), FAImpressionFacture_BVR_Doc.HEADER_FILENAME_EBU));
+        } else {
+            // Implémenter la même fonctionalité des signatures pour les entêtes
+            // spécifiques aux documents et aux caisses...
+            if ("" != getTemplateProperty(getDocumentInfo(), FAImpressionFacture_BVR_Doc.HEADER_FILENAME)) {
+
+                getImporter().getParametre().put(
+                        ICaisseReportHelper.PARAM_SUBREPORT_HEADER,
+                        ((ACaisseReportHelper) caisseReportHelper).getDefaultModelPath() + "/"
+                                + getTemplateProperty(getDocumentInfo(), FAImpressionFacture_BVR_Doc.HEADER_FILENAME));
+                // pour la CICICAM, l'entête des BVRs n'a que la date, faire en
+                // sorte que pour les autres caisses,
+                // il y aie aussi le "lieu,le "...
+            }
         }
+
         totalTimeDataSource += (System.currentTimeMillis() - currentTime);
     }
 
@@ -1149,6 +1159,14 @@ public class FAImpressionFacture_BVR_Doc extends FAImpressionFacturation {
 
     public void setUnificationProcess(boolean unificationProcess) {
         this.unificationProcess = unificationProcess;
+    }
+
+    public Boolean getIsEbusiness() {
+        return isEbusiness;
+    }
+
+    public void setIsEbusiness(Boolean isEbusiness) {
+        this.isEbusiness = isEbusiness;
     }
 
 }

@@ -1,5 +1,6 @@
 package ch.globaz.orion.businessimpl.services.partnerWeb;
 
+import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
 import globaz.naos.db.affiliation.AFAffiliation;
 import globaz.naos.services.AFAffiliationServices;
@@ -10,15 +11,12 @@ import java.util.Set;
 import ch.globaz.common.sql.QueryExecutor;
 import ch.globaz.orion.businessimpl.services.ServicesProviders;
 import ch.globaz.xmlns.eb.partnerweb.ContactsAffilie;
-import ch.globaz.xmlns.eb.partnerweb.PartnerWebService;
+import ch.globaz.xmlns.eb.partnerweb.Partner;
 
 public class PartnerWebServiceImpl {
 
-    private static PartnerWebService partnerWebService = ServicesProviders.partnerWebServiceProvide(BSessionUtil
-            .getSessionFromThreadContext());
-
-    public static Set<ContactEbusinessAffilie> searchAllActivContactAffilie() {
-        List<ContactsAffilie> contacts = partnerWebService.searchAllActivContact();
+    public static Set<ContactEbusinessAffilie> searchAllActivContactAffilie(BSession session) {
+        List<ContactsAffilie> contacts = ServicesProviders.partnerWebServiceProvide(session).searchAllActivContact();
 
         List<AfilliationForContactEb> affiliations = findAffiliationByNumerosAffilie(contacts);
 
@@ -27,7 +25,7 @@ public class PartnerWebServiceImpl {
         return list;
     }
 
-    public static Set<ContactEbusinessAffilie> searchSuiviDeclarationContact() {
+    public static Set<ContactEbusinessAffilie> searchSuiviDeclarationContact(BSession session) {
 
         String query = "select AFFIlIE.MALNAF as numeroAffilie, AFFIlIE.MADFIN as dateDeRadiation,  AFFIlIE.MATDEC as codeDeclaration, complement.JCJOVA as etape "
                 + "       from schema.jojpcjo complement "
@@ -47,7 +45,8 @@ public class PartnerWebServiceImpl {
 
         List<String> affilierNumeros = resolveNumeroAffilies(suvies);
 
-        List<ContactsAffilie> contacts = partnerWebService.searchContactByNoAffilie(affilierNumeros);
+        List<ContactsAffilie> contacts = ServicesProviders.partnerWebServiceProvide(session).searchContactByNoAffilie(
+                affilierNumeros);
 
         Set<ContactEbusinessAffilie> list = new ContactEbAffilierList().merge(contacts, suvies)
                 .filtreAffiliationNotNull();
@@ -96,4 +95,30 @@ public class PartnerWebServiceImpl {
         return affilliationsEb;
     }
 
+    /**
+     * Retourne true si l'affilié a un compte EBusiness et est actif
+     * 
+     * @param session
+     * @param numeroAffilie
+     * @return
+     */
+    public static Boolean isExistingAndActivAffilieEbusiness(BSession session, String numeroAffilie) {
+        return ServicesProviders.partnerWebServiceProvide(session).isExistingAndActivAffilie(numeroAffilie);
+    }
+
+    /**
+     * Retourne la liste de tous les affiliés actifs EBusiness
+     * 
+     * @param session
+     * @return
+     */
+    public static List<String> listAllActivNumerosAffiliesEbusiness(BSession session) {
+        List<String> listActivNumerosAffilies = new ArrayList<String>();
+        List<Partner> listActivAffilies = ServicesProviders.partnerWebServiceProvide(session).findAllActivAffilies();
+        for (Partner affilie : listActivAffilies) {
+            listActivNumerosAffilies.add(affilie.getNumeroAffilie());
+        }
+
+        return listActivNumerosAffilies;
+    }
 }

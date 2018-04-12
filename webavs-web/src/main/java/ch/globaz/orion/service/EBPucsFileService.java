@@ -17,6 +17,7 @@ import ch.globaz.common.domaine.Montant;
 import ch.globaz.common.sql.QueryExecutor;
 import ch.globaz.common.sql.SQLWriter;
 import ch.globaz.orion.business.domaine.pucs.DeclarationSalaireProvenance;
+import ch.globaz.orion.business.domaine.pucs.DeclarationSalaireType;
 import ch.globaz.orion.business.domaine.pucs.EtatPucsFile;
 import ch.globaz.orion.business.models.pucs.PucsFile;
 import ch.globaz.orion.db.EBPucsFileEntity;
@@ -255,6 +256,11 @@ public class EBPucsFileService {
         pucsFile.setFilename(entity.getIdFileName());
         pucsFile.setAfSeul(entity.isAfSeul());
         pucsFile.setAnneeDeclaration(String.valueOf(entity.getAnneeDeclaration()));
+        if (entity.getAnneeVersement() == null || entity.getAnneeVersement() == 0) {
+            pucsFile.setAnneeVersement(String.valueOf(entity.getAnneeDeclaration()));
+        } else {
+            pucsFile.setAnneeVersement(String.valueOf(entity.getAnneeVersement()));
+        }
         pucsFile.setCurrentStatus(EtatPucsFile.fromValue(String.valueOf(entity.getStatut())));
         pucsFile.setDateDeReception(new Date(entity.getDateReception()).getSwissValue());
         pucsFile.setDuplicate(entity.isDuplicate());
@@ -278,6 +284,12 @@ public class EBPucsFileService {
             pucsFile.setDateValidation(new Date(entity.getDateValidation()).getSwissValue());
         }
 
+        if (entity.getTypeDeclaration() == null
+                || entity.getTypeDeclaration() == DeclarationSalaireType.PRINCIPALE.getValue()) {
+            pucsFile.setTypeDeclaration(DeclarationSalaireType.PRINCIPALE);
+        } else {
+            pucsFile.setTypeDeclaration(DeclarationSalaireType.COMPLEMENTAIRE);
+        }
         return pucsFile;
     }
 

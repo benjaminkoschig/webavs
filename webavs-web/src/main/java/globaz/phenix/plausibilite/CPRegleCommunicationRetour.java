@@ -67,8 +67,12 @@ import globaz.pyxis.db.tiers.TIHistoriqueContribuable;
 import globaz.pyxis.db.tiers.TIHistoriqueContribuableManager;
 import globaz.pyxis.db.tiers.TITiersViewBean;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 import ch.globaz.hera.business.services.HeraServiceLocator;
+import ch.globaz.orion.business.domaine.demandeacompte.DemandeModifAcompteStatut;
+import ch.globaz.orion.db.EBDemandeModifAcompteEntity;
 
 /**
  * @author hna Pour changer le modèle de ce commentaire de type généré, allez à :
@@ -3562,6 +3566,21 @@ public class CPRegleCommunicationRetour extends CPGenericReglePlausibilite {
     public String isFichierCentral(String niveauMsg, String idParam, String description) throws Exception {
         // On recherche d'abord si l'affiliation provient d'une demande (messageId)
         if (JadeStringUtil.isEmpty(getSedexContribuable().getYourBusinessReferenceId())) {
+            ajouterErreur(idParam);
+            return niveauMsg;
+        }
+        return "";
+    }
+
+    public String isFPVDemandeEncours(String niveauMsg, String idParam, String description) throws Exception {
+        CPCommunicationFiscaleRetourViewBean comm = (CPCommunicationFiscaleRetourViewBean) getCommunicationRetour();
+        // Recherche si demande encours pour le tiers
+        List<String> statutEnCours = new ArrayList<String>();
+        statutEnCours.add(DemandeModifAcompteStatut.A_TRAITER.getValue());
+        statutEnCours.add(DemandeModifAcompteStatut.VALIDE.getValue());
+
+        if (EBDemandeModifAcompteEntity.returnNbDemandeInstatusForIdAffiliation(getSession(), comm.getIdAffiliation(),
+                statutEnCours) > 0) {
             ajouterErreur(idParam);
             return niveauMsg;
         }

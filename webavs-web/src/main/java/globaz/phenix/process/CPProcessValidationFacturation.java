@@ -36,6 +36,7 @@ import globaz.phenix.db.principale.CPDecision;
 import globaz.phenix.db.principale.CPDecisionAffiliationManager;
 import globaz.phenix.db.principale.CPDecisionManager;
 import globaz.phenix.db.principale.CPDonneesBase;
+import globaz.phenix.db.principale.CPDonneesBaseManager;
 import globaz.phenix.db.principale.CPDonneesCalcul;
 import globaz.phenix.db.principale.CPSortie;
 import globaz.phenix.db.principale.CPSortieManager;
@@ -45,7 +46,15 @@ import globaz.pyxis.db.tiers.TITiersViewBean;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
+import ch.globaz.orion.business.constantes.EBProperties;
+import ch.globaz.orion.business.domaine.demandeacompte.DemandeModifAcompteStatut;
+import ch.globaz.orion.businessimpl.services.adi.AdiServiceImpl;
+import ch.globaz.orion.businessimpl.services.partnerWeb.PartnerWebServiceImpl;
+import ch.globaz.orion.db.EBDemandeModifAcompteEntity;
+import ch.globaz.orion.ws.service.UtilsService;
+import ch.globaz.xmlns.eb.adi.StatusDecisionAcompteIndEnum;
 
 public class CPProcessValidationFacturation extends BProcess {
 
@@ -69,6 +78,8 @@ public class CPProcessValidationFacturation extends BProcess {
     private BSession sessionPavo = null;
     private TITiersViewBean tiers = null;
     private boolean transfertAnneePreEncodee = false;
+    private boolean isEbusinessConnected = false;
+    private List<String> listNumeroAffiliesEbusiness;
 
     private boolean wantMajCI = true;
 
@@ -113,6 +124,9 @@ public class CPProcessValidationFacturation extends BProcess {
     protected boolean _executeProcess() {
         // Sous controle d'exceptions
         try {
+            // défini si un EBusiness est connecté
+            isEbusinessConnected = EBProperties.EBUSINESS_CONNECTED.getBooleanValue();
+
             // Recherche de la date d'introduction du NNSS
             try {
                 setDateNNSS(((CPApplication) getSession().getApplication()).getDateNNSS());
@@ -336,6 +350,58 @@ public class CPProcessValidationFacturation extends BProcess {
             // Mise à jour code actif des décisions de l'année
             majCodeActifDecision(decision.getAnneeDecision());
         }
+
+        // si un EBusiness est connecté
+        if (isEbusinessConnected) {
+            // si il s'agit d'une demande provenant de l'EBusiness on met à jour sont statut
+            if (!isOnError() && !JadeStringUtil.isBlankOrZero(decision.getIdDemandePortail())) {
+                // Mise à jour du statut de la demande dans Orion
+                EBDemandeModifAcompteEntity demande = new EBDemandeModifAcompteEntity();
+                demande.setSession(getSession());
+                demande.setIdEntity(decision.getIdDemandePortail());
+                demande.retrieve();
+                if (!demande.isNew()) {
+                    demande.setCsStatut(DemandeModifAcompteStatut.COMPTABILISE.getValue());
+                    demande.update(getTransaction());
+                    // Mise à jour du statut dans EBusiness -> traitée
+                    BSession bsession = UtilsService.getSessionUserGeneric(getSession());
+                    if (JadeStringUtil.isEmpty(decision.getIdDecision())) {
+                        AdiServiceImpl.changeStatutDemande(bsession, Integer.valueOf(demande.getIdDemandePortail()),
+                                StatusDecisionAcompteIndEnum.ERREUR, demande.getRemarque());
+                        this._addError("aucune décision existante pour cette demande " + decision.getIdDemandePortail());
+                    } else {
+                        AdiServiceImpl.updateDemandeModifAcompteIndAndLinkDecisionWebAvs(bsession,
+                                Integer.valueOf(demande.getIdDemandePortail()), StatusDecisionAcompteIndEnum.TRAITEE,
+                                demande.getRemarque(), Integer.valueOf(decision.getIdDecision()));
+                    }
+                } else {
+                    this._addError("impossible de trouver la demande associée " + decision.getIdDemandePortail());
+                }
+            }
+            // sinon on créé la décision dans l'EBusiness
+            else {
+                // récupération des données de bases
+                CPDonneesBaseManager donneesBaseManager = new CPDonneesBaseManager();
+                donneesBaseManager.setSession(getSession());
+                donneesBaseManager.setForIdDecision(decision.getIdDecision());
+                donneesBaseManager.find(1);
+                if (donneesBaseManager.size() != 1) {
+                    this._addError("impossible de charger les données de base pour la décision "
+                            + decision.getIdDecision());
+                }
+                CPDonneesBase donneeBase = (CPDonneesBase) donneesBaseManager.getFirstEntity();
+
+                // création de la décision si l'affilié est inscrit et actif dans l'EBusiness
+                String numeroAffilie = getAffiliation().getAffilieNumero();
+                if (listNumeroAffiliesEbusiness.contains(numeroAffilie)) {
+                    AdiServiceImpl.createDecisionAcompteInd(UtilsService.getSessionUserGeneric(getSession()),
+                            numeroAffilie, decision.getAnneeDecision(), decision.getDateFacturation(),
+                            donneeBase.getRevenu1(), donneeBase.getCapital(), decision.getTypeDecision(),
+                            decision.getIdDecision());
+                }
+            }
+        }
+
         if (getTransaction().hasErrors()) {
             this._addError(getTransaction(),
                     getSession().getLabel("CP_MSG_0110") + " " + getAffiliation().getAffilieNumero() + " "
@@ -1307,8 +1373,13 @@ public class CPProcessValidationFacturation extends BProcess {
      * @throws Exception
      */
     private void processDecisions() throws Exception {
-        // Permet d'afficher les données
-        // this.setProgressScaleValue();
+        // si un EBusiness est connecté on recherche les affiliés EBusiness actifs
+        if (isEbusinessConnected) {
+            listNumeroAffiliesEbusiness = PartnerWebServiceImpl.listAllActivNumerosAffiliesEbusiness(getSession());
+            if (listNumeroAffiliesEbusiness == null || listNumeroAffiliesEbusiness.isEmpty()) {
+                this._addError("les affiliés EBusiness n'ont pas pu être chargés");
+            }
+        }
 
         // compteur du progress
         long progressCounter = -1;

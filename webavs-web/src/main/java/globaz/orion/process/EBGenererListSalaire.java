@@ -33,7 +33,7 @@ import com.google.common.base.Throwables;
 public class EBGenererListSalaire extends EBAbstractJadeJob {
 
     private static final long serialVersionUID = 1L;
-    
+
     private String email;
     private Boolean generateEtapeRappel = false;
     private String forDateReference;
@@ -99,7 +99,7 @@ public class EBGenererListSalaire extends EBAbstractJadeJob {
     protected void process() throws Exception {
         try {
 
-            Set<ContactEbusinessAffilie> list = PartnerWebServiceImpl.searchSuiviDeclarationContact();
+            Set<ContactEbusinessAffilie> list = PartnerWebServiceImpl.searchSuiviDeclarationContact(getSession());
             List<ContactEbusinessAffilie> listFiltrePourEnvoie = new ArrayList<ContactEbusinessAffilie>();
             for (ContactEbusinessAffilie contactEbusinessAffilie : list) {
                 // On n'envois le mail qu'aux administrateur et pas à une fiduciaire

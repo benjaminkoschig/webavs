@@ -28,7 +28,13 @@ public enum EBProperties implements IProperties {
     VALIDATION_MONTANT_NEGATIF("validationAutomatique.verification.valeurNegative",
             "Vérifie si le montant facturé est négatif", Boolean.class),
     ECL_EXCLURE_CA_AFFILIE_PERSONNEL("ecl.exclure.ca.affilie.personnel",
-            "permet d'exclure dans l'affichage ECL les comptes annexes avec le rôle affilie personnel", Boolean.class);
+            "permet d'exclure dans l'affichage ECL les comptes annexes avec le rôle affilie personnel", Boolean.class),
+    EBUSINESS_CONNECTED("ebusiness.connected", "Indique si un EBusiness est connecté avec WebAVS", Boolean.class),
+    EMAIL_MUTATION_ADRESSE_CAF("email.mutation.adresse.caf",
+            "Adresse email à laquelle envoyer les mutations d'adresses caf", String.class),
+    EMAIL_MUTATION_ADRESSE_AVS("email.mutation.adresse.avs",
+            "Adresse email à laquelle envoyer les mutations d'adresses avs", String.class),
+    GENERIC_USER("generic.user", "userwebavs", String.class);
 
     private String property;
     private String description;

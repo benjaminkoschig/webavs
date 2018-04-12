@@ -21,6 +21,8 @@ public class AFMassesForAffilieManager extends BManager {
     private String dateFin = "";
     private String forMois = "";
     private String forAnnee = "";
+    private boolean cotParitaire = true;
+    private boolean cotPers = true;
 
     @Override
     protected String _getSql(BStatement statement) {
@@ -28,7 +30,7 @@ public class AFMassesForAffilieManager extends BManager {
         StringBuilder sqlBuffer = new StringBuilder();
 
         sqlBuffer
-                .append(" SELECT aff.MAIAFF, aff.MADESL, aff.malnaf, cot.MEICOT, cot.memmap, cot.meddeb, cot.medfin, ass.MBLLIF, ass.MBLLID, ass.MBLLII, ass.MBTTYP, ass.mbtcan, ass.mbirub");
+                .append(" SELECT aff.MAIAFF, aff.MADESL, aff.malnaf, aff.MATPER, cot.MEICOT, cot.memmap, cot.meddeb, cot.medfin, ass.MBLLIF, ass.MBLLID, ass.MBLLII, ass.MBTTYP, ass.mbtcan, ass.mbirub, ass.MBTGEN");
         sqlBuffer.append(" FROM ").append(_getCollection()).append("AFAFFIP aff");
         sqlBuffer.append(" inner join ").append(_getCollection()).append("AFADHEP adh on adh.MAIAFF = aff.MAIAFF");
         sqlBuffer.append(" inner join ").append(_getCollection()).append("afcotip cot on cot.MRIADH = adh.MRIADH");
@@ -53,7 +55,15 @@ public class AFMassesForAffilieManager extends BManager {
             }
         }
 
-        sqlBuffer.append(" and ass.MBTGEN = 801001");
+        // uniquement cotisations paritaires
+        if (cotParitaire && !cotPers) {
+            sqlBuffer.append(" and ass.MBTGEN = 801001");
+        }
+
+        // uniquement cotisations personnelles
+        if (cotPers && !cotParitaire) {
+            sqlBuffer.append(" and ass.MBTGEN = 801002");
+        }
 
         return sqlBuffer.toString();
     }
@@ -93,6 +103,22 @@ public class AFMassesForAffilieManager extends BManager {
 
     public void setForAnnee(String forAnnee) {
         this.forAnnee = forAnnee;
+    }
+
+    public boolean isCotParitaire() {
+        return cotParitaire;
+    }
+
+    public void setCotParitaire(boolean cotParitaire) {
+        this.cotParitaire = cotParitaire;
+    }
+
+    public boolean isCotPers() {
+        return cotPers;
+    }
+
+    public void setCotPers(boolean cotPers) {
+        this.cotPers = cotPers;
     }
 
 }

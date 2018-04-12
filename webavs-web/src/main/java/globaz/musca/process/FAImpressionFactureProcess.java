@@ -235,6 +235,7 @@ public class FAImpressionFactureProcess extends FAGenericProcess implements IFAI
     private String titreDocument; // nom donné au document (Factures bloquées,
 
     public boolean unificationProcess = false;
+    private boolean ebusinessMode = false;
 
     public FAImpressionFactureProcess() throws Exception {
         super();
@@ -661,6 +662,7 @@ public class FAImpressionFactureProcess extends FAGenericProcess implements IFAI
             docinfo.setPublishDocument(true);
             docinfo.setArchiveDocument(false);
         }
+
         try {
             int TAILLE_LOT = Integer.parseInt((getSession().getApplication()).getProperty("tailleLot", "0"));
             // attacher le document à l'email
@@ -1382,5 +1384,13 @@ public class FAImpressionFactureProcess extends FAGenericProcess implements IFAI
 
     public void setUnificationProcess(boolean unificationProcess) {
         this.unificationProcess = unificationProcess;
+    }
+
+    public boolean isEbusinessMode() {
+        return ebusinessMode;
+    }
+
+    public void setEbusinessMode(boolean ebusinessMode) {
+        this.ebusinessMode = ebusinessMode;
     }
 }

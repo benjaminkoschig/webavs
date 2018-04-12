@@ -98,6 +98,11 @@ public class DossierListComplexSearchModel extends JadeSearchComplexModel {
     private String likePrenomEnfant = null;
 
     /**
+     * Recherche pour les dossiers dont la date de validité est plus grande que forFinValiditeGreater ou null
+     */
+    private String forFinValiditeGreater = null;
+
+    /**
      * 
      * @return forDateEnfant
      */
@@ -412,6 +417,14 @@ public class DossierListComplexSearchModel extends JadeSearchComplexModel {
         if (!JadeStringUtil.isEmpty(likePrenomEnfant)) {
             this.likePrenomEnfant = JadeStringUtil.convertSpecialChars(likePrenomEnfant).toUpperCase();
         }
+    }
+
+    public String getForFinValiditeGreater() {
+        return forFinValiditeGreater;
+    }
+
+    public void setForFinValiditeGreater(String forFinValiditeGreater) {
+        this.forFinValiditeGreater = forFinValiditeGreater;
     }
 
     /*

@@ -1,3 +1,4 @@
+<%@page import="ch.globaz.orion.business.domaine.pucs.DeclarationSalaireType"%>
 <%@page import="globaz.orion.process.importpucs.EBImportSwissDecProcess"%>
 <%@page import="globaz.orion.process.importpucs.EBImportPucsDanProcess"%>
 <%@page import="ch.globaz.common.process.byitem.ProcessItemsService"%>
@@ -196,6 +197,16 @@ function getSelectedIds(type) {
 	<td>
 		<input type="text" name="fullText"/>
 	</td>
+	<td>
+		<ct:FWLabel key="JSP_GEB0001_TYPE_DECLARATION"/>
+	</td>
+	<td>
+		<select name="forTypeDeclaration">
+			<option value = ""></option>
+			<option value = "<%=DeclarationSalaireType.PRINCIPALE.getValue()%>"><ct:FWLabel key="JSP_GEB0001_TYPE_DECLARATION_PRINCIPALE"/></option>
+			<option value = "<%=DeclarationSalaireType.COMPLEMENTAIRE.getValue()%>"><ct:FWLabel key="JSP_GEB0001_TYPE_DECLARATION_COMPLEMENTAIRE"/></option>
+		</select>
+	</td>
 </tr>
 
 <%-- /tpl:insert --%>
@@ -204,7 +215,7 @@ function getSelectedIds(type) {
 <ct:ifhasright element="orion.pucs.pucsImport.afficher" crud="u">
 <input type="button" id="simulation" value="<ct:FWLabel key="PUCS_SIMULATION"/>"/>&nbsp;
 <input type="button" id="ctrlSwissDec" value="<ct:FWLabel key="PUCS_CONTROLE_SWISSDEC"/>"/>&nbsp;
-<%-- <input type="button" id="importFileInDb" value="<ct:FWLabel key="PUCS_IMPORT_FILE"/>"/>&nbsp; --%>
+<%-- <input type="button" id="importFileInDb" value="<ct:FWLabel key="PUCS_IMPORT_FILE"/>"/>&nbsp;  --%>
 
 </ct:ifhasright>
 <ct:ifhasright element="orion.pucs.pucsImport.afficher" crud="u">

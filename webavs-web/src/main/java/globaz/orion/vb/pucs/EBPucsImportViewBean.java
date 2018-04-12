@@ -212,10 +212,18 @@ public class EBPucsImportViewBean extends EBAbstractViewBean implements FWAJAXVi
 
     private Map<String, Collection<PucsFile>> toMapPucsByNumAffilie() {
 
+        int incr = 0;
+
         Map<String, Collection<PucsFile>> map = new HashMap<String, Collection<PucsFile>>();
         for (PucsFile pucs : pucsFiles) {
             String key = pucs.getNumeroAffilie() + "_" + pucs.getAnneeDeclaration() + "_" + pucs.getProvenance() + "_"
-                    + pucs.isForTest() + "_" + pucs.isAfSeul();
+                    + pucs.getTypeDeclaration() + "_" + pucs.isForTest() + "_" + pucs.isAfSeul();
+
+            // Permet de ne pas fusionner des salaires différés
+            if (pucs.isSalaireDifferes()) {
+                key += Integer.toString(incr++);
+            }
+
             if (!map.containsKey(key)) {
                 map.put(key, new ArrayList<PucsFile>());
             }

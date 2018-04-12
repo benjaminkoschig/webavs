@@ -394,7 +394,11 @@ public class EBTreatPucsFiles extends BProcess {
                         }
                     }
 
-                    if ((pucsFile.getProvenance().isDan() || pucsFile.getProvenance().isPucs()) && !isForSimultation) {
+                    // On traite les institutions et les déclaration de salaire vide uniquement :
+                    // - si on est pas en simulation
+                    // - si on est en présence d'une déclaration de salaire principale.
+                    if ((pucsFile.getProvenance().isDan() || pucsFile.getProvenance().isPucs()) && !isForSimultation
+                            && pucsFile.getTypeDeclaration().isPrincipale()) {
                         Exception e1 = null;
                         try {
                             // Récupération de l'id affiliation
@@ -404,7 +408,7 @@ public class EBTreatPucsFiles extends BProcess {
                             gestionDeclarationSalaireSansSalaire(pucsFile.getNbSalaires(), aff,
                                     pucsFile.getAnneeDeclaration(), pucsFile.getDateDeReception(),
                                     pucsFile.getFilename());
-                            // Mise à jour des insitutions
+                            // Mise à jour des insitutions uniquement si on est dans une DS principale
                             if (pucsFileMerge.getPucsFileToMergded().isEmpty()) {
                                 updateInstitution(pucsFile.getFilename(), idAffiliation,
                                         pucsFile.getAnneeDeclaration(), pucsFile.getProvenance());
@@ -429,7 +433,7 @@ public class EBTreatPucsFiles extends BProcess {
                     }
 
                     // Mise a jour du type de déclaration de salaire
-                    if (!isForSimultation) {
+                    if (!isForSimultation && pucsFile.getTypeDeclaration().isPrincipale()) {
                         majModeDeclarationSalaire(aff, pucsFile.getProvenance());
                     }
                     if (getSession().getCurrentThreadTransaction().hasErrors()) {
@@ -467,6 +471,9 @@ public class EBTreatPucsFiles extends BProcess {
                         declaration.setIsBatch(new Boolean(true));
 
                         String file = workDir + pucsFile.getFilename() + ".xml";
+
+                        declaration.setAnneeVersement(pucsFile.getAnneeVersement());
+                        declaration.setDeclarationSalaireType(pucsFile.getTypeDeclaration());
 
                         declaration.setProvenance(pucsFile.getProvenance().getValue());
                         declaration.setNumAffilieBase(pucsFile.getNumeroAffilie());

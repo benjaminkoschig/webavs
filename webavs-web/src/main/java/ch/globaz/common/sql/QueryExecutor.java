@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import ch.globaz.common.exceptions.CommonTechnicalException;
+import ch.globaz.queryexec.bridge.jade.SCM;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 
@@ -58,8 +59,9 @@ import com.google.common.collect.Lists;
  * </p>
  * 
  * @author dma
- * 
+ * @deprecated Il faut utiliser {@link SCM}
  */
+@Deprecated
 public class QueryExecutor {
 
     /**

@@ -8,7 +8,6 @@ import globaz.globall.util.JACalendar;
 import globaz.globall.util.JACalendarGregorian;
 import globaz.globall.util.JADate;
 import globaz.musca.api.IFAPassage;
-import globaz.musca.application.FAApplication;
 import globaz.musca.db.facturation.FAModuleFacturation;
 import globaz.musca.db.facturation.FAPassage;
 import globaz.musca.db.facturation.FAPassageModule;
@@ -71,8 +70,12 @@ public class CPFacturationDecisionImpl extends CPFacturationGenericImpl implemen
 
     @Override
     public boolean generer(IFAPassage passage, BProcess context, String idModuleFacturation) throws Exception {
-
         CPProcessFacturation procFacturation = new CPProcessFacturation();
+        // récupération du module
+        FAModuleFacturation moduleFacturation = new FAModuleFacturation();
+        moduleFacturation.setSession(context.getSession());
+        moduleFacturation.setIdModuleFacturation(idModuleFacturation);
+        moduleFacturation.retrieve();
 
         // copier le process parent
         BSession sessionPhenix = new globaz.globall.db.BSession(
@@ -90,32 +93,23 @@ public class CPFacturationDecisionImpl extends CPFacturationGenericImpl implemen
             // Créer un nouveau passage automatiquement si défini dans property
             if (((CPApplication) GlobazSystem.getApplication("PHENIX")).isCreationPassageAutomatique()
                     && !passage.getIsAuto()) {
-                // Recherche si séparation indépendant et non-actif - Inforom 314s
-                Boolean isSeprationIndNac = false;
-                try {
-                    isSeprationIndNac = new Boolean(GlobazSystem
-                            .getApplication(FAApplication.DEFAULT_APPLICATION_MUSCA).getProperty(
-                                    FAApplication.SEPARATION_IND_NA));
-                } catch (Exception e) {
-                    isSeprationIndNac = Boolean.FALSE;
-                }
-                if (isSeprationIndNac) {
-                    // Recherche du module utiliés si IND ou NAC dans le passage en question
-                    FAPassageModuleManager modPass = new FAPassageModuleManager();
-                    modPass.setSession(sessionPhenix);
-                    modPass.setForIdPassage(passage.getIdPassage());
-                    modPass.setInTypeModule(FAModuleFacturation.CS_MODULE_COT_PERS_IND + ", "
-                            + FAModuleFacturation.CS_MODULE_COT_PERS_NAC);
-                    modPass.find();
-                    if (modPass.size() > 0) {
-                        String module = ((FAPassageModule) modPass.getFirstEntity()).getIdTypeModule();
-                        openNewPassage(passage, context, module);
-                    }
 
+                // Recherche du module utiliés si IND ou NAC dans le passage en question
+                FAPassageModuleManager modPass = new FAPassageModuleManager();
+                modPass.setSession(sessionPhenix);
+                modPass.setForIdPassage(passage.getIdPassage());
+                if (moduleFacturation.getIdTypeModule().equals(FAModuleFacturation.CS_MODULE_COT_PERS_PORTAIL)) {
+                    modPass.setInTypeModule(FAModuleFacturation.CS_MODULE_COT_PERS_PORTAIL);
                 } else {
-                    openNewPassage(passage, context, FAModuleFacturation.CS_MODULE_COT_PERS);
+                    modPass.setInTypeModule(FAModuleFacturation.CS_MODULE_COT_PERS + ", "
+                            + FAModuleFacturation.CS_MODULE_COT_PERS_IND + ", "
+                            + FAModuleFacturation.CS_MODULE_COT_PERS_NAC);
                 }
-
+                modPass.find();
+                if (modPass.size() > 0) {
+                    String module = ((FAPassageModule) modPass.getFirstEntity()).getIdTypeModule();
+                    openNewPassage(passage, context, module);
+                }
             }
             return true;
         } else {

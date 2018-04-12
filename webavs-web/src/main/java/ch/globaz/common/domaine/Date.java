@@ -4,8 +4,12 @@ import java.text.DateFormatSymbols;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.regex.Pattern;
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
 
 /**
  * Redéfinition de la classe Date afin qu'elle corresponde à la définition d'un
@@ -820,7 +824,7 @@ public class Date implements Comparable<Date> {
     public int compareTo(Date o) {
         return date.compareTo(o.getDate());
     }
-
+    
     /**
      * @param partialDate
      * @return
@@ -853,5 +857,13 @@ public class Date implements Comparable<Date> {
 
     public boolean isMoisJanvier() {
         return getNumeroMois() == MOIS_JANVIER;
+    }
+
+    public XMLGregorianCalendar toXMLGregorianCalendar() throws DatatypeConfigurationException {
+        GregorianCalendar gregoCal = new GregorianCalendar();
+
+        gregoCal.setTime(getDate());
+
+        return DatatypeFactory.newInstance().newXMLGregorianCalendar(gregoCal);
     }
 }

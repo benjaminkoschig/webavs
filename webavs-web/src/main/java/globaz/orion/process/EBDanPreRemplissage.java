@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import ch.globaz.orion.business.constantes.PreRemplissageStatus;
 import ch.globaz.orion.businessimpl.services.dan.DanServiceImpl;
+import ch.globaz.xmlns.eb.dan.DanTypeEnum;
 import ch.globaz.xmlns.eb.dan.EBDanException_Exception;
 
 /**
@@ -54,8 +55,6 @@ public class EBDanPreRemplissage extends EBAbstractJadeJob {
     private String typeDeclaration = null;
     private boolean executeFromWebAvs = true;
     private String loginName = null;
-
-
 
     public void addMailError(String message) {
         if (bodyMailBuffError == null) {
@@ -194,6 +193,7 @@ public class EBDanPreRemplissage extends EBAbstractJadeJob {
                 // dan.setIdAffilie(aff.getAffiliationId());
                 // dan.setNumeroAffilie(aff.getAffilieNumero());
                 dan.setAnnee(Integer.parseInt(getAnnee()));
+                dan.setType(DanTypeEnum.PRINCIPALE);
 
                 // ****************************************
                 // Récupération des insitutions LAA/LPP

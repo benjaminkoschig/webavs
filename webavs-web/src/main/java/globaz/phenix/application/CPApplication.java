@@ -72,6 +72,7 @@ public class CPApplication extends globaz.globall.db.BApplication {
     public final static String LIBELLEPASSAGE_AUTOMATIQUE_DEFAULT = "Facturation PHENIX";
     public final static String LIBELLEPASSAGE_AUTOMATIQUE_IND = "libellePassageCotPersAutoInd";
     public final static String LIBELLEPASSAGE_AUTOMATIQUE_NAC = "libellePassageCotPersAutoNac";
+    public final static String LIBELLEPASSAGE_AUTOMATIQUE_PORTAIL = "libellePassageCotPersAutoPortail";
     public final static String MAJ_NUMCONTRIBUABLE = "majNumContribuable";
     public final static String NB_COMMUNICATIONS_MAX_PAR_FICHIER = "NbComMax";
     public final static String NB_COMMUNICATIONS_MAX_PAR_FICHIER_DEFVAL = "3000";
@@ -573,6 +574,8 @@ public class CPApplication extends globaz.globall.db.BApplication {
             libelle = this.getProperty(CPApplication.LIBELLEPASSAGE_AUTOMATIQUE_IND);
         } else if (FAModuleFacturation.CS_MODULE_COT_PERS_NAC.equalsIgnoreCase(module)) {
             libelle = this.getProperty(CPApplication.LIBELLEPASSAGE_AUTOMATIQUE_NAC);
+        } else if (FAModuleFacturation.CS_MODULE_COT_PERS_PORTAIL.equalsIgnoreCase(module)) {
+            libelle = this.getProperty(CPApplication.LIBELLEPASSAGE_AUTOMATIQUE_PORTAIL);
         }
         if (JadeStringUtil.isBlankOrZero(libelle)) {
             libelle = this.getProperty(CPApplication.LIBELLEPASSAGE_AUTOMATIQUE);
@@ -1093,7 +1096,6 @@ public class CPApplication extends globaz.globall.db.BApplication {
         }
 
     }
-
 
     /**
      * Permet de savoir si la caisse en question est la CCCVS

@@ -52,6 +52,29 @@
 						<parameter name="userAction" value="orion.sdd.saisieDecompte.afficher" />
 				</action>
 			</node>
+			<node>
+				<label refId="MENU_RECAPAF"/>
+				<action command="/orion" responseTarget="fr_main">
+						<parameter name="userAction" value="orion.recap.recapAf.chercher" />
+				</action>
+			</node>
+			<node open="yes">
+				<label refId="MENU_ADI" />
+				<nodes>
+					<node>
+				<label refId="MENU_ECRAN_DEMANDES_TRANSMISES"/>
+				<action command="/orion" responseTarget="fr_main">
+						<parameter name="userAction" value="orion.adi.demandesTransmises.chercher" />
+				</action>
+				</node>
+				<node>
+					<label refId="MENU_RECAP_DEMANDES_TRANSMISES"/>
+					<action command="/orion" responseTarget="fr_main">
+							<parameter name="userAction" value="orion.adi.recapDemandesTransmises.afficher" />
+					</action>
+				</node>
+				</nodes>
+			</node>
 		</nodes>
 	</menu>
 	

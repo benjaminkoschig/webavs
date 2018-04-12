@@ -1284,7 +1284,7 @@ public class CPDecisionViewBean extends CPDecision implements FWViewBeanInterfac
 
             }
             // Test si procédure extraordinaire
-            if ((((CPApplication) decisionViewBean.getSession().getApplication()).isProcedureExtraordinaire())) {
+            if (new CPApplication().isProcedureExtraordinaire()) {
                 switch (anneeDecision) {
                     case 2000:
                         switch (anneeDebAffiliation) {

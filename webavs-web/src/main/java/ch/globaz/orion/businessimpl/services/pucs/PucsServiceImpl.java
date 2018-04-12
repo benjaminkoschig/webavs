@@ -8,8 +8,10 @@ import globaz.jade.common.Jade;
 import globaz.jade.fs.JadeFsFacade;
 import globaz.naos.db.affiliation.AFAffiliation;
 import globaz.naos.services.AFAffiliationServices;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetEncoder;
@@ -212,9 +214,10 @@ public class PucsServiceImpl implements PucsService {
 
     @Override
     public String pucsFileLisibleForEbusiness(String id, DeclarationSalaireProvenance provenance, String format,
-            String loginName, String userEmail, String langue) {
+            String loginName, String userEmail, String langue) throws OrionPucsException {
         Locale locale = new Locale(langue);
         SimpleOutputListBuilder builder = SimpleOutputListBuilder.newInstance();
+        BSession session = UtilsService.initSession();
 
         if ("pdf".equals(format)) {
             builder.asPdf().local(locale);
@@ -223,8 +226,45 @@ public class PucsServiceImpl implements PucsService {
         } else {
             throw new IllegalArgumentException("the format " + format + " is not allowed");
         }
-        File file = outForEbusiness(id, provenance, builder, langue);
+
+        PucsFile pucsFileWebAvs = EBPucsFileService.readByFilename(id, session);
+
+        File file = null;
+
+        if (pucsFileWebAvs != null) {
+            String idPucsWebAvs = pucsFileWebAvs.getIdDb();
+            file = outForEbusiness(idPucsWebAvs, provenance, builder, langue);
+        } else {
+            throw new OrionPucsException("Aucun fichier PUCS trouvé pour l'id " + id);
+        }
+
         return JadeFilenameUtil.normalizePathComponents(file.getAbsolutePath());
+    }
+
+    @Override
+    public String pucsFileLisibleForEbusinessFromByteCode(byte[] pucsFile, DeclarationSalaireProvenance provenance,
+            String format, String langue) throws OrionPucsException {
+        try {
+            Locale locale = new Locale(langue);
+            SimpleOutputListBuilder simpleOutputListbuilder = SimpleOutputListBuilder.newInstance();
+            BSession session = UtilsService.initSession();
+            if ("pdf".equals(format)) {
+                simpleOutputListbuilder.asPdf().local(locale);
+            } else if ("xls".equals(format)) {
+                simpleOutputListbuilder.asXls().local(locale);
+            } else {
+                throw new IllegalArgumentException("the format " + format + " is not allowed");
+            }
+            // parsing du fichier PUCS
+            InputStream inputStreamPucsFile = new ByteArrayInputStream(pucsFile);
+            ElementsDomParser parser = new ElementsDomParser(inputStreamPucsFile);
+
+            // création du fichier
+            File file = out(provenance, simpleOutputListbuilder, parser, session);
+            return JadeFilenameUtil.normalizePathComponents(file.getAbsolutePath());
+        } catch (Exception e) {
+            throw new OrionPucsException("Unable to generate file", e);
+        }
     }
 
     public static String pucFileLisiblePdf(DeclarationSalaireProvenance provenance, ElementsDomParser parser,

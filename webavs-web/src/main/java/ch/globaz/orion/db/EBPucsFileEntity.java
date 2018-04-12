@@ -25,6 +25,7 @@ public class EBPucsFileEntity extends JadeEntity {
     private String idFileName;
     private String idAffiliation;
     private Integer anneeDeclaration;
+    private Integer anneeVersement;
     private Integer statut;
     private Date dateReception;
     private String handlingUser;
@@ -34,16 +35,17 @@ public class EBPucsFileEntity extends JadeEntity {
     private String provenance;
     private BigDecimal totalControle;
     private Double sizeFileInKo;
-    private Boolean afSeul;
-    private Boolean duplicate;
+    private boolean afSeul;
+    private boolean duplicate;
     private Integer niveauSecurite;
     private Boolean salaireInferieurLimite;
     private File file;
     private String searchString;
-    private Boolean forTest;
-    private Boolean certifieExact;
+    private boolean forTest;
+    private boolean certifieExact;
     private Date dateValidation;
     private String nomValidation;
+    private Integer typeDeclaration;
 
     @Override
     protected void writeProperties() {
@@ -51,6 +53,7 @@ public class EBPucsFileEntity extends JadeEntity {
         write(EBPucsFileDefTable.ID_FILE_NAME, idFileName);
         writeStringAsNumeric(EBPucsFileDefTable.ID_AFFILIATION, idAffiliation);
         write(EBPucsFileDefTable.ANNEE_DECLARATION, anneeDeclaration);
+        write(EBPucsFileDefTable.ANNEE_VERSEMENT, anneeVersement);
         write(EBPucsFileDefTable.STATUS, statut);
         write(EBPucsFileDefTable.HANDLING_USER, handlingUser);
         write(EBPucsFileDefTable.NOM_AFFILIE, nomAffilie);
@@ -69,6 +72,7 @@ public class EBPucsFileEntity extends JadeEntity {
         write(EBPucsFileDefTable.CERTIFIE_EXACT, certifieExact);
         write(EBPucsFileDefTable.DATE_VALIDATION, dateValidation);
         write(EBPucsFileDefTable.NOM_VALIDATION, nomValidation);
+        write(EBPucsFileDefTable.TYPE_DECLARATION, typeDeclaration);
     }
 
     @Override
@@ -78,6 +82,7 @@ public class EBPucsFileEntity extends JadeEntity {
         idAffiliation = this.read(EBPucsFileDefTable.ID_AFFILIATION);
         idFileName = read(EBPucsFileDefTable.ID_FILE_NAME);
         anneeDeclaration = read(EBPucsFileDefTable.ANNEE_DECLARATION);
+        anneeVersement = read(EBPucsFileDefTable.ANNEE_VERSEMENT);
         statut = read(EBPucsFileDefTable.STATUS);
         handlingUser = read(EBPucsFileDefTable.HANDLING_USER);
         nomAffilie = read(EBPucsFileDefTable.NOM_AFFILIE);
@@ -96,6 +101,7 @@ public class EBPucsFileEntity extends JadeEntity {
         certifieExact = read(EBPucsFileDefTable.CERTIFIE_EXACT);
         dateValidation = read(EBPucsFileDefTable.DATE_VALIDATION);
         nomValidation = read(EBPucsFileDefTable.NOM_VALIDATION);
+        typeDeclaration = read(EBPucsFileDefTable.TYPE_DECLARATION);
     }
 
     public static void deleteFileOnWorkDirectory(String idFileName) {
@@ -348,6 +354,22 @@ public class EBPucsFileEntity extends JadeEntity {
 
     public void setNomValidation(String nomValidation) {
         this.nomValidation = nomValidation;
+    }
+
+    public Integer getAnneeVersement() {
+        return anneeVersement;
+    }
+
+    public void setAnneeVersement(Integer anneeVersement) {
+        this.anneeVersement = anneeVersement;
+    }
+
+    public Integer getTypeDeclaration() {
+        return typeDeclaration;
+    }
+
+    public void setTypeDeclaration(Integer typeDeclaration) {
+        this.typeDeclaration = typeDeclaration;
     }
 
 }

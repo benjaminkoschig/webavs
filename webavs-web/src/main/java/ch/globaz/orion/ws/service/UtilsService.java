@@ -1,12 +1,16 @@
 package ch.globaz.orion.ws.service;
 
 import globaz.globall.db.BSession;
+import globaz.globall.db.BSessionInfo;
+import globaz.globall.db.BSessionUtil;
 import globaz.globall.db.GlobazServer;
 import globaz.jade.log.JadeLogger;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import ch.globaz.common.properties.PropertiesException;
+import ch.globaz.orion.business.constantes.EBProperties;
 
 /**
  * Utilitaire pour les WebServices
@@ -37,6 +41,29 @@ public final class UtilsService {
         }
 
         return session;
+    }
+
+    public static BSession getSessionUserGeneric(BSession sessionWebAvs) {
+        BSession sessionUserGeneric = null;
+        BSessionInfo sessionInfo = new BSessionInfo();
+
+        try {
+            sessionInfo.setApplication(sessionWebAvs.getApplicationId());
+            sessionInfo.setLanguageId(sessionWebAvs.getIdLangue());
+            sessionInfo.setLanguageISO(sessionWebAvs.getIdLangueISO());
+            sessionInfo.setUserId(UtilsService.getUserGeneric());
+            sessionUserGeneric = BSessionUtil.createSession(sessionInfo);
+
+            sessionUserGeneric.connectSession(sessionUserGeneric);
+        } catch (Exception e) {
+            JadeLogger.error("An error happened while getting a new session with generic user!", e);
+        }
+
+        return sessionUserGeneric;
+    }
+
+    private static String getUserGeneric() throws PropertiesException {
+        return EBProperties.GENERIC_USER.getValue();
     }
 
     /**

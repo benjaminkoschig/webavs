@@ -1,5 +1,6 @@
 package ch.globaz.al.businessimpl.processus.traitementimpl;
 
+import globaz.globall.db.BSessionUtil;
 import globaz.jade.client.util.JadeCodesSystemsUtil;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
@@ -10,12 +11,18 @@ import globaz.jade.print.server.JadePrintDocumentContainer;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
 import ch.globaz.al.business.constantes.ALCSProcessus;
 import ch.globaz.al.business.constantes.ALConstProtocoles;
 import ch.globaz.al.business.loggers.ProtocoleLogger;
 import ch.globaz.al.businessimpl.processus.BusinessTraitement;
 import ch.globaz.al.businessimpl.services.ALImplServiceLocator;
+import ch.globaz.orion.business.constantes.EBProperties;
+import ch.globaz.orion.businessimpl.services.af.AfServiceImpl;
 
 /**
  * 
@@ -53,11 +60,21 @@ public class GenerationPrestationsTraitement extends BusinessTraitement {
 
     @Override
     public void execute() throws JadeApplicationException, JadePersistenceException {
+        boolean isEbusinessConnected = EBProperties.EBUSINESS_CONNECTED.getBooleanValue();
+
         String periode = getProcessusConteneur().getDataCriterias().periodeCriteria;
         String type = getProcessusConteneur().getDataCriterias().cotisationCriteria;
         String numGeneration = getTraitementPeriodiqueModel().getId();
         String processus = JadeCodesSystemsUtil.getCodeLibelle(getProcessusConteneur().getCSProcessus());
         String traitement = JadeCodesSystemsUtil.getCodeLibelle(getCSTraitement());
+
+        // clôture des récaps AF côté Ebusiness
+        if (isEbusinessConnected) {
+            XMLGregorianCalendar anneeMoisRecap = computeAnneeMoisRecapXmlGregorian(periode);
+
+            AfServiceImpl.cloturerRecapAf(BSessionUtil.getSessionFromThreadContext(), anneeMoisRecap);
+
+        }
 
         // génération
         ProtocoleLogger logger = ALImplServiceLocator.getGenerationService().generationGlobale(periode, type,
@@ -86,6 +103,25 @@ public class GenerationPrestationsTraitement extends BusinessTraitement {
             protocolesCSV.add(protocoleCSV);
         }
         this.pubInfo = pubInfo;
+    }
+
+    private XMLGregorianCalendar computeAnneeMoisRecapXmlGregorian(String periode) {
+        GregorianCalendar anneeMoiDateCal = new GregorianCalendar();
+
+        String anneeMoisStr = JadeDateUtil.getFirstDateOfMonth(periode);
+        Date anneeMoisDate = JadeDateUtil.getGlobazDate(anneeMoisStr);
+
+        anneeMoiDateCal.setTime(anneeMoisDate);
+
+        XMLGregorianCalendar anneeMoisRecap = null;
+
+        try {
+            anneeMoisRecap = DatatypeFactory.newInstance().newXMLGregorianCalendar(anneeMoiDateCal);
+        } catch (DatatypeConfigurationException e) {
+            throw new RuntimeException(e.toString(), e);
+        }
+
+        return anneeMoisRecap;
     }
 
     @Override

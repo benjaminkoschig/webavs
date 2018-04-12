@@ -32,7 +32,7 @@
 		<%-- tpl:put name="zoneList" --%>
     <%
 		PCLotViewBean line = (PCLotViewBean) viewBean.getEntity(i);
-		actionDetail = targetLocation  + "='" + detailLink + line.getSimpleLot().getIdLot()+"'";
+// 		actionDetail = targetLocation  + "='" + detailLink + line.getSimpleLot().getIdLot()+"'";
 	%>
 	
     <TD class="mtd" width="">		

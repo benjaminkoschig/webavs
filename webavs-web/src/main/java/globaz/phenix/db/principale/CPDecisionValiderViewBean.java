@@ -64,25 +64,32 @@ public class CPDecisionValiderViewBean extends CPDecision implements FWViewBeanI
         try {
             // Recherche du prochain id passage à facturer
             globaz.musca.api.IFAPassage passage = null;
-            // Recherche si séparation indépendant et non-actif - Inforom 314s
-            Boolean isSeprationIndNac = false;
-            try {
-                isSeprationIndNac = new Boolean(GlobazSystem.getApplication(FAApplication.DEFAULT_APPLICATION_MUSCA)
-                        .getProperty(FAApplication.SEPARATION_IND_NA));
-            } catch (Exception e) {
-                isSeprationIndNac = Boolean.FALSE;
-            }
-            if (isSeprationIndNac) {
-                if (isNonActif()) {
-                    passage = ServicesFacturation.getProchainPassageFacturation(getSession(), null,
-                            FAModuleFacturation.CS_MODULE_COT_PERS_NAC);
+            // Test si la décision a été générée depuis Orion
+            if (!JadeStringUtil.isBlankOrZero(getIdDemandePortail())) {
+                passage = ServicesFacturation.getProchainPassageFacturation(getSession(), null,
+                        FAModuleFacturation.CS_MODULE_COT_PERS_PORTAIL);
+            } else {
+                // Recherche si séparation indépendant et non-actif - Inforom 314s
+                Boolean isSeprationIndNac = false;
+                try {
+                    isSeprationIndNac = new Boolean(GlobazSystem
+                            .getApplication(FAApplication.DEFAULT_APPLICATION_MUSCA).getProperty(
+                                    FAApplication.SEPARATION_IND_NA));
+                } catch (Exception e) {
+                    isSeprationIndNac = Boolean.FALSE;
+                }
+                if (isSeprationIndNac) {
+                    if (isNonActif()) {
+                        passage = ServicesFacturation.getProchainPassageFacturation(getSession(), null,
+                                FAModuleFacturation.CS_MODULE_COT_PERS_NAC);
+                    } else {
+                        passage = ServicesFacturation.getProchainPassageFacturation(getSession(), null,
+                                FAModuleFacturation.CS_MODULE_COT_PERS_IND);
+                    }
                 } else {
                     passage = ServicesFacturation.getProchainPassageFacturation(getSession(), null,
-                            FAModuleFacturation.CS_MODULE_COT_PERS_IND);
+                            FAModuleFacturation.CS_MODULE_COT_PERS);
                 }
-            } else {
-                passage = ServicesFacturation.getProchainPassageFacturation(getSession(), null,
-                        FAModuleFacturation.CS_MODULE_COT_PERS);
             }
             if (passage != null) {
                 setIdPassage(passage.getIdPassage());
@@ -194,21 +201,27 @@ public class CPDecisionValiderViewBean extends CPDecision implements FWViewBeanI
             FAPassageModuleManager modPassManager = new FAPassageModuleManager();
             modPassManager.setSession(getSession());
             modPassManager.setForIdPassage(getIdPassage());
-            Boolean isSeprationIndNac = Boolean.FALSE;
-            try {
-                isSeprationIndNac = new Boolean(GlobazSystem.getApplication(FAApplication.DEFAULT_APPLICATION_MUSCA)
-                        .getProperty(FAApplication.SEPARATION_IND_NA));
-            } catch (Exception e) {
-                isSeprationIndNac = Boolean.FALSE;
-            }
-            if (isSeprationIndNac) {
-                if (isNonActif()) {
-                    modPassManager.setForIdTypeModule(FAModuleFacturation.CS_MODULE_COT_PERS_NAC);
-                } else {
-                    modPassManager.setForIdTypeModule(FAModuleFacturation.CS_MODULE_COT_PERS_IND);
-                }
+            if (!JadeStringUtil.isBlankOrZero(getIdDemandePortail())) {
+                modPassManager.setForIdTypeModule(FAModuleFacturation.CS_MODULE_COT_PERS_PORTAIL);
             } else {
-                modPassManager.setForIdTypeModule(FAModuleFacturation.CS_MODULE_COT_PERS);
+
+                Boolean isSeprationIndNac = Boolean.FALSE;
+                try {
+                    isSeprationIndNac = new Boolean(GlobazSystem
+                            .getApplication(FAApplication.DEFAULT_APPLICATION_MUSCA).getProperty(
+                                    FAApplication.SEPARATION_IND_NA));
+                } catch (Exception e) {
+                    isSeprationIndNac = Boolean.FALSE;
+                }
+                if (isSeprationIndNac) {
+                    if (isNonActif()) {
+                        modPassManager.setForIdTypeModule(FAModuleFacturation.CS_MODULE_COT_PERS_NAC);
+                    } else {
+                        modPassManager.setForIdTypeModule(FAModuleFacturation.CS_MODULE_COT_PERS_IND);
+                    }
+                } else {
+                    modPassManager.setForIdTypeModule(FAModuleFacturation.CS_MODULE_COT_PERS);
+                }
             }
             modPassManager.find();
             if (modPassManager.getSize() == 0) {

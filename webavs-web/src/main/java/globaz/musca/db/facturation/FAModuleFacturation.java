@@ -27,6 +27,7 @@ public class FAModuleFacturation extends BEntity implements Serializable {
     public final static String CS_MODULE_COT_PERS = "905006";
     public final static String CS_MODULE_COT_PERS_IND = "905041";
     public final static String CS_MODULE_COT_PERS_NAC = "905042";
+    public final static String CS_MODULE_COT_PERS_PORTAIL = "905045";
 
     public final static String CS_MODULE_DECISION_CAP_CGAS = "905047";
     public final static String CS_MODULE_DECLARATION_SALAIRE = "905012";

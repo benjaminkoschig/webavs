@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.w3c.dom.Document;
 import ch.globaz.common.dom.ElementsDomParser;
 import ch.globaz.orion.business.domaine.pucs.DeclarationSalaireProvenance;
+import ch.globaz.orion.business.domaine.pucs.DeclarationSalaireType;
 import ch.globaz.orion.business.models.pucs.PucsFile;
 
 public class MergePucsTest {
@@ -80,7 +81,7 @@ public class MergePucsTest {
     // String filePath = mergePucs.out("1078865-10-Af_Seul", document);
     //
     // }
-    @Ignore
+
     @Test
     public void testIsSameProvenance() throws Exception {
         List<PucsFile> files = new ArrayList<PucsFile>();
@@ -96,11 +97,33 @@ public class MergePucsTest {
         assertTrue(MergePucs.isSameProvenance(files));
 
         PucsFile pucsFile3 = new PucsFile();
-        pucsFile3.setFilename("testTwo");
+        pucsFile3.setFilename("testThree");
         pucsFile3.setProvenance(DeclarationSalaireProvenance.DAN);
         files.add(pucsFile3);
 
         assertFalse(MergePucs.isSameProvenance(files));
+    }
+
+    @Test
+    public void testIsSameTypeDeclaration() throws Exception {
+        List<PucsFile> files = new ArrayList<PucsFile>();
+        PucsFile pucsFile1 = new PucsFile();
+        pucsFile1.setFilename("testOne");
+        pucsFile1.setTypeDeclaration(DeclarationSalaireType.PRINCIPALE);
+        PucsFile pucsFile2 = new PucsFile();
+        pucsFile2.setFilename("testTwo");
+        pucsFile2.setTypeDeclaration(DeclarationSalaireType.PRINCIPALE);
+        files.add(pucsFile1);
+        files.add(pucsFile2);
+
+        assertTrue(MergePucs.isSameTypeDeclaration(files));
+
+        PucsFile pucsFile3 = new PucsFile();
+        pucsFile3.setFilename("testThree");
+        pucsFile3.setTypeDeclaration(DeclarationSalaireType.COMPLEMENTAIRE);
+        files.add(pucsFile3);
+
+        assertFalse(MergePucs.isSameTypeDeclaration(files));
     }
 
 }

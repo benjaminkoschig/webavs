@@ -62,6 +62,44 @@
 				<search-field name="inActivitesDossier" field-ref="dossierModel.activiteAllocataire" operation="IN"/>				
 		</search-group>
 	</search-definition>
+	
+	<search-definition name="EBUSINESS">
+		<search-group operator="AND">
+		
+				<search-field name="forIdTiersEnfant" field-ref="droitComplexModel.enfantComplexModel.enfantModel.idTiersEnfant" operation="EQUALS"/>
+				<!-- uniquement pour l'option de l'écran enfant (dossiers de l'enfant) -->
+				<search-field name="forIdEnfant" field-ref="droitComplexModel.enfantComplexModel.enfantModel.idEnfant" operation="EQUALS"/>
+				<search-field name="likeNssEnfant" field-ref="droitComplexModel.enfantComplexModel.personneEtendueComplexModel.personneEtendue.numAvsActuel" operation="LIKE"/>
+				<search-field name="likePrenomEnfant" field-ref="droitComplexModel.enfantComplexModel.personneEtendueComplexModel.tiers.designationUpper2" operation="LIKE"/>
+				<search-field name="likeNomEnfant" field-ref="droitComplexModel.enfantComplexModel.personneEtendueComplexModel.tiers.designationUpper1" operation="LIKE"/>
+				<search-field name="forDateEnfant" field-ref="droitComplexModel.enfantComplexModel.personneEtendueComplexModel.personne.dateNaissance" operation="EQUALS"/>
+				
+				<!-- uniquement pour l'option de l'écran allocataire (dossiers de l'allocataire) -->
+				<search-field name="forIdAllocataire" field-ref="dossierModel.idAllocataire" operation="EQUALS"/>
+				<search-field name="forIdTiersAllocataire" field-ref="allocataireComplexModel.allocataireModel.idTiersAllocataire" operation="EQUALS"/>
+				<search-field name="likeNssAllocataire" field-ref="allocataireComplexModel.personneEtendueComplexModel.personneEtendue.numAvsActuel" operation="LIKE"/>
+				<search-field name="likePrenomAllocataire" field-ref="allocataireComplexModel.personneEtendueComplexModel.tiers.designationUpper2" operation="LIKE"/>
+				<search-field name="likeNomAllocataire" field-ref="allocataireComplexModel.personneEtendueComplexModel.tiers.designationUpper1" operation="LIKE"/>		
+				
+				<search-field name="forNumAffilie" field-ref="dossierModel.numeroAffilie" operation="EQUALS"/>
+				<search-field name="likeNomAffilie" field-ref="affiliationModel.raisonSocialeUpper" operation="LIKE"/>
+				<search-field name="forIdDossier" field-ref="dossierModel.idDossier" operation="EQUALS"/>
+				<search-field name="forNumeroDossier" field-ref="dossierModel.numeroDossier" operation="EQUALS"/>
+				<!--  uniquement pour les filtres de l'écran de recherche AL0004 -->
+				<search-field name="inEtatsDossier" field-ref="dossierModel.etatDossier" operation="IN"/>
+				<search-field name="inStatutsDossier" field-ref="dossierModel.statut" operation="IN"/>
+				<search-field name="inActivitesDossier" field-ref="dossierModel.activiteAllocataire" operation="IN"/>
+				
+				<search-group operator="AND">
+					<search-group operator="OR">
+						<search-field name="forFinValiditeGreater"  field-ref="dossierModel.finValidite" operation="GREATER"  />
+						<search-field name="forFinValiditeGreater"  field-ref="dossierModel.finValidite" operation="NULL"/>
+					</search-group>
+				</search-group>				
+		</search-group>
+	</search-definition>
+	
+	
 	<order-by name="numDossier"  >
 		<order-field field-ref="idDossier" order="ASC"/>
 	</order-by> 
@@ -71,6 +109,38 @@
 		<order-field field-ref="etatDossier" order="ASC"/>
 		<order-field field-ref="finValidite" order="DESC"/>
 		<order-field field-ref="idDossier" order="DESC"/>
-	</order-by> 	
+	</order-by>
+	<order-by name="numDossierAsc"  >
+		<order-field field-ref="idDossier" order="ASC"/>
+	</order-by>
+	<order-by name="numDossierDesc"  >
+		<order-field field-ref="idDossier" order="DESC"/>
+	</order-by>
+	<order-by name="nssAsc"  >
+		<order-field field-ref="nss" order="ASC"/>
+	</order-by>
+	<order-by name="nssDesc"  >
+		<order-field field-ref="nss" order="DESC"/>
+	</order-by>
+	<order-by name="nomPrenomAllocataireAsc"  >
+		<order-field field-ref="nomAllocataire" order="ASC"/>
+		<order-field field-ref="prenomAllocataire" order="ASC"/>
+	</order-by>
+	<order-by name="nomPrenomAllocataireDesc"  >
+		<order-field field-ref="nomAllocataire" order="DESC"/>
+		<order-field field-ref="prenomAllocataire" order="DESC"/>
+	</order-by>
+	<order-by name="etatDossierAsc"  >
+		<order-field field-ref="etatDossier" order="ASC"/>
+	</order-by>
+	<order-by name="etatDossierDesc"  >
+		<order-field field-ref="etatDossier" order="DESC"/>
+	</order-by>
+	<order-by name="finValiditeAsc"  >
+		<order-field field-ref="finValidite" order="ASC"/>
+	</order-by>
+	<order-by name="finValiditeDesc"  >
+		<order-field field-ref="finValidite" order="DESC"/>
+	</order-by>
 </complexe-model>
 </model-mapping>

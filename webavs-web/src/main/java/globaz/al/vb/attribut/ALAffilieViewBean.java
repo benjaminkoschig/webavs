@@ -8,8 +8,10 @@ import ch.globaz.al.business.constantes.ALConstAttributsEntite;
 import ch.globaz.al.business.models.attribut.AttributEntiteModel;
 import ch.globaz.al.business.models.attribut.AttributEntiteSearchModel;
 import ch.globaz.al.business.services.ALServiceLocator;
+import ch.globaz.common.properties.PropertiesException;
 import ch.globaz.naos.business.model.AffiliationSimpleModel;
 import ch.globaz.naos.business.service.AFBusinessServiceLocator;
+import ch.globaz.orion.business.constantes.EBProperties;
 import ch.globaz.param.business.models.ParameterSearchModel;
 
 /**
@@ -370,5 +372,15 @@ public class ALAffilieViewBean extends BJadePersistentObjectViewBean {
                     affilie.getClass().getName().toString(), (AttributEntiteModel) attributsList.get(i));
         }
 
+    }
+
+    /**
+     * Retourne la valeur de la propriété orion.ebusiness.connected
+     * 
+     * @return
+     * @throws PropertiesException
+     */
+    public boolean isEbusinessConnected() throws PropertiesException {
+        return EBProperties.EBUSINESS_CONNECTED.getBooleanValue();
     }
 }

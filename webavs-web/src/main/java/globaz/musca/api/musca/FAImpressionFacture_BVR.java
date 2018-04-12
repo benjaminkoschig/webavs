@@ -46,6 +46,7 @@ public class FAImpressionFacture_BVR extends FAImpressionGenerique {
         _document.setParentWithCopy(context);
         _document.setPassage(passage);
         _document.setJadeUser(context.getJadeUser());
+        _document.setIsEbusiness(context.isEbusinessMode());
 
         // _document.setDateImpression(aDate);
         return true;

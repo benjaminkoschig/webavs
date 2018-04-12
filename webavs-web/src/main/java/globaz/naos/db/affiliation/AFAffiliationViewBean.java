@@ -11,6 +11,10 @@ import globaz.naos.util.AFIDEUtil;
 import globaz.naos.util.IDEDataBean;
 import globaz.naos.util.IDEServiceCallUtil;
 import java.util.List;
+import ch.globaz.common.properties.PropertiesException;
+import ch.globaz.orion.business.constantes.EBProperties;
+import ch.globaz.orion.businessimpl.services.partnerWeb.PartnerWebServiceImpl;
+import ch.globaz.orion.ws.service.UtilsService;
 
 public class AFAffiliationViewBean extends AFAffiliation implements FWViewBeanInterface {
     /**
@@ -31,9 +35,8 @@ public class AFAffiliationViewBean extends AFAffiliation implements FWViewBeanIn
 
     private boolean isMessageAnnonceIdeCreationAjouteeToDisplay = false;
 
-    public boolean isMessageAnnonceIdeCreationAjouteeToDisplay() {
-        return isMessageAnnonceIdeCreationAjouteeToDisplay;
-    }
+    private boolean isEbusinessConnected = false;
+    private boolean isActivAffilieEBusiness = false;
 
     // commence par souligné afin de ne pas être prise par jspSetBeanProperties
     public void _setMessageAnnonceIdeCreationAjouteeToDisplay(boolean isMessageAnnonceIdeCreationAjouteeToDisplay) {
@@ -87,6 +90,14 @@ public class AFAffiliationViewBean extends AFAffiliation implements FWViewBeanIn
             } else {
                 isIdeReadOnly = true;
             }
+        }
+
+        // si un EBusiness est connecté on regarde si l'affilié à un compte EBusiness actif
+        isEbusinessConnected = EBProperties.EBUSINESS_CONNECTED.getBooleanValue();
+        if (isEbusinessConnected) {
+            // renseigne l'attribut indiquant si l'affilié est inscrit et actif dans l'EBusiness
+            isActivAffilieEBusiness = PartnerWebServiceImpl.isExistingAndActivAffilieEbusiness(
+                    UtilsService.getSessionUserGeneric(getSession()), getAffilieNumero());
         }
     }
 
@@ -161,6 +172,15 @@ public class AFAffiliationViewBean extends AFAffiliation implements FWViewBeanIn
     }
 
     /**
+     * retourne true si l'affilié existe et est actif dans l'EBusiness
+     * 
+     * @return
+     */
+    public boolean isActivAffilieEBusiness() {
+        return isActivAffilieEBusiness;
+    }
+
+    /**
      * Insérez la description de la méthode ici. Date de création : (03.05.2002 16:20:01)
      * 
      * @param action
@@ -205,4 +225,19 @@ public class AFAffiliationViewBean extends AFAffiliation implements FWViewBeanIn
         }
 
     }
+
+    public boolean isMessageAnnonceIdeCreationAjouteeToDisplay() {
+        return isMessageAnnonceIdeCreationAjouteeToDisplay;
+    }
+
+    /**
+     * Retourne true si WebAVS est connecté à un EBusiness
+     * 
+     * @return
+     * @throws PropertiesException
+     */
+    public boolean isEbusinessConnected() throws PropertiesException {
+        return isEbusinessConnected;
+    }
+
 }

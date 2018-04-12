@@ -363,6 +363,22 @@ public class SQLWriter {
 
     /**
      * Ajoute le = avec le paramètre définit à la requête SQL
+     * et transforme la chaine de caractère en date globaz.
+     * EX: 10.2015 = > 201510, 01.10.2015 =>20151001
+     * 
+     * @param param String sql
+     * @return SQLWriter utilisé
+     */
+    public SQLWriter greaterOrEqualForDate(String param) {
+        Integer date = null;
+        if (param != null && !param.isEmpty()) {
+            date = datToGlobazFormat(param);
+        }
+        return greaterOrEqual(date);
+    }
+
+    /**
+     * Ajoute le = avec le paramètre définit à la requête SQL
      * 
      * @param param Integer sql
      * @return SQLWriter utilisé
@@ -371,6 +387,22 @@ public class SQLWriter {
         if (param != null) {
             paramsToUse.add(String.valueOf(param));
             query.append("=?");
+        } else {
+            rollback();
+        }
+        return this;
+    }
+
+    /**
+     * Ajoute le >= avec le paramètre définit à la requête SQL
+     * 
+     * @param param Integer sql
+     * @return SQLWriter utilisé
+     */
+    public SQLWriter greaterOrEqual(Integer param) {
+        if (param != null) {
+            paramsToUse.add(String.valueOf(param));
+            query.append(">=?");
         } else {
             rollback();
         }

@@ -28,6 +28,7 @@ import org.w3c.dom.NodeList;
 import ch.globaz.common.dom.ElementsDomParser;
 import ch.globaz.common.exceptions.CommonTechnicalException;
 import ch.globaz.orion.business.domaine.pucs.DeclarationSalaireProvenance;
+import ch.globaz.orion.business.domaine.pucs.DeclarationSalaireType;
 import ch.globaz.orion.business.models.pucs.PucsFile;
 import ch.globaz.orion.businessimpl.services.pucs.FindPucsSwissDec;
 import ch.globaz.orion.service.EBPucsFileService;
@@ -64,18 +65,51 @@ public class MergePucs {
         return true;
     }
 
+    static boolean isSameTypeDeclaration(List<PucsFile> pucsFiles) {
+        DeclarationSalaireType typeDeclaration = pucsFiles.get(0).getTypeDeclaration();
+        for (PucsFile pucsFile : pucsFiles) {
+            if (!typeDeclaration.equals(pucsFile.getTypeDeclaration())) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    static boolean isSalaireDiffere(List<PucsFile> pucsFiles) {
+
+        if (pucsFiles.size() > 1) {
+            for (PucsFile pucsFile : pucsFiles) {
+                if (pucsFile.isSalaireDifferes()) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     public PucsFile mergeAndBuildPucsFile(String numAffilie, List<PucsFile> pucsFiles, BSession session)
-            throws JadeServiceLocatorException, JadeServiceActivatorException, NullPointerException,
-            ClassCastException, JadeClassCastException {
+            throws JadeServiceLocatorException, JadeServiceActivatorException, JadeClassCastException {
         if (!isSameProvenance(pucsFiles)) {
             throw new CommonTechnicalException(
                     "Il n'est pas possible de fusionner des fichiers PUCS de proveances différentes");
         }
 
+        if (!isSameTypeDeclaration(pucsFiles)) {
+            throw new CommonTechnicalException(
+                    "Il n'est pas possible de fusionner des fichiers PUCS de types différents (Principal et Complémentaire)");
+        }
+
+        if (!isSalaireDiffere(pucsFiles)) {
+            throw new CommonTechnicalException(
+                    "Il n'est pas possible de fusionner des fichiers PUCS de salaire différés");
+        }
+
         parser = mergeForAffilie(pucsFiles, session);
         String filePath = out(numAffilie, parser.getDocument());
-        PucsFile PucsFile = FindPucsSwissDec.buildPucsByFile(filePath, pucsFiles.get(0).getProvenance(), session);
-        return PucsFile;
+        PucsFile pucsFile = FindPucsSwissDec.buildPucsByFile(filePath, pucsFiles.get(0).getProvenance(), session);
+        pucsFile.setTypeDeclaration(pucsFiles.get(0).getTypeDeclaration());
+
+        return pucsFile;
     }
 
     public ElementsDomParser getParser() {

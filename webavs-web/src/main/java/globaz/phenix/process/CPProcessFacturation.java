@@ -3,6 +3,7 @@ package globaz.phenix.process;
 import globaz.caisse.helper.CaisseHelperFactory;
 import globaz.framework.util.FWCurrency;
 import globaz.framework.util.FWMessage;
+import globaz.globall.db.BManager;
 import globaz.globall.db.BProcess;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BStatement;
@@ -238,8 +239,9 @@ public final class CPProcessFacturation extends BProcess {
             modPass.setForIdPassage(getIdPassage());
             modPass.setInTypeModule(FAModuleFacturation.CS_MODULE_COT_PERS + ", "
                     + FAModuleFacturation.CS_MODULE_COT_PERS_IND + ", " + FAModuleFacturation.CS_MODULE_COT_PERS_NAC
-                    + ", " + FAModuleFacturation.CS_MODULE_STANDARD);
-            modPass.find();
+                    + ", " + FAModuleFacturation.CS_MODULE_STANDARD + ", "
+                    + FAModuleFacturation.CS_MODULE_COT_PERS_PORTAIL);
+            modPass.find(BManager.SIZE_NOLIMIT);
             if (modPass.size() > 0) {
                 // -------------------------------------------------------------------------
                 // Recherche si périodique personnelle en cours (hormis

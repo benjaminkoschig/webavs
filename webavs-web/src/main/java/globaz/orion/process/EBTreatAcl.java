@@ -127,12 +127,17 @@ public class EBTreatAcl extends EBAbstractJadeJob {
                     AclServiceImpl.changeStatus(Integer.parseInt(aclEnCours[i].getIdAnnonceCollaborateur()),
                             AclStatutEnum.PROBLEME, getSession());
 
+                    JadeThread.logError(this.getClass().toString(), getSession().getCurrentThreadTransaction()
+                            .getErrors().toString());
+
                     // Suppression des logs d'erreur
-                    JadeThread.logClear();
                     getSession().getCurrentThreadTransaction().clearErrorBuffer();
                     getSession().getCurrentThreadTransaction().clearWarningBuffer();
-                    getSession().getErrors();// vide également le buffer
+                    JadeThread.logError(this.getClass().toString(), getSession().getErrors().toString());// vide
+                                                                                                         // également le
+                                                                                                         // buffer
                     getSession().getWarnings();// vide également le buffer
+                    JadeThread.logClear();
                 } else {
                     JadeThread.commitSession();
                     if (treatAclEnCoursResult.getArcStatut().equals(CIAnnonceCollaborateurService.ARC_STATUT_TERMINE)) {
@@ -196,14 +201,17 @@ public class EBTreatAcl extends EBAbstractJadeJob {
                     AclServiceImpl.changeStatus(Integer.parseInt(aclSaisie[i].getIdAnnonceCollaborateur()),
                             AclStatutEnum.PROBLEME, getSession());
                     aclSaisie[i].setStatut(getSession().getLabel("ACL_STATUT_PROBLEME"));
-                    System.out.println(getSession().getCurrentThreadTransaction().getErrors());
+                    JadeThread.logError(this.getClass().toString(), getSession().getCurrentThreadTransaction()
+                            .getErrors().toString());
 
                     // Suppression des logs d'erreur
-                    JadeThread.logClear();
                     getSession().getCurrentThreadTransaction().clearErrorBuffer();
                     getSession().getCurrentThreadTransaction().clearWarningBuffer();
-                    getSession().getErrors();// vide également le buffer
+                    JadeThread.logError(this.getClass().toString(), getSession().getErrors().toString());// vide
+                                                                                                         // également le
+                                                                                                         // buffer
                     getSession().getWarnings();// vide également le buffer
+                    JadeThread.logClear();
                 } else {
                     JadeThread.commitSession();
                     if (!JadeStringUtil.isBlank(treatAclSaisieResult.getAttestationAssuranceLocation())) {

@@ -51,6 +51,7 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Vector;
 import javax.servlet.http.HttpSession;
+import ch.globaz.common.domaine.Date;
 
 /**
  * Classe utilitaire pour PAVO. Date de création : (09.01.2003 15:18:41)
@@ -637,6 +638,32 @@ public class CPUtil {
             }
         }
         return str;
+    }
+
+    /**
+     * Détermination du type de décision selon le type de l'ancienne décision
+     * 
+     * @return
+     */
+    public static String determinerTypeDecision(Integer anneeDemande, String typeDecisionActuel) {
+        Integer anneeCourante = Date.getCurrentYear();
+        String typeDecision = CPDecision.CS_PROVISOIRE;
+
+        if (typeDecisionActuel == null) {
+            if (anneeCourante.equals(anneeDemande)) {
+                typeDecision = CPDecision.CS_ACOMPTE;
+            }
+        } else {
+            if (typeDecisionActuel.equalsIgnoreCase(CPDecision.CS_PROVISOIRE)
+                    || typeDecisionActuel.equalsIgnoreCase(CPDecision.CS_CORRECTION)) {
+                typeDecision = CPDecision.CS_CORRECTION;
+            } else if (anneeCourante.equals(anneeDemande)) {
+                typeDecision = CPDecision.CS_ACOMPTE;
+            } else {
+                typeDecision = CPDecision.CS_PROVISOIRE;
+            }
+        }
+        return typeDecision;
     }
 
     public CPUtil() {

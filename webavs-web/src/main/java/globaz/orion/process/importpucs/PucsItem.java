@@ -83,6 +83,11 @@ public class PucsItem extends ProcessItem {
         entity.setFile(pucsFile.getFile());
         entity.setAfSeul(pucsFile.isAfSeul());
         entity.setAnneeDeclaration(Integer.valueOf(pucsFile.getAnneeDeclaration()));
+        if (JadeStringUtil.isEmpty(pucsFile.getAnneeVersement())) {
+            entity.setAnneeVersement(entity.getAnneeDeclaration());
+        } else {
+            entity.setAnneeVersement(Integer.valueOf(pucsFile.getAnneeVersement()));
+        }
         if (pucsFile.getCurrentStatus() != null) {
             entity.setStatut(Integer.valueOf(pucsFile.getCurrentStatus().getValue()));
         }
@@ -98,11 +103,10 @@ public class PucsItem extends ProcessItem {
         entity.setTotalControle(new Montant(pucsFile.getTotalControle()).getBigDecimalValue());
         entity.setIdFileName(pucsFile.getFilename());
         entity.setSearchString(createSearchString(pucsFile));
-
         entity.setDateValidation(new Date(pucsFile.getDateDeReception()).getDate());
         entity.setNomValidation(pucsFile.getNomValidation());
         entity.setCertifieExact(pucsFile.getCertifieExact());
-
+        entity.setTypeDeclaration(pucsFile.getTypeDeclaration().getValue());
         entity.add();
     }
 

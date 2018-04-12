@@ -41,6 +41,7 @@ import globaz.naos.util.AFUtil;
 import globaz.osiris.api.APICompteAnnexe;
 import globaz.osiris.db.comptes.CACompteAnnexe;
 import globaz.osiris.db.comptes.CASectionManager;
+import globaz.osiris.db.interets.CAInteretMoratoire;
 import globaz.pavo.application.CIApplication;
 import globaz.pavo.db.compte.CICompteIndividuel;
 import globaz.pavo.db.compte.CICompteIndividuelManager;
@@ -83,6 +84,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import ch.globaz.orion.business.domaine.pucs.DeclarationSalaire;
 import ch.globaz.orion.business.domaine.pucs.DeclarationSalaireProvenance;
+import ch.globaz.orion.business.domaine.pucs.DeclarationSalaireType;
 import ch.globaz.orion.service.EBEbusinessInterface;
 import ch.globaz.orion.service.EBPucsFileService;
 import ch.swissdec.schema.sd._20130514.salarydeclarationconsumercontainer.DeclareSalaryConsumerType;
@@ -221,6 +223,9 @@ public class CIDeclaration extends BProcess {
     private boolean validationAutomatique = false;
 
     private DSDeclarationViewBean declaration = null;
+
+    private DeclarationSalaireType declarationSalaireType = DeclarationSalaireType.PRINCIPALE;
+    private String anneeVersement;
 
     private CIImportPucs4Process importPucs4Process;
 
@@ -1834,7 +1839,7 @@ public class CIDeclaration extends BProcess {
             journal.setIdTypeCompte(CIJournal.CS_PROVISOIRE);
             journal.setDateReception(dateReceptionForced);
             boolean wantCreatePrincipale = true;
-            if (size == 0) {
+            if (size == 0 && declarationSalaireType.isPrincipale()) {
                 // si il n'existe pas encore dans la DB, on le crée (sauf en mode simulation)
                 journal.setIdTypeInscription(CIJournal.CS_DECLARATION_SALAIRES);
             } else {
@@ -1861,8 +1866,12 @@ public class CIDeclaration extends BProcess {
                                 dsMgr.setForTypeDeclaration(DSDeclarationViewBean.CS_PRINCIPALE);
                             } else {
                                 dsMgr.setForTypeDeclaration(DSDeclarationViewBean.CS_COMPLEMENTAIRE);
+                                if (!journal.getAnneeCotisation().equals(anneeVersement)) {
+                                    dsMgr.setForTypeDeclaration(DSDeclarationViewBean.CS_SALAIRE_DIFFERES);
+                                }
+
                             }
-                            dsMgr.find(getTransaction());
+                            dsMgr.find(getTransaction(), BManager.SIZE_USEDEFAULT);
                             if (dsMgr.size() > 0) {
                                 declaration = (DSDeclarationViewBean) dsMgr.getFirstEntity();
                                 declaration.setIdJournal(journal.getIdJournal());
@@ -1888,6 +1897,12 @@ public class CIDeclaration extends BProcess {
                                     declaration.setTypeDeclaration(DSDeclarationViewBean.CS_PRINCIPALE);
                                 } else {
                                     declaration.setTypeDeclaration(DSDeclarationViewBean.CS_COMPLEMENTAIRE);
+                                    if (!declaration.getAnnee().equals(anneeVersement)) {
+                                        declaration.setTypeDeclaration(DSDeclarationViewBean.CS_SALAIRE_DIFFERES);
+                                        // pour les salaires différés les intérêts moratoires sont directement exemptés
+                                        declaration.setSoumisInteret(CAInteretMoratoire.CS_EXEMPTE);
+                                        declaration.setAnneeTaux(anneeVersement);
+                                    }
                                 }
                                 declaration.setEtat(DSDeclarationViewBean.CS_OUVERT);
                                 declaration.setIdJournal(journal.getIdJournal());
@@ -2689,6 +2704,22 @@ public class CIDeclaration extends BProcess {
 
     public void setIdsPucsFile(String idsPucsFile) {
         this.idsPucsFile = idsPucsFile;
+    }
+
+    public DeclarationSalaireType getDeclarationSalaireType() {
+        return declarationSalaireType;
+    }
+
+    public void setDeclarationSalaireType(DeclarationSalaireType declarationSalaireType) {
+        this.declarationSalaireType = declarationSalaireType;
+    }
+
+    public String getAnneeVersement() {
+        return anneeVersement;
+    }
+
+    public void setAnneeVersement(String anneeVersement) {
+        this.anneeVersement = anneeVersement;
     }
 
 }

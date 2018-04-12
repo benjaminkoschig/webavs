@@ -68,7 +68,7 @@ public class EBGenererListContact extends EBAbstractJadeJob {
                 @Override
                 public Set<ContactEbusinessAffilie> load(String param) throws JadeApplicationException {
                     Set<ContactEbusinessAffilie> list;
-                    list = PartnerWebServiceImpl.searchAllActivContactAffilie();
+                    list = PartnerWebServiceImpl.searchAllActivContactAffilie(getSession());
                     return list;
                 }
             };

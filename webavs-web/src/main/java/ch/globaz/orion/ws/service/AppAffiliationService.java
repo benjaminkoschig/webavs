@@ -10,15 +10,19 @@ import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.log.JadeLogger;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import globaz.naos.db.affiliation.AFAffiliation;
+import globaz.naos.db.affiliation.AFAffiliationManager;
 import globaz.naos.services.AFAffiliationServices;
 import globaz.naos.translation.CodeSystem;
 import globaz.pyxis.application.TIApplication;
 import globaz.webavs.common.ICommonConstantes;
 import java.util.ArrayList;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ch.globaz.common.domaine.Checkers;
 import ch.globaz.common.exceptions.CommonTechnicalException;
 import ch.globaz.naos.business.service.AFBusinessServiceLocator;
+import ch.globaz.orion.ws.exceptions.WebAvsException;
 import ch.globaz.pyxis.business.model.AdresseTiersDetail;
 import ch.globaz.pyxis.business.service.AdresseService;
 import ch.globaz.pyxis.business.service.TIBusinessServiceLocator;
@@ -29,6 +33,8 @@ import ch.globaz.pyxis.business.service.TIBusinessServiceLocator;
  * @author sco
  */
 public class AppAffiliationService {
+
+    private static Logger logger = LoggerFactory.getLogger(AppAffiliationService.class);
 
     private AppAffiliationService() {
         throw new UnsupportedOperationException();
@@ -44,8 +50,9 @@ public class AppAffiliationService {
      * @return Une liste des masses pour l'affilié
      */
     public static List<AFMassesForAffilie> retrieveListCotisationForNumAffilie(BSession session, String numAffilie,
-            String date, String forMois, String forAnnee) {
+            String date, String forMois, String forAnnee, boolean cotParitaire, boolean cotPers) {
 
+        logger.debug("retrieveCotisationForNumAffilie " + numAffilie);
         Checkers.checkNotNull(session, "session");
         Checkers.checkNotNull(numAffilie, "numAffilie");
         Checkers.checkNotEmpty(numAffilie, "numAffilie");
@@ -54,15 +61,18 @@ public class AppAffiliationService {
         manager.setSession(session);
         manager.setDateFin(date);
         manager.setNumAffilie(numAffilie);
+        manager.setCotParitaire(cotParitaire);
+        manager.setCotPers(cotPers);
 
         try {
+            logger.debug("find masses for affilie");
             manager.find(BManager.SIZE_NOLIMIT);
         } catch (Exception e) {
             JadeLogger.error("Unabled to retrieve cotisations and masses for the affilie : " + numAffilie, e);
             throw new CommonTechnicalException("Unabled to retrieve cotisations and masses for the affilie : "
                     + numAffilie, e);
         }
-
+        logger.debug("nb masses founded=" + manager.size());
         List<AFMassesForAffilie> listMassesForAffilie = new ArrayList<AFMassesForAffilie>();
 
         if (manager.isEmpty()) {
@@ -89,7 +99,7 @@ public class AppAffiliationService {
      */
     public static List<AFMassesForAffilie> retrieveListCotisationForNumAffilieForMoisAnnee(BSession session,
             String numAffilie, String forMois, String forAnnee) {
-        return retrieveListCotisationForNumAffilie(session, numAffilie, null, forMois, forAnnee);
+        return retrieveListCotisationForNumAffilie(session, numAffilie, null, forMois, forAnnee, true, false);
     }
 
     /**
@@ -104,7 +114,7 @@ public class AppAffiliationService {
      */
     public static List<AFMassesForAffilie> retrieveListCotisationForNumAffilie(BSession session, String numAffilie,
             String date) {
-        return retrieveListCotisationForNumAffilie(session, numAffilie, date, null, null);
+        return retrieveListCotisationForNumAffilie(session, numAffilie, date, null, null, true, false);
     }
 
     /**
@@ -117,7 +127,42 @@ public class AppAffiliationService {
      * @throws NullPointerException Si la session est null
      */
     public static List<AFMassesForAffilie> retrieveListCotisationActiveForNumAffilie(BSession session, String numAffilie) {
-        return retrieveListCotisationForNumAffilie(session, numAffilie, null, null, null);
+        return retrieveListCotisationForNumAffilie(session, numAffilie, null, null, null, true, false);
+    }
+
+    /**
+     * Méthode permettant de récupérer de la liste des cotisations paritaires et personnelles d'un affilié à la date
+     * indiquée.
+     * 
+     * @param session Une session
+     * @param numAffilie Un numéro d'affilié
+     * @param date une date
+     * @return Une list de masses
+     * @throws IllegalArgumentException Exception levée si le numéro d'affilié est null ou vide
+     * @throws NullPointerException Si la session est null
+     */
+    public static List<AFMassesForAffilie> retrieveListCotisationParAndPersForNumAffilie(BSession session,
+            String numAffilie) {
+        return retrieveListCotisationForNumAffilie(session, numAffilie, null, null, null, true, true);
+    }
+
+    /**
+     * Méthode permettant de récupérer de la liste des cotisations paritaires et / ou personnelles d'un affilié à la
+     * date
+     * indiquée.
+     * 
+     * @param session Une session
+     * @param numAffilie Un numéro d'affilié
+     * @param date une date
+     * @param cotParitaire
+     * @param cotPers
+     * @return Une list de masses
+     * @throws IllegalArgumentException Exception levée si le numéro d'affilié est null ou vide
+     * @throws NullPointerException Si la session est null
+     */
+    public static List<AFMassesForAffilie> retrieveListCotisationConfigurableForNumAffilie(BSession session,
+            String numAffilie, boolean cotParitaire, boolean cotPers) {
+        return retrieveListCotisationForNumAffilie(session, numAffilie, null, null, null, cotParitaire, cotPers);
     }
 
     /**
@@ -254,8 +299,32 @@ public class AppAffiliationService {
      * 
      * @param numeroAffilie
      * @return
+     * @throws WebAvsException
+     * @throws JadeApplicationException
+     * @throws JadePersistenceException
+     * @throws JadeApplicationServiceNotAvailableException
      */
-    public static String findAdresseCourrierAffilie(String numeroAffilie) {
+    public static AdresseTiersDetail findAdresseAffilie(String numeroAffilie, String csTypeAdresse)
+            throws WebAvsException {
+
+        try {
+            // Retrouver l'id du tiers correspondant au numéro d'affilié
+            String idTiers = AFBusinessServiceLocator.getAffiliationService()
+                    .findIdTiersForNumeroAffilie(numeroAffilie);
+            if (idTiers == null) {
+                JadeLogger.error(AppAffiliationService.class, "idTiers for affilie not found : " + numeroAffilie);
+            }
+
+            return TIBusinessServiceLocator.getAdresseService().getAdresseTiers(idTiers, true,
+                    JACalendar.todayJJsMMsAAAA(), ICommonConstantes.CS_APPLICATION_COTISATION, csTypeAdresse, "");
+        } catch (Exception e) {
+            JadeLogger.error(AppAffiliationService.class,
+                    "technical error when findAdresseAffilie for numeroAffilie : " + numeroAffilie);
+            throw new WebAvsException("technical error when findAdresseAffilie for numeroAffilie : " + numeroAffilie);
+        }
+    }
+
+    public static String findAdresseDomicileAffilie(String numeroAffilie) {
         String adresseCourrier = null;
         try {
             // Retrouver l'id du tiers correspondant au numéro d'affilié
@@ -283,5 +352,55 @@ public class AppAffiliationService {
         }
 
         return adresseCourrier;
+    }
+
+    public static AFAffiliation findAffiliationParitaire(String numeroAffilie) throws WebAvsException {
+        BSession session = UtilsService.initSession();
+
+        // recherche de l'affiliation
+        AFAffiliationManager affiliationManager = new AFAffiliationManager();
+        affiliationManager.setSession(session);
+        affiliationManager.setForAffilieNumero(numeroAffilie);
+        affiliationManager.setForTypeAffiliation(new String[] { CodeSystem.TYPE_AFFILI_EMPLOY,
+                CodeSystem.TYPE_AFFILI_INDEP_EMPLOY });
+
+        try {
+            affiliationManager.find(BManager.SIZE_USEDEFAULT);
+            if (affiliationManager.size() > 0) {
+                // récupération de l'affiliation
+                return (AFAffiliation) affiliationManager.getFirstEntity();
+            } else {
+                // aucun affiliation trouvée
+                return null;
+            }
+        } catch (Exception e) {
+            JadeLogger.error(AppAffiliationService.class, "technical error when findAffiliation for numeroAffilie : "
+                    + numeroAffilie);
+            throw new WebAvsException("technical error when findAffiliation for numeroAffilie : " + numeroAffilie);
+        }
+    }
+
+    public static AFAffiliation findAffiliation(String numeroAffilie) throws WebAvsException {
+        BSession session = UtilsService.initSession();
+
+        // recherche de l'affiliation
+        AFAffiliationManager affiliationManager = new AFAffiliationManager();
+        affiliationManager.setSession(session);
+        affiliationManager.setForAffilieNumero(numeroAffilie);
+
+        try {
+            affiliationManager.find(BManager.SIZE_USEDEFAULT);
+            if (affiliationManager.size() > 0) {
+                // récupération de l'affiliation
+                return (AFAffiliation) affiliationManager.getFirstEntity();
+            } else {
+                JadeLogger.error(AppAffiliationService.class, "affiliation not found : " + numeroAffilie);
+                throw new WebAvsException("affiliation not found : " + numeroAffilie);
+            }
+        } catch (Exception e) {
+            JadeLogger.error(AppAffiliationService.class, "technical error when findAffiliation for numeroAffilie : "
+                    + numeroAffilie);
+            throw new WebAvsException("technical error when findAffiliation for numeroAffilie : " + numeroAffilie);
+        }
     }
 }

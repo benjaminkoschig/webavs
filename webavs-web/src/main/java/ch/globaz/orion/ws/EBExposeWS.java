@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import javax.xml.ws.Endpoint;
 import ch.globaz.orion.ws.affiliation.WebAvsAffiliationServiceImpl;
+import ch.globaz.orion.ws.allocationfamiliale.WebAvsAllocationFamilialeServiceImpl;
 import ch.globaz.orion.ws.common.WebAvsCommonServiceImpl;
 import ch.globaz.orion.ws.comptabilite.WebAvsComptabiliteServiceImpl;
 import ch.globaz.orion.ws.cotisation.WebAvsCotisationsServiceImpl;
@@ -15,6 +16,7 @@ public class EBExposeWS {
     private static final String WEBAVS_COMPTABILITE_SERVICE = "/webAvsComptabiliteService";
     private static final String WEBAVS_AFFILIATION_SERVICE = "/webAvsAffiliationService";
     private static final String WEBAVS_COTISATIONS_SERVICE = "/webAvsCotisationsService";
+    private static final String WEBAVS_ALLOCATION_FAMILIALE_SERVICE = "/webAvsAllocationFamilialeService";
     private static final String WS_BASE_LOCATION = "/webavs/ws";
     private static final String IP_0_0_0_0 = "0.0.0.0";
 
@@ -32,6 +34,8 @@ public class EBExposeWS {
             webServices.put(wsBaseLocation + WEBAVS_COMPTABILITE_SERVICE,
                     Endpoint.create(new WebAvsComptabiliteServiceImpl()));
             webServices.put(wsBaseLocation + WEBAVS_COMMON_SERVICE, Endpoint.create(new WebAvsCommonServiceImpl()));
+            webServices.put(wsBaseLocation + WEBAVS_ALLOCATION_FAMILIALE_SERVICE,
+                    Endpoint.create(new WebAvsAllocationFamilialeServiceImpl()));
 
             // publish all WS
             if (!webServices.entrySet().isEmpty()) {

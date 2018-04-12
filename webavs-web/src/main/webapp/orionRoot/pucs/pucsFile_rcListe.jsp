@@ -1,3 +1,4 @@
+<%@page import="ch.globaz.orion.business.domaine.pucs.DeclarationSalaireType"%>
 <%@ page language="java" %>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ include file="/theme/list/header.jspf" %>
@@ -130,6 +131,7 @@ $(function () {
 
 <th colspan="2"><ct:FWLabel key="NUMERO_AFFILIE"/></th>
 <th><ct:FWLabel key="NOM"/></th>
+<th><ct:FWLabel key="JSP_GEB0001_TYPE_DECLARATION"/></th>
 <th><ct:FWLabel key="DATE_RECEPTION"/></th>
 <th><ct:FWLabel key="ANNEE_DECL"/></th>
 <th><ct:FWLabel key="TOTAL_CONTROLE"/></th>
@@ -144,7 +146,12 @@ $(function () {
 <%-- tpl:insert attribute="zoneCondition" --%>
 <%-- /tpl:insert --%>
 	<%		rowStyle = (condition) ? "row" : "rowOdd";
+			
 			EBPucsFileViewBean line = (EBPucsFileViewBean) viewBean.get(i);
+			if(line.getPucsFile().isSalaireDifferes()) {
+			    rowStyle = "rowJaune";
+			}    
+			
 			pageContext.setAttribute("pucsFile", ((EBPucsFileViewBean) viewBean.get(i)).getPucsFile());
 	%>
 			<tr id="<%=line.getId()%>" lock="<%=line.hasLock()%>" isVisible="<%=line.isVisible()%>" numeroAff="<%=line.getPucsFile().getNumeroAffilie()%>" idAff="<%=line.getIdAffiliation()%>" class="<%=rowStyle%>" onMouseOver="jscss('swap', this, '<%=rowStyle%>', 'rowHighligthed')" onMouseOut="jscss('swap', this, 'rowHighligthed', '<%=rowStyle%>')">
@@ -170,6 +177,11 @@ $(function () {
 				<%} %>
 				<c:out value="${pucsFile.nomAffilie}" />
 			</td>
+			<%if (line.getPucsFile().isDeclarationPrincipale()){%>
+			<td title="<ct:FWLabel key='JSP_GEB0001_TYPE_DECLARATION_PRINCIPALE'/>" style="text-align:center"><ct:FWLabel key='JSP_GEB0001_TYPE_DECLARATION_PRINCIPALE_MINI'/></td>
+			<% } else if (line.getPucsFile().isDeclarationComplementaire()){ %>
+			<td title="<ct:FWLabel key='JSP_GEB0001_TYPE_DECLARATION_COMPLEMENTAIRE'/>" style="text-align:center"><ct:FWLabel key='JSP_GEB0001_TYPE_DECLARATION_COMPLEMENTAIRE_MINI'/></td>
+			<% } %>
 			<td style="text-align:center"><%=line.getPucsFile().getDateDeReception()%></td>
 			<td style="text-align:center"><%=line.getPucsFile().getAnneeDeclaration()%></td>
 			<td style="text-align:right"><%=new FWCurrency(line.getPucsFile().getTotalControle()).toStringFormat()%></td>

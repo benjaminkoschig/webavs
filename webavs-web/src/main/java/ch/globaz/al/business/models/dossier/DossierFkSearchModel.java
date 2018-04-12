@@ -42,6 +42,11 @@ public class DossierFkSearchModel extends JadeSearchSimpleModel {
     private String forStatut = null;
 
     /**
+     * recherche par numéro d'affilié
+     */
+    private String forNumeroAffilie = null;
+
+    /**
      * 
      * @return forEtatDossier
      */
@@ -70,6 +75,9 @@ public class DossierFkSearchModel extends JadeSearchSimpleModel {
         return forStatut;
     }
 
+    /**
+     * @return forIdTiersBeneficiaire
+     */
     public String getForIdTiersBeneficiaire() {
         return forIdTiersBeneficiaire;
     }
@@ -81,6 +89,13 @@ public class DossierFkSearchModel extends JadeSearchSimpleModel {
      */
     public void setForEtatDossier(String forEtatDossier) {
         this.forEtatDossier = forEtatDossier;
+    }
+
+    /**
+     * @return forNumeroAffilie
+     */
+    public String getForNumeroAffilie() {
+        return forNumeroAffilie;
     }
 
     /**
@@ -107,8 +122,18 @@ public class DossierFkSearchModel extends JadeSearchSimpleModel {
         this.forStatut = forStatut;
     }
 
+    /**
+     * @param forIdTiersBeneficiaire
+     */
     public void setForIdTiersBeneficiaire(String forIdTiersBeneficiaire) {
         this.forIdTiersBeneficiaire = forIdTiersBeneficiaire;
+    }
+
+    /**
+     * @param forNumeroAffilie
+     */
+    public void setForNumeroAffilie(String forNumeroAffilie) {
+        this.forNumeroAffilie = forNumeroAffilie;
     }
 
     /*

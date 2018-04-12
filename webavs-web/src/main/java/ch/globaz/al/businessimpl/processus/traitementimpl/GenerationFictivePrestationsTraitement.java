@@ -1,10 +1,13 @@
 package ch.globaz.al.businessimpl.processus.traitementimpl;
 
+import globaz.globall.db.BSessionUtil;
 import globaz.jade.client.util.JadeDateUtil;
+import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.context.JadeThread;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.log.JadeLogger;
+import globaz.jade.persistence.model.JadeAbstractModel;
 import globaz.jade.persistence.model.JadeAbstractSearchModel;
 import globaz.jade.print.server.JadePrintDocumentContainer;
 import globaz.jade.publish.client.JadePublishDocument;
@@ -12,12 +15,20 @@ import globaz.jade.publish.client.JadePublishServerFacade;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
 import globaz.jade.publish.message.JadePublishDocumentMessage;
 import java.io.File;
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
+import ch.globaz.al.business.constantes.ALCSDossier;
 import ch.globaz.al.business.constantes.ALCSPrestation;
 import ch.globaz.al.business.constantes.ALCSProcessus;
 import ch.globaz.al.business.constantes.ALConstDocument;
@@ -27,12 +38,18 @@ import ch.globaz.al.business.models.dossier.AffilieListComplexModel;
 import ch.globaz.al.business.models.dossier.AffilieListComplexSearchModel;
 import ch.globaz.al.business.models.dossier.DossierComplexModel;
 import ch.globaz.al.business.models.dossier.DossierComplexSearchModel;
+import ch.globaz.al.business.models.prestation.RecapitulatifEntrepriseImpressionComplexModel;
 import ch.globaz.al.business.models.prestation.RecapitulatifEntrepriseImpressionComplexSearchModel;
 import ch.globaz.al.business.services.ALServiceLocator;
 import ch.globaz.al.businessimpl.processus.BusinessTraitement;
 import ch.globaz.al.businessimpl.services.ALImplServiceLocator;
 import ch.globaz.al.utils.ALDateUtils;
 import ch.globaz.al.utils.ALFileCSVUtils;
+import ch.globaz.orion.business.constantes.EBProperties;
+import ch.globaz.orion.businessimpl.services.af.AfServiceImpl;
+import ch.globaz.orion.businessimpl.services.partnerWeb.PartnerWebServiceImpl;
+import ch.globaz.xmlns.eb.recapaf.NouvelleLigneRecapAf;
+import ch.globaz.xmlns.eb.recapaf.UniteTempsEnum;
 
 public class GenerationFictivePrestationsTraitement extends BusinessTraitement {
     private JadePrintDocumentContainer containerA = new JadePrintDocumentContainer();
@@ -58,13 +75,14 @@ public class GenerationFictivePrestationsTraitement extends BusinessTraitement {
     protected void execute() throws JadePersistenceException, JadeApplicationException {
 
         boolean isGed = false;
+        boolean isEbusinessConnected = EBProperties.EBUSINESS_CONNECTED.getBooleanValue();
 
         ArrayList listConteneurRecap = new ArrayList();
         HashMap recapCSV = new HashMap();
         ArrayList listRecapPdf = new ArrayList();
         ArrayList listRecapCsv = new ArrayList();
 
-        ArrayList listDossiersGeneration = new ArrayList();
+        ArrayList<String> listDossiersGeneration = new ArrayList<String>();
         String periode = getProcessusConteneur().getDataCriterias().periodeCriteria;
         String typeCoti = getProcessusConteneur().getDataCriterias().cotisationCriteria;
 
@@ -98,15 +116,69 @@ public class GenerationFictivePrestationsTraitement extends BusinessTraitement {
 
         String bonification = ALConstPrestations.TYPE_DIRECT.equals(typeCoti) ? ALCSPrestation.BONI_DIRECT
                 : ALCSPrestation.BONI_INDIRECT;
+
         // pour tous les dossiers concernés, on les calcule et stockes les résultats sous forme de lignes récaps
         // imprimables via service impression récaps
-        RecapitulatifEntrepriseImpressionComplexSearchModel prestationsToPrint = ALServiceLocator
+        RecapitulatifEntrepriseImpressionComplexSearchModel allPrestations = ALServiceLocator
                 .getRecapitulatifEntrepriseImpressionService().calculPrestationsStoreInRecapsDocs(
                         listDossiersGeneration, periode, bonification);
-        // pour que résultat du calcul soient compatibles avec l'impression des récaps, il faut le mettre dans une
-        // ArrayList
+
+        // liste des récaps à imprimer
         ArrayList<RecapitulatifEntrepriseImpressionComplexSearchModel> recapToPrint = new ArrayList<RecapitulatifEntrepriseImpressionComplexSearchModel>();
-        recapToPrint.add(prestationsToPrint);
+
+        // si l'environnement webAVS est connecté à EBusiness on créé certaines récaps côté EBusiness
+        if (isEbusinessConnected) {
+            // récupération de tous les numéros d'affiliés actifs dans le portail EBusiness
+            List<String> listNumeroAffiliesEbusiness = PartnerWebServiceImpl
+                    .listAllActivNumerosAffiliesEbusiness(BSessionUtil.getSessionFromThreadContext());
+
+            List<JadeAbstractModel> allPrestationsList = Arrays.asList(allPrestations.getSearchResults());
+            List<JadeAbstractModel> prestationsToPrintList = new ArrayList<JadeAbstractModel>();
+            Map<String, List<RecapitulatifEntrepriseImpressionComplexModel>> recapForEbusinessByNumAffilieMap = new HashMap<String, List<RecapitulatifEntrepriseImpressionComplexModel>>();
+
+            for (JadeAbstractModel model : allPrestationsList) {
+                RecapitulatifEntrepriseImpressionComplexModel dossier = (RecapitulatifEntrepriseImpressionComplexModel) model;
+                String numAffilie = dossier.getRecapEntrepriseModel().getNumeroAffilie();
+
+                // rechercher l'attribut format
+                // AttributEntiteModel attributFormatRecap = ALServiceLocator.getAttributEntiteModelService()
+                // .getAttributAffilie(ALConstAttributsEntite.FORMAT_RECAP, dossier.getIdAffilie());
+
+                // si affilié EBusiness on place dans la map des récap EBusiness
+                if (listNumeroAffiliesEbusiness.contains(numAffilie)) {
+                    if (recapForEbusinessByNumAffilieMap.containsKey(numAffilie)) {
+                        recapForEbusinessByNumAffilieMap.get(numAffilie).add(dossier);
+                    } else {
+                        List<RecapitulatifEntrepriseImpressionComplexModel> listeDossier = new ArrayList<RecapitulatifEntrepriseImpressionComplexModel>();
+                        listeDossier.add(dossier);
+                        recapForEbusinessByNumAffilieMap.put(numAffilie, listeDossier);
+                    }
+                }
+                // sinon on le place dans la liste des récaps à imprimer
+                else {
+                    prestationsToPrintList.add(model);
+                }
+            }
+
+            // création des récaps sur EBusiness
+            try {
+                createRecapForEbusiness(recapForEbusinessByNumAffilieMap, periode);
+            } catch (Exception e1) {
+                JadeLogger.error(this, new Exception("Erreur à l'utilisation du service loadDocuments", e1));
+                JadeThread.logError(this.getClass().getName() + ".process()",
+                        "Erreur à l'utilisation du service loadDocuments");
+                return;
+            }
+
+            // pour les affiliés qui n'ont pas de compte EBusiness on imprime au format papier -> convertir la liste des
+            // prestations à imprimer
+            JadeAbstractModel[] prestationsToPrintTab = prestationsToPrintList.toArray(new JadeAbstractModel[0]);
+            RecapitulatifEntrepriseImpressionComplexSearchModel prestationToPrintSearchModel = new RecapitulatifEntrepriseImpressionComplexSearchModel();
+            prestationToPrintSearchModel.setSearchResults(prestationsToPrintTab);
+            recapToPrint.add(prestationToPrintSearchModel);
+        } else {
+            recapToPrint.add(allPrestations);
+        }
 
         // ------------- PDF + MAIL + GED(ou pas selon paramètrage) ----------------
         try {
@@ -210,6 +282,68 @@ public class GenerationFictivePrestationsTraitement extends BusinessTraitement {
 
             file.delete();
 
+        }
+
+    }
+
+    private void createRecapForEbusiness(Map<String, List<RecapitulatifEntrepriseImpressionComplexModel>> mapDossier,
+            String periode) throws DatatypeConfigurationException {
+        for (Map.Entry<String, List<RecapitulatifEntrepriseImpressionComplexModel>> entry : mapDossier.entrySet()) {
+            String numAffilie = entry.getKey();
+
+            GregorianCalendar anneeMoiDateCal = new GregorianCalendar();
+            GregorianCalendar misADispoCal = new GregorianCalendar();
+
+            String anneeMoisStr = JadeDateUtil.getFirstDateOfMonth(periode);
+            Date anneeMoisDate = JadeDateUtil.getGlobazDate(anneeMoisStr);
+            Date misADispo = new Date();
+
+            anneeMoiDateCal.setTime(anneeMoisDate);
+            misADispoCal.setTime(misADispo);
+
+            XMLGregorianCalendar anneeMoisRecap = null;
+            XMLGregorianCalendar miseADispo = null;
+
+            anneeMoisRecap = DatatypeFactory.newInstance().newXMLGregorianCalendar(anneeMoiDateCal);
+            miseADispo = DatatypeFactory.newInstance().newXMLGregorianCalendar(misADispoCal);
+
+            List<NouvelleLigneRecapAf> lignesRecap = new ArrayList<NouvelleLigneRecapAf>();
+
+            for (RecapitulatifEntrepriseImpressionComplexModel dossier : entry.getValue()) {
+                NouvelleLigneRecapAf ligne = new NouvelleLigneRecapAf();
+
+                ligne.setNss(dossier.getNumNSS());
+                ligne.setNumeroDossierAf(Integer.valueOf(dossier.getIdDossier()));
+                ligne.setNomAllocataire(dossier.getNomAllocataire());
+                ligne.setPrenomAllocataire(dossier.getPrenomAllocataire());
+                ligne.setNbEnfant(Integer.valueOf(dossier.getNbrEnfant()));
+                ligne.setMontantAllocation(new BigDecimal(dossier.getMontant()));
+
+                String typeUnite = dossier.getTypeUnite();
+                if (ALCSDossier.UNITE_CALCUL_MOIS.equals(typeUnite)) {
+                    ligne.setUniteTravail(UniteTempsEnum.MOIS);
+                    if (!JadeStringUtil.isEmpty(dossier.getNbreUnite())) {
+                        ligne.setNbUniteTravail(Integer.valueOf(dossier.getNbreUnite()));
+                    }
+                } else if (ALCSDossier.UNITE_CALCUL_JOUR.equals(typeUnite)) {
+                    ligne.setUniteTravail(UniteTempsEnum.JOUR);
+                } else if (ALCSDossier.UNITE_CALCUL_HEURE.equals(typeUnite)) {
+                    ligne.setUniteTravail(UniteTempsEnum.HEURE);
+                } else {
+                    // si unité spéciale ou autre on ne créé pas de ligne dans la récap
+                    continue;
+                }
+
+                lignesRecap.add(ligne);
+            }
+
+            try {
+                AfServiceImpl.createRecapAf(BSessionUtil.getSessionFromThreadContext(), numAffilie, anneeMoisRecap,
+                        miseADispo, lignesRecap);
+            } catch (Exception e) {
+                JadeLogger.error(this, "Erreur lors de la création de la récapAf pour l'affilié " + numAffilie + " "
+                        + e.getMessage());
+            }
         }
 
     }

@@ -160,6 +160,8 @@ public class CPIDecision_Doc extends FWIDocumentManager implements Constante {
     private JadeUser user = null;
     private boolean wantLettreCouple = true;
 
+    private boolean isEbusiness = false;
+
     /**
      * Insérez la description de la méthode ici. Date de création : (26.02.2003 16:56:39)
      */
@@ -1185,17 +1187,35 @@ public class CPIDecision_Doc extends FWIDocumentManager implements Constante {
                 decisionsInd = getICTDecisionInd();
                 if (decision.getTypeDecision().equalsIgnoreCase(CPDecision.CS_ACOMPTE) && !isAcompteDetailCalcul()) {
                     acomptesInd = getICTAcompteIndependant();
-                    super.setTemplateFile("PHENIX_ACOMPTE_IND");
+                    if (isEbusiness) {
+                        super.setTemplateFile("PHENIX_ACOMPTE_IND_EBU");
+                    } else {
+                        super.setTemplateFile("PHENIX_ACOMPTE_IND");
+                    }
+
                 } else if ((decision.getTypeDecision().equalsIgnoreCase(CPDecision.CS_ACOMPTE))
                         || ((Integer.parseInt(decision.getAnneeDecision()) >= JACalendar.getYear(JACalendar
                                 .todayJJsMMsAAAA())) && !decision.getPeriodicite().equalsIgnoreCase(
                                 CodeSystem.PERIODICITE_ANNUELLE))) {
-                    super.setTemplateFile("PHENIX_DECISION_IND");
+
+                    if (isEbusiness) {
+                        super.setTemplateFile("PHENIX_DECISION_IND_EBU");
+                    } else {
+                        super.setTemplateFile("PHENIX_DECISION_IND");
+                    }
                 } else {
                     if ("false".equalsIgnoreCase(getDecisionRetroactiveAvecMontantFacture())) {
-                        super.setTemplateFile("PHENIX_DECISION_IND");
+                        if (isEbusiness) {
+                            super.setTemplateFile("PHENIX_DECISION_IND_EBU");
+                        } else {
+                            super.setTemplateFile("PHENIX_DECISION_IND");
+                        }
                     } else {
-                        super.setTemplateFile("PHENIX_DECISION_IND2");
+                        if (isEbusiness) {
+                            super.setTemplateFile("PHENIX_DECISION_IND2_EBU");
+                        } else {
+                            super.setTemplateFile("PHENIX_DECISION_IND2");
+                        }
                     }
                 }
             }
@@ -2205,7 +2225,8 @@ public class CPIDecision_Doc extends FWIDocumentManager implements Constante {
 
         headerBean.setNoAvs(decision.getNumAvsActuel());
         JadeUserService service = JadeAdminServiceLocatorProvider.getLocator().getUserService();
-        if (CPApplication.getCPApplication(CPApplication.DEFAULT_APPLICATION_PHENIX).isUseSessionUserForHeader()) {
+        if (CPApplication.getCPApplication(CPApplication.DEFAULT_APPLICATION_PHENIX).isUseSessionUserForHeader()
+                && !isEbusiness) {
             // dans ce cas, on utilise le user en session pour les infos (phone,
             // nom, services...) dans le header des docuements CP.
 
@@ -2250,6 +2271,14 @@ public class CPIDecision_Doc extends FWIDocumentManager implements Constante {
 
     public void setWantLettreCouple(boolean wantLettreCouple) {
         this.wantLettreCouple = wantLettreCouple;
+    }
+
+    public boolean isEbusiness() {
+        return isEbusiness;
+    }
+
+    public void setEbusiness(boolean isEbusiness) {
+        this.isEbusiness = isEbusiness;
     }
 
 }

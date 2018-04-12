@@ -17,6 +17,7 @@ import ch.globaz.common.dom.ElementsDomParser;
 import ch.globaz.common.process.byitem.ProcessItem;
 import ch.globaz.orion.business.domaine.pucs.DeclarationSalaire;
 import ch.globaz.orion.business.domaine.pucs.DeclarationSalaireProvenance;
+import ch.globaz.orion.business.domaine.pucs.DeclarationSalaireType;
 import ch.globaz.orion.business.domaine.pucs.EtatPucsFile;
 import ch.globaz.orion.business.models.pucs.PucsFile;
 import ch.globaz.orion.businessimpl.services.pucs.DeclarationSalaireBuilder;
@@ -97,6 +98,7 @@ public class PucsSwissDecItem extends ProcessItem {
 
             DeclarationSalaire ds = DeclarationSalaireBuilder.builOnlyHead(parser);
             pucsFile.setAnneeDeclaration(String.valueOf(ds.getAnnee()));
+            pucsFile.setAnneeVersement(String.valueOf(ds.getAnnee()));
             pucsFile.setNbSalaires(String.valueOf(ds.getNbSalaire()));
             pucsFile.setNomAffilie(ds.getNom());
             pucsFile.setNumeroAffilie(ds.getNumeroAffilie());
@@ -111,6 +113,7 @@ public class PucsSwissDecItem extends ProcessItem {
             if (ds.isAfSeul()) {
                 pucsFile.setTotalControle(ds.getMontantCaf().toStringFormat());
             }
+            pucsFile.setTypeDeclaration(DeclarationSalaireType.PRINCIPALE);
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         } finally {

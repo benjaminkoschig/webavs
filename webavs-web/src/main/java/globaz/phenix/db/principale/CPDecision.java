@@ -31,9 +31,13 @@ import globaz.phenix.toolbox.CPToolBox;
 import globaz.phenix.util.CPUtil;
 import globaz.pyxis.db.tiers.TITiersViewBean;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Vector;
+import ch.globaz.orion.business.domaine.demandeacompte.DemandeModifAcompteStatut;
+import ch.globaz.orion.db.EBDemandeModifAcompteEntity;
 
 public class CPDecision extends globaz.globall.db.BEntity implements IDecision, java.io.Serializable {
 
@@ -108,6 +112,7 @@ public class CPDecision extends globaz.globall.db.BEntity implements IDecision, 
     public final static java.lang.String FIELD_ICIIFD = "ICIIFD";
     public final static java.lang.String FIELD_ICIIFP = "ICIIFP";
     public final static java.lang.String FIELD_MAIAFF = "MAIAFF";
+    public final static java.lang.String FIELD_EBIDDP = "EBIDDP";
     // Constante statique pour la table
     public final static java.lang.String TABLE_CPDECIP = "CPDECIP";
 
@@ -149,6 +154,7 @@ public class CPDecision extends globaz.globall.db.BEntity implements IDecision, 
     private Boolean recours = Boolean.FALSE;
     private java.lang.String responsable = "";
     private Boolean miseEnGEDValidationRetour = Boolean.FALSE;
+    private java.lang.String idDemandePortail = "";
 
     // Sauvegarde de l'id sortie d'une ANL pour pouvoir
     // la supprimer si on rencontre plus tard une imputation (uniquement CSC)
@@ -399,6 +405,16 @@ public class CPDecision extends globaz.globall.db.BEntity implements IDecision, 
             }
             // PO 9213
             supprimerSortie(transaction, this);
+
+            // MAJ etat de la demande du portail à l'état "A traiter"
+            if (!JadeStringUtil.isBlankOrZero(getIdDemandePortail())) {
+                EBDemandeModifAcompteEntity dem = new EBDemandeModifAcompteEntity();
+                dem.setSession(getSession());
+                dem.setIdEntity(getIdDemandePortail());
+                dem.retrieve();
+                dem.setCsStatut(DemandeModifAcompteStatut.A_TRAITER.getValue());
+                dem.update();
+            }
         } catch (Exception e) {
             _addError(transaction, getSession().getLabel("CP_MSG_0026") + " " + e.getMessage());
         }
@@ -782,6 +798,7 @@ public class CPDecision extends globaz.globall.db.BEntity implements IDecision, 
         idCommune = statement.dbReadNumeric("IAICOM");
         recours = statement.dbReadBoolean("IABREC");
         miseEnGEDValidationRetour = statement.dbReadBoolean("IABGED");
+        idDemandePortail = statement.dbReadNumeric("EBIDDP");
     }
 
     public void _sortieDeb(AFAffiliation affiliation, globaz.globall.db.BTransaction transaction) throws Exception {
@@ -943,6 +960,15 @@ public class CPDecision extends globaz.globall.db.BEntity implements IDecision, 
                 varDateDeb = affiliation.getDateFin();
             }
         }
+        // Si l'affilié a encore une demande de modification dans le portail en cours de travail => erreur
+        List<String> statutEnCours = new ArrayList<String>();
+        statutEnCours.add(DemandeModifAcompteStatut.A_TRAITER.getValue());
+        statutEnCours.add(DemandeModifAcompteStatut.VALIDE.getValue());
+        if (EBDemandeModifAcompteEntity.returnNbDemandeInstatusForIdAffiliation(getSession(),
+                affiliation.getAffiliationId(), statutEnCours) > 0) {
+            _addError(transaction, getSession().getLabel("ERROR_DEMANDE_PORTAIL"));
+        }
+
         // Lecture des décisions
         CPDecisionManager manager = new CPDecisionManager();
         manager.setSession(sessionPhenix);
@@ -953,7 +979,7 @@ public class CPDecision extends globaz.globall.db.BEntity implements IDecision, 
         // Excepté les décisions encodées à l'avance (Ex 2009 en 2008)
         manager.setToAnneeDecision(Integer.toString(JACalendar.getYear(JACalendar.today().toString())));
         manager.setForEtat(CPDecision.CS_VALIDATION);
-        manager.find(transaction);
+        manager.find(transaction, BManager.SIZE_NOLIMIT);
         if (manager.size() > 0) {
             _addError(transaction, getSession().getLabel("CP_MSG_0027"));
         }
@@ -973,7 +999,7 @@ public class CPDecision extends globaz.globall.db.BEntity implements IDecision, 
         // Ex d'un cas radié que l'on reprend
         miseAjourCodeActif(affiliation, transaction, remboursement, manager);
         manager.setForIsActive(Boolean.TRUE);
-        manager.find(transaction);
+        manager.find(transaction, BManager.SIZE_NOLIMIT);
         // NE rien faire si il n'y a pas de décision
         if ((manager.size() > 0) && !transaction.hasErrors()) {
             String genre = ((CPDecision) manager.getFirstEntity()).getGenreAffilie();
@@ -1228,6 +1254,8 @@ public class CPDecision extends globaz.globall.db.BEntity implements IDecision, 
         statement.writeField("IAICOM", this._dbWriteNumeric(statement.getTransaction(), getIdCommune(), "idCommune"));
         statement.writeField("IABGED", this._dbWriteBoolean(statement.getTransaction(), getMiseEnGEDValidationRetour(),
                 BConstants.DB_TYPE_BOOLEAN_CHAR, "miseEnGEDValidationRetour"));
+        statement.writeField("EBIDDP",
+                this._dbWriteNumeric(statement.getTransaction(), getIdDemandePortail(), "idDemandePortail"));
     }
 
     public void attachTransactionForExternalService(BTransaction transactionForExternalService) {
@@ -1286,30 +1314,37 @@ public class CPDecision extends globaz.globall.db.BEntity implements IDecision, 
     private globaz.musca.api.IFAPassage findPassage(AFAffiliation affiliation,
             globaz.globall.db.BTransaction transaction, BSession sessionPhenix, String genre) {
         globaz.musca.api.IFAPassage passage;
-        if (CPDecision.CS_ETUDIANT.equalsIgnoreCase(genre)) {
+        // Si décision liée à une demande EBU
+        if (!JadeStringUtil.isBlankOrZero(getIdDemandePortail())) {
             passage = ServicesFacturation.getProchainPassageFacturation(sessionPhenix, transaction,
-                    FAModuleFacturation.CS_MODULE_ETUDIANT);
+                    FAModuleFacturation.CS_MODULE_COT_PERS_PORTAIL);
         } else {
-            // Recherche si séparation indépendant et non-actif - Inforom 314s
-            Boolean isSeprationIndNac = false;
-            try {
-                isSeprationIndNac = new Boolean(GlobazSystem.getApplication(FAApplication.DEFAULT_APPLICATION_MUSCA)
-                        .getProperty(FAApplication.SEPARATION_IND_NA));
-            } catch (Exception e) {
-                isSeprationIndNac = Boolean.FALSE;
-            }
-            if (isSeprationIndNac) {
-                if (affiliation.getTypeAffiliation().equals(CodeSystem.TYPE_AFFILI_NON_ACTIF)
-                        || affiliation.getTypeAffiliation().equals(CodeSystem.TYPE_AFFILI_SELON_ART_1A)) {
-                    passage = ServicesFacturation.getProchainPassageFacturation(getSession(), null,
-                            FAModuleFacturation.CS_MODULE_COT_PERS_NAC);
+            if (CPDecision.CS_ETUDIANT.equalsIgnoreCase(genre)) {
+                passage = ServicesFacturation.getProchainPassageFacturation(sessionPhenix, transaction,
+                        FAModuleFacturation.CS_MODULE_ETUDIANT);
+            } else {
+                // Recherche si séparation indépendant et non-actif - Inforom 314s
+                Boolean isSeprationIndNac = false;
+                try {
+                    isSeprationIndNac = new Boolean(GlobazSystem
+                            .getApplication(FAApplication.DEFAULT_APPLICATION_MUSCA).getProperty(
+                                    FAApplication.SEPARATION_IND_NA));
+                } catch (Exception e) {
+                    isSeprationIndNac = Boolean.FALSE;
+                }
+                if (isSeprationIndNac) {
+                    if (affiliation.getTypeAffiliation().equals(CodeSystem.TYPE_AFFILI_NON_ACTIF)
+                            || affiliation.getTypeAffiliation().equals(CodeSystem.TYPE_AFFILI_SELON_ART_1A)) {
+                        passage = ServicesFacturation.getProchainPassageFacturation(getSession(), null,
+                                FAModuleFacturation.CS_MODULE_COT_PERS_NAC);
+                    } else {
+                        passage = ServicesFacturation.getProchainPassageFacturation(getSession(), null,
+                                FAModuleFacturation.CS_MODULE_COT_PERS_IND);
+                    }
                 } else {
                     passage = ServicesFacturation.getProchainPassageFacturation(getSession(), null,
-                            FAModuleFacturation.CS_MODULE_COT_PERS_IND);
+                            FAModuleFacturation.CS_MODULE_COT_PERS);
                 }
-            } else {
-                passage = ServicesFacturation.getProchainPassageFacturation(getSession(), null,
-                        FAModuleFacturation.CS_MODULE_COT_PERS);
             }
         }
         return passage;
@@ -1463,6 +1498,10 @@ public class CPDecision extends globaz.globall.db.BEntity implements IDecision, 
     @Override
     public java.lang.String getIdDecision() {
         return idDecision;
+    }
+
+    public java.lang.String getIdDemandePortail() {
+        return idDemandePortail;
     }
 
     public java.lang.String getIdIfdDefinitif() {
@@ -1978,6 +2017,10 @@ public class CPDecision extends globaz.globall.db.BEntity implements IDecision, 
 
     public void setIdDecision(java.lang.String newIdDecision) {
         idDecision = newIdDecision;
+    }
+
+    public void setIdDemandePortail(java.lang.String idDemandePortail) {
+        this.idDemandePortail = idDemandePortail;
     }
 
     public void setIdIfdDefinitif(java.lang.String newIdIfdDefinitif) {

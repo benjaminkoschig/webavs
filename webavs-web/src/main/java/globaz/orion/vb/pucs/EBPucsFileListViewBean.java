@@ -180,4 +180,8 @@ public class EBPucsFileListViewBean extends EBAbstractListViewBeanPagination {
         this.pucsFiles = pucsFiles;
     }
 
+    public void setforTypeDeclaration(String typeDeclaration) {
+        manager.setForTypeDeclaration(typeDeclaration);
+    }
+
 }
