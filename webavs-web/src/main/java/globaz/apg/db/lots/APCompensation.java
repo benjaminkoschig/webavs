@@ -64,6 +64,10 @@ public class APCompensation extends BEntity {
 
     /**
      */
+    public static final String FIELDNAME_ISPORTECOMPTE = "VNPORT";
+
+    /**
+     */
     public static final String TABLE_NAME = "APCOMPP";
 
     // ~ Instance fields
@@ -78,6 +82,7 @@ public class APCompensation extends BEntity {
     private String montantTotal = "";
     private Boolean isIndependant = false;
     private Boolean isEmployeur = false;
+    private Boolean isPorteEnCompte = false;
 
     // ~ Methods
     // --------------------------------------------------------------------------------------------------------
@@ -133,6 +138,7 @@ public class APCompensation extends BEntity {
         genrePrestation = statement.dbReadNumeric(APCompensation.FIELDNAME_GENRE_PRESTATION);
         isIndependant = statement.dbReadBoolean(APCompensation.FIELDNAME_ISINDEPENDANT);
         isEmployeur = statement.dbReadBoolean(APCompensation.FIELDNAME_ISEMPLOYEUR);
+        isPorteEnCompte = statement.dbReadBoolean(APCompensation.FIELDNAME_ISPORTECOMPTE);
     }
 
     /**
@@ -174,6 +180,8 @@ public class APCompensation extends BEntity {
                 this._dbWriteBoolean(transaction, isIndependant, BConstants.DB_TYPE_BOOLEAN_CHAR, "isIndependant"));
         statement.writeField(APCompensation.FIELDNAME_ISEMPLOYEUR,
                 this._dbWriteBoolean(transaction, isEmployeur, BConstants.DB_TYPE_BOOLEAN_CHAR, "isEmployeur"));
+        statement.writeField(APCompensation.FIELDNAME_ISPORTECOMPTE,
+                this._dbWriteBoolean(transaction, isPorteEnCompte, BConstants.DB_TYPE_BOOLEAN_CHAR, "isPorteEnCompte"));
     }
 
     /**
@@ -341,4 +349,24 @@ public class APCompensation extends BEntity {
     public Boolean getIsEmployeur() {
         return isEmployeur;
     }
+
+    /**
+     * getter pour l'attribut isPorte
+     * 
+     * @return la valeur courante de l'attribut is indépendant
+     */
+
+    public Boolean getIsPorteEnCompte() {
+        return isPorteEnCompte;
+    }
+
+    /**
+     * setter pour l'attribut isPorte
+     * 
+     * @return la valeur courante de l'attribut is indépendant
+     */
+    public void setIsPorteEnCompte(Boolean isPorteEnCompte) {
+        this.isPorteEnCompte = isPorteEnCompte;
+    }
+
 }

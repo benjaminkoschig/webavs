@@ -434,7 +434,7 @@ public class APDecompteGenerationProcess extends APAbstractDecomptesGenerationPr
             typeDePrestation = recupererTypeDePrestation(repartitionJointPrestation);
 
             data.add(new APPrestationJointRepartitionPOJO(repartitionJointPrestation, situationProfessionnelle,
-                    departement, typeDePrestation, isModuleActifForPorterEnCompte()));
+                    departement, typeDePrestation, isModuleActifForPorterEnCompte(), getSession(), getTransaction()));
         }
         return data;
     }

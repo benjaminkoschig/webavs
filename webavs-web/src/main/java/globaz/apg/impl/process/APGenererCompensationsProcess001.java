@@ -8,6 +8,7 @@ import globaz.apg.api.prestation.IAPRepartitionPaiements;
 import globaz.apg.api.process.IAPGenererCompensationProcess;
 import globaz.apg.application.APApplication;
 import globaz.apg.db.droits.APDroitLAPG;
+import globaz.apg.db.droits.APSituationProfessionnelle;
 import globaz.apg.db.lots.APCompensation;
 import globaz.apg.db.lots.APCompensationManager;
 import globaz.apg.db.lots.APFactureACompenser;
@@ -309,10 +310,30 @@ public class APGenererCompensationsProcess001 extends BProcess implements IAPGen
                     if (APTypeDePrestation.ACM2_ALFA.isCodeSystemEqual(genre)) {
                         genre = APTypeDePrestation.ACM_ALFA.getCodesystemString();
                     }
+                    final String idAssureDeBase = droit.loadDemande().getIdTiers();
 
-                    Key key = new Key(repartitionPaiementsJointEmployeur.getIdTiers(),
-                            repartitionPaiementsJointEmployeur.getIdAffilie(), "0",
-                            repartitionPaiementsJointEmployeur.getIdParticularite(), genre, false, false, "", false);
+                    Boolean isPorteEnCompte = isSituationProfPorteEnCompte(repartitionPaiementsJointEmployeur
+                            .getIdSituationProfessionnelle());
+                    Key key = null;
+                    // Cas ou le bénéficiaire est l'assuré de base
+                    if (idAssureDeBase.equals(repartitionPaiementsJointEmployeur.getIdTiers())) {
+
+                        key = new Key(repartitionPaiementsJointEmployeur.getIdTiers(),
+                                repartitionPaiementsJointEmployeur.getIdAffilie(), "0",
+                                repartitionPaiementsJointEmployeur.getIdParticularite(), genre, false, false, "", false);
+                    }
+                    // Cas ou le bénéficiaire est un affilié
+                    else if (!JadeStringUtil.isIntegerEmpty(repartitionPaiementsJointEmployeur.getIdAffilie())) {
+                        key = new Key(repartitionPaiementsJointEmployeur.getIdTiers(),
+                                repartitionPaiementsJointEmployeur.getIdAffilie(), "0",
+                                repartitionPaiementsJointEmployeur.getIdParticularite(), genre, false, false, "",
+                                isPorteEnCompte);
+                    } else {
+                        key = new Key(repartitionPaiementsJointEmployeur.getIdTiers(),
+                                repartitionPaiementsJointEmployeur.getIdAffilie(), "0",
+                                repartitionPaiementsJointEmployeur.getIdParticularite(), genre, false, false, "", false);
+
+                    }
 
                     key.idDomaineAdressePaiement = repartitionPaiementsJointEmployeur.getIdDomaineAdressePaiement();
                     key.idTiersAdressePaiement = repartitionPaiementsJointEmployeur.getIdTiersAdressePaiement();
@@ -347,6 +368,7 @@ public class APGenererCompensationsProcess001 extends BProcess implements IAPGen
                         sommePourUnTiers.put(repartitionPaiementsJointEmployeur.getIdTiers(), new FWCurrency(
                                 montantRepartition.toString()));
                     }
+
                 }
 
                 repartitionPaiementsJointEmployeurManager.cursorClose(statement);
@@ -809,6 +831,26 @@ public class APGenererCompensationsProcess001 extends BProcess implements IAPGen
 
     @Override
     public boolean isModulePorterEnCompte() {
+        return false;
+    }
+
+    /**
+     * Recherche la situation professionnelle avec son ID et récupère son champ isPorteEnCompte
+     * 
+     * @param idSituationProfessionnelle
+     *            Retourne true si la situation professionnelle passée en paramètre est portée en compte
+     * @throws Exception
+     */
+    private boolean isSituationProfPorteEnCompte(String idSituationProfessionnelle) throws Exception {
+        if (!JadeStringUtil.isBlankOrZero(idSituationProfessionnelle)) {
+            APSituationProfessionnelle situationPro = new APSituationProfessionnelle();
+            situationPro.setId(idSituationProfessionnelle);
+            situationPro.setSession(getSession());
+            situationPro.retrieve(getTransaction());
+            if (!situationPro.isNew()) {
+                return situationPro.getIsPorteEnCompte();
+            }
+        }
         return false;
     }
 

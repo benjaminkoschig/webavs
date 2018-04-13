@@ -220,13 +220,22 @@ public class APGenererCompensationsProcess006 extends BProcess implements IAPGen
         APRepartitionPaiements repartitionPaiements;
         while ((repartitionPaiements = (APRepartitionPaiements) repartitionPaiementsJointEmployeurManager
                 .cursorReadNext(statement)) != null) {
+            if (compensation.getIsPorteEnCompte()) {
+                if (isSituationProfPorteEnCompte(repartitionPaiements.getIdSituationProfessionnelle())) {
+                    repartitionPaiements.setIdCompensation(compensation.getIdCompensation());
+                    repartitionPaiements.wantMiseAJourLot(false);
+                    repartitionPaiements.update(transaction);
+                    memoryLog(getSession().getLabel("REPARTITION_MISE_A_JOUR"), "",
+                            repartitionPaiements.getIdRepartitionBeneficiairePaiement());
+                }
+            } else {
+                repartitionPaiements.setIdCompensation(compensation.getIdCompensation());
+                repartitionPaiements.wantMiseAJourLot(false);
+                repartitionPaiements.update(transaction);
+                memoryLog(getSession().getLabel("REPARTITION_MISE_A_JOUR"), "",
+                        repartitionPaiements.getIdRepartitionBeneficiairePaiement());
+            }
 
-            repartitionPaiements.setIdCompensation(compensation.getIdCompensation());
-            repartitionPaiements.wantMiseAJourLot(false);
-            repartitionPaiements.update(transaction);
-
-            memoryLog(getSession().getLabel("REPARTITION_MISE_A_JOUR"), "",
-                    repartitionPaiements.getIdRepartitionBeneficiairePaiement());
         }
 
         repartitionPaiementsJointEmployeurManager.cursorClose(statement);
@@ -297,6 +306,7 @@ public class APGenererCompensationsProcess006 extends BProcess implements IAPGen
         compensation.setGenrePrestation(key.genrePrestation);
         compensation.setIsIndependant(key.isIndependant);
         compensation.setIsEmployeur(key.isEmployeur);
+        compensation.setIsPorteEnCompte(key.isPorteEnCompte);
 
         compensation.add(transaction);
 
@@ -371,10 +381,31 @@ public class APGenererCompensationsProcess006 extends BProcess implements IAPGen
             final boolean isEmployeur = repartition.getTypePaiement().equals(
                     IAPRepartitionPaiements.CS_PAIEMENT_EMPLOYEUR);
             final boolean isIndependant = repartition.getIsIndependant().booleanValue();
+            final String idAssureDeBase = droit.loadDemande().getIdTiers();
 
-            final Key key = new Key(repartition.getIdTiers(), repartition.getIdAffilie(), "0",
-                    repartition.getIdParticularite(), repartition.getGenrePrestationPrestation(), isEmployeur,
-                    isIndependant, "", false);
+            Boolean isPorteEnCompte = isSituationProfPorteEnCompte(repartition.getIdSituationProfessionnelle());
+
+            final Key key;
+            // Cas ou le bénéficiaire est l'assuré de base
+            if (idAssureDeBase.equals(repartition.getIdTiers())) {
+
+                key = new Key(repartition.getIdTiers(), repartition.getIdAffilie(), "0",
+                        repartition.getIdParticularite(), repartition.getGenrePrestationPrestation(), false, false, "",
+                        false);
+            }
+            // Cas ou le bénéficiaire est un affilié
+            else if (!JadeStringUtil.isIntegerEmpty(repartition.getIdAffilie())) {
+                key = new Key(repartition.getIdTiers(), repartition.getIdAffilie(), "0",
+                        repartition.getIdParticularite(), repartition.getGenrePrestationPrestation(), false, false, "",
+                        isPorteEnCompte);
+            } else {
+                key = new Key(repartition.getIdTiers(), repartition.getIdAffilie(), "0",
+                        repartition.getIdParticularite(), repartition.getGenrePrestationPrestation(), false, false, "",
+                        false);
+            }
+            // key = new Key(repartition.getIdTiers(), repartition.getIdAffilie(), "0",
+            // repartition.getIdParticularite(),
+            // repartition.getGenrePrestationPrestation(), isEmployeur, isIndependant, "", false);
             key.idDomaineAdressePaiement = repartition.getIdDomaineAdressePaiement();
             key.idTiersAdressePaiement = repartition.getIdTiersAdressePaiement();
 
@@ -720,5 +751,25 @@ public class APGenererCompensationsProcess006 extends BProcess implements IAPGen
         }
 
         logger.log(level, message, throwable);
+    }
+
+    /**
+     * Recherche la situation professionnelle avec son ID et récupère son champ isPorteEnCompte
+     * 
+     * @param idSituationProfessionnelle
+     *            Retourne true si la situation professionnelle passée en paramètre est portée en compte
+     * @throws Exception
+     */
+    private boolean isSituationProfPorteEnCompte(String idSituationProfessionnelle) throws Exception {
+        if (!JadeStringUtil.isBlankOrZero(idSituationProfessionnelle)) {
+            APSituationProfessionnelle situationPro = new APSituationProfessionnelle();
+            situationPro.setId(idSituationProfessionnelle);
+            situationPro.setSession(getSession());
+            situationPro.retrieve(getTransaction());
+            if (!situationPro.isNew()) {
+                return situationPro.getIsPorteEnCompte();
+            }
+        }
+        return false;
     }
 }

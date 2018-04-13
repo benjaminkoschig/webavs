@@ -4,6 +4,9 @@ import globaz.apg.api.prestation.IAPRepartitionPaiements;
 import globaz.apg.db.droits.APSituationProfessionnelle;
 import globaz.apg.db.prestation.APRepartitionJointPrestation;
 import globaz.apg.enums.APTypeDePrestation;
+import globaz.globall.api.BITransaction;
+import globaz.globall.db.BSession;
+import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.log.JadeLogger;
 import globaz.prestation.db.employeurs.PRDepartement;
 import globaz.prestation.tools.PRBlankBNumberFormater;
@@ -40,6 +43,7 @@ public class APDonneeRegroupementDecompte {
     private boolean isIndependant;
     private boolean isEmployeur;
     private boolean isModuleCompensationPorteEnCompteActif;
+    private boolean isPorteEncompte;
     private String idAdressePaiement;
 
     /**
@@ -115,6 +119,8 @@ public class APDonneeRegroupementDecompte {
             default:
                 throw new RuntimeException("Can not generate the regroupement key because the method is empty !");
         }
+        key.append("-");
+        key.append(isPorteEncompte);
         return key.toString();
     }
 
@@ -134,7 +140,8 @@ public class APDonneeRegroupementDecompte {
      */
     public APDonneeRegroupementDecompte(final APRepartitionJointPrestation repartitionJointPrestation,
             final APSituationProfessionnelle situationProfessionnelle, final PRDepartement departement,
-            final APTypeDePrestation typeDePrestation, boolean isModuleCompensationPorteEnCompteActif) {
+            final APTypeDePrestation typeDePrestation, boolean isModuleCompensationPorteEnCompteActif,
+            BSession session, BITransaction transaction) {
 
         if (repartitionJointPrestation == null) {
             throw new IllegalArgumentException(
@@ -159,6 +166,12 @@ public class APDonneeRegroupementDecompte {
 
         this.isModuleCompensationPorteEnCompteActif = isModuleCompensationPorteEnCompteActif;
 
+        try {
+            isPorteEncompte = isSituationProfPorteEnCompte(repartitionJointPrestation.getIdSituationProfessionnelle(),
+                    session, transaction);
+        } catch (Exception e1) {
+            JadeLogger.error(this, e1);
+        }
         TIAdressePaiementData adresse;
         try {
             adresse = repartitionJointPrestation.loadAdressePaiement(null);
@@ -174,6 +187,21 @@ public class APDonneeRegroupementDecompte {
 
     }
 
+    private boolean isSituationProfPorteEnCompte(String idSituationProfessionnelle, BSession session,
+            BITransaction transaction) throws Exception {
+        if (!JadeStringUtil.isBlankOrZero(idSituationProfessionnelle)) {
+            APSituationProfessionnelle situationPro = new APSituationProfessionnelle();
+            situationPro.setId(idSituationProfessionnelle);
+            situationPro.setSession(session);
+            situationPro.retrieve(transaction);
+            if (!situationPro.isNew()) {
+                return situationPro.getIsPorteEnCompte();
+            }
+        }
+        return false;
+    }
+
+    //
     /**
      * Determine le département lié à une situation professionnelle
      * 

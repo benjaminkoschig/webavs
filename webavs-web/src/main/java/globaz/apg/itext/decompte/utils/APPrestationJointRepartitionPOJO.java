@@ -4,6 +4,8 @@ import globaz.apg.db.droits.APSituationProfessionnelle;
 import globaz.apg.db.lots.APFactureACompenser;
 import globaz.apg.db.prestation.APRepartitionJointPrestation;
 import globaz.apg.enums.APTypeDePrestation;
+import globaz.globall.api.BITransaction;
+import globaz.globall.db.BSession;
 import globaz.prestation.db.employeurs.PRDepartement;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,7 +32,8 @@ public class APPrestationJointRepartitionPOJO {
 
     public APPrestationJointRepartitionPOJO(final APRepartitionJointPrestation repartitionJointPrestation,
             final APSituationProfessionnelle situationProfessionnelle, final PRDepartement departement,
-            final APTypeDePrestation typeDePrestation, final boolean isModuleCompensationPorteEnCompteActif) {
+            final APTypeDePrestation typeDePrestation, final boolean isModuleCompensationPorteEnCompteActif,
+            BSession session, BITransaction transaction) {
 
         if (repartitionJointPrestation == null) {
             throw new IllegalArgumentException(
@@ -43,7 +46,7 @@ public class APPrestationJointRepartitionPOJO {
 
         prestationJointRepartition = repartitionJointPrestation;
         donneePourRegroupement = new APDonneeRegroupementDecompte(prestationJointRepartition, situationProfessionnelle,
-                departement, typeDePrestation, isModuleCompensationPorteEnCompteActif);
+                departement, typeDePrestation, isModuleCompensationPorteEnCompteActif, session, transaction);
     }
 
     /**

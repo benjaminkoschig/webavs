@@ -6,6 +6,7 @@ package globaz.apg.db.prestation;
 import globaz.apg.db.droits.APEmployeur;
 import globaz.apg.db.droits.APSituationProfessionnelle;
 import globaz.globall.db.BStatement;
+import globaz.jade.client.util.JadeStringUtil;
 
 /**
  * <H1>Description</H1>
@@ -123,7 +124,12 @@ public class APRepartitionPaiementsJointEmployeur extends APRepartitionJointPres
      * @return la valeur courante de l'attribut id particulier
      */
     public String getIdParticularite() {
-        return idParticularite;
+        if (JadeStringUtil.isNull(idParticularite) || JadeStringUtil.isBlank(idParticularite)) {
+            return "0";
+        } else {
+            return idParticularite;
+        }
+
     }
 
     /**
