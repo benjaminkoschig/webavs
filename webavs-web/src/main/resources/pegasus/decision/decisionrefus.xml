@@ -34,6 +34,7 @@
 				</search-group>		
 				<search-field name="forCsEtat" operation="EQUALS" field-ref="decisionHeader.simpleDecisionHeader.csEtatDecision" value="64028003" />
 				<search-field name="forIdsDecisionHeader" operation="IN" field-ref="decisionHeader.simpleDecisionHeader.idDecisionHeader"  />
+				<search-field name="forCsEtatDemande" operation="NOT_EQUALS"  field-ref="demande.simpleDemande.csEtatDemande" value="64001010"/>
 			</search-group>
 		</search-definition>
 		

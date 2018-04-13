@@ -131,6 +131,7 @@
 					</search-group>
 				</search-group>
 				<search-field name="forDebutDecision" operation="LESS_OR_EQUALS"  field-ref="simpleDecisionHeader.dateDebutDecision"/>
+				<search-field name="forCsEtatDemande" operation="NOT_EQUALS"  field-ref="simpleDemande.csEtatDemande" value="64001010"/>
 			</search-group>
 		</search-definition>
 		
@@ -157,6 +158,7 @@
 					</search-group>
 				</search-group>
 				<search-field name="forDebutDecision" operation="EQUALS"  field-ref="simpleDecisionHeader.dateDebutDecision"/>
+				<search-field name="forCsEtatDemande" operation="NOT_EQUALS"  field-ref="simpleDemande.csEtatDemande" value="64001010"/>
 			</search-group>
 		</search-definition>
 		
@@ -193,6 +195,7 @@
 					</search-group>
 				</search-group>
 				<search-field name="forDebutDecision" operation="LESS_OR_EQUALS"  field-ref="simpleDecisionHeader.dateDebutDecision"/>
+				<search-field name="forCsEtatDemande" operation="NOT_EQUALS"  field-ref="simpleDemande.csEtatDemande" value="64001010"/>
 			</search-group>
 		</search-definition>
 		
