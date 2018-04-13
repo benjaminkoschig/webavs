@@ -75,7 +75,8 @@ function displayAjaxResult(result) {
 }
 
 function printRecap(inGed) {
-	ajaxQuery(globazGlobal.ACTION_GED, displayAjaxResult);
+	
+	ajaxQuery(globazGlobal.ACTION_GED+inGed, displayAjaxResult);
 }
 
 function ajaxQuery(query,handlerStateFunction){

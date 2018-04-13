@@ -38,8 +38,8 @@
 <script type="text/javascript">
 	globazGlobal.ACTION_AJAX = "al.prestation.recapAjax";
 	globazGlobal.ID_RECAP_MODEL = ${viewBean.recapModel.idRecap};
+	globazGlobal.ACTION_GED = "<%=servletContext + mainServletPath%>?userAction=al.prestation.recap.executer&printGed=";
 	globazGlobal.MSG_DELETE = "<%=JavascriptEncoder.getInstance().encode(objSession.getLabel("MESSAGE_SUPPRESSION"))%>";
-	globazGlobal.ACTION_GED = "<%=servletContext + mainServletPath%>?userAction=al.prestation.recap.executer&printGed="+"inGed";
 	globazGlobal.MESSAGE_GENDOSSIER_NOTID = "<%= JavascriptEncoder.getInstance().encode(objSession.getLabel("MESSAGE_GENDOSSIER_NOTID"))%>";
 	globazGlobal.ACTION_ADD_LINK = '<%=servletContext + mainServletPath + "?userAction=al.prestation.generationDossier.afficher&_method=add&idDossier="%>';
 </script>
