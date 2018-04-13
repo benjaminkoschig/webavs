@@ -279,6 +279,13 @@ public class GeneratePerstationPeriodeDecompte {
         });
     }
 
+    /**
+     * sorting overriding compare to <b>allow interpretation of null value</b> in compare and reverse order.
+     * the null is allow only in return of OrdreVersementForList.getSimpleOrdreVersement().getNoGroupePeriode() but
+     * SimpleOrdreVersement can't be null
+     * 
+     * @param ovs
+     */
     private static void sortByNoGroupeDesc(List<OrdreVersementForList> ovs) {
         Collections.sort(ovs, new Comparator<OrdreVersementForList>() {
             @Override

@@ -15,7 +15,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import sun.net.ftp.FtpClient;
 
 /**
  * @author ald Pour changer le modèle de ce commentaire de type généré, allez à :

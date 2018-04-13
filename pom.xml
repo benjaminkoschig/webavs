@@ -28,6 +28,8 @@
 	</distributionManagement>
 
 	<properties>
+		<java.source.version>1.7</java.source.version>
+
 		<wiki.parent>WebAVS RN</wiki.parent>
 		<!-- SCM ATTRIBUTES -->
 		<scm.path>webavs-repos</scm.path>
