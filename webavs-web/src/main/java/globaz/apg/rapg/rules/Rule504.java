@@ -7,11 +7,7 @@ import globaz.apg.enums.APGenreServiceAPG;
 import globaz.apg.exceptions.APRuleExecutionException;
 import globaz.apg.interfaces.APDroitAvecParent;
 import globaz.apg.pojo.APChampsAnnonce;
-import globaz.jade.client.util.JadeDateUtil;
-import globaz.jade.client.util.JadePeriodWrapper;
 import globaz.jade.client.util.JadeStringUtil;
-import globaz.prestation.beans.PRPeriode;
-import globaz.prestation.utils.PRDateUtils;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,6 +20,8 @@ import java.util.List;
  * @author lga
  */
 public class Rule504 extends Rule {
+
+    private static final int NB_JOUR_MAX = 124;
 
     /**
      * @param errorCode
@@ -73,29 +71,13 @@ public class Rule504 extends Rule {
             }
 
             int nombreJoursEffectue = 0;
-            int nombreJoursMax = 145;
-            String noel = "25.12.";
+            int nombreJoursMax = NB_JOUR_MAX;
 
             // On va trouver tous les droits, même celui qu'on vient de créer,
-            // on contrôle si une période est pendant Noël
             // on additionne tous les jours soldées
             for (int i = 0; i < droitsTries.size(); i++) {
                 APDroitAPGJointTiers droit = (APDroitAPGJointTiers) droitsTries.get(i);
 
-                // Pour chaque périodes du droit
-                for (JadePeriodWrapper periodeW : droit.getPeriodes()) {
-                    // Si un des droits chevauche Noël, le nombre de jours max passe à 159
-                    if (JadeDateUtil.isGlobazDate(periodeW.getDateDebut())
-                            && JadeDateUtil.isGlobazDate(periodeW.getDateFin())) {
-                        String annee = champsAnnonce.getStartOfPeriod().substring(6);
-                        PRPeriode periode = new PRPeriode();
-                        periode.setDateDeDebut(periodeW.getDateDebut());
-                        periode.setDateDeFin(periodeW.getDateFin());
-                        if (PRDateUtils.isDateDansLaPeriode(periode, noel + annee)) {
-                            nombreJoursMax = 159;
-                        }
-                    }
-                }
                 // On cumul les jours soldés
                 if (!JadeStringUtil.isBlank(droit.getNbrJourSoldes())) {
                     nombreJoursEffectue += Integer.parseInt(droit.getNbrJourSoldes());
