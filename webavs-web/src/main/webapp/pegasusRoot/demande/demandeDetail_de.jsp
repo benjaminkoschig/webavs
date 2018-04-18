@@ -81,7 +81,10 @@ var showConfirmDialogAnnulation = function () {
                 $( this ).dialog( "close" );
                 $('#comptabilisationAuto').val("false");
                 action(COMMIT);
-            }
+            },
+           "<ct:FWLabel key='JSP_PC_BOUTON_CAN'/>": function() {
+                $( this ).dialog( "close" );
+            } 
         }
     });
 };
@@ -152,10 +155,10 @@ var showConfirmationDialogDateReduc = function () {
                      action(COMMIT);
        
             	}
-            }
-/*             "<ct:FWLabel key='JSP_PC_BOUTON_CAN'/>": function() {
+            },
+           "<ct:FWLabel key='JSP_PC_BOUTON_CAN'/>": function() {
                 $( this ).dialog( "close" );
-            } */
+            } 
         }
     });
 };
