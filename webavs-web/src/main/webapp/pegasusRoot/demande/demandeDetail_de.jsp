@@ -519,8 +519,7 @@ function postInit(){
 				</tr>
 				<TR><TD colspan="6">&nbsp;<HR class="separator" ></TD></TR>
 				
-				<%if(IPCDemandes.CS_REFUSE.equals(viewBean.getDemande().getSimpleDemande().getCsEtatDemande()) 
-				        || IPCDemandes.CS_ANNULE.equals(viewBean.getDemande().getSimpleDemande().getCsEtatDemande())) {%> 
+				<%if(IPCDemandes.CS_ANNULE.equals(viewBean.getDemande().getSimpleDemande().getCsEtatDemande())) {%> 
 				<tr>
 					<td class="standardLabel"><ct:FWLabel key="JSP_PC_DEM_D_FORCER_ANNULATION"/></td>
 					<td>
@@ -529,7 +528,8 @@ function postInit(){
 					</td>
 				</tr>
 				<TR><TD colspan="6">&nbsp;<HR class="separator" ></TD></TR>
-				<%}else if(IPCDemandes.CS_SUPPRIME.equals(viewBean.getDemande().getSimpleDemande().getCsEtatDemande())){ %>
+				<%}else if(IPCDemandes.CS_SUPPRIME.equals(viewBean.getDemande().getSimpleDemande().getCsEtatDemande())
+				        || IPCDemandes.CS_REFUSE.equals(viewBean.getDemande().getSimpleDemande().getCsEtatDemande()) ){ %>
 				<tr>
 					<td class="standardLabel"><ct:FWLabel key="JSP_PC_DEM_D_FORCER_ANNULATION"/></td>
 					<td>
