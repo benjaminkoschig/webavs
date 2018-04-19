@@ -819,12 +819,15 @@ public class RERenteAccordeeJointDemandeRenteHelper extends PRHybridHelper {
      */
     public String getIdCompteAnnexe(BSession bSession, String idTiers) throws Exception {
 
+        String nss = getNSSTiers(idTiers, bSession);
+
         String idCompteAnnexe = "";
 
         CACompteAnnexeManager caManager = new CACompteAnnexeManager();
         caManager.setSession(bSession);
         caManager.setForIdRole(IntRole.ROLE_RENTIER);
         caManager.setForIdTiers(idTiers);
+        caManager.setForIdExterneRole(nss);
         caManager.find(BManager.SIZE_NOLIMIT);
 
         if (!caManager.hasErrors()) {
@@ -841,6 +844,15 @@ public class RERenteAccordeeJointDemandeRenteHelper extends PRHybridHelper {
         }
 
         return idCompteAnnexe;
+    }
+
+    private String getNSSTiers(String idTiers, BSession bSession) throws Exception {
+
+        PRTiersWrapper tw = PRTiersHelper.getTiersParId(bSession, idTiers);
+        if (tw == null || JadeStringUtil.isEmpty(tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL))) {
+            throw new Exception("Tiers not found, or NSS is blank. idTiers = " + idTiers);
+        }
+        return tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL);
     }
 
     /***
