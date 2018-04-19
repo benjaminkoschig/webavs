@@ -664,9 +664,9 @@ public class REAnnoncePonctuelleHelper extends PRAbstractHelper {
                                     conjoint.getIdTiers(), session);
 
                             if (listConjoint.size() > 0) {
-                                for (int i = 0; i < list.size(); i++) {
+                                for (int i = 0; i < listConjoint.size(); i++) {
 
-                                    RERenteAccordee ra = list.get(i);
+                                    RERenteAccordee ra = listConjoint.get(i);
 
                                     REBasesCalcul bc = new REBasesCalcul();
                                     bc.setSession(session);
