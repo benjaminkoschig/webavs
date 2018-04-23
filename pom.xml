@@ -639,6 +639,9 @@
 						<reports />
 					</reportSet>
 				</reportSets>
+        		<configuration>
+	            	<maxmemory>3G</maxmemory>
+	            </configuration>
 			</plugin>
 		</plugins>
 	</reporting>

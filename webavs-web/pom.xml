@@ -158,6 +158,13 @@
 					</execution>
 				</executions>
 			</plugin>
+			
+			<plugin>
+				<artifactId>maven-javadoc-plugin</artifactId>
+        		<configuration>
+	            	<maxmemory>3G</maxmemory>
+	            </configuration>
+			</plugin>
 
 			<!-- Used to dynamically generate .class file from XSD with XJB binding --> 
 			<plugin>
