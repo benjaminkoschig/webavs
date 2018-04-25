@@ -473,10 +473,12 @@ public class DemandeServiceImpl extends PegasusAbstractServiceImpl implements De
         List<Droit> droits = PegasusServiceLocator.getDroitService().findCurrentVersionDroitByIdsDemande(
                 Arrays.asList(demande.getId()));
         String today = JadeDateUtil.getGlobazFormattedDate(new Date());
-        String dateDeb = JadeDateUtil.addMonths("01." + demande.getSimpleDemande().getDateDebut(), -1).substring(3);
-        for (Droit droit : droits) {
-            droit = PegasusServiceLocator.getDroitService().corrigerDroitAnnulation(droit, today, dateDeb, today,
-                    BSessionUtil.getSessionFromThreadContext().getUserId(), comptabilisationAuto, null);
+        if (!JadeStringUtil.isBlankOrZero(demande.getSimpleDemande().getDateDebut())) {
+            String dateDeb = JadeDateUtil.addMonths("01." + demande.getSimpleDemande().getDateDebut(), -1).substring(3);
+            for (Droit droit : droits) {
+                droit = PegasusServiceLocator.getDroitService().corrigerDroitAnnulation(droit, today, dateDeb, today,
+                        BSessionUtil.getSessionFromThreadContext().getUserId(), comptabilisationAuto, null);
+            }
         }
         demande.getSimpleDemande().setCsEtatDemande(IPCDemandes.CS_ANNULE);
         update(demande);
