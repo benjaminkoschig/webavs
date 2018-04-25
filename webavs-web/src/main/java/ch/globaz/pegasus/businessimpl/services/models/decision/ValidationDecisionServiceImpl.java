@@ -361,12 +361,12 @@ public class ValidationDecisionServiceImpl extends PegasusAbstractServiceImpl im
             String idLot = validerDecisionSuppression
                     .valider(decisionSuppression, isComptabilisationAuto, isAnnulation);
 
-            if (EPCProperties.GESTION_ANNONCES_LAPRAMS.getBooleanValue()) {
+            if (!isAnnulation && EPCProperties.GESTION_ANNONCES_LAPRAMS.getBooleanValue()) {
                 PegasusImplServiceLocator.getPrepareAnnonceLapramsService().genereAnnonceLapramsSuppression(
                         decisionSuppression);
             }
 
-            if (EPCProperties.GESTION_COMMUNICATION_OCC.getBooleanValue()) {
+            if (!isAnnulation && EPCProperties.GESTION_COMMUNICATION_OCC.getBooleanValue()) {
                 PegasusImplServiceLocator.getGenerationCommunicationOCCService().genereCommunicationOCCSuppression(
                         decisionSuppression);
             }
