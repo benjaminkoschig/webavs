@@ -42,6 +42,11 @@ public class PcaPrecedante {
 
     public static List<PcaForDecompte> findPcaCourrante(String idDroit, String noVersionDroitCourant)
             throws JadePersistenceException {
+        return findPcaCourrante(idDroit, noVersionDroitCourant);
+    }
+
+    public static List<PcaForDecompte> findPcaCourrante(String idDroit, String noVersionDroitCourant, String dateFin)
+            throws JadePersistenceException {
 
         PcaForDecompteSearch search = new PcaForDecompteSearch();
 
@@ -50,6 +55,9 @@ public class PcaPrecedante {
         search.setOrderKey(PcaForDecompteSearch.ORDER_BY_DATE_DEBUT_AND_CS_ROLE);
         search.setWhereKey(PcaForDecompteSearch.FOR_OLD_VERSIONED_PCA_WITH_MONTANT_MENSUELLE_FOR_DECOMPTE);
         search.setDefinedSearchSize(JadeAbstractSearchModel.SIZE_NOLIMIT);
+        if (!JadeStringUtil.isBlankOrZero(dateFin)) {
+            search.setForDateMin(dateFin);
+        }
 
         return PersistenceUtil.search(search);
 

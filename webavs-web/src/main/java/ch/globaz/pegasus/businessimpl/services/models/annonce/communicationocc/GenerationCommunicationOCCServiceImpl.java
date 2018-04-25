@@ -47,7 +47,15 @@ public class GenerationCommunicationOCCServiceImpl extends PegasusAbstractServic
 
             List<PcaForDecompte> pcas;
 
-            pcas = PcaPrecedante.findPcaCourrante(simpleVersionDroit.getIdDroit(), simpleVersionDroit.getNoVersion());
+            if (JadeStringUtil.isBlankOrZero(decisionSuppression.getVersionDroit().getDemande().getSimpleDemande()
+                    .getDateFinInitial())) {
+                pcas = PcaPrecedante.findPcaCourrante(simpleVersionDroit.getIdDroit(),
+                        simpleVersionDroit.getNoVersion());
+            } else {
+                pcas = PcaPrecedante.findPcaCourrante(simpleVersionDroit.getIdDroit(),
+                        simpleVersionDroit.getNoVersion(), decisionSuppression.getVersionDroit().getDemande()
+                                .getSimpleDemande().getDateFinInitial());
+            }
 
             if (pcas.size() == 0) {
                 throw new PrestationException(
