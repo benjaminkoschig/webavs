@@ -1,7 +1,10 @@
 package globaz.corvus.db.deblocage;
 
 import globaz.corvus.api.lots.IRELot;
+import globaz.corvus.db.lignedeblocage.RELigneDeblocage;
 import globaz.corvus.db.lignedeblocage.RELigneDeblocages;
+import globaz.corvus.db.lignedeblocage.ReLigneDeclocageServices;
+import globaz.corvus.db.lignedeblocage.constantes.RELigneDeblocageEtat;
 import globaz.corvus.db.lignedeblocageventilation.RELigneDeblocageVentilation;
 import globaz.corvus.db.lignedeblocageventilation.RELigneDeblocageVentilationServices;
 import globaz.corvus.db.lots.RELot;
@@ -23,11 +26,13 @@ public class RELibererDevaliderDeblocage {
     private BSession session;
     private RELigneDeblocageVentilationServices ventilationService;
     private REDeblocageService deblocageService;
+    private ReLigneDeclocageServices ligneDeblocageService;
 
     public RELibererDevaliderDeblocage(BSession session) {
         this.session = session;
         ventilationService = new RELigneDeblocageVentilationServices(session);
         deblocageService = new REDeblocageService(session);
+        ligneDeblocageService = new ReLigneDeclocageServices(session);
     }
 
     public void devalider(Long idRenteAccordee) {
@@ -60,8 +65,7 @@ public class RELibererDevaliderDeblocage {
         RELot lot = findLotOrCreate();
         Long idLot = Long.valueOf(lot.getIdLot());
         RELigneDeblocages deblocagesEnregistre = deblocage.getLignesDeblocages().filtreEnregistres();
-        RELigneDeblocages deblocagesValide = deblocage.getLignesDeblocages().filtreValides();
-        updateSectionsSolde(deblocage, deblocagesValide);
+        updateSectionsSolde(deblocage);
         Long idApplication = Long.valueOf(IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_RENTE);
         Long idTiersAdressePaiement = Long.valueOf(deblocage.getPracc().getIdTiersAdressePmt());
 
@@ -145,15 +149,15 @@ public class RELibererDevaliderDeblocage {
     /**
      * Mets à jour le montant des sections avec les ventilations déjà validées
      */
-    private void updateSectionsSolde(REDeblocage deblocage, RELigneDeblocages deblocagesValide) {
-        if (deblocagesValide.isEmpty()) {
-            return;
-        }
-        List<RELigneDeblocageVentilation> ventilations = ventilationService.searchByIdsLigneDeblocage(deblocagesValide
-                .getIdsLigne());
-        for (RELigneDeblocageVentilation ventil : ventilations) {
-            for (CASectionJoinCompteAnnexeJoinTiers section : deblocage.getSections()) {
-                if (section.getIdSection().equals(ventil.getIdSectionSource().toString())) {
+    private void updateSectionsSolde(REDeblocage deblocage) {
+
+        for (CASectionJoinCompteAnnexeJoinTiers section : deblocage.getSections()) {
+            List<RELigneDeblocageVentilation> ventilations = ventilationService.searchByIdSection(section
+                    .getIdSection());
+            for (RELigneDeblocageVentilation ventil : ventilations) {
+                RELigneDeblocage ligneDeblocage = ligneDeblocageService.read(String.valueOf(ventil
+                        .getIdLigneDeblocage()));
+                if (RELigneDeblocageEtat.VALIDE.equals(ligneDeblocage.getEtat())) {
                     // ajout du montant sur solde négatif = soustraction
                     section.setSolde(new Montant(section.getSolde()).add(ventil.getMontant()).toStringValue());
                 }
