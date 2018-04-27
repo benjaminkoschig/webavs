@@ -11,8 +11,8 @@ import globaz.naos.util.AFIDEUtil;
 import globaz.naos.util.IDEDataBean;
 import globaz.naos.util.IDEServiceCallUtil;
 import java.util.List;
+import ch.globaz.common.properties.CommonProperties;
 import ch.globaz.common.properties.PropertiesException;
-import ch.globaz.orion.business.constantes.EBProperties;
 import ch.globaz.orion.businessimpl.services.partnerWeb.PartnerWebServiceImpl;
 import ch.globaz.orion.ws.service.UtilsService;
 
@@ -93,7 +93,7 @@ public class AFAffiliationViewBean extends AFAffiliation implements FWViewBeanIn
         }
 
         // si un EBusiness est connecté on regarde si l'affilié à un compte EBusiness actif
-        isEbusinessConnected = EBProperties.EBUSINESS_CONNECTED.getBooleanValue();
+        isEbusinessConnected = CommonProperties.EBUSINESS_CONNECTED.getBooleanValue();
         if (isEbusinessConnected) {
             // renseigne l'attribut indiquant si l'affilié est inscrit et actif dans l'EBusiness
             isActivAffilieEBusiness = PartnerWebServiceImpl.isExistingAndActivAffilieEbusiness(

@@ -45,7 +45,7 @@ import ch.globaz.al.businessimpl.processus.BusinessTraitement;
 import ch.globaz.al.businessimpl.services.ALImplServiceLocator;
 import ch.globaz.al.utils.ALDateUtils;
 import ch.globaz.al.utils.ALFileCSVUtils;
-import ch.globaz.orion.business.constantes.EBProperties;
+import ch.globaz.common.properties.CommonProperties;
 import ch.globaz.orion.businessimpl.services.af.AfServiceImpl;
 import ch.globaz.orion.businessimpl.services.partnerWeb.PartnerWebServiceImpl;
 import ch.globaz.xmlns.eb.recapaf.NouvelleLigneRecapAf;
@@ -75,7 +75,7 @@ public class GenerationFictivePrestationsTraitement extends BusinessTraitement {
     protected void execute() throws JadePersistenceException, JadeApplicationException {
 
         boolean isGed = false;
-        boolean isEbusinessConnected = EBProperties.EBUSINESS_CONNECTED.getBooleanValue();
+        boolean isEbusinessConnected = CommonProperties.EBUSINESS_CONNECTED.getBooleanValue();
 
         ArrayList listConteneurRecap = new ArrayList();
         HashMap recapCSV = new HashMap();

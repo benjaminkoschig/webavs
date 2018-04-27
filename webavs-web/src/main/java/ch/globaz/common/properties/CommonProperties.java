@@ -35,7 +35,8 @@ public enum CommonProperties implements IProperties {
     WIRR_KEYSTORE_PATH("wirr.keystore.path", "Chemin absolu du keystore"),
     WIRR_KEYSTORE_TYPE("wirr.keystore.type", "Type du keystore"),
     WIRR_KEYSTORE_PASSWORD("wirr.keystore.password", "Password du keystore"),
-    WIRR_SSL_CONTEXT_TYPE("wirr.ssl.context.type", "type du context ssl");
+    WIRR_SSL_CONTEXT_TYPE("wirr.ssl.context.type", "type du context ssl"),
+    EBUSINESS_CONNECTED("ebusiness.connected", "Indique si un EBusiness est connecté avec WebAVS");
 
     private String description;
     private String propertyName;

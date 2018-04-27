@@ -48,7 +48,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
-import ch.globaz.orion.business.constantes.EBProperties;
+import ch.globaz.common.properties.CommonProperties;
 import ch.globaz.orion.business.domaine.demandeacompte.DemandeModifAcompteStatut;
 import ch.globaz.orion.businessimpl.services.adi.AdiServiceImpl;
 import ch.globaz.orion.businessimpl.services.partnerWeb.PartnerWebServiceImpl;
@@ -125,7 +125,7 @@ public class CPProcessValidationFacturation extends BProcess {
         // Sous controle d'exceptions
         try {
             // défini si un EBusiness est connecté
-            isEbusinessConnected = EBProperties.EBUSINESS_CONNECTED.getBooleanValue();
+            isEbusinessConnected = CommonProperties.EBUSINESS_CONNECTED.getBooleanValue();
 
             // Recherche de la date d'introduction du NNSS
             try {
