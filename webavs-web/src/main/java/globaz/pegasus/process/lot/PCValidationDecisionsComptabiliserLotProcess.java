@@ -1,14 +1,32 @@
 package globaz.pegasus.process.lot;
 
+import globaz.corvus.api.lots.IRELot;
+import globaz.externe.IPRConstantesExternes;
+import globaz.globall.db.BProcessLauncher;
+import globaz.jade.client.util.JadeDateUtil;
+import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.job.common.JadeJobQueueNames;
+import globaz.jade.persistence.model.JadeAbstractModel;
+import globaz.jade.persistence.model.JadeAbstractSearchModel;
+import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import globaz.pegasus.process.PCAbstractJob;
+import globaz.pegasus.process.decision.PCImprimerDecisionsProcess;
 import globaz.pegasus.process.lot.ComptabiliserProcessMailHandler.PROCESS_TYPE;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import ch.globaz.corvus.business.models.lots.SimpleLot;
 import ch.globaz.corvus.business.services.CorvusServiceLocator;
+import ch.globaz.pegasus.business.constantes.decision.DecisionTypes;
+import ch.globaz.pegasus.business.exceptions.models.decision.DecisionException;
+import ch.globaz.pegasus.business.exceptions.models.lot.PrestationException;
+import ch.globaz.pegasus.business.models.decision.DecisionApresCalcul;
+import ch.globaz.pegasus.business.models.decision.DecisionApresCalculSearch;
+import ch.globaz.pegasus.business.models.lot.Prestation;
+import ch.globaz.pegasus.business.models.lot.PrestationSearch;
 import ch.globaz.pegasus.business.services.PegasusServiceLocator;
 import ch.globaz.pegasus.businessimpl.services.models.decision.ged.DACGedHandler;
+import ch.globaz.pegasus.businessimpl.utils.PCGedUtils;
 
 /**
  * Process pour pouvoir lancer la comptabilisation d'un lot déclenché depuis les PC (comptabilisation auto) en mode
@@ -51,8 +69,67 @@ public class PCValidationDecisionsComptabiliserLotProcess extends PCAbstractJob 
             this.addError(e);
         } finally {
             SimpleLot simpleLot = CorvusServiceLocator.getLotService().read(idLot);
+            if (PCGedUtils.isDocumentInGed(IPRConstantesExternes.PC_REF_INFOROM_DECISION_APRES_CALCUL, getSession())
+                    && simpleLot.getCsTypeLot().equals(IRELot.CS_TYP_LOT_DECISION_RESTITUTION)) {
+                launchMiseEnGedDecisionApresCalcul(simpleLot);
+            }
             sendProcessMail(PROCESS_TYPE.COMPTABILISATION, simpleLot, null);
         }
+    }
+
+    /**
+     * Point d'entrée de la mise en GED auto des décisions après calcul
+     * 
+     * @throws Exception
+     */
+    private void launchMiseEnGedDecisionApresCalcul(SimpleLot simpleLot) throws Exception {
+
+        // récupération de l'utilisateur connecté
+        String loggedUser = getSession().getUserId();
+        // handler permettant de générer le container de publication
+        // DACGedHandler gedHandler = null;// = DACGedHandler.getInstanceForTraitementPourLot(this.idLot,
+        // loggedUser,getSession(),this.getIdsDecisionToPrintForlot(this.idLot));
+
+        PCImprimerDecisionsProcess process = new PCImprimerDecisionsProcess();
+        process.setSession(getSession());
+        process.setIdLot(idLot);
+        process.setForGed(Boolean.TRUE);
+        process.setIsForLot(Boolean.TRUE);
+        process.setDecisionType(DecisionTypes.DECISION_APRES_CALCUL);
+        process.setIdDecisionsIdToPrint(getIdsDecisionToPrintForlot(idLot));
+        process.setMailGest(mailAdress);
+        process.setDateDoc(JadeDateUtil.getGlobazFormattedDate(new Date()));
+        // process.setGedHandler(gedHandler);
+        BProcessLauncher.startJob(process);
+    }
+
+    private ArrayList<String> getIdsDecisionToPrintForlot(String idLot) throws DecisionException,
+            JadeApplicationServiceNotAvailableException, JadePersistenceException, PrestationException {
+
+        // liste des prestations
+        ArrayList<String> listeIdsPrestations = new ArrayList<String>();
+        PrestationSearch prestSearch = new PrestationSearch();
+        prestSearch.setDefinedSearchSize(JadeAbstractSearchModel.SIZE_NOLIMIT);
+        prestSearch.setForIdLot(idLot);
+
+        // iteration sur les résultats
+        for (JadeAbstractModel model : PegasusServiceLocator.getPrestationService().search(prestSearch)
+                .getSearchResults()) {
+            listeIdsPrestations.add(((Prestation) model).getId());
+        }
+        // liste des idDecisions
+        ArrayList<String> idsDecisionAc = new ArrayList<String>();
+        DecisionApresCalculSearch dacSearch = new DecisionApresCalculSearch();
+        dacSearch.setForIdPrestationsIn(listeIdsPrestations);
+        dacSearch.setWhereKey(DecisionApresCalculSearch.FOR_MISE_EN_GED_COMPTA_WHERE_KEY);
+        dacSearch.setDefinedSearchSize(JadeAbstractSearchModel.SIZE_NOLIMIT);
+
+        for (JadeAbstractModel model : PegasusServiceLocator.getDecisionApresCalculService().search(dacSearch)
+                .getSearchResults()) {
+            idsDecisionAc.add(((DecisionApresCalcul) model).getSimpleDecisionApresCalcul().getIdDecisionApresCalcul());
+        }
+
+        return idsDecisionAc;
     }
 
     @Override
