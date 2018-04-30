@@ -52,11 +52,11 @@
 		<ch.globaz.mercato.notification.version>1.0.0</ch.globaz.mercato.notification.version>
 		<itucana.version>0.0.1</itucana.version>
 		<jade.version>5.5.1-SNAPSHOT</jade.version>
-		<pyxis.version>1.23.3-jre7-SNAPSHOT</pyxis.version>
-		<simple-output-list.version>1.3.3-jre7-SNAPSHOT</simple-output-list.version>
-		<sqlClassMapper.version>1.1.1-jre7-SNAPSHOT</sqlClassMapper.version>
-		<op.version>5.0.5-jre7-SNAPSHOT</op.version>
-		<globaz-external-xsd.version>1.2.3-jre7-SNAPSHOT</globaz-external-xsd.version>
+		<pyxis.version>1.23.3-SNAPSHOT</pyxis.version>
+		<simple-output-list.version>1.3.2-SNAPSHOT</simple-output-list.version>
+		<sqlClassMapper.version>1.0.1-SNAPSHOT</sqlClassMapper.version>
+		<op.version>5.0.4-SNAPSHOT</op.version>
+		<globaz-external-xsd.version>1.2.4-SNAPSHOT</globaz-external-xsd.version>
 		<ebback-api.version>9.0.0-SNAPSHOT</ebback-api.version>
 
 
@@ -321,13 +321,13 @@
 			<dependency>
 				<groupId>ch.globaz</groupId>
 				<artifactId>uidwse</artifactId>
-				<version>1.0.1-jre7-SNAPSHOT</version>
+				<version>1.0.1-SNAPSHOT</version>
 			</dependency>
 			
 			<dependency>
 				<groupId>ch.globaz</groupId>
   				<artifactId>wirr-api</artifactId>
-  				<version>1.0.2-jre7-SNAPSHOT</version>
+  				<version>1.0.2-SNAPSHOT</version>
 			</dependency>
 			
 			<dependency>
