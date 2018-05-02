@@ -179,12 +179,12 @@
 	<table class="areaTable" style="border: thin; border: blue;">
 		<thead>
 			<tr>
-				<th style="width: 120px; font-size: 12px;"><strong>Id prestation</strong></th>
-				<th style="width: 120px; font-size: 12px;"><strong>Date de début</strong></th>
-				<th style="width: 120px; font-size: 12px;"><strong>Date de fin</strong></th>
-				<th style="width: 80px; font-size: 12px;"><strong>Code</strong></th>
-				<th style="width: 200px; font-size: 12px;"><strong>Plausibilité</strong></th>
-				<th style="width: 120px; font-size: 12px;"><strong>Quittancer</strong></th>
+				<th style="width: 120px; font-size: 12px;"><strong><ct:FWLabel key="JSP_ID_PRESTATION"/></strong></th>
+				<th style="width: 120px; font-size: 12px;"><strong><ct:FWLabel key="JSP_PAP2004_DATE_DEBUT"/></strong></th>
+				<th style="width: 120px; font-size: 12px;"><strong><ct:FWLabel key="JSP_PAP2004_DATE_FIN"/></strong></th>
+				<th style="width: 80px; font-size: 12px;"><strong><ct:FWLabel key="JSP_CODE"/></strong></th>
+				<th style="width: 200px; font-size: 12px;"><strong><ct:FWLabel key="JSP_PLAUSIBILITE"/></strong></th>
+				<th style="width: 120px; font-size: 12px;"><strong><ct:FWLabel key="JSP_QUITTANCER"/></strong></th>
 			</tr>
 		</thead>
 		

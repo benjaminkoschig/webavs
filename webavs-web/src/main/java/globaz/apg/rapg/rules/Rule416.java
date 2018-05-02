@@ -12,43 +12,48 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * <strong>Règles de validation des plausibilités RAPG</br> Description :</strong></br> Si le champ « serviceType » = 11
- * (école de recrues) et le champ « numberOfDays » > 145 (sans que la période chevauche Noël) ou 159 (si la période
- * chevauche Noël) -> erreur </br><strong>Champs concerné(s) :</strong></br> </br> Info complémentaire : il faut
- * rechercher tous le droit de la personne car c'est l'ensemble des jours d'école de recrue que l'on veut contrôller
+ * <strong>Règles de validation des plausibilités RAPG</br> Description :</strong></br> Si le champ « serviceType » = 40
+ * et/ou 41 et le champ « numberOfDays » est > 450 jours -> erreur </br><strong>Champs concerné(s) :</strong></br>
  * 
  * @author lga
  */
-public class Rule504 extends Rule {
+public class Rule416 extends Rule {
 
-    private static final int NB_JOUR_MAX = 124;
+    private static final int NB_JOUR_MAX = 450;
 
     /**
      * @param errorCode
      */
-    public Rule504(String errorCode) {
+    public Rule416(String errorCode) {
         super(errorCode, true);
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * ch.globaz.apg.businessimpl.plausibilites.Rule#check(ch.globaz.apg.business.models.plausibilites.ChampsAnnonce)
+     */
     @Override
     public boolean check(APChampsAnnonce champsAnnonce) throws APRuleExecutionException, IllegalArgumentException {
-        /**
-         * Note : Normalement les service 11 école de recrue sont saisit sur une seule carte APG. Mais, pas acquis de
-         * conscience et pour prévenir les cas particuliers, on effectue une requête pour remonter tous les droits du
-         * tiers avec genre de service 11
-         */
         String serviceType = champsAnnonce.getServiceType();
         int typeAnnonce = getTypeAnnonce(champsAnnonce);
         if (typeAnnonce == 1) {
             validNotEmpty(serviceType, "serviceType");
         }
 
-        if (APGenreServiceAPG.MilitaireEcoleDeRecrue.getCodePourAnnonce().equals(serviceType)) {
+        List<String> services = new ArrayList<String>();
+        services.add(APGenreServiceAPG.ServiceCivilNormal.getCodePourAnnonce());
+        services.add(APGenreServiceAPG.ServiceCivilTauxRecrue.getCodePourAnnonce());
+
+        if (services.contains(serviceType)) {
+            int totalDeJours = 0;
             String nss = champsAnnonce.getInsurant();
             validNotEmpty(nss, "NSS");
 
             List<String> forIn = new ArrayList<String>();
-            forIn.add(APGenreServiceAPG.MilitaireEcoleDeRecrue.getCodeSysteme());
+            forIn.add(APGenreServiceAPG.ServiceCivilNormal.getCodeSysteme());
+            forIn.add(APGenreServiceAPG.ServiceCivilTauxRecrue.getCodeSysteme());
 
             APDroitAPGJointTiersManager manager = new APDroitAPGJointTiersManager();
             manager.setSession(getSession());
@@ -60,35 +65,37 @@ public class Rule504 extends Rule {
             etatIndesirable.add(IAPDroitLAPG.CS_ETAT_DROIT_REFUSE);
             etatIndesirable.add(IAPDroitLAPG.CS_ETAT_DROIT_TRANSFERE);
             manager.setForEtatDroitNotIn(etatIndesirable);
-
-            List<APDroitAvecParent> droitsTries = null;
+            List<APDroitAvecParent> droitsSansParents = null;
             try {
                 manager.find();
                 List<APDroitAvecParent> tousLesDroits = manager.getContainer();
-                droitsTries = skipDroitParent(tousLesDroits);
+                droitsSansParents = skipDroitParent(tousLesDroits);
             } catch (Exception e) {
                 throwRuleExecutionException(e);
             }
 
-            int nombreJoursEffectue = 0;
-            int nombreJoursMax = NB_JOUR_MAX;
-
-            // On va trouver tous les droits, même celui qu'on vient de créer,
-            // on additionne tous les jours soldées
-            for (int i = 0; i < droitsTries.size(); i++) {
-                APDroitAPGJointTiers droit = (APDroitAPGJointTiers) droitsTries.get(i);
-
-                // On cumul les jours soldés
-                if (!JadeStringUtil.isBlank(droit.getNbrJourSoldes())
-                        && droit.getIdDroit().equals(champsAnnonce.getIdDroit())) {
-                    nombreJoursEffectue += Integer.parseInt(droit.getNbrJourSoldes());
+            for (Object d : droitsSansParents) {
+                APDroitAPGJointTiers droit = (APDroitAPGJointTiers) d;
+                if (!JadeStringUtil.isEmpty(droit.getNbrJourSoldes())) {
+                    totalDeJours += Integer.valueOf(droit.getNbrJourSoldes());
                 }
+
             }
 
-            if (nombreJoursEffectue > nombreJoursMax) {
+            if (totalDeJours > NB_JOUR_MAX) {
                 return false;
             }
         }
         return true;
+    }
+
+    private boolean isGenreService40ou41(String csGenreService) {
+        if (APGenreServiceAPG.ServiceCivilNormal.getCodeSysteme().equals(csGenreService)) {
+            return true;
+        }
+        if (APGenreServiceAPG.ServiceCivilTauxRecrue.getCodeSysteme().equals(csGenreService)) {
+            return true;
+        }
+        return false;
     }
 }
