@@ -119,6 +119,10 @@ public class PCDemandeDetailViewBean extends BJadePersistentObjectViewBean {
         return new BSpy(demande.getSimpleDemande().getSpy());
     }
 
+    public String getDateDebut() {
+        return demande.getSimpleDemande().getDateDebut();
+    }
+
     /**
      * Return true si il existe une decision de refus pour cette demande (idDecisionRefus != 0)
      * 
