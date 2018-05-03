@@ -150,8 +150,10 @@ public class REGenererDemandeCalculProvisoireProcess extends REAbstractInfoCompl
                     bc.setSession(getSession());
                     bc.setIdBasesCalcul(ra.getIdBaseCalcul());
                     bc.retrieve();
-                    REDeleteCascadeDemandeAPrestationsDues.supprimerBaseCalculCascade_noCommit(getSession(),
-                            getSession().getCurrentThreadTransaction(), bc);
+                    if (!bc.isNew()) {
+                        REDeleteCascadeDemandeAPrestationsDues.supprimerBaseCalculCascade_noCommit(getSession(),
+                                getSession().getCurrentThreadTransaction(), bc);
+                    }
                 }
 
             }
