@@ -127,24 +127,15 @@ var showConfirmationDialogDateReduc = function () {
         	"<ct:FWLabel key='PROCESS_ADAPTATION_PC_OUI'/>": function() {
                 $( this ).dialog( "close" );
                 $('#comptabilisationAuto').val("true");
-                if(dateFinFormate < dateFormate){
-                	showErrorDialogDateReduc();
-                }else if(dateFormate < dateDebutFormat){
-                	showErrorDialogDateReducDebut();
-                }else{
+
                     var dateTemp = document.getElementById("forDateFin").value;
                     $('#forDateFin').val(document.getElementById("dateReduc").value);
                     $('#dateReduc').val(dateTemp);
                     action(COMMIT);
-                }
-      
             },
             "<ct:FWLabel key='PROCESS_ADAPTATION_PC_NON'/>": function() {
                 $( this ).dialog( "close" );
                 $('#comptabilisationAuto').val("false");
-        		if(dateFinFormate < dateFormate && dateFinInitialFormat < dateFormate || dateFormate < dateDebutFormat){
-    					showErrorDialogDateReduc();
-        		}else{
         	         var dateTemp = document.getElementById("forDateFin").value;
                      $('#forDateFin').val(document.getElementById("dateReduc").value);
                      if(dateFinInitialFormat == ""){
@@ -153,8 +144,7 @@ var showConfirmationDialogDateReduc = function () {
                     	 $('#dateReduc').val(dateFinInitial);
                      }
                      action(COMMIT);
-       
-            	}
+
             },
            "<ct:FWLabel key='JSP_PC_BOUTON_CAN'/>": function() {
                 $( this ).dialog( "close" );
@@ -427,7 +417,13 @@ function validate() {
 			  state = false;
 			  parts = dateValue.split('.');
 			  dateFormate = new Date(parts[1],parts[0],'');
+	          if(dateFinFormate < dateFormate){
+              	showErrorDialogDateReduc();
+              }else if(dateFormate < dateDebutFormat){
+              	showErrorDialogDateReducDebut();
+              }else{
 		      showConfirmationDialogDateReduc();
+              }
 			// zone remise à blanc reset de la date de réduction à la date initiale
 			} else if(dateFinInitialFormat != null) {
 				$('#forDateFin').val(dateFinInitial);
