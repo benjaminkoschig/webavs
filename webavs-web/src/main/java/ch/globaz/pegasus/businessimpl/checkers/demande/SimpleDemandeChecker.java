@@ -215,6 +215,7 @@ public abstract class SimpleDemandeChecker extends PegasusAbstractChecker {
         SimpleDemandeSearch search = new SimpleDemandeSearch();
         search.setWhereKey("WithDateFinNull");
         search.setForIdDossier(demande.getIdDossier());
+        search.setForNotCsEtatDemande(IPCDemandes.CS_ANNULE);
         boolean exist = true;
         try {
             int nb = PegasusImplServiceLocator.getSimpleDemandeService().count(search);

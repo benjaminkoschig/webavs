@@ -33,6 +33,7 @@
 				<search-field name="forCsEtatDemandeIN" field-ref="dateFin" operation="NULL"/>
 				<search-field name="forDateFin" field-ref="idDossier" operation="EQUALS"/>
 				<search-field name="forIdDossier" field-ref="idDossier" operation="EQUALS"/>
+				<search-field name="forNotCsEtatDemande" field-ref="csEtatDemande" operation="NOT_EQUALS"/>
 			</search-group>
 		</search-definition>
 		
