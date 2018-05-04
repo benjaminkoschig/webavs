@@ -46,6 +46,7 @@ import ch.globaz.al.businessimpl.services.ALImplServiceLocator;
 import ch.globaz.al.utils.ALDateUtils;
 import ch.globaz.al.utils.ALFileCSVUtils;
 import ch.globaz.common.properties.CommonProperties;
+import ch.globaz.orion.business.constantes.EBProperties;
 import ch.globaz.orion.businessimpl.services.af.AfServiceImpl;
 import ch.globaz.orion.businessimpl.services.partnerWeb.PartnerWebServiceImpl;
 import ch.globaz.xmlns.eb.recapaf.NouvelleLigneRecapAf;
@@ -76,6 +77,7 @@ public class GenerationFictivePrestationsTraitement extends BusinessTraitement {
 
         boolean isGed = false;
         boolean isEbusinessConnected = CommonProperties.EBUSINESS_CONNECTED.getBooleanValue();
+        boolean isManagedRecapAfInEbusiness = EBProperties.RECAPAF_MANAGE_RECAP_IN_EBUSINESS.getBooleanValue();
 
         ArrayList listConteneurRecap = new ArrayList();
         HashMap recapCSV = new HashMap();
@@ -127,7 +129,7 @@ public class GenerationFictivePrestationsTraitement extends BusinessTraitement {
         ArrayList<RecapitulatifEntrepriseImpressionComplexSearchModel> recapToPrint = new ArrayList<RecapitulatifEntrepriseImpressionComplexSearchModel>();
 
         // si l'environnement webAVS est connecté à EBusiness on créé certaines récaps côté EBusiness
-        if (isEbusinessConnected) {
+        if (isEbusinessConnected && isManagedRecapAfInEbusiness) {
             // récupération de tous les numéros d'affiliés actifs dans le portail EBusiness
             List<String> listNumeroAffiliesEbusiness = PartnerWebServiceImpl
                     .listAllActivNumerosAffiliesEbusiness(BSessionUtil.getSessionFromThreadContext());
@@ -139,10 +141,6 @@ public class GenerationFictivePrestationsTraitement extends BusinessTraitement {
             for (JadeAbstractModel model : allPrestationsList) {
                 RecapitulatifEntrepriseImpressionComplexModel dossier = (RecapitulatifEntrepriseImpressionComplexModel) model;
                 String numAffilie = dossier.getRecapEntrepriseModel().getNumeroAffilie();
-
-                // rechercher l'attribut format
-                // AttributEntiteModel attributFormatRecap = ALServiceLocator.getAttributEntiteModelService()
-                // .getAttributAffilie(ALConstAttributsEntite.FORMAT_RECAP, dossier.getIdAffilie());
 
                 // si affilié EBusiness on place dans la map des récap EBusiness
                 if (listNumeroAffiliesEbusiness.contains(numAffilie)) {

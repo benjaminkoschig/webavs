@@ -29,12 +29,18 @@ public enum EBProperties implements IProperties {
             "Vérifie si le montant facturé est négatif", Boolean.class),
     ECL_EXCLURE_CA_AFFILIE_PERSONNEL("ecl.exclure.ca.affilie.personnel",
             "permet d'exclure dans l'affichage ECL les comptes annexes avec le rôle affilie personnel", Boolean.class),
-    EBUSINESS_CONNECTED("ebusiness.connected", "Indique si un EBusiness est connecté avec WebAVS", Boolean.class),
     EMAIL_MUTATION_ADRESSE_CAF("email.mutation.adresse.caf",
             "Adresse email à laquelle envoyer les mutations d'adresses caf", String.class),
     EMAIL_MUTATION_ADRESSE_AVS("email.mutation.adresse.avs",
             "Adresse email à laquelle envoyer les mutations d'adresses avs", String.class),
-    GENERIC_USER("generic.user", "userwebavs", String.class);
+    GENERIC_USER("generic.user", "userwebavs", String.class),
+    DISPLAY_IS_AFFILIE_EBUSINESS("display.is.affilie.ebusiness",
+            "Indique dans le détail de l'affilié si celui-ci est actif dans EBusiness ", Boolean.class),
+    ADI_MANAGE_DECISION_IN_EBUSINESS("adi.manage.decision.in.ebusiness",
+            "Indique si les décisions de cotisations personnelles doivent être créées dans l'EBusiness", Boolean.class),
+    RECAPAF_MANAGE_RECAP_IN_EBUSINESS("recapaf.manage.recap.in.ebusiness",
+            "Indique si les récaps AF doivent être créées dans l'EBusiness lors de la génération globale fictive ",
+            Boolean.class);
 
     private String property;
     private String description;

@@ -13,13 +13,11 @@ import globaz.naos.util.IDEServiceCallUtil;
 import java.util.List;
 import ch.globaz.common.properties.CommonProperties;
 import ch.globaz.common.properties.PropertiesException;
+import ch.globaz.orion.business.constantes.EBProperties;
 import ch.globaz.orion.businessimpl.services.partnerWeb.PartnerWebServiceImpl;
 import ch.globaz.orion.ws.service.UtilsService;
 
 public class AFAffiliationViewBean extends AFAffiliation implements FWViewBeanInterface {
-    /**
-     * 
-     */
     private static final long serialVersionUID = 1L;
     private String action;
     private String message;
@@ -37,6 +35,7 @@ public class AFAffiliationViewBean extends AFAffiliation implements FWViewBeanIn
 
     private boolean isEbusinessConnected = false;
     private boolean isActivAffilieEBusiness = false;
+    private boolean wantDisplayIsAffilieEbusiness = false;
 
     // commence par souligné afin de ne pas être prise par jspSetBeanProperties
     public void _setMessageAnnonceIdeCreationAjouteeToDisplay(boolean isMessageAnnonceIdeCreationAjouteeToDisplay) {
@@ -94,7 +93,8 @@ public class AFAffiliationViewBean extends AFAffiliation implements FWViewBeanIn
 
         // si un EBusiness est connecté on regarde si l'affilié à un compte EBusiness actif
         isEbusinessConnected = CommonProperties.EBUSINESS_CONNECTED.getBooleanValue();
-        if (isEbusinessConnected) {
+        wantDisplayIsAffilieEbusiness = EBProperties.DISPLAY_IS_AFFILIE_EBUSINESS.getBooleanValue();
+        if (isEbusinessConnected && wantDisplayIsAffilieEbusiness) {
             // renseigne l'attribut indiquant si l'affilié est inscrit et actif dans l'EBusiness
             isActivAffilieEBusiness = PartnerWebServiceImpl.isExistingAndActivAffilieEbusiness(
                     UtilsService.getSessionUserGeneric(getSession()), getAffilieNumero());
@@ -238,6 +238,19 @@ public class AFAffiliationViewBean extends AFAffiliation implements FWViewBeanIn
      */
     public boolean isEbusinessConnected() throws PropertiesException {
         return isEbusinessConnected;
+    }
+
+    /**
+     * true si on souhaite afficher l'information qui indique si l'affilié a un compte EBusiness actif
+     * 
+     * @return
+     */
+    public boolean isWantDisplayIsAffilieEbusiness() {
+        return wantDisplayIsAffilieEbusiness;
+    }
+
+    public void setWantDisplayIsAffilieEbusiness(boolean wantDisplayIsAffilieEbusiness) {
+        this.wantDisplayIsAffilieEbusiness = wantDisplayIsAffilieEbusiness;
     }
 
 }

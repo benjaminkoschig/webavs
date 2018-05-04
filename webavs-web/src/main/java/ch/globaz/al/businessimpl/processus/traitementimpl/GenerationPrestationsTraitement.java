@@ -22,6 +22,7 @@ import ch.globaz.al.business.loggers.ProtocoleLogger;
 import ch.globaz.al.businessimpl.processus.BusinessTraitement;
 import ch.globaz.al.businessimpl.services.ALImplServiceLocator;
 import ch.globaz.common.properties.CommonProperties;
+import ch.globaz.orion.business.constantes.EBProperties;
 import ch.globaz.orion.businessimpl.services.af.AfServiceImpl;
 
 /**
@@ -61,6 +62,7 @@ public class GenerationPrestationsTraitement extends BusinessTraitement {
     @Override
     public void execute() throws JadeApplicationException, JadePersistenceException {
         boolean isEbusinessConnected = CommonProperties.EBUSINESS_CONNECTED.getBooleanValue();
+        boolean isManagedRecapAfInEbusiness = EBProperties.RECAPAF_MANAGE_RECAP_IN_EBUSINESS.getBooleanValue();
 
         String periode = getProcessusConteneur().getDataCriterias().periodeCriteria;
         String type = getProcessusConteneur().getDataCriterias().cotisationCriteria;
@@ -68,12 +70,10 @@ public class GenerationPrestationsTraitement extends BusinessTraitement {
         String processus = JadeCodesSystemsUtil.getCodeLibelle(getProcessusConteneur().getCSProcessus());
         String traitement = JadeCodesSystemsUtil.getCodeLibelle(getCSTraitement());
 
-        // clôture des récaps AF côté Ebusiness
-        if (isEbusinessConnected) {
+        // clôture des récaps AF côté Ebusiness (si les récaps sont remontées dans EBusiness)
+        if (isEbusinessConnected && isManagedRecapAfInEbusiness) {
             XMLGregorianCalendar anneeMoisRecap = computeAnneeMoisRecapXmlGregorian(periode);
-
             AfServiceImpl.cloturerRecapAf(BSessionUtil.getSessionFromThreadContext(), anneeMoisRecap);
-
         }
 
         // génération

@@ -858,7 +858,7 @@ function maxLength(zone,max)
 								</TD-->
 							</TR>
 							
-							<%if(viewBean.isEbusinessConnected()){ %>
+							<%if(viewBean.isEbusinessConnected() && viewBean.isWantDisplayIsAffilieEbusiness()){ %>
 							<TR id="isEBusiness">
 								<TD nowrap width="161"><ct:FWLabel key="NAOS_JSP_AFFILIATION_EBUSINESS_CHECKBOX_PASSIVE"/></TD>
 								<TD nowrap colspan="2"> 

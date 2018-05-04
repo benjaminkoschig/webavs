@@ -49,6 +49,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 import ch.globaz.common.properties.CommonProperties;
+import ch.globaz.orion.business.constantes.EBProperties;
 import ch.globaz.orion.business.domaine.demandeacompte.DemandeModifAcompteStatut;
 import ch.globaz.orion.businessimpl.services.adi.AdiServiceImpl;
 import ch.globaz.orion.businessimpl.services.partnerWeb.PartnerWebServiceImpl;
@@ -79,6 +80,7 @@ public class CPProcessValidationFacturation extends BProcess {
     private TITiersViewBean tiers = null;
     private boolean transfertAnneePreEncodee = false;
     private boolean isEbusinessConnected = false;
+    private boolean isManagedDecisionInEbusiness = false;
     private List<String> listNumeroAffiliesEbusiness;
 
     private boolean wantMajCI = true;
@@ -126,6 +128,7 @@ public class CPProcessValidationFacturation extends BProcess {
         try {
             // défini si un EBusiness est connecté
             isEbusinessConnected = CommonProperties.EBUSINESS_CONNECTED.getBooleanValue();
+            isManagedDecisionInEbusiness = EBProperties.ADI_MANAGE_DECISION_IN_EBUSINESS.getBooleanValue();
 
             // Recherche de la date d'introduction du NNSS
             try {
@@ -352,7 +355,7 @@ public class CPProcessValidationFacturation extends BProcess {
         }
 
         // si un EBusiness est connecté
-        if (isEbusinessConnected) {
+        if (isEbusinessConnected && isManagedDecisionInEbusiness) {
             // si il s'agit d'une demande provenant de l'EBusiness on met à jour sont statut
             if (!isOnError() && !JadeStringUtil.isBlankOrZero(decision.getIdDemandePortail())) {
                 // Mise à jour du statut de la demande dans Orion
@@ -1373,8 +1376,9 @@ public class CPProcessValidationFacturation extends BProcess {
      * @throws Exception
      */
     private void processDecisions() throws Exception {
-        // si un EBusiness est connecté on recherche les affiliés EBusiness actifs
-        if (isEbusinessConnected) {
+        // si un EBusiness est connecté et que les décisions sont remontées du côté EBusiness, on recherche les affiliés
+        // EBusiness actifs
+        if (isEbusinessConnected && isManagedDecisionInEbusiness) {
             listNumeroAffiliesEbusiness = PartnerWebServiceImpl.listAllActivNumerosAffiliesEbusiness(getSession());
             if (listNumeroAffiliesEbusiness == null || listNumeroAffiliesEbusiness.isEmpty()) {
                 this._addError("les affiliés EBusiness n'ont pas pu être chargés");
