@@ -82,10 +82,11 @@ public class REComptabiliseDebloquage extends AREModuleComptable {
                 List<CASectionJoinCompteAnnexeJoinTiers> sectionsLigneVentil = mgr.toList();
 
                 // K170719_001 : on récupère le compte annexe de la section et pas du versement
+                // K171016_002 : Prendre le montant de ligne de ventilation et non le total
                 doOrdreVersement(session, compta, sectionsLigneVentil.get(0).getIdCompteAnnexe(), versement
-                        .getLigneDeblocageVentilation().getIdSectionSource().toString(), versement.getMontant()
-                        .toStringFormat(), adr.getIdAvoirPaiementUnique(), motifVersement, dateValeurComptable, false,
-                        idOrganeExecution);
+                        .getLigneDeblocageVentilation().getIdSectionSource().toString(), versement
+                        .getLigneDeblocageVentilation().getMontant().toStringFormat(), adr.getIdAvoirPaiementUnique(),
+                        motifVersement, dateValeurComptable, false, idOrganeExecution);
             } else if (versement.getType().isDetteEnCompta()) {
 
                 String idSection = versement.getLigneDeblocage().getIdSectionCompensee().toString();
