@@ -39,7 +39,7 @@ public enum EBProperties implements IProperties {
     ADI_MANAGE_DECISION_IN_EBUSINESS("adi.manage.decision.in.ebusiness",
             "Indique si les décisions de cotisations personnelles doivent être créées dans l'EBusiness", Boolean.class),
     RECAPAF_MANAGE_RECAP_IN_EBUSINESS("recapaf.manage.recap.in.ebusiness",
-            "Indique si les récaps AF doivent être créées dans l'EBusiness lors de la génération globale fictive ",
+            "Indique si les récaps AF doivent être créées dans l'EBusiness lors de la génération globale fictive",
             Boolean.class);
 
     private String property;
