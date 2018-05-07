@@ -52,14 +52,6 @@
 
 		<plugins>
 			<plugin>
-	          <groupId>org.bsc.maven</groupId>
-	          <artifactId>confluence-reporting-maven-plugin</artifactId>
-	          <version>4.5</version>
-	          <configuration>
-	            <skip>true</skip>
-	          </configuration>
-	        </plugin>
-			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-eclipse-plugin</artifactId>
 				<configuration>

@@ -645,4 +645,15 @@
 			</plugin>
 		</plugins>
 	</reporting>
+	<build>
+		<plugins>
+        <plugin>
+          <groupId>org.bsc.maven</groupId>
+          <artifactId>confluence-reporting-maven-plugin</artifactId>
+          <configuration>
+            <skip>true</skip>
+          </configuration>
+        </plugin>
+		</plugins>
+	</build>
 </project>
