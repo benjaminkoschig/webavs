@@ -417,7 +417,12 @@ function validate() {
 			  state = false;
 			  parts = dateValue.split('.');
 			  dateFormate = new Date(parts[1],parts[0],'');
-	          if(dateFinFormate < dateFormate){
+			  if(dateFinInitialFormat != null && dateFinInitialFormat != "") {
+			  	dateToCompare = dateFinInitialFormat;
+			  }else {
+				dateToCompare = dateFinFormate;
+			  } 
+			  if(dateToCompare < dateFormate){
               	showErrorDialogDateReduc();
               }else if(dateFormate < dateDebutFormat){
               	showErrorDialogDateReducDebut();
