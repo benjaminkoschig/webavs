@@ -411,7 +411,7 @@ function validate() {
 			showConfirmDialogAnnulation();
 		}
 		var date = document.getElementById("dateReduc");
-		if(date != null) {
+		if(date != null && date.value != "") {
 			var dateValue = date.value;
 			if (dateValue!=""){
 			  state = false;
