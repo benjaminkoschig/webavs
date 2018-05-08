@@ -11,7 +11,6 @@ import ch.globaz.pegasus.business.exceptions.models.dossiers.DossierException;
 import ch.globaz.pegasus.business.exceptions.models.droit.DonneeFinanciereException;
 import ch.globaz.pegasus.business.exceptions.models.droit.DroitException;
 import ch.globaz.pegasus.business.exceptions.models.pcaccordee.PCAccordeeException;
-import ch.globaz.pegasus.business.exceptions.models.pmtmensuel.PmtMensuelException;
 import ch.globaz.pegasus.business.models.demande.Demande;
 import ch.globaz.pegasus.business.models.demande.DemandeSearch;
 import ch.globaz.pegasus.business.models.demande.ListDemandes;
@@ -213,8 +212,7 @@ public interface DemandeService extends JadeApplicationService {
      * @throws JadeApplicationException
      */
     public Demande annuler(Demande demande, Boolean comptabilisationAuto) throws JadePersistenceException,
-            DemandeException, DossierException, DroitException, JadeApplicationServiceNotAvailableException,
-            PmtMensuelException;
+            JadeApplicationException;
 
     /**
      * Revient en arrière sur l'annulation d'une demande
