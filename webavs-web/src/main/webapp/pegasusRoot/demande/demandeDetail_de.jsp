@@ -317,14 +317,16 @@ if(dateFinInitial!=""){
 }
 
 function doDisableDate(checkboxElem) {
-	if(checkboxElem.checked){
-		document.getElementById("dateReduc").disabled = true;
-		var inputcal = $('#dateReduc').data('notation_calendar');
-		inputcal.enableDisableInput();
-		inputcal.$elementToPutObject.next().off('click');
-	}else{
-		document.getElementById("dateReduc").disabled = false;
-		 $('#dateReduc').data('notation_calendar').enableDisableInput();
+	if(document.getElementById("dateReduc")!=null) {
+		if(checkboxElem.checked){
+			document.getElementById("dateReduc").disabled = true;
+			var inputcal = $('#dateReduc').data('notation_calendar');
+			inputcal.enableDisableInput();
+			inputcal.$elementToPutObject.next().off('click');
+		}else{
+			document.getElementById("dateReduc").disabled = false;
+			 $('#dateReduc').data('notation_calendar').enableDisableInput();
+		}
 	}
 
 }
