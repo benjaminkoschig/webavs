@@ -36,6 +36,7 @@ import ch.globaz.pegasus.business.exceptions.models.dossiers.DossierException;
 import ch.globaz.pegasus.business.exceptions.models.droit.DonneeFinanciereException;
 import ch.globaz.pegasus.business.exceptions.models.droit.DroitException;
 import ch.globaz.pegasus.business.exceptions.models.pcaccordee.PCAccordeeException;
+import ch.globaz.pegasus.business.exceptions.models.pmtmensuel.PmtMensuelException;
 import ch.globaz.pegasus.business.models.demande.Demande;
 import ch.globaz.pegasus.business.models.demande.DemandeSearch;
 import ch.globaz.pegasus.business.models.demande.ListDemandes;
@@ -468,7 +469,8 @@ public class DemandeServiceImpl extends PegasusAbstractServiceImpl implements De
 
     @Override
     public Demande annuler(Demande demande, Boolean comptabilisationAuto) throws JadePersistenceException,
-            DemandeException, DossierException, DroitException, JadeApplicationServiceNotAvailableException {
+            DemandeException, DossierException, DroitException, JadeApplicationServiceNotAvailableException,
+            PmtMensuelException {
 
         List<Droit> droits = PegasusServiceLocator.getDroitService().findCurrentVersionDroitByIdsDemande(
                 Arrays.asList(demande.getId()));
@@ -476,8 +478,9 @@ public class DemandeServiceImpl extends PegasusAbstractServiceImpl implements De
         if (!JadeStringUtil.isBlankOrZero(demande.getSimpleDemande().getDateDebut())) {
             String dateDeb = JadeDateUtil.addMonths("01." + demande.getSimpleDemande().getDateDebut(), -1).substring(3);
             for (Droit droit : droits) {
-                droit = PegasusServiceLocator.getDroitService().corrigerDroitAnnulation(droit, today, dateDeb, today,
-                        BSessionUtil.getSessionFromThreadContext().getUserId(), comptabilisationAuto, null);
+                droit = PegasusServiceLocator.getDroitService().corrigerDroitAnnulation(droit, today, dateDeb,
+                        getDateDecision(), BSessionUtil.getSessionFromThreadContext().getUserId(),
+                        comptabilisationAuto, null);
             }
         }
         demande.getSimpleDemande().setCsEtatDemande(IPCDemandes.CS_ANNULE);
@@ -520,12 +523,24 @@ public class DemandeServiceImpl extends PegasusAbstractServiceImpl implements De
         String dateDeb = demande.getSimpleDemande().getDateFin();
         for (Droit droit : droits) {
             droit = PegasusServiceLocator.getDroitService().corrigerDroitDateReduction(droit, demande, today, dateDeb,
-                    today, BSessionUtil.getSessionFromThreadContext().getUserId(), comptabilisationAuto, null);
+                    getDateDecision(), BSessionUtil.getSessionFromThreadContext().getUserId(), comptabilisationAuto,
+                    null);
         }
         if (dateDeb.equals(demande.getSimpleDemande().getDateFinInitial())) {
             demande.getSimpleDemande().setDateFinInitial(null);
             update(demande);
         }
         return demande;
+    }
+
+    private String getDateDecision() throws PmtMensuelException, JadeApplicationServiceNotAvailableException {
+        ch.globaz.common.domaine.Date todayDate = new ch.globaz.common.domaine.Date();
+        String dateDecision = todayDate.getSwissValue();
+        ch.globaz.common.domaine.Date dateProchainPaiement = new ch.globaz.common.domaine.Date(PegasusServiceLocator
+                .getPmtMensuelService().getDateProchainPmt());
+        if (todayDate.compareTo(dateProchainPaiement) > 0) {
+            dateDecision = JadeDateUtil.addDays(dateProchainPaiement.getSwissValue(), -1);
+        }
+        return dateDecision;
     }
 }
