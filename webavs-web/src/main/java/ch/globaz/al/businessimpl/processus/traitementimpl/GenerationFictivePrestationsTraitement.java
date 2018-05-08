@@ -43,10 +43,10 @@ import ch.globaz.al.business.models.prestation.RecapitulatifEntrepriseImpression
 import ch.globaz.al.business.services.ALServiceLocator;
 import ch.globaz.al.businessimpl.processus.BusinessTraitement;
 import ch.globaz.al.businessimpl.services.ALImplServiceLocator;
+import ch.globaz.al.properties.ALProperties;
 import ch.globaz.al.utils.ALDateUtils;
 import ch.globaz.al.utils.ALFileCSVUtils;
 import ch.globaz.common.properties.CommonProperties;
-import ch.globaz.orion.business.constantes.EBProperties;
 import ch.globaz.orion.businessimpl.services.af.AfServiceImpl;
 import ch.globaz.orion.businessimpl.services.partnerWeb.PartnerWebServiceImpl;
 import ch.globaz.xmlns.eb.recapaf.NouvelleLigneRecapAf;
@@ -77,7 +77,7 @@ public class GenerationFictivePrestationsTraitement extends BusinessTraitement {
 
         boolean isGed = false;
         boolean isEbusinessConnected = CommonProperties.EBUSINESS_CONNECTED.getBooleanValue();
-        boolean isManagedRecapAfInEbusiness = EBProperties.RECAPAF_MANAGE_RECAP_IN_EBUSINESS.getBooleanValue();
+        boolean isManagedRecapAfInEbusiness = ALProperties.RECAPAF_MANAGE_RECAP_IN_EBUSINESS.getBooleanValue();
 
         ArrayList listConteneurRecap = new ArrayList();
         HashMap recapCSV = new HashMap();

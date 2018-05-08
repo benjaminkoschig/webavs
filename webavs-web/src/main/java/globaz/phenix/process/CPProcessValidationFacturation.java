@@ -41,6 +41,7 @@ import globaz.phenix.db.principale.CPDonneesCalcul;
 import globaz.phenix.db.principale.CPSortie;
 import globaz.phenix.db.principale.CPSortieManager;
 import globaz.phenix.toolbox.CPToolBox;
+import globaz.phenix.util.CPProperties;
 import globaz.pyxis.db.tiers.TIHistoriqueAvs;
 import globaz.pyxis.db.tiers.TITiersViewBean;
 import java.math.BigDecimal;
@@ -49,7 +50,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 import ch.globaz.common.properties.CommonProperties;
-import ch.globaz.orion.business.constantes.EBProperties;
 import ch.globaz.orion.business.domaine.demandeacompte.DemandeModifAcompteStatut;
 import ch.globaz.orion.businessimpl.services.adi.AdiServiceImpl;
 import ch.globaz.orion.businessimpl.services.partnerWeb.PartnerWebServiceImpl;
@@ -128,7 +128,7 @@ public class CPProcessValidationFacturation extends BProcess {
         try {
             // défini si un EBusiness est connecté
             isEbusinessConnected = CommonProperties.EBUSINESS_CONNECTED.getBooleanValue();
-            isManagedDecisionInEbusiness = EBProperties.ADI_MANAGE_DECISION_IN_EBUSINESS.getBooleanValue();
+            isManagedDecisionInEbusiness = CPProperties.ADI_MANAGE_DECISION_IN_EBUSINESS.getBooleanValue();
 
             // Recherche de la date d'introduction du NNSS
             try {

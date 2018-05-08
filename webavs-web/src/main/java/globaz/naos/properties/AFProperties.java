@@ -47,8 +47,9 @@ public enum AFProperties implements IProperties {
     IDE_CASCADE_ADRESSE_MORALE("ide.cascade.adresse.morale", "Cascade d'adresse IDE pour personnes morales"),
     IDE_CASCADE_ADRESSE_PHYSIQUE("ide.cascade.adresse.physique", "Cascade d'adresse IDE pour personnes physiques"),
     CONTROLE_ANNUEL_LPP_GENERATION_EXTRAIT_DS("lpp.annuel.generation.extrait",
-            "Generation de l'extrait de décompte lors de l'envoi du questionnaire LPP pour le suivi annuel");
-    ;
+            "Generation de l'extrait de décompte lors de l'envoi du questionnaire LPP pour le suivi annuel"),
+    DISPLAY_IS_AFFILIE_EBUSINESS("display.is.affilie.ebusiness",
+            "Indique dans le détail de l'affilié si celui-ci est actif dans EBusiness");
 
     private String description;
     private String propertyName;

@@ -23,3 +23,6 @@ UPDATE SCHEMA.AFAFFIP SET MALFED = null WHERE MALFED = '0';
 
 --Correction label
 UPDATE SCHEMA.FWCOUP SET PCOLUT = 'Fehlerhaft' WHERE PCOSID = 858004 AND PLAIDE = 'D';
+
+--Ajout de propriété : afficher/pas afficher dans le détail de l'affilié si celui-ci est actif dans EBusiness
+INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL) VALUES ('naos.display.is.affilie.ebusiness','false');

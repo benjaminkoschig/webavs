@@ -11,3 +11,6 @@ ALTER TABLE SCHEMA.CPDECIP ADD COLUMN EBIDDP NUMERIC(15,0);
 
 -- Insertion libellé libellePassageCotPersAutoPortail dans les propriétés PHENIX
 INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL) VALUES ('phenix.libellePassageCotPersAutoPortail','Décisions personnelles issues du portail');
+
+-- Ajout de propriété : Indique si les décisions de cotisations personnelles doivent être créées dans l'EBusiness
+INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL) VALUES ('phenix.adi.manage.decision.in.ebusiness','false');

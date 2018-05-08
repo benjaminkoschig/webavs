@@ -4,10 +4,6 @@ INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL) VALUES ('orion.adi.messageRefusGe
 INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL) VALUES ('orion.email.mutation.adresse.caf','');
 INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL) VALUES ('orion.email.mutation.adresse.avs','');
 INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL) VALUES ('orion.generic.user','userwebavs');
-INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL) VALUES ('orion.display.is.affilie.ebusiness','false');
-INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL) VALUES ('orion.adi.manage.decision.in.ebusiness','false');
-INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL) VALUES ('orion.recapaf.manage.recap.in.ebusiness','false');
-
 
 --Gestion des DAN complément
 ALTER TABLE SCHEMA.EBPUCS_FILE ADD ANNEE_VERSEMENT NUMERIC(4,0);

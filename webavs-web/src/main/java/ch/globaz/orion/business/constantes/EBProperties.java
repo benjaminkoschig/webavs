@@ -33,14 +33,7 @@ public enum EBProperties implements IProperties {
             "Adresse email à laquelle envoyer les mutations d'adresses caf", String.class),
     EMAIL_MUTATION_ADRESSE_AVS("email.mutation.adresse.avs",
             "Adresse email à laquelle envoyer les mutations d'adresses avs", String.class),
-    GENERIC_USER("generic.user", "userwebavs", String.class),
-    DISPLAY_IS_AFFILIE_EBUSINESS("display.is.affilie.ebusiness",
-            "Indique dans le détail de l'affilié si celui-ci est actif dans EBusiness ", Boolean.class),
-    ADI_MANAGE_DECISION_IN_EBUSINESS("adi.manage.decision.in.ebusiness",
-            "Indique si les décisions de cotisations personnelles doivent être créées dans l'EBusiness", Boolean.class),
-    RECAPAF_MANAGE_RECAP_IN_EBUSINESS("recapaf.manage.recap.in.ebusiness",
-            "Indique si les récaps AF doivent être créées dans l'EBusiness lors de la génération globale fictive",
-            Boolean.class);
+    GENERIC_USER("generic.user", "Nom de l'utilisateur générique EBusiness", String.class);
 
     private String property;
     private String description;

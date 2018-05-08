@@ -1,0 +1,2 @@
+-- Ajout de propriété : Indique si les récaps AF doivent être créées dans l'EBusiness lors de la génération globale fictive
+INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL) VALUES ('al.recapaf.manage.recap.in.ebusiness','false');

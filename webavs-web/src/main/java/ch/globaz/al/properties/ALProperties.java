@@ -17,10 +17,16 @@ public enum ALProperties implements IProperties {
         }
 
     },
-
     REVENUS_MINIMAUX("revenus.minimaux", "Liste représentant les couples années:revenu minimal") {
         @Override
         public boolean isValidValue(final String propertyValue) {
+            return CommonPropertiesUtils.isValidBooleanPropertyValue(propertyValue);
+        }
+    },
+    RECAPAF_MANAGE_RECAP_IN_EBUSINESS("recapaf.manage.recap.in.ebusiness",
+            "Indique si les récaps AF doivent être créées dans l'EBusiness lors de la génération globale fictive") {
+        @Override
+        public boolean isValidValue(String propertyValue) {
             return CommonPropertiesUtils.isValidBooleanPropertyValue(propertyValue);
         }
     };

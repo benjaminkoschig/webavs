@@ -21,8 +21,8 @@ import ch.globaz.al.business.constantes.ALConstProtocoles;
 import ch.globaz.al.business.loggers.ProtocoleLogger;
 import ch.globaz.al.businessimpl.processus.BusinessTraitement;
 import ch.globaz.al.businessimpl.services.ALImplServiceLocator;
+import ch.globaz.al.properties.ALProperties;
 import ch.globaz.common.properties.CommonProperties;
-import ch.globaz.orion.business.constantes.EBProperties;
 import ch.globaz.orion.businessimpl.services.af.AfServiceImpl;
 
 /**
@@ -62,7 +62,7 @@ public class GenerationPrestationsTraitement extends BusinessTraitement {
     @Override
     public void execute() throws JadeApplicationException, JadePersistenceException {
         boolean isEbusinessConnected = CommonProperties.EBUSINESS_CONNECTED.getBooleanValue();
-        boolean isManagedRecapAfInEbusiness = EBProperties.RECAPAF_MANAGE_RECAP_IN_EBUSINESS.getBooleanValue();
+        boolean isManagedRecapAfInEbusiness = ALProperties.RECAPAF_MANAGE_RECAP_IN_EBUSINESS.getBooleanValue();
 
         String periode = getProcessusConteneur().getDataCriterias().periodeCriteria;
         String type = getProcessusConteneur().getDataCriterias().cotisationCriteria;
