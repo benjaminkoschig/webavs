@@ -49,6 +49,7 @@ import globaz.globall.util.JACalendarGregorian;
 import globaz.globall.util.JADate;
 import globaz.globall.util.JAException;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.log.JadeLogger;
 import globaz.osiris.api.APICompteAnnexe;
 import globaz.osiris.api.APIGestionComptabiliteExterne;
 import globaz.osiris.api.APIJournal;
@@ -265,8 +266,7 @@ public class REModuleComptableDiminution extends AREModuleComptable {
             entete.setIdEnteteBlocage(ra.getIdEnteteBlocage());
             entete.retrieve();
         } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            JadeLogger.info(this, "SQL ERROR : REEnteteBlocage");
         }
 
         /*

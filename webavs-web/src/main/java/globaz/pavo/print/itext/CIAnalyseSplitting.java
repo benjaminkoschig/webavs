@@ -172,7 +172,7 @@ public class CIAnalyseSplitting extends FWIDocumentManager {
                 if (ci != null) {
                     if (!ci.hasUserShowRight(getTransaction())) {
                         secureDenied = true;
-                        throw new Exception(CIAnalyseSplitting.class
+                        throw new FWIException(CIAnalyseSplitting.class
                                 + " : Droit insuffisant pour voir le montant du revenu");
                     }
                     if (BSessionUtil.compareDateFirstLowerOrEqual(getSession(),
@@ -436,8 +436,8 @@ public class CIAnalyseSplitting extends FWIDocumentManager {
 
     @Override
     protected String getEMailObject() {
-        String documentFileTitle = (JadeStringUtil.isBlank(getFileTitle()) ? getDocumentTitle() : getFileTitle());
-        StringBuffer buffer = new StringBuffer(getSession().getLabel(
+        String documentFileTitle = JadeStringUtil.isBlank(getFileTitle()) ? getDocumentTitle() : getFileTitle();
+        StringBuilder buffer = new StringBuilder(getSession().getLabel(
                 "APERCU_SPLITTING_EMAIL_SUBJECT_DROIT_INSUFFISANT_ENTETE"));
         buffer.append(documentFileTitle);
         if (secureDenied) {

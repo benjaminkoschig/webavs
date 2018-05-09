@@ -2177,7 +2177,7 @@ public class CICompteIndividuel extends BEntity {
                             return false;
                         }
                     } else {
-                        if ((accesUser < accesCI)) {
+                        if (accesUser < accesCI) {
                             // sécurité utilisateur inférieure -> -> ecriture cachée
                             return false;
                         }
@@ -2200,9 +2200,7 @@ public class CICompteIndividuel extends BEntity {
     }
 
     private boolean checkAffSecureCode(BTransaction transaction, int codeSecure) throws Exception {
-        BTransaction transactionSecureCode = null;
-        boolean hasRight = false;
-        ResultSet resultSet = null;
+        ResultSet resultSet;
         BStatement psCheckAffSecureCode = new BStatement(transaction);
         psCheckAffSecureCode.createStatement();
         resultSet = psCheckAffSecureCode.executeQuery("SELECT MATSEC as AFF_SEC from "
