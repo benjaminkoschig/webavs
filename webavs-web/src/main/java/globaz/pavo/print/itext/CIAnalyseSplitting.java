@@ -157,7 +157,7 @@ public class CIAnalyseSplitting extends FWIDocumentManager {
                 if (ci != null) {
                     if (!ci.hasUserShowRight(getTransaction())) {
                         secureDenied = true;
-                        throw new Exception(CIAnalyseSplitting.class
+                        throw new FWIException(CIAnalyseSplitting.class
                                 + " : Droit insuffisant pour voir le montant du revenu");
                     }
                     if (BSessionUtil.compareDateFirstLowerOrEqual(getSession(),
@@ -215,7 +215,7 @@ public class CIAnalyseSplitting extends FWIDocumentManager {
                     if (ci != null) {
                         if (!ci.hasUserShowRight(getTransaction())) {
                             secureDenied = true;
-                            throw new Exception(CIAnalyseSplitting.class
+                            throw new FWIException(CIAnalyseSplitting.class
                                     + " : Droit insuffisant pour voir le montant du revenu");
                         }
                         if (BSessionUtil.compareDateFirstLowerOrEqual(getSession(),

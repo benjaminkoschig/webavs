@@ -19,6 +19,7 @@ import globaz.jade.admin.JadeAdminServiceLocatorProvider;
 import globaz.jade.admin.user.bean.JadeUser;
 import globaz.jade.admin.user.service.JadeUserService;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.log.JadeLogger;
 import globaz.jade.smtp.JadeSmtpClient;
 import globaz.naos.translation.CodeSystem;
 import globaz.naos.util.AFUtil;
@@ -1461,15 +1462,7 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
     }
 
     public boolean hasRight(String userId, String numAvs) {
-
-        try {
-            return hasRight(userId, getSession(), numAvs);
-        } catch (Exception e) {
-            setMessage(e.getMessage());
-            e.printStackTrace();
-        }
-
-        return true;
+        return hasRight(userId, getSession(), numAvs);
     }
 
     public boolean hasRight(String userId, BSession session, String numAVS) {
@@ -1504,15 +1497,15 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
                     return false;
                 }
             } catch (Exception e) {
-                // _addError(newTrans, newTrans.getErrors().toString());
-                throw (e);
+                throw e;
             } finally {
                 if (newTrans != null) {
                     newTrans.closeTransaction();
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            setMessage(e.getMessage());
+            JadeLogger.warn(this, e.getMessage());
             return true;
         }
     }

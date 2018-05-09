@@ -36,6 +36,7 @@ import globaz.cygnus.db.typeDeSoins.RFTypeDeSoin;
 import globaz.cygnus.db.typeDeSoins.RFTypeDeSoinJointSousTypeDeSoin;
 import globaz.cygnus.db.typeDeSoins.RFTypeDeSoinJointSousTypeDeSoinManager;
 import globaz.cygnus.db.typeDeSoins.RFTypeDeSoinManager;
+import globaz.cygnus.exceptions.RFRetrieveIsEnfantException;
 import globaz.cygnus.exceptions.RFRetrieveTypeHomeException;
 import globaz.cygnus.services.RFMembreFamilleService;
 import globaz.cygnus.services.adaptationJournaliere.RFAdaptationJournaliereContext;
@@ -1204,13 +1205,15 @@ public class RFUtils {
                         return true;
                     }
                 } else {
-                    throw new Exception("RFValidationDemandeService.montantsQdAssure(): RFAssQdDossier null");
+                    throw new RFRetrieveIsEnfantException(
+                            "RFValidationDemandeService.montantsQdAssure(): RFAssQdDossier null");
                 }
             } else {
-                throw new Exception("RFValidationDemandeService.montantsQdAssure(): RFAssQdDossier introuvable");
+                throw new RFRetrieveIsEnfantException(
+                        "RFValidationDemandeService.montantsQdAssure(): RFAssQdDossier introuvable");
             }
         } else {
-            throw new Exception("RFValidationDemandeService.montantsQdAssure(): Dossier introuvable");
+            throw new RFRetrieveIsEnfantException("RFValidationDemandeService.montantsQdAssure(): Dossier introuvable");
         }
 
         return false;

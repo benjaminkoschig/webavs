@@ -30,6 +30,7 @@ import globaz.cygnus.db.qds.RFQdPrincipale;
 import globaz.cygnus.db.qds.RFQdPrincipaleManager;
 import globaz.cygnus.utils.RFPropertiesUtils;
 import globaz.cygnus.utils.RFUtils;
+import globaz.framework.printing.itext.exception.FWIException;
 import globaz.globall.api.BISession;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BTransaction;
@@ -320,7 +321,7 @@ public class RFValiderDecisionMiseAJourEntitiesService {
                                     }
                                 } else if (!RFPropertiesUtils.miseEnGedDesDecisionsAZero()
                                         || !Montant.valueOf(rfDecJoiPre.getMontantTotal()).isZero()) {
-                                    throw new Exception("RFValiderDecisionProcess.run(): OV introuvable");
+                                    throw new FWIException("RFValiderDecisionProcess.run(): OV introuvable");
                                 }
 
                             } else {
