@@ -26,6 +26,7 @@ public class DemandeSearch extends JadeSearchComplexModel {
 
     private String forIdTiers = null;
     private List<String> inCsEtatDemande = null;
+    private String forNotCsEtatDemande = null;
 
     private String likeNom = null;
 
@@ -221,6 +222,14 @@ public class DemandeSearch extends JadeSearchComplexModel {
      */
     public void setOrderBy(String orderBy) {
         setOrderKey(orderBy);
+    }
+
+    public String getForNotCsEtatDemande() {
+        return forNotCsEtatDemande;
+    }
+
+    public void setForNotCsEtatDemande(String forNotCsEtatDemande) {
+        this.forNotCsEtatDemande = forNotCsEtatDemande;
     }
 
     @Override

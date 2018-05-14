@@ -23,6 +23,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import ch.globaz.hera.business.exceptions.models.PeriodeException;
 import ch.globaz.pegasus.business.constantes.ConstantesCalcul;
+import ch.globaz.pegasus.business.constantes.IPCDemandes;
 import ch.globaz.pegasus.business.constantes.IPCDroits;
 import ch.globaz.pegasus.business.constantes.donneesfinancieres.IPCApiAvsAi;
 import ch.globaz.pegasus.business.exceptions.models.calcul.CalculBusinessException;
@@ -249,6 +250,7 @@ public class PeriodesServiceImpl extends PegasusAbstractServiceImpl implements
         // on filtre la demande elle-meme
         demandeSearch.setOrderKey(DemandeSearch.ORDER_DATE_DEBUT_DESC);
         demandeSearch.setForIdDemandeNotEquals(droit.getDemande().getId());
+        demandeSearch.setForNotCsEtatDemande(IPCDemandes.CS_ANNULE);
         demandeSearch = PegasusServiceLocator.getDemandeService().search(demandeSearch);
 
         // date de demande

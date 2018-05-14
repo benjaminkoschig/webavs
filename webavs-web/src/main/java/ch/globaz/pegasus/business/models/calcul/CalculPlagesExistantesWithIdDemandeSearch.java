@@ -16,6 +16,7 @@ public class CalculPlagesExistantesWithIdDemandeSearch extends JadeSearchComplex
      */
     private static final long serialVersionUID = 1L;
     private String forIdRequerant = null;
+    private String forCsEtatDemande = null;
 
     public String getForIdRequerant() {
         return forIdRequerant;
@@ -33,6 +34,14 @@ public class CalculPlagesExistantesWithIdDemandeSearch extends JadeSearchComplex
     @Override
     public Class whichModelClass() {
         return CalculPlagesExistantesWithIdDemande.class;
+    }
+
+    public String getForCsEtatDemande() {
+        return forCsEtatDemande;
+    }
+
+    public void setForCsEtatDemande(String forCsEtatDemande) {
+        this.forCsEtatDemande = forCsEtatDemande;
     }
 
 }

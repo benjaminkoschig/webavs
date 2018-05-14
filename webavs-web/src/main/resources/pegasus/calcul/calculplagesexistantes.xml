@@ -13,6 +13,7 @@
 		<search-definition>
 			<search-group operator="AND">
 				<search-field name="forIdRequerant" field-ref="versionDroit.demande.dossier.demandePrestation.demandePrestation.idTiers" operation="EQUALS"/>
+				<search-field name="forCsEtatDemande" operation="NOT_EQUALS"  field-ref="versionDroit.demande.simpleDemande.csEtatDemande" value="64001010"/>
 			</search-group>
 		</search-definition>		
 		

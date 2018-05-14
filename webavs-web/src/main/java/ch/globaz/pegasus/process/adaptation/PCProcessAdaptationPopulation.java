@@ -79,6 +79,7 @@ public class PCProcessAdaptationPopulation implements JadeProcessPopulationInter
         search.setDefinedSearchSize(JadeAbstractSearchModel.SIZE_NOLIMIT);
         search.setOrderBy("nomPrenom");
         search.setForCsEtatDemande(IPCDemandes.CS_OCTROYE);
+        search.setForNotCsEtatDemande(IPCDemandes.CS_ANNULE);
         search.setWhereKey(DemandeSearch.WITH_DEMANDE_DATE_FIN_NULL);
         PegasusServiceLocator.getDemandeService().search(search);
         return createArray(search);
