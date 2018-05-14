@@ -2726,7 +2726,8 @@ public interface DroitService extends JadeApplicationService {
      * @throws DroitException
      */
     Droit supprimerVersionDroit(Droit droit) throws DonneeFinanciereException,
-            JadeApplicationServiceNotAvailableException, JadePersistenceException, DroitException;
+            JadeApplicationServiceNotAvailableException, JadePersistenceException, DroitException, DemandeException,
+            DossierException;
 
     /**
      * Supprime une version de droit à l'état annulé. Si il y a une seule version le droit, les membres de familles et

@@ -4277,7 +4277,8 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
 
     @Override
     public Droit supprimerVersionDroit(Droit droit) throws DonneeFinanciereException,
-            JadeApplicationServiceNotAvailableException, JadePersistenceException, DroitException {
+            JadeApplicationServiceNotAvailableException, JadePersistenceException, DroitException, DemandeException,
+            DossierException {
         if (DroitChecker.isUpdatable(droit)) {
             // suppression des données financières
             PegasusImplServiceLocator.getDonneeFinanciereHeaderService().deleteDonneFinancierByIdVersionDroit(
@@ -4295,6 +4296,11 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
             // suppression de la version de droit
             PegasusImplServiceLocator.getSimpleVersionDroitService().delete(droit.getSimpleVersionDroit());
 
+            if (!JadeStringUtil.isEmpty(droit.getDemande().getSimpleDemande().getDateFinInitial())) {
+                droit.getDemande().getSimpleDemande().setDateFinInitial("");
+                PegasusImplServiceLocator.getSimpleDemandeService().update(droit.getDemande().getSimpleDemande());
+            }
+
             // suppression du droit si il y une seule version
             SimpleVersionDroitSearch search = new SimpleVersionDroitSearch();
             search.setForIdDroit(droit.getSimpleDroit().getIdDroit());
@@ -4303,6 +4309,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
                         droit.getSimpleDroit().getIdDroit());
                 PegasusImplServiceLocator.getSimpleDroitService().delete(droit.getSimpleDroit());
             }
+
         }
 
         return droit;

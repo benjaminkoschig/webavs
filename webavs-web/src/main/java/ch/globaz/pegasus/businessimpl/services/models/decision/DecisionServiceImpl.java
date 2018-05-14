@@ -350,7 +350,9 @@ public class DecisionServiceImpl extends PegasusAbstractServiceImpl implements D
                 SimpleVersionDroit simpleVersionDroitPrecedente = findVersionDroitPrecedant(idDroit, noVersion);
                 SimpleDemande simpleDemande = vd.getDemande().getSimpleDemande();
 
-                if (isDecisionSuppression || hasDateFinForce(newPcas)) {
+                if (!JadeStringUtil.isEmpty(simpleDemande.getDateFinInitial())) {
+                    simpleDemande.setDateFin(simpleDemande.getDateFinInitial());
+                } else if (isDecisionSuppression || hasDateFinForce(newPcas)) {
                     simpleDemande.setDateFin("");
                 }
 
