@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import ch.globaz.corvus.business.exceptions.models.LotException;
 import ch.globaz.hera.business.exceptions.models.MembreFamilleException;
 import ch.globaz.hera.business.services.HeraServiceLocator;
 import ch.globaz.hera.business.vo.famille.MembreFamilleVO;
@@ -35,18 +36,21 @@ import ch.globaz.pegasus.business.exceptions.models.demande.DemandeException;
 import ch.globaz.pegasus.business.exceptions.models.dossiers.DossierException;
 import ch.globaz.pegasus.business.exceptions.models.droit.DonneeFinanciereException;
 import ch.globaz.pegasus.business.exceptions.models.droit.DroitException;
+import ch.globaz.pegasus.business.exceptions.models.lot.PrestationException;
 import ch.globaz.pegasus.business.exceptions.models.pcaccordee.PCAccordeeException;
 import ch.globaz.pegasus.business.exceptions.models.pmtmensuel.PmtMensuelException;
 import ch.globaz.pegasus.business.models.demande.Demande;
 import ch.globaz.pegasus.business.models.demande.DemandeSearch;
 import ch.globaz.pegasus.business.models.demande.ListDemandes;
 import ch.globaz.pegasus.business.models.demande.ListDemandesSearch;
+import ch.globaz.pegasus.business.models.demande.SimpleDemande;
 import ch.globaz.pegasus.business.models.droit.Droit;
 import ch.globaz.pegasus.business.models.pcaccordee.PCAccordee;
 import ch.globaz.pegasus.business.models.pcaccordee.PCAccordeeSearch;
 import ch.globaz.pegasus.business.models.revisionquadriennale.ListRevisionsSearch;
 import ch.globaz.pegasus.business.services.PegasusServiceLocator;
 import ch.globaz.pegasus.business.services.models.demande.DemandeService;
+import ch.globaz.pegasus.businessimpl.checkers.demande.SimpleDemandeChecker;
 import ch.globaz.pegasus.businessimpl.services.PegasusAbstractServiceImpl;
 import ch.globaz.pegasus.businessimpl.services.PegasusImplServiceLocator;
 import ch.globaz.pegasus.businessimpl.utils.PersistenceUtil;
@@ -321,20 +325,28 @@ public class DemandeServiceImpl extends PegasusAbstractServiceImpl implements De
 
     @Override
     public boolean isDemandeReouvrable(Demande demande) throws PegasusException,
-            JadeApplicationServiceNotAvailableException, JadePersistenceException {
+            JadeApplicationServiceNotAvailableException, JadePersistenceException, LotException {
 
         PCAccordeeSearch search = new PCAccordeeSearch();
         search.setWhereKey(PCAccordeeSearch.FOR_CURRENT_VERSIONED_WITH_DATE_FIN_FORCE);
         search.setForIdDemande(demande.getSimpleDemande().getIdDemande());
         search.setForCsEtatPca(IPCPCAccordee.CS_ETAT_PCA_VALIDE);
         int nb = PegasusImplServiceLocator.getPCAccordeeService().count(search);
+        PegasusServiceLocator.getPCAccordeeService().search(search);
 
         if ((nb > 0) && isLastDemande(demande)
-                && !IPCDemandes.CS_REOUVERT.equals(demande.getSimpleDemande().getCsEtatDemande())) {
+                && !IPCDemandes.CS_REOUVERT.equals(demande.getSimpleDemande().getCsEtatDemande())
+                && !(isComptabilise(demande.getSimpleDemande()))) {
             return true;
         }
         return false;
 
+    }
+
+    private boolean isComptabilise(SimpleDemande demande) throws DroitException, PrestationException, LotException,
+            JadeApplicationServiceNotAvailableException, JadePersistenceException {
+
+        return SimpleDemandeChecker.isLotAnnuleComptabilise(demande);
     }
 
     @Override

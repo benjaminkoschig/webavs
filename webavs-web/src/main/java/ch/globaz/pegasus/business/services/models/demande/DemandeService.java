@@ -4,6 +4,7 @@ import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.service.provider.application.JadeApplicationService;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
+import ch.globaz.corvus.business.exceptions.models.LotException;
 import ch.globaz.pegasus.business.exceptions.PegasusException;
 import ch.globaz.pegasus.business.exceptions.models.decision.DecisionException;
 import ch.globaz.pegasus.business.exceptions.models.demande.DemandeException;
@@ -200,9 +201,10 @@ public interface DemandeService extends JadeApplicationService {
      * @throws PegasusException
      * @throws JadeApplicationServiceNotAvailableException
      * @throws JadePersistenceException
+     * @throws LotException
      */
     public boolean isDemandeReouvrable(Demande demande) throws PegasusException,
-            JadeApplicationServiceNotAvailableException, JadePersistenceException;
+            JadeApplicationServiceNotAvailableException, JadePersistenceException, LotException;
 
     /**
      * Annule la demande
