@@ -432,9 +432,9 @@ function validate() {
 		      showConfirmationDialogDateReduc();
               }
 			// zone remise à blanc reset de la date de réduction à la date initiale
-			} else if(dateFinInitialFormat != null) {
-				$('#forDateFin').val(dateFinInitial);
-			}
+			} 
+		}else if(dateFinInitialFormat != null && dateFinInitialFormat != "") {
+			$('#forDateFin').val(dateFinInitial);
 		}
 
 		
