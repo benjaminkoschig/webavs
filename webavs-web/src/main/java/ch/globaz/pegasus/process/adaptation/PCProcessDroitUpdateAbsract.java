@@ -7,6 +7,8 @@ import java.util.Map;
 import ch.globaz.jade.process.business.interfaceProcess.entity.JadeProcessEntityNeedProperties;
 import ch.globaz.jade.process.business.interfaceProcess.entity.JadeProcessEntityPropertySavable;
 import ch.globaz.pegasus.business.constantes.IPCDroits;
+import ch.globaz.pegasus.business.exceptions.models.demande.DemandeException;
+import ch.globaz.pegasus.business.exceptions.models.dossiers.DossierException;
 import ch.globaz.pegasus.business.exceptions.models.droit.DroitException;
 import ch.globaz.pegasus.business.models.droit.Droit;
 import ch.globaz.pegasus.process.util.AbstractEntity;
@@ -20,7 +22,7 @@ public abstract class PCProcessDroitUpdateAbsract extends AbstractEntity impleme
     protected Map<Enum<?>, String> properties = null;
 
     public void fillDroitToUpdate() throws DroitException, JadeApplicationServiceNotAvailableException,
-            JadePersistenceException {
+            JadePersistenceException, DemandeException, DossierException {
 
         // remplie le droit courant et définit le droit à calculer
         Droit[] droits = PCAdaptationUtils.findUpdatableDroits(entity.getIdRef(),
