@@ -28,16 +28,7 @@ public enum ADIControlesEnum {
         return label;
     }
 
-    public void setLabel(String label) {
-        this.label = label;
-    }
-
     public Boolean isCritical() {
         return isCritical;
     }
-
-    public void setIsCritical(Boolean isCritical) {
-        this.isCritical = isCritical;
-    }
-
 }

@@ -141,7 +141,7 @@ public class CPProcessDemandePortailGenererDecision extends BProcess {
             // Création des remarques
             calcul.createRemarqueAutomatique(getTransaction(), newDecision);
         } catch (Exception e) {
-            e.printStackTrace();
+            JadeLogger.error(this, e);
         }
     }
 
@@ -169,7 +169,7 @@ public class CPProcessDemandePortailGenererDecision extends BProcess {
             getMemoryLog().logMessage(e.toString(), FWMessage.FATAL, this.getClass().getName());
         } // Fin de la procédure
         catch (Throwable t) {
-            t.printStackTrace();
+            JadeLogger.error(this, t);
         }
         return !isOnError();
     }

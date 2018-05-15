@@ -14,10 +14,6 @@ public enum DeclarationSalaireType {
         return value;
     }
 
-    public void setValue(Integer value) {
-        this.value = value;
-    }
-
     public boolean isPrincipale() {
         return PRINCIPALE.equals(this);
     }

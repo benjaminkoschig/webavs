@@ -20,24 +20,12 @@ public enum DemandeModifAcompteType {
         return value;
     }
 
-    public void setValue(String value) {
-        this.value = value;
-    }
-
     public String getLabel() {
         return label;
     }
 
-    public void setLabel(String label) {
-        this.label = label;
-    }
-
     public Integer getCs() {
         return cs;
-    }
-
-    public void setCs(Integer cs) {
-        this.cs = cs;
     }
 
     public static DemandeModifAcompteType fromValue(String value) {
