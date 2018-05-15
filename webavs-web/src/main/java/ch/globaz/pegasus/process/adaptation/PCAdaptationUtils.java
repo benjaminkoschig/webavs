@@ -25,6 +25,8 @@ import ch.globaz.pegasus.business.constantes.IPCDemandes;
 import ch.globaz.pegasus.business.constantes.IPCDroits;
 import ch.globaz.pegasus.business.constantes.IPCValeursPlanCalcul;
 import ch.globaz.pegasus.business.constantes.IPCVariableMetier;
+import ch.globaz.pegasus.business.exceptions.models.demande.DemandeException;
+import ch.globaz.pegasus.business.exceptions.models.dossiers.DossierException;
 import ch.globaz.pegasus.business.exceptions.models.droit.DonneeFinanciereException;
 import ch.globaz.pegasus.business.exceptions.models.droit.DroitException;
 import ch.globaz.pegasus.business.exceptions.models.pcaccordee.PCAccordeeException;
@@ -193,10 +195,12 @@ public class PCAdaptationUtils {
      * @throws JadePersistenceException
      * @throws JadeApplicationServiceNotAvailableException
      * @throws DroitException
+     * @throws DossierException
+     * @throws DemandeException
      */
     public static Droit[] findUpdatableDroits(String idDemande, String date, String csMotif,
             Map<PCProcessAdapationEnum, String> dataToSave) throws DroitException,
-            JadeApplicationServiceNotAvailableException, JadePersistenceException {
+            JadeApplicationServiceNotAvailableException, JadePersistenceException, DemandeException, DossierException {
         DroitSearch droitSearch = null;
         Droit currentDroit = null;
         Droit droitACalculer = null;
