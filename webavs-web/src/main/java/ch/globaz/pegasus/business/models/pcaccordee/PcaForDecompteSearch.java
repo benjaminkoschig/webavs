@@ -15,6 +15,8 @@ public class PcaForDecompteSearch extends JadeSearchComplexModel {
     private String forIdDemande;
     private String forIdDroit;
     private String forNoVersion;
+    private String forCsEtatPlanCalcul;
+    private String forCsEtatDemande;
 
     public String getForDateMax() {
         return forDateMax;
@@ -59,5 +61,21 @@ public class PcaForDecompteSearch extends JadeSearchComplexModel {
     @Override
     public Class<PcaForDecompte> whichModelClass() {
         return PcaForDecompte.class;
+    }
+
+    public String getForCsEtatPlanCalcul() {
+        return forCsEtatPlanCalcul;
+    }
+
+    public void setForCsEtatPlanCalcul(String forCsEtatPlanCalcul) {
+        this.forCsEtatPlanCalcul = forCsEtatPlanCalcul;
+    }
+
+    public String getForCsEtatDemande() {
+        return forCsEtatDemande;
+    }
+
+    public void setForCsEtatDemande(String forCsEtatDemande) {
+        this.forCsEtatDemande = forCsEtatDemande;
     }
 }

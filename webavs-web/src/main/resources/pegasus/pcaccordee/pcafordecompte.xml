@@ -72,6 +72,10 @@
 						<search-group operator="OR">
 							<search-field name="forDateMax" operation="LESS_OR_EQUALS" field-ref="simplePCAccordee.dateFin"/>
 							<search-field name="forDateMax" operation="NULL" field-ref="simplePCAccordee.dateFin"/>
+							<search-group operator="AND">	
+								<search-field name="forCsEtatPlanCalcul" operation="EQUALS" field-ref="simplePlanDeCalcul.etatPC" value="64061003"/>
+								<search-field name="forCsEtatDemande" operation="EQUALS"  field-ref="simpleDemande.csEtatDemande" value="64001010"/>
+							</search-group> 
 						</search-group>
 					</search-group>
 				
