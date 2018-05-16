@@ -49,7 +49,6 @@ import globaz.globall.util.JACalendarGregorian;
 import globaz.globall.util.JADate;
 import globaz.globall.util.JAException;
 import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.log.JadeLogger;
 import globaz.osiris.api.APICompteAnnexe;
 import globaz.osiris.api.APIGestionComptabiliteExterne;
 import globaz.osiris.api.APIJournal;
@@ -260,14 +259,6 @@ public class REModuleComptableDiminution extends AREModuleComptable {
     private boolean doitOnCreerUneRestitutionEnCompta(final RERenteAccordee ra, JACalendar cal, JADate dateDernierPmt,
             JADate dateFinRA) {
         boolean creerRestitution = true;
-        REEnteteBlocage entete = new REEnteteBlocage();
-        try {
-            entete.setSession(ra.getSession());
-            entete.setIdEnteteBlocage(ra.getIdEnteteBlocage());
-            entete.retrieve();
-        } catch (Exception e) {
-            JadeLogger.info(this, "SQL ERROR : REEnteteBlocage");
-        }
 
         /*
          * CONDITION 1
@@ -275,7 +266,7 @@ public class REModuleComptableDiminution extends AREModuleComptable {
          * n'est pas bloquée....
          */
         if ((cal.compare(dateDernierPmt, dateFinRA) == JACalendar.COMPARE_EQUALS)
-                && (ra.getIsPrestationBloquee() != null) && (!ra.getIsPrestationBloquee().booleanValue())) {
+                && ((ra.getIsPrestationBloquee() != null) && !ra.getIsPrestationBloquee().booleanValue())) {
             creerRestitution = false;
         }
 
@@ -304,20 +295,6 @@ public class REModuleComptableDiminution extends AREModuleComptable {
          */
         if (creerRestitution) {
             if (cal.compare(dateDernierPmt, dateFinRA) == JACalendar.COMPARE_FIRSTLOWER) {
-                creerRestitution = false;
-            }
-        }
-
-        /*
-         * CONDITION 4
-         * La restitution de montant et la création de journaux en compta n'est réalisé que si la date de fin est
-         * identique au mois comptable, la rente est bloqué
-         * que le montant de déblocage et blocage sont identiques
-         */
-        if (creerRestitution) {
-            if (cal.compare(dateDernierPmt, dateFinRA) == JACalendar.COMPARE_EQUALS
-                    && (ra.getIsPrestationBloquee() != null) && (ra.getIsPrestationBloquee())
-                    && entete.getMontantBloque().equalsIgnoreCase(entete.getMontantDebloque())) {
                 creerRestitution = false;
             }
         }
