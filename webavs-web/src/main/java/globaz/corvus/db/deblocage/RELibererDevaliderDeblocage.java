@@ -152,8 +152,8 @@ public class RELibererDevaliderDeblocage {
     private void updateSectionsSolde(REDeblocage deblocage) {
 
         for (CASectionJoinCompteAnnexeJoinTiers section : deblocage.getSections()) {
-            List<RELigneDeblocageVentilation> ventilations = ventilationService.searchByIdSection(section
-                    .getIdSection());
+            List<RELigneDeblocageVentilation> ventilations = ventilationService.searchByIdSection(Long.valueOf(section
+                    .getIdSection()));
             for (RELigneDeblocageVentilation ventil : ventilations) {
                 RELigneDeblocage ligneDeblocage = ligneDeblocageService.read(String.valueOf(ventil
                         .getIdLigneDeblocage()));

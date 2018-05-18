@@ -137,8 +137,8 @@ public class RELigneDeblocageVentilationServices {
      * @param id
      * @return List<RELigneDeblocageVentilation>
      */
-    public List<RELigneDeblocageVentilation> searchByIdSection(String idSection) {
-        if (idSection == null || idSection.isEmpty()) {
+    public List<RELigneDeblocageVentilation> searchByIdSection(Long idSection) {
+        if (idSection == null) {
             throw new IllegalArgumentException(
                     "To searchByIdSection ligneDeblocageVentilation, idSection must be not null or empty");
         }
