@@ -37,6 +37,7 @@
 		<scm.url>${scm.protocol}://${scm.base}/${scm.branch}/webavs-parent</scm.url>
 		<scm.weburl>http://${scm.base}/${scm.branch}/webavs-parent</scm.weburl>
 		<release.tagFormat>webavs/@{project.version}</release.tagFormat>
+		<wiki.home>http://confluence.ju.globaz.ch</wiki.home>
 
 
 		<!-- since we are building with JDK 1.6, we need to override some plugin's 
