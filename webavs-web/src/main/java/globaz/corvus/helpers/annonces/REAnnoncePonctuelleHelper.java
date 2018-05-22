@@ -1935,7 +1935,9 @@ public class REAnnoncePonctuelleHelper extends PRAbstractHelper {
                             demAPI.setCodeOfficeAI(viewBean.getOfficeAI());
                             demAPI.setDateSuvenanceEvenementAssure(viewBean.getSurvenanceEvenementAssure());
 
-                            demAPI.update(transaction);
+                            if (bc.isDemandeRenteAPI()) {
+                                demAPI.update(transaction);
+                            }
 
                             bcm.setSession(session);
                             bcm.setForIdRenteCalculee(red.getIdRenteCalculee());
@@ -1950,7 +1952,9 @@ public class REAnnoncePonctuelleHelper extends PRAbstractHelper {
                                 bcD.setInvaliditePrecoce(viewBean.getIsInvaliditePrecoce());
                                 bcD.setCodeOfficeAi(viewBean.getOfficeAI());
                                 bcD.setIsDemandeRenteAPI(true);
-                                bcD.update(transaction);
+                                if (bc.isDemandeRenteAPI()) {
+                                    bcD.update(transaction);
+                                }
                             }
 
                         } else if (JadeNumericUtil.isInteger(viewBean.getGenrePrestation())
@@ -1982,7 +1986,9 @@ public class REAnnoncePonctuelleHelper extends PRAbstractHelper {
                                     pInv.update(transaction);
                                 }
                             }
-                            demINV.update(transaction);
+                            if (!bc.isDemandeRenteAPI()) {
+                                demINV.update(transaction);
+                            }
 
                             bcm.setSession(session);
                             bcm.setForIdRenteCalculee(red.getIdRenteCalculee());
@@ -1996,7 +2002,9 @@ public class REAnnoncePonctuelleHelper extends PRAbstractHelper {
                                 bcD.setSurvenanceEvtAssAyantDroit(viewBean.getSurvenanceEvenementAssure());
                                 bcD.setInvaliditePrecoce(viewBean.getIsInvaliditePrecoce());
                                 bcD.setCodeOfficeAi(viewBean.getOfficeAI());
-                                bcD.update(transaction);
+                                if (!bc.isDemandeRenteAPI()) {
+                                    bcD.update(transaction);
+                                }
                             }
                         }
                     }
