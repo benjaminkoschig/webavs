@@ -508,40 +508,40 @@
 				<image  scaleImage="FillFrame" vAlign="Top" hAlign="Left" isUsingCache="false" evaluationTime="Now" hyperlinkType="None">					<reportElement
 						mode="Opaque"
 						x="18"
-						y="71"
+						y="80"
 						width="454"
 						height="181"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
 						key="image-1"
-						stretchType="RelativeToBandHeight"
-						positionType="FixRelativeToTop"
+						stretchType="NoStretch"
+						positionType="Float"
 						isPrintRepeatedValues="true"
 						isRemoveLineWhenBlank="false"
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="false">
 							<printWhenExpression><![CDATA[$P{P_DUPLICATA_FR}]]></printWhenExpression>
 						</reportElement>
-					<graphicElement stretchType="RelativeToBandHeight" pen="None" fill="Solid" />
+					<graphicElement stretchType="NoStretch" pen="None" fill="Solid" />
 					<imageExpression class="java.lang.String"><![CDATA[$P{P_DEFAULT_MODEL_PATH}+"/duplicata.jpg"]]></imageExpression>				</image>
 				<image  scaleImage="FillFrame" vAlign="Top" hAlign="Left" isUsingCache="false" evaluationTime="Now" hyperlinkType="None">					<reportElement
 						mode="Opaque"
 						x="18"
-						y="70"
+						y="80"
 						width="452"
 						height="179"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
 						key="image-2"
-						stretchType="RelativeToBandHeight"
-						positionType="FixRelativeToTop"
+						stretchType="NoStretch"
+						positionType="Float"
 						isPrintRepeatedValues="true"
 						isRemoveLineWhenBlank="false"
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="false">
 							<printWhenExpression><![CDATA[$P{P_DUPLICATA_DE}]]></printWhenExpression>
 						</reportElement>
-					<graphicElement stretchType="RelativeToBandHeight" pen="None" fill="Solid" />
+					<graphicElement stretchType="NoStretch" pen="None" fill="Solid" />
 					<imageExpression class="java.lang.String"><![CDATA[$P{P_DEFAULT_MODEL_PATH}+"/duplicataDE.jpg"]]></imageExpression>				</image>
 				<subreport  isUsingCache="true">
 					<reportElement
