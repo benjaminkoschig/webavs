@@ -562,7 +562,7 @@
 		<dependency>
 			<groupId>ch.admin.ofit.anakin</groupId>
 			<artifactId>Anakin</artifactId>
-			<version>1.12.1</version>
+			<version>1.12.2</version>
 			<classifier>globaz</classifier>
 		</dependency>
 		<dependency>
