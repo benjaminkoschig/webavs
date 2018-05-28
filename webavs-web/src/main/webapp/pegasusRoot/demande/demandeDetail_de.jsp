@@ -1,5 +1,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <%@page import="ch.globaz.pegasus.business.constantes.IPCDroits"%>
+<%@page import="ch.globaz.pegasus.business.services.models.demande.DemandeService"%>
 <%@ page language="java" import="globaz.globall.http.*" contentType="text/html;charset=ISO-8859-1" %>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <HTML>
@@ -153,6 +154,31 @@ var showConfirmationDialogDateReduc = function () {
     });
 };
 
+calculerMontantRestitutionAjax = function (valeurDateSuppression){
+	var that = this;
+	if(valeurDateSuppression.length > 0){
+		var o_options, ajax;
+		o_options = {
+			serviceClassName: demandeServiceClassName,
+			serviceMethodName: "calculerMontantRestitution",
+			parametres: demande+","+valeurDateSuppression,
+			criterias: '',
+			cstCriterias: '',
+			callBack: function (data) {
+				$('#montantRestitution').val(data).change();
+			},
+			errorCallBack: null
+		};
+		ajax = Object.create($.extend(true, {}, globazNotation.readwidget));
+		ajax.options = o_options;
+		ajax.read();
+	  } else {
+		  $('#montantRestitution').val(0).change();
+	  }
+	
+
+};
+
 </SCRIPT>
 <% /*
 	Pour utiliser les postit, changez la valeur de la variable "key" (définie ci-dessus).
@@ -216,7 +242,6 @@ var showConfirmationDialogDateReduc = function () {
 		viewBean.setIsOnlyRetro(true);
 	}
 
-	
 	
 %>
 <%-- /tpl:put --%>
@@ -304,6 +329,9 @@ var dateDebut = "<%=JadeStringUtil.toNotNullString(viewBean.getDemande().getSimp
 var dateFin = "<%=JadeStringUtil.toNotNullString(viewBean.getDemande().getSimpleDemande().getDateFin())%>";
 
 var dateFinInitial ="<%=JadeStringUtil.toNotNullString(viewBean.getDemande().getSimpleDemande().getDateFinInitial())%>";
+
+var demandeServiceClassName = "<%=DemandeService.class.getName()%>";
+var demande=<%=viewBean.getId()%>;
 
 var parts = dateFin.split('.');
 var dateFinFormate = new Date(parts[1],parts[0],'');
@@ -461,6 +489,19 @@ function validate() {
 	
 function postInit(){
 		$('#csNationaliteAffiche,#partiallikeNSS').attr('disabled','true');
+
+		$('#dateReduc').change(function () {
+			  calculerMontantRestitutionAjax(this.value);
+		});
+		
+		$('#annule').change(function () {
+			if($("#annule").is(':checked')) {
+				calculerMontantRestitutionAjax(dateDebut);
+			} else {
+				$('#montantRestitution').val(0).change();
+			}
+		});
+
 }
 	
 </script>
@@ -552,6 +593,12 @@ function postInit(){
 						<input type="text" name="dateReduc" id="dateReduc"  onchange="doDisableCheckbox(this)" data-g-calendar="mandatory:false,type:month" value="<%=!JadeStringUtil.isBlank(viewBean.getDemande().getSimpleDemande().getDateFinInitial())?viewBean.getDemande().getSimpleDemande().getDateFin():""%>" />
 					</td>
 				</tr>
+				<tr id="montantRestitutionTr">
+						<TD><ct:FWLabel key="JSP_PC_DRO_D_MONTANT_RESTITUTION"/></TD>
+						<TD>
+							<input type="text" value=" " name="montantRestitution" id="montantRestitution"  readonly="readonly" disabled="disabled" data-g-amount=" " />
+						</TD>
+					</tr>	
 				<TR><TD colspan="6">&nbsp;<HR class="separator" ></TD></TR>
 				<%}%>
 	

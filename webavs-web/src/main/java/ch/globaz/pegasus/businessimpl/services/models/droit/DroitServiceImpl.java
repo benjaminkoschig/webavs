@@ -21,6 +21,7 @@ import globaz.pegasus.utils.PCUserHelper;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -3265,7 +3266,7 @@ public class DroitServiceImpl extends PegasusAbstractServiceImpl implements Droi
         Droit oldDroit = null;
         DroitSearch droitSearch = new DroitSearch();
         droitSearch.setWhereKey(DroitSearch.OLD_DEMANDE);
-        droitSearch.setForCsEtatDroit(IPCDemandes.CS_SUPPRIME);
+        droitSearch.setForCsEtatDroitIn(Arrays.asList(IPCDemandes.CS_SUPPRIME, IPCDemandes.CS_ANNULE));
         droitSearch.setForIdDemandePc(droit.getSimpleDroit().getIdDemandePC());
         if (JadeStringUtil.isBlankOrZero(droit.getDemande().getSimpleDemande().getDateDebut())) {
             droitSearch.setForDateFinDemande(JadeDateUtil.convertDateMonthYear(droit.getDemande().getSimpleDemande()

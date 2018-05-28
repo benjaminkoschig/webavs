@@ -16,6 +16,7 @@ import globaz.jade.persistence.model.JadeAbstractSearchModel;
 import globaz.jade.persistence.sql.JadeAbstractSqlModelDefinition;
 import globaz.jade.persistence.sql.JadeSqlFieldDefinition;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -36,6 +37,7 @@ import ch.globaz.pegasus.business.exceptions.models.demande.DemandeException;
 import ch.globaz.pegasus.business.exceptions.models.dossiers.DossierException;
 import ch.globaz.pegasus.business.exceptions.models.droit.DonneeFinanciereException;
 import ch.globaz.pegasus.business.exceptions.models.droit.DroitException;
+import ch.globaz.pegasus.business.exceptions.models.lot.OrdreVersementException;
 import ch.globaz.pegasus.business.exceptions.models.lot.PrestationException;
 import ch.globaz.pegasus.business.exceptions.models.pcaccordee.PCAccordeeException;
 import ch.globaz.pegasus.business.exceptions.models.pmtmensuel.PmtMensuelException;
@@ -53,6 +55,7 @@ import ch.globaz.pegasus.business.services.models.demande.DemandeService;
 import ch.globaz.pegasus.businessimpl.checkers.demande.SimpleDemandeChecker;
 import ch.globaz.pegasus.businessimpl.services.PegasusAbstractServiceImpl;
 import ch.globaz.pegasus.businessimpl.services.PegasusImplServiceLocator;
+import ch.globaz.pegasus.businessimpl.services.models.decision.validation.suppression.GenerateOvsForSuppression;
 import ch.globaz.pegasus.businessimpl.utils.PersistenceUtil;
 import ch.globaz.pegasus.businessimpl.utils.QueryAlter;
 import ch.globaz.pegasus.businessimpl.utils.QueryAlterManager;
@@ -554,5 +557,36 @@ public class DemandeServiceImpl extends PegasusAbstractServiceImpl implements De
             dateDecision = JadeDateUtil.addDays(dateProchainPaiement.getSwissValue(), -1);
         }
         return dateDecision;
+    }
+
+    @Override
+    public BigDecimal calculerMontantRestitution(String idDemande, String dateSuppressionDroit)
+            throws OrdreVersementException, PCAccordeeException, JadeApplicationServiceNotAvailableException,
+            JadePersistenceException, PmtMensuelException, DroitException, DemandeException {
+
+        Demande demande = PegasusServiceLocator.getDemandeService().read(idDemande);
+
+        BigDecimal montantTotalRestitution = null;
+        List<Droit> droits = PegasusServiceLocator.getDroitService().findCurrentVersionDroitByIdsDemande(
+                Arrays.asList(demande.getId()));
+        for (Droit droit : droits) {
+            String dateDernierPmt = PegasusServiceLocator.getPmtMensuelService().getDateDernierPmt();
+
+            PCAccordeeSearch oldPcaSearch = new PCAccordeeSearch();
+            oldPcaSearch.setForIdDroit(droit.getSimpleDroit().getIdDroit());
+            oldPcaSearch.setForDateValable(dateSuppressionDroit);
+            oldPcaSearch.setForNoVersionDroit(droit.getSimpleVersionDroit().getNoVersion() + 1);
+            oldPcaSearch.setWhereKey(PCAccordeeSearch.FOR_PCA_REPLACEC_BY_DECISION_SUPPRESSION);
+            oldPcaSearch.setOrderKey("forDateDebutAsc");
+            oldPcaSearch = PegasusServiceLocator.getPCAccordeeService().search(oldPcaSearch);
+
+            List<PCAccordee> pcas = PersistenceUtil.typeSearch(oldPcaSearch);
+            GenerateOvsForSuppression generateOvs = new GenerateOvsForSuppression(dateSuppressionDroit, dateDernierPmt);
+            generateOvs.generateOv(pcas);
+
+            montantTotalRestitution = generateOvs.getMontantTotalRestitution();
+
+        }
+        return montantTotalRestitution;
     }
 }

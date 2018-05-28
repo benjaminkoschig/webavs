@@ -4,6 +4,7 @@ import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.service.provider.application.JadeApplicationService;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
+import java.math.BigDecimal;
 import ch.globaz.corvus.business.exceptions.models.LotException;
 import ch.globaz.pegasus.business.exceptions.PegasusException;
 import ch.globaz.pegasus.business.exceptions.models.decision.DecisionException;
@@ -11,6 +12,7 @@ import ch.globaz.pegasus.business.exceptions.models.demande.DemandeException;
 import ch.globaz.pegasus.business.exceptions.models.dossiers.DossierException;
 import ch.globaz.pegasus.business.exceptions.models.droit.DonneeFinanciereException;
 import ch.globaz.pegasus.business.exceptions.models.droit.DroitException;
+import ch.globaz.pegasus.business.exceptions.models.lot.OrdreVersementException;
 import ch.globaz.pegasus.business.exceptions.models.pcaccordee.PCAccordeeException;
 import ch.globaz.pegasus.business.exceptions.models.pmtmensuel.PmtMensuelException;
 import ch.globaz.pegasus.business.models.demande.Demande;
@@ -235,4 +237,8 @@ public interface DemandeService extends JadeApplicationService {
 
     public Demande dateReduction(Demande demande, Boolean comptabilisationAuto) throws JadePersistenceException,
             JadeApplicationException;
+
+    public BigDecimal calculerMontantRestitution(String idDemande, String dateSuppressionDroit)
+            throws OrdreVersementException, PCAccordeeException, JadeApplicationServiceNotAvailableException,
+            JadePersistenceException, PmtMensuelException, DroitException, DemandeException;
 }
