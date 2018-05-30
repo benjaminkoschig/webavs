@@ -1,4 +1,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<%@page import="ch.globaz.pegasus.business.constantes.EPCProperties"%>
+<%@page import="ch.globaz.pegasus.businessimpl.utils.PCproperties"%>
 <%@page import="ch.globaz.pegasus.business.constantes.IPCDroits"%>
 <%@page import="ch.globaz.pegasus.business.services.models.demande.DemandeService"%>
 <%@ page language="java" import="globaz.globall.http.*" contentType="text/html;charset=ISO-8859-1" %>
@@ -565,8 +567,9 @@ function postInit(){
 				
 				<%if(((IPCDemandes.CS_ANNULE.equals(viewBean.getDemande().getSimpleDemande().getCsEtatDemande())) 
 				        ||  (IPCDemandes.CS_REFUSE.equals(viewBean.getDemande().getSimpleDemande().getCsEtatDemande()) 
-				                && JadeStringUtil.isBlankOrZero(viewBean.getDateDebut())) )
-				                && !viewBean.getDemande().isNew()  ) {%> 
+				                && JadeStringUtil.isBlankOrZero(viewBean.getDateDebut())
+				                && !viewBean.getDemande().isNew())) 
+				        && PCproperties.getBoolean(EPCProperties.AFFICHAGE_FORCER_ANNULER)) {%> 
 				<tr>
 					<td class="standardLabel"><ct:FWLabel key="JSP_PC_DEM_D_FORCER_ANNULATION"/></td>
 					<td>
@@ -575,8 +578,8 @@ function postInit(){
 					</td>
 				</tr>
 				<TR><TD colspan="6">&nbsp;<HR class="separator" ></TD></TR>
-				<%}else if((IPCDemandes.CS_SUPPRIME.equals(viewBean.getDemande().getSimpleDemande().getCsEtatDemande())
-				        || IPCDemandes.CS_REFUSE.equals(viewBean.getDemande().getSimpleDemande().getCsEtatDemande())) && !viewBean.getDemande().isNew() ){ %>
+				<%}else if(((IPCDemandes.CS_SUPPRIME.equals(viewBean.getDemande().getSimpleDemande().getCsEtatDemande())
+				        || IPCDemandes.CS_REFUSE.equals(viewBean.getDemande().getSimpleDemande().getCsEtatDemande())) && !viewBean.getDemande().isNew())&& PCproperties.getBoolean(EPCProperties.AFFICHAGE_FORCER_ANNULER) ){ %>
 				<tr>
 					<td class="standardLabel"><ct:FWLabel key="JSP_PC_DEM_D_FORCER_ANNULATION"/></td>
 					<td>
