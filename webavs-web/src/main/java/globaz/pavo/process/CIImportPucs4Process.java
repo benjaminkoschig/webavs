@@ -1480,10 +1480,10 @@ public class CIImportPucs4Process extends BProcess {
 
     private String testAndSetPourMontantNegatif(CIEcriture ecriture, ArrayList<String> errors, String montantEcr) {
 
+        ecriture.setGre("11");
         if (!"true".equalsIgnoreCase(getAccepteEcrituresNegatives())) {
             FWCurrency cur = new FWCurrency(montantEcr);
             errors.add(getSession().getLabel("DT_ECRITURE_NEGATIVE"));
-            ecriture.setGre("11");
             ecriture.setExtourne(CIEcriture.CS_EXTOURNE_1);
             ecriture.setMontant(cur.toStringFormat());
         } else {
@@ -1506,13 +1506,13 @@ public class CIImportPucs4Process extends BProcess {
     }
 
     private String testAndSetPourMontantPositif(CIEcriture ecriture, ArrayList<String> errors, String montantEcr) {
+        ecriture.setGre("01");
         try {
             FWCurrency cur = new FWCurrency(montantEcr);
             if (!cur.isZero() && cur.compareTo(new FWCurrency("1")) == -1) {
                 errors.add(getSession().getLabel("DT_MONTANT_INF_1CHF"));
                 ecriture.setMontant(montantEcr);
             } else {
-                ecriture.setGre("01");
                 ecriture.setMontant(cur.toStringFormat());
             }
         } catch (Exception inex) {
