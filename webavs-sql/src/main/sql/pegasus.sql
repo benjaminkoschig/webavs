@@ -9,3 +9,6 @@ insert into SCHEMA.FWCOUP (pcosid,plaide,pcouid,pcolut, pspy) values ( 64003007,
 --Ajout d'un champ DataFin Initial
 ALTER TABLE SCHEMA.PCDEMPC ADD BBDFINB DECIMAL(6,0);
 REORG TABLE SCHEMA.PCDEMPC;
+
+--Ajout d'activation d'une propriété applicative de "Forcer annuler"
+INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL) VALUES ('pegasus.application.ForcerAnnuler.afficher','false');

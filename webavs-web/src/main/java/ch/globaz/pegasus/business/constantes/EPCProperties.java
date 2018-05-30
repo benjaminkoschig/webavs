@@ -57,7 +57,8 @@ public enum EPCProperties implements IProperties {
     RPC_DESTINATAIRE("rpc.message.header.recipient.id"),
     RPC_ELOFFICE("rpc.message.header.eloffice"),
     RPC_GROUPE_RESPONSABLE("rpc.groupresponsable"),
-    RPC_LIMIT_DAY_GENERATION("rpc.limit.day.generation");
+    RPC_LIMIT_DAY_GENERATION("rpc.limit.day.generation"),
+    AFFICHAGE_FORCER_ANNULER("application.ForcerAnnuler.afficher");
 
     private String property;
 
