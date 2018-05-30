@@ -569,7 +569,7 @@ function postInit(){
 				        ||  (IPCDemandes.CS_REFUSE.equals(viewBean.getDemande().getSimpleDemande().getCsEtatDemande()) 
 				                && JadeStringUtil.isBlankOrZero(viewBean.getDateDebut())
 				                && !viewBean.getDemande().isNew())) 
-				        && PCproperties.getBoolean(EPCProperties.AFFICHAGE_FORCER_ANNULER)) {%> 
+				        && viewBean.getForcerAnnulerActif()) {%> 
 				<tr>
 					<td class="standardLabel"><ct:FWLabel key="JSP_PC_DEM_D_FORCER_ANNULATION"/></td>
 					<td>
@@ -579,7 +579,7 @@ function postInit(){
 				</tr>
 				<TR><TD colspan="6">&nbsp;<HR class="separator" ></TD></TR>
 				<%}else if(((IPCDemandes.CS_SUPPRIME.equals(viewBean.getDemande().getSimpleDemande().getCsEtatDemande())
-				        || IPCDemandes.CS_REFUSE.equals(viewBean.getDemande().getSimpleDemande().getCsEtatDemande())) && !viewBean.getDemande().isNew())&& PCproperties.getBoolean(EPCProperties.AFFICHAGE_FORCER_ANNULER) ){ %>
+				        || IPCDemandes.CS_REFUSE.equals(viewBean.getDemande().getSimpleDemande().getCsEtatDemande())) && !viewBean.getDemande().isNew())&& viewBean.getForcerAnnulerActif() ){ %>
 				<tr>
 					<td class="standardLabel"><ct:FWLabel key="JSP_PC_DEM_D_FORCER_ANNULATION"/></td>
 					<td>

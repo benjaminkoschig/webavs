@@ -11,6 +11,7 @@ import java.util.Map;
 import ch.globaz.common.domaine.Echeance.EcheanceDomaine;
 import ch.globaz.common.domaine.Echeance.EcheanceType;
 import ch.globaz.hera.business.models.famille.MembreFamille;
+import ch.globaz.pegasus.business.constantes.EPCProperties;
 import ch.globaz.pegasus.business.constantes.IPCDemandes;
 import ch.globaz.pegasus.business.exceptions.models.droit.DroitException;
 import ch.globaz.pegasus.business.models.demande.Demande;
@@ -18,6 +19,7 @@ import ch.globaz.pegasus.business.models.droit.DroitMembreFamilleEtendu;
 import ch.globaz.pegasus.business.models.droit.DroitMembreFamilleEtenduSearch;
 import ch.globaz.pegasus.business.services.PegasusServiceLocator;
 import ch.globaz.pegasus.businessimpl.checkers.demande.SimpleDemandeChecker;
+import ch.globaz.pegasus.businessimpl.utils.PCproperties;
 import com.google.gson.Gson;
 
 public class PCDemandeDetailViewBean extends BJadePersistentObjectViewBean {
@@ -31,6 +33,7 @@ public class PCDemandeDetailViewBean extends BJadePersistentObjectViewBean {
     private Boolean isDateReduc = false;
     private Boolean comptabilisationAuto = false;
     private Map<String, String> membresFamille = new HashMap<String, String>();
+    private Boolean forcerAnnulerActif;
 
     public PCDemandeDetailViewBean() {
         super();
@@ -194,6 +197,7 @@ public class PCDemandeDetailViewBean extends BJadePersistentObjectViewBean {
             membresFamille.put(tiers.getPersonneEtendue().getPersonne().getIdTiers(),
                     tiers.getNom() + " - " + tiers.getPrenom());
         }
+        forcerAnnulerActif = PCproperties.getBoolean(EPCProperties.AFFICHAGE_FORCER_ANNULER);
 
     }
 
@@ -246,6 +250,10 @@ public class PCDemandeDetailViewBean extends BJadePersistentObjectViewBean {
         } else {
             demande = PegasusServiceLocator.getDemandeService().update(demande);
         }
+    }
+
+    public Boolean getForcerAnnulerActif() {
+        return forcerAnnulerActif;
     }
 
     public boolean getActionRouvrirDemande() {
