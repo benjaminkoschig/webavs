@@ -9,6 +9,7 @@ import globaz.globall.db.BSession;
 import globaz.globall.db.BStatement;
 import globaz.globall.db.GlobazJobQueue;
 import globaz.globall.db.GlobazServer;
+import globaz.jade.common.Jade;
 import globaz.jade.job.client.JadeJobServerFacade;
 import globaz.jade.job.message.JadeJobInfo;
 import globaz.pavo.application.CIApplication;
@@ -39,6 +40,9 @@ public class CIClotureJournalProcess extends BProcess {
             if (args.length > 2) {
                 pwd = args[2];
             }
+
+            // démarrage en mode CommandeLineJob pour ne pas exécuter les processus SEDEX
+            Jade.getInstanceForCommandLineJob();
 
             BSession session = (BSession) GlobazServer.getCurrentSystem()
                     .getApplication(CIApplication.DEFAULT_APPLICATION_PAVO).newSession(user, pwd);
