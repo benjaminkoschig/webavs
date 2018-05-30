@@ -17,6 +17,7 @@ import java.util.Date;
 import java.util.List;
 import ch.globaz.corvus.business.models.lots.SimpleLot;
 import ch.globaz.corvus.business.services.CorvusServiceLocator;
+import ch.globaz.pegasus.business.constantes.EPCProperties;
 import ch.globaz.pegasus.business.constantes.decision.DecisionTypes;
 import ch.globaz.pegasus.business.exceptions.models.decision.DecisionException;
 import ch.globaz.pegasus.business.exceptions.models.lot.PrestationException;
@@ -27,6 +28,8 @@ import ch.globaz.pegasus.business.models.lot.PrestationSearch;
 import ch.globaz.pegasus.business.services.PegasusServiceLocator;
 import ch.globaz.pegasus.businessimpl.services.models.decision.ged.DACGedHandler;
 import ch.globaz.pegasus.businessimpl.utils.PCGedUtils;
+import ch.globaz.pegasus.businessimpl.utils.PCproperties;
+import ch.globaz.pegasus.utils.PCApplicationUtil;
 
 /**
  * Process pour pouvoir lancer la comptabilisation d'un lot déclenché depuis les PC (comptabilisation auto) en mode
@@ -68,9 +71,11 @@ public class PCValidationDecisionsComptabiliserLotProcess extends PCAbstractJob 
         } catch (Exception e) {
             this.addError(e);
         } finally {
+            // S170224_009 - ajout de l'impression forcée en fin de validation pour mise en ged auto 
+            // WEBAVS-5482 - Seul JU et VD souhaitent cette fonctionnalité, le canton VS est exclu sur base de la prop LOI_CANTONALE_PC("canton.loi.pc")
             SimpleLot simpleLot = CorvusServiceLocator.getLotService().read(idLot);
-            if (PCGedUtils.isDocumentInGed(IPRConstantesExternes.PC_REF_INFOROM_DECISION_APRES_CALCUL, getSession())
-                    && simpleLot.getCsTypeLot().equals(IRELot.CS_TYP_LOT_DECISION_RESTITUTION)) {
+            if ( (!PCApplicationUtil.isCantonVS()) && (PCGedUtils.isDocumentInGed(IPRConstantesExternes.PC_REF_INFOROM_DECISION_APRES_CALCUL, getSession())
+                    && simpleLot.getCsTypeLot().equals(IRELot.CS_TYP_LOT_DECISION_RESTITUTION))) {
                 launchMiseEnGedDecisionApresCalcul(simpleLot);
             }
             sendProcessMail(PROCESS_TYPE.COMPTABILISATION, simpleLot, null);
