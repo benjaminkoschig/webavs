@@ -394,9 +394,7 @@ public class EBTreatPucsFiles extends BProcess {
                         }
                     }
 
-                    // On traite les institutions et les déclaration de salaire vide uniquement :
-                    // - si on est pas en simulation
-                    // - si on est en présence d'une déclaration de salaire principale.
+                    // traitement des DS vides et mise à jour des institutions LAA/LPP pour les DS principales
                     if ((pucsFile.getProvenance().isDan() || pucsFile.getProvenance().isPucs()) && !isForSimultation
                             && pucsFile.getTypeDeclaration().isPrincipale()) {
                         Exception e1 = null;
@@ -416,7 +414,6 @@ public class EBTreatPucsFiles extends BProcess {
                                 updateInstitution(pucsFileMerge.getPucsFileToMergded().get(0).getFilename(),
                                         idAffiliation, pucsFile.getAnneeDeclaration(), pucsFile.getProvenance());
                             }
-
                         } catch (Exception e) {
                             e1 = e;
                         } finally {
@@ -790,13 +787,10 @@ public class EBTreatPucsFiles extends BProcess {
         Integer idLpp;
         if (declarationSalaireProvenance.isDan()) {
             idLaa = DanServiceImpl.getInstitution(Integer.parseInt(EBDanUtils.LAA), Integer.parseInt(id), getSession());
-
             idLpp = DanServiceImpl.getInstitution(Integer.parseInt(EBDanUtils.LPP), Integer.parseInt(id), getSession());
-
         } else if (declarationSalaireProvenance.isPucs()) {
             idLaa = PucsServiceImpl.findIdInstitution(Integer.valueOf(EBDanUtils.LAA), Integer.valueOf(id),
                     getSession());
-
             idLpp = PucsServiceImpl.findIdInstitution(Integer.valueOf(EBDanUtils.LPP), Integer.valueOf(id),
                     getSession());
         } else {
