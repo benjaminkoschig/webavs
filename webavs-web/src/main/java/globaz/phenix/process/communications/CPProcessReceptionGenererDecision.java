@@ -1791,6 +1791,9 @@ public class CPProcessReceptionGenererDecision extends BProcess {
         if (donnee.getPurchasingLPP() != "") {
             rachatLPPDonneBase = Integer.parseInt(JANumberFormatter.deQuote(donnee.getPurchasingLPP()));
         }
+        if (!JadeStringUtil.isBlank(donnee.getPurchasingLPPCjt())) {
+            rachatLPPDonneBase += Integer.parseInt(JANumberFormatter.deQuote(donnee.getPurchasingLPPCjt()));
+        }
         if (donnee.getEmploymentIncome() != "") {
             revenu = Integer.parseInt(JANumberFormatter.deQuote(donnee.getIncomeFromSelfEmployment()));
         }

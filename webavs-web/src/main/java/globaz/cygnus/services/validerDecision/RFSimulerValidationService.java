@@ -61,6 +61,8 @@ public class RFSimulerValidationService {
         } else {
             nomDoc = session.getLabel("PROCESS_DECOMPTE_VALIDER_DECISION");
         }
+        // K151214_001 : Problème lorsque le nom de fichier contient des caractères spéciaux
+        nomDoc = JadeStringUtil.convertSpecialChars(nomDoc).replaceAll(" ", "_");
 
         // sélection du modèle à utiliser (avec ou sans les communes politiques)
         String modelName;

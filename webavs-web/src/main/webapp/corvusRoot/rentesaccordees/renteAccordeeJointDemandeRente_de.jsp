@@ -414,7 +414,7 @@
   }
 function testDisabledCorps(){
 	<%if (IRERenteAccordee.CS_ETAT_VALIDE.equals(viewBean.getCsEtat()) ||
-		  IRERenteAccordee.CS_ETAT_CALCULE.equals(viewBean.getCsEtat())){%>
+		  IRERenteAccordee.CS_ETAT_CALCULE.equals(viewBean.getCsEtat()) || IRERenteAccordee.CS_ETAT_DIMINUE.equals(viewBean.getCsEtat()) || IRERenteAccordee.CS_ETAT_PARTIEL.equals(viewBean.getCsEtat())){%>
 		var body = document.getElementById("bodyCorps");
 		disabledCorps(body.getElementsByTagName("input"));
 		disabledCorps(body.getElementsByTagName("select"));

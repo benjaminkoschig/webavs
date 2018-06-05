@@ -51,11 +51,11 @@ public class CalculJourAppoint {
 		sja.setNbrJoursAppoint(String.valueOf(nbJours));
 		SimpleDateFormat datedfDateFormat = new SimpleDateFormat("dd.MM.yyyy");
 		sja.setDateEntreHome(datedfDateFormat.format(dateEntreeHome));
-		if (montantJournalierJoursAppoint.compareTo(new BigDecimal(0)) == 1) {
+//		if (montantJournalierJoursAppoint.compareTo(new BigDecimal(0)) == 1) {
 			return sja;
-		} else {
-			return null;
-		}
+//		} else {
+//			return null;
+//		}
 	}
 
 	private BigDecimal computMontantTotal(int nbJours, BigDecimal montantJournalierJoursAppoint) {
@@ -91,19 +91,21 @@ public class CalculJourAppoint {
 	private BigDecimal computeMontantJourAppoint(final BigDecimal montantPcaCourrant,
 			final BigDecimal montantPcaPrecedant, int nbJoursMois) {
 		BigDecimal montantNet = montantPcaCourrant;
+		final BigDecimal NB_MOIS_ANNEE = new BigDecimal(12);
+		final BigDecimal NB_JOURS_ANNEE = new BigDecimal(365);
 		
 		if (montantPcaCourrant == null) {
 			throw new IllegalArgumentException("Unable to generateJoursAppoint, the montantPcaCourrant is null!");
 		}
-	
 		if (montantPcaPrecedant != null) {
 			montantNet = montantPcaCourrant.subtract(montantPcaPrecedant);
 		}
 		
-		 
-		BigDecimal montantJournalierJoursAppoint = montantNet.divide(new BigDecimal(nbJoursMois), 8, RoundingMode.HALF_UP);
+		BigDecimal montantJournalierJoursAppoint = montantNet.multiply(NB_MOIS_ANNEE);
 		
-		FWCurrency montant = new FWCurrency(montantJournalierJoursAppoint.toString());
+		BigDecimal montantJournalierJA = montantJournalierJoursAppoint.divide(NB_JOURS_ANNEE, 8, RoundingMode.CEILING);
+		
+		FWCurrency montant = new FWCurrency(montantJournalierJA.toString());
 		montant.round(FWCurrency.ROUND_5CT);
 		
 		montantJournalierJoursAppoint = montant.getBigDecimalValue(); //new BigDecimal(Math.ceil(montantJournalierJoursAppoint.doubleValue() * 20) / 20,new MathContext(10, RoundingMode.HALF_UP)); 

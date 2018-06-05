@@ -1,6 +1,10 @@
 package globaz.cygnus.helpers.prestationsaccordees;
 
 import globaz.corvus.db.rentesaccordees.REPrestationsAccordees;
+import globaz.corvus.utils.REPmtMensuel;
+import globaz.cygnus.db.demandes.RFDemande;
+import globaz.cygnus.db.demandes.RFDemandeJointDossierJointTiers;
+import globaz.cygnus.db.demandes.RFDemandeJointDossierJointTiersManager;
 import globaz.cygnus.db.paiement.RFPrestationAccordee;
 import globaz.cygnus.utils.RFUtils;
 import globaz.cygnus.vb.prestationsaccordees.RFPrestationsAccordeesViewBean;
@@ -14,6 +18,7 @@ import globaz.globall.util.JACalendarGregorian;
 import globaz.globall.util.JADate;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.helpers.PRAbstractHelper;
+import java.util.Iterator;
 
 public class RFPrestationsAccordeesHelper extends PRAbstractHelper {
 
@@ -35,42 +40,67 @@ public class RFPrestationsAccordeesHelper extends PRAbstractHelper {
             prestationAccordee.setIdPrestationAccordee(rfPrestationsAccordeesVB.getIdRFMAccordee());
             prestationAccordee.retrieve(transaction);
 
+            RFDemandeJointDossierJointTiersManager rfDemJoiDosJoiTieMgr = new RFDemandeJointDossierJointTiersManager(
+                    false);
+            rfDemJoiDosJoiTieMgr.setSession(rfPrestationsAccordeesVB.getSession());
+            rfDemJoiDosJoiTieMgr.setForIdDecision(rfPrestationsAccordeesVB.getIdDecision());
+            rfDemJoiDosJoiTieMgr.find();
+
+            Iterator<RFDemandeJointDossierJointTiers> rfDemJoiDosJoiTieItr = rfDemJoiDosJoiTieMgr.iterator();
+            RFDemandeJointDossierJointTiers demandeCherche = rfDemJoiDosJoiTieItr.next();
+
+            RFDemande demande = new RFDemande();
+            demande.setIdDemande(demandeCherche.getIdDemande());
+            demande.retrieve(transaction);
+
             if (!prestationAccordee.isNew()) {
 
                 prestationAccordee.setReferencePmt(rfPrestationsAccordeesVB.getReferencePaiement());
                 prestationAccordee.setDateFinDroit(rfPrestationsAccordeesVB.getDateFinDroit());
 
                 prestationAccordee.update(transaction);
+                String dateFinPresFinal = JACalendar
+                        .format(cal.lastInMonth(rfPrestationsAccordeesVB.getDateFinDroit()));
+                JADate dateFinDroitJd = new JADate(rfPrestationsAccordeesVB.getDateFinDroit());
+                JADate todayJd = JACalendar.today();
+                JADate dateDernier = new JADate(REPmtMensuel.getDateDernierPmt(rfPrestationsAccordeesVB.getSession()));
 
-                RFPrestationAccordee rfPrestationAccordee = new RFPrestationAccordee();
-                rfPrestationAccordee.setSession(rfPrestationsAccordeesVB.getSession());
-                rfPrestationAccordee.setIdRFMAccordee(prestationAccordee.getIdPrestationAccordee());
+                if (cal.compare(dateFinDroitJd, dateDernier) == JACalendar.COMPARE_FIRSTUPPER) {
+                    demande.setDateFinTraitement(dateFinPresFinal);
+                    demande.update(transaction);
+                    RFPrestationAccordee rfPrestationAccordee = new RFPrestationAccordee();
+                    rfPrestationAccordee.setSession(rfPrestationsAccordeesVB.getSession());
+                    rfPrestationAccordee.setIdRFMAccordee(prestationAccordee.getIdPrestationAccordee());
 
-                rfPrestationAccordee.retrieve();
+                    rfPrestationAccordee.retrieve();
 
-                if (!rfPrestationAccordee.isNew()) {
+                    if (!rfPrestationAccordee.isNew()) {
 
-                    if (!JadeStringUtil.isBlankOrZero(rfPrestationsAccordeesVB.getDateFinDroit())) {
-                        // Si la date de fin de droit < la date du jour -> date diminution = date du jour
-                        // Si la date de fin de droit >= la date du jour -> date diminution = date de fin de droit
-                        JADate dateFinDroitJd = new JADate(rfPrestationsAccordeesVB.getDateFinDroit());
-                        JADate todayJd = JACalendar.today();
-                        if ((cal.compare(dateFinDroitJd, todayJd) == JACalendar.COMPARE_EQUALS)
-                                || (cal.compare(dateFinDroitJd, todayJd) == JACalendar.COMPARE_FIRSTUPPER)) {
-                            rfPrestationAccordee.setDateDiminution("01." + rfPrestationsAccordeesVB.getDateFinDroit());
+                        if (!JadeStringUtil.isBlankOrZero(rfPrestationsAccordeesVB.getDateFinDroit())) {
+                            // Si la date de fin de droit < la date du jour -> date diminution = date du jour
+                            // Si la date de fin de droit >= la date du jour -> date diminution = date de fin de droit
+                            if ((cal.compare(dateFinDroitJd, todayJd) == JACalendar.COMPARE_EQUALS)
+                                    || (cal.compare(dateFinDroitJd, todayJd) == JACalendar.COMPARE_FIRSTUPPER)) {
+                                rfPrestationAccordee.setDateDiminution("01."
+                                        + rfPrestationsAccordeesVB.getDateFinDroit());
+                            } else {
+                                rfPrestationAccordee.setDateDiminution("01."
+                                        + (todayJd.getMonth() < 10 ? "0" + todayJd.getMonth() : todayJd.getMonth())
+                                        + "." + todayJd.getYear());
+                            }
+
                         } else {
-                            rfPrestationAccordee.setDateDiminution("01."
-                                    + (todayJd.getMonth() < 10 ? "0" + todayJd.getMonth() : todayJd.getMonth()) + "."
-                                    + todayJd.getYear());
+                            rfPrestationAccordee.setDateDiminution("");
                         }
+                        rfPrestationAccordee.update(transaction);
 
                     } else {
-                        rfPrestationAccordee.setDateDiminution("");
+                        RFUtils.setMsgErreurInattendueViewBean(rfPrestationsAccordeesVB, "_update()",
+                                "RFPrestationHelper");
                     }
-                    rfPrestationAccordee.update(transaction);
 
                 } else {
-                    RFUtils.setMsgErreurInattendueViewBean(rfPrestationsAccordeesVB, "_update()", "RFPrestationHelper");
+                    RFUtils.setMsgErreurViewBean(rfPrestationsAccordeesVB, "JSP_ERREUR_DATE_DE_FIN");
                 }
 
             } else {

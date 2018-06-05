@@ -4,6 +4,18 @@
 package globaz.naos.process.statOfas;
 
 import globaz.aquila.api.ICOEtape;
+import globaz.corvus.api.decisions.IREDecision;
+import globaz.corvus.api.demandes.IREDemandeRente;
+import globaz.corvus.db.decisions.REDecisionEntity;
+import globaz.corvus.db.decisions.REValidationDecisions;
+import globaz.corvus.db.demandes.REDemandeRente;
+import globaz.corvus.db.demandes.REDemandeRenteAPI;
+import globaz.corvus.db.demandes.REPeriodeAPI;
+import globaz.corvus.db.ordresversements.REOrdresVersements;
+import globaz.corvus.db.prestations.REPrestations;
+import globaz.corvus.db.rentesaccordees.REPrestationDue;
+import globaz.corvus.db.rentesaccordees.REPrestationsAccordees;
+import globaz.cygnus.api.ordresversements.IREOrdresVersements;
 import globaz.framework.util.FWCurrency;
 import globaz.framework.util.FWMessage;
 import globaz.framework.util.FWMessageFormat;
@@ -2960,61 +2972,215 @@ public class AFStatistiquesOfasProcess extends BProcess {
     }
 
     private String getSqlComptageIMCasAI() {
+        StringBuilder sql = new StringBuilder();
 
-        String sql = "Select count(distinct(ywidem)) as "
-                + AFStatistiquesOfasProcess.REQUETE_COMPTAGE_NOMBRE_IM_CAS_AI
-                + " from schema.redecis as decisions "
-                + "inner join schema.represt as prestations on decisions.YWIDEC = prestations.YUIDEC "
-                + "inner join schema.reorver as ov on (ov.YVIPRE = prestations.YUIPRE and YVMMON != 0) "
-                + "inner join schema.rederen as demande on demande.yaidem = decisions.YWIDEM "
-                + "left join schema.redeapi as demande_api on (demande_api.yeirap = demande.yaidem and yattyd = 52800001) "
-                + "left join schema.repeapi as periode_api on (demande_api.yeirap = periode_api.yhidem) "
-                + "WHERE YWTETA=52837003 " + "AND YWDVAL<=" + annee + "1231 " + "AND YWDVAL>=" + annee + "0101 "
-                + "and ov.YVTTYP = 52842010 " + "and ( " + "yattyd in (52800002) " + "or( " + "yattyd = 52800001 "
-                + "and " + "yhtgdr in(52809002,52809001) " + ") " + ")";
+        sql.append("Select count(distinct(");
+        sql.append(REDecisionEntity.FIELDNAME_ID_DEMANDE_RENTE);
+        sql.append(")) as ");
+        sql.append(AFStatistiquesOfasProcess.REQUETE_COMPTAGE_NOMBRE_IM_CAS_AI);
+        sql.append(" from schema.");
+        sql.append(REDecisionEntity.TABLE_NAME_DECISIONS);
+        sql.append(" as decisions inner join schema.");
+        sql.append(REPrestations.TABLE_NAME_PRESTATION);
+        sql.append(" as prestations on decisions.");
+        sql.append(REDecisionEntity.FIELDNAME_ID_DECISION);
+        sql.append(" = ");
+        sql.append("prestations.");
+        sql.append(REPrestations.FIELDNAME_ID_DECISION);
+        sql.append(" inner join schema.");
+        sql.append(REOrdresVersements.TABLE_NAME_ORDRES_VERSEMENTS + " ");
+        sql.append("as ov on (ov.");
+        sql.append(REOrdresVersements.FIELDNAME_ID_PRESTATION);
+        sql.append(" = prestations.");
+        sql.append(REPrestations.FIELDNAME_ID_PRESTATION);
+        sql.append(" and ");
+        sql.append(REOrdresVersements.FIELDNAME_MONTANT);
+        sql.append("!= 0 ").append("and ").append(REOrdresVersements.FIELDNAME_TYPE).append("=")
+                .append(IREOrdresVersements.CS_TYPE_INTERET_MORATOIRE).append(") ");
+        sql.append("inner join schema.").append(REValidationDecisions.TABLE_NAME_VALIDATION_DECISION)
+                .append(" as val on decisions.").append(REDecisionEntity.FIELDNAME_ID_DECISION).append("=")
+                .append("val.").append(REValidationDecisions.FIELDNAME_ID_DECISION);
+        sql.append(" inner join schema.").append(REPrestationDue.TABLE_NAME_PRESTATIONS_DUES).append(" as prs on val.")
+                .append(REValidationDecisions.FIELDNAME_ID_PRESTATION_DUE).append(" = prs.")
+                .append(REPrestationDue.FIELDNAME_ID_PRESTATION_DUE);
+        sql.append(" inner join schema.").append(REPrestationsAccordees.TABLE_NAME_PRESTATIONS_ACCORDEES)
+                .append(" as rac on ").append("prs.").append(REPrestationDue.FIELDNAME_ID_RENTE_ACCORDEE)
+                .append("= rac.").append(REPrestationsAccordees.FIELDNAME_ID_PRESTATION_ACCORDEE);
+        sql.append(" WHERE ").append(REDecisionEntity.FIELDNAME_ETAT).append("=").append(IREDecision.CS_ETAT_VALIDE)
+                .append(" AND ").append(REDecisionEntity.FIELDNAME_DATE_DECISION).append("<=").append(annee)
+                .append("1231 AND ").append(REDecisionEntity.FIELDNAME_DATE_DECISION).append(">=").append(annee)
+                .append("0101 ");
+        sql.append(" AND rac.")
+                .append(REPrestationsAccordees.FIELDNAME_CODE_PRESTATION)
+                .append(" in ('50','52','53','54','55','56','70','72','73','74','75','76','81','82','83','84','88','91','92','93')");
 
-        sql = replaceSchemaInSqlQuery(sql);
-
-        return sql;
+        return replaceSchemaInSqlQuery(sql.toString());
     }
 
     private String getSqlComptageIMCasAVS() {
 
-        String sql = "Select count(distinct(ywidem)) as "
-                + AFStatistiquesOfasProcess.REQUETE_COMPTAGE_NOMBRE_IM_CAS_AVS
-                + " from schema.redecis as decisions "
-                + "inner join schema.represt as prestations on decisions.YWIDEC = prestations.YUIDEC "
-                + "inner join schema.reorver as ov on (ov.YVIPRE = prestations.YUIPRE and YVMMON != 0) "
-                + "inner join schema.rederen as demande on demande.yaidem = decisions.YWIDEM "
-                + "left join schema.redeapi as demande_api on (demande_api.yeirap = demande.yaidem and yattyd = 52800001) "
-                + "left join schema.repeapi as periode_api on (demande_api.yeirap = periode_api.yhidem) "
-                + "WHERE YWTETA=52837003 " + "AND YWDVAL<=" + annee + "1231 " + "AND YWDVAL>=" + annee + "0101 "
-                + "and ov.YVTTYP = 52842010 " + "and ( " + "yattyd in (52800003,52800004) " + "or( "
-                + "yattyd = 52800001 " + "and " + "yhtgdr in(52809004,52809003) " + ") " + ") ";
+        StringBuilder sql = new StringBuilder();
 
-        sql = replaceSchemaInSqlQuery(sql);
+        sql.append("Select count(distinct(");
+        sql.append(REDecisionEntity.FIELDNAME_ID_DEMANDE_RENTE);
+        sql.append(")) as ");
+        sql.append(AFStatistiquesOfasProcess.REQUETE_COMPTAGE_NOMBRE_IM_CAS_AVS);
+        sql.append(" from schema.");
+        sql.append(REDecisionEntity.TABLE_NAME_DECISIONS);
+        sql.append(" as decisions inner join schema.");
+        sql.append(REPrestations.TABLE_NAME_PRESTATION);
+        sql.append(" as prestations on decisions.");
+        sql.append(REDecisionEntity.FIELDNAME_ID_DECISION);
+        sql.append(" = ");
+        sql.append("prestations.");
+        sql.append(REPrestations.FIELDNAME_ID_DECISION);
+        sql.append(" inner join schema.");
+        sql.append(REOrdresVersements.TABLE_NAME_ORDRES_VERSEMENTS + " ");
+        sql.append("  as ov on (ov.");
+        sql.append(REOrdresVersements.FIELDNAME_ID_PRESTATION);
+        sql.append(" = prestations.");
+        sql.append(REPrestations.FIELDNAME_ID_PRESTATION);
+        sql.append(" and ");
+        sql.append(REOrdresVersements.FIELDNAME_MONTANT);
+        sql.append("!= 0 AND ").append(REOrdresVersements.FIELDNAME_TYPE).append("=")
+                .append(IREOrdresVersements.CS_TYPE_INTERET_MORATOIRE).append(") ");
+        sql.append("inner join schema.").append(REValidationDecisions.TABLE_NAME_VALIDATION_DECISION)
+                .append(" as val on decisions.").append(REDecisionEntity.FIELDNAME_ID_DECISION).append("=")
+                .append("val.").append(REValidationDecisions.FIELDNAME_ID_DECISION);
+        sql.append(" inner join schema.").append(REPrestationDue.TABLE_NAME_PRESTATIONS_DUES).append(" as prs on val.")
+                .append(REValidationDecisions.FIELDNAME_ID_PRESTATION_DUE).append(" = prs.")
+                .append(REPrestationDue.FIELDNAME_ID_PRESTATION_DUE);
+        sql.append(" inner join schema.").append(REPrestationsAccordees.TABLE_NAME_PRESTATIONS_ACCORDEES)
+                .append(" as rac on ").append("prs.").append(REPrestationDue.FIELDNAME_ID_RENTE_ACCORDEE)
+                .append("= rac.").append(REPrestationsAccordees.FIELDNAME_ID_PRESTATION_ACCORDEE);
+        sql.append(" WHERE ").append(REDecisionEntity.FIELDNAME_ETAT).append("=").append(IREDecision.CS_ETAT_VALIDE)
+                .append(" AND ").append(REDecisionEntity.FIELDNAME_DATE_DECISION).append("<=").append(annee)
+                .append("1231 AND ").append(REDecisionEntity.FIELDNAME_DATE_DECISION).append(">=").append(annee)
+                .append("0101 ");
+        sql.append(" AND rac.")
+                .append(REPrestationsAccordees.FIELDNAME_CODE_PRESTATION)
+                .append(" in ('10','12','13','14','15','16','33','34','35','36','20','22','23','24','25','26','43','44','45','46','85','86','87','89','94','95','96','97')");
+        //
+        // String sql = "Select count(distinct(ywidem)) as "
+        // + AFStatistiquesOfasProcess.REQUETE_COMPTAGE_NOMBRE_IM_CAS_AVS
+        // + " from schema.redecis as decisions "
+        // + "inner join schema.represt as prestations on decisions.YWIDEC = prestations.YUIDEC "
+        // + "inner join schema.reorver as ov on (ov.YVIPRE = prestations.YUIPRE and YVMMON != 0) "
+        // + "inner join schema.rederen as demande on demande.yaidem = decisions.YWIDEM "
+        // + "left join schema.redeapi as demande_api on (demande_api.yeirap = demande.yaidem and yattyd = 52800001) "
+        // + "left join schema.repeapi as periode_api on (demande_api.yeirap = periode_api.yhidem) "
+        // + "WHERE YWTETA=52837003 " + "AND YWDVAL<=" + annee + "1231 " + "AND YWDVAL>=" + annee + "0101 "
+        // + "and ov.YVTTYP = 52842010 " + "and ( " + "yattyd in (52800003,52800004) " + "or( "
+        // + "yattyd = 52800001 " + "and " + "yhtgdr in(52809004,52809003) " + ") " + ") ";
 
-        return sql;
+        return replaceSchemaInSqlQuery(sql.toString());
     }
 
     private String getSqlComptageSommeIM() {
+        StringBuffer sql = new StringBuffer();
 
-        String sql = "Select sum(montant_distinct.yvmmon) as "
-                + AFStatistiquesOfasProcess.REQUETE_COMPTAGE_TOTAL_IM
-                + " from ( Select DISTINCT yviove, YVMMON from schema.redecis as decisions "
-                + "inner join schema.represt as prestations on decisions.YWIDEC = prestations.YUIDEC "
-                + "inner join schema.reorver as ov on ov.YVIPRE = prestations.YUIPRE "
-                + "inner join schema.rederen as demande on demande.yaidem = decisions.YWIDEM "
-                + "left join schema.redeapi as demande_api on (demande_api.yeirap = demande.yaidem and yattyd = 52800001) "
-                + "left join schema.repeapi as periode_api on (demande_api.yeirap = periode_api.yhidem) "
-                + "WHERE YWTETA=52837003 " + "AND YWDVAL<=" + annee + "1231 " + "AND YWDVAL>=" + annee + "0101 "
-                + "and ov.YVTTYP = 52842010 " + "and ( " + "yattyd in (52800003,52800004,52800002) " + "or( "
-                + "yattyd = 52800001 " + "and " + "yhtgdr in(52809004,52809003,52809002,52809001) " + ") "
-                + ")) AS montant_distinct";
+        sql.append("Select sum(montant_distinct.");
+        sql.append(REOrdresVersements.FIELDNAME_MONTANT);
+        sql.append(") as ");
+        sql.append(AFStatistiquesOfasProcess.REQUETE_COMPTAGE_TOTAL_IM);
+        sql.append(" from ( Select DISTINCT ");
+        sql.append(REOrdresVersements.FIELDNAME_ID_ORDRE_VERSEMENT);
+        sql.append(", ");
+        sql.append(REOrdresVersements.FIELDNAME_MONTANT);
+        sql.append(" from schema.");
+        sql.append(REDecisionEntity.TABLE_NAME_DECISIONS);
+        sql.append(" as decisions ");
+        sql.append("inner join schema.");
+        sql.append(REPrestations.TABLE_NAME_PRESTATION);
+        sql.append(" as prestations on decisions.");
+        sql.append(REDecisionEntity.FIELDNAME_ID_DECISION);
+        sql.append(" = ");
+        sql.append("prestations.");
+        sql.append(REPrestations.FIELDNAME_ID_DECISION);
+        sql.append(" inner join schema.");
+        sql.append(REOrdresVersements.TABLE_NAME_ORDRES_VERSEMENTS);
+        sql.append(" as ov on ov.");
+        sql.append(REOrdresVersements.FIELDNAME_ID_PRESTATION);
+        sql.append(" = prestations.");
+        sql.append(REPrestations.FIELDNAME_ID_PRESTATION);
+        sql.append(" inner join schema.");
+        sql.append(REDemandeRente.TABLE_NAME_DEMANDE_RENTE);
+        sql.append(" as demande on demande.");
+        sql.append(REDemandeRente.FIELDNAME_ID_DEMANDE_RENTE);
+        sql.append(" = decisions.");
+        sql.append(REDecisionEntity.FIELDNAME_ID_DEMANDE_RENTE);
+        sql.append(" left join schema.");
+        sql.append(REDemandeRenteAPI.TABLE_NAME_DEMANDE_RENTE_API);
+        sql.append(" as demande_api on (demande_api.");
+        sql.append(REDemandeRenteAPI.FIELDNAME_ID_DEMANDE_RENTE_API);
+        sql.append(" = demande.");
+        sql.append(REDemandeRente.FIELDNAME_ID_DEMANDE_RENTE);
+        sql.append(" and ");
+        sql.append(REDemandeRente.FIELDNAME_CS_TYPE_DEMANDE_RENTE);
+        sql.append(" = ");
+        sql.append(IREDemandeRente.CS_TYPE_DEMANDE_RENTE_API);
+        sql.append(") ");
+        sql.append("left join schema.");
+        sql.append(REPeriodeAPI.TABLE_NAME);
+        sql.append(" as periode_api on (demande_api.");
+        sql.append(REDemandeRenteAPI.FIELDNAME_ID_DEMANDE_RENTE_API);
+        sql.append(" = periode_api.");
+        sql.append(REPeriodeAPI.FIELDNAME_ID_DEMANDE_RENTE);
+        sql.append(") ");
+        sql.append("WHERE ");
+        sql.append(REDecisionEntity.FIELDNAME_ETAT);
+        sql.append("=");
+        sql.append(IREDecision.CS_ETAT_VALIDE);
+        sql.append(" AND ");
+        sql.append(REDecisionEntity.FIELDNAME_DATE_DECISION);
+        sql.append("<=");
+        sql.append(annee);
+        sql.append("1231 AND  ");
+        sql.append(REDecisionEntity.FIELDNAME_DATE_DECISION);
+        sql.append(">=");
+        sql.append(annee);
+        sql.append("0101 and ov.");
+        sql.append(REOrdresVersements.FIELDNAME_TYPE);
+        sql.append("=");
+        sql.append(IREOrdresVersements.CS_TYPE_INTERET_MORATOIRE);
+        sql.append(" and (");
+        sql.append(REDemandeRente.FIELDNAME_CS_TYPE_DEMANDE_RENTE);
+        sql.append(" in (");
+        sql.append(IREDemandeRente.CS_TYPE_DEMANDE_RENTE_VIEILLESSE);
+        sql.append(",");
+        sql.append(IREDemandeRente.CS_TYPE_DEMANDE_RENTE_SURVIVANT);
+        sql.append(",");
+        sql.append(IREDemandeRente.CS_TYPE_DEMANDE_RENTE_INVALIDITE);
+        sql.append(") or ( ");
+        sql.append(REDemandeRente.FIELDNAME_CS_TYPE_DEMANDE_RENTE);
+        sql.append("=");
+        sql.append(IREDemandeRente.CS_TYPE_DEMANDE_RENTE_API);
+        sql.append(" and ");
+        sql.append(REPeriodeAPI.FIELDNAME_CS_GENRE_DROIT_API);
+        sql.append(" in(");
+        sql.append(IREDemandeRente.CS_GENRE_DROIT_API_API_AI_RENTE);
+        sql.append(",");
+        sql.append(IREDemandeRente.CS_GENRE_DROIT_API_API_AI_PRST);
+        sql.append(",");
+        sql.append(IREDemandeRente.CS_TYPE_DEMANDE_RENTE_VIEILLESSE);
+        sql.append(",");
+        sql.append(IREDemandeRente.CS_TYPE_DEMANDE_RENTE_SURVIVANT);
+        sql.append(")))) as montant_distinct");
 
-        sql = replaceSchemaInSqlQuery(sql);
+        // String sql = "Select sum(montant_distinct.yvmmon) as "
+        // + AFStatistiquesOfasProcess.REQUETE_COMPTAGE_TOTAL_IM
+        // + " from ( Select DISTINCT yviove, YVMMON from schema.redecis as decisions "
+        // + "inner join schema.represt as prestations on decisions.YWIDEC = prestations.YUIDEC "
+        // + "inner join schema.reorver as ov on ov.YVIPRE = prestations.YUIPRE "
+        // + "inner join schema.rederen as demande on demande.yaidem = decisions.YWIDEM "
+        // + "left join schema.redeapi as demande_api on (demande_api.yeirap = demande.yaidem and yattyd = 52800001) "
+        // + "left join schema.repeapi as periode_api on (demande_api.yeirap = periode_api.yhidem) "
+        // + "WHERE YWTETA=52837003 " + "AND YWDVAL<=" + annee + "1231 " + "AND YWDVAL>=" + annee + "0101 "
+        // + "and ov.YVTTYP = 52842010 " + "and ( " + "yattyd in (52800003,52800004,52800002) " + "or( "
+        // + "yattyd = 52800001 " + "and " + "yhtgdr in(52809004,52809003,52809002,52809001) " + ") "
+        // + ")) AS montant_distinct";
 
-        return sql;
+        return replaceSchemaInSqlQuery(sql.toString());
     }
 
     private String getSqlCotiAndNombreIndTseWithRente() {

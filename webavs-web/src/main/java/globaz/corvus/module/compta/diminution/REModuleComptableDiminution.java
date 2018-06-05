@@ -259,14 +259,23 @@ public class REModuleComptableDiminution extends AREModuleComptable {
     private boolean doitOnCreerUneRestitutionEnCompta(final RERenteAccordee ra, JACalendar cal, JADate dateDernierPmt,
             JADate dateFinRA) {
         boolean creerRestitution = true;
-
+        REEnteteBlocage entete = new REEnteteBlocage();
+        try {
+            entete.setSession(ra.getSession());
+            entete.setIdEnteteBlocage(ra.getIdEnteteBlocage());
+            entete.retrieve();
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         /*
          * CONDITION 1
          * Si la date du dernier pmt est égal à la date de la diminution et
          * n'est pas bloquée....
          */
         if ((cal.compare(dateDernierPmt, dateFinRA) == JACalendar.COMPARE_EQUALS)
-                && ((ra.getIsPrestationBloquee() != null) && !ra.getIsPrestationBloquee().booleanValue())) {
+                && (ra.getIsPrestationBloquee() != null) && (!ra.getIsPrestationBloquee().booleanValue())
+                && (entete.getMontantBloque().equals(entete.getMontantDebloque()))) {
             creerRestitution = false;
         }
 
@@ -295,6 +304,19 @@ public class REModuleComptableDiminution extends AREModuleComptable {
          */
         if (creerRestitution) {
             if (cal.compare(dateDernierPmt, dateFinRA) == JACalendar.COMPARE_FIRSTLOWER) {
+                creerRestitution = false;
+            }
+        }
+        /*
+         * CONDITION 4
+         * La restitution de montant et la création de journaux en compta n'est réalisé que si la date de fin est
+         * identique au mois comptable, la rente est bloqué
+         * que le montant de déblocage et blocage sont identiques
+         */
+        if (creerRestitution) {
+            if (cal.compare(dateDernierPmt, dateFinRA) == JACalendar.COMPARE_EQUALS
+                    && (ra.getIsPrestationBloquee() != null) && (ra.getIsPrestationBloquee())
+                    && entete.getMontantBloque().equalsIgnoreCase(entete.getMontantDebloque())) {
                 creerRestitution = false;
             }
         }
