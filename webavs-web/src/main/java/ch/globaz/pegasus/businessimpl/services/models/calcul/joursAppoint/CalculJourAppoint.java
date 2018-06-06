@@ -38,16 +38,20 @@ public class CalculJourAppoint {
 		
 		Calendar calEntreeHome = Calendar.getInstance();
 		calEntreeHome.setTime(dateEntreeHome);
-	
-		int nbJoursMois = calEntreeHome.getActualMaximum(Calendar.DAY_OF_MONTH);
+ 		int nbJoursMois = calEntreeHome.getActualMaximum(Calendar.DAY_OF_MONTH);
 		int nbJours = (nbJoursMois - (calEntreeHome.get(Calendar.DAY_OF_MONTH))) + 1;
+		if(montantPcaPrecedant!=null && montantPcaCourrant.subtract(montantPcaPrecedant).compareTo(new BigDecimal(0)) < 1){
+		    nbJours = 0;
+		}
+
+
 		
 		BigDecimal montantJournalierJoursAppoint = computeMontantJourAppoint(montantPcaCourrant, montantPcaPrecedant,
 				nbJoursMois);
 
 		SimpleJoursAppoint sja = new SimpleJoursAppoint();
 		sja.setMontantJournalier(String.valueOf(montantJournalierJoursAppoint));
-		sja.setMontantTotal(computMontantTotal(nbJours, montantJournalierJoursAppoint).toString());
+ 		sja.setMontantTotal(computMontantTotal(nbJours, montantJournalierJoursAppoint).toString());
 		sja.setNbrJoursAppoint(String.valueOf(nbJours));
 		SimpleDateFormat datedfDateFormat = new SimpleDateFormat("dd.MM.yyyy");
 		sja.setDateEntreHome(datedfDateFormat.format(dateEntreeHome));
@@ -59,7 +63,7 @@ public class CalculJourAppoint {
 	}
 
 	private BigDecimal computMontantTotal(int nbJours, BigDecimal montantJournalierJoursAppoint) {
-		return montantJournalierJoursAppoint.multiply(new BigDecimal(nbJours)).setScale(0,RoundingMode.CEILING);
+		return montantJournalierJoursAppoint.multiply(new BigDecimal(nbJours)).setScale(0,RoundingMode.HALF_EVEN);
 	}
 	
 	
