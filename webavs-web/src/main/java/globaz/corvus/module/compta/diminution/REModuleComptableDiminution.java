@@ -257,17 +257,13 @@ public class REModuleComptableDiminution extends AREModuleComptable {
      * @return
      */
     private boolean doitOnCreerUneRestitutionEnCompta(final RERenteAccordee ra, JACalendar cal, JADate dateDernierPmt,
-            JADate dateFinRA) {
+            JADate dateFinRA) throws Exception {
         boolean creerRestitution = true;
         REEnteteBlocage entete = new REEnteteBlocage();
-        try {
-            entete.setSession(ra.getSession());
-            entete.setIdEnteteBlocage(ra.getIdEnteteBlocage());
-            entete.retrieve();
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        entete.setSession(ra.getSession());
+        entete.setIdEnteteBlocage(ra.getIdEnteteBlocage());
+        entete.retrieve();
+
         /*
          * CONDITION 1
          * Si la date du dernier pmt est égal à la date de la diminution et
