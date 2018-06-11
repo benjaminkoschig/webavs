@@ -1048,7 +1048,8 @@ public class REBasesCalcul extends BEntity {
      * @param string
      */
     public void setDroitApplique(String string) {
-        if (string.equals("09")) {
+        final String numRevisionXML = "09";
+        if (string.equals(numRevisionXML)) {
             droitApplique = "9";
         } else {
             droitApplique = string;
