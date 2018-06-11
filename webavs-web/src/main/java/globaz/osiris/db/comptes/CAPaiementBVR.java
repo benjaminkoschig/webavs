@@ -28,6 +28,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import ch.globaz.osiris.business.constantes.CAProperties;
 
 /**
  * Date de création : (14.02.2002 10:06:48)
@@ -63,7 +64,11 @@ public class CAPaiementBVR extends CAPaiement implements APIPaiementBVR {
 
         if (isTaxeEstReporte()) {
             try {
-                setSectionModeCompensation(transaction, APISection.MODE_REPORT);
+                if (!CAProperties.MODE_AUTO_REPORT.getBooleanValue()) {
+                    setSectionModeCompensation(transaction, APISection.MODE_REPORT);
+                } else {
+                    setSectionModeCompensation(transaction, APISection.MODE_COMPENSATION_STANDARD);
+                }
             } catch (Exception e) {
                 _addError(transaction, e.toString());
             }
