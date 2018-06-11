@@ -708,18 +708,21 @@ public class RFPreparerDecisionsService {
 
                 if (null != demandeCourante) {
 
-                    if (rfPreDecDemLinQdPri.getCsTypeRelation().equals(IPCDroits.CS_ROLE_FAMILLE_ENFANT)) {
-                        demandeCourante.setEnfant(true);
-                    }
-
                     if (rfPreDecDemLinQdPri.getIsComprisDansCalcul()) {
                         if (!demandeCourante.getIsForcerImputation()) {
                             demandeCourante.setIdQdPrincipale(rfPreDecDemLinQdPri.getIdQd());
                         }
+                        if (rfPreDecDemLinQdPri.getCsTypeRelation().equals(IPCDroits.CS_ROLE_FAMILLE_ENFANT)) {
+                            demandeCourante.setEnfant(true);
+                        }
                         idQdPrincipaleSet.add(demandeCourante.getIdQdPrincipale());
-                    } else {
+                    // on s'assure que la demande n'est pas déjà traitée     
+                    } else if(!idQdPrincipaleSet.contains(demandeCourante.getIdQdPrincipale())){
                         demandeCourante.setIdQdPrincipale("");
                         demandeCourante.setEnfantExclu(true);
+                        if (rfPreDecDemLinQdPri.getCsTypeRelation().equals(IPCDroits.CS_ROLE_FAMILLE_ENFANT)) {
+                            demandeCourante.setEnfant(true);
+                        }
                     }
                 }
             }
