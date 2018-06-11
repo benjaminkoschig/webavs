@@ -1210,15 +1210,21 @@ public class REACORAnnonceXmlReader {
                 if (familienAngehoerigeType.getVNr2Ergaenzend().size() > 0) {
                     /* YXNDNA (String) : format NSS complet sur 13 position sans point */
                     String nssCompl2 = familienAngehoerigeType.getVNr2Ergaenzend().get(0);
-                    if (nssCompl2 != null) {
-                        if (nssCompl2.equals("0")) {
-                            secondNoAssComplementaire = emptyNSS;
-                        } else {
-                            PRTiersWrapper tiers2 = PRTiersHelper.getTiers(session, NSUtil.formatAVSUnknown(nssCompl2));
-                            if (tiers2 != null) {
-                                secondNoAssComplementaire = nssCompl2;
-                            }
-                        }
+                    // if (nssCompl2 != null) {
+                    // if (nssCompl2.equals("0")) {
+                    // secondNoAssComplementaire = emptyNSS;
+                    // } else {
+                    // PRTiersWrapper tiers2 = PRTiersHelper.getTiers(session, NSUtil.formatAVSUnknown(nssCompl2));
+                    // if (tiers2 != null) {
+                    // secondNoAssComplementaire = nssCompl2;
+                    // }
+                    // }
+                    // }
+                    if (!JadeStringUtil.isBlankOrZero(nssCompl2)) {
+                        secondNoAssComplementaire = NSUtil.unFormatAVS(definirNssComplementaire(session,
+                                NSUtil.formatAVSUnknown(nssCompl2)));
+                    } else {
+                        secondNoAssComplementaire = EMPTY_NSS;
                     }
                 }
             }
