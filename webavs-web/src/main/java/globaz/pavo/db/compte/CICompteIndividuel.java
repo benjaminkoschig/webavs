@@ -2221,12 +2221,13 @@ public class CICompteIndividuel extends BEntity {
                     + Jade.getInstance().getDefaultJdbcSchema() + ".CIINDIP ci on ecr.KAIIND=ci.KAIIND inner join "
                     + Jade.getInstance().getDefaultJdbcSchema() + ".AFAFFIP aff on ecr.KBITIE=aff.MAIAFF "
                     + "WHERE ci.KANAVS=" + JAUtil.quotedString(JAStringFormatter.deformatAvs(nAVSStr[1])));
-        }
-        while (resultSet.next()) {
-            if (Integer.parseInt(resultSet.getString(1)) > codeSecure) {
-                return false;
+            while (resultSet.next()) {
+                if (Integer.parseInt(resultSet.getString(1)) > codeSecure) {
+                    return false;
+                }
             }
         }
+
         return true;
     }
 
