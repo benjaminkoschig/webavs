@@ -68,12 +68,12 @@
 	<ct:menuSetAllParams key="montantRenteAccordee" value="<%=viewBean.getMontantPrestation()%>"/>
 	<ct:menuSetAllParams key="idBaseCalcul" value="<%=viewBean.getIdBaseCalcul()%>"/>
 	<ct:menuSetAllParams key="csTypeBasesCalcul" value="<%=viewBean.getCsTypeBasesCalcul()%>"/>
-	<% if ((IRERenteAccordee.CS_ETAT_AJOURNE.equals(viewBean.getCsEtat())
-		    || IRERenteAccordee.CS_ETAT_CALCULE.equals(viewBean.getCsEtat())
-		    || IRERenteAccordee.CS_ETAT_DIMINUE.equals(viewBean.getCsEtat()))
-		    
-		  || (!globaz.jade.client.util.JadeStringUtil.isBlankOrZero(viewBean.getDateFinDroit()))
-		  || !REPmtMensuel.isValidationDecisionAuthorise(objSession)) { %>
+	<% if ( (!viewBean.isDecisionLotValide() && (IRERenteAccordee.CS_ETAT_VALIDE.equals(viewBean.getCsEtat()) || IRERenteAccordee.CS_ETAT_PARTIEL.equals(viewBean.getCsEtat())))
+	        || IRERenteAccordee.CS_ETAT_CALCULE.equals(viewBean.getCsEtat())
+	        || IRERenteAccordee.CS_ETAT_DIMINUE.equals(viewBean.getCsEtat())
+			|| (!globaz.jade.client.util.JadeStringUtil.isBlankOrZero(viewBean.getDateFinDroit()))
+		    || !REPmtMensuel.isValidationDecisionAuthorise(objSession)
+		  ) { %>
 		<ct:menuActivateNode active="no" nodeId="optdiminution"/>
 	<%} else {%>
 		<ct:menuActivateNode active="yes" nodeId="optdiminution"/>

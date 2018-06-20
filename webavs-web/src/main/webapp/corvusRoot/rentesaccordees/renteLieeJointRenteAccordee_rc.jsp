@@ -1,4 +1,5 @@
-<%-- tpl:insert page="/theme/find.jtpl" --%><%@page import="globaz.jade.publish.client.JadePublishDocument"%>
+<%-- tpl:insert page="/theme/find.jtpl" --%><%@page import="globaz.jade.client.util.JadeUtil"%>
+<%@page import="globaz.jade.publish.client.JadePublishDocument"%>
 <%@page import="globaz.corvus.servlet.IREActions"%>
 <%@ page language="java" errorPage="/errorPage.jsp" import="globaz.globall.http.*" %>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
@@ -19,7 +20,10 @@
 	rememberSearchCriterias = true;
 	
 	globaz.corvus.vb.rentesaccordees.RERenteAccordeeJointDemandeRenteViewBean viewBean = (globaz.corvus.vb.rentesaccordees.RERenteAccordeeJointDemandeRenteViewBean) request.getAttribute("viewBean");
-	
+	if(JadeStringUtil.isBlank(viewBean.getCsEtat())){
+	    viewBean.retrieve();
+	    
+	}
 	String noDemandeRente = request.getParameter("noDemandeRente");
 	String idTierRequerant = request.getParameter("idTierRequerant");
 	String idRenteAccordee = request.getParameter("idRenteAccordee");
@@ -51,10 +55,9 @@
 				<ct:menuSetAllParams key="montantRenteAccordee" value="<%=viewBean.getMontantPrestation()%>"/>
 				<ct:menuSetAllParams key="idBaseCalcul" value="<%=viewBean.getIdBaseCalcul()%>"/>
 				<ct:menuSetAllParams key="csTypeBasesCalcul" value="<%=viewBean.getCsTypeBasesCalcul()%>"/>
-				<% if ((IRERenteAccordee.CS_ETAT_AJOURNE.equals(viewBean.getCsEtat())
+				<% if ((!viewBean.isDecisionLotValide() && (IRERenteAccordee.CS_ETAT_VALIDE.equals(viewBean.getCsEtat()) || IRERenteAccordee.CS_ETAT_PARTIEL.equals(viewBean.getCsEtat())))
 					    || IRERenteAccordee.CS_ETAT_CALCULE.equals(viewBean.getCsEtat())
-					    || IRERenteAccordee.CS_ETAT_DIMINUE.equals(viewBean.getCsEtat()))
-					    
+					    || IRERenteAccordee.CS_ETAT_DIMINUE.equals(viewBean.getCsEtat())
 					  || (!globaz.jade.client.util.JadeStringUtil.isBlankOrZero(viewBean.getDateFinDroit()))
 					  || !REPmtMensuel.isValidationDecisionAuthorise(objSession)) { %>
 					<ct:menuActivateNode active="no" nodeId="optdiminution"/>

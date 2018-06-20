@@ -86,9 +86,9 @@
 					<ct:menuParam key="dateFinDroit" value="<%=courant.getDateFinDroit()%>" />
 					<ct:menuParam key="isPreparationDecisionValide" value="<%=Boolean.toString(courant.isPreparationDecisionValide())%>" />
 <%
-	if ((IRERenteAccordee.CS_ETAT_AJOURNE.equals(courant.getCsEtat())
-		|| IRERenteAccordee.CS_ETAT_CALCULE.equals(courant.getCsEtat())
-		|| IRERenteAccordee.CS_ETAT_DIMINUE.equals(courant.getCsEtat()))
+	if ( (!courant.isDecisionLotValide() && (IRERenteAccordee.CS_ETAT_VALIDE.equals(courant.getCsEtat()) || IRERenteAccordee.CS_ETAT_PARTIEL.equals(courant.getCsEtat())))
+	    || IRERenteAccordee.CS_ETAT_CALCULE.equals(courant.getCsEtat())
+	    || IRERenteAccordee.CS_ETAT_DIMINUE.equals(courant.getCsEtat())
 		|| (!JadeStringUtil.isBlankOrZero(courant.getDateFinDroit()))
 		|| !REPmtMensuel.isValidationDecisionAuthorise(objSession)) {
 %>					<ct:menuExcludeNode nodeId="optdiminution" />

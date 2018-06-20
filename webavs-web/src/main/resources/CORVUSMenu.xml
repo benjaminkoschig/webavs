@@ -405,6 +405,7 @@
 					<parameter name="noDemandeRente" />
 					<parameter name="idTierRequerant" />
 					<parameter name="idTiersVueGlobale" />
+					<parameter name="forCsEtat" />
 				</action>
 			</node>
 			<node id="demandesRassemblements">
@@ -554,6 +555,7 @@
 					<parameter name="idBaseCalcul" />
 					<parameter name="csTypeBasesCalcul" />
 					<parameter name="idTiersBeneficiaire" />
+					<parameter name="csEtatRenteAccordee" />
 					<parameter name="menuOptionToLoad" value="rentesaccordees" />
 				</action>
 			</node>

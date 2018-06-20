@@ -14,6 +14,7 @@ import globaz.corvus.db.rentesaccordees.REEnteteBlocage;
 import globaz.corvus.db.rentesaccordees.RERenteAccJoinTblTiersJoinDemandeRente;
 import globaz.corvus.db.rentesaccordees.RERenteAccordee;
 import globaz.corvus.utils.decisions.REDecisionsUtil;
+import globaz.corvus.vb.lots.RELotViewBean;
 import globaz.externe.IPRConstantesExternes;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.util.FWCurrency;
@@ -925,6 +926,33 @@ public class RERenteAccordeeJointDemandeRenteViewBean extends RERenteAccJoinTblT
                 }
             }
         }
+    }
+
+    public boolean isDecisionLotValide() throws Exception {
+
+        REDecisionJointDemandeRenteManager mgr = new REDecisionJointDemandeRenteManager();
+        mgr.setForNoDemandeRente(getNoDemandeRente());
+        mgr.setForIdsRentesAccordeesIn(getIdPrestationAccordee());
+        mgr.setSession(getSession());
+        mgr.find();
+        if (mgr.isEmpty()) {
+            return true;
+        }
+
+        for (Iterator iterator = mgr.iterator(); iterator.hasNext();) {
+            REDecisionJointDemandeRente entity = (REDecisionJointDemandeRente) iterator.next();
+            RELotViewBean viewBean = new RELotViewBean();
+            viewBean.setIdLot(entity.getIdLot());
+            viewBean.setSession(getSession());
+            viewBean.retrieve();
+            if (viewBean.getCsEtatLot().equals(IRELot.CS_ETAT_LOT_VALIDE)) {
+                return true;
+            }
+
+        }
+
+        return false;
+
     }
 
     /**

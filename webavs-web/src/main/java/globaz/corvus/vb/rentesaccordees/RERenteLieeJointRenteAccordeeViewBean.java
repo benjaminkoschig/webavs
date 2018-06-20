@@ -7,10 +7,14 @@ package globaz.corvus.vb.rentesaccordees;
 import globaz.commons.nss.NSUtil;
 import globaz.corvus.api.basescalcul.IREPrestationAccordee;
 import globaz.corvus.api.demandes.IREDemandeRente;
+import globaz.corvus.api.lots.IRELot;
 import globaz.corvus.db.basescalcul.REBasesCalcul;
 import globaz.corvus.db.demandes.REDemandeRente;
+import globaz.corvus.db.rentesaccordees.REDecisionJointDemandeRente;
+import globaz.corvus.db.rentesaccordees.REDecisionJointDemandeRenteManager;
 import globaz.corvus.db.rentesaccordees.RERenteLieeJointPrestationAccordee;
 import globaz.corvus.utils.decisions.REDecisionsUtil;
+import globaz.corvus.vb.lots.RELotViewBean;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.util.FWCurrency;
 import globaz.globall.db.BStatement;
@@ -18,6 +22,7 @@ import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.tools.nnss.PRNSSUtil;
+import java.util.Iterator;
 import java.util.Vector;
 
 /**
@@ -253,6 +258,33 @@ public class RERenteLieeJointRenteAccordeeViewBean extends RERenteLieeJointPrest
         demande.retrieve();
 
         return demande.getIdDemandeRente();
+    }
+
+    public boolean isDecisionLotValide() throws Exception {
+
+        REDecisionJointDemandeRenteManager mgr = new REDecisionJointDemandeRenteManager();
+        mgr.setForNoDemandeRente(getNoDemandeRente());
+        mgr.setForIdsRentesAccordeesIn(getIdPrestationAccordee());
+        mgr.setSession(getSession());
+        mgr.find();
+        if (mgr.isEmpty()) {
+            return true;
+        }
+
+        for (Iterator iterator = mgr.iterator(); iterator.hasNext();) {
+            REDecisionJointDemandeRente entity = (REDecisionJointDemandeRente) iterator.next();
+            RELotViewBean viewBean = new RELotViewBean();
+            viewBean.setIdLot(entity.getIdLot());
+            viewBean.setSession(getSession());
+            viewBean.retrieve();
+            if (viewBean.getCsEtatLot().equals(IRELot.CS_ETAT_LOT_VALIDE)) {
+                return true;
+            }
+
+        }
+
+        return false;
+
     }
 
     /**
