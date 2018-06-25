@@ -42,7 +42,7 @@ public class PcaPrecedante {
 
     public static List<PcaForDecompte> findPcaCourrante(String idDroit, String noVersionDroitCourant)
             throws JadePersistenceException {
-        return findPcaCourrante(idDroit, noVersionDroitCourant);
+        return findPcaCourrante(idDroit, noVersionDroitCourant, null);
     }
 
     public static List<PcaForDecompte> findPcaCourrante(String idDroit, String noVersionDroitCourant, String dateFin)
