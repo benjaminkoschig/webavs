@@ -155,7 +155,9 @@ public class CIAnalyseSplitting extends FWIDocumentManager {
                 // années jeunesse et rente
                 CICompteIndividuel ci = ciManager.getCIRegistreAssures(dossier.getIdTiersAssure(), getTransaction());
                 if (ci != null) {
-                    if (!ci.hasUserShowRight(getTransaction())) {
+                    if (!ci.hasUserShowRight(getTransaction())
+                            || !CICompteIndividuel.hasRightAffiliationSecureCode(getSession(), getTransaction(), ci,
+                                    getSession().getUserId())) {
                         secureDenied = true;
                         throw new FWIException(CIAnalyseSplitting.class
                                 + " : Droit insuffisant pour voir le montant du revenu");
@@ -170,7 +172,9 @@ public class CIAnalyseSplitting extends FWIDocumentManager {
                 }
                 ci = ciManager.getCIRegistreAssures(dossier.getIdTiersConjoint(), getTransaction());
                 if (ci != null) {
-                    if (!ci.hasUserShowRight(getTransaction())) {
+                    if (!ci.hasUserShowRight(getTransaction())
+                            || !CICompteIndividuel.hasRightAffiliationSecureCode(getSession(), getTransaction(), ci,
+                                    getSession().getUserId())) {
                         secureDenied = true;
                         throw new FWIException(CIAnalyseSplitting.class
                                 + " : Droit insuffisant pour voir le montant du revenu");
@@ -213,7 +217,9 @@ public class CIAnalyseSplitting extends FWIDocumentManager {
                     CICompteIndividuel ci = ciManager.getCIRegistreAssures(dossier.getIdTiersConjoint(),
                             getTransaction());
                     if (ci != null) {
-                        if (!ci.hasUserShowRight(getTransaction())) {
+                        if (!ci.hasUserShowRight(getTransaction())
+                                || !CICompteIndividuel.hasRightAffiliationSecureCode(getSession(), getTransaction(),
+                                        ci, getSession().getUserId())) {
                             secureDenied = true;
                             throw new FWIException(CIAnalyseSplitting.class
                                     + " : Droit insuffisant pour voir le montant du revenu");

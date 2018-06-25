@@ -1360,8 +1360,8 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
             throw new CISplittingException(getSession().getLabel("MSG_DOSSIER_APERCU"));
         }
 
-        boolean hasRight = hasRight(getSession().getUserId(), getIdTiersAssure())
-                || hasRight(getSession().getUserId(), getIdTiersConjoint());
+        boolean hasNoRight = hasNoRight(getSession().getUserId(), getIdTiersAssure())
+                || hasNoRight(getSession().getUserId(), getIdTiersConjoint());
 
         String refUniqueAssure = null;
         String refUniqueConjoint = null;
@@ -1395,7 +1395,7 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
 
         CISplittingApercuAndLettreAccompagnementMergeProcess apercuAndLettreAccompagnementMergeProcess = new CISplittingApercuAndLettreAccompagnementMergeProcess();
 
-        apercuAndLettreAccompagnementMergeProcess.setCache(hasRight);
+        apercuAndLettreAccompagnementMergeProcess.setCache(hasNoRight);
 
         apercuAndLettreAccompagnementMergeProcess.setSession(getSession());
         apercuAndLettreAccompagnementMergeProcess.setEMailAddress(email);
@@ -1461,11 +1461,11 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
         apercuAndLettreAccompagnementMergeProcess.start();
     }
 
-    public boolean hasRight(String userId, String numAvs) {
-        return hasRight(userId, getSession(), numAvs);
+    public boolean hasNoRight(String userId, String numAvs) {
+        return hasNoRight(userId, getSession(), numAvs);
     }
 
-    public boolean hasRight(String userId, BSession session, String numAVS) {
+    public boolean hasNoRight(String userId, BSession session, String numAVS) {
         try {
             // non on n'a pas déjà demandé le revenu pour cet instance
             // recherche du compte individuel en relation avec l'annonce
@@ -1485,7 +1485,7 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
                     CICompteIndividuel ci = (CICompteIndividuel) ciRecherche.getEntity(0);
                     // faire une nouvelle transaction
                     if (ci.hasUserShowRight(newTrans, userId)
-                            && !existEcritureACacher(session, ci.getCompteIndividuelId())) {
+                            && CICompteIndividuel.hasRightAffiliationSecureCode(session, newTrans, ci, userId)) {
                         // l'utilisateur a les droits pour voir le revenu
                         return false;
                     } else {

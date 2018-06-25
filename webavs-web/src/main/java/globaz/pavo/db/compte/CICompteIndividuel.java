@@ -7,6 +7,7 @@ import globaz.globall.api.BITransaction;
 import globaz.globall.db.BConstants;
 import globaz.globall.db.BEntity;
 import globaz.globall.db.BManager;
+import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
 import globaz.globall.db.BStatement;
 import globaz.globall.db.BTransaction;
@@ -2161,28 +2162,20 @@ public class CICompteIndividuel extends BEntity {
             if (JAUtil.isStringEmpty(getAccesSecurite())) {
                 // ci pas chargé correctement -> écriture cachée
                 return false;
-            } else if (!JAUtil.isIntegerEmpty(getAccesSecurite())) {
-                FWSecureUserDetail user = new FWSecureUserDetail();
-                user.setSession(getSession());
-                user.setUser(userId);
-                user.setLabel(CICompteIndividuel.SECURITE_LABEL);
-                user.retrieve(transaction);
-                if (!user.isNew()) {
-                    int accesUser = Integer.parseInt(user.getData());
+            } else if (!JAUtil.isIntegerEmpty(getAccesSecurite())
+                    && !CICompteIndividuel.CS_ACCESS_0.equals(getAccesSecurite())) {
+                FWSecureUserDetail userSecureCode = new FWSecureUserDetail();
+                userSecureCode.setSession(getSession());
+                userSecureCode.setUser(userId);
+                userSecureCode.setLabel(CICompteIndividuel.SECURITE_LABEL);
+                userSecureCode.retrieve(transaction);
+                if (!userSecureCode.isNew()) {
+                    int accesUser = Integer.parseInt(userSecureCode.getData());
                     int accesCI = Character.getNumericValue(getAccesSecurite().charAt(getAccesSecurite().length() - 1));
-                    if (transaction != null) {
-                        boolean accesAff = checkAffSecureCode(transaction, CS_ACCESS + accesUser);
-                        if ((accesUser < accesCI) || !accesAff) {
-                            // sécurité utilisateur inférieure -> -> ecriture cachée
-                            return false;
-                        }
-                    } else {
-                        if (accesUser < accesCI) {
-                            // sécurité utilisateur inférieure -> -> ecriture cachée
-                            return false;
-                        }
+                    if (accesUser < accesCI) {
+                        // sécurité utilisateur inférieure -> -> ecriture cachée
+                        return false;
                     }
-
                 } else {
                     // l'utilisateur n'a pas de code accès -> ecriture cachée
                     return false;
@@ -2199,36 +2192,54 @@ public class CICompteIndividuel extends BEntity {
         }
     }
 
-    private boolean checkAffSecureCode(BTransaction transaction, int codeSecure) throws Exception {
-        ResultSet resultSet;
-        BStatement psCheckAffSecureCode = new BStatement(transaction);
-        psCheckAffSecureCode.createStatement();
-        resultSet = psCheckAffSecureCode.executeQuery("SELECT MATSEC as AFF_SEC from "
-                + Jade.getInstance().getDefaultJdbcSchema() + ".CIECRIP ecr inner join "
-                + Jade.getInstance().getDefaultJdbcSchema() + ".CIINDIP ci on ecr.KAIIND=ci.KAIIND inner join "
-                + Jade.getInstance().getDefaultJdbcSchema() + ".AFAFFIP aff on ecr.KBITIE=aff.MAIAFF "
-                + "WHERE ci.KAIIND=" + getCompteIndividuelId());
-        Object[] ciLies = getCILies();
-        while (resultSet.next()) {
-            if (Integer.parseInt(resultSet.getString(1)) > codeSecure) {
-                return false;
-            }
-        }
-        if (ciLies.length > 1) {
-            String[] nAVSStr = (String[]) ciLies[1];
+    public static boolean hasRightAffiliationSecureCode(BSession session, BTransaction transaction,
+            CICompteIndividuel ci, String userId) throws Exception {
+
+        FWSecureUserDetail userSecureCode = new FWSecureUserDetail();
+        userSecureCode.setSession(session);
+        userSecureCode.setUser(userId);
+        userSecureCode.setLabel(CICompteIndividuel.SECURITE_LABEL);
+        userSecureCode.retrieve(transaction);
+        if (!userSecureCode.isNew()) {
+            int accesUser = Integer.parseInt(userSecureCode.getData());
+
+            ResultSet resultSet;
+            BStatement psCheckAffSecureCode = new BStatement(transaction);
+            psCheckAffSecureCode.createStatement();
             resultSet = psCheckAffSecureCode.executeQuery("SELECT MATSEC as AFF_SEC from "
                     + Jade.getInstance().getDefaultJdbcSchema() + ".CIECRIP ecr inner join "
                     + Jade.getInstance().getDefaultJdbcSchema() + ".CIINDIP ci on ecr.KAIIND=ci.KAIIND inner join "
                     + Jade.getInstance().getDefaultJdbcSchema() + ".AFAFFIP aff on ecr.KBITIE=aff.MAIAFF "
-                    + "WHERE ci.KANAVS=" + JAUtil.quotedString(JAStringFormatter.deformatAvs(nAVSStr[1])));
+                    + "WHERE ci.KAIIND=" + ci.getCompteIndividuelId());
+            Object[] ciLies = ci.getCILies();
             while (resultSet.next()) {
-                if (Integer.parseInt(resultSet.getString(1)) > codeSecure) {
+                String value = resultSet.getString(1);
+                if (Character.getNumericValue(value.charAt(value.length() - 1)) > accesUser) {
                     return false;
                 }
             }
+            if (ciLies.length > 1) {
+                for (Object ciLie : ciLies) {
+                    String[] nAVSStr = (String[]) ciLie;
+                    if (!JAStringFormatter.deformatAvs(nAVSStr[1]).equals(ci.getNumeroAvs())) {
+                        resultSet = psCheckAffSecureCode.executeQuery("SELECT MATSEC as AFF_SEC from "
+                                + Jade.getInstance().getDefaultJdbcSchema() + ".CIECRIP ecr inner join "
+                                + Jade.getInstance().getDefaultJdbcSchema()
+                                + ".CIINDIP ci on ecr.KAIIND=ci.KAIIND inner join "
+                                + Jade.getInstance().getDefaultJdbcSchema() + ".AFAFFIP aff on ecr.KBITIE=aff.MAIAFF "
+                                + "WHERE ci.KANAVS=" + JAUtil.quotedString(JAStringFormatter.deformatAvs(nAVSStr[1])));
+                        while (resultSet.next()) {
+                            String value = resultSet.getString(1);
+                            if (Character.getNumericValue(value.charAt(value.length() - 1)) > accesUser) {
+                                return false;
+                            }
+                        }
+                    }
+                }
+            }
+            return true;
         }
-
-        return true;
+        return false;
     }
 
     public Boolean isCiOuvert() {

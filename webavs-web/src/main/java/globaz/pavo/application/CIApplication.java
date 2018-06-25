@@ -1,10 +1,5 @@
 package globaz.pavo.application;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Map;
-import java.util.StringTokenizer;
 import globaz.framework.controller.FWAction;
 import globaz.framework.menu.FWMenuCache;
 import globaz.framework.secure.FWSecureConstants;
@@ -41,6 +36,11 @@ import globaz.pyxis.api.ITIPersonneAvs;
 import globaz.pyxis.api.helper.ITIAdministrationHelper;
 import globaz.pyxis.api.helper.ITIPersonneAvsHelper;
 import globaz.webavs.common.CommonProperties;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Map;
+import java.util.StringTokenizer;
 
 /**
  * Application PAVO
@@ -208,8 +208,7 @@ public class CIApplication extends globaz.globall.db.BApplication {
         FWAction.registerActionCustom("pavo.splitting.domicileSplitting.chercherDomicile", FWSecureConstants.READ);
         FWAction.registerActionCustom("pavo.splitting.dossierSplitting.apercuRCI", FWSecureConstants.READ);
         FWAction.registerActionCustom("pavo.splitting.dossierSplitting.afficherDepuisMandat", FWSecureConstants.READ);
-        FWAction.registerActionCustom("pavo.splitting.imprimerAnalyse.afficher", FWSecureConstants.UPDATE);
-        FWAction.registerActionCustom("pavo.splitting.imprimerApercu.afficher", FWSecureConstants.UPDATE);
+        FWAction.registerActionCustom("pavo.splitting.imprimerAnalyse.afficher", FWSecureConstants.READ);
         FWAction.registerActionCustom("pavo.splitting.dossierSplitting.annulerDossier", FWSecureConstants.UPDATE);
         FWAction.registerActionCustom("pavo.splitting.dossierSplitting.rouvrir", FWSecureConstants.UPDATE);
         FWAction.registerActionCustom("pavo.splitting.dossierSplitting.rouvrirDossier", FWSecureConstants.UPDATE);

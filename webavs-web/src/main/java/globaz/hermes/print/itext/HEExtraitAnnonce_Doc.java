@@ -19,6 +19,7 @@ import globaz.hermes.db.gestion.HEOutputAnnonceException;
 import globaz.hermes.db.gestion.HEOutputAnnonceListViewBean;
 import globaz.hermes.db.gestion.HEOutputAnnonceViewBean;
 import globaz.hermes.print.itext.util.HEExtraitComparatorCaisse;
+import globaz.hermes.utils.HECompareAnnonce;
 import globaz.hermes.utils.StringUtils;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.common.Jade;
@@ -115,7 +116,7 @@ public class HEExtraitAnnonce_Doc extends FWIDocumentManager {
     private String numeroAVS20 = "";
 
     private boolean premierPassage = true;
-    private TreeSet referenceUniqueList = new TreeSet();
+    private TreeSet referenceUniqueList = new TreeSet(new  HECompareAnnonce());
     protected Vector referenceUniqueVectorList = new Vector();
     public String service;
     private String sexe = "";

@@ -390,7 +390,7 @@ public final class AFAffiliationServices {
             FWSecureUserDetail user = new FWSecureUserDetail();
 
             user.setSession(session);
-            user.setUser(session.getUserId().toLowerCase());
+            user.setUser(session.getUserId());
             user.setLabel(AFAffiliation.SECURE_CODE);
 
             user.retrieve();
