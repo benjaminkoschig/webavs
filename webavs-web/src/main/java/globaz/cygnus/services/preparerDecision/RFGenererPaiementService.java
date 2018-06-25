@@ -619,24 +619,26 @@ public class RFGenererPaiementService {
         prest.setIdAdressePaiement(decision.getIdAdressePaiement());
         prest.setIdTiersBeneficiaire(idRequerant);
 
-        RFImputationQdsData qd = getQdPrincipalMap(qdsAimputerMap, decision.getIdQdPrincipale());
-
-        prest.setcsGenrePrestation(qd.getCsGenrePcAccordee());
-        prest.setTypePrestation(qd.getCsTypePcAccordee());
-
-        if (RFPropertiesUtils.ajoutDemandesEnComptabiliteSansTenirCompteTypeDeHome()) {
-            prest.setRemboursementRequerant("");
-        } else {
-            if (JadeStringUtil.isBlankOrZero(qd.getRemboursementRequerant())) {
-                prest.setRemboursementRequerant(IRFQd.CS_TYPE_REMBOURSEMENT_DOMICILE);
+        if(!JadeStringUtil.isEmpty(decision.getIdQdPrincipale())) {
+            RFImputationQdsData qd = getQdPrincipalMap(qdsAimputerMap, decision.getIdQdPrincipale());
+    
+            prest.setcsGenrePrestation(qd.getCsGenrePcAccordee());
+            prest.setTypePrestation(qd.getCsTypePcAccordee());
+    
+            if (RFPropertiesUtils.ajoutDemandesEnComptabiliteSansTenirCompteTypeDeHome()) {
+                prest.setRemboursementRequerant("");
             } else {
-                prest.setRemboursementRequerant(qd.getRemboursementRequerant());
+                if (JadeStringUtil.isBlankOrZero(qd.getRemboursementRequerant())) {
+                    prest.setRemboursementRequerant(IRFQd.CS_TYPE_REMBOURSEMENT_DOMICILE);
+                } else {
+                    prest.setRemboursementRequerant(qd.getRemboursementRequerant());
+                }
             }
+        
+            prest.setRemboursementConjoint(qd.getRemboursementConjoint());
+            prest.setIsRI(qd.isRI());
+            prest.setIsLAPRAMS(qd.isLAPRAMS());
         }
-
-        prest.setRemboursementConjoint(qd.getRemboursementConjoint());
-        prest.setIsRI(qd.isRI());
-        prest.setIsLAPRAMS(qd.isLAPRAMS());
 
         prest.add(transaction);
 
