@@ -75,6 +75,7 @@ import ch.globaz.prestation.domaine.CodePrestation;
  * 
  */
 public class REAnnoncePonctuelleHelper extends PRAbstractHelper {
+    private final String EMPTY_NSS = "00000000000";
 
     @Override
     protected void _retrieve(final FWViewBeanInterface viewBean, final FWAction action,
@@ -1245,11 +1246,16 @@ public class REAnnoncePonctuelleHelper extends PRAbstractHelper {
             String nssComplementaire1 = "756." + viewBean.getNssComplementaire1();
             nssComplementaire1 = JadeStringUtil.change(nssComplementaire1, ".", "");
             annonce_01.setPremierNoAssComplementaire(nssComplementaire1);
+        } else {
+            annonce_01.setPremierNoAssComplementaire(EMPTY_NSS);
+
         }
         if (!JadeStringUtil.isBlankOrZero(viewBean.getNssComplementaire2())) {
             String nssComplementaire2 = "756." + viewBean.getNssComplementaire2();
             nssComplementaire2 = JadeStringUtil.change(nssComplementaire2, ".", "");
             annonce_01.setSecondNoAssComplementaire(nssComplementaire2);
+        } else {
+            annonce_01.setSecondNoAssComplementaire(EMPTY_NSS);
         }
 
         annonce_01.setEtatCivil(viewBean.getCodeEtatCivil());

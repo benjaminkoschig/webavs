@@ -521,9 +521,13 @@ public class REAnnoncePonctuelleViewBean extends PRAbstractViewBeanSupport {
             // tiersComplementaire2 mere
             if (enf.getMere() != null) {
                 enf.getMere().getCsCantonDomicile();
-                PRTiersWrapper tw = PRTiersHelper.getTiersParId(session, enf.getMere().getIdTiers());
-                nssComplementaire2 = tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL);
-                idTiersComplementaire2 = tw.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS);
+                if (ISFSituationFamiliale.ID_MEMBRE_FAMILLE_CONJOINT_INCONNU.equals(enf.getMere().getIdMembreFamille())) {
+                    // TODO oui mais on a pas de tiers pour le conjoint inconnu
+                } else {
+                    PRTiersWrapper tw = PRTiersHelper.getTiersParId(session, enf.getMere().getIdTiers());
+                    nssComplementaire2 = tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL);
+                    idTiersComplementaire2 = tw.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS);
+                }
             }
 
             // Pour ayant droit enfant
