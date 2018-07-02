@@ -1704,8 +1704,11 @@ public class CPProcessReceptionGenererDecision extends BProcess {
                 mRevenuInd = mRevenuInd.subtract(mRevenuTSE);
                 newDecision.setRevenu1(mRevenuInd.toString());
             }
-
-            calculLPP(newDecision, donnee);
+            if (!traitementConjoint) {
+                calculLPP(newDecision, donnee);
+            } else {
+                calculLPPCjt(newDecision, donnee);
+            }
 
         } else if (IConstantes.CS_LOCALITE_CANTON_VALAIS.equalsIgnoreCase(getJournal().getCanton())) {
             CPCommunicationFiscaleRetourVSViewBean retourVS = new CPCommunicationFiscaleRetourVSViewBean();
@@ -1791,11 +1794,41 @@ public class CPProcessReceptionGenererDecision extends BProcess {
         if (donnee.getPurchasingLPP() != "") {
             rachatLPPDonneBase = Integer.parseInt(JANumberFormatter.deQuote(donnee.getPurchasingLPP()));
         }
+
+        if (donnee.getEmploymentIncome() != "") {
+            revenu = Integer.parseInt(JANumberFormatter.deQuote(donnee.getIncomeFromSelfEmployment()));
+        }
+
+        double revenus = ((double) revenu + revenuAgricole);
+
+        // Ne pas tenir compte du rachat LPP si les revenus sont inférieur à 0
+        if (revenus >= 0.0) {
+            double rachatLPPCalcule = rachatLPPDonneBase / 2.0;
+
+            if (rachatLPPCalcule > revenus / 2.0) {
+                rachatLPPCalcule = revenus / 2.0;
+            }
+
+            rachatLPPCalcule = Math.abs(rachatLPPCalcule);
+
+            decisionViewBean.setRachatLPP(String.valueOf(JANumberFormatter.format(rachatLPPCalcule, 1.0, 0,
+                    JANumberFormatter.SUP)));
+        }
+    }
+
+    public void calculLPPCjt(CPDecisionViewBean decisionViewBean, CPSedexDonneesBase donnee) {
+        int rachatLPPDonneBase = 0;
+        int revenu = 0;
+        int revenuAgricole = 0;
+
         if (!JadeStringUtil.isBlank(donnee.getPurchasingLPPCjt())) {
             rachatLPPDonneBase += Integer.parseInt(JANumberFormatter.deQuote(donnee.getPurchasingLPPCjt()));
         }
-        if (donnee.getEmploymentIncome() != "") {
-            revenu = Integer.parseInt(JANumberFormatter.deQuote(donnee.getIncomeFromSelfEmployment()));
+        if (!JadeStringUtil.isBlank(donnee.getIncomeFromSelfEmploymentCjt())) {
+            revenu = Integer.parseInt(JANumberFormatter.deQuote(donnee.getIncomeFromSelfEmploymentCjt()));
+        }
+        if (!JadeStringUtil.isBlank(donnee.getMainIncomeInAgricultureCjt())) {
+            revenuAgricole = Integer.parseInt(JANumberFormatter.deQuote(donnee.getMainIncomeInAgricultureCjt()));
         }
 
         double revenus = ((double) revenu + revenuAgricole);
