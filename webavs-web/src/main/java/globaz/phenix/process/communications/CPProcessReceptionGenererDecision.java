@@ -1831,7 +1831,7 @@ public class CPProcessReceptionGenererDecision extends BProcess {
             revenuAgricole = Integer.parseInt(JANumberFormatter.deQuote(donnee.getMainIncomeInAgricultureCjt()));
         }
 
-        double revenus = ((double) revenu + revenuAgricole);
+        double revenus = (double) revenu + revenuAgricole;
 
         // Ne pas tenir compte du rachat LPP si les revenus sont inférieur à 0
         if (revenus >= 0.0) {
