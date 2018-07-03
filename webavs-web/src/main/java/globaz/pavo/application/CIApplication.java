@@ -95,6 +95,9 @@ public class CIApplication extends globaz.globall.db.BApplication {
     public final static String WANTED_TO_COMPARE = "anomalieCompare";
     public final static String WANTED_TO_CORRECT = "anomalieCorrige";
     public static final String PROPERTY_ACTIVER_PARSING_PUCS_4 = "activerParsingPUCS4";
+    public static final String IS_ANNONCE_XML = "entete.isAnnoncesXML";
+    public static final String NO_CAISSE = "noCaisse";
+    public static final String NO_AGENCE = "noAgence";
 
     // le format du numéro d'affilié
     private IFormatData affileFormater = null;
@@ -1442,5 +1445,14 @@ public class CIApplication extends globaz.globall.db.BApplication {
 
     public boolean wantUpiDaily() {
         return Boolean.valueOf(this.getProperty(CIApplication.WANT_UPI_DAILY, "false").trim()).booleanValue();
+    }
+
+    public boolean isAnnonceXML() {
+        return Boolean.valueOf(this.getProperty(CIApplication.IS_ANNONCE_XML).trim()).booleanValue();
+
+    }
+
+    public String getNumFichierEnteteCI() {
+        return this.getProperty(NO_CAISSE) + this.getProperty(NO_AGENCE);
     }
 }

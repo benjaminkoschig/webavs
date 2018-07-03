@@ -29,7 +29,7 @@
 									NSS
 								</td>
 								<td>
-									<nss:nssPopup value=''name="likeNumeroAvs" 
+									<nss:nssPopup value='' name="likeNumeroAvs" 
 									cssclass="visible"  avsMinNbrDigit="99" avsAutoNbrDigit="99"
 									nssMinNbrDigit="99" nssAutoNbrDigit="9"/> 
 								</td>

@@ -2199,6 +2199,24 @@ public class CIUtil {
         }
     }
 
+    public static boolean isAnnonceXML(BSession session) {
+        try {
+            CIApplication application = (CIApplication) session.getApplication();
+            return application.isAnnonceXML();
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public static String getNumFichierEnteteCI(BSession session) {
+        try {
+            CIApplication application = (CIApplication) session.getApplication();
+            return application.getNumFichierEnteteCI();
+        } catch (Exception e) {
+            return "000000";
+        }
+    }
+
     public static boolean isGenreSeptSiCloture(BSession session, String noAvs, String moisDebut, String moisFin,
             String annee) {
         try {

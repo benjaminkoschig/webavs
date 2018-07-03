@@ -15,6 +15,7 @@ import globaz.pavo.application.CIApplication;
 import globaz.pavo.db.comparaison.CIAnomalieCI;
 import globaz.pavo.db.comparaison.CIComparaisonIteratorInput;
 import globaz.pavo.db.comparaison.CIComparaisonIteratorInputEBC;
+import globaz.pavo.db.comparaison.CIComparaisonIteratorInputXML;
 import globaz.pavo.db.comparaison.CICompteIndividuelComparaison;
 import globaz.pavo.db.comparaison.CICompteIndividuelComparaisonManager;
 import globaz.pavo.db.comparaison.CIEnteteRecord;
@@ -69,11 +70,19 @@ public class CIComparaisonEnteteParcoursProcess extends FWProcess {
     @Override
     protected boolean _executeProcess() {
         ICIComparaisonIteratorInput iterator = null;
-        if (!CIUtil.isComparaisonEBCDIC(getSession())) {
-            iterator = new CIComparaisonIteratorInput();
-        } else {
-            iterator = new CIComparaisonIteratorInputEBC();
+        try {
+            if (CIUtil.isAnnonceXML(getSession())) {
+                iterator = new CIComparaisonIteratorInputXML();
+            } else if (!CIUtil.isComparaisonEBCDIC(getSession())) {
+                iterator = new CIComparaisonIteratorInput();
+            } else {
+                iterator = new CIComparaisonIteratorInputEBC();
+            }
+
+        } catch (Exception e1) {
+            e1.printStackTrace();
         }
+
         iterator.setFileName(getFileNameInput());
         int taille = 0;
         try {
@@ -370,19 +379,32 @@ public class CIComparaisonEnteteParcoursProcess extends FWProcess {
      * @return
      */
     public String getFileNameInput() {
-        String file;
+        String file = null;
         try {
             CIApplication application = (CIApplication) GlobazServer.getCurrentSystem().getApplication(
                     CIApplication.DEFAULT_APPLICATION_PAVO);
+
             if (JadeStringUtil.isBlank(application.getLocalPath())) {
-                file = "./pavoRoot/comparaison.txt";
+                if (CIUtil.isAnnonceXML(getSession())) {
+                    file = "./pavoRoot/enteteci" + application.getNumFichierEnteteCI() + ".xml";
+                } else {
+                    file = "./pavoRoot/comparaison.txt";
+                }
+
             } else {
-                file = application.getLocalPath() + "/pavoRoot/comparaison.txt";
+                if (CIUtil.isAnnonceXML(getSession())) {
+                    file = application.getLocalPath() + "/pavoRoot/enteteci" + application.getNumFichierEnteteCI()
+                            + ".xml";
+                } else {
+                    file = application.getLocalPath() + "/pavoRoot/comparaison.txt";
+                }
             }
+
         } catch (Exception e) {
             e.printStackTrace();
             return "";
         }
+
         return file;
     }
 

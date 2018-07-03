@@ -14,6 +14,7 @@ import globaz.pavo.db.comparaison.CIAnomalieCI;
 import globaz.pavo.db.comparaison.CIAnomalieCIManager;
 import globaz.pavo.db.comparaison.CIComparaisonIteratorInput;
 import globaz.pavo.db.comparaison.CIComparaisonIteratorInputEBC;
+import globaz.pavo.db.comparaison.CIComparaisonIteratorInputXML;
 import globaz.pavo.db.comparaison.CICompteIndividuelComparaisonManager;
 import globaz.pavo.db.comparaison.ICIComparaisonIteratorInput;
 import globaz.pavo.db.compte.CIEcritureManager;
@@ -109,9 +110,18 @@ public class CIComparaisonStatistique_Doc extends FWIDocumentManager {
             CIApplication application = (CIApplication) GlobazServer.getCurrentSystem().getApplication(
                     CIApplication.DEFAULT_APPLICATION_PAVO);
             if (JAUtil.isStringEmpty(application.getLocalPath())) {
-                file = "./pavoRoot/comparaison.txt";
+                if (CIUtil.isAnnonceXML(getSession())) {
+                    file = "./pavoRoot/enteteci" + application.getNumFichierEnteteCI() + ".xml";
+                } else {
+                    file = "./pavoRoot/comparaison.txt";
+                }
             } else {
-                file = application.getLocalPath() + "/pavoRoot/comparaison.txt";
+                if (CIUtil.isAnnonceXML(getSession())) {
+                    file = application.getLocalPath() + "/pavoRoot/enteteci" + application.getNumFichierEnteteCI()
+                            + ".xml";
+                } else {
+                    file = application.getLocalPath() + "/pavoRoot/comparaison.txt";
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -167,7 +177,9 @@ public class CIComparaisonStatistique_Doc extends FWIDocumentManager {
     public String getNbRecords() {
         try {
             ICIComparaisonIteratorInput iterator = null;
-            if (!CIUtil.isComparaisonEBCDIC(getSession())) {
+            if (CIUtil.isAnnonceXML(getSession())) {
+                iterator = new CIComparaisonIteratorInputXML();
+            } else if (!CIUtil.isComparaisonEBCDIC(getSession())) {
                 iterator = new CIComparaisonIteratorInput();
             } else {
                 iterator = new CIComparaisonIteratorInputEBC();
