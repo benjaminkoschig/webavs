@@ -11,6 +11,7 @@ import globaz.globall.db.GlobazServer;
 import globaz.globall.parameters.FWParametersSystemCode;
 import globaz.globall.parameters.FWParametersSystemCodeManager;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.log.JadeLogger;
 import globaz.pavo.application.CIApplication;
 import globaz.pavo.db.comparaison.CIAnomalieCI;
 import globaz.pavo.db.comparaison.CIComparaisonIteratorInput;
@@ -80,7 +81,7 @@ public class CIComparaisonEnteteParcoursProcess extends FWProcess {
             }
 
         } catch (Exception e1) {
-            e1.printStackTrace();
+            JadeLogger.debug(this, e1);
         }
 
         iterator.setFileName(getFileNameInput());

@@ -1448,7 +1448,7 @@ public class CIApplication extends globaz.globall.db.BApplication {
     }
 
     public boolean isAnnonceXML() {
-        return Boolean.valueOf(this.getProperty(CIApplication.IS_ANNONCE_XML).trim()).booleanValue();
+        return Boolean.parseBoolean(this.getProperty(CIApplication.IS_ANNONCE_XML).trim());
 
     }
 

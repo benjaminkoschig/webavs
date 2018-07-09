@@ -3,6 +3,8 @@ package globaz.pavo.db.comparaison;
 import globaz.jade.client.util.JadeStringUtil;
 import java.io.File;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
@@ -10,6 +12,7 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import ch.admin.zas.pool.PoolAntwortVonZAS;
+import ch.admin.zas.pool.PoolAntwortVonZAS.Lot;
 import ch.admin.zas.rc.IKBestandesmeldungType;
 
 public class CIComparaisonIteratorInputXML implements ICIComparaisonIteratorInput {
@@ -17,22 +20,21 @@ public class CIComparaisonIteratorInputXML implements ICIComparaisonIteratorInpu
     private boolean isReady = false;
     private static final String XSD_FOLDER = "/xsd/P2020/annoncesRC/";
     private static final String XSD_NAME = "AntwortVonZas.xsd";
-    private JAXBContext jc;
-    private Unmarshaller unmarshaller;
-    private int nbCITraite = 0;
-    List<Object> listCI = null;
-
-    private int size = -1;
+    PoolAntwortVonZAS pool;
+    List<IKBestandesmeldungType> listCI = null;
+    Iterator<IKBestandesmeldungType> itListCi = null;
 
     public CIComparaisonIteratorInputXML() {
         super();
     }
 
     private CIEnteteRecord _fillBean() throws Exception {
-        IKBestandesmeldungType donneeXML = (IKBestandesmeldungType) listCI.get(nbCITraite);
-        CIEnteteRecord record = new CIEnteteRecord();
+        CIEnteteRecord record = null;
+        IKBestandesmeldungType donneeXML = itListCi.next();
         int tailleNum = 0;
         String tmp = "";
+
+        record = new CIEnteteRecord();
         /*
          * Numéro de la caisse et Agence
          * CAS : Caisse suisse qui ont que 2 chiffres au lieu de 3
@@ -107,11 +109,10 @@ public class CIComparaisonIteratorInputXML implements ICIComparaisonIteratorInpu
                 record.setAgence(donneeXML.getFruehererAuftrag().getKasseZweigstelleAuftraggebend()
                         .substring(tailleNum - 3, tailleNum));
             }
-
         }
 
-        nbCITraite++;
         return record;
+
     }
 
     private void _init() throws Exception {
@@ -121,14 +122,11 @@ public class CIComparaisonIteratorInputXML implements ICIComparaisonIteratorInpu
                 URL url = getClass().getResource(XSD_FOLDER + XSD_NAME);
                 Schema schema = sf.newSchema(url);
                 ch.admin.zas.pool.ObjectFactory factoryPool = new ch.admin.zas.pool.ObjectFactory();
-                PoolAntwortVonZAS pool = factoryPool.createPoolAntwortVonZAS();
-                jc = JAXBContext.newInstance(pool.getClass());
-                unmarshaller = jc.createUnmarshaller();
+                pool = factoryPool.createPoolAntwortVonZAS();
+                JAXBContext jc = JAXBContext.newInstance(pool.getClass());
+                Unmarshaller unmarshaller = jc.createUnmarshaller();
                 unmarshaller.setSchema(schema);
                 pool = (PoolAntwortVonZAS) unmarshaller.unmarshal(new File(getFileName()));
-                listCI = pool.getLot().get(0)
-                        .getVAIKEmpfangsbestaetigungOrIKEroeffnungsermaechtigungOrIKUebermittlungsauftrag();
-                nbCITraite = 0;
                 isReady = true;
             }
         } catch (Exception e) {
@@ -155,12 +153,8 @@ public class CIComparaisonIteratorInputXML implements ICIComparaisonIteratorInpu
         if (!isReady) {
             _init();
         }
-        if (listCI != null) {
-            if (nbCITraite < listCI.size()) {
-                return true;
-            } else {
-                return false;
-            }
+        if (itListCi != null) {
+            return itListCi.hasNext();
         } else {
             return false;
         }
@@ -172,16 +166,11 @@ public class CIComparaisonIteratorInputXML implements ICIComparaisonIteratorInpu
         if (!isReady) {
             _init();
         }
-        if (listCI != null) {
-            CIEnteteRecord declaration = _fillBean();
-            return declaration;
+        if (itListCi.hasNext()) {
+            return _fillBean();
         } else {
             throw new Exception();
         }
-        // CIEnteteRecord declaration = new CIEnteteRecord ();
-        // vide le cache pour lire de toute facon la ligne suivante
-        // System.out.println("["+line+"]");
-
     }
 
     /**
@@ -197,12 +186,23 @@ public class CIComparaisonIteratorInputXML implements ICIComparaisonIteratorInpu
         if (!isReady) {
             _init();
         }
-        if (listCI != null) {
+        if (pool != null) {
+            listCI = new ArrayList<IKBestandesmeldungType>();
+            for (Lot lot : pool.getLot()) {
+                for (Object annonceXMLRAW : lot
+                        .getVAIKEmpfangsbestaetigungOrIKEroeffnungsermaechtigungOrIKUebermittlungsauftrag()) {
+                    if (annonceXMLRAW instanceof IKBestandesmeldungType) {
+                        listCI.add((IKBestandesmeldungType) annonceXMLRAW);
+                    }
+
+                }
+
+            }
+            itListCi = listCI.iterator();
             return listCI.size();
         } else {
             throw new Exception();
         }
 
     }
-
 }

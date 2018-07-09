@@ -97,6 +97,7 @@ public class CIDeclaration extends BProcess {
 
     private static final long serialVersionUID = 8208343321214530414L;
     public static String CS_AC = "327003";
+    public static String CS_AC_XML = "327019";
     public static String CS_AMI = "327002";
     public static String CS_CLIENTS_GLOBAZ = "327001";
     public static String CS_COT_PERS = "327017";
@@ -417,7 +418,8 @@ public class CIDeclaration extends BProcess {
         } else {
             titreLog = "Déclaration";
         }
-        if (CIDeclaration.CS_AC.equals(getType()) || CIDeclaration.CS_AMI.equals(getType())) {
+        if (CIDeclaration.CS_AC.equals(getType()) || CIDeclaration.CS_AMI.equals(getType())
+                || CIDeclaration.CS_AC_XML.equals(getType())) {
             return declarationCentrale();
         } else {
 

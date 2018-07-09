@@ -21,6 +21,7 @@ import globaz.pavo.db.inscriptions.CIJournal;
 import globaz.pavo.db.inscriptions.declaration.CIDeclarationCentraleHTMLOutput;
 import globaz.pavo.db.inscriptions.declaration.CIDeclarationCentraleIterator;
 import globaz.pavo.db.inscriptions.declaration.CIDeclarationCentraleSummaryHtmlOutput;
+import globaz.pavo.db.inscriptions.declaration.CIDeclarationCentraleXMLIterator;
 import globaz.pavo.db.inscriptions.declaration.CIDeclarationMilitaireIterator;
 import globaz.pavo.db.inscriptions.declaration.CIDeclarationRecord;
 import globaz.pavo.db.inscriptions.declaration.ICIDeclarationIterator;
@@ -234,6 +235,8 @@ public class CIDeclarationCentrale extends BProcess {
             ICIDeclarationIterator itDec = null;
             if ("militaire".equals(getType())) {
                 itDec = new CIDeclarationMilitaireIterator();
+            } else if (CIDeclaration.CS_AC_XML.equals(getType())) {
+                itDec = new CIDeclarationCentraleXMLIterator();
             } else {
                 itDec = new CIDeclarationCentraleIterator();
             }
@@ -805,6 +808,7 @@ public class CIDeclarationCentrale extends BProcess {
 
             }
             tableJournaux.put(key, journal);
+
         }
         return journal;
     }
