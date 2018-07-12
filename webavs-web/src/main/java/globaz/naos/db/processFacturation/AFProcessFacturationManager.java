@@ -449,18 +449,35 @@ public class AFProcessFacturationManager extends BManager implements Serializabl
                             + this._dbWriteNumeric(statement.getTransaction(), dateDebutAnneeFacturation.toStrAMJ())
                             + " OR " + _getCollection() + "AFCOTIP.MEDFIN = 0)" + "))";
                 }
-                // ")";
-                // ajout du filtre sur l'adhésion
                 sqlWhere += " and ((" + _getCollection() + "AFADHEP.MRDDEB <= "
                         + this._dbWriteNumeric(statement.getTransaction(), dateFinMoisFacturation.toStrAMJ())
                         + " AND (" + _getCollection() + "AFADHEP.MRDFIN >= "
                         + this._dbWriteNumeric(statement.getTransaction(), dateDebutMoisFacturation.toStrAMJ())
                         + " OR " + _getCollection()
-                        + "AFADHEP.MRDFIN = 0"
-                        // ajout cas : si radié avant la fin de la période
-                        + " OR " + _getCollection() + "AFCOTIP.METPER = "
+                        + "AFADHEP.MRDFIN = 0";
+                // ajout du filtre sur l'adhésion
+                if (dateDebutMoisFacturation.getMonth() % 3 == 0) {
+                    // dates pour le trimestre
+                    JADate dateDebutTrimestreFacturation = new JADate(dateDebutMoisFacturation.toAMJ());
+                    dateDebutTrimestreFacturation.setMonth(dateDebutTrimestreFacturation.getMonth() - 2);
+                    JADate dateFinTrimestreFacturation = dateFinMoisFacturation;
+                    sqlWhere +=  " OR (" + _getCollection() + "AFAFFIP.MATPER = "
                         + this._dbWriteNumeric(statement.getTransaction(), CodeSystem.PERIODICITE_TRIMESTRIELLE)
-                        + ")) or (" + _getCollection() + "AFADHEP.MRIADH is null))";
+                        + " AND "
+                        + _getCollection()
+                        + "AFADHEP.MRTADH = "
+                        + this._dbWriteNumeric(statement.getTransaction(), CodeSystem.TYPE_ADHESION_CAISSE_PRINCIPALE)
+                        + " AND "
+                        + _getCollection()
+                        + "AFADHEP.MRDDEB <= "
+                        + this._dbWriteNumeric(statement.getTransaction(), dateFinTrimestreFacturation.toStrAMJ())
+                        + " AND "
+                        + _getCollection()
+                        + "AFADHEP.MRDFIN >= "
+                        + this._dbWriteNumeric(statement.getTransaction(), dateDebutTrimestreFacturation.toStrAMJ())
+                        + ")";
+                 }
+                sqlWhere += ")) or (" + _getCollection() + "AFADHEP.MRIADH is null))";
             } catch (Exception e) {
                 e.printStackTrace();
             }
