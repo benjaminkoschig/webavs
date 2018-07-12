@@ -3,12 +3,15 @@
  */
 package globaz.ij.helpers.process;
 
+import ch.globaz.common.properties.PropertiesException;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.controller.FWAction;
 import globaz.framework.controller.FWHelper;
 import globaz.globall.api.BISession;
 import globaz.globall.db.BSession;
 import globaz.ij.process.IJEnvoyerAnnoncesProcess;
+import globaz.ij.process.IJEnvoyerAnnoncesXMLProcess;
+import globaz.ij.properties.IJProperties;
 import globaz.ij.vb.process.IJEnvoyerAnnoncesViewBean;
 
 /**
@@ -31,12 +34,27 @@ public class IJEnvoyerAnnoncesHelper extends FWHelper {
     protected void _start(FWViewBeanInterface viewBean, FWAction action, BISession session) {
         IJEnvoyerAnnoncesViewBean eaViewBean = (IJEnvoyerAnnoncesViewBean) viewBean;
 
-        IJEnvoyerAnnoncesProcess process = new IJEnvoyerAnnoncesProcess((BSession) session);
+        try {
+            if (IJProperties.ACTIVER_ANNONCES_XML.getBooleanValue()) {
+                IJEnvoyerAnnoncesXMLProcess process = new IJEnvoyerAnnoncesXMLProcess((BSession) session);
+                process.setEMailAddress(eaViewBean.getEMailAddress());
+                process.setForDateEnvoi(eaViewBean.getForDateEnvoi());
+                process.setForMoisAnneeComptable(eaViewBean.getForMoisAnneeComptable());
 
-        process.setEMailAddress(eaViewBean.getEMailAddress());
-        process.setForDateEnvoi(eaViewBean.getForDateEnvoi());
-        process.setForMoisAnneeComptable(eaViewBean.getForMoisAnneeComptable());
+                process.start();
 
-        process.start();
+            } else {
+                IJEnvoyerAnnoncesProcess process = new IJEnvoyerAnnoncesProcess((BSession) session);
+                process.setEMailAddress(eaViewBean.getEMailAddress());
+                process.setForDateEnvoi(eaViewBean.getForDateEnvoi());
+                process.setForMoisAnneeComptable(eaViewBean.getForMoisAnneeComptable());
+
+                process.start();
+            }
+        } catch (PropertiesException e) {
+            viewBean.setMsgType(FWViewBeanInterface.ERROR);
+            viewBean.setMessage(e.getMessage());
+        }
+
     }
 }

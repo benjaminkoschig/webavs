@@ -22,7 +22,14 @@ public enum IJProperties implements IProperties {
      * Le montant maximum d'une petite IJ rev5 dès 2016 : 122.10
      */
     MONTANT_PETITE_IJ_MAXIMUM_REV_5_DES2016("montant.petite.ij.maximum.rev.5.des2016",
-            "Le montant maximum d'une petite IJ rev5 dès 2016");
+            "Le montant maximum d'une petite IJ rev5 dès 2016"),
+    
+    ACTIVER_ANNONCES_XML("isAnnoncesXML", "détermine si les annonces sont générées au format xml"),
+    RACINE_NOM_FICHIER_OUTPUT_ZAS("racine.nom.fichier.centrale",
+            "donne la raçine nom du fichier à envoyer à la centrale"),
+    FTP_CENTRALE_PATH("centrale.url", "donne l'url de la centrale"),
+    CENTRALE_TEST("centrale.test",
+            "définit si nous sommes en mode test pour mettre la balise test dans le fichier output de la centrale");
 
     private String description;
     private String propertyName;

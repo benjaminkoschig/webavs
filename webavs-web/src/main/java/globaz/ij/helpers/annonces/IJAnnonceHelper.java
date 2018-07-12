@@ -1,11 +1,15 @@
 package globaz.ij.helpers.annonces;
 
+import ch.admin.zas.rc.IVTaggelderMeldungType;
+import ch.globaz.common.exceptions.ValidationException;
+import globaz.corvus.annonce.service.REAnnonces9eXmlService;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.controller.FWAction;
 import globaz.globall.api.BISession;
 import globaz.globall.db.BTransaction;
 import globaz.ij.api.annonces.IIJAnnonce;
 import globaz.ij.db.annonces.IJAnnonce;
+import globaz.ij.properties.IJProperties;
 import globaz.ij.vb.annonces.IJAnnonceViewBean;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.helpers.PRAbstractHelper;
@@ -116,15 +120,26 @@ public class IJAnnonceHelper extends PRAbstractHelper {
                         annonceViewBean.getPeriodeAnnonce2().delete(transaction);
                     }
                 }
-            }
+            } 
 
             if (transaction.hasErrors()) {
                 viewBean.setMsgType(FWViewBeanInterface.ERROR);
                 viewBean.setMessage(transaction.getErrors().toString());
                 transaction.rollback();
             } else {
+                // Si la propriété est activée on valide le format xml
+                if (IJProperties.ACTIVER_ANNONCES_XML.getBooleanValue()) {
+                    IVTaggelderMeldungType annonceXml = IJAnnoncesXmlService.getInstance().getAnnonceXml(annonceViewBean);
+                    try {
+                        IJAnnoncesXMLValidatorService.getInstance().validateUnitMessage(annonceXml);
+                    } catch (ValidationException e) {
+                        throw new Exception(e.getMessageErreurDeValidation().toString());
+                    }
+                    
+                }
                 transaction.commit();
             }
+            
         } catch (Exception e) {
             if (transaction != null) {
                 transaction.rollback();
@@ -136,5 +151,7 @@ public class IJAnnonceHelper extends PRAbstractHelper {
                 transaction.closeTransaction();
             }
         }
+
+
     }
 }
