@@ -199,7 +199,7 @@ public class CIDeclarationCentraleXMLIterator implements ICIDeclarationIterator 
             listCI = new ArrayList<Aufzeichnungen>();
             if (size < 1) {
                 /*
-                 * Parcourir les lots et prendre que les inscriptions AC tout en récupérant le numéro de l'agence
+                 * Parcourir les lots et prendre que les annonces CI tout en récupérant le numéro de l'agence
                  */
                 for (Lot lot : lots.getLot()) {
                     for (Object object : lot
@@ -211,10 +211,19 @@ public class CIDeclarationCentraleXMLIterator implements ICIDeclarationIterator 
                         }
                     }
                 }
+                /*
+                 * Trier pour avoir les inscriptions AC des annonces CI
+                 */
+                String noAffilie;
                 for (IKStatistikMeldungType list : listIKStat) {
                     for (Aufzeichnungen annonceXMLRAW : list.getAufzeichnungen()) {
-                        listCI.add(annonceXMLRAW);
-                        size++;
+                        noAffilie = annonceXMLRAW.getEintragungIKMeldung().get(0).getAKAbrechnungsNr();
+                        if (noAffilie.length() > 5) {
+                            if (noAffilie.substring(0, 6).contains("999999")) {
+                                listCI.add(annonceXMLRAW);
+                                size++;
+                            }
+                        }
                     }
                 }
 
