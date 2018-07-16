@@ -54,6 +54,7 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
     parent.isModification = false;
     
     checkDepartement();
+    checkIbanEmployeur();
     
     if (document.forms[0].elements('_method').value == "add")
         document.forms[0].elements('userAction').value="<%=globaz.apg.servlet.IAPActions.ACTION_SITUATION_PROFESSIONNELLE%>.ajouter";
@@ -424,6 +425,17 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
 			// pas de departement selectionne
 			if("" == document.forms[0].elements('idParticulariteEmployeur').value){
 				parent.warningObj.text = "<ct:FWLabel key='JSP_DEPARTEMENT_MANQUANT'/>";
+				parent.showWarnings();
+			}
+		<%}%>
+	}
+	
+	function checkIbanEmployeur(){
+		// Si l'employeur ne possède pas d'IBAN (IBAN vaut CH0000000000000000000)
+		<%if(!viewBean.getIsIbanValide()){%>
+			var isPorteEnCompte = $('#isPorteEnCompte').is(':checked');
+			if(!isPorteEnCompte){
+				parent.warningObj.text = "<ct:FWLabel key='JSP_IBAN_INVALIDE'/>";
 				parent.showWarnings();
 			}
 		<%}%>
