@@ -75,7 +75,7 @@ public class CIAnnonceCentraleGenerationProcess extends BProcess {
 
     private void annoncerInscriptionsACentrale() throws Exception {
 
-        if (CIUtil.isAnnonceXML(getSession())) {
+        if (CIUtil.isAnnonceInscriptionXML(getSession())) {
             if (annonceCentraleProcessXML == null) {
                 annonceCentraleProcessXML = new CIAnnonceCentraleProcessXML();
             }

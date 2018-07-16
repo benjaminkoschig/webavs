@@ -2584,4 +2584,13 @@ public class CIUtil {
         }
     }
 
+    public static boolean isAnnonceInscriptionXML(BSession session) {
+        try {
+            CIApplication application = (CIApplication) session.getApplication();
+            return application.isAnnonceInscriptionXML();
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
 }
