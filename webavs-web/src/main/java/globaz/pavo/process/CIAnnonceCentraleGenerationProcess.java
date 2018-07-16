@@ -51,7 +51,7 @@ public class CIAnnonceCentraleGenerationProcess extends BProcess {
 
             boolean isImpressionEnErreur = false;
             if (CIAnnonceCentrale.CS_ETAT_GENERE.equalsIgnoreCase(annonceCentrale.getIdEtat())
-                    || (CIUtil.isAnnonceXML(getSession()) && CIAnnonceCentrale.CS_ETAT_ENVOYE
+                    || (CIUtil.isAnnonceInscriptionCIXML(getSession()) && CIAnnonceCentrale.CS_ETAT_ENVOYE
                             .equalsIgnoreCase(annonceCentrale.getIdEtat()))) {
                 isImpressionEnErreur = imprimerProtocole();
             }
@@ -75,7 +75,7 @@ public class CIAnnonceCentraleGenerationProcess extends BProcess {
 
     private void annoncerInscriptionsACentrale() throws Exception {
 
-        if (CIUtil.isAnnonceInscriptionXML(getSession())) {
+        if (CIUtil.isAnnonceInscriptionCIXML(getSession())) {
             if (annonceCentraleProcessXML == null) {
                 annonceCentraleProcessXML = new CIAnnonceCentraleProcessXML();
             }

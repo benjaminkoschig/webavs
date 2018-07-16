@@ -99,7 +99,7 @@ public class CIAnnoncesCentrale_Doc extends FWIDocumentManager {
         getImporter().setParametre(CIAnnoncesCentrale_Param.ENTRY1, getSession().getLabel("ANNONCESCENTRALE_ENTRY1"));
         getImporter().setParametre(CIAnnoncesCentrale_Param.ENTRY2, getSession().getLabel("ANNONCESCENTRALE_ENTRY2"));
         getImporter().setParametre(CIAnnoncesCentrale_Param.ENTRY4, getSession().getLabel("ANNONCESCENTRALE_ENTRY4"));
-        if (CIUtil.isAnnonceXML(getSession())) {
+        if (CIUtil.isAnnonceInscriptionCIXML(getSession())) {
             getImporter().setParametre(CIAnnoncesCentrale_Param.ENTRY5, "");
             getImporter().setParametre(CIAnnoncesCentrale_Param.ENTRY6, "");
         } else {
@@ -180,7 +180,7 @@ public class CIAnnoncesCentrale_Doc extends FWIDocumentManager {
         String formattedDate = JadeDateUtil.getGlobazFormattedDate(date);
 
         column.put(CIAnnoncesCentrale_Param.DATE_ANNONCE, formattedDate);
-        if (CIUtil.isAnnonceXML(getSession())) {
+        if (CIUtil.isAnnonceInscriptionCIXML(getSession())) {
             column.put(CIAnnoncesCentrale_Param.DATEN_RECORDS, "");
             column.put(CIAnnoncesCentrale_Param.EINTRAGUNGEN, "");
         } else {
