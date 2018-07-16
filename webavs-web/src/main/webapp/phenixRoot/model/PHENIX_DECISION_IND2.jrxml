@@ -504,7 +504,7 @@
 			</band>
 		</title>
 		<pageHeader>
-			<band height="360"  isSplitAllowed="true" >
+			<band height="365"  isSplitAllowed="true" >
 				<image  scaleImage="FillFrame" vAlign="Top" hAlign="Left" isUsingCache="false" evaluationTime="Now" hyperlinkType="None">					<reportElement
 						mode="Opaque"
 						x="18"
