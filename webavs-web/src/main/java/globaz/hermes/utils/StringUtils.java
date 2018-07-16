@@ -469,4 +469,31 @@ public class StringUtils {
     public StringUtils() {
         super();
     }
+
+    public static String left(String str, int len) {
+        if (str == null) {
+            return null;
+        }
+        if (len < 0) {
+            return "";
+        }
+        if (str.length() <= len) {
+            return str;
+        }
+        return str.substring(0, len);
+    }
+
+    public static String right(String str, int len) {
+        if (str == null) {
+            return null;
+        }
+        if (len < 0) {
+            return "";
+        }
+        if (str.length() <= len) {
+            return str;
+        }
+        return str.substring(str.length() - len);
+    }
+
 }

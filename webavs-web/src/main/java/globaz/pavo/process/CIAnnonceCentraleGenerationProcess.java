@@ -10,6 +10,7 @@ import globaz.jade.client.util.JadeStringUtil;
 import globaz.pavo.application.CIApplication;
 import globaz.pavo.db.compte.CIAnnonceCentrale;
 import globaz.pavo.db.compte.CIAnnonceCentraleManager;
+import globaz.pavo.util.CIUtil;
 
 /**
  * @author mmo
@@ -29,6 +30,7 @@ public class CIAnnonceCentraleGenerationProcess extends BProcess {
     private String debutPeriodeEnvoi;
     private String finPeriodeEnvoi;
     private String modeLancement;
+    CIAnnonceCentraleProcessXML annonceCentraleProcessXML;
 
     @Override
     protected void _executeCleanUp() {
@@ -48,7 +50,9 @@ public class CIAnnonceCentraleGenerationProcess extends BProcess {
             annoncerInscriptionsACentrale();
 
             boolean isImpressionEnErreur = false;
-            if (CIAnnonceCentrale.CS_ETAT_GENERE.equalsIgnoreCase(annonceCentrale.getIdEtat())) {
+            if (CIAnnonceCentrale.CS_ETAT_GENERE.equalsIgnoreCase(annonceCentrale.getIdEtat())
+                    || (CIUtil.isAnnonceXML(getSession()) && CIAnnonceCentrale.CS_ETAT_ENVOYE
+                            .equalsIgnoreCase(annonceCentrale.getIdEtat()))) {
                 isImpressionEnErreur = imprimerProtocole();
             }
 
@@ -71,12 +75,21 @@ public class CIAnnonceCentraleGenerationProcess extends BProcess {
 
     private void annoncerInscriptionsACentrale() throws Exception {
 
-        CIAnnonceCentraleProcess annonceCentraleProcess = new CIAnnonceCentraleProcess();
-        annonceCentraleProcess.setParentWithCopy(this);
-        annonceCentraleProcess.setModeExecution(CIAnnonceCentraleProcess.MODE_EXECUTION_INFOROM_D0064);
-        annonceCentraleProcess.setAnnonceCentrale(annonceCentrale);
-        annonceCentraleProcess.executeProcess();
-
+        if (CIUtil.isAnnonceXML(getSession())) {
+            if (annonceCentraleProcessXML == null) {
+                annonceCentraleProcessXML = new CIAnnonceCentraleProcessXML();
+            }
+            annonceCentraleProcessXML.setParentWithCopy(this);
+            annonceCentraleProcessXML.setModeExecution(CIAnnonceCentraleProcess.MODE_EXECUTION_INFOROM_D0064);
+            annonceCentraleProcessXML.setAnnonceCentrale(annonceCentrale);
+            annonceCentraleProcessXML.executeProcess();
+        } else {
+            CIAnnonceCentraleProcess annonceCentraleProcess = new CIAnnonceCentraleProcess();
+            annonceCentraleProcess.setParentWithCopy(this);
+            annonceCentraleProcess.setModeExecution(CIAnnonceCentraleProcess.MODE_EXECUTION_INFOROM_D0064);
+            annonceCentraleProcess.setAnnonceCentrale(annonceCentrale);
+            annonceCentraleProcess.executeProcess();
+        }
     }
 
     public int getAnneeCourante() {

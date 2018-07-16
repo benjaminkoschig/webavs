@@ -2208,6 +2208,33 @@ public class CIUtil {
         }
     }
 
+    public static String getPathFTP(BSession session) {
+        try {
+            CIApplication application = (CIApplication) session.getApplication();
+            return application.getPathFTP();
+        } catch (Exception e) {
+            return "";
+        }
+    }
+
+    public static boolean isTestXML(BSession session) {
+        try {
+            CIApplication application = (CIApplication) session.getApplication();
+            return application.isAnnonceXML();
+        } catch (Exception e) {
+            return true;
+        }
+    }
+
+    public static boolean isAnnonceInscriptionCIXML(BSession session) {
+        try {
+            CIApplication application = (CIApplication) session.getApplication();
+            return application.isAnnonceInscriptionXML();
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     public static String getNumFichierEnteteCI(BSession session) {
         try {
             CIApplication application = (CIApplication) session.getApplication();
@@ -2545,6 +2572,16 @@ public class CIUtil {
      */
     public CIUtil() {
         super();
+    }
+
+    public static String getRacineNom() {
+        try {
+            CIApplication application = (CIApplication) GlobazServer.getCurrentSystem().getApplication(
+                    CIApplication.DEFAULT_APPLICATION_PAVO);
+            return application.getRacineNom();
+        } catch (Exception e) {
+            return "";
+        }
     }
 
 }

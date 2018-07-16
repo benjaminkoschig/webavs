@@ -17,6 +17,7 @@ import globaz.pavo.application.CIApplication;
 import globaz.pavo.db.compte.CIAnnonceCentrale;
 import globaz.pavo.db.compte.CIAnnonceCentraleManager;
 import globaz.pavo.process.CIAnnonceCentraleImpressionRapportProcess;
+import globaz.pavo.util.CIUtil;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -98,8 +99,16 @@ public class CIAnnoncesCentrale_Doc extends FWIDocumentManager {
         getImporter().setParametre(CIAnnoncesCentrale_Param.ENTRY1, getSession().getLabel("ANNONCESCENTRALE_ENTRY1"));
         getImporter().setParametre(CIAnnoncesCentrale_Param.ENTRY2, getSession().getLabel("ANNONCESCENTRALE_ENTRY2"));
         getImporter().setParametre(CIAnnoncesCentrale_Param.ENTRY4, getSession().getLabel("ANNONCESCENTRALE_ENTRY4"));
-        getImporter().setParametre(CIAnnoncesCentrale_Param.ENTRY5, getSession().getLabel("ANNONCESCENTRALE_ENTRY5"));
-        getImporter().setParametre(CIAnnoncesCentrale_Param.ENTRY6, getSession().getLabel("ANNONCESCENTRALE_ENTRY6"));
+        if (CIUtil.isAnnonceXML(getSession())) {
+            getImporter().setParametre(CIAnnoncesCentrale_Param.ENTRY5, "");
+            getImporter().setParametre(CIAnnoncesCentrale_Param.ENTRY6, "");
+        } else {
+            getImporter().setParametre(CIAnnoncesCentrale_Param.ENTRY5,
+                    getSession().getLabel("ANNONCESCENTRALE_ENTRY5"));
+            getImporter().setParametre(CIAnnoncesCentrale_Param.ENTRY6,
+                    getSession().getLabel("ANNONCESCENTRALE_ENTRY6"));
+        }
+
         getImporter().setParametre(CIAnnoncesCentrale_Param.ENTRY7, getSession().getLabel("ANNONCESCENTRALE_ENTRY7"));
         getImporter().setParametre(CIAnnoncesCentrale_Param.ENTRY8, getSession().getLabel("ANNONCESCENTRALE_ENTRY8"));
         getImporter().setParametre(CIAnnoncesCentrale_Param.ENTRY9, getSession().getLabel("ANNONCESCENTRALE_ENTRY9"));
@@ -171,8 +180,13 @@ public class CIAnnoncesCentrale_Doc extends FWIDocumentManager {
         String formattedDate = JadeDateUtil.getGlobazFormattedDate(date);
 
         column.put(CIAnnoncesCentrale_Param.DATE_ANNONCE, formattedDate);
-        column.put(CIAnnoncesCentrale_Param.DATEN_RECORDS, formatNumber(calculDatenRecords()));
-        column.put(CIAnnoncesCentrale_Param.EINTRAGUNGEN, formatNumber(annonces.getNbrInscriptions()));
+        if (CIUtil.isAnnonceXML(getSession())) {
+            column.put(CIAnnoncesCentrale_Param.DATEN_RECORDS, "");
+            column.put(CIAnnoncesCentrale_Param.EINTRAGUNGEN, "");
+        } else {
+            column.put(CIAnnoncesCentrale_Param.DATEN_RECORDS, formatNumber(calculDatenRecords()));
+            column.put(CIAnnoncesCentrale_Param.EINTRAGUNGEN, formatNumber(annonces.getNbrInscriptions()));
+        }
         column.put(CIAnnoncesCentrale_Param.VOR_VERARBEITUNG, formatNumber(String.valueOf(dernierM))); // String.valueOf(dernierMontant));
         column.put(CIAnnoncesCentrale_Param.EINKOMMEN, formatNumber(String.valueOf(differenceM))); // String.valueOf(differenceMontant));
         column.put(CIAnnoncesCentrale_Param.NACH_VERARBEITUNG, formatNumber(annonces.getMontantTotal()));

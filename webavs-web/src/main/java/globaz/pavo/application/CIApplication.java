@@ -95,9 +95,13 @@ public class CIApplication extends globaz.globall.db.BApplication {
     public final static String WANTED_TO_COMPARE = "anomalieCompare";
     public final static String WANTED_TO_CORRECT = "anomalieCorrige";
     public static final String PROPERTY_ACTIVER_PARSING_PUCS_4 = "activerParsingPUCS4";
-    public static final String IS_ANNONCE_XML = "entete.isAnnoncesXML";
+    public static final String IS_ANNONCE_ENTETE_XML = "entete.isAnnoncesXML";
+    public static final String IS_ANNONCE_INSCRIPTION_XML = "inscriptions.isAnnoncesXML";
+    public static final String IS_TEST_XML = "centrale.test";
     public static final String NO_CAISSE = "noCaisse";
     public static final String NO_AGENCE = "noAgence";
+    public static final String PATH_FTP = "centrale.url";
+    public static final String RACINE_NOM = "racine.fichier.centrale";
 
     // le format du numéro d'affilié
     private IFormatData affileFormater = null;
@@ -1448,11 +1452,29 @@ public class CIApplication extends globaz.globall.db.BApplication {
     }
 
     public boolean isAnnonceXML() {
-        return Boolean.parseBoolean(this.getProperty(CIApplication.IS_ANNONCE_XML).trim());
+        return Boolean.parseBoolean(this.getProperty(CIApplication.IS_ANNONCE_ENTETE_XML).trim());
+
+    }
+
+    public String getPathFTP() {
+        return this.getProperty(PATH_FTP);
+    }
+
+    public boolean isTestXML() {
+        return Boolean.parseBoolean(this.getProperty(CIApplication.IS_TEST_XML).trim());
 
     }
 
     public String getNumFichierEnteteCI() {
         return this.getProperty(NO_CAISSE) + this.getProperty(NO_AGENCE);
+
+    }
+
+    public boolean isAnnonceInscriptionXML() {
+        return Boolean.parseBoolean(this.getProperty(CIApplication.IS_ANNONCE_INSCRIPTION_XML).trim());
+    }
+
+    public String getRacineNom() {
+        return this.getProperty(RACINE_NOM);
     }
 }
