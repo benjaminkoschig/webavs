@@ -54,6 +54,7 @@ public class CGPeriodeComptable extends CGNeedExerciceComptable implements ITree
     public static final String FIELD_IDJOURNAL3 = "IDJOURNAL3";
     public static final String FIELD_IDPERIODECOMPTABLE = "IDPERIODECOMPTABLE";
     public static final String FIELD_IDTYPEPERIODE = "IDTYPEPERIODE";
+    public static final String FIELD_NOMFICHIER = "NOMFICHIER";
     public static final String ID_PERIODE_TOUT_EXERCICE = "0";
     private final static String LABEL_PREFIXE = "PERIODE_COMPTABLE_";
 
@@ -75,6 +76,8 @@ public class CGPeriodeComptable extends CGNeedExerciceComptable implements ITree
     private String idPeriodeComptable = new String();
 
     private String idTypePeriode = new String();
+    
+    private String nomFichier = "";
 
     /**
      * Commentaire relatif au constructeur CGPeriodeComptable
@@ -144,6 +147,7 @@ public class CGPeriodeComptable extends CGNeedExerciceComptable implements ITree
         estCloture = statement.dbReadBoolean(FIELD_ESTCOLTURE);
         idTypePeriode = statement.dbReadNumeric(FIELD_IDTYPEPERIODE);
         idAnnonce = statement.dbReadNumeric(FIELD_IDANNONCE);
+        nomFichier = statement.dbReadString(FIELD_NOMFICHIER);
     }
 
     /**
@@ -491,6 +495,7 @@ public class CGPeriodeComptable extends CGNeedExerciceComptable implements ITree
         statement.writeField(FIELD_IDTYPEPERIODE,
                 _dbWriteNumeric(statement.getTransaction(), getIdTypePeriode(), "idTypePeriode"));
         statement.writeField(FIELD_IDANNONCE, _dbWriteNumeric(statement.getTransaction(), getIdAnnonce(), "idAnnonce"));
+        statement.writeField(FIELD_NOMFICHIER, _dbWriteString(statement.getTransaction(), getNomFichier(), "nomFichier"));
     }
 
     @Override
@@ -573,6 +578,10 @@ public class CGPeriodeComptable extends CGNeedExerciceComptable implements ITree
 
     public String getIdAnnonce() {
         return idAnnonce;
+    }
+    
+    public String getNomFichier() {
+        return nomFichier;
     }
 
     public String getIdBouclement() {
@@ -1459,6 +1468,10 @@ public class CGPeriodeComptable extends CGNeedExerciceComptable implements ITree
 
     public void setIdAnnonce(String newIdAnnonce) {
         idAnnonce = newIdAnnonce;
+    }
+    
+    public void setNomFichier(String nomFichier) {
+        this.nomFichier = nomFichier;
     }
 
     public void setIdBouclement(String newIdBouclement) {

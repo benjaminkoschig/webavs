@@ -15,6 +15,7 @@ import globaz.globall.db.GlobazJobQueue;
 import globaz.globall.db.GlobazServer;
 import globaz.globall.util.JACalendar;
 import globaz.helios.application.CGApplication;
+import globaz.helios.application.CGProperties;
 import globaz.helios.db.avs.CGExtendedCompteOfas;
 import globaz.helios.db.avs.CGExtendedCompteOfasManager;
 import globaz.helios.db.avs.CGExtendedContrePartieCpteAff;
@@ -26,6 +27,8 @@ import globaz.helios.db.comptes.CGMandat;
 import globaz.helios.db.comptes.CGPeriodeComptable;
 import globaz.helios.db.comptes.CGPlanComptableManager;
 import globaz.helios.db.comptes.CGPlanComptableViewBean;
+import globaz.helios.process.annonces.CGPeriodeComptableEnvoiAnnoncesXMLService;
+import globaz.helios.process.annonces.CGPeriodeComptableXMLService;
 import globaz.helios.process.helper.CGHelperReleveAVS;
 import globaz.helios.process.helper.CGMetaAnnonceAttributs;
 import globaz.helios.process.helper.CGMontantHelper;
@@ -44,6 +47,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import ch.admin.zas.pool.PoolMeldungZurZAS;
+import ch.globaz.common.properties.CommonProperties;
 
 /**
  * Insérez la description du type ici. Date de création : (20.03.2003 14:48:16)
@@ -60,6 +65,7 @@ public class CGPeriodeComptableEnvoiAnnonces extends BProcess {
     private CGBouclement bouclement = null;
     private CGExerciceComptable exercice = null;
     private String idAnnonce = null;
+    private String nomFichier = "";
     private String idComptabilite = "";
     private String idPeriodeComptable = "";
     private Boolean isComptaDefinitive = new Boolean(true);
@@ -74,6 +80,10 @@ public class CGPeriodeComptableEnvoiAnnonces extends BProcess {
     private BISession remoteSession = null;
     private BITransaction remoteTransaction = null;
     private CGHelperReleveAVS traitementReleveAvsHelper = new CGHelperReleveAVS();
+    
+    private boolean isAnnonceXML;
+    private CGPeriodeComptableEnvoiAnnoncesXMLService xmlService;
+    PoolMeldungZurZAS.Lot lotAnnonces;
 
     /**
      * Commentaire relatif au constructeur CGJournalComptabiliserProcess.
@@ -169,7 +179,13 @@ public class CGPeriodeComptableEnvoiAnnonces extends BProcess {
             // Envoi des annonces à la centrale
             else {
                 try {
-                    preparerAnnoncesComptesExploitation();
+                    if(isAnnonceXML) {
+                        lotAnnonces = CGPeriodeComptableXMLService.getInstance().initPoolMeldungZurZASLot(CGProperties.CENTRALE_TEST.getBooleanValue(), CommonProperties.KEY_NO_CAISSE.getValue());
+                        xmlService = new CGPeriodeComptableEnvoiAnnoncesXMLService(getSession(), getTransaction(), periode, exercice, lotAnnonces.getVAIKMeldungNeuerVersicherterOrVAIKMeldungAenderungVersichertenDatenOrVAIKMeldungVerkettungVersichertenNr(), application);
+                        xmlService.preparerAnnoncesComptesExploitation(traitementReleveAvsHelper, isComptaDefinitive);
+                    } else {
+                        preparerAnnoncesComptesExploitation();
+                    }
                     this.info("COMPTE_EXPLOITATION_OK");
                 } catch (Exception e) {
                     this.error("COMPTE_EXPLOITATION_ERREUR", e.getMessage());
@@ -196,7 +212,11 @@ public class CGPeriodeComptableEnvoiAnnonces extends BProcess {
                 if (nbErrors == 0) {
                     try {
                         if (bouclement.isBouclementMensuelAVS().booleanValue()) {
-                            preparerAnnoncesComptesAffilie();
+                            if(isAnnonceXML) {
+                                xmlService.preparerAnnoncesComptesAffilie();
+                            }else {
+                                preparerAnnoncesComptesAffilie();
+                            }
                             this.info("COMPTE_AFFILIE_OK");
                         }
                     } catch (Exception e) {
@@ -210,7 +230,11 @@ public class CGPeriodeComptableEnvoiAnnonces extends BProcess {
                 if (nbErrors == 0) {
                     try {
                         if (bouclement.isBouclementAnnuelAVS().booleanValue()) {
-                            preparerAnnoncesBalanceAnnuelleMvt();
+                            if(isAnnonceXML) {
+                                xmlService.preparerAnnoncesBalanceAnnuelleMvt(initAnnoncesBalanceAnnuelleManager(), traitementReleveAvsHelper, isComptaDefinitive);
+                            } else {
+                                preparerAnnoncesBalanceAnnuelleMvt();
+                            }
                             this.info("COMPTE_MVTANU_OK");
                         }
 
@@ -225,7 +249,11 @@ public class CGPeriodeComptableEnvoiAnnonces extends BProcess {
                 // Envoi des annonces
                 if (nbErrors == 0) {
                     try {
-                        idAnnonce = annoncer(remoteTransaction, remoteSession, listAnnonces, application);
+                        if(isAnnonceXML) {
+                            nomFichier = annoncerXML();
+                        } else {
+                            idAnnonce = annoncer(remoteTransaction, remoteSession, listAnnonces, application);
+                        }
                     } catch (Exception e) {
                         nbErrors++;
                         rollbackRemoteTransaction(e.getMessage());
@@ -242,10 +270,17 @@ public class CGPeriodeComptableEnvoiAnnonces extends BProcess {
                     remoteTransaction.closeTransaction();
                     remoteTransaction = null;
 
-                    // Setter id Annonce à la période:
                     if (!periode.isNew()) {
-                        periode.setIdAnnonce(idAnnonce);
-                        periode.update();
+                        if(isAnnonceXML) {
+                            periode.setIdAnnonce("0");
+                            periode.setNomFichier(nomFichier);
+                            periode.update();
+                        } else {
+                            // Setter id Annonce à la période:
+                            periode.setIdAnnonce(idAnnonce);
+                            periode.setNomFichier("");
+                            periode.update();
+                        }
                     }
 
                 } catch (Exception e) {
@@ -299,6 +334,14 @@ public class CGPeriodeComptableEnvoiAnnonces extends BProcess {
             abort();
         }
     }
+    
+    public String annoncerXML() throws Exception {
+        String fileName = CGPeriodeComptableXMLService.getInstance().genereFichier(lotAnnonces);
+        CGPeriodeComptableXMLService.getInstance().envoiFichier(fileName);
+        return new File(fileName).getName();
+    }
+    
+
 
     /**
      * Ajouter les annonces en BD à l'aide du module Hermes.
@@ -762,7 +805,7 @@ public class CGPeriodeComptableEnvoiAnnonces extends BProcess {
             }
         } else {
             if (isEnvoyerAnnoncesOfas.booleanValue()) {
-                return label("OFAS_OBJET_MAIL_OK") + " " + periode.getFullDescription() + ", ID "
+                return label("OFAS_OBJET_MAIL_OK") + " " + getPeriode().getFullDescription() + ", ID "
                         + periode.getIdPeriodeComptable();
             } else {
                 return label("OBJET_MAIL_OK") + " " + periode.getFullDescription() + ", ID "
@@ -959,6 +1002,7 @@ public class CGPeriodeComptableEnvoiAnnonces extends BProcess {
     }
 
     private boolean init() throws Exception {
+        isAnnonceXML = CGProperties.ACTIVER_ANNONCES_XML.getBooleanValue();
         periode = new CGPeriodeComptable();
         periode.setSession(getSession());
         periode.setIdPeriodeComptable(getIdPeriodeComptable());
@@ -1417,7 +1461,11 @@ public class CGPeriodeComptableEnvoiAnnonces extends BProcess {
         }
         ds.cursorClose(statement);
 
-        construireAnnonces8B(count, nbrComptes, listResultAnnonces8B);
+        if(isAnnonceXML) {
+            xmlService.construireAnnonces8B(listResultAnnonces8B);
+        } else {
+            construireAnnonces8B(count, nbrComptes, listResultAnnonces8B);
+        }
     }
 
     /**

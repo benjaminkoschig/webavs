@@ -3,7 +3,7 @@
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ include file="/theme/detail/header.jspf" %>
 <%-- tpl:put name="zoneInit" --%>
-<%@ page import="globaz.helios.db.comptes.*,globaz.helios.db.interfaces.*"%>
+<%@ page import="globaz.helios.db.comptes.*,globaz.helios.db.interfaces.*,globaz.helios.application.CGProperties"%>
 <!-- Creer l'enregitrement s'il n'existe pas -->
 <%
 	idEcran="GCF0016";
@@ -130,6 +130,15 @@ function init(){}
 
 	</td>
       </tr>
+      
+      <% if(CGProperties.ACTIVER_ANNONCES_XML.getBooleanValue()){ %>      
+      <tr>
+      	<td>[DE]Nom fichier annonce XML transmis</td>
+        <td>
+			<input name='nomFichier' readonly class="libelleLongDisabled" value='<%=viewBean.getNomFichier()%>'>
+		</td>
+	  </tr>
+	  <%} %>
 	<%} %>
 
 <%-- /tpl:put --%>
