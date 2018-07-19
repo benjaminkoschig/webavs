@@ -67,6 +67,12 @@ public enum REProperties implements IProperties {
             "donne la raçine nom du fichier à envoyer à la centrale"),
     FTP_CENTRALE_PATH("centrale.url", "donne l'url de la centrale"),
     CENTRALE_TEST("centrale.test",
+            "définit si nous sommes en mode test pour mettre la balise test dans le fichier output de la centrale"),
+    RECAP_ACTIVER_ANNONCES_XML("recapRentes.isAnnoncesXML", "détermine si les annonces sont envoyées au format xml"),
+    RECAP_RACINE_NOM_FICHIER_OUTPUT_ZAS("recapRentes.racine.nom.fichier.centrale",
+            "donne la raçine nom du fichier à envoyer à la centrale"),
+    RECAP_FTP_CENTRALE_PATH("recapRentes.centrale.url", "donne l'url de la centrale"),
+    RECAP_CENTRALE_TEST("recapRentes.centrale.test",
             "définit si nous sommes en mode test pour mettre la balise test dans le fichier output de la centrale");
 
     private String description;
