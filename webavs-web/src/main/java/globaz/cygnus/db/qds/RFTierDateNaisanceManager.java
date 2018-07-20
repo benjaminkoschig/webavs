@@ -70,7 +70,7 @@ public class RFTierDateNaisanceManager extends BManager {
         if (!JadeStringUtil.isEmpty(forIdTiers)) {
             sqlWhere.append(schema + T_PERSONNE + "." + F_IDTIER);
             sqlWhere.append(" = ");
-            sqlWhere.append(this._dbWriteString(statement.getTransaction(),
+            sqlWhere.append(this._dbWriteNumeric(statement.getTransaction(),
                     PRStringUtils.upperCaseWithoutSpecialChars(forIdTiers)));
         }
 
