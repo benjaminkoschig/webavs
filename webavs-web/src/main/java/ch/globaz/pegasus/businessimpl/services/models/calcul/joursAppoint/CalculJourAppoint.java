@@ -40,15 +40,15 @@ public class CalculJourAppoint {
 		calEntreeHome.setTime(dateEntreeHome);
  		int nbJoursMois = calEntreeHome.getActualMaximum(Calendar.DAY_OF_MONTH);
 		int nbJours = (nbJoursMois - (calEntreeHome.get(Calendar.DAY_OF_MONTH))) + 1;
+		BigDecimal montantJournalierJoursAppoint;
 		if(montantPcaPrecedant!=null && montantPcaCourrant.subtract(montantPcaPrecedant).compareTo(new BigDecimal(0)) < 1){
-		    nbJours = 0;
+		    montantJournalierJoursAppoint = new BigDecimal(0);
+		}else{
+		    montantJournalierJoursAppoint = computeMontantJourAppoint(montantPcaCourrant, montantPcaPrecedant,
+	                nbJoursMois);
 		}
 
-
-		
-		BigDecimal montantJournalierJoursAppoint = computeMontantJourAppoint(montantPcaCourrant, montantPcaPrecedant,
-				nbJoursMois);
-
+	
 		SimpleJoursAppoint sja = new SimpleJoursAppoint();
 		sja.setMontantJournalier(String.valueOf(montantJournalierJoursAppoint));
  		sja.setMontantTotal(computMontantTotal(nbJours, montantJournalierJoursAppoint).toString());
