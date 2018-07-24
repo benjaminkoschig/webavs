@@ -44,7 +44,7 @@ public class CalculJourAppointTestCase {
 				{ "30.04.2014", new BigDecimal(3600), new BigDecimal(600), 1, "98.65", "99"},
 				{ "01.04.2014", new BigDecimal(3600), new BigDecimal(600), 30, "98.65", "2960" },
 				{ "01.04.2014", new BigDecimal(600), new BigDecimal(600), 30, null, "0"},
-				{ "01.04.2014", new BigDecimal(600), new BigDecimal(800), 30, null, "0"},
+				{ "01.04.2014", new BigDecimal(600), new BigDecimal(800), 30, null, "-198"},
 				{ "31.03.2014", new BigDecimal(3600), new BigDecimal(500), 1, "101.90", "102"},
 				{ "01.03.2014", new BigDecimal(3600), new BigDecimal(500), 31, "101.90", "3159" }, 
 				{ "01.03.2014", new BigDecimal(3600), new BigDecimal(1200), 31, "78.90", "2446" },
