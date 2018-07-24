@@ -590,9 +590,11 @@ public class REAnnoncePonctuelleViewBean extends PRAbstractViewBeanSupport {
                 // l'épouse
                 // est écrasé par celui de l'ex-épouse
                 if (!idTiers1.equals(ra.getIdTiersBeneficiaire()) && JadeStringUtil.isEmpty(nssComplementaire1)) {
-                    PRTiersWrapper tw = PRTiersHelper.getTiersParId(session, idTiers1);
-                    nssComplementaire1 = tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL);
-                    idTiersComplementaire1 = tw.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS);
+                    if (!JadeStringUtil.isBlankOrZero(idTiers1)) {
+                        PRTiersWrapper tw = PRTiersHelper.getTiersParId(session, idTiers1);
+                        nssComplementaire1 = tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL);
+                        idTiersComplementaire1 = tw.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS);
+                    }
                 } else {
                     String idMbrFamille2 = rf.getIdMembreFamilleFemme();
                     ISFMembreFamille mf2 = sf.getMembreFamille(idMbrFamille2);
@@ -601,9 +603,11 @@ public class REAnnoncePonctuelleViewBean extends PRAbstractViewBeanSupport {
                     // l'épouse
                     // est écrasé par celui de l'ex-épouse
                     if (!idTiers2.equals(ra.getIdTiersBeneficiaire()) && JadeStringUtil.isEmpty(nssComplementaire1)) {
-                        PRTiersWrapper tw = PRTiersHelper.getTiersParId(session, idTiers2);
-                        nssComplementaire1 = tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL);
-                        idTiersComplementaire1 = tw.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS);
+                        if (!JadeStringUtil.isBlankOrZero(idTiers2)) {
+                            PRTiersWrapper tw = PRTiersHelper.getTiersParId(session, idTiers2);
+                            nssComplementaire1 = tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL);
+                            idTiersComplementaire1 = tw.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS);
+                        }
                     }
                 }
             }
@@ -647,21 +651,24 @@ public class REAnnoncePonctuelleViewBean extends PRAbstractViewBeanSupport {
                     // l'épouse
                     // est écrasé par celui de l'ex-épouse
                     if (!idTiers2.equals(ra.getIdTiersBeneficiaire()) && JadeStringUtil.isEmpty(nssComplementaire1)) {
-                        PRTiersWrapper tw = PRTiersHelper.getTiersParId(session, idTiers2);
-                        nssComplementaire1 = tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL);
-                        idTiersComplementaire1 = tw.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS);
+                        if (!JadeStringUtil.isBlankOrZero(idTiers2)) {
+                            PRTiersWrapper tw = PRTiersHelper.getTiersParId(session, idTiers2);
+                            nssComplementaire1 = tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL);
+                            idTiersComplementaire1 = tw.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS);
+                        }
+                    }
+                }
+
+                // si celibataire -> tiersComplementaire1 rien
+                if (rfs != null) {
+                    if (rfs.length == 0) {
+                        nssComplementaire1 = "";
+                        idTiersComplementaire1 = "";
                     }
                 }
             }
-
-            // si celibataire -> tiersComplementaire1 rien
-            if (rfs != null) {
-                if (rfs.length == 0) {
-                    nssComplementaire1 = "";
-                    idTiersComplementaire1 = "";
-                }
-            }
         }
+
     }
 
     public void setAncienNSS(String ancienNSS) {
