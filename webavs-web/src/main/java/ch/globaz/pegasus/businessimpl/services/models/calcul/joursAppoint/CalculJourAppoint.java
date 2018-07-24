@@ -41,7 +41,7 @@ public class CalculJourAppoint {
  		int nbJoursMois = calEntreeHome.getActualMaximum(Calendar.DAY_OF_MONTH);
 		int nbJours = (nbJoursMois - (calEntreeHome.get(Calendar.DAY_OF_MONTH))) + 1;
 		BigDecimal montantJournalierJoursAppoint;
-		if(montantPcaPrecedant!=null && montantPcaCourrant.subtract(montantPcaPrecedant).compareTo(new BigDecimal(0)) < 1){
+		if(montantPcaPrecedant!=null && montantPcaCourrant.subtract(montantPcaPrecedant).compareTo(new BigDecimal(0)) == 1){
 		    montantJournalierJoursAppoint = new BigDecimal(0);
 		}else{
 		    montantJournalierJoursAppoint = computeMontantJourAppoint(montantPcaCourrant, montantPcaPrecedant,
@@ -50,7 +50,7 @@ public class CalculJourAppoint {
 
 	
 		SimpleJoursAppoint sja = new SimpleJoursAppoint();
-		sja.setMontantJournalier(String.valueOf(montantJournalierJoursAppoint));
+		sja.setMontantJournalier(String.valueOf(montantJournalierJoursAppoint.abs()));
  		sja.setMontantTotal(computMontantTotal(nbJours, montantJournalierJoursAppoint).toString());
 		sja.setNbrJoursAppoint(String.valueOf(nbJours));
 		SimpleDateFormat datedfDateFormat = new SimpleDateFormat("dd.MM.yyyy");
