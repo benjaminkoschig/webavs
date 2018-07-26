@@ -30,7 +30,7 @@ public class CalculJourAppoint {
 	 * @return L'objet jour d'appoint
 	 */
 	public  SimpleJoursAppoint generateJoursAppoint(final Date dateEntreeHome, final BigDecimal montantPcaCourrant,
-			final  BigDecimal montantPcaPrecedant) {
+			final  BigDecimal montantPcaPrecedant, boolean isMemePeriode) {
 		
 		if (dateEntreeHome == null) {
 			throw new IllegalArgumentException("Unable to generateJoursAppoint, the dateEntreeHome is null!");
@@ -42,7 +42,7 @@ public class CalculJourAppoint {
 		int nbJours = (nbJoursMois - (calEntreeHome.get(Calendar.DAY_OF_MONTH))) + 1;
 		BigDecimal montantJournalierJoursAppoint;
 		if(montantPcaPrecedant!=null){
-		    if(montantPcaCourrant.subtract(montantPcaPrecedant).compareTo(new BigDecimal(0)) == 0){
+		    if(montantPcaCourrant.subtract(montantPcaPrecedant).compareTo(new BigDecimal(0)) <= 0 && !isMemePeriode){
 	            montantJournalierJoursAppoint = new BigDecimal(0);
 	        }else{
 	            montantJournalierJoursAppoint = computeMontantJourAppoint(montantPcaCourrant, montantPcaPrecedant,

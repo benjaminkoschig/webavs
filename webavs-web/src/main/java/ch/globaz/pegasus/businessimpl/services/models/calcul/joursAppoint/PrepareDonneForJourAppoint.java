@@ -14,6 +14,7 @@ import ch.globaz.pegasus.business.constantes.EPCProperties;
 import ch.globaz.pegasus.business.constantes.IPCDroits;
 import ch.globaz.pegasus.business.constantes.IPCValeursPlanCalcul;
 import ch.globaz.pegasus.business.exceptions.models.calcul.CalculException;
+import ch.globaz.pegasus.business.models.calcul.CalculDonneesCC;
 import ch.globaz.pegasus.business.models.calcul.CalculPcaReplace;
 import ch.globaz.pegasus.business.models.calcul.CalculPcaReplaceSearch;
 import ch.globaz.pegasus.business.models.pcaccordee.SimpleJoursAppoint;
@@ -25,6 +26,10 @@ import ch.globaz.pegasus.businessimpl.utils.calcul.PersonnePCAccordee;
 import ch.globaz.pegasus.businessimpl.utils.calcul.TupleDonneeRapport;
 
 public class PrepareDonneForJourAppoint {
+    boolean isMemePeriodeEtJoursAppointExist = false;
+    boolean is2Rentes = false;
+    boolean isMontantRenteConjointExist = false;
+    boolean isMontantRenteRequerantExist = false;
 
     /**
      * Calcul des jours d'appoints s'il le faut l'ajoute dans la periode Pour calcule le montant du jour d'appont on
@@ -39,14 +44,19 @@ public class PrepareDonneForJourAppoint {
             // Récupération de la propriété système, si jours d'appoints actif
             if (PCproperties.getBoolean(EPCProperties.GESTION_JOURS_APPOINTS)) {
                 PeriodePCAccordee periodePrecedente = null;
-
+                isMemePeriodeEtJoursAppointExist = false;
+                isMontantRenteRequerantExist = false;
+                isMontantRenteConjointExist = false;
                 for (PeriodePCAccordee periode : listePCAccordes) {
                     CalculComparatif ccRetenu = periode.getCCRetenu()[0];
                     boolean domToSpeMal = false;
+
+                    is2Rentes(ccRetenu.getPersonnes());
                     // on itere sur les personnes
                     for (PersonnePCAccordee personne : ccRetenu.getPersonnes()) {
                         Date dateEntreeHomePersonne = getDateEntreeHome(personne);
                         if (personne.isConjoint() || personne.isRequerant()) {
+
                             if (mustGenerateJourAppoint(periode.getDateDebut(), dateEntreeHomePersonne)
                                     && personne.getIsHome()) {
                                 RequerantConjoint<CalculPcaReplace> pcaReqConj = resolveOldPcaRequerantConjoint(
@@ -81,8 +91,14 @@ public class PrepareDonneForJourAppoint {
                                         periode.setJoursAppointConjoint(generateJoursAppoint(dateEntreeHomePersonne,
                                                 periode.getCCRetenu()[1], montantPrecedant, true));
                                     } else {
-                                        periode.setJoursAppointConjoint(generateJoursAppoint(dateEntreeHomePersonne,
-                                                periode.getCCRetenu()[1], "0", true));
+                                        if (!is2Rentes) {
+                                            periode.setJoursAppointConjoint(generateJoursAppoint(
+                                                    dateEntreeHomePersonne, periode.getCCRetenu()[1], "0", true));
+                                        } else {
+                                            periode.setJoursAppointConjoint(generateJoursAppoint(
+                                                    dateEntreeHomePersonne, periode.getCCRetenu()[1], montantPrecedant,
+                                                    true));
+                                        }
 
                                     }
 
@@ -91,6 +107,7 @@ public class PrepareDonneForJourAppoint {
                                     if (!pcaReqConj.isRequerantEmpty()) {
                                         montantPrecedant = pcaReqConj.getRequerant().getSimplePrestationsAccordees()
                                                 .getMontantPrestation();
+
                                     }
 
                                     if (periodePrecedente != null) {
@@ -120,6 +137,28 @@ public class PrepareDonneForJourAppoint {
         }
     }
 
+    private void is2Rentes(List<PersonnePCAccordee> list) {
+        for (PersonnePCAccordee personne : list) {
+            for (CalculDonneesCC donnePersonne : personne.getDonneesBD()) {
+                if (donnePersonne.getCsRoleFamille().equals(IPCDroits.CS_ROLE_FAMILLE_CONJOINT)
+                        && !isMontantRenteConjointExist) {
+                    isMontantRenteConjointExist = !JadeStringUtil.isBlankOrZero(donnePersonne.getRenteAVSAIMontant());
+                }
+                if (donnePersonne.getCsRoleFamille().equals(IPCDroits.CS_ROLE_FAMILLE_REQUERANT)
+                        && !isMontantRenteRequerantExist) {
+                    isMontantRenteRequerantExist = !JadeStringUtil.isBlankOrZero(donnePersonne.getRenteAVSAIMontant());
+                }
+
+            }
+        }
+        if (isMontantRenteConjointExist & isMontantRenteRequerantExist) {
+            is2Rentes = true;
+        } else {
+            is2Rentes = false;
+        }
+
+    }
+
     private RequerantConjoint<CalculPcaReplace> resolveOldPcaRequerantConjoint(CalculPcaReplaceSearch pcaReplaceSearch,
             PeriodePCAccordee periode) {
         RequerantConjoint<CalculPcaReplace> pcaRequerantConjoint = new RequerantConjoint<CalculPcaReplace>();
@@ -142,8 +181,21 @@ public class PrepareDonneForJourAppoint {
                     pcaRequerantConjoint.setConjoint(pca);
                 }
             }
+            if (pca.getSimplePCAccordee().getHasJoursAppoint()) {
+                isMemeJourDEntreeenHomeEtJoursApppoint(periodePrecedante, periodeActuelle);
+            }
+
         }
         return pcaRequerantConjoint;
+    }
+
+    private void isMemeJourDEntreeenHomeEtJoursApppoint(Periode periodePrecedante, Periode periodeActuelle) {
+        if (periodePrecedante.compareTo(periodeActuelle) == 0) {
+            isMemePeriodeEtJoursAppointExist = true;
+        } else {
+            isMemePeriodeEtJoursAppointExist = false;
+        }
+
     }
 
     private boolean mustGenerateJourAppoint(Date dateDebut, Date dateEntreeHomePersonne) {
@@ -188,7 +240,7 @@ public class PrepareDonneForJourAppoint {
             CalculJourAppoint calculJourAppoint = new CalculJourAppoint();
             BigDecimal montantPrecedant = new BigDecimal(montantPrecedantPca);
             SimpleJoursAppoint sja = calculJourAppoint.generateJoursAppoint(dateEntreeHome,
-                    new BigDecimal(ccRetenu.getMontantPCMensuel()), montantPrecedant);
+                    new BigDecimal(ccRetenu.getMontantPCMensuel()), montantPrecedant, isMemePeriodeEtJoursAppointExist);
 
             return sja;
         }

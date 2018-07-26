@@ -102,8 +102,14 @@ public class ValiderDecisionSuppression extends AbstractValiderDecision {
                 }
                 JACalendarGregorian cal = new JACalendarGregorian();
                 if (cal.compare(dateSupression, dateDebutPCHome) == JACalendar.COMPARE_FIRSTLOWER) {
-                    montantTotalRestitution = montantTotalRestitution.add(new BigDecimal(listeJoursAppoint.get(0)
-                            .getMontantTotal()));
+                    for (SimpleOrdreVersement simpleOrdreVersement : ovs) {
+                        if (simpleOrdreVersement.getMontant().equals(montantTotalRestitution.toString())) {
+                            montantTotalRestitution = montantTotalRestitution.add(new BigDecimal(listeJoursAppoint.get(
+                                    0).getMontantTotal()));
+                            simpleOrdreVersement.setMontant(montantTotalRestitution.toString());
+                        }
+                    }
+
                 }
             }
         }
