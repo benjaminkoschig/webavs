@@ -2,6 +2,9 @@ package ch.globaz.pegasus.businessimpl.services.models.pcaccordee;
 
 import globaz.globall.db.BSessionUtil;
 import globaz.globall.util.JACalendar;
+import globaz.globall.util.JACalendarGregorian;
+import globaz.globall.util.JADate;
+import globaz.globall.util.JAException;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeListUtil;
 import globaz.jade.client.util.JadeStringUtil;
@@ -1253,8 +1256,35 @@ public class PCAccordeeServiceImpl extends PegasusAbstractServiceImpl implements
         List<PCAccordee> pcas = PersistenceUtil.typeSearch(oldPcaSearch);
         GenerateOvsForSuppression generateOvs = new GenerateOvsForSuppression(dateSuppressionDroit, dateDernierPmt);
         generateOvs.generateOv(pcas);
-
         BigDecimal montantTotalRestitution = generateOvs.getMontantTotalRestitution();
+
+        List<SimpleJoursAppoint> listeJoursAppoint = new ArrayList<SimpleJoursAppoint>();
+        for (PCAccordee pca : pcas) {
+            if (pca.getSimplePCAccordee().getHasJoursAppoint()) {
+                SimpleJoursAppointSearch search = new SimpleJoursAppointSearch();
+                search.setForIdPCAccordee(pca.getId());
+                search = PegasusImplServiceLocator.getSimpleJoursAppointService().search(search);
+                listeJoursAppoint = PersistenceUtil.typeSearch(search, search.whichModelClass());
+
+                JADate dateDebutPCHome = null;
+                JADate dateSupression = null;
+                try {
+                    dateDebutPCHome = new JADate(pca.getSimplePCAccordee().getDateDebut());
+                    dateSupression = new JADate(dateSuppressionDroit);
+                } catch (JAException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                JACalendarGregorian cal = new JACalendarGregorian();
+                if (cal.compare(dateSupression, dateDebutPCHome) == JACalendar.COMPARE_FIRSTLOWER) {
+                    montantTotalRestitution = montantTotalRestitution.add(new BigDecimal(listeJoursAppoint.get(0)
+                            .getMontantTotal()));
+                }
+
+            }
+
+        }
+
         return montantTotalRestitution;
     }
 }

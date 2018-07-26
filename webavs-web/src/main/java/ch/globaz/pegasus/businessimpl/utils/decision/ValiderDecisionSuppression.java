@@ -4,6 +4,9 @@ import globaz.corvus.api.basescalcul.IREPrestationAccordee;
 import globaz.corvus.api.lots.IRELot;
 import globaz.globall.db.BSessionUtil;
 import globaz.globall.util.JACalendar;
+import globaz.globall.util.JACalendarGregorian;
+import globaz.globall.util.JADate;
+import globaz.globall.util.JAException;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.context.JadeThread;
@@ -14,6 +17,7 @@ import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.log.business.JadeBusinessMessageLevels;
 import globaz.jade.persistence.model.JadeAbstractModel;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import ch.globaz.corvus.business.models.rentesaccordees.SimplePrestationsAccordees;
@@ -37,6 +41,8 @@ import ch.globaz.pegasus.business.models.lot.SimpleOrdreVersement;
 import ch.globaz.pegasus.business.models.lot.SimplePrestation;
 import ch.globaz.pegasus.business.models.pcaccordee.PCAccordee;
 import ch.globaz.pegasus.business.models.pcaccordee.PCAccordeeSearch;
+import ch.globaz.pegasus.business.models.pcaccordee.SimpleJoursAppoint;
+import ch.globaz.pegasus.business.models.pcaccordee.SimpleJoursAppointSearch;
 import ch.globaz.pegasus.business.models.pcaccordee.SimplePCAccordee;
 import ch.globaz.pegasus.business.services.PegasusServiceLocator;
 import ch.globaz.pegasus.businessimpl.services.PegasusImplServiceLocator;
@@ -77,12 +83,36 @@ public class ValiderDecisionSuppression extends AbstractValiderDecision {
         List<PCAccordee> pcas = PersistenceUtil.typeSearch(oldPcaSearch, oldPcaSearch.whichModelClass());
         GenerateOvsForSuppression generateOvs = new GenerateOvsForSuppression(dateSuppression, dateDernierPmt);
         List<SimpleOrdreVersement> ovs = generateOvs.generateOv(pcas);
+        BigDecimal montantTotalRestitution = generateOvs.getMontantTotalRestitution();
+        List<SimpleJoursAppoint> listeJoursAppoint = new ArrayList<SimpleJoursAppoint>();
+        for (PCAccordee pca : pcas) {
+            if (pca.getSimplePCAccordee().getHasJoursAppoint()) {
+                SimpleJoursAppointSearch search = new SimpleJoursAppointSearch();
+                search.setForIdPCAccordee(pca.getId());
+                search = PegasusImplServiceLocator.getSimpleJoursAppointService().search(search);
+                listeJoursAppoint = PersistenceUtil.typeSearch(search, search.whichModelClass());
+                JADate dateDebutPCHome = null;
+                JADate dateSupression = null;
+                try {
+                    dateDebutPCHome = new JADate(pca.getSimplePCAccordee().getDateDebut());
+                    dateSupression = new JADate(dateSuppression);
+                } catch (JAException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                JACalendarGregorian cal = new JACalendarGregorian();
+                if (cal.compare(dateSupression, dateDebutPCHome) == JACalendar.COMPARE_FIRSTLOWER) {
+                    montantTotalRestitution = montantTotalRestitution.add(new BigDecimal(listeJoursAppoint.get(0)
+                            .getMontantTotal()));
+                }
+            }
+        }
 
         GeneratePrestation generatePrestation = new GeneratePrestation(dateDernierPmt, decisionSuppression
                 .getSimpleDecisionSuppression().getDateSuppression());
 
-        SimplePrestation prestation = generatePrestation.generate(pcas, generateOvs.getMontantTotalRestitution(),
-                decisionSuppression.getVersionDroit().getSimpleVersionDroit().getIdVersionDroit());
+        SimplePrestation prestation = generatePrestation.generate(pcas, montantTotalRestitution, decisionSuppression
+                .getVersionDroit().getSimpleVersionDroit().getIdVersionDroit());
 
         prestation.setIdLot(simpleLot.getIdLot());
         prestation = PegasusImplServiceLocator.getSimplePrestationService().create(prestation);
