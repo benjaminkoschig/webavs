@@ -35,7 +35,7 @@ public class CalculJourAppointTestCase {
     @Parameterized.Parameters(name = "Date: {0}, mnt PCA  courrante: {1}, mnt PCA precedente: {2}, Expected mntJourApp: {3}  Expected montant jourApp: {4}, Expect montantTotal: {5}")
     public static Collection<Object[]> getParameters() {
         // @formatter:off
-		return Arrays.asList(new Object[][] { 
+		return Arrays.asList(new Object[][] {
 				{ "31.03.2014", new BigDecimal(310), null, 1, "10.20" , "10" },
 				{ "01.03.2014", new BigDecimal(310), null, 31, "10.20", "316" },
 				{ "31.03.2014", new BigDecimal(300), null, 1, "9.85", "10" },
@@ -46,7 +46,7 @@ public class CalculJourAppointTestCase {
 				{ "01.04.2014", new BigDecimal(600), new BigDecimal(600), 30, null, "0"},
 				{ "01.04.2014", new BigDecimal(600), new BigDecimal(800), 30, null, "-198"},
 				{ "31.03.2014", new BigDecimal(3600), new BigDecimal(500), 1, "101.90", "102"},
-				{ "01.03.2014", new BigDecimal(3600), new BigDecimal(500), 31, "101.90", "3159" }, 
+				{ "01.03.2014", new BigDecimal(3600), new BigDecimal(500), 31, "101.90", "3159" },
 				{ "01.03.2014", new BigDecimal(3600), new BigDecimal(1200), 31, "78.90", "2446" },
 				{ "30.03.2014", new BigDecimal(13.33), null, 2, "0.45", "1" },
 				{ "30.03.2014", new BigDecimal(14.57), null, 2, "0.50", "1" },
@@ -71,13 +71,13 @@ public class CalculJourAppointTestCase {
 			Assert.fail("Aucun jour d'appoint existe la valeur est null");
 		}
 	}
-	
+
 
 	private SimpleJoursAppoint createJourAppoint() throws ParseException {
 		CalculJourAppoint calculJourAppoint = new CalculJourAppoint();
 		SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
 		SimpleJoursAppoint sja = calculJourAppoint.generateJoursAppoint(sdf.parse(date), montantCourrant,
-				montantPrecedent);
+				montantPrecedent, true);
 		return sja;
 	}
 
