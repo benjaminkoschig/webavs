@@ -68,6 +68,16 @@ var langue = "<%=languePage%>";
 	globazGlobal.labelTitreSaisieAbsences = '<ct:FWLabel key="JSP_CONTROLE_ABSENCES_SAISIE_ABSENCES" />';
 	globazGlobal.labelOui = '<ct:FWLabel key="OUI" />';
 	globazGlobal.labelNon = '<ct:FWLabel key="NON" />';
+	
+	function checkNbChar(){
+		
+		var nbChar = document.getElementById("baseIndemnisation.remarque").value.length;
+		
+		if(nbChar > 512){
+			var error = "Votre commentaire comporte " + nbChar + " caractères sur 512 autorisés";
+			alert(error);
+		}
+	}
 </script>
 
 <script type="text/javascript" src="<%=servletContext%>/ijRoot/controleAbsences/dossierControleAbsencesAjax_de.js"></script>
@@ -416,10 +426,11 @@ var langue = "<%=languePage%>";
 												<ct:FWLabel key="JSP_BASE_IND_REMARQUE" />
 											</div>
 											<div class="span8">
-												<textarea rows="4" cols="90" 
+												<textarea rows="10" cols="90" 
 														id="baseIndemnisation.remarque"
 														name="baseIndemnisation.remarque" 
-														data-g-string="" />
+														data-g-string="" 
+														/>
 												</textarea>
 											</div>
 										</div>
@@ -464,7 +475,7 @@ var langue = "<%=languePage%>";
 											<ct:ifhasright element="<%=partialUserActionAction%>" crud="c">
 												<input class="btnAjaxAdd" type="button" value="<%=btnNewLabel%>">
 											</ct:ifhasright>
-											<input class="btnAjaxValidate" type="button" value="<%=btnValLabel%>">
+											<input class="btnAjaxValidate" type="button" value="<%=btnValLabel%>" onclick="checkNbChar()">
 											<input class="btnAjaxCancel" type="button" value="<%=btnCanLabel%>">
 										</div>
 											<ct:ifhasright element="ij.controleAbsences.baseIndemnisationAjax.supprimerAJAX" crud="upd">
