@@ -75,8 +75,13 @@ var langue = "<%=languePage%>";
 		
 		if(nbChar > 512){
 			var error = "Votre commentaire comporte " + nbChar + " caractères sur 512 autorisés";
-			alert(error);
+			$("#errorNbChar").html("<p>"+error+"</p>").fadeIn(400).delay(10000).fadeOut(400);
+			
 		}
+	}
+	
+	window.onload = function(){	
+		$("#errorNbChar").hide();
 	}
 </script>
 
@@ -432,6 +437,7 @@ var langue = "<%=languePage%>";
 														data-g-string="" 
 														/>
 												</textarea>
+												<div id="errorNbChar" hidden class="alert alert-error"/>
 											</div>
 										</div>
 										<div class="row-fluid">										
