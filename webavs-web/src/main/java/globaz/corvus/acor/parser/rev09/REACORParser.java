@@ -1946,6 +1946,7 @@ public class REACORParser extends REACORAbstractFlatFileParser {
             // skip line
             if (line.startsWith(REACORAbstractFlatFileParser.CODE_ALLOC_RENCH_1991)
                     || line.startsWith(REACORAbstractFlatFileParser.CODE_COTISATION)
+                    || line.startsWith(REACORAbstractFlatFileParser.CODE_RENTE_INCHANGEE)
                     || line.startsWith(REACORAbstractFlatFileParser.CODE_MONTANT_MENS_RENTE_AJOURNEES)) {
                 line = REACORParser.readRelevantLine(reader);
             }

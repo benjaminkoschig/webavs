@@ -25,6 +25,7 @@ public abstract class REACORAbstractFlatFileParser {
     protected static final String CODE_BASE_CALCUL = "$b";
     protected static final String CODE_BASE_FIN_CALCUL = "$s";
     protected static final String CODE_COTISATION = "$c";
+    protected static final String CODE_RENTE_INCHANGEE = "$i";
     protected static final String CODE_MONTANT_MENS_RENTE_AJOURNEES = "$q";
     protected static final String CODE_PRESTATION_DUE_MENSUEL = "$p";
     protected static final String CODE_PRESTATION_DUE_RETROACTIF = "$t";
