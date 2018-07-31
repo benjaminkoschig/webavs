@@ -8,7 +8,10 @@ import ch.globaz.common.properties.PropertiesException;
 public enum DSProperties implements IProperties {
 
     PROPERTY_ANNEE_BONUSPFA_VARIABLE("bonusPFAVariable.annee",
-            "année à partir de laquelle la réduction PFA pour les décomptes électroniques se base sur un taux variable");
+            "année à partir de laquelle la réduction PFA pour les décomptes électroniques se base sur un taux variable"),
+    PREIMPR_SANSPERS_FOR_PERSJUR(
+            "preImpr.sansPers.for.persJur",
+            "Personnalités juridiques (ALL/NONE/code_système1,code_système2...) pour lesquelles il faut pouvoir effectuer la préimpression des DS (malgré la particularité sans personnel)");
 
     private String description;
     private String propertyName;

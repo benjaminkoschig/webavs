@@ -13,6 +13,7 @@ import globaz.draco.db.declaration.DSDeclarationListViewBean;
 import globaz.draco.db.declaration.DSDeclarationViewBean;
 import globaz.draco.db.preimpression.DSSqlStringForStatement;
 import globaz.draco.process.DSProcessValidation;
+import globaz.draco.properties.DSProperties;
 import globaz.draco.util.DSUtil;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.printing.itext.FWIDocumentManager;
@@ -59,6 +60,8 @@ import globaz.pyxis.db.tiers.TIRole;
 import globaz.pyxis.db.tiers.TIRoleManager;
 import globaz.pyxis.db.tiers.TITiers;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -69,6 +72,9 @@ import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
  * Permet de générer le document de pré-impression des déclarations de salaires
  */
 public class Doc2_preImpressionDeclaration extends FWIDocumentManager {
+
+    private static final String PREIMPR_SANSPERS_FOR_PERSJUR_ALL = "ALL";
+    private static final String PREIMPR_SANSPERS_FOR_PERSJUR_NONE = "NONE";
 
     private static final long serialVersionUID = -87417721244564777L;
     public static final String CS_AMENDE = "125012";
@@ -1099,6 +1105,21 @@ public class Doc2_preImpressionDeclaration extends FWIDocumentManager {
         super._executeProcess();
     }
 
+    private boolean isPersJurToImprimeForSansPers(String preImprSansPersForPersJur, String persJur) {
+
+        if (PREIMPR_SANSPERS_FOR_PERSJUR_ALL.equalsIgnoreCase(preImprSansPersForPersJur)) {
+            return true;
+        } else if (PREIMPR_SANSPERS_FOR_PERSJUR_NONE.equalsIgnoreCase(preImprSansPersForPersJur)) {
+            return false;
+        } else {
+
+            List<String> listPersJur = new ArrayList<String>(Arrays.asList(preImprSansPersForPersJur.split(",")));
+
+            return listPersJur.contains(persJur);
+        }
+
+    }
+
     /**
      * Cette méthode va s'assurer qu'on n'imprime pas deux fois le meme affilié
      * 
@@ -1117,10 +1138,11 @@ public class Doc2_preImpressionDeclaration extends FWIDocumentManager {
         if (!fromAffilies.equals(untilAffilies)
                 || (JadeStringUtil.isBlank(fromAffilies) && JadeStringUtil.isBlank(untilAffilies))) {
 
+            String preImprSansPersForPersJur = DSProperties.PREIMPR_SANSPERS_FOR_PERSJUR.getValue();
             while (lecture
                     && AFParticulariteAffiliation.existeParticularite(getTransaction(), affEnCours.getAffiliationId(),
                             CodeSystem.PARTIC_AFFILIE_SANS_PERSONNEL, "31.12." + annee)
-                    && !CodeSystem.PERS_JURIDIQUE_SA.equals(affEnCours.getPersonnaliteJuridique())) {
+                    && !isPersJurToImprimeForSansPers(preImprSansPersForPersJur, affEnCours.getPersonnaliteJuridique())) {
 
                 affEnCours.isRadie();
                 if ((ind + 1) < affManager.getSize()) {
