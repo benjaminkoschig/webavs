@@ -45,6 +45,8 @@ public class REGenererAttestationFiscaleUniqueViewBean extends PRAbstractViewBea
     private String titreAPI = "";
     private String total = "";
     private String traiterPar = "";
+    private String contact = "";
+    private String telephone = "";
 
     public String getAdresse() {
         return adresse;
@@ -202,6 +204,14 @@ public class REGenererAttestationFiscaleUniqueViewBean extends PRAbstractViewBea
         return traiterPar;
     }
 
+    public String getContact() {
+        return contact;
+    }
+
+    public String getTelephone() {
+        return telephone ;
+    }
+
     public void setAdresse(String adresse) {
         this.adresse = adresse;
     }
@@ -352,6 +362,14 @@ public class REGenererAttestationFiscaleUniqueViewBean extends PRAbstractViewBea
 
     public void setTraiterPar(String traiterPar) {
         this.traiterPar = traiterPar;
+    }
+
+    public void setContact(String contact) {
+        this.contact = contact;
+    }
+    
+    public void setTelephone(String telephone) {
+        this.telephone = telephone;
     }
 
     @Override

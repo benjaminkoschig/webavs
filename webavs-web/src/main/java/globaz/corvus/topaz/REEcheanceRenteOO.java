@@ -1128,8 +1128,8 @@ public class REEcheanceRenteOO extends AbstractJadeJob {
             if (("true").equals(getSession().getApplication().getProperty("isAfficherDossierTraitePar"))) {
                 if (userDetails != null) {
                     String user = userDetails.getFirstname() + " " + userDetails.getLastname();
-                    crBean.setNomCollaborateur(document.getTextes(1).getTexte(1).getDescription() + " " + user);
-                    crBean.setTelCollaborateur(userDetails.getPhone());
+                    crBean.setNomCollaborateur(document.getTextes(1).getTexte(1).getDescription() + " " + document.getTextes(1).getTexte(2).getDescription());
+                    crBean.setTelCollaborateur(document.getTextes(1).getTexte(3).getDescription());
                 }
             }
 

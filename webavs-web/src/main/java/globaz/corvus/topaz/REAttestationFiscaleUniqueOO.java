@@ -72,6 +72,8 @@ public class REAttestationFiscaleUniqueOO extends REAbstractJobOO {
     private String titreAPI;
     private String total;
     private String traiterPar;
+    private String contact;
+    private String telephone;
 
     public REAttestationFiscaleUniqueOO() {
         super(false);
@@ -108,6 +110,8 @@ public class REAttestationFiscaleUniqueOO extends REAbstractJobOO {
         titreAPI = "";
         total = "";
         traiterPar = "";
+        contact = "";
+        telephone = "";
     }
 
     @Override
@@ -158,8 +162,8 @@ public class REAttestationFiscaleUniqueOO extends REAbstractJobOO {
         caisseHelper.setTemplateName(REAttestationFiscaleUniqueOO.FICHIER_MODELE_ENTETE_CORVUS);
 
         if (("true").equals(getSession().getApplication().getProperty("isAfficherDossierTraitePar"))) {
-            crBean.setNomCollaborateur(getTraiterPar() + " " + getSession().getUserFullName());
-            crBean.setTelCollaborateur(getSession().getUserInfo().getPhone());
+            crBean.setNomCollaborateur(getTraiterPar() + " " + getContact());
+            crBean.setTelCollaborateur(getTelephone());
         }
 
         // Ajoute le libelle CONFIDENTIEL dans l'adresse de l'entete du document
@@ -463,6 +467,14 @@ public class REAttestationFiscaleUniqueOO extends REAbstractJobOO {
     public String getTraiterPar() {
         return traiterPar;
     }
+    
+    public String getContact() {
+        return contact;
+    }
+    
+    public String getTelephone() {
+        return telephone;
+    }
 
     public void setAdresse(String adresse) {
         this.adresse = adresse;
@@ -578,5 +590,13 @@ public class REAttestationFiscaleUniqueOO extends REAbstractJobOO {
 
     public void setTraiterPar(String traiterPar) {
         this.traiterPar = traiterPar;
+    }
+
+    public void setContact(String contact) {
+        this.contact = contact;
+    }
+    
+    public void setTelephone(String telephone) {
+        this.telephone = telephone;
     }
 }

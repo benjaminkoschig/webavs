@@ -724,6 +724,8 @@ public class REGenererAttestationFiscaleAction extends REDefaultProcessAction {
                     }
 
                     viewBean.setTraiterPar(document.getTextes(6).getTexte(1).getDescription());
+                    viewBean.setContact(document.getTextes(6).getTexte(2).getDescription());
+                    viewBean.setTelephone(document.getTextes(6).getTexte(3).getDescription());
                     viewBean.setEMailAddress(mail);
                     viewBean.setDateImpressionAttJJMMAAA(dateAttJJMMAAAA);
                     viewBean.setCodeIsoLangue(codeIsoLangue);
