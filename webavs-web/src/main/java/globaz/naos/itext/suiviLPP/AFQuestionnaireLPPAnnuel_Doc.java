@@ -6,6 +6,7 @@ import globaz.globall.db.BSession;
 import globaz.globall.db.FWFindParameter;
 import globaz.globall.db.FWFindParameterManager;
 import globaz.hercule.service.CETiersService;
+import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.log.JadeLogger;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
 import globaz.naos.db.affiliation.AFAffiliation;
@@ -20,6 +21,7 @@ import globaz.pyxis.adresse.datasource.TIAdresseDataSource;
 import globaz.pyxis.db.tiers.TITiers;
 import java.util.ArrayList;
 import java.util.List;
+import cern.colt.Arrays;
 import ch.globaz.common.domaine.Montant;
 
 public class AFQuestionnaireLPPAnnuel_Doc extends AFAbstractTiersDocument {
@@ -56,10 +58,17 @@ public class AFQuestionnaireLPPAnnuel_Doc extends AFAbstractTiersDocument {
     @Override
     public void createDataSource() throws Exception {
         super.createDataSource();
-
+        
         // Lancement du process pour générer la liste extrait de salaires
+        List<Integer> annees = new ArrayList<>();
+
+        String[] ans = getPeriode().split(",");
+        for (String an : ans) {
+            an = an.replaceAll(" ", "");
+            annees.add(Integer.parseInt(an));
+        }
         if (AFProperties.CONTROLE_ANNUEL_LPP_GENERATION_EXTRAIT_DS.getBooleanValue()) {
-            initAndLaunchProcessListExtraitDS(getIdAffiliation(), Integer.parseInt(getPeriode()), getDateImpression());
+            initAndLaunchProcessListExtraitDSByYearsList(getIdAffiliation(), annees, getDateImpression());
         }
 
         fillDocInfo();
@@ -102,6 +111,63 @@ public class AFQuestionnaireLPPAnnuel_Doc extends AFAbstractTiersDocument {
     @Override
     protected void initDocument(String isoLangueTiers) throws Exception {
         //
+    }
+
+    private void initAndLaunchProcessListExtraitDSByYearsList(String numAffilie, List<Integer> annees,
+            String dateImpression) throws Exception {
+
+        for (int annee : annees) {
+
+            AFSuiviLppAnnuelSalariesManager mgr = new AFSuiviLppAnnuelSalariesManager();
+            List<AFSuiviLppAnnuelSalarie> listeSalarie = new ArrayList<>();
+            
+            mgr.setSession(getSession());
+            mgr.setForIdAffiliation(Long.parseLong(numAffilie));
+            mgr.setForAnnee(annee);
+            mgr.find(BManager.SIZE_NOLIMIT);
+
+            if (mgr.getSize() > 0) {
+                for (int i = 0; i < mgr.getSize(); i++) {
+                    AFSuiviLppAnnuelSalarie salarie = (AFSuiviLppAnnuelSalarie) mgr.getEntity(i);
+                    calculSeuilLPP(salarie);
+                    listeSalarie.add(salarie);
+                }
+            }
+
+            AFAffiliation employeur;
+
+            AFAffiliationManager affiliationManager = new AFAffiliationManager();
+            affiliationManager.setSession(getSession());
+            affiliationManager.setForAffiliationId(numAffilie);
+            affiliationManager.find(BManager.SIZE_NOLIMIT);
+
+            if (affiliationManager.size() == 1) {
+                employeur = (AFAffiliation) affiliationManager.get(0);
+            } else {
+                throw new Exception("L'affiliation correspondant au numéro " + numAffilie + " n'a pas été trouvée");
+            }
+
+            TIAdresseDataSource adresseEmployeur = getAdresseFromItTiersEmployeur(getSession(), "20",
+                    employeur.getIdTiers(), numAffilie);
+
+            AFListeExtraitDS processListeExtraitDS = new AFListeExtraitDS();
+            processListeExtraitDS.setSession(getSession());
+            processListeExtraitDS.setListeSalarie(listeSalarie);
+            processListeExtraitDS.setEmployeur(employeur);
+            processListeExtraitDS.setAdresseEmployeur(adresseEmployeur);
+            processListeExtraitDS.setAnnee(String.valueOf(annee));
+            processListeExtraitDS.setLangueIso(employeur.getTiers().getLangueIso());
+            processListeExtraitDS.setDate(dateImpression);
+            processListeExtraitDS.setSendCompletionMail(false);
+            processListeExtraitDS.executeProcess();
+            // date ?
+
+            pathListeExtraitDS = processListeExtraitDS.getPath();
+            documentInfoListeExtraitDS = processListeExtraitDS.getDocumentInfoPdf();
+
+            // Ajout du fichier d'extrait de salaire.
+            registerAttachedDocument(documentInfoListeExtraitDS, pathListeExtraitDS);
+        }
     }
 
     private void initAndLaunchProcessListExtraitDS(String numAffilie, int annee, String dateImpression)
@@ -176,8 +242,8 @@ public class AFQuestionnaireLPPAnnuel_Doc extends AFAbstractTiersDocument {
 
             salarie.setSeuilEntree(valeurSeuil);
         } catch (Exception e) {
-            throw new IllegalArgumentException("Error when retrieving the 'plage de valeur' with key 'SEUILLPP' ("
-                    + e.getMessage() + ")");
+            throw new IllegalArgumentException(
+                    "Error when retrieving the 'plage de valeur' with key 'SEUILLPP' (" + e.getMessage() + ")");
         }
     }
 
