@@ -108,6 +108,36 @@ public abstract class AFSuiviGeneral extends BAbstractEntityExternalService {
     }
 
     /**
+     * Permet de générer un control, par défaut le module de provenance est NAOS. 
+     * Fonction dédiée au Suivi Annuel LPP 
+     * 
+     * @param affiliation
+     * @throws Exception
+     */
+    public void genererControleLPPAnnuel(AFAffiliation affiliation) throws Exception {
+        // prépare les données pour l'envoi
+        HashMap<String, String> params = new HashMap<String, String>();
+        params.put(ILEConstantes.CS_PARAM_GEN_ID_TIERS, affiliation.getTiers().getIdTiers());
+        params.put(ILEConstantes.CS_PARAM_GEN_NUMERO, affiliation.getAffilieNumero());
+        params.put(ILEConstantes.CS_PARAM_GEN_ROLE, TIRole.CS_AFFILIE);
+        params.put(ILEConstantes.CS_PARAM_GEN_TYPE_PROVENANCE_MODULE, AFApplication.DEFAULT_APPLICATION_NAOS);
+        params.put(ILEConstantes.CS_PARAM_GEN_ID_TIERS_DESTINAIRE, getIdDestinataire(affiliation));
+        params.put(ILEConstantes.CS_PARAM_GEN_ID_AFFILIATION, affiliation.getAffiliationId());
+
+        // execute le process de génération
+        LEGenererEnvoi gen = new LEGenererEnvoi();
+        gen.setSession(affiliation.getSession());
+        gen.setCsDocument(ILEConstantes.CS_DEBUT_SUIVI_ANNUEL_LPP);
+        gen.setParamEnvoiList(params);
+        gen.setSendCompletionMail(false);
+        gen.setGenerateEtapeSuivante(isGenererEtapeSuivante(affiliation));
+        if (affiliation.isSuivisSuspendu()) {
+            affiliation.addSuivi(gen);
+        } else {
+            gen.start();
+        }
+    }
+    /**
      * Permet de définir le module de provenance (application)
      * 
      * @param affiliation
@@ -212,6 +242,32 @@ public abstract class AFSuiviGeneral extends BAbstractEntityExternalService {
             viewBean.setProvenance(provenanceCriteres);
             viewBean.setForCsTypeCodeSysteme(ILEConstantes.CS_DEF_FORMULE_GROUPE);
             viewBean.setForValeurCodeSysteme(getDefinitionFormule());
+            viewBean.find();
+            if (viewBean.size() == 0) {
+                return null;
+            } else {
+                return (LUJournalViewBean) viewBean.getFirstEntity();
+            }
+        } catch (Exception e) {
+            JadeLogger.info(this, e.getMessage());
+            return null;
+        }
+    }
+    
+    public LUJournalViewBean isAlreadySentLPPAnnuel(AFAffiliation affiliation) {
+        try {
+            LUProvenanceDataSource provenanceCriteres = new LUProvenanceDataSource();
+            provenanceCriteres.addProvenance(ILEConstantes.CS_PARAM_GEN_NUMERO, affiliation.getAffilieNumero());
+            provenanceCriteres.addProvenance(ILEConstantes.CS_PARAM_GEN_ID_TIERS, affiliation.getIdTiers());
+            provenanceCriteres.addProvenance(ILEConstantes.CS_PARAM_GEN_ROLE, TIRole.CS_AFFILIE);
+            provenanceCriteres.addProvenance(ILEConstantes.CS_PARAM_GEN_TYPE_PROVENANCE_MODULE,
+                    AFApplication.DEFAULT_APPLICATION_NAOS);
+            provenanceCriteres.addProvenance(ILEConstantes.CS_PARAM_GEN_ID_AFFILIATION, affiliation.getAffiliationId());
+            LUJournalListViewBean viewBean = new LUJournalListViewBean();
+            viewBean.setSession(affiliation.getSession());
+            viewBean.setProvenance(provenanceCriteres);
+            viewBean.setForCsTypeCodeSysteme(ILEConstantes.CS_DEF_FORMULE_GROUPE);
+            viewBean.setForValeurCodeSysteme(ILEConstantes.CS_DEBUT_SUIVI_ANNUEL_LPP);
             viewBean.find();
             if (viewBean.size() == 0) {
                 return null;

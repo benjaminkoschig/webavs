@@ -122,6 +122,15 @@ public class AFSuiviCaisseAffiliation extends BEntity {
                 handler.genererJournalisationReception(journal.getIdJournalisation(), JACalendar.todayJJsMMsAAAA(),
                         sessionLeo, transaction);
             }
+            
+            // Traitement pour Suivi Annuel LPP
+            AFSuiviLPP suiviLppAnnuel = new AFSuiviLPP();
+            LUJournalViewBean journalAnnuel = suiviLppAnnuel.isAlreadySentLPPAnnuel(getAffiliation());
+            if ((journalAnnuel != null) && JadeStringUtil.isBlank(journalAnnuel.getDateReception())) {
+                LEJournalHandler handler = new LEJournalHandler();
+                handler.genererJournalisationReception(journalAnnuel.getIdJournalisation(), JACalendar.todayJJsMMsAAAA(),
+                        sessionLeo, transaction);
+            }
 
             if ((!getAttestationIp().booleanValue()) && JadeStringUtil.isEmpty(getMotif())) {
 
@@ -129,6 +138,7 @@ public class AFSuiviCaisseAffiliation extends BEntity {
                 if (attestation.isAffiliationConcerne(getAffiliation())) {
                     attestation.setIdDestinataire(getIdTiersCaisse());
                     attestation.genererControle(getAffiliation());
+                    attestation.genererControleLPPAnnuel(getAffiliation());
                 }
             }
         }
@@ -166,6 +176,19 @@ public class AFSuiviCaisseAffiliation extends BEntity {
             journal = suiviLpp.isAlreadySent(getAffiliation());
             if (journal != null) {
                 handler.annulerReceptionFormule(journal.getIdJournalisation(), sessionLeo);
+            }
+            
+            // Traitement pour Suivi Annuel LPP
+            AFSuiviAttestIP suiviIpLPPAnnuel = new AFSuiviAttestIP();
+            LUJournalViewBean journalAnnuel = suiviIpLPPAnnuel.isAlreadySentLPPAnnuel(getAffiliation());
+            if (journalAnnuel != null) {
+                handler.annulerTousJournaux(journalAnnuel.getIdJournalisation(), sessionLeo, transaction);
+            }
+
+            AFSuiviLPP suiviLppAnnuel = new AFSuiviLPP();
+            journalAnnuel = suiviLppAnnuel.isAlreadySentLPPAnnuel(getAffiliation());
+            if (journalAnnuel != null) {
+                handler.annulerReceptionFormule(journalAnnuel.getIdJournalisation(), sessionLeo);
             }
         }
     }
@@ -206,6 +229,29 @@ public class AFSuiviCaisseAffiliation extends BEntity {
                 }
             }
 
+            // Traitement pour Suivi Annuel LPP
+            AFSuiviAttestIP suiviIpLPPAnnuel = new AFSuiviAttestIP();
+            journal = suiviIpLPPAnnuel.isAlreadySentLPPAnnuel(getAffiliation());
+
+            // Pas recu d'attestation IP
+            if (!getAttestationIp().booleanValue()) {
+
+                if (journal == null && !isNonSoumis()) {
+                    AFSuiviAttestIP attestation = new AFSuiviAttestIP();
+                    if (attestation.isAffiliationConcerne(getAffiliation())) {
+                        attestation.setIdDestinataire(getIdTiersCaisse());
+                        attestation.genererControle(getAffiliation());
+                    }
+                }
+
+                // Reçu l'attestation IP
+            } else {
+                if ((journal != null) && JadeStringUtil.isBlank(journal.getDateReception())) {
+                    LEJournalHandler handler = new LEJournalHandler();
+                    handler.genererJournalisationReception(journal.getIdJournalisation(), JACalendar.todayJJsMMsAAAA(),
+                            sessionLeo, transaction);
+                }
+            }
         }
     }
 
