@@ -46,9 +46,11 @@ $(function() {
 			check: function () {
 			    if(this.$checkBox.prop("checked")) {
 			    	$("#reinjectionRow").hide();
+			    	$("#dateCreation").hide();
 			    }
 			    else{
 		    		$("#reinjectionRow").show();
+		    		$("#dateCreation").show();
 		    	}
 			}
 	}
@@ -105,7 +107,19 @@ function postInit() {
  	<TD>&nbsp;</TD>
 </TR>
 
-<tr id="reinjectionRow" style="display:none;">
+<TR id="dateCreation" style="display:none;">
+	<TD>?Date de création</TD>
+	<TD>
+		<input
+		name="dateCreation" 
+		data-g-calendar=" " 
+		value="<%=viewBean.getDateCreation()%>" />
+	</TD>
+</TR>
+
+
+
+<tr id="reinjectionRow" >
      <td><ct:FWLabel key="REINJECTION_FICHIER_MODIF"/></td>
      <td>          		
           <input align="right"  type="file" size="65" name="filename" maxlength="256">

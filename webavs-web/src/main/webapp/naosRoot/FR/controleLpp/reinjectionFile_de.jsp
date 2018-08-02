@@ -28,6 +28,7 @@ if(!uploadBean.getFilename().isEmpty()){
 <input type="hidden" name="tri" value="<%=uploadBean.getFieldValue("tri")%>">
 <input type="hidden" name="dateImpression" value="<%=uploadBean.getFieldValue("dateImpression")%>">
 <input type="hidden" name="typeAdresse" value="<%=uploadBean.getFieldValue("typeAdresse")%>">
+<input type="hidden" name="dateCreation" value="<%=uploadBean.getFieldValue("dateCreation")%>">
 </form>
 <script>mainForm.submit()</script>
 </body>

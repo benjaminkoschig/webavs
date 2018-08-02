@@ -39,6 +39,7 @@ import net.sf.jasperreports.engine.JRExporterParameter;
 import org.apache.commons.io.FileUtils;
 import ch.globaz.common.document.babel.CatalogueTexteLoader;
 import ch.globaz.common.document.babel.TexteGiverBabelWithVariables;
+import ch.globaz.common.domaine.Date;
 import ch.globaz.jade.business.models.Langues;
 import ch.globaz.orion.businessimpl.services.ServicesProviders;
 import ch.globaz.xmlns.eb.mail.FileExtension;
@@ -139,8 +140,12 @@ public class LEGenererEtapesSuivantes extends BProcess {
                 // charger les données relatives au document a imprimer
                 try {
 
-                    envoiDS = envoi.chargerDonnees(envoiCrt.getIdJournalisation(), envoiCrt.getEtapeSuivante(),
-                            getSession(), getTransaction());
+                    if (this.getDateImpression() == new Date().getSwissValue()) {
+                        envoiDS = envoi.chargerDonnees(envoiCrt.getIdJournalisation(), envoiCrt.getEtapeSuivante(),
+                                getSession(), getTransaction());
+                    } else {
+                        envoiDS = envoi.chargerDonnees(envoiCrt.getIdJournalisation(), envoiCrt.getEtapeSuivante(), getSession(), getTransaction(), this.getDateImpression());   
+                    }
 
                 } catch (Exception e) {
                     getMemoryLog()

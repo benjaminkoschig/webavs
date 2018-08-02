@@ -39,6 +39,7 @@ public class AFControleLppAnnuelHelper extends FWHelper {
             process.setModeControle(vb.isModeControleSimulation());
             process.setEMailAddress(vb.getEmail());
             process.setFileName(vb.getFilename());
+            process.setDateCreation(vb.getDateCreation());
             BProcessLauncher.start(process);
         } catch (Exception e) {
             viewBean.setMessage(e.toString());

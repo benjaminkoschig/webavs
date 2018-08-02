@@ -154,6 +154,11 @@ public class LEEnvoiHandler {
             BTransaction transaction) throws Exception {
         return this.getParamsEnvoi(idDernierJournal, csTypeEtapeSuivante, session, transaction);
     }
+    
+    public LEEnvoiDataSource chargerDonnees(String idDernierJournal, String csTypeEtapeSuivante, BSession session, BTransaction transaction,
+           String dateCreation) throws Exception {
+        return this.getParamsEnvoi(idDernierJournal, csTypeEtapeSuivante, session, transaction, dateCreation);
+    }
 
     public LUJournalDataSource envoiToJournalisation(LEParamEnvoiDataSource envoiCrtDS) {
         LUJournalDataSource journalDataSource = new LUJournalDataSource();
@@ -437,6 +442,57 @@ public class LEEnvoiHandler {
         }
         return pHandler.loadParametreEnvoi(csDocument, listParam, session, transaction, dateRappel, dateCreation);
     }
+    
+
+    /**
+     * 
+     * 
+     */
+    private LEEnvoiDataSource getParamsEnvoi(String idJournal, String csDocument, BSession session,
+            BTransaction transaction, String dateCreation) throws Exception {
+        LEJournalHandler journalHandler = new LEJournalHandler();
+        LEParamEnvoiHandler pHandler = new LEParamEnvoiHandler();
+        LEParamEnvoiDataSource listParam = journalHandler.getParamsEnvoiDataSource(idJournal, session, transaction);
+        LEDestinataireListViewBean dest = getDestinataires(csDocument, session, transaction);
+        if (dest.size() > 0) {
+            listParam.remove(ILEConstantes.CS_PARAM_GEN_ID_TIERS_DESTINAIRE);
+            listParam.addParamEnvoi(ILEConstantes.CS_PARAM_GEN_ID_TIERS_DESTINAIRE,
+                    ((LEDestinataireViewBean) dest.getFirstEntity()).getIdTiers());
+        }
+
+        // tester si le type de document nécessite un autre destinataire (envoi
+        // du mandat à l'agence communale, rappel 1 ou rappel 2)
+        if (ILEConstantes.CS_DEF_FORMULE_MANDAT_AGENT_DS.equals(csDocument)
+                || ILEConstantes.CS_DEF_FORMULE_MANDAT_AGENT_RAPPEL1_DS.equals(csDocument)
+                || ILEConstantes.CS_DEF_FORMULE_MANDAT_AGENT_RAPPEL2_DS.equals(csDocument)) {
+            String idAgence = getAgenceCommunale(listParam.getParamEnvoi(ILEConstantes.CS_PARAM_GEN_ID_TIERS)
+                    .getValeur(), session, transaction);
+            if (!JadeStringUtil.isEmpty(idAgence)) {
+                listParam.remove(ILEConstantes.CS_PARAM_GEN_ID_TIERS_DESTINAIRE);
+                listParam.addParamEnvoi(ILEConstantes.CS_PARAM_GEN_ID_TIERS_DESTINAIRE, idAgence);
+            } else {
+
+                String theInfoTiers = "";
+                try {
+                    TITiers theDestinataire = new TITiers();
+                    theDestinataire.setSession(session);
+                    theDestinataire
+                            .setIdTiers(listParam.getParamEnvoi(ILEConstantes.CS_PARAM_GEN_ID_TIERS).getValeur());
+                    theDestinataire.retrieve();
+                    theInfoTiers = theDestinataire.getNomEtNumero();
+                } catch (Exception e) {
+                    theInfoTiers = "";
+                }
+
+                throw new Exception(FWMessageFormat.format(session.getLabel("ERREUR_TIERS_SANS_AGENCE_COMMUNALE"),
+                        theInfoTiers));
+            }
+
+        }
+
+        return pHandler.loadParametreEnvoi(csDocument, listParam, session, transaction, "", dateCreation);
+    }
+    
 
     /**
      * @param idDernierJournal

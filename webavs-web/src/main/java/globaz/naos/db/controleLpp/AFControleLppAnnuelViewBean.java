@@ -3,6 +3,7 @@
  */
 package globaz.naos.db.controleLpp;
 
+import globaz.globall.util.JACalendar;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.naos.db.AFAbstractViewBean;
 
@@ -17,6 +18,7 @@ public class AFControleLppAnnuelViewBean extends AFAbstractViewBean {
     private String anneeFin;
     private String email;
     private String filename;
+    private String dateCreation = JACalendar.todayJJsMMsAAAA();
 
     // true = simulation
     private boolean modeControle = true;
@@ -41,7 +43,7 @@ public class AFControleLppAnnuelViewBean extends AFAbstractViewBean {
     public void setEmail(String email) {
         this.email = email;
     }
-
+    
     public void setModeControle(boolean modeControle) {
         this.modeControle = modeControle;
     }
@@ -72,5 +74,13 @@ public class AFControleLppAnnuelViewBean extends AFAbstractViewBean {
 
     public void setFilename(String filename) {
         this.filename = filename;
+    }
+
+    public String getDateCreation() {
+        return dateCreation;
+    }
+
+    public void setDateCreation(String dateCreation) {
+        this.dateCreation = dateCreation;
     }
 }

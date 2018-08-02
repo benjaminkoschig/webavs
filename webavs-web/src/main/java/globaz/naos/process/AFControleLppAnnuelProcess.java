@@ -112,6 +112,7 @@ public class AFControleLppAnnuelProcess extends BProcess {
     private String typeAdresse;
 
     private String fileName;
+    private String dateCreation;
 
     public AFControleLppAnnuelProcess() {
         super();
@@ -211,8 +212,10 @@ public class AFControleLppAnnuelProcess extends BProcess {
                 b.add(ILEConstantes.CS_QUESTIONNAIRE_ANNUEL_LPP);
                 etapes.setCsFormule(b);
 
-                etapes.setDateImpression(new Date().getSwissValue());
+                //etapes.setDateImpression(new Date().getSwissValue());
+                etapes.setDateImpression(getDateCreation());
                 etapes.setDatePriseEnCompte(new Date().getSwissValue());
+                //etapes.setDatePriseEnCompte(getDateCreation());
                 etapes.setCategorie(ILEConstantes.CS_CATEGORIE_SUIVI_LPP_ANNUEL);
                 etapes.setSimulation(false);
                 etapes.setCommentaire("Génération par le contrôle annuel LPP");
@@ -714,6 +717,7 @@ public class AFControleLppAnnuelProcess extends BProcess {
 
         // execute le process de génération
         LEGenererEnvoi gen = new LEGenererEnvoi();
+        gen.setDateCreation(getDateCreation());
         gen.setSession(getSession());
         // gen.setEMailAddress(getEMailAddress());
         gen.setCsDocument(ILEConstantes.CS_DEBUT_SUIVI_ANNUEL_LPP);
@@ -747,7 +751,8 @@ public class AFControleLppAnnuelProcess extends BProcess {
 
         // execute le process de génération
         LEGenererEnvoi gen = new LEGenererEnvoi();
-        gen.setSession(getSession());
+        gen.setDateCreation(getDateCreation());
+        gen.setSession(getSession());       
         // gen.setEMailAddress(getEMailAddress());
         gen.setCsDocument(ILEConstantes.CS_DEBUT_SUIVI_ANNUEL_LPP);
         gen.setParamEnvoiList(params);
@@ -1283,6 +1288,10 @@ public class AFControleLppAnnuelProcess extends BProcess {
     public String getAnneeDebut() {
         return anneeDebut;
     }
+    
+    public String getDateCreation() {
+        return dateCreation;
+    }
 
     public void setAnneeDebut(String anneeDebut) {
         this.anneeDebut = anneeDebut;
@@ -1302,5 +1311,9 @@ public class AFControleLppAnnuelProcess extends BProcess {
 
     public void setFileName(String fileName) {
         this.fileName = fileName;
+    }
+
+    public void setDateCreation(String dateCreation) {
+        this.dateCreation = dateCreation;
     }
 }

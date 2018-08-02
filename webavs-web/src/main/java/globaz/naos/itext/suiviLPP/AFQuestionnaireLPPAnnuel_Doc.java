@@ -81,6 +81,7 @@ public class AFQuestionnaireLPPAnnuel_Doc extends AFAbstractTiersDocument {
         getDocumentInfo().setPublishDocument(false);
         getDocumentInfo().setArchiveDocument(true);
         getDocumentInfo().setDocumentProperty("annee", getPeriode());
+        getDocumentInfo().setDocumentDate(getDateImpression());
     }
 
     @Override
