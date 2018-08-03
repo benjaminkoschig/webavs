@@ -3,7 +3,15 @@
  */
 package globaz.corvus.helpers.annonces;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Map;
+import ch.globaz.prestation.domaine.CodePrestation;
 import globaz.caisse.helper.CaisseHelperFactory;
+import globaz.commons.nss.NSUtil;
 import globaz.corvus.api.annonces.IREAnnonces;
 import globaz.corvus.api.basescalcul.IREPrestationAccordee;
 import globaz.corvus.api.demandes.IREDemandeRente;
@@ -62,17 +70,10 @@ import globaz.prestation.tools.PRDateFormater;
 import globaz.pyxis.api.ITIPersonne;
 import globaz.pyxis.constantes.IConstantes;
 import globaz.pyxis.db.adressecourrier.TILocalite;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Map;
-import ch.globaz.prestation.domaine.CodePrestation;
 
 /**
  * @author SCR
- * 
+ *
  */
 public class REAnnoncePonctuelleHelper extends PRAbstractHelper {
     private final String EMPTY_NSS = "00000000000";
@@ -114,9 +115,8 @@ public class REAnnoncePonctuelleHelper extends PRAbstractHelper {
                     PRTiersWrapper adresseDomicile = PRTiersHelper.getTiersAdresseDomicileParId(session,
                             ra.getIdTiersBeneficiaire(), dateAujourdhui);
 
-                    if ((adresseDomicile != null)
-                            && !JadeStringUtil.isBlankOrZero(adresseDomicile
-                                    .getProperty(PRTiersWrapper.PROPERTY_ID_CANTON))) {
+                    if ((adresseDomicile != null) && !JadeStringUtil
+                            .isBlankOrZero(adresseDomicile.getProperty(PRTiersWrapper.PROPERTY_ID_CANTON))) {
                         csCantonDomicile = adresseDomicile.getProperty(PRTiersWrapper.PROPERTY_ID_CANTON);
                     } else if (!IConstantes.ID_PAYS_SUISSE.equals(membre.getCsNationalite())) {
                         csCantonDomicile = IConstantes.CS_LOCALITE_ETRANGER;
@@ -141,8 +141,8 @@ public class REAnnoncePonctuelleHelper extends PRAbstractHelper {
             if ("10".equals(ra.getCodePrestation()) || "13".equals(ra.getCodePrestation())
                     || "20".equals(ra.getCodePrestation()) || "23".equals(ra.getCodePrestation())
                     || "50".equals(ra.getCodePrestation()) || "70".equals(ra.getCodePrestation())) {
-                vb.setBesoinAnnonceRentesLieesSiModification(getRentesComplementairesEnCours((BSession) session,
-                        ra.getId()).size() > 0);
+                vb.setBesoinAnnonceRentesLieesSiModification(
+                        getRentesComplementairesEnCours((BSession) session, ra.getId()).size() > 0);
             }
         } catch (Exception e) {
             if (transaction != null) {
@@ -265,8 +265,8 @@ public class REAnnoncePonctuelleHelper extends PRAbstractHelper {
                     throw new Exception(session.getLabel("ERREUR_ADRESSE_DOMICILE_INTROUVABLE"));
                 }
 
-                ISFMembreFamilleRequerant[] membres = situationFamiliale.getMembresFamilleRequerant(
-                        ra.getIdTiersBeneficiaire(), JACalendar.todayJJsMMsAAAA());
+                ISFMembreFamilleRequerant[] membres = situationFamiliale
+                        .getMembresFamilleRequerant(ra.getIdTiersBeneficiaire(), JACalendar.todayJJsMMsAAAA());
 
                 for (ISFMembreFamilleRequerant unMembre : membres) {
                     if (!unMembre.getCsCantonDomicile().equals(
@@ -277,8 +277,8 @@ public class REAnnoncePonctuelleHelper extends PRAbstractHelper {
                         membreDb.retrieve();
 
                         if (!membreDb.isNew()) {
-                            membreDb.setCsCantonDomicile(adresseActuelleTiersRentePrincipale
-                                    .getProperty(PRTiersWrapper.PROPERTY_ID_CANTON));
+                            membreDb.setCsCantonDomicile(
+                                    adresseActuelleTiersRentePrincipale.getProperty(PRTiersWrapper.PROPERTY_ID_CANTON));
                             membreDb.update();
                         }
                     }
@@ -309,8 +309,8 @@ public class REAnnoncePonctuelleHelper extends PRAbstractHelper {
                 membreDb.retrieve();
 
                 if (!membreDb.isNew()) {
-                    membreDb.setCsCantonDomicile(adresseActuelleTiersRentePrincipale
-                            .getProperty(PRTiersWrapper.PROPERTY_ID_CANTON));
+                    membreDb.setCsCantonDomicile(
+                            adresseActuelleTiersRentePrincipale.getProperty(PRTiersWrapper.PROPERTY_ID_CANTON));
                     membreDb.update();
                 }
             }
@@ -391,8 +391,7 @@ public class REAnnoncePonctuelleHelper extends PRAbstractHelper {
                             || REGenresPrestations.GENRE_13.equals(ra.getCodePrestation())
                             || REGenresPrestations.GENRE_20.equals(ra.getCodePrestation())
                             || REGenresPrestations.GENRE_23.equals(ra.getCodePrestation())
-                            || REGenresPrestations.GENRE_33.equals(ra.getCodePrestation())
-                            ||
+                            || REGenresPrestations.GENRE_33.equals(ra.getCodePrestation()) ||
                             // REGenresPrestations.GENRE_43.equals(ra.getCodePrestation())||
                             REGenresPrestations.GENRE_50.equals(ra.getCodePrestation())
                             || REGenresPrestations.GENRE_53.equals(ra.getCodePrestation())
@@ -415,8 +414,8 @@ public class REAnnoncePonctuelleHelper extends PRAbstractHelper {
                             arc4301.setNoAssAyantDroit(JadeStringUtil.change(vb.getAncienNSS(), ".", ""));
 
                             arc4301.setPremierNoAssComplementaire(nssConjoint(vb.getIdTiersBeneficiaire(), session));
-                            arc4301.setNouveauNoAssureAyantDroit(JadeStringUtil.change(
-                                    tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL), ".", ""));
+                            arc4301.setNouveauNoAssureAyantDroit(JadeStringUtil
+                                    .change(tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL), ".", ""));
                             arc4301.setCodeMutation("89");
 
                             arc4301.add(transaction);
@@ -444,8 +443,8 @@ public class REAnnoncePonctuelleHelper extends PRAbstractHelper {
                             arc4601.setNoAssAyantDroit(JadeStringUtil.change(vb.getAncienNSS(), ".", ""));
 
                             arc4601.setPremierNoAssComplementaire(nssConjoint(vb.getIdTiersBeneficiaire(), session));
-                            arc4601.setNouveauNoAssureAyantDroit(JadeStringUtil.change(
-                                    tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL), ".", ""));
+                            arc4601.setNouveauNoAssureAyantDroit(JadeStringUtil
+                                    .change(tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL), ".", ""));
                             arc4601.setCodeMutation("89");
 
                             arc4601.add(transaction);
@@ -469,8 +468,7 @@ public class REAnnoncePonctuelleHelper extends PRAbstractHelper {
                             || REGenresPrestations.GENRE_24.equals(ra.getCodePrestation())
                             || REGenresPrestations.GENRE_26.equals(ra.getCodePrestation())
                             || REGenresPrestations.GENRE_34.equals(ra.getCodePrestation())
-                            || REGenresPrestations.GENRE_36.equals(ra.getCodePrestation())
-                            ||
+                            || REGenresPrestations.GENRE_36.equals(ra.getCodePrestation()) ||
                             // REGenresPrestations.GENRE_44.equals(ra.getCodePrestation())||
                             REGenresPrestations.GENRE_54.equals(ra.getCodePrestation())
                             || REGenresPrestations.GENRE_56.equals(ra.getCodePrestation())
@@ -492,8 +490,8 @@ public class REAnnoncePonctuelleHelper extends PRAbstractHelper {
 
                             arc4301.setPremierNoAssComplementaire(nssPere(vb.getIdTiersBeneficiaire(), session));
                             arc4301.setSecondNoAssComplementaire(nssMere(vb.getIdTiersBeneficiaire(), session));
-                            arc4301.setNouveauNoAssureAyantDroit(JadeStringUtil.change(
-                                    tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL), ".", ""));
+                            arc4301.setNouveauNoAssureAyantDroit(JadeStringUtil
+                                    .change(tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL), ".", ""));
                             arc4301.setCodeMutation("89");
 
                             arc4301.add(transaction);
@@ -522,8 +520,8 @@ public class REAnnoncePonctuelleHelper extends PRAbstractHelper {
 
                             arc4601.setPremierNoAssComplementaire(nssPere(vb.getIdTiersBeneficiaire(), session));
                             arc4601.setSecondNoAssComplementaire(nssMere(vb.getIdTiersBeneficiaire(), session));
-                            arc4601.setNouveauNoAssureAyantDroit(JadeStringUtil.change(
-                                    tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL), ".", ""));
+                            arc4601.setNouveauNoAssureAyantDroit(JadeStringUtil
+                                    .change(tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL), ".", ""));
                             arc4601.setCodeMutation("89");
 
                             arc4601.add(transaction);
@@ -566,8 +564,8 @@ public class REAnnoncePonctuelleHelper extends PRAbstractHelper {
 
                             arc4301.setPremierNoAssComplementaire(nssMere(vb.getIdTiersBeneficiaire(), session));
                             arc4301.setSecondNoAssComplementaire(nssPere(vb.getIdTiersBeneficiaire(), session));
-                            arc4301.setNouveauNoAssureAyantDroit(JadeStringUtil.change(
-                                    tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL), ".", ""));
+                            arc4301.setNouveauNoAssureAyantDroit(JadeStringUtil
+                                    .change(tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL), ".", ""));
                             arc4301.setCodeMutation("89");
 
                             arc4301.add(transaction);
@@ -597,8 +595,8 @@ public class REAnnoncePonctuelleHelper extends PRAbstractHelper {
 
                             arc4601.setPremierNoAssComplementaire(nssMere(vb.getIdTiersBeneficiaire(), session));
                             arc4601.setSecondNoAssComplementaire(nssPere(vb.getIdTiersBeneficiaire(), session));
-                            arc4601.setNouveauNoAssureAyantDroit(JadeStringUtil.change(
-                                    tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL), ".", ""));
+                            arc4601.setNouveauNoAssureAyantDroit(JadeStringUtil
+                                    .change(tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL), ".", ""));
                             arc4601.setCodeMutation("89");
 
                             arc4601.add(transaction);
@@ -640,10 +638,10 @@ public class REAnnoncePonctuelleHelper extends PRAbstractHelper {
                             || ISFSituationFamiliale.CS_ETAT_CIVIL_SEPARE_DE_FAIT.equals(mf.getCsEtatCivil())
                             || ISFSituationFamiliale.CS_ETAT_CIVIL_SEPARE_JUDICIAIREMENT.equals(mf.getCsEtatCivil())
                             || ISFSituationFamiliale.CS_ETAT_CIVIL_PARTENARIAT_ENREGISTRE.equals(mf.getCsEtatCivil())
-                            || ISFSituationFamiliale.CS_ETAT_CIVIL_PARTENARIAT_SEPARE_DE_FAIT.equals(mf
-                                    .getCsEtatCivil())
-                            || ISFSituationFamiliale.CS_ETAT_CIVIL_PARTENARIAT_SEPARE_JUDICIAIREMENT.equals(mf
-                                    .getCsEtatCivil())) {
+                            || ISFSituationFamiliale.CS_ETAT_CIVIL_PARTENARIAT_SEPARE_DE_FAIT
+                                    .equals(mf.getCsEtatCivil())
+                            || ISFSituationFamiliale.CS_ETAT_CIVIL_PARTENARIAT_SEPARE_JUDICIAIREMENT
+                                    .equals(mf.getCsEtatCivil())) {
 
                         ISFRelationFamiliale[] relfam = sf.getRelationsConjoints(mf.getIdTiers(), null);
                         ISFMembreFamille conjoint = null;
@@ -689,15 +687,16 @@ public class REAnnoncePonctuelleHelper extends PRAbstractHelper {
                                                 conjoint.getIdTiers());
 
                                         arc4301.setNoAssAyantDroit(JadeStringUtil.change(
-                                                twConjoint.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL), ".", ""));
+                                                twConjoint.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL), ".",
+                                                ""));
 
                                         arc4301.setPremierNoAssComplementaire(JadeStringUtil.change(
                                                 tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL), ".", ""));
 
                                         if (JadeStringUtil.isEmpty(ra.getIdTiersComplementaire1())
                                                 || "0".equals(ra.getIdTiersComplementaire1())) {
-                                            ra.setIdTiersComplementaire1(tw
-                                                    .getProperty(PRTiersWrapper.PROPERTY_ID_TIERS));
+                                            ra.setIdTiersComplementaire1(
+                                                    tw.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS));
                                             ra.save(transaction);
                                         }
 
@@ -736,15 +735,16 @@ public class REAnnoncePonctuelleHelper extends PRAbstractHelper {
                                                 conjoint.getIdTiers());
 
                                         arc4601.setNoAssAyantDroit(JadeStringUtil.change(
-                                                twConjoint.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL), ".", ""));
+                                                twConjoint.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL), ".",
+                                                ""));
 
                                         arc4601.setPremierNoAssComplementaire(JadeStringUtil.change(
                                                 tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL), ".", ""));
 
                                         if (JadeStringUtil.isEmpty(ra.getIdTiersComplementaire1())
                                                 || "0".equals(ra.getIdTiersComplementaire1())) {
-                                            ra.setIdTiersComplementaire1(tw
-                                                    .getProperty(PRTiersWrapper.PROPERTY_ID_TIERS));
+                                            ra.setIdTiersComplementaire1(
+                                                    tw.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS));
                                             ra.save(transaction);
                                         }
 
@@ -791,8 +791,7 @@ public class REAnnoncePonctuelleHelper extends PRAbstractHelper {
                                         || REGenresPrestations.GENRE_16.equals(ra.getCodePrestation())
                                         || REGenresPrestations.GENRE_24.equals(ra.getCodePrestation())
                                         || REGenresPrestations.GENRE_26.equals(ra.getCodePrestation())
-                                        || REGenresPrestations.GENRE_34.equals(ra.getCodePrestation())
-                                        ||
+                                        || REGenresPrestations.GENRE_34.equals(ra.getCodePrestation()) ||
                                         // REGenresPrestations.GENRE_44.equals(ra.getCodePrestation())||
                                         REGenresPrestations.GENRE_54.equals(ra.getCodePrestation())
                                         || REGenresPrestations.GENRE_56.equals(ra.getCodePrestation())
@@ -821,8 +820,8 @@ public class REAnnoncePonctuelleHelper extends PRAbstractHelper {
                                                     ""));
                                             arc4301.setPremierNoAssComplementaire(JadeStringUtil.change(
                                                     tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL), ".", ""));
-                                            arc4301.setSecondNoAssComplementaire(nssMere(ra.getIdTiersBeneficiaire(),
-                                                    session));
+                                            arc4301.setSecondNoAssComplementaire(
+                                                    nssMere(ra.getIdTiersBeneficiaire(), session));
 
                                             if (JadeStringUtil.isEmpty(ra.getIdTiersComplementaire1())
                                                     || "0".equals(ra.getIdTiersComplementaire1())
@@ -830,8 +829,8 @@ public class REAnnoncePonctuelleHelper extends PRAbstractHelper {
                                                     || "0".equals(ra.getIdTiersComplementaire2())) {
                                                 if (JadeStringUtil.isEmpty(ra.getIdTiersComplementaire1())
                                                         || "0".equals(ra.getIdTiersComplementaire1())) {
-                                                    ra.setIdTiersComplementaire1(tw
-                                                            .getProperty(PRTiersWrapper.PROPERTY_ID_TIERS));
+                                                    ra.setIdTiersComplementaire1(
+                                                            tw.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS));
                                                 }
                                                 if (JadeStringUtil.isEmpty(ra.getIdTiersComplementaire2())
                                                         || "0".equals(ra.getIdTiersComplementaire2())) {
@@ -851,8 +850,8 @@ public class REAnnoncePonctuelleHelper extends PRAbstractHelper {
                                                     twEnfant.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL), ".",
                                                     ""));
 
-                                            arc4301.setPremierNoAssComplementaire(nssPere(ra.getIdTiersBeneficiaire(),
-                                                    session));
+                                            arc4301.setPremierNoAssComplementaire(
+                                                    nssPere(ra.getIdTiersBeneficiaire(), session));
                                             arc4301.setSecondNoAssComplementaire(JadeStringUtil.change(
                                                     tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL), ".", ""));
 
@@ -870,8 +869,8 @@ public class REAnnoncePonctuelleHelper extends PRAbstractHelper {
                                                 }
                                                 if (JadeStringUtil.isEmpty(ra.getIdTiersComplementaire2())
                                                         || "0".equals(ra.getIdTiersComplementaire2())) {
-                                                    ra.setIdTiersComplementaire1(tw
-                                                            .getProperty(PRTiersWrapper.PROPERTY_ID_TIERS));
+                                                    ra.setIdTiersComplementaire1(
+                                                            tw.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS));
                                                 }
                                                 ra.save(transaction);
                                             }
@@ -914,8 +913,8 @@ public class REAnnoncePonctuelleHelper extends PRAbstractHelper {
 
                                             arc4601.setPremierNoAssComplementaire(JadeStringUtil.change(
                                                     tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL), ".", ""));
-                                            arc4601.setSecondNoAssComplementaire(nssMere(ra.getIdTiersBeneficiaire(),
-                                                    session));
+                                            arc4601.setSecondNoAssComplementaire(
+                                                    nssMere(ra.getIdTiersBeneficiaire(), session));
 
                                             if (JadeStringUtil.isEmpty(ra.getIdTiersComplementaire1())
                                                     || "0".equals(ra.getIdTiersComplementaire1())
@@ -923,8 +922,8 @@ public class REAnnoncePonctuelleHelper extends PRAbstractHelper {
                                                     || "0".equals(ra.getIdTiersComplementaire2())) {
                                                 if (JadeStringUtil.isEmpty(ra.getIdTiersComplementaire1())
                                                         || "0".equals(ra.getIdTiersComplementaire1())) {
-                                                    ra.setIdTiersComplementaire1(tw
-                                                            .getProperty(PRTiersWrapper.PROPERTY_ID_TIERS));
+                                                    ra.setIdTiersComplementaire1(
+                                                            tw.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS));
                                                 }
                                                 if (JadeStringUtil.isEmpty(ra.getIdTiersComplementaire2())
                                                         || "0".equals(ra.getIdTiersComplementaire2())) {
@@ -944,8 +943,8 @@ public class REAnnoncePonctuelleHelper extends PRAbstractHelper {
                                                     twEnfant.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL), ".",
                                                     ""));
 
-                                            arc4601.setPremierNoAssComplementaire(nssPere(ra.getIdTiersBeneficiaire(),
-                                                    session));
+                                            arc4601.setPremierNoAssComplementaire(
+                                                    nssPere(ra.getIdTiersBeneficiaire(), session));
                                             arc4601.setSecondNoAssComplementaire(JadeStringUtil.change(
                                                     tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL), ".", ""));
 
@@ -963,8 +962,8 @@ public class REAnnoncePonctuelleHelper extends PRAbstractHelper {
                                                 }
                                                 if (JadeStringUtil.isEmpty(ra.getIdTiersComplementaire2())
                                                         || "0".equals(ra.getIdTiersComplementaire2())) {
-                                                    ra.setIdTiersComplementaire1(tw
-                                                            .getProperty(PRTiersWrapper.PROPERTY_ID_TIERS));
+                                                    ra.setIdTiersComplementaire1(
+                                                            tw.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS));
                                                 }
                                                 ra.save(transaction);
                                             }
@@ -1016,8 +1015,8 @@ public class REAnnoncePonctuelleHelper extends PRAbstractHelper {
                                                     twEnfant.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL), ".",
                                                     ""));
 
-                                            arc4301.setPremierNoAssComplementaire(nssMere(ra.getIdTiersBeneficiaire(),
-                                                    session));
+                                            arc4301.setPremierNoAssComplementaire(
+                                                    nssMere(ra.getIdTiersBeneficiaire(), session));
                                             arc4301.setSecondNoAssComplementaire(JadeStringUtil.change(
                                                     tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL), ".", ""));
 
@@ -1035,8 +1034,8 @@ public class REAnnoncePonctuelleHelper extends PRAbstractHelper {
                                                 }
                                                 if (JadeStringUtil.isEmpty(ra.getIdTiersComplementaire2())
                                                         || "0".equals(ra.getIdTiersComplementaire2())) {
-                                                    ra.setIdTiersComplementaire1(tw
-                                                            .getProperty(PRTiersWrapper.PROPERTY_ID_TIERS));
+                                                    ra.setIdTiersComplementaire1(
+                                                            tw.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS));
                                                 }
                                                 ra.save(transaction);
                                             }
@@ -1051,8 +1050,8 @@ public class REAnnoncePonctuelleHelper extends PRAbstractHelper {
 
                                             arc4301.setPremierNoAssComplementaire(JadeStringUtil.change(
                                                     tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL), ".", ""));
-                                            arc4301.setSecondNoAssComplementaire(nssPere(ra.getIdTiersBeneficiaire(),
-                                                    session));
+                                            arc4301.setSecondNoAssComplementaire(
+                                                    nssPere(ra.getIdTiersBeneficiaire(), session));
 
                                             if (JadeStringUtil.isEmpty(ra.getIdTiersComplementaire1())
                                                     || "0".equals(ra.getIdTiersComplementaire1())
@@ -1060,8 +1059,8 @@ public class REAnnoncePonctuelleHelper extends PRAbstractHelper {
                                                     || "0".equals(ra.getIdTiersComplementaire2())) {
                                                 if (JadeStringUtil.isEmpty(ra.getIdTiersComplementaire1())
                                                         || "0".equals(ra.getIdTiersComplementaire1())) {
-                                                    ra.setIdTiersComplementaire1(tw
-                                                            .getProperty(PRTiersWrapper.PROPERTY_ID_TIERS));
+                                                    ra.setIdTiersComplementaire1(
+                                                            tw.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS));
                                                 }
                                                 if (JadeStringUtil.isEmpty(ra.getIdTiersComplementaire2())) {
                                                     String idTiersPere = idTiersPere(ra.getIdTiersBeneficiaire(),
@@ -1108,8 +1107,8 @@ public class REAnnoncePonctuelleHelper extends PRAbstractHelper {
                                                     twEnfant.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL), ".",
                                                     ""));
 
-                                            arc4601.setPremierNoAssComplementaire(nssMere(ra.getIdTiersBeneficiaire(),
-                                                    session));
+                                            arc4601.setPremierNoAssComplementaire(
+                                                    nssMere(ra.getIdTiersBeneficiaire(), session));
                                             arc4601.setSecondNoAssComplementaire(JadeStringUtil.change(
                                                     tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL), ".", ""));
 
@@ -1127,8 +1126,8 @@ public class REAnnoncePonctuelleHelper extends PRAbstractHelper {
                                                 }
                                                 if (JadeStringUtil.isEmpty(ra.getIdTiersComplementaire2())
                                                         || "0".equals(ra.getIdTiersComplementaire2())) {
-                                                    ra.setIdTiersComplementaire1(tw
-                                                            .getProperty(PRTiersWrapper.PROPERTY_ID_TIERS));
+                                                    ra.setIdTiersComplementaire1(
+                                                            tw.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS));
                                                 }
                                                 ra.save(transaction);
                                             }
@@ -1143,8 +1142,8 @@ public class REAnnoncePonctuelleHelper extends PRAbstractHelper {
 
                                             arc4601.setPremierNoAssComplementaire(JadeStringUtil.change(
                                                     tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL), ".", ""));
-                                            arc4601.setSecondNoAssComplementaire(nssPere(ra.getIdTiersBeneficiaire(),
-                                                    session));
+                                            arc4601.setSecondNoAssComplementaire(
+                                                    nssPere(ra.getIdTiersBeneficiaire(), session));
 
                                             if (JadeStringUtil.isEmpty(ra.getIdTiersComplementaire1())
                                                     || "0".equals(ra.getIdTiersComplementaire1())
@@ -1152,8 +1151,8 @@ public class REAnnoncePonctuelleHelper extends PRAbstractHelper {
                                                     || "0".equals(ra.getIdTiersComplementaire2())) {
                                                 if (JadeStringUtil.isEmpty(ra.getIdTiersComplementaire1())
                                                         || "0".equals(ra.getIdTiersComplementaire1())) {
-                                                    ra.setIdTiersComplementaire1(tw
-                                                            .getProperty(PRTiersWrapper.PROPERTY_ID_TIERS));
+                                                    ra.setIdTiersComplementaire1(
+                                                            tw.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS));
                                                 }
                                                 if (JadeStringUtil.isEmpty(ra.getIdTiersComplementaire2())
                                                         || "0".equals(ra.getIdTiersComplementaire2())) {
@@ -1238,24 +1237,39 @@ public class REAnnoncePonctuelleHelper extends PRAbstractHelper {
         annonce_01.setNumeroAgence(CaisseHelperFactory.getInstance().getNoAgence(session.getApplication()));
         annonce_01.setEtat(IREAnnonces.CS_ETAT_OUVERT);
         annonce_01.setReferenceCaisseInterne(session.getUserId());
-
+        CodePrestation codePrestation = CodePrestation
+                .getCodePrestation(Integer.parseInt(viewBean.getGenrePrestation()));
         PRTiersWrapper tw = PRTiersHelper.getTiersParId(session, viewBean.getIdTiersBeneficiaire());
         annonce_01.setNoAssAyantDroit(JadeStringUtil.change(tw.getNSS(), ".", ""));
 
-        if (!JadeStringUtil.isBlankOrZero(viewBean.getNssComplementaire1())) {
-            String nssComplementaire1 = "756." + viewBean.getNssComplementaire1();
-            nssComplementaire1 = JadeStringUtil.change(nssComplementaire1, ".", "");
-            annonce_01.setPremierNoAssComplementaire(nssComplementaire1);
+        // K170512_001 (Conséquence de cette correction)
+        PRTiersWrapper twCompl1 = PRTiersHelper.getTiersParId(session, viewBean.getIdTiersComplementaire1());
+        if (twCompl1 != null) {
+            annonce_01.setPremierNoAssComplementaire(
+                    NSUtil.unFormatAVS(twCompl1.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL)));
+        } else if (codePrestation.isRenteComplementairePourEnfant()
+                || (!ISFSituationFamiliale.CS_ETAT_CIVIL_CELIBATAIRE.equals(viewBean.getCsEtatCivil())
+                        && !ISFSituationFamiliale.CS_ETAT_CIVIL_PARTENARIAT_DISSOUS_JUDICIAIREMENT
+                                .equals(viewBean.getCsEtatCivil())
+                        && !ISFSituationFamiliale.CS_ETAT_CIVIL_DIVORCE.equals(viewBean.getCsEtatCivil()))) {
+            annonce_01.setPremierNoAssComplementaire("00000000000");
         } else {
-            annonce_01.setPremierNoAssComplementaire(EMPTY_NSS);
-
+            annonce_01.setPremierNoAssComplementaire("");
         }
-        if (!JadeStringUtil.isBlankOrZero(viewBean.getNssComplementaire2())) {
-            String nssComplementaire2 = "756." + viewBean.getNssComplementaire2();
-            nssComplementaire2 = JadeStringUtil.change(nssComplementaire2, ".", "");
-            annonce_01.setSecondNoAssComplementaire(nssComplementaire2);
+
+        // K170512_001 (Conséquence de cette correction)
+        PRTiersWrapper twCompl2 = PRTiersHelper.getTiersParId(session, viewBean.getIdTiersComplementaire2());
+        if (twCompl2 != null) {
+            annonce_01.setSecondNoAssComplementaire(
+                    NSUtil.unFormatAVS(twCompl2.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL)));
+        } else if (codePrestation.isRenteComplementairePourEnfant()
+                || (!ISFSituationFamiliale.CS_ETAT_CIVIL_CELIBATAIRE.equals(viewBean.getCsEtatCivil())
+                        && !ISFSituationFamiliale.CS_ETAT_CIVIL_PARTENARIAT_DISSOUS_JUDICIAIREMENT
+                                .equals(viewBean.getCsEtatCivil())
+                        && !ISFSituationFamiliale.CS_ETAT_CIVIL_DIVORCE.equals(viewBean.getCsEtatCivil()))) {
+            annonce_01.setSecondNoAssComplementaire("00000000000");
         } else {
-            annonce_01.setSecondNoAssComplementaire(EMPTY_NSS);
+            annonce_01.setSecondNoAssComplementaire("");
         }
 
         annonce_01.setEtatCivil(viewBean.getCodeEtatCivil());
@@ -1269,8 +1283,8 @@ public class REAnnoncePonctuelleHelper extends PRAbstractHelper {
 
         annonce_01.setGenrePrestation(viewBean.getGenrePrestation());
         annonce_01.setCodeMutation("99");
-        annonce_01.setMoisRapport(PRDateFormater.convertDate_AAAAMM_to_MMAA(PRDateFormater
-                .convertDate_MMxAAAA_to_AAAAMM(REPmtMensuel.getDateDernierPmt(session))));
+        annonce_01.setMoisRapport(PRDateFormater.convertDate_AAAAMM_to_MMAA(
+                PRDateFormater.convertDate_MMxAAAA_to_AAAAMM(REPmtMensuel.getDateDernierPmt(session))));
         annonce_01.setCasSpecial1(viewBean.getCs1());
         annonce_01.setCasSpecial2(viewBean.getCs2());
         annonce_01.setCasSpecial3(viewBean.getCs3());
@@ -1312,8 +1326,8 @@ public class REAnnoncePonctuelleHelper extends PRAbstractHelper {
         annonce02.setCasSpecial5(viewBean.getCs5());
 
         if (!JadeStringUtil.isBlank(viewBean.getGenrePrestation())) {
-            CodePrestation codePrestation = CodePrestation.getCodePrestation(Integer.parseInt(viewBean
-                    .getGenrePrestation()));
+            CodePrestation codePrestation = CodePrestation
+                    .getCodePrestation(Integer.parseInt(viewBean.getGenrePrestation()));
 
             // Spécifique AI/API
             if ((codePrestation.isAPI() || codePrestation.isAI())) {
@@ -1328,8 +1342,8 @@ public class REAnnoncePonctuelleHelper extends PRAbstractHelper {
                 }
                 annonce02.setCodeInfirmite(viewBean.getCleInfirmite());
 
-                annonce02.setSurvenanceEvenAssure(PRDateFormater.convertDate_AAAAMM_to_MMAA(PRDateFormater
-                        .convertDate_MMxAAAA_to_AAAAMM(viewBean.getSurvenanceEvenementAssure())));
+                annonce02.setSurvenanceEvenAssure(PRDateFormater.convertDate_AAAAMM_to_MMAA(
+                        PRDateFormater.convertDate_MMxAAAA_to_AAAAMM(viewBean.getSurvenanceEvenementAssure())));
 
                 if ((viewBean.getIsInvaliditePrecoce() != null) && viewBean.getIsInvaliditePrecoce().booleanValue()) {
                     annonce02.setAgeDebutInvalidite("1");
@@ -1410,8 +1424,8 @@ public class REAnnoncePonctuelleHelper extends PRAbstractHelper {
             annonce43_01.setCantonEtatDomicile(vb.getCsCanton());
         }
         annonce43_01.setGenrePrestation(ra.getCodePrestation());
-        annonce43_01.setMoisRapport(PRDateFormater.convertDate_AAAAMM_to_MMAA(PRDateFormater
-                .convertDate_MMxAAAA_to_AAAAMM(REPmtMensuel.getDateDernierPmt(session))));
+        annonce43_01.setMoisRapport(PRDateFormater.convertDate_AAAAMM_to_MMAA(
+                PRDateFormater.convertDate_MMxAAAA_to_AAAAMM(REPmtMensuel.getDateDernierPmt(session))));
 
         return annonce43_01;
     }
@@ -1440,8 +1454,8 @@ public class REAnnoncePonctuelleHelper extends PRAbstractHelper {
             annonce43_01.setCantonEtatDomicile(csCantonDomicile);
         }
         annonce43_01.setGenrePrestation(ra.getCodePrestation());
-        annonce43_01.setMoisRapport(PRDateFormater.convertDate_AAAAMM_to_MMAA(PRDateFormater
-                .convertDate_MMxAAAA_to_AAAAMM(REPmtMensuel.getDateDernierPmt(session))));
+        annonce43_01.setMoisRapport(PRDateFormater.convertDate_AAAAMM_to_MMAA(
+                PRDateFormater.convertDate_MMxAAAA_to_AAAAMM(REPmtMensuel.getDateDernierPmt(session))));
 
         return annonce43_01;
     }
@@ -1496,8 +1510,8 @@ public class REAnnoncePonctuelleHelper extends PRAbstractHelper {
             annonce46_01.setCantonEtatDomicile(vb.getCsCanton());
         }
         annonce46_01.setGenrePrestation(ra.getCodePrestation());
-        annonce46_01.setMoisRapport(PRDateFormater.convertDate_AAAAMM_to_MMAA(PRDateFormater
-                .convertDate_MMxAAAA_to_AAAAMM(REPmtMensuel.getDateDernierPmt(session))));
+        annonce46_01.setMoisRapport(PRDateFormater.convertDate_AAAAMM_to_MMAA(
+                PRDateFormater.convertDate_MMxAAAA_to_AAAAMM(REPmtMensuel.getDateDernierPmt(session))));
 
         return annonce46_01;
     }
@@ -1526,8 +1540,8 @@ public class REAnnoncePonctuelleHelper extends PRAbstractHelper {
             annonce46_01.setCantonEtatDomicile(csCantonDomicile);
         }
         annonce46_01.setGenrePrestation(ra.getCodePrestation());
-        annonce46_01.setMoisRapport(PRDateFormater.convertDate_AAAAMM_to_MMAA(PRDateFormater
-                .convertDate_MMxAAAA_to_AAAAMM(REPmtMensuel.getDateDernierPmt(session))));
+        annonce46_01.setMoisRapport(PRDateFormater.convertDate_AAAAMM_to_MMAA(
+                PRDateFormater.convertDate_MMxAAAA_to_AAAAMM(REPmtMensuel.getDateDernierPmt(session))));
 
         return annonce46_01;
     }
@@ -1617,12 +1631,10 @@ public class REAnnoncePonctuelleHelper extends PRAbstractHelper {
         renteAccordee.setId(viewBean.getIdRenteAccordee());
         renteAccordee.retrieve(transaction);
 
-        if (!renteAccordee.isNew()
-                && ("10".equals(renteAccordee.getCodePrestation()) || "13".equals(renteAccordee.getCodePrestation())
-                        || "20".equals(renteAccordee.getCodePrestation())
-                        || "23".equals(renteAccordee.getCodePrestation())
-                        || "50".equals(renteAccordee.getCodePrestation()) || "70".equals(renteAccordee
-                        .getCodePrestation()))) {
+        if (!renteAccordee.isNew() && ("10".equals(renteAccordee.getCodePrestation())
+                || "13".equals(renteAccordee.getCodePrestation()) || "20".equals(renteAccordee.getCodePrestation())
+                || "23".equals(renteAccordee.getCodePrestation()) || "50".equals(renteAccordee.getCodePrestation())
+                || "70".equals(renteAccordee.getCodePrestation()))) {
             List<RERenteLieeJointPrestationAccordee> complementaires = getRentesComplementairesEnCours(session,
                     viewBean.getIdRenteAccordee());
 
@@ -1678,19 +1690,19 @@ public class REAnnoncePonctuelleHelper extends PRAbstractHelper {
         RERenteLieeJointPrestationAccordeeManager manager = new RERenteLieeJointPrestationAccordeeManager();
         manager.setSession(session);
         manager.setForIdTiersLiant(rentePrincipale.getIdTiersBeneficiaire());
-        manager.setForCsEtatIn(Arrays.asList(IREPrestationAccordee.CS_ETAT_VALIDE,
-                IREPrestationAccordee.CS_ETAT_PARTIEL));
+        manager.setForCsEtatIn(
+                Arrays.asList(IREPrestationAccordee.CS_ETAT_VALIDE, IREPrestationAccordee.CS_ETAT_PARTIEL));
         manager.find();
 
         PRTiersWrapper tiersPrincipal = PRTiersHelper.getTiersParId(session, rentePrincipale.getIdTiersBeneficiaire());
 
         List<Integer> codesRentesComplementaires = null;
         if (ITIPersonne.CS_HOMME.equals(tiersPrincipal.getProperty(PRTiersWrapper.PROPERTY_SEXE))) {
-            codesRentesComplementaires = RECodePrestationComplementaireUtil.getComplementairePourHomme().get(
-                    Integer.parseInt(rentePrincipale.getCodePrestation()));
+            codesRentesComplementaires = RECodePrestationComplementaireUtil.getComplementairePourHomme()
+                    .get(Integer.parseInt(rentePrincipale.getCodePrestation()));
         } else {
-            codesRentesComplementaires = RECodePrestationComplementaireUtil.getComplementairePourFemme().get(
-                    Integer.parseInt(rentePrincipale.getCodePrestation()));
+            codesRentesComplementaires = RECodePrestationComplementaireUtil.getComplementairePourFemme()
+                    .get(Integer.parseInt(rentePrincipale.getCodePrestation()));
         }
 
         if (codesRentesComplementaires == null) {
@@ -1963,9 +1975,8 @@ public class REAnnoncePonctuelleHelper extends PRAbstractHelper {
                                 }
                             }
 
-                        } else if (JadeNumericUtil.isInteger(viewBean.getGenrePrestation())
-                                && !CodePrestation.getCodePrestation(Integer.parseInt(viewBean.getGenrePrestation()))
-                                        .isAPI()) {
+                        } else if (JadeNumericUtil.isInteger(viewBean.getGenrePrestation()) && !CodePrestation
+                                .getCodePrestation(Integer.parseInt(viewBean.getGenrePrestation())).isAPI()) {
                             REDemandeRenteInvalidite demINV = new REDemandeRenteInvalidite();
                             demINV.setSession(session);
                             demINV.setIdDemandeRente(red.getIdDemandeRente());
