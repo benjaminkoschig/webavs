@@ -3,6 +3,19 @@
  */
 package globaz.corvus.vb.annonces;
 
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import ch.globaz.jade.JadeBusinessServiceLocator;
+import ch.globaz.jade.business.models.Langues;
+import ch.globaz.jade.business.models.codesysteme.JadeCodeSysteme;
+import ch.globaz.jade.business.services.codesysteme.JadeCodeSystemeService;
+import ch.globaz.prestation.domaine.CodePrestation;
 import globaz.commons.nss.NSUtil;
 import globaz.corvus.api.demandes.IREDemandeRente;
 import globaz.corvus.db.basescalcul.REBasesCalcul;
@@ -30,19 +43,6 @@ import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.vb.PRAbstractViewBeanSupport;
 import globaz.pyxis.db.tiers.TIHistoriqueAvs;
 import globaz.pyxis.db.tiers.TIHistoriqueAvsManager;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
-import ch.globaz.jade.JadeBusinessServiceLocator;
-import ch.globaz.jade.business.models.Langues;
-import ch.globaz.jade.business.models.codesysteme.JadeCodeSysteme;
-import ch.globaz.jade.business.services.codesysteme.JadeCodeSystemeService;
-import ch.globaz.prestation.domaine.CodePrestation;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 /**
  * @author scr
@@ -264,7 +264,7 @@ public class REAnnoncePonctuelleViewBean extends PRAbstractViewBeanSupport {
 
     /**
      * Retourne le no de l'office AI du canton de la caisse
-     * 
+     *
      * @return
      */
     public String getNoOfficeAICantonal() {
@@ -462,24 +462,24 @@ public class REAnnoncePonctuelleViewBean extends PRAbstractViewBeanSupport {
 
     /**
      * Mise a jours des tiers complementaire a l'aide de la situation familiale et de du tiersBeneficiaire de la RA
-     * 
+     *
      * Pour ayant droit enfant =======================
-     * 
+     *
      * rentes 14, 24, 34, 54, 74, 16, 26, 56, 76 -> tiersComplementaire1 pere (si conj. inc. 00000000000) ->
      * tiersComplementaire2 mere
-     * 
+     *
      * rentes 15, 25, 35, 45, 55, 75 -> tiersComplementaire1 mere -> tiersComplementaire2 pere (si conj. inc.
      * 00000000000)
-     * 
+     *
      * Autres ======
-     * 
+     *
      * 13, 23, 33, 53, 73 -> tiersComplementaire1 l'autre conjoint
-     * 
-     * 
+     *
+     *
      * 10, 20, 50, 70 -> si celibataire -> tiersComplementaire1 rien -> si marie ou veuf -> tiersComplementaire1 l'autre
      * conjoint -> si divorce -> tiersComplementaire1 le dernier ex-conjoint
-     * 
-     * 
+     *
+     *
      * @param session
      * @param transaction
      * @param ra
@@ -509,8 +509,9 @@ public class REAnnoncePonctuelleViewBean extends PRAbstractViewBeanSupport {
             // tiersComplementaire1 pere (si conj. inc. 00000000000)
             if (enf.getPere() != null) {
                 enf.getPere().getCsCantonDomicile();
-                if (ISFSituationFamiliale.ID_MEMBRE_FAMILLE_CONJOINT_INCONNU.equals(enf.getPere().getIdMembreFamille())) {
-                    // TODO oui mais on a pas de tiers pour le conjoint inconnu
+                if (ISFSituationFamiliale.ID_MEMBRE_FAMILLE_CONJOINT_INCONNU.equals(enf.getPere().getIdMembreFamille())
+                        || JadeStringUtil.isBlankOrZero(enf.getPere().getIdTiers())) {
+                    // oui mais on a pas de tiers pour le conjoint inconnu
                 } else {
                     PRTiersWrapper tw = PRTiersHelper.getTiersParId(session, enf.getPere().getIdTiers());
                     nssComplementaire1 = tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL);
@@ -521,8 +522,9 @@ public class REAnnoncePonctuelleViewBean extends PRAbstractViewBeanSupport {
             // tiersComplementaire2 mere
             if (enf.getMere() != null) {
                 enf.getMere().getCsCantonDomicile();
-                if (ISFSituationFamiliale.ID_MEMBRE_FAMILLE_CONJOINT_INCONNU.equals(enf.getMere().getIdMembreFamille())) {
-                    // TODO oui mais on a pas de tiers pour le conjoint inconnu
+                if (ISFSituationFamiliale.ID_MEMBRE_FAMILLE_CONJOINT_INCONNU.equals(enf.getMere().getIdMembreFamille())
+                        || JadeStringUtil.isBlankOrZero(enf.getMere().getIdTiers())) {
+                    // oui mais on a pas de tiers pour le conjoint inconnu
                 } else {
                     PRTiersWrapper tw = PRTiersHelper.getTiersParId(session, enf.getMere().getIdTiers());
                     nssComplementaire2 = tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL);
@@ -546,16 +548,22 @@ public class REAnnoncePonctuelleViewBean extends PRAbstractViewBeanSupport {
             // tiersComplementaire1 mere
             if (enf.getMere() != null) {
                 enf.getMere().getCsCantonDomicile();
-                PRTiersWrapper tw = PRTiersHelper.getTiersParId(session, enf.getMere().getIdTiers());
-                nssComplementaire1 = tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL);
-                idTiersComplementaire1 = tw.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS);
+                if (ISFSituationFamiliale.ID_MEMBRE_FAMILLE_CONJOINT_INCONNU.equals(enf.getMere().getIdMembreFamille())
+                        || JadeStringUtil.isBlankOrZero(enf.getMere().getIdTiers())) {
+                    // oui mais on a pas de tiers pour le conjoint inconnu
+                } else {
+                    PRTiersWrapper tw = PRTiersHelper.getTiersParId(session, enf.getMere().getIdTiers());
+                    nssComplementaire1 = tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL);
+                    idTiersComplementaire1 = tw.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS);
+                }
             }
 
             // tiersComplementaire2 pere (si conj. inc. 00000000000)
             if (enf.getPere() != null) {
                 enf.getPere().getCsCantonDomicile();
-                if (ISFSituationFamiliale.ID_MEMBRE_FAMILLE_CONJOINT_INCONNU.equals(enf.getPere().getIdMembreFamille())) {
-                    // TODO oui mais on a pas de tiers pour le conjoint inconnu
+                if (ISFSituationFamiliale.ID_MEMBRE_FAMILLE_CONJOINT_INCONNU.equals(enf.getPere().getIdMembreFamille())
+                        || JadeStringUtil.isBlankOrZero(enf.getPere().getIdTiers())) {
+                    // oui mais on a pas de tiers pour le conjoint inconnu
                 } else {
                     PRTiersWrapper tw = PRTiersHelper.getTiersParId(session, enf.getPere().getIdTiers());
                     nssComplementaire2 = tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL);
@@ -640,9 +648,11 @@ public class REAnnoncePonctuelleViewBean extends PRAbstractViewBeanSupport {
                 // l'épouse
                 // est écrasé par celui de l'ex-épouse
                 if (!idTiers1.equals(ra.getIdTiersBeneficiaire()) && JadeStringUtil.isEmpty(nssComplementaire1)) {
-                    PRTiersWrapper tw = PRTiersHelper.getTiersParId(session, idTiers1);
-                    nssComplementaire1 = tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL);
-                    idTiersComplementaire1 = tw.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS);
+                    if (!JadeStringUtil.isBlankOrZero(idTiers1)) {
+                        PRTiersWrapper tw = PRTiersHelper.getTiersParId(session, idTiers1);
+                        nssComplementaire1 = tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL);
+                        idTiersComplementaire1 = tw.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS);
+                    }
                 } else {
                     String idMbrFamille2 = rf.getIdMembreFamilleFemme();
                     ISFMembreFamille mf2 = sf.getMembreFamille(idMbrFamille2);
