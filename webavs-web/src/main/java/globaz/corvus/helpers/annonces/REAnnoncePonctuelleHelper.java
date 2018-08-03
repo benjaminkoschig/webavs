@@ -1262,11 +1262,7 @@ public class REAnnoncePonctuelleHelper extends PRAbstractHelper {
         if (twCompl2 != null) {
             annonce_01.setSecondNoAssComplementaire(
                     NSUtil.unFormatAVS(twCompl2.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL)));
-        } else if (codePrestation.isRenteComplementairePourEnfant()
-                || (!ISFSituationFamiliale.CS_ETAT_CIVIL_CELIBATAIRE.equals(viewBean.getCsEtatCivil())
-                        && !ISFSituationFamiliale.CS_ETAT_CIVIL_PARTENARIAT_DISSOUS_JUDICIAIREMENT
-                                .equals(viewBean.getCsEtatCivil())
-                        && !ISFSituationFamiliale.CS_ETAT_CIVIL_DIVORCE.equals(viewBean.getCsEtatCivil()))) {
+        } else if (codePrestation.isRenteComplementairePourEnfant()) {
             annonce_01.setSecondNoAssComplementaire("00000000000");
         } else {
             annonce_01.setSecondNoAssComplementaire("");
