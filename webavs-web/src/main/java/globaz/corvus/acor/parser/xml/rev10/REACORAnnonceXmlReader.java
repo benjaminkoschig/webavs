@@ -1,23 +1,5 @@
 package globaz.corvus.acor.parser.xml.rev10;
 
-import globaz.commons.nss.NSUtil;
-import globaz.corvus.acor.parser.rev09.REACORParser;
-import globaz.corvus.api.annonces.IREAnnonces;
-import globaz.corvus.db.annonces.REAnnonceRente;
-import globaz.corvus.db.annonces.REAnnoncesAugmentationModification10Eme;
-import globaz.corvus.db.rentesaccordees.RERenteAccordee;
-import globaz.corvus.db.rentesaccordees.RERenteAccordeeManager;
-import globaz.corvus.exceptions.RETechnicalException;
-import globaz.globall.db.BManager;
-import globaz.globall.db.BSession;
-import globaz.globall.db.BTransaction;
-import globaz.jade.client.util.JadeStringUtil;
-import globaz.prestation.interfaces.tiers.PRTiersHelper;
-import globaz.prestation.interfaces.tiers.PRTiersWrapper;
-import globaz.prestation.tools.PRDateFormater;
-import globaz.prestation.utils.PRDateUtils;
-import globaz.prestation.utils.PRDateUtils.PRDateEquality;
-import globaz.prestation.utils.PRStringFormatter;
 import java.io.StringReader;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -48,14 +30,35 @@ import ch.admin.zas.rc.ZuwachsmeldungO10Type;
 import ch.admin.zas.rc.ZuwachsmeldungO10Type.Leistungsbeschreibung;
 import ch.admin.zas.rc.ZuwachsmeldungO10Type.Leistungsbeschreibung.Berechnungsgrundlagen;
 import ch.globaz.pyxis.domaine.NumeroSecuriteSociale;
+import globaz.commons.nss.NSUtil;
+import globaz.corvus.acor.parser.rev09.REACORParser;
+import globaz.corvus.api.annonces.IREAnnonces;
+import globaz.corvus.db.annonces.REAnnonceRente;
+import globaz.corvus.db.annonces.REAnnoncesAugmentationModification10Eme;
+import globaz.corvus.db.rentesaccordees.RERenteAccordee;
+import globaz.corvus.db.rentesaccordees.RERenteAccordeeManager;
+import globaz.corvus.exceptions.RETechnicalException;
+import globaz.globall.db.BManager;
+import globaz.globall.db.BSession;
+import globaz.globall.db.BTransaction;
+import globaz.jade.client.util.JadeStringUtil;
+import globaz.prestation.interfaces.tiers.PRTiersHelper;
+import globaz.prestation.interfaces.tiers.PRTiersWrapper;
+import globaz.prestation.tools.PRDateFormater;
+import globaz.prestation.utils.PRDateUtils;
+import globaz.prestation.utils.PRDateUtils.PRDateEquality;
+import globaz.prestation.utils.PRStringFormatter;
 
 /**
  * Lit le contenu du fichier annonces.xml généré par ACOR. La lecture s'effectue selon les classes générées par JaxB
- * contenues dans le package ch.admin.zas.pool.</br> Le fichier annonces.xml contient uniquement des annonces 10ème
- * révision, la lecture porte donc uniquement sur ce type d'annonces</br> Les annonces de diminution ne sont pas
- * lues</br> Le principe de lecture des champs est le suivant : on ne lance pas d'erreur si une section est vide, le
+ * contenues dans le package ch.admin.zas.pool.</br>
+ * Le fichier annonces.xml contient uniquement des annonces 10ème
+ * révision, la lecture porte donc uniquement sur ce type d'annonces</br>
+ * Les annonces de diminution ne sont pas
+ * lues</br>
+ * Le principe de lecture des champs est le suivant : on ne lance pas d'erreur si une section est vide, le
  * contrôle s'effectuera par la validation avec Anakin sur les annonces de type 44 01 et 02 qui seront crées.</br>
- * 
+ *
  * @author lga
  */
 public class REACORAnnonceXmlReader {
@@ -147,11 +150,13 @@ public class REACORAnnonceXmlReader {
     }
 
     /**
-     * Construit l'ensemble des annonces 44_01</br> Graph d'object lié à une annonce 44_01 :
-     * REANHEA->REAAL1A->REAAL2A->REAAL3A->REAAL4A</br> L'annonce n'est pas persisté dans cette méthode, l'idTiers n'est
+     * Construit l'ensemble des annonces 44_01</br>
+     * Graph d'object lié à une annonce 44_01 :
+     * REANHEA->REAAL1A->REAAL2A->REAAL3A->REAAL4A</br>
+     * L'annonce n'est pas persisté dans cette méthode, l'idTiers n'est
      * pas définit dans cette méthode et l'id lien annonce sur l'annonce 44_02 non plus. C.F method
      * buildAnnonce44(...)</br>
-     * 
+     *
      * @param session
      *            La session en cours
      * @param transaction
@@ -232,8 +237,8 @@ public class REACORAnnonceXmlReader {
                     /* YXNPNA (String) : format NSS complet sur 13 position sans point */
                     premierNoAssComplementaire = familienAngehoerigeType.getVNr1Ergaenzend().get(0);
                     if (!JadeStringUtil.isBlankOrZero(premierNoAssComplementaire)) {
-                        premierNoAssComplementaire = NSUtil.unFormatAVS(definirNssComplementaire(session,
-                                NSUtil.formatAVSUnknown(premierNoAssComplementaire)));
+                        premierNoAssComplementaire = NSUtil.unFormatAVS(
+                                definirNssComplementaire(session, NSUtil.formatAVSUnknown(premierNoAssComplementaire)));
                     } else {
                         premierNoAssComplementaire = EMPTY_NSS;
                     }
@@ -242,8 +247,8 @@ public class REACORAnnonceXmlReader {
                     /* YXNDNA (String) : format NSS complet sur 13 position sans point */
                     secondNoAssComplementaire = familienAngehoerigeType.getVNr2Ergaenzend().get(0);
                     if (!JadeStringUtil.isBlankOrZero(secondNoAssComplementaire)) {
-                        secondNoAssComplementaire = NSUtil.unFormatAVS(definirNssComplementaire(session,
-                                NSUtil.formatAVSUnknown(secondNoAssComplementaire)));
+                        secondNoAssComplementaire = NSUtil.unFormatAVS(
+                                definirNssComplementaire(session, NSUtil.formatAVSUnknown(secondNoAssComplementaire)));
                     } else {
                         secondNoAssComplementaire = EMPTY_NSS;
                     }
@@ -334,10 +339,12 @@ public class REACORAnnonceXmlReader {
     }
 
     /**
-     * Construit l'ensemble des annonces 44_02</br> Graph d'object lié à une annonce 44_02 :
-     * REANHEA->REAAL1A->REAAL2A->REAAL3A->REAAL4A</br> L'annonce n'est pas persisté dans cette méthode, l'idTiers n'est
+     * Construit l'ensemble des annonces 44_02</br>
+     * Graph d'object lié à une annonce 44_02 :
+     * REANHEA->REAAL1A->REAAL2A->REAAL3A->REAAL4A</br>
+     * L'annonce n'est pas persisté dans cette méthode, l'idTiers n'est
      * pas définit dans cette méthode c.f buildAnnonce44(...)</br>
-     * 
+     *
      * @param session
      *            La session en cours
      * @param transaction
@@ -461,18 +468,18 @@ public class REACORAnnonceXmlReader {
                     }
 
                     /* YYDCM1 (int) : type intrinsèque, valeur formatée sur 2 position */
-                    dureeCotManquante48_72 = this.formatValue(skalaBerechnung
-                            .getAnrechnungVor1973FehlenderBeitragsmonate());
+                    dureeCotManquante48_72 = this
+                            .formatValue(skalaBerechnung.getAnrechnungVor1973FehlenderBeitragsmonate());
                     dureeCotManquante48_72 = indentLeftWithZero(dureeCotManquante48_72, 2);
 
                     /* YYDCM2 (int) : type intrinsèque, valeur formatée sur 2 position */
-                    dureeCotManquante73_78 = this.formatValue(skalaBerechnung
-                            .getAnrechnungAb1973Bis1978FehlenderBeitragsmonate());
+                    dureeCotManquante73_78 = this
+                            .formatValue(skalaBerechnung.getAnrechnungAb1973Bis1978FehlenderBeitragsmonate());
                     dureeCotManquante73_78 = indentLeftWithZero(dureeCotManquante73_78, 2);
 
                     /* YYDACC (int) : type intrinsèque, valeur brut, formatage sur 2 positions */
-                    anneeCotClasseAge = indentLeftWithZero(
-                            this.formatValue(skalaBerechnung.getBeitragsjahreJahrgang()), 2);
+                    anneeCotClasseAge = indentLeftWithZero(this.formatValue(skalaBerechnung.getBeitragsjahreJahrgang()),
+                            2);
                 }
 
                 if (berechnungsgrundlagen.getDJEBeschreibung() != null) {
@@ -679,17 +686,40 @@ public class REACORAnnonceXmlReader {
     }
 
     /**
-     * Format un BigDecimal sur 4 position selon les règles suivantes :</br> </br> x : nb années</br> y : nb mois</br>
-     * </br> ==> Cas 1 : x.y est reçu en entrée, Cas 2 : seulement x est reçu.</br> </br> <tab>Cas du x.y :</br> </br>
+     * Format un BigDecimal sur 4 position selon les règles suivantes :</br>
+     * </br>
+     * x : nb années</br>
+     * y : nb mois</br>
+     * </br>
+     * ==> Cas 1 : x.y est reçu en entrée, Cas 2 : seulement x est reçu.</br>
+     * </br>
+     * <tab>Cas du x.y :</br>
+     * </br>
      * &nbsp;&nbsp;&nbsp;&nbsp;Cas du x : si x < 9 alors formatter en 09 sinon laisser tel quel</br>
-     * &nbsp;&nbsp;&nbsp;&nbsp;Cas du y : si y < 9 alors formatter en 09 sinon laisser tel quel</br> </br>
-     * &nbsp;&nbsp;&nbsp;&nbsp;Alors : Concaténer les deux valeurs afin d'obtenir une valeur sur 4 positions.</br> </br>
-     * &nbsp;&nbsp;Cas du x :</br> &nbsp;&nbsp;&nbsp;&nbsp;Cas du x : si x <= 9 alors formatter en 0900</br>
+     * &nbsp;&nbsp;&nbsp;&nbsp;Cas du y : si y < 9 alors formatter en 09 sinon laisser tel quel</br>
+     * </br>
+     * &nbsp;&nbsp;&nbsp;&nbsp;Alors : Concaténer les deux valeurs afin d'obtenir une valeur sur 4 positions.</br>
+     * </br>
+     * &nbsp;&nbsp;Cas du x :</br>
+     * &nbsp;&nbsp;&nbsp;&nbsp;Cas du x : si x <= 9 alors formatter en 0900</br>
      * &nbsp;&nbsp;&nbsp;&nbsp;Cas du x : si x > 9 alors formatter en x00 (par exemple si on reçoit 12 alors on sort
-     * avec 1200)</br> </br> &nbsp;&nbsp;Alors : Concaténer les deux valeurs afin d'obtenir une valeur sur 4
-     * positions.</br></br></br> Exemple :</br> - null : chaîne vide</br> - 0.0 : 0000</br> - 1.0 : 0100</br> - 1.1 :
-     * 0101</br> - 10.1 : 1001</br> - 10.10 : 1010</br> - 0.11 : 0011</br> - 12.12 : 1212</br>
-     * 
+     * avec 1200)</br>
+     * </br>
+     * &nbsp;&nbsp;Alors : Concaténer les deux valeurs afin d'obtenir une valeur sur 4
+     * positions.</br>
+     * </br>
+     * </br>
+     * Exemple :</br>
+     * - null : chaîne vide</br>
+     * - 0.0 : 0000</br>
+     * - 1.0 : 0100</br>
+     * - 1.1 :
+     * 0101</br>
+     * - 10.1 : 1001</br>
+     * - 10.10 : 1010</br>
+     * - 0.11 : 0011</br>
+     * - 12.12 : 1212</br>
+     *
      * @param bd
      *            Le BigDecimal à formatter
      * @return La valeur du BigDecimal formatter
@@ -754,7 +784,7 @@ public class REACORAnnonceXmlReader {
 
     /**
      * Format la date en MMAA
-     * 
+     *
      * @param value
      *            La date à formatter
      * @return Une chaîne de caractère représentant la date sous la forme MMAA
@@ -778,7 +808,7 @@ public class REACORAnnonceXmlReader {
 
     /**
      * Format la date en AAAAMM
-     * 
+     *
      * @param value
      *            La date à formatter
      * @return Une chaîne de caractère représentant la date sous la forme AAAAMM
@@ -799,7 +829,7 @@ public class REACORAnnonceXmlReader {
 
     /**
      * Format la date en AAAAMM
-     * 
+     *
      * @param value
      *            La date à formatter
      * @return Une chaîne de caractère représentant la date sous la forme AAAAMM
@@ -855,10 +885,14 @@ public class REACORAnnonceXmlReader {
     }
 
     /**
-     * Parcourt les rentes accordées dont les ids sont passés en paramètres</br> Les champs suivants seront testé pour
-     * déterminer si l'annonce correspond à la rente accordée :</br> - NSS (idTiersBeneficiaire)</br> - Genre de rente
-     * (genrePrestation)</br> - Date de début</br>
-     * 
+     * Parcourt les rentes accordées dont les ids sont passés en paramètres</br>
+     * Les champs suivants seront testé pour
+     * déterminer si l'annonce correspond à la rente accordée :</br>
+     * - NSS (idTiersBeneficiaire)</br>
+     * - Genre de rente
+     * (genrePrestation)</br>
+     * - Date de début</br>
+     *
      * @param session
      *            La session courante
      * @param transaction
@@ -900,9 +934,10 @@ public class REACORAnnonceXmlReader {
     }
 
     /**
-     * Format une chaîne de caractère en lui ajoutant des zéro à gauche</br> Example : value = '218', indentValue = '5'
+     * Format une chaîne de caractère en lui ajoutant des zéro à gauche</br>
+     * Example : value = '218', indentValue = '5'
      * ==> 00218
-     * 
+     *
      * @param value
      *            La chaîne de caractère à formater
      * @param indentValue
@@ -921,8 +956,8 @@ public class REACORAnnonceXmlReader {
                 if (ra.getIdTiersBeneficiaire().equals(annonce44.getIdTiers())) {
                     String dateDebutDroitAnnonce = PRDateFormater
                             .convertDate_MMAA_to_MMxAAAA(annonce44.getDebutDroit());
-                    if (PRDateUtils.compare("01." + ra.getDateDebutDroit(), "01." + dateDebutDroitAnnonce).equals(
-                            PRDateEquality.EQUALS)) {
+                    if (PRDateUtils.compare("01." + ra.getDateDebutDroit(), "01." + dateDebutDroitAnnonce)
+                            .equals(PRDateEquality.EQUALS)) {
                         result = true;
                     }
                 }
@@ -933,11 +968,14 @@ public class REACORAnnonceXmlReader {
 
     /**
      * Lit le contenu du fichier annonces.xml généré par ACOR. La lecture s'effectue selon les classes générées par JaxB
-     * contenues dans le package ch.admin.zas.pool.</br> Le fichier annonces.xml contient uniquement des annonces 10ème
-     * révision, la lecture porte uniquement sur ce type d'annonces</br> Les annonces de diminution ne sont pas
-     * lues</br> Le principe de lecture des champs est le suivant : on ne lance pas d'erreur si une section est vide, le
+     * contenues dans le package ch.admin.zas.pool.</br>
+     * Le fichier annonces.xml contient uniquement des annonces 10ème
+     * révision, la lecture porte uniquement sur ce type d'annonces</br>
+     * Les annonces de diminution ne sont pas
+     * lues</br>
+     * Le principe de lecture des champs est le suivant : on ne lance pas d'erreur si une section est vide, le
      * contrôle s'effectuera par la validation avec Anakin sur les annonces de type 44 qui seront crées.</br>
-     * 
+     *
      * @param session
      *            La session en cours
      * @param transaction
@@ -991,8 +1029,8 @@ public class REACORAnnonceXmlReader {
                             // Rente extraordinaire
                             else if ((meldung.getAusserordentlicheRente() != null)
                                     && (meldung.getAusserordentlicheRente().getZuwachsmeldung() != null)) {
-                                annoncesExtraOrdinaires10emeRev.add(meldung.getAusserordentlicheRente()
-                                        .getZuwachsmeldung());
+                                annoncesExtraOrdinaires10emeRev
+                                        .add(meldung.getAusserordentlicheRente().getZuwachsmeldung());
 
                             }
                         } else {
@@ -1112,11 +1150,13 @@ public class REACORAnnonceXmlReader {
     }
 
     /**
-     * Construit l'ensemble des annonces 44_01</br> Graph d'object lié à une annonce 44_01 extraordinaire :
-     * REANHEA->REAAL1A->REAAL2A->REAAL3A->REAAL4A</br> L'annonce n'est pas persisté dans cette méthode, l'idTiers n'est
+     * Construit l'ensemble des annonces 44_01</br>
+     * Graph d'object lié à une annonce 44_01 extraordinaire :
+     * REANHEA->REAAL1A->REAAL2A->REAAL3A->REAAL4A</br>
+     * L'annonce n'est pas persisté dans cette méthode, l'idTiers n'est
      * pas définit dans cette méthode et l'id lien annonce sur l'annonce 44_02 non plus. C.F method
      * buildAnnonce44(...)</br>
-     * 
+     *
      * @param session
      *            La session en cours
      * @param transaction
@@ -1210,19 +1250,10 @@ public class REACORAnnonceXmlReader {
                 if (familienAngehoerigeType.getVNr2Ergaenzend().size() > 0) {
                     /* YXNDNA (String) : format NSS complet sur 13 position sans point */
                     String nssCompl2 = familienAngehoerigeType.getVNr2Ergaenzend().get(0);
-                    // if (nssCompl2 != null) {
-                    // if (nssCompl2.equals("0")) {
-                    // secondNoAssComplementaire = emptyNSS;
-                    // } else {
-                    // PRTiersWrapper tiers2 = PRTiersHelper.getTiers(session, NSUtil.formatAVSUnknown(nssCompl2));
-                    // if (tiers2 != null) {
-                    // secondNoAssComplementaire = nssCompl2;
-                    // }
-                    // }
-                    // }
+                    // K170302_002
                     if (!JadeStringUtil.isBlankOrZero(nssCompl2)) {
-                        secondNoAssComplementaire = NSUtil.unFormatAVS(definirNssComplementaire(session,
-                                NSUtil.formatAVSUnknown(nssCompl2)));
+                        secondNoAssComplementaire = NSUtil
+                                .unFormatAVS(definirNssComplementaire(session, NSUtil.formatAVSUnknown(nssCompl2)));
                     } else {
                         secondNoAssComplementaire = EMPTY_NSS;
                     }
@@ -1295,10 +1326,12 @@ public class REACORAnnonceXmlReader {
     }
 
     /**
-     * Construit l'ensemble des annonces 44_02</br> Graph d'object lié à une annonce 44_02 :
-     * REANHEA->REAAL1A->REAAL2A->REAAL3A->REAAL4A</br> L'annonce n'est pas persisté dans cette méthode, l'idTiers n'est
+     * Construit l'ensemble des annonces 44_02</br>
+     * Graph d'object lié à une annonce 44_02 :
+     * REANHEA->REAAL1A->REAAL2A->REAAL3A->REAAL4A</br>
+     * L'annonce n'est pas persisté dans cette méthode, l'idTiers n'est
      * pas définit dans cette méthode c.f buildAnnonce44(...)</br>
-     * 
+     *
      * @param session
      *            La session en cours
      * @param transaction
