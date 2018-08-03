@@ -179,6 +179,7 @@ public class AFSuiviCaisseAffiliation extends BEntity {
             }
             
             // Traitement pour Suivi Annuel LPP
+
             AFSuiviLPPAnnuel suiviLppAnnuel = new AFSuiviLPPAnnuel();
             journal = suiviLppAnnuel.isAlreadySent(getAffiliation());
             if (journal != null) {
