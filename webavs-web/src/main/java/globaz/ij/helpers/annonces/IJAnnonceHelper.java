@@ -2,7 +2,6 @@ package globaz.ij.helpers.annonces;
 
 import ch.admin.zas.rc.IVTaggelderMeldungType;
 import ch.globaz.common.exceptions.ValidationException;
-import globaz.corvus.annonce.service.REAnnonces9eXmlService;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.controller.FWAction;
 import globaz.globall.api.BISession;
@@ -12,6 +11,7 @@ import globaz.ij.db.annonces.IJAnnonce;
 import globaz.ij.properties.IJProperties;
 import globaz.ij.vb.annonces.IJAnnonceViewBean;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.common.JadeException;
 import globaz.prestation.helpers.PRAbstractHelper;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
@@ -133,7 +133,7 @@ public class IJAnnonceHelper extends PRAbstractHelper {
                     try {
                         IJAnnoncesXMLValidatorService.getInstance().validateUnitMessage(annonceXml);
                     } catch (ValidationException e) {
-                        throw new Exception(e.getMessageErreurDeValidation().toString());
+                        throw new JadeException(e.getMessageErreurDeValidation().toString());
                     }
                     
                 }

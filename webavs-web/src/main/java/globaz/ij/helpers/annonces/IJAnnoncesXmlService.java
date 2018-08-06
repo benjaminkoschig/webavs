@@ -39,7 +39,7 @@ public class IJAnnoncesXmlService {
         return instance;
     }
 
-    public IVTaggelderMeldungType getAnnonceXml(IJAnnonce annonce) throws Exception {
+    public IVTaggelderMeldungType getAnnonceXml(IJAnnonce annonce) throws DatatypeConfigurationException, ParseException  {
         IVTaggelderMeldungType annonceXml = null;
         boolean isCasSpecial = "3".equals(annonce.getCodeGenreCarte()) || "4".equals(annonce.getCodeGenreCarte());
 

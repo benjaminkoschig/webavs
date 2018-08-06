@@ -24,8 +24,6 @@ public class RFTierDateNaisanceManager extends BManager {
 
     private String forIdTiers;
 
-    public String likeAlias = "";
-
     /**
      * @see globaz.globall.db.BManager#_getFields(globaz.globall.db.BStatement)
      */

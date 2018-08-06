@@ -1,5 +1,20 @@
 package globaz.helios.process;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import javax.xml.bind.JAXBException;
+import org.xml.sax.SAXException;
+import ch.admin.zas.pool.PoolMeldungZurZAS;
+import ch.globaz.common.properties.CommonProperties;
+import ch.globaz.common.properties.PropertiesException;
 import globaz.caisse.helper.CaisseHelperFactory;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.util.FWCurrency;
@@ -36,19 +51,8 @@ import globaz.helios.translation.CodeSystem;
 import globaz.hermes.api.IHEAnnoncesViewBean;
 import globaz.hermes.api.IHEInputAnnonceLight;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.common.JadeException;
 import globaz.jade.log.JadeLogger;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import ch.admin.zas.pool.PoolMeldungZurZAS;
-import ch.globaz.common.properties.CommonProperties;
 
 /**
  * Insérez la description du type ici. Date de création : (20.03.2003 14:48:16)
@@ -335,7 +339,7 @@ public class CGPeriodeComptableEnvoiAnnonces extends BProcess {
         }
     }
     
-    public String annoncerXML() throws Exception {
+    public String annoncerXML() throws PropertiesException, IOException, SAXException, JAXBException, JadeException {
         String fileName = CGPeriodeComptableXMLService.getInstance().genereFichier(lotAnnonces);
         CGPeriodeComptableXMLService.getInstance().envoiFichier(fileName);
         return new File(fileName).getName();

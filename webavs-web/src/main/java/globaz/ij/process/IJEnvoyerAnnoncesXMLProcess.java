@@ -34,7 +34,11 @@ import globaz.ij.db.annonces.IJAnnonceManager;
 import globaz.ij.helpers.annonces.IJAnnoncesXMLValidatorService;
 import globaz.ij.helpers.annonces.IJAnnoncesXmlService;
 import globaz.ij.properties.IJProperties;
+import globaz.jade.common.JadeClassCastException;
+import globaz.jade.common.JadeException;
 import globaz.jade.fs.JadeFsFacade;
+import globaz.jade.service.exception.JadeServiceActivatorException;
+import globaz.jade.service.exception.JadeServiceLocatorException;
 
 /**
  * @author ebko
@@ -204,7 +208,7 @@ public class IJEnvoyerAnnoncesXMLProcess extends BProcess {
             if (lotAnnonces
                     .getVAIKMeldungNeuerVersicherterOrVAIKMeldungAenderungVersichertenDatenOrVAIKMeldungVerkettungVersichertenNr()
                     .isEmpty()) {
-                throw new Exception(getSession().getLabel("PROCESS_ENVOI_ANNONCES_ERREUR_AUCUNE_ANNONCE"));
+                throw new JadeException(getSession().getLabel("PROCESS_ENVOI_ANNONCES_ERREUR_AUCUNE_ANNONCE"));
             }
 
             String fileName = IJAnnoncesXMLValidatorService.getInstance().genereFichier(lotAnnonces, nbAnnoncesLot);
@@ -364,7 +368,7 @@ public class IJEnvoyerAnnoncesXMLProcess extends BProcess {
             e.getMessageErreurDeValidation().add(0, annonce.getIdAnnonce() + " - " + annonce.getNoAssure() + " : ");
             throw e;
         }  catch (Exception e) {
-            throw new Exception(annonce.getIdAnnonce() + " - " + annonce.getNoAssure() + " : " + e.getMessage());
+            throw new JadeException(annonce.getIdAnnonce() + " - " + annonce.getNoAssure() + " : " + e.getMessage());
         }      
     } 
 
@@ -396,9 +400,15 @@ public class IJEnvoyerAnnoncesXMLProcess extends BProcess {
      * Méthode qui envoie le fichier à la centrale
      * 
      * @param fichier à envoyer à la centrale
+     * @throws PropertiesException 
+     * @throws JadeClassCastException 
+     * @throws ClassCastException 
+     * @throws  
+     * @throws JadeServiceActivatorException 
+     * @throws JadeServiceLocatorException 
      * @throws Exception
      */
-    private void envoiFichier(String fichier) throws Exception {
+    private void envoiFichier(String fichier) throws JadeServiceLocatorException, JadeServiceActivatorException, JadeClassCastException, PropertiesException  {
 
         JadeFsFacade.copyFile(fichier, IJProperties.FTP_CENTRALE_PATH.getValue() + "/" + new File(fichier).getName());
     }

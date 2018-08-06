@@ -2,6 +2,7 @@ package globaz.ij.helpers.annonces;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -34,6 +35,7 @@ import globaz.globall.util.JACalendar;
 import globaz.ij.properties.IJProperties;
 import globaz.jade.client.util.JadeFilenameUtil;
 import globaz.jade.common.Jade;
+import globaz.jade.common.JadeException;
 
 /**
  * @author ebko
@@ -76,9 +78,10 @@ public class IJAnnoncesXMLValidatorService {
      * Méthode qui retourne un nom de fichier basé sur le timestamp
      * 
      * @return
+     * @throws PropertiesException 
      * @throws Exception
      */
-    private String getFileNameTimeStamp() throws Exception {
+    private String getFileNameTimeStamp() throws PropertiesException  {
         String fileName = "M_" + IJProperties.RACINE_NOM_FICHIER_OUTPUT_ZAS.getValue();
         fileName = JadeFilenameUtil.addFilenameSuffixDateTimeDecimals(fileName);
         fileName = StringUtils.left(fileName, fileName.length() - 7) + "_" + StringUtils.right(fileName, 7);
@@ -176,9 +179,14 @@ public class IJAnnoncesXMLValidatorService {
      * Méthode qui génère le fichier en fonction d'un lot d'annonces en input
      * 
      * @return l'uri du fichier généré
+     * @throws JAXBException 
+     * @throws SAXException 
+     * @throws PropertiesException 
+     * @throws IOException 
+     * @throws JadeException 
      * @throws Exception
      */
-    public String genereFichier(PoolMeldungZurZAS.Lot lotAnnonce, int size) throws Exception {
+    public String genereFichier(PoolMeldungZurZAS.Lot lotAnnonce, int size) throws SAXException, JAXBException, PropertiesException, IOException, JadeException  {
         String fileName;
         ch.admin.zas.pool.ObjectFactory factoryPool = new ch.admin.zas.pool.ObjectFactory();
         PoolMeldungZurZAS pool = factoryPool.createPoolMeldungZurZAS();
@@ -190,7 +198,7 @@ public class IJAnnoncesXMLValidatorService {
         File f = new File(fileName);
         boolean canCreateFile = f.createNewFile();
         if (!canCreateFile) {
-            throw new Exception("Unable to create file : " + fileName);
+            throw new JadeException("Unable to create file : " + fileName);
         }
 
         try {
