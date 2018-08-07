@@ -8,16 +8,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import javax.xml.datatype.XMLGregorianCalendar;
+import al.ch.ech.xmlns.ech_0104_69._4.HeaderType;
+import al.ch.ech.xmlns.ech_0104_69._4.Message;
+import al.ch.ech.xmlns.ech_0104_69._4.NoticeType;
+import al.ch.ech.xmlns.ech_0104_69._4.ReceiptType;
+import al.ch.ech.xmlns.ech_0104_69._4.RegisterStatusRecordType;
+import al.ch.ech.xmlns.ech_0104_69._4.UPISynchronizationRecordType;
 import ch.eahv_iv.xmlns.eahv_iv_fao_empl._0.AllowanceType;
 import ch.eahv_iv.xmlns.eahv_iv_fao_empl._0.BeneficiaryType;
 import ch.eahv_iv.xmlns.eahv_iv_fao_empl._0.ChildAllowanceType;
 import ch.eahv_iv.xmlns.eahv_iv_fao_empl._0.ChildType;
-import ch.ech.xmlns.ech_0104_69._3.HeaderType;
-import ch.ech.xmlns.ech_0104_69._3.Message;
-import ch.ech.xmlns.ech_0104_69._3.NoticeType;
-import ch.ech.xmlns.ech_0104_69._3.ReceiptType;
-import ch.ech.xmlns.ech_0104_69._3.RegisterStatusRecordType;
-import ch.ech.xmlns.ech_0104_69._3.UPISynchronizationRecordType;
 import ch.globaz.al.business.constantes.ALConstRafam;
 import ch.globaz.al.business.constantes.enumerations.RafamImportProtocolFields;
 import ch.globaz.al.business.constantes.enumerations.RafamReturnCode;
@@ -29,11 +29,11 @@ import ch.globaz.al.business.models.rafam.AnnonceRafamModel;
 import ch.globaz.al.business.services.ALServiceLocator;
 import ch.globaz.al.business.services.rafam.sedex.AnnonceRafamSedexService;
 import ch.globaz.al.businessimpl.rafam.sedex.handler.MessageEmployeurDelegueHandler;
-import ch.globaz.al.businessimpl.rafam.sedex.handler.MessageNoticeHandler;
-import ch.globaz.al.businessimpl.rafam.sedex.handler.MessageReceiptHandler;
+import ch.globaz.al.businessimpl.rafam.sedex.handler.MessageNoticeNewXSDVersionHandler;
+import ch.globaz.al.businessimpl.rafam.sedex.handler.MessageReceiptNewXSDVersionHandler;
+import ch.globaz.al.businessimpl.rafam.sedex.handler.MessageRegisterNewXSDVersionStatusRecordDelegueHandler;
 import ch.globaz.al.businessimpl.rafam.sedex.handler.MessageRegisterStatusRecordDelegueHandler;
-import ch.globaz.al.businessimpl.rafam.sedex.handler.MessageRegisterStatusRecordHandler;
-import ch.globaz.al.businessimpl.rafam.sedex.handler.MessageUPISynchronizationRecordHandler;
+import ch.globaz.al.businessimpl.rafam.sedex.handler.MessageUPISynchronizationNewXSDVersionRecordHandler;
 import ch.globaz.al.businessimpl.rafam.sedex.handler.MessagesEmployeursDeleguesContainer;
 import ch.globaz.al.businessimpl.services.ALImplServiceLocator;
 import ch.globaz.al.utils.ALRafamUtils;
@@ -61,7 +61,6 @@ import globaz.jade.log.business.renderer.JadeBusinessMessageRendererDefaultStrin
 import globaz.jade.properties.JadePropertiesService;
 import globaz.jade.sedex.JadeSedexDirectoryInitializationException;
 import globaz.jade.sedex.JadeSedexService;
-import globaz.jade.sedex.annotation.OnReceive;
 import globaz.jade.sedex.annotation.Setup;
 import globaz.jade.sedex.message.SedexMessage;
 import globaz.jade.sedex.message.SimpleSedexMessage;
@@ -74,7 +73,7 @@ import globaz.jade.smtp.JadeSmtpClient;
  * @author jts
  *
  */
-public class ImportAnnoncesRafam {
+public class ImportAnnoncesRafamNewXSDVersion {
 
     private static final String APPLICATION_NAME = "AL";
     private JadeContext context;
@@ -93,14 +92,14 @@ public class ImportAnnoncesRafam {
         List<String> errList = new ArrayList<String>();
 
         if (messageRafam instanceof NoticeType) {
-            errList = ALServiceLocator.getAnnoncesRafamErrorBusinessService()
+            errList = ALServiceLocator.getAnnoncesRafamNewXSDVersionErrorBusinessService()
                     .getErrorsFromList(((NoticeType) messageRafam).getError());
             nssEnfant = Long.toString(((NoticeType) messageRafam).getChild().getVn());
             nssAllocataire = Long.toString(((NoticeType) messageRafam).getBeneficiary().getVn());
             recordNumber = ((NoticeType) messageRafam).getRecordNumber().toString();
 
         } else if (messageRafam instanceof ReceiptType) {
-            errList = ALServiceLocator.getAnnoncesRafamErrorBusinessService()
+            errList = ALServiceLocator.getAnnoncesRafamNewXSDVersionErrorBusinessService()
                     .getErrorsFromList(((ReceiptType) messageRafam).getError());
             if (((ReceiptType) messageRafam).getChild().getVn() != null) {
                 nssEnfant = Long.toString(((ReceiptType) messageRafam).getChild().getVn());
@@ -111,7 +110,7 @@ public class ImportAnnoncesRafam {
             recordNumber = ((ReceiptType) messageRafam).getRecordNumber().toString();
 
         } else if (messageRafam instanceof RegisterStatusRecordType) {
-            errList = ALServiceLocator.getAnnoncesRafamErrorBusinessService()
+            errList = ALServiceLocator.getAnnoncesRafamNewXSDVersionErrorBusinessService()
                     .getErrorsFromList(((RegisterStatusRecordType) messageRafam).getError());
             if (((RegisterStatusRecordType) messageRafam).getChild().getVn() != null) {
                 nssEnfant = Long.toString(((RegisterStatusRecordType) messageRafam).getChild().getVn());
@@ -122,7 +121,7 @@ public class ImportAnnoncesRafam {
             recordNumber = ((RegisterStatusRecordType) messageRafam).getRecordNumber().toString();
 
         } else if (messageRafam instanceof UPISynchronizationRecordType) {
-            errList = ALServiceLocator.getAnnoncesRafamErrorBusinessService()
+            errList = ALServiceLocator.getAnnoncesRafamNewXSDVersionErrorBusinessService()
                     .getErrorsFromList(((UPISynchronizationRecordType) messageRafam).getError());
             if (((UPISynchronizationRecordType) messageRafam).getChild().getVn() != null) {
                 nssEnfant = Long.toString(((UPISynchronizationRecordType) messageRafam).getChild().getVn());
@@ -440,46 +439,11 @@ public class ImportAnnoncesRafam {
      */
     public BSession getSession() throws Exception {
         if (session == null) {
-            session = (BSession) GlobazSystem.getApplication(ImportAnnoncesRafam.APPLICATION_NAME).newSession(userSedex,
-                    passSedex);
+            session = (BSession) GlobazSystem.getApplication(ImportAnnoncesRafamNewXSDVersion.APPLICATION_NAME)
+                    .newSession(userSedex, passSedex);
         }
 
         return session;
-    }
-
-    /**
-     * En vue de la nouvelle version des annonces XSD, cette méthode va tester si on se trouve avec les nouvelles
-     * annonces ou les anciennes
-     * (Car en fonction de la version des annonces, le processus ne sera pas le même)
-     *
-     * @param messageCentrale Le message contenant les annonces de la centrale
-     * @throws Exception
-     */
-    @OnReceive
-    public void switchImportMessage(SedexMessage messageCentrale) throws Exception {
-        if (!(messageCentrale instanceof SimpleSedexMessage)) {
-            throw new ALRafamSedexException("Le message sedex " + messageCentrale.getFileLocation()
-                    + " n'est pas un message SimpleSedexMessage et n'a pas été traité");
-        } else {
-            Object brutMessage = null;
-            try {
-                JAXBServices jaxbService = JAXBServices.getInstance();
-                brutMessage = jaxbService.unmarshal(((SimpleSedexMessage) messageCentrale).fileLocation, false, false,
-                        (Class<?>[]) null);
-                if (brutMessage instanceof al.ch.ech.xmlns.ech_0104_69._4.Message) {
-                    // On va utiliser le processus pour l'importation des nouvelles annonces
-                    ImportAnnoncesRafamNewXSDVersion importAnnoncesRafam = new ImportAnnoncesRafamNewXSDVersion();
-                    importAnnoncesRafam.importMessage(messageCentrale);
-                } else {
-                    // On se trouve avec un message d'ancienne version, donc on utilise le process de base (qu'on aura
-                    // pas modifié)
-                    importMessage(messageCentrale);
-                }
-            } catch (Exception e) {
-                throw new ALRafamSedexException("Une erreur s'est produite pendant la lecture du message sedex "
-                        + messageCentrale.getFileLocation() + " : " + e.getMessage());
-            }
-        }
     }
 
     /**
@@ -492,24 +456,14 @@ public class ImportAnnoncesRafam {
      * @throws Exception
      */
     public void importMessage(SedexMessage messageCentrale) throws Exception {
+
         try {
             JadeLogger.info(this, "Start import RAFam Sedex message " + messageCentrale.getFileLocation());
             JadeThreadActivator.startUsingJdbcContext(Thread.currentThread(), getContext());
 
             ArrayList<HashMap<RafamImportProtocolFields, String>> protocole = new ArrayList<HashMap<RafamImportProtocolFields, String>>();
             String recipientId = "?";
-            Message message = null;
-
-            // /////////////////////////////////////////////////////////////////////////////////////////////////////
-            // Chargement du message
-            // /////////////////////////////////////////////////////////////////////////////////////////////////////
-
-            try {
-                message = unmarshalMessage(messageCentrale);
-            } catch (Exception e) {
-                JadeLogger.error(this,
-                        "une erreur s'est produite pendant la lecture du fichier d'annonce : " + e.getMessage());
-            }
+            Message message = (Message) messageCentrale;
 
             // /////////////////////////////////////////////////////////////////////////////////////////////////////
             // Traitement du message
@@ -569,7 +523,7 @@ public class ImportAnnoncesRafam {
     private JadeThreadContext initContext(BSession session) throws Exception {
         JadeThreadContext context;
         JadeContextImplementation ctxtImpl = new JadeContextImplementation();
-        ctxtImpl.setApplicationId(ImportAnnoncesRafam.APPLICATION_NAME);
+        ctxtImpl.setApplicationId(ImportAnnoncesRafamNewXSDVersion.APPLICATION_NAME);
         ctxtImpl.setLanguage(session.getIdLangueISO());
         ctxtImpl.setUserEmail(session.getUserEMail());
         ctxtImpl.setUserId(session.getUserId());
@@ -712,7 +666,7 @@ public class ImportAnnoncesRafam {
         for (NoticeType notice : message.getContent().getNotice()) {
             try {
 
-                AnnonceRafamModel annonce = new MessageNoticeHandler(notice).traiterMessage(null);
+                AnnonceRafamModel annonce = new MessageNoticeNewXSDVersionHandler(notice).traiterMessage(null);
                 AnnonceRafamSedexService serviceAnnonceRafamSedex = ALImplServiceLocator.getAnnonceRafamSedexService();
 
                 if (serviceAnnonceRafamSedex.isAnnonceEmployeurDelegue(notice.getRecordNumber().toString())) {
@@ -763,7 +717,7 @@ public class ImportAnnoncesRafam {
         for (ReceiptType receipt : message.getContent().getReceipt()) {
             try {
 
-                AnnonceRafamModel annonce = new MessageReceiptHandler(receipt).traiterMessage(null);
+                AnnonceRafamModel annonce = new MessageReceiptNewXSDVersionHandler(receipt).traiterMessage(null);
 
                 AnnonceRafamSedexService serviceAnnonceRafam = ALImplServiceLocator.getAnnonceRafamSedexService();
 
@@ -819,12 +773,12 @@ public class ImportAnnoncesRafam {
 
             try {
 
-                MessageRegisterStatusRecordDelegueHandler.areAnnoncesDelegueInDb = ALServiceLocator
+                MessageRegisterNewXSDVersionStatusRecordDelegueHandler.areAnnoncesDelegueInDb = ALServiceLocator
                         .getAnnonceRafamDelegueBusinessService().isAnnoncesInDb();
             } catch (Exception e) {
                 // si on arrive pas à tester si il y a déjà des annonces délégués, on part du principe que c'est
                 // il ne faut pas faire d'import initial
-                MessageRegisterStatusRecordDelegueHandler.areAnnoncesDelegueInDb = true;
+                MessageRegisterNewXSDVersionStatusRecordDelegueHandler.areAnnoncesDelegueInDb = true;
             }
 
             for (RegisterStatusRecordType register : message.getContent().getRegisterStatus()
@@ -838,7 +792,7 @@ public class ImportAnnoncesRafam {
 
                     if (isImportRegisterStatusDelegateEnabled() && serviceAnnonceRafamSedex
                             .isAnnonceEmployeurDelegue(register.getRecordNumber().toString())) {
-                        MessageRegisterStatusRecordDelegueHandler afDelegueHandler = new MessageRegisterStatusRecordDelegueHandler(
+                        MessageRegisterNewXSDVersionStatusRecordDelegueHandler afDelegueHandler = new MessageRegisterNewXSDVersionStatusRecordDelegueHandler(
                                 register);
                         afDelegueHandler.traiterMessage(null);
 
@@ -846,7 +800,7 @@ public class ImportAnnoncesRafam {
                             .isAnnonceEmployeurDelegue(register.getRecordNumber().toString())) {
                         HashMap<String, Object> params = new HashMap<String, Object>();
                         params.put("messageDate", messageDate);
-                        new MessageRegisterStatusRecordHandler(register).traiterMessage(params);
+                        new MessageRegisterNewXSDVersionStatusRecordDelegueHandler(register).traiterMessage(params);
                     }
 
                     if (JadeThread.logMessages() != null) {
@@ -888,7 +842,8 @@ public class ImportAnnoncesRafam {
         for (UPISynchronizationRecordType synchro : m.getContent().getUPISynchronizationRecord()) {
             try {
 
-                AnnonceRafamModel annonce = new MessageUPISynchronizationRecordHandler(synchro).traiterMessage(null);
+                AnnonceRafamModel annonce = new MessageUPISynchronizationNewXSDVersionRecordHandler(synchro)
+                        .traiterMessage(null);
 
                 AnnonceRafamSedexService serviceAnnonceRafam = ALImplServiceLocator.getAnnonceRafamSedexService();
 
