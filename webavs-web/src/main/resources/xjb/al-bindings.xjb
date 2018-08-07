@@ -1,0 +1,61 @@
+<jaxb:bindings xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" version="2.1">
+
+    <!-- Configure our custom xsd -->
+    <jaxb:bindings schemaLocation="../xsd/al/eCH-0007-6-0.xsd"
+        node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="al.ch.ech.xmlns.ech_0007._6" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+
+    <jaxb:bindings schemaLocation="../xsd/al/eCH-0008-3-0.xsd"
+        node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="al.ch.ech.xmlns.ech_0008._3" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+
+    <jaxb:bindings schemaLocation="../xsd/al/eCH-0044-4-0f.xsd"
+        node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="al.ch.ech.xmlns.ech_00044_f._4" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+
+    <jaxb:bindings schemaLocation="../xsd/al/eCH-0058-5-0.xsd"
+        node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="al.ch.ech.xmlns.ech_00058._5" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+
+    <jaxb:bindings schemaLocation="../xsd/al/eCH-0097-3-0.xsd"
+        node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="al.ch.ech.xmlns.ech_00097._3" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+
+    <jaxb:bindings schemaLocation="../xsd/al/eCH-0104-4-1.xsd"
+        node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="al.ch.ech.xmlns.ech_0104._4" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+
+    <jaxb:bindings schemaLocation="../xsd/al/eCH-0104-68-4-1.xsd"
+        node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="al.ch.ech.xmlns.ech_0104_68._4" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+    
+    <jaxb:bindings schemaLocation="../xsd/al/eCH-0104-69-4-1.xsd"
+        node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="al.ch.ech.xmlns.ech_0104_69._4" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+    
+</jaxb:bindings>
