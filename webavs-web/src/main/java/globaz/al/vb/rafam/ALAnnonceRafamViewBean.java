@@ -1,9 +1,5 @@
 package globaz.al.vb.rafam;
 
-import globaz.globall.db.BSession;
-import globaz.globall.db.BSpy;
-import globaz.globall.vb.BJadePersistentObjectViewBean;
-import globaz.jade.client.util.JadeDateUtil;
 import java.util.Date;
 import ch.globaz.al.business.constantes.ALConstParametres;
 import ch.globaz.al.business.constantes.enumerations.RafamEtatAnnonce;
@@ -13,12 +9,21 @@ import ch.globaz.al.business.services.ALServiceLocator;
 import ch.globaz.al.businessimpl.services.ALImplServiceLocator;
 import ch.globaz.param.business.models.ParameterModel;
 import ch.globaz.param.business.service.ParamServiceLocator;
+import ch.globaz.pyxis.business.model.PaysSearchSimpleModel;
+import ch.globaz.pyxis.business.model.PaysSimpleModel;
+import globaz.globall.db.BSession;
+import globaz.globall.db.BSpy;
+import globaz.globall.vb.BJadePersistentObjectViewBean;
+import globaz.jade.client.util.JadeDateUtil;
+import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.persistence.JadePersistenceManager;
 
 /**
  * ViewBean représentant une annonce RAFAM
- * 
+ *
  * @author jts
- * 
+ *
  */
 public class ALAnnonceRafamViewBean extends BJadePersistentObjectViewBean {
 
@@ -45,8 +50,8 @@ public class ALAnnonceRafamViewBean extends BJadePersistentObjectViewBean {
 
     @Override
     public void add() throws Exception {
-        annonce.setAnnonceRafamModel(ALServiceLocator.getAnnonceRafamModelService().create(
-                annonce.getAnnonceRafamModel()));
+        annonce.setAnnonceRafamModel(
+                ALServiceLocator.getAnnonceRafamModelService().create(annonce.getAnnonceRafamModel()));
     }
 
     public Boolean canDelete() {
@@ -64,7 +69,7 @@ public class ALAnnonceRafamViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Retourne le modèle d'annonce Rafam
-     * 
+     *
      * @return the annonce
      */
     public AnnonceRafamComplexModel getAnnonce() {
@@ -82,12 +87,11 @@ public class ALAnnonceRafamViewBean extends BJadePersistentObjectViewBean {
                 // si le paramètre edition admin est à true ou si l'annonce est nouvelle (on la créé manuellement) ou si
                 // elle
                 // est en cours
-                if (canValidate
-                        || annonce.isNew()
-                        || RafamEtatAnnonce.ENREGISTRE.equals(RafamEtatAnnonce.getRafamEtatAnnonceCS(annonce
-                                .getAnnonceRafamModel().getEtat()))
-                        || RafamEtatAnnonce.A_TRANSMETTRE.equals(RafamEtatAnnonce.getRafamEtatAnnonceCS(annonce
-                                .getAnnonceRafamModel().getEtat()))) {
+                if (canValidate || annonce.isNew()
+                        || RafamEtatAnnonce.ENREGISTRE.equals(
+                                RafamEtatAnnonce.getRafamEtatAnnonceCS(annonce.getAnnonceRafamModel().getEtat()))
+                        || RafamEtatAnnonce.A_TRANSMETTRE.equals(
+                                RafamEtatAnnonce.getRafamEtatAnnonceCS(annonce.getAnnonceRafamModel().getEtat()))) {
                     return "";
                 } else {
 
@@ -103,7 +107,7 @@ public class ALAnnonceRafamViewBean extends BJadePersistentObjectViewBean {
     }
 
     /**
-     * 
+     *
      * @return Erreurs liées à l'annonce
      * @throws Exception
      *             Exception levée si l'id de l'annonce n'est pas défini ou si les erreurs n'ont pas pu être chargées
@@ -118,7 +122,7 @@ public class ALAnnonceRafamViewBean extends BJadePersistentObjectViewBean {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.db.BIPersistentObject#getId()
      */
     @Override
@@ -135,7 +139,7 @@ public class ALAnnonceRafamViewBean extends BJadePersistentObjectViewBean {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.vb.BJadePersistentObjectViewBean#getSpy()
      */
     @Override
@@ -145,7 +149,7 @@ public class ALAnnonceRafamViewBean extends BJadePersistentObjectViewBean {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.db.BIPersistentObject#retrieve()
      */
     @Override
@@ -170,7 +174,7 @@ public class ALAnnonceRafamViewBean extends BJadePersistentObjectViewBean {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.db.BIPersistentObject#setId(java.lang.String)
      */
     @Override
@@ -181,13 +185,30 @@ public class ALAnnonceRafamViewBean extends BJadePersistentObjectViewBean {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.db.BIPersistentObject#update()
      */
     @Override
     public void update() throws Exception {
-        annonce.setAnnonceRafamModel(ALServiceLocator.getAnnonceRafamModelService().update(
-                annonce.getAnnonceRafamModel()));
+        annonce.setAnnonceRafamModel(
+                ALServiceLocator.getAnnonceRafamModelService().update(annonce.getAnnonceRafamModel()));
 
+    }
+
+    public String getPays() {
+        try {
+            String codeCentrale = getAnnonce().getAnnonceRafamModel().getCodeCentralePaysEnfant();
+            if (!JadeStringUtil.isBlankOrZero(codeCentrale)) {
+                PaysSearchSimpleModel searchModel = new PaysSearchSimpleModel();
+                searchModel.setForIdPays(codeCentrale);
+                searchModel = (PaysSearchSimpleModel) JadePersistenceManager.search(searchModel);
+                if (searchModel.getSearchResults().length > 0) {
+                    return ((PaysSimpleModel) searchModel.getSearchResults()[0]).getLibelleFr();
+                }
+            }
+            return "";
+        } catch (JadePersistenceException e) {
+            return "";
+        }
     }
 }

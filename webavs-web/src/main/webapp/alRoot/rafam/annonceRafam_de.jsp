@@ -347,7 +347,7 @@ function suspendreAnnonce(){
                         <td class="label"><ct:FWLabel key="AL0031_PAYS_DOMICILE_ENFANT"/></td>
 
                         <td>
-                           <input type="text" value="<%=viewBean.getAnnonce().getAnnonceRafamModel().getCodeCentralePaysEnfant()%>" name="annonce.annonceRafamModel.echeanceDroit" <%=viewBean.getEditionModeFields() %>/>
+                           <input type="text" value="<%=viewBean.getPays()%>" name="annonce.annonceRafamModel.codeCentralePaysEnfant" <%=viewBean.getEditionModeFields() %>/>
                         </td>
                      </tr>
                   </table>
