@@ -1,18 +1,9 @@
 package ch.globaz.al.businessimpl.services.rafam;
 
-import globaz.jade.client.util.JadeCodesSystemsUtil;
-import globaz.jade.client.util.JadeDateUtil;
-import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.exception.JadeApplicationException;
-import globaz.jade.exception.JadePersistenceException;
-import globaz.pyxis.util.CommonNSSFormater;
 import java.util.Date;
 import ch.eahv_iv.xmlns.eahv_iv_fao_empl._0.AllowanceType;
 import ch.eahv_iv.xmlns.eahv_iv_fao_empl._0.BeneficiaryType;
 import ch.eahv_iv.xmlns.eahv_iv_fao_empl._0.ChildType;
-import ch.ech.xmlns.ech_0104_69._3.NoticeType;
-import ch.ech.xmlns.ech_0104_69._3.RegisterStatusRecordType;
-import ch.ech.xmlns.ech_0104_69._3.UPISynchronizationRecordType;
 import ch.globaz.al.business.constantes.ALConstRafam;
 import ch.globaz.al.business.constantes.enumerations.RafamEtatAnnonce;
 import ch.globaz.al.business.constantes.enumerations.RafamEvDeclencheur;
@@ -41,17 +32,24 @@ import ch.globaz.al.businessimpl.services.ALImplServiceLocator;
 import ch.globaz.al.utils.ALDateUtils;
 import ch.globaz.al.utils.ALRafamUtils;
 import ch.globaz.naos.business.data.AssuranceInfo;
+import ch.globaz.naos.business.model.AffiliationSimpleModel;
+import globaz.jade.client.util.JadeCodesSystemsUtil;
+import globaz.jade.client.util.JadeDateUtil;
+import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.exception.JadeApplicationException;
+import globaz.jade.exception.JadePersistenceException;
+import globaz.pyxis.util.CommonNSSFormater;
 
 /**
- * 
+ *
  * @author jts
- * 
+ *
  */
 public class InitAnnoncesRafamServiceImpl extends ALAbstractBusinessServiceImpl implements InitAnnoncesRafamService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * ch.globaz.al.business.services.rafam.InitAnnoncesRafamService#getBaseLegale(ch.globaz.al.business.models.dossier
      * .DossierComplexModel, ch.globaz.al.business.models.droit.DroitComplexModel)
@@ -60,7 +58,8 @@ public class InitAnnoncesRafamServiceImpl extends ALAbstractBusinessServiceImpl 
     public RafamLegalBasis getBaseLegale(DossierComplexModel dossier, DroitComplexModel droit)
             throws JadeApplicationException, JadePersistenceException, JadeApplicationException {
 
-        if (ALServiceLocator.getDossierBusinessService().isAgricole(dossier.getDossierModel().getActiviteAllocataire())) {
+        if (ALServiceLocator.getDossierBusinessService()
+                .isAgricole(dossier.getDossierModel().getActiviteAllocataire())) {
 
             AgricoleSearchModel search = new AgricoleSearchModel();
             search.setForIdAllocataire(dossier.getDossierModel().getIdAllocataire());
@@ -85,7 +84,7 @@ public class InitAnnoncesRafamServiceImpl extends ALAbstractBusinessServiceImpl 
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * ch.globaz.al.business.services.rafam.InitAnnoncesRafamService#getCantonBaseLegale(ch.globaz.al.business.models
      * .dossier.DossierComplexModel, ch.globaz.al.business.models.droit.DroitComplexModel)
@@ -94,15 +93,15 @@ public class InitAnnoncesRafamServiceImpl extends ALAbstractBusinessServiceImpl 
     public String getCantonBaseLegale(DossierComplexModel dossier, DroitComplexModel droit)
             throws JadeApplicationException, JadePersistenceException {
 
-        AssuranceInfo info = ALServiceLocator.getAffiliationBusinessService().getAssuranceInfo(
-                dossier.getDossierModel(), JadeDateUtil.getGlobazFormattedDate(new Date()));
+        AssuranceInfo info = ALServiceLocator.getAffiliationBusinessService()
+                .getAssuranceInfo(dossier.getDossierModel(), JadeDateUtil.getGlobazFormattedDate(new Date()));
 
         return JadeCodesSystemsUtil.getCode(info.getCanton());
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * ch.globaz.al.business.services.rafam.InitAnnoncesRafamService#getInternalOfficeReference(ch.globaz.al.business
      * .models.dossier.DossierComplexModel, ch.globaz.al.business.models.droit.DroitComplexModel)
@@ -126,7 +125,7 @@ public class InitAnnoncesRafamServiceImpl extends ALAbstractBusinessServiceImpl 
 
     /**
      * Méthode ajoutée en vue de la gestion des record numbers pour la FPV
-     * 
+     *
      * @return <code>null</code>
      */
     private String getRecordNumber() {
@@ -135,7 +134,7 @@ public class InitAnnoncesRafamServiceImpl extends ALAbstractBusinessServiceImpl 
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * ch.globaz.al.business.services.rafam.InitAnnoncesRafamService#initAnnonce68a(ch.globaz.al.business.models.dossier
      * .DossierComplexModel, ch.globaz.al.business.models.droit.DroitComplexModel,
@@ -151,7 +150,7 @@ public class InitAnnoncesRafamServiceImpl extends ALAbstractBusinessServiceImpl 
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * ch.globaz.al.business.services.rafam.InitAnnoncesRafamService#initAnnonce68a(ch.globaz.al.business.models.dossier
      * .DossierComplexModel, ch.globaz.al.business.models.droit.DroitComplexModel,
@@ -160,8 +159,8 @@ public class InitAnnoncesRafamServiceImpl extends ALAbstractBusinessServiceImpl 
      */
     @Override
     public AnnonceRafamModel initAnnonce68a(DossierComplexModel dossier, DroitComplexModel droit,
-            RafamFamilyAllowanceType type, RafamEtatAnnonce etat) throws JadeApplicationException,
-            JadePersistenceException {
+            RafamFamilyAllowanceType type, RafamEtatAnnonce etat)
+            throws JadeApplicationException, JadePersistenceException {
 
         if (!RafamEtatAnnonce.A_TRANSMETTRE.equals(etat) && !RafamEtatAnnonce.ENREGISTRE.equals(etat)) {
             throw new ALAnnonceRafamException(
@@ -185,8 +184,8 @@ public class InitAnnoncesRafamServiceImpl extends ALAbstractBusinessServiceImpl 
         annonce.setRecordNumber(getRecordNumber());
         annonce.setInternalOfficeReference(getInternalOfficeReference(dossier, droit));
 
-        annonce.setNssEnfant(droit.getEnfantComplexModel().getPersonneEtendueComplexModel().getPersonneEtendue()
-                .getNumAvsActuel());
+        annonce.setNssEnfant(
+                droit.getEnfantComplexModel().getPersonneEtendueComplexModel().getPersonneEtendue().getNumAvsActuel());
         annonce.setGenrePrestation(type.getCodeCentrale());
         annonce.setBaseLegale(getBaseLegale(dossier, droit).getCodeCentrale());
         annonce.setCanton(getCantonBaseLegale(dossier, droit));
@@ -201,10 +200,10 @@ public class InitAnnoncesRafamServiceImpl extends ALAbstractBusinessServiceImpl 
 
         annonce.setNssAllocataire(dossier.getAllocataireComplexModel().getPersonneEtendueComplexModel()
                 .getPersonneEtendue().getNumAvsActuel());
-        annonce.setCodeStatutFamilial(RafamFamilyStatus.getFamilyStatusCS(droit.getDroitModel().getStatutFamilial())
-                .getCodeCentrale());
-        annonce.setCodeTypeActivite(RafamOccupationStatus.getOccupationStatusCS(
-                dossier.getDossierModel().getActiviteAllocataire()).getCodeCentrale());
+        annonce.setCodeStatutFamilial(
+                RafamFamilyStatus.getFamilyStatusCS(droit.getDroitModel().getStatutFamilial()).getCodeCentrale());
+        annonce.setCodeTypeActivite(RafamOccupationStatus
+                .getOccupationStatusCS(dossier.getDossierModel().getActiviteAllocataire()).getCodeCentrale());
 
         annonce.setDelegated(false);
 
@@ -216,12 +215,28 @@ public class InitAnnoncesRafamServiceImpl extends ALAbstractBusinessServiceImpl 
         annonce.setOfficeBranch(officeProvider.getOfficeBranch());
         annonce.setLegalOffice(officeProvider.getLegalOffice(droit.getDroitModel().getDebutDroit()));
 
+        annonce.setNumeroIDE(getNumeroIDEAffilie(numAffilie));
+        annonce.setCodeCentralePaysEnfant(droit.getEnfantComplexModel().getPaysModel().getCodeCentrale());
+
         return annonce;
+    }
+
+    /**
+     * Récupère le numéro IDE de l'affilié d'après son numéro d'affilié
+     *
+     * @param numAffilie
+     * @return numeroIDE de l'affilié
+     * @throws JadePersistenceException
+     * @throws JadeApplicationException
+     */
+    private String getNumeroIDEAffilie(String numAffilie) throws JadePersistenceException, JadeApplicationException {
+        AffiliationSimpleModel affil = ALServiceLocator.getAffiliationBusinessService().getAffiliation(numAffilie);
+        return affil.getNumeroIDE();
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * ch.globaz.al.business.services.rafam.InitAnnoncesRafamService#initAnnonce68b(ch.globaz.al.business.models.dossier
      * .DossierComplexModel, ch.globaz.al.business.models.droit.DroitComplexModel,
@@ -257,8 +272,8 @@ public class InitAnnoncesRafamServiceImpl extends ALAbstractBusinessServiceImpl 
         annonce.setRecordNumber(lastAnnonce.getRecordNumber());
         annonce.setInternalOfficeReference(lastAnnonce.getInternalOfficeReference());
 
-        annonce.setNssEnfant(droit.getEnfantComplexModel().getPersonneEtendueComplexModel().getPersonneEtendue()
-                .getNumAvsActuel());
+        annonce.setNssEnfant(
+                droit.getEnfantComplexModel().getPersonneEtendueComplexModel().getPersonneEtendue().getNumAvsActuel());
         annonce.setGenrePrestation(type.getCodeCentrale());
         annonce.setBaseLegale(getBaseLegale(dossier, droit).getCodeCentrale());
         annonce.setCanton(getCantonBaseLegale(dossier, droit));
@@ -273,10 +288,10 @@ public class InitAnnoncesRafamServiceImpl extends ALAbstractBusinessServiceImpl 
 
         annonce.setNssAllocataire(dossier.getAllocataireComplexModel().getPersonneEtendueComplexModel()
                 .getPersonneEtendue().getNumAvsActuel());
-        annonce.setCodeStatutFamilial(RafamFamilyStatus.getFamilyStatusCS(droit.getDroitModel().getStatutFamilial())
-                .getCodeCentrale());
-        annonce.setCodeTypeActivite(RafamOccupationStatus.getOccupationStatusCS(
-                dossier.getDossierModel().getActiviteAllocataire()).getCodeCentrale());
+        annonce.setCodeStatutFamilial(
+                RafamFamilyStatus.getFamilyStatusCS(droit.getDroitModel().getStatutFamilial()).getCodeCentrale());
+        annonce.setCodeTypeActivite(RafamOccupationStatus
+                .getOccupationStatusCS(dossier.getDossierModel().getActiviteAllocataire()).getCodeCentrale());
 
         annonce.setDelegated(false);
 
@@ -288,12 +303,15 @@ public class InitAnnoncesRafamServiceImpl extends ALAbstractBusinessServiceImpl 
         annonce.setOfficeBranch(officeProvider.getOfficeBranch());
         annonce.setLegalOffice(officeProvider.getLegalOffice(droit.getDroitModel().getDebutDroit()));
 
+        annonce.setNumeroIDE(getNumeroIDEAffilie(numAffilie));
+        annonce.setCodeCentralePaysEnfant(droit.getEnfantComplexModel().getPaysModel().getCodeCentrale());
+
         return annonce;
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * ch.globaz.al.business.services.rafam.InitAnnoncesRafamService#initAnnonce68b(ch.globaz.al.business.models.dossier
      * .DossierComplexModel, ch.globaz.al.business.models.droit.DroitComplexModel,
@@ -310,20 +328,20 @@ public class InitAnnoncesRafamServiceImpl extends ALAbstractBusinessServiceImpl 
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * ch.globaz.al.business.services.rafam.InitAnnoncesRafamService#initAnnonce68c(ch.globaz.al.business.models.rafam
      * .AnnonceRafamModel)
      */
     @Override
-    public AnnonceRafamModel initAnnonce68c(AnnonceRafamModel lastAnnonce) throws JadeApplicationException,
-            JadePersistenceException {
+    public AnnonceRafamModel initAnnonce68c(AnnonceRafamModel lastAnnonce)
+            throws JadeApplicationException, JadePersistenceException {
         return this.initAnnonce68c(lastAnnonce, RafamEtatAnnonce.A_TRANSMETTRE);
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * ch.globaz.al.business.services.rafam.InitAnnoncesRafamService#initAnnonce68c(ch.globaz.al.business.models.rafam
      * .AnnonceRafamModel)
@@ -362,23 +380,26 @@ public class InitAnnoncesRafamServiceImpl extends ALAbstractBusinessServiceImpl 
         annonce.setOfficeBranch(lastAnnonce.getOfficeBranch());
         annonce.setLegalOffice(lastAnnonce.getLegalOffice());
 
+        annonce.setNumeroIDE(lastAnnonce.getNumeroIDE());
+        annonce.setCodeCentralePaysEnfant(lastAnnonce.getCodeCentralePaysEnfant());
+
         return annonce;
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ch.globaz.al.business.services.rafam.InitAnnoncesRafamService#initAnnonce69b(ch.ech.xmlns.ech_0104_69._2.
      * UPISynchronizationRecordType)
      */
     @Override
-    public AnnonceRafamModel initAnnonce69b(UPISynchronizationRecordType message) throws JadeApplicationException,
-            JadePersistenceException {
+    public AnnonceRafamModel initAnnonce69b(ch.ech.xmlns.ech_0104_69._3.UPISynchronizationRecordType message)
+            throws JadeApplicationException, JadePersistenceException {
 
         CommonNSSFormater nssf = new CommonNSSFormater();
         AnnonceRafamModel annonce = new AnnonceRafamModel();
-        AnnonceRafamModel last = ALImplServiceLocator.getAnnoncesRafamSearchService().getLastAnnonceForRecordNumber(
-                message.getRecordNumber().toString());
+        AnnonceRafamModel last = ALImplServiceLocator.getAnnoncesRafamSearchService()
+                .getLastAnnonceForRecordNumber(message.getRecordNumber().toString());
 
         if (last.isNew()) {
             throw new ALAnnonceRafamException(
@@ -407,14 +428,14 @@ public class InitAnnoncesRafamServiceImpl extends ALAbstractBusinessServiceImpl 
             annonce.setDelegated(false);
         }
 
-        annonce.setGenrePrestation(RafamFamilyAllowanceType.getFamilyAllowanceType(message.getFamilyAllowanceType())
-                .getCodeCentrale());
+        annonce.setGenrePrestation(
+                RafamFamilyAllowanceType.getFamilyAllowanceType(message.getFamilyAllowanceType()).getCodeCentrale());
 
-        annonce.setDateCreation(JadeDateUtil.getGlobazFormattedDate(message.getCreationDate().toGregorianCalendar()
-                .getTime()));
+        annonce.setDateCreation(
+                JadeDateUtil.getGlobazFormattedDate(message.getCreationDate().toGregorianCalendar().getTime()));
         if (message.getMutationDate() != null) {
-            annonce.setDateMutation(JadeDateUtil.getGlobazFormattedDate(message.getMutationDate().toGregorianCalendar()
-                    .getTime()));
+            annonce.setDateMutation(
+                    JadeDateUtil.getGlobazFormattedDate(message.getMutationDate().toGregorianCalendar().getTime()));
         }
 
         annonce.setCodeRetour(RafamReturnCode.getRafamReturnCode(Long.toString(message.getReturnCode())).getCode());
@@ -431,8 +452,8 @@ public class InitAnnoncesRafamServiceImpl extends ALAbstractBusinessServiceImpl 
                 annonce.setNssAllocataire(nssf.format(Long.toString(message.getBeneficiary().getVn())));
             }
         } catch (Exception e) {
-            throw new ALRafamSedexException("InitAnnoncesRafamServiceImpl#initAnnonce69b : unable to check NSS "
-                    + e.getMessage());
+            throw new ALRafamSedexException(
+                    "InitAnnoncesRafamServiceImpl#initAnnonce69b : unable to check NSS " + e.getMessage());
         }
 
         // enfant
@@ -443,16 +464,16 @@ public class InitAnnoncesRafamServiceImpl extends ALAbstractBusinessServiceImpl 
             annonce.setPrenomEnfant(message.getChild().getFirstName());
         }
         if (!JadeStringUtil.isBlank(message.getChild().getSex())) {
-            annonce.setSexeEnfant(ALImplServiceLocator.getAnnonceRafamBusinessService().getSexeCS(
-                    message.getChild().getSex()));
+            annonce.setSexeEnfant(
+                    ALImplServiceLocator.getAnnonceRafamBusinessService().getSexeCS(message.getChild().getSex()));
         }
         if (message.getChild().getDateOfBirth() != null) {
-            annonce.setDateNaissanceEnfant(JadeDateUtil.getGlobazFormattedDate(message.getChild().getDateOfBirth()
-                    .getYearMonthDay().toGregorianCalendar().getTime()));
+            annonce.setDateNaissanceEnfant(JadeDateUtil.getGlobazFormattedDate(
+                    message.getChild().getDateOfBirth().getYearMonthDay().toGregorianCalendar().getTime()));
         }
         if (message.getChild().getDateOfDeath() != null) {
-            annonce.setDateMortEnfant(JadeDateUtil.getGlobazFormattedDate(message.getChild().getDateOfDeath()
-                    .getYearMonthDay().toGregorianCalendar().getTime()));
+            annonce.setDateMortEnfant(JadeDateUtil.getGlobazFormattedDate(
+                    message.getChild().getDateOfDeath().getYearMonthDay().toGregorianCalendar().getTime()));
         }
 
         // allocataire
@@ -463,16 +484,16 @@ public class InitAnnoncesRafamServiceImpl extends ALAbstractBusinessServiceImpl 
             annonce.setPrenomAllocataire(message.getBeneficiary().getFirstName());
         }
         if (!JadeStringUtil.isBlank(message.getBeneficiary().getSex())) {
-            annonce.setSexeAllocataire(ALImplServiceLocator.getAnnonceRafamBusinessService().getSexeCS(
-                    message.getBeneficiary().getSex()));
+            annonce.setSexeAllocataire(
+                    ALImplServiceLocator.getAnnonceRafamBusinessService().getSexeCS(message.getBeneficiary().getSex()));
         }
         if (message.getBeneficiary().getDateOfBirth() != null) {
-            annonce.setDateNaissanceAllocataire(JadeDateUtil.getGlobazFormattedDate(message.getBeneficiary()
-                    .getDateOfBirth().getYearMonthDay().toGregorianCalendar().getTime()));
+            annonce.setDateNaissanceAllocataire(JadeDateUtil.getGlobazFormattedDate(
+                    message.getBeneficiary().getDateOfBirth().getYearMonthDay().toGregorianCalendar().getTime()));
         }
         if (message.getBeneficiary().getDateOfDeath() != null) {
-            annonce.setDateMortAllocataire(JadeDateUtil.getGlobazFormattedDate(message.getBeneficiary()
-                    .getDateOfDeath().getYearMonthDay().toGregorianCalendar().getTime()));
+            annonce.setDateMortAllocataire(JadeDateUtil.getGlobazFormattedDate(
+                    message.getBeneficiary().getDateOfDeath().getYearMonthDay().toGregorianCalendar().getTime()));
         }
 
         return annonce;
@@ -480,21 +501,21 @@ public class InitAnnoncesRafamServiceImpl extends ALAbstractBusinessServiceImpl 
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ch.globaz.al.business.services.rafam.InitAnnoncesRafamService#initAnnonce69c(ch.ech.xmlns.ech_0104_69._2.
      * RegisterStatusRecordType)
      */
     @Override
-    public AnnonceRafamModel initAnnonce69cDelegue(RegisterStatusRecordType message, boolean initial)
-            throws JadeApplicationException, JadePersistenceException {
+    public AnnonceRafamModel initAnnonce69cDelegue(ch.ech.xmlns.ech_0104_69._3.RegisterStatusRecordType message,
+            boolean initial) throws JadeApplicationException, JadePersistenceException {
 
         CommonNSSFormater nssf = new CommonNSSFormater();
         AnnonceRafamModel annonce = new AnnonceRafamModel();
 
         annonce.setRecordNumber(message.getRecordNumber().toString());
 
-        annonce.setGenrePrestation(RafamFamilyAllowanceType.getFamilyAllowanceType(message.getFamilyAllowanceType())
-                .getCodeCentrale());
+        annonce.setGenrePrestation(
+                RafamFamilyAllowanceType.getFamilyAllowanceType(message.getFamilyAllowanceType()).getCodeCentrale());
 
         // NSS
         try {
@@ -514,16 +535,16 @@ public class InitAnnoncesRafamServiceImpl extends ALAbstractBusinessServiceImpl 
             annonce.setPrenomEnfant(message.getChild().getFirstName());
         }
         if (!JadeStringUtil.isBlank(message.getChild().getSex())) {
-            annonce.setSexeEnfant(ALImplServiceLocator.getAnnonceRafamBusinessService().getSexeCS(
-                    message.getChild().getSex()));
+            annonce.setSexeEnfant(
+                    ALImplServiceLocator.getAnnonceRafamBusinessService().getSexeCS(message.getChild().getSex()));
         }
         if (message.getChild().getDateOfBirth() != null) {
-            annonce.setDateNaissanceEnfant(JadeDateUtil.getGlobazFormattedDate(message.getChild().getDateOfBirth()
-                    .getYearMonthDay().toGregorianCalendar().getTime()));
+            annonce.setDateNaissanceEnfant(JadeDateUtil.getGlobazFormattedDate(
+                    message.getChild().getDateOfBirth().getYearMonthDay().toGregorianCalendar().getTime()));
         }
         if (message.getChild().getDateOfDeath() != null) {
-            annonce.setDateMortEnfant(JadeDateUtil.getGlobazFormattedDate(message.getChild().getDateOfDeath()
-                    .getYearMonthDay().toGregorianCalendar().getTime()));
+            annonce.setDateMortEnfant(JadeDateUtil.getGlobazFormattedDate(
+                    message.getChild().getDateOfDeath().getYearMonthDay().toGregorianCalendar().getTime()));
         }
 
         annonce.setBaseLegale(RafamLegalBasis.getLegalBasis(message.getLegalBasis().getLaw()).getCodeCentrale());
@@ -533,7 +554,8 @@ public class InitAnnoncesRafamServiceImpl extends ALAbstractBusinessServiceImpl 
 
         if (message.getValidityPeriod() != null) {
             annonce.setDebutDroit(ALDateUtils.XMLGregorianCalendarToGlobazDate(message.getValidityPeriod().getStart()));
-            annonce.setEcheanceDroit(ALDateUtils.XMLGregorianCalendarToGlobazDate(message.getValidityPeriod().getEnd()));
+            annonce.setEcheanceDroit(
+                    ALDateUtils.XMLGregorianCalendarToGlobazDate(message.getValidityPeriod().getEnd()));
         }
 
         // allocataire
@@ -543,7 +565,8 @@ public class InitAnnoncesRafamServiceImpl extends ALAbstractBusinessServiceImpl 
             }
         } catch (Exception e) {
             throw new ALRafamSedexException(
-                    "InitAnnoncesRafamServiceImpl#initAnnonce69c : unable to check beneficiary's NSS " + e.getMessage());
+                    "InitAnnoncesRafamServiceImpl#initAnnonce69c : unable to check beneficiary's NSS "
+                            + e.getMessage());
         }
 
         if (!JadeStringUtil.isBlank(message.getBeneficiary().getOfficialName())) {
@@ -553,30 +576,30 @@ public class InitAnnoncesRafamServiceImpl extends ALAbstractBusinessServiceImpl 
             annonce.setPrenomAllocataire(message.getBeneficiary().getFirstName());
         }
         if (!JadeStringUtil.isBlank(message.getBeneficiary().getSex())) {
-            annonce.setSexeAllocataire(ALImplServiceLocator.getAnnonceRafamBusinessService().getSexeCS(
-                    message.getBeneficiary().getSex()));
+            annonce.setSexeAllocataire(
+                    ALImplServiceLocator.getAnnonceRafamBusinessService().getSexeCS(message.getBeneficiary().getSex()));
         }
         if (message.getBeneficiary().getDateOfBirth() != null) {
-            annonce.setDateNaissanceAllocataire(JadeDateUtil.getGlobazFormattedDate(message.getBeneficiary()
-                    .getDateOfBirth().getYearMonthDay().toGregorianCalendar().getTime()));
+            annonce.setDateNaissanceAllocataire(JadeDateUtil.getGlobazFormattedDate(
+                    message.getBeneficiary().getDateOfBirth().getYearMonthDay().toGregorianCalendar().getTime()));
         }
         if (message.getBeneficiary().getDateOfDeath() != null) {
-            annonce.setDateMortAllocataire(JadeDateUtil.getGlobazFormattedDate(message.getBeneficiary()
-                    .getDateOfDeath().getYearMonthDay().toGregorianCalendar().getTime()));
+            annonce.setDateMortAllocataire(JadeDateUtil.getGlobazFormattedDate(
+                    message.getBeneficiary().getDateOfDeath().getYearMonthDay().toGregorianCalendar().getTime()));
         }
 
-        annonce.setCodeStatutFamilial(RafamFamilyStatus.getFamilyStatus(message.getBeneficiary().getFamilialStatus())
-                .getCodeCentrale());
+        annonce.setCodeStatutFamilial(
+                RafamFamilyStatus.getFamilyStatus(message.getBeneficiary().getFamilialStatus()).getCodeCentrale());
 
-        annonce.setCodeTypeActivite(RafamOccupationStatus.getOccupationStatus(
-                message.getBeneficiary().getOccupationStatus()).getCodeCentrale());
+        annonce.setCodeTypeActivite(RafamOccupationStatus
+                .getOccupationStatus(message.getBeneficiary().getOccupationStatus()).getCodeCentrale());
 
-        annonce.setDateCreation(JadeDateUtil.getGlobazFormattedDate(message.getCreationDate().toGregorianCalendar()
-                .getTime()));
+        annonce.setDateCreation(
+                JadeDateUtil.getGlobazFormattedDate(message.getCreationDate().toGregorianCalendar().getTime()));
 
         if (message.getMutationDate() != null) {
-            annonce.setDateMutation(JadeDateUtil.getGlobazFormattedDate(message.getMutationDate().toGregorianCalendar()
-                    .getTime()));
+            annonce.setDateMutation(
+                    JadeDateUtil.getGlobazFormattedDate(message.getMutationDate().toGregorianCalendar().getTime()));
         }
 
         if (message.getCanceled() == null) {
@@ -621,18 +644,19 @@ public class InitAnnoncesRafamServiceImpl extends ALAbstractBusinessServiceImpl 
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
-     * ch.globaz.al.business.services.rafam.InitAnnoncesRafamService#initAnnonce69d(ch.ech.xmlns.ech_0104_69._2.NoticeType
+     * ch.globaz.al.business.services.rafam.InitAnnoncesRafamService#initAnnonce69d(ch.ech.xmlns.ech_0104_69._2.
+     * NoticeType
      * )
      */
     @Override
-    public AnnonceRafamModel initAnnonce69d(NoticeType notice) throws JadeApplicationException,
-            JadePersistenceException {
+    public AnnonceRafamModel initAnnonce69d(ch.ech.xmlns.ech_0104_69._3.NoticeType notice)
+            throws JadeApplicationException, JadePersistenceException {
         CommonNSSFormater nssf = new CommonNSSFormater();
         AnnonceRafamModel annonce = new AnnonceRafamModel();
-        AnnonceRafamModel last = ALImplServiceLocator.getAnnoncesRafamSearchService().getLastAnnonceForRecordNumber(
-                notice.getRecordNumber().toString());
+        AnnonceRafamModel last = ALImplServiceLocator.getAnnoncesRafamSearchService()
+                .getLastAnnonceForRecordNumber(notice.getRecordNumber().toString());
 
         if (last.isNew()) {
             throw new ALAnnonceRafamException(
@@ -650,14 +674,14 @@ public class InitAnnoncesRafamServiceImpl extends ALAbstractBusinessServiceImpl 
         annonce.setIdDroit(last.getIdDroit());
 
         annonce.setRecordNumber(notice.getRecordNumber().toString());
-        annonce.setGenrePrestation(RafamFamilyAllowanceType.getFamilyAllowanceType(notice.getFamilyAllowanceType())
-                .getCodeCentrale());
+        annonce.setGenrePrestation(
+                RafamFamilyAllowanceType.getFamilyAllowanceType(notice.getFamilyAllowanceType()).getCodeCentrale());
 
-        annonce.setDateCreation(JadeDateUtil.getGlobazFormattedDate(notice.getCreationDate().toGregorianCalendar()
-                .getTime()));
+        annonce.setDateCreation(
+                JadeDateUtil.getGlobazFormattedDate(notice.getCreationDate().toGregorianCalendar().getTime()));
         if (notice.getMutationDate() != null) {
-            annonce.setDateMutation(JadeDateUtil.getGlobazFormattedDate(notice.getMutationDate().toGregorianCalendar()
-                    .getTime()));
+            annonce.setDateMutation(
+                    JadeDateUtil.getGlobazFormattedDate(notice.getMutationDate().toGregorianCalendar().getTime()));
         }
 
         annonce.setCodeRetour(RafamReturnCode.getRafamReturnCode(Long.toString(notice.getReturnCode())).getCode());
@@ -668,16 +692,16 @@ public class InitAnnoncesRafamServiceImpl extends ALAbstractBusinessServiceImpl 
             annonce.setNssAllocataire(nssf.format(Long.toString(notice.getBeneficiary().getVn())));
 
         } catch (Exception e) {
-            throw new ALRafamSedexException("InitAnnoncesRafamServiceImpl#initAnnonce69d : unable to check NSS "
-                    + e.getMessage());
+            throw new ALRafamSedexException(
+                    "InitAnnoncesRafamServiceImpl#initAnnonce69d : unable to check NSS " + e.getMessage());
         }
 
         return annonce;
     }
 
     @Override
-    public AnnonceRafamModel initAnnonceDelegue68a(BeneficiaryType beneficiary, ChildType child, AllowanceType allowance)
-            throws JadeApplicationException, JadePersistenceException {
+    public AnnonceRafamModel initAnnonceDelegue68a(BeneficiaryType beneficiary, ChildType child,
+            AllowanceType allowance) throws JadeApplicationException, JadePersistenceException {
 
         AnnonceRafamModel annonce = new AnnonceRafamModel();
         annonce.setTypeAnnonce(RafamTypeAnnonce._68A_CREATION.getCode());
@@ -717,8 +741,8 @@ public class InitAnnoncesRafamServiceImpl extends ALAbstractBusinessServiceImpl 
 
     @Override
     public AnnonceRafamModel initAnnonceDelegue68b(BeneficiaryType beneficiary, ChildType child,
-            AllowanceType allowance, AnnonceRafamModel lastAnnonce) throws JadeApplicationException,
-            JadePersistenceException {
+            AllowanceType allowance, AnnonceRafamModel lastAnnonce)
+            throws JadeApplicationException, JadePersistenceException {
 
         AnnonceRafamModel annonce = new AnnonceRafamModel();
         annonce.setTypeAnnonce(RafamTypeAnnonce._68B_MUTATION.getCode());
@@ -766,8 +790,8 @@ public class InitAnnoncesRafamServiceImpl extends ALAbstractBusinessServiceImpl 
 
     @Override
     public AnnonceRafamModel initAnnonceDelegue68c(BeneficiaryType beneficiary, ChildType child,
-            AllowanceType allowance, AnnonceRafamModel lastAnnonce) throws JadeApplicationException,
-            JadePersistenceException {
+            AllowanceType allowance, AnnonceRafamModel lastAnnonce)
+            throws JadeApplicationException, JadePersistenceException {
         AnnonceRafamModel annonce = new AnnonceRafamModel();
         annonce.setTypeAnnonce(RafamTypeAnnonce._68C_ANNULATION.getCode());
         annonce.setEvDeclencheur(RafamEvDeclencheur.ANNULATION.getCS());
@@ -792,6 +816,299 @@ public class InitAnnoncesRafamServiceImpl extends ALAbstractBusinessServiceImpl 
         annonce.setOfficeIdentifier(lastAnnonce.getOfficeIdentifier());
         annonce.setOfficeBranch(lastAnnonce.getOfficeBranch());
         annonce.setLegalOffice(lastAnnonce.getLegalOffice());
+
+        return annonce;
+    }
+
+    @Override
+    public AnnonceRafamModel initAnnonce69b(al.ch.ech.xmlns.ech_0104_69._4.UPISynchronizationRecordType message)
+            throws JadeApplicationException, JadePersistenceException {
+
+        CommonNSSFormater nssf = new CommonNSSFormater();
+        AnnonceRafamModel annonce = new AnnonceRafamModel();
+        AnnonceRafamModel last = ALImplServiceLocator.getAnnoncesRafamSearchService()
+                .getLastAnnonceForRecordNumber(message.getRecordNumber().toString());
+
+        if (last.isNew()) {
+            throw new ALAnnonceRafamException(
+                    "InitAnnoncesRafamServiceImpl#initAnnonce69b : aucune annonce n'a été trouvée pour le record number "
+                            + message.getRecordNumber().toString());
+        }
+
+        annonce.setDateReception(JadeDateUtil.getGlobazFormattedDate(new Date()));
+
+        annonce.setTypeAnnonce(RafamTypeAnnonce._69B_SYNCHRO_UPI.getCode());
+        annonce.setEvDeclencheur(RafamEvDeclencheur.UPDATE_UPI.getCS());
+
+        annonce.setInternalError(false);
+        annonce.setCanceled(false);
+        annonce.setEtat(RafamEtatAnnonce.RECU.getCS());
+        annonce.setIdAllocataire(last.getIdAllocataire());
+        annonce.setIdDroit(last.getIdDroit());
+
+        annonce.setRecordNumber(message.getRecordNumber().toString());
+        // selon le recordNumber, on set attribut delegated
+        AnnonceRafamSedexService s = ALImplServiceLocator.getAnnonceRafamSedexService();
+
+        if (s.isAnnonceEmployeurDelegue(null, message.getRecordNumber().toString())) {
+            annonce.setDelegated(true);
+        } else {
+            annonce.setDelegated(false);
+        }
+
+        annonce.setGenrePrestation(
+                RafamFamilyAllowanceType.getFamilyAllowanceType(message.getFamilyAllowanceType()).getCodeCentrale());
+
+        annonce.setDateCreation(
+                JadeDateUtil.getGlobazFormattedDate(message.getCreationDate().toGregorianCalendar().getTime()));
+        if (message.getMutationDate() != null) {
+            annonce.setDateMutation(
+                    JadeDateUtil.getGlobazFormattedDate(message.getMutationDate().toGregorianCalendar().getTime()));
+        }
+
+        annonce.setCodeRetour(RafamReturnCode.getRafamReturnCode(Long.toString(message.getReturnCode())).getCode());
+
+        // NSS
+        try {
+            if (message.getChild().getVn() != null) {
+                annonce.setNssEnfant(nssf.format(Long.toString(message.getChild().getVn())));
+            }
+            if (message.getChild().getNewVn() != null) {
+                annonce.setNewNssEnfant(nssf.format(Long.toString(message.getChild().getNewVn())));
+            }
+            if (message.getBeneficiary().getVn() != null) {
+                annonce.setNssAllocataire(nssf.format(Long.toString(message.getBeneficiary().getVn())));
+            }
+        } catch (Exception e) {
+            throw new ALRafamSedexException(
+                    "InitAnnoncesRafamServiceImpl#initAnnonce69b : unable to check NSS " + e.getMessage());
+        }
+
+        // enfant
+        if (!JadeStringUtil.isBlank(message.getChild().getOfficialName())) {
+            annonce.setNomEnfant(message.getChild().getOfficialName());
+        }
+        if (!JadeStringUtil.isBlank(message.getChild().getFirstName())) {
+            annonce.setPrenomEnfant(message.getChild().getFirstName());
+        }
+        if (!JadeStringUtil.isBlank(message.getChild().getSex())) {
+            annonce.setSexeEnfant(
+                    ALImplServiceLocator.getAnnonceRafamBusinessService().getSexeCS(message.getChild().getSex()));
+        }
+        if (message.getChild().getDateOfBirth() != null) {
+            annonce.setDateNaissanceEnfant(JadeDateUtil.getGlobazFormattedDate(
+                    message.getChild().getDateOfBirth().getYearMonthDay().toGregorianCalendar().getTime()));
+        }
+        if (message.getChild().getDateOfDeath() != null) {
+            annonce.setDateMortEnfant(JadeDateUtil.getGlobazFormattedDate(
+                    message.getChild().getDateOfDeath().getYearMonthDay().toGregorianCalendar().getTime()));
+        }
+
+        // allocataire
+        if (!JadeStringUtil.isBlank(message.getBeneficiary().getOfficialName())) {
+            annonce.setNomAllocataire(message.getBeneficiary().getOfficialName());
+        }
+        if (!JadeStringUtil.isBlank(message.getBeneficiary().getFirstName())) {
+            annonce.setPrenomAllocataire(message.getBeneficiary().getFirstName());
+        }
+        if (!JadeStringUtil.isBlank(message.getBeneficiary().getSex())) {
+            annonce.setSexeAllocataire(
+                    ALImplServiceLocator.getAnnonceRafamBusinessService().getSexeCS(message.getBeneficiary().getSex()));
+        }
+        if (message.getBeneficiary().getDateOfBirth() != null) {
+            annonce.setDateNaissanceAllocataire(JadeDateUtil.getGlobazFormattedDate(
+                    message.getBeneficiary().getDateOfBirth().getYearMonthDay().toGregorianCalendar().getTime()));
+        }
+        if (message.getBeneficiary().getDateOfDeath() != null) {
+            annonce.setDateMortAllocataire(JadeDateUtil.getGlobazFormattedDate(
+                    message.getBeneficiary().getDateOfDeath().getYearMonthDay().toGregorianCalendar().getTime()));
+        }
+
+        return annonce;
+    }
+
+    @Override
+    public AnnonceRafamModel initAnnonce69cDelegue(al.ch.ech.xmlns.ech_0104_69._4.RegisterStatusRecordType message,
+            boolean initial) throws JadeApplicationException, JadePersistenceException {
+
+        CommonNSSFormater nssf = new CommonNSSFormater();
+        AnnonceRafamModel annonce = new AnnonceRafamModel();
+
+        annonce.setRecordNumber(message.getRecordNumber().toString());
+
+        annonce.setGenrePrestation(
+                RafamFamilyAllowanceType.getFamilyAllowanceType(message.getFamilyAllowanceType()).getCodeCentrale());
+
+        // NSS
+        try {
+            if (message.getChild().getVn() != null) {
+                annonce.setNssEnfant(nssf.format(Long.toString(message.getChild().getVn())));
+            }
+        } catch (Exception e) {
+            throw new ALRafamSedexException(
+                    "InitAnnoncesRafamServiceImpl#initAnnonce69c : unable to check child's NSS " + e.getMessage());
+        }
+
+        // enfant
+        if (!JadeStringUtil.isBlank(message.getChild().getOfficialName())) {
+            annonce.setNomEnfant(message.getChild().getOfficialName());
+        }
+        if (!JadeStringUtil.isBlank(message.getChild().getFirstName())) {
+            annonce.setPrenomEnfant(message.getChild().getFirstName());
+        }
+        if (!JadeStringUtil.isBlank(message.getChild().getSex())) {
+            annonce.setSexeEnfant(
+                    ALImplServiceLocator.getAnnonceRafamBusinessService().getSexeCS(message.getChild().getSex()));
+        }
+        if (message.getChild().getDateOfBirth() != null) {
+            annonce.setDateNaissanceEnfant(JadeDateUtil.getGlobazFormattedDate(
+                    message.getChild().getDateOfBirth().getYearMonthDay().toGregorianCalendar().getTime()));
+        }
+        if (message.getChild().getDateOfDeath() != null) {
+            annonce.setDateMortEnfant(JadeDateUtil.getGlobazFormattedDate(
+                    message.getChild().getDateOfDeath().getYearMonthDay().toGregorianCalendar().getTime()));
+        }
+
+        annonce.setBaseLegale(RafamLegalBasis.getLegalBasis(message.getLegalBasis().getLaw()).getCodeCentrale());
+        if (message.getLegalBasis().getCanton() != null) {
+            annonce.setCanton(message.getLegalBasis().getCanton().value());
+        }
+
+        if (message.getValidityPeriod() != null) {
+            annonce.setDebutDroit(ALDateUtils.XMLGregorianCalendarToGlobazDate(message.getValidityPeriod().getStart()));
+            annonce.setEcheanceDroit(
+                    ALDateUtils.XMLGregorianCalendarToGlobazDate(message.getValidityPeriod().getEnd()));
+        }
+
+        // allocataire
+        try {
+            if (message.getBeneficiary().getVn() != null) {
+                annonce.setNssAllocataire(nssf.format(Long.toString(message.getBeneficiary().getVn())));
+            }
+        } catch (Exception e) {
+            throw new ALRafamSedexException(
+                    "InitAnnoncesRafamServiceImpl#initAnnonce69c : unable to check beneficiary's NSS "
+                            + e.getMessage());
+        }
+
+        if (!JadeStringUtil.isBlank(message.getBeneficiary().getOfficialName())) {
+            annonce.setNomAllocataire(message.getBeneficiary().getOfficialName());
+        }
+        if (!JadeStringUtil.isBlank(message.getBeneficiary().getFirstName())) {
+            annonce.setPrenomAllocataire(message.getBeneficiary().getFirstName());
+        }
+        if (!JadeStringUtil.isBlank(message.getBeneficiary().getSex())) {
+            annonce.setSexeAllocataire(
+                    ALImplServiceLocator.getAnnonceRafamBusinessService().getSexeCS(message.getBeneficiary().getSex()));
+        }
+        if (message.getBeneficiary().getDateOfBirth() != null) {
+            annonce.setDateNaissanceAllocataire(JadeDateUtil.getGlobazFormattedDate(
+                    message.getBeneficiary().getDateOfBirth().getYearMonthDay().toGregorianCalendar().getTime()));
+        }
+        if (message.getBeneficiary().getDateOfDeath() != null) {
+            annonce.setDateMortAllocataire(JadeDateUtil.getGlobazFormattedDate(
+                    message.getBeneficiary().getDateOfDeath().getYearMonthDay().toGregorianCalendar().getTime()));
+        }
+
+        annonce.setCodeStatutFamilial(
+                RafamFamilyStatus.getFamilyStatus(message.getBeneficiary().getFamilialStatus()).getCodeCentrale());
+
+        annonce.setCodeTypeActivite(RafamOccupationStatus
+                .getOccupationStatus(message.getBeneficiary().getOccupationStatus()).getCodeCentrale());
+
+        annonce.setDateCreation(
+                JadeDateUtil.getGlobazFormattedDate(message.getCreationDate().toGregorianCalendar().getTime()));
+
+        if (message.getMutationDate() != null) {
+            annonce.setDateMutation(
+                    JadeDateUtil.getGlobazFormattedDate(message.getMutationDate().toGregorianCalendar().getTime()));
+        }
+
+        if (message.getCanceled() == null) {
+            annonce.setCanceled(false);
+        } else {
+            annonce.setCanceled(0 == message.getCanceled() ? true : false);
+        }
+
+        if (message.getReturnCode() != null) {
+            annonce.setCodeRetour(RafamReturnCode.getRafamReturnCode(Long.toString(message.getReturnCode())).getCode());
+        } else {
+
+            if ((message.getError() != null) && !message.getError().isEmpty()) {
+                annonce.setCodeRetour(RafamReturnCode.EN_ERREUR.getCode());
+            } else if (annonce.getCanceled()) {
+                annonce.setCodeRetour(RafamReturnCode.ANNULEE.getCode());
+            } else {
+                annonce.setCodeRetour(RafamReturnCode.TRAITE.getCode());
+            }
+        }
+
+        // ////////////////////////////////////////////////////////////////
+        // Informations internes
+        if (initial) {
+            annonce.setTypeAnnonce(RafamTypeAnnonce._68A_CREATION.getCode());
+            annonce.setEvDeclencheur(RafamEvDeclencheur.CREATION.getCS());
+        } else {
+            annonce.setTypeAnnonce(RafamTypeAnnonce._69C_REGISTER_STATUS.getCode());
+            annonce.setEvDeclencheur(RafamEvDeclencheur.ETAT_REGISTRE.getCS());
+        }
+
+        annonce.setDateReception(JadeDateUtil.getGlobazFormattedDate(new Date()));
+        annonce.setInternalOfficeReference("ED-" + message.getRecordNumber().toString().substring(0, 2) + "-"
+                + ALRafamUtils.translateInRefNumber(message.getRecordNumber().toString()));
+        annonce.setInternalError(false);
+        annonce.setEtat(RafamEtatAnnonce.RECU.getCS());
+        annonce.setIdAllocataire("0");
+        annonce.setIdDroit("0");
+        annonce.setDelegated(new Boolean(true));
+        return annonce;
+    }
+
+    @Override
+    public AnnonceRafamModel initAnnonce69d(al.ch.ech.xmlns.ech_0104_69._4.NoticeType notice)
+            throws JadeApplicationException, JadePersistenceException {
+        CommonNSSFormater nssf = new CommonNSSFormater();
+        AnnonceRafamModel annonce = new AnnonceRafamModel();
+        AnnonceRafamModel last = ALImplServiceLocator.getAnnoncesRafamSearchService()
+                .getLastAnnonceForRecordNumber(notice.getRecordNumber().toString());
+
+        if (last.isNew()) {
+            throw new ALAnnonceRafamException(
+                    "InitAnnoncesRafamServiceImpl#initAnnonce69d : aucune annonce n'a été trouvée pour le record number "
+                            + notice.getRecordNumber().toString());
+        }
+
+        annonce.setTypeAnnonce(RafamTypeAnnonce._69D_NOTICE.getCode());
+        annonce.setEvDeclencheur(RafamEvDeclencheur.NOTICE.getCS());
+
+        annonce.setInternalError(false);
+        annonce.setCanceled(false);
+        annonce.setEtat(RafamEtatAnnonce.RECU.getCS());
+        annonce.setIdAllocataire(last.getIdAllocataire());
+        annonce.setIdDroit(last.getIdDroit());
+
+        annonce.setRecordNumber(notice.getRecordNumber().toString());
+        annonce.setGenrePrestation(
+                RafamFamilyAllowanceType.getFamilyAllowanceType(notice.getFamilyAllowanceType()).getCodeCentrale());
+
+        annonce.setDateCreation(
+                JadeDateUtil.getGlobazFormattedDate(notice.getCreationDate().toGregorianCalendar().getTime()));
+        if (notice.getMutationDate() != null) {
+            annonce.setDateMutation(
+                    JadeDateUtil.getGlobazFormattedDate(notice.getMutationDate().toGregorianCalendar().getTime()));
+        }
+
+        annonce.setCodeRetour(RafamReturnCode.getRafamReturnCode(Long.toString(notice.getReturnCode())).getCode());
+
+        // NSS
+        try {
+            annonce.setNssEnfant(nssf.format(Long.toString(notice.getChild().getVn())));
+            annonce.setNssAllocataire(nssf.format(Long.toString(notice.getBeneficiary().getVn())));
+
+        } catch (Exception e) {
+            throw new ALRafamSedexException(
+                    "InitAnnoncesRafamServiceImpl#initAnnonce69d : unable to check NSS " + e.getMessage());
+        }
 
         return annonce;
     }
