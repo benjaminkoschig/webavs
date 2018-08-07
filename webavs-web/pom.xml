@@ -184,13 +184,11 @@
 								<include>ree/*.xsd</include>
 								<include>P2020/annoncesRC/*.xsd</include>
 								<include>rpc/*.xsd</include>
-<!-- 								<include>al/*.xsd</include>  -->
 							</schemaIncludes>
 							<bindingDirectory>src/main/resources/xjb</bindingDirectory>
 							<bindingIncludes>
 								<include>ree-bindings.xjb</include>
 								<include>rpc-bindings.xjb</include>
-<!-- 								<include>al-bindings.xjb</include>  -->
 							</bindingIncludes>
 						</configuration>
 					</execution>
@@ -209,6 +207,7 @@
 							<bindingIncludes>
 								<include>al-bindings.xjb</include> 
 							</bindingIncludes>
+							<clearOutputDir>false</clearOutputDir>
 						</configuration>
 					</execution>
 				</executions>
