@@ -4,7 +4,7 @@ import globaz.jade.persistence.model.JadeSimpleModel;
 
 public class AffiliationSimpleModel extends JadeSimpleModel {
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
     private String affiliationId;
@@ -24,6 +24,7 @@ public class AffiliationSimpleModel extends JadeSimpleModel {
     private Boolean relevePersonnel;
     private String typeAffiliation;
     private String accesSecurite;
+    private String numeroIDE;
 
     public String getAffiliationId() {
         return affiliationId;
@@ -169,6 +170,14 @@ public class AffiliationSimpleModel extends JadeSimpleModel {
 
     public void setAccesSecurite(String accesSecurite) {
         this.accesSecurite = accesSecurite;
+    }
+
+    public String getNumeroIDE() {
+        return numeroIDE;
+    }
+
+    public void setNumeroIDE(String numeroIDE) {
+        this.numeroIDE = numeroIDE;
     }
 
 }

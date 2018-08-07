@@ -1,10 +1,6 @@
 package ch.globaz.al.businessimpl.services.affiliation;
 
-import globaz.globall.util.JACalendar;
-import globaz.jade.client.util.JadeDateUtil;
-import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.exception.JadeApplicationException;
-import globaz.jade.exception.JadePersistenceException;
+import java.util.Date;
 import ch.globaz.al.business.constantes.ALCSDossier;
 import ch.globaz.al.business.exceptions.affiliations.ALAffiliationException;
 import ch.globaz.al.business.exceptions.model.dossier.ALDossierComplexModelException;
@@ -13,25 +9,33 @@ import ch.globaz.al.business.services.ALServiceLocator;
 import ch.globaz.al.business.services.affiliation.AffiliationBusinessService;
 import ch.globaz.al.businessimpl.services.ALAbstractBusinessServiceImpl;
 import ch.globaz.naos.business.data.AssuranceInfo;
+import ch.globaz.naos.business.model.AffiliationSearchSimpleModel;
+import ch.globaz.naos.business.model.AffiliationSimpleModel;
 import ch.globaz.naos.business.service.AFBusinessServiceLocator;
+import globaz.globall.util.JACalendar;
+import globaz.jade.client.util.JadeDateUtil;
+import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.exception.JadeApplicationException;
+import globaz.jade.exception.JadePersistenceException;
 
 /**
  * Implémentation du service métier lié aux affiliation
- * 
+ *
  * @author jts
- * 
+ *
  */
-public class AffiliationBusinessServiceImpl extends ALAbstractBusinessServiceImpl implements AffiliationBusinessService {
+public class AffiliationBusinessServiceImpl extends ALAbstractBusinessServiceImpl
+        implements AffiliationBusinessService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @seech.globaz.al.business.services.affiliation.AffiliationService#
      * getAssuranceInfo(ch.globaz.al.business.models.dossier.DossierModel, java.lang.String)
      */
     @Override
-    public AssuranceInfo getAssuranceInfo(DossierModel model, String date) throws JadePersistenceException,
-            JadeApplicationException {
+    public AssuranceInfo getAssuranceInfo(DossierModel model, String date)
+            throws JadePersistenceException, JadeApplicationException {
 
         if (model == null) {
             throw new ALAffiliationException(
@@ -43,8 +47,8 @@ public class AffiliationBusinessServiceImpl extends ALAbstractBusinessServiceImp
         }
 
         if (!JadeDateUtil.isGlobazDate(date)) {
-            throw new ALDossierComplexModelException("AffiliationServiceImpl#getAssuranceInfo :" + date
-                    + "is not a valid date");
+            throw new ALDossierComplexModelException(
+                    "AffiliationServiceImpl#getAssuranceInfo :" + date + "is not a valid date");
         }
 
         // TODO (lot 2) on ne doit pas passer l'activite de l'allocataire
@@ -85,7 +89,7 @@ public class AffiliationBusinessServiceImpl extends ALAbstractBusinessServiceImp
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @seech.globaz.al.business.services.affiliation.AffiliationService#
      * getAssuranceInfo(ch.globaz.al.business.models.dossier.DossierModel, java.lang.String)
      */
@@ -105,8 +109,8 @@ public class AffiliationBusinessServiceImpl extends ALAbstractBusinessServiceImp
         }
 
         if (!JadeDateUtil.isGlobazDate(date)) {
-            throw new ALDossierComplexModelException("AffiliationServiceImpl#getAssuranceInfo :" + date
-                    + "is not a valid date");
+            throw new ALDossierComplexModelException(
+                    "AffiliationServiceImpl#getAssuranceInfo :" + date + "is not a valid date");
         }
 
         // TODO (lot 2) on ne doit pas passer l'activite de l'allocataire
@@ -132,8 +136,8 @@ public class AffiliationBusinessServiceImpl extends ALAbstractBusinessServiceImp
         } else if (ALCSDossier.ACTIVITE_TSE.equals(activite)) {
             activite = "";
         } else {
-            throw new ALAffiliationException("AffiliationServiceImpl#getAssuranceInfo : the activity type " + activite
-                    + " is not supported");
+            throw new ALAffiliationException(
+                    "AffiliationServiceImpl#getAssuranceInfo : the activity type " + activite + " is not supported");
         }
 
         return AFBusinessServiceLocator.getAffiliationService().getAssuranceInfoAF(numAffilie, date, activite);
@@ -141,7 +145,7 @@ public class AffiliationBusinessServiceImpl extends ALAbstractBusinessServiceImp
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ch.globaz.al.business.services.affiliation.AffiliationBusinessService#requireDocumentLienAgenceCommunale()
      */
     @Override
@@ -152,5 +156,20 @@ public class AffiliationBusinessServiceImpl extends ALAbstractBusinessServiceImp
         } else {
             return false;
         }
+    }
+
+    @Override
+    public AffiliationSimpleModel getAffiliation(String numAffilie)
+            throws JadePersistenceException, JadeApplicationException {
+        AffiliationSimpleModel affil = new AffiliationSimpleModel();
+        AffiliationSearchSimpleModel searchModel = new AffiliationSearchSimpleModel();
+        searchModel.setForNumeroAffilie(numAffilie);
+        searchModel.setForDateValidite(JadeDateUtil.getGlobazFormattedDate(new Date()));
+        searchModel.setWhereKey("withoutDateFin");
+        searchModel = AFBusinessServiceLocator.getAffiliationService().find(searchModel);
+        if (searchModel.getSize() >= 1) {
+            affil = (AffiliationSimpleModel) searchModel.getSearchResults()[0];
+        }
+        return affil;
     }
 }

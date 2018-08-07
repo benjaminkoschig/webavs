@@ -16,6 +16,7 @@
 			<field name="sexeEnfant" column="ARSEXE" type="NUMERIC" dataType="NUMERIC(8,0)" mandatory="false" comment="Sexe de l'enfant"/>
 			<field name="dateNaissanceEnfant" column="ARNAIE" type="DATE" mandatory="false" comment="Date de naissance de l'enfant"/>
 			<field name="dateMortEnfant" column="ARMORE" type="DATE" mandatory="false" comment="Date de la mort de l'enfant"/>
+			<field name="codeCentralePaysEnfant" column="ARPAYE" type="NUMERIC" dataType="NUMERIC(3,0)" mandatory="true" comment="Pays de domicile de l'enfant" />
 			
 			<field name="idAllocataire" column="BID" type="NUMERIC" mandatory="true" comment="ID (FK) de l'allocataire à l'annonce"/>
 			<field name="nssAllocataire" column="ARVNAL" type="STRING" dataType="VARCHAR(16)" mandatory="true" comment="NSS de l'allocataire"/>
@@ -56,6 +57,7 @@
 			<field name="officeIdentifier" column="AROFID" type="STRING" dataType="VARCHAR(10)" mandatory="true" comment="Delivery office id de la caisse"/>
 			<field name="officeBranch" column="ARBRAN" type="STRING" dataType="VARCHAR(10)" mandatory="true" comment="branche de l'office"/>
 			<field name="legalOffice" column="ARLEOF" type="STRING" dataType="VARCHAR(10)" mandatory="true" comment="Legal office de la caisse"/>
+			<field name="numeroIDE" column="ARNIDE" type="STRING" dateType="VARCHAR(50)" mandatory="false" comment="numéro IDE" />
 		</fields>
 		
 		<search-definition name="default">

@@ -4,13 +4,13 @@ import globaz.jade.persistence.model.JadeSimpleModel;
 
 /**
  * Modèle d'une annonce RAFAM
- * 
+ *
  * @author jts
- * 
+ *
  */
 public class AnnonceRafamModel extends JadeSimpleModel {
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
     /**
@@ -90,7 +90,7 @@ public class AnnonceRafamModel extends JadeSimpleModel {
 
     /**
      * Etat de l'annonce
-     * 
+     *
      */
     private String etat = null;
 
@@ -187,6 +187,16 @@ public class AnnonceRafamModel extends JadeSimpleModel {
     private String officeIdentifier;
     private String officeBranch;
     private String legalOffice;
+
+    /**
+     * pays de domicile de l'enfant (obligatoire depuis xsd 4.0)
+     */
+    private String codeCentralePaysEnfant;
+
+    /**
+     * numéro IDE (ajouté depuis xsd 4.0)
+     */
+    private String numeroIDE;
 
     /**
      * Type d'annonce
@@ -521,5 +531,21 @@ public class AnnonceRafamModel extends JadeSimpleModel {
 
     public void setOfficeBranch(String officeBranch) {
         this.officeBranch = officeBranch;
+    }
+
+    public String getNumeroIDE() {
+        return numeroIDE;
+    }
+
+    public void setNumeroIDE(String numeroIDE) {
+        this.numeroIDE = numeroIDE;
+    }
+
+    public String getCodeCentralePaysEnfant() {
+        return codeCentralePaysEnfant;
+    }
+
+    public void setCodeCentralePaysEnfant(String codeCentralePaysEnfant) {
+        this.codeCentralePaysEnfant = codeCentralePaysEnfant;
     }
 }

@@ -264,7 +264,7 @@ function suspendreAnnonce(){
                   <hr />
                   <% } %>
 
-                  <table class="tab2Col">
+                  <table class="tab3Col">
                   
                   <td class="label subtitle" colspan="6">
                        <ct:FWLabel key="AL0031_ENFANT"/>
@@ -344,12 +344,15 @@ function suspendreAnnonce(){
                            <input type="text" value="<%=(JadeStringUtil.isBlankOrZero(viewBean.getAnnonce().getAnnonceRafamModel().getEcheanceDroit()))?"":viewBean.getAnnonce().getAnnonceRafamModel().getEcheanceDroit()%>" name="annonce.annonceRafamModel.echeanceDroit" <%=viewBean.getEditionModeFields() %>/>
                         </td>
 
-                        <td colspan="2">
+                        <td class="label"><ct:FWLabel key="AL0031_PAYS_DOMICILE_ENFANT"/></td>
+
+                        <td>
+                           <input type="text" value="<%=viewBean.getAnnonce().getAnnonceRafamModel().getCodeCentralePaysEnfant()%>" name="annonce.annonceRafamModel.echeanceDroit" <%=viewBean.getEditionModeFields() %>/>
                         </td>
                      </tr>
                   </table>
                   
-                  <table class="tab2Col">
+                  <table class="tab3Col">
                      <caption><ct:FWLabel key="AL0031_ENFANT_CENTRALE"/></caption>
 
                      <tr>
@@ -381,15 +384,16 @@ function suspendreAnnonce(){
                         <td>
                            <input type="text" value="<%=viewBean.getAnnonce().getAnnonceRafamModel().getPrenomEnfant()%>" disabled="disabled" class="readOnly" readonly="readonly" />
                         </td>
-
-                        <td colspan="2">
+						<!-- Pour la mise en page -->
+                        <td >&nbsp;
                         </td>
+                        <td >&nbsp;
                      </tr>
                   </table>
 
                   <hr />
 
-                  <table class="tab2Col">
+                  <table class="tab3Col">
                      
                      
                         <td class="label subtitle" colspan="6">
@@ -409,8 +413,11 @@ function suspendreAnnonce(){
                          <td>
                            <input type="text" value="<%=viewBean.getAnnonce().getAnnonceRafamModel().getDateNaissanceAllocataire()%>" disabled="disabled" class="readOnly" readonly="readonly" />
                         </td>
-
-                        <td colspan="2">
+                        
+                          <td class="label"><ct:FWLabel key="AL0031_IDE_EMPLOYEUR"/></td>
+                         
+                         <td>
+                           <input type="text" value="<%=(JadeStringUtil.isBlankOrZero(viewBean.getAnnonce().getAnnonceRafamModel().getNumeroIDE()))?"":viewBean.getAnnonce().getAnnonceRafamModel().getNumeroIDE()%>" disabled="disabled" class="readOnly" readonly="readonly" />
                         </td>
                      </tr>
 
@@ -452,7 +459,7 @@ function suspendreAnnonce(){
                      </tr>
                   </table>
                   
-                  <table class="tab2Col">
+                  <table class="tab3Col">
                        <caption><ct:FWLabel key="AL0031_BENEFICIAIRE_CENTRALE"/></caption>
 						
                      <tr>
@@ -467,8 +474,10 @@ function suspendreAnnonce(){
                          <td>
                            <input type="text" value="<%=viewBean.getAnnonce().getAnnonceRafamModel().getDateNaissanceAllocataire()%>" disabled="disabled" class="readOnly" readonly="readonly" />
                         </td>
-
-                        <td colspan="2">
+						<!-- Pour la mise en page -->
+                        <td >&nbsp;
+                        </td>
+                        <td >&nbsp;
                         </td>
                      </tr>
 
@@ -484,8 +493,10 @@ function suspendreAnnonce(){
                         <td>
                            <input type="text" value="<%=viewBean.getAnnonce().getAnnonceRafamModel().getPrenomAllocataire()%>" disabled="disabled" class="readOnly" readonly="readonly" />
                         </td>
-
-                        <td colspan="2">
+						<!-- Pour la mise en page -->
+                        <td >&nbsp;
+                        </td>
+                        <td >&nbsp;
                         </td>
                      </tr>
                   </table>

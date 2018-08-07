@@ -22,6 +22,7 @@
 			<field name="idConvention" column="MACONV" type="NUMERIC" />
 			
 			<field name="accesSecurite" column="MATSEC" type="NUMERIC" />
+			<field name="numeroIDE" column="MALFED" type="STRING" />
 			<!-- 
 			<field name="brancheEconomique" column="MATBRA" type="NUMERIC"  />
 			<field name="personnaliteJuridique" column="MATJUR" type="NUMERIC"  />
@@ -40,7 +41,6 @@
 			<field name="relevePersonnel" column="MABREI" type="NUMERIC"  />
 			<field name="massePeriodicite" column="MAMMAP" type="NUMERIC"  />
 			<field name="masseAnnuelle" column="MAMMAA" type="NUMERIC"  />
-			<field name="numeroIDE" column="MALFED" type="STRING"  />
 			<field name="taxeCo2Taux" column="MAMTCO" type="STRING"  />
 			<field name="taxeCo2Fraction" column="MAMFCO" type="STRING"  />
 			<field name="ancienAffilieNumero" column="MALNAA" type="STRING"  />
@@ -71,6 +71,17 @@
 				<search-field name="forNumeroAffilie" field-ref="affilieNumero" operation="EQUALS" />
 				<search-field name="forNumeroAffilieLike" field-ref="affilieNumero" operation="LIKE" />
 				<search-field name="forDateValidite" field-ref="dateDebut" operation="GREATER_OR_EQUALS"/>
+				<search-group operator="OR">
+					<search-field name="forDateValidite" field-ref="dateFin" operation="NULL"/>
+					<search-field name="forDateValidite" field-ref="dateFin" operation="GREATER_OR_EQUALS"/>
+				</search-group>
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="withoutDateFin" >
+			<search-group operator="AND">
+				<search-field name="forNumeroAffilie" field-ref="affilieNumero" operation="EQUALS" />
+				<search-field name="forNumeroAffilieLike" field-ref="affilieNumero" operation="LIKE" />
 				<search-group operator="OR">
 					<search-field name="forDateValidite" field-ref="dateFin" operation="NULL"/>
 					<search-field name="forDateValidite" field-ref="dateFin" operation="GREATER_OR_EQUALS"/>
