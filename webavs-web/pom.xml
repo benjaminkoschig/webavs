@@ -173,24 +173,6 @@
 				<version>0.13.1</version>
 				<executions>
 					<execution>
-						<id>generate-al</id>
-						<goals>
-							<goal>generate</goal>
-						</goals>
-						<configuration>
-							<specVersion>2.1</specVersion>
-							<schemaDirectory>src/main/resources/xsd</schemaDirectory>
-							<schemaIncludes>
-								<include>al/*.xsd</include> 
-							</schemaIncludes>
-							<bindingDirectory>src/main/resources/xjb</bindingDirectory>
-							<bindingIncludes>
-								<include>al-bindings.xjb</include> 
-							</bindingIncludes>
-<!-- 							<clearOutputDir>false</clearOutputDir> -->
-						</configuration>
-					</execution>
-					<execution>
 						<id>generate</id>
 						<goals>
 							<goal>generate</goal>
@@ -207,6 +189,24 @@
 							<bindingIncludes>
 								<include>ree-bindings.xjb</include>
 								<include>rpc-bindings.xjb</include>
+							</bindingIncludes>
+						</configuration>
+					</execution>
+					<execution>
+						<id>generate-al</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<specVersion>2.1</specVersion>
+							<schemaDirectory>src/main/resources/xsd</schemaDirectory>
+							<generateDirectory>target/generated-sources/xjc-al</generateDirectory>
+							<schemaIncludes>
+								<include>al/*.xsd</include> 
+							</schemaIncludes>
+							<bindingDirectory>src/main/resources/xjb</bindingDirectory>
+							<bindingIncludes>
+								<include>al-bindings.xjb</include> 
 							</bindingIncludes>
 						</configuration>
 					</execution>
