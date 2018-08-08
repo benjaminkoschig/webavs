@@ -19,6 +19,7 @@ import globaz.corvus.api.recap.IRERecapMensuelle;
 import globaz.corvus.db.recap.access.RERecapElement;
 import globaz.corvus.db.recap.access.RERecapMensuelle;
 import globaz.corvus.db.recap.access.RERecapMensuelleManager;
+import globaz.corvus.properties.REProperties;
 import globaz.corvus.vb.recap.REDetailRecapMensuelleViewBean;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.globall.db.BManager;
@@ -28,7 +29,6 @@ import globaz.globall.db.GlobazJobQueue;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JACalendarGregorian;
 import globaz.globall.util.JADate;
-import globaz.ij.properties.IJProperties;
 import globaz.jade.common.JadeException;
 import globaz.jade.fs.JadeFsFacade;
 import globaz.prestation.tools.PRDateFormater;
@@ -65,7 +65,7 @@ public class REEnvoyerRecapARC8DXMLProcess extends BProcess {
         validate();
 
         try {
-            PoolMeldungZurZAS.Lot lotAnnonces = REEnvoyerRecapARC8DXMLService.getInstance().initPoolMeldungZurZASLot(IJProperties.CENTRALE_TEST.getBooleanValue(),
+            PoolMeldungZurZAS.Lot lotAnnonces = REEnvoyerRecapARC8DXMLService.getInstance().initPoolMeldungZurZASLot(REProperties.CENTRALE_TEST.getBooleanValue(),
                     CommonProperties.KEY_NO_CAISSE.getValue());
  
             prepareEnvoieAnnonce(reDetRecMenViewBean, lotAnnonces);
@@ -189,7 +189,7 @@ public class REEnvoyerRecapARC8DXMLProcess extends BProcess {
         }
 
         String fileName = REEnvoyerRecapARC8DXMLService.getInstance().genereFichier(lotAnnonces);
-        JadeFsFacade.copyFile(fileName, IJProperties.FTP_CENTRALE_PATH.getValue() + "/" + new File(fileName).getName());
+        JadeFsFacade.copyFile(fileName, REProperties.FTP_CENTRALE_PATH.getValue() + "/" + new File(fileName).getName());
     }
 
 
