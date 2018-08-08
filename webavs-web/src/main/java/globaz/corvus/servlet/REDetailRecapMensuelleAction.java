@@ -175,7 +175,7 @@ public class REDetailRecapMensuelleAction extends PRDefaultAction {
                     _destination = "/corvus?userAction=corvus.recap.detailRecapMensuelleAi.reAfficher&process=launched";
 
                 } else {
-                    _destination = _getDestEchec(session, request, response, viewBean);
+                    _destination = "/corvus?userAction=corvus.recap.detailRecapMensuelleAi.reAfficher";
                 }
 
             } else {
@@ -215,7 +215,7 @@ public class REDetailRecapMensuelleAction extends PRDefaultAction {
                     _destination = "/corvus?userAction=corvus.recap.detailRecapMensuelleAvs.reAfficher&process=launched";
 
                 } else {
-                    _destination = _getDestEchec(session, request, response, viewBean);
+                    _destination = "/corvus?userAction=corvus.recap.detailRecapMensuelleAvs.reAfficher";
                 }
 
             } else {
