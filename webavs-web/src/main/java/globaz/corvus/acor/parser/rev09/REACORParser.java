@@ -1,5 +1,16 @@
 package globaz.corvus.acor.parser.rev09;
 
+import java.io.BufferedReader;
+import java.io.Reader;
+import java.lang.reflect.Method;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import ch.admin.ofit.anakin.donnee.AnnonceErreur;
 import globaz.commons.nss.NSUtil;
 import globaz.corvus.acor.parser.REFeuilleCalculVO;
 import globaz.corvus.anakin.REAnakinParser;
@@ -50,21 +61,10 @@ import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.tools.PRAssert;
 import globaz.prestation.tools.PRDateFormater;
 import globaz.prestation.tools.PRStringUtils;
-import java.io.BufferedReader;
-import java.io.Reader;
-import java.lang.reflect.Method;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import ch.admin.ofit.anakin.donnee.AnnonceErreur;
 
 /**
  * un parser qui parse le fichier annonce.pay de globaz.re.acor et en extrait les prestations
- * 
+ *
  * @author scr
  */
 public class REACORParser extends REACORAbstractFlatFileParser {
@@ -96,9 +96,9 @@ public class REACORParser extends REACORAbstractFlatFileParser {
      * besoin.
      * Bien évidement, en amont nous avons besoin de connaître l'id de la copie de la demande d'ou cet objet qui permet
      * de retourner les 2 informations
-     * 
+     *
      * @author lga
-     * 
+     *
      */
     public static class ReturnedValue {
         private List<Long> idRenteAccordees = new LinkedList<Long>();
@@ -253,11 +253,13 @@ public class REACORParser extends REACORAbstractFlatFileParser {
         // Si pas de date de fin, ou que date de fin après date courante...
         if (
 
-        ((dateFin == null) || (JACalendar.COMPARE_FIRSTLOWER == resultComparaison1) || (JACalendar.COMPARE_EQUALS == resultComparaison1))
+        ((dateFin == null) || (JACalendar.COMPARE_FIRSTLOWER == resultComparaison1)
+                || (JACalendar.COMPARE_EQUALS == resultComparaison1))
 
                 &&
 
-                ((dateDebut != null) && ((JACalendar.COMPARE_FIRSTUPPER == resultComparaison2) || (JACalendar.COMPARE_EQUALS == resultComparaison2)))) {
+                ((dateDebut != null) && ((JACalendar.COMPARE_FIRSTUPPER == resultComparaison2)
+                        || (JACalendar.COMPARE_EQUALS == resultComparaison2)))) {
 
             identificationCas = 1;
         }
@@ -273,22 +275,22 @@ public class REACORParser extends REACORAbstractFlatFileParser {
 
         switch (identificationCas) {
 
-        // Cas 1) rentes en cours
-        // Année montant du RAM = année courant
+            // Cas 1) rentes en cours
+            // Année montant du RAM = année courant
             case 1:
 
                 // mm.aaaa
                 JADate dateDerPmt = new JADate(REPmtMensuel.getDateDernierPmt(session));
                 return String.valueOf(dateDerPmt.getYear());
 
-                // Cas 2) rentes dans le futur
-                // Année montant du RAM = année début de la RA
+            // Cas 2) rentes dans le futur
+            // Année montant du RAM = année début de la RA
             case 2:
                 JADate date = new JADate(ra.getDateDebutDroit());
                 return String.valueOf(date.getYear());
 
-                // Cas 3) rentes rétréoactives
-                // Année montant du RAM = année(date de fin)
+            // Cas 3) rentes rétréoactives
+            // Année montant du RAM = année(date de fin)
             case 3:
                 date = new JADate(ra.getDateFinDroit());
                 return String.valueOf(date.getYear());
@@ -298,7 +300,7 @@ public class REACORParser extends REACORAbstractFlatFileParser {
     }
 
     /**
-     * 
+     *
      * @param session
      * @param transaction
      * @param demandeSource
@@ -309,8 +311,8 @@ public class REACORParser extends REACORAbstractFlatFileParser {
      * @throws Exception
      */
     private static REBasesCalcul doTraiterBaseCalcul(final BSession session, final BTransaction transaction,
-            final REDemandeRente demandeSource, REBasesCalcul bc, final int noCasATraiter, IdDemandeRente idCopieDemande)
-            throws Exception {
+            final REDemandeRente demandeSource, REBasesCalcul bc, final int noCasATraiter,
+            IdDemandeRente idCopieDemande) throws Exception {
 
         switch (noCasATraiter) {
 
@@ -369,8 +371,8 @@ public class REACORParser extends REACORAbstractFlatFileParser {
                 rc.setIdRenteCalculee(demandeSource.getIdRenteCalculee());
                 rc.retrieve(transaction);
                 if (rc.isNew()) {
-                    throw new PRACORException("!!! RC not found. idRC/idDemande = "
-                            + demandeSource.getIdRenteCalculee() + "/" + demandeSource.getIdDemandeRente());
+                    throw new PRACORException("!!! RC not found. idRC/idDemande = " + demandeSource.getIdRenteCalculee()
+                            + "/" + demandeSource.getIdDemandeRente());
                 }
 
                 // on passe la demande dans l'etat...
@@ -428,7 +430,7 @@ public class REACORParser extends REACORAbstractFlatFileParser {
 
     /**
      * Importe les données de ACOR dans une annonce 41 --> Enregistrement 01.
-     * 
+     *
      * @return
      */
     private static REAnnoncesAugmentationModification9Eme importAnnonce41_01(final BSession session,
@@ -442,16 +444,16 @@ public class REACORParser extends REACORAbstractFlatFileParser {
         annonce41.setNumeroCaisse(session.getApplication().getProperty("noCaisse"));
         annonce41.setNumeroAgence(session.getApplication().getProperty("noAgence"));
         annonce41.setNumeroAnnonce(REACORAbstractFlatFileParser.getField(line, fields, "NO_ANNONCE"));
-        annonce41.setReferenceCaisseInterne(REACORAbstractFlatFileParser.getField(line, fields, "REF_INTERNE_CAISSE")
-                .toUpperCase());
-        annonce41.setNoAssAyantDroit(REACORAbstractFlatFileParser.getField(line, fields,
-                "NO_ASS_AYANT_DROIT_PRESTATION").replaceAll("-", "756"));
-        annonce41.setPremierNoAssComplementaire(REACORAbstractFlatFileParser.getField(line, fields,
-                "PREMIER_NO_ASSURE_COMP").replaceAll("-", "756"));
-        annonce41.setSecondNoAssComplementaire(REACORAbstractFlatFileParser.getField(line, fields,
-                "SECOND_NO_ASSURE_COMP").replaceAll("-", "756"));
-        annonce41.setNouveauNoAssureAyantDroit(REACORAbstractFlatFileParser.getField(line, fields,
-                "NOUVEAU_NO_ASS_AYANT_DROIT").replaceAll("-", "756"));
+        annonce41.setReferenceCaisseInterne(
+                REACORAbstractFlatFileParser.getField(line, fields, "REF_INTERNE_CAISSE").toUpperCase());
+        annonce41.setNoAssAyantDroit(REACORAbstractFlatFileParser
+                .getField(line, fields, "NO_ASS_AYANT_DROIT_PRESTATION").replaceAll("-", "756"));
+        annonce41.setPremierNoAssComplementaire(
+                REACORAbstractFlatFileParser.getField(line, fields, "PREMIER_NO_ASSURE_COMP").replaceAll("-", "756"));
+        annonce41.setSecondNoAssComplementaire(
+                REACORAbstractFlatFileParser.getField(line, fields, "SECOND_NO_ASSURE_COMP").replaceAll("-", "756"));
+        annonce41.setNouveauNoAssureAyantDroit(REACORAbstractFlatFileParser
+                .getField(line, fields, "NOUVEAU_NO_ASS_AYANT_DROIT").replaceAll("-", "756"));
         annonce41.setEtatCivil(REACORAbstractFlatFileParser.getField(line, fields, "ETAT_CIVIL"));
         annonce41.setIsRefugie(REACORAbstractFlatFileParser.getField(line, fields, "REFUGIE"));
         annonce41.setCantonEtatDomicile(REACORAbstractFlatFileParser.getField(line, fields, "CANTON_ETAT_DOMICILE"));
@@ -459,8 +461,8 @@ public class REACORParser extends REACORAbstractFlatFileParser {
         annonce41.setDebutDroit(REACORAbstractFlatFileParser.getField(line, fields, "DEBUT_DROIT"));
         annonce41.setMensualitePrestationsFrancs(JadeStringUtil.fillWithZeroes(
                 REACORAbstractFlatFileParser.getField(line, fields, "MENSUALITE_PRESTATIONS_FRANCS"), 5));
-        annonce41.setMensualiteRenteOrdRemp(REACORAbstractFlatFileParser.getField(line, fields,
-                "MENSUALITE_RENTE_ORDINAIRE"));
+        annonce41.setMensualiteRenteOrdRemp(
+                REACORAbstractFlatFileParser.getField(line, fields, "MENSUALITE_RENTE_ORDINAIRE"));
         annonce41.setFinDroit(REACORAbstractFlatFileParser.getField(line, fields, "FIN_DROIT"));
         annonce41.setCodeMutation(REACORAbstractFlatFileParser.getField(line, fields, "CODE_MUTATION"));
         // Ce champ de doit pas être stocké à la création de l'annonce. Il est
@@ -472,7 +474,7 @@ public class REACORParser extends REACORAbstractFlatFileParser {
 
     /**
      * Importe les données de ACOR dans une annonce 41 --> Enregistrement 02.
-     * 
+     *
      * @return
      */
     private static REAnnoncesAugmentationModification9Eme importAnnonce41_02(final BSession session,
@@ -488,36 +490,36 @@ public class REACORParser extends REACORAbstractFlatFileParser {
         annonce41.setAnneeNiveau(REACORAbstractFlatFileParser.getField(line, fields, "ANNEE_NIVEAU"));
         annonce41.setRevenuPrisEnCompte(REACORAbstractFlatFileParser.getField(line, fields, "REVENU_PRIS_EM_COMPTE"));
         annonce41.setEchelleRente(REACORAbstractFlatFileParser.getField(line, fields, "ECHELLE_RENTE"));
-        annonce41.setDureeCoEchelleRenteAv73(REACORAbstractFlatFileParser.getField(line, fields,
-                "DUREE_COT_PRISE_EN_COMPTE_AVANT_1973"));
-        annonce41.setDureeCoEchelleRenteDes73(REACORAbstractFlatFileParser.getField(line, fields,
-                "DUREE_COT_PRISE_EN_COMPTE_DES_1973"));
-        annonce41.setDureeCotManquante48_72(REACORAbstractFlatFileParser.getField(line, fields,
-                "PRISE_EN_COMPTE_COT_MANQUANTE_48_72"));
+        annonce41.setDureeCoEchelleRenteAv73(
+                REACORAbstractFlatFileParser.getField(line, fields, "DUREE_COT_PRISE_EN_COMPTE_AVANT_1973"));
+        annonce41.setDureeCoEchelleRenteDes73(
+                REACORAbstractFlatFileParser.getField(line, fields, "DUREE_COT_PRISE_EN_COMPTE_DES_1973"));
+        annonce41.setDureeCotManquante48_72(
+                REACORAbstractFlatFileParser.getField(line, fields, "PRISE_EN_COMPTE_COT_MANQUANTE_48_72"));
         annonce41.setAnneeCotClasseAge(REACORAbstractFlatFileParser.getField(line, fields, "ANNEE_COT_CLASSE_AGE"));
         annonce41.setDureeAjournement(REACORAbstractFlatFileParser.getField(line, fields, "DUREE_AJOURNEMENT"));
-        annonce41.setSupplementAjournement(REACORAbstractFlatFileParser
-                .getField(line, fields, "SUPPLEMENT_AJOURNEMENT"));
-        annonce41.setDateRevocationAjournement(REACORAbstractFlatFileParser.getField(line, fields,
-                "DATE_REVOCATION_AJOURNEMENT"));
+        annonce41.setSupplementAjournement(
+                REACORAbstractFlatFileParser.getField(line, fields, "SUPPLEMENT_AJOURNEMENT"));
+        annonce41.setDateRevocationAjournement(
+                REACORAbstractFlatFileParser.getField(line, fields, "DATE_REVOCATION_AJOURNEMENT"));
         annonce41.setIsLimiteRevenu(REACORAbstractFlatFileParser.getField(line, fields, "LIMITE_REVENU"));
         annonce41.setIsMinimumGaranti(REACORAbstractFlatFileParser.getField(line, fields, "MINIMUM_GARANTI"));
         annonce41.setOfficeAICompetent(REACORAbstractFlatFileParser.getField(line, fields, "OFFICE_AI_AYANT_DROIT"));
         annonce41.setOfficeAiCompEpouse(REACORAbstractFlatFileParser.getField(line, fields, "OFFICE_AI_EPOUSE"));
-        annonce41.setDegreInvalidite(REACORAbstractFlatFileParser
-                .getField(line, fields, "DEGRE_INVALIDITE_AYANT_DROIT"));
-        annonce41.setDegreInvaliditeEpouse(REACORAbstractFlatFileParser.getField(line, fields,
-                "DEGRE_INVALIDITE_EPOUSE"));
+        annonce41.setDegreInvalidite(
+                REACORAbstractFlatFileParser.getField(line, fields, "DEGRE_INVALIDITE_AYANT_DROIT"));
+        annonce41.setDegreInvaliditeEpouse(
+                REACORAbstractFlatFileParser.getField(line, fields, "DEGRE_INVALIDITE_EPOUSE"));
         annonce41.setCodeInfirmite(REACORAbstractFlatFileParser.getField(line, fields, "CODE_INFIRMITE_AYANT_DROIT"));
         annonce41.setCodeInfirmiteEpouse(REACORAbstractFlatFileParser.getField(line, fields, "CODE_INFIRMITE_EPOUSE"));
-        annonce41.setSurvenanceEvenAssure(REACORAbstractFlatFileParser.getField(line, fields,
-                "SURVENANCE_EVT_ASS_AYANT_DROIT"));
-        annonce41.setSurvenanceEvtAssureEpouse(REACORAbstractFlatFileParser.getField(line, fields,
-                "SURVENANCE_EVT_ASS_EPOUSE"));
-        annonce41.setAgeDebutInvalidite(REACORAbstractFlatFileParser.getField(line, fields,
-                "AGE_DEBUT_INVALIDITE_AYANT_DROIT"));
-        annonce41.setAgeDebutInvaliditeEpouse(REACORAbstractFlatFileParser.getField(line, fields,
-                "AGE_DEBUT_INVALIDITE_EPOUSE"));
+        annonce41.setSurvenanceEvenAssure(
+                REACORAbstractFlatFileParser.getField(line, fields, "SURVENANCE_EVT_ASS_AYANT_DROIT"));
+        annonce41.setSurvenanceEvtAssureEpouse(
+                REACORAbstractFlatFileParser.getField(line, fields, "SURVENANCE_EVT_ASS_EPOUSE"));
+        annonce41.setAgeDebutInvalidite(
+                REACORAbstractFlatFileParser.getField(line, fields, "AGE_DEBUT_INVALIDITE_AYANT_DROIT"));
+        annonce41.setAgeDebutInvaliditeEpouse(
+                REACORAbstractFlatFileParser.getField(line, fields, "AGE_DEBUT_INVALIDITE_EPOUSE"));
         annonce41.setGenreDroitAPI(REACORAbstractFlatFileParser.getField(line, fields, "GENRE_DROIT_API"));
         annonce41.setReduction(REACORAbstractFlatFileParser.getField(line, fields, "REDUCTION"));
         annonce41.setCasSpecial1(REACORAbstractFlatFileParser.getField(line, fields, "CAS_SPECIAL_1"));
@@ -525,8 +527,8 @@ public class REACORParser extends REACORAbstractFlatFileParser {
         annonce41.setCasSpecial3(REACORAbstractFlatFileParser.getField(line, fields, "CAS_SPECIAL_3"));
         annonce41.setCasSpecial4(REACORAbstractFlatFileParser.getField(line, fields, "CAS_SPECIAL_4"));
         annonce41.setCasSpecial5(REACORAbstractFlatFileParser.getField(line, fields, "CAS_SPECIAL_5"));
-        annonce41.setDureeCotManquante73_78(REACORAbstractFlatFileParser.getField(line, fields,
-                "PRISE_EN_COMPTE_DUREES_COT_MANQUANTES_73_78"));
+        annonce41.setDureeCotManquante73_78(
+                REACORAbstractFlatFileParser.getField(line, fields, "PRISE_EN_COMPTE_DUREES_COT_MANQUANTES_73_78"));
         annonce41.setRevenuAnnuelMoyenSansBTE(REACORAbstractFlatFileParser.getField(line, fields, "RAM_SANS_BTE"));
         annonce41.setBteMoyennePrisEnCompte(REACORAbstractFlatFileParser.getField(line, fields, "BTE_MOYENNES"));
         annonce41.setNombreAnneeBTE(REACORAbstractFlatFileParser.getField(line, fields, "NBRE_ANNEE_BTE"));
@@ -536,7 +538,7 @@ public class REACORParser extends REACORAbstractFlatFileParser {
 
     /**
      * Importe les données de ACOR dans une annonce 44 --> Enregistrement 01.
-     * 
+     *
      * @return
      */
     private static REAnnoncesAugmentationModification10Eme importAnnonce44_01(final BSession session,
@@ -549,39 +551,39 @@ public class REACORParser extends REACORAbstractFlatFileParser {
         annonce44.setNumeroCaisse(session.getApplication().getProperty("noCaisse"));
         annonce44.setNumeroAgence(session.getApplication().getProperty("noAgence"));
         annonce44.setNumeroAnnonce(REACORAbstractFlatFileParser.getField(line, fields, "NO_ANNONCE"));
-        annonce44.setReferenceCaisseInterne(REACORAbstractFlatFileParser.getField(line, fields, "REF_INTERNE_CAISSE")
-                .toUpperCase());
-        annonce44.setNoAssAyantDroit(REACORAbstractFlatFileParser.getField(line, fields, "NO_ASS_AYANT_DROIT")
-                .replaceAll("-", "756"));
+        annonce44.setReferenceCaisseInterne(
+                REACORAbstractFlatFileParser.getField(line, fields, "REF_INTERNE_CAISSE").toUpperCase());
+        annonce44.setNoAssAyantDroit(
+                REACORAbstractFlatFileParser.getField(line, fields, "NO_ASS_AYANT_DROIT").replaceAll("-", "756"));
 
-        if (!JadeStringUtil.isBlankOrZero(REACORAbstractFlatFileParser.getField(line, fields, "PREMIER_NO_ASS_COMP")
-                .replaceAll("-", "756"))) {
-            PRTiersWrapper tier1 = PRTiersHelper.getTiers(session, NSUtil.formatAVSUnknown(REACORAbstractFlatFileParser
-                    .getField(line, fields, "PREMIER_NO_ASS_COMP").replaceAll("-", "756")));
+        if (!JadeStringUtil.isBlankOrZero(
+                REACORAbstractFlatFileParser.getField(line, fields, "PREMIER_NO_ASS_COMP").replaceAll("-", "756"))) {
+            PRTiersWrapper tier1 = PRTiersHelper.getTiers(session, NSUtil.formatAVSUnknown(
+                    REACORAbstractFlatFileParser.getField(line, fields, "PREMIER_NO_ASS_COMP").replaceAll("-", "756")));
 
             if (tier1 == null) {
                 annonce44.setPremierNoAssComplementaire("00000000000");
             } else {
-                annonce44.setPremierNoAssComplementaire(REACORAbstractFlatFileParser.getField(line, fields,
-                        "PREMIER_NO_ASS_COMP").replaceAll("-", "756"));
+                annonce44.setPremierNoAssComplementaire(REACORAbstractFlatFileParser
+                        .getField(line, fields, "PREMIER_NO_ASS_COMP").replaceAll("-", "756"));
             }
         }
 
-        if (!JadeStringUtil.isBlankOrZero(REACORAbstractFlatFileParser.getField(line, fields, "SECOND_NO_ASS_COMP")
-                .replaceAll("-", "756"))) {
-            PRTiersWrapper tier2 = PRTiersHelper.getTiers(session, NSUtil.formatAVSUnknown(REACORAbstractFlatFileParser
-                    .getField(line, fields, "SECOND_NO_ASS_COMP").replaceAll("-", "756")));
+        if (!JadeStringUtil.isBlankOrZero(
+                REACORAbstractFlatFileParser.getField(line, fields, "SECOND_NO_ASS_COMP").replaceAll("-", "756"))) {
+            PRTiersWrapper tier2 = PRTiersHelper.getTiers(session, NSUtil.formatAVSUnknown(
+                    REACORAbstractFlatFileParser.getField(line, fields, "SECOND_NO_ASS_COMP").replaceAll("-", "756")));
 
             if (tier2 == null) {
                 annonce44.setSecondNoAssComplementaire("00000000000");
             } else {
-                annonce44.setSecondNoAssComplementaire(REACORAbstractFlatFileParser.getField(line, fields,
-                        "SECOND_NO_ASS_COMP").replaceAll("-", "756"));
+                annonce44.setSecondNoAssComplementaire(REACORAbstractFlatFileParser
+                        .getField(line, fields, "SECOND_NO_ASS_COMP").replaceAll("-", "756"));
             }
         }
 
-        annonce44.setNouveauNoAssureAyantDroit(REACORAbstractFlatFileParser.getField(line, fields,
-                "NOUVEAU_NO_ASS_AYANT_DROIT").replaceAll("-", "756"));
+        annonce44.setNouveauNoAssureAyantDroit(REACORAbstractFlatFileParser
+                .getField(line, fields, "NOUVEAU_NO_ASS_AYANT_DROIT").replaceAll("-", "756"));
         annonce44.setEtatCivil(REACORAbstractFlatFileParser.getField(line, fields, "ETAT_CIVIL"));
         annonce44.setIsRefugie(REACORAbstractFlatFileParser.getField(line, fields, "REFUGIE"));
         annonce44.setCantonEtatDomicile(REACORAbstractFlatFileParser.getField(line, fields, "CANTON_ETAT_DOMICILE"));
@@ -600,7 +602,7 @@ public class REACORParser extends REACORAbstractFlatFileParser {
 
     /**
      * Importe les données de ACOR dans une annonce 44 --> Enregistrement 02.
-     * 
+     *
      * @return
      */
     private static REAnnoncesAugmentationModification10Eme importAnnonce44_02(final BSession session,
@@ -612,14 +614,14 @@ public class REACORParser extends REACORAbstractFlatFileParser {
         annonce44.setCodeApplication(REACORAbstractFlatFileParser.getField(line, fields, "CODE_APPLICATION"));
         annonce44.setCodeEnregistrement01(REACORAbstractFlatFileParser.getField(line, fields, "CODE_ENREGISTREMENT"));
         annonce44.setEchelleRente(REACORAbstractFlatFileParser.getField(line, fields, "ECHELLE_RENTE"));
-        annonce44.setDureeCoEchelleRenteAv73(REACORAbstractFlatFileParser.getField(line, fields,
-                "DUREE_COT_PRISE_EN_COMPTE_AVANT_1973"));
-        annonce44.setDureeCoEchelleRenteDes73(REACORAbstractFlatFileParser.getField(line, fields,
-                "DUREE_COT_PRISE_EN_COMPTE_DES_1973"));
-        annonce44.setDureeCotManquante48_72(REACORAbstractFlatFileParser.getField(line, fields,
-                "PRISE_EN_COMPTE_COT_MANQUANTES_48_72"));
-        annonce44.setDureeCotManquante73_78(REACORAbstractFlatFileParser.getField(line, fields,
-                "PRISE_EN_COMPTE_COT_MANQUANTES_73_78"));
+        annonce44.setDureeCoEchelleRenteAv73(
+                REACORAbstractFlatFileParser.getField(line, fields, "DUREE_COT_PRISE_EN_COMPTE_AVANT_1973"));
+        annonce44.setDureeCoEchelleRenteDes73(
+                REACORAbstractFlatFileParser.getField(line, fields, "DUREE_COT_PRISE_EN_COMPTE_DES_1973"));
+        annonce44.setDureeCotManquante48_72(
+                REACORAbstractFlatFileParser.getField(line, fields, "PRISE_EN_COMPTE_COT_MANQUANTES_48_72"));
+        annonce44.setDureeCotManquante73_78(
+                REACORAbstractFlatFileParser.getField(line, fields, "PRISE_EN_COMPTE_COT_MANQUANTES_73_78"));
         annonce44.setAnneeCotClasseAge(REACORAbstractFlatFileParser.getField(line, fields, "ANNEE_COT_CLASSE_AGE"));
         annonce44.setRamDeterminant(REACORAbstractFlatFileParser.getField(line, fields, "RAM_DETERMINANT"));
         annonce44.setDureeCotPourDetRAM(REACORAbstractFlatFileParser.getField(line, fields, "DUREE_COT_POUR_DET_RAM"));
@@ -629,8 +631,8 @@ public class REACORParser extends REACORAbstractFlatFileParser {
         annonce44.setAnneeNiveau(REACORAbstractFlatFileParser.getField(line, fields, "ANNEE_NIVEAU"));
 
         annonce44.setNbreAnneeBTA(REACORAbstractFlatFileParser.getField(line, fields, "NBRE_ANNEE_BTA"));
-        annonce44.setNbreAnneeBonifTrans(REACORAbstractFlatFileParser.getField(line, fields,
-                "NBRE_ANNEE_BONIF_TRANSITOIRES"));
+        annonce44.setNbreAnneeBonifTrans(
+                REACORAbstractFlatFileParser.getField(line, fields, "NBRE_ANNEE_BONIF_TRANSITOIRES"));
         annonce44.setOfficeAICompetent(REACORAbstractFlatFileParser.getField(line, fields, "OFFICE_AI"));
         annonce44.setDegreInvalidite(REACORAbstractFlatFileParser.getField(line, fields, "DEGRE_INVALIDITE"));
         annonce44.setCodeInfirmite(REACORAbstractFlatFileParser.getField(line, fields, "CODE_INFIRMITE"));
@@ -643,17 +645,17 @@ public class REACORParser extends REACORAbstractFlatFileParser {
         annonce44.setCasSpecial3(REACORAbstractFlatFileParser.getField(line, fields, "CAS_SPECIAL_3"));
         annonce44.setCasSpecial4(REACORAbstractFlatFileParser.getField(line, fields, "CAS_SPECIAL_4"));
         annonce44.setCasSpecial5(REACORAbstractFlatFileParser.getField(line, fields, "CAS_SPECIAL_5"));
-        annonce44.setNbreAnneeAnticipation(REACORAbstractFlatFileParser.getField(line, fields,
-                "NBRE_ANNEES_ANTICIPATION"));
-        annonce44.setReductionAnticipation(REACORAbstractFlatFileParser
-                .getField(line, fields, "REDUCTION_ANTICIPATION"));
-        annonce44.setDateDebutAnticipation(REACORAbstractFlatFileParser.getField(line, fields,
-                "DATE_DEBUT_ANTICIPATION"));
+        annonce44.setNbreAnneeAnticipation(
+                REACORAbstractFlatFileParser.getField(line, fields, "NBRE_ANNEES_ANTICIPATION"));
+        annonce44.setReductionAnticipation(
+                REACORAbstractFlatFileParser.getField(line, fields, "REDUCTION_ANTICIPATION"));
+        annonce44.setDateDebutAnticipation(
+                REACORAbstractFlatFileParser.getField(line, fields, "DATE_DEBUT_ANTICIPATION"));
         annonce44.setDureeAjournement(REACORAbstractFlatFileParser.getField(line, fields, "DUREE_AJOURNEMENT"));
-        annonce44.setSupplementAjournement(REACORAbstractFlatFileParser
-                .getField(line, fields, "SUPPLEMENT_AJOURNEMENT"));
-        annonce44.setDateRevocationAjournement(REACORAbstractFlatFileParser.getField(line, fields,
-                "DATE_REVOCATION_AJOURNEMENT"));
+        annonce44.setSupplementAjournement(
+                REACORAbstractFlatFileParser.getField(line, fields, "SUPPLEMENT_AJOURNEMENT"));
+        annonce44.setDateRevocationAjournement(
+                REACORAbstractFlatFileParser.getField(line, fields, "DATE_REVOCATION_AJOURNEMENT"));
         annonce44.setIsSurvivant(REACORAbstractFlatFileParser.getField(line, fields, "CODE_SURVIVANT_INVALIDE"));
 
         return annonce44;
@@ -661,7 +663,7 @@ public class REACORParser extends REACORAbstractFlatFileParser {
 
     /**
      * Importe les données de ACOR dans une base de calcul.
-     * 
+     *
      * @return
      */
     private static REBasesCalcul importBaseCalcul(final BSession session, final String line,
@@ -688,7 +690,8 @@ public class REACORParser extends REACORAbstractFlatFileParser {
         } catch (Exception e) {
         }
 
-        bc.setAnneeBonifTacheAssistance(REACORAbstractFlatFileParser.getField(line, fields, "ANNEE_BONIF_TACHE_ASSIST"));
+        bc.setAnneeBonifTacheAssistance(
+                REACORAbstractFlatFileParser.getField(line, fields, "ANNEE_BONIF_TACHE_ASSIST"));
         bc.setAnneeBonifTacheEduc(REACORAbstractFlatFileParser.getField(line, fields, "ANNEE_BONIF_TACHE_EDUC"));
         bc.setAnneeBonifTransitoire(REACORAbstractFlatFileParser.getField(line, fields, "ANNEE_BONIF_TRANSITOIRE"));
         bc.setAnneeCotiClasseAge(REACORAbstractFlatFileParser.getField(line, fields, "ANNEE_COTI_CLASSE_AGE"));
@@ -704,18 +707,19 @@ public class REACORParser extends REACORAbstractFlatFileParser {
         bc.setDureeCotiDes73(REACORAbstractFlatFileParser.getField(line, fields, "DUREE_COTI_DES_73"));
         bc.setEchelleRente(REACORAbstractFlatFileParser.getField(line, fields, "ECHELLE_RENTE"));
         bc.setFacteurRevalorisation(REACORAbstractFlatFileParser.getField(line, fields, "FACTEUR_REVALORISATION"));
-        bc.setInvaliditePrecoce(PRStringUtils.getBooleanFromACOR_0_1(REACORAbstractFlatFileParser.getField(line,
-                fields, "INVALIDITE_PRECOCE_AYANT_DROIT")));
-        bc.setLimiteRevenu(PRStringUtils.getBooleanFromACOR_0_1(REACORAbstractFlatFileParser.getField(line, fields,
-                "LIMITE_REVENU")));
-        bc.setMinimuGaranti(PRStringUtils.getBooleanFromACOR_0_1(REACORAbstractFlatFileParser.getField(line, fields,
-                "MINIMUM_GARANTI")));
+        bc.setInvaliditePrecoce(PRStringUtils.getBooleanFromACOR_0_1(
+                REACORAbstractFlatFileParser.getField(line, fields, "INVALIDITE_PRECOCE_AYANT_DROIT")));
+        bc.setLimiteRevenu(PRStringUtils
+                .getBooleanFromACOR_0_1(REACORAbstractFlatFileParser.getField(line, fields, "LIMITE_REVENU")));
+        bc.setMinimuGaranti(PRStringUtils
+                .getBooleanFromACOR_0_1(REACORAbstractFlatFileParser.getField(line, fields, "MINIMUM_GARANTI")));
         bc.setMoisAppointsAvant73(REACORAbstractFlatFileParser.getField(line, fields, "MOIS_APPOINT_AV_73"));
         bc.setMoisAppointsDes73(REACORAbstractFlatFileParser.getField(line, fields, "MOIS_APPOINT_DES_73"));
-        bc.setMoisCotiAnneeOuvertDroit(REACORAbstractFlatFileParser.getField(line, fields, "MOIS_COTI_ANNEE_OUVERTURE"));
+        bc.setMoisCotiAnneeOuvertDroit(
+                REACORAbstractFlatFileParser.getField(line, fields, "MOIS_COTI_ANNEE_OUVERTURE"));
         bc.setMontantMaxR10Ech44(REACORAbstractFlatFileParser.getField(line, fields, "MONTANT_MAX_R10_E44"));
-        bc.setIsPartageRevenuActuel(PRStringUtils.getBooleanFromACOR_0_1(REACORAbstractFlatFileParser.getField(line,
-                fields, "PARTAGE_REVENU")));
+        bc.setIsPartageRevenuActuel(PRStringUtils
+                .getBooleanFromACOR_0_1(REACORAbstractFlatFileParser.getField(line, fields, "PARTAGE_REVENU")));
         bc.setPeriodeAssEtrangerAv73(REACORAbstractFlatFileParser.getField(line, fields, "PERIODE_ASS_ETR_AV_73"));
         bc.setPeriodeAssEtrangerDes73(REACORAbstractFlatFileParser.getField(line, fields, "PERIODE_ASS_ETR_DES73"));
         bc.setPeriodeJeunesse(REACORAbstractFlatFileParser.getField(line, fields, "PERIODE_JEUNESSE"));
@@ -723,33 +727,33 @@ public class REACORParser extends REACORAbstractFlatFileParser {
         bc.setRevenuAnnuelMoyen(REACORAbstractFlatFileParser.getField(line, fields, "RAM"));
         bc.setRevenuJeunesse(REACORAbstractFlatFileParser.getField(line, fields, "REVENU_JEUNESSE"));
         bc.setRevenuPrisEnCompte(REACORAbstractFlatFileParser.getField(line, fields, "REVENU_PRIS_COMPTE"));
-        bc.setRevenuSplitte(PRStringUtils.getBooleanFromACOR_0_1(REACORAbstractFlatFileParser.getField(line, fields,
-                "REVENU_SPLITTE")));
+        bc.setRevenuSplitte(PRStringUtils
+                .getBooleanFromACOR_0_1(REACORAbstractFlatFileParser.getField(line, fields, "REVENU_SPLITTE")));
         bc.setSupplementCarriere(REACORAbstractFlatFileParser.getField(line, fields, "POURCENT_SUPP_CARRIERE"));
-        bc.setSurvenanceEvtAssAyantDroit(JadeStringUtil.removeChar(PRDateFormater
-                .convertDate_MMAA_to_MMxAAAA(REACORAbstractFlatFileParser.getField(line, fields,
-                        "SURVENANCE_EVEN_ASSURE_AYANT_DROIT")), '.'));
+        bc.setSurvenanceEvtAssAyantDroit(JadeStringUtil.removeChar(
+                PRDateFormater.convertDate_MMAA_to_MMxAAAA(
+                        REACORAbstractFlatFileParser.getField(line, fields, "SURVENANCE_EVEN_ASSURE_AYANT_DROIT")),
+                '.'));
         bc.setDureeRevenuAnnuelMoyen(REACORAbstractFlatFileParser.getField(line, fields, "DUREE_COTI_RAM"));
         bc.setReferenceDecision("0");
 
         if (bc instanceof REBasesCalculNeuviemeRevision) {
 
-            ((REBasesCalculNeuviemeRevision) bc).setBonificationTacheEducative(REACORAbstractFlatFileParser.getField(
-                    line, fields, "BONIF_TACHE_EDUCATIVE"));
-            ((REBasesCalculNeuviemeRevision) bc).setNbrAnneeEducation(REACORAbstractFlatFileParser.getField(line,
-                    fields, "NOMBRE_ANNEE_EDUCATION"));
-            ((REBasesCalculNeuviemeRevision) bc).setCodeOfficeAiEpouse(REACORAbstractFlatFileParser.getField(line,
-                    fields, "OFFICE_AI_COMPETANT_EPOUSE"));
-            ((REBasesCalculNeuviemeRevision) bc).setDegreInvaliditeEpouse(REACORAbstractFlatFileParser.getField(line,
-                    fields, "DEGRE_INVALIDITE_EPOUSE"));
-            ((REBasesCalculNeuviemeRevision) bc).setCleInfirmiteEpouse(REACORAbstractFlatFileParser.getField(line,
-                    fields, "CLE_INFIRM_EPOUSE"));
-            ((REBasesCalculNeuviemeRevision) bc).setSurvenanceEvenementAssureEpouse(PRDateFormater
-                    .convertDate_MMAA_to_AAAAMM(REACORAbstractFlatFileParser.getField(line, fields,
-                            "SURVENANCE_EVEN_ASSURE_EPOUSE")));
-            ((REBasesCalculNeuviemeRevision) bc).setInvaliditePrecoceEpouse(PRStringUtils
-                    .getBooleanFromACOR_0_1(REACORAbstractFlatFileParser.getField(line, fields,
-                            "INVALIDITE_PRECOCE_EPOUSE")));
+            ((REBasesCalculNeuviemeRevision) bc).setBonificationTacheEducative(
+                    REACORAbstractFlatFileParser.getField(line, fields, "BONIF_TACHE_EDUCATIVE"));
+            ((REBasesCalculNeuviemeRevision) bc).setNbrAnneeEducation(
+                    REACORAbstractFlatFileParser.getField(line, fields, "NOMBRE_ANNEE_EDUCATION"));
+            ((REBasesCalculNeuviemeRevision) bc).setCodeOfficeAiEpouse(
+                    REACORAbstractFlatFileParser.getField(line, fields, "OFFICE_AI_COMPETANT_EPOUSE"));
+            ((REBasesCalculNeuviemeRevision) bc).setDegreInvaliditeEpouse(
+                    REACORAbstractFlatFileParser.getField(line, fields, "DEGRE_INVALIDITE_EPOUSE"));
+            ((REBasesCalculNeuviemeRevision) bc)
+                    .setCleInfirmiteEpouse(REACORAbstractFlatFileParser.getField(line, fields, "CLE_INFIRM_EPOUSE"));
+            ((REBasesCalculNeuviemeRevision) bc)
+                    .setSurvenanceEvenementAssureEpouse(PRDateFormater.convertDate_MMAA_to_AAAAMM(
+                            REACORAbstractFlatFileParser.getField(line, fields, "SURVENANCE_EVEN_ASSURE_EPOUSE")));
+            ((REBasesCalculNeuviemeRevision) bc).setInvaliditePrecoceEpouse(PRStringUtils.getBooleanFromACOR_0_1(
+                    REACORAbstractFlatFileParser.getField(line, fields, "INVALIDITE_PRECOCE_EPOUSE")));
 
         }
         return bc;
@@ -757,7 +761,7 @@ public class REACORParser extends REACORAbstractFlatFileParser {
 
     /**
      * Importe les données de ACOR dans une rente accordée.
-     * 
+     *
      * @return
      */
     private static REPrestationDue importPrestationsDues(final BSession session, final BTransaction transaction,
@@ -769,11 +773,11 @@ public class REACORParser extends REACORAbstractFlatFileParser {
             pd.setCsType(IREPrestationDue.CS_TYPE_PMT_MENS);
             pd.setCsEtat(IREPrestationDue.CS_ETAT_ATTENTE);
             if (line.length() > 57) {
-                pd.setMontantReductionAnticipation(REACORAbstractFlatFileParser.getField(line, fields,
-                        "MONTANT_REDUC_ANTICI"));
+                pd.setMontantReductionAnticipation(
+                        REACORAbstractFlatFileParser.getField(line, fields, "MONTANT_REDUC_ANTICI"));
                 if (line.length() > 60) {
-                    pd.setMontantSupplementAjournement(REACORAbstractFlatFileParser.getField(line, fields,
-                            "MONTANT_SUPPL_AJOURN"));
+                    pd.setMontantSupplementAjournement(
+                            REACORAbstractFlatFileParser.getField(line, fields, "MONTANT_SUPPL_AJOURN"));
                 } else {
                     pd.setMontantSupplementAjournement("0");
                 }
@@ -786,8 +790,8 @@ public class REACORParser extends REACORAbstractFlatFileParser {
             pd.setCsType(IREPrestationDue.CS_TYPE_MNT_TOT);
 
             String dateDernierPmt = REPmtMensuel.getDateDernierPmt(session);
-            String dateDebutPmt = PRDateFormater.convertDate_AAAAMM_to_MMxAAAA(REACORAbstractFlatFileParser.getField(
-                    line, fields, "DEBUT_PAIEMENT"));
+            String dateDebutPmt = PRDateFormater.convertDate_AAAAMM_to_MMxAAAA(
+                    REACORAbstractFlatFileParser.getField(line, fields, "DEBUT_PAIEMENT"));
             JADate jDateDateDernierPmt = new JADate(dateDernierPmt);
             JADate jDateDateDebutPmt = new JADate(dateDebutPmt);
 
@@ -799,8 +803,8 @@ public class REACORParser extends REACORAbstractFlatFileParser {
 
         }
         pd.setCsTypePaiement(null);
-        pd.setDateDebutPaiement(PRDateFormater.convertDate_AAAAMM_to_MMxAAAA(REACORAbstractFlatFileParser.getField(
-                line, fields, "DEBUT_PAIEMENT")));
+        pd.setDateDebutPaiement(PRDateFormater
+                .convertDate_AAAAMM_to_MMxAAAA(REACORAbstractFlatFileParser.getField(line, fields, "DEBUT_PAIEMENT")));
         pd.setMontant(REACORAbstractFlatFileParser.getField(line, fields, "MONTANT"));
         pd.setRam(REACORAbstractFlatFileParser.getField(line, fields, "RAM"));
 
@@ -809,7 +813,7 @@ public class REACORParser extends REACORAbstractFlatFileParser {
 
     /**
      * Importe les données de ACOR dans une rente accordée.
-     * 
+     *
      * @return
      */
     private static RERenteAccordee importRenteAccordee(final BSession session, final BTransaction transaction,
@@ -861,8 +865,8 @@ public class REACORParser extends REACORAbstractFlatFileParser {
         ISFSituationFamiliale sf = SFSituationFamilialeFactory.getSituationFamiliale(session,
                 ISFSituationFamiliale.CS_DOMAINE_RENTES, demande.loadDemandePrestation(transaction).getIdTiers());
 
-        ISFMembreFamilleRequerant[] mf = sf.getMembresFamilleRequerant(demande.loadDemandePrestation(transaction)
-                .getIdTiers());
+        ISFMembreFamilleRequerant[] mf = sf
+                .getMembresFamilleRequerant(demande.loadDemandePrestation(transaction).getIdTiers());
 
         String nssTiersBaseCalcul = REACORAbstractFlatFileParser.getField(line, fields, "NSS_BASE_CALCUL");
 
@@ -885,13 +889,13 @@ public class REACORParser extends REACORAbstractFlatFileParser {
         }
 
         ra.setSupplementVeuvage(REACORAbstractFlatFileParser.getField(line, fields, "SUPPL_VEUVAGE"));
-        ra.setDateDebutAnticipation(PRDateFormater.convertDate_AAAAMM_to_MMAAAA(PRDateFormater
-                .convertDate_MMAA_to_AAAAMM(REACORAbstractFlatFileParser.getField(line, fields,
-                        "DATE_DEBUT_ANTICIPATION"))));
-        ra.setDateDebutDroit(PRDateFormater.convertDate_MMAA_to_MMxAAAA(REACORAbstractFlatFileParser.getField(line,
-                fields, "DEBUT_DROIT")));
-        ra.setDateFinDroit(PRDateFormater.convertDate_MMAA_to_MMxAAAA(REACORAbstractFlatFileParser.getField(line,
-                fields, "FIN_DROIT")));
+        ra.setDateDebutAnticipation(
+                PRDateFormater.convertDate_AAAAMM_to_MMAAAA(PRDateFormater.convertDate_MMAA_to_AAAAMM(
+                        REACORAbstractFlatFileParser.getField(line, fields, "DATE_DEBUT_ANTICIPATION"))));
+        ra.setDateDebutDroit(PRDateFormater
+                .convertDate_MMAA_to_MMxAAAA(REACORAbstractFlatFileParser.getField(line, fields, "DEBUT_DROIT")));
+        ra.setDateFinDroit(PRDateFormater
+                .convertDate_MMAA_to_MMxAAAA(REACORAbstractFlatFileParser.getField(line, fields, "FIN_DROIT")));
 
         String d = REACORAbstractFlatFileParser.getField(line, fields, "FIN_DROIT_ECHEANCE");
 
@@ -917,8 +921,8 @@ public class REACORParser extends REACORAbstractFlatFileParser {
 
             }
         }
-        ra.setDateRevocationAjournement(PRDateFormater.convertDate_MMAA_to_MMxAAAA(REACORAbstractFlatFileParser
-                .getField(line, fields, "DATE_REVOCATION_AJOURNEMENT")));
+        ra.setDateRevocationAjournement(PRDateFormater.convertDate_MMAA_to_MMxAAAA(
+                REACORAbstractFlatFileParser.getField(line, fields, "DATE_REVOCATION_AJOURNEMENT")));
         ra.setDureeAjournement(REACORAbstractFlatFileParser.getField(line, fields, "DUREE_AJOURNEMENT"));
 
         PRTiersWrapper wrapper = PRTiersHelper.getTiers(session,
@@ -930,23 +934,23 @@ public class REACORParser extends REACORAbstractFlatFileParser {
 
         ra.setIdTiersBeneficiaire(wrapper.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS));
 
-        wrapper = PRTiersHelper.getTiers(session, NSUtil.formatAVSUnknown(REACORAbstractFlatFileParser.getField(line,
-                fields, "PREMIER_NSS_COMPLEMENTAIRE")));
+        wrapper = PRTiersHelper.getTiers(session, NSUtil
+                .formatAVSUnknown(REACORAbstractFlatFileParser.getField(line, fields, "PREMIER_NSS_COMPLEMENTAIRE")));
         if (wrapper != null) {
             ra.setIdTiersComplementaire1(wrapper.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS));
         }
 
-        wrapper = PRTiersHelper.getTiers(session, NSUtil.formatAVSUnknown(REACORAbstractFlatFileParser.getField(line,
-                fields, "SECOND_NSS_COMPLEMENTAIRE")));
+        wrapper = PRTiersHelper.getTiers(session, NSUtil
+                .formatAVSUnknown(REACORAbstractFlatFileParser.getField(line, fields, "SECOND_NSS_COMPLEMENTAIRE")));
         if (wrapper != null) {
             ra.setIdTiersComplementaire2(wrapper.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS));
         }
 
         ra.setMontantPrestation(REACORAbstractFlatFileParser.getField(line, fields, "MONTANT_PRESTATION"));
-        ra.setMontantReducationAnticipation(REACORAbstractFlatFileParser.getField(line, fields,
-                "MONTANT_REDUCT_ANTICIPATION"));
-        ra.setMontantRenteOrdiRemplacee(REACORAbstractFlatFileParser.getField(line, fields,
-                "MONTANT_RENTE_ORDINAIRE_REMPL"));
+        ra.setMontantReducationAnticipation(
+                REACORAbstractFlatFileParser.getField(line, fields, "MONTANT_REDUCT_ANTICIPATION"));
+        ra.setMontantRenteOrdiRemplacee(
+                REACORAbstractFlatFileParser.getField(line, fields, "MONTANT_RENTE_ORDINAIRE_REMPL"));
         ra.setReductionFauteGrave(REACORAbstractFlatFileParser.getField(line, fields, "REDUCTION_FAUTE_GRAVE"));
         ra.setCodeRefugie(REACORAbstractFlatFileParser.getField(line, fields, "CODE_REFUGIE"));
         ra.setSupplementAjournement(REACORAbstractFlatFileParser.getField(line, fields, "SUPPLEMENT_AJOURNEMENT"));
@@ -959,7 +963,7 @@ public class REACORParser extends REACORAbstractFlatFileParser {
 
     /**
      * Parse le fichier annonce.pay (reader) et insere dans la base les prestations qui s'y trouvent.
-     * 
+     *
      * @param session
      *            DOCUMENT ME!
      * @param prononce
@@ -1162,7 +1166,7 @@ public class REACORParser extends REACORAbstractFlatFileParser {
                 /**
                  * Niveau 101..150
                  */
-                if (level <= 150) {
+                if (level <= 150 && !line.startsWith(REACORAbstractFlatFileParser.CODE_BASE_FIN_CALCUL)) {
                     line = REACORParser.readRelevantLine(bufferedReader);
                 }
 
@@ -1170,9 +1174,8 @@ public class REACORParser extends REACORAbstractFlatFileParser {
                  * Niveau 151..200
                  */
                 if (level <= 200) {
-                    if ((line != null)
-                            && (line.startsWith(REACORAbstractFlatFileParser.CODE_RENTE_ACCORDEE) || line
-                                    .startsWith(REACORAbstractFlatFileParser.CODE_AJOURNEMENT))) {
+                    if ((line != null) && (line.startsWith(REACORAbstractFlatFileParser.CODE_RENTE_ACCORDEE)
+                            || line.startsWith(REACORAbstractFlatFileParser.CODE_AJOURNEMENT))) {
                         // importer les rentes accordées
 
                         fields = REACORAbstractFlatFileParser
@@ -1187,8 +1190,8 @@ public class REACORParser extends REACORAbstractFlatFileParser {
                                 fields);
                         // si il y a une relation au requerant => la rente
                         // accordee est pour un des membres de la famille
-                        isAnnoncePayForDemandeRente = (isAnnoncePayForDemandeRente || !JadeStringUtil.isIntegerEmpty(ra
-                                .getCsRelationAuRequerant()));
+                        isAnnoncePayForDemandeRente = (isAnnoncePayForDemandeRente
+                                || !JadeStringUtil.isIntegerEmpty(ra.getCsRelationAuRequerant()));
 
                         ra.setIdBaseCalcul(bc.getIdBasesCalcul());
 
@@ -1260,8 +1263,8 @@ public class REACORParser extends REACORAbstractFlatFileParser {
                         }
 
                         // Traitement des prestations dues....
-                        if (((line != null) && line
-                                .startsWith(REACORAbstractFlatFileParser.CODE_PRESTATION_DUE_RETROACTIF))
+                        if (((line != null)
+                                && line.startsWith(REACORAbstractFlatFileParser.CODE_PRESTATION_DUE_RETROACTIF))
                                 || line.startsWith(REACORAbstractFlatFileParser.CODE_PRESTATION_DUE_MENSUEL)) {
 
                             String dateFin = null;
@@ -1272,8 +1275,8 @@ public class REACORParser extends REACORAbstractFlatFileParser {
                                 // le 1er trouvé correspond à la plus petite des
                                 // dates.
                                 if (plusPetiteDateDeDebutDesPrestationsDues == null) {
-                                    plusPetiteDateDeDebutDesPrestationsDues = REACORAbstractFlatFileParser.getField(
-                                            line, fields, "DEBUT_PAIEMENT");
+                                    plusPetiteDateDeDebutDesPrestationsDues = REACORAbstractFlatFileParser
+                                            .getField(line, fields, "DEBUT_PAIEMENT");
                                 }
                             } else {
                                 fields = REACORAbstractFlatFileParser
@@ -1281,8 +1284,8 @@ public class REACORParser extends REACORAbstractFlatFileParser {
                                 dateFin = REPmtMensuel.getDateDernierPmt(session);
                             }
 
-                            REPrestationDue pd = REACORParser.importPrestationsDues(session,
-                                    (BTransaction) transaction, line, fields, ra);
+                            REPrestationDue pd = REACORParser.importPrestationsDues(session, (BTransaction) transaction,
+                                    line, fields, ra);
                             if (!JadeStringUtil.isBlankOrZero(ra.getDateFinDroit())
                                     && BSessionUtil.compareDateFirstLower(session, ra.getDateFinDroit(), dateFin)) {
 
@@ -1335,9 +1338,9 @@ public class REACORParser extends REACORAbstractFlatFileParser {
                     if (firstDateDebutRA.length() == 0) {
                         firstDateDebutRA = renteAcc.getDateDebutDroit();
                     } else {
-                        if (Integer
-                                .parseInt(PRDateFormater.convertDate_MMxAAAA_to_AAAAMM(renteAcc.getDateDebutDroit())) < Integer
-                                .parseInt(PRDateFormater.convertDate_MMxAAAA_to_AAAAMM(firstDateDebutRA))) {
+                        if (Integer.parseInt(
+                                PRDateFormater.convertDate_MMxAAAA_to_AAAAMM(renteAcc.getDateDebutDroit())) < Integer
+                                        .parseInt(PRDateFormater.convertDate_MMxAAAA_to_AAAAMM(firstDateDebutRA))) {
                             firstDateDebutRA = renteAcc.getDateDebutDroit();
                         }
                     }
@@ -1348,8 +1351,9 @@ public class REACORParser extends REACORAbstractFlatFileParser {
                     if (lastDateFinRA.length() == 0) {
                         lastDateFinRA = renteAcc.getDateFinDroit();
                     } else {
-                        if (Integer.parseInt(PRDateFormater.convertDate_MMxAAAA_to_AAAAMM(renteAcc.getDateFinDroit())) > Integer
-                                .parseInt(PRDateFormater.convertDate_MMxAAAA_to_AAAAMM(lastDateFinRA))) {
+                        if (Integer.parseInt(
+                                PRDateFormater.convertDate_MMxAAAA_to_AAAAMM(renteAcc.getDateFinDroit())) > Integer
+                                        .parseInt(PRDateFormater.convertDate_MMxAAAA_to_AAAAMM(lastDateFinRA))) {
                             lastDateFinRA = renteAcc.getDateFinDroit();
                         }
                     }
@@ -1496,7 +1500,7 @@ public class REACORParser extends REACORAbstractFlatFileParser {
 
     /**
      * Parse le fichier annonce.RR (reader) et insière dans la base les annonces qui s'y trouvent.
-     * 
+     *
      * @param session
      *            DOCUMENT ME!
      * @param transaction
@@ -1867,9 +1871,8 @@ public class REACORParser extends REACORAbstractFlatFileParser {
                  */
 
                 if (level <= 200) {
-                    if ((line != null)
-                            && (line.startsWith(REACORAbstractFlatFileParser.CODE_RENTE_ACCORDEE) || line
-                                    .startsWith(REACORAbstractFlatFileParser.CODE_AJOURNEMENT))) {
+                    if ((line != null) && (line.startsWith(REACORAbstractFlatFileParser.CODE_RENTE_ACCORDEE)
+                            || line.startsWith(REACORAbstractFlatFileParser.CODE_AJOURNEMENT))) {
                         // importer les rentes accordées
 
                         fields = REACORAbstractFlatFileParser
@@ -1934,7 +1937,7 @@ public class REACORParser extends REACORAbstractFlatFileParser {
 
     /**
      * return all the relevant line. skip unused information.
-     * 
+     *
      * @param reader
      * @return
      * @throws Exception
@@ -1960,7 +1963,7 @@ public class REACORParser extends REACORAbstractFlatFileParser {
      * saisie dans la demande' et la date du jours. Il n'est possible de saisir une date de traitement dans la demande,
      * que pour les cas de vieillesse. Elle est utile pour traiter la demande en avance, uniquement. Donc si elle est
      * saisie, elle sera obligatoirement plus grande que la date du jours.
-     * 
+     *
      * @param demande
      * @return max (date jours, date traitement de la demande) format : jj.mm.aaaa
      */
