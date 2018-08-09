@@ -167,7 +167,6 @@ function init(){
 	btnDelLabel = "<<";
 	%>
 	document.forms[0].focus();	
-	disableChkAjoutARC61(document.getElementById('idChkCreerArc61'));
 }
 
 function postInit()
@@ -320,9 +319,12 @@ function showOrHideChkAjoutARC61(tag){
 }
 
 function disableChkAjoutARC61(chkBox){
-	chkBox.style.backgroundColor = '#b3c4db';
-	chkBox.setAttribute("disabled","disabled");
-	chkBox.checked = false;
+	console.log(<%=motif%>);
+	if(<%=motif%> == "11"){
+		chkBox.style.backgroundColor = '#b3c4db';
+		chkBox.setAttribute("disabled","disabled");
+		chkBox.checked = false;
+	}
 }
 
 function trim(valueToTrim)

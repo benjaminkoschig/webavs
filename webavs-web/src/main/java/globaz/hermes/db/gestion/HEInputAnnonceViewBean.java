@@ -1,5 +1,10 @@
 package globaz.hermes.db.gestion;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Vector;
 import globaz.framework.util.FWMessageFormat;
 import globaz.globall.api.BISession;
 import globaz.globall.db.BManager;
@@ -43,11 +48,6 @@ import globaz.jade.log.JadeLogger;
 import globaz.pavo.db.compte.CIAnnonceCIAdditionnel;
 import globaz.pavo.db.compte.CIAnnonceSuspens;
 import globaz.pavo.util.CIAffilieManager;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Vector;
 
 /**
  * @author: ado
@@ -85,13 +85,15 @@ public class HEInputAnnonceViewBean extends HEAnnoncesViewBean {
     private boolean wantCheckUnique = true;
     private String warningEmployeurSansPersoOrAccountZero = "";
 
+    private Boolean chkCreerArc61 = false;
+
     public HEInputAnnonceViewBean() {
         super();
     }
 
     /**
      * Constructor HEInputAnnonceViewBean.
-     * 
+     *
      * @param bSession
      */
     public HEInputAnnonceViewBean(BSession bSession) {
@@ -108,7 +110,7 @@ public class HEInputAnnonceViewBean extends HEAnnoncesViewBean {
      * <code>_afterAdd(BTransaction transaction)</code>
      * <p>
      * Ne pas oublier de partager la connexion avec les autres DAB !!! </i>
-     * 
+     *
      * @exception java.lang.Exception
      *                en cas d'erreur fatale
      */
@@ -142,13 +144,13 @@ public class HEInputAnnonceViewBean extends HEAnnoncesViewBean {
         }
 
         // BZ 5522: exclure le traitement des ordres si uniquement PRESTATIONS (CCB)
-        if (!"true".equals(HEProperties.getParameter(HEProperties.PROP_CODE_EXCL_TRAITEMENT_ORDRE, getSession(),
-                transaction))) {
+        if (!"true".equals(
+                HEProperties.getParameter(HEProperties.PROP_CODE_EXCL_TRAITEMENT_ORDRE, getSession(), transaction))) {
             // PUSH PAVO si enregistrement 01 annonce 21, 22, 23, 29
             if ((this.getField(IHEAnnoncesViewBean.CODE_APPLICATION).equals("21")
                     || this.getField(IHEAnnoncesViewBean.CODE_APPLICATION).equals("22")
-                    || this.getField(IHEAnnoncesViewBean.CODE_APPLICATION).equals("23") || this.getField(
-                    IHEAnnoncesViewBean.CODE_APPLICATION).equals("29"))
+                    || this.getField(IHEAnnoncesViewBean.CODE_APPLICATION).equals("23")
+                    || this.getField(IHEAnnoncesViewBean.CODE_APPLICATION).equals("29"))
                     && this.getField(IHEAnnoncesViewBean.CODE_ENREGISTREMENT).equals("01")) {
 
                 pushAnnonceCI(getSession(), transaction);
@@ -174,8 +176,9 @@ public class HEInputAnnonceViewBean extends HEAnnoncesViewBean {
                 && "01".equals(this.getField(IHEAnnoncesViewBean.CODE_ENREGISTREMENT))) {
 
             if ((HEAnnoncesViewBean.isMotifCA(this.getField(IHEAnnoncesViewBean.MOTIF_ANNONCE))
-                    || (HEAnnoncesViewBean.isMotifForDeclSalaire(this.getField(IHEAnnoncesViewBean.MOTIF_ANNONCE))) || globaz.hermes.utils.HEUtil
-                        .isMotifCert(getSession(), this.getField(IHEAnnoncesViewBean.MOTIF_ANNONCE)))
+                    || (HEAnnoncesViewBean.isMotifForDeclSalaire(this.getField(IHEAnnoncesViewBean.MOTIF_ANNONCE)))
+                    || globaz.hermes.utils.HEUtil.isMotifCert(getSession(),
+                            this.getField(IHEAnnoncesViewBean.MOTIF_ANNONCE)))
                     && "true".equals(getSession().getApplication().getProperty("affilie.input"))) {
                 // Inforom 444
                 if (!JadeStringUtil.isEmpty(getLangueCorrespondance())) {
@@ -248,8 +251,8 @@ public class HEInputAnnonceViewBean extends HEAnnoncesViewBean {
                 }
             }
 
-            if ((HEAnnoncesViewBean.isMotifForDeclSalaire(this.getField(IHEAnnoncesViewBean.MOTIF_ANNONCE)) || HEUtil
-                    .isMotifCert(getSession(), this.getField(IHEAnnoncesViewBean.MOTIF_ANNONCE)))
+            if ((HEAnnoncesViewBean.isMotifForDeclSalaire(this.getField(IHEAnnoncesViewBean.MOTIF_ANNONCE))
+                    || HEUtil.isMotifCert(getSession(), this.getField(IHEAnnoncesViewBean.MOTIF_ANNONCE)))
                     && "true".equals(getSession().getApplication().getProperty("affilie.input"))) {
                 if (!JadeStringUtil.isEmpty(getNumeroAffilie())) {
                     HEInfos infos = new HEInfos();
@@ -299,10 +302,23 @@ public class HEInputAnnonceViewBean extends HEAnnoncesViewBean {
             String AVSOrDesignation = HEUtil.getNumAVSOrDesignation(getNumeroAVS(),
                     this.getField(IHEAnnoncesViewBean.ETAT_NOMINATIF), getSession());
 
-            setWarningEmployeurSansPersoOrAccountZero(AVSOrDesignation + " : "
-                    + getSession().getLabel("HERMES_EMPLOYEUR_SANS_PERSONNEL"));
+            setWarningEmployeurSansPersoOrAccountZero(
+                    AVSOrDesignation + " : " + getSession().getLabel("HERMES_EMPLOYEUR_SANS_PERSONNEL"));
         }
+        addARC61(transaction);
+    }
 
+    private void addARC61(BTransaction transaction) {
+        try {
+            if ("11".equals(getMotif()) && getChkCreerArc61() && !JadeStringUtil.isBlankOrZero(getNumeroAVS())) {
+                setMotif("61");
+                setChkCreerArc61(false);
+                getInputTable().put(IHEAnnoncesViewBean.MOTIF_ANNONCE, "61");
+                this.add(transaction);
+            }
+        } catch (Exception e) {
+            _addError(transaction, e.getMessage());
+        }
     }
 
     @Override
@@ -314,7 +330,7 @@ public class HEInputAnnonceViewBean extends HEAnnoncesViewBean {
 
     /**
      * Appellée avant l'ajout, permet de générer la PK
-     * 
+     *
      * @param transaction
      *            transaction
      * @exception java.lang.Exception
@@ -331,11 +347,10 @@ public class HEInputAnnonceViewBean extends HEAnnoncesViewBean {
         if (codeApp.equals("11") && codeEnr.equals("01")) {
             if ((inputedRef != null) && (inputedRef.trim().length() != 0)) {
 
-                put(IHEAnnoncesViewBean.REFERENCE_INTERNE_CAISSE,
-                        StringUtils
-                                .transformDiphtAndAccent(
-                                        JadeStringUtil.stripBlanks(this
-                                                .getField(IHEAnnoncesViewBean.REFERENCE_INTERNE_CAISSE))).toUpperCase());
+                put(IHEAnnoncesViewBean.REFERENCE_INTERNE_CAISSE, StringUtils
+                        .transformDiphtAndAccent(
+                                JadeStringUtil.stripBlanks(this.getField(IHEAnnoncesViewBean.REFERENCE_INTERNE_CAISSE)))
+                        .toUpperCase());
                 if ("true".equals(getSession().getApplication().getProperty("service.input"))) {
                     // verification que le service dans la référence est pas
                     // vide
@@ -415,9 +430,8 @@ public class HEInputAnnonceViewBean extends HEAnnoncesViewBean {
         if (!codeApp.equals("39")) {
             try {
                 if (!JadeStringUtil.isBlank(this.getField(IHEAnnoncesViewBean.ETAT_NOMINATIF))) {
-                    put(IHEAnnoncesViewBean.ETAT_NOMINATIF,
-                            StringUtils.transformDiphtongues(this.getField(IHEAnnoncesViewBean.ETAT_NOMINATIF))
-                                    .toUpperCase());
+                    put(IHEAnnoncesViewBean.ETAT_NOMINATIF, StringUtils
+                            .transformDiphtongues(this.getField(IHEAnnoncesViewBean.ETAT_NOMINATIF)).toUpperCase());
                 }
             } catch (Exception e) {
                 _addError(transaction, e.getMessage());
@@ -438,9 +452,8 @@ public class HEInputAnnonceViewBean extends HEAnnoncesViewBean {
         setIdAnnonce(this._incCounter(transaction, "0"));
         // //////////////////////////////////////////////////////////////////////////////////////////////
         // je mets la référence unique
-        if (JadeStringUtil.isBlank(getRefUnique())
-                || (this.getField(IHEAnnoncesViewBean.CODE_APPLICATION).equals("11") && this.getField(
-                        IHEAnnoncesViewBean.CODE_ENREGISTREMENT).equals("01"))) {
+        if (JadeStringUtil.isBlank(getRefUnique()) || (this.getField(IHEAnnoncesViewBean.CODE_APPLICATION).equals("11")
+                && this.getField(IHEAnnoncesViewBean.CODE_ENREGISTREMENT).equals("01"))) {
             setRefUnique(getIdAnnonce());
         }
         if (this.getField(IHEAnnoncesViewBean.CODE_APPLICATION).equals("11")
@@ -455,18 +468,18 @@ public class HEInputAnnonceViewBean extends HEAnnoncesViewBean {
           // - Si le numéro de caisse est vide, je set le numéro de caisse et le
           // numéro d'agence
           // par rapport au fichier properties
-        if ((this.getField(IHEAnnoncesViewBean.CODE_APPLICATION).equals("22") && this.getField(
-                IHEAnnoncesViewBean.CODE_ENREGISTREMENT).equals("01"))) {
+        if ((this.getField(IHEAnnoncesViewBean.CODE_APPLICATION).equals("22")
+                && this.getField(IHEAnnoncesViewBean.CODE_ENREGISTREMENT).equals("01"))) {
             setNumeroCaisse(StringUtils.unPad(this.getField(IHEAnnoncesViewBean.NUMERO_CAISSE_COMMETTANTE)) + "."
                     + StringUtils.unPad(this.getField(IHEAnnoncesViewBean.NUMERO_AGENCE_COMMETTANTE)));
-        } else if ((this.getField(IHEAnnoncesViewBean.CODE_APPLICATION).equals("38") || this.getField(
-                IHEAnnoncesViewBean.CODE_APPLICATION).equals("39"))
+        } else if ((this.getField(IHEAnnoncesViewBean.CODE_APPLICATION).equals("38")
+                || this.getField(IHEAnnoncesViewBean.CODE_APPLICATION).equals("39"))
                 && HELotViewBean.CS_TYPE_RECEPTION.equals(getTypeLot())) {
             // réception, donc on prend la caisse CI
             setNumeroCaisse(StringUtils.unPad(this.getField(IHEAnnoncesViewBean.NUMERO_CAISSE__CI)) + "."
                     + StringUtils.unPad(this.getField(IHEAnnoncesViewBean.NUMERO_AGENCE_CI)));
-        } else if ((this.getField(IHEAnnoncesViewBean.CODE_APPLICATION).equals("38") || this.getField(
-                IHEAnnoncesViewBean.CODE_APPLICATION).equals("39"))
+        } else if ((this.getField(IHEAnnoncesViewBean.CODE_APPLICATION).equals("38")
+                || this.getField(IHEAnnoncesViewBean.CODE_APPLICATION).equals("39"))
                 && HELotViewBean.CS_TYPE_ENVOI.equals(getTypeLot())) {
             // envoi
             setNumeroCaisse(StringUtils.unPad(this.getField(IHEAnnoncesViewBean.NUMERO_CAISSE_COMMETTANTE)) + "."
@@ -521,8 +534,8 @@ public class HEInputAnnonceViewBean extends HEAnnoncesViewBean {
         } // cas particulier RCI
         if (this.getField(IHEAnnoncesViewBean.CODE_APPLICATION).equals("11")
                 && this.getField(IHEAnnoncesViewBean.CODE_ENREGISTREMENT).equals("04")
-                && (HEAnnoncesViewBean.isMotifRCI(this.getField(IHEAnnoncesViewBean.MOTIF_ANNONCE)) || HEAnnoncesViewBean
-                        .isMotifRevocation(this.getField(IHEAnnoncesViewBean.MOTIF_ANNONCE)))) { // vérification
+                && (HEAnnoncesViewBean.isMotifRCI(this.getField(IHEAnnoncesViewBean.MOTIF_ANNONCE))
+                        || HEAnnoncesViewBean.isMotifRevocation(this.getField(IHEAnnoncesViewBean.MOTIF_ANNONCE)))) { // vérification
             // de
             // la
             // date
@@ -535,8 +548,8 @@ public class HEInputAnnonceViewBean extends HEAnnoncesViewBean {
                 String dateCloture = StringUtils.removeBeginChars(
                         StringUtils.removeDots(this.getField(IHEAnnoncesViewBean.DATE_CLOTURE_MMAA)), '0');
                 if (JadeStringUtil.isBlank(dateCloture)
-                        || ((Integer.parseInt(dateCloture) <= IHEAnnoncesViewBean.DATE_CLOTURE_AA_MAX) && (Integer
-                                .parseInt(dateCloture) < IHEAnnoncesViewBean.DATE_CLOTURE_MMAA_MAX))) {
+                        || ((Integer.parseInt(dateCloture) <= IHEAnnoncesViewBean.DATE_CLOTURE_AA_MAX)
+                                && (Integer.parseInt(dateCloture) < IHEAnnoncesViewBean.DATE_CLOTURE_MMAA_MAX))) {
                     // date sous format AA et entrée sous forme 92
                     dateCloture = StringUtils.padBeforeString(dateCloture, "0", 2);
                     put(IHEAnnoncesViewBean.DATE_CLOTURE_MMAA, StringUtils.padBeforeString(dateCloture, " ", 4));
@@ -617,8 +630,8 @@ public class HEInputAnnonceViewBean extends HEAnnoncesViewBean {
             if (!HEUtil.isNNSSActif(getSession())) {
                 try {
                     AVSUtils avs = new AVSUtils(this.getField(IHEAnnoncesViewBean.ETAT_NOMINATIF),
-                            this.getField(IHEAnnoncesViewBean.DATE_NAISSANCE_JJMMAAAA), Integer.parseInt(this
-                                    .getField(IHEAnnoncesViewBean.SEXE)));
+                            this.getField(IHEAnnoncesViewBean.DATE_NAISSANCE_JJMMAAAA),
+                            Integer.parseInt(this.getField(IHEAnnoncesViewBean.SEXE)));
                     avs.setFormat(DateUtils.JJMMAAAA);
                     setNumeroAVS(avs.getNumeroAvs());
                 } catch (Exception e) {
@@ -631,8 +644,8 @@ public class HEInputAnnonceViewBean extends HEAnnoncesViewBean {
                 && "01".equals(this.getField(IHEAnnoncesViewBean.CODE_ENREGISTREMENT))) {
             String inputedRef = this.getField(IHEAnnoncesViewBean.REFERENCE_INTERNE_CAISSE);
             if ((inputedRef != null) && (inputedRef.trim().length() != 0)) {
-                put(IHEAnnoncesViewBean.REFERENCE_INTERNE_CAISSE, StringUtils.transformDiphtAndAccent(inputedRef)
-                        .toUpperCase());
+                put(IHEAnnoncesViewBean.REFERENCE_INTERNE_CAISSE,
+                        StringUtils.transformDiphtAndAccent(inputedRef).toUpperCase());
             }
         }
         validate(transaction);
@@ -748,8 +761,8 @@ public class HEInputAnnonceViewBean extends HEAnnoncesViewBean {
                     if (!HEUtil.isNNSSActif(getSession())) {
                         try {
                             AVSUtils avs = new AVSUtils(this.getField(IHEAnnoncesViewBean.ETAT_NOMINATIF),
-                                    this.getField(IHEAnnoncesViewBean.DATE_NAISSANCE_JJMMAAAA), Integer.parseInt(this
-                                            .getField(IHEAnnoncesViewBean.SEXE)));
+                                    this.getField(IHEAnnoncesViewBean.DATE_NAISSANCE_JJMMAAAA),
+                                    Integer.parseInt(this.getField(IHEAnnoncesViewBean.SEXE)));
                             attenteRetour.setNumeroAvs(avs.getNumeroAvs());
                         } catch (Exception e) {
                             JadeLogger.error(this, e);
@@ -929,24 +942,17 @@ public class HEInputAnnonceViewBean extends HEAnnoncesViewBean {
     /**
      * Method generatesReturn. les CODE_TRAITEMENT des annonces 25 qui valent 01,02,94,73,09,71,75 et 94 ne génèrent pas
      * de retours
-     * 
+     *
      * @param CODE_DE_TRAITEMENT
      * @return boolean
      */
     private boolean generatesReturn(String codeTraitement) {
         // les 01,02,94,73,09,71,75,79,91 et 94 ne génèrent pas de retours
         // 67,81 si et slt si motif != 93,98
-        return !"01".equals(codeTraitement)
-                && !"02".equals(codeTraitement)
-                && !"05".equals(codeTraitement)
-                && !"94".equals(codeTraitement)
-                && !"73".equals(codeTraitement)
-                && !"09".equals(codeTraitement)
-                && !"71".equals(codeTraitement)
-                && !"77".equals(codeTraitement)
-                && !"75".equals(codeTraitement)
-                && !"79".equals(codeTraitement)
-                && !"91".equals(codeTraitement)
+        return !"01".equals(codeTraitement) && !"02".equals(codeTraitement) && !"05".equals(codeTraitement)
+                && !"94".equals(codeTraitement) && !"73".equals(codeTraitement) && !"09".equals(codeTraitement)
+                && !"71".equals(codeTraitement) && !"77".equals(codeTraitement) && !"75".equals(codeTraitement)
+                && !"79".equals(codeTraitement) && !"91".equals(codeTraitement)
                 && !("67".equals(codeTraitement) && !("93".equals(getMotif()) || "98".equals(getMotif())
                         || "92".equals(getMotif()) || "97".equals(getMotif())))
                 && !("81".equals(codeTraitement) && !("93".equals(getMotif()) || "98".equals(getMotif())
@@ -1303,7 +1309,7 @@ public class HEInputAnnonceViewBean extends HEAnnoncesViewBean {
 
     /**
      * Method pushAnnonceCI.
-     * 
+     *
      * @param bSession
      * @param transaction
      */
@@ -1457,8 +1463,8 @@ public class HEInputAnnonceViewBean extends HEAnnoncesViewBean {
         // longueur
         if (this.getField(IHEAnnoncesViewBean.CODE_APPLICATION).equals("11")
                 && this.getField(IHEAnnoncesViewBean.CODE_ENREGISTREMENT).equals("04")
-                && (HEAnnoncesViewBean.isMotifRCI(this.getField(IHEAnnoncesViewBean.MOTIF_ANNONCE)) || HEAnnoncesViewBean
-                        .isMotifRevocation(this.getField(IHEAnnoncesViewBean.MOTIF_ANNONCE)))) { // vérification
+                && (HEAnnoncesViewBean.isMotifRCI(this.getField(IHEAnnoncesViewBean.MOTIF_ANNONCE))
+                        || HEAnnoncesViewBean.isMotifRevocation(this.getField(IHEAnnoncesViewBean.MOTIF_ANNONCE)))) { // vérification
             // de
             // la
             // date
@@ -1468,7 +1474,7 @@ public class HEInputAnnonceViewBean extends HEAnnoncesViewBean {
                 String msg = FWMessageFormat.format(getSession().getLabel("HERMES_00004"),
                         ((((HEApplication) getSession().getApplication()).getCsChampsListe(getSession()))
                                 .getCodeSysteme(IHEAnnoncesViewBean.DATE_CLOTURE_MMAA)).getCurrentCodeUtilisateur()
-                                .getLibelle());
+                                        .getLibelle());
                 _addError(transaction, msg);
             } else {
                 String dateCloture = StringUtils.removeBeginChars(
@@ -1497,13 +1503,13 @@ public class HEInputAnnonceViewBean extends HEAnnoncesViewBean {
                         String msg = FWMessageFormat.format(getSession().getLabel("HERMES_00004"),
                                 ((((HEApplication) getSession().getApplication()).getCsChampsListe(getSession()))
                                         .getCodeSysteme(IHEAnnoncesViewBean.NUMERO_ASSURE_AYANT_DROIT))
-                                        .getCurrentCodeUtilisateur().getLibelle());
+                                                .getCurrentCodeUtilisateur().getLibelle());
                         _addError(transaction, msg);
                     }
                 }
                 String numAssure = StringUtils.removeDots(this.getField(IHEAnnoncesViewBean.NUMERO_ASSURE));
-                String numAssureAyantDroit = StringUtils.removeDots(this
-                        .getField(IHEAnnoncesViewBean.NUMERO_ASSURE_AYANT_DROIT));
+                String numAssureAyantDroit = StringUtils
+                        .removeDots(this.getField(IHEAnnoncesViewBean.NUMERO_ASSURE_AYANT_DROIT));
                 if (!JAUtil.isStringEmpty(numAssure) && !JAUtil.isStringEmpty(numAssureAyantDroit)
                         && (numAssure.equals(numAssureAyantDroit))
                         && this.getField(IHEAnnoncesViewBean.AYANT_DROIT).equals("0")) {
@@ -1517,64 +1523,56 @@ public class HEInputAnnonceViewBean extends HEAnnoncesViewBean {
             // soit sur chaque chiffre
             if (!JadeStringUtil.isEmpty(this.getField(IHEAnnoncesViewBean.NUMERO_ASSURE))) {
 
-                if (JadeStringUtil.removeChar(this.getField(IHEAnnoncesViewBean.NUMERO_ASSURE), '.').length() < NUM_AVS_LENGTH) {
+                if (JadeStringUtil.removeChar(this.getField(IHEAnnoncesViewBean.NUMERO_ASSURE), '.')
+                        .length() < NUM_AVS_LENGTH) {
 
                     if (getNnss().booleanValue()) {
-                        if (JadeStringUtil.removeChar(this.getField(IHEAnnoncesViewBean.NUMERO_ASSURE), '.').length() < NUM_NSS_LENGTH) {
-                            _addError(
-                                    transaction,
-                                    FWMessageFormat.format(getSession().getLabel("HERMES_10014"),
-                                            String.valueOf(NUM_NSS_LENGTH)));
+                        if (JadeStringUtil.removeChar(this.getField(IHEAnnoncesViewBean.NUMERO_ASSURE), '.')
+                                .length() < NUM_NSS_LENGTH) {
+                            _addError(transaction, FWMessageFormat.format(getSession().getLabel("HERMES_10014"),
+                                    String.valueOf(NUM_NSS_LENGTH)));
                         }
                     } else {
-                        _addError(
-                                transaction,
-                                FWMessageFormat.format(getSession().getLabel("HERMES_10014"),
-                                        String.valueOf(NUM_AVS_LENGTH)));
+                        _addError(transaction, FWMessageFormat.format(getSession().getLabel("HERMES_10014"),
+                                String.valueOf(NUM_AVS_LENGTH)));
                     }
                 }
             }
 
             if (!JadeStringUtil.isEmpty(this.getField(IHEAnnoncesViewBean.NUMERO_ASSURE_1))) {
-                if (JadeStringUtil.removeChar(this.getField(IHEAnnoncesViewBean.NUMERO_ASSURE_1), '.').length() < NUM_AVS_LENGTH) {
-                    _addError(
-                            transaction,
-                            FWMessageFormat.format(getSession().getLabel("HERMES_10015"),
-                                    String.valueOf(NUM_AVS_LENGTH)));
+                if (JadeStringUtil.removeChar(this.getField(IHEAnnoncesViewBean.NUMERO_ASSURE_1), '.')
+                        .length() < NUM_AVS_LENGTH) {
+                    _addError(transaction, FWMessageFormat.format(getSession().getLabel("HERMES_10015"),
+                            String.valueOf(NUM_AVS_LENGTH)));
                 }
             }
             if (!JadeStringUtil.isEmpty(this.getField(IHEAnnoncesViewBean.NUMERO_ASSURE_2))) {
-                if (JadeStringUtil.removeChar(this.getField(IHEAnnoncesViewBean.NUMERO_ASSURE_2), '.').length() < NUM_AVS_LENGTH) {
-                    _addError(
-                            transaction,
-                            FWMessageFormat.format(getSession().getLabel("HERMES_10015"),
-                                    String.valueOf(NUM_AVS_LENGTH)));
+                if (JadeStringUtil.removeChar(this.getField(IHEAnnoncesViewBean.NUMERO_ASSURE_2), '.')
+                        .length() < NUM_AVS_LENGTH) {
+                    _addError(transaction, FWMessageFormat.format(getSession().getLabel("HERMES_10015"),
+                            String.valueOf(NUM_AVS_LENGTH)));
                 }
             }
             if (!JadeStringUtil.isEmpty(this.getField(IHEAnnoncesViewBean.NUMERO_ASSURE_3))) {
-                if (JadeStringUtil.removeChar(this.getField(IHEAnnoncesViewBean.NUMERO_ASSURE_3), '.').length() < NUM_AVS_LENGTH) {
-                    _addError(
-                            transaction,
-                            FWMessageFormat.format(getSession().getLabel("HERMES_10015"),
-                                    String.valueOf(NUM_AVS_LENGTH)));
+                if (JadeStringUtil.removeChar(this.getField(IHEAnnoncesViewBean.NUMERO_ASSURE_3), '.')
+                        .length() < NUM_AVS_LENGTH) {
+                    _addError(transaction, FWMessageFormat.format(getSession().getLabel("HERMES_10015"),
+                            String.valueOf(NUM_AVS_LENGTH)));
                 }
             }
             if (!JadeStringUtil.isEmpty((this.getField(IHEAnnoncesViewBean.NUMERO_ASSURE_AYANT_DROIT)))) {
                 if (JadeStringUtil.removeChar(this.getField(IHEAnnoncesViewBean.NUMERO_ASSURE_AYANT_DROIT), '.')
                         .length() < NUM_AVS_LENGTH) {
-                    _addError(
-                            transaction,
-                            FWMessageFormat.format(getSession().getLabel("HERMES_10016"),
-                                    String.valueOf(NUM_AVS_LENGTH)));
+                    _addError(transaction, FWMessageFormat.format(getSession().getLabel("HERMES_10016"),
+                            String.valueOf(NUM_AVS_LENGTH)));
                 }
             }
             if (!JadeStringUtil.isEmpty(this.getField(IHEAnnoncesViewBean.NUMERO_ASSURE_CONJOINT_SPLITTING_DIVORCE))) {
-                if (JadeStringUtil.removeChar(
-                        this.getField(IHEAnnoncesViewBean.NUMERO_ASSURE_CONJOINT_SPLITTING_DIVORCE), '.').length() < NUM_AVS_LENGTH) {
-                    _addError(
-                            transaction,
-                            FWMessageFormat.format(getSession().getLabel("HERMES_10017"),
-                                    String.valueOf(NUM_AVS_LENGTH)));
+                if (JadeStringUtil
+                        .removeChar(this.getField(IHEAnnoncesViewBean.NUMERO_ASSURE_CONJOINT_SPLITTING_DIVORCE), '.')
+                        .length() < NUM_AVS_LENGTH) {
+                    _addError(transaction, FWMessageFormat.format(getSession().getLabel("HERMES_10017"),
+                            String.valueOf(NUM_AVS_LENGTH)));
                 }
             }
             if (!JadeStringUtil.isEmpty(this.getField(IHEAnnoncesViewBean.ETAT_ORIGINE))) {
@@ -1649,8 +1647,8 @@ public class HEInputAnnonceViewBean extends HEAnnoncesViewBean {
             if (motifViewBean == null) {
 
                 _addError(transaction, "Motif inexistant : " + this.getField(IHEAnnoncesViewBean.MOTIF_ANNONCE));
-                throw new HEInputAnnonceException("Motif inexistant : "
-                        + this.getField(IHEAnnoncesViewBean.MOTIF_ANNONCE));
+                throw new HEInputAnnonceException(
+                        "Motif inexistant : " + this.getField(IHEAnnoncesViewBean.MOTIF_ANNONCE));
             }
         } //
           // /////////////////////////////////////////////////////////////////////////
@@ -1744,7 +1742,7 @@ public class HEInputAnnonceViewBean extends HEAnnoncesViewBean {
 
     /**
      * Getter de formulePolitesse
-     * 
+     *
      * @return the formulePolitesse
      */
     public String getFormulePolitesse() {
@@ -1754,7 +1752,7 @@ public class HEInputAnnonceViewBean extends HEAnnoncesViewBean {
     /**
      * Ce getter est spécifique, il permettra de ne pas avoir un bug d'affichage au moment de l'action réafficher du
      * framework.
-     * 
+     *
      * @return the warningEmployeurSansPersoOrAccountZero
      */
     public String getWarningEmployeurSansPersoOrAccountZero() {
@@ -1772,11 +1770,19 @@ public class HEInputAnnonceViewBean extends HEAnnoncesViewBean {
 
     /**
      * Setter de formulePolitesse
-     * 
+     *
      * @param formulePolitesse the formulePolitesse to set
      */
     public void setFormulePolitesse(String formulePolitesse) {
         this.formulePolitesse = formulePolitesse;
+    }
+
+    public Boolean getChkCreerArc61() {
+        return chkCreerArc61;
+    }
+
+    public void setChkCreerArc61(Boolean chkCreerArc61) {
+        this.chkCreerArc61 = chkCreerArc61;
     }
 
 }
