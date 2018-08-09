@@ -167,7 +167,7 @@ function init(){
 	btnDelLabel = "<<";
 	%>
 	document.forms[0].focus();	
-	
+	disableChkAjoutARC61(document.getElementById('idChkCreerArc61'));
 }
 
 function postInit()
@@ -218,6 +218,7 @@ function postInit()
 	}else {
 	input[1].focus();
 	}
+	disableChkAjoutARC61(document.getElementById('idChkCreerArc61'));
 }
 
 
@@ -301,7 +302,27 @@ function updateForm(tag){
 			document.forms[0].elements('118011').value = element.paysCode;
 			document.forms[0].elements('TOLST118011').value = element.paysCode;
 		}		
-	}	
+	}
+	showOrHideChkAjoutARC61(tag);
+}
+// La case ne peut être cochée que si 
+function showOrHideChkAjoutARC61(tag){
+	if(tag != null && tag.input != null){
+		var nss = tag.input.value;
+		if(nss != ""){
+			document.getElementById('idChkCreerArc61').removeAttribute("disabled");
+		}else{
+			disableChkAjoutARC61(document.getElementById('idChkCreerArc61'));
+		}
+	}else{
+		disableChkAjoutARC61(document.getElementById('idChkCreerArc61'));
+	}
+}
+
+function disableChkAjoutARC61(chkBox){
+	chkBox.style.backgroundColor = '#b3c4db';
+	chkBox.setAttribute("disabled","disabled");
+	chkBox.checked = false;
 }
 
 function trim(valueToTrim)
@@ -1086,6 +1107,16 @@ function updFieldsBoundedToCategorie(){
 					<textarea disabled="true" name="adresseRentier" id="txtarea" rows="4" cols="40" class="forceDisable"  disabled="true" style=" background-color : #b3c4db;"><%=adr%></textarea> 
 				</td>
 			</tr>
+			<% // Ne concerne que les motifs 11 
+			if("11".equals(motif)){ %>
+			<tr>
+				<td width="400">&nbsp;<ct:FWLabel key="HERMES_JSP_GAZ0004_AJOUT_ARC_61"/></td>
+				<td>
+					<INPUT type="checkbox" value="on" id="idChkCreerArc61" name="chkCreerArc61" <%=viewBean.getChkCreerArc61().booleanValue()?"CHECKED":""%>>&nbsp;
+				</td>
+			</tr>
+			
+			<% }%>
 			
 			
 			</tr>
