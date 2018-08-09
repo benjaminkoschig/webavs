@@ -19,9 +19,14 @@ import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAv
 
 public class MessageRegisterNewXSDVersionStatusRecordDelegueHandler extends MessageEmployeurDelegueHandler {
 
-    public static boolean areAnnoncesDelegueInDb = true;
-    public static boolean canSendMailReactivationModuleAfDelegue = false;
+    private boolean areAnnoncesDelegueInDb = true;
+    private boolean canSendMailReactivationModuleAfDelegue = false;
+
     private RegisterStatusRecordType message = null;
+
+    public MessageRegisterNewXSDVersionStatusRecordDelegueHandler() {
+
+    }
 
     public MessageRegisterNewXSDVersionStatusRecordDelegueHandler(RegisterStatusRecordType register) {
         message = register;
@@ -55,9 +60,9 @@ public class MessageRegisterNewXSDVersionStatusRecordDelegueHandler extends Mess
     public AnnonceRafamModel traiterMessage(Map<String, Object> params)
             throws JadeApplicationException, JadePersistenceException {
 
-        if (!MessageRegisterNewXSDVersionStatusRecordDelegueHandler.areAnnoncesDelegueInDb) {
+        if (!isAreAnnoncesDelegueInDb()) {
 
-            MessageRegisterNewXSDVersionStatusRecordDelegueHandler.canSendMailReactivationModuleAfDelegue = true;
+            setCanSendMailReactivationModuleAfDelegue(true);
             annonceImported = ALImplServiceLocator.getInitAnnoncesRafamService().initAnnonce69cDelegue(message, true);
             // on ne crée pas les annonces annulées
             if (!annonceImported.getCanceled()) {
@@ -115,6 +120,30 @@ public class MessageRegisterNewXSDVersionStatusRecordDelegueHandler extends Mess
         }
 
         return annonceImported;
+    }
+
+    public boolean isAreAnnoncesDelegueInDb() {
+        return areAnnoncesDelegueInDb;
+    }
+
+    public boolean isCanSendMailReactivationModuleAfDelegue() {
+        return canSendMailReactivationModuleAfDelegue;
+    }
+
+    public RegisterStatusRecordType getMessage() {
+        return message;
+    }
+
+    public void setAreAnnoncesDelegueInDb(boolean areAnnoncesDelegueInDb) {
+        this.areAnnoncesDelegueInDb = areAnnoncesDelegueInDb;
+    }
+
+    public void setCanSendMailReactivationModuleAfDelegue(boolean canSendMailReactivationModuleAfDelegue) {
+        this.canSendMailReactivationModuleAfDelegue = canSendMailReactivationModuleAfDelegue;
+    }
+
+    public void setMessage(RegisterStatusRecordType message) {
+        this.message = message;
     }
 
 }

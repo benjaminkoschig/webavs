@@ -772,15 +772,15 @@ public class ImportAnnoncesRafamNewXSDVersion {
 
         if ((isImportRegisterStatusEnabled() || isImportRegisterStatusDelegateEnabled())
                 && (message.getContent().getRegisterStatus() != null)) {
-
+            MessageRegisterNewXSDVersionStatusRecordDelegueHandler afDelegueHandler = new MessageRegisterNewXSDVersionStatusRecordDelegueHandler();
             try {
 
-                MessageRegisterNewXSDVersionStatusRecordDelegueHandler.areAnnoncesDelegueInDb = ALServiceLocator
-                        .getAnnonceRafamDelegueBusinessService().isAnnoncesInDb();
+                afDelegueHandler.setAreAnnoncesDelegueInDb(
+                        ALServiceLocator.getAnnonceRafamDelegueBusinessService().isAnnoncesInDb());
             } catch (Exception e) {
                 // si on arrive pas à tester si il y a déjà des annonces délégués, on part du principe que c'est
                 // il ne faut pas faire d'import initial
-                MessageRegisterNewXSDVersionStatusRecordDelegueHandler.areAnnoncesDelegueInDb = true;
+                afDelegueHandler.setAreAnnoncesDelegueInDb(true);
             }
 
             for (RegisterStatusRecordType register : message.getContent().getRegisterStatus()
@@ -794,15 +794,15 @@ public class ImportAnnoncesRafamNewXSDVersion {
 
                     if (isImportRegisterStatusDelegateEnabled() && serviceAnnonceRafamSedex
                             .isAnnonceEmployeurDelegue(register.getRecordNumber().toString())) {
-                        MessageRegisterNewXSDVersionStatusRecordDelegueHandler afDelegueHandler = new MessageRegisterNewXSDVersionStatusRecordDelegueHandler(
-                                register);
+                        afDelegueHandler.setMessage(register);
                         afDelegueHandler.traiterMessage(null);
 
                     } else if (isImportRegisterStatusEnabled() && !serviceAnnonceRafamSedex
                             .isAnnonceEmployeurDelegue(register.getRecordNumber().toString())) {
                         HashMap<String, Object> params = new HashMap<String, Object>();
                         params.put("messageDate", messageDate);
-                        new MessageRegisterNewXSDVersionStatusRecordDelegueHandler(register).traiterMessage(params);
+                        afDelegueHandler.setMessage(register);
+                        afDelegueHandler.traiterMessage(params);
                     }
 
                     if (JadeThread.logMessages() != null) {
