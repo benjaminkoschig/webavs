@@ -219,7 +219,6 @@ public class ImportAnnoncesRafamNewXSDVersion {
                         }
 
                     } catch (Exception e) {
-                        e.printStackTrace();
                         JadeLogger.error(this,
                                 "Une erreur s'est produite pendant la création des fichiers d'annonces de l'employeur délégué n°"
                                         + idEmployeurDelegue + ", annonce n° "
@@ -286,7 +285,10 @@ public class ImportAnnoncesRafamNewXSDVersion {
 
                 MarshallerEmployeurDelegueSingleton.marshal(childAllowances, fichierARetourner);
                 JadeFsFacade.copyFile(fichierARetourner.getAbsolutePath(), urlForReturn);
-                fichierARetourner.delete();
+                if (!fichierARetourner.delete()) {
+                    JadeLogger.info(this,
+                            "Le fichier " + fichierARetourner.getAbsolutePath() + " n'a pas pu être supprimé");
+                }
 
                 // création + envoi protocole retour au responsable Rafam de la CAF
                 String file = ALServiceLocator.getAnnoncesRafamDelegueProtocoleService()
