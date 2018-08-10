@@ -1,17 +1,17 @@
 package globaz.corvus.acor.parser.rev09;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import globaz.globall.util.JADate;
 import globaz.globall.util.JAException;
 import globaz.prestation.acor.PRACORException;
 import globaz.prestation.file.parser.PRFileParserFactory;
 import globaz.prestation.file.parser.PRTextField;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * <H1>Description</H1>
- * 
+ *
  * @author scr
  */
 public abstract class REACORAbstractFlatFileParser {
@@ -50,10 +50,10 @@ public abstract class REACORAbstractFlatFileParser {
 
     /**
      * retourne une configuration pour le code.
-     * 
+     *
      * @param code
      *            DOCUMENT ME!
-     * 
+     *
      * @return la valeur courante de l'attribut configuration
      */
     protected static Map<String, PRTextField> getConfiguration(String code) {
@@ -62,16 +62,16 @@ public abstract class REACORAbstractFlatFileParser {
 
     /**
      * idem que getField mais retourne une chaine au format jj.mm.aaaa
-     * 
+     *
      * @param line
      *            DOCUMENT ME!
      * @param fields
      *            DOCUMENT ME!
      * @param fieldName
      *            DOCUMENT ME!
-     * 
+     *
      * @return la valeur courante de l'attribut date
-     * 
+     *
      * @throws PRACORException
      *             DOCUMENT ME!
      */
@@ -87,14 +87,14 @@ public abstract class REACORAbstractFlatFileParser {
     /**
      * recherche dans la map la definition du champ fieldname et l'utilise pour extraire la valeur correspondante dans
      * la ligne de texte.
-     * 
+     *
      * @param line
      *            DOCUMENT ME!
      * @param fields
      *            DOCUMENT ME!
      * @param fieldName
      *            DOCUMENT ME!
-     * 
+     *
      * @return la valeur courante de l'attribut field
      */
     protected static String getField(String line, Map<String, PRTextField> fields, String fieldName) {
@@ -105,15 +105,15 @@ public abstract class REACORAbstractFlatFileParser {
 
     /**
      * charge toutes les configurations du fichier fileparserIJ.xml
-     * 
+     *
      * @throws PRACORException
      *             DOCUMENT ME!
      */
     protected static void loadConfigurations_NAVS() throws PRACORException {
         try {
-            REACORAbstractFlatFileParser
-                    .addConfiguration(REACORAbstractFlatFileParser.CODE_BASE_CALCUL, PRFileParserFactory
-                            .loadConfiguration(REACORAbstractFlatFileParser.FILE_PARSER, "BASE_CALCUL_NAVS"));
+            REACORAbstractFlatFileParser.addConfiguration(REACORAbstractFlatFileParser.CODE_BASE_CALCUL,
+                    PRFileParserFactory.loadConfiguration(REACORAbstractFlatFileParser.FILE_PARSER,
+                            "BASE_CALCUL_NAVS"));
             REACORAbstractFlatFileParser.addConfiguration(REACORAbstractFlatFileParser.CODE_RENTE_ACCORDEE,
                     PRFileParserFactory.loadConfiguration(REACORAbstractFlatFileParser.FILE_PARSER,
                             "RENTE_ACCORDEE_NAVS"));
@@ -131,7 +131,7 @@ public abstract class REACORAbstractFlatFileParser {
 
     /**
      * charge toutes les configurations du fichier fileparserIJ.xml
-     * 
+     *
      * @throws PRACORException
      *             DOCUMENT ME!
      */
@@ -143,11 +143,11 @@ public abstract class REACORAbstractFlatFileParser {
                     PRFileParserFactory.loadConfiguration(REACORAbstractFlatFileParser.FILE_PARSER,
                             "RENTE_ACCORDEE_NSS"));
             REACORAbstractFlatFileParser.addConfiguration(REACORAbstractFlatFileParser.CODE_PRESTATION_DUE_MENSUEL,
-                    PRFileParserFactory
-                            .loadConfiguration(REACORAbstractFlatFileParser.FILE_PARSER, "MONTANT_VERSE_NSS"));
+                    PRFileParserFactory.loadConfiguration(REACORAbstractFlatFileParser.FILE_PARSER,
+                            "MONTANT_VERSE_NSS"));
             REACORAbstractFlatFileParser.addConfiguration(REACORAbstractFlatFileParser.CODE_PRESTATION_DUE_RETROACTIF,
-                    PRFileParserFactory
-                            .loadConfiguration(REACORAbstractFlatFileParser.FILE_PARSER, "MONTANT_VERSE_NSS"));
+                    PRFileParserFactory.loadConfiguration(REACORAbstractFlatFileParser.FILE_PARSER,
+                            "MONTANT_VERSE_NSS"));
 
         } catch (Exception e) {
             throw new PRACORException("impossible de charger le fichier de configuration pour parser", e);
@@ -156,7 +156,7 @@ public abstract class REACORAbstractFlatFileParser {
 
     /**
      * charge toutes les configurations du fichier fileparserRE.xml
-     * 
+     *
      * @throws PRACORException
      *             DOCUMENT ME!
      */
@@ -164,14 +164,12 @@ public abstract class REACORAbstractFlatFileParser {
         try {
             REACORAbstractFlatFileParser.addConfiguration(REACORAbstractFlatFileParser.CODE_41_01, PRFileParserFactory
                     .loadConfiguration(REACORAbstractFlatFileParser.FILE_PARSER, "ANNONCE_41_42_43_01"));
-            REACORAbstractFlatFileParser
-                    .addConfiguration(REACORAbstractFlatFileParser.CODE_41_02, PRFileParserFactory.loadConfiguration(
-                            REACORAbstractFlatFileParser.FILE_PARSER, "ANNONCE_41_43_02"));
+            REACORAbstractFlatFileParser.addConfiguration(REACORAbstractFlatFileParser.CODE_41_02, PRFileParserFactory
+                    .loadConfiguration(REACORAbstractFlatFileParser.FILE_PARSER, "ANNONCE_41_43_02"));
             REACORAbstractFlatFileParser.addConfiguration(REACORAbstractFlatFileParser.CODE_44_01, PRFileParserFactory
                     .loadConfiguration(REACORAbstractFlatFileParser.FILE_PARSER, "ANNONCE_44_45_46_01"));
-            REACORAbstractFlatFileParser
-                    .addConfiguration(REACORAbstractFlatFileParser.CODE_44_02, PRFileParserFactory.loadConfiguration(
-                            REACORAbstractFlatFileParser.FILE_PARSER, "ANNONCE_44_46_02"));
+            REACORAbstractFlatFileParser.addConfiguration(REACORAbstractFlatFileParser.CODE_44_02, PRFileParserFactory
+                    .loadConfiguration(REACORAbstractFlatFileParser.FILE_PARSER, "ANNONCE_44_46_02"));
 
         } catch (Exception e) {
             throw new PRACORException("impossible de charger le fichier de configuration pour parser", e);

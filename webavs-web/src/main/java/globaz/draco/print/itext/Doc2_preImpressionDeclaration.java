@@ -1,5 +1,12 @@
 package globaz.draco.print.itext;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import globaz.babel.api.ICTDocument;
 import globaz.babel.api.ICTListeTextes;
 import globaz.babel.api.ICTTexte;
@@ -59,13 +66,6 @@ import globaz.pyxis.constantes.IConstantes;
 import globaz.pyxis.db.tiers.TIRole;
 import globaz.pyxis.db.tiers.TIRoleManager;
 import globaz.pyxis.db.tiers.TITiers;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 
 /**
@@ -305,8 +305,8 @@ public class Doc2_preImpressionDeclaration extends FWIDocumentManager {
 
             String labelNumAff = getSession().getApplication().getLabel("ENTETE_NUMEROAFFILIE", langueIsoTiers);
 
-            if (!JadeStringUtil.isEmpty(AFIDEUtil.defineNumeroStatutForDoc(affEnCours.getNumeroIDE(),
-                    affEnCours.getIdeStatut()))) {
+            if (!JadeStringUtil.isEmpty(
+                    AFIDEUtil.defineNumeroStatutForDoc(affEnCours.getNumeroIDE(), affEnCours.getIdeStatut()))) {
                 labelNumAff += "/" + getSession().getApplication().getLabel("ENTETE_NUMEROIDE", langueIsoTiers);
             }
 
@@ -318,13 +318,11 @@ public class Doc2_preImpressionDeclaration extends FWIDocumentManager {
             super.setParametres(Doc1_PreImp_Param.P_HEAD_4, numAffilie);
             super.setParametres(Doc1_PreImp_Param.P_HEAD_5,
                     getSession().getApplication().getLabel("ENTETE_DECLARATIONPERIODE", langueIsoTiers));
-            super.setParametres(
-                    Doc1_PreImp_Param.P_ADRESSE,
+            super.setParametres(Doc1_PreImp_Param.P_ADRESSE,
                     affEnCours.getTiers().getAdresseAsString(getDocumentInfo(), IConstantes.CS_AVOIR_ADRESSE_COURRIER,
                             DSApplication.CS_DOMAINE_DECLARATION_SALAIRES, JACalendar.todayJJsMMsAAAA(),
                             affEnCours.getAffilieNumero()));
-            super.setParametres(
-                    Doc1_PreImp_Param.P_NUMEROAFFILIE,
+            super.setParametres(Doc1_PreImp_Param.P_NUMEROAFFILIE,
                     getSession().getApplication().getLabel("ENVOI_NUM_AFFILIE", langueIsoTiers) + " "
                             + affEnCours.getAffilieNumero());
             super.setParametres(Doc1_PreImp_Param.P_NOMPRENOMAFFILIE, affEnCours.getTiers().getPrenomNom());
@@ -408,14 +406,12 @@ public class Doc2_preImpressionDeclaration extends FWIDocumentManager {
         // On regarde si la localité est vide afin de ne pas afficher une
         // virgule sans rien après
         if (tiersLAA.getLocalite().length() != 0) {
-            super.setParametres(
-                    Doc1_PreImp_Param.P_ASSURANCE,
+            super.setParametres(Doc1_PreImp_Param.P_ASSURANCE,
                     getSession().getApplication().getLabel("ENVOI_ASSUR_LAA", langueIsoTiers) + ": "
                             + tiersLAA.getDesignation1() + " " + tiersLAA.getDesignation2() + ", "
                             + tiersLAA.getLocalite());
         } else {
-            super.setParametres(
-                    Doc1_PreImp_Param.P_ASSURANCE,
+            super.setParametres(Doc1_PreImp_Param.P_ASSURANCE,
                     getSession().getApplication().getLabel("ENVOI_ASSUR_LAA", langueIsoTiers) + ": "
                             + tiersLAA.getDesignation1() + " " + tiersLAA.getDesignation2());
         }
@@ -441,14 +437,12 @@ public class Doc2_preImpressionDeclaration extends FWIDocumentManager {
         // On regarde si la localité est vide afin de ne pas afficher une
         // virgule sans rien après
         if (tiersLPP.getLocalite().length() != 0) {
-            super.setParametres(
-                    Doc1_PreImp_Param.P_CAISSE,
+            super.setParametres(Doc1_PreImp_Param.P_CAISSE,
                     getSession().getApplication().getLabel("ENVOI_PREVOYANCE_LPP", langueIsoTiers) + ": "
                             + tiersLPP.getDesignation1() + " " + tiersLPP.getDesignation2() + " "
                             + tiersLPP.getDesignation3() + ", " + tiersLPP.getLocalite());
         } else {
-            super.setParametres(
-                    Doc1_PreImp_Param.P_CAISSE,
+            super.setParametres(Doc1_PreImp_Param.P_CAISSE,
                     getSession().getApplication().getLabel("ENVOI_PREVOYANCE_LPP", langueIsoTiers) + ": "
                             + tiersLPP.getDesignation1() + " " + tiersLPP.getDesignation2() + " "
                             + tiersLPP.getDesignation3());
@@ -499,13 +493,14 @@ public class Doc2_preImpressionDeclaration extends FWIDocumentManager {
                     getSession().getApplication().getLabel("ENTETE_ASSURANCECHOMAGE", langueIsoTiers));
             super.setParametres(Doc1_PreImp_Param.L_17,
                     getSession().getApplication().getLabel("PRE_ANNEE", langueIsoTiers));
-            super.setParametres(Doc1_PreImp_Param.L_18, getSession().getApplication().getLabel("AC_II", langueIsoTiers));
+            super.setParametres(Doc1_PreImp_Param.L_18,
+                    getSession().getApplication().getLabel("AC_II", langueIsoTiers));
 
             // Ici on sette les paramètres pour savoir si les collonnes doivent
             // être affichées ou non
             DSApplication application = null;
-            application = (DSApplication) globaz.globall.db.GlobazServer.getCurrentSystem().getApplication(
-                    DSApplication.DEFAULT_APPLICATION_DRACO);
+            application = (DSApplication) globaz.globall.db.GlobazServer.getCurrentSystem()
+                    .getApplication(DSApplication.DEFAULT_APPLICATION_DRACO);
 
             super.setParametres(Doc1_PreImp_Param.P_AF, String.valueOf(true));
             super.setParametres(Doc1_PreImp_Param.P_LPP, String.valueOf(true));
@@ -541,18 +536,18 @@ public class Doc2_preImpressionDeclaration extends FWIDocumentManager {
                 String[] args = { realPeriodeDebut, realPeriodeFin };
 
                 if ("fr".equalsIgnoreCase(langueIsoTiers)) {
-                    super.setParametres(Doc1_PreImp_Param.P_COTISATION_PERIODE, CEDocumentItextService.formatMessage(
-                            application.getProperty("libelle.cotisationMembreFR"), args));
+                    super.setParametres(Doc1_PreImp_Param.P_COTISATION_PERIODE, CEDocumentItextService
+                            .formatMessage(application.getProperty("libelle.cotisationMembreFR"), args));
                 } else if ("de".equals(langueIsoTiers)) {
-                    super.setParametres(Doc1_PreImp_Param.P_COTISATION_PERIODE, CEDocumentItextService.formatMessage(
-                            application.getProperty("libelle.cotisationMembreDE"), args));
+                    super.setParametres(Doc1_PreImp_Param.P_COTISATION_PERIODE, CEDocumentItextService
+                            .formatMessage(application.getProperty("libelle.cotisationMembreDE"), args));
                 } else if ("it".equals(langueIsoTiers)) {
-                    super.setParametres(Doc1_PreImp_Param.P_COTISATION_PERIODE, CEDocumentItextService.formatMessage(
-                            application.getProperty("libelle.cotisationMembreIT"), args));
+                    super.setParametres(Doc1_PreImp_Param.P_COTISATION_PERIODE, CEDocumentItextService
+                            .formatMessage(application.getProperty("libelle.cotisationMembreIT"), args));
 
                 } else {
-                    super.setParametres(Doc1_PreImp_Param.P_COTISATION_PERIODE, CEDocumentItextService.formatMessage(
-                            application.getProperty("libelle.cotisationMembreFR"), args));
+                    super.setParametres(Doc1_PreImp_Param.P_COTISATION_PERIODE, CEDocumentItextService
+                            .formatMessage(application.getProperty("libelle.cotisationMembreFR"), args));
                 }
             }
 
@@ -573,8 +568,8 @@ public class Doc2_preImpressionDeclaration extends FWIDocumentManager {
             super.setParametres(Doc1_PreImp_Param.L_RUE,
                     getSession().getApplication().getLabel("RUE_NO", langueIsoTiers));
             super.setParametres(Doc1_PreImp_Param.L_NPA, getSession().getApplication().getLabel("NPA", langueIsoTiers));
-            super.setParametres(Doc1_PreImp_Param.L_LIEU, getSession().getApplication()
-                    .getLabel("LIEU", langueIsoTiers));
+            super.setParametres(Doc1_PreImp_Param.L_LIEU,
+                    getSession().getApplication().getLabel("LIEU", langueIsoTiers));
             super.setParametres(Doc1_PreImp_Param.L_SALAIRE_BRUTS,
                     getSession().getApplication().getLabel("SALAIRE_BRUT", langueIsoTiers));
 
@@ -794,8 +789,8 @@ public class Doc2_preImpressionDeclaration extends FWIDocumentManager {
 
         try {
             // On formate les numéros d'affiliés
-            CIApplication ciApp = (CIApplication) GlobazServer.getCurrentSystem().getApplication(
-                    CIApplication.DEFAULT_APPLICATION_PAVO);
+            CIApplication ciApp = (CIApplication) GlobazServer.getCurrentSystem()
+                    .getApplication(CIApplication.DEFAULT_APPLICATION_PAVO);
             affilieFormater = ciApp.getAffileFormater();
             if (affilieFormater != null) {
                 affilieNum = affilieFormater.unformat(affilieNum);
@@ -854,12 +849,11 @@ public class Doc2_preImpressionDeclaration extends FWIDocumentManager {
         String nbDocument = "500";
 
         try {
-            nbDocument = ((DSApplication) getSession().getApplication())
-                    .getProperty("nbDocumentPourFusion", nbDocument);
+            nbDocument = ((DSApplication) getSession().getApplication()).getProperty("nbDocumentPourFusion",
+                    nbDocument);
         } catch (Exception e) {
-            JadeLogger
-                    .warn(this,
-                            "Unabled to find the property \"nbDocumentPourFusion\". The default property set by the process is 100.");
+            JadeLogger.warn(this,
+                    "Unabled to find the property \"nbDocumentPourFusion\". The default property set by the process is 100.");
             nbDocument = "100";
         }
 
@@ -883,9 +877,9 @@ public class Doc2_preImpressionDeclaration extends FWIDocumentManager {
             try {
                 this.mergePDF(mergedDocumentInfo, true, 0, false, null);
             } catch (Exception e) {
-                getMemoryLog().logMessage(
-                        "Erreur pour l'affilié " + mergedDocumentInfo.getDocumentProperty("numero.affilie.formatte")
-                                + ": " + e.toString(), FWViewBeanInterface.ERROR, this.getClass().toString());
+                getMemoryLog().logMessage("Erreur pour l'affilié "
+                        + mergedDocumentInfo.getDocumentProperty("numero.affilie.formatte") + ": " + e.toString(),
+                        FWViewBeanInterface.ERROR, this.getClass().toString());
             }
 
             // on déplace le document vers une liste temporaire (car la fusion
@@ -987,8 +981,8 @@ public class Doc2_preImpressionDeclaration extends FWIDocumentManager {
 
         try {
             // On formate les numéros d'affiliés
-            CIApplication ciApp = (CIApplication) GlobazServer.getCurrentSystem().getApplication(
-                    CIApplication.DEFAULT_APPLICATION_PAVO);
+            CIApplication ciApp = (CIApplication) GlobazServer.getCurrentSystem()
+                    .getApplication(CIApplication.DEFAULT_APPLICATION_PAVO);
             affilieFormater = ciApp.getAffileFormater();
 
             if (affilieFormater != null) {
@@ -1122,7 +1116,7 @@ public class Doc2_preImpressionDeclaration extends FWIDocumentManager {
 
     /**
      * Cette méthode va s'assurer qu'on n'imprime pas deux fois le meme affilié
-     * 
+     *
      * @throws Exception
      */
     private void controlNumero() throws Exception {
@@ -1142,7 +1136,8 @@ public class Doc2_preImpressionDeclaration extends FWIDocumentManager {
             while (lecture
                     && AFParticulariteAffiliation.existeParticularite(getTransaction(), affEnCours.getAffiliationId(),
                             CodeSystem.PARTIC_AFFILIE_SANS_PERSONNEL, "31.12." + annee)
-                    && !isPersJurToImprimeForSansPers(preImprSansPersForPersJur, affEnCours.getPersonnaliteJuridique())) {
+                    && !isPersJurToImprimeForSansPers(preImprSansPersForPersJur,
+                            affEnCours.getPersonnaliteJuridique())) {
 
                 affEnCours.isRadie();
                 if ((ind + 1) < affManager.getSize()) {
@@ -1368,24 +1363,22 @@ public class Doc2_preImpressionDeclaration extends FWIDocumentManager {
             if ((isPasse && imprimerDeclaration.booleanValue())
                     || (imprimerDeclaration.booleanValue() && !imprimerLettre.booleanValue())) {
                 setTemplateFile(MODEL_NAME);
-                ICaisseReportHelper caisseReportHelper = CaisseHelperFactory.getInstance().getCaisseReportHelper(
-                        getDocumentInfo(), getSession().getApplication(), langueIsoTiers);
+                ICaisseReportHelper caisseReportHelper = CaisseHelperFactory.getInstance()
+                        .getCaisseReportHelper(getDocumentInfo(), getSession().getApplication(), langueIsoTiers);
                 CaisseHeaderReportBean headerBean = new CaisseHeaderReportBean();
 
                 _setHeader(headerBean);
                 caisseReportHelper.addHeaderParameters(this, headerBean);
 
-                DSApplication application = (DSApplication) GlobazServer.getCurrentSystem().getApplication(
-                        DSApplication.DEFAULT_APPLICATION_DRACO);
+                DSApplication application = (DSApplication) GlobazServer.getCurrentSystem()
+                        .getApplication(DSApplication.DEFAULT_APPLICATION_DRACO);
                 if (application.isCCVDTraitement()
                         && affEnCours.getDeclarationSalaire().equals(DSProcessValidation.CS_DECL_MIXTE)) {
-                    getImporter().getParametre().put(
-                            ICaisseReportHelper.PARAM_SUBREPORT_HEADER,
+                    getImporter().getParametre().put(ICaisseReportHelper.PARAM_SUBREPORT_HEADER,
                             ((ACaisseReportHelper) caisseReportHelper).getDefaultModelPath() + "/"
                                     + getTemplateProperty(getDocumentInfo(), "header.filename.declaration2"));
                 } else {
-                    getImporter().getParametre().put(
-                            ICaisseReportHelper.PARAM_SUBREPORT_HEADER,
+                    getImporter().getParametre().put(ICaisseReportHelper.PARAM_SUBREPORT_HEADER,
                             ((ACaisseReportHelper) caisseReportHelper).getDefaultModelPath() + "/"
                                     + getTemplateProperty(getDocumentInfo(), "header.filename.declaration"));
                 }
@@ -1398,8 +1391,8 @@ public class Doc2_preImpressionDeclaration extends FWIDocumentManager {
 
     private String formatNumAffilie(String numAffilie) throws Exception {
         String numAffNonFormatte;
-        IFormatData affilieFormater = ((AFApplication) GlobazServer.getCurrentSystem().getApplication(
-                AFApplication.DEFAULT_APPLICATION_NAOS)).getAffileFormater();
+        IFormatData affilieFormater = ((AFApplication) GlobazServer.getCurrentSystem()
+                .getApplication(AFApplication.DEFAULT_APPLICATION_NAOS)).getAffileFormater();
 
         try {
             numAffNonFormatte = affilieFormater.unformat(numAffilie);
@@ -1413,8 +1406,8 @@ public class Doc2_preImpressionDeclaration extends FWIDocumentManager {
     public void createLettrePreImpression() throws Exception {
         Doc1_PreImpLettre_DS managerLettre = new Doc1_PreImpLettre_DS();
 
-        ICaisseReportHelper caisseReportHelper = CaisseHelperFactory.getInstance().getCaisseReportHelper(
-                getDocumentInfo(), getSession().getApplication(), langueIsoTiers);
+        ICaisseReportHelper caisseReportHelper = CaisseHelperFactory.getInstance()
+                .getCaisseReportHelper(getDocumentInfo(), getSession().getApplication(), langueIsoTiers);
 
         CaisseHeaderReportBean headerBean = new CaisseHeaderReportBean();
 
@@ -1427,18 +1420,16 @@ public class Doc2_preImpressionDeclaration extends FWIDocumentManager {
 
         caisseReportHelper.addHeaderParameters(this, headerBean);
 
-        DSApplication application = (DSApplication) GlobazServer.getCurrentSystem().getApplication(
-                DSApplication.DEFAULT_APPLICATION_DRACO);
+        DSApplication application = (DSApplication) GlobazServer.getCurrentSystem()
+                .getApplication(DSApplication.DEFAULT_APPLICATION_DRACO);
 
         if (application.isCCVDTraitement()
                 && affEnCours.getDeclarationSalaire().equals(DSProcessValidation.CS_DECL_MIXTE)) {
-            getImporter().getParametre().put(
-                    ICaisseReportHelper.PARAM_SUBREPORT_HEADER,
+            getImporter().getParametre().put(ICaisseReportHelper.PARAM_SUBREPORT_HEADER,
                     ((ACaisseReportHelper) caisseReportHelper).getDefaultModelPath() + "/"
                             + getTemplateProperty(getDocumentInfo(), "header.filename.lettre.decl"));
         } else if (!JadeStringUtil.isBlankOrZero(application.getHeaderGris())) {
-            getImporter().getParametre().put(
-                    ICaisseReportHelper.PARAM_SUBREPORT_HEADER,
+            getImporter().getParametre().put(ICaisseReportHelper.PARAM_SUBREPORT_HEADER,
                     ((ACaisseReportHelper) caisseReportHelper).getDefaultModelPath() + "/"
                             + application.getHeaderGris());
         }
@@ -1487,7 +1478,7 @@ public class Doc2_preImpressionDeclaration extends FWIDocumentManager {
 
     /**
      * Execute le statement pour la pré-impression
-     * 
+     *
      * @param transaction
      */
     private void executeStatementBeforePrint(BTransaction transaction) {
@@ -1513,7 +1504,7 @@ public class Doc2_preImpressionDeclaration extends FWIDocumentManager {
 
     /**
      * Méthode qui définit s'il existe une coti de type cotisation période pour une année
-     * 
+     *
      * @return
      * @throws Exception
      */
@@ -1565,8 +1556,8 @@ public class Doc2_preImpressionDeclaration extends FWIDocumentManager {
                 res += titre;
                 i = i + 2;
             } else if (paragraphe.charAt(i + 1) == '4') {
-                String agenceComm = affEnCours
-                        .getAgenceCom(affEnCours.getAffiliationId(), JACalendar.todayJJsMMsAAAA());
+                String agenceComm = affEnCours.getAgenceCom(affEnCours.getAffiliationId(),
+                        JACalendar.todayJJsMMsAAAA());
                 res += agenceComm;
                 i = i + 2;
             }
@@ -1621,7 +1612,7 @@ public class Doc2_preImpressionDeclaration extends FWIDocumentManager {
 
     /**
      * Retourne un booleen qui nous dit si on doit imprimer les déclarations pour tous les affilies
-     * 
+     *
      * @return affilieTous
      */
     public boolean getAffilieTous() {
@@ -1630,7 +1621,7 @@ public class Doc2_preImpressionDeclaration extends FWIDocumentManager {
 
     /**
      * Retourne l'année
-     * 
+     *
      * @return annee
      */
     public String getAnnee() {
@@ -1688,7 +1679,7 @@ public class Doc2_preImpressionDeclaration extends FWIDocumentManager {
 
     /**
      * Retourne le premier affilié à renvoyer
-     * 
+     *
      * @return fromAffilies
      */
     public String getFromAffilies() {
@@ -1738,7 +1729,7 @@ public class Doc2_preImpressionDeclaration extends FWIDocumentManager {
 
     /**
      * Retourne un booleen qui nous dit si on doit imprimer la déclaration
-     * 
+     *
      * @return imprimerDeclaration
      */
     public Boolean getImprimerDeclaration() {
@@ -1747,7 +1738,7 @@ public class Doc2_preImpressionDeclaration extends FWIDocumentManager {
 
     /**
      * Retourne un booleen qui nous dit si on doit imprimer une lettre
-     * 
+     *
      * @return imprimerLettre
      */
     public Boolean getImprimerLettre() {
@@ -1883,7 +1874,7 @@ public class Doc2_preImpressionDeclaration extends FWIDocumentManager {
 
     /**
      * Retourne le dernier affilie à renvoyer
-     * 
+     *
      * @return untilAffilies
      */
     public String getUntilAffilies() {
@@ -1943,7 +1934,7 @@ public class Doc2_preImpressionDeclaration extends FWIDocumentManager {
 
     /**
      * Sette un booleen qui nous dit si on doit imprimer les déclarations pour tous les affilies
-     * 
+     *
      * @param b
      */
     public void setAffilieTous(boolean b) {
@@ -1952,7 +1943,7 @@ public class Doc2_preImpressionDeclaration extends FWIDocumentManager {
 
     /**
      * Sette l'année
-     * 
+     *
      * @param string
      */
     public void setAnnee(String string) {
@@ -1980,7 +1971,7 @@ public class Doc2_preImpressionDeclaration extends FWIDocumentManager {
 
     /**
      * Sette le premier affilié à renvoyer
-     * 
+     *
      * @param string
      */
     public void setFromAffilies(String string) {
@@ -1997,7 +1988,7 @@ public class Doc2_preImpressionDeclaration extends FWIDocumentManager {
 
     /**
      * Sette un booleen qui nous dit si on doit imprimer la déclaration
-     * 
+     *
      * @param b
      */
     public void setImprimerDeclaration(Boolean b) {
@@ -2006,7 +1997,7 @@ public class Doc2_preImpressionDeclaration extends FWIDocumentManager {
 
     /**
      * Sette un booleen qui nous dit si on doit imprimer la lettre
-     * 
+     *
      * @param b
      */
     public void setImprimerLettre(Boolean b) {
