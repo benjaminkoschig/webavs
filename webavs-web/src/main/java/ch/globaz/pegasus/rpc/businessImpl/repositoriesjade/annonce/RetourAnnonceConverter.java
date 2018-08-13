@@ -1,13 +1,18 @@
 package ch.globaz.pegasus.rpc.businessImpl.repositoriesjade.annonce;
 
-import globaz.globall.db.BSession;
 import java.util.ArrayList;
 import java.util.List;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import ch.globaz.common.converter.ConvertValueEnum;
 import ch.globaz.common.domaine.Date;
 import ch.globaz.common.persistence.DomaineConverterJade;
 import ch.globaz.common.persistence.DomaineJadeAbstractSearchModel;
 import ch.globaz.common.persistence.RepositoryJade;
+import ch.globaz.pegasus.business.models.decision.DecisionApresCalcul;
+import ch.globaz.pegasus.business.models.decision.DecisionApresCalculSearch;
+import ch.globaz.pegasus.business.models.decision.DecisionSuppression;
+import ch.globaz.pegasus.business.models.decision.DecisionSuppressionSearch;
 import ch.globaz.pegasus.rpc.business.models.SimpleLienAnnonceDecision;
 import ch.globaz.pegasus.rpc.business.models.SimpleLienAnnonceDecisionSearch;
 import ch.globaz.pegasus.rpc.business.models.SimpleRetourAnnonce;
@@ -19,8 +24,8 @@ import ch.globaz.pegasus.rpc.domaine.TypeViolationPlausi;
 import ch.globaz.pegasus.rpc.domaine.plausi.PlausiRetour;
 import ch.globaz.pegasus.rpc.plausi.core.RpcPlausiCategory;
 import ch.globaz.pegasus.rpc.plausi.core.RpcPlausiType;
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
+import globaz.globall.db.BSession;
+import globaz.jade.client.util.JadeStringUtil;
 
 public class RetourAnnonceConverter implements DomaineConverterJade<RetourAnnonceRpc, SimpleRetourAnnonce> {
 
@@ -140,6 +145,10 @@ public class RetourAnnonceConverter implements DomaineConverterJade<RetourAnnonc
         retourAnnonce.setOfficePCConflit(model.getOfficePCConflit());
         retourAnnonce.setRemarque(model.getRemarqueRetour());
         retourAnnonce.setSpy(model.getSpy());
+        
+        if(!JadeStringUtil.isBlank(model.getIdDecision())) {
+            resolveDecision(retourAnnonce, model.getIdDecision());
+        }
 
         return retourAnnonce;
     }
@@ -153,6 +162,30 @@ public class RetourAnnonceConverter implements DomaineConverterJade<RetourAnnonc
             return liensAnnonce.get(0);
         }
         return null;
+    }
+    
+    private void resolveDecision(RetourAnnonce retourAnnonce, String idDecision) {
+
+        DecisionApresCalculSearch search2 = new DecisionApresCalculSearch();
+        search2.setForIdDecisionHeader(idDecision);
+        List<DecisionApresCalcul> decisionAPC = RepositoryJade.searchForAndFetch(search2);
+        if (!decisionAPC.isEmpty()) {
+            DecisionApresCalcul decision = decisionAPC.get(0);
+            retourAnnonce.setIdDemande(decision.getVersionDroit().getDemande().getId());
+            retourAnnonce.setIdDroit(decision.getVersionDroit().getId());
+            return ;
+        }
+        
+        DecisionSuppressionSearch search3 = new DecisionSuppressionSearch();
+        search3.setForIdDecisionHeader(idDecision);
+        List<DecisionSuppression> decisionSup = RepositoryJade.searchForAndFetch(search3);
+        if (!decisionSup.isEmpty()) {
+            DecisionSuppression decision = decisionSup.get(0);
+            retourAnnonce.setIdDemande(decision.getVersionDroit().getDemande().getId());
+            retourAnnonce.setIdDroit(decision.getVersionDroit().getId());
+            return ;
+        }
+        
     }
 
     private TypeViolationPlausi resolveTypeViolation(SimpleRetourAnnonce model) {

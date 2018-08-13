@@ -107,14 +107,6 @@ public class RpcDatasListConverter implements Iterator<RpcDataConverter>, Iterab
         VersionDroit versionDroit = toVersionDroit(entry.getValue().get(0).getSimpleVersionDroit());
         Dossier dossier = new Dossier();
         dossier.setId(entry.getValue().get(0).getIdDossier());
-        Demande demande = new Demande();
-        demande.setId(entry.getValue().get(0).getIdDemande());
-        demande.setIsFratrie(entry.getValue().get(0).getIsFratrie());
-        if (demande.getIsFratrie() == null) {
-            demande.setIsFratrie(false);
-        }
-
-        RpcData annonceData = new RpcData(versionDroit, dossier, demande);
 
         Map<String, List<RPCDecionsPriseDansLeMois>> map = new HashMap<String, List<RPCDecionsPriseDansLeMois>>();
 
@@ -124,8 +116,21 @@ public class RpcDatasListConverter implements Iterator<RpcDataConverter>, Iterab
             }
             map.get(model.keyForGroup()).add(model);
         }
+        
+        RpcData annonceData = null;
 
         for (Entry<String, List<RPCDecionsPriseDansLeMois>> entryDecisions : map.entrySet()) {
+            
+            Demande demande = new Demande();
+            demande.setId(entryDecisions.getValue().get(0).getIdDemande());
+            demande.setIsFratrie(entryDecisions.getValue().get(0).getIsFratrie());
+            if (demande.getIsFratrie() == null) {
+                demande.setIsFratrie(false);
+            }
+            if(annonceData == null) {
+                annonceData = new RpcData(versionDroit, dossier, demande);
+            }
+            
             annonceData.add(rpcDecisionRequerantConjoint.convert(entryDecisions.getValue(), versionDroit, demande));
         }
         RpcDataDecisionFilter.filtre(annonceData);

@@ -101,6 +101,15 @@ public class RpcData {
         }
         return null;
     }
+    
+    public RpcDecisionRequerantConjoint resolveCurrentConjoint() {
+        for (RpcDecisionRequerantConjoint decision : rpcDecisionRequerantConjoints) {
+            if (decision.isCurrentConjoint()) {
+                return decision;
+            }
+        }
+        return null;
+    }
 
     public PcaDecisions resolveDecisionsConjoint() {
         PcaDecisions decisions = new PcaDecisions();

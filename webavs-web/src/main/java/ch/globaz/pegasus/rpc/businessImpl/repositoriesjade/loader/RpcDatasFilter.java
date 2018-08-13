@@ -36,7 +36,18 @@ class RpcDatasFilter {
             Entry<String, List<RPCDecionsPriseDansLeMois>> last = entry.getValue().lastEntry();
             result.put(last.getKey(), last.getValue());
         }
-        return result;
+        
+        // S180426_009 - RPC - Pi-066 - ajouter un tri par idDossier avant le retour
+        Map<String, List<RPCDecionsPriseDansLeMois>> resultByIdDossier = new HashMap<String, List<RPCDecionsPriseDansLeMois>>();
+        for (Entry<String, List<RPCDecionsPriseDansLeMois>> entry : result.entrySet()) {
+            if (!resultByIdDossier.containsKey(entry.getValue().get(0).getIdDossier())) {
+                resultByIdDossier.put(entry.getValue().get(0).getIdDossier(), entry.getValue());
+            } else {
+                resultByIdDossier.get(entry.getValue().get(0).getIdDossier()).addAll(entry.getValue());
+            }
+        }
+        return resultByIdDossier;
+
     }
 
     private Map<String, TreeMap<String, List<RPCDecionsPriseDansLeMois>>> groupByIdDemandeAndVersionDroit(

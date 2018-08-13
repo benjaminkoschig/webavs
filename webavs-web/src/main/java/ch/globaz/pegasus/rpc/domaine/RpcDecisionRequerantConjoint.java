@@ -32,7 +32,7 @@ public class RpcDecisionRequerantConjoint {
 
         situation = resolveSituation();
     }
-
+    
     public RpcDecisionRequerantConjoint(Demande demande, PcaDecision decisionRequerant, RpcCalcul calculRequerant,
             List<MembreFamilleWithDonneesFinanciere> membresFamilleWithDonneesFinancieres,
             PersonsElementsCalcul personsElementsCalcul, VariablesMetier variablesMetier) {
@@ -49,6 +49,14 @@ public class RpcDecisionRequerantConjoint {
         } else {
             situation = PcaSituation.INDEFINIT;
         }
+    }
+    
+    public RpcDecisionRequerantConjoint(RpcDecisionRequerantConjoint rpcDecision, RpcPcaDecisionCalculElementCalcul conjoint) {
+        this.demande = rpcDecision.demande;
+        this.membresFamilleWithDonneesFinanciere = rpcDecision.membresFamilleWithDonneesFinanciere;
+        this.requerant = rpcDecision.requerant;
+        this.conjoint = conjoint;
+        situation = resolveSituation();
     }
 
     public PcaDecision getRequerant() {
@@ -70,6 +78,11 @@ public class RpcDecisionRequerantConjoint {
     public boolean isCurrent() {
         return hasRequerant() && requerant.getPcaDecision().getPca() != null
                 && requerant.getPcaDecision().getPca().hasCurrent();
+    }
+    
+    public boolean isCurrentConjoint() {
+        return hasConjoint() && conjoint.getPcaDecision().getPca() != null
+                && conjoint.getPcaDecision().getPca().hasCurrent();
     }
 
     public boolean isCoupleSepare() {

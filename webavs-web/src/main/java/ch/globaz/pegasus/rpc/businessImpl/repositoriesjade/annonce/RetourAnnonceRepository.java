@@ -78,7 +78,7 @@ public class RetourAnnonceRepository extends RepositoryJade<RetourAnnonceRpc, Si
         for (JadeAbstractModel model : search.getSearchResults()) {
             RetourAnnonce complexModel = (RetourAnnonce) model;
             SimpleRetourAnnonce retourAnnonceModel = complexModel.getSimpleRetourAnnonce();
-
+            retourAnnonceModel.setIdDecision(complexModel.getSimpleDecisionHeader().getId());
             RetourAnnonceRpc retourAnnonceRpc = retourAnnonceConverter.convertToDomain(retourAnnonceModel);
             retoursAnnonce.add(retourAnnonceRpc);
         }

@@ -38,6 +38,8 @@ public class RetourAnnonce implements RetourAnnonceRpc {
     private Periode periodeDecision;
     private String remarque;
     private String spy;
+    private String idDemande;
+    private String idDroit;
 
     BSession session;
 
@@ -295,12 +297,28 @@ public class RetourAnnonce implements RetourAnnonceRpc {
             return "";
         }
     }
-
+    
     public String getIdPlanCalcul() {
         if (idLienAnnonceDecision != null) {
             return idLienAnnonceDecision.getIdPlanCalcul();
         } else {
             return "";
         }
+    }
+    
+    public String getIdDemande() {
+        return idDemande;
+    }
+
+    public void setIdDemande(String idDemande) {
+        this.idDemande = idDemande;
+    }
+
+    public String getIdDroit() {
+        return idDroit;
+    }
+
+    public void setIdDroit(String idDroit) {
+        this.idDroit = idDroit;
     }
 }

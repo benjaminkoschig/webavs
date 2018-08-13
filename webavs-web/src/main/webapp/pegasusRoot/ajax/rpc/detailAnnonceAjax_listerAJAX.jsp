@@ -8,12 +8,12 @@
 		<tr idEntity="${detailAnnonce.id}">
 			<td>
 				<a style="text-align:center" href='<c:out value="${pageContext.request.contextPath}/pegasus?userAction=pegasus.demande.demande.chercher&idDossier=${viewBean.idDossier}" />'> 
-					${viewBean.idDossier}
+					${detailAnnonce.idDemande}
 		        </a>
 	        </td>
 			<td>
-				<a style="text-align:center" href='<c:out value="${pageContext.request.contextPath}/pegasus?userAction=pegasus.pcaccordee.pcAccordee.chercher&idVersionDroit=${viewBean.idVersion}" />'> 
-					${viewBean.idVersion}
+				<a style="text-align:center" href='<c:out value="${pageContext.request.contextPath}/pegasus?userAction=pegasus.pcaccordee.pcAccordee.chercher&idVersionDroit=${detailAnnonce.idDroit}" />'> 
+					${detailAnnonce.idDroit}
 		        </a>
 	        </td>
 			<td>${detailAnnonce.etat}</td>

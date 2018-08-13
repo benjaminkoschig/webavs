@@ -21,6 +21,7 @@ public class SimpleRetourAnnonce extends JadeSimpleModel {
     private String validToConflit;
     private String csStatusRetour;
     private String remarqueRetour;
+    private String idDecision;
 
     @Override
     public String getId() {
@@ -158,6 +159,14 @@ public class SimpleRetourAnnonce extends JadeSimpleModel {
 
     public void setRemarqueRetour(String remarqueRetour) {
         this.remarqueRetour = remarqueRetour;
+    }
+
+    public String getIdDecision() {
+        return idDecision;
+    }
+
+    public void setIdDecision(String idDecision) {
+        this.idDecision = idDecision;
     }
 
 }

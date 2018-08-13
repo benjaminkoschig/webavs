@@ -204,6 +204,8 @@ public class PCDetailAnnonceAjaxViewBean extends JadeAbstractAjaxFindRawSQLForDo
         item.setCategoriePlausi(bean.getCategorie());
         item.setValidFromConflit(bean.getValidFromConflit());
         item.setValidToConflit(bean.getValidToConflit());
+        item.setIdDemande(((RetourAnnonce)bean).getIdDemande());
+        item.setIdDroit(((RetourAnnonce)bean).getIdDroit());
         return item;
     }
 
