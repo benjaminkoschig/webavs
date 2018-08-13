@@ -51,7 +51,7 @@ public class RpcPlausiPI008 extends RpcPlausiCommonCalcul {
 
     @Override
     public RpcPlausiCategory getCategory() {
-        return RpcPlausiCategory.WARNING;
+        return RpcPlausiCategory.ERROR;
     }
 
     @Override

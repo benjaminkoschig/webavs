@@ -18,8 +18,8 @@ public class BienImmobilierServantHabitationPrincipale extends BienImmobilier im
     private final BienImmobilierHabitableType typeDeBien;
 
     public BienImmobilierServantHabitationPrincipale(Montant valeurFiscale, Montant valeurLocative,
-            Montant interetHypothecaire, Montant loyerEncaisse, Montant sousLocation, Montant dette,
-            Integer nbPersonne, BienImmobilierHabitableType typeDeBien, Part part, ProprieteType proprieteType,
+            Montant interetHypothecaire, Montant loyerEncaisse, Montant sousLocation, Montant dette, Integer nbPersonne,
+            BienImmobilierHabitableType typeDeBien, Part part, ProprieteType proprieteType,
             DonneeFinanciere donneeFinanciere) {
         super(interetHypothecaire, dette, part, proprieteType, donneeFinanciere);
         this.nbPersonne = nbPersonne;
@@ -53,6 +53,13 @@ public class BienImmobilierServantHabitationPrincipale extends BienImmobilier im
 
     public Montant computeValLocativePartPropriete() {
         if (proprieteType.isUsufruit() || proprieteType.isProprietaire()) {
+            return valeurLocative.multiply(part);
+        }
+        return Montant.ZERO_ANNUEL;
+    }
+
+    public Montant computeValLocativeDH_RPC() {
+        if (proprieteType.isUsufruit() || proprieteType.isProprietaire() || proprieteType.isDroitHabitation()) {
             return valeurLocative.multiply(part);
         }
         return Montant.ZERO_ANNUEL;

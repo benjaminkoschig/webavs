@@ -54,7 +54,7 @@ public class RpcPlausiPI011 implements RpcPlausiMetier<RpcPlausiPI011Data> {
 
     @Override
     public RpcPlausiCategory getCategory() {
-        return RpcPlausiCategory.WARNING;
+        return RpcPlausiCategory.ERROR;
     }
 
     @Override

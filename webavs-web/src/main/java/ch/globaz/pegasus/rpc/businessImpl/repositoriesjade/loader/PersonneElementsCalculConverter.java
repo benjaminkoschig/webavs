@@ -73,8 +73,8 @@ public class PersonneElementsCalculConverter {
             perElCal.setRenteIsSansRente(false);
         }
 
-        perElCal.setRevenuBruteActiviteLucrative(computActiviteLucrative(parameters.getVariablesMetier()
-                .getForfaitTenueMenage().resolveMostRecent(), df));
+        perElCal.setRevenuBruteActiviteLucrative(computActiviteLucrative(
+                parameters.getVariablesMetier().getForfaitTenueMenage().resolveMostRecent(), df));
 
         perElCal.setLpp(df.getAutresRentes().getAutresRentesByGenre(AutreRenteGenre.LPP).sumRevenuAnnuel());
 
@@ -87,11 +87,10 @@ public class PersonneElementsCalculConverter {
             }
         }).sumWithStrategie();
 
-        perElCal.setTotalRentes(df
-                .getAutresRentes()
+        perElCal.setTotalRentes(df.getAutresRentes()
                 .filtreByGenre(AutreRenteGenre.LAA, AutreRenteGenre.ASSURANCE_PRIVEE, AutreRenteGenre.TROISIEME_PILIER,
-                        AutreRenteGenre.LAM, AutreRenteGenre.AUTRES).sumRevenuAnnuel().add(montantArv)
-                .add(perElCal.getLpp()).add(perElCal.getRenteEtrangere()));
+                        AutreRenteGenre.LAM, AutreRenteGenre.AUTRES)
+                .sumRevenuAnnuel().add(montantArv).add(perElCal.getLpp()).add(perElCal.getRenteEtrangere()));
 
         perElCal.setRetraitCapitalLpp(Montant.ZERO); // Nous ne disposons pas de cette information.
 
@@ -120,22 +119,24 @@ public class PersonneElementsCalculConverter {
 
         if (taxeJournaliereHome != null) {
 
-            perElCal.setHomeContributionLca(taxeJournaliereHome.computMontantContributionLcaAnnuel(dateDebut
-                    .getNbDaysInYear()));
+            perElCal.setHomeContributionLca(
+                    taxeJournaliereHome.computMontantContributionLcaAnnuel(dateDebut.getNbDaysInYear()));
 
             TypeChambrePrix typeChambrePrix = resolveTypeChambre(parameters, dateDebut, taxeJournaliereHome);
             Montant homeTaxeHomeTotal = typeChambrePrix.getPrix().annualise(dateDebut);
 
             perElCal.setHomeTaxeHomeTotal(homeTaxeHomeTotal);
-            Montant plafond = isCantonValais ? resolvePlafondHome(parameters.getVariablesMetier(),
-                    typeChambrePrix.getServiceEtat()).annualise(dateDebut) : Montant.ZERO_ANNUEL;
-            perElCal.setHomeTaxeHomePrisEnCompte(homeTaxeHomeTotal.greater(plafond) && !plafond.isZero() ? plafond
-                    : homeTaxeHomeTotal);
+            Montant plafond = isCantonValais
+                    ? resolvePlafondHome(parameters.getVariablesMetier(), typeChambrePrix.getServiceEtat())
+                            .annualise(dateDebut)
+                    : Montant.ZERO_ANNUEL;
+            perElCal.setHomeTaxeHomePrisEnCompte(
+                    homeTaxeHomeTotal.greater(plafond) && !plafond.isZero() ? plafond : homeTaxeHomeTotal);
             if (isCantonValais) {
-                perElCal.setHomeTaxeHomePrisEnCompte(perElCal.getHomeTaxeHomePrisEnCompte().add(
-                        taxeJournaliereHome.getFraisLongueDuree().annualise(dateDebut)));
-                perElCal.setHomeTaxeHomeTotal(perElCal.getHomeTaxeHomeTotal().add(
-                        taxeJournaliereHome.getFraisLongueDuree().annualise(dateDebut)));
+                perElCal.setHomeTaxeHomePrisEnCompte(perElCal.getHomeTaxeHomePrisEnCompte()
+                        .add(taxeJournaliereHome.getFraisLongueDuree().annualise(dateDebut)));
+                perElCal.setHomeTaxeHomeTotal(perElCal.getHomeTaxeHomeTotal()
+                        .add(taxeJournaliereHome.getFraisLongueDuree().annualise(dateDebut)));
             }
             perElCal.setHomeDepensesPersonnelles(resolveArgentDepoche(typeChambrePrix.getCategorieArgentPoche(),
                     typeChambrePrix.getCategorie(), parameters.getVariablesMetier(), dateDebut, isLvpc));
@@ -165,16 +166,17 @@ public class PersonneElementsCalculConverter {
         perElCal.setLivingAddress(livingAddress);
         perElCal.setTypeRenteCS(resolveMaxType(dfFiltre));
 
-        perElCal.setUsufructIncome((df.getBiensImmobiliersServantHbitationPrincipale().filtreByProprieteType(
-                ProprieteType.USUFRUITIER, ProprieteType.DROIT_HABITATION).sumMontantValeurLocativePartPropriete())
-                .add(df.getBiensImmobiliersNonPrincipale()
-                        .filtreByProprieteType(ProprieteType.USUFRUITIER, ProprieteType.DROIT_HABITATION)
-                        .sumMontantValeurLocativePartPropriete()));
+        perElCal.setUsufructIncome((df.getBiensImmobiliersServantHbitationPrincipale()
+                .filtreByProprieteType(ProprieteType.USUFRUITIER, ProprieteType.DROIT_HABITATION)
+                .sumMontantValeurLocativeDH_RPC())
+                        .add(df.getBiensImmobiliersNonPrincipale()
+                                .filtreByProprieteType(ProprieteType.USUFRUITIER, ProprieteType.DROIT_HABITATION)
+                                .sumMontantValeurLocativePartPropriete()));
 
         perElCal.setValeurLocativeProprietaire((df.getBiensImmobiliersServantHbitationPrincipale()
-                .filtreByProprieteType(ProprieteType.PROPRIETAIRE).sumMontantValeurLocativePartPropriete()).add(df
-                .getBiensImmobiliersNonPrincipale().filtreByProprieteType(ProprieteType.PROPRIETAIRE)
-                .sumMontantValeurLocativePartPropriete()));
+                .filtreByProprieteType(ProprieteType.PROPRIETAIRE).sumMontantValeurLocativePartPropriete())
+                        .add(df.getBiensImmobiliersNonPrincipale().filtreByProprieteType(ProprieteType.PROPRIETAIRE)
+                                .sumMontantValeurLocativePartPropriete()));
 
         // Si les APi sont prisent en compte dans le calcul
         if (perElCal.getHomeTaxeHomeTotal().isPositive()) {// !perElCal.getHomeIsApiFacturee() &&
@@ -275,8 +277,8 @@ public class PersonneElementsCalculConverter {
         } else if (serviceEtat.isListAttente()) {
             plafonds = variablesMetier.getPlafondAnnuelListAttente();
         } else {
-            throw new RpcTechnicalException("The plafond cant be found with the cs periode serivce etat["
-                    + serviceEtat.getValue() + "]");
+            throw new RpcTechnicalException(
+                    "The plafond cant be found with the cs periode serivce etat[" + serviceEtat.getValue() + "]");
         }
         return plafonds.resolveMostRecent().getMontant();
     }
@@ -285,8 +287,8 @@ public class PersonneElementsCalculConverter {
             Date dateDebut) {
         Date dateNaissance = new Date(membreFamille.getPersonne().getDateNaissance());
 
-        ForfaitsPrimeAssuranceMaladie forfaits = forfaitsPrimeAssuranceMaladie.filtreByIdLocalite(membreFamille
-                .getDonneesPersonnelles().getIdDernierDomicileLegale());
+        ForfaitsPrimeAssuranceMaladie forfaits = forfaitsPrimeAssuranceMaladie
+                .filtreByIdLocalite(membreFamille.getDonneesPersonnelles().getIdDernierDomicileLegale());
         String idLocalite = membreFamille.getDonneesPersonnelles().getIdDernierDomicileLegale();
 
         if ("0".equals(idLocalite) || idLocalite == null || idLocalite.isEmpty()) {

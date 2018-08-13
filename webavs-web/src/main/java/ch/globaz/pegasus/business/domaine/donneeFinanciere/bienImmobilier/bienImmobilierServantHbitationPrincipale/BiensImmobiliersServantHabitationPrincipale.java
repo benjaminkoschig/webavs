@@ -6,8 +6,8 @@ import ch.globaz.pegasus.business.domaine.donneeFinanciere.ProprieteType;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.bienImmobilier.BiensImmobiliers;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.bienImmobilier.BiensImmobiliersList;
 
-public class BiensImmobiliersServantHabitationPrincipale extends
-        BiensImmobiliers<BienImmobilierServantHabitationPrincipale, BiensImmobiliersServantHabitationPrincipale>
+public class BiensImmobiliersServantHabitationPrincipale
+        extends BiensImmobiliers<BienImmobilierServantHabitationPrincipale, BiensImmobiliersServantHabitationPrincipale>
         implements BiensImmobiliersList {
 
     public BiensImmobiliersServantHabitationPrincipale() {
@@ -71,6 +71,17 @@ public class BiensImmobiliersServantHabitationPrincipale extends
     }
 
     @Override
+    public Montant sumMontantValeurLocativeDH_RPC() {
+
+        return this.sum(new Each<BienImmobilierServantHabitationPrincipale>() {
+            @Override
+            public Montant getMontant(BienImmobilierServantHabitationPrincipale donnneeFianciere) {
+                return donnneeFianciere.computeValLocativeDH_RPC();
+            }
+        });
+    }
+
+    @Override
     public Montant sumMontantValeurLocativePartPropriete(ProprieteType type) {
 
         return filtreByProprieteType(type).sum(new Each<BienImmobilierServantHabitationPrincipale>() {
@@ -116,8 +127,9 @@ public class BiensImmobiliersServantHabitationPrincipale extends
         return this.sum(new Each<BienImmobilierServantHabitationPrincipale>() {
             @Override
             public Montant getMontant(BienImmobilierServantHabitationPrincipale donnneeFianciere) {
-                return donnneeFianciere.computeDepense().isPositive() ? donnneeFianciere.computeDepense().add(
-                        forfaitCharge) : Montant.ZERO_ANNUEL;
+                return donnneeFianciere.computeDepense().isPositive()
+                        ? donnneeFianciere.computeDepense().add(forfaitCharge)
+                        : Montant.ZERO_ANNUEL;
             }
         });
     }
