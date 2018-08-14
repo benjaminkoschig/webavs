@@ -21,6 +21,8 @@ public abstract class MutationAbstract extends globaz.jade.persistence.model.Jad
     private String noVersion = null;
     private String nss = null;
     private String prenom = null;
+    private String csEtatDemande = null;
+    private String dateFinInitial = null;
 
     public String getCsRoleMembreFamille() {
         return csRoleMembreFamille;
@@ -147,6 +149,22 @@ public abstract class MutationAbstract extends globaz.jade.persistence.model.Jad
     @Override
     public String toString() {
         return "NSS:" + nss + "No Version: " + noVersion + ", montant: " + montant + " periode: " + dateDebutPca + "-";
+    }
+
+    public String getCsEtatDemande() {
+        return csEtatDemande;
+    }
+
+    public void setCsEtatDemande(String csEtatDemande) {
+        this.csEtatDemande = csEtatDemande;
+    }
+
+    public String getDateFinInitial() {
+        return dateFinInitial;
+    }
+
+    public void setDateFinInitial(String dateFinInitial) {
+        this.dateFinInitial = dateFinInitial;
     }
 
 }

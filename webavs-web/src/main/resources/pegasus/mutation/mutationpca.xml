@@ -12,6 +12,8 @@
 			<select-field name="csTypePreparationDecision" field-ref="simpleDecisionApresCalcul.csTypePreparation" />
 			<select-field name="csTypePca" field-ref="pca.csTypePC" />
 			<select-field name="csTypeDecision" field-ref="simpleDecisionHeader.csTypeDecision" />
+			<select-field name="csEtatDemande" field-ref="simpleDemande.csEtatDemande" />
+			<select-field name="dateFinInitial" field-ref="simpleDemande.dateFinInitial" />
 			<select-field name="nss"    field-ref="personneEtendueComplexModel.personneEtendue.numAvsActuel" />
 			<select-field name="nom"    field-ref="personneEtendueComplexModel.tiers.designation1" />
 			<select-field name="prenom" field-ref="personneEtendueComplexModel.tiers.designation2" />
@@ -75,6 +77,12 @@
 				<join-field name="idDroit" operation="EQUALS" field-ref="simpleVersionDroit.idDroit"/>
 			</join-group>		
 		</linked-model>
+		
+		<linked-model name="simpleDemande" model-ref="ch.globaz.pegasus.business.models.demande.SimpleDemande" join-type="INNER" select-fields="false" >
+			<join-group operator="AND">
+				<join-field name="idDemande" operation="EQUALS" field-ref="simpleDroit.idDemandePC"/>
+			</join-group>		
+		</linked-model>				
 	
 		<linked-model name="simpleDroitMembreFamille" model-ref="ch.globaz.pegasus.business.models.droit.SimpleDroitMembreFamille" join-type="INNER" select-fields="false">
 			<join-group operator="AND">
@@ -118,7 +126,7 @@
 			
 				<search-field name="forIsPlanRetenu" operation="EQUALS" field-ref="planClacule.isPlanRetenu"/>
 				<search-field name="forCsEtat" operation="EQUALS" field-ref="simpleDecisionHeader.csEtatDecision" value="64028003" />
-				<search-field name="forIsSupprime" operation="EQUALS" field-ref="pca.isSupprime" />	 	
+				<search-field name="forIsSupprime" operation="EQUALS" field-ref="pca.isSupprime" />
 			</search-group>
 		</search-definition>
 		

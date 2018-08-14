@@ -21,6 +21,7 @@ import ch.globaz.common.properties.PropertiesException;
 import ch.globaz.pegasus.business.constantes.EPCPMutationPassage;
 import ch.globaz.pegasus.business.constantes.EPCProperties;
 import ch.globaz.pegasus.business.constantes.IPCDecision;
+import ch.globaz.pegasus.business.constantes.IPCDemandes;
 import ch.globaz.pegasus.business.constantes.IPCDroits;
 import ch.globaz.pegasus.business.constantes.IPCPCAccordee;
 import ch.globaz.pegasus.business.exceptions.models.MutationException;
@@ -40,6 +41,10 @@ import ch.globaz.pegasus.businessimpl.utils.PersistenceUtil;
 
 /**
  * @author dma
+ */
+/**
+ * @author ebko
+ *
  */
 public class MutationPcaServiceImpl implements MutationPcaService {
 
@@ -309,8 +314,48 @@ public class MutationPcaServiceImpl implements MutationPcaService {
         search.setWhereKey(MutationPcaSearch.FOR_PCA_VALIDEE);
         search.setDefinedSearchSize(JadeAbstractSearchModel.SIZE_NOLIMIT);
         List<MutationPca> list = PersistenceUtil.search(search, search.whichModelClass());
+        list = filtrePcaDemandeAnnulee(list);
 
         return list;
+    }
+    
+    /**
+     * Filtre les pca : ne prend pas en compte les pca dues à l'annulation ou la réduction d'une demande
+     * 
+     * @param listPca
+     * @return
+     */
+    private List<MutationPca> filtrePcaDemandeAnnulee(List<MutationPca> listPca) {
+        Map<String, List<MutationPca>> mapPcaAnnule = new HashMap<>();
+        List<MutationPca> listPcaFinale = new ArrayList<>();
+        for(MutationPca pca : listPca) {
+            if(isDemandeAnnule(pca)) {
+                if(mapPcaAnnule.get(pca.getIdDemande()) == null) {
+                    mapPcaAnnule.put(pca.getIdDemande(), new ArrayList<MutationPca>());
+                }
+                mapPcaAnnule.get(pca.getIdDemande()).add(pca);
+            } else {
+                listPcaFinale.add(pca);
+            }
+        }
+        
+        // Supprime la dernière pca d'une demande qui a été annulée ou réduite
+        for(List<MutationPca> listPcaAnnule: mapPcaAnnule.values()) {
+            Collections.sort(listPcaAnnule, new SortByNoVersion());
+            listPcaAnnule.remove(0);
+            listPcaFinale.addAll(listPcaAnnule);
+        }
+        return listPcaFinale;
+    }
+    
+    class SortByNoVersion implements Comparator<MutationPca> {
+        public int compare(MutationPca a, MutationPca b) {
+            return Integer.valueOf(b.getNoVersion()) - Integer.valueOf(a.getNoVersion());
+        }
+    }
+    
+    private boolean isDemandeAnnule(MutationPca pca) {
+        return IPCDemandes.CS_ANNULE.equals(pca.getCsEtatDemande()) || !JadeStringUtil.isBlankOrZero(pca.getDateFinInitial());
     }
 
     /**
