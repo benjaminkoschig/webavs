@@ -1,3 +1,0 @@
--- Ajout d'un boolean "estPorteEnCompte"
-ALTER table SCHEMA.APCOMPP ADD VNPORT CHAR(1);
-REORG TABLE SCHEMA.APCOMPP;
