@@ -4,23 +4,26 @@ import globaz.framework.process.FWProcess;
 import globaz.framework.util.FWMessage;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BPreparedStatement;
+import globaz.globall.db.BProcess;
 import globaz.globall.db.BSession;
 import globaz.globall.db.GlobazJobQueue;
-import globaz.globall.db.GlobazServer;
 import globaz.globall.util.JACalendar;
-import globaz.hermes.application.HEApplication;
 import globaz.hermes.utils.DateUtils;
-import globaz.hermes.utils.EBCDICFileWriter;
 import globaz.hermes.utils.StringUtils;
 import globaz.jade.client.util.JadeFilenameUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.common.Jade;
+import globaz.jade.common.JadeClassCastException;
 import globaz.jade.fs.JadeFsFacade;
+import globaz.jade.service.exception.JadeServiceActivatorException;
+import globaz.jade.service.exception.JadeServiceLocatorException;
 import globaz.pavo.application.CIApplication;
 import globaz.pavo.db.compte.CIAnnonceCentrale;
 import globaz.pavo.db.compte.CIAnnonceCentraleManager;
+import globaz.pavo.db.compte.CICompteIndividuel;
 import globaz.pavo.db.compte.CIEcriture;
 import globaz.pavo.db.compte.CIEcritureManager;
+import globaz.pavo.db.inscriptions.CIJournal;
 import globaz.pavo.util.CIUtil;
 import java.io.File;
 import java.io.IOException;
@@ -59,42 +62,24 @@ import ch.admin.zas.rc.PoolKopfType;
 import ch.admin.zas.rc.TEintragungIKMinDat.Beitragsdauer;
 import ch.admin.zas.rc.TStandIKStatistik;
 import ch.globaz.common.properties.CommonProperties;
+import ch.globaz.common.properties.PropertiesException;
 
-public class CIAnnonceCentraleProcessXML extends FWProcess {
+public class CIAnnonceCentraleProcessXML extends BProcess {
     private static final long serialVersionUID = 1L;
-    private static final int AFFILE_LENGTH = 11;
-    private static final String CODE_APP_ENR_FINAL = "34";
-    private static final String CODE_APP_ENR_INIT = "31";
-    private static final String CODE_APP_ENR_INSC = "32";
-    private static final String CODE_ENR = "01";
-    private static final int CURRENCY_LENGTH = 9;
     public static final String ENCODING = "Cp037";
-    private static final int ENR_LENGTH = 120;
     public static final int MAX_ECRITURE_LOT_DEFAUT = 50000;
     public static final String MODE_EXECUTION_INFOROM_D0064 = "modeExecutionInforomD0064";
-    public final static int NO_ERROR = 0;
-    private static final String NOMBRE_ASSURE = "00";
-    private static final int NUM_AVS_LENGTH = 11;
-    public final static int ON_ERROR = 200;
     private static final String REPORT_REVENUS_DEFAULT = "00000000000";
-    private static final String RESERVE_ZEROS_ENR = "0000000000000000";
-    private static final int TOTAL_REVENU_LENGTH = 11;
-    private static final String VALEUR_AFFILIE_SANS_NUM = "00000000000";
     private String agence = "";
     private String anneeAA = "";
     private CIAnnonceCentrale annonceCentrale = null;
     private String caisse = "";
-    private CIEcritureManager ecrituresAAnnoncer = null;
-    private EBCDICFileWriter fos = null;
+    private static final int AFFILE_LENGTH = 11;
     private int maxEcrituresASelect = 0;
     private String modeExecution = "";
     private String montantInitial = "";
-    private int nbreLotMax = 0;
-    private File out = null;
-    private BSession sessionHermes = null;
-    private String startDate = "";
     private BigInteger totalRevenus = null;
-
+    private static final int NUM_AVS_LENGTH = 11;
     private String typeEnregistrement = CIAnnonceCentrale.TYPE_ENR_ANNONCE_INTERCALAIRE;
     private static final String XSD_FOLDER = "/xsd/P2020/annoncesRC/";
     private static final String XSD_NAME = "MeldungZurZas.xsd";
@@ -102,6 +87,7 @@ public class CIAnnonceCentraleProcessXML extends FWProcess {
     private static final Logger LOG = LoggerFactory.getLogger(CIAnnonceCentraleGenerationProcess.class);
     IKStatistikMeldungType annonceXML;
     Marshaller marshaller = null;
+    Marshaller marshallerIKStat = null;
 
     /**
      * Constructor for CIAnnonceCentraleProcess.
@@ -129,6 +115,7 @@ public class CIAnnonceCentraleProcessXML extends FWProcess {
     protected boolean _executeProcess() throws Exception {
         try {
             // init valeurs communes
+
             caisse = StringUtils.padBeforeString(getSession().getApplication().getProperty(CIApplication.CODE_CAISSE),
                     "0", 3);
             agence = StringUtils.padBeforeString(getSession().getApplication().getProperty(CIApplication.CODE_AGENCE),
@@ -137,8 +124,6 @@ public class CIAnnonceCentraleProcessXML extends FWProcess {
 
             InitProcess();
             //
-            sessionHermes = (BSession) GlobazServer.getCurrentSystem()
-                    .getApplication(HEApplication.DEFAULT_APPLICATION_HERMES).newSession(getSession());
 
             genererEcritureXML();
 
@@ -186,7 +171,7 @@ public class CIAnnonceCentraleProcessXML extends FWProcess {
 
         annoncePrecedentes.setOrderByDateEnvoiDesc();
         annoncePrecedentes.find(getTransaction(), 1);
-
+        String startDate = "";
         if (annoncePrecedentes.size() > 0) {
             // on prend le dernier lot envoyé
             CIAnnonceCentrale derniereAnnonce = (CIAnnonceCentrale) annoncePrecedentes.getFirstEntity();
@@ -236,7 +221,7 @@ public class CIAnnonceCentraleProcessXML extends FWProcess {
         System.out.println(DateUtils.getTimeStamp()
                 + "Recherche des \u00e9critures \u00e0  annoncer \u00e0  la centrale...");
         setState(getSession().getLabel("MSG_ANN_CEN_PROC_RECHERCHE"));
-        ecrituresAAnnoncer = new CIEcritureManager();
+        CIEcritureManager ecrituresAAnnoncer = new CIEcritureManager();
         ecrituresAAnnoncer.setSession(getSession());
         ecrituresAAnnoncer.setForDateAnnonceCentrale("0");
         // prendre seulement les genres 6,7
@@ -464,7 +449,8 @@ public class CIAnnonceCentraleProcessXML extends FWProcess {
 
     }
 
-    private void envoiFichier(String fichier) throws Exception {
+    private void envoiFichier(String fichier) throws CIAnnonceCentraleException, JadeServiceLocatorException,
+            JadeServiceActivatorException, JadeClassCastException {
         if (CIUtil.getPathFTP(getSession()) != "") {
             JadeFsFacade.copyFile(fichier, CIUtil.getPathFTP(getSession()) + "/" + getFileNameTimeStamp());
         } else {
@@ -488,12 +474,13 @@ public class CIAnnonceCentraleProcessXML extends FWProcess {
     }
 
     private void prepareEnvoieAnnonce(CIEcriture ciEcr, IKStatistikMeldungType annonceXML)
-            throws CIAnnonceCentraleException, DatatypeConfigurationException {
+            throws CIAnnonceCentraleException, DatatypeConfigurationException, JAXBException, SAXException,
+            PropertiesException, ParseException {
 
         Aufzeichnungen notes = new Aufzeichnungen();
         EintragungIKMeldung annonceCI = new EintragungIKMeldung();
 
-        annonceXML.setStandIKStatistikVorher(generateStandIKStatistikVorher(ciEcr));
+        annonceXML.setStandIKStatistikVorher(generateStandIKStatistikVorher());
 
         /*
          * Génération IKKopf
@@ -510,7 +497,14 @@ public class CIAnnonceCentraleProcessXML extends FWProcess {
          * Génration EintragungIKMeldung
          */
 
-        annonceCI.setAKAbrechnungsNr(JadeStringUtil.removeChar(ciEcr.getIdAffilie(), '.'));
+        // annonceCI.setAKAbrechnungsNr(JadeStringUtil.removeChar(ciEcr.getIdAffilie(), '.'));
+        try {
+            annonceCI.setAKAbrechnungsNr(getAffilie(ciEcr));
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
         String genre = ciEcr.getGenreEcriture();
         if (!JadeStringUtil.isBlankOrZero(ciEcr.getGenreEcriture())) {
             annonceCI.setSchluesselzahlBeitragsart(Short.parseShort(genre.substring(genre.length() - 1)));
@@ -545,11 +539,40 @@ public class CIAnnonceCentraleProcessXML extends FWProcess {
         annonceCI.setEinkommen(new BigDecimal(getMontant(ciEcr)));
         annonceCI.setVerarbeitungsjahr(retourneXMLGregorianCalendarFromYear(anneeAA));
         notes.getEintragungIKMeldung().add(annonceCI);
+        // validateAnnonceCI(notes);
         annonceXML.getAufzeichnungen().add(notes);
 
     }
 
-    private TStandIKStatistik generateStandIKStatistikVorher(CIEcriture ciEcr) {
+    // private void validateAnnonceCI(Aufzeichnungen notes) throws CIAnnonceCentraleException,
+    // DatatypeConfigurationException, SAXException, JAXBException, PropertiesException, ParseException {
+    // ch.admin.zas.pool.ObjectFactory factoryPool = new ch.admin.zas.pool.ObjectFactory();
+    // IKStatistikMeldungType annonceXMLTest = factoryType.createIKStatistikMeldungType();
+    // annonceXMLTest.setKasseZweigstelleIKFuehrend(caisse + agence);
+    // annonceXMLTest.setVerarbeitungsjahr(retourneXMLGregorianCalendarFromYear(anneeAA));
+    // annonceXMLTest.getAufzeichnungen().add(notes);
+    // PoolMeldungZurZAS.Lot lotAnnonces = initPoolMeldungZurZASLot(CIUtil.isTestXML(getSession()),
+    // CommonProperties.KEY_NO_CAISSE.getValue());
+    // lotAnnonces
+    // .getVAIKMeldungNeuerVersicherterOrVAIKMeldungAenderungVersichertenDatenOrVAIKMeldungVerkettungVersichertenNr()
+    // .add(annonceXMLTest);
+    // PoolMeldungZurZAS pool = factoryPool.createPoolMeldungZurZAS();
+    // pool.getLot().add(lotAnnonces);
+    // lotAnnonces.getPoolFuss().setEintragungengesamtzahl(1);
+    // initMarshaller(pool);
+    // marshaller.setEventHandler(new ValidationEventHandler() {
+    //
+    // @Override
+    // public boolean handleEvent(ValidationEvent event) {
+    // LOG.warn("JAXB validation error : " + event.getMessage(), this);
+    // return false;
+    // }
+    // });
+    // marshaller.marshal(pool, new ByteArrayOutputStream());
+    //
+    // }
+
+    private TStandIKStatistik generateStandIKStatistikVorher() {
         TStandIKStatistik statAvant = factoryType.createTStandIKStatistik();
         statAvant.setVorzeichenCode((short) 0);
         statAvant.setSummeEinkommen(BigInteger.ZERO);
@@ -562,41 +585,6 @@ public class CIAnnonceCentraleProcessXML extends FWProcess {
         duree.setEndmonat(Short.parseShort(ciEcr.getMoisFin()));
         return duree;
     }
-
-    // private String getAffilie(CIEcriture ecriture) throws Exception {
-    // if (CIEcriture.CS_CIGENRE_8.equals(ecriture.getGenreEcriture())) {
-    // String noAffilie = "";
-    // if (!JadeStringUtil.isIntegerEmpty(ecriture.getPartenaireId())) {
-    // CICompteIndividuel ciPart = new CICompteIndividuel();
-    // ciPart.setSession(getSession());
-    // ciPart.setCompteIndividuelId(ecriture.getPartenaireId());
-    // ciPart.retrieve();
-    // if (!ciPart.isNew()) {
-    // noAffilie = ciPart.getNumeroAvsForSplitting();
-    // }
-    // }
-    // return StringUtils.padAfterString(noAffilie, " ", CIAnnonceCentraleProcessXML.NUM_AVS_LENGTH);
-    // } else { // recherche journal
-    // CIJournal journal = ecriture.getJournal(null, false);
-    // if (!journal.isNew()) {
-    // if (CIJournal.CS_APG.equals(journal.getIdTypeInscription())) {
-    // return "77777777777";
-    // } else if (CIJournal.CS_IJAI.equals(journal.getIdTypeInscription())) {
-    // return "88888888888";
-    // } else if (CIJournal.CS_ASSURANCE_CHOMAGE.equals(journal.getIdTypeInscription())) {
-    // return ecriture.getCaisseChomageFormattee();
-    // } else if (CIJournal.CS_ASSURANCE_MILITAIRE.equals(journal.getIdTypeInscription())) {
-    // return "66666666666";
-    // }
-    // }
-    // String numAffWithoutDot = StringUtils.removeDots(ecriture.getIdAffilie());
-    // if (numAffWithoutDot.length() > CIAnnonceCentraleProcessXML.NUM_AVS_LENGTH) {
-    // numAffWithoutDot = numAffWithoutDot.substring(0, CIAnnonceCentraleProcessXML.NUM_AVS_LENGTH);
-    // }
-    //
-    // return StringUtils.padAfterString(numAffWithoutDot, " ", CIAnnonceCentraleProcessXML.AFFILE_LENGTH);
-    // }
-    // }
 
     private String getFileNameTimeStamp() throws CIAnnonceCentraleException {
         String fileName = "M_" + CIUtil.getRacineNom();
@@ -657,6 +645,41 @@ public class CIAnnonceCentraleProcessXML extends FWProcess {
     private String getMontant(CIEcriture ecriture) {
         int revenuTr = (int) Double.parseDouble(ecriture.getRevenu());
         return String.valueOf(revenuTr);
+    }
+
+    private String getAffilie(CIEcriture ecriture) throws Exception {
+        if (CIEcriture.CS_CIGENRE_8.equals(ecriture.getGenreEcriture())) {
+            String noAffilie = "";
+            if (!JadeStringUtil.isIntegerEmpty(ecriture.getPartenaireId())) {
+                CICompteIndividuel ciPart = new CICompteIndividuel();
+                ciPart.setSession(getSession());
+                ciPart.setCompteIndividuelId(ecriture.getPartenaireId());
+                ciPart.retrieve();
+                if (!ciPart.isNew()) {
+                    noAffilie = ciPart.getNumeroAvsForSplitting();
+                }
+            }
+            return noAffilie;
+        } else { // recherche journal
+            CIJournal journal = ecriture.getJournal(null, false);
+            if (!journal.isNew()) {
+                if (CIJournal.CS_APG.equals(journal.getIdTypeInscription())) {
+                    return "77777777777";
+                } else if (CIJournal.CS_IJAI.equals(journal.getIdTypeInscription())) {
+                    return "88888888888";
+                } else if (CIJournal.CS_ASSURANCE_CHOMAGE.equals(journal.getIdTypeInscription())) {
+                    return ecriture.getCaisseChomageFormattee();
+                } else if (CIJournal.CS_ASSURANCE_MILITAIRE.equals(journal.getIdTypeInscription())) {
+                    return "66666666666";
+                }
+            }
+            String numAffWithoutDot = JadeStringUtil.removeChar(ecriture.getIdAffilie(), '.');
+            if (numAffWithoutDot.length() > CIAnnonceCentraleProcessXML.NUM_AVS_LENGTH) {
+                numAffWithoutDot = numAffWithoutDot.substring(0, CIAnnonceCentraleProcessXML.NUM_AVS_LENGTH);
+            }
+
+            return numAffWithoutDot;
+        }
     }
 
 }
