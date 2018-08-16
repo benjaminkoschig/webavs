@@ -1,5 +1,6 @@
 package globaz.corvus.helpers.adaptation;
 
+import java.util.Iterator;
 import globaz.commons.nss.NSUtil;
 import globaz.corvus.anakin.AnakinValidationException;
 import globaz.corvus.annonce.REAnnoncesAPersister;
@@ -56,7 +57,6 @@ import globaz.prestation.enums.codeprestation.type.PRCodePrestationInvalidite;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.tools.PRDateFormater;
-import java.util.Iterator;
 
 public class REAdaptationManuelleHelper extends FWHelper {
     private final String EMPTY_NSS = "00000000000";
@@ -269,7 +269,7 @@ public class REAdaptationManuelleHelper extends FWHelper {
     }
 
     /**
-     * 
+     *
      * @param session
      * @param transaction
      * @param vb
@@ -355,8 +355,8 @@ public class REAdaptationManuelleHelper extends FWHelper {
             prstduMgr.setSession(session);
             prstduMgr.setForIdRenteAccordes(ra.getIdPrestationAccordee());
             prstduMgr.setForCsType(IREPrestationDue.CS_TYPE_PMT_MENS);
-            prstduMgr.setForPeriodePDInMoisAnnee(PRDateFormater.convertDate_MMxAAAA_to_AAAAMM(REPmtMensuel
-                    .getDateProchainPmt(session)));
+            prstduMgr.setForPeriodePDInMoisAnnee(
+                    PRDateFormater.convertDate_MMxAAAA_to_AAAAMM(REPmtMensuel.getDateProchainPmt(session)));
             prstduMgr.find();
 
             if (prstduMgr.isEmpty() || (prstduMgr.size() > 1)) {
@@ -387,8 +387,8 @@ public class REAdaptationManuelleHelper extends FWHelper {
             prstduMgr.setSession(session);
             prstduMgr.setForIdRenteAccordes(ra.getIdPrestationAccordee());
             prstduMgr.setForCsType(IREPrestationDue.CS_TYPE_PMT_MENS);
-            prstduMgr.setForPeriodePDInMoisAnnee(PRDateFormater.convertDate_MMxAAAA_to_AAAAMM(REPmtMensuel
-                    .getDateDernierPmt(session)));
+            prstduMgr.setForPeriodePDInMoisAnnee(
+                    PRDateFormater.convertDate_MMxAAAA_to_AAAAMM(REPmtMensuel.getDateDernierPmt(session)));
             prstduMgr.find();
 
             if (prstduMgr.isEmpty() || (prstduMgr.size() > 1)) {
@@ -440,7 +440,7 @@ public class REAdaptationManuelleHelper extends FWHelper {
      * Si oui, ne rien faire</br>
      * </br>
      * Créer annonce ponctuelle 10ème</br>
-     * 
+     *
      * @param transaction
      * @param vb
      * @param ra
@@ -449,9 +449,8 @@ public class REAdaptationManuelleHelper extends FWHelper {
      * @param tier
      * @throws Exception
      */
-    private void creerAnnonces10emeRevision(BSession session, BTransaction transaction,
-            REAdaptationManuelleViewBean vb, PRTiersWrapper tier, RERenteAccordee ra, String dateDernierPaiement)
-            throws Exception {
+    private void creerAnnonces10emeRevision(BSession session, BTransaction transaction, REAdaptationManuelleViewBean vb,
+            PRTiersWrapper tier, RERenteAccordee ra, String dateDernierPaiement) throws Exception {
 
         // On va d'abord contrôler si une annonce de diminution à déjà été créée.
         int genrePrestation = 0;
@@ -602,10 +601,10 @@ public class REAdaptationManuelleHelper extends FWHelper {
         REBaseDeCalcul9EmeRevisionReader baseDeCalculReader = new REBaseDeCalcul9EmeRevisionReader();
         // ---------------------------------------------------------------------------//
 
-        annoncePonctuelle9Eme.setNumeroCaisse(generalReader.convertNumeroCaisse(session.getApplication().getProperty(
-                "noCaisse")));
-        annoncePonctuelle9Eme.setNumeroAgence(generalReader.convertNumeroAgence(session.getApplication().getProperty(
-                "noAgence")));
+        annoncePonctuelle9Eme
+                .setNumeroCaisse(generalReader.convertNumeroCaisse(session.getApplication().getProperty("noCaisse")));
+        annoncePonctuelle9Eme
+                .setNumeroAgence(generalReader.convertNumeroAgence(session.getApplication().getProperty("noAgence")));
         annoncePonctuelle9Eme.setUtilisateurPourReferenceCaisseInterne(session.getUserId().toUpperCase());
 
         annoncePonctuelle9Eme.setDebutDroit(new JADate(new JACalendarGregorian().addMonths(dateDernierPaiement, 1)));
@@ -614,17 +613,17 @@ public class REAdaptationManuelleHelper extends FWHelper {
         // rapport
         annoncePonctuelle9Eme.setCodeMutation(78);
 
-        annoncePonctuelle9Eme.setNoAssAyantDroit(generalReader.convertFormatedNss(tierBeneficiaire
-                .getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL)));
-        annoncePonctuelle9Eme.setMensualitePrestationsFrancs(generalReader.convertMensualitePrestationsFrancs(vb
-                .getNouveauMontantPrestation()));
+        annoncePonctuelle9Eme.setNoAssAyantDroit(
+                generalReader.convertFormatedNss(tierBeneficiaire.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL)));
+        annoncePonctuelle9Eme.setMensualitePrestationsFrancs(
+                generalReader.convertMensualitePrestationsFrancs(vb.getNouveauMontantPrestation()));
 
         // Valeurs récupéré depuis les rentes accordées
         annoncePonctuelle9Eme.setIdTiers(renteAccordeeReader.convertIdTiers(ra.getIdTiersBeneficiaire()));
         annoncePonctuelle9Eme.setRefugie(renteAccordeeReader.convertIsRefugie(ra.getCodeRefugie()));
         annoncePonctuelle9Eme.setGenrePrestation(renteAccordeeReader.convertGenrePrestation(ra.getCodePrestation()));
-        annoncePonctuelle9Eme.setSupplementAjournement(renteAccordeeReader.convertSupplementAjournement(ra
-                .getSupplementAjournement()));
+        annoncePonctuelle9Eme.setSupplementAjournement(
+                renteAccordeeReader.convertSupplementAjournement(ra.getSupplementAjournement()));
         // annoncePonctuelle10Eme.setDateDebutAnticipation(renteAccordeeReader.convertDateDebutAnticipation(ra
         // .getDateDebutAnticipation()));
         // annoncePonctuelle10Eme.setNbreAnneeAnticipation(renteAccordeeReader.convertNbreAnneeAnticipation(ra
@@ -638,23 +637,23 @@ public class REAdaptationManuelleHelper extends FWHelper {
         annoncePonctuelle9Eme.setCasSpecial3(renteAccordeeReader.convertCasSpecial(ra.getCodeCasSpeciaux3()));
         annoncePonctuelle9Eme.setCasSpecial4(renteAccordeeReader.convertCasSpecial(ra.getCodeCasSpeciaux4()));
         annoncePonctuelle9Eme.setCasSpecial5(renteAccordeeReader.convertCasSpecial(ra.getCodeCasSpeciaux5()));
-        annoncePonctuelle9Eme.setDateRevocationAjournement(renteAccordeeReader.convertDateRevocationAjournement(ra
-                .getDateRevocationAjournement()));
+        annoncePonctuelle9Eme.setDateRevocationAjournement(
+                renteAccordeeReader.convertDateRevocationAjournement(ra.getDateRevocationAjournement()));
         annoncePonctuelle9Eme.setDureeAjournement(
                 renteAccordeeReader.convertDureeAjournementValeurEntiere(ra.getDureeAjournement()),
                 renteAccordeeReader.convertDureeAjournementValeurDecimal(ra.getDureeAjournement()));
 
-        Integer etatCivil = renteAccordeeReader.convertEtatCivil(PRACORConst.csEtatCivilToAcorForRentes(ra
-                .getCsEtatCivil()));
+        Integer etatCivil = renteAccordeeReader
+                .convertEtatCivil(PRACORConst.csEtatCivilToAcorForRentes(ra.getCsEtatCivil()));
         annoncePonctuelle9Eme.setEtatCivil(etatCivil);
 
         // CantonEtatDomicile
         // On essaye avec le tier requérant
-        PRTiersWrapper tierRequerantAdr = PRTiersHelper.getTiersAdresseDomicileParId(session,
-                ra.getIdTiersBaseCalcul(), JACalendar.todayJJsMMsAAAA());
+        PRTiersWrapper tierRequerantAdr = PRTiersHelper.getTiersAdresseDomicileParId(session, ra.getIdTiersBaseCalcul(),
+                JACalendar.todayJJsMMsAAAA());
         if (tierRequerantAdr != null) {
-            annoncePonctuelle9Eme.setCantonEtatDomicile(generalReader.convertCantonEtatDomicile(PRACORConst
-                    .csCantonToAcor(tierRequerantAdr.getProperty(PRTiersWrapper.PROPERTY_ID_CANTON))));
+            annoncePonctuelle9Eme.setCantonEtatDomicile(generalReader.convertCantonEtatDomicile(
+                    PRACORConst.csCantonToAcor(tierRequerantAdr.getProperty(PRTiersWrapper.PROPERTY_ID_CANTON))));
         }
 
         // sinon on test avec le tier bénéficiaire
@@ -680,26 +679,26 @@ public class REAdaptationManuelleHelper extends FWHelper {
 
         PRTiersWrapper tierComp1 = PRTiersHelper.getTiersParId(session, ra.getIdTiersComplementaire1());
         if (tierComp1 != null) {
-            annoncePonctuelle9Eme.setPremierNoAssComplementaire(generalReader.convertFormatedNss(tierComp1
-                    .getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL)));
+            annoncePonctuelle9Eme.setPremierNoAssComplementaire(
+                    generalReader.convertFormatedNss(tierComp1.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL)));
         } else {
             if (REGenrePrestationEnum.groupe5.contains(ra.getCodePrestation()) || isNSS1Obligatoire) {
                 nssComplementaire = majTiersComplementaires(session, transaction, ra);
-                annoncePonctuelle9Eme.setPremierNoAssComplementaire(generalReader.convertFormatedNss(nssComplementaire
-                        .getNssComplementaire1()));
+                annoncePonctuelle9Eme.setPremierNoAssComplementaire(
+                        generalReader.convertFormatedNss(nssComplementaire.getNssComplementaire1()));
             }
         }
 
         // SecondNoAssComplementaire
         PRTiersWrapper tierComp2 = PRTiersHelper.getTiersParId(session, ra.getIdTiersComplementaire2());
         if (tierComp2 != null) {
-            annoncePonctuelle9Eme.setSecondNoAssComplementaire(generalReader.convertFormatedNss(tierComp2
-                    .getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL)));
+            annoncePonctuelle9Eme.setSecondNoAssComplementaire(
+                    generalReader.convertFormatedNss(tierComp2.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL)));
         } else {
             if (REGenrePrestationEnum.groupe5.contains(ra.getCodePrestation())) {
                 if (!JadeStringUtil.isBlankOrZero(nssComplementaire.getNssComplementaire2())) {
-                    annoncePonctuelle9Eme.setSecondNoAssComplementaire(generalReader
-                            .convertFormatedNss(nssComplementaire.getNssComplementaire2()));
+                    annoncePonctuelle9Eme.setSecondNoAssComplementaire(
+                            generalReader.convertFormatedNss(nssComplementaire.getNssComplementaire2()));
                 }
             }
         }
@@ -711,23 +710,24 @@ public class REAdaptationManuelleHelper extends FWHelper {
             demAPI.setIdDemandeRente(dr.getIdDemandeRente());
             demAPI.retrieve();
             if (demAPI.isNew()) {
-                throw new Exception("Unable to retrieve the REDemandeRenteAPI with id [" + dr.getIdDemandeRente() + "]");
+                throw new Exception(
+                        "Unable to retrieve the REDemandeRenteAPI with id [" + dr.getIdDemandeRente() + "]");
             }
-            annoncePonctuelle9Eme.setGenreDroitAPI(generalReader.convertGenreDroitAPI(session.getCode(ra
-                    .getCsGenreDroitApi())));
+            annoncePonctuelle9Eme
+                    .setGenreDroitAPI(generalReader.convertGenreDroitAPI(session.getCode(ra.getCsGenreDroitApi())));
         }
 
         // Pour tous les autre type de rentes sauf API
         else {
             annoncePonctuelle9Eme.setEchelleRente(baseDeCalculReader.readEchelleRente(bc.getEchelleRente()));
 
-            annoncePonctuelle9Eme.setDureeCotManquante48_72(baseDeCalculReader.readDureeCotManquante48_72(bc
-                    .getMoisAppointsAvant73()));
-            annoncePonctuelle9Eme.setDureeCotManquante73_78(baseDeCalculReader.readDureeCotManquante73_78(bc
-                    .getMoisAppointsDes73()));
+            annoncePonctuelle9Eme.setDureeCotManquante48_72(
+                    baseDeCalculReader.readDureeCotManquante48_72(bc.getMoisAppointsAvant73()));
+            annoncePonctuelle9Eme.setDureeCotManquante73_78(
+                    baseDeCalculReader.readDureeCotManquante73_78(bc.getMoisAppointsDes73()));
             annoncePonctuelle9Eme.setRamDeterminant(baseDeCalculReader.readRamDeterminant(bc.getRevenuAnnuelMoyen()));
-            annoncePonctuelle9Eme.setAnneeCotClasseAge(baseDeCalculReader.readAnneeCotClasseAge(bc
-                    .getAnneeCotiClasseAge()));
+            annoncePonctuelle9Eme
+                    .setAnneeCotClasseAge(baseDeCalculReader.readAnneeCotClasseAge(bc.getAnneeCotiClasseAge()));
             annoncePonctuelle9Eme.setAnneeNiveau(baseDeCalculReader.readAnneeNiveau(bc.getAnneeDeNiveau()));
 
             //
@@ -749,20 +749,20 @@ public class REAdaptationManuelleHelper extends FWHelper {
 
             // Spécifique 9ème
             // REANN41
-            annoncePonctuelle9Eme.setMontantRenteOrdinaireRemplace(renteAccordeeReader
-                    .readMontantRenteOrdinaireRemplace(ra.getMontantRenteOrdiRemplacee()));
+            annoncePonctuelle9Eme.setMontantRenteOrdinaireRemplace(
+                    renteAccordeeReader.readMontantRenteOrdinaireRemplace(ra.getMontantRenteOrdiRemplacee()));
             // on ne le veut pas
             // annoncePonctuelle9Eme.setNouveauNoAssureAyantDroit(baseDeCalculReader.readNouveauNoAssureAyantDroit());
             // REAAL3B
-            annoncePonctuelle9Eme.setRevenuPrisEnCompte(baseDeCalculReader.readRevenuPrisEnCompte(bc
-                    .getRevenuPrisEnCompte()));
+            annoncePonctuelle9Eme
+                    .setRevenuPrisEnCompte(baseDeCalculReader.readRevenuPrisEnCompte(bc.getRevenuPrisEnCompte()));
             annoncePonctuelle9Eme.setIsLimiteRevenu(baseDeCalculReader.readIsLimiteRevenu(bc.isLimiteRevenu()));
             annoncePonctuelle9Eme.setIsMinimumGaranti(baseDeCalculReader.readIsMinimumGaranti(bc.isMinimuGaranti()));
             // #
             // annoncePonctuelle9Eme.setRevenuAnnuelMoyen(baseDeCalculReader.readRevenuAnnuelMoyen(bc
             // .getRevenuAnnuelMoyen()));
-            annoncePonctuelle9Eme.setBteMoyennePrisEnCompte(baseDeCalculReader.readBonificationTacheEducative(bc
-                    .getBonificationTacheEducative()));
+            annoncePonctuelle9Eme.setBteMoyennePrisEnCompte(
+                    baseDeCalculReader.readBonificationTacheEducative(bc.getBonificationTacheEducative()));
 
         }
 
@@ -773,12 +773,12 @@ public class REAdaptationManuelleHelper extends FWHelper {
         }
 
         annoncePonctuelle9Eme.setOfficeAICompetent(baseDeCalculReader.readOfficeAICompetent(bc.getCodeOfficeAi()));
-        annoncePonctuelle9Eme.setSurvenanceEvenAssure(baseDeCalculReader.readSurvenanceEvenAssure(bc
-                .getSurvenanceEvtAssAyantDroit()));
+        annoncePonctuelle9Eme.setSurvenanceEvenAssure(
+                baseDeCalculReader.readSurvenanceEvenAssure(bc.getSurvenanceEvtAssAyantDroit()));
 
         annoncePonctuelle9Eme.setCodeInfirmite(baseDeCalculReader.readCodeInfirmite(bc.getCleInfirmiteAyantDroit()));
-        annoncePonctuelle9Eme.setCodeAtteinteFonctionnelle(baseDeCalculReader.readCodeAtteinteFonctionnelle(bc
-                .getCleInfirmiteAyantDroit()));
+        annoncePonctuelle9Eme.setCodeAtteinteFonctionnelle(
+                baseDeCalculReader.readCodeAtteinteFonctionnelle(bc.getCleInfirmiteAyantDroit()));
 
         // ---------------------------------------------------------------------------//
         RECreationAnnonceService serviceCreationAnnonce = new RECreationAnnonceService();
@@ -852,10 +852,10 @@ public class REAdaptationManuelleHelper extends FWHelper {
         REBaseDeCalcul10EmeRevisionReader baseDeCalculReader = new REBaseDeCalcul10EmeRevisionReader();
         // ---------------------------------------------------------------------------//
 
-        annoncePonctuelle10Eme.setNumeroCaisse(converter.convertNumeroCaisse(session.getApplication().getProperty(
-                "noCaisse")));
-        annoncePonctuelle10Eme.setNumeroAgence(converter.convertNumeroAgence(session.getApplication().getProperty(
-                "noAgence")));
+        annoncePonctuelle10Eme
+                .setNumeroCaisse(converter.convertNumeroCaisse(session.getApplication().getProperty("noCaisse")));
+        annoncePonctuelle10Eme
+                .setNumeroAgence(converter.convertNumeroAgence(session.getApplication().getProperty("noAgence")));
         annoncePonctuelle10Eme.setUtilisateurPourReferenceCaisseInterne(session.getUserId().toUpperCase());
 
         annoncePonctuelle10Eme.setDebutDroit(new JADate(new JACalendarGregorian().addMonths(dateDernierPaiement, 1)));
@@ -864,23 +864,23 @@ public class REAdaptationManuelleHelper extends FWHelper {
         // rapport
         annoncePonctuelle10Eme.setCodeMutation(78);
 
-        annoncePonctuelle10Eme.setNoAssAyantDroit(converter.convertFormatedNss(tierBeneficiaire
-                .getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL)));
-        annoncePonctuelle10Eme.setMensualitePrestationsFrancs(converter.convertMensualitePrestationsFrancs(vb
-                .getNouveauMontantPrestation()));
+        annoncePonctuelle10Eme.setNoAssAyantDroit(
+                converter.convertFormatedNss(tierBeneficiaire.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL)));
+        annoncePonctuelle10Eme.setMensualitePrestationsFrancs(
+                converter.convertMensualitePrestationsFrancs(vb.getNouveauMontantPrestation()));
 
         // Valeurs récupéré depuis les rentes accordées
         annoncePonctuelle10Eme.setIdTiers(renteAccordeeReader.convertIdTiers(ra.getIdTiersBeneficiaire()));
         annoncePonctuelle10Eme.setRefugie(renteAccordeeReader.convertIsRefugie(ra.getCodeRefugie()));
         annoncePonctuelle10Eme.setGenrePrestation(renteAccordeeReader.convertGenrePrestation(ra.getCodePrestation()));
-        annoncePonctuelle10Eme.setSupplementAjournement(renteAccordeeReader.convertSupplementAjournement(ra
-                .getSupplementAjournement()));
-        annoncePonctuelle10Eme.setDateDebutAnticipation(renteAccordeeReader.convertDateDebutAnticipation(ra
-                .getDateDebutAnticipation()));
-        annoncePonctuelle10Eme.setNbreAnneeAnticipation(renteAccordeeReader.convertNbreAnneeAnticipation(ra
-                .getAnneeAnticipation()));
-        annoncePonctuelle10Eme.setReductionAnticipation(renteAccordeeReader.convertReductionAnticipation(ra
-                .getMontantReducationAnticipation()));
+        annoncePonctuelle10Eme.setSupplementAjournement(
+                renteAccordeeReader.convertSupplementAjournement(ra.getSupplementAjournement()));
+        annoncePonctuelle10Eme.setDateDebutAnticipation(
+                renteAccordeeReader.convertDateDebutAnticipation(ra.getDateDebutAnticipation()));
+        annoncePonctuelle10Eme
+                .setNbreAnneeAnticipation(renteAccordeeReader.convertNbreAnneeAnticipation(ra.getAnneeAnticipation()));
+        annoncePonctuelle10Eme.setReductionAnticipation(
+                renteAccordeeReader.convertReductionAnticipation(ra.getMontantReducationAnticipation()));
         annoncePonctuelle10Eme.setSurvivant(renteAccordeeReader.convertIsSurvivant(ra.getCodeSurvivantInvalide()));
         annoncePonctuelle10Eme.setReduction(renteAccordeeReader.convertReduction(ra.getReductionFauteGrave()));
         annoncePonctuelle10Eme.setCasSpecial1(renteAccordeeReader.convertCasSpecial(ra.getCodeCasSpeciaux1()));
@@ -888,23 +888,23 @@ public class REAdaptationManuelleHelper extends FWHelper {
         annoncePonctuelle10Eme.setCasSpecial3(renteAccordeeReader.convertCasSpecial(ra.getCodeCasSpeciaux3()));
         annoncePonctuelle10Eme.setCasSpecial4(renteAccordeeReader.convertCasSpecial(ra.getCodeCasSpeciaux4()));
         annoncePonctuelle10Eme.setCasSpecial5(renteAccordeeReader.convertCasSpecial(ra.getCodeCasSpeciaux5()));
-        annoncePonctuelle10Eme.setDateRevocationAjournement(renteAccordeeReader.convertDateRevocationAjournement(ra
-                .getDateRevocationAjournement()));
+        annoncePonctuelle10Eme.setDateRevocationAjournement(
+                renteAccordeeReader.convertDateRevocationAjournement(ra.getDateRevocationAjournement()));
         annoncePonctuelle10Eme.setDureeAjournement(
                 renteAccordeeReader.convertDureeAjournementValeurEntiere(ra.getDureeAjournement()),
                 renteAccordeeReader.convertDureeAjournementValeurDecimal(ra.getDureeAjournement()));
 
-        Integer etatCivil = renteAccordeeReader.convertEtatCivil(PRACORConst.csEtatCivilToAcorForRentes(ra
-                .getCsEtatCivil()));
+        Integer etatCivil = renteAccordeeReader
+                .convertEtatCivil(PRACORConst.csEtatCivilToAcorForRentes(ra.getCsEtatCivil()));
         annoncePonctuelle10Eme.setEtatCivil(etatCivil);
 
         // CantonEtatDomicile
         // On essaye avec le tier requérant
-        PRTiersWrapper tierRequerantAdr = PRTiersHelper.getTiersAdresseDomicileParId(session,
-                ra.getIdTiersBaseCalcul(), JACalendar.todayJJsMMsAAAA());
+        PRTiersWrapper tierRequerantAdr = PRTiersHelper.getTiersAdresseDomicileParId(session, ra.getIdTiersBaseCalcul(),
+                JACalendar.todayJJsMMsAAAA());
         if (tierRequerantAdr != null) {
-            annoncePonctuelle10Eme.setCantonEtatDomicile(converter.convertCantonEtatDomicile(PRACORConst
-                    .csCantonToAcor(tierRequerantAdr.getProperty(PRTiersWrapper.PROPERTY_ID_CANTON))));
+            annoncePonctuelle10Eme.setCantonEtatDomicile(converter.convertCantonEtatDomicile(
+                    PRACORConst.csCantonToAcor(tierRequerantAdr.getProperty(PRTiersWrapper.PROPERTY_ID_CANTON))));
         }
 
         // sinon on test avec le tier bénéficiaire
@@ -930,26 +930,26 @@ public class REAdaptationManuelleHelper extends FWHelper {
 
         PRTiersWrapper tierComp1 = PRTiersHelper.getTiersParId(session, ra.getIdTiersComplementaire1());
         if (tierComp1 != null) {
-            annoncePonctuelle10Eme.setPremierNoAssComplementaire(converter.convertFormatedNss(tierComp1
-                    .getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL)));
+            annoncePonctuelle10Eme.setPremierNoAssComplementaire(
+                    converter.convertFormatedNss(tierComp1.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL)));
         } else {
             if (REGenrePrestationEnum.groupe5.contains(ra.getCodePrestation()) || isNSS1Obligatoire) {
                 nssComplementaire = majTiersComplementaires(session, transaction, ra);
-                annoncePonctuelle10Eme.setPremierNoAssComplementaire(converter.convertFormatedNss(nssComplementaire
-                        .getNssComplementaire1()));
+                annoncePonctuelle10Eme.setPremierNoAssComplementaire(
+                        converter.convertFormatedNss(nssComplementaire.getNssComplementaire1()));
             }
         }
 
         // SecondNoAssComplementaire
         PRTiersWrapper tierComp2 = PRTiersHelper.getTiersParId(session, ra.getIdTiersComplementaire2());
         if (tierComp2 != null) {
-            annoncePonctuelle10Eme.setSecondNoAssComplementaire(converter.convertFormatedNss(tierComp2
-                    .getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL)));
+            annoncePonctuelle10Eme.setSecondNoAssComplementaire(
+                    converter.convertFormatedNss(tierComp2.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL)));
         } else {
             if (REGenrePrestationEnum.groupe5.contains(ra.getCodePrestation())) {
                 if (!JadeStringUtil.isBlankOrZero(nssComplementaire.getNssComplementaire2())) {
-                    annoncePonctuelle10Eme.setSecondNoAssComplementaire(converter.convertFormatedNss(nssComplementaire
-                            .getNssComplementaire2()));
+                    annoncePonctuelle10Eme.setSecondNoAssComplementaire(
+                            converter.convertFormatedNss(nssComplementaire.getNssComplementaire2()));
                 }
             }
         }
@@ -961,23 +961,24 @@ public class REAdaptationManuelleHelper extends FWHelper {
             demAPI.setIdDemandeRente(dr.getIdDemandeRente());
             demAPI.retrieve();
             if (demAPI.isNew()) {
-                throw new Exception("Unable to retrieve the REDemandeRenteAPI with id [" + dr.getIdDemandeRente() + "]");
+                throw new Exception(
+                        "Unable to retrieve the REDemandeRenteAPI with id [" + dr.getIdDemandeRente() + "]");
             }
-            annoncePonctuelle10Eme.setGenreDroitAPI(converter.convertGenreDroitAPI(session.getCode(ra
-                    .getCsGenreDroitApi())));
+            annoncePonctuelle10Eme
+                    .setGenreDroitAPI(converter.convertGenreDroitAPI(session.getCode(ra.getCsGenreDroitApi())));
         }
 
         // Pour tous les autre type de rentes sauf API
         else {
             annoncePonctuelle10Eme.setEchelleRente(baseDeCalculReader.readEchelleRente(bc.getEchelleRente()));
             annoncePonctuelle10Eme.setCodeRevenuSplitte(bc.getIsPartageRevenuCalcul());
-            annoncePonctuelle10Eme.setDureeCotManquante48_72(baseDeCalculReader.readDureeCotManquante48_72(bc
-                    .getMoisAppointsAvant73()));
-            annoncePonctuelle10Eme.setDureeCotManquante73_78(baseDeCalculReader.readDureeCotManquante73_78(bc
-                    .getMoisAppointsDes73()));
+            annoncePonctuelle10Eme.setDureeCotManquante48_72(
+                    baseDeCalculReader.readDureeCotManquante48_72(bc.getMoisAppointsAvant73()));
+            annoncePonctuelle10Eme.setDureeCotManquante73_78(
+                    baseDeCalculReader.readDureeCotManquante73_78(bc.getMoisAppointsDes73()));
             annoncePonctuelle10Eme.setRamDeterminant(baseDeCalculReader.readRamDeterminant(bc.getRevenuAnnuelMoyen()));
-            annoncePonctuelle10Eme.setAnneeCotClasseAge(baseDeCalculReader.readAnneeCotClasseAge(bc
-                    .getAnneeCotiClasseAge()));
+            annoncePonctuelle10Eme
+                    .setAnneeCotClasseAge(baseDeCalculReader.readAnneeCotClasseAge(bc.getAnneeCotiClasseAge()));
             annoncePonctuelle10Eme.setAnneeNiveau(baseDeCalculReader.readAnneeNiveau(bc.getAnneeDeNiveau()));
 
             //
@@ -1013,12 +1014,12 @@ public class REAdaptationManuelleHelper extends FWHelper {
         }
 
         annoncePonctuelle10Eme.setOfficeAICompetent(baseDeCalculReader.readOfficeAICompetent(bc.getCodeOfficeAi()));
-        annoncePonctuelle10Eme.setSurvenanceEvenAssure(baseDeCalculReader.readSurvenanceEvenAssure(bc
-                .getSurvenanceEvtAssAyantDroit()));
+        annoncePonctuelle10Eme.setSurvenanceEvenAssure(
+                baseDeCalculReader.readSurvenanceEvenAssure(bc.getSurvenanceEvtAssAyantDroit()));
 
         annoncePonctuelle10Eme.setCodeInfirmite(baseDeCalculReader.readCodeInfirmite(bc.getCleInfirmiteAyantDroit()));
-        annoncePonctuelle10Eme.setCodeAtteinteFonctionnelle(baseDeCalculReader.readCodeAtteinteFonctionnelle(bc
-                .getCleInfirmiteAyantDroit()));
+        annoncePonctuelle10Eme.setCodeAtteinteFonctionnelle(
+                baseDeCalculReader.readCodeAtteinteFonctionnelle(bc.getCleInfirmiteAyantDroit()));
 
         // ---------------------------------------------------------------------------//
         RECreationAnnonceService serviceCreationAnnonce = new RECreationAnnonceService();
@@ -1074,8 +1075,8 @@ public class REAdaptationManuelleHelper extends FWHelper {
             montant = "0" + montant;
         }
         ann46dim.setMensualitePrestationsFrancs(montant);
-        ann46dim.setFinDroit(PRDateFormater.convertDate_AAAAMM_to_MMAA(PRDateFormater
-                .convertDate_MMxAAAA_to_AAAAMM(dateRapportEtFin)));
+        ann46dim.setFinDroit(PRDateFormater
+                .convertDate_AAAAMM_to_MMAA(PRDateFormater.convertDate_MMxAAAA_to_AAAAMM(dateRapportEtFin)));
 
         // Mois rapport
         JADate moisRapport = new JADate(new JACalendarGregorian().addMonths(dateRapportEtFin, 1));
@@ -1115,7 +1116,7 @@ public class REAdaptationManuelleHelper extends FWHelper {
      * Si oui, ne rien faire</br>
      * </br>
      * Créer annonce ponctuelle 9ème</br>
-     * 
+     *
      * @param transaction
      * @param vb
      * @param ra
@@ -1191,8 +1192,8 @@ public class REAdaptationManuelleHelper extends FWHelper {
         }
 
         ann43dim.setMensualitePrestationsFrancs(montant);
-        ann43dim.setFinDroit(PRDateFormater.convertDate_AAAAMM_to_MMAA(PRDateFormater
-                .convertDate_MMxAAAA_to_AAAAMM(dateRapportEtFin)));
+        ann43dim.setFinDroit(PRDateFormater
+                .convertDate_AAAAMM_to_MMAA(PRDateFormater.convertDate_MMxAAAA_to_AAAAMM(dateRapportEtFin)));
 
         // Mois rapport
         JADate moisRapport = new JADate(new JACalendarGregorian().addMonths(dateRapportEtFin, 1));
@@ -1298,24 +1299,24 @@ public class REAdaptationManuelleHelper extends FWHelper {
 
     /**
      * Mise a jours des tiers complementaire a l'aide de la situation familiale et de du tiersBeneficiaire de la RA
-     * 
+     *
      * Pour ayant droit enfant =======================
-     * 
+     *
      * rentes 14, 24, 34, 54, 74, 16, 26, 56, 76 -> tiersComplementaire1 pere (si conj. inc. 00000000000) ->
      * tiersComplementaire2 mere
-     * 
+     *
      * rentes 15, 25, 35, 45, 55, 75 -> tiersComplementaire1 mere -> tiersComplementaire2 pere (si conj. inc.
      * 00000000000)
-     * 
+     *
      * Autres ======
-     * 
+     *
      * 13, 23, 33, 53, 73 -> tiersComplementaire1 l'autre conjoint
-     * 
-     * 
+     *
+     *
      * 10, 20, 50, 70 -> si celibataire -> tiersComplementaire1 rien -> si marie ou veuf -> tiersComplementaire1 l'autre
      * conjoint -> si divorce -> tiersComplementaire1 le dernier ex-conjoint
-     * 
-     * 
+     *
+     *
      * @param session
      * @param transaction
      * @param ra
@@ -1366,7 +1367,8 @@ public class REAdaptationManuelleHelper extends FWHelper {
             // tiersComplementaire1 pere (si conj. inc. 00000000000)
             if (enf.getPere() != null) {
                 enf.getPere().getCsCantonDomicile();
-                if (ISFSituationFamiliale.ID_MEMBRE_FAMILLE_CONJOINT_INCONNU.equals(enf.getPere().getIdMembreFamille())) {
+                if (ISFSituationFamiliale.ID_MEMBRE_FAMILLE_CONJOINT_INCONNU
+                        .equals(enf.getPere().getIdMembreFamille())) {
                     // oui mais on a pas de tiers pour le conjoint inconnu
                 } else {
                     PRTiersWrapper tw = PRTiersHelper.getTiersParId(session, enf.getPere().getIdTiers());
@@ -1377,8 +1379,13 @@ public class REAdaptationManuelleHelper extends FWHelper {
             // tiersComplementaire2 mere
             if (enf.getMere() != null) {
                 enf.getMere().getCsCantonDomicile();
-                PRTiersWrapper tw = PRTiersHelper.getTiersParId(session, enf.getMere().getIdTiers());
-                nssComplementaire.setNssComplementaire2(tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL));
+                if (ISFSituationFamiliale.ID_MEMBRE_FAMILLE_CONJOINT_INCONNU
+                        .equals(enf.getMere().getIdMembreFamille())) {
+                    // oui mais on a pas de tiers pour le conjoint inconnu
+                } else {
+                    PRTiersWrapper tw = PRTiersHelper.getTiersParId(session, enf.getMere().getIdTiers());
+                    nssComplementaire.setNssComplementaire2(tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL));
+                }
             }
 
             // Pour ayant droit enfant
@@ -1397,14 +1404,20 @@ public class REAdaptationManuelleHelper extends FWHelper {
             // tiersComplementaire1 mere
             if (enf.getMere() != null) {
                 enf.getMere().getCsCantonDomicile();
-                PRTiersWrapper tw = PRTiersHelper.getTiersParId(session, enf.getMere().getIdTiers());
-                nssComplementaire.setNssComplementaire1(tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL));
+                if (ISFSituationFamiliale.ID_MEMBRE_FAMILLE_CONJOINT_INCONNU
+                        .equals(enf.getMere().getIdMembreFamille())) {
+                    // oui mais on a pas de tiers pour le conjoint inconnu
+                } else {
+                    PRTiersWrapper tw = PRTiersHelper.getTiersParId(session, enf.getMere().getIdTiers());
+                    nssComplementaire.setNssComplementaire1(tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL));
+                }
             }
 
             // tiersComplementaire2 pere (si conj. inc. 00000000000)
             if (enf.getPere() != null) {
                 enf.getPere().getCsCantonDomicile();
-                if (ISFSituationFamiliale.ID_MEMBRE_FAMILLE_CONJOINT_INCONNU.equals(enf.getPere().getIdMembreFamille())) {
+                if (ISFSituationFamiliale.ID_MEMBRE_FAMILLE_CONJOINT_INCONNU
+                        .equals(enf.getPere().getIdMembreFamille())) {
                     // oui mais on a pas de tiers pour le conjoint inconnu
                 } else {
                     PRTiersWrapper tw = PRTiersHelper.getTiersParId(session, enf.getPere().getIdTiers());
