@@ -363,6 +363,10 @@ public class CAPaiementBVR extends CAPaiement implements APIPaiementBVR {
                 && JadeStringUtil.isBlankOrZero(getIdSectionAux())) {
             getMemoryLog().logMessage("7395", null, FWMessage.ERREUR, this.getClass().getName());
         }
+        if ((getSection() != null) && APISection.ID_TYPE_SECTION_BULLETIN_NEUTRE.equals(getSection().getIdTypeSection())
+                && APISection.STATUTBN_ANNULE.equals(getSection().getIdModeCompensation())) {
+            getMemoryLog().logMessage("7405", null, FWMessage.ERREUR, this.getClass().getName());
+        }
     }
 
     @Override
