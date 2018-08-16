@@ -214,7 +214,8 @@ public class AFControleLppAnnuelProcess extends BProcess {
 
                 //etapes.setDateImpression(new Date().getSwissValue());
                 etapes.setDateImpression(getDateCreation());
-                etapes.setDatePriseEnCompte(new Date().getSwissValue());
+                //etapes.setDatePriseEnCompte(new Date().getSwissValue());
+                etapes.setDatePriseEnCompte(getDateCreation());
                 //etapes.setDatePriseEnCompte(getDateCreation());
                 etapes.setCategorie(ILEConstantes.CS_CATEGORIE_SUIVI_LPP_ANNUEL);
                 etapes.setSimulation(false);

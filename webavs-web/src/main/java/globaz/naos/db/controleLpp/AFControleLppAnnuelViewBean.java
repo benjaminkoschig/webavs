@@ -4,6 +4,9 @@
 package globaz.naos.db.controleLpp;
 
 import globaz.globall.util.JACalendar;
+import globaz.globall.util.JACalendarGregorian;
+import globaz.globall.util.JADate;
+import globaz.globall.util.JAException;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.naos.db.AFAbstractViewBean;
 
@@ -81,6 +84,13 @@ public class AFControleLppAnnuelViewBean extends AFAbstractViewBean {
     }
 
     public void setDateCreation(String dateCreation) {
-        this.dateCreation = dateCreation;
+        JACalendarGregorian calendar = new JACalendarGregorian();
+        try {
+            JADate nextWorkingDay = calendar.getNextWorkingDay(dateCreation);
+            this.dateCreation = JACalendar.format(nextWorkingDay);
+        } catch (JAException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 }
