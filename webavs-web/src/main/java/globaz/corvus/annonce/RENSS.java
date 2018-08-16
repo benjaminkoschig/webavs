@@ -7,15 +7,15 @@ import globaz.prestation.utils.PRStringFormatter;
  * Permet de gérer un NSS tout simplement avec des valeurs entières.
  * Les valeurs min et max de chaque position sont contrôlés
  * Le préfixe '756' est automatiquement inséré
- * 
- * 
+ *
+ *
  * 756.1111.2222.33
  * -> 1111 : 1ère position
  * -> 2222 : 2ème position
  * -> 33 : 3ème position
- * 
+ *
  * @author lga
- * 
+ *
  */
 public class RENSS {
 
@@ -77,16 +77,12 @@ public class RENSS {
 
     /**
      * Retourne le numéro NSS non formatté
-     * 
+     *
      * @return le numéro NSS non formatté (ex : 7560132630265)
      */
     public String getUnformatedNSS() {
         StringBuilder sb = new StringBuilder();
-        if (val1 == 0 & val2 == 0 & val3 == 0) {
-            sb.append("000");
-        } else {
-            sb.append(val0);
-        }
+        sb.append(val0);
         sb.append(PRStringFormatter.indentLeft(String.valueOf(val1), 4, "0"));
         sb.append(PRStringFormatter.indentLeft(String.valueOf(val2), 4, "0"));
         sb.append(PRStringFormatter.indentLeft(String.valueOf(val3), 2, "0"));
@@ -95,16 +91,12 @@ public class RENSS {
 
     /**
      * Retourne le numéro NSS formatté
-     * 
+     *
      * @return le numéro NSS formatté (ex : 756.0132.6302.65)
      */
     public String getFormatedNSS() {
         StringBuilder sb = new StringBuilder();
-        if (val1 == 0 & val2 == 0 & val3 == 0) {
-            sb.append("000");
-        } else {
-            sb.append(val0);
-        }
+        sb.append(val0);
         sb.append(".");
         sb.append(PRStringFormatter.indentLeft(String.valueOf(val1), 4, "0"));
         sb.append(".");
@@ -117,7 +109,7 @@ public class RENSS {
     /**
      * Créer un NSS depuis une chaîne de caractère.
      * Le format attendu est le suivant 756.xxxx.xxxx.xx (ou x est un numérique)
-     * 
+     *
      * @param nss La chain de caractère correspondant au NSS
      * @return
      * @throws REIllegalNSSFormatException
@@ -128,18 +120,18 @@ public class RENSS {
             throw new REIllegalNSSFormatException("nss is null or empty");
         }
         if (nss.length() != 16) {
-            throw new REIllegalNSSFormatException("Invalid NSS format [" + nss
-                    + "]. Must match format 756.xxxx.xxxx.xx");
+            throw new REIllegalNSSFormatException(
+                    "Invalid NSS format [" + nss + "]. Must match format 756.xxxx.xxxx.xx");
         }
 
         String[] values = nss.split("\\.");
         if (values.length != 4) {
-            throw new REIllegalNSSFormatException("Invalid NSS format [" + nss
-                    + "]. Must match format 756.xxxx.xxxx.xx");
+            throw new REIllegalNSSFormatException(
+                    "Invalid NSS format [" + nss + "]. Must match format 756.xxxx.xxxx.xx");
         }
         if (!"756".equals(values[0])) {
-            throw new REIllegalNSSFormatException("Invalid NSS format [" + nss
-                    + "]. Must match format 756.xxxx.xxxx.xx");
+            throw new REIllegalNSSFormatException(
+                    "Invalid NSS format [" + nss + "]. Must match format 756.xxxx.xxxx.xx");
         }
         result = new RENSS(Integer.valueOf(values[1]), Integer.valueOf(values[2]), Integer.valueOf(values[3]));
 
