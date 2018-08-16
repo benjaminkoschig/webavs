@@ -84,20 +84,25 @@ public class RpcDecisionAnnonceComplete {
             PcaDecision pcaDecisionPartner, PersonsElementsCalcul personsElementsCalcul, Demande demande) {
 
         if (personData.getMembreFamille().getRoleMembreFamille().isEnfant() || demande.getIsFratrie()) {
-            return RpcVitalNeedsCategory.CHILD;
-        } else {
-            if (personData.getMembreFamille().getPersonne().getId()
-                    .equals(pcaDecision.getPca().getBeneficiaire().getId())) {
-                if (pcaDecision.getPca().getGenre().isHome()) {
-                    return RpcVitalNeedsCategory.NO_NEEDS;
-                }
+            if (isHome(personData, pcaDecision)) {
+                return RpcVitalNeedsCategory.NO_NEEDS;
+            } else {
+                return RpcVitalNeedsCategory.CHILD;
             }
-            if (personsElementsCalcul.hasConjoint() && pcaDecisionPartner == null) {
+        } else {
+            if (isHome(personData, pcaDecision)) {
+                return RpcVitalNeedsCategory.NO_NEEDS;
+            } else if (personsElementsCalcul.hasConjoint() && pcaDecisionPartner == null) {
                 return RpcVitalNeedsCategory.COUPLE;
             } else {
                 return RpcVitalNeedsCategory.ALONE;
             }
         }
+    }
+    
+    private boolean isHome(PersonElementsCalcul personData, PcaDecision pcaDecision) {
+        return personData.getMembreFamille().getPersonne().getId().equals(pcaDecision.getPca().getBeneficiaire().getId())
+                && pcaDecision.getPca().getGenre().isHome();
     }
 
     public boolean hasDateFin() {
