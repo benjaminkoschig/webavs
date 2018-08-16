@@ -34,6 +34,7 @@ class RpcAdresseLoader {
             .getCachedCascadesDomaine(BSessionUtil.getSessionFromThreadContext());
     private int partition = 2000;
     private Boolean parallel;
+    private static final String ADRESSE_ETRANGER = "ET"; 
 
     private RpcAdresseLoader() {
     }
@@ -193,7 +194,7 @@ class RpcAdresseLoader {
     private RpcAddress findAdresse(Collection<RpcAddress> adresses, String domaine, String type) {
         for (RpcAddress adresse : adresses) {
             if (adresse.getType().equals(type) && adresse.getDomaine().equals(domaine)
-                    && "".equals(adresse.getIdExterne().trim())) {
+                    && "".equals(adresse.getIdExterne().trim()) && !ADRESSE_ETRANGER.equals(adresse.getCanton().getAbreviation())) {
                 return adresse;
             }
         }
@@ -203,7 +204,7 @@ class RpcAdresseLoader {
     private RpcAddress findAdresse(Collection<RpcAddress> adresses, String domaine, String type, String idExterne) {
         for (RpcAddress adresse : adresses) {
             if (adresse.getType().equals(type) && adresse.getDomaine().equals(domaine)
-                    && adresse.getIdExterne().equals(idExterne)) {
+                    && adresse.getIdExterne().equals(idExterne) && !ADRESSE_ETRANGER.equals(adresse.getCanton().getAbreviation())) {
                 return adresse;
             }
         }
