@@ -82,7 +82,11 @@ public class RENSS {
      */
     public String getUnformatedNSS() {
         StringBuilder sb = new StringBuilder();
-        sb.append(val0);
+        if (val1 == 0 & val2 == 0 & val3 == 0) {
+            sb.append("000");
+        } else {
+            sb.append(val0);
+        }
         sb.append(PRStringFormatter.indentLeft(String.valueOf(val1), 4, "0"));
         sb.append(PRStringFormatter.indentLeft(String.valueOf(val2), 4, "0"));
         sb.append(PRStringFormatter.indentLeft(String.valueOf(val3), 2, "0"));
@@ -96,7 +100,11 @@ public class RENSS {
      */
     public String getFormatedNSS() {
         StringBuilder sb = new StringBuilder();
-        sb.append(val0);
+        if (val1 == 0 & val2 == 0 & val3 == 0) {
+            sb.append("000");
+        } else {
+            sb.append(val0);
+        }
         sb.append(".");
         sb.append(PRStringFormatter.indentLeft(String.valueOf(val1), 4, "0"));
         sb.append(".");

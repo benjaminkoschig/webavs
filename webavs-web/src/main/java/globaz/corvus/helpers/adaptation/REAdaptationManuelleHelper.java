@@ -59,6 +59,7 @@ import globaz.prestation.tools.PRDateFormater;
 import java.util.Iterator;
 
 public class REAdaptationManuelleHelper extends FWHelper {
+    private final String EMPTY_NSS = "00000000000";
 
     class NSSComplementaire {
         private String nssComplementaire1 = "";
@@ -1078,7 +1079,13 @@ public class REAdaptationManuelleHelper extends FWHelper {
 
         // Mois rapport
         JADate moisRapport = new JADate(new JACalendarGregorian().addMonths(dateRapportEtFin, 1));
-        String moisRapportFormatte = String.valueOf(moisRapport.getYear()) + String.valueOf(moisRapport.getMonth());
+        String moisRapportFormatte;
+        if (moisRapport.getMonth() > 9) {
+            moisRapportFormatte = String.valueOf(moisRapport.getYear()) + String.valueOf(moisRapport.getMonth());
+        } else {
+            moisRapportFormatte = String.valueOf(moisRapport.getYear()) + "0" + String.valueOf(moisRapport.getMonth());
+
+        }
         moisRapportFormatte = PRDateFormater.convertDate_AAAAMM_to_MMAA(moisRapportFormatte);
         ann46dim.setMoisRapport(moisRapportFormatte);
 
