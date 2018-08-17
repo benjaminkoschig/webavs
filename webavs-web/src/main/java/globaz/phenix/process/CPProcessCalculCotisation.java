@@ -61,7 +61,6 @@ import java.util.List;
 import ch.globaz.common.codesystem.CodeSystemUtils;
 import ch.globaz.orion.ws.cotisation.CalculAcomptesInd;
 import ch.globaz.orion.ws.cotisation.LigneCotisation;
-
 /**
  * Insérez la description du type ici. Date de création : (25.02.2002 13:41:13)
  * 
@@ -69,7 +68,7 @@ import ch.globaz.orion.ws.cotisation.LigneCotisation;
  */
 public final class CPProcessCalculCotisation extends BProcess {
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
 
@@ -117,7 +116,7 @@ public final class CPProcessCalculCotisation extends BProcess {
 
     /**
      * Insérez la description de la méthode ici. Date de création : (29.04.2002 10:50:34)
-     * 
+     *
      * @param parent
      *            BProcess
      */
@@ -134,7 +133,7 @@ public final class CPProcessCalculCotisation extends BProcess {
 
     /**
      * Calcul des montants de cotisation Date de création : (14.02.2002 14:26:51)
-     * 
+     *
      * @return boolean
      */
     @Override
@@ -241,7 +240,7 @@ public final class CPProcessCalculCotisation extends BProcess {
                                 setRevenuAf(Boolean.FALSE);
                             }
                         }
-                        if (isRevenuAf().equals(Boolean.TRUE) && !JadeStringUtil.isEmpty(donneeBase.getRevenuAutre1())) {
+                        if (isRevenuAf().equals(Boolean.TRUE)&& !JadeStringUtil.isEmpty(donneeBase.getRevenuAutre1())) {
                             // Calcul en ignorant revenu autre 1 et en ne créant
                             // pas la coti AF
                             calculIndependant(this, 1);
@@ -281,7 +280,7 @@ public final class CPProcessCalculCotisation extends BProcess {
 
     /**
      * Ajout des montants de cotisation Date de création : (25.02.2002 12:58:23)
-     * 
+     *
      * @param process
      *            BProcess le processus d'exécution
      * @param cotisationMensuelle
@@ -452,7 +451,7 @@ public final class CPProcessCalculCotisation extends BProcess {
 
     /**
      * Création d'une ligne de cotisation pour pouvoir rembourser le montant déjà facturé
-     * 
+     *
      * @author hna
      * @param process
      * @param cotiAf
@@ -474,7 +473,7 @@ public final class CPProcessCalculCotisation extends BProcess {
 
     /**
      * Calcul des cotisations AF Date de création : (25.02.2002 12:58:23)
-     * 
+     *
      * @param process
      *            BProcess le processus d'exécution
      * @param revenu
@@ -639,7 +638,7 @@ public final class CPProcessCalculCotisation extends BProcess {
 
     /**
      * Permet de déterminer le revenu max suivant le nombre de mois si le nombre de mois est renseigné.
-     * 
+     *
      * @param revenuMaximumParametre Le revenu maximum paramétré dans l'application
      * @param nombreDeMois Le nombre de mois de la décision
      * @return Le revenu calculé passé en paramètre si le nombre de mois est vide. Le nouveau revenu calculé sinon.
@@ -658,7 +657,7 @@ public final class CPProcessCalculCotisation extends BProcess {
 
     /**
      * Calcul des cotisations AFI Date de création : (08.12.2006 12:58:23)
-     * 
+     *
      * @param process
      *            BProcess le processus d'exécution
      * @param revenu
@@ -867,8 +866,8 @@ public final class CPProcessCalculCotisation extends BProcess {
                 franchise = getFranchise(process, exerciceSur2Annee);
                 // sauvegarde du montant de la franchise
                 if ((codeRevenuAf != 2) && (franchise != 0)) {
-                    donCalcul
-                            ._sauvegardeCalcul(this, decision.getIdDecision(), CPDonneesCalcul.CS_FRANCHISE, franchise);
+                    donCalcul._sauvegardeCalcul(this, decision.getIdDecision(), CPDonneesCalcul.CS_FRANCHISE,
+                            franchise);
                 }
             }
         }
@@ -932,7 +931,7 @@ public final class CPProcessCalculCotisation extends BProcess {
 
     /**
      * Calcul de l'assurance chomage (TSE) Date de création : (11.11.2005 12:58:23)
-     * 
+     *
      * @param process
      *            BProcess le processus d'exécution
      */
@@ -955,10 +954,8 @@ public final class CPProcessCalculCotisation extends BProcess {
                     AFCotisation cotiAf = aff._cotisation(process.getTransaction(), decision.getIdAffiliation(),
                             CodeSystem.GENRE_ASS_PERSONNEL, CodeSystem.TYPE_ASS_COTISATION_AC,
                             decision.getDebutDecision(), decision.getFinDecision(), 1);
-                    if ((cotiAf != null)
-                            && !cotiAf.getDateDebut().equalsIgnoreCase(cotiAf.getDateFin())
-                            && BSessionUtil.compareDateFirstLowerOrEqual(getSession(), cotiAf.getDateDebut(),
-                                    dateAgeAvs)) {
+                    if ((cotiAf != null) && !cotiAf.getDateDebut().equalsIgnoreCase(cotiAf.getDateFin()) && BSessionUtil
+                            .compareDateFirstLowerOrEqual(getSession(), cotiAf.getDateDebut(), dateAgeAvs)) {
                         if (!exempte) {
                             if (anneeAvs == anneeDec) {
                                 cotiAf.setDateFin(dateAgeAvs);
@@ -967,8 +964,8 @@ public final class CPProcessCalculCotisation extends BProcess {
                             // et la décision si l'année de coti = l'année de décision
                             // sinon prendre la date de décision
                             String dateRef = decision.getDebutDecision();
-                            if ((Integer.parseInt(decision.getAnneeDecision()) == JACalendar.getYear(cotiAf
-                                    .getDateDebut()))
+                            if ((Integer.parseInt(decision.getAnneeDecision()) == JACalendar
+                                    .getYear(cotiAf.getDateDebut()))
                                     && BSessionUtil.compareDateFirstGreater(getSession(), cotiAf.getDateDebut(),
                                             decision.getDebutDecision())) {
                                 dateRef = cotiAf.getDateDebut();
@@ -983,8 +980,8 @@ public final class CPProcessCalculCotisation extends BProcess {
                             // montant max défini dans paramètre de l'assurance
                             CPDonneesCalcul donneesCalcul = new CPDonneesCalcul();
                             donneesCalcul.setSession(getSession());
-                            String revenuNet = JANumberFormatter.deQuote(donneesCalcul.getMontant(
-                                    decision.getIdDecision(), CPDonneesCalcul.CS_REV_NET));
+                            String revenuNet = JANumberFormatter.deQuote(
+                                    donneesCalcul.getMontant(decision.getIdDecision(), CPDonneesCalcul.CS_REV_NET));
                             if (JadeStringUtil.isEmpty(revenuNet)) {
                                 revenuNet = "0";
                             }
@@ -997,7 +994,8 @@ public final class CPProcessCalculCotisation extends BProcess {
                                 revenuNet = revenuMaxAC;
                             }
                             // Calcul de la durée de cotisation
-                            cotiMensuelle = calculMontantCotisationMensuelle(saveDureeDecision, taux, cotiAf, revenuNet);
+                            cotiMensuelle = calculMontantCotisationMensuelle(saveDureeDecision, taux, cotiAf,
+                                    revenuNet);
                         }
                         addCotisation(this, cotiMensuelle, cotiAf, Float.toString(taux), "", Boolean.FALSE);
                         if (!JadeStringUtil.isEmpty(saveRevenuNet) && !exempte) {
@@ -1061,7 +1059,7 @@ public final class CPProcessCalculCotisation extends BProcess {
     /**
      * Calcul de l'assurance chomage 2 (TSE) : (Revenu (éventuellement plafonné) - plafond AC1) * taux Date de création
      * : (11.11.2005 12:58:23)
-     * 
+     *
      * @param process
      *            BProcess le processus d'exécution
      * @param plafond
@@ -1081,8 +1079,8 @@ public final class CPProcessCalculCotisation extends BProcess {
                 AFAffiliation aff = new AFAffiliation();
                 aff.setSession(process.getSession());
                 AFCotisation cotiAf = aff._cotisation(process.getTransaction(), decision.getIdAffiliation(),
-                        CodeSystem.GENRE_ASS_PERSONNEL, CodeSystem.TYPE_ASS_COTISATION_AC2,
-                        decision.getDebutDecision(), decision.getFinDecision(), 1);
+                        CodeSystem.GENRE_ASS_PERSONNEL, CodeSystem.TYPE_ASS_COTISATION_AC2, decision.getDebutDecision(),
+                        decision.getFinDecision(), 1);
                 if ((cotiAf != null) && !cotiAf.getDateDebut().equalsIgnoreCase(cotiAf.getDateFin())) {
                     // Prendre la date la plus récente entre l'assurance et la
                     // décision si l'année de coti = l'année de décision
@@ -1164,7 +1162,7 @@ public final class CPProcessCalculCotisation extends BProcess {
 
     /**
      * Calcul des bonifications ou mises en compte Date de création : (25.02.2002 12:58:23)
-     * 
+     *
      * @param process
      *            BProcess le processus d'exécution
      */
@@ -1203,15 +1201,15 @@ public final class CPProcessCalculCotisation extends BProcess {
                             revenuCi = cotiEncode * (float) 9.9;
                         }
                     } else {
-                        float ancienCi = Float.parseFloat(JANumberFormatter.deQuote(donneeCalcul.getMontant(
-                                coti.getIdDecision(), CPDonneesCalcul.CS_REV_CI)));
+                        float ancienCi = Float.parseFloat(JANumberFormatter
+                                .deQuote(donneeCalcul.getMontant(coti.getIdDecision(), CPDonneesCalcul.CS_REV_CI)));
                         // Calcul du CI
                         if (Integer.parseInt(getDecision().getAnneeDecision()) >= 2011) {
-                            revenuCi = (Float.parseFloat(JANumberFormatter.deQuote(coti.getMontantAnnuel())) - cotiEncode)
-                                    * (float) 9.71;
+                            revenuCi = (Float.parseFloat(JANumberFormatter.deQuote(coti.getMontantAnnuel()))
+                                    - cotiEncode) * (float) 9.71;
                         } else {
-                            revenuCi = (Float.parseFloat(JANumberFormatter.deQuote(coti.getMontantAnnuel())) - cotiEncode)
-                                    * (float) 9.9;
+                            revenuCi = (Float.parseFloat(JANumberFormatter.deQuote(coti.getMontantAnnuel()))
+                                    - cotiEncode) * (float) 9.9;
                         }
                         revenuCi = JANumberFormatter.round(revenuCi, 1, 2, JANumberFormatter.NEAR);
 
@@ -1278,9 +1276,9 @@ public final class CPProcessCalculCotisation extends BProcess {
         // fédérative(01.07.2011 au 31.12.2011)
         // --> pas accepté
         if (cotiMgr.size() > 1) {
-            throw new Exception("Erreur : " + cotiMgr.size()
-                    + " cotisations fédératives ont été trouvées dans la période du " + decision.getDebutDecision()
-                    + " au " + decision.getFinDecision());
+            throw new Exception(
+                    "Erreur : " + cotiMgr.size() + " cotisations fédératives ont été trouvées dans la période du "
+                            + decision.getDebutDecision() + " au " + decision.getFinDecision());
         }
 
         AFCotisation cotisationFederative = (AFCotisation) cotiMgr.getEntity(0);
@@ -1310,9 +1308,8 @@ public final class CPProcessCalculCotisation extends BProcess {
         }
 
         String finPeriodeCotisation = decision.getFinDecision();
-        if (!JadeStringUtil.isBlankOrZero(cotisationFederative.getDateFin())
-                && BSessionUtil.compareDateFirstLower(getSession(), cotisationFederative.getDateFin(),
-                        decision.getFinDecision())) {
+        if (!JadeStringUtil.isBlankOrZero(cotisationFederative.getDateFin()) && BSessionUtil
+                .compareDateFirstLower(getSession(), cotisationFederative.getDateFin(), decision.getFinDecision())) {
             finPeriodeCotisation = cotisationFederative.getDateFin();
         }
 
@@ -1357,13 +1354,13 @@ public final class CPProcessCalculCotisation extends BProcess {
 
     /**
      * Calcul des cotisations CPS autre Date de création : 22.10.2007
-     * 
+     *
      * @param process
      *            BProcess le processus d'exécution
      * @param revenuCI
      */
     public LigneCotisation calculCPSAutre(BProcess process, float revenuCi, boolean exempte, int saveDureeDecision,
-            boolean isEbusiness) {
+            boolean isEbusiness, boolean cotiMinimumAvs) {
         // Sous contrôle d'exception
         float taux = 0;
         Boolean cotiMinimum = Boolean.FALSE;
@@ -1378,6 +1375,31 @@ public final class CPProcessCalculCotisation extends BProcess {
                         CodeSystem.GENRE_ASS_PERSONNEL, CodeSystem.TYPE_ASS_CPS_AUTRE, decision.getDebutDecision(),
                         decision.getFinDecision(), 1);
                 if ((cotiAf != null) && !cotiAf.getDateDebut().equalsIgnoreCase(cotiAf.getDateFin())) {
+                    // Recherche du mode de calcul de la cotisation AF
+                    // Pour simplifier la saisie, au niveau des paramètres : indépendant = ind, tse, rentier,
+                    // agriculteur
+                    String modeCalculAF = findMethodeCaculAf(cotiAf);
+                    // La cotisation AF Soleure se base sur la cotisation avs et
+                    // non sur le revenu, il faut que le ontant de la cotisation
+                    // AVS soit plus grand que la cotisation minimum
+                    boolean afSelonCoti = false;
+                    if (CPParametreCanton.CS_AF_SELON_COTI.equalsIgnoreCase(modeCalculAF)) {
+                        afSelonCoti = true;
+                    }
+                    if (afSelonCoti) {
+                        if (Boolean.TRUE.equals(cotiMinimumAvs)) {
+                            exempte = true;
+                        } else {
+                            revenuCi = Float.parseFloat(JANumberFormatter.deQuote(getMontantAnnuel()));
+                        }
+                    } else if (CPParametreCanton.CS_AF_REVENU1.equalsIgnoreCase(modeCalculAF)) {
+                        revenuCi = JANumberFormatter.round(revenuAFVD, 100, 0, JANumberFormatter.INF);
+                    } else if (CPParametreCanton.CS_AF_REVENU2.equalsIgnoreCase(modeCalculAF)) {
+                        // Si revenu2 est renseigné on prend revenu2 sinon c'est le revenu déterminant (revenu 1)
+                        if (!JadeStringUtil.isEmpty(donneeBase.getRevenuAutre1())) {
+                            revenuCi = Float.parseFloat(JANumberFormatter.deQuote(donneeBase.getRevenuAutre1()));
+                        }
+                    }
                     if (!exempte) {
                         // Pour les rentiers dans l'année et qui paye au prorata
                         // la coti avs
@@ -1397,8 +1419,8 @@ public final class CPProcessCalculCotisation extends BProcess {
                             dateRef = cotiAf.getDateDebut();
                         }
                         // Recherche du montant de revenu maximum
-                        String varString = cotiAf.getAssurance().getParametreAssuranceValeur(
-                                CodeSystem.GEN_PARAM_ASS_REVENU_MAX, dateRef, "");
+                        String varString = cotiAf.getAssurance()
+                                .getParametreAssuranceValeur(CodeSystem.GEN_PARAM_ASS_REVENU_MAX, dateRef, "");
                         if (null == varString) {
                             this._addError(getTransaction(), getSession().getLabel("CP_MSG_0174") + " "
                                     + cotiAf.getAssurance().getAssuranceLibelle(getSession().getIdLangueISO()));
@@ -1427,8 +1449,8 @@ public final class CPProcessCalculCotisation extends BProcess {
                         float cotiAnnuelleBrut = (revenuCi * taux) / 100;
                         // Recherche de la cotisation mimimum AF
                         if (!CPDecision.CS_RENTIER.equalsIgnoreCase(decision.getGenreAffilie()) || casProrataRentier) {
-                            varString = cotiAf.getAssurance().getParametreAssuranceValeur(
-                                    CodeSystem.GEN_PARAM_ASS_COTISATION_MIN, dateRef, "");
+                            varString = cotiAf.getAssurance()
+                                    .getParametreAssuranceValeur(CodeSystem.GEN_PARAM_ASS_COTISATION_MIN, dateRef, "");
                             if (null == varString) {
                                 this._addError(getTransaction(), getSession().getLabel("CP_MSG_0175") + " "
                                         + cotiAf.getAssurance().getAssuranceLibelle(getSession().getIdLangueISO()));
@@ -1464,7 +1486,8 @@ public final class CPProcessCalculCotisation extends BProcess {
                 } else {
                     // PO 2036 et 9407- Recherche et extourne s'il y a un compteur pour la rubrique pour l'année de
                     // décision
-                    creationCotisationPourExtrounerCompteurExistant(process, aff, cotiAf, CodeSystem.TYPE_ASS_CPS_AUTRE);
+                    creationCotisationPourExtrounerCompteurExistant(process, aff, cotiAf,
+                            CodeSystem.TYPE_ASS_CPS_AUTRE);
                 }
             }
             return ligne;
@@ -1476,13 +1499,13 @@ public final class CPProcessCalculCotisation extends BProcess {
 
     /**
      * Calcul des cotisations CPS Général Date de création : 22.10.2007
-     * 
+     *
      * @param process
      *            BProcess le processus d'exécution
      * @param revenuCI
      */
     public LigneCotisation calculCPSGeneral(BProcess process, float revenuCi, boolean exempte, int saveDureeDecision,
-            boolean isEbusiness) {
+            boolean isEbusiness, boolean cotiMinimumAvs) {
         // Sous contrôle d'exception
         float taux = 0;
         Boolean cotiMinimum = Boolean.FALSE;
@@ -1497,6 +1520,32 @@ public final class CPProcessCalculCotisation extends BProcess {
                         CodeSystem.GENRE_ASS_PERSONNEL, CodeSystem.TYPE_ASS_CPS_GENERAL, decision.getDebutDecision(),
                         decision.getFinDecision(), 1);
                 if ((cotiAf != null) && !cotiAf.getDateDebut().equalsIgnoreCase(cotiAf.getDateFin())) {
+                    // Recherche du mode de calcul de la cotisation AF
+                    // Pour simplifier la saisie, au niveau des paramètres : indépendant = ind, tse, rentier,
+                    // agriculteur
+                    String modeCalculAF = findMethodeCaculAf(cotiAf);
+                    // La cotisation AF Tessin se base sur la cotisation avs et
+                    // non sur le revenu, il faut que le montant de la cotisation
+                    // AVS soit plus grand que la cotisation minimum
+
+                    boolean afSelonCoti = false;
+                    if (CPParametreCanton.CS_AF_SELON_COTI.equalsIgnoreCase(modeCalculAF)) {
+                        afSelonCoti = true;
+                    }
+                    if (afSelonCoti) {
+                        if (Boolean.TRUE.equals(cotiMinimumAvs)) {
+                            exempte = true;
+                        } else {
+                            revenuCi = Float.parseFloat(JANumberFormatter.deQuote(getMontantAnnuel()));
+                        }
+                    } else if (CPParametreCanton.CS_AF_REVENU1.equalsIgnoreCase(modeCalculAF)) {
+                        revenuCi = JANumberFormatter.round(revenuAFVD, 100, 0, JANumberFormatter.INF);
+                    } else if (CPParametreCanton.CS_AF_REVENU2.equalsIgnoreCase(modeCalculAF)) {
+                        // Si revenu2 est renseigné on prend revenu2 sinon c'est le revenu déterminant (revenu 1)
+                        if (!JadeStringUtil.isEmpty(donneeBase.getRevenuAutre1())) {
+                            revenuCi = Float.parseFloat(JANumberFormatter.deQuote(donneeBase.getRevenuAutre1()));
+                        }
+                    }
                     if (!exempte) {
                         // Pour les rentiers dans l'année et qui paye au prorata
                         // la coti avs
@@ -1516,8 +1565,8 @@ public final class CPProcessCalculCotisation extends BProcess {
                             dateRef = cotiAf.getDateDebut();
                         }
                         // Recherche du montant de revenu maximum
-                        String varString = cotiAf.getAssurance().getParametreAssuranceValeur(
-                                CodeSystem.GEN_PARAM_ASS_REVENU_MAX, dateRef, "");
+                        String varString = cotiAf.getAssurance()
+                                .getParametreAssuranceValeur(CodeSystem.GEN_PARAM_ASS_REVENU_MAX, dateRef, "");
                         if (null == varString) {
                             this._addError(getTransaction(), getSession().getLabel("CP_MSG_0174") + " "
                                     + cotiAf.getAssurance().getAssuranceLibelle(getSession().getIdLangueISO()));
@@ -1546,8 +1595,8 @@ public final class CPProcessCalculCotisation extends BProcess {
                         float cotiAnnuelleBrut = (revenuCi * taux) / 100;
                         // Recherche de la cotisation mimimum AF
                         if (!CPDecision.CS_RENTIER.equalsIgnoreCase(decision.getGenreAffilie()) || casProrataRentier) {
-                            varString = cotiAf.getAssurance().getParametreAssuranceValeur(
-                                    CodeSystem.GEN_PARAM_ASS_COTISATION_MIN, dateRef, "");
+                            varString = cotiAf.getAssurance()
+                                    .getParametreAssuranceValeur(CodeSystem.GEN_PARAM_ASS_COTISATION_MIN, dateRef, "");
                             if (null == varString) {
                                 this._addError(getTransaction(), getSession().getLabel("CP_MSG_0175") + " "
                                         + cotiAf.getAssurance().getAssuranceLibelle(getSession().getIdLangueISO()));
@@ -1595,7 +1644,7 @@ public final class CPProcessCalculCotisation extends BProcess {
 
     /**
      * Calcul de la durée de cotisation (la décision et l'assurance) Date de création : (25.02.2002 12:58:23)
-     * 
+     *
      * @param assurance
      *            AFCotisation
      * @param décision
@@ -1609,8 +1658,8 @@ public final class CPProcessCalculCotisation extends BProcess {
         // l'assurance
         String dateDebut = decision.getDebutDecision();
         String dateFin = decision.getFinDecision();
-        if ((!JadeStringUtil.isIntegerEmpty(cotiAf.getDateFin()) && BSessionUtil.compareDateFirstLower(getSession(),
-                cotiAf.getDateFin(), dateFin))
+        if ((!JadeStringUtil.isIntegerEmpty(cotiAf.getDateFin())
+                && BSessionUtil.compareDateFirstLower(getSession(), cotiAf.getDateFin(), dateFin))
                 || (BSessionUtil.compareDateFirstGreater(getSession(), cotiAf.getDateDebut(), dateDebut))) {
             return 12;
         }
@@ -1772,8 +1821,8 @@ public final class CPProcessCalculCotisation extends BProcess {
     }
 
     protected float calculFortuneTotal(BProcess process, float fortuneTotal, float fortune1, float fortune2,
-            float fortune3, float fortune4, float autreFortune, float dette) throws Exception, JAException,
-            NumberFormatException {
+            float fortune3, float fortune4, float autreFortune, float dette)
+            throws Exception, JAException, NumberFormatException {
         if ((((CPApplication) getSession().getApplication()).isCPCALCIMMO())
                 && (!decision.getTypeDecision().equalsIgnoreCase(CPDecision.CS_DEFINITIVE))
                 && (!decision.getTypeDecision().equalsIgnoreCase(CPDecision.CS_RECTIFICATION))) {
@@ -1806,7 +1855,7 @@ public final class CPProcessCalculCotisation extends BProcess {
 
     /**
      * Calcul des frais d'administration Date de création : (25.02.2002 12:58:23)
-     * 
+     *
      * @param process
      *            BProcess le processus d'exécution
      */
@@ -1832,8 +1881,8 @@ public final class CPProcessCalculCotisation extends BProcess {
                         theTauxFraisAdministrationPersonnel = cotiAf.findTauxWithRecalcul(dateRef,
                                 String.valueOf(revenuDeterminantEbu), true, false, "");
 
-                        taux = Float.parseFloat(JANumberFormatter.deQuote(theTauxFraisAdministrationPersonnel
-                                .getValeurTotal()));
+                        taux = Float.parseFloat(
+                                JANumberFormatter.deQuote(theTauxFraisAdministrationPersonnel.getValeurTotal()));
 
                         calcul = revenuDeterminantEbu * taux / 100;
 
@@ -1884,24 +1933,25 @@ public final class CPProcessCalculCotisation extends BProcess {
                                     theRevenuDeterminant, true, false, "");
                         } catch (Exception e) {
                             throw new Exception(getSession().getLabel(
-                                    "FIND_TAUX_FRAIS_ADMINISTRATION_PERSONNELLE_EXCEPTION_THROWED")
-                                    + e.toString());
+                                    "FIND_TAUX_FRAIS_ADMINISTRATION_PERSONNELLE_EXCEPTION_THROWED") + e.toString());
                         }
 
                         if ((theTauxFraisAdministrationPersonnel == null)
                                 || theTauxFraisAdministrationPersonnel.isNew()) {
-                            throw new Exception(getSession().getLabel(
-                                    "NO_TAUX_FRAIS_ADMINISTRATION_PERSONNELLE_FOUNDED"));
+                            throw new Exception(
+                                    getSession().getLabel("NO_TAUX_FRAIS_ADMINISTRATION_PERSONNELLE_FOUNDED"));
                         }
 
-                        taux = Float.parseFloat(JANumberFormatter.deQuote(theTauxFraisAdministrationPersonnel
-                                .getValeurTotal()));
+                        taux = Float.parseFloat(
+                                JANumberFormatter.deQuote(theTauxFraisAdministrationPersonnel.getValeurTotal()));
 
                         if (CodeSystem.GEN_VALEUR_ASS_TAUX_VARIABLE
                                 .equalsIgnoreCase(theTauxFraisAdministrationPersonnel.getGenreValeur())
-                                && CodeSystem.TYPE_CALCUL_MASSE.equalsIgnoreCase(cotiAf.getAssurance().getTypeCalcul())) {
-                            float theRevenuDeterminantForCalcul = JANumberFormatter.round(new FWCurrency(
-                                    theRevenuDeterminant).floatValue() / 12, 1, 0, JANumberFormatter.INF);
+                                && CodeSystem.TYPE_CALCUL_MASSE
+                                        .equalsIgnoreCase(cotiAf.getAssurance().getTypeCalcul())) {
+                            float theRevenuDeterminantForCalcul = JANumberFormatter.round(
+                                    new FWCurrency(theRevenuDeterminant).floatValue() / 12, 1, 0,
+                                    JANumberFormatter.INF);
                             if (CPDecision.CS_REMISE.equalsIgnoreCase(decision.getTypeDecision())
                                     && JadeStringUtil.isEmpty(getMontantMensuel())) {
                                 theRevenuDeterminantForCalcul = new FWCurrency(theRevenuDeterminant).floatValue();
@@ -1915,17 +1965,14 @@ public final class CPProcessCalculCotisation extends BProcess {
                         }
 
                         if (getModeArrondiFad() == 2) {
-                            arrondiCalcul = ""
-                                    + JANumberFormatter.round(Float.parseFloat(Float.toString(calcul)), 0.05, 2,
-                                            JANumberFormatter.INF);
+                            arrondiCalcul = "" + JANumberFormatter.round(Float.parseFloat(Float.toString(calcul)), 0.05,
+                                    2, JANumberFormatter.INF);
                         } else if (getModeArrondiFad() == 3) {
-                            arrondiCalcul = ""
-                                    + JANumberFormatter.round(Float.parseFloat(Float.toString(calcul)), 0.05, 2,
-                                            JANumberFormatter.SUP);
+                            arrondiCalcul = "" + JANumberFormatter.round(Float.parseFloat(Float.toString(calcul)), 0.05,
+                                    2, JANumberFormatter.SUP);
                         } else {
-                            arrondiCalcul = ""
-                                    + JANumberFormatter.round(Float.parseFloat(Float.toString(calcul)), 0.05, 2,
-                                            JANumberFormatter.NEAR);
+                            arrondiCalcul = "" + JANumberFormatter.round(Float.parseFloat(Float.toString(calcul)), 0.05,
+                                    2, JANumberFormatter.NEAR);
                         }
                         // Création des cotisations dans CPCOTIP
                         // Si Remise => prendre directement la coti annuelle * le
@@ -1936,8 +1983,8 @@ public final class CPProcessCalculCotisation extends BProcess {
                         // coti minimale on prend le montant encodé * le taux
                         if (CPDecision.CS_REMISE.equalsIgnoreCase(decision.getTypeDecision())
                                 && JadeStringUtil.isEmpty(getMontantMensuel())) {
-                            if (Integer.parseInt(getDecision().getAnneeDecision()) != JACalendar.getYear(JACalendar
-                                    .today().toString())) {
+                            if (Integer.parseInt(getDecision().getAnneeDecision()) != JACalendar
+                                    .getYear(JACalendar.today().toString())) {
                                 String idRubrique = cotiAf.getAssurance().getRubriqueId();
                                 // On prend seulement dans les compteurs des frais si il n'y a pas plus de 1 CHF de
                                 // diffèrence
@@ -1948,8 +1995,8 @@ public final class CPProcessCalculCotisation extends BProcess {
                                     saveCalcul = Float.parseFloat(JANumberFormatter.deQuote(arrondiCalcul));
                                 }
                                 String compteurFad = CPToolBox.rechMontantFacture(getSession(), getTransaction(),
-                                        getCompteAnnexe().getIdCompteAnnexe(), idRubrique, getDecision()
-                                                .getAnneeDecision());
+                                        getCompteAnnexe().getIdCompteAnnexe(), idRubrique,
+                                        getDecision().getAnneeDecision());
                                 if (!JadeStringUtil.isBlankOrZero(compteurFad)) {
                                     saveCompteur = Float.parseFloat(JANumberFormatter.deQuote(compteurFad));
                                 }
@@ -1982,12 +2029,13 @@ public final class CPProcessCalculCotisation extends BProcess {
      * => il ne faut pas prendre la zone revenuAutre pour la détermination du revenu et ne pas générer que la cotiAF
      * celle-ci sera calculée par la méthode calculIndependant() avec codeRevenuAf = 2 Date de création : (25.02.2004
      * 12:58:23)
-     * 
+     *
      * @param process
      *            BProcess le processus d'exécution
      * @param boolean revenuAFDifferent codeRevenuAf= 0 => calcul normal codeRevenuAf= 1 => calcul avs sans tenir compte
-     *        de revenuAutre et ne pas générer la coti AF codeRevenuAf= 2 => calcul uniquement de la coti AF en prenant
-     *        en compte uniquement revenuAutre (=revenuAF)
+     *            de revenuAutre et ne pas générer la coti AF codeRevenuAf= 2 => calcul uniquement de la coti AF en
+     *            prenant
+     *            en compte uniquement revenuAutre (=revenuAF)
      */
     public void calculIndependant(BProcess process, int codeRevenuAf) {
         float interet = 0;
@@ -2032,9 +2080,8 @@ public final class CPProcessCalculCotisation extends BProcess {
                 }
             }
             // Test si l'affilié est un TSE
-            if (decision.getAffiliation().getTypeAffiliation().equalsIgnoreCase(CodeSystem.TYPE_AFFILI_TSE)
-                    || decision.getAffiliation().getTypeAffiliation()
-                            .equalsIgnoreCase(CodeSystem.TYPE_AFFILI_TSE_VOLONTAIRE)) {
+            if (decision.getAffiliation().getTypeAffiliation().equalsIgnoreCase(CodeSystem.TYPE_AFFILI_TSE) || decision
+                    .getAffiliation().getTypeAffiliation().equalsIgnoreCase(CodeSystem.TYPE_AFFILI_TSE_VOLONTAIRE)) {
                 isTSE = true;
             }
             decision.setProrata("0");
@@ -2062,8 +2109,8 @@ public final class CPProcessCalculCotisation extends BProcess {
             float cotisation2 = translateMontantCotisation(getDonneeBase().getCotisation2());
 
             // Détermination si activité accessoire
-            exempte = determinationSiActiviteAccessoire(process, codeRevenuAf, revenuBrut, donCalcul,
-                    exerciceSur2Annee, exempte, isTSE, cotisation1, cotisation2);
+            exempte = determinationSiActiviteAccessoire(process, codeRevenuAf, revenuBrut, donCalcul, exerciceSur2Annee,
+                    exempte, isTSE, cotisation1, cotisation2);
 
             dateAvs = tiers.getDateAvs();
             anneeAvs = JACalendar.getYear(dateAvs);
@@ -2118,8 +2165,9 @@ public final class CPProcessCalculCotisation extends BProcess {
                 anneeRadiation = Integer.toString(JACalendar.getYear(cotiAf.getDateFin()));
             }
             boolean isDepartEtrangerOuDeces = false;
-            if ((anneeRadiation.equalsIgnoreCase(decision.getAnneeDecision()) && (CodeSystem.MOTIF_FIN_DECES
-                    .equalsIgnoreCase(motifFin) || CodeSystem.MOTIF_FIN_A_ETRANGER.equalsIgnoreCase(motifFin)))
+            if ((anneeRadiation.equalsIgnoreCase(decision.getAnneeDecision())
+                    && (CodeSystem.MOTIF_FIN_DECES.equalsIgnoreCase(motifFin)
+                            || CodeSystem.MOTIF_FIN_A_ETRANGER.equalsIgnoreCase(motifFin)))
                     || affiliation.getMotifCreation().equalsIgnoreCase(CodeSystem.MOTIF_AFFIL_NON_ACTIF_AL_ETRANGER)) {
                 isDepartEtrangerOuDeces = true;
             }
@@ -2195,8 +2243,7 @@ public final class CPProcessCalculCotisation extends BProcess {
 
             baremeDegressif = AFParticulariteAffiliation.existeParticularite(getTransaction(),
                     decision.getIdAffiliation(), AFParticulariteAffiliation.CS_BAREME_DEGRESSIF,
-                    decision.getDebutDecision())
-                    && (revenuMin >= Float.parseFloat(revenuDeterminant));
+                    decision.getDebutDecision()) && (revenuMin >= Float.parseFloat(revenuDeterminant));
 
             // Nouvelle directive au 01.01.2012- Prendre le taux max pour les TSE
             if (isTSE && (Integer.parseInt(decision.getAnneeDecision()) >= 2012)) {
@@ -2207,8 +2254,8 @@ public final class CPProcessCalculCotisation extends BProcess {
                 if (cotiAf != null) {
                     // Recherche du taux
                     try {
-                        tauxCalcul = Float.parseFloat(JANumberFormatter.deQuote(cotiAf.getTaux(
-                                decision.getDebutDecision(), "0")));
+                        tauxCalcul = Float.parseFloat(
+                                JANumberFormatter.deQuote(cotiAf.getTaux(decision.getDebutDecision(), "0")));
                     } catch (Exception e) {
                         tauxCalcul = 0; // BTC bug affiliation!!! 15.12.2003
                     }
@@ -2222,15 +2269,15 @@ public final class CPProcessCalculCotisation extends BProcess {
             // Si rentier ou personne ayant déjà payé la coti minimum en tant
             // que salarié et que son revenu
             // est inférieur au revenu minimum
-            else if (((tauxCalcul == 0) && ((CPDecision.CS_RENTIER.equalsIgnoreCase(decision.getGenreAffilie())) && (revenuMin > Float
-                    .parseFloat(revenuDeterminant))))
-                    || (Boolean.TRUE.equals(decision.getCotiMinimumPayeEnSalarie()) && (revenuMin > Float
-                            .parseFloat(revenuDeterminant))) || baremeDegressif) {
+            else if (((tauxCalcul == 0) && ((CPDecision.CS_RENTIER.equalsIgnoreCase(decision.getGenreAffilie()))
+                    && (revenuMin > Float.parseFloat(revenuDeterminant))))
+                    || (Boolean.TRUE.equals(decision.getCotiMinimumPayeEnSalarie())
+                            && (revenuMin > Float.parseFloat(revenuDeterminant)))
+                    || baremeDegressif) {
                 // Cotisation pour rentier - Barème dégressif
                 CPTableRentierManager tRentierManager = findCotisationRentier(revenuDet);
                 if (tRentierManager.size() == 0) {
-                    this._addError(
-                            process.getTransaction(),
+                    this._addError(process.getTransaction(),
                             "cotisation avs non trouvée: " + decision.getAnneeDecision() + "  "
                                     + Float.toString(revenuCi) + " " + getDescriptionTiers());
                     return;
@@ -2248,10 +2295,10 @@ public final class CPProcessCalculCotisation extends BProcess {
                     if (Boolean.FALSE.equals(decision.getCotiMinimumPayeEnSalarie()) && !isDepartEtrangerOuDeces) {
                         dateDebut = "01.01." + decision.getAnneeDecision();
                     }
-                    float montantProrataCoti = Float.parseFloat(CPToolBox.getMontantProRata(dateDebut,
-                            decision.getFinDecision(), cotiAnnuelleBrut));
-                    montantProrataCiMin = Float.parseFloat(CPToolBox.getMontantProRata(dateDebut, dateAvs,
-                            getCotiIndMinimum()));
+                    float montantProrataCoti = Float.parseFloat(
+                            CPToolBox.getMontantProRata(dateDebut, decision.getFinDecision(), cotiAnnuelleBrut));
+                    montantProrataCiMin = Float
+                            .parseFloat(CPToolBox.getMontantProRata(dateDebut, dateAvs, getCotiIndMinimum()));
                     if ((Integer.parseInt(decision.getAnneeDecision()) == anneeAvs)
                             && BSessionUtil.compareDateFirstLower(getSession(), decision.getDebutDecision(), dateAvs)
                             // PO 8314
@@ -2272,12 +2319,13 @@ public final class CPProcessCalculCotisation extends BProcess {
             }
             // Sinon test pour cotisation minimum
             else if ((!isTSE && ((revenuMin > revenuDet) && !exerciceSur2Annee))
-                    || (isTSE && (Integer.parseInt(decision.getAnneeDecision()) < 2012) && ((revenuMin > revenuDet) && !exerciceSur2Annee))
+                    || (isTSE && (Integer.parseInt(decision.getAnneeDecision()) < 2012)
+                            && ((revenuMin > revenuDet) && !exerciceSur2Annee))
                     || (((revenuMin > revenuDet) && perte))
-                    || ((revenuMin > revenuDet) && exerciceSur2Annee && decision.getAnneeDecision().equalsIgnoreCase(
-                            Integer.toString(anneeFinExercice)))
-                    || ((revenuMin > revenuDet) && decision.getPremiereAssurance().equals(new Boolean(true)) && decision
-                            .getTaxation().equalsIgnoreCase("N"))) { // Ex: 4
+                    || ((revenuMin > revenuDet) && exerciceSur2Annee
+                            && decision.getAnneeDecision().equalsIgnoreCase(Integer.toString(anneeFinExercice)))
+                    || ((revenuMin > revenuDet) && decision.getPremiereAssurance().equals(new Boolean(true))
+                            && decision.getTaxation().equalsIgnoreCase("N"))) { // Ex: 4
                 // non rentier
                 revenuCi = revenuCiMin;
                 cotiAnnuelleBrut = getCotiIndMinimum();
@@ -2298,8 +2346,8 @@ public final class CPProcessCalculCotisation extends BProcess {
                 if (tauxCalcul == 0) {
                     tInd = returnTableIndependant(process, anneeRevenu, revenuDeterminant);
                     if (tInd == null) {
-                        this._addError(getTransaction(), getSession().getLabel("CP_MSG_0110") + " "
-                                + getDescriptionTiers());
+                        this._addError(getTransaction(),
+                                getSession().getLabel("CP_MSG_0110") + " " + getDescriptionTiers());
                         return;
                     }
                     // Calcul de la cotisation annuelle
@@ -2332,8 +2380,10 @@ public final class CPProcessCalculCotisation extends BProcess {
                         || ((revenuMin > revenuDet) && isDepartEtrangerOuDeces
                                 && (2004 <= Integer.parseInt(decision.getAnneeDecision())) && periodeIncomplete)
                         || casProrataRentier
-                        || (decision.getTaxation().equalsIgnoreCase("A") && ((moisDebutDecision != 01) || (moisFinDecision != 12)))
-                        || ((revenuMin > revenuDet) && (anneeAvs == Integer.parseInt(decision.getAnneeDecision())) && periodeIncomplete) // I100305_000019
+                        || (decision.getTaxation().equalsIgnoreCase("A")
+                                && ((moisDebutDecision != 01) || (moisFinDecision != 12)))
+                        || ((revenuMin > revenuDet) && (anneeAvs == Integer.parseInt(decision.getAnneeDecision()))
+                                && periodeIncomplete) // I100305_000019
                         || (Integer.parseInt(decision.getNombreMoisTotalDecision()) > 0)) {
                     prorataCi = true;
                 }
@@ -2387,13 +2437,13 @@ public final class CPProcessCalculCotisation extends BProcess {
             if (prorataCi) {
                 // Cas spécial remtier en cours d'année avec fin d'activité avant sa retraite
                 // Demande de CICICAM 9GQ38865 du 11.06.2007 - Affilié 810.2539
-                if (CPDecision.CS_RENTIER.equalsIgnoreCase(decision.getGenreAffilie())
-                        && BSessionUtil.compareDateFirstLower(getSession(), getDonneeBase().getFinExercice1(), dateAvs)) {
-                    varCurrency = new FWCurrency(cotiAnnuelleBrut
-                            / ((JACalendar.getMonth(saveDateFinDecision) - moisDebutDecision) + 1));
+                if (CPDecision.CS_RENTIER.equalsIgnoreCase(decision.getGenreAffilie()) && BSessionUtil
+                        .compareDateFirstLower(getSession(), getDonneeBase().getFinExercice1(), dateAvs)) {
+                    varCurrency = new FWCurrency(
+                            cotiAnnuelleBrut / ((JACalendar.getMonth(saveDateFinDecision) - moisDebutDecision) + 1));
                 } else if (!JadeStringUtil.isBlankOrZero(getDecision().getNombreMoisTotalDecision())) {
-                    varCurrency = new FWCurrency(cotiAnnuelleBrut
-                            / Integer.parseInt(getDecision().getNombreMoisTotalDecision()));
+                    varCurrency = new FWCurrency(
+                            cotiAnnuelleBrut / Integer.parseInt(getDecision().getNombreMoisTotalDecision()));
                 } else if (casProrataRentier && (cotiAnnuelleBrut == montantProrataCiMin)) {
                     varCurrency = new FWCurrency(cotiAnnuelleBrut / dureeDecision);
                 } else {
@@ -2424,8 +2474,8 @@ public final class CPProcessCalculCotisation extends BProcess {
              * this.decision.getAnneeDecision() .equalsIgnoreCase(Integer.toString(anneeFinExercice))) || (!prorataCi &&
              * (cotiAnnuelleBrut == this.getCotiIndMinimum()))) {
              */
-            if (((revenuMin > revenuDet) && exerciceSur2Annee && decision.getAnneeDecision().equalsIgnoreCase(
-                    Integer.toString(anneeFinExercice)))
+            if (((revenuMin > revenuDet) && exerciceSur2Annee
+                    && decision.getAnneeDecision().equalsIgnoreCase(Integer.toString(anneeFinExercice)))
                     || (!prorataCi && (cotiAnnuelleBrut == getCotiIndMinimum()))) {
                 if (Integer.parseInt(decision.getNombreMoisTotalDecision()) == 0) {
                     cotiAnnuelle = Float.toString(cotiAnnuelleBrut);
@@ -2438,8 +2488,8 @@ public final class CPProcessCalculCotisation extends BProcess {
             if (prorataCi || casProrataRentier) {
                 if (casProrataRentier) {
                     moisFinDecision = JACalendar.getMonth(dateAvs);
-                    if (Boolean.TRUE.equals(cotiMinimum)
-                            && Boolean.FALSE.equals(decision.getCotiMinimumPayeEnSalarie()) && !isDepartEtrangerOuDeces) {
+                    if (Boolean.TRUE.equals(cotiMinimum) && Boolean.FALSE.equals(decision.getCotiMinimumPayeEnSalarie())
+                            && !isDepartEtrangerOuDeces) {
                         moisDebutDecision = 1;
                     }
                     dureeDecision = (moisFinDecision - moisDebutDecision) + 1;
@@ -2473,7 +2523,8 @@ public final class CPProcessCalculCotisation extends BProcess {
                     if (cotiMinimum) { // PO 6345
                         tauxCalcul = 0;
                     }
-                    addCotisation(process, cotiMensuelle, cotiAf, Float.toString(tauxCalcul), cotiAnnuelle, cotiMinimum);
+                    addCotisation(process, cotiMensuelle, cotiAf, Float.toString(tauxCalcul), cotiAnnuelle,
+                            cotiMinimum);
                     // PO 6758 - if (CPDecision.CS_FRANCHISE.equalsIgnoreCase(this.decision.getSpecification())
                     // && (this.decision.getFacturation().equals(Boolean.FALSE) || CPDecision.CS_ACOMPTE
                     // .equalsIgnoreCase(this.decision.getTypeDecision()))) {
@@ -2502,17 +2553,17 @@ public final class CPProcessCalculCotisation extends BProcess {
             }
             if (codeRevenuAf != 1) {
                 // Calcul AF
-                calculAF(process, revenuDet, exempte, saveDureeDecision, cotiMinimum,
-                        CodeSystem.TYPE_ASS_COTISATION_AF, isEbusiness);
+                calculAF(process, revenuDet, exempte, saveDureeDecision, cotiMinimum, CodeSystem.TYPE_ASS_COTISATION_AF,
+                        isEbusiness);
                 // Calcul PC famille
                 calculAF(process, revenuDet, exempte, saveDureeDecision, cotiMinimum, CodeSystem.TYPE_ASS_PC_FAMILLE,
                         isEbusiness);
             }
             if (codeRevenuAf != 2) {
                 // Calcul CPS général
-                calculCPSGeneral(process, revenuDet, exempte, saveDureeDecision, isEbusiness);
+                calculCPSGeneral(process, revenuDet, exempte, saveDureeDecision, isEbusiness, cotiMinimum);
                 // Calcul CPS autre
-                calculCPSAutre(process, revenuDet, exempte, saveDureeDecision, isEbusiness);
+                calculCPSAutre(process, revenuDet, exempte, saveDureeDecision, isEbusiness, cotiMinimum);
                 // Calcul Lamat
                 calculLamat(process, revenuDet, exempte, isEbusiness);
             }
@@ -2544,17 +2595,17 @@ public final class CPProcessCalculCotisation extends BProcess {
             int nbMois = (moisFin - moisDebut) + 1;
 
             montantActiviteAccessoire = (revenuBrut * 12) / nbMois;
-            montantActiviteAccessoire = JANumberFormatter
-                    .round(montantActiviteAccessoire, 1, 0, JANumberFormatter.NEAR);
+            montantActiviteAccessoire = JANumberFormatter.round(montantActiviteAccessoire, 1, 0,
+                    JANumberFormatter.NEAR);
         }
         // Recherche montant maximum pour activité accessoire
         float revenuActviteAccessoire = Float.parseFloat(FWFindParameter.findParameter(process.getTransaction(),
                 "10500130", "REVACTACC", decision.getDebutDecision(), "", 0));
-        if (JANumberFormatter.round(montantActiviteAccessoire, 100, 0, JANumberFormatter.INF) <= revenuActviteAccessoire) {
+        if (JANumberFormatter.round(montantActiviteAccessoire, 100, 0,
+                JANumberFormatter.INF) <= revenuActviteAccessoire) {
             // Inforom 380 - Pour les TSE, pas de coti si revenu < revenu accessoire sauf si il a la particularité
             // "Forcer calcul"
-            if (isTSE
-                    && (Integer.parseInt(decision.getAnneeDecision()) >= 2012)
+            if (isTSE && (Integer.parseInt(decision.getAnneeDecision()) >= 2012)
                     && !AFParticulariteAffiliation.existeParticularite(getTransaction(), decision.getIdAffiliation(),
                             AFParticulariteAffiliation.CS_FORCER_CALCUL_TSE, decision.getDebutDecision())) {
                 exempte = true;
@@ -2576,7 +2627,7 @@ public final class CPProcessCalculCotisation extends BProcess {
 
     /**
      * Calcul des cotisations LAMAT Date de création : (25.02.2002 12:58:23)
-     * 
+     *
      * @param process
      *            BProcess le processus d'exécution
      * @param revenuCI
@@ -2606,8 +2657,8 @@ public final class CPProcessCalculCotisation extends BProcess {
                             dateRef = cotiAf.getDateDebut();
                         }
                         try {
-                            taux = Float.parseFloat(JANumberFormatter.deQuote(cotiAf.getTaux(dateRef,
-                                    JANumberFormatter.deQuote(Float.toString(revenuCi)))));
+                            taux = Float.parseFloat(JANumberFormatter.deQuote(
+                                    cotiAf.getTaux(dateRef, JANumberFormatter.deQuote(Float.toString(revenuCi)))));
 
                         } catch (Exception e) {
                             taux = 0; // BTC bug affiliation!!! 15.12.2003
@@ -2631,7 +2682,8 @@ public final class CPProcessCalculCotisation extends BProcess {
                 } else {
                     // PO 2036 et 9407- Recherche et extourne s'il y a un compteur pour la rubrique pour l'année de
                     // décision
-                    creationCotisationPourExtrounerCompteurExistant(process, aff, cotiAf, CodeSystem.TYPE_ASS_MATERNITE);
+                    creationCotisationPourExtrounerCompteurExistant(process, aff, cotiAf,
+                            CodeSystem.TYPE_ASS_MATERNITE);
                 }
             }
 
@@ -2655,7 +2707,7 @@ public final class CPProcessCalculCotisation extends BProcess {
 
     /**
      * Calcul des cotisation pour un non actif Date de création : (25.02.2002 12:58:23)
-     * 
+     *
      * @param process
      *            BProcess le processus d'exécution
      */
@@ -2713,8 +2765,8 @@ public final class CPProcessCalculCotisation extends BProcess {
             // Recherche cotisation annuelle
             CPTableNonActifManager tNacManager = findCotisationNac(fortuneDet);
             if (tNacManager.size() == 0) {
-                this._addError(process.getTransaction(), "cotisation non trouvée: " + decision.getAnneeDecision()
-                        + "  " + Float.toString(fortuneDet) + " " + getDescriptionTiers());
+                this._addError(process.getTransaction(), "cotisation non trouvée: " + decision.getAnneeDecision() + "  "
+                        + Float.toString(fortuneDet) + " " + getDescriptionTiers());
                 return;
             } else {
                 if (cotiAf != null) {
@@ -2760,9 +2812,9 @@ public final class CPProcessCalculCotisation extends BProcess {
                     // Calcul PC famille
                     calculAF(process, revenuCi, false, 0, cotiMinimum, CodeSystem.TYPE_ASS_PC_FAMILLE, isEbusiness);
                     // Calcul CPS général
-                    calculCPSGeneral(process, revenuCi, false, 0, isEbusiness);
+                    calculCPSGeneral(process, revenuCi, false, 0, isEbusiness, cotiMinimum);
                     // Calcul CPS autre
-                    calculCPSAutre(process, revenuCi, false, 0, isEbusiness);
+                    calculCPSAutre(process, revenuCi, false, 0, isEbusiness, cotiMinimum);
                     // Calcul Lamat
                     calculLamat(process, revenuCi, false, isEbusiness);
                     // Calcul AC2
@@ -2770,8 +2822,8 @@ public final class CPProcessCalculCotisation extends BProcess {
                     // Remboursement AFI
                     remboursementAFI(process);
                 } else {
-                    this._addError(process.getTransaction(), " cotisation de l'affiliation non retrouvée "
-                            + getDescriptionTiers());
+                    this._addError(process.getTransaction(),
+                            " cotisation de l'affiliation non retrouvée " + getDescriptionTiers());
                 }
             }
         } catch (Exception e) {
@@ -2782,7 +2834,7 @@ public final class CPProcessCalculCotisation extends BProcess {
 
     /**
      * Calcul des remises Date de création : (14.04.2008 12:58:23)
-     * 
+     *
      * @param process
      *            BProcess le processus d'exécution
      */
@@ -2820,12 +2872,13 @@ public final class CPProcessCalculCotisation extends BProcess {
 
     /**
      * Détermination du revenu brut et de la duréée d'exercice
-     * 
+     *
      * @param revenuBrut
      * @return
      * @throws NumberFormatException
      */
-    protected float calculRevenuBrutEtPeriodePourNonActif(float revenuBrut, CPDonneesCalcul donCalcul) throws Exception {
+    protected float calculRevenuBrutEtPeriodePourNonActif(float revenuBrut, CPDonneesCalcul donCalcul)
+            throws Exception {
         // Si revenu basé sur encodage mensuel: (défini dans fichier
         // properties)
         // revenu brut = (revenu1 * nbre de mois) arrondi au franc le plus
@@ -2861,8 +2914,8 @@ public final class CPProcessCalculCotisation extends BProcess {
 
         nbMois = 12;
         if (!JadeStringUtil.isBlank(getDonneeBase().getMontantTotalRenteAVS())) {
-            montantTotalRenteAVS = Float.parseFloat(JANumberFormatter
-                    .deQuote(getDonneeBase().getMontantTotalRenteAVS()));
+            montantTotalRenteAVS = Float
+                    .parseFloat(JANumberFormatter.deQuote(getDonneeBase().getMontantTotalRenteAVS()));
 
             if (!JadeStringUtil.isIntegerEmpty(getDonneeBase().getNbMoisExercice1())) {
                 nbMois = Integer.parseInt(getDonneeBase().getNbMoisExercice1());
@@ -2932,7 +2985,7 @@ public final class CPProcessCalculCotisation extends BProcess {
 
     /**
      * Créer les remarques automatiques par rapport aux données de la décision Date de création : (17.11.2005 11:44:23)
-     * */
+     */
     public void createRemarqueAutomatique(BTransaction transaction, CPDecision decision) throws Exception {
         // Pas de remarque pour lettre salarié et mise en compte car ce sont des
         // lettres BABEL
@@ -2941,8 +2994,9 @@ public final class CPProcessCalculCotisation extends BProcess {
             // Création de ou des remarque(s) si il y a un conjoint
             // Valable uniquement pour non-actif (selon CCJU)
             if (decision.isNonActif()) {
-                if ((!decision.getTypeDecision().equalsIgnoreCase(CPDecision.CS_IMPUTATION) && !JadeStringUtil
-                        .isIntegerEmpty(decision.getIdConjoint())) || decision.getDivision2().equals(new Boolean(true))) {
+                if ((!decision.getTypeDecision().equalsIgnoreCase(CPDecision.CS_IMPUTATION)
+                        && !JadeStringUtil.isIntegerEmpty(decision.getIdConjoint()))
+                        || decision.getDivision2().equals(new Boolean(true))) {
                     CPLienCommentaireRemarqueTypeManager comManager = new CPLienCommentaireRemarqueTypeManager();
                     comManager.setSession(getSession());
                     comManager.setForIdCommentaire(CPCommentaireRemarqueType.CS_CONJOINT);
@@ -3192,7 +3246,7 @@ public final class CPProcessCalculCotisation extends BProcess {
 
     /**
      * Retourne le revenu brut pour un indépendant Date de création : (18.03.2004 08:47:47)
-     * 
+     *
      * @return float
      */
     public float determinationRevenuBrutIndependant(BProcess process, int codeRevenuAf) {
@@ -3289,7 +3343,7 @@ public final class CPProcessCalculCotisation extends BProcess {
 
     /**
      * Détermination du revenu selon le plafond de l'assurance chomage
-     * 
+     *
      * @param process
      * @param dateRef
      * @param typePlafond
@@ -3312,8 +3366,8 @@ public final class CPProcessCalculCotisation extends BProcess {
 
         } else if ((JACalendar.getMonth(decision.getDebutDecision()) != 1)
                 || (JACalendar.getMonth(decision.getFinDecision()) != 12)) {
-            plafond = JANumberFormatter.deQuote(CPToolBox.getMontantProRata(donneeBase.getDebutExercice1(),
-                    donneeBase.getFinExercice1(), plafond));
+            plafond = JANumberFormatter.deQuote(
+                    CPToolBox.getMontantProRata(donneeBase.getDebutExercice1(), donneeBase.getFinExercice1(), plafond));
         }
         return plafond;
     }
@@ -3348,7 +3402,7 @@ public final class CPProcessCalculCotisation extends BProcess {
 
     /**
      * Recherche du mode de calcul de la cotisation AF
-     * 
+     *
      * @param cotiAf
      * @return
      * @throws Exception
@@ -3361,15 +3415,15 @@ public final class CPProcessCalculCotisation extends BProcess {
         } else {
             genreAffilie = CPDecision.CS_INDEPENDANT;
         }
-        String modeCalculAF = CPParametreCanton.findCodeWhitTypeCantonAndGenre(getSession(), cotiAf.getAssurance()
-                .getAssuranceCanton(), CPParametreCanton.CS_MODE_CALCUL_AF, getDecision().getFinDecision(),
-                genreAffilie);
+        String modeCalculAF = CPParametreCanton.findCodeWhitTypeCantonAndGenre(getSession(),
+                cotiAf.getAssurance().getAssuranceCanton(), CPParametreCanton.CS_MODE_CALCUL_AF,
+                getDecision().getFinDecision(), genreAffilie);
         return modeCalculAF;
     }
 
     /**
      * Recherche du taux de cotisation pour la période de décision
-     * 
+     *
      * @param cotiAf
      * @return
      * @throws NumberFormatException
@@ -3405,7 +3459,7 @@ public final class CPProcessCalculCotisation extends BProcess {
 
     /**
      * Retourne la cotisation minimum Afi pour une année
-     * 
+     *
      * @return float
      */
     public float getCotiAfiMinimum() throws Exception {
@@ -3417,7 +3471,7 @@ public final class CPProcessCalculCotisation extends BProcess {
 
     /**
      * Retourne la cotisation minimum indépendant pour une année
-     * 
+     *
      * @return float
      */
     public float getCotiIndMinimum() throws Exception {
@@ -3433,7 +3487,7 @@ public final class CPProcessCalculCotisation extends BProcess {
 
     /**
      * Insérez la description de la méthode ici. Date de création : (18.03.2003 14:21:36)
-     * 
+     *
      * @return globaz.phenix.db.principale.CPDecision
      */
     public globaz.phenix.db.principale.CPDecision getDecision() {
@@ -3442,7 +3496,7 @@ public final class CPProcessCalculCotisation extends BProcess {
 
     /**
      * Insérez la description de la méthode ici. Date de création : (18.03.2003 10:59:30)
-     * 
+     *
      * @return java.lang.String
      */
     public java.lang.String getDescriptionTiers() {
@@ -3458,7 +3512,7 @@ public final class CPProcessCalculCotisation extends BProcess {
 
     /**
      * Insérez la description de la méthode ici. Date de création : (14.02.2002 14:22:21)
-     * 
+     *
      * @return java.lang.String
      */
     @Override
@@ -3481,7 +3535,7 @@ public final class CPProcessCalculCotisation extends BProcess {
 
     /**
      * Retourne le montant de la franchise AVS Date de création : (18.03.2004 08:47:47)
-     * 
+     *
      * @return float
      */
     public float getFranchise(BProcess process, boolean exerciceSur2annee) {
@@ -3504,8 +3558,8 @@ public final class CPProcessCalculCotisation extends BProcess {
                 int moisDebut = 0;
                 int moisFin = 0;
                 if (exerciceSur2annee) {
-                    if (BSessionUtil.compareDateBetweenOrEqual(process.getSession(), getDonneeBase()
-                            .getDebutExercice1(), getDonneeBase().getFinExercice1(), dateAvs)) {
+                    if (BSessionUtil.compareDateBetweenOrEqual(process.getSession(),
+                            getDonneeBase().getDebutExercice1(), getDonneeBase().getFinExercice1(), dateAvs)) {
                         moisDebut = JACalendar.getMonth(dateAvs) + 1;
                         moisFin = JACalendar.getMonth(getDonneeBase().getFinExercice1());
                         if (JACalendar.getYear(dateAvs) < JACalendar.getYear(getDonneeBase().getFinExercice1())) {
@@ -3561,7 +3615,7 @@ public final class CPProcessCalculCotisation extends BProcess {
 
     /**
      * Insérez la description de la méthode ici. Date de création : (25.02.2002 13:55:43)
-     * 
+     *
      * @return java.lang.String
      */
     public java.lang.String getIdDecision() {
@@ -3574,7 +3628,7 @@ public final class CPProcessCalculCotisation extends BProcess {
 
     /**
      * Insérez la description de la méthode ici. Date de création : (18.03.2003 13:05:41)
-     * 
+     *
      * @return float
      */
     public String getMontantAnnuel() {
@@ -3583,7 +3637,7 @@ public final class CPProcessCalculCotisation extends BProcess {
 
     /**
      * Insérez la description de la méthode ici. Date de création : (18.03.2003 13:04:19)
-     * 
+     *
      * @return float
      */
     public String getMontantMensuel() {
@@ -3592,7 +3646,7 @@ public final class CPProcessCalculCotisation extends BProcess {
 
     /**
      * Insérez la description de la méthode ici. Date de création : (18.03.2003 13:05:15)
-     * 
+     *
      * @return float
      */
     public String getMontantSemestriel() {
@@ -3601,7 +3655,7 @@ public final class CPProcessCalculCotisation extends BProcess {
 
     /**
      * Insérez la description de la méthode ici. Date de création : (18.03.2003 13:04:47)
-     * 
+     *
      * @return float
      */
     public String getMontantTrimestriel() {
@@ -3635,7 +3689,7 @@ public final class CPProcessCalculCotisation extends BProcess {
 
     /**
      * Détermination si l'affilié a assez payé en tant que salarié
-     * 
+     *
      * @param cotiMinimum
      * @param montantAnnuel
      * @param prorata
@@ -3645,8 +3699,8 @@ public final class CPProcessCalculCotisation extends BProcess {
     protected void handleSalarieDispense(Boolean cotiMinimum, String montantAnnuel, boolean prorata, float cotiAnnuelle)
             throws NumberFormatException {
         if (!JadeStringUtil.isBlank(getDonneeBase().getCotisationSalarie())) {
-            float cotisationSalarie = Float.parseFloat(JANumberFormatter
-                    .deQuote(getDonneeBase().getCotisationSalarie()));
+            float cotisationSalarie = Float
+                    .parseFloat(JANumberFormatter.deQuote(getDonneeBase().getCotisationSalarie()));
             if (cotisationSalarie > 0) {
                 float montantSemestriel = 0;
                 if (cotiAnnuelle != 0) {
@@ -3679,14 +3733,14 @@ public final class CPProcessCalculCotisation extends BProcess {
 
     /**
      * Initialisation des revenus et cotisations minimum pour non actif
-     * 
+     *
      * @throws NumberFormatException
      * @throws Exception
      */
     protected void initMontantMinimum() throws NumberFormatException, Exception {
         if (getRevenuNacMin() == 0) {
-            setRevenuNacMin(new Float(CPTableNonActif.getRevenuMin(getSession(), decision.getAnneeDecision()))
-                    .floatValue());
+            setRevenuNacMin(
+                    new Float(CPTableNonActif.getRevenuMin(getSession(), decision.getAnneeDecision())).floatValue());
         }
         if (getCotiNacMinimum() == 0) {
             setCotiNacMinimum(CPTableNonActif.getCotisationMin(getSession(), decision.getAnneeDecision()));
@@ -3719,8 +3773,9 @@ public final class CPProcessCalculCotisation extends BProcess {
                     CodeSystem.GENRE_ASS_PERSONNEL, CodeSystem.TYPE_ASS_AFI, affiliation.getDateDebut(),
                     decision.getFinDecision(), 4);
             if (cotiAfi != null) {
-                String montantCompteur = CPToolBox.rechMontantFacture(getSession(), getTransaction(), getCompteAnnexe()
-                        .getIdCompteAnnexe(), cotiAfi.getAssurance().getRubriqueId(), decision.getAnneeDecision());
+                String montantCompteur = CPToolBox.rechMontantFacture(getSession(), getTransaction(),
+                        getCompteAnnexe().getIdCompteAnnexe(), cotiAfi.getAssurance().getRubriqueId(),
+                        decision.getAnneeDecision());
                 if (!JadeStringUtil.isBlankOrZero(montantCompteur)) {
                     addCotisation(process, 0, cotiAfi, "0", "", Boolean.FALSE);
                 }
@@ -3742,24 +3797,18 @@ public final class CPProcessCalculCotisation extends BProcess {
                 // Pour le genre d'affilié --> avec/sans activité lucrative
                 if ("{genreAffilie}".equals(chaineARemplacer)) {
                     if (decision.isNonActif() || CPDecision.CS_ACT_NON_LUCRATIVE.equals(decision.getGenreAffilie())) {
-                        chaineModifiee = CPToolBox.replaceString(
-                                chaineModifiee,
-                                "{genreAffilie}",
+                        chaineModifiee = CPToolBox.replaceString(chaineModifiee, "{genreAffilie}",
                                 getSession().getApplication().getLabel("CPDECISION_GENRENONACTIF",
                                         globaz.phenix.translation.CodeSystem.getCode(getSession(), tiers.getLangue())));
                     } else if (CPDecision.CS_TSE.equalsIgnoreCase(decision.getGenreAffilie())
                             || getAffiliation().getTypeAffiliation().equalsIgnoreCase(CodeSystem.TYPE_AFFILI_TSE)
-                            || getAffiliation().getTypeAffiliation().equalsIgnoreCase(
-                                    CodeSystem.TYPE_AFFILI_TSE_VOLONTAIRE)) {
-                        chaineModifiee = CPToolBox.replaceString(
-                                chaineModifiee,
-                                "{genreAffilie}",
+                            || getAffiliation().getTypeAffiliation()
+                                    .equalsIgnoreCase(CodeSystem.TYPE_AFFILI_TSE_VOLONTAIRE)) {
+                        chaineModifiee = CPToolBox.replaceString(chaineModifiee, "{genreAffilie}",
                                 getSession().getApplication().getLabel("CPDECISION_GENRETSE",
                                         globaz.phenix.translation.CodeSystem.getCode(getSession(), tiers.getLangue())));
                     } else {
-                        chaineModifiee = CPToolBox.replaceString(
-                                chaineModifiee,
-                                "{genreAffilie}",
+                        chaineModifiee = CPToolBox.replaceString(chaineModifiee, "{genreAffilie}",
                                 getSession().getApplication().getLabel("CPDECISION_GENREINDEP",
                                         globaz.phenix.translation.CodeSystem.getCode(getSession(), tiers.getLangue())));
                     }
@@ -3775,38 +3824,26 @@ public final class CPProcessCalculCotisation extends BProcess {
                     if ((affiliation != null) && !affiliation.isNew()) {
                         // mensuelle
                         if (CodeSystem.PERIODICITE_MENSUELLE.equals(affiliation.getPeriodicite())) {
-                            chaineModifiee = CPToolBox.replaceString(
-                                    chaineModifiee,
-                                    "{periodicite}",
-                                    getSession().getApplication().getLabel(
-                                            "CPDECISION_PERIODEMENSUEL",
+                            chaineModifiee = CPToolBox.replaceString(chaineModifiee, "{periodicite}",
+                                    getSession().getApplication().getLabel("CPDECISION_PERIODEMENSUEL",
                                             globaz.phenix.translation.CodeSystem.getCode(getSession(),
                                                     tiers.getLangue())));
                             // trimestrielle
                         } else if (CodeSystem.PERIODICITE_TRIMESTRIELLE.equals(affiliation.getPeriodicite())) {
-                            chaineModifiee = CPToolBox.replaceString(
-                                    chaineModifiee,
-                                    "{periodicite}",
-                                    getSession().getApplication().getLabel(
-                                            "CPDECISION_PERIODETRIM",
+                            chaineModifiee = CPToolBox.replaceString(chaineModifiee, "{periodicite}",
+                                    getSession().getApplication().getLabel("CPDECISION_PERIODETRIM",
                                             globaz.phenix.translation.CodeSystem.getCode(getSession(),
                                                     tiers.getLangue())));
                             // semestrielle
                         } else if ("802003".equals(affiliation.getPeriodicite())) {
-                            chaineModifiee = CPToolBox.replaceString(
-                                    chaineModifiee,
-                                    "{periodicite}",
-                                    getSession().getApplication().getLabel(
-                                            "CPDECISION_PERIODESEM",
+                            chaineModifiee = CPToolBox.replaceString(chaineModifiee, "{periodicite}",
+                                    getSession().getApplication().getLabel("CPDECISION_PERIODESEM",
                                             globaz.phenix.translation.CodeSystem.getCode(getSession(),
                                                     tiers.getLangue())));
                             // annuelle
                         } else {
-                            chaineModifiee = CPToolBox.replaceString(
-                                    chaineModifiee,
-                                    "{periodicite}",
-                                    getSession().getApplication().getLabel(
-                                            "CPDECISION_PERIODEANNUEL",
+                            chaineModifiee = CPToolBox.replaceString(chaineModifiee, "{periodicite}",
+                                    getSession().getApplication().getLabel("CPDECISION_PERIODEANNUEL",
                                             globaz.phenix.translation.CodeSystem.getCode(getSession(),
                                                     tiers.getLangue())));
                         }
@@ -3822,13 +3859,11 @@ public final class CPProcessCalculCotisation extends BProcess {
                         if (!JAUtil.isDateEmpty(dDecision)) {
                             // type de décision précédente est égale à
                             // notification --> texte: notre notification du ...
-                            chaineModifiee = CPToolBox.replaceString(
-                                    chaineModifiee,
-                                    "{dateDecisionPrecedente}",
-                                    (getSession().getApplication().getLabel(
-                                            "CPDECISION_PRECEDENTE",
+                            chaineModifiee = CPToolBox.replaceString(chaineModifiee, "{dateDecisionPrecedente}",
+                                    (getSession().getApplication().getLabel("CPDECISION_PRECEDENTE",
                                             globaz.phenix.translation.CodeSystem.getCode(getSession(),
-                                                    tiers.getLangue())) + dDecision));
+                                                    tiers.getLangue()))
+                                            + dDecision));
                         } else {
                             chaineModifiee = "";
                         }
@@ -3848,8 +3883,8 @@ public final class CPProcessCalculCotisation extends BProcess {
                         chaineModifiee = CPToolBox.replaceString(chaineModifiee, "{mRevenuNet}", revenuNet);
                     }
                 } else if ("{mRevenuAf}".equals(chaineARemplacer)) {
-                    chaineModifiee = CPToolBox.replaceString(chaineModifiee, "{mRevenuAf}", getDonneeBase()
-                            .getRevenuAutre1());
+                    chaineModifiee = CPToolBox.replaceString(chaineModifiee, "{mRevenuAf}",
+                            getDonneeBase().getRevenuAutre1());
                 } else if ("{mRevenuCI}".equals(chaineARemplacer)) {
                     String revenuCI = "";
                     CPDonneesCalcul donneesCalcul = new CPDonneesCalcul();
@@ -3883,8 +3918,8 @@ public final class CPProcessCalculCotisation extends BProcess {
                         tiersAssistance.setIdTiers(decision.getIdServiceSociale());
                         String today = JACalendar.today().toStr(".");
                         String adresseTiersAssistance = "";
-                        TIAvoirAdresse avoirAdresse = tiersAssistance.findAvoirAdresse(
-                                IConstantes.CS_AVOIR_ADRESSE_COURRIER, "519005", today);
+                        TIAvoirAdresse avoirAdresse = tiersAssistance
+                                .findAvoirAdresse(IConstantes.CS_AVOIR_ADRESSE_COURRIER, "519005", today);
                         if (avoirAdresse != null) {
                             TIAdresse adresse = new TIAdresse();
                             adresseTiersAssistance = adresse.getDetailAdresseHorizontale(getSession(),
@@ -3899,8 +3934,8 @@ public final class CPProcessCalculCotisation extends BProcess {
                     // Recherche de la description du tiers en charge de
                     // l'affilié
                     try {
-                        float revenuActviteAccessoire = Float.parseFloat(FWFindParameter.findParameter(
-                                getTransaction(), "10500130", "REVACTACC", decision.getDebutDecision(), "", 0));
+                        float revenuActviteAccessoire = Float.parseFloat(FWFindParameter.findParameter(getTransaction(),
+                                "10500130", "REVACTACC", decision.getDebutDecision(), "", 0));
                         chaineModifiee = CPToolBox.replaceString(chaineModifiee, "{mRevenuAccessoire}",
                                 JANumberFormatter.fmt(Float.toString(revenuActviteAccessoire), true, false, true, 0));
                     } catch (Exception e) {
@@ -3921,7 +3956,7 @@ public final class CPProcessCalculCotisation extends BProcess {
 
     /**
      * Ajout des montants de cotisation Date de création : (25.02.2002 12:58:23)
-     * 
+     *
      * @param process
      *            BProcess le processus d'exécution
      * @param anneeRevenu
@@ -3959,7 +3994,7 @@ public final class CPProcessCalculCotisation extends BProcess {
 
     /**
      * Ajout des montants de cotisation Date de création : (25.02.2002 12:58:23)
-     * 
+     *
      * @param process
      *            BProcess le processus d'exécution
      * @param anneeRevenu
@@ -4034,7 +4069,7 @@ public final class CPProcessCalculCotisation extends BProcess {
 
     /**
      * Insérez la description de la méthode ici. Date de création : (18.03.2003 14:21:36)
-     * 
+     *
      * @param newDecision
      *            globaz.phenix.db.principale.CPDecision
      */
@@ -4044,7 +4079,7 @@ public final class CPProcessCalculCotisation extends BProcess {
 
     /**
      * Insérez la description de la méthode ici. Date de création : (18.03.2003 10:59:30)
-     * 
+     *
      * @param newDescriptionTiers
      *            java.lang.String
      */
@@ -4061,7 +4096,7 @@ public final class CPProcessCalculCotisation extends BProcess {
 
     /**
      * Insérez la description de la méthode ici. Date de création : (25.02.2002 13:55:43)
-     * 
+     *
      * @param newIdJournal
      *            java.lang.String
      */
@@ -4075,7 +4110,7 @@ public final class CPProcessCalculCotisation extends BProcess {
 
     /**
      * Insérez la description de la méthode ici. Date de création : (18.03.2003 13:05:41)
-     * 
+     *
      * @param newMontantAnnuel
      *            float
      */
@@ -4085,7 +4120,7 @@ public final class CPProcessCalculCotisation extends BProcess {
 
     /**
      * Insérez la description de la méthode ici. Date de création : (18.03.2003 13:04:19)
-     * 
+     *
      * @param newMontantMensuel
      *            float
      */
@@ -4095,7 +4130,7 @@ public final class CPProcessCalculCotisation extends BProcess {
 
     /**
      * Insérez la description de la méthode ici. Date de création : (18.03.2003 13:05:15)
-     * 
+     *
      * @param newMontantSemestriel
      *            float
      */
@@ -4105,7 +4140,7 @@ public final class CPProcessCalculCotisation extends BProcess {
 
     /**
      * Insérez la description de la méthode ici. Date de création : (18.03.2003 13:04:47)
-     * 
+     *
      * @param newMontantTrimestriel
      *            float
      */
@@ -4214,8 +4249,8 @@ public final class CPProcessCalculCotisation extends BProcess {
             float cotisation2 = 0;
 
             // Détermination si activité accessoire
-            exempte = determinationSiActiviteAccessoire(process, codeRevenuAf, revenuBrut, donCalcul,
-                    exerciceSur2Annee, exempte, isTSE, cotisation1, cotisation2);
+            exempte = determinationSiActiviteAccessoire(process, codeRevenuAf, revenuBrut, donCalcul, exerciceSur2Annee,
+                    exempte, isTSE, cotisation1, cotisation2);
 
             // dateAvs = tiers.getDateAvs();
             anneeAvs = JACalendar.getYear(tiers.getDateAvs());
@@ -4238,8 +4273,9 @@ public final class CPProcessCalculCotisation extends BProcess {
                 anneeRadiation = Integer.toString(JACalendar.getYear(cotiAf.getDateFin()));
             }
             boolean isDepartEtrangerOuDeces = false;
-            if ((anneeRadiation.equalsIgnoreCase(decision.getAnneeDecision()) && (CodeSystem.MOTIF_FIN_DECES
-                    .equalsIgnoreCase(motifFin) || CodeSystem.MOTIF_FIN_A_ETRANGER.equalsIgnoreCase(motifFin)))
+            if ((anneeRadiation.equalsIgnoreCase(decision.getAnneeDecision())
+                    && (CodeSystem.MOTIF_FIN_DECES.equalsIgnoreCase(motifFin)
+                            || CodeSystem.MOTIF_FIN_A_ETRANGER.equalsIgnoreCase(motifFin)))
                     || affiliation.getMotifCreation().equalsIgnoreCase(CodeSystem.MOTIF_AFFIL_NON_ACTIF_AL_ETRANGER)) {
                 isDepartEtrangerOuDeces = true;
             }
@@ -4267,8 +4303,7 @@ public final class CPProcessCalculCotisation extends BProcess {
 
             baremeDegressif = AFParticulariteAffiliation.existeParticularite(getTransaction(),
                     decision.getIdAffiliation(), AFParticulariteAffiliation.CS_BAREME_DEGRESSIF,
-                    decision.getDebutDecision())
-                    && (revenuMin >= Float.parseFloat(revenuDeterminant));
+                    decision.getDebutDecision()) && (revenuMin >= Float.parseFloat(revenuDeterminant));
 
             // Si exempte => revenu et coti = 0
             if (exempte) {
@@ -4278,15 +4313,15 @@ public final class CPProcessCalculCotisation extends BProcess {
             // Si rentier ou personne ayant déjà payé la coti minimum en tant
             // que salarié et que son revenu
             // est inférieur au revenu minimum
-            else if (((tauxCalcul == 0) && ((CPDecision.CS_RENTIER.equalsIgnoreCase(decision.getGenreAffilie())) && (revenuMin > Float
-                    .parseFloat(revenuDeterminant))))
-                    || (Boolean.TRUE.equals(decision.getCotiMinimumPayeEnSalarie()) && (revenuMin > Float
-                            .parseFloat(revenuDeterminant))) || baremeDegressif) {
+            else if (((tauxCalcul == 0) && ((CPDecision.CS_RENTIER.equalsIgnoreCase(decision.getGenreAffilie()))
+                    && (revenuMin > Float.parseFloat(revenuDeterminant))))
+                    || (Boolean.TRUE.equals(decision.getCotiMinimumPayeEnSalarie())
+                            && (revenuMin > Float.parseFloat(revenuDeterminant)))
+                    || baremeDegressif) {
                 // Cotisation pour rentier - Barème dégressif
                 CPTableRentierManager tRentierManager = findCotisationRentier(revenuDet);
                 if (tRentierManager.size() == 0) {
-                    this._addError(
-                            process.getTransaction(),
+                    this._addError(process.getTransaction(),
                             "cotisation avs non trouvée: " + decision.getAnneeDecision() + "  "
                                     + Float.toString(revenuCi) + " " + getDescriptionTiers());
                     return null;
@@ -4304,10 +4339,10 @@ public final class CPProcessCalculCotisation extends BProcess {
                     if (Boolean.FALSE.equals(decision.getCotiMinimumPayeEnSalarie()) && !isDepartEtrangerOuDeces) {
                         dateDebut = "01.01." + decision.getAnneeDecision();
                     }
-                    float montantProrataCoti = Float.parseFloat(CPToolBox.getMontantProRata(dateDebut,
-                            decision.getFinDecision(), cotiAnnuelleBrut));
-                    montantProrataCiMin = Float.parseFloat(CPToolBox.getMontantProRata(dateDebut, dateAvs,
-                            getCotiIndMinimum()));
+                    float montantProrataCoti = Float.parseFloat(
+                            CPToolBox.getMontantProRata(dateDebut, decision.getFinDecision(), cotiAnnuelleBrut));
+                    montantProrataCiMin = Float
+                            .parseFloat(CPToolBox.getMontantProRata(dateDebut, dateAvs, getCotiIndMinimum()));
                     if ((Integer.parseInt(decision.getAnneeDecision()) == anneeAvs)
                             && BSessionUtil.compareDateFirstLower(getSession(), decision.getDebutDecision(), dateAvs)
                             // PO 8314
@@ -4327,12 +4362,11 @@ public final class CPProcessCalculCotisation extends BProcess {
                 }
             }
             // Sinon test pour cotisation minimum
-            else if ((((revenuMin > revenuDet) && !exerciceSur2Annee))
-                    || (((revenuMin > revenuDet) && perte))
-                    || ((revenuMin > revenuDet) && exerciceSur2Annee && decision.getAnneeDecision().equalsIgnoreCase(
-                            Integer.toString(anneeFinExercice)))
-                    || ((revenuMin > revenuDet) && decision.getPremiereAssurance().equals(new Boolean(true)) && decision
-                            .getTaxation().equalsIgnoreCase("N"))) { // Ex: 4
+            else if ((((revenuMin > revenuDet) && !exerciceSur2Annee)) || (((revenuMin > revenuDet) && perte))
+                    || ((revenuMin > revenuDet) && exerciceSur2Annee
+                            && decision.getAnneeDecision().equalsIgnoreCase(Integer.toString(anneeFinExercice)))
+                    || ((revenuMin > revenuDet) && decision.getPremiereAssurance().equals(new Boolean(true))
+                            && decision.getTaxation().equalsIgnoreCase("N"))) { // Ex: 4
                 // non rentier
                 revenuCi = revenuCiMin;
                 cotiAnnuelleBrut = getCotiIndMinimum();
@@ -4353,8 +4387,8 @@ public final class CPProcessCalculCotisation extends BProcess {
                 if (tauxCalcul == 0) {
                     tInd = returnTableIndependant(process, anneeRevenu, revenuDeterminant);
                     if (tInd == null) {
-                        this._addError(getTransaction(), getSession().getLabel("CP_MSG_0110") + " "
-                                + getDescriptionTiers());
+                        this._addError(getTransaction(),
+                                getSession().getLabel("CP_MSG_0110") + " " + getDescriptionTiers());
                         return null;
                     }
                     // Calcul de la cotisation annuelle
@@ -4449,13 +4483,13 @@ public final class CPProcessCalculCotisation extends BProcess {
             if (prorataCi) {
                 // Cas spécial remtier en cours d'année avec fin d'activité avant sa retraite
                 // Demande de CICICAM 9GQ38865 du 11.06.2007 - Affilié 810.2539
-                if (CPDecision.CS_RENTIER.equalsIgnoreCase(decision.getGenreAffilie())
-                        && BSessionUtil.compareDateFirstLower(getSession(), getDonneeBase().getFinExercice1(), dateAvs)) {
-                    varCurrency = new FWCurrency(cotiAnnuelleBrut
-                            / ((JACalendar.getMonth(saveDateFinDecision) - moisDebutDecision) + 1));
+                if (CPDecision.CS_RENTIER.equalsIgnoreCase(decision.getGenreAffilie()) && BSessionUtil
+                        .compareDateFirstLower(getSession(), getDonneeBase().getFinExercice1(), dateAvs)) {
+                    varCurrency = new FWCurrency(
+                            cotiAnnuelleBrut / ((JACalendar.getMonth(saveDateFinDecision) - moisDebutDecision) + 1));
                 } else if (!JadeStringUtil.isBlankOrZero(getDecision().getNombreMoisTotalDecision())) {
-                    varCurrency = new FWCurrency(cotiAnnuelleBrut
-                            / Integer.parseInt(getDecision().getNombreMoisTotalDecision()));
+                    varCurrency = new FWCurrency(
+                            cotiAnnuelleBrut / Integer.parseInt(getDecision().getNombreMoisTotalDecision()));
                 } else if (casProrataRentier && (cotiAnnuelleBrut == montantProrataCiMin)) {
                     varCurrency = new FWCurrency(cotiAnnuelleBrut / dureeDecision);
                 } else {
@@ -4490,8 +4524,8 @@ public final class CPProcessCalculCotisation extends BProcess {
              * this.decision.getAnneeDecision() .equalsIgnoreCase(Integer.toString(anneeFinExercice))) || (!prorataCi &&
              * (cotiAnnuelleBrut == this.getCotiIndMinimum()))) {
              */
-            if (((revenuMin > revenuDet) && exerciceSur2Annee && decision.getAnneeDecision().equalsIgnoreCase(
-                    Integer.toString(anneeFinExercice)))
+            if (((revenuMin > revenuDet) && exerciceSur2Annee
+                    && decision.getAnneeDecision().equalsIgnoreCase(Integer.toString(anneeFinExercice)))
                     || (!prorataCi && (cotiAnnuelleBrut == getCotiIndMinimum()))) {
                 if (Integer.parseInt(decision.getNombreMoisTotalDecision()) == 0) {
                     cotiAnnuelle = Float.toString(cotiAnnuelleBrut);
@@ -4504,8 +4538,8 @@ public final class CPProcessCalculCotisation extends BProcess {
             if (prorataCi || casProrataRentier) {
                 if (casProrataRentier) {
                     moisFinDecision = JACalendar.getMonth(dateAvs);
-                    if (Boolean.TRUE.equals(cotiMinimum)
-                            && Boolean.FALSE.equals(decision.getCotiMinimumPayeEnSalarie()) && !isDepartEtrangerOuDeces) {
+                    if (Boolean.TRUE.equals(cotiMinimum) && Boolean.FALSE.equals(decision.getCotiMinimumPayeEnSalarie())
+                            && !isDepartEtrangerOuDeces) {
                         moisDebutDecision = 1;
                     }
                     dureeDecision = (moisFinDecision - moisDebutDecision) + 1;
@@ -4595,7 +4629,8 @@ public final class CPProcessCalculCotisation extends BProcess {
                     CodeSystem.TYPE_ASS_PC_FAMILLE));
 
             // Calcul CPS général
-            LigneCotisation ligneDifGen = calculCPSGeneralForEbu(process, revenuDet, exempte, saveDureeDecision);
+            LigneCotisation ligneDifGen = calculCPSGeneralForEbu(process, revenuDet, exempte, saveDureeDecision,
+                    cotiMinimum);
 
             if (ligneDifGen != null) {
                 if (ligneDifGen.getMontant().compareTo(BigDecimal.ZERO) == 1) {
@@ -4607,7 +4642,8 @@ public final class CPProcessCalculCotisation extends BProcess {
             }
 
             // Calcul CPS autre
-            LigneCotisation ligneDifAutre = calculCPSAutreForEbu(process, revenuDet, exempte, saveDureeDecision);
+            LigneCotisation ligneDifAutre = calculCPSAutreForEbu(process, revenuDet, exempte, saveDureeDecision,
+                    cotiMinimum);
 
             if (ligneDifAutre != null) {
                 if (ligneDifAutre.getMontant().compareTo(BigDecimal.ZERO) == 1) {
@@ -4667,7 +4703,7 @@ public final class CPProcessCalculCotisation extends BProcess {
 
     /**
      * Calcul des frais d'administration Date de création : (25.02.2002 12:58:23)
-     * 
+     *
      * @param process
      *            BProcess le processus d'exécution
      */
@@ -4728,26 +4764,26 @@ public final class CPProcessCalculCotisation extends BProcess {
                     }
 
                     try {
-                        theTauxFraisAdministrationPersonnel = cotiAf.findTauxWithRecalcul(dateRef,
-                                theRevenuDeterminant, true, false, "");
+                        theTauxFraisAdministrationPersonnel = cotiAf.findTauxWithRecalcul(dateRef, theRevenuDeterminant,
+                                true, false, "");
                     } catch (Exception e) {
-                        throw new Exception(getSession().getLabel(
-                                "FIND_TAUX_FRAIS_ADMINISTRATION_PERSONNELLE_EXCEPTION_THROWED")
-                                + e.toString());
+                        throw new Exception(
+                                getSession().getLabel("FIND_TAUX_FRAIS_ADMINISTRATION_PERSONNELLE_EXCEPTION_THROWED")
+                                        + e.toString());
                     }
 
                     if ((theTauxFraisAdministrationPersonnel == null) || theTauxFraisAdministrationPersonnel.isNew()) {
                         throw new Exception(getSession().getLabel("NO_TAUX_FRAIS_ADMINISTRATION_PERSONNELLE_FOUNDED"));
                     }
 
-                    taux = Float.parseFloat(JANumberFormatter.deQuote(theTauxFraisAdministrationPersonnel
-                            .getValeurTotal()));
+                    taux = Float.parseFloat(
+                            JANumberFormatter.deQuote(theTauxFraisAdministrationPersonnel.getValeurTotal()));
 
-                    if (CodeSystem.GEN_VALEUR_ASS_TAUX_VARIABLE.equalsIgnoreCase(theTauxFraisAdministrationPersonnel
-                            .getGenreValeur())
+                    if (CodeSystem.GEN_VALEUR_ASS_TAUX_VARIABLE
+                            .equalsIgnoreCase(theTauxFraisAdministrationPersonnel.getGenreValeur())
                             && CodeSystem.TYPE_CALCUL_MASSE.equalsIgnoreCase(cotiAf.getAssurance().getTypeCalcul())) {
-                        float theRevenuDeterminantForCalcul = JANumberFormatter.round(new FWCurrency(
-                                theRevenuDeterminant).floatValue() / 12, 1, 0, JANumberFormatter.INF);
+                        float theRevenuDeterminantForCalcul = JANumberFormatter.round(
+                                new FWCurrency(theRevenuDeterminant).floatValue() / 12, 1, 0, JANumberFormatter.INF);
                         if (CPDecision.CS_REMISE.equalsIgnoreCase(decision.getTypeDecision())
                                 && JadeStringUtil.isEmpty(getMontantMensuel())) {
                             theRevenuDeterminantForCalcul = new FWCurrency(theRevenuDeterminant).floatValue();
@@ -4764,17 +4800,14 @@ public final class CPProcessCalculCotisation extends BProcess {
                     }
 
                     if (getModeArrondiFad() == 2) {
-                        arrondiCalcul = ""
-                                + JANumberFormatter.round(Float.parseFloat(Float.toString(calcul)), 0.05, 2,
-                                        JANumberFormatter.INF);
+                        arrondiCalcul = "" + JANumberFormatter.round(Float.parseFloat(Float.toString(calcul)), 0.05, 2,
+                                JANumberFormatter.INF);
                     } else if (getModeArrondiFad() == 3) {
-                        arrondiCalcul = ""
-                                + JANumberFormatter.round(Float.parseFloat(Float.toString(calcul)), 0.05, 2,
-                                        JANumberFormatter.SUP);
+                        arrondiCalcul = "" + JANumberFormatter.round(Float.parseFloat(Float.toString(calcul)), 0.05, 2,
+                                JANumberFormatter.SUP);
                     } else {
-                        arrondiCalcul = ""
-                                + JANumberFormatter.round(Float.parseFloat(Float.toString(calcul)), 0.05, 2,
-                                        JANumberFormatter.NEAR);
+                        arrondiCalcul = "" + JANumberFormatter.round(Float.parseFloat(Float.toString(calcul)), 0.05, 2,
+                                JANumberFormatter.NEAR);
                     }
                     // Création des cotisations dans CPCOTIP
                     // Si Remise => prendre directement la coti annuelle * le
@@ -4785,8 +4818,8 @@ public final class CPProcessCalculCotisation extends BProcess {
                     // coti minimale on prend le montant encodé * le taux
                     if (CPDecision.CS_REMISE.equalsIgnoreCase(decision.getTypeDecision())
                             && JadeStringUtil.isEmpty(getMontantMensuel())) {
-                        if (Integer.parseInt(getDecision().getAnneeDecision()) != JACalendar.getYear(JACalendar.today()
-                                .toString())) {
+                        if (Integer.parseInt(getDecision().getAnneeDecision()) != JACalendar
+                                .getYear(JACalendar.today().toString())) {
                             String idRubrique = cotiAf.getAssurance().getRubriqueId();
                             // On prend seulement dans les compteurs des frais si il n'y a pas plus de 1 CHF de
                             // diffèrence
@@ -4796,9 +4829,9 @@ public final class CPProcessCalculCotisation extends BProcess {
                             if (!JadeStringUtil.isBlankOrZero(arrondiCalcul)) {
                                 saveCalcul = Float.parseFloat(JANumberFormatter.deQuote(arrondiCalcul));
                             }
-                            String compteurFad = CPToolBox
-                                    .rechMontantFacture(getSession(), getTransaction(), getCompteAnnexe()
-                                            .getIdCompteAnnexe(), idRubrique, getDecision().getAnneeDecision());
+                            String compteurFad = CPToolBox.rechMontantFacture(getSession(), getTransaction(),
+                                    getCompteAnnexe().getIdCompteAnnexe(), idRubrique,
+                                    getDecision().getAnneeDecision());
                             if (!JadeStringUtil.isBlankOrZero(compteurFad)) {
                                 saveCompteur = Float.parseFloat(JANumberFormatter.deQuote(compteurFad));
                             }
@@ -4860,7 +4893,7 @@ public final class CPProcessCalculCotisation extends BProcess {
 
     /**
      * Calcul des cotisations AF Date de création : (25.02.2002 12:58:23)
-     * 
+     *
      * @param process
      *            BProcess le processus d'exécution
      * @param revenu
@@ -4934,8 +4967,8 @@ public final class CPProcessCalculCotisation extends BProcess {
                             dateRef = cotiAf.getDateDebut();
                         }
                         // Recherche du montant de revenu maximum
-                        String varString = cotiAf.getAssurance().getParametreAssuranceValeur(
-                                CodeSystem.GEN_PARAM_ASS_REVENU_MAX, dateRef, "");
+                        String varString = cotiAf.getAssurance()
+                                .getParametreAssuranceValeur(CodeSystem.GEN_PARAM_ASS_REVENU_MAX, dateRef, "");
                         if (null == varString) {
                             if (typeAssuranceAF.equalsIgnoreCase(CodeSystem.TYPE_ASS_COTISATION_AF)) {
                                 this._addError(getTransaction(), getSession().getLabel("CP_MSG_0174") + " "
@@ -4975,12 +5008,9 @@ public final class CPProcessCalculCotisation extends BProcess {
                                         CodeSystem.GEN_PARAM_ASS_COTISATION_MIN, dateRef, "");
                                 if (null == varString) {
                                     if (typeAssuranceAF.equalsIgnoreCase(CodeSystem.TYPE_ASS_COTISATION_AF)) {
-                                        this._addError(
-                                                getTransaction(),
-                                                getSession().getLabel("CP_MSG_0175")
-                                                        + " "
-                                                        + cotiAf.getAssurance().getAssuranceLibelle(
-                                                                getSession().getIdLangueISO()));
+                                        this._addError(getTransaction(),
+                                                getSession().getLabel("CP_MSG_0175") + " " + cotiAf.getAssurance()
+                                                        .getAssuranceLibelle(getSession().getIdLangueISO()));
                                     } else {
                                         varString = "0";
                                     }
@@ -5018,7 +5048,8 @@ public final class CPProcessCalculCotisation extends BProcess {
                 } else {
                     // PO 2036 et 9407- Recherche et extourne s'il y a un compteur pour la rubrique pour l'année de
                     // décision
-                    ligne = creationCotisationPourExtrounerCompteurExistantForEbu(process, aff, cotiAf, typeAssuranceAF);
+                    ligne = creationCotisationPourExtrounerCompteurExistantForEbu(process, aff, cotiAf,
+                            typeAssuranceAF);
                 }
             }
 
@@ -5031,13 +5062,13 @@ public final class CPProcessCalculCotisation extends BProcess {
 
     /**
      * Calcul des cotisations CPS Général Date de création : 22.10.2007
-     * 
+     *
      * @param process
      *            BProcess le processus d'exécution
      * @param revenuCI
      */
     public LigneCotisation calculCPSGeneralForEbu(BProcess process, float revenuCi, boolean exempte,
-            int saveDureeDecision) {
+            int saveDureeDecision, boolean cotiMinimumAvs) {
         // Sous contrôle d'exception
         float taux = 0;
         Boolean cotiMinimum = Boolean.FALSE;
@@ -5055,7 +5086,31 @@ public final class CPProcessCalculCotisation extends BProcess {
                         decision.getFinDecision(), 3);
                 if ((cotiAf != null) && !cotiAf.getDateDebut().equalsIgnoreCase(cotiAf.getDateFin())) {
                     dateRef = decision.getDebutDecision();
-
+                    // Recherche du mode de calcul de la cotisation AF
+                    // Pour simplifier la saisie, au niveau des paramètres : indépendant = ind, tse, rentier,
+                    // agriculteur
+                    String modeCalculAF = findMethodeCaculAf(cotiAf);
+                    // La cotisation AF Soleure se base sur la cotisation avs et
+                    // non sur le revenu, il faut que le ontant de la cotisation
+                    // AVS soit plus grand que la cotisation minimum
+                    boolean afSelonCoti = false;
+                    if (CPParametreCanton.CS_AF_SELON_COTI.equalsIgnoreCase(modeCalculAF)) {
+                        afSelonCoti = true;
+                    }
+                    if (afSelonCoti) {
+                        if (Boolean.TRUE.equals(cotiMinimumAvs)) {
+                            exempte = true;
+                        } else {
+                            revenuCi = Float.parseFloat(JANumberFormatter.deQuote(getMontantAnnuel()));
+                        }
+                    } else if (CPParametreCanton.CS_AF_REVENU1.equalsIgnoreCase(modeCalculAF)) {
+                        revenuCi = JANumberFormatter.round(revenuAFVD, 100, 0, JANumberFormatter.INF);
+                    } else if (CPParametreCanton.CS_AF_REVENU2.equalsIgnoreCase(modeCalculAF)) {
+                        // Si revenu2 est renseigné on prend revenu2 sinon c'est le revenu déterminant (revenu 1)
+                        if (!JadeStringUtil.isEmpty(donneeBase.getRevenuAutre1())) {
+                            revenuCi = Float.parseFloat(JANumberFormatter.deQuote(donneeBase.getRevenuAutre1()));
+                        }
+                    }
                     if (!exempte) {
                         // Pour les rentiers dans l'année et qui paye au prorata
                         // la coti avs
@@ -5074,8 +5129,8 @@ public final class CPProcessCalculCotisation extends BProcess {
                             dateRef = cotiAf.getDateDebut();
                         }
                         // Recherche du montant de revenu maximum
-                        String varString = cotiAf.getAssurance().getParametreAssuranceValeur(
-                                CodeSystem.GEN_PARAM_ASS_REVENU_MAX, dateRef, "");
+                        String varString = cotiAf.getAssurance()
+                                .getParametreAssuranceValeur(CodeSystem.GEN_PARAM_ASS_REVENU_MAX, dateRef, "");
                         if (null == varString) {
                             this._addError(getTransaction(), getSession().getLabel("CP_MSG_0174") + " "
                                     + cotiAf.getAssurance().getAssuranceLibelle(getSession().getIdLangueISO()));
@@ -5105,8 +5160,8 @@ public final class CPProcessCalculCotisation extends BProcess {
                         float cotiAnnuelleBrut = (revenuCi * taux) / 100;
                         // Recherche de la cotisation mimimum AF
                         if (!CPDecision.CS_RENTIER.equalsIgnoreCase(decision.getGenreAffilie()) || casProrataRentier) {
-                            varString = cotiAf.getAssurance().getParametreAssuranceValeur(
-                                    CodeSystem.GEN_PARAM_ASS_COTISATION_MIN, dateRef, "");
+                            varString = cotiAf.getAssurance()
+                                    .getParametreAssuranceValeur(CodeSystem.GEN_PARAM_ASS_COTISATION_MIN, dateRef, "");
                             if (null == varString) {
                                 this._addError(getTransaction(), getSession().getLabel("CP_MSG_0175") + " "
                                         + cotiAf.getAssurance().getAssuranceLibelle(getSession().getIdLangueISO()));
@@ -5156,12 +5211,13 @@ public final class CPProcessCalculCotisation extends BProcess {
 
     /**
      * Calcul des cotisations CPS autre Date de création : 22.10.2007
-     * 
+     *
      * @param process
      *            BProcess le processus d'exécution
      * @param revenuCI
      */
-    public LigneCotisation calculCPSAutreForEbu(BProcess process, float revenuCi, boolean exempte, int saveDureeDecision) {
+    public LigneCotisation calculCPSAutreForEbu(BProcess process, float revenuCi, boolean exempte,
+            int saveDureeDecision, boolean cotiMinimumAvs) {
         // Sous contrôle d'exception
         float taux = 0;
         Boolean cotiMinimum = Boolean.FALSE;
@@ -5179,7 +5235,31 @@ public final class CPProcessCalculCotisation extends BProcess {
                         decision.getFinDecision(), 3);
                 if ((cotiAf != null) && !cotiAf.getDateDebut().equalsIgnoreCase(cotiAf.getDateFin())) {
                     dateRef = decision.getDebutDecision();
-
+                    // Recherche du mode de calcul de la cotisation AF
+                    // Pour simplifier la saisie, au niveau des paramètres : indépendant = ind, tse, rentier,
+                    // agriculteur
+                    String modeCalculAF = findMethodeCaculAf(cotiAf);
+                    // La cotisation AF Soleure se base sur la cotisation avs et
+                    // non sur le revenu, il faut que le ontant de la cotisation
+                    // AVS soit plus grand que la cotisation minimum
+                    boolean afSelonCoti = false;
+                    if (CPParametreCanton.CS_AF_SELON_COTI.equalsIgnoreCase(modeCalculAF)) {
+                        afSelonCoti = true;
+                    }
+                    if (afSelonCoti) {
+                        if (Boolean.TRUE.equals(cotiMinimumAvs)) {
+                            exempte = true;
+                        } else {
+                            revenuCi = Float.parseFloat(JANumberFormatter.deQuote(getMontantAnnuel()));
+                        }
+                    } else if (CPParametreCanton.CS_AF_REVENU1.equalsIgnoreCase(modeCalculAF)) {
+                        revenuCi = JANumberFormatter.round(revenuAFVD, 100, 0, JANumberFormatter.INF);
+                    } else if (CPParametreCanton.CS_AF_REVENU2.equalsIgnoreCase(modeCalculAF)) {
+                        // Si revenu2 est renseigné on prend revenu2 sinon c'est le revenu déterminant (revenu 1)
+                        if (!JadeStringUtil.isEmpty(donneeBase.getRevenuAutre1())) {
+                            revenuCi = Float.parseFloat(JANumberFormatter.deQuote(donneeBase.getRevenuAutre1()));
+                        }
+                    }
                     if (!exempte) {
                         // Pour les rentiers dans l'année et qui paye au prorata
                         // la coti avs
@@ -5198,8 +5278,8 @@ public final class CPProcessCalculCotisation extends BProcess {
                             dateRef = cotiAf.getDateDebut();
                         }
                         // Recherche du montant de revenu maximum
-                        String varString = cotiAf.getAssurance().getParametreAssuranceValeur(
-                                CodeSystem.GEN_PARAM_ASS_REVENU_MAX, dateRef, "");
+                        String varString = cotiAf.getAssurance()
+                                .getParametreAssuranceValeur(CodeSystem.GEN_PARAM_ASS_REVENU_MAX, dateRef, "");
                         if (null == varString) {
                             this._addError(getTransaction(), getSession().getLabel("CP_MSG_0174") + " "
                                     + cotiAf.getAssurance().getAssuranceLibelle(getSession().getIdLangueISO()));
@@ -5231,8 +5311,8 @@ public final class CPProcessCalculCotisation extends BProcess {
 
                         // Recherche de la cotisation mimimum AF
                         if (!CPDecision.CS_RENTIER.equalsIgnoreCase(decision.getGenreAffilie()) || casProrataRentier) {
-                            varString = cotiAf.getAssurance().getParametreAssuranceValeur(
-                                    CodeSystem.GEN_PARAM_ASS_COTISATION_MIN, dateRef, "");
+                            varString = cotiAf.getAssurance()
+                                    .getParametreAssuranceValeur(CodeSystem.GEN_PARAM_ASS_COTISATION_MIN, dateRef, "");
                             if (null == varString) {
                                 this._addError(getTransaction(), getSession().getLabel("CP_MSG_0175") + " "
                                         + cotiAf.getAssurance().getAssuranceLibelle(getSession().getIdLangueISO()));
@@ -5283,7 +5363,7 @@ public final class CPProcessCalculCotisation extends BProcess {
 
     /**
      * Calcul des cotisations LAMAT Date de création : (25.02.2002 12:58:23)
-     * 
+     *
      * @param process
      *            BProcess le processus d'exécution
      * @param revenuCI
@@ -5316,8 +5396,8 @@ public final class CPProcessCalculCotisation extends BProcess {
                             dateRef = cotiAf.getDateDebut();
                         }
                         try {
-                            taux = Float.parseFloat(JANumberFormatter.deQuote(cotiAf.getTaux(dateRef,
-                                    JANumberFormatter.deQuote(Float.toString(revenuCi)))));
+                            taux = Float.parseFloat(JANumberFormatter.deQuote(
+                                    cotiAf.getTaux(dateRef, JANumberFormatter.deQuote(Float.toString(revenuCi)))));
 
                         } catch (Exception e) {
                             taux = 0; // BTC bug affiliation!!! 15.12.2003
@@ -5357,7 +5437,7 @@ public final class CPProcessCalculCotisation extends BProcess {
     }
 
     /**
-     * 
+     *
      * Les exceptions avec un message à l'attention de l'utilisateur n'ont pas été labellisées Ceci car avec le
      * fonctionnement actuel du process aucun mail est envoyé et aucun message remonté à l'utilisateur TODO labelliser
      * les exceptions lorsque le fonctionnement du process permettra de remonter un message à l'utilisateur
@@ -5389,9 +5469,9 @@ public final class CPProcessCalculCotisation extends BProcess {
         // fédérative(01.07.2011 au 31.12.2011)
         // --> pas accepté
         if (cotiMgr.size() > 1) {
-            throw new Exception("Erreur : " + cotiMgr.size()
-                    + " cotisations fédératives ont été trouvées dans la période du " + decision.getDebutDecision()
-                    + " au " + decision.getFinDecision());
+            throw new Exception(
+                    "Erreur : " + cotiMgr.size() + " cotisations fédératives ont été trouvées dans la période du "
+                            + decision.getDebutDecision() + " au " + decision.getFinDecision());
         }
 
         AFCotisation cotisationFederative = (AFCotisation) cotiMgr.getEntity(0);
@@ -5422,9 +5502,8 @@ public final class CPProcessCalculCotisation extends BProcess {
         }
 
         String finPeriodeCotisation = decision.getFinDecision();
-        if (!JadeStringUtil.isBlankOrZero(cotisationFederative.getDateFin())
-                && BSessionUtil.compareDateFirstLower(getSession(), cotisationFederative.getDateFin(),
-                        decision.getFinDecision())) {
+        if (!JadeStringUtil.isBlankOrZero(cotisationFederative.getDateFin()) && BSessionUtil
+                .compareDateFirstLower(getSession(), cotisationFederative.getDateFin(), decision.getFinDecision())) {
             finPeriodeCotisation = cotisationFederative.getDateFin();
         }
 
@@ -5500,7 +5579,7 @@ public final class CPProcessCalculCotisation extends BProcess {
 
     /**
      * Création d'une ligne de cotisation pour pouvoir rembourser le montant déjà facturé
-     * 
+     *
      * @param process
      * @param cotiAf
      *            return LigneCotisation
@@ -5512,8 +5591,9 @@ public final class CPProcessCalculCotisation extends BProcess {
 
         if (cotiAf != null) {
             // recherche du montant déjà facturé
-            String montantCompteur = CPToolBox.rechMontantFacture(getSession(), getTransaction(), getCompteAnnexe()
-                    .getIdCompteAnnexe(), cotiAf.getAssurance().getRubriqueId(), decision.getAnneeDecision());
+            String montantCompteur = CPToolBox.rechMontantFacture(getSession(), getTransaction(),
+                    getCompteAnnexe().getIdCompteAnnexe(), cotiAf.getAssurance().getRubriqueId(),
+                    decision.getAnneeDecision());
             // Recherche du taux
             if (!JadeStringUtil.isBlankOrZero(montantCompteur)) {
                 // Ajout de la ligne de cotisation
