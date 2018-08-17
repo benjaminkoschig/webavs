@@ -636,6 +636,8 @@ public class REDecisionInfoContainer implements Serializable {
 
             FWCurrency montantPrest = new FWCurrency();
             FWCurrency montantPrestPrec = new FWCurrency();
+            List<String> idTiers = new ArrayList<>();
+            List<String> idTiersPrecedant = new ArrayList<>();
 
             JADate dateDebut = new JADate();
             JADate dateFinPrec = new JADate();
@@ -648,6 +650,8 @@ public class REDecisionInfoContainer implements Serializable {
 
                 nbPrestPrec = nbPrest;
                 montantPrestPrec = new FWCurrency(montantPrest.toString());
+                idTiersPrecedant = idTiers;
+                idTiers = new ArrayList<>();
 
                 if (isFirst) {
                     dateDebut = dateCourante;
@@ -698,6 +702,8 @@ public class REDecisionInfoContainer implements Serializable {
                     vo.setIdPrestationDue(Long.parseLong(pd.getIdPrestationDue()));
                     vo.setIdTiersBeneficiaire(Long.parseLong(ra.getIdTiersBeneficiaire()));
                     vo.setMontant(pd.getMontant());
+                    
+                    idTiers.add(ra.getIdTiersBeneficiaire());
 
                     PRTiersWrapper tiers = PRTiersHelper.getTiersParId(session, ra.getIdTiersBeneficiaire());
 
@@ -718,7 +724,7 @@ public class REDecisionInfoContainer implements Serializable {
                 if (!isFirst) {
 
                     // Comparer avec la liste précédente
-                    if ((nbPrestPrec != nbPrest) || (!montantPrest.equals(montantPrestPrec))) {
+                    if ((nbPrestPrec != nbPrest) || (!montantPrest.equals(montantPrestPrec) || !isListesIdentiques(idTiers, idTiersPrecedant))) {
 
                         // BZ 5062 - Englober toute la création de la clé dans ce test
                         // Ajouter si la liste précédente n'est pas vide
@@ -789,6 +795,19 @@ public class REDecisionInfoContainer implements Serializable {
             throw new Exception("Erreur dans le tri des périodes : " + e.getMessage());
         }
 
+    }
+    
+    private boolean isListesIdentiques(List<String> liste1, List<String> liste2) {
+        if(liste1.size() != liste2.size()) {
+            return false;
+        }
+        // ! ne test pas les listes avec des doublons
+        for(String idTiers : liste1) {
+            if(!liste2.contains(idTiers)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public boolean isContentInfini() {
