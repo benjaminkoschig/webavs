@@ -15,6 +15,7 @@ import ch.globaz.pegasus.business.domaine.donneeFinanciere.assuranceRenteViagere
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.autreRente.AutreRente;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.autreRente.AutreRenteGenre;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.autreRente.AutresRentes;
+import ch.globaz.pegasus.business.domaine.donneeFinanciere.bienImmobilier.BienImmobilier;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.pensionAlimentaire.PensionAlimentaireType;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.renteAvsAi.RenteAvsAi;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.taxeJournalierHome.TaxeJournaliereHome;
@@ -68,7 +69,13 @@ public class PersonneElementsCalculConverter {
                 .add(df.getIndemintesJournaliereApg().sumRevenuAnnuel(nbDayInYear)));
 
         if (df.getRentesAvsAi().hasMoreThanOneElement()) {
-            perElCal.setRenteIsSansRente(df.getRentesAvsAi().get(0).isSansRente());
+            boolean sansRente = true;
+            for (RenteAvsAi rente : df.getRentesAvsAi().getList()) {
+                if (sansRente) {
+                    sansRente = rente.isSansRente();
+                }
+            }
+            perElCal.setRenteIsSansRente(sansRente);
         } else {
             perElCal.setRenteIsSansRente(false);
         }
@@ -166,16 +173,25 @@ public class PersonneElementsCalculConverter {
         perElCal.setLivingAddress(livingAddress);
         perElCal.setTypeRenteCS(resolveMaxType(dfFiltre));
 
-        perElCal.setUsufructIncome((df.getBiensImmobiliersServantHbitationPrincipale()
+        Montant usuIncome = df.getBiensImmobiliersServantHbitationPrincipale()
                 .filtreByProprieteType(ProprieteType.USUFRUITIER, ProprieteType.DROIT_HABITATION)
-                .sumMontantValeurLocativeDH_RPC())
-                        .add(df.getBiensImmobiliersNonPrincipale()
-                                .filtreByProprieteType(ProprieteType.USUFRUITIER, ProprieteType.DROIT_HABITATION)
-                                .sumMontantValeurLocativePartPropriete()));
+                .sumMontantValeurLocativeDH_RPC()
+                .add(df.getBiensImmobiliersNonPrincipale()
+                        .filtreByProprieteType(ProprieteType.USUFRUITIER, ProprieteType.DROIT_HABITATION)
+                        .sumMontantValeurLocativePartPropriete());
+
+        // Dans le plan de calcule la valeur est déjà inclus dans les rentes si le requérant a un bien immobilière
+        if (canAddImmobilierNonHabitable(df)) {
+            usuIncome = usuIncome.add(
+                    df.getBiensImmobiliersNonHabitable().sumMontantRendementPartPropriete(ProprieteType.USUFRUITIER));
+        }
+        perElCal.setUsufructIncome(usuIncome);
 
         perElCal.setValeurLocativeProprietaire((df.getBiensImmobiliersServantHbitationPrincipale()
-                .filtreByProprieteType(ProprieteType.PROPRIETAIRE).sumMontantValeurLocativePartPropriete())
-                        .add(df.getBiensImmobiliersNonPrincipale().filtreByProprieteType(ProprieteType.PROPRIETAIRE)
+                .filtreByProprieteType(ProprieteType.PROPRIETAIRE, ProprieteType.CO_PROPRIETAIRE)
+                .sumMontantValeurLocativePartProprieteEtCoPropiete())
+                        .add(df.getBiensImmobiliersNonPrincipale()
+                                .filtreByProprieteType(ProprieteType.PROPRIETAIRE, ProprieteType.CO_PROPRIETAIRE)
                                 .sumMontantValeurLocativePartPropriete()));
 
         // Si les APi sont prisent en compte dans le calcul
@@ -186,6 +202,20 @@ public class PersonneElementsCalculConverter {
         }
 
         return perElCal;
+    }
+
+    private boolean canAddImmobilierNonHabitable(DonneesFinancieresContainer df) {
+        boolean canAdd = true;
+        for (BienImmobilier bienImmo : df.getAllBiensImmobilier().getList()) {
+            if (bienImmo.getProprieteType() == ProprieteType.PROPRIETAIRE) {
+                canAdd = false;
+                break;
+            } else if (!(bienImmo.getDette().isZero() && bienImmo.getInteretHypothecaire().isZero())) {
+                canAdd = false;
+                break;
+            }
+        }
+        return canAdd;
     }
 
     private Montant resolveRenteEtrangere(Parameters parameters, Date dateDebut,

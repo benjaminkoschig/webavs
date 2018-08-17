@@ -31,6 +31,7 @@ public class AnnoncePersonalCalculationElements {
     protected Montant hcFlatHelp;
     protected Montant hcEffectiveHelp;
     protected Montant otherExpenses;
+    protected Montant disabledAllowance;
 
     protected AnnoncePensionCategory pensionCategory;
     protected AnnonceResidenceCosts residenceCosts;
@@ -60,6 +61,9 @@ public class AnnoncePersonalCalculationElements {
                 patientContributionCategory = XSD_PCC_EN_SUS_DE_LA_TAXE_HOME;
             }
             patientContributionCategory = XSD_PCC_PARTIE_DE_LA_TAXE_HOME;
+            if (!personData.getHomeIsApiFacturee()) {
+                disabledAllowance = personData.getRenteApi();
+            }
         }
         hcFlatHelp = personData.getPrimeLamal();
         if (hcEffectiveHelp()) {
@@ -127,6 +131,10 @@ public class AnnoncePersonalCalculationElements {
 
     public AnnonceResidenceCosts getResidenceCosts() {
         return residenceCosts;
+    }
+
+    public Montant getDisabledAllowance() {
+        return disabledAllowance;
     }
 
 }

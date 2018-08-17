@@ -39,8 +39,8 @@ public class AnnonceDecision {
     public AnnonceDecision(RpcDecisionAnnonceComplete annonce) {
         this.annonce = annonce;
         final Decision decision = annonce.getPcaDecision().getDecision();
-        final PcaEtatCalcul etatCalculFederal = decision.getType().isRefusSansCalcul() ? PcaEtatCalcul.REFUSE : annonce
-                .getRpcCalcul().getEtatCalculFederal();
+        final PcaEtatCalcul etatCalculFederal = decision.getType().isRefusSansCalcul() ? PcaEtatCalcul.REFUSE
+                : annonce.getRpcCalcul().getEtatCalculFederal();
         final Pca pca = annonce.getPcaDecision().getPca();
         if (pca != null) {
             pcaDecisionId = pca.getId();
@@ -220,35 +220,40 @@ public class AnnonceDecision {
     }
 
     public Montant getPropertyIncome() {
-        return calculationElements.getRealProperty() != null ? calculationElements.getRealProperty()
-                .getPropertyIncome() : Montant.ZERO_ANNUEL;
+        return calculationElements.getRealProperty() != null ? calculationElements.getRealProperty().getPropertyIncome()
+                : Montant.ZERO_ANNUEL;
     }
 
     public Montant getMortgageInterest() {
-        return calculationElements.getRealProperty() != null ? calculationElements.getRealProperty()
-                .getMortgageInterest() : Montant.ZERO_ANNUEL;
+        return calculationElements.getRealProperty() != null
+                ? calculationElements.getRealProperty().getMortgageInterest()
+                : Montant.ZERO_ANNUEL;
     }
 
     public Montant getMaintenanceFees() {
-        return calculationElements.getRealProperty() != null ? calculationElements.getRealProperty()
-                .getMaintenanceFees() : Montant.ZERO_ANNUEL;
+        return calculationElements.getRealProperty() != null
+                ? calculationElements.getRealProperty().getMaintenanceFees()
+                : Montant.ZERO_ANNUEL;
     }
 
     public Montant getInterestFeesEligible() {
-        return calculationElements.getRealProperty() != null ? calculationElements.getRealProperty()
-                .getInterestFeesEligible() : Montant.ZERO_ANNUEL;
+        return calculationElements.getRealProperty() != null
+                ? calculationElements.getRealProperty().getInterestFeesEligible()
+                : Montant.ZERO_ANNUEL;
     }
 
     // Accesseurs AnnonceCalculationElements.AnnonceHousingOwner
 
     public Montant getSelfInhabitedProperty() {
-        return calculationElements.getHousingOwner() != null ? calculationElements.getHousingOwner()
-                .getSelfInhabitedProperty() : Montant.ZERO_ANNUEL;
+        return calculationElements.getHousingOwner() != null
+                ? calculationElements.getHousingOwner().getSelfInhabitedProperty()
+                : Montant.ZERO_ANNUEL;
     }
 
     public Montant getSelfInhabitedPropertyDeductible() {
-        return calculationElements.getHousingOwner() != null ? calculationElements.getHousingOwner()
-                .getSelfInhabitedPropertyDeductible() : Montant.ZERO_ANNUEL;
+        return calculationElements.getHousingOwner() != null
+                ? calculationElements.getHousingOwner().getSelfInhabitedPropertyDeductible()
+                : Montant.ZERO_ANNUEL;
     }
 
     public Montant getRentalValue() {
@@ -304,8 +309,8 @@ public class AnnonceDecision {
 
             if (pensionCategory != null && pensionCategory.getPension() != null
                     && pensionCategory.getPension().getAvsAipension() != null) {
-                sum = sum.add(person.getPersonalCalculationElements().getPensionCategory().getPension()
-                        .getAvsAipension());
+                sum = sum.add(
+                        person.getPersonalCalculationElements().getPensionCategory().getPension().getAvsAipension());
             }
         }
 
@@ -320,8 +325,8 @@ public class AnnonceDecision {
 
             if (pensionCategory != null && pensionCategory.getPension() != null
                     && pensionCategory.getPension().getDailyAllowance() != null) {
-                sum = sum.add(person.getPersonalCalculationElements().getPensionCategory().getPension()
-                        .getDailyAllowance());
+                sum = sum.add(
+                        person.getPersonalCalculationElements().getPensionCategory().getPension().getDailyAllowance());
             }
         }
 
@@ -338,6 +343,20 @@ public class AnnonceDecision {
         }
 
         return sum.arrondiAUnIntier();
+    }
+
+    public Montant getDisabledAllowance() {
+        Montant sum = Montant.ZERO_ANNUEL;
+
+        for (AnnoncePerson person : persons) {
+            if (person.getPersonalCalculationElements() != null
+                    && person.getPersonalCalculationElements().getDisabledAllowance() != null) {
+                sum = sum.add(person.getPersonalCalculationElements().getDisabledAllowance());
+            }
+        }
+
+        return sum.arrondiAUnIntier();
+
     }
 
     public Montant getSumContributionsAssuranceMaladie() {

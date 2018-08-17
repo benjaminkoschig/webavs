@@ -10,9 +10,9 @@ import ch.globaz.pegasus.business.domaine.pca.PcaGenre;
 
 /**
  * Wrapper des données d'une decision dans l'annonce
- * 
+ *
  * @author cel
- * 
+ *
  */
 public class RpcDecisionAnnonceComplete {
     private final Demande demande;
@@ -133,9 +133,8 @@ public class RpcDecisionAnnonceComplete {
             PcaDecision pcaDecisionPartner) {
         if (pcaDecision.getPca().getRoleBeneficiaire().equals(personData.getMembreFamille().getRoleMembreFamille())) {
             return pcaDecision.getPca().getGenre();
-        } else if ((pcaDecisionPartner != null)
-                && pcaDecisionPartner.getPca().getRoleBeneficiaire()
-                        .equals(personData.getMembreFamille().getRoleMembreFamille())) {
+        } else if ((pcaDecisionPartner != null) && pcaDecisionPartner.getPca().getRoleBeneficiaire()
+                .equals(personData.getMembreFamille().getRoleMembreFamille())) {
             return pcaDecisionPartner.getPca().getGenre();
         } else {
             // cas des enfants
@@ -145,11 +144,15 @@ public class RpcDecisionAnnonceComplete {
 
     public Montant resolveLoyerTotalBrut() {
         if (hasPartner()) {
-            return getMembresFamilleWithDonneesFinanciere().filtreByRoleMembreFamille(
-                    pcaDecision.getPca().getRoleBeneficiaire()).sumLoyerTotalBrut();
+            return getMembresFamilleWithDonneesFinanciere()
+                    .filtreByRoleMembreFamille(pcaDecision.getPca().getRoleBeneficiaire()).sumLoyerTotalBrut();
         } else {
             return getMembresFamilleWithDonneesFinanciere().sumLoyerTotalBrut();
         }
+    }
+
+    public boolean hasInteretsHypotecaireSansPlafond() {
+        return !rpcCalcul.getDepensesFraisImmoInteretHypothequaire().isZero();
     }
 
     public boolean hasInteretsHypotecaire() {

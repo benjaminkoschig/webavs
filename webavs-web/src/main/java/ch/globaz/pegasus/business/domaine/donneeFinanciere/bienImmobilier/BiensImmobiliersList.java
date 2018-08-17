@@ -16,6 +16,8 @@ public interface BiensImmobiliersList {
 
     public Montant sumMontantValeurLocativeDH_RPC();
 
+    public Montant sumMontantValeurLocativePartProprieteEtCoPropiete();
+
     public Montant sumMontantValeurLocativePartPropriete(ProprieteType type);
 
     public Montant sumSousLocation();

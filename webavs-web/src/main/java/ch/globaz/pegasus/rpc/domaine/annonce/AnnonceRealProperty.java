@@ -15,10 +15,14 @@ public class AnnonceRealProperty {
     public AnnonceRealProperty(RpcDecisionAnnonceComplete annonce) {
         realProperty = annonce.getRpcCalcul().getFortuneImmobiliere();
         mortgageDebts = annonce.getRpcCalcul().getDettesHypothequaires();
-        propertyIncome = annonce.getRpcCalcul().getRevenusFortuneImmobiliere();
         mortgageInterest = annonce.getRpcCalcul().getInteretsHypothequaires();
         maintenanceFees = annonce.getRpcCalcul().getFraisEntretien();
         interestFeesEligible = annonce.getRpcCalcul().getInteretsHypothequairesFraisMaintenance();
+
+        propertyIncome = Montant.ZERO_ANNUEL;
+        if (annonce.hasImmobilier() || annonce.hasInteretsHypotecaireSansPlafond() || annonce.hasDettesHypotecaire()) {
+            propertyIncome = annonce.getRpcCalcul().getRevenusFortuneImmobiliere();
+        }
     }
 
     public Montant getRealProperty() {

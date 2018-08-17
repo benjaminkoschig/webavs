@@ -71,6 +71,17 @@ public class BiensImmobiliersServantHabitationPrincipale
     }
 
     @Override
+    public Montant sumMontantValeurLocativePartProprieteEtCoPropiete() {
+
+        return this.sum(new Each<BienImmobilierServantHabitationPrincipale>() {
+            @Override
+            public Montant getMontant(BienImmobilierServantHabitationPrincipale donnneeFianciere) {
+                return donnneeFianciere.computeValLocativePartProprieteEtCoPropiete();
+            }
+        });
+    }
+
+    @Override
     public Montant sumMontantValeurLocativeDH_RPC() {
 
         return this.sum(new Each<BienImmobilierServantHabitationPrincipale>() {

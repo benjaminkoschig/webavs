@@ -58,8 +58,15 @@ public class BienImmobilierServantHabitationPrincipale extends BienImmobilier im
         return Montant.ZERO_ANNUEL;
     }
 
+    public Montant computeValLocativePartProprieteEtCoPropiete() {
+        if (proprieteType.isProprietaire() || proprieteType.isCoProprietaire()) {
+            return valeurLocative.multiply(part);
+        }
+        return Montant.ZERO_ANNUEL;
+    }
+
     public Montant computeValLocativeDH_RPC() {
-        if (proprieteType.isUsufruit() || proprieteType.isProprietaire() || proprieteType.isDroitHabitation()) {
+        if (proprieteType.isUsufruit() || proprieteType.isDroitHabitation()) {
             return valeurLocative.multiply(part);
         }
         return Montant.ZERO_ANNUEL;

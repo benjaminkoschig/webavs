@@ -102,8 +102,8 @@ public class RpcCalcul {
      * FC20
      */
     public Montant getRevenusDeLaFortune() {
-        Montant sum = calcul.getRevenusInteretFortuneMobilierTotal().add(
-                calcul.getRevenusInteretDessaisissementFortuneTotal());
+        Montant sum = calcul.getRevenusInteretFortuneMobilierTotal()
+                .add(calcul.getRevenusInteretDessaisissementFortuneTotal());
         // 8690.7179.41 getRevenusImposableFortuneTotal
         // getRevenusInteretTitre
         return divideByTwoIfCoupleSepare(sum);
@@ -196,6 +196,13 @@ public class RpcCalcul {
      */
     public Montant getFraisEntretien() {
         return calcul.getDepensesFraisImmoEntretienImmeuble();
+    }
+
+    /**
+     * Help pour charge de la valeur FC21
+     */
+    public Montant getDepensesFraisImmoInteretHypothequaire() {
+        return calcul.getDepensesFraisImmoInteretHypothequaire();
     }
 
     /**
@@ -373,7 +380,7 @@ public class RpcCalcul {
 
     /**
      * Depalfonnement de loyer
-     * 
+     *
      * @return la clé additionnele de plafond fédéral
      */
     public Montant getPlafondFederal() {
@@ -382,7 +389,7 @@ public class RpcCalcul {
 
     /**
      * * Depalfonnement de loyer
-     * 
+     *
      * @return la part cantonale annuelel
      */
     public Montant getPartCantonaleAnnuelle() {

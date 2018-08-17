@@ -15,8 +15,7 @@ public abstract class RpcPlausiCommonCalcul implements RpcPlausiMetier<RpcPlausi
         revenu.FC22 = decision.getRentalValue();
         revenu.FC23 = decision.getUsufructIncome();
 
-        // TODO : DCLTODO - Mis à zero d'office ?
-        revenu.E3 = Montant.ZERO;// FAire une somme du disabledAllowance;
+        revenu.E3 = decision.getDisabledAllowance();
 
         revenu.E5 = decision.getSumContributionsAssuranceMaladie();
 
