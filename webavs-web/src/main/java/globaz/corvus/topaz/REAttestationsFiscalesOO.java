@@ -1,5 +1,6 @@
 package globaz.corvus.topaz;
 
+import globaz.babel.api.ICTDocument;
 import globaz.babel.utils.CatalogueText;
 import globaz.caisse.helper.CaisseHelperFactory;
 import globaz.caisse.report.helper.CaisseHeaderReportBean;
@@ -21,6 +22,8 @@ import globaz.jade.print.server.JadePrintDocumentContainer;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
 import globaz.jade.publish.document.JadePublishDocumentInfoProvider;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
+import globaz.prestation.interfaces.babel.PRBabelHelper;
+import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.tools.PRDateFormater;
 import globaz.prestation.tools.PRStringUtils;
 import globaz.pyxis.api.ITIPersonne;
@@ -68,6 +71,8 @@ public class REAttestationsFiscalesOO extends REAbstractJobOO {
     private SortedSet<REFamillePourAttestationsFiscales> familles;
     private String codeIsoLangue;
     private boolean isSendToGed;
+    private ICTDocument document;
+    private ICTDocument documentHelper;
 
     public REAttestationsFiscalesOO() {
         super(true);
@@ -446,9 +451,10 @@ public class REAttestationsFiscalesOO extends REAbstractJobOO {
                 StringBuilder nomCollaboration = new StringBuilder();
                 nomCollaboration.append(getTexte(catalogueTextesAttestationsFiscales, 6, 1)).append(" ")
                         .append(getSession().getUserFullName());
-
-                crBean.setNomCollaborateur(nomCollaboration.toString());
-                crBean.setTelCollaborateur(getSession().getUserInfo().getPhone());
+                
+                chargementCatalogueTexte();
+                crBean.setNomCollaborateur(document.getTextes(6).getTexte(1).getDescription() + " " + document.getTextes(6).getTexte(2).getDescription());
+                crBean.setTelCollaborateur(document.getTextes(6).getTexte(3).getDescription());
             }
 
             // Ajoute le libelle CONFIDENTIEL dans l'adresse de l'entete du document
@@ -504,6 +510,25 @@ public class REAttestationsFiscalesOO extends REAbstractJobOO {
         }
 
         return codesPrestation;
+    }
+    
+    private void chargementCatalogueTexte() throws Exception {
+
+        // creation du helper pour les catalogues de texte
+        documentHelper = PRBabelHelper.getDocumentHelper(getSession());
+        documentHelper.setCsDomaine(IRECatalogueTexte.CS_RENTES);
+        documentHelper.setCsTypeDocument(IRECatalogueTexte.CS_ATTESTATION_FISCALE);
+        documentHelper.setNom("openOffice");
+        documentHelper.setDefault(Boolean.FALSE);
+        documentHelper.setActif(Boolean.TRUE);
+        documentHelper.setCodeIsoLangue(codeIsoLangue);
+
+        ICTDocument[] documents = documentHelper.load();
+        if ((documents == null) || (documents.length == 0)) {
+            throw new Exception(getSession().getLabel("ERREUR_CHARGEMENT_CAT_TEXTE"));
+        } else {
+            document = documents[0];
+        }
     }
 
     public String getDateDernierPaiement() {
