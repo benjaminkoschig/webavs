@@ -39,6 +39,7 @@ import globaz.hermes.db.parametrage.HEParametrageannonceManager;
 import globaz.hermes.handler.HELotHandler;
 import globaz.hermes.utils.AVSUtils;
 import globaz.hermes.utils.DateUtils;
+import globaz.hermes.utils.HECSMotif;
 import globaz.hermes.utils.HEConfigurationServiceUtils;
 import globaz.hermes.utils.HENNSSUtils;
 import globaz.hermes.utils.HEUtil;
@@ -310,11 +311,18 @@ public class HEInputAnnonceViewBean extends HEAnnoncesViewBean {
 
     private void addARC61(BTransaction transaction) {
         try {
-            if ("11".equals(getMotif()) && getChkCreerArc61() && !JadeStringUtil.isBlankOrZero(getNumeroAVS())) {
-                setMotif("61");
-                setChkCreerArc61(false);
-                getInputTable().put(IHEAnnoncesViewBean.MOTIF_ANNONCE, "61");
-                this.add(transaction);
+            if (CODE_ARC_11.equals(getMotif()) && getChkCreerArc61() && !JadeStringUtil.isBlankOrZero(getNumeroAVS())) {
+                HEInputAnnonceViewBean viewbean = (HEInputAnnonceViewBean) clone();
+                // Le critère 32 est celui utilisé lorsqu'on saisi un motif 61
+                viewbean.computeNeededFields(HECSMotif.CS_AVEC_CI_CA_PRESENTE, "32");
+                viewbean.setMotif(CODE_ARC_61);
+                viewbean.setChkCreerArc61(false);
+                viewbean.getInputTable().put(IHEAnnoncesViewBean.MOTIF_ANNONCE, CODE_ARC_61);
+                viewbean.getInputTable().put(IHEAnnoncesViewBean.ETAT_NOMINATIF, "");
+                viewbean.getInputTable().put(IHEAnnoncesViewBean.DATE_NAISSANCE_JJMMAAAA, "");
+                viewbean.getInputTable().put(IHEAnnoncesViewBean.ETAT_ORIGINE, "");
+                viewbean.getInputTable().put(IHEAnnoncesViewBean.SEXE, "");
+                viewbean.add(transaction);
             }
         } catch (Exception e) {
             _addError(transaction, e.getMessage());

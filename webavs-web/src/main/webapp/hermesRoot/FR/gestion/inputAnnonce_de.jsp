@@ -304,7 +304,7 @@ function updateForm(tag){
 	}
 	showOrHideChkAjoutARC61(tag);
 }
-// La case ne peut être cochée que si 
+// La case ne peut être cochée que s'il y a un nss
 function showOrHideChkAjoutARC61(tag){
 	if(tag != null && tag.input != null){
 		var nss = tag.input.value;
@@ -319,7 +319,6 @@ function showOrHideChkAjoutARC61(tag){
 }
 
 function disableChkAjoutARC61(chkBox){
-	console.log(<%=motif%>);
 	if(<%=motif%> == "11"){
 		chkBox.style.backgroundColor = '#b3c4db';
 		chkBox.setAttribute("disabled","disabled");
