@@ -1,5 +1,14 @@
 package globaz.hermes.db.gestion;
 
+import java.text.ParseException;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
 import globaz.commons.nss.NSUtil;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.util.FWMessageFormat;
@@ -44,21 +53,12 @@ import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.log.JadeLogger;
 import globaz.jade.smtp.JadeSmtpClient;
 import globaz.pavo.util.CIUtil;
-import java.text.ParseException;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-import java.util.Vector;
 
 /**
  * Classe représentant une liste d'annonces pour un lot<br>
  * Fichier HEANNOP put(CODE_APPLICATION, _codeApplication); put(CODE_ENREGISTREMENT, _enregistrement);
  * put(MOTIF_ANNONCE, _motif);
- * 
+ *
  * @author ADO
  */
 
@@ -89,8 +89,7 @@ public class HEAnnoncesViewBean extends BEntity implements FWViewBeanInterface {
             IHEAnnoncesViewBean.CS_NUMERO_ASSURE_A_ONZE_CHIFFRES,
             IHEAnnoncesViewBean.CS_NUM_ASSURE_AYANT_DROIT_PRESTATION, IHEAnnoncesViewBean.CS_PREM_NUM_ASSURE_COMPL,
             IHEAnnoncesViewBean.CS_NUMERO_ASSURE_13_POSITIONS,
-            IHEAnnoncesViewBean.CS_NUMERO_ASSURE_AYANT_DROIT_CONJOINT,
-            IHEAnnoncesViewBean.CS_NUMERO_ASSURE_PERE_ENFANT,
+            IHEAnnoncesViewBean.CS_NUMERO_ASSURE_AYANT_DROIT_CONJOINT, IHEAnnoncesViewBean.CS_NUMERO_ASSURE_PERE_ENFANT,
             IHEAnnoncesViewBean.CS_SECOND_NUMERO_ASSURE_COMPLEMENTAIRE,
             IHEAnnoncesViewBean.CS_PREMIER_NUMERO_ASSURE_COMPLEMENTAIRE, IHEAnnoncesViewBean.NUMERO_ASSURE_AYANT_DROIT,
             IHEAnnoncesViewBean.CS_NOUVEAU_NUMERO_ASSURE_AYANT_DROIT_PRESTATION };
@@ -174,7 +173,8 @@ public class HEAnnoncesViewBean extends BEntity implements FWViewBeanInterface {
     // liste des champs cachés pour l'affichage
     public static String[] hiddenFields = { IHEAnnoncesViewBean.CODE_APPLICATION,
             IHEAnnoncesViewBean.CODE_ENREGISTREMENT, IHEAnnoncesViewBean.RESERVE_A_BLANC,
-            IHEAnnoncesViewBean.RESERVE_BLANC_2, IHEAnnoncesViewBean.RESERVE_ZERO_2, IHEAnnoncesViewBean.RESERVE_ZEROS };
+            IHEAnnoncesViewBean.RESERVE_BLANC_2, IHEAnnoncesViewBean.RESERVE_ZERO_2,
+            IHEAnnoncesViewBean.RESERVE_ZEROS };
 
     public static String[] MOTIF_IMPRESSION_CA = { "36", "46" };
     public static String[] MOTIFS_ATTEST_DATE = { "11", "13", "15", "19", "31", "33", "36", "" };
@@ -657,6 +657,9 @@ public class HEAnnoncesViewBean extends BEntity implements FWViewBeanInterface {
 
     protected String wantCheckCiOuvert = HEAnnoncesViewBean.WANT_CHECK_CI_OUVERT_TRUE;
 
+    protected static final String CODE_ARC_61 = "61";
+    protected static final String CODE_ARC_11 = "11";
+
     /**
      * Constructeur du type HEAnnoncesViewBean
      */
@@ -668,7 +671,7 @@ public class HEAnnoncesViewBean extends BEntity implements FWViewBeanInterface {
 
     /**
      * Constructor HEAnnoncesViewBean.
-     * 
+     *
      * @param bSession
      */
     public HEAnnoncesViewBean(BSession bSession) {
@@ -711,7 +714,7 @@ public class HEAnnoncesViewBean extends BEntity implements FWViewBeanInterface {
      * <code>_beforeUpdate()</code>
      * <p>
      * Ne pas oublier de partager la connexion avec les autres DAB !!! </i>
-     * 
+     *
      * @exception java.lang.Exception
      *                en cas d'erreur fatale
      */
@@ -785,7 +788,7 @@ public class HEAnnoncesViewBean extends BEntity implements FWViewBeanInterface {
 
     /**
      * Renvoie la valeur de la propriété tableName (nom de la table)
-     * 
+     *
      * @return le nom de la table
      */
     @Override
@@ -800,7 +803,7 @@ public class HEAnnoncesViewBean extends BEntity implements FWViewBeanInterface {
 
     /**
      * Lit les enregistrements de la DB
-     * 
+     *
      * @param statement
      *            statement
      * @exception Exception
@@ -837,7 +840,7 @@ public class HEAnnoncesViewBean extends BEntity implements FWViewBeanInterface {
 
     /**
      * Valide la valeur des champs avant ajout
-     * 
+     *
      * @param statement
      *            statement
      */
@@ -902,10 +905,10 @@ public class HEAnnoncesViewBean extends BEntity implements FWViewBeanInterface {
                 if (HELotViewBean.CS_TYPE_ENVOI.equals(getTypeLot())
                         && !"PAVO".equalsIgnoreCase(getIdProgramme().trim())) {
 
-                    if ((getInputTable().get(key) != null)
-                            && (((String) getInputTable().get(key)).trim().length() != 0)
-                            && ((((String) getInputTable().get(key)).lastIndexOf(",") == -1) || (((String) getInputTable()
-                                    .get(key)).lastIndexOf(",") != ((String) getInputTable().get(key)).indexOf(",")))) {
+                    if ((getInputTable().get(key) != null) && (((String) getInputTable().get(key)).trim().length() != 0)
+                            && ((((String) getInputTable().get(key)).lastIndexOf(",") == -1)
+                                    || (((String) getInputTable().get(key))
+                                            .lastIndexOf(",") != ((String) getInputTable().get(key)).indexOf(",")))) {
                         _addError(statement.getTransaction(), getSession().getLabel("HERMES_00024"));
                     }
                 }
@@ -976,10 +979,8 @@ public class HEAnnoncesViewBean extends BEntity implements FWViewBeanInterface {
 
                         // log("\n(" + getChampEnregistrement() + ")",
                         // FWLogIt.ERROR);
-                        _addError(
-                                statement.getTransaction(),
-                                FWMessageFormat.format(getSession().getLabel("HERMES_00004"),
-                                        champsTable.valueAt(champAnnonce.getIdChamp())));
+                        _addError(statement.getTransaction(), FWMessageFormat.format(
+                                getSession().getLabel("HERMES_00004"), champsTable.valueAt(champAnnonce.getIdChamp())));
                     }
                 }
             }
@@ -999,16 +1000,16 @@ public class HEAnnoncesViewBean extends BEntity implements FWViewBeanInterface {
                     if ((this.getField(IHEAnnoncesViewBean.NUMERO_ASSURE).length() >= NUM_AVS_LENGTH)
                             && ((HEApplication) getSession().getApplication()).isCiOuvert(getSession(),
                                     this.getField(IHEAnnoncesViewBean.NUMERO_ASSURE))) {
-                        _addError(statement.getTransaction(), FWMessageFormat.format(
-                                getSession().getLabel("HERMES_00005"), globaz.commons.nss.NSUtil.formatAVSUnknown(this
-                                        .getField(IHEAnnoncesViewBean.NUMERO_ASSURE))));
+                        _addError(statement.getTransaction(),
+                                FWMessageFormat.format(getSession().getLabel("HERMES_00005"), globaz.commons.nss.NSUtil
+                                        .formatAVSUnknown(this.getField(IHEAnnoncesViewBean.NUMERO_ASSURE))));
                     }
                 }
             }
 
-            if ((JadeStringUtil.isEmpty((String) getInputTable().get(IHEAnnoncesViewBean.NUMERO_ASSURE)) && (this
-                    .getField(IHEAnnoncesViewBean.MOTIF_ANNONCE).equals("13") || this.getField(
-                    IHEAnnoncesViewBean.MOTIF_ANNONCE).equals("19")))) {
+            if ((JadeStringUtil.isEmpty((String) getInputTable().get(IHEAnnoncesViewBean.NUMERO_ASSURE))
+                    && (this.getField(IHEAnnoncesViewBean.MOTIF_ANNONCE).equals("13")
+                            || this.getField(IHEAnnoncesViewBean.MOTIF_ANNONCE).equals("19")))) {
 
                 try {
                     if (CIUtil.is30YearsAgo(this.getField(IHEAnnoncesViewBean.DATE_NAISSANCE_JJMMAAAA))) {
@@ -1040,8 +1041,8 @@ public class HEAnnoncesViewBean extends BEntity implements FWViewBeanInterface {
                     // depuis le NNSS
                     if (JadeStringUtil.isBlank(dateNaissance)
                             && !HENNSSUtils.isNNSSLength(this.getField(IHEAnnoncesViewBean.NUMERO_ASSURE))) {
-                        dateNaissance = AVSUtils.getBirthDateFromAVS(StringUtils.removeDots(this
-                                .getField(IHEAnnoncesViewBean.NUMERO_ASSURE)));
+                        dateNaissance = AVSUtils.getBirthDateFromAVS(
+                                StringUtils.removeDots(this.getField(IHEAnnoncesViewBean.NUMERO_ASSURE)));
                     }
                 } catch (Exception e) {
                     _addError(statement.getTransaction(), getSession().getLabel("HERMES_10023"));
@@ -1081,8 +1082,8 @@ public class HEAnnoncesViewBean extends BEntity implements FWViewBeanInterface {
 
             if ("95".equals(this.getField(IHEAnnoncesViewBean.MOTIF_ANNONCE))) {
 
-                if (this.getField(IHEAnnoncesViewBean.NUMERO_ASSURE).equals(
-                        this.getField(IHEAnnoncesViewBean.NUMERO_ASSURE_CONJOINT_SPLITTING_DIVORCE))) {
+                if (this.getField(IHEAnnoncesViewBean.NUMERO_ASSURE)
+                        .equals(this.getField(IHEAnnoncesViewBean.NUMERO_ASSURE_CONJOINT_SPLITTING_DIVORCE))) {
                     _addError(statement.getTransaction(), getSession().getLabel("HERMES_00028"));
                 }
             }
@@ -1137,7 +1138,7 @@ public class HEAnnoncesViewBean extends BEntity implements FWViewBeanInterface {
 
     /**
      * Sauvegarde les valeurs des propriétés propres de l'entité composant une clé alternée
-     * 
+     *
      * @exception java.lang.Exception
      *                si la sauvegarde des propriétés a échouée
      * @param alternateKey
@@ -1156,7 +1157,7 @@ public class HEAnnoncesViewBean extends BEntity implements FWViewBeanInterface {
 
     /**
      * Ecrit la clef primaire
-     * 
+     *
      * @param statement
      *            statement
      * @exception Exception
@@ -1169,7 +1170,7 @@ public class HEAnnoncesViewBean extends BEntity implements FWViewBeanInterface {
 
     /**
      * Ecrit les valeurs de l'objet dans la table de la bdd
-     * 
+     *
      * @param statement
      *            statement
      * @exception Exception
@@ -1183,12 +1184,10 @@ public class HEAnnoncesViewBean extends BEntity implements FWViewBeanInterface {
                 this._dbWriteDateAMJ(statement.getTransaction(), getDateAnnonce(), "dateAnnonce"));
         statement.writeField("RNLUTI",
                 this._dbWriteString(statement.getTransaction(), getUtilisateur().toUpperCase(), "utilisateur"));
-        statement
-                .writeField("RNTPRO", this._dbWriteString(statement.getTransaction(), getIdProgramme(), "idProgramme"));
-        statement.writeField(
-                "RNLENR",
-                this._dbWriteString(statement.getTransaction(),
-                        StringUtils.formatEnregistrement(getChampEnregistrement()), "enregistrement"));
+        statement.writeField("RNTPRO",
+                this._dbWriteString(statement.getTransaction(), getIdProgramme(), "idProgramme"));
+        statement.writeField("RNLENR", this._dbWriteString(statement.getTransaction(),
+                StringUtils.formatEnregistrement(getChampEnregistrement()), "enregistrement"));
         statement.writeField("RNREFU", this._dbWriteString(statement.getTransaction(), getRefUnique(), "refUnique"));
         statement.writeField("RNTSTA", this._dbWriteNumeric(statement.getTransaction(), getStatut(), "statut"));
         statement.writeField("RNTMES", this._dbWriteNumeric(statement.getTransaction(), getIdMessage(), "idMessage"));
@@ -1198,9 +1197,10 @@ public class HEAnnoncesViewBean extends BEntity implements FWViewBeanInterface {
             statement.writeField("RNAVS",
                     this._dbWriteString(statement.getTransaction(), StringUtils.removeDots(getNumeroAVS()).trim()));
         } else {
-            statement.writeField("RNAVS", this._dbWriteString(statement.getTransaction(),
-                    StringUtils.padAfterString(StringUtils.removeDots(getNumeroAVS()).trim(), "0", 11),
-                    "numero avs RNAVS"));
+            statement.writeField("RNAVS",
+                    this._dbWriteString(statement.getTransaction(),
+                            StringUtils.padAfterString(StringUtils.removeDots(getNumeroAVS()).trim(), "0", 11),
+                            "numero avs RNAVS"));
         }
         statement.writeField("RNMOT", this._dbWriteString(statement.getTransaction(), getMotif(), "motif RNMOT"));
         statement.writeField("RNCAIS",
@@ -1289,8 +1289,8 @@ public class HEAnnoncesViewBean extends BEntity implements FWViewBeanInterface {
             // "La valeur saisie est trop longue (Le champ n° " + s +
             // " a une longueur de " + s.length() + " caractères au lieu des " +
             // maxLength + " autorisés)"
-            throw new HEInputAnnonceException(FWMessageFormat.format(getSession().getLabel("HERMES_00023"), s,
-                    "" + s.length(), "" + maxLength));
+            throw new HEInputAnnonceException(
+                    FWMessageFormat.format(getSession().getLabel("HERMES_00023"), s, "" + s.length(), "" + maxLength));
         }
 
         if (s.length() == maxLength) {
@@ -1341,7 +1341,7 @@ public class HEAnnoncesViewBean extends BEntity implements FWViewBeanInterface {
 
     /**
      * Method checkUniqueARC. on vérifie que si y'a un numéro AVS
-     * 
+     *
      * @param transaction
      * @return boolean true si l'arc est unique, false s'il existe déjà
      */
@@ -1359,8 +1359,8 @@ public class HEAnnoncesViewBean extends BEntity implements FWViewBeanInterface {
             if (this.getField(IHEAnnoncesViewBean.NUMERO_ASSURE).trim().length() != 0) {
                 HEOutputAnnonceListViewBean annonces = new HEOutputAnnonceListViewBean(getSession());
                 annonces.setForInProgress(true);
-                annonces.setForNumeroAVS(StringUtils
-                        .removeDots(this.getField(IHEAnnoncesViewBean.NUMERO_ASSURE).trim()));
+                annonces.setForNumeroAVS(
+                        StringUtils.removeDots(this.getField(IHEAnnoncesViewBean.NUMERO_ASSURE).trim()));
                 annonces.setForCodeApplicationOR("11", "21");
                 // annonces.setForNotLikeCodeAppl("38");
                 // annonces.setForNotLikeCodeAppl2("39");
@@ -1469,8 +1469,8 @@ public class HEAnnoncesViewBean extends BEntity implements FWViewBeanInterface {
                 // _addError(statement.getTransaction(), e2.getMessage());
                 setMsgType(FWViewBeanInterface.ERROR);
 
-                setMessage(FWMessageFormat.format(getSession().getLabel("HERMES_DROIT_MOTIF"), getSession()
-                        .getUserName(), getSession().getCode(motif)));
+                setMessage(FWMessageFormat.format(getSession().getLabel("HERMES_DROIT_MOTIF"),
+                        getSession().getUserName(), getSession().getCode(motif)));
 
             }
             BSession newSession = (BSession) getSession().getApplication().newSession(getSession());
@@ -1511,8 +1511,9 @@ public class HEAnnoncesViewBean extends BEntity implements FWViewBeanInterface {
                     champ.retrieve();
                     champsTable.putParamAnnonce(champ.getIdParametrageAnnonce());
 
-                    champsTable.put(champ.getIdChamp(), (paramSC.getCodeSysteme(champ.getIdChamp()))
-                            .getCurrentCodeUtilisateur().getLibelle(), Integer.parseInt(champ.getLongueur()));
+                    champsTable.put(champ.getIdChamp(),
+                            (paramSC.getCodeSysteme(champ.getIdChamp())).getCurrentCodeUtilisateur().getLibelle(),
+                            Integer.parseInt(champ.getLongueur()));
                 }
             }
         } catch (Exception e) {
@@ -1630,7 +1631,7 @@ public class HEAnnoncesViewBean extends BEntity implements FWViewBeanInterface {
 
     /**
      * renvoit la valeur par défaut de la référence interne
-     * 
+     *
      * @param int part - 0 le user name, 1 champ libre, 2 la date
      */
     public String getDefaultReferenceInterne(int part) {
@@ -1641,7 +1642,7 @@ public class HEAnnoncesViewBean extends BEntity implements FWViewBeanInterface {
     /**
      * Récupère une valeur en fonction d'une des constantes de classe Attention, si c'est une liste qui est demandée ce
      * sera la première valeur qui sera renvoyée Ici, le champ demandé peut-être à null
-     * 
+     *
      * @param FIELD
      *            le champ demandé
      * @return le champ ou null si le champ n'existe pas pour cette annonce
@@ -1653,7 +1654,7 @@ public class HEAnnoncesViewBean extends BEntity implements FWViewBeanInterface {
     /**
      * Récupère une valeur en fonction d'une des constantes de classe Attention, si c'est une liste qui est demandée ce
      * sera la première valeur qui sera renvoyée Ici, le champ demandé peut-être à null
-     * 
+     *
      * @param FIELD
      *            le champ demandé
      * @param nullAllowed
@@ -1673,7 +1674,7 @@ public class HEAnnoncesViewBean extends BEntity implements FWViewBeanInterface {
 
     /**
      * Method getFieldValues.
-     * 
+     *
      * @return Hashtable
      * @throws Exception
      */
@@ -1753,8 +1754,8 @@ public class HEAnnoncesViewBean extends BEntity implements FWViewBeanInterface {
                 throw new HEOutputAnnonceException("Champ inconnu demandé");
             }
 
-            throw new HEOutputAnnonceException(FWMessageFormat.format(getSession().getLabel("HERMES_00004"),
-                    champsView.getLibelle()));
+            throw new HEOutputAnnonceException(
+                    FWMessageFormat.format(getSession().getLabel("HERMES_00004"), champsView.getLibelle()));
         } else if ((o instanceof String) && "".equals(o)) {
             HEChampsViewBean champsView = new HEChampsViewBean();
             champsView.setSession(getSession());
@@ -1766,8 +1767,8 @@ public class HEAnnoncesViewBean extends BEntity implements FWViewBeanInterface {
                 throw new HEOutputAnnonceException("Champ inconnu demandé");
             }
 
-            throw new HEOutputAnnonceException(FWMessageFormat.format(getSession().getLabel("HERMES_00004"),
-                    champsView.getLibelle()));
+            throw new HEOutputAnnonceException(
+                    FWMessageFormat.format(getSession().getLabel("HERMES_00004"), champsView.getLibelle()));
         } else {
             return (String) o;
         }
@@ -1989,7 +1990,7 @@ public class HEAnnoncesViewBean extends BEntity implements FWViewBeanInterface {
 
     /**
      * Method getRevenu.
-     * 
+     *
      * @return String
      * @throws HEOutputAnnonceException
      * @author ald, 13.04.04 cette méthode retourne le montant du revenu quand l'utilisateur à les droits nécessaires.
@@ -2154,7 +2155,7 @@ public class HEAnnoncesViewBean extends BEntity implements FWViewBeanInterface {
 
     /**
      * Renvoi le type du lot auquel cette annonce appartient
-     * 
+     *
      * @return String typeLot (cf HELotViewbean)
      */
     public String getTypeLot() {
@@ -2200,8 +2201,8 @@ public class HEAnnoncesViewBean extends BEntity implements FWViewBeanInterface {
             HECodeapplicationViewBean codeApp = (HECodeapplicationViewBean) caM.getEntity(0);
 
             if (caM.size() == 0) {
-                throw new HEInputAnnonceException("Ce code application n'existe pas : "
-                        + this.getField(IHEAnnoncesViewBean.CODE_APPLICATION));
+                throw new HEInputAnnonceException(
+                        "Ce code application n'existe pas : " + this.getField(IHEAnnoncesViewBean.CODE_APPLICATION));
             }
 
             HEParametrageannonceManager paramManager = new HEParametrageannonceManager();
@@ -2298,13 +2299,15 @@ public class HEAnnoncesViewBean extends BEntity implements FWViewBeanInterface {
 
                         case HEChampannonceViewBean.CADRAGE_DROITE:
                             s = this.checkLength(field, HEChampannonceViewBean.CAR_CADRAGE_DROITE,
-                                    Integer.parseInt(champAnnonce.getLongueur()), HEChampannonceViewBean.CADRAGE_DROITE);
+                                    Integer.parseInt(champAnnonce.getLongueur()),
+                                    HEChampannonceViewBean.CADRAGE_DROITE);
 
                             break;
 
                         case HEChampannonceViewBean.CADRAGE_GAUCHE:
                             s = this.checkLength(field, HEChampannonceViewBean.CAR_CADRAGE_GAUCHE,
-                                    Integer.parseInt(champAnnonce.getLongueur()), HEChampannonceViewBean.CADRAGE_GAUCHE);
+                                    Integer.parseInt(champAnnonce.getLongueur()),
+                                    HEChampannonceViewBean.CADRAGE_GAUCHE);
 
                             break;
 
@@ -2330,8 +2333,8 @@ public class HEAnnoncesViewBean extends BEntity implements FWViewBeanInterface {
             }
 
             if (sbAuto.length() != 120) {
-                throw new HEInputAnnonceException(FWMessageFormat.format(getSession().getLabel("HERMES_00012"), ""
-                        + sbAuto.length(), sbAuto));
+                throw new HEInputAnnonceException(
+                        FWMessageFormat.format(getSession().getLabel("HERMES_00012"), "" + sbAuto.length(), sbAuto));
             }
         } catch (Exception e) {
             throw e;
@@ -2378,7 +2381,7 @@ public class HEAnnoncesViewBean extends BEntity implements FWViewBeanInterface {
 
     /**
      * Valide la valeur des champs avant ajout
-     * 
+     *
      * @param statement
      *            statement
      */
@@ -2450,7 +2453,7 @@ public class HEAnnoncesViewBean extends BEntity implements FWViewBeanInterface {
 
     /**
      * Création d'annonces
-     * 
+     *
      * @idParametrageAnnonce l'identifiant de paramétrage
      */
     public final void parseARC(BTransaction transaction) throws HEInputAnnonceException {
@@ -2546,13 +2549,15 @@ public class HEAnnoncesViewBean extends BEntity implements FWViewBeanInterface {
 
                         case HEChampannonceViewBean.CADRAGE_DROITE:
                             s = this.checkLength(field, HEChampannonceViewBean.CAR_CADRAGE_DROITE,
-                                    Integer.parseInt(champAnnonce.getLongueur()), HEChampannonceViewBean.CADRAGE_DROITE);
+                                    Integer.parseInt(champAnnonce.getLongueur()),
+                                    HEChampannonceViewBean.CADRAGE_DROITE);
 
                             break;
 
                         case HEChampannonceViewBean.CADRAGE_GAUCHE:
                             s = this.checkLength(field, HEChampannonceViewBean.CAR_CADRAGE_GAUCHE,
-                                    Integer.parseInt(champAnnonce.getLongueur()), HEChampannonceViewBean.CADRAGE_GAUCHE);
+                                    Integer.parseInt(champAnnonce.getLongueur()),
+                                    HEChampannonceViewBean.CADRAGE_GAUCHE);
 
                             break;
 
@@ -2588,7 +2593,7 @@ public class HEAnnoncesViewBean extends BEntity implements FWViewBeanInterface {
 
     /**
      * Permet de saisir un champ d'une annonce
-     * 
+     *
      * @param Object
      *            value (Vector ou String) la valeur
      */
@@ -2610,7 +2615,7 @@ public class HEAnnoncesViewBean extends BEntity implements FWViewBeanInterface {
 
     /**
      * Method putAll.
-     * 
+     *
      * @param m
      */
     public void putAll(Map m) {
@@ -2648,7 +2653,7 @@ public class HEAnnoncesViewBean extends BEntity implements FWViewBeanInterface {
 
     /**
      * Définit la valeur de la propriété enregistrement la chaine de 120 caractére de l'annonce
-     * 
+     *
      * @param newEnregistrement
      *            newEnregistrement
      */
@@ -2658,7 +2663,7 @@ public class HEAnnoncesViewBean extends BEntity implements FWViewBeanInterface {
 
     /**
      * Définit la valeur de la propriété dateAnnonce la date de l'annonce
-     * 
+     *
      * @param newDateAnnonce
      *            newDateAnnonce
      */
@@ -2683,7 +2688,7 @@ public class HEAnnoncesViewBean extends BEntity implements FWViewBeanInterface {
 
     /**
      * Définit la valeur de la propriété idAnnonce c'est la clef primaire de l'annonce
-     * 
+     *
      * @param newIdAnnonce
      *            newIdAnnonce
      */
@@ -2694,7 +2699,7 @@ public class HEAnnoncesViewBean extends BEntity implements FWViewBeanInterface {
     /**
      * Définit la valeur de la propriété idLot clef étrangère permettant d'identifier le lot auquel appartient cette
      * annonce
-     * 
+     *
      * @param newIdLot
      *            newIdLot
      */
@@ -2704,7 +2709,7 @@ public class HEAnnoncesViewBean extends BEntity implements FWViewBeanInterface {
 
     /**
      * Définit la valeur de la propriété idMessage le message à inscrire
-     * 
+     *
      * @param newIdMessage
      *            newIdMessage
      */
@@ -2714,7 +2719,7 @@ public class HEAnnoncesViewBean extends BEntity implements FWViewBeanInterface {
 
     /**
      * Définit la valeur de la propriété idProgramme Le programme qui fait cet ajour (HELIOS, PAVO...)
-     * 
+     *
      * @param newIdProgramme
      *            newIdProgramme
      */
@@ -2789,7 +2794,7 @@ public class HEAnnoncesViewBean extends BEntity implements FWViewBeanInterface {
 
     /**
      * Définit la valeur de la propriété statut le statut de l'annonce (En attente, A traiter...)
-     * 
+     *
      * @param newStatut
      *            newStatut
      */
@@ -2799,7 +2804,7 @@ public class HEAnnoncesViewBean extends BEntity implements FWViewBeanInterface {
 
     /**
      * Fixe le type du lot auquel cette annonce appartient
-     * 
+     *
      * @param String
      *            typeLot (cf HELotViewBean.CS_TYPE_ENVOI et HELotViewBean.CS_TYPE_RECEPTION)
      */
@@ -2809,7 +2814,7 @@ public class HEAnnoncesViewBean extends BEntity implements FWViewBeanInterface {
 
     /**
      * Définit la valeur de la propriété utilisateur L'utilisateur qui créé cette annonce
-     * 
+     *
      * @param newUtilisateur
      *            newUtilisateur
      */
@@ -2862,8 +2867,8 @@ public class HEAnnoncesViewBean extends BEntity implements FWViewBeanInterface {
                 setNnss(Boolean.FALSE);
             }
 
-            setNumeroAvsNNSS(this.getField(IHEAnnoncesViewBean.CS_NUMERO_ASSURE_PERSONNE_REQUERANTE
-                    + HENNSSUtils.PARAM_NNSS));
+            setNumeroAvsNNSS(
+                    this.getField(IHEAnnoncesViewBean.CS_NUMERO_ASSURE_PERSONNE_REQUERANTE + HENNSSUtils.PARAM_NNSS));
         } else if (!this.getField(IHEAnnoncesViewBean.CS_NUMERO_ASSURE).trim().equals("")) {
             setNumeroAVS(this.getField(IHEAnnoncesViewBean.CS_NUMERO_ASSURE));
             if (HENNSSUtils.isNNSSLength(this.getField(IHEAnnoncesViewBean.CS_NUMERO_ASSURE))) {
@@ -2890,14 +2895,14 @@ public class HEAnnoncesViewBean extends BEntity implements FWViewBeanInterface {
                     AVSUtils avs = null;
                     if (!JadeStringUtil.isEmpty(this.getField(IHEAnnoncesViewBean.DATE_NAISSANCE_JJMMAAAA))) {
                         avs = new AVSUtils(this.getField(IHEAnnoncesViewBean.ETAT_NOMINATIF),
-                                this.getField(IHEAnnoncesViewBean.DATE_NAISSANCE_JJMMAAAA), Integer.parseInt(this
-                                        .getField(IHEAnnoncesViewBean.SEXE)));
+                                this.getField(IHEAnnoncesViewBean.DATE_NAISSANCE_JJMMAAAA),
+                                Integer.parseInt(this.getField(IHEAnnoncesViewBean.SEXE)));
                         avs.setFormat(DateUtils.JJMMAAAA);
                     }
                     if (!JadeStringUtil.isEmpty(this.getField(IHEAnnoncesViewBean.DATE_NAISSANCE_1_JJMMAA))) {
                         avs = new AVSUtils(this.getField(IHEAnnoncesViewBean.ETAT_NOMINATIF),
-                                this.getField(IHEAnnoncesViewBean.DATE_NAISSANCE_1_JJMMAA), Integer.parseInt(this
-                                        .getField(IHEAnnoncesViewBean.SEXE)));
+                                this.getField(IHEAnnoncesViewBean.DATE_NAISSANCE_1_JJMMAA),
+                                Integer.parseInt(this.getField(IHEAnnoncesViewBean.SEXE)));
                         avs.setFormat(DateUtils.JJMMAA);
                     }
                     if (avs != null) {
@@ -2942,7 +2947,8 @@ public class HEAnnoncesViewBean extends BEntity implements FWViewBeanInterface {
             }
 
         }
-        if (!JadeStringUtil.isEmpty(this.getField(IHEAnnoncesViewBean.CS_PREMIER_NUMERO_ASSURE_COMPLEMENTAIRE).trim())) {
+        if (!JadeStringUtil
+                .isEmpty(this.getField(IHEAnnoncesViewBean.CS_PREMIER_NUMERO_ASSURE_COMPLEMENTAIRE).trim())) {
             if (HENNSSUtils.isNNSSLength(this.getField(IHEAnnoncesViewBean.CS_PREMIER_NUMERO_ASSURE_COMPLEMENTAIRE))) {
                 // Modif NNSS, pour setter le flag Attention parse ARC
                 put(IHEAnnoncesViewBean.CS_PREMIER_NUMERO_ASSURE_COMPLEMENTAIRE + HENNSSUtils.PARAM_NNSS, "true");
@@ -2962,10 +2968,10 @@ public class HEAnnoncesViewBean extends BEntity implements FWViewBeanInterface {
             }
 
         }
-        if (!JadeStringUtil.isEmpty(this.getField(IHEAnnoncesViewBean.CS_NOUVEAU_NUMERO_ASSURE_AYANT_DROIT_PRESTATION)
-                .trim())) {
-            if (HENNSSUtils.isNNSSLength(this
-                    .getField(IHEAnnoncesViewBean.CS_NOUVEAU_NUMERO_ASSURE_AYANT_DROIT_PRESTATION))) {
+        if (!JadeStringUtil
+                .isEmpty(this.getField(IHEAnnoncesViewBean.CS_NOUVEAU_NUMERO_ASSURE_AYANT_DROIT_PRESTATION).trim())) {
+            if (HENNSSUtils
+                    .isNNSSLength(this.getField(IHEAnnoncesViewBean.CS_NOUVEAU_NUMERO_ASSURE_AYANT_DROIT_PRESTATION))) {
                 // Modif NNSS, pour setter le flag Attention parse ARC
                 put(IHEAnnoncesViewBean.CS_NOUVEAU_NUMERO_ASSURE_AYANT_DROIT_PRESTATION + HENNSSUtils.PARAM_NNSS,
                         "true");
