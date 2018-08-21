@@ -1,5 +1,6 @@
 package globaz.pavo.db.splitting;
 
+import java.util.HashMap;
 import globaz.commons.nss.NSUtil;
 import globaz.framework.secure.FWSecureConstants;
 import globaz.framework.secure.user.FWSecureUser;
@@ -34,16 +35,15 @@ import globaz.pavo.print.itext.CISplittingApercuAndLettreAccompagnementMergeProc
 import globaz.pavo.print.itext.CISplittingInvitationExConjoint_Doc;
 import globaz.pavo.util.CIUtil;
 import globaz.pyxis.api.ITIPersonneAvs;
-import java.util.HashMap;
 
 /**
  * Classe représentant un dossier de splitting. Date de création : (14.10.2002 15:43:18)
- * 
+ *
  * @author: dgi
  */
 public class CIDossierSplitting extends BEntity implements java.io.Serializable {
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
     // Type de personne
@@ -155,7 +155,7 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
 
     /**
      * Effectue des traitements après une lecture dans la BD et après avoir vidé le tampon de lecture
-     * 
+     *
      * @exception java.lang.Exception
      *                en cas d'erreur fatale
      */
@@ -167,7 +167,7 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
 
     /**
      * Supprime tous les mandats et domiciles associés au dossier
-     * 
+     *
      * @exception java.lang.Exception
      *                en cas d'erreur fatale
      */
@@ -177,7 +177,7 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
 
     /**
      * Effectue des traitements après une lecture dans la BD et après avoir vidé le tampon de lecture
-     * 
+     *
      * @exception java.lang.Exception
      *                en cas d'erreur fatale
      */
@@ -189,7 +189,7 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
 
     /**
      * Effectue des traitements après une lecture dans la BD et après avoir vidé le tampon de lecture
-     * 
+     *
      * @exception java.lang.Exception
      *                en cas d'erreur fatale
      */
@@ -211,7 +211,7 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
 
     /**
      * Effectue des traitements après une lecture dans la BD et après avoir vidé le tampon de lecture
-     * 
+     *
      * @exception java.lang.Exception
      *                en cas d'erreur fatale
      */
@@ -252,7 +252,7 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
 
     /**
      * Teste si la supression est autorisée.
-     * 
+     *
      * @exception java.lang.Exception
      *                en cas d'erreur fatale
      */
@@ -320,7 +320,7 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
 
     /**
      * Effectue des traitements avant une mise à jour dans la BD
-     * 
+     *
      * @exception java.lang.Exception
      *                en cas d'erreur fatale
      */
@@ -351,7 +351,7 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
 
     /**
      * Renvoie la clause FROM
-     * 
+     *
      * @return la clause FROM
      */
     @Override
@@ -586,9 +586,9 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
 
     /**
      * met le statut annulé
-     * 
+     *
      * @throws Exception
-     * 
+     *
      */
     public void annuleDossierSplitting() throws Exception {
         if (CIDossierSplitting.CS_CLOTURE.equals(idEtat)) {
@@ -626,7 +626,7 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
 
     /**
      * Indique si l'utilisateur peut supprimer le dossier en fonction du responsable et de l'état du dossier
-     * 
+     *
      * @return true si autorisé supprimer le dossier
      */
     public boolean canDelete() {
@@ -640,7 +640,8 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
         }
         if (getSession() == null) {
             return false;
-        } else if (!getSession().hasRight(CIDossierSplitting.USER_ACTION_SUPPRIMER_SPLITTING, FWSecureConstants.REMOVE)) {
+        } else if (!getSession().hasRight(CIDossierSplitting.USER_ACTION_SUPPRIMER_SPLITTING,
+                FWSecureConstants.REMOVE)) {
             return false;
         }
         return true;
@@ -682,7 +683,7 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
 
     /**
      * Essaie de trouver le nom complet du créateur du CI. Date de création : (29.11.2002 14:12:37)
-     * 
+     *
      * @param transaction
      *            la transaction à utiliser
      */
@@ -711,7 +712,7 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
 
     /**
      * Test la date de naissance de l'assuré et du conjoit par rapport à la date de mariage et test du sexe.
-     * 
+     *
      * @param transaction
      *            la transaction à utiliser
      * @return true si les CI sont en ordre
@@ -724,7 +725,7 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
 
     /**
      * Test la date de naissance de l'assuré et du conjoit par rapport à la date de mariage et test du sexe.
-     * 
+     *
      * @param transaction
      *            la transaction à utiliser
      * @return true si les CI sont en ordre ou si les ci sont inexistants
@@ -876,7 +877,7 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
 
     /**
      * Returns the container.
-     * 
+     *
      * @return CIEcrituresSplittingContainer
      */
     public CIEcrituresSplittingContainer getContainer() {
@@ -926,7 +927,7 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
 
     /**
      * Insérez la description de la méthode ici. Date de création : (29.10.2002 09:18:17)
-     * 
+     *
      * @return java.lang.String
      */
     public java.lang.String getDuree() {
@@ -935,7 +936,7 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
 
     /**
      * Retourne l'adresse email du responsable du dossier en cours. Date de création : (26.11.2002 08:29:01)
-     * 
+     *
      * @param transaction
      *            la transaction à utiliser.
      * @return l'adresse email ou null si inexistante.
@@ -985,14 +986,6 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
         return idArc33Conjoint;
     }
 
-    public java.lang.String getIdArc65Assure() {
-        return idArc65Assure;
-    }
-
-    public java.lang.String getIdArc65Conjoint() {
-        return idArc65Conjoint;
-    }
-
     public java.lang.String getIdArc98Assure() {
         return idArc98Assure;
     }
@@ -1003,7 +996,7 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
 
     /**
      * Insérez la description de la méthode ici. Date de création : (28.02.2003 16:37:32)
-     * 
+     *
      * @return java.lang.String
      */
     public java.lang.String getIdDossierInterne() {
@@ -1053,7 +1046,7 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
 
     /**
      * Insérez la description de la méthode ici. Date de création : (29.10.2002 09:18:17)
-     * 
+     *
      * @return java.lang.String
      */
     public java.lang.String getIdTiersPartenaire() {
@@ -1150,7 +1143,7 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
 
     /**
      * Insérez la description de la méthode ici. Date de création : (29.11.2002 08:55:57)
-     * 
+     *
      * @return java.lang.String
      */
     public java.lang.String getRemarqueDossier() {
@@ -1197,7 +1190,7 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
 
     /**
      * Insérez la description de la méthode ici. Date de création : (12.12.2002 13:07:36)
-     * 
+     *
      * @return java.lang.String
      */
     public java.lang.String getTiersAssureInfo() {
@@ -1206,7 +1199,7 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
 
     /**
      * Retourne la localité de l'assuré Date de création : (12.12.2002 09:09:20)
-     * 
+     *
      * @return la localité du tiers.
      */
     public java.lang.String getTiersAssureLocalite() {
@@ -1215,7 +1208,7 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
 
     /**
      * Retourne le nom de l'assuré. Date de création : (04.12.2002 12:42:14)
-     * 
+     *
      * @return le nom du tiers.
      */
     public java.lang.String getTiersAssureNomComplet() {
@@ -1224,7 +1217,7 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
 
     /**
      * Insérez la description de la méthode ici. Date de création : (12.12.2002 13:07:36)
-     * 
+     *
      * @return java.lang.String
      */
     public java.lang.String getTiersConjointInfo() {
@@ -1233,7 +1226,7 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
 
     /**
      * Retourne la localité du conjoint. Date de création : (12.12.2002 09:09:20)
-     * 
+     *
      * @return la localité du conjoint.
      */
     public java.lang.String getTiersConjointLocalite() {
@@ -1242,7 +1235,7 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
 
     /**
      * Retourne le nom du conjoint. Date de création : (04.12.2002 12:42:14)
-     * 
+     *
      * @return le nom du conjoint.
      */
     public java.lang.String getTiersConjointNomComplet() {
@@ -1251,7 +1244,7 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
 
     /**
      * Insérez la description de la méthode ici. Date de création : (04.12.2002 12:44:05)
-     * 
+     *
      * @return java.lang.String
      */
     public java.lang.String getTiersPartenaireNomComplet() {
@@ -1268,7 +1261,7 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
 
     /**
      * Insérez la description de la méthode ici. Date de création : (08.05.2003 12:51:15)
-     * 
+     *
      * @return java.lang.String
      */
     public java.lang.String getTypePersonne() {
@@ -1277,7 +1270,7 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
 
     /**
      * Retourne la classe <tt>FWSecureUser</tt> du responsable du dossier. Date de création : (03.12.2002 12:58:17)
-     * 
+     *
      * @return La classe correspondante
      * @param transaction
      *            la transaction à utiliser.
@@ -1291,7 +1284,7 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
 
     /**
      * Renvoie le nom du créateur du CI. Date de création : (29.11.2002 14:30:33)
-     * 
+     *
      * @return le nom (complet si trouvé ou simplement l'abbréviation) du créateur.
      */
     public java.lang.String getUtilisateurNomComplet() {
@@ -1424,8 +1417,8 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
             theFormulePolitesseAssure = "Monsieur";
         }
         apercuAndLettreAccompagnementMergeProcess.setNumeroAVSAssure(theFormatedAVSNumberAssure);
-        apercuAndLettreAccompagnementMergeProcess.setAdresseAssure(theFormulePolitesseAssure + "\n"
-                + getAdresseAssure());
+        apercuAndLettreAccompagnementMergeProcess
+                .setAdresseAssure(theFormulePolitesseAssure + "\n" + getAdresseAssure());
         if (getChkLettreAccompagnementAssure()) {
 
             apercuAndLettreAccompagnementMergeProcess.setChkLettreAccompagnementAssure(new Boolean(true));
@@ -1449,8 +1442,8 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
             theFormulePolitesseExConjoint = "Monsieur";
         }
         apercuAndLettreAccompagnementMergeProcess.setNumeroAVSExConjoint(theFormatedAVSNumberExConjoint);
-        apercuAndLettreAccompagnementMergeProcess.setAdresseExConjoint(theFormulePolitesseExConjoint + "\n"
-                + getAdresseExConjoint());
+        apercuAndLettreAccompagnementMergeProcess
+                .setAdresseExConjoint(theFormulePolitesseExConjoint + "\n" + getAdresseExConjoint());
         if (getChkLettreAccompagnementExConjoint()) {
 
             apercuAndLettreAccompagnementMergeProcess.setChkLettreAccompagnementExConjoint(new Boolean(true));
@@ -1561,7 +1554,7 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
 
     /**
      * Teste si tous les mandats d'un tiers sont dans l'état TERMINE. Date de création : (06.11.2002 12:04:06)
-     * 
+     *
      * @return true si tous les mandats sont terminés.
      * @param transaction
      *            la transaction à utiliser.
@@ -1585,7 +1578,7 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
 
     /**
      * Insérez la description de la méthode ici. Date de création : (28.02.2003 16:37:32)
-     * 
+     *
      * @return java.lang.Boolean
      */
     public java.lang.Boolean isCaRequisAssure() {
@@ -1594,7 +1587,7 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
 
     /**
      * Insérez la description de la méthode ici. Date de création : (28.02.2003 16:37:32)
-     * 
+     *
      * @return java.lang.Boolean
      */
     public java.lang.Boolean isCaRequisConjoint() {
@@ -1607,7 +1600,7 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
 
     /**
      * Insérez la description de la méthode ici. Date de création : (28.02.2003 16:37:32)
-     * 
+     *
      * @return java.lang.Boolean
      */
     public java.lang.Boolean isExtraitCiRequisAssure() {
@@ -1616,7 +1609,7 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
 
     /**
      * Insérez la description de la méthode ici. Date de création : (28.02.2003 16:37:32)
-     * 
+     *
      * @return java.lang.Boolean
      */
     public java.lang.Boolean isExtraitCiRequisConjoint() {
@@ -1625,7 +1618,7 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
 
     /**
      * Returns the forceExecute.
-     * 
+     *
      * @return boolean
      */
     public boolean isForceExecute() {
@@ -1635,7 +1628,7 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
     /**
      * Teste si l'état actuel du dossier de splitting autorise une opération sur les domiciles à l'étranger et les
      * mandats. Date de création : (28.10.2002 16:39:58)
-     * 
+     *
      * @return true si une modification est autorisée.
      */
     public boolean isModificationAllowedFromDossier() {
@@ -1643,10 +1636,10 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
                 || CIDossierSplitting.CS_DEMANDE_CA.equals(getIdEtat())
                 || CIDossierSplitting.CS_CLOTURE.equals(getIdEtat())
                 || CIDossierSplitting.CS_DEMANDE_REVOCATION.equals(getIdEtat()) // for
-        // test
-        // ||
-        // CS_SAISIE_DOSSIER.equals(getIdEtat())
-        || CIDossierSplitting.CS_REVOQUE.equals(getIdEtat()));
+                // test
+                // ||
+                // CS_SAISIE_DOSSIER.equals(getIdEtat())
+                || CIDossierSplitting.CS_REVOQUE.equals(getIdEtat()));
     }
 
     private CICompteIndividuel loadCI(String idTiers) throws Exception {
@@ -1667,7 +1660,7 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
 
     /**
      * Insérez la description de la méthode ici. Date de création : (29.01.2003 11:20:07)
-     * 
+     *
      * @param transaction
      *            globaz.globall.db.BTransaction
      */
@@ -1815,7 +1808,7 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
 
     /**
      * Révoque les mandats d'un tiers donné. Date de création : (05.11.2002 08:16:28)
-     * 
+     *
      * @param idTiers
      *            le tiers dont les mandats doivent être révoqués
      * @param transaction
@@ -1848,7 +1841,7 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
 
     /**
      * Révocation du dossier. Date de création : (15.10.2002 11:12:26)
-     * 
+     *
      * @exception si
      *                la révocation est impossible ou si la transaction ne peut pas s'effectuer
      */
@@ -1918,7 +1911,7 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
 
     /**
      * Insérez la description de la méthode ici. Date de création : (28.02.2003 16:37:32)
-     * 
+     *
      * @param newCaRequisAssure
      *            java.lang.Boolean
      */
@@ -1936,7 +1929,7 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
 
     /**
      * Insérez la description de la méthode ici. Date de création : (28.02.2003 16:37:32)
-     * 
+     *
      * @param newCaRequisConjoint
      *            java.lang.Boolean
      */
@@ -1985,7 +1978,7 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
 
     /**
      * Insérez la description de la méthode ici. Date de création : (29.10.2002 09:18:17)
-     * 
+     *
      * @param newDuree
      *            java.lang.String
      */
@@ -1999,7 +1992,7 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
 
     /**
      * Insérez la description de la méthode ici. Date de création : (28.02.2003 16:37:32)
-     * 
+     *
      * @param newExtraitCiRequisAssure
      *            java.lang.Boolean
      */
@@ -2017,7 +2010,7 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
 
     /**
      * Insérez la description de la méthode ici. Date de création : (28.02.2003 16:37:32)
-     * 
+     *
      * @param newExtraitCiRequisConjoint
      *            java.lang.Boolean
      */
@@ -2035,7 +2028,7 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
 
     /**
      * Sets the forceExecute.
-     * 
+     *
      * @param forceExecute
      *            The forceExecute to set
      */
@@ -2051,14 +2044,6 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
         idArc33Conjoint = newIdArc33Conjoint;
     }
 
-    public void setIdArc65Assure(java.lang.String newIdArc65Assure) {
-        idArc65Assure = newIdArc65Assure;
-    }
-
-    public void setIdArc65Conjoint(java.lang.String newIdArc65Conjoint) {
-        idArc65Conjoint = newIdArc65Conjoint;
-    }
-
     public void setIdArc98Assure(java.lang.String newIdArc98Assure) {
         idArc98Assure = newIdArc98Assure;
     }
@@ -2069,7 +2054,7 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
 
     /**
      * Insérez la description de la méthode ici. Date de création : (28.02.2003 16:37:32)
-     * 
+     *
      * @param newIdDossierInterne
      *            java.lang.String
      */
@@ -2120,7 +2105,7 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
 
     /**
      * Insérez la description de la méthode ici. Date de création : (29.10.2002 09:18:17)
-     * 
+     *
      * @param newIdPartenaire
      *            java.lang.String
      */
@@ -2149,7 +2134,7 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
 
     /**
      * Insérez la description de la méthode ici. Date de création : (29.11.2002 08:55:57)
-     * 
+     *
      * @param newRemarque
      *            java.lang.String
      */
@@ -2163,7 +2148,7 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
 
     /**
      * Insérez la description de la méthode ici. Date de création : (04.12.2002 12:44:05)
-     * 
+     *
      * @param newTiersPartenaireNomComplet
      *            java.lang.String
      */
@@ -2181,7 +2166,7 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
 
     /**
      * Défini si le partenaire est l'assuré ou le conjoint. Date de création : (20.01.2003 09:48:11)
-     * 
+     *
      * @param newTypePersonne
      *            <tt>CIDossierSplitting.ASSURE</tt> ou <tt>CIDossierSplitting.CONJOINT</tt>
      */
@@ -2191,7 +2176,7 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
 
     /**
      * Exécute le splitting des mandats d'un tiers donné. Date de création : (05.11.2002 08:16:28)
-     * 
+     *
      * @param idTiers
      *            le tiers concerné
      * @param transaction
@@ -2209,7 +2194,8 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
         mandats.find(transaction);
         boolean actionCalled = false; // flag pour mandat automatiques
         boolean foundOpened = false;
-        for (int i = 0; (i < mandats.size()) && !transaction.isRollbackOnly() && !remoteTransaction.isRollbackOnly(); i++) {
+        for (int i = 0; (i < mandats.size()) && !transaction.isRollbackOnly()
+                && !remoteTransaction.isRollbackOnly(); i++) {
             CIMandatSplitting entity = (CIMandatSplitting) mandats.getEntity(i);
             if (CIMandatSplitting.CS_REVOQUE.equals(entity.getIdEtat())) {
                 // effacer les mandats révoqués
@@ -2239,7 +2225,7 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
     /**
      * Description de la classe <tt>CIDossierSplitting</tt>.<br>
      * Date de création : (03.12.2002 08:01:59)
-     * 
+     *
      * @return la description de la classe.
      */
     public String toMyString() {
@@ -2270,7 +2256,7 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
 
     /**
      * Mise à jour lors de traitement journalier. Date de création : (15.10.2002 11:12:03)
-     * 
+     *
      * @param transaction
      *            la transaction à utiliser
      */
@@ -2304,10 +2290,10 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
                 ciManager.orderByAvs(false);
                 CICompteIndividuel ciToCheck = ciManager.getCIRegistreAssures(getIdTiersAssure(), transaction);
                 if ((ciToCheck == null) || !ciToCheck.isCiOuvert().booleanValue()) {
-                    // aucun ci ouvert --> ARC65
+                    // aucun ci ouvert --> ARC65 --> Devenu ARC 61 depuis le 01.01.19
                     HashMap attributs = new HashMap();
                     attributs.put(IHEAnnoncesViewBean.CODE_ENREGISTREMENT, "01");
-                    attributs.put(IHEAnnoncesViewBean.MOTIF_ANNONCE, "65");
+                    attributs.put(IHEAnnoncesViewBean.MOTIF_ANNONCE, "61");
                     // assuré
                     attributs.put(IHEAnnoncesViewBean.NUMERO_ASSURE, getIdTiersAssure());
                     // ref interne
@@ -2320,7 +2306,7 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
                     if (idAnnonce != null) {
                         // changer état
                         setIdEtat(CIDossierSplitting.CS_DEMANDE_OUVERTURE_CI);
-                        // mémorisé dans idArc65
+                        // mémorisé dans idArc65 qui est devenu 61 (depuis 01.01.19)
                         setIdArc65Assure(idAnnonce);
                         // sauve l'état actuel
                         // update(transaction);
@@ -2330,10 +2316,10 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
                 // recherche CI pour conjoint
                 ciToCheck = ciManager.getCIRegistreAssures(getIdTiersConjoint(), transaction);
                 if ((ciToCheck == null) || !ciToCheck.isCiOuvert().booleanValue()) {
-                    // aucun ci ouvert --> ARC65
+                    // aucun ci ouvert --> ARC65 --> Devenu ARC 61 depuis le 01.01.19
                     HashMap attributs = new HashMap();
                     attributs.put(IHEAnnoncesViewBean.CODE_ENREGISTREMENT, "01");
-                    attributs.put(IHEAnnoncesViewBean.MOTIF_ANNONCE, "65");
+                    attributs.put(IHEAnnoncesViewBean.MOTIF_ANNONCE, "61");
                     // conjoint
                     attributs.put(IHEAnnoncesViewBean.NUMERO_ASSURE, getIdTiersConjoint());
                     // ref interne
@@ -2346,7 +2332,7 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
                     if (idAnnonce != null) {
                         // changer état
                         setIdEtat(CIDossierSplitting.CS_DEMANDE_OUVERTURE_CI);
-                        // mémorisé dans idArc65
+                        // mémorisé dans idArc65 qui est devenu 61 (depuis 01.01.19)
                         setIdArc65Conjoint(idAnnonce);
                         // sauve l'état actuel
                         // update(transaction);
@@ -2410,16 +2396,17 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
                 // vérification extrait CI
                 IHEOutputAnnonce remoteLectureAnnonce = (IHEOutputAnnonce) remoteSession
                         .getAPIFor(IHEOutputAnnonce.class);
-                remoteLectureAnnonce.setMethodsToLoad(new String[] { "getIdAnnonce", "getAllAnnonceRetour",
-                        "getInputTable" });
+                remoteLectureAnnonce
+                        .setMethodsToLoad(new String[] { "getIdAnnonce", "getAllAnnonceRetour", "getInputTable" });
                 IHEOutputAnnonce remoteLectureAnnonceConj = (IHEOutputAnnonce) remoteSession
                         .getAPIFor(IHEOutputAnnonce.class);
-                remoteLectureAnnonceConj.setMethodsToLoad(new String[] { "getIdAnnonce", "getAllAnnonceRetour",
-                        "getInputTable" });
+                remoteLectureAnnonceConj
+                        .setMethodsToLoad(new String[] { "getIdAnnonce", "getAllAnnonceRetour", "getInputTable" });
                 if (isExtraitCiRequisAssure().booleanValue()) {
                     remoteLectureAnnonce.setIdAnnonce(getIdArc98Assure());
                     remoteLectureAnnonce.retrieve(remoteTransaction);
-                    // System.out.println("98A for "+getIdTiersAssure()+" retrieved, retour "+(remoteLectureAnnonce.getAllAnnonceRetour()?"ok":"nok"));
+                    // System.out.println("98A for "+getIdTiersAssure()+" retrieved, retour
+                    // "+(remoteLectureAnnonce.getAllAnnonceRetour()?"ok":"nok"));
                 }
                 // test extrait assuré
                 if (!isExtraitCiRequisAssure().booleanValue()
@@ -2427,7 +2414,8 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
                     if (isExtraitCiRequisConjoint().booleanValue()) {
                         remoteLectureAnnonceConj.setIdAnnonce(getIdArc98Conjoint());
                         remoteLectureAnnonceConj.retrieve(remoteTransaction);
-                        // System.out.println("98C for "+getIdTiersAssure()+" retrieved, retour "+(remoteLectureAnnonce.getAllAnnonceRetour()?"ok":"nok"));
+                        // System.out.println("98C for "+getIdTiersAssure()+" retrieved, retour
+                        // "+(remoteLectureAnnonce.getAllAnnonceRetour()?"ok":"nok"));
                     }
                     // test extrait conjoint
                     if (remoteLectureAnnonceConj.getAllAnnonceRetour() != null) {
@@ -2477,7 +2465,8 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
                 }
             }
             // état splitting
-            if (CIDossierSplitting.CS_SPLITTING_EN_COURS.equals(idEtat) || CIDossierSplitting.CS_ERREUR.equals(idEtat)) {
+            if (CIDossierSplitting.CS_SPLITTING_EN_COURS.equals(idEtat)
+                    || CIDossierSplitting.CS_ERREUR.equals(idEtat)) {
                 if (isAllMandatAsState(getIdTiersAssure(), CIMandatSplitting.CS_TERMINE, transaction)
                         && isAllMandatAsState(getIdTiersConjoint(), CIMandatSplitting.CS_TERMINE, transaction)) {
                     // tous les mandats sont terminés
@@ -2609,8 +2598,8 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
                     String to = getEMailResponsable(transaction);
                     if (JAUtil.isStringEmpty(to)) {
                         // adresse non trouvée -> envoie à admin
-                        ((CIApplication) getSession().getApplication()).sendEmailToAdmin(
-                                getSession().getLabel("MSG_DOSSIER_EMAIL_SUJET_CL"), message, this);
+                        ((CIApplication) getSession().getApplication())
+                                .sendEmailToAdmin(getSession().getLabel("MSG_DOSSIER_EMAIL_SUJET_CL"), message, this);
                     } else {
                         // adresse trouvée
                         JadeSmtpClient.getInstance().sendMail(to, getSession().getLabel("MSG_DOSSIER_EMAIL_SUJET_CL"),
@@ -2632,8 +2621,8 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
                     infoAssure.append(getIdTiersAssure());
                     infoAssure.append('\n');
                     infoAssure.append(getSession().getLabel("MSG_DOSSIER_EMAIL_NOM"));
-                    String nomPersonne = application.getTiersByAvs(transaction, getIdTiersAssure(),
-                            new String[] { "getNom" }).getNom();
+                    String nomPersonne = application
+                            .getTiersByAvs(transaction, getIdTiersAssure(), new String[] { "getNom" }).getNom();
                     if (nomPersonne == null) {
                         nomPersonne = "";
                     }
@@ -2643,8 +2632,8 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
                     infoAssure.append(getIdTiersConjoint());
                     infoAssure.append('\n');
                     infoAssure.append(getSession().getLabel("MSG_DOSSIER_EMAIL_NOMC"));
-                    nomPersonne = application.getTiersByAvs(transaction, getIdTiersConjoint(),
-                            new String[] { "getNom" }).getNom();
+                    nomPersonne = application
+                            .getTiersByAvs(transaction, getIdTiersConjoint(), new String[] { "getNom" }).getNom();
                     if (nomPersonne == null) {
                         nomPersonne = "";
                     }
@@ -2655,8 +2644,8 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
                     String to = getEMailResponsable(transaction);
                     if (JAUtil.isStringEmpty(to)) {
                         // adresse non trouvée -> envoie à admin
-                        ((CIApplication) getSession().getApplication()).sendEmailToAdmin(
-                                getSession().getLabel("MSG_DOSSIER_EMAIL_SUJET_RE"), message, this);
+                        ((CIApplication) getSession().getApplication())
+                                .sendEmailToAdmin(getSession().getLabel("MSG_DOSSIER_EMAIL_SUJET_RE"), message, this);
                     } else {
                         JadeSmtpClient.getInstance().sendMail(to, getSession().getLabel("MSG_DOSSIER_EMAIL_SUJET_RE"),
                                 message, null);
@@ -2691,6 +2680,22 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
         }
         return rCI95Done;
 
+    }
+
+    public java.lang.String getIdArc65Assure() {
+        return idArc65Assure;
+    }
+
+    public java.lang.String getIdArc65Conjoint() {
+        return idArc65Conjoint;
+    }
+
+    public void setIdArc65Assure(java.lang.String idArc65Assure) {
+        this.idArc65Assure = idArc65Assure;
+    }
+
+    public void setIdArc65Conjoint(java.lang.String idArc65Conjoint) {
+        this.idArc65Conjoint = idArc65Conjoint;
     }
 
 }

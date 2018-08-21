@@ -1,5 +1,8 @@
 package globaz.pavo.db.compte;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import globaz.commons.nss.NSUtil;
 import globaz.globall.api.BISession;
 import globaz.globall.db.BEntity;
@@ -21,18 +24,15 @@ import globaz.pavo.db.inscriptions.CIJournal;
 import globaz.pavo.db.splitting.CIEcrituresSplittingContainer;
 import globaz.pavo.util.CIUtil;
 import globaz.pyxis.api.ITIAdministration;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 
 /**
  * Object représentant la période de splitting d'un compte individuel. Date de création : (12.11.2002 13:42:47)
- * 
+ *
  * @author: David Girardin
  */
 public class CIPeriodeSplitting extends BEntity {
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
     public final static String CS_SAISIE_MANUELLE = "322002";
@@ -81,8 +81,8 @@ public class CIPeriodeSplitting extends BEntity {
     protected void _afterRetrieve(BTransaction transaction) throws java.lang.Exception {
         // no caisse
         if (!JAUtil.isIntegerEmpty(getCaisseCommettante())) {
-            CIApplication application = (CIApplication) GlobazServer.getCurrentSystem().getApplication(
-                    CIApplication.DEFAULT_APPLICATION_PAVO);
+            CIApplication application = (CIApplication) GlobazServer.getCurrentSystem()
+                    .getApplication(CIApplication.DEFAULT_APPLICATION_PAVO);
             if (isLoadedFromManager()) {
                 // uniquement le numéro de la caisse si rc_liste
                 caisseAgence = application.getAdministration(getSession(), getCaisseCommettante(),
@@ -109,7 +109,7 @@ public class CIPeriodeSplitting extends BEntity {
 
     /**
      * Effectue des traitements avant un ajout dans la BD
-     * 
+     *
      * @exception java.lang.Exception
      *                en cas d'erreur fatale
      */
@@ -131,7 +131,7 @@ public class CIPeriodeSplitting extends BEntity {
 
     /**
      * Lit les valeurs des propriétés propres de l'entité à partir de la bdd
-     * 
+     *
      * @exception Exception
      *                si la lecture des propriétés échoue
      */
@@ -147,8 +147,8 @@ public class CIPeriodeSplitting extends BEntity {
         typeEnregistrement = statement.dbReadNumeric("KLTENR");
         dateRevocation = statement.dbReadDateAMJ("KLDREV");
         idJournal = statement.dbReadNumeric("KLIDJN");
-        CIApplication app = (CIApplication) GlobazServer.getCurrentSystem().getApplication(
-                CIApplication.DEFAULT_APPLICATION_PAVO);
+        CIApplication app = (CIApplication) GlobazServer.getCurrentSystem()
+                .getApplication(CIApplication.DEFAULT_APPLICATION_PAVO);
         if (!app.isAnnoncesWA()) {
             caisseTenantCI = statement.dbReadNumeric("KLTCTE");
             realCaisse = statement.dbReadNumeric("KLCTCI");
@@ -157,7 +157,7 @@ public class CIPeriodeSplitting extends BEntity {
 
     /**
      * valide le contenu de l'entite (notamment les champs obligatoires)
-     * 
+     *
      * @param statement
      *            L'objet d'accès à la base
      */
@@ -247,8 +247,8 @@ public class CIPeriodeSplitting extends BEntity {
         statement.writeField("KLDREV",
                 this._dbWriteDateAMJ(statement.getTransaction(), getDateRevocation(), "dateRevocation"));
         statement.writeField("KLIDJN", this._dbWriteNumeric(statement.getTransaction(), getIdJournal(), "idJournal"));
-        CIApplication app = (CIApplication) GlobazServer.getCurrentSystem().getApplication(
-                CIApplication.DEFAULT_APPLICATION_PAVO);
+        CIApplication app = (CIApplication) GlobazServer.getCurrentSystem()
+                .getApplication(CIApplication.DEFAULT_APPLICATION_PAVO);
         if (!app.isAnnoncesWA()) {
             statement.writeField("KLTCTE",
                     this._dbWriteNumeric(statement.getTransaction(), getCaisseTenantCI(), "caisseTenantCI"));
@@ -342,7 +342,7 @@ public class CIPeriodeSplitting extends BEntity {
     /**
      * Teste si l'écriture donnée doit être associée à cette période de splitting. Si le genre de l'écriture est
      * différent de 7 ou 8, l'écriture est automatiquement splitée.
-     * 
+     *
      * @param transaction
      *            la transaction à utiliser
      * @param ecriture
@@ -404,12 +404,12 @@ public class CIPeriodeSplitting extends BEntity {
                                 return null;
                             }
                             // si pas d'erreur dans la transaction, envoie d'un
-                            // 65
+                            // 65 --> 61 depuis le 01.01.19
                             if (!transaction.hasErrors()) {
                                 if (ciConjoint != null) {
                                     CIApplication application = (CIApplication) GlobazServer.getCurrentSystem()
                                             .getApplication(CIApplication.DEFAULT_APPLICATION_PAVO);
-                                    String genreAnnonce = "65";
+                                    String genreAnnonce = "61";
                                     // annonce
                                     HashMap attributs = new HashMap();
                                     attributs.put(IHEAnnoncesViewBean.CODE_ENREGISTREMENT, "01");
@@ -427,8 +427,8 @@ public class CIPeriodeSplitting extends BEntity {
                         _addError(transaction, getSession().getLabel("MSG_ECRITURE_PARTSPL"));
                         return null;
                     }
-                    long montant = (long) Math.floor(Double.parseDouble(JANumberFormatter.deQuote(ecriture
-                            .getMontantSigne())));
+                    long montant = (long) Math
+                            .floor(Double.parseDouble(JANumberFormatter.deQuote(ecriture.getMontantSigne())));
                     return addEcritureSplitting(transaction, anneeEcritureInt, montant, ciAssure, ciConjoint, check);
                 }
                 ArrayList result = new ArrayList();
@@ -461,14 +461,14 @@ public class CIPeriodeSplitting extends BEntity {
 
     /**
      * Renvoie le numéro d'agence qui tient le ci
-     * */
+     */
     public String getCaisseTenantCIWA() {
         if ((typeEnregistrement != null) && (typeEnregistrement.length() == 6)) {
             String agence = typeEnregistrement.substring(3, 4);
             if (!JAUtil.isIntegerEmpty(agence)) {
                 try {
-                    CIApplication app = (CIApplication) GlobazServer.getCurrentSystem().getApplication(
-                            CIApplication.DEFAULT_APPLICATION_PAVO);
+                    CIApplication app = (CIApplication) GlobazServer.getCurrentSystem()
+                            .getApplication(CIApplication.DEFAULT_APPLICATION_PAVO);
                     if (app.isAnnoncesWA()) {
                         return app.getProperty(CIApplication.CODE_CAISSE) + "." + typeEnregistrement.substring(3, 4);
                     } else {
@@ -531,7 +531,7 @@ public class CIPeriodeSplitting extends BEntity {
 
     /**
      * Renvoie l'id du journal à utiliser pour cette période de splitting. Date de création : (14.05.2003 12:05:40)
-     * 
+     *
      * @param transaction
      *            la transaction à utiliser
      * @param noAvs
@@ -661,12 +661,12 @@ public class CIPeriodeSplitting extends BEntity {
 
     /**
      * Renvoie le type d'enregistrement en mode WA de la caisse teant le CI
-     * */
+     */
     public String getTypeEnregistrementWA() {
 
         try {
-            CIApplication app = (CIApplication) GlobazServer.getCurrentSystem().getApplication(
-                    CIApplication.DEFAULT_APPLICATION_PAVO);
+            CIApplication app = (CIApplication) GlobazServer.getCurrentSystem()
+                    .getApplication(CIApplication.DEFAULT_APPLICATION_PAVO);
             if ((typeEnregistrement != null) && (typeEnregistrement.length() == 6)) {
                 if (app.isAnnoncesWA()) {
                     return typeEnregistrement.substring(0, 3) + "0" + typeEnregistrement.substring(4);
@@ -706,7 +706,7 @@ public class CIPeriodeSplitting extends BEntity {
 
     /**
      * Révoque la période de splitting. Date de création : (16.05.2003 08:47:53)
-     * 
+     *
      * @param transaction
      *            la transaction à utiliser.
      * @exception Exception
@@ -734,7 +734,7 @@ public class CIPeriodeSplitting extends BEntity {
 
     /**
      * Spécifie le no de la caisse et de l'agence au format "CCC.AAA". Date de création : (15.01.2003 15:44:00)
-     * 
+     *
      * @param caisse
      *            la caisse et l'agence
      */
@@ -791,7 +791,7 @@ public class CIPeriodeSplitting extends BEntity {
 
     /**
      * Effectue un splitting des écritures du CI spécifié pour cette période de splitting.
-     * 
+     *
      * @param transaction
      *            la transaction à utiliser.
      * @param ciAssure
@@ -930,16 +930,16 @@ public class CIPeriodeSplitting extends BEntity {
             HEOutputAnnonceListViewBean annonceMgr = new HEOutputAnnonceListViewBean();
             annonceMgr.setISession(sessionHE);
             annonceMgr.setForNumeroAVS(getPartenaireNumeroAvs());
-            annonceMgr.setForMotif("65");
+            annonceMgr.setForMotif("61");
             annonceMgr.find(transaction);
             if (!annonceMgr.isEmpty()) {
                 // existe déjà
                 idAnnonce = ((HEOutputAnnonceViewBean) annonceMgr.getFirstEntity()).getIdAnnonce();
             } else {
-                // créer le 65
+                // créer le 65 --> 61 depuis le 01.01.19
                 HashMap attributs = new HashMap();
                 attributs.put(IHEAnnoncesViewBean.CODE_ENREGISTREMENT, "01");
-                attributs.put(IHEAnnoncesViewBean.MOTIF_ANNONCE, "65");
+                attributs.put(IHEAnnoncesViewBean.MOTIF_ANNONCE, "61");
                 // assuré
                 attributs.put(IHEAnnoncesViewBean.NUMERO_ASSURE, getPartenaireNumeroAvs());
                 idAnnonce = application.annonceARC(transaction, attributs, true);

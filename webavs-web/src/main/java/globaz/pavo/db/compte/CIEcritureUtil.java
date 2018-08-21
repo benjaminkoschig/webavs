@@ -1,5 +1,8 @@
 package globaz.pavo.db.compte;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BSessionUtil;
 import globaz.globall.db.BTransaction;
@@ -10,13 +13,10 @@ import globaz.naos.db.affiliation.AFAffiliation;
 import globaz.pavo.application.CIApplication;
 import globaz.pavo.db.splitting.CIMandatSplitting;
 import globaz.pavo.util.CIUtil;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
 
 /**
  * @author user
- * 
+ *
  *         To change this generated comment edit the template variable "typecomment": Window>Preferences>Java>Templates.
  *         To enable and disable the creation of type comments go to Window>Preferences>Java>Code Generation.
  */
@@ -25,7 +25,7 @@ public class CIEcritureUtil {
 
     /**
      * Constructeur.
-     * 
+     *
      * @param ecr
      *            l'écriture concernée
      */
@@ -36,7 +36,7 @@ public class CIEcritureUtil {
 
     /**
      * Test si l'affilié donné existe dans la période de l'écriture
-     * 
+     *
      * @param debutAff
      *            la date de début d'affiliation
      * @param finAff
@@ -79,9 +79,8 @@ public class CIEcritureUtil {
                 if (JAUtil.isStringEmpty(moisF)) {
                     moisF = "12";
                 }
-                return result
-                        & BSessionUtil.compareDateFirstGreaterOrEqual(ecriture.getSession(), finAff,
-                                CIUtil.padDate("01." + moisF + "." + ecriture.getAnnee()));
+                return result & BSessionUtil.compareDateFirstGreaterOrEqual(ecriture.getSession(), finAff,
+                        CIUtil.padDate("01." + moisF + "." + ecriture.getAnnee()));
             }
         } else {
             return true;
@@ -90,7 +89,7 @@ public class CIEcritureUtil {
 
     /**
      * Teste est ajoute des écritures de splitting par rapport à cette écriture.
-     * 
+     *
      * @param transaction
      *            la transaction à utiliser
      * @return la liste des écritures splittées ou null si aucune écriture présente
@@ -119,7 +118,7 @@ public class CIEcritureUtil {
 
     /**
      * Permet de savoir si le total est négatif pour les ecritures spéciales
-     * 
+     *
      * @param typeJournal
      * @return
      */
@@ -130,7 +129,7 @@ public class CIEcritureUtil {
 
     /**
      * Test si le mois de fin et de début sont égal à 66,77 ou 99
-     * 
+     *
      * @return true si les mois de début et de fin sont spéciaux (66,77,99)
      */
     public boolean isMoisSpeciaux() {
@@ -143,7 +142,7 @@ public class CIEcritureUtil {
 
     /**
      * Recherche ou créé le CI correspondant. Date de création : (15.04.2003 15:20:01)
-     * 
+     *
      * @param transaction
      *            globaz.globall.db.BTransaction
      */
@@ -153,7 +152,7 @@ public class CIEcritureUtil {
 
     /**
      * Recherche ou créé le CI correspondant. Date de création : (15.04.2003 15:20:01)
-     * 
+     *
      * @param transaction
      *            globaz.globall.db.BTransaction
      */
@@ -163,7 +162,7 @@ public class CIEcritureUtil {
 
     /**
      * Recherche ou créé le CI correspondant. Date de création : (15.04.2003 15:20:01)
-     * 
+     *
      * @param transaction
      *            globaz.globall.db.BTransaction
      */
@@ -324,7 +323,7 @@ public class CIEcritureUtil {
     /**
      * Test si le total des inscription pour le même employeur et la même année d'un assuré n'est pas négatif. Date de
      * création : (14.11.2002 09:53:16)
-     * 
+     *
      * @param transaction
      *            la transaction a utiliser.
      * @return true si le montant total n'est pas négatif.
@@ -385,7 +384,7 @@ public class CIEcritureUtil {
     /**
      * ATTENTION : uniquement pour les affiliés de type Paritaire. Retourne le résultat sans l'ecriture en cours, pour
      * les DT, on ne peut pas le faire dans l'afteradd
-     * 
+     *
      * @param transaction
      * @param employeur
      * @return
@@ -395,8 +394,8 @@ public class CIEcritureUtil {
         if ((ecriture == null) || (ecriture.getSession() == null)) {
             return new BigDecimal("0");
         }
-        CIApplication application = (CIApplication) GlobazServer.getCurrentSystem().getApplication(
-                CIApplication.DEFAULT_APPLICATION_PAVO);
+        CIApplication application = (CIApplication) GlobazServer.getCurrentSystem()
+                .getApplication(CIApplication.DEFAULT_APPLICATION_PAVO);
         AFAffiliation aff = new AFAffiliation();
         aff = application.getAffilieByNo(ecriture.getSession(), employeur, true, false, "1", "12", ecriture.getAnnee(),
                 "", "");
@@ -442,7 +441,7 @@ public class CIEcritureUtil {
     /**
      * Recherche si une écriture existe déjà pour le même employeur et la même année, même période et même montant. Date
      * de création : (14.11.2002 09:53:16)
-     * 
+     *
      * @param transaction
      *            la transaction a utiliser.
      * @return true si au moins une écriture a été trouvée.
@@ -467,7 +466,7 @@ public class CIEcritureUtil {
     /**
      * Recherche si une écriture existe déjà pour le même employeur et la même année un assuré, différent de 99. Date de
      * création : (14.11.2002 09:53:16)
-     * 
+     *
      * @param transaction
      *            la transaction a utiliser.
      * @return true si au moins une écriture a été trouvée.
@@ -537,7 +536,7 @@ public class CIEcritureUtil {
     /**
      * Génère une réouverture de CI. Utilisée lors du traitement de clôture ou lors d'un ajout d'écriture si celle-ci
      * est après la dernière clôture
-     * 
+     *
      * @param transaction
      *            la transaction à utiliser
      */
@@ -545,16 +544,16 @@ public class CIEcritureUtil {
         if ((ecriture == null) || JAUtil.isStringEmpty(ecriture.getAvs())) {
             return;
         }
-        CIApplication application = (CIApplication) GlobazServer.getCurrentSystem().getApplication(
-                CIApplication.DEFAULT_APPLICATION_PAVO);
+        CIApplication application = (CIApplication) GlobazServer.getCurrentSystem()
+                .getApplication(CIApplication.DEFAULT_APPLICATION_PAVO);
         // test du genre
         String genreAnnonce = null;
         if (CIEcriture.CS_CIGENRE_7.equals(ecriture.getGenreEcriture())) {
             // genre 7, envoi d'un 67
             genreAnnonce = "67";
         } else {
-            // Tous les autres genres envoi d'un 65
-            genreAnnonce = "65";
+            // Tous les autres genres envoi d'un 65 --> Modification de l'ARC en 61 depuis 01.01.19
+            genreAnnonce = "61";
         }
         if (genreAnnonce != null) {
             // annonce
