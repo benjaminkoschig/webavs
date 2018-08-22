@@ -25,6 +25,7 @@ public class CGExtractionOperationOsirisManager extends BManager {
     private static final long serialVersionUID = 1L;
     private String dateDebut = "";
     private String dateFin = "";
+    private String idMandat = "";
 
     /*
      * (non-Javadoc)
@@ -140,6 +141,14 @@ public class CGExtractionOperationOsirisManager extends BManager {
 
             sqlWhere.append(" AND ");
         }
+        if (!JadeStringUtil.isBlank(getIdMandat())) {
+            sqlWhere.append(CAJournalDebit.FIELD_IDMANDAT);
+            sqlWhere.append(" = ");
+            sqlWhere.append(getIdMandat());
+            sqlWhere.append(" AND ");
+
+        }
+
         sqlWhere.append("cc.").append(CACompteCourant.FIELD_JOURNALDESDEBIT);
         sqlWhere.append("='1'");
         sqlWhere.append(" AND ");
@@ -162,20 +171,6 @@ public class CGExtractionOperationOsirisManager extends BManager {
 
         return sqlWhere.toString();
     }
-
-    // select
-    // substr(digits(jo.datevaleurcg),1,6),cc.idexterne,ru.idexterne,comptecourantdest,contrepartiedest,idmandat,sum(montant)
-    // from meroweb.cacptcp cc
-    // inner join meroweb.caoperp op on (cc.idcomptecourant=op.idcomptecourant)
-    // inner join meroweb.carubrp ru on (op.idcompte=ru.idrubrique)
-    // inner join meroweb.cajourp jo on (op.idjournal=jo.idjournal)
-    // left join meroweb.cglinkp li on (cc.idexterne=li.comptecourantsrc and ru.idexterne=contrepartiesrc)
-    // where jo.datevaleurcg between 20110301 and 20110331
-    // and cc.journaldebit=’1’
-    // and op.etat=205002
-    // group by substr(digits(jo.datevaleurcg),1,6),cc.idexterne, ru.idexterne, li.comptecourantdest,
-    // li.contrepartiedest,li.idmandat
-    // order by substr(digits(jo.datevaleurcg),1,6),cc.idexterne, ru.idexterne
 
     @Override
     protected BEntity _newEntity() throws Exception {
@@ -210,6 +205,20 @@ public class CGExtractionOperationOsirisManager extends BManager {
      */
     public void setDateFin(String dateFin) {
         this.dateFin = dateFin;
+    }
+
+    /**
+     * @return the idMandat
+     */
+    public String getIdMandat() {
+        return idMandat;
+    }
+
+    /**
+     * @param idMandat the idMandat to set
+     */
+    public void setIdMandat(String idMandat) {
+        this.idMandat = idMandat;
     }
 
 }

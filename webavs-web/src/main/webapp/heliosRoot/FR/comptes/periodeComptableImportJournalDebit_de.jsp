@@ -14,6 +14,8 @@
    	periodeComptable.setSession((globaz.globall.db.BSession)globaz.helios.translation.CodeSystem.getSession(session));
    	periodeComptable.setIdPeriodeComptable(viewBean.getIdPeriodeComptable());
    	periodeComptable.retrieve();
+
+   	String tous = "Tous";
 %>
 <%-- /tpl:put --%>
 <%-- tpl:put name="zoneBusiness" --%><%-- /tpl:put --%>
@@ -31,14 +33,19 @@
 <%-- tpl:put name="zoneMain" --%>
 		<tr>
 			<td>Mandat</td>
+				 
 			<input type="hidden" name='isEnvoyerAnnoncesOfas' value='on'>
-			<td> <input name='libelle' class='libelleLongDisabled' readonly value='<%=exerciceComptable.getMandat().getLibelle()%>'> <input type="hidden" name="idExerciceComptable" value="<%=exerciceComptable.getIdExerciceComptable()%>"></td>
+	<td> 
+		<ct:FWListSelectTag name="idMandat" defaut=""
+			data="<%=globaz.helios.translation.CGListes.getMandatListe(session, tous, exerciceComptable.getIdMandat())%>"/>
+		<input type="hidden" name="idExerciceComptable" value="<%=exerciceComptable.getIdExerciceComptable()%>">
+	</td>
 		</tr>
 		<tr>
 			<td>Exercice</td>
 			<td> <input name='libelle' class='libelleLongDisabled' readonly value='<%=exerciceComptable.getFullDescription()%>'>
-			     <input name='idMandat' type="hidden" value='<%=exerciceComptable.getIdMandat()%>'>
-			     <input name='idComptabilite' type="hidden" value='<%=globaz.helios.translation.CodeSystem.CS_DEFINITIF%>'></td>
+	     <input name='idComptabilite' type="hidden" value='<%=globaz.helios.translation.CodeSystem.CS_DEFINITIF%>'>
+     </td>
 		</tr>
 
 		<tr>

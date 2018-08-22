@@ -1,5 +1,7 @@
 package globaz.helios.translation;
 
+import java.util.Vector;
+import javax.servlet.http.HttpSession;
 import globaz.globall.db.BSession;
 import globaz.helios.api.ICGJournal;
 import globaz.helios.db.avs.CGSecteurAVS;
@@ -24,12 +26,11 @@ import globaz.helios.db.comptes.CGPlanComptableManager;
 import globaz.helios.db.comptes.CGPlanComptableViewBean;
 import globaz.helios.db.interfaces.CGNeedExerciceComptable;
 import globaz.jade.client.util.JadeStringUtil;
-import java.util.Vector;
-import javax.servlet.http.HttpSession;
+import globaz.jade.log.JadeLogger;
 
 /**
  * Insérez la description du type ici. Date de création : (07.11.2002 15:42:08)
- * 
+ *
  * @author: Administrator
  */
 public class CGListes {
@@ -441,6 +442,38 @@ public class CGListes {
         return vList;
     }
 
+    public static Vector getMandatListe(HttpSession session, String ajouteTous, String excludeIdMandat) {
+
+        Vector vList = new Vector();
+        String[] list = new String[2];
+        // pour critere de recherche (par ex: ecran exerciceComptable_rc))
+        if (ajouteTous != null && !ajouteTous.equals("")) {
+            list[0] = "";
+            list[1] = ajouteTous;
+            vList.add(list);
+        }
+
+        try {
+            CGMandatManager manager = new CGMandatManager();
+            manager.setSession((BSession) CodeSystem.getSession(session));
+            manager.find();
+
+            for (int i = 0; i < manager.size(); i++) {
+                list = new String[2];
+                CGMandat entity = (CGMandat) manager.getEntity(i);
+                if (!excludeIdMandat.equals(entity.getIdMandat())) {
+                    list[0] = entity.getIdMandat();
+                    list[1] = entity.getLibelle();
+                    vList.add(list);
+                }
+            }
+        } catch (Exception e) {
+            JadeLogger.error(e, e.getMessage());
+            // si probleme, retourne une liste vide.
+        }
+        return vList;
+    }
+
     public static Vector getPeriodeComptableListe(HttpSession session) {
         return getPeriodeComptableListe(session, "");
     }
@@ -556,7 +589,7 @@ public class CGListes {
 
     /**
      * Insérez la description de la méthode ici. Date de création : (04.04.2003 17:20:23)
-     * 
+     *
      * @return java.util.Vector
      * @param session
      *            javax.servlet.http.HttpSession
@@ -637,7 +670,7 @@ public class CGListes {
 
     /**
      * Insérez la description de la méthode ici. Date de création : (04.04.2003 17:20:23)
-     * 
+     *
      * @return java.util.Vector
      * @param session
      *            javax.servlet.http.HttpSession

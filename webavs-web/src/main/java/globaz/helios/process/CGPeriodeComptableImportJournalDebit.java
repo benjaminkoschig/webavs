@@ -43,6 +43,7 @@ public class CGPeriodeComptableImportJournalDebit extends BProcess {
     private HashMap<String, CGExerciceComptable> exercicesMap = null;
     private String idPeriodeComptable = "";
     private CGPeriodeComptable periode = null;
+    private String idMandat = "";
 
     public CGPeriodeComptableImportJournalDebit() {
         super();
@@ -67,12 +68,17 @@ public class CGPeriodeComptableImportJournalDebit extends BProcess {
     @Override
     protected boolean _executeProcess() throws Exception {
         // Annulation des journaux déjà comptabilisés
+        if (JadeStringUtil.isBlankOrZero(getIdMandat())) {
         annuleJournalComptabilise();
+        } else {
+            annuleJournalComptabiliseByMandat(getIdMandat());
+        }
 
         // Vérification des rows obtenues
         CGExtractionOperationOsirisManager ext = new CGExtractionOperationOsirisManager();
         ext.setDateDebut((new JADate(retrievePeriodeComptable().getDateDebut())).toStrAMJ());
         ext.setDateFin((new JADate(retrievePeriodeComptable().getDateFin())).toStrAMJ());
+        ext.setIdMandat(getIdMandat());
         ext.setSession(getSession());
         ext.find(getTransaction(), BManager.SIZE_NOLIMIT);
 
@@ -193,19 +199,51 @@ public class CGPeriodeComptableImportJournalDebit extends BProcess {
     /**
      * @throws Exception
      */
+    private void annuleJournalComptabiliseByMandat(String idMandat) throws Exception {
+        String annee = getAnnee(retrievePeriodeComptable().getDateDebut());
+        String mois = getMois(retrievePeriodeComptable().getDateDebut());
+        String idExercice = findExerciceComptable(idMandat).getIdExerciceComptable();
+
+        CGJournalManager mgrJournal = new CGJournalManager();
+        mgrJournal.setSession(getSession());
+        mgrJournal.setForIdExerciceComptable(idExercice);
+        mgrJournal.setForReferenceExterne(CGPeriodeComptableImportJournalDebit.JOURNAL_DEBIT_REFERENCE_EXTERNE + annee
+                + mois);
+        mgrJournal.setForIdEtat(ICGJournal.CS_ETAT_COMPTABILISE);
+        mgrJournal.find(getTransaction(), BManager.SIZE_NOLIMIT);
+
+        if (mgrJournal.size() == 1) {
+            CGJournal journal = (CGJournal) mgrJournal.getFirstEntity();
+            journal.annuler(getTransaction());
+        } else {
+            throw new Exception(
+                    "Error in CGPeriodeComptableImportJournalDebit.annuleJournalComptabiliseByMandat : several results ["
+                            + idExercice + "-" + CGPeriodeComptableImportJournalDebit.JOURNAL_DEBIT_REFERENCE_EXTERNE
+                            + annee + mois + "]");
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
     private void comptabiliserJournaux() throws Exception {
+        if (JadeStringUtil.isBlankOrZero(getIdMandat())) {
         String annee = getAnnee(retrievePeriodeComptable().getDateDebut());
         String mois = getMois(retrievePeriodeComptable().getDateDebut());
         CGJournalManager mgrJournal = new CGJournalManager();
         mgrJournal.setSession(getSession());
         mgrJournal.setForIdEtat(ICGJournal.CS_ETAT_OUVERT);
-        mgrJournal.setForReferenceExterne(CGPeriodeComptableImportJournalDebit.JOURNAL_DEBIT_REFERENCE_EXTERNE + annee
-                + mois);
+            mgrJournal.setForReferenceExterne(CGPeriodeComptableImportJournalDebit.JOURNAL_DEBIT_REFERENCE_EXTERNE
+                    + annee + mois);
         mgrJournal.find(getTransaction(), BManager.SIZE_NOLIMIT);
         @SuppressWarnings("unchecked")
         Iterator<CGJournal> it = mgrJournal.iterator();
         while (it.hasNext()) {
             CGJournal journal = it.next();
+            journal.comptabiliser(this);
+        }
+        } else {
+            CGJournal journal = findOrCreateJournal(getIdMandat());
             journal.comptabiliser(this);
         }
     }
@@ -374,6 +412,20 @@ public class CGPeriodeComptableImportJournalDebit extends BProcess {
      */
     public void setIdPeriodeComptable(String idPeriodeComptable) {
         this.idPeriodeComptable = idPeriodeComptable;
+    }
+
+    /**
+     * @return the idMandat
+     */
+    public String getIdMandat() {
+        return idMandat;
+    }
+
+    /**
+     * @param idMandat the idMandat to set
+     */
+    public void setIdMandat(String idMandat) {
+        this.idMandat = idMandat;
     }
 
 }
