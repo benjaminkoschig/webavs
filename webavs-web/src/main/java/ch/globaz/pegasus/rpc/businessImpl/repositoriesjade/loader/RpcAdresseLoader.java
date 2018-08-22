@@ -194,7 +194,7 @@ class RpcAdresseLoader {
     private RpcAddress findAdresse(Collection<RpcAddress> adresses, String domaine, String type) {
         for (RpcAddress adresse : adresses) {
             if (adresse.getType().equals(type) && adresse.getDomaine().equals(domaine)
-                    && "".equals(adresse.getIdExterne().trim()) && !ADRESSE_ETRANGER.equals(adresse.getCanton().getAbreviation())) {
+                    && "".equals(adresse.getIdExterne().trim()) && (IConstantes.CS_AVOIR_ADRESSE_DOMICILE.equals(domaine) || !ADRESSE_ETRANGER.equals(adresse.getCanton().getAbreviation()))) {
                 return adresse;
             }
         }
@@ -204,7 +204,7 @@ class RpcAdresseLoader {
     private RpcAddress findAdresse(Collection<RpcAddress> adresses, String domaine, String type, String idExterne) {
         for (RpcAddress adresse : adresses) {
             if (adresse.getType().equals(type) && adresse.getDomaine().equals(domaine)
-                    && adresse.getIdExterne().equals(idExterne) && !ADRESSE_ETRANGER.equals(adresse.getCanton().getAbreviation())) {
+                    && adresse.getIdExterne().equals(idExterne) && (IConstantes.CS_AVOIR_ADRESSE_DOMICILE.equals(domaine) || !ADRESSE_ETRANGER.equals(adresse.getCanton().getAbreviation()))) {
                 return adresse;
             }
         }
