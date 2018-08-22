@@ -1,9 +1,5 @@
 package globaz.pavo.db.inscriptions.declaration;
 
-import globaz.commons.nss.NSUtil;
-import globaz.globall.db.BSession;
-import globaz.globall.db.BTransaction;
-import globaz.jade.client.util.JadeStringUtil;
 import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
@@ -15,10 +11,14 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
-import ch.admin.zas.pool.PoolMeldungZurZAS;
-import ch.admin.zas.pool.PoolMeldungZurZAS.Lot;
-import ch.admin.zas.rc.IKStatistikMeldungType;
-import ch.admin.zas.rc.IKStatistikMeldungType.Aufzeichnungen;
+import ch.admin.zas.pool.PoolAntwortVonZAS;
+import ch.admin.zas.pool.PoolAntwortVonZAS.Lot;
+import ch.admin.zas.rc.ALVEntschaedigungenMeldungType;
+import ch.admin.zas.rc.ALVEntschaedigungenMeldungType.Aufzeichnungen;
+import globaz.commons.nss.NSUtil;
+import globaz.globall.db.BSession;
+import globaz.globall.db.BTransaction;
+import globaz.jade.client.util.JadeStringUtil;
 
 public class CIDeclarationCentraleXMLIterator implements ICIDeclarationIterator {
     private String filename = "";
@@ -29,13 +29,13 @@ public class CIDeclarationCentraleXMLIterator implements ICIDeclarationIterator 
     private int size = 0;
     private JAXBContext jc;
     private Unmarshaller unmarshaller;
-    PoolMeldungZurZAS lots;
+    PoolAntwortVonZAS lots;
     List<Aufzeichnungen> listCI;
     Iterator<Aufzeichnungen> itIKStat;
     private BTransaction transaction = null;
     private String agence = "";
     private static final String XSD_FOLDER = "/xsd/P2020/annoncesRC/";
-    private static final String XSD_NAME = "MeldungZurZas.xsd";
+    private static final String XSD_NAME = "AntwortVonZas.xsd";
 
     private void _init() throws Exception {
         try {
@@ -44,11 +44,11 @@ public class CIDeclarationCentraleXMLIterator implements ICIDeclarationIterator 
                 URL url = getClass().getResource(XSD_FOLDER + XSD_NAME);
                 Schema schema = sf.newSchema(url);
                 ch.admin.zas.pool.ObjectFactory factoryPool = new ch.admin.zas.pool.ObjectFactory();
-                lots = factoryPool.createPoolMeldungZurZAS();
-                jc = JAXBContext.newInstance(PoolMeldungZurZAS.class);
+                lots = factoryPool.createPoolAntwortVonZAS();
+                jc = JAXBContext.newInstance(PoolAntwortVonZAS.class);
                 unmarshaller = jc.createUnmarshaller();
                 unmarshaller.setSchema(schema);
-                lots = (PoolMeldungZurZAS) unmarshaller.unmarshal(new File(getFilename()));
+                lots = (PoolAntwortVonZAS) unmarshaller.unmarshal(new File(getFilename()));
                 isReady = true;
             }
         } catch (Exception e) {
@@ -71,8 +71,8 @@ public class CIDeclarationCentraleXMLIterator implements ICIDeclarationIterator 
 
         }
 
-        String numeroAffilie = JadeStringUtil.fillWithSpaces(annonceXML.getEintragungIKMeldung().get(0)
-                .getAKAbrechnungsNr(), 11);
+        String numeroAffilie = JadeStringUtil
+                .fillWithSpaces(annonceXML.getEintragungIKMeldung().get(0).getAKAbrechnungsNr(), 11);
         String greEc = "";
         if (annonceXML.getEintragungIKMeldung().get(0).getSchluesselzahlStornoeintrag() != null) {
             greEc = annonceXML.getEintragungIKMeldung().get(0).getSchluesselzahlStornoeintrag() + "";
@@ -93,9 +93,8 @@ public class CIDeclarationCentraleXMLIterator implements ICIDeclarationIterator 
         int moisDebut = annonceXML.getEintragungIKMeldung().get(0).getBeitragsdauer().getAnfangsmonat();
         int moisFin = annonceXML.getEintragungIKMeldung().get(0).getBeitragsdauer().getEndmonat();
         String annee = Integer.toString(annonceXML.getEintragungIKMeldung().get(0).getBeitragsjahr().getYear());
-        String montantEcr = JadeStringUtil.fillWithZeroes(annonceXML.getEintragungIKMeldung().get(0).getEinkommen()
-                .toString(), 9);
-        // String anneeInsc = line.substring(58, 60);
+        String montantEcr = JadeStringUtil
+                .fillWithZeroes(annonceXML.getEintragungIKMeldung().get(0).getEinkommen().toString(), 9);
 
         CIDeclarationRecord dec = new CIDeclarationRecord();
         dec.setNumeroAvs(noAvs);
@@ -195,7 +194,7 @@ public class CIDeclarationCentraleXMLIterator implements ICIDeclarationIterator 
             _init();
         }
         if (lots != null) {
-            List<IKStatistikMeldungType> listIKStat = new ArrayList<IKStatistikMeldungType>();
+            List<ALVEntschaedigungenMeldungType> listIKStat = new ArrayList<ALVEntschaedigungenMeldungType>();
             listCI = new ArrayList<Aufzeichnungen>();
             if (size < 1) {
                 /*
@@ -203,9 +202,9 @@ public class CIDeclarationCentraleXMLIterator implements ICIDeclarationIterator 
                  */
                 for (Lot lot : lots.getLot()) {
                     for (Object object : lot
-                            .getVAIKMeldungNeuerVersicherterOrVAIKMeldungAenderungVersichertenDatenOrVAIKMeldungVerkettungVersichertenNr()) {
-                        if (object instanceof IKStatistikMeldungType) {
-                            listIKStat.add((IKStatistikMeldungType) object);
+                            .getVAIKEmpfangsbestaetigungOrIKEroeffnungsermaechtigungOrIKUebermittlungsauftrag()) {
+                        if (object instanceof ALVEntschaedigungenMeldungType) {
+                            listIKStat.add((ALVEntschaedigungenMeldungType) object);
                             agence = listIKStat.get(0).getKasseZweigstelleIKFuehrend().substring(3, 6);
 
                         }
@@ -215,8 +214,9 @@ public class CIDeclarationCentraleXMLIterator implements ICIDeclarationIterator 
                  * Trier pour avoir les inscriptions AC des annonces CI
                  */
                 String noAffilie;
-                for (IKStatistikMeldungType list : listIKStat) {
-                    for (Aufzeichnungen annonceXMLRAW : list.getAufzeichnungen()) {
+                for (ALVEntschaedigungenMeldungType list : listIKStat) {
+                    for (ch.admin.zas.rc.ALVEntschaedigungenMeldungType.Aufzeichnungen annonceXMLRAW : list
+                            .getAufzeichnungen()) {
                         noAffilie = annonceXMLRAW.getEintragungIKMeldung().get(0).getAKAbrechnungsNr();
                         if (noAffilie.length() > 5) {
                             if (noAffilie.substring(0, 6).contains("999999")) {
