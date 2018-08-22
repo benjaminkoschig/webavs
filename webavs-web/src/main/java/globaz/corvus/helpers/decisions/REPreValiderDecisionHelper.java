@@ -1,5 +1,30 @@
 package globaz.corvus.helpers.decisions;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import ch.globaz.common.domaine.Periode;
+import ch.globaz.corvus.business.services.CorvusCrudServiceLocator;
+import ch.globaz.corvus.business.services.CorvusServiceLocator;
+import ch.globaz.corvus.business.services.models.decisions.DecisionService;
+import ch.globaz.corvus.domaine.DemandeRente;
+import ch.globaz.corvus.domaine.PrestationDue;
+import ch.globaz.corvus.domaine.RenteAccordee;
+import ch.globaz.corvus.domaine.constantes.CodeCasSpecialRente;
+import ch.globaz.corvus.domaine.constantes.TypeOrdreVersement;
+import ch.globaz.corvus.domaine.constantes.TypePrestationDue;
+import ch.globaz.corvus.domaine.constantes.TypeTraitementDecisionRente;
+import ch.globaz.corvus.utils.rentesverseesatort.RECalculRentesVerseesATort;
+import ch.globaz.corvus.utils.rentesverseesatort.REDetailCalculRenteVerseeATort;
+import ch.globaz.pyxis.domaine.PersonneAVS;
 import globaz.babel.db.copies.CTCopies;
 import globaz.babel.db.copies.CTCopiesManager;
 import globaz.babel.utils.BabelContainer;
@@ -61,6 +86,7 @@ import globaz.corvus.db.rentesverseesatort.RERenteVerseeATortJointRenteAccordee;
 import globaz.corvus.db.rentesverseesatort.RERenteVerseeATortJointRenteAccordeeManager;
 import globaz.corvus.db.rentesverseesatort.wrapper.RECalculRentesVerseesATortConverter;
 import globaz.corvus.db.rentesverseesatort.wrapper.RERenteVerseeATortWrapper;
+import globaz.corvus.db.retenues.RERetenuesJointPrestationAccordeeManager;
 import globaz.corvus.exceptions.REBusinessException;
 import globaz.corvus.exceptions.RETechnicalException;
 import globaz.corvus.process.REImprimerDecisionProcess;
@@ -107,6 +133,7 @@ import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.tools.PRAssert;
 import globaz.prestation.tools.PRDateFormater;
 import globaz.prestation.tools.PRSession;
+import globaz.prestation.tools.PRStringUtils;
 import globaz.pyxis.api.ITIPersonne;
 import globaz.pyxis.constantes.IConstantes;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
@@ -116,31 +143,6 @@ import globaz.pyxis.db.tiers.TIAdministrationManager;
 import globaz.pyxis.db.tiers.TIAdministrationViewBean;
 import globaz.pyxis.db.tiers.TICompositionTiers;
 import globaz.pyxis.db.tiers.TICompositionTiersManager;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import ch.globaz.common.domaine.Periode;
-import ch.globaz.corvus.business.services.CorvusCrudServiceLocator;
-import ch.globaz.corvus.business.services.CorvusServiceLocator;
-import ch.globaz.corvus.business.services.models.decisions.DecisionService;
-import ch.globaz.corvus.domaine.DemandeRente;
-import ch.globaz.corvus.domaine.PrestationDue;
-import ch.globaz.corvus.domaine.RenteAccordee;
-import ch.globaz.corvus.domaine.constantes.CodeCasSpecialRente;
-import ch.globaz.corvus.domaine.constantes.TypeOrdreVersement;
-import ch.globaz.corvus.domaine.constantes.TypePrestationDue;
-import ch.globaz.corvus.domaine.constantes.TypeTraitementDecisionRente;
-import ch.globaz.corvus.utils.rentesverseesatort.RECalculRentesVerseesATort;
-import ch.globaz.corvus.utils.rentesverseesatort.REDetailCalculRenteVerseeATort;
-import ch.globaz.pyxis.domaine.PersonneAVS;
 
 /**
  * @author SCR
@@ -415,8 +417,8 @@ public class REPreValiderDecisionHelper extends PRHybridHelper {
                 // chargement des rentes versées à tort de la demande depuis la base de données
                 RERenteVerseeATortJointRenteAccordeeManager renteVerseeATortJointRenteAccordeeManager = new RERenteVerseeATortJointRenteAccordeeManager();
                 renteVerseeATortJointRenteAccordeeManager.setSession(session);
-                renteVerseeATortJointRenteAccordeeManager.setForIdDemandeRente(Long.parseLong(decisionEntity
-                        .getIdDemandeRente()));
+                renteVerseeATortJointRenteAccordeeManager
+                        .setForIdDemandeRente(Long.parseLong(decisionEntity.getIdDemandeRente()));
                 renteVerseeATortJointRenteAccordeeManager.setForIdTiers(Long.parseLong(membre.getIdTiers()));
                 renteVerseeATortJointRenteAccordeeManager.setForIdsRentesNouveauDroitIn(idsRA);
                 renteVerseeATortJointRenteAccordeeManager.setSansLesSaisiesManuelles(true);
@@ -548,8 +550,8 @@ public class REPreValiderDecisionHelper extends PRHybridHelper {
                     // recherche d'un éventuel ordre de versement déjà lié à cette rente versée à tort
                     REOrdresVersementsManager ordresVersementsManager = new REOrdresVersementsManager();
                     ordresVersementsManager.setSession(session);
-                    ordresVersementsManager.setForIdRenteVerseeATort(uneRenteVerseeATortSansRenteNouveauDroit
-                            .getIdRenteVerseeATort());
+                    ordresVersementsManager
+                            .setForIdRenteVerseeATort(uneRenteVerseeATortSansRenteNouveauDroit.getIdRenteVerseeATort());
                     ordresVersementsManager.find(transaction, BManager.SIZE_NOLIMIT);
 
                     if (ordresVersementsManager.size() == 0) {
@@ -562,8 +564,8 @@ public class REPreValiderDecisionHelper extends PRHybridHelper {
                         ov.setMontantDette(uneRenteVerseeATortSansRenteNouveauDroit.getMontant().toString());
                         ov.setIdRenteAccordeeDiminueeParOV(null);
                         ov.setIdRenteAccordeeACompenserParOV(null);
-                        ov.setIdRenteVerseeATort(uneRenteVerseeATortSansRenteNouveauDroit.getIdRenteVerseeATort()
-                                .toString());
+                        ov.setIdRenteVerseeATort(
+                                uneRenteVerseeATortSansRenteNouveauDroit.getIdRenteVerseeATort().toString());
                         ov.setIdSection(null);
                         ov.setIsCompense(Boolean.TRUE);
                         ov.setIdTiers(uneRenteVerseeATortSansRenteNouveauDroit.getIdTiers().toString());
@@ -639,8 +641,8 @@ public class REPreValiderDecisionHelper extends PRHybridHelper {
                         ov.setCsType(IREOrdresVersements.CS_TYPE_DETTE_RENTE_RESTITUTION);
                     } else if (APISection.ID_CATEGORIE_SECTION_DECISION.equals(sectionEnCours.getCategorieSection())) {
                         ov.setCsType(IREOrdresVersements.CS_TYPE_DETTE_RENTE_DECISION);
-                    } else if (APISection.ID_CATEGORIE_SECTION_PRESTATIONS_BLOQUEES.equals(sectionEnCours
-                            .getCategorieSection())) {
+                    } else if (APISection.ID_CATEGORIE_SECTION_PRESTATIONS_BLOQUEES
+                            .equals(sectionEnCours.getCategorieSection())) {
                         ov.setCsType(IREOrdresVersements.CS_TYPE_DETTE_RENTE_PRST_BLOQUE);
                     } else if (APISection.ID_CATEGORIE_SECTION_RETOUR.equals(sectionEnCours.getCategorieSection())) {
                         ov.setCsType(IREOrdresVersements.CS_TYPE_DETTE_RENTE_RETOUR);
@@ -677,7 +679,7 @@ public class REPreValiderDecisionHelper extends PRHybridHelper {
      * Crée la prestation avec les ordres de versements liés. La prestation est le cummul des $p pour la décision. De
      * plus, créé les OV à partir des créanciers, ainsi que les IM Récupérer les dettes de la famille, le cas échéants
      * et les ajouter en tant que OV.
-     * 
+     *
      * @param session
      * @param transaction
      * @param idDemandeRente
@@ -689,29 +691,29 @@ public class REPreValiderDecisionHelper extends PRHybridHelper {
             final String idDemandeRente, final RERenteAccordee ra, final REPrestationDue pd) throws Exception {
 
         /*
-         * 
+         *
          * Exemples :
-         * 
+         *
          * Décision RETRO [ période RETRO décision ] [ pd ] -1-----2-----------3------------4----------->t
-         * 
-         * 
+         *
+         *
          * Le nombre de mois à prendre en compte est : 3-2
-         * 
-         * 
-         * 
+         *
+         *
+         *
          * Décision courant (le rétro est sur le mois en cours, car déjà payé) période RETRO décision ][ [ pd
          * -1---------------------------2--------------->t
-         * 
-         * 
+         *
+         *
          * Le nombre de mois à prendre en compte est : 1
-         * 
-         * 
-         * 
+         *
+         *
+         *
          * Décision STANDARD
-         * 
+         *
          * [ période RETRO décision ] [ pd ][ pd ][ pd-1----------23----------45------6------------------->t
-         * 
-         * 
+         *
+         *
          * Le nombre de mois à prendre en compte est : 2-1 + 4-3 + 6-5. Ce la dit, cette méthode sera appelé 3 fois, cad
          * 1 fois pour chaque pd.
          */
@@ -803,10 +805,8 @@ public class REPreValiderDecisionHelper extends PRHybridHelper {
                 creancier.setSession(session);
                 creancier.setIdCreancier(ca.getIdCreancier());
                 creancier.retrieve(transaction);
-                PRAssert.notIsNew(
-                        creancier,
-                        "creancier not found for idCreancier/idCreanceAccordee : " + ca.getIdCreancier() + "/"
-                                + ca.getIdCreanceAccordee());
+                PRAssert.notIsNew(creancier, "creancier not found for idCreancier/idCreanceAccordee : "
+                        + ca.getIdCreancier() + "/" + ca.getIdCreanceAccordee());
 
                 OrdreVersementWrapper ovw = new OrdreVersementWrapper();
                 // convertir le type de creancier pour obtenir le type d'ordre de versement
@@ -820,7 +820,7 @@ public class REPreValiderDecisionHelper extends PRHybridHelper {
             }
 
             /*
-             * 
+             *
              * Traitement des Intérêts Moratoires
              */
 
@@ -863,7 +863,7 @@ public class REPreValiderDecisionHelper extends PRHybridHelper {
     /**
      * Ajoute une prestation dans l'état attente. Le montant de la prestation = Somme(des montants des RA) Utilisée
      * uniquement pour les décisions sans rétroactif.
-     * 
+     *
      * @param session
      * @param transaction
      * @param decision
@@ -923,8 +923,8 @@ public class REPreValiderDecisionHelper extends PRHybridHelper {
             REBeneficiairePrincipalVO bp = REBeneficiairePrincipal.retrieveBeneficiairePrincipal(session, transaction,
                     idsRA);
 
-            TIAdressePaiementData adr = PRTiersHelper.getAdressePaiementData(session, transaction, bp.ra
-                    .loadInformationsComptabilite().getIdTiersAdressePmt(),
+            TIAdressePaiementData adr = PRTiersHelper.getAdressePaiementData(session, transaction,
+                    bp.ra.loadInformationsComptabilite().getIdTiersAdressePmt(),
                     IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_RENTE, "", JACalendar.todayJJsMMsAAAA());
 
             if ((adr == null) || adr.isNew()) {
@@ -950,8 +950,8 @@ public class REPreValiderDecisionHelper extends PRHybridHelper {
 
     protected void assertNotIsNew(final BEntity entity, final String errorMsg) throws Exception {
         if (entity.isNew()) {
-            throw new Exception(errorMsg == null ? "" : errorMsg + " " + entity.getClass().getName()
-                    + " not Found. id=" + entity.getId());
+            throw new Exception(errorMsg == null ? ""
+                    : errorMsg + " " + entity.getClass().getName() + " not Found. id=" + entity.getId());
         }
     }
 
@@ -1074,9 +1074,8 @@ public class REPreValiderDecisionHelper extends PRHybridHelper {
                 demAI.setIdDemandeRente(demande.getId().toString());
                 demAI.retrieve();
 
-                if (!isRetro
-                        && demAI.getCsGenrePrononceAI().equals(
-                                IREDemandeRente.CS_GENRE_PRONONCE_INVALIDITE_AVEC_MOTIVATION)) {
+                if (!isRetro && demAI.getCsGenrePrononceAI()
+                        .equals(IREDemandeRente.CS_GENRE_PRONONCE_INVALIDITE_AVEC_MOTIVATION)) {
                     copie.setIsMoyensDroit(Boolean.FALSE);
                     copie.setIsSignature(Boolean.FALSE);
                 } else {
@@ -1090,9 +1089,8 @@ public class REPreValiderDecisionHelper extends PRHybridHelper {
                 demAPI.setIdDemandeRente(demande.getId().toString());
                 demAPI.retrieve();
 
-                if (!isRetro
-                        && demAPI.getCsGenrePrononceAI().equals(
-                                IREDemandeRente.CS_GENRE_PRONONCE_INVALIDITE_AVEC_MOTIVATION)) {
+                if (!isRetro && demAPI.getCsGenrePrononceAI()
+                        .equals(IREDemandeRente.CS_GENRE_PRONONCE_INVALIDITE_AVEC_MOTIVATION)) {
                     copie.setIsMoyensDroit(Boolean.FALSE);
                     copie.setIsSignature(Boolean.FALSE);
                 } else {
@@ -1127,8 +1125,8 @@ public class REPreValiderDecisionHelper extends PRHybridHelper {
             throws Exception {
         TIAdministrationManager tiAdminCaisseMgr = new TIAdministrationManager();
         tiAdminCaisseMgr.setSession(session);
-        tiAdminCaisseMgr.setForCodeAdministration(CaisseHelperFactory.getInstance().getNoCaisseFormatee(
-                session.getApplication()));
+        tiAdminCaisseMgr.setForCodeAdministration(
+                CaisseHelperFactory.getInstance().getNoCaisseFormatee(session.getApplication()));
         tiAdminCaisseMgr.setForGenreAdministration(CaisseHelperFactory.CS_CAISSE_COMPENSATION);
         tiAdminCaisseMgr.find();
 
@@ -1168,9 +1166,8 @@ public class REPreValiderDecisionHelper extends PRHybridHelper {
                 demAI.setIdDemandeRente(demande.getId().toString());
                 demAI.retrieve();
 
-                if (!isRetro
-                        && demAI.getCsGenrePrononceAI().equals(
-                                IREDemandeRente.CS_GENRE_PRONONCE_INVALIDITE_AVEC_MOTIVATION)) {
+                if (!isRetro && demAI.getCsGenrePrononceAI()
+                        .equals(IREDemandeRente.CS_GENRE_PRONONCE_INVALIDITE_AVEC_MOTIVATION)) {
                     copie.setIsMoyensDroit(Boolean.FALSE);
                     copie.setIsSignature(Boolean.FALSE);
                 } else {
@@ -1184,9 +1181,8 @@ public class REPreValiderDecisionHelper extends PRHybridHelper {
                 demAPI.setIdDemandeRente(demande.getId().toString());
                 demAPI.retrieve();
 
-                if (!isRetro
-                        && demAPI.getCsGenrePrononceAI().equals(
-                                IREDemandeRente.CS_GENRE_PRONONCE_INVALIDITE_AVEC_MOTIVATION)) {
+                if (!isRetro && demAPI.getCsGenrePrononceAI()
+                        .equals(IREDemandeRente.CS_GENRE_PRONONCE_INVALIDITE_AVEC_MOTIVATION)) {
                     copie.setIsMoyensDroit(Boolean.FALSE);
                     copie.setIsSignature(Boolean.FALSE);
                 } else {
@@ -1454,9 +1450,8 @@ public class REPreValiderDecisionHelper extends PRHybridHelper {
                 copie.setIsPageGarde(Boolean.TRUE);
             }
 
-            if (!isRetro
-                    && demAPI.getCsGenrePrononceAI().equals(
-                            IREDemandeRente.CS_GENRE_PRONONCE_INVALIDITE_AVEC_MOTIVATION)) {
+            if (!isRetro && demAPI.getCsGenrePrononceAI()
+                    .equals(IREDemandeRente.CS_GENRE_PRONONCE_INVALIDITE_AVEC_MOTIVATION)) {
 
                 if (typeDecision.equals("API-AVS")) {
                     copie.setIsMoyensDroit(Boolean.FALSE);
@@ -1478,10 +1473,10 @@ public class REPreValiderDecisionHelper extends PRHybridHelper {
         }
     }
 
-    private void creerOrdresVersementDiminutionRenteFamille(final BITransaction transaction,
+    private void creerOrdresVersementDiminutionRenteFamille(final BSession session, final BITransaction transaction,
             final DemandeRente demande, final Long idPrestation, final REDecisionEntity decision,
             final String dateDernierPaiement, final Set<Long> idsRenteDecision, final Set<Long> idsRADejaDiminuees,
-            final Set<Long> beneficiairesDeCetteDecision) throws Exception {
+            final Set<Long> beneficiairesDeCetteDecision, String testRetenue) throws Exception {
 
         Set<RenteAccordee> rentesNecessiantUneDiminution = CorvusServiceLocator.getDemandeRenteService()
                 .rentesAccordeesDevantEtreDiminueesLorsDeLaValidationDeLaDemande(demande);
@@ -1543,6 +1538,59 @@ public class REPreValiderDecisionHelper extends PRHybridHelper {
 
                 idsRADejaDiminuees.add(uneRenteAccordeeADiminuer.getId());
             }
+
+            // K160222_002 - Rajout du test si une rente est en cours et qu'elle possède une retenue, un message
+            // d'avertissement doit d'afficher
+            hasRenteRetenueEnCours(session, transaction, uneRenteAccordeeADiminuer, testRetenue);
+        }
+    }
+
+    /**
+     * Méthode permettant de tester si une rente est en cours et qu'elle possède une retenue, un message d'avertissement
+     * d'affiche
+     *
+     * @param session
+     * @param transaction
+     * @param uneRenteAccordeeADiminuer
+     * @param testRetenue
+     * @throws Exception
+     */
+    private void hasRenteRetenueEnCours(BSession session, BITransaction transaction,
+            RenteAccordee uneRenteAccordeeADiminuer, String testRetenue) throws Exception {
+        if ((testRetenue != null) && "true".equals(testRetenue)) {
+            // Récupération de la rente accordée
+            RERenteAccordeeManager raManager = new RERenteAccordeeManager();
+            raManager.setSession(session);
+            raManager.setForIdRenteAccordee(uneRenteAccordeeADiminuer.getId().toString());
+            raManager.setForEnCoursAtMois(REPmtMensuel.getDateProchainPmt(session));
+            raManager.find(transaction, BManager.SIZE_NOLIMIT);
+            if (raManager.size() == 1) {
+                RERenteAccordee ra = (RERenteAccordee) raManager.getEntity(0);
+                // si la rente à diminuer a une retenue en cours, afficher message d'avertissement
+                RERetenuesJointPrestationAccordeeManager retMgr = new RERetenuesJointPrestationAccordeeManager();
+                retMgr.setSession(session);
+                retMgr.setForIdRenteAccordee(ra.getIdPrestationAccordee());
+                retMgr.setForEnCoursAtDate(REPmtMensuel.getDateProchainPmt(session));
+                retMgr.find(transaction, BManager.SIZE_NOLIMIT);
+
+                if (!retMgr.isEmpty()) {
+
+                    String labelError = session.getLabel("AVERTISSEMENT_RETENUE_EN_COURS");
+                    labelError = PRStringUtils.replaceString(labelError, "{noRente}", ra.getIdPrestationAccordee());
+
+                    PRTiersWrapper tierRA = PRTiersHelper.getTiersParId(session, ra.getIdTiersBeneficiaire());
+
+                    if (tierRA != null) {
+                        labelError = PRStringUtils.replaceString(labelError, "{nom}",
+                                tierRA.getProperty(PRTiersWrapper.PROPERTY_NOM) + " "
+                                        + tierRA.getProperty(PRTiersWrapper.PROPERTY_PRENOM));
+                    }
+                    // BZ 5342
+                    // Le message ne doit pas être bloquant et s'afficher à l'arrivée
+                    // dans l'écran PRE2002
+                    messageRetenueSurRente += labelError;
+                }
+            }
         }
     }
 
@@ -1557,7 +1605,7 @@ public class REPreValiderDecisionHelper extends PRHybridHelper {
     /**
      * Méthode qui permet de dévalider toutes les autres décisions de la demande de rente. Est utilisé lors de la
      * dévalidation d'une décision.
-     * 
+     *
      * @param REDecisionEntity
      * @param BSession
      * @param BITransaction
@@ -1571,7 +1619,7 @@ public class REPreValiderDecisionHelper extends PRHybridHelper {
 
     /**
      * Regroupe toutes les RA pour la demande concernée, par adr. pmt
-     * 
+     *
      * @throws Exception
      */
     protected void doTraitement(final BSession session, final BTransaction transaction, final DemandeRente demande,
@@ -1659,8 +1707,8 @@ public class REPreValiderDecisionHelper extends PRHybridHelper {
             else if (IREPreparationDecision.CS_TYP_PREP_DECISION_RETRO.equals(csTypeDecision)) {
                 String dateDecisionCourantFormat = PRDateFormater
                         .convertDate_AAAAMMJJ_to_JJxMMxAAAA(dateDecisionCourant.toStrAMJ());
-                String AAAAMM = PRDateFormater.convertDate_JJxMMxAAAA_to_AAAAMM(cal.addMonths(
-                        dateDecisionCourantFormat, -1));
+                String AAAAMM = PRDateFormater
+                        .convertDate_JJxMMxAAAA_to_AAAAMM(cal.addMonths(dateDecisionCourantFormat, -1));
                 mgr.setUntilDateDebutPmt(AAAAMM);
             }
 
@@ -1671,16 +1719,16 @@ public class REPreValiderDecisionHelper extends PRHybridHelper {
             dummy = null;
 
             // Le tri s'effectue par genre, idTiersAdressePmt + idDomaineApp, ref. interne
-            mgr.setOrderBy(" " + schema + REPrestationDue.TABLE_NAME_PRESTATIONS_DUES + "."
-                    + REPrestationDue.FIELDNAME_CS_TYPE + ", " + schema
-                    + REPrestationsAccordees.TABLE_NAME_PRESTATIONS_ACCORDEES + "."
-                    + REPrestationsAccordees.FIELDNAME_CODE_PRESTATION + ", " + schema
-                    + REInformationsComptabilite.TABLE_NAME_INFO_COMPTA + "."
-                    + REInformationsComptabilite.FIELDNAME_ID_TIERS_ADRESSE_PMT + ", " + schema
-                    + REInformationsComptabilite.TABLE_NAME_INFO_COMPTA + "."
-                    + REInformationsComptabilite.FIELDNAME_ID_DOMAINE_APPLICATION + ", " + schema
-                    + REPrestationsAccordees.TABLE_NAME_PRESTATIONS_ACCORDEES + "."
-                    + REPrestationsAccordees.FIELDNAME_REFERENCE_PMT + " ");
+            mgr.setOrderBy(
+                    " " + schema + REPrestationDue.TABLE_NAME_PRESTATIONS_DUES + "." + REPrestationDue.FIELDNAME_CS_TYPE
+                            + ", " + schema + REPrestationsAccordees.TABLE_NAME_PRESTATIONS_ACCORDEES + "."
+                            + REPrestationsAccordees.FIELDNAME_CODE_PRESTATION + ", " + schema
+                            + REInformationsComptabilite.TABLE_NAME_INFO_COMPTA + "."
+                            + REInformationsComptabilite.FIELDNAME_ID_TIERS_ADRESSE_PMT + ", " + schema
+                            + REInformationsComptabilite.TABLE_NAME_INFO_COMPTA + "."
+                            + REInformationsComptabilite.FIELDNAME_ID_DOMAINE_APPLICATION + ", " + schema
+                            + REPrestationsAccordees.TABLE_NAME_PRESTATIONS_ACCORDEES + "."
+                            + REPrestationsAccordees.FIELDNAME_REFERENCE_PMT + " ");
 
             mgr.find(transaction, BManager.SIZE_NOLIMIT);
             for (int j = 0; j < mgr.size(); j++) {
@@ -1709,7 +1757,7 @@ public class REPreValiderDecisionHelper extends PRHybridHelper {
 
     /**
      * Cette méthode crée la prestation et les ordres de versements liés.
-     * 
+     *
      * @param session
      * @param transaction
      * @param decisionEntity
@@ -1896,11 +1944,11 @@ public class REPreValiderDecisionHelper extends PRHybridHelper {
                 deci.setIsRemarqueRenteDeVeuveLimitee(vb.getHasRemarqueRenteDeVeuveLimitee());
                 deci.setIsRemarqueRemariageRenteDeSurvivant(vb.getHasRemarqueRemariageRenteDeSurvivant());
                 deci.setIsRemarqueRentePourEnfant(vb.getHasRemarqueRentesPourEnfants());
-                deci.setIsRemarqueRenteAvecDebutDroit5AnsAvantDepotDemande(vb
-                        .getHasRemarqueRenteAvecDebutDroit5AnsAvantDateDepot());
+                deci.setIsRemarqueRenteAvecDebutDroit5AnsAvantDepotDemande(
+                        vb.getHasRemarqueRenteAvecDebutDroit5AnsAvantDateDepot());
                 deci.setIsRemSuppVeuf(vb.getIsRemSuppVeuf());
-                deci.setIsRemarqueRenteAvecMontantMinimumMajoreInvalidite(vb
-                        .getHasRemarqueRenteAvecMontantMinimumMajoreInvalidite());
+                deci.setIsRemarqueRenteAvecMontantMinimumMajoreInvalidite(
+                        vb.getHasRemarqueRenteAvecMontantMinimumMajoreInvalidite());
                 deci.setIsRemarqueRenteReduitePourSurassurance(vb.getHasRemarqueRenteReduitePourSurassurance());
                 deci.update(transaction);
             }
@@ -1994,7 +2042,7 @@ public class REPreValiderDecisionHelper extends PRHybridHelper {
 
     /**
      * Création des décisions dans l'état ATTENTE. Les décisions sont regroupées par RA et adr. pmt
-     * 
+     *
      * @param viewBean
      * @param action
      * @param session
@@ -2017,15 +2065,16 @@ public class REPreValiderDecisionHelper extends PRHybridHelper {
 
             String idDemandeRente = vb.getIdDemandeRente();
 
-            DemandeRente demande = CorvusCrudServiceLocator.getDemandeRenteCrudService().read(
-                    Long.parseLong(idDemandeRente));
+            DemandeRente demande = CorvusCrudServiceLocator.getDemandeRenteCrudService()
+                    .read(Long.parseLong(idDemandeRente));
 
             REPreparerDecisionSpecifiqueHelper.verifierQuAucuneRenteDesBeneficiairesDeLaDemandeNeSoitBloquee(demande);
 
-            if (IREPreparationDecision.CS_TYP_PREP_DECISION_COURANT.equalsIgnoreCase(vb.getCsTypePreparationDecision())) {
+            if (IREPreparationDecision.CS_TYP_PREP_DECISION_COURANT
+                    .equalsIgnoreCase(vb.getCsTypePreparationDecision())) {
                 if (isRenteVerseeATortPlusGrandEgalMontantRetroactifAPayer(demande, session)) {
-                    throw new REBusinessException(
-                            session.getLabel("PREVALIDATION_DECISION_COURANT_ERREUR_RENTE_VERSEE_A_TORT_PLUS_GRAND_EGAL_MONTANT_RETROACTIF"));
+                    throw new REBusinessException(session.getLabel(
+                            "PREVALIDATION_DECISION_COURANT_ERREUR_RENTE_VERSEE_A_TORT_PLUS_GRAND_EGAL_MONTANT_RETROACTIF"));
                 }
 
             }
@@ -2067,8 +2116,8 @@ public class REPreValiderDecisionHelper extends PRHybridHelper {
              * Si le montant totale des rentes versées à tort est égal ou supérieur au montant des rentes accordées -->
              * Erreur !
              */
-            TypeTraitementDecisionRente typePreparationDecision = TypeTraitementDecisionRente.parse(vb
-                    .getCsTypePreparationDecision());
+            TypeTraitementDecisionRente typePreparationDecision = TypeTraitementDecisionRente
+                    .parse(vb.getCsTypePreparationDecision());
             if (typePreparationDecision == null) {
                 String message = session
                         .getLabel("PREPARER_DECISION_ERREUR_CODE_SYSTEM_TYPE_PREPARATION_DECISION_INCONNU");
@@ -2088,8 +2137,8 @@ public class REPreValiderDecisionHelper extends PRHybridHelper {
             if (IREPreparationDecision.CS_TYP_PREP_DECISION_COURANT.equals(vb.getCsTypePreparationDecision())
                     && dateDernierPaiement.equals(vb.getDecisionDepuis())
                     && (renteNecessitantUneDiminutionApresValidation.size() > 0)) {
-                throw new REBusinessException(
-                        session.getLabel("ERREUR_PREPARATION_DECISION_COURANT_VALIDE_AVEC_RENTES_NECESSITANT_DIMINUTION"));
+                throw new REBusinessException(session
+                        .getLabel("ERREUR_PREPARATION_DECISION_COURANT_VALIDE_AVEC_RENTES_NECESSITANT_DIMINUTION"));
             }
 
             vb.setRequerantInfo(getRequerantInfo(session, demande));
@@ -2189,10 +2238,9 @@ public class REPreValiderDecisionHelper extends PRHybridHelper {
                         REDecisionEntity decisionCourantValidee = (REDecisionEntity) decisionsCourantValideeManager
                                 .getFirstEntity();
 
-                        periodeRetro = REPreValiderDecisionHelper.retrievePeriodeRetro(
-                                demande,
-                                JadeDateUtil.convertDateMonthYear(JadeDateUtil.addMonths(
-                                        "01." + decisionCourantValidee.getDecisionDepuis(), -1)));
+                        periodeRetro = REPreValiderDecisionHelper.retrievePeriodeRetro(demande,
+                                JadeDateUtil.convertDateMonthYear(JadeDateUtil
+                                        .addMonths("01." + decisionCourantValidee.getDecisionDepuis(), -1)));
                         break;
 
                     case STANDARD:
@@ -2449,7 +2497,8 @@ public class REPreValiderDecisionHelper extends PRHybridHelper {
                 // Chargement des nouvelles copies selon décision originale (la propriété permet d'imprimer ou non
                 // la copie
                 // sera utile pour l'envoi à la ged... a voir plus tard
-                if (typeDecision.startsWith("INV") || (typeDecision.startsWith("API") && typeDecision.endsWith("INV"))) {
+                if (typeDecision.startsWith("INV")
+                        || (typeDecision.startsWith("API") && typeDecision.endsWith("INV"))) {
                     creerCopiePourLaCaisse(session, transaction, demande, decisionEntity, isRetro, isDecisionRetro,
                             isIdTiersBCEqualsIdTiersReqDemande, typeDecision);
                 }
@@ -2536,8 +2585,9 @@ public class REPreValiderDecisionHelper extends PRHybridHelper {
                 // vb.getIdTiersRequerant(), JACalendar.todayJJsMMsAAAA());
                 if ((tiersBeneficiaire != null)
                         && ITIPersonne.CS_HOMME.equals(tiersBeneficiaire.getProperty(PRTiersWrapper.PROPERTY_SEXE))
-                        && IConstantes.ID_PAYS_SUISSE.equals(tiersBeneficiaire
-                                .getProperty(PRTiersWrapper.PROPERTY_ID_PAYS)) && isRenteAIPrincipale) {
+                        && IConstantes.ID_PAYS_SUISSE
+                                .equals(tiersBeneficiaire.getProperty(PRTiersWrapper.PROPERTY_ID_PAYS))
+                        && isRenteAIPrincipale) {
                     creerCopiePourAffaireMilitaire(session, transaction, decisionEntity, tiersBeneficiaire);
                 }
 
@@ -2603,16 +2653,17 @@ public class REPreValiderDecisionHelper extends PRHybridHelper {
                         // Pas de rétro pour la décision
                         // On créé cependant une prestation, sans aucun OV.
                         if ((dic != null) && (decisionEntity != null)) {
-                            nouvellePrestation = addPrestationSansOV(session, transaction, decisionEntity, dic
-                                    .getIdsPrstDuesParIdsRA().keySet(), demande, dateDernierPaiement);
+                            nouvellePrestation = addPrestationSansOV(session, transaction, decisionEntity,
+                                    dic.getIdsPrstDuesParIdsRA().keySet(), demande, dateDernierPaiement);
                         }
                     }
 
                     if (!IREDecision.CS_TYPE_DECISION_RETRO.equals(decisionEntity.getCsTypeDecision())
                             && (nouvellePrestation != null) && !isRetroPur) {
-                        creerOrdresVersementDiminutionRenteFamille(transaction, demande,
+                        creerOrdresVersementDiminutionRenteFamille(session, transaction, demande,
                                 Long.parseLong(nouvellePrestation.getIdPrestation()), decisionEntity,
-                                dateDernierPaiement, keys, idsRADejaDiminuees, beneficiairesDeCetteDecision);
+                                dateDernierPaiement, keys, idsRADejaDiminuees, beneficiairesDeCetteDecision,
+                                vb.getTestRetenue());
                     }
                 }
 
@@ -2622,17 +2673,17 @@ public class REPreValiderDecisionHelper extends PRHybridHelper {
 
                 CatalogueText catalogueTexteDecision = new CatalogueText();
                 // BZ 6480
-                if (IConstantes.CS_TIERS_LANGUE_FRANCAIS.equals(tiersBeneficiaire
-                        .getProperty(PRTiersWrapper.PROPERTY_LANGUE))) {
+                if (IConstantes.CS_TIERS_LANGUE_FRANCAIS
+                        .equals(tiersBeneficiaire.getProperty(PRTiersWrapper.PROPERTY_LANGUE))) {
                     catalogueTexteDecision.setCodeIsoLangue("fr");
-                } else if (IConstantes.CS_TIERS_LANGUE_ALLEMAND.equals(tiersBeneficiaire
-                        .getProperty(PRTiersWrapper.PROPERTY_LANGUE))) {
+                } else if (IConstantes.CS_TIERS_LANGUE_ALLEMAND
+                        .equals(tiersBeneficiaire.getProperty(PRTiersWrapper.PROPERTY_LANGUE))) {
                     catalogueTexteDecision.setCodeIsoLangue("de");
-                } else if (IConstantes.CS_TIERS_LANGUE_ITALIEN.equals(tiersBeneficiaire
-                        .getProperty(PRTiersWrapper.PROPERTY_LANGUE))) {
+                } else if (IConstantes.CS_TIERS_LANGUE_ITALIEN
+                        .equals(tiersBeneficiaire.getProperty(PRTiersWrapper.PROPERTY_LANGUE))) {
                     catalogueTexteDecision.setCodeIsoLangue("it");
-                } else if (IConstantes.CS_TIERS_LANGUE_ROMANCHE.equals(tiersBeneficiaire
-                        .getProperty(PRTiersWrapper.PROPERTY_LANGUE))) {
+                } else if (IConstantes.CS_TIERS_LANGUE_ROMANCHE
+                        .equals(tiersBeneficiaire.getProperty(PRTiersWrapper.PROPERTY_LANGUE))) {
                     catalogueTexteDecision.setCodeIsoLangue("rm");
                 }
                 catalogueTexteDecision.setCsDomaine(IRECatalogueTexte.CS_RENTES);
@@ -2691,11 +2742,11 @@ public class REPreValiderDecisionHelper extends PRHybridHelper {
             vb.setHasRemarqueRenteDeVeuveLimitee(dd.getIsRemarqueRenteDeVeuveLimitee());
             vb.setHasRemarqueRemariageRenteDeSurvivant(dd.getIsRemarqueRemariageRenteDeSurvivant());
             vb.setHasRemarqueRentesPourEnfants(dd.getIsRemarqueRentePourEnfant());
-            vb.setHasRemarqueRenteAvecDebutDroit5AnsAvantDateDepot(dd
-                    .getIsRemarqueRenteAvecDebutDroit5AnsAvantDepotDemande());
+            vb.setHasRemarqueRenteAvecDebutDroit5AnsAvantDateDepot(
+                    dd.getIsRemarqueRenteAvecDebutDroit5AnsAvantDepotDemande());
             vb.setHasRemarqueRenteAvecSupplementPourPersonneVeuve(dd.getIsRemSuppVeuf());
-            vb.setHasRemarqueRenteAvecMontantMinimumMajoreInvalidite(dd
-                    .getIsRemarqueRenteAvecMontantMinimumMajoreInvalidite());
+            vb.setHasRemarqueRenteAvecMontantMinimumMajoreInvalidite(
+                    dd.getIsRemarqueRenteAvecMontantMinimumMajoreInvalidite());
             vb.setHasRemarqueRenteReduitePourSurassurance(dd.getIsRemarqueRenteReduitePourSurassurance());
 
         } catch (Exception e) {
@@ -2712,8 +2763,8 @@ public class REPreValiderDecisionHelper extends PRHybridHelper {
                     if (transaction.hasErrors() || session.hasWarnings() || transaction.isRollbackOnly()) {
                         if (transaction.hasErrors() || transaction.hasWarnings()) {
                             viewBean.setMessage(transaction.getErrors().toString());
-                            viewBean.setMsgType(transaction.hasErrors() ? FWViewBeanInterface.ERROR
-                                    : FWViewBeanInterface.WARNING);
+                            viewBean.setMsgType(
+                                    transaction.hasErrors() ? FWViewBeanInterface.ERROR : FWViewBeanInterface.WARNING);
                         } else if (session.hasWarnings()) {
                             viewBean.setMessage(session.getWarnings().toString());
                             viewBean.setMsgType(FWViewBeanInterface.WARNING);
@@ -2741,15 +2792,15 @@ public class REPreValiderDecisionHelper extends PRHybridHelper {
     }
 
     /**
-     * 
+     *
      * Test si :
      * - La préparation de la décision est de type COURANT ()
      * - Si c'est le cas :
      * -- On additionne le montant de toutes les rentes accordées de la demande
      * -- On additionne le montant de toutes les rentes versées à tort de la demande
      * Si le montant total des rentes versées à tort est égal ou supérieur au montant des rentes accordées --> Erreur !
-     * 
-     * 
+     *
+     *
      * @param session La session courante
      * @param typeTraitementDecisionRente Le type de traitement de la décision
      * @param demande La demande de rente
@@ -2758,8 +2809,8 @@ public class REPreValiderDecisionHelper extends PRHybridHelper {
      *             rentes accordées
      */
     private void controleMontantRentesVerseesATort(final BSession session,
-            TypeTraitementDecisionRente typeTraitementDecisionRente, DemandeRente demande) throws Exception,
-            REBusinessException {
+            TypeTraitementDecisionRente typeTraitementDecisionRente, DemandeRente demande)
+            throws Exception, REBusinessException {
         if (TypeTraitementDecisionRente.COURANT.equals(typeTraitementDecisionRente)) {
 
             // Montant total des rentes accordées
@@ -2798,7 +2849,7 @@ public class REPreValiderDecisionHelper extends PRHybridHelper {
      * Inforom 500 : si il y à des intérêts moratoires il faut remonter l'info dans le viewBean afin de cocher la
      * checkBox 'Intérêts moratoire' On récupère quand même l'info depuis l'entité en db vu que l'utilisateur est
      * peut-être déjà venu sur cet écran
-     * 
+     *
      * @param session
      * @param transaction
      * @param hasInteretMoratoires
@@ -2886,8 +2937,8 @@ public class REPreValiderDecisionHelper extends PRHybridHelper {
         decision.setIsRemarqueRenteDeVeuveLimitee(false);
         decision.setIsRemarqueRemariageRenteDeSurvivant(false);
         decision.setIsRemarqueRentePourEnfant(false);
-        decision.setIsRemarqueIncarceration(demande
-                .comporteDesRentesAccordeesAvecCodeCasSpecial(CodeCasSpecialRente.CODE_CAS_SPECIAL_07));
+        decision.setIsRemarqueIncarceration(
+                demande.comporteDesRentesAccordeesAvecCodeCasSpecial(CodeCasSpecialRente.CODE_CAS_SPECIAL_07));
 
         gererRemarqueAnnuleEtRemplaceDecisionPrecedente(session, demande, decision);
 
@@ -2914,25 +2965,27 @@ public class REPreValiderDecisionHelper extends PRHybridHelper {
             infoComplementaire.retrieve(transaction);
 
             if (!infoComplementaire.isNew()) {
-                isRemarqueRenteAvecSupplementPourPersonneVeuve = Boolean.TRUE.equals(infoComplementaire
-                        .getIsRenteAvecSupplementPourPersonneVeuve());
+                isRemarqueRenteAvecSupplementPourPersonneVeuve = Boolean.TRUE
+                        .equals(infoComplementaire.getIsRenteAvecSupplementPourPersonneVeuve());
 
-                isRemarqueRenteAvecDebutDroit5AnsAvantDepotDemande = Boolean.TRUE.equals(infoComplementaire
-                        .getIsRenteAvecDebutDroit5AnsAvantDepotDemande());
+                isRemarqueRenteAvecDebutDroit5AnsAvantDepotDemande = Boolean.TRUE
+                        .equals(infoComplementaire.getIsRenteAvecDebutDroit5AnsAvantDepotDemande());
 
-                isRemarqueRenteAvecMontantMinimumMajoreInvalidite = Boolean.TRUE.equals(infoComplementaire
-                        .getIsRenteAvecMontantMinimumMajoreInvalidite());
+                isRemarqueRenteAvecMontantMinimumMajoreInvalidite = Boolean.TRUE
+                        .equals(infoComplementaire.getIsRenteAvecMontantMinimumMajoreInvalidite());
 
-                isRemarqueRenteReduitePourSurassurance = Boolean.TRUE.equals(infoComplementaire
-                        .getIsRenteReduitePourSurassurance());
+                isRemarqueRenteReduitePourSurassurance = Boolean.TRUE
+                        .equals(infoComplementaire.getIsRenteReduitePourSurassurance());
 
                 isRenteLimitee = Boolean.TRUE.equals(infoComplementaire.getIsRenteLimitee());
             }
         }
 
         decision.setIsRemSuppVeuf(isRemarqueRenteAvecSupplementPourPersonneVeuve);
-        decision.setIsRemarqueRenteAvecDebutDroit5AnsAvantDepotDemande(isRemarqueRenteAvecDebutDroit5AnsAvantDepotDemande);
-        decision.setIsRemarqueRenteAvecMontantMinimumMajoreInvalidite(isRemarqueRenteAvecMontantMinimumMajoreInvalidite);
+        decision.setIsRemarqueRenteAvecDebutDroit5AnsAvantDepotDemande(
+                isRemarqueRenteAvecDebutDroit5AnsAvantDepotDemande);
+        decision.setIsRemarqueRenteAvecMontantMinimumMajoreInvalidite(
+                isRemarqueRenteAvecMontantMinimumMajoreInvalidite);
         decision.setIsRemarqueRenteReduitePourSurassurance(isRemarqueRenteReduitePourSurassurance);
 
         PRTiersWrapper tiers = PRTiersHelper.getTiersParId(session, idTiersBeneficiairePrincipal);
@@ -3030,7 +3083,7 @@ public class REPreValiderDecisionHelper extends PRHybridHelper {
     /**
      * Utilisé pour contrôlé si des changements au niveau des copies ont été opéré entre 2 génération de décision. Dans
      * l'affirmative, la nouvelle décision devra être entièrement recréée.
-     * 
+     *
      * @param session
      * @param transaction
      * @param decision
@@ -3076,7 +3129,7 @@ public class REPreValiderDecisionHelper extends PRHybridHelper {
 
     /**
      * Donne le type d'ordre de versement en fonction du type de creancier
-     * 
+     *
      * @param string
      * @return
      */
@@ -3106,7 +3159,7 @@ public class REPreValiderDecisionHelper extends PRHybridHelper {
 
     /**
      * Retourne les rentes accordées liées à la décision
-     * 
+     *
      * @param session
      * @param transaction
      * @param decision
@@ -3148,8 +3201,8 @@ public class REPreValiderDecisionHelper extends PRHybridHelper {
                 renteAccordee.setIdPrestationAccordee(idPrestationAccordee);
                 renteAccordee.retrieve(transaction);
                 if (renteAccordee.isNew()) {
-                    throw new Exception("Can not retrieve the REPrestationsAccordees  with id [" + idPrestationAccordee
-                            + "]");
+                    throw new Exception(
+                            "Can not retrieve the REPrestationsAccordees  with id [" + idPrestationAccordee + "]");
                 }
                 renteAccordeesDecision.add(renteAccordee);
             }
@@ -3183,10 +3236,10 @@ public class REPreValiderDecisionHelper extends PRHybridHelper {
         decision.setIsRemarqueRenteDeVeuveLimitee(vb.getHasRemarqueRenteDeVeuveLimitee());
         decision.setIsRemarqueRemariageRenteDeSurvivant(vb.getHasRemarqueRemariageRenteDeSurvivant());
         decision.setIsRemarqueRentePourEnfant(vb.getHasRemarqueRentesPourEnfants());
-        decision.setIsRemarqueRenteAvecDebutDroit5AnsAvantDepotDemande(vb
-                .getHasRemarqueRenteAvecDebutDroit5AnsAvantDateDepot());
-        decision.setIsRemarqueRenteAvecMontantMinimumMajoreInvalidite(vb
-                .getHasRemarqueRenteAvecMontantMinimumMajoreInvalidite());
+        decision.setIsRemarqueRenteAvecDebutDroit5AnsAvantDepotDemande(
+                vb.getHasRemarqueRenteAvecDebutDroit5AnsAvantDateDepot());
+        decision.setIsRemarqueRenteAvecMontantMinimumMajoreInvalidite(
+                vb.getHasRemarqueRenteAvecMontantMinimumMajoreInvalidite());
         decision.setIsRemarqueRenteReduitePourSurassurance(vb.getHasRemarqueRenteReduitePourSurassurance());
         decision.setCsGenreDecision(vb.getCsGenreDecision());
         decision.setTraitePar(vb.getTraiterParDecision());
@@ -3294,8 +3347,8 @@ public class REPreValiderDecisionHelper extends PRHybridHelper {
                                     decision.setCsEtat(IREDecision.CS_ETAT_ATTENTE);
                                     decision.update(transaction);
 
-                                    REDeleteCascadeDemandeAPrestationsDues.annuleTraitementValidationDecision(
-                                            transaction, session, decision);
+                                    REDeleteCascadeDemandeAPrestationsDues
+                                            .annuleTraitementValidationDecision(transaction, session, decision);
 
                                     devalideAutresDecisionsDemande(decision, session, transaction);
 
@@ -3356,7 +3409,8 @@ public class REPreValiderDecisionHelper extends PRHybridHelper {
             String idTierBenefPrinc = vb.getIdTiersBeneficiairePrincipal();
 
             // Si on est venu dans l'écran depuis la rcList des décisions (détail)
-            if (vb.getIsDepuisRcListDecision().booleanValue() || IREPreparationDecision.CS_TYP_PREP_DECISION_RETRO.equals(decision.getCsTypeDecision())) {
+            if (vb.getIsDepuisRcListDecision().booleanValue()
+                    || IREPreparationDecision.CS_TYP_PREP_DECISION_RETRO.equals(decision.getCsTypeDecision())) {
 
                 // chargement de la décision d'arrivée
                 REDecisionEntity deci = new REDecisionEntity();
@@ -3467,7 +3521,7 @@ public class REPreValiderDecisionHelper extends PRHybridHelper {
 
     /**
      * Récupère la décision de type Courant associée à la demande.
-     * 
+     *
      * @param session
      * @param transaction
      * @param idDemandeRente
@@ -3545,8 +3599,8 @@ public class REPreValiderDecisionHelper extends PRHybridHelper {
 
     }
 
-    private void validate(final REPreValiderDecisionViewBean vb, final BSession session, final BITransaction transaction)
-            throws Exception {
+    private void validate(final REPreValiderDecisionViewBean vb, final BSession session,
+            final BITransaction transaction) throws Exception {
 
         REDemandeRente dem = new REDemandeRente();
         dem.setSession(session);
@@ -3596,8 +3650,8 @@ public class REPreValiderDecisionHelper extends PRHybridHelper {
         JADate datePmtMensuel = null;
 
         if (!JadeStringUtil.isBlankOrZero(REPmtMensuel.getDateDernierPmt(session))) {
-            datePmtMensuel = new JADate(PRDateFormater.convertDate_JJxMMxAAAA_to_MMxAAAA(REPmtMensuel
-                    .getDateDernierPmt(session)));
+            datePmtMensuel = new JADate(
+                    PRDateFormater.convertDate_JJxMMxAAAA_to_MMxAAAA(REPmtMensuel.getDateDernierPmt(session)));
         }
 
         JADate dateDebutDroit = new JADate(PRDateFormater.convertDate_JJxMMxAAAA_to_MMxAAAA(dem.getDateDebut()));
@@ -3614,9 +3668,9 @@ public class REPreValiderDecisionHelper extends PRHybridHelper {
                     if (cal.compare(dateDecision, datePmtMensuel) == JACalendar.COMPARE_FIRSTLOWER) {
                         vb._addError("JSP_PRP_D_DDECMOICON");
                     }
-                    if (((cal.compare(dateDecision, datePmtMensuel) == JACalendar.COMPARE_FIRSTUPPER) && ((cal.compare(
-                            dateDecision, dateDebutDroit) == JACalendar.COMPARE_FIRSTUPPER) || (cal.compare(
-                            dateDecision, dateDebutDroit) == JACalendar.COMPARE_EQUALS)))) {
+                    if (((cal.compare(dateDecision, datePmtMensuel) == JACalendar.COMPARE_FIRSTUPPER)
+                            && ((cal.compare(dateDecision, dateDebutDroit) == JACalendar.COMPARE_FIRSTUPPER)
+                                    || (cal.compare(dateDecision, dateDebutDroit) == JACalendar.COMPARE_EQUALS)))) {
                         vb._addError("JSP_PRP_D_RECDEM");
                     }
                 } else {
@@ -3667,8 +3721,9 @@ public class REPreValiderDecisionHelper extends PRHybridHelper {
         for (int i = 0; i < crManager.size(); i++) {
             RECreancierViewBean cr = (RECreancierViewBean) crManager.get(i);
 
-            if ((IRECreancier.CS_TIERS.equals(cr.getCsType()) || IRECreancier.CS_ASSURANCE_SOCIALE.equals(cr
-                    .getCsType())) && !new FWCurrency(cr.getMontantReparti()).isZero()) {
+            if ((IRECreancier.CS_TIERS.equals(cr.getCsType())
+                    || IRECreancier.CS_ASSURANCE_SOCIALE.equals(cr.getCsType()))
+                    && !new FWCurrency(cr.getMontantReparti()).isZero()) {
 
                 // Si le domaine rente n'existe pas, on récupère le domaine standard.
                 TIAdressePaiementData adr = PRTiersHelper.getAdressePaiementData(session, (BTransaction) transaction,

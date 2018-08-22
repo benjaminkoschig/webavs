@@ -15,9 +15,6 @@
 	if(viewBean.getInformationMessage() != null ){
 		viewBean.addErrorAvecMessagePret(viewBean.getInformationMessage());
 	}
-	if(!JadeStringUtil.isEmpty(viewBean.getMessageRetenueSurRente())){
-		viewBean.addErrorAvecMessagePret(viewBean.getMessageRetenueSurRente());
-	}
 	
 	selectedIdValue = viewBean.getIdDemandeRente();
 	String noDemandeRente = viewBean.getIdDemandeRente();
@@ -210,13 +207,30 @@ function actionAjouterAnnexes(vall){
    		document.forms[0].elements('selectedIndex').value=selectIndex;
    		document.forms[0].submit();
 	}
-  
+ 
+ $( function() {
+	    $( "#dialog-message" ).dialog({
+	    	modal: true,
+	    	width: '50%',
+	      	height: 'auto',
+	      	resizable: false
+	    });
+  } );
 </script>
 <%-- /tpl:put --%>
 <%@ include file="/theme/detail/bodyStart.jspf" %>
 			<%-- tpl:put name="zoneTitle" --%><ct:FWLabel key="JSP_PREVALID_D_TITRE"/><%-- /tpl:put --%>
 <%@ include file="/theme/detail/bodyStart2.jspf" %>
 <%-- tpl:put name="zoneMain" --%>
+
+ <% if(!JadeStringUtil.isEmpty(viewBean.getMessageRetenueSurRente())){ %>
+	<div id="dialog-message" title="Warning">
+	  <p>
+	    <%= viewBean.getMessageRetenueSurRente() %>
+	  </p>
+	</div>
+ <%}%>
+	
 	<tr>
 		<td><LABEL for="tiersBeneficiairePrincipalDescription"><b><ct:FWLabel key="JSP_PREVALID_D_REQUERANT"/></b></LABEL></td>
 		<td colspan="4"><input type="text" name="tiersBeneficiairePrincipalDescription" value="<%=tiersBeneficiairePrincipalDescription%>" class="RElibelleExtraLongDisabled" style="width:550px;" disabled="true" READONLY></td>
