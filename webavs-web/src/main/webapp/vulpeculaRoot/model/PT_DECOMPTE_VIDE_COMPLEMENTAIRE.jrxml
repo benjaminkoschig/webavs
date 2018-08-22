@@ -48,11 +48,9 @@
 	<parameter name="P_COL_HEADER_4" isForPrompting="true" class="java.lang.String">
 		<defaultValueExpression ><![CDATA["Code prof.\nBeruf. Code"]]></defaultValueExpression>
 	</parameter>
-	<parameter name="P_COL_HEADER_5" isForPrompting="true" class="java.lang.String">
-		<defaultValueExpression ><![CDATA["Vacances/Jours fériés\nFerien/Feiertage"]]></defaultValueExpression>
-	</parameter>
+	<parameter name="P_COL_HEADER_5" isForPrompting="true" class="java.lang.String"/>
 	<parameter name="P_COL_HEADER_6" isForPrompting="true" class="java.lang.String">
-		<defaultValueExpression ><![CDATA["Gratifications\nGratifikationen"]]></defaultValueExpression>
+		<defaultValueExpression ><![CDATA["Gratification/13ème\nGratifikation/13."]]></defaultValueExpression>
 	</parameter>
 	<parameter name="P_COL_HEADER_7" isForPrompting="true" class="java.lang.String">
 		<defaultValueExpression ><![CDATA["Abs. justifiées\nAbs. Entsch."]]></defaultValueExpression>
@@ -71,8 +69,9 @@
 		<defaultValueExpression ><![CDATA["APG + Compl. SM\nEO + MEK"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="P_COL_HEADER_11" isForPrompting="false" class="java.lang.String">
-		<defaultValueExpression ><![CDATA["Taux\nAnsatzt"]]></defaultValueExpression>
+		<defaultValueExpression ><![CDATA["Remarque\nRemark"]]></defaultValueExpression>
 	</parameter>
+	<parameter name="P_MONTANT_TOTAL" isForPrompting="false" class="java.lang.String"/>
 	<field name="COL_1" class="java.lang.String"/>
 	<field name="COL_2" class="java.lang.String"/>
 	<field name="COL_3" class="java.lang.String"/>
@@ -80,14 +79,34 @@
 	<field name="COL_5" class="java.lang.String"/>
 	<field name="COL_6" class="java.lang.String"/>
 	<field name="COL_7" class="java.lang.String"/>
-	<field name="COL_8" class="java.lang.String"/>
+	<field name="COL_8" class="java.math.BigDecimal"/>
 	<field name="COL_9" class="java.lang.String"/>
-	<field name="COL_10" class="java.lang.String"/>
+	<field name="COL_10" class="java.math.BigDecimal"/>
 	<field name="COL_11" class="java.lang.String"/>
+	<field name="F_GROUPE_LIGNES" class="java.lang.String"/>
 	<variable name="CURR_PAGE" class="java.lang.Integer" resetType="Page" calculation="Nothing">
 		<variableExpression><![CDATA[new Integer($V{PAGE_NUMBER}.intValue() + $P{PAGE_NUMERO}.intValue())]]></variableExpression>
 		<initialValueExpression><![CDATA[$V{PAGE_NUMBER}]]></initialValueExpression>
 	</variable>
+	<variable name="SUM_COL8" class="java.math.BigDecimal" resetType="Report" calculation="Sum">
+		<variableExpression><![CDATA[$F{COL_8}]]></variableExpression>
+		<initialValueExpression><![CDATA[new BigDecimal(0)]]></initialValueExpression>
+	</variable>
+	<variable name="SUM_COL10" class="java.math.BigDecimal" resetType="Report" calculation="Sum">
+		<variableExpression><![CDATA[$F{COL_10}]]></variableExpression>
+		<initialValueExpression><![CDATA[new BigDecimal(0)]]></initialValueExpression>
+	</variable>
+		<group  name="groupeLignes" isStartNewColumn="false" isStartNewPage="true" isResetPageNumber="false" isReprintHeaderOnEachPage="false" minHeightToStartNewPage="0" >
+			<groupExpression><![CDATA[$F{F_GROUPE_LIGNES}]]></groupExpression>
+			<groupHeader>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+			</groupHeader>
+			<groupFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+			</groupFooter>
+		</group>
 		<background>
 			<band height="0"  isSplitAllowed="true" >
 			</band>
@@ -161,9 +180,9 @@
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="393"
+						x="303"
 						y="1"
-						width="71"
+						width="77"
 						height="21"
 						forecolor="#000000"
 						backcolor="#FFFFCC"
@@ -181,10 +200,10 @@
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="469"
+						x="385"
 						y="1"
-						width="55"
-						height="21"
+						width="82"
+						height="19"
 						forecolor="#000000"
 						backcolor="#FFFFCC"
 						key="textField"
@@ -201,10 +220,10 @@
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="531"
+						x="472"
 						y="1"
-						width="55"
-						height="21"
+						width="76"
+						height="19"
 						forecolor="#000000"
 						backcolor="#FFFFCC"
 						key="textField"
@@ -221,9 +240,9 @@
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="592"
+						x="554"
 						y="1"
-						width="55"
+						width="85"
 						height="21"
 						forecolor="#000000"
 						backcolor="#FFFFCC"
@@ -241,9 +260,9 @@
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="650"
+						x="644"
 						y="1"
-						width="55"
+						width="74"
 						height="21"
 						forecolor="#000000"
 						backcolor="#FFFFCC"
@@ -262,7 +281,7 @@
 				<line direction="TopDown">
 					<reportElement
 						mode="Opaque"
-						x="648"
+						x="641"
 						y="0"
 						width="0"
 						height="22"
@@ -280,25 +299,7 @@
 				<line direction="TopDown">
 					<reportElement
 						mode="Opaque"
-						x="591"
-						y="0"
-						width="0"
-						height="22"
-						forecolor="#000000"
-						backcolor="#FFFFFF"
-						key="line"
-						stretchType="RelativeToBandHeight"
-						positionType="FixRelativeToTop"
-						isPrintRepeatedValues="true"
-						isRemoveLineWhenBlank="false"
-						isPrintInFirstWholeBand="false"
-						isPrintWhenDetailOverflows="false"/>
-					<graphicElement stretchType="RelativeToBandHeight" pen="Thin" fill="Solid" />
-				</line>
-				<line direction="TopDown">
-					<reportElement
-						mode="Opaque"
-						x="529"
+						x="552"
 						y="0"
 						width="0"
 						height="22"
@@ -334,7 +335,25 @@
 				<line direction="TopDown">
 					<reportElement
 						mode="Opaque"
-						x="392"
+						x="383"
+						y="0"
+						width="0"
+						height="22"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="line"
+						stretchType="RelativeToBandHeight"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<graphicElement stretchType="RelativeToBandHeight" pen="Thin" fill="Solid" />
+				</line>
+				<line direction="TopDown">
+					<reportElement
+						mode="Opaque"
+						x="301"
 						y="0"
 						width="0"
 						height="22"
@@ -351,7 +370,7 @@
 				</line>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="349"
+						x="258"
 						y="1"
 						width="42"
 						height="21"
@@ -373,7 +392,7 @@
 						mode="Transparent"
 						x="31"
 						y="1"
-						width="254"
+						width="166"
 						height="21"
 						forecolor="#000000"
 						backcolor="#C0C0C0"
@@ -391,7 +410,7 @@
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="288"
+						x="197"
 						y="1"
 						width="60"
 						height="21"
@@ -412,7 +431,7 @@
 				<line direction="TopDown">
 					<reportElement
 						mode="Opaque"
-						x="349"
+						x="258"
 						y="0"
 						width="0"
 						height="22"
@@ -430,7 +449,7 @@
 				<line direction="TopDown">
 					<reportElement
 						mode="Opaque"
-						x="288"
+						x="197"
 						y="0"
 						width="0"
 						height="22"
@@ -465,10 +484,10 @@
 				</line>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="707"
-						y="1"
-						width="60"
-						height="21"
+						x="723"
+						y="2"
+						width="83"
+						height="17"
 						forecolor="#000000"
 						backcolor="#FFFFCC"
 						key="textField-17"
@@ -483,31 +502,11 @@
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_COL_HEADER_10}]]></textFieldExpression>
 				</textField>
-				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
-						mode="Transparent"
-						x="769"
-						y="1"
-						width="33"
-						height="21"
-						forecolor="#000000"
-						backcolor="#FFFFCC"
-						key="textField-18"
-						stretchType="NoStretch"
-						positionType="FixRelativeToTop"
-						isPrintRepeatedValues="true"
-						isRemoveLineWhenBlank="false"
-						isPrintInFirstWholeBand="false"
-						isPrintWhenDetailOverflows="false"/>
-					<textElement textAlignment="Center" verticalAlignment="Top" rotation="None" lineSpacing="Single">
-						<font reportFont="Arial_Normal" fontName=""/>
-					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_COL_HEADER_11}]]></textFieldExpression>
-				</textField>
 				<staticText>
 					<reportElement
 						mode="Transparent"
-						x="461"
-						y="9"
+						x="371"
+						y="8"
 						width="7"
 						height="12"
 						forecolor="#000000"
@@ -527,8 +526,8 @@
 				<staticText>
 					<reportElement
 						mode="Transparent"
-						x="521"
-						y="9"
+						x="459"
+						y="7"
 						width="7"
 						height="12"
 						forecolor="#000000"
@@ -548,8 +547,8 @@
 				<staticText>
 					<reportElement
 						mode="Transparent"
-						x="583"
-						y="9"
+						x="540"
+						y="7"
 						width="7"
 						height="12"
 						forecolor="#000000"
@@ -569,8 +568,8 @@
 				<staticText>
 					<reportElement
 						mode="Transparent"
-						x="800"
-						y="9"
+						x="798"
+						y="8"
 						width="7"
 						height="12"
 						forecolor="#000000"
@@ -590,25 +589,7 @@
 				<line direction="TopDown">
 					<reportElement
 						mode="Opaque"
-						x="769"
-						y="0"
-						width="0"
-						height="22"
-						forecolor="#000000"
-						backcolor="#FFFFFF"
-						key="line-11"
-						stretchType="RelativeToBandHeight"
-						positionType="FixRelativeToTop"
-						isPrintRepeatedValues="true"
-						isRemoveLineWhenBlank="false"
-						isPrintInFirstWholeBand="false"
-						isPrintWhenDetailOverflows="false"/>
-					<graphicElement stretchType="RelativeToBandHeight" pen="Thin" fill="Solid" />
-				</line>
-				<line direction="TopDown">
-					<reportElement
-						mode="Opaque"
-						x="706"
+						x="722"
 						y="0"
 						width="0"
 						height="22"
@@ -648,7 +629,25 @@
 				<line direction="TopDown">
 					<reportElement
 						mode="Opaque"
-						x="392"
+						x="301"
+						y="0"
+						width="0"
+						height="18"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="line"
+						stretchType="RelativeToBandHeight"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<graphicElement stretchType="RelativeToBandHeight" pen="Thin" fill="Solid" />
+				</line>
+				<line direction="TopDown">
+					<reportElement
+						mode="Opaque"
+						x="383"
 						y="0"
 						width="0"
 						height="18"
@@ -684,7 +683,7 @@
 				<line direction="TopDown">
 					<reportElement
 						mode="Opaque"
-						x="529"
+						x="552"
 						y="0"
 						width="0"
 						height="18"
@@ -702,7 +701,7 @@
 				<line direction="TopDown">
 					<reportElement
 						mode="Opaque"
-						x="591"
+						x="641"
 						y="0"
 						width="0"
 						height="18"
@@ -717,25 +716,7 @@
 						isPrintWhenDetailOverflows="false"/>
 					<graphicElement stretchType="RelativeToBandHeight" pen="Thin" fill="Solid" />
 				</line>
-				<line direction="TopDown">
-					<reportElement
-						mode="Opaque"
-						x="648"
-						y="0"
-						width="0"
-						height="18"
-						forecolor="#000000"
-						backcolor="#FFFFFF"
-						key="line"
-						stretchType="RelativeToBandHeight"
-						positionType="FixRelativeToTop"
-						isPrintRepeatedValues="true"
-						isRemoveLineWhenBlank="false"
-						isPrintInFirstWholeBand="false"
-						isPrintWhenDetailOverflows="false"/>
-					<graphicElement stretchType="RelativeToBandHeight" pen="Thin" fill="Solid" />
-				</line>
-				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
 						x="1"
 						y="1"
@@ -755,9 +736,9 @@
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$F{COL_1}]]></textFieldExpression>
 				</textField>
-				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="288"
+						x="197"
 						y="1"
 						width="60"
 						height="16"
@@ -775,11 +756,11 @@
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$F{COL_3}]]></textFieldExpression>
 				</textField>
-				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
 						x="33"
 						y="1"
-						width="251"
+						width="163"
 						height="16"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -795,11 +776,11 @@
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$F{COL_2}]]></textFieldExpression>
 				</textField>
-				<textField isStretchWithOverflow="false" pattern="#,##0.00" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+				<textField isStretchWithOverflow="false" pattern="#,##0.00" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="649"
+						x="644"
 						y="1"
-						width="55"
+						width="73"
 						height="16"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -815,11 +796,11 @@
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$F{COL_9}]]></textFieldExpression>
 				</textField>
-				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="592"
+						x="554"
 						y="1"
-						width="55"
+						width="85"
 						height="16"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -829,17 +810,19 @@
 						isPrintRepeatedValues="true"
 						isRemoveLineWhenBlank="false"
 						isPrintInFirstWholeBand="false"
-						isPrintWhenDetailOverflows="false"/>
+						isPrintWhenDetailOverflows="false">
+							<printWhenExpression><![CDATA[new Boolean($F{COL_8}!=null)]]></printWhenExpression>
+						</reportElement>
 					<textElement textAlignment="Right" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
 						<font reportFont="Arial_Normal"/>
 					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA[$F{COL_8}]]></textFieldExpression>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$F{COL_8}]]></textFieldExpression>
 				</textField>
-				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="530"
+						x="472"
 						y="1"
-						width="62"
+						width="77"
 						height="16"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -852,16 +835,16 @@
 						isPrintWhenDetailOverflows="false">
 							<printWhenExpression><![CDATA[new Boolean($F{COL_7}!=null)]]></printWhenExpression>
 						</reportElement>
-					<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
+					<textElement textAlignment="Right" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
 						<font reportFont="Arial_Normal"/>
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$F{COL_7}]]></textFieldExpression>
 				</textField>
-				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="470"
+						x="385"
 						y="1"
-						width="57"
+						width="82"
 						height="16"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -872,16 +855,16 @@
 						isRemoveLineWhenBlank="false"
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="false"/>
-					<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
+					<textElement textAlignment="Right" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
 						<font reportFont="Arial_Normal"/>
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$F{COL_6}]]></textFieldExpression>
 				</textField>
-				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="392"
+						x="303"
 						y="1"
-						width="68"
+						width="78"
 						height="16"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -892,14 +875,14 @@
 						isRemoveLineWhenBlank="false"
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="false"/>
-					<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
+					<textElement textAlignment="Right" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
 						<font reportFont="Arial_Normal"/>
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$F{COL_5}]]></textFieldExpression>
 				</textField>
-				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="349"
+						x="258"
 						y="1"
 						width="42"
 						height="16"
@@ -938,7 +921,7 @@
 				<line direction="TopDown">
 					<reportElement
 						mode="Opaque"
-						x="288"
+						x="197"
 						y="0"
 						width="0"
 						height="18"
@@ -956,7 +939,7 @@
 				<line direction="TopDown">
 					<reportElement
 						mode="Opaque"
-						x="349"
+						x="258"
 						y="0"
 						width="0"
 						height="18"
@@ -974,7 +957,7 @@
 				<line direction="TopDown">
 					<reportElement
 						mode="Opaque"
-						x="706"
+						x="722"
 						y="0"
 						width="0"
 						height="18"
@@ -989,29 +972,11 @@
 						isPrintWhenDetailOverflows="false"/>
 					<graphicElement stretchType="RelativeToBandHeight" pen="Thin" fill="Solid" />
 				</line>
-				<line direction="TopDown">
-					<reportElement
-						mode="Opaque"
-						x="769"
-						y="0"
-						width="0"
-						height="18"
-						forecolor="#000000"
-						backcolor="#FFFFFF"
-						key="line-14"
-						stretchType="RelativeToBandHeight"
-						positionType="FixRelativeToTop"
-						isPrintRepeatedValues="true"
-						isRemoveLineWhenBlank="false"
-						isPrintInFirstWholeBand="false"
-						isPrintWhenDetailOverflows="false"/>
-					<graphicElement stretchType="RelativeToBandHeight" pen="Thin" fill="Solid" />
-				</line>
-				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="708"
+						x="722"
 						y="0"
-						width="60"
+						width="83"
 						height="16"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -1021,31 +986,13 @@
 						isPrintRepeatedValues="true"
 						isRemoveLineWhenBlank="false"
 						isPrintInFirstWholeBand="false"
-						isPrintWhenDetailOverflows="false"/>
-					<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
-						<font reportFont="Arial_Normal"/>
-					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA[$F{COL_10}]]></textFieldExpression>
-				</textField>
-				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
-						mode="Transparent"
-						x="771"
-						y="0"
-						width="33"
-						height="16"
-						forecolor="#000000"
-						backcolor="#FFFFFF"
-						key="textField-20"
-						stretchType="NoStretch"
-						positionType="FixRelativeToTop"
-						isPrintRepeatedValues="true"
-						isRemoveLineWhenBlank="false"
-						isPrintInFirstWholeBand="false"
-						isPrintWhenDetailOverflows="false"/>
+						isPrintWhenDetailOverflows="false">
+							<printWhenExpression><![CDATA[new Boolean($F{COL_10}!=null)]]></printWhenExpression>
+						</reportElement>
 					<textElement textAlignment="Right" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
 						<font reportFont="Arial_Normal"/>
 					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA[$F{COL_11}]]></textFieldExpression>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$F{COL_10}]]></textFieldExpression>
 				</textField>
 			</band>
 		</detail>
@@ -1058,12 +1005,12 @@
 			</band>
 		</pageFooter>
 		<summary>
-			<band height="16"  isSplitAllowed="true" >
+			<band height="17"  isSplitAllowed="true" >
 				<line direction="TopDown">
 					<reportElement
 						mode="Opaque"
-						x="649"
-						y="15"
+						x="576"
+						y="16"
 						width="63"
 						height="0"
 						forecolor="#000000"
@@ -1079,8 +1026,8 @@
 				</line>
 				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true" evaluationTime="Column" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="478"
-						y="2"
+						x="385"
+						y="3"
 						width="158"
 						height="12"
 						forecolor="#000000"
@@ -1100,8 +1047,8 @@
 				<line direction="TopDown">
 					<reportElement
 						mode="Opaque"
-						x="649"
-						y="13"
+						x="576"
+						y="14"
 						width="63"
 						height="0"
 						forecolor="#000000"
@@ -1115,6 +1062,82 @@
 						isPrintWhenDetailOverflows="false"/>
 					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
 				</line>
+				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true" evaluationTime="Column" hyperlinkType="None" >					<reportElement
+						mode="Transparent"
+						x="577"
+						y="3"
+						width="60"
+						height="9"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-20"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
+						<font reportFont="Arial_Normal"/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$V{SUM_COL8}]]></textFieldExpression>
+				</textField>
+				<line direction="TopDown">
+					<reportElement
+						mode="Opaque"
+						x="742"
+						y="14"
+						width="63"
+						height="0"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="line-14"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
+				</line>
+				<line direction="TopDown">
+					<reportElement
+						mode="Opaque"
+						x="742"
+						y="16"
+						width="63"
+						height="0"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="line-15"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
+				</line>
+				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true" evaluationTime="Column" hyperlinkType="None" >					<reportElement
+						mode="Transparent"
+						x="745"
+						y="3"
+						width="60"
+						height="9"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-21"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
+						<font reportFont="Arial_Normal"/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$V{SUM_COL10}]]></textFieldExpression>
+				</textField>
 			</band>
 		</summary>
 </jasperReport>

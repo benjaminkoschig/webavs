@@ -41,6 +41,7 @@
 	<parameter name="P_MONTANT_IMPOTS" isForPrompting="false" class="java.lang.String"/>
 	<parameter name="P_MONTANT_VERSE" isForPrompting="false" class="java.lang.String"/>
 	<parameter name="P_REFERENCES" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_NB" isForPrompting="false" class="java.lang.String"/>
 	<variable name="IMAGE_LOGO" class="java.lang.String" resetType="Report" calculation="Nothing">
 		<variableExpression><![CDATA[$P{MODEL_PATH}+"cologo2.gif"]]></variableExpression>
 	</variable>
@@ -168,7 +169,7 @@
 						isRemoveLineWhenBlank="false"
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="false"/>
-					<textElement textAlignment="Justified" verticalAlignment="Top" rotation="None" isStyledText="true" lineSpacing="Single">
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" isStyledText="true" lineSpacing="Single">
 						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_P2}]]></textFieldExpression>
@@ -446,6 +447,26 @@
 		</columnFooter>
 		<pageFooter>
 			<band height="44"  isSplitAllowed="true" >
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="14"
+						y="1"
+						width="501"
+						height="43"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-15"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="false" isItalic="true" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_NB}]]></textFieldExpression>
+				</textField>
 			</band>
 		</pageFooter>
 		<summary>

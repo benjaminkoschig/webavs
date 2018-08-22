@@ -334,9 +334,9 @@
 			<band height="20"  isSplitAllowed="true" >
 				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="40"
+						x="35"
 						y="0"
-						width="34"
+						width="40"
 						height="12"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -377,9 +377,9 @@
 				</staticText>
 				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="314"
+						x="297"
 						y="0"
-						width="65"
+						width="82"
 						height="12"
 						forecolor="#000000"
 						backcolor="#FFFFFF"

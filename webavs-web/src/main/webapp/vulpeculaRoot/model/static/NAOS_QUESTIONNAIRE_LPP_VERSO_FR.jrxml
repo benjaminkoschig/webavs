@@ -1,0 +1,476 @@
+<?xml version="1.0" encoding="UTF-8"  ?>
+<!-- Created with iReport - A designer for JasperReports -->
+<!DOCTYPE jasperReport PUBLIC "//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
+<jasperReport
+		 name="PHENIX_DECISION_DEF_VERSO_FR"
+		 columnCount="1"
+		 printOrder="Vertical"
+		 orientation="Portrait"
+		 pageWidth="595"
+		 pageHeight="842"
+		 columnWidth="425"
+		 columnSpacing="0"
+		 leftMargin="42"
+		 rightMargin="42"
+		 topMargin="5"
+		 bottomMargin="5"
+		 whenNoDataType="AllSectionsNoDetail"
+		 isTitleNewPage="false"
+		 isSummaryNewPage="false">
+	<property name="ireport.scriptlethandling" value="2" />
+	<reportFont name="ARIAL" isDefault="false" fontName="arial.ttf" size="11" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="ARIAL.TTF" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+		<background>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</background>
+		<title>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</title>
+		<pageHeader>
+			<band height="670"  isSplitAllowed="true" >
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="29"
+						y="278"
+						width="482"
+						height="32"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="true"
+						isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Justified" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL" fontName="Arial" pdfFontName="Helvetica"/>
+					</textElement>
+				<text><![CDATA[Tout employeur occupant des salariés soumis à l'assurance obligatoire doit être affilié à une institution de prévoyance inscrite dans le registre de la prévoyance professionnelle.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="29"
+						y="223"
+						width="482"
+						height="18"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL" fontName="" pdfFontName="Helvetica-BoldOblique" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Art. 11 Affiliation à une institution de prévoyance]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="1"
+						y="74"
+						width="509"
+						height="48"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-1"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL" fontName="" pdfFontName="Helvetica-BoldOblique" size="14" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Loi Fédérale sur la prévoyance professionnelle 
+(LPP-RS 831.40)]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="1"
+						y="278"
+						width="18"
+						height="27"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-2"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL" fontName="Arial" pdfFontName="Helvetica"/>
+					</textElement>
+				<text><![CDATA[1]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="29"
+						y="319"
+						width="482"
+						height="26"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-3"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Justified" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL" fontName="Arial" pdfFontName="Helvetica"/>
+					</textElement>
+				<text><![CDATA[Si l'employeur n'est pas encore affilié à une institution de prévoyance, il en choisira une après entente avec son personnel, ou, si elle existe, avec la représentation des travailleurs.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="1"
+						y="319"
+						width="18"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-4"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL" fontName="Arial" pdfFontName="Helvetica"/>
+					</textElement>
+				<text><![CDATA[2]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="1"
+						y="354"
+						width="18"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-5"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL" fontName="Arial" pdfFontName="Helvetica"/>
+					</textElement>
+				<text><![CDATA[3]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="29"
+						y="354"
+						width="482"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-6"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Justified" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL" fontName="Arial" pdfFontName="Helvetica"/>
+					</textElement>
+				<text><![CDATA[L'affiliation a lieu avec effet rétroactif.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="1"
+						y="376"
+						width="23"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-7"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL" fontName="Arial" pdfFontName="Helvetica"/>
+					</textElement>
+				<text><![CDATA[3bis]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="29"
+						y="376"
+						width="482"
+						height="68"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-8"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Justified" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL" fontName="Arial" pdfFontName="Helvetica"/>
+					</textElement>
+				<text><![CDATA[La résiliation de l'affiliation et la réaffiliation à une nouvelle institution de prévoyance par l'employeur s'effectuent après entente avec son personnel, ou, si elle existe, avec la représentation des travailleurs.
+L'institution de prévoyance doit annoncer la résiliation du contrat d'affiliation à la caisse de compensation de l'AVS compétente.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="1"
+						y="448"
+						width="23"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-9"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL" fontName="Arial" pdfFontName="Helvetica"/>
+					</textElement>
+				<text><![CDATA[3ter]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="29"
+						y="448"
+						width="482"
+						height="26"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-10"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Justified" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL" fontName="Arial" pdfFontName="Helvetica"/>
+					</textElement>
+				<text><![CDATA[Faute d'entente dans les cas cités aux al. 2 et 3bis, la décision sera prise par un arbitre neutre désigné soit d'un commun accord, soit, à défaut, par l'autorité de surveillance.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="1"
+						y="483"
+						width="23"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-11"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL" fontName="Arial" pdfFontName="Helvetica"/>
+					</textElement>
+				<text><![CDATA[4]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="29"
+						y="483"
+						width="482"
+						height="26"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-12"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Justified" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL" fontName="Arial" pdfFontName="Helvetica" isBold="true"/>
+					</textElement>
+				<text><![CDATA[La caisse de compensation de l'AVS s'assure que les employeurs qui dépendent d'elle sont affiliés à une institution de prévoyance enregistrée.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="1"
+						y="518"
+						width="23"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-13"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL" fontName="Arial" pdfFontName="Helvetica"/>
+					</textElement>
+				<text><![CDATA[5]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="29"
+						y="518"
+						width="482"
+						height="26"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-14"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Justified" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL" fontName="Arial" pdfFontName="Helvetica"/>
+					</textElement>
+				<text><![CDATA[La caisse de compensation de l'AVS somme les employeurs qui ne remplissent pas l'obligation prévue à l'al. 1 de s'affilier dans les deux mois à une institution de prévoyance enregistrée.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="1"
+						y="553"
+						width="23"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-15"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL" fontName="Arial" pdfFontName="Helvetica"/>
+					</textElement>
+				<text><![CDATA[6]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="29"
+						y="553"
+						width="482"
+						height="26"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-16"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Justified" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL" fontName="Arial" pdfFontName="Helvetica"/>
+					</textElement>
+				<text><![CDATA[Si l'employeur ne se soumet pas à la mise en demeure de la caisse de compensation de l'AVS dans le délai imparti, celle-ci l'annonce à l'institution supplétive (art. 60) pour l'affiliation rétroactive.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="1"
+						y="588"
+						width="23"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-17"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL" fontName="Arial" pdfFontName="Helvetica"/>
+					</textElement>
+				<text><![CDATA[7]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="29"
+						y="588"
+						width="482"
+						height="41"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-18"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Justified" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font reportFont="ARIAL" fontName="Arial" pdfFontName="Helvetica"/>
+					</textElement>
+				<text><![CDATA[L'institution supplétive et la caisse de compensation de l'AVS facturent à l'employeur retardataire les frais administratifs qu'il a occasionnés. Les frais non recouvrables sont pris en charge par les fonds de garantie (art. 56, al. 1, let. d et h).]]></text>
+				</staticText>
+			</band>
+		</pageHeader>
+		<columnHeader>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</columnHeader>
+		<detail>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</detail>
+		<columnFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</columnFooter>
+		<pageFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</pageFooter>
+		<summary>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</summary>
+</jasperReport>

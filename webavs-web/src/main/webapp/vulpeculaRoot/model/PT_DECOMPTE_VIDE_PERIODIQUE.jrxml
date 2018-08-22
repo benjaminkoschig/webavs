@@ -74,6 +74,7 @@
 	<field name="COL_7" class="java.math.BigDecimal"/>
 	<field name="COL_8" class="java.lang.String"/>
 	<field name="COL_9" class="java.lang.String"/>
+	<field name="F_GROUPE_LIGNES" class="java.lang.String"/>
 	<variable name="SUM_COL7" class="java.math.BigDecimal" resetType="Report" calculation="Sum">
 		<variableExpression><![CDATA[$F{COL_7}]]></variableExpression>
 		<initialValueExpression><![CDATA[new BigDecimal(0)]]></initialValueExpression>
@@ -82,6 +83,17 @@
 		<variableExpression><![CDATA[new Integer($V{PAGE_NUMBER}.intValue() + $P{PAGE_NUMERO}.intValue())]]></variableExpression>
 		<initialValueExpression><![CDATA[$V{PAGE_NUMBER}]]></initialValueExpression>
 	</variable>
+		<group  name="groupeLignes" isStartNewColumn="false" isStartNewPage="true" isResetPageNumber="false" isReprintHeaderOnEachPage="false" minHeightToStartNewPage="0" >
+			<groupExpression><![CDATA[$F{F_GROUPE_LIGNES}]]></groupExpression>
+			<groupHeader>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+			</groupHeader>
+			<groupFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+			</groupFooter>
+		</group>
 		<background>
 			<band height="0"  isSplitAllowed="true" >
 			</band>

@@ -12,8 +12,8 @@
 		 columnSpacing="0"
 		 leftMargin="17"
 		 rightMargin="17"
-		 topMargin="20"
-		 bottomMargin="20"
+		 topMargin="99"
+		 bottomMargin="33"
 		 whenNoDataType="AllSectionsNoDetail"
 		 isTitleNewPage="false"
 		 isSummaryNewPage="false">
@@ -42,7 +42,6 @@
 	<parameter name="P_P1" isForPrompting="false" class="java.lang.String"/>
 	<parameter name="P_APG" isForPrompting="false" class="java.lang.String"/>
 	<parameter name="P_SAL_COUV" isForPrompting="false" class="java.lang.String"/>
-	<parameter name="P_TAUX" isForPrompting="false" class="java.lang.String"/>
 	<parameter name="P_SALAIRE" isForPrompting="false" class="java.lang.String"/>
 	<parameter name="P_PERIODE" isForPrompting="false" class="java.lang.String"/>
 	<parameter name="P_LPP" isForPrompting="false" class="java.lang.String"/>
@@ -50,11 +49,23 @@
 	<parameter name="P_RET" isForPrompting="false" class="java.lang.String"/>
 	<parameter name="P_FCFP" isForPrompting="false" class="java.lang.String"/>
 	<parameter name="P_AF" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_LAST_NOM_PRENOM" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_LAST_PERIODE" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_LAST_SALAIRE" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_LAST_V" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_LAST_MONTANT_VERSE" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_LAST_AVS" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_LAST_AC" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_LAST_LPP" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_LAST_CM" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_LAST_MONTANT_BRUT" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_LAST_RET" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_LAST_FCFP" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_LAST_AF" isForPrompting="false" class="java.lang.String"/>
 	<field name="F_NOM_PRENOM" class="java.lang.String"/>
 	<field name="F_MONTANT_VERSE" class="java.lang.String"/>
 	<field name="F_PERIODE" class="java.lang.String"/>
 	<field name="F_V" class="java.lang.String"/>
-	<field name="F_TAUX" class="java.lang.String"/>
 	<field name="F_SALAIRE" class="java.lang.String"/>
 	<field name="F_RET" class="java.lang.String"/>
 	<field name="F_AVS" class="java.lang.String"/>
@@ -370,11 +381,11 @@
 			</band>
 			</groupHeader>
 			<groupFooter>
-			<band height="36"  isSplitAllowed="true" >
+			<band height="109"  isSplitAllowed="false" >
 				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="512"
-						y="3"
+						y="14"
 						width="47"
 						height="13"
 						forecolor="#000000"
@@ -395,7 +406,7 @@
 					<reportElement
 						mode="Opaque"
 						x="2"
-						y="2"
+						y="13"
 						width="558"
 						height="0"
 						forecolor="#000000"
@@ -409,10 +420,10 @@
 						isPrintWhenDetailOverflows="false"/>
 					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
 				</line>
-				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="15"
-						y="19"
+						y="30"
 						width="493"
 						height="16"
 						forecolor="#000000"
@@ -421,13 +432,293 @@
 						stretchType="NoStretch"
 						positionType="FixRelativeToTop"
 						isPrintRepeatedValues="true"
-						isRemoveLineWhenBlank="false"
+						isRemoveLineWhenBlank="true"
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="false"/>
 					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
 						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_P1}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="2"
+						y="0"
+						width="119"
+						height="11"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-52"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_LAST_NOM_PRENOM}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="513"
+						y="0"
+						width="46"
+						height="11"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-53"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_LAST_MONTANT_VERSE}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="139"
+						y="0"
+						width="46"
+						height="11"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-54"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_LAST_PERIODE}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="124"
+						y="0"
+						width="12"
+						height="11"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-55"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_LAST_V}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="189"
+						y="0"
+						width="43"
+						height="11"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-56"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_LAST_SALAIRE}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="316"
+						y="0"
+						width="30"
+						height="11"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-57"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_LAST_AVS}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="235"
+						y="0"
+						width="45"
+						height="11"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-58"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_LAST_MONTANT_BRUT}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="349"
+						y="0"
+						width="30"
+						height="11"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-59"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_LAST_AC}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="283"
+						y="0"
+						width="30"
+						height="11"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-60"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_LAST_LPP}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="383"
+						y="0"
+						width="30"
+						height="11"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-61"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_LAST_CM}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="416"
+						y="0"
+						width="30"
+						height="11"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-62"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_LAST_RET}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="480"
+						y="0"
+						width="30"
+						height="11"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-63"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_LAST_FCFP}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="449"
+						y="0"
+						width="30"
+						height="11"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-64"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_LAST_AF}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="332"
+						y="92"
+						width="226"
+						height="17"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-7"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="true"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_SIGNATURE}]]></textFieldExpression>
 				</textField>
 			</band>
 			</groupFooter>
@@ -437,12 +728,12 @@
 			</band>
 		</background>
 		<title>
-			<band height="200"  isSplitAllowed="true" >
+			<band height="178"  isSplitAllowed="true" >
 				<subreport  isUsingCache="true">
 					<reportElement
 						mode="Opaque"
 						x="0"
-						y="0"
+						y="-75"
 						width="533"
 						height="198"
 						forecolor="#000000"
@@ -457,14 +748,10 @@
 					<parametersMapExpression><![CDATA[new java.util.HashMap($P{REPORT_PARAMETERS_MAP})]]></parametersMapExpression>
 					<subreportExpression  class="java.lang.String"><![CDATA[$P{P_SUBREPORT_HEADER}]]></subreportExpression>
 				</subreport>
-			</band>
-		</title>
-		<pageHeader>
-			<band height="70"  isSplitAllowed="true" >
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="14"
-						y="35"
+						y="150"
 						width="508"
 						height="17"
 						forecolor="#000000"
@@ -484,6 +771,10 @@
 				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_TITRE}]]></textFieldExpression>
 				</textField>
 			</band>
+		</title>
+		<pageHeader>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
 		</pageHeader>
 		<columnHeader>
 			<band height="0"  isSplitAllowed="true" >
@@ -491,7 +782,7 @@
 		</columnHeader>
 		<detail>
 			<band height="11"  isSplitAllowed="true" >
-				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="2"
 						y="0"
@@ -503,7 +794,7 @@
 						stretchType="NoStretch"
 						positionType="FixRelativeToTop"
 						isPrintRepeatedValues="true"
-						isRemoveLineWhenBlank="false"
+						isRemoveLineWhenBlank="true"
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="false"/>
 					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
@@ -511,7 +802,7 @@
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$F{F_NOM_PRENOM}]]></textFieldExpression>
 				</textField>
-				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="513"
 						y="0"
@@ -523,7 +814,7 @@
 						stretchType="NoStretch"
 						positionType="FixRelativeToTop"
 						isPrintRepeatedValues="true"
-						isRemoveLineWhenBlank="false"
+						isRemoveLineWhenBlank="true"
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="false"/>
 					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
@@ -531,7 +822,7 @@
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$F{F_MONTANT_VERSE}]]></textFieldExpression>
 				</textField>
-				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="139"
 						y="0"
@@ -543,7 +834,7 @@
 						stretchType="NoStretch"
 						positionType="FixRelativeToTop"
 						isPrintRepeatedValues="true"
-						isRemoveLineWhenBlank="false"
+						isRemoveLineWhenBlank="true"
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="false"/>
 					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
@@ -551,7 +842,7 @@
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$F{F_PERIODE}]]></textFieldExpression>
 				</textField>
-				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="124"
 						y="0"
@@ -563,7 +854,7 @@
 						stretchType="NoStretch"
 						positionType="FixRelativeToTop"
 						isPrintRepeatedValues="true"
-						isRemoveLineWhenBlank="false"
+						isRemoveLineWhenBlank="true"
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="false"/>
 					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
@@ -571,7 +862,7 @@
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$F{F_V}]]></textFieldExpression>
 				</textField>
-				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="189"
 						y="0"
@@ -583,7 +874,7 @@
 						stretchType="NoStretch"
 						positionType="FixRelativeToTop"
 						isPrintRepeatedValues="true"
-						isRemoveLineWhenBlank="false"
+						isRemoveLineWhenBlank="true"
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="false"/>
 					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
@@ -591,7 +882,7 @@
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$F{F_SALAIRE}]]></textFieldExpression>
 				</textField>
-				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="316"
 						y="0"
@@ -603,7 +894,7 @@
 						stretchType="NoStretch"
 						positionType="FixRelativeToTop"
 						isPrintRepeatedValues="true"
-						isRemoveLineWhenBlank="false"
+						isRemoveLineWhenBlank="true"
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="false"/>
 					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
@@ -611,7 +902,7 @@
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$F{F_AVS}]]></textFieldExpression>
 				</textField>
-				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="235"
 						y="0"
@@ -623,7 +914,7 @@
 						stretchType="NoStretch"
 						positionType="FixRelativeToTop"
 						isPrintRepeatedValues="true"
-						isRemoveLineWhenBlank="false"
+						isRemoveLineWhenBlank="true"
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="false"/>
 					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
@@ -631,7 +922,7 @@
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$F{F_MONTANT_BRUT}]]></textFieldExpression>
 				</textField>
-				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="349"
 						y="0"
@@ -643,7 +934,7 @@
 						stretchType="NoStretch"
 						positionType="FixRelativeToTop"
 						isPrintRepeatedValues="true"
-						isRemoveLineWhenBlank="false"
+						isRemoveLineWhenBlank="true"
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="false"/>
 					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
@@ -651,7 +942,7 @@
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$F{F_AC}]]></textFieldExpression>
 				</textField>
-				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="283"
 						y="0"
@@ -663,7 +954,7 @@
 						stretchType="NoStretch"
 						positionType="FixRelativeToTop"
 						isPrintRepeatedValues="true"
-						isRemoveLineWhenBlank="false"
+						isRemoveLineWhenBlank="true"
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="false"/>
 					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
@@ -671,7 +962,7 @@
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$F{F_LPP}]]></textFieldExpression>
 				</textField>
-				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="383"
 						y="0"
@@ -683,7 +974,7 @@
 						stretchType="NoStretch"
 						positionType="FixRelativeToTop"
 						isPrintRepeatedValues="true"
-						isRemoveLineWhenBlank="false"
+						isRemoveLineWhenBlank="true"
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="false"/>
 					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
@@ -691,7 +982,7 @@
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$F{F_CM}]]></textFieldExpression>
 				</textField>
-				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="416"
 						y="0"
@@ -703,7 +994,7 @@
 						stretchType="NoStretch"
 						positionType="FixRelativeToTop"
 						isPrintRepeatedValues="true"
-						isRemoveLineWhenBlank="false"
+						isRemoveLineWhenBlank="true"
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="false"/>
 					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
@@ -711,7 +1002,7 @@
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$F{F_RET}]]></textFieldExpression>
 				</textField>
-				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="480"
 						y="0"
@@ -723,7 +1014,7 @@
 						stretchType="NoStretch"
 						positionType="FixRelativeToTop"
 						isPrintRepeatedValues="true"
-						isRemoveLineWhenBlank="false"
+						isRemoveLineWhenBlank="true"
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="false"/>
 					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
@@ -731,7 +1022,7 @@
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$F{F_FCFP}]]></textFieldExpression>
 				</textField>
-				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="449"
 						y="0"
@@ -743,7 +1034,7 @@
 						stretchType="NoStretch"
 						positionType="FixRelativeToTop"
 						isPrintRepeatedValues="true"
-						isRemoveLineWhenBlank="false"
+						isRemoveLineWhenBlank="true"
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="false"/>
 					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
@@ -758,20 +1049,36 @@
 			</band>
 		</columnFooter>
 		<pageFooter>
-			<band height="20"  isSplitAllowed="true" >
-			</band>
-		</pageFooter>
-		<lastPageFooter>
-			<band height="123"  isSplitAllowed="false" >
-				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
-						mode="Opaque"
-						x="285"
-						y="28"
-						width="250"
-						height="17"
+			<band height="11"  isSplitAllowed="true" >
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Transparent"
+						x="475"
+						y="0"
+						width="48"
+						height="11"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
-						key="textField-7"
+						key="textField-48"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Helvetica" pdfFontName="Helvetica-Bold" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA["Page " + String.valueOf($V{PAGE_NUMBER})]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Report" hyperlinkType="None" >					<reportElement
+						mode="Transparent"
+						x="523"
+						y="0"
+						width="30"
+						height="11"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-49"
 						stretchType="NoStretch"
 						positionType="FixRelativeToTop"
 						isPrintRepeatedValues="true"
@@ -779,12 +1086,12 @@
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="false"/>
 					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
-						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+						<font fontName="Helvetica" pdfFontName="Helvetica-Bold" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_SIGNATURE}]]></textFieldExpression>
+				<textFieldExpression   class="java.lang.String"><![CDATA[" / " + String.valueOf($V{PAGE_NUMBER})]]></textFieldExpression>
 				</textField>
 			</band>
-		</lastPageFooter>
+		</pageFooter>
 		<summary>
 			<band height="0"  isSplitAllowed="true" >
 			</band>
