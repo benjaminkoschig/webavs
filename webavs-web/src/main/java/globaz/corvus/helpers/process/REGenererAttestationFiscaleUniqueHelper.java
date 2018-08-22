@@ -48,8 +48,6 @@ public class REGenererAttestationFiscaleUniqueHelper extends PRAbstractHelper {
             process.setCodeIsoLangue(glabViewBean.getCodeIsoLangue());
             process.setSession((BSession) session);
             process.setTraiterPar(glabViewBean.getTraiterPar());
-            process.setContact(glabViewBean.getContact());
-            process.setTelephone(glabViewBean.getTelephone());
 
             process.setAdresse(glabViewBean.getAdresse());
             process.setConcerne(glabViewBean.getConcerne());

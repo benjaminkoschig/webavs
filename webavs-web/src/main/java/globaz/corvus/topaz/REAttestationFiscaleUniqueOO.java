@@ -1,9 +1,11 @@
 package globaz.corvus.topaz;
 
+import globaz.babel.api.ICTDocument;
 import globaz.babel.utils.CatalogueText;
 import globaz.caisse.helper.CaisseHelperFactory;
 import globaz.caisse.report.helper.CaisseHeaderReportBean;
 import globaz.caisse.report.helper.ICaisseReportHelperOO;
+import globaz.corvus.api.codesystem.IRECatalogueTexte;
 import globaz.corvus.api.topaz.IRENoDocumentInfoRom;
 import globaz.corvus.application.REApplication;
 import globaz.corvus.db.attestationsFiscales.REDonneesPourAttestationsFiscales;
@@ -18,11 +20,14 @@ import globaz.jade.print.server.JadePrintDocumentContainer;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
 import globaz.jade.publish.document.JadePublishDocumentInfoProvider;
 import globaz.prestation.ged.PRGedHelper;
+import globaz.prestation.interfaces.babel.PRBabelHelper;
 import globaz.prestation.tools.PRStringUtils;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import ch.globaz.common.properties.CommonProperties;
+import ch.globaz.common.properties.CommonPropertiesUtils;
 import ch.globaz.corvus.process.attestationsfiscales.REAgregateurDonneesPourAttestationsFiscales;
 import ch.globaz.corvus.process.attestationsfiscales.REFamillePourAttestationsFiscales;
 import ch.globaz.corvus.process.attestationsfiscales.RERentePourAttestationsFiscales;
@@ -37,6 +42,7 @@ public class REAttestationFiscaleUniqueOO extends REAbstractJobOO {
      * 
      */
     private static final long serialVersionUID = 1L;
+    private static final String NUM_CAISSE_FERCIAM = "106";
 
     public static final String FICHIER_MODELE_ENTETE_CORVUS = "RE_LETTRE_ATTESTATION_FISCALE";
 
@@ -72,8 +78,7 @@ public class REAttestationFiscaleUniqueOO extends REAbstractJobOO {
     private String titreAPI;
     private String total;
     private String traiterPar;
-    private String contact;
-    private String telephone;
+    private CatalogueText catalogueTextesAttestationsFiscales;
 
     public REAttestationFiscaleUniqueOO() {
         super(false);
@@ -110,13 +115,20 @@ public class REAttestationFiscaleUniqueOO extends REAbstractJobOO {
         titreAPI = "";
         total = "";
         traiterPar = "";
-        contact = "";
-        telephone = "";
     }
 
     @Override
     protected List<CatalogueText> definirCataloguesDeTextes() {
-        return null;
+        List<CatalogueText> catalogues = new ArrayList<CatalogueText>();
+
+        catalogueTextesAttestationsFiscales = new CatalogueText();
+        catalogueTextesAttestationsFiscales.setCodeIsoLangue(getCodeIsoLangue());
+        catalogueTextesAttestationsFiscales.setCsDomaine(IRECatalogueTexte.CS_RENTES);
+        catalogueTextesAttestationsFiscales.setCsTypeDocument(IRECatalogueTexte.CS_ATTESTATION_FISCALE);
+        catalogueTextesAttestationsFiscales.setNomCatalogue("openOffice");
+        catalogues.add(catalogueTextesAttestationsFiscales);
+
+        return catalogues;
     }
 
     /**
@@ -162,8 +174,17 @@ public class REAttestationFiscaleUniqueOO extends REAbstractJobOO {
         caisseHelper.setTemplateName(REAttestationFiscaleUniqueOO.FICHIER_MODELE_ENTETE_CORVUS);
 
         if (("true").equals(getSession().getApplication().getProperty("isAfficherDossierTraitePar"))) {
-            crBean.setNomCollaborateur(getTraiterPar() + " " + getContact());
-            crBean.setTelCollaborateur(getTelephone());
+            //Uniquement pour la FERCIAM
+            if((NUM_CAISSE_FERCIAM).equals(CommonPropertiesUtils.getValue(CommonProperties.KEY_NO_CAISSE))) {
+                CatalogueText catalogue = definirCataloguesDeTextes().get(0);
+                crBean.setNomCollaborateur(getTraiterPar() + " " + getTexte(catalogue, 6, 2));
+                crBean.setTelCollaborateur(getTexte(catalogue, 6, 3));
+            }else {
+              crBean.setNomCollaborateur(getTraiterPar() + " " + getSession().getUserFullName());
+              crBean.setTelCollaborateur(getSession().getUserInfo().getPhone());
+            }
+
+            
         }
 
         // Ajoute le libelle CONFIDENTIEL dans l'adresse de l'entete du document
@@ -467,14 +488,6 @@ public class REAttestationFiscaleUniqueOO extends REAbstractJobOO {
     public String getTraiterPar() {
         return traiterPar;
     }
-    
-    public String getContact() {
-        return contact;
-    }
-    
-    public String getTelephone() {
-        return telephone;
-    }
 
     public void setAdresse(String adresse) {
         this.adresse = adresse;
@@ -590,13 +603,5 @@ public class REAttestationFiscaleUniqueOO extends REAbstractJobOO {
 
     public void setTraiterPar(String traiterPar) {
         this.traiterPar = traiterPar;
-    }
-
-    public void setContact(String contact) {
-        this.contact = contact;
-    }
-    
-    public void setTelephone(String telephone) {
-        this.telephone = telephone;
     }
 }

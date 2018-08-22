@@ -57,6 +57,8 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import ch.globaz.common.properties.CommonProperties;
+import ch.globaz.common.properties.CommonPropertiesUtils;
 import ch.globaz.corvus.business.models.echeances.REMotifEcheance;
 import ch.globaz.prestation.domaine.CodePrestation;
 import ch.globaz.topaz.datajuicer.DocumentData;
@@ -79,6 +81,7 @@ public class REEcheanceRenteOO extends AbstractJadeJob {
     private static final String CDT_MOISSUIVANTECHE = "{MoisSuivantEcheance}";
     private static final String CDT_MONTANTPREST = "{MontantPrestation}";
     private static final String CDT_TITRE = "{titre}";
+    private static final String NUM_CAISSE_FERCIAM = "106";
 
     public static final String FICHIER_MODELE_ENTETE_CORVUS = "RE_LETTRE_ECHEANCE_RENTE";
 
@@ -1128,8 +1131,15 @@ public class REEcheanceRenteOO extends AbstractJadeJob {
             if (("true").equals(getSession().getApplication().getProperty("isAfficherDossierTraitePar"))) {
                 if (userDetails != null) {
                     String user = userDetails.getFirstname() + " " + userDetails.getLastname();
-                    crBean.setNomCollaborateur(document.getTextes(1).getTexte(1).getDescription() + " " + document.getTextes(1).getTexte(2).getDescription());
-                    crBean.setTelCollaborateur(document.getTextes(1).getTexte(3).getDescription());
+                    
+                 // Uniquement pour la FERCIAM
+                    if((NUM_CAISSE_FERCIAM).equals(CommonPropertiesUtils.getValue(CommonProperties.KEY_NO_CAISSE))) {
+                        crBean.setNomCollaborateur(document.getTextes(1).getTexte(1).getDescription() + " " + document.getTextes(1).getTexte(2).getDescription());
+                        crBean.setTelCollaborateur(document.getTextes(1).getTexte(3).getDescription());
+                    }else {
+                        crBean.setNomCollaborateur(document.getTextes(1).getTexte(1).getDescription() + " " + user);
+                        crBean.setTelCollaborateur(userDetails.getPhone());
+                    }
                 }
             }
 
