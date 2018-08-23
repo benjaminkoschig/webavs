@@ -1,5 +1,18 @@
 package globaz.phenix.listes.excel;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.math.BigDecimal;
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
+import org.apache.poi.hssf.usermodel.HSSFDataFormat;
+import org.apache.poi.hssf.usermodel.HSSFFont;
+import org.apache.poi.hssf.usermodel.HSSFFooter;
+import org.apache.poi.hssf.usermodel.HSSFPrintSetup;
+import org.apache.poi.hssf.usermodel.HSSFRichTextString;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import globaz.caisse.helper.CaisseHelperFactory;
 import globaz.framework.util.FWCurrency;
 import globaz.framework.util.FWMessage;
@@ -27,23 +40,10 @@ import globaz.phenix.db.principale.CPSortie;
 import globaz.phenix.db.principale.CPSortieManager;
 import globaz.phenix.db.principale.CPSortieMontant;
 import globaz.phenix.toolbox.CPToolBox;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.math.BigDecimal;
-import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFCellStyle;
-import org.apache.poi.hssf.usermodel.HSSFDataFormat;
-import org.apache.poi.hssf.usermodel.HSSFFont;
-import org.apache.poi.hssf.usermodel.HSSFFooter;
-import org.apache.poi.hssf.usermodel.HSSFPrintSetup;
-import org.apache.poi.hssf.usermodel.HSSFRichTextString;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 
 /**
  * Insérez la description du type ici. Date de création : (17.06.2003 14:38:38)
- * 
+ *
  * @author: jpa
  */
 public class CPListeConcordanceCotPersCompta {
@@ -58,6 +58,7 @@ public class CPListeConcordanceCotPersCompta {
     private String toAnneeDecision = "";
     private String toDiffAdmise = "";
     private HSSFWorkbook wb;
+    private String typeAssurance;
 
     /**
      * Commentaire relatif au constructeur TentDocument.
@@ -72,17 +73,19 @@ public class CPListeConcordanceCotPersCompta {
         sheet = wb.createSheet("COMP1");
     }
 
+    // @BMS-only type Assurance
     /**
      * Commentaire relatif au constructeur TentDocument.
      */
     public CPListeConcordanceCotPersCompta(BSession session, String fromAnnee, String toAnnee, String fromNumAff,
-            String tillNumAff) {
+            String tillNumAff, String typeAssurance) {
         this.session = session;
         wb = new HSSFWorkbook();
         setFromAnneeDecision(fromAnnee);
         setToAnneeDecision(toAnnee);
         setFromNumAff(fromNumAff);
         setTillNumAff(tillNumAff);
+        setTypeAssurance(typeAssurance);
         sheet = wb.createSheet(fromAnnee + " -" + toAnnee);
         HSSFPrintSetup ps = sheet.getPrintSetup();
         // format
@@ -94,7 +97,7 @@ public class CPListeConcordanceCotPersCompta {
 
     /**
      * Returns the fromAnneeDecision.
-     * 
+     *
      * @return String
      */
     public String getFromAnneeDecision() {
@@ -115,8 +118,8 @@ public class CPListeConcordanceCotPersCompta {
 
     public String getOutputFile() {
         try {
-            File f = File
-                    .createTempFile(session.getLabel("LISTE_TITRE1") + JACalendar.today().toStrAMJ() + "_", ".xls");
+            File f = File.createTempFile(session.getLabel("LISTE_TITRE1") + JACalendar.today().toStrAMJ() + "_",
+                    ".xls");
             f.deleteOnExit();
             FileOutputStream out = new FileOutputStream(f);
             wb.write(out);
@@ -130,7 +133,7 @@ public class CPListeConcordanceCotPersCompta {
 
     /**
      * Returns the processAppelant.
-     * 
+     *
      * @return BProcess
      */
     public BProcess getProcessAppelant() {
@@ -139,7 +142,7 @@ public class CPListeConcordanceCotPersCompta {
 
     /**
      * Returns the session.
-     * 
+     *
      * @return BSession
      */
     public BSession getSession() {
@@ -152,7 +155,7 @@ public class CPListeConcordanceCotPersCompta {
 
     /**
      * Returns the toAnneeDecision.
-     * 
+     *
      * @return String
      */
     public String getToAnneeDecision() {
@@ -165,7 +168,7 @@ public class CPListeConcordanceCotPersCompta {
 
     /**
      * Retourne le nombre de mois à facturer pour une cotisation Date de création : (30.04.2003 14:14:07)
-     * 
+     *
      * @return int
      * @param session
      *            globaz.globall.db.BSession
@@ -197,15 +200,14 @@ public class CPListeConcordanceCotPersCompta {
             cotiAf.retrieve();
             int anneeDebutCotisAf = JACalendar.getYear(cotiAf.getDateDebut());
             int anneeFinAcotiAf = JACalendar.getYear(cotiAf.getDateFin());
-            if ((anneeDebutCotisAf == anneeDecision)
-                    && (BSessionUtil.compareDateFirstGreater(session, cotiAf.getDateDebut(),
-                            cotisation.getDebutCotisation()))) {
+            if ((anneeDebutCotisAf == anneeDecision) && (BSessionUtil.compareDateFirstGreater(session,
+                    cotiAf.getDateDebut(), cotisation.getDebutCotisation()))) {
                 moisDebut = JACalendar.getMonth(cotiAf.getDateDebut());
             } else {
                 moisDebut = JACalendar.getMonth(cotisation.getDebutCotisation());
             }
-            if ((anneeFinAcotiAf == anneeDecision)
-                    && (BSessionUtil.compareDateFirstLower(session, cotiAf.getDateFin(), cotisation.getFinCotisation()))) {
+            if ((anneeFinAcotiAf == anneeDecision) && (BSessionUtil.compareDateFirstLower(session, cotiAf.getDateFin(),
+                    cotisation.getFinCotisation()))) {
                 moisFin = JACalendar.getMonth(cotiAf.getDateFin());
             } else {
                 moisFin = JACalendar.getMonth(cotisation.getFinCotisation());
@@ -225,8 +227,8 @@ public class CPListeConcordanceCotPersCompta {
                 // Si la date de début de décision > date de dernière
                 // facturation
                 // => ne rien facturer, le cas sera pris lors de la périodique
-                else if (BSessionUtil.compareDateFirstGreaterOrEqual(session, cotisation.getDebutCotisation(), "01."
-                        + passage.getDatePeriode())) {
+                else if (BSessionUtil.compareDateFirstGreaterOrEqual(session, cotisation.getDebutCotisation(),
+                        "01." + passage.getDatePeriode())) {
                     return 0;
                 }
                 // Détermination de la période minimum que le passage doit avoir
@@ -256,8 +258,8 @@ public class CPListeConcordanceCotPersCompta {
 
                 } else if (CodeSystem.PERIODICITE_ANNUELLE.equalsIgnoreCase(cotiAf.getPeriodicite())) {
                     if (!JadeStringUtil.isIntegerEmpty(cotiAf.getTraitementMoisAnnee())) {
-                        moisMinPossible = Integer
-                                .parseInt(JadeStringUtil.substring(cotiAf.getTraitementMoisAnnee(), 4)) + 1;
+                        moisMinPossible = Integer.parseInt(JadeStringUtil.substring(cotiAf.getTraitementMoisAnnee(), 4))
+                                + 1;
                     } else {
                         moisMinPossible = 13;
                     }
@@ -380,8 +382,9 @@ public class CPListeConcordanceCotPersCompta {
                         if (nbMois == 99) {
                             montantCotisation = cotisation.getMontantAnnuel();
                         } else {
-                            FWCurrency montantInt = new FWCurrency(Float.parseFloat(JANumberFormatter
-                                    .deQuote(cotisation.getMontantMensuel())) * nbMois);
+                            FWCurrency montantInt = new FWCurrency(
+                                    Float.parseFloat(JANumberFormatter.deQuote(cotisation.getMontantMensuel()))
+                                            * nbMois);
                             montantCotisation = montantInt.toString();
                         }
                     }
@@ -392,8 +395,8 @@ public class CPListeConcordanceCotPersCompta {
                     if (CPDecision.CS_SORTIE.equalsIgnoreCase(cotisation.getEtat())
                             || CPDecision.CS_REMISE.equalsIgnoreCase(cotisation.getTypeDecision())) {
                         montantCoti = new BigDecimal("0");
-                    } else if ((!JadeStringUtil.isIntegerEmpty(cotisation.getFinAffiliation()) && BSessionUtil
-                            .compareDateFirstGreaterOrEqual(getSession(), cotisation.getDebutDecision(),
+                    } else if ((!JadeStringUtil.isIntegerEmpty(cotisation.getFinAffiliation())
+                            && BSessionUtil.compareDateFirstGreaterOrEqual(getSession(), cotisation.getDebutDecision(),
                                     cotisation.getFinAffiliation()))
                             || (BSessionUtil.compareDateFirstLowerOrEqual(getSession(), cotisation.getFinDecision(),
                                     cotisation.getDebutAffiliation()))) {
@@ -432,8 +435,8 @@ public class CPListeConcordanceCotPersCompta {
                             // JANumberFormatter.round(montantImputation, 1, 2,
                             // JANumberFormatter.NEAR);
                             montantImputation = JANumberFormatter.round(cotiEncode, 1, 2, JANumberFormatter.NEAR);
-                            FWCurrency montantInt = new FWCurrency(Float.parseFloat(JANumberFormatter
-                                    .deQuote(montantCotisation)) - montantImputation);
+                            FWCurrency montantInt = new FWCurrency(
+                                    Float.parseFloat(JANumberFormatter.deQuote(montantCotisation)) - montantImputation);
                             montantCoti = montantInt.getBigDecimalValue();
                         } else {
                             montantCoti = new BigDecimal(JANumberFormatter.deQuote(montantCotisation));
@@ -443,8 +446,8 @@ public class CPListeConcordanceCotPersCompta {
                     // montant extourné
                     // donc montant de décision = 0 et on affiche la période
                     // d'affiliation
-                    if ((!JadeStringUtil.isIntegerEmpty(cotisation.getFinAffiliation()) && BSessionUtil
-                            .compareDateFirstGreaterOrEqual(getSession(), cotisation.getDebutDecision(),
+                    if ((!JadeStringUtil.isIntegerEmpty(cotisation.getFinAffiliation())
+                            && BSessionUtil.compareDateFirstGreaterOrEqual(getSession(), cotisation.getDebutDecision(),
                                     cotisation.getFinAffiliation()))
                             || (BSessionUtil.compareDateFirstLowerOrEqual(getSession(), cotisation.getFinDecision(),
                                     cotisation.getDebutAffiliation()))
@@ -472,20 +475,21 @@ public class CPListeConcordanceCotPersCompta {
                         sortieMontant.setAssurance(cotisation.getIdCotiAffiliation());
                         sortieMontant.retrieve();
                         if (!sortieMontant.isNew()) {
-                            montantCoti = montantCoti.subtract(new BigDecimal(JANumberFormatter.deQuote(sortieMontant
-                                    .getMontant())));
+                            montantCoti = montantCoti
+                                    .subtract(new BigDecimal(JANumberFormatter.deQuote(sortieMontant.getMontant())));
                         }
                     }
                     // Si tiers ou année différente => recherche du montant en compta
                     if (!premierEnreg
-                            && (!cotisation.getNumAffilie().equalsIgnoreCase(cotisationPrecedente.getNumAffilie()) || !cotisation
-                                    .getAnneeDecision().equalsIgnoreCase(cotisationPrecedente.getAnneeDecision()))) {
+                            && (!cotisation.getNumAffilie().equalsIgnoreCase(cotisationPrecedente.getNumAffilie())
+                                    || !cotisation.getAnneeDecision()
+                                            .equalsIgnoreCase(cotisationPrecedente.getAnneeDecision()))) {
                         // Recherche du compte annexe
                         CACompteAnnexe compte = new CACompteAnnexe();
                         compte.setSession(getSession());
                         compte.setAlternateKey(1);
-                        compte.setIdRole(CaisseHelperFactory.getInstance().getRoleForAffiliePersonnel(
-                                getSession().getApplication()));
+                        compte.setIdRole(CaisseHelperFactory.getInstance()
+                                .getRoleForAffiliePersonnel(getSession().getApplication()));
                         compte.setIdExterneRole(cotisationPrecedente.getNumAffilie());
                         compte.wantCallMethodBefore(false);
                         compte.retrieve();
@@ -508,8 +512,8 @@ public class CPListeConcordanceCotPersCompta {
                                     cotisationPrecedente.getDebutCotisation(), "");
                             String cptReduction = CPToolBox.compteurRubrique(getSession(), null,
                                     compte.getIdCompteAnnexe(), rub, cotisationPrecedente.getAnneeDecision());
-                            montantEnCompta = montantEnCompta.add(new BigDecimal(JANumberFormatter
-                                    .deQuote(cptReduction)));
+                            montantEnCompta = montantEnCompta
+                                    .add(new BigDecimal(JANumberFormatter.deQuote(cptReduction)));
 
                             // rub = cotiAf.getAssurance().getParametreAssuranceValeur(CodeSystem.GEN_PARAM_ASS_REMISE,
                             // cotisationPrecedente.getDebutCotisation(), "");
@@ -543,15 +547,15 @@ public class CPListeConcordanceCotPersCompta {
                             // Genre
                             cell = row.createCell((short) colNum++);
                             cell.setCellStyle(style);
-                            cell.setCellValue(new HSSFRichTextString(globaz.phenix.translation.CodeSystem.getLibelle(
-                                    getSession(), cotisationPrecedente.getGenreAffilie())));
+                            cell.setCellValue(new HSSFRichTextString(globaz.phenix.translation.CodeSystem
+                                    .getLibelle(getSession(), cotisationPrecedente.getGenreAffilie())));
                             // Année
                             cell = row.createCell((short) colNum++);
                             cell.setCellStyle(style);
                             cell.setCellValue(new HSSFRichTextString(cotisationPrecedente.getAnneeDecision()));
                             // periode affiliation
-                            if ((!JadeStringUtil.isIntegerEmpty(cotisationPrecedente.getFinAffiliation()) && BSessionUtil
-                                    .compareDateFirstGreaterOrEqual(getSession(),
+                            if ((!JadeStringUtil.isIntegerEmpty(cotisationPrecedente.getFinAffiliation())
+                                    && BSessionUtil.compareDateFirstGreaterOrEqual(getSession(),
                                             cotisationPrecedente.getDebutDecision(),
                                             cotisationPrecedente.getFinAffiliation()))
                                     || (BSessionUtil.compareDateFirstLowerOrEqual(getSession(),
@@ -599,8 +603,8 @@ public class CPListeConcordanceCotPersCompta {
             CACompteAnnexe compte = new CACompteAnnexe();
             compte.setSession(getSession());
             compte.setAlternateKey(1);
-            compte.setIdRole(CaisseHelperFactory.getInstance()
-                    .getRoleForAffiliePersonnel(getSession().getApplication()));
+            compte.setIdRole(
+                    CaisseHelperFactory.getInstance().getRoleForAffiliePersonnel(getSession().getApplication()));
             compte.setIdExterneRole(cotisationPrecedente.getNumAffilie());
             compte.wantCallMethodBefore(false);
             compte.retrieve();
@@ -658,10 +662,11 @@ public class CPListeConcordanceCotPersCompta {
                 cell = row.createCell((short) colNum++);
                 cell.setCellStyle(style);
                 cell.setCellValue(new HSSFRichTextString(cotisationPrecedente.getAnneeDecision()));
+
                 // periode affiliation
-                if ((!JadeStringUtil.isIntegerEmpty(cotisationPrecedente.getFinAffiliation()) && BSessionUtil
-                        .compareDateFirstGreaterOrEqual(getSession(), cotisationPrecedente.getDebutDecision(),
-                                cotisationPrecedente.getFinAffiliation()))
+                if ((!JadeStringUtil.isIntegerEmpty(cotisationPrecedente.getFinAffiliation())
+                        && BSessionUtil.compareDateFirstGreaterOrEqual(getSession(),
+                                cotisationPrecedente.getDebutDecision(), cotisationPrecedente.getFinAffiliation()))
                         || (BSessionUtil.compareDateFirstLowerOrEqual(getSession(),
                                 cotisationPrecedente.getFinDecision(), cotisationPrecedente.getDebutAffiliation()))) {
                     periodeAffiliation = cotisationPrecedente.getDebutAffiliation() + " - "
@@ -701,7 +706,7 @@ public class CPListeConcordanceCotPersCompta {
 
     /**
      * Sets the fromAnneeDecision.
-     * 
+     *
      * @param fromAnneeDecision
      *            The fromAnneeDecision to set
      */
@@ -723,7 +728,7 @@ public class CPListeConcordanceCotPersCompta {
 
     /**
      * Sets the processAppelant.
-     * 
+     *
      * @param processAppelant
      *            The processAppelant to set
      */
@@ -733,7 +738,7 @@ public class CPListeConcordanceCotPersCompta {
 
     /**
      * Sets the session.
-     * 
+     *
      * @param session
      *            The session to set
      */
@@ -771,8 +776,8 @@ public class CPListeConcordanceCotPersCompta {
         row = sheet.createRow(0);
         c = row.createCell((short) 0);
         try {
-            c.setCellValue(new HSSFRichTextString(session.getApplication().getProperty(
-                    "COMPANYNAME_" + getSession().getIdLangueISO().toUpperCase())));
+            c.setCellValue(new HSSFRichTextString(session.getApplication()
+                    .getProperty("COMPANYNAME_" + getSession().getIdLangueISO().toUpperCase())));
         } catch (Exception e) {
             c.setCellValue(new HSSFRichTextString(""));
         }
@@ -837,6 +842,7 @@ public class CPListeConcordanceCotPersCompta {
                 c.setCellValue(new HSSFRichTextString(getFromNumAff()));
                 c.setCellStyle(style3);
             }
+
             // Num Affilié de fin
             if (getTillNumAff().length() > 0) {
                 row = sheet.createRow(i++);
@@ -848,6 +854,24 @@ public class CPListeConcordanceCotPersCompta {
                 c.setCellStyle(style3);
                 c = row.createCell((short) 3);
                 c.setCellValue(new HSSFRichTextString(getTillNumAff()));
+                c.setCellStyle(style3);
+            }
+
+            if (getTypeAssurance().length() > 0) {
+                row = sheet.createRow(i++);
+                c = row.createCell((short) 0);
+                c.setCellValue(new HSSFRichTextString(""));
+                c.setCellStyle(style3);
+                c = row.createCell((short) 1);
+                c.setCellValue(new HSSFRichTextString(session.getLabel("LISTE_TYPE_ASSURANCE")));
+                c.setCellStyle(style3);
+                c = row.createCell((short) 3);
+                if (getTypeAssurance().equals("812001")) {
+                    c.setCellValue(new HSSFRichTextString(session.getLabel("LISTE_AVS")));
+                } else {
+                    c.setCellValue(new HSSFRichTextString(session.getLabel("LISTE_AF")));
+                }
+
                 c.setCellStyle(style3);
             }
         } catch (Exception e) {
@@ -877,7 +901,7 @@ public class CPListeConcordanceCotPersCompta {
 
     /**
      * Sets the toAnneeDecision.
-     * 
+     *
      * @param toAnneeDecision
      *            The toAnneeDecision to set
      */
@@ -887,5 +911,13 @@ public class CPListeConcordanceCotPersCompta {
 
     public void setToDiffAdmise(String toDiffAdmise) {
         this.toDiffAdmise = toDiffAdmise;
+    }
+
+    public String getTypeAssurance() {
+        return typeAssurance;
+    }
+
+    public void setTypeAssurance(String typeAssurance) {
+        this.typeAssurance = typeAssurance;
     }
 }

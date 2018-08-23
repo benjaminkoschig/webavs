@@ -120,6 +120,18 @@ function init(){
             <TD></TD>
             <TD></TD>
          </tr>
+         </tr>
+         	<td width="300">Versicherungstyp</td>
+         	<td>
+         		<ct:select name="code_type_assurance">
+  					<option selected value="812001">AHV</option>
+  					<option value="812002">FZ</option>
+				</ct:select>
+         	</td>
+         	<TD></TD>
+            <TD></TD>
+         <tr>
+         </tr>
      	 <TR>
             <TD width="150">E-Mail Adresse</TD>
             <TD><input name='eMailAddress' class='libelleLong' data-g-string="mandatory:true" value='<%=viewBean.getEMailAddress()%>'></TD>

@@ -121,6 +121,17 @@ function init(){
             <TD></TD>
             <TD></TD>
          </tr>
+         	<td width="300">Type d'assurance</td>
+         	<td>
+         		<ct:select name="code_type_assurance">
+  					<option selected value="812001">AVS</option>
+  					<option value="812002">AF</option>
+				</ct:select>
+         	</td>
+         	<TD></TD>
+            <TD></TD>
+         <tr>
+         </tr>
           
       	 <TR>
             <TD width="150">Adresse E-Mail</TD>

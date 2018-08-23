@@ -39,6 +39,8 @@ public class CPProcessListeConcordanceCotPersCompta extends BProcess {
     private String toAnneeDecision = "";
     private String toDiffAdmise = "";
 
+    private String code_type_assurance;
+
     /**
      * Commentaire relatif au constructeur TIExportProcess.
      */
@@ -97,7 +99,7 @@ public class CPProcessListeConcordanceCotPersCompta extends BProcess {
             manager.setFromNoAffilie(getFromAffilieDebut());
             manager.setTillNoAffilie(getFromAffilieFin());
             manager.setIsActiveOrRadie(Boolean.TRUE);
-            manager.setForGenreCotisation(globaz.naos.translation.CodeSystem.TYPE_ASS_COTISATION_AVS_AI);
+            manager.setForGenreCotisation(code_type_assurance);
             manager.setForExceptSpecification(CPDecision.CS_SALARIE_DISPENSE);
             manager.setInEtat(CPDecision.CS_FACTURATION + ", " + CPDecision.CS_PB_COMPTABILISATION + ", "
                     + CPDecision.CS_REPRISE + ", " + CPDecision.CS_SORTIE);
@@ -120,7 +122,7 @@ public class CPProcessListeConcordanceCotPersCompta extends BProcess {
 
             // Création du document
             CPListeConcordanceCotPersCompta excelDoc = new CPListeConcordanceCotPersCompta(getSession(),
-                    getFromAnneeDecision(), getToAnneeDecision(), getFromAffilieDebut(), getFromAffilieFin());
+                    getFromAnneeDecision(), getToAnneeDecision(), getFromAffilieDebut(), getFromAffilieFin(),getCode_type_assurance());
             excelDoc.setSession(getSession());
             excelDoc.setProcessAppelant(this);
             excelDoc.setFromDiffAdmise(getFromDiffAdmise());
@@ -280,5 +282,13 @@ public class CPProcessListeConcordanceCotPersCompta extends BProcess {
 
     public void setToDiffAdmise(String toDiffAdmise) {
         this.toDiffAdmise = toDiffAdmise;
+    }
+
+    public String getCode_type_assurance() {
+        return code_type_assurance;
+    }
+
+    public void setCode_type_assurance(String code_type_assurance) {
+        this.code_type_assurance = code_type_assurance;
     }
 }
