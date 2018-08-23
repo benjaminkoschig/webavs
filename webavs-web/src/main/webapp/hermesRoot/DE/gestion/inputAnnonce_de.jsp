@@ -30,7 +30,7 @@ boolean clearFields = request.getParameter("modeCancel")==null?false:request.get
 String detailLink = "hermes.parametrage.attenteEnvoi.afficher";
 idEcran="GAZ0004";
 String motif = viewBean.getReadOnlyFieldValue(IHEAnnoncesViewBean.MOTIF_ANNONCE,HttpUtils.getParamsAsMap(request));
-
+Boolean chkCreerArc61 = viewBean.getChkCreerArc61();
 
 
 boolean isDateNSS = globaz.hermes.utils.HEUtil.isNNSSActif(viewBean.getSession());
@@ -167,7 +167,6 @@ function init(){
 	btnDelLabel = "<<";
 	%>
 	document.forms[0].focus();	
-	
 }
 
 function postInit()
@@ -218,6 +217,9 @@ function postInit()
 	}else {
 	input[1].focus();
 	}
+	<% if(!chkCreerArc61){ %>
+		disableChkAjoutARC61(document.getElementById('idChkCreerArc61'));
+	<% } %>
 }
 
 
@@ -301,7 +303,35 @@ function updateForm(tag){
 			document.forms[0].elements('118011').value = element.paysCode;
 			document.forms[0].elements('TOLST118011').value = element.paysCode;
 		}		
-	}	
+	}
+	showOrHideChkAjoutARC61(tag);
+}
+// La case ne peut être cochée que s'il y a un nss
+function showOrHideChkAjoutARC61(tag){
+	if(tag != null && tag.input != null){
+		var nss = tag.input.value;
+		if(nss != ""){
+			document.getElementById('idChkCreerArc61').removeAttribute("disabled");
+		}else{
+			disableChkAjoutARC61(document.getElementById('idChkCreerArc61'));
+		}
+	}else{
+		disableChkAjoutARC61(document.getElementById('idChkCreerArc61'));
+	}
+}
+
+function disableChkAjoutARC61(chkBox){
+	if(<%=motif%> == "11"){
+		chkBox.style.backgroundColor = '#b3c4db';
+		chkBox.setAttribute("disabled","disabled");
+		chkBox.checked = false;
+	}
+}
+
+function chkNSSVide(){
+	if(document.getElementById('partialTOSTR118007').value == ""){
+		disableChkAjoutARC61(document.getElementById('idChkCreerArc61'));
+	}
 }
 
 function trim(valueToTrim)
@@ -704,7 +734,7 @@ function updFieldsBoundedToCategorie(){
 	           
 	            	
 	            	 <nss:nssPopup name="<%=keyName%>"  value="<%=HENNSSUtils.convertNegatifToNNSS(keyValue)%>" 
-	            	onChange="<%=onChange%>" cssclass="libelle" jspName="<%=select%>" 
+	            	onChange="<%=onChange%>" cssclass="libelle" jspName="<%=select%>"
 	            	avsMinNbrDigit="5" nssMinNbrDigit="8" loadValuesFromRequest="false" newnss="<%=nss%>"/>
 	            	
 			
@@ -824,7 +854,7 @@ function updFieldsBoundedToCategorie(){
 						} else {
 							ref1 = ref[0];
 							ref2 = ref[1];						
-						}	
+						}
 						session.setAttribute("hermesARCRI1", ref1);
 						session.setAttribute("hermesARCRI2", ref2);
 					}else {
@@ -832,8 +862,8 @@ function updFieldsBoundedToCategorie(){
 					    ref1 = (String) session.getAttribute("hermesARCRI1");
 					    if (null!=session.getAttribute("hermesARCRI2"))
 					    ref2 = (String) session.getAttribute("hermesARCRI2");
-					
 					}
+					
 					%>
 					<tr>
 						<td width="400">&nbsp;<%=champsListe.get(hermesKey)%></td>
@@ -1086,6 +1116,16 @@ function updFieldsBoundedToCategorie(){
 					<textarea disabled="true" name="adresseRentier" id="txtarea" rows="4" cols="40" class="forceDisable"  disabled="true" style=" background-color : #b3c4db;"><%=adr%></textarea> 
 				</td>
 			</tr>
+			<% // Ne concerne que les motifs 11 
+			if("11".equals(motif)){ %>
+			<tr>
+				<td width="400">&nbsp;<ct:FWLabel key="HERMES_JSP_GAZ0004_AJOUT_ARC_61"/></td>
+				<td>
+					<INPUT type="checkbox" value="on" id="idChkCreerArc61" onClick="chkNSSVide()" name="chkCreerArc61" <%=viewBean.getChkCreerArc61().booleanValue()?"CHECKED":""%>>&nbsp;
+				</td>
+			</tr>
+			
+			<% }%>
 			
 			
 			</tr>

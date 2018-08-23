@@ -30,7 +30,7 @@ boolean clearFields = request.getParameter("modeCancel")==null?false:request.get
 String detailLink = "hermes.parametrage.attenteEnvoi.afficher";
 idEcran="GAZ0004";
 String motif = viewBean.getReadOnlyFieldValue(IHEAnnoncesViewBean.MOTIF_ANNONCE,HttpUtils.getParamsAsMap(request));
-
+Boolean chkCreerArc61 = viewBean.getChkCreerArc61();
 
 
 boolean isDateNSS = globaz.hermes.utils.HEUtil.isNNSSActif(viewBean.getSession());
@@ -217,7 +217,9 @@ function postInit()
 	}else {
 	input[1].focus();
 	}
-	disableChkAjoutARC61(document.getElementById('idChkCreerArc61'));
+	<% if(!chkCreerArc61){ %>
+		disableChkAjoutARC61(document.getElementById('idChkCreerArc61'));
+	<% } %>
 }
 
 
@@ -323,6 +325,12 @@ function disableChkAjoutARC61(chkBox){
 		chkBox.style.backgroundColor = '#b3c4db';
 		chkBox.setAttribute("disabled","disabled");
 		chkBox.checked = false;
+	}
+}
+
+function chkNSSVide(){
+	if(document.getElementById('partialTOSTR118007').value == ""){
+		disableChkAjoutARC61(document.getElementById('idChkCreerArc61'));
 	}
 }
 
@@ -726,7 +734,7 @@ function updFieldsBoundedToCategorie(){
 	           
 	            	
 	            	 <nss:nssPopup name="<%=keyName%>"  value="<%=HENNSSUtils.convertNegatifToNNSS(keyValue)%>" 
-	            	onChange="<%=onChange%>" cssclass="libelle" jspName="<%=select%>" 
+	            	onChange="<%=onChange%>" cssclass="libelle" jspName="<%=select%>"
 	            	avsMinNbrDigit="5" nssMinNbrDigit="8" loadValuesFromRequest="false" newnss="<%=nss%>"/>
 	            	
 			
@@ -1113,7 +1121,7 @@ function updFieldsBoundedToCategorie(){
 			<tr>
 				<td width="400">&nbsp;<ct:FWLabel key="HERMES_JSP_GAZ0004_AJOUT_ARC_61"/></td>
 				<td>
-					<INPUT type="checkbox" value="on" id="idChkCreerArc61" name="chkCreerArc61" <%=viewBean.getChkCreerArc61().booleanValue()?"CHECKED":""%>>&nbsp;
+					<INPUT type="checkbox" value="on" id="idChkCreerArc61" onClick="chkNSSVide()" name="chkCreerArc61" <%=viewBean.getChkCreerArc61().booleanValue()?"CHECKED":""%>>&nbsp;
 				</td>
 			</tr>
 			
