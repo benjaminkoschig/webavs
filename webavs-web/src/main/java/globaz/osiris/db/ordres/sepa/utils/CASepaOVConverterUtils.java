@@ -1,12 +1,5 @@
 package globaz.osiris.db.ordres.sepa.utils;
 
-import globaz.globall.util.JACCP;
-import globaz.jade.client.util.JadeStringUtil;
-import globaz.osiris.api.ordre.APICommonOdreVersement;
-import globaz.osiris.db.ordres.sepa.AbstractSepa.SepaException;
-import globaz.osiris.db.ordres.sepa.exceptions.ISODataMissingXMLException;
-import globaz.osiris.db.utils.CAAdressePaiementFormatter;
-import globaz.osiris.external.IntAdressePaiement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.six_interbank_clearing.de.pain_001_001_03_ch_02.CategoryPurpose1CHCode;
@@ -15,6 +8,14 @@ import com.six_interbank_clearing.de.pain_001_001_03_ch_02.GenericAccountIdentif
 import com.six_interbank_clearing.de.pain_001_001_03_ch_02.LocalInstrument2Choice;
 import com.six_interbank_clearing.de.pain_001_001_03_ch_02.PaymentMethod3Code;
 import com.six_interbank_clearing.de.pain_001_001_03_ch_02.ServiceLevel8Choice;
+import globaz.globall.util.JACCP;
+import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.properties.JadePropertiesService;
+import globaz.osiris.api.ordre.APICommonOdreVersement;
+import globaz.osiris.db.ordres.sepa.AbstractSepa.SepaException;
+import globaz.osiris.db.ordres.sepa.exceptions.ISODataMissingXMLException;
+import globaz.osiris.db.utils.CAAdressePaiementFormatter;
+import globaz.osiris.external.IntAdressePaiement;
 
 public class CASepaOVConverterUtils {
 
@@ -48,7 +49,7 @@ public class CASepaOVConverterUtils {
 
     /**
      * for hashmap key to regroup Blevels
-     * 
+     *
      * @param ov
      * @return String to identify in hashing compare BVR/virement
      * @throws Exception
@@ -64,7 +65,7 @@ public class CASepaOVConverterUtils {
 
     /**
      * for hashmap key to regroup Blevels
-     * 
+     *
      * @param ov
      * @return String to identify in hashing compare bankANDccp/mandat/null
      * @throws Exception
@@ -75,7 +76,7 @@ public class CASepaOVConverterUtils {
 
     /**
      * for hashmap key to regroup Blevels
-     * 
+     *
      * @param ov
      * @return String to identify in hashing compare
      * @throws Exception
@@ -121,14 +122,19 @@ public class CASepaOVConverterUtils {
 
     public static CategoryPurpose1CHCode getCtgyPurp(APICommonOdreVersement ov) {
         CategoryPurpose1CHCode ctgyPurp = new CategoryPurpose1CHCode();
-        // TODO determiner sur quel critère lpurpose code change
-        ctgyPurp.setCd(ExternalCategoryPurpose1_RENTE_AVS_AI);
+        // TODO ajouter la logique de changement de valeur en accord aux paramètres de l'organe d'execution
+        String typeFormatage = JadePropertiesService.getInstance().getProperty("common.formatNumAffilie");
+        if (typeFormatage.contains("BMSNumAffilie")) {
+            ctgyPurp.setCd(ExternalCategoryPurpose1_AUTRE);
+        } else {
+            ctgyPurp.setCd(ExternalCategoryPurpose1_RENTE_AVS_AI);
+        }
         return ctgyPurp;
     }
 
     /**
      * identifiant unique de la transaction
-     * 
+     *
      * @param ov
      * @return instructionId
      */
@@ -138,7 +144,7 @@ public class CASepaOVConverterUtils {
 
     /**
      * identifiant unique de la transaction
-     * 
+     *
      * @param ov
      * @return instructionId
      */
@@ -161,7 +167,7 @@ public class CASepaOVConverterUtils {
 
     /**
      * retourne le nom du bénéficiaire de l'OP/OV en question
-     * 
+     *
      * @param ov
      * @return String, nom du bénéficiaire
      * @throws Exception
@@ -244,7 +250,7 @@ public class CASepaOVConverterUtils {
 
     /**
      * Récupération selon l'ancien formateur du numéro d'ahdérent BVR dans le cas de paiement type 1 (BVR)
-     * 
+     *
      * @param ov
      * @return
      * @throws Exception
