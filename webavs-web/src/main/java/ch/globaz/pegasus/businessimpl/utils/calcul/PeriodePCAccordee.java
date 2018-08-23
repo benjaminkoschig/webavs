@@ -783,7 +783,11 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
                 throw new CalculException("found null tuple(s)");
             }
             for (TupleDonneeRapport tuple : personneRoot.getEnfants().values()) {
-                sumTuple(root, tuple);
+                if(!IPCValeursPlanCalcul.CLE_REVEN_RENAUTRE_RENTE_ETRANGERE_TAUX_CHANGE.equals(tuple.getLabel())) {
+                    sumTuple(root, tuple);
+                } else {
+                    mixTuple(root, tuple);
+                }
             }
         }
         return root;
@@ -1390,6 +1394,30 @@ public class PeriodePCAccordee implements Serializable, IPeriodePCAccordee {
 
         for (TupleDonneeRapport enfant : tupleAjoute.getEnfants().values()) {
             sumTuple(tuple, enfant);
+        }
+    }
+       
+    /**
+     * Fonction récursive qui mix 2 tuples ensemble, ainsi que leurs enfants. Si deux enfants ont un identifiant
+     * commun, seul le premier est gardé
+     * 
+     * @param base
+     *            le tuple auquel sera mixé les valeurs de l'autre tuple
+     * @param tupleAjoute
+     *            le tuple à mixer
+     */
+    private void mixTuple(TupleDonneeRapport base, TupleDonneeRapport tupleAjoute) {
+        final String key = tupleAjoute.getLabel();
+        TupleDonneeRapport tuple;
+        if (base.getEnfants().containsKey(key)) {
+            tuple = base.getEnfants().get(key);
+        } else {
+            tuple = new TupleDonneeRapport(tupleAjoute);
+            base.getEnfants().put(key, tuple);
+        }
+
+        for (TupleDonneeRapport enfant : tupleAjoute.getEnfants().values()) {
+            mixTuple(tuple, enfant);
         }
     }
 

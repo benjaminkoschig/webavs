@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ch.globaz.common.domaine.Date;
 import ch.globaz.common.domaine.Montant;
+import ch.globaz.pegasus.business.domaine.donneeFinanciere.DonneeFinanciereType;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.DonneesFinancieresContainer;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.Filtre;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.ProprieteType;
@@ -16,6 +17,8 @@ import ch.globaz.pegasus.business.domaine.donneeFinanciere.autreRente.AutreRente
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.autreRente.AutreRenteGenre;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.autreRente.AutresRentes;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.bienImmobilier.BienImmobilier;
+import ch.globaz.pegasus.business.domaine.donneeFinanciere.bienImmobilier.bienImmobilierNonHabitable.BienImmobilierNonHabitable;
+import ch.globaz.pegasus.business.domaine.donneeFinanciere.bienImmobilier.bienImmobilierNonHabitable.BienImmobilierNonHabitableType;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.pensionAlimentaire.PensionAlimentaireType;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.renteAvsAi.RenteAvsAi;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.taxeJournalierHome.TaxeJournaliereHome;
@@ -211,6 +214,11 @@ public class PersonneElementsCalculConverter {
                 canAdd = false;
                 break;
             } else if (!(bienImmo.getDette().isZero() && bienImmo.getInteretHypothecaire().isZero())) {
+                canAdd = false;
+                break;
+            } else if(DonneeFinanciereType.BIEN_IMMOBILIER_NON_HABITABLE.equals(bienImmo.getTypeDonneeFinanciere())
+                    && ProprieteType.USUFRUITIER.equals(bienImmo.getProprieteType())
+                    && BienImmobilierNonHabitableType.TERRAIN_AGRICOLE.equals(((BienImmobilierNonHabitable)bienImmo).getTypeDeBien())) {
                 canAdd = false;
                 break;
             }

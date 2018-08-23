@@ -279,34 +279,31 @@ public class Converter2469_101 implements Converter<RpcData, ContentType> {
                 .setScale(2, BigDecimal.ROUND_HALF_UP));
         calcElmnt.setVitalNeeds(calculationElements.getVitalNeeds().longValue());
         calcElmnt.setChildren(calculationElements.getChildren());
-        if (calculationElements.getRealProperty() != null) { //
+        if (calculationElements.isProperty()) { //
             RealPropertyType realProp = factory.createRealPropertyType();
-            AnnonceRealProperty arp = calculationElements.getRealProperty();
-            realProp.setRealProperty(arp.getRealProperty().longValue());
-            realProp.setMortgageDebts(arp.getMortgageDebts().longValue());
-            realProp.setPropertyIncome(arp.getPropertyIncome().longValue());
-            realProp.setMortgageInterest(arp.getMortgageInterest().longValue());
-            realProp.setMaintenanceFees(arp.getMaintenanceFees().longValue());
-            realProp.setInterestFeesEligible(arp.getInterestFeesEligible().longValue());
+            realProp.setRealProperty(calculationElements.getRealProperty().longValue());
+            realProp.setMortgageDebts(calculationElements.getMortgageDebts().longValue());
+            realProp.setPropertyIncome(calculationElements.getPropertyIncome().longValue());
+            realProp.setMortgageInterest(calculationElements.getMortgageInterest().longValue());
+            realProp.setMaintenanceFees(calculationElements.getMaintenanceFees().longValue());
+            realProp.setInterestFeesEligible(calculationElements.getInterestFeesEligible().longValue());
             calcElmnt.setRealProperty(realProp);
         }
-        if (calculationElements.getHousingOwner() != null) { // annonce.isProrietaire()
+        if (calculationElements.isHousingOwner()) { // annonce.isProrietaire()
             HousingOwnerType housingOwner = factory.createHousingOwnerType();
-            AnnonceHousingOwner annonceHousingOwner = calculationElements.getHousingOwner();
-            housingOwner.setSelfInhabitedProperty(annonceHousingOwner.getSelfInhabitedProperty().longValue());
-            housingOwner.setSelfInhabitedPropertyDeductible(annonceHousingOwner.getSelfInhabitedPropertyDeductible()
+            housingOwner.setSelfInhabitedProperty(calculationElements.getSelfInhabitedProperty().longValue());
+            housingOwner.setSelfInhabitedPropertyDeductible(calculationElements.getSelfInhabitedPropertyDeductible()
                     .longValue());
-            housingOwner.setRentalValue(annonceHousingOwner.getRentalValue().longValue());
+            housingOwner.setRentalValue(calculationElements.getRentalValue().longValue());
             calcElmnt.setHousingOwner(housingOwner);
         }
-        if (calculationElements.getRents() != null) {// annonce.hasLoyers()
+        if (calculationElements.isRent()) {// annonce.hasLoyers()
             RentsType rents = factory.createRentsType();
-            AnnonceRents annonceRents = calculationElements.getRents();
-            rents.setGrossRental(annonceRents.getGrossRental().longValue());
-            rents.setRentCategory(annonceRents.getRentCategory());
-            rents.setRentGrossTotal(annonceRents.getRentGrossTotal().longValue());
-            rents.setRentGrossTotalPart(annonceRents.getRentGrossTotalPart().longValue());
-            rents.setMaxRent(annonceRents.getMaxRent().longValue());
+            rents.setGrossRental(calculationElements.getGrossRental().longValue());
+            rents.setRentCategory(calculationElements.getRentCategory());
+            rents.setRentGrossTotal(calculationElements.getRentGrossTotal().longValue());
+            rents.setRentGrossTotalPart(calculationElements.getRentGrossTotalPart().longValue());
+            rents.setMaxRent(calculationElements.getMaxRent().longValue());
             calcElmnt.setRents(rents);
         }
         return calcElmnt;

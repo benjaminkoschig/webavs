@@ -3,7 +3,9 @@ package ch.globaz.pegasus.rpc.domaine;
 import ch.globaz.common.domaine.Montant;
 import ch.globaz.pegasus.business.domaine.pca.Calcul;
 import ch.globaz.pegasus.business.domaine.pca.PcaEtatCalcul;
+import ch.globaz.pegasus.business.exceptions.models.calcul.CalculException;
 import ch.globaz.pegasus.rpc.businessImpl.converter.Converter2469_101;
+import ch.globaz.pegasus.utils.PCApplicationUtil;
 
 public class RpcCalcul {
 
@@ -243,6 +245,13 @@ public class RpcCalcul {
         }
         return Montant.ZERO_ANNUEL;
     }
+    
+    /**
+     * FC22
+     */
+    public Montant getDepensesLoyerValeurLocativeAppHabite() {
+        return calcul.getDepensesLoyerValeurLocativeAppHabite();
+    }
 
     /**
      * FC19
@@ -270,8 +279,12 @@ public class RpcCalcul {
      */
     public Montant getLoyerMaximum() {
         Montant plafondFed = getPlafondFederal();
-        if (plafondFed != null && plafondFed.greater(Montant.ZERO)) {
-            return plafondFed;
+        try {
+            if (!PCApplicationUtil.isCantonVD() && plafondFed != null && plafondFed.greater(Montant.ZERO)) {
+                return plafondFed;
+            }
+        } catch (CalculException e) {
+            e.printStackTrace();
         }
         return calcul.getLegendeDepensesLoyerPlafonne();
     }
@@ -291,6 +304,10 @@ public class RpcCalcul {
         somme = somme.add(calcul.getRevenusActiviteLucrativeIndependante());
         somme = somme.add(calcul.getRevenusActiviteLucrativeIndependanteAgricole());
         return somme;
+    }
+    
+    public Montant getRevenusActiviteLucrativeIndependanteAgricole() {
+        return calcul.getRevenusActiviteLucrativeIndependanteAgricole();
     }
 
     /**

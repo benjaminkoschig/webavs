@@ -57,13 +57,11 @@ public class AnnoncePersonalCalculationElements {
         if (pcaDecision.getPca().getGenre().isDomicile()) {
             patientContributionCategory = XSD_PCC_NON_PRIS_EN_COMPTE;
         } else {
+            patientContributionCategory = XSD_PCC_PARTIE_DE_LA_TAXE_HOME;
             if (personData.hasResidenceContributions()) {
                 patientContributionCategory = XSD_PCC_EN_SUS_DE_LA_TAXE_HOME;
             }
-            patientContributionCategory = XSD_PCC_PARTIE_DE_LA_TAXE_HOME;
-            if (!personData.getHomeIsApiFacturee()) {
-                disabledAllowance = personData.getRenteApi();
-            }
+            disabledAllowance = personData.getRenteApi();
         }
         hcFlatHelp = personData.getPrimeLamal();
         if (hcEffectiveHelp()) {

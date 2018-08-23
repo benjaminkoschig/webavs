@@ -94,9 +94,9 @@ public class AnnonceDecision {
             }
 
             persons.add(person);
-        }
+        }      
     }
-
+    
     public void setDeliveryOffice(InfoCaisse infoCaisse) {
         deliveryOffice = new AnnonceDeliveryOffice(infoCaisse);
     }
@@ -210,81 +210,63 @@ public class AnnonceDecision {
     // Accesseurs AnnonceCalculationElements.AnnonceRealProperty
 
     public Montant getRealProperty() {
-        return calculationElements.getRealProperty() != null ? calculationElements.getRealProperty().getRealProperty()
-                : Montant.ZERO_ANNUEL;
+        return calculationElements.getRealProperty();
     }
 
     public Montant getMortgageDebts() {
-        return calculationElements.getRealProperty() != null ? calculationElements.getRealProperty().getMortgageDebts()
-                : Montant.ZERO_ANNUEL;
+        return calculationElements.getMortgageDebts();
     }
 
     public Montant getPropertyIncome() {
-        return calculationElements.getRealProperty() != null ? calculationElements.getRealProperty().getPropertyIncome()
-                : Montant.ZERO_ANNUEL;
+        return calculationElements.getPropertyIncome();
     }
 
     public Montant getMortgageInterest() {
-        return calculationElements.getRealProperty() != null
-                ? calculationElements.getRealProperty().getMortgageInterest()
-                : Montant.ZERO_ANNUEL;
+        return calculationElements.getMortgageInterest();
     }
 
     public Montant getMaintenanceFees() {
-        return calculationElements.getRealProperty() != null
-                ? calculationElements.getRealProperty().getMaintenanceFees()
-                : Montant.ZERO_ANNUEL;
+        return calculationElements.getMaintenanceFees();
     }
 
     public Montant getInterestFeesEligible() {
-        return calculationElements.getRealProperty() != null
-                ? calculationElements.getRealProperty().getInterestFeesEligible()
-                : Montant.ZERO_ANNUEL;
+        return calculationElements.getInterestFeesEligible();
     }
 
     // Accesseurs AnnonceCalculationElements.AnnonceHousingOwner
 
     public Montant getSelfInhabitedProperty() {
-        return calculationElements.getHousingOwner() != null
-                ? calculationElements.getHousingOwner().getSelfInhabitedProperty()
-                : Montant.ZERO_ANNUEL;
+        return calculationElements.getSelfInhabitedProperty();
     }
 
     public Montant getSelfInhabitedPropertyDeductible() {
-        return calculationElements.getHousingOwner() != null
-                ? calculationElements.getHousingOwner().getSelfInhabitedPropertyDeductible()
-                : Montant.ZERO_ANNUEL;
+        return calculationElements.getSelfInhabitedPropertyDeductible();
     }
 
     public Montant getRentalValue() {
-        return calculationElements.getHousingOwner() != null ? calculationElements.getHousingOwner().getRentalValue()
-                : Montant.ZERO_ANNUEL;
+        return calculationElements.getRentalValue();
     }
 
     // Accesseurs AnnonceCalculationElements.AnnonceRents
 
     public Montant getGrossRental() {
-        return calculationElements.getRents() != null ? calculationElements.getRents().getGrossRental()
-                : Montant.ZERO_ANNUEL;
+        return calculationElements.getGrossRental();
     }
 
     public String getRentCategory() {
-        return calculationElements.getRents() != null ? calculationElements.getRents().getRentCategory() : null;
+        return calculationElements.getRentCategory();
     }
 
     public Montant getRentGrossTotal() {
-        return calculationElements.getRents() != null ? calculationElements.getRents().getRentGrossTotal()
-                : Montant.ZERO_ANNUEL;
+        return calculationElements.getRentGrossTotal();
     }
 
     public Montant getRentGrossTotalPart() {
-        return calculationElements.getRents() != null ? calculationElements.getRents().getRentGrossTotalPart()
-                : Montant.ZERO_ANNUEL;
+        return calculationElements.getRentGrossTotalPart();
     }
 
     public Montant getMaxRent() {
-        return calculationElements.getRents() != null ? calculationElements.getRents().getMaxRent()
-                : Montant.ZERO_ANNUEL;
+        return calculationElements.getMaxRent();
     }
 
     // Accesseurs AnnonceElAmounts
@@ -350,8 +332,8 @@ public class AnnonceDecision {
 
         for (AnnoncePerson person : persons) {
             if (person.getPersonalCalculationElements() != null
-                    && person.getPersonalCalculationElements().getDisabledAllowance() != null) {
-                sum = sum.add(person.getPersonalCalculationElements().getDisabledAllowance());
+                    && person.getPersonalCalculationElements().getPensionCategory().getPension() != null) {
+                sum = sum.add(person.getPersonalCalculationElements().getPensionCategory().getPension().getDisabledAllowance());
             }
         }
 

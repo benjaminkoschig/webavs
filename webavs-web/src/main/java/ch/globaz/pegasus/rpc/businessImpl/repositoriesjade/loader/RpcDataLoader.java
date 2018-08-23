@@ -6,6 +6,7 @@ import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAv
 import java.beans.XMLDecoder;
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -81,6 +82,8 @@ public class RpcDataLoader {
     private final Date dateMoisAnnoncesPrise;
     private final Double toleranceDifferenceAnnonces;
     private Boolean parallel = true;
+    //private List<String> listNss = Arrays.asList("756.1917.4419.19"); 
+    private List<String> listNss = new ArrayList<>();
 
     public RpcDataLoader() {
         try {
@@ -207,11 +210,16 @@ public class RpcDataLoader {
         LOG.info("Decisions de type 'Mois suivant' du mois précédent : {}", decionsMoisSuivantDuMoisPrecedent.size());
         decionsPriseDansLeMois.addAll(decionsMoisSuivantDuMoisPrecedent);
 
-        /* Control de population: Retours annonce en erreur dans le lot precedent et avec fin de droit */
-        List<RPCDecionsPriseDansLeMois> decionsEnErreurMoisPrecedent = loadDecisionEnErreurMoisPrecedent(dateMoisAnnoncesPrise);
-        infos.setNbErrorRetoursAnnoncePreviousMonth(decionsEnErreurMoisPrecedent.size());
-        LOG.info("Retours decisions en erreur : {}", infos.getNbErrorRetoursAnnoncePreviousMonth());
-        decionsPriseDansLeMois.addAll(decionsEnErreurMoisPrecedent);
+//        /* Control de population: Retours annonce en erreur dans le lot precedent et avec fin de droit */
+//        List<RPCDecionsPriseDansLeMois> decionsEnErreurMoisPrecedent = loadDecisionEnErreurMoisPrecedent(dateMoisAnnoncesPrise);
+//        infos.setNbErrorRetoursAnnoncePreviousMonth(decionsEnErreurMoisPrecedent.size());
+//        LOG.info("Retours decisions en erreur : {}", infos.getNbErrorRetoursAnnoncePreviousMonth());
+//        decionsPriseDansLeMois.addAll(decionsEnErreurMoisPrecedent);
+//        
+//        /* Charger les décisions avec des id version de droit supérieures au décisiondes Retours annonce en erreur  */
+//        List<RPCDecionsPriseDansLeMois> decionsSuperieurErreur = loadDecisionVersionDroitSupDecisionErreur(decionsEnErreurMoisPrecedent);
+//        LOG.info("Retours decisions supérieures aux décisions en erreur : {}", decionsSuperieurErreur.size());
+//        decionsPriseDansLeMois.addAll(decionsSuperieurErreur);
 
         Set<String> idsVersionDroitNotIn = new HashSet<String>();
         for (RPCDecionsPriseDansLeMois rpcDecionsPriseDansLeMois : decionsPriseDansLeMois) {
@@ -229,6 +237,7 @@ public class RpcDataLoader {
 
         RpcDatasFilter filter = new RpcDatasFilter();
         decionsPriseDansLeMois.addAll(currentPca);
+        
         Map<String, List<RPCDecionsPriseDansLeMois>> mapDecision = filter
                 .filtreAndGroupByIdVersionDroit(decionsPriseDansLeMois);
 
@@ -239,7 +248,7 @@ public class RpcDataLoader {
 
         return load(mapDecision, decisionsRefus);
     }
-
+    
     private void removeDateFin(List<RPCDecionsPriseDansLeMois> currentPca) {
         for (RPCDecionsPriseDansLeMois rpcDecionsPriseDansLeMois : currentPca) {
             rpcDecionsPriseDansLeMois.getSimplePCAccordee().setDateFin(null);
@@ -432,6 +441,9 @@ public class RpcDataLoader {
         search.setForDateDecisionMinMoins1(dateMoisAnnoncesPrise.addMonth(-1).getFirstDayOfMonth().getSwissValue());
         search.setForDateDecisionMoisAnneMoins1(dateMoisAnnoncesPrise.addMonth(-1).getSwissMonthValue());
         search.setForDebutDecision(dateMoisAnnoncesPrise.getMoisAnneeFormatte());
+        if(!listNss.isEmpty()) {
+            search.setForNss(listNss);
+        }
 
         LOG.info("requête loadDecisionPriseDansLeMois");
         return RepositoryJade.searchForAndFetch(search, limitSize);
@@ -447,11 +459,14 @@ public class RpcDataLoader {
         search.setForDateDecisionMaxMoins1(dateMoisPrecedent.addMonth(-1).getLastDayOfMonth().getSwissValue());
         search.setForDateDecisionMinMoins1(dateMoisPrecedent.addMonth(-1).getFirstDayOfMonth().getSwissValue());
         search.setForDateDecisionMoisAnneMoins1(dateMoisPrecedent.addMonth(-1).getSwissMonthValue());
+        if(!listNss.isEmpty()) {
+            search.setForNss(listNss);
+        }
 
         LOG.info("requête loadDecisionMoisSuivantDuMoisPrecendant");
         return RepositoryJade.searchForAndFetch(search, limitSize);
     }
-
+    
     // Control de population de retours d'annonces
     private List<RPCDecionsPriseDansLeMois> loadDecisionEnErreurMoisPrecedent(Date dateDernierPaiement) {
         List<String> decisionsEnErreur = new ArrayList<String>();
@@ -479,11 +494,36 @@ public class RpcDataLoader {
                 search.setForDateDecisionMoisAnneMoins1(dateDernierPaiement.addMonth(-1).getLastDayOfMonth()
                         .getSwissMonthValue());
                 search.setForIdsDecsion(decisionsEnErreur);
+                if(!listNss.isEmpty()) {
+                    search.setForNss(listNss);
+                }
                 LOG.info("requête loadDecisionEnErreurMoisPrecedent");
                 return RepositoryJade.searchForAndFetch(search, limitSize);
             }
         }
         return new ArrayList<RPCDecionsPriseDansLeMois>();
+    }
+    
+    private List<RPCDecionsPriseDansLeMois> loadDecisionVersionDroitSupDecisionErreur(List<RPCDecionsPriseDansLeMois> decisions) {
+        List<RPCDecionsPriseDansLeMois> list = new ArrayList<>();
+        RPCDecionsPriseDansLeMoisSearch search = new RPCDecionsPriseDansLeMoisSearch();
+        search.setWhereKey("decisionVersionDroitSupDecisionErreur");
+        Date dateMoisPrecedent = dateMoisAnnoncesPrise.addMonth(-1);
+        search.setForDateDecisionMax(dateMoisPrecedent.getLastDayOfMonth().getSwissValue());
+        search.setForDateDecisionMaxMoins1(dateMoisPrecedent.addMonth(-1).getLastDayOfMonth().getSwissValue());
+        search.setForDateDecisionMoisAnneMoins1(dateMoisPrecedent.addMonth(-1).getSwissMonthValue());
+        if(!listNss.isEmpty()) {
+            search.setForNss(listNss);
+        }
+        for(RPCDecionsPriseDansLeMois decision : decisions) {
+            search.setForIdVersionDroitSup(decision.getSimpleVersionDroit().getIdVersionDroit());
+            search.setForIdDemande(decision.getIdDemande());
+            List<RPCDecionsPriseDansLeMois> result = RepositoryJade.searchForAndFetch(search, limitSize);
+            list.addAll(result);
+        }
+
+        LOG.info("requête loadDecisionVersionDroitSupDecisionErreur");
+        return list;
     }
 
     private List<DecisionRefus> loadDecisionsRefus(Date dateDernierPaiement) {
@@ -530,6 +570,9 @@ public class RpcDataLoader {
         search.setForCsEtatDroit(EtatDroit.VALIDE.getValue());
         search.setForCsEtatPca(PcaEtat.VALIDE.getValue());
         search.setForDebutDecision(dateDernierPaiement.getMoisAnneeFormatte());
+        if(!listNss.isEmpty()) {
+            search.setForNss(listNss);
+        }
 
         // Ou date ultérieur au mois paiement
         search.setForDateFinMoisFutur(dateDernierPaiement.getSwissMonthValue());

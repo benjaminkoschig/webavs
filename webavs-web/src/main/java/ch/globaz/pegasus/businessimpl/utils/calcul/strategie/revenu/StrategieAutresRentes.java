@@ -126,7 +126,7 @@ public class StrategieAutresRentes extends StrategieCalculRevenu implements IStr
                 tupleTaux.setLabel(IPCValeursPlanCalcul.CLE_REVEN_RENAUTRE_RENTE_ETRANGERE_TAUX_CHANGE.toString());
 
                 // Add taux conversion for devise. One key for each currency
-                if (!tupleTaux.containsValeurEnfant(codeDevise)) {
+                if (!tupleTaux.containsValeurEnfant(codeDevise) && !resultatExistant.containsValeurEnfant(codeDevise)) {
                     this.getOrCreateChild(tupleTaux, codeDevise, setTauxDeChange(tauxChange));
                 }
             }
