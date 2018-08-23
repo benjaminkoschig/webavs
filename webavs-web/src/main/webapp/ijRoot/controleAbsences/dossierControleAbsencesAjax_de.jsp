@@ -1,3 +1,4 @@
+<%@page import="ch.admin.ofit.anakin.commum.Session"%>
 <%@page import="globaz.jade.client.util.JadeStringUtil"%>
 <%@page import="globaz.ij.vb.controleAbsences.IJDossierControleAbsencesAjaxViewBean"%>
 <%@page import="globaz.ij.servlet.IIJActions"%>
@@ -75,7 +76,7 @@ var langue = "<%=languePage%>";
 		
 		if(nbChar > 512){
 			var error = "Votre commentaire comporte " + nbChar + " caractères sur 512 autorisés";
-			$("#errorNbChar").html("<p>"+error+"</p>").fadeIn(400).delay(10000).fadeOut(400);
+			$("#errorNbChar").html("<p>"+'<ct:FWLabel key="JSP_BASES_IND_WARN_MESSAGE_TO_LONG" />' + " " + nbChar + "/512</p>").fadeIn(400).delay(10000).fadeOut(400);
 			
 		}
 	}
