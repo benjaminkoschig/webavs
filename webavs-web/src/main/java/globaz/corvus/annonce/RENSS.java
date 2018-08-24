@@ -23,6 +23,7 @@ public class RENSS {
      * Le préfix '756' utilisé par les NSS SOUS
      */
     public static final String NSS_PREFIX = "756";
+    private final static String EMPTY_NSS_UNFORMATED = "00000000000";
     public static final String EMPTY_UNFORMATED_NSS_WITHOUT_PREFIX = "0000000000";
     public static final String EMPTY_FORMATED_NSS_WITHOUT_PREFIX = "0000.0000.00";
     public static final String EMPTY_UNFORMATED_NSS_WITH_PREFIX = NSS_PREFIX + EMPTY_UNFORMATED_NSS_WITHOUT_PREFIX;
@@ -36,6 +37,7 @@ public class RENSS {
      * Préfixe d'un numéro NSS. Toujours 756
      */
     private final int val0 = 756;
+    private final String val0_unknown = "00000000000";
 
     /**
      * Première composante du numéro NSS.
@@ -55,7 +57,9 @@ public class RENSS {
      */
     private int val3;
 
-    public RENSS(int val1, int val2, int val3) throws IllegalArgumentException {
+    private boolean isEmpty = false;
+
+    public RENSS(int val1, int val2, int val3, boolean isEmpty) throws IllegalArgumentException {
         validateValue(val1, 9999, 1);
         validateValue(val2, 9999, 2);
         validateValue(val3, 99, 3);
@@ -63,6 +67,7 @@ public class RENSS {
         this.val1 = val1;
         this.val2 = val2;
         this.val3 = val3;
+        this.isEmpty = isEmpty;
     }
 
     private void validateValue(int value, int maxValue, int position) throws IllegalArgumentException {
@@ -82,10 +87,15 @@ public class RENSS {
      */
     public String getUnformatedNSS() {
         StringBuilder sb = new StringBuilder();
-        sb.append(val0);
-        sb.append(PRStringFormatter.indentLeft(String.valueOf(val1), 4, "0"));
-        sb.append(PRStringFormatter.indentLeft(String.valueOf(val2), 4, "0"));
-        sb.append(PRStringFormatter.indentLeft(String.valueOf(val3), 2, "0"));
+        if (!isEmpty) {
+            sb.append(val0);
+            sb.append(PRStringFormatter.indentLeft(String.valueOf(val1), 4, "0"));
+            sb.append(PRStringFormatter.indentLeft(String.valueOf(val2), 4, "0"));
+            sb.append(PRStringFormatter.indentLeft(String.valueOf(val3), 2, "0"));
+        } else {
+            sb.append(val0_unknown);
+        }
+
         return sb.toString();
     }
 
@@ -96,7 +106,11 @@ public class RENSS {
      */
     public String getFormatedNSS() {
         StringBuilder sb = new StringBuilder();
-        sb.append(val0);
+        if (!isEmpty) {
+            sb.append(val0);
+        } else {
+            sb.append(val0_unknown);
+        }
         sb.append(".");
         sb.append(PRStringFormatter.indentLeft(String.valueOf(val1), 4, "0"));
         sb.append(".");
@@ -119,21 +133,26 @@ public class RENSS {
         if (JadeStringUtil.isEmpty(nss)) {
             throw new REIllegalNSSFormatException("nss is null or empty");
         }
-        if (nss.length() != 16) {
+        if (nss.length() != 16 && !nss.equals(EMPTY_NSS_UNFORMATED)) {
             throw new REIllegalNSSFormatException(
                     "Invalid NSS format [" + nss + "]. Must match format 756.xxxx.xxxx.xx");
         }
 
         String[] values = nss.split("\\.");
-        if (values.length != 4) {
+        if (values.length != 4 && !nss.equals(EMPTY_NSS_UNFORMATED)) {
             throw new REIllegalNSSFormatException(
                     "Invalid NSS format [" + nss + "]. Must match format 756.xxxx.xxxx.xx");
         }
-        if (!"756".equals(values[0])) {
+        if (!nss.equals(EMPTY_NSS_UNFORMATED) && !"756".equals(values[0])) {
             throw new REIllegalNSSFormatException(
                     "Invalid NSS format [" + nss + "]. Must match format 756.xxxx.xxxx.xx");
         }
-        result = new RENSS(Integer.valueOf(values[1]), Integer.valueOf(values[2]), Integer.valueOf(values[3]));
+        if (!nss.equals(EMPTY_NSS_UNFORMATED)) {
+            result = new RENSS(Integer.valueOf(values[1]), Integer.valueOf(values[2]), Integer.valueOf(values[3]),
+                    false);
+        } else {
+            result = new RENSS(0, 0, 0, true);
+        }
 
         return result;
     }

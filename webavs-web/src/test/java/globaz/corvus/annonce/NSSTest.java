@@ -44,7 +44,7 @@ public class NSSTest {
 
         // Test des valeurs minimum
         try {
-            new RENSS(0, 0, 0);
+            new RENSS(0, 0, 0, true);
             assertTrue(true);
         } catch (IllegalArgumentException e) {
             assertTrue("Aucune exception new doit être lancée avec les valeurs [0, 0, 0]", false);
@@ -52,24 +52,27 @@ public class NSSTest {
 
         // Test d'une valeur négative en 1ère position
         try {
-            new RENSS(-1, 2789, 63);
-            assertTrue("Une exception doit être lancée car la valeur [-1] n'est pas authorisée en 1ère position", false);
+            new RENSS(-1, 2789, 63, false);
+            assertTrue("Une exception doit être lancée car la valeur [-1] n'est pas authorisée en 1ère position",
+                    false);
         } catch (IllegalArgumentException e) {
             assertTrue(true);
         }
 
         // Test d'une valeur négative en 2ème position
         try {
-            new RENSS(2789, -1, 63);
-            assertTrue("Une exception doit être lancée car la valeur [-1] n'est pas authorisée en 2ème position", false);
+            new RENSS(2789, -1, 63, false);
+            assertTrue("Une exception doit être lancée car la valeur [-1] n'est pas authorisée en 2ème position",
+                    false);
         } catch (IllegalArgumentException e) {
             assertTrue(true);
         }
 
         // Test d'une valeur négative en 3ème position
         try {
-            new RENSS(1254, 2789, -1);
-            assertTrue("Une exception doit être lancée car la valeur [-1] n'est pas authorisée en 3ème position", false);
+            new RENSS(1254, 2789, -1, false);
+            assertTrue("Une exception doit être lancée car la valeur [-1] n'est pas authorisée en 3ème position",
+                    false);
         } catch (IllegalArgumentException e) {
             assertTrue(true);
         }
@@ -80,7 +83,7 @@ public class NSSTest {
 
         // Test des valeurs minimum
         try {
-            new RENSS(9999, 9999, 99);
+            new RENSS(9999, 9999, 99, false);
             assertTrue(true);
         } catch (IllegalArgumentException e) {
             assertTrue("Aucune exception ne doit être lancée avec les valeurs [9999, 9999, 99]", false);
@@ -88,7 +91,7 @@ public class NSSTest {
 
         // Test d'une valeur trop grande en 1ère position
         try {
-            new RENSS(10000, 2789, 63);
+            new RENSS(10000, 2789, 63, false);
             assertTrue("Une exception doit être lancée car la valeur [10000] n'est pas authorisée en 1ère position",
                     false);
         } catch (IllegalArgumentException e) {
@@ -97,7 +100,7 @@ public class NSSTest {
 
         // Test d'une valeur trop grande en 2ème position
         try {
-            new RENSS(6854, 10000, 63);
+            new RENSS(6854, 10000, 63, false);
             assertTrue("Une exception doit être lancée car la valeur [10000] n'est pas authorisée en 2ème position",
                     false);
         } catch (IllegalArgumentException e) {
@@ -106,7 +109,7 @@ public class NSSTest {
 
         // Test d'une valeur trop grande en 3ème position
         try {
-            new RENSS(8642, 2789, 100);
+            new RENSS(8642, 2789, 100, false);
             assertTrue("Une exception doit être lancée car la valeur [100] n'est pas authorisée en 3ème position",
                     false);
         } catch (IllegalArgumentException e) {
@@ -129,7 +132,7 @@ public class NSSTest {
     public void testFormattage() {
 
         try {
-            RENSS nss = new RENSS(0, 0, 0);
+            RENSS nss = new RENSS(0, 0, 0, false);
             assertTrue("7560000000000".equals(nss.getUnformatedNSS()));
             assertTrue("756.0000.0000.00".equals(nss.getFormatedNSS()));
         } catch (IllegalArgumentException e) {
@@ -137,7 +140,7 @@ public class NSSTest {
         }
 
         try {
-            RENSS nss = new RENSS(675, 9642, 12);
+            RENSS nss = new RENSS(675, 9642, 12, false);
             assertTrue("7560675964212".equals(nss.getUnformatedNSS()));
             assertTrue("756.0675.9642.12".equals(nss.getFormatedNSS()));
         } catch (IllegalArgumentException e) {
@@ -145,7 +148,7 @@ public class NSSTest {
         }
 
         try {
-            RENSS nss = new RENSS(9999, 9999, 99);
+            RENSS nss = new RENSS(9999, 9999, 99, false);
             assertTrue("7569999999999".equals(nss.getUnformatedNSS()));
             assertTrue("756.9999.9999.99".equals(nss.getFormatedNSS()));
         } catch (IllegalArgumentException e) {

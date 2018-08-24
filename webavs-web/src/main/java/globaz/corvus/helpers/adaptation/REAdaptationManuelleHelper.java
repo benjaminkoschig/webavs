@@ -696,9 +696,12 @@ public class REAdaptationManuelleHelper extends FWHelper {
                     generalReader.convertFormatedNss(tierComp2.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL)));
         } else {
             if (REGenrePrestationEnum.groupe5.contains(ra.getCodePrestation())) {
+                nssComplementaire = majTiersComplementaires(session, transaction, ra);
                 if (!JadeStringUtil.isBlankOrZero(nssComplementaire.getNssComplementaire2())) {
                     annoncePonctuelle9Eme.setSecondNoAssComplementaire(
                             generalReader.convertFormatedNss(nssComplementaire.getNssComplementaire2()));
+                } else {
+                    annoncePonctuelle9Eme.setSecondNoAssComplementaire(generalReader.convertFormatedNss(EMPTY_NSS));
                 }
             }
         }
@@ -917,6 +920,8 @@ public class REAdaptationManuelleHelper extends FWHelper {
             }
         }
 
+        // CodePrestation codePrestation = CodePrestation.getCodePrestation(Integer.parseInt(vb.getGenrePrestation()));
+
         // PremierNoAssComplementaire
         boolean isNSS1Obligatoire = false;
         if (REGenrePrestationEnum.groupe1.contains(ra.getCodePrestation())) {
@@ -947,11 +952,15 @@ public class REAdaptationManuelleHelper extends FWHelper {
                     converter.convertFormatedNss(tierComp2.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL)));
         } else {
             if (REGenrePrestationEnum.groupe5.contains(ra.getCodePrestation())) {
+                nssComplementaire = majTiersComplementaires(session, transaction, ra);
                 if (!JadeStringUtil.isBlankOrZero(nssComplementaire.getNssComplementaire2())) {
                     annoncePonctuelle10Eme.setSecondNoAssComplementaire(
                             converter.convertFormatedNss(nssComplementaire.getNssComplementaire2()));
+                } else {
+                    annoncePonctuelle10Eme.setSecondNoAssComplementaire(converter.convertFormatedNss(EMPTY_NSS));
                 }
             }
+
         }
 
         // Si API Saisir le genre droit API
@@ -1197,7 +1206,12 @@ public class REAdaptationManuelleHelper extends FWHelper {
 
         // Mois rapport
         JADate moisRapport = new JADate(new JACalendarGregorian().addMonths(dateRapportEtFin, 1));
-        String moisRapportFormatte = String.valueOf(moisRapport.getYear()) + String.valueOf(moisRapport.getMonth());
+        String moisRapportFormatte;
+        if (moisRapport.getMonth() > 9) {
+            moisRapportFormatte = String.valueOf(moisRapport.getYear()) + String.valueOf(moisRapport.getMonth());
+        } else {
+            moisRapportFormatte = String.valueOf(moisRapport.getYear()) + "0" + String.valueOf(moisRapport.getMonth());
+        }
         moisRapportFormatte = PRDateFormater.convertDate_AAAAMM_to_MMAA(moisRapportFormatte);
         ann43dim.setMoisRapport(moisRapportFormatte);
 
@@ -1408,8 +1422,10 @@ public class REAdaptationManuelleHelper extends FWHelper {
                         .equals(enf.getMere().getIdMembreFamille())) {
                     // oui mais on a pas de tiers pour le conjoint inconnu
                 } else {
-                    PRTiersWrapper tw = PRTiersHelper.getTiersParId(session, enf.getMere().getIdTiers());
-                    nssComplementaire.setNssComplementaire1(tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL));
+                    if (!JadeStringUtil.isBlankOrZero(enf.getMere().getIdTiers())) {
+                        PRTiersWrapper tw = PRTiersHelper.getTiersParId(session, enf.getMere().getIdTiers());
+                        nssComplementaire.setNssComplementaire1(tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL));
+                    }
                 }
             }
 
@@ -1420,8 +1436,10 @@ public class REAdaptationManuelleHelper extends FWHelper {
                         .equals(enf.getPere().getIdMembreFamille())) {
                     // oui mais on a pas de tiers pour le conjoint inconnu
                 } else {
-                    PRTiersWrapper tw = PRTiersHelper.getTiersParId(session, enf.getPere().getIdTiers());
-                    nssComplementaire.setNssComplementaire2(tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL));
+                    if (!JadeStringUtil.isBlankOrZero(enf.getPere().getIdTiers())) {
+                        PRTiersWrapper tw = PRTiersHelper.getTiersParId(session, enf.getPere().getIdTiers());
+                        nssComplementaire.setNssComplementaire2(tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL));
+                    }
 
                 }
             }
