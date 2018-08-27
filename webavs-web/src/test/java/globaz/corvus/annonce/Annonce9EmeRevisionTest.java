@@ -1,6 +1,7 @@
 package globaz.corvus.annonce;
 
 import static org.junit.Assert.*;
+import org.junit.Test;
 import globaz.corvus.annonce.domain.annonce.REAnnoncePonctuelle9EmeRevision;
 import globaz.corvus.annonce.formatter.RECreationAnnonceFormatterException;
 import globaz.corvus.annonce.reader.REBaseDeCalcul9EmeRevisionReader;
@@ -11,7 +12,6 @@ import globaz.globall.util.JACalendarGregorian;
 import globaz.globall.util.JADate;
 import globaz.globall.util.JAException;
 import globaz.prestation.acor.PRACORConst;
-import org.junit.Test;
 
 public class Annonce9EmeRevisionTest {
 
@@ -64,7 +64,7 @@ public class Annonce9EmeRevisionTest {
     /**
      * Test toute la chaîne de création d'annonces
      * - Reader, AnnonceDomain, entityGenerator, formatter
-     * 
+     *
      * @throws JAException
      * @throws REIllegalNSSFormatException
      */
@@ -104,8 +104,8 @@ public class Annonce9EmeRevisionTest {
         annoncePonctuelle10Eme.setCasSpecial4(renteAccordeeReader.convertCasSpecial("02"));
         annoncePonctuelle10Eme.setCasSpecial5(renteAccordeeReader.convertCasSpecial("68"));
 
-        annoncePonctuelle10Eme.setDateRevocationAjournement(renteAccordeeReader
-                .convertDateRevocationAjournement("06.2005"));
+        annoncePonctuelle10Eme
+                .setDateRevocationAjournement(renteAccordeeReader.convertDateRevocationAjournement("06.2005"));
 
         annoncePonctuelle10Eme.setDureeAjournement(renteAccordeeReader.convertDureeAjournementValeurEntiere("1.02"),
                 renteAccordeeReader.convertDureeAjournementValeurDecimal("1.02"));
@@ -151,8 +151,8 @@ public class Annonce9EmeRevisionTest {
                 baseDeCalculReader.readNombreAnneeBTE_valeurDecimal("11"));
 
         // REANN41
-        annoncePonctuelle10Eme.setMontantRenteOrdinaireRemplace(renteAccordeeReader
-                .readMontantRenteOrdinaireRemplace("826"));
+        annoncePonctuelle10Eme
+                .setMontantRenteOrdinaireRemplace(renteAccordeeReader.readMontantRenteOrdinaireRemplace("826"));
 
         // REAAL3B
         annoncePonctuelle10Eme.setRevenuPrisEnCompte(baseDeCalculReader.readRevenuPrisEnCompte("3"));
@@ -204,7 +204,7 @@ public class Annonce9EmeRevisionTest {
 
     /**
      * Retourne une annonce ponctuelle correctement remplie
-     * 
+     *
      * @return une annonce ponctuelle correctement remplie
      */
     private REAnnoncePonctuelle9EmeRevision getAnnoncePonctuelle1() {
@@ -227,9 +227,9 @@ public class Annonce9EmeRevisionTest {
         annonceACreer.setRefugie(false);
         annonceACreer.setMensualitePrestationsFrancs(738);
         annonceACreer.setMoisRapport(new JADate(01, 01, 2015));
-        annonceACreer.setNoAssAyantDroit(new RENSS(684, 8427, 2));
+        annonceACreer.setNoAssAyantDroit(new RENSS(684, 8427, 2, false));
         annonceACreer.setNumeroAnnonce(59463l);
-        annonceACreer.setPremierNoAssComplementaire(new RENSS(9999, 9999, 99));
+        annonceACreer.setPremierNoAssComplementaire(new RENSS(9999, 9999, 99, false));
         annonceACreer.setSecondNoAssComplementaire(null);
         annonceACreer.setReferenceCaisseInterne("LuCiEn");
 
@@ -269,7 +269,7 @@ public class Annonce9EmeRevisionTest {
         annonceACreer.setBteMoyennePrisEnCompte(12500);
 
         // REANN41
-        annonceACreer.setNouveauNoAssureAyantDroit(new RENSS(1234, 5678, 90));
+        annonceACreer.setNouveauNoAssureAyantDroit(new RENSS(1234, 5678, 90, false));
         annonceACreer.setMontantRenteOrdinaireRemplace(790);
 
         return annonceACreer;

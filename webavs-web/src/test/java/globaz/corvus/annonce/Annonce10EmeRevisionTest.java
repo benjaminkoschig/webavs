@@ -1,6 +1,7 @@
 package globaz.corvus.annonce;
 
 import static org.junit.Assert.*;
+import org.junit.Test;
 import globaz.corvus.annonce.domain.annonce.REAnnoncePonctuelle10EmeRevision;
 import globaz.corvus.annonce.formatter.RECreationAnnonceFormatterException;
 import globaz.corvus.annonce.reader.REBaseDeCalcul10EmeRevisionReader;
@@ -11,7 +12,6 @@ import globaz.globall.util.JACalendarGregorian;
 import globaz.globall.util.JADate;
 import globaz.globall.util.JAException;
 import globaz.prestation.acor.PRACORConst;
-import org.junit.Test;
 
 public class Annonce10EmeRevisionTest {
 
@@ -40,7 +40,7 @@ public class Annonce10EmeRevisionTest {
     /**
      * Test toute la chaîne de création d'annonces
      * - Reader, AnnonceDomain, entityGenerator, formatter
-     * 
+     *
      * @throws REIllegalNSSFormatException
      * @throws JAException
      */
@@ -88,8 +88,8 @@ public class Annonce10EmeRevisionTest {
 
         annoncePonctuelle10Eme.setSurvivant(renteAccordeeReader.convertIsSurvivant("1"));
 
-        annoncePonctuelle10Eme.setDateRevocationAjournement(renteAccordeeReader
-                .convertDateRevocationAjournement("06.2005"));
+        annoncePonctuelle10Eme
+                .setDateRevocationAjournement(renteAccordeeReader.convertDateRevocationAjournement("06.2005"));
 
         annoncePonctuelle10Eme.setDureeAjournement(renteAccordeeReader.convertDureeAjournementValeurEntiere("1.02"),
                 renteAccordeeReader.convertDureeAjournementValeurDecimal("1.02"));
@@ -201,7 +201,7 @@ public class Annonce10EmeRevisionTest {
 
     /**
      * Retourne une annonce ponctuelle correctement remplie
-     * 
+     *
      * @return une annonce ponctuelle correctement remplie
      */
     private REAnnoncePonctuelle10EmeRevision getAnnoncePonctuelle1() {
@@ -224,9 +224,9 @@ public class Annonce10EmeRevisionTest {
         annonceACreer.setRefugie(false);
         annonceACreer.setMensualitePrestationsFrancs(738);
         annonceACreer.setMoisRapport(new JADate(01, 01, 2015));
-        annonceACreer.setNoAssAyantDroit(new RENSS(684, 8427, 2));
+        annonceACreer.setNoAssAyantDroit(new RENSS(684, 8427, 2, false));
         annonceACreer.setNumeroAnnonce(59463l);
-        annonceACreer.setPremierNoAssComplementaire(new RENSS(9999, 9999, 99));
+        annonceACreer.setPremierNoAssComplementaire(new RENSS(9999, 9999, 99, false));
         annonceACreer.setSecondNoAssComplementaire(null);
         annonceACreer.setReferenceCaisseInterne("LuCiEn");
 
@@ -268,7 +268,7 @@ public class Annonce10EmeRevisionTest {
         annonceACreer.setReductionAnticipation(44);
 
         // REANN44
-        annonceACreer.setNouveauNoAssureAyantDroit(new RENSS(1234, 5678, 90));
+        annonceACreer.setNouveauNoAssureAyantDroit(new RENSS(1234, 5678, 90, false));
 
         return annonceACreer;
     }
