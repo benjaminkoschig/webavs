@@ -149,6 +149,14 @@ public class Calcul {
     public Montant getRevenusActiviteLucrativeRevenuPrivilegie() {
         return Montant.newAnnuel(tuple.getValeurEnfant(IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_REVENU_PRIVILEGIE));
     }
+    
+    /**
+     * CLE_REVEN_ACT_LUCR_REVENU_PRIS_EN_COMPTE
+     */
+    public Montant getRevenusActiviteLucrativeRevenuPrisEnCompte() {
+        return Montant.newAnnuel(tuple.getValeurEnfant(IPCValeursPlanCalcul.CLE_REVEN_ACT_LUCR_REVENU_PRIS_EN_COMPTE));
+    }
+    
 
     /**
      * CLE_REVEN_AUTREREV_ALLOCATIONS_FAMILLIALES

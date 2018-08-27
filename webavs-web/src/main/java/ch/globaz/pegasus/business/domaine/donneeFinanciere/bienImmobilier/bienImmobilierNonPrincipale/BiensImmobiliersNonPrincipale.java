@@ -4,6 +4,7 @@ import ch.globaz.common.domaine.Montant;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.Each;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.ProprieteType;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.bienImmobilier.BiensImmobiliers;
+import ch.globaz.pegasus.business.domaine.donneeFinanciere.bienImmobilier.bienImmobilierServantHbitationPrincipale.BienImmobilierServantHabitationPrincipale;
 
 public class BiensImmobiliersNonPrincipale extends
         BiensImmobiliers<BienImmobilierNonPrincipale, BiensImmobiliersNonPrincipale> {
@@ -36,6 +37,26 @@ public class BiensImmobiliersNonPrincipale extends
             @Override
             public Montant getMontant(BienImmobilierNonPrincipale donnneeFianciere) {
                 return donnneeFianciere.computeValLocativePartPropriete();
+            }
+        });
+    }
+    
+    public Montant sumMontantValeurLocativePartProprieteEtCoPropiete() {
+
+        return this.sum(new Each<BienImmobilierNonPrincipale>() {
+            @Override
+            public Montant getMontant(BienImmobilierNonPrincipale donnneeFianciere) {
+                return donnneeFianciere.computeValLocativePartProprieteEtCoPropiete();
+            }
+        });
+    }
+    
+    public Montant sumMontantValeurLocativeDH_RPC() {
+
+        return this.sum(new Each<BienImmobilierNonPrincipale>() {
+            @Override
+            public Montant getMontant(BienImmobilierNonPrincipale donnneeFianciere) {
+                return donnneeFianciere.computeValLocativeDH_RPC();
             }
         });
     }

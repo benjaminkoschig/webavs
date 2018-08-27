@@ -119,7 +119,7 @@ public class PersonneElementsCalculConverter {
         perElCal.setAutresDepenses(dfFiltre.getCotisationsPsal().sumDepense()
                 .add(dfFiltre.getPensionsAlimentaireByType(PensionAlimentaireType.VERSEE).sumDepense()));
         TaxeJournaliereHome taxeJournaliereHome = dfFiltre.getTaxesJournaliereHome().resolveCurrentTaxejournaliere();
-        Montant entretienViager;
+        Montant entretienViager = Montant.ZERO;
         if (isCoupleSepare) {
             entretienViager = df.getContratsEntretienViager().filtreForMembreFamille(donneesFinanciere.getFamille())
                     .sumRevenuAnnuel();
@@ -176,26 +176,35 @@ public class PersonneElementsCalculConverter {
         perElCal.setLivingAddress(livingAddress);
         perElCal.setTypeRenteCS(resolveMaxType(dfFiltre));
 
-        Montant usuIncome = df.getBiensImmobiliersServantHbitationPrincipale()
-                .filtreByProprieteType(ProprieteType.USUFRUITIER, ProprieteType.DROIT_HABITATION)
-                .sumMontantValeurLocativeDH_RPC()
-                .add(df.getBiensImmobiliersNonPrincipale()
-                        .filtreByProprieteType(ProprieteType.USUFRUITIER, ProprieteType.DROIT_HABITATION)
-                        .sumMontantValeurLocativePartPropriete());
-
-        // Dans le plan de calcule la valeur est déjà inclus dans les rentes si le requérant a un bien immobilière
-        if (canAddImmobilierNonHabitable(df)) {
-            usuIncome = usuIncome.add(
-                    df.getBiensImmobiliersNonHabitable().sumMontantRendementPartPropriete(ProprieteType.USUFRUITIER));
-        }
-        perElCal.setUsufructIncome(usuIncome);
-
-        perElCal.setValeurLocativeProprietaire((df.getBiensImmobiliersServantHbitationPrincipale()
+        Montant propIncome = Montant.ZERO;
+        Montant usuIncome = Montant.ZERO;
+        
+        propIncome = df.getBiensImmobiliersServantHbitationPrincipale()
                 .filtreByProprieteType(ProprieteType.PROPRIETAIRE, ProprieteType.CO_PROPRIETAIRE)
-                .sumMontantValeurLocativePartProprieteEtCoPropiete())
-                        .add(df.getBiensImmobiliersNonPrincipale()
-                                .filtreByProprieteType(ProprieteType.PROPRIETAIRE, ProprieteType.CO_PROPRIETAIRE)
-                                .sumMontantValeurLocativePartPropriete()));
+                .sumMontantValeurLocativePartProprieteEtCoPropiete();
+        
+        if(propIncome.isZero()) {
+            usuIncome = df.getBiensImmobiliersServantHbitationPrincipale()
+                        .filtreByProprieteType(ProprieteType.USUFRUITIER, ProprieteType.DROIT_HABITATION)
+                        .sumMontantValeurLocativeDH_RPC();
+        }
+        
+        propIncome = propIncome.add(df.getBiensImmobiliersNonPrincipale()
+                .filtreByProprieteType(ProprieteType.PROPRIETAIRE, ProprieteType.CO_PROPRIETAIRE)
+                .sumMontantValeurLocativePartProprieteEtCoPropiete());
+
+        usuIncome = usuIncome.add(df.getBiensImmobiliersNonPrincipale()
+                            .filtreByProprieteType(ProprieteType.USUFRUITIER, ProprieteType.DROIT_HABITATION)
+                            .sumMontantValeurLocativeDH_RPC());
+    
+            // Dans le plan de calcule la valeur est déjà inclus dans les rentes si le requérant a un bien immobilière
+    //        if (canAddImmobilierNonHabitable(df)) {
+    //            usuIncome = usuIncome.add(
+    //                    df.getBiensImmobiliersNonHabitable().sumMontantRendementPartPropriete(ProprieteType.USUFRUITIER));
+    //        }
+        perElCal.setUsufructIncome(usuIncome);
+        
+        perElCal.setValeurLocativeProprietaire(propIncome);
 
         // Si les APi sont prisent en compte dans le calcul
         if (perElCal.getHomeTaxeHomeTotal().isPositive()) {// !perElCal.getHomeIsApiFacturee() &&
@@ -218,7 +227,8 @@ public class PersonneElementsCalculConverter {
                 break;
             } else if(DonneeFinanciereType.BIEN_IMMOBILIER_NON_HABITABLE.equals(bienImmo.getTypeDonneeFinanciere())
                     && ProprieteType.USUFRUITIER.equals(bienImmo.getProprieteType())
-                    && BienImmobilierNonHabitableType.TERRAIN_AGRICOLE.equals(((BienImmobilierNonHabitable)bienImmo).getTypeDeBien())) {
+                    //&& BienImmobilierNonHabitableType.TERRAIN_AGRICOLE.equals(((BienImmobilierNonHabitable)bienImmo).getTypeDeBien())) {
+                ) {
                 canAdd = false;
                 break;
             }

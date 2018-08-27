@@ -1,6 +1,7 @@
 package ch.globaz.pegasus.rpc.domaine;
 
 import ch.globaz.common.domaine.Montant;
+import ch.globaz.pegasus.business.constantes.IPCValeursPlanCalcul;
 import ch.globaz.pegasus.business.domaine.pca.Calcul;
 import ch.globaz.pegasus.business.domaine.pca.PcaEtatCalcul;
 import ch.globaz.pegasus.business.exceptions.models.calcul.CalculException;
@@ -125,9 +126,13 @@ public class RpcCalcul {
      */
     public Montant getRevenusTotalAPrendreEnCompte() {
         // DIVISION PAR DEUX NECESSAIRE
-        return divideByTwoIfCoupleSepare(calcul.getRevenusActiviteLucrativeRevenuPrivilegie());
+        if (calcul.getRevenusAutreIJAI() !=  null && !calcul.getRevenusAutreIJAI().isZero()) {
+            return divideByTwoIfCoupleSepare(calcul.getRevenusActiviteLucrativeRevenuPrisEnCompte());
+        } else {
+            return divideByTwoIfCoupleSepare(calcul.getRevenusActiviteLucrativeRevenuPrivilegie());
+        }
     }
-
+    
     /**
      * FC25
      */

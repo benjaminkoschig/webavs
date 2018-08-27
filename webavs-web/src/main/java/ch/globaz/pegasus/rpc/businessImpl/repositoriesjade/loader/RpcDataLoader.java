@@ -69,6 +69,8 @@ public class RpcDataLoader {
      * comptable ouvert est le mois suivant au moment des paiements mensuels)
      */
     private static final int RENTE_DATE_PAIEMENT_DELAIS = -15;
+    
+    private static final String ANNONCE_POUR_ENVOIE = "64074005";
 
     private static final Logger LOG = LoggerFactory.getLogger(RpcDataLoader.class);
 
@@ -471,7 +473,9 @@ public class RpcDataLoader {
             retourSearch.setForIdLot(lots.get(0).getId());
             List<RetourAnnonce> retoursEnErreur = RepositoryJade.searchForAndFetch(retourSearch, limitSize);
             for (RetourAnnonce enErreur : retoursEnErreur) {
-                decisionsEnErreur.add(enErreur.getSimpleDecisionHeader().getIdDecisionHeader());
+                if(ANNONCE_POUR_ENVOIE.equals(enErreur.getSimpleAnnonce().getCsEtat())) {
+                    decisionsEnErreur.add(enErreur.getSimpleDecisionHeader().getIdDecisionHeader());
+                }
             }
             if (!decisionsEnErreur.isEmpty()) {
                 RPCDecionsPriseDansLeMoisSearch search = new RPCDecionsPriseDansLeMoisSearch();
