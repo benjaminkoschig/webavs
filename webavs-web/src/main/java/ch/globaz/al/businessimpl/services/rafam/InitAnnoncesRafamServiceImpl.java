@@ -33,6 +33,9 @@ import ch.globaz.al.utils.ALDateUtils;
 import ch.globaz.al.utils.ALRafamUtils;
 import ch.globaz.naos.business.data.AssuranceInfo;
 import ch.globaz.naos.business.model.AffiliationSimpleModel;
+import ch.globaz.pyxis.business.model.PaysSearchSimpleModel;
+import ch.globaz.pyxis.business.model.PaysSimpleModel;
+import ch.globaz.pyxis.business.service.TIBusinessServiceLocator;
 import globaz.jade.client.util.JadeCodesSystemsUtil;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
@@ -216,9 +219,29 @@ public class InitAnnoncesRafamServiceImpl extends ALAbstractBusinessServiceImpl 
         annonce.setLegalOffice(officeProvider.getLegalOffice(droit.getDroitModel().getDebutDroit()));
 
         annonce.setNumeroIDE(getNumeroIDEAffilie(numAffilie));
-        annonce.setCodeCentralePaysEnfant(droit.getEnfantComplexModel().getPaysModel().getCodeCentrale());
+        annonce.setCodeCentralePaysEnfant(
+                getCodeCentralePays(droit.getEnfantComplexModel().getEnfantModel().getIdPaysResidence()));
 
         return annonce;
+    }
+
+    /**
+     * Récupère le code de la centrale du pays
+     *
+     * @param idPays
+     * @return codeCentralePays
+     * @throws JadePersistenceException
+     * @throws JadeApplicationException
+     */
+    private String getCodeCentralePays(String idPays) throws JadePersistenceException, JadeApplicationException {
+        PaysSearchSimpleModel paysSearchModel = new PaysSearchSimpleModel();
+        paysSearchModel.setForIdPays(idPays);
+        paysSearchModel = TIBusinessServiceLocator.getAdresseService().findPays(paysSearchModel);
+        if (paysSearchModel.getSize() == 1) {
+            PaysSimpleModel paysSimpleModel = (PaysSimpleModel) paysSearchModel.getSearchResults()[0];
+            return paysSimpleModel.getCodeCentrale();
+        }
+        return "";
     }
 
     /**
@@ -304,7 +327,8 @@ public class InitAnnoncesRafamServiceImpl extends ALAbstractBusinessServiceImpl 
         annonce.setLegalOffice(officeProvider.getLegalOffice(droit.getDroitModel().getDebutDroit()));
 
         annonce.setNumeroIDE(getNumeroIDEAffilie(numAffilie));
-        annonce.setCodeCentralePaysEnfant(droit.getEnfantComplexModel().getPaysModel().getCodeCentrale());
+        annonce.setCodeCentralePaysEnfant(
+                getCodeCentralePays(droit.getEnfantComplexModel().getEnfantModel().getIdPaysResidence()));
 
         return annonce;
     }
