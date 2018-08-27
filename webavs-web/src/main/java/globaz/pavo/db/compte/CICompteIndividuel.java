@@ -2169,6 +2169,13 @@ public class CICompteIndividuel extends BEntity {
                 userSecureCode.setUser(userId);
                 userSecureCode.setLabel(CICompteIndividuel.SECURITE_LABEL);
                 userSecureCode.retrieve(transaction);
+                // Ajout test en lowerCase si enregistrement non trouvé
+                if(userSecureCode.isNew()) {
+                    userSecureCode.setSession(getSession());
+                    userSecureCode.setUser(userId.toLowerCase());
+                    userSecureCode.setLabel(CICompteIndividuel.SECURITE_LABEL);
+                    userSecureCode.retrieve(transaction);
+                }
                 if (!userSecureCode.isNew()) {
                     int accesUser = Integer.parseInt(userSecureCode.getData());
                     int accesCI = Character.getNumericValue(getAccesSecurite().charAt(getAccesSecurite().length() - 1));

@@ -58,9 +58,9 @@ public class HEExtraitAnnonceBean {
         setMoisFin(entity.getField(IHEAnnoncesViewBean.DUREE_COTISATIONS_FIN));
         setAnneeCotti(entity.getField(IHEAnnoncesViewBean.ANNEES_COTISATIONS_AAAA));
         if (StringUtils.isStringEmpty(userId)) {
-            setRevenu(entity.getRevenu(entity.getUtilisateur().toLowerCase()));
+            setRevenu(entity.getRevenu(entity.getUtilisateur()));
         } else {
-            setRevenu(entity.getRevenu(userId.toLowerCase()));
+            setRevenu(entity.getRevenu(userId));
         }
         setPartBonn(entity.getField(IHEAnnoncesViewBean.PART_BONIFICATIONS_ASSISTANCES));
         setCodeADS(entity.getField(IHEAnnoncesViewBean.CODE_A_D_S));
