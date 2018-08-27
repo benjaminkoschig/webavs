@@ -183,25 +183,18 @@ public class PersonneElementsCalculConverter {
                 .filtreByProprieteType(ProprieteType.PROPRIETAIRE, ProprieteType.CO_PROPRIETAIRE)
                 .sumMontantValeurLocativePartProprieteEtCoPropiete();
         
-        if(propIncome.isZero()) {
-            usuIncome = df.getBiensImmobiliersServantHbitationPrincipale()
-                        .filtreByProprieteType(ProprieteType.USUFRUITIER, ProprieteType.DROIT_HABITATION)
-                        .sumMontantValeurLocativeDH_RPC();
-        }
-        
         propIncome = propIncome.add(df.getBiensImmobiliersNonPrincipale()
                 .filtreByProprieteType(ProprieteType.PROPRIETAIRE, ProprieteType.CO_PROPRIETAIRE)
                 .sumMontantValeurLocativePartProprieteEtCoPropiete());
-
+        
+        usuIncome = df.getBiensImmobiliersServantHbitationPrincipale()
+                .filtreByProprieteType(ProprieteType.USUFRUITIER, ProprieteType.DROIT_HABITATION)
+                .sumMontantValeurLocativeDH_RPC();
+        
         usuIncome = usuIncome.add(df.getBiensImmobiliersNonPrincipale()
-                            .filtreByProprieteType(ProprieteType.USUFRUITIER, ProprieteType.DROIT_HABITATION)
-                            .sumMontantValeurLocativeDH_RPC());
+                .filtreByProprieteType(ProprieteType.USUFRUITIER, ProprieteType.DROIT_HABITATION)
+                .sumMontantValeurLocativeDH_RPC());
     
-            // Dans le plan de calcule la valeur est déjà inclus dans les rentes si le requérant a un bien immobilière
-    //        if (canAddImmobilierNonHabitable(df)) {
-    //            usuIncome = usuIncome.add(
-    //                    df.getBiensImmobiliersNonHabitable().sumMontantRendementPartPropriete(ProprieteType.USUFRUITIER));
-    //        }
         perElCal.setUsufructIncome(usuIncome);
         
         perElCal.setValeurLocativeProprietaire(propIncome);
@@ -226,9 +219,7 @@ public class PersonneElementsCalculConverter {
                 canAdd = false;
                 break;
             } else if(DonneeFinanciereType.BIEN_IMMOBILIER_NON_HABITABLE.equals(bienImmo.getTypeDonneeFinanciere())
-                    && ProprieteType.USUFRUITIER.equals(bienImmo.getProprieteType())
-                    //&& BienImmobilierNonHabitableType.TERRAIN_AGRICOLE.equals(((BienImmobilierNonHabitable)bienImmo).getTypeDeBien())) {
-                ) {
+                    && ProprieteType.USUFRUITIER.equals(bienImmo.getProprieteType())) {
                 canAdd = false;
                 break;
             }
