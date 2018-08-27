@@ -151,6 +151,11 @@ public class StrategieFinalDepenseLoyer extends UtilStrategieBienImmobillier imp
         } else {
             plafond = plafondCelibataire;
         }
+        
+        if (isFauteuilRoulant) {
+            plafond += plafondFauteuil;
+        }
+        
         donnee.getOrCreateEnfant(IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_PLAFOND_FEDERAL).addValeur(plafond);
 
         if (!csAppartementProtege.isEmpty() && !csAppartementProtege.equals("0")) {
@@ -161,9 +166,6 @@ public class StrategieFinalDepenseLoyer extends UtilStrategieBienImmobillier imp
             }
         }
 
-        if (isFauteuilRoulant) {
-            plafond += plafondFauteuil;
-        }
         TupleDonneeRapport tuplePlafond = donnee.getOrCreateEnfant(IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_PLAFOND);
         tuplePlafond.addValeur(plafond);
         tuplePlafond.setLegende(Integer.toString((int) plafond));
