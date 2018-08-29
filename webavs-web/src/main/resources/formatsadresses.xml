@@ -24,5 +24,17 @@
 		<li><var name="case_postale"/></li>
 		<li><var name="npa" suffix=" "/><var name="localite"/></li>
 	</format>
+	
+	<format id="US">
+		<li><var name="titre"/></li>
+		<li><var name="d1"/><var name="d2" prefix=" "/></li>
+		<li><var name="d3"/></li>
+		<li><var name="d4"/></li>
+		<li><var name="attention"/></li>
+		<li><var name="rue"/><space/><var name="numero"/></li>
+		<li><var name="case_postale"/></li>
+		<li><var name="localite" suffix=" "/><var name="npa"/></li>
+		<li><var name="pays" case="upper" /></li>
+	</format>
 
 </formats>
