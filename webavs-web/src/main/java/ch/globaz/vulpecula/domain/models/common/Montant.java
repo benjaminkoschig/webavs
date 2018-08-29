@@ -12,7 +12,7 @@ import ch.globaz.utils.TypesValidator;
  * 
  * @author Arnaud Geiser (AGE) | Créé le 17 déc. 2013
  */
-public class Montant implements ValueObject {
+public class Montant implements ValueObject, Comparable<Montant> {
     private static final long serialVersionUID = 1L;
 
     private BigDecimal currency = BigDecimal.ZERO;
@@ -175,7 +175,7 @@ public class Montant implements ValueObject {
 
     /**
      * 
-     * @return un String selon le format "##,###,###.00"
+     * @return un String selon le format "##,###,###.##"
      */
     public String toStringFormat() {
         String pattern = "###,###.##";
@@ -184,6 +184,19 @@ public class Montant implements ValueObject {
         symbols.setDecimalSeparator('.');
         DecimalFormat decimalFormat = new DecimalFormat(pattern, symbols);
         return decimalFormat.format(currency);
+    }
+
+    /**
+     * 
+     * @return un String selon le format "##,###,###.00"
+     */
+    public String toStringFormatTwoDecimales() {
+        String pattern = "###,##0.00";
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.FRANCE);
+        symbols.setGroupingSeparator('\'');
+        symbols.setDecimalSeparator('.');
+        DecimalFormat decimalFormat = new DecimalFormat(pattern, symbols);
+        return decimalFormat.format(getBigDecimalNormalisee());
     }
 
     public Montant multiply(final int valueToMultiply) {
@@ -340,7 +353,7 @@ public class Montant implements ValueObject {
     }
 
     /**
-     * Retourne si le montant passé en paramètre est plus petit au montant actuel.
+     * Retourne false si le montant passé en paramètre est plus petit ou égal au montant actuel.
      * 
      * @param montant à comparer
      * @return true si plus grand, false si plus petit ou égal
@@ -372,5 +385,10 @@ public class Montant implements ValueObject {
         } catch (IllegalArgumentException ex) {
             return false;
         }
+    }
+
+    @Override
+    public int compareTo(Montant o) {
+        return getBigDecimalValue().compareTo(o.getBigDecimalValue());
     }
 }
