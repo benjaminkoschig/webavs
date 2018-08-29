@@ -36,6 +36,14 @@ public class CIDeclarationCentraleXMLIterator implements ICIDeclarationIterator 
     private String agence = "";
     private static final String XSD_FOLDER = "/xsd/P2020/annoncesRC/";
     private static final String XSD_NAME = "AntwortVonZas.xsd";
+    private static CIDeclarationCentraleXMLIterator instance = null;
+
+    public static CIDeclarationCentraleXMLIterator getInstance() {
+        if (instance == null) {
+            instance = new CIDeclarationCentraleXMLIterator();
+        }
+        return instance;
+    }
 
     private void _init() throws Exception {
         try {
@@ -48,9 +56,9 @@ public class CIDeclarationCentraleXMLIterator implements ICIDeclarationIterator 
                 jc = JAXBContext.newInstance(PoolAntwortVonZAS.class);
                 unmarshaller = jc.createUnmarshaller();
                 unmarshaller.setSchema(schema);
-                lots = (PoolAntwortVonZAS) unmarshaller.unmarshal(new File(getFilename()));
                 isReady = true;
             }
+            lots = (PoolAntwortVonZAS) unmarshaller.unmarshal(new File(getFilename()));
         } catch (Exception e) {
 
             throw e;
@@ -205,7 +213,8 @@ public class CIDeclarationCentraleXMLIterator implements ICIDeclarationIterator 
                             .getVAIKEmpfangsbestaetigungOrIKEroeffnungsermaechtigungOrIKUebermittlungsauftrag()) {
                         if (object instanceof ALVEntschaedigungenMeldungType) {
                             listIKStat.add((ALVEntschaedigungenMeldungType) object);
-                            agence = listIKStat.get(0).getKasseZweigstelleIKFuehrend().substring(3, 6);
+                            agence = listIKStat.get(0).getKasseZweigstelleIKFuehrend().substring(3,
+                                    listIKStat.get(0).getKasseZweigstelleIKFuehrend().length());
 
                         }
                     }
