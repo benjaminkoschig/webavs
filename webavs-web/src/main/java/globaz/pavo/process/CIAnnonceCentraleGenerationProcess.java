@@ -14,12 +14,12 @@ import globaz.pavo.util.CIUtil;
 
 /**
  * @author mmo
- * 
+ *
  */
 public class CIAnnonceCentraleGenerationProcess extends BProcess {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
     public static final String MODE_LANCEMENT_AUTOMATIQUE = "modeLancementAutomatique";
@@ -51,8 +51,8 @@ public class CIAnnonceCentraleGenerationProcess extends BProcess {
 
             boolean isImpressionEnErreur = false;
             if (CIAnnonceCentrale.CS_ETAT_GENERE.equalsIgnoreCase(annonceCentrale.getIdEtat())
-                    || (CIUtil.isAnnonceInscriptionCIXML(getSession()) && CIAnnonceCentrale.CS_ETAT_ENVOYE
-                            .equalsIgnoreCase(annonceCentrale.getIdEtat()))) {
+                    || (CIUtil.isAnnonceInscriptionCIXML(getSession())
+                            && CIAnnonceCentrale.CS_ETAT_ENVOYE.equalsIgnoreCase(annonceCentrale.getIdEtat()))) {
                 isImpressionEnErreur = imprimerProtocole();
             }
 
@@ -76,9 +76,7 @@ public class CIAnnonceCentraleGenerationProcess extends BProcess {
     private void annoncerInscriptionsACentrale() throws Exception {
 
         if (CIUtil.isAnnonceInscriptionCIXML(getSession())) {
-            if (annonceCentraleProcessXML == null) {
-                annonceCentraleProcessXML = new CIAnnonceCentraleProcessXML();
-            }
+            annonceCentraleProcessXML = CIAnnonceCentraleProcessXML.getInstance();
             annonceCentraleProcessXML.setParentWithCopy(this);
             annonceCentraleProcessXML.setModeExecution(CIAnnonceCentraleProcess.MODE_EXECUTION_INFOROM_D0064);
             annonceCentraleProcessXML.setAnnonceCentrale(annonceCentrale);
@@ -193,8 +191,8 @@ public class CIAnnonceCentraleGenerationProcess extends BProcess {
         if (moisAnnonce == moisFinPeriodeEnvoi) {
             // il faut créer la première annonce de l'année suivante
             int anneeSuivante = anneeCourante + 1;
-            String moisDebutPeriodeEnvoiString = JadeStringUtil
-                    .fillWithZeroes(String.valueOf(moisDebutPeriodeEnvoi), 2);
+            String moisDebutPeriodeEnvoiString = JadeStringUtil.fillWithZeroes(String.valueOf(moisDebutPeriodeEnvoi),
+                    2);
             dateCreationNewAnnonce = "01." + moisDebutPeriodeEnvoiString + "." + anneeSuivante;
 
         }
@@ -240,8 +238,8 @@ public class CIAnnonceCentraleGenerationProcess extends BProcess {
     private void validateProcessInputs() throws Exception {
 
         if ((annonceCentrale == null) || annonceCentrale.isNew()) {
-            throw new Exception(getSession().getLabel(
-                    "CI_ANNONCE_CENTRALE_GENERATION_ERREUR_ANNONCE_A_GENERER_EXISTE_PAS"));
+            throw new Exception(
+                    getSession().getLabel("CI_ANNONCE_CENTRALE_GENERATION_ERREUR_ANNONCE_A_GENERER_EXISTE_PAS"));
         }
 
         StringBuffer wrongInputBuffer = new StringBuffer();
@@ -249,27 +247,25 @@ public class CIAnnonceCentraleGenerationProcess extends BProcess {
         String moisAnneeAnnonceAGenerer = annonceCentrale.getDateCreation().substring(3, 10);
 
         if (!JadeDateUtil.isGlobazDate(debutPeriodeEnvoi)) {
-            wrongInputBuffer.append(getSession().getLabel(
-                    "CI_ANNONCE_CENTRALE_ERREUR_PROPERTY_ANNONCE_PERIODE_DEBUT_MANDATORY")
-                    + "\n");
+            wrongInputBuffer
+                    .append(getSession().getLabel("CI_ANNONCE_CENTRALE_ERREUR_PROPERTY_ANNONCE_PERIODE_DEBUT_MANDATORY")
+                            + "\n");
         }
 
         if (!JadeDateUtil.isGlobazDate(finPeriodeEnvoi)) {
-            wrongInputBuffer.append(getSession().getLabel(
-                    "CI_ANNONCE_CENTRALE_ERREUR_PROPERTY_ANNONCE_PERIODE_FIN_MANDATORY")
-                    + "\n");
+            wrongInputBuffer.append(
+                    getSession().getLabel("CI_ANNONCE_CENTRALE_ERREUR_PROPERTY_ANNONCE_PERIODE_FIN_MANDATORY") + "\n");
         }
 
         if (!moisAnneeDateCourante.equalsIgnoreCase(moisAnneeAnnonceAGenerer)) {
-            wrongInputBuffer.append(getSession().getLabel(
-                    "CI_ANNONCE_CENTRALE_GENERATION_ERREUR_PAS_ANNONCE_DU_MOIS_EN_COURS")
-                    + "\n");
+            wrongInputBuffer.append(
+                    getSession().getLabel("CI_ANNONCE_CENTRALE_GENERATION_ERREUR_PAS_ANNONCE_DU_MOIS_EN_COURS") + "\n");
         }
 
         if (!JadeStringUtil.isBlankOrZero(annonceCentrale.getIdEtat())) {
-            wrongInputBuffer.append(getSession().getLabel(
-                    "CI_ANNONCE_CENTRALE_GENERATION_ERREUR_ANNONCE_DEJA_GENEREE_OU_ENVOYEE")
-                    + "\n");
+            wrongInputBuffer.append(
+                    getSession().getLabel("CI_ANNONCE_CENTRALE_GENERATION_ERREUR_ANNONCE_DEJA_GENEREE_OU_ENVOYEE")
+                            + "\n");
         }
 
         if (wrongInputBuffer.length() >= 1) {

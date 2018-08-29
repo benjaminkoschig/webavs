@@ -1,31 +1,8 @@
 package globaz.pavo.process;
 
-import globaz.framework.process.FWProcess;
-import globaz.framework.util.FWMessage;
-import globaz.globall.db.BManager;
-import globaz.globall.db.BPreparedStatement;
-import globaz.globall.db.BProcess;
-import globaz.globall.db.BSession;
-import globaz.globall.db.GlobazJobQueue;
-import globaz.globall.util.JACalendar;
-import globaz.hermes.utils.DateUtils;
-import globaz.hermes.utils.StringUtils;
-import globaz.jade.client.util.JadeFilenameUtil;
-import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.common.Jade;
-import globaz.jade.common.JadeClassCastException;
-import globaz.jade.fs.JadeFsFacade;
-import globaz.jade.service.exception.JadeServiceActivatorException;
-import globaz.jade.service.exception.JadeServiceLocatorException;
-import globaz.pavo.application.CIApplication;
-import globaz.pavo.db.compte.CIAnnonceCentrale;
-import globaz.pavo.db.compte.CIAnnonceCentraleManager;
-import globaz.pavo.db.compte.CICompteIndividuel;
-import globaz.pavo.db.compte.CIEcriture;
-import globaz.pavo.db.compte.CIEcritureManager;
-import globaz.pavo.db.inscriptions.CIJournal;
-import globaz.pavo.util.CIUtil;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -33,7 +10,9 @@ import java.net.URL;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -59,10 +38,38 @@ import ch.admin.zas.rc.IKStatistikMeldungType.Aufzeichnungen.IKKopf;
 import ch.admin.zas.rc.IKStatistikMeldungType.StandIKStatistikNacher;
 import ch.admin.zas.rc.PoolFussType;
 import ch.admin.zas.rc.PoolKopfType;
+import ch.admin.zas.rc.PoolKopfType.Datentraegerstyp;
+import ch.admin.zas.rc.TDatentraegerstyp;
 import ch.admin.zas.rc.TEintragungIKMinDat.Beitragsdauer;
 import ch.admin.zas.rc.TStandIKStatistik;
 import ch.globaz.common.properties.CommonProperties;
 import ch.globaz.common.properties.PropertiesException;
+import globaz.framework.process.FWProcess;
+import globaz.framework.util.FWMessage;
+import globaz.globall.db.BManager;
+import globaz.globall.db.BPreparedStatement;
+import globaz.globall.db.BProcess;
+import globaz.globall.db.BSession;
+import globaz.globall.db.GlobazJobQueue;
+import globaz.globall.util.JACalendar;
+import globaz.globall.util.JAUtil;
+import globaz.hermes.utils.DateUtils;
+import globaz.hermes.utils.StringUtils;
+import globaz.jade.client.util.JadeFilenameUtil;
+import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.common.Jade;
+import globaz.jade.common.JadeClassCastException;
+import globaz.jade.fs.JadeFsFacade;
+import globaz.jade.service.exception.JadeServiceActivatorException;
+import globaz.jade.service.exception.JadeServiceLocatorException;
+import globaz.pavo.application.CIApplication;
+import globaz.pavo.db.compte.CIAnnonceCentrale;
+import globaz.pavo.db.compte.CIAnnonceCentraleManager;
+import globaz.pavo.db.compte.CICompteIndividuel;
+import globaz.pavo.db.compte.CIEcriture;
+import globaz.pavo.db.compte.CIEcritureManager;
+import globaz.pavo.db.inscriptions.CIJournal;
+import globaz.pavo.util.CIUtil;
 
 public class CIAnnonceCentraleProcessXML extends BProcess {
     private static final long serialVersionUID = 1L;
@@ -88,12 +95,22 @@ public class CIAnnonceCentraleProcessXML extends BProcess {
     IKStatistikMeldungType annonceXML;
     Marshaller marshaller = null;
     Marshaller marshallerIKStat = null;
+    private static CIAnnonceCentraleProcessXML instance = null;
+    private HashMap<Aufzeichnungen, ArrayList<ValidationEvent>> listError;
+    private Aufzeichnungen compteCI;
 
     /**
      * Constructor for CIAnnonceCentraleProcess.
      */
     public CIAnnonceCentraleProcessXML() {
         super();
+    }
+
+    public static CIAnnonceCentraleProcessXML getInstance() {
+        if (instance == null) {
+            instance = new CIAnnonceCentraleProcessXML();
+        }
+        return instance;
     }
 
     public CIAnnonceCentraleProcessXML(BSession session) {
@@ -129,9 +146,21 @@ public class CIAnnonceCentraleProcessXML extends BProcess {
 
             System.out.println(DateUtils.getTimeStamp() + "Processus terminé -> Transaction ok");
         } catch (Exception e) {
-            System.err.println(e.getMessage());
-            System.out.println(DateUtils.getTimeStamp() + "Transaction pas ok -> rollback");
-            getTransaction().addErrors(e.getMessage());
+            if (e instanceof CIAnnonceCentraleException) {
+                CIAnnonceCentraleException exp = (CIAnnonceCentraleException) e;
+                System.err.println(exp.toString());
+                System.out.println(DateUtils.getTimeStamp() + "Transaction pas ok -> rollback");
+                if (!exp.isPathError()) {
+                    getTransaction().addErrors(exp.getErrorMessages());
+                } else {
+                    getTransaction().addErrors(exp.getFTPError());
+                }
+
+            } else {
+                System.err.println(e.getMessage());
+                System.out.println(DateUtils.getTimeStamp() + "Transaction pas ok -> rollback");
+                getTransaction().addErrors(e.getMessage());
+            }
         }
         return true;
     }
@@ -164,8 +193,8 @@ public class CIAnnonceCentraleProcessXML extends BProcess {
         annoncePrecedentes.setSession(getSession());
         annoncePrecedentes.setForAnnee(DateUtils.getYear(DateUtils.getCurrentDateAMJ(), DateUtils.AAAAMMJJ));
         if (isModeExecutionInforomD0064()) {
-            annoncePrecedentes.setBeforeDateEnvoi(DateUtils.convertDate(annonceCentrale.getDateEnvoi(),
-                    DateUtils.JJMMAAAA_DOTS, DateUtils.AAAAMMJJ));
+            annoncePrecedentes.setBeforeDateEnvoi(
+                    DateUtils.convertDate(annonceCentrale.getDateEnvoi(), DateUtils.JJMMAAAA_DOTS, DateUtils.AAAAMMJJ));
             annoncePrecedentes.setInStatut(CIAnnonceCentrale.CS_ETAT_GENERE + "," + CIAnnonceCentrale.CS_ETAT_ENVOYE);
         }
 
@@ -197,6 +226,7 @@ public class CIAnnonceCentraleProcessXML extends BProcess {
                             : getMontantInitial());
             startDate = DateUtils.getCurrentDateAMJ();
         }
+        listError = new HashMap<Aufzeichnungen, ArrayList<ValidationEvent>>();
         System.out.println("Paramètres de départ du process : date de g\u00e9n\u00e9ration " + startDate);
         System.out.println("                                  report du revenu " + totalRevenus.toString());
     }
@@ -218,8 +248,8 @@ public class CIAnnonceCentraleProcessXML extends BProcess {
                 CommonProperties.KEY_NO_CAISSE.getValue());
 
         System.out.println("G\u00e9n\u00e9ration du lot num\u00e9ro :" + 1);
-        System.out.println(DateUtils.getTimeStamp()
-                + "Recherche des \u00e9critures \u00e0  annoncer \u00e0  la centrale...");
+        System.out.println(
+                DateUtils.getTimeStamp() + "Recherche des \u00e9critures \u00e0  annoncer \u00e0  la centrale...");
         setState(getSession().getLabel("MSG_ANN_CEN_PROC_RECHERCHE"));
         CIEcritureManager ecrituresAAnnoncer = new CIEcritureManager();
         ecrituresAAnnoncer.setSession(getSession());
@@ -269,14 +299,16 @@ public class CIAnnonceCentraleProcessXML extends BProcess {
             annonceXML = factoryType.createIKStatistikMeldungType();
             annonceXML.setKasseZweigstelleIKFuehrend(caisse + agence);
             annonceXML.setVerarbeitungsjahr(retourneXMLGregorianCalendarFromYear(anneeAA));
+            annonceXML.setStandIKStatistikVorher(generateStandIKStatistikVorher(totalRevenus));
 
-            totalRevenus = BigInteger.ZERO;
             for (int i = 0; i < maxAAnnonces; i++) {
                 CIEcriture ciEcr = (CIEcriture) ecrituresAAnnoncer.get(i);
                 try {
                     prepareEnvoieAnnonce(ciEcr, annonceXML);
+                    compteCI = annonceXML.getAufzeichnungen().get(i);
+                    validateAnnonceCI(compteCI);
                 } catch (Exception e) {
-                    LOG.error("Erreur lors de la préparation des annonces " + e.toString(), e);
+                    LOG.error("Erreur lors de la préparation des annonces : " + e.toString(), e);
                     throw e;
                 }
                 totalRevenus = totalRevenus.add(new BigInteger(getMontantSigne(ciEcr)));
@@ -284,10 +316,12 @@ public class CIAnnonceCentraleProcessXML extends BProcess {
                 ecrPrepared.execute();
 
             }
-            if (totalRevenus.compareTo(BigInteger.ZERO) < 0) {
-                annonceXML.setStandIKStatistikNacher(generateStandIKStatistikVorher(totalRevenus.abs()));
-                annonceXML.getStandIKStatistikNacher().setVorzeichenCode((short) 1);
+            if (!listError.isEmpty()) {
+                CIAnnonceCentraleException exp = new CIAnnonceCentraleException();
+                exp.setErrors(listError);
+                throw exp;
             }
+            annonceXML.setStandIKStatistikNacher(generateStandIKStatistikNacher(totalRevenus));
 
             lotAnnonces
                     .getVAIKMeldungNeuerVersicherterOrVAIKMeldungAenderungVersichertenDatenOrVAIKMeldungVerkettungVersichertenNr()
@@ -296,8 +330,8 @@ public class CIAnnonceCentraleProcessXML extends BProcess {
             if (isModeExecutionInforomD0064()) {
                 if (CIAnnonceCentrale.CS_ANNONCE_INTERCALAIRE.equalsIgnoreCase(annonceCentrale.getIdTypeAnnonce())) {
                     setTypeEnregistrement(CIAnnonceCentrale.TYPE_ENR_ANNONCE_INTERCALAIRE);
-                } else if (CIAnnonceCentrale.CS_DERNIER_ANNONCE_ANNEE.equalsIgnoreCase(annonceCentrale
-                        .getIdTypeAnnonce())) {
+                } else if (CIAnnonceCentrale.CS_DERNIER_ANNONCE_ANNEE
+                        .equalsIgnoreCase(annonceCentrale.getIdTypeAnnonce())) {
                     setTypeEnregistrement(CIAnnonceCentrale.TYPE_ENR_DERNIERE_ANNONCE_ANNEE);
                 }
 
@@ -305,13 +339,21 @@ public class CIAnnonceCentraleProcessXML extends BProcess {
             String fileName = null;
             try {
                 fileName = genereFichier(lotAnnonces);
-            } catch (Exception e) {
+            } catch (JAXBException e) {
                 LOG.error("Erreur lors de la génération du fichier : " + e.toString(), e);
                 throw e;
             }
             try {
                 envoiFichier(fileName);
             } catch (Exception e) {
+                if (e instanceof JadeServiceActivatorException) {
+                    JadeServiceActivatorException error = (JadeServiceActivatorException) e;
+                    if (error.getThrowable() instanceof FileNotFoundException) {
+                        CIAnnonceCentraleException exception = new CIAnnonceCentraleException(e.toString());
+                        exception.setIsPatchError(true);
+                        throw exception;
+                    }
+                }
                 LOG.error("Erreur lors de l'envoi : " + e.toString(), e);
                 throw e;
             }
@@ -331,9 +373,10 @@ public class CIAnnonceCentraleProcessXML extends BProcess {
                 annonce = new CIAnnonceCentrale();
                 annonce.setSession(getSession());
                 annonce.setDateCreation(JACalendar.todayJJsMMsAAAA());
-                annonce.setDateEnvoi(DateUtils.convertDate(dateEnvoiPrevu, DateUtils.AAAAMMJJ, DateUtils.JJMMAAAA_DOTS));
-                annonce.setNbrInscriptions(String.valueOf(isEncoreLotApres ? ecrituresAAnnoncer.size() - 1
-                        : ecrituresAAnnoncer.size()));
+                annonce.setDateEnvoi(
+                        DateUtils.convertDate(dateEnvoiPrevu, DateUtils.AAAAMMJJ, DateUtils.JJMMAAAA_DOTS));
+                annonce.setNbrInscriptions(
+                        String.valueOf(isEncoreLotApres ? ecrituresAAnnoncer.size() - 1 : ecrituresAAnnoncer.size()));
                 annonce.setMontantTotal(totalRevenus.toString());
                 annonce.setIdTypeAnnonce(getCodeSystemeTypeEnregistrement(isEncoreLotApres));
                 annonce.setIdEtat(CIAnnonceCentrale.CS_ETAT_GENERE);
@@ -346,7 +389,7 @@ public class CIAnnonceCentraleProcessXML extends BProcess {
 
     /**
      * Returns the typeEnregistrement.
-     * 
+     *
      * @return String
      */
     public String getTypeEnregistrement(boolean isEncoreEnrAfter) {
@@ -367,13 +410,17 @@ public class CIAnnonceCentraleProcessXML extends BProcess {
         }
     }
 
-    private Lot initPoolMeldungZurZASLot(boolean poolKopfTest, String poolKopfSender) throws ParseException,
-            DatatypeConfigurationException {
+    private Lot initPoolMeldungZurZASLot(boolean poolKopfTest, String poolKopfSender)
+            throws ParseException, DatatypeConfigurationException {
         ch.admin.zas.pool.ObjectFactory factoryPool = new ch.admin.zas.pool.ObjectFactory();
         ch.admin.zas.pool.PoolMeldungZurZAS.Lot lot = factoryPool.createPoolMeldungZurZASLot();
         PoolKopfType poolKopf = factoryType.createPoolKopfType();
         if (poolKopfTest) {
             poolKopf.setTest("TEST");
+            Datentraegerstyp donnee = factoryType.createPoolKopfTypeDatentraegerstyp();
+            donnee.setPoolscode(true);
+            donnee.setValue(TDatentraegerstyp.T);
+            poolKopf.setDatentraegerstyp(donnee);
         }
         poolKopf.setSender(poolKopfSender);
 
@@ -413,8 +460,8 @@ public class CIAnnonceCentraleProcessXML extends BProcess {
 
     }
 
-    private String genereFichier(PoolMeldungZurZAS.Lot lotAnnonce) throws CIAnnonceCentraleException, IOException,
-            SAXException, JAXBException {
+    private String genereFichier(PoolMeldungZurZAS.Lot lotAnnonce)
+            throws CIAnnonceCentraleException, IOException, SAXException, JAXBException {
         String fileName;
         ch.admin.zas.pool.ObjectFactory factoryPool = new ch.admin.zas.pool.ObjectFactory();
         PoolMeldungZurZAS pool = factoryPool.createPoolMeldungZurZAS();
@@ -460,15 +507,33 @@ public class CIAnnonceCentraleProcessXML extends BProcess {
 
     }
 
-    private StandIKStatistikNacher generateStandIKStatistikVorher(BigInteger totalRevenus2) {
+    private TStandIKStatistik generateStandIKStatistikVorher(BigInteger totalRevenusT) {
+        TStandIKStatistik statAvant = factoryType.createTStandIKStatistik();
+        if (totalRevenusT.compareTo(BigInteger.ZERO) < 0) {
+            statAvant.setVorzeichenCode((short) 1);
+            statAvant.setSummeEinkommen(totalRevenusT.abs());
+        } else {
+            statAvant.setVorzeichenCode((short) 0);
+            statAvant.setSummeEinkommen(totalRevenusT.abs());
+        }
+
+        return statAvant;
+    }
+
+    private StandIKStatistikNacher generateStandIKStatistikNacher(BigInteger totalRevenusT) {
         StandIKStatistikNacher statApres = factoryType.createIKStatistikMeldungTypeStandIKStatistikNacher();
         if (CIAnnonceCentrale.CS_ANNONCE_INTERCALAIRE.equalsIgnoreCase(annonceCentrale.getIdTypeAnnonce())) {
             statApres.setLetzteMeldung((short) 1);
         } else if (CIAnnonceCentrale.CS_DERNIER_ANNONCE_ANNEE.equalsIgnoreCase(annonceCentrale.getIdTypeAnnonce())) {
             statApres.setLetzteMeldung((short) 2);
         }
-        statApres.setVorzeichenCode((short) 0);
-        statApres.setSummeEinkommen(totalRevenus2);
+        if (totalRevenusT.compareTo(BigInteger.ZERO) < 0) {
+            statApres.setVorzeichenCode((short) 1);
+            statApres.setSummeEinkommen(totalRevenusT.abs());
+        } else {
+            statApres.setVorzeichenCode((short) 0);
+            statApres.setSummeEinkommen(totalRevenusT.abs());
+        }
 
         return statApres;
     }
@@ -480,11 +545,10 @@ public class CIAnnonceCentraleProcessXML extends BProcess {
         Aufzeichnungen notes = new Aufzeichnungen();
         EintragungIKMeldung annonceCI = new EintragungIKMeldung();
 
-        annonceXML.setStandIKStatistikVorher(generateStandIKStatistikVorher());
-
         /*
          * Génération IKKopf
          */
+
         IKKopf ikkopf = new IKKopf();
         if (!JadeStringUtil.isBlankOrZero(ciEcr.getAvs())) {
             ikkopf.getVersichertennummer().add(ciEcr.getAvs());
@@ -496,8 +560,6 @@ public class CIAnnonceCentraleProcessXML extends BProcess {
         /*
          * Génration EintragungIKMeldung
          */
-
-        // annonceCI.setAKAbrechnungsNr(JadeStringUtil.removeChar(ciEcr.getIdAffilie(), '.'));
         try {
             annonceCI.setAKAbrechnungsNr(getAffilie(ciEcr));
         } catch (Exception e) {
@@ -517,60 +579,79 @@ public class CIAnnonceCentraleProcessXML extends BProcess {
         } else {
             annonceCI.setSchluesselzahlStornoeintrag((short) 0);
         }
-        if (!JadeStringUtil.isBlankOrZero(ciEcr.getCode())) {
-            JAXBElement<Short> chiffrecleGenre = factoryType.createTEintragungIKMinDatBesondereSchluesselzahlIK(Short
-                    .parseShort(ciEcr.getCode().substring(ciEcr.getCode().length() - 1)));
-            annonceCI.setBesondereSchluesselzahlIK(chiffrecleGenre);
+        if (!JadeStringUtil.isBlankOrZero(ciEcr.getParticulier())) {
+            if (!JadeStringUtil.isBlankOrZero(ciEcr.getParticulier().substring(ciEcr.getParticulier().length() - 1))) {
+                JAXBElement<Short> chiffrecleGenre = factoryType.createTEintragungIKMinDatBesondereSchluesselzahlIK(
+                        Short.parseShort(ciEcr.getParticulier().substring(ciEcr.getParticulier().length() - 1)));
+                annonceCI.setBesondereSchluesselzahlIK(chiffrecleGenre);
+            }
         }
+
         if (!JadeStringUtil.isBlankOrZero(ciEcr.getPartBta())) {
-            JAXBElement<Integer> bta = factoryType.createTEintragungIKMinDatBetreuungsgutschriftBruchteil(Integer
-                    .parseInt(ciEcr.getPartBta()));
+            JAXBElement<Integer> bta = factoryType
+                    .createTEintragungIKMinDatBetreuungsgutschriftBruchteil(Integer.parseInt(ciEcr.getPartBta()));
+            annonceCI.setBetreuungsgutschriftBruchteil(bta);
+        } else {
+            JAXBElement<Integer> bta = factoryType
+                    .createTEintragungIKMinDatBetreuungsgutschriftBruchteil(Integer.parseInt("0"));
             annonceCI.setBetreuungsgutschriftBruchteil(bta);
         }
         if (!JadeStringUtil.isBlankOrZero(ciEcr.getCodeSpecial())) {
-            JAXBElement<Short> codeSpecial = factoryType.createTEintragungIKMinDatSonderfallcodeIK(Short
-                    .parseShort(ciEcr.getCodeSpecial().substring(ciEcr.getCodeSpecial().length() - 1)));
+            JAXBElement<Short> codeSpecial = factoryType.createTEintragungIKMinDatSonderfallcodeIK(
+                    Short.parseShort(ciEcr.getCodeSpecial().substring(ciEcr.getCodeSpecial().length() - 1)));
             annonceCI.setSonderfallcodeIK(codeSpecial);
         } else {
-            annonceCI.setSonderfallcodeIK(null);
+            JAXBElement<Short> codeSpecial = factoryType.createTEintragungIKMinDatSonderfallcodeIK(null);
+            codeSpecial.setNil(true);
+            annonceCI.setSonderfallcodeIK(codeSpecial);
         }
         annonceCI.setBeitragsdauer(generateBeitragsdauer(ciEcr));
         annonceCI.setBeitragsjahr(retourneXMLGregorianCalendarFromYear(ciEcr.getAnnee().substring(2, 4)));
         annonceCI.setEinkommen(new BigDecimal(getMontant(ciEcr)));
         annonceCI.setVerarbeitungsjahr(retourneXMLGregorianCalendarFromYear(anneeAA));
         notes.getEintragungIKMeldung().add(annonceCI);
-        // validateAnnonceCI(notes);
         annonceXML.getAufzeichnungen().add(notes);
 
     }
 
-    // private void validateAnnonceCI(Aufzeichnungen notes) throws CIAnnonceCentraleException,
-    // DatatypeConfigurationException, SAXException, JAXBException, PropertiesException, ParseException {
-    // ch.admin.zas.pool.ObjectFactory factoryPool = new ch.admin.zas.pool.ObjectFactory();
-    // IKStatistikMeldungType annonceXMLTest = factoryType.createIKStatistikMeldungType();
-    // annonceXMLTest.setKasseZweigstelleIKFuehrend(caisse + agence);
-    // annonceXMLTest.setVerarbeitungsjahr(retourneXMLGregorianCalendarFromYear(anneeAA));
-    // annonceXMLTest.getAufzeichnungen().add(notes);
-    // PoolMeldungZurZAS.Lot lotAnnonces = initPoolMeldungZurZASLot(CIUtil.isTestXML(getSession()),
-    // CommonProperties.KEY_NO_CAISSE.getValue());
-    // lotAnnonces
-    // .getVAIKMeldungNeuerVersicherterOrVAIKMeldungAenderungVersichertenDatenOrVAIKMeldungVerkettungVersichertenNr()
-    // .add(annonceXMLTest);
-    // PoolMeldungZurZAS pool = factoryPool.createPoolMeldungZurZAS();
-    // pool.getLot().add(lotAnnonces);
-    // lotAnnonces.getPoolFuss().setEintragungengesamtzahl(1);
-    // initMarshaller(pool);
-    // marshaller.setEventHandler(new ValidationEventHandler() {
-    //
-    // @Override
-    // public boolean handleEvent(ValidationEvent event) {
-    // LOG.warn("JAXB validation error : " + event.getMessage(), this);
-    // return false;
-    // }
-    // });
-    // marshaller.marshal(pool, new ByteArrayOutputStream());
-    //
-    // }
+    private void validateAnnonceCI(Aufzeichnungen notes) throws CIAnnonceCentraleException,
+            DatatypeConfigurationException, SAXException, JAXBException, PropertiesException, ParseException {
+        ch.admin.zas.pool.ObjectFactory factoryPool = new ch.admin.zas.pool.ObjectFactory();
+        IKStatistikMeldungType annonceXMLTest = factoryType.createIKStatistikMeldungType();
+        annonceXMLTest.setKasseZweigstelleIKFuehrend(caisse + agence);
+        annonceXMLTest.setVerarbeitungsjahr(retourneXMLGregorianCalendarFromYear(anneeAA));
+        annonceXMLTest.getAufzeichnungen().add(notes);
+        annonceXMLTest.setStandIKStatistikVorher(generateStandIKStatistikVorher(BigInteger.ZERO));
+        annonceXMLTest.setStandIKStatistikNacher(generateStandIKStatistikNacher(BigInteger.ZERO));
+        PoolMeldungZurZAS.Lot lotAnnonces = initPoolMeldungZurZASLot(CIUtil.isTestXML(getSession()),
+                CommonProperties.KEY_NO_CAISSE.getValue());
+        lotAnnonces
+                .getVAIKMeldungNeuerVersicherterOrVAIKMeldungAenderungVersichertenDatenOrVAIKMeldungVerkettungVersichertenNr()
+                .add(annonceXMLTest);
+        PoolMeldungZurZAS pool = factoryPool.createPoolMeldungZurZAS();
+        pool.getLot().add(lotAnnonces);
+        lotAnnonces.getPoolFuss().setEintragungengesamtzahl(1);
+        initMarshaller(pool);
+        marshaller.setEventHandler(new ValidationEventHandler() {
+
+            @Override
+            public boolean handleEvent(ValidationEvent event) {
+                LOG.warn("JAXB validation error : " + event.getMessage(), this);
+                ArrayList<ValidationEvent> list;
+                if (!listError.containsKey(compteCI)) {
+                    list = new ArrayList<ValidationEvent>();
+                } else {
+                    list = listError.get(compteCI);
+                }
+                list.add(event);
+                listError.put(compteCI, list);
+
+                return true;
+            }
+        });
+        marshaller.marshal(pool, new ByteArrayOutputStream());
+
+    }
 
     private TStandIKStatistik generateStandIKStatistikVorher() {
         TStandIKStatistik statAvant = factoryType.createTStandIKStatistik();
@@ -594,8 +675,8 @@ public class CIAnnonceCentraleProcessXML extends BProcess {
         return fileName;
     }
 
-    public XMLGregorianCalendar retourneXMLGregorianCalendarFromYear(String dateYy) throws CIAnnonceCentraleException,
-            DatatypeConfigurationException {
+    public XMLGregorianCalendar retourneXMLGregorianCalendarFromYear(String dateYy)
+            throws CIAnnonceCentraleException, DatatypeConfigurationException {
         XMLGregorianCalendar returnCalendar;
         GregorianCalendar gregory;
         if (new Integer(dateYy) > 48) {
@@ -615,7 +696,7 @@ public class CIAnnonceCentraleProcessXML extends BProcess {
 
     /**
      * Returns the maxEcrituresASelect.
-     * 
+     *
      * @return int
      */
     public int getMaxEcrituresASelect() throws Exception {
@@ -633,13 +714,14 @@ public class CIAnnonceCentraleProcessXML extends BProcess {
 
     private String getMontantSigne(CIEcriture ecriture) {
         int revenuTr = (int) Double.parseDouble(ecriture.getRevenu());
-        if (JadeStringUtil.isBlank(ecriture.getExtourne()) || CIEcriture.CS_EXTOURNE_2.equals(ecriture.getExtourne())
+        if (JAUtil.isIntegerEmpty(ecriture.getExtourne()) || CIEcriture.CS_EXTOURNE_2.equals(ecriture.getExtourne())
                 || CIEcriture.CS_EXTOURNE_6.equals(ecriture.getExtourne())
                 || CIEcriture.CS_EXTOURNE_8.equals(ecriture.getExtourne())) {
             return String.valueOf(revenuTr);
         } else {
             return String.valueOf(-1 * revenuTr);
         }
+
     }
 
     private String getMontant(CIEcriture ecriture) {
@@ -656,7 +738,7 @@ public class CIAnnonceCentraleProcessXML extends BProcess {
                 ciPart.setCompteIndividuelId(ecriture.getPartenaireId());
                 ciPart.retrieve();
                 if (!ciPart.isNew()) {
-                    noAffilie = ciPart.getNumeroAvsForSplitting();
+                    noAffilie = ciPart.getNumeroAvs();
                 }
             }
             return noAffilie;
@@ -674,8 +756,8 @@ public class CIAnnonceCentraleProcessXML extends BProcess {
                 }
             }
             String numAffWithoutDot = JadeStringUtil.removeChar(ecriture.getIdAffilie(), '.');
-            if (numAffWithoutDot.length() > CIAnnonceCentraleProcessXML.NUM_AVS_LENGTH) {
-                numAffWithoutDot = numAffWithoutDot.substring(0, CIAnnonceCentraleProcessXML.NUM_AVS_LENGTH);
+            if (numAffWithoutDot.contains("-")) {
+                numAffWithoutDot = "756" + numAffWithoutDot.substring(1, numAffWithoutDot.length());
             }
 
             return numAffWithoutDot;
