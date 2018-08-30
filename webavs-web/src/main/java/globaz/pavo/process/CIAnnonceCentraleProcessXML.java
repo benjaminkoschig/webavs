@@ -498,11 +498,14 @@ public class CIAnnonceCentraleProcessXML extends BProcess {
 
     private void envoiFichier(String fichier) throws CIAnnonceCentraleException, JadeServiceLocatorException,
             JadeServiceActivatorException, JadeClassCastException {
-        if (CIUtil.getPathFTP(getSession()) != "") {
+        if (!JadeStringUtil.isBlank(CIUtil.getPathFTP(getSession()))) {
             JadeFsFacade.copyFile(fichier, CIUtil.getPathFTP(getSession()) + "/" + getFileNameTimeStamp());
         } else {
             LOG.error(getSession().getLabel("ERROR_PATH_BLANK"));
-            throw new CIAnnonceCentraleException(getSession().getLabel("ERROR_PATH_BLANK"));
+            CIAnnonceCentraleException excep = new CIAnnonceCentraleException(
+                    getSession().getLabel("ERROR_PATH_BLANK"));
+            excep.setIsPatchError(true);
+            throw excep;
         }
 
     }
