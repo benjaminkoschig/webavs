@@ -330,10 +330,12 @@ public class MutationPcaServiceImpl implements MutationPcaService {
         List<MutationPca> listPcaFinale = new ArrayList<>();
         for(MutationPca pca : listPca) {
             if(isDemandeAnnule(pca)) {
-                if(mapPcaAnnule.get(pca.getIdDemande()) == null) {
-                    mapPcaAnnule.put(pca.getIdDemande(), new ArrayList<MutationPca>());
+                // groupe par id demande + numéro nss
+                String key = pca.getIdDemande()+pca.getNss();
+                if(mapPcaAnnule.get(key) == null) {
+                    mapPcaAnnule.put(key, new ArrayList<MutationPca>());
                 }
-                mapPcaAnnule.get(pca.getIdDemande()).add(pca);
+                mapPcaAnnule.get(key).add(pca);
             } else {
                 listPcaFinale.add(pca);
             }
