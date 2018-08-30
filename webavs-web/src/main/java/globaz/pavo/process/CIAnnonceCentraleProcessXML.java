@@ -738,7 +738,10 @@ public class CIAnnonceCentraleProcessXML extends BProcess {
                 ciPart.setCompteIndividuelId(ecriture.getPartenaireId());
                 ciPart.retrieve();
                 if (!ciPart.isNew()) {
-                    noAffilie = ciPart.getNumeroAvs();
+                    noAffilie = ciPart.getNumeroAvsForSplitting();
+                    if (noAffilie.contains("-")) {
+                        noAffilie = "756" + JadeStringUtil.removeChar(noAffilie, '-');
+                    }
                 }
             }
             return noAffilie;
@@ -755,11 +758,10 @@ public class CIAnnonceCentraleProcessXML extends BProcess {
                     return "66666666666";
                 }
             }
-            String numAffWithoutDot = JadeStringUtil.removeChar(ecriture.getIdAffilie(), '.');
-            if (numAffWithoutDot.contains("-")) {
-                numAffWithoutDot = "756" + numAffWithoutDot.substring(1, numAffWithoutDot.length());
+            String numAffWithoutDot = StringUtils.removeDots(ecriture.getIdAffilie());
+            if (numAffWithoutDot.length() > CIAnnonceCentraleProcessXML.NUM_AVS_LENGTH) {
+                numAffWithoutDot = numAffWithoutDot.substring(0, CIAnnonceCentraleProcessXML.NUM_AVS_LENGTH);
             }
-
             return numAffWithoutDot;
         }
     }
