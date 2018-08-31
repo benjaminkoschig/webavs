@@ -179,6 +179,9 @@ public interface ILEConstantes extends ENConstantes {
     /******* Définition de formule LPP ********/
     String CS_DEBUT_SUIVI_ANNUEL_LPP = "6200074";
     String CS_QUESTIONNAIRE_ANNUEL_LPP = "6200075";
+    String CS_DEF_FORMULE_RAPPEL_ANNUEL_LPP = "6200076";
+    String CS_DEF_FORMULE_SOMMATION_ANNUEL_LPP = "6200077";
+    String CS_DEF_FORMULE_DENONCIATION_ANNUEL_LPP = "6200078";
 
     /******* Définition de formule LPP ********/
     String CS_DEBUT_SUIVI_NCC = "6200079";
