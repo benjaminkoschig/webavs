@@ -143,12 +143,18 @@ public class RpcDecisionAnnonceComplete {
     }
 
     public Montant resolveLoyerTotalBrut() {
+        Montant loyer;
         if (hasPartner()) {
-            return getMembresFamilleWithDonneesFinanciere()
+            loyer = getMembresFamilleWithDonneesFinanciere()
                     .filtreByRoleMembreFamille(pcaDecision.getPca().getRoleBeneficiaire()).sumLoyerTotalBrut();
         } else {
-            return getMembresFamilleWithDonneesFinanciere().sumLoyerTotalBrut();
+            loyer = getMembresFamilleWithDonneesFinanciere().sumLoyerTotalBrut();
         }
+        Montant plafond = rpcCalcul.getLoyerMaximum();
+        if (loyer.greater(plafond)) {
+            return plafond;
+        }
+        return loyer;
     }
 
     public boolean hasInteretsHypotecaireSansPlafond() {

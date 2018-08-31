@@ -275,7 +275,12 @@ public class RpcCalcul {
      * FC28
      */
     public Montant getPartLoyerTotatBrut() {
-        return calcul.getDepensesLoyerTotalNonPlafonne();
+        Montant loyer = calcul.getDepensesLoyerTotalNonPlafonne();
+        Montant plafond = getLoyerMaximum();
+        if (loyer.greater(plafond)) {
+            return plafond;
+        }
+        return loyer;
     }
 
     /**
@@ -397,7 +402,12 @@ public class RpcCalcul {
      * FC27
      */
     public Montant getLoyerMontantNet() {
-        return calcul.getLoyerMontantNet();
+        Montant loyer = calcul.getLoyerMontantNet();
+        Montant plafond = getLoyerMaximum();
+        if (loyer.greater(plafond)) {
+            return plafond;
+        }
+        return loyer;
     }
 
     /**
