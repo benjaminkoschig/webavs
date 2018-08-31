@@ -3,6 +3,7 @@ package ch.globaz.vulpecula.business.models.servicemilitaire;
 import globaz.jade.persistence.model.JadeSimpleModel;
 
 public class ServiceMilitaireSimpleModel extends JadeSimpleModel {
+
     private static final long serialVersionUID = 1L;
 
     private String id;
@@ -24,6 +25,7 @@ public class ServiceMilitaireSimpleModel extends JadeSimpleModel {
     private String baseSalaire;
     private String tauxCP;
     private String tauxGratification;
+    private String dateVersement;
 
     @Override
     public String getId() {
@@ -178,4 +180,13 @@ public class ServiceMilitaireSimpleModel extends JadeSimpleModel {
     public void setTauxGratification(String tauxGratification) {
         this.tauxGratification = tauxGratification;
     }
+
+    public String getDateVersement() {
+        return dateVersement;
+    }
+
+    public void setDateVersement(String dateVersement) {
+        this.dateVersement = dateVersement;
+    }
+
 }

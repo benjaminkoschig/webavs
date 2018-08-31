@@ -9,6 +9,7 @@ import globaz.globall.db.BProcessLauncher;
 import globaz.vulpecula.vb.decomptesalaire.PTAnnoncerMyProdisViewBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ch.globaz.vulpecula.process.myprodis.AnnoncerCPProcess;
 import ch.globaz.vulpecula.process.myprodis.AnnoncerSalairesCotisantsProcess;
 import ch.globaz.vulpecula.process.myprodis.AnnoncerSalairesTheoriquesProcessAnnuel;
 import ch.globaz.vulpecula.process.myprodis.AnnoncerSalairesTheoriquesProcessMensuel;
@@ -29,6 +30,9 @@ public class PTAnnoncerMyProdisHelper extends FWHelper {
                 break;
             case COTISANTS:
                 process = new AnnoncerSalairesCotisantsProcess();
+                break;
+            case CP:
+                process = new AnnoncerCPProcess();
                 break;
         }
 

@@ -36,8 +36,32 @@
 				<search-field name="forGenre" field-ref="cotisationAssociationProfessionnelleSimpleModel.genre"
 					operation="EQUALS" />
 				<search-field name="forGenreNot" field-ref="cotisationAssociationProfessionnelleSimpleModel.genre" operation="NOT_EQUALS" />
+				
+				<search-field name="forMontantFourchette" field-ref="parametreCotisationAssociationSimpleModel.fourchetteDebut"
+					operation="LESS_OR_EQUALS" />
+					
+				<search-field name="forMontantFourchette" field-ref="parametreCotisationAssociationSimpleModel.fourchetteFin"
+					operation="GREATER_OR_EQUALS" />
+					
+				<search-field name="forFourchetteInferieure" field-ref="parametreCotisationAssociationSimpleModel.fourchetteDebut"
+					operation="LESS_OR_EQUALS" />
+					
+				<search-field name="forFourchetteSuperieure" field-ref="parametreCotisationAssociationSimpleModel.fourchetteFin"
+					operation="GREATER_OR_EQUALS" />	
+					
+				<search-field name="forTypeParametre" field-ref="parametreCotisationAssociationSimpleModel.typeParam"
+					operation="EQUALS" />
+					
+				<search-field name="forFacturerDefautIn" field-ref="cotisationAssociationProfessionnelleSimpleModel.facturerDefaut" operation="IN" />
  			</search-group>
 		</search-definition>
+		
+		<order-by>
+			<order-field
+				field-ref="parametreCotisationAssociationSimpleModel.typeParam"
+				order="ASC" />
+		</order-by>
+		
 		
 		<order-by name="idDesc">
 			<order-field

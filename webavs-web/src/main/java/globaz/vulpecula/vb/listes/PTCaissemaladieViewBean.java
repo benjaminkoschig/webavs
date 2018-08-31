@@ -10,6 +10,8 @@ public class PTCaissemaladieViewBean extends PTListeProcessViewBean {
     private String periodicite;
     private String liste;
     private String date;
+    private String dateFrom;
+    private String dateTo;
     private String idCaisseMaladie;
 
     private List<Administration> caissesMaladies;
@@ -19,6 +21,7 @@ public class PTCaissemaladieViewBean extends PTListeProcessViewBean {
         caissesMaladies = VulpeculaRepositoryLocator.getAdministrationRepository().findAllCaissesMaladies();
     }
 
+    @Override
     public String getEmail() {
         if (email == null) {
             return JadeThread.currentUserEmail();
@@ -50,6 +53,7 @@ public class PTCaissemaladieViewBean extends PTListeProcessViewBean {
         this.date = date;
     }
 
+    @Override
     public void setEmail(String email) {
         this.email = email;
     }
@@ -64,5 +68,21 @@ public class PTCaissemaladieViewBean extends PTListeProcessViewBean {
 
     public List<Administration> getCaissesMaladies() {
         return caissesMaladies;
+    }
+
+    public String getDateFrom() {
+        return dateFrom;
+    }
+
+    public void setDateFrom(String dateFrom) {
+        this.dateFrom = dateFrom;
+    }
+
+    public String getDateTo() {
+        return dateTo;
+    }
+
+    public void setDateTo(String dateTo) {
+        this.dateTo = dateTo;
     }
 }

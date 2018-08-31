@@ -1,13 +1,12 @@
 package ch.globaz.vulpecula.externalservices;
 
+import ch.globaz.mercato.mutations.myprodis.InfoType;
+import ch.globaz.mercato.notification.Notification;
 import globaz.globall.db.BAbstractEntityExternalService;
 import globaz.globall.db.BEntity;
 import globaz.jade.client.util.JadeStringUtil;
-import globaz.pyxis.constantes.IConstantes;
 import globaz.pyxis.db.adressecourrier.TIAvoirAdresse;
 import globaz.pyxis.db.adressepaiement.TIAvoirPaiement;
-import ch.globaz.mercato.mutations.myprodis.InfoType;
-import ch.globaz.mercato.notification.Notification;
 
 public class AdresseTracker extends BAbstractEntityExternalService {
     private RequestFactory requestFactory = new RequestFactory();
@@ -16,13 +15,12 @@ public class AdresseTracker extends BAbstractEntityExternalService {
     public void afterAdd(BEntity entity) throws Throwable {
         if (entity instanceof TIAvoirAdresse) {
             TIAvoirAdresse avoirAdressse = (TIAvoirAdresse) entity;
-            // On annonce que pour les adresses de type "Domicile"
-            if (IConstantes.CS_AVOIR_ADRESSE_DOMICILE.equals(avoirAdressse.getTypeAdresse())) {
-                Notification notification = new Notification(InfoType.AJOUT_AVOIR_ADRESSE, entity.getId());
-                requestFactory.persistFromAnciennePersistance(notification, entity.getSession());
-            }
+            Notification notification = new Notification(InfoType.AJOUT_AVOIR_ADRESSE, entity.getId(),
+                    avoirAdressse.getIdTiers());
+            requestFactory.persistFromAnciennePersistance(notification, entity.getSession());
         } else if (entity instanceof TIAvoirPaiement) {
-            Notification notification = new Notification(InfoType.AJOUT_AVOIR_PAIEMENT, entity.getId());
+            TIAvoirPaiement avoirPaiement = (TIAvoirPaiement) entity;
+            Notification notification = new Notification(InfoType.AJOUT_AVOIR_PAIEMENT, entity.getId(), avoirPaiement.getIdTiers());
             requestFactory.persistFromAnciennePersistance(notification, entity.getSession());
         }
     }
@@ -37,20 +35,28 @@ public class AdresseTracker extends BAbstractEntityExternalService {
 
     @Override
     public void afterUpdate(BEntity entity) throws Throwable {
+    	String idTiers = null;
         if (entity instanceof TIAvoirAdresse) {
             TIAvoirAdresse avoirAdressse = (TIAvoirAdresse) entity;
-            // On annonce que pour les adresses de type "Domicile"
-            if (IConstantes.CS_AVOIR_ADRESSE_DOMICILE.equals(avoirAdressse.getTypeAdresse())) {
-                if (JadeStringUtil.isBlankOrZero(((TIAvoirAdresse) entity).getDateFinRelation())) {
-                    Notification notification = new Notification(InfoType.MODIFICATION_AVOIR_ADRESSE, entity.getId());
-                    requestFactory.persistFromAnciennePersistance(notification, entity.getSession());
-                }
-            }
-        } else if (entity instanceof TIAvoirPaiement) {
-            if (JadeStringUtil.isBlankOrZero(((TIAvoirPaiement) entity).getDateFinRelation())) {
-                Notification notification = new Notification(InfoType.MODIFICATION_AVOIR_PAIEMENT, entity.getId());
+            idTiers = avoirAdressse.getIdTiers();
+            if (JadeStringUtil.isBlankOrZero(((TIAvoirAdresse) entity).getDateFinRelation())) {
+                Notification notification = new Notification(InfoType.MODIFICATION_AVOIR_ADRESSE, entity.getId(),
+                		idTiers);
                 requestFactory.persistFromAnciennePersistance(notification, entity.getSession());
             }
+        } else if (entity instanceof TIAvoirPaiement) {
+            TIAvoirPaiement avoirPaiement = (TIAvoirPaiement) entity;
+            idTiers = avoirPaiement.getIdTiers();
+            if (JadeStringUtil.isBlankOrZero(((TIAvoirPaiement) entity).getDateFinRelation())) {
+                Notification notification = new Notification(InfoType.MODIFICATION_AVOIR_PAIEMENT, entity.getId(),
+                		idTiers);
+                requestFactory.persistFromAnciennePersistance(notification, entity.getSession());
+            }
+        }
+        
+        // Notification pour eBusiness
+        if (idTiers != null && idTiers.length() != 0) {
+        	requestFactory.persistFromAnciennePersistanceEbu(idTiers, entity.getSession());
         }
     }
 

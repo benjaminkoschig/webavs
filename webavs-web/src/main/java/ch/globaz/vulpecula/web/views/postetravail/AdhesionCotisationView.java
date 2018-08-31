@@ -22,6 +22,7 @@ public class AdhesionCotisationView implements Comparable<AdhesionCotisationView
     public String spy;
     public String idAssurance;
     public boolean checked;
+    public boolean valid;
 
     public String getIdCotisation() {
         return idCotisation;
@@ -83,6 +84,14 @@ public class AdhesionCotisationView implements Comparable<AdhesionCotisationView
 
     public void setSpy(String spy) {
         this.spy = spy;
+    }
+
+    public boolean isValid() {
+        return valid;
+    }
+
+    public void setValid(boolean valid) {
+        this.valid = valid;
     }
 
     @Override

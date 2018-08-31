@@ -147,5 +147,8 @@ public class PTMainServlet extends FWJadeServlet {
         registerActionMapping(PTActions.IS, FWDefaultServletAction.class);
         registerActionMapping(PTActions.COMPTABILITE, FWDefaultServletAction.class);
         registerActionMapping(PTActions.AF, PTAFAction.class);
+        registerActionMapping(PTActions.CONTROLE_EMPLOYEUR, PTControleEmployeurAction.class);
+        registerActionMapping(PTActions.AP, PTAPAction.class);
+        registerActionMapping(PTActions.EBUSINESS, PTEbusinessAction.class);
     }
 }

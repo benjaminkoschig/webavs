@@ -1,11 +1,5 @@
 package ch.globaz.vulpecula.facturation;
 
-import globaz.jade.client.util.JadeStringUtil;
-import globaz.musca.db.facturation.FAAfact;
-import globaz.musca.db.facturation.FAEnteteFacture;
-import globaz.musca.db.facturation.FAModuleFacturation;
-import globaz.osiris.api.APIRubrique;
-import globaz.osiris.api.APISection;
 import java.util.Deque;
 import java.util.LinkedList;
 import org.slf4j.Logger;
@@ -22,6 +16,12 @@ import ch.globaz.vulpecula.util.RubriqueUtil;
 import ch.globaz.vulpecula.util.RubriqueUtil.Compte;
 import ch.globaz.vulpecula.util.RubriqueUtil.Convention;
 import ch.globaz.vulpecula.util.RubriqueUtil.Prestation;
+import globaz.jade.client.util.JadeStringUtil;
+import globaz.musca.db.facturation.FAAfact;
+import globaz.musca.db.facturation.FAEnteteFacture;
+import globaz.musca.db.facturation.FAModuleFacturation;
+import globaz.osiris.api.APIRubrique;
+import globaz.osiris.api.APISection;
 
 /**
  * BProcess permettant la génération des afacts lors de la génération des congés payés.
@@ -51,8 +51,8 @@ public class PTProcessFacturationCongePayeGenerer extends PTProcessFacturation {
         // Pour des raisons de mem on passe par un Deque (LinkedList) qui permet de libérer la mem après chaque
         // itération.
         // La mem va monter et être libérée quand il y aura besoin d'espace.
-        Deque<CongePaye> deque = new LinkedList<CongePaye>(VulpeculaRepositoryLocator.getCongePayeRepository()
-                .findForFacturation(getPassage().getId()));
+        Deque<CongePaye> deque = new LinkedList<CongePaye>(
+                VulpeculaRepositoryLocator.getCongePayeRepository().findForFacturation(getPassage().getId()));
 
         // Boucler sur les décomptes et charger les lignes de salaires
         while (!deque.isEmpty() && !isAborted()) {
@@ -62,7 +62,8 @@ public class PTProcessFacturationCongePayeGenerer extends PTProcessFacturation {
                 continue;
             }
 
-            NumeroDecompte numero = new NumeroDecompte(congePaye.getAnneeDebutAsValue(), NumeroDecompte.CONGES_PAYES);
+            // POBMS-61 Prendre la date de fin et non plus la date de début.
+            NumeroDecompte numero = new NumeroDecompte(congePaye.getAnneeFinAsValue(), NumeroDecompte.CONGES_PAYES);
             FAEnteteFacture enteteFacture = null;
             try {
                 if (Beneficiaire.EMPLOYEUR.equals(congePaye.getBeneficiaire())
@@ -76,6 +77,7 @@ public class PTProcessFacturationCongePayeGenerer extends PTProcessFacturation {
 
                 } else if (Beneficiaire.TRAVAILLEUR.equals(congePaye.getBeneficiaire())) {
                     if (congePaye.getTravailleurNss() == null || congePaye.getTravailleurNss().length() == 0) {
+                    	// TODO a corriger (peut-être remplacer le adError par un warning)
                         this._addError("Pas de numéro NSS pour le travailleur "
                                 + congePaye.getPosteTravail().getDescriptionTravailleur() + ". IdTiers="
                                 + congePaye.getTravailleurIdTiers());
@@ -108,7 +110,7 @@ public class PTProcessFacturationCongePayeGenerer extends PTProcessFacturation {
 
     /**
      * Change l'état de la prestation à TRAITEE
-     * 
+     *
      * @param congePaye
      */
     private void majEtatPrestation(CongePaye congePaye) {
@@ -118,15 +120,15 @@ public class PTProcessFacturationCongePayeGenerer extends PTProcessFacturation {
 
     /**
      * Création de la ligne de facture selon la cotisation calculee pour une entete de facture
-     * 
+     *
      * @param enteteFacture
      * @param congePaye
      * @throws Exception
      */
     private void createAfactsForEmployeur(FAEnteteFacture enteteFacture, CongePaye congePaye) throws Exception {
         // création de l'afact
-        int idCaisseMetier = VulpeculaServiceLocator.getPosteTravailService().getIdTiersCaissePrincipale(
-                congePaye.getIdPosteTravail());
+        int idCaisseMetier = VulpeculaServiceLocator.getPosteTravailService()
+                .getIdTiersCaissePrincipale(congePaye.getIdPosteTravail());
 
         // Ajout des afacts pour la rubrique CP
         addAfact(enteteFacture, congePaye, congePaye.getMontantBrut().getNegativeValue().toString(), Compte.PRESTATION,
@@ -156,8 +158,8 @@ public class PTProcessFacturationCongePayeGenerer extends PTProcessFacturation {
      */
     private void createAfactsForTravailleur(FAEnteteFacture enteteFacture, CongePaye congePaye) throws Exception {
         // création de l'afact
-        int idCaisseMetier = VulpeculaServiceLocator.getPosteTravailService().getIdTiersCaissePrincipale(
-                congePaye.getIdPosteTravail());
+        int idCaisseMetier = VulpeculaServiceLocator.getPosteTravailService()
+                .getIdTiersCaissePrincipale(congePaye.getIdPosteTravail());
 
         addAfact(enteteFacture, congePaye, congePaye.getMontantBrut().getNegativeValue().toString(), Compte.PRESTATION,
                 idCaisseMetier);
@@ -208,8 +210,8 @@ public class PTProcessFacturationCongePayeGenerer extends PTProcessFacturation {
             afact.setFinPeriode(congePaye.getPeriodeFinAsSwissValue());
             afact.setMontantFacture(montant);
             afact.setNumCaisse("" + idCaisseMetier);
-            afact.setReferenceExterne(congePaye.getBeneficiaire().getValue() + "-"
-                    + congePaye.getConventionEmployeur().getCode());
+            afact.setReferenceExterne(
+                    congePaye.getBeneficiaire().getValue() + "-" + congePaye.getConventionEmployeur().getCode());
             afact.add();
         }
     }

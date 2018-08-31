@@ -18,7 +18,14 @@
 			<td><c:out value="${entity.employeurComplexModel.administrationComplexModel.tiers.designation1}" /></td>
 			<td><ct:FWCode csCode="${entity.decompteSimpleModel.type}"/></td>
 			<td>${entity.decompteSimpleModel.periodeFormatte}</td>
-			<td><ct:FWCodeLibelle csCode="${entity.decompteSimpleModel.etat}"/></td>
+			<c:choose>
+				<c:when test="${entity.decompteSimpleModel.etat==entity.etatDecompte}">
+					<td>TO - <ct:FWCodeLibelle csCode="${entity.taxationOfficeSimpleModel.etat}"/></td>
+				</c:when>
+				<c:otherwise>
+					<td><ct:FWCodeLibelle csCode="${entity.decompteSimpleModel.etat}"/></td>
+				</c:otherwise>
+			</c:choose>
 			<td>${entity.decompteSimpleModel.dateReception}</td>
 			<td>${entity.decompteSimpleModel.dateRappel}</td>
 			<td><ct:FWCode csCode="${entity.decompteSimpleModel.motifProlongation}"/></td>

@@ -31,7 +31,7 @@
 	  			</c:choose>
 	  		</tr>
 			<c:forEach var="entreeContribution" items="${entry.value}">
-				<fmt:formatNumber var="taux" value="${entreeContribution.taux.value}" maxFractionDigits="2" minFractionDigits="2" />
+				<fmt:formatNumber var="taux" value="${entreeContribution.taux.value}" maxFractionDigits="3" minFractionDigits="3" />
 				<fmt:formatNumber var="masse" value="${entreeContribution.masse.value}" maxFractionDigits="2" minFractionDigits="2" />
 				<fmt:formatNumber var="montant" value="${entreeContribution.montant.value}" maxFractionDigits="2" minFractionDigits="2" />
 				<tr class="bmsRowEven">

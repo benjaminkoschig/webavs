@@ -1,7 +1,7 @@
 package ch.globaz.vulpecula.web.views.postetravail;
 
-import globaz.globall.util.JAException;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.exception.JadePersistenceException;
 import globaz.naos.translation.CodeSystem;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -10,10 +10,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import org.apache.commons.lang.Validate;
 import ch.globaz.specifications.UnsatisfiedSpecificationException;
 import ch.globaz.vulpecula.business.services.VulpeculaRepositoryLocator;
 import ch.globaz.vulpecula.business.services.VulpeculaServiceLocator;
 import ch.globaz.vulpecula.domain.models.common.Date;
+import ch.globaz.vulpecula.domain.models.decompte.DecompteSalaire;
+import ch.globaz.vulpecula.domain.models.decompte.TypeDecompte;
 import ch.globaz.vulpecula.domain.models.postetravail.AdhesionCotisationPosteTravail;
 import ch.globaz.vulpecula.domain.models.postetravail.Employeur;
 import ch.globaz.vulpecula.domain.models.postetravail.PosteTravail;
@@ -40,7 +43,20 @@ public class PosteTravailViewService {
                         dateNaissanceTravailleur, sexeTravailleur));
     }
 
-    public static void create(final String posteTravailString) throws ViewException {
+    public static Map<String, AdhesionCotisationViewContainer> getAdhesionsCotisationsActivesGroupByPlanCaisse(
+            final String idPosteTravail, final String dateFin) {
+        return PosteTravailViewService.groupByPlanCaisseId(PosteTravailViewService
+                .getAdhesionsCotisationsActivesRevision(idPosteTravail, dateFin));
+    }
+
+    private static AdhesionCotisationViewContainer getAdhesionsCotisationsActivesRevision(final String idPosteTravail,
+            final String dateFin) {
+        AdhesionCotisationViewContainer cotisationsActives = new AdhesionCotisationViewContainer();
+        cotisationsActives.addAll(PosteTravailViewService.getAdhesionsCotisationsActives(idPosteTravail, dateFin));
+        return cotisationsActives;
+    }
+
+    public static void create(final String posteTravailString) throws ViewException, JadePersistenceException {
         Gson gson = new Gson();
         PosteTravailGSON posteTravailGson = gson.fromJson(posteTravailString, PosteTravailGSON.class);
         PosteTravail posteTravail = posteTravailGson.convertToDomain();
@@ -51,6 +67,9 @@ public class PosteTravailViewService {
         Travailleur travailleur = VulpeculaRepositoryLocator.getTravailleurRepository().findById(
                 posteTravail.getTravailleur().getId());
         posteTravail.setTravailleur(travailleur);
+        for (AdhesionCotisationPosteTravail adh : posteTravail.getAdhesionsCotisations()) {
+            adh.setCotisation(VulpeculaServiceLocator.getCotisationService().findById(adh.getIdCotisation()));
+        }
         try {
             VulpeculaServiceLocator.getPosteTravailService().create(posteTravail);
         } catch (UnsatisfiedSpecificationException e) {
@@ -58,10 +77,13 @@ public class PosteTravailViewService {
         }
     }
 
-    public static void update(final String posteTravailString) throws ViewException {
+    public static void update(final String posteTravailString) throws ViewException, JadePersistenceException,
+            Exception {
         Gson gson = new Gson();
         PosteTravailGSON posteTravailGson = gson.fromJson(posteTravailString, PosteTravailGSON.class);
         PosteTravail posteTravail = posteTravailGson.convertToDomain();
+        PosteTravail posteBeforeUpdate = VulpeculaRepositoryLocator.getPosteTravailRepository().findById(
+                posteTravail.getId());
 
         Employeur employeur = VulpeculaRepositoryLocator.getEmployeurRepository().findByIdAffilie(
                 posteTravail.getEmployeur().getId());
@@ -69,14 +91,20 @@ public class PosteTravailViewService {
         Travailleur travailleur = VulpeculaRepositoryLocator.getTravailleurRepository().findById(
                 posteTravail.getTravailleur().getId());
         posteTravail.setTravailleur(travailleur);
+        for (AdhesionCotisationPosteTravail adh : posteTravail.getAdhesionsCotisations()) {
+            adh.setCotisation(VulpeculaServiceLocator.getCotisationService().findById(adh.getIdCotisation()));
+        }
         try {
             VulpeculaServiceLocator.getPosteTravailService().update(posteTravail);
         } catch (UnsatisfiedSpecificationException e) {
             throw new ViewException(e);
         }
+
+        VulpeculaServiceLocator.getPosteTravailService().checkForMailAF(posteBeforeUpdate, posteTravail);
+
     }
 
-    private static Map<String, AdhesionCotisationViewContainer> groupByPlanCaisseId(
+    public static Map<String, AdhesionCotisationViewContainer> groupByPlanCaisseId(
             AdhesionCotisationViewContainer adhesionCotisationViews) {
         Map<String, AdhesionCotisationViewContainer> map = new TreeMap<String, AdhesionCotisationViewContainer>();
         for (AdhesionCotisationView adhesionCotisationView : adhesionCotisationViews) {
@@ -92,12 +120,39 @@ public class PosteTravailViewService {
     private static AdhesionCotisationViewContainer getAdhesionsCotisationsActivesEtPossibles(
             final String idPosteTravail, final String idAffilie, final String dateDebut, final String dateFin,
             String dateNaissanceTravailleur, String sexeTravailleur) {
+
+        // Load actives cotisations => only existing and Active Poste de travail have cotisation
         AdhesionCotisationViewContainer cotisationsActivesEtPossibles = new AdhesionCotisationViewContainer();
         cotisationsActivesEtPossibles.addAll(PosteTravailViewService.getAdhesionsCotisationsActives(idPosteTravail,
                 dateFin));
-        cotisationsActivesEtPossibles.addAll(PosteTravailViewService.getAdhesionsCotisationsPossibles(idAffilie,
-                dateDebut, dateFin, isNouveauPoste(idPosteTravail), dateNaissanceTravailleur, sexeTravailleur));
 
+        // A new Poste de travail needs to have the possibility to choose any active cotisation
+        AdhesionCotisationViewContainer tmpContainer = new AdhesionCotisationViewContainer();
+        if (cotisationsActivesEtPossibles.isEmpty()) {
+            tmpContainer.addAll(PosteTravailViewService.getAdhesionsCotisationsPossibles(idAffilie, dateDebut, dateFin,
+                    isNouveauPoste(idPosteTravail), dateNaissanceTravailleur, sexeTravailleur));
+        }
+
+        if (isNouveauPosteEbu(idPosteTravail, tmpContainer)) {
+            AdhesionCotisationViewContainer tmpEbuContainer = new AdhesionCotisationViewContainer();
+            tmpEbuContainer.addAll(PosteTravailViewService.getAdhesionsCotisationsPossibles(idAffilie, dateDebut,
+                    dateFin, true, dateNaissanceTravailleur, sexeTravailleur));
+            for (AdhesionCotisationView cotisation : tmpEbuContainer) {
+                if (cotisation.getDateDebut() != null && !cotisation.getDateDebut().isEmpty()) {
+                    cotisation.checked = true;
+                }
+            }
+            cotisationsActivesEtPossibles.addAll(tmpEbuContainer);
+        } else {
+            tmpContainer = new AdhesionCotisationViewContainer();
+            tmpContainer.addAll(PosteTravailViewService.getAdhesionsCotisationsPossibles(idAffilie, dateDebut, dateFin,
+                    isNouveauPoste(idPosteTravail), dateNaissanceTravailleur, sexeTravailleur));
+            for (AdhesionCotisationView adhesionCotisation : tmpContainer) {
+                if (JadeStringUtil.isBlank(adhesionCotisation.dateFinCotisation)) {
+                    cotisationsActivesEtPossibles.add(adhesionCotisation);
+                }
+            }
+        }
         return cotisationsActivesEtPossibles;
     }
 
@@ -111,9 +166,34 @@ public class PosteTravailViewService {
 
     /**
      * @param idPosteTravail
+     * @param tmpContainer
      * @return
      */
-    private static Set<AdhesionCotisationView> getAdhesionsCotisationsActives(final String idPosteTravail,
+    private static boolean isNouveauPosteEbu(final String idPosteTravail,
+            final AdhesionCotisationViewContainer cotisationViewContainer) {
+        // Check if poste was created by WebMetier
+        boolean isNew = isNouveauPoste(idPosteTravail);
+
+        // Only check if not a real new poste, when WebMetier creates a poste the poste id is empty by default
+        if (!isNew) {
+            for (AdhesionCotisationView cotisation : cotisationViewContainer) {
+                // If any of the cotisation have checked value set to true that is means is a existing element
+                if (cotisation.checked) {
+                    isNew = false;
+                    break;
+                } else {
+                    isNew = true;
+                }
+            }
+        }
+        return isNew;
+    }
+
+    /**
+     * @param idPosteTravail
+     * @return
+     */
+    public static Set<AdhesionCotisationView> getAdhesionsCotisationsActives(final String idPosteTravail,
             final String dateFin) {
         if (JadeStringUtil.isEmpty(idPosteTravail)) {
             return new HashSet<AdhesionCotisationView>();
@@ -168,20 +248,20 @@ public class PosteTravailViewService {
     private static AdhesionCotisationViewContainer getAdhesionsCotisationsPossibles(final String idAffilie,
             final String dateDebutAsString, final String dateFinAsString, boolean isNouveauPoste,
             String dateNaissanceTravailleur, String sexeTravailleur) {
+        Date dateNaissance = new Date(dateNaissanceTravailleur);
+        Date dateDebutActivite = new Date(dateDebutAsString);
+        Date dateFinActivite = !JadeStringUtil.isEmpty(dateFinAsString) ? new Date(dateFinAsString) : null;
+
         if (idAffilie == null) {
             return new AdhesionCotisationViewContainer();
         }
 
         Set<AdhesionCotisationView> adhesionsCotisationsPossibles = new TreeSet<AdhesionCotisationView>();
         List<Cotisation> cotisationsEmployeurs = null;
-        Date dateFin = null;
-        if (!JadeStringUtil.isEmpty(dateFinAsString)) {
-            dateFin = new Date(dateFinAsString);
-        }
         cotisationsEmployeurs = VulpeculaServiceLocator.getCotisationService().findByIdAffilieForDate(idAffilie,
-                new Date(dateDebutAsString), dateFin);
+                dateDebutActivite, dateFinActivite);
 
-        List<String> listIdCotisations = null;
+        List<String> listIdCotisations = new ArrayList<String>();
         if (isNouveauPoste) {
             listIdCotisations = findCotisationsObligatoires(idAffilie, dateDebutAsString, dateFinAsString,
                     dateNaissanceTravailleur);
@@ -197,82 +277,23 @@ public class PosteTravailViewService {
             adhesionCotisationView.dateDebutCotisation = cotisation.getDateDebut().getSwissValue();
             if (cotisation.getDateFin() != null) {
                 adhesionCotisationView.dateFinCotisation = cotisation.getDateFin().getSwissValue();
+            } else {
+                adhesionCotisationView.dateFinCotisation = "";
             }
 
-            if (isNouveauPoste) {
-                if (!isMineur(new Date(dateNaissanceTravailleur), dateDebutAsString)) {
-                    if (listIdCotisations.contains(cotisation.getId())) {
-                        Date dateDebutActivite = new Date(dateDebutAsString);
-                        if (dateDebutActivite.after(cotisation.getDateDebut())) {
-                            adhesionCotisationView.dateDebut = dateDebutAsString;
-                        } else {
-                            adhesionCotisationView.dateDebut = adhesionCotisationView.dateDebutCotisation;
-                        }
-
-                        if (cotisation.getDateFin() != null) {
-                            adhesionCotisationView.dateFin = adhesionCotisationView.dateFinCotisation;
-                        } else {
-                            adhesionCotisationView.dateFin = dateFinAsString;
-                        }
-                    }
-                } else {
-                    // On test si le travailleur a 18ans et on lui rajoute l'AVS avec comme date de début le mois ou
-                    // l'année ??? de ses
-                    // 18 ans.
-                    if (listIdCotisations.contains(cotisation.getId())) {
-                        Date dateDebutActivite = new Date(dateDebutAsString);
-
-                        if (dateDebutActivite.after(cotisation.getDateDebut())) {
-
-                            Date dateAvs = getAnnee18Ans(dateNaissanceTravailleur).getDateOfFirstDayOfYear();
-                            if (dateDebutActivite.after(dateAvs)) {
-                                adhesionCotisationView.dateDebut = dateDebutAsString;
-                            } else {
-                                adhesionCotisationView.dateDebut = dateAvs.getSwissValue();
-                            }
-
-                        } else {
-                            adhesionCotisationView.dateDebut = adhesionCotisationView.dateDebutCotisation;
-                        }
-
-                        if (cotisation.getDateFin() != null) {
-                            adhesionCotisationView.dateFin = adhesionCotisationView.dateFinCotisation;
-                        } else {
-                            adhesionCotisationView.dateFin = dateFinAsString;
-                        }
-                    }
-                }
-                // L'AC et l'AC2 ont une date de fin le mois après l'âge de la retraite
-                if (cotisation.getTypeAssurance().getValue().equals(CodeSystem.TYPE_ASS_COTISATION_AC)
-                        || cotisation.getTypeAssurance().getValue().equals(CodeSystem.TYPE_ASS_COTISATION_AC2)) {
-                    Date dateRetraite = null;
-                    try {
-                        dateRetraite = VulpeculaServiceLocator.getTravailleurService().giveDateRentier(
-                                dateNaissanceTravailleur, sexeTravailleur);
-                    } catch (JAException e) {
-                    }
-                    if (cotisation.getDateFin() != null) {
-                        adhesionCotisationView.dateFin = adhesionCotisationView.dateFinCotisation;
-                    } else {
-                        if (dateRetraite.after(new Date(dateDebutAsString))) {
-                            adhesionCotisationView.dateFin = dateRetraite.getSwissValue();
-                        } else {
-                            adhesionCotisationView.dateFin = dateDebutAsString;
-                        }
-
-                    }
+            if (isNouveauPoste && listIdCotisations.contains(cotisation.getId())) {
+                CotisationDatee cotisationDatee = CotisationDatee.calculer(cotisation, sexeTravailleur, dateNaissance,
+                        dateDebutActivite, dateFinActivite);
+                if (cotisationDatee.isValide()) {
+                    adhesionCotisationView.dateDebut = cotisationDatee.getDateDebut().getSwissValue();
+                    adhesionCotisationView.dateFin = cotisationDatee.getDateFin() != null ? cotisationDatee
+                            .getDateFin().getSwissValue() : null;
                 }
             }
             adhesionCotisationView.idAssurance = cotisation.getAssuranceId();
             adhesionsCotisationsPossibles.add(adhesionCotisationView);
         }
         return new AdhesionCotisationViewContainer(adhesionsCotisationsPossibles);
-    }
-
-    private static Date getAnnee18Ans(String dateNaissanceTravailleur) {
-        Date dateNaissance = new Date(dateNaissanceTravailleur);
-        dateNaissance = dateNaissance.addYear(18);
-        return dateNaissance;
     }
 
     public double findNombreHeuresParMois(String idPosteTravail, String stringDate) {
@@ -290,6 +311,15 @@ public class PosteTravailViewService {
     public double findNombreHeuresParJour(String idPosteTravail, String stringDate) {
         Date date = new Date(stringDate);
         return VulpeculaServiceLocator.getPosteTravailService().getNombreHeuresParJour(idPosteTravail, date);
+    }
+
+    public CotisationDateeView findCotisationDateeForTravailleur(String idTravailleur, String idCotisation,
+            String dateDebutActivite, String dateFinActivite) {
+        Date dateDebut = new Date(dateDebutActivite);
+        Date dateFin = !"null".equals(dateFinActivite) ? new Date(dateFinActivite) : null;
+        CotisationDatee cotisationDatee = VulpeculaServiceLocator.getCotisationService()
+                .findCotisationDateeForTravailleur(idTravailleur, idCotisation, dateDebut, dateFin);
+        return new CotisationDateeView(cotisationDatee);
     }
 
     /**
@@ -327,20 +357,20 @@ public class PosteTravailViewService {
         return listIdCotisations;
     }
 
-    /**
-     * @param dateNaissance
-     * @return true si age >= 18 ans
-     */
-    private static boolean isMineur(Date dateNaissance, String dateDebutPoste) {
-        Date now = new Date(dateDebutPoste);
+    public static boolean hasDecompteSalaireAfterDateFin(String idPosteTravail, String dateFinPoste) {
+        Validate.notNull(idPosteTravail);
+        Validate.notNull(dateFinPoste);
 
-        long ageInMillis = now.getTime() - dateNaissance.getTime();
-        long age = ageInMillis / 1000 / 60 / 60 / 24 / 7 / 52;
+        Date dateFin = new Date(dateFinPoste);
 
-        if (18 >= age) {
-            return true;
+        List<DecompteSalaire> decomptesSalaires = VulpeculaRepositoryLocator.getDecompteSalaireRepository()
+                .findByIdPosteTravailAfterDateFin(idPosteTravail, dateFin);
+        for (DecompteSalaire decompteSalaire : decomptesSalaires) {
+            if (decompteSalaire.isComptabilise()
+                    && TypeDecompte.PERIODIQUE.equals(decompteSalaire.getDecompte().getType())) {
+                return true;
+            }
         }
-
         return false;
     }
 }

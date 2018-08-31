@@ -8,10 +8,10 @@ import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.exception.JadePersistenceException;
 import java.util.Collection;
 import ch.globaz.specifications.UnsatisfiedSpecificationException;
-import ch.globaz.vulpecula.business.services.VulpeculaServiceLocator;
-import ch.globaz.vulpecula.business.services.decompte.DecompteService;
+import ch.globaz.vulpecula.business.services.VulpeculaRepositoryLocator;
 import ch.globaz.vulpecula.businessimpl.services.decompte.GenererDecompteProcessor;
 import ch.globaz.vulpecula.domain.models.common.Date;
+import ch.globaz.vulpecula.domain.models.common.Periode;
 import ch.globaz.vulpecula.domain.models.common.PeriodeMensuelle;
 import ch.globaz.vulpecula.domain.models.decompte.Decompte;
 import ch.globaz.vulpecula.domain.models.decompte.NumeroDecompte;
@@ -22,6 +22,7 @@ import ch.globaz.vulpecula.util.CodeSystem;
 import ch.globaz.vulpecula.util.CodeSystemUtil;
 import ch.globaz.vulpecula.web.servlet.PTConstants;
 import com.google.common.base.Preconditions;
+import com.sun.star.lang.IllegalArgumentException;
 
 /**
  * ViewBean utilisé dans la page JSP "decomptenouveau_de.jsp"
@@ -36,8 +37,6 @@ public class PTDecomptenouveauViewBean extends BJadePersistentObjectViewBean {
     private String designationEmployeur = "";
     private boolean withPostes = false;
     private String email = "";
-
-    private DecompteService decompteService = VulpeculaServiceLocator.getDecompteService();
 
     public String getEmail() {
         if (JadeStringUtil.isEmpty(email)) {
@@ -113,26 +112,33 @@ public class PTDecomptenouveauViewBean extends BJadePersistentObjectViewBean {
         }
     }
 
+    private boolean checkPeriodeDecompteInPeriodeEmployeur() {
+        Employeur emp = VulpeculaRepositoryLocator.getEmployeurRepository().findById(decompte.getEmployeur().getId());
+        Periode periodeEmp = new Periode(emp.getDateDebut(), emp.getDateFin());
+        Periode periodeDec = new Periode(dateDebut, dateFin);
+        if (!periodeEmp.contains(periodeDec)) {
+            return false;
+        }
+        return true;
+    }
+
     @Override
-    public void add() throws ViewException, JadePersistenceException {
+    public void add() throws ViewException, JadePersistenceException, IllegalArgumentException {
         Preconditions.checkNotNull(decompte.getDateEtablissement());
         Preconditions.checkNotNull(decompte.getPeriode());
+        if (!checkPeriodeDecompteInPeriodeEmployeur()) {
+            throw new IllegalArgumentException("la période est invalide");
+        }
 
-        if (TypeDecompte.SANS_TRAVAILLEUR.equals(decompte.getType())) {
-            decompteService.genererDecomptesSansTravailleurs(decompte.getDateEtablissement(), decompte.getPeriode(),
-                    email);
-        } else {
-            try {
-                if (TypeDecompte.SPECIAL.equals(decompte.getType())
-                        || TypeDecompte.CONTROLE_EMPLOYEUR.equals(decompte.getType())) {
-                    decompte.setDateReception(decompte.getDateEtablissement());
-                }
-
-                GenererDecompteProcessor genererDecompteProcess = new GenererDecompteProcessor();
-                decompte = genererDecompteProcess.genererDecompteVideManuel(decompte, withPostes, email);
-            } catch (UnsatisfiedSpecificationException e) {
-                throw new ViewException(e);
+        try {
+            if (decompte.isTraiterAsSpecial() || TypeDecompte.CONTROLE_EMPLOYEUR.equals(decompte.getType())) {
+                decompte.setDateReception(decompte.getDateEtablissement());
             }
+
+            GenererDecompteProcessor genererDecompteProcess = new GenererDecompteProcessor();
+            decompte = genererDecompteProcess.genererDecompteVideManuel(decompte, withPostes, email);
+        } catch (UnsatisfiedSpecificationException e) {
+            throw new ViewException(e);
         }
     }
 
@@ -166,12 +172,16 @@ public class PTDecomptenouveauViewBean extends BJadePersistentObjectViewBean {
         return TypeDecompte.CONTROLE_EMPLOYEUR.getValue();
     }
 
-    public String getCsSpecial() {
-        return TypeDecompte.SPECIAL.getValue();
+    public String getCsSpecialCaisse() {
+        return TypeDecompte.SPECIAL_CAISSE.getValue();
     }
 
-    public String getCsSansTravailleur() {
-        return TypeDecompte.SANS_TRAVAILLEUR.getValue();
+    public String getCsSpecial() {
+        return TypeDecompte.SPECIAL_SALAIRE.getValue();
+    }
+
+    public String getCsCPP() {
+        return TypeDecompte.CPP.getValue();
     }
 
     public String getNumCT() {

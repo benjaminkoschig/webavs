@@ -1,21 +1,26 @@
 package ch.globaz.vulpecula.business.services.decompte;
 
+import globaz.jade.exception.JadePersistenceException;
+import java.util.Collection;
 import java.util.List;
 import ch.globaz.specifications.UnsatisfiedSpecificationException;
+import ch.globaz.vulpecula.businessimpl.services.decompte.TauxCotisationDecompteLoader;
 import ch.globaz.vulpecula.documents.decompte.CotisationsInfo;
+import ch.globaz.vulpecula.domain.models.common.Annee;
 import ch.globaz.vulpecula.domain.models.common.Date;
 import ch.globaz.vulpecula.domain.models.common.Montant;
-import ch.globaz.vulpecula.domain.models.common.PeriodeMensuelle;
 import ch.globaz.vulpecula.domain.models.common.Taux;
 import ch.globaz.vulpecula.domain.models.decompte.CotisationDecompte;
 import ch.globaz.vulpecula.domain.models.decompte.Decompte;
 import ch.globaz.vulpecula.domain.models.decompte.DecompteReceptionEtat;
 import ch.globaz.vulpecula.domain.models.decompte.DecompteSalaire;
 import ch.globaz.vulpecula.domain.models.decompte.DifferenceControle;
+import ch.globaz.vulpecula.domain.models.decompte.EtatDecompte;
 import ch.globaz.vulpecula.domain.models.decompte.NumeroDecompte;
 import ch.globaz.vulpecula.domain.models.decompte.TypeDecompte;
 import ch.globaz.vulpecula.domain.models.postetravail.AdhesionCotisationPosteTravail;
 import ch.globaz.vulpecula.domain.models.postetravail.Employeur;
+import ch.globaz.vulpecula.domain.models.postetravail.PosteTravail;
 import ch.globaz.vulpecula.external.models.affiliation.Assurance;
 
 public interface DecompteService {
@@ -23,6 +28,8 @@ public interface DecompteService {
     public DifferenceControle controler(Decompte decompte);
 
     public DifferenceControle controler(String idDecompte, boolean pasDeControle);
+
+    boolean updateEtat(final String idDecompte, EtatDecompte etat);
 
     String genererSommationManuel(String vide) throws Exception;
 
@@ -62,6 +69,18 @@ public interface DecompteService {
     DecompteReceptionEtat receptionner(String idDecompte, String date);
 
     /**
+     * Reinitialisation d'un décompte si état <> COMPTABILISE :</br>
+     * <ul>
+     * <li>Suppression de la date de réception</li>
+     * <li>Changement de l'état à 'Généré'</li>
+     * </ul>
+     * 
+     * @param decompte Decompte à mettre à jour
+     * @return Nouvel état du décompte
+     */
+    void reinitialiseDecompte(Decompte decompte);
+
+    /**
      * Réception d'un décompte (changement d'état à réceptionné) et mise à jour de la date de réception.
      * 
      * @param idDecompte String représentant l'id du décomtpe à mettre à jour
@@ -96,13 +115,15 @@ public interface DecompteService {
      */
     void ajoutCotisationsPourPoste(DecompteSalaire decompteSalaire);
 
+    void ajoutCotisationPourLigneAPG(DecompteSalaire decompteSalaire);
+
     void ajoutCotisationsPourPoste(DecompteSalaire decompteSalaire, Montant masseAC2);
 
     List<CotisationDecompte> getCotisationsPosteTravail(DecompteSalaire decompteSalaire);
 
-    Decompte update(Decompte decompte) throws UnsatisfiedSpecificationException;
+    Decompte update(Decompte decompte) throws UnsatisfiedSpecificationException, JadePersistenceException;
 
-    List<Decompte> rechercheDecomptesRectificatif();
+    Collection<Decompte> rechercheDecomptesRectificatif();
 
     /**
      * Recherche du décompte précédent au décompte envoyé. Ce dernier ne doit pas être au statut OUVERT, GENERE
@@ -147,28 +168,8 @@ public interface DecompteService {
      */
     NumeroDecompte getNumeroDecompte(Employeur employeur, TypeDecompte typeDecompte, Date date, String periodicite);
 
-    /**
-     * Création d'une cotisation d'un décompte si :
-     * <ul>
-     * <li>le travailleur est en âge de cotiser.
-     * <li>le décompte n'est pas de type complémentaire et la cotisation pas congés payés
-     * 
-     * @param posteTravail Poste de travail concerné
-     * @param adhesionCotisation Adhésion à transformer en CotisationDecompte
-     * @param dateReference Date de référence à laquelle déterminer si le travailleur est en âge de cotiser
-     * @param nextId Id à affecter à l'objet
-     * @param taux Taux à appliquer à la cotisation
-     * @return CotisationDecompte si l'adhésion respecte les conditions ci-dessus, null dans les autres cas
-     */
-    CotisationDecompte createCotisationDecompte(DecompteSalaire decompteSalaire,
-            AdhesionCotisationPosteTravail adhesionCotisation, Date dateReference, Taux taux, String nextId);
-
-    /**
-     * Génération de décomptes vides sans travailleur.
-     * Un décompte vide sans travailleur est un décompte pour un employeur qui ne possède pas de poste actif mais qui
-     * possède la propriété {@link Employeur#isEditerSansTravailleur()}
-     */
-    void genererDecomptesSansTravailleurs(Date dateEtablissement, PeriodeMensuelle periodeMensuelle, String email);
+    CotisationDecompte createCotisationDecompte(AdhesionCotisationPosteTravail adhesionCotisation, Taux taux,
+            String nextId);
 
     /**
      * Retourne les cotisations actives pour le décompte passé en paramètres.
@@ -180,6 +181,8 @@ public interface DecompteService {
      */
     List<AdhesionCotisationPosteTravail> findAdhesionsForDecompteSalaire(DecompteSalaire decompteSalaire);
 
+    List<AdhesionCotisationPosteTravail> findAdhesionsForDecompteSalaireCP(DecompteSalaire decompteSalaire);
+
     void annulerDecompteForParticularite(String idAffilie, String dateDebut, String dateFin);
 
     /**
@@ -189,4 +192,44 @@ public interface DecompteService {
      * @return Texte du rectificatif
      */
     String findTextePersonneReference(Decompte decompte);
+
+    /**
+     * Ajoute une entrée dans la table de synchronisation avec EBU afin de pouvoir le notifier à ServiceNow
+     * 
+     * @param idDecompte id du décompte
+     * @throws JadePersistenceException
+     */
+    public void notifierSynchronisationEbu(String idDecompte, String idEmployeur, TypeDecompte type)
+            throws JadePersistenceException;
+
+    public void actualiserTauxCotisations(DecompteSalaire decompteSalaire, Annee annee);
+
+    /**
+     * Génération des cotisations pour un décompte selon le type de salaire.
+     * <ul>
+     * <li>Si le décompte est de type CPP : On prend les cotisations de l'affilié
+     * <li>Si le décompte est d'un autre type : On prend les cotisations du poste de travail
+     * 
+     * @param decompteSalaire Décompte salaire pour lequel générer les cotisations
+     * @return Liste de cotisations
+     */
+    List<CotisationDecompte> genererTableCotisation(DecompteSalaire decompteSalaire,
+            TauxCotisationDecompteLoader tauxCotisationDecompteLoader);
+
+    /**
+     * Retourne true si l'affilié lié au décompte possède au moins un dossier avec une prestation AF entre la date de
+     * début du décompte et la date de fin du décompte.
+     * Dans le cas où l'affilié ne possède pas de dossiers AF, on retourne également true.
+     * 
+     * @param decompte Décompte pour lequel rechercher les prestations AF
+     * @return true si possède des prestations ou que l'affilié ne possède pas de dossier
+     */
+    boolean hasPrestationsAFOuPasDossier(Decompte decompte);
+
+    public void actualiserDecompteSelonPoste(PosteTravail posteTravailCreated) throws JadePersistenceException,
+            UnsatisfiedSpecificationException;
+
+    public void actualiserDecompteForExternalServices(String idEmployeur, String dateATraiter)
+            throws JadePersistenceException, UnsatisfiedSpecificationException;
+
 }

@@ -80,7 +80,14 @@ public class ImprimerDecomptesProcess extends BProcessWithContext {
         }
 
         List<DecompteContainer> decompteContainers = new ArrayList<DecompteContainer>();
+        int nbDecomptes = decomptes.size();
         for (Decompte decompte : decomptes) {
+            // On n'imprime pas le décompte si c'est un décompte eBusiness et qu'il y a plusieurs décomptes dans le
+            // processus.
+            // Ceci permet de pouvoir imprimer les décomptes de manière unitaire.
+            if (decompte.getEmployeur().isEBusiness() && nbDecomptes > 1) {
+                continue;
+            }
             decompteService.retrieveDecompteInfos(decompte);
 
             CotisationsInfo cotisationInfo = decompteService.retrieveCotisationsInfo(decompte.getIdEmployeur(),

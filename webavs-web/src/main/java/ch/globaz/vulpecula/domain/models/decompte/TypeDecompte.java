@@ -9,7 +9,7 @@ import java.util.List;
  * <b>Méthode A :</b> {@link #PERIODIQUE} et {@link #COMPLEMENTAIRE}
  * </p>
  * <p>
- * <b>Méthode B :</b> {@link #CONTROLE_EMPLOYEUR} et {@link #SPECIAL}
+ * <b>Méthode B :</b> {@link #CONTROLE_EMPLOYEUR} et {@link #SPECIAL_SALAIRE}
  * </p>
  * 
  */
@@ -17,8 +17,9 @@ public enum TypeDecompte {
     PERIODIQUE(68014001),
     COMPLEMENTAIRE(68014002),
     CONTROLE_EMPLOYEUR(68014003),
-    SPECIAL(68014004),
-    SANS_TRAVAILLEUR(-1);
+    SPECIAL_SALAIRE(68014004),
+    SPECIAL_CAISSE(68014006),
+    CPP(68014005);
 
     private int value;
 
@@ -73,5 +74,21 @@ public enum TypeDecompte {
 
     public boolean isComplementaire() {
         return COMPLEMENTAIRE.equals(this);
+    }
+
+    public boolean isCPP() {
+        return CPP.equals(this);
+    }
+
+    public boolean isSpecialSalaire() {
+        return SPECIAL_SALAIRE.equals(this);
+    }
+
+    public boolean isSpecialCaisse() {
+        return SPECIAL_CAISSE.equals(this);
+    }
+
+    public boolean isTraiterAsSpecial() {
+        return isCPP() || isSpecialSalaire() || isSpecialCaisse();
     }
 }

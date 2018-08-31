@@ -1,10 +1,12 @@
 /**
- * 
+ *
  */
 package ch.globaz.vulpecula.businessimpl.services.postetravail;
 
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.persistence.model.JadeAbstractModel;
+import globaz.jade.smtp.JadeSmtpClient;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -14,6 +16,14 @@ import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ch.globaz.al.business.models.dossier.DossierComplexModel;
+import ch.globaz.al.business.models.dossier.DossierComplexSearchModel;
+import ch.globaz.al.business.services.ALServiceLocator;
+import ch.globaz.jade.noteIt.NoteException;
+import ch.globaz.jade.noteIt.SimpleNote;
+import ch.globaz.jade.noteIt.SimpleNoteSearch;
+import ch.globaz.jade.noteIt.business.service.JadeNoteService;
+import ch.globaz.jade.noteIt.businessimpl.service.JadeNoteServiceImpl;
 import ch.globaz.naos.business.model.TauxAssuranceSimpleModel;
 import ch.globaz.specifications.Specification;
 import ch.globaz.specifications.UnsatisfiedSpecificationException;
@@ -33,6 +43,7 @@ import ch.globaz.vulpecula.domain.models.decompte.TypeAssurance;
 import ch.globaz.vulpecula.domain.models.decompte.TypeSalaire;
 import ch.globaz.vulpecula.domain.models.parametrage.TableParametrage;
 import ch.globaz.vulpecula.domain.models.postetravail.AdhesionCotisationPosteTravail;
+import ch.globaz.vulpecula.domain.models.postetravail.GenreModification;
 import ch.globaz.vulpecula.domain.models.postetravail.PosteTravail;
 import ch.globaz.vulpecula.domain.models.postetravail.Qualification;
 import ch.globaz.vulpecula.domain.models.prestations.Beneficiaire;
@@ -41,9 +52,9 @@ import ch.globaz.vulpecula.domain.repositories.caissemaladie.AffiliationCaisseMa
 import ch.globaz.vulpecula.domain.repositories.postetravail.AdhesionCotisationPosteTravailRepository;
 import ch.globaz.vulpecula.domain.repositories.postetravail.EmployeurRepository;
 import ch.globaz.vulpecula.domain.repositories.postetravail.PosteTravailRepository;
+import ch.globaz.vulpecula.domain.specifications.postetravail.PosteTravailAdhesionAVSAvecFASpecification;
 import ch.globaz.vulpecula.domain.specifications.postetravail.PosteTravailAdhesionCheckAdresseDomicileExistPourLPPSpecification;
 import ch.globaz.vulpecula.domain.specifications.postetravail.PosteTravailDecompteSalaireExistantSpecification;
-import ch.globaz.vulpecula.domain.specifications.postetravail.PosteTravailDecompteSpecification;
 import ch.globaz.vulpecula.domain.specifications.postetravail.PosteTravailMultipleEmployeurTravailleurMemePeriodeSpecification;
 import ch.globaz.vulpecula.external.models.affiliation.Adhesion;
 import ch.globaz.vulpecula.external.models.affiliation.Cotisation;
@@ -69,6 +80,24 @@ public class PosteTravailServiceImpl implements PosteTravailService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PosteTravailServiceImpl.class);
 
+    @Override
+    public boolean travailleurHasPostIt(String idTravailleur) throws NoteException, JadePersistenceException {
+        JadeNoteService noteService = new JadeNoteServiceImpl();
+        SimpleNoteSearch search = new SimpleNoteSearch();
+        search.setForTableSource("PT_TRAVAILLEURS");
+        search.setForSourceId(idTravailleur);
+        return !noteService.search(search).isEmpty();
+    }
+
+    @Override
+    public List<SimpleNote> getPostIt(String idTravailleur) throws NoteException, JadePersistenceException {
+        JadeNoteService noteService = new JadeNoteServiceImpl();
+        SimpleNoteSearch search = new SimpleNoteSearch();
+        search.setForTableSource("PT_TRAVAILLEURS");
+        search.setForSourceId(idTravailleur);
+        return noteService.search(search);
+    }
+
     public PosteTravailServiceImpl(final PosteTravailRepository repository,
             final AdhesionCotisationPosteTravailRepository adhesionCotisationRepository,
             final CotisationService cotisationService,
@@ -81,7 +110,8 @@ public class PosteTravailServiceImpl implements PosteTravailService {
     }
 
     @Override
-    public PosteTravail create(final PosteTravail posteTravail) throws UnsatisfiedSpecificationException {
+    public PosteTravail create(final PosteTravail posteTravail) throws UnsatisfiedSpecificationException,
+            JadePersistenceException {
         posteTravail.validate();
 
         // JIRA : BMS-1957 MyProdis: Empêcher l'ajout de la cotisation LPP si il n'y a pas d'adresse de domicile
@@ -92,7 +122,9 @@ public class PosteTravailServiceImpl implements PosteTravailService {
                 posteTravail.getTravailleurIdTiers());
         PosteTravailAdhesionCheckAdresseDomicileExistPourLPPSpecification adhesionCheckAdresseDomicileExistPourLPPSpecification = new PosteTravailAdhesionCheckAdresseDomicileExistPourLPPSpecification(
                 adresseDomicile);
-        adhesionCheckAdresseDomicileExistPourLPPSpecification.isSatisfiedBy(posteTravail);
+        PosteTravailAdhesionAVSAvecFASpecification adhesionAVSAvecFASpecification = new PosteTravailAdhesionAVSAvecFASpecification();
+        adhesionCheckAdresseDomicileExistPourLPPSpecification.and(adhesionAVSAvecFASpecification).isSatisfiedBy(
+                posteTravail);
 
         // Création de l'employeur dans sa table si inexistant
         if (!employeurRepository.hasEntryInDB(posteTravail.getEmployeur())) {
@@ -110,6 +142,10 @@ public class PosteTravailServiceImpl implements PosteTravailService {
 
         PosteTravail poste = repository.create(posteTravail);
 
+        // DecompteService ... modification ici.
+
+        VulpeculaServiceLocator.getDecompteService().actualiserDecompteSelonPoste(poste);
+
         VulpeculaServiceLocator.getAffiliationCaisseMaladieService().createForPosteTravail(poste);
 
         return poste;
@@ -117,7 +153,8 @@ public class PosteTravailServiceImpl implements PosteTravailService {
     }
 
     @Override
-    public PosteTravail update(final PosteTravail posteTravail) throws UnsatisfiedSpecificationException {
+    public PosteTravail update(final PosteTravail posteTravail) throws UnsatisfiedSpecificationException,
+            JadePersistenceException {
         posteTravail.validate();
 
         // JIRA : BMS-1957 MyProdis: Empêcher l'ajout de la cotisation LPP si il n'y a pas d'adresse de domicile
@@ -128,7 +165,9 @@ public class PosteTravailServiceImpl implements PosteTravailService {
                 posteTravail.getTravailleurIdTiers());
         PosteTravailAdhesionCheckAdresseDomicileExistPourLPPSpecification adhesionCheckAdresseDomicileExistPourLPPSpecification = new PosteTravailAdhesionCheckAdresseDomicileExistPourLPPSpecification(
                 adresseDomicile);
-        adhesionCheckAdresseDomicileExistPourLPPSpecification.isSatisfiedBy(posteTravail);
+        PosteTravailAdhesionAVSAvecFASpecification adhesionAVSAvecFASpecification = new PosteTravailAdhesionAVSAvecFASpecification();
+        adhesionCheckAdresseDomicileExistPourLPPSpecification.and(adhesionAVSAvecFASpecification).isSatisfiedBy(
+                posteTravail);
 
         // Recherche des postes de travail appartenant à l'employeur et
         // vérification que le poste n'est pas déjà présent pour le même
@@ -139,27 +178,75 @@ public class PosteTravailServiceImpl implements PosteTravailService {
         // Validation de la spécification
         spec.isSatisfiedBy(posteTravail);
 
-        List<DecompteSalaire> decomptes = VulpeculaRepositoryLocator.getDecompteSalaireRepository()
+        // POBMS-48 Poste de travail: Erreur lors de la modification de la période d'activité s'il y a un décompte saisi
+        // à l'avance
+        // List<DecompteSalaire> decomptes = VulpeculaRepositoryLocator.getDecompteSalaireRepository()
+        // .findByIdPosteTravail(posteTravail.getId());
+        // Specification<PosteTravail> specDecompte = new PosteTravailDecompteSpecification(decomptes);
+        // specDecompte.isSatisfiedBy(posteTravail);
+
+        gererCaissesMaladies(posteTravail);
+
+        List<AdhesionCotisationPosteTravail> adhesionCotisations = posteTravail.getAdhesionsCotisations();
+        PosteTravail updatedPosteTravail = repository.update(posteTravail);
+
+        VulpeculaServiceLocator.getDecompteService().actualiserDecompteSelonPoste(updatedPosteTravail);
+
+        // Workaround pour revenir à l'état precendent des Adhesion aux cotisations.
+        // L'actualisation des décomptes sur-écrit les adhesions en prenant en compte que les cotis actif pour la
+        // periode de décompte
+        updatedPosteTravail.setAdhesionsCotisations(adhesionCotisations);
+
+        return updatedPosteTravail;
+    }
+
+    // au cas ou la la date de fin d'un poste de travail est annulée
+    void ouvrirCaisseMaladies(PosteTravail posteTravail) {
+        List<AffiliationCaisseMaladie> affiliations = affiliationCaisseMaladieRepository
                 .findByIdPosteTravail(posteTravail.getId());
-
-        Specification<PosteTravail> specDecompte = new PosteTravailDecompteSpecification(decomptes);
-        specDecompte.isSatisfiedBy(posteTravail);
-
-        if (posteTravail.getFinActivite() != null) {
-            cloturerCaissesMaladies(posteTravail);
+        if (!affiliations.isEmpty()) {
+            Collections.sort(affiliations);
+            AffiliationCaisseMaladie affiliation = affiliations.get(0);
+            if (affiliation.getMoisFin() != null) {
+                affiliation.setMoisFin(null);
+                affiliation.setDateAnnonceFin(null);
+                affiliationCaisseMaladieRepository.update(affiliation);
+            }
         }
+    }
 
-        return repository.update(posteTravail);
+    void gererCaissesMaladies(PosteTravail posteTravail) {
+        if (posteTravail.getFinActivite() != null || posteTravail.hasAssurancesMaladiesToutesCloturees()) {
+            cloturerCaissesMaladies(posteTravail);
+        } else {
+            ouvrirCaisseMaladies(posteTravail);
+        }
     }
 
     void cloturerCaissesMaladies(PosteTravail posteTravail) {
         List<AffiliationCaisseMaladie> affiliations = affiliationCaisseMaladieRepository
                 .findByIdPosteTravail(posteTravail.getId());
-        for (AffiliationCaisseMaladie affiliation : affiliations) {
-            if (affiliation.getMoisFin() == null) {
-                affiliation.setMoisFin(posteTravail.getFinActivite());
-                affiliationCaisseMaladieRepository.update(affiliation);
+
+        if (!affiliations.isEmpty()) {
+            Collections.sort(affiliations);
+            AffiliationCaisseMaladie affiliation = affiliations.get(0);
+
+            if (posteTravail.hasAssurancesMaladiesToutesCloturees()) {
+                Date dateFin = posteTravail.getPeriodeLastAssuranceMaladie().getDateFin();
+                if (!dateFin.isMemeMoisAnnee(affiliation.getMoisFin())) {
+                    affiliation.setMoisFin(dateFin);
+                    affiliation.setDateAnnonceFin(null);
+                    affiliationCaisseMaladieRepository.update(affiliation);
+                }
+            } else {
+                Date dateFin = posteTravail.getFinActivite();
+                if (!dateFin.isMemeMoisAnnee(affiliation.getMoisFin())) {
+                    affiliation.setMoisFin(dateFin);
+                    affiliation.setDateAnnonceFin(null);
+                    affiliationCaisseMaladieRepository.update(affiliation);
+                }
             }
+
         }
     }
 
@@ -170,6 +257,8 @@ public class PosteTravailServiceImpl implements PosteTravailService {
 
         Specification<PosteTravail> specDecompte = new PosteTravailDecompteSalaireExistantSpecification(decomptes);
         specDecompte.isSatisfiedBy(posteTravail);
+
+        VulpeculaServiceLocator.getAffiliationCaisseMaladieService().deleteForPosteTravail(posteTravail);
 
         repository.delete(posteTravail);
     }
@@ -213,6 +302,22 @@ public class PosteTravailServiceImpl implements PosteTravailService {
         return null;
     }
 
+    @Override
+    public List<PosteTravail> findPostesActifDurantAnnee(String idTravailleur, Annee annee) {
+        List<PosteTravail> postesTravail = repository.findByIdTravailleur(idTravailleur);
+        List<PosteTravail> postes = filterPostesActifsDurantAnnee(postesTravail, annee);
+        Collections.sort(postes, new Comparator<PosteTravail>() {
+            @Override
+            public int compare(PosteTravail p1, PosteTravail p2) {
+                return p1.getPeriodeActivite().compareTo(p2.getPeriodeActivite());
+            }
+        });
+        if (postes.size() > 0) {
+            return postes;
+        }
+        return new ArrayList<PosteTravail>();
+    }
+
     private List<PosteTravail> filterPostesActifsMois(List<PosteTravail> postesTravail, final Date date) {
         Collection<PosteTravail> filteredList = Collections2.filter(postesTravail, new Predicate<PosteTravail>() {
             @Override
@@ -248,6 +353,18 @@ public class PosteTravailServiceImpl implements PosteTravailService {
 
         for (PosteTravail posteTravail : postesTravail) {
             if (posteTravail.isActif(date.getLastDayOfMonth())) {
+                postesTravailActifs.add(posteTravail);
+            }
+        }
+
+        return postesTravailActifs;
+    }
+
+    private List<PosteTravail> filterPostesActifsDurantAnnee(List<PosteTravail> postesTravail, Annee annee) {
+        List<PosteTravail> postesTravailActifs = new ArrayList<PosteTravail>();
+
+        for (PosteTravail posteTravail : postesTravail) {
+            if (posteTravail.isActifIn(annee)) {
                 postesTravailActifs.add(posteTravail);
             }
         }
@@ -363,7 +480,7 @@ public class PosteTravailServiceImpl implements PosteTravailService {
                 cotisation.getAssuranceId(), date);
         Taux taux = new Taux(0);
         if (tauxAssuranceSimpleModel != null) {
-            if (typeSalaire.equals(TypeSalaire.HEURES)) {
+            if (typeSalaire.equals(TypeSalaire.HEURES) || typeSalaire.equals(TypeSalaire.CONSTANT)) {
                 taux = new Taux(tauxAssuranceSimpleModel.getValeurEmploye());
             } else if (beneficiaire != null && beneficiaire.equals(Beneficiaire.TRAVAILLEUR)) {
                 taux = new Taux(tauxAssuranceSimpleModel.getValeurEmploye());
@@ -455,7 +572,7 @@ public class PosteTravailServiceImpl implements PosteTravailService {
     @Override
     public double getNombreHeuresParMois(String idPosteTravail, Date date) {
         int noCaisseMetier = getNumeroCaissePrincipale(idPosteTravail);
-        double nombreHeuresParMois = TableParametrage.getInstance().getHeuresTravailMois(noCaisseMetier);
+        double nombreHeuresParMois = TableParametrage.getInstance(date.getAnnee()).getHeuresTravailMois(noCaisseMetier);
         return new Montant(nombreHeuresParMois).multiply(findTauxOccupation(idPosteTravail, date)).decimal(2)
                 .doubleValue();
     }
@@ -465,7 +582,8 @@ public class PosteTravailServiceImpl implements PosteTravailService {
         PeriodeMensuelle periode = new PeriodeMensuelle(dateDebut, dateFin);
         int noCaisseMetier = getNumeroCaissePrincipale(idPosteTravail);
 
-        double nombreHeuresParMois = TableParametrage.getInstance().getHeuresTravailMois(noCaisseMetier);
+        double nombreHeuresParMois = TableParametrage.getInstance(dateDebut.getAnnee()).getHeuresTravailMois(
+                noCaisseMetier);
         Montant nombreHeures = Montant.ZERO;
         for (Date date : periode.getMois()) {
             nombreHeures = nombreHeures.add(new Montant(nombreHeuresParMois).multiply(findTauxOccupation(
@@ -478,7 +596,7 @@ public class PosteTravailServiceImpl implements PosteTravailService {
     @Override
     public double getNombreHeuresParJour(String idPosteTravail, Date date) {
         int noCaisseMetier = getNumeroCaissePrincipale(idPosteTravail);
-        return TableParametrage.getInstance().getHeuresTravailJour(noCaisseMetier);
+        return TableParametrage.getInstance(date.getAnnee()).getHeuresTravailJour(noCaisseMetier);
     }
 
     protected Taux findTauxOccupation(String idPosteTravail, Date date) {
@@ -504,7 +622,32 @@ public class PosteTravailServiceImpl implements PosteTravailService {
                 postesSansDoublonsTravailleurs.put(posteTravail.getIdTravailleur(), posteTravail);
             } else {
                 PosteTravail posteExistant = postesSansDoublonsTravailleurs.get(posteTravail.getIdTravailleur());
-                if (!posteExistant.getDebutActivite().before(posteTravail.getDebutActivite())) {
+                if (posteTravail.getDebutActivite().after(posteExistant.getDebutActivite())) {
+                    postesSansDoublonsTravailleurs.put(posteTravail.getIdTravailleur(), posteTravail);
+                }
+            }
+        }
+
+        return new ArrayList<PosteTravail>(postesSansDoublonsTravailleurs.values());
+    }
+
+    @Override
+    public List<PosteTravail> findAAnnoncer2(Date date) {
+        Map<String, PosteTravail> postesSansDoublonsTravailleurs = new HashMap<String, PosteTravail>();
+        List<PosteTravail> postes = new ArrayList<PosteTravail>();
+        List<String> ids = repository.findAAnnoncer2(date, false);
+        for (String idPoste : ids) {
+            postes.add(repository.findByIdPosteTravailWithDependencies(idPoste));
+        }
+
+        postes = removeNonEligibles(postes, date);
+
+        for (PosteTravail posteTravail : postes) {
+            if (!postesSansDoublonsTravailleurs.containsKey(posteTravail.getIdTravailleur())) {
+                postesSansDoublonsTravailleurs.put(posteTravail.getIdTravailleur(), posteTravail);
+            } else {
+                PosteTravail posteExistant = postesSansDoublonsTravailleurs.get(posteTravail.getIdTravailleur());
+                if (posteTravail.getDebutActivite().after(posteExistant.getDebutActivite())) {
                     postesSansDoublonsTravailleurs.put(posteTravail.getIdTravailleur(), posteTravail);
                 }
             }
@@ -516,11 +659,19 @@ public class PosteTravailServiceImpl implements PosteTravailService {
     private List<PosteTravail> removeNonEligibles(List<PosteTravail> postes, Date date) {
         List<PosteTravail> eligibles = new ArrayList<PosteTravail>();
         for (PosteTravail poste : postes) {
-            if (poste.hasMoreThanOrEquals18Ans(date) && poste.cotiseAVS(date)) {
+            if (poste.isEnAgeAvs(date) && poste.cotiseAVS(date) && isFinPosteAgeAVS(poste)) {
                 eligibles.add(poste);
             }
         }
         return eligibles;
+    }
+
+    private boolean isFinPosteAgeAVS(PosteTravail poste) {
+        if (poste.getFinActivite() == null) {
+            return true;
+        } else {
+            return poste.isEnAgeAvs(poste.getFinActivite());
+        }
     }
 
     @Override
@@ -571,7 +722,8 @@ public class PosteTravailServiceImpl implements PosteTravailService {
             TypePrestation typePrestation) {
         String idPosteTravail = posteTravail.getId();
         int caisseMetier = getNumeroCaissePrincipale(idPosteTravail);
-        List<TypeAssurance> obligatoires = findPrestationsObligatoiresFor(caisseMetier, typePrestation);
+        List<TypeAssurance> obligatoires = findPrestationsObligatoiresFor(caisseMetier, typePrestation,
+                dateDebut.getAnnee());
         return hasAssuranceActiveForX(idPosteTravail, dateDebut, dateFin, obligatoires);
     }
 
@@ -587,8 +739,9 @@ public class PosteTravailServiceImpl implements PosteTravailService {
         return false;
     }
 
-    private List<TypeAssurance> findPrestationsObligatoiresFor(int noCaisseMetier, TypePrestation typePrestation) {
-        TableParametrage table = TableParametrage.getInstance();
+    private List<TypeAssurance> findPrestationsObligatoiresFor(int noCaisseMetier, TypePrestation typePrestation,
+            String annee) {
+        TableParametrage table = TableParametrage.getInstance(annee);
         switch (typePrestation) {
             case ABSENCES_JUSTIFIEES:
                 return table.getTypeAssuranceobligatoireForAJ(noCaisseMetier);
@@ -619,4 +772,131 @@ public class PosteTravailServiceImpl implements PosteTravailService {
         Collections.sort(qualificationsValides, new CodeSystemAlphaComparator());
         return qualificationsValides;
     }
+
+    @Override
+    public int findPostesActifsByIdAffiliePourControle(String idEmployeur, Date dateDernierControle) {
+        Date moisEnCours = dateDernierControle.getFirstDayOfMonth();
+        int nombreMax = 0;
+        for (int i = 0; i < 12; i++) {
+            List<PosteTravail> postes = findPostesActifsByIdAffilie(idEmployeur, moisEnCours);
+            if (postes.size() > nombreMax) {
+                nombreMax = postes.size();
+            }
+            moisEnCours = moisEnCours.addMonth(-1);
+        }
+        return nombreMax;
+    }
+
+    @Override
+    public void sendEmailAF(String sujet, String corps) throws Exception {
+        String email = VulpeculaServiceLocator.getPropertiesService().getMailAF();
+        JadeSmtpClient.getInstance().sendMail(email, sujet, corps, null);
+    }
+
+    @Override
+    public void checkForMailAF(PosteTravail posteBeforeUpdate, PosteTravail posteAfterUpdate) throws Exception {
+        String sujet;
+        String mention;
+        String nom = posteAfterUpdate.getTravailleur().getDesignation1();
+        String prenom = posteAfterUpdate.getTravailleur().getDesignation2();
+        String nss = "Aucun NSS trouvé pour ce travailleur";
+        boolean toSend = true;
+        if (posteAfterUpdate.getTravailleurNss() != null
+                && !JadeStringUtil.isEmpty(posteAfterUpdate.getTravailleurNss())) {
+            nss = posteAfterUpdate.getTravailleurNss();
+        }
+        String idDossier = "";
+
+        GenreModification genre = GenreModification.SANS_IMPACT_AF;
+
+        if (posteBeforeUpdate.getPeriodeActivite().getDateFin() != null
+                && posteAfterUpdate.getPeriodeActivite().getDateFin() == null) {
+            if (!posteBeforeUpdate.isActif()) {
+                genre = GenreModification.REACTIVATION;
+            }
+        } else if (posteBeforeUpdate.getPeriodeActivite().getDateFin() == null
+                && posteAfterUpdate.getPeriodeActivite().getDateFin() != null) {
+            if (!posteAfterUpdate.isActif()) {
+                genre = GenreModification.DESACTIVATION;
+            } else {
+                genre = GenreModification.CHANGEMENT_FIN_POSTE;
+            }
+        } else if (posteBeforeUpdate.getPeriodeActivite().getDateFin() != null
+                && posteAfterUpdate.getPeriodeActivite().getDateFin() != null) {
+            if (posteBeforeUpdate.isActif() && !posteAfterUpdate.isActif()) {
+                genre = GenreModification.DESACTIVATION;
+            } else if (!posteBeforeUpdate.isActif() && posteAfterUpdate.isActif()) {
+                genre = GenreModification.REACTIVATION;
+            } else if (posteBeforeUpdate.getPeriodeActivite().getDateFin()
+                    .before(posteAfterUpdate.getPeriodeActivite().getDateFin())
+                    || posteBeforeUpdate.getPeriodeActivite().getDateFin()
+                            .after(posteAfterUpdate.getPeriodeActivite().getDateFin())) {
+                genre = GenreModification.CHANGEMENT_FIN_POSTE;
+            }
+        }
+
+        DossierComplexSearchModel searchForNow = ALServiceLocator.getDossierBusinessService().getDossiersActifs(
+                new Date().toString(), posteAfterUpdate.getTravailleurIdTiers());
+        JadeAbstractModel[] idsDossiers = searchForNow.getSearchResults();
+
+        if (idsDossiers.length == 0) {
+            DossierComplexSearchModel search = ALServiceLocator.getDossierBusinessService().getDossiersActifs(
+                    new Date().addMonth(-6).toString(), posteAfterUpdate.getTravailleurIdTiers());
+            idsDossiers = search.getSearchResults();
+        }
+
+        if (idsDossiers.length == 1) {
+            idDossier = ((DossierComplexModel) idsDossiers[0]).getId();
+        } else if (idsDossiers.length < 1) {
+            toSend = false;
+        } else {
+            idDossier = "";
+
+            for (int i = 0; i < idsDossiers.length; i++) {
+                if (i < idsDossiers.length - 1) {
+                    idDossier = idDossier.concat(((DossierComplexModel) idsDossiers[i]).getId() + ", ");
+                } else {
+                    idDossier = idDossier.concat(((DossierComplexModel) idsDossiers[i]).getId() + ".");
+                }
+            }
+        }
+
+        if (toSend) {
+            if (genre.equals(GenreModification.DESACTIVATION)) {
+                sujet = "Fin d'activité poste de travail";
+                mention = "Fin d'activité du poste de travail au : \nDate de sortie : "
+                        + posteAfterUpdate.getPeriodeActivite().getDateFinAsSwissValue() + "\n";
+                sendEmailAF(sujet, buildBodyMailAF(mention, nom, prenom, nss, idDossier));
+            }
+            if (genre.equals(GenreModification.REACTIVATION)) {
+                sujet = "Réactivation poste de travail";
+                mention = "Réactivation du poste de travail pour : \n";
+                sendEmailAF(sujet, buildBodyMailAF(mention, nom, prenom, nss, idDossier));
+            }
+            if (genre.equals(GenreModification.CHANGEMENT_FIN_POSTE)) {
+                sujet = "Modification date fin poste de travail";
+                if (posteBeforeUpdate.getPeriodeActivite().getDateFin() != null) {
+                    mention = "Modification de la date fin du poste de travail : \nAncienne date de sortie : "
+                            + posteBeforeUpdate.getPeriodeActivite().getDateFinAsSwissValue() + "\n"
+                            + "Nouvelle date de sortie : "
+                            + posteAfterUpdate.getPeriodeActivite().getDateFinAsSwissValue() + "\n";
+                } else {
+                    mention = "Modification de la date fin du poste de travail : \nAncienne date de sortie : aucune\nNouvelle date de sortie : "
+                            + posteAfterUpdate.getPeriodeActivite().getDateFinAsSwissValue() + "\n";
+                }
+                sendEmailAF(sujet, buildBodyMailAF(mention, nom, prenom, nss, idDossier));
+            }
+        }
+    }
+
+    private static String buildBodyMailAF(String mention, String nom, String prenom, String nss, String idDossier) {
+        String corps = mention;
+        corps = corps.concat("Nom : " + nom + "\n");
+        corps = corps.concat("Prénom : " + prenom + "\n");
+        corps = corps.concat("NSS : " + nss + "\n");
+        corps = corps.concat("Numéro dossier : " + idDossier + "\n");
+        return corps;
+
+    }
+
 }

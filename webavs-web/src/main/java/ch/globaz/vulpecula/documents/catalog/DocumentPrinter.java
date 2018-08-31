@@ -13,9 +13,12 @@ import ch.globaz.vulpecula.external.BProcessWithContext;
 public abstract class DocumentPrinter<T extends Serializable> extends BProcessWithContext {
     private static final long serialVersionUID = -1228965146801743634L;
 
-    private List<T> elements;
+    private Collection<T> elements;
     private T currentElement;
     private String documentFileName = null;
+    private String idTiers;
+    private String noAffilie;
+    private String idDecompte;
 
     protected String getMessageNoElements() {
         return getSession().getLabel("EMAIL_PAS_ELEMENTS");
@@ -88,7 +91,7 @@ public abstract class DocumentPrinter<T extends Serializable> extends BProcessWi
         return currentElement;
     }
 
-    public List<T> getElements() {
+    public Collection<T> getElements() {
         return elements;
     }
 
@@ -96,7 +99,7 @@ public abstract class DocumentPrinter<T extends Serializable> extends BProcessWi
         this.currentElement = currentElement;
     }
 
-    public void setElements(List<T> elements) {
+    public void setElements(Collection<T> elements) {
         this.elements = elements;
     }
 
@@ -112,6 +115,30 @@ public abstract class DocumentPrinter<T extends Serializable> extends BProcessWi
      */
     public void setDocumentFileName(String documentFileName) {
         this.documentFileName = documentFileName;
+    }
+
+    public String getIdTiers() {
+        return idTiers;
+    }
+
+    public void setIdTiers(String idTiers) {
+        this.idTiers = idTiers;
+    }
+
+    public String getNoAffilie() {
+        return noAffilie;
+    }
+
+    public void setNoAffilie(String noAffilie) {
+        this.noAffilie = noAffilie;
+    }
+
+    public String getIdDecompte() {
+        return idDecompte;
+    }
+
+    public void setIdDecompte(String idDecompte) {
+        this.idDecompte = idDecompte;
     }
 
 }

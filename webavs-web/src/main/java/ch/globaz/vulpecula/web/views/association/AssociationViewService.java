@@ -23,13 +23,18 @@ public class AssociationViewService {
                 .findCotisationsById(idCotisationAP).getMasseSalarialeDefaut().getValue();
     }
 
+    public String findDefaultFacturer(String idCotisationAP) {
+        return String.valueOf(VulpeculaServiceLocator.getCotisationAssociationProfessionnelleService()
+                .findCotisationsById(idCotisationAP).getFacturerDefaut().getValue());
+    }
+
     public boolean create(String associationsJson) throws ViewException {
         Gson gson = new Gson();
         AssociationsGSON associationsGSON = gson.fromJson(associationsJson, AssociationsGSON.class);
-        List<AssociationCotisation> associationsCotisations = associationsGSON.convertToDomain();
+        List<AssociationCotisation> mapAssociationsCotisations = associationsGSON.convertToDomain();
         try {
             VulpeculaServiceLocator.getAssociationCotisationService().create(associationsGSON.idEmployeur,
-                    associationsCotisations);
+                    mapAssociationsCotisations);
         } catch (UnsatisfiedSpecificationException e) {
             throw new ViewException(e);
         }

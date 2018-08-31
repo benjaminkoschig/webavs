@@ -24,7 +24,7 @@
 		<c:forEach var="decompteView" items="${decompteGroupView.cotisationDecompteViews}">
 			<tr class="bmsRowEven">	
 			<fmt:formatNumber var="cotisation" value="${decompteView.cotisation}" minFractionDigits="2" maxFractionDigits="2" />
-			<fmt:formatNumber var="taux" value="${decompteView.taux}" minFractionDigits="2" maxFractionDigits="2" />
+			<fmt:formatNumber var="taux" value="${decompteView.taux}" minFractionDigits="3" maxFractionDigits="3" />
 			<fmt:formatNumber var="masse" value="${decompteView.masse}" minFractionDigits="2" maxFractionDigits="2" />
 			<fmt:formatNumber var="franchise" value="${decompteView.franchise}" minFractionDigits="2" maxFractionDigits="2" />
 				<td>

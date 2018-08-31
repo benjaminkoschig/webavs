@@ -30,9 +30,11 @@
 		<div class="area">
 			<div class="areaSearch">
 			<table width="100%">
-				<tr><td width ="20%"><ct:FWLabel key='JSP_LIBELLE'/><td><input type="text" id="searchModel.forLibelleUpperLike"></input></td></tr>
-				<tr><td width ="20%"><ct:FWLabel key='JSP_CODE'/><td><input type="text" id="searchModel.forCodeLike"></input></td></tr>
-				<tr><td width ="20%"><ct:FWLabel key='JSP_ASSOCIATION_PROFESSIONNELLE'/><td><input type="text" id="searchModel.forAssociationLike"></input></td></tr>
+				<tr><td width ="20%"><ct:FWLabel key='JSP_LIBELLE'/><td><input type="text" id="searchModel.forLibelleUpperLike"  value="${viewBean.searchModel.forLibelleUpperLike}" ></input></td></tr>
+				<tr><td width ="20%"><ct:FWLabel key='JSP_CODE'/><td><input type="text" id="searchModel.forCodeLike" value="${viewBean.searchModel.forCodeLike}" ></input></td></tr>
+				<tr><td width ="20%"><ct:FWLabel key='JSP_ASSOCIATION_PROFESSIONNELLE'/><td><input type="text" id="searchModel.forAssociationLike" value="${viewBean.searchModel.forAssociationLike}" ></input></td></tr>
+				<tr><td width ="20%"><ct:FWLabel key="JSP_A_FACTURER_DEFAUT"/><td><ct:FWCodeSelectTag notation="data-g-select=''" name="searchModel.forFacturerDefaut" codeType="PTCATCOTAP" defaut="${viewBean.searchModel.forFacturerDefaut}" wantBlank="true" tabindex="8"/></td></tr>
+				
 				<%-- <tr>
 					<td width ="20%">
 						<ct:FWLabel key='JSP_CODE'/>
@@ -63,6 +65,7 @@
 						<th data-orderKey="libelleUpper"><ct:FWLabel key="JSP_LIBELLE" /></th>
 						<th data-orderKey="genre"><ct:FWLabel key="JSP_GENRE" /></th>
 						<th data-orderKey="codeAdministration"><ct:FWLabel key="JSP_ASSOCIATION_PROFESSIONNELLE" /></th>
+						<th><ct:FWLabel key="JSP_A_FACTURER_DEFAUT" /></th>
 					</thead>
 					<tbody>
 						<%-- Rempli dynamiquement ! --%>

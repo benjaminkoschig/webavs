@@ -1,23 +1,31 @@
 package ch.globaz.vulpecula.external.services;
 
+import globaz.globall.db.BSession;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeNumericUtil;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.persistence.JadePersistenceManager;
 import globaz.jade.persistence.model.JadeAbstractModel;
 import globaz.naos.api.IAFAssurance;
+import globaz.naos.db.assurance.AFAssurance;
+import globaz.naos.db.assurance.AFAssuranceManager;
 import globaz.naos.db.cotisation.AFCotisation;
 import globaz.naos.translation.CodeSystem;
+import globaz.naos.util.AFUtil;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import org.apache.commons.lang.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ch.globaz.exceptions.ExceptionMessage;
 import ch.globaz.exceptions.GlobazTechnicalException;
 import ch.globaz.naos.business.model.TauxAssuranceSimpleModel;
+import ch.globaz.vulpecula.business.services.VulpeculaRepositoryLocator;
+import ch.globaz.vulpecula.business.services.VulpeculaServiceLocator;
 import ch.globaz.vulpecula.domain.models.common.Age;
 import ch.globaz.vulpecula.domain.models.common.Date;
+import ch.globaz.vulpecula.domain.models.common.Montant;
 import ch.globaz.vulpecula.domain.models.common.Taux;
 import ch.globaz.vulpecula.domain.models.decompte.TypeAssurance;
 import ch.globaz.vulpecula.domain.models.postetravail.Travailleur;
@@ -29,6 +37,8 @@ import ch.globaz.vulpecula.external.models.CotisationParametreSearchComplexModel
 import ch.globaz.vulpecula.external.models.CotisationSearchComplexModel;
 import ch.globaz.vulpecula.external.models.affiliation.Cotisation;
 import ch.globaz.vulpecula.external.repositoriesjade.naos.converters.CotisationConverter;
+import ch.globaz.vulpecula.repositoriesjade.RepositoryJade;
+import ch.globaz.vulpecula.web.views.postetravail.CotisationDatee;
 
 public class CotisationServiceImpl implements CotisationService {
     private static final Logger LOGGER = LoggerFactory.getLogger(CotisationServiceImpl.class);
@@ -74,9 +84,10 @@ public class CotisationServiceImpl implements CotisationService {
     public List<Cotisation> findByIdAffilieForDate(String id, Date date) {
         List<Cotisation> cotisations = new ArrayList<Cotisation>();
         CotisationSearchComplexModel searchModel = new CotisationSearchComplexModel();
+        searchModel.setForIdAffilie(String.valueOf(id));
         searchModel.setForDateDebutLessEquals(date.getSwissValue());
         searchModel.setForDateFinGreaterEquals(date.getSwissValue());
-        searchModel.setForIdAffilie(String.valueOf(id));
+
         try {
             JadePersistenceManager.search(searchModel);
             for (JadeAbstractModel model : searchModel.getSearchResults()) {
@@ -90,6 +101,47 @@ public class CotisationServiceImpl implements CotisationService {
         return cotisations;
     }
 
+    @Override
+    public List<Cotisation> findByIdAffilieForDateWithTaux(String id, Date date) {
+        List<Cotisation> cotisations = findByIdAffilieForDate(id, date);
+        for (Cotisation cotisation : cotisations) {
+            cotisation.setTaux(findTaux(cotisation.getId(), date));
+        }
+        return cotisations;
+    }
+
+    @Override
+    public Cotisation findById(String id) {
+        CotisationSearchComplexModel searchModel = new CotisationSearchComplexModel();
+        searchModel.setWhereKey(CotisationComplexModel.SEARCH_BY_ID);
+        searchModel.setForId(id);
+        RepositoryJade.searchFor(searchModel);
+        if (searchModel.getSize() > 0) {
+            CotisationComplexModel cotisationComplexModel = (CotisationComplexModel) searchModel.getSearchResults()[0];
+            return CotisationConverter.convertToDomain(cotisationComplexModel);
+        }
+        return null;
+    }
+
+    @Override
+    public List<Cotisation> findAllByIdAffilie(String id) {
+        List<Cotisation> cotisations = new ArrayList<Cotisation>();
+        CotisationSearchComplexModel searchModel = new CotisationSearchComplexModel();
+        searchModel.setForIdAffilie(String.valueOf(id));
+        searchModel.setWhereKey(CotisationComplexModel.SEARCH_ALL_BY_ID);
+        try {
+            JadePersistenceManager.search(searchModel);
+            for (JadeAbstractModel model : searchModel.getSearchResults()) {
+                CotisationComplexModel cotisationComplexModel = (CotisationComplexModel) model;
+                Cotisation cotisation = CotisationConverter.convertToDomain(cotisationComplexModel);
+                cotisations.add(cotisation);
+            }
+        } catch (JadePersistenceException ex) {
+            throw new GlobazTechnicalException(ExceptionMessage.ERREUR_TECHNIQUE, ex);
+        }
+        return cotisations;
+    }
+    
     @Override
     public List<Cotisation> findByIdAffilie(String id) {
         List<Cotisation> cotisations = new ArrayList<Cotisation>();
@@ -363,5 +415,44 @@ public class CotisationServiceImpl implements CotisationService {
                 cotisationEntity.getDateFin());
 
         return cotisation;
+    }
+
+    @Override
+    public Montant getPlafondAC(Date date, BSession session) {
+        try {
+            AFAssuranceManager assuranceManager = new AFAssuranceManager();
+            assuranceManager.setForTypeAssurance(CodeSystem.TYPE_ASS_COTISATION_AC);
+            assuranceManager.setSession(session);
+            assuranceManager.find();
+
+            AFAssurance assurance = (AFAssurance) assuranceManager.get(0);
+            String plafond = AFUtil.giveParametreAssurance(CodeSystem.GEN_PARAM_ASS_PLAFOND, assurance.getId(),
+                    date.getSwissValue(), session).getValeur();
+            return new Montant(plafond);
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage());
+            throw new GlobazTechnicalException(ExceptionMessage.ERREUR_TECHNIQUE, e);
+        }
+    }
+
+    /**
+     * @param idTravailleur
+     * @param idCotisation
+     * @param dateDebut
+     * @param dateFin
+     * @return
+     */
+    public CotisationDatee findCotisationDateeForTravailleur(String idTravailleur, String idCotisation,
+            Date dateDebutActivite, Date dateFinActivite) {
+        Validate.notNull(idCotisation);
+        Validate.notNull(idTravailleur);
+
+        Travailleur travailleur = VulpeculaRepositoryLocator.getTravailleurRepository().findById(idTravailleur);
+        Cotisation cotisation = VulpeculaServiceLocator.getCotisationService().findById(idCotisation);
+
+        Date dateNaissance = new Date(travailleur.getDateNaissance());
+
+        return CotisationDatee.calculer(cotisation, travailleur.getSexe(), dateNaissance, dateDebutActivite,
+                dateFinActivite);
     }
 }

@@ -14,6 +14,7 @@ import java.util.Observable;
 import org.apache.poi.hssf.record.RowRecord;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
+import org.apache.poi.hssf.usermodel.HSSFFont;
 import org.apache.poi.hssf.usermodel.HSSFFooter;
 import org.apache.poi.hssf.usermodel.HSSFHeader;
 import org.apache.poi.hssf.usermodel.HSSFPrintSetup;
@@ -133,6 +134,8 @@ public abstract class AbstractListExcel extends Observable {
     // "h:mm:ss"
     // "m/d/yy h:mm"
 
+    protected static final short COLUMN_WIDTH_1000 = 1000;
+    protected static final short COLUMN_WIDTH_2000 = 2000;
     protected static final short COLUMN_WIDTH_3500 = 3500;
     protected static final short COLUMN_WIDTH_4500 = 4500;
 
@@ -144,6 +147,7 @@ public abstract class AbstractListExcel extends Observable {
     /** Largeur d'une colonne contenant une date */
     protected static final short COLUMN_WIDTH_DATE = 3500;
     protected static final short COLUMN_WIDTH_DESCRIPTION = 12000;
+    protected static final short COLUMN_WIDTH_NAME = 8000;
     /** Largeur d'une colonne contenant un montant */
     protected static final short COLUMN_WIDTH_MONTANT = 4000;
     protected static final short COLUMN_WIDTH_REMARQUE = 7000;
@@ -173,7 +177,7 @@ public abstract class AbstractListExcel extends Observable {
     public static final String OP_DIVIDE = "/";
     public static final String OP_DIVIDE_BY_100 = "/100";
     public static final String FORMULA_SUM = "SUM";
-
+    
     /** True : affiche un border à la liste. */
     private boolean border = true;
     /** Détermine la colonne en cours */
@@ -202,6 +206,7 @@ public abstract class AbstractListExcel extends Observable {
     private HSSFCellStyle styleGris25PourcentGras = null;
     private HSSFCellStyle styleListGris25PourcentGras = null;
     private HSSFCellStyle styleListMontantGris25PourcentGras = null;
+    private HSSFCellStyle styleListMontant = null;
     private HSSFCellStyle styleListNombre1DGris25PourcentGras = null;
     private HSSFCellStyle styleLeft = null;
     private HSSFCellStyle styleListTitleCenter = null;
@@ -214,15 +219,29 @@ public abstract class AbstractListExcel extends Observable {
     private HSSFCellStyle styleNeutre = null;
     private HSSFCellStyle stylePourcent = null;
     private HSSFCellStyle styleRight = null;
+    private HSSFCellStyle styleMontantRed = null;
+    private HSSFCellStyle stylePourcentRed = null;
+    private HSSFCellStyle styleRightRed = null;
     private HSSFCellStyle styleTitleVerticalTopCenter = null;
     private HSSFCellStyle styleTitreCritere = null;
     private HSSFCellStyle styleTotal = null;
+    private HSSFCellStyle styleMontantBorderMediumTotal = null;
     private HSSFCellStyle styleVerticalBottomCenter = null;
     private HSSFCellStyle styleVerticalBottomLeft = null;
     private HSSFCellStyle styleVerticalBottomRight = null;
     private HSSFCellStyle styleVerticalTopCenter = null;
     private HSSFCellStyle styleVerticalTopLeft = null;
     private HSSFCellStyle styleVerticalTopRight = null;
+    private HSSFCellStyle styleVerticalAlign = null;
+    private HSSFCellStyle styleRightNone = null;
+    private HSSFCellStyle styleRightNoneGreen = null;
+    private HSSFCellStyle styleMontantNone = null;
+    private HSSFCellStyle styleMontantNoneGreen = null;
+    private HSSFCellStyle stylePourcentNone = null;
+    private HSSFCellStyle styleListLeftNone = null;
+    private HSSFCellStyle stylePourcentNoneGreen = null;
+    private HSSFCellStyle styleMontantNoBorder = null;
+    private HSSFCellStyle styleGris25PourcentGrasMontant = null;
 
     private HSSFCellStyle previousStyle = null;
 
@@ -249,6 +268,22 @@ public abstract class AbstractListExcel extends Observable {
         setDateImpression(JACalendar.today().getDay() + "." + JACalendar.today().getMonth() + "."
                 + JACalendar.today().getYear());
         wb = new HSSFWorkbook();
+        styleFactory = new StyleFactory(wb);
+    }
+
+    /**
+     * Créer une liste en fonction d'une existante
+     * 
+     * @param listExcel
+     */
+    public AbstractListExcel(AbstractListExcel listExcel) {
+        setSession(listExcel.getSession());
+        setFilenameRoot(listExcel.getFilenameRoot());
+        documentInfo = listExcel.getDocumentInfo();
+        setDocumentTitle(listExcel.getDocumentTitle());
+        setDateImpression(JACalendar.today().getDay() + "." + JACalendar.today().getMonth() + "."
+                + JACalendar.today().getYear());
+        wb = listExcel.getWorkbook();
         styleFactory = new StyleFactory(wb);
     }
 
@@ -511,11 +546,22 @@ public abstract class AbstractListExcel extends Observable {
         return index;
     }
 
+    protected int createMergedRegion(int colFrom, int colTo, int rowFrom, int rowTo, double value, HSSFCellStyle style) {
+        setColNum((short) colFrom);
+        int index = this.createMergedRegion(getRegion(colFrom, colTo, rowFrom, rowTo), this.createCell(value, style));
+        setColNum((short) colTo + 1);
+        return index;
+    }
+
     protected int createMergedRegion(int size, String value) {
         return createMergedRegion(getColNum(), getColNum() + size - 1, getRowNum(), getRowNum(), value, previousStyle);
     }
 
     protected int createMergedRegion(int size, String value, HSSFCellStyle style) {
+        return createMergedRegion(getColNum(), getColNum() + size - 1, getRowNum(), getRowNum(), value, style);
+    }
+
+    protected int createMergedRegion(int size, double value, HSSFCellStyle style) {
         return createMergedRegion(getColNum(), getColNum() + size - 1, getRowNum(), getRowNum(), value, style);
     }
 
@@ -584,7 +630,11 @@ public abstract class AbstractListExcel extends Observable {
         if (title.length() > SHEET_MAX_LENGTH) {
             title = title.substring(0, SHEET_MAX_LENGTH);
         }
-        currentSheet = wb.createSheet(title);
+        try {
+            currentSheet = wb.createSheet(title);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         // Marges (unité en pouces)
         currentSheet.setMargin(HSSFSheet.LeftMargin, LEFT_MARGIN);
@@ -762,6 +812,80 @@ public abstract class AbstractListExcel extends Observable {
         return styleCritere;
     }
 
+    protected HSSFCellStyle getStyleVerticalAlign() {
+        if (isNull(styleVerticalAlign)) {
+            styleVerticalAlign = getWorkbook().createCellStyle();
+        }
+        styleVerticalAlign.setVerticalAlignment(HSSFCellStyle.VERTICAL_JUSTIFY);
+        return styleVerticalAlign;
+    }
+
+    /**
+     * Pourcent : droite;encadré(medium); Wrap; format 0.00%
+     * 
+     * @return le style liste pour un pourcentage
+     */
+    protected HSSFCellStyle getStylePourcentRed() {
+        if (isNull(stylePourcentRed)) {
+            stylePourcentRed = styleFactory.createStyle(getFontHeight(), false, false, Alignement.RIGHT, Border.NONE,
+                    FieldType.POURCENT);
+        }
+        HSSFFont font = wb.createFont();
+        font.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
+        font.setColor(HSSFColor.RED.index);
+        stylePourcentRed.setFont(font);
+        return stylePourcentRed;
+    }
+
+    /**
+     * Montant : droite; encadré(thin); Wrap; format #,##0.00
+     * 
+     * @return le style liste pour un montant
+     */
+    protected HSSFCellStyle getStyleMontantRed() {
+        if (isNull(styleMontantRed)) {
+            styleMontantRed = styleFactory.createStyle(getFontHeight(), false, false, Alignement.RIGHT, Border.NONE,
+                    FieldType.MONTANT);
+        }
+        HSSFFont font = wb.createFont();
+        font.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
+        font.setColor(HSSFColor.RED.index);
+        styleMontantRed.setFont(font);
+        return styleMontantRed;
+    }
+
+    /**
+     * gauche, italique, rouge
+     * 
+     * @return le style des critères des listes
+     */
+    protected HSSFCellStyle getStyleCritereRed() {
+        if (isNull(styleCritere)) {
+            styleCritere = styleFactory.createStyle(getFontHeight(), true, Alignement.LEFT, HSSFColor.RED.index);
+        }
+        HSSFFont font = wb.createFont();
+        font.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
+        font.setColor(HSSFColor.RED.index);
+        styleCritere.setFont(font);
+        return styleCritere;
+    }
+
+    /**
+     * droite; encadré(thin); wrap
+     * 
+     * @return le style liste aligné à droite
+     */
+    protected HSSFCellStyle getStyleListRightRed() {
+        if (isNull(styleRightRed)) {
+            styleRightRed = styleFactory.createStyle(getFontHeight(), Alignement.RIGHT, Border.NONE);
+        }
+        HSSFFont font = wb.createFont();
+        font.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
+        font.setColor(HSSFColor.RED.index);
+        styleRightRed.setFont(font);
+        return styleRightRed;
+    }
+
     /**
      * droite, italique
      * 
@@ -798,12 +922,33 @@ public abstract class AbstractListExcel extends Observable {
         return styleGris25PourcentGras;
     }
 
+    protected HSSFCellStyle getStyleGris25PourcentGrasMontant() {
+        if (isNull(styleGris25PourcentGrasMontant)) {
+            styleGris25PourcentGrasMontant = styleFactory.createStyle(getFontHeight(), false, true, Alignement.RIGHT,
+                    HSSFColor.GREY_25_PERCENT.index, Border.NONE, FieldType.MONTANT);
+        }
+
+        return styleGris25PourcentGrasMontant;
+
+    }
+
     /**
      * Grise la cellule à 25% et ajoute du gras pour un tableau
      */
     protected HSSFCellStyle getStyleListGris25PourcentGras() {
         if (isNull(styleListGris25PourcentGras)) {
             styleListGris25PourcentGras = styleFactory.createStyle(getFontHeight(), false, true, Alignement.LEFT,
+                    HSSFColor.GREY_25_PERCENT.index, Border.THIN);
+        }
+        return styleListGris25PourcentGras;
+    }
+
+    /**
+     * Grise la cellule à 25% et ajoute du gras pour un tableau
+     */
+    protected HSSFCellStyle getStyleListGris25Pourcent() {
+        if (isNull(styleListGris25PourcentGras)) {
+            styleListGris25PourcentGras = styleFactory.createStyle(getFontHeight(), false, false, Alignement.LEFT,
                     HSSFColor.GREY_25_PERCENT.index, Border.THIN);
         }
         return styleListGris25PourcentGras;
@@ -818,6 +963,17 @@ public abstract class AbstractListExcel extends Observable {
                     Alignement.RIGHT, HSSFColor.GREY_25_PERCENT.index, Border.THIN, FieldType.MONTANT);
         }
         return styleListMontantGris25PourcentGras;
+    }
+
+    /**
+     * Grise la cellule à 25% et ajoute du gras pour un tableau pour un montant
+     */
+    protected HSSFCellStyle getStyleListMontant() {
+        if (isNull(styleListMontant)) {
+            styleListMontant = styleFactory.createStyle(getFontHeight(), false, true, Alignement.RIGHT, Border.THIN,
+                    FieldType.MONTANT);
+        }
+        return styleListMontant;
     }
 
     /**
@@ -856,6 +1012,18 @@ public abstract class AbstractListExcel extends Observable {
     }
 
     /**
+     * gauche; encadré(thin); Wrap
+     * 
+     * @return le style liste aligné à gauche
+     */
+    protected HSSFCellStyle getStyleListLeftNone() {
+        if (isNull(styleListLeftNone)) {
+            styleListLeftNone = styleFactory.createStyle(getFontHeight(), Border.NONE);
+        }
+        return styleListLeftNone;
+    }
+
+    /**
      * droite; encadré(thin); wrap
      * 
      * @return le style liste aligné à droite
@@ -865,6 +1033,35 @@ public abstract class AbstractListExcel extends Observable {
             styleRight = styleFactory.createStyle(getFontHeight(), Alignement.RIGHT, Border.THIN);
         }
         return styleRight;
+    }
+
+    /**
+     * droite; wrap
+     * 
+     * @return le style liste aligné à droite
+     */
+    protected HSSFCellStyle getStyleListRightNone() {
+        if (isNull(styleRightNone)) {
+            styleRightNone = styleFactory.createStyle(getFontHeight(), Alignement.RIGHT, Border.NONE);
+        }
+        return styleRightNone;
+    }
+
+    /**
+     * droite; encadré(thin); wrap
+     * 
+     * @return le style liste aligné à droite
+     */
+    protected HSSFCellStyle getStyleListRightNoneGreen() {
+        if (isNull(styleRightNoneGreen)) {
+            styleRightNoneGreen = styleFactory.createStyle(getFontHeight(), Alignement.RIGHT, Border.NONE);
+        }
+        HSSFFont font = wb.createFont();
+        font.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
+        font.setColor(HSSFColor.GREEN.index);
+        styleRightNoneGreen.setFont(font);
+
+        return styleRightNoneGreen;
     }
 
     /**
@@ -988,7 +1185,7 @@ public abstract class AbstractListExcel extends Observable {
      */
     protected HSSFCellStyle getStyleListVerticalAlignTopLeft() {
         if (isNull(styleVerticalTopLeft)) {
-            styleVerticalTopLeft = styleFactory.createStyle(getFontHeight(), Alignement.CENTER, VerticalAlignement.TOP,
+            styleVerticalTopLeft = styleFactory.createStyle(getFontHeight(), Alignement.LEFT, VerticalAlignement.TOP,
                     Border.THIN);
         }
         return styleVerticalTopLeft;
@@ -1022,6 +1219,50 @@ public abstract class AbstractListExcel extends Observable {
     }
 
     /**
+     * Montant : droite; encadré(thin); Wrap; format #,##0.00
+     * 
+     * @return le style liste pour un montant
+     */
+    protected HSSFCellStyle getStyleMontantNoBorder() {
+        if (isNull(styleMontantNoBorder)) {
+            styleMontantNoBorder = styleFactory.createStyle(getFontHeight(), false, false, Alignement.RIGHT,
+                    Border.NONE, FieldType.MONTANT);
+        }
+        return styleMontantNoBorder;
+    }
+
+    /**
+     * Montant : droite; encadré(thin); Wrap; format #,##0.00
+     * 
+     * @return le style liste pour un montant
+     */
+    protected HSSFCellStyle getStyleMontantNone() {
+        if (isNull(styleMontantNone)) {
+            styleMontantNone = styleFactory.createStyle(getFontHeight(), false, false, Alignement.RIGHT, Border.NONE,
+                    FieldType.MONTANT);
+        }
+        return styleMontantNone;
+    }
+
+    /**
+     * Montant : droite; encadré(thin); Wrap; format #,##0.00
+     * 
+     * @return le style liste pour un montant
+     */
+    protected HSSFCellStyle getStyleMontantNoneGreen() {
+        if (isNull(styleMontantNoneGreen)) {
+            styleMontantNoneGreen = styleFactory.createStyle(getFontHeight(), false, false, Alignement.RIGHT,
+                    Border.NONE, FieldType.MONTANT);
+        }
+        HSSFFont font = wb.createFont();
+        font.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
+        font.setColor(HSSFColor.GREEN.index);
+        styleMontantNoneGreen.setFont(font);
+
+        return styleMontantNoneGreen;
+    }
+
+    /**
      * Nombre à une décimale : droite; encadré(thin); Wrap; format 0.0
      * 
      * @return le style liste pour un montant
@@ -1035,7 +1276,7 @@ public abstract class AbstractListExcel extends Observable {
     }
 
     /**
-     * Total : droite; gras; encadré(medium); Wrap; format #,##0.00
+     * Total : droite; gras; encadré(thin); Wrap; format #,##0.00
      * 
      * @return le style liste pour un montant total
      */
@@ -1045,6 +1286,19 @@ public abstract class AbstractListExcel extends Observable {
                     FieldType.MONTANT);
         }
         return styleTotal;
+    }
+
+    /**
+     * Total : droite; gras; encadré(medium); Wrap; format #,##0.00
+     * 
+     * @return le style liste pour un montant total
+     */
+    protected HSSFCellStyle getStyleMontantBorderMediumTotal() {
+        if (isNull(styleMontantBorderMediumTotal)) {
+            styleMontantBorderMediumTotal = styleFactory.createStyle(getFontHeight(), false, true, Alignement.RIGHT,
+                    Border.MEDIUM, FieldType.MONTANT);
+        }
+        return styleMontantBorderMediumTotal;
     }
 
     /**
@@ -1058,6 +1312,37 @@ public abstract class AbstractListExcel extends Observable {
                     FieldType.POURCENT);
         }
         return stylePourcent;
+    }
+
+    /**
+     * Pourcent : droite;encadré(medium); Wrap; format 0.00%
+     * 
+     * @return le style liste pour un pourcentage
+     */
+    protected HSSFCellStyle getStylePourcentNone() {
+        if (isNull(stylePourcentNone)) {
+            stylePourcentNone = styleFactory.createStyle(getFontHeight(), false, false, Alignement.RIGHT, Border.NONE,
+                    FieldType.POURCENT);
+        }
+        return stylePourcentNone;
+    }
+
+    /**
+     * Pourcent : droite;encadré(medium); Wrap; format 0.00%
+     * 
+     * @return le style liste pour un pourcentage
+     */
+    protected HSSFCellStyle getStylePourcentNoneGreen() {
+        if (isNull(stylePourcentNoneGreen)) {
+            stylePourcentNoneGreen = styleFactory.createStyle(getFontHeight(), false, false, Alignement.RIGHT,
+                    Border.NONE, FieldType.POURCENT);
+        }
+        HSSFFont font = wb.createFont();
+        font.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
+        font.setColor(HSSFColor.GREEN.index);
+        stylePourcentNoneGreen.setFont(font);
+
+        return stylePourcentNoneGreen;
     }
 
     protected HSSFCellStyle getStyleGras() {

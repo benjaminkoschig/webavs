@@ -30,6 +30,7 @@ public class DecompteSimpleModel extends JadeSimpleModel {
     private String motifProlongation;
     private Boolean rectifie;
     private Boolean controleAC2;
+    private String typeProvenance;
 
     public Boolean getRectifie() {
         return rectifie;
@@ -205,4 +206,18 @@ public class DecompteSimpleModel extends JadeSimpleModel {
     public void setControleAC2(Boolean controleAC2) {
         this.controleAC2 = controleAC2;
     }
+
+	/**
+	 * @return the typeProvenance
+	 */
+	public String getTypeProvenance() {
+		return typeProvenance;
+	}
+
+	/**
+	 * @param typeProvenance the typeProvenance to set
+	 */
+	public void setTypeProvenance(String typeProvenance) {
+		this.typeProvenance = typeProvenance;
+	}
 }

@@ -12,6 +12,7 @@ public class PrestationGroupee implements Serializable {
     private static final long serialVersionUID = -1885682375645335980L;
 
     private String nss;
+    private String idTiersBeneficiaire;
     private String titre;
     private String nom;
     private String prenom;
@@ -30,6 +31,7 @@ public class PrestationGroupee implements Serializable {
     private String adresseFormattee;
     private String raisonSociale;
     private Date date;
+    private String cantonResidence;
 
     public String getNss() {
         return nss;
@@ -183,6 +185,14 @@ public class PrestationGroupee implements Serializable {
         this.date = date;
     }
 
+    public void setCantonResidence(String cantonResidence) {
+        this.cantonResidence = cantonResidence;
+    }
+
+    public String getCantonResidence() {
+        return cantonResidence;
+    }
+
     /**
      * Création d'une prestation groupée. Une prestation groupée correspond à un ensemble de prestations AF dont les
      * périodes ont été regroupées.
@@ -238,5 +248,13 @@ public class PrestationGroupee implements Serializable {
             entetePrestation.setLangue(CodeLangue.fromValue(langue));
         }
         return entetePrestation;
+    }
+
+    public String getIdTiersBeneficiaire() {
+        return idTiersBeneficiaire;
+    }
+
+    public void setIdTiersBeneficiaire(String nssTiersBeneficiaire) {
+        this.idTiersBeneficiaire = nssTiersBeneficiaire;
     }
 }

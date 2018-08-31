@@ -186,6 +186,10 @@ input.readOnly, select.readOnly {
 	position: relative;
 }
 
+.interligne {
+	line-height: 30pt;
+}
+
 .bloc .header {
 	font-weight : bold;
 	font-size : 11px;
@@ -328,5 +332,67 @@ input.readOnly, select.readOnly {
 .employeurEntry {
 	display : inline-block;
 	*display : inline;
+}
+
+/********************** NEW TRAVAILLEUR FORM ******************/
+
+
+.ebuFormSection{
+	border-style: solid;
+    border-width: 2px;
+    width:49%;
+    height:75%;
+    display:inline-block; 
+    margin:1%;
+    margin-left:16%;
+}
+
+.valueEmp{
+	background-color:white;
+}
+
+.labelEmp{
+	background-color:#F1F9FF;	
+}
+
+.tableEmp{
+	border-style: solid;
+    border-width: 2px;
+    overflow:hidden;
+	background-color:#D7E4FF;
+}
+
+.infoEmployeur{
+    width:15.3%;
+    height:75%;
+    margin-left:10px;
+	margin-top:1%;
+	margin-bottom:10px;
+	float:left;
+	overflow:hidden;
+}
+
+.validationSection{
+	align:center;
+    width:49%;
+    height:75%;
+    display:inline-block; 
+    margin:1%;
+    margin-left:16%;	
+}
+
+.tableEmp.label{
+	background-color:#F1F9FF;
+}
+
+
+#submitTiersEtAdresse, #refuseTiersEtAdresse, #submitTravailleur, #refuseTravailleur, #updatePosteTravail, #submitPosteTravail, #refusePosteTravail, #refuseAllFields, #submitBanque, #refuseBanque{
+	float:right;
+	display:inline;
+}
+
+.dateFin{
+	text-align:right;
+	color:red;	
 }
 

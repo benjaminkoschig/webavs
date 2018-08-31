@@ -25,6 +25,10 @@ public interface APISection extends BIEntity {
             APISection.ID_CATEGORIE_SECTION_DECOMPTE_SALAIRES_DIFFERES,
             APISection.ID_CATEGORIE_SECTION_DECISION_COTPERS, APISection.ID_CATEGORIE_SECTION_IJAI,
             APISection.ID_CATEGORIE_SECTION_DECISION_COTPERS_ETUDIANT, APISection.ID_CATEGORIE_SECTION_DECOMPTE_PCG,
+            APISection.ID_CATEGORIE_SECTION_DECISION_COTPERS,
+            APISection.ID_CATEGORIE_SECTION_IJAI,
+            APISection.ID_CATEGORIE_SECTION_DECISION_COTPERS_ETUDIANT,
+            APISection.ID_CATEGORIE_SECTION_DECOMPTE_PCG,
             APISection.ID_CATEGORIE_SECTION_IRRECOUVRABLE,
             APISection.ID_CATEGORIE_SECTION_RECOUVREMENT_IRRECOUVRABLE,
             APISection.ID_CATEGORIE_SECTION_RESTITUTIONS,
@@ -199,6 +203,8 @@ public interface APISection extends BIEntity {
     public static String ID_TYPE_SECTION_RESTITUTION = "26";
     public static String ID_TYPE_SECTION_RETOUR = "5";
     public static String ID_TYPE_SECTION_RFM = "76";
+    public static String ID_TYPE_SECTION_ASSOCIATION = "10";
+    public static String ID_TYPE_SECTION_CPP = "11";
 
     // Mode de compensation
     public final static String MODE_BLOQUER_COMPENSATION = "244001";

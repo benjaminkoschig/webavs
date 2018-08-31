@@ -12,6 +12,9 @@
 			<td>
 				<c:out value="${entity.administrationComplexModel.admin.codeAdministration} - ${entity.administrationComplexModel.tiers.designation1} ${entity.administrationComplexModel.tiers.designation2}" /> 
 			</td>
+			<td>
+				<c:out value="${entity.libelleFacturerDefaut}" /> 
+			</td>
 		</tr>			
 	</c:forEach>
 </liste>

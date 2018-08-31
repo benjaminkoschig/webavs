@@ -2,6 +2,7 @@ package globaz.vulpecula.vb.listes;
 
 import java.util.List;
 import ch.globaz.vulpecula.business.services.VulpeculaRepositoryLocator;
+import ch.globaz.vulpecula.business.services.travailleur.TravailleurServiceCRUD;
 import ch.globaz.vulpecula.domain.models.common.Date;
 import ch.globaz.vulpecula.external.models.pyxis.Administration;
 
@@ -9,6 +10,8 @@ public class PTListeSyndicatsViewBean extends PTListeProcessViewBean {
     private String liste;
     private String idSyndicat;
     private String idCaisseMetier;
+    private String idTravailleur;
+    private String designationTravailleur;
     private String annee;
 
     private List<Administration> syndicats;
@@ -62,5 +65,25 @@ public class PTListeSyndicatsViewBean extends PTListeProcessViewBean {
 
     public String getCurrentYear() {
         return Date.now().getAnnee();
+    }
+
+    public String getDesignationTravailleur() {
+        return designationTravailleur;
+    }
+
+    public void setDesignationTravailleur(String designationTravailleur) {
+        this.designationTravailleur = designationTravailleur;
+    }
+
+    public String getTravailleurViewService() {
+        return TravailleurServiceCRUD.class.getName();
+    }
+
+    public String getIdTravailleur() {
+        return idTravailleur;
+    }
+
+    public void setIdTravailleur(String idTravailleur) {
+        this.idTravailleur = idTravailleur;
     }
 }

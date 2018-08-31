@@ -6,13 +6,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import com.google.common.base.Function;
+import com.google.common.collect.Multimaps;
+import com.google.common.collect.TreeMultimap;
 import ch.globaz.vulpecula.domain.models.TypeAbsenceJustifieeComparator;
 import ch.globaz.vulpecula.domain.models.common.Montant;
 import ch.globaz.vulpecula.domain.models.postetravail.Employeur;
 import ch.globaz.vulpecula.domain.models.registre.Convention;
-import com.google.common.base.Function;
-import com.google.common.collect.Multimaps;
-import com.google.common.collect.TreeMultimap;
 
 public class AbsencesJustifiees implements Iterable<AbsenceJustifiee> {
     private final Collection<AbsenceJustifiee> absenceJustifiees;
@@ -74,7 +74,8 @@ public class AbsencesJustifiees implements Iterable<AbsenceJustifiee> {
         return nbJours;
     }
 
-    public static Map<Convention, AJsParType> groupByConventionAndByType(Collection<AbsenceJustifiee> absencesJustifiees) {
+    public static Map<Convention, AJsParType> groupByConventionAndByType(
+            Collection<AbsenceJustifiee> absencesJustifiees) {
         Map<Convention, AJsParType> absencesParConventionParType = new TreeMap<Convention, AJsParType>();
 
         Map<Convention, Collection<AbsenceJustifiee>> absencesParConvention = groupByConvention(absencesJustifiees);
@@ -102,8 +103,8 @@ public class AbsencesJustifiees implements Iterable<AbsenceJustifiee> {
 
     public static List<AJParEmployeur> groupByEmployeur(Collection<AbsenceJustifiee> absences) {
         List<AJParEmployeur> list = new ArrayList<AJParEmployeur>();
-        Map<Employeur, Collection<AbsenceJustifiee>> map = Multimaps.index(absences,
-                new Function<AbsenceJustifiee, Employeur>() {
+        Map<Employeur, Collection<AbsenceJustifiee>> map = Multimaps
+                .index(absences, new Function<AbsenceJustifiee, Employeur>() {
                     @Override
                     public Employeur apply(AbsenceJustifiee absenceJustifiee) {
                         return absenceJustifiee.getEmployeur();
@@ -123,5 +124,13 @@ public class AbsencesJustifiees implements Iterable<AbsenceJustifiee> {
             abs.put(absenceJustifiee.getConventionEmployeur(), absenceJustifiee);
         }
         return abs.asMap();
+    }
+
+    public int size() {
+        return absenceJustifiees.size();
+    }
+
+    public boolean add(AbsenceJustifiee aj) {
+        return absenceJustifiees.add(aj);
     }
 }

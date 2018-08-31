@@ -9,8 +9,7 @@ public class DecompteCTSPInteretsRequis extends AbstractSpecification<Decompte> 
 
     @Override
     public boolean isValid(Decompte decompte) {
-        if (TypeDecompte.CONTROLE_EMPLOYEUR.equals(decompte.getType())
-                || TypeDecompte.SPECIAL.equals(decompte.getType())) {
+        if (TypeDecompte.CONTROLE_EMPLOYEUR.equals(decompte.getType()) || decompte.isTraiterAsSpecial()) {
             if (decompte.getInteretsMoratoires() == null) {
                 addMessage(SpecificationMessage.DECOMPTE_CT_ST_INTERETS_REQUIS);
             }

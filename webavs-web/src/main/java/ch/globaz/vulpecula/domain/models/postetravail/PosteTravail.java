@@ -35,6 +35,8 @@ import ch.globaz.vulpecula.external.models.affiliation.Assurance;
 import ch.globaz.vulpecula.external.models.affiliation.Cotisation;
 import ch.globaz.vulpecula.external.models.affiliation.CotisationChecker;
 import ch.globaz.vulpecula.external.models.affiliation.PlanCaisse;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
 
 /***
  * Le poste de travail correspond à la relation entre un travailleur et un
@@ -43,28 +45,25 @@ import ch.globaz.vulpecula.external.models.affiliation.PlanCaisse;
  * @author Arnaud Geiser (AGE) | Créé le 17 déc. 2013
  */
 public class PosteTravail implements DomainEntity {
+    public static final int CAISSE_METIER_INVALIDE = 0;
+
     private String idPosteTravail;
     private Employeur employeur;
     private Boolean franchiseAVS;
     private List<Occupation> occupations;
     private Periode periodeActivite;
     private Qualification qualification;
+    private Date dateValiditeQualification;
     private Travailleur travailleur;
     private TypeSalaire typeSalaire;
+    private Date dateValiditeTypeSalaire;
     private String spy;
     private String idTiersCM;
     private List<AdhesionCotisationPosteTravail> adhesionsCotisations;
     private List<ConventionQualification> parametresQualifications;
-
-    public static final int CAISSE_METIER_INVALIDE = 0;
-
-    public String getIdTiersCM() {
-        return idTiersCM;
-    }
-
-    public void setIdTiersCM(String idTiersCM) {
-        this.idTiersCM = idTiersCM;
-    }
+    private String idPortail;
+    private String correlationId = "";
+    private String posteCorrelationId;
 
     public PosteTravail() {
         this(null);
@@ -72,11 +71,37 @@ public class PosteTravail implements DomainEntity {
 
     public PosteTravail(String id) {
         idPosteTravail = id;
-
         franchiseAVS = false;
-
         occupations = new ArrayList<Occupation>();
         adhesionsCotisations = new ArrayList<AdhesionCotisationPosteTravail>();
+    }
+
+    public String getIdPortail() {
+        return idPortail;
+    }
+
+    public void setIdPortail(String idPortail) {
+        this.idPortail = idPortail;
+    }
+
+    public String getCorrelationId() {
+        return correlationId;
+    }
+
+    public void setCorrelationId(String correlationId) {
+        this.correlationId = correlationId;
+    }
+
+    public List<ConventionQualification> getParametresQualifications() {
+        return parametresQualifications;
+    }
+
+    public String getIdTiersCM() {
+        return idTiersCM;
+    }
+
+    public void setIdTiersCM(String idTiersCM) {
+        this.idTiersCM = idTiersCM;
     }
 
     @Override
@@ -183,6 +208,22 @@ public class PosteTravail implements DomainEntity {
         return typeSalaire;
     }
 
+    public Date getDateValiditeQualification() {
+        return dateValiditeQualification;
+    }
+
+    public void setDateValiditeQualification(Date dateValiditeQualification) {
+        this.dateValiditeQualification = dateValiditeQualification;
+    }
+
+    public Date getDateValiditeTypeSalaire() {
+        return dateValiditeTypeSalaire;
+    }
+
+    public void setDateValiditeTypeSalaire(Date dateValiditeTypeSalaire) {
+        this.dateValiditeTypeSalaire = dateValiditeTypeSalaire;
+    }
+
     /**
      * Retourne le code système correspondant au type de salaire.
      * Si le type de salaire est null, alors null est retournée.
@@ -226,6 +267,22 @@ public class PosteTravail implements DomainEntity {
      */
     public String getFinActiviteAsSwissValue() {
         Date date = getFinActivite();
+        if (date != null) {
+            return date.getSwissValue();
+        }
+        return null;
+    }
+
+    public String getDateValiditeQualificationAsSwissValue() {
+        Date date = getDateValiditeQualification();
+        if (date != null) {
+            return date.getSwissValue();
+        }
+        return null;
+    }
+
+    public String getDateValiditeTypeSalaireAsSwissValue() {
+        Date date = getDateValiditeTypeSalaire();
         if (date != null) {
             return date.getSwissValue();
         }
@@ -363,6 +420,20 @@ public class PosteTravail implements DomainEntity {
         return getOccupation(date);
     }
 
+    public Occupation getLatestOccupation() {
+        Occupation lastOccupation = null;
+        for (Occupation occupation : occupations) {
+
+            if (lastOccupation == null
+                    || occupation.getDateValidite().getTime() > lastOccupation.getDateValidite().getTime()) {
+                lastOccupation = occupation;
+            }
+
+        }
+
+        return lastOccupation;
+    }
+
     /**
      * Retourne l'occupation du poste de travail par rapport à la date spécifiée.
      * 
@@ -381,8 +452,10 @@ public class PosteTravail implements DomainEntity {
         }
 
         // Si pas de poste, on force l'occupation à 100%
-        if (current == null) {
+        if (current == null && (occupations.size() > 1 || occupations.isEmpty())) {
             current = Occupation.valueOf100At(date);
+        } else if (occupations.size() == 1) {
+            return occupations.get(0);
         }
         return current;
     }
@@ -535,12 +608,12 @@ public class PosteTravail implements DomainEntity {
     }
 
     public Convention getConvention() {
-        Employeur employeur = getEmployeur();
-        if (employeur == null) {
+        Employeur employeur1 = getEmployeur();
+        if (employeur1 == null) {
             return null;
         }
 
-        return employeur.getConvention();
+        return employeur1.getConvention();
     }
 
     public String getIdConvention() {
@@ -629,7 +702,7 @@ public class PosteTravail implements DomainEntity {
      * @return true si droit au AJ
      */
     public boolean hasDroitAJ(int idCaisseMetier, Date date) {
-        return TableParametrage.getInstance().hasDroitAJ(idCaisseMetier, getTypesAssurancesArray(date));
+        return TableParametrage.getInstance(date.getAnnee()).hasDroitAJ(idCaisseMetier, getTypesAssurancesArray(date));
     }
 
     /**
@@ -649,7 +722,7 @@ public class PosteTravail implements DomainEntity {
      * @return true si droit au AJ
      */
     public boolean hasDroitCP(int idCaisseMetier, Date date) {
-        return TableParametrage.getInstance().hasDroitCP(idCaisseMetier, getTypesAssurancesArray(date));
+        return TableParametrage.getInstance(date.getAnnee()).hasDroitCP(idCaisseMetier, getTypesAssurancesArray(date));
     }
 
     /**
@@ -669,7 +742,7 @@ public class PosteTravail implements DomainEntity {
      * @return true si droit au AJ
      */
     public boolean hasDroitSM(int idCaisseMetier, Date date) {
-        return TableParametrage.getInstance().hasDroitSM(idCaisseMetier, getTypesAssurancesArray(date));
+        return TableParametrage.getInstance(date.getAnnee()).hasDroitSM(idCaisseMetier, getTypesAssurancesArray(date));
     }
 
     /**
@@ -693,6 +766,14 @@ public class PosteTravail implements DomainEntity {
         return travailleur.getAge(dateDeCalcul);
     }
 
+    public int getAgeTravailleurForDate(String dateDeCalcul) {
+        return travailleur.getAge(new Date(dateDeCalcul));
+    }
+
+    public int getAgeTravailleurForDate(Date dateDeCalcul) {
+        return travailleur.getAge(dateDeCalcul);
+    }
+
     /**
      * retourne le nombre d'année de services ininterrompues pour le poste de travail
      * 
@@ -705,9 +786,7 @@ public class PosteTravail implements DomainEntity {
             anneeFin = Integer.parseInt(getFinActivite().getAnnee());
         }
 
-        int anneeServices = anneeFin - anneeDebut;
-
-        return anneeServices;
+        return anneeFin - anneeDebut;
     }
 
     /**
@@ -809,13 +888,20 @@ public class PosteTravail implements DomainEntity {
 
         long MILLI_SECONDS_PER_YEAR = 31558464000L;
         long milliSecondsSinceDate = System.currentTimeMillis() - dbDate.getTime();
-        int nbYears = (int) (milliSecondsSinceDate / MILLI_SECONDS_PER_YEAR);
 
-        return nbYears;
+        return (int) (milliSecondsSinceDate / MILLI_SECONDS_PER_YEAR);
     }
 
     public boolean isMensuel() {
         return TypeSalaire.MOIS.equals(typeSalaire);
+    }
+
+    public boolean isHoraire() {
+        return TypeSalaire.HEURES.equals(typeSalaire);
+    }
+
+    public boolean isConstant() {
+        return TypeSalaire.CONSTANT.equals(typeSalaire);
     }
 
     public boolean hasMoreThan18Ans(Date dateReference) {
@@ -837,7 +923,7 @@ public class PosteTravail implements DomainEntity {
         for (AdhesionCotisationPosteTravail adhesionCotisation : adhesionsCotisations) {
             cotisations.add(adhesionCotisation.getCotisation());
         }
-        return CotisationChecker.isSoumisAVS(cotisations);
+        return CotisationChecker.isSoumisAVS(cotisations, new Date(31, 12, Integer.valueOf(date.getAnnee())));
     }
 
     /**
@@ -851,6 +937,10 @@ public class PosteTravail implements DomainEntity {
 
     public boolean isActifIn(Annee annee) {
         return getPeriodeActivite().isActifIn(annee);
+    }
+
+    public boolean isActifInAnneeOrPrecedente(Annee annee) {
+        return (getPeriodeActivite().isActifIn(annee) || getPeriodeActivite().isActifIn(annee.previous()));
     }
 
     public void setParametresQualifications(List<ConventionQualification> parametresQualifications) {
@@ -890,4 +980,111 @@ public class PosteTravail implements DomainEntity {
     public String getIdLocaliteEmployeur() {
         return employeur.getAdressePrincipale().getIdLocalite();
     }
+
+    public boolean isEnAgeAvs(Date date) {
+        return travailleur.isEnAgeAvs(date);
+    }
+
+    public boolean isElectricite() {
+        return employeur.isElectricite();
+    }
+
+    public boolean hasCotisationAVS() {
+        return hasCotisation(TypeAssurance.COTISATION_AVS_AI);
+    }
+
+    public boolean hasCotisationFA() {
+        return hasCotisation(TypeAssurance.FRAIS_ADMINISTRATION);
+    }
+
+    public boolean hasAssuranceMaladie() {
+        return hasCotisation(TypeAssurance.ASSURANCE_MALADIE);
+    }
+
+    private boolean hasCotisation(TypeAssurance assurance) {
+        for (AdhesionCotisationPosteTravail adhesion : adhesionsCotisations) {
+            if (adhesion.getTypeAssurance().equals(assurance)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private List<AdhesionCotisationPosteTravail> getAssurancesMaladies() {
+        List<AdhesionCotisationPosteTravail> adhesions = new ArrayList<AdhesionCotisationPosteTravail>();
+        for (AdhesionCotisationPosteTravail adhesion : adhesionsCotisations) {
+            if (TypeAssurance.ASSURANCE_MALADIE.equals(adhesion.getTypeAssurance())) {
+                adhesions.add(adhesion);
+            }
+        }
+        return adhesions;
+    }
+
+    /**
+     * Retourne si le poste de travail possède des assurances maladies qui sont toutes clôturées (disposent d'une date
+     * de fin).
+     * Dans le cas on le poste ne possède pas de cotisation de type Assurance Maladie, la valeur false est retournée.
+     * 
+     * @return true si possède au moins une assurance maladie et que toutes les caisses sont clôturées
+     */
+    public boolean hasAssurancesMaladiesToutesCloturees() {
+        return hasAssuranceMaladie() && hasAllAssurancesMaladiesCloturees();
+    }
+
+    private AdhesionCotisationPosteTravail getLastDateDebut(List<AdhesionCotisationPosteTravail> adhesions) {
+        Date dateDebut = adhesions.get(0).getPeriode().getDateDebut();
+        AdhesionCotisationPosteTravail adhesionToReturn = adhesions.get(0);
+        for (AdhesionCotisationPosteTravail adhesion : adhesions) {
+            if (adhesion.getPeriode().getDateDebut().after(dateDebut)) {
+                dateDebut = adhesion.getPeriode().getDateDebut();
+                adhesionToReturn = adhesion;
+            }
+        }
+        return adhesionToReturn;
+    }
+
+    /**
+     * Retourne la dernière assurance maladie active.
+     * 
+     * @return Assurance maladie
+     */
+    public AdhesionCotisationPosteTravail getLastAssuranceMaladie() {
+        List<AdhesionCotisationPosteTravail> assurancesMaladies = getAssurancesMaladies();
+        if (assurancesMaladies.isEmpty()) {
+            return null;
+        }
+        // Collections.sort(assurancesMaladies);
+        return getLastDateDebut(assurancesMaladies);
+    }
+
+    /**
+     * Retourne si les assurances maladies sont toutes clôturées.
+     * 
+     * @return true si toutes les cotisations assurance maladie
+     */
+    private boolean hasAllAssurancesMaladiesCloturees() {
+        return Iterables.all(getAssurancesMaladies(), new Predicate<AdhesionCotisationPosteTravail>() {
+            @Override
+            public boolean apply(AdhesionCotisationPosteTravail adhesion) {
+                return adhesion.getPeriode().getDateFin() != null;
+            }
+        });
+    }
+
+    public Periode getPeriodeLastAssuranceMaladie() {
+        List<AdhesionCotisationPosteTravail> adhesions = getAssurancesMaladies();
+        if (adhesions.isEmpty()) {
+            return null;
+        }
+        return getLastAssuranceMaladie().getPeriode();
+    }
+
+    public String getPosteCorrelationId() {
+        return posteCorrelationId;
+    }
+
+    public void setPosteCorrelationId(String posteCorrealtionId) {
+        posteCorrelationId = posteCorrealtionId;
+    }
+
 }

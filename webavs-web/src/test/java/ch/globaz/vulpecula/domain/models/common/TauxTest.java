@@ -117,6 +117,37 @@ public class TauxTest {
 
     @Test
     public void getValue_Given11_9327_ShouldBe11_93() {
-        assertThat(new Taux(11.9327).getValue(), is("11.93"));
+        assertThat(new Taux(11.9327).getValue(), is("11.9327"));
     }
+
+    @Test
+    public void getValue_Given5_321451_ShouldBe5_32145() {
+        assertThat(new Taux(5.321451).getValue(), is("5.32145"));
+    }
+
+    @Test
+    public void getValue_Given5_32000_ShouldBe5_32() {
+        assertThat(new Taux(5.32000).getValue(), is("5.32"));
+    }
+
+    @Test
+    public void getValue_Given5_3_ShouldBe5_30() {
+        assertThat(new Taux(5.3).getValue(), is("5.30"));
+    }
+
+    @Test
+    public void getValue_Given5_125_ShouldBe5_125() {
+        assertThat(new Taux(5.125).getValue(), is("5.125"));
+    }
+
+    @Test
+    public void getValue_Given0_08_ShouldBe0_08() {
+        assertThat(new Taux(0.08).getValue(), is("0.08"));
+    }
+
+    // @Test
+    // public void getValue_Given1005_12_ShouldBe1005_12() {
+    // String test = new Taux(1000.00).getValue();
+    // assertThat(test, is("1'000.00"));
+    // }
 }

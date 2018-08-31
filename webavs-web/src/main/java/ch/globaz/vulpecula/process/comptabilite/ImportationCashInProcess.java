@@ -1,6 +1,8 @@
 package ch.globaz.vulpecula.process.comptabilite;
 
-import globaz.aquila.db.rdp.cashin.importer.CashinImportData;
+import globaz.aquila.db.rdp.cashin.importer.CashinImportDataFrais;
+import globaz.aquila.db.rdp.cashin.importer.CashinImportDataPaiement;
+import globaz.aquila.db.rdp.cashin.importer.CashinTypePaiement;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
 import globaz.globall.db.GlobazJobQueue;
@@ -16,17 +18,21 @@ import globaz.osiris.api.APICompteAnnexe;
 import globaz.osiris.api.APIEcriture;
 import globaz.osiris.api.APIRubrique;
 import globaz.osiris.db.comptes.CACompteAnnexe;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import ch.globaz.exceptions.ExceptionMessage;
 import ch.globaz.exceptions.GlobazTechnicalException;
 import ch.globaz.osiris.business.data.JournalConteneur;
 import ch.globaz.osiris.business.model.EcritureSimpleModel;
 import ch.globaz.osiris.business.model.JournalSimpleModel;
+import ch.globaz.osiris.business.model.PaiementSimpleModel;
 import ch.globaz.osiris.business.model.SectionSimpleModel;
 import ch.globaz.osiris.business.service.CABusinessServiceLocator;
 import ch.globaz.vulpecula.domain.models.common.Date;
@@ -41,20 +47,21 @@ import ch.globaz.vulpecula.util.RubriqueUtil;
  * @since WebBMS 1.0
  */
 public class ImportationCashInProcess extends BProcessWithContext {
-    private static final long serialVersionUID = -6431396237521702640L;
+	private static final long serialVersionUID = -6431396237521702640L;
+	
+    private static final String CSV_SEPARATOR = "\\t";
+    private static final Logger LOGGER = LoggerFactory.getLogger(ImportationCashInProcess.class);
+    private static final String JDBC = "jdbc://";
+    private static final String WORK_DIR = "work/";
+    private static final String DATE_PATTERN = "yyyyMMdd";
+    private static final String DATE_PATTERN_SWISS = "dd.MM.yyyy";
+    private static final String ID_REFERENCE_RUBRIQUE_FDP = "237099";
+    private static final String LIBELLE_JOURNAL_DEFAULT = "Importation frais Cashin";
 
     private String csvFilename = "";
     private String journalLibelle = "";
     private String journalDate = "";
     private TypeImportation typeImportation;
-
-    private static final String JDBC = "jdbc://";
-    private static final String WORK_DIR = "work/";
-    private static final String DATE_PATTERN = "yyyyMMdd";
-    private static final String DATE_PATTERN_SWISS = "dd.MM.yyyy";
-    private final static Logger LOGGER = LoggerFactory.getLogger(ImportationCashInProcess.class);
-    private static final String ID_REFERENCE_RUBRIQUE_FDP = "237099";
-    private static final String LIBELLE_JOURNAL_DEFAULT = "Importation frais Cashin";
 
     public enum TypeImportation {
         FRAIS,
@@ -107,7 +114,41 @@ public class ImportationCashInProcess extends BProcessWithContext {
     }
 
     private boolean importationPaiement(String filepath) throws IOException {
-        getTransaction().addErrors("Importation des paiements pas encore implémenté !");
+        BufferedReader in = null;
+        try {
+            in = new BufferedReader(new FileReader(filepath));
+            String line;
+            String[] donnees_fichier;
+            ArrayList<CashinImportDataPaiement> arrayLignesFichier = new ArrayList<CashinImportDataPaiement>();
+
+            while ((line = in.readLine()) != null) {
+                donnees_fichier = line.split(CSV_SEPARATOR);
+
+                if (donnees_fichier.length != CashinImportDataPaiement.NOMBRE_DE_CHAMPS) {
+                    throw new Exception("Nombre de colonnes dans le fichier source incorrect !");
+                }
+
+                CashinImportDataPaiement cashinImportData = new CashinImportDataPaiement(donnees_fichier);
+                arrayLignesFichier.add(cashinImportData);
+            }
+
+            JournalConteneur jc = createJournal();
+
+            for (CashinImportDataPaiement cashinImportData : arrayLignesFichier) {
+                creerEcrituresPaiement(cashinImportData, jc);
+            }
+            CABusinessServiceLocator.getJournalService().comptabilise(
+                    CABusinessServiceLocator.getJournalService().createJournalAndOperations(jc));
+
+            JadeThread.commitSession();
+
+        } catch (Exception e) {
+            getTransaction().addErrors(
+                    getSession().getLabel("ERREUR_IMPORTATION_FRAIS_CASHIN") + "\r\n" + e.getMessage());
+            return false;
+        } finally {
+            in.close();
+        }
         return true;
     }
 
@@ -117,24 +158,24 @@ public class ImportationCashInProcess extends BProcessWithContext {
             in = new BufferedReader(new FileReader(filepath));
             String line;
             String[] donnees_fichier;
-            ArrayList<CashinImportData> arrayLignesFichier = new ArrayList<CashinImportData>();
+            ArrayList<CashinImportDataFrais> arrayLignesFichier = new ArrayList<CashinImportDataFrais>();
 
             while ((line = in.readLine()) != null) {
                 // TODO Gérer le séparateur dans les properties ?
-                donnees_fichier = line.split("\\t");
+                donnees_fichier = line.split(CSV_SEPARATOR);
 
-                if (donnees_fichier.length != CashinImportData.NOMBRE_DE_CHAMPS) {
+                if (donnees_fichier.length != CashinImportDataFrais.NOMBRE_DE_CHAMPS) {
                     throw new Exception("Nombre de colonnes dans le fichier source incorrect !");
                 }
 
-                CashinImportData cashinImportData = new CashinImportData(donnees_fichier);
+                CashinImportDataFrais cashinImportData = new CashinImportDataFrais(donnees_fichier);
                 arrayLignesFichier.add(cashinImportData);
             }
 
             JournalConteneur jc = createJournal();
 
-            for (CashinImportData cashinImportData : arrayLignesFichier) {
-                creerEcritures(cashinImportData, jc);
+            for (CashinImportDataFrais cashinImportData : arrayLignesFichier) {
+                creerEcrituresFrais(cashinImportData, jc);
             }
             CABusinessServiceLocator.getJournalService().comptabilise(
                     CABusinessServiceLocator.getJournalService().createJournalAndOperations(jc));
@@ -175,7 +216,53 @@ public class ImportationCashInProcess extends BProcessWithContext {
         }
     }
 
-    private void creerEcritures(CashinImportData cashinImportData, JournalConteneur jc) throws Exception {
+    private void creerEcrituresPaiement(CashinImportDataPaiement cashinImportData, JournalConteneur jc)
+            throws Exception {
+        BSession session = BSessionUtil.getSessionFromThreadContext();
+
+        // Rechercher le compteAnnexe
+        CACompteAnnexe compteAnnexe = new CACompteAnnexe();
+        compteAnnexe.setIdRole(Role.AFFILIE_PARITAIRE.getValue());
+        compteAnnexe.setIdExterneRole(cashinImportData.getNoExtDebiteur());
+        compteAnnexe.setAlternateKey(APICompteAnnexe.AK_IDEXTERNE);
+        compteAnnexe.setSession(session);
+        compteAnnexe.retrieve();
+
+        // Rechercher la section
+        SectionSimpleModel section = CABusinessServiceLocator.getSectionService().getSectionByIdExterne(
+                compteAnnexe.getIdCompteAnnexe(), cashinImportData.getNoExtLitigeType(),
+                cashinImportData.getNoExtLitigeSansType(), jc.getJournalModel());
+
+        if (CashinTypePaiement.INTERETS.equals(cashinImportData.getTypePaiement())) {
+            EcritureSimpleModel interetModel = new EcritureSimpleModel();
+            interetModel.setIdCompteAnnexe(compteAnnexe.getIdCompteAnnexe());
+            interetModel.setIdSection(section.getIdSection());
+            interetModel.setDate(cashinImportData.getDateEcriture().getSwissValue());
+            interetModel.setMontant(cashinImportData.getMontant().negate().toString());
+            interetModel.setCodeDebitCredit(computeCodeDebitCredit(cashinImportData.getMontant().negate()));
+
+//            APIRubrique rubriquePartCot = RubriqueUtil.retrieveRubriqueForReference(session, ID_REFERENCE_RUBRIQUE_FDP);
+//            interetModel.setIdRubrique(rubriquePartCot.getIdRubrique());
+            // FIXME Quel rubrique ? est-ce toujours la même (AVS et autres tâches) ?
+            interetModel.setIdRubrique("249");
+
+            jc.addEcriture(interetModel);
+        }
+
+        PaiementSimpleModel paiementSimpleModel = new PaiementSimpleModel();
+        paiementSimpleModel.setCodeDebitCredit(computeCodeDebitCredit(cashinImportData.getMontant()));
+        paiementSimpleModel.setIdCompteAnnexe(compteAnnexe.getIdCompteAnnexe());
+        paiementSimpleModel.setIdSection(section.getIdSection());
+        paiementSimpleModel.setDate(cashinImportData.getDateEcriture().getSwissValue());
+
+        // FIXME Quel rubrique choisir ? En dur ici : 1000.1020.0000 - Versements sur banque
+        paiementSimpleModel.setIdRubrique("100039");
+        paiementSimpleModel.setMontant(cashinImportData.getMontant().toString());
+
+        jc.addEcriture(paiementSimpleModel);
+    }
+
+    private void creerEcrituresFrais(CashinImportDataFrais cashinImportData, JournalConteneur jc) throws Exception {
         BSession session = BSessionUtil.getSessionFromThreadContext();
 
         // Rechercher le compteAnnexe

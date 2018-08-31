@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model
+		className="ch.globaz.vulpecula.business.models.decomptes.DecompteComptableComplexModel">
+
+		<root-model name="decompteSimpleModel"
+			model-ref="ch.globaz.vulpecula.business.models.decomptes.DecompteSimpleModel" />
+
+		<linked-model name="employeurComplexModel"
+			model-ref="ch.globaz.vulpecula.business.models.employeur.EmployeurComplexModel"
+			join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="affiliationTiersComplexModel.affiliation.affiliationId"
+					operation="EQUALS" field-ref="decompteSimpleModel.idEmployeur" />
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="passageModel"
+			model-ref="ch.globaz.musca.business.models.PassageModel"
+			join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idPassage" 
+					operation="EQUALS" field-ref="decompteSimpleModel.idPassageFacturation" />
+			</join-group>	
+		</linked-model>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forId" field-ref="decompteSimpleModel.id"
+					operation="EQUALS" />
+				<search-field name="forIdEmployeur"
+					field-ref="decompteSimpleModel.idEmployeur" operation="EQUALS" />
+				<search-field name="forDatePassageGreaterOfEquals" field-ref="passageModel.dateFacturation"
+					operation="GREATER_OR_EQUALS" />
+				<search-field name="forDatePassageLessOrEquals" field-ref="passageModel.dateFacturation"
+					operation="LESS_OR_EQUALS" />
+				<search-field name="forEtat"
+					field-ref="decompteSimpleModel.etat" operation="EQUALS" />
+			</search-group>
+		</search-definition>
+		
+		<order-by name="default">
+			<order-field field-ref="decompteSimpleModel.dateEtablissement" order="DESC" />		
+		</order-by>
+		
+		<order-by name="idAsc">
+			<order-field field-ref="decompteSimpleModel.id" order="ASC"/>
+		</order-by> 
+		<order-by name="idDesc">
+			<order-field field-ref="decompteSimpleModel.id" order="DESC"/>
+		</order-by> 	
+	</complexe-model>
+</model-mapping>

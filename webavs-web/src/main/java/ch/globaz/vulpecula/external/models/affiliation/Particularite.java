@@ -8,7 +8,7 @@ import ch.globaz.vulpecula.domain.models.common.Date;
  * @author Jonas Paratte (JPA) | Créé le 12.11.2014
  * 
  */
-public class Particularite {
+public class Particularite implements Comparable<Particularite> {
     private String id;
     private String affiliationId;
     private String particularite;
@@ -81,6 +81,11 @@ public class Particularite {
      */
     public void setId(final String id) {
         this.id = id;
+    }
+
+    @Override
+    public int compareTo(Particularite other) {
+        return dateDebut.compareTo(other.getDateDebut());
     }
 
 }

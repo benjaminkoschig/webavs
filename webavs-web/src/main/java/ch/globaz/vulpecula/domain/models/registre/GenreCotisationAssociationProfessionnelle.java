@@ -55,5 +55,9 @@ public enum GenreCotisationAssociationProfessionnelle {
     public String getValue() {
         return String.valueOf(codeSysteme);
     }
+    
+    public static boolean isNonMembre(GenreCotisationAssociationProfessionnelle genre) {
+    	return NON_MEMBRE.getValue().equals(genre.getValue());
+    }
 
 }

@@ -2,9 +2,11 @@ package ch.globaz.vulpecula.domain.models.decompte;
 
 public class DifferenceControle {
     public static final DifferenceControle VALIDE = new DifferenceControle();
+    public static final DifferenceControle ERREUR_EBUSINESS = new DifferenceControle();
 
     static {
         VALIDE.isValid = true;
+        ERREUR_EBUSINESS.erreurEbusiness = true;
     }
 
     String montantControle = "";
@@ -12,6 +14,7 @@ public class DifferenceControle {
     String difference = "";
     String remarqueRectification = "";
     boolean isValid = false;
+    boolean erreurEbusiness = false;
 
     public String getDifference() {
         return difference;
@@ -27,6 +30,9 @@ public class DifferenceControle {
 
     public boolean isValid() {
         return isValid;
+    }
+    public boolean isErreurEBusiness() {
+        return erreurEbusiness;
     }
 
     public void setDifference(final String difference) {

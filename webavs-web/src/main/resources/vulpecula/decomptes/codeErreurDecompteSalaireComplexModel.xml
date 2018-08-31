@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model
+		className="ch.globaz.vulpecula.business.models.decomptes.CodeErreurDecompteSalaireComplexModel">
+
+		<root-model name="codeErreurDecompteSalaireSimpleModel"
+			model-ref="ch.globaz.vulpecula.business.models.decomptes.CodeErreurDecompteSalaireSimpleModel" />
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forId" field-ref="codeErreurDecompteSalaireSimpleModel.id"
+					operation="EQUALS" />
+				<search-field name="inIdLigneDecompte" field-ref="codeErreurDecompteSalaireSimpleModel.idLigneDecompte"
+					operation="IN" />
+				<search-field name="forIdLigneDecompte"
+					field-ref="codeErreurDecompteSalaireSimpleModel.idLigneDecompte" operation="EQUALS" />
+			</search-group>
+		</search-definition>
+	</complexe-model>
+</model-mapping>

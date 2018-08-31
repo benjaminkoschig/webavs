@@ -5,6 +5,8 @@ import globaz.jade.persistence.model.JadeSearchComplexModel;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import ch.globaz.vulpecula.domain.models.common.Annee;
+import ch.globaz.vulpecula.domain.models.common.AnneeComptable;
 import ch.globaz.vulpecula.domain.models.common.Date;
 import ch.globaz.vulpecula.domain.models.decompte.EtatDecompte;
 import ch.globaz.vulpecula.domain.models.decompte.TypeDecompte;
@@ -19,6 +21,7 @@ public class LigneDecompteSearchComplexModel extends JadeSearchComplexModel {
     public static final String SEQUENCE_DESC = "sequenceDesc";
     public static final String SEQUENCE_ASC = "sequenceAsc";
     public static final String ORDER_BY_EMPLOYEUR = "employeur";
+    public static final String ORDER_BY_TRAVAILLEUR = "travailleur";
 
     public static final String DATE_FIN_DECOMPTE_DESC = "dateFinDecompteDesc";
     public static final String DATE_FIN_DECOMPTE_ASC = "dateFinDecompteAsc";
@@ -27,11 +30,11 @@ public class LigneDecompteSearchComplexModel extends JadeSearchComplexModel {
 
     private String forId;
     private String forIdConvention;
-
     private String forIdDecompte;
     private String forIdDecompteGreater;
     private String forIdPosteTravail;
     private String forIdTravailleur;
+    private String forIdEmployeur;
     private String forSequence;
     private String fromSequence;
     private String toSequence;
@@ -47,6 +50,15 @@ public class LigneDecompteSearchComplexModel extends JadeSearchComplexModel {
     private String forRaisonSocialeUpperLike;
     private String likeNumeroDecompte;
     private String forAnneeDecompte;
+    private String forNumeroDecompte;
+    private String forIdTravailleurLess;
+    private String forIdTravailleurGreater;
+    private String forPeriodeFinAfter;
+    private Collection<String> forEtatDecompteIn;
+    private List<String> forTypeDecompteIn;
+    private String forAnneeCotisationsGreaterOrEquals;
+    private String forAnneeCotisationsLessOrEquals;
+    private Boolean forToTreat;
 
     public String getForDateNonAnnoncee() {
         return forDateNonAnnoncee;
@@ -55,8 +67,6 @@ public class LigneDecompteSearchComplexModel extends JadeSearchComplexModel {
     public void setForDateNonAnnoncee(String forDateNonAnnoncee) {
         this.forDateNonAnnoncee = forDateNonAnnoncee;
     }
-
-    private List<String> forTypeDecompteIn;
 
     public String getForId() {
         return forId;
@@ -117,6 +127,14 @@ public class LigneDecompteSearchComplexModel extends JadeSearchComplexModel {
      */
     public void setForSequence(final String forSequence) {
         this.forSequence = forSequence;
+    }
+
+    public String getForIdEmployeur() {
+        return forIdEmployeur;
+    }
+
+    public void setForIdEmployeur(String forIdEmployeur) {
+        this.forIdEmployeur = forIdEmployeur;
     }
 
     /**
@@ -271,15 +289,97 @@ public class LigneDecompteSearchComplexModel extends JadeSearchComplexModel {
     }
 
     public String getForAnneeDecompteDebut() {
-        return "01.01." + forAnneeDecompte;
+        AnneeComptable anneeComptable = new AnneeComptable(forAnneeDecompte);
+        return anneeComptable.getDateDebutAsSwissValue();
     }
 
     public String getForAnneeDecompteFin() {
-        return "31.12." + forAnneeDecompte;
+        AnneeComptable anneeComptable = new AnneeComptable(forAnneeDecompte);
+        return anneeComptable.getDateFinAsSwissValue();
     }
 
     public void setForAnneeDecompte(String forAnneeDecompte) {
         this.forAnneeDecompte = forAnneeDecompte;
+    }
+
+    public String getForNumeroDecompte() {
+        return forNumeroDecompte;
+    }
+
+    public void setForNumeroDecompte(String forNumeroDecompte) {
+        this.forNumeroDecompte = forNumeroDecompte;
+    }
+
+    public String getForIdTravailleurLess() {
+        return forIdTravailleurLess;
+    }
+
+    public void setForIdTravailleurLess(String forIdTravailleurLess) {
+        this.forIdTravailleurLess = forIdTravailleurLess;
+    }
+
+    public String getForIdTravailleurGreater() {
+        return forIdTravailleurGreater;
+    }
+
+    public void setForIdTravailleurGreater(String forIdTravailleurGreater) {
+        this.forIdTravailleurGreater = forIdTravailleurGreater;
+    }
+
+    /**
+     * @return the forEtatDecompteIn
+     */
+    public Collection<String> getForEtatDecompteIn() {
+        return forEtatDecompteIn;
+    }
+
+    /**
+     * @param forEtatDecompteIn the forEtatDecompteIn to set
+     */
+    public void setForEtatDecompteIn(Collection<String> forEtatDecompteIn) {
+        this.forEtatDecompteIn = forEtatDecompteIn;
+    }
+
+    public String getForPeriodeFinAfter() {
+        return forPeriodeFinAfter;
+    }
+
+    public void setForPeriodeFinAfter(Date dateFin) {
+        forPeriodeFinAfter = dateFin.getSwissValue();
+    }
+
+    public String getForAnneeCotisationsGreaterOrEquals() {
+        return forAnneeCotisationsGreaterOrEquals;
+    }
+
+    public void setForAnneeCotisationsGreaterOrEquals(String forAnneeCotisationsGreaterOrEquals) {
+        this.forAnneeCotisationsGreaterOrEquals = forAnneeCotisationsGreaterOrEquals;
+    }
+
+    public String getForAnneeCotisationsLessOrEquals() {
+        return forAnneeCotisationsLessOrEquals;
+    }
+
+    public void setForAnneeCotisationsLessOrEquals(String forAnneeCotisationsLessOrEquals) {
+        this.forAnneeCotisationsLessOrEquals = forAnneeCotisationsLessOrEquals;
+    }
+
+    public void setForAnneeCotisationsGreaterOrEquals(Annee anneeDebut) {
+        setForAnneeCotisationsGreaterOrEquals(String.valueOf(anneeDebut.getValue()));
+    }
+
+    public void setForAnneeCotisationsLessOrEquals(Annee anneeFin) {
+        if (anneeFin != null) {
+            setForAnneeCotisationsLessOrEquals(String.valueOf(anneeFin.getValue()));
+        }
+    }
+
+    public Boolean getForToTreat() {
+        return forToTreat;
+    }
+
+    public void setForToTreat(Boolean forToTreat) {
+        this.forToTreat = forToTreat;
     }
 
     @Override

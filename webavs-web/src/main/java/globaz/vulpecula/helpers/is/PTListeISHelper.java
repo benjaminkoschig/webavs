@@ -55,6 +55,7 @@ public class PTListeISHelper extends FWHelper {
         ListeISParCAFProcess process = new ListeISParCAFProcess();
         process.setEMailAddress(email);
         process.setAnnee(annee);
+        process.setCanton(canton);
         BProcessLauncher.start(process);
     }
 }

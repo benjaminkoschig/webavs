@@ -1,11 +1,5 @@
 package ch.globaz.vulpecula.facturation;
 
-import globaz.globall.db.BProcess;
-import globaz.musca.db.facturation.FAAfact;
-import globaz.musca.db.facturation.FAEnteteFacture;
-import globaz.musca.db.facturation.FAModuleFacturation;
-import globaz.osiris.api.APIRubrique;
-import globaz.osiris.db.comptes.CARubrique;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.Locale;
@@ -19,6 +13,12 @@ import ch.globaz.vulpecula.domain.models.taxationoffice.EtatTaxation;
 import ch.globaz.vulpecula.domain.models.taxationoffice.LigneTaxation;
 import ch.globaz.vulpecula.domain.models.taxationoffice.TaxationOffice;
 import ch.globaz.vulpecula.util.I18NUtil;
+import globaz.globall.db.BProcess;
+import globaz.musca.db.facturation.FAAfact;
+import globaz.musca.db.facturation.FAEnteteFacture;
+import globaz.musca.db.facturation.FAModuleFacturation;
+import globaz.osiris.api.APIRubrique;
+import globaz.osiris.db.comptes.CARubrique;
 
 public class PTProcessFacturationTaxationOfficeGenerer extends PTProcessFacturation {
     private static final long serialVersionUID = 1L;
@@ -73,19 +73,19 @@ public class PTProcessFacturationTaxationOfficeGenerer extends PTProcessFacturat
 
     /**
      * Créé une entete de facture si non existant, sinon retourne l'entete de facture existant dans le passage
-     * 
+     *
      * @param decompte
      * @return {@link FAEnteteFacture} enteteFacture
      * @throws Exception
      */
     private FAEnteteFacture createEnteteFacture(final TaxationOffice taxationOffice) throws Exception {
         return createEnteteFacture(taxationOffice.getIdTiers(), taxationOffice.getEmployeurAffilieNumero(),
-                taxationOffice.getNumeroDecompteAsValue(), taxationOffice.getDecompte().getTypeSection().getValue());
+                taxationOffice.getNumeroDecompteForSection(), taxationOffice.getDecompte().getTypeSection().getValue());
     }
 
     /**
      * Création de la ligne de facture selon la cotisation calculee pour une entete de facture
-     * 
+     *
      * @param cotisationCalculee
      * @param enteteFacture
      * @param decompte

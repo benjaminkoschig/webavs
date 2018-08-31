@@ -13,6 +13,10 @@
 				comment="id du passage en facturation" />
 			<field name="etat" column="CS_ETAT" type="NUMERIC"
 				comment="etat de la taxation d'office" />
+			<field name="dateAnnulation" column="DATE_ANNULATION" type="DATE"
+				comment="date d'annulation de la taxation d'office" />
+			<field name="idSection" column="ID_SECTION" type="STRING"
+				comment="id de la section annulée" />	
 		</fields>
 		<order-by name="idDesc">
 			<order-field field-ref="id" order="DESC" />

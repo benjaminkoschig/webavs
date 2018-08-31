@@ -12,6 +12,7 @@ import ch.globaz.vulpecula.domain.models.common.DomainEntity;
 import ch.globaz.vulpecula.domain.models.common.Montant;
 import ch.globaz.vulpecula.domain.models.common.Periode;
 import ch.globaz.vulpecula.domain.models.common.Taux;
+import ch.globaz.vulpecula.domain.models.registre.CategorieFactureAssociationProfessionnelle;
 import ch.globaz.vulpecula.domain.models.registre.GenreCotisationAssociationProfessionnelle;
 import ch.globaz.vulpecula.external.models.pyxis.Administration;
 import com.google.common.base.Function;
@@ -24,10 +25,13 @@ public class AssociationCotisation implements DomainEntity, Comparable<Associati
     private String idEmployeur;
     private GenreCotisationAssociationProfessionnelle genre;
     private CotisationAssociationProfessionnelle cotisationAssociationProfessionnelle;
+    private AssociationEmployeur associationEmployeur;
     private Periode periode;
     private Taux masseSalariale;
     private Montant forfait;
     private Taux reductionFacture;
+    // private CategorieFactureAssociationProfessionnelle facturer;
+    private boolean utiliseDansFacture = false;
 
     public static final int LIMITE_COTISATION_NON_MEMBRE = 1;
     public static final double MASSE_SALARIALE_DEFAUT = 100;
@@ -41,6 +45,18 @@ public class AssociationCotisation implements DomainEntity, Comparable<Associati
      */
     public String getIdCotisationAssociationProfessionnelle() {
         return cotisationAssociationProfessionnelle.getId();
+    }
+
+    public AssociationEmployeur getAssociationEmployeur() {
+        return associationEmployeur;
+    }
+
+    public void setAssociationEmployeur(AssociationEmployeur associationEmployeur) {
+        this.associationEmployeur = associationEmployeur;
+    }
+
+    public String getIdAssociationProfessionnelle() {
+        return cotisationAssociationProfessionnelle.getIdAssociationProfessionnelle();
     }
 
     public CotisationAssociationProfessionnelle getCotisationAssociationProfessionnelle() {
@@ -66,6 +82,10 @@ public class AssociationCotisation implements DomainEntity, Comparable<Associati
 
     public void setGenre(GenreCotisationAssociationProfessionnelle genre) {
         this.genre = genre;
+    }
+
+    public CategorieFactureAssociationProfessionnelle getFacturer() {
+        return cotisationAssociationProfessionnelle.getFacturerDefaut();
     }
 
     public Periode getPeriode() {
@@ -148,6 +168,15 @@ public class AssociationCotisation implements DomainEntity, Comparable<Associati
         return false;
     }
 
+    /**
+     * Retourne true si la cotisation est active pour la date du jour
+     * 
+     * @return true si cotisation active par rapport à la date du jour ou si pas de date de fin
+     */
+    public boolean isActive() {
+        return periode.getDateFin() == null || periode.getDateFin().afterOrEquals(Date.now());
+    }
+
     public boolean sansPeriodeFin() {
         return periode.getDateFin() == null;
     }
@@ -177,6 +206,20 @@ public class AssociationCotisation implements DomainEntity, Comparable<Associati
         return periode.compareTo(other.getPeriode());
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof AssociationCotisation) {
+            AssociationCotisation associationCotisation = (AssociationCotisation) obj;
+
+            if (associationCotisation.getId() == null) {
+                return false;
+            }
+
+            return associationCotisation.getId().equals(getId());
+        }
+        return false;
+    }
+
     public Administration getAssociationProfessionnelle() {
         return cotisationAssociationProfessionnelle.getAssociationProfessionnelle();
     }
@@ -194,7 +237,7 @@ public class AssociationCotisation implements DomainEntity, Comparable<Associati
     }
 
     public static Map<AssociationGenre, List<AssociationCotisation>> groupByAssociationGenre(
-            List<AssociationCotisation> cotisations) {
+            List<AssociationCotisation> cotisations, final Map<String, AssociationEmployeur> mapAssocEmpl) {
         Map<AssociationGenre, List<AssociationCotisation>> associationCotisationOrdered = new HashMap<AssociationGenre, List<AssociationCotisation>>();
 
         Map<AssociationGenre, Collection<AssociationCotisation>> associationsCotisations = Multimaps.index(cotisations,
@@ -202,7 +245,8 @@ public class AssociationCotisation implements DomainEntity, Comparable<Associati
                     @Override
                     public AssociationGenre apply(AssociationCotisation associationCotisation) {
                         return new AssociationGenre(associationCotisation.getAssociationProfessionnelle(),
-                                associationCotisation.getGenre());
+                                associationCotisation.getGenre(), mapAssocEmpl.get(associationCotisation
+                                        .getIdAssociationProfessionnelle()));
                     }
                 }).asMap();
 
@@ -213,4 +257,33 @@ public class AssociationCotisation implements DomainEntity, Comparable<Associati
         }
         return associationCotisationOrdered;
     }
+
+    public boolean isRabaisSpecial() {
+        return CategorieFactureAssociationProfessionnelle.RABAIS_SPECIAL.equals(cotisationAssociationProfessionnelle
+                .getFacturerDefaut());
+    }
+
+    public String getIdRubriqueCotisation() {
+        if (getCotisationAssociationProfessionnelle() != null) {
+            return getCotisationAssociationProfessionnelle().getIdRubrique();
+        }
+        return null;
+    }
+
+    public boolean isUtiliseDansFacture() {
+        return utiliseDansFacture;
+    }
+
+    public void setUtiliseDansFacture(boolean utiliseDansFacture) {
+        this.utiliseDansFacture = utiliseDansFacture;
+    }
+    
+    public boolean isMembre() {
+    	return GenreCotisationAssociationProfessionnelle.MEMBRE.getValue().equals(getGenre().getValue());
+    }
+    
+    public boolean isNonMembre() {
+    	return GenreCotisationAssociationProfessionnelle.NON_MEMBRE.getValue().equals(getGenre().getValue());
+    }
+
 }

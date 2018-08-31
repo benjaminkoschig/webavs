@@ -10,7 +10,7 @@ dans le pageContext ! --%>
 		<td class="value">${travailleur.numAvsActuel}</td>
 	</tr>
 	<tr>
-		<td class="label"><ct:FWLabel key="JSP_NOM"/> <ct:FWLabel key="JSP_PRENOM"/></td>
+		<td class="label"><ct:FWLabel key="JSP_NOM"/>&nbsp;<ct:FWLabel key="JSP_PRENOM"/></td>
 		<td class="value">${travailleur.designation1}&nbsp;${travailleur.designation2}</td>
 	</tr>
 	<tr>

@@ -1,6 +1,7 @@
 package globaz.vulpecula.vb.decomptesalaire;
 
 import globaz.vulpecula.vb.PTAjaxDisplayViewBean;
+import org.apache.commons.lang.Validate;
 import ch.globaz.vulpecula.business.services.VulpeculaRepositoryLocator;
 import ch.globaz.vulpecula.domain.models.common.Montant;
 import ch.globaz.vulpecula.domain.models.decompte.Decompte;
@@ -20,6 +21,7 @@ public class PTCotisationsAjaxViewBean extends PTAjaxDisplayViewBean {
 
     @Override
     public void retrieve() throws Exception {
+        Validate.notEmpty(idDecompteSalaire);
         decompte = VulpeculaRepositoryLocator.getDecompteSalaireRepository().findById(idDecompteSalaire).getDecompte();
         // Si la masse salariale est présente, c'est que l'on demande un nouvel affichage, soit un nouveau calcul
         if (!masseSalariale.isZero()) {

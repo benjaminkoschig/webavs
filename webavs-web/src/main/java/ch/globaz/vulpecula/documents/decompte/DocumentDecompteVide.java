@@ -5,22 +5,25 @@ import globaz.framework.printing.itext.exception.FWIException;
 import globaz.globall.db.BApplication;
 import globaz.globall.util.JANumberFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import ch.globaz.vulpecula.documents.DocumentConstants;
 import ch.globaz.vulpecula.documents.catalog.DocumentDomaine;
 import ch.globaz.vulpecula.documents.catalog.VulpeculaDocumentManager;
+import ch.globaz.vulpecula.documents.decompte.DocumentDecompteVidePrinter.InfoACDecompte;
 import ch.globaz.vulpecula.domain.models.common.Montant;
 import ch.globaz.vulpecula.domain.models.common.Taux;
 import ch.globaz.vulpecula.domain.models.decompte.Decompte;
+import ch.globaz.vulpecula.domain.models.decompte.TypeDecompte;
 import ch.globaz.vulpecula.external.models.pyxis.CodeLangue;
 import ch.globaz.vulpecula.models.decompte.TableauContributions;
 import ch.globaz.vulpecula.models.decompte.TableauContributions.EntreeContribution;
 import ch.globaz.vulpecula.models.decompte.TableauContributions.TypeContribution;
 import ch.globaz.vulpecula.util.I18NUtil;
-import com.sun.star.lang.NullPointerException;
 
 /**
  * Classe parente des documents de décomptes vides
@@ -28,13 +31,14 @@ import com.sun.star.lang.NullPointerException;
  * @since WebBMS 1.0
  */
 public abstract class DocumentDecompteVide extends VulpeculaDocumentManager<DecompteContainer> {
+    private boolean isPrintingFromEbu = false;
     private static final long serialVersionUID = 333224584795958537L;
 
     private static final String CHF = "CHF";
-    private static final String TRANCHE_AC2_MAX = "99'999.00";
-    private static final String TRANCHE_AC2_MIN = CHF + " 10'501.00";
-    private static final String TRANCHE_AC_MAX = "10'500.00";
     private static final String TRANCHE_AC_MIN = CHF + " 0.00";
+    private static final String TRANCHE_AC2_MAX = "99'999.00";
+
+    private InfoACDecompte info;
 
     private static final String LABEL_DOCUMENT_MONTANT_PAYABLE = "DOCUMENT_MONTANT_PAYABLE";
     private static final String LABEL_DOCUMENT_TOTAL_DES_CONTRIBUTIONS = "DOCUMENT_TOTAL_DES_CONTRIBUTIONS";
@@ -56,13 +60,20 @@ public abstract class DocumentDecompteVide extends VulpeculaDocumentManager<Deco
     /**
      * Constructeur, on l'on passe les décomptes que l'on désire imprimer
      * 
+     * @param isPrintingFromEbu2
+     * 
      * @param decomptes List<Decompte>
      * @throws Exception
      */
-    public DocumentDecompteVide(final DecompteContainer element, final String documentName, final String numeroInforom)
-            throws Exception {
+    public DocumentDecompteVide(final DecompteContainer element, final String documentName, final String numeroInforom,
+            boolean isPrintingFromEbu2) throws Exception {
         super(element, documentName, numeroInforom);
-        setHeaderName(DocumentConstants.HEADER_LANDSCAPE_BMS);
+        setPrintingFromEbu(isPrintingFromEbu2);
+        if (isPrintingFromEbu) {
+            setHeaderName(DocumentConstants.HEADER_LANDSCAPE_BMS_EBUSINESS);
+        } else {
+            setHeaderName(DocumentConstants.HEADER_LANDSCAPE_BMS);
+        }
         decompte = element.getDecompte();
     }
 
@@ -102,18 +113,36 @@ public abstract class DocumentDecompteVide extends VulpeculaDocumentManager<Deco
     public CaisseHeaderReportBean giveBeanHeader() throws Exception {
         CaisseHeaderReportBean beanReport = new CaisseHeaderReportBean();
 
-        Decompte decompte = getCurrentElement().getDecompte();
+        Decompte decompte2 = getCurrentElement().getDecompte();
 
-        beanReport.setAdresse(decompte.getFullAdressePrincipaleFormatte());
+        beanReport.setAdresse(decompte2.getFullAdressePrincipaleFormatte());
         beanReport.setNomCollaborateur(getSession().getUserFullName());
         beanReport.setTelCollaborateur(getSession().getUserInfo().getPhone());
         beanReport.setUser(getSession().getUserInfo());
 
-        beanReport.setDate(decompte.getDateEtablissementAsSwissValue());
-        beanReport.setNoAffilie(decompte.getEmployeurAffilieNumero());
+        beanReport.setDate(decompte2.getDateEtablissementAsSwissValue());
+        if ((decompte2.isPeriodique() || decompte2.isComplementaire()) && !decompte2.isEBusiness()) {
+            beanReport.setNoAffilie(buildInfoNumAffilie(decompte2));
+        } else {
+            beanReport.setNoAffilie(decompte2.getEmployeurAffilieNumero());
+        }
         beanReport.setConfidentiel(true);
 
         return beanReport;
+    }
+
+    private String buildInfoNumAffilie(Decompte decompte) {
+        String monthForComplementaire = "13";
+        StringBuilder toReturn = new StringBuilder();
+        toReturn.append("BM.");
+        toReturn.append(decompte.getEmployeurAffilieNumero());
+        toReturn.append("/");
+        if (TypeDecompte.COMPLEMENTAIRE.equals(decompte.getType())) {
+            toReturn.append(monthForComplementaire + decompte.getAnnee().toString());
+        } else {
+            toReturn.append(decompte.getMoisPeriodeDebut() + decompte.getAnnee().toString());
+        }
+        return toReturn.toString();
     }
 
     /**
@@ -130,7 +159,7 @@ public abstract class DocumentDecompteVide extends VulpeculaDocumentManager<Deco
 
         setParametres(DocumentConstants.P_DECOMPTE_DESCRIPTION, getDescriptionDecompte(decompte));
         setParametres(DocumentConstants.P_DECOMPTE_ID,
-                application.getLabel(DocumentConstants.DOCUMENT_ID_DECOMPTE, langue) + " : " + decompte.getId());
+                application.getLabel(DocumentConstants.DOCUMENT_ID_DECOMPTE, langue) + ":" + decompte.getId());
         fillDocumentTitle();
 
         if (state == STATE_SALAIRES) {
@@ -138,11 +167,18 @@ public abstract class DocumentDecompteVide extends VulpeculaDocumentManager<Deco
                     application.getLabel(DocumentConstants.DOCUMENT_TOTAL_DES_SALAIRES, langue));
             fillDataSourceSalaire();
         } else {
-            setParametres(DocumentConstants.P_CERTIFIE_EXACT,
-                    application.getLabel(DocumentDecompteVide.LABEL_DOCUMENT_DECOMPTE_CERTIFIE_EXACT, langue));
-            setParametres(DocumentConstants.P_TIMBRE_SIGNATURE,
-                    application.getLabel(DocumentDecompteVide.LABEL_DOCUMENT_TIMBRE_ET_SIGNATURE, langue));
-            setParametres(DocumentConstants.P_LIEU_DATE, application.getLabel("DOCUMENT_LIEU_ET_DATE", langue));
+            if (!isPrintingFromEbu) {
+                setParametres(DocumentConstants.P_CERTIFIE_EXACT,
+                        application.getLabel(DocumentDecompteVide.LABEL_DOCUMENT_DECOMPTE_CERTIFIE_EXACT, langue));
+                setParametres(DocumentConstants.P_TIMBRE_SIGNATURE,
+                        application.getLabel(DocumentDecompteVide.LABEL_DOCUMENT_TIMBRE_ET_SIGNATURE, langue));
+                setParametres(DocumentConstants.P_LIEU_DATE, application.getLabel("DOCUMENT_LIEU_ET_DATE", langue));
+            } else {
+                setParametres(DocumentConstants.P_CERTIFIE_EXACT, "");
+                setParametres(DocumentConstants.P_TIMBRE_SIGNATURE, "");
+                setParametres(DocumentConstants.P_LIEU_DATE, application.getLabel("DOCUMENT_TRANSMIS_EBU", langue));
+            }
+
             setParametres(DocumentConstants.P_TOTAL_CONTRI,
                     application.getLabel(DocumentDecompteVide.LABEL_DOCUMENT_TOTAL_DES_CONTRIBUTIONS, langue));
             setParametres(DocumentConstants.P_MONTANT_PAYABLE,
@@ -170,11 +206,11 @@ public abstract class DocumentDecompteVide extends VulpeculaDocumentManager<Deco
     }
 
     private String formatTaux(Taux taux) {
-        return JANumberFormatter.format(taux.getValue(), 0.01, 2, JANumberFormatter.NEAR);
+        return JANumberFormatter.format(taux.getValue(), 0.001, 3, JANumberFormatter.NEAR);
     }
 
     /**
-     * 
+     *
      */
     protected abstract void fillDataSourceSalaire();
 
@@ -203,7 +239,7 @@ public abstract class DocumentDecompteVide extends VulpeculaDocumentManager<Deco
                 collection
                         .add(buildTitleLine(application.getLabel(DocumentConstants.LABEL_DOCUMENT_AVS_AI_APG, langue)));
                 if (entry.getValue().isEmpty()) {
-                    collection.add(buildLine(new EntreeContribution(Taux.ZERO(), Montant.ZERO)));
+                    collection.add(buildLine(EntreeContribution.empty()));
                 } else {
                     for (EntreeContribution entree : entry.getValue()) {
                         collection.add(buildLine(entree));
@@ -214,12 +250,12 @@ public abstract class DocumentDecompteVide extends VulpeculaDocumentManager<Deco
             if (entry.getKey().isAc()) {
                 collection.add(buildTitleLine(application.getLabel(DocumentConstants.LABEL_DOCUMENT_AC, langue)));
                 if (entry.getValue().isEmpty()) {
-                    collection.add(buildLine(new EntreeContribution(Taux.ZERO(), Montant.ZERO),
-                            DocumentDecompteVide.TRANCHE_AC_MIN, DocumentDecompteVide.TRANCHE_AC_MAX));
+                    collection.add(buildLine(EntreeContribution.empty(), DocumentDecompteVide.TRANCHE_AC_MIN, CHF + " "
+                            + JANumberFormatter.format(info.trancheACMax.getValue())));
                 } else {
                     for (EntreeContribution entree : entry.getValue()) {
                         collection.add(buildLine(entree, DocumentDecompteVide.TRANCHE_AC_MIN,
-                                DocumentDecompteVide.TRANCHE_AC_MAX));
+                                JANumberFormatter.format(info.trancheACMax.getValue())));
                     }
                 }
             }
@@ -227,7 +263,8 @@ public abstract class DocumentDecompteVide extends VulpeculaDocumentManager<Deco
             if (entry.getKey().isAc2() && !entry.getValue().isEmpty()) {
                 collection.add(buildTitleLine(application.getLabel(DocumentConstants.LABEL_DOCUMENT_AC2, langue)));
                 for (EntreeContribution entree : entry.getValue()) {
-                    collection.add(buildLine(entree, DocumentDecompteVide.TRANCHE_AC2_MIN,
+                    collection.add(buildLine(entree,
+                            CHF + " " + JANumberFormatter.format(info.trancheAC2Min.getValue()),
                             DocumentDecompteVide.TRANCHE_AC2_MAX));
                 }
             }
@@ -293,7 +330,9 @@ public abstract class DocumentDecompteVide extends VulpeculaDocumentManager<Deco
     }
 
     private void fillDocumentTitle() {
-        setDocumentTitle(decompte.getEmployeurAffilieNumero());
+        // BMS-2502 Demande de Mme Dell'Estate le 01.09.2016
+        // setDocumentTitle(decompte.getEmployeurAffilieNumero());
+        setDocumentTitle(decompte.getEmployeur().getConvention().getCode() + "-" + decompte.getEmployeurAffilieNumero());
     }
 
     /**
@@ -320,19 +359,83 @@ public abstract class DocumentDecompteVide extends VulpeculaDocumentManager<Deco
         return getCurrentElement().getDecompte().getEmployeurLangue();
     }
 
-    /**
-     * @param linesNumber
-     * @return
-     */
-    public static int linesToAdd(int linesNumber, int NB_LINE_MAX) {
-        int nbPage = linesNumber / NB_LINE_MAX;
-        int nbLigneLastPage = linesNumber - (NB_LINE_MAX * nbPage);
-        int ligneDisponibleRestante = NB_LINE_MAX - nbLigneLastPage;
-        int ligneARajouter = ligneDisponibleRestante - 1;
-
-        if (ligneARajouter <= 0) {
-            ligneARajouter = NB_LINE_MAX + ligneARajouter;
+    public static int linesToAdd(int nb, int perPage, int nbLignesAdresses, TypeDecompte type) {
+        int adjustedPerPage = adjusted(perPage, nbLignesAdresses, type);
+        int sum = 0;
+        for (Integer i : splittingGroups(nb, adjustedPerPage)) {
+            sum += i;
         }
-        return ligneARajouter;
+        return sum - nb;
     }
+
+    public static Map<Integer, Integer> splittingGroupsByRow(int nb, int perPage, int nbLignesAdresses,
+            TypeDecompte type) {
+        int adjustedPerPage = adjusted(perPage, nbLignesAdresses, type);
+        int linesToAdd = linesToAdd(nb, perPage, nbLignesAdresses, type);
+        List<Integer> splittingGroups = splittingGroups(nb, adjustedPerPage);
+
+        Map<Integer, Integer> map = new HashMap<Integer, Integer>();
+        for (int i = 1; i <= (nb + linesToAdd); i++) {
+            map.put(i, getGroup(i, splittingGroups));
+        }
+        return map;
+    }
+
+    private static int adjusted(int perPage, int nbLignesAdresses, TypeDecompte type) {
+        if (nbLignesAdresses == 7) {
+            return perPage - 1;
+        }
+        return perPage;
+    }
+
+    private static int getGroup(int currentLine, List<Integer> groups) {
+        int page = 1;
+        int sumGroups = 0;
+        for (Integer group : groups) {
+            sumGroups = sumGroups + group;
+            if (currentLine <= sumGroups) {
+                return page;
+            }
+            page++;
+        }
+        return page;
+    }
+
+    public static List<Integer> splittingGroups(int nb, int perPage) {
+        int nbMultiples = nb / perPage;
+        int rest = nb % perPage;
+        if (nbMultiples == 0) {
+            return Arrays.asList(perPage - 1);
+        }
+
+        List<Integer> maxParGroupe = new ArrayList<Integer>();
+        for (int i = 0; i < nbMultiples - 1; i++) {
+            maxParGroupe.add(perPage);
+        }
+        if (rest == 0) {
+            maxParGroupe.add(perPage - 1);
+        } else {
+            maxParGroupe.add(perPage);
+        }
+        maxParGroupe.add(perPage - 1);
+
+        return maxParGroupe;
+    }
+
+    public InfoACDecompte getInfo() {
+        return info;
+    }
+
+    public void setInfo(InfoACDecompte info) {
+        this.info = info;
+    }
+
+    public boolean isPrintingFromEbu() {
+        return isPrintingFromEbu;
+    }
+
+    public void setPrintingFromEbu(boolean isPrintingFromEbu) {
+        this.isPrintingFromEbu = isPrintingFromEbu;
+    }
+
 }

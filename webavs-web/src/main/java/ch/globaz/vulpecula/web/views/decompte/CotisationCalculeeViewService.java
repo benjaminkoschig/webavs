@@ -52,7 +52,7 @@ public final class CotisationCalculeeViewService {
                 value.add(cotisationCalculeeView);
                 sousTotalTauxPlanCaisse = sousTotalTauxPlanCaisse.addTaux(cotisationCalculee.getTaux());
                 sousTotalCotisationPlanCaisse = sousTotalCotisationPlanCaisse.add(cotisationCalculee
-                        .getMontantCalculee());
+                        .getMontantCalculee().normalize());
                 totalTaux = totalTaux.addTaux(cotisationCalculee.getTaux());
                 totalCotisation = totalCotisation.add(cotisationCalculee.getMontantCalculee().normalize());
             }

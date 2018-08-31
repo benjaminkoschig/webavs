@@ -168,7 +168,10 @@ public class PTTravailleurvueglobaleViewBean extends BJadeSearchObjectELViewBean
         for (PosteTravail posteTravail : travailleur.getPostesTravail()) {
             int idCaisseMetier = VulpeculaServiceLocator.getPosteTravailService().getNumeroCaissePrincipale(
                     posteTravail.getId());
-            if (TableParametrage.getInstance().hasDroitAJ(idCaisseMetier, getTypesAssurancesArray(posteTravail))) {
+            String anneeParametre = posteTravail.getPeriodeActivite().getDateFin() != null ? posteTravail
+                    .getPeriodeActivite().getDateFin().getAnnee() : "";
+            if (TableParametrage.getInstance(anneeParametre).hasDroitAJ(idCaisseMetier,
+                    getTypesAssurancesArray(posteTravail))) {
                 return true;
             }
         }
@@ -184,7 +187,10 @@ public class PTTravailleurvueglobaleViewBean extends BJadeSearchObjectELViewBean
         for (PosteTravail posteTravail : travailleur.getPostesTravail()) {
             int idCaisseMetier = VulpeculaServiceLocator.getPosteTravailService().getNumeroCaissePrincipale(
                     posteTravail.getId());
-            if (TableParametrage.getInstance().hasDroitCP(idCaisseMetier, getTypesAssurancesArray(posteTravail))) {
+            String anneeParametre = posteTravail.getPeriodeActivite().getDateFin() != null ? posteTravail
+                    .getPeriodeActivite().getDateFin().getAnnee() : "";
+            if (TableParametrage.getInstance(anneeParametre).hasDroitCP(idCaisseMetier,
+                    getTypesAssurancesArray(posteTravail))) {
                 return true;
             }
         }
@@ -200,7 +206,10 @@ public class PTTravailleurvueglobaleViewBean extends BJadeSearchObjectELViewBean
         for (PosteTravail posteTravail : travailleur.getPostesTravail()) {
             int idCaisseMetier = VulpeculaServiceLocator.getPosteTravailService().getNumeroCaissePrincipale(
                     posteTravail.getId());
-            if (TableParametrage.getInstance().hasDroitSM(idCaisseMetier, getTypesAssurancesArray(posteTravail))) {
+            String anneeParametre = posteTravail.getPeriodeActivite().getDateFin() != null ? posteTravail
+                    .getPeriodeActivite().getDateFin().getAnnee() : "";
+            if (TableParametrage.getInstance(anneeParametre).hasDroitSM(idCaisseMetier,
+                    getTypesAssurancesArray(posteTravail))) {
                 return true;
             }
         }

@@ -99,4 +99,8 @@ public class HistoriqueDecompte implements DomainEntity, Comparable<HistoriqueDe
         }
     }
 
+    public boolean isReprise() {
+        return decompte.isReprise();
+    }
+
 }

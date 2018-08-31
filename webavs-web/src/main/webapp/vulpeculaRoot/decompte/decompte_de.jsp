@@ -6,7 +6,7 @@
 
 <%--  *********************************************************** Paramétrage global de la page ************************************************************** --%>
 <%-- labels n° écran et titre --%>
-<c:set var="idEcran" value="PPT1009"/>
+<c:set var="idEcran" value="PPT1109"/>
 <c:set var="labelTitreEcran" value="JSP_DECOMPTES"/>
 
 <c:set var="userActionNew" value="vulpecula.decomptenouveau.decomptenouveau.afficher"/>
@@ -26,8 +26,10 @@
 	globazGlobal.csTaxationOffice = '${viewBean.csTaxationOffice}';
 	globazGlobal.ACTION_AJAX = '${userActionListerAjax}';
 	globazGlobal.decompteService = '${viewBean.decompteService}';
+	globazGlobal.decompteViewService = '${viewBean.decompteViewService}';
 	globazGlobal.libelleBoutonSommation = '${viewBean.libelleBoutonSommation}';
 	globazGlobal.libelleConfirmeSommation = '${viewBean.libelleConfirmeSommation}';
+	globazGlobal.libelleImpressionDemarree = '${viewBean.libelleImpressionDemarree}';
 </script>
 
 <%@ include file="/theme/find_ajax_el/bodyStart.jspf" %>
@@ -147,11 +149,32 @@
 							</select>
 						</td>
 					</tr>
+					<tr>
+						<td><ct:FWLabel key="JSP_TYPE_PROVENANCE"/></td>
+						<td>
+							<select id="searchModel.forTypeProvenance" name="typeProvenance">
+								<option value="" selected></option>
+								<c:forEach var="typeProvenance" items="${viewBean.typesProvenance}">
+									<c:choose>
+										<c:when test="${typeProvenance==0}">
+											<option value="${typeProvenance}"><ct:FWLabel key="JSP_TYPE_PROVENANCE_GENERE"/></option>
+										</c:when>
+										<c:otherwise>
+											<option value="${typeProvenance}"><ct:FWCodeLibelle csCode="${typeProvenance}"/></option>
+										</c:otherwise>
+									</c:choose>
+								</c:forEach>
+							</select>
+						</td>
+						<td></td>
+						<td></td>
+					</tr>
 				</table>
 			</div>
 		<%@ include file="/theme/find_ajax_el/searchNewButtons.jspf" %>
 		<div align="left"  style="padding-right:8px;padding-bottom:10px;background-color: white;">
 			<input type="button" id="boutonSommation" value="${viewBean.libelleBoutonSommation}">
+			<input type="button" id="boutonTO" value='<ct:FWLabel key="JSP_GENERER_LISTE_TO_PREVISIONNELLE"/>' />
 		</div>
 		
 		

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<model-mapping import="vulpecula/ebusiness/travailleurEbuSimpleModel.xml"/>
+	<model-mapping import="vulpecula/ebusiness/synchronisationEbuSimpleModel.xml"/>
+	<model-mapping import="vulpecula/ebusiness/synchronisationEbuComplexModel.xml"/>
+	<model-mapping import="vulpecula/ebusiness/synchronisationTravailleurEbuSimpleModel.xml"/>
+	<model-mapping import="vulpecula/ebusiness/synchronisationTravailleurEbuComplexModel.xml"/>
+</model-mapping>

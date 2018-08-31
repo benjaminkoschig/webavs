@@ -2,6 +2,7 @@ package globaz.vulpecula.vb.association;
 
 import globaz.globall.db.BSpy;
 import globaz.globall.vb.BJadePersistentObjectViewBean;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -10,8 +11,12 @@ import ch.globaz.vulpecula.domain.models.association.AssociationCotisation;
 import ch.globaz.vulpecula.domain.models.association.AssociationGenre;
 import ch.globaz.vulpecula.domain.models.association.CotisationAssociationProfessionnelle;
 import ch.globaz.vulpecula.domain.models.postetravail.Employeur;
+import ch.globaz.vulpecula.domain.models.registre.CategorieFactureAssociationProfessionnelle;
 import ch.globaz.vulpecula.domain.models.registre.GenreCotisationAssociationProfessionnelle;
 import ch.globaz.vulpecula.external.models.pyxis.Administration;
+import ch.globaz.vulpecula.util.CodeSystem;
+import ch.globaz.vulpecula.util.CodeSystemUtil;
+import ch.globaz.vulpecula.web.servlet.PTConstants;
 import ch.globaz.vulpecula.web.views.association.AssociationViewService;
 
 public class PTAssociationViewBean extends BJadePersistentObjectViewBean {
@@ -120,6 +125,43 @@ public class PTAssociationViewBean extends BJadePersistentObjectViewBean {
      */
     public double getMasseSalarialeDefaut() {
         return AssociationCotisation.MASSE_SALARIALE_DEFAUT;
+    }
+
+    public List<CodeSystem> getCategoriesFactures() {
+        return CodeSystemUtil.getCodesSystemesForFamille(PTConstants.CS_GROUPE_CATEGORIE_COTISATION_AP);
+    }
+
+    /**
+     * Retourne les categories de facturation utilisables.
+     * Le type RABAIS SPECIAL ne peut pas être utilisé en tant que tel.
+     * 
+     * @return Liste de codes systèmes sélectionnable par l'utilisateur
+     */
+    public List<CodeSystem> getCategoriesFacturesUtilisables() {
+        List<CodeSystem> codesUtilisables = new ArrayList<CodeSystem>();
+        List<CodeSystem> codes = getCategoriesFactures();
+        for (CodeSystem code : codes) {
+            if (!CategorieFactureAssociationProfessionnelle.RABAIS_SPECIAL.getValue().equals(code.getId())) {
+                codesUtilisables.add(code);
+            }
+        }
+        return codesUtilisables;
+    }
+
+    /**
+     * Retourne les categories de facturation utilisables.
+     * Le type RABAIS SPECIAL ne peut pas être utilisé en tant que tel.
+     * 
+     * @return Liste de codes systèmes sélectionnable par l'utilisateur
+     */
+    public CodeSystem getCategorieFactureRabaisSpecial() {
+        List<CodeSystem> codes = getCategoriesFactures();
+        for (CodeSystem code : codes) {
+            if (CategorieFactureAssociationProfessionnelle.RABAIS_SPECIAL.getValue().equals(code.getId())) {
+                return code;
+            }
+        }
+        return null;
     }
 
     public String getAssociationViewService() {

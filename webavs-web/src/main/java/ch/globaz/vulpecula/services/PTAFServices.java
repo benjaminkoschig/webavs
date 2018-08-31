@@ -20,6 +20,8 @@ import org.slf4j.LoggerFactory;
 import ch.globaz.al.business.constantes.ALCSAffilie;
 import ch.globaz.al.business.constantes.ALCSPrestation;
 import ch.globaz.al.business.exceptions.business.ALDossierBusinessException;
+import ch.globaz.al.business.models.allocataire.AllocataireComplexModel;
+import ch.globaz.al.business.models.allocataire.AllocataireComplexSearchModel;
 import ch.globaz.al.business.models.dossier.DossierComplexModel;
 import ch.globaz.al.business.models.dossier.DossierComplexSearchModel;
 import ch.globaz.al.business.models.dossier.DossierListComplexModel;
@@ -35,10 +37,14 @@ import ch.globaz.al.business.services.ALServiceLocator;
 import ch.globaz.exceptions.ExceptionMessage;
 import ch.globaz.exceptions.GlobazTechnicalException;
 import ch.globaz.vulpecula.business.models.af.DroitSearchModel;
+import ch.globaz.vulpecula.business.models.is.EntetePrestationComplexModel;
+import ch.globaz.vulpecula.business.models.is.EntetePrestationSearchComplexModel;
+import ch.globaz.vulpecula.domain.models.common.Date;
 import ch.globaz.vulpecula.domain.models.common.Periode;
 import ch.globaz.vulpecula.domain.models.common.PeriodeMensuelle;
 import ch.globaz.vulpecula.domain.models.decompte.Decompte;
 import ch.globaz.vulpecula.domain.models.decompte.TypeDecompte;
+import ch.globaz.vulpecula.domain.models.is.TauxImpositionNotFoundException;
 import ch.globaz.vulpecula.domain.models.postetravail.Employeur;
 import ch.globaz.vulpecula.repositoriesjade.RepositoryJade;
 
@@ -285,5 +291,32 @@ public class PTAFServices {
         }
 
         return droits;
+    }
+
+    public static List<EntetePrestationComplexModel> getPrestationsForAlloc(String idTiers, Date dateDebut,
+            Date dateFin, String idEmployeur) throws TauxImpositionNotFoundException {
+        // On recherche l'allocataire d'après l'id Tiers pour rechercher les prestations
+        AllocataireComplexSearchModel allocataireSearch = new AllocataireComplexSearchModel();
+        allocataireSearch.setForIdTiers(idTiers);
+
+        try {
+            JadePersistenceManager.search(allocataireSearch);
+        } catch (JadePersistenceException e) {
+            return null;
+        }
+
+        if (allocataireSearch.getSize() > 0) {
+            AllocataireComplexModel allocataire = (AllocataireComplexModel) allocataireSearch.getSearchResults()[0];
+            EntetePrestationSearchComplexModel searchModel = new EntetePrestationSearchComplexModel();
+            searchModel.setForIdAllocataire(allocataire.getId());
+            searchModel.setForPeriodeDeAfterOrEquals(dateDebut);
+            searchModel.setForPeriodeDeBeforeOrEquals(dateFin);
+            searchModel.setForEtat(ALCSPrestation.ETAT_CO);
+            searchModel.setForAffiliationId(idEmployeur);
+            List<EntetePrestationComplexModel> prestations = RepositoryJade.searchForAndFetch(searchModel);
+            return prestations;
+        }
+
+        return null;
     }
 }

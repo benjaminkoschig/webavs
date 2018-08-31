@@ -5,6 +5,7 @@ import globaz.framework.controller.FWAction;
 import globaz.framework.servlets.FWServlet;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.vulpecula.vb.registre.PTAbstractAdministrationAjaxViewBean;
+import globaz.vulpecula.vb.registre.PTCotisationsAPViewBean;
 import globaz.vulpecula.vb.registre.PTDetailParamCotiAPViewBean;
 import globaz.vulpecula.vb.registre.PTParametresCotisationsAssociationsViewBean;
 import globaz.vulpecula.vb.registre.PTParametresyndicatAjaxViewBean;
@@ -28,7 +29,7 @@ import com.google.gson.reflect.TypeToken;
  * 
  * @author jpa
  */
-public class PTRegistresAction extends PTAbstractDefaultServletAction {
+public class PTRegistresAction extends PTDefaultServletAction {
     /**
      * @param aServlet
      */
@@ -78,10 +79,15 @@ public class PTRegistresAction extends PTAbstractDefaultServletAction {
                 }
             }
             vb.setCotiAP(cotiAP);
-
             List<Administration> associationsProfessionnelles = VulpeculaRepositoryLocator
                     .getAdministrationRepository().findAllAssociationsProfessionnelles();
             vb.setAssociationsProfessionnelles(associationsProfessionnelles);
+            // workaround, ne pas appeler le super qui fait un setBeanProperties dont le comportement met le boolean à
+            // false à l'affichage (car non déclaré dans la request) [selon moi -@cel-, défaut de conception]
+            return viewBean;
+        }
+        if (viewBean instanceof PTCotisationsAPViewBean) {
+            setBeanProperties(request, viewBean);
         }
         return super.beforeAfficher(session, request, response, viewBean);
     }

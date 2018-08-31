@@ -1,6 +1,9 @@
 package ch.globaz.vulpecula.external.repositoriesjade.pyxis.converters;
 
+import globaz.jade.client.util.JadeStringUtil;
 import ch.globaz.pyxis.business.model.TiersSimpleModel;
+import ch.globaz.vulpecula.business.services.VulpeculaRepositoryLocator;
+import ch.globaz.vulpecula.external.models.pyxis.Pays;
 import ch.globaz.vulpecula.external.models.pyxis.Tiers;
 
 /***
@@ -71,6 +74,12 @@ public final class TiersConverter {
         tiers.setPolitesseSpecIt(tiersSimpleModel.getPolitesseSpecIt());
         tiers.setTitreTiers(tiersSimpleModel.getTitreTiers());
         tiers.setTypeTiers(tiersSimpleModel.getTypeTiers());
+
+        if (tiers.getPays() == null && tiersSimpleModel.getIdPays() != null
+                && !JadeStringUtil.isBlankOrZero(tiersSimpleModel.getIdPays())) {
+            Pays pays = VulpeculaRepositoryLocator.getPaysRepository().findById(tiersSimpleModel.getIdPays());
+            tiers.setPays(pays);
+        }
         return tiers;
     }
 }

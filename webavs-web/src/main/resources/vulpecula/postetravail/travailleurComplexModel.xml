@@ -15,6 +15,7 @@
 			<select-field name="personneEtendueComplexModel.personne.canton" field-ref="personneEtendueComplexModel.personne.canton" />
 			<select-field name="personneEtendueComplexModel.personne.district" field-ref="personneEtendueComplexModel.personne.district" />
 			
+			<select-field name="personneEtendueComplexModel.tiers.idPays" field-ref="personneEtendueComplexModel.tiers.idPays" />
 			<select-field name="personneEtendueComplexModel.tiers.idTiers" field-ref="personneEtendueComplexModel.tiers.idTiers" />
 			<select-field name="personneEtendueComplexModel.tiers.typeTiers" field-ref="personneEtendueComplexModel.tiers.typeTiers" />
 			<select-field name="personneEtendueComplexModel.tiers.titreTiers" field-ref="personneEtendueComplexModel.tiers.titreTiers" />
@@ -54,6 +55,8 @@
 				<search-field name="forDateNaissance" field-ref="personneEtendueComplexModel.personne.dateNaissance"
 					operation="EQUALS" />
 				<search-field name="annonceMeroba" field-ref="travailleurSimpleModel.annonceMeroba" operation="EQUALS" />
+				<search-field name="forCorrelationId" field-ref="travailleurSimpleModel.correlationId"
+					operation="EQUALS" />
 			</search-group>
 		</search-definition>
 		

@@ -14,6 +14,7 @@
 		<search-definition>
 			<search-group operator="AND">
 				<search-field name="forId" field-ref="id" operation="EQUALS" />
+				<search-field name="forIdLigneDecompte" field-ref="idLigneDecompte" operation="EQUALS" />
 			</search-group>
 		</search-definition>
 		

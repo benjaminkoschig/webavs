@@ -1,9 +1,11 @@
 package ch.globaz.vulpecula.domain.models.postetravail;
 
+import globaz.jade.client.util.JadeStringUtil;
 import java.util.ArrayList;
 import java.util.List;
 import ch.globaz.exceptions.ExceptionMessage;
 import ch.globaz.exceptions.GlobazBusinessException;
+import ch.globaz.vulpecula.business.services.VulpeculaServiceLocator;
 import ch.globaz.vulpecula.domain.models.common.Date;
 import ch.globaz.vulpecula.domain.models.decompte.DecompteSalaire;
 import ch.globaz.vulpecula.external.models.pyxis.PersonneEtendue;
@@ -13,6 +15,7 @@ import ch.globaz.vulpecula.external.models.pyxis.PersonneEtendue;
  * 
  */
 public class Travailleur extends PersonneEtendue {
+    private String correlationId;
     private String idTravailleur;
     private Boolean annonceMeroba;
     private Date dateAnnonceMeroba;
@@ -28,6 +31,14 @@ public class Travailleur extends PersonneEtendue {
 
     public Travailleur(final PersonneEtendue personneEtendue) {
         super(personneEtendue);
+    }
+
+    public String getCorrelationId() {
+        return correlationId;
+    }
+
+    public void setCorrelationId(String correlationId) {
+        this.correlationId = correlationId;
     }
 
     @Override
@@ -299,6 +310,27 @@ public class Travailleur extends PersonneEtendue {
         return getAge(dateReference) > 18;
     }
 
+    public int getAgeAVS(Date dateReference) {
+        int anneeReference = Integer.valueOf(dateReference.getAnnee());
+        Date date = new Date(getDateNaissance());
+        Date dateNaissance = new Date("01.01." + date.getAnnee());
+        int anneeNaissance = Integer.valueOf(dateNaissance.getAnnee());
+        int age = anneeReference - anneeNaissance;
+
+        Date dateReferencePourComparaison = new Date(dateReference.getJour() + "." + dateReference.getMois() + "."
+                + "2000");
+        Date dateNaissancePourComparaison = new Date(dateNaissance.getJour() + "." + dateNaissance.getMois() + "."
+                + "2000");
+        if (dateReferencePourComparaison.before(dateNaissancePourComparaison)) {
+            age--;
+        }
+        return age;
+    }
+
+    public boolean isEnAgeAvs(Date date) {
+        return getAgeAVS(date) >= 18;
+    }
+
     public boolean hasMoreThanOrEquals18Ans(Date dateReference) {
         return getAge(dateReference) >= 18;
     }
@@ -384,4 +416,18 @@ public class Travailleur extends PersonneEtendue {
         }
         return true;
     }
+
+    public boolean isRetraiter(Date dateReference) {
+        if (getDateNaissance() != null && !JadeStringUtil.isEmpty(getDateNaissance())) {
+
+            Date dateRetraite = VulpeculaServiceLocator.getTravailleurService().giveDateRentier(getDateNaissance(),
+                    getSexe());
+
+            if (dateRetraite.beforeOrEquals(dateReference)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }

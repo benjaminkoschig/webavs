@@ -89,7 +89,7 @@ public class Occupation {
     }
 
     /**
-     * Retourne la date de validét sous forme de valeur
+     * Retourne la date de validité sous forme de valeur
      * 
      * @return String représentant la date au format dd.mm.YYYY
      */

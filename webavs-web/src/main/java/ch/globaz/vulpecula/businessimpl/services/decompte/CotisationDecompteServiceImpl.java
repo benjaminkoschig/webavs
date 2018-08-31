@@ -62,7 +62,30 @@ public class CotisationDecompteServiceImpl implements CotisationDecompteService 
         // contribuable.
         DecompteSalaire decompteSalaire = decompteSalaireRepository.findById(idDecompteSalaire);
         decompteSalaireRepository.update(decompteSalaire);
-        return decompteSalaire.getTauxContribuableForCaissesSociales();
+        return decompteSalaire.getTauxContribuableForCaissesSociales(false);
     }
 
+    @Override
+    public void deleteCotisationDecompteWithoutRecalcul(String idDecompteSalaire, String idCotisationDecompte) {
+
+        CotisationDecompteSearchSimpleModel searchModel = new CotisationDecompteSearchSimpleModel();
+        searchModel.setForId(idCotisationDecompte);
+        try {
+            JadePersistenceManager.delete(searchModel);
+        } catch (JadePersistenceException e) {
+            LOGGER.error(e.getMessage());
+        }
+    }
+
+    @Override
+    public void deleteCotisationDecompteWithoutRecalcul(String idLigneDecopmte) {
+
+        CotisationDecompteSearchSimpleModel searchModel = new CotisationDecompteSearchSimpleModel();
+        searchModel.setForIdLigneDecompte(idLigneDecopmte);
+        try {
+            JadePersistenceManager.delete(searchModel);
+        } catch (JadePersistenceException e) {
+            LOGGER.error(e.getMessage());
+        }
+    }
 }

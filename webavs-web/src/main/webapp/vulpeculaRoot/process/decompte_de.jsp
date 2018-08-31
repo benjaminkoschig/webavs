@@ -10,6 +10,7 @@
 <script type="text/javascript">
 	globazGlobal.isAnnuelle = ${viewBean.annuelle};
 	globazGlobal.csComplementaire = ${viewBean.csComplementaire};
+	globazGlobal.isEbusiness = ${viewBean.ebusiness};
 </script>
 <script type="text/javascript" src="vulpeculaRoot/scripts/validations.js"></script>
 <script type="text/javascript" src="${pageContext.request.contextPath}/vulpeculaRoot/process/decompte_de.js"></script>
@@ -24,6 +25,9 @@
 			</td>
 			<td>
 				<ct:FWCodeSelectTag name="TYPE_DECOMPTE" codeType="PTTYPEDECO" wantBlank="true" defaut="" except="${viewBean.listExceptEtats}" notation="data-g-select='mandatory:true'"/>
+				 <input type="checkbox" class="is_ebusiness" data-g-commutator="condition:($(this).prop('checked') == true), actionTrue: notMandatory('#CONVENTIONS'), actionFalse: mandatory('#CONVENTIONS')">
+				 <ct:FWLabel key='JSP_FOR_EBUSINESS'/>
+				<input type="hidden" id="EBUSINESS" name="EBUSINESS" value="FALSE">
 			</td>
 		</tr>
 		<tr>
@@ -56,7 +60,7 @@
 				<label><ct:FWLabel key='JSP_PROCESS_DECOMPTE_CONVENTION'/></label>
 			</td>
 			<td>	
-				<ct:FWListSelectTag name="CONVENTIONS" defaut="" data="${viewBean.conventions}" notation="data-g-select='mandatory:true'"/>
+				<ct:FWListSelectTag name="CONVENTIONS" defaut="" data="${viewBean.conventions}"/>
 			</td>
 		</tr>
 		<tr>

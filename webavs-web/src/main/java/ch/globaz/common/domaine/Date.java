@@ -794,6 +794,21 @@ public class Date implements Comparable<Date> {
     }
 
     /**
+     * Retourne si la date est entre deux dates
+     * 
+     * @param date la plus ancienne
+     * @param date la plus récente
+     * 
+     * @return true si la date est entre les dates passées en paramètre.
+     */
+    public Boolean isBetween(Date oldDate, Date recentDate) {
+        if (afterOrEquals(oldDate) && beforeOrEquals(recentDate)) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * 
      * @param dateDeDebut
      * @param dateDeFin

@@ -91,7 +91,9 @@ public class PTDecompteViewBean extends JadeProcessAbstractViewBean {
     public Set<String> getListExceptEtats() {
         Set<String> except = new HashSet<String>();
         except.add(TypeDecompte.CONTROLE_EMPLOYEUR.getValue());
-        except.add(TypeDecompte.SPECIAL.getValue());
+        except.add(TypeDecompte.SPECIAL_SALAIRE.getValue());
+        except.add(TypeDecompte.SPECIAL_CAISSE.getValue());
+        except.add(TypeDecompte.CPP.getValue());
         return except;
     }
 
@@ -101,6 +103,10 @@ public class PTDecompteViewBean extends JadeProcessAbstractViewBean {
 
     public boolean isAnnuelle() {
         return PTProcessDecomptePopulation.PERIODICITE_ANNUELLE.equals(getPeriodicite());
+    }
+    
+    public boolean isEbusiness() {
+    	return "TRUE".equals(getProperties().get(String.valueOf(PTProcessDecompteProperty.EBUSINESS)));
     }
 
     public boolean isMensuelleTrimestrielle() {

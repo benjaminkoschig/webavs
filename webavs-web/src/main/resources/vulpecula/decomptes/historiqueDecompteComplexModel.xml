@@ -27,11 +27,16 @@
 					field-ref="historiqueDecompteSimpleModel.etat" operation="EQUALS" />
 				<search-field name="forEtatsIn"
 					field-ref="historiqueDecompteSimpleModel.etat" operation="IN" />
+				<search-field name="forIdEmployeur"
+					field-ref="decompteComplexModel.decompteSimpleModel.idEmployeur" operation="EQUALS" />	
+				<search-field name="forAnneeDebut" operation="GREATER_OR_EQUALS" field-ref="historiqueDecompteSimpleModel.date" />
+				<search-field name="forAnneeFin" operation="LESS_OR_EQUALS" field-ref="historiqueDecompteSimpleModel.date" />
 			</search-group>
 		</search-definition>
 		
 		<order-by name="orderByDateDesc">
 			<order-field field-ref="historiqueDecompteSimpleModel.date" order="DESC"/>
 		</order-by>
+		
 	</complexe-model>
 </model-mapping>

@@ -21,11 +21,12 @@ import com.google.common.collect.Multimaps;
  * Classe représentant une adhésion d'un poste de travail à une cotisation
  * 
  */
-public class AdhesionCotisationPosteTravail implements DomainEntity {
+public class AdhesionCotisationPosteTravail implements DomainEntity, Comparable<AdhesionCotisationPosteTravail> {
     private String id;
     private Periode periode;
     private Cotisation cotisation;
     private String spy;
+    private String idPosteTravail;
 
     /**
      * Retourne l'id de l'adhésion
@@ -46,6 +47,14 @@ public class AdhesionCotisationPosteTravail implements DomainEntity {
     @Override
     public void setId(final String id) {
         this.id = id;
+    }
+
+    public String getIdPosteTravail() {
+        return idPosteTravail;
+    }
+
+    public void setIdPosteTravail(String idPosteTravail) {
+        this.idPosteTravail = idPosteTravail;
     }
 
     public Cotisation getCotisation() {
@@ -146,22 +155,53 @@ public class AdhesionCotisationPosteTravail implements DomainEntity {
         return cotisation.getPlanCaisse();
     }
 
+    /**
+     * Check si la cotisation de l'affiliation est actif ou pas pour la date en question
+     * 
+     * @param date
+     * @return
+     */
+    private boolean isCotisationAffiliationActif(final Date date) {
+        if (cotisation.getDateFin() != null && cotisation.getDateFin().before(date)) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
     public boolean isActif() {
         return isActif(Date.now());
     }
 
     public boolean isActif(final Date date) {
-        if (cotisation.getDateFin() != null && cotisation.getDateFin().before(date)) {
-            return false;
-        }
-        return periode.contains(date);
+        return isCotisationAffiliationActif(date) && periode.contains(date);
     }
 
     public boolean isActifPourLeMois(final Date date) {
-        if (cotisation.getDateFin() != null && cotisation.getDateFin().before(date)) {
-            return false;
+        return isCotisationAffiliationActif(date) && periode.isActifMois(date);
+    }
+
+    public boolean isActifPourLeMoisParPeriode(final Periode periodeCherchee) {
+        // period => period de la cotisation du poste de travail. Attention !! pas nécessairement depuis le 1 jusque le
+        // dernier jour de mois
+        // periodeCherchee => period du décompte
+        // cotisation => represent la cotisation de l'affilié (employeur)
+        // pas forcement les mêmes dates du period que celui d'un poste de travail
+        if (periode.getDateFin() != null) {
+            return isCotisationAffiliationActif(periode.getDateFin())
+                    && periode.getDateDebut().beforeOrEquals(periodeCherchee.getDateFin())
+                    && periode.getDateFin().afterOrEquals(periodeCherchee.getDateDebut());
+        } else {
+            return periode.getDateDebut().beforeOrEquals(periodeCherchee.getDateFin());
         }
-        return periode.isActifMois(date);
+    }
+
+    public boolean isActifForCP(final Date dateFinAffiliation, final Date dateFinDecompte) {
+        if (dateFinAffiliation != null && dateFinAffiliation.equals(cotisation.getDateFin())
+                && dateFinAffiliation.equals(periode.getDateFin())) {
+            return true;
+        }
+        return isCotisationAffiliationActif(dateFinDecompte) && periode.chevauche(new Annee(dateFinDecompte));
     }
 
     /**
@@ -180,6 +220,10 @@ public class AdhesionCotisationPosteTravail implements DomainEntity {
         return cotisation.isAssuranceAC2();
     }
 
+    public boolean isLPP() {
+        return cotisation.isAssuranceLPP();
+    }
+
     public boolean isAssuranceACOrAC2() {
         return cotisation.isAssuranceAC() || cotisation.isAssuranceAC2();
     }
@@ -190,23 +234,7 @@ public class AdhesionCotisationPosteTravail implements DomainEntity {
      * @return true si doit être ignoré
      */
     public boolean aIgnorer(TypeDecompte type, Convention convention) {
-        if (TypeDecompte.COMPLEMENTAIRE.equals(type)) {
-            if (convention.isElectricite()) {
-                switch (getTypeAssurance()) {
-                    case CONTRIBUTION_GENERALE:
-                    case CONTRIBUTION_GENERALE_REDUITE:
-                    case CPR_TRAVAILLEUR:
-                        return true;
-                    default:
-                        return false;
-                }
-            } else {
-                if (TypeAssurance.CONGES_PAYES.equals(getTypeAssurance())) {
-                    return true;
-                }
-            }
-        }
-        return false;
+        return cotisation.aIgnorer(type, convention);
     }
 
     @Override
@@ -235,5 +263,14 @@ public class AdhesionCotisationPosteTravail implements DomainEntity {
 
     public String getIdAssurance() {
         return cotisation.getAssuranceId();
+    }
+
+    @Override
+    public int compareTo(AdhesionCotisationPosteTravail o) {
+        // TODO bring local
+        String compare1 = getCotisation().getAssurance().getLibelle(null);
+        String compare2 = o.getCotisation().getAssurance().getLibelle(null);
+
+        return compare1.compareTo(compare2);
     }
 }

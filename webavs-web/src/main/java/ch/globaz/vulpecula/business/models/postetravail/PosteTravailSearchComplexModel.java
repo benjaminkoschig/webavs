@@ -11,15 +11,19 @@ import ch.globaz.vulpecula.domain.models.postetravail.Qualification;
  * 
  */
 public class PosteTravailSearchComplexModel extends JadeSearchComplexModel {
+    private static final long serialVersionUID = 2557482767328812357L;
+
     public static final String WHERE_AANNONCER = "aAnnoncer";
 
     private String forPeriodeDebutLess;
+    private String forPeriodeFinGreater;
     private String forGenrePrestation;
     private String forPeriodeDebut;
     private String forPeriodeFin;
     private String forIdAffilie;
     private String forIdEmployeur;
     private String forIdPosteTravail;
+    private String forPosteCorrelationId;
     private String forIdTiers;
     private String forIdTravailleur;
     private String forIdConvention;
@@ -27,6 +31,7 @@ public class PosteTravailSearchComplexModel extends JadeSearchComplexModel {
     private String likeNomTravailleur;
     private String likePrenomTravailleur;
     private Boolean annonceMeroba;
+    private Collection<String> forIdTravailleursNotIn;
 
     public String getForPeriodeDebut() {
         return forPeriodeDebut;
@@ -156,4 +161,35 @@ public class PosteTravailSearchComplexModel extends JadeSearchComplexModel {
         setForQualificationIn(qualifs);
 
     }
+
+    /**
+     * @return the forIdTravailleursNotIn
+     */
+    public Collection<String> getForIdTravailleursNotIn() {
+        return forIdTravailleursNotIn;
+    }
+
+    /**
+     * @param forIdTravailleursNotIn the forIdTravailleursNotIn to set
+     */
+    public void setForIdTravailleursNotIn(Collection<String> forIdTravailleursNotIn) {
+        this.forIdTravailleursNotIn = forIdTravailleursNotIn;
+    }
+
+    public String getForPeriodeFinGreater() {
+        return forPeriodeFinGreater;
+    }
+
+    public void setForPeriodeFinGreater(String forPeriodeFinGreater) {
+        this.forPeriodeFinGreater = forPeriodeFinGreater;
+    }
+
+    public String getForPosteCorrelationId() {
+        return forPosteCorrelationId;
+    }
+
+    public void setForPosteCorrelationId(String forPosteCorrelationId) {
+        this.forPosteCorrelationId = forPosteCorrelationId;
+    }
+
 }

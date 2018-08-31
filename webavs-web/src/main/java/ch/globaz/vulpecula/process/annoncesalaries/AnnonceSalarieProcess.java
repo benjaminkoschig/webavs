@@ -33,7 +33,7 @@ public class AnnonceSalarieProcess extends BProcessWithContext {
     }
 
     private void retrieve() {
-        postes = VulpeculaServiceLocator.getPosteTravailService().findAAnnoncer(new Date(date));
+        postes = VulpeculaServiceLocator.getPosteTravailService().findAAnnoncer2(new Date(date));
     }
 
     private void print() throws IOException {
@@ -76,4 +76,5 @@ public class AnnonceSalarieProcess extends BProcessWithContext {
     public void setDate(String date) {
         this.date = date;
     }
+
 }

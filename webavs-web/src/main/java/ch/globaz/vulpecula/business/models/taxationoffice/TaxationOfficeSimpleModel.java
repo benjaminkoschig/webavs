@@ -9,6 +9,8 @@ public class TaxationOfficeSimpleModel extends JadeSimpleModel {
     private String idDecompte;
     private String idPassageFacturation;
     private String etat;
+    private String dateAnnulation;
+    private String idSection;
 
     @Override
     public String getId() {
@@ -18,6 +20,14 @@ public class TaxationOfficeSimpleModel extends JadeSimpleModel {
     @Override
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getIdSection() {
+        return idSection;
+    }
+
+    public void setIdSection(String idSection) {
+        this.idSection = idSection;
     }
 
     public String getIdDecompte() {
@@ -42,5 +52,13 @@ public class TaxationOfficeSimpleModel extends JadeSimpleModel {
 
     public void setEtat(String etat) {
         this.etat = etat;
+    }
+
+    public String getDateAnnulation() {
+        return dateAnnulation;
+    }
+
+    public void setDateAnnulation(String dateAnnulation) {
+        this.dateAnnulation = dateAnnulation;
     }
 }

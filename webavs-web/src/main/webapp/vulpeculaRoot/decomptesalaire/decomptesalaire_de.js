@@ -2,6 +2,7 @@ var GLO = GLO || {};
 
 GLO.isMensuel = false;
 GLO.idPosteTravail = null;
+GLO.idNouveauTravailleur = null;
 
 var zoneAjax;
 
@@ -49,7 +50,7 @@ GLO.absences = {
 };
 
 GLO.navigation = {
-	//Le parent correspondant à la DefaultTableAjaxList
+	//Le parent correspondant a la DefaultTableAjaxList
 	o_parent : null,
 	//Définit le mode (update/read)
 	mode : null,
@@ -71,7 +72,7 @@ GLO.navigation = {
 		this.boutonDelete = $("#btnAjaxDelete");
 		this.boutonNouveau = $("#btnAjaxNouveau");
 		
-		//Si le décompte est éditable et que l'on à activer l'option modification par défaut
+		//Si le décompte est éditable et que l'on a activer l'option modification par défaut
 		if(globazGlobal.IS_EDITABLE && this.modificationParDefaut) {
 			this.mode = globazGlobal.IS_EDITABLE==true ? "update" : "read";
 		}
@@ -124,7 +125,7 @@ GLO.navigation = {
 		} else {
 			GLO.decompteSalaire.$passerSuivant.prop("disabled", false);
 		}
-		
+		GLO.decompteSalaire.$forcerFranchise0.prop('checked',false);
 		if (this.isPasserAuSuivant) {
 			this.boutonValider.hide();
 			GLO.decompteSalaire.$btnNext.html("&nbsp;&nbsp;" + globazGlobal.BOUTON_VALIDER_LABEL + "&nbsp;&gt;&nbsp;&nbsp;");
@@ -169,8 +170,10 @@ GLO.navigation = {
 		if(!this.isEntityLoaded) {
 			this.o_parent.ajaxLoadEntity();
 		}
-		GLO.decompteSalaire.$descriptionPosteTravail.prop('readonly', true);
-		GLO.decompteSalaire.$descriptionPosteTravail.addClass("readOnly");
+		if (GLO.idPosteTravail != null) {
+			GLO.decompteSalaire.$descriptionPosteTravail.prop('readonly', true);
+			GLO.decompteSalaire.$descriptionPosteTravail.addClass("readOnly");
+		}
 		setTimeout(function () {
 			GLO.decompteSalaire.manageMensuel();
 		},200);
@@ -184,8 +187,9 @@ GLO.navigation = {
 		return GLO.decompteSalaire.$heure.is(':disabled');
 	},
 	redirectToDecompteIfLast : function() {
-    	if(this.isLast) {
-    		//Hack: On délaie la redirection afin d'être sûr que les décomptes salaires soient mise à jour (AJAX)
+		var isEnErreur = $("#decompteSalaireGSON\\.isEnErreur").val();
+    	if(this.isLast && isEnErreur == "false") {
+    		//Hack: On délaie la redirection afin d'étre sûr que les décomptes salaires soient mise à jour (AJAX)
     		setTimeout(function() {
     			window.location = "vulpecula?userAction=vulpecula.decomptedetail.decomptedetail.afficher&mode=edition&selectedId="+globazGlobal.ID_DECOMPTE;
     		},200);
@@ -211,15 +215,19 @@ GLO.decompteSalaire = {
 		this.$periodeDebut = $('#decompteSalaireGSON\\.periodeDebut');
 		this.$periodeFin = $('#decompteSalaireGSON\\.periodeFin');
 		this.$vider = $('#vider');
+		this.$quittancer = $('#decompteSalaireGSON\\.quittancer');
+		this.$anneeCotisations = $('#decompteSalaireGSON\\.anneeCotisations');
+		this.$forcerFranchise0 = $('#decompteSalaireGSON\\.forcerFranchise0');
+		this.$isEnErreur = $('#decompteSalaireGSON\\.isEnErreur');
 		
 		this.$masseAC2.change(function (event, data) {
 			if(eventConstant.isChangeFromAjax(data)) return;
-			GLO.cotisations.load(GLO.decompteSalaire.getSalaireTotal());			
+			GLO.cotisations.load(GLO.decompteSalaire.getSalaireTotal());
 		});
 		
 		this.$masseFranchise.change(function (event, data) {
 			if(eventConstant.isChangeFromAjax(data)) return;
-			GLO.cotisations.load(GLO.decompteSalaire.getSalaireTotal());			
+			GLO.cotisations.load(GLO.decompteSalaire.getSalaireTotal());
 		});
 		
 		this.$salaireTotal.change(function (event, data) {
@@ -247,6 +255,10 @@ GLO.decompteSalaire = {
 				}
 			}
 		});
+		
+		if(this.hasAnneeCotisations()) {
+			this.$anneeCotisations.val(new Date().getFullYear());
+		}
 	},
 	roundSalaireTotal : function() {
 		var $this = this.$salaireTotal;
@@ -255,6 +267,9 @@ GLO.decompteSalaire = {
 	},
 	isTypeDecompteWithHeure : function() {
 		return globazGlobal.TYPE_DECOMPTE == globazGlobal.TYPE_PERIODIQUE;
+	},
+	hasAnneeCotisations : function() {
+		return globazGlobal.TYPE_DECOMPTE === globazGlobal.TYPE_CPP;
 	},
 	resetHeures : function() {
 		this.$heure.val("0.00");
@@ -302,9 +317,17 @@ GLO.decompteSalaire = {
 	},
 	getMasseFranchise : function() {
 		if(this.$masseFranchise.length>0) {
-			return globazNotation.utilsFormatter.amountTofloat(this.$masseFranchise.val());	
+			return globazNotation.utilsFormatter.amountTofloat(this.$masseFranchise.val());
 		} else {
 			return "0.0";
+		}
+	},
+	getAnneeCotisations : function() {
+		var annee = parseInt(this.$anneeCotisations.val(), 0);
+		if(annee>0) {
+			return annee;
+		} else {
+			return null;
 		}
 	},
 	manageMensuel : function() {
@@ -326,20 +349,23 @@ GLO.decompteSalaire = {
 		if (GLO.decompteSalaire.isTypeDecompteWithHeure()) {
 			this.$heure.focus().select();
 		} else {
-			//Workaround: Problème de sélection inexplicable
+			//Workaround: Probléme de sélection inexplicable
 			setTimeout(function() {
 				that.$salaireTotal.focus().select();
 			}, 100);
 		}
 		
-		if(!globazGlobal.isNouveau) {
+		if(!globazGlobal.isNouveau && !globazGlobal.isNouveauTravailleur) {
 			this.$descriptionPosteTravail.attr('readonly','readonly');
-			this.$descriptionPosteTravail.addClass('readOnly');			
+			this.$descriptionPosteTravail.addClass('readOnly');
 		}
 	},
 	loadHeures : function(wantFocus) {
 		var that = this;
 		if (GLO.decompteSalaire.isTypeDecompteWithHeure()) {
+			if (GLO.idPosteTravail == null) {
+				return;
+			}
 			var options = {
 					serviceClassName:globazGlobal.posteTravailViewService,
 					serviceMethodName:'findNombreHeuresParMois2',
@@ -359,19 +385,26 @@ GLO.decompteSalaire = {
 		}
 	},
 	beforeUpdate : function() {
-		if(globazGlobal.isNouveau || GLO.decompteSalaire.isDeleted) {
+		var diffCotisations = 'difference_cotisations';
+		var diffAnnee = 'difference_annee';
+		var anneeCotisations = GLO.decompteSalaire.getAnneeCotisations();
+		if(globazGlobal.isNouveau || GLO.decompteSalaire.isDeleted || globazGlobal.isNouveauTravailleur) {
 			return;
 		}
 		var options = {
 				serviceClassName:globazGlobal.decompteSalaireViewService,
 				serviceMethodName:'checkCotisationDecompte',
-				parametres:globazGlobal.ID_LIGNE_DECOMPTE,
+				parametres:globazGlobal.ID_LIGNE_DECOMPTE+','+anneeCotisations,
 				callBack:function (data) {
 					GLO.decompteSalaire.cotisationMustReload = "false";
-					if (!data) {
+					if (diffCotisations===data) {
 						if (window.confirm(globazGlobal.messageDialogCotisation)) {
 							GLO.decompteSalaire.cotisationMustReload = "true";
 						}
+					} else if(diffAnnee===data)  {
+						GLO.decompteSalaire.cotisationMustReload = "true";
+					} else {
+						// On ne fait rien ! throw "Unexpected value for data";
 					}
 
 				}
@@ -383,6 +416,9 @@ GLO.decompteSalaire = {
 GLO.historiqueSalaire = (function() {
 	function load() {
 		$('#historiquesalaireContent').empty();
+		if (GLO.idPosteTravail == null) {
+			return;
+		}
 		vulpeculaUtils.ajaxWait({
 			data: { idPosteTravail:GLO.idPosteTravail,
 				   "userAction":"vulpecula.decomptesalaire.historiqueSalaireAjax.afficherAJAX"
@@ -441,17 +477,36 @@ GLO.cotisations = (function(){
 })();
 
 $(function () {
+	
+	$('.consultationGed').click(function() {
+		$('.consultationGed').prop('disabled', true);
+		var id = $(this).attr('id');
+		
+		var options = {
+				serviceClassName:globazGlobal.decompteViewService,
+				serviceMethodName:'callTGedmyProdis',
+				parametres:id,
+				callBack: function() {
+					
+				}
+		}
+		vulpeculaUtils.lancementService(options);
+	});
+	setTimeout(function() {
+		$('.consultationGed').prop('disabled', false);
+	}, 100);
+	
 	$("#aideContext").click(function() { 
 		$("#help-show").fadeToggle();
 	});
-	
 	function forceRemoveFocus() {
 		$('.hasFocus').removeClass('hasFocus');
 	}
-
+	
 	$("#tabs").tabs({
 		selected : 1
 	});
+	
 	
 	$("#btnAjaxValidate").click(function() {
 		GLO.decompteSalaire.beforeUpdate();
@@ -482,6 +537,27 @@ $(function () {
 		GLO.absences.edit();
 	});
 	
+	function handleEBusinessPart(data) {
+		var $ebusinesspart = $('#ebusinesspart')
+		if(!data) {
+			$ebusinesspart.css('display','none');
+			return;
+		}
+		// Gestion des codes erreurs
+		$("#listCodeErreurs").html("");
+		var tabCodes = data.decompteSalaireGSON.codeErreur;
+		if (tabCodes && tabCodes.length > 0) {
+			$.each(tabCodes, function(index, item) {
+				GLO.loadLibelleCodeErreur(item);
+			});
+			$ebusinesspart.css('display','block');
+		} else {
+			$ebusinesspart.css('display','none');
+		}
+	}
+	
+	handleEBusinessPart();
+	
 	defaultDetailAjax.init({
 		s_entityIdPath : "decompteSalaireGSON.idDecompteSalaire",
 		init: function () {
@@ -509,6 +585,8 @@ $(function () {
 				if(!GLO.navigation.isPasserAuSuivant) {
 					GLO.navigation.mode = "read";
 				} else {
+					GLO.decompteSalaire.$descriptionPosteTravail.prop('readonly', false);
+					GLO.decompteSalaire.$descriptionPosteTravail.removeClass("readOnly");
 		    		GLO.navigation.startEdition(that);
 		    		GLO.decompteSalaire.manageMensuel();
 				}
@@ -516,22 +594,39 @@ $(function () {
 				GLO.decompteSalaire.calculMontant();
 				GLO.navigation.handleIsPasserSuivant();
 				GLO.navigation.showNouveauButton();
+
+				if (!GLO.decompteSalaire.$quittancer.is(':checked')) {
+					GLO.decompteSalaire.$quittancer.prop("disabled", false);
+					$("#aTraiter").show();
+				} else {
+					$("#aTraiter").hide();
+				}
 			});
+
 			$areaDetail.on(eventConstant.AJAX_LOAD_DATA, function() {
 				GLO.navigation.isEntityLoaded = true;
-				if ("update" == GLO.navigation.mode) {
-					if (!GLO.decompteSalaire.$heure.is(':disabled')) { 
+				if ('update' == GLO.navigation.mode) {
+					if (!GLO.decompteSalaire.$heure.is(':disabled') && GLO.idPosteTravail == null) {
 						GLO.decompteSalaire.$descriptionPosteTravail.prop('readonly', true);
-						GLO.decompteSalaire.$descriptionPosteTravail.addClass("readOnly");
+						GLO.decompteSalaire.$descriptionPosteTravail.addClass('readOnly');
 					} else {
+						GLO.decompteSalaire.$descriptionPosteTravail.prop('readonly', false);
+						GLO.decompteSalaire.$descriptionPosteTravail.removeClass('readOnly');
 						GLO.navigation.startEdition(that);
 					}
 				}
 				GLO.decompteSalaire.calculMontant();
 				GLO.decompteSalaire.manageMensuel();
-				
 				GLO.navigation.handleIsPasserSuivant();
 				GLO.navigation.showNouveauButton();
+
+				if (!GLO.decompteSalaire.$quittancer.is(':checked')) {
+					GLO.decompteSalaire.$quittancer.prop("disabled", false);
+					$("#aTraiter").show();
+				} else {
+					$("#aTraiter").hide();
+				}
+				
 			});
 			
 			zoneAjax.onDelete = function(data) {
@@ -582,6 +677,7 @@ $(function () {
 			
 			this.sequence = globazGlobal.SEQUENCE;
 			this.navigation = globazGlobal.NAVIGATION;
+
 		},
 		getParametersForLoad: function() {
 			this.sequence = $("#decompteSalaireGSON\\.sequence").val();
@@ -595,7 +691,15 @@ $(function () {
 		},
 		onRetrieve: function(data) {
 			GLO.isMensuel = data.decompteSalaireGSON.isMensuel;
-			GLO.idPosteTravail = data.decompteSalaireGSON.idPosteTravail;
+			
+			if (data.decompteSalaireGSON.idPosteTravail) {
+				GLO.idPosteTravail = data.decompteSalaireGSON.idPosteTravail;
+				globazGlobal.TAUXEBU = data.decompteSalaireGSON.tauxSaisieEbu;
+			} else {
+				GLO.idPosteTravail = null;
+			}
+			GLO.idNouveauTravailleur = data.decompteSalaireGSON.correlationId;
+			globazGlobal.isNouveauTravailleur = data.decompteSalaireGSON.nouveauTravailleur;
 			
 			this.t_element = this.defaultLoadData(data, "#");
 			globazGlobal.ID_LIGNE_DECOMPTE = data.decompteSalaireGSON.idDecompteSalaire;
@@ -606,19 +710,55 @@ $(function () {
 			GLO.navigation.enableDisableNavigationButton(data.decompteSalaireGSON.first, data.decompteSalaireGSON.last);
 			GLO.hasDroitAF(data);
 			this.disabeldEnableForm(true);
-			$(".lastModification").html(" Update: " + data.decompteSalaireGSON.spy);
+			handleEBusinessPart(data);
+			$('#libelleDateFin').text($('#decompteSalaireGSON\\.periodeFin').val());
+			var $ligneSuprimmee = $("#ligneSuprimmee");
+			if(data.decompteSalaireGSON.ligneSupprimee){
+				$ligneSuprimmee.show();
+			}else{
+				$ligneSuprimmee.hide();
+			}
+
+			if(data.decompteSalaireGSON.quittancer){
+				$ligneSuprimmee.hide();
+			}
+			$('.lastModification').html(' Update: ' + data.decompteSalaireGSON.spy);
 			GLO.handleNote();
 			GLO.decompteSalaire.isDeleted = false;
 		},
-		onUpdate: function (data,action) {
+		onUpdate: function (data,action) {			
+			
 			if(action!=='del') {
+
 				this.superOnUpdate(data);
 				
+				$('#libelleDateFin').text($('#decompteSalaireGSON\\.periodeFin').val());
+				var $ligneSuprimmee = $("#ligneSuprimmee");
+				if(data.decompteSalaireGSON.ligneSupprimee){
+					$ligneSuprimmee.show();
+				}else{
+					$ligneSuprimmee.hide();
+				}
+				
+				if(data.decompteSalaireGSON.quittancer){
+					$ligneSuprimmee.hide();
+				}
+								
 				GLO.isMensuel = data.decompteSalaireGSON.isMensuel;
-				GLO.idPosteTravail = data.decompteSalaireGSON.idPosteTravail;
+				
+				if (data.decompteSalaireGSON.idPosteTravail) {
+					GLO.idPosteTravail = data.decompteSalaireGSON.idPosteTravail;
+					globazGlobal.TAUXEBU = data.decompteSalaireGSON.tauxSaisieEbu;
+				} else {
+					GLO.idPosteTravail = null;
+				}
+				GLO.idNouveauTravailleur = data.decompteSalaireGSON.correlationId;
+				globazGlobal.isNouveauTravailleur = data.decompteSalaireGSON.nouveauTravailleur;
+				
+				handleEBusinessPart(data);
 				
 				GLO.navigation.enableDisableNavigationButton(data.decompteSalaireGSON.first, data.decompteSalaireGSON.last);
-				$(".lastModification").html(" Update: " + data.decompteSalaireGSON.spy);
+				$('.lastModification').html(' Update: ' + data.decompteSalaireGSON.spy);
 				globazGlobal.ID_LIGNE_DECOMPTE = $('#decompteSalaireGSON\\.idDecompteSalaire').val();
 				zoneAjax.selectedEntityId = globazGlobal.ID_LIGNE_DECOMPTE;
 				this.isEntityLoaded = true;
@@ -628,6 +768,7 @@ $(function () {
 	    		GLO.handleNote();
 	    		GLO.hasDroitAF(data);
 				GLO.decompteSalaire.isDeleted = false;
+				
 			}
 		},
 		onError: function (data) {
@@ -642,6 +783,7 @@ $(function () {
 			var parametres = GLO.absences.save();
 			parametres.isPasserSuivant = GLO.navigation.isPasserAuSuivant;
 			parametres.cotisationMustReload = GLO.decompteSalaire.cotisationMustReload;
+			parametres.idPosteTravail = GLO.idPosteTravail;
 			return parametres;
 		}
 	});
@@ -661,18 +803,38 @@ GLO.hasDroitAF = function(data) {
 			}
 		}
 	};
-	vulpeculaUtils.lancementService(options);	
+	vulpeculaUtils.lancementService(options);
+}
+
+GLO.loadLibelleCodeErreur = function(data, list) {
+	var taux = parseFloat(globazGlobal.TAUXEBU);
+	taux = taux.toFixed(2);
+	var options = {
+		serviceClassName:globazGlobal.decompteSalaireViewService,
+		serviceMethodName:'loadCodesErreur',
+		parametres:data+","+taux,
+		callBack:function (tabErreur) {
+			$("#listCodeErreurs").html($("#listCodeErreurs").html() + "<li>" + tabErreur);
+		}
+	};
+	vulpeculaUtils.lancementService(options);
 }
 
 GLO.handleNote = function() {
-		if(GLO.idPosteTravail && GLO.idPosteTravail.length>0) {
+		if(GLO.idPosteTravail && GLO.idPosteTravail.length > 0) {
 			$('.descriptionTravailleur').show();
+			$('.descriptionNouveauTravailleur').hide();
 		} else {
 			$('.descriptionTravailleur').hide();
+			
+			GLO.handleNoteNouveauTravailleur();
 			return;
 		}
 			
 		//Recherche des notes et des informations relatives au travailleur
+		if (GLO.idPosteTravail == null) {
+			return;
+		}
 		var options = {
 			serviceClassName:globazGlobal.travailleurViewService,
 			serviceMethodName:'getInformationsTravailleur',
@@ -691,4 +853,28 @@ GLO.handleNote = function() {
 			}
 	};
 	vulpeculaUtils.lancementService(options);
-};
+}
+
+GLO.handleNoteNouveauTravailleur = function() {
+	if (globazGlobal.isNouveauTravailleur && GLO.idNouveauTravailleur && globazGlobal.ID_LIGNE_DECOMPTE) {
+		$('.descriptionNouveauTravailleur').show();
+	} else {
+		$('.descriptionNouveauTravailleur').hide();
+		return;
+	}
+		
+	var options = {
+		serviceClassName:globazGlobal.travailleurViewService,
+		serviceMethodName:'getInformationsNouveauTravailleur',
+		parametres:GLO.idNouveauTravailleur,
+		callBack:function (infos) {
+			$('#titleCorrelationId').prop('title', 'id : ' + GLO.idNouveauTravailleur);
+			$('#infoTDateNaissance').html(infos.dateNaissance);
+			$('#infoTGenreSalaire').html(infos.genreSalaire);
+			$('#infoTQualification').html(infos.qualification);
+			$('#infoTNom').html(infos.nom);
+		}
+	};
+	vulpeculaUtils.lancementService(options);
+}
+;

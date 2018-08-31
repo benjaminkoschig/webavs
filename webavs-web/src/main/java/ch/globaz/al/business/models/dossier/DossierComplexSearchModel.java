@@ -32,6 +32,7 @@ public class DossierComplexSearchModel extends JadeSearchComplexModel {
     public static final String SEARCH_LIST_DOSSIER_ACTIF = "listDossierActif";
     public static final String SEARCH_RADIATION_AFFILIE = "RadiationAffilie";
     public static final String SEARCH_DOSSIERS_ACTIF = "dossiersActifs";
+    public static final String SEARCH_DOSSIERS_ACTIF_COMPTA_VULPECULA = "dossiersActifsComptaVulpecula";
     public static final String SEARCH_DOSSIERS_FILE_ATTENTE = "dossiersFileAttente";
 
     /**

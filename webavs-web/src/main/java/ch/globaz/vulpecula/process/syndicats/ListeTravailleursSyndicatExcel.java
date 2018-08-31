@@ -1,6 +1,5 @@
 package ch.globaz.vulpecula.process.syndicats;
 
-import globaz.globall.db.BSession;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +9,8 @@ import ch.globaz.vulpecula.domain.models.common.Annee;
 import ch.globaz.vulpecula.domain.models.syndicat.AffiliationSyndicat;
 import ch.globaz.vulpecula.external.api.poi.AbstractListExcel;
 import ch.globaz.vulpecula.external.models.pyxis.Administration;
+import globaz.globall.db.BSession;
+import globaz.jade.client.util.JadeStringUtil;
 
 public class ListeTravailleursSyndicatExcel extends AbstractListExcel {
     private Map<Administration, Map<Administration, List<AffiliationSyndicat>>> affiliationsGroupBySyndicat;
@@ -22,11 +23,10 @@ public class ListeTravailleursSyndicatExcel extends AbstractListExcel {
     private final int COL_PERIODE_FIN = 5;
 
     private Annee annee;
+    private String idTravailleur;
 
     public ListeTravailleursSyndicatExcel(BSession session, String filenameRoot, String documentTitle) {
         super(session, filenameRoot, documentTitle);
-        setWantHeader(false);
-        setWantFooter(false);
     }
 
     public void setAnnee(Annee annee) {
@@ -58,6 +58,9 @@ public class ListeTravailleursSyndicatExcel extends AbstractListExcel {
 
     private void createSheet(Administration syndicat, Administration caisseMetier) {
         HSSFSheet sheet = createSheet(syndicat.getDesignation1() + "_" + caisseMetier.getDesignation1());
+        initPage(false);
+        setWantFooter(true);
+        setWantHeader(true);
         sheet.setColumnWidth((short) COL_N_AVS, AbstractListExcel.COLUMN_WIDTH_4500);
         sheet.setColumnWidth((short) COL_NOM, AbstractListExcel.COLUMN_WIDTH_4500);
         sheet.setColumnWidth((short) COL_PRENOM, AbstractListExcel.COLUMN_WIDTH_DATE);
@@ -70,6 +73,11 @@ public class ListeTravailleursSyndicatExcel extends AbstractListExcel {
         createRow();
         createCell(getLabel("LISTE_SYNDICATS_SYNDICAT"), getStyleCritereTitle());
         createCell(syndicat.getDesignation1() + " : " + caisseMetier.getDesignation1(), getStyleCritere());
+        if (!JadeStringUtil.isBlank(idTravailleur)) {
+            createRow();
+            createCell(getLabel("LISTE_SYNDICATS_ID_TRAVAILLEUR"), getStyleCritereTitle());
+            createCell(Integer.valueOf(idTravailleur));
+        }
         createRow();
         createCell(getLabel("LISTE_SYNDICATS_ANNEE"), getStyleCritereTitle());
         createCell(annee.getValue());
@@ -103,5 +111,13 @@ public class ListeTravailleursSyndicatExcel extends AbstractListExcel {
     @Override
     public String getNumeroInforom() {
         return DocumentConstants.LISTES_SYNDICATS_TRAVAILLEURS_SYNDICAT;
+    }
+
+    public String getIdTravailleur() {
+        return idTravailleur;
+    }
+
+    public void setIdTravailleur(String idTravailleur) {
+        this.idTravailleur = idTravailleur;
     }
 }

@@ -9,6 +9,7 @@ import ch.globaz.vulpecula.business.services.VulpeculaRepositoryLocator;
 import ch.globaz.vulpecula.business.services.VulpeculaServiceLocator;
 import ch.globaz.vulpecula.businessimpl.services.users.UsersServiceImpl;
 import ch.globaz.vulpecula.domain.models.common.Taux;
+import ch.globaz.vulpecula.domain.models.postetravail.Travailleur;
 import ch.globaz.vulpecula.domain.models.prestations.TypePrestation;
 import ch.globaz.vulpecula.util.CodeSystem;
 import ch.globaz.vulpecula.web.views.prestations.PrestationsViewService;
@@ -35,8 +36,8 @@ public class PTSaisierapideViewBean extends BJadeSearchObjectELViewBean {
     @Override
     public void retrieve() throws Exception {
         if (!JadeStringUtil.isEmpty(idTravailleur)) {
-            nomPrenomTravailleur = VulpeculaRepositoryLocator.getTravailleurRepository().findById(idTravailleur)
-                    .getNomPrenomTravailleur();
+            Travailleur trav = VulpeculaRepositoryLocator.getTravailleurRepository().findById(idTravailleur);
+            nomPrenomTravailleur = trav.getNomPrenomTravailleur();
         }
     }
 
@@ -113,4 +114,5 @@ public class PTSaisierapideViewBean extends BJadeSearchObjectELViewBean {
     public String getPasDroitsLibelle() {
         return BSessionUtil.getSessionFromThreadContext().getLabel("PAS_DROIT_SAISIE_RAPIDE");
     }
+
 }

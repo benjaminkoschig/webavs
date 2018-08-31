@@ -8,6 +8,7 @@ public class CotisationAssociationProfessionnelleSearchSimpleModel extends JadeS
     private String forId;
     private String forLibelleLike;
     private String forLibelleUpperLike;
+    private String forFacturerDefaut;
 
     public String getForId() {
         return forId;
@@ -31,6 +32,20 @@ public class CotisationAssociationProfessionnelleSearchSimpleModel extends JadeS
 
     public void setForLibelleUpperLike(String forLibelleUpperLike) {
         this.forLibelleUpperLike = forLibelleUpperLike;
+    }
+
+    /**
+     * @return the forFacturerDefaut
+     */
+    public String getForFacturerDefaut() {
+        return forFacturerDefaut;
+    }
+
+    /**
+     * @param forFacturerDefaut the forFacturerDefaut to set
+     */
+    public void setForFacturerDefaut(String forFacturerDefaut) {
+        this.forFacturerDefaut = forFacturerDefaut;
     }
 
     @Override

@@ -1,8 +1,16 @@
 package ch.globaz.vulpecula.repositoriesjade.syndicat;
 
+import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.log.JadeLogger;
+import globaz.jade.persistence.JadePersistenceManager;
+import globaz.jade.persistence.model.JadeAbstractModel;
+import globaz.jade.persistence.model.JadeAbstractSearchModel;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import ch.globaz.vulpecula.business.models.syndicat.AffiliationSyndicatComplexModel;
 import ch.globaz.vulpecula.business.models.syndicat.AffiliationSyndicatSearchComplexModel;
+import ch.globaz.vulpecula.business.models.syndicat.AffiliationSyndicatSearchSimpleModel;
 import ch.globaz.vulpecula.business.models.syndicat.AffiliationSyndicatSimpleModel;
 import ch.globaz.vulpecula.domain.models.common.Annee;
 import ch.globaz.vulpecula.domain.models.syndicat.AffiliationSyndicat;
@@ -58,7 +66,38 @@ public class AffiliationSyndicatRepositoryJade extends
     }
 
     @Override
+    public List<AffiliationSyndicat> findByAnneeAndTravailleur(String idSyndicat, Annee annee, String idTravailleur) {
+        AffiliationSyndicatSearchComplexModel searchComplexModel = new AffiliationSyndicatSearchComplexModel();
+        searchComplexModel.setWhereKey(SEARCH_FOR_DATE_FIN_IS_NULL);
+        searchComplexModel.setForDateDebutBeforeOrEquals(annee.getLastDayOfYear());
+        searchComplexModel.setForDateFinAfterOrEquals(annee.getFirstDayOfYear());
+        searchComplexModel.setForIdSyndicat(idSyndicat);
+        searchComplexModel.setForIdTravailleur(idTravailleur);
+        searchComplexModel.setForDateFinIsNull();
+        return searchAndFetch(searchComplexModel);
+    }
+
+    @Override
     public List<AffiliationSyndicat> findByAnnee(Annee annee) {
         return findByAnnee(null, annee);
+    }
+
+    @Override
+    public Set<String> findAllIdTravailleurs() {
+        AffiliationSyndicatSearchSimpleModel search = new AffiliationSyndicatSearchSimpleModel();
+        search.setDefinedSearchSize(JadeAbstractSearchModel.SIZE_NOLIMIT);
+        try {
+            JadePersistenceManager.search(search);
+        } catch (JadePersistenceException e) {
+            JadeLogger.warn(this, "ERROR in process " + this.getClass().getName() + " (" + e.toString() + ")");
+            JadeLogger.warn(this, e);
+        }
+
+        Set<String> listIdTravailleur = new HashSet<String>();
+        for (JadeAbstractModel abstractModel : search.getSearchResults()) {
+            AffiliationSyndicatSimpleModel model = (AffiliationSyndicatSimpleModel) abstractModel;
+            listIdTravailleur.add(model.getIdTravailleur());
+        }
+        return listIdTravailleur;
     }
 }

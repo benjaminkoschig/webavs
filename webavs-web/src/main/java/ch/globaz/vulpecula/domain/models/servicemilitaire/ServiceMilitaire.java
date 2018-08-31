@@ -22,6 +22,7 @@ import ch.globaz.vulpecula.external.models.musca.Passage;
 import ch.globaz.vulpecula.external.models.osiris.Journal;
 
 public class ServiceMilitaire implements PrestationSMAJ, Comparable<ServiceMilitaire> {
+
     private String id;
     private PosteTravail posteTravail;
     private GenreSM genre;
@@ -44,6 +45,7 @@ public class ServiceMilitaire implements PrestationSMAJ, Comparable<ServiceMilit
     private List<TauxServiceMilitaire> tauxServicesMilitaires;
     private Journal journal = new Journal();
     private String spy;
+    private Date dateVersement;
 
     public ServiceMilitaire() {
         tauxServicesMilitaires = new ArrayList<TauxServiceMilitaire>();
@@ -455,6 +457,14 @@ public class ServiceMilitaire implements PrestationSMAJ, Comparable<ServiceMilit
         this.tauxServicesMilitaires = tauxServicesMilitaires;
     }
 
+    public Date getDateVersement() {
+        return dateVersement;
+    }
+
+    public void setDateVersement(Date dateVersement) {
+        this.dateVersement = dateVersement;
+    }
+
     /**
      * @return le NSS du travailleur
      */
@@ -499,4 +509,17 @@ public class ServiceMilitaire implements PrestationSMAJ, Comparable<ServiceMilit
     public Employeur getEmployeur() {
         return posteTravail.getEmployeur();
     }
+
+    public Date getDateVersementComptable() {
+        if (getDateVersement() != null) {
+            return getDateVersement();
+        } else {
+            if (getPassage() != null && getPassage().getDateFacturation() != null
+                    && getPassage().getDateFacturation().length() > 0) {
+                return new Date(getPassage().getDateFacturation());
+            }
+        }
+        return null;
+    }
+
 }

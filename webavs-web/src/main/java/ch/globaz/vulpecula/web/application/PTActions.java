@@ -29,6 +29,7 @@ public final class PTActions {
     public static final String CONGE_PAYE = "vulpecula.congepaye";
     public static final String SERVICE_MILITAIRE = "vulpecula.servicemilitaire";
     public static final String LISTES = "vulpecula.listes";
+    public static final String AP = "vulpecula.ap";
     public static final String ASSOCIATION = "vulpecula.association";
     public static final String CAISSE_MALADIE = "vulpecula.caissemaladie";
     public static final String SYNDICAT = "vulpecula.syndicat";
@@ -37,4 +38,6 @@ public final class PTActions {
     public static final String COMPTABILITE = "vulpecula.comptabilite";
     public static final String AF = "vulpecula.af";
     public static final String STATISTIQUES = "vulpecula.statistiques";
+    public static final String CONTROLE_EMPLOYEUR = "vulpecula.ctrlemployeur";
+    public static final String EBUSINESS = "vulpecula.ebusiness";
 }

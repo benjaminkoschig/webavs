@@ -16,6 +16,7 @@ $(function() {
 			this.capage(5, [10, 20, 30, 50, 100]);
 			this.addSearch();
 		},
+		b_changeStack:true,
 		afterRetrieve : function(data) {
 			this.defaultLoadData(data, '#');
 			$("#libelleAssociation").val(data.currentEntity.administrationComplexModel.admin.codeAdministration + " - " + data.currentEntity.administrationComplexModel.tiers.designation1+" "+data.currentEntity.administrationComplexModel.tiers.designation2);

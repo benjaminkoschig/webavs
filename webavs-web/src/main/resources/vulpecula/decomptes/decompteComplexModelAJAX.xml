@@ -57,15 +57,20 @@
 				<search-field name="beforeDate" operation="LESS" field-ref="decompteSimpleModel.periodeDebut" />	
 				<search-field name="forDateReception"
 					field-ref="decompteSimpleModel.dateReception" operation="EQUALS" />	
-				<search-field name="forEtatTaxation" field-ref="taxationOfficeSimpleModel.etat" operation="EQUALS" />		
+				<search-field name="forEtatTaxation" field-ref="taxationOfficeSimpleModel.etat" operation="EQUALS" />
+				<search-field name="forTypeProvenance" field-ref="decompteSimpleModel.typeProvenance" operation="EQUALS" />
 			</search-group>
 		</search-definition>
 		
+<!-- 		<order-by name="default"> -->
+<!-- 			<order-field field-ref="decompteSimpleModel.dateEtablissement" order="DESC" />		 -->
+<!-- 			<order-field field-ref="employeurComplexModel.affiliationTiersComplexModel.affiliation.raisonSociale" order="ASC" />		 -->
+<!-- 		</order-by> -->
 		<order-by name="default">
-			<order-field field-ref="decompteSimpleModel.dateEtablissement" order="DESC" />		
-			<order-field field-ref="employeurComplexModel.affiliationTiersComplexModel.affiliation.raisonSociale" order="ASC" />		
-		</order-by>
-		
+			<order-field field-ref="decompteSimpleModel.periodeFin" order="DESC" />
+			<order-field field-ref="employeurComplexModel.affiliationTiersComplexModel.affiliation.raisonSociale" order="ASC" />
+			<order-field field-ref="decompteSimpleModel.id" order="ASC"/>			
+		</order-by>		
 		<order-by name="idAsc">
 			<order-field field-ref="decompteSimpleModel.id" order="ASC"/>
 		</order-by> 
@@ -104,6 +109,6 @@
 		</order-by>	
 		<order-by name="dateReceptionDesc">
 			<order-field field-ref="decompteSimpleModel.dateReception" order="DESC" />
-		</order-by>			
+		</order-by>	
 	</complexe-model>
 </model-mapping>

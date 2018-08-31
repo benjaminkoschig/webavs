@@ -1,78 +1,57 @@
 package ch.globaz.vulpecula.externalservices;
 
-import globaz.globall.db.BIJadeSimpleModelExternalService;
-import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.persistence.JadePersistenceManager;
-import globaz.jade.persistence.model.JadeSimpleModel;
-import ch.globaz.exceptions.ExceptionMessage;
-import ch.globaz.exceptions.GlobazTechnicalException;
-import ch.globaz.vulpecula.business.models.postetravail.PosteTravailSearchSimpleModel;
-import ch.globaz.vulpecula.business.models.postetravail.PosteTravailSimpleModel;
+import globaz.globall.db.BAbstractEntityExternalService;
+import globaz.globall.db.BEntity;
 
-public class PosteTravailTracker implements BIJadeSimpleModelExternalService {
-
+public class PosteTravailTracker extends BAbstractEntityExternalService {
     private RequestFactory requestFactory = new RequestFactory();
 
     @Override
-    public void afterAdd(JadeSimpleModel model) throws Throwable {
-        // Notification notification = new Notification(InfoType.NOUVEAU_POSTE, model.getId());
-        // requestFactory.persistFromNouvellePersistance(notification);
+    public void afterAdd(BEntity entity) throws Throwable {
+        // La création d'un nouveau tiers ne nous intéresse pas.
+        // String idTiers = entity.getId();
+
+        // Notification pour eBusiness
+        // requestFactory.persistFromAnciennePersistanceEbu(idTiers, entity.getSession());
     }
 
     @Override
-    public void afterDelete(JadeSimpleModel model) throws Throwable {
+    public void afterDelete(BEntity entity) throws Throwable {
     }
 
     @Override
-    public void afterUpdate(JadeSimpleModel model) throws Throwable {
+    public void afterRetrieve(BEntity entity) throws Throwable {
     }
 
     @Override
-    public void beforeAdd(JadeSimpleModel model) throws Throwable {
+    public void afterUpdate(BEntity entity) throws Throwable {
+        // String idPosteTravail = entity.getId();
+        // Notification pour eBusiness
+        // TODO Créer méthode persistPT
+        // requestFactory.persistPosteTravailFromAnciennePersistanceEbu(idPosteTravail, entity.getSession());
     }
 
     @Override
-    public void beforeDelete(JadeSimpleModel model) throws Throwable {
+    public void beforeAdd(BEntity entity) throws Throwable {
     }
 
     @Override
-    public void beforeUpdate(JadeSimpleModel model) throws Throwable {
-        // PosteTravailSimpleModel posteTravail = (PosteTravailSimpleModel) model;
-        // PosteTravailSimpleModel oldPosteTravail = retrieveOldPosteTravail(model.getId());
-        //
-        // if (isDateDebutActiviteChanged(posteTravail, oldPosteTravail)) {
-        // Notification notificationDateDebut = new Notification(InfoType.MODIFICATION_DATE_DEBUT_POSTE, model.getId());
-        // requestFactory.persistFromNouvellePersistance(notificationDateDebut);
-        // }
-        //
-        // if (isDateFinActiviteChanged(posteTravail, oldPosteTravail)) {
-        // Notification notificationDateDebut = new Notification(InfoType.MODIFICATION_DATE_FIN_POSTE, model.getId());
-        // requestFactory.persistFromNouvellePersistance(notificationDateDebut);
-        // }
+    public void beforeDelete(BEntity entity) throws Throwable {
     }
 
-    private PosteTravailSimpleModel retrieveOldPosteTravail(String idPosteTravail) {
-        try {
-            PosteTravailSearchSimpleModel searchModel = new PosteTravailSearchSimpleModel();
-            searchModel.setForIdPosteTravail(idPosteTravail);
-            JadePersistenceManager.search(searchModel);
-            if (searchModel.getSize() == 1) {
-                return (PosteTravailSimpleModel) searchModel.getSearchResults()[0];
-            } else {
-                throw new GlobazTechnicalException(ExceptionMessage.ERREUR_INCONNUE);
-            }
-        } catch (Exception e) {
-            throw new GlobazTechnicalException(ExceptionMessage.ERREUR_TECHNIQUE);
-        }
+    @Override
+    public void beforeRetrieve(BEntity entity) throws Throwable {
     }
 
-    private boolean isDateDebutActiviteChanged(PosteTravailSimpleModel posteTravail,
-            PosteTravailSimpleModel oldPosteTravail) {
-        return !JadeStringUtil.equals(posteTravail.getDebutActivite(), oldPosteTravail.getDebutActivite(), true);
+    @Override
+    public void beforeUpdate(BEntity entity) throws Throwable {
     }
 
-    private boolean isDateFinActiviteChanged(PosteTravailSimpleModel posteTravail,
-            PosteTravailSimpleModel oldPosteTravail) {
-        return !JadeStringUtil.equals(posteTravail.getFinActivite(), oldPosteTravail.getFinActivite(), true);
+    @Override
+    public void init(BEntity entity) throws Throwable {
+    }
+
+    @Override
+    public void validate(BEntity entity) throws Throwable {
     }
 }

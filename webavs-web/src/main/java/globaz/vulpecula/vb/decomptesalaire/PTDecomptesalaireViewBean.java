@@ -3,17 +3,24 @@ package globaz.vulpecula.vb.decomptesalaire;
 import globaz.globall.db.BSessionUtil;
 import globaz.jade.client.util.JadeNumericUtil;
 import globaz.jade.client.util.JadeStringUtil;
+import java.util.List;
 import ch.globaz.common.vb.DomainPersistentObjectViewBean;
 import ch.globaz.vulpecula.business.services.VulpeculaRepositoryLocator;
 import ch.globaz.vulpecula.businessimpl.services.decompte.DecompteServiceImpl;
+import ch.globaz.vulpecula.domain.models.common.Taux;
+import ch.globaz.vulpecula.domain.models.decompte.CodeErreurDecompteSalaire;
 import ch.globaz.vulpecula.domain.models.decompte.Decompte;
 import ch.globaz.vulpecula.domain.models.decompte.DecompteSalaire;
 import ch.globaz.vulpecula.domain.models.decompte.EtatDecompte;
 import ch.globaz.vulpecula.domain.models.decompte.TypeDecompte;
+import ch.globaz.vulpecula.domain.models.decompte.TypeProvenance;
 import ch.globaz.vulpecula.domain.models.decompte.TypeSalaire;
 import ch.globaz.vulpecula.domain.models.postetravail.Employeur;
 import ch.globaz.vulpecula.domain.models.postetravail.PosteTravail;
+import ch.globaz.vulpecula.domain.models.postetravail.TravailleurEbuDomain;
+import ch.globaz.vulpecula.domain.models.taxationoffice.TaxationOffice;
 import ch.globaz.vulpecula.web.application.PTActions;
+import ch.globaz.vulpecula.web.views.decompte.DecompteViewService;
 import ch.globaz.vulpecula.web.views.decomptesalaire.DecompteSalaireViewService;
 import ch.globaz.vulpecula.web.views.postetravail.PosteTravailViewService;
 import ch.globaz.vulpecula.web.views.postetravail.TravailleurViewService;
@@ -29,9 +36,20 @@ public class PTDecomptesalaireViewBean extends DomainPersistentObjectViewBean<De
     private DecompteSalaire decompteSalaire;
     private String idDecompte = "";
     private String idPosteTravail = "";
+    private TaxationOffice taxationOffice;
+    private boolean isEnErreur = false;
+
+    public boolean getIsEnErreur() {
+        isEnErreur = !decompteSalaire.getPeriodeDebut().getAnnee()
+                .equals(decompteSalaire.getDecompte().getPeriodeDebut().getAnnee());
+        return isEnErreur;
+    }
+
+    // private boolean isEbuAndComplementaire;
 
     public PTDecomptesalaireViewBean() {
         decompteSalaire = new DecompteSalaire();
+        taxationOffice = new TaxationOffice();
     }
 
     @Override
@@ -71,6 +89,42 @@ public class PTDecomptesalaireViewBean extends DomainPersistentObjectViewBean<De
         return decompteSalaire.getDecompte();
     }
 
+    public String getVacances() {
+        if (decompteSalaire.getVacancesFeries() != null
+                && !JadeStringUtil.isEmpty(decompteSalaire.getVacancesFeries().getValue())) {
+            return decompteSalaire.getVacancesFeries().getValueNormalisee();
+        } else {
+            return "0.00";
+        }
+    }
+
+    public String getGratifications() {
+        if (decompteSalaire.getGratifications() != null
+                && !JadeStringUtil.isEmpty(decompteSalaire.getGratifications().getValue())) {
+            return decompteSalaire.getGratifications().getValueNormalisee();
+        } else {
+            return "0.00";
+        }
+    }
+
+    public String getAbsencesJustifiees() {
+        if (decompteSalaire.getAbsencesJustifiees() != null
+                && !JadeStringUtil.isEmpty(decompteSalaire.getAbsencesJustifiees().getValue())) {
+            return decompteSalaire.getAbsencesJustifiees().getValueNormalisee();
+        } else {
+            return "0.00";
+        }
+    }
+
+    public String getApgComplSm() {
+        if (decompteSalaire.getApgComplementaireSM() != null
+                && !JadeStringUtil.isEmpty(decompteSalaire.getApgComplementaireSM().getValue())) {
+            return decompteSalaire.getApgComplementaireSM().getValueNormalisee();
+        } else {
+            return "0.00";
+        }
+    }
+
     /**
      * @return type de décompte
      */
@@ -97,9 +151,15 @@ public class PTDecomptesalaireViewBean extends DomainPersistentObjectViewBean<De
      * @return an Employeur
      */
     public Employeur getEmployeur() {
-        if (getDecompte() != null) {
+        if (getDecompte() != null && !JadeStringUtil.isEmpty(getDecompte().getEmployeur().getId())) {
             return getDecompte().getEmployeur();
         } else {
+            if (getDecompte() != null) {
+                // Workaround : Dans le cas de décomptes eBusiness, le décompte salaire ne dispose pas de décompte
+                // (car l'employeur est recherché grâce à l'id du poste de travail qui n'est pas saisi. On recherche
+                // alors l'employeur avec l'id du décompte afin de pallier à cette problématique
+                return VulpeculaRepositoryLocator.getDecompteRepository().findById(idDecompte).getEmployeur();
+            }
             return null;
         }
     }
@@ -116,14 +176,19 @@ public class PTDecomptesalaireViewBean extends DomainPersistentObjectViewBean<De
         return decompteSalaire.getIdDecompte();
     }
 
+    public String getTauxAffiche() {
+        return decompteSalaire.getTauxAfficheErreur();
+    }
+
     /**
      * @return le poste de travail de la ligne de decompte
      */
     private PosteTravail getPosteTravail() {
         if (decompteSalaire.getPosteTravail() != null
-                && JadeStringUtil.isBlank(decompteSalaire.getPosteTravail().getSpy())) {
-            PosteTravail posteTravail = VulpeculaRepositoryLocator.getPosteTravailRepository().findById(
-                    decompteSalaire.getPosteTravail().getId());
+                && JadeStringUtil.isBlank(decompteSalaire.getPosteTravail().getSpy())
+                && decompteSalaire.getPosteTravail().getId() != null) {
+            PosteTravail posteTravail = VulpeculaRepositoryLocator.getPosteTravailRepository()
+                    .findByIdWithFullDependecies(decompteSalaire.getPosteTravail().getId());
             decompteSalaire.setPosteTravail(posteTravail);
         }
         return decompteSalaire.getPosteTravail();
@@ -144,6 +209,21 @@ public class PTDecomptesalaireViewBean extends DomainPersistentObjectViewBean<De
         decompteSalaire = VulpeculaRepositoryLocator.getDecompteSalaireRepository().findByIdWithoutDependencies(
                 decompteSalaire.getId());
         idPosteTravail = decompteSalaire.getPosteTravail().getId();
+
+        if (decompteSalaire.getIdPosteTravail() == null || decompteSalaire.getIdPosteTravail().isEmpty()) {
+            TravailleurEbuDomain travailleurEbu = VulpeculaRepositoryLocator.getNouveauTravailleurRepository()
+                    .findByCorrelationAndPosteCorrelationWithQuittance(decompteSalaire.getCorrelationId(),
+                            decompteSalaire.getPosteCorrelationId());
+            if (travailleurEbu != null) {
+                decompteSalaire.setPosteTravail(travailleurEbu.getPosteTravailFictif());
+            } else {
+                decompteSalaire.setPosteTravail(new PosteTravail());
+            }
+        }
+
+        decompteSalaire.setTauxAfficheErreur(decompteSalaire.getTauxContribuableAfficheAsValue());
+
+        taxationOffice = VulpeculaRepositoryLocator.getTaxationOfficeRepository().findByIdDecompte(idDecompte);
     }
 
     /**
@@ -166,6 +246,10 @@ public class PTDecomptesalaireViewBean extends DomainPersistentObjectViewBean<De
         return DecompteSalaireViewService.class.getName();
     }
 
+    public String getDecompteViewService() {
+        return DecompteViewService.class.getName();
+    }
+
     /**
      * Retourne true si le décompte salaire peut être édité.
      * 
@@ -176,6 +260,10 @@ public class PTDecomptesalaireViewBean extends DomainPersistentObjectViewBean<De
             return false;
         }
         return decompteSalaire.getDecompte().isEditable();
+    }
+
+    public boolean isEBusiness() {
+        return decompteSalaire.getDecompte().isEBusiness();
     }
 
     /**
@@ -202,6 +290,15 @@ public class PTDecomptesalaireViewBean extends DomainPersistentObjectViewBean<De
 
     public boolean isNouveau() {
         return JadeStringUtil.isEmpty(decompteSalaire.getId());
+    }
+
+    public boolean isNouveauTravailleur() {
+        if (decompteSalaire.getPosteTravail() == null) {
+            return false;
+        }
+        // return JadeStringUtil.isEmpty(decompteSalaire.getPosteTravail().getId());
+
+        return decompteSalaire.isNewTravailleur();
     }
 
     public String getPeriodeDebut() {
@@ -234,12 +331,12 @@ public class PTDecomptesalaireViewBean extends DomainPersistentObjectViewBean<De
         if (decompte.isControleEmployeur()) {
             return "";
         } else {
-            if (decompte.getPeriode().isMemeAnnee()) {
-                return decompte.getPeriodeFin().getSwissValue();
-            } else {
-                return decompte.getAnnee().getLastDayOfYear().getSwissValue();
-            }
+            // if (decompte.getPeriode().isMemeAnnee()) {
+            // return decompte.getPeriodeFin().getSwissValue();
+            // } else {
+            return decompte.getPeriodeFin().getSwissValue();
         }
+
     }
 
     public String getMessageDialogCotisation() {
@@ -253,4 +350,52 @@ public class PTDecomptesalaireViewBean extends DomainPersistentObjectViewBean<De
     public String getTypePeriodique() {
         return TypeDecompte.PERIODIQUE.getValue();
     }
+
+    public String getTypeCPP() {
+        return TypeDecompte.CPP.getValue();
+    }
+
+    public TaxationOffice getTaxationOffice() {
+        return taxationOffice;
+    }
+
+    public String getRemarque() {
+        return decompteSalaire.getRemarque();
+    }
+
+    public String getTauxSaisieEbu() {
+        if (decompteSalaire.getTauxSaisieEbu() != null) {
+            return decompteSalaire.getTauxSaisieEbu();
+        }
+        return "";
+
+    }
+
+    public String getTauxSaisieEbuFormatte() {
+        Taux taux;
+        if (decompteSalaire.getTauxSaisieEbu() != null) {
+            taux = new Taux(decompteSalaire.getTauxSaisieEbu());
+            return taux.getValue();
+        }
+        return "";
+
+    }
+
+    public List<CodeErreurDecompteSalaire> getListeCodeErreur() {
+        return decompteSalaire.getListeCodeErreur();
+    }
+
+    public boolean getIsEbuAndComplementaire() {
+        Employeur employeur = VulpeculaRepositoryLocator.getEmployeurRepository().findById(
+                decompteSalaire.getDecompte().getEmployeur().getId());
+        boolean isEbu = employeur.isEBusiness();
+        boolean isDecCompl = TypeDecompte.COMPLEMENTAIRE.equals(decompteSalaire.getDecompte().getType());
+        boolean isDecEbu = TypeProvenance.EBUSINESS.equals(decompteSalaire.getDecompte().getTypeProvenance());
+        return isEbu && isDecCompl && isDecEbu;
+    }
+
+    public boolean getIsEbu() {
+        return TypeProvenance.EBUSINESS.equals(decompteSalaire.getDecompte().getTypeProvenance());
+    }
+
 }

@@ -28,4 +28,24 @@ public interface TaxationOfficeRepository extends Repository<TaxationOffice> {
 
     int findNbTOActives(Employeur employeur, Date dateDebut);
 
+    /**
+     * Recherche des taxations d'office non annulées pour un id employeur.
+     * 
+     * @param id employeur
+     * @return Liste de taxations
+     */
+    List<TaxationOffice> findByIdEmployeur(String idEmployeur);
+
+    /**
+     * Recherche des taxations d'office avec l'état passé en paramètre.
+     * 
+     * @param etat Etat de taxation
+     * @return Liste de taxations d'office
+     */
+    List<TaxationOffice> findByEtat(EtatTaxation etat);
+
+    List<TaxationOffice> findByEtatIn(EtatTaxation... etat);
+
+    List<TaxationOffice> findAnnuleForDate(Date date);
+
 }

@@ -15,6 +15,7 @@ import ch.globaz.vulpecula.business.models.notification.NotificationSimpleModel;
 import ch.globaz.vulpecula.business.services.VulpeculaRepositoryLocator;
 import ch.globaz.vulpecula.domain.models.common.Date;
 import ch.globaz.vulpecula.domain.models.postetravail.PosteTravail;
+import ch.globaz.vulpecula.domain.models.postetravail.TravailleurEbuDomain;
 
 public class TravailleurViewService {
 
@@ -25,6 +26,7 @@ public class TravailleurViewService {
         public String qualification;
         public String note;
         public String dateFinPoste;
+        public String nom;
     }
 
     /**
@@ -46,6 +48,26 @@ public class TravailleurViewService {
         infos.qualification = session.getCodeLibelle(posteTravail.getQualificationAsValue());
         infos.note = retrieveNotes(posteTravail.getIdTravailleur());
         infos.dateFinPoste = getDateFinPoste(posteTravail.getFinActivite());
+        return infos;
+    }
+
+    public InformationsTravailleurs getInformationsNouveauTravailleur(String correlationId) throws NoteException,
+            JadePersistenceException {
+        BSession session = BSessionUtil.getSessionFromThreadContext();
+        TravailleurEbuDomain travailleurEbu = VulpeculaRepositoryLocator.getNouveauTravailleurRepository()
+                .findByCorrelationIdWithQuittance(correlationId);
+
+        InformationsTravailleurs infos = new InformationsTravailleurs();
+        if (travailleurEbu != null) {
+            infos.dateNaissance = travailleurEbu.getDateNaissance();
+            if (travailleurEbu.getTypeSalaire() != null) {
+                infos.genreSalaire = session.getCodeLibelle(travailleurEbu.getTypeSalaire().getValue());
+            }
+            if (travailleurEbu.getCodeProfessionnel() != null) {
+                infos.qualification = session.getCodeLibelle(travailleurEbu.getCodeProfessionnel().getValue());
+            }
+            infos.nom = travailleurEbu.getNom() + ", " + travailleurEbu.getPrenom();
+        }
         return infos;
     }
 

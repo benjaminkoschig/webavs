@@ -34,9 +34,9 @@
 								<ct:FWLabel key="JSP_GENRE"/>
 							</td>
 							<td>
-								<ct:select id="searchModel.forGenre" name="searchModel.forGenre" wantBlank="true" notation="data-g-select=' '">
-									<ct:optionsCodesSystems csFamille="PTGENCOTAP"/>
-								</ct:select>
+							<ct:select id="searchModel.forGenre" name="searchModel.forGenre" wantBlank="true" notation="data-g-select=' '">
+								<ct:optionsCodesSystems csFamille="PTGENCOTAP"/>	
+							</ct:select>
 							</td>
 						</tr>		
 			</table>

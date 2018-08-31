@@ -1,15 +1,12 @@
 package ch.globaz.vulpecula.businessimpl.services.employeur;
 
-import globaz.jade.client.util.JadeNumericUtil;
-import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.exception.JadePersistenceException;
-import globaz.jade.persistence.JadePersistenceManager;
-import globaz.jade.persistence.model.JadeAbstractSearchModel;
-import globaz.naos.translation.CodeSystem;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import org.apache.commons.lang.Validate;
 import ch.globaz.naos.business.model.ParticulariteSearchSimpleModel;
 import ch.globaz.naos.business.model.ParticulariteSimpleModel;
 import ch.globaz.vulpecula.business.models.employeur.EmployeurParticulariteComplexModel;
@@ -28,10 +25,16 @@ import ch.globaz.vulpecula.external.repositoriesjade.naos.converters.Particulari
 import ch.globaz.vulpecula.repositoriesjade.RepositoryJade;
 import ch.globaz.vulpecula.repositoriesjade.postetravail.converters.EmployeurConverter;
 import ch.globaz.vulpecula.util.DBUtil;
+import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.persistence.JadePersistenceManager;
+import globaz.jade.persistence.model.JadeAbstractSearchModel;
+import globaz.naos.translation.CodeSystem;
+import globaz.vulpecula.business.exception.VulpeculaException;
 
 /**
  * @author Arnaud Geiser (AGE) | Créé le 14 mars 2014
- * 
+ *
  */
 public class EmployeurServiceImpl implements EmployeurService {
     private EmployeurRepository employeurRepository;
@@ -59,7 +62,17 @@ public class EmployeurServiceImpl implements EmployeurService {
     @Override
     public List<Employeur> findByIdAffilie(final String idAffilie, final Date dateDebut, final Date dateFin,
             final Collection<String> inPeriodicite) {
-        return employeurRepository.findByIdAffilie(idAffilie, dateDebut, dateFin, inPeriodicite);
+        return employeurRepository.findByIdAffilie(idAffilie, dateFin, dateFin, inPeriodicite);
+    }
+
+    @Override
+    public Employeur findByIdAffilie(final String idAffilie) {
+        return employeurRepository.findByIdAffilie(idAffilie);
+    }
+
+    @Override
+    public Employeur findByNumAffilie(final String numAffilie) {
+        return employeurRepository.findByNumAffilie(numAffilie);
     }
 
     @Override
@@ -78,7 +91,7 @@ public class EmployeurServiceImpl implements EmployeurService {
         // Tri la liste retourné par la fonction findByIdAffilie afin qu'il ne reste que
         // les employeurs qui ont une période d'activité dans la période demandé
         for (Employeur empl : employeurs) {
-            if (empl.isActif(periodeDemande)) {
+            if (empl.isActif(periodeDemande) && !empl.getDateDebut().equals(empl.getDateFin())) {
                 employeurActifs.add(empl);
             }
         }
@@ -101,8 +114,7 @@ public class EmployeurServiceImpl implements EmployeurService {
             ids.add(employeur.getId());
         }
 
-        String sql = "SELECT DISTINCT aff.MAIAFF "
-                + "FROM SCHEMA.AFAFFIP aff "
+        String sql = "SELECT DISTINCT aff.MAIAFF " + "FROM SCHEMA.AFAFFIP aff "
                 + "JOIN SCHEMA.PT_POSTES_TRAVAILS postes ON aff.MAIAFF=postes.ID_AFAFFIP "
                 + "WHERE (postes.DATE_DEBUT_ACTIVITE<=:dateDebut "
                 + "AND (postes.DATE_FIN_ACTIVITE>:dateDebut OR postes.DATE_FIN_ACTIVITE=0) "
@@ -121,6 +133,36 @@ public class EmployeurServiceImpl implements EmployeurService {
         }
 
         return employeursActifs;
+    }
+
+    @Override
+    public List<Employeur> findEmployeursActifsSansPostes(final Date dateDebut, final Date dateFin)
+            throws VulpeculaException {
+        List<Employeur> employeursActifsSansPostesActifs = new ArrayList<Employeur>();
+
+        StringBuilder sbsql = new StringBuilder();
+        sbsql.append("SELECT DISTINCT aff.MAIAFF ").append("FROM SCHEMA.AFAFFIP aff ")
+                .append("JOIN SCHEMA.PT_POSTES_TRAVAILS postes ON aff.MAIAFF=postes.ID_AFAFFIP ")
+                .append("WHERE aff.MADFIN = 0 ").append("AND postes.DATE_FIN_ACTIVITE < ").append(dateFin.getValue())
+                .append(" except( ").append("SELECT DISTINCT aff.MAIAFF ").append("FROM SCHEMA.AFAFFIP aff ")
+                .append("JOIN SCHEMA.PT_POSTES_TRAVAILS postes ON aff.MAIAFF=postes.ID_AFAFFIP ")
+                .append("WHERE postes.DATE_DEBUT_ACTIVITE < ").append(dateFin.getValue())
+                .append(" AND  postes.DATE_FIN_ACTIVITE=0 ").append("AND aff.MADDEB<= ").append(dateDebut.getValue())
+                .append(" AND aff.MADFIN=0)");
+
+        List<HashMap<String, Object>> validIds;
+        try {
+            validIds = DBUtil.executeQuery(sbsql.toString(), getClass());
+        } catch (JadePersistenceException e) {
+            throw new VulpeculaException(e.getMessage());
+        }
+
+        for (HashMap<String, Object> maiaffPair : validIds) {
+            BigDecimal idAff = (BigDecimal) maiaffPair.get("MAIAFF");
+            Employeur employeur = findByIdAffilie(idAff.toString());
+            employeursActifsSansPostesActifs.add(employeur);
+        }
+        return employeursActifsSansPostesActifs;
     }
 
     public boolean hasPostesActifs(Employeur employeur, final Date dateDebut, Date dateFin) {
@@ -234,13 +276,7 @@ public class EmployeurServiceImpl implements EmployeurService {
         List<Employeur> employeursEdition = employeurRepository.findEmployeursWithEdition();
 
         for (Employeur employeur : employeursEdition) {
-            Date finAffiliation = null;
-            if (!JadeNumericUtil.isEmptyOrZero(employeur.getDateFin())) {
-                finAffiliation = new Date(employeur.getDateFin());
-            }
-
-            if ((finAffiliation == null || finAffiliation.afterOrEquals(dateFin))
-                    && !hasPostesActifs(employeur, dateDebut, dateFin)) {
+            if (employeur.isActif(new Periode(dateDebut, dateFin)) && !hasPostesActifs(employeur, dateDebut, dateFin)) {
                 employeursInactifsEdition.add(employeur);
             }
         }
@@ -280,22 +316,6 @@ public class EmployeurServiceImpl implements EmployeurService {
     }
 
     @Override
-    public boolean changeEditerSansTravailleur(String idEmployeur, boolean activated) {
-        if (employeurRepository.hasEntryInDB(idEmployeur)) {
-            Employeur employeur = employeurRepository.findById(idEmployeur);
-            employeur.setEditerSansTravailleur(activated);
-            employeur = employeurRepository.update(employeur);
-            return employeur.isEditerSansTravailleur();
-        } else {
-            Employeur employeur = new Employeur();
-            employeur.setId(idEmployeur);
-            employeur.setEditerSansTravailleur(activated);
-            employeur = employeurRepository.create(employeur);
-            return employeur.isEditerSansTravailleur();
-        }
-    }
-
-    @Override
     public List<Employeur> getEmployeursSansParticularite(List<Employeur> employeurs, Date date) {
         List<Employeur> employeursSansParticularites = new ArrayList<Employeur>();
         for (Employeur e : employeurs) {
@@ -306,7 +326,8 @@ public class EmployeurServiceImpl implements EmployeurService {
         return employeursSansParticularites;
     }
 
-    boolean hasParticulariteSansPersonnel(Employeur employeur, Date date) {
+    @Override
+    public boolean hasParticulariteSansPersonnel(Employeur employeur, Date date) {
         List<Particularite> particularites = findParticularites(employeur.getId(), date);
         for (Particularite particularite : particularites) {
             Periode periode = new Periode(particularite.getDateDebut(), particularite.getDateFin());
@@ -337,5 +358,68 @@ public class EmployeurServiceImpl implements EmployeurService {
             particularties.add(particularite);
         }
         return particularties;
+    }
+
+    @Override
+    public List<Particularite> findParticularites(String idAffilie, Periode periode) {
+        List<Particularite> particularties = new ArrayList<Particularite>();
+        ParticulariteSearchSimpleModel searchModel = new ParticulariteSearchSimpleModel();
+        searchModel.setForIdAffiliation(idAffilie);
+        searchModel.setForPeriodeDebutLessOrEquals(periode.getDateDebutAsSwissValue());
+        searchModel.setForParticularite(CodeSystem.PARTIC_AFFILIE_SANS_PERSONNEL);
+        RepositoryJade.searchFor(searchModel);
+
+        for (int i = 0; i < searchModel.getSize(); i++) {
+            ParticulariteSimpleModel particulariteSimpleModel = (ParticulariteSimpleModel) searchModel
+                    .getSearchResults()[i];
+            Particularite particularite = ParticulariteConverter.convertToDomain(particulariteSimpleModel);
+            Periode periodeParticularite = new Periode(particularite.getDateDebut(), particularite.getDateFin());
+            if (periodeParticularite.chevauche(periode)) {
+                particularties.add(particularite);
+            }
+        }
+        return particularties;
+    }
+
+    @Override
+    public List<Particularite> findParticularites(String idAffilie) {
+        List<Particularite> particularties = new ArrayList<Particularite>();
+        ParticulariteSearchSimpleModel searchModel = new ParticulariteSearchSimpleModel();
+        searchModel.setForIdAffiliation(idAffilie);
+        RepositoryJade.searchFor(searchModel);
+
+        for (int i = 0; i < searchModel.getSize(); i++) {
+            ParticulariteSimpleModel particulariteSimpleModel = (ParticulariteSimpleModel) searchModel
+                    .getSearchResults()[i];
+            Particularite particularite = ParticulariteConverter.convertToDomain(particulariteSimpleModel);
+            particularties.add(particularite);
+        }
+        return particularties;
+    }
+
+    @Override
+    public Particularite findDerniereParticularite(String idAffilie) {
+        ParticulariteSearchSimpleModel searchModel = new ParticulariteSearchSimpleModel();
+        searchModel.setForIdAffiliation(idAffilie);
+        searchModel.setForParticularite(CodeSystem.PARTIC_AFFILIE_SANS_PERSONNEL);
+        RepositoryJade.searchFor(searchModel);
+        for (int i = 0; i < searchModel.getSize(); i++) {
+            ParticulariteSimpleModel particulariteSimpleModel = (ParticulariteSimpleModel) searchModel
+                    .getSearchResults()[i];
+            Particularite particularite = new Particularite();
+            particularite.setDateDebut(new Date(particulariteSimpleModel.getDateDebut()));
+            if (!JadeStringUtil.isEmpty(particulariteSimpleModel.getDateFin())) {
+                particularite.setDateFin(new Date(particulariteSimpleModel.getDateFin()));
+            }
+            return particularite;
+        }
+        return null;
+    }
+
+    @Override
+    public boolean isEmployeurEbusiness(String idEmployeur) {
+        Validate.notEmpty(idEmployeur);
+        Employeur employeur = VulpeculaRepositoryLocator.getEmployeurRepository().findById(idEmployeur);
+        return employeur.isEBusiness();
     }
 }

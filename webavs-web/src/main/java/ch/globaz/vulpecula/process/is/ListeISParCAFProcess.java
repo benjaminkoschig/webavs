@@ -14,6 +14,7 @@ public class ListeISParCAFProcess extends BProcessWithContext {
     private static final long serialVersionUID = 931442789627393396L;
 
     private Annee annee;
+    private String canton;
 
     private Map<String, PrestationGroupee> prestationsAImprimer;
 
@@ -32,7 +33,7 @@ public class ListeISParCAFProcess extends BProcessWithContext {
 
     private void retrieve() {
         prestationsAImprimer = VulpeculaServiceLocator.getImpotSourceService().getPrestationsForAllocISGroupByCaisseAF(
-                annee);
+                annee, canton);
     }
 
     private void print() throws Exception {
@@ -41,6 +42,7 @@ public class ListeISParCAFProcess extends BProcessWithContext {
                 DocumentConstants.LISTES_AF_RETENUES_PAR_CAF_NAME);
         listISParCAFExcel.setPrestationsAImprimer(prestationsAImprimer);
         listISParCAFExcel.setAnnee(annee);
+        listISParCAFExcel.setCanton(canton);
         listISParCAFExcel.create();
         registerAttachedDocument(JadePublishDocumentInfoProvider.newInstance(this), listISParCAFExcel.getOutputFile());
     }
@@ -62,4 +64,13 @@ public class ListeISParCAFProcess extends BProcessWithContext {
     public Annee getAnnee() {
         return annee;
     }
+
+    public String getCanton() {
+        return canton;
+    }
+
+    public void setCanton(String canton) {
+        this.canton = canton;
+    }
+
 }

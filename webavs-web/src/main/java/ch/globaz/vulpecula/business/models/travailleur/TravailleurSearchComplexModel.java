@@ -9,6 +9,10 @@ import globaz.jade.persistence.model.JadeSearchComplexModel;
  * 
  */
 public class TravailleurSearchComplexModel extends JadeSearchComplexModel {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 8656900807497643999L;
     private String forDateNaissance;
     private String forIdTiers;
     private String forIdTravailleur;
@@ -16,6 +20,7 @@ public class TravailleurSearchComplexModel extends JadeSearchComplexModel {
     private String likeNom;
     private String likePrenom;
     private Boolean annonceMeroba;
+    private String forCorrelationId;
 
     private String sexeHomme = "516001";
     private String sexeFemme = "516002";
@@ -92,6 +97,14 @@ public class TravailleurSearchComplexModel extends JadeSearchComplexModel {
 
     public String getSexeFemme() {
         return sexeFemme;
+    }
+
+    public String getForCorrelationId() {
+        return forCorrelationId;
+    }
+
+    public void setForCorrelationId(String forCorrelationId) {
+        this.forCorrelationId = forCorrelationId;
     }
 
     @Override

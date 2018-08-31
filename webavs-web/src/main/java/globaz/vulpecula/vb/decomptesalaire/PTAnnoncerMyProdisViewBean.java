@@ -11,7 +11,8 @@ public class PTAnnoncerMyProdisViewBean extends BJadeSearchObjectELViewBean {
     public enum GenreAnnonce {
         THEORIQUES_ANNUEL,
         THEORIQUES_MENSUEL,
-        COTISANTS
+        COTISANTS,
+        CP
     };
 
     private int anneeAnnuel;
@@ -100,6 +101,10 @@ public class PTAnnoncerMyProdisViewBean extends BJadeSearchObjectELViewBean {
 
     public String getGenreAnnonceCotisants() {
         return GenreAnnonce.COTISANTS.toString();
+    }
+
+    public String getGenreCP() {
+        return GenreAnnonce.CP.toString();
     }
 
     public String getMessageAnneeObligatoire() {

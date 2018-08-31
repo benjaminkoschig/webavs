@@ -1,15 +1,5 @@
 package ch.globaz.vulpecula.facturation;
 
-import globaz.globall.db.BProcess;
-import globaz.globall.util.JACalendar;
-import globaz.globall.util.JANumberFormatter;
-import globaz.jade.context.JadeThread;
-import globaz.jade.log.business.JadeBusinessMessage;
-import globaz.musca.db.facturation.FAAfact;
-import globaz.musca.db.facturation.FAEnteteFacture;
-import globaz.musca.db.facturation.FAModuleFacturation;
-import globaz.osiris.api.APIRubrique;
-import globaz.osiris.db.comptes.CARubrique;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -19,6 +9,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ch.globaz.vulpecula.business.services.VulpeculaRepositoryLocator;
+import ch.globaz.vulpecula.business.services.VulpeculaServiceLocator;
 import ch.globaz.vulpecula.domain.models.common.Annee;
 import ch.globaz.vulpecula.domain.models.common.Date;
 import ch.globaz.vulpecula.domain.models.common.Montant;
@@ -28,8 +19,23 @@ import ch.globaz.vulpecula.domain.models.decompte.EtatDecompte;
 import ch.globaz.vulpecula.domain.models.decompte.HistoriqueDecompte;
 import ch.globaz.vulpecula.domain.models.decompte.TypeAssurance;
 import ch.globaz.vulpecula.domain.models.decompte.TypeDecompte;
+import ch.globaz.vulpecula.domain.models.decompte.TypeProvenance;
 import ch.globaz.vulpecula.external.models.affiliation.Adhesion;
 import ch.globaz.vulpecula.util.I18NUtil;
+import globaz.globall.db.BProcess;
+import globaz.globall.db.BSessionUtil;
+import globaz.globall.db.FWFindParameter;
+import globaz.globall.util.JACalendar;
+import globaz.globall.util.JANumberFormatter;
+import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.context.JadeThread;
+import globaz.jade.log.JadeLogger;
+import globaz.jade.log.business.JadeBusinessMessage;
+import globaz.musca.db.facturation.FAAfact;
+import globaz.musca.db.facturation.FAEnteteFacture;
+import globaz.musca.db.facturation.FAModuleFacturation;
+import globaz.osiris.api.APIRubrique;
+import globaz.osiris.db.comptes.CARubrique;
 
 /**
  * Processus de facturation des décomptes salaires
@@ -64,21 +70,33 @@ public final class PTProcessFacturationDecomptesSalaireGenerer extends PTProcess
     protected boolean launch() {
         // Suppression des entete et afact du journal
         deleteEnteteEtAfactForIdPassage(getIdPassage());
-
+        /*
+         * Récupération du paramètre de date limite de facturation
+         */
+        String dateLimite = null;
+        try {
+            dateLimite = FWFindParameter.findParameter(BSessionUtil.getSessionFromThreadContext().getCurrentThreadTransaction(), "68041001", "DATELIMITE",
+                    "01.01.2018", "", 0);
+            JadeLogger.info(dateLimite, dateLimite);
+        } catch (Exception e) {
+            JadeLogger.error(e, e.getMessage());
+        }
+        
         // Recherche des décomptes validés ou rectifiés
         // Pour des raisons de mem on passe par un Deque (LinkedList) qui permet de libérer la mem après chaque
         // itération.
         // La mem va monter et être libéré quand il y aura besoin d'espace.
         Deque<Decompte> deque = new LinkedList<Decompte>(VulpeculaRepositoryLocator.getDecompteRepository()
-                .findDecomptesForFacturation());
-
+                .findDecomptesForFacturation(new Date(dateLimite)));
+        Boolean mustPrintSpecialEbusiness = VulpeculaServiceLocator.getPropertiesService()
+                .mustImprimerFactureSpecialEbusiness();
         // Boucler sur les décomptes et charger les lignes de salaires
         while (!deque.isEmpty() && !isAborted()) {
             Decompte decompte = deque.removeFirst();
 
             try {
                 // Création de l'entête de facture
-                FAEnteteFacture enteteFacture = createEnteteFacture(decompte);
+                FAEnteteFacture enteteFacture = createEnteteFacture(decompte, mustPrintSpecialEbusiness);
                 // On charge les lignes de salaires et les cotis
                 fillLignesAndCotisations(decompte);
 
@@ -123,7 +141,8 @@ public final class PTProcessFacturationDecomptesSalaireGenerer extends PTProcess
      */
     private String findIdRubriqueForEcart(Decompte decompte) {
         String idRubriqueForDifference = null;
-        if (EtatDecompte.VALIDE.equals(decompte.getEtat()) && !decompte.getMontantDifference().isZero()) {
+        if (EtatDecompte.VALIDE.equals(decompte.getEtat()) && !decompte.getMontantDifference().isZero()
+                && !TypeProvenance.EBUSINESS.equals(decompte.getTypeProvenance())) {
             idRubriqueForDifference = findIdRubriqueForEcart(decompte.getTableCotisationsCalculees());
         }
         return idRubriqueForDifference;
@@ -239,15 +258,15 @@ public final class PTProcessFacturationDecomptesSalaireGenerer extends PTProcess
      * @return {@link FAEnteteFacture} enteteFacture
      * @throws Exception
      */
-    private FAEnteteFacture createEnteteFacture(final Decompte decompte) throws Exception {
-        if (TypeDecompte.SPECIAL.equals(decompte.getType())
+    private FAEnteteFacture createEnteteFacture(final Decompte decompte, Boolean mustPrintSpecial) throws Exception {
+        if ((decompte.isTraiterAsSpecial() && (mustPrintSpecial || !decompte.isEBusiness()))
                 || TypeDecompte.CONTROLE_EMPLOYEUR.equals(decompte.getType())) {
             return createEnteteFactureWithInteret(decompte.getIdTiers(), decompte.getEmployeurAffilieNumero(), decompte
                     .getNumeroDecompte().getValue(), decompte.getTypeSection().getValue(),
                     decompte.getInteretsMoratoires());
         } else {
             return createEnteteFactureWithoutPrinting(decompte.getIdTiers(), decompte.getEmployeurAffilieNumero(),
-                    decompte.getNumeroDecompte().getValue(), decompte.getTypeSection().getValue());
+                    decompte.getNumeroSection(), decompte.getTypeSection().getValue());
         }
 
     }
@@ -282,8 +301,27 @@ public final class PTProcessFacturationDecomptesSalaireGenerer extends PTProcess
 
         afact.setLibelle(cotisationCalculee.getCotisation().getAssuranceLibelle(I18NUtil.getUserLocale()));
         afact.setIdRubrique(cotisationCalculee.getCotisation().getAssurance().getRubriqueId());
-        afact.setDebutPeriode(anneeCotisation.getFirstDayOfYear().getSwissValue());
-        afact.setFinPeriode(anneeCotisation.getLastDayOfYear().getSwissValue());
+        afact.setDebutPeriode(decompte.getPeriode().getPeriodeDebutAsSwissValue());
+        afact.setFinPeriode(decompte.getPeriode().getPeriodeFinAsSwissValue());
+        // afact.setDebutPeriode(anneeCotisation.getFirstDayOfYear().getSwissValue());
+        // afact.setFinPeriode(anneeCotisation.getLastDayOfYear().getSwissValue());
+
+        int anneeDebutDecompte = 0;
+        int anneeFinDecompte = 0;
+
+        if (!JadeStringUtil.isBlankOrZero(decompte.getPeriodeDebut().getSwissValue())) {
+            anneeDebutDecompte = decompte.getPeriodeDebut().getYear();
+            if (anneeDebutDecompte < Integer.parseInt(anneeCotisation.toString())) {
+                afact.setDebutPeriode(anneeCotisation.getFirstDayOfYear().getSwissValue());
+            }
+        }
+
+        if (!JadeStringUtil.isBlankOrZero(decompte.getPeriodeFin().getSwissValue())) {
+            anneeFinDecompte = decompte.getPeriodeFin().getYear();
+            if (anneeFinDecompte > Integer.parseInt(anneeCotisation.toString())) {
+                afact.setFinPeriode(anneeCotisation.getLastDayOfYear().getSwissValue());
+            }
+        }
 
         int idCaisseMetier = 0;
         Adhesion adh = VulpeculaRepositoryLocator.getAdhesionRepository().findCaisseMetier(decompte.getIdEmployeur());

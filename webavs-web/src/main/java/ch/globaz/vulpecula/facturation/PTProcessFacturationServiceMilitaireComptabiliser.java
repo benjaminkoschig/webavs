@@ -2,6 +2,8 @@ package ch.globaz.vulpecula.facturation;
 
 import java.util.List;
 import ch.globaz.vulpecula.business.services.VulpeculaRepositoryLocator;
+import ch.globaz.vulpecula.domain.models.common.Date;
+import ch.globaz.vulpecula.domain.models.prestations.Beneficiaire;
 import ch.globaz.vulpecula.domain.models.prestations.Etat;
 import ch.globaz.vulpecula.domain.models.servicemilitaire.ServiceMilitaire;
 import ch.globaz.vulpecula.domain.repositories.servicemilitaire.ServiceMilitaireRepository;
@@ -24,6 +26,12 @@ public class PTProcessFacturationServiceMilitaireComptabiliser extends PTProcess
         List<ServiceMilitaire> serviceMilitaires = serviceMilitaireRepository.findForFacturation(getIdPassage());
         for (ServiceMilitaire serviceMilitaire : serviceMilitaires) {
             serviceMilitaire.setEtat(Etat.COMPTABILISEE);
+
+            if (Beneficiaire.NOTE_CREDIT.equals(serviceMilitaire.getBeneficiaire())
+                    || serviceMilitaire.getMontant().isNegative()) {
+                serviceMilitaire.setDateVersement(new Date(getPassage().getDateFacturation()));
+            }
+
             serviceMilitaireRepository.update(serviceMilitaire);
         }
         return true;

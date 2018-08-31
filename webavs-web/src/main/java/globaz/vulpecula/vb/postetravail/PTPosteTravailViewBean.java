@@ -4,6 +4,7 @@
 package globaz.vulpecula.vb.postetravail;
 
 import globaz.globall.db.BSessionUtil;
+import globaz.jade.exception.JadePersistenceException;
 import java.util.ArrayList;
 import java.util.List;
 import ch.globaz.common.vb.DomainPersistentObjectViewBean;
@@ -65,7 +66,7 @@ public class PTPosteTravailViewBean extends DomainPersistentObjectViewBean<Poste
     }
 
     @Override
-    public void add() throws ViewException {
+    public void add() throws ViewException, JadePersistenceException {
         try {
             VulpeculaServiceLocator.getPosteTravailService().create(posteTravail);
         } catch (UnsatisfiedSpecificationException ex) {
@@ -362,6 +363,14 @@ public class PTPosteTravailViewBean extends DomainPersistentObjectViewBean<Poste
         return BSessionUtil.getSessionFromThreadContext().getLabel("JSP_MESSAGE_SUPPRESSION");
     }
 
+    public String getMessageDecompteSurPeriode() {
+        return BSessionUtil.getSessionFromThreadContext().getLabel("JSP_MESSAGE_DECOMPTE_SUR_PERIODE_POSTE");
+    }
+
+    public String getMessageCotisationNonComprise() {
+        return BSessionUtil.getSessionFromThreadContext().getLabel("JSP_MESSAGE_COTISATION_NON_COMPRISE_PERIODE");
+    }
+
     public String getPosteTravailViewService() {
         return PosteTravailViewService.class.getName();
     }
@@ -413,6 +422,13 @@ public class PTPosteTravailViewBean extends DomainPersistentObjectViewBean<Poste
 
     public void setAffiliationCaisseMaladie(String affiliationCaisseMaladie) {
         this.affiliationCaisseMaladie = affiliationCaisseMaladie;
+    }
+
+    public String getPosteCorrelationId() {
+        if (posteTravail.getPosteCorrelationId() != null && !posteTravail.getPosteCorrelationId().isEmpty()) {
+            return posteTravail.getPosteCorrelationId();
+        }
+        return "";
     }
 
 }

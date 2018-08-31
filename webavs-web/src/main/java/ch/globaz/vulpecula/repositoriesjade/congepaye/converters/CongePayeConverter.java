@@ -1,5 +1,6 @@
 package ch.globaz.vulpecula.repositoriesjade.congepaye.converters;
 
+import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.persistence.model.JadeAbstractSearchModel;
 import ch.globaz.musca.business.models.PassageModel;
 import ch.globaz.osiris.business.model.JournalSimpleModel;
@@ -62,6 +63,11 @@ public class CongePayeConverter implements DomaineConverterJade<CongePaye, Conge
             congePayeSimpleModel.setEtat(Etat.SAISIE.getValue());
         }
 
+        if (entity.getDateTraitementSalaires() != null) {
+            congePayeSimpleModel.setDateTraitementSalaires(entity.getDateTraitementSalaires().getSwissValue());
+        }
+        congePayeSimpleModel.setTraitementSalaires(entity.getTraitementSalaires());
+
         if (entity.getPosteTravail() != null) {
             congePayeSimpleModel.setIdPosteTravail(entity.getPosteTravail().getId());
         }
@@ -79,6 +85,14 @@ public class CongePayeConverter implements DomaineConverterJade<CongePaye, Conge
         congePayeSimpleModel.setTotalSalaire(entity.getTotalSalaire().getValue());
         congePayeSimpleModel.setSalaireDeclare(entity.getSalaireDeclare().getValue());
         congePayeSimpleModel.setMontantNet(entity.getMontantNet().getValue());
+        if (entity.getDateVersement() != null) {
+            congePayeSimpleModel.setDateVersement(entity.getDateVersement().getSwissValue());
+        }
+
+        if (entity.getDateTraitementMyProdis() != null) {
+            congePayeSimpleModel.setDateTraitementMyProdis(entity.getDateTraitementMyProdis().getSwissValue());
+        }
+
         return congePayeSimpleModel;
     }
 
@@ -100,12 +114,24 @@ public class CongePayeConverter implements DomaineConverterJade<CongePaye, Conge
         if (simpleModel.getSalaireNonDeclare() != null && simpleModel.getSalaireNonDeclare().length() > 0) {
             congePaye.setSalaireNonDeclare(new Montant(simpleModel.getSalaireNonDeclare()));
         }
+
+        if (!JadeStringUtil.isEmpty(simpleModel.getDateVersement())) {
+            congePaye.setDateVersement(new Date(simpleModel.getDateVersement()));
+        }
+        if (!JadeStringUtil.isEmpty(simpleModel.getDateTraitementMyProdis())) {
+            congePaye.setDateTraitementMyProdis(new Date(simpleModel.getDateTraitementMyProdis()));
+        }
         congePaye.setTauxCP(new Taux(simpleModel.getTauxCP()));
         congePaye.setIdPassageFacturation(simpleModel.getIdPassageFacturation());
 
         PosteTravail posteTravail = new PosteTravail();
         posteTravail.setId(simpleModel.getIdPosteTravail());
         congePaye.setPosteTravail(posteTravail);
+
+        if (!JadeStringUtil.isEmpty(simpleModel.getDateTraitementSalaires())) {
+            congePaye.setDateTraitementSalaires(new Date(simpleModel.getDateTraitementSalaires()));
+        }
+        congePaye.setTraitementSalaires(simpleModel.getTraitementSalaires());
 
         return congePaye;
     }

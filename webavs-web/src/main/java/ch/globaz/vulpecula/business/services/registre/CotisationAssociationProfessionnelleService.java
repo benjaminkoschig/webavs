@@ -21,4 +21,9 @@ public interface CotisationAssociationProfessionnelleService extends JadeApplica
 
     CotisationAssociationProfessionnelle findCotisationsById(String idCotisationAP);
 
+    List<String> findAssociationsParente(String idAssociation);
+
+    List<String> findAssociationsEnfant(String idAssociation);
+
+    List<String> findAssociationsCPP(String idAssociation);
 }

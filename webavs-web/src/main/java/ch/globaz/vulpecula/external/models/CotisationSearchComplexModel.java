@@ -5,11 +5,19 @@ import globaz.jade.persistence.model.JadeSearchComplexModel;
 public class CotisationSearchComplexModel extends JadeSearchComplexModel {
     private static final long serialVersionUID = 6717624959133765127L;
 
+    private String forId;
     private String forIdAffilie;
     private String forDateDebutGreaterEquals;
     private String forDateDebutLessEquals;
-    private String forDateFinLessEquals;
     private String forDateFinGreaterEquals;
+
+    public String getForId() {
+        return forId;
+    }
+
+    public void setForId(String forId) {
+        this.forId = forId;
+    }
 
     public String getForIdAffilie() {
         return forIdAffilie;
@@ -17,6 +25,7 @@ public class CotisationSearchComplexModel extends JadeSearchComplexModel {
 
     public void setForIdAffilie(String forIdAffilie) {
         this.forIdAffilie = forIdAffilie;
+
     }
 
     public String getForDateDebutGreaterEquals() {
@@ -25,14 +34,6 @@ public class CotisationSearchComplexModel extends JadeSearchComplexModel {
 
     public void setForDateDebutGreaterEquals(String forDateDebut) {
         forDateDebutGreaterEquals = forDateDebut;
-    }
-
-    public String getForDateFinLessEquals() {
-        return forDateFinLessEquals;
-    }
-
-    public void setForDateFinLessEquals(String forDateFin) {
-        forDateFinLessEquals = forDateFin;
     }
 
     public String getForDateDebutLessEquals() {

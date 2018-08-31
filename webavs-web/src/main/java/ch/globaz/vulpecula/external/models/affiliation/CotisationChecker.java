@@ -1,6 +1,8 @@
 package ch.globaz.vulpecula.external.models.affiliation;
 
 import java.util.List;
+import ch.globaz.vulpecula.domain.models.common.Date;
+import ch.globaz.vulpecula.domain.models.common.Periode;
 
 /**
  * Classe permettant d'effectuer des contrôles relatifs à la classe {@link Cotisation}
@@ -18,6 +20,34 @@ public class CotisationChecker {
         for (Cotisation cotisation : cotisations) {
             if (cotisation.isAssuranceAVS()) {
                 return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean isSoumisAVS(final List<Cotisation> cotisations, Date dateRef) {
+        checkListsCotisationAndThrowExceptionIfNull(cotisations);
+        for (Cotisation cotisation : cotisations) {
+            if (dateRef != null && dateRef.afterOrEquals(cotisation.getDateDebut())
+                    && (cotisation.getDateFin() == null || dateRef.beforeOrEquals(cotisation.getDateFin()))) {
+                if (cotisation.isAssuranceAVS()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public static boolean isSoumisAVSPlus1JourPourPeriode(final List<Cotisation> cotisations, Periode periode) {
+        checkListsCotisationAndThrowExceptionIfNull(cotisations);
+        for (Cotisation cotisation : cotisations) {
+            if (!cotisation.getDateDebut().equals(cotisation.getDateFin())) {
+                Periode periodeCotisation = new Periode(cotisation.getDateDebut(), cotisation.getDateFin());
+                if (periodeCotisation.contains(periode) || periodeCotisation.chevauche(periode)) {
+                    if (cotisation.isAssuranceAVS()) {
+                        return true;
+                    }
+                }
             }
         }
         return false;

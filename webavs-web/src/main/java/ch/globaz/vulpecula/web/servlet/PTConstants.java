@@ -20,6 +20,8 @@ public class PTConstants {
     public static final String CS_GROUPE_CODES_REFERENCES = "OSIREFRUB";
     public static final String CS_GROUPE_TYPE_DECOMPTES = "PTTYPEDECO";
     public static final String CS_GROUPE_ETAT_DECOMPTES = "PTDECETAT";
+    public static final String CS_GROUPE_TYPE_CTRL = "PTTYPECTRL";
+    public static final String CS_GROUPE_CATEGORIE_COTISATION_AP = "PTCATCOTAP";
 
     public static final int MYPRODIS_SALAIRES_MUTATION01 = 1;
     public static final int MYPRODIS_SALAIRES_MUTATION03 = 3;
@@ -51,6 +53,18 @@ public class PTConstants {
     public static final String NUMERO_DECOMPTE = "numeroDecompte";
     public static final String TYPE = "type";
     public static final String ANNEE = "annee";
+    // GED myProdis
+    // Consultation
+    public static final String GED_LOGIN_EXTERNE = "E_LoginExtern";
+    public static final String GED_TYPE = "E_Type";
+    public static final String GED_PARTNER_EXTERNE_ID = "E_PartnerExternId";
+    public static final String GED_DOC_LABEL_SEARCH = "E_DocLabelSearch";
+    // Mise en GED
+    public static final String COUNTER_ID = "E_CounterId";
+    public static final String DOC_DATE = "E_DocDate";
+    public static final String DOC_LABEL = "E_DocLabel";
+    public static final String DOC_FILE_NAME = "E_DocFileName";
+    public static final String DOC_CONTENT = "E_DocContent";
 
     public static final String JSON_STRING_REGEX_SPLIT = "\\|";
 

@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model
+		className="ch.globaz.vulpecula.business.models.association.FactureAssociationComplexModel">
+
+		<root-model name="enteteFactureAssociationProfessionnelleSimpleModel"
+			model-ref="ch.globaz.vulpecula.business.models.association.EnteteFactureAssociationProfessionnelleSimpleModel" />
+			
+		<linked-model name="employeurComplexModel"
+			model-ref="ch.globaz.vulpecula.business.models.employeur.EmployeurComplexModel"
+			join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="affiliationTiersComplexModel.affiliation.affiliationId"
+					operation="EQUALS" field-ref="enteteFactureAssociationProfessionnelleSimpleModel.idEmployeur" />
+			</join-group>
+		</linked-model>
+
+		<linked-model name="ligneFactureAssociationProfessionnelleSimpleModel"
+			model-ref="ch.globaz.vulpecula.business.models.association.LigneFactureAssociationProfessionnelleSimpleModel"
+			join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idEnteteFacture" operation="EQUALS"
+					field-ref="enteteFactureAssociationProfessionnelleSimpleModel.id" />
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="administrationParentComplexModel"
+			model-ref="ch.globaz.vulpecula.external.models.AdministrationComplexModel"
+			join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="admin.idTiersAdministration" operation="EQUALS"
+					field-ref="enteteFactureAssociationProfessionnelleSimpleModel.idAssociation" />
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="associationCotisationSimpleModel"
+			model-ref="ch.globaz.vulpecula.business.models.association.AssociationCotisationSimpleModel"
+			join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="id" operation="EQUALS"
+					field-ref="ligneFactureAssociationProfessionnelleSimpleModel.idAssociationCotisation" />
+			</join-group>
+		</linked-model>
+				
+		<linked-model name="cotisationAssociationProfessionnelleSimpleModel"
+			model-ref="ch.globaz.vulpecula.business.models.association.CotisationAssociationProfessionnelleSimpleModel"
+			join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="id" operation="EQUALS"
+					field-ref="associationCotisationSimpleModel.idCotisationAssociationProfessionnelle" />
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="administrationComplexModel"
+			model-ref="ch.globaz.vulpecula.external.models.AdministrationComplexModel"
+			join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="admin.idTiersAdministration" operation="EQUALS"
+					field-ref="cotisationAssociationProfessionnelleSimpleModel.idAssociationProfessionnelle" />
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="passageModel"
+			model-ref="ch.globaz.musca.business.models.PassageModel"
+			join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="idPassage" operation="EQUALS"
+					field-ref="enteteFactureAssociationProfessionnelleSimpleModel.idPassageFacturation" />
+			</join-group>
+		</linked-model>
+
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forId" field-ref="enteteFactureAssociationProfessionnelleSimpleModel.id"
+					operation="EQUALS" />
+				<search-field name="forIdIn" field-ref="enteteFactureAssociationProfessionnelleSimpleModel.id"
+					operation="IN" />
+				<search-field name="forIdEmployeur" field-ref="enteteFactureAssociationProfessionnelleSimpleModel.idEmployeur"
+					operation="EQUALS" />
+				<search-field name="forAnneeFacture" field-ref="enteteFactureAssociationProfessionnelleSimpleModel.anneeFacture"
+					operation="EQUALS" />
+				<search-field name="forIdAssociationIn" field-ref="enteteFactureAssociationProfessionnelleSimpleModel.idAssociation" operation="IN" />
+				<search-field name="forEtat" field-ref="enteteFactureAssociationProfessionnelleSimpleModel.etat"
+					operation="EQUALS" />
+				<search-field name="forIdPassage" field-ref="enteteFactureAssociationProfessionnelleSimpleModel.idPassageFacturation"
+					operation="EQUALS" />
+				<search-field name="forGenre" field-ref="associationCotisationSimpleModel.genre"
+					operation="EQUALS" />
+			</search-group>
+		</search-definition>
+		
+		<order-by name="defaut">
+			<order-field field-ref="enteteFactureAssociationProfessionnelleSimpleModel.anneeFacture"
+				order="DESC" />
+		</order-by>
+		<order-by name="idDesc">
+			<order-field field-ref="enteteFactureAssociationProfessionnelleSimpleModel.id"
+				order="DESC" />
+		</order-by>
+		<order-by name="idAsc">
+			<order-field field-ref="enteteFactureAssociationProfessionnelleSimpleModel.id" />
+		</order-by>
+	</complexe-model>
+</model-mapping>

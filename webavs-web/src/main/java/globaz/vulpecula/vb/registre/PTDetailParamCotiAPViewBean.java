@@ -1,13 +1,14 @@
 package globaz.vulpecula.vb.registre;
 
-import globaz.globall.db.BSpy;
 import java.util.List;
 import ch.globaz.common.vb.BJadeSearchObjectELViewBean;
 import ch.globaz.vulpecula.business.services.VulpeculaRepositoryLocator;
 import ch.globaz.vulpecula.domain.models.association.CotisationAssociationProfessionnelle;
 import ch.globaz.vulpecula.domain.models.common.Taux;
+import ch.globaz.vulpecula.domain.models.registre.CategorieFactureAssociationProfessionnelle;
 import ch.globaz.vulpecula.domain.models.registre.GenreCotisationAssociationProfessionnelle;
 import ch.globaz.vulpecula.external.models.pyxis.Administration;
+import globaz.globall.db.BSpy;
 
 public class PTDetailParamCotiAPViewBean extends BJadeSearchObjectELViewBean {
 
@@ -83,6 +84,18 @@ public class PTDetailParamCotiAPViewBean extends BJadeSearchObjectELViewBean {
         cotiAP.setGenre(GenreCotisationAssociationProfessionnelle.fromValue(libelle));
     }
 
+    public String getFacturerDefaut() {
+        CategorieFactureAssociationProfessionnelle catCoti = CategorieFactureAssociationProfessionnelle.A_FACTURER;
+        if (cotiAP != null && cotiAP.getFacturerDefaut() != null) {
+            catCoti = cotiAP.getFacturerDefaut();
+        }
+        return catCoti.getValue();
+    }
+
+    public void setFacturerDefaut(String facturerDefaut) {
+        cotiAP.setFacturerDefaut(CategorieFactureAssociationProfessionnelle.fromValue(facturerDefaut));
+    }
+
     public String getIdAssociationProfessionnelle() {
         String idAP = "0";
         if (cotiAP != null && cotiAP.getAssociationProfessionnelle() != null
@@ -151,5 +164,28 @@ public class PTDetailParamCotiAPViewBean extends BJadeSearchObjectELViewBean {
     @Override
     public BSpy getSpy() {
         return null;
+    }
+
+    public void setIdRubrique(String idRubrique) {
+        cotiAP.setIdRubrique(idRubrique);
+    }
+
+    /**
+     * @return the idExterneRubrique
+     */
+    public String getIdExterneRubrique() {
+        if (cotiAP.getRubrique() != null && cotiAP.getRubrique().getId() != null
+                && cotiAP.getRubrique().getId().length() != 0 && !cotiAP.getRubrique().getId().equals("0")) {
+            return cotiAP.getRubrique().getIdExterne();
+        }
+        return "";
+    }
+
+    public String getPrintOrder() {
+        return cotiAP.getPrintOrder();
+    }
+
+    public void setPrintOrder(String num) {
+        cotiAP.setPrintOrder(num);
     }
 }

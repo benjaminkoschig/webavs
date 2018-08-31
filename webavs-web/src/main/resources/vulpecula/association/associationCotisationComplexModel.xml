@@ -21,14 +21,47 @@
 					operation="EQUALS" />
 				<search-field name="forIdEmployeur" field-ref="associationCotisationSimpleModel.idEmployeur"
 					operation="EQUALS" />
+				<search-field name="forIdAssociationProfessionnelle" field-ref="cotisationAssociationProfessionnelleComplexModel.administrationComplexModel.admin.idTiersAdministration"
+					operation="EQUALS" />	
+				<search-field name="forIdAssociationProfessionnelleIn" field-ref="cotisationAssociationProfessionnelleComplexModel.administrationComplexModel.admin.idTiersAdministration"
+					operation="IN" />	
+				<search-field name="forDateFin" operation="LESS" field-ref="associationCotisationSimpleModel.periodeDebut" />
 			</search-group>
 		</search-definition>
+		
+		<search-definition name="FACTURATION">
+			<search-group operator="AND">
+				<search-field name="forId" field-ref="associationCotisationSimpleModel.id"
+					operation="EQUALS" />
+				<search-field name="forIdEmployeur" field-ref="associationCotisationSimpleModel.idEmployeur"
+					operation="EQUALS" />
+				<search-field name="forIdAssociationProfessionnelle" field-ref="cotisationAssociationProfessionnelleComplexModel.administrationComplexModel.admin.idTiersAdministration"
+					operation="EQUALS" />	
+				<search-field name="forIdAssociationProfessionnelleIn" field-ref="cotisationAssociationProfessionnelleComplexModel.administrationComplexModel.admin.idTiersAdministration"
+					operation="IN" />	
+				<search-field name="forDateFin" operation="LESS" field-ref="associationCotisationSimpleModel.periodeDebut" />
+				<search-group operator="AND">
+					<search-group operator="OR">
+						<search-field name="forDateDebut" operation="GREATER_OR_EQUALS" field-ref="associationCotisationSimpleModel.periodeFin" />		
+						<search-field name="forDateDebut" operation="NULL" field-ref="associationCotisationSimpleModel.periodeFin" />
+					</search-group>
+				</search-group>		
+			</search-group>
+		</search-definition>
+		
+		<order-by  name="defaut">
+			<order-field field-ref="associationCotisationSimpleModel.idEmployeur"
+				order="DESC" />
+		</order-by>
 		<order-by name="idDesc">
 			<order-field field-ref="associationCotisationSimpleModel.id"
 				order="DESC" />
 		</order-by>
 		<order-by name="idAsc">
 			<order-field field-ref="associationCotisationSimpleModel.id" />
+		</order-by>
+		<order-by name="printOrder">
+			<order-field field-ref="cotisationAssociationProfessionnelleComplexModel.cotisationAssociationProfessionnelleSimpleModel.printOrder" />
 		</order-by>
 	</complexe-model>
 </model-mapping>

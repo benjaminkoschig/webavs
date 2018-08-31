@@ -43,6 +43,8 @@
 <script type="text/javascript" src="${rootPath}/scripts/json2.js"></script>
 <script type="text/javascript" src="${rootPath}/scripts/amount.js"></script>
 <script type="text/javascript" src="${rootPath}/taxationoffice/taxationofficePart.js"></script>
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/theme/ajax/templateZoneAjax.css">
+<script type="text/javascript" src="${rootPath}/scripts/vulpeculaUtils.js"></script>
 
 <%--  *************************************************************** Script propre à la page **************************************************************** --%>
 <script type="text/javascript">
@@ -50,6 +52,7 @@
 	globazGlobal.taxationServiceImpl = '${viewBean.taxationOfficeServiceImpl}';
 	globazGlobal.idTaxationOffice = '${taxationOffice.id}';
 	globazGlobal.idDecompte = '${viewBean.decompte.id}';
+	globazGlobal.decompteViewService = '${viewBean.decompteViewService}';
 </script>
 
 

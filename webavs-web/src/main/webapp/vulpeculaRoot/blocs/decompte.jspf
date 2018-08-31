@@ -4,13 +4,34 @@ dans le pageContext ! --%>
 	<input id="idDecompte" type="hidden" value="${decompte.id}">
 	<div class="header">
 	<div style="float: right;">
+		<c:choose>
+		<c:when test="${!decompte.gedMyProdis}">
 		<a style="align:right;" href="vulpecula?userAction=vulpecula.afficherGed.afficherGed.afficherGed&selectedId=${decompte.idGed}&serviceNameId=VULPECULA" target="GED_CONSULT">
 			<ct:FWLabel key="JSP_GED" /> (${decompte.idGed})
 		</a>
+		</c:when>
+		<c:otherwise>
+			<input type="button" id="${decompte.id}" class="consultationGed" value = "<ct:FWLabel key="JSP_GED" />">
+		</c:otherwise>
+		</c:choose>
 		</div>
 		
 		<a href="vulpecula?userAction=vulpecula.decomptedetail.decomptedetail.afficher&selectedId=${decompte.id}">
-			<ct:FWLabel key="JSP_DECOMPTE" /> (${decompte.id})
+			<span>
+				<c:choose>
+					<c:when test="${decompte.typeProvenance.value==0}">
+						<img style="margin-left:4px;" src="images/tp_gear16_v.png" title="Généré" />
+					</c:when>
+					<c:otherwise>
+	  					<c:if test="${decompte.typeProvenance.value == 68036001}">
+	  						<img style="margin-left:4px;" src="images/tp_main16_vi.png" title="Manuel" />
+  						</c:if>
+	  					<c:if test="${decompte.typeProvenance.value == 68036002}">
+	  						<img style="margin-left:4px;" src="images/tp_web16_o.png" title="e-business" />
+  						</c:if>
+					</c:otherwise>
+				</c:choose>
+			</span><ct:FWLabel key="JSP_DECOMPTE" /> (${decompte.id})
 		</a>
 		
 	</div>		
@@ -43,9 +64,34 @@ dans le pageContext ! --%>
 		</tr>
 		<tr>
 			<td class="label">
-				<label><ct:FWLabel key='JSP_DECOMPTE_ETAT'/></label>			
+				<label><ct:FWLabel key='JSP_TYPE_PROVENANCE'/></label>
 			</td>
-			<td class="value"><ct:FWCodeLibelle csCode="${decompte.etat.value}"/></td>
+			<td class="value">
+				<span>
+					<c:choose>
+						<c:when test="${decompte.typeProvenance.value==0}">
+							WebMétier généré
+						</c:when>
+						<c:otherwise>
+							<ct:FWCodeLibelle csCode="${decompte.typeProvenance.value}"/>
+						</c:otherwise>
+					</c:choose>
+				</span>
+			</td>
+		</tr>
+				
+		<tr>
+			<td class="label">
+				<label><ct:FWLabel key='JSP_DECOMPTE_ETAT'/></label>
+				<c:choose>
+					<c:when test="${decompte.etat=='TAXATION_DOFFICE'}">
+						<td class="value"><ct:FWCodeLibelle csCode="${decompte.etat.value}"/> - <ct:FWCodeLibelle csCode="${viewBean.taxationOffice.etat.value}"/></td>
+					</c:when>
+					<c:otherwise>
+						<td class="value"><ct:FWCodeLibelle csCode="${decompte.etat.value}"/></td>
+					</c:otherwise>
+				</c:choose>
+			</td>
 		</tr>
 	</table>
 </div>

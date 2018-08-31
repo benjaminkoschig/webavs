@@ -7,6 +7,8 @@
 		<fields>
 			<primary-key name="id" column="ID"
 				comment="Id du poste de travail" />
+			<field name="posteCorrelationId" column="POSTE_CORRELATION_ID" type="STRING"
+				comment="poste travail correlation ebu id" />
 			<field name="idTravailleur" column="ID_PT_TRAVAILLEURS" type="NUMERIC"
 				comment="id travailleur" />
 			<field name="idEmployeur" column="ID_AFAFFIP" type="NUMERIC"
@@ -28,6 +30,8 @@
 				<search-field name="forIdPosteTravail" field-ref="id"
 					operation="EQUALS" />
 				<search-field name="forIdTravailleur" field-ref="idTravailleur"
+					operation="EQUALS" />
+				<search-field name="forPosteCorrelationId" field-ref="posteCorrelationId"
 					operation="EQUALS" />
 			</search-group>
 		</search-definition>

@@ -14,6 +14,7 @@ public class AssociationCotisationSimpleModel extends JadeSimpleModel {
     private String masseSalariale;
     private String forfait;
     private String reductionFacture;
+    private String facturer;
 
     public AssociationCotisationSimpleModel() {
         super();
@@ -81,6 +82,14 @@ public class AssociationCotisationSimpleModel extends JadeSimpleModel {
 
     public void setReductionFacture(String reductionFacture) {
         this.reductionFacture = reductionFacture;
+    }
+
+    public String getFacturer() {
+        return facturer;
+    }
+
+    public void setFacturer(String facturer) {
+        this.facturer = facturer;
     }
 
     @Override

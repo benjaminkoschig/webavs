@@ -2,15 +2,21 @@ package ch.globaz.vulpecula.documents.af;
 
 import globaz.caisse.report.helper.CaisseHeaderReportBean;
 import globaz.framework.printing.itext.exception.FWIException;
+import globaz.jade.client.util.JadeStringUtil;
+import globaz.pyxis.db.tiers.TITiersViewBean;
 import java.util.HashMap;
 import java.util.Map;
+import ch.globaz.vulpecula.business.services.VulpeculaRepositoryLocator;
 import ch.globaz.vulpecula.businessimpl.services.is.PrestationGroupee;
 import ch.globaz.vulpecula.documents.DocumentConstants;
 import ch.globaz.vulpecula.documents.catalog.DocumentDomaine;
 import ch.globaz.vulpecula.documents.catalog.DocumentType;
 import ch.globaz.vulpecula.documents.catalog.VulpeculaDocumentManager;
+import ch.globaz.vulpecula.domain.models.common.Annee;
 import ch.globaz.vulpecula.domain.models.common.Date;
+import ch.globaz.vulpecula.domain.models.postetravail.Travailleur;
 import ch.globaz.vulpecula.external.models.pyxis.CodeLangue;
+import ch.globaz.vulpecula.external.models.pyxis.Tiers;
 
 public class DocumentAttestationAFPourFisc extends VulpeculaDocumentManager<PrestationGroupee> {
 
@@ -35,6 +41,16 @@ public class DocumentAttestationAFPourFisc extends VulpeculaDocumentManager<Pres
     private static final String PARAM_TEL = "tel";
     private static final String PARAM_EMAIL = "email";
 
+    private Annee annee;
+
+    public Annee getAnnee() {
+        return annee;
+    }
+
+    public void setAnnee(Annee annee) {
+        this.annee = annee;
+    }
+
     public DocumentAttestationAFPourFisc() throws Exception {
         this(null);
     }
@@ -42,6 +58,12 @@ public class DocumentAttestationAFPourFisc extends VulpeculaDocumentManager<Pres
     public DocumentAttestationAFPourFisc(PrestationGroupee prestation) throws Exception {
         super(prestation, DocumentConstants.ATTESTATION_AF_FISC_CT_NAME,
                 DocumentConstants.ATTESTATION_AF_FISC_TYPE_NUMBER);
+    }
+
+    public DocumentAttestationAFPourFisc(PrestationGroupee prestation, Annee annee) throws Exception {
+        super(prestation, DocumentConstants.ATTESTATION_AF_FISC_CT_NAME,
+                DocumentConstants.ATTESTATION_AF_FISC_TYPE_NUMBER);
+        this.annee = annee;
     }
 
     @Override
@@ -68,7 +90,9 @@ public class DocumentAttestationAFPourFisc extends VulpeculaDocumentManager<Pres
     public void fillFields() throws Exception {
         setReferences();
         setDeclarationImpot();
-        setParametres(P_TITRE, getCodeLibelle(getCurrentElement().getTitre()));
+        String titre = getTitreToPrint();
+        String[] titles = { titre };
+        setParametres(P_TITRE, formatMessage(getTexte(10, 1), titles));
         setParametresP1();
         setAffilie();
         setParametres(P_GENRE_PRESTATIONS, getTexte(3, 1));
@@ -76,7 +100,7 @@ public class DocumentAttestationAFPourFisc extends VulpeculaDocumentManager<Pres
         setParametres(P_MONTANT, getCurrentElement().getMontantPrestations().getValue());
         setParametres(P_ALLOCATIONS_FAMILIALES, getTexte(3, 3));
         setParametres(P_P2, getTexte(8, 1));
-        setParametres(P_P3, getTexte(8, 2));
+        setParametres(P_P3, formatMessage(getTexte(8, 2), titles));
         setParametres(P_SIGNATURE, getTexte(9, 1));
         setParametres(P_NB, getTexte(9, 2));
 
@@ -85,7 +109,7 @@ public class DocumentAttestationAFPourFisc extends VulpeculaDocumentManager<Pres
 
     private void setDeclarationImpot() throws Exception {
         Map<String, String> parametres = new HashMap<String, String>();
-        parametres.put(PARAM_ANNEE, String.valueOf(getCurrentElement().getDebutVersement().getYear()));
+        parametres.put(PARAM_ANNEE, String.valueOf(getAnnee().getValue()));
         setParametres(P_DECLARATION_IMPOT, getTexteFormatte(1, 1, parametres));
     }
 
@@ -99,7 +123,7 @@ public class DocumentAttestationAFPourFisc extends VulpeculaDocumentManager<Pres
 
     private void setParametresP1() throws Exception {
         Map<String, String> parametres = new HashMap<String, String>();
-        parametres.put(PARAM_ANNEE, String.valueOf(getCurrentElement().getDebutVersement().getYear()));
+        parametres.put(PARAM_ANNEE, String.valueOf(getAnnee().getValue()));
         setParametres(P_P1, getTexteFormatte(2, 1, parametres));
     }
 
@@ -110,6 +134,22 @@ public class DocumentAttestationAFPourFisc extends VulpeculaDocumentManager<Pres
         sb.append(" - ");
         sb.append(entetePrestation.getLocalite());
         setParametres(P_AFFILIE, sb.toString());
+    }
+
+    private String getTitreToPrint() throws Exception {
+        Travailleur travAllocataire = VulpeculaRepositoryLocator.getTravailleurRepository().findByNss(
+                getCurrentElement().getNss());
+        if (travAllocataire.getIdTiers().equals(getCurrentElement().getIdTiersBeneficiaire())) {
+            TITiersViewBean bean = new TITiersViewBean();
+            bean.setIdTiers(travAllocataire.getIdTiers());
+            bean.retrieve();
+            return bean.getFormulePolitesse(getCodeLangue().getValue());
+        } else {
+            TITiersViewBean bean = new TITiersViewBean();
+            bean.setIdTiers(getCurrentElement().getIdTiersBeneficiaire());
+            bean.retrieve();
+            return bean.getFormulePolitesse(getCodeLangue().getValue());
+        }
     }
 
     @Override
@@ -127,20 +167,33 @@ public class DocumentAttestationAFPourFisc extends VulpeculaDocumentManager<Pres
 
     @Override
     public CodeLangue getCodeLangue() {
-        CodeLangue langue = getCurrentElement().getLangue();
-        if (langue != null) {
-            return langue;
+        Travailleur travAllocataire = VulpeculaRepositoryLocator.getTravailleurRepository().findByNss(
+                getCurrentElement().getNss());
+
+        Tiers tiersBeneficiaire = VulpeculaRepositoryLocator.getTiersRepository().findById(
+                getCurrentElement().getIdTiersBeneficiaire());
+
+        if (travAllocataire.getIdTiers().equals(tiersBeneficiaire.getIdTiers())) {
+            CodeLangue langue = getCurrentElement().getLangue();
+            if (langue != null) {
+                return langue;
+            } else {
+                return CodeLangue.FR;
+            }
         } else {
-            return CodeLangue.FR;
+            return CodeLangue.fromValue(tiersBeneficiaire.getLangue());
         }
     }
 
     @Override
     public void beforeBuildReport() throws FWIException {
         super.beforeBuildReport();
+        String year = annee.toString();
+        year = year.length() > 2 ? year.substring(2) : year;
+
         StringBuilder sb = new StringBuilder();
-        sb.append(getCurrentElement().getNss());
-        sb.append(getCurrentElement().getDebutVersement().getYear());
+        sb.append(JadeStringUtil.removeChar(getCurrentElement().getNss(), '.'));
+        sb.append(year);
         sb.append(0);
         getDocumentInfo().setBarcode(sb.toString());
     }

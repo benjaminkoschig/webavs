@@ -22,6 +22,10 @@ public abstract class PrestationsListExcel extends AbstractListExcel {
         super(session, filenameRoot, documentTitle);
     }
 
+    public PrestationsListExcel(PrestationsListExcel listExcel) {
+        super(listExcel);
+    }
+
     /**
      * Retourne une chaîne de caractère comportant le titre du document Excel.
      * 
@@ -66,6 +70,10 @@ public abstract class PrestationsListExcel extends AbstractListExcel {
         } else {
             createCell(EMPTY_CRITERE);
         }
+    }
+
+    public boolean hasEmployeurFilter() {
+        return employeur != null && employeur.getId() != null;
     }
 
     public void setIdPassageFacturation(String idPassageFacturation) {

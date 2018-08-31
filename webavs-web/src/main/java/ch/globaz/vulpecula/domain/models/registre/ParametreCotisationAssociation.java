@@ -29,6 +29,7 @@ public class ParametreCotisationAssociation implements DomainEntity, Serializabl
     private Taux taux;
     private Montant fourchetteDebut;
     private Montant fourchetteFin;
+    private Double facteur;
     private String spy;
 
     public Taux getTaux() {
@@ -75,6 +76,13 @@ public class ParametreCotisationAssociation implements DomainEntity, Serializabl
         return cotisationAssociationProfessionnelle;
     }
 
+    public String getIdAssociationProfessionnelle() {
+        if (cotisationAssociationProfessionnelle == null) {
+            return null;
+        }
+        return cotisationAssociationProfessionnelle.getIdAssociationProfessionnelle();
+    }
+
     public void setCotisationAssociationProfessionnelle(
             CotisationAssociationProfessionnelle cotisationAssociationProfessionnelle) {
         this.cotisationAssociationProfessionnelle = cotisationAssociationProfessionnelle;
@@ -86,6 +94,14 @@ public class ParametreCotisationAssociation implements DomainEntity, Serializabl
 
     public void setTypeParam(TypeParamCotisationAP typeParamCotisationAP) {
         typeParam = typeParamCotisationAP;
+    }
+
+    public Double getFacteur() {
+        return facteur;
+    }
+
+    public void setFacteur(Double facteur) {
+        this.facteur = facteur;
     }
 
     @Override

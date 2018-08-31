@@ -34,14 +34,14 @@ public class DecompteCTSPInteretsRequisTest {
     @Test(expected = UnsatisfiedSpecificationException.class)
     public void isSatisfiedBy_GivenDecompteSpecial_ShouldBeFalse() throws UnsatisfiedSpecificationException {
         Decompte decompte = new Decompte();
-        decompte.setType(TypeDecompte.SPECIAL);
+        decompte.setType(TypeDecompte.SPECIAL_SALAIRE);
         spec.isSatisfiedBy(decompte);
     }
 
     @Test
     public void isSatisfiedBy_GivenDecompteSpecialWithInterets_ShouldBeTrue() throws UnsatisfiedSpecificationException {
         Decompte decompte = new Decompte();
-        decompte.setType(TypeDecompte.SPECIAL);
+        decompte.setType(TypeDecompte.SPECIAL_SALAIRE);
         decompte.setInteretsMoratoires(InteretsMoratoires.AUTOMATIQUE);
         assertTrue(spec.isSatisfiedBy(decompte));
     }

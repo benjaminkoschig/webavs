@@ -21,11 +21,12 @@
 			<select-field name="affiliationTiersComplexModel.affiliation.idConvention" field-ref="affiliationTiersComplexModel.affiliation.idConvention" />
 			<select-field name="affiliationTiersComplexModel.affiliation.accesSecurite" field-ref="affiliationTiersComplexModel.affiliation.accesSecurite" />
 			<select-field name="affiliationTiersComplexModel.tiersAffiliation.idTiers" field-ref="affiliationTiersComplexModel.tiersAffiliation.idTiers" />
+			<select-field name="affiliationTiersComplexModel.affiliation.declarationSalaire" field-ref="affiliationTiersComplexModel.affiliation.declarationSalaire" />
 		</select-fields>
 		
 		<root-model name="affiliationTiersComplexModel"
 			model-ref="ch.globaz.naos.business.model.AffiliationTiersComplexModel"
-			select-fields="false" />
+			select-fields="true" />
 
 		<linked-model name="administrationComplexModel"
 			model-ref="ch.globaz.pyxis.business.model.AdministrationComplexModel"
@@ -68,8 +69,11 @@
 					field-ref="affiliationTiersComplexModel.affiliation.periodicite" operation="IN" />
 				<search-field name="isBvr"
 					field-ref="employeurSimpleModel.bvr" operation="EQUALS" />
-				<search-field name="isEditerSansTravailleur" field-ref="employeurSimpleModel.editerSansTravailleur" operation="EQUALS" />
 				<search-field  name="typeAffiliation" field-ref="affiliationTiersComplexModel.affiliation.typeAffiliation" operation="EQUALS" />
+				<search-field name="forDateDebutGreaterOrEquals" field-ref="affiliationTiersComplexModel.affiliation.dateDebut"
+					operation="GREATER_OR_EQUALS" />
+				<search-field name="forDateDebutLessOrEquals" field-ref="affiliationTiersComplexModel.affiliation.dateDebut"
+					operation="LESS_OR_EQUALS" />
 			</search-group>
 		</search-definition>
 

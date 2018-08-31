@@ -31,6 +31,7 @@ public interface IntRole extends BIEntity {
     public String ROLE_PCF = "517045";
     public String ROLE_RENTIER = "517038";
     public String ROLE_BENEFICIAIRE_PRESTATIONS_CONVENTIONNELLES = "68902001";
+    public String ROLE_ASSOCIATION_PROFESSIONNELLE = "68902003";
 
     /**
      * 

@@ -19,6 +19,7 @@
 <c:set var="userActionAddPoste" value="vulpecula.postetravail.posteTravail" />
 <c:set var="userActionAddDecompte" value="vulpecula.decomptenouveau.decomptenouveau" />
 <c:set var="userActionAddAssociation" value="vulpecula.association.association" />
+<c:set var="userActionAddControleEmployeur" value="vulpecula.ctrlemployeur.controleEmployeur" />
 
 <%-- initialisation des variables --%>
 <c:set var="employeur" value="${viewBean.employeur}" />
@@ -27,10 +28,13 @@
 <%@ include file="/theme/detail_el/javascripts.jspf" %>
 <script type="text/javascript">
 globazGlobal.employeurViewService = '${viewBean.employeurViewService}';
+globazGlobal.facturationAPViewService = '${viewBean.facturationAPViewService}';
 globazGlobal.idEmployeur = ${employeur.id};
 globazGlobal.tab = '${viewBean.tab}';
 globazGlobal.labelOui = '${viewBean.labelOui}';
 globazGlobal.labelNon = '${viewBean.labelNon}';
+globazGlobal.labelDeleteFA = '${viewBean.labelDeleteFA}';
+globazGlobal.labelRefuseFA = '${viewBean.labelRefuseFA}';
 </script>
 <script type="text/javascript" src="${pageContext.request.contextPath}/scripts/ajax/AbstractScalableAJAXTableZone.js"/></script>
 <script type="text/javascript" src="${pageContext.request.contextPath}/scripts/ajax/AbstractSimpleAJAXDetailZone.js"/></script>
@@ -46,6 +50,15 @@ table.tableAssociationProfesionnelle, .tableAssociationProfesionnelle th, .table
 	border: solid 1px black;
 }
 </style>
+
+<%-- *************************************************************** Templates ******************************************************************************* --%>
+<script id="tplListModeles" type="text/template">
+	<select>
+		<c:forEach var="modele" items="${viewBean.modeles}">
+			<option value="${modele.id}">${modele.libelle}</option>
+		</c:forEach>
+	</select>
+</script>
 
 <%--  *************************************************************** Script propre à la page **************************************************************** --%>
 
@@ -84,23 +97,27 @@ table.tableAssociationProfesionnelle, .tableAssociationProfesionnelle th, .table
 				</tr>
 				<tr>
 					<td class="label">
-						<label for="editerSansTravailleur">
-							<ct:FWLabel key="JSP_EDITER_SANS_TRAVAILLEUR"/>
+						<label for="sansPersonel">
+							<ct:FWLabel key="JSP_SANS_PERSONNEL"/>
 						</label>
 					</td>
 					<td class="value">
 						<c:choose>
-							<c:when test="${employeur.editerSansTravailleur}">
-								<input id="editerSansTravailleur" name="editerSansTravailleur" type="checkbox" checked="checked">
-								<label id="labelEditerSansTravailleur" for="editerSansTravailleur">
+							<c:when test="${viewBean.hasParticularite()}">
+								<div style="display:inline;">
+									<img style="margin-left:4px;width:20px;" src="images/small_good.png" />
+								</div>
+								<div style="display:inline;vertical-align: middle;height:20px;">
 									<ct:FWLabel key="JSP_OUI"/>
-								</label>
+								</div>
 							</c:when>
 							<c:otherwise>
-								<input id="editerSansTravailleur" name="editerSansTravailleur" type="checkbox">
-								<label id="labelEditerSansTravailleur" for="editerSansTravailleur">
+								<div style="display:inline;">
+									<img style="margin-left:4px;height:20px;" src="images/small_error.png" />
+								</div>
+								<div style="display:inline;vertical-align: middle;height:20px;">
 									<ct:FWLabel key="JSP_NON"/>
-								</label>
+								</div>
 							</c:otherwise>
 						</c:choose>
 					</td>
@@ -127,26 +144,38 @@ table.tableAssociationProfesionnelle, .tableAssociationProfesionnelle th, .table
 						</select>
 					</td>
 				</tr>
+				<tr>
+					<td class="label">
+						<label>
+							Employeur Ebusiness
+						</label>
+					</td>
+					<td class="value">
+						<c:choose>
+							<c:when test="${viewBean.employeurIsEbu}">
+								<div style="display:inline;">
+									<img style="margin-left:4px;width:20px;" src="images/small_good.png" />
+								</div>
+								<div style="display:inline;vertical-align: middle;height:20px;">
+									<ct:FWLabel key="JSP_OUI"/>
+								</div>
+							</c:when>
+							<c:otherwise>
+								<div style="display:inline;">
+									<img style="margin-left:4px;height:20px;" src="images/small_error.png" />
+								</div>
+								<div style="display:inline;vertical-align: middle;height:20px;">
+									<ct:FWLabel key="JSP_NON"/>
+								</div>
+							</c:otherwise>
+						</c:choose>
+					</td>
+				</tr>
 			</table>
 		</div>
 	</div>
 	<div class="blocRight">
-		<%@ include file="/vulpeculaRoot/blocs/employeurCaissesSociales.jspf" %>
-<div class="bloc blocLarge">
-		<div class="header">
-			<ct:FWLabel key="JSP_CAISSE_METIER"/>
-			</div>
-			<table>
-				<tr>
-					<td style="width: 20%"  class="label"><ct:FWLabel key="JSP_NO" /></td>
-					<td style="width: 80%"  class="label"><ct:FWLabel key="JSP_DESIGNATION" /></td>
-				</tr>
-				<tr>
-					<td class="value">${viewBean.caisseMetier.codeAdministrationPlanCaisse}</td> 
-					<td class="value">${viewBean.caisseMetier.libelleAdministrationPlanCaisse}</td>
-				</tr>
-			</table>
-		</div>
+		<%@ include file="/vulpeculaRoot/blocs/employeurCotisationsActives.jspf" %>
 	</div>
 </div>
 	
@@ -157,6 +186,7 @@ table.tableAssociationProfesionnelle, .tableAssociationProfesionnelle th, .table
     <li><a href="#prestations"><ct:FWLabel key="JSP_PRESTATIONS" /></a></li>
     <li><a href="#associations"><ct:FWLabel key="JSP_ASSOCIATIONS" /></a></li>
     <li><a href="#facturation_association"><ct:FWLabel key="JSP_FACTURATION_ASSOCIATION" /></a></li>
+    <li><a href="#controlesEmployeurs"><ct:FWLabel key="JSP_CONTROLES_EMPLOYEURS" /></a></li>
   </ul>
   <div class="area" id="postes">
  	<table class="areaTable" id="postesTable" style="width: 100%" cellspacing="0" cellpadding="0">
@@ -224,7 +254,7 @@ table.tableAssociationProfesionnelle, .tableAssociationProfesionnelle th, .table
   				<th data-orderkey="datecomptabilisation" class="notSortable"><ct:FWLabel key="JSP_COMPTABILISE"/></th>
   				<th data-orderkey="dateRectification" class="notSortable"><ct:FWLabel key="JSP_RECTIFIE"/></th>
   				<th data-orderkey="montant" class="notSortable"><ct:FWLabel key="JSP_TOTAL_DES_SALAIRES"/></th>
-  				<th data-orderkey="etape"><ct:FWLabel key="JSP_ETAPE"/></th>
+  				<th data-orderkey="etape"><ct:FWLabel key="JSP_ETAT"/></th>
   				<th data-orderkey="dateRappel"><ct:FWLabel key="JSP_DATE_RAPPEL"/></th>
   			</tr>
    			<tr>
@@ -252,7 +282,7 @@ table.tableAssociationProfesionnelle, .tableAssociationProfesionnelle th, .table
   				<th class="notSortable"></th>
   			</tr>
   			<tr><!-- Ajout d'un decompte -->
-  				<td style="text-align: left" colspan="10">
+  				<td style="text-align: left" colspan="11">
   					<ct:ifhasright element="${userActionAddDecompte}" crud="c">
 	  					<a href="vulpecula?userAction=${userActionAddDecompte}.afficher&_method=add&idEmployeur=${viewBean.employeur.id}&designationEmployeur=${viewBean.employeur.affilieNumero},${viewBean.employeur.raisonSociale}">
 	  						<img style="margin-left:4px;" src="images/amal/view_right.png" />
@@ -284,12 +314,17 @@ table.tableAssociationProfesionnelle, .tableAssociationProfesionnelle th, .table
   				<th colspan="2" style="text-align:left"><ct:FWLabel key="JSP_ADHESIONS_ASSOCIATIONS_PROFESSIONNELLES" /></th>
   			</tr>
     		<tr>
-  				<td style="text-align: left" colspan="10">
+  				<td style="text-align: left">
   					<ct:ifhasright element="${userActionAddAssociation}" crud="c">
 	  					<a href="vulpecula?userAction=${userActionAddAssociation}.afficher&selectedId=${viewBean.employeur.id}&idEmployeur=${viewBean.employeur.id}&_method=upd">
 	  						<img style="margin-left:4px;" src="images/amal/view_detailed.png" />
 	  					</a>
   					</ct:ifhasright>
+  					
+  				</td>
+  				<td colspan="9" style="text-align: left">
+  					<input type="checkbox" class="chShowInactive" id="chShowInactive">
+					<span style="font-style:italic"><label for="chShowInactive"><ct:FWLabel key="JSP_AFFICHER_INACTIVES"/></label></span>
   				</td>
   			</tr>  
   		</thead>
@@ -300,7 +335,61 @@ table.tableAssociationProfesionnelle, .tableAssociationProfesionnelle th, .table
 	  	</tbody>
   	</table>
   </div>
-  <div id="facturation_association">
+  
+  
+  <div class="area" id="facturation_association">
+  
+  	<table id="facturationAssociationTable" class="areaTable" style="width: 100%" cellspacing="0" cellpadding="0">
+  	
+  		<thead>
+  			<tr>
+  				<th class="notSortable" colspan="2"></th>
+  				<th class="notSortable"><ct:FWLabel key="JSP_FACTURATION_AP_ASSOCIATION_PROFESSIONNELLE" /></th>
+  				<th class="notSortable"><ct:FWLabel key="JSP_FACTURATION_AP_ANNEE" /></th>
+  				<th class="notSortable"><ct:FWLabel key="JSP_FACTURATION_AP_MONTANT" /></th>
+  				<th class="notSortable"><ct:FWLabel key="JSP_FACTURATION_AP_PASSAGE_FACTURATION" /></th>
+  				<th class="notSortable"><ct:FWLabel key="JSP_FACTURATION_AP_DATE_FACTURATION" /></th>
+  				<th class="notSortable"><ct:FWLabel key="JSP_FACTURATION_AP_MODELE_ENTETE" /></th>
+  				<th class="notSortable"><ct:FWLabel key="JSP_FACTURATION_AP_ETAT" /></th>
+  				<th class="notSortable"><ct:FWLabel key="JSP_BOUTON_PRINT" /></th>
+  			</tr>	
+  		</thead>
+  		
+  		<tbody id="facturationAssociationContent">
+  			 <tr>
+	  			<td id="facturationAssociationWait"></td>
+	  		</tr>
+  		</tbody>
+  		
+  	</table>
+  </div>
+  <div id="controlesEmployeurs" class="area">
+  	<table id="controlesEmployeursTable" class="areaTable" style="width: 100%" cellspacing="0" cellpadding="0">
+  		<thead>
+  			<tr>
+  				<th></th>
+  				<th data-orderkey="id" class="notSortable"><ct:FWLabel key="JSP_ID" /></th>
+  				<th data-orderkey="numeroMeroba" class="notSortable"><ct:FWLabel key="JSP_NO_RAPPORT" /></th>
+  				<th data-orderkey="dateControle" data-defaultOrder="Desc" class="notSortable"><ct:FWLabel key="JSP_DATE_CONTROLE"/></th>
+  				<th data-orderkey="dateAu" class="notSortable"><ct:FWLabel key="JSP_PERIODE"/></th>
+  				<th class="notSortable"><ct:FWLabel key="JSP_MONTANT"/></th>
+  				<th class="notSortable"><ct:FWLabel key="JSP_TYPE"/></th>
+  				<th class="notSortable"><ct:FWLabel key="JSP_AUTRES_MESURES"/></th>
+  				<th class="notSortable"><ct:FWLabel key="JSP_REVISEUR"/></th>
+  			</tr>
+    		<tr>
+  				<td style="text-align: left" colspan="10">
+  					<ct:ifhasright element="${userActionAddControleEmployeur}" crud="c">
+	  					<a href="vulpecula?userAction=${userActionAddControleEmployeur}.afficher&idEmployeur=${viewBean.employeur.id}&_method=add">
+	  						<img style="margin-left:4px;" src="images/amal/view_right.png" />
+	  					</a>
+  					</ct:ifhasright>
+  				</td>
+  			</tr>  
+  		</thead>
+	  	<tbody id="controlesEmployeursContent">
+	  	</tbody>  	
+  	</table>
   </div>
 </div>
 

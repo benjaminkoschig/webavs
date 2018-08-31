@@ -56,6 +56,32 @@ $(function () {
 		document.forms[0].elements('userAction').value="vulpecula.listes.listeSyndicats.executer";
 		document.forms[0].submit();
 	});
+	
+	$('#liste').change(function () {
+		if ("68022001" === $(this).val()) {
+			// Liste travailleurs syndicat
+// 			$("[name='idSyndicat']").prop('disabled', 'disabled');
+// 			$("[name='idCaisseMetier']").prop('disabled', 'disabled');
+			$("[name='idSyndicat']").removeAttr('disabled');
+// 			$("[name='idCaisseMetier']").removeAttr('disabled');
+		} else if ("68022002" === $(this).val()) {
+			// Liste travailleurs salaire syndicat
+// 			$("[name='idSyndicat']").prop('disabled', 'disabled');
+// 			$("[name='idCaisseMetier']").prop('disabled', 'disabled');
+			$("[name='idSyndicat']").removeAttr('disabled');
+// 			$("[name='idCaisseMetier']").removeAttr('disabled');
+		} else if ("68022003" === $(this).val()) {
+			// Liste travailleurs paiement syndicat
+// 			console.log("3");
+			$("[name='idSyndicat']").removeAttr('disabled');
+// 			$("[name='idCaisseMetier']").removeAttr('disabled');
+		} else if ("68022004" === $(this).val()) {
+			// Liste travailleurs sans syndicat
+			$("[name='idSyndicat']").prop('disabled', 'disabled');
+			$("[name='designationTravailleur']").prop('disabled', 'disabled');
+// 			$("[name='idCaisseMetier']").prop('disabled', 'disabled');
+		}
+	});
 })
 </script>
 <style type="text/css">
@@ -119,6 +145,32 @@ $(function () {
 						</c:forEach>
 				</select>
 				</td>
+			</tr>
+			<tr>
+				<td><label for="travailleur"><ct:FWLabel key="JSP_TRAVAILLEUR"/></label></td>
+				<td>
+					<input id="idTravailleur" name="idTravailleur" type="hidden" />
+					<ct:widget id='widgetTravailleur'
+		   				name = 'designationTravailleur'
+		   				styleClass="widgetAdmin"
+		   				notation="data-g-string='mandatory:false'  value='${viewBean.designationTravailleur}'">
+						<ct:widgetService defaultLaunchSize="1" methodName="search" className="${viewBean.travailleurViewService}">
+						travailleurSimpleModel.id,personneEtendueComplexModel.tiers.designation1,personneEtendueComplexModel.tiers.designation2
+						<ct:widgetCriteria criteria="forIdTravailleur" label="JSP_ID_TRAVAILLEUR"/>
+						<ct:widgetCriteria criteria="likeNom" label="JSP_NOM"/>
+						<ct:widgetCriteria criteria="likePrenom" label="JSP_PRENOM"/>
+						<ct:widgetLineFormatter format="#{travailleurSimpleModel.id} - #{personneEtendueComplexModel.tiers.designation1} #{personneEtendueComplexModel.tiers.designation2}"/>
+						<ct:widgetJSReturnFunction>
+							<script type="text/javascript">
+								function(element){
+									this.value=$(element).attr('travailleurSimpleModel.id')+'-'+$(element).attr('personneEtendueComplexModel.tiers.designation1')+' '+$(element).attr('personneEtendueComplexModel.tiers.designation2');
+									$('#idTravailleur').val($(element).attr('travailleurSimpleModel.id'));
+								}
+							</script>
+					</ct:widgetJSReturnFunction>
+					</ct:widgetService>
+					</ct:widget>
+				</td>				
 			</tr>
 			<tr>
 				<td><label for="annee"><ct:FWLabel key="JSP_ANNEE"/></label></td>

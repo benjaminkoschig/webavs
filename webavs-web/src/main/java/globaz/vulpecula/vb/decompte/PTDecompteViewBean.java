@@ -10,8 +10,10 @@ import ch.globaz.vulpecula.businessimpl.services.decompte.DecompteServiceImpl;
 import ch.globaz.vulpecula.domain.models.common.Date;
 import ch.globaz.vulpecula.domain.models.decompte.EtatDecompte;
 import ch.globaz.vulpecula.domain.models.decompte.TypeDecompte;
+import ch.globaz.vulpecula.domain.models.decompte.TypeProvenance;
 import ch.globaz.vulpecula.domain.models.registre.Convention;
 import ch.globaz.vulpecula.domain.models.taxationoffice.EtatTaxation;
+import ch.globaz.vulpecula.web.views.decompte.DecompteViewService;
 
 /**
  * ViewBean utilisé dans la page JSP "decompte_de.jsp"
@@ -31,6 +33,7 @@ public class PTDecompteViewBean extends BJadeSearchObjectELViewBean {
         private String inEtats;
         private String forEtatTaxation;
         private String forType;
+        private String forTypeProvenance;
 
         public final String getForId() {
             return forId;
@@ -137,6 +140,20 @@ public class PTDecompteViewBean extends BJadeSearchObjectELViewBean {
         public final void setForType(String forType) {
             this.forType = forType;
         }
+
+        /**
+         * @return the forTypeProvenance
+         */
+        public String getForTypeProvenance() {
+            return forTypeProvenance;
+        }
+
+        /**
+         * @param forTypeProvenance the forTypeProvenance to set
+         */
+        public void setForTypeProvenance(String forTypeProvenance) {
+            this.forTypeProvenance = forTypeProvenance;
+        }
     }
 
     private List<Convention> conventions;
@@ -157,7 +174,8 @@ public class PTDecompteViewBean extends BJadeSearchObjectELViewBean {
 
     public String getEtatsEnSuspens() {
         return EtatDecompte.ERREUR.getValue() + "," + EtatDecompte.RECEPTIONNE.getValue() + ","
-                + EtatDecompte.OUVERT.getValue() + "," + EtatDecompte.GENERE.getValue();
+                + EtatDecompte.OUVERT.getValue() + "," + EtatDecompte.GENERE.getValue() + ","
+                + EtatDecompte.A_TRAITER.getValue();
     }
 
     public String getCsTaxationOffice() {
@@ -172,8 +190,16 @@ public class PTDecompteViewBean extends BJadeSearchObjectELViewBean {
         return TypeDecompte.getList();
     }
 
+    public List<String> getTypesProvenance() {
+        return TypeProvenance.getList();
+    }
+
     public String getDecompteService() {
         return DecompteServiceImpl.class.getName();
+    }
+
+    public String getDecompteViewService() {
+        return DecompteViewService.class.getName();
     }
 
     public String getLibelleBoutonSommation() {
@@ -192,6 +218,10 @@ public class PTDecompteViewBean extends BJadeSearchObjectELViewBean {
 
     public String getProtegeLibelle() {
         return BSessionUtil.getSessionFromThreadContext().getLabel("PAS_DROIT_DECOMPTE");
+    }
+
+    public String getLibelleImpressionDemarree() {
+        return BSessionUtil.getSessionFromThreadContext().getLabel("JSP_IMPRESSION_DEMARREE");
     }
 
     public void setProtege(String protege) {

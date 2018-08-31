@@ -12,6 +12,7 @@
 		var $periodiciteAnnuelle = $('#periodeAnnuelle');
 		var $annuelle = $('#annuelle');
 		var $typeDecompte = $('#TYPE_DECOMPTE');
+		var $is_ebusiness = $('.is_ebusiness');
 		
 		$periodiciteAnnuelle.hide();
 		var $periodicite = $('.typePeriodicite');
@@ -23,6 +24,18 @@
 		} else {
 			showMensuelleTrimestrielleView();			
 		}
+		
+		if(globazGlobal.isEbusiness) {
+			$is_ebusiness.prop('checked', true);
+		}
+		
+		$is_ebusiness.change(function() {
+			if($is_ebusiness.is(':checked')) {
+				$('#EBUSINESS').val("TRUE");
+			} else {
+				$('#EBUSINESS').val("FALSE");
+			}
+		});
 		
 		$typeDecompte.change(function() {
 			var $this = $(this);

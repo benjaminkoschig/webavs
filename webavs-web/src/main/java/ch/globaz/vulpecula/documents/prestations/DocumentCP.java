@@ -1,6 +1,5 @@
 package ch.globaz.vulpecula.documents.prestations;
 
-import globaz.globall.util.JANumberFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -11,6 +10,7 @@ import ch.globaz.vulpecula.documents.catalog.DocumentType;
 import ch.globaz.vulpecula.domain.models.congepaye.CPParEmployeur;
 import ch.globaz.vulpecula.domain.models.congepaye.CongePaye;
 import ch.globaz.vulpecula.domain.models.congepaye.CongesPayes;
+import globaz.globall.util.JANumberFormatter;
 
 public class DocumentCP extends DocumentPrestations<CPParEmployeur> {
 
@@ -36,6 +36,13 @@ public class DocumentCP extends DocumentPrestations<CPParEmployeur> {
     private static final Object P_SALAIRE = "P_SALAIRE";
     private static final Object P_TAUX = "P_TAUX";
     private static final Object P_MONTANT_VERSE = "P_MONTANT_VERSE";
+
+    private static final Object P_LAST_NOM_PRENOM = "P_LAST_NOM_PRENOM";
+    private static final Object P_LAST_V = "P_LAST_V";
+    private static final Object P_LAST_PERIODE = "P_LAST_PERIODE";
+    private static final Object P_LAST_SALAIRE = "P_LAST_SALAIRE";
+    private static final Object P_LAST_TAUX = "P_LAST_TAUX";
+    private static final Object P_LAST_MONTANT_VERSE = "P_LAST_MONTANT_VERSE";
 
     public DocumentCP() throws Exception {
         this(null);
@@ -67,21 +74,38 @@ public class DocumentCP extends DocumentPrestations<CPParEmployeur> {
 
     @Override
     public void fillFields() throws Exception {
+        setDocumentTitle(getCurrentElement().getEmployeur().getConvention().getCode() + "-"
+                + getCurrentElement().getEmployeur().getAffilieNumero());
         CongesPayes congesPayes = getCurrentElement().getCongesPayes();
-
         Collection<Map<String, Object>> collection = new ArrayList<Map<String, Object>>();
 
+        int compteur = congesPayes.size();
         for (CongePaye congePaye : congesPayes) {
-            Map<String, Object> ligne = new HashMap<String, Object>();
-            ligne.put(F_NOM_PRENOM, congePaye.getPosteTravail().getNomPrenomTravailleur());
-            ligne.put(F_V, getCode(congePaye.getBeneficiaire().getValue()));
-            ligne.put(F_VERSEMENT_ABR, getCode(congePaye.getBeneficiaire().getValue()));
-            ligne.put(F_PERIODE, congePaye.getAnneeDebut().getValue() + " - " + congePaye.getAnneeFin().getValue());
-            ligne.put(F_SALAIRE, JANumberFormatter.format(congePaye.getSalaires().getValue()));
-            ligne.put(F_TAUX,
-                    JANumberFormatter.format(congePaye.getTauxCP().getValue(), 0.01, 2, JANumberFormatter.NEAR));
-            ligne.put(F_MONTANT_VERSE, JANumberFormatter.format(congePaye.getMontantNet().getValue()));
-            collection.add(ligne);
+            if (--compteur == 0) {
+                // Dernière ligne doit être avec le totale
+                setParametres(P_LAST_NOM_PRENOM, congePaye.getPosteTravail().getNomPrenomTravailleur());
+                setParametres(P_LAST_V, getCode(congePaye.getBeneficiaire().getValue()));
+                setParametres(P_LAST_PERIODE,
+                        congePaye.getAnneeDebut().getValue() + " - " + congePaye.getAnneeFin().getValue());
+                setParametres(P_LAST_SALAIRE, JANumberFormatter.format(congePaye.getSalaires().getValue()));
+                setParametres(P_LAST_TAUX,
+                        JANumberFormatter.format(congePaye.getTauxCP().getValue(), 0.01, 2, JANumberFormatter.NEAR));
+                setParametres(P_LAST_MONTANT_VERSE, JANumberFormatter.format(congePaye.getMontantNet().getValue()));
+            } else {
+                Map<String, Object> ligne = new HashMap<String, Object>();
+                ligne.put(F_NOM_PRENOM, congePaye.getPosteTravail().getNomPrenomTravailleur());
+                ligne.put(F_V, getCode(congePaye.getBeneficiaire().getValue()));
+                ligne.put(F_VERSEMENT_ABR, getCode(congePaye.getBeneficiaire().getValue()));
+                ligne.put(F_PERIODE, congePaye.getAnneeDebut().getValue() + " - " + congePaye.getAnneeFin().getValue());
+                ligne.put(F_SALAIRE, JANumberFormatter.format(congePaye.getSalaires().getValue()));
+                ligne.put(F_TAUX,
+                        JANumberFormatter.format(congePaye.getTauxCP().getValue(), 0.01, 2, JANumberFormatter.NEAR));
+                ligne.put(F_MONTANT_VERSE, JANumberFormatter.format(congePaye.getMontantNet().getValue()));
+                collection.add(ligne);
+            }
+        }
+        if (!collection.isEmpty()) {
+            setDataSource(collection);
         }
         setParametres(P_TITRE, getTexte(1, 1));
         setParametres(P_NOM_PRENOM, getLabel("DOCUMENT_NOM_PRENOM"));
@@ -93,7 +117,6 @@ public class DocumentCP extends DocumentPrestations<CPParEmployeur> {
         setParametres(P_SOMME_MONTANTS_VERSES, JANumberFormatter.format(congesPayes.getSommeNets().getValue()));
         setParametres(P_P1, getTexte(3, 1));
         setSignature();
-        setDataSource(collection);
     }
 
     private void setSignature() throws Exception {

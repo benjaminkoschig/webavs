@@ -18,7 +18,9 @@
 			<td><ct:FWCode csCode="${serviceMilitaire.typeSalaire.value}"/></td>
 			<td>${serviceMilitaire.dateDebutAsString}</td>
 			<td>${serviceMilitaire.dateFinAsString}</td>
+			<td>${serviceMilitaire.nbJours}</td>
 			<td><ct:FWCodeLibelle csCode="${serviceMilitaire.genre.value}"/></td>
+			<td>${serviceMilitaire.couvertureAPG.value}</td>
 			<td>${montantBrut}</td>
 			<td>${montantAVerser}</td>
 			<td><ct:FWCode csCode="${serviceMilitaire.beneficiaire.value}"/></td>

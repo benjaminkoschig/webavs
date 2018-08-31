@@ -27,7 +27,7 @@ public class DocumentAttestationAFPourFiscPrinter extends DocumentPrinter<Presta
 
     @Override
     public FWIDocumentManager createDocument() throws Exception {
-        return new DocumentAttestationAFPourFisc(getCurrentElement());
+        return new DocumentAttestationAFPourFisc(getCurrentElement(), getAnnee());
     }
 
     public Annee getAnnee() {

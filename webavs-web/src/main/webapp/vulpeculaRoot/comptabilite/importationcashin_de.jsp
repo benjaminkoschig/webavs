@@ -74,7 +74,7 @@
 		<td><input id="email" type="text" name="email" value="${viewBean.email}" /></td>
 	</tr>					
 	<tr>
-		<td><ct:FWLabel key="JSP_FILE_TO_IMPORT"/></td>	
+		<td><ct:FWLabel key="JSP_FILE_CASHIN_TO_IMPORT"/></td>	
 		<td><input id="FILENAME" name="FILENAME" type="file" data-g-upload="protocole:jdbc, callBack: propageName" /><input type="hidden" id="importFilename" name="importFilename" />
 		</td>
 	</tr>

@@ -1,10 +1,9 @@
 package ch.globaz.vulpecula.businessimpl.services.decompte;
 
-import globaz.globall.db.GlobazJobQueue;
-import globaz.jade.exception.JadePersistenceException;
 import java.util.ArrayList;
 import java.util.List;
 import ch.globaz.specifications.UnsatisfiedSpecificationException;
+import ch.globaz.vulpecula.business.services.VulpeculaRepositoryLocator;
 import ch.globaz.vulpecula.business.services.VulpeculaServiceLocator;
 import ch.globaz.vulpecula.business.services.employeur.EmployeurService;
 import ch.globaz.vulpecula.domain.models.common.Date;
@@ -13,8 +12,11 @@ import ch.globaz.vulpecula.domain.models.decompte.Decompte;
 import ch.globaz.vulpecula.domain.models.decompte.TypeDecompte;
 import ch.globaz.vulpecula.domain.models.postetravail.Employeur;
 import ch.globaz.vulpecula.external.BProcessWithContext;
+import globaz.globall.db.GlobazJobQueue;
+import globaz.jade.exception.JadePersistenceException;
 
 public class GenererDecompteSansTravailleurProcess extends BProcessWithContext {
+    //private static final String DECEMBRE = "12";
     private Date dateEtablissement;
     private PeriodeMensuelle periodeMensuelle;
     private String email;
@@ -30,7 +32,8 @@ public class GenererDecompteSansTravailleurProcess extends BProcessWithContext {
         genererDecompteProcessor = new GenererDecompteProcessor();
     }
 
-    public GenererDecompteSansTravailleurProcess(Date dateEtablissement, PeriodeMensuelle periodeMensuelle, String email) {
+    public GenererDecompteSansTravailleurProcess(Date dateEtablissement, PeriodeMensuelle periodeMensuelle,
+            String email) {
         this();
         this.dateEtablissement = dateEtablissement;
         this.periodeMensuelle = periodeMensuelle;
@@ -52,6 +55,17 @@ public class GenererDecompteSansTravailleurProcess extends BProcessWithContext {
             throws JadePersistenceException, UnsatisfiedSpecificationException {
         List<Decompte> decomptes = new ArrayList<Decompte>();
         for (Employeur employeur : employeurs) {
+            if (employeur.isAnnuel()) {
+                // && !DECEMBRE.equals(periode.getMoisFin())
+                // Si c'est annuel on ne crée rien. Sinon il faut créer un décompte annuel et pas mensuel
+                continue;
+            }
+
+            // Test si un décompte existe deja pour cette période
+            if (isDecompteExistantForPeriode(periode, employeur)) {
+                continue;
+            }
+
             Decompte decompte = new Decompte();
             decompte.setType(TypeDecompte.PERIODIQUE);
             decompte.setPeriode(periode);
@@ -67,6 +81,17 @@ public class GenererDecompteSansTravailleurProcess extends BProcessWithContext {
             impressionDecomptes.setSendCompletionMail(false);
             impressionDecomptes.start();
         }
+    }
+
+    /**
+     * @param periode
+     * @param employeur
+     */
+    private boolean isDecompteExistantForPeriode(PeriodeMensuelle periode, Employeur employeur) {
+        String idEmployeur = employeur.getId();
+        List<Decompte> listDecompteExistant = VulpeculaRepositoryLocator.getDecompteRepository()
+                .findByIdEmployeurForPeriode(idEmployeur, periode);
+        return !listDecompteExistant.isEmpty();
     }
 
     public final Date getDateEtablissement() {

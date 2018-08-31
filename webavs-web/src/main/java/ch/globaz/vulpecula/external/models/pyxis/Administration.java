@@ -1,5 +1,7 @@
 package ch.globaz.vulpecula.external.models.pyxis;
 
+import ch.globaz.vulpecula.business.services.VulpeculaRepositoryLocator;
+
 public class Administration extends Tiers {
     public static final String CS_TYPE_CAISSE_AF = "509030";
 
@@ -56,6 +58,29 @@ public class Administration extends Tiers {
         this.codeInstitution = codeInstitution;
     }
 
+    /**
+     * @return designation 1 et designation 2
+     */
+    public String getDescription() {
+        return getDesignation1() + " " + getDesignation2();
+    }
+
+    public String getDescription(CodeLangue langue) {
+        CodeLangue codeLangue = CodeLangue.FR;
+        if (langue != null) {
+            codeLangue = langue;
+        }
+        Adresse adresseCourrier = VulpeculaRepositoryLocator.getAdresseRepository()
+                .findAdresseCourrierByIdTiers(getIdTiers(), codeLangue);
+
+        if (adresseCourrier == null) {
+            return getDesignation1() + " " + getDesignation2() + " " + getDesignation3() + " " + getDesignation4();
+        }
+
+        return adresseCourrier.getDescription1() + " " + adresseCourrier.getDescription2() + " "
+                + adresseCourrier.getDescription3() + " " + adresseCourrier.getDescription4();
+    }
+
     @Override
     public int hashCode() {
         return getId().hashCode();
@@ -75,4 +100,5 @@ public class Administration extends Tiers {
         return "Administration [designation1=" + designation1 + " genre=" + genre + ", canton=" + canton
                 + ", codeAdministration=" + codeAdministration + ", codeInstitution=" + codeInstitution + "]";
     }
+
 }

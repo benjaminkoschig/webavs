@@ -7,7 +7,13 @@ import globaz.jade.persistence.model.JadeSimpleModel;
  * 
  */
 public class PosteTravailSimpleModel extends JadeSimpleModel {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 4721513979639342970L;
+
     private String id;
+    private String posteCorrelationId;
     private String idEmployeur;
     private String idTravailleur;
     private String debutActivite;
@@ -15,6 +21,8 @@ public class PosteTravailSimpleModel extends JadeSimpleModel {
     private String genreSalaire;
     private Boolean posteFranchiseAVS;
     private String qualification;
+    private String dateValiditeQualification;
+    private String dateValiditeTypeSalaire;
 
     public PosteTravailSimpleModel() {
         super();
@@ -85,4 +93,29 @@ public class PosteTravailSimpleModel extends JadeSimpleModel {
     public void setQualification(String qualification) {
         this.qualification = qualification;
     }
+
+    public String getPosteCorrelationId() {
+        return posteCorrelationId;
+    }
+
+    public void setPosteCorrelationId(String posteCorrelationId) {
+        this.posteCorrelationId = posteCorrelationId;
+    }
+
+    public String getDateValiditeQualification() {
+        return dateValiditeQualification;
+    }
+
+    public String getDateValiditeTypeSalaire() {
+        return dateValiditeTypeSalaire;
+    }
+
+    public void setDateValiditeQualification(String dateValiditeQualification) {
+        this.dateValiditeQualification = dateValiditeQualification;
+    }
+
+    public void setDateValiditeTypeSalaire(String dateValiditeTypeSalaire) {
+        this.dateValiditeTypeSalaire = dateValiditeTypeSalaire;
+    }
+
 }

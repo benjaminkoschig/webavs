@@ -88,6 +88,9 @@ public class AFCotisation extends BEntity {
     public final static String TYPE_CONTROLE_EMPLOYEUR = "122004";
     private static final String TYPE_EXPLOITATION = "508021";
 
+    // @BMS-ONLY
+    private AFCotisation oldCotisation = null;
+
     /**
      * Renvoie la rubrique comptable pour la cotisation definie par l'ID donné.
      * 
@@ -393,6 +396,9 @@ public class AFCotisation extends BEntity {
         }
         // Création des annonces de mutation
         AFCotisation ancien = creationAnnonceCotisation(transaction);
+
+        // @BMS-ONLY --> Commenté pour ne pas impacter WEB@AVS
+        // oldCotisation = ancien;
 
         // si changement de plan caisse, on efface l'id de l'adhésion
         if (!ancien.getPlanCaisseId().equals(getPlanCaisseId())) {
@@ -3102,5 +3108,10 @@ public class AFCotisation extends BEntity {
 
     public void setMiseAjourDepuisEcran(java.lang.Boolean miseAjourDepuisEcran) {
         this.miseAjourDepuisEcran = miseAjourDepuisEcran;
+    }
+
+    // @BMS-ONLY
+    public AFCotisation getOldCotisation() {
+        return oldCotisation;
     }
 }

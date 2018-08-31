@@ -1,6 +1,7 @@
 package ch.globaz.vulpecula.repositoriesjade.association.converter;
 
 import globaz.jade.client.util.JadeNumericUtil;
+import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.persistence.model.JadeAbstractSearchModel;
 import ch.globaz.vulpecula.business.models.association.AssociationCotisationComplexModel;
 import ch.globaz.vulpecula.business.models.association.AssociationCotisationSearchSimpleModel;
@@ -9,7 +10,6 @@ import ch.globaz.vulpecula.domain.models.association.AssociationCotisation;
 import ch.globaz.vulpecula.domain.models.association.CotisationAssociationProfessionnelle;
 import ch.globaz.vulpecula.domain.models.common.Montant;
 import ch.globaz.vulpecula.domain.models.common.Periode;
-import ch.globaz.vulpecula.domain.models.common.Taux;
 import ch.globaz.vulpecula.domain.models.registre.GenreCotisationAssociationProfessionnelle;
 import ch.globaz.vulpecula.repositoriesjade.decompte.DomaineConverterJade;
 
@@ -45,9 +45,8 @@ public class AssociationCotisationConverter
         associationCotisationSimpleModel.setIdEmployeur(associationCotisation.getIdEmployeur());
         associationCotisationSimpleModel.setPeriodeDebut(associationCotisation.getPeriodeDebutAsValue());
         associationCotisationSimpleModel.setPeriodeFin(associationCotisation.getPeriodeFinAsValue());
-        associationCotisationSimpleModel.setMasseSalariale(associationCotisation.getMasseSalariale().getValue());
         associationCotisationSimpleModel.setForfait(associationCotisation.getForfait().getValue());
-        associationCotisationSimpleModel.setReductionFacture(associationCotisation.getReductionFacture().getValue());
+        associationCotisationSimpleModel.setFacturer(associationCotisation.getFacturer().getValue());
         associationCotisationSimpleModel.setSpy(associationCotisation.getSpy());
         return associationCotisationSimpleModel;
     }
@@ -65,10 +64,21 @@ public class AssociationCotisationConverter
         } else {
             associationCotisation.setPeriode(new Periode(associationCotisationSimpleModel.getPeriodeDebut(), null));
         }
-        associationCotisation.setMasseSalariale(new Taux(associationCotisationSimpleModel.getMasseSalariale()));
-        associationCotisation.setForfait(new Montant(associationCotisationSimpleModel.getForfait()));
-        associationCotisation.setReductionFacture(new Taux(associationCotisationSimpleModel.getReductionFacture()));
+
+        if (!JadeStringUtil.isEmpty(associationCotisationSimpleModel.getForfait())) {
+            associationCotisation.setForfait(new Montant(associationCotisationSimpleModel.getForfait()));
+        }
+
+        // associationCotisation.setFacturer(CategorieFactureAssociationProfessionnelle
+        // .fromValue(associationCotisationSimpleModel.getFacturer()));
         associationCotisation.setSpy(associationCotisationSimpleModel.getSpy());
+
+        if (!JadeStringUtil.isBlankOrZero(associationCotisationSimpleModel.getIdCotisationAssociationProfessionnelle())) {
+            CotisationAssociationProfessionnelle cotisation = new CotisationAssociationProfessionnelle();
+            cotisation.setId(associationCotisationSimpleModel.getIdCotisationAssociationProfessionnelle());
+            associationCotisation.setCotisationAssociationProfessionnelle(cotisation);
+        }
+
         return associationCotisation;
     }
 

@@ -1,6 +1,7 @@
 package ch.globaz.vulpecula.businessimpl.services.decompte;
 
 import globaz.jade.client.util.JadeDateUtil;
+import globaz.jade.client.util.JadeStringUtil;
 import globaz.naos.db.cotisation.AFCotisation;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -8,8 +9,8 @@ import ch.globaz.vulpecula.business.services.VulpeculaServiceLocator;
 import ch.globaz.vulpecula.domain.models.common.Date;
 import ch.globaz.vulpecula.domain.models.common.Taux;
 import ch.globaz.vulpecula.domain.models.decompte.DecompteSalaire;
-import ch.globaz.vulpecula.domain.models.decompte.TypeDecompte;
 import ch.globaz.vulpecula.domain.models.postetravail.AdhesionCotisationPosteTravail;
+import ch.globaz.vulpecula.external.models.affiliation.Cotisation;
 import ch.globaz.vulpecula.external.services.CotisationService;
 
 /**
@@ -85,19 +86,18 @@ public class TauxCotisationDecompteLoader {
     // plusieurs fois.
     // Mais cela ne devrait pas poser de problèmes
     public Taux getOrLoadTauxAssurance(DecompteSalaire decompteSalaire, AdhesionCotisationPosteTravail cotisation) {
-        Date date = null;
-        TypeDecompte typeDecompte = decompteSalaire.getTypeDecompte();
-        if (TypeDecompte.COMPLEMENTAIRE.equals(typeDecompte)) {
-            date = decompteSalaire.getPeriode().getDateFin();
-        } else {
-            date = decompteSalaire.getPeriode().getDateDebut();
-        }
+        Date date = decompteSalaire.getDateCalculTaux();
+        return getOrLoadTauxAssurance(decompteSalaire.getIdEmployeur(), cotisation.getCotisation(), date);
+    }
 
-        Key key = new Key(decompteSalaire.getIdEmployeur(), cotisation.getIdAssurance(), date);
+    public Taux getOrLoadTauxAssurance(String idEmployeur, Cotisation cotisation, Date date) {
+        Key key = new Key(idEmployeur, cotisation.getAssuranceId(), date);
         if (!cacheTaux.containsKey(key)) {
-            AFCotisation afCotisation = cotisationService.findAFCotisation(cotisation.getIdCotisation(), date);
+            AFCotisation afCotisation = cotisationService.findAFCotisation(cotisation.getId(), date);
             String taux = afCotisation.getTaux(JadeDateUtil.getDMYDate(new java.util.Date(date.getTime())), null);
-            cacheTaux.put(key, new Taux(taux));
+            if (!JadeStringUtil.isEmpty(taux)) {
+                cacheTaux.put(key, new Taux(taux));
+            }
         }
         return cacheTaux.get(key);
     }

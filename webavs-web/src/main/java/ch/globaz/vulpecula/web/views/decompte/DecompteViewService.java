@@ -1,11 +1,18 @@
 package ch.globaz.vulpecula.web.views.decompte;
 
-import globaz.globall.db.BSessionUtil;
-import globaz.jade.client.util.JadeNumericUtil;
-import globaz.jade.client.util.JadeStringUtil;
+
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLSession;
+import com.google.common.base.Preconditions;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import ch.globaz.vulpecula.business.services.VulpeculaRepositoryLocator;
 import ch.globaz.vulpecula.business.services.VulpeculaServiceLocator;
 import ch.globaz.vulpecula.businessimpl.services.decompte.ImprimerDecomptesProcess;
@@ -16,11 +23,18 @@ import ch.globaz.vulpecula.domain.models.decompte.DecompteReceptionEtat;
 import ch.globaz.vulpecula.domain.models.decompte.EtatDecompte;
 import ch.globaz.vulpecula.domain.models.taxationoffice.EtatTaxation;
 import ch.globaz.vulpecula.domain.models.taxationoffice.TaxationOffice;
+import ch.globaz.vulpecula.externalservices.RequestFactory;
+import ch.globaz.vulpecula.process.taxationoffice.ListeTOPrevisionnelleProcess;
 import ch.globaz.vulpecula.services.PTAFServices;
 import ch.globaz.vulpecula.web.gson.DecompteGSON;
 import ch.globaz.vulpecula.web.servlet.PTConstants;
-import com.google.common.base.Preconditions;
-import com.google.gson.Gson;
+import globaz.framework.util.FWMemoryLog;
+import globaz.framework.util.FWMessage;
+import globaz.globall.db.BProcessLauncher;
+import globaz.globall.db.BSessionUtil;
+import globaz.jade.client.util.JadeNumericUtil;
+import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.log.JadeLogger;
 
 public class DecompteViewService {
     public DecompteGSON getDecompteById(final String idDecompte) {
@@ -38,6 +52,55 @@ public class DecompteViewService {
         return decompteGSON;
     }
 
+    public void callTGedmyProdis(String id) {
+        // Pouvoir logger en cas de problème d'appel
+        FWMemoryLog log = new FWMemoryLog();
+        log.setSession(BSessionUtil.getSessionFromThreadContext());
+
+        Decompte decompte = VulpeculaRepositoryLocator.getDecompteRepository().findById(id);
+        JsonObject json = new JsonObject();
+        json.addProperty(PTConstants.GED_LOGIN_EXTERNE, BSessionUtil.getSessionFromThreadContext().getUserId());
+        json.addProperty(PTConstants.GED_DOC_LABEL_SEARCH, id);
+        json.addProperty(PTConstants.GED_TYPE, "MB");
+        json.addProperty(PTConstants.GED_PARTNER_EXTERNE_ID, decompte.getEmployeur().getIdTiers());
+        
+        try {
+            HostnameVerifier hostname = new HostnameVerifier() {
+                
+                @Override
+                public boolean verify(String hostname, SSLSession session) {
+                    System.out.println("Warning: URL Host: "+RequestFactory.URL_GED_CONSULTATION+" vs. "
+                            +session.getPeerHost());
+                          return true;
+                }
+            };
+            
+            System.setProperty("javax.net.ssfl.trustStore", "jssecacerts.cert");
+            
+            HttpsURLConnection.setDefaultHostnameVerifier(hostname);
+            URL url = new URL(RequestFactory.URL_GED_CONSULTATION);
+            HttpURLConnection urlConn = (HttpURLConnection) url.openConnection();
+            
+            urlConn.setRequestMethod("POST");
+            urlConn.setDoOutput(true);
+            urlConn.setRequestProperty("Content-Type", "Application/json");
+            
+            OutputStream os = urlConn.getOutputStream();
+            os.write(json.toString().getBytes());
+            os.flush();
+            
+            if(urlConn.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                JadeLogger.info(null, "L'envoie de la requête a réussi");
+            }
+            
+            urlConn.disconnect();
+        } catch (Exception e) {
+            log.logMessage("Error while accessing webService for GED : " + e.getMessage(), FWMessage.AVERTISSEMENT,
+                    this.getClass().getName());
+        }
+
+    }
+    
     public DecompteReceptionEtat setDateReception(final String idDecompte, final String date) {
         return VulpeculaServiceLocator.getDecompteService().receptionner(idDecompte, date);
     }
@@ -148,6 +211,12 @@ public class DecompteViewService {
             idsDecompte.add(decompte.getId());
         }
         return idsDecompte;
+    }
+
+    public void genererListeTOPrevisionnelle(String nothing) throws Exception {
+        ListeTOPrevisionnelleProcess process = new ListeTOPrevisionnelleProcess();
+        process.setEmail(BSessionUtil.getSessionFromThreadContext().getUserEMail());
+        BProcessLauncher.start(process);
     }
 
     private static final class ImprimerSearchGSON {

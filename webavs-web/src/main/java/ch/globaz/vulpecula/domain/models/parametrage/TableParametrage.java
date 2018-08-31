@@ -1,16 +1,24 @@
 package ch.globaz.vulpecula.domain.models.parametrage;
 
+import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.common.Jade;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.math.BigInteger;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ch.globaz.common.domaine.Date;
 import ch.globaz.exceptions.ExceptionMessage;
 import ch.globaz.exceptions.GlobazTechnicalException;
 import ch.globaz.vulpecula.domain.models.absencejustifiee.LienParente;
@@ -29,7 +37,7 @@ import ch.globaz.vulpecula.domain.models.servicemilitaire.GenreSM;
  */
 public class TableParametrage {
 
-    private static final String PRESTATIONS_XML_PATH = "ch/globaz/vulpecula/parametrage/prestations.xml";
+    private static final String PRESTATIONS_XML_PATH = "vulpeculaRoot/parametrage/prestations";
     private static final String FIELD_AGE = "age";
     private static final String FIELD_ANNEE_SERVICE = "anneeService";
 
@@ -44,29 +52,82 @@ public class TableParametrage {
     private ParametragePrestation parametragePrestation;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TableParametrage.class);
+    private static Map<String, TableParametrage> mapParametrage = null;
     private static TableParametrage tableParametrage = null;
 
-    private TableParametrage() {
+    private boolean isCalledByUnitTest = false;
+
+    TableParametrage(String year, Boolean calledByUnitTest) {
         try {
-            loadTable();
+            isCalledByUnitTest = true;
+            loadTable(year);
+            tableParametrage = this;
+        } catch (Exception e) {
+            throw new GlobazTechnicalException(ExceptionMessage.ERREUR_TECHNIQUE);
+        }
+    }
+
+    private TableParametrage(String year) {
+        try {
+            loadTable(year);
         } catch (Exception e) {
             throw new GlobazTechnicalException(ExceptionMessage.ERREUR_TECHNIQUE);
         }
     }
 
     public static TableParametrage getInstance() {
-        if (tableParametrage == null) {
-            tableParametrage = new TableParametrage();
-        }
-        return tableParametrage;
+        return getInstance("");
     }
 
-    private void loadTable() throws JAXBException, URISyntaxException {
-        JAXBContext jc = JAXBContext.newInstance(ParametragePrestation.class);
+    public static TableParametrage getInstance(String year) {
+        // Set current year as default year. If params is null or empty
+        if (JadeStringUtil.isEmpty(year)) {
+            year = Date.now().getAnnee();
+        }
 
+        if (mapParametrage == null) {
+            mapParametrage = new HashMap<String, TableParametrage>();
+        }
+
+        if (!mapParametrage.containsKey(year)) {
+            mapParametrage.put(year, new TableParametrage(year));
+        }
+        tableParametrage = mapParametrage.get(year);
+        return mapParametrage.get(year);
+    }
+
+    private void loadTable(String year) throws JAXBException, URISyntaxException, FileNotFoundException,
+            SecurityException {
+        JAXBContext jc = JAXBContext.newInstance(ParametragePrestation.class);
         Unmarshaller unmarshaller = jc.createUnmarshaller();
-        InputStream configurationFile = getClass().getClassLoader().getResourceAsStream(PRESTATIONS_XML_PATH);
+
+        String parametrePath = getParametrePath(year);
+        InputStream configurationFile = new FileInputStream(parametrePath);
+
         parametragePrestation = (ParametragePrestation) unmarshaller.unmarshal(configurationFile);
+    }
+
+    private String getRootPath() {
+        if (isCalledByUnitTest) {
+            return System.getProperty("user.dir") + "/src/main/webapp/";
+        }
+        return Jade.getInstance().getHomeDir();
+    }
+
+    private String getParametrePath(String year) {
+        String path = getRootPath() + PRESTATIONS_XML_PATH + "_" + year + ".xml";
+        if (!(new File(path)).exists()) {
+            int numericYear = Integer.parseInt(year);
+            if (year != Date.now().getAnnee() && numericYear > 2015) {
+                numericYear--;
+            } else {
+                return getParametrePath(String.valueOf(Date.now().getAnnee()));
+            }
+            return getParametrePath(String.valueOf(numericYear));
+        } else {
+            System.out.println("LBE : " + path);
+            return path;
+        }
     }
 
     /**

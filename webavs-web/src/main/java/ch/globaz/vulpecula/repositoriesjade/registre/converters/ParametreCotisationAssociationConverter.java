@@ -41,6 +41,7 @@ public class ParametreCotisationAssociationConverter
                 .getValueNormalisee());
         cotisationCaisseMetierSimpleModel.setFourchetteFin(parametreCotisationAssociation.getFourchetteFin()
                 .getValueNormalisee());
+        cotisationCaisseMetierSimpleModel.setFacteur(parametreCotisationAssociation.getFacteur().toString());
         cotisationCaisseMetierSimpleModel.setSpy(parametreCotisationAssociation.getSpy());
         return cotisationCaisseMetierSimpleModel;
     }
@@ -67,6 +68,9 @@ public class ParametreCotisationAssociationConverter
         if (!JadeStringUtil.isEmpty(parametreCotisationAssociationSimpleModel.getFourchetteFin())) {
             cotisationCaisseMetier.setFourchetteFin(new Montant(parametreCotisationAssociationSimpleModel
                     .getFourchetteFin()));
+        }
+        if (!JadeStringUtil.isEmpty(parametreCotisationAssociationSimpleModel.getFacteur())) {
+            cotisationCaisseMetier.setFacteur(Double.valueOf(parametreCotisationAssociationSimpleModel.getFacteur()));
         }
         cotisationCaisseMetier.setSpy(parametreCotisationAssociationSimpleModel.getSpy());
         return cotisationCaisseMetier;

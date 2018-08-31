@@ -198,7 +198,7 @@ globazGlobal.findCompteur = function(idPosteTravail, anneeDebut, anneeFin) {
 			callBack:function (data) {
 				var idPosteTravail = $("#idPosteTravail").val();
 				$("#salaireDeclare").val(globazNotation.utilsFormatter.formatStringToAmout(data, 2, true));
-				globazGlobal.services.findTaux(idPosteTravail, function (data) {
+				globazGlobal.services.findTaux(idPosteTravail, anneeFin, function (data) {
 					var tauxCP = parseFloat(data).toFixed(2);
 					$("#tauxCP").val(tauxCP);
 					globazGlobal.calculMontants();
@@ -452,9 +452,20 @@ globazGlobal.validate = (function() {
 		return messages;
 	}
 	
+	function checkNSSExists(){
+		var messages = [];
+		
+		if(globazGlobal.numAvsTravailleur == ""){
+			messages.push(globazGlobal.messageEmptyNSS);
+		}
+		
+		return messages;
+	}
+	
 	return function() {
 		var messages = checkDates();
 		messages = messages.concat(checkSalaireNonDeclare());
+		messages = messages.concat(checkNSSExists());
 		
 		if(messages.length==0) {
 			return true;

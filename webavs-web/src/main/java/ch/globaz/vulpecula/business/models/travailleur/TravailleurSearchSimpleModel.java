@@ -11,6 +11,7 @@ public class TravailleurSearchSimpleModel extends JadeSearchSimpleModel {
     private String forId;
     private String forIdTiers;
     private String forIdTravailleur;
+    private String forCorrelationId;
 
     public String getForId() {
         return forId;
@@ -34,6 +35,14 @@ public class TravailleurSearchSimpleModel extends JadeSearchSimpleModel {
 
     public void setForIdTravailleur(String forIdTravailleur) {
         this.forIdTravailleur = forIdTravailleur;
+    }
+
+    public String getForCorrelationId() {
+        return forCorrelationId;
+    }
+
+    public void setForCorrelationId(String forCorrelationId) {
+        this.forCorrelationId = forCorrelationId;
     }
 
     @Override

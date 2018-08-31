@@ -25,7 +25,7 @@
 			<td><span id="adressePaiementEmployeur"/></td>
 		</tr>
 		<tr>
-			<td><ct:FWLabel key="JSP_GENRE_PRESTATION"/></td>
+			<td><ct:FWLabel key="JSP_GENRE_PRESTATIONS"/></td>
 			<td>
 				<select id="genrePrestations" name="genrePrestations" />
 					<c:if test="${not empty viewBean.absenceJustifiee.type.value}">
@@ -133,7 +133,7 @@
 								<span id="spanTauxAVS"><c:out value="${absenceJustifiee.tauxAVS.value}"></c:out></span>%
 							</td>
 							<td style="text-align: right;">
-								<input class="montantCotisation smallextended readOnly"  type="text" data-g-amount="" readonly="readonly" disabled="disabled" tabindex="-1"/>
+								<input class="montantCotisation smallextended readOnly" id="montantAVS"  type="text" data-g-amount="" readonly="readonly" disabled="disabled" tabindex="-1"/>
 							</td>
 						</tr>
 						<tr class="cotisation">
@@ -143,7 +143,7 @@
 								<span id="spanTauxAC"><c:out value="${absenceJustifiee.tauxAC.value}"></c:out></span>%
 							</td>
 							<td style="text-align: right;">
-								<input class="montantCotisation smallextended readOnly"  type="text" data-g-amount="" readonly="readonly" disabled="disabled" tabindex="-1"/>
+								<input class="montantCotisation smallextended readOnly" id="montantAC"  type="text" data-g-amount="" readonly="readonly" disabled="disabled" tabindex="-1"/>
 							</td>
 						</tr>						
 					</table>			
@@ -156,6 +156,7 @@
 				<input id="montantVerse" name="montantVerse" class="smallextended readOnly" value="${absenceJustifiee.montantVerse.toStringValue()}" data-g-amount="" readonly="readonly" disabled="disabled" tabindex="-1"/>
 			</td>
 		</tr>
+		<input type="hidden" name="idAbsenceJustifiee" id="idAbsenceJustifiee" value="${absenceJustifiee.id}"/>
 </table>
 </div>
 </div>

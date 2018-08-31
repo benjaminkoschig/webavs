@@ -3,6 +3,7 @@ package ch.globaz.vulpecula.domain.models.taxationoffice;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import ch.globaz.vulpecula.domain.models.common.Date;
 import ch.globaz.vulpecula.domain.models.common.DomainEntity;
 import ch.globaz.vulpecula.domain.models.common.Montant;
 import ch.globaz.vulpecula.domain.models.common.Taux;
@@ -19,12 +20,17 @@ import ch.globaz.vulpecula.external.models.pyxis.CodeLangue;
  * 
  */
 public class TaxationOffice implements DomainEntity, Serializable {
+    private static final long serialVersionUID = -2189470702408712689L;
+
+    public static final int OFFSET_FOR_TAXATIONOFFICE = 500;
     private String id;
     private Decompte decompte;
     private String idPassageFacturation;
     private EtatTaxation etat;
     private String spy;
     private List<LigneTaxation> lignes;
+    private Date dateAnnulation;
+    private String idSection;
 
     public TaxationOffice() {
         lignes = new ArrayList<LigneTaxation>();
@@ -38,6 +44,14 @@ public class TaxationOffice implements DomainEntity, Serializable {
     @Override
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getIdSection() {
+        return idSection;
+    }
+
+    public void setIdSection(String idSection) {
+        this.idSection = idSection;
     }
 
     public String getIdPassageFacturation() {
@@ -66,6 +80,14 @@ public class TaxationOffice implements DomainEntity, Serializable {
 
     public String getIdDecompte() {
         return decompte.getId();
+    }
+
+    public Date getDateAnnulation() {
+        return dateAnnulation;
+    }
+
+    public void setDateAnnulation(Date dateAnnulation) {
+        this.dateAnnulation = dateAnnulation;
     }
 
     /**
@@ -268,6 +290,10 @@ public class TaxationOffice implements DomainEntity, Serializable {
      * @return String représentant le numéro de décompte, pouvant être utilisé en tant que section
      */
     public String getNumeroDecompteAsValue() {
+        return decompte.getNumeroDecompte().getValue();
+    }
+
+    public String getNumeroDecompteForSection() {
         return decompte.getNumeroDecompte().getValue();
     }
 

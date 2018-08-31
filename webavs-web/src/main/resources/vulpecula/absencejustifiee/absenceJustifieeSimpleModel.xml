@@ -37,6 +37,10 @@
 				comment="nombre d'heures effectuées par jour pour ce poste" />
 			<field name="salaireHoraire" column="SALAIRE_HORAIRE" type="NUMERIC"
 				comment="salaire horaire pour l'absence justfiée" />
+			<field name="dateVersement" column="DATE_VERSEMENT" type="DATE"
+				comment="date de versement de la prestation (REPRISE)" />
+			<field name="dateTraitementSalaires" column="DATE_TRAITEMENT_SALAIRES" type="DATE"/>
+			<field name="traitementSalaires" column="TRAITEMENT_SALAIRES" type="STRING"/>			
 		</fields>
 		
 		<search-definition>

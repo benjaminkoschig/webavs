@@ -13,6 +13,9 @@ public class CotisationAssociationProfessionnelleSimpleModel extends JadeSimpleM
     private String libelleDE;
     private String libelleIT;
     private String masseSalarialeDefaut;
+    private String facturerDefaut;
+    private String idRubrique;
+    private String printOrder;
 
     private String genre;
 
@@ -58,6 +61,14 @@ public class CotisationAssociationProfessionnelleSimpleModel extends JadeSimpleM
         this.masseSalarialeDefaut = masseSalarialeDefaut;
     }
 
+    public String getFacturerDefaut() {
+        return facturerDefaut;
+    }
+
+    public void setFacturerDefaut(String facturerDefaut) {
+        this.facturerDefaut = facturerDefaut;
+    }
+
     public String getIdAssociationProfessionnelle() {
         return idAssociationProfessionnelle;
     }
@@ -88,5 +99,33 @@ public class CotisationAssociationProfessionnelleSimpleModel extends JadeSimpleM
 
     public void setLibelleUpper(String libelleUpper) {
         this.libelleUpper = libelleUpper;
+    }
+
+    /**
+     * @return the idRubrique
+     */
+    public String getIdRubrique() {
+        return idRubrique;
+    }
+
+    /**
+     * @param idRubrique the idRubrique to set
+     */
+    public void setIdRubrique(String idRubrique) {
+        this.idRubrique = idRubrique;
+    }
+
+    /**
+     * @return the printOrder
+     */
+    public String getPrintOrder() {
+        return printOrder;
+    }
+
+    /**
+     * @param printOrder the printOrder to set
+     */
+    public void setPrintOrder(String printOrder) {
+        this.printOrder = printOrder;
     }
 }

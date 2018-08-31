@@ -1,19 +1,18 @@
 package ch.globaz.vulpecula.documents.rectificatif;
 
 import globaz.caisse.report.helper.CaisseHeaderReportBean;
-import globaz.framework.printing.itext.api.FWIImporterInterface;
+import globaz.docinfo.TIDocumentInfoHelper;
 import globaz.framework.printing.itext.exception.FWIException;
 import globaz.framework.printing.itext.fill.FWIImportParametre;
 import globaz.framework.util.FWMessage;
 import globaz.globall.db.BApplication;
 import globaz.globall.util.JANumberFormatter;
+import globaz.pyxis.api.ITIRole;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import net.sf.jasperreports.engine.JasperFillManager;
-import net.sf.jasperreports.engine.JasperPrint;
 import ch.globaz.vulpecula.business.services.VulpeculaRepositoryLocator;
 import ch.globaz.vulpecula.business.services.VulpeculaServiceLocator;
 import ch.globaz.vulpecula.documents.BulletinVersementReference;
@@ -25,7 +24,6 @@ import ch.globaz.vulpecula.documents.catalog.VulpeculaDocumentManager;
 import ch.globaz.vulpecula.domain.models.common.Date;
 import ch.globaz.vulpecula.domain.models.common.Montant;
 import ch.globaz.vulpecula.domain.models.common.NumeroReference;
-import ch.globaz.vulpecula.domain.models.common.Taux;
 import ch.globaz.vulpecula.domain.models.decompte.Decompte;
 import ch.globaz.vulpecula.external.models.osiris.TypeSection;
 import ch.globaz.vulpecula.external.models.pyxis.Adresse;
@@ -118,8 +116,9 @@ public class DocumentRectificatif extends VulpeculaDocumentManager<Decompte> {
 
         Map<String, String> parametres = new HashMap<String, String>();
         parametres.put(DocumentRectificatif.CTPARAMETRE_NO_DECOMPTE, decompte.getId());
-        parametres.put(DocumentRectificatif.CTPARAMETRE_MOIS, decompte.getNomMoisPeriodeDebut(locale));
-        parametres.put(DocumentRectificatif.CTPARAMETRE_ANNEE, decompte.getAnneePeriodeDebut());
+        parametres.put(DocumentRectificatif.CTPARAMETRE_MOIS, decompte.getDescription(locale));
+        // Ce paramètre n'est plus utilisé
+        parametres.put(DocumentRectificatif.CTPARAMETRE_ANNEE, "");
 
         return getTexteFormatte(1, 1, parametres);
     }
@@ -146,37 +145,24 @@ public class DocumentRectificatif extends VulpeculaDocumentManager<Decompte> {
     public void beforeBuildReport() throws FWIException {
         super.beforeBuildReport();
         setTemplateFile(getJasperTemplate());
+        Decompte decompte = getCurrentElement();
+        try {
+            TIDocumentInfoHelper.fill(getDocumentInfo(), decompte.getEmployeurIdTiers(), getSession(),
+                    ITIRole.CS_AFFILIE, decompte.getEmployeurAffilieNumero(), "");
+        } catch (Exception e) {
+            getMemoryLog().logMessage(e.toString(), "Error", this.getClass().getName());
+        }
+        getDocumentInfo().setDocumentProperty("idDecompte", decompte.getId());
+        getDocumentInfo().setDocumentProperty("decompte.periode",
+                decompte.getMoisPeriodeFin() + decompte.getAnneePeriodeFin());
 
         computeTotalPage();
     }
 
-    /**
-     * Détermine le total de page d'un document afin de pouvoir gérer les X dans les BVR.
-     * Pour cela, on construit en mémoire le document.
-     */
-    private void computeTotalPage() {
-        int nbPages = 0;
-        FWIImporterInterface importDoc = super.getImporter();
-        try {
-            String sourceFilename = importDoc.getImportPath() + "/" + getJasperTemplate() + importDoc.getImportType();
-
-            // On construit le document pour connaitre le nb de page total
-            JasperPrint m_document = JasperFillManager.fillReport(sourceFilename, importDoc.getParametre(),
-                    getDataSource());
-
-            if ((m_document != null)) {
-                nbPages = m_document.getPages().size();
-            }
-
-            // On recharge le data source
-            createDataSource();
-        } catch (Exception e) {
-            getMemoryLog().logMessage("Problème pour déterminer le nb de page total du document : " + e.getMessage(),
-                    FWMessage.AVERTISSEMENT, this.getClass().getName());
-        }
-
-        // On passe le nb de page au document
-        setParametres("P_NOMBRE_PAGES", nbPages);
+    @Override
+    public void afterBuildReport() {
+        super.afterBuildReport();
+        getDocumentInfo().setDocumentProperty("document.title", getFileTitle());
     }
 
     /**
@@ -286,7 +272,7 @@ public class DocumentRectificatif extends VulpeculaDocumentManager<Decompte> {
                         .add(buildTitleLine(application.getLabel(DocumentConstants.LABEL_DOCUMENT_AVS_AI_APG, langue)));
 
                 if (entry.getValue().isEmpty()) {
-                    collection.add(buildLine(new EntreeContribution(Taux.ZERO(), Montant.ZERO)));
+                    collection.add(buildLine(EntreeContribution.empty()));
                 } else {
                     for (EntreeContribution entree : entry.getValue()) {
                         collection.add(buildLine(entree));
@@ -298,7 +284,7 @@ public class DocumentRectificatif extends VulpeculaDocumentManager<Decompte> {
                 collection.add(buildTitleLine(application.getLabel(DocumentConstants.LABEL_DOCUMENT_AC, langue)));
 
                 if (entry.getValue().isEmpty()) {
-                    collection.add(buildLine(new EntreeContribution(Taux.ZERO(), Montant.ZERO)));
+                    collection.add(buildLine(EntreeContribution.empty()));
                 } else {
                     for (EntreeContribution entree : entry.getValue()) {
                         collection.add(buildLine(entree));
@@ -421,7 +407,7 @@ public class DocumentRectificatif extends VulpeculaDocumentManager<Decompte> {
 
     private void fillDocumentTitle() {
         Decompte decompte = getCurrentElement();
-        setDocumentTitle(decompte.getEmployeurAffilieNumero());
+        setDocumentTitle(decompte.getEmployeur().getConvention().getCode() + "-" + decompte.getEmployeurAffilieNumero());
     }
 
     @Override

@@ -64,6 +64,7 @@ public final class AffilieConverter {
         affilie.setReleveParitaire(affiliationSimpleModel.getReleveParitaire());
         affilie.setRelevePersonnel(affiliationSimpleModel.getRelevePersonnel());
         affilie.setAccesSecurite(affiliationSimpleModel.getAccesSecurite());
+        affilie.setDeclarationSalaire(affiliationSimpleModel.getDeclarationSalaire());
         affilie.setSpy(affiliationSimpleModel.getSpy());
         return affilie;
     }

@@ -10,9 +10,15 @@ import globaz.jade.persistence.model.JadeSearchComplexModel;
  * 
  */
 public class PosteTravailSearchSimpleModel extends JadeSearchComplexModel {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -3787344990541366423L;
+
     private String forIdPosteTravail;
     private String forIdTravailleur;
     private String forIdEmployeur;
+    private String forPosteCorrelationId;
 
     public String getForIdEmployeur() {
         return forIdEmployeur;
@@ -36,6 +42,14 @@ public class PosteTravailSearchSimpleModel extends JadeSearchComplexModel {
 
     public void setForIdTravailleur(String forIdTravailleur) {
         this.forIdTravailleur = forIdTravailleur;
+    }
+
+    public String getForPosteCorrelationId() {
+        return forPosteCorrelationId;
+    }
+
+    public void setForPosteCorrelationId(String forPosteCorrelationId) {
+        this.forPosteCorrelationId = forPosteCorrelationId;
     }
 
     @Override

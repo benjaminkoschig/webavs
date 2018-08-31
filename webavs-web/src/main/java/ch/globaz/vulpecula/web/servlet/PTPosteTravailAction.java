@@ -7,7 +7,6 @@ import static ch.globaz.vulpecula.web.servlet.PTConstants.*;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.controller.FWAction;
 import globaz.framework.servlets.FWServlet;
-import globaz.globall.db.BSessionUtil;
 import globaz.vulpecula.vb.postetravail.PTCotisationsAjaxViewBean;
 import globaz.vulpecula.vb.postetravail.PTEmployeurViewBean;
 import globaz.vulpecula.vb.postetravail.PTPosteTravailViewBean;
@@ -53,15 +52,18 @@ public class PTPosteTravailAction extends PTDefaultServletAction {
                 List<Administration> listCaisseMaladie = VulpeculaRepositoryLocator.getAdministrationRepository()
                         .findAllCaissesMaladies();
 
-                String aucuneCaisseLabel = BSessionUtil.getSessionFromThreadContext().getLabel("JSP_AUCUNE_CAISSE");
-                Administration cmVide = new Administration();
-                cmVide.setId("-1");
-                cmVide.setDesignation1(aucuneCaisseLabel);
+                // String aucuneCaisseLabel = BSessionUtil.getSessionFromThreadContext().getLabel("JSP_AUCUNE_CAISSE");
+                // Administration cmVide = new Administration();
+                // cmVide.setId("-1");
+                // cmVide.setDesignation1(aucuneCaisseLabel);
 
-                listCaisseMaladiePourEcran.add(cmVide);
+                // listCaisseMaladiePourEcran.add(cmVide);
 
                 for (Administration administration : listCaisseMaladie) {
-                    listCaisseMaladiePourEcran.add(administration);
+                    if (VulpeculaRepositoryLocator.getAdministrationRepository().isActive(administration.getIdTiers())) {
+                        listCaisseMaladiePourEcran.add(administration);
+                    }
+
                 }
 
                 vb.setListCaisseMaladie(listCaisseMaladiePourEcran);

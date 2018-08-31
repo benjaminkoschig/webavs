@@ -77,7 +77,7 @@ public class SalaireQualificationProcessTest {
 
     @Test
     public void groupeByRegionAndQualification_GivenEmptyList_ShouldReturnEmptyMap() {
-        Map<Pair<String, Qualification>, Collection<PosteTravail>> map = process
+        Map<String, Map<Pair<String, Qualification>, Collection<PosteTravail>>> map = process
                 .groupeByRegionAndQualification(new ArrayList<PosteTravail>());
 
         assertEquals(map.size(), 0);
@@ -85,7 +85,8 @@ public class SalaireQualificationProcessTest {
 
     @Test(expected = NullPointerException.class)
     public void groupeByRegionAndQualification_GivenNull_ThrowException() {
-        Map<Pair<String, Qualification>, Collection<PosteTravail>> map = process.groupeByRegionAndQualification(null);
+        Map<String, Map<Pair<String, Qualification>, Collection<PosteTravail>>> map = process
+                .groupeByRegionAndQualification(null);
         assertEquals(map, null);
     }
 
@@ -103,7 +104,8 @@ public class SalaireQualificationProcessTest {
 
         doReturn(new DetailGroupeLocalites(alDGL)).when(process).findDetailGroupeLocalites(pt);
 
-        Map<Pair<String, Qualification>, Collection<PosteTravail>> map = process.groupeByRegionAndQualification(alPT);
+        Map<String, Map<Pair<String, Qualification>, Collection<PosteTravail>>> map = process
+                .groupeByRegionAndQualification(alPT);
 
         assertEquals(map.size(), 1);
     }
@@ -165,12 +167,13 @@ public class SalaireQualificationProcessTest {
         postes.add(jpa);
         postes.add(cbu);
 
-        Map<Pair<String, Qualification>, Collection<PosteTravail>> map = process.groupeByRegionAndQualification(postes);
+        Map<String, Map<Pair<String, Qualification>, Collection<PosteTravail>>> map = process
+                .groupeByRegionAndQualification(postes);
 
-        for (Map.Entry<Pair<String, Qualification>, Collection<PosteTravail>> entree : map.entrySet()) {
+        for (Map.Entry<String, Map<Pair<String, Qualification>, Collection<PosteTravail>>> entree : map.entrySet()) {
             System.out.println(entree.getKey() + " " + entree.getValue());
         }
 
-        assertEquals(map.size(), 3);
+        assertEquals(map.size(), 1);
     }
 }

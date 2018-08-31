@@ -30,7 +30,13 @@
 			<field name="salaireDeclare" column="SALAIRE_DECLARE" type="NUMERIC"
 				comment="salaire déclaré" />
 			<field name="montantNet" column="MONTANT_NET" type="NUMERIC"
-				comment="montant net" />	
+				comment="montant net" />
+			<field name="dateVersement" column="DATE_VERSEMENT" type="DATE"
+				comment="date de versement de la prestation (REPRISE)" />	
+			<field name="dateTraitementMyProdis" column="DATE_TRAITEMENT_MYPRODIS" type="DATE"
+				comment="date de traitement effectuée par MyProdis" />	
+		    <field name="dateTraitementSalaires" column="DATE_TRAITEMENT_SALAIRES" type="DATE"/>
+			<field name="traitementSalaires" column="TRAITEMENT_SALAIRES" type="STRING"/>		
 		</fields>
 		
 		<search-definition>

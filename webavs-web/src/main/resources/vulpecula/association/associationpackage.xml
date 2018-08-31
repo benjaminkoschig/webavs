@@ -4,4 +4,8 @@
 	<model-mapping import="vulpecula/association/associationCotisationComplexModel.xml"/>
 	<model-mapping import="vulpecula/association/cotisationAssociationProfessionnelleSimpleModel.xml"/>
 	<model-mapping import="vulpecula/association/cotisationAssociationProfessionnelleComplexModel.xml"/>
+	<model-mapping import="vulpecula/association/enteteFactureAssociationProfessionnelleSimpleModel.xml"/>
+	<model-mapping import="vulpecula/association/ligneFactureAssociationProfessionnelleSimpleModel.xml"/>		
+	<model-mapping import="vulpecula/association/factureAssociationComplexModel.xml"/>
+	<model-mapping import="vulpecula/association/associationEmployeurSimpleModel.xml"/>		
 </model-mapping>

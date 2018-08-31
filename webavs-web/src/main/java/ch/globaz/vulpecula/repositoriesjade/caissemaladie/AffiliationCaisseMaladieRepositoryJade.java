@@ -44,11 +44,8 @@ public class AffiliationCaisseMaladieRepositoryJade
     @Override
     public AffiliationCaisseMaladie findActifByIdPosteTravail(String idPosteTravail) {
         List<AffiliationCaisseMaladie> affiliations = findByIdPosteTravail(idPosteTravail);
-        if (affiliations.size() > 0) {
-            AffiliationCaisseMaladie affiliation = affiliations.get(0);
-            if (affiliation.isActif()) {
-                return affiliation;
-            }
+        if (!affiliations.isEmpty()) {
+            return affiliations.get(0);
         }
         return null;
     }

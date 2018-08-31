@@ -28,6 +28,8 @@
 			<select-field name="spy" field-ref="entetePrestationModel.pspy" />
 			<select-field name="dateComptableVersement" field-ref="entetePrestationModel.dateVersComp" />
 			<select-field name="numFactureRecap" field-ref="recapitulatifEntrepriseModel.numeroFacture" />
+			<select-field name="bonification" field-ref="entetePrestationModel.bonification" />
+			<select-field name="cantonAllocataire" field-ref="allocataireModel.cantonResidence" />
 		</select-fields>
 		
 		<root-model name="entetePrestationModel"
@@ -146,6 +148,7 @@
 					<search-field name="forId" field-ref="entetePrestationModel.idEntete" operation="EQUALS"/>
 					<search-field name="forIdProcessus" field-ref="recapitulatifEntrepriseModel.idProcessusPeriodique" operation="EQUALS"/>
 					<search-field name="forIdAllocataire" field-ref="allocataireModel.idAllocataire" operation="EQUALS" />
+					<search-field name="forIdDossier" field-ref="dossierModel.idDossier" operation="EQUALS" />
 					<search-field name="forDateComptabilisationBeforeOrEquals" field-ref="entetePrestationModel.dateVersComp" operation="LESS_OR_EQUALS" />
 					<search-field name="forDateComptabilisationAfterOrEquals" field-ref="entetePrestationModel.dateVersComp" operation="GREATER_OR_EQUALS" />
 					<search-field name="forCantonResidence" field-ref="allocataireModel.cantonResidence" operation="EQUALS" />
@@ -156,7 +159,13 @@
 					<search-field name="forBonification" field-ref="entetePrestationModel.bonification" operation="EQUALS" />
 					<search-field name="forPeriodeDeBeforeOrEquals" field-ref="entetePrestationModel.periodeDe" operation="LESS_OR_EQUALS" />
 					<search-field name="forPeriodeDeAfterOrEquals" field-ref="entetePrestationModel.periodeDe" operation="GREATER_OR_EQUALS" />
+					<search-field name="forAffiliationId" field-ref="affiliationSimpleModel.affiliationId" operation="EQUALS" />
  				</search-group>
 		</search-definition>
+		
+		<order-by name="default">
+			<order-field field-ref="periodeDe" order="ASC" />
+		</order-by>
+		
 	</complexe-model>
 </model-mapping>

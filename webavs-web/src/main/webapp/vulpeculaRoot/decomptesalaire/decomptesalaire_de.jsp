@@ -37,13 +37,18 @@
 	globazGlobal.IS_EDITABLE = ${viewBean.editable};
 	globazGlobal.posteTravailViewService = '${viewBean.posteTravailViewService}';
 	globazGlobal.decompteSalaireViewService = '${viewBean.decompteSalaireViewService}';
+	globazGlobal.decompteViewService = '${viewBean.decompteViewService}';
 	globazGlobal.travailleurViewService = '${viewBean.travailleurViewService}';
 	globazGlobal.csMensuel = '${viewBean.csMensuel}';
 	globazGlobal.isNouveau = ${viewBean.nouveau};
+	globazGlobal.isNouveauTravailleur = ${viewBean.nouveauTravailleur};
 	globazGlobal.messageDialogCotisation = '${viewBean.messageDialogCotisation}';
 	globazGlobal.messageDroitsAF = '${viewBean.messageDroitsAF}';
 	globazGlobal.TYPE_DECOMPTE = '${viewBean.typeDecompte}';
 	globazGlobal.TYPE_PERIODIQUE = '${viewBean.typePeriodique}';
+	globazGlobal.TYPE_CPP = '${viewBean.typeCPP}';
+	globazGlobal.IS_EBUSINESS = ${viewBean.EBusiness};
+	globazGlobal.TAUXEBU = '${viewBean.tauxSaisieEbu}';
 </script>
 <script id="lineAbsence" type="jade/template">
 	<tr statut="">
@@ -105,9 +110,21 @@
 											 	}¦,
 											 nbOfCharBeforeLaunch:¦3¦"
 						/>
+						
 						<input id="idPosteTravail" name="idPosteTravail" type="hidden" value="" />
 					</td>
 					<td rowspan="3">
+						<div class="bloc blocMedium descriptionNouveauTravailleur" style="font-size:x-small;text-align:left;color:#b64823;">
+							<strong id="titleCorrelationId">Nouveau travailleur</strong>
+							<table style="border-collapse: collapse; font-size:x-small;">
+								<tr class="bmsRowEven"><td style="width: 40%">Nom, prénom</td><td><span id="infoTNom"></span></td></tr>
+								<tr><td style="width: 40%"><ct:FWLabel key="JSP_DATE_NAISSANCE"/></td><td><span id="infoTDateNaissance"></span></td></tr>
+								<tr class="bmsRowEven"><td><ct:FWLabel key="JSP_GENRE_SALAIRE"/></td><td><span id="infoTGenreSalaire"></span></td></tr>
+								<tr><td><ct:FWLabel key="JSP_QUALIFICATION"/></td><td><span id="infoTQualification"></span></td></tr>
+								<tr class="bmsRowEven"><td><ct:FWLabel key="JSP_ETAT_POSTE"/></td><td>nouveau travailleur</td></tr>
+							</table>
+						</div>
+					
 						<div class="bloc blocMedium descriptionTravailleur" style="font-size:x-small;text-align:left;">
 							<strong id="titlePosteTravail"><ct:FWLabel key="JSP_POSTE_TRAVAIL"/></strong>
 							<table style="border-collapse: collapse; font-size:x-small;">
@@ -118,10 +135,59 @@
 								<tr><td><b><ct:FWLabel key="JSP_NOTE"/></b></td><td><span id="infoNote"></span></td></tr>
 							</table>
 							<table id="tableDroitActif" style="border-collapse: collapse; font-size:x-small;display:none">
-								<tr class="bmsRowEven"><td><span style="color:red;font-weight: bold;">${viewBean.messageDroitsAF}</span></td></tr>
+								<tr class="bmsRowEven"><td colspan="2"><span style="color:red;font-weight: bold;">${viewBean.messageDroitsAF}</span></td></tr>
 							</table>
+
 						</div>
+						<div class="bloc blocMedium" style="font-size:x-small;text-align:left;" id=ebusinesspart>
+<!-- 							<hr/> -->
+							<!--
+								vert : #179a19
+								orange : #b64823
+								violet : #9f3db8
+							 -->
+							<table id="tableEBusiness" style="border-collapse: collapse; font-size:x-small;display:inline; color:#b64823">
+								<tr class="bmsRowEven"><td><ct:FWLabel key="JSP_REMARQUE"/></td><td id="remarque"><span id="decompteSalaireGSON.remarque"></span></td></tr>
+								<tr>
+									<td id="aTraiter" style="display:none">
+										<b><ct:FWLabel key="JSP_QUITTANCER"/> <input accesskey="J" title="alt + J" type="checkbox" id="decompteSalaireGSON.quittancer" /></b>
+									</td>
+									<td>
+										<ul style="margin:0px;" id="listCodeErreurs"></ul>
+									</td>
+								</tr>
+								<tr id="ligneSuprimmee" style="display:none">
+									<td><b><ct:FWLabel key="JSP_MAJ_FIN_POSTE"/></td>
+									<td><span id="libelleDateFin"></span></td>
+									<td><input type="checkbox" id="decompteSalaireGSON.majFinPoste"/></b></td>
+								</tr>
+							</table>
+						</div>					
 					</td>
+					<c:if test="${viewBean.isEbuAndComplementaire}">
+					<td>
+					<div class="bloc blocMedium" style="font-size:x-small;text-align:left;margin-top:23%;" id="complementaireEbuPart">
+						<strong id="montantsSaisisEmployeur">Montants saisis par l'employeur</strong>
+						<table id="tableComplementaireEbu" style="border-collapse: collapse; font-size:x-small;">
+							<tr>
+								<td>Vacances / Jours fériés</td>
+								<td style="text-align:center;"><span id="decompteSalaireGSON.vacances"></span></td>
+							</tr>
+							<tr class="bmsRowEven">
+								<td>Gratifications</td>
+								<td style="text-align:center;"><span id="decompteSalaireGSON.gratifications"></span></td>
+							</tr>
+							<tr>
+								<td>Absences justifiées</td>
+								<td style="text-align:center;"><span id="decompteSalaireGSON.absencesJustifiees"></span>
+							<tr class="bmsRowEven">
+								<td>APG + Compl. SM</td>
+								<td style="text-align:center;"><span id="decompteSalaireGSON.apgComplSm"></span></td>
+							</tr>
+						</table>
+					</div>
+					</td>
+					</c:if>				
 				</tr>
 				<tr>
 					<td>
@@ -153,6 +219,19 @@
 						<input type="text" id="decompteSalaireGSON.masseFranchise" data-g-amount=" " value="" />
 					</td>
 				</tr>
+				<tr>					
+					<td>
+						<label><ct:FWLabel key="PAS_DE_FRANCHISE"/></label>&nbsp;<input type="checkBox" id="decompteSalaireGSON.forcerFranchise0" value="" />
+					</td>
+				</tr>
+				<c:if test="${decompte.CPP}">
+					<tr>
+						<td>
+							<label><ct:FWLabel key="JSP_ANNEE_COTISATIONS_POUR_TAUX"/></label><br />
+							<input type="text" id="decompteSalaireGSON.anneeCotisations" data-g-integer="sizeMax:4" value="" />
+						</td>
+					</tr>
+				</c:if>
 				<tr>
 					<td>
 					<table><tr><td>
@@ -181,12 +260,22 @@
 				<tr>
 					<td>
 						<label><ct:FWLabel key="JSP_TOTAL_TAUX_CONTRIB" /></label>
-					<br/><input type="text" id="decompteSalaireGSON.tauxContribuable" data-g-rate="nbMaxDecimal:2" value="" class="readOnly" readonly="readonly" tabindex="-1" size="4" /></td>
+						<c:if test="${viewBean.isEbu}">
+							&nbsp;&nbsp;&nbsp;<label><ct:FWLabel key="JSP_TOTAL_TAUX_PORTAIL" /></label>
+						</c:if>
+					<span style="margin-right:70px">
+					<br/><input type="text" id="decompteSalaireGSON.tauxContribuable" data-g-rate="nbMaxDecimal:2" value="" class="readOnly" readonly="readonly" tabindex="-1" size="4" />
+					</span>						
+					<c:if test="${viewBean.isEbu}">														
+						<input type="text" id="decompteSalaireGSON.tauxSaisieEbu" data-g-rate="nbMaxDecimal:2" value="" class="readOnly" readonly="readonly" tabindex="-1" size="4" />										
+					</c:if>
+					</td>
 				</tr>
 				<tr>
 					<td>
 						<label><ct:FWLabel key="JSP_SEQUENCE" /></label>
 						<br/><input type="text" id="decompteSalaireGSON.sequence" value="" class="readOnly" readonly="readonly" tabindex="-1" size="4" />
+						<input type="hidden" id="decompteSalaireGSON.isEnErreur" value=""/>
 					</td>
 				</tr>
 			</table>
@@ -221,7 +310,7 @@
 			<c:if test="${viewBean.editable}">
 				<input id="btnAjaxNouveau" type="button" value='<ct:FWLabel key="JSP_NOUVEAU"/>'></input>
 			</c:if>
-			<a href="vulpecula?userAction=back" id="cancelBack" accesskey="A" title="<ct:FWLabel key="JSP_RETOUR_DESCRIPTION" />"><ct:FWLabel key="JSP_RETOUR" /></a>
+			<a href="vulpecula?userAction=vulpecula.decomptedetail.decomptedetail.afficher&selectedId=${viewBean.idDecompte}" id="cancelBack" accesskey="A" title="<ct:FWLabel key="JSP_RETOUR_DESCRIPTION" />"><ct:FWLabel key="JSP_RETOUR" /></a>
 			</span>
 		</div>
 
@@ -252,7 +341,8 @@
 				  	<tr class="none"><td><kbd class="keyboard-key nowrap" style="border: 1px solid #aaa; background-color: #f9f9f9; padding: 0.1em 0.3em; font-family: inherit; font-size: 1em;">Alt</kbd> + <kbd class="keyboard-key nowrap" style="border: 1px solid #aaa; background-color: #f9f9f9; padding: 0.1em 0.4em; font-family: inherit; font-size: 1em;">M</kbd></td><td><ct:FWLabel key="JSP_AIDE_MODIFIER" /></td></tr>
 				  	<tr class="bmsRowEven"><td><kbd class="keyboard-key nowrap" style="border: 1px solid #aaa; background-color: #f9f9f9; padding: 0.1em 0.3em; font-family: inherit; font-size: 1em;">Ctrl</kbd> + <kbd class="keyboard-key nowrap" style="border: 1px solid #aaa; background-color: #f9f9f9; padding: 0.1em 0.3em; font-family: inherit; font-size: 1em;">Alt</kbd> + <kbd class="keyboard-key nowrap" style="border: 1px solid #aaa; background-color: #f9f9f9; padding: 0.1em 0.3em; font-family: inherit; font-size: 1em;">+</kbd></td><td><ct:FWLabel key="JSP_AIDE_ABSENCE" /></td></tr>
 				  	<tr class="none"><td><kbd class="keyboard-key nowrap" style="border: 1px solid #aaa; background-color: #f9f9f9; padding: 0.1em 0.3em; font-family: inherit; font-size: 1em;">Alt</kbd> + <kbd class="keyboard-key nowrap" style="border: 1px solid #aaa; background-color: #f9f9f9; padding: 0.1em 0.4em; font-family: inherit; font-size: 1em;">S</kbd></td><td><ct:FWLabel key="JSP_AIDE_SUPPRIMER" /></td></tr> 
-				  	<tr class="bmsRowEven"><td><kbd class="keyboard-key nowrap" style="border: 1px solid #aaa; background-color: #f9f9f9; padding: 0.1em 0.3em; font-family: inherit; font-size: 1em;">Alt</kbd> + <kbd class="keyboard-key nowrap" style="border: 1px solid #aaa; background-color: #f9f9f9; padding: 0.1em 0.4em; font-family: inherit; font-size: 1em;">C</kbd></td><td><ct:FWLabel key="JSP_AIDE_VIDER" /></td></tr> 
+				  	<tr class="bmsRowEven"><td><kbd class="keyboard-key nowrap" style="border: 1px solid #aaa; background-color: #f9f9f9; padding: 0.1em 0.3em; font-family: inherit; font-size: 1em;">Alt</kbd> + <kbd class="keyboard-key nowrap" style="border: 1px solid #aaa; background-color: #f9f9f9; padding: 0.1em 0.4em; font-family: inherit; font-size: 1em;">C</kbd></td><td><ct:FWLabel key="JSP_AIDE_VIDER" /></td></tr>
+				  	<tr class="bmsRowEven"><td><kbd class="keyboard-key nowrap" style="border: 1px solid #aaa; background-color: #f9f9f9; padding: 0.1em 0.3em; font-family: inherit; font-size: 1em;">Alt</kbd> + <kbd class="keyboard-key nowrap" style="border: 1px solid #aaa; background-color: #f9f9f9; padding: 0.1em 0.4em; font-family: inherit; font-size: 1em;">J</kbd></td><td><ct:FWLabel key="JSP_AIDE_QUITTANCE" /></td></tr> 
 				 	<tr class="bmsRowEven"><td colspan="2"><ct:FWLabel key="JSP_AIDE_PASSER_SUIVANT" /></td></tr>
 				 </table>
 				 </div>

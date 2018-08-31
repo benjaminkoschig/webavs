@@ -11,7 +11,6 @@ public class EmployeurSimpleModel extends JadeSimpleModel {
     private String idEmployeur;
     private String typeFacturation;
     private boolean bvr;
-    private boolean editerSansTravailleur;
 
     public EmployeurSimpleModel() {
         super();
@@ -49,13 +48,5 @@ public class EmployeurSimpleModel extends JadeSimpleModel {
 
     public void setTypeFacturation(String typeFacturation) {
         this.typeFacturation = typeFacturation;
-    }
-
-    public final boolean getEditerSansTravailleur() {
-        return editerSansTravailleur;
-    }
-
-    public final void setEditerSansTravailleur(boolean editerSansTravailleur) {
-        this.editerSansTravailleur = editerSansTravailleur;
     }
 }

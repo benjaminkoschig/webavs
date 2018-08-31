@@ -17,8 +17,8 @@ public class TableParametrageTest {
     private static TableParametrage tableParametrage;
 
     @BeforeClass
-    public static void before() throws JAXBException, URISyntaxException {
-        tableParametrage = TableParametrage.getInstance();
+    public static void beforeClass() throws JAXBException, URISyntaxException {
+        tableParametrage = new TableParametrage("2018", true);
     }
 
     @Test

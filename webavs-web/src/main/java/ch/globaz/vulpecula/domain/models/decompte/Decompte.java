@@ -1,6 +1,8 @@
 package ch.globaz.vulpecula.domain.models.decompte;
 
+import globaz.jade.client.util.JadeStringUtil;
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -12,6 +14,8 @@ import java.util.Map;
 import java.util.Set;
 import ch.globaz.specifications.Specification;
 import ch.globaz.specifications.UnsatisfiedSpecificationException;
+import ch.globaz.vulpecula.business.services.VulpeculaRepositoryLocator;
+import ch.globaz.vulpecula.business.services.VulpeculaServiceLocator;
 import ch.globaz.vulpecula.domain.models.common.Annee;
 import ch.globaz.vulpecula.domain.models.common.Date;
 import ch.globaz.vulpecula.domain.models.common.DomainEntity;
@@ -21,12 +25,15 @@ import ch.globaz.vulpecula.domain.models.common.Taux;
 import ch.globaz.vulpecula.domain.models.postetravail.Employeur;
 import ch.globaz.vulpecula.domain.models.postetravail.PosteTravail;
 import ch.globaz.vulpecula.domain.models.registre.Convention;
+import ch.globaz.vulpecula.domain.models.taxationoffice.EtatTaxation;
+import ch.globaz.vulpecula.domain.models.taxationoffice.TaxationOffice;
 import ch.globaz.vulpecula.domain.specifications.decompte.DecompteCTNumeroRequis;
 import ch.globaz.vulpecula.domain.specifications.decompte.DecompteDateDecompteRequiseSpecification;
 import ch.globaz.vulpecula.domain.specifications.decompte.DecompteEmployeurRequisSpecification;
 import ch.globaz.vulpecula.domain.specifications.decompte.DecomptePeriodeRequiseSpecification;
 import ch.globaz.vulpecula.external.models.affiliation.PlanCaisse;
 import ch.globaz.vulpecula.external.models.hercule.InteretsMoratoires;
+import ch.globaz.vulpecula.external.models.musca.Passage;
 import ch.globaz.vulpecula.external.models.osiris.TypeSection;
 import ch.globaz.vulpecula.external.models.pyxis.Adresse;
 import ch.globaz.vulpecula.external.models.pyxis.CodeLangue;
@@ -56,6 +63,14 @@ public class Decompte implements DomainEntity, Serializable {
     private transient final List<HistoriqueDecompte> historiques;
     private String typeDecompteLibelle;
     private boolean controleAC2;
+    private TaxationOffice taxationOfficeModel;
+    private TypeProvenance typeProvenance;
+
+    /**
+     * Passage de facturation auquel le décompte est lié.
+     * Attention, celui-ci n'est pas automatiquement chargé depuis la persistence (uniquement DecompteComplexModel)
+     */
+    private Passage passage;
 
     public String getTypeDecompteLibelle() {
         return typeDecompteLibelle;
@@ -63,6 +78,21 @@ public class Decompte implements DomainEntity, Serializable {
 
     public void setTypeDecompteLibelle(String typeDecompteLibelle) {
         this.typeDecompteLibelle = typeDecompteLibelle;
+    }
+
+    /**
+     * Retourne l'etat de la taxation d'office, null, si il n'y a pas de taxation
+     * 
+     * @return {@link EtatTaxation} etat de la taxation d'office
+     */
+    public EtatTaxation getEtatTaxationOffice() {
+        TaxationOffice to = VulpeculaRepositoryLocator.getTaxationOfficeRepository().findByIdDecompte(idDecompte);
+        if (to == null) {
+            return null;
+        } else {
+            return to.getEtat();
+        }
+
     }
 
     /**
@@ -237,6 +267,10 @@ public class Decompte implements DomainEntity, Serializable {
         } else {
             return getId();
         }
+    }
+
+    public Boolean getGedMyProdis() {
+        return VulpeculaServiceLocator.getPropertiesService().isGedMyProdis();
     }
 
     /**
@@ -447,7 +481,7 @@ public class Decompte implements DomainEntity, Serializable {
     public List<Taux> getTauxContribuablesDifferents() {
         Set<Taux> taux = new HashSet<Taux>();
         for (DecompteSalaire decompteSalaire : lignes) {
-            taux.add(decompteSalaire.getTauxContribuableForCaissesSociales());
+            taux.add(decompteSalaire.getTauxContribuableForCaissesSociales(false));
         }
         return new ArrayList<Taux>(taux);
     }
@@ -475,8 +509,24 @@ public class Decompte implements DomainEntity, Serializable {
         return TypeDecompte.CONTROLE_EMPLOYEUR.equals(type);
     }
 
+    public boolean isNotEbusiness() {
+        return !TypeProvenance.EBUSINESS.equals(getTypeProvenance());
+    }
+
     public boolean isPeriodique() {
         return TypeDecompte.PERIODIQUE.equals(type);
+    }
+
+    public boolean isSpecial() {
+        return isSpecialCaisse() || isSpecialSalaire();
+    }
+
+    public boolean isCPP() {
+        return TypeDecompte.CPP.equals(type);
+    }
+
+    public boolean isSpecialCaisse() {
+        return TypeDecompte.SPECIAL_CAISSE.equals(type);
     }
 
     public boolean isSoumisAC() {
@@ -491,8 +541,12 @@ public class Decompte implements DomainEntity, Serializable {
         return employeur.isSoumisAVS();
     }
 
-    public boolean isSpecial() {
-        return TypeDecompte.SPECIAL.equals(type);
+    public boolean isSpecialSalaire() {
+        return type.isSpecialSalaire();
+    }
+
+    public boolean isTraiterAsSpecial() {
+        return type.isTraiterAsSpecial();
     }
 
     public void setDateEtablissement(final Date dateEtablissement) {
@@ -509,6 +563,14 @@ public class Decompte implements DomainEntity, Serializable {
 
     public void setEtat(final EtatDecompte etat) {
         this.etat = etat;
+    }
+
+    public Passage getPassage() {
+        return passage;
+    }
+
+    public void setPassage(Passage passage) {
+        this.passage = passage;
     }
 
     @Override
@@ -634,10 +696,21 @@ public class Decompte implements DomainEntity, Serializable {
      * @return true si {@link EtatDecompte#OUVERT}, {@link EtatDecompte#ERREUR} ou {@link EtatDecompte#RECEPTIONNE}
      */
     public boolean isControlable() {
+        if (EtatDecompte.A_TRAITER.equals(etat)) {
+            List<DecompteSalaire> listeDecompteSalaire = VulpeculaRepositoryLocator.getDecompteSalaireRepository()
+                    .findByIdDecompte(getId());
+            for (DecompteSalaire ligne : listeDecompteSalaire) {
+                if (ligne.isaTraiter()) {
+                    return false;
+                }
+            }
+        }
+
         switch (etat) {
             case OUVERT:
             case ERREUR:
             case RECEPTIONNE:
+            case A_TRAITER:
                 return true;
             default:
                 return false;
@@ -654,6 +727,7 @@ public class Decompte implements DomainEntity, Serializable {
             case OUVERT:
             case GENERE:
             case SOMMATION:
+            case A_TRAITER:
                 return true;
             default:
                 return false;
@@ -670,6 +744,17 @@ public class Decompte implements DomainEntity, Serializable {
         switch (etat) {
             case VALIDE:
             case RECTIFIE:
+                // case A_TRAITER:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    public boolean isValideOuComptablise() {
+        switch (etat) {
+            case VALIDE:
+            case COMPTABILISE:
                 return true;
             default:
                 return false;
@@ -772,6 +857,35 @@ public class Decompte implements DomainEntity, Serializable {
     }
 
     /**
+     * 
+     * @return {@link Montant} Masse de toutes les lignes de décomptes pour un type d'assurance
+     */
+    public Montant getMasseCotisationCalculees(TypeAssurance typeAssurance) {
+        Montant montantTotal = Montant.ZERO;
+        List<CotisationCalculee> cotisationsMergees = new ArrayList<CotisationCalculee>();
+        for (CotisationCalculee cotisationCalculee : getAllCotisationsCalculees()) {
+            boolean found = false;
+            for (int i = 0; i < cotisationsMergees.size(); i++) {
+                CotisationCalculee cotisationMergee = cotisationsMergees.get(i);
+                if (cotisationMergee.hasSameAssuranceAndTaux(cotisationCalculee)) {
+                    CotisationCalculee newCotisationMergee = cotisationMergee.add(cotisationCalculee);
+                    cotisationsMergees.set(i, newCotisationMergee);
+                    found = true;
+                }
+            }
+            if (!found) {
+                cotisationsMergees.add(cotisationCalculee);
+            }
+        }
+        for (CotisationCalculee cotisation : cotisationsMergees) {
+            if (cotisation.getCotisation().getTypeAssurance().getValue().equals(typeAssurance.getValue())) {
+                montantTotal = montantTotal.add(cotisation.getMontant());
+            }
+        }
+        return montantTotal;
+    }
+
+    /**
      * Retourne une table de cotisations calculees groupées par leur plan caisse.
      * 
      * @return La table de cotisation calculees groupés par {@link PlanCaisse} sous forme de Map
@@ -856,6 +970,7 @@ public class Decompte implements DomainEntity, Serializable {
             case ERREUR:
             case SOMMATION:
             case RECEPTIONNE:
+            case A_TRAITER:
                 return true;
             default:
                 return false;
@@ -942,9 +1057,8 @@ public class Decompte implements DomainEntity, Serializable {
     /**
      * Calcul de la date de rappel
      * Si la fin de la période du décompte est supérieure/égal à la date d'établissement, alors on ajoute X jours à la
-     * date
-     * de fin de période.
-     * Si la fin de la période du décompte est inférieure à la date d'établissement, alors on ajoute X jours à la date
+     * date de fin de période.
+     * Si la fin de la période du décompte est inférieure à la date d'établissement, alors on ajoute 30 jours à la date
      * d'établissement.
      * 
      * @param Le nombre de jours (X) à ajouter pour la date de rappel
@@ -1181,10 +1295,17 @@ public class Decompte implements DomainEntity, Serializable {
 
     // On affiche le mois courant si la période n'est que d'un mois, dans le cas contraire, on affiche les deux mois
     public String getDescription(Locale locale) {
+        String annee = periode.getAnneeDebut();
+        String anneeFin = periode.getAnneeFin();
+
         String smois = "";
         if (periode.isLongerThanOneMonth()) {
             StringBuilder mois = new StringBuilder();
             mois.append(upperCaseFirstLetter(Date.getMonthName(Integer.valueOf(periode.getMoisDebut()), locale)));
+            if (!annee.equals(anneeFin)) {
+                mois.append(" ");
+                mois.append(annee);
+            }
             mois.append(" - ");
             mois.append(upperCaseFirstLetter(Date.getMonthName(Integer.valueOf(periode.getMoisFin()), locale)));
 
@@ -1193,10 +1314,9 @@ public class Decompte implements DomainEntity, Serializable {
             smois = upperCaseFirstLetter(Date.getMonthName(Integer.valueOf(periode.getMoisDebut()), locale));
         }
 
-        String annee = periode.getAnneeDebut();
         smois = firstLetterUpperCase(smois);
 
-        return smois + " " + annee;
+        return smois + " " + anneeFin;
     }
 
     private String upperCaseFirstLetter(String word) {
@@ -1215,7 +1335,7 @@ public class Decompte implements DomainEntity, Serializable {
         if (isReprise()) {
             return TypeSection.DECOMPTE_COTISATION;
         }
-        if (TypeDecompte.SPECIAL.equals(getType()) || TypeDecompte.CONTROLE_EMPLOYEUR.equals(getType())
+        if (isTraiterAsSpecial() || TypeDecompte.CONTROLE_EMPLOYEUR.equals(getType())
                 || EtatDecompte.TAXATION_DOFFICE.equals(getEtat())) {
             return TypeSection.DECOMPTE_COTISATION;
         } else {
@@ -1240,5 +1360,73 @@ public class Decompte implements DomainEntity, Serializable {
         } else {
             return getNumeroDecompte().getValue();
         }
+    }
+
+    public TaxationOffice getTaxationOfficeModel() {
+        return taxationOfficeModel;
+    }
+
+    public void setTaxationOfficeModel(TaxationOffice taxationOfficeModel) {
+        this.taxationOfficeModel = taxationOfficeModel;
+    }
+
+    public boolean isSansSalaire() {
+        for (DecompteSalaire ligneSalaire : getLignes()) {
+            if (!ligneSalaire.getSalaireTotal().isZero()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * @return the provenance
+     */
+    public TypeProvenance getTypeProvenance() {
+        return typeProvenance;
+    }
+
+    /**
+     * @param provenance the provenance to set
+     */
+    public void setTypeProvenance(TypeProvenance provenance) {
+        typeProvenance = provenance;
+    }
+
+    /**
+     * Retourne le nombre de lignes de l'adresse
+     * 
+     * @return nombre de lignes
+     */
+    public int getNbLignesAdresse() {
+        return employeur.getAdressePrincipale().nbLignes();
+    }
+
+    public void calculerAndSetControleAC2() {
+        if (periode.isPeriodeFinDecembre()) {
+            controleAC2 = true;
+        } else if (isComplementaire()) {
+            controleAC2 = true;
+        } else {
+            if (!JadeStringUtil.isBlankOrZero(getEmployeur().getDateFin())) {
+                SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy");
+                try {
+                    java.util.Date dateFin = formatter.parse(getEmployeur().getDateFin());
+                    if (dateFin.getMonth() + 1 == new Integer(periode.getMoisFin())) {
+                        controleAC2 = true;
+                    }
+                } catch (Exception e) {
+                    controleAC2 = false;
+                }
+            }
+        }
+    }
+
+    public boolean isEmployeurEBusiness() {
+        return employeur.isEBusiness();
+    }
+
+    public boolean isEBusiness() {
+        return TypeProvenance.EBUSINESS.equals(typeProvenance);
     }
 }

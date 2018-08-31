@@ -8,6 +8,7 @@ import java.util.List;
 import ch.globaz.vulpecula.domain.models.common.Date;
 import ch.globaz.vulpecula.domain.models.decompte.EtatDecompte;
 import ch.globaz.vulpecula.domain.models.decompte.TypeDecompte;
+import ch.globaz.vulpecula.domain.models.decompte.TypeProvenance;
 
 public class DecompteSearchComplexModelAJAX extends JadeSearchComplexModel {
     private static final long serialVersionUID = -6641472392212694779L;
@@ -30,6 +31,7 @@ public class DecompteSearchComplexModelAJAX extends JadeSearchComplexModel {
     private String beforeDate;
     private String forDateReception;
     private String forEtatTaxation;
+    private String forTypeProvenance;
 
     public String getForDateReception() {
         return forDateReception;
@@ -227,6 +229,24 @@ public class DecompteSearchComplexModelAJAX extends JadeSearchComplexModel {
 
     public void setForEtatTaxation(String forEtatTaxation) {
         this.forEtatTaxation = forEtatTaxation;
+    }
+
+    /**
+     * @return the forTypeProvenance
+     */
+    public String getForTypeProvenance() {
+        return forTypeProvenance;
+    }
+
+    public void setForTypeProvenance(final TypeProvenance typeProvenance) {
+        forType = typeProvenance.getValue();
+    }
+
+    /**
+     * @param forTypeProvenance the forTypeProvenance to set
+     */
+    public void setForTypeProvenance(String forTypeProvenance) {
+        this.forTypeProvenance = forTypeProvenance;
     }
 
     @Override

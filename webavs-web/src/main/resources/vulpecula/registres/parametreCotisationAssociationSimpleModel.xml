@@ -17,13 +17,14 @@
 				type="NUMERIC" comment="fourchette de départ de la cotisation" />
 			<field name="fourchetteFin" column="FOURCHETTE_FIN"
 				type="NUMERIC" comment="fourchette de fin de la cotisation" />
+			<field name="facteur" column="FACTEUR" type="NUMERIC" comment="facteur de la cotisation" />
 		</fields>
 		<search-definition>
 			<search-group operator="AND">
 				<search-field name="forId" field-ref="id"
 					operation="EQUALS" />
 				<search-field name="forIdCotisationAssociationProfessionnelle" field-ref="idCotisationAssociationProfessionnelle"
-					operation="EQUALS" />
+					operation="EQUALS" />			
 			</search-group>
 		</search-definition>
 		<order-by name="idDesc">

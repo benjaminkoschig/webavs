@@ -12,6 +12,10 @@ public class TiersTracker extends BAbstractEntityExternalService {
     @Override
     public void afterAdd(BEntity entity) throws Throwable {
         // La création d'un nouveau tiers ne nous intéresse pas.
+        String idTiers = entity.getId();
+
+        // Notification pour eBusiness
+        requestFactory.persistFromAnciennePersistanceEbu(idTiers, entity.getSession());
     }
 
     @Override
@@ -24,9 +28,13 @@ public class TiersTracker extends BAbstractEntityExternalService {
 
     @Override
     public void afterUpdate(BEntity entity) throws Throwable {
-        Notification notification = new Notification(InfoType.MODIFICATION_TIERS, entity.getId());
-        // RequestFactory.executeAsync(notification);
+        String idTiers = entity.getId();
+
+        Notification notification = new Notification(InfoType.MODIFICATION_TIERS, idTiers);
         requestFactory.persistFromAnciennePersistance(notification, entity.getSession());
+
+        // Notification pour eBusiness
+        requestFactory.persistFromAnciennePersistanceEbu(idTiers, entity.getSession());
     }
 
     @Override

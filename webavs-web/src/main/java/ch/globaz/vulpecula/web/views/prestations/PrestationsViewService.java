@@ -6,6 +6,7 @@ import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.persistence.JadePersistenceManager;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,10 +27,12 @@ import ch.globaz.vulpecula.business.services.VulpeculaRepositoryLocator;
 import ch.globaz.vulpecula.business.services.VulpeculaServiceLocator;
 import ch.globaz.vulpecula.business.services.congepaye.CongePayeService;
 import ch.globaz.vulpecula.business.services.postetravail.PosteTravailService;
+import ch.globaz.vulpecula.domain.models.absencejustifiee.AbsenceJustifiee;
 import ch.globaz.vulpecula.domain.models.absencejustifiee.LienParente;
 import ch.globaz.vulpecula.domain.models.absencejustifiee.TypeAbsenceJustifiee;
 import ch.globaz.vulpecula.domain.models.common.Annee;
 import ch.globaz.vulpecula.domain.models.common.Date;
+import ch.globaz.vulpecula.domain.models.common.Montant;
 import ch.globaz.vulpecula.domain.models.common.Periode;
 import ch.globaz.vulpecula.domain.models.common.Taux;
 import ch.globaz.vulpecula.domain.models.congepaye.CongePaye;
@@ -38,6 +41,7 @@ import ch.globaz.vulpecula.domain.models.decompte.TypeAssurance;
 import ch.globaz.vulpecula.domain.models.parametrage.ConfigurationSM;
 import ch.globaz.vulpecula.domain.models.parametrage.TableParametrage;
 import ch.globaz.vulpecula.domain.models.postetravail.PosteTravail;
+import ch.globaz.vulpecula.domain.models.postetravail.Travailleur;
 import ch.globaz.vulpecula.domain.models.prestations.Beneficiaire;
 import ch.globaz.vulpecula.domain.models.prestations.TypePrestation;
 import ch.globaz.vulpecula.domain.models.servicemilitaire.GenreSM;
@@ -72,8 +76,14 @@ public class PrestationsViewService {
             throws ViewException {
         TypePrestation type = TypePrestation.fromValue(genrePrestation);
         boolean hasAuMoinsUnPoste = false;
+
+        // pour le congé payé vérifier si le nss existe
+        boolean hasNSS = true;
+        Travailleur trav = VulpeculaRepositoryLocator.getTravailleurRepository().findById(idTravailleur);
+
         List<PosteTravail> postesList = VulpeculaRepositoryLocator.getPosteTravailRepository()
                 .findByIdTravailleurWithDependencies(idTravailleur);
+
         for (PosteTravail posteTravail : postesList) {
             if (hasAuMoinsUnPoste) {
                 break;
@@ -92,6 +102,11 @@ public class PrestationsViewService {
                     if (posteTravail.hasDroitCP(idCaisseMetier)) {
                         hasAuMoinsUnPoste = true;
                     }
+                    // test seulement si congé payé
+                    if (JadeStringUtil.isEmpty(trav.getNumAvsActuel())) {
+                        hasNSS = false;
+                    }
+
                     break;
                 case SERVICES_MILITAIRE:
                     if (posteTravail.hasDroitSM(idCaisseMetier)) {
@@ -104,6 +119,9 @@ public class PrestationsViewService {
         }
         if (!hasAuMoinsUnPoste) {
             throw new ViewException(SpecificationMessage.SAISIE_RAPIDE_PAS_DE_POSTE);
+        }
+        if (!hasNSS) {
+            throw new ViewException(SpecificationMessage.EMPTY_NSS);
         }
         return hasAuMoinsUnPoste;
     }
@@ -251,9 +269,15 @@ public class PrestationsViewService {
      * @throws JAXBException
      */
     public boolean tenirCompteDesCotisations(String idPosteTravail) throws JAXBException, URISyntaxException {
+        PosteTravail posteTravail = VulpeculaRepositoryLocator.getPosteTravailRepository().findById(idPosteTravail);
         int numeroCaisse = VulpeculaServiceLocator.getPosteTravailService().getNumeroCaissePrincipale(idPosteTravail);
+        String anneeParametre = "";
+        if (posteTravail != null) {
+            anneeParametre = posteTravail.getPeriodeActivite().getDateFin() != null ? posteTravail.getPeriodeActivite()
+                    .getDateFin().getAnnee() : "";
+        }
         if (numeroCaisse != PosteTravail.CAISSE_METIER_INVALIDE) {
-            return TableParametrage.getInstance().hasCotisationsCongesPays(numeroCaisse);
+            return TableParametrage.getInstance(anneeParametre).hasCotisationsCongesPays(numeroCaisse);
         } else {
             return false;
         }
@@ -268,8 +292,9 @@ public class PrestationsViewService {
      * @param idPosteTravail
      * @return
      */
-    public String getTauxCPParametrage(String idPosteTravail) {
+    public String getTauxCPParametrage(String idPosteTravail, String anneeString) {
         PosteTravail posteTravail = VulpeculaRepositoryLocator.getPosteTravailRepository().findById(idPosteTravail);
+        Annee annee = new Annee(anneeString);
 
         int noCaisseMetier = VulpeculaServiceLocator.getPosteTravailService().getNumeroCaissePrincipale(idPosteTravail);
 
@@ -278,8 +303,9 @@ public class PrestationsViewService {
         }
         if (noCaisseMetier != 0) {
             Taux taux = new Taux(TableParametrage
-                    .getInstance()
-                    .getNbJoursTaux(Integer.valueOf(noCaisseMetier), posteTravail.getAgeTravailleur(),
+                    .getInstance(anneeString)
+                    .getNbJoursTaux(Integer.valueOf(noCaisseMetier),
+                            posteTravail.getAgeTravailleurForDate(annee.getLastDayOfYear()),
                             posteTravail.getAnneesService()).getTaux());
             return taux.getValue();
         } else {
@@ -303,7 +329,9 @@ public class PrestationsViewService {
             throw new GlobazTechnicalException(ExceptionMessage.ERREUR_TECHNIQUE);
         }
         if (noCaisseMetier != 0) {
-            Taux taux = new Taux(TableParametrage.getInstance().getGratification(noCaisseMetier));
+            String annee = posteTravail.getPeriodeActivite().getDateFin() != null ? posteTravail.getPeriodeActivite()
+                    .getDateFin().getAnnee() : "";
+            Taux taux = new Taux(TableParametrage.getInstance(annee).getGratification(noCaisseMetier));
             return taux.getValue();
         } else {
             return "0";
@@ -328,7 +356,9 @@ public class PrestationsViewService {
             throw new GlobazTechnicalException(ExceptionMessage.ERREUR_TECHNIQUE);
         }
         if (noCaisseMetier != 0) {
-            Taux taux = TableParametrage.getInstance().getCouvertureAPG(noCaisseMetier, genreSM);
+            String annee = posteTravail.getPeriodeActivite().getDateFin() != null ? posteTravail.getPeriodeActivite()
+                    .getDateFin().getAnnee() : "";
+            Taux taux = TableParametrage.getInstance(annee).getCouvertureAPG(noCaisseMetier, genreSM);
             return taux.getValue();
         } else {
             return "0";
@@ -521,7 +551,8 @@ public class PrestationsViewService {
         int idCaisseMetier = VulpeculaServiceLocator.getPosteTravailService().getNumeroCaissePrincipale(idPosteTravail);
         PosteTravail poste = VulpeculaRepositoryLocator.getPosteTravailRepository().findById(idPosteTravail);
         try {
-            return TableParametrage.getInstance().getNombreJoursPrestationAJ(idCaisseMetier, type, lien,
+            Date date = new Date(stringDate);
+            return TableParametrage.getInstance(date.getAnnee()).getNombreJoursPrestationAJ(idCaisseMetier, type, lien,
                     poste.getAnneesService());
         } catch (IllegalArgumentException ex) {
             LOGGER.info(ex.toString());
@@ -549,7 +580,8 @@ public class PrestationsViewService {
 
         ConfigurationSM config = null;
         if (noCaisseMetier > 0) {
-            config = TableParametrage.getInstance().getConfigurationSM(noCaisseMetier, genreSM, ageTravailleur);
+            config = TableParametrage.getInstance(date.getAnnee()).getConfigurationSM(noCaisseMetier, genreSM,
+                    ageTravailleur);
         }
         return config;
     }
@@ -755,6 +787,67 @@ public class PrestationsViewService {
         taux[0] = new Taux(tauxAVS.getValeurEmployeur()).getValue();
         taux[1] = new Taux(tauxAC.getValeurEmployeur()).getValue();
         return taux;
+    }
+
+    /**
+     * Cette méthode vérifie si le montant à verser et le montant brut on la même valeur.
+     * Si c'est le cas, la méthode va s'occuper d'ajouter les cotisations AC et AVS au montant à verser.
+     * Il s'agit d'une méthode permettant de contourner le problème des cas dont les montants finaux n'ont pas été mis à
+     * jour automatiquement.
+     * 
+     * @return la valeur réelle du montant à verser.
+     */
+    public static String balanceAmountWithDiff(String montantBrut, String montantVerse, String montantAVS,
+            String montantAC) {
+        // 1. Transformation des montants en BIG Decimal
+        BigDecimal montantBrutBD = new BigDecimal(montantBrut);
+        BigDecimal montantVerseBD = new BigDecimal(montantVerse);
+        BigDecimal montantAVSBD = new BigDecimal(montantAVS);
+        BigDecimal montantACBD = new BigDecimal(montantAC);
+        // Si montant Brut égal Montant verse BD -> on vérifie si les tauxAVS et tauxAC ne sont pas à 0 et on les
+        // additionne au montant à verser
+        if (montantBrutBD.equals(montantVerseBD)) {
+
+            if ((montantACBD.compareTo(BigDecimal.ZERO) != 0) || (montantAVSBD.compareTo(BigDecimal.ZERO) != 0)) {
+                montantVerseBD = montantVerseBD.add(montantACBD);
+                montantVerseBD = montantVerseBD.add(montantAVSBD);
+            }
+            montantVerseBD.setScale(2);
+            return montantVerseBD.toString();
+        }
+
+        return montantVerse;
+    }
+
+    /**
+     * Cette méthode permet de mettre à jour en base de données le montant à versé si celui-ci est égal au montant brut.
+     * 
+     * @param montantBrut
+     * @param montantVerse
+     * @param montantAVS
+     * @param montantAC
+     * @param idAbsenceJustifiee
+     * @return le montant mis à jour avec les cotisations
+     */
+    public String updateAmountOnDiff(String montantBrut, String montantVerse, String montantAVS, String montantAC,
+            String idAbsenceJustifiee) {
+        // Récupérer l'absence en cours
+        AbsenceJustifiee absenceJustifiee = new AbsenceJustifiee();
+        absenceJustifiee.setId(idAbsenceJustifiee);
+        absenceJustifiee = VulpeculaRepositoryLocator.getAbsenceJustifieeRepository().findById(idAbsenceJustifiee);
+
+        String amountToReturn = balanceAmountWithDiff(montantBrut, montantVerse, montantAVS, montantAC);
+
+        // Mise à jour du montant verse en DB
+        Montant montantVerseToUpd = new Montant(amountToReturn);
+        // Si le montant à updater est différent du montant en vigueur, on fait la mise à jour en DB, sinon on ne fait
+        // rien.
+        if (!montantVerseToUpd.equals(absenceJustifiee.getMontantVerse())) {
+            absenceJustifiee.setMontantVerse(montantVerseToUpd);
+            VulpeculaRepositoryLocator.getAbsenceJustifieeRepository().update(absenceJustifiee);
+        }
+
+        return amountToReturn;
     }
 
     /**

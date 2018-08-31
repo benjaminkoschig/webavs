@@ -57,6 +57,26 @@ $(function () {
 		document.forms[0].submit();
 	});
 })
+
+function changeDateInputAvailable(){
+	if($('#idListeCaisseMaladie').val() == '-1'){
+		$('.blocPeriode').show();
+		$('.blocMoisRef').hide();
+	    $('#date').val('');
+	}else{
+		$('.blocPeriode').hide();
+		$('.blocMoisRef').show();
+		$('#dateTo').val('');
+		$('#dateFrom').val('');
+	}
+}
+
+$(function () {
+$('#idListeCaisseMaladie').change(function(){
+	changeDateInputAvailable();
+});
+})
+
 </script>
 <style type="text/css">
 	#mainWrapper {
@@ -87,7 +107,7 @@ $(function () {
 			<tr>
 				<td><label for="idCaisseMaladie"><ct:FWLabel key="JSP_CAISSE_MALADIE"/></label></td>
 				<td>
-					<select name="idCaisseMaladie">
+					<select id="idListeCaisseMaladie" name="idCaisseMaladie">
 						<c:choose>
 							<c:when test="${empty viewBean.idCaisseMaladie}">
 								<option selected="selected" value=""></option>
@@ -108,15 +128,29 @@ $(function () {
 								</c:forEach>
 							</c:otherwise>
 						</c:choose>
+						<option value="-1">Non annoncée</option>
 					</select>
 				</td>
 			</tr>
-			<tr>
+			 <!-- Cette section ne doit apparaître que si on sélectionne "Non annoncée"-->
+			
+			<tr class="blocPeriode" style="DISPLAY: none">
+			    <td><label for="dateFrom"><ct:FWLabel key="JSP_DATE_FROM_REFERENCE"/></label></td>
+			    	<td>
+					<input id="dateFrom" name="dateFrom" value="${viewBean.date}" data-g-calendar="" />
+				</td>
+				 <td><label for="dateTo"><ct:FWLabel key="JSP_DATE_TO_REFERENCE"/></label></td>
+			    	<td>
+					<input id="dateTo" name="dateTo" value="${viewBean.date}" data-g-calendar="" />
+					</td>	
+				</tr>	 
+			     <!-- Cette section apparaît dans le cas ou la caisse sélectionnée n'est pas "Non annoncée"-->
+			    <tr class="blocMoisRef">
 				<td><label for="date"><ct:FWLabel key="JSP_DATE_DE_REFERENCE"/></label></td>
 				<td>
-					<input name="date" value="${viewBean.date}" data-g-calendar="" />
-				</td>				
-			</tr>
+					<input id="date" name="date" value="${viewBean.date}" data-g-calendar="" />
+				</td>
+				</tr>				
 			<c:if test="${not processLaunched}">	
 			<tr>
 				<td style="text-align: center;" colspan="2">

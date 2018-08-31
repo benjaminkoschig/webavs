@@ -6,6 +6,7 @@ package ch.globaz.vulpecula.process.decompte;
 import globaz.jade.context.JadeThread;
 
 /**
+ * Nom des champs à persister
  * @author sel
  * 
  */
@@ -23,7 +24,7 @@ public enum PTProcessDecompteProperty {
     fromNoAffilie("vulpecula.process.decompte.fromNoAffilie"),
     fromNoAffilieLibelle("vulpecula.process.decompte.fromNoAffilieLibelle"),
     TYPE_DECOMPTE("vulpecula.process.decompte.TYPE_DECOMPTE"),
-
+    EBUSINESS("vulpecula.process.decompte.EBUSINESS"),
     ID_DECOMPTE("ID_DECOMPTE");
 
     private final String idLabel;

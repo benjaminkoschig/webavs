@@ -12,7 +12,6 @@ import ch.globaz.vulpecula.business.services.VulpeculaServiceLocator;
 import ch.globaz.vulpecula.business.services.congepaye.CongePayeService;
 import ch.globaz.vulpecula.domain.models.congepaye.CongePaye;
 import ch.globaz.vulpecula.domain.models.parametrage.TableParametrage;
-import ch.globaz.vulpecula.domain.models.postetravail.PosteTravail;
 import ch.globaz.vulpecula.domain.repositories.congepaye.CongePayeRepository;
 
 public class CongePayeServiceImpl implements CongePayeService {
@@ -30,12 +29,6 @@ public class CongePayeServiceImpl implements CongePayeService {
 
     @Override
     public CongePaye create(CongePaye congePaye) throws UnsatisfiedSpecificationException {
-        if (congePaye.getPosteTravail().mustBeFetched()) {
-            PosteTravail posteTravail = VulpeculaRepositoryLocator.getPosteTravailRepository().findById(
-                    congePaye.getIdPosteTravail());
-            congePaye.setPosteTravail(posteTravail);
-        }
-        congePaye.validate();
         return congePayeRepository.create(congePaye);
     }
 

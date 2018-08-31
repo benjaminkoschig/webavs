@@ -113,8 +113,21 @@ public abstract class PTProcessFacturation extends BProcessWithContext {
         return createEnteteFactureWithInteret(idTiers, idExterneRole, numeroSection, idTypeFacture, null);
     }
 
+    protected FAEnteteFacture createEnteteFactureRole(String idTiers, String idExterneRole, String numeroSection,
+            String idTypeFacture, String roleCompteAnnexe) throws Exception {
+        return createEnteteFactureWithInteret(idTiers, idExterneRole, numeroSection, idTypeFacture, null,
+                roleCompteAnnexe);
+    }
+
     protected FAEnteteFacture createEnteteFactureWithInteret(String idTiers, String idExterneRole,
             String numeroSection, String idTypeFacture, InteretsMoratoires interet) throws Exception {
+        return createEnteteFactureWithInteret(idTiers, idExterneRole, numeroSection, idTypeFacture, interet,
+                IntRole.ROLE_AFFILIE_PARITAIRE);
+    }
+
+    protected FAEnteteFacture createEnteteFactureWithInteret(String idTiers, String idExterneRole,
+            String numeroSection, String idTypeFacture, InteretsMoratoires interet, String roleCompteAnnexe)
+            throws Exception {
         try {
             FAEnteteFactureManager enteteFactureManager = rechercheEntete(idTiers, idExterneRole, numeroSection,
                     idTypeFacture);
@@ -122,7 +135,7 @@ public abstract class PTProcessFacturation extends BProcessWithContext {
             // si aucune entete trouvée -> création de l'entete
             if (enteteFactureManager.size() == 0) {
                 FAEnteteFacture nouvelleEnteteFacture = creationNouvelleEntete(idTiers, idExterneRole, numeroSection,
-                        idTypeFacture, interet);
+                        idTypeFacture, interet, roleCompteAnnexe);
 
                 // Ajout de l'entête
                 nouvelleEnteteFacture.add(getTransaction());
@@ -144,8 +157,15 @@ public abstract class PTProcessFacturation extends BProcessWithContext {
 
             // si aucune entete trouvée -> création de l'entete
             if (enteteFactureManager.size() == 0) {
-                FAEnteteFacture nouvelleEnteteFacture = creationNouvelleEntete(idTiers, idExterneRole, numeroSection,
-                        idTypeFacture, null);
+                FAEnteteFacture nouvelleEnteteFacture;
+                NumeroDecompte numeroDecompte = new NumeroDecompte(numeroSection);
+                if (NumeroDecompte.COMPLEMENTAIRE.equals(numeroDecompte.getCode())) {
+                    nouvelleEnteteFacture = creationNouvelleEntete(idTiers, idExterneRole, numeroSection,
+                            idTypeFacture, InteretsMoratoires.EXEMPTE, IntRole.ROLE_AFFILIE_PARITAIRE);
+                } else {
+                    nouvelleEnteteFacture = creationNouvelleEntete(idTiers, idExterneRole, numeroSection,
+                            idTypeFacture, InteretsMoratoires.AUTOMATIQUE, IntRole.ROLE_AFFILIE_PARITAIRE);
+                }
 
                 nouvelleEnteteFacture.setIdCSModeImpression(FAEnteteFacture.CS_MODE_IMP_NOT_IMPRIMABLE);
 
@@ -162,13 +182,13 @@ public abstract class PTProcessFacturation extends BProcessWithContext {
     }
 
     private FAEnteteFacture creationNouvelleEntete(String idTiers, String idExterneRole, String numeroSection,
-            String idTypeFacture, InteretsMoratoires interet) throws Exception {
+            String idTypeFacture, InteretsMoratoires interet, String roleCompteAnnexe) throws Exception {
         NumeroDecompte numeroDecompte = new NumeroDecompte(numeroSection);
         FAEnteteFacture nouvelleEnteteFacture = new FAEnteteFacture();
         nouvelleEnteteFacture.setSession(getSession());
         nouvelleEnteteFacture.setIdPassage(getPassage().getId());
         nouvelleEnteteFacture.setIdTiers(idTiers);
-        nouvelleEnteteFacture.setIdRole(IntRole.ROLE_AFFILIE_PARITAIRE);
+        nouvelleEnteteFacture.setIdRole(roleCompteAnnexe);
         nouvelleEnteteFacture.setIdExterneRole(idExterneRole);
         nouvelleEnteteFacture.setIdTypeFacture(idTypeFacture);
         nouvelleEnteteFacture.setNonImprimable(false);
@@ -178,7 +198,7 @@ public abstract class PTProcessFacturation extends BProcessWithContext {
             nouvelleEnteteFacture.setIdModeRecouvrement(FAEnteteFacture.CS_MODE_RETENU);
             nouvelleEnteteFacture.setIdAdressePaiement("");
         }
-        nouvelleEnteteFacture.initDefaultPlanValue(IntRole.ROLE_AFFILIE_PARITAIRE);
+        nouvelleEnteteFacture.initDefaultPlanValue(roleCompteAnnexe);
         if (interet != null) {
             nouvelleEnteteFacture.setIdSoumisInteretsMoratoires(interet.getValue());
         }
@@ -240,6 +260,22 @@ public abstract class PTProcessFacturation extends BProcessWithContext {
             return false;
         }
 
+        if (montantFacture == null || montantFacture.isZero()) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Retourne si l'Afact peut être ajouté.
+     * Dans le cas d'une cotisation avec masse, il faut qu'une masse et un taux soit présents.
+     * Dans tous les cas le montant facturé doit être différent de zéro.
+     * 
+     * @param montantFacture
+     * @return boolean est-ce qu'il faut ajouter ou non l'afact
+     */
+    protected boolean isAfactAAjouter(final Montant montantFacture) {
         if (montantFacture == null || montantFacture.isZero()) {
             return false;
         }

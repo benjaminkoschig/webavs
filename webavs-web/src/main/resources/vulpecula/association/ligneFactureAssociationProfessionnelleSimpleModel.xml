@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<simple-model
+		className="ch.globaz.vulpecula.business.models.association.LigneFactureAssociationProfessionnelleSimpleModel">
+		<table name="PT_LIGNE_FACTURE_AP" hasCreationSpy="true" hasSpy="true"
+			alwaysIncrementPrimaryKey="true" />
+			
+		<fields>
+			<primary-key name="id" column="ID"
+				comment="Id de la table ligne facture AP" />
+			<field name="idEnteteFacture" column="ID_PT_ENTETE_FACTURE_AP" type="NUMERIC" comment="id entete facture association professionnelle" />
+			<field name="periodeDebut" column="PERIODE_DEBUT" type="NUMERIC" comment="période début" />
+			<field name="periodeFin" column="PERIODE_FIN" type="NUMERIC" comment="période fin" />
+			<field name="idAssociationCotisation" column="ID_PT_ASSOCIATION_COTISATION" type="NUMERIC" comment="id de la cotisation" />	
+			<field name="fourchetteDebut" column="FOURCHETTE_DEBUT" type="NUMERIC" comment="fourchette de début" />
+			<field name="fourchetteFin" column="FOURCHETTE_FIN" type="NUMERIC" comment="fourchette de fin" />
+			<field name="montantCotisation" column="MONTANT_COTISATION" type="NUMERIC" comment="montant de la cotisation calculée" />
+			<field name="typeParametre" column="CS_TYPE_PARAM" type="NUMERIC" comment="type de paramètre : remise, taux variable,..." />
+			<field name="tauxCotisation" column="TAUX" type="NUMERIC" comment="taux de la cotisation" />
+			<field name="massePourCotisation" column="MASSE_POUR_COTISATION" type="NUMERIC" comment="masse salariale prise en compte pour le calcul" />
+			<field name="facteurCotisation" column="FACTEUR" type="NUMERIC" comment="facteur de la cotisation" />	
+		</fields>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forId" field-ref="id" operation="EQUALS" />
+				<search-field name="forIdEntete" field-ref="idEnteteFacture" operation="EQUALS" />
+				<search-field name="forIdAssociationCotisation" field-ref="idAssociationCotisation" operation="EQUALS" />	
+			</search-group>
+		</search-definition>
+		<order-by name="idDesc">
+			<order-field field-ref="id" order="DESC" />
+		</order-by>
+		<order-by name="idAsc">
+			<order-field field-ref="id" />
+		</order-by>
+	</simple-model>
+</model-mapping>

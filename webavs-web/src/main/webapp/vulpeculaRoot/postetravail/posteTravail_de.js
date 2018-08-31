@@ -2,6 +2,7 @@ var editMode = false;
 
 function add () {
 	document.forms[0].elements('userAction').value="vulpecula.postetravail.posteTravail.afficher&_method=_add";
+	$('#linkToAnnonce')[0].style.display="none";
 }
 
 function upd() {
@@ -12,19 +13,18 @@ function upd() {
 	//Impossible d'éditer le travailleur ou l'employeur
 	$('#descriptionTravailleur').prop('disabled',true);
 	$('#descriptionEmployeur').prop('disabled',true);
+	$('#linkToAnnonce')[0].style.display="none";
 }
 
 function postInit() {
 	if(globazGlobal.affiliationCaisseMaladie != "-1") {
 		$("#caisseMaladie").val(globazGlobal.affiliationCaisseMaladie);
-		//$("#caisseMaladie").attr('disabled','disabled');
 	}
 }
 
 function validate() {
  	var o_occupations = GLO.tauxOccupation.retrieve();
  	var o_cotisations = GLO.cotisations.retrieve();
- 	
  	
  	var o_posteTravail = {	
  		id : $("#idPosteTravail").text(),
@@ -38,7 +38,8 @@ function validate() {
  		posteFranchiseAVS : $("#posteFranchiseAvs").is(':checked'),
  	    periodeDebut : $("#debutActivite").val(),
  	    periodeFin : $("#finActivite").val(),
- 	    idTiersCM : $("#caisseMaladie").val()
+ 	    idTiersCM : $("#caisseMaladie").val(),
+ 	    posteCorrelationId : globazGlobal.posteCorrelationId
  	};
  	var posteTravail = JSON.stringify(o_posteTravail);
  	
@@ -79,6 +80,7 @@ function cancel() {
     	window.location.href="vulpecula?userAction=back";
     }
     else {
+    	document.forms[0].elements('_method').value = "";
         document.forms[0].elements('userAction').value="vulpecula.postetravail.posteTravail.afficher";
         document.forms[0].elements('selectedId').value=$('#idPosteTravail').text();
         action(ROLLBACK);
@@ -93,7 +95,13 @@ function del() {
 }
 
 function init(){
-
+	if(document.forms[0].elements('_method').value == "upd"){
+		editMode = true;
+		$('#linkToAnnonce')[0].style.display="none";
+		if(!globazGlobal.isNouveau) {
+			$('#caisseMaladie').attr('disabled','disabled');
+		}
+	}
 }
 
 //chargement du dom jquery
@@ -107,6 +115,7 @@ jsManager.executeAfter = function () {
 		else if(globazGlobal.addWithEmployeur) {
 		$('#descriptionEmployeur').prop('disabled',true);
 		}
+		$('#linkToAnnonce')[0].style.display="none";
 	});
 	
 	$zoneCotisation.accordion({
@@ -128,19 +137,38 @@ jsManager.executeAfter = function () {
 	});
 	
 	function doCotisationCheck($checkbox) {
-		idCotisation = $checkbox.val();
+		var idCotisation = $checkbox.val();
+		var idTravailleur = $('#idTravailleur').val();
 		
 		var $tr = $checkbox.closest('tr');
 		var $dateDebut = $tr.find('.dateDebut');
 		var $dateFin = $tr.find('.dateFin');
+		var $debutActivite = $('#debutActivite');
+		var $finActivite = $('#finActivite');
+		
+		var debutActivite = $debutActivite.val();
+		var finActivite = $finActivite.val().length>0 ? $finActivite.val() : "null"; 
+		
+		function cb(cotisationDatee) {
+			if(cotisationDatee.valide || window.confirm(globazGlobal.messageCotisationNonComprise)) {
+				$dateDebut.val(cotisationDatee.dateDebut);
+				if(cotisationDatee.dateFin && cotisationDatee.dateFin!=="null") {
+					$dateFin.val(cotisationDatee.dateFin);
+				} else {
+					$dateFin.val('');
+				}				
+			} else {
+				$checkbox.prop('checked', false);
+			}
+		}
 		
 		if ($checkbox.is(':checked')) {
-			GLO.cotisations.callFindCotisationAndFillDate($dateDebut, $dateFin, idCotisation);
+			GLO.cotisations.callFindCotisationAndFillDate(idTravailleur, idCotisation, debutActivite, finActivite, cb);
 		} else {
 			$dateDebut.val("");
 			$dateFin.val("");
 		}
-		GLO.cotisations.coloriageTitre($checkbox);		
+		GLO.cotisations.coloriageTitre($checkbox);
 	}
 
 	$("#wizard").tabs();	
@@ -156,7 +184,9 @@ jsManager.executeAfter = function () {
 		GLO.cotisations.reloadIfPossible(globazGlobal.getPosteTravail());
 	});
 	$('#finActivite').change(function() {
+		var $this = $(this);
 		GLO.cotisations.reloadIfPossible(globazGlobal.getPosteTravail());
+		checkHasDecompteSalaire(globazGlobal.getPosteTravail(),$this.val());
 	});
 	
 	var idPosteTravail = $("#idPosteTravail").text();
@@ -175,12 +205,34 @@ jsManager.executeAfter = function () {
 	function callServiceQualificationsPourConvention(idConvention){
 		if(idConvention.length > 0){
 			var options = {
-					serviceClassName:'ch.globaz.vulpecula.web.views.postetravail.PosteTravailViewService',
+					serviceClassName:globazGlobal.posteTravailViewService,
 					serviceMethodName:'getQualificationsParConvention',
 					parametres:idConvention,
 					callBack:function (data) {createOptionsQualifications(data);}
 			};
 			vulpeculaUtils.lancementService(options);			
+		}
+	}
+	
+	function checkHasDecompteSalaire(idPosteTravail, dateFin) {
+		if(idPosteTravail.length>0 && dateFin.length>0) {
+			var options = {
+					serviceClassName:globazGlobal.posteTravailViewService,
+					serviceMethodName:'hasDecompteSalaireAfterDateFin',
+					parametres:idPosteTravail + ',' + dateFin,
+					callBack:function (hasDecompteSalaire) {
+						var $infos = $('#informations');
+						if(hasDecompteSalaire) {
+							$infos.noty({
+								type: 'warning',
+								maxVisible : 1,
+								text: globazGlobal.messageDecompteSurPeriode});
+						} else {
+							$.noty.closeAll();
+						}
+					}
+			}
+			vulpeculaUtils.lancementService(options);
 		}
 	}
 	
@@ -273,7 +325,7 @@ GLO.cotisations = {
 				}
 				
 				if(finActivite.length == 0){
-					finActivite = " ";
+					finActivite = "";
 				}
 
 				if(globazGlobal.isNouveau) {
@@ -343,38 +395,13 @@ GLO.cotisations = {
 		});
 	}, 
 	
-	callFindCotisationAndFillDate : function($dateDebut, $dateFin, idCotisation) {
+	callFindCotisationAndFillDate : function(idCotisation, idTravailleur, dateDebut, dateFin, cb) {
 		var options = {
-				serviceClassName:globazGlobal.cotisationService,
-				serviceMethodName:'findByIdCotisation',
-				parametres:idCotisation,
+				serviceClassName:globazGlobal.posteTravailViewService,
+				serviceMethodName:'findCotisationDateeForTravailleur',
+				parametres:idCotisation+','+idTravailleur+','+dateDebut+','+dateFin,
 				callBack:function (cotisation) {
-					var $debutActivite = $("#debutActivite");
-					var dateDebutActivite = $debutActivite.val().split(".");
-					var dateDebutCoti = cotisation.dateDebut.split(".");
-					if (new Date(dateDebutActivite[2], dateDebutActivite[1]-1, dateDebutActivite[0]).getTime() > new Date(dateDebutCoti[2], dateDebutCoti[1]-1, dateDebutCoti[0]).getTime()) {
-						$dateDebut.val($debutActivite.val());
-					} else {
-						$dateDebut.val(cotisation.dateDebut);
-					}
-					
-					var $finActivite = $("#finActivite");
-					var dateFinActivite = $finActivite.val().split(".");
-					var dateFinCoti = cotisation.dateFin.split(".");
-					
-					if (dateFinActivite[0] != "") {
-						if (dateFinCoti[0] == "") {
-							$dateFin.val($finActivite.val());
-						} else {
-							if (new Date(dateFinActivite[2], dateFinActivite[1]-1, dateFinActivite[0]).getTime() < new Date(dateFinCoti[2], dateFinCoti[1]-1, dateFinCoti[0]).getTime()) {
-								$dateFin.val($finActivite.val());
-							} else {
-								$dateFin.val(cotisation.dateFin);
-							}
-						}
-					} else {
-						$dateFin.val(cotisation.dateFin);
-					}
+					cb(cotisation);
 				}
 		};
 		vulpeculaUtils.lancementService(options);
@@ -439,7 +466,7 @@ GLO.tauxOccupation = {
 			$body.append($templateTaux);
 			for (var i = 0; i < data.length; i++){
 				var line = data[i];
-				//Pour chaque paramètre on créé le detai
+				//Pour chaque paramètre on créé le detail
 				var $detailT = $templateTaux.clone(false,false);
 				$detailT.attr('data-g-clone');
 				$tableTaux.append($detailT);
@@ -450,6 +477,10 @@ GLO.tauxOccupation = {
 				$detailT.find($(".tauxOccupation")).prop('disabled', true);
 				$detailT.find($(".dateValidite")).val(line[1]);
 				$detailT.find($(".dateValidite")).prop('disabled', true);
+				if(document.forms[0].elements('_method').value == "upd"){
+					$detailT.find($(".tauxOccupation")).prop('disabled', false);
+					$detailT.find($(".dateValidite")).prop('disabled', false);
+				}
 			}
 			$templateTaux.hide();
 		}else{

@@ -1,6 +1,8 @@
 package ch.globaz.vulpecula.domain.repositories.congepaye;
 
 import java.util.List;
+import ch.globaz.vulpecula.domain.models.common.Annee;
+import ch.globaz.vulpecula.domain.models.common.Date;
 import ch.globaz.vulpecula.domain.models.common.Periode;
 import ch.globaz.vulpecula.domain.models.congepaye.CongePaye;
 import ch.globaz.vulpecula.domain.repositories.Repository;
@@ -61,4 +63,31 @@ public interface CongePayeRepository extends Repository<CongePaye> {
 
     List<CongePaye> findBy(String idPassageFacturation, String idEmployeur, String idTravailleur, String idConvention,
             Periode periode);
+
+    List<CongePaye> findByIdTravailleurAndPeriod(String idTravailleur, String dateDebut, String dateFin);
+
+    List<CongePaye> findByIdTravailleurAndDatePassageFacturation(String idTravailleur, String dateDebut, String dateFin);
+
+    List<CongePaye> findByIdTravailleurForDateVersement(String idTravailleur, String dateDebut, String dateFin);
+
+    List<CongePaye> findSalairesPourAnnee(Annee annee, String idConvention);
+
+    /**
+     * Retourne les congés payés dont la date de versement est contenu dans l'année pour un employeur spécifique.
+     * 
+     * @param idEmployeur String représentant un id employeur
+     * @param annee Année déterminant la date de versement du début à la fin de l'année
+     * @return Liste d'absences justifiées
+     */
+    List<CongePaye> findByIdEmployeurForDateVersementInAnnee(String idEmployeur, Annee annee);
+
+    List<CongePaye> findByIdEmployeurForDateVersementInAnnee(String idEmployeur, Date dateDebut, Date dateFin);
+
+    List<CongePaye> findByIdTravailleurAndDatePassageFacturationAndIdEmployeur(String idTravailleur, String dateDebut,
+            String dateFin, String idEmployeur);
+
+    List<CongePaye> findByIdTravailleurForDateVersementAndIdEmployeur(String idTravailleur, String dateDebut,
+            String dateFin, String idEmployeur);
+
+    List<CongePaye> findCPSoumisLPP(Annee annee);
 }

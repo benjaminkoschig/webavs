@@ -1,11 +1,13 @@
 package ch.globaz.vulpecula.documents.decompte;
 
-import globaz.framework.printing.itext.FWIDocumentManager;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.TreeMap;
 import ch.globaz.vulpecula.documents.DocumentConstants;
 import ch.globaz.vulpecula.documents.catalog.DocumentPrinter;
+import ch.globaz.vulpecula.domain.models.decompte.Decompte;
+import globaz.framework.printing.itext.FWIDocumentManager;
 
 public class DocumentDecompteBVRPrinter extends DocumentPrinter<DecompteContainer> {
     private static final long serialVersionUID = 5203096441297081387L;
@@ -16,7 +18,8 @@ public class DocumentDecompteBVRPrinter extends DocumentPrinter<DecompteContaine
         super();
     }
 
-    public static DocumentDecompteBVRPrinter createWithDecompteContainer(Collection<DecompteContainer> decompteContainer) {
+    public static DocumentDecompteBVRPrinter createWithDecompteContainer(
+            Collection<DecompteContainer> decompteContainer) {
         DocumentDecompteBVRPrinter printer = new DocumentDecompteBVRPrinter();
         printer.decompteContainer = new ArrayList<DecompteContainer>(decompteContainer);
         return printer;
@@ -42,7 +45,25 @@ public class DocumentDecompteBVRPrinter extends DocumentPrinter<DecompteContaine
 
     @Override
     public void retrieve() {
-        setElements(decompteContainer);
+        TreeMap<String, DecompteContainer> decompteContainerTri = new TreeMap<String, DecompteContainer>();
+        for (DecompteContainer decompteCon : decompteContainer) {
+            // BMS-2502 Demande de Mme Dell'Estate le 01.09.2016
+            // String key = decompteCon.getDecompte().getEmployeurAffilieNumero() + "-"
+            // + decompteCon.getDecompte().getId();
+            String key = getKey(decompteCon.getDecompte());
+            decompteContainerTri.put(key, decompteCon);
+        }
+
+        setElements(decompteContainerTri.values());
+    }
+
+    /**
+     * @param decompte
+     * @return
+     */
+    private String getKey(Decompte decompte) {
+        String key = decompte.getEmployeur().getConvention().getCode();
+        return key + decompte.getEmployeur().getRaisonSociale() + "-" + decompte.getId();
     }
 
     /**

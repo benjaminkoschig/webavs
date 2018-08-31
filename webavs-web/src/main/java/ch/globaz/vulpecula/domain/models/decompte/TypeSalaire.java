@@ -8,7 +8,8 @@ package ch.globaz.vulpecula.domain.models.decompte;
  */
 public enum TypeSalaire {
     HEURES(68013001),
-    MOIS(68013002);
+    MOIS(68013002),
+    CONSTANT(68013003);
 
     private int value;
 

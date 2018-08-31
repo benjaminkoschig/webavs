@@ -1,11 +1,13 @@
 /**
- * 
+ *
  */
 package ch.globaz.vulpecula.businessimpl.services.properties;
 
 import globaz.globall.db.BSystem;
+import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.properties.JadePropertiesService;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,6 +73,21 @@ public class PropertiesServiceImpl implements PropertiesService {
     }
 
     @Override
+    public String getTexteRectificatifAllemandElectricien() {
+        return findProperties(TEXTE_RECTIFICATIF_ALLEMAND_ELECTRICIEN);
+    }
+
+    @Override
+    public List<String> getTosAnnuleesEmails() {
+        String emails = findProperties(TOS_ANNULEES_EMAILS);
+        if (JadeStringUtil.isEmpty(emails)) {
+            return Collections.emptyList();
+        }
+        String[] list = emails.split(",");
+        return Arrays.asList(list);
+    }
+
+    @Override
     public String findProperties(String propertiesName) {
         try {
             String newName = new StringBuilder().append(MODULENAME).append(".").append(propertiesName).toString();
@@ -88,6 +105,40 @@ public class PropertiesServiceImpl implements PropertiesService {
             return null;
         } catch (Exception e) {
             return null;
+        }
+    }
+
+    private List<String> findPropertiesAsList(String propertiesName) {
+        String properties = findProperties(propertiesName);
+        String[] list = properties.split(",");
+        return Arrays.asList(list);
+    }
+
+    @Override
+    public List<String> getPrioritesLPP() {
+        return findPropertiesAsList(PRIORITES_COTISATIONS_LPP);
+    }
+
+    @Override
+    public String getMailAF() {
+        return findProperties(MAIL_AF);
+    }
+
+    @Override
+    public Boolean isGedMyProdis() {
+        String value = findProperties(GED_MY_PRODIS);
+        return "TRUE".equalsIgnoreCase(value);
+    }
+
+    @Override
+    public Boolean mustImprimerFactureSpecialEbusiness() {
+        String value = findProperties(IMPRIMER_FACTURE_SPECIAL_EBUSINESS);
+        if (value == null) {
+            LOGGER.error("La propriété 'vulpecula.imprimerFactureSpecialEbusiness' n'est pas renseigné !");
+            return null;
+
+        } else {
+            return "TRUE".equalsIgnoreCase(value);
         }
     }
 }

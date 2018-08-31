@@ -22,11 +22,11 @@ globazGlobal.services = {
 			};
 			vulpeculaUtils.lancementService(options);	
 		},
-		findTaux : function(idPosteTravail, callback) {
+		findTaux : function(idPosteTravail, date, callback) {
 			var options = {
 					serviceClassName:globazGlobal.prestationsViewService,
 					serviceMethodName:'getTauxCPParametrage',
-					parametres:idPosteTravail,
+					parametres:idPosteTravail+','+date,
 					callBack:callback
 			};
 			vulpeculaUtils.lancementService(options);

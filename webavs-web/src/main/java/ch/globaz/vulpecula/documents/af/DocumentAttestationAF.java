@@ -1,15 +1,19 @@
 package ch.globaz.vulpecula.documents.af;
 
-import globaz.caisse.report.helper.CaisseHeaderReportBean;
 import java.util.HashMap;
 import java.util.Map;
+import ch.globaz.vulpecula.business.services.VulpeculaRepositoryLocator;
 import ch.globaz.vulpecula.businessimpl.services.is.PrestationGroupee;
 import ch.globaz.vulpecula.documents.DocumentConstants;
 import ch.globaz.vulpecula.documents.catalog.DocumentDomaine;
 import ch.globaz.vulpecula.documents.catalog.DocumentType;
 import ch.globaz.vulpecula.documents.catalog.VulpeculaDocumentManager;
 import ch.globaz.vulpecula.domain.models.common.Date;
+import ch.globaz.vulpecula.domain.models.postetravail.Travailleur;
 import ch.globaz.vulpecula.external.models.pyxis.CodeLangue;
+import ch.globaz.vulpecula.external.models.pyxis.Tiers;
+import globaz.caisse.report.helper.CaisseHeaderReportBean;
+import globaz.pyxis.db.tiers.TITiersViewBean;
 
 public class DocumentAttestationAF extends VulpeculaDocumentManager<PrestationGroupee> {
 
@@ -27,6 +31,7 @@ public class DocumentAttestationAF extends VulpeculaDocumentManager<PrestationGr
     private static final String P_MONTANT_IMPOTS = "P_MONTANT_IMPOTS";
     private static final String P_MONTANT_VERSE = "P_MONTANT_VERSE";
     private static final String P_REFERENCES = "P_REFERENCES";
+    private static final String P_NB = "P_NB";
 
     private static final String PARAM_DATE_DEBUT = "dateDebut";
     private static final String PARAM_DATE_FIN = "dateFin";
@@ -69,7 +74,11 @@ public class DocumentAttestationAF extends VulpeculaDocumentManager<PrestationGr
         setReferences();
         setParametres(P_ALLOCATIONS_FAMILIALES, getTexte(1, 1));
         setParametresP1();
-        setParametres(P_TITRE, getCodeLibelle(getCurrentElement().getTitre()));
+
+        String titre = getTitreToPrint();
+        String[] titles = {titre};
+        setParametres(P_TITRE, formatMessage(getTexte(10,1), titles));
+
         setParametres(P_BENEFICIAIRE, getCurrentElement().getRaisonSociale());
         setParametres(P_MONTANT_PRESTATION, getCurrentElement().getMontantPrestations().getValueNormalisee());
         setParametres(P_PERIODE_AF, getCurrentElement().getDebutVersement().getSwissValue() + " - "
@@ -78,9 +87,25 @@ public class DocumentAttestationAF extends VulpeculaDocumentManager<PrestationGr
         setParametres(P_MONTANT_IMPOTS, getCurrentElement().getImpots().getValueNormalisee());
         setParametres(P_MONTANT_VERSE,
                 getCurrentElement().getMontantPrestations().substract(getCurrentElement().getImpots())
-                        .getValueNormalisee());
-        setParametres(P_P2, getTexte(8, 1));
+                .getValueNormalisee());
+        setParametres(P_P2, formatMessage(getTexte(8,1), titles));
         setParametres(P_SIGNATURE, getTexte(9, 1));
+        setParametres(P_NB, getTexte(9, 2));
+    }
+
+    private String getTitreToPrint() throws Exception {
+        Travailleur travAllocataire = VulpeculaRepositoryLocator.getTravailleurRepository().findByNss(getCurrentElement().getNss());
+        if(travAllocataire.getIdTiers().equals(getCurrentElement().getIdTiersBeneficiaire())) {            
+            TITiersViewBean bean = new TITiersViewBean();
+            bean.setIdTiers(travAllocataire.getIdTiers());
+            bean.retrieve();
+            return bean.getFormulePolitesse(getCodeLangue().getValue());
+        }else {
+            TITiersViewBean bean = new TITiersViewBean();
+            bean.setIdTiers(getCurrentElement().getIdTiersBeneficiaire());
+            bean.retrieve();
+            return bean.getFormulePolitesse(getCodeLangue().getValue());
+        }
     }
 
     private void setReferences() throws Exception {
@@ -111,13 +136,22 @@ public class DocumentAttestationAF extends VulpeculaDocumentManager<PrestationGr
         return beanReport;
     }
 
+
     @Override
     public CodeLangue getCodeLangue() {
-        CodeLangue langue = getCurrentElement().getLangue();
-        if (langue != null) {
-            return langue;
-        } else {
-            return CodeLangue.FR;
+        Travailleur travAllocataire = VulpeculaRepositoryLocator.getTravailleurRepository().findByNss(getCurrentElement().getNss());
+
+        Tiers tiersBeneficiaire = VulpeculaRepositoryLocator.getTiersRepository().findById(getCurrentElement().getIdTiersBeneficiaire());
+
+        if(travAllocataire.getIdTiers().equals(tiersBeneficiaire.getIdTiers())) {
+            CodeLangue langue = getCurrentElement().getLangue();
+            if (langue != null) {
+                return langue;
+            } else {
+                return CodeLangue.FR;
+            }
+        }else {            
+            return CodeLangue.fromValue(tiersBeneficiaire.getLangue());
         }
-    }
+    }  
 }

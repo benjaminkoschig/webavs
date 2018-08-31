@@ -16,6 +16,8 @@
 				comment="est annoncé à la MEROBA" />
 			<field name="dateAnnonceMeroba" column="DATE_ANNONCE_MEROBA"
 				type="DATE" comment="date de l'annonce à la MEROBA" />
+			<field name="correlationId" column="CORRELATION_ID"
+				type="STRING" comment="Id de la correlation" />
 		</fields>
 		<search-definition>
 			<search-group operator="AND">
@@ -24,6 +26,8 @@
 				<search-field name="forIdTravailleur" field-ref="id"
 					operation="EQUALS" />
 				<search-field name="forIdTiers" field-ref="idTiers"
+					operation="EQUALS" />
+				<search-field name="forCorrelationId" field-ref="correlationId"
 					operation="EQUALS" />
 			</search-group>
 		</search-definition>

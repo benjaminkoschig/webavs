@@ -72,6 +72,8 @@ public final class AdhesionCotisationPosteTravailConverter {
         adhesionCotisation.setCotisation(cotisation);
         adhesionCotisation.setSpy(adhesionCaissePosteTravailSimpleModel.getSpy());
 
+        adhesionCotisation.setIdPosteTravail(adhesionCaissePosteTravailSimpleModel.getIdPosteTravail());
+
         return adhesionCotisation;
     }
 

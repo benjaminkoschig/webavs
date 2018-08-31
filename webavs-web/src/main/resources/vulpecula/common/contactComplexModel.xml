@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.vulpecula.external.models.ContactComplexModel">
+
+		<root-model name="contactSimpleModel" model-ref="ch.globaz.vulpecula.external.models.ContactSimpleModel" />
+
+		<linked-model name="contactTiersSimpleModel" model-ref="ch.globaz.vulpecula.external.models.ContactTiersSimpleModel" join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="idContact" field-ref="contactSimpleModel.idContact" />
+			</join-group>
+		</linked-model>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forIdContact" field-ref="contactSimpleModel.idContact" operation="EQUALS" />
+				<search-field name="forIdTiers" field-ref="contactTiersSimpleModel.idTiers" operation="EQUALS" />
+				<search-field name="forNom" field-ref="contactSimpleModel.nom" operation="LIKE" />
+				<search-field name="forPrenom" field-ref="contactSimpleModel.prenom" operation="LIKE" />
+			</search-group>			
+		</search-definition>
+		
+		<order-by>
+			<order-field field-ref="contactSimpleModel.nom" order="ASC" />
+		</order-by>
+		
+		<order-by name="nomDesc">
+			<order-field field-ref="contactSimpleModel.nom" order="DESC" />
+		</order-by>
+		
+	</complexe-model>
+</model-mapping>

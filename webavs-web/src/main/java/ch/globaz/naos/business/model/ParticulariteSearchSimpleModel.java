@@ -9,6 +9,7 @@ public class ParticulariteSearchSimpleModel extends JadeSearchSimpleModel {
     private String forParticularite = "";
     private String forIdAffiliation = "";
     private String forDateDebutLessOrEquals;
+    private String forPeriodeDebutLessOrEquals;
 
     public String getForIdAffiliation() {
         return forIdAffiliation;
@@ -32,6 +33,20 @@ public class ParticulariteSearchSimpleModel extends JadeSearchSimpleModel {
 
     public void setForDateDebutLessOrEquals(String forDateDebutLessOrEquals) {
         this.forDateDebutLessOrEquals = forDateDebutLessOrEquals;
+    }
+
+    /**
+     * @return the forPeriodeDebutLessOrEquals
+     */
+    public String getForPeriodeDebutLessOrEquals() {
+        return forPeriodeDebutLessOrEquals;
+    }
+
+    /**
+     * @param forPeriodeDebutLessOrEquals the forPeriodeDebutLessOrEquals to set
+     */
+    public void setForPeriodeDebutLessOrEquals(String forPeriodeDebutLessOrEquals) {
+        this.forPeriodeDebutLessOrEquals = forPeriodeDebutLessOrEquals;
     }
 
     @Override

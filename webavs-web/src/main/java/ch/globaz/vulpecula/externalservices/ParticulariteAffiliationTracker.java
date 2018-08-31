@@ -9,13 +9,16 @@ public class ParticulariteAffiliationTracker extends BAbstractEntityExternalServ
 
     @Override
     public void afterAdd(BEntity entity) throws Throwable {
-        startUsingThreadContext(entity.getSession());
-        AFParticulariteAffiliation particularite = (AFParticulariteAffiliation) entity;
-        if (particularite.getParticularite().equals(CodeSystem.PARTIC_AFFILIE_SANS_PERSONNEL)) {
-            VulpeculaServiceLocator.getDecompteService().annulerDecompteForParticularite(
-                    particularite.getAffiliationId(), particularite.getDateDebut(), particularite.getDateFin());
-        }
-        stopUsingThreadContext();
+        try {
+	        startUsingThreadContext(entity.getSession());
+	        AFParticulariteAffiliation particularite = (AFParticulariteAffiliation) entity;
+	        if (particularite.getParticularite().equals(CodeSystem.PARTIC_AFFILIE_SANS_PERSONNEL)) {
+	            VulpeculaServiceLocator.getDecompteService().annulerDecompteForParticularite(
+	                    particularite.getAffiliationId(), particularite.getDateDebut(), particularite.getDateFin());
+	        }
+	    } finally {
+	        stopUsingThreadContext();
+	    }
     }
 
     @Override

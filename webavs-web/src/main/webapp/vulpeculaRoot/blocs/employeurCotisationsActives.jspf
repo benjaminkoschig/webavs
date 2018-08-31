@@ -1,0 +1,39 @@
+<%-- L'utilisation de ce bloc nécessite qu'une variable employeur soit présente
+dans le pageContext ! --%>
+<div class="bloc blocLarge">
+	<div class="header">
+		<a href="naos?userAction=naos.cotisation.cotisation.chercher&affiliationId=${employeur.id}">
+			<ct:FWLabel key="JSP_COTISATIONS_ACTIVES"/>
+		</a> - 
+		<a href="naos?userAction=naos.adhesion.adhesion.chercher&affiliationId=${employeur.id}">
+			<ct:FWLabel key="JSP_ADHESIONS_CAISSES"/>
+		</a>
+	</div>
+	<table>
+		<thead>
+			<tr>
+				<td style="width: 20%" class="label"><ct:FWLabel key="JSP_CAISSE" /></td>
+				<td style="width: 80%" class="label"><ct:FWLabel key="LISTE_RECAP_EMPLOYEUR_ASSURANCE" /></td>
+			</tr>
+		</thead>
+		<tbody>
+			<c:forEach var="cotisation" items="${viewBean.employeurCotisationsActives}">
+				<tr>
+				<!-- viewBean.getCaisse(i).getAdministration().getCodeAdministration(); -->
+					<td class="value">${cotisation.planCaisse.getAdministration().getCodeAdministration()}</td>
+					<c:if test="${cotisation.assurance != null}">
+						<c:if test="${languePage == 'FR'}">
+							<td class="value">${cotisation.assurance.libelleFr}</td>
+						</c:if>
+						<c:if test="${languePage == 'DE'}">
+							<td class="value">${cotisation.assurance.libelleAl}</td>
+						</c:if>
+						<c:if test="${languePage == 'IT'}">
+							<td class="value">${cotisation.assurance.libelleIt}</td>
+						</c:if>
+					</c:if>
+				</tr>
+			</c:forEach>
+		</tbody>
+	</table>
+</div>

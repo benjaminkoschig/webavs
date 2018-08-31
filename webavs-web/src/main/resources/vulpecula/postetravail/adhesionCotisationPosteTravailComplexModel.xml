@@ -17,11 +17,22 @@
 			</join-group>
 		</linked-model>
 		
+		<linked-model name="posteTravailComplexModel"
+			model-ref="ch.globaz.vulpecula.business.models.postetravail.PosteTravailComplexModel"
+			join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="posteTravailSimpleModel.id"
+					operation="EQUALS" field-ref="adhesionCotisationPosteTravail.idPosteTravail" />
+			</join-group>
+		</linked-model>
+		
 		<search-definition>
 				<search-group operator="AND">
 					<search-field name="forId" field-ref="adhesionCotisationPosteTravail.id" operation="EQUALS"/>
 					<search-field name="forIdPosteTravail" field-ref="adhesionCotisationPosteTravail.idPosteTravail" operation="EQUALS"/>
 					<search-field name="forIdIn" field-ref="adhesionCotisationPosteTravail.idPosteTravail" operation="IN" />
+					<search-field name="forIdEmployeur" field-ref="posteTravailComplexModel.posteTravailSimpleModel.idEmployeur" operation="EQUALS" />
+					<search-field name="forIdCotisation" field-ref="adhesionCotisationPosteTravail.idCotisation" operation="EQUALS" />
 				</search-group>
 		</search-definition>
 	</complexe-model>

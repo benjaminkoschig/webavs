@@ -3,12 +3,16 @@ package globaz.vulpecula.vb.syndicat;
 import globaz.globall.db.BSpy;
 import globaz.globall.vb.BJadePersistentObjectViewBean;
 import globaz.jade.client.util.JadeStringUtil;
+import java.util.List;
 import ch.globaz.vulpecula.business.services.VulpeculaRepositoryLocator;
+import ch.globaz.vulpecula.business.services.VulpeculaServiceLocator;
+import ch.globaz.vulpecula.domain.models.common.Date;
 import ch.globaz.vulpecula.domain.models.common.Periode;
 import ch.globaz.vulpecula.domain.models.postetravail.Travailleur;
 import ch.globaz.vulpecula.domain.models.syndicat.AffiliationSyndicat;
 import ch.globaz.vulpecula.domain.repositories.syndicat.AffiliationSyndicatRepository;
 import ch.globaz.vulpecula.external.models.pyxis.Administration;
+import ch.globaz.vulpecula.web.views.decomptesalaire.DecompteSalaireDetailsAnnuelView;
 import ch.globaz.vulpecula.web.views.decomptesalaire.DecompteSalaireViewService;
 
 public class PTSyndicatViewBean extends BJadePersistentObjectViewBean {
@@ -16,6 +20,7 @@ public class PTSyndicatViewBean extends BJadePersistentObjectViewBean {
     private AffiliationSyndicat affiliationSyndicat = new AffiliationSyndicat();
     private AffiliationSyndicatRepository affiliationSyndicatRepository = VulpeculaRepositoryLocator
             .getAffiliationSyndicatRepository();
+    private List<DecompteSalaireDetailsAnnuelView> detailsDecomptesSalairesParAnnee;
 
     @Override
     public void add() throws Exception {
@@ -36,6 +41,15 @@ public class PTSyndicatViewBean extends BJadePersistentObjectViewBean {
     @Override
     public void retrieve() throws Exception {
         affiliationSyndicat = affiliationSyndicatRepository.findById(getId());
+        Date dateFin;
+        if (JadeStringUtil.isBlankOrZero(getDateFinAsSwissValue())) {
+            dateFin = Date.now();
+        } else {
+            dateFin = new Date(getDateFinAsSwissValue());
+        }
+        detailsDecomptesSalairesParAnnee = VulpeculaServiceLocator.getDecompteSalaireService()
+                .calculDetailsDecompteSalaire(getTravailleur().getId(), getIdSyndicat(),
+                        new Date(getDateDebutAsSwissValue()), dateFin);
     }
 
     @Override
@@ -116,6 +130,10 @@ public class PTSyndicatViewBean extends BJadePersistentObjectViewBean {
 
     public boolean isNouveau() {
         return JadeStringUtil.isEmpty(affiliationSyndicat.getId());
+    }
+
+    public List<DecompteSalaireDetailsAnnuelView> getDetailsDecomptesSalairesParAnnee() {
+        return detailsDecomptesSalairesParAnnee;
     }
 
 }

@@ -13,6 +13,8 @@ public class ParametreCotisationAPMandatoriesSpecification extends
     private final List<String> listCSMontant = Arrays.asList(TypeParamCotisationAP.MONTANT_MIN.getValue(),
             TypeParamCotisationAP.MONTANT_MAX.getValue(), TypeParamCotisationAP.FORFAIT_FIX.getValue());
 
+    private final List<String> listCSFacteur = Arrays.asList(TypeParamCotisationAP.FACTEUR.getValue());
+
     @Override
     public boolean isValid(ParametreCotisationAssociation cotisationAAjouter) {
         if (cotisationAAjouter.getFourchetteDebut() == null) {
@@ -24,6 +26,10 @@ public class ParametreCotisationAPMandatoriesSpecification extends
         if (listCSMontant.contains(cotisationAAjouter.getTypeParam().getValue())) {
             if (cotisationAAjouter.getMontant() == null || cotisationAAjouter.getMontant().isZero()) {
                 addMessage(SpecificationMessage.PARAMETRE_COTISATION_AP_MONTANT_MANQUANT);
+            }
+        } else if (listCSFacteur.contains(cotisationAAjouter.getTypeParam().getValue())) {
+            if (cotisationAAjouter.getFacteur() == null || cotisationAAjouter.getFacteur() <= 0) {
+                addMessage(SpecificationMessage.PARAMETRE_COTISATION_AP_FACTEUR_MANQUANT);
             }
         } else {
             if (cotisationAAjouter.getTaux() == null || cotisationAAjouter.getTaux().isZero()) {

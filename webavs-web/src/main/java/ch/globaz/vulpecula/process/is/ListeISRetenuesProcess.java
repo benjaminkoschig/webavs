@@ -74,6 +74,7 @@ public class ListeISRetenuesProcess extends BProcessWithContext {
         excel.setCanton(canton);
         excel.setCaisseAF(libelleCaisseAF);
         excel.setIdProcessusAF(idProcessusAF);
+        excel.setLangueUser(getSession().getIdLangueISO());
         excel.create();
         registerAttachedDocument(JadePublishDocumentInfoProvider.newInstance(this), excel.getOutputFile());
     }

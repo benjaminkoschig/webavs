@@ -1,5 +1,7 @@
 package ch.globaz.vulpecula.external.models.pyxis;
 
+import ch.globaz.vulpecula.domain.models.common.Date;
+
 /**
  * Représentation métier d'une PersonneSimple (Personne) selon le module Pyxis
  * 
@@ -160,5 +162,30 @@ public class PersonneSimple extends Tiers {
      */
     public void setDistrict(String district) {
         this.district = district;
+    }
+
+    public boolean isMineur(Date dateAComparer) {
+        Date dateNaissance = new Date(getDateNaissance());
+        return isMineur(dateNaissance, dateAComparer);
+    }
+
+    public static boolean isMineur(Date dateNaissance, Date dateAComparer) {
+        long ageInMillis = dateAComparer.getTime() - dateNaissance.getTime();
+        long age = ageInMillis / 1000 / 60 / 60 / 24 / 7 / 52;
+
+        if (18 >= age) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public static Date getAnnee18Ans(String dateNaissanceTravailleur) {
+        Date dateNaissance = new Date(dateNaissanceTravailleur);
+        return getAnnee18ans(dateNaissance);
+    }
+
+    public static Date getAnnee18ans(Date dateNaissance) {
+        return dateNaissance.addYear(18);
     }
 }

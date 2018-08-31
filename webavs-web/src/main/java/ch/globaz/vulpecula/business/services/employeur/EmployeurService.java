@@ -1,11 +1,14 @@
 package ch.globaz.vulpecula.business.services.employeur;
 
 import globaz.jade.exception.JadePersistenceException;
+import globaz.vulpecula.business.exception.VulpeculaException;
 import java.util.Collection;
 import java.util.List;
 import ch.globaz.vulpecula.domain.models.common.Date;
+import ch.globaz.vulpecula.domain.models.common.Periode;
 import ch.globaz.vulpecula.domain.models.postetravail.Employeur;
 import ch.globaz.vulpecula.domain.models.registre.TypeFacturation;
+import ch.globaz.vulpecula.external.models.affiliation.Particularite;
 
 /**
  * @author Arnaud Geiser (AGE) | Créé le 14 mars 2014
@@ -34,7 +37,13 @@ public interface EmployeurService {
     List<Employeur> findByIdConventionNonRadieWithParticulariteSansPersonnelEtActif(String idConvention)
             throws JadePersistenceException;
 
+    // NE DOIT PAS FONCTIONNER CORRECTEMENT
+    @Deprecated
     List<Employeur> findByIdAffilie(String idAffilie, Date dateDebut, Date dateFin, Collection<String> inPeriodicite);
+
+    Employeur findByIdAffilie(String idAffilie);
+
+    Employeur findByNumAffilie(final String numAffilie);
 
     /**
      * Retourne si l'employeur possède des postes de travail actifs par rapport
@@ -82,11 +91,41 @@ public interface EmployeurService {
      */
     List<Employeur> findEmployeursSansPostesAvecEdition(Date dateDebut, Date dateFin);
 
+    /**
+     * Retourne la liste des employeurs actifs qui ne possèdent pas de postes actifs
+     * 
+     * @param dateDebut
+     * @param dateFin
+     * @return Liste des employeurs actifs sans postes de travail
+     */
+    List<Employeur> findEmployeursActifsSansPostes(Date dateDebut, Date dateFin) throws VulpeculaException;
+
     String changeTypeFacturation(String idEmployeur, TypeFacturation typeFacturation);
 
     boolean changeEnvoiBVRSansDecompte(String idEmployeur, boolean activated);
 
-    boolean changeEditerSansTravailleur(String idEmployeur, boolean activated);
-
     List<Employeur> findEmployeurActif(Date periodeDebut, Date periodeFin);
+
+    /**
+     * Retourne les particularité "sans personnel" pour le période passée en paramètre
+     * 
+     * @param idEmployeur
+     * @param periode
+     * @return les particularité "sans personnel" pour le période passée en paramètre
+     */
+    List<Particularite> findParticularites(String idEmployeur, Periode periode);
+
+    Particularite findDerniereParticularite(String idEmployeur);
+
+    List<Particularite> findParticularites(String idEmployeur);
+
+    /**
+     * Retourne true si l'employeur à une particularité "sans personnel" pour la date du jour
+     * 
+     * @param employeur Employeur pour lequel rechercher les particularités
+     * @return true si sans personnel
+     */
+    boolean hasParticulariteSansPersonnel(Employeur employeur, Date date);
+
+    boolean isEmployeurEbusiness(String idEmployeur);
 }

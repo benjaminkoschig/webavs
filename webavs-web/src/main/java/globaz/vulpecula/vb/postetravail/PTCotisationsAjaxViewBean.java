@@ -22,7 +22,6 @@ public class PTCotisationsAjaxViewBean extends PTAjaxDisplayViewBean {
         adhesionsActivesEtPossibles = PosteTravailViewService
                 .getAdhesionsCotisationsActivesEtPossiblesGroupByPlanCaisse(idPosteTravail, idEmployeur, dateDebut,
                         dateFin, dateNaissanceTravailleur, sexeTravailleur);
-
     }
 
     public String getIdPosteTravail() {

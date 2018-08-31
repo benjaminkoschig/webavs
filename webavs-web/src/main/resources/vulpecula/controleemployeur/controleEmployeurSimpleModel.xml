@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model
+		className="ch.globaz.vulpecula.business.models.controleemployeur.ControleEmployeurSimpleModel">
+		<table name="PT_CONTROLES_EMPLOYEURS" hasCreationSpy="true" hasSpy="true"
+			alwaysIncrementPrimaryKey="true" />
+		<fields>
+			<primary-key name="id" column="ID"
+				comment="Id du contrôle employeur" />
+			<field name="idEmployeur" column="ID_AFAFFIP" type="NUMERIC"
+				comment="id de l'employeur" />
+			<field name="idUtilisateur" column="ID_FWSUSRP" type="STRING"
+				comment="id de l'utilisateur" />
+			<field name="numeroMeroba" column="NO_MEROBA" type="STRING"
+				comment="numéro meroba" />
+			<field name="montant" column="MONTANT" type="NUMERIC"
+				comment="montant du contrôle employeur" />
+			<field name="dateControle" column="DATE_CTRL" type="DATE"
+				comment="date de contrôle" />
+			<field name="dateAu" column="DATE_AU" type="DATE" 
+				comment="date de fin de contrôle"/>
+			<field name="type" column="CS_TYPE" type="NUMERIC"
+				comment="type de contrôle" />
+			<field name="autresMesures" column="AUTRES_MESURES" type="BOOLEAN" 
+				comment="si autres mesures ou pas" />
+		</fields>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forId" field-ref="id" operation="EQUALS" />
+				<search-field name="forIdEmployeur" field-ref="idEmployeur" operation="EQUALS" />
+			</search-group>
+		</search-definition>
+		
+		<order-by>
+			<order-field field-ref="id" />
+		</order-by>
+		
+		<order-by name="idDesc">
+			<order-field field-ref="id" order="DESC" />
+		</order-by>
+	</simple-model>
+</model-mapping>

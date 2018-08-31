@@ -6,10 +6,12 @@ import globaz.globall.db.BSpy;
 import globaz.hercule.db.controleEmployeur.CEAffilieForAttrPts;
 import globaz.hercule.db.controleEmployeur.CEAffilieForAttrPtsManager;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.exception.JadePersistenceException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import ch.globaz.common.vb.DomainPersistentObjectViewBean;
+import ch.globaz.specifications.SpecificationMessage;
 import ch.globaz.specifications.UnsatisfiedSpecificationException;
 import ch.globaz.vulpecula.business.services.VulpeculaRepositoryLocator;
 import ch.globaz.vulpecula.business.services.VulpeculaServiceLocator;
@@ -23,6 +25,7 @@ import ch.globaz.vulpecula.domain.models.decompte.EtatDecompte;
 import ch.globaz.vulpecula.domain.models.decompte.HistoriqueDecompte;
 import ch.globaz.vulpecula.domain.models.decompte.MotifProlongation;
 import ch.globaz.vulpecula.domain.models.postetravail.Employeur;
+import ch.globaz.vulpecula.domain.models.taxationoffice.TaxationOffice;
 import ch.globaz.vulpecula.external.exceptions.ViewException;
 import ch.globaz.vulpecula.external.models.hercule.InteretsMoratoires;
 import ch.globaz.vulpecula.repositoriesjade.decompte.DecompteSalaireRepositoryJade;
@@ -38,6 +41,7 @@ public class PTDecomptedetailViewBean extends DomainPersistentObjectViewBean<Dec
 
     private Decompte decompte;
     private List<HistoriqueDecompte> historiqueDecompte;
+    private TaxationOffice taxationOffice;
     private boolean pasDeControle;
 
     private boolean isEdition = false;
@@ -64,6 +68,7 @@ public class PTDecomptedetailViewBean extends DomainPersistentObjectViewBean<Dec
     public PTDecomptedetailViewBean() {
         decompte = new Decompte();
         historiqueDecompte = new ArrayList<HistoriqueDecompte>();
+        taxationOffice = new TaxationOffice();
     }
 
     @Override
@@ -178,6 +183,10 @@ public class PTDecomptedetailViewBean extends DomainPersistentObjectViewBean<Dec
         return decompte.getEmployeur();
     }
 
+    public boolean isEbusiness() {
+        return getEmployeur().isEBusiness();
+    }
+
     @Override
     public Decompte getEntity() {
         return decompte;
@@ -249,6 +258,7 @@ public class PTDecomptedetailViewBean extends DomainPersistentObjectViewBean<Dec
         decompte = VulpeculaRepositoryLocator.getDecompteRepository().findById(getDecompte().getId());
         historiqueDecompte = VulpeculaRepositoryLocator.getHistoriqueDecompteRepository().findByIdDecompte(
                 decompte.getId());
+        taxationOffice = VulpeculaRepositoryLocator.getTaxationOfficeRepository().findByIdDecompte(decompte.getId());
     }
 
     /**
@@ -257,6 +267,8 @@ public class PTDecomptedetailViewBean extends DomainPersistentObjectViewBean<Dec
     public void setDateReception(final String dateReception) {
         if (dateReception != null && dateReception.length() > 0) {
             decompte.setDateReception(new Date(dateReception));
+        } else {
+            decompte.setDateReception(null);
         }
     }
 
@@ -307,7 +319,12 @@ public class PTDecomptedetailViewBean extends DomainPersistentObjectViewBean<Dec
     }
 
     @Override
-    public void update() throws ViewException {
+    public void update() throws ViewException, JadePersistenceException {
+        if (controler) {
+            if (decompte.getDateReception() == null) {
+                throw new ViewException(SpecificationMessage.DECOMPTE_DATE_RECEPTION_INEXISTANTE);
+            }
+        }
         // On stocke le spy que l'on réassignera dans le cas où une étape dans le processus ne fonctionne pas
         // correctement.
         String oldSpy = decompte.getSpy();
@@ -317,7 +334,11 @@ public class PTDecomptedetailViewBean extends DomainPersistentObjectViewBean<Dec
         } catch (UnsatisfiedSpecificationException e) {
             throw new ViewException(e);
         }
-        if (decompte.getDateReception() != null && decompte.isReceptionnable()) {
+
+        if (EtatDecompte.RECEPTIONNE.equals(decompte.getEtat())
+                && (decompte.getDateReception() == null || "0".equals(decompte.getDateReception()))) {
+            decompteService.reinitialiseDecompte(decompte);
+        } else if (decompte.getDateReception() != null && decompte.isReceptionnable()) {
             decompteService.receptionner(decompte.getId(), decompte.getDateReception());
         }
         // Si c'est le bouton contrôler, on effectue un contrôle
@@ -412,6 +433,10 @@ public class PTDecomptedetailViewBean extends DomainPersistentObjectViewBean<Dec
         return !differenceControle.isValid();
     }
 
+    public boolean isEchecEBusinessControler() {
+        return differenceControle.isErreurEBusiness();
+    }
+
     public DifferenceControle getDifferenceControle() {
         return differenceControle;
     }
@@ -458,4 +483,9 @@ public class PTDecomptedetailViewBean extends DomainPersistentObjectViewBean<Dec
     public boolean isPeriodique() {
         return getDecompte().isPeriodique();
     }
+
+    public TaxationOffice getTaxationOffice() {
+        return taxationOffice;
+    }
+
 }

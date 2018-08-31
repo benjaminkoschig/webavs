@@ -1,10 +1,12 @@
 package ch.globaz.vulpecula.business.services.association;
 
+import globaz.jade.exception.JadePersistenceException;
 import java.util.List;
 import java.util.Map;
 import ch.globaz.specifications.UnsatisfiedSpecificationException;
 import ch.globaz.vulpecula.domain.models.association.AssociationCotisation;
 import ch.globaz.vulpecula.domain.models.association.AssociationGenre;
+import ch.globaz.vulpecula.domain.models.common.Montant;
 
 public interface AssociationCotisationService {
     /**
@@ -17,4 +19,7 @@ public interface AssociationCotisationService {
 
     void create(String idEmployeur, List<AssociationCotisation> associationsCotisations)
             throws UnsatisfiedSpecificationException;
+
+    boolean isDansLaFourchette(String idCotisationAssociationProfessionnelle, Montant masseSalariale)
+            throws JadePersistenceException;
 }

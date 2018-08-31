@@ -20,4 +20,8 @@ public interface CotisationDecompteService {
      * @return Nouveau taux de cotisation du décompte pour les caisses sociales
      */
     Taux deleteCotisationDecompte(String idDecompteSalaire, String idCotisationDecompte);
+
+    void deleteCotisationDecompteWithoutRecalcul(String idDecompteSalaire, String idCotisationDecompte);
+
+    void deleteCotisationDecompteWithoutRecalcul(String idLigneDecopmte);
 }

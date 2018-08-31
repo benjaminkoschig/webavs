@@ -31,6 +31,7 @@ globazGlobal.processLaunched = ${processLaunched};
 globazGlobal.genreAnnonceTheoriquesAnnuel = '${viewBean.genreAnnonceTheoriquesAnnuel}';
 globazGlobal.genreAnnonceTheoriquesMensuel = '${viewBean.genreAnnonceTheoriquesMensuel}';
 globazGlobal.genreAnnonceCotisants = '${viewBean.genreAnnonceCotisants}';
+globazGlobal.genreCP = '${viewBean.genreCP}';
 globazGlobal.messageAnneeObligatoire = '${viewBean.messageAnneeObligatoire}';
 globazGlobal.messageMoisObligatoire = '${viewBean.messageMoisObligatoire}';
 
@@ -90,6 +91,12 @@ $(function () {
 		document.forms[0].elements('genreAnnonce').value=globazGlobal.genreAnnonceCotisants;
 		document.forms[0].submit();
 	});
+	$('#annoncerCP').click(function() {
+		$(this).prop('disabled', true);
+		document.forms[0].elements('userAction').value="vulpecula.decomptesalaire.annoncerMyProdis.executer";
+		document.forms[0].elements('genreAnnonce').value=globazGlobal.genreCP;
+		document.forms[0].submit();
+	});
 })
 </script>
 <style type="text/css">
@@ -112,10 +119,6 @@ $(function () {
 				<td><label for="email"><ct:FWLabel key="JSP_EMAIL"/></label></td>
 				<td><input id="email" type="text" name="email" value="${viewBean.email}" /></td>
 			</tr> -->
-			<tr>
-				<td><label for="annee"><ct:FWLabel key="JSP_ANNEE" /></label></td>
-				
-			</tr>
 			<c:if test="${not processLaunched}">
 			<tr>
 				<td id="annoncerSalairesTheoriquesAnnuel" colspan="2"><input style="width:100%"  type="button" value="<ct:FWLabel key="JSP_ANNONCER_SALAIRES_THEORIQUES_ANNUEL"/>" /></td>
@@ -128,6 +131,9 @@ $(function () {
 			</tr>
 			<tr>
 				<td id="annoncerSalairesCotisants" colspan="2"><input style="width:100%" type="button" value='<ct:FWLabel key="JSP_ANNONCER_SALAIRES_COTISANTS"/>' /></td>
+			</tr>
+			<tr>
+				<td id="annoncerCP" colspan="2"><input style="width:100%" type="button" value='<ct:FWLabel key="JSP_ANNONCER_CP"/>' /></td>
 			</tr>
 			</c:if>
 		</table>

@@ -6,10 +6,13 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import ch.globaz.vulpecula.domain.models.common.Date;
+import ch.globaz.vulpecula.domain.models.decompte.TypeDecompte;
 import ch.globaz.vulpecula.domain.models.taxationoffice.EtatTaxation;
 
 public class TaxationOfficeSearchComplexModel extends JadeSearchComplexModel {
     private static final long serialVersionUID = 1L;
+
+    public static final String NO_AFFILIE_ASC = "noAffilieAsc";
 
     private String forId;
     private Collection<String> forIds;
@@ -21,6 +24,8 @@ public class TaxationOfficeSearchComplexModel extends JadeSearchComplexModel {
     private String forIdEmployeur;
     private String forDateDe;
     private String forDateAu;
+    private Collection<String> forTypesNotIn;
+    private String forDateAnnulation;
 
     public String getForId() {
         return forId;
@@ -129,6 +134,37 @@ public class TaxationOfficeSearchComplexModel extends JadeSearchComplexModel {
 
     public void setForDateAu(String forDateAu) {
         this.forDateAu = forDateAu;
+    }
+
+    /**
+     * @return the forTypesNotIn
+     */
+    public Collection<String> getForTypesNotIn() {
+        return forTypesNotIn;
+    }
+
+    public String getForDateAnnulation() {
+        return forDateAnnulation;
+    }
+
+    public void setForDateAnnulation(Date forDateAnnulation) {
+        this.forDateAnnulation = forDateAnnulation.getSwissValue();
+    }
+
+    public void setForDateAnnulation(String forDateAnnulation) {
+        this.forDateAnnulation = forDateAnnulation;
+    }
+
+    /**
+     * @param forTypesNotIn the forTypesNotIn to set
+     */
+    public void setForTypesNotIn(TypeDecompte... typesNotIn) {
+        Collection<String> listeTypesNotIn = new ArrayList<String>();
+        for (TypeDecompte type : typesNotIn) {
+            listeTypesNotIn.add(type.getValue());
+        }
+
+        forTypesNotIn = listeTypesNotIn;
     }
 
     @Override

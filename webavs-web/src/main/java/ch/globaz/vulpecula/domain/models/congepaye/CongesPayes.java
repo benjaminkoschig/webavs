@@ -6,17 +6,17 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import ch.globaz.vulpecula.domain.models.common.Montant;
-import ch.globaz.vulpecula.domain.models.postetravail.Employeur;
-import ch.globaz.vulpecula.domain.models.registre.Convention;
 import com.google.common.base.Function;
 import com.google.common.collect.Multimaps;
 import com.google.common.collect.TreeMultimap;
+import ch.globaz.vulpecula.domain.models.common.Montant;
+import ch.globaz.vulpecula.domain.models.postetravail.Employeur;
+import ch.globaz.vulpecula.domain.models.registre.Convention;
 
 /**
  * Représente une collection de congés payés.
  * Cette classe ajoute un ensemble de méthode de calculs pour les congés payés.
- * 
+ *
  */
 public class CongesPayes implements Iterable<CongePaye> {
     private Collection<CongePaye> congesPayes;
@@ -31,7 +31,7 @@ public class CongesPayes implements Iterable<CongePaye> {
 
     /**
      * Retourne la somme des salaires.
-     * 
+     *
      * @return
      */
     public Montant getSalaires() {
@@ -44,7 +44,7 @@ public class CongesPayes implements Iterable<CongePaye> {
 
     /**
      * Retourne la somme des montants bruts.
-     * 
+     *
      * @return
      */
     public Montant getSommeBruts() {
@@ -57,7 +57,7 @@ public class CongesPayes implements Iterable<CongePaye> {
 
     /**
      * Retourne la somme des montants associés aux assurances de type Retaval.
-     * 
+     *
      * @return
      */
     public Montant getSommeRetaval() {
@@ -70,7 +70,7 @@ public class CongesPayes implements Iterable<CongePaye> {
 
     /**
      * Retourne la sommes des montants associés aux assurances de type Maladie (FCFP)
-     * 
+     *
      * @return
      */
     public Montant getSommeMal() {
@@ -83,7 +83,7 @@ public class CongesPayes implements Iterable<CongePaye> {
 
     /**
      * Retourne la somme des montants associés aux assurances de type LPP.
-     * 
+     *
      * @return
      */
     public Montant getSommeLPP() {
@@ -96,7 +96,7 @@ public class CongesPayes implements Iterable<CongePaye> {
 
     /**
      * Retourne la somme des montants associés aux assurances de type AVS.
-     * 
+     *
      * @return
      */
     public Montant getSommeAVS() {
@@ -109,7 +109,7 @@ public class CongesPayes implements Iterable<CongePaye> {
 
     /**
      * Retourne la somme des montants associés aux assurance de type AC
-     * 
+     *
      * @return
      */
     public Montant getSommeAC() {
@@ -122,7 +122,7 @@ public class CongesPayes implements Iterable<CongePaye> {
 
     /**
      * Retourne la somme des montants associés aux assurance de type AF.
-     * 
+     *
      * @return
      */
     public Montant getSommeAF() {
@@ -135,7 +135,7 @@ public class CongesPayes implements Iterable<CongePaye> {
 
     /**
      * Retourne la somme des montants associés aux assurance de type FCFP.
-     * 
+     *
      * @return
      */
     public Montant getSommeFCFP() {
@@ -148,7 +148,7 @@ public class CongesPayes implements Iterable<CongePaye> {
 
     /**
      * Retourne la somme des montants nets.
-     * 
+     *
      * @return
      */
     public Montant getSommeNets() {
@@ -161,7 +161,7 @@ public class CongesPayes implements Iterable<CongePaye> {
 
     /**
      * Création d'une map Convention-CongePaye à partir d'une liste de congés payés.
-     * 
+     *
      * @param congesPayes Liste de congés payés
      * @return Map de Convention-CongePaye
      */
@@ -198,5 +198,9 @@ public class CongesPayes implements Iterable<CongePaye> {
     @Override
     public Iterator<CongePaye> iterator() {
         return congesPayes.iterator();
+    }
+
+    public int size() {
+        return congesPayes.size();
     }
 }

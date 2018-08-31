@@ -1,9 +1,12 @@
 package ch.globaz.vulpecula.domain.repositories.postetravail;
 
 import java.util.List;
+import ch.globaz.ij.businessimpl.exception.BusinessException;
+import ch.globaz.vulpecula.domain.models.common.Annee;
 import ch.globaz.vulpecula.domain.models.common.Date;
 import ch.globaz.vulpecula.domain.models.postetravail.PosteTravail;
 import ch.globaz.vulpecula.domain.models.postetravail.Qualification;
+import ch.globaz.vulpecula.domain.models.syndicat.ListeTravailleursSansSyndicat;
 import ch.globaz.vulpecula.domain.repositories.QueryParameters;
 import ch.globaz.vulpecula.domain.repositories.Repository;
 
@@ -107,7 +110,13 @@ public interface PosteTravailRepository extends Repository<PosteTravail> {
     @Override
     PosteTravail update(PosteTravail posteTravail);
 
+    PosteTravail updateForEbu(PosteTravail posteTravail, Date oldDateFin);
+
     PosteTravail findByIdPosteTravailWithDependencies(String idPosteTravail);
+
+    PosteTravail findByIdWithOccupations(String idPosteTravail);
+
+    PosteTravail findByIdWithFullDependecies(String idPosteTravail);
 
     /**
      * Recherche de tous les postes de travail dont le travailleur a/n'a pas été annoncé à la MEROBA. Attention, cette
@@ -117,6 +126,8 @@ public interface PosteTravailRepository extends Repository<PosteTravail> {
      * @return Liste de postes de travail
      */
     List<PosteTravail> findAAnnoncer(Date date, boolean isAnnonceMeroba);
+
+    List<String> findAAnnoncer2(Date date, boolean isAnnonceMeroba);
 
     List<PosteTravail> findAll();
 
@@ -131,4 +142,33 @@ public interface PosteTravailRepository extends Repository<PosteTravail> {
             int offset, int size);
 
     int countByIdTravailleur(String idTravailleur, QueryParameters extrasParams, Date date);
+
+    List<PosteTravail> findPosteActifInAnnee(String id, Annee annee);
+
+    PosteTravail findByTravailleurEtEmployeur(String idTravailleur, String idEmployeur);
+
+    PosteTravail findByTravailleurEtEmployeurEtPosteCorrelationId(String idTravailleur, String idEmployeur,
+            String posteCorrelationId);
+
+    PosteTravail findByPosteCorrelationId(String posteCorrelationId);
+
+    PosteTravail findByTravailleurEmployeurEtPeriode(String idTravailleur, String idEmployeur, String periodeDebut,
+            String periodeFin);
+
+    List<PosteTravail> findListByTravailleurEtEmployeur(String idTravailleur, String idEmployeur);
+
+    PosteTravail findByTravailleurEmployeurEtQualification(String idTravailleur, String idEmployeur,
+            List<Qualification> qualifications);
+
+    /**
+     * Recherche de tous les postes de travail qui possèdent des cotisations de type CPR et qui n'est pas affilié à un
+     * syndicat pour une année donnée
+     * 
+     * @param idCaisseMetier
+     * 
+     * @param Annee Année de l'affiliation du poste de travail
+     * @return Liste d'ID des postes de travail
+     */
+    List<ListeTravailleursSansSyndicat> findPostesTravailWithCPRCotiNotInAffiliationSyndicat(Annee annee,
+            String idCaisseMetier);
 }

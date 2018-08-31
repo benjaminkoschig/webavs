@@ -8,6 +8,7 @@ import ch.globaz.vulpecula.business.services.decompte.DecompteService;
 import ch.globaz.vulpecula.business.services.postetravail.PosteTravailService;
 import ch.globaz.vulpecula.business.services.properties.PropertiesService;
 import ch.globaz.vulpecula.business.services.taxationoffice.TaxationOfficeService;
+import ch.globaz.vulpecula.domain.models.common.Date;
 import ch.globaz.vulpecula.domain.models.decompte.Decompte;
 import ch.globaz.vulpecula.domain.models.decompte.DecompteSalaire;
 import ch.globaz.vulpecula.domain.models.decompte.EtatDecompte;
@@ -64,6 +65,35 @@ public class DecompteServiceImplTest {
         DecompteSalaire decompteSalaire = mock(DecompteSalaire.class);
         decompteService.findAdhesionsForDecompteSalaire(decompteSalaire);
 
-        verify(decompteSalaire).getPeriodeFin();
+        verify(decompteSalaire).getPeriode();
+    }
+
+    @Test
+    public void updateDecompte_Delete_DateReception_Should_Set_Etat_Ouvert_And_Delete_DateReception() {
+        Date dateReception = new Date("01.01.2016");
+        Decompte decompte = mock(Decompte.class);
+        when(decompte.getDateReception()).thenReturn(dateReception);
+        when(decompte.getEtat()).thenReturn(EtatDecompte.RECEPTIONNE);
+
+        decompteService.reinitialiseDecompte(decompte);
+
+        when(decompte.getDateReception()).thenCallRealMethod();
+        verify(decompte).setEtat(EtatDecompte.OUVERT);
+        verify(decompte).setDateReception(null);
+        verify(decompteRepository).update(decompte);
+    }
+
+    @Test
+    public void updateDecompte_Etat_Comptabilise_Delete_DateReception_Should_Do_Nothing() {
+        Date dateReception = new Date("01.01.2016");
+        Decompte decompte = mock(Decompte.class);
+        when(decompte.getDateReception()).thenReturn(dateReception);
+        when(decompte.getEtat()).thenReturn(EtatDecompte.COMPTABILISE);
+
+        decompteService.reinitialiseDecompte(decompte);
+
+        verify(decompte, never()).setEtat(EtatDecompte.GENERE);
+        verify(decompte, never()).setDateReception(null);
+        verify(decompteRepository, never()).update(decompte);
     }
 }

@@ -5,8 +5,11 @@ import globaz.jade.publish.document.JadePublishDocumentInfoProvider;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
+import org.apache.commons.lang.StringUtils;
 import ch.globaz.utils.Pair;
 import ch.globaz.vulpecula.business.services.VulpeculaRepositoryLocator;
 import ch.globaz.vulpecula.documents.DocumentConstants;
@@ -18,8 +21,8 @@ import ch.globaz.vulpecula.domain.models.decompte.DecompteSalaire;
 import ch.globaz.vulpecula.domain.models.postetravail.PosteTravail;
 import ch.globaz.vulpecula.domain.models.postetravail.Qualification;
 import ch.globaz.vulpecula.external.BProcessWithContext;
-import com.google.common.base.Function;
-import com.google.common.collect.Multimaps;
+import ch.globaz.vulpecula.util.CodeSystem;
+import ch.globaz.vulpecula.util.CodeSystemUtil;
 
 public class SalaireQualificationProcess extends BProcessWithContext {
     private static final long serialVersionUID = 3606653891930651187L;
@@ -33,8 +36,19 @@ public class SalaireQualificationProcess extends BProcessWithContext {
     protected boolean _executeProcess() throws Exception {
         super._executeProcess();
 
-        String convention = VulpeculaRepositoryLocator.getConventionRepository().findById(idConvention)
-                .getDesignation();
+        String convention = null;
+        if (!StringUtils.isEmpty(idConvention)) {
+            convention = VulpeculaRepositoryLocator.getConventionRepository().findById(idConvention).getDesignation();
+        }
+
+        if (codesQualifications == null || codesQualifications.isEmpty()) {
+            codesQualifications = new ArrayList<String>();
+            // On peuple la liste avec tous les codes
+            List<CodeSystem> codes = CodeSystemUtil.getCodesSystemesForFamille("PTQUALIFIC");
+            for (CodeSystem code : codes) {
+                codesQualifications.add(code.getId());
+            }
+        }
 
         SalaireQualificationExcel statExcel = new SalaireQualificationExcel(retrieve(),
                 new Date(periodeDebut).getFirstDayOfMonth(), new Date(periodeFin).getLastDayOfMonth(), convention,
@@ -54,51 +68,77 @@ public class SalaireQualificationProcess extends BProcessWithContext {
      * 
      * @return une liste d'EntreeSalaireQualification
      */
-    public List<EntreeSalaireQualification> retrieve() {
-        List<EntreeSalaireQualification> entrees = new ArrayList<EntreeSalaireQualification>();
+    public Map<String, List<EntreeSalaireQualification>> retrieve() {
+        Map<String, List<EntreeSalaireQualification>> mapConventionEntree = new HashMap<String, List<EntreeSalaireQualification>>();
 
         Date dateDebut = new Date(periodeDebut).getFirstDayOfMonth();
         Date dateFin = new Date(periodeFin).getLastDayOfMonth();
 
-        Map<Pair<String, Qualification>, Collection<PosteTravail>> map = findAndGroupPostesTravails(dateDebut, dateFin);
+        Map<String, Map<Pair<String, Qualification>, Collection<PosteTravail>>> mapConvRegionQuali = findAndGroupPostesTravails(
+                dateDebut, dateFin);
 
-        for (Map.Entry<Pair<String, Qualification>, Collection<PosteTravail>> entree : map.entrySet()) {
-            Montant moyenneSalaireHoraire = Montant.ZERO;
-            List<PosteTravail> postes = new ArrayList<PosteTravail>();
+        // trier la map par région (ordre alphabétique)
+        for (Map.Entry<String, Map<Pair<String, Qualification>, Collection<PosteTravail>>> entreeConvRegionQuali : mapConvRegionQuali
+                .entrySet()) {
 
-            for (PosteTravail poste : entree.getValue()) {
+            List<EntreeSalaireQualification> entrees = new ArrayList<EntreeSalaireQualification>();
 
-                Montant moyenneSalairePoste = Montant.ZERO;
-                List<DecompteSalaire> ds = findListeDecomptes(dateDebut, dateFin, poste.getId());
-                // Liste de décomptes salaires qui sont compté dans les statistiques
-                List<DecompteSalaire> decompteComptes = new ArrayList<DecompteSalaire>();
-                if (ds.size() > 0) {
-                    for (DecompteSalaire decompte : ds) {
-                        if (decompte.getAbsences().size() == 0) {
-                            moyenneSalairePoste = moyenneSalairePoste.add(decompte.getSalaireHoraire());
-                            decompteComptes.add(decompte);
+            Map<Pair<String, Qualification>, Collection<PosteTravail>> mapQualRegion = entreeConvRegionQuali.getValue();
+
+            TreeMap<Pair<String, Qualification>, Collection<PosteTravail>> treeMapQualRegionMap = new TreeMap<Pair<String, Qualification>, Collection<PosteTravail>>();
+            treeMapQualRegionMap.putAll(mapQualRegion);
+
+            String convention = entreeConvRegionQuali.getKey();
+
+            for (Map.Entry<Pair<String, Qualification>, Collection<PosteTravail>> entreeQualRegion : treeMapQualRegionMap
+                    .entrySet()) {
+                Montant moyenneSalaireHoraire = Montant.ZERO;
+                List<PosteTravail> postes = new ArrayList<PosteTravail>();
+
+                for (PosteTravail poste : entreeQualRegion.getValue()) {
+
+                    Montant moyenneSalairePoste = Montant.ZERO;
+                    List<DecompteSalaire> ds = findListeDecomptes(dateDebut, dateFin, poste.getId());
+                    // Liste de décomptes salaires qui sont compté dans les statistiques
+                    List<DecompteSalaire> decompteComptes = new ArrayList<DecompteSalaire>();
+                    if (ds.size() > 0) {
+                        int nombreDecomptes = 0;
+                        for (DecompteSalaire decompte : ds) {
+                            if (decompte.getAbsences().isEmpty() && !decompte.getSalaireHoraire().isZero()) {
+                                nombreDecomptes++;
+                                moyenneSalairePoste = moyenneSalairePoste.add(decompte.getSalaireHoraire());
+                                decompteComptes.add(decompte);
+                            }
+                        }
+                        if (nombreDecomptes != 0) {
+                            moyenneSalairePoste = moyenneSalairePoste.divide(nombreDecomptes);
                         }
                     }
-                    moyenneSalairePoste = moyenneSalairePoste.divide(decompteComptes.size());
+                    if (!moyenneSalairePoste.isZero()) {
+                        moyenneSalaireHoraire = moyenneSalaireHoraire.add(moyenneSalairePoste);
+                        postes.add(poste);
+                    }
                 }
-                if (!moyenneSalairePoste.isZero()) {
-                    moyenneSalaireHoraire = moyenneSalaireHoraire.add(moyenneSalairePoste);
-                    postes.add(poste);
+
+                if (!postes.isEmpty()) {
+                    moyenneSalaireHoraire = moyenneSalaireHoraire.divide(postes.size());
                 }
-            }
-            if (!postes.isEmpty()) {
-                moyenneSalaireHoraire = moyenneSalaireHoraire.divide(postes.size());
+
+                if (!moyenneSalaireHoraire.isZero()) {
+                    entrees.add(new EntreeSalaireQualification(entreeQualRegion.getKey(), postes, moyenneSalaireHoraire
+                            .normalize()));
+                }
             }
 
-            if (!moyenneSalaireHoraire.isZero()) {
-                entrees.add(new EntreeSalaireQualification(entree.getKey(), postes, moyenneSalaireHoraire));
-            }
+            mapConventionEntree.put(convention, entrees);
+
         }
 
-        return entrees;
+        return mapConventionEntree;
     }
 
-    Map<Pair<String, Qualification>, Collection<PosteTravail>> findAndGroupPostesTravails(Date dateDebut, Date dateFin) {
+    Map<String, Map<Pair<String, Qualification>, Collection<PosteTravail>>> findAndGroupPostesTravails(Date dateDebut,
+            Date dateFin) {
         List<PosteTravail> postesTravails = VulpeculaRepositoryLocator.getPosteTravailRepository()
                 .findPosteActifByConventionAndQualification(dateDebut, dateFin, idConvention,
                         mapToQualifications(codesQualifications));
@@ -151,16 +191,25 @@ public class SalaireQualificationProcess extends BProcessWithContext {
      *         travails
      *         pour la période, la convention et les qualifications données
      */
-    Map<Pair<String, Qualification>, Collection<PosteTravail>> groupeByRegionAndQualification(
+    Map<String, Map<Pair<String, Qualification>, Collection<PosteTravail>>> groupeByRegionAndQualification(
             List<PosteTravail> posteTravails) {
 
-        return Multimaps.index(posteTravails, new Function<PosteTravail, Pair<String, Qualification>>() {
+        Map<String, Map<Pair<String, Qualification>, Collection<PosteTravail>>> map = new HashMap<String, Map<Pair<String, Qualification>, Collection<PosteTravail>>>();
 
-            @Override
-            public Pair<String, Qualification> apply(PosteTravail poste) {
-                return findPairRegionQualif(poste);
+        for (PosteTravail poste : posteTravails) {
+
+            if (!map.containsKey(poste.getDesignationConvention())) {
+                map.put(poste.getDesignationConvention(),
+                        new HashMap<Pair<String, Qualification>, Collection<PosteTravail>>());
             }
-        }).asMap();
+            Pair<String, Qualification> pair = findPairRegionQualif(poste);
+            if (!map.get(poste.getDesignationConvention()).containsKey(pair)) {
+                map.get(poste.getDesignationConvention()).put(pair, new ArrayList<PosteTravail>());
+            }
+            map.get(poste.getDesignationConvention()).get(pair).add(poste);
+
+        }
+        return map;
     }
 
     /**
@@ -186,9 +235,8 @@ public class SalaireQualificationProcess extends BProcessWithContext {
      * @return un DetailGroupeLocalite
      */
     DetailGroupeLocalites findDetailGroupeLocalites(PosteTravail poste) {
-        DetailGroupeLocalites detailGroupeLocalites = VulpeculaRepositoryLocator.getDetailGroupeLocaliteRepository()
-                .findByIdLocalite(poste.getIdLocaliteEmployeur());
-        return detailGroupeLocalites;
+        return VulpeculaRepositoryLocator.getDetailGroupeLocaliteRepository().findByIdLocalite(
+                poste.getIdLocaliteEmployeur());
     }
 
     /**
@@ -200,10 +248,8 @@ public class SalaireQualificationProcess extends BProcessWithContext {
      */
     private List<DecompteSalaire> findListeDecomptes(Date dateDebut, Date dateFin, String idPoste) {
 
-        List<DecompteSalaire> listeDecomptes = VulpeculaRepositoryLocator.getDecompteSalaireRepository()
-                .findByIdPosteTravail(Arrays.asList(idPoste), dateDebut, dateFin);
-
-        return listeDecomptes;
+        return VulpeculaRepositoryLocator.getDecompteSalaireRepository().findByIdPosteTravail(Arrays.asList(idPoste),
+                dateDebut, dateFin);
     }
 
     public String getIdConvention() {

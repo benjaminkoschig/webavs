@@ -3,9 +3,12 @@ package ch.globaz.vulpecula.business.models.decomptes;
 import globaz.jade.persistence.model.JadeComplexModel;
 import ch.globaz.vulpecula.business.models.employeur.EmployeurComplexModel;
 import ch.globaz.vulpecula.business.models.taxationoffice.TaxationOfficeSimpleModel;
+import ch.globaz.vulpecula.domain.models.decompte.EtatDecompte;
 
 public class DecompteComplexModelAJAX extends JadeComplexModel {
     private static final long serialVersionUID = -1025546784075067435L;
+
+    private String etatDecompte = EtatDecompte.TAXATION_DOFFICE.TAXATION_DOFFICE.getValue();
 
     private DecompteSimpleModel decompteSimpleModel;
     private EmployeurComplexModel employeurComplexModel;
@@ -59,5 +62,9 @@ public class DecompteComplexModelAJAX extends JadeComplexModel {
     @Override
     public void setSpy(String spy) {
         decompteSimpleModel.setSpy(spy);
+    }
+
+    public String getEtatDecompte() {
+        return etatDecompte;
     }
 }

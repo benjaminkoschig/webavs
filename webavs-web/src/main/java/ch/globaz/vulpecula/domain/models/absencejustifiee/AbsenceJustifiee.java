@@ -2,6 +2,7 @@ package ch.globaz.vulpecula.domain.models.absencejustifiee;
 
 import java.io.Serializable;
 import ch.globaz.specifications.UnsatisfiedSpecificationException;
+import ch.globaz.vulpecula.domain.models.common.Annee;
 import ch.globaz.vulpecula.domain.models.common.Date;
 import ch.globaz.vulpecula.domain.models.common.Montant;
 import ch.globaz.vulpecula.domain.models.common.Periode;
@@ -10,6 +11,8 @@ import ch.globaz.vulpecula.domain.models.decompte.TypeSalaire;
 import ch.globaz.vulpecula.domain.models.postetravail.Employeur;
 import ch.globaz.vulpecula.domain.models.postetravail.PosteTravail;
 import ch.globaz.vulpecula.domain.models.postetravail.Qualification;
+import ch.globaz.vulpecula.domain.models.postetravail.Travailleur;
+import ch.globaz.vulpecula.domain.models.prestations.AnnoncableAVS;
 import ch.globaz.vulpecula.domain.models.prestations.Beneficiaire;
 import ch.globaz.vulpecula.domain.models.prestations.Etat;
 import ch.globaz.vulpecula.domain.models.prestations.PrestationSMAJ;
@@ -32,7 +35,8 @@ import ch.globaz.vulpecula.external.models.pyxis.CodeLangue;
  * </ul>
  * 
  */
-public class AbsenceJustifiee implements PrestationSMAJ, Comparable<AbsenceJustifiee>, Serializable {
+public class AbsenceJustifiee implements PrestationSMAJ, Comparable<AbsenceJustifiee>, Serializable, AnnoncableAVS {
+
     private String idAbsenceJustifiee;
     private PosteTravail posteTravail;
     private TypeAbsenceJustifiee type;
@@ -50,6 +54,25 @@ public class AbsenceJustifiee implements PrestationSMAJ, Comparable<AbsenceJusti
     private double nombreHeuresParJour;
     private Montant salaireHoraire;
     private Journal journal = new Journal();
+    private Date dateVersement;
+    private Date dateTraitementSalaires;
+    private String traitementSalaires;
+
+    public String getTraitementSalaires() {
+        return traitementSalaires;
+    }
+
+    public void setTraitementSalaires(String traitementSalaires) {
+        this.traitementSalaires = traitementSalaires;
+    }
+
+    public Date getDateTraitementSalaires() {
+        return dateTraitementSalaires;
+    }
+
+    public void setDateTraitementSalaires(Date dateTraitementSalaires) {
+        this.dateTraitementSalaires = dateTraitementSalaires;
+    }
 
     public AbsenceJustifiee() {
     }
@@ -271,6 +294,7 @@ public class AbsenceJustifiee implements PrestationSMAJ, Comparable<AbsenceJusti
      * 
      * @return String représentant le nom de la raison sociale
      */
+    @Override
     public String getRaisonSocialeEmployeur() {
         if (posteTravail == null) {
             return null;
@@ -283,6 +307,7 @@ public class AbsenceJustifiee implements PrestationSMAJ, Comparable<AbsenceJusti
      * 
      * @return Retourne si l'absence est dans un état modifiable
      */
+    @Override
     public boolean isModifiable() {
         return !Etat.COMPTABILISEE.equals(etat) && !Etat.TRAITEE.equals(etat);
     }
@@ -311,6 +336,7 @@ public class AbsenceJustifiee implements PrestationSMAJ, Comparable<AbsenceJusti
         this.lienParente = lienParente;
     }
 
+    @Override
     public String getIdPassageFacturation() {
         if (passage == null) {
             return null;
@@ -572,5 +598,84 @@ public class AbsenceJustifiee implements PrestationSMAJ, Comparable<AbsenceJusti
 
     public Montant getMontantAC() {
         return montantBrut.multiply(tauxAC).normalize();
+    }
+
+    public Date getDateVersement() {
+        return dateVersement;
+    }
+
+    public Date getDateVersementComptable() {
+        if (getDateVersement() != null) {
+            return getDateVersement();
+        } else {
+            if (getPassage() != null && getPassage().getDateFacturation() != null
+                    && getPassage().getDateFacturation().length() > 0) {
+                return new Date(getPassage().getDateFacturation());
+            }
+        }
+        return null;
+    }
+
+    public void setDateVersement(Date dateVersement) {
+        this.dateVersement = dateVersement;
+    }
+
+    /**
+     * Retourne si l'absence justifiée dispose d'AVS.
+     * 
+     * @return true si dispose d'un taux AVS différent de zéro
+     */
+    public boolean hasAVS() {
+        if (tauxAVS == null) {
+            return false;
+        }
+        return !tauxAVS.isZero();
+    }
+
+    /**
+     * Retourne si l'absence justifiée dispose d'AC
+     * 
+     * @return true si dispose d'un taux AC différent de zéro
+     */
+    public boolean hasAC() {
+        if (tauxAC == null) {
+            return false;
+        }
+        return !tauxAC.isZero();
+    }
+
+    public boolean hasAVSouAC() {
+        return hasAVS() || hasAC();
+    }
+
+    public Annee getAnneeDateVersement() {
+        return new Annee(dateVersement.getAnnee());
+    }
+
+    public Travailleur getTravailleur() {
+        return posteTravail.getTravailleur();
+    }
+
+    public Montant getMasseAVS() {
+        if (hasAVS()) {
+            return montantBrut;
+        }
+        return Montant.ZERO;
+    }
+
+    public Montant getMasseAC() {
+        if (hasAC()) {
+            return montantBrut;
+        }
+        return Montant.ZERO;
+    }
+
+    public boolean isCotisationsDeduites() {
+        return montantBrut.greater(montantVerse);
+    }
+
+    @Override
+    public boolean isAnnoncableAVS() {
+        return isCotisationsDeduites() && hasAVS() && posteTravail.isElectricite();
     }
 }

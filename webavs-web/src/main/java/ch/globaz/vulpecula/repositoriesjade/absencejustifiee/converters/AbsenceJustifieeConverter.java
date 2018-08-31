@@ -1,5 +1,6 @@
 package ch.globaz.vulpecula.repositoriesjade.absencejustifiee.converters;
 
+import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.persistence.model.JadeAbstractSearchModel;
 import ch.globaz.musca.business.models.PassageModel;
 import ch.globaz.osiris.business.model.JournalSimpleModel;
@@ -10,6 +11,7 @@ import ch.globaz.vulpecula.business.models.postetravail.PosteTravailComplexModel
 import ch.globaz.vulpecula.domain.models.absencejustifiee.AbsenceJustifiee;
 import ch.globaz.vulpecula.domain.models.absencejustifiee.LienParente;
 import ch.globaz.vulpecula.domain.models.absencejustifiee.TypeAbsenceJustifiee;
+import ch.globaz.vulpecula.domain.models.common.Date;
 import ch.globaz.vulpecula.domain.models.common.Montant;
 import ch.globaz.vulpecula.domain.models.common.Periode;
 import ch.globaz.vulpecula.domain.models.common.Taux;
@@ -57,6 +59,10 @@ public class AbsenceJustifieeConverter implements
         absenceJustifieeSimpleModel.setMontantBrut(String.valueOf(entity.getMontantBrut().getValue()));
         absenceJustifieeSimpleModel.setMontantVerse(String.valueOf(entity.getMontantVerse().getValue()));
         absenceJustifieeSimpleModel.setIdPosteTravail(entity.getIdPosteTravail());
+        if (entity.getDateTraitementSalaires() != null) {
+            absenceJustifieeSimpleModel.setDateTraitementSalaires(entity.getDateTraitementSalaires().getSwissValue());
+        }
+        absenceJustifieeSimpleModel.setTraitementSalaires(entity.getTraitementSalaires());
         absenceJustifieeSimpleModel.setSpy(entity.getSpy());
         if (entity.getTauxAVS() != null) {
             absenceJustifieeSimpleModel.setTauxAVS(String.valueOf(entity.getTauxAVS().getValue()));
@@ -77,7 +83,9 @@ public class AbsenceJustifieeConverter implements
         absenceJustifieeSimpleModel.setNombreDeJours(String.valueOf(entity.getNombreDeJours()));
         absenceJustifieeSimpleModel.setNombreHeuresParJour(String.valueOf(entity.getNombreHeuresParJour()));
         absenceJustifieeSimpleModel.setSalaireHoraire(String.valueOf(entity.getSalaireHoraire().getValue()));
-
+        if (entity.getDateVersement() != null) {
+            absenceJustifieeSimpleModel.setDateVersement(entity.getDateVersement().getSwissValue());
+        }
         return absenceJustifieeSimpleModel;
     }
 
@@ -110,6 +118,15 @@ public class AbsenceJustifieeConverter implements
         absenceJustifiee.setNombreDeJours(Double.valueOf(simpleModel.getNombreDeJours()));
         absenceJustifiee.setNombreHeuresParJour(Double.valueOf(simpleModel.getNombreHeuresParJour()));
         absenceJustifiee.setSalaireHoraire(new Montant(simpleModel.getSalaireHoraire()));
+
+        if (!JadeStringUtil.isEmpty(simpleModel.getDateTraitementSalaires())) {
+            absenceJustifiee.setDateTraitementSalaires(new Date(simpleModel.getDateTraitementSalaires()));
+        }
+        absenceJustifiee.setTraitementSalaires(simpleModel.getTraitementSalaires());
+
+        if (!JadeStringUtil.isEmpty(simpleModel.getDateVersement())) {
+            absenceJustifiee.setDateVersement(new Date(simpleModel.getDateVersement()));
+        }
 
         return absenceJustifiee;
     }

@@ -59,13 +59,10 @@ public class Compteurs implements Iterable<Compteur> {
         }
 
         if (isLastCompteur(compteurIterator)) {
-            if (nouveauMontantAAbsorber.isPositive()) {
-                compteur.forceAbsorbe(congePaye, nouveauMontantAAbsorber);
-            }
+            compteur.forceAbsorbe(congePaye, nouveauMontantAAbsorber);
         } else {
             absorbe(compteurIterator, nouveauMontantAAbsorber, congePaye);
         }
-
     }
 
     /**

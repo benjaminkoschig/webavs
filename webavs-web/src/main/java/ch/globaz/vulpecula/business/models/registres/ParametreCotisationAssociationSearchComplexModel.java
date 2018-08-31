@@ -4,6 +4,7 @@
 package ch.globaz.vulpecula.business.models.registres;
 
 import globaz.jade.persistence.model.JadeSearchComplexModel;
+import java.util.Collection;
 
 public class ParametreCotisationAssociationSearchComplexModel extends JadeSearchComplexModel {
     private static final long serialVersionUID = 1L;
@@ -18,6 +19,43 @@ public class ParametreCotisationAssociationSearchComplexModel extends JadeSearch
     private String forGenre;
     private String forGenreNot;
     private String forLibelleLike;
+    private String forMontantFourchette;
+    private String forTypeParametre;
+    private String forFourchetteInferieure;
+    private String forFourchetteSuperieure;
+    private Collection<String> forFacturerDefautIn;
+
+    public String getForFourchetteSuperieure() {
+        return forFourchetteSuperieure;
+    }
+
+    public void setForFourchetteSuperieure(String forFourchetteSuperieure) {
+        this.forFourchetteSuperieure = forFourchetteSuperieure;
+    }
+
+    public String getForTypeParametre() {
+        return forTypeParametre;
+    }
+
+    public void setForTypeParametre(String forTypeParametre) {
+        this.forTypeParametre = forTypeParametre;
+    }
+
+    public String getForFourchetteInferieure() {
+        return forFourchetteInferieure;
+    }
+
+    public void setForFourchetteInferieure(String forFourchetteInferieure) {
+        this.forFourchetteInferieure = forFourchetteInferieure;
+    }
+
+    public String getForMontantFourchette() {
+        return forMontantFourchette;
+    }
+
+    public void setForMontantFourchette(String forMontantFourchette) {
+        this.forMontantFourchette = forMontantFourchette;
+    }
 
     public String getForId() {
         return forId;
@@ -57,5 +95,19 @@ public class ParametreCotisationAssociationSearchComplexModel extends JadeSearch
 
     public void setForLibelleLike(String forLibelleLike) {
         this.forLibelleLike = "%" + forLibelleLike;
+    }
+
+    /**
+     * @return the forNotfacturerDefaut
+     */
+    public Collection<String> getForFacturerDefautIn() {
+        return forFacturerDefautIn;
+    }
+
+    /**
+     * @param forNotfacturerDefaut the forNotfacturerDefaut to set
+     */
+    public void setForFacturerDefautIn(Collection<String> forfacturerDefaut) {
+        forFacturerDefautIn = forfacturerDefaut;
     }
 }

@@ -40,7 +40,6 @@ public final class PosteTravailConverter implements
      * Constructeur privé afin de ne pas pouvoir instancier la classe
      */
     private PosteTravailConverter() {
-
     }
 
     /**
@@ -57,6 +56,7 @@ public final class PosteTravailConverter implements
         // est null, ....
         PosteTravailSimpleModel posteTravailSimpleModel = new PosteTravailSimpleModel();
         posteTravailSimpleModel.setId(String.valueOf(posteTravail.getId()));
+        posteTravailSimpleModel.setPosteCorrelationId(posteTravail.getPosteCorrelationId());
         posteTravailSimpleModel.setIdEmployeur(String.valueOf(posteTravail.getEmployeur().getId()));
         posteTravailSimpleModel.setPosteFranchiseAVS(posteTravail.isFranchiseAVS());
         if (posteTravail.getPeriodeActivite().getDateDebut() != null) {
@@ -68,10 +68,14 @@ public final class PosteTravailConverter implements
         if (posteTravail.getQualification() != null) {
             posteTravailSimpleModel.setQualification(posteTravail.getQualification().getValue());
         }
+        posteTravailSimpleModel.setDateValiditeQualification(posteTravail.getDateValiditeQualificationAsSwissValue());
+
         posteTravailSimpleModel.setIdTravailleur(String.valueOf(posteTravail.getTravailleur().getId()));
         if (posteTravail.getTypeSalaire() != null) {
             posteTravailSimpleModel.setGenreSalaire(posteTravail.getTypeSalaire().getValue());
         }
+        posteTravailSimpleModel.setDateValiditeTypeSalaire(posteTravail.getDateValiditeTypeSalaireAsSwissValue());
+
         posteTravailSimpleModel.setSpy(posteTravail.getSpy());
         return posteTravailSimpleModel;
     }
@@ -114,6 +118,7 @@ public final class PosteTravailConverter implements
         PosteTravail poste = new PosteTravail();
 
         poste.setId(posteTravailSimpleModel.getId());
+        poste.setPosteCorrelationId(posteTravailSimpleModel.getPosteCorrelationId());
 
         poste.setFranchiseAVS(posteTravailSimpleModel.getPosteFranchiseAVS());
 
@@ -130,25 +135,35 @@ public final class PosteTravailConverter implements
         }
         Periode periodeActivite = null;
         try {
-            periodeActivite = new Periode(dateDebut, dateFin);
+            if (dateDebut != null) {
+                periodeActivite = new Periode(dateDebut, dateFin);
+            }
         } catch (IllegalArgumentException e) {
             LOGGER.error(e.getMessage());
         }
 
         poste.setPeriodeActivite(periodeActivite);
         try {
-            if (posteTravailSimpleModel.getQualification() != null) {
+            if (posteTravailSimpleModel.getQualification() != null
+                    && !posteTravailSimpleModel.getQualification().isEmpty()) {
                 poste.setQualification(Qualification.fromValue(posteTravailSimpleModel.getQualification()));
             }
         } catch (IllegalArgumentException e) {
             LOGGER.error(e.getMessage());
         }
+        if (Date.isValid(posteTravailSimpleModel.getDateValiditeQualification())) {
+            poste.setDateValiditeQualification(new Date(posteTravailSimpleModel.getDateValiditeQualification()));
+        }
         try {
-            if (posteTravailSimpleModel.getGenreSalaire() != null) {
+            if (posteTravailSimpleModel.getGenreSalaire() != null
+                    && !posteTravailSimpleModel.getGenreSalaire().isEmpty()) {
                 poste.setTypeSalaire(TypeSalaire.fromValue(posteTravailSimpleModel.getGenreSalaire()));
             }
         } catch (IllegalArgumentException e) {
             LOGGER.error(e.getMessage());
+        }
+        if (Date.isValid(posteTravailSimpleModel.getDateValiditeTypeSalaire())) {
+            poste.setDateValiditeTypeSalaire(new Date(posteTravailSimpleModel.getDateValiditeTypeSalaire()));
         }
         poste.setSpy(posteTravailSimpleModel.getSpy());
 

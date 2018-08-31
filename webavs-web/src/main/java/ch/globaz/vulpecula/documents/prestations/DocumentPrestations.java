@@ -18,7 +18,7 @@ public abstract class DocumentPrestations<T extends PrestationParEmployeur> exte
     @Override
     public CaisseHeaderReportBean giveBeanHeader() throws Exception {
         CaisseHeaderReportBean beanReport = new CaisseHeaderReportBean();
-        beanReport.setAdresse(getCurrentElement().getEmployeur().getAdressePrincipaleFormatee());
+        beanReport.setAdresse(getCurrentElement().getEmployeur().getAdressePrincipale().getAdresseFormatte());
         beanReport.setNomCollaborateur(getSession().getUserFullName());
         beanReport.setTelCollaborateur(getSession().getUserInfo().getPhone());
         beanReport.setUser(getSession().getUserInfo());

@@ -4,9 +4,12 @@ import ch.globaz.naos.business.model.AssuranceSimpleModel;
 import ch.globaz.naos.business.model.CotisationSimpleModel;
 import ch.globaz.naos.business.model.PlanCaisseSimpleModel;
 import ch.globaz.vulpecula.business.models.postetravail.AdhesionCotisationPosteTravailSimpleModel;
+import ch.globaz.vulpecula.business.services.VulpeculaRepositoryLocator;
 import ch.globaz.vulpecula.domain.models.common.Date;
 import ch.globaz.vulpecula.external.models.CotisationComplexModel;
 import ch.globaz.vulpecula.external.models.affiliation.Cotisation;
+import ch.globaz.vulpecula.external.models.pyxis.Administration;
+import ch.globaz.vulpecula.external.repositories.tiers.AdministrationRepository;
 
 /**
  * Convertisseur {@link CotisationSimpleModel} en {@link Cotisation} Convertie également les objets
@@ -64,7 +67,11 @@ public final class CotisationConverter {
         PlanCaisseSimpleModel planCaisseSimpleModel = cotisationComplexModel.getPlanCaisseSimpleModel();
 
         Cotisation cotisation = CotisationConverter.convertToDomain(cotisationSimpleModel);
-        cotisation.setPlanCaisse(PlanCaisseConverter.convertToDomain(planCaisseSimpleModel));
+
+        AdministrationRepository administrationRepository = VulpeculaRepositoryLocator.getAdministrationRepository();
+        Administration administration = administrationRepository.findById(planCaisseSimpleModel.getIdTiers());
+
+        cotisation.setPlanCaisse(PlanCaisseConverter.convertToDomain(planCaisseSimpleModel, administration));
         cotisation.setAssurance(AssuranceConverter.convertToDomain(assuranceSimpleModel));
 
         return cotisation;

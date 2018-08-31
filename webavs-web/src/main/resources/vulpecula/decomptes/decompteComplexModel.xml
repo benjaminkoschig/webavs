@@ -17,30 +17,34 @@
 		
 		<search-definition>
 			<search-group operator="AND">
-				<search-field name="forId" field-ref="decompteSimpleModel.id"
-					operation="EQUALS" />
-				<search-field name="forIdGreater" field-ref="decompteSimpleModel.id"
-					operation="GREATER_OR_EQUALS" />
-				<search-field name="forIds" field-ref="decompteSimpleModel.id"
-					operation="IN" />				
-				<search-field name="forNoDecompte" field-ref="decompteSimpleModel.numeroDecompte"
-					operation="LIKE" />
-				<search-field name="likeNoDecompte" field-ref="decompteSimpleModel.numeroDecompte"
-					operation="LIKE" />
+			
+			    <search-field name="forAnneeDebut" operation="GREATER_OR_EQUALS" field-ref="decompteSimpleModel.periodeDebut" />
+				<search-field name="forAnneeFin" operation="LESS_OR_EQUALS" field-ref="decompteSimpleModel.periodeDebut" />
+				
+				<search-field name="forId" field-ref="decompteSimpleModel.id" operation="EQUALS" />
+				<search-field name="forIdGreater" field-ref="decompteSimpleModel.id" operation="GREATER_OR_EQUALS" />
+				<search-field name="forIds" field-ref="decompteSimpleModel.id" operation="IN" />
+				<search-field name="forNoDecompte" field-ref="decompteSimpleModel.numeroDecompte" operation="LIKE" />
+				<search-field name="likeNoDecompte" field-ref="decompteSimpleModel.numeroDecompte" operation="LIKE" />
 				<search-field name="forIdEmployeur"
 					field-ref="decompteSimpleModel.idEmployeur" operation="EQUALS" />
 				<search-field name="forIdConvention"
 					field-ref="employeurComplexModel.administrationComplexModel.admin.idTiersAdministration" operation="EQUALS"/>
 				<search-field name="likeNoAffilie"
 					field-ref="employeurComplexModel.affiliationTiersComplexModel.affiliation.affilieNumero" operation="LIKE" />
+					
 				<search-field name="forDateDe"
 					field-ref="decompteSimpleModel.periodeDebut" operation="GREATER_OR_EQUALS" />
 				<search-field name="forDateAu"
-					field-ref="decompteSimpleModel.periodeDebut" operation="LESS_OR_EQUALS" />	
-				<search-field name="forType"
-					field-ref="decompteSimpleModel.type" operation="EQUALS" />
-				<search-field name="forEtat"
-					field-ref="decompteSimpleModel.etat" operation="EQUALS" />
+					field-ref="decompteSimpleModel.periodeDebut" operation="LESS_OR_EQUALS" />
+					
+				<search-field name="fromDateDebut" field-ref="decompteSimpleModel.periodeDebut" operation="GREATER_OR_EQUALS" />
+				<search-field name="toDateFin" field-ref="decompteSimpleModel.periodeFin" operation="LESS_OR_EQUALS" />
+					
+				<search-field name="forType" field-ref="decompteSimpleModel.type" operation="EQUALS" />
+				<search-field name="forNotType" field-ref="decompteSimpleModel.type" operation="NOT_EQUALS" />
+				<search-field name="forEtat" field-ref="decompteSimpleModel.etat" operation="EQUALS" />
+				<search-field name="forNotEtat" field-ref="decompteSimpleModel.etat" operation="NOT_EQUALS" />
 				<search-field name="inEtats"
 					field-ref="decompteSimpleModel.etat" operation="IN" />
 				<search-field name="inTypes"
@@ -52,9 +56,10 @@
 				<search-field name="forIdPassage" field-ref="decompteSimpleModel.idPassageFacturation" operation="EQUALS" />
 				<search-field name="wantRectifie"
 					field-ref="decompteSimpleModel.rectifie" operation="EQUALS" />
-				<search-field name="beforeDate" operation="LESS" field-ref="decompteSimpleModel.periodeDebut" />	
+				<search-field name="beforeDate" operation="LESS" field-ref="decompteSimpleModel.periodeDebut" />
 				<search-field name="forDateReception"
 					field-ref="decompteSimpleModel.dateReception" operation="EQUALS" />	
+				<search-field name="forTypeProvenance" field-ref="decompteSimpleModel.typeProvenance" operation="EQUALS" />
 				<search-group operator="AND">
 					<search-field name="beforeDateRappel" field-ref="decompteSimpleModel.dateRappel" operation="LESS" />
 					<search-field name="dateRappelIsNotZero" field-ref="decompteSimpleModel.dateRappel" operation="NOT_EQUALS" />

@@ -1,21 +1,24 @@
 package ch.globaz.vulpecula.process.communicationsalaires;
 
-import globaz.globall.db.BSession;
-import java.util.Deque;
+import java.util.List;
+import org.apache.poi.hssf.usermodel.HSSFPrintSetup;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import ch.globaz.vulpecula.documents.DocumentConstants;
+import ch.globaz.vulpecula.domain.models.absencejustifiee.AbsenceJustifiee;
 import ch.globaz.vulpecula.domain.models.common.Annee;
+import ch.globaz.vulpecula.domain.models.congepaye.CongePaye;
 import ch.globaz.vulpecula.domain.models.decompte.DecompteSalaire;
 import ch.globaz.vulpecula.domain.models.decompte.TypeDecompte;
 import ch.globaz.vulpecula.external.api.poi.AbstractListExcel;
 import ch.globaz.vulpecula.process.prestations.PrestationsListExcel;
+import globaz.globall.db.BSession;
 
 public class ListSalairesExcel extends PrestationsListExcel {
     private Annee annee;
     private String typeDecompte;
 
     private static final String SHEET_TITLE = "SA";
-    private Deque<DecompteSalaire> listDecompteSalaire;
+    private List<SalairesAAnnoncer> listDecompteSalaire;
 
     private final int COL_NUM_AFFILIE = 0;
     private final int COL_NSS = 1;
@@ -32,6 +35,7 @@ public class ListSalairesExcel extends PrestationsListExcel {
     public ListSalairesExcel(BSession session, String filenameRoot, String documentTitle) {
         super(session, filenameRoot, documentTitle);
         HSSFSheet sheet = createSheet(SHEET_TITLE);
+        sheet.setAutobreaks(true);
         sheet.setColumnWidth((short) COL_NUM_AFFILIE, AbstractListExcel.COLUMN_WIDTH_AFILIE);
         sheet.setColumnWidth((short) COL_NSS, AbstractListExcel.COLUMN_WIDTH_AFILIE);
         sheet.setColumnWidth((short) COL_NOM_TRAVAILLEUR, AbstractListExcel.COLUMN_WIDTH_5500);
@@ -43,7 +47,9 @@ public class ListSalairesExcel extends PrestationsListExcel {
 
     @Override
     public void createContent() {
-        initPage(true);
+        HSSFPrintSetup ps = initPage(true);
+        ps.setFitWidth((short)1);
+        ps.setFitHeight((short)0);
         createRow();
         createCriteresConvention();
         createCriteresTypeDecompte();
@@ -80,19 +86,50 @@ public class ListSalairesExcel extends PrestationsListExcel {
         createCell(getSession().getLabel("LISTE_SALAIRES_ANNEE_FIN"), getStyleListGris25PourcentGras());
         createCell(getSession().getLabel("LISTE_SALAIRES_MONTANT_FIN"), getStyleListGris25PourcentGras());
 
-        while (!listDecompteSalaire.isEmpty()) {
-            DecompteSalaire decompteSalaire = listDecompteSalaire.removeFirst();
-            createRow();
-            createCell(decompteSalaire.getEmployeur().getAffilieNumero(), getStyleListLeft());
-            createCell(decompteSalaire.getPosteTravail().getTravailleur().getNumAvsActuel(), getStyleListLeft());
-            createCell(decompteSalaire.getNomPrenomTravailleur(), getStyleListLeft());
-            createCell(decompteSalaire.getPeriode().getDateDebut().toString(), getStyleListLeft());
-            createCell(decompteSalaire.getPeriode().getDateFin().toString(), getStyleListLeft());
-            createCell(getAnnee().toString(), getStyleListLeft());
-            createCell(decompteSalaire.getSalaireTotalAsValue(), getStyleListLeft());
-            currentElement++;
-            setChanged();
-            notifyObservers();
+        for (SalairesAAnnoncer salaires : listDecompteSalaire) {
+            if (salaires.getListeDecomptes() != null && salaires.getListeDecomptes().size() > 0) {
+                for (DecompteSalaire decompteSalaire : salaires.getListeDecomptes()) {
+                    createRow();
+                    createCell(decompteSalaire.getEmployeur().getAffilieNumero(), getStyleListLeft());
+                    createCell(decompteSalaire.getPosteTravail().getTravailleur().getNumAvsActuel(), getStyleListLeft());
+                    createCell(decompteSalaire.getNomPrenomTravailleur(), getStyleListLeft());
+                    createCell(decompteSalaire.getPeriode().getDateDebut().toString(), getStyleListLeft());
+                    createCell(decompteSalaire.getPeriode().getDateFin().toString(), getStyleListLeft());
+                    createCell(getAnnee().getValue(), getStyleListRight());
+                    createCell(decompteSalaire.getSalaireTotal(), getStyleMontant());
+                    currentElement++;
+                    setChanged();
+                    notifyObservers();
+                }
+            }
+            if (salaires.getListeAJ() != null && salaires.getListeAJ().size() > 0) {
+                for (AbsenceJustifiee aj : salaires.getListeAJ()) {
+                    if (aj.isAnnoncableAVS()) {
+                        createRow();
+                        createCell(aj.getEmployeur().getAffilieNumero(), getStyleListLeft());
+                        createCell(aj.getTravailleur().getNumAvsActuel(), getStyleListLeft());
+                        createCell(aj.getNomPrenomTravailleur(), getStyleListLeft());
+                        createCell(aj.getDateVersement().toString(), getStyleListLeft());
+                        createCell(aj.getDateVersement().toString(), getStyleListLeft());
+                        createCell(aj.getDateVersement().getAnnee(), getStyleListLeft());
+                        createCell(aj.getMasseAVS(), getStyleListLeft());
+                    }
+                }
+            }
+            if (salaires.getListeCP() != null && salaires.getListeCP().size() > 0) {
+                for (CongePaye cp : salaires.getListeCP()) {
+                    if (cp.isAnnoncableAVS()) {
+                        createRow();
+                        createCell(cp.getEmployeur().getAffilieNumero(), getStyleListLeft());
+                        createCell(cp.getTravailleur().getNumAvsActuel(), getStyleListLeft());
+                        createCell(cp.getNomPrenomTravailleur(), getStyleListLeft());
+                        createCell(cp.getDateVersement().toString(), getStyleListLeft());
+                        createCell(cp.getDateVersement().toString(), getStyleListLeft());
+                        createCell(cp.getDateVersement().getAnnee(), getStyleListLeft());
+                        createCell(cp.getMasseAVS(), getStyleListLeft());
+                    }
+                }
+            }
         }
     }
 
@@ -114,12 +151,12 @@ public class ListSalairesExcel extends PrestationsListExcel {
         this.annee = annee;
     }
 
-    public Deque<DecompteSalaire> getListDecompteSalaire() {
+    public List<SalairesAAnnoncer> getListDecompteSalaire() {
         return listDecompteSalaire;
     }
 
-    public void setListDecompteSalaire(Deque<DecompteSalaire> listeSalaires) {
-        listDecompteSalaire = listeSalaires;
+    public void setListDecompteSalaire(List<SalairesAAnnoncer> listeSalairesAAnnoncer) {
+        listDecompteSalaire = listeSalairesAAnnoncer;
     }
 
     public String getTypeDecompte() {

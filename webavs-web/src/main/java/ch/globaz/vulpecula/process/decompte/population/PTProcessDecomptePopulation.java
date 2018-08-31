@@ -1,11 +1,5 @@
 package ch.globaz.vulpecula.process.decompte.population;
 
-import globaz.globall.db.BSessionUtil;
-import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.context.JadeThread;
-import globaz.jade.context.exception.JadeNoBusinessLogSessionError;
-import globaz.jade.exception.JadeApplicationException;
-import globaz.jade.exception.JadePersistenceException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -14,6 +8,7 @@ import ch.globaz.jade.process.business.bean.JadeProcessEntity;
 import ch.globaz.jade.process.business.interfaceProcess.population.JadeProcessPopulationCheckable;
 import ch.globaz.jade.process.business.interfaceProcess.population.JadeProcessPopulationInterface;
 import ch.globaz.jade.process.business.interfaceProcess.population.JadeProcessPopulationNeedProperties;
+import ch.globaz.vulpecula.business.services.VulpeculaRepositoryLocator;
 import ch.globaz.vulpecula.business.services.VulpeculaServiceLocator;
 import ch.globaz.vulpecula.business.services.employeur.EmployeurService;
 import ch.globaz.vulpecula.business.services.taxationoffice.TaxationOfficeService;
@@ -22,47 +17,57 @@ import ch.globaz.vulpecula.domain.models.common.Date;
 import ch.globaz.vulpecula.domain.models.common.PeriodeMensuelle;
 import ch.globaz.vulpecula.domain.models.decompte.TypeDecompte;
 import ch.globaz.vulpecula.domain.models.postetravail.Employeur;
+import ch.globaz.vulpecula.external.models.affiliation.Adhesion;
 import ch.globaz.vulpecula.process.decompte.PTProcessDecompteInfo;
 import ch.globaz.vulpecula.process.decompte.PTProcessDecompteProperty;
+import globaz.globall.db.BSessionUtil;
+import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.context.JadeThread;
+import globaz.jade.context.exception.JadeNoBusinessLogSessionError;
+import globaz.jade.exception.JadeApplicationException;
+import globaz.jade.exception.JadePersistenceException;
 
 /**
  * @author jpa
- * 
+ *
  *         <pre>
  * 		   Cette classe est chargée de remplir la population du process. A savoir aller rechercher les affiliés
  *         correspondants aux critères de recherches du processus. 2 cas de figure sont possible, décompte de type
- *         périodique ou spécial. 
- *         
+ *         périodique ou spécial.
+ *
  *         Dans le cas d'un décompte spécial, on va rechercher spécifiquement un et un seul
- *         affilié, afin de créé un décompte, dans ce cas les paramètres sont les suivants : 
- *         -Date du décompte : date qui va figurer sur le décompte 
- *         -Num. affilié : numéro de l'affilié concerné 
+ *         affilié, afin de créé un décompte, dans ce cas les paramètres sont les suivants :
+ *         -Date du décompte : date qui va figurer sur le décompte
+ *         -Num. affilié : numéro de l'affilié concerné
  *         -Période salaire : mois concernées par le décompte
- *         
+ *
  *         Dans le cas d'un décompte périodique, les paramètres sont les suivants :
  *         -Date du décompte : date qui va figurer sur le décompte
  *         -Conventions : il est possible de prendre les affiliés concernés que par une convention
  *         -Num. affilié : il est également possible de créer un décompte pour un seul affilié
  *         -Période salaire : mois concernées par le décompte
- *         
+ *
  *         D'après ces critères le programme va rechercher les affiliés concernés.
  *         Le processus se découpe ensuite par tranches de 1 mois.
- *         Pour chaque mois, on regarde les cotisations concernées et donc la péridodicité, 
+ *         Pour chaque mois, on regarde les cotisations concernées et donc la péridodicité,
  *         afin de voir si l'affilié est compris pour ce décompte
- *         
+ *
  *         Pour janvier,février,avril,mai,juillet,août,octobre, novembre que les mensuels.
  *         Pour mars, juin, septembre et décembre, on regarde en plus les trimestriels
  *         Pour décembre il faut également tenir compte des annuels
- * </pre>
+ *         </pre>
  */
-public class PTProcessDecomptePopulation implements JadeProcessPopulationInterface,
-        JadeProcessPopulationNeedProperties<PTProcessDecompteProperty>,
+public class PTProcessDecomptePopulation
+        implements JadeProcessPopulationInterface, JadeProcessPopulationNeedProperties<PTProcessDecompteProperty>,
         JadeProcessPopulationCheckable<PTProcessDecompteProperty> {
 
     private static final String PREMIER_JOUR_MOIS = "01.";
 
     public static final String PERIODICITE_MENSUELLE_TRIMESTRIELLE = "MENSUELLE_TRIMESTRIELLE";
     public static final String PERIODICITE_ANNUELLE = "ANNUELLE";
+
+    private static final String ENTREPRISE_TRAVAIL_INTERIMAIRE = "133";
+    private static final String CODE_PERIODICITE_ANNUELLE = "802004";
 
     private Map<PTProcessDecompteProperty, String> properties = null;
     private PTProcessDecompteInfo decompteInfo;
@@ -78,8 +83,8 @@ public class PTProcessDecomptePopulation implements JadeProcessPopulationInterfa
     }
 
     @Override
-    public void checker(final Map<PTProcessDecompteProperty, String> map) throws JadePersistenceException,
-            JadeApplicationException {
+    public void checker(final Map<PTProcessDecompteProperty, String> map)
+            throws JadePersistenceException, JadeApplicationException {
         if (checkMandatory(map)) {
             checkIntegrity(map, false);
         }
@@ -105,6 +110,13 @@ public class PTProcessDecomptePopulation implements JadeProcessPopulationInterfa
 
         if (JadeStringUtil.isEmpty(map.get(PTProcessDecompteProperty.DATE_DECOMPTE))) {
             JadeThread.logError(getClass().getName(), "vulpecula.decompte.datedecompte.mandatory");
+            return false;
+        }
+
+        if (JadeStringUtil.isEmpty(map.get(PTProcessDecompteProperty.CONVENTIONS))
+                && map.get(PTProcessDecompteProperty.EBUSINESS).equals("FALSE")
+                && JadeStringUtil.isEmpty(map.get(PTProcessDecompteProperty.employeurNumero))) {
+            JadeThread.logError(getClass().getName(), "vulpecula.decompte.conventions.mandatory");
             return false;
         }
 
@@ -182,7 +194,7 @@ public class PTProcessDecomptePopulation implements JadeProcessPopulationInterfa
 
     /**
      * Création des entités qui seront stockées en base de données.
-     * 
+     *
      * @param employeurs
      *            Employeurs à convertir en entités
      * @param moisCourant
@@ -215,49 +227,106 @@ public class PTProcessDecomptePopulation implements JadeProcessPopulationInterfa
     }
 
     @Override
-    public String getParametersForUrl(final JadeProcessEntity entity) throws JadePersistenceException,
-            JadeApplicationException {
+    public String getParametersForUrl(final JadeProcessEntity entity)
+            throws JadePersistenceException, JadeApplicationException {
         // TODO ajouter l'idPoste de travail, afin d'afficher le poste de
         // travail depuis une entité
         return null;
     }
 
     private List<JadeProcessEntity> rechercheAndCreateEntities(final String idConvention, final String idEmployeur,
-            final Collection<String> inPeriodicite, final Date dateDebut, final Date dateFin) {
+            final Collection<String> inPeriodicite, final Date dateDebut, final Date dateFin, boolean forEbusiess) {
+
         List<Employeur> employeurs = rechercheCas(idConvention, idEmployeur, inPeriodicite, dateDebut, dateFin);
+
         // Dans le cas où aucune entité est présente, on lance une exception afin d'interrompre le processus
         if (employeurs.isEmpty()) {
             String erreur = BSessionUtil.getSessionFromThreadContext().getLabel("JSP_PROCESS_DECOMPTE_AUCUN_EMPLOYEUR");
             throw new java.lang.IllegalArgumentException(erreur);
         }
-        employeurs = removeEmployeursSansPostes(employeurs, dateDebut, dateFin);
-        employeurs = removeEmployeursAvecParticulariteSansPersonnel(employeurs, dateDebut);
+
+        employeurs = filterEmployeursFaillites(employeurs);
 
         // On retire les employeurs qui possèdent des TO actives pour la période
         if (decompteInfo.getType().equals(TypeDecompte.PERIODIQUE)) {
-            employeurs = removeEmployeurAvecTO(employeurs, dateDebut);
+            employeurs = candidatsForDecomptePeriodique(employeurs, dateDebut, forEbusiess);
+        } else {
+            employeurs = candidatsForDecompteComplementaire(employeurs, dateDebut, forEbusiess);
+            // On retire les employeurs avec une périodicité annuelle et la caisse "entreprise travail intérimaire"
+            // pour les décomptes complémentaires
+            employeurs = filterCandidatsForDecompteComplementaire(employeurs);
         }
         if (employeurs.isEmpty()) {
-            String erreur = BSessionUtil.getSessionFromThreadContext().getLabel(
-                    "JSP_PROCESS_DECOMPTE_AUCUN_POSTE_ACTIF");
+            String erreur = BSessionUtil.getSessionFromThreadContext()
+                    .getLabel("JSP_PROCESS_DECOMPTE_AUCUN_POSTE_ACTIF");
             throw new java.lang.IllegalArgumentException(erreur);
         }
         return createEntities(employeurs);
     }
 
-    private List<Employeur> removeEmployeursAvecParticulariteSansPersonnel(List<Employeur> employeurs, Date dateDebut) {
-        return employeurService.getEmployeursSansParticularite(employeurs, dateDebut);
+    private List<Employeur> filterCandidatsForDecompteComplementaire(List<Employeur> employeurs) {
+        List<Employeur> filtersEmployeurs = new ArrayList<Employeur>();
+        for (Employeur employeur : employeurs) {
+            if (TypeDecompte.COMPLEMENTAIRE.equals(decompteInfo.getType())) {
+                Adhesion adhesion = VulpeculaRepositoryLocator.getAdhesionRepository()
+                        .findCaisseMetier(employeur.getId());
+                if (adhesion != null
+                        && ENTREPRISE_TRAVAIL_INTERIMAIRE.equals(adhesion.getCodeAdministrationPlanCaisse())
+                        && !CODE_PERIODICITE_ANNUELLE.equals(employeur.getPeriodicite())) {
+                } else {
+                    filtersEmployeurs.add(employeur);
+                }
+            }
+        }
+        return filtersEmployeurs;
     }
 
-    private List<Employeur> removeEmployeursSansPostes(final List<Employeur> employeurs, final Date dateDebut,
-            final Date dateFin) {
-        return employeurService.getEmployeursActifsAvecPostes(employeurs, dateDebut, dateFin);
+    /**
+     * Filtre les employeurs qui sont en faillite.
+     *
+     * @param employeurs Employeurs potentiellement en faillite
+     * @return Liste d'employeurs qui ne sont pas en faillite
+     */
+    private List<Employeur> filterEmployeursFaillites(Collection<Employeur> employeurs) {
+        List<Employeur> filteredEmployeurs = new ArrayList<Employeur>();
+        for (Employeur employeur : employeurs) {
+            if (!employeur.isFaillite()) {
+                filteredEmployeurs.add(employeur);
+            }
+        }
+        return filteredEmployeurs;
     }
 
-    private List<Employeur> removeEmployeurAvecTO(final List<Employeur> employeurs, final Date dateDebut) {
+    /**
+     * Retire les employeurs qui ont une TO et ceux qui ne correspondent au critère forEbusiness
+     *
+     * @param employeurs liste d'employeurs à trier
+     * @param dateDebut
+     * @param forEbusiess doit-on prendre en comtpe que les employeurs eBusiness ou que les non-ebusiness.
+     * @return liste d'employeurs candidat
+     */
+    private List<Employeur> candidatsForDecomptePeriodique(final List<Employeur> employeurs, final Date dateDebut,
+            boolean forEbusiess) {
         List<Employeur> employeursSansTO = new ArrayList<Employeur>();
         for (Employeur employeur : employeurs) {
-            if (!taxationOfficeService.hasTO(employeur, dateDebut)) {
+            if (!taxationOfficeService.hasTO(employeur, dateDebut) && employeur.isEBusiness() == forEbusiess) {
+                employeursSansTO.add(employeur);
+            }
+        }
+
+        if (employeursSansTO.isEmpty()) {
+            throw new IllegalArgumentException(
+                    BSessionUtil.getSessionFromThreadContext().getLabel("JSP_PROCESS_DECOMPTE_TO_EBUSINESS"));
+        }
+
+        return employeursSansTO;
+    }
+
+    private List<Employeur> candidatsForDecompteComplementaire(final List<Employeur> employeurs, final Date dateDebut,
+            boolean forEbusiess) {
+        List<Employeur> employeursSansTO = new ArrayList<Employeur>();
+        for (Employeur employeur : employeurs) {
+            if (employeur.isEBusiness() == forEbusiess) {
                 employeursSansTO.add(employeur);
             }
         }
@@ -267,7 +336,7 @@ public class PTProcessDecomptePopulation implements JadeProcessPopulationInterfa
     /**
      * Appel du repository afin de rechercher les cas correspondant aux critères
      * passés en paramètre.
-     * 
+     *
      * @param idConvention
      *            id de la convention
      * @param inPeriodicite
@@ -301,14 +370,16 @@ public class PTProcessDecomptePopulation implements JadeProcessPopulationInterfa
         Date dateDebut = getDatePeriodeDe();
         Date dateFin = getDatePeriodeA();
 
+        boolean forEbusiess = isEbusiness();
+
         entites.addAll(rechercheAndCreateEntities(idConvention, idEmployeur, getPeriodicites(dateFin), dateDebut,
-                dateFin));
+                dateFin, forEbusiess));
         return entites;
     }
 
     /**
      * Retourne les périodicités en fonction des paramètres saisis
-     * 
+     *
      * @return Liste de périodicités
      */
     List<String> getPeriodicites(Date dateFin) {
@@ -355,6 +426,13 @@ public class PTProcessDecomptePopulation implements JadeProcessPopulationInterfa
 
     private String getEmployeurNumero() {
         return properties.get(PTProcessDecompteProperty.employeurNumero);
+    }
+
+    private boolean isEbusiness() {
+        if (properties.get(PTProcessDecompteProperty.EBUSINESS) == null) {
+            return false;
+        }
+        return "TRUE".equals(properties.get(PTProcessDecompteProperty.EBUSINESS));
     }
 
     private Date getDatePeriodeDe() {

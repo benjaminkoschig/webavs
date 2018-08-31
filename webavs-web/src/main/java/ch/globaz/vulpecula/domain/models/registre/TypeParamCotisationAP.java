@@ -11,15 +11,30 @@ import java.util.List;
 public enum TypeParamCotisationAP {
     MONTANT_MIN(68031001),
     MONTANT_MAX(68031002),
-    TAUX_FIX(68031003),
-    TAUX_CUMULATIF(68031004),
-    FORFAIT_FIX(68031005),
-    RABAIS(68031006);
+    FORFAIT_FIX(68031005, 1),
+    TAUX_FIX(68031003, 2),
+    TAUX_CUMULATIF(68031004, 3),
+    RABAIS(68031006, 4),
+    FORFAIT_COTISATION(68031007),
+    FACTEUR(68031008);
 
     private int value;
+    private int priority;
 
     private TypeParamCotisationAP(int value) {
         this.value = value;
+        priority = 0;
+    }
+
+    /**
+     * Constructeur qui prend la priorité en paramètre, ce qui permet le tri dans l'écran et le document
+     * 
+     * @param value
+     * @param priority
+     */
+    private TypeParamCotisationAP(int value, int priority) {
+        this.value = value;
+        this.priority = priority;
     }
 
     /**
@@ -29,6 +44,10 @@ public enum TypeParamCotisationAP {
      */
     public String getValue() {
         return String.valueOf(value);
+    }
+
+    public String getPriority() {
+        return String.valueOf(priority);
     }
 
     /**

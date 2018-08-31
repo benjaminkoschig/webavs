@@ -12,7 +12,6 @@ import globaz.vulpecula.vb.decomptenouveau.PTDecomptenouveauViewBean;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import ch.globaz.vulpecula.domain.models.decompte.TypeDecompte;
 
 /**
  * Gère les actions pour un décompte
@@ -46,13 +45,9 @@ public class PTDecompteNouveauAction extends FWDefaultServletAction {
 
         if (viewBean instanceof PTDecomptenouveauViewBean) {
             PTDecomptenouveauViewBean vb = (PTDecomptenouveauViewBean) viewBean;
-            if (TypeDecompte.SANS_TRAVAILLEUR.equals(vb.getDecompte().getType())) {
-                return "/" + getAction().getApplicationPart() + "?userAction=vulpecula.decompte.decompte.afficher";
-            } else {
-                return "/" + getAction().getApplicationPart()
-                        + "?userAction=vulpecula.decomptedetail.decomptedetail.afficher&selectedId="
-                        + vb.getDecompte().getId();
-            }
+            return "/" + getAction().getApplicationPart()
+                    + "?userAction=vulpecula.decomptedetail.decomptedetail.afficher&selectedId="
+                    + vb.getDecompte().getId();
         }
 
         return super._getDestAjouterSucces(session, request, response, viewBean);

@@ -32,6 +32,7 @@ public class PosteTravailGSON implements Serializable {
     public String etat;
     public boolean posteFranchiseAVS;
     public String idTiersCM;
+    public String posteCorrelationId;
 
     public String getIdTiersCM() {
         return idTiersCM;
@@ -88,6 +89,7 @@ public class PosteTravailGSON implements Serializable {
         poste.setAdhesionsCotisations(adhesionCotisation);
         poste.setSpy(spy);
         poste.setIdTiersCM(idTiersCM);
+        poste.setPosteCorrelationId(posteCorrelationId);
 
         return poste;
     }

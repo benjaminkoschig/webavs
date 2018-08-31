@@ -19,6 +19,27 @@ public class LigneDecompteSimpleModel extends JadeSimpleModel {
     private String dateAnnonce;
     private String dateAnnonceLPP;
     private String montantFranchise;
+    private String genreCotisations;
+    private boolean toTreat;
+    // Décompte complémentaire pour e-business
+    private String mntVacancesFeries;
+    private String mntGratifications;
+    private String mntAbsencesJustifiees;
+    private String mntAPGComplementaireSM;
+    private String correlationId;
+    private String anneeCotisations;
+    private String lineCorrelationId;
+    private String posteCorrelationId;
+    private String tauxSaisieEbu;
+    private String status;
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
     @Override
     public String getId() {
@@ -133,4 +154,126 @@ public class LigneDecompteSimpleModel extends JadeSimpleModel {
     public void setMontantFranchise(String montantFranchise) {
         this.montantFranchise = montantFranchise;
     }
+
+    public String getGenreCotisations() {
+        return genreCotisations;
+    }
+
+    public void setGenreCotisations(String genreCotisations) {
+        this.genreCotisations = genreCotisations;
+    }
+
+    /**
+     * @param toTreat the toTreat to set
+     */
+    public void setToTreat(boolean toTreat) {
+        this.toTreat = toTreat;
+    }
+
+    public boolean getToTreat() {
+        return toTreat;
+    }
+
+    /**
+     * @return the mntVacancesFeries
+     */
+    public String getMntVacancesFeries() {
+        return mntVacancesFeries;
+    }
+
+    /**
+     * @param mntVacancesFeries the mntVacancesFeries to set
+     */
+    public void setMntVacancesFeries(String mntVacancesFeries) {
+        this.mntVacancesFeries = mntVacancesFeries;
+    }
+
+    /**
+     * @return the mntGratifications
+     */
+    public String getMntGratifications() {
+        return mntGratifications;
+    }
+
+    /**
+     * @param mntGratifications the mntGratifications to set
+     */
+    public void setMntGratifications(String mntGratifications) {
+        this.mntGratifications = mntGratifications;
+    }
+
+    /**
+     * @return the mntAbsencesJustifiees
+     */
+    public String getMntAbsencesJustifiees() {
+        return mntAbsencesJustifiees;
+    }
+
+    /**
+     * @param mntAbsencesJustifiees the mntAbsencesJustifiees to set
+     */
+    public void setMntAbsencesJustifiees(String mntAbsencesJustifiees) {
+        this.mntAbsencesJustifiees = mntAbsencesJustifiees;
+    }
+
+    /**
+     * @return the mntAPGComplementaireSM
+     */
+    public String getMntAPGComplementaireSM() {
+        return mntAPGComplementaireSM;
+    }
+
+    /**
+     * @param mntAPGComplementaireSM the mntAPGComplementaireSM to set
+     */
+    public void setMntAPGComplementaireSM(String mntAPGComplementaireSM) {
+        this.mntAPGComplementaireSM = mntAPGComplementaireSM;
+    }
+
+    /**
+     * @return the correlationId
+     */
+    public String getCorrelationId() {
+        return correlationId;
+    }
+
+    /**
+     * @param correlationId the correlationId to set
+     */
+    public void setCorrelationId(String correlationId) {
+        this.correlationId = correlationId;
+    }
+
+    public String getAnneeCotisations() {
+        return anneeCotisations;
+    }
+
+    public void setAnneeCotisations(String anneeCotisations) {
+        this.anneeCotisations = anneeCotisations;
+    }
+
+    public String getLineCorrelationId() {
+        return lineCorrelationId;
+    }
+
+    public void setLineCorrelationId(String lineCorrelationId) {
+        this.lineCorrelationId = lineCorrelationId;
+    }
+
+    public String getPosteCorrelationId() {
+        return posteCorrelationId;
+    }
+
+    public void setPosteCorrelationId(String posteCorrelationId) {
+        this.posteCorrelationId = posteCorrelationId;
+    }
+
+    public String getTauxSaisieEbu() {
+        return tauxSaisieEbu;
+    }
+
+    public void setTauxSaisieEbu(String tauxSaisieEbu) {
+        this.tauxSaisieEbu = tauxSaisieEbu;
+    }
+
 }

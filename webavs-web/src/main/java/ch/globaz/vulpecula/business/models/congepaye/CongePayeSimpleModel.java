@@ -26,6 +26,28 @@ public class CongePayeSimpleModel extends JadeSimpleModel {
     private String salaireDeclare;
     private String montantNet;
 
+    private String dateVersement;
+    private String dateTraitementMyProdis;
+
+    private String dateTraitementSalaires;
+    private String traitementSalaires;
+
+    public String getDateTraitementSalaires() {
+        return dateTraitementSalaires;
+    }
+
+    public void setDateTraitementSalaires(String dateTraitementSalaires) {
+        this.dateTraitementSalaires = dateTraitementSalaires;
+    }
+
+    public String getTraitementSalaires() {
+        return traitementSalaires;
+    }
+
+    public void setTraitementSalaires(String traitementSalaires) {
+        this.traitementSalaires = traitementSalaires;
+    }
+
     @Override
     public String getId() {
         return id;
@@ -186,4 +208,19 @@ public class CongePayeSimpleModel extends JadeSimpleModel {
         this.montantNet = montantNet;
     }
 
+    public String getDateVersement() {
+        return dateVersement;
+    }
+
+    public void setDateVersement(String dateVersement) {
+        this.dateVersement = dateVersement;
+    }
+
+    public String getDateTraitementMyProdis() {
+        return dateTraitementMyProdis;
+    }
+
+    public void setDateTraitementMyProdis(String dateTraitementMyProdis) {
+        this.dateTraitementMyProdis = dateTraitementMyProdis;
+    }
 }

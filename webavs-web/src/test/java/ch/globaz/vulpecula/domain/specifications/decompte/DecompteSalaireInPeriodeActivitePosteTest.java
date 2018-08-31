@@ -40,11 +40,11 @@ public class DecompteSalaireInPeriodeActivitePosteTest {
     }
 
     @Test
-    public void isValid_GivenDecompteSalaireSameMonthAndYearPeriodePoste_ShouldBeFalse()
+    public void isValid_GivenDecompteSalaireSameMonthAndYearPeriodePoste_ShouldBeTrue()
             throws UnsatisfiedSpecificationException {
         when(decompteSalaire.getPeriodeActivitePoste()).thenReturn(new Periode("15.01.2011", "31.01.2011"));
         when(decompteSalaire.getPeriode()).thenReturn(new Periode("01.01.2011", "31.01.2011"));
-        assertFalse(decompteSalaireInPeriodeActivitePoste.isValid(decompteSalaire));
+        assertTrue(decompteSalaireInPeriodeActivitePoste.isValid(decompteSalaire));
     }
 
     @Test
@@ -53,5 +53,12 @@ public class DecompteSalaireInPeriodeActivitePosteTest {
         when(decompteSalaire.getPeriodeActivitePoste()).thenReturn(new Periode("15.01.2011", "31.01.2011"));
         when(decompteSalaire.getPeriode()).thenReturn(new Periode("01.02.2011", "28.02.2011"));
         assertFalse(decompteSalaireInPeriodeActivitePoste.isValid(decompteSalaire));
+    }
+
+    @Test
+    public void isValid_GivenDecompteSalaire_ShouldBeTrue() {
+        when(decompteSalaire.getPeriodeActivitePoste()).thenReturn(new Periode("01.01.1975", "15.05.2014"));
+        when(decompteSalaire.getPeriode()).thenReturn(new Periode("01.05.2014", "31.05.2014"));
+        assertTrue(decompteSalaireInPeriodeActivitePoste.isValid(decompteSalaire));
     }
 }

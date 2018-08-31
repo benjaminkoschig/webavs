@@ -2,6 +2,7 @@ package ch.globaz.vulpecula.repositoriesjade.decompte.converters;
 
 import globaz.jade.persistence.model.JadeAbstractSearchModel;
 import ch.globaz.vulpecula.business.models.decomptes.DecompteComplexModel;
+import ch.globaz.vulpecula.business.models.decomptes.DecompteComptableComplexModel;
 import ch.globaz.vulpecula.business.models.decomptes.DecompteSearchSimpleModel;
 import ch.globaz.vulpecula.business.models.decomptes.DecompteSimpleModel;
 import ch.globaz.vulpecula.business.models.employeur.EmployeurComplexModel;
@@ -13,8 +14,11 @@ import ch.globaz.vulpecula.domain.models.decompte.EtatDecompte;
 import ch.globaz.vulpecula.domain.models.decompte.MotifProlongation;
 import ch.globaz.vulpecula.domain.models.decompte.NumeroDecompte;
 import ch.globaz.vulpecula.domain.models.decompte.TypeDecompte;
+import ch.globaz.vulpecula.domain.models.decompte.TypeProvenance;
 import ch.globaz.vulpecula.domain.models.postetravail.Employeur;
 import ch.globaz.vulpecula.external.models.hercule.InteretsMoratoires;
+import ch.globaz.vulpecula.external.models.musca.Passage;
+import ch.globaz.vulpecula.external.repositoriesjade.musca.converters.PassageConverter;
 import ch.globaz.vulpecula.repositoriesjade.decompte.DomaineConverterJade;
 import ch.globaz.vulpecula.repositoriesjade.postetravail.converters.EmployeurConverter;
 
@@ -26,6 +30,12 @@ import ch.globaz.vulpecula.repositoriesjade.postetravail.converters.EmployeurCon
  */
 public final class DecompteConverter implements
         DomaineConverterJade<Decompte, DecompteComplexModel, DecompteSimpleModel> {
+
+    private static DecompteConverter INSTANCE = new DecompteConverter();
+
+    public static DecompteConverter getInstance() {
+        return INSTANCE;
+    }
 
     /**
      * Conversion d'un {@link DecompteComplexModel} en un {@link Decompte} où
@@ -46,6 +56,17 @@ public final class DecompteConverter implements
 
         decompte.setEmployeur(employeur);
 
+        return decompte;
+    }
+
+    public Decompte convertToDomain(final DecompteComptableComplexModel decompteComptableComplexModel) {
+        Employeur employeur = EmployeurConverter.getInstance().convertToDomain(
+                decompteComptableComplexModel.getEmployeurComplexModel());
+        Passage passage = PassageConverter.getInstance().convertToDomain(
+                decompteComptableComplexModel.getPassageModel());
+        Decompte decompte = convertToDomain(decompteComptableComplexModel.getDecompteSimpleModel());
+        decompte.setEmployeur(employeur);
+        decompte.setPassage(passage);
         return decompte;
     }
 
@@ -81,6 +102,9 @@ public final class DecompteConverter implements
         if (decompteSimpleModel.getType() != null) {
             decompte.setType(TypeDecompte.fromValue(decompteSimpleModel.getType()));
         }
+        if (decompteSimpleModel.getTypeProvenance() != null) {
+            decompte.setTypeProvenance(TypeProvenance.fromValue(decompteSimpleModel.getTypeProvenance()));
+        }
         if (decompteSimpleModel.getEtat() != null) {
             decompte.setEtat(EtatDecompte.fromValue(decompteSimpleModel.getEtat()));
         }
@@ -101,6 +125,10 @@ public final class DecompteConverter implements
 
         if (decompteSimpleModel.getControleAC2() != null) {
             decompte.setControleAC2(decompteSimpleModel.getControleAC2());
+        }
+        
+        if (decompteSimpleModel.getTypeProvenance() != null) {
+            decompte.setTypeProvenance(TypeProvenance.fromValue(decompteSimpleModel.getTypeProvenance()));
         }
 
         Employeur employeur = new Employeur();
@@ -168,6 +196,11 @@ public final class DecompteConverter implements
         } else {
             decompteSimpleModel.setRectifie(false);
         }
+        
+        if (decompte.getTypeProvenance() != null) {
+        	decompteSimpleModel.setTypeProvenance(decompte.getTypeProvenance().getValue());
+        }
+        
         return decompteSimpleModel;
     }
 

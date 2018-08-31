@@ -2,14 +2,22 @@ package ch.globaz.vulpecula.business.services;
 
 import ch.globaz.vulpecula.domain.repositories.absencejustifiee.AbsenceJustifieeRepository;
 import ch.globaz.vulpecula.domain.repositories.association.AssociationCotisationRepository;
+import ch.globaz.vulpecula.domain.repositories.association.AssociationEmployeurRepository;
 import ch.globaz.vulpecula.domain.repositories.association.CotisationAssociationProfessionnelleRepository;
+import ch.globaz.vulpecula.domain.repositories.association.EnteteFactureAssociationProfessionnelleRepository;
+import ch.globaz.vulpecula.domain.repositories.association.FactureAssociationRepository;
+import ch.globaz.vulpecula.domain.repositories.association.LigneFactureAssociationProfessionnelleRepository;
 import ch.globaz.vulpecula.domain.repositories.caissemaladie.AffiliationCaisseMaladieRepository;
 import ch.globaz.vulpecula.domain.repositories.caissemaladie.SuiviCaisseMaladieRepository;
 import ch.globaz.vulpecula.domain.repositories.congepaye.CompteurRepository;
 import ch.globaz.vulpecula.domain.repositories.congepaye.CongePayeRepository;
+import ch.globaz.vulpecula.domain.repositories.controleemployeur.ControleEmployeurRepository;
 import ch.globaz.vulpecula.domain.repositories.decompte.DecompteRepository;
 import ch.globaz.vulpecula.domain.repositories.decompte.DecompteSalaireRepository;
 import ch.globaz.vulpecula.domain.repositories.decompte.HistoriqueDecompteRepository;
+import ch.globaz.vulpecula.domain.repositories.ebusiness.NouveauTravailleurRepository;
+import ch.globaz.vulpecula.domain.repositories.ebusiness.SynchronisationRepository;
+import ch.globaz.vulpecula.domain.repositories.ebusiness.SynchronisationTravailleurEbuRepository;
 import ch.globaz.vulpecula.domain.repositories.is.HistoriqueProcessusAfRepository;
 import ch.globaz.vulpecula.domain.repositories.is.TauxImpositionRepository;
 import ch.globaz.vulpecula.domain.repositories.postetravail.AdhesionCotisationPosteTravailRepository;
@@ -27,29 +35,41 @@ import ch.globaz.vulpecula.domain.repositories.syndicat.ParametreSyndicatReposit
 import ch.globaz.vulpecula.domain.repositories.taxationoffice.LigneTaxationRepository;
 import ch.globaz.vulpecula.domain.repositories.taxationoffice.TaxationOfficeRepository;
 import ch.globaz.vulpecula.external.repositories.affiliation.AdhesionRepository;
+import ch.globaz.vulpecula.external.repositories.affiliation.CotisationRepository;
 import ch.globaz.vulpecula.external.repositories.tiers.AdministrationRepository;
 import ch.globaz.vulpecula.external.repositories.tiers.AdresseRepository;
+import ch.globaz.vulpecula.external.repositories.tiers.ContactRepository;
 import ch.globaz.vulpecula.external.repositories.tiers.DetailGroupeLocaliteRepository;
 import ch.globaz.vulpecula.external.repositories.tiers.PaysRepository;
 import ch.globaz.vulpecula.external.repositories.tiers.PersonneEtendueRepository;
 import ch.globaz.vulpecula.external.repositories.tiers.TiersRepository;
 import ch.globaz.vulpecula.external.repositoriesjade.naos.AdhesionRepositoryJade;
+import ch.globaz.vulpecula.external.repositoriesjade.naos.CotisationRepositoryJade;
 import ch.globaz.vulpecula.external.repositoriesjade.pyxis.AdministrationRepositoryJade;
 import ch.globaz.vulpecula.external.repositoriesjade.pyxis.AdresseRepositoryJade;
+import ch.globaz.vulpecula.external.repositoriesjade.pyxis.ContactRepositoryJade;
 import ch.globaz.vulpecula.external.repositoriesjade.pyxis.DetailGroupeLocaliteRepositoryJade;
 import ch.globaz.vulpecula.external.repositoriesjade.pyxis.PaysRepositoryJade;
 import ch.globaz.vulpecula.external.repositoriesjade.pyxis.PersonneEtendueRepositoryJade;
 import ch.globaz.vulpecula.external.repositoriesjade.pyxis.TiersRepositoryJade;
 import ch.globaz.vulpecula.repositoriesjade.absencejustifiee.AbsenceJustifieeRepositoryJade;
 import ch.globaz.vulpecula.repositoriesjade.association.AssociationCotisationRepositoryJade;
+import ch.globaz.vulpecula.repositoriesjade.association.AssociationEmployeurRepositoryJade;
 import ch.globaz.vulpecula.repositoriesjade.association.CotisationAssociationProfessionnelleRepositoryJade;
+import ch.globaz.vulpecula.repositoriesjade.association.EnteteFactureAssociationProfessionnelleRepositoryJade;
+import ch.globaz.vulpecula.repositoriesjade.association.FactureAssociationRepositoryJade;
+import ch.globaz.vulpecula.repositoriesjade.association.LigneFactureAssociationProfessionnelleRepositoryJade;
 import ch.globaz.vulpecula.repositoriesjade.caissemaladie.AffiliationCaisseMaladieRepositoryJade;
 import ch.globaz.vulpecula.repositoriesjade.caissemaladie.SuiviCaisseMaladieRepositoryJade;
 import ch.globaz.vulpecula.repositoriesjade.congepaye.CompteurRepositoryJade;
 import ch.globaz.vulpecula.repositoriesjade.congepaye.CongePayeRepositoryJade;
+import ch.globaz.vulpecula.repositoriesjade.controleemployeur.ControleEmployeurRepositoryJade;
 import ch.globaz.vulpecula.repositoriesjade.decompte.DecompteRepositoryJade;
 import ch.globaz.vulpecula.repositoriesjade.decompte.DecompteSalaireRepositoryJade;
 import ch.globaz.vulpecula.repositoriesjade.decompte.HistoriqueDecompteRepositoryJade;
+import ch.globaz.vulpecula.repositoriesjade.decompte.ebusiness.NouveauTravailleurRepositoryJade;
+import ch.globaz.vulpecula.repositoriesjade.ebusiness.SynchronisationRepositoryJade;
+import ch.globaz.vulpecula.repositoriesjade.ebusiness.SynchronisationTravailleurEbuRepositoryJade;
 import ch.globaz.vulpecula.repositoriesjade.is.HistoriqueProcessusAfRepositoryJade;
 import ch.globaz.vulpecula.repositoriesjade.is.TauxImpositionRepositoryJade;
 import ch.globaz.vulpecula.repositoriesjade.postetravail.AdhesionCotisationPosteTravailRepositoryJade;
@@ -87,6 +107,10 @@ public final class VulpeculaRepositoryLocator {
      */
     public static TravailleurRepository getTravailleurRepository() {
         return TravailleurRepositoryHolder.INSTANCE;
+    }
+
+    public static NouveauTravailleurRepository getNouveauTravailleurRepository() {
+        return NouveauTravailleurRepositoryHolder.INSTANCE;
     }
 
     /**
@@ -233,6 +257,15 @@ public final class VulpeculaRepositoryLocator {
         return AdhesionRepositoryHolder.INSTANCE;
     }
 
+    /**
+     * Retourne une implémentation de la classe {@link CotisationRepository}
+     * 
+     * @return Une instance de {@link CotisationRepositoryJade}
+     */
+    public static CotisationRepository getCotisationsRepository() {
+        return CotisationRepositoryHolder.INSTANCE;
+    }
+
     public static ConventionQualificationRepository getConventionQualificationRepository() {
         return ConventionQualificationRepositoryHolder.INSTANCE;
     }
@@ -265,6 +298,22 @@ public final class VulpeculaRepositoryLocator {
      */
     public static ServiceMilitaireRepository getServiceMilitaireRepository() {
         return ServiceMilitaireRepositoryHolder.INSTANCE;
+    }
+
+    public static EnteteFactureAssociationProfessionnelleRepository getEnteteFactureRepository() {
+        return EnteteFactureAssociationProfessionnelleRepositoryHolder.INSTANCE;
+    }
+
+    public static LigneFactureAssociationProfessionnelleRepository getLigneFactureRepository() {
+        return LigneFactureAssociationProfessionnelleRepositoryHolder.INSTANCE;
+    }
+
+    public static AssociationEmployeurRepository getAssociationEmployeurRepository() {
+        return AssociationEmployeurRepositoryHolder.INSTANCE;
+    }
+
+    public static ContactRepository getContactRepository() {
+        return ContactRepositoryHolder.INSTANCE;
     }
 
     /**
@@ -314,13 +363,42 @@ public final class VulpeculaRepositoryLocator {
         return SuiviCaisseMaladieRepositoryHolder.INSTANCE;
     }
 
+    public static ControleEmployeurRepository getControleEmployeurRepository() {
+        return ControleEmployeurRepositoryHolder.INSTANCE;
+    }
+
+    public static FactureAssociationRepository getFactureAssociationRepository() {
+        return FactureAssociationRepositoryHolder.INSTANCE;
+    }
+
+    public static SynchronisationRepository getSynchronisationRepository() {
+        return SynchronisationEbuRepositoryHolder.INSTANCE;
+    }
+
+    public static SynchronisationTravailleurEbuRepository getSynchronisationTravailleurEbuRepository() {
+        return SynchronisationTravailleurEbuRepositoryHolder.INSTANCE;
+    }
+
     /*
      * Repository holders - to avoid loading all repositories at once -
      * following the "initialization on demand holder idiom" see
      * http://en.wikipedia.org/wiki/Singleton_pattern#The_solution_of_Bill_Pugh
      */
+    private static class LigneFactureAssociationProfessionnelleRepositoryHolder {
+        private static final LigneFactureAssociationProfessionnelleRepository INSTANCE = new LigneFactureAssociationProfessionnelleRepositoryJade();
+    }
+
+    private static class EnteteFactureAssociationProfessionnelleRepositoryHolder {
+        private static final EnteteFactureAssociationProfessionnelleRepository INSTANCE = new EnteteFactureAssociationProfessionnelleRepositoryJade(
+                getLigneFactureRepository(), getAdministrationRepository());
+    }
+
     private static class TravailleurRepositoryHolder {
         private static final TravailleurRepository INSTANCE = new TravailleurRepositoryJade();
+    }
+
+    private static class NouveauTravailleurRepositoryHolder {
+        private static final NouveauTravailleurRepository INSTANCE = new NouveauTravailleurRepositoryJade();
     }
 
     private static class DecompteRepositoryHolder {
@@ -435,9 +513,22 @@ public final class VulpeculaRepositoryLocator {
         private static final HistoriqueProcessusAfRepository INSTANCE = new HistoriqueProcessusAfRepositoryJade();
     }
 
+    private static class ControleEmployeurRepositoryHolder {
+        private static final ControleEmployeurRepository INSTANCE = new ControleEmployeurRepositoryJade();
+    }
+
+    private static class FactureAssociationRepositoryHolder {
+        private static final FactureAssociationRepository INSTANCE = new FactureAssociationRepositoryJade(
+                getLigneFactureRepository(), getEnteteFactureRepository());
+    }
+
     /* TODO: Repositories externes devant être à terme, externalisés */
     private static class AdhesionRepositoryHolder {
         private static final AdhesionRepository INSTANCE = new AdhesionRepositoryJade();
+    }
+
+    private static class CotisationRepositoryHolder {
+        private static final CotisationRepository INSTANCE = new CotisationRepositoryJade();
     }
 
     private static class PersonneRepositoryHolder {
@@ -450,5 +541,21 @@ public final class VulpeculaRepositoryLocator {
 
     private static class DetailGroupeLocaliteRepositoryHolder {
         private static final DetailGroupeLocaliteRepository INSTANCE = new DetailGroupeLocaliteRepositoryJade();
+    }
+
+    private static class AssociationEmployeurRepositoryHolder {
+        private static final AssociationEmployeurRepository INSTANCE = new AssociationEmployeurRepositoryJade();
+    }
+
+    private static class ContactRepositoryHolder {
+        private static final ContactRepository INSTANCE = new ContactRepositoryJade();
+    }
+
+    private static class SynchronisationEbuRepositoryHolder {
+        private static final SynchronisationRepositoryJade INSTANCE = new SynchronisationRepositoryJade();
+    }
+
+    private static class SynchronisationTravailleurEbuRepositoryHolder {
+        private static final SynchronisationTravailleurEbuRepositoryJade INSTANCE = new SynchronisationTravailleurEbuRepositoryJade();
     }
 }

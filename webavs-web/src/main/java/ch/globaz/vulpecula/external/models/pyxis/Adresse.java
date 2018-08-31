@@ -21,6 +21,7 @@ public class Adresse {
     private String attention;
     private String npa;
     private String pays;
+    private String isoPays;
     private String cantonOFAS;
     private String description1;
     private String description2;
@@ -79,6 +80,49 @@ public class Adresse {
         return liste;
     }
 
+    public List<String> getAdresseAsStringLinesWithoutTitre() {
+        List<String> liste = new ArrayList<String>();
+
+        if (isNotEmpty(description1) && isNotEmpty(description2)) {
+            liste.add(description1 + " " + description2);
+        } else if (isNotEmpty(description1)) {
+            liste.add(description1);
+        } else if (isNotEmpty(description2)) {
+            liste.add(description2);
+        }
+
+        if (isNotEmpty(description3) && isNotEmpty(description4)) {
+            // Jira BMS-1960
+            liste.add(description3);
+            liste.add(description4);
+        } else if (isNotEmpty(description3)) {
+            liste.add(description3);
+        } else if (isNotEmpty(description4)) {
+            liste.add(description4);
+        }
+
+        if (isNotEmpty(attention)) {
+            liste.add(attention);
+        }
+
+        if (isNotEmpty(rue)) {
+            if (isNotEmpty(rueNumero)) {
+                liste.add(rue + " " + rueNumero);
+            } else {
+                liste.add(rue);
+            }
+        }
+
+        if (isNotEmpty(casePostale)) {
+            liste.add(casePostale);
+        }
+
+        if (isNotEmpty(npa) && isNotEmpty(localite)) {
+            liste.add(npa + " " + localite);
+        }
+        return liste;
+    }
+
     public String getAdresseFormatte() {
         StringBuffer adressAsString = new StringBuffer();
         for (String ligne : getAdresseAsStringLines()) {
@@ -86,6 +130,24 @@ public class Adresse {
             adressAsString.append("\n");
         }
         return adressAsString.toString();
+    }
+
+    public String getAdresseFormatteWithoutTitre() {
+        StringBuffer adressAsString = new StringBuffer();
+        for (String ligne : getAdresseAsStringLinesWithoutTitre()) {
+            adressAsString.append(ligne);
+            adressAsString.append("\n");
+        }
+        return adressAsString.toString();
+    }
+
+    /**
+     * Retourne le nombre de lignes de l'adresse
+     * 
+     * @return
+     */
+    public int nbLignes() {
+        return getAdresseAsStringLines().size();
     }
 
     public String getDescription1() {
@@ -287,6 +349,20 @@ public class Adresse {
      */
     public void setPays(final String pays) {
         this.pays = pays;
+    }
+
+    /**
+     * @return the isoPays
+     */
+    public String getIsoPays() {
+        return isoPays;
+    }
+
+    /**
+     * @param isoPays the isoPays to set
+     */
+    public void setIsoPays(String isoPays) {
+        this.isoPays = isoPays;
     }
 
     /**

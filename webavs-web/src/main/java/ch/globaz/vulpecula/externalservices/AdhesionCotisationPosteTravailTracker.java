@@ -18,7 +18,7 @@ public class AdhesionCotisationPosteTravailTracker implements BIJadeSimpleModelE
     public void afterAdd(JadeSimpleModel simpleModel) throws Throwable {
         AdhesionCotisationPosteTravail adhesionCotisationPosteTravail = VulpeculaRepositoryLocator
                 .getAdhesionCotisationPosteRepository().findById(simpleModel.getId());
-        if (TypeAssurance.COTISATION_LPP.equals(adhesionCotisationPosteTravail.getTypeAssurance())) {
+        if (adhesionCotisationPosteTravail.getAssurance().isTypeLPP()) {
             Notification notification = new Notification(InfoType.AJOUT_COTISATION_POSTE_LPP, simpleModel.getId());
             requestFactory.persistFromNouvellePersistance(notification);
 

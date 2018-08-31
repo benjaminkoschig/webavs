@@ -12,6 +12,9 @@ jsManager.executeAfter = function () {
 		globazGlobal.calcul.calculTotalUnites();
 		globazGlobal.genrePrestations.init();
 		globazGlobal.loadNumeroCompte();
+		if(globazGlobal.$getMontantBrut().val() === globazGlobal.$getMontantVerse().val()){
+		globazGlobal.updateAmountOnDiffForUpdate();
+		}
 	}
 };
 
@@ -25,6 +28,9 @@ function upd() {
 function validate() {
 	var state = globazGlobal.validation.validate();
 	 if (document.forms[0].elements('_method').value == "add") {
+		 if(globazGlobal.$getMontantBrut().val() === globazGlobal.$getMontantVerse().val()){
+			 globazGlobal.updateAmountOnDiffForValidation();
+	    } 
 	     document.forms[0].elements('userAction').value="vulpecula.absencesjustifiees.absencesjustifiees.ajouter";
 	 } else {
 	     document.forms[0].elements('userAction').value="vulpecula.absencesjustifiees.absencesjustifiees.modifier";
@@ -437,6 +443,57 @@ globazGlobal.$getNombreHeuresParJour = function() {
 
 globazGlobal.$getDateDebutAbsence = function() {
 	return $('#debutAbsence');
+};
+
+globazGlobal.$getDateFinAbsence = function() {
+	return $('#finAbsence');
+};
+
+
+globazGlobal.$getMontantVerse = function() {
+	return $('#montantVerse');
+};
+
+globazGlobal.$getMontantAVS = function() {
+	return $('#montantAVS');
+};
+
+globazGlobal.$getMontantAC = function() {
+	return $('#montantAC');
+};
+
+globazGlobal.$getIdAbsenceJustifiee = function() {
+	return $('#idAbsenceJustifiee');
+};
+
+globazGlobal.$getMontantBrut = function() {
+	return $('#montantBrut');
+};
+
+globazGlobal.updateAmountOnDiffForUpdate = function() {
+	var options = {
+			serviceClassName:globazGlobal.prestationsViewService,
+			serviceMethodName:'updateAmountOnDiff',
+			parametres: globazGlobal.$getMontantBrut().val() + ',' + globazGlobal.$getMontantVerse().val() + ',' + globazGlobal.$getMontantAVS().val() + ',' + globazGlobal.$getMontantAC().val() + "," + globazGlobal.$getIdAbsenceJustifiee().val(),
+			callBack:function (data) {
+				var montantVerse = data;
+				$('#montantVerse').val(montantVerse);
+			}
+	};
+	vulpeculaUtils.lancementService(options);				
+};
+
+globazGlobal.updateAmountOnDiffForValidation = function() {
+	var options = {
+			serviceClassName:globazGlobal.prestationsViewService,
+			serviceMethodName:'balanceAmountWithDiff',
+			parametres: globazGlobal.$getMontantBrut().val() + ',' + globazGlobal.$getMontantVerse().val() + ',' + globazGlobal.$getMontantAVS().val() + ',' + globazGlobal.$getMontantAC().val(),
+			callBack:function (data) {
+				var montantVerse = data;
+				$('#montantVerse').val(montantVerse);
+			}
+	};
+	vulpeculaUtils.lancementService(options);				
 };
 
 globazGlobal.validation = (function()  {

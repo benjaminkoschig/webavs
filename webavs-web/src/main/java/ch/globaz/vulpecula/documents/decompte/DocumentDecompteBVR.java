@@ -47,8 +47,7 @@ public class DocumentDecompteBVR extends VulpeculaDocumentManager<DecompteContai
     public DocumentDecompteBVR(final DecompteContainer decompteContainer) throws Exception {
         super(decompteContainer, DocumentConstants.DECOMPTE_BVR_FILENAME, DocumentConstants.DECOMPTE_BVR_TYPE_NUMBER);
         Decompte decompte = decompteContainer.getDecompte();
-        if (TypeDecompte.CONTROLE_EMPLOYEUR.equals(decompte.getType())
-                || TypeDecompte.SPECIAL.equals(decompte.getType())) {
+        if (TypeDecompte.CONTROLE_EMPLOYEUR.equals(decompte.getType()) || decompte.isTraiterAsSpecial()) {
             typeSection = TypeSection.DECOMPTE_COTISATION;
         }
     }
@@ -100,7 +99,9 @@ public class DocumentDecompteBVR extends VulpeculaDocumentManager<DecompteContai
 
     private void fillDocumentTitle() {
         Decompte decompte = getCurrentElement().getDecompte();
-        setDocumentTitle(decompte.getEmployeurAffilieNumero());
+        // BMS-2502 Demande de Mme Dell'Estate le 01.09.2016
+        // setDocumentTitle(decompte.getEmployeurAffilieNumero());
+        setDocumentTitle(decompte.getEmployeur().getConvention().getCode() + "-" + decompte.getEmployeurAffilieNumero());
 
     }
 

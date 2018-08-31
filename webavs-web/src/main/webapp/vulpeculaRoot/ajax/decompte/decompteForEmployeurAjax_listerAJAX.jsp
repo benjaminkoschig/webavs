@@ -12,7 +12,14 @@
 		<td>${decompte.dateComptabilisationAsSwissValue}</td>
 		<td>${decompte.dateRectificationAsSwissValue}</td>
 		<td style="text-align: right;">${montantTotalFormate}</td>
-		<td><ct:FWCodeLibelle csCode="${decompte.etat.value}"/></td>
+		<c:choose>
+			<c:when test="${decompte.taxationOffice}">
+				<td>TO - <ct:FWCodeLibelle csCode="${decompte.taxationOfficeModel.etat.value}"/></td>
+			</c:when>
+			<c:otherwise>
+				<td><ct:FWCodeLibelle csCode="${decompte.etat.value}"/></td>
+			</c:otherwise>
+		</c:choose>
 		<td>${decompte.dateRappelAsSwissValue}</td>
 	</tr>  	
 </c:forEach>

@@ -22,6 +22,25 @@ public class AbsenceJustifieeSimpleModel extends JadeSimpleModel {
     private String nombreDeJours;
     private String nombreHeuresParJour;
     private String salaireHoraire;
+    private String dateVersement;
+    private String dateTraitementSalaires;
+    private String traitementSalaires;
+
+    public String getDateTraitementSalaires() {
+        return dateTraitementSalaires;
+    }
+
+    public void setDateTraitementSalaires(String dateTraitementSalaires) {
+        this.dateTraitementSalaires = dateTraitementSalaires;
+    }
+
+    public String getTraitementSalaires() {
+        return traitementSalaires;
+    }
+
+    public void setTraitementSalaires(String traitementSalaires) {
+        this.traitementSalaires = traitementSalaires;
+    }
 
     @Override
     public String getId() {
@@ -151,5 +170,13 @@ public class AbsenceJustifieeSimpleModel extends JadeSimpleModel {
 
     public void setSalaireHoraire(String salaireHoraire) {
         this.salaireHoraire = salaireHoraire;
+    }
+
+    public String getDateVersement() {
+        return dateVersement;
+    }
+
+    public void setDateVersement(String dateVersement) {
+        this.dateVersement = dateVersement;
     }
 }

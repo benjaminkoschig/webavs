@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<complexe-model
+		className="ch.globaz.vulpecula.business.models.ebusiness.SynchronisationTravailleurEbuComplexModel">
+
+		<root-model name="synchronisationTravailleurEbuSimpleModel"
+			model-ref="ch.globaz.vulpecula.business.models.ebusiness.SynchronisationTravailleurEbuSimpleModel" />
+		<linked-model name="travailleurEbuSimpleModel"
+			model-ref="ch.globaz.vulpecula.business.models.ebusiness.TravailleurEbuSimpleModel"
+			join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="id"
+					operation="EQUALS" field-ref="synchronisationTravailleurEbuSimpleModel.idAnnonce" />
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="posteTravailComplexModel"
+			model-ref="ch.globaz.vulpecula.business.models.postetravail.PosteTravailComplexModel"
+			join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="posteTravailSimpleModel.idTravailleur"
+					operation="EQUALS" field-ref="synchronisationTravailleurEbuSimpleModel.idTravailleur" />
+			</join-group>
+		</linked-model>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forDateSynchronisationIsEmpty" field-ref="synchronisationTravailleurEbuSimpleModel.dateSynchronisation"
+					operation="NULL" />
+				<search-field name="forId" field-ref="synchronisationTravailleurEbuSimpleModel.id" operation="EQUALS" />
+				<search-field name="forIdTravailleur" field-ref="synchronisationTravailleurEbuSimpleModel.idTravailleur" operation="EQUALS" />
+				<search-field name="forIdEmployeur" field-ref="posteTravailComplexModel.posteTravailSimpleModel.idEmployeur" operation="EQUALS" />
+			</search-group>
+		</search-definition>
+		<search-definition name="inAnnonce">
+			<search-group operator="AND">
+				<search-field name="forDateSynchronisationIsEmpty" field-ref="synchronisationTravailleurEbuSimpleModel.dateSynchronisation"
+					operation="NULL" />
+				<search-field name="forId" field-ref="synchronisationTravailleurEbuSimpleModel.id" operation="EQUALS" />
+				<search-field name="forIdTravailleur" field-ref="synchronisationTravailleurEbuSimpleModel.idTravailleur" operation="EQUALS" />
+				<search-field name="forIdEmployeur" field-ref="travailleurEbuSimpleModel.idEmployeur" operation="EQUALS" />
+			</search-group>
+		</search-definition>
+	</complexe-model>
+</model-mapping>

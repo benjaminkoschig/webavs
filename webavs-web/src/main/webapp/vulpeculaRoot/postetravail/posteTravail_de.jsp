@@ -17,6 +17,7 @@
 <script type="text/javascript" src="${rootPath}/scripts/vulpeculaUtils.js"></script>
 <script type="text/javascript" src="${rootPath}/scripts/json2.js"></script>
 <script type="text/javascript" src="${rootPath}/postetravail/posteTravail_de.js"></script>
+<script type="text/javascript" src="${rootPath}/scripts/utils/jquery.noty.packaged.min.js"></script>
 
 
 <%--  *************************************************************** Script propre à la page **************************************************************** --%>
@@ -34,8 +35,11 @@ globazGlobal.cotisationService =  '${viewBean.cotisationService}';
 globazGlobal.addWithTravailleur = ${viewBean.addWithTravailleur};
 globazGlobal.addWithEmployeur = ${viewBean.addWithEmployeur};
 globazGlobal.messageSuppression = '${viewBean.messageSuppression}';
+globazGlobal.messageDecompteSurPeriode = '${viewBean.messageDecompteSurPeriode}';
+globazGlobal.messageCotisationNonComprise = "${viewBean.messageCotisationNonComprise}";
 globazGlobal.isNouveau = ${viewBean.nouveau};
 globazGlobal.affiliationCaisseMaladie = '${viewBean.affiliationCaisseMaladie}';
+globazGlobal.posteCorrelationId = '${viewBean.posteCorrelationId}';
 </script>
 
 
@@ -43,6 +47,18 @@ globazGlobal.affiliationCaisseMaladie = '${viewBean.affiliationCaisseMaladie}';
 <ct:FWLabel key="${labelTitreEcran}"/>
 <%@ include file="/theme/detail_el/bodyStart2.jspf" %>
 <%--  ******************************************************************* Corps de la page ******************************************************************* --%>
+<div id="informations" style="position:absolute;right:0; width: 30%;"></div>
+
+<c:if test="${viewBean.posteCorrelationId != ''}">
+	<div id="linkToAnnonce" style="float:right">
+		<td colspan="2" style="text-align:right;font-weight:bold"><a href="${pageContext.request.contextPath}\vulpecula?userAction=vulpecula.ebusiness.nouveauTravailleur.afficher">
+		<ct:FWLabel key='JSP_RETOUR_ANNONCES'/></a></td>
+	</div>
+</c:if>
+
+
+
+
 <div id="content">
 	<div id="blocLeft">
 	</div>

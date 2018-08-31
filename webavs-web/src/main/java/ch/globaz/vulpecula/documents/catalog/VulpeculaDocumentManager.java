@@ -1,7 +1,11 @@
 package ch.globaz.vulpecula.documents.catalog;
 
+import globaz.framework.printing.itext.api.FWIImporterInterface;
+import globaz.framework.util.FWMessage;
 import java.io.Serializable;
 import java.util.List;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
 import ch.globaz.vulpecula.application.ApplicationConstants;
 
 /**
@@ -35,5 +39,37 @@ public abstract class VulpeculaDocumentManager<T extends Serializable> extends D
             throws Exception {
         super(ApplicationConstants.DEFAULT_APPLICATION_VULPECULA, ApplicationConstants.APPLICATION_VULPECULA_REP,
                 element, documentName, numeroInforom);
+    }
+
+    /**
+     * Détermine le total de page d'un document afin de pouvoir gérer les X dans les BVR.
+     * Pour cela, on construit en mémoire le document.
+     */
+    protected void computeTotalPage() {
+        int nbPages = 0;
+        FWIImporterInterface importDoc = super.getImporter();
+        try {
+            String sourceFilename = importDoc.getImportPath() + "/" + getJasperTemplate() + importDoc.getImportType();
+
+            // On construit le document pour connaitre le nb de page total
+            JasperPrint m_document = JasperFillManager.fillReport(sourceFilename, importDoc.getParametre(),
+                    getDataSource());
+            if ((m_document != null)) {
+                nbPages = m_document.getPages().size();
+            }
+
+            // On recharge le data source
+            createDataSource();
+        } catch (Exception e) {
+            getMemoryLog().logMessage("Problème pour déterminer le nb de page total du document : " + e.getMessage(),
+                    FWMessage.AVERTISSEMENT, this.getClass().getName());
+        }
+
+        // On passe le nb de page au document
+        setParametres("P_NOMBRE_PAGES", nbPages);
+
+        
+
+        
     }
 }

@@ -14,6 +14,25 @@ public class HistoriqueDecompteSearchComplexModel extends JadeSearchComplexModel
     private Collection<String> forIdDecompteIn;
     private Collection<String> forEtatsIn;
     private String forEtat;
+    private String forIdEmployeur;
+    private String forAnneeDebut;
+    private String forAnneeFin;
+
+    public String getForAnneeDebut() {
+        return forAnneeDebut;
+    }
+
+    public void setForAnneeDebut(String forAnneeDebut) {
+        this.forAnneeDebut = forAnneeDebut;
+    }
+
+    public String getForAnneeFin() {
+        return forAnneeFin;
+    }
+
+    public void setForAnneeFin(String forAnneeFin) {
+        this.forAnneeFin = forAnneeFin;
+    }
 
     public String getForId() {
         return forId;
@@ -71,4 +90,13 @@ public class HistoriqueDecompteSearchComplexModel extends JadeSearchComplexModel
     public Class<HistoriqueDecompteComplexModel> whichModelClass() {
         return HistoriqueDecompteComplexModel.class;
     }
+
+    public void setForIdEmployeur(final String forIdEmployeur) {
+        this.forIdEmployeur = forIdEmployeur;
+    }
+
+    public String getForIdEmployeur() {
+        return forIdEmployeur;
+    }
+
 }

@@ -2,6 +2,7 @@ package globaz.vulpecula.vb.decomptesalaire;
 
 import globaz.vulpecula.vb.PTAjaxDisplayViewBean;
 import java.util.List;
+import org.apache.commons.lang.Validate;
 import ch.globaz.vulpecula.business.services.VulpeculaRepositoryLocator;
 import ch.globaz.vulpecula.domain.models.decompte.DecompteSalaire;
 
@@ -13,8 +14,11 @@ public class PTHistoriqueSalaireAjaxViewBean extends PTAjaxDisplayViewBean {
 
     @Override
     public void retrieve() throws Exception {
+        Validate.notEmpty(idPosteTravail);
+
         historiqueSalaire = VulpeculaRepositoryLocator.getDecompteSalaireRepository().findByIdPosteTravailOneYearAgo(
                 idPosteTravail);
+
     }
 
     /**

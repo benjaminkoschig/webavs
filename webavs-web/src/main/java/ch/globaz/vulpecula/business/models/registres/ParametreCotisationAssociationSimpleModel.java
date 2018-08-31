@@ -12,6 +12,7 @@ public class ParametreCotisationAssociationSimpleModel extends JadeSimpleModel {
     private String montant;
     private String fourchetteDebut;
     private String fourchetteFin;
+    private String facteur;
 
     public ParametreCotisationAssociationSimpleModel() {
         super();
@@ -63,6 +64,14 @@ public class ParametreCotisationAssociationSimpleModel extends JadeSimpleModel {
 
     public void setFourchetteFin(String fourchetteFin) {
         this.fourchetteFin = fourchetteFin;
+    }
+
+    public String getFacteur() {
+        return facteur;
+    }
+
+    public void setFacteur(String facteur) {
+        this.facteur = facteur;
     }
 
     @Override

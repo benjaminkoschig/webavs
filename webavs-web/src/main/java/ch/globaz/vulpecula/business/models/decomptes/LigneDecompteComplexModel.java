@@ -1,6 +1,7 @@
 package ch.globaz.vulpecula.business.models.decomptes;
 
 import globaz.jade.persistence.model.JadeComplexModel;
+import ch.globaz.musca.business.models.PassageModel;
 import ch.globaz.naos.business.model.AffiliationSimpleModel;
 import ch.globaz.pyxis.business.model.AdministrationSimpleModel;
 import ch.globaz.pyxis.business.model.PersonneEtendueSimpleModel;
@@ -26,12 +27,13 @@ public class LigneDecompteComplexModel extends JadeComplexModel {
     private TiersSimpleModel employeurTiersSimpleModel;
     private AdministrationSimpleModel conventionAdministrationSimpleModel;
     private TiersSimpleModel conventionTiersSimpleModel;
-
+    private HistoriqueDecompteSimpleModel historiqueDecompteSimpleModel;
     // TravailleurComplexModel
     private TravailleurSimpleModel travailleurSimpleModel;
     private TiersSimpleModel travailleurTiersSimpleModel;
     private PersonneSimpleModel travailleurPersonneSimpleModel;
     private PersonneEtendueSimpleModel travailleurPersonneEtendueSimpleModel;
+    private PassageModel passageModel;
 
     private DecompteSimpleModel decompteSimpleModel;
 
@@ -50,7 +52,18 @@ public class LigneDecompteComplexModel extends JadeComplexModel {
         travailleurPersonneSimpleModel = new PersonneSimpleModel();
         travailleurPersonneEtendueSimpleModel = new PersonneEtendueSimpleModel();
 
+        passageModel = new PassageModel();
+
         decompteSimpleModel = new DecompteSimpleModel();
+        historiqueDecompteSimpleModel = new HistoriqueDecompteSimpleModel();
+    }
+
+    public PassageModel getPassageModel() {
+        return passageModel;
+    }
+
+    public void setPassageModel(PassageModel passageModel) {
+        this.passageModel = passageModel;
     }
 
     public LigneDecompteSimpleModel getLigneDecompteSimpleModel() {
@@ -148,6 +161,14 @@ public class LigneDecompteComplexModel extends JadeComplexModel {
 
     public void setDecompteSimpleModel(DecompteSimpleModel decompteSimpleModel) {
         this.decompteSimpleModel = decompteSimpleModel;
+    }
+
+    public HistoriqueDecompteSimpleModel getHistoriqueDecompteSimpleModel() {
+        return historiqueDecompteSimpleModel;
+    }
+
+    public void setHistoriqueDecompteSimpleModel(HistoriqueDecompteSimpleModel historiqueDecompteSimpleModel) {
+        this.historiqueDecompteSimpleModel = historiqueDecompteSimpleModel;
     }
 
     @Override

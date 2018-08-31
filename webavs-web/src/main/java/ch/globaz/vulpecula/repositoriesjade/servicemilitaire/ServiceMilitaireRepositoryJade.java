@@ -1,6 +1,5 @@
 package ch.globaz.vulpecula.repositoriesjade.servicemilitaire;
 
-import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.persistence.JadePersistenceManager;
 import globaz.jade.persistence.model.JadeAbstractSearchModel;
@@ -91,6 +90,54 @@ public class ServiceMilitaireRepositoryJade extends
     }
 
     @Override
+    public List<ServiceMilitaire> findByIdTravailleurAndPeriod(String idTravailleur, String dateDebut, String dateFin) {
+        ServiceMilitaireSearchComplexModel searchModel = new ServiceMilitaireSearchComplexModel();
+        searchModel.setForIdTravailleur(idTravailleur);
+        searchModel.setForDateDebut(dateDebut);
+        searchModel.setForDateFin(dateFin);
+        searchModel.setWhereKey(ServiceMilitaireSearchComplexModel.WHERE_WITH_PERIODE_ABSENCE);
+        return searchAndFetch(searchModel);
+    }
+
+    @Override
+    public List<ServiceMilitaire> findByIdTravailleurAndPeriodePassage(String idTravailleur, String dateDebut,
+            String dateFin) {
+        ServiceMilitaireSearchComplexModel searchModel = new ServiceMilitaireSearchComplexModel();
+        searchModel.setForIdTravailleur(idTravailleur);
+        searchModel.setForDateDebutPassage(dateDebut);
+        searchModel.setForDateFinPassage(dateFin);
+        searchModel.setWhereKey(ServiceMilitaireSearchComplexModel.WHERE_WITH_PERIODE_PASSAGE);
+        return searchAndFetch(searchModel);
+    }
+
+    @Override
+    public List<ServiceMilitaire> findByIdTravailleurForDateVersement(String idTravailleur, String dateDebut,
+            String dateFin) {
+        ServiceMilitaireSearchComplexModel searchModel = new ServiceMilitaireSearchComplexModel();
+        searchModel.setForIdTravailleur(idTravailleur);
+        searchModel.setForDateDebutVersement(dateDebut);
+        searchModel.setForDateFinVersement(dateFin);
+
+        searchModel.setWhereKey(ServiceMilitaireSearchComplexModel.WHERE_WITH_PERIODE_VERSEMENT);
+        return searchAndFetch(searchModel);
+    }
+
+    @Override
+    public List<ServiceMilitaire> findByIdTravailleurForRevision(String idTravailleur, String idEmployeur,
+            String dateDebut, String dateFin) {
+        ServiceMilitaireSearchComplexModel searchModel = new ServiceMilitaireSearchComplexModel();
+        searchModel.setForIdTravailleur(idTravailleur);
+        searchModel.setForDateDebutVersement(dateDebut);
+        searchModel.setForDateFinVersement(dateFin);
+        searchModel.setForIdEmployeur(idEmployeur);
+        searchModel.setForDateDebut(dateDebut);
+        searchModel.setForDateFin(dateFin);
+        // SearchDefinition to use :
+        searchModel.setWhereKey(ServiceMilitaireSearchComplexModel.WHERE_VERS_COMPL_ELSE_ABSENCE);
+        return searchAndFetch(searchModel);
+    }
+
+    @Override
     public List<ServiceMilitaire> findByIdTravailleurOrderByIdpassage(String idTravailleur) {
         ServiceMilitaireSearchComplexModel searchModel = new ServiceMilitaireSearchComplexModel();
         searchModel.setForIdTravailleur(idTravailleur);
@@ -125,16 +172,14 @@ public class ServiceMilitaireRepositoryJade extends
         ParamQualifHolder holder = new ParamQualifHolder();
 
         ServiceMilitaireSearchComplexModel searchComplexModel = new ServiceMilitaireSearchComplexModel();
-        if (JadeStringUtil.isBlankOrZero(idPassageFacturation)) {
-            searchComplexModel.setForIdPassage(idPassageFacturation);
-        }
+
         searchComplexModel.setForIdTravailleur(idTravailleur);
         searchComplexModel.setForIdEmployeur(idEmployeur);
         searchComplexModel.setForIdConvention(idConvention);
         searchComplexModel.setForDateDebut(periode.getDateDebutAsSwissValue());
         searchComplexModel.setForDateFin(periode.getDateFinAsSwissValue());
         searchComplexModel.setWhereKey(ServiceMilitaireSearchComplexModel.WHERE_WITHDATE);
-        searchComplexModel.setOrderKey(ServiceMilitaireSearchComplexModel.ORDER_BY_CONVENTION_ASC);
+        searchComplexModel.setOrderKey(ServiceMilitaireSearchComplexModel.ORDERBY_CONVENTION_RAISONSOCIALE_ASC);
         List<ServiceMilitaire> servicesMilitaires = searchAndFetch(searchComplexModel);
 
         for (ServiceMilitaire serviceMilitaire : servicesMilitaires) {
@@ -149,7 +194,7 @@ public class ServiceMilitaireRepositoryJade extends
     public List<ServiceMilitaire> findBy(String idPassageFacturation, String idEmployeur, String idTravailleur,
             String idConvention) {
         return findBy(idPassageFacturation, idEmployeur, idTravailleur, idConvention,
-                ServiceMilitaireSearchComplexModel.ORDER_BY_CONVENTION_ASC);
+                ServiceMilitaireSearchComplexModel.ORDERBY_CONVENTION_RAISONSOCIALE_ASC);
     }
 
     private void loadDependencies(ServiceMilitaire serviceMilitaire) {

@@ -35,29 +35,29 @@
 		
 		<search-definition>
 			<search-group operator="AND">
-				<search-field name="forIdAffilie" field-ref="adhesionSimpleModel.affiliationId"
-					operation="EQUALS" />
+				<search-field name="forIdAffilie" field-ref="adhesionSimpleModel.affiliationId" operation="EQUALS" />
+					
 				<search-field name="forDateDebutGreaterEquals" field-ref="cotisationSimpleModel.dateDebut" operation="GREATER_OR_EQUALS" />
-				<search-group operator="AND">
-					<search-group operator="OR">
-						<search-field name="forDateFinLessEquals" field-ref="cotisationSimpleModel.dateFin" operation="LESS_OR_EQUALS" />
-						<search-field name="forDateFinLessEquals" field-ref="cotisationSimpleModel.dateFin" operation="NULL" />
-					</search-group>
-				</search-group>
 				<search-field name="forDateDebutLessEquals" field-ref="cotisationSimpleModel.dateDebut" operation="LESS_OR_EQUALS" />
-				<search-group operator="AND">
-					<search-group operator="OR">
-						<search-field name="forDateFinGreaterEquals" field-ref="cotisationSimpleModel.dateFin" operation="GREATER_OR_EQUALS" />
-						<search-field name="forDateFinGreaterEquals" field-ref="cotisationSimpleModel.dateFin" operation="NULL" />
-					</search-group>
+				
+				<search-group operator="OR">
+					<search-field name="forDateFinGreaterEquals" field-ref="cotisationSimpleModel.dateFin" operation="GREATER_OR_EQUALS" />
+					<search-field name="forDateFinGreaterEquals" field-ref="cotisationSimpleModel.dateFin" operation="NULL" />
 				</search-group>
+				
+ 			</search-group>
+		</search-definition>
+		
+		<search-definition name="searchAllById">
+			<search-group operator="AND">
+				<search-field name="forIdAffilie" field-ref="adhesionSimpleModel.affiliationId" operation="EQUALS" />
  			</search-group>
 		</search-definition>
 		
 		<search-definition name="searchById">
 			<search-group operator="AND">
-				<search-field name="forIdAffilie" field-ref="adhesionSimpleModel.affiliationId"
-					operation="EQUALS" />
+				<search-field name="forId" field-ref="cotisationSimpleModel.cotisationId" operation="EQUALS" />
+				<search-field name="forIdAffilie" field-ref="adhesionSimpleModel.affiliationId" operation="EQUALS" />
 			</search-group>			
 		</search-definition>
 		

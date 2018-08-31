@@ -6,6 +6,7 @@ import globaz.jade.client.util.JadeNumericUtil;
 import globaz.naos.db.cotisation.AFCotisation;
 import ch.globaz.mercato.mutations.myprodis.InfoType;
 import ch.globaz.mercato.notification.Notification;
+import ch.globaz.vulpecula.domain.models.decompte.TypeAssurance;
 
 public class CotisationTracker extends BAbstractEntityExternalService {
     private RequestFactory requestFactory = new RequestFactory();
@@ -13,17 +14,24 @@ public class CotisationTracker extends BAbstractEntityExternalService {
     @Override
     public void afterAdd(BEntity entity) throws Throwable {
         AFCotisation cotisation = (AFCotisation) entity;
-        Notification notification = new Notification(InfoType.AJOUT_COTISATION_LPP, entity.getId());
-        requestFactory.persistFromAnciennePersistance(notification, entity.getSession());
-
-        if (!JadeNumericUtil.isEmptyOrZero(cotisation.getDateFin())) {
-            Notification radiationNotification = new Notification(InfoType.RADIATION_COTISATION_LPP, entity.getId());
-            requestFactory.persistFromAnciennePersistance(radiationNotification, entity.getSession());
+        if(isAssuranceLPP(cotisation)) {
+            Notification notification = new Notification(InfoType.AJOUT_COTISATION_LPP, entity.getId());
+            requestFactory.persistFromAnciennePersistance(notification, entity.getSession());
+    
+            if (!JadeNumericUtil.isEmptyOrZero(cotisation.getDateFin())) {
+                Notification radiationNotification = new Notification(InfoType.RADIATION_COTISATION_LPP, entity.getId());
+                requestFactory.persistFromAnciennePersistance(radiationNotification, entity.getSession());
+            }
         }
     }
 
     @Override
     public void afterDelete(BEntity entity) throws Throwable {
+        AFCotisation cotisation = (AFCotisation) entity;
+        if(isAssuranceLPP(cotisation)) {
+            Notification notification = new Notification(InfoType.SUPPRESSION_COTISATION_LPP, cotisation.getAdhesion().getAffiliationId(), cotisation.getAssurance().getAssuranceLibelleCourtFr().trim());
+            requestFactory.persistFromAnciennePersistance(notification, entity.getSession());
+        }
     }
 
     @Override
@@ -35,9 +43,11 @@ public class CotisationTracker extends BAbstractEntityExternalService {
         // A chaque modification de cotisation, si la date de fin est saisie, on annonce la radiation de la cotisation
         // LPP
         AFCotisation cotisation = (AFCotisation) entity;
-        Notification notification = new Notification(InfoType.RADIATION_COTISATION_LPP, entity.getId());
-        if (!JadeNumericUtil.isEmptyOrZero(cotisation.getDateFin())) {
-            requestFactory.persistFromAnciennePersistance(notification, entity.getSession());
+        if(isAssuranceLPP(cotisation)) {
+            Notification notification = new Notification(InfoType.RADIATION_COTISATION_LPP, entity.getId());
+            if (!JadeNumericUtil.isEmptyOrZero(cotisation.getDateFin())) {
+                requestFactory.persistFromAnciennePersistance(notification, entity.getSession());
+            }
         }
     }
 
@@ -63,5 +73,9 @@ public class CotisationTracker extends BAbstractEntityExternalService {
 
     @Override
     public void validate(BEntity entity) throws Throwable {
+    }
+    
+    private boolean isAssuranceLPP(AFCotisation cotisation) {
+        return TypeAssurance.COTISATION_LPP.getValue().equals(cotisation.getAssurance().getTypeAssurance());
     }
 }

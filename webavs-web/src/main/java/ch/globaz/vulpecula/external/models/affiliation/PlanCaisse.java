@@ -4,7 +4,7 @@ import ch.globaz.vulpecula.external.models.pyxis.Administration;
 
 /**
  * @author Arnaud Geiser (AGE) | Créé le 6 févr. 2014
- * 
+ *
  */
 public class PlanCaisse {
     private String id;
@@ -45,7 +45,17 @@ public class PlanCaisse {
     }
 
     public String getIdTiersAdministration() {
+        if (administration == null) {
+            return null;
+        }
         return administration.getIdTiers();
+    }
+
+    public String getCodeAdministration() {
+        if (administration == null) {
+            return null;
+        }
+        return administration.getCodeAdministration();
     }
 
     @Override

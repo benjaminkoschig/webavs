@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.vulpecula.external.models.ContactSimpleModel">
+		<table name="TICONTP" hasCreationSpy="false" hasSpy="true" 
+			alwaysIncrementPrimaryKey="true" />
+		<fields>
+			<primary-key name="idContact" column="HLICON" />
+			<field name="nom" column="HLNOM" type="STRING" />
+			<field name="prenom" column="HLPRE" type="STRING" />
+		</fields>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forId" field-ref="idContact" operation="EQUALS" />
+				<search-field name="forNom" field-ref="nom" operation="LIKE"/>
+				<search-field name="forPrenom" field-ref="prenom" operation="LIKE"/>
+			</search-group>
+		</search-definition>
+		
+		<order-by>
+			<order-field field-ref="nom" />
+		</order-by>
+		
+		<order-by name="idDesc">
+			<order-field field-ref="nom" order="DESC" />
+		</order-by>
+	</simple-model>
+</model-mapping>

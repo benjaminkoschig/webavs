@@ -1,4 +1,4 @@
-//fonctions de bases à redéfinir
+//fonctions de bases ï¿½ redï¿½finir
 function devalider() { 
 	var o_options = {
 		serviceClassName: globazGlobal.taxationService,
@@ -26,7 +26,7 @@ function annuler() {
 }
 
 function imprimer() { 
-	//Affiche une boite de dialogue quand le bouton "imprimer" est cliqué
+	//Affiche une boite de dialogue quand le bouton "imprimer" est cliquï¿½
 	$(function() {
 	    $( "#dialog" ).dialog({
 	      autoOpen: false,
@@ -122,6 +122,23 @@ function init() {
 
 //chargement du dom jquery
 $(function () {
+	$('.consultationGed').click(function() {
+		$('.consultationGed').prop('disabled', true);
+		var id = $(this).attr('id');
+		var options = {
+				serviceClassName:globazGlobal.decompteViewService,
+				serviceMethodName:'callTGedmyProdis',
+				parametres:id,
+				callBack: function() {
+					
+				}
+		}
+		vulpeculaUtils.lancementService(options);
+	});
+	setTimeout(function() {
+		$('.consultationGed').prop('disabled', false);
+	}, 100);
+	
 	globazGlobal.lignesTaxation.init();
 	
 	$("#designationPassageFacturation").change(function() {

@@ -1,15 +1,20 @@
 package ch.globaz.vulpecula.external.services;
 
+import globaz.globall.db.BSession;
 import globaz.naos.db.cotisation.AFCotisation;
+
 import java.util.List;
 import java.util.Locale;
+
 import ch.globaz.naos.business.model.TauxAssuranceSimpleModel;
 import ch.globaz.vulpecula.domain.models.common.Date;
+import ch.globaz.vulpecula.domain.models.common.Montant;
 import ch.globaz.vulpecula.domain.models.common.Taux;
 import ch.globaz.vulpecula.domain.models.decompte.TypeAssurance;
 import ch.globaz.vulpecula.domain.models.postetravail.Travailleur;
 import ch.globaz.vulpecula.external.models.AssuranceTauxComplexModel;
 import ch.globaz.vulpecula.external.models.affiliation.Cotisation;
+import ch.globaz.vulpecula.web.views.postetravail.CotisationDatee;
 
 /**
  * @author Arnaud Geiser (AGE) | Créé le 2 avr. 2014
@@ -74,15 +79,34 @@ public interface CotisationService {
     Taux findTauxForEmployeurAndType(String idAffilie, TypeAssurance typeAssurance, Date date);
 
     /**
+     * Retourne la cotisation dont l'id est passé en paramèter
+     * 
+     * @param id String représentant l'id de la cotisation
+     * @return Cotisation ou null si inexistante
+     */
+    Cotisation findById(String id);
+
+    /**
      * @param idAffilie
      * @param date valeur
      * @return la liste des cotisations propre à l'affiliation dont l'id est passé et la date
      */
     List<Cotisation> findByIdAffilieForDate(String id, Date date);
 
+    /**
+     * Retourne une liste de cotisations avec leur taux en vigeur à la date passée en paramètre.
+     * 
+     * @param id Id de l'affilié
+     * @param date Date à laquelle déterminer l'activité
+     * @return Liste des cotisations
+     */
+    List<Cotisation> findByIdAffilieForDateWithTaux(String id, Date date);
+
     List<Cotisation> findByIdAffilieForDate(String id, Date dateDebut, Date dateFin);
 
     List<Cotisation> findByIdAffilie(String id);
+    
+    List<Cotisation> findAllByIdAffilie(String id);
 
     /**
      * Retourne le libellé de la cotisation, selon le langue de l'utilisateur
@@ -142,5 +166,10 @@ public interface CotisationService {
      * @return la cotisation correspondant à l'id
      */
     CotisationView findByIdCotisation(String idCotisation);
+
+    Montant getPlafondAC(Date date, BSession session);
+
+    CotisationDatee findCotisationDateeForTravailleur(String idTravailleur, String idCotisation,
+            Date dateDebutActivite, Date dateFinActivite);
 
 }

@@ -63,6 +63,7 @@ public class PTDecompteAjaxViewBean extends
     @Override
     public void setSearchModel(DecompteSearchComplexModelAJAX jadeAbstractSearchModel) {
         searchModel = jadeAbstractSearchModel;
+
     }
 
 }

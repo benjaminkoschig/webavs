@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:element name="parametrage_prestation">
+		<xs:complexType>
+			<xs:choice maxOccurs="unbounded">
+				<xs:element name="profession" type="profession"/>
+			</xs:choice>
+			<xs:attribute name="version" type="xs:integer"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:complexType name="profession">
+		<xs:sequence>
+			<xs:element name="caisses_metiers" type="caisses_metiers" minOccurs="0" />
+			<xs:element name="mariage" type="mariage"/>
+			<xs:element name="deces" type="deces"/>
+			<xs:element name="naissances" type="naissances"/>
+			<xs:element name="recrutement_info" type="xs:double"/>
+			<xs:element name="liber" type="xs:double"/>
+			<xs:element name="inspection" type="xs:double" minOccurs="0" />
+			<xs:element name="demenagement" type="demenagement"/>
+			<xs:element name="vacances" type="vacances"/>
+			<xs:element name="jours_feries" type="xs:integer"/>
+			<xs:element name="horaire" type="horaire"/>
+			<xs:element name="formation_prof" type="xs:integer"/>
+			<xs:element name="hasCotisationsCongesPayes" type="xs:boolean" />
+			<xs:element name="gratification" type="xs:double" />
+			<xs:element name="serviceMilitaire" type="serviceMilitaire" />
+			<xs:element name="hasDroitAJ" type="hasDroitAJ" />
+			<xs:element name="hasDroitCP" type="hasDroitCP" />
+			<xs:element name="hasDroitSM" type="hasDroitSM" />
+		</xs:sequence>
+		<xs:attribute name="description" type="xs:string" />
+	</xs:complexType>
+	<xs:complexType name="caisses_metiers">
+		<xs:sequence maxOccurs="unbounded">
+			<xs:element name="caisse_metier" type="xs:integer" />
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="mariage">
+		<xs:sequence>
+			<xs:element name="standard" type="xs:integer"/>
+			<xs:element name="enfants" type="xs:integer" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="deces">
+		<xs:sequence maxOccurs="unbounded">
+			<xs:element name="parente">
+				<xs:complexType mixed="true">
+					<xs:attribute name="lien">
+						<xs:simpleType>
+							<xs:restriction base="xs:string">
+								<xs:pattern value="68002[0-9]{3}|autres"/>
+							</xs:restriction>
+						</xs:simpleType>
+					</xs:attribute>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="naissances">
+		<xs:sequence>
+			<xs:element name="naissance" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="predicats" type="predicats" minOccurs="0"/>
+						<xs:element name="nbjours" type="xs:integer"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="demenagement" mixed="true">
+		<xs:attribute name="paye">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="non"/>
+					<xs:enumeration value="employeur"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="vacances">
+		<xs:sequence>
+			<xs:element name="vacance" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="predicats" type="predicats" minOccurs="0"/>
+						<xs:element name="nbjours" type="xs:integer"/>
+						<xs:element name="taux" type="xs:double"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="horaire">
+		<xs:sequence>
+			<xs:element name="jour" type="xs:double"/>
+			<xs:element name="semaine" type="xs:double"/>
+			<xs:element name="mois" type="xs:double"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="typeSalaire">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[JSM]"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="serviceMilitaire">
+		<xs:sequence maxOccurs="unbounded">
+			<xs:element name="genre">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="minJours" type="xs:integer" minOccurs="0" />
+						<xs:element name="maxJours" type="xs:integer" minOccurs="0" />
+						<xs:element name="couvertureAPG" type="xs:integer" />
+						<xs:element name="code" type="xs:integer" minOccurs="0" />
+					</xs:sequence>
+					<xs:attribute name="codeSysteme">
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:pattern value="68008[0-9]{3}"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:attribute>	
+				</xs:complexType>			
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="tauxCP0" type="xs:boolean" />
+	</xs:complexType>
+	<xs:complexType name="predicats">
+		<xs:sequence>
+			<xs:element name="predicat" maxOccurs="unbounded">
+				<xs:complexType mixed="true">
+					<xs:attribute name="type">
+						<xs:simpleType>
+							<xs:restriction base="xs:string">
+								<xs:enumeration value="less"/>
+								<xs:enumeration value="greater"/>
+								<xs:enumeration value="equals"/>
+								<xs:enumeration value="greaterOrEquals"/>
+								<xs:enumeration value="lessOrEquals"/>
+							</xs:restriction>
+						</xs:simpleType>
+					</xs:attribute>
+					<xs:attribute name="field">
+						<xs:simpleType>
+							<xs:restriction base="xs:string">
+								<xs:enumeration value="age"/>
+								<xs:enumeration value="anneeService"/>
+							</xs:restriction>
+						</xs:simpleType>
+					</xs:attribute>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="hasDroitAJ">
+		<xs:sequence minOccurs="0" maxOccurs="unbounded">
+			<xs:element name="typeAssurance" type="typeAssurance" />
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="hasDroitCP">
+		<xs:sequence minOccurs="0" maxOccurs="unbounded">
+			<xs:element name="typeAssurance" type="typeAssurance" />
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="hasDroitSM">
+		<xs:sequence minOccurs="0" maxOccurs="unbounded">
+			<xs:element name="typeAssurance" type="typeAssurance" />
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="typeAssurance">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="68904[0-9]{3}"></xs:pattern>
+			<xs:pattern value="812[0-9]{3}"></xs:pattern>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

@@ -6,11 +6,18 @@ import ch.globaz.vulpecula.external.models.pyxis.Administration;
 public class AssociationGenre {
     private final Administration association;
     private final GenreCotisationAssociationProfessionnelle genre;
+    private final AssociationEmployeur associationEmployeur;
 
-    public AssociationGenre(Administration association, GenreCotisationAssociationProfessionnelle genre) {
+    public AssociationGenre(Administration association, GenreCotisationAssociationProfessionnelle genre,
+            AssociationEmployeur associationEmployeur) {
         super();
         this.association = association;
         this.genre = genre;
+        this.associationEmployeur = associationEmployeur;
+    }
+
+    public AssociationGenre(Administration association, GenreCotisationAssociationProfessionnelle genre) {
+        this(association, genre, null);
     }
 
     public Administration getAssociation() {
@@ -23,6 +30,10 @@ public class AssociationGenre {
 
     public GenreCotisationAssociationProfessionnelle getGenre() {
         return genre;
+    }
+
+    public AssociationEmployeur getAssociationEmployeur() {
+        return associationEmployeur;
     }
 
     @Override

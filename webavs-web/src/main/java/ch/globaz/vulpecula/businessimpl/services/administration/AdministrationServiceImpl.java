@@ -23,4 +23,5 @@ public class AdministrationServiceImpl implements AdministrationService {
         }
         return (AdministrationSearchComplexModel) JadePersistenceManager.search(searchModel);
     }
+
 }

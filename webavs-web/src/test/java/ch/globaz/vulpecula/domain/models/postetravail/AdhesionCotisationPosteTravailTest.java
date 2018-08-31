@@ -11,6 +11,7 @@ import ch.globaz.vulpecula.domain.models.common.Periode;
 import ch.globaz.vulpecula.domain.models.decompte.TypeAssurance;
 import ch.globaz.vulpecula.domain.models.decompte.TypeDecompte;
 import ch.globaz.vulpecula.domain.models.registre.Convention;
+import ch.globaz.vulpecula.external.models.affiliation.Assurance;
 import ch.globaz.vulpecula.external.models.affiliation.Cotisation;
 
 /**
@@ -133,6 +134,69 @@ public class AdhesionCotisationPosteTravailTest {
     }
 
     @Test
+    public void isActifForCP1_ShouldBeTrue() {
+        Date dateFinEmployeur = new Date("30.11.2016");
+        Cotisation cotisation = createCotisation("01.08.2006", "30.11.2016");
+        adhesionCotisationPosteTravail.setPeriode(new Periode("01.08.2006", "30.11.2016"));
+        adhesionCotisationPosteTravail.setCotisation(cotisation);
+        assertTrue(adhesionCotisationPosteTravail.isActifForCP(dateFinEmployeur, new Date("31.12.2016")));
+    }
+
+    @Test
+    public void isActifForCP2_ShouldBeTrue() {
+        Date dateFinEmployeur = null;
+        Cotisation cotisation = createCotisation("01.08.2006", "30.11.2016");
+        adhesionCotisationPosteTravail.setPeriode(new Periode("01.08.2006", "30.11.2016"));
+        adhesionCotisationPosteTravail.setCotisation(cotisation);
+        assertFalse(adhesionCotisationPosteTravail.isActifForCP(dateFinEmployeur, new Date("31.12.2016")));
+    }
+
+    @Test
+    public void isActifForCP3_ShouldBeTrue() {
+        Date dateFinEmployeur = null;
+        Cotisation cotisation = createCotisation("01.08.2006");
+        adhesionCotisationPosteTravail.setPeriode(new Periode(new Date("01.08.2006")));
+        adhesionCotisationPosteTravail.setCotisation(cotisation);
+        assertTrue(adhesionCotisationPosteTravail.isActifForCP(dateFinEmployeur, new Date("31.12.2016")));
+    }
+
+    @Test
+    public void isActifForCP4_ShouldBeTrue() {
+        Date dateFinEmployeur = new Date("30.11.2016");
+        Cotisation cotisation = createCotisation("01.08.2006", "30.11.2016");
+        adhesionCotisationPosteTravail.setPeriode(new Periode("01.01.2007", "31.12.2010"));
+        adhesionCotisationPosteTravail.setCotisation(cotisation);
+        assertFalse(adhesionCotisationPosteTravail.isActifForCP(dateFinEmployeur, new Date("31.12.2016")));
+    }
+
+    @Test
+    public void isActifForCP5_ShouldBeTrue() {
+        Date dateFinEmployeur = new Date("30.11.2016");
+        Cotisation cotisation = createCotisation("01.10.2016", "30.10.2016");
+        adhesionCotisationPosteTravail.setPeriode(new Periode("01.08.2016", "30.10.2016"));
+        adhesionCotisationPosteTravail.setCotisation(cotisation);
+        assertFalse(adhesionCotisationPosteTravail.isActifForCP(dateFinEmployeur, new Date("31.12.2016")));
+    }
+
+    @Test
+    public void isActifForCP6_ShouldBeTrue() {
+        Date dateFinEmployeur = null;
+        Cotisation cotisation = createCotisation("01.01.2015", "31.08.2016");
+        adhesionCotisationPosteTravail.setPeriode(new Periode("17.08.2015", "31.07.2016"));
+        adhesionCotisationPosteTravail.setCotisation(cotisation);
+        assertTrue(adhesionCotisationPosteTravail.isActifForCP(dateFinEmployeur, new Date("31.07.2016")));
+    }
+
+    @Test
+    public void isActifForCP6_ShouldBeFalse() {
+        Date dateFinEmployeur = null;
+        Cotisation cotisation = createCotisation("01.01.2015", "31.08.2016");
+        adhesionCotisationPosteTravail.setPeriode(new Periode("17.08.2015", "31.07.2016"));
+        adhesionCotisationPosteTravail.setCotisation(cotisation);
+        assertFalse(adhesionCotisationPosteTravail.isActifForCP(dateFinEmployeur, new Date("31.12.2016")));
+    }
+
+    @Test
     public void aIgnorer1() {
         Convention convention = createConvention(true);
         configureIgnorer(TypeAssurance.CONTRIBUTION_GENERALE);
@@ -174,9 +238,13 @@ public class AdhesionCotisationPosteTravailTest {
     }
 
     private void configureIgnorer(TypeAssurance typeAssurance) {
-        Cotisation cotisation = mock(Cotisation.class);
-        when(cotisation.getTypeAssurance()).thenReturn(typeAssurance);
+        Cotisation cotisation = new Cotisation();
+        Assurance assurance = new Assurance();
+        assurance.setTypeAssurance(typeAssurance);
+        cotisation.setAssurance(assurance);
+        cotisation.setDateDebut(new Date("01.01.2015"));
         adhesionCotisationPosteTravail.setCotisation(cotisation);
+        adhesionCotisationPosteTravail.setPeriode(new Periode("01.01.2015", "31.12.2015"));
     }
 
     private Cotisation createCotisation(String date) {

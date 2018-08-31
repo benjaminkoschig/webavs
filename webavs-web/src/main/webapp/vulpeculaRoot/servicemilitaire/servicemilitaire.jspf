@@ -153,7 +153,13 @@
 		</tr>
 		<tr>
 			<td class="border_left indentLeft" colspan="3">- <ct:FWLabel key="JSP_VERSEMENT_APG"/></td>
-			<td><input type="text" name="versementAPG" id="versementAPG" value="${servicemilitaire.versementAPG.toStringValue()}" class="smallextended" data-g-amount="mandatory:true"></td>
+			<td><input type="text" name="versementAPG" id="versementAPG" value="${servicemilitaire.versementAPG.toStringValue()}" class="smallextended" 
+				data-g-commutator="context:$('#genrePrestations'),
+				   					  master:context,
+				   					  trigger:change,
+				   					  condition:context.val()==68008012,
+				   					  actionTrue:¦notMandatory()¦,
+				   					  actionFalse:¦mandatory()¦" data-g-amount="mandatory:true"></td>
 			<td></td>
 			<td></td>
 			<td></td>

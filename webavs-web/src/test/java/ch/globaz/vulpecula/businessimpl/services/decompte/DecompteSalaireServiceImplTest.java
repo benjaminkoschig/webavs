@@ -13,10 +13,12 @@ import ch.globaz.vulpecula.domain.models.common.Annee;
 import ch.globaz.vulpecula.domain.models.common.Date;
 import ch.globaz.vulpecula.domain.models.common.Montant;
 import ch.globaz.vulpecula.domain.models.common.Periode;
+import ch.globaz.vulpecula.domain.models.common.PeriodeMensuelle;
 import ch.globaz.vulpecula.domain.models.common.Taux;
 import ch.globaz.vulpecula.domain.models.decompte.CotisationDecompte;
 import ch.globaz.vulpecula.domain.models.decompte.Decompte;
 import ch.globaz.vulpecula.domain.models.decompte.DecompteSalaire;
+import ch.globaz.vulpecula.domain.models.decompte.TypeDecompte;
 import ch.globaz.vulpecula.domain.models.postetravail.Occupation;
 import ch.globaz.vulpecula.domain.models.postetravail.PosteTravail;
 import ch.globaz.vulpecula.domain.repositories.decompte.DecompteRepository;
@@ -58,6 +60,9 @@ public class DecompteSalaireServiceImplTest {
         init();
         when(decompteSalaire.getSalaireTotal()).thenReturn(new Montant(1500));
         when(decompteSalaire.getPeriodeFinDecompte()).thenReturn(new Date("01.01.2014"));
+        Decompte decompte = new Decompte();
+        decompte.setType(TypeDecompte.COMPLEMENTAIRE);
+        when(decompteSalaire.getDecompte()).thenReturn(decompte);
 
         decompteSalaireService.handleAC(decompteSalaire);
 
@@ -70,6 +75,9 @@ public class DecompteSalaireServiceImplTest {
         init();
         when(decompteSalaire.getSalaireTotal()).thenReturn(new Montant(12000));
         when(decompteSalaire.getPeriodeFinDecompte()).thenReturn(new Date("01.01.2014"));
+        Decompte decompte = new Decompte();
+        decompte.setType(TypeDecompte.COMPLEMENTAIRE);
+        when(decompteSalaire.getDecompte()).thenReturn(decompte);
 
         decompteSalaireService.handleAC(decompteSalaire);
 
@@ -83,6 +91,9 @@ public class DecompteSalaireServiceImplTest {
         doReturn(new Montant(11000)).when(decompteSalaireService).findMasseACFor(any(String.class), any(Annee.class));
         when(decompteSalaire.getSalaireTotal()).thenReturn(new Montant(12000));
         when(decompteSalaire.getPeriodeFinDecompte()).thenReturn(new Date("01.01.2014"));
+        Decompte decompte = new Decompte();
+        decompte.setType(TypeDecompte.COMPLEMENTAIRE);
+        when(decompteSalaire.getDecompte()).thenReturn(decompte);
 
         decompteSalaireService.handleAC(decompteSalaire);
 
@@ -96,6 +107,9 @@ public class DecompteSalaireServiceImplTest {
         doReturn(new Montant(20000)).when(decompteSalaireService).findMasseACFor(any(String.class), any(Annee.class));
         when(decompteSalaire.getSalaireTotal()).thenReturn(new Montant(2000));
         when(decompteSalaire.getPeriodeFinDecompte()).thenReturn(new Date("01.02.2014"));
+        Decompte decompte = new Decompte();
+        decompte.setType(TypeDecompte.COMPLEMENTAIRE);
+        when(decompteSalaire.getDecompte()).thenReturn(decompte);
 
         decompteSalaireService.handleAC(decompteSalaire);
 
@@ -110,6 +124,9 @@ public class DecompteSalaireServiceImplTest {
         doReturn(new Montant(2000)).when(decompteSalaireService).findMasseAC2For(any(DecompteSalaire.class));
         when(decompteSalaire.getSalaireTotal()).thenReturn(new Montant(2000));
         when(decompteSalaire.getPeriodeFinDecompte()).thenReturn(new Date("01.02.2014"));
+        Decompte decompte = new Decompte();
+        decompte.setType(TypeDecompte.COMPLEMENTAIRE);
+        when(decompteSalaire.getDecompte()).thenReturn(decompte);
 
         decompteSalaireService.handleAC(decompteSalaire);
 
@@ -124,6 +141,9 @@ public class DecompteSalaireServiceImplTest {
         doReturn(new Montant(2000)).when(decompteSalaireService).findMasseAC2For(any(DecompteSalaire.class));
         when(decompteSalaire.getSalaireTotal()).thenReturn(new Montant(500));
         when(decompteSalaire.getPeriodeFinDecompte()).thenReturn(new Date("01.02.2014"));
+        Decompte decompte = new Decompte();
+        decompte.setType(TypeDecompte.COMPLEMENTAIRE);
+        when(decompteSalaire.getDecompte()).thenReturn(decompte);
 
         decompteSalaireService.handleAC(decompteSalaire);
 
@@ -138,6 +158,9 @@ public class DecompteSalaireServiceImplTest {
         doReturn(new Montant(9000)).when(decompteSalaireService).findMasseAC2For(any(DecompteSalaire.class));
         when(decompteSalaire.getSalaireTotal()).thenReturn(new Montant(5000));
         when(decompteSalaire.getPeriodeFinDecompte()).thenReturn(new Date("01.04.2014"));
+        Decompte decompte = new Decompte();
+        decompte.setType(TypeDecompte.COMPLEMENTAIRE);
+        when(decompteSalaire.getDecompte()).thenReturn(decompte);
 
         decompteSalaireService.handleAC(decompteSalaire);
 
@@ -159,6 +182,11 @@ public class DecompteSalaireServiceImplTest {
         Decompte decompte = mock(Decompte.class);
         doReturn(decompte).when(decompteSalaireService).findDecompte(any(String.class));
         when(decompte.getMontantAC(any(DecompteSalaire.class))).thenReturn(new Montant(0));
+
+        decompte.setType(TypeDecompte.COMPLEMENTAIRE);
+        decompte.setPeriode(new PeriodeMensuelle(new Date("01.04.2014"), new Date("30.04.2014")));
+        when(decompteSalaire.getDecompte()).thenReturn(decompte);
+        doReturn(decompte).when(decompteSalaireService).findDecompte(any(String.class));
         decompteSalaireService.handleAC(decompteSalaire);
 
         assertEquals(cotisationDecompteAC.getMasse(), new Montant(126000));
@@ -180,6 +208,10 @@ public class DecompteSalaireServiceImplTest {
         when(decompte.getMontantAC(any(DecompteSalaire.class))).thenReturn(new Montant(26000));
         doReturn(decompte).when(decompteSalaireService).findDecompte(any(String.class));
 
+        decompte.setType(TypeDecompte.COMPLEMENTAIRE);
+        decompte.setPeriode(new PeriodeMensuelle(new Date("01.04.2014"), new Date("30.04.2015")));
+        when(decompteSalaire.getDecompte()).thenReturn(decompte);
+
         decompteSalaireService.handleAC(decompteSalaire);
 
         assertEquals(cotisationDecompteAC.getMasse(), new Montant(100000));
@@ -200,6 +232,9 @@ public class DecompteSalaireServiceImplTest {
                 any(Annee.class));
         Decompte decompte = mock(Decompte.class);
         when(decompte.getMontantAC(any(DecompteSalaire.class))).thenReturn(new Montant(0));
+        decompte.setType(TypeDecompte.COMPLEMENTAIRE);
+        decompte.setPeriode(new PeriodeMensuelle(new Date("01.04.2014"), new Date("30.04.2014")));
+        when(decompteSalaire.getDecompte()).thenReturn(decompte);
         doReturn(decompte).when(decompteSalaireService).findDecompte(any(String.class));
 
         decompteSalaireService.handleAC(decompteSalaire);

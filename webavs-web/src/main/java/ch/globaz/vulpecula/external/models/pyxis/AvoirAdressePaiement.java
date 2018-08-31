@@ -3,6 +3,7 @@ package ch.globaz.vulpecula.external.models.pyxis;
 public class AvoirAdressePaiement {
     public static final String CS_DOMAINE_STANDARD = "519004";
     public static final String CS_DOMAINE_PRESTATIONS_CONVENTIONNELLES = "68901001";
+    public static final String CS_DOMAINE_FACTURATION_AP = "68901002";
 
     private String id;
 

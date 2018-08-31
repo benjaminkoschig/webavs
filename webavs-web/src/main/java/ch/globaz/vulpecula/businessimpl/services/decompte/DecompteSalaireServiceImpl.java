@@ -1,13 +1,19 @@
 package ch.globaz.vulpecula.businessimpl.services.decompte;
 
-import globaz.globall.db.BSessionUtil;
-import globaz.globall.db.BSpy;
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import org.joda.time.DateTime;
+import org.slf4j.LoggerFactory;
+import com.google.common.base.Preconditions;
 import ch.globaz.exceptions.ExceptionMessage;
 import ch.globaz.exceptions.GlobazTechnicalException;
 import ch.globaz.specifications.UnsatisfiedSpecificationException;
@@ -18,20 +24,30 @@ import ch.globaz.vulpecula.business.services.properties.PropertiesService;
 import ch.globaz.vulpecula.domain.models.common.Annee;
 import ch.globaz.vulpecula.domain.models.common.Date;
 import ch.globaz.vulpecula.domain.models.common.Montant;
+import ch.globaz.vulpecula.domain.models.common.Periode;
+import ch.globaz.vulpecula.domain.models.decompte.CodeErreur;
+import ch.globaz.vulpecula.domain.models.decompte.CodeErreurDecompteSalaire;
 import ch.globaz.vulpecula.domain.models.decompte.CotisationDecompte;
 import ch.globaz.vulpecula.domain.models.decompte.Decompte;
 import ch.globaz.vulpecula.domain.models.decompte.DecompteSalaire;
 import ch.globaz.vulpecula.domain.models.decompte.TypeAssurance;
+import ch.globaz.vulpecula.domain.models.decompte.TypeDecompte;
 import ch.globaz.vulpecula.domain.models.postetravail.AdhesionCotisationPosteTravail;
 import ch.globaz.vulpecula.domain.models.postetravail.Occupation;
 import ch.globaz.vulpecula.domain.models.postetravail.PosteTravail;
+import ch.globaz.vulpecula.domain.models.syndicat.ParametreSyndicat;
 import ch.globaz.vulpecula.domain.repositories.decompte.DecompteRepository;
 import ch.globaz.vulpecula.domain.repositories.decompte.DecompteSalaireRepository;
 import ch.globaz.vulpecula.domain.repositories.postetravail.PosteTravailRepository;
+import ch.globaz.vulpecula.external.models.affiliation.Adhesion;
 import ch.globaz.vulpecula.external.models.affiliation.Assurance;
 import ch.globaz.vulpecula.external.models.affiliation.Cotisation;
 import ch.globaz.vulpecula.external.models.pyxis.Administration;
-import com.google.common.base.Preconditions;
+import ch.globaz.vulpecula.web.views.decomptesalaire.DecompteSalaireDetailsAnnuelView;
+import globaz.globall.db.BSessionUtil;
+import globaz.globall.db.BSpy;
+import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.exception.JadePersistenceException;
 
 public class DecompteSalaireServiceImpl implements DecompteSalaireService {
     private final DecompteSalaireRepository decompteSalaireRepository;
@@ -51,6 +67,21 @@ public class DecompteSalaireServiceImpl implements DecompteSalaireService {
     @Override
     public DecompteSalaire create(final DecompteSalaire decompteSalaire) throws UnsatisfiedSpecificationException {
         return create(decompteSalaire, Montant.ZERO);
+    }
+
+    @Override
+    public DecompteSalaire createWithoutCotisations(final DecompteSalaire decompteSalaire)
+            throws UnsatisfiedSpecificationException {
+        return createWithoutCotisations(decompteSalaire, Montant.ZERO);
+    }
+
+    @Override
+    public DecompteSalaire createWithoutPosteTravail(final DecompteSalaire decompteSalaire)
+            throws UnsatisfiedSpecificationException {
+        if (decompteSalaire.getDecompte().mustBeFetched()) {
+            decompteSalaire.setDecompte(decompteRepository.findById(decompteSalaire.getIdDecompte()));
+        }
+        return decompteSalaireRepository.create(decompteSalaire);
     }
 
     @Override
@@ -74,15 +105,56 @@ public class DecompteSalaireServiceImpl implements DecompteSalaireService {
     }
 
     @Override
-    public DecompteSalaire update(final DecompteSalaire decompteSalaire) throws UnsatisfiedSpecificationException {
+    public DecompteSalaire createWithoutCotisations(final DecompteSalaire decompteSalaire, Montant montantAC2)
+            throws UnsatisfiedSpecificationException {
+        if (decompteSalaire.getPosteTravail().mustBeFetched()) {
+            decompteSalaire.setPosteTravail(posteTravailRepository.findById(decompteSalaire.getIdPosteTravail()));
+        }
+        if (decompteSalaire.getDecompte().mustBeFetched()) {
+            decompteSalaire.setDecompte(decompteRepository.findById(decompteSalaire.getIdDecompte()));
+        }
+        decompteSalaire.validate();
+        handleAC(decompteSalaire);
+        plafonnementRentier(decompteSalaire, decompteSalaire.getMontantFranchise());
+
+        if (montantAC2 != null) {
+            forceMasseAC2(decompteSalaire, montantAC2);
+        }
+
+        return decompteSalaireRepository.createWithoutCotisations(decompteSalaire);
+    }
+
+    @Override
+    public DecompteSalaire update(final DecompteSalaire decompteSalaire) throws UnsatisfiedSpecificationException,
+            JadePersistenceException {
         return update(decompteSalaire, Montant.ZERO);
+    }
+
+    private boolean hasAbsences(DecompteSalaire decompteSalaire) {
+        return !decompteSalaire.getAbsences().isEmpty();
+    }
+
+    private boolean isNouvelleLigne(DecompteSalaire decompte) {
+        for (CodeErreurDecompteSalaire code : decompte.getListeCodeErreur()) {
+            if (CodeErreur.NOUVELLE_LIGNE.equals(code.getCodeErreur())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
     public DecompteSalaire update(final DecompteSalaire decompteSalaire, Montant montantAC2)
-            throws UnsatisfiedSpecificationException {
+            throws UnsatisfiedSpecificationException, JadePersistenceException {
         decompteSalaire.validate();
-        decompteSalaire.calculSalaireTotalSiNecessaire();
+        if (isNouvelleLigne(decompteSalaire)
+                || (hasAbsences(decompteSalaire) && decompteSalaire.getPosteTravail().isMensuel())) {
+            decompteSalaire.setHeures(0.00);
+            decompteSalaire.setSalaireHoraire(Montant.ZERO);
+        } else {
+            decompteSalaire.calculChampSalaire();
+        }
+
         handleAC(decompteSalaire);
         plafonnementRentier(decompteSalaire, decompteSalaire.getMontantFranchise());
 
@@ -90,7 +162,31 @@ public class DecompteSalaireServiceImpl implements DecompteSalaireService {
             forceMasseAC2(decompteSalaire, montantAC2);
         }
 
-        return decompteSalaireRepository.update(decompteSalaire);
+        if (decompteSalaire.isMajFinPoste()) {
+            PosteTravail poste = posteTravailRepository
+                    .findByIdWithFullDependecies(decompteSalaire.getIdPosteTravail());
+            Date dateDebutPeriode = poste.getPeriodeActivite().getDateDebut();
+            poste.setPeriodeActivite(new Periode(dateDebutPeriode, decompteSalaire.getPeriodeFin()));
+            cloturerCotisation(poste, decompteSalaire.getPeriodeFin());
+            VulpeculaServiceLocator.getPosteTravailService().update(poste);
+            decompteSalaire.getDecompte().getLignes().remove(decompteSalaire);
+            decompteSalaireRepository.delete(decompteSalaire);
+            // return null car la ligne de décompte à été supprimée
+            return null;
+        } else {
+            return decompteSalaireRepository.update(decompteSalaire);
+        }
+    }
+
+    private void cloturerCotisation(PosteTravail poste, Date date) {
+        List<AdhesionCotisationPosteTravail> adhesions = poste.getAdhesionsCotisations();
+        for (AdhesionCotisationPosteTravail adhesion : adhesions) {
+            Periode periode = adhesion.getPeriode();
+            if (periode.isActif()) {
+                Periode newPeriode = new Periode(periode.getDateDebut(), date);
+                adhesion.setPeriode(newPeriode);
+            }
+        }
     }
 
     @Override
@@ -134,36 +230,139 @@ public class DecompteSalaireServiceImpl implements DecompteSalaireService {
     }
 
     private void plafonnementRentier(DecompteSalaire decompteSalaire, Montant masseFranchise) {
-        boolean isRentier = false;
-        try {
-            isRentier = VulpeculaServiceLocator.getTravailleurService().isRentier(decompteSalaire.getIdTravailleur(),
-                    decompteSalaire.getPeriode().getDateFin());
-        } catch (Exception e) {
-            throw new GlobazTechnicalException(ExceptionMessage.ERREUR_INCONNUE, e);
-        }
-        Montant montantFranchise = calculMontantFranchise(decompteSalaire, masseFranchise);
-        List<CotisationDecompte> cotisationsDecompte = new ArrayList<CotisationDecompte>();
-        for (CotisationDecompte cotisationDecompte : decompteSalaire.getCotisationsDecompte()) {
-            if (cotisationDecompte.isAssuranceWithReductionRentier() && isRentier) {
-                cotisationDecompte.setMasse(deductionFranchise(decompteSalaire.getSalaireTotal(), montantFranchise));
-                cotisationDecompte.setMasseForcee(true);
+        if (decompteSalaire.getPosteTravail().getTravailleur().getId() != null) {
+            boolean isRentier = false;
+            try {
+                isRentier = VulpeculaServiceLocator.getTravailleurService().isRentier(
+                        decompteSalaire.getIdTravailleur(), decompteSalaire.getPeriode().getDateFin());
+            } catch (Exception e) {
+                throw new GlobazTechnicalException(ExceptionMessage.ERREUR_INCONNUE, e);
             }
-            cotisationsDecompte.add(cotisationDecompte);
+            if (!"12".equals(decompteSalaire.getDecompte().getPeriode().getMoisFin())
+                    && !TypeDecompte.COMPLEMENTAIRE.equals(decompteSalaire.getDecompte().getType())) {
+
+                Montant montantFranchise;
+                if (masseFranchise != null && !masseFranchise.isZero()) {
+                    montantFranchise = masseFranchise;
+                } else {
+                    montantFranchise = new Montant(VulpeculaServiceLocator.getPropertiesService().findProperties(
+                            PropertiesService.MONTANT_MENSUEL_FRANCHISE_RENTIER));
+                }
+
+                if (decompteSalaire.isForcerFranchise0()) {
+                    montantFranchise = Montant.ZERO;
+                }
+
+                List<CotisationDecompte> cotisationsDecompte = new ArrayList<CotisationDecompte>();
+                for (CotisationDecompte cotisationDecompte : decompteSalaire.getCotisationsDecompte()) {
+                    if (cotisationDecompte.isAssuranceWithReductionRentier() && isRentier) {
+                        cotisationDecompte.setMasse(deductionFranchise(decompteSalaire.getSalaireTotal(),
+                                montantFranchise));
+                        cotisationDecompte.setMasseForcee(true);
+                    }
+                    cotisationsDecompte.add(cotisationDecompte);
+                }
+                decompteSalaire.setCotisationsDecompte(cotisationsDecompte);
+            } else {
+                // Trouver le montant de la franchise totale
+                try {
+                    Montant montantFranchise = new Montant(calculMontantFranchisePourNbMoisCPOr12(decompteSalaire));
+                    Montant montantTotalAf = findMasseAFFor(decompteSalaire.getIdPosteTravail(),
+                            decompteSalaire.getAnnee());
+                    Montant montantTotalSalaire = findMasseSalaireFor(decompteSalaire.getIdPosteTravail(),
+                            decompteSalaire.getAnnee());
+                    Montant montantPlafonne = montantFranchise.substract(montantTotalSalaire.substract(montantTotalAf));
+                    List<CotisationDecompte> cotisationsDecompte = new ArrayList<CotisationDecompte>();
+                    for (CotisationDecompte cotisationDecompte : decompteSalaire.getCotisationsDecompte()) {
+                        if (cotisationDecompte.isAssuranceWithReductionRentier() && isRentier) {
+                            if (masseFranchise != null && !masseFranchise.isZero()) {
+                                montantPlafonne = masseFranchise;
+                            }
+                            if (decompteSalaire.isForcerFranchise0()) {
+                                montantPlafonne = Montant.ZERO;
+                            }
+                            cotisationDecompte.setMasse(deductionFranchise(decompteSalaire.getSalaireTotal(),
+                                    montantPlafonne));
+                            cotisationDecompte.setMasseForcee(true);
+                        }
+                        cotisationsDecompte.add(cotisationDecompte);
+                    }
+                    decompteSalaire.setCotisationsDecompte(cotisationsDecompte);
+                } catch (Exception e) {
+                    LoggerFactory.getLogger(this.getClass()).error(e.getMessage());
+                }
+            }
         }
-        decompteSalaire.setCotisationsDecompte(cotisationsDecompte);
     }
 
-    private Montant calculMontantFranchise(DecompteSalaire decompteSalaire, Montant masseFranchise) {
+    private BigDecimal calculMontantFranchisePourNbMoisCPOr12(DecompteSalaire decompteSalaire) throws Exception {
+        Montant franchiseMensuelle = new Montant(VulpeculaServiceLocator.getPropertiesService().findProperties(
+                PropertiesService.MONTANT_MENSUEL_FRANCHISE_RENTIER));
+        DateTime dateDebut = determineDateDebutForCPOr12(decompteSalaire);
+        DateTime dateFin = determineDateFinForCPOr12(decompteSalaire);
+        int nbMois = dateFin.getMonthOfYear() - (dateDebut.getMonthOfYear() - 1);
+        if (nbMois < 0) {
+            throw new Exception("Impossible d'avoir une différence négative");
+        }
+        return franchiseMensuelle.getBigDecimalValue().multiply(new BigDecimal(nbMois));
+    }
+
+    public DateTime determineDateFinForCPOr12(DecompteSalaire decompteSalaire) throws Exception {
+        SimpleDateFormat dateFormatterInput = new SimpleDateFormat("dd.MM.yyyy");
+        return new DateTime(dateFormatterInput.parse(decompteSalaire.getPeriodeFinDecompte().toString())).monthOfYear()
+                .withMaximumValue().dayOfMonth().withMaximumValue();
+
+    }
+
+    public DateTime determineDateDebutForCPOr12(DecompteSalaire decompteSalaire) throws Exception {
+        SimpleDateFormat dateFormatterInput = new SimpleDateFormat("dd.MM.yyyy");
+
+        DateTime dateDebutAnnee = new DateTime(dateFormatterInput.parse(decompteSalaire.getPeriodeFinAsSwissValue()))
+                .monthOfYear().withMinimumValue().monthOfYear().withMinimumValue().dayOfMonth().withMinimumValue();
+        DateTime dateDebutPoste = new DateTime(dateFormatterInput.parseObject(decompteSalaire.getPosteTravail()
+                .getDebutActiviteAsSwissValue()));
+
+        Date dateRetraiteDo = VulpeculaServiceLocator.getTravailleurService().giveDateRentier(
+                decompteSalaire.getIdTravailleur());
+        DateTime dateRetraite = new DateTime(dateFormatterInput.parse(dateRetraiteDo.toString()));
+        DateTime dateToReturn;
+        if (dateDebutPoste.isAfter(dateDebutAnnee)) {
+            dateToReturn = dateDebutPoste;
+        } else {
+            dateToReturn = dateDebutAnnee;
+        }
+        if (dateRetraite.isAfter(dateToReturn) && (dateRetraite.getYear() == dateDebutAnnee.getYear())) {
+            return dateRetraite;
+        } else {
+            return dateToReturn;
+        }
+    }
+
+    private Montant calculMontantFranchise(DecompteSalaire decompteSalaire, Montant masseFranchise) throws Exception {
+        SimpleDateFormat dateFormatterInput = new SimpleDateFormat("dd.MM.yyyy");
         // Si le décompte est avant 2016, on ne prend que le contenu de la case
         if (decompteSalaire.getAnnee().isBefore(propertiesService.getAnneeProduction())) {
             return masseFranchise;
-        } else if (!masseFranchise.isZero()) {
+        } else if (masseFranchise != null && !masseFranchise.isZero()) {
             return masseFranchise;
         } else {
-            // Sinon, on prend le contenu de la case si renseigné, sinon montant de la properties
-            return new Montant(VulpeculaServiceLocator.getPropertiesService().findProperties(
-                    PropertiesService.MONTANT_MENSUEL_FRANCHISE_RENTIER));
+            // On retrouve le nombre de mois concernés par le décompte et on fait attention aux rentier en cours
+            // d'année.
+            DateTime dateDebutDecompte = new DateTime(dateFormatterInput.parse(decompteSalaire
+                    .getPeriodeDebutAsSwissValue()));
+            DateTime dateFinDecompte = new DateTime(dateFormatterInput.parse(decompteSalaire
+                    .getPeriodeDebutAsSwissValue()));
+            DateTime dateRetraite = new DateTime(dateFormatterInput.parse(VulpeculaServiceLocator
+                    .getTravailleurService().giveDateRentier(decompteSalaire.getIdTravailleur()).toString()));
+            if (dateRetraite.isAfter(dateDebutDecompte) && dateRetraite.isAfter(dateFinDecompte)) {
+                dateDebutDecompte = dateRetraite;
+            }
+            int nbMois = dateFinDecompte.getMonthOfYear() - dateDebutDecompte.getMonthOfYear();
+            BigDecimal franchiseMensuelle = new Montant(VulpeculaServiceLocator.getPropertiesService().findProperties(
+                    PropertiesService.MONTANT_MENSUEL_FRANCHISE_RENTIER)).getBigDecimalValue();
+            return new Montant(franchiseMensuelle.multiply(new BigDecimal(nbMois)));
         }
+
     }
 
     Montant deductionFranchise(Montant salaireTotal, Montant montantFranchise) {
@@ -179,6 +378,36 @@ public class DecompteSalaireServiceImpl implements DecompteSalaireService {
         return salaireTotal;
     }
 
+    /**
+     * Méthode qui définit si on doit calculer le chômage en prenant compte des inscriptions de l'année :
+     * 
+     * @param decompte
+     * @return true si on doit caclculer sur l'année
+     * @throws Exception
+     */
+    private boolean controleAC2SurLannee(Decompte decompte) {
+        if (!TypeDecompte.PERIODIQUE.equals(decompte.getType())) {
+            return true;
+        }
+        if ("12".equals(decompte.getPeriodeFin().getMois())) {
+            return true;
+        }
+        if (JadeStringUtil.isBlankOrZero(decompte.getEmployeur().getDateFin())) {
+            return false;
+        }
+        try {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
+            java.util.Date dateFinAffiliation = dateFormat.parse(decompte.getEmployeur().getDateFin());
+
+            if (new Integer(decompte.getPeriodeFin().getMois()) == dateFinAffiliation.getMonth() + 1) {
+                return true;
+            }
+        } catch (Exception e) {
+            return false;
+        }
+        return false;
+    }
+
     void handleAC(DecompteSalaire decompteSalaire) {
         CotisationDecompte cotisationAC = decompteSalaire.getCotisationAC();
         if (!isGererAC2(decompteSalaire, cotisationAC)) {
@@ -191,50 +420,76 @@ public class DecompteSalaireServiceImpl implements DecompteSalaireService {
             return;
         }
 
-        Decompte decompte = findDecompte(decompteSalaire);
-        if (decompteSalaire.controleAC2() || !decompteSalaire.isMemeAnnee(decompte.getAnnee())) {
-            // Montant AC total comptabilisé pour l'année en cours
-            Montant montantACComptabiliseForCurrentYear = findMasseACFor(decompteSalaire.getIdPosteTravail(),
-                    decompteSalaire.getAnneeDecompte());
+        // SI pas PERIODIQUE
+        if (decompteSalaire.getDecompte() != null && controleAC2SurLannee(decompteSalaire.getDecompte())) {
+            Decompte decompte = findDecompte(decompteSalaire);
+            if (decompteSalaire.controleAC2() || !decompteSalaire.isMemeAnnee(decompte.getAnnee())) {
+                // Montant AC total comptabilisé pour l'année en cours
+                Montant montantACComptabiliseForCurrentYear = findMasseACFor(decompteSalaire.getIdPosteTravail(),
+                        decompteSalaire.getAnneeDecompte());
 
-            // On va rechercher les lignes de décompte (décompte salaire) pour le même poste de travail dans le même
-            // décompte afin de calculer l'AC qui a déjà été calculé.
-            findLignesMemeDecompte(decompteSalaire);
+                // On va rechercher les lignes de décompte (décompte salaire) pour le même poste de travail dans le même
+                // décompte afin de calculer l'AC qui a déjà été calculé.
+                findLignesMemeDecompte(decompteSalaire);
 
-            Montant plafondACForPeriode = findPlafondAcForPeriode(decompteSalaire,
-                    decompte.getMontantAC(decompteSalaire));
+                Montant plafondACForPeriode = findPlafondAcForPeriode(decompteSalaire,
+                        decompte.getMontantAC(decompteSalaire));
+
+                Montant masseDecompteSalaire = decompteSalaire.getSalaireTotal();
+                CotisationDecompte cotisationAC2 = findOrCreateCotisationAC2(decompteSalaire, masseDecompteSalaire);
+
+                cotisationAC.setMasseForcee(true);
+                cotisationAC.setMasse(Montant.ZERO);
+                if (montantACComptabiliseForCurrentYear.greater(plafondACForPeriode)) {
+                    // Si le montantAC comptabilisé est plus grand que le montant maximum. On soustrait la différence et
+                    // on
+                    // l'ajoute dans l'AC.
+                    Montant difference = montantACComptabiliseForCurrentYear.substract(plafondACForPeriode);
+                    cotisationAC.setMasse(difference.negate());
+                    cotisationAC2.setMasse(difference.add(masseDecompteSalaire));
+                } else if (montantACComptabiliseForCurrentYear.less(plafondACForPeriode)) {
+                    Montant montantPossibleAC = plafondACForPeriode.substract(montantACComptabiliseForCurrentYear);
+                    if (montantPossibleAC.greater(masseDecompteSalaire)) {
+                        Montant montantAC2DeduirePossible = montantPossibleAC.substract(masseDecompteSalaire);
+                        // Rechercher les cotisations AC2 pour l'année
+                        Montant montantAC2Precedent = findMasseAC2For(decompteSalaire);
+                        if (montantAC2DeduirePossible.greater(montantAC2Precedent)) {
+                            cotisationAC.setMasse(masseDecompteSalaire.add(montantAC2Precedent));
+                            cotisationAC2.setMasse(montantAC2Precedent.negate());
+                        } else {
+                            cotisationAC.setMasse(masseDecompteSalaire.add(montantAC2DeduirePossible));
+                            cotisationAC2.setMasse(montantAC2DeduirePossible.negate());
+                        }
+                    } else {
+                        cotisationAC.setMasse(montantPossibleAC);
+                        // Montant AC2, compensation
+                        Montant montantAC2 = masseDecompteSalaire.substract(montantPossibleAC);
+                        cotisationAC2.setMasse(montantAC2);
+                    }
+                }
+            }
+        } else {
+            // Pour les PERIODIQUE
+            int nbMonth = (Integer.valueOf(decompteSalaire.getPeriode().getDateFin().getMois()) - Integer
+                    .valueOf(decompteSalaire.getPeriode().getDateDebut().getMois())) + 1;
+            Montant plafondACForPeriode = getPlafondParMois(decompteSalaire.getCotisationAC().getAssurance(),
+                    decompteSalaire.getPeriodeFinDecompte());
+            plafondACForPeriode = plafondACForPeriode.multiply(nbMonth);
 
             Montant masseDecompteSalaire = decompteSalaire.getSalaireTotal();
             CotisationDecompte cotisationAC2 = findOrCreateCotisationAC2(decompteSalaire, masseDecompteSalaire);
 
             cotisationAC.setMasseForcee(true);
-            cotisationAC.setMasse(Montant.ZERO);
-            if (montantACComptabiliseForCurrentYear.greater(plafondACForPeriode)) {
-                // Si le montantAC comptabilisé est plus grand que le montant maximum. On soustrait la différence et on
-                // l'ajoute dans l'AC.
-                Montant difference = montantACComptabiliseForCurrentYear.substract(plafondACForPeriode);
-                cotisationAC.setMasse(difference.negate());
-                cotisationAC2.setMasse(difference.add(masseDecompteSalaire));
-            } else if (montantACComptabiliseForCurrentYear.less(plafondACForPeriode)) {
-                Montant montantPossibleAC = plafondACForPeriode.substract(montantACComptabiliseForCurrentYear);
-                if (montantPossibleAC.greater(masseDecompteSalaire)) {
-                    Montant montantAC2DeduirePossible = montantPossibleAC.substract(masseDecompteSalaire);
-                    // Rechercher les cotisations AC2 pour l'année
-                    Montant montantAC2Precedent = findMasseAC2For(decompteSalaire);
-                    if (montantAC2DeduirePossible.greater(montantAC2Precedent)) {
-                        cotisationAC.setMasse(masseDecompteSalaire.add(montantAC2Precedent));
-                        cotisationAC2.setMasse(montantAC2Precedent.negate());
-                    } else {
-                        cotisationAC.setMasse(masseDecompteSalaire.add(montantAC2DeduirePossible));
-                        cotisationAC2.setMasse(montantAC2DeduirePossible.negate());
-                    }
-                } else {
-                    cotisationAC.setMasse(montantPossibleAC);
-                    // Montant AC2, compensation
-                    Montant montantAC2 = masseDecompteSalaire.substract(montantPossibleAC);
-                    cotisationAC2.setMasse(montantAC2);
-                }
+
+            Montant montantAC2 = masseDecompteSalaire.substract(plafondACForPeriode);
+            if (montantAC2.isPositive()) {
+                cotisationAC2.setMasse(montantAC2);
+                cotisationAC.setMasse(plafondACForPeriode);
+            } else {
+                cotisationAC.setMasse(masseDecompteSalaire);
+                cotisationAC2.setMasse(new Montant("0.00"));
             }
+
         }
     }
 
@@ -355,11 +610,12 @@ public class DecompteSalaireServiceImpl implements DecompteSalaireService {
      * @return Montant AC
      */
     protected Montant findMasseACFor(String idPosteTravail, Annee anneeDecompte) {
-        List<DecompteSalaire> decomptesSalaires = decompteSalaireRepository.findForYear(idPosteTravail, anneeDecompte);
+        List<DecompteSalaire> decomptesSalaires = decompteSalaireRepository.findForYearComptaOuValide(idPosteTravail,
+                anneeDecompte);
         Montant masseAC = Montant.ZERO;
         for (DecompteSalaire decompteSalaire : decomptesSalaires) {
             CotisationDecompte cotisationAC = decompteSalaire.getCotisationAC();
-            if (cotisationAC != null && decompteSalaire.isComptabilise()) {
+            if (cotisationAC != null && decompteSalaire.isValideOuComptabilise()) {
                 if (cotisationAC.getMasse().isZero()) {
                     masseAC = masseAC.add(decompteSalaire.getSalaireTotal());
                 } else {
@@ -394,6 +650,50 @@ public class DecompteSalaireServiceImpl implements DecompteSalaireService {
         return masseAC2;
     }
 
+    /**
+     * Retourne la masse AC2 pour l'année dont une ligne de décompte est passée en paramètre.
+     * Seules les décomptes salaires comptabilisées sont prises en compte.
+     * 
+     * @param decompteSalaire Décompte salaire
+     * @return Montant Franchise Totale
+     */
+    protected Montant findMasseAFFor(String idPosteTravail, Annee anneeDecompte) {
+        List<DecompteSalaire> decomptesSalaires = decompteSalaireRepository.findForYearComptaOuValide(idPosteTravail,
+                anneeDecompte);
+        Montant masseAF = Montant.ZERO;
+        for (DecompteSalaire decompteSalaire : decomptesSalaires) {
+            CotisationDecompte cotisationAF = decompteSalaire.getCotisationAF();
+            if (cotisationAF != null && decompteSalaire.isValideOuComptabilise()) {
+                if (cotisationAF.getMasseForcee()) {
+                    masseAF = masseAF.add(cotisationAF.getMasse());
+                } else {
+                    masseAF = masseAF.add(decompteSalaire.getSalaireTotal());
+                }
+            }
+        }
+        return masseAF;
+    }
+
+    /**
+     * Retourne la masse AC2 pour l'année dont une ligne de décompte est passée en paramètre.
+     * Seules les décomptes salaires comptabilisées sont prises en compte.
+     * 
+     * @param decompteSalaire Décompte salaire
+     * @return Montant Franchise Totale
+     */
+    protected Montant findMasseSalaireFor(String idPosteTravail, Annee anneeDecompte) {
+        List<DecompteSalaire> decomptesSalaires = decompteSalaireRepository.findForYearComptaOuValide(idPosteTravail,
+                anneeDecompte);
+        Montant masseSalaire = Montant.ZERO;
+        for (DecompteSalaire decompteSalaire : decomptesSalaires) {
+            Montant salaire = decompteSalaire.getSalaireTotal();
+            if (salaire != null && decompteSalaire.isValideOuComptabilise()) {
+                masseSalaire = masseSalaire.add(salaire);
+            }
+        }
+        return masseSalaire;
+    }
+
     protected Montant findMontantMaximumForAC(DecompteSalaire decompteSalaire, Annee annee) {
         return findMontantMaximumForAC(decompteSalaire, annee.getLastDayOfYear());
     }
@@ -404,7 +704,19 @@ public class DecompteSalaireServiceImpl implements DecompteSalaireService {
         Assurance assuranceAC = decompteSalaire.getCotisationAC().getAssurance();
 
         int mois = date.getNumeroMois();
+        SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
+        java.util.Date dateDebut;
         int moisDebut = 1;
+        try {
+            dateDebut = format.parse(decompteSalaire.getEmployeur().getDateDebut());
+
+            if (posteTravail.getPeriodeActivite().getDateDebut().getAnnee()
+                    .equals(String.valueOf(1900 + dateDebut.getYear()))) {
+                moisDebut = dateDebut.getMonth() + 1;
+            }
+        } catch (Exception e) {
+            // ??
+        }
 
         Montant plafondPourXMois = Montant.ZERO;
         for (int i = moisDebut; i <= mois; i++) {
@@ -455,17 +767,21 @@ public class DecompteSalaireServiceImpl implements DecompteSalaireService {
     }
 
     @Override
-    public void majDateAnnonceSalaire(Deque<DecompteSalaire> listeDecompteSalaire) {
+    public DecompteSalaire findPrecedentValide(String idPosteTravail, Date dateRecherche) {
+        return decompteSalaireRepository.findPrecedentValide(idPosteTravail, dateRecherche);
+    }
+
+    @Override
+    public void majDateAnnonceSalaire(Deque<DecompteSalaire> listeSalaires) {
         String dateAnnonce = new BSpy(BSessionUtil.getSessionFromThreadContext()).getFullData();
-        while (!listeDecompteSalaire.isEmpty()) {
-            DecompteSalaire decompteSalaire = listeDecompteSalaire.removeFirst();
+        while (!listeSalaires.isEmpty()) {
+            DecompteSalaire decompteSalaire = listeSalaires.removeFirst();
 
             DecompteSalaire decompteToUpd = VulpeculaRepositoryLocator.getDecompteSalaireRepository().findById(
                     decompteSalaire.getId());
             decompteToUpd.setDateAnnonce(dateAnnonce);
             VulpeculaRepositoryLocator.getDecompteSalaireRepository().update(decompteToUpd);
         }
-
     }
 
     @Override
@@ -483,7 +799,7 @@ public class DecompteSalaireServiceImpl implements DecompteSalaireService {
 
         try {
             return VulpeculaServiceLocator.getTravailleurService().isRentier(decompteSalaire.getTravailleur(),
-                    decompteSalaire.getPeriodeDebut());
+                    decompteSalaire.getPeriodeFin());
         } catch (Exception e) {
             throw new GlobazTechnicalException(ExceptionMessage.ERREUR_TECHNIQUE, e);
         }
@@ -510,6 +826,378 @@ public class DecompteSalaireServiceImpl implements DecompteSalaireService {
         return calculSomme(decomptesSalaires);
     }
 
+    @Override
+    public Montant cumulSalaireSyndicatWithCotisationsCPR(String idTravailleur, Date dateDebut, Date dateFin) {
+        // Récupérer tous les décomptes salaires du travailleur qui sont comptabilisés entre les périodes données
+        List<DecompteSalaire> decomptesSalaires = decompteSalaireRepository.findByIdAndPeriode(idTravailleur,
+                dateDebut, dateFin);
+
+        // Récupération des décomptes avec cotisations
+        List<DecompteSalaire> decomptesPourSalaireAnnuel = findDecomptesWithCotisationCPRInPeriode(decomptesSalaires,
+                dateDebut, dateFin);
+
+        return calculSomme(decomptesPourSalaireAnnuel);
+    }
+
+    /**
+     * Retourne les détails salariales d'un travailleur pour une période données avec ses cotisations pour un syndicat
+     * Seules les décomptes salaires comptabilisées sont prises en compte.
+     * 
+     * @param idTravailleur
+     * @param idSyndicat
+     * @param dateDebut Date de début de la période d'affiliation syndicat
+     * @param dateFin Date de fin de la période d'affiliation syndicat (date défini ou date d'aujourd'hui)
+     * @return List<DecompteSalaireDetailsAnnuelView> Liste contenant les détails salariales par année
+     */
+    @Override
+    public List<DecompteSalaireDetailsAnnuelView> calculDetailsDecompteSalaire(String idTravailleur, String idSyndicat,
+            Date dateDebut, Date dateFin) {
+        // Récupérer tous les décomptes salaires du travailleur qui sont comptabilisés entre les périodes données
+        List<DecompteSalaire> decomptesSalaires = decompteSalaireRepository.findByIdAndPeriodeWithCotisations(
+                idTravailleur, dateDebut, dateFin);
+        List<DecompteSalaireDetailsAnnuelView> detailsDecomptesSalairesParAnnee = new ArrayList<DecompteSalaireDetailsAnnuelView>();
+
+        // On commence par l'année la plus récente, l'année en cours
+        Date dateDebutEnCours = dateFin.getDateOfFirstDayOfYear();
+        Date dateFinEnCours = dateFin.getDateOfLastDayOfYear();
+
+        // Et on boucle jusqu'à l'année de la date début passé en paramètre, donc l'année la plus ancienne
+        while (dateDebutEnCours.afterOrEquals(dateDebut)) {
+            DecompteSalaireDetailsAnnuelView decSalaireDetAn = new DecompteSalaireDetailsAnnuelView();
+            decSalaireDetAn.setTaux("0.00");
+            decSalaireDetAn.setPourcentage("0.00");
+            decSalaireDetAn.setFrais("0.00");
+
+            // Récupération des décomptes avec cotisations
+            List<DecompteSalaire> decomptesPourSalaireAnnuel = findDecomptesWithCotisationCPRInPeriode(
+                    decomptesSalaires, dateDebutEnCours, dateFinEnCours);
+
+            decSalaireDetAn.setSalaireAnnuel(calculSomme(decomptesPourSalaireAnnuel).toStringFormatTwoDecimales());
+
+            if (!decomptesPourSalaireAnnuel.isEmpty()) {
+                // Récupére le ou les ID de l'employeur et le décompte concerné
+                // Afin de savoir quel décompte utilisé pour instancier le taux + le pourcentage et les frais du
+                // syndicat
+                Map<String, DecompteSalaire> idsEmployeurWithDecompteSalaire = getEmployeurAvecLeDecompteConcerne(decomptesPourSalaireAnnuel);
+
+                // Décompte qui sera utilisé pour rechercher le taux d'assurance / le pourcentage et les frais du
+                // syndicat
+                DecompteSalaire decompteAUtilise = findDecompteAUtiliserPourTauxEtSyndicat(
+                        idsEmployeurWithDecompteSalaire, dateFinEnCours);
+
+                // Initiatlisation du taux / pourcentage / frais
+                initTauxEtParametreSyndicat(decSalaireDetAn, decompteAUtilise, dateDebutEnCours, idSyndicat);
+            }
+
+            // Initialisation de l'année en cours, du salaire annuel et des cotisations brutes / nettes
+            decSalaireDetAn = initDecompteSalaireDetailsAnnuelView(decSalaireDetAn, dateDebutEnCours);
+
+            detailsDecomptesSalairesParAnnee.add(decSalaireDetAn);
+
+            // Passage à l'année précédente
+            dateDebutEnCours = dateDebutEnCours.addYear(-1);
+            dateFinEnCours = dateFinEnCours.addYear(-1);
+        }
+
+        return detailsDecomptesSalairesParAnnee;
+    }
+
+    /**
+     * Retourne les décomptes salaires qui possèdent des cotisations CPR basé sur la période des décomptes salaires
+     * 
+     * @param decomptes
+     * @param dateDebut
+     * @param dateFin
+     * @return List<DecompteSalaire>
+     */
+    @Override
+    public List<DecompteSalaire> findDecomptesInPeriodeWithCotisationCPR(List<DecompteSalaire> decomptesSalaire,
+            Date dateDebut, Date dateFin) {
+        List<DecompteSalaire> decomptesSalaireWithCotCPR = new ArrayList<DecompteSalaire>();
+        for (DecompteSalaire decSalaire : decomptesSalaire) {
+            if (isDecompteSalaireBetweenPeriode(decSalaire, dateDebut, dateFin) && hasCotisationsTypeCPR(decSalaire)) {
+                decomptesSalaireWithCotCPR.add(decSalaire);
+            }
+        }
+        return decomptesSalaireWithCotCPR;
+    }
+
+    /**
+     * Retourne les décomptes salaires qui possèdent des cotisations CPR basé sur la période des cotisations
+     * 
+     * @param decomptes
+     * @param dateDebut
+     * @param dateFin
+     * @return List<DecompteSalaire>
+     */
+    @Override
+    public List<DecompteSalaire> findDecomptesWithCotisationCPRInPeriode(List<DecompteSalaire> decomptesSalaire,
+            Date dateDebut, Date dateFin) {
+        List<DecompteSalaire> decomptesSalaireWithCotCPR = new ArrayList<DecompteSalaire>();
+        for (DecompteSalaire decSalaire : decomptesSalaire) {
+            if (isDecompteSalaireBetweenPeriode(decSalaire, dateDebut, dateFin)
+                    && hasCotisationsTypeCPRForAPeriode(decSalaire)) {
+                decomptesSalaireWithCotCPR.add(decSalaire);
+            }
+        }
+        return decomptesSalaireWithCotCPR;
+    }
+
+    /**
+     * Set les adhésions cotisations au poste travail du décompte salaire. Test ensuite si une de ces adhésions
+     * possèdent une cotisation de type CPR et que la période du décompte salaire se trouve dans la période de
+     * l'adhésion
+     * 
+     * @param decSalaire
+     * @return
+     */
+    private boolean hasCotisationsTypeCPRForAPeriode(DecompteSalaire decSalaire) {
+        decSalaire.getPosteTravail().setAdhesionsCotisations(
+                VulpeculaRepositoryLocator.getAdhesionCotisationPosteRepository().findByIdPosteTravail(
+                        decSalaire.getPosteTravail().getId()));
+
+        for (AdhesionCotisationPosteTravail adhesionCotisation : decSalaire.getPosteTravail().getAdhesionsCotisations()) {
+            if (isDecSalaireInPeriodeCotisation(decSalaire, adhesionCotisation)) {
+                for (CotisationDecompte coti : decSalaire.getCotisationsDecompte()) {
+                    if (TypeAssurance.CPR_TRAVAILLEUR.equals(coti.getAssurance().getTypeAssurance())) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Check si la période du décompte salaire se situe dans la période de l'adhésion cotisation
+     * 
+     * @param decSalaire
+     * @param adhesionCotisation
+     * @return vrai si la période du décompte se trouve dans celle de l'adhésion cotisation
+     */
+    private boolean isDecSalaireInPeriodeCotisation(DecompteSalaire decSalaire,
+            AdhesionCotisationPosteTravail adhesionCotisation) {
+
+        Boolean checkDateDebut = Integer.parseInt(decSalaire.getPeriode().getDateDebut().getAnneeMois()) >= Integer
+                .parseInt(adhesionCotisation.getPeriode().getDateDebut().getAnneeMois());
+        Boolean checkDateFin;
+        if (adhesionCotisation.getPeriode().getDateFin() != null) {
+            checkDateFin = Integer.parseInt(decSalaire.getPeriode().getDateFin().getAnneeMois()) <= Integer
+                    .parseInt(adhesionCotisation.getPeriode().getDateFin().getAnneeMois());
+        } else {
+            checkDateFin = true;
+        }
+        return checkDateDebut && checkDateFin;
+    }
+
+    /**
+     * Initialisation du taux de l'assurance de type CPR Travailleur
+     * Initialisation du pourcentage et des frais des paramètres du syndicat
+     * 
+     * @param decSalaireDetAn
+     * @param decompteAUtilise
+     * @param dateDebutEnCours
+     * @param idSyndicat
+     */
+    private void initTauxEtParametreSyndicat(DecompteSalaireDetailsAnnuelView decSalaireDetAn,
+            DecompteSalaire decompteAUtilise, Date dateDebutEnCours, String idSyndicat) {
+        if (JadeStringUtil.isBlankOrZero(decSalaireDetAn.getTaux())) {
+            decSalaireDetAn.setTaux(getTauxAssuranceDeTypeCPRTravailleur(decompteAUtilise.getCotisationsDecompte(),
+                    dateDebutEnCours));
+        }
+        if (JadeStringUtil.isBlankOrZero(decSalaireDetAn.getPourcentage())
+                || JadeStringUtil.isBlankOrZero(decSalaireDetAn.getFrais())) {
+            ParametreSyndicat parametreSyndicat = getParametreSyndicat(idSyndicat, decompteAUtilise.getEmployeur()
+                    .getId());
+            if (parametreSyndicat.getPourcentage() != null) {
+                decSalaireDetAn.setPourcentage(parametreSyndicat.getPourcentage().getValue());
+            }
+            if (parametreSyndicat.getMontantParTravailleur() != null) {
+                decSalaireDetAn.setFrais(parametreSyndicat.getMontantParTravailleur().getValueNormalisee());
+            }
+        }
+    }
+
+    /**
+     * Retourne le décompte salaire qui sera utilisé pour rechercher le taux de l'assurance de type CPR Travailleur et
+     * pour rechercher les paramètres d'un syndicat
+     * 
+     * @param idsEmployeurWithDecompteSalaire
+     * @param date
+     * @return DecompteSalaire Le décompte salaire qui sera utilisé pour retrouver le taux CPR et les paramètres du
+     *         syndicat
+     */
+    private DecompteSalaire findDecompteAUtiliserPourTauxEtSyndicat(
+            Map<String, DecompteSalaire> idsEmployeurWithDecompteSalaire, Date date) {
+        DecompteSalaire decompteAUtilise = new DecompteSalaire();
+        List<DecompteSalaire> decomptesSalaires = new ArrayList<DecompteSalaire>(
+                idsEmployeurWithDecompteSalaire.values());
+        // Si on a plus qu'un employeur
+        if (idsEmployeurWithDecompteSalaire.size() > 1) {
+            // On prend déjà le poste de travail qui est actif
+            decompteAUtilise = findDecompteAvecPosteActif(decomptesSalaires, date);
+            // Et si les postes sont tous actifs et aucun l'est, on prend le plus récent
+            if (decompteAUtilise == null) {
+                decompteAUtilise = findDecomptAvecPlusRecentPoste(decomptesSalaires);
+            }
+        } else if (idsEmployeurWithDecompteSalaire.size() == 1) {
+            for (Entry<String, DecompteSalaire> entry : idsEmployeurWithDecompteSalaire.entrySet()) {
+                decompteAUtilise = entry.getValue();
+            }
+        }
+        return decompteAUtilise;
+    }
+
+    /**
+     * Retourne le décompte salaire qui est actif parmis une liste de décomptes salaires
+     * 
+     * @param decomptesSalaire
+     * @param date
+     * @return DecompteSalaire Un décompte salaire s'il en existe un sinon null si 0 ou plusieurs
+     */
+    private DecompteSalaire findDecompteAvecPosteActif(List<DecompteSalaire> decomptesSalaire, Date date) {
+        List<DecompteSalaire> decomptesAvecPosteTravailActifs = new ArrayList<DecompteSalaire>();
+
+        // Récupération des décomptes avec postes actifs au dernier mois de l'année en cours
+        for (DecompteSalaire decompteSalaire : decomptesSalaire) {
+            if (decompteSalaire.getPosteTravail().isActif(date.getLastDayOfMonth())) {
+                decomptesAvecPosteTravailActifs.add(decompteSalaire);
+            }
+        }
+
+        // S'il y en a qu'un actif parmis tous, on le retourne
+        if (decomptesAvecPosteTravailActifs.size() == 1) {
+            return decomptesAvecPosteTravailActifs.get(0);
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Retourne une map composé d'un ID unique d'employeur et le décompte salaire concerné
+     * 
+     * @param decomptesPourSalaireAnnuel Liste de décomptes salaires
+     * @return Map<String, DecompteSalaire>
+     */
+    private Map<String, DecompteSalaire> getEmployeurAvecLeDecompteConcerne(
+            List<DecompteSalaire> decomptesPourSalaireAnnuel) {
+        Map<String, DecompteSalaire> idsEmployeurWithDecompteSalaire = new HashMap<String, DecompteSalaire>();
+        for (DecompteSalaire decSalaire : decomptesPourSalaireAnnuel) {
+            String idEmployeur = decSalaire.getEmployeur().getId();
+            if (!idsEmployeurWithDecompteSalaire.containsKey(idEmployeur)) {
+                idsEmployeurWithDecompteSalaire.put(idEmployeur, decSalaire);
+            }
+        }
+        return idsEmployeurWithDecompteSalaire;
+    }
+
+    /**
+     * Retourne le décompte salaire avec le plus récent poste de travail parmi une liste de décompte
+     * 
+     * @param decomptes
+     * @return DecompteSalaire Le décompte salaire ayant le poste de travail avec la période d'activité la plus récente
+     */
+    public DecompteSalaire findDecomptAvecPlusRecentPoste(List<DecompteSalaire> decomptes) {
+        Collections.sort(decomptes, new Comparator<DecompteSalaire>() {
+            @Override
+            public int compare(DecompteSalaire d1, DecompteSalaire d2) {
+                return d2.getPosteTravail().getPeriodeActivite().compareTo(d1.getPosteTravail().getPeriodeActivite());
+            }
+        });
+        if (!decomptes.isEmpty()) {
+            return decomptes.get(0);
+        }
+        return null;
+    }
+
+    /**
+     * Retourne vrai si le décompte salaire contient des cotisations de type CPR Travailleur
+     * 
+     * @param decSalaire
+     * @return Boolean
+     */
+    private boolean hasCotisationsTypeCPR(DecompteSalaire decSalaire) {
+        for (CotisationDecompte cotisation : decSalaire.getCotisationsDecompte()) {
+            if (TypeAssurance.CPR_TRAVAILLEUR.equals(cotisation.getAssurance().getTypeAssurance())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Retourne vrai si le décompte salaire se trouve entre deux date
+     * 
+     * @param decSalaire
+     * @param dateDebutEnCours
+     * @param dateFinEnCours
+     * @return Boolean
+     */
+    private boolean isDecompteSalaireBetweenPeriode(DecompteSalaire decSalaire, Date dateDebutEnCours,
+            Date dateFinEnCours) {
+        if (dateFinEnCours == null) {
+            dateFinEnCours = new Date();
+        }
+        return decSalaire.getPeriodeDebutDecompte().afterOrEquals(dateDebutEnCours)
+                && decSalaire.getPeriodeFinDecompte().beforeOrEquals(dateFinEnCours);
+    }
+
+    /**
+     * Calcul et rempli les attributs d'un objet DecompteSalaireDetailsAnnuelView (salaire annuel, cotisation
+     * brute / nette)
+     * 
+     * @param decSalaireDetAn
+     * @param dateDebutEnCours
+     * @return DecompteSalaireDetailsAnnuelView
+     */
+    private DecompteSalaireDetailsAnnuelView initDecompteSalaireDetailsAnnuelView(
+            DecompteSalaireDetailsAnnuelView decSalaireDetAn, Date dateDebutEnCours) {
+        decSalaireDetAn.setAnnee(dateDebutEnCours.getAnnee());
+        decSalaireDetAn.setCotisationBrute(Montant.valueOf(decSalaireDetAn.getSalaireAnnuel())
+                .multiply(Montant.valueOf(decSalaireDetAn.getTaux())).divideBy100().toStringFormatTwoDecimales());
+        decSalaireDetAn
+                .setCotisationNette(new Montant(decSalaireDetAn.getCotisationBrute())
+                        .multiply(Montant.valueOf(decSalaireDetAn.getPourcentage())).divideBy100()
+                        .toStringFormatTwoDecimales());
+        return decSalaireDetAn;
+    }
+
+    /**
+     * Retourne les parametres du syndicat par rapport à la caisse métier de l'employeur
+     * 
+     * @param idSyndicat
+     * @param idEmployeur
+     * @return ParametreSyndicat
+     */
+    private ParametreSyndicat getParametreSyndicat(String idSyndicat, String idEmployeur) {
+        Adhesion caisseMetier = VulpeculaRepositoryLocator.getAdhesionRepository().findCaisseMetier(idEmployeur);
+        ParametreSyndicat parametreSyndicat = new ParametreSyndicat();
+        List<ParametreSyndicat> param = VulpeculaRepositoryLocator.getParametreSyndicatRepository().findByIdSyndicat(
+                idSyndicat, caisseMetier.getAdministrationPlanCaisse().getId());
+        if (!param.isEmpty()) {
+            parametreSyndicat = param.get(0);
+        }
+        return parametreSyndicat;
+    }
+
+    /**
+     * Retourne le taux de l'assurance de type CPR Travailleur d'une cotisation pour une date donnée
+     * 
+     * @param cotisationsDecompte
+     * @param date
+     * @return
+     */
+    private String getTauxAssuranceDeTypeCPRTravailleur(List<CotisationDecompte> cotisationsDecompte, Date date) {
+        String taux = "0";
+        for (CotisationDecompte coti : cotisationsDecompte) {
+            if (TypeAssurance.CPR_TRAVAILLEUR.equals(coti.getAssurance().getTypeAssurance())) {
+                taux = VulpeculaServiceLocator.getCotisationService()
+                        .findTauxForAssurance(coti.getAssurance().getId(), date).getValeurEmploye();
+            }
+        }
+        return Montant.valueOf(taux).getValueNormalisee();
+    }
+
     protected String findCaisseMetierForDecompteSalaire(DecompteSalaire decompteSalaire) {
         return String.valueOf(VulpeculaServiceLocator.getPosteTravailService().getIdTiersCaissePrincipale(
                 decompteSalaire.getIdPosteTravail()));
@@ -530,6 +1218,9 @@ public class DecompteSalaireServiceImpl implements DecompteSalaireService {
 
         List<DecompteSalaire> decomptesSalaires = decompteSalaireRepository.findByIdAndPeriode(idTravailleur,
                 dateDebut, dateFin);
+        // if (isListeTravailleurPaiementSyndicat) {
+        decomptesSalaires = findDecomptesWithCotisationCPRInPeriode(decomptesSalaires, dateDebut, dateFin);
+        // }
         for (DecompteSalaire decompteSalaire : decomptesSalaires) {
             String idEmployeur = decompteSalaire.getIdEmployeur();
             if (!mappingEmployeursCaisseMetier.containsKey(idEmployeur)) {
@@ -564,9 +1255,13 @@ public class DecompteSalaireServiceImpl implements DecompteSalaireService {
     }
 
     @Override
-    public boolean checkCotisationDecompte(String idDecompteSalaire) {
+    public DifferenceCotisationSalaire checkCotisationDecompte(String idDecompteSalaire, Annee annee) {
         DecompteSalaire decompteSalaire = VulpeculaRepositoryLocator.getDecompteSalaireRepository().findById(
                 idDecompteSalaire);
+        // Si ce n'est pas la même année, on rechargera alors les cotisations
+        if (!decompteSalaire.isSameAnneeCotisations(annee)) {
+            return DifferenceCotisationSalaire.DIFFERENCE_ANNEE;
+        }
 
         List<CotisationDecompte> cotisationsEffectiveDecompte = VulpeculaServiceLocator.getCotisationDecompteService()
                 .getCotisationsDecompte(idDecompteSalaire);
@@ -578,7 +1273,11 @@ public class DecompteSalaireServiceImpl implements DecompteSalaireService {
             cotisationsPossiblesDecompte.add(new CotisationDecompte(adhesion));
         }
 
-        return listEquals(cotisationsEffectiveDecompte, cotisationsPossiblesDecompte);
+        if (listEquals(cotisationsEffectiveDecompte, cotisationsPossiblesDecompte)) {
+            return DifferenceCotisationSalaire.NONE;
+        } else {
+            return DifferenceCotisationSalaire.DIFFERENCE_COTISATIONS;
+        }
     }
 
     /**

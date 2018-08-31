@@ -27,7 +27,9 @@ public enum TypeSection {
     RENTE_AVS_AI(4),
     RESTITUTION(26),
     RETOUR(5),
-    RFM(76);
+    RFM(76),
+    ASSOCIATION(10),
+    CPP(11);
 
     private int value;
 

@@ -1,6 +1,9 @@
 package ch.globaz.vulpecula.business.services.postetravail;
 
+import globaz.jade.exception.JadePersistenceException;
 import java.util.List;
+import ch.globaz.jade.noteIt.NoteException;
+import ch.globaz.jade.noteIt.SimpleNote;
 import ch.globaz.specifications.UnsatisfiedSpecificationException;
 import ch.globaz.vulpecula.domain.models.common.Annee;
 import ch.globaz.vulpecula.domain.models.common.Date;
@@ -29,9 +32,9 @@ public interface PosteTravailService {
      */
     int getIdTiersCaissePrincipale(String idPosteTravail);
 
-    PosteTravail create(PosteTravail posteTravail) throws UnsatisfiedSpecificationException;
+    PosteTravail create(PosteTravail posteTravail) throws UnsatisfiedSpecificationException, JadePersistenceException;
 
-    PosteTravail update(PosteTravail posteTravail) throws UnsatisfiedSpecificationException;
+    PosteTravail update(PosteTravail posteTravail) throws UnsatisfiedSpecificationException, JadePersistenceException;
 
     void delete(PosteTravail posteTravail) throws UnsatisfiedSpecificationException;
 
@@ -161,7 +164,10 @@ public interface PosteTravailService {
      * 
      * @return Liste de postes de travail
      */
+
     List<PosteTravail> findAAnnoncer(Date date);
+
+    List<PosteTravail> findAAnnoncer2(Date date);
 
     /**
      * Retourne si le poste de travail dispose de la bonne cotisation active afin de disposer du droit pour le type de
@@ -186,4 +192,17 @@ public interface PosteTravailService {
      */
     List<CodeSystem> getQualificationForConvention(String idConvention);
 
-}
+    /**
+     * Retourne le nombre le plus grand de postes de travails actifs dans l'année précédente du dernierControle
+     */
+    int findPostesActifsByIdAffiliePourControle(String idEmployeur, Date dateDernierControle);
+
+    boolean travailleurHasPostIt(String idTravailleur) throws NoteException, JadePersistenceException;
+
+    List<SimpleNote> getPostIt(String idTravailleur) throws NoteException, JadePersistenceException;
+
+    void sendEmailAF(String sujet, String corps) throws Exception;
+
+    List<PosteTravail> findPostesActifDurantAnnee(String idTravailleur, Annee annee);
+
+    void checkForMailAF(PosteTravail posteBeforeUpdate, PosteTravail posteAfterUpdate) throws Exception;}

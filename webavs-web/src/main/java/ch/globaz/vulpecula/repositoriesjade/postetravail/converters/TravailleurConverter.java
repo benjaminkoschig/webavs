@@ -59,6 +59,9 @@ public final class TravailleurConverter implements
         if (!JadeStringUtil.isEmpty(travailleurSimpleModel.getDateAnnonceMeroba())) {
             travailleur.setDateAnnonceMeroba(new Date(travailleurSimpleModel.getDateAnnonceMeroba()));
         }
+        if (!JadeStringUtil.isEmpty(travailleurSimpleModel.getCorrelationId())) {
+            travailleur.setCorrelationId(travailleurSimpleModel.getCorrelationId());
+        }
 
         // Si le travailleur dispose d'une référence sur un permis de
         // travail, il doit posséder une référence de permis.
@@ -89,6 +92,10 @@ public final class TravailleurConverter implements
         } else {
             travailleurSimpleModel.setReferencePermis("");
         }
+        if (!JadeStringUtil.isEmpty(travailleur.getCorrelationId())) {
+            travailleurSimpleModel.setCorrelationId(travailleur.getCorrelationId());
+        }
+
         travailleurSimpleModel.setSpy(travailleur.getSpy());
         return travailleurSimpleModel;
     }

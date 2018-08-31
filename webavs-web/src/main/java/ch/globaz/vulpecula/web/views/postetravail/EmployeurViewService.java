@@ -15,8 +15,4 @@ public class EmployeurViewService {
     public boolean changeEnvoiBVRSansDecompte(String idEmployeur, boolean activated) {
         return employeurService.changeEnvoiBVRSansDecompte(idEmployeur, activated);
     }
-
-    public boolean changeEditerSansTravailleur(String idEmployeur, boolean activated) {
-        return employeurService.changeEditerSansTravailleur(idEmployeur, activated);
-    }
 }

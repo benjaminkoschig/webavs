@@ -1,6 +1,5 @@
 package ch.globaz.vulpecula.documents.prestations;
 
-import globaz.globall.util.JANumberFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -11,6 +10,7 @@ import ch.globaz.vulpecula.documents.catalog.DocumentType;
 import ch.globaz.vulpecula.domain.models.servicemilitaire.SMParEmployeur;
 import ch.globaz.vulpecula.domain.models.servicemilitaire.ServiceMilitaire;
 import ch.globaz.vulpecula.domain.models.servicemilitaire.ServicesMilitaires;
+import globaz.globall.util.JANumberFormatter;
 
 public class DocumentSM extends DocumentPrestations<SMParEmployeur> {
 
@@ -28,6 +28,17 @@ public class DocumentSM extends DocumentPrestations<SMParEmployeur> {
     private static final String F_MONTANT_VERSE = "F_MONTANT_VERSE";
     private static final String F_TAUX = "F_TAUX";
     private static final String F_PERIODE = "F_PERIODE";
+
+    private static final String P_LAST_NOM_PRENOM = "P_LAST_NOM_PRENOM";
+    private static final String P_LAST_PRESTATION = "P_LAST_PRESTATION";
+    private static final String P_LAST_V = "P_LAST_V";
+    private static final String P_LAST_JOURS = "P_LAST_JOURS";
+    private static final String P_LAST_MONTANT_BRUT = "P_LAST_MONTANT_BRUT";
+    private static final String P_LAST_AVS = "P_LAST_AVS";
+    private static final String P_LAST_AC = "P_LAST_AC";
+    private static final String P_LAST_MONTANT_VERSE = "P_LAST_MONTANT_VERSE";
+    private static final String P_LAST_TAUX = "P_LAST_TAUX";
+    private static final String P_LAST_PERIODE = "P_LAST_PERIODE";
 
     private static final String P_TITRE = "P_TITRE";
     private static final String P_NOM_PRENOM = "P_NOM_PRENOM";
@@ -51,7 +62,8 @@ public class DocumentSM extends DocumentPrestations<SMParEmployeur> {
     }
 
     public DocumentSM(SMParEmployeur smParEmployeur) throws Exception {
-        super(smParEmployeur, DocumentConstants.SERVICE_MILITAIRE_NAME, DocumentConstants.SERVICE_MILITAIRE_TYPE_NUMBER);
+        super(smParEmployeur, DocumentConstants.SERVICE_MILITAIRE_NAME,
+                DocumentConstants.SERVICE_MILITAIRE_TYPE_NUMBER);
     }
 
     @Override
@@ -76,29 +88,56 @@ public class DocumentSM extends DocumentPrestations<SMParEmployeur> {
 
     @Override
     public void fillFields() throws Exception {
+        setDocumentTitle(getCurrentElement().getEmployeur().getConvention().getCode() + "-"
+                + getCurrentElement().getEmployeur().getAffilieNumero());
         ServicesMilitaires servicesMilitaires = getCurrentElement().getServicesMilitaires();
-
         Collection<Map<String, Object>> collection = new ArrayList<Map<String, Object>>();
 
+        int compteur = servicesMilitaires.size();
         for (ServiceMilitaire serviceMilitaire : servicesMilitaires) {
-            Map<String, Object> ligne = new HashMap<String, Object>();
-            ligne.put(F_NOM_PRENOM, serviceMilitaire.getPosteTravail().getNomPrenomTravailleur());
-            ligne.put(F_PRESTATION, getCodeLibelle(serviceMilitaire.getTypePrestation()));
-            if (serviceMilitaire.getMontantAVerser().isZero()) {
-                ligne.put(F_V, "X");
+            if (--compteur == 0) {
+                // Dernière ligne doit être avec le totale
+                setParametres(P_LAST_NOM_PRENOM, serviceMilitaire.getPosteTravail().getNomPrenomTravailleur());
+                setParametres(P_LAST_PRESTATION, getCodeLibelle(serviceMilitaire.getTypePrestation()));
+                if (serviceMilitaire.getMontantAVerser().isZero()) {
+                    setParametres(P_LAST_V, "X");
+                } else {
+                    setParametres(P_LAST_V, getCode(serviceMilitaire.getBeneficiaire().getValue()));
+                }
+                setParametres(P_LAST_JOURS, String.valueOf(serviceMilitaire.getNbJours()));
+                setParametres(P_LAST_TAUX, JANumberFormatter.format(serviceMilitaire.getCouvertureAPG().getValue(),
+                        0.01, 2, JANumberFormatter.NEAR));
+                setParametres(P_LAST_MONTANT_BRUT,
+                        JANumberFormatter.format(serviceMilitaire.getMontantBrut().getValue()));
+                setParametres(P_LAST_AVS, JANumberFormatter.format(serviceMilitaire.getMontantAVS().getValue()));
+                setParametres(P_LAST_AC, JANumberFormatter.format(serviceMilitaire.getMontantAC().getValue()));
+                setParametres(P_LAST_MONTANT_VERSE,
+                        JANumberFormatter.format(serviceMilitaire.getMontantAVerser().getValue()));
+                setParametres(P_LAST_PERIODE, serviceMilitaire.getPeriode().getDateDebutAsSwissValue() + " - "
+                        + serviceMilitaire.getPeriode().getDateFinAsSwissValue());
             } else {
-                ligne.put(F_V, getCode(serviceMilitaire.getBeneficiaire().getValue()));
+                Map<String, Object> ligne = new HashMap<String, Object>();
+                ligne.put(F_NOM_PRENOM, serviceMilitaire.getPosteTravail().getNomPrenomTravailleur());
+                ligne.put(F_PRESTATION, getCodeLibelle(serviceMilitaire.getTypePrestation()));
+                if (serviceMilitaire.getMontantAVerser().isZero()) {
+                    ligne.put(F_V, "X");
+                } else {
+                    ligne.put(F_V, getCode(serviceMilitaire.getBeneficiaire().getValue()));
+                }
+                ligne.put(F_JOURS, String.valueOf(serviceMilitaire.getNbJours()));
+                ligne.put(F_TAUX, JANumberFormatter.format(serviceMilitaire.getCouvertureAPG().getValue(), 0.01, 2,
+                        JANumberFormatter.NEAR));
+                ligne.put(F_MONTANT_BRUT, JANumberFormatter.format(serviceMilitaire.getMontantBrut().getValue()));
+                ligne.put(F_AVS, JANumberFormatter.format(serviceMilitaire.getMontantAVS().getValue()));
+                ligne.put(F_AC, JANumberFormatter.format(serviceMilitaire.getMontantAC().getValue()));
+                ligne.put(F_MONTANT_VERSE, JANumberFormatter.format(serviceMilitaire.getMontantAVerser().getValue()));
+                ligne.put(F_PERIODE, serviceMilitaire.getPeriode().getDateDebutAsSwissValue() + " - "
+                        + serviceMilitaire.getPeriode().getDateFinAsSwissValue());
+                collection.add(ligne);
             }
-            ligne.put(F_JOURS, String.valueOf(serviceMilitaire.getNbJours()));
-            ligne.put(F_TAUX, JANumberFormatter.format(serviceMilitaire.getCouvertureAPG().getValue(), 0.01, 2,
-                    JANumberFormatter.NEAR));
-            ligne.put(F_MONTANT_BRUT, JANumberFormatter.format(serviceMilitaire.getMontantBrut().getValue()));
-            ligne.put(F_AVS, JANumberFormatter.format(serviceMilitaire.getMontantAVS().getValue()));
-            ligne.put(F_AC, JANumberFormatter.format(serviceMilitaire.getMontantAC().getValue()));
-            ligne.put(F_MONTANT_VERSE, JANumberFormatter.format(serviceMilitaire.getMontantAVerser().getValue()));
-            ligne.put(F_PERIODE, serviceMilitaire.getPeriode().getDateDebutAsSwissValue() + " - "
-                    + serviceMilitaire.getPeriode().getDateFinAsSwissValue());
-            collection.add(ligne);
+        }
+        if (!collection.isEmpty()) {
+            setDataSource(collection);
         }
         setParametres(P_NOM_PRENOM, getLabel("DOCUMENT_NOM_PRENOM"));
         setParametres(P_SOMME_MONTANTS_VERSES,
@@ -116,7 +155,6 @@ public class DocumentSM extends DocumentPrestations<SMParEmployeur> {
         setParametres(P_PART_PATRONALE, getLabel("DOCUMENT_PART_PATRONALE"));
         setParametres(P_PERIODE, getLabel("DOCUMENT_PERIODE"));
         setSignature();
-        setDataSource(collection);
     }
 
     private void setSignature() throws Exception {

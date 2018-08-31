@@ -30,6 +30,7 @@ globazGlobal.idEmployeur = '${viewBean.idEmployeur}';
 globazGlobal.associationViewService = '${viewBean.associationViewService}';
 globazGlobal.csMembre = '${viewBean.csMembre}';
 globazGlobal.csNonTaxe = '${viewBean.csNonTaxe}';
+globazGlobal.csRabaisSpecial = ${viewBean.categorieFactureRabaisSpecial.id};
 globazGlobal.limiteCotisationsNonMembre = ${viewBean.limiteCotisationsNonMembre};
 globazGlobal.reductionFactureDefaut = ${viewBean.reductionFactureDefaut};
 globazGlobal.masseSalarialeDefaut = ${viewBean.masseSalarialeDefaut};
@@ -58,6 +59,10 @@ s}
 .cotisations tr {
 	background-color: white;
 }
+
+.toDelete td{
+	background-color: red;
+}
 </style>
 <script type="jade/template" id="nouvelleAssociation">
 	<div class="association">
@@ -69,24 +74,47 @@ s}
 				<option value="${associationProfessionnelle.id}"><c:out value="${associationProfessionnelle.codeAdministration} - ${associationProfessionnelle.designation1} ${associationProfessionnelle.designation2}" /></option>
 			</c:forEach>
 		</select>
+
 	
 		<ct:FWCodeSelectTag notation="class='genre'" name="genre" codeType="PTGENCOTAP" defaut=""/>
 		<button class="btnSearchCotisations" type="button">OK</button>
 		</div>
+
+
 	</div>	
+
+
 	<button class="addCotisation"><img src="images/list-add.png" /></button>	
+<table style="width: 70%;">
+					<tr>
+						<td><ct:FWLabel key="JSP_ASSOCIATIONS_PROFESSIONNELLES_MASSE_SALARIALE"/></td>		
+						<td>			
+								<input class="masseAssociation" type="text" data-g-amount=" " />
+						</td>
+					</tr>
+				</table>
 				<table style="width: 70%" class="cotisations">
 					<tr>
 						<td></td>
 						<td style="width: 20%"><ct:FWLabel key="JSP_COTISATION"/></td>
 						<td><ct:FWLabel key="JSP_PERIODE_DEBUT"/></td>
 						<td><ct:FWLabel key="JSP_PERIODE_FIN"/></td>
-						<td><ct:FWLabel key="JSP_ASSOCIATIONS_PROFESSIONNELLES_MASSE_SALARIALE"/></td>
 						<td><ct:FWLabel key="JSP_FORFAIT"/></td>
-						<td><ct:FWLabel key="JSP_REDUCTION_FACTURE"/></td>
 					</tr>
 				</table>
 	</div>
+</script>
+<script type="jade/template" id="categorieFactures">
+		<select class="facturer" name="facture">
+			<c:forEach var="code" items="${viewBean.categoriesFacturesUtilisables}">
+				<option value="${code.id}">${code.libelle}</option>
+			</c:forEach>
+		</select>
+</script>
+<script type="jade/template" id="categorieFactureRabaisSpecial">
+		<select class="facturer" name="facture">
+			<option value="${viewBean.categorieFactureRabaisSpecial.id}">${viewBean.categorieFactureRabaisSpecial.libelle}</option>
+		</select>
 </script>
 
 <!--  Champ caché servant à la navigation -->
@@ -100,6 +128,7 @@ s}
 	<button id="addAssociation"><ct:FWLabel key="JSP_AJOUT"/></button>
 	</div>
 	<div id="associations">
+		<c:set var="COMPTEUR" scope="session" value="0"/>
 		<c:forEach var="entry" items="${viewBean.associationsCotisations}">
 			<div class="association">
 				<div>
@@ -117,51 +146,115 @@ s}
 							</c:choose>
 						</c:forEach>
 					</select>
-				
 					<ct:FWCodeSelectTag notation="class='genre'" name="genre" codeType="PTGENCOTAP" defaut="${entry.key.genre.value}"/>
 					</div>
 				</div>	
-				<button class="addCotisation"><img src="images/list-add.png" /></button>	
+				
+				<table style="width: 70%;">
+					<tr>
+						<td><button class="addCotisation"><img src="images/list-add.png" /></button></td>
+					</tr>	
+					<tr>
+						<td><ct:FWLabel key="JSP_ASSOCIATIONS_PROFESSIONNELLES_MASSE_SALARIALE"/></td>		
+						<td>			
+								<input class="masseAssociation" type="text" data-g-amount=" " value="${entry.key.associationEmployeur.masseAssociation.value}"/>
+						</td>
+					</tr>
+				</table>
+				
 				<table style="width: 70%;" class="cotisations">
 					<tr class="softHeader">
 						<td></td>
-						<td style="width: 20%"><ct:FWLabel key="JSP_COTISATION"/></td>
+						<td style="width: 20%">							
+							<ct:FWLabel key="JSP_COTISATION"/>&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" class="chShowInactive" id="chShowInactive_${COMPTEUR}">
+								<span style="font-style:italic"><label for="chShowInactive_${COMPTEUR}"><ct:FWLabel key="JSP_AFFICHER_INACTIVES"/></label></span>
+						</td>
 						<td><ct:FWLabel key="JSP_PERIODE_DEBUT"/></td>
 						<td><ct:FWLabel key="JSP_PERIODE_FIN"/></td>
-						<td><ct:FWLabel key="JSP_ASSOCIATIONS_PROFESSIONNELLES_MASSE_SALARIALE"/></td>
 						<td><ct:FWLabel key="JSP_FORFAIT"/></td>
-						<td><ct:FWLabel key="JSP_REDUCTION_FACTURE"/></td>
 					</tr>
 				<c:forEach var="associationCotisation" items="${entry.value}">
-					<tr class="cotisationMembre">
+					<!-- 				Déclaration des variables permettant de mettre en lecture seule les champs				 -->
+					<c:choose>
+						<c:when test="${associationCotisation.utiliseDansFacture}">
+							<c:set var="isReadOnly" scope="session" value="true"/>
+							<c:set var="stringReadOnly" scope="session" value="class='readOnly' readonly='readonly' disabled='disabled'"/>				
+						</c:when>
+						<c:otherwise>
+							<c:set var="isReadOnly" scope="session" value="false"/>
+							<c:set var="stringReadOnly" scope="session" value=""/>
+						</c:otherwise>
+					</c:choose>
+					<!-- 				Fin déclaration des variables permettant de mettre en lecture seule les champs				 -->
+					<!-- 				Déclaration des variables permettant de cacher les cotisations inactive				 -->
+					<c:choose>
+						<c:when test="${associationCotisation.active}">
+							<c:set var="stringHideIfInactive" scope="session" value=""/>
+							<c:set var="stringClassInactive" scope="session" value=""/>
+						</c:when>
+						<c:otherwise>
+							<c:set var="stringHideIfInactive" scope="session" value="style = 'display:none'"/>
+							<c:set var="stringClassInactive" scope="session" value="inactive"/>							
+						</c:otherwise>
+					</c:choose>
+					<!-- 				Fin déclaration des variables permettant de cacher les cotisations inactive				 -->
+					
+					<tr class="cotisationMembre ${stringClassInactive}" ${stringHideIfInactive}>
 						<td>
-							<button class="deleteCotisation">
-								<img src="images/edit-delete.png" />
-							</button>
-						</td>
-						<td>
-						<select style="width: 100%" class="idCotisation">
-							<option value="${associationCotisation.idCotisationAssociationProfessionnelle}">${associationCotisation.libelleCotisation}</option>
-						</select>
-						</td>					
-						<td><input class="periodeDebut" data-g-calendar="mandatory:true"  value="${associationCotisation.periodeDebutAsValue}"/></td>
-						<td><input class="periodeFin" data-g-calendar="" value="${associationCotisation.periodeFinAsValue}" /></td>
-						<td>
+							<input type="hidden" class="idAssociationCotisation" value="${associationCotisation.id}" />
+							<input type="hidden" class="pspy" value="${associationCotisation.spy}" />
 							<c:choose>
-								<c:when test="${associationCotisation.nonTaxe}">
-									<input class="masseSalariale" type="text" data-g-amount=" " value="${associationCotisation.masseSalariale.value}" class="readOnly" readonly="readonly" disabled="disabled" tabindex="-1" />
+								<c:when test="${not isReadOnly}">
+									<button class="deleteCotisation">
+										<img src="images/edit-delete.png" />
+									</button>
 								</c:when>
 								<c:otherwise>
-									<input class="masseSalariale" type="text" data-g-amount=" " value="${associationCotisation.masseSalariale.value}" />
+									<button title='<ct:FWLabel key="JSP_MESSAGE_FACTURE_UTILISEE"/>'>
+										<img src="images/cadenas.gif" />
+									</button>
 								</c:otherwise>
 							</c:choose>
 						</td>
-						<td><input class="forfait" type="text" data-g-amount="blankAsZero:false" value="${associationCotisation.forfait.value}" /></td>
-						<td><input class="reductionFacture" type="text" data-g-amount=" " value="${associationCotisation.reductionFacture.value}" /></td>
+						<td>
+						<select style="width: 100%" class="idCotisation" ${stringReadOnly}>
+							<option value="${associationCotisation.idCotisationAssociationProfessionnelle}">${associationCotisation.libelleCotisation}</option>
+						</select>
+						</td>
+						<td><input class="periodeDebut" data-g-calendar="mandatory:true"  value="${associationCotisation.periodeDebutAsValue}" ${stringReadOnly}/></td>
+						<td><input class="periodeFin" data-g-calendar="" value="${associationCotisation.periodeFinAsValue}" /></td>
+<!-- 						<td> -->
+<%-- 							<c:choose> --%>
+<%-- 								<c:when test="${associationCotisation.rabaisSpecial}"> --%>
+<!-- 									<select class="facturer" name="facture"> -->
+<%-- 										<option value="${viewBean.categorieFactureRabaisSpecial.id}">${viewBean.categorieFactureRabaisSpecial.libelle}</option> --%>
+<!-- 									</select>									 -->
+<%-- 								</c:when> --%>
+<%-- 								<c:otherwise> --%>
+<!-- 									<select class="facturer" name="facture"> -->
+<!-- 										<option value="0">Par défaut</option> -->
+<%-- 										<c:forEach var="code" items="${viewBean.categoriesFacturesUtilisables}"> --%>
+<%-- 											<c:choose> --%>
+<%-- 												<c:when test="${code.id == associationCotisation.facturer.value}"> --%>
+<%-- 													<option selected="selected" value="${code.id}">${code.libelle}</option> --%>
+<%-- 												</c:when> --%>
+<%-- 												<c:otherwise> --%>
+<%-- 													<c:if test="${not isReadOnly}"> --%>
+<%-- 														<option value="${code.id}">${code.libelle}</option> --%>
+<%-- 													</c:if> --%>
+<%-- 												</c:otherwise> --%>
+<%-- 											</c:choose>													 --%>
+<%-- 										</c:forEach> --%>
+<!-- 									</select> -->
+<%-- 								</c:otherwise> --%>
+<%-- 							</c:choose> --%>
+<!-- 						</td> -->
+						<td><input class="forfait" type="text" data-g-amount="blankAsZero:true" value="${associationCotisation.forfait.value}" ${stringReadOnly}/></td>
 				</tr><!-- cotisationMembre -->
 				</c:forEach>							
 			</table><!-- cotisations -->
-		</div><!-- association -->
+		</div><!-- association -->		
+		<c:set var="COMPTEUR" scope="session" value="${COMPTEUR+1}"/>
 		</c:forEach>
 	</div>
 	<div>

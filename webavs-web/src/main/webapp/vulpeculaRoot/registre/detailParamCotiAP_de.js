@@ -1,5 +1,6 @@
 var cotisationSearch;
 var typeListeMONTANT = [68031001,68031002,68031005];
+var typeListeFACTEUR = [68031008];
 
 
 $(function () {
@@ -14,7 +15,9 @@ $(function () {
 	$(".btnAjaxAdd").click(function () {
 		if(contains(typeListeMONTANT,$('#currentEntity\\.parametreCotisationAssociationSimpleModel\\.typeParam').val())){
 			isMontant();
-		}else{
+		} else if(contains(typeListeFACTEUR, $('#currentEntity\\.parametreCotisationAssociationSimpleModel\\.typeParam').val())){
+			isFacteur();
+		} else{
 			isTaux();
 		}
 	});
@@ -26,7 +29,9 @@ $(function () {
 	$('#currentEntity\\.parametreCotisationAssociationSimpleModel\\.typeParam').change(function() {
 		if(contains(typeListeMONTANT,$('#currentEntity\\.parametreCotisationAssociationSimpleModel\\.typeParam').val())){
 			isMontant();
-		}else{
+		}else if(contains(typeListeFACTEUR, $('#currentEntity\\.parametreCotisationAssociationSimpleModel\\.typeParam').val())){
+			isFacteur();
+		} else {
 			isTaux();
 		}
 	});
@@ -39,6 +44,7 @@ $(function () {
 			cotisationSearch = this;
 			this.capage(30, [10, 20, 30, 50, 100]);
 			this.addSearch();
+			$("select[name=currentEntity\\.parametreCotisationAssociationSimpleModel\\.typeParam] option[value='68031007']").remove();
 		},
 
 		clearFields: function () {
@@ -59,12 +65,20 @@ function validate() {
 
 function isTaux(){
 	document.getElementById('trMontant').disabled='disabled';
+	document.getElementById('trFacteur').disabled='disabled';
 	document.getElementById('trTaux').disabled='';
 }
 
 function isMontant(){
 	document.getElementById('trMontant').disabled='';
 	document.getElementById('trTaux').disabled='disabled';
+	document.getElementById('trFacteur').disabled='disabled';
+}
+
+function isFacteur(){
+	document.getElementById('trMontant').disabled='disabled';
+	document.getElementById('trTaux').disabled='disabled';
+	document.getElementById('trFacteur').disabled='';
 }
 
 function contains(a, obj) {

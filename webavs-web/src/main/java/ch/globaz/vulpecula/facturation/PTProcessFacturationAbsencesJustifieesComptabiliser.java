@@ -4,6 +4,8 @@ import globaz.globall.db.BProcess;
 import java.util.List;
 import ch.globaz.vulpecula.business.services.VulpeculaRepositoryLocator;
 import ch.globaz.vulpecula.domain.models.absencejustifiee.AbsenceJustifiee;
+import ch.globaz.vulpecula.domain.models.common.Date;
+import ch.globaz.vulpecula.domain.models.prestations.Beneficiaire;
 import ch.globaz.vulpecula.domain.models.prestations.Etat;
 
 /**
@@ -36,6 +38,9 @@ public final class PTProcessFacturationAbsencesJustifieesComptabiliser extends P
 
     private void majEtatAbsence(final AbsenceJustifiee absence) {
         absence.setEtat(Etat.COMPTABILISEE);
+        if (Beneficiaire.NOTE_CREDIT.equals(absence.getBeneficiaire()) || absence.getMontant().isNegative()) {
+            absence.setDateVersement(new Date(getPassage().getDateFacturation()));
+        }
         VulpeculaRepositoryLocator.getAbsenceJustifieeRepository().update(absence);
     }
 }

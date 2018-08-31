@@ -1,6 +1,5 @@
 package ch.globaz.vulpecula.documents.prestations;
 
-import globaz.globall.util.JANumberFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -11,6 +10,7 @@ import ch.globaz.vulpecula.documents.catalog.DocumentType;
 import ch.globaz.vulpecula.domain.models.absencejustifiee.AJParEmployeur;
 import ch.globaz.vulpecula.domain.models.absencejustifiee.AbsenceJustifiee;
 import ch.globaz.vulpecula.domain.models.absencejustifiee.AbsencesJustifiees;
+import globaz.globall.util.JANumberFormatter;
 
 public class DocumentAJ extends DocumentPrestations<AJParEmployeur> {
 
@@ -27,6 +27,16 @@ public class DocumentAJ extends DocumentPrestations<AJParEmployeur> {
     private static final String F_AC = "F_AC";
     private static final String F_MONTANT_VERSE = "F_MONTANT_VERSE";
     private static final String F_PERIODE = "F_PERIODE";
+
+    private static final String P_LAST_NOM_PRENOM = "P_LAST_NOM_PRENOM";
+    private static final String P_LAST_PRESTATION = "P_LAST_PRESTATION";
+    private static final String P_LAST_V = "P_LAST_V";
+    private static final String P_LAST_JOURS = "P_LAST_JOURS";
+    private static final String P_LAST_MONTANT_BRUT = "P_LAST_MONTANT_BRUT";
+    private static final String P_LAST_AVS = "P_LAST_AVS";
+    private static final String P_LAST_AC = "P_LAST_AC";
+    private static final String P_LAST_MONTANT_VERSE = "P_LAST_MONTANT_VERSE";
+    private static final String P_LAST_PERIODE = "P_LAST_PERIODE";
 
     private static final String P_TITRE = "P_TITRE";
     private static final String P_NOM_PRENOM = "P_NOM_PRENOM";
@@ -75,22 +85,44 @@ public class DocumentAJ extends DocumentPrestations<AJParEmployeur> {
 
     @Override
     public void fillFields() throws Exception {
+        setDocumentTitle(getCurrentElement().getEmployeur().getConvention().getCode() + "-"
+                + getCurrentElement().getEmployeur().getAffilieNumero());
         AbsencesJustifiees absencesJustifiees = getCurrentElement().getAbsencesJustifiees();
-
         Collection<Map<String, Object>> collection = new ArrayList<Map<String, Object>>();
 
+        int compteur = absencesJustifiees.size();
         for (AbsenceJustifiee absenceJustifiee : absencesJustifiees) {
-            Map<String, Object> ligne = new HashMap<String, Object>();
-            ligne.put(F_NOM_PRENOM, absenceJustifiee.getPosteTravail().getNomPrenomTravailleur());
-            ligne.put(F_PRESTATION, getCodeLibelle(absenceJustifiee.getTypePrestation()));
-            ligne.put(F_V, getCode(absenceJustifiee.getBeneficiaire().getValue()));
-            collection.add(ligne);
-            ligne.put(F_JOURS, String.valueOf(absenceJustifiee.getNombreDeJours()));
-            ligne.put(F_MONTANT_BRUT, JANumberFormatter.format(absenceJustifiee.getMontantBrut().getValue()));
-            ligne.put(F_AVS, JANumberFormatter.format(absenceJustifiee.getMontantAVS().getValue()));
-            ligne.put(F_AC, JANumberFormatter.format(absenceJustifiee.getMontantAC().getValue()));
-            ligne.put(F_MONTANT_VERSE, JANumberFormatter.format(absenceJustifiee.getMontantVerse().getValue()));
-            ligne.put(F_PERIODE, absenceJustifiee.getDateDebutAbsence() + " - " + absenceJustifiee.getDateFinAbsence());
+            if (--compteur == 0) {
+                // Dernière ligne doit être avec le totale
+                setParametres(P_LAST_NOM_PRENOM, absenceJustifiee.getPosteTravail().getNomPrenomTravailleur());
+                setParametres(P_LAST_PRESTATION, getCodeLibelle(absenceJustifiee.getTypePrestation()));
+                setParametres(P_LAST_V, getCode(absenceJustifiee.getBeneficiaire().getValue()));
+                setParametres(P_LAST_JOURS, String.valueOf(absenceJustifiee.getNombreDeJours()));
+                setParametres(P_LAST_MONTANT_BRUT,
+                        JANumberFormatter.format(absenceJustifiee.getMontantBrut().getValue()));
+                setParametres(P_LAST_AVS, JANumberFormatter.format(absenceJustifiee.getMontantAVS().getValue()));
+                setParametres(P_LAST_AC, JANumberFormatter.format(absenceJustifiee.getMontantAC().getValue()));
+                setParametres(P_LAST_MONTANT_VERSE,
+                        JANumberFormatter.format(absenceJustifiee.getMontantVerse().getValue()));
+                setParametres(P_LAST_PERIODE,
+                        absenceJustifiee.getDateDebutAbsence() + " - " + absenceJustifiee.getDateFinAbsence());
+            } else {
+                Map<String, Object> ligne = new HashMap<String, Object>();
+                ligne.put(F_NOM_PRENOM, absenceJustifiee.getPosteTravail().getNomPrenomTravailleur());
+                ligne.put(F_PRESTATION, getCodeLibelle(absenceJustifiee.getTypePrestation()));
+                ligne.put(F_V, getCode(absenceJustifiee.getBeneficiaire().getValue()));
+                ligne.put(F_JOURS, String.valueOf(absenceJustifiee.getNombreDeJours()));
+                ligne.put(F_MONTANT_BRUT, JANumberFormatter.format(absenceJustifiee.getMontantBrut().getValue()));
+                ligne.put(F_AVS, JANumberFormatter.format(absenceJustifiee.getMontantAVS().getValue()));
+                ligne.put(F_AC, JANumberFormatter.format(absenceJustifiee.getMontantAC().getValue()));
+                ligne.put(F_MONTANT_VERSE, JANumberFormatter.format(absenceJustifiee.getMontantVerse().getValue()));
+                ligne.put(F_PERIODE,
+                        absenceJustifiee.getDateDebutAbsence() + " - " + absenceJustifiee.getDateFinAbsence());
+                collection.add(ligne);
+            }
+        }
+        if (!collection.isEmpty()) {
+            setDataSource(collection);
         }
         setParametres(P_SOMME_MONTANTS_VERSES,
                 JANumberFormatter.format(absencesJustifiees.sommeMontantsVerses().getValue()));
@@ -107,7 +139,6 @@ public class DocumentAJ extends DocumentPrestations<AJParEmployeur> {
         setParametres(P_PERIODE, getLabel("DOCUMENT_PERIODE"));
         setParametres(P_PART_PATRONALE, getLabel("DOCUMENT_PART_PATRONALE"));
         setSignature();
-        setDataSource(collection);
     }
 
     private void setSignature() throws Exception {

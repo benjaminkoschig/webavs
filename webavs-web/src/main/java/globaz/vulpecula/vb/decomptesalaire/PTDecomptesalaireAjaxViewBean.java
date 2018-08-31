@@ -3,19 +3,28 @@ package globaz.vulpecula.vb.decomptesalaire;
 import globaz.framework.bean.FWAJAXViewBeanInterface;
 import globaz.framework.bean.FWListViewBeanInterface;
 import globaz.framework.bean.FWViewBeanInterface;
+import globaz.globall.db.BSessionUtil;
 import globaz.globall.db.BSpy;
 import globaz.globall.vb.BJadePersistentObjectViewBean;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.exception.JadePersistenceException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import org.apache.commons.lang.Validate;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import ch.globaz.specifications.SpecificationMessage;
 import ch.globaz.specifications.UnsatisfiedSpecificationException;
 import ch.globaz.vulpecula.business.services.VulpeculaRepositoryLocator;
 import ch.globaz.vulpecula.business.services.VulpeculaServiceLocator;
+import ch.globaz.vulpecula.domain.models.common.Annee;
 import ch.globaz.vulpecula.domain.models.common.Montant;
 import ch.globaz.vulpecula.domain.models.common.Periode;
+import ch.globaz.vulpecula.domain.models.common.Taux;
 import ch.globaz.vulpecula.domain.models.decompte.Absence;
+import ch.globaz.vulpecula.domain.models.decompte.CodeErreur;
+import ch.globaz.vulpecula.domain.models.decompte.CodeErreurDecompteSalaire;
 import ch.globaz.vulpecula.domain.models.decompte.CotisationDecompte;
 import ch.globaz.vulpecula.domain.models.decompte.Decompte;
 import ch.globaz.vulpecula.domain.models.decompte.DecompteSalaire;
@@ -83,6 +92,7 @@ public class PTDecomptesalaireAjaxViewBean extends BJadePersistentObjectViewBean
         decompteSalaire.setDecompte(decompte);
         decompteSalaire.setPosteTravail(posteTravail);
         convertGson2Model(decompteSalaireGSON, decompteSalaire);
+        decompteSalaire.setaTraiter(false);
 
         VulpeculaServiceLocator.getDecompteService().ajoutCotisationsPourPoste(decompteSalaire);
         try {
@@ -104,8 +114,15 @@ public class PTDecomptesalaireAjaxViewBean extends BJadePersistentObjectViewBean
                 getIdDecompte(), decompteSalaire.getSequence()));
         decompteSalaireGSON.setSpy(computeSpy(decompteSalaire.getSpy()));
         decompteSalaireGSON.setMasseAC2(decompteSalaire.getMasseAC2().getValue());
-        decompteSalaireGSON.setTauxContribuable(decompteSalaire.getTauxContribuableForCaissesSocialesAsValue());
-        decompteSalaireGSON.setIdTiersTravailleur(decompteSalaire.getPosteTravail().getTravailleurIdTiers());
+        // decompteSalaireGSON.setTauxContribuable(decompteSalaire.getTauxContribuableForCaissesSocialesAsValue(false));
+        decompteSalaireGSON.setTauxSaisieEbu(decompteSalaire.getTauxSaisieEbu());
+        if (decompteSalaire.getTravailleur().getIdTiers() == null
+                || decompteSalaire.getTravailleur().getIdTiers().isEmpty()) {
+            decompteSalaireGSON.setIdTiersTravailleur(null);
+        } else {
+            decompteSalaireGSON.setIdTiersTravailleur(decompteSalaire.getPosteTravail().getTravailleurIdTiers());
+        }
+
     }
 
     @Override
@@ -113,33 +130,34 @@ public class PTDecomptesalaireAjaxViewBean extends BJadePersistentObjectViewBean
         if (SEQUENCE_NEXT.equals(navigation)) {
             decompteSalaire = VulpeculaRepositoryLocator.getDecompteSalaireRepository()
                     .findNextByIdDecompteAndSequence(getIdDecompte(), sequence);
+            decompteSalaire.setTauxAfficheErreur(decompteSalaire.getTauxContribuableAfficheAsValue());
         } else if (SEQUENCE_PREVIOUS.equals(navigation)) {
             decompteSalaire = VulpeculaRepositoryLocator.getDecompteSalaireRepository()
                     .findPreviousByIdDecompteAndSequence(getIdDecompte(), sequence);
+            decompteSalaire.setTauxAfficheErreur(decompteSalaire.getTauxContribuableAfficheAsValue());
         } else {
             decompteSalaire = VulpeculaRepositoryLocator.getDecompteSalaireRepository().findById(idDecompteSalaire);
+            decompteSalaire.setTauxAfficheErreur(decompteSalaire.getTauxContribuableAfficheAsValue());
         }
 
-        // Conversion decompteSalaire en decompteSalaireGSON
-        decompteSalaireGSON = convertModel2Gson(decompteSalaire);
-        decompteSalaireGSON.setFirst(VulpeculaRepositoryLocator.getDecompteSalaireRepository().isFirstDecompteSalaire(
-                getIdDecompte(), decompteSalaire.getSequence()));
-        decompteSalaireGSON.setLast(VulpeculaRepositoryLocator.getDecompteSalaireRepository().isLastDecompteSalaire(
-                getIdDecompte(), decompteSalaire.getSequence()));
-
-        idPosteTravail = String.valueOf(decompteSalaire.getPosteTravail().getId());
-        descriptionPosteTravail = decompteSalaire.getPosteTravail().getDescriptionTravailleur();
-        sequence = decompteSalaire.getSequence();
+        loadInfosComplementaires();
     }
 
     @Override
-    public void update() throws ViewException {
+    public void update() throws JadePersistenceException {
         if (!isDeleted) {
             decompteSalaire = VulpeculaRepositoryLocator.getDecompteSalaireRepository().findById(
                     decompteSalaireGSON.getIdDecompteSalaire());
             decompteSalaire = convertGson2Model(decompteSalaireGSON, decompteSalaire);
 
-            if (cotisationMustReload) {
+            boolean isNewTravailleur = decompteSalaire.isNewTravailleur();
+            if (isNewTravailleur) {
+                Validate.notEmpty(idPosteTravail);
+                decompteSalaire.setPosteTravail(VulpeculaRepositoryLocator.getPosteTravailRepository().findById(
+                        idPosteTravail));
+            }
+
+            if (cotisationMustReload || isNewTravailleur) {
                 VulpeculaRepositoryLocator.getDecompteSalaireRepository().deleteCotisationsDecompte(decompteSalaire);
                 decompteSalaire.getCotisationsDecompte().clear();
                 VulpeculaServiceLocator.getDecompteService().ajoutCotisationsPourPoste(decompteSalaire);
@@ -155,35 +173,81 @@ public class PTDecomptesalaireAjaxViewBean extends BJadePersistentObjectViewBean
         }
 
         if (isPasserSuivant) {
-            decompteSalaire = VulpeculaRepositoryLocator.getDecompteSalaireRepository()
-                    .findNextByIdDecompteAndSequence(getIdDecompte(), sequence);
-            // Conversion decompteSalaire en decompteSalaireGSON
-            decompteSalaireGSON = convertModel2Gson(decompteSalaire);
+            if (decompteSalaire != null && decompteSalaire.getDecompte().isEBusiness()) {
+                decompteSalaire = VulpeculaRepositoryLocator.getDecompteSalaireRepository()
+                        .findNextAQuittancerByIdDecompteAndSequence(getIdDecompte(), sequence);
+                decompteSalaire.setTauxAfficheErreur(decompteSalaire.getTauxContribuableAfficheAsValue());
+            } else {
+                decompteSalaire = VulpeculaRepositoryLocator.getDecompteSalaireRepository()
+                        .findNextByIdDecompteAndSequence(getIdDecompte(), sequence);
+                decompteSalaire.setTauxAfficheErreur(decompteSalaire.getTauxContribuableAfficheAsValue());
+            }
+            loadInfosComplementaires();
+        }
+    }
+
+    private void loadInfosComplementaires() {
+        // Conversion decompteSalaire en decompteSalaireGSON
+        decompteSalaireGSON = convertModel2Gson(decompteSalaire);
+        decompteSalaireGSON.setFirst(VulpeculaRepositoryLocator.getDecompteSalaireRepository().isFirstDecompteSalaire(
+                getIdDecompte(), decompteSalaire.getSequence()));
+        if (decompteSalaire.getDecompte().isEBusiness()) {
+            decompteSalaireGSON.setLast(VulpeculaRepositoryLocator.getDecompteSalaireRepository()
+                    .isLastDecompteSalaireAQuittancer(getIdDecompte(), decompteSalaire.getSequence()));
+        } else {
             decompteSalaireGSON.setLast(VulpeculaRepositoryLocator.getDecompteSalaireRepository()
                     .isLastDecompteSalaire(getIdDecompte(), decompteSalaire.getSequence()));
-            decompteSalaireGSON.setFirst(VulpeculaRepositoryLocator.getDecompteSalaireRepository()
-                    .isFirstDecompteSalaire(getIdDecompte(), decompteSalaire.getSequence()));
-            idPosteTravail = String.valueOf(decompteSalaire.getPosteTravail().getId());
-            descriptionPosteTravail = decompteSalaire.getPosteTravail().getDescriptionTravailleur();
-            sequence = decompteSalaire.getSequence();
         }
+        if (decompteSalaire.getPosteTravail().getId().isEmpty()) {
+            idPosteTravail = null;
+        } else {
+            idPosteTravail = String.valueOf(decompteSalaire.getPosteTravail().getId());
+        }
+        decompteSalaireGSON.setTauxAAfficher(decompteSalaire.getTauxAfficheErreur());
+        descriptionPosteTravail = decompteSalaire.getPosteTravail().getDescriptionTravailleur();
+        sequence = decompteSalaire.getSequence();
+        decompteSalaireGSON.setEnErreur(getIsEnErreur(decompteSalaire));
     }
 
     private DecompteSalaireGSON convertModel2Gson(final DecompteSalaire decompteSalaire) {
         decompteSalaireGSON.setIdPosteTravail(decompteSalaire.getIdPosteTravail());
         decompteSalaireGSON.setIdDecompteSalaire(decompteSalaire.getId());
-        decompteSalaireGSON.setHeures("" + decompteSalaire.getHeures());
+        decompteSalaireGSON.setHeures(Double.toString(decompteSalaire.getHeures()));
         decompteSalaireGSON.setSalaireHoraire(decompteSalaire.getSalaireHoraire().toStringFormat());
         decompteSalaireGSON.setSalaireTotal(decompteSalaire.getSalaireTotal().toStringFormat());
-        decompteSalaireGSON.setTauxContribuable(decompteSalaire.getTauxContribuableForCaissesSocialesAsValue());
+
+        decompteSalaireGSON.setTauxContribuable(decompteSalaire.getTauxContribuableForCaissesSocialesAsValue(false));
+
+        // decompteSalaireGSON.setTauxAAfficher(decompteSalaire.getTauxAfficheErreur());
+        decompteSalaireGSON.setTauxAAfficher(decompteSalaire.getTauxContribuableAfficheAsValue());
+        // decompteSalaireGSON.setTauxSaisieEbu(decompteSalaire.getTauxSaisieEbu());
+        decompteSalaireGSON.setTauxSaisieEbu(decompteSalaire.getTauxSaisieEbu());
+
         decompteSalaireGSON.setSequence(decompteSalaire.getSequence());
         decompteSalaireGSON.setAbsences(decompteSalaire.getAbsences());
         decompteSalaireGSON.setMensuel(decompteSalaire.isMensuel());
         decompteSalaireGSON.setSpy(computeSpy(decompteSalaire.getSpy()));
         decompteSalaireGSON.setPeriodeDebut(decompteSalaire.getPeriode().getDateDebutAsSwissValue());
-        decompteSalaireGSON.setIdTiersTravailleur(decompteSalaire.getTravailleur().getIdTiers());
+        decompteSalaireGSON.setForcerFranchise0(decompteSalaire.isForcerFranchise0());
+        if (decompteSalaire.getTravailleur().getIdTiers() == null
+                || decompteSalaire.getTravailleur().getIdTiers().isEmpty()) {
+            decompteSalaireGSON.setIdTiersTravailleur(null);
+        } else {
+            decompteSalaireGSON.setIdTiersTravailleur(decompteSalaire.getTravailleur().getIdTiers());
+        }
         decompteSalaireGSON.setPeriodeFin(decompteSalaire.getPeriode().getDateFinAsSwissValue());
         decompteSalaireGSON.setMasseFranchise(decompteSalaire.getMontantFranchise().getValue());
+        decompteSalaireGSON.setRemarque(decompteSalaire.getRemarque());
+        decompteSalaireGSON.setCodeErreur(decompteSalaire.getListeCodeErreur());
+        decompteSalaireGSON.setQuittancer(!decompteSalaire.isaTraiter());
+        decompteSalaireGSON.setLigneSupprimee(false);
+        decompteSalaireGSON.setMajFinPoste(false);
+        for (CodeErreurDecompteSalaire code : decompteSalaire.getListeCodeErreur()) {
+            if (code.getCodeErreur().equals(CodeErreur.LIGNE_SUPPRIMEE)) {
+                decompteSalaireGSON.setLigneSupprimee(true);
+            }
+        }
+
         CotisationDecompte cotisationAC2 = decompteSalaire.getCotisationAC2();
         if (cotisationAC2 != null) {
             if (cotisationAC2.getMasseForcee()) {
@@ -194,6 +258,40 @@ public class PTDecomptesalaireAjaxViewBean extends BJadePersistentObjectViewBean
         } else {
             decompteSalaireGSON.setMasseAC2("0.00");
         }
+
+        decompteSalaireGSON.setCorrelationId(decompteSalaire.getCorrelationId());
+        decompteSalaireGSON.setNouveauTravailleur(decompteSalaire.isNewTravailleur());
+        if (decompteSalaire.getAnneeCotisations() != null) {
+            decompteSalaireGSON.setAnneeCotisations(decompteSalaire.getAnneeCotisations().getValue());
+        }
+
+        if (decompteSalaire.getStatus() != null) {
+            decompteSalaireGSON.setStatus(decompteSalaire.getStatus());
+        }
+
+        if (!JadeStringUtil.isBlankOrZero(decompteSalaire.getVacancesFeriesAsValue())) {
+            decompteSalaireGSON.setVacances(decompteSalaire.getVacancesFeriesAsValue());
+        } else {
+            decompteSalaireGSON.setVacances("0.00");
+        }
+        if (!JadeStringUtil.isBlankOrZero(decompteSalaire.getGratificationsAsValue())) {
+            decompteSalaireGSON.setGratifications(decompteSalaire.getGratificationsAsValue());
+        } else {
+            decompteSalaireGSON.setGratifications("0.00");
+        }
+        if (!JadeStringUtil.isBlankOrZero(decompteSalaire.getAbsencesJustifieesAsValue())) {
+            decompteSalaireGSON.setAbsencesJustifiees(decompteSalaire.getAbsencesJustifieesAsValue());
+        } else {
+            decompteSalaireGSON.setAbsencesJustifiees("0.00");
+        }
+        if (!JadeStringUtil.isBlankOrZero(decompteSalaire.getApgComplementaireSMAsValue())) {
+            decompteSalaireGSON.setApgComplSm(decompteSalaire.getApgComplementaireSMAsValue());
+        } else {
+            decompteSalaireGSON.setApgComplSm("0.00");
+        }
+
+        decompteSalaireGSON.setEnErreur(getIsEnErreur(decompteSalaire));
+
         return decompteSalaireGSON;
     }
 
@@ -209,22 +307,77 @@ public class PTDecomptesalaireAjaxViewBean extends BJadePersistentObjectViewBean
                     SpecificationMessage.DECOMPTE_SALAIRE_DATE_FIN_OBLIGATOIRE));
         }
 
-        decompteSalaire.setHeures(unformatNumber(decompteSalaireGSON.getHeures()));
-        decompteSalaire.setSalaireHoraire(new Montant(decompteSalaireGSON.getSalaireHoraire()));
-        decompteSalaire.setSalaireTotal(new Montant(decompteSalaireGSON.getSalaireTotal()));
-        decompteSalaire.setPeriode(new Periode(decompteSalaireGSON.getPeriodeDebut(), decompteSalaireGSON
+        /*
+         * Contrôle que la période de la ligne de salaire se trouve bien sans la période du décompte.
+         */
+        Decompte decompte = VulpeculaRepositoryLocator.getDecompteRepository().findById(idDecompte);
+        if (!checkPeriodesValidity(decompte, decompteSalaireGSON)) {
+            throw new IllegalStateException(BSessionUtil.getSessionFromThreadContext().getLabel(
+                    "ERROR_VALIDATION_PERIODE_DECOMPTE_SALAIRE"));
+        }
+        decompteSalaire2.setHeures(unformatNumber(decompteSalaireGSON.getHeures()));
+        decompteSalaire2.setSalaireHoraire(new Montant(decompteSalaireGSON.getSalaireHoraire()));
+        decompteSalaire2.setSalaireTotal(new Montant(decompteSalaireGSON.getSalaireTotal()));
+        decompteSalaire2.setPeriode(new Periode(decompteSalaireGSON.getPeriodeDebut(), decompteSalaireGSON
                 .getPeriodeFin()));
-        decompteSalaire.setSequence(decompteSalaireGSON.getSequence());
-        decompteSalaire.setMontantFranchise(new Montant(decompteSalaireGSON.getMasseFranchise()));
+        decompteSalaire2.setSequence(decompteSalaireGSON.getSequence());
+        decompteSalaire2.setMontantFranchise(new Montant(decompteSalaireGSON.getMasseFranchise()));
+        decompteSalaire2.setTauxAfficheErreur(decompteSalaireGSON.getTauxAAfficher());
+        decompteSalaire2.setTauxForEbu(new Taux(decompteSalaireGSON.getTauxContribuable()));
+        decompteSalaire2.setTauxSaisieEbu(decompteSalaireGSON.getTauxSaisieEbu());
+        decompteSalaire2.setForcerFranchise0(decompteSalaireGSON.isForcerFranchise0());
 
         List<Absence> absences = new ArrayList<Absence>();
         for (AbsenceGSON absenceGSON : decompteSalaireGSON.getAbsencesGSON()) {
-            Absence absence = absenceGSON.convertToDomain(decompteSalaire);
+            Absence absence = absenceGSON.convertToDomain(decompteSalaire2);
             absences.add(absence);
         }
-        decompteSalaire.setAbsences(absences);
 
-        return decompteSalaire;
+        decompteSalaire2.setAbsences(absences);
+        decompteSalaire2.setaTraiter(!decompteSalaireGSON.isQuittancer());
+        // On ne traite plus la maj du poste via les décomptes
+        // decompteSalaire2.setMajFinPoste(decompteSalaireGSON.isMajFinPoste());
+        decompteSalaire2.setMajFinPoste(false);
+        if (decompteSalaireGSON.getAnneeCotisations() > 0) {
+            decompteSalaire2.setAnneeCotisations(new Annee(decompteSalaireGSON.getAnneeCotisations()));
+        }
+
+        if (decompteSalaireGSON.getStatus() != null) {
+            decompteSalaire2.setStatus(decompteSalaireGSON.getStatus());
+        }
+
+        return decompteSalaire2;
+    }
+
+    /**
+     * Permet de contrôler que la période du salaire ne se trouve pas en dehors de la période du décompte.
+     * 
+     * @param decompte Décompte à tenir compte pour la période.
+     * @param decompteSalaire Salaire à tenir compte pour la comparaison avec la période du décompte.
+     * @return Vrai si la période du salaire ne se trouve pas en dehors de la période du décompte.
+     */
+    private Boolean checkPeriodesValidity(Decompte decompte, DecompteSalaireGSON decompteSalaire) {
+
+        /*
+         * Formattage correct des périodes pour le contrôle
+         */
+        DateTimeFormatter formatter = DateTimeFormat.forPattern("MM.yyyy");
+        Integer anneeDebutDecompte = formatter.parseDateTime(decompte.getPeriodeDebutAsSwissValue()).getYear();
+        Integer anneeFinDecompte = formatter.parseDateTime(decompte.getPeriodeFinAsSwissValue()).getYear();
+
+        formatter = DateTimeFormat.forPattern("dd.MM.yyyy");
+        Integer anneeDebutDecompteSalaire = formatter.parseDateTime(decompteSalaire.getPeriodeDebut()).getYear();
+        Integer anneeFinDecompteSalaire = formatter.parseDateTime(decompteSalaire.getPeriodeFin()).getYear();
+
+        /*
+         * Contrôle que la période de la ligne de salaire se trouve bien à l'intérieur de la période de décompte.
+         */
+
+        if (anneeDebutDecompteSalaire < anneeDebutDecompte || anneeFinDecompteSalaire > anneeFinDecompte) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -434,5 +587,10 @@ public class PTDecomptesalaireAjaxViewBean extends BJadePersistentObjectViewBean
             return false;
         }
         return decompteSalaire.getDecompte().isEditable();
+    }
+
+    public boolean getIsEnErreur(DecompteSalaire decompteSalaire) {
+        return !decompteSalaire.getPeriodeDebut().getAnnee()
+                .equals(decompteSalaire.getDecompte().getPeriodeDebut().getAnnee());
     }
 }

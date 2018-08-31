@@ -10,8 +10,6 @@
 				comment="si l'employeur a oui ou non un BVR" />
 			<field name="typeFacturation" column="CS_TYPE_FACTURATION" type="NUMERIC"
 				comment="type de facturation" />
-			<field name="editerSansTravailleur" column="EDITER_SANS_TRAV" type="BOOLEAN"
-				comment="définit si le décompte peut être édité si pas de travailleur" />
 		</fields>
 		<search-definition>
 			<search-group operator="AND">

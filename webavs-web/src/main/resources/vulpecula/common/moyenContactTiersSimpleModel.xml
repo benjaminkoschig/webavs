@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<simple-model className="ch.globaz.vulpecula.external.models.MoyenContactTiersSimpleModel">
+		<table name="TIMCOMP" hasCreationSpy="false" hasSpy="true" 
+			alwaysIncrementPrimaryKey="false" />
+		<fields>
+			<primary-key name="idContact" column="HLICON" />
+			<field name="typeContact" column="HLTTCO" type="NUMERIC" />
+			<field name="valeur" column="HLCONT" type="STRING" />
+			<field name="application" column="HLAPPL" type="NUMERIC" />
+		</fields>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forId" field-ref="idContact" operation="EQUALS" />
+			</search-group>
+		</search-definition>
+		
+	</simple-model>
+</model-mapping>

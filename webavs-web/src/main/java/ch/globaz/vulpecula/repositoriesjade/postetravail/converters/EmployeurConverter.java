@@ -41,7 +41,6 @@ public final class EmployeurConverter implements
         }
 
         employeur.setBvr(employeurSimpleModel.getBvr());
-        employeur.setEditerSansTravailleur(employeurSimpleModel.getEditerSansTravailleur());
         employeur.setSpy(employeurSimpleModel.getSpy());
         return employeur;
     }
@@ -69,7 +68,6 @@ public final class EmployeurConverter implements
             employeurSimpleModel.setTypeFacturation(employeur.getTypeFacturation().getValue());
         }
         employeurSimpleModel.setBvr(employeur.isBvr());
-        employeurSimpleModel.setEditerSansTravailleur(employeur.isEditerSansTravailleur());
         employeurSimpleModel.setSpy(employeur.getSpy());
         return employeurSimpleModel;
     }
@@ -78,7 +76,6 @@ public final class EmployeurConverter implements
     public Employeur convertToDomain(EmployeurSimpleModel employeurSimpleModel) {
         Employeur employeur = new Employeur();
         employeur.setBvr(employeurSimpleModel.getBvr());
-        employeur.setEditerSansTravailleur(employeurSimpleModel.getEditerSansTravailleur());
         employeur.setSpy(employeurSimpleModel.getSpy());
         return employeur;
     }

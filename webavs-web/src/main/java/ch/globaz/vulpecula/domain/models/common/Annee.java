@@ -48,6 +48,10 @@ public final class Annee implements ValueObject, Comparable<Annee> {
         this(Integer.valueOf(annee));
     }
 
+    public Annee(Date date) {
+        this(date.getYear());
+    }
+
     @Override
     public int compareTo(Annee other) {
         return annee - other.annee;
@@ -156,6 +160,10 @@ public final class Annee implements ValueObject, Comparable<Annee> {
         return new Annee(annee + 1);
     }
 
+    public Annee previous() {
+        return previous(1);
+    }
+
     public Annee previous(int nb) {
         return new Annee(annee - nb);
     }
@@ -172,6 +180,11 @@ public final class Annee implements ValueObject, Comparable<Annee> {
             return annee.getValue() == getValue();
         }
         return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return getValue();
     }
 
     @Override

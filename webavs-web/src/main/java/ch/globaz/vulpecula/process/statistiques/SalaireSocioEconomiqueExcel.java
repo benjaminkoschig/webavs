@@ -104,7 +104,7 @@ public class SalaireSocioEconomiqueExcel extends AbstractListExcel {
                     salaireAnnee = salaireAnnee.add(decompte.getSalaireTotal());
                 }
 
-                createCell(salaireAnnee);
+                createCell(salaireAnnee, getStyleMontantNoBorder());
                 createCell(getSession().getCodeLibelle(poste.getQualificationAsValue()));
             }
         }

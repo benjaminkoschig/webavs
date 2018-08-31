@@ -8,6 +8,7 @@ import ch.globaz.naos.business.model.PlanCaisseSimpleModel;
 
 public class CotisationComplexModel extends JadeComplexModel {
     public static final String SEARCH_BY_ID = "searchById";
+    public static final String SEARCH_ALL_BY_ID = "searchAllById";
 
     private CotisationSimpleModel cotisationSimpleModel;
     private PlanCaisseSimpleModel planCaisseSimpleModel;

@@ -14,7 +14,7 @@ public abstract class AbstractDaemon implements Runnable {
             JadeEncrypterNotFoundException, Exception {
 
         if (password == null) {
-            throw new IllegalStateException("user non renseigné. ");
+            throw new IllegalStateException("password non renseigné. ");
         }
         // this.password = JadeDefaultEncrypters.getJadeDefaultEncrypter().decrypt(passSedex);
         this.password = password;
@@ -24,7 +24,7 @@ public abstract class AbstractDaemon implements Runnable {
             JadeEncrypterNotFoundException, Exception {
 
         if (username == null) {
-            throw new IllegalStateException("password non renseigné. ");
+            throw new IllegalStateException("user non renseigné. ");
         }
         // this.username = JadeDefaultEncrypters.getJadeDefaultEncrypter().decrypt(userSedex);
         this.username = username;

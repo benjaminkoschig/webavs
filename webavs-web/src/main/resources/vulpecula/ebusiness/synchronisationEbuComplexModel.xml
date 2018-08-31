@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model
+		className="ch.globaz.vulpecula.business.models.ebusiness.SynchronisationEbuComplexModel">
+
+		<root-model name="synchronisationEbuSimpleModel"
+			model-ref="ch.globaz.vulpecula.business.models.ebusiness.SynchronisationEbuSimpleModel" />
+		
+		<linked-model name="decompteSimpleModel"
+			model-ref="ch.globaz.vulpecula.business.models.decomptes.DecompteSimpleModel"
+			join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="id"
+					operation="EQUALS" field-ref="synchronisationEbuSimpleModel.idDecompte" />
+			</join-group>
+		</linked-model>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forDateSynchronisationIsEmpty" field-ref="synchronisationEbuSimpleModel.dateSynchronisation"
+					operation="NULL" />
+				<search-field name="forIdEmployeur" field-ref="decompteSimpleModel.idEmployeur" operation="EQUALS" />	
+				<search-field name="yearsMonthFrom" field-ref="decompteSimpleModel.periodeDebut" operation="GREATER_OR_EQUALS" />
+				<search-field name="yearsMonthTo" field-ref="decompteSimpleModel.periodeFin" operation="LESS_OR_EQUALS" />	
+				<search-field name="status" field-ref="decompteSimpleModel.etat" operation="EQUALS" />
+				<search-field name="forId" field-ref="synchronisationEbuSimpleModel.id" operation="EQUALS" />
+			</search-group>
+		</search-definition>
+	</complexe-model>
+</model-mapping>

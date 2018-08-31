@@ -28,7 +28,7 @@
 <c:set var="bButtonNew" value="false" scope="page" />
 <%-- <c:set var="bButtonValidate" value="true" scope="page" /> --%>
 <%-- <c:set var="bButtonCancel" value="true" scope="page" /> --%>
-<%-- <c:set var="bButtonDelete" value="true" scope="page"/> --%>
+<c:set var="bButtonDelete" value="${viewBean.ebusiness}" scope="page"/>
 <%-- <c:set var="bButtonUpdate" value="true" scope="page" /> --%>
 
 <%--  ********************************************************************** JS CSS ***************************************************************************--%>
@@ -63,6 +63,7 @@ globazGlobal.decompteViewService = '${viewBean.decompteViewService}';
 globazGlobal.IS_EDITABLE = ${viewBean.decompte.editable};
 globazGlobal.isEdition = ${viewBean.edition};
 globazGlobal.echecControler = ${viewBean.echecControler};
+globazGlobal.echecEBusinessControler = ${viewBean.echecEBusinessControler};
 globazGlobal.isControlable = ${decompte.controlable};
 </script>
 <%--  ******************************************************************* Corps de la page ******************************************************************* --%>
@@ -83,7 +84,7 @@ globazGlobal.isControlable = ${decompte.controlable};
 	</c:if>	
 			<c:if test="${decompte.periodique or decompte.complementaire}">
 			<tr>
-				<td class="label">
+				<td>
 					<label><ct:FWLabel key='JSP_DATE_RAPPEL'/></label>
 				</td>
 				<td><input type="text" id="dateRappel" name="dateRappel" value="${decompte.dateRappelAsSwissValue}" data-g-calendar=" " /></td>
@@ -94,6 +95,7 @@ globazGlobal.isControlable = ${decompte.controlable};
 					<td><ct:FWCodeSelectTag name="motifProlongation" codeType="PTMOTIFPR" wantBlank="true" defaut="${viewBean.decompte.motifProlongation.value}"/></td>
 				</td>
 			</tr>
+			<c:if test="${decompte.notEbusiness}">
 			<tr>
 				<td width="20%">
 					<label><ct:FWLabel key='JSP_DECOMPTE_RECU_LE'/></label>
@@ -102,6 +104,7 @@ globazGlobal.isControlable = ${decompte.controlable};
 					<input type="text" id="date_reception" name="dateReception" value="${viewBean.dateReception}" data-g-calendar=" " />
 				</td>   
 			</tr>
+			</c:if>
 		</c:if> 
 		<c:if test="${decompte.controleEmployeur}">
 			<tr>
@@ -126,7 +129,7 @@ globazGlobal.isControlable = ${decompte.controlable};
 				</td>
 			</tr>	
 		</c:if>	
-		<c:if test="${decompte.controleEmployeur or decompte.special}">
+		<c:if test="${decompte.controleEmployeur or decompte.traiterAsSpecial}">
 			<tr>
 				<td style="width:20%">
 					<label><ct:FWLabel key='JSP_INTERETS_MORATOIRES'/></label>
@@ -136,6 +139,7 @@ globazGlobal.isControlable = ${decompte.controlable};
 				</td>
 			</tr>
 		</c:if>
+		<c:if test="${decompte.notEbusiness}">
 		<tr>
 			<td>
 				<label><ct:FWLabel key='JSP_DECOMPTE_MONTANT_CONTROLE'/></label>
@@ -151,6 +155,7 @@ globazGlobal.isControlable = ${decompte.controlable};
 				</c:choose>
 			</td>
 		</tr>
+		</c:if>
 		<tr>
 			<td>
 				<label for="controleAC2" ><ct:FWLabel key='JSP_CONTROLE_AC2'/></label>
@@ -223,7 +228,7 @@ globazGlobal.isControlable = ${decompte.controlable};
 					</c:if>
 					<c:if test="${decompte.devalidable}"> 
   						<input class="btnCtrl" id="btnDevalide" type="button"  value='<ct:FWLabel key="JSP_DEVALIDE_BTN"/>' onclick="devalider(${viewBean.decompte.id})"/>	
-					</c:if> 
+					</c:if>
 					
 					<c:if test="${viewBean.etat == ETAT_ANNULE or viewBean.etat == ETAT_GENERE or viewBean.etat == ETAT_OUVERT}">
 						<c:if test="${bButtonDelete}">
@@ -258,6 +263,7 @@ globazGlobal.isControlable = ${decompte.controlable};
 							<th><ct:FWLabel key='JSP_DECOMPTE_SALAIRE_TOTAL'/></th>
 							<th><ct:FWLabel key='JSP_DECOMPTE_ABSENCES'/></th>
 							<th><ct:FWLabel key='JSP_DECOMPTE_TAUX_CONTRIBUABLE'/></th>
+							<th><ct:FWLabel key='JSP_DECOMPTE_STATUS'/></th>
 						</tr>
 						<tr>
 							<th></th>
@@ -276,9 +282,12 @@ globazGlobal.isControlable = ${decompte.controlable};
 							<th></th>
 							<th></th>
 							<th></th>
+							<th class="notSortable">
+								<input style="text-align:center;" id="status" type="checkbox" />
+							</th>
 						</tr>
 			  			<tr><!-- Ajout d'un decompte salaire -->
-			  				<td style="text-align: left" colspan="10">
+			  				<td style="text-align: left" colspan="11">
 			  					<ct:ifhasright element="${userActionSalaire}" crud="c">
 			  					<c:if test="${viewBean.decompte.editable}">
 				  					<a href="vulpecula?userAction=${userActionSalaire}.afficher&amp;_method=add&amp;idDecompte=${viewBean.entity.id}" class="ajouterSalaire">

@@ -3,6 +3,7 @@ package ch.globaz.vulpecula.documents.rectificatif;
 import globaz.framework.printing.itext.FWIDocumentManager;
 import java.util.Collection;
 import java.util.List;
+import java.util.TreeMap;
 import ch.globaz.vulpecula.business.services.VulpeculaRepositoryLocator;
 import ch.globaz.vulpecula.documents.DocumentConstants;
 import ch.globaz.vulpecula.documents.catalog.DocumentPrinter;
@@ -47,12 +48,24 @@ public class DocumentRectificatifPrinter extends DocumentPrinter<Decompte> {
     @Override
     public void retrieve() {
         List<Decompte> decomptes = VulpeculaRepositoryLocator.getDecompteRepository().findByIdInWithDependencies(ids);
+        TreeMap<String, Decompte> decomptesForRectificationTri = new TreeMap<String, Decompte>();
         for (Decompte decompte : decomptes) {
+            String key = getKey(decompte);
             decompte.setLignes(VulpeculaRepositoryLocator.getDecompteSalaireRepository()
                     .findByIdDecompteWithDependencies(decompte.getId()));
             decompte.setAdressePrincipale(VulpeculaRepositoryLocator.getAdresseRepository()
                     .findAdressePrioriteCourrierByIdTiers(decompte.getIdTiers()));
+            decomptesForRectificationTri.put(key, decompte);
         }
-        setElements(decomptes);
+        setElements(decomptesForRectificationTri.values());
+    }
+
+    /**
+     * @param decompte
+     * @return
+     */
+    private String getKey(Decompte decompte) {
+        String key = decompte.getEmployeur().getConvention().getCode();
+        return key + decompte.getEmployeur().getRaisonSociale() + "-" + decompte.getId();
     }
 }

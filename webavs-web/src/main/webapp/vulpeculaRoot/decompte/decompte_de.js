@@ -16,6 +16,18 @@ $(function() {
 	    }
 	});
 	
+	$('#boutonTO').click(function() {
+		var options = {
+				serviceClassName:globazGlobal.decompteViewService,
+				serviceMethodName:'genererListeTOPrevisionnelle',
+				parametres:' ',
+				callBack: function() {
+					alert(globazGlobal.libelleImpressionDemarree);
+				}
+		}
+		vulpeculaUtils.lancementService(options);
+	});
+	
 	$('#btnRechercher').click(function() {
 		find();
 	});

@@ -119,13 +119,17 @@ public class StyleFactory {
 
     private void setFormat(HSSFCellStyle style, FieldType type) {
         switch (type) {
+            case NOMBRE_1D:
+                style.setDataFormat(wb.createDataFormat().getFormat(FORMAT_NOMBRE_1D));
+                break;
+            // le pourcentage de Excel est 1 unité 0 100.00%
+            // absence du break pour appliquer le format Montant
+            case POURCENT:
+                style.setDataFormat(wb.createDataFormat().getFormat(FORMAT_POURCENT));
+                break;
             case MONTANT:
                 style.setDataFormat(FORMAT_MONTANT);
                 break;
-            case POURCENT:
-                style.setDataFormat(wb.createDataFormat().getFormat(FORMAT_POURCENT));
-            case NOMBRE_1D:
-                style.setDataFormat(wb.createDataFormat().getFormat(FORMAT_NOMBRE_1D));
             default:
                 break;
         }
@@ -201,7 +205,7 @@ public class StyleFactory {
 
     /**
      * défini une police gras
-     * 
+     *
      * @param wb
      * @return la font gras
      */

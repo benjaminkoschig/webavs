@@ -24,7 +24,7 @@
 		  	</c:otherwise>
 	  	</c:choose>
 	  		<td>
-	  			<button class="supprimerSalaire">Supprimer</button>
+	  			<button class="supprimerSalaire"><ct:FWLabel key="JSP_SUPPRIMER"/></button>
 	  		</td>
 			<td><c:out value="${ligneDecompte.posteTravail.id}" /></td>
 			<td style="text-align:left;"><c:out value="${ligneDecompte.posteTravail.travailleur.designation1} ${ligneDecompte.posteTravail.travailleur.designation2}" /></td>			

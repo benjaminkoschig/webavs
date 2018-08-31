@@ -26,8 +26,11 @@ public class ListeTravailleursPaiementSyndicatProcess extends ListeSyndicatsProc
                 DocumentConstants.LISTES_SYNDICATS_TRAVAILLEURS_PAIEMENT_SYNDICAT_NAME);
         listeTravailleursSalaireSyndicatExcel.setAffiliationsSyndicats(affiliationsGroupBySyndicat);
         listeTravailleursSalaireSyndicatExcel.setParametresSyndicats(parametresSyndicats);
+        listeTravailleursSalaireSyndicatExcel.setIdTravailleur(idTravailleur);
         listeTravailleursSalaireSyndicatExcel.setAnnee(annee);
+        listeTravailleursSalaireSyndicatExcel.setLog(getMemoryLog());
         listeTravailleursSalaireSyndicatExcel.create();
+        getMemoryLog().logMessage("Salut", "Salut", "Salut");
         registerAttachedDocument(JadePublishDocumentInfoProvider.newInstance(this),
                 listeTravailleursSalaireSyndicatExcel.getOutputFile());
     }

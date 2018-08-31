@@ -2,6 +2,8 @@ package ch.globaz.vulpecula.domain.repositories.absencejustifiee;
 
 import java.util.List;
 import ch.globaz.vulpecula.domain.models.absencejustifiee.AbsenceJustifiee;
+import ch.globaz.vulpecula.domain.models.common.Annee;
+import ch.globaz.vulpecula.domain.models.common.Date;
 import ch.globaz.vulpecula.domain.models.common.Periode;
 import ch.globaz.vulpecula.domain.repositories.Repository;
 
@@ -48,5 +50,31 @@ public interface AbsenceJustifieeRepository extends Repository<AbsenceJustifiee>
             Periode periode, String orderBy);
 
     List<AbsenceJustifiee> findByIdPassage(String idPassage, String idEmployeur);
+
+    List<AbsenceJustifiee> findByIdTravailleurAndPeriod(String idTravailleur, String dateDebut, String dateFin);
+
+    List<AbsenceJustifiee> findByIdTravailleurAndDatePassageFacturation(String idTravailleur, String dateDebut,
+            String dateFin);
+
+    List<AbsenceJustifiee> findByIdTravailleurForDateVersement(String idTravailleur, String dateDebut, String dateFin);
+
+    List<AbsenceJustifiee> findSalairesPourAnnee(Annee annee, String idConvention);
+
+    /**
+     * Retourne les absences justifiées dont la date de versement est contenu dans l'année pour un employeur spécifique.
+     * 
+     * @param idEmployeur String représentant un id employeur
+     * @param annee Année déterminant la date de versement du début à la fin de l'année
+     * @return Liste d'absences justifiées
+     */
+    List<AbsenceJustifiee> findByIdEmployeurForDateVersementInAnnee(String idEmployeur, Annee annee);
+
+    List<AbsenceJustifiee> findByIdEmployeurForDateVersementInAnnee(String idEmployeur, Date dateDebut, Date dateFin);
+
+    List<AbsenceJustifiee> findByIdTravailleurForDateVersementAndIdEmployeur(String idTravailleur, String dateDebut,
+            String dateFin, String idEmployeur);
+
+    List<AbsenceJustifiee> findByIdTravailleurAndDatePassageFacturationAndIdEmployeur(String idTravailleur,
+            String dateDebut, String dateFin, String idEmployeur);
 
 }

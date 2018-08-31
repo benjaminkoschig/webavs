@@ -11,10 +11,20 @@ import ch.globaz.vulpecula.external.models.CotisationComplexModel;
 public class AdhesionCotisationPosteTravailComplexModel extends JadeComplexModel {
     private AdhesionCotisationPosteTravailSimpleModel adhesionCotisationPosteTravail;
     private CotisationComplexModel cotisationComplexModel;
+    private PosteTravailComplexModel posteTravailComplexModel;
 
     public AdhesionCotisationPosteTravailComplexModel() {
         adhesionCotisationPosteTravail = new AdhesionCotisationPosteTravailSimpleModel();
         cotisationComplexModel = new CotisationComplexModel();
+        posteTravailComplexModel = new PosteTravailComplexModel();
+    }
+
+    public PosteTravailComplexModel getPosteTravailComplexModel() {
+        return posteTravailComplexModel;
+    }
+
+    public void setPosteTravailComplexModel(PosteTravailComplexModel posteTravailComplexModel) {
+        this.posteTravailComplexModel = posteTravailComplexModel;
     }
 
     public AdhesionCotisationPosteTravailSimpleModel getAdhesionCotisationPosteTravail() {

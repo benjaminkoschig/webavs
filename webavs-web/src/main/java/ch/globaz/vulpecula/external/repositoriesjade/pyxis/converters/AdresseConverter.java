@@ -50,6 +50,7 @@ public final class AdresseConverter {
         adresse.setLocalite(adresseTiersDetail.getFields().get(AdresseTiersDetail.ADRESSE_VAR_LOCALITE));
         adresse.setNpa(adresseTiersDetail.getFields().get(AdresseTiersDetail.ADRESSE_VAR_NPA));
         adresse.setPays(adresseTiersDetail.getFields().get(AdresseTiersDetail.ADRESSE_VAR_PAYS));
+        adresse.setIsoPays(adresseTiersDetail.getFields().get(AdresseTiersDetail.ADRESSE_VAR_PAYS_ISO));
         adresse.setRue(adresseTiersDetail.getFields().get(AdresseTiersDetail.ADRESSE_VAR_RUE));
         adresse.setRueNumero(adresseTiersDetail.getFields().get(AdresseTiersDetail.ADRESSE_VAR_NUMERO));
         return adresse;

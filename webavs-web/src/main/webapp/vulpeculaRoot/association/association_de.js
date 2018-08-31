@@ -40,6 +40,7 @@ globazGlobal.associations = (function() {
 		$('#addAssociation').click(function () {
 			var nouvelleAssociation = $($('#nouvelleAssociation').html());
 			$associations.append(nouvelleAssociation);
+			notationManager.addNotationOnFragmentWithoutEvents($associations);
 		});
 		
 		$associations.on('click','.deleteAssociation', function() {
@@ -52,7 +53,11 @@ globazGlobal.associations = (function() {
 			var $cotisationMembre = $(this).closest('.cotisationMembre');
 			var $association = $cotisationMembre.closest('.association');
 			
-			$cotisationMembre.remove();
+			if ($cotisationMembre.hasClass("justAdded")) {
+				$cotisationMembre.remove();
+			} else {
+				$cotisationMembre.toggleClass("toDelete");
+			}
 			
 			var nbCotisations = $association.find('.cotisationMembre').length;
 			if(nbCotisations==0) {
@@ -91,8 +96,27 @@ globazGlobal.associations = (function() {
 			findDefautMasseSalariale($(this).val(),function(taux){
 				var strTaux = taux;
 				$masseSalariale.val(strTaux);
-				});
+			});
+			
+			var $facturer = $(this).closest('.cotisationMembre').find('.facturer');
+			findDefautFacturer($(this).val(),function(csFacturer){
+				$facturer.closest('.selectCatFactu').html(getTemplateSelectSelonFacturer(csFacturer))
+				$facturer.val(csFacturer);
+			});
 		});
+		
+		$associations.on('click','.chShowInactive',function() {
+			$association = $(this).closest('.association').find(".inactive");
+			$association.toggle();
+		});
+	}
+	
+	function getTemplateSelectSelonFacturer(facturer) {
+		if(facturer==globazGlobal.csRabaisSpecial) {
+			return $('#categorieFactureRabaisSpecial').html()
+		} else {
+			return $('#categorieFactures').html();
+		}
 	}
 	
 	function setValueToInputs($inputs, value) {
@@ -131,7 +155,7 @@ globazGlobal.associations = (function() {
 		var $cotisations = $(association.find('.cotisationMembre'));
 		var nbCotisations = $cotisations.length;
 		
-		//Si il existe déjà une cotisation, on reprend son taux de réduction de facture par défaut.
+		//S'il existe déjà une cotisation, on reprend son taux de réduction de facture par défaut.
 		if(nbCotisations > 0) {
 			var $lastCotisation = $($cotisations.get(nbCotisations-1));
 			reductionFacture = $lastCotisation.find('.reductionFacture').val();
@@ -153,25 +177,30 @@ globazGlobal.associations = (function() {
 	function creerNouvelleCotisation(association, genre, cotisations, selectedId) {
 		var reductionFacture = globazGlobal.reductionFactureDefaut;
 		var $cotisations = association.find('.cotisations');
-		var nouvelleCotisation = '<tr class="cotisationMembre">';
-		nouvelleCotisation += '<td><button class="deleteCotisation"><img src="images/edit-delete.png" /></button></td>';
+		var nouvelleCotisation = '<tr class="cotisationMembre justAdded">';
+		nouvelleCotisation += '<td><input type="hidden" class="idAssociationCotisation" value="0" /><button class="deleteCotisation"><img src="images/edit-delete.png" /></button></td>';
 		nouvelleCotisation += '<td><select style="width:100%" class="idCotisation">';
 		var nbCotisations = cotisations.length;
-		var masseSalariale
+		var csFacturerFirstElement;
 		for(var i=0;i<nbCotisations;i++) {
 			var cotisation = cotisations[i];
+
+			if(cotisation.facturerDefaut==='RABAIS_SPECIAL') {
+				csFacturerFirstElement = globazGlobal.csRabaisSpecial;
+			}
 			if(selectedId==i) {
 				nouvelleCotisation += '<option selected="selected" value="'+cotisation.id+'">'+cotisation.libelle+'</option>';
 			} else {
-				nouvelleCotisation += '<option value="'+cotisation.id+'">'+cotisation.libelle+'</option>';
+				if ('SUPPRIMER' !== cotisation.facturerDefaut && 'SOLDE_MINIME' !== cotisation.facturerDefaut) {
+					nouvelleCotisation += '<option value="'+cotisation.id+'">'+cotisation.libelle+'</option>';
+				}
 			}
 		}
 		nouvelleCotisation += '</select></td>';
 		nouvelleCotisation += '<td><input class="periodeDebut" data-g-calendar="mandatory:true" /></td>';
 		nouvelleCotisation += '<td><input class="periodeFin" data-g-calendar="" /></td>';
-		nouvelleCotisation += '<td><input class="masseSalariale" type="text" data-g-amount=" " value="100.00" /></td>';
-		nouvelleCotisation += '<td><input class="forfait" type="text" data-g-amount="blankAsZero:false" value="" /></td>';
-		nouvelleCotisation += '<td><input class="reductionFacture" type="text" data-g-amount=" " value="'+reductionFacture+'" /></td>';
+//		nouvelleCotisation += '<td class="selectCatFactu"></td>';
+		nouvelleCotisation += '<td><input class="forfait" type="text" data-g-amount="blankAsZero:true" value="" /></td>';
 		nouvelleCotisation += '</tr>';
 		
 		var $nouvelleCotisation = $(nouvelleCotisation); 
@@ -182,7 +211,14 @@ globazGlobal.associations = (function() {
 			$masseSalariale.removeClass('isValueKo');
 			$masseSalariale.val(globazNotation.utilsFormatter.formatStringToAmout(0));
 		}
+		//récupération du select catégorie de facture compile sur taglib, on va copier le template présent
+		//dans le page JSP.
+//		var $selectCatFactu = $nouvelleCotisation.find('.selectCatFactu');
+//		var categorieFactures = $(getTemplateSelectSelonFacturer(csFacturerFirstElement));
+//		$selectCatFactu.append(categorieFactures);
+		
 		$cotisations.append($nouvelleCotisation);
+		
 		
 		//Désactivation des champs relatifs à l'association
 		association.find('.associationHeader').attr('disabled','disabled');			
@@ -202,6 +238,16 @@ globazGlobal.associations = (function() {
 		var options = {
 				serviceClassName:globazGlobal.associationViewService,
 				serviceMethodName:'findDefaultMasseSalariale',
+				parametres:idCotisation,
+				callBack:callback
+		};
+		vulpeculaUtils.lancementService(options);	
+	}
+	
+	function findDefautFacturer(idCotisation, callback) {
+		var options = {
+				serviceClassName:globazGlobal.associationViewService,
+				serviceMethodName:'findDefaultFacturer',
 				parametres:idCotisation,
 				callBack:callback
 		};
@@ -237,8 +283,9 @@ globazGlobal.associations = (function() {
 			association.associationProfessionnelle = $association.find('.associationProfessionnelle').val();
 			association.genre = $association.find('.genre').val();
 			association.cotisations = [];
+			association.masseAssociation = $association.find('.masseAssociation').val();
 			
-			var $cotisations = $association.find('.cotisationMembre');
+			var $cotisations = $association.find('.cotisationMembre').not(".toDelete");
 			var nbCotisations = $cotisations.length;
 			for(var j=0;j<nbCotisations;j++) {
 				cotisation = {};
@@ -246,9 +293,10 @@ globazGlobal.associations = (function() {
 				cotisation.id = $cotisation.find('.idCotisation').val();
 				cotisation.periodeDebut = $cotisation.find('.periodeDebut').val();
 				cotisation.periodeFin = $cotisation.find('.periodeFin').val();
-				cotisation.masseSalariale = $cotisation.find('.masseSalariale').val();
+				cotisation.facturer = $cotisation.find('.facturer').val();
 				cotisation.forfait = $cotisation.find('.forfait').val();
-				cotisation.reductionFacture = $cotisation.find('.reductionFacture').val();
+				cotisation.idAssociationCotisation = $cotisation.find('.idAssociationCotisation').val();
+				cotisation.pspy = $cotisation.find('.pspy').val();
 				association.cotisations.push(cotisation);
 			}
 			associations.push(association);

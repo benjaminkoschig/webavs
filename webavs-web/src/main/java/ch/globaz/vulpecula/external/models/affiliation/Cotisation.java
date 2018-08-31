@@ -4,6 +4,8 @@ import java.util.Locale;
 import ch.globaz.vulpecula.domain.models.common.Date;
 import ch.globaz.vulpecula.domain.models.common.Taux;
 import ch.globaz.vulpecula.domain.models.decompte.TypeAssurance;
+import ch.globaz.vulpecula.domain.models.decompte.TypeDecompte;
+import ch.globaz.vulpecula.domain.models.registre.Convention;
 
 /**
  * Cotisation au sens du module NAOS (à définir)
@@ -308,6 +310,50 @@ public class Cotisation {
             return false;
         }
         return assurance.isTypeAF();
+    }
+
+    /**
+     * Retourne si l'assurance est de type AF.
+     * 
+     * @return true si l'assurance est de type LPP, false dans le cas où l'assurance eset null ou si autre type
+     */
+    public boolean isAssuranceLPP() {
+        if (assurance == null) {
+            return false;
+        }
+        return assurance.isTypeLPP();
+    }
+
+    /**
+     * Retourne si la cotisation à une date de fin
+     * 
+     * @return true si possède une date de fin
+     */
+    public boolean hasDateFin() {
+        return dateFin != null;
+    }
+
+    public boolean aIgnorer(TypeDecompte type, Convention convention) {
+        if (dateDebut.equals(dateFin)) {
+            return true;
+        }
+        if (TypeDecompte.COMPLEMENTAIRE.equals(type)) {
+            if (convention.isElectricite()) {
+                switch (getTypeAssurance()) {
+                    case CONTRIBUTION_GENERALE:
+                    case CONTRIBUTION_GENERALE_REDUITE:
+                    case CPR_TRAVAILLEUR:
+                        return true;
+                    default:
+                        return false;
+                }
+            } else {
+                if (TypeAssurance.CONGES_PAYES.equals(getTypeAssurance())) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     @Override

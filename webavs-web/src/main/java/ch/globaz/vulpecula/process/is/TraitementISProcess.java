@@ -15,6 +15,7 @@ import globaz.osiris.db.comptes.CAOperationManager;
 import globaz.osiris.db.comptes.CAOperationOrdreVersement;
 import globaz.osiris.db.comptes.CAOperationOrdreVersementManager;
 import globaz.osiris.external.IntRole;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -22,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
+
 import ch.globaz.al.businessimpl.services.rubriques.comptables.RubriquesComptablesBMSServiceImpl;
 import ch.globaz.exceptions.ExceptionMessage;
 import ch.globaz.exceptions.GlobazTechnicalException;
@@ -144,7 +146,8 @@ public class TraitementISProcess extends BProcessWithContext {
     private void traiter(EntetePrestationComplexModel entete, JournalConteneur jc, String date) throws Exception {
         // Correctioon Jira BMS-1922
         // Selon exemple PaiementDirectServiceImpl ln450
-        String numeroFacture = entete.getNumFactureRecap().substring(0, 4) + APISection.CATEGORIE_SECTION_AF + "000";
+    	String annee = entete.getNumFactureRecap().substring(0, 4);
+        String numeroFacture = annee + APISection.CATEGORIE_SECTION_AF + "000";
 
         CompteAnnexeSimpleModel compteAnnexe = findCompteAnnexe(jc.getJournalModel().getId(), entete.getIdTiers(),
                 entete.getNumAvsActuel());
@@ -185,7 +188,7 @@ public class TraitementISProcess extends BProcessWithContext {
                 new Date(entete.getPeriodeA()), Date.now());
         addPrestationToMap(prestation);
 
-        adapterOV(compteAnnexe, entete.getIdJournal(), impots.negate());
+        adapterOV(compteAnnexe, entete.getIdJournal(), impots.negate(), annee);
     }
 
     private void addPrestationToMap(PrestationGroupee prestation) {
@@ -197,8 +200,10 @@ public class TraitementISProcess extends BProcessWithContext {
         prestations.add(prestation);
     }
 
-    private void adapterOV(CompteAnnexeSimpleModel compteAnnexe, String idJournal, Montant montantAAjouter)
+    private void adapterOV(CompteAnnexeSimpleModel compteAnnexe, String idJournal, Montant montantAAjouter, String annee)
             throws Exception {
+    	boolean found=false;
+    	
         CAOperationOrdreVersementManager caoov = new CAOperationOrdreVersementManager();
         caoov.setSession(getSession());
         caoov.setForEtatNotIn(Arrays.asList(APIOperation.ETAT_VERSE));
@@ -206,17 +211,35 @@ public class TraitementISProcess extends BProcessWithContext {
         caoov.setOrderBy(CAOperationManager.ORDER_IDOPERATION_DESC);
         caoov.setForIdJournal(idJournal);
         caoov.find();
-        CAOperationOrdreVersement ov = (CAOperationOrdreVersement) caoov.getFirstEntity();
-        // Si aucun ordre de versement n'a été trouvé, on averti l'utilisateur.
-        if (ov == null) {
+        
+        if(caoov.size()==1) {
+        	CAOperationOrdreVersement ov = (CAOperationOrdreVersement) caoov.getFirstEntity();
+        	found = updateOV(montantAAjouter, annee, ov);
+        } else {
+	        for (int i=0; i < caoov.size() && !found; i++) {
+	        	CAOperationOrdreVersement ov = (CAOperationOrdreVersement) caoov.get(i);
+	        	found = updateOV(montantAAjouter, annee, ov);
+	        }
+        }
+        
+  	    // Si aucun ordre de versement n'a été trouvé, on averti l'utilisateur.
+        if (!found) {
             getMemoryLog().logMessage(
                     I18NUtil.getMessageFromResource("vulpecula.is.ov_nontrouve", compteAnnexe.getIdExterneRole(),
                             idJournal), FWMessage.AVERTISSEMENT, getClass().getName());
             return;
         }
-        Montant montantCourant = new Montant(ov.getMontant());
-        ov.setMontant(montantCourant.add(montantAAjouter).getValue());
-        ov.update(getTransaction());
+        
+    }
+
+	private boolean updateOV(Montant montantAAjouter, String annee, CAOperationOrdreVersement ov) throws Exception {
+	    if(annee.equals(ov.getSection().getIdExterne().substring(0, 4))) {
+	        Montant montantCourant = new Montant(ov.getMontant());
+	        ov.setMontant(montantCourant.add(montantAAjouter).getValue());
+	        ov.update(getTransaction());
+	        return true;
+	    }
+	    return false;
     }
 
     private void print() throws Exception {

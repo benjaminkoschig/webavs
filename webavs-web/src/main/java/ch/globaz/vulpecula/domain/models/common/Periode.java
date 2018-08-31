@@ -112,8 +112,6 @@ public class Periode implements Comparable<Periode>, ValueObject {
     }
 
     public static boolean isValid(final Date dateDebut, final Date dateFin) {
-        // FIXME: Est-ce que l'on considère que la période est valide lorsque la
-        // date début est null ET que la date de fin aussi ?
         if (dateDebut == null && dateFin == null) {
             return false;
         }
@@ -175,6 +173,11 @@ public class Periode implements Comparable<Periode>, ValueObject {
 
     public boolean chevauche(final Periode periode) {
         return compare(periode) == ComparaisonPeriode.CHEVAUCHE;
+    }
+
+    public boolean chevauche(final Annee annee) {
+        Periode periode = new Periode(annee.getFirstDayOfYear(), annee.getLastDayOfYear());
+        return chevauche(periode);
     }
 
     /**
@@ -273,10 +276,14 @@ public class Periode implements Comparable<Periode>, ValueObject {
         return false;
     }
 
+    public boolean contains(final Annee annee) {
+        return contains(new Periode(annee.getFirstDayOfYear(), annee.getLastDayOfYear()));
+    }
+
     /**
-     * Retourne si la période est contenu dans l'autre période (limite incluse)
+     * Retourne true si la période passée en paramètre est contenue dans la période (limite incluse)
      * 
-     * @param date
+     * @param période
      *            à comparer
      * @return true si incluse
      */
@@ -334,7 +341,7 @@ public class Periode implements Comparable<Periode>, ValueObject {
         if (getDateFin() != null) {
             sb.append(getDateFinAsSwissValue());
         } else {
-            sb.append("???");
+            sb.append("0");
         }
         return sb.toString();
     }
@@ -398,13 +405,21 @@ public class Periode implements Comparable<Periode>, ValueObject {
     }
 
     /**
+     * Retourne si la période est active par rapport au date.
+     * 
+     * @return true si active
+     */
+    private boolean isActif(Date date) {
+        return dateDebut.beforeOrEquals(date) && (dateFin == null || dateFin.afterOrEquals(date));
+    }
+
+    /**
      * Retourne si la période est active par rapport à la date du jour.
      * 
      * @return true si active
      */
     public boolean isActif() {
-        Date today = Date.now();
-        return dateDebut.beforeOrEquals(Date.now()) && (dateFin == null || dateFin.afterOrEquals(today));
+        return isActif(Date.now());
     }
 
     /**
@@ -435,6 +450,17 @@ public class Periode implements Comparable<Periode>, ValueObject {
             return false;
         }
         return true;
+
+    }
+
+    public boolean isActifForPeriode(Periode periode) {
+        if ((dateDebut.isMemeMois(periode.getDateDebut()) || dateDebut.before(periode.getDateDebut()))
+                && ((dateFin == null) || (dateFin.isMemeMois(periode.getDateFin()) || dateFin.after(periode
+                        .getDateFin())))) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -448,9 +474,15 @@ public class Periode implements Comparable<Periode>, ValueObject {
      */
     public boolean isActif(final Periode periodeDemande) {
         if (getDateFin() != null) {
-            return chevauche(periodeDemande);
+            return (periodeDemande.getDateFin() == null || getDateDebut().beforeOrEquals(periodeDemande.getDateFin()))
+                    && getDateFin().afterOrEquals(periodeDemande.getDateDebut());
         } else {
-            return !(getDateDebut()).after(periodeDemande.getDateFin());
+            if (periodeDemande.getDateFin() == null) {
+                return true;
+            } else {
+                return periodeDemande.getDateFin() == null
+                        || getDateDebut().beforeOrEquals(periodeDemande.getDateFin());
+            }
         }
     }
 

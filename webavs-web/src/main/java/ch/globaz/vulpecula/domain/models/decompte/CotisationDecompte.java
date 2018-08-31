@@ -163,6 +163,19 @@ public class CotisationDecompte implements DomainEntity {
         return TypeAssurance.ASSURANCE_CHOMAGE.equals(cotisation.getTypeAssurance());
     }
 
+    public boolean isAVS() {
+        return TypeAssurance.COTISATION_AVS_AI.equals(cotisation.getTypeAssurance());
+    }
+
+    public boolean isForAPGHigh() {
+        return isAVS() || isAssuranceAC2() || isAssuranceAC()
+                || TypeAssurance.FRAIS_ADMINISTRATION.equals(cotisation.getTypeAssurance());
+    }
+
+    public boolean isForAPGLow() {
+        return isAVS() || isAssuranceAC() || TypeAssurance.FRAIS_ADMINISTRATION.equals(cotisation.getTypeAssurance());
+    }
+
     @Override
     public String toString() {
         return "CotisationDecompte [id=" + id + ", cotisation=" + cotisation + ", taux=" + taux + ", masse=" + masse

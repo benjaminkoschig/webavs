@@ -1,5 +1,6 @@
 package ch.globaz.vulpecula.business.services.is;
 
+import globaz.vulpecula.business.exception.VulpeculaException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -7,6 +8,7 @@ import ch.globaz.vulpecula.business.models.is.EntetePrestationComplexModel;
 import ch.globaz.vulpecula.businessimpl.services.is.PrestationGroupee;
 import ch.globaz.vulpecula.domain.models.common.Annee;
 import ch.globaz.vulpecula.domain.models.common.Date;
+import ch.globaz.vulpecula.domain.models.is.DetailPrestationAF;
 import ch.globaz.vulpecula.domain.models.is.TauxImpositionNotFoundException;
 
 public interface ImpotSourceService {
@@ -93,6 +95,15 @@ public interface ImpotSourceService {
     List<EntetePrestationComplexModel> getEntetesPrestations(String idProcessus);
 
     /**
+     * 
+     * @param dateDebut
+     * @param dateFin
+     * @return Liste de prestations prévues expréssement pour la liste des AF versées
+     */
+    Map<String, Collection<DetailPrestationAF>> getPrestationsForListAFVersees(String dateDebut, String dateFin)
+            throws VulpeculaException;
+
+    /**
      * @see #getPrestationsForAllocIS(String, Date, Date)
      * @param canton Canton de résidence de l'allocataire
      * @param caisseAF Caisse AF
@@ -110,5 +121,5 @@ public interface ImpotSourceService {
      * @param annee Année à laquelle sélectionner les prestations (BASE SUR LA DATE DE COMPTABILISATION)
      * @return Liste de prestations
      */
-    Map<String, PrestationGroupee> getPrestationsForAllocISGroupByCaisseAF(Annee annee);
+    Map<String, PrestationGroupee> getPrestationsForAllocISGroupByCaisseAF(Annee annee, String canton);
 }

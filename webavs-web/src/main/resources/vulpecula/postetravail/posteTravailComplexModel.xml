@@ -31,6 +31,8 @@
 			<select-field name="travailleurComplexModel.travailleurSimpleModel.genrePermisTravail" field-ref="travailleurComplexModel.travailleurSimpleModel.genrePermisTravail" />
 			<select-field name="travailleurComplexModel.travailleurSimpleModel.referencePermis" field-ref="travailleurComplexModel.travailleurSimpleModel.referencePermis" />
 			<select-field name="travailleurComplexModel.travailleurSimpleModel.spy" field-ref="travailleurComplexModel.travailleurSimpleModel.spy" />
+
+			<select-field name="travailleurComplexModel.travailleurSimpleModel.correlationId" field-ref="travailleurComplexModel.travailleurSimpleModel.correlationId" />
 			
 			<select-field name="travailleurComplexModel.personneEtendueComplexModel.personneEtendue.idTiers" field-ref="travailleurComplexModel.personneEtendueComplexModel.personne.idTiers" />
 			<select-field name="travailleurComplexModel.personneEtendueComplexModel.personneEtendue.numAvsActuel" field-ref="travailleurComplexModel.personneEtendueComplexModel.personneEtendue.numAvsActuel" />
@@ -76,6 +78,8 @@
 			<search-group operator="AND">
 				<search-field name="forIdPosteTravail" field-ref="posteTravailSimpleModel.id"
 					operation="EQUALS" />
+				<search-field name="forPosteCorrelationId"
+					field-ref="posteTravailSimpleModel.posteCorrelationId" operation="EQUALS" />
 				<search-field name="forIdTiers"
 					field-ref="travailleurComplexModel.travailleurSimpleModel.idTiers" operation="EQUALS" />
 				<search-field name="forIdTravailleur"
@@ -97,6 +101,7 @@
 				<search-field name="forPeriodeFin" field-ref="posteTravailSimpleModel.finActivite" operation="LESS_OR_EQUALS" />
 				<search-field name="forIdConvention" field-ref="employeurComplexModel.affiliationTiersComplexModel.affiliation.idConvention" operation="EQUALS" />
 				<search-field name="forQualificationIn" field-ref="posteTravailSimpleModel.qualification" operation="IN" />
+				<search-field name="forIdTravailleursNotIn" field-ref="posteTravailSimpleModel.idTravailleur" operation="NOT_IN" />
 			</search-group>
 		</search-definition>
 		<search-definition name="aAnnoncer">
@@ -104,6 +109,24 @@
 				<search-field name="annonceMeroba" field-ref="travailleurComplexModel.travailleurSimpleModel.annonceMeroba" operation="EQUALS" />
 				<search-field name="forPeriodeDebut" field-ref="posteTravailSimpleModel.debutActivite" operation="GREATER_OR_EQUALS" />
 				<search-field name="forPeriodeDebutLess" field-ref="posteTravailSimpleModel.debutActivite" operation="LESS_OR_EQUALS" />
+				<search-literal><![CDATA[ (#{posteTravailSimpleModel.debutActivite} != #{posteTravailSimpleModel.finActivite}) ]]></search-literal>
+			</search-group>
+		</search-definition>
+		<search-definition name="posteContainPeriode">
+			<search-group operator="AND">
+				<search-field name="forIdTravailleur"
+					field-ref="travailleurComplexModel.travailleurSimpleModel.id" operation="EQUALS" />
+				<search-field name="forIdAffilie"
+					field-ref="employeurComplexModel.affiliationTiersComplexModel.affiliation.affiliationId"
+					operation="EQUALS" />
+				<search-field name="forIdEmployeur"
+					field-ref="employeurComplexModel.affiliationTiersComplexModel.affiliation.affiliationId"
+					operation="EQUALS" />
+				<search-field name="forPeriodeDebutLess" field-ref="posteTravailSimpleModel.debutActivite" operation="LESS_OR_EQUALS" />			
+				<search-group operator="OR">
+					<search-field name="forPeriodeFinGreater" field-ref="posteTravailSimpleModel.finActivite" operation="NULL" />
+					<search-field name="forPeriodeFinGreater" field-ref="posteTravailSimpleModel.finActivite" operation="GREATER_OR_EQUALS" />
+				</search-group>
 			</search-group>
 		</search-definition>
 	</complexe-model>

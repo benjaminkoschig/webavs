@@ -19,6 +19,7 @@ import ch.globaz.vulpecula.domain.repositories.taxationoffice.LigneTaxationRepos
 import ch.globaz.vulpecula.domain.repositories.taxationoffice.TaxationOfficeRepository;
 import ch.globaz.vulpecula.util.I18NUtil;
 import ch.globaz.vulpecula.web.servlet.PTTaxationOfficeAction;
+import ch.globaz.vulpecula.web.views.decompte.DecompteViewService;
 import ch.globaz.vulpecula.web.views.taxationoffice.LigneTaxationView;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -41,7 +42,9 @@ public class PTTaxationofficeViewBean extends DomainPersistentObjectViewBean<Tax
     private String idDecompte;
 
     private Gson gson = new Gson();
-
+    public String getDecompteViewService() {
+        return DecompteViewService.class.getName();
+    }
     public PTTaxationofficeViewBean() {
         taxationOffice = new TaxationOffice();
         lignesTaxationViews = new ArrayList<LigneTaxationView>();

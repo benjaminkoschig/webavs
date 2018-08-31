@@ -69,4 +69,13 @@ public interface EmployeurRepository extends Repository<Employeur> {
      * @return true si possède la case à cocher
      */
     List<Employeur> findEmployeursWithEdition();
+
+    /**
+     * Retourne la liste des employeurs dont l'activité à commencer entre la dateDebut et la dateFin
+     * 
+     * @param dateDebut Date de début à laquelle déterminer l'activité de début de l'employeur
+     * @param dateFin Date de fin à laquelle déterminer l'activité de début de l'employeur
+     * @return Liste d'employeurs
+     */
+    List<Employeur> findByPeriode(Date dateDebut, Date dateFin);
 }

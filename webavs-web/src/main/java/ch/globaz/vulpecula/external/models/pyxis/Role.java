@@ -5,7 +5,7 @@ import java.util.List;
 
 /**
  * Liste des rôles de tiers.
- * 
+ *
  * @since WebBMS 0.01.03
  */
 public enum Role {
@@ -22,7 +22,9 @@ public enum Role {
     DEBITEUR(517090),
     IJAI(517034),
     PCF(517045),
-    RENTIER(517038);
+    RENTIER(517038),
+    BENEFICIAIRE_PRESTATIONS_CONVENTIONNELLES(68902001),
+    ASSOCIATION_PROFESSIONNELLE(68902003);
 
     private int value;
 
@@ -32,7 +34,7 @@ public enum Role {
 
     /**
      * Retourne le code système représentant le rôle
-     * 
+     *
      * @return String représentant un code système
      */
     public String getValue() {
@@ -41,7 +43,7 @@ public enum Role {
 
     /**
      * Construction de l'énumération à partir d'un code système
-     * 
+     *
      * @param value
      *            String représentant un code système
      * @return Un état du {@link Role}
@@ -65,7 +67,7 @@ public enum Role {
 
     /**
      * Retourne si le code système passée en paramètre correspondant bien à un {@link Role}
-     * 
+     *
      * @param value
      *            Code système
      * @return true si valide

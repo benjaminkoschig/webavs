@@ -245,7 +245,7 @@
 			<th data-orderkey="genreSalaire"><ct:FWLabel key="JSP_GEN" /></th>
 			<th data-orderkey="dateDebut" data-defaultOrder="Desc"><ct:FWLabel key="JSP_DEBUT_ABSENCE" /></th>
 			<th data-orderkey="dateFin"><ct:FWLabel key="JSP_FIN_ABSENCE" /></th>
-			<th data-orderkey="genrePrestation"><ct:FWLabel key="JSP_GENRE_PRESTATION" /></th>
+			<th data-orderkey="genrePrestation"><ct:FWLabel key="JSP_GENRE_PRESTATIONS" /></th>
 			<th data-orderkey="montantBrut"><ct:FWLabel key="JSP_MONTANT_BRUT" /></th>
 			<th data-orderkey="montantAVerser"><ct:FWLabel key="JSP_MONTANT_VERSE" /></th>
 			<th class="notSortable" data-orderkey="beneficiaire"><ct:FWLabel key="JSP_BENEFICIAIRE_ABREGE" /></th>
@@ -283,7 +283,9 @@
 			<th data-orderkey="genreSalaire"><ct:FWLabel key="JSP_GEN" /></th>
 			<th data-orderkey="dateDebut" data-defaultOrder="Desc"><ct:FWLabel key="JSP_DEBUT_ABSENCE" /></th>
 			<th data-orderkey="dateFin"><ct:FWLabel key="JSP_FIN_ABSENCE" /></th>
+			<th data-orderkey="nbJours"><ct:FWLabel key="JSP_NOMBRE_JOURS" /></th>
 			<th class="notSortable" data-orderkey="prestation"><ct:FWLabel key="JSP_GENRE_PRESTATIONS" /></th>
+			<th data-orderkey="tauxCP"><ct:FWLabel key="JSP_COUVERTURE_APG" /> (%)</th>
 			<th data-orderkey="mmontantBrut"><ct:FWLabel key="JSP_MONTANT_BRUT" /></th>
 			<th data-orderkey="montantAVerser"><ct:FWLabel key="JSP_MONTANT_VERSE" /></th>
 			<th class="notSortable" data-orderkey="beneficiaire"><ct:FWLabel key="JSP_BENEFICIAIRE_ABREGE" /></th>
@@ -292,7 +294,7 @@
 			<th data-orderkey="dateFacturation"><ct:FWLabel key="JSP_COMPTABILISATION" /></th>
 		</tr>
 		<tr>
-			<td style="text-align: left; color: red !important;" colspan="15">
+			<td style="text-align: left; color: red !important;" colspan="17">
 				<c:choose>
 					<c:when test="${viewBean.hasDroitSM and hasCreateRightOnServiceMilitaire and empty viewBean.passageSMErreur}">
 						<a href="vulpecula?userAction=vulpecula.servicemilitaire.servicemilitaire.afficher&idTravailleur=${travailleur.id}&_method=add">

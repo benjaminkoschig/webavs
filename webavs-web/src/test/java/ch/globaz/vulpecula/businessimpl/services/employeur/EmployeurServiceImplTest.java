@@ -44,6 +44,52 @@ public class EmployeurServiceImplTest {
         assertFalse(excepted);
     }
 
+    @Test
+    public void test() {
+        Employeur employeur = new Employeur();
+        employeur.setDateDebut("01.01.2017");
+        when(employeurRepository.findEmployeursWithEdition()).thenReturn(Arrays.asList(employeur));
+        doReturn(false).when(employeurService).hasPostesActifs(any(Employeur.class), any(Date.class), any(Date.class));
+        List<Employeur> employeurs = employeurService.findEmployeursSansPostesAvecEdition(new Date("01.01.2016"),
+                new Date("31.12.2016"));
+        assertTrue(employeurs.isEmpty());
+    }
+
+    @Test
+    public void test2() {
+        Employeur employeur = new Employeur();
+        employeur.setDateDebut("01.01.2016");
+        when(employeurRepository.findEmployeursWithEdition()).thenReturn(Arrays.asList(employeur));
+        doReturn(false).when(employeurService).hasPostesActifs(any(Employeur.class), any(Date.class), any(Date.class));
+        List<Employeur> employeurs = employeurService.findEmployeursSansPostesAvecEdition(new Date("01.01.2016"),
+                new Date("31.12.2016"));
+        assertFalse(employeurs.isEmpty());
+    }
+
+    @Test
+    public void test3() {
+        Employeur employeur = new Employeur();
+        employeur.setDateDebut("01.01.2016");
+        employeur.setDateFin("31.12.2016");
+        when(employeurRepository.findEmployeursWithEdition()).thenReturn(Arrays.asList(employeur));
+        doReturn(true).when(employeurService).hasPostesActifs(any(Employeur.class), any(Date.class), any(Date.class));
+        List<Employeur> employeurs = employeurService.findEmployeursSansPostesAvecEdition(new Date("01.01.2016"),
+                new Date("31.12.2016"));
+        assertTrue(employeurs.isEmpty());
+    }
+
+    @Test
+    public void test4() {
+        Employeur employeur = new Employeur();
+        employeur.setDateDebut("01.01.2016");
+        employeur.setDateFin("31.12.2016");
+        when(employeurRepository.findEmployeursWithEdition()).thenReturn(Arrays.asList(employeur));
+        doReturn(false).when(employeurService).hasPostesActifs(any(Employeur.class), any(Date.class), any(Date.class));
+        List<Employeur> employeurs = employeurService.findEmployeursSansPostesAvecEdition(new Date("01.01.2016"),
+                new Date("31.12.2016"));
+        assertFalse(employeurs.isEmpty());
+    }
+
     @Ignore
     @Test
     public void givenEmployeurWithPosteActifWhenHasPosteTravailActifThenReturnTrue() {
@@ -64,31 +110,6 @@ public class EmployeurServiceImplTest {
                 new Date("31.12.2015"));
 
         assertEquals(0, employeurs.size());
-    }
-
-    @Ignore
-    @Test
-    public void findEmployeursSansPostesAvecEdition_ShouldBeTest() {
-        Employeur employeur = new Employeur();
-        employeur.setEditerSansTravailleur(true);
-        doReturn(Arrays.asList(employeur)).when(employeurService).findEmployeursSansPostesAvecEdition(any(Date.class),
-                any(Date.class));
-        List<Employeur> employeurs = employeurService.findEmployeursSansPostesAvecEdition(new Date("01.01.2015"),
-                new Date("31.12.2015"));
-
-        assertEquals(1, employeurs.size());
-    }
-
-    @Ignore
-    @Test
-    public void findEmployeursSansPostesAvecEdition_ShouldBeTest2() {
-        Employeur employeur = new Employeur();
-        employeur.setEditerSansTravailleur(true);
-        doReturn(Arrays.asList(employeur)).when(employeurService).findEmployeursSansPostesAvecEdition(any(Date.class),
-                any(Date.class));
-        List<Employeur> employeurs = employeurService.findEmployeursSansPostesAvecEdition(new Date("01.01.2014"), null);
-
-        assertEquals(1, employeurs.size());
     }
 
     @Ignore
@@ -142,5 +163,12 @@ public class EmployeurServiceImplTest {
             particularite.setDateFin(new Date(dateFin));
         }
         return particularite;
+    }
+
+    private Employeur createEmployeur(String dateDebut, String dateFin) {
+        Employeur employeur = new Employeur();
+        employeur.setDateDebut(dateDebut);
+        employeur.setDateFin(dateFin);
+        return employeur;
     }
 }

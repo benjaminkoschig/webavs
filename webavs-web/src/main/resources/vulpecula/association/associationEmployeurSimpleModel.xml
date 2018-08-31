@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<simple-model
+		className="ch.globaz.vulpecula.business.models.association.AssociationEmployeurSimpleModel">
+		<table name="PT_ASSOCIATION_EMPLOYEUR" hasCreationSpy="true" hasSpy="true"
+			alwaysIncrementPrimaryKey="true" />
+		<fields>
+			<primary-key name="id" column="ID"
+				comment="Id de la table association employeur" />
+			<field name="idEmployeur" column="ID_EMPLOYEUR" type="NUMERIC" comment="id employeur" />
+			<field name="idAssociation" column="ID_ASSOCIATION" type="NUMERIC" comment="id de l'association" />
+			<field name="forfaitAssociation" column="FORFAIT_ASSOCIATION" type="NUMERIC" comment="forfait de l'association" />
+			<field name="masseAssociation" column="MASSE_ASSOCIATION" type="NUMERIC" comment="masse de l'association" />
+		</fields>
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forId" field-ref="id"
+					operation="EQUALS" />
+				<search-field name="forIdEmployeur" field-ref="idEmployeur"
+					operation="EQUALS" />
+				<search-field name="forIdAssociation" field-ref="idAssociation"
+					operation="EQUALS" />		
+			</search-group>	
+		</search-definition>
+		<order-by name="idDesc">
+			<order-field field-ref="id" order="DESC" />
+		</order-by>
+		<order-by name="idAsc">
+			<order-field field-ref="id" />
+		</order-by>
+	</simple-model>
+</model-mapping>

@@ -1,7 +1,5 @@
 package ch.globaz.vulpecula.process.syndicats;
 
-import globaz.framework.util.FWMessage;
-import globaz.globall.db.GlobazJobQueue;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -11,12 +9,15 @@ import ch.globaz.vulpecula.domain.models.common.Annee;
 import ch.globaz.vulpecula.domain.models.syndicat.AffiliationSyndicat;
 import ch.globaz.vulpecula.external.BProcessWithContext;
 import ch.globaz.vulpecula.external.models.pyxis.Administration;
+import globaz.framework.util.FWMessage;
+import globaz.globall.db.GlobazJobQueue;
 
 public abstract class ListeSyndicatsProcess extends BProcessWithContext {
     private static final long serialVersionUID = -6695182440313223821L;
 
     protected String idSyndicat;
     protected String idCaisseMetier;
+    protected String idTravailleur;
     protected Annee annee;
     protected Map<Administration, Map<Administration, List<AffiliationSyndicat>>> affiliationsGroupBySyndicat;
     protected Administration syndicat;
@@ -30,6 +31,11 @@ public abstract class ListeSyndicatsProcess extends BProcessWithContext {
         super._executeProcess();
         try {
             retrieve();
+            if (affiliationsGroupBySyndicat.isEmpty()) {
+                getMemoryLog().logMessage(getSession().getLabel("LISTE_TRAVAILLEUR_PAIEMENT_SYNDICAT_ERROR"),
+                        FWMessage.ERREUR, this.getClass().getName());
+                return false;
+            }
             if (!listeErreur.isEmpty()) {
                 String erreurMessage = getSession().getLabel("CAISSE_PRINCIPALE_LISTE_SYNDICATS_ERREUR") + "\n";
                 for (String nomTravailleurErreur : listeErreur) {
@@ -48,7 +54,7 @@ public abstract class ListeSyndicatsProcess extends BProcessWithContext {
     protected void retrieve() {
         affiliationsGroupBySyndicat = affiliationSyndicatService
                 .findByAnneeWithCumulSalaireGroupBySyndicatAndCaisseMetier(idSyndicat, idCaisseMetier, getAnnee(),
-                        listeErreur);
+                        listeErreur, idTravailleur);
     }
 
     protected abstract void print() throws Exception;
@@ -75,6 +81,14 @@ public abstract class ListeSyndicatsProcess extends BProcessWithContext {
 
     public void setAnnee(Annee annee) {
         this.annee = annee;
+    }
+
+    public String getIdTravailleur() {
+        return idTravailleur;
+    }
+
+    public void setIdTravailleur(String idTravailleur) {
+        this.idTravailleur = idTravailleur;
     }
 
     @Override

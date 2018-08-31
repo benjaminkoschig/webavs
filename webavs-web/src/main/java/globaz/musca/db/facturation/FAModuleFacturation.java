@@ -42,6 +42,7 @@ public class FAModuleFacturation extends BEntity implements Serializable {
     public final static String CS_MODULE_PERIODIQUE_30JUIN = "905013";
 
     // Type de module
+    public final static String CS_MODULE_ASSOCIATIONS_PROF = "905051";
     public final static String CS_MODULE_DECOMPTES_SALAIRE = "905050";
     public final static String CS_MODULE_TAXATION_OFFICE = "905060";
     public final static String CS_MODULE_ABSENCES_JUSTIFIEES = "905070";

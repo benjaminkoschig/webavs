@@ -2,12 +2,15 @@ package ch.globaz.vulpecula.models.decompte;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import ch.globaz.utils.Pair;
 import ch.globaz.vulpecula.business.services.VulpeculaServiceLocator;
 import ch.globaz.vulpecula.business.services.decompte.DecompteSalaireService;
+import ch.globaz.vulpecula.domain.models.common.Annee;
 import ch.globaz.vulpecula.domain.models.common.Montant;
 import ch.globaz.vulpecula.domain.models.common.Taux;
 import ch.globaz.vulpecula.domain.models.common.ValueObject;
@@ -58,13 +61,23 @@ public class TableauContributions {
         private static final long serialVersionUID = 6494188283418217195L;
         private final Taux taux;
         private final Montant masse;
+        private final Annee annee;
 
-        public EntreeContribution(Taux taux, Montant masse) {
+        public EntreeContribution(Taux taux, Montant masse, Annee annee) {
             Preconditions.checkNotNull(taux);
             Preconditions.checkNotNull(masse);
 
             this.taux = taux;
             this.masse = masse;
+            this.annee = annee;
+        }
+
+        private EntreeContribution(Taux taux, Montant masse) {
+            this(taux, masse, null);
+        }
+
+        public static EntreeContribution empty() {
+            return new EntreeContribution(Taux.ZERO(), Montant.ZERO);
         }
 
         public Taux getTaux() {
@@ -77,6 +90,10 @@ public class TableauContributions {
 
         public Montant getMontant() {
             return masse.multiply(taux).normalize();
+        }
+
+        public Annee getAnnee() {
+            return annee;
         }
 
         @Override
@@ -99,29 +116,45 @@ public class TableauContributions {
      * @param decompte
      */
     private void computeAvsAc(Decompte decompte) {
-        EntreeContribution avs = null;
-        EntreeContribution fadm = null;
-        for (CotisationCalculee cotisation : decompte.getTableCotisationsCalculees()) {
+        List<CotisationCalculee> cotisationsCalculees = decompte.getTableCotisationsCalculees();
+        Map<Pair<TypeAssurance, Annee>, Taux> tauxParTypeAndAnnee = tauxParTypeAndAnnee(cotisationsCalculees);
+        for (CotisationCalculee cotisation : cotisationsCalculees) {
             Taux taux = cotisation.getTaux();
             Montant masse = cotisation.getMontant();
+            Annee annee = cotisation.getAnnee();
 
             if (TypeAssurance.COTISATION_AVS_AI.equals(cotisation.getTypeAssurance())) {
-                avs = new EntreeContribution(taux, masse);
+                Taux tauxAVS = getTauxAVS(tauxParTypeAndAnnee, annee);
+                add(TypeContribution.AVS, new EntreeContribution(tauxAVS, masse, annee));
             } else if (TypeAssurance.ASSURANCE_CHOMAGE.equals(cotisation.getTypeAssurance())) {
-                add(TypeContribution.AC, new EntreeContribution(taux, masse));
+                add(TypeContribution.AC, new EntreeContribution(taux, masse, annee));
             } else if (TypeAssurance.COTISATION_AC2.equals(cotisation.getTypeAssurance())) {
-                add(TypeContribution.AC2, new EntreeContribution(taux, masse));
-            } else if (TypeAssurance.FRAIS_ADMINISTRATION.equals(cotisation.getTypeAssurance())) {
-                fadm = new EntreeContribution(taux, masse);
+                add(TypeContribution.AC2, new EntreeContribution(taux, masse, annee));
             }
         }
+    }
 
-        if (avs != null && fadm != null) {
-            EntreeContribution entree = new EntreeContribution(avs.getTaux().addTaux(fadm.getTaux()), avs.getMasse());
-            add(TypeContribution.AVS, entree);
-        } else if (fadm == null && avs != null) {
-            add(TypeContribution.AVS, new EntreeContribution(avs.getTaux(), avs.getMasse()));
+    private Taux getTauxAVS(Map<Pair<TypeAssurance, Annee>, Taux> tauxParTypeAndAnnee, Annee annee) {
+        Taux tauxAVS = tauxParTypeAndAnnee.get(new Pair<TypeAssurance, Annee>(TypeAssurance.COTISATION_AVS_AI, annee));
+        Taux tauxFA = tauxParTypeAndAnnee
+                .get(new Pair<TypeAssurance, Annee>(TypeAssurance.FRAIS_ADMINISTRATION, annee));
+        if (tauxAVS == null && tauxFA == null) {
+            return Taux.ZERO();
+        } else if (tauxFA == null) {
+            return tauxAVS;
+        } else if (tauxAVS == null) {
+            return tauxFA;
+        } else {
+            return tauxAVS.addTaux(tauxFA);
         }
+    }
+
+    private Map<Pair<TypeAssurance, Annee>, Taux> tauxParTypeAndAnnee(List<CotisationCalculee> cotisationsCalculees) {
+        Map<Pair<TypeAssurance, Annee>, Taux> map = new HashMap<Pair<TypeAssurance, Annee>, Taux>();
+        for (CotisationCalculee cc : cotisationsCalculees) {
+            map.put(new Pair<TypeAssurance, Annee>(cc.getTypeAssurance(), cc.getAnnee()), cc.getTaux());
+        }
+        return map;
     }
 
     private void computeCaissesSociales(Decompte decompte) {
@@ -131,7 +164,7 @@ public class TableauContributions {
 
         for (Taux taux : data.keySet()) {
             Montant masse = data.get(taux);
-            add(TypeContribution.CAISSES_SOCIALES, new EntreeContribution(taux, masse));
+            add(TypeContribution.CAISSES_SOCIALES, new EntreeContribution(taux, masse, null));
         }
     }
 
@@ -146,7 +179,7 @@ public class TableauContributions {
                 continue;
             }
             Montant masse = data.get(taux);
-            add(TypeContribution.AF, new EntreeContribution(taux, masse));
+            add(TypeContribution.AF, new EntreeContribution(taux, masse, null));
         }
     }
 

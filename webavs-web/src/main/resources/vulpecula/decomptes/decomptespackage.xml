@@ -5,13 +5,18 @@
 	<model-mapping import="vulpecula/decomptes/cotisationDecompteSimpleModel.xml"/>
 	<model-mapping import="vulpecula/decomptes/ligneDecompteSimpleModel.xml"/>
 	<model-mapping import="vulpecula/decomptes/absenceSimpleModel.xml"/>
+	<model-mapping import="vulpecula/decomptes/codeErreurDecompteSalaireSimpleModel.xml"/>
 	
 	<model-mapping import="vulpecula/decomptes/decompteComplexModel.xml"/>
 	<model-mapping import="vulpecula/decomptes/decompteComplexModelAJAX.xml"/>
+	<model-mapping import="vulpecula/decomptes/decompteComptableComplexModel.xml"/>
 	<model-mapping import="vulpecula/decomptes/ligneDecompteComplexModel.xml"/>
 	<model-mapping import="vulpecula/decomptes/absenceComplexModel.xml"/>
+	<model-mapping import="vulpecula/decomptes/codeErreurDecompteSalaireComplexModel.xml"/>
 	<model-mapping import="vulpecula/decomptes/historiqueDecompteComplexModel.xml"/>
 	<model-mapping import="vulpecula/decomptes/cotisationDecompteComplexModel.xml"/>
+	<model-mapping import="vulpecula/decomptes/decompteSalaireAAnnoncerHistoriqueComplexModel.xml"/>
+	
 	
 	<!-- ComplexModel spécifiques -->
 	<model-mapping import="vulpecula/decomptes/decompteSalaireAAnnoncerComplexModel.xml"/>

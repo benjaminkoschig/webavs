@@ -1,9 +1,12 @@
 package globaz.vulpecula.vb.decompte;
 
+import java.util.ArrayList;
 import java.util.List;
 import ch.globaz.common.vb.JadeAbstractAjaxFindForDomain;
 import ch.globaz.vulpecula.business.services.VulpeculaRepositoryLocator;
 import ch.globaz.vulpecula.domain.models.decompte.Decompte;
+import ch.globaz.vulpecula.domain.models.taxationoffice.EtatTaxation;
+import ch.globaz.vulpecula.domain.models.taxationoffice.TaxationOffice;
 import ch.globaz.vulpecula.domain.repositories.Repository;
 
 public class PTDecompteForEmployeurAjaxViewBean extends JadeAbstractAjaxFindForDomain<Decompte> {
@@ -13,6 +16,7 @@ public class PTDecompteForEmployeurAjaxViewBean extends JadeAbstractAjaxFindForD
     private String idDecompte;
     private String numeroDecompte;
     private String type;
+    private TaxationOffice taxationOfficeModel;
 
     public List<Decompte> getDecomptes() {
         return getList();
@@ -34,6 +38,10 @@ public class PTDecompteForEmployeurAjaxViewBean extends JadeAbstractAjaxFindForD
         this.type = type;
     }
 
+    public TaxationOffice getTaxationOfficeModel() {
+        return taxationOfficeModel;
+    }
+
     @Override
     public Decompte getEntity() {
         return new Decompte();
@@ -46,8 +54,26 @@ public class PTDecompteForEmployeurAjaxViewBean extends JadeAbstractAjaxFindForD
 
     @Override
     public List<Decompte> findByRepository() {
-        return VulpeculaRepositoryLocator.getDecompteRepository().findWithDependencies(idEmployeur, idDecompte,
-                numeroDecompte, type);
+        List<Decompte> listeDecomptesRetour = new ArrayList<Decompte>();
+        List<Decompte> listeDecomptes = VulpeculaRepositoryLocator.getDecompteRepository().findByIdEmployeur(
+                idEmployeur, idDecompte, numeroDecompte, type);
+
+        for (Decompte decompte : listeDecomptes) {
+            if (decompte.isTaxationOffice()) {
+                taxationOfficeModel = VulpeculaRepositoryLocator.getTaxationOfficeRepository().findByIdDecompte(
+                        decompte.getId());
+                decompte.setTaxationOfficeModel(taxationOfficeModel);
+
+                // POBMS-132
+                if (!EtatTaxation.ANNULE.equals(decompte.getEtatTaxationOffice())) {
+                    listeDecomptesRetour.add(decompte);
+                }
+            } else {
+                listeDecomptesRetour.add(decompte);
+            }
+        }
+
+        return listeDecomptesRetour;
     }
 
 }

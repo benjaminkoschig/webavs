@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model
+		className="ch.globaz.vulpecula.business.models.controleemployeur.ControleEmployeurComplexModel">
+		
+		<root-model name="controleEmployeurSimpleModel"
+			model-ref="ch.globaz.vulpecula.business.models.controleemployeur.ControleEmployeurSimpleModel" />
+
+		<linked-model name="employeurComplexModel"
+			model-ref="ch.globaz.vulpecula.business.models.employeur.EmployeurComplexModel"
+			join-type="INNER">
+			<join-group operator="AND">
+				<join-field name="affiliationTiersComplexModel.affiliation.affiliationId"
+					operation="EQUALS" field-ref="controleEmployeurSimpleModel.idEmployeur" />
+			</join-group>
+		</linked-model>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forId" field-ref="controleEmployeurSimpleModel.id"
+					operation="EQUALS" />
+				<search-field name="forIdEmployeur"
+					field-ref="controleEmployeurSimpleModel.idEmployeur" operation="EQUALS" />	
+					<search-field name="forControleLess"
+						field-ref="controleEmployeurSimpleModel.dateAu" operation="LESS_OR_EQUALS" />
+					<search-field name="forControleLess"
+						field-ref="controleEmployeurSimpleModel.dateAu" operation="NOT_NULL" />	
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="searchForListe">
+			<search-group operator="AND">
+				<search-field name="forDateDebutGOE" field-ref="controleEmployeurSimpleModel.dateControle"
+					operation="GREATER_OR_EQUALS" />
+				<search-field name="forDateDebutLOE" field-ref="controleEmployeurSimpleModel.dateControle"
+					operation="LESS_OR_EQUALS" />		
+				<search-field name="forControleLess"
+					field-ref="controleEmployeurSimpleModel.dateAu" operation="NOT_NULL" />			
+			</search-group>
+		</search-definition>
+		
+		<order-by name="dateAuDesc">
+			<order-field field-ref="controleEmployeurSimpleModel.dateAu" order="DESC" />
+		</order-by>
+	</complexe-model>
+</model-mapping>

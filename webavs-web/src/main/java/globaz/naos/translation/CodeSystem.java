@@ -294,6 +294,7 @@ public class CodeSystem {
     public final static String MOTIF_FIN_SANS_PERS = "803038";
     public final static String MOTIF_FIN_MASSE = "803039";
     public final static String MOTIF_FIN_DEPART_HORS_CANTON = "803040";
+    public final static String MOTIF_FIN_FAILLITE = "19130017";
     public final static String Transfert_dans_une_autre_commune = "803041";
     public final static String Remise_de_l_exploitation = "803042";
     public final static String MOTIF_FIN_EXCLUSION_LTN = "803043";

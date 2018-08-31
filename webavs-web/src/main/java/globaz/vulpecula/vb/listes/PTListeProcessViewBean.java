@@ -17,7 +17,7 @@ public class PTListeProcessViewBean extends BJadeSearchObjectELViewBean {
     }
 
     public String getEmail() {
-        if (email == null) {
+        if (email == null || email.trim().isEmpty()) {
             return JadeThread.currentUserEmail();
         }
         return email;

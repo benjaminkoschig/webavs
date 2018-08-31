@@ -2,6 +2,7 @@ package ch.globaz.vulpecula.domain.models.common;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import ch.globaz.utils.TypesValidator;
 
 /**
@@ -52,7 +53,10 @@ public class Taux implements ValueObject, Comparable<Taux> {
      * @param taux Taux à ajouter
      */
     public Taux addTaux(final Taux taux) {
-        BigDecimal sum = getBigDecimal().add(taux.getBigDecimal());
+        BigDecimal sum = getBigDecimal();
+        if (taux != null) {
+            sum = getBigDecimal().add(taux.getBigDecimal());
+        }
         return new Taux(sum);
     }
 
@@ -89,17 +93,18 @@ public class Taux implements ValueObject, Comparable<Taux> {
      * @return String représentant le taux
      */
     public String getValue() {
-        return getValueWith(2);
+        return getValueWith(5);
     }
 
     /**
-     * Retourne le taux avec le nombre de décimales passé en paramètre.
+     * Retourne le taux avec le nombre de décimales passé en paramètre selon le formater prédéfinit "###,##0.00###".
      * 
      * @param nombre Nombre de décimales
      * @return String représentant le taux avec un certain nombre de décimales.
      */
     public String getValueWith(int nombre) {
-        return taux.setScale(nombre, RoundingMode.HALF_UP).toPlainString();
+        DecimalFormat df = new DecimalFormat("###,##0.00###");
+        return df.format(taux.setScale(nombre, RoundingMode.HALF_UP).doubleValue());
     }
 
     public String getValueWith(long nombre) {

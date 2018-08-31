@@ -21,14 +21,14 @@ public class NumeroDecompte implements ValueObject {
     private static final String OFFSET_FIRST = "000";
     private static final int OFFSET_INCREMENT = 10;
 
-    private static final String PERIODIQUE_TRIMESTRIELLE = "4";
-    private static final String PERIODIQUE_ANNUELLE = "40";
-    private static final String COMPLEMENTAIRE = "36";
+    public static final String PERIODIQUE_TRIMESTRIELLE = "4";
+    public static final String PERIODIQUE_ANNUELLE = "40";
+    public static final String COMPLEMENTAIRE = "36";
     public static final String CONTROLE_EMPLOYEUR = "17";
     public static final String SPECIAL = "18";
 
     /**
-     * ATTENTION : En cas de modification du no° ça ne correspondera plus avec la classe APISection
+     * ATTENTION : En cas de modification du no° ça ne correspondra plus avec la classe APISection
      */
     public static final String ABSENCES_JUSTIFIEES = "91";
     public static final String CONGES_PAYES = "92";
@@ -40,7 +40,7 @@ public class NumeroDecompte implements ValueObject {
 
     /**
      * Création d'un numéro de décompte à partir d'une chaîne de caractères.
-     * Elle doit corresponder au format suivant(xxxxmmooo).
+     * Elle doit correspondre au format suivant(xxxxmmooo).
      * 
      * @param numeroDecompte String représentant un numéro de décompte
      */
@@ -160,7 +160,9 @@ public class NumeroDecompte implements ValueObject {
             case CONTROLE_EMPLOYEUR:
                 sb.append(CONTROLE_EMPLOYEUR);
                 break;
-            case SPECIAL:
+            case SPECIAL_SALAIRE:
+            case SPECIAL_CAISSE:
+            case CPP:
                 sb.append(SPECIAL);
                 break;
         }
@@ -186,6 +188,11 @@ public class NumeroDecompte implements ValueObject {
 
     public String getOffset() {
         return offset;
+    }
+
+    public NumeroDecompte addOffset(int number) {
+        int iOffset = Integer.valueOf(offset);
+        return new NumeroDecompte(annee + code + String.valueOf(iOffset + number));
     }
 
     @Override

@@ -12,4 +12,8 @@
 	<model-mapping import="vulpecula/common/detailGroupeLocaliteSimpleModel.xml" />
 	<model-mapping import="vulpecula/common/groupeLocaliteSimpleModel.xml" />
 	<model-mapping import="vulpecula/common/detailGroupeLocaliteComplexModel.xml" />
+	<model-mapping import="vulpecula/common/contactSimpleModel.xml" />
+	<model-mapping import="vulpecula/common/contactTiersSimpleModel.xml" />
+	<model-mapping import="vulpecula/common/contactComplexModel.xml" />
+	<model-mapping import="vulpecula/common/moyenContactTiersSimpleModel.xml" />	
 </model-mapping>

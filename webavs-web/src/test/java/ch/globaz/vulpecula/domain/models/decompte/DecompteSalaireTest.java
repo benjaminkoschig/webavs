@@ -70,7 +70,7 @@ public class DecompteSalaireTest {
 
     @Test
     public void getTauxContribuableAsValue_givenADecompteSalaireWithoutCotisation_ShouldBe0() {
-        String actual = decompteSalaire.getTauxContribuableForCaissesSocialesAsValue();
+        String actual = decompteSalaire.getTauxContribuableForCaissesSocialesAsValue(false);
         assertEquals("0.00", actual);
     }
 
@@ -78,7 +78,7 @@ public class DecompteSalaireTest {
     public void aDecompteSalaireWithOneCotisationOf4MustReturn4() {
         addTaux(4);
 
-        String actual = decompteSalaire.getTauxContribuableForCaissesSocialesAsValue();
+        String actual = decompteSalaire.getTauxContribuableForCaissesSocialesAsValue(false);
         assertEquals("4.00", actual);
     }
 
@@ -87,7 +87,7 @@ public class DecompteSalaireTest {
         addTaux(0.25);
         addTaux(1.33);
 
-        String actual = decompteSalaire.getTauxContribuableForCaissesSocialesAsValue();
+        String actual = decompteSalaire.getTauxContribuableForCaissesSocialesAsValue(false);
         assertEquals("1.58", actual);
     }
 
@@ -233,7 +233,7 @@ public class DecompteSalaireTest {
 
     @Test
     public void calculSalaireTotalSiNessaire_GivenEmptyDecompteSalaire_ShouldNotChanged() {
-        decompteSalaire.calculSalaireTotalSiNecessaire();
+        decompteSalaire.calculChampSalaire();
 
         assertEquals(0, decompteSalaire.getHeures(), 0);
         assertEquals(Montant.ZERO, decompteSalaire.getSalaireHoraire());
@@ -244,7 +244,7 @@ public class DecompteSalaireTest {
     public void calculSalaireTotalSiNecessaire_GivenDecompteSalaireWithHeuresOf3AndSalaireHoraireOf100_ShouldBeCalculated() {
         decompteSalaire.setHeures(3f);
         decompteSalaire.setSalaireHoraire(new Montant(100));
-        decompteSalaire.calculSalaireTotalSiNecessaire();
+        decompteSalaire.calculChampSalaire();
 
         assertEquals(3f, decompteSalaire.getHeures(), 0);
         assertEquals(Montant.valueOf(100), decompteSalaire.getSalaireHoraire());
@@ -360,5 +360,35 @@ public class DecompteSalaireTest {
         decompteSalaire.setSalaireTotal(Montant.valueOf("13000"));
         decompteSalaire.setMontantFranchise(Montant.valueOf("1400"));
         assertFalse(decompteSalaire.isFranchise());
+    }
+
+    @Test
+    public void isSameAnneeCotisations_GivenDecompteWithoutAnneeAndNull_ShouldBeTrue() {
+        decompteSalaire.setAnneeCotisations(null);
+        assertTrue(decompteSalaire.isSameAnneeCotisations(null));
+}
+
+    @Test
+    public void isSameAnneeCotisations_GivenDecompte2015AndNull_ShouldBeFalse() {
+        decompteSalaire.setAnneeCotisations(new Annee(2015));
+        assertFalse(decompteSalaire.isSameAnneeCotisations(null));
+    }
+
+    @Test
+    public void isSameAnneeCotisations_GivenDecompteWithoutAnneeAn2015_ShouldBeTrue() {
+        decompteSalaire.setAnneeCotisations(null);
+        assertFalse(decompteSalaire.isSameAnneeCotisations(new Annee(2015)));
+    }
+
+    @Test
+    public void isSameAnneeCotisations_GivenDecompte2013An2015_ShouldBeTrue() {
+        decompteSalaire.setAnneeCotisations(new Annee(2013));
+        assertFalse(decompteSalaire.isSameAnneeCotisations(new Annee(2015)));
+    }
+
+    @Test
+    public void isSameAnneeCotisations_GivenDecompte2015An2015_ShouldBeFalse() {
+        decompteSalaire.setAnneeCotisations(new Annee(2015));
+        assertTrue(decompteSalaire.isSameAnneeCotisations(new Annee(2015)));
     }
 }

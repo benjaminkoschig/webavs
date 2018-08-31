@@ -5,6 +5,8 @@ import globaz.jade.persistence.model.JadeSimpleModel;
 public class TravailleurSimpleModel extends JadeSimpleModel {
     private static final long serialVersionUID = 4973405341749918097L;
 
+    private String correlationId;
+    private String posteCorrelationId;
     private Boolean annonceMeroba;
     private String dateAnnonceMeroba;
     private String genrePermisTravail;
@@ -14,6 +16,14 @@ public class TravailleurSimpleModel extends JadeSimpleModel {
 
     public TravailleurSimpleModel() {
         super();
+    }
+
+    public String getCorrelationId() {
+        return correlationId;
+    }
+
+    public void setCorrelationId(String correlationId) {
+        this.correlationId = correlationId;
     }
 
     public Boolean getAnnonceMeroba() {
@@ -65,4 +75,13 @@ public class TravailleurSimpleModel extends JadeSimpleModel {
     public void setReferencePermis(String referencePermis) {
         this.referencePermis = referencePermis;
     }
+
+    public String getPosteCorrelationId() {
+        return posteCorrelationId;
+    }
+
+    public void setPosteCorrelationId(String posteCorrelationId) {
+        this.posteCorrelationId = posteCorrelationId;
+    }
+
 }

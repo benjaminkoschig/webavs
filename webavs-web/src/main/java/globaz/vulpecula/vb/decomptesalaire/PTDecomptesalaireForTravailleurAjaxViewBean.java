@@ -1,9 +1,14 @@
 package globaz.vulpecula.vb.decomptesalaire;
 
+import java.util.ArrayList;
 import java.util.List;
+
 import ch.globaz.common.vb.JadeAbstractAjaxFindForDomain;
 import ch.globaz.vulpecula.business.services.VulpeculaRepositoryLocator;
+import ch.globaz.vulpecula.domain.models.decompte.Decompte;
 import ch.globaz.vulpecula.domain.models.decompte.DecompteSalaire;
+import ch.globaz.vulpecula.domain.models.decompte.EtatDecompte;
+import ch.globaz.vulpecula.domain.models.taxationoffice.EtatTaxation;
 import ch.globaz.vulpecula.domain.repositories.Repository;
 
 public class PTDecomptesalaireForTravailleurAjaxViewBean extends JadeAbstractAjaxFindForDomain<DecompteSalaire> {
@@ -51,7 +56,28 @@ public class PTDecomptesalaireForTravailleurAjaxViewBean extends JadeAbstractAja
 
     @Override
     public List<DecompteSalaire> findByRepository() {
-        return VulpeculaRepositoryLocator.getDecompteSalaireRepository().findLignesDecomptesSansCotisationsByIdTravailleur(
-                idTravailleur, idDecompte, raisonSociale, numeroDecompte, type);
+    	List<DecompteSalaire> listRetour = new ArrayList<DecompteSalaire>();
+    	
+    	for (DecompteSalaire decompteSalaire : VulpeculaRepositoryLocator.getDecompteSalaireRepository().findLignesDecomptesSansCotisationsByIdTravailleur(
+                idTravailleur, idDecompte, raisonSociale, numeroDecompte, type)) {
+    	
+    		Decompte decompte = decompteSalaire.getDecompte();
+
+    		// POBMS-132
+    		if (decompte != null && EtatDecompte.ANNULE.equals(decompte.getEtat())) {
+    			continue;
+    		}
+    		
+    		if (decompte != null && decompte.isTaxationOffice()) {
+    			// POBMS-132
+    			if(!EtatTaxation.ANNULE.equals(decompte.getEtatTaxationOffice())) {
+    				listRetour.add(decompteSalaire);
+                }
+    		} else {
+    			listRetour.add(decompteSalaire);
+    		}
+    	}
+    	
+        return listRetour;
     }
 }

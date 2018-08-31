@@ -12,6 +12,7 @@ import globaz.globall.db.BSession;
 import globaz.globall.db.GlobazJobQueue;
 import globaz.jade.admin.JadeAdminServiceLocatorProvider;
 import globaz.jade.client.util.JadeConversionUtil;
+import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.client.util.JadeUtil;
 import globaz.jade.context.JadeContextImplementation;
 import globaz.jade.context.JadeThreadActivator;
@@ -398,5 +399,71 @@ public abstract class DocumentManager<T extends Serializable> extends FWIDocumen
 
     public String getCodeLibelle(String cs) {
         return CodeSystemUtil.getCodeSysteme(cs, I18NUtil.getLanguesOf(getCodeLangue())).getLibelle();
+    }
+    
+    public String getCodeLibelle(String cs, CodeLangue langue) {
+        return CodeSystemUtil.getCodeSysteme(cs, I18NUtil.getLanguesOf(langue)).getLibelle();
+    }
+
+    public String getDefaultModelPath() {
+        try {
+            return getSession().getApplication().getExternalModelPath() + "defaultModel";
+        } catch (Exception e) {
+            throw new GlobazTechnicalException(ExceptionMessage.ERREUR_TECHNIQUE);
+        }
+    }
+    
+    /**
+     * Permet le formatage des textes du catalogue de texte pour les documents iText.<BR>
+     * Il permet de remplacer toutes les occurences {x} par l'argument [x] correspondant.
+     * 
+     * @param message
+     * @param args
+     * @return
+     */
+    public static String formatMessage(String message, String[] args) {
+
+        StringBuffer buffer = new StringBuffer(message);
+
+        // doubler les guillemets simples si necessaire
+        // for (int idChar = 0; idChar < buffer.length(); ++idChar) {
+        // if ((buffer.charAt(idChar) == '\'')
+        // && ((idChar == (buffer.length() - 1)) || (buffer.charAt(idChar + 1) != '\''))) {
+        // buffer.insert(idChar, '\'');
+        // ++idChar;
+        // }
+        // }
+        // remplacer les arguments null par chaine vide
+        for (int idArg = 0; idArg < args.length; ++idArg) {
+            if (args[idArg] == null) {
+                args[idArg] = "";
+            }
+        }
+
+        // Remplace les {x} par les args[x]
+        StringBuffer messageFormat = new StringBuffer();
+        boolean isTexte = true;
+        String param = "";
+        for (int i = 0; i < buffer.length(); i++) {
+
+            if ((buffer.charAt(i) != '{') && isTexte && (buffer.charAt(i) != '}')) {
+                messageFormat.append(buffer.charAt(i));
+            } else if (!isTexte && (buffer.charAt(i) != '}')) {
+                param += buffer.charAt(i);
+            } else if (buffer.charAt(i) == '}') {
+                isTexte = true;
+                if (!JadeStringUtil.isBlank(param)) {
+                    int numArg = Integer.parseInt(param);
+                    if (numArg < args.length) {
+                        messageFormat.append(args[numArg]);
+                    }
+                }
+            } else if (buffer.charAt(i) == '{') {
+                isTexte = false;
+                param = "";
+            }
+        }
+
+        return messageFormat.toString();
     }
 }

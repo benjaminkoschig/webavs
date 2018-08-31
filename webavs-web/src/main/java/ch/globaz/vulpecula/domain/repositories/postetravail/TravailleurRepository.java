@@ -25,4 +25,52 @@ public interface TravailleurRepository extends Repository<Travailleur> {
      * @return Un travailleur ou null si non présent en base de données.
      */
     Travailleur findByIdTiers(String idTiers);
+
+    /**
+     * Retourne un travailleur par rapport à son nss.
+     * 
+     * @param nss
+     * @return Un travailleur ou null si non présent en base de données.
+     */
+    Travailleur findByNss(String nss);
+
+    /**
+     * Retourne un travailleur par rapport à son nom / prenom et date de naissance.
+     * 
+     * @param nom
+     * @param prenom
+     * @param dateNaissance
+     * @return Un travailleur, null si non présent en base de données, null si exception.
+     */
+    Travailleur findByNomPrenomDateNaissance(String nom, String prenom, String dateNaissance);
+
+    /**
+     * Pour portail : retourne un travailleur par rapport à son correlationId
+     * 
+     * @param nom
+     * @param prenom
+     * @param dateNaissance
+     * @return Un travailleur, null si non présent en base de données, null si exception.
+     */
+    Travailleur findByCorrelationId(String correlationId);
+
+    /**
+     * Retourne la liste de travailleur en fonction du nom / prenom et de la date de naissance.
+     * 
+     * @param nom
+     * @param prenom
+     * @param dateNaissance
+     * @return Une liste de travailleur, null si aucun présent en base de données, null si exception.
+     */
+    List<Travailleur> findByNomPrenomDateNaissanceV2(String nom, String prenom, String dateNaissance);
+
+    /**
+     * Retourne le nombre de travailleur retourné par la requête
+     * 
+     * @param nom
+     * @param prenom
+     * @param dateNaissance
+     * @return le nombre de travailleur ou null si non trouvé en DB.
+     */
+    int countForNomPrenomDateNaissance(String nom, String prenom, String dateNaissance);
 }

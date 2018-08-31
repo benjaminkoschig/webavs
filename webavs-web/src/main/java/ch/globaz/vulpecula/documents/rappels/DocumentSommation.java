@@ -51,8 +51,9 @@ public class DocumentSommation extends VulpeculaDocumentManager<Decompte> {
         setParametres(P_P1, getTexte(2, 1));
 
         if (TypeDecompte.COMPLEMENTAIRE.equals(decompte.getType())) {
-            setParametres(P_PERIODE, getSession().getLabel("COMPLEMENTAIRE") + " "
-                    + decompte.getPeriode().getAnneeDebut());
+
+        	setParametres(P_PERIODE, getLabel("COMPLEMENTAIRE") + " " + decompte.getPeriode().getAnneeDebut());
+
         } else {
             setParametres(P_PERIODE, decompte.getDescription(locale));
         }

@@ -1170,4 +1170,8 @@ public class AFAdhesion extends BEntity implements Serializable {
         typeAdhesion = string;
     }
 
+    // @BMS-ONLY : Accesor needed to rollback a RADIATION
+    public AFAdhesion getOldAdhesion() {
+        return oldAdhesion;
+    }
 }

@@ -34,6 +34,8 @@
 	globazGlobal.messageAucuneCaisseMetier = '<c:out value="${viewBean.messageAucuneCaisseMetier}" />'
 	globazGlobal.messageLignePeriodeSaisie = '<ct:FWLabel key="JSP_LIGNE_PERIODE_SAISIE"/>'
 	globazGlobal.mustSubstractCotisations = '${viewBean.mustSubstractCotisations}';
+	globazGlobal.numAvsTravailleur = '${travailleur.numAvsActuel}';
+	globazGlobal.messageEmptyNSS = '${viewBean.messageEmptyNSS}';
 </script> 
 
 <%--  ********************************************************************** JS CSS ***************************************************************************--%>

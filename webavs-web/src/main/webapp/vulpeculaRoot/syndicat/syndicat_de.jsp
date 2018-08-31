@@ -18,7 +18,7 @@
 <script type="text/javascript">
 //fonctions de bases à redéfinir
 globazGlobal.isNouveau = ${viewBean.nouveau};
-globazGlobal.idTravailleur = '${viewBean.idTravailleur}';
+globazGlobal.idTravailleur = ${viewBean.idTravailleur};
 globazGlobal.decompteSalaireViewService = '${viewBean.decompteSalaireViewSerivce}';
 
 function add() {
@@ -60,6 +60,7 @@ globazGlobal.syndicats = (function() {
 	var $dateDebut;
 	var $dateFin;
 	var $montantTotal;
+	var $listeDetailsDecompteByYear;
 	
 	function init() {
 		montantVide = '0.00';
@@ -70,6 +71,7 @@ globazGlobal.syndicats = (function() {
 		if(!globazGlobal.isNouveau) {
 			searchCumulSalairesIfPossible();
 		}
+		//searchDetailsDecompteGroupByYear(globazGlobal.idTravailleur, $dateDebut.val(), $dateFin.val());
 		initEvents();
 	}
 	
@@ -77,6 +79,27 @@ globazGlobal.syndicats = (function() {
 		$dateDebut.add($dateFin).change(function () {
 			searchCumulSalairesIfPossible();
 		});
+	}
+	
+	function searchDetailsDecompteGroupByYear(idTravailleur, dateDebut, dateFin) {
+		var dateDebutTime = 0;
+		var dateFinTime = 0;
+		if(dateDebut.length > 0) {
+			dateDebutTime = getDateFromFormat(dateDebut, "dd.MM.yyyy");
+		}
+		if(dateFin.length > 0) {
+			dateFinTime = dateFin;
+		}
+		var options = {
+				serviceClassName:globazGlobal.decompteSalaireViewService,
+				serviceMethodName:'getDetailsDecompte',
+				parametres:idTravailleur + ',' + dateDebut + ',' + dateFinTime,
+				callBack:function (data) {
+					$listeDetailsDecompteByYear = data;
+					console.log($listeDetailsDecompteByYear);
+				}
+		};
+		vulpeculaUtils.lancementService(options);
 	}
 	
 	function searchCumulSalairesIfPossible() {
@@ -104,7 +127,7 @@ globazGlobal.syndicats = (function() {
 	function searchCumulSalairesSansDateFin(idTravailleur, dateDebut) {
 		var options = {
 				serviceClassName:globazGlobal.decompteSalaireViewService,
-				serviceMethodName:'cumulSalairesSansDateFin',
+				serviceMethodName:'cumulSalairesSyndicatWithCotisationsCPRSansDateFin',
 				parametres:idTravailleur + ',' + dateDebut,
 				callBack:function (data) {
 					$montantTotal.val(data);
@@ -116,7 +139,7 @@ globazGlobal.syndicats = (function() {
 	function searchCumulSalaires(idTravailleur, dateDebut, dateFin) {
 		var options = {
 				serviceClassName:globazGlobal.decompteSalaireViewService,
-				serviceMethodName:'cumulSalaires',
+				serviceMethodName:'cumulSalairesSyndicatWithCotisationsCPR',
 				parametres:idTravailleur + ',' + dateDebut + ',' + dateFin,
 				callBack:function (data) {
 					$montantTotal.val(data);
@@ -137,6 +160,8 @@ jsManager.executeAfter = function () {
 
 
 <%@ include file="/theme/detail_el/bodyStart.jspf" %>
+<span class="postItIcon" data-g-note="idExterne:${travailleur.id}, tableSource:PT_TRAVAILLEURS">
+</span>
 <ct:FWLabel key="${labelTitreEcran}"/>
 <%@ include file="/theme/detail_el/bodyStart2.jspf" %>
 <%--  ******************************************************************* Corps de la page ******************************************************************* --%>
@@ -193,6 +218,28 @@ jsManager.executeAfter = function () {
 				<input id="montantTotal" data-g-amount="" class="readOnly" readonly="readonly" value="" type="text" />
 			</td>
 		</tr>
+	</table>
+	<table style="margin-top:15px;">
+		<tr>
+			<th><ct:FWLabel key="JSP_SYNDIC_ANNEE" /></th>
+			<th><ct:FWLabel key="JSP_SYNDIC_SALAIRE_ANNUEL" /></th>
+			<th><ct:FWLabel key="JSP_SYNDIC_TAUX" /></th>
+			<th><ct:FWLabel key="JSP_SYNDIC_COTISATION_BRUT" /></th>
+			<th><ct:FWLabel key="JSP_SYNDIC_POURCENTAGE" /></th>
+			<th><ct:FWLabel key="JSP_SYNDIC_COTISATION_NET" /></th>
+			<th><ct:FWLabel key="JSP_SYNDIC_FRAIS" /></th>
+		</tr>
+  		<c:forEach var="detaisDecompteByYear" items="${viewBean.detailsDecomptesSalairesParAnnee}">
+		<tr style="text-align: right;" class="bmsRowEven">
+			<td style="padding-left:10px;">${detaisDecompteByYear.annee}</td>
+			<td style="padding-left:10px;">${detaisDecompteByYear.salaireAnnuel}</td>
+			<td style="padding-left:10px;">${detaisDecompteByYear.taux}</td>
+			<td style="padding-left:10px;">${detaisDecompteByYear.cotisationBrute}</td>
+			<td style="padding-left:10px;">${detaisDecompteByYear.pourcentage}</td>
+			<td style="padding-left:10px;">${detaisDecompteByYear.cotisationNette}</td>
+			<td style="padding-left:10px;">${detaisDecompteByYear.frais}</td>
+		</tr>
+  		</c:forEach>
 	</table>
 </div>
 

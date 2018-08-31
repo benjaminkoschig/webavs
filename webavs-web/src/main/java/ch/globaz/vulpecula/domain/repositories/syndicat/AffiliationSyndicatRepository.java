@@ -1,6 +1,7 @@
 package ch.globaz.vulpecula.domain.repositories.syndicat;
 
 import java.util.List;
+import java.util.Set;
 import ch.globaz.vulpecula.domain.models.common.Annee;
 import ch.globaz.vulpecula.domain.models.syndicat.AffiliationSyndicat;
 import ch.globaz.vulpecula.domain.repositories.Repository;
@@ -14,4 +15,8 @@ public interface AffiliationSyndicatRepository extends Repository<AffiliationSyn
     List<AffiliationSyndicat> findByAnnee(String idSyndicat, Annee annee);
 
     List<AffiliationSyndicat> findByAnnee(Annee annee);
+
+    Set<String> findAllIdTravailleurs();
+
+    List<AffiliationSyndicat> findByAnneeAndTravailleur(String idSyndicat, Annee annee, String idTravailleur);
 }

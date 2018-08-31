@@ -1,10 +1,12 @@
 package ch.globaz.vulpecula.domain.models.postetravail;
 
+import globaz.naos.translation.CodeSystem;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import ch.globaz.vulpecula.domain.models.common.Date;
 import ch.globaz.vulpecula.domain.models.common.Periode;
 import ch.globaz.vulpecula.domain.models.common.Taux;
 import ch.globaz.vulpecula.domain.models.decompte.Decompte;
@@ -20,10 +22,11 @@ import ch.globaz.vulpecula.external.models.affiliation.CotisationChecker;
  * 
  */
 public class Employeur extends Affilie implements Serializable {
+    public static final String EBUSINESS = "68907001";
+
     private static final long serialVersionUID = 1L;
 
     private boolean bvr;
-    private boolean editerSansTravailleur;
     private TypeFacturation typeFacturation;
     private List<PosteTravail> postesTravail;
     private Set<Travailleur> travailleurs;
@@ -36,6 +39,12 @@ public class Employeur extends Affilie implements Serializable {
         init();
     }
 
+    public Employeur(String idEmployeur) {
+        super();
+        init();
+        setId(idEmployeur);
+    }
+
     public Employeur(final Affilie affilie) {
         super(affilie);
         init();
@@ -43,6 +52,7 @@ public class Employeur extends Affilie implements Serializable {
 
     private void init() {
         postesTravail = new ArrayList<PosteTravail>();
+        typeFacturation = TypeFacturation.VERSEMENT;
     }
 
     public void setTypeFacturation(TypeFacturation typeFacturation) {
@@ -150,6 +160,14 @@ public class Employeur extends Affilie implements Serializable {
         return CotisationChecker.isSoumisAVS(cotisations);
     }
 
+    public boolean isSoumisAVSPlus1JourPourPeriode(Periode periode) {
+        return CotisationChecker.isSoumisAVSPlus1JourPourPeriode(cotisations, periode);
+    }
+
+    public boolean isSoumisAVS(Date dateRef) {
+        return CotisationChecker.isSoumisAVS(cotisations, dateRef);
+    }
+
     public boolean isSoumisAC() {
         return CotisationChecker.isSoumisAC(cotisations);
     }
@@ -188,14 +206,6 @@ public class Employeur extends Affilie implements Serializable {
             return null;
         }
         return convention.getCode();
-    }
-
-    public final boolean isEditerSansTravailleur() {
-        return editerSansTravailleur;
-    }
-
-    public final void setEditerSansTravailleur(boolean editerSansTravailleur) {
-        this.editerSansTravailleur = editerSansTravailleur;
     }
 
     public final Adhesion getCaisseMetier() {
@@ -238,6 +248,22 @@ public class Employeur extends Affilie implements Serializable {
      */
     public boolean isActif(final Periode periodeDemande) {
         Periode periodeActivite = new Periode(getDateDebut(), getDateFin());
-        return periodeDemande.isActif(periodeActivite);
+        return periodeActivite.isActif(periodeDemande);
+    }
+
+    public boolean isElectricite() {
+        return convention.isElectricite();
+    }
+
+    public boolean isEBusiness() {
+        if (getDeclarationSalaire() != null) {
+            return EBUSINESS.equals(getDeclarationSalaire().trim());
+        } else {
+            return false;
+        }
+    }
+
+    public boolean isFaillite() {
+        return CodeSystem.MOTIF_FIN_FAILLITE.equals(motifFin);
     }
 }

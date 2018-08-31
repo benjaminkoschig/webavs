@@ -1,5 +1,10 @@
 package ch.globaz.vulpecula.documents.rectificatif;
 
+import java.util.Collection;
+import ch.globaz.vulpecula.business.services.VulpeculaRepositoryLocator;
+import ch.globaz.vulpecula.business.services.VulpeculaServiceLocator;
+import ch.globaz.vulpecula.documents.catalog.DocumentPrinter;
+import ch.globaz.vulpecula.domain.models.decompte.Decompte;
 import globaz.framework.util.FWMessage;
 import globaz.globall.db.BProcess;
 import globaz.globall.db.BProcessLauncher;
@@ -8,14 +13,9 @@ import globaz.jade.context.JadeThreadActivator;
 import globaz.jade.context.JadeThreadContext;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
 import globaz.naos.db.affiliation.AFAffiliationUtil;
-import java.util.List;
-import ch.globaz.vulpecula.business.services.VulpeculaRepositoryLocator;
-import ch.globaz.vulpecula.business.services.VulpeculaServiceLocator;
-import ch.globaz.vulpecula.documents.catalog.DocumentPrinter;
-import ch.globaz.vulpecula.domain.models.decompte.Decompte;
 
 /**
- * 
+ *
  * @author jpa
  *         Process de lancement de l'impression des documents rectificatifs
  */
@@ -44,7 +44,7 @@ public class PTImpressionRectificatifProcess extends BProcess {
             JadeThreadContext threadContext = AFAffiliationUtil.initContext(getSession());
             JadeThreadActivator.startUsingJdbcContext(Thread.currentThread(), threadContext.getContext());
 
-            List<Decompte> listDecomptesRectificatif = rechercheDecomptesRectificatifs();
+            Collection<Decompte> listDecomptesRectificatif = rechercheDecomptesRectificatifs();
 
             if (!listDecomptesRectificatif.isEmpty()) {
                 // Mise à jour de l'état recitifié sur le décompte
@@ -85,7 +85,7 @@ public class PTImpressionRectificatifProcess extends BProcess {
 
     }
 
-    private List<Decompte> rechercheDecomptesRectificatifs() {
+    private Collection<Decompte> rechercheDecomptesRectificatifs() {
         return VulpeculaServiceLocator.getDecompteService().rechercheDecomptesRectificatif();
     }
 

@@ -1,5 +1,6 @@
 package ch.globaz.vulpecula.repositoriesjade.servicemilitaire.converters;
 
+import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.persistence.model.JadeAbstractSearchModel;
 import ch.globaz.musca.business.models.PassageModel;
 import ch.globaz.osiris.business.model.JournalSimpleModel;
@@ -7,6 +8,7 @@ import ch.globaz.vulpecula.business.models.postetravail.PosteTravailComplexModel
 import ch.globaz.vulpecula.business.models.servicemilitaire.ServiceMilitaireComplexModel;
 import ch.globaz.vulpecula.business.models.servicemilitaire.ServiceMilitaireSearchSimpleModel;
 import ch.globaz.vulpecula.business.models.servicemilitaire.ServiceMilitaireSimpleModel;
+import ch.globaz.vulpecula.domain.models.common.Date;
 import ch.globaz.vulpecula.domain.models.common.Montant;
 import ch.globaz.vulpecula.domain.models.common.Periode;
 import ch.globaz.vulpecula.domain.models.common.Taux;
@@ -72,6 +74,9 @@ public class ServiceMilitaireConverter implements
         serviceMilitaireSimpleModel.setTauxCP(serviceMilitaire.getTauxCP().getValue());
         serviceMilitaireSimpleModel.setTauxGratification(serviceMilitaire.getTauxGratification().getValue());
         serviceMilitaireSimpleModel.setSpy(serviceMilitaire.getSpy());
+        if (serviceMilitaire.getDateVersement() != null) {
+            serviceMilitaireSimpleModel.setDateVersement(serviceMilitaire.getDateVersement().getSwissValue());
+        }
         return serviceMilitaireSimpleModel;
     }
 
@@ -97,6 +102,9 @@ public class ServiceMilitaireConverter implements
         serviceMilitaire.setTauxCP(new Taux(serviceMilitaireSimpleModel.getTauxCP()));
         serviceMilitaire.setTauxGratification(new Taux(serviceMilitaireSimpleModel.getTauxGratification()));
         serviceMilitaire.setSpy(serviceMilitaireSimpleModel.getSpy());
+        if (!JadeStringUtil.isEmpty(serviceMilitaireSimpleModel.getDateVersement())) {
+            serviceMilitaire.setDateVersement(new Date(serviceMilitaireSimpleModel.getDateVersement()));
+        }
 
         return serviceMilitaire;
     }

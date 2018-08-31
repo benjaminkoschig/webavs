@@ -16,22 +16,25 @@ public class ListSMExcel extends PrestationsListExcel {
 
     private Map<Convention, SMsParType> servicesMilitairesParTypeParConvention;
 
-    private final int LAST_COLUMN_OFFSET = 13;
+    private final int LAST_COLUMN_OFFSET = 16;
 
     private final int COL_ID_TRAVAILLEUR = 0;
     private final int COL_TRAVAILLEUR = 1;
     private final int COL_NO_AFFILIE = 2;
-    private final int COL_BENEFICIAIRE = 3;
-    private final int COL_PERIODE = 4;
-    private final int COL_JOURS = 5;
-    private final int COL_SAL_H = 6;
-    private final int COL_TOTAL_SAL_COUV = 7;
-    private final int COL_UNKNOWN = 8;
-    private final int COL_APG = 9;
-    private final int COL_BRUT = 10;
-    private final int COL_AVS_AC = 11;
-    private final int COL_AF = 12;
-    private final int COL_TOTAL_VERSE = 13;
+    private final int COL_EMPLOYEUR = 3;
+    private final int COL_BENEFICIAIRE = 4;
+    private final int COL_PERIODE = 5;
+    private final int COL_DATE_DEBUT = 6;
+    private final int COL_DATE_FIN = 7;
+    private final int COL_JOURS = 8;
+    private final int COL_SAL_H = 9;
+    private final int COL_TOTAL_SAL_COUV = 10;
+    private final int COL_UNKNOWN = 11;
+    private final int COL_APG = 12;
+    private final int COL_BRUT = 13;
+    private final int COL_AVS_AC = 14;
+    private final int COL_AF = 15;
+    private final int COL_TOTAL_VERSE = 16;
 
     public ListSMExcel(BSession session, String filenameRoot, String documentTitle) {
         super(session, filenameRoot, documentTitle);
@@ -39,8 +42,11 @@ public class ListSMExcel extends PrestationsListExcel {
         sheet.setColumnWidth((short) COL_ID_TRAVAILLEUR, AbstractListExcel.COLUMN_WIDTH_3500);
         sheet.setColumnWidth((short) COL_TRAVAILLEUR, AbstractListExcel.COLUMN_WIDTH_DESCRIPTION);
         sheet.setColumnWidth((short) COL_NO_AFFILIE, AbstractListExcel.COLUMN_WIDTH_AFILIE);
+        sheet.setColumnWidth((short) COL_EMPLOYEUR, AbstractListExcel.COLUMN_WIDTH_DESCRIPTION);
         sheet.setColumnWidth((short) COL_BENEFICIAIRE, AbstractListExcel.COLUMN_WIDTH_4500);
         sheet.setColumnWidth((short) COL_PERIODE, AbstractListExcel.COLUMN_WIDTH_5500);
+        sheet.setColumnWidth((short) COL_DATE_DEBUT, AbstractListExcel.COLUMN_WIDTH_MONTANT);
+        sheet.setColumnWidth((short) COL_DATE_FIN, AbstractListExcel.COLUMN_WIDTH_MONTANT);
         sheet.setColumnWidth((short) COL_JOURS, AbstractListExcel.COLUMN_WIDTH_MONTANT);
         sheet.setColumnWidth((short) COL_SAL_H, AbstractListExcel.COLUMN_WIDTH_MONTANT);
         sheet.setColumnWidth((short) COL_TOTAL_SAL_COUV, AbstractListExcel.COLUMN_WIDTH_MONTANT);
@@ -65,8 +71,11 @@ public class ListSMExcel extends PrestationsListExcel {
         createCell(getSession().getLabel("LISTE_ID_TRAVAILLEUR"), getStyleListTitleLeft());
         createCell(getSession().getLabel("LISTE_TRAVAILLEUR"), getStyleListTitleLeft());
         createCell(getSession().getLabel("LISTE_NO_AFFILIE"), getStyleListTitleLeft());
+        createCell(getSession().getLabel("LISTE_EMPLOYEUR"), getStyleListTitleLeft());
         createCell(getSession().getLabel("LISTE_BENEFICIAIRE"), getStyleListTitleLeft());
         createCell(getSession().getLabel("LISTE_PERIODE"), getStyleListTitleLeft());
+        createCell(getSession().getLabel("LISTE_DEBUT_ABSENCE"), getStyleListTitleLeft());
+        createCell(getSession().getLabel("LISTE_FIN_ABSENCE"), getStyleListTitleLeft());
         createCell(getSession().getLabel("LISTE_JOURS"), getStyleListTitleLeft());
         createCell(getSession().getLabel("LISTE_SAL_H"), getStyleListTitleLeft());
         createCell(getSession().getLabel("LISTE_TAUX"), getStyleListTitleLeft());
@@ -85,7 +94,7 @@ public class ListSMExcel extends PrestationsListExcel {
             String conventionDescription = convention.getCode() + " " + convention.getDesignation();
 
             int newRow = createRow();
-            createMergedRegion(0, LAST_COLUMN_OFFSET, newRow, newRow, conventionDescription,
+            createMergedRegion(COL_ID_TRAVAILLEUR, LAST_COLUMN_OFFSET, newRow, newRow, conventionDescription,
                     getStyleListGris25PourcentGras());
 
             for (Map.Entry<GenreSM, ServicesMilitaires> smParType : smsParType.entrySet()) {
@@ -101,9 +110,17 @@ public class ListSMExcel extends PrestationsListExcel {
                     createCell(serviceMilitaire.getTravailleurIdTiers(), getStyleListLeft());
                     createCell(serviceMilitaire.getNomPrenomTravailleur(), getStyleListLeft());
                     createCell(serviceMilitaire.getNoAffilie(), getStyleListLeft());
+                    if (serviceMilitaire.getEmployeur().getId() != null) {
+                        createCell(serviceMilitaire.getEmployeur().getRaisonSociale(), getStyleListLeft());
+                    } else {
+                        createCell("-", getStyleListLeft());
+                    }
                     createCell(getSession().getCodeLibelle(serviceMilitaire.getBeneficiaire().getValue()),
                             getStyleListLeft());
                     createCell(serviceMilitaire.getPeriodeAsString(), getStyleMontant());
+                    createCell(String.valueOf(serviceMilitaire.getDateDebutAsString()), getStyleMontant());
+                    createCell(String.valueOf(serviceMilitaire.getDateFinAsString()), getStyleMontant());
+
                     createCell(String.valueOf(serviceMilitaire.getNbJours()), getStyleMontant());
                     createCell(serviceMilitaire.getSalaireHoraire().getValue(), getStyleMontant());
                     createCell(serviceMilitaire.getCouvertureAPG().getValue(), getStyleMontant());
@@ -117,7 +134,7 @@ public class ListSMExcel extends PrestationsListExcel {
                 }
 
                 int totalGenreSM = createRow();
-                createMergedRegion(1, COL_PERIODE, totalGenreSM, totalGenreSM,
+                createMergedRegion(COL_TRAVAILLEUR, COL_DATE_FIN, totalGenreSM, totalGenreSM,
                         getSession().getLabel("LISTE_TOTAL_COLON") + genreSMLibelle, getStyleListGris25PourcentGras());
                 createCell(servicesMilitaires.getSommeNbjours(), getStyleListMontantGris25PourcentGras());
                 createEmptyCellForMontant(2, getStyleListMontantGris25PourcentGras());
@@ -133,9 +150,8 @@ public class ListSMExcel extends PrestationsListExcel {
             }
 
             int conventionEndRow = createRow();
-            createMergedRegion(0, COL_PERIODE, conventionEndRow, conventionEndRow,
-                    getSession().getLabel("LISTE_TOTAL_COLON") + conventionDescription,
-                    getStyleListGris25PourcentGras());
+            createMergedRegion(COL_ID_TRAVAILLEUR, COL_DATE_FIN, conventionEndRow, conventionEndRow, getSession()
+                    .getLabel("LISTE_TOTAL_COLON") + conventionDescription, getStyleListGris25PourcentGras());
             createCell(smsParType.getSommeNbJours(), getStyleListMontantGris25PourcentGras());
             createEmptyCellForMontant(2, getStyleListMontantGris25PourcentGras());
             createCell(smsParType.getSommeVersementAPG().getValue(), getStyleListMontantGris25PourcentGras());

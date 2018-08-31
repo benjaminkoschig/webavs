@@ -4,6 +4,7 @@ import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.persistence.model.JadeSearchComplexModel;
 import globaz.pavo.util.CIAffilie;
 import java.util.Collection;
+import ch.globaz.vulpecula.domain.models.common.Date;
 
 public class EmployeurSearchComplexModel extends JadeSearchComplexModel {
     private static final long serialVersionUID = -2897148419721954304L;
@@ -23,6 +24,8 @@ public class EmployeurSearchComplexModel extends JadeSearchComplexModel {
     private String typeAffiliation = CIAffilie.CS_EMPLOYEUR;
     private Boolean isBvr = null;
     private Boolean isEditerSansTravailleur = null;
+    private String forDateDebutGreaterOrEquals = null;
+    private String forDateDebutLessOrEquals = null;
 
     /**
      * @return the forAffiliationId
@@ -180,5 +183,29 @@ public class EmployeurSearchComplexModel extends JadeSearchComplexModel {
 
     public void setForNumeroAffilie(String forNumeroAffilie) {
         this.forNumeroAffilie = forNumeroAffilie;
+    }
+
+    public void setForDateDebutGreaterOrEquals(Date dateDebut) {
+        setForDateDebutGreaterOrEquals(dateDebut.getSwissValue());
+    }
+
+    public void setForDateDebutLessOrEquals(Date dateFin) {
+        setForDateFin(dateFin.getSwissValue());
+    }
+
+    public String getForDateDebutGreaterOrEquals() {
+        return forDateDebutGreaterOrEquals;
+    }
+
+    public void setForDateDebutGreaterOrEquals(String forDateDebutGreaterOrEquals) {
+        this.forDateDebutGreaterOrEquals = forDateDebutGreaterOrEquals;
+    }
+
+    public String getForDateDebutLessOrEquals() {
+        return forDateDebutLessOrEquals;
+    }
+
+    public void setForDateDebutLessOrEquals(String forDateDebutLessOrEquals) {
+        this.forDateDebutLessOrEquals = forDateDebutLessOrEquals;
     }
 }

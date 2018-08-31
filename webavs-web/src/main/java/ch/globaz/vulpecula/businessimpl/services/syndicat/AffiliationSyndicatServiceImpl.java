@@ -1,6 +1,5 @@
 package ch.globaz.vulpecula.businessimpl.services.syndicat;
 
-import globaz.jade.client.util.JadeStringUtil;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -8,6 +7,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import com.google.common.base.Function;
+import com.google.common.collect.Multimaps;
 import ch.globaz.vulpecula.business.services.VulpeculaRepositoryLocator;
 import ch.globaz.vulpecula.business.services.VulpeculaServiceLocator;
 import ch.globaz.vulpecula.business.services.decompte.DecompteSalaireService;
@@ -19,8 +20,7 @@ import ch.globaz.vulpecula.domain.models.postetravail.Travailleur;
 import ch.globaz.vulpecula.domain.models.syndicat.AffiliationSyndicat;
 import ch.globaz.vulpecula.domain.repositories.syndicat.AffiliationSyndicatRepository;
 import ch.globaz.vulpecula.external.models.pyxis.Administration;
-import com.google.common.base.Function;
-import com.google.common.collect.Multimaps;
+import globaz.jade.client.util.JadeStringUtil;
 
 public class AffiliationSyndicatServiceImpl implements AffiliationSyndicatService {
     private AffiliationSyndicatRepository affiliationSyndicatRepository = VulpeculaRepositoryLocator
@@ -30,9 +30,14 @@ public class AffiliationSyndicatServiceImpl implements AffiliationSyndicatServic
 
     @Override
     public Map<Administration, List<AffiliationSyndicat>> findByAnneeWithCumulSalairesGroupByCaisseMetier(
-            String idSyndicat, String idCaisseMetier, Annee annee, List<String> listeErreur) {
+            String idSyndicat, String idCaisseMetier, Annee annee, List<String> listeErreur, String idTravailleur) {
         Map<Administration, List<AffiliationSyndicat>> affiliationsSyndicatsGroupByCaisseMetier = new HashMap<Administration, List<AffiliationSyndicat>>();
-        List<AffiliationSyndicat> affiliations = affiliationSyndicatRepository.findByAnnee(idSyndicat, annee);
+        List<AffiliationSyndicat> affiliations;
+        if (JadeStringUtil.isBlank(idTravailleur)) {
+            affiliations = affiliationSyndicatRepository.findByAnnee(idSyndicat, annee);
+        } else {
+            affiliations = affiliationSyndicatRepository.findByAnneeAndTravailleur(idSyndicat, annee, idTravailleur);
+        }
         for (AffiliationSyndicat affiliationSyndicat : affiliations) {
             try {
 
@@ -62,16 +67,16 @@ public class AffiliationSyndicatServiceImpl implements AffiliationSyndicatServic
 
     @Override
     public Map<Administration, Map<Administration, List<AffiliationSyndicat>>> findByAnneeWithCumulSalaireGroupBySyndicatAndCaisseMetier(
-            String idSyndicat, String idCaisseMetier, Annee annee, List<String> listeErreur) {
+            String idSyndicat, String idCaisseMetier, Annee annee, List<String> listeErreur, String idTravailleur) {
         Map<Administration, Map<Administration, List<AffiliationSyndicat>>> result = new HashMap<Administration, Map<Administration, List<AffiliationSyndicat>>>();
         Map<Administration, List<AffiliationSyndicat>> affiliationSyndicatGroupByCaisseMetier = findByAnneeWithCumulSalairesGroupByCaisseMetier(
-                idSyndicat, idCaisseMetier, annee, listeErreur);
+                idSyndicat, idCaisseMetier, annee, listeErreur, idTravailleur);
         for (Map.Entry<Administration, List<AffiliationSyndicat>> entry : affiliationSyndicatGroupByCaisseMetier
                 .entrySet()) {
             Administration caisseMetier = entry.getKey();
             List<AffiliationSyndicat> affiliations = entry.getValue();
-            Map<Administration, Collection<AffiliationSyndicat>> affiliationsGroupBySyndicat = Multimaps.index(
-                    affiliations, new Function<AffiliationSyndicat, Administration>() {
+            Map<Administration, Collection<AffiliationSyndicat>> affiliationsGroupBySyndicat = Multimaps
+                    .index(affiliations, new Function<AffiliationSyndicat, Administration>() {
                         @Override
                         public Administration apply(AffiliationSyndicat affiliationSyndicat) {
                             return affiliationSyndicat.getSyndicat();

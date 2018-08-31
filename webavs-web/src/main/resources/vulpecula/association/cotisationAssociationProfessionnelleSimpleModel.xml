@@ -10,25 +10,26 @@
 			<field name="libelle" column="LIBELLE" type="STRING" comment="libelle" />
 			<field name="libelleUpper" column="LIBELLE_UPPER" type="STRING" comment="libelle upper" />
 			<field name="masseSalarialeDefaut" column="MASSE_SALARIALE_DEFAUT" type="NUMERIC" />
+			<field name="facturerDefaut" column="CS_FACTURER_DEFAUT" type="NUMERIC"/>
 			<field name="libelleFR" column="LIBELLE_FR" type="STRING" comment="libelleFR" />
 			<field name="libelleDE" column="LIBELLE_DE" type="STRING" comment="libelleDE" />
 			<field name="libelleIT" column="LIBELLE_IT" type="STRING" comment="libelleIT" />
 			<field name="idAssociationProfessionnelle" column="ID_TIADMIP" type="NUMERIC" />
 			<field name="genre" column="CS_GENRE" type="NUMERIC" />
+ 			<field name="idRubrique" column="ID_CARUBRP" type="NUMERIC" />
+ 			<field name="printOrder" column="PRINT_ORDER" type="NUMERIC" />
 		</fields>
 		<search-definition>
 			<search-group operator="AND">
-				<search-field name="forId" field-ref="id"
-					operation="EQUALS" />
-				<search-field name="forLibelleLike" field-ref="libelle"
-					operation="LIKE" />
-				<search-field name="forLibelleUpperLike" field-ref="libelleUpper"
-					operation="LIKE" />
+				<search-field name="forId" field-ref="id" operation="EQUALS" />
+				<search-field name="forLibelleLike" field-ref="libelle" operation="LIKE" />
+				<search-field name="forLibelleUpperLike" field-ref="libelleUpper" operation="LIKE" />
+				<search-field name="forFacturerDefaut" field-ref="facturerDefaut" operation="EQUALS" />
 			</search-group>
 		</search-definition>
 		
 		<order-by name="">
-			<order-field field-ref="id" />
+			<order-field field-ref="printOrder" />
 		</order-by>
 		
 		<order-by name="idDesc">

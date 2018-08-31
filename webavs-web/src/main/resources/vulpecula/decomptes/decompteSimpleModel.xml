@@ -22,6 +22,7 @@
 			<field name="motifProlongation" column="CS_MOTIF_PROLONGATION" type="NUMERIC" comment="motif de prolongation du rappel"/>
 			<field name="rectifie" column="RECTIFIE" type="BOOLEAN" comment="est-ce un décompte rectifié"/>
 			<field name="controleAC2" column="CONTROLEAC2" type="BOOLEAN" comment="est-ce que c'est un décompte où l'on effectue un contrôle AC2" />
+			<field name="typeProvenance" column="CS_TYPE_PROVENANCE" type="NUMERIC" comment="Code System : type de provenance du décompte" />
 		</fields>
 		
 		<search-definition>

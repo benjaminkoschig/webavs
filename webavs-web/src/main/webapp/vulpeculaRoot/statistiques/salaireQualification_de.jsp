@@ -71,19 +71,27 @@ function loadCodesQualifications(idConvention){
 
 //chargement du dom jquery
 $(function () {
-	loadCodesQualifications($('#idConvention').val());
+	if($('#idConvention').val() != ""){
+		loadCodesQualifications($('#idConvention').val());
+	}
 	
 	$('#idConvention').change(function(){
-		loadCodesQualifications($(this).val());
+		if($('#idConvention').val() != ""){
+			loadCodesQualifications($(this).val());
+		} else {
+			$('#trQualif').hide();
+			var selector = $('#codesQualifications');
+			selector.empty();
+		}
 	});
 	
 	$('#launch').click(function() {
-		if($('#codesQualifications').val()){
+		if(!$('#idConvention').val() && $('#codesQualifications').val()){
+			showErrorDialog(messageQualificationRequis);
+		}else{
 			$(this).prop('disabled',true);
 			document.forms[0].elements('userAction').value="vulpecula.statistiques.salaireQualification.executer";
 			document.forms[0].submit();	
-		}else{
-			showErrorDialog(messageQualificationRequis);	
 		}
 	});
 });
@@ -110,6 +118,7 @@ $(function () {
 				<td><label for="convention"><ct:FWLabel key="JSP_CONVENTION"/></label></td>
 				<td>
 					<select  name="idConvention" id="idConvention">
+						<option value="" selected="selected"></option>
 						<c:forEach var="convention" items="${viewBean.conventions}">
 							<c:choose>
 								<c:when test="${viewBean.idConvention==convention.id}">

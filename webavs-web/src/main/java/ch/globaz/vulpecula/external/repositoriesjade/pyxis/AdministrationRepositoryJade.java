@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package ch.globaz.vulpecula.external.repositoriesjade.pyxis;
 
@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ch.globaz.common.sql.QueryExecutor;
 import ch.globaz.vulpecula.business.services.VulpeculaServiceLocator;
 import ch.globaz.vulpecula.business.services.properties.PropertiesService;
 import ch.globaz.vulpecula.external.models.AdministrationComplexModel;
@@ -116,5 +117,38 @@ public class AdministrationRepositoryJade implements AdministrationRepository {
             LOGGER.error(ex.getMessage());
         }
         return administrations;
+    }
+
+    @Override
+    public Administration findByCodeAndGenre(String code, String genre) {
+        Administration administration = null;
+        AdministrationSearchComplexModel adminComplexModel = new AdministrationSearchComplexModel();
+        adminComplexModel.setForCodeAdministration(code);
+        adminComplexModel.setForGenreAdministration(genre);
+        try {
+            JadePersistenceManager.search(adminComplexModel);
+            if (adminComplexModel.getSize() > 0) {
+                AdministrationComplexModel administrationComplexModel = (AdministrationComplexModel) adminComplexModel
+                        .getSearchResults()[0];
+                administration = AdministrationConverter.convertToDomain(administrationComplexModel);
+            }
+        } catch (JadePersistenceException ex) {
+            LOGGER.error(ex.getMessage());
+        }
+        return administration;
+    }
+
+    @Override
+    public boolean isActive(String idTiers) {
+        List<String> list = QueryExecutor.execute(buildQueryIsActive(idTiers), String.class);
+        if (!list.isEmpty()) {
+            return list.get(0).equals("2");
+        } else {
+            return false;
+        }
+    }
+
+    private String buildQueryIsActive(String idTiers) {
+        return "SELECT HTINAC FROM SCHEMA.TITIERP WHERE HTITIE =" + idTiers;
     }
 }

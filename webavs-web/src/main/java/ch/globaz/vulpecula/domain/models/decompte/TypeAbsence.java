@@ -15,7 +15,10 @@ public enum TypeAbsence {
     SERVICE_MILITAIRE(68015006),
     VACANCES(68015007),
     MATERNITE(68015008),
-    CONGES_NON_PAYES(68015009);
+    CONGES_NON_PAYES(68015009),
+    CHOMAGE_INTEMPERIE(68015010),
+    CHOMAGE_TECHNIQUE(68015011),
+    GAIN_INTERMEDIARE(68015012);
 
     private int value;
 
@@ -26,7 +29,7 @@ public enum TypeAbsence {
     /**
      * Retourne un code système représentant la valeur du type de salaire
      * 
-     * @return String représentant un code sytème
+     * @return String représentant un code système
      */
     public String getValue() {
         return String.valueOf(value);

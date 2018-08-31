@@ -19,6 +19,7 @@ public class ListISParCAFExcel extends AbstractListExcel {
     private Map<String, PrestationGroupee> prestationsAImprimer;
 
     private Annee annee;
+    private String canton;
 
     public ListISParCAFExcel(BSession session, String filenameRoot, String documentTitle) {
         super(session, filenameRoot, documentTitle);
@@ -31,15 +32,16 @@ public class ListISParCAFExcel extends AbstractListExcel {
         createEntetes();
         for (Map.Entry<String, PrestationGroupee> entry : prestationsAImprimer.entrySet()) {
             PrestationGroupee prestation = entry.getValue();
+            Montant montantPrestation = prestation.getMontantPrestations();
             Montant montantRetenue = prestation.getImpots();
             Montant montantFrais = prestation.getFrais();
             Montant montantNet = montantRetenue.substract(montantFrais);
             createRow();
             createCell(prestation.getLibelleCaisseAF(), getStyleListLeft());
-            createCell(prestation.getMontantPrestations().getValue(), getStyleMontant());
-            createCell(prestation.getImpots().getValue(), getStyleMontant());
-            createCell(prestation.getFrais().getValue(), getStyleMontant());
-            createCell(montantNet.getValue(), getStyleMontant());
+            createCell(Double.parseDouble(montantPrestation.getValueNormalisee()), getStyleMontant());
+            createCell(Double.parseDouble(montantRetenue.getValueNormalisee()), getStyleMontant());
+            createCell(Double.parseDouble(montantFrais.getValueNormalisee()), getStyleMontant());
+            createCell(Double.parseDouble(montantNet.getValueNormalisee()), getStyleMontant());
         }
     }
 
@@ -61,6 +63,11 @@ public class ListISParCAFExcel extends AbstractListExcel {
     private void createEntetes() {
         createRow();
         createRow();
+        String libelleCanton = canton.isEmpty() || "0".equals(canton) ? getLabel("JSP_TOUS") : getCodeLibelle(canton);
+
+        createCell(getLabel("LISTE_AF_CANTON"), getStyleCritereTitle());
+        createCell(libelleCanton, getStyleCritere());
+        createRow();
         createRow();
         createCell(getLabel("LISTE_AF_CAISSE_AF"), getStyleGris25PourcentGras());
         createCell(getLabel("LISTE_AF_MONTANT_AF"), getStyleGris25PourcentGras());
@@ -81,4 +88,13 @@ public class ListISParCAFExcel extends AbstractListExcel {
     public void setAnnee(Annee annee) {
         this.annee = annee;
     }
+
+    public String getCanton() {
+        return canton;
+    }
+
+    public void setCanton(String canton) {
+        this.canton = canton;
+    }
+
 }

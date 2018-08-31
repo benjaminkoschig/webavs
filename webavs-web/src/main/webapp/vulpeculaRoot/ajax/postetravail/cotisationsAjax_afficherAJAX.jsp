@@ -2,11 +2,14 @@
 <c:forEach var="entry" items="${viewBean.adhesionsCotisationsActivesEtPossiblesGroupByPlanCaisse}" varStatus="status">
 
 	<c:choose>
-		<c:when test="${entry.value.auMoins1Coti}">
+		<c:when test="${entry.value.auMoins1CotiActive}">
 			<h3><a style="color: #339933" id="caisse_${status.index}" class="caisse" href="#">${entry.key}</a></h3>
-		</c:when>	
-		<c:otherwise>
+		</c:when>
+		<c:when test="${entry.value.cotiDesactive}">
 			<h3><a id="caisse_${status.index}" class="caisse" href="#">${entry.key}</a></h3>
+		</c:when>
+		<c:otherwise>
+			<h3><a style="color: #999999" id="caisse_${status.index}" class="caisse" href="#">${entry.key}</a></h3>
 		</c:otherwise>
 	</c:choose>
 	

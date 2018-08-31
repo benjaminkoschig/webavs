@@ -16,6 +16,19 @@
 			<field name="dateAnnonce" column="DATE_ANNONCE" type="STRING" />
 			<field name="dateAnnonceLPP" column="DATE_ANNONCE_LPP" type="DATE" />
 			<field name="montantFranchise" column="MONTANT_FRANCHISE" type="NUMERIC" />
+			<field name="genreCotisations" column="CS_GENRE_COTISATIONS" type="NUMERIC" />
+			<field name="remarque" column="REMARQUE" type="STRING" comment="remarque provenant du portail e-business" />
+			<field name="toTreat" column="A_TRAITER" type="BOOLEAN" />
+			<field name="correlationId" column="ID_PT_TRAVAILLEURS_EBU" type="STRING" comment="lien sur le travailleur e-business" />
+			<field name="mntVacancesFeries" column="VAC_FERIES" type="NUMERIC" comment="decompte complementaire provenant du portail e-business" />
+			<field name="mntGratifications" column="GRATIFICATION" type="NUMERIC" comment="decompte complementaire provenant du portail e-business" />
+			<field name="mntAbsencesJustifiees" column="ABS_JUSTIFIEES" type="NUMERIC" comment="decompte complementaire provenant du portail e-business" />
+			<field name="mntAPGComplementaireSM" column="APG_COMPL_SM" type="NUMERIC" comment="decompte complementaire provenant du portail e-business" />
+			<field name="anneeCotisations" column="ANNEE_COTISATIONS" type="NUMERIC" comment="année de prise en charge des taux de cotisation" />
+			<field name="lineCorrelationId" column="LINE_CORRELATION_ID" type="STRING" comment="Id de la corrélation de la ligne de décompte" />
+			<field name="posteCorrelationId" column="POSTE_CORRELATION_ID" type="STRING" comment="Id de la corrélation du poste de travail de la ligne" />
+			<field name="tauxSaisieEbu" column="TAUX_SAISIE_EBU" type="NUMERIC" comment="Taux saisi dans le portail" />
+			<field name="status" column="CS_STATUS" type="NUMERIC" comment="Status de ligne pour portail" />			
 		</fields>
 		
 		<search-definition>
@@ -25,6 +38,8 @@
 				<search-field name="fromSequence" field-ref="sequence" operation="GREATER_OR_EQUALS" />
 				<search-field name="toSequence" field-ref="sequence" operation="LESS_OR_EQUALS" />
 				<search-field name="forIdDecompte" field-ref="idDecompte" operation="EQUALS" />
+				<search-field name="forToTreat" field-ref="toTreat" operation="EQUALS" />
+				<search-field name="forCorrelationId" field-ref="correlationId" operation="EQUALS" />
 			</search-group>
 		</search-definition>
 		

@@ -1,11 +1,11 @@
 package ch.globaz.vulpecula.domain.models.decompte;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import ch.globaz.specifications.UnsatisfiedSpecificationException;
+import ch.globaz.vulpecula.business.services.VulpeculaServiceLocator;
 import ch.globaz.vulpecula.domain.models.common.Annee;
 import ch.globaz.vulpecula.domain.models.common.Date;
 import ch.globaz.vulpecula.domain.models.common.DomainEntity;
@@ -18,6 +18,7 @@ import ch.globaz.vulpecula.domain.models.postetravail.Travailleur;
 import ch.globaz.vulpecula.domain.specifications.decompte.DecompteSalaireInPeriodeActivitePoste;
 import ch.globaz.vulpecula.domain.specifications.decompte.DecompteSalairePeriodeMemeAnnee;
 import ch.globaz.vulpecula.external.models.affiliation.Assurance;
+import ch.globaz.vulpecula.ws.bean.StatusLine;
 
 /**
  * @author Arnaud Geiser (AGE) | Créé le 20 févr. 2014
@@ -39,14 +40,58 @@ public class DecompteSalaire implements DomainEntity {
     private Date dateAnnonceLPP;
     private Montant montantFranchise;
     private Taux tauxContribuableAffiche;
+    private Taux tauxForEbu;
+    private String genreCotisations;
+    private String remarque;
+    private boolean aTraiter;
+    private boolean majFinPoste = false;
+    private String correlationId;
+    private String lineCorrelationId;
+    private String posteCorrelationId;
+    private List<CodeErreurDecompteSalaire> listeCodeErreur;
+    // Décompte complémentaire pour e-business
+    private Montant vacancesFeries;
+    private Montant gratifications;
+    private Montant absencesJustifiees;
+    private Montant apgComplementaireSM;
+    private Annee anneeCotisations;
+    private String tauxAfficheErreur;
+    private String tauxSaisieEbu;
+    private StatusLine status;
+    private boolean forcerFranchise0;
 
     public DecompteSalaire() {
         absences = new ArrayList<Absence>();
         cotisationsDecompte = new ArrayList<CotisationDecompte>();
+        listeCodeErreur = new ArrayList<CodeErreurDecompteSalaire>();
+    }
+
+    public Taux getTauxForEbu() {
+        return tauxForEbu;
+    }
+
+    public void setTauxForEbu(Taux tauxForEbu) {
+        this.tauxForEbu = tauxForEbu;
+    }
+
+    public String getTauxAfficheErreur() {
+        return tauxAfficheErreur;
+    }
+
+    public void setTauxAfficheErreur(String tauxAfficheErreur) {
+        this.tauxAfficheErreur = tauxAfficheErreur;
     }
 
     public List<Absence> getAbsences() {
         return absences;
+    }
+
+    public boolean isMajFinPoste() {
+        return majFinPoste;
+    }
+
+    public void setMajFinPoste(boolean majFinPoste) {
+        this.majFinPoste = majFinPoste;
     }
 
     public List<CotisationDecompte> getCotisationsDecompte() {
@@ -141,14 +186,44 @@ public class DecompteSalaire implements DomainEntity {
         return getMontantForAssurance(TypeAssurance.COTISATION_AC2);
     }
 
+    public Montant getMasseAVS() {
+        return getMontantForAssurance(TypeAssurance.COTISATION_AVS_AI);
+    }
+
     public Montant getMasseAF() {
         return getMontantForAssurances(CotisationDecompte.getAssurancesWithReductionRentier());
     }
 
-    public Montant getMontantForAssurance(TypeAssurance typeAssurance) {
-        return getMontantForAssurances(Arrays.asList(typeAssurance));
+    public Montant getMasseAFPourReviseur() {
+        if (VulpeculaServiceLocator.getDecompteSalaireService().isPosteTravailRentier(this)) {
+            return getMontantForAssurances(CotisationDecompte.getAssurancesWithReductionRentier());
+        } else {
+            return getMontantForAssurance(TypeAssurance.COTISATION_AF);
+        }
     }
 
+    /**
+     * somme des montant dans le cas ou l'on demande un seul type d'assurance
+     * 
+     * @param typeAssurance
+     * @return
+     */
+    public Montant getMontantForAssurance(TypeAssurance typeAssurance) {
+        Montant montant = Montant.ZERO;
+        for (CotisationDecompte cotisationDecompte : cotisationsDecompte) {
+            if (cotisationDecompte.getTypeAssurance() == typeAssurance) {
+                montant = montant.add(cotisationDecompte.getMasse(salaireTotal));
+            }
+        }
+        return montant;
+    }
+
+    /**
+     * cas de'AF, on a besoin d'avoir une coti dès que une coti correspond a la liste d'AF
+     * 
+     * @param typesAssurance
+     * @return
+     */
     private Montant getMontantForAssurances(List<TypeAssurance> typesAssurance) {
         Montant montant = Montant.ZERO;
         for (CotisationDecompte cotisationDecompte : cotisationsDecompte) {
@@ -175,18 +250,41 @@ public class DecompteSalaire implements DomainEntity {
         return taux;
     }
 
-    public String getTauxContribuableForCaissesSocialesAsValue() {
-        return getTauxContribuableForCaissesSociales().getValue();
+    public String getTauxContribuableForCaissesSocialesAsValue(boolean ebusiness) {
+        return getTauxContribuableForCaissesSociales(ebusiness).getValue();
     }
 
     public Taux getTauxContribuableForCaissesSociales() {
+        return getTauxContribuableForCaissesSociales(false);
+    }
+
+    public Taux getTauxContribuableForCaissesSociales(boolean ebusiness) {
         Taux taux = new Taux(0);
+
         for (CotisationDecompte cotisationDecompte : cotisationsDecompte) {
             if (!Assurance.NOT_CAISSES_SOCIALES.contains(cotisationDecompte.getTypeAssurance())) {
                 taux = taux.addTaux(cotisationDecompte.getTaux());
             }
         }
+        if (ebusiness && taux.isZero() && tauxContribuableAffiche != null && !tauxContribuableAffiche.isZero()) {
+            return tauxContribuableAffiche;
+        }
         return taux;
+    }
+
+    private Taux getTauxContribuableForLineApgHigh() {
+        Taux tauxToReturn = getTauxContribuableForTypeAssurance(TypeAssurance.COTISATION_AVS_AI);
+        tauxToReturn = tauxToReturn.addTaux(getTauxContribuableForTypeAssurance(TypeAssurance.COTISATION_AC2));
+        tauxToReturn = tauxToReturn.addTaux(getTauxContribuableForTypeAssurance(TypeAssurance.ASSURANCE_CHOMAGE));
+        tauxToReturn = tauxToReturn.addTaux(getTauxContribuableForTypeAssurance(TypeAssurance.FRAIS_ADMINISTRATION));
+        return tauxToReturn;
+    }
+
+    private Taux getTauxContribuableForLineApgLow() {
+        Taux tauxToReturn = getTauxContribuableForTypeAssurance(TypeAssurance.COTISATION_AVS_AI);
+        tauxToReturn = tauxToReturn.addTaux(getTauxContribuableForTypeAssurance(TypeAssurance.ASSURANCE_CHOMAGE));
+        tauxToReturn = tauxToReturn.addTaux(getTauxContribuableForTypeAssurance(TypeAssurance.FRAIS_ADMINISTRATION));
+        return tauxToReturn;
     }
 
     public Taux getTauxContribuableForAF() {
@@ -245,6 +343,12 @@ public class DecompteSalaire implements DomainEntity {
 
     public void addAbsence(final Absence absence) {
         absences.add(absence);
+    }
+
+    public void addCodeErreur(final CodeErreur codeErreur) {
+        setaTraiter(true);
+        CodeErreurDecompteSalaire codeErreurDS = new CodeErreurDecompteSalaire(codeErreur);
+        listeCodeErreur.add(codeErreurDS);
     }
 
     /**
@@ -435,9 +539,11 @@ public class DecompteSalaire implements DomainEntity {
     public List<CotisationCalculee> getCotisationCalculees() {
         List<CotisationCalculee> cotisationsCalculees = new ArrayList<CotisationCalculee>();
         for (CotisationDecompte cotisationDecompte : cotisationsDecompte) {
-            CotisationCalculee cotisationCalculee = new CotisationCalculee(cotisationDecompte.getCotisation(),
-                    cotisationDecompte.getMasse(salaireTotal), cotisationDecompte.getTaux(), getAnnee());
-            cotisationsCalculees.add(cotisationCalculee);
+            if (salaireTotal != null) {
+                CotisationCalculee cotisationCalculee = new CotisationCalculee(cotisationDecompte.getCotisation(),
+                        cotisationDecompte.getMasse(salaireTotal), cotisationDecompte.getTaux(), getAnnee());
+                cotisationsCalculees.add(cotisationCalculee);
+            }
         }
         return cotisationsCalculees;
     }
@@ -466,9 +572,13 @@ public class DecompteSalaire implements DomainEntity {
      * Calcul du décompte salaire si le nombre d'heures et si le salaire horaire est saisi. Il faut également que le
      * salaire total soit à 0 pour ne pas l'écraser.
      */
-    public void calculSalaireTotalSiNecessaire() {
+    public void calculChampSalaire() {
         if (getSalaireHoraire().isPositive() && heures > 0 && getSalaireTotal().isZero()) {
             setSalaireTotal(salaireHoraire.multiply(new Montant(String.valueOf(heures))));
+        } else if (getSalaireHoraire().isZero() && heures > 0 && getSalaireTotal().isPositive()) {
+            setSalaireHoraire(new Montant(salaireTotal.doubleValue() / heures));
+        } else if (getSalaireHoraire().isPositive() && getHeures() == 0 && getSalaireTotal().isPositive()) {
+            setHeures(salaireTotal.doubleValue() / salaireHoraire.doubleValue());
         }
     }
 
@@ -576,8 +686,16 @@ public class DecompteSalaire implements DomainEntity {
         return decompte.isComptabilise();
     }
 
+    public boolean isValideOuComptabilise() {
+        return decompte.isValideOuComptablise();
+    }
+
     public Annee getAnnee() {
         return new Annee(periode.getDateDebut().getAnnee());
+    }
+
+    public boolean isCPP() {
+        return decompte.isCPP();
     }
 
     /**
@@ -689,6 +807,12 @@ public class DecompteSalaire implements DomainEntity {
         this.dateAnnonceLPP = dateAnnonceLPP;
     }
 
+    @Deprecated
+    /**
+     * utiliser uniquement dans les cas de reprise ou lorsque l'on souhaite forcer la masse de la franchise
+     *
+     * @return
+     */
     public Montant getMontantFranchise() {
         return montantFranchise;
     }
@@ -696,4 +820,267 @@ public class DecompteSalaire implements DomainEntity {
     public void setMontantFranchise(Montant montantFranchise) {
         this.montantFranchise = montantFranchise;
     }
+
+    public String getGenreCotisations() {
+        return genreCotisations;
+    }
+
+    public void setGenreCotisations(String genreCotisations) {
+        this.genreCotisations = genreCotisations;
+    }
+
+    public boolean isComplementaire() {
+        return decompte.isComplementaire();
+    }
+
+    // /**
+    // * @return the status
+    // */
+    // public StatusDecompteSalaire getStatus() {
+    // return status;
+    // }
+    //
+    // /**
+    // * @param status the status to set
+    // */
+    // public void setStatus(StatusDecompteSalaire status) {
+    // this.status = status;
+    // }
+
+    /**
+     * @return the remarque
+     */
+    public String getRemarque() {
+        return remarque;
+    }
+
+    /**
+     * @param remarque the remarque to set
+     */
+    public void setRemarque(String remarque) {
+        this.remarque = remarque;
+    }
+
+    /**
+     * @return the listeCodeErreur
+     */
+    public List<CodeErreurDecompteSalaire> getListeCodeErreur() {
+        return listeCodeErreur;
+    }
+
+    /**
+     * @param listeCodeErreur the listeCodeErreur to set
+     */
+    public void setListeCodeErreur(List<CodeErreurDecompteSalaire> listeCodeErreur) {
+        this.listeCodeErreur = listeCodeErreur;
+    }
+
+    /**
+     * @return the aTraiter
+     */
+    public boolean isaTraiter() {
+        return aTraiter;
+    }
+
+    public boolean isLigneSupprimmee() {
+        if (!isaTraiter()) {
+            for (CodeErreurDecompteSalaire code : getListeCodeErreur()) {
+                if (code.getCodeErreur().equals(CodeErreur.LIGNE_SUPPRIMEE)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * @return the aTraiter
+     */
+    public boolean getaTraiter() {
+        return aTraiter;
+    }
+
+    /**
+     * @param aTraiter the aTraiter to set
+     */
+    public void setaTraiter(boolean aTraiter) {
+        this.aTraiter = aTraiter;
+    }
+
+    /**
+     * @return the correlationId
+     */
+    public String getCorrelationId() {
+        return correlationId;
+    }
+
+    /**
+     * @param correlationId the correlationId to set
+     */
+    public void setCorrelationId(String correlationId) {
+        this.correlationId = correlationId;
+    }
+
+    public boolean isTravailleurRetraiter(Date dateReference) {
+        return getTravailleur().isRetraiter(dateReference);
+    }
+
+    /**
+     * @return the vacancesFeries
+     */
+    public Montant getVacancesFeries() {
+        return vacancesFeries;
+    }
+
+    /**
+     * @param vacancesFeries the vacancesFeries to set
+     */
+    public void setVacancesFeries(Montant vacancesFeries) {
+        this.vacancesFeries = vacancesFeries;
+    }
+
+    /**
+     * @return the gratifications
+     */
+    public Montant getGratifications() {
+        return gratifications;
+    }
+
+    /**
+     * @param gratifications the gratifications to set
+     */
+    public void setGratifications(Montant gratifications) {
+        this.gratifications = gratifications;
+    }
+
+    /**
+     * @return the absencesJustifiees
+     */
+    public Montant getAbsencesJustifiees() {
+        return absencesJustifiees;
+    }
+
+    /**
+     * @param absencesJustifiees the absencesJustifiees to set
+     */
+    public void setAbsencesJustifiees(Montant absencesJustifiees) {
+        this.absencesJustifiees = absencesJustifiees;
+    }
+
+    /**
+     * @return the apgComplementaireSM
+     */
+    public Montant getApgComplementaireSM() {
+        return apgComplementaireSM;
+    }
+
+    /**
+     * @param apgComplementaireSM the apgComplementaireSM to set
+     */
+    public void setApgComplementaireSM(Montant apgComplementaireSM) {
+        this.apgComplementaireSM = apgComplementaireSM;
+    }
+
+    public String getVacancesFeriesAsValue() {
+        if (vacancesFeries != null) {
+            return vacancesFeries.getValueNormalisee();
+        }
+        return Montant.ZERO.getValue();
+    }
+
+    public String getGratificationsAsValue() {
+        if (gratifications != null) {
+            return gratifications.getValueNormalisee();
+        }
+        return Montant.ZERO.getValue();
+    }
+
+    public String getAbsencesJustifieesAsValue() {
+        if (absencesJustifiees != null) {
+            return absencesJustifiees.getValueNormalisee();
+        }
+        return Montant.ZERO.getValue();
+    }
+
+    public String getApgComplementaireSMAsValue() {
+        if (apgComplementaireSM != null) {
+            return apgComplementaireSM.getValueNormalisee();
+        }
+        return Montant.ZERO.getValue();
+    }
+
+    public boolean isNewTravailleur() {
+        return (getIdPosteTravail() == null || getIdPosteTravail().isEmpty()) && !correlationId.isEmpty();
+    }
+
+    /**
+     * Année de prise en charge des cotisations pour les décomptes auxquels le temps peut être forcé.
+     * 
+     * @return L'année de prise en charge des taux de cotisations
+     */
+    public Annee getAnneeCotisations() {
+        return anneeCotisations;
+    }
+
+    public void setAnneeCotisations(Annee anneeCotisations) {
+        this.anneeCotisations = anneeCotisations;
+    }
+
+    public Date getDateCalculTaux() {
+        if (anneeCotisations != null) {
+            return anneeCotisations.getFirstDayOfYear();
+        } else {
+            if (isComplementaire()) {
+                return periode.getDateFin();
+            } else {
+                return periode.getDateDebut();
+            }
+        }
+    }
+
+    public boolean isSameAnneeCotisations(Annee annee) {
+        return (annee == null && anneeCotisations == null)
+                || (anneeCotisations != null && anneeCotisations.equals(annee));
+    }
+
+    public String getLineCorrelationId() {
+        return lineCorrelationId;
+    }
+
+    public void setLineCorrelationId(String lineCorrelationId) {
+        this.lineCorrelationId = lineCorrelationId;
+    }
+
+    public String getPosteCorrelationId() {
+        return posteCorrelationId;
+    }
+
+    public void setPosteCorrelationId(String posteCorrelationId) {
+        this.posteCorrelationId = posteCorrelationId;
+    }
+
+    public String getTauxSaisieEbu() {
+        return tauxSaisieEbu;
+    }
+
+    public void setTauxSaisieEbu(String tauxSaisieEbu) {
+        this.tauxSaisieEbu = tauxSaisieEbu;
+    }
+
+    public StatusLine getStatus() {
+        return status;
+    }
+
+    public void setStatus(StatusLine status) {
+        this.status = status;
+    }
+
+    public boolean isForcerFranchise0() {
+        return forcerFranchise0;
+    }
+
+    public void setForcerFranchise0(boolean forcerFranchise0) {
+        this.forcerFranchise0 = forcerFranchise0;
+    }
+
 }

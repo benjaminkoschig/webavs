@@ -58,4 +58,23 @@ public interface ServiceMilitaireRepository extends Repository<ServiceMilitaire>
 
     List<ServiceMilitaire> findBy(String idPassageFacturation, String idEmployeur, String idTravailleur,
             String idConvention, Periode periode);
+
+    List<ServiceMilitaire> findByIdTravailleurAndPeriod(String idTravailleur, String dateDebut, String dateFin);
+
+    List<ServiceMilitaire> findByIdTravailleurAndPeriodePassage(String idTravailleur, String dateDebut, String dateFin);
+
+    List<ServiceMilitaire> findByIdTravailleurForDateVersement(String idTravailleur, String dateDebut, String dateFin);
+
+    /**
+     * Trouver les SM pour la liste révision : càd,
+     * par date de versement au cours de l'année pour les prestation complémentaire
+     * et par date de service pour celles sans intervention employeur
+     * 
+     * @param idTravailleur
+     * @param dateDebut
+     * @param dateFin
+     * @return
+     */
+    List<ServiceMilitaire> findByIdTravailleurForRevision(String idTravailleur, String idEmployeur, String dateDebut,
+            String dateFin);
 }

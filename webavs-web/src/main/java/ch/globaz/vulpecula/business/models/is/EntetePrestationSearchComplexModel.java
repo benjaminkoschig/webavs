@@ -18,6 +18,16 @@ public class EntetePrestationSearchComplexModel extends JadeSearchComplexModel {
     private String forEtat;
     private String forBonification;
     private String forPeriodeDeBeforeOrEquals;
+    private String forAffiliationId;
+    private String forIdDossier;
+
+    public String getForAffiliationId() {
+        return forAffiliationId;
+    }
+
+    public void setForAffiliationId(String forAffiliationId) {
+        this.forAffiliationId = forAffiliationId;
+    }
 
     public String getForId() {
         return forId;
@@ -140,6 +150,14 @@ public class EntetePrestationSearchComplexModel extends JadeSearchComplexModel {
 
     public void setForPeriodeDeBeforeOrEquals(String forPeriodeDeBeforeOrEquals) {
         this.forPeriodeDeBeforeOrEquals = forPeriodeDeBeforeOrEquals;
+    }
+
+    public String getForIdDossier() {
+        return forIdDossier;
+    }
+
+    public void setForIdDossier(String forIdDossier) {
+        this.forIdDossier = forIdDossier;
     }
 
     @Override

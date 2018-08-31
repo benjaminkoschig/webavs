@@ -17,6 +17,8 @@ import ch.globaz.vulpecula.domain.models.parametrage.TableParametrage;
 import ch.globaz.vulpecula.domain.models.postetravail.Employeur;
 import ch.globaz.vulpecula.domain.models.postetravail.PosteTravail;
 import ch.globaz.vulpecula.domain.models.postetravail.Qualification;
+import ch.globaz.vulpecula.domain.models.postetravail.Travailleur;
+import ch.globaz.vulpecula.domain.models.prestations.AnnoncableAVS;
 import ch.globaz.vulpecula.domain.models.prestations.Beneficiaire;
 import ch.globaz.vulpecula.domain.models.prestations.Etat;
 import ch.globaz.vulpecula.domain.models.prestations.Prestation;
@@ -24,10 +26,11 @@ import ch.globaz.vulpecula.domain.models.registre.Convention;
 import ch.globaz.vulpecula.domain.specifications.congepaye.CPPeriodeAnnuelleRequise;
 import ch.globaz.vulpecula.domain.specifications.congepaye.CPPeriodeInActivitePoste;
 import ch.globaz.vulpecula.domain.specifications.congepaye.CPSalaireDeclareSpecification;
+import ch.globaz.vulpecula.external.models.affiliation.Assurance;
 import ch.globaz.vulpecula.external.models.musca.Passage;
 import ch.globaz.vulpecula.external.models.osiris.Journal;
 
-public class CongePaye implements Prestation, Comparable<CongePaye> {
+public class CongePaye implements Prestation, Comparable<CongePaye>, AnnoncableAVS {
 
     private String idCongePaye;
     private PosteTravail posteTravail;
@@ -42,6 +45,27 @@ public class CongePaye implements Prestation, Comparable<CongePaye> {
     private String spy;
     private Passage passage = new Passage();
     private Journal journal = new Journal();
+    private Date dateVersement;
+    private Date dateTraitementMyProdis;
+
+    public Date getDateTraitementSalaires() {
+        return dateTraitementSalaires;
+    }
+
+    public void setDateTraitementSalaires(Date dateTraitementSalaires) {
+        this.dateTraitementSalaires = dateTraitementSalaires;
+    }
+
+    public String getTraitementSalaires() {
+        return traitementSalaires;
+    }
+
+    public void setTraitementSalaires(String traitementSalaires) {
+        this.traitementSalaires = traitementSalaires;
+    }
+
+    private Date dateTraitementSalaires;
+    private String traitementSalaires;
 
     private Montant salaireDeclare;
     private Montant montantNet;
@@ -182,6 +206,7 @@ public class CongePaye implements Prestation, Comparable<CongePaye> {
      * 
      * @return String représentant le nom de la raison sociale
      */
+    @Override
     public String getRaisonSocialeEmployeur() {
         if (posteTravail == null) {
             return null;
@@ -220,6 +245,7 @@ public class CongePaye implements Prestation, Comparable<CongePaye> {
      * 
      * @return Retourne TRUE si le congé payé est modifiable.
      */
+    @Override
     public boolean isModifiable() {
         return !Etat.COMPTABILISEE.equals(etat) && !Etat.TRAITEE.equals(etat);
     }
@@ -274,8 +300,8 @@ public class CongePaye implements Prestation, Comparable<CongePaye> {
         if (posteTravail == null) {
             throw new GlobazTechnicalException(ExceptionMessage.ERREUR_TECHNIQUE);
         }
-        return new Taux(TableParametrage.getInstance().getNbJoursTaux(noCaisseMetier, posteTravail.getAgeTravailleur())
-                .getTaux());
+        return new Taux(TableParametrage.getInstance(anneeFin != null ? anneeFin.toString() : anneeDebut.toString())
+                .getNbJoursTaux(noCaisseMetier, posteTravail.getAgeTravailleur()).getTaux());
     }
 
     /**
@@ -289,12 +315,14 @@ public class CongePaye implements Prestation, Comparable<CongePaye> {
         if (posteTravail == null) {
             throw new GlobazTechnicalException(ExceptionMessage.ERREUR_TECHNIQUE);
         }
-        return TableParametrage.getInstance().getHeuresTravailSemaine(noCaisseMetier);
+        return TableParametrage.getInstance(anneeFin != null ? anneeFin.toString() : anneeDebut.toString())
+                .getHeuresTravailSemaine(noCaisseMetier);
     }
 
     /**
      * @return the idPassageFacturation
      */
+    @Override
     public String getIdPassageFacturation() {
         return getPassage().getId();
     }
@@ -443,6 +471,16 @@ public class CongePaye implements Prestation, Comparable<CongePaye> {
     }
 
     /**
+     * 
+     * Retourne l'année de fin du congé payé en String.
+     * 
+     * @return String représentant l'année du début
+     */
+    public String getAnneeFinAsValue() {
+        return String.valueOf(getAnneeFin().getValue());
+    }
+
+    /**
      * Retourne la date du poste de travail lié au passage de facturation.
      * 
      * @return String représentant la date de facturation
@@ -586,5 +624,118 @@ public class CongePaye implements Prestation, Comparable<CongePaye> {
 
     public Employeur getEmployeur() {
         return posteTravail.getEmployeur();
+    }
+
+    public Date getDateVersement() {
+        return dateVersement;
+    }
+
+    public void setDateVersement(Date dateVersement) {
+        this.dateVersement = dateVersement;
+    }
+
+    public Date getDateTraitementMyProdis() {
+        return dateTraitementMyProdis;
+    }
+
+    public void setDateTraitementMyProdis(Date dateTraitementMyProdis) {
+        this.dateTraitementMyProdis = dateTraitementMyProdis;
+    }
+
+    public Date getDateVersementComptable() {
+        if (getDateVersement() != null) {
+            return getDateVersement();
+        } else {
+            if (getPassage() != null && getPassage().getDateFacturation() != null
+                    && getPassage().getDateFacturation().length() > 0) {
+                return new Date(getPassage().getDateFacturation());
+            }
+        }
+        return null;
+    }
+
+    public Annee getAnneeDateVersement() {
+        return new Annee(dateVersement.getAnnee());
+    }
+
+    public Travailleur getTravailleur() {
+        return posteTravail.getTravailleur();
+    }
+
+    /**
+     * Retourne true si possède une cotisation de type {@link TypeAssurance#COTISATION_AVS_AI}
+     * 
+     * @return true si possède cotisation de type AVS
+     */
+    public boolean hasAVS() {
+        for (TauxCongePaye tauxCongePaye : tauxCongePayes) {
+            TypeAssurance type = tauxCongePaye.getTypeAssurance();
+            if (TypeAssurance.COTISATION_AVS_AI.equals(type)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean hasLPP() {
+        for (TauxCongePaye tauxCongePaye : tauxCongePayes) {
+            TypeAssurance type = tauxCongePaye.getTypeAssurance();
+            if (TypeAssurance.COTISATION_LPP.equals(type)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean hasAC() {
+        for (TauxCongePaye tauxCongePaye : tauxCongePayes) {
+            TypeAssurance type = tauxCongePaye.getTypeAssurance();
+            if (TypeAssurance.ASSURANCE_CHOMAGE.equals(type)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Retourne true si possède une cotisation de type {@link TypeAssurance#COTISATION_AVS_AI} ou
+     * {@link TypeAssurance#ASSURANCE_CHOMAGE}
+     * 
+     * @return true si possède cotisation AVS ou AC
+     */
+    public boolean hasAVSouAC() {
+        return hasAVS() || hasAC();
+    }
+
+    public Montant getMasseAVS() {
+        if (hasAVS()) {
+            return getMontantBrut();
+        }
+        return Montant.ZERO;
+    }
+
+    public Montant getMasseAC() {
+        if (hasAC()) {
+            return getMontantBrut();
+        }
+        return Montant.ZERO;
+    }
+
+    public boolean isCotisationsDeduites() {
+        return getMontantBrut().greater(montantNet);
+    }
+
+    @Override
+    public boolean isAnnoncableAVS() {
+        return hasAVS() && isCotisationsDeduites() && posteTravail.isElectricite();
+    }
+
+    public Assurance getAssuranceLPP() {
+        for (TauxCongePaye taux : tauxCongePayes) {
+            if (taux.getTypeAssurance().equals(TypeAssurance.COTISATION_LPP)) {
+                return taux.getAssurance();
+            }
+        }
+        return null;
     }
 }

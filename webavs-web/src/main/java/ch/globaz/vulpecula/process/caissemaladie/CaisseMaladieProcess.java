@@ -16,6 +16,8 @@ public abstract class CaisseMaladieProcess extends BProcessWithContext {
 
     protected String idCaisseMaladie;
     protected Date dateAnnonce;
+    protected String dateAnnonceFrom;
+    protected String dateAnnonceTo;
     protected List<AffiliationCaisseMaladie> affiliationsCaissesMaladies;
     protected Map<Administration, Collection<AffiliationCaisseMaladie>> affiliationsGroupByCaisseMaladie;
     protected Administration caisseMaladie;
@@ -49,6 +51,22 @@ public abstract class CaisseMaladieProcess extends BProcessWithContext {
 
     public void setDateAnnonce(Date dateAnnonce) {
         this.dateAnnonce = dateAnnonce;
+    }
+
+    public String getDateAnnonceFrom() {
+        return dateAnnonceFrom;
+    }
+
+    public void setDateAnnonceFrom(String dateAnnonceFrom) {
+        this.dateAnnonceFrom = dateAnnonceFrom;
+    }
+
+    public String getDateAnnonceTo() {
+        return dateAnnonceTo;
+    }
+
+    public void setDateAnnonceTo(String dateAnnonceTo) {
+        this.dateAnnonceTo = dateAnnonceTo;
     }
 
     @Override

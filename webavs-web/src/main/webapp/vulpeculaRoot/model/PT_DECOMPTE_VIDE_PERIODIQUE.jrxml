@@ -167,7 +167,7 @@
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="405"
+						x="285"
 						y="1"
 						width="42"
 						height="21"
@@ -187,7 +187,7 @@
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="449"
+						x="329"
 						y="1"
 						width="41"
 						height="21"
@@ -207,7 +207,7 @@
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="489"
+						x="370"
 						y="1"
 						width="62"
 						height="21"
@@ -227,7 +227,7 @@
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="552"
+						x="432"
 						y="1"
 						width="46"
 						height="21"
@@ -247,9 +247,9 @@
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="599"
+						x="479"
 						y="1"
-						width="208"
+						width="328"
 						height="21"
 						forecolor="#000000"
 						backcolor="#C0C0C0"
@@ -268,7 +268,7 @@
 				<line direction="TopDown">
 					<reportElement
 						mode="Opaque"
-						x="598"
+						x="478"
 						y="0"
 						width="0"
 						height="22"
@@ -286,7 +286,7 @@
 				<line direction="TopDown">
 					<reportElement
 						mode="Opaque"
-						x="552"
+						x="432"
 						y="0"
 						width="0"
 						height="22"
@@ -304,7 +304,7 @@
 				<line direction="TopDown">
 					<reportElement
 						mode="Opaque"
-						x="491"
+						x="371"
 						y="0"
 						width="0"
 						height="22"
@@ -322,7 +322,7 @@
 				<line direction="TopDown">
 					<reportElement
 						mode="Opaque"
-						x="448"
+						x="328"
 						y="0"
 						width="0"
 						height="22"
@@ -340,7 +340,7 @@
 				<line direction="TopDown">
 					<reportElement
 						mode="Opaque"
-						x="404"
+						x="284"
 						y="0"
 						width="0"
 						height="22"
@@ -357,7 +357,7 @@
 				</line>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="361"
+						x="241"
 						y="1"
 						width="42"
 						height="21"
@@ -379,7 +379,7 @@
 						mode="Transparent"
 						x="31"
 						y="1"
-						width="265"
+						width="144"
 						height="21"
 						forecolor="#000000"
 						backcolor="#C0C0C0"
@@ -397,7 +397,7 @@
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="298"
+						x="178"
 						y="1"
 						width="60"
 						height="21"
@@ -418,7 +418,7 @@
 				<line direction="TopDown">
 					<reportElement
 						mode="Opaque"
-						x="360"
+						x="240"
 						y="0"
 						width="0"
 						height="22"
@@ -436,7 +436,7 @@
 				<line direction="TopDown">
 					<reportElement
 						mode="Opaque"
-						x="297"
+						x="177"
 						y="0"
 						width="0"
 						height="22"
@@ -494,7 +494,7 @@
 				<line direction="TopDown">
 					<reportElement
 						mode="Opaque"
-						x="404"
+						x="284"
 						y="0"
 						width="0"
 						height="18"
@@ -512,7 +512,7 @@
 				<line direction="TopDown">
 					<reportElement
 						mode="Opaque"
-						x="448"
+						x="328"
 						y="0"
 						width="0"
 						height="18"
@@ -530,7 +530,7 @@
 				<line direction="TopDown">
 					<reportElement
 						mode="Opaque"
-						x="491"
+						x="371"
 						y="0"
 						width="0"
 						height="18"
@@ -548,7 +548,7 @@
 				<line direction="TopDown">
 					<reportElement
 						mode="Opaque"
-						x="552"
+						x="432"
 						y="0"
 						width="0"
 						height="18"
@@ -566,7 +566,7 @@
 				<line direction="TopDown">
 					<reportElement
 						mode="Opaque"
-						x="598"
+						x="478"
 						y="0"
 						width="0"
 						height="18"
@@ -603,7 +603,7 @@
 				</textField>
 				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="298"
+						x="178"
 						y="1"
 						width="60"
 						height="16"
@@ -625,7 +625,7 @@
 						mode="Transparent"
 						x="33"
 						y="1"
-						width="262"
+						width="142"
 						height="16"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -643,19 +643,19 @@
 				</textField>
 				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="599"
+						x="480"
 						y="1"
-						width="208"
+						width="327"
 						height="16"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
 						key="textField-8"
-						stretchType="NoStretch"
+						stretchType="RelativeToBandHeight"
 						positionType="FixRelativeToTop"
 						isPrintRepeatedValues="true"
 						isRemoveLineWhenBlank="false"
 						isPrintInFirstWholeBand="false"
-						isPrintWhenDetailOverflows="false"/>
+						isPrintWhenDetailOverflows="true"/>
 					<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
 						<font reportFont="Arial_Normal"/>
 					</textElement>
@@ -663,7 +663,7 @@
 				</textField>
 				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="552"
+						x="433"
 						y="1"
 						width="43"
 						height="16"
@@ -683,7 +683,7 @@
 				</textField>
 				<textField isStretchWithOverflow="false" pattern="#,##0.00" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="489"
+						x="371"
 						y="1"
 						width="60"
 						height="16"
@@ -705,7 +705,7 @@
 				</textField>
 				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="449"
+						x="329"
 						y="1"
 						width="40"
 						height="16"
@@ -725,7 +725,7 @@
 				</textField>
 				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="405"
+						x="285"
 						y="1"
 						width="40"
 						height="16"
@@ -745,7 +745,7 @@
 				</textField>
 				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="361"
+						x="241"
 						y="1"
 						width="42"
 						height="16"
@@ -784,7 +784,7 @@
 				<line direction="TopDown">
 					<reportElement
 						mode="Opaque"
-						x="297"
+						x="177"
 						y="0"
 						width="0"
 						height="18"
@@ -802,7 +802,7 @@
 				<line direction="TopDown">
 					<reportElement
 						mode="Opaque"
-						x="360"
+						x="240"
 						y="0"
 						width="0"
 						height="18"
@@ -831,7 +831,7 @@
 			<band height="16"  isSplitAllowed="true" >
 				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true" evaluationTime="Column" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="489"
+						x="371"
 						y="2"
 						width="60"
 						height="9"
@@ -852,7 +852,7 @@
 				<line direction="TopDown">
 					<reportElement
 						mode="Opaque"
-						x="489"
+						x="369"
 						y="15"
 						width="63"
 						height="0"
@@ -869,7 +869,7 @@
 				</line>
 				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true" evaluationTime="Column" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="311"
+						x="204"
 						y="2"
 						width="158"
 						height="12"
@@ -890,7 +890,7 @@
 				<line direction="TopDown">
 					<reportElement
 						mode="Opaque"
-						x="489"
+						x="369"
 						y="13"
 						width="63"
 						height="0"

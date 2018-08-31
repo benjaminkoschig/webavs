@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<simple-model
+		className="ch.globaz.vulpecula.business.models.ebusiness.TravailleurEbuSimpleModel">
+		<table name="PT_TRAVAILLEURS_EBU" hasCreationSpy="true" hasSpy="true"
+			alwaysIncrementPrimaryKey="no" />
+		<fields>
+			<primary-key name="id" column="ID"/>
+			<field name="correlationId" column="CORRELATION_ID" type="STRING" />
+			<field name="posteCorrelationId" column="POSTE_CORRELATION_ID"
+				type="STRING" />
+			<field name="idTravailleur" column="ID_PT_TRAVAILLEUR" type="NUMERIC" />
+			<field name="nom" column="NOM" type="STRING" />
+			<field name="prenom" column="PRENOM" type="STRING" />
+			<field name="adresseTitre" column="ADRESSE_TITRE" type="STRING" />
+			<field name="adresseDescription1" column="ADRESSE_DESCRIPTION1"
+				type="STRING" />
+			<field name="adresseDescription2" column="ADRESSE_DESCRIPTION2"
+				type="STRING" />
+			<field name="adresseRue" column="ADRESSE_RUE" type="STRING" />
+			<field name="adresseRuenumero" column="ADRESSE_RUENUMERO" type="STRING" />
+			<field name="adresseNpa" column="ADRESSE_NPA" type="STRING" />
+			<field name="adresseLocalite" column="ADRESSE_LOCALITE" type="STRING" />
+			<field name="adresseCasePostale" column="ADRESSE_CASE_POSTALE"
+				type="STRING" />
+			<field name="adressePays" column="ADRESSE_PAYS" type="STRING" />
+			<field name="telephone" column="TELEPHONE" type="STRING" />
+			<field name="nationalite" column="NATIONALITE" type="STRING" />
+			<field name="csEtatCivil" column="CS_ETAT_CIVIL" type="NUMERIC" />
+			<field name="dateNaissance" column="DATE_NAISSANCE" type="DATE" />
+			<field name="nss" column="NSS" type="STRING" />
+			<field name="permisSejourCategorie" column="PERMIS_SEJOUR_CATEGORIE"
+				type="STRING" />
+			<field name="permisSejourNumero" column="PERMIS_SEJOUR_NUMERO"
+				type="STRING" />
+			<field name="nombreEnfant" column="NOMBRE_ENFANT" type="NUMERIC" />
+			<field name="compteBancaireNom" column="COMPTE_BANCAIRE_NOM"
+				type="STRING" />
+			<field name="compteBancaireLocalite" column="COMPTE_BANCAIRE_LOCALITE"
+				type="STRING" />
+			<field name="compteBancaireLocaliteId" column="COMPTE_BANCAIRE_LOCALITE_ID"
+				type="STRING" />
+			<field name="compteBancaireIban" column="COMPTE_BANCAIRE_IBAN"
+				type="STRING" />
+			<field name="numeroEntreprise" column="NUMERO_ENTREPRISE" type="STRING" />
+			<field name="nomEntreprise" column="NOM_ENTREPRISE" type="STRING" />
+			<field name="profession" column="PROFESSION" type="STRING" />
+			<field name="dateDebutActivite" column="DATE_DEBUT_ACTIVITE"
+				type="DATE" />
+			<field name="dateFinActivite" column="DATE_FIN_ACTIVITE" type="DATE" />
+			<field name="sexe" column="SEXE" type="STRING" />
+			<field name="tauxActivite" column="TAUX_ACTIVITE" type="NUMERIC" />
+			<field name="dateTauxActivite" column="DATE_DEBUT_TAUX_ACTIVITE"
+				type="DATE" />
+			<field name="dureeContratDeterminee" column="DUREE_CONTRAT_DETERMINEE"
+				type="BOOLEAN" />
+			<field name="dureeContratDateFin" column="DUREE_CONTRAT_DATE_FIN"
+				type="DATE" />
+			<field name="csCodeProfessionnel" column="CS_CODE_PROFESSIONNEL"
+				type="NUMERIC" />
+			<field name="contratCollectifAssureur" column="CONTRAT_COLLECTIF_ASSUREUR"
+				type="NUMERIC" />
+			<field name="contratCollectifAssuranceCombinee" column="CONTRAT_COLLECTIF_ASSURANCE_COMBINEE"
+				type="BOOLEAN" />
+			<field name="dateInscription" column="DATE_INSCRIPTION" type="DATE" />
+			<field name="convention" column="CONVENTION" type="NUMERIC" />
+			<field name="nomUpper" column="NOMUPPER" type="STRING" />
+			<field name="prenomUpper" column="PRENOMUPPER" type="STRING" />
+			<field name="idEmployeur" column="ID_PT_EMPLOYEUR" type="NUMERIC" />
+			<field name="idDecompte" column="ID_PT_DECOMPTE" type="NUMERIC" />
+			<field name="salaire" column="SALAIRE" type="NUMERIC" />
+			<field name="typeSalaire" column="CS_TYPE_SALAIRE" type="NUMERIC" />
+			<field name="modification" column="MODIFICATION" type="BOOLEAN" />
+			<field name="tiersStatus" column="TIERS_STATUS" type="STRING" />
+			<field name="posteStatus" column="POSTE_STATUS" type="STRING" />
+			<field name="travailleurStatus" column="TRAVAILLEUR_STATUS"
+				type="STRING" />
+			<field name="banqueStatus" column="BANQUE_STATUS" type="STRING" />
+			<field name="idPosteTravail" column="ID_PT_POSTE" type="NUMERIC" />
+			<field name="status" column="STATUS" type="STRING" />
+		</fields>
+
+		<search-definition>
+			<search-group operator="AND">
+					<search-field name="forId" field-ref="id" operation="EQUALS" />
+					<search-field name="forIdEmployeur" field-ref="idEmployeur"
+						operation="EQUALS" />
+					<search-field name="likeNom" field-ref="nom" operation="LIKE" />
+					<search-field name="likePrenom" field-ref="prenom"
+						operation="LIKE" />
+					<search-field name="forNumAvs" field-ref="nss"
+						operation="LIKE" />
+					<search-field name="forDateNaissance" field-ref="dateNaissance"
+						operation="EQUALS" />
+					<search-field name="forCorrelationId" field-ref="correlationId"
+						operation="EQUALS" />
+					<search-field name="forConvention" field-ref="convention"
+						operation="EQUALS" />
+					<search-field name="forStatus" field-ref="status"
+						operation="EQUALS" />
+			</search-group>
+		</search-definition>
+
+		<search-definition name="sansQuittance">
+			<search-group operator="AND">
+				<search-field name="forId" field-ref="id" operation="EQUALS" />
+				<search-field name="forIdEmployeur" field-ref="idEmployeur"
+					operation="EQUALS" />
+				<search-field name="likeNom" field-ref="nom" operation="LIKE" />
+				<search-field name="likePrenom" field-ref="prenom"
+					operation="LIKE" />
+				<search-field name="forNumAvs" field-ref="nss"
+					operation="LIKE" />
+				<search-field name="forDateNaissance" field-ref="dateNaissance"
+					operation="EQUALS" />
+				<search-field name="forCorrelationId" field-ref="correlationId"
+					operation="EQUALS" />
+				<search-field name="forPosteCorrelationId" field-ref="posteCorrelationId"
+					operation="EQUALS" />
+				<search-field name="forConvention" field-ref="convention"
+						operation="EQUALS" />
+				<search-field name="forStatus" field-ref="status" operation="EQUALS" value="511110" />
+			</search-group>
+		</search-definition>
+		<order-by>
+			<order-field field-ref="id" order="ASC"/>
+		</order-by>
+		<order-by name="idDesc">
+			<order-field field-ref="id" order="DESC" />
+		</order-by>
+		<order-by name="idAsc">
+			<order-field field-ref="id" />
+		</order-by>
+
+		<order-by name="nomDesc">
+			<order-field field-ref="nom" order="DESC" />
+		</order-by>
+		<order-by name="nomAsc">
+			<order-field field-ref="nom" />
+		</order-by>
+		<order-by name="prenomDesc">
+			<order-field field-ref="prenom" order="DESC" />
+		</order-by>
+		<order-by name="prenomAsc">
+			<order-field field-ref="prenom" />
+		</order-by>
+		<order-by name="nssDesc">
+			<order-field field-ref="nss" order="DESC" />
+		</order-by>
+		<order-by name="nssAsc">
+			<order-field field-ref="nss" />
+		</order-by>
+		<order-by name="dateNaissanceDesc">
+			<order-field field-ref="dateNaissance" order="DESC" />
+		</order-by>
+		<order-by name="dateNaissanceAsc">
+			<order-field field-ref="dateNaissance" />
+		</order-by>
+	</simple-model>
+</model-mapping>

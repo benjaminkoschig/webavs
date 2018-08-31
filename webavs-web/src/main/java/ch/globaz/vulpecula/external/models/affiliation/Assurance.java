@@ -289,6 +289,15 @@ public class Assurance {
         return TypeAssurance.COTISATION_AC2.equals(typeAssurance);
     }
 
+    /**
+     * Retourne si le type d'assurance est de type LPP.
+     * 
+     * @return true si type assurance est de type LPP
+     */
+    public boolean isTypeLPP() {
+        return TypeAssurance.COTISATION_LPP.equals(typeAssurance);
+    }
+
     public String getLibelle(Locale locale) {
         if (Locale.GERMAN.equals(locale)) {
             return libelleAl;
@@ -296,6 +305,23 @@ public class Assurance {
             return libelleIt;
         } else {
             return libelleFr;
+        }
+    }
+
+    /**
+     * Retourne le libellé court dans la langue locale passée en paramètre
+     * 
+     * @param locale Langue dans laquelle on veut que le libellé soit retourné
+     * 
+     * @return libellé court dans la langue souhaitée
+     */
+    public String getLibelleCourt(Locale locale) {
+        if (Locale.GERMAN.equals(locale)) {
+            return libelleCourtAl;
+        } else if (Locale.ITALIAN.equals(locale)) {
+            return libelleCourtIt;
+        } else {
+            return libelleCourtFr;
         }
     }
 

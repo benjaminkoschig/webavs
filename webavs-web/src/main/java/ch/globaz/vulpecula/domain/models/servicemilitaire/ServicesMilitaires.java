@@ -7,12 +7,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import ch.globaz.vulpecula.domain.models.common.Montant;
-import ch.globaz.vulpecula.domain.models.postetravail.Employeur;
-import ch.globaz.vulpecula.domain.models.registre.Convention;
 import com.google.common.base.Function;
 import com.google.common.collect.Multimaps;
 import com.google.common.collect.TreeMultimap;
+import ch.globaz.vulpecula.domain.models.common.Montant;
+import ch.globaz.vulpecula.domain.models.postetravail.Employeur;
+import ch.globaz.vulpecula.domain.models.registre.Convention;
 
 public class ServicesMilitaires implements Iterable<ServiceMilitaire> {
     private final Collection<ServiceMilitaire> servicesMilitaires;
@@ -82,7 +82,8 @@ public class ServicesMilitaires implements Iterable<ServiceMilitaire> {
         return somme;
     }
 
-    public static Map<Convention, SMsParType> groupByGenreSMByConvention(Collection<ServiceMilitaire> servicesMilitaires) {
+    public static Map<Convention, SMsParType> groupByGenreSMByConvention(
+            Collection<ServiceMilitaire> servicesMilitaires) {
         Map<Convention, SMsParType> smsParType = new TreeMap<Convention, SMsParType>();
 
         for (Map.Entry<Convention, Collection<ServiceMilitaire>> entry : groupByConvention(servicesMilitaires)
@@ -124,8 +125,8 @@ public class ServicesMilitaires implements Iterable<ServiceMilitaire> {
 
     public static List<SMParEmployeur> groupByEmployeur(Collection<ServiceMilitaire> servicesMilitaires) {
         List<SMParEmployeur> list = new ArrayList<SMParEmployeur>();
-        Map<Employeur, Collection<ServiceMilitaire>> map = Multimaps.index(servicesMilitaires,
-                new Function<ServiceMilitaire, Employeur>() {
+        Map<Employeur, Collection<ServiceMilitaire>> map = Multimaps
+                .index(servicesMilitaires, new Function<ServiceMilitaire, Employeur>() {
                     @Override
                     public Employeur apply(ServiceMilitaire serviceMilitaire) {
                         return serviceMilitaire.getEmployeur();
@@ -136,5 +137,13 @@ public class ServicesMilitaires implements Iterable<ServiceMilitaire> {
             list.add(new SMParEmployeur(entry.getKey(), cps));
         }
         return list;
+    }
+
+    public int size() {
+        return servicesMilitaires.size();
+    }
+
+    public boolean add(ServiceMilitaire serviceMilitaire) {
+        return servicesMilitaires.add(serviceMilitaire);
     }
 }

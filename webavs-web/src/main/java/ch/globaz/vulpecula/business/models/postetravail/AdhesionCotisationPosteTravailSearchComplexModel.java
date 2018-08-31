@@ -1,9 +1,8 @@
 package ch.globaz.vulpecula.business.models.postetravail;
 
+import globaz.jade.persistence.model.JadeSearchComplexModel;
 import java.util.Collection;
 import java.util.List;
-
-import globaz.jade.persistence.model.JadeSearchComplexModel;
 
 /**
  * Modèle de recherche pour {@link AdhesionCotisationPosteTravailComplexModel}
@@ -13,7 +12,9 @@ public class AdhesionCotisationPosteTravailSearchComplexModel extends JadeSearch
     private String forId;
     private String forIdPosteTravail;
     private Collection<String> forIdIn;
-    
+    private String forIdEmployeur;
+    private String forIdCotisation;
+
     public Collection<String> getForIdIn() {
         return forIdIn;
     }
@@ -24,6 +25,14 @@ public class AdhesionCotisationPosteTravailSearchComplexModel extends JadeSearch
 
     public void setInId(final List<String> ids) {
         forIdIn = ids;
+    }
+
+    public String getForIdCotisation() {
+        return forIdCotisation;
+    }
+
+    public void setForIdCotisation(String forIdCotisation) {
+        this.forIdCotisation = forIdCotisation;
     }
 
     public String getForId() {
@@ -40,6 +49,14 @@ public class AdhesionCotisationPosteTravailSearchComplexModel extends JadeSearch
 
     public void setForIdPosteTravail(String forIdPosteTravail) {
         this.forIdPosteTravail = forIdPosteTravail;
+    }
+
+    public String getForIdEmployeur() {
+        return forIdEmployeur;
+    }
+
+    public void setForIdEmployeur(String forIdEmployeur) {
+        this.forIdEmployeur = forIdEmployeur;
     }
 
     @Override

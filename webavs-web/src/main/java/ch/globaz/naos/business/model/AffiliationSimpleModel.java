@@ -24,6 +24,7 @@ public class AffiliationSimpleModel extends JadeSimpleModel {
     private Boolean relevePersonnel;
     private String typeAffiliation;
     private String accesSecurite;
+    private String declarationSalaire;
     private String numeroIDE;
 
     public String getAffiliationId() {
@@ -178,6 +179,20 @@ public class AffiliationSimpleModel extends JadeSimpleModel {
 
     public void setNumeroIDE(String numeroIDE) {
         this.numeroIDE = numeroIDE;
+    }
+	
+	 /**
+     * @return the declarationSalaire
+     */
+    public String getDeclarationSalaire() {
+        return declarationSalaire;
+    }
+
+	/**
+     * @param declarationSalaire the declarationSalaire to set
+     */
+    public void setDeclarationSalaire(String declarationSalaire) {
+        this.declarationSalaire = declarationSalaire;
     }
 
 }

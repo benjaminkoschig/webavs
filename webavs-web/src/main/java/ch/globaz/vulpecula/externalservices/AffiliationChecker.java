@@ -13,6 +13,11 @@ public class AffiliationChecker extends BAbstractEntityExternalService {
 
     @Override
     public void afterAdd(BEntity entity) throws Throwable {
+        if (((AFAffiliation) entity).getAffilieNumero().contains(".00")) {
+            Employeur employeur = new Employeur();
+            employeur.setId(entity.getId());
+            employeur = VulpeculaRepositoryLocator.getEmployeurRepository().create(employeur);
+        } 
     }
 
     @Override

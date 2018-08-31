@@ -36,5 +36,9 @@
 			<order-field field-ref="tiers.designation1" order="ASC"/>
 			<order-field field-ref="tiers.designation2" order="ASC"/>
 		</order-by>
+		
+		<order-by name="codeAdm">
+			<order-field field-ref="admin.codeAdministration" order="ASC"/>
+		</order-by>
 	</complexe-model>
 </model-mapping>

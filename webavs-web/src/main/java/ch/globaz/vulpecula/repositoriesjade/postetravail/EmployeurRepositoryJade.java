@@ -120,4 +120,13 @@ public class EmployeurRepositoryJade extends RepositoryJade<Employeur, Employeur
         }
         return true;
     }
+
+    @Override
+    public List<Employeur> findByPeriode(Date dateDebut, Date dateFin) {
+        EmployeurSearchComplexModel searchModel = new EmployeurSearchComplexModel();
+        searchModel.setForDateDebutGreaterOrEquals(dateDebut);
+        searchModel.setForDateDebutLessOrEquals(dateFin);
+        return searchAndFetch(searchModel);
+    }
+
 }

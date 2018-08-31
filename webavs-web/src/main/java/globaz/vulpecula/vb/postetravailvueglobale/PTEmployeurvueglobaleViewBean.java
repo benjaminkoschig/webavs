@@ -10,11 +10,16 @@ import java.util.ArrayList;
 import java.util.List;
 import ch.globaz.common.vb.BJadeSearchObjectELViewBean;
 import ch.globaz.vulpecula.business.services.VulpeculaRepositoryLocator;
+import ch.globaz.vulpecula.business.services.VulpeculaServiceLocator;
+import ch.globaz.vulpecula.domain.models.association.ModeleEntete;
+import ch.globaz.vulpecula.domain.models.common.Date;
 import ch.globaz.vulpecula.domain.models.postetravail.Employeur;
 import ch.globaz.vulpecula.external.models.affiliation.Adhesion;
+import ch.globaz.vulpecula.external.models.affiliation.Cotisation;
 import ch.globaz.vulpecula.util.CodeSystem;
 import ch.globaz.vulpecula.util.CodeSystemUtil;
 import ch.globaz.vulpecula.web.servlet.PTConstants;
+import ch.globaz.vulpecula.web.views.association.FacturationAPViewService;
 import ch.globaz.vulpecula.web.views.postetravail.EmployeurViewService;
 
 /**
@@ -45,6 +50,7 @@ public class PTEmployeurvueglobaleViewBean extends BJadeSearchObjectELViewBean {
                 .findAdhesionsActivesByIdAffilie(id));
         employeur.setAdressePrincipale(VulpeculaRepositoryLocator.getAdresseRepository()
                 .findAdressePrioriteCourrierByIdTiers(employeur.getIdTiers()));
+        employeur.setCotisations(VulpeculaRepositoryLocator.getCotisationsRepository().findByIdAffilie(id));
 
         caisseMetier = VulpeculaRepositoryLocator.getAdhesionRepository().findCaisseMetier(employeur.getId());
 
@@ -52,6 +58,10 @@ public class PTEmployeurvueglobaleViewBean extends BJadeSearchObjectELViewBean {
         qualifications = CodeSystemUtil.getCodesSystemesForFamille(PTConstants.CS_GROUPE_QUALIFICATION);
         typesFacturation = CodeSystemUtil.getCodesSystemesForFamille(PTConstants.CS_GROUPE_TYPE_FACTURATION);
         typesDecomptes = CodeSystemUtil.getCodesSystemesForFamille(PTConstants.CS_GROUPE_TYPE_DECOMPTES);
+    }
+
+    public boolean getEmployeurIsEbu() {
+        return employeur.isEBusiness();
     }
 
     public List<CodeSystem> getGenresSalaires() {
@@ -90,6 +100,13 @@ public class PTEmployeurvueglobaleViewBean extends BJadeSearchObjectELViewBean {
             }
         }
         return adhesionsCaisses;
+    }
+
+    /**
+     * @return la liste des cotisations actives
+     */
+    public List<Cotisation> getEmployeurCotisationsActives() {
+        return employeur.getCotisations();
     }
 
     /**
@@ -141,7 +158,27 @@ public class PTEmployeurvueglobaleViewBean extends BJadeSearchObjectELViewBean {
         return BSessionUtil.getSessionFromThreadContext().getLabel("JSP_NON");
     }
 
+    public String getLabelDeleteFA() {
+        return BSessionUtil.getSessionFromThreadContext().getLabel("JSP_DELETE_FACTURATION_ASSOCIATION");
+    }
+
+    public String getLabelRefuseFA() {
+        return BSessionUtil.getSessionFromThreadContext().getLabel("JSP_REFUSE_FACTURATION_ASSOCIATION");
+    }
+
     public String getEmployeurViewService() {
         return EmployeurViewService.class.getName();
+    }
+
+    public String getFacturationAPViewService() {
+        return FacturationAPViewService.class.getName();
+    }
+
+    public List<ModeleEntete> getModeles() {
+        return VulpeculaServiceLocator.getParametrageAPService().getModeles();
+    }
+
+    public boolean hasParticularite() {
+        return VulpeculaServiceLocator.getEmployeurService().hasParticulariteSansPersonnel(employeur, Date.now());
     }
 }

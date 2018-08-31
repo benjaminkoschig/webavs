@@ -1,6 +1,5 @@
 package ch.globaz.vulpecula.documents.af;
 
-import globaz.caisse.report.helper.CaisseHeaderReportBean;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
@@ -12,6 +11,7 @@ import ch.globaz.vulpecula.documents.catalog.VulpeculaDocumentManager;
 import ch.globaz.vulpecula.domain.models.common.Date;
 import ch.globaz.vulpecula.domain.models.postetravail.Travailleur;
 import ch.globaz.vulpecula.external.models.pyxis.CodeLangue;
+import globaz.caisse.report.helper.CaisseHeaderReportBean;
 
 public class DocumentPrimeNaissanceAF extends VulpeculaDocumentManager<Element> {
     public static class Element implements Serializable {
@@ -65,6 +65,7 @@ public class DocumentPrimeNaissanceAF extends VulpeculaDocumentManager<Element> 
 
     @Override
     public void fillFields() throws Exception {
+        setDocumentTitle(getCurrentElement().getNSS());
         setParametres(P_CONCERNE, getTexte(1, 1));
         setMainText();
         setParametres(P_SIGNATURE, getTexte(9, 1));

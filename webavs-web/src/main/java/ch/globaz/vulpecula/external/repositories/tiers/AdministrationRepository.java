@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package ch.globaz.vulpecula.external.repositories.tiers;
 
@@ -20,6 +20,8 @@ public interface AdministrationRepository {
 
     Administration findById(String id);
 
+    Administration findByCodeAndGenre(String code, String genre);
+
     List<Administration> findAllCaissesMaladies();
 
     List<Administration> findAllSyndicats();
@@ -32,4 +34,6 @@ public interface AdministrationRepository {
     List<Administration> findAllConventions();
 
     List<Administration> findAllCaissesAF();
+
+    boolean isActive(String idTiers);
 }

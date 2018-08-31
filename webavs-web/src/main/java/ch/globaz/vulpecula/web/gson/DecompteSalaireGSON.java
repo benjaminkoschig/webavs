@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import ch.globaz.vulpecula.domain.models.decompte.Absence;
+import ch.globaz.vulpecula.domain.models.decompte.CodeErreurDecompteSalaire;
+import ch.globaz.vulpecula.ws.bean.StatusLine;
 
 /**
  * Données serialisables et nécessaire pour l'écran decompte salaire
@@ -21,14 +23,47 @@ public class DecompteSalaireGSON implements Serializable {
     private String masseAC2;
     private String masseFranchise;
     private String tauxContribuable;
+    private String tauxAAfficher;
     private String sequence;
     private boolean first;
     private boolean last;
     private boolean isMensuel;
     private List<AbsenceGSON> absencesGSON;
+    private String[] codeErreur;
     private String spy;
     private String periodeDebut;
     private String periodeFin;
+    private String remarque;
+    private boolean quittancer;
+    private String correlationId;
+    private boolean nouveauTravailleur;
+    private int anneeCotisations;
+    private boolean ligneSupprimee;
+    private boolean majFinPoste;
+    private String tauxSaisieEbu;
+    private StatusLine status;
+    private String vacances;
+    private String gratifications;
+    private String absencesJustifiees;
+    private String apgComplSm;
+    private boolean forcerFranchise0;
+    private boolean isEnErreur;
+
+    public boolean isMajFinPoste() {
+        return majFinPoste;
+    }
+
+    public void setMajFinPoste(boolean majFinPoste) {
+        this.majFinPoste = majFinPoste;
+    }
+
+    public boolean isLigneSupprimee() {
+        return ligneSupprimee;
+    }
+
+    public void setLigneSupprimee(boolean ligneSupprimee) {
+        this.ligneSupprimee = ligneSupprimee;
+    }
 
     /**
      * @return the heures
@@ -231,5 +266,163 @@ public class DecompteSalaireGSON implements Serializable {
 
     public final void setIdTiersTravailleur(String idTiersTravailleur) {
         this.idTiersTravailleur = idTiersTravailleur;
+    }
+
+    /**
+     * @return the remarque
+     */
+    public String getRemarque() {
+        return remarque;
+    }
+
+    /**
+     * @param remarque the remarque to set
+     */
+    public void setRemarque(String remarque) {
+        this.remarque = remarque;
+    }
+
+    public void setCodeErreur(final List<CodeErreurDecompteSalaire> codeErreurDS) {
+        codeErreur = new String[codeErreurDS.size()];
+        int i = 0;
+        for (CodeErreurDecompteSalaire code : codeErreurDS) {
+            codeErreur[i++] = code.getCodeErreurAsValue();
+        }
+    }
+
+    /**
+     * @return the codeErreur
+     */
+    public String[] getCodeErreur() {
+        return codeErreur;
+    }
+
+    /**
+     * @param codeErreur the codeErreur to set
+     */
+    public void setCodeErreur(String[] codeErreur) {
+        this.codeErreur = codeErreur;
+    }
+
+    /**
+     * @return the aTraiter
+     */
+    public boolean isQuittancer() {
+        return quittancer;
+    }
+
+    /**
+     * @param aTraiter the aTraiter to set
+     */
+    public void setQuittancer(boolean aTraiter) {
+        quittancer = aTraiter;
+    }
+
+    /**
+     * @return the correlationId
+     */
+    public String getCorrelationId() {
+        return correlationId;
+    }
+
+    /**
+     * @param correlationId the correlationId to set
+     */
+    public void setCorrelationId(String correlationId) {
+        this.correlationId = correlationId;
+    }
+
+    /**
+     * @return the nouveauTravailleur
+     */
+    public boolean isNouveauTravailleur() {
+        return nouveauTravailleur;
+    }
+
+    /**
+     * @param nouveauTravailleur the nouveauTravailleur to set
+     */
+    public void setNouveauTravailleur(boolean nouveauTravailleur) {
+        this.nouveauTravailleur = nouveauTravailleur;
+    }
+
+    public int getAnneeCotisations() {
+        return anneeCotisations;
+    }
+
+    public void setAnneeCotisations(int anneeCotisations) {
+        this.anneeCotisations = anneeCotisations;
+    }
+
+    public String getTauxAAfficher() {
+        return tauxAAfficher;
+    }
+
+    public void setTauxAAfficher(String tauxAAfficher) {
+        this.tauxAAfficher = tauxAAfficher;
+    }
+
+    public String getTauxSaisieEbu() {
+        return tauxSaisieEbu;
+    }
+
+    public void setTauxSaisieEbu(String tauxSaisieEbu) {
+        this.tauxSaisieEbu = tauxSaisieEbu;
+    }
+
+    public StatusLine getStatus() {
+        return status;
+    }
+
+    public void setStatus(StatusLine status) {
+        this.status = status;
+    }
+
+    public String getVacances() {
+        return vacances;
+    }
+
+    public void setVacances(String vacances) {
+        this.vacances = vacances;
+    }
+
+    public String getGratifications() {
+        return gratifications;
+    }
+
+    public void setGratifications(String gratifications) {
+        this.gratifications = gratifications;
+    }
+
+    public String getAbsencesJustifiees() {
+        return absencesJustifiees;
+    }
+
+    public void setAbsencesJustifiees(String absencesJustifiees) {
+        this.absencesJustifiees = absencesJustifiees;
+    }
+
+    public String getApgComplSm() {
+        return apgComplSm;
+    }
+
+    public void setApgComplSm(String apgComplSm) {
+        this.apgComplSm = apgComplSm;
+    }
+
+    public boolean isForcerFranchise0() {
+        return forcerFranchise0;
+    }
+
+    public void setForcerFranchise0(boolean forcerFranchise0) {
+        this.forcerFranchise0 = forcerFranchise0;
+    }
+
+    public boolean isEnErreur() {
+        return isEnErreur;
+    }
+
+    public void setEnErreur(boolean isEnErreur) {
+        this.isEnErreur = isEnErreur;
     }
 }

@@ -6,6 +6,7 @@ import globaz.jade.service.provider.application.JadeCrudService;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import ch.globaz.pyxis.business.model.AdministrationComplexModel;
 import ch.globaz.pyxis.business.model.AdministrationSearchComplexModel;
+import ch.globaz.pyxis.business.services.AdresseService;
 import ch.globaz.vulpecula.business.models.registres.ParametreCotisationAssociationComplexModel;
 import ch.globaz.vulpecula.business.models.registres.ParametreCotisationAssociationSearchComplexModel;
 import ch.globaz.vulpecula.business.services.absencesjustifiees.AbsenceJustifieeService;
@@ -21,6 +22,8 @@ import ch.globaz.vulpecula.business.services.decompte.CotisationDecompteService;
 import ch.globaz.vulpecula.business.services.decompte.DecompteSalaireService;
 import ch.globaz.vulpecula.business.services.decompte.DecompteService;
 import ch.globaz.vulpecula.business.services.decompte.DecompteServiceCRUD;
+import ch.globaz.vulpecula.business.services.ebusiness.NouveauTravailleurService;
+import ch.globaz.vulpecula.business.services.ebusiness.NouveauTravailleurServiceCRUD;
 import ch.globaz.vulpecula.business.services.employeur.EmployeurService;
 import ch.globaz.vulpecula.business.services.is.ImpotSourceService;
 import ch.globaz.vulpecula.business.services.is.ProcessusAFService;
@@ -29,6 +32,7 @@ import ch.globaz.vulpecula.business.services.is.TauxImpositionServiceCRUD;
 import ch.globaz.vulpecula.business.services.postetravail.PosteTravailService;
 import ch.globaz.vulpecula.business.services.postetravail.PosteTravailServiceCRUD;
 import ch.globaz.vulpecula.business.services.properties.PropertiesService;
+import ch.globaz.vulpecula.business.services.qualification.QualificationService;
 import ch.globaz.vulpecula.business.services.registre.CotisationAssociationProfessionnelleService;
 import ch.globaz.vulpecula.business.services.registre.ParametreCotisationAssociationServiceCRUD;
 import ch.globaz.vulpecula.business.services.registre.ParametreSyndicatService;
@@ -40,6 +44,7 @@ import ch.globaz.vulpecula.business.services.travailleur.TravailleurServiceCRUD;
 import ch.globaz.vulpecula.business.services.users.UsersService;
 import ch.globaz.vulpecula.businessimpl.services.absencesjustifiees.AbsenceJustifieeServiceImpl;
 import ch.globaz.vulpecula.businessimpl.services.association.AssociationCotisationServiceImpl;
+import ch.globaz.vulpecula.businessimpl.services.association.ParametrageAPService;
 import ch.globaz.vulpecula.businessimpl.services.caissemaladie.AffiliationCaisseMaladieServiceImpl;
 import ch.globaz.vulpecula.businessimpl.services.caissemaladie.SuiviCaisseMaladieServiceImpl;
 import ch.globaz.vulpecula.businessimpl.services.compteur.CompteurServiceImpl;
@@ -47,12 +52,14 @@ import ch.globaz.vulpecula.businessimpl.services.congepaye.CongePayeServiceImpl;
 import ch.globaz.vulpecula.businessimpl.services.decompte.CotisationDecompteServiceImpl;
 import ch.globaz.vulpecula.businessimpl.services.decompte.DecompteSalaireServiceImpl;
 import ch.globaz.vulpecula.businessimpl.services.decompte.DecompteServiceImpl;
+import ch.globaz.vulpecula.businessimpl.services.ebusiness.NouveauTravailleurServiceImpl;
 import ch.globaz.vulpecula.businessimpl.services.employeur.EmployeurServiceImpl;
 import ch.globaz.vulpecula.businessimpl.services.is.ImpotSourceServiceImpl;
 import ch.globaz.vulpecula.businessimpl.services.is.ProcessusAFServiceImpl;
 import ch.globaz.vulpecula.businessimpl.services.is.TauxImpositionServiceImpl;
 import ch.globaz.vulpecula.businessimpl.services.postetravail.PosteTravailServiceImpl;
 import ch.globaz.vulpecula.businessimpl.services.properties.PropertiesServiceImpl;
+import ch.globaz.vulpecula.businessimpl.services.qualification.QualificationServiceImpl;
 import ch.globaz.vulpecula.businessimpl.services.registre.CotisationAssociationProfessionnelleServiceImpl;
 import ch.globaz.vulpecula.businessimpl.services.registre.ParametreSyndicatServiceImpl;
 import ch.globaz.vulpecula.businessimpl.services.servicemilitaire.ServiceMilitaireServiceImpl;
@@ -60,8 +67,14 @@ import ch.globaz.vulpecula.businessimpl.services.syndicat.AffiliationSyndicatSer
 import ch.globaz.vulpecula.businessimpl.services.taxationoffice.TaxationOfficeServiceImpl;
 import ch.globaz.vulpecula.businessimpl.services.travailleur.TravailleurServiceImpl;
 import ch.globaz.vulpecula.businessimpl.services.users.UsersServiceImpl;
+import ch.globaz.vulpecula.external.services.CompteAnnexeService;
+import ch.globaz.vulpecula.external.services.CompteAnnexeServiceImpl;
 import ch.globaz.vulpecula.external.services.CotisationService;
 import ch.globaz.vulpecula.external.services.CotisationServiceImpl;
+import ch.globaz.vulpecula.external.services.OrganeExecutionService;
+import ch.globaz.vulpecula.external.services.OrganeExecutionServiceImpl;
+import ch.globaz.vulpecula.external.services.SuiviCaissesService;
+import ch.globaz.vulpecula.external.services.SuiviCaissesServiceImpl;
 import ch.globaz.vulpecula.external.services.musca.PassageService;
 import ch.globaz.vulpecula.external.services.musca.PassageServiceImpl;
 
@@ -69,6 +82,10 @@ import ch.globaz.vulpecula.external.services.musca.PassageServiceImpl;
  * @author jpa
  */
 public class VulpeculaServiceLocator {
+
+    public static QualificationService getQualificationService() {
+        return QualificationServiceHolder.INSTANCE;
+    }
 
     public static TaxationOfficeService getTaxationOfficeService() {
         return TaxationOfficeServiceHolder.INSTANCE;
@@ -92,6 +109,10 @@ public class VulpeculaServiceLocator {
 
     public static TravailleurService getTravailleurService() {
         return TravailleurServiceHolder.INSTANCE;
+    }
+
+    public static NouveauTravailleurService getNouveauTravailleurService() {
+        return NouveauTravailleurServiceHolder.INSTANCE;
     }
 
     public static PosteTravailService getPosteTravailService() {
@@ -158,6 +179,10 @@ public class VulpeculaServiceLocator {
         return UsersHolder.INSTANCE;
     }
 
+    public static ParametrageAPService getParametrageAPService() {
+        return ParametrageAPServiceHolder.INSTANCE;
+    }
+
     // FIXME: Devrait être placé dans naos
     public static CotisationService getCotisationService() {
         return new CotisationServiceImpl();
@@ -166,6 +191,26 @@ public class VulpeculaServiceLocator {
     // FIXME: Devrait être placé dans musca
     public static PassageService getPassageService() {
         return PassageServiceHolder.INSTANCE;
+    }
+
+    // FIXME: Devrait être placé dans musca
+    public static OrganeExecutionService getOrganeExecutionService() {
+        return OrganeExecutionServiceHolder.INSTANCE;
+    }
+
+    // FIXME: Devrait être placé dans musca
+    public static CompteAnnexeService getCompteAnnexeService() {
+        return CompteAnnexeServiceHolder.INSTANCE;
+    }
+
+    // FIXME: Devrait être placé dans musca
+    public static SuiviCaissesService getSuiviCaissesService() {
+        return SuiviCaissesServiceHolder.INSTANCE;
+    }
+
+    // FIXME: Devrait être placé dans pyxis
+    public static AdresseService getAdresseService() throws JadeApplicationServiceNotAvailableException {
+        return (AdresseService) JadeApplicationServiceLocator.getInstance().getServiceImpl(AdresseService.class);
     }
 
     public static DecompteServiceCRUD getDecompteServiceCRUD() throws JadeApplicationServiceNotAvailableException {
@@ -189,6 +234,12 @@ public class VulpeculaServiceLocator {
     public static TravailleurServiceCRUD getTravailleurServiceCRUD() throws JadeApplicationServiceNotAvailableException {
         return (TravailleurServiceCRUD) JadeApplicationServiceLocator.getInstance().getServiceImpl(
                 TravailleurServiceCRUD.class);
+    }
+
+    public static NouveauTravailleurServiceCRUD getNouveauTravailleurServiceCRUD()
+            throws JadeApplicationServiceNotAvailableException {
+        return (NouveauTravailleurServiceCRUD) JadeApplicationServiceLocator.getInstance().getServiceImpl(
+                NouveauTravailleurServiceCRUD.class);
     }
 
     public static JadeCrudService<AdministrationComplexModel, AdministrationSearchComplexModel> getAdministrationService()
@@ -221,13 +272,22 @@ public class VulpeculaServiceLocator {
                 ReferenceRubriqueServiceCRUD.class);
     }
 
+    private static class QualificationServiceHolder {
+        public static final QualificationService INSTANCE = new QualificationServiceImpl();
+    }
+
     private static class PropertiesServiceHolder {
         public static final PropertiesService INSTANCE = new PropertiesServiceImpl();
     }
 
     private static class TravailleurServiceHolder {
         public static final TravailleurService INSTANCE = new TravailleurServiceImpl(getTravailleurRepository(),
-                getPosteTravailRepository(), getPosteTravailService());
+                getPosteTravailRepository(), getPosteTravailService(), getSynchronisationTravailleurEbuRepository());
+    }
+
+    private static class NouveauTravailleurServiceHolder {
+        public static final NouveauTravailleurService INSTANCE = new NouveauTravailleurServiceImpl(
+                getNouveauTravailleurRepository());
     }
 
     private static class DecompteSalaireServiceHolder {
@@ -243,7 +303,9 @@ public class VulpeculaServiceLocator {
 
     private static class TaxationOfficeServiceHolder {
         public static final TaxationOfficeService INSTANCE = new TaxationOfficeServiceImpl(
-                getTaxationOfficeRepository(), getLigneTaxationRepository(), getPassageService());
+                getTaxationOfficeRepository(), getLigneTaxationRepository(), getPassageService(),
+                getDecompteRepository(), getHistoriqueDecompteRepository(), getPropertiesService(),
+                getCotisationService());
     }
 
     private static class PosteTravailServiceHolder {
@@ -293,7 +355,7 @@ public class VulpeculaServiceLocator {
 
     private static class AssociationCotisationServiceHolder {
         public static final AssociationCotisationService INSTANCE = new AssociationCotisationServiceImpl(
-                getAssociationCotisationRepository());
+                getAssociationCotisationRepository(), getLigneFactureRepository(), getAssociationEmployeurRepository());
     }
 
     private static class AffiliationCaisseMaladieServiceHolder {
@@ -328,8 +390,23 @@ public class VulpeculaServiceLocator {
                 getSuiviCaisseMaladieRepository());
     }
 
+    private static class ParametrageAPServiceHolder {
+        public static final ParametrageAPService INSTANCE = new ParametrageAPService();
+    }
+
     private static class UsersHolder {
         public static final UsersService INSTANCE = new UsersServiceImpl();
     }
 
+    private static class OrganeExecutionServiceHolder {
+        public static final OrganeExecutionService INSTANCE = new OrganeExecutionServiceImpl();
+    }
+
+    private static class CompteAnnexeServiceHolder {
+        public static final CompteAnnexeService INSTANCE = new CompteAnnexeServiceImpl();
+    }
+
+    private static class SuiviCaissesServiceHolder {
+        public static final SuiviCaissesService INSTANCE = new SuiviCaissesServiceImpl();
+    }
 }

@@ -17,6 +17,7 @@ public class CotisationAssociationProfessionnelleSearchComplexModel extends Jade
     private String forIdAssociation;
     private String forCodeAdministration;
     private String forCodeLike;
+    private String forFacturerDefaut;
 
     @Override
     public Class<CotisationAssociationProfessionnelleComplexModel> whichModelClass() {
@@ -125,5 +126,19 @@ public class CotisationAssociationProfessionnelleSearchComplexModel extends Jade
         if (!JadeStringUtil.isEmpty(forCodeLike)) {
             this.forCodeLike = JadeStringUtil.toUpperCase(forCodeLike);
         }
+    }
+
+    /**
+     * @return the forFacturerDefaut
+     */
+    public String getForFacturerDefaut() {
+        return forFacturerDefaut;
+    }
+
+    /**
+     * @param forFacturerDefaut the forFacturerDefaut to set
+     */
+    public void setForFacturerDefaut(String forFacturerDefaut) {
+        this.forFacturerDefaut = forFacturerDefaut;
     }
 }

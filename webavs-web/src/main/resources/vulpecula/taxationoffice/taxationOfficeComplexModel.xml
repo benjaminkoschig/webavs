@@ -29,10 +29,21 @@
 				<search-field name="forEtatIn"  field-ref="taxationOfficeSimpleModel.etat" operation="IN" />
 				<search-field name="forEtatNotIn"  field-ref="taxationOfficeSimpleModel.etat" operation="NOT_IN" />
 				<search-field name="forDateDe"
-					field-ref="decompteComplexModel.decompteSimpleModel.periodeDebut" operation="GREATER_OR_EQUALS" />
+					field-ref="decompteComplexModel.decompteSimpleModel.periodeFin" operation="GREATER_OR_EQUALS" />
 				<search-field name="forDateAu"
 					field-ref="decompteComplexModel.decompteSimpleModel.periodeDebut" operation="LESS_OR_EQUALS" />	
+				<search-field name="forTypesNotIn"
+					field-ref="decompteComplexModel.decompteSimpleModel.type" operation="NOT_IN" />
+				<search-field name="likeNoAffilie"
+					field-ref="decompteComplexModel.employeurComplexModel.affiliationTiersComplexModel.affiliation.affilieNumero" operation="LIKE" />
+				<search-field name="forDateAnnulation"
+					field-ref="taxationOfficeSimpleModel.dateAnnulation" operation="EQUALS" />
 			</search-group>
 		</search-definition>
+		
+		<order-by name="noAffilieAsc">
+			<order-field field-ref="decompteComplexModel.employeurComplexModel.affiliationTiersComplexModel.affiliation.affilieNumero" order="ASC"/>
+		</order-by> 
+		
 	</complexe-model>
 </model-mapping>

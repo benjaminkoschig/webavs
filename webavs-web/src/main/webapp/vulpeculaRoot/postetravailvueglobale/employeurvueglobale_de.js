@@ -113,7 +113,46 @@ $(function () {
 		});	
 	}
 	
-	var loadingFunctions = [initPostesTable, initDecomptesTable, initPrestationsTable, initAssociationsTable];
+	function initControlesEmployeursTable() {
+		defaultTableAjaxList.init({
+			s_container: "#controlesEmployeurs",
+			s_table : '#controlesEmployeursTable',
+			s_selector : '#controlesEmployeursContent',
+			s_actionAjax : "vulpecula.ctrlemployeur.controlesEmployeursAjax",
+			userActionDetail : "vulpecula?userAction=vulpecula.ctrlemployeur.controleEmployeur.afficher&selectedId=",
+			
+			init : function() {
+				var that = this;
+				this.capage(20, [ 10, 20, 30, 50, 100 ]);
+				
+				$('#controlesEmployeursTable input, #controlesEmployeursTable select').change(function() {
+					that.ajaxFind();
+				});
+			},
+			
+			getParametresForFind : function () {
+				var m_map = {};
+				m_map['idEmployeur'] = globazGlobal.idEmployeur;
+				return m_map;
+			}
+		});		
+	}
+	
+	function initFacturationAssociationTable() {
+		vulpeculaUtils.ajaxWait({
+			data : {
+				userAction : "vulpecula.ap.facturationAPAjax.afficherAJAX",
+				idEmployeur : globazGlobal.idEmployeur
+			},
+			selectorToAppend : '#facturationAssociationWait',
+			success : function(data) {
+				$('#facturationAssociationContent').empty();
+				$('#facturationAssociationContent').append(data);
+			}
+		});			
+	}
+	
+	var loadingFunctions = [initPostesTable, initDecomptesTable, initPrestationsTable, initAssociationsTable, initFacturationAssociationTable, initControlesEmployeursTable];
 	var loadedTabs = [];
 	
 	function loadTab(index) {
@@ -137,7 +176,7 @@ $(function () {
 		$tabs.tabs("select",globazGlobal.tab);
 	}	
 	
-	$('#postes, #decomptes, #prestations').on(eventConstant.AJAX_FIND_COMPLETE, function() {
+	$('#postes, #decomptes, #prestations, #facturation_association, #controlesEmployeurs').on(eventConstant.AJAX_FIND_COMPLETE, function() {
 		$(this).find('.imgLoading').hide();
 	});
 	
@@ -188,18 +227,107 @@ $(function () {
 		});
 	});
 	
-	$('#editerSansTravailleur').change(function() {
-		var $editerSansTravailleur = $(this);
-		var checked = $editerSansTravailleur.is(':checked');
-		var $labelEditerSansTravailleur = $('#labelEditerSansTravailleur');
-		changeEditerSansTravailleur(checked, function(isChecked) {
-			if(isChecked) {
-				$labelEditerSansTravailleur.text(globazGlobal.labelOui);
-			} else {
-				$labelEditerSansTravailleur.text(globazGlobal.labelNon);
-			}
-		});
+	$('#facturation_association').on('click','.modeleEntete',function(event) {
+		event.stopImmediatePropagation();
+		var $this = $(this);
+		var $td = $(this).closest('td');
+		if(!$this.attr('edit')) {
+			var $tplListModeles = $($('#tplListModeles').html());
+			var selectedId = $this.attr('data-idModele');
+			$tplListModeles.find('option[value="'+selectedId+'"]').attr('selected','selected');
+			$tplListModeles.change('change', function(e) {
+				var $selected = $tplListModeles.find(':selected');
+				$td.html($selected.text());
+				$td.attr('data-idModele',$selected.val());
+				$td.removeAttr('edit');
+				
+				var idEntete = $td.closest('tr').attr('data-id');
+				changeModeleEntete(idEntete, $selected.val());
+			});
+			$this.html($tplListModeles);
+			$this.attr('edit',true);
+		}
 	});
+	
+	$('#facturation_association').on('click','.facture',function() {
+		var $facture = $(this); 
+		var $this = $(this).next();
+		$this.toggle({complete : function() {
+			if($this.is(':visible')) {
+				$facture.find('img.expandFA').attr('src','images/icon-collapse.gif')
+			} else {
+				$facture.find('img.expandFA').attr('src','images/icon-expand.gif')
+			}
+		}});
+	});
+	
+	$('#facturation_association').on('click','.printFactureAP',function(event) {
+		event.stopImmediatePropagation();
+		var $this = $(this);
+		var idFacture = $this.attr('data-idFacture');
+		var options = {
+				serviceClassName:globazGlobal.facturationAPViewService,
+				serviceMethodName:'printFactureAP',
+				parametres : idFacture,
+				callBack:function() {
+					
+				}
+		}
+		vulpeculaUtils.lancementService(options);
+	});
+	
+	$('#facturation_association').on('click','.deleteFA',function(event) {
+		event.stopImmediatePropagation();
+		var $this = $(this);
+		var idFacture = $this.attr('data-idFacture');
+		var msgConfirm = globazGlobal.labelDeleteFA+" (#"+idFacture+")";
+		if (confirm(msgConfirm)) {
+			var options = {
+				serviceClassName:globazGlobal.facturationAPViewService,
+				serviceMethodName:'deleteFactureAP',
+				parametres : idFacture,
+				callBack:function() {
+					initFacturationAssociationTable();
+				}
+			}
+			vulpeculaUtils.lancementService(options);
+		}
+	});
+	
+	$('#facturation_association').on('click','.refuseFA',function(event) {
+		event.stopImmediatePropagation();
+		var $this = $(this);
+		var idFacture = $this.attr('data-idFacture');
+		var msgConfirm = globazGlobal.labelRefuseFA+" (#"+idFacture+")";
+		if (confirm(msgConfirm)) {
+			var options = {
+				serviceClassName:globazGlobal.facturationAPViewService,
+				serviceMethodName:'refuseFactureAP',
+				parametres : idFacture,
+				callBack:function() {
+					initFacturationAssociationTable();
+				}
+			}
+			vulpeculaUtils.lancementService(options);
+		}
+	});
+	
+	$('#associationsTable').on('click','.chShowInactive',function() {
+		$association = $(this).closest('#associationsTable').find(".inactive");
+		$association.toggle();
+	});
+	
+	function changeModeleEntete(idEntete, idModeleEntete, callback) {
+		var options = {
+				serviceClassName:globazGlobal.facturationAPViewService,
+				serviceMethodName:'changeModeleEntete',
+				parametres : idEntete + "," + idModeleEntete,
+				callBack:function() {
+					
+				}
+		}
+		vulpeculaUtils.lancementService(options);
+	}
 	
 	function changeTypeFacturation(typeFacturation, callback) {
  		var options = {

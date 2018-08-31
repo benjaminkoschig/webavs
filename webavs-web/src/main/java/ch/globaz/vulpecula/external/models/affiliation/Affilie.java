@@ -2,6 +2,7 @@ package ch.globaz.vulpecula.external.models.affiliation;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import ch.globaz.vulpecula.domain.models.registre.Convention;
 import ch.globaz.vulpecula.external.models.pyxis.Tiers;
 
@@ -38,6 +39,7 @@ public class Affilie extends Tiers {
     protected Boolean relevePersonnel;
     protected String typeAffiliation;
     protected String accesSecurite;
+    protected String declarationSalaire;
 
     protected List<Cotisation> cotisations;
     protected List<Particularite> particularites;
@@ -69,6 +71,7 @@ public class Affilie extends Tiers {
         typeAffiliation = affilie.getTypeAffiliation();
         convention = affilie.getConvention();
         accesSecurite = affilie.getAccesSecurite();
+        declarationSalaire = affilie.getDeclarationSalaire();
     }
 
     @Override
@@ -389,6 +392,7 @@ public class Affilie extends Tiers {
      * @return
      */
     @Override
+    @Deprecated
     public String getAdressePrincipaleFormatee() {
         StringBuilder sb = new StringBuilder();
         sb.append(raisonSociale);
@@ -434,4 +438,18 @@ public class Affilie extends Tiers {
     public void setParticularites(List<Particularite> particularites) {
         this.particularites = particularites;
     }
+
+	/**
+	 * @return the declarationSalaire
+	 */
+	public String getDeclarationSalaire() {
+		return declarationSalaire;
+	}
+
+	/**
+	 * @param declarationSalaire the declarationSalaire to set
+	 */
+	public void setDeclarationSalaire(String declarationSalaire) {
+		this.declarationSalaire = declarationSalaire;
+	}
 }

@@ -4,8 +4,10 @@ import java.util.List;
 import ch.globaz.vulpecula.business.services.VulpeculaRepositoryLocator;
 import ch.globaz.vulpecula.business.services.VulpeculaServiceLocator;
 import ch.globaz.vulpecula.business.services.compteur.CompteurService;
+import ch.globaz.vulpecula.domain.models.common.Date;
 import ch.globaz.vulpecula.domain.models.congepaye.Compteurs;
 import ch.globaz.vulpecula.domain.models.congepaye.CongePaye;
+import ch.globaz.vulpecula.domain.models.prestations.Beneficiaire;
 import ch.globaz.vulpecula.domain.models.prestations.Etat;
 
 public class PTProcessFacturationCongePayeComptabiliser extends PTProcessFacturation {
@@ -28,6 +30,11 @@ public class PTProcessFacturationCongePayeComptabiliser extends PTProcessFactura
 
     private void majEtatCongePaye(CongePaye congePaye) {
         congePaye.setEtat(Etat.COMPTABILISEE);
+
+        if (Beneficiaire.NOTE_CREDIT.equals(congePaye.getBeneficiaire()) || congePaye.getMontant().isNegative()) {
+            congePaye.setDateVersement(new Date(getPassage().getDateFacturation()));
+        }
+
         VulpeculaRepositoryLocator.getCongePayeRepository().update(congePaye);
     }
 

@@ -27,6 +27,11 @@
 			<select-field name="decompteSimpleModel.id" field-ref="decompteSimpleModel.id" />
 			<select-field name="decompteSimpleModel.idEmployeur" field-ref="decompteSimpleModel.idEmployeur" />
 			<select-field name="decompteSimpleModel.dateEtablissement" field-ref="decompteSimpleModel.dateEtablissement" />
+			<select-field name="decompteSimpleModel.idPassageFacturation" field-ref="decompteSimpleModel.idPassageFacturation" />
+			
+			<select-field name="passageModel.dateFacturation" field-ref="passageModel.dateFacturation" />
+			
+			
 			
 		</select-fields>
 
@@ -110,6 +115,15 @@
 			</join-group>
 		</linked-model>
 		
+		<linked-model name="passageModel"
+			model-ref="ch.globaz.musca.business.models.PassageModel"
+			join-type="LEFT_OUTER">
+			<join-group operator="AND">
+				<join-field name="idPassage"
+					operation="EQUALS" field-ref="decompteSimpleModel.idPassageFacturation" />
+			</join-group>
+		</linked-model>
+		
 		<search-definition>
 			<search-group operator="AND">
 				<search-field name="forId" field-ref="ligneDecompteSimpleModel.id"
@@ -132,8 +146,8 @@
 				<search-field name="forIdConvention" field-ref="affiliationSimpleModel.idConvention" operation="EQUALS" />
 				<search-field name="forTypeDecompteIn" field-ref="decompteSimpleModel.type" operation="IN" />
 				<search-field name="forDateNonAnnoncee" field-ref="ligneDecompteSimpleModel.dateAnnonce" operation="NULL"/>
-				<search-field name="forAnneeDecompteDebut" field-ref="decompteSimpleModel.dateEtablissement" operation="GREATER_OR_EQUALS"/>
-				<search-field name="forAnneeDecompteFin" field-ref="decompteSimpleModel.dateEtablissement" operation="LESS_OR_EQUALS"/>
+				<search-field name="forAnneeDecompteDebut" field-ref="passageModel.dateFacturation" operation="GREATER_OR_EQUALS"/>
+				<search-field name="forAnneeDecompteFin" field-ref="passageModel.dateFacturation" operation="LESS_OR_EQUALS"/>
 			</search-group>
 		</search-definition>
 		<order-by name="employeur">

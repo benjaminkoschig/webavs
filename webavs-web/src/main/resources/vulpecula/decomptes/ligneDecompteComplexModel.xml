@@ -8,6 +8,7 @@
 			<select-field name="travailleurSimpleModel.idTiers" field-ref="travailleurSimpleModel.idTiers" />
 			<select-field name="travailleurSimpleModel.annonceMeroba" field-ref="travailleurSimpleModel.annonceMeroba" />
 			<select-field name="travailleurSimpleModel.spy" field-ref="travailleurSimpleModel.spy" />
+			<select-field name="travailleurSimpleModel.correlationId" field-ref="travailleurSimpleModel.correlationId" />
 			
 			<select-field name="posteTravailSimpleModel.id" field-ref="posteTravailSimpleModel.id" />
 			<select-field name="posteTravailSimpleModel.debutActivite" field-ref="posteTravailSimpleModel.debutActivite" />
@@ -27,7 +28,23 @@
 			<select-field name="ligneDecompteSimpleModel.tauxContribuable" field-ref="ligneDecompteSimpleModel.tauxContribuable" />
 			<select-field name="ligneDecompteSimpleModel.sequence" field-ref="ligneDecompteSimpleModel.sequence" />
 			<select-field name="ligneDecompteSimpleModel.montantFranchise" field-ref="ligneDecompteSimpleModel.montantFranchise" />
+			<select-field name="ligneDecompteSimpleModel.genreCotisations" field-ref="ligneDecompteSimpleModel.genreCotisations" />
+			<select-field name="ligneDecompteSimpleModel.dateAnnonceLPP" field-ref="ligneDecompteSimpleModel.dateAnnonceLPP" />
+			<select-field name="ligneDecompteSimpleModel.toTreat" field-ref="ligneDecompteSimpleModel.toTreat" />
+			<select-field name="ligneDecompteSimpleModel.correlationId" field-ref="ligneDecompteSimpleModel.correlationId" />
+			<select-field name="ligneDecompteSimpleModel.mntVacancesFeries" field-ref="ligneDecompteSimpleModel.mntVacancesFeries" />
+			<select-field name="ligneDecompteSimpleModel.mntGratifications" field-ref="ligneDecompteSimpleModel.mntGratifications" />
+			<select-field name="ligneDecompteSimpleModel.mntAbsencesJustifiees" field-ref="ligneDecompteSimpleModel.mntAbsencesJustifiees" />
+			<select-field name="ligneDecompteSimpleModel.mntAPGComplementaireSM" field-ref="ligneDecompteSimpleModel.mntAPGComplementaireSM" />
+			<select-field name="ligneDecompteSimpleModel.anneeCotisations" field-ref="ligneDecompteSimpleModel.anneeCotisations" />
+			<select-field name="ligneDecompteSimpleModel.lineCorrelationId" field-ref="ligneDecompteSimpleModel.lineCorrelationId" />
+			<select-field name="ligneDecompteSimpleModel.posteCorrelationId" field-ref="ligneDecompteSimpleModel.posteCorrelationId" />			
+			<select-field name="ligneDecompteSimpleModel.idPosteTravail" field-ref="ligneDecompteSimpleModel.idPosteTravail" />
+			<select-field name="ligneDecompteSimpleModel.tauxSaisieEbu" field-ref="ligneDecompteSimpleModel.tauxSaisieEbu" />			
 			<select-field name="ligneDecompteSimpleModel.spy" field-ref="ligneDecompteSimpleModel.spy" />
+			<select-field name="ligneDecompteSimpleModel.status" field-ref="ligneDecompteSimpleModel.status" />
+			
+			<select-field name="decompteSimpleModel.numeroDecompte" field-ref="decompteSimpleModel.numeroDecompte" />
 		
 			<select-field name="travailleurPersonneEtendueSimpleModel.numAvsActuel" field-ref="travailleurPersonneEtendueSimpleModel.numAvsActuel" />
 			<select-field name="travailleurPersonneEtendueSimpleModel.spy" field-ref="travailleurPersonneEtendueSimpleModel.spy" />
@@ -82,7 +99,7 @@
 			model-ref="ch.globaz.vulpecula.business.models.decomptes.LigneDecompteSimpleModel" />
 
 		<linked-model name="posteTravailSimpleModel" select-fields="false"
-			model-ref="ch.globaz.vulpecula.business.models.postetravail.PosteTravailSimpleModel" join-type="INNER" >
+			model-ref="ch.globaz.vulpecula.business.models.postetravail.PosteTravailSimpleModel" join-type="LEFT_OUTER" >
 			<join-group operator="AND">
 				<join-field name="id" operation="EQUALS" field-ref="ligneDecompteSimpleModel.idPosteTravail" />
 			</join-group>
@@ -175,9 +192,11 @@
 				<search-field name="fromSequence" field-ref="ligneDecompteSimpleModel.sequence" operation="GREATER" />				
 				<search-field name="toSequence" field-ref="ligneDecompteSimpleModel.sequence" operation="LESS" />
 				<search-field name="forEtatDecompte" field-ref="decompteSimpleModel.etat" operation="EQUALS" />
+				<search-field name="forEtatDecompteIn" field-ref="decompteSimpleModel.etat" operation="IN" />
 				<search-field name="beforeDateFinDecompte" field-ref="decompteSimpleModel.periodeFin" operation="LESS_OR_EQUALS" />
 				<search-field name="forPeriodeDebut" field-ref="ligneDecompteSimpleModel.periodeDebut" operation="GREATER_OR_EQUALS" />
 				<search-field name="forPeriodeFin" field-ref="ligneDecompteSimpleModel.periodeFin" operation="LESS_OR_EQUALS" />
+				<search-field name="forPeriodeFinAfter" field-ref="ligneDecompteSimpleModel.periodeFin" operation="GREATER" />
 				<search-field name="forIdConvention" field-ref="affiliationSimpleModel.idConvention" operation="EQUALS" />
 				<search-field name="forTypeDecompteIn" field-ref="decompteSimpleModel.type" operation="IN" />
 				<search-field name="forIdsPostesTravailIn" field-ref="ligneDecompteSimpleModel.idPosteTravail" operation="IN" />
@@ -189,6 +208,13 @@
 				</search-group>
 				<search-field name="forRaisonSocialeUpperLike" field-ref="affiliationSimpleModel.raisonSocialeUpper" operation="LIKE" />
 				<search-field name="likeNumeroDecompte" field-ref="decompteSimpleModel.numeroDecompte" operation="LIKE" />
+				<search-field name="forNumeroDecompte" field-ref="decompteSimpleModel.numeroDecompte" operation="EQUALS" />
+				<search-field name="forIdTravailleurLess" field-ref="travailleurSimpleModel.id" operation="LESS_OR_EQUALS" />
+				<search-field name="forIdTravailleurGreater" field-ref="travailleurSimpleModel.id" operation="GREATER_OR_EQUALS" />
+				<search-field name="forIdEmployeur" field-ref="decompteSimpleModel.idEmployeur" operation="EQUALS" />
+				<search-field name="forAnneeCotisationsGreaterOrEquals" field-ref="ligneDecompteSimpleModel.anneeCotisations" operation="GREATER_OR_EQUALS" />
+				<search-field name="forAnneeCotisationsLessOrEquals" field-ref="ligneDecompteSimpleModel.anneeCotisations" operation="LESS_OR_EQUALS" />
+				<search-field name="forToTreat" field-ref="ligneDecompteSimpleModel.toTreat" operation="EQUALS" />
 			</search-group>
 		</search-definition>
 		<order-by name="default">
@@ -208,6 +234,11 @@
 		</order-by>
 		<order-by name="dateFinDecompteAsc">
 			<order-field field-ref="decompteSimpleModel.periodeFin" order="ASC" />
+		</order-by>
+		
+		<order-by name="dateFinDecompteAsc">
+			<order-field field-ref="travailleurTiersSimpleModel.designation1" order="ASC" />
+			<order-field field-ref="travailleurTiersSimpleModel.designation2" order="ASC" />
 		</order-by>
 		
 		<!-- 		Pour les tri de la vue globale travailleur -->
@@ -265,6 +296,11 @@
 		</order-by>
 		<order-by name="heuresDesc">
 			<order-field field-ref="ligneDecompteSimpleModel.nombreHeures" order="DESC" />
+		</order-by>
+		
+		<order-by name="travailleur">
+			<order-field field-ref="travailleurTiersSimpleModel.designation1" order="ASC" />
+			<order-field field-ref="travailleurTiersSimpleModel.designation2" order="ASC" />
 		</order-by>
 
 		<order-by name="salaireHoraireAsc">

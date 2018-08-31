@@ -1,10 +1,12 @@
 package ch.globaz.vulpecula.domain.repositories.decompte;
 
+import globaz.jade.exception.JadePersistenceException;
 import java.util.Collection;
 import java.util.Deque;
 import java.util.List;
 import ch.globaz.vulpecula.domain.models.common.Annee;
 import ch.globaz.vulpecula.domain.models.common.Date;
+import ch.globaz.vulpecula.domain.models.communicationsalaires.CommunicationSalairesRetaval;
 import ch.globaz.vulpecula.domain.models.decompte.DecompteSalaire;
 import ch.globaz.vulpecula.domain.models.registre.Convention;
 import ch.globaz.vulpecula.domain.repositories.Repository;
@@ -85,6 +87,13 @@ public interface DecompteSalaireRepository extends Repository<DecompteSalaire> {
 
     /**
      * @param idDecompte
+     * @param sequence sequence courante du décompte salaire
+     * @return le décompte salaire suivant à quittancer
+     */
+    DecompteSalaire findNextAQuittancerByIdDecompteAndSequence(String idDecompte, String currentSequence);
+
+    /**
+     * @param idDecompte
      * @param sequence
      *            sequence courante du décompte salaire
      * @return le décompte salaire précédent
@@ -99,6 +108,8 @@ public interface DecompteSalaireRepository extends Repository<DecompteSalaire> {
      */
     boolean isLastDecompteSalaire(String idDecompte, String currentSequence);
 
+    boolean isLastDecompteSalaireAQuittancer(String idDecompte, String currentSequence);
+
     /**
      * @param idDecompte
      * @param sequence
@@ -109,7 +120,11 @@ public interface DecompteSalaireRepository extends Repository<DecompteSalaire> {
 
     DecompteSalaire findPrecedentComptabilise(String idPosteTravail, Date dateReception);
 
+    DecompteSalaire findPrecedentValide(String idPosteTravail, Date dateReception);
+
     List<DecompteSalaire> findByIdPosteTravail(String idPosteTravail);
+
+    List<DecompteSalaire> findDecompteOuvertGenereATraiterByIdPosteTravail(String idPosteTravail);
 
     /**
      * Retourne les décomptes salaire à partir d'une année en arrière.
@@ -136,6 +151,8 @@ public interface DecompteSalaireRepository extends Repository<DecompteSalaire> {
      */
     List<DecompteSalaire> findForYear(String idPosteTravail, Annee anneeDecompte);
 
+    List<DecompteSalaire> findForYearComptaOuValide(String idPosteTravail, Annee anneeDecompte);
+
     List<DecompteSalaire> findByIdAndPeriode(String idTravailleur, Date dateDebut, Date dateFin);
 
     List<DecompteSalaire> findByIdPosteTravail(Collection<String> idPostes, Date anneeDebut, Date anneeFin);
@@ -143,4 +160,43 @@ public interface DecompteSalaireRepository extends Repository<DecompteSalaire> {
     DecompteSalaire findAndfetchFirstByIdDecompte(String idDecompte);
 
     DecompteSalaire findByIdWithoutDependencies(String id);
+
+    List<DecompteSalaire> findByNoDecompteAndIdPosteTravail(String noDecompte, String idPosteTravail);
+
+    List<DecompteSalaire> findAllForYear(Annee anneeDecompte, String idTravailleurLess, String idTravailleurGreater);
+
+    List<DecompteSalaire> findByIdsDecomptesInWithDependenciesOrderByTravailleur(List<String> idsDecomptes);
+
+    List<DecompteSalaire> findByIdEmployeurAndPeriodeWithDependenciesOrderByTravailleur(String idEmployeur,
+            Date dateDebut, Date dateFin);
+
+    List<DecompteSalaire> findCPPByIdEmployeurAndPeriodeWithDependenciesOrderByTravailleur(String idEmployeur,
+            Annee anneeDebut, Annee anneeFin);
+
+    /**
+     * Retourne les décomptes salaires se terminant après la date de fin potentiel du poste.
+     * 
+     * @param idPosteTravail String idPosteTravail
+     * @param dateFinPoste String date de fin
+     * @return Liste des décomptes salaires
+     */
+    List<DecompteSalaire> findByIdPosteTravailAfterDateFin(String idPosteTravail, Date date);
+
+    Deque<DecompteSalaire> findSalairesResorPourAnnee(Annee annee);
+
+    List<CommunicationSalairesRetaval> findSalairesRetavalPourAnnee(Annee annee);
+
+    List<DecompteSalaire> findDecomptesActifsHorsPeriode(String idPosteTravail, Date dateFin);
+
+    DecompteSalaire createWithoutCotisations(DecompteSalaire decompteSalaire);
+
+    /**
+     * Retourne les décomptes salaires d'un travailleur pour une période donnée
+     * 
+     * @param idTravailleur String id du travailleur
+     * @param dateDebut String date de début de période
+     * @param dateFin String date de fin de période
+     * @return Liste des décomptes salaires
+     */
+    List<DecompteSalaire> findByIdAndPeriodeWithCotisations(String idTravailleur, Date dateDebut, Date dateFin);
 }

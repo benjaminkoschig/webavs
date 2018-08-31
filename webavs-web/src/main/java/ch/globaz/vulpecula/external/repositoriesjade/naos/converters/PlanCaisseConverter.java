@@ -6,9 +6,9 @@ import ch.globaz.vulpecula.external.models.pyxis.Administration;
 
 /**
  * Convertisseur {@link PlanCaisseSimpleModel} en {@link PlanCaisse}
- * 
+ *
  * @author Arnaud Geiser (AGE) | Créé le 17 janv. 2014
- * 
+ *
  */
 public final class PlanCaisseConverter {
     /**
@@ -20,7 +20,7 @@ public final class PlanCaisseConverter {
 
     /**
      * Conversion d'un {@link PlanCaisseSimpleModel} en {@link PlanCaisse}
-     * 
+     *
      * @param assuranceSimpleModel
      *            Représentation de la table
      * @return Objet métier {@link PlanCaisse}
@@ -31,6 +31,10 @@ public final class PlanCaisseConverter {
         planCaisse.setId(planCaisseSimpleModel.getId());
         planCaisse.setLibelle(planCaisseSimpleModel.getLibelle());
         planCaisse.setTypeAffiliation(planCaisseSimpleModel.getTypeAffiliation());
+
+        Administration admin = new Administration();
+        admin.setId(planCaisseSimpleModel.getIdTiers());
+        planCaisse.setAdministration(admin);
 
         return planCaisse;
     }

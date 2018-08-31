@@ -8,6 +8,7 @@ import globaz.jade.persistence.model.JadeSearchSimpleModel;
  */
 public class CotisationDecompteSearchSimpleModel extends JadeSearchSimpleModel {
     private String forId;
+    private String forIdLigneDecompte;
 
     public String getForId() {
         return forId;
@@ -15,6 +16,14 @@ public class CotisationDecompteSearchSimpleModel extends JadeSearchSimpleModel {
 
     public void setForId(String forId) {
         this.forId = forId;
+    }
+
+    public String getForIdLigneDecompte() {
+        return forIdLigneDecompte;
+    }
+
+    public void setForIdLigneDecompte(String forIdLigneDecompte) {
+        this.forIdLigneDecompte = forIdLigneDecompte;
     }
 
     @Override

@@ -1,17 +1,15 @@
 package ch.globaz.vulpecula.documents.prestations;
 
-import globaz.framework.printing.itext.FWIDocumentManager;
-import globaz.jade.client.util.JadeStringUtil;
-import java.util.Collections;
 import java.util.List;
 import ch.globaz.vulpecula.business.services.VulpeculaRepositoryLocator;
 import ch.globaz.vulpecula.documents.DocumentConstants;
 import ch.globaz.vulpecula.domain.models.common.Periode;
 import ch.globaz.vulpecula.domain.models.postetravail.Employeur;
-import ch.globaz.vulpecula.domain.models.prestations.PrestationByNameComparator;
 import ch.globaz.vulpecula.domain.models.servicemilitaire.SMParEmployeur;
 import ch.globaz.vulpecula.domain.models.servicemilitaire.ServiceMilitaire;
 import ch.globaz.vulpecula.domain.models.servicemilitaire.ServicesMilitaires;
+import globaz.framework.printing.itext.FWIDocumentManager;
+import globaz.jade.client.util.JadeStringUtil;
 
 public class DocumentSMPrinter extends DocumentPrestationsPrinter<SMParEmployeur> {
     private static final long serialVersionUID = 3721912632239314835L;
@@ -45,12 +43,11 @@ public class DocumentSMPrinter extends DocumentPrestationsPrinter<SMParEmployeur
             serviceMilitaires = VulpeculaRepositoryLocator.getServiceMilitaireRepository().findBy(idPassageFacturation,
                     idEmployeur, idTravailleur, idConvention);
         }
-        Collections.sort(serviceMilitaires, new PrestationByNameComparator());
         List<SMParEmployeur> sms = ServicesMilitaires.groupByEmployeur(serviceMilitaires);
         for (SMParEmployeur sm : sms) {
             Employeur employeur = sm.getEmployeur();
             employeur.setAdressePrincipale(VulpeculaRepositoryLocator.getAdresseRepository()
-                    .findAdresseDomicileByIdTiers(employeur.getIdTiers()));
+                    .findAdressePrioriteCourrierByIdTiers(employeur.getIdTiers()));
         }
         setElements(sms);
     }

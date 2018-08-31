@@ -21,6 +21,11 @@ public final class HistoriqueDecompteConverter implements
         DomaineConverterJade<HistoriqueDecompte, HistoriqueDecompteComplexModel, HistoriqueDecompteSimpleModel> {
 
     private static final DecompteConverter DECOMPTE_CONVERTER = new DecompteConverter();
+    private static final HistoriqueDecompteConverter INSTANCE = new HistoriqueDecompteConverter();
+
+    public static HistoriqueDecompteConverter getInstance() {
+        return INSTANCE;
+    }
 
     @Override
     public HistoriqueDecompteSimpleModel convertToPersistence(final HistoriqueDecompte historiqueDecompte) {

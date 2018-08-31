@@ -6,6 +6,8 @@ import ch.globaz.vulpecula.business.models.absencejustifiee.AbsenceJustifieeComp
 import ch.globaz.vulpecula.business.models.absencejustifiee.AbsenceJustifieeSearchComplexModel;
 import ch.globaz.vulpecula.business.models.absencejustifiee.AbsenceJustifieeSimpleModel;
 import ch.globaz.vulpecula.domain.models.absencejustifiee.AbsenceJustifiee;
+import ch.globaz.vulpecula.domain.models.common.Annee;
+import ch.globaz.vulpecula.domain.models.common.Date;
 import ch.globaz.vulpecula.domain.models.common.Periode;
 import ch.globaz.vulpecula.domain.repositories.absencejustifiee.AbsenceJustifieeRepository;
 import ch.globaz.vulpecula.repositoriesjade.RepositoryJade;
@@ -33,6 +35,83 @@ public class AbsenceJustifieeRepositoryJade extends
     public List<AbsenceJustifiee> findByIdTravailleur(String id) {
         AbsenceJustifieeSearchComplexModel searchComplexModel = new AbsenceJustifieeSearchComplexModel();
         searchComplexModel.setForIdTravailleur(id);
+        return searchAndFetch(searchComplexModel);
+    }
+
+    @Override
+    public List<AbsenceJustifiee> findByIdTravailleurAndPeriod(String idTravailleur, String dateDebut, String dateFin) {
+        AbsenceJustifieeSearchComplexModel searchComplexModel = new AbsenceJustifieeSearchComplexModel();
+        searchComplexModel.setForIdTravailleur(idTravailleur);
+        searchComplexModel.setForDateDebut(dateDebut);
+        searchComplexModel.setForDateFin(dateFin);
+        searchComplexModel.setWhereKey(AbsenceJustifieeSearchComplexModel.WHERE_WITH_PERIODE_ABSENCE);
+        return searchAndFetch(searchComplexModel);
+    }
+
+    @Override
+    public List<AbsenceJustifiee> findByIdTravailleurAndDatePassageFacturation(String idTravailleur, String dateDebut,
+            String dateFin) {
+        AbsenceJustifieeSearchComplexModel searchComplexModel = new AbsenceJustifieeSearchComplexModel();
+        searchComplexModel.setForIdTravailleur(idTravailleur);
+        searchComplexModel.setForDateDebutPassageFacturation(dateDebut);
+        searchComplexModel.setForDateFinPassageFacturation(dateFin);
+        searchComplexModel.setWhereKey(AbsenceJustifieeSearchComplexModel.WHERE_WITH_PERIODE_PASSAGE_FACTURATION);
+        return searchAndFetch(searchComplexModel);
+    }
+
+    @Override
+    public List<AbsenceJustifiee> findByIdTravailleurAndDatePassageFacturationAndIdEmployeur(String idTravailleur,
+            String dateDebut, String dateFin, String idEmployeur) {
+        AbsenceJustifieeSearchComplexModel searchComplexModel = new AbsenceJustifieeSearchComplexModel();
+        searchComplexModel.setForIdTravailleur(idTravailleur);
+        searchComplexModel.setForDateDebutPassageFacturation(dateDebut);
+        searchComplexModel.setForDateFinPassageFacturation(dateFin);
+        searchComplexModel.setForIdEmployeur(idEmployeur);
+        searchComplexModel.setWhereKey(AbsenceJustifieeSearchComplexModel.WHERE_WITH_PERIODE_PASSAGE_FACTURATION);
+        return searchAndFetch(searchComplexModel);
+    }
+
+    @Override
+    public List<AbsenceJustifiee> findByIdTravailleurForDateVersement(String idTravailleur, String dateDebut,
+            String dateFin) {
+        AbsenceJustifieeSearchComplexModel searchComplexModel = new AbsenceJustifieeSearchComplexModel();
+        searchComplexModel.setForIdTravailleur(idTravailleur);
+        searchComplexModel.setForDateDebutVersement(dateDebut);
+        searchComplexModel.setForDateFinVersement(dateFin);
+        searchComplexModel.setWhereKey(AbsenceJustifieeSearchComplexModel.WHERE_WITH_PERIODE_VERSEMENT);
+        return searchAndFetch(searchComplexModel);
+    }
+
+    @Override
+    public List<AbsenceJustifiee> findByIdTravailleurForDateVersementAndIdEmployeur(String idTravailleur,
+            String dateDebut, String dateFin, String idEmployeur) {
+        AbsenceJustifieeSearchComplexModel searchComplexModel = new AbsenceJustifieeSearchComplexModel();
+        searchComplexModel.setForIdTravailleur(idTravailleur);
+        searchComplexModel.setForIdEmployeur(idEmployeur);
+        searchComplexModel.setForDateDebutVersement(dateDebut);
+        searchComplexModel.setForDateFinVersement(dateFin);
+        searchComplexModel.setWhereKey(AbsenceJustifieeSearchComplexModel.WHERE_WITH_PERIODE_VERSEMENT);
+        return searchAndFetch(searchComplexModel);
+    }
+
+    @Override
+    public List<AbsenceJustifiee> findByIdEmployeurForDateVersementInAnnee(String idEmployeur, Annee annee) {
+        AbsenceJustifieeSearchComplexModel searchComplexModel = new AbsenceJustifieeSearchComplexModel();
+        searchComplexModel.setForIdEmployeur(idEmployeur);
+        searchComplexModel.setForDateDebutVersement(annee.getFirstDayOfYear());
+        searchComplexModel.setForDateFinVersement(annee.getLastDayOfYear());
+        searchComplexModel.setWhereKey(AbsenceJustifieeSearchComplexModel.WHERE_WITH_PERIODE_VERSEMENT);
+        return searchAndFetch(searchComplexModel);
+    }
+
+    @Override
+    public List<AbsenceJustifiee> findByIdEmployeurForDateVersementInAnnee(String idEmployeur, Date dateDebut,
+            Date dateFin) {
+        AbsenceJustifieeSearchComplexModel searchComplexModel = new AbsenceJustifieeSearchComplexModel();
+        searchComplexModel.setForIdEmployeur(idEmployeur);
+        searchComplexModel.setForDateDebutVersement(dateDebut);
+        searchComplexModel.setForDateFinVersement(dateFin);
+        searchComplexModel.setWhereKey(AbsenceJustifieeSearchComplexModel.WHERE_WITH_PERIODE_VERSEMENT);
         return searchAndFetch(searchComplexModel);
     }
 
@@ -105,5 +184,20 @@ public class AbsenceJustifieeRepositoryJade extends
         }
 
         return absencesJustifiees;
+    }
+
+    @Override
+    public List<AbsenceJustifiee> findSalairesPourAnnee(Annee annee, String idConvention) {
+        AbsenceJustifieeSearchComplexModel searchComplexModel = new AbsenceJustifieeSearchComplexModel();
+        if (!JadeStringUtil.isEmpty(idConvention)) {
+            searchComplexModel.setForIdConvention(idConvention);
+        }
+        searchComplexModel.setForDateDebutVersement(annee.getFirstDayOfYear().toString());
+        searchComplexModel.setForDateFinVersement(annee.getLastDayOfYear().toString());
+        searchComplexModel.setForTraitementSalaires("traitement");
+        searchComplexModel
+                .setWhereKey(AbsenceJustifieeSearchComplexModel.WHERE_WITH_PERIODE_VERSEMENT_TRAITEMENT_SALAIRES);
+
+        return searchAndFetch(searchComplexModel);
     }
 }

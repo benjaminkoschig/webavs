@@ -338,6 +338,10 @@ public class PTCongepayeViewBean extends BJadePersistentObjectViewBean {
         congePaye.setTauxCongePayes(liste);
     }
 
+    public String getMessageEmptyNSS() {
+        return SpecificationMessage.getMessage(I18NUtil.getUserLocale(), SpecificationMessage.EMPTY_NSS);
+    }
+
     public String getMessageAnneeDebutNonVide() {
         return SpecificationMessage.getMessage(I18NUtil.getUserLocale(), SpecificationMessage.CP_ANNEE_DEBUT_NON_VIDE);
     }

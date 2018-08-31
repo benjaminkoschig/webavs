@@ -1,10 +1,5 @@
 package ch.globaz.vulpecula.comptabilite.importationcg;
 
-import globaz.jade.common.Jade;
-import globaz.jade.common.JadeClassCastException;
-import globaz.jade.fs.JadeFsFacade;
-import globaz.jade.service.exception.JadeServiceActivatorException;
-import globaz.jade.service.exception.JadeServiceLocatorException;
 import java.io.File;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -35,10 +30,15 @@ import ch.globaz.vulpecula.comptabilite.importationcg.xmlobject.Mandat;
 import ch.globaz.vulpecula.comptabilite.importationcg.xmlobject.Montant;
 import ch.globaz.vulpecula.comptabilite.importationcg.xmlobject.ObjectFactory;
 import ch.globaz.vulpecula.comptabilite.importationcg.xmlobject.Pieceentete;
+import globaz.jade.common.Jade;
+import globaz.jade.common.JadeClassCastException;
+import globaz.jade.fs.JadeFsFacade;
+import globaz.jade.service.exception.JadeServiceActivatorException;
+import globaz.jade.service.exception.JadeServiceLocatorException;
 
 /**
  * Converti les données CSV pour générer un fichier XML compatible pour l'import d'écritures Helios
- * 
+ *
  * @since WebBMS 0.5
  */
 public class Csv2JaxbBuilder {
@@ -58,6 +58,10 @@ public class Csv2JaxbBuilder {
         // Lecture
         try {
             String uriFile = Csv2JaxbBuilder.JDBC + Jade.getInstance().getDefaultJdbcSchema() + "/" + csvFilename;
+            // XXX
+            LOGGER.warn("PIZZA");
+            LOGGER.warn(filepath);
+            LOGGER.warn(uriFile);
 
             JadeFsFacade.copyFile(uriFile, filepath);
             JadeFsFacade.delete(uriFile);
@@ -72,6 +76,8 @@ public class Csv2JaxbBuilder {
         } catch (JadeClassCastException e) {
             LOGGER.error(e.toString());
         }
+        //XXX
+        LOGGER.warn("PIZZA2");
 
         CsvFile csv = new CsvFile(filepath);
         List<Map<String, String>> mappedData = csv.getMappedData(MyProdisMyAccCsv.TITLES);
@@ -123,7 +129,7 @@ public class Csv2JaxbBuilder {
 
     /**
      * Construit la structure xml en fonction des données csv
-     * 
+     *
      * @param listeLines
      * @param libelleJournal
      * @param dateValeurJournal
@@ -159,7 +165,7 @@ public class Csv2JaxbBuilder {
 
     /**
      * Ecrit le fichier sur le disque
-     * 
+     *
      * @param importEcriture
      * @param filePathDestination
      */
@@ -182,9 +188,10 @@ public class Csv2JaxbBuilder {
     }
 
     /**
-     * 
+     *
      */
-    private static Ecriture buildEcriture(String libelle, String idExterneCompte, String codeDebitCredit, String montant) {
+    private static Ecriture buildEcriture(String libelle, String idExterneCompte, String codeDebitCredit,
+            String montant) {
         Ecriture ecriture = new Ecriture();
         ecriture.setLibelle(new Libelle(libelle));
         ecriture.setIdexternecompte(new Idexternecompte(idExterneCompte));
@@ -302,7 +309,7 @@ public class Csv2JaxbBuilder {
 
     /**
      * Contrôle si la chaîne de caractères est de type numérique
-     * 
+     *
      * @param value Une valeur
      * @return true si la valeur est numeric
      */

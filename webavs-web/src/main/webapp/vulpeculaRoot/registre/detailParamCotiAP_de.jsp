@@ -6,7 +6,8 @@
 
 <%--  *********************************************************** Paramétrage global de la page ************************************************************** --%>
 <%-- labels n° écran et titre --%>
-<c:set var="idEcran" value="PPT10XX" />
+<c:set var="idEcran" value="PPT1011" />
+<c:set var="labelTitreEcran" value="JSP_COTISATIONS_ASSOCIATIONS" />
 <c:set var="bButtonDelete" value="false" />
 
 <!-- TO BE ABLE TO USE DIFFERENT THEME, UNIMPORT JAVASCRIPT.JSPF FOR /find_ajax_el/ and manually add missing ones -->
@@ -27,11 +28,9 @@
 	$(window).resize(function() { 
 		$('#mainWrapper').css('width', '100%').css('width', '-=10px'); });
 	function add () {
-		
 	}
 
 	function upd() {
-		 
 	}
 
 	function validate() {
@@ -45,7 +44,6 @@
 	}
 
 	function cancel() {
-		
 		 if (document.forms[0].elements('_method').value == "add"){
 			 document.forms[0].elements('userAction').value="back"; 
 		 }else{
@@ -111,21 +109,10 @@ select {
 </style>
 <tr>
 	<td>
-	
 	<table>
 		<tr>
-			<td><ct:FWLabel key="JSP_ID"/></td>
-			<td><span id="idCoti">${viewBean.cotiAP.id}</span></td>
-			<td colspan="2"></td>
-		</tr>
-		<tr>
-			<td><ct:FWLabel key="JSP_LIBELLE"/></td>
-			<td><input id="libelle" name="libelle" type="text" value="${viewBean.cotiAP.libelle}" tabindex="1" ></span></td>
-			<td colspan="2"></td>
-		</tr>
-		<tr>
-		<td><ct:FWLabel key="JSP_ASSOCIATION_PROFESSIONNELLE"/></td>
-		<td>
+			<td><ct:FWLabel key="JSP_ASSOCIATION_PROFESSIONNELLE"/></td>
+			<td colspan="3">
 			<select class="associationProfessionnelle" id="idAssociationProfessionnelle" name="idAssociationProfessionnelle" tabindex="2">
 				<c:forEach var="associationProfessionnelle" items="${viewBean.associationsProfessionnelles}">
 					<c:choose>
@@ -138,28 +125,64 @@ select {
 					</c:choose>
 				</c:forEach>
 			</select>
-		</td>
-		
+			</td>
+		</tr>
+		<tr>
+			<td><ct:FWLabel key="JSP_LIBELLE"/></td>
+			<td><input id="libelle" name="libelle" class="libelleLong" type="text" value="${viewBean.cotiAP.libelle}" tabindex="1" ></span></td>
 			<td><ct:FWLabel key="JSP_LIBELLE_FR"/></td>
-			<td><input id="libelleFR" name="libelleFR" type="text" value="${viewBean.cotiAP.libelleFR}" tabindex="5"></span></td>
+			<td><input id="libelleFR" name="libelleFR" class="libelleLong" type="text" value="${viewBean.cotiAP.libelleFR}" tabindex="5"></span></td>
 		</tr>
 		<tr>
 			<td><ct:FWLabel key="JSP_GENRE"/></td>
 			<td><ct:FWCodeSelectTag notation="data-g-select=''" name="genre" codeType="PTGENCOTAP" defaut="${viewBean.genre}" wantBlank="false" tabindex="3"/></td>
 			<td><ct:FWLabel key="JSP_LIBELLE_DE"/></td>
-			<td><input id="libelleDE" name="libelleDE" type="text" value="${viewBean.cotiAP.libelleDE}" tabindex="6"></span></td>
+			<td><input id="libelleDE" name="libelleDE" class="libelleLong" type="text" value="${viewBean.cotiAP.libelleDE}" tabindex="6"></span></td>
 		</tr>
 		<tr>
 			<td><ct:FWLabel key="JSP_MASSE_SALARIALE_DEFAUT"/></td>
-			<td><input id="masseSalarialeDefaut" name="masseSalarialeDefaut" data-g-amount="" type="text" value="${viewBean.cotiAP.masseSalarialeDefaut}" tabindex="4"/></td>
+			<td><input id="masseSalarialeDefaut" name="masseSalarialeDefaut" class="taux" data-g-amount="" type="text" value="${viewBean.cotiAP.masseSalarialeDefaut}" tabindex="4"/>%</td>
 			<td><ct:FWLabel key="JSP_LIBELLE_IT"/></td>
-			<td><input id="libelleIT" name="libelleIT" type="text" value="${viewBean.cotiAP.libelleIT}" tabindex="7"></span></td>
+			<td><input id="libelleIT" name="libelleIT" class="libelleLong" type="text" value="${viewBean.cotiAP.libelleIT}" tabindex="7"></span></td>
 		</tr>
+		<tr>
+			<td><ct:FWLabel key="JSP_A_FACTURER_DEFAUT"/></td>
+			<td><ct:FWCodeSelectTag notation="data-g-select=''" name="facturerDefaut" codeType="PTCATCOTAP" defaut="${viewBean.facturerDefaut}" wantBlank="false" tabindex="8"/></td>
+			<td><ct:FWLabel key="JSP_PRINT_ORDER"/></td>
+			<td><input id="printOrder" name="printOrder" class="numero" type="text" value="${viewBean.cotiAP.printOrder}" tabindex="9"></span></td>
+		</tr>
+		
+		<tr>
+			<td><ct:FWLabel key="JSP_RUBRIQUE"/></td>
+			<td colspan="2">
+			<input 
+			id="currentEntity.rubriqueSimpleModel.idExterne"
+			class="jadeAutocompleteAjax"
+			type="text"
+			tabindex="9"
+			value="${viewBean.idExterneRubrique}"
+			data-g-autocomplete="service:¦ch.globaz.vulpecula.business.services.rubrique.RubriqueService¦,
+								 method:¦find¦,
+								 criterias:¦{'likeIdExterne':'Id externe'}¦,
+								 lineFormatter:¦#{idExterne}¦,
+								 modelReturnVariables:¦idRubrique,idExterne¦,nbReturn:¦20¦,
+								 functionReturn:¦
+								 	function(element){
+								 		this.value=$(element).attr('idExterne');
+								 		$('#idRubrique').val($(element).attr('idRubrique'));	
+								 	}¦
+								 ,nbOfCharBeforeLaunch:¦3¦"
+			/></td>
+			<td>
+			<input type="hidden" value="${viewBean.cotiAP.idRubrique}" id="idRubrique" name="idRubrique"/>
+			</td>
+		</tr>
+			
 	</table>
-		</td>
+	</td>
 </tr>
-	<%@ include file="/theme/detail_el/bodyButtons.jspf" %>
- <%@ include file="/theme/detail_el/bodyErrors.jspf" %>
+<%@ include file="/theme/detail_el/bodyButtons.jspf" %>
+<%@ include file="/theme/detail_el/bodyErrors.jspf" %>
 
 <!-- END OF DETAIL PART -->
 
@@ -182,6 +205,7 @@ select {
 						<th><ct:FWLabel key="JSP_GENRE"/></th>
 						<th><ct:FWLabel key="JSP_TYPE"/></th>
 						<th><ct:FWLabel key="JSP_TAUX"/></th>
+						<th><ct:FWLabel key="JSP_FACTEUR"/></th>
 						<th><ct:FWLabel key="JSP_MONTANT"/></th>
 						<th><ct:FWLabel key="JSP_FOURCHETTE_DEBUT"/></th>
 						<th><ct:FWLabel key="JSP_FOURCHETTE_FIN"/></th>
@@ -212,7 +236,15 @@ select {
 								<ct:FWLabel key="JSP_TAUX"/>
 							</td>
 							<td>
-								 <input id="currentEntity.parametreCotisationAssociationSimpleModel.taux" name="currentEntity.cotisationCaisseMetierSimpleModel.taux" data-g-rate="nbMaxDecimal:5" />%  
+								 <input id="currentEntity.parametreCotisationAssociationSimpleModel.taux" class="taux" name="currentEntity.cotisationCaisseMetierSimpleModel.taux" data-g-rate="nbMaxDecimal:5" />%  
+							</td>
+						</tr>
+						<tr id="trFacteur">
+							<td>
+								<ct:FWLabel key="JSP_FACTEUR"/>
+							</td>
+							<td>
+								 <input id="currentEntity.parametreCotisationAssociationSimpleModel.facteur" name="currentEntity.cotisationCaisseMetierSimpleModel.facteur" data-g-amount="" default="0.00" wantBlank="false"/>  
 							</td>
 						</tr>
 						<tr id="trMontant">

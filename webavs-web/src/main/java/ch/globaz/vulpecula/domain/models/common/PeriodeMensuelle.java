@@ -280,4 +280,11 @@ public class PeriodeMensuelle implements ValueObject {
         return periodeDebut.isMemeAnnee(periodeFin);
     }
 
+    /**
+     * Retourne si la période de fin est en décembre
+     */
+    public boolean isPeriodeFinDecembre() {
+        return periodeFin.isDecembre();
+    }
+
 }

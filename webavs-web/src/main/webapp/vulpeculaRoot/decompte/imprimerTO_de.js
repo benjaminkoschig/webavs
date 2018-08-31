@@ -4,7 +4,11 @@ $(function() {
 	var toPrints = [];
 
 	$('.areaSearch :input,select').change(function() {
+		var $element = $(this);
 		$('#checkAll').prop('checked',false);
+		if($element.attr('id')=='noAffilie') {
+			vulpeculaUtils.formatNoAffilie($element);
+		}
 		decompteSearch.ajaxFind();
 	});
 	

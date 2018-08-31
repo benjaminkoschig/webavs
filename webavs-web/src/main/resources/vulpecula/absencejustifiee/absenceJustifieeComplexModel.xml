@@ -17,7 +17,7 @@
 		
 		<linked-model name="passageModel"
 			model-ref="ch.globaz.musca.business.models.PassageModel"
-			join-type="INNER">
+			join-type="LEFT_OUTER">
 			<join-group operator="AND">
 				<join-field name="idPassage"
 					operation="EQUALS" field-ref="absenceJustifieeSimpleModel.idPassageFacturation" />
@@ -63,11 +63,84 @@
 			</search-group>
 		</search-definition>
 		
+		<search-definition name="withPeriodeAbsence">
+			<search-group operator="AND">
+				<search-field name="forId" field-ref="absenceJustifieeSimpleModel.id"
+					operation="EQUALS" />
+				<search-field name="forIdTravailleur"
+					field-ref="posteTravailComplexModel.travailleurComplexModel.travailleurSimpleModel.id" operation="EQUALS" />
+				<search-field name="forIdPassage"
+					field-ref="absenceJustifieeSimpleModel.idPassageFacturation" operation="EQUALS" />
+				<search-field name="forIdEmployeur"
+					field-ref="posteTravailComplexModel.employeurComplexModel.affiliationTiersComplexModel.affiliation.affiliationId" operation="EQUALS" />
+				<search-field name="forIdConvention" field-ref="posteTravailComplexModel.employeurComplexModel.administrationComplexModel.tiers.idTiers" operation="EQUALS" />
+				<search-field name="forDateDebut" field-ref="absenceJustifieeSimpleModel.dateFinAbsence" operation="GREATER_OR_EQUALS" />
+				<search-field name="forDateFin" field-ref="absenceJustifieeSimpleModel.dateFinAbsence" operation="LESS_OR_EQUALS" />
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="withPeriodePassage">
+			<search-group operator="AND">
+				<search-field name="forId" field-ref="absenceJustifieeSimpleModel.id"
+					operation="EQUALS" />
+				<search-field name="forIdTravailleur"
+					field-ref="posteTravailComplexModel.travailleurComplexModel.travailleurSimpleModel.id" operation="EQUALS" />
+				<search-field name="forIdPassage"
+					field-ref="absenceJustifieeSimpleModel.idPassageFacturation" operation="EQUALS" />
+				<search-field name="forIdEmployeur"
+					field-ref="posteTravailComplexModel.employeurComplexModel.affiliationTiersComplexModel.affiliation.affiliationId" operation="EQUALS" />
+				<search-field name="forIdConvention" field-ref="posteTravailComplexModel.employeurComplexModel.administrationComplexModel.tiers.idTiers" operation="EQUALS" />
+				<search-field name="forDateDebutPassageFacturation" field-ref="passageModel.dateFacturation" operation="GREATER_OR_EQUALS" />
+				<search-field name="forDateFinPassageFacturation" field-ref="passageModel.dateFacturation" operation="LESS_OR_EQUALS" />
+				<search-field name="forDateDebutPassageFacturation" field-ref="absenceJustifieeSimpleModel.dateVersement" operation="NULL" />
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="withPeriodeVersement">
+			<search-group operator="AND">
+				<search-field name="forId" field-ref="absenceJustifieeSimpleModel.id"
+					operation="EQUALS" />
+				<search-field name="forIdTravailleur"
+					field-ref="posteTravailComplexModel.travailleurComplexModel.travailleurSimpleModel.id" operation="EQUALS" />
+				<search-field name="forIdPassage"
+					field-ref="absenceJustifieeSimpleModel.idPassageFacturation" operation="EQUALS" />
+				<search-field name="forIdEmployeur"
+					field-ref="posteTravailComplexModel.employeurComplexModel.affiliationTiersComplexModel.affiliation.affiliationId" operation="EQUALS" />
+				<search-field name="forIdConvention" field-ref="posteTravailComplexModel.employeurComplexModel.administrationComplexModel.tiers.idTiers" operation="EQUALS" />
+				<search-field name="forDateDebutVersement" field-ref="absenceJustifieeSimpleModel.dateVersement" operation="GREATER_OR_EQUALS" />
+				<search-field name="forDateFinVersement" field-ref="absenceJustifieeSimpleModel.dateVersement" operation="LESS_OR_EQUALS" />
+			</search-group>
+		</search-definition>
+		
+		<search-definition name="withPeriodeVersementTraitementSalaires">
+			<search-group operator="AND">
+				<search-field name="forId" field-ref="absenceJustifieeSimpleModel.id"
+					operation="EQUALS" />
+				<search-field name="forIdTravailleur"
+					field-ref="posteTravailComplexModel.travailleurComplexModel.travailleurSimpleModel.id" operation="EQUALS" />
+				<search-field name="forIdPassage"
+					field-ref="absenceJustifieeSimpleModel.idPassageFacturation" operation="EQUALS" />
+				<search-field name="forIdEmployeur"
+					field-ref="posteTravailComplexModel.employeurComplexModel.affiliationTiersComplexModel.affiliation.affiliationId" operation="EQUALS" />
+				<search-field name="forIdConvention" field-ref="posteTravailComplexModel.employeurComplexModel.administrationComplexModel.tiers.idTiers" operation="EQUALS" />
+				<search-field name="forDateDebutVersement" field-ref="absenceJustifieeSimpleModel.dateVersement" operation="GREATER_OR_EQUALS" />
+				<search-field name="forDateFinVersement" field-ref="absenceJustifieeSimpleModel.dateVersement" operation="LESS_OR_EQUALS" />
+				<search-field name="forTraitementSalaires" field-ref="absenceJustifieeSimpleModel.traitementSalaires" operation="NULL" />
+			</search-group>
+		</search-definition>
+		
+		
+		
+		
 		<order-by name="conventionDesc">
 			<order-field field-ref="posteTravailComplexModel.employeurComplexModel.administrationComplexModel.admin.codeAdministration" order="DESC" />
 		</order-by>
 		<order-by name="conventionAsc">
 			<order-field field-ref="posteTravailComplexModel.employeurComplexModel.administrationComplexModel.admin.codeAdministration" order="ASC" />
+		</order-by>
+		<order-by name="conventionEmployeurRaisonSocialeAsc">
+			<order-field field-ref="posteTravailComplexModel.employeurComplexModel.administrationComplexModel.admin.codeAdministration" order="ASC" />
+			<order-field field-ref="posteTravailComplexModel.employeurComplexModel.affiliationTiersComplexModel.affiliation.raisonSocialeUpper" order="ASC" />
 		</order-by>
 		<order-by name="idPassageFacturationDesc">
 			<order-field field-ref="absenceJustifieeSimpleModel.idPassageFacturation" order="DESC" />

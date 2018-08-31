@@ -170,17 +170,47 @@ globazGlobal.calcul = (function() {
 				.amountTofloat(globazGlobal.$getMontantCompensation().val());
 		var montantBrut = $montantCouvertureAPG - $montantVersementAPG
 				- $montantCompensation;
-
-		if (montantBrut < 0) {
+		if(verifyIfRawAmountShouldBeZero($montantCouvertureAPG, $montantVersementAPG)){		
 			montantBrut = 0;
+			$('#montantBrut').prop('disabled', true);
+		}else{
+			$('#montantBrut').prop('disabled', false);
 		}
-		
 		montantBrut = roundToFiveCentimes(montantBrut);
 		globazGlobal.$getMontantBrut().val(
 				globazNotation.utilsFormatter.formatStringToAmout(montantBrut,
 						2, true));
 	}
 
+	function verifyIfRawAmountShouldBeZero(montantCouvertureAPG, montantVersementAPG){
+		//Si les signes ne sont pas les mêmes, on laisse le champ libre
+		var signMontantCouvAPG = findSignum(montantCouvertureAPG);
+		var signMontantVersementAPG = findSignum(montantVersementAPG);
+		
+         if(signMontantCouvAPG != signMontantVersementAPG){
+        	 return false;
+         }
+		var montantCouvertureAPGAbs = Math.abs(montantCouvertureAPG);
+		var montantVersementAPGAbs = Math.abs(montantVersementAPG);
+		
+		if(montantVersementAPGAbs >= montantCouvertureAPGAbs){
+			
+			return true;
+		}
+		
+		return false;
+	}
+	
+	function findSignum(amount){
+		
+		if(amount < 0 ){
+			return -1;
+		}else if (amount === 0){
+			return 0;
+		}
+		return 1;
+	}
+	
 	function calculMontantAVerser() {
 		globazGlobal.cotisations.calcul();
 	}
@@ -683,6 +713,13 @@ globazGlobal.validation = (function() {
 	}
 	
 	function checkVersementAPG() {
+		//BMS-2105 : Ne pas rendre obligatoire le champ APG pour le code "Fonction publique"
+		if (globazGlobal.$getGenrePrestation().val() == 68008012) {
+			if (globazGlobal.$getMontantVersementAPG().val().length==0) {
+				globazGlobal.$getMontantVersementAPG().val(0.00);
+			}
+			return true;
+		}
 		var mainForm = $('form[name="mainForm"]').serializeFormJSON();
 		var versementAPG = mainForm.versementAPG;
 		if (versementAPG.length == 0) {

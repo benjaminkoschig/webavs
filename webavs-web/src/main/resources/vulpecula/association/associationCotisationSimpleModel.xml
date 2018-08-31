@@ -15,6 +15,7 @@
 			<field name="masseSalariale" column="MASSE_SALARIALE" type="NUMERIC" comment="taux de la masse salariale" />
 			<field name="forfait" column="FORFAIT" type="NUMERIC" comment="forfait unique sur l'association" />
 			<field name="reductionFacture" column="REDUCTION_FACTURE" type="NUMERIC" comment="taux de réduction facture" />
+			<field name="facturer" column="CS_FACTURER" type="NUMERIC" comment="categorie de facturation pour l'association"/>
 		</fields>
 		<search-definition>
 			<search-group operator="AND">

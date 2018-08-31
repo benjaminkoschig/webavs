@@ -62,6 +62,12 @@
 							<parameter name="userAction" value="vulpecula.decomptesalaire.annoncerMyProdis.afficher" />
 						</action>
 					</node>
+					<node>
+						<label refId="MENU_PT_CONTROLER_MYPRODIS" />
+						<action command="/vulpecula" responseTarget="fr_main">
+							<parameter name="userAction" value="vulpecula.decomptesalaire.controlerMyProdis.afficher"/>
+						</action>
+					</node>
 				</nodes>
 			</node>
 		</nodes>	
@@ -83,6 +89,68 @@
 					</node>
 				</nodes>
 			</node>					
+		</nodes>
+		<nodes>
+			<node open="no">
+					<label open="no" refId="MENU_EBUSINESS" />
+					<nodes>
+						<node>
+							<label refId="MENU_ANNONCE_NOUVEAU_TRAVAILLEUR" />
+							<action command="/vulpecula" responseTarget="fr_main">
+								<parameter name="userAction" value="vulpecula.ebusiness.nouveauTravailleur.afficher" />
+							</action>
+						</node>
+					</nodes>
+			</node>	
+		</nodes>
+		<nodes>
+			<node open="no">
+					<label open="no" refId="MENU_PT_CONTROLE_EMPLOYEUR" />
+					<nodes>
+						<node>
+							<label refId="MENU_LISTE_POUR_REVISION" />
+							<action command="/vulpecula" responseTarget="fr_main">
+								<parameter name="userAction" value="vulpecula.listes.revision.afficher" />
+							</action>
+						</node>
+						<node>
+							<label refId="MENU_PT_LETTRE_CONTROLE_EMPLOYEUR"/>
+							<action command="/vulpecula" responseTarget="fr_main">
+								<parameter name="userAction" value="vulpecula.ctrlemployeur.lettreControle.afficher"/>
+							</action>
+						</node>
+						<node>
+							<label refId="MENU_PT_RECAP_EMPLOYEUR"/>
+							<action command="/vulpecula" responseTarget="fr_main">
+								<parameter name="userAction" value="vulpecula.ctrlemployeur.recapEmployeur.afficher"/>
+							</action>
+						</node>
+						<node>
+							<label refId="MENU_LISTE_NOUVELLES_AFFILIATIONS" />
+							<action command="/vulpecula" responseTarget="fr_main">
+								<parameter name="userAction" value="vulpecula.listes.nouvellesAffiliations.afficher" />
+							</action>
+						</node>						
+						<node>
+							<label refId="MENU_LISTE_NON_CONTROLE_4_ANS" />
+							<action command="/vulpecula" responseTarget="fr_main">
+								<parameter name="userAction" value="vulpecula.listes.nonControle.afficher" />
+							</action>
+						</node>
+						<node>
+							<label refId="MENU_LISTE_CONTROLE_PAR_ANNEE" />
+							<action command="/vulpecula" responseTarget="fr_main">
+								<parameter name="userAction" value="vulpecula.ctrlemployeur.controleEmployeurParAnnee.afficher" />
+							</action>
+						</node>
+						<node>
+							<label refId="MENU_PT_LETTRE_EMPLOYEUR_ACTIF_SANS_PERSONNEL" />
+							<action command="/vulpecula" responseTarget="fr_main">
+								<parameter name="userAction" value="vulpecula.ctrlemployeur.lettreEmployeurActifSansPersonnel.afficher" />
+							</action>
+						</node>
+					</nodes>
+			</node>	
 		</nodes>
 		<nodes>
 			<node open="no">
@@ -112,6 +180,43 @@
 								<parameter name="userAction" value="vulpecula.is.primeNaissanceAF.afficher"/>
 							</action>
 						</node>
+						<node>
+							<label refId="MENU_PT_LIST_AF_VERSEES" />
+							<action command="/vulpecula" responseTarget="fr_main">
+								<parameter name="userAction" value="vulpecula.is.listeAFVersees.afficher"/>
+							</action>
+						</node>
+					</nodes>
+			</node>	
+		</nodes>
+		<nodes>
+			<node open="no">
+					<label open="no" refId="MENU_PT_ASSOCIATIONS_PROFESSIONNELLES" />
+					<nodes>
+						<node>
+							<label refId="MENU_PT_AP_GENERATION_FACTURATION"/>
+							<action command="/vulpecula" responseTarget="fr_main">
+								<parameter name="userAction" value="vulpecula.ap.facturationAP.afficher"/>
+							</action>
+						</node>
+						<node>
+							<label refId="MENU_PT_IMPRESSION_FACTURATION"/>
+							<action command="/vulpecula" responseTarget="fr_main">
+								<parameter name="userAction" value="vulpecula.ap.impressionFacturation.afficher"/>
+							</action>
+						</node>
+						<node>
+							<label refId="MENU_PT_COTISATIONS_AP" />
+							<action command="/vulpecula" responseTarget="fr_main">
+								<parameter name="userAction" value="vulpecula.registre.cotisationsAP.afficher"/>
+							</action>						
+						</node>
+						<node>
+							<label refId="MENU_PT_ANNULER_SOLDE_MINIME"/>
+							<action command="/vulpecula" responseTarget="fr_main">
+								<parameter name="userAction" value="vulpecula.comptabilite.annulerSoldeMinime.afficher"/>
+							</action>
+						</node>
 					</nodes>
 			</node>	
 		</nodes>
@@ -129,6 +234,24 @@
 							<label refId="MENU_PT_IMPORT_CASHIN"/>
 							<action command="/vulpecula" responseTarget="fr_main">
 								<parameter name="userAction" value="vulpecula.comptabilite.importationcashin.afficher"/>
+							</action>
+						</node>
+						<node>
+							<label refId="MENU_PT_LISTES_INTERNE"/>
+							<action command="/vulpecula" responseTarget="fr_main">
+								<parameter name="userAction" value="vulpecula.comptabilite.listesInternes.afficher"/>
+							</action>
+						</node>
+						<node>
+							<label refId="MENU_PT_LISTES_RECAP_PAR_RUBRIQUES"/>
+							<action command="/vulpecula" responseTarget="fr_main">
+								<parameter name="userAction" value="vulpecula.comptabilite.listeRecapParRubrique.afficher"/>
+							</action>
+						</node>
+						<node>
+							<label refId="MENU_PT_LISTE_SOLDES_CPP_ASSOCIATION"/>
+							<action command="/vulpecula" responseTarget="fr_main">
+								<parameter name="userAction" value="vulpecula.comptabilite.listeSoldesCPPAssociation.afficher"/>
 							</action>
 						</node>
 					</nodes>
@@ -151,6 +274,12 @@
 						</action>
 					</node>
 					<node>
+						<label refId="MENU_PT_LISTE_DECOMPTE_SALAIRES_AVS" />
+						<action command="/vulpecula" responseTarget="fr_main">
+							<parameter name="userAction" value="vulpecula.listes.salairesAVS.afficher" />
+						</action>
+					</node>
+					<node>
 						<label refId="MENU_PT_ANNONCE_SALARIES" />
 						<action command="/vulpecula" responseTarget="fr_main">
 							<parameter name="userAction" value="vulpecula.listes.annoncesalaries.afficher" />
@@ -163,9 +292,27 @@
 						</action>
 					</node>
 					<node>
+						<label refId="MENU_PT_COMMUNICATION_SALAIRES_RESOR" />
+						<action command="/vulpecula" responseTarget="fr_main">
+							<parameter name="userAction" value="vulpecula.listes.communicationsalairesresor.afficher" />
+						</action>
+					</node>
+					<node>
 						<label refId="MENU_PT_ANNONCE_CAISSES_MALADIES" />
 						<action command="/vulpecula" responseTarget="fr_main">
 							<parameter name="userAction" value="vulpecula.listes.caissemaladie.afficher" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_PT_LISTE_AMCAB" />
+						<action command="/vulpecula" responseTarget="fr_main">
+							<parameter name="userAction" value="vulpecula.listes.listeAMCAB.afficher" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_PT_LISTE_QUORUMS" />
+						<action command="/vulpecula" responseTarget="fr_main">
+							<parameter name="userAction" value="vulpecula.listes.listeQuorums.afficher" />
 						</action>
 					</node>
 					<node>
@@ -185,7 +332,25 @@
 						<action command="/vulpecula" responseTarget="fr_main">
 							<parameter name="userAction" value="vulpecula.listes.montantRubrique.afficher" />
 						</action>
-					</node>					
+					</node>
+					<node>
+						<label refId="MENU_PT_LISTE_CP_SOUMIS_LPP" />
+						<action command="/vulpecula" responseTarget="fr_main">
+							<parameter name="userAction" value="vulpecula.listes.listeCPsoumisLPP.afficher" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_PT_LISTE_DIVERS" />
+						<action command="/vulpecula" responseTarget="fr_main">
+							<parameter name="userAction" value="vulpecula.listes.listeDivers.afficher" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_PT_LISTE_PERSONNES_AVEC_AGE" />
+						<action command="/vulpecula" responseTarget="fr_main">
+							<parameter name="userAction" value="vulpecula.listes.listePersonnesAvecAge.afficher" />
+						</action>
+					</node>
 				</nodes>
 			</node>
 		</nodes>		
@@ -254,19 +419,6 @@
 									<parameter name="userAction" value="vulpecula.registre.qualification.afficher"/>
 								</action>
 							</node>
-							<!-- REMOVED BY CEL until GO and cleanup 
-							<node>
-								<label refId="MENU_PT_PARAMETRES_COTISATIONS_ASSOCIATIONS" />
-								<action command="/vulpecula" responseTarget="fr_main">
-									<parameter name="userAction" value="vulpecula.registre.parametresCotisationsAssociations.afficher"/>
-								</action>
-							</node>
-							<node>
-								<label refId="MENU_PT_COTISATIONS_AP" />
-								<action command="/vulpecula" responseTarget="fr_main">
-									<parameter name="userAction" value="vulpecula.registre.cotisationsAP.afficher"/>
-								</action>						
-							</node> -->
 							<node>
 								<label refId="MENU_PT_TAUX_IMPOSITION" />
 								<action command="/vulpecula" responseTarget="fr_main">
@@ -275,12 +427,6 @@
 							</node>
 						</nodes>
 					</node>
-					<node>
-						<label refId="MENU_PT_COTISATIONS_AP" />
-						<action command="/vulpecula" responseTarget="fr_main">
-							<parameter name="userAction" value="vulpecula.registre.cotisationsAP.afficher"/>
-						</action>						
-					</node>		
 					<node id="catalogue_texte">
 						<label defaultValue="Catalogue de textes">
 							<language iso="de">?Catalogue de textes</language>

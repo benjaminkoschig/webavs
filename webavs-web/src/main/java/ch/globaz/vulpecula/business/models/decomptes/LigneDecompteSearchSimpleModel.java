@@ -7,11 +7,15 @@ import globaz.jade.persistence.model.JadeSearchSimpleModel;
  * 
  */
 public class LigneDecompteSearchSimpleModel extends JadeSearchSimpleModel {
-    private String forId;
+	private static final long serialVersionUID = 8613372217797915171L;
+	
+	private String forId;
     private String forSequence;
     private String forIdDecompte;
     private String fromSequence;
     private String toSequence;
+    private Boolean forToTreat;
+    private String forCorrelationId;
 
     public String getForId() {
         return forId;
@@ -79,7 +83,35 @@ public class LigneDecompteSearchSimpleModel extends JadeSearchSimpleModel {
         this.toSequence = toSequence;
     }
 
-    @Override
+    /**
+	 * @return the forToTreat
+	 */
+	public Boolean getForToTreat() {
+		return forToTreat;
+	}
+
+	/**
+	 * @param forToTreat the forToTreat to set
+	 */
+	public void setForToTreat(Boolean forToTreat) {
+		this.forToTreat = forToTreat;
+	}
+
+	/**
+	 * @return the forCorrelationId
+	 */
+	public String getForCorrelationId() {
+		return forCorrelationId;
+	}
+
+	/**
+	 * @param forCorrelationId the forCorrelationId to set
+	 */
+	public void setForCorrelationId(String forCorrelationId) {
+		this.forCorrelationId = forCorrelationId;
+	}
+
+	@Override
     public Class<LigneDecompteSimpleModel> whichModelClass() {
         return LigneDecompteSimpleModel.class;
     }

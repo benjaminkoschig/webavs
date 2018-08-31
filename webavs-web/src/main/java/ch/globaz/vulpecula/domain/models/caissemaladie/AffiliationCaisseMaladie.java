@@ -18,7 +18,7 @@ import ch.globaz.vulpecula.external.models.pyxis.Administration;
 import com.google.common.base.Function;
 import com.google.common.collect.Multimaps;
 
-public class AffiliationCaisseMaladie implements DomainEntity {
+public class AffiliationCaisseMaladie implements DomainEntity, Comparable<AffiliationCaisseMaladie> {
 
     private String id;
     private Travailleur travailleur;
@@ -32,6 +32,7 @@ public class AffiliationCaisseMaladie implements DomainEntity {
     private String idPosteTravail;
     private String descriptionEmployeur;
     private PosteTravail posteTravail;
+    private String hasCotisationAMCAB = "";
 
     public String getIdPosteTravail() {
         return idPosteTravail;
@@ -246,6 +247,22 @@ public class AffiliationCaisseMaladie implements DomainEntity {
      */
     public boolean isActif() {
         return new Periode(moisDebut, moisFin).isActifMois(Date.now());
+    }
+
+    @Override
+    public int compareTo(AffiliationCaisseMaladie o) {
+        Periode p1 = new Periode(o.moisDebut, o.moisFin);
+        Periode p2 = new Periode(moisDebut, moisFin);
+
+        return p1.compareTo(p2);
+    }
+
+    public String getHasCotisationAMCAB() {
+        return hasCotisationAMCAB;
+    }
+
+    public void setHasCotisationAMCAB(String hasCotisationAMCAB) {
+        this.hasCotisationAMCAB = hasCotisationAMCAB;
     }
 
 }

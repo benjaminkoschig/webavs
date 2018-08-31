@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-mapping>
+	<simple-model
+		className="ch.globaz.vulpecula.business.models.association.EnteteFactureAssociationProfessionnelleSimpleModel">
+		<table name="PT_ENTETE_FACTURE_AP" hasCreationSpy="true" hasSpy="true"
+			alwaysIncrementPrimaryKey="true" />
+			
+		<fields>
+			<primary-key name="id" column="ID"
+				comment="Id de la table entete facture AP" />
+			<field name="idEmployeur" column="ID_PT_EMPLOYEURS" type="NUMERIC" comment="id employeur" />
+			<field name="taux" column="TAUX" type="NUMERIC" comment="pourcentage de la masse pris en compte pour la facture" />
+			<field name="anneeFacture" column="ANNEE_FACTURE" type="NUMERIC" comment="année de la facture" />
+			<field name="reductionFacture" column="REDUCTION_FACTURE" type="NUMERIC" comment="réduction totale accordée à l'employeur" />
+			<field name="etat" column="CS_ETAT" type="NUMERIC" comment="état de l'entête de facture" />
+			<field name="montantTotal" column="MONTANT_TOTAL" type="NUMERIC" comment="montant total de l'entête (ensemble des cotisations)" />
+			<field name="masseSalariale" column="MASSE_SALARIALE" type="NUMERIC" comment="masse salariale" />
+			<field name="idModeleEntete" column="ID_MODELE_ENTETE" type="NUMERIC" comment="lien sur le modele de l'entete" />
+			<field name="idAssociation" column="ID_ASSOCIATION" type="NUMERIC" comment="id de l'association parent" />
+			<field name="idPassageFacturation" column="ID_FAPASSP" type="NUMERIC" comment="id du passage de facturation" />
+			<field name="numeroSection" column="NUMERO_SECTION" type="STRING" comment="numéro de section" />
+		</fields>
+		
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forId" field-ref="id" operation="EQUALS" />
+				<search-field name="forIdEmployeur" field-ref="idEmployeur" operation="EQUALS" />	
+				
+				<search-field name="forIdAssociation" field-ref="idAssociation" operation="EQUALS" />
+				<search-field name="forAnnee" field-ref="anneeFacture" operation="EQUALS" />
+				<search-field name="forIdPassageFacturation" field-ref="idPassageFacturation" operation="EQUALS" />
+			</search-group>
+		</search-definition>
+		<order-by name="idDesc">
+			<order-field field-ref="id" order="DESC" />
+		</order-by>
+		<order-by name="idAsc">
+			<order-field field-ref="id" />
+		</order-by>
+	</simple-model>
+</model-mapping>

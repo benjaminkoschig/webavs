@@ -16,7 +16,7 @@
 			</c:choose>
 			<td><ct:FWCodeLibelle csCode="${decompte.etat.value}"/></td>
 			<c:choose>
-				<c:when test="${decompte.special}">
+				<c:when test="${(decompte.special) or (decompte.type.CPP)}">
 					<td><button type="button" class="toPrint toPrintSpecial"><ct:FWLabel key="JSP_IMPRIMER"/></button></td>
 				</c:when>
 				<c:otherwise>

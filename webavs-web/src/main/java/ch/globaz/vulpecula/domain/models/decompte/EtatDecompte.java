@@ -5,7 +5,7 @@ import java.util.List;
 
 /***
  * Enumération représentant l'état d'un décompte défini dans le lot 6
- * 
+ *
  * @author Arnaud Geiser (AGE) | Créé le 10 déc. 2013
  */
 public enum EtatDecompte {
@@ -19,7 +19,8 @@ public enum EtatDecompte {
     ANNULE(68012008),
     TAXATION_DOFFICE(68012009),
     FACTURATION(68012010),
-    SOMMATION(68012011);
+    SOMMATION(68012011),
+    A_TRAITER(68012012);
 
     private int value;
 
@@ -29,7 +30,7 @@ public enum EtatDecompte {
 
     /**
      * Retourne le code système représentant le permis de travail
-     * 
+     *
      * @return String représentant un code système
      */
     public String getValue() {
@@ -38,7 +39,7 @@ public enum EtatDecompte {
 
     /**
      * Construction de l'énumération à partir d'un code système
-     * 
+     *
      * @param value
      *            String représentant un code système
      * @return Un état du {@link EtatDecompte}
@@ -62,7 +63,7 @@ public enum EtatDecompte {
 
     /**
      * Retourne si le code système passée en paramètre correspondant bien à un {@link EtatDecompte}
-     * 
+     *
      * @param value
      *            Code système
      * @return true si valide

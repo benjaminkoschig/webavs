@@ -13,7 +13,7 @@ import ch.globaz.vulpecula.domain.models.holidays.JoursFeries;
  * ValueObject (immutable)
  * 
  */
-public class Date implements ValueObject {
+public class Date implements ValueObject, Comparable<Date> {
     private static final long serialVersionUID = 1L;
 
     public static final String DATE_INCONNU = "????";
@@ -24,6 +24,8 @@ public class Date implements ValueObject {
     private static final String DATE_PATTERN_SWISS = "dd.MM.yyyy";
     private static final String DATE_PATTERN_MONTH = "yyyyMM";
     private static final String DATE_PATTERN_MONTH_SWISS = "MM.yyyy";
+    private static final String DATE_PATTERN_FULL_WITH_WEEK_DAY_FR = "EEEE dd MMMM yyyy";
+    private static final String DATE_PATTERN_FULL_WITH_WEEK_DAY_DE = "EEEE dd. MMMM yyyy";
     private static final String NULL_DATE_ALIAS = "";
 
     private static final String PATTERN_DAY = "dd";
@@ -87,6 +89,13 @@ public class Date implements ValueObject {
      */
     public Date() {
         date = fetchRealDate(new java.util.Date());
+    }
+
+    /**
+     * Création de la date à partir du jour, mois et année
+     */
+    public Date(int jour, int mois, int annee) {
+        this(jour + "." + mois + "." + annee);
     }
 
     /**
@@ -238,6 +247,20 @@ public class Date implements ValueObject {
      */
     public String getSwissValue() {
         SimpleDateFormat dateFormat = new SimpleDateFormat(Date.DATE_PATTERN_SWISS);
+        return dateFormat.format(date);
+    }
+
+    /**
+     * Retour la date au format standard Swiss
+     * 
+     * @return String au format EEEE dd MMMM yyyy
+     */
+    public String getFullWithWeekDayValue(Locale locale) {
+        String format = Date.DATE_PATTERN_FULL_WITH_WEEK_DAY_FR;
+        if (Locale.GERMAN.equals(locale)) {
+            format = Date.DATE_PATTERN_FULL_WITH_WEEK_DAY_DE;
+        }
+        SimpleDateFormat dateFormat = new SimpleDateFormat(format, locale);
         return dateFormat.format(date);
     }
 
@@ -491,6 +514,20 @@ public class Date implements ValueObject {
         calendar.setTime(getDate());
         calendar.set(Calendar.DAY_OF_MONTH, 1);
         calendar.set(Calendar.MONTH, 0);
+
+        return new Date(calendar.getTime());
+    }
+
+    /**
+     * Retourne la date du dernier jour de l'année pour la date actuelle
+     * 
+     * @return Nouvel objet date. Par exemple ("10.12.2014 -> 01.12.2014")
+     */
+    public Date getDateOfLastDayOfYear() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(getDate());
+        calendar.set(Calendar.DAY_OF_MONTH, 31);
+        calendar.set(Calendar.MONTH, 11);
 
         return new Date(calendar.getTime());
     }
@@ -832,5 +869,26 @@ public class Date implements ValueObject {
 
     public boolean isMemeAnnee(Date date) {
         return getAnnee().equals(date.getAnnee());
+    }
+
+    public boolean isMemeMoisAnnee(Date date) {
+        if (date == null) {
+            return false;
+        }
+        return isMemeMois(date) && isMemeAnnee(date);
+    }
+
+    /**
+     * Retourne si la date est en décembre
+     * 
+     * @return true si décembre
+     */
+    public boolean isDecembre() {
+        return Integer.parseInt(getMois()) == MOIS_DECEMBRE;
+    }
+
+    @Override
+    public int compareTo(Date other) {
+        return date.compareTo(other.date);
     }
 }

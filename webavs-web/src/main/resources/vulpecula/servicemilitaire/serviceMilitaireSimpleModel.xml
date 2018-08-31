@@ -43,6 +43,8 @@
 				comment="Taux de congé payés" />
 			<field name="tauxGratification" column="TAUX_GRATIFICATION" type="NUMERIC"
 				comment="Taux de gratification" />
+			<field name="dateVersement" column="DATE_VERSEMENT" type="DATE"
+				comment="date de versement de la prestation (REPRISE)" />	
 		</fields>
 		
 		<search-definition>

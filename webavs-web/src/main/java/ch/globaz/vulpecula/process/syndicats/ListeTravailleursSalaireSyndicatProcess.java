@@ -12,6 +12,7 @@ public class ListeTravailleursSalaireSyndicatProcess extends ListeSyndicatsProce
                 getSession(), DocumentConstants.LISTES_SYNDICATS_TRAVAILLEURS_SALAIRE_SYNDICAT_DOC_NAME,
                 DocumentConstants.LISTES_SYNDICATS_TRAVAILLEURS_SALAIRE_SYNDICAT_NAME);
         listeTravailleursSalaireSyndicatExcel.setAffiliationsSyndicats(affiliationsGroupBySyndicat);
+        listeTravailleursSalaireSyndicatExcel.setIdTravailleur(idTravailleur);
         listeTravailleursSalaireSyndicatExcel.setAnnee(annee);
         listeTravailleursSalaireSyndicatExcel.create();
         registerAttachedDocument(JadePublishDocumentInfoProvider.newInstance(this),

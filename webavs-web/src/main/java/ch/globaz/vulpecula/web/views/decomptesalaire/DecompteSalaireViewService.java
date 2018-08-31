@@ -1,16 +1,21 @@
 package ch.globaz.vulpecula.web.views.decomptesalaire;
 
+import globaz.globall.db.BSession;
+import globaz.globall.db.BSessionUtil;
 import globaz.jade.client.util.JadeNumericUtil;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import java.net.URISyntaxException;
 import javax.xml.bind.JAXBException;
+import org.apache.commons.lang.Validate;
 import ch.globaz.vulpecula.business.services.VulpeculaServiceLocator;
 import ch.globaz.vulpecula.business.services.decompte.DecompteSalaireService;
+import ch.globaz.vulpecula.domain.models.common.Annee;
 import ch.globaz.vulpecula.domain.models.common.Date;
 import ch.globaz.vulpecula.domain.models.common.Montant;
 import ch.globaz.vulpecula.domain.models.common.Periode;
 import ch.globaz.vulpecula.domain.models.common.Taux;
+import ch.globaz.vulpecula.domain.models.decompte.CodeErreur;
 import ch.globaz.vulpecula.domain.models.decompte.DecompteSalaire;
 import ch.globaz.vulpecula.domain.models.parametrage.TableParametrage;
 import ch.globaz.vulpecula.services.PTAFServices;
@@ -25,7 +30,7 @@ public class DecompteSalaireViewService {
             throw new IllegalArgumentException("La date de recherche : " + dateRecherche + " n'est pas valide");
         }
 
-        DecompteSalaire decompteSalaire = decompteSalaireService.findPrecedentComptabilise(idPosteTravail, new Date(
+        DecompteSalaire decompteSalaire = decompteSalaireService.findPrecedentValide(idPosteTravail, new Date(
                 dateRecherche));
 
         if (decompteSalaire != null) {
@@ -68,21 +73,37 @@ public class DecompteSalaireViewService {
         return nouveauTaux.getValue();
     }
 
-    /**
-     * @param idDecompteSalaire
-     */
-    public boolean checkCotisationDecompte(String idDecompteSalaire) {
-        return VulpeculaServiceLocator.getDecompteSalaireService().checkCotisationDecompte(idDecompteSalaire);
+    public String checkCotisationDecompte(String idDecompteSalaire, String annee) {
+        Validate.notEmpty(idDecompteSalaire);
+        if (!JadeNumericUtil.isEmptyOrZero(annee) && !"null".equals(annee)) {
+            return VulpeculaServiceLocator.getDecompteSalaireService()
+                    .checkCotisationDecompte(idDecompteSalaire, new Annee(annee)).getRaison();
+        } else {
+            return VulpeculaServiceLocator.getDecompteSalaireService().checkCotisationDecompte(idDecompteSalaire, null)
+                    .getRaison();
+        }
     }
 
     public String cumulSalaires(String idTravailleur, String dateDebut, String dateFin) {
         return VulpeculaServiceLocator.getDecompteSalaireService()
-                .cumulSalaire(idTravailleur, new Date(dateDebut), new Date(dateFin)).getValue();
+                .cumulSalaire(idTravailleur, new Date(dateDebut), new Date(dateFin)).toStringFormatTwoDecimales();
     }
 
     public String cumulSalairesSansDateFin(String idTravailleur, String dateDebut) {
         return VulpeculaServiceLocator.getDecompteSalaireService()
-                .cumulSalaire(idTravailleur, new Date(dateDebut), null).getValue();
+                .cumulSalaire(idTravailleur, new Date(dateDebut), null).toStringFormatTwoDecimales();
+    }
+
+    public String cumulSalairesSyndicatWithCotisationsCPR(String idTravailleur, String dateDebut, String dateFin) {
+        return VulpeculaServiceLocator.getDecompteSalaireService()
+                .cumulSalaireSyndicatWithCotisationsCPR(idTravailleur, new Date(dateDebut), new Date(dateFin))
+                .toStringFormatTwoDecimales();
+    }
+
+    public String cumulSalairesSyndicatWithCotisationsCPRSansDateFin(String idTravailleur, String dateDebut) {
+        return VulpeculaServiceLocator.getDecompteSalaireService()
+                .cumulSalaireSyndicatWithCotisationsCPR(idTravailleur, new Date(dateDebut), null)
+                .toStringFormatTwoDecimales();
     }
 
     /**
@@ -99,9 +120,22 @@ public class DecompteSalaireViewService {
         Preconditions.checkArgument(!JadeNumericUtil.isEmptyOrZero(stringDate));
         Preconditions.checkArgument(!JadeNumericUtil.isEmptyOrZero(idTiers));
 
+        if (!JadeNumericUtil.isIntegerPositif(idTiers)) {
+            return false;
+        }
+
         if (PTAFServices.hasDroitsActifs(stringDate, idTiers)) {
             return true;
         }
         return false;
+    }
+
+    public String loadCodesErreur(String code, String taux) {
+        BSession session = BSessionUtil.getSessionFromThreadContext();
+        String libelle = session.getCodeLibelle(code);
+        if (code.equals(CodeErreur.TAUX_DIFFERENT.getValue())) {
+            libelle += " (" + taux + ")";
+        }
+        return libelle;
     }
 }
