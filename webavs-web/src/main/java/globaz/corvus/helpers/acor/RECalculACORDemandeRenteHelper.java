@@ -1,5 +1,34 @@
 package globaz.corvus.helpers.acor;
 
+import java.io.StringReader;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import javax.servlet.ServletException;
+import org.apache.commons.lang.StringEscapeUtils;
+import ch.globaz.common.domaine.Checkers;
+import ch.globaz.corvus.business.services.CorvusCrudServiceLocator;
+import ch.globaz.corvus.business.services.CorvusServiceLocator;
+import ch.globaz.corvus.domaine.BaseCalcul;
+import ch.globaz.corvus.domaine.DemandeRente;
+import ch.globaz.corvus.domaine.DemandeRenteVieillesse;
+import ch.globaz.corvus.domaine.RenteAccordee;
+import ch.globaz.corvus.domaine.constantes.CodeCasSpecialRente;
+import ch.globaz.corvus.domaine.constantes.EtatDemandeRente;
+import ch.globaz.corvus.domaine.constantes.TypeDemandeRente;
+import ch.globaz.corvus.utils.rentesverseesatort.RECalculRentesVerseesATort;
+import ch.globaz.corvus.utils.rentesverseesatort.REDetailCalculRenteVerseeATort;
+import ch.globaz.pyxis.business.services.PyxisCrudServiceLocator;
+import ch.globaz.pyxis.domaine.PersonneAVS;
 import globaz.commons.nss.NSUtil;
 import globaz.corvus.acor.REACORBatchFilePrinter;
 import globaz.corvus.acor.parser.REFeuilleCalculVO;
@@ -90,35 +119,6 @@ import globaz.prestation.tools.PRAssert;
 import globaz.prestation.tools.PRDateFormater;
 import globaz.prestation.utils.PRDateUtils;
 import globaz.prestation.utils.PRDateUtils.PRDateEquality;
-import java.io.StringReader;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import javax.servlet.ServletException;
-import org.apache.commons.lang.StringEscapeUtils;
-import ch.globaz.common.domaine.Checkers;
-import ch.globaz.corvus.business.services.CorvusCrudServiceLocator;
-import ch.globaz.corvus.business.services.CorvusServiceLocator;
-import ch.globaz.corvus.domaine.BaseCalcul;
-import ch.globaz.corvus.domaine.DemandeRente;
-import ch.globaz.corvus.domaine.DemandeRenteVieillesse;
-import ch.globaz.corvus.domaine.RenteAccordee;
-import ch.globaz.corvus.domaine.constantes.CodeCasSpecialRente;
-import ch.globaz.corvus.domaine.constantes.EtatDemandeRente;
-import ch.globaz.corvus.domaine.constantes.TypeDemandeRente;
-import ch.globaz.corvus.utils.rentesverseesatort.RECalculRentesVerseesATort;
-import ch.globaz.corvus.utils.rentesverseesatort.REDetailCalculRenteVerseeATort;
-import ch.globaz.pyxis.business.services.PyxisCrudServiceLocator;
-import ch.globaz.pyxis.domaine.PersonneAVS;
 
 /**
  * <H1>Description</H1>
@@ -126,7 +126,7 @@ import ch.globaz.pyxis.domaine.PersonneAVS;
  * helper utiliser pour le calcul des demandes de rentes. Les demandes autres que API sont calculée via le logiciel
  * ACOR. Les demandes API sont quant à elle calculée par l'application CORVUS.
  * </p>
- * 
+ *
  * @author scr
  */
 public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
@@ -135,9 +135,9 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
      * Cette classe abstraite est la pour factoriser la génération de la clé de comparaison.
      * La clé de comparaison est identique mais généré sur des données différentes si on traite la base de calcul ou la
      * demande de rente
-     * 
+     *
      * @author lga
-     * 
+     *
      */
     private abstract class CleWrapper {
 
@@ -156,21 +156,21 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
         /**
          * Cette méthode construit les données pour la génération de la clé de comparaison sur la base de la demande de
          * rente
-         * 
+         *
          * @param demandeRente La demande de rente
          */
         private void build(DemandeRente demandeRente) {
             if (demandeRente.getRequerant() == null || demandeRente.getRequerant().getId() == null
                     || demandeRente.getRequerant().getId() == 0) {
-                throw new NullPointerException("Unable to found the idTiersRequerant for DemandeRente with id ["
-                        + demandeRente.getId() + "]");
+                throw new NullPointerException(
+                        "Unable to found the idTiersRequerant for DemandeRente with id [" + demandeRente.getId() + "]");
             } else {
                 idTiers = demandeRente.getRequerant().getId().toString();
             }
 
             if (demandeRente.getTypeDemandeRente() == null) {
-                throw new NullPointerException("Unable to found the TypeDemandeRente for DemandeRente with id ["
-                        + demandeRente.getId() + "]");
+                throw new NullPointerException(
+                        "Unable to found the TypeDemandeRente for DemandeRente with id [" + demandeRente.getId() + "]");
             } else {
                 typeDemandeRente = demandeRente.getTypeDemandeRente();
             }
@@ -187,7 +187,7 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
         /**
          * Cette méthode construit les données pour la génération de la clé de comparaison sur la base d'une base de
          * calcul et de ses rentes accordées
-         * 
+         *
          * @param baseCalcul La base de calcul en question
          * @param renteAccordees Les rentes accordées liées à la base de calcul
          */
@@ -195,8 +195,8 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
 
             // Résolution de l'idTiers pour la génération de la clé de comparaison
             if (JadeStringUtil.isBlankOrZero(baseCalcul.getIdTiersBaseCalcul())) {
-                throw new NullPointerException("Unable to found the idTiersBaseCalcul for REBaseCalcul with id ["
-                        + baseCalcul.getId() + "]");
+                throw new NullPointerException(
+                        "Unable to found the idTiersBaseCalcul for REBaseCalcul with id [" + baseCalcul.getId() + "]");
             } else {
                 idTiers = baseCalcul.getIdTiersBaseCalcul();
             }
@@ -289,8 +289,8 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
         public int compareTo(DemandeRenteWrapper demande) {
             PRDateEquality result = null;
             try {
-                result = PRDateUtils.compare(getDemandeRente().getDateDebutDuDroitInitial(), demande.getDemandeRente()
-                        .getDateDebutDuDroitInitial());
+                result = PRDateUtils.compare(getDemandeRente().getDateDebutDuDroitInitial(),
+                        demande.getDemandeRente().getDateDebutDuDroitInitial());
             } catch (Exception e) {
                 return 0;
             }
@@ -385,8 +385,10 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
         int resultComparaison2 = cal.compare(dateDernierPaiement, dateDebut);
         // Cas 1 : rentes en cours
         // Si pas de date de fin, ou que date de fin après date courante...
-        if (((dateFin == null) || (JACalendar.COMPARE_FIRSTLOWER == resultComparaison1) || (JACalendar.COMPARE_EQUALS == resultComparaison1))
-                && ((dateDebut != null) && ((JACalendar.COMPARE_FIRSTUPPER == resultComparaison2) || (JACalendar.COMPARE_EQUALS == resultComparaison2)))) {
+        if (((dateFin == null) || (JACalendar.COMPARE_FIRSTLOWER == resultComparaison1)
+                || (JACalendar.COMPARE_EQUALS == resultComparaison1))
+                && ((dateDebut != null) && ((JACalendar.COMPARE_FIRSTUPPER == resultComparaison2)
+                        || (JACalendar.COMPARE_EQUALS == resultComparaison2)))) {
             identificationCas = 1;
         }
         // Cas 2 : rentes dans le futur
@@ -400,22 +402,22 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
 
         switch (identificationCas) {
 
-        // Cas 1) rentes en cours
-        // Année montant du RAM = année courant
+            // Cas 1) rentes en cours
+            // Année montant du RAM = année courant
             case 1:
 
                 // mm.aaaa
                 JADate dateDerPmt = new JADate(REPmtMensuel.getDateDernierPmt(session));
                 return String.valueOf(dateDerPmt.getYear());
 
-                // Cas 2) rentes dans le futur
-                // Année montant du RAM = année début de la RA
+            // Cas 2) rentes dans le futur
+            // Année montant du RAM = année début de la RA
             case 2:
                 JADate date = new JADate(ra.getDateDebutDroit());
                 return String.valueOf(date.getYear());
 
-                // Cas 3) rentes rétréoactives
-                // Année montant du RAM = année(date de fin)
+            // Cas 3) rentes rétréoactives
+            // Année montant du RAM = année(date de fin)
             case 3:
                 date = new JADate(ra.getDateFinDroit());
                 return String.valueOf(date.getYear());
@@ -475,7 +477,7 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
      * de rente match type de demande) <br />
      * Ce sera cette demande qui sera copiée.
      * </p>
-     * 
+     *
      * @param demande
      *            la demande contenant des rentes possédant et ne possédant pas le code cas spécial 07 / 08 et
      *            nécessitant donc une séparation en deux
@@ -545,7 +547,8 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
                      */
                     boolean uneDemandeEstAuNomDuDonneurDeDroit = false;
                     for (DemandeRente uneDemandeDeLaFamille : demandesDeLaFamille) {
-                        if (uneDemandeDeLaFamille.getDossier().getRequerant().equals(uneBaseCalcul.getDonneurDeDroit())) {
+                        if (uneDemandeDeLaFamille.getDossier().getRequerant()
+                                .equals(uneBaseCalcul.getDonneurDeDroit())) {
                             uneDemandeEstAuNomDuDonneurDeDroit = true;
                         }
                     }
@@ -569,13 +572,13 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
             for (RenteAccordee uneRenteAvecCodeCasSpecial : rentesAccordeesAvecCodeCasSpecial) {
                 if (!uneRenteAvecCodeCasSpecial.getBaseCalcul().getDonneurDeDroit().equals(demande.getRequerant())
                         && (nouvelleDemande == null)) {
-                    nouvelleDemande = RECalculACORDemandeRenteHelper.copierDemandePourLaRenteAccordee(
-                            demandesDeLaFamille, uneRenteAvecCodeCasSpecial);
+                    nouvelleDemande = RECalculACORDemandeRenteHelper
+                            .copierDemandePourLaRenteAccordee(demandesDeLaFamille, uneRenteAvecCodeCasSpecial);
 
                     if (nouvelleDemande != null) {
                         // on retire la demande avec code cas spécial de la demande initiale
-                        demande.setRentesAccordees(RECalculACORDemandeRenteHelper.retirerRenteAccordee(
-                                rentesAccordeesAvecCodeCasSpecial, uneRenteAvecCodeCasSpecial));
+                        demande.setRentesAccordees(RECalculACORDemandeRenteHelper
+                                .retirerRenteAccordee(rentesAccordeesAvecCodeCasSpecial, uneRenteAvecCodeCasSpecial));
                         // rattachement de la rente avec code cas spécial à la demande fraîchement copiée
                         nouvelleDemande.setRentesAccordees(Arrays.asList(uneRenteAvecCodeCasSpecial));
                     }
@@ -596,10 +599,9 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
                 } else {
                     for (RenteAccordee uneRenteSansCodeCasSpecial : rentesAccordeesSansCodeCasSpecial) {
                         if (!uneRenteSansCodeCasSpecial.getBaseCalcul().getDonneurDeDroit()
-                                .equals(demande.getRequerant())
-                                && (nouvelleDemande == null)) {
-                            nouvelleDemande = RECalculACORDemandeRenteHelper.copierDemandePourLaRenteAccordee(
-                                    demandesDeLaFamille, uneRenteSansCodeCasSpecial);
+                                .equals(demande.getRequerant()) && (nouvelleDemande == null)) {
+                            nouvelleDemande = RECalculACORDemandeRenteHelper
+                                    .copierDemandePourLaRenteAccordee(demandesDeLaFamille, uneRenteSansCodeCasSpecial);
 
                             if (nouvelleDemande != null) {
                                 // on garde les rentes avec code cas spécial sur la demande initiale
@@ -654,7 +656,7 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
      * test unitaire. Pensez à update toutes les demandes après utilisation pour sauver les modifications apportées par
      * cette méthode sur les demandes.
      * </p>
-     * 
+     *
      * @param demandeSurLaquelleOnTravail une demande, à l'état calculé, contenant des rentes dont le code prestation ne
      *            correspondant pas au type de la demande
      * @param demandesNonValideesDeLaFamille la liste des demandes non validées de la famille du requérant de la demande
@@ -669,9 +671,8 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
             boolean deplacementFait = false;
 
             for (DemandeRente uneDemandeNonValideeDeLaFamille : demandesNonValideesDeLaFamille) {
-                if (!deplacementFait
-                        && uneDemandeNonValideeDeLaFamille.codesPrestationsAcceptesPourCeTypeDeDemande().contains(
-                                uneRenteADeplacer.getCodePrestation())) {
+                if (!deplacementFait && uneDemandeNonValideeDeLaFamille.codesPrestationsAcceptesPourCeTypeDeDemande()
+                        .contains(uneRenteADeplacer.getCodePrestation())) {
                     demandeSurLaquelleOnTravail.retirerRenteAccordee(uneRenteADeplacer);
                     uneDemandeNonValideeDeLaFamille.ajouterRenteAccordee(uneRenteADeplacer);
 
@@ -707,7 +708,7 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
 
     /**
      * DOCUMENT ME!
-     * 
+     *
      * @param viewBean
      *            DOCUMENT ME!
      * @param action
@@ -769,11 +770,12 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
             for (int i = 0; (mfs != null) && (i < mfs.length); i++) {
                 ISFMembreFamilleRequerant mf = mfs[i];
 
-                if ((JadeStringUtil.isBlankOrZero(mf.getDateNaissance()) || JadeStringUtil
-                        .isBlankOrZero(mf.getCsSexe())) && !mf.getIdMembreFamille().equals("999999999999")) {
+                if ((JadeStringUtil.isBlankOrZero(mf.getDateNaissance())
+                        || JadeStringUtil.isBlankOrZero(mf.getCsSexe()))
+                        && !mf.getIdMembreFamille().equals("999999999999")) {
                     viewBean.setMsgType(FWViewBeanInterface.ERROR);
-                    viewBean.setMessage(mf.getNom() + " " + mf.getPrenom()
-                            + session.getLabel("ERREUR_DATE_NAISS_SEXE_DEFINI"));
+                    viewBean.setMessage(
+                            mf.getNom() + " " + mf.getPrenom() + session.getLabel("ERREUR_DATE_NAISS_SEXE_DEFINI"));
                 }
             }
 
@@ -1000,10 +1002,10 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
                 JADate dateEcheance = null;
                 JADate dateFinEcheance = null;
 
-                if (IREDemandeRente.CS_GENRE_DROIT_API_API_AI_RENTE.equalsIgnoreCase(montantsPrstAPI[i]
-                        .getCsGenreDroitApi())
-                        || IREDemandeRente.CS_GENRE_DROIT_API_API_AI_PRST.equalsIgnoreCase(montantsPrstAPI[i]
-                                .getCsGenreDroitApi())) {
+                if (IREDemandeRente.CS_GENRE_DROIT_API_API_AI_RENTE
+                        .equalsIgnoreCase(montantsPrstAPI[i].getCsGenreDroitApi())
+                        || IREDemandeRente.CS_GENRE_DROIT_API_API_AI_PRST
+                                .equalsIgnoreCase(montantsPrstAPI[i].getCsGenreDroitApi())) {
                     isAPIAI = true;
 
                     if (null != tiers) {
@@ -1049,7 +1051,8 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
 
                     api.setDateDebut(dateDebut);
 
-                    if (JadeStringUtil.isBlankOrZero(lastDateFinPeriodeAPI) && JadeStringUtil.isBlankOrZero(dateDeces)) {
+                    if (JadeStringUtil.isBlankOrZero(lastDateFinPeriodeAPI)
+                            && JadeStringUtil.isBlankOrZero(dateDeces)) {
                         api.setDateFin(null);
                     } else {
                         api.setDateFin(dateFin);
@@ -1069,8 +1072,10 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
                 // Ne pas traiter les périodes qui ont une date de début
                 // supérieure ou égale à la date de fin selon l'échéance
                 // retraite
-                if ((isDateFinEcheance && (cal.compare(dateFinEcheance, new JADate(montantsPrstAPI[i].getDateDebut())) != JACalendar.COMPARE_SECONDLOWER))
-                        || (isDateEcheance && (cal.compare(dateEcheance, new JADate(montantsPrstAPI[i].getDateDebut())) != JACalendar.COMPARE_SECONDLOWER))) {
+                if ((isDateFinEcheance && (cal.compare(dateFinEcheance,
+                        new JADate(montantsPrstAPI[i].getDateDebut())) != JACalendar.COMPARE_SECONDLOWER))
+                        || (isDateEcheance && (cal.compare(dateEcheance,
+                                new JADate(montantsPrstAPI[i].getDateDebut())) != JACalendar.COMPARE_SECONDLOWER))) {
                     continue;
                 }
 
@@ -1080,12 +1085,15 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
                     // si pas de date de fin et datedébut plus petite que date
                     // d'échéance
                     if (JadeStringUtil.isBlankOrZero(montantsPrstAPI[i].getDateFin())
-                            && (cal.compare(montantsPrstAPI[i].getDateDebut(), dateFinEcheance.toStr(".")) == JACalendar.COMPARE_FIRSTLOWER)) {
+                            && (cal.compare(montantsPrstAPI[i].getDateDebut(),
+                                    dateFinEcheance.toStr(".")) == JACalendar.COMPARE_FIRSTLOWER)) {
                         montantsPrstAPI[i].setDateFin(dateFinEcheance.toStr("."));
                         // Si date de fin plus grande que date échéance et
                         // datedébut plus petite que date d'échéance
-                    } else if ((cal.compare(montantsPrstAPI[i].getDateFin(), dateFinEcheance.toStr(".")) == JACalendar.COMPARE_FIRSTUPPER)
-                            && (cal.compare(montantsPrstAPI[i].getDateDebut(), dateFinEcheance.toStr(".")) == JACalendar.COMPARE_FIRSTLOWER)) {
+                    } else if ((cal.compare(montantsPrstAPI[i].getDateFin(),
+                            dateFinEcheance.toStr(".")) == JACalendar.COMPARE_FIRSTUPPER)
+                            && (cal.compare(montantsPrstAPI[i].getDateDebut(),
+                                    dateFinEcheance.toStr(".")) == JACalendar.COMPARE_FIRSTLOWER)) {
                         montantsPrstAPI[i].setDateFin(dateFinEcheance.toStr("."));
                     }
                 }
@@ -1205,10 +1213,10 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
                     prstDue = new REPrestationDue();
                     prstDue.setSession(session);
 
-                    prstDue.setDateDebutPaiement(PRDateFormater.convertDate_JJxMMxAAAA_to_MMxAAAA(montantsPrstAPI[i]
-                            .getDateDebut()));
-                    prstDue.setDateFinPaiement(PRDateFormater.convertDate_JJxMMxAAAA_to_MMxAAAA(montantsPrstAPI[i]
-                            .getDateFin()));
+                    prstDue.setDateDebutPaiement(
+                            PRDateFormater.convertDate_JJxMMxAAAA_to_MMxAAAA(montantsPrstAPI[i].getDateDebut()));
+                    prstDue.setDateFinPaiement(
+                            PRDateFormater.convertDate_JJxMMxAAAA_to_MMxAAAA(montantsPrstAPI[i].getDateFin()));
 
                     // Derniere période pour ce type de prestation, en fait la
                     // seule et unique
@@ -1230,12 +1238,12 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
                         } else if (BSessionUtil.compareDateFirstGreater(session, dfRetro, lastPmtjjmmaaaa)) {
                             dfRetro = lastPmtjjmmaaaa;
                         }
-                        nombreMoisRetro = getNombreMois(new JADate(montantsPrstAPI[i].getDateDebut()), new JADate(
-                                dfRetro));
+                        nombreMoisRetro = getNombreMois(new JADate(montantsPrstAPI[i].getDateDebut()),
+                                new JADate(dfRetro));
 
                     } else {
-                        nombreMoisRetro = getNombreMois(new JADate(montantsPrstAPI[i].getDateDebut()), new JADate(
-                                montantsPrstAPI[i].getDateFin()));
+                        nombreMoisRetro = getNombreMois(new JADate(montantsPrstAPI[i].getDateDebut()),
+                                new JADate(montantsPrstAPI[i].getDateFin()));
                         isLastPeriodeForRA = false;
                     }
                     montantRetroPeriode = montantsPrstAPI[i].getMontant().multiply(new BigDecimal(nombreMoisRetro));
@@ -1254,10 +1262,10 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
                     prstDue = new REPrestationDue();
                     prstDue.setSession(session);
 
-                    prstDue.setDateDebutPaiement(PRDateFormater.convertDate_JJxMMxAAAA_to_MMxAAAA(montantsPrstAPI[i]
-                            .getDateDebut()));
-                    prstDue.setDateFinPaiement(PRDateFormater.convertDate_JJxMMxAAAA_to_MMxAAAA(montantsPrstAPI[i]
-                            .getDateFin()));
+                    prstDue.setDateDebutPaiement(
+                            PRDateFormater.convertDate_JJxMMxAAAA_to_MMxAAAA(montantsPrstAPI[i].getDateDebut()));
+                    prstDue.setDateFinPaiement(
+                            PRDateFormater.convertDate_JJxMMxAAAA_to_MMxAAAA(montantsPrstAPI[i].getDateFin()));
 
                     if (isLastMontantPrstApiForCurrentRenteAccordee) {
 
@@ -1273,14 +1281,14 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
                         } else if (BSessionUtil.compareDateFirstGreater(session, dfRetro, lastPmtjjmmaaaa)) {
                             dfRetro = lastPmtjjmmaaaa;
                         }
-                        nombreMoisRetro = getNombreMois(new JADate(montantsPrstAPI[i].getDateDebut()), new JADate(
-                                dfRetro));
+                        nombreMoisRetro = getNombreMois(new JADate(montantsPrstAPI[i].getDateDebut()),
+                                new JADate(dfRetro));
 
                     } else {
                         isLastPeriodeForRA = false;
 
-                        nombreMoisRetro = getNombreMois(new JADate(montantsPrstAPI[i].getDateDebut()), new JADate(
-                                montantsPrstAPI[i].getDateFin()));
+                        nombreMoisRetro = getNombreMois(new JADate(montantsPrstAPI[i].getDateDebut()),
+                                new JADate(montantsPrstAPI[i].getDateFin()));
                     }
                     montantRetroPeriode = montantsPrstAPI[i].getMontant().multiply(new BigDecimal(nombreMoisRetro));
                     montantTotalRetro = montantTotalRetro.add(montantRetroPeriode);
@@ -1304,12 +1312,17 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
                     } else {
                         // donc si datedebut <= dateEcheance && dateFin >=
                         // dateEcheance
-                        if (((cal.compare(montantsPrstAPI[i].getDateDebut(), dateEcheance.toStr(".")) == JACalendar.COMPARE_FIRSTLOWER) || (cal
-                                .compare(montantsPrstAPI[i].getDateDebut(), dateEcheance.toStr(".")) == JACalendar.COMPARE_EQUALS))
+                        if (((cal.compare(montantsPrstAPI[i].getDateDebut(),
+                                dateEcheance.toStr(".")) == JACalendar.COMPARE_FIRSTLOWER)
+                                || (cal.compare(montantsPrstAPI[i].getDateDebut(),
+                                        dateEcheance.toStr(".")) == JACalendar.COMPARE_EQUALS))
 
-                                && ((cal.compare(montantsPrstAPI[i].getDateFin(), dateEcheance.toStr(".")) == JACalendar.COMPARE_FIRSTUPPER) || (cal
-                                        .compare(montantsPrstAPI[i].getDateFin(), dateEcheance.toStr(".")) == JACalendar.COMPARE_EQUALS))) {
-                            ra.setDateEcheance(PRDateFormater.convertDate_JJxMMxAAAA_to_MMxAAAA(dateEcheance.toStr(".")));
+                                && ((cal.compare(montantsPrstAPI[i].getDateFin(),
+                                        dateEcheance.toStr(".")) == JACalendar.COMPARE_FIRSTUPPER)
+                                        || (cal.compare(montantsPrstAPI[i].getDateFin(),
+                                                dateEcheance.toStr(".")) == JACalendar.COMPARE_EQUALS))) {
+                            ra.setDateEcheance(
+                                    PRDateFormater.convertDate_JJxMMxAAAA_to_MMxAAAA(dateEcheance.toStr(".")));
                             ra.update(transaction);
                         }
                     }
@@ -1329,8 +1342,8 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
                     prstDueRetro.setCsType(IREPrestationDue.CS_TYPE_MNT_TOT);
                     prstDueRetro.setCsTypePaiement(IREPrestationDue.CS_TYPE_DE_PMT_PMT_MENS);
                     prstDueRetro.setIdRenteAccordee(ra.getIdPrestationAccordee());
-                    prstDueRetro.setMontant(JANumberFormatter.format(montantTotalRetro.toString(), 0.01, 2,
-                            JANumberFormatter.NEAR));
+                    prstDueRetro.setMontant(
+                            JANumberFormatter.format(montantTotalRetro.toString(), 0.01, 2, JANumberFormatter.NEAR));
 
                     if (BSessionUtil.compareDateFirstLower(session, prstDueRetro.getDateFinPaiement(),
                             prstDueRetro.getDateDebutPaiement())) {
@@ -1356,8 +1369,8 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
                                 ra.setDateFinDroit(PRDateFormater.convertDate_JJxMMxAAAA_to_MMxAAAA(dateDeces));
                                 ra.setCodeMutation(IREAnnonces.CODE_MUTATION_DECES);
                             } else {
-                                ra.setDateFinDroit(PRDateFormater.convertDate_JJxMMxAAAA_to_MMxAAAA(montantsPrstAPI[i]
-                                        .getDateFin()));
+                                ra.setDateFinDroit(PRDateFormater
+                                        .convertDate_JJxMMxAAAA_to_MMxAAAA(montantsPrstAPI[i].getDateFin()));
                                 ra.setCodeMutation(IREAnnonces.CODE_MUTATION_AUTRE_EVENEMENT);
                             }
                         } else {
@@ -1368,10 +1381,10 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
                     // Pas de date de décès
                     else {
                         if (!JadeStringUtil.isBlankOrZero(montantsPrstAPI[i].getDateFin())) {
-                            ra.setDateFinDroit(PRDateFormater.convertDate_JJxMMxAAAA_to_MMxAAAA(montantsPrstAPI[i]
-                                    .getDateFin()));
-                            prstDue.setDateFinPaiement(PRDateFormater
-                                    .convertDate_JJxMMxAAAA_to_MMxAAAA(montantsPrstAPI[i].getDateFin()));
+                            ra.setDateFinDroit(
+                                    PRDateFormater.convertDate_JJxMMxAAAA_to_MMxAAAA(montantsPrstAPI[i].getDateFin()));
+                            prstDue.setDateFinPaiement(
+                                    PRDateFormater.convertDate_JJxMMxAAAA_to_MMxAAAA(montantsPrstAPI[i].getDateFin()));
                             ra.setCodeMutation(IREAnnonces.CODE_MUTATION_AUTRE_EVENEMENT);
                         }
 
@@ -1400,8 +1413,8 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
                                             ra.getDateFinDroit())) {
 
                                 if (isAPIAI && isDateEcheance) {
-                                    ra.setDateEcheance(PRDateFormater.convertDate_JJxMMxAAAA_to_MMxAAAA(dateEcheance
-                                            .toStr(".")));
+                                    ra.setDateEcheance(
+                                            PRDateFormater.convertDate_JJxMMxAAAA_to_MMxAAAA(dateEcheance.toStr(".")));
                                 }
 
                                 ra.setDateFinDroit(null);
@@ -1427,15 +1440,15 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
                 globaz.hera.api.ISFSituationFamiliale sitFam = SFSituationFamilialeFactory.getSituationFamiliale(
                         session, ISFSituationFamiliale.CS_DOMAINE_RENTES,
                         tw.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS));
-                ISFMembreFamilleRequerant[] membresFamilleRequerant = sitFam.getMembresFamille(ra
-                        .getIdTiersBeneficiaire());
+                ISFMembreFamilleRequerant[] membresFamilleRequerant = sitFam
+                        .getMembresFamille(ra.getIdTiersBeneficiaire());
                 for (int j = 0; j < membresFamilleRequerant.length; j++) {
 
                     ISFMembreFamilleRequerant membreFamilleRequerant = membresFamilleRequerant[j];
 
                     if (ra.getIdTiersBeneficiaire().equals(membreFamilleRequerant.getIdTiers())) {
-                        ra.setCsEtatCivil(PRACORConst.csEtatCivilHeraToCsEtatCivil(membreFamilleRequerant
-                                .getCsEtatCivil()));
+                        ra.setCsEtatCivil(
+                                PRACORConst.csEtatCivilHeraToCsEtatCivil(membreFamilleRequerant.getCsEtatCivil()));
                     }
                 }
 
@@ -1545,8 +1558,8 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
             csDomaine = ISFSituationFamiliale.CS_DOMAINE_RENTES;
         }
 
-        globaz.hera.api.ISFSituationFamiliale sf = SFSituationFamilialeFactory.getSituationFamiliale(session,
-                csDomaine, caViewBean.getIdTiers());
+        globaz.hera.api.ISFSituationFamiliale sf = SFSituationFamilialeFactory.getSituationFamiliale(session, csDomaine,
+                caViewBean.getIdTiers());
         ISFMembreFamilleRequerant[] membresFamille = sf.getMembresFamille(caViewBean.getIdTiers());
 
         for (int i = 0; (membresFamille != null) && (i < membresFamille.length); i++) {
@@ -1555,8 +1568,8 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
             if ((JadeStringUtil.isBlankOrZero(mf.getDateNaissance()) || JadeStringUtil.isBlankOrZero(mf.getCsSexe()))
                     && !mf.getIdMembreFamille().equals(ISFSituationFamiliale.ID_MEMBRE_FAMILLE_CONJOINT_INCONNU)) {
                 viewBean.setMsgType(FWViewBeanInterface.ERROR);
-                viewBean.setMessage(mf.getNom() + " " + mf.getPrenom()
-                        + session.getLabel("ERREUR_DATE_NAISS_SEXE_DEFINI"));
+                viewBean.setMessage(
+                        mf.getNom() + " " + mf.getPrenom() + session.getLabel("ERREUR_DATE_NAISS_SEXE_DEFINI"));
             }
         }
 
@@ -1628,8 +1641,8 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
                     dc.setDecisions(new REDecisionXmlDataStructure[0]);
                 } else {
                     try {
-                        dc = REImportFCalculACOR.importFCalcul(session, (BTransaction) transaction, new StringReader(
-                                caViewbean.getContenuFCalculXML()));
+                        dc = REImportFCalculACOR.importFCalcul(session, (BTransaction) transaction,
+                                new StringReader(caViewbean.getContenuFCalculXML()));
                     }
                     // Si erreur lors de la lecture du fichier xml, on la saute.
                     catch (Exception e) {
@@ -1862,7 +1875,8 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
                 // si la demande sur laquelle est liée la rente accordée est différente de la demande de la rente
                 // versée
                 // à tort, on met à jour la rente versée à tort pour refléter la rente accordée
-                if (!uneRenteVerseeATort.getIdDemandeRente().equals(Long.parseLong(demandeRente2.getIdDemandeRente()))) {
+                if (!uneRenteVerseeATort.getIdDemandeRente()
+                        .equals(Long.parseLong(demandeRente2.getIdDemandeRente()))) {
                     uneRenteVerseeATort.retrieve();
                     uneRenteVerseeATort.setIdDemandeRente(Long.parseLong(demandeRente2.getIdDemandeRente()));
                     uneRenteVerseeATort.update();
@@ -1894,7 +1908,7 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
      * Met à jour les date de début et de fin de la demande en fonction des dates de début et de fin des rentes
      * accordées.
      * Si aucune rente accordée n'est présente les dates de la demande ne seront pas mis a jour.
-     * 
+     *
      * @param session la session à utiliser
      * @param id L'id de la demande à mettre à jour
      * @throws Exception
@@ -1961,7 +1975,7 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
 
     /**
      * Réinitialise toutes les demandes de la famille (sauf API) en état non validé avant remonté du calcul
-     * 
+     *
      * @param session
      * @param caViewbean
      * @throws IllegalArgumentException
@@ -1979,8 +1993,8 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
 
         PRHybridHelper.initContext(session, this);
         try {
-            PersonneAVS requerant = PyxisCrudServiceLocator.getPersonneAvsCrudService().read(
-                    Long.valueOf(idTiersRequerant));
+            PersonneAVS requerant = PyxisCrudServiceLocator.getPersonneAvsCrudService()
+                    .read(Long.valueOf(idTiersRequerant));
             Set<DemandeRente> demandesDeLaFamille = CorvusServiceLocator.getDemandeRenteService()
                     .demandesDuRequerantEtDeSaFamille(requerant);
             demandesNonValideesDeLaFamille = demandesStandardsOuTransitoires(demandesNonValidees(demandesDeLaFamille));
@@ -2006,14 +2020,13 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
 
     /**
      * Return true si la demande doit être réinitialisée
-     * 
+     *
      * @param dem
      * @return
      */
     private boolean filtrerDemandeAReinitialiser(DemandeRente dem) {
         if (!TypeDemandeRente.DEMANDE_API.equals(dem.getTypeDemandeRente())) {
-            if (!EtatDemandeRente.VALIDE.equals(dem.getEtat())
-                    && !EtatDemandeRente.COURANT_VALIDE.equals(dem.getEtat())
+            if (!EtatDemandeRente.VALIDE.equals(dem.getEtat()) && !EtatDemandeRente.COURANT_VALIDE.equals(dem.getEtat())
                     && !EtatDemandeRente.TRANSFERE.equals(dem.getEtat())
                     && !EtatDemandeRente.TERMINE.equals(dem.getEtat())) {
                 return true;
@@ -2024,7 +2037,7 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
 
     /**
      * Réinitialise une demande
-     * 
+     *
      * @param demandeReinitialisees
      * @param id
      */
@@ -2087,10 +2100,10 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
                 renteVerseeATortEnBase.retrieve(transaction);
 
                 renteVerseeATortEnBase.setIdDemandeRente(uneRenteVerseeATort.getIdDemandeRente());
-                renteVerseeATortEnBase.setIdRenteAccordeeAncienDroit(uneRenteVerseeATort
-                        .getIdRenteAccordeeAncienDroit());
-                renteVerseeATortEnBase.setIdRenteAccordeeNouveauDroit(uneRenteVerseeATort
-                        .getIdRenteAccordeeNouveauDroit());
+                renteVerseeATortEnBase
+                        .setIdRenteAccordeeAncienDroit(uneRenteVerseeATort.getIdRenteAccordeeAncienDroit());
+                renteVerseeATortEnBase
+                        .setIdRenteAccordeeNouveauDroit(uneRenteVerseeATort.getIdRenteAccordeeNouveauDroit());
                 renteVerseeATortEnBase.setTypeRenteVerseeATort(uneRenteVerseeATort.getTypeRenteVerseeATort());
                 renteVerseeATortEnBase.setMontant(uneRenteVerseeATort.getMontant());
                 renteVerseeATortEnBase.update(transaction);
@@ -2106,7 +2119,7 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
 
     /**
      * Filtre les demandes et retourne les demandes dans l'état ENREGISTRE, AU_CALCUL et CALCULE
-     * 
+     *
      * @param demandes Les demandes à filtrer
      * @return Les demandes filtrées
      */
@@ -2131,7 +2144,7 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
 
     /**
      * Filtre les demandes et retourne les demandes dans l'état VALIDE et COURANT_VALIDE
-     * 
+     *
      * @param demandes Les demandes à filtrer
      * @return Les demandes filtrées
      */
@@ -2171,9 +2184,9 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
     }
 
     /*
-     * 
+     *
      * Voir avec RJE, besoin de cas tests !!!!
-     * 
+     *
      * Si RAM ne change pas, ACOR ne va rien crééer. -> mettre date de traitement au CI Additionnel lors de
      * l'importation et permettre l'importation sans planter l'applic.
      */
@@ -2245,8 +2258,8 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
                                 nss = NSUtil.unFormatAVS(nss);
                                 nss2 = NSUtil.unFormatAVS(nss2);
 
-                                String ddAAAAMMJJ2 = PRDateFormater.convertDate_JJxMMxAAAA_to_AAAAMMJJ(ra
-                                        .getDateDebutDroit());
+                                String ddAAAAMMJJ2 = PRDateFormater
+                                        .convertDate_JJxMMxAAAA_to_AAAAMMJJ(ra.getDateDebutDroit());
 
                                 String codePrst1 = ra.getCodePrestation();
                                 String codePrst2 = decisionXML.getPrestation().getRente().getCodePrestation();
@@ -2258,8 +2271,8 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
                                     String remarques = null;
                                     if (decisionXML.getPrestation() != null) {
                                         if (decisionXML.getPrestation().getRente() != null) {
-                                            if (!JadeStringUtil.isEmpty(decisionXML.getPrestation().getRente()
-                                                    .getRemarques())) {
+                                            if (!JadeStringUtil
+                                                    .isEmpty(decisionXML.getPrestation().getRente().getRemarques())) {
                                                 remarques = decisionXML.getPrestation().getRente().getRemarques()
                                                         .trim();
                                             }
@@ -2329,8 +2342,8 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
                                 String remarques = null;
                                 if (decisionXML.getPrestation() != null) {
                                     if (decisionXML.getPrestation().getRente() != null) {
-                                        if (!JadeStringUtil.isEmpty(decisionXML.getPrestation().getRente()
-                                                .getRemarques())) {
+                                        if (!JadeStringUtil
+                                                .isEmpty(decisionXML.getPrestation().getRente().getRemarques())) {
                                             remarques = decisionXML.getPrestation().getRente().getRemarques().trim();
                                         }
                                     }
@@ -2502,7 +2515,7 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
 
     /**
      * Créé / MAJ de la base de calcul, suivant le cas à traiter.
-     * 
+     *
      * @param session
      * @param transaction
      * @param demandeSource
@@ -2532,8 +2545,8 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
                         mgr.setForIdRenteCalculee(demandeSource.getIdRenteCalculee());
                         mgr.find(transaction, 2);
                         if (!mgr.isEmpty()) {
-                            throw new Exception(session.getLabel("ERREUR_INCOHERANCE_DONNEES")
-                                    + rc.getIdRenteCalculee() + "/" + demandeSource.getIdDemandeRente());
+                            throw new Exception(session.getLabel("ERREUR_INCOHERANCE_DONNEES") + rc.getIdRenteCalculee()
+                                    + "/" + demandeSource.getIdDemandeRente());
                         }
                     }
 
@@ -2567,14 +2580,14 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
                     bc.setIsDemandeRenteAPI(true);
                 }
 
-                bc.setCleInfirmiteAyantDroit(session.getCode(demAPI.getCsInfirmite())
-                        + session.getCode(demAPI.getCsAtteinte()));
+                bc.setCleInfirmiteAyantDroit(
+                        session.getCode(demAPI.getCsInfirmite()) + session.getCode(demAPI.getCsAtteinte()));
                 bc.setCodeOfficeAi(demAPI.getCodeOfficeAI());
 
                 // Date survenance événement vide ? Première période
                 if (!JadeStringUtil.isBlankOrZero(demAPI.getDateSuvenanceEvenementAssure())) {
-                    bc.setSurvenanceEvtAssAyantDroit(PRDateFormater.convertDate_JJxMMxAAAA_to_MMxAAAA(demAPI
-                            .getDateSuvenanceEvenementAssure()));
+                    bc.setSurvenanceEvtAssAyantDroit(
+                            PRDateFormater.convertDate_JJxMMxAAAA_to_MMxAAAA(demAPI.getDateSuvenanceEvenementAssure()));
                 } else {
                     REPeriodeAPIManager apiMgr = new REPeriodeAPIManager();
                     apiMgr.setSession(session);
@@ -2594,7 +2607,8 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
 
                     }
 
-                    bc.setSurvenanceEvtAssAyantDroit(PRDateFormater.convertDate_AAAAMMJJ_to_MMxAAAA(dateMin.toStrAMJ()));
+                    bc.setSurvenanceEvtAssAyantDroit(
+                            PRDateFormater.convertDate_AAAAMMJJ_to_MMxAAAA(dateMin.toStrAMJ()));
 
                 }
                 // Fin BZ 4876
@@ -2618,8 +2632,8 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
                 rc.setIdRenteCalculee(demandeSource.getIdRenteCalculee());
                 rc.retrieve(transaction);
                 if (rc.isNew()) {
-                    throw new PRACORException("!!! RC not found. idRC/idDemande = "
-                            + demandeSource.getIdRenteCalculee() + "/" + demandeSource.getIdDemandeRente());
+                    throw new PRACORException("!!! RC not found. idRC/idDemande = " + demandeSource.getIdRenteCalculee()
+                            + "/" + demandeSource.getIdDemandeRente());
                 }
 
                 demandeSource.setDateTraitement(REACORParser.retrieveDateTraitement(demandeSource));
@@ -2659,8 +2673,8 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
 
                 // Date survenance événement vide ? Première période
                 if (!JadeStringUtil.isBlankOrZero(demAPI.getDateSuvenanceEvenementAssure())) {
-                    newBC.setSurvenanceEvtAssAyantDroit(PRDateFormater.convertDate_JJxMMxAAAA_to_MMxAAAA(demAPI
-                            .getDateSuvenanceEvenementAssure()));
+                    newBC.setSurvenanceEvtAssAyantDroit(
+                            PRDateFormater.convertDate_JJxMMxAAAA_to_MMxAAAA(demAPI.getDateSuvenanceEvenementAssure()));
                 } else {
                     REPeriodeAPIManager apiMgr = new REPeriodeAPIManager();
                     apiMgr.setSession(session);
@@ -2681,8 +2695,8 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
 
                     }
 
-                    newBC.setSurvenanceEvtAssAyantDroit(PRDateFormater.convertDate_AAAAMMJJ_to_MMxAAAA(dateMin
-                            .toStrAMJ()));
+                    newBC.setSurvenanceEvtAssAyantDroit(
+                            PRDateFormater.convertDate_AAAAMMJJ_to_MMxAAAA(dateMin.toStrAMJ()));
 
                 }
                 // Fin BZ 4876
@@ -2727,8 +2741,8 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
 
                 // Date survenance événement vide ? Première période
                 if (!JadeStringUtil.isBlankOrZero(demAPI.getDateSuvenanceEvenementAssure())) {
-                    bc.setSurvenanceEvtAssAyantDroit(PRDateFormater.convertDate_JJxMMxAAAA_to_MMxAAAA(demAPI
-                            .getDateSuvenanceEvenementAssure()));
+                    bc.setSurvenanceEvtAssAyantDroit(
+                            PRDateFormater.convertDate_JJxMMxAAAA_to_MMxAAAA(demAPI.getDateSuvenanceEvenementAssure()));
                 } else {
                     REPeriodeAPIManager apiMgr = new REPeriodeAPIManager();
                     apiMgr.setSession(session);
@@ -2749,7 +2763,8 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
 
                     }
 
-                    bc.setSurvenanceEvtAssAyantDroit(PRDateFormater.convertDate_AAAAMMJJ_to_MMxAAAA(dateMin.toStrAMJ()));
+                    bc.setSurvenanceEvtAssAyantDroit(
+                            PRDateFormater.convertDate_AAAAMMJJ_to_MMxAAAA(dateMin.toStrAMJ()));
 
                 }
                 // Fin BZ 4876
@@ -2774,7 +2789,7 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
 
     /**
      * retrouve par introspection la methode a executer quand on arrive dans ce helper avec une action custom.
-     * 
+     *
      * @param viewBean
      *            DOCUMENT ME!
      * @param action
@@ -2810,7 +2825,7 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
     /**
      * Récupère les info complémentaire liées à la demande si elle existent, le cas échéant les info complémentaire
      * seront crées et référencé dans la demande
-     * 
+     *
      * @return Dans tous les cas, l'entité PRInfoCompl associée à la demande
      * @throws Exception
      *             S'il n'est pas possible de récupérer les infos compl
@@ -2892,7 +2907,7 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
     }
 
     /**
-     * 
+     *
      * @param session
      * @param caViewbean
      * @param transaction
@@ -2925,11 +2940,14 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
         }
 
         /* Lecture du fichier annonce.rr en priorité */
-        if (!JadeStringUtil.isEmpty(caViewbean.getContenuAnnonceRR())) {
-            globaz.corvus.acor.parser.rev09.REACORParser.parseAnnonceRR(session, transaction, new StringReader(
-                    caViewbean.getContenuAnnonceRR()), rentesAccordees);
-        }
-        /* Lecture du fichier annonce.xml si annonce.rr n'existe pas */
+        /*
+         * Mis en commentaire car le fichier ne sera plus généré par ACOR
+         * if (!JadeStringUtil.isEmpty(caViewbean.getContenuAnnonceRR())) {
+         * globaz.corvus.acor.parser.rev09.REACORParser.parseAnnonceRR(session, transaction, new StringReader(
+         * caViewbean.getContenuAnnonceRR()), rentesAccordees);
+         * } /*
+         * /* Lecture du fichier annonce.xml si annonce.rr n'existe pas
+         */
         else if (!JadeStringUtil.isEmpty(caViewbean.getContenuAnnonceXML())) {
             REACORAnnonceXmlReader annonceXmlReader = new REACORAnnonceXmlReader();
             annonceXmlReader.readAnnonceXmlContent(session, (BTransaction) transaction,
@@ -2959,7 +2977,7 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
     /**
      * Récupère ou créer les info complémentaire liées à la demande et renseigne les flags boolean liés au rente avec
      * remarque particulière
-     * 
+     *
      * @param session
      * @param transaction
      * @param idDemande
@@ -2969,8 +2987,7 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
      * @throws Exception
      */
     private void miseAJourInfoComplementaire(final BSession session, final BITransaction transaction,
-            final String idDemande, final boolean hasRenteLimitee,
-            final boolean isRenteAvecSupplementPourPersonneVeuve,
+            final String idDemande, final boolean hasRenteLimitee, final boolean isRenteAvecSupplementPourPersonneVeuve,
             final boolean isRenteAvecDebutDroit5AnsAvantDepotDemande,
             final boolean isRenteAvecMontantMinimumMajoreInvalidite, final boolean isRenteReduitePourSurassurance)
             throws Exception {
@@ -2997,7 +3014,7 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
     }
 
     /**
-     * 
+     *
      * @param idTiersRequrant L'id tiers du requérant de la demande pour laquelle on remonte le calcul
      * @param idDemandeCournante Id de la demande pour laquelle on est en train de remonter le calcul
      * @throws Exception
@@ -3133,7 +3150,7 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
      * Répartis les rentes accordées selon le modèle A.
      * Le modèle A de répartition des rentes accordées est utilisé lorsque de code cas spéciaux 08 sont présent dans au
      * moins une des RA de toutes les demandes ouverte de la famille
-     * 
+     *
      * @param demandeCouranteCle
      * @param demandesDeLaFamilleCle
      * @throws Exception
@@ -3171,7 +3188,7 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
      * Répartis les rentes accordées selon le modèle B.
      * Le modèle B de répartition des rentes accordées est utilisé lorsque des rentes accordées contiennent des CCS 08
      * et d'autres non
-     * 
+     *
      * @param demandeCouranteCle
      * @param demandesDeLaFamilleWrapper
      * @throws Exception
@@ -3272,8 +3289,8 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
 
                     // Si la clé de la BC est égal à la clé de la demande on peut déplacer la BC dans la demande
                     if (cleBaseCalcul.equals(demande.getCleDeComparaison())) {
-                        deplacerBaseDeCalculDansDemande(session, baseDeCalcul.getBasesCalcul(), demande
-                                .getDemandeRente().getId().toString());
+                        deplacerBaseDeCalculDansDemande(session, baseDeCalcul.getBasesCalcul(),
+                                demande.getDemandeRente().getId().toString());
                         deplace = true;
                         break;
                     }
@@ -3301,8 +3318,8 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
                              * demande non validées de la famille. Si ce n'est pas fait et qu'il y a plusieurs base de
                              * calcul à déplacer on risque de retrouver des copies à double
                              */
-                            DemandeRente demandeDomain = CorvusCrudServiceLocator.getDemandeRenteCrudService().read(
-                                    new Long(copie.getIdDemandeRente()));
+                            DemandeRente demandeDomain = CorvusCrudServiceLocator.getDemandeRenteCrudService()
+                                    .read(new Long(copie.getIdDemandeRente()));
                             demandesDeLaFamilleWrapper.add(new DemandeRenteWrapper(demandeDomain));
                             deplace = true;
                             if (deplace) {
@@ -3317,16 +3334,16 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
                         String userMessage = session
                                 .getLabel("IMPORTATION_CALCUL_ACOR_IMPOSSIBLE_DEPLACER_BASE_CALCUL");
 
-                        String typeDemande = session.getCodeLibelle(String.valueOf(baseDeCalcul.getTypeDemandeRente()
-                                .getCodeSysteme()));
+                        String typeDemande = session
+                                .getCodeLibelle(String.valueOf(baseDeCalcul.getTypeDemandeRente().getCodeSysteme()));
 
                         String ajournement = " ";
                         if (baseDeCalcul.isAjournement()) {
                             ajournement = " " + session.getLabel("IMPORTATION_CALCUL_ACOR_AJOURNEMENT") + " ";
                         }
 
-                        PRTiersWrapper tiers = PRTiersHelper.getTiersParId(session, baseDeCalcul.getBasesCalcul()
-                                .getIdTiersBaseCalcul());
+                        PRTiersWrapper tiers = PRTiersHelper.getTiersParId(session,
+                                baseDeCalcul.getBasesCalcul().getIdTiersBaseCalcul());
                         String infoTiers = tiers.getNom() + " " + tiers.getPrenom() + " " + tiers.getNSS();
 
                         userMessage = userMessage.replace("{0}", typeDemande);
@@ -3349,7 +3366,7 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
 
     /**
      * Créer une copie de la demande et déplace la rente accordées dedans
-     * 
+     *
      * @param baseDeCalcul La base de calcul à déplacer
      * @param demandeValidee La demande à copier
      * @return <code>true</code> si le déplacement à pu être réalisé
@@ -3388,8 +3405,8 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
             throw new REBusinessException(message);
         }
 
-        REDemandeRente copieDemande = REDemandeRegles.copierDemandeRente(session,
-                session.getCurrentThreadTransaction(), demande);
+        REDemandeRente copieDemande = REDemandeRegles.copierDemandeRente(session, session.getCurrentThreadTransaction(),
+                demande);
         if (copieDemande == null) {
             String message = session.getLabel("IMPORTATION_CALCUL_ACOR_IMPOSSIBLE_COPIER_DEMANDE");
             message = message.replace("{0}", demande.getId().toString());
@@ -3402,7 +3419,7 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
 
     /**
      * Déplace la base de calcul dans la demande
-     * 
+     *
      * @param basesCalcul La base de calcul à déplacer
      * @param demandeRente La demande dans laquelle déplacer la base de calcul
      * @return <code>true</code> si le déplacement à réussit
@@ -3467,7 +3484,7 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
      * 1 - Boucle sur les demandes afin de trouver la demande recherchée en fonction de son id
      * 2 - Si la demande à été trouvée, elle sera supprimé du Set de demandes <code>demandes</code> Méthode safe si
      * demandes est null
-     * 
+     *
      * @param demandes Le Set de demandes dans lequel la recherche sera effectué
      * @param idDemandeCourante L'id de la demande à récupérer
      * @return La demande courante si trouvée sinon null.
@@ -3492,7 +3509,7 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
     /**
      * Filtre les demandes de type API. Retourne un Set de DemandeRente sans les rentes API.
      * Méthode safe face à l'argument <code>demandes</code> null.
-     * 
+     *
      * @param demandes Les demandes à filtrer
      * @return Un Set de DemandeRente sans les demandes de type API. <strong>Ne retourne jamais null</strong>
      */
@@ -3580,7 +3597,7 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
      * phrase contenue dans le feuille de calcul ACOR Si cette phrase est présente, mise à jour du champ WCBVLI dans
      * PRINFCOM. Le but de la mise à jour de ce champs est; lors de la préparation de la décision, si ce champs est à
      * vrai, des remarques seront automatiquement insérée dans la décision
-     * 
+     *
      * @param session
      * @param caViewbean
      * @param transaction
