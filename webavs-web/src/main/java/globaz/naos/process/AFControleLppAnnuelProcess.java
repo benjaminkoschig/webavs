@@ -793,7 +793,7 @@ public class AFControleLppAnnuelProcess extends BProcess {
                     sal.setSuivi(true);
                 }
 
-                // continue;
+                continue;
             }
             // 2. Si pas de suivi, on en crée un .
 
