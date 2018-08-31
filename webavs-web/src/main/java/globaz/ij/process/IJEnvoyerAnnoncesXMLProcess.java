@@ -5,6 +5,7 @@ package globaz.ij.process;
 
 import java.io.File;
 import java.text.DateFormat;
+import java.text.MessageFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.GregorianCalendar;
@@ -308,7 +309,7 @@ public class IJEnvoyerAnnoncesXMLProcess extends BProcess {
         if (getMemoryLog().isOnErrorLevel() || getMemoryLog().isOnFatalLevel()) {
             return getSession().getLabel("PROCESS_ENVOI_ANNONCES_FAILED");
         } else {
-            return getSession().getLabel("PROCESS_ENVOI_ANNONCES_SUCCESS");
+            return MessageFormat.format(getSession().getLabel("PROCESS_ENVOI_ANNONCES_SUCCESS"), forMoisAnneeComptable);
         }
 
     }
