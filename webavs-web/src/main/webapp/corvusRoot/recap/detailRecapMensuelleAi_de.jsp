@@ -38,14 +38,13 @@
 
 <script language="JavaScript">
 
-function upd() {
-}
 
 function init(){
 
 	document.getElementById('elem510002').focus();
 	document.getElementById('elem510002').select();
-	
+	var isError = <%=request.getParameter("isError")%>;
+	if(isError!=true){
 	document.getElementById("elem510001").disabled=true;
 	document.getElementById("elem510002").disabled=true;
 	document.getElementById("elem510003").disabled=true;
@@ -66,7 +65,17 @@ function init(){
 	document.getElementById("elem513004").disabled=true;
 	document.getElementById("elem513005").disabled=true;
 	document.getElementById("elem513007").disabled=true;
-	
+	 document.getElementById('btnAVS').style.display = '';
+	 document.getElementById('btnImprimer').style.display  = '';
+	 document.getElementById('btnHermes').style.display  = '';
+	hideValidationButtons();
+	}else{
+		 showValidationButtons();
+		 document.getElementById('btnAVS').style.display= 'none';
+		 document.getElementById('btnImprimer').style.display = 'none';
+		 document.getElementById('btnHermes').style.display  = 'none';
+
+	}
 }
 
 // surcharge afin de pouvoir avoir le focus sur le tabindex 2
@@ -101,6 +110,11 @@ function upd() {
 	document.getElementById("elem513004").disabled=false;
 	document.getElementById("elem513005").disabled=false;
 	document.getElementById("elem513007").disabled=false;
+	
+
+	 document.getElementById('btnAVS').style.display= 'none';
+	 document.getElementById('btnImprimer').style.display = 'none';
+	 document.getElementById('btnHermes').style.display  = 'none';
 	
 }
 
@@ -378,16 +392,16 @@ function avs(){
 	<TD style="text-align:center;"><strong>213.3030</strong></TD>
 </TR>				
 
-
+<INPUT type="hidden" name="isError" value="">
 <%-- /tpl:put --%>
 <%@ include file="/theme/detail/bodyButtons.jspf"%>
 <%-- tpl:put name="zoneButtons" --%>
 <%if (globaz.corvus.api.recap.IRERecapMensuelle.CS_ETAT_ATTENTE.equals(viewBean.getCsEtat()) &&
 	  controller.getSession().hasRight(IREActions.ACTION_RECAP_DETAIL, FWSecureConstants.UPDATE)){%>
-<input type="button" class="btnCtrl" value="<%=btnEnvCdCLabel%>" onclick="envoiHermes()">
+<input type="button" class="btnCtrl" id="btnHermes" value="<%=btnEnvCdCLabel%>" onclick="envoiHermes()">
 <%}%>
-<input type="button" class="btnCtrl" value="<%=btnPrintLabel%>" onclick="envoiCdC()">
-<input type="button" class="btnCtrl" value="<ct:FWLabel key="LISTE_RECAP_AVS"/>" onclick="avs()">
+<input type="button" class="btnCtrl"  id="btnImprimer"  value="<%=btnPrintLabel%>" onclick="envoiCdC()">
+<input type="button" class="btnCtrl" id="btnAVS" value="<ct:FWLabel key="LISTE_RECAP_AVS"/>" onclick="avs()">
 <%-- /tpl:put --%>
 <%@ include file="/theme/detail/bodyErrors.jspf" %>
 <%-- tpl:put name="zoneEndPage" --%>

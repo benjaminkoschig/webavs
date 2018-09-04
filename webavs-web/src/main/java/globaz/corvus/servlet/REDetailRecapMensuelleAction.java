@@ -3,6 +3,9 @@
  */
 package globaz.corvus.servlet;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import globaz.corvus.api.recap.IRERecapMensuelle;
 import globaz.corvus.vb.recap.REChargerRecapMensuelleViewBean;
 import globaz.corvus.vb.recap.REDetailRecapMensuelleViewBean;
@@ -15,9 +18,6 @@ import globaz.globall.db.BSession;
 import globaz.jade.log.JadeLogger;
 import globaz.jsp.util.GlobazJSPBeanUtil;
 import globaz.prestation.servlet.PRDefaultAction;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 /**
  * @author hpe
@@ -60,14 +60,16 @@ public class REDetailRecapMensuelleAction extends PRDefaultAction {
         ((REDetailRecapMensuelleViewBean) viewBean).setTo2_501(request.getParameter("to2_501"));
         ((REDetailRecapMensuelleViewBean) viewBean).setTo2_503(request.getParameter("to2_503"));
 
-        ((REDetailRecapMensuelleViewBean) viewBean).getElem500099().setMontant(
-                request.getParameter("elem500099.montant"));
-        ((REDetailRecapMensuelleViewBean) viewBean).getElem501099().setMontant(
-                request.getParameter("elem501099.montant"));
-        ((REDetailRecapMensuelleViewBean) viewBean).getElem503099().setMontant(
-                request.getParameter("elem503099.montant"));
+        ((REDetailRecapMensuelleViewBean) viewBean).getElem500099()
+                .setMontant(request.getParameter("elem500099.montant"));
+        ((REDetailRecapMensuelleViewBean) viewBean).getElem501099()
+                .setMontant(request.getParameter("elem501099.montant"));
+        ((REDetailRecapMensuelleViewBean) viewBean).getElem503099()
+                .setMontant(request.getParameter("elem503099.montant"));
 
-        _destination = "/corvus?userAction=corvus.recap.detailRecapMensuelleAi.reAfficher&process=launched";
+        _destination = "/corvus?userAction=corvus.recap.detailRecapMensuelleAi.reAfficher&process=launched&isError=false";
+
+        // _destination = "/corvus?userAction=corvus.recap.detailRecapMensuelleAi.reAfficher&process=launched";
         goSendRedirect(_destination, request, response);
 
     }
@@ -76,7 +78,9 @@ public class REDetailRecapMensuelleAction extends PRDefaultAction {
             FWDispatcher mainDispatcher, FWViewBeanInterface viewBean) throws Exception {
 
         String _destination = "";
-        _destination = "/corvus?userAction=corvus.recap.detailRecapMensuelleAvs.reAfficher&process=launched";
+        // _destination = "/corvus?userAction=corvus.recap.detailRecapMensuelleAvs.reAfficher&process=launched";
+        _destination = "/corvus?userAction=corvus.recap.detailRecapMensuelleAvs.reAfficher&process=launched&isError=false";
+
         goSendRedirect(_destination, request, response);
 
     }
@@ -172,10 +176,10 @@ public class REDetailRecapMensuelleAction extends PRDefaultAction {
 
                 if (viewBean.getMsgType().equals(FWViewBeanInterface.ERROR) == false) {
                     // _destination =
-                    _destination = "/corvus?userAction=corvus.recap.detailRecapMensuelleAi.reAfficher&process=launched";
+                    _destination = "/corvus?userAction=corvus.recap.detailRecapMensuelleAi.reAfficher&process=launched&isError=false";
 
                 } else {
-                    _destination = "/corvus?userAction=corvus.recap.detailRecapMensuelleAi.reAfficher";
+                    _destination = "/corvus?userAction=corvus.recap.detailRecapMensuelleAi.reAfficher&isError=true";
                 }
 
             } else {
@@ -212,10 +216,10 @@ public class REDetailRecapMensuelleAction extends PRDefaultAction {
 
                 if (viewBean.getMsgType().equals(FWViewBeanInterface.ERROR) == false) {
                     // _destination =
-                    _destination = "/corvus?userAction=corvus.recap.detailRecapMensuelleAvs.reAfficher&process=launched";
-
+                    _destination = "/corvus?userAction=corvus.recap.detailRecapMensuelleAvs.reAfficher&process=launched&isError=false";
                 } else {
-                    _destination = "/corvus?userAction=corvus.recap.detailRecapMensuelleAvs.reAfficher";
+                    _destination = "/corvus?userAction=corvus.recap.detailRecapMensuelleAvs.reAfficher&isError=true";
+
                 }
 
             } else {

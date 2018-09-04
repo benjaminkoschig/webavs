@@ -1,5 +1,7 @@
 package globaz.corvus.vb.recap;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import globaz.corvus.db.recap.access.RERecapElement;
 import globaz.corvus.db.recap.access.RERecapElementManager;
 import globaz.corvus.db.recap.access.RERecapMensuelle;
@@ -9,8 +11,6 @@ import globaz.framework.util.FWMessage;
 import globaz.globall.db.BEntity;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BTransaction;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 
 /**
  * @author FGo Représentation graphique du détail d'une récap mensuelle
@@ -18,7 +18,7 @@ import java.lang.reflect.Method;
  */
 public class REDetailRecapMensuelleViewBean extends RERecapMensuelle implements FWViewBeanInterface {
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
     private String dateRapport = "";
@@ -80,6 +80,7 @@ public class REDetailRecapMensuelleViewBean extends RERecapMensuelle implements 
     private String to2_511 = "";
 
     private String to2_513 = "";
+    private boolean isError = false;
 
     /**
      * Constructeur de la classe RERecapMensuelleViewBean
@@ -90,7 +91,7 @@ public class REDetailRecapMensuelleViewBean extends RERecapMensuelle implements 
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.db.BEntity#_afterRetrieve(globaz.globall.db.BTransaction)
      */
     @Override
@@ -102,7 +103,7 @@ public class REDetailRecapMensuelleViewBean extends RERecapMensuelle implements 
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.db.BEntity#_afterUpdate(globaz.globall.db.BTransaction)
      */
     @Override
@@ -115,7 +116,7 @@ public class REDetailRecapMensuelleViewBean extends RERecapMensuelle implements 
 
     /**
      * Récupère la date de rapport
-     * 
+     *
      * @return the dateRapport
      */
     public String getDateRapport() {
@@ -491,7 +492,7 @@ public class REDetailRecapMensuelleViewBean extends RERecapMensuelle implements 
 
     /**
      * Charge le manager d'éléments de la récap mensuelle
-     * 
+     *
      * @return
      */
     private RERecapElementManager loadElementManager() {
@@ -508,7 +509,7 @@ public class REDetailRecapMensuelleViewBean extends RERecapMensuelle implements 
 
     /**
      * Chargement les éléments
-     * 
+     *
      * @throws REDetailRecapInstanciationException
      */
     private void loadElements() throws REDetailRecapInstanciationException {
@@ -537,7 +538,7 @@ public class REDetailRecapMensuelleViewBean extends RERecapMensuelle implements 
 
     /**
      * Modifie la date de rapport
-     * 
+     *
      * @param dateRapport
      *            the newDateRapport to set
      */
@@ -931,7 +932,7 @@ public class REDetailRecapMensuelleViewBean extends RERecapMensuelle implements 
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.db.BEntity#setSession(globaz.globall.db.BSession)
      */
     @Override
@@ -987,7 +988,7 @@ public class REDetailRecapMensuelleViewBean extends RERecapMensuelle implements 
 
     /**
      * Effectue un update sur tout les attributs de type RERecapElement
-     * 
+     *
      * @param transaction
      * @throws Exception
      */
@@ -1004,66 +1005,74 @@ public class REDetailRecapMensuelleViewBean extends RERecapMensuelle implements 
         }
     }
 
+    public boolean getIsError() {
+        return isError;
+    }
+
+    public void setIsError(boolean isError) {
+        this.isError = isError;
+    }
+
     /*
      * public String getCas02(){
-     * 
+     *
      * int total=0;
-     * 
+     *
      * total = new Integer(getElem500002().getCas()).intValue() + new Integer(getElem501002().getCas()).intValue() + new
      * Integer(getElem503002().getCas()).intValue() + new Integer(getElem510002().getCas()).intValue() + new
      * Integer(getElem511002().getCas()).intValue() + new Integer(getElem513002().getCas()).intValue();
-     * 
+     *
      * return String.valueOf(total); }
-     * 
+     *
      * public String getCas03(){
-     * 
+     *
      * int total=0;
-     * 
+     *
      * total = new Integer(getElem500003().getCas()).intValue() + new Integer(getElem501003().getCas()).intValue() + new
      * Integer(getElem503003().getCas()).intValue() + new Integer(getElem510003().getCas()).intValue() + new
      * Integer(getElem511003().getCas()).intValue() + new Integer(getElem513003().getCas()).intValue();
-     * 
+     *
      * return String.valueOf(total); }
-     * 
+     *
      * public String getCas04(){
-     * 
+     *
      * int total=0;
-     * 
+     *
      * total = new Integer(getElem500004().getCas()).intValue() + new Integer(getElem501004().getCas()).intValue() + new
      * Integer(getElem503004().getCas()).intValue() + new Integer(getElem510004().getCas()).intValue() + new
      * Integer(getElem511004().getCas()).intValue() + new Integer(getElem513004().getCas()).intValue();
-     * 
+     *
      * return String.valueOf(total); }
-     * 
+     *
      * public String getCas05(){
-     * 
+     *
      * int total=0;
-     * 
+     *
      * total = new Integer(getElem500005().getCas()).intValue() + new Integer(getElem501005().getCas()).intValue() + new
      * Integer(getElem503005().getCas()).intValue() + new Integer(getElem510005().getCas()).intValue() + new
      * Integer(getElem511005().getCas()).intValue() + new Integer(getElem513005().getCas()).intValue();
-     * 
+     *
      * return String.valueOf(total); }
-     * 
+     *
      * public String getCasEnCours(){
-     * 
+     *
      * int total=0;
-     * 
+     *
      * total = new Integer(getCas02()).intValue() + new Integer(getCas03()).intValue() + new
      * Integer(getCas04()).intValue();
-     * 
+     *
      * return String.valueOf(total);
-     * 
+     *
      * }
-     * 
+     *
      * public String getCasMensuelleSousTotal(){
-     * 
+     *
      * int total=0;
-     * 
+     *
      * total = new Integer(getCasEnCours()).intValue() + new Integer(getCas05()).intValue();
-     * 
+     *
      * return String.valueOf(total);
-     * 
+     *
      * }
      */
 

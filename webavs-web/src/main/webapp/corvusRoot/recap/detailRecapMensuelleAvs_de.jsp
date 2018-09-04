@@ -36,8 +36,6 @@
 
 <script language="JavaScript">
 
-function upd() {
-}
 
 function validate() {
       document.forms[0].elements('userAction').value="<%=globaz.corvus.servlet.IREActions.ACTION_RECAP_DETAIL%>.modifierRecapAvs";
@@ -47,7 +45,8 @@ function validate() {
 function init(){
 	document.getElementById('elem500002').focus();
 	document.getElementById('elem500002').select();
-	
+	var isError = <%=request.getParameter("isError")%>
+	if(isError!=true){
 	document.getElementById("elem500001").disabled=true;
 	document.getElementById("elem500002").disabled=true;
 	document.getElementById("elem500003").disabled=true;
@@ -68,6 +67,12 @@ function init(){
 	document.getElementById("elem503004").disabled=true;
 	document.getElementById("elem503005").disabled=true;
 	document.getElementById("elem503007").disabled=true;
+	hideValidationButtons();
+	document.getElementById('btnAI').style.display= '';
+}else{
+	 showValidationButtons();
+     document.getElementById('btnAI').style.display= 'none';
+}
 	
 }
 
@@ -82,7 +87,6 @@ function doInitThings() {
 }
 
 function upd() {
-
 	document.getElementById("elem500001").disabled=false;
 	document.getElementById("elem500002").disabled=false;
 	document.getElementById("elem500003").disabled=false;
@@ -103,13 +107,16 @@ function upd() {
 	document.getElementById("elem503004").disabled=false;
 	document.getElementById("elem503005").disabled=false;
 	document.getElementById("elem503007").disabled=false;
+
+	document.getElementById('btnAI').style.display= 'none';
+
 	
 }
 
-function validate() {
-      document.forms[0].elements('userAction').value="<%=globaz.corvus.servlet.IREActions.ACTION_RECAP_DETAIL%>.modifierRecapAvs";
-      document.forms[0].submit();
-}
+// function validate() {
+<%--       document.forms[0].elements('userAction').value="<%=globaz.corvus.servlet.IREActions.ACTION_RECAP_DETAIL%>.modifierRecapAvs"; --%>
+//       document.forms[0].submit();
+// }
 
 function addCommas(myId){
   nStr = document.getElementById(myId).value;
@@ -378,11 +385,11 @@ function ai(){
 	<TD>&nbsp;</TD>
 	<TD style="text-align:center;"><strong>212.3030</strong></TD>
 </TR>
-
+<INPUT type="hidden" name="isError" value="">
 <%-- /tpl:put --%>
 <%@ include file="/theme/detail/bodyButtons.jspf"%>
 <%-- tpl:put name="zoneButtons" --%>
-<input type="button" class="btnCtrl" value="<ct:FWLabel key="LISTE_RECAP_AI"/>" onclick="ai()">
+<input type="button" class="btnCtrl"  id="btnAI" value="<ct:FWLabel key="LISTE_RECAP_AI"/>" onclick="ai()">
 <%-- /tpl:put --%>
 <%@ include file="/theme/detail/bodyErrors.jspf" %>
 <%-- tpl:put name="zoneEndPage" --%>

@@ -34,7 +34,7 @@ import globaz.jade.fs.JadeFsFacade;
 import globaz.prestation.tools.PRDateFormater;
 
 /**
- * 
+ *
  * @author ebko
  */
 public class REEnvoyerRecapARC8DXMLProcess extends BProcess {
@@ -65,9 +65,9 @@ public class REEnvoyerRecapARC8DXMLProcess extends BProcess {
         validate();
 
         try {
-            PoolMeldungZurZAS.Lot lotAnnonces = REEnvoyerRecapARC8DXMLService.getInstance().initPoolMeldungZurZASLot(REProperties.CENTRALE_TEST.getBooleanValue(),
-                    CommonProperties.KEY_NO_CAISSE.getValue());
- 
+            PoolMeldungZurZAS.Lot lotAnnonces = REEnvoyerRecapARC8DXMLService.getInstance().initPoolMeldungZurZASLot(
+                    REProperties.CENTRALE_TEST.getBooleanValue(), CommonProperties.KEY_NO_CAISSE.getValue());
+
             prepareEnvoieAnnonce(reDetRecMenViewBean, lotAnnonces);
             envoieRecap(lotAnnonces);
 
@@ -98,8 +98,8 @@ public class REEnvoyerRecapARC8DXMLProcess extends BProcess {
 
             RERecapMensuelleManager reRecapMensuelleMgrMoisSuivant = new RERecapMensuelleManager();
             reRecapMensuelleMgrMoisSuivant.setSession(getSession());
-            reRecapMensuelleMgrMoisSuivant.setForDateRapportMensuel(PRDateFormater
-                    .convertDate_AAAAMMJJ_to_MMxAAAA(dateMoisSuivant.toStrAMJ()));
+            reRecapMensuelleMgrMoisSuivant.setForDateRapportMensuel(
+                    PRDateFormater.convertDate_AAAAMMJJ_to_MMxAAAA(dateMoisSuivant.toStrAMJ()));
             reRecapMensuelleMgrMoisSuivant.find(BManager.SIZE_USEDEFAULT);
 
             Object[] noElements = mntRecapTotauxElems.keySet().toArray();
@@ -159,29 +159,33 @@ public class REEnvoyerRecapARC8DXMLProcess extends BProcess {
             abort();
         }
     }
-    
+
     void prepareEnvoieAnnonce(REDetailRecapMensuelleViewBean recap, PoolMeldungZurZAS.Lot poolMeldungLot)
             throws ValidationException, PropertiesException, JadeException {
-        
+
         String noCaisse = CommonProperties.KEY_NO_CAISSE.getValue();
         String noAgence = CommonProperties.NUMERO_AGENCE.getValue();
         try {
 
-            MonatsRekapitulationRentenType annonceXml = REAnnonceARC8DXmlService.getInstance().getAnnonceXml(recap, noCaisse + noAgence);
+            MonatsRekapitulationRentenType annonceXml = REAnnonceARC8DXmlService.getInstance().getAnnonceXml(recap,
+                    noCaisse + noAgence);
             REEnvoyerRecapARC8DXMLService.getInstance().validateUnitMessage(annonceXml);
             poolMeldungLot
-            .getVAIKMeldungNeuerVersicherterOrVAIKMeldungAenderungVersichertenDatenOrVAIKMeldungVerkettungVersichertenNr()
-            .add(annonceXml);
+                    .getVAIKMeldungNeuerVersicherterOrVAIKMeldungAenderungVersichertenDatenOrVAIKMeldungVerkettungVersichertenNr()
+                    .add(annonceXml);
         } catch (ValidationException e) {
             e.getMessageErreurDeValidation().add(0, recap.getId() + " - " + recap.getIdRecapMensuelle() + " : ");
             throw e;
-        }  catch (Exception e) {
+        } catch (NumberFormatException e) {
+            throw new JadeException(recap.getId() + " - " + recap.getIdRecapMensuelle() + " : "
+                    + getSession().getLabel("ERREUR_CHAMP_VALEUR"));
+        } catch (Exception e) {
             throw new JadeException(recap.getId() + " - " + recap.getIdRecapMensuelle() + " : " + e.getMessage());
-        }      
-    } 
+        }
+    }
 
-
-    private void envoieRecap(PoolMeldungZurZAS.Lot lotAnnonces) throws JadeException, PropertiesException, IOException, SAXException, JAXBException {
+    private void envoieRecap(PoolMeldungZurZAS.Lot lotAnnonces)
+            throws JadeException, PropertiesException, IOException, SAXException, JAXBException {
         if (lotAnnonces
                 .getVAIKMeldungNeuerVersicherterOrVAIKMeldungAenderungVersichertenDatenOrVAIKMeldungVerkettungVersichertenNr()
                 .isEmpty()) {
@@ -192,10 +196,9 @@ public class REEnvoyerRecapARC8DXMLProcess extends BProcess {
         JadeFsFacade.copyFile(fileName, REProperties.FTP_CENTRALE_PATH.getValue() + "/" + new File(fileName).getName());
     }
 
-
     /**
      * getter pour l'attribut EMail object
-     * 
+     *
      * @return la valeur courante de l'attribut EMail object
      */
     @Override
