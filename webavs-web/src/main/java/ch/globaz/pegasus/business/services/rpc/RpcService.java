@@ -6,5 +6,5 @@ import ch.globaz.common.exceptions.ValidationException;
 public interface RpcService extends JadeApplicationService {
     String loadXmlByIdAnnonce(String idAnnonce) throws ValidationException;
 
-    void testPlausiForDecision(String idDecision);
+    void testPlausiForDecision(String... idDecision);
 }

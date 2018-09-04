@@ -170,12 +170,14 @@ public class RpcDataLoader {
         return rpcDatas.read();
     }
 
-    public RpcData loadByIdDecision(String idDecision) {
+    public RpcData loadByIdDecision(String... idDecision) {
         parallel = false;
         Preconditions.checkNotNull(idDecision, "idDecision is null");
 
         Set<String> idsDecision = new HashSet<String>();
-        idsDecision.add(idDecision);
+        for(String decision : idDecision) {
+            idsDecision.add(decision);
+        }
 
         RPCDecionsPriseDansLeMoisSearch searchDecision = new RPCDecionsPriseDansLeMoisSearch();
         searchDecision.setWhereKey("prevalidation");
