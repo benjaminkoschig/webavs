@@ -1,5 +1,14 @@
 package globaz.pavo.util;
 
+import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Vector;
+import javax.servlet.http.HttpSession;
 import globaz.caisse.helper.CaisseHelperFactory;
 import globaz.commons.nss.NSUtil;
 import globaz.framework.controller.FWController;
@@ -35,19 +44,10 @@ import globaz.pavo.translation.CodeSystem;
 import globaz.pyxis.db.tiers.TIAdministrationManager;
 import globaz.pyxis.db.tiers.TIAdministrationViewBean;
 import globaz.pyxis.db.tiers.TITiersViewBean;
-import java.math.BigDecimal;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Vector;
-import javax.servlet.http.HttpSession;
 
 /**
  * Classe utilitaire pour PAVO. Date de création : (09.01.2003 15:18:41)
- * 
+ *
  * @author: Administrator
  */
 public class CIUtil {
@@ -55,7 +55,7 @@ public class CIUtil {
 
     /**
      * Renvoie le code système asssocié à un code utilisateur et un groupe.
-     * 
+     *
      * @param Un
      *            object BTransaction.
      * @param Le
@@ -109,7 +109,7 @@ public class CIUtil {
 
     /**
      * Renvoie une date aaaammjj en jj.mm.aaaa ou null si format incorrect. Date de création : (14.03.2003 10:38:25)
-     * 
+     *
      * @return java.lang.String
      * @param date
      *            java.lang.String
@@ -123,7 +123,7 @@ public class CIUtil {
 
     /**
      * Renvoie une date jj.mm.aaaa en aaammjj ou null si format incorrecte. Date de création : (14.03.2003 10:38:25)
-     * 
+     *
      * @return java.lang.String
      * @param date
      *            java.lang.String
@@ -177,7 +177,7 @@ public class CIUtil {
     /**
      * Renvoie une date jj.mm.aaaa en aaammjj ou null si format incorrecte et ajout 1 à la date donnée Date de création
      * : (14.03.2003 10:38:25)
-     * 
+     *
      * @return java.lang.String
      * @param date
      *            java.lang.String
@@ -239,7 +239,7 @@ public class CIUtil {
      * Si pas de date début affiliation (ça devrait pas arrivé), alors on met la date défaut
      * Exemple 1 : début affiliation : 15.02.2016 est plus grande que 01.01.2016, > on met la date affiliation
      * Exemple 2 : début affiliation : 10.01.2015 est plus petite que 01.01.2016, > on met la date défaut
-     * 
+     *
      * @param dateDebutDefaut La date de fin par défaut à comparer.
      * @param dateDebutAffiliation Date de début de l'affiliation.
      * @return La date affiliation si plus grande que date par défaut, sinon la date défaut.
@@ -264,7 +264,7 @@ public class CIUtil {
      * Si pas de date fin affiliation (ça devrait pas arrivé), alors on met la date défaut
      * Exemple 1 : fin affiliation : 20.11.2016 est plus petite que 31.12.2016, > on met la date affiliation
      * Exemple 2 : fin affiliation : 10.01.2017 est plus grande que 31.12.2016, > on met la date défaut
-     * 
+     *
      * @param dateFinDefaut La date de fin par défaut à comparer.
      * @param dateFinAffiliation Date de fin de l'affiliation.
      * @return La date affiliation si plus petite que date par défaut, sinon la date défaut.
@@ -285,7 +285,7 @@ public class CIUtil {
 
     /**
      * Renvoie une date jj.mm.aaaa en jjmmaa. Date de création : (14.03.2003 10:38:25)
-     * 
+     *
      * @return java.lang.String
      * @param date
      *            java.lang.String
@@ -299,7 +299,7 @@ public class CIUtil {
 
     /**
      * Renvoie une date jj.mm.aaaa en mmaa. Date de création : (14.03.2003 10:38:25)
-     * 
+     *
      * @return java.lang.String
      * @param date
      *            java.lang.String
@@ -312,8 +312,8 @@ public class CIUtil {
     }
 
     public static String formatNumeroAffilie(BSession session, String numeroAffilie) throws Exception {
-        CIApplication app = (CIApplication) GlobazServer.getCurrentSystem().getApplication(
-                CIApplication.DEFAULT_APPLICATION_PAVO);
+        CIApplication app = (CIApplication) GlobazServer.getCurrentSystem()
+                .getApplication(CIApplication.DEFAULT_APPLICATION_PAVO);
         IFormatData affilieFormater = app.getAffileFormater();
         return affilieFormater.format(numeroAffilie);
 
@@ -321,7 +321,7 @@ public class CIUtil {
 
     /**
      * ATTENTION uniquement pour les affiliés de type Paritaire
-     * 
+     *
      * @param session
      * @param annee
      * @param idAffiliation
@@ -333,12 +333,12 @@ public class CIUtil {
         // idAffiliation = "22980";
 
         try {
-            CIApplication application = (CIApplication) GlobazServer.getCurrentSystem().getApplication(
-                    CIApplication.DEFAULT_APPLICATION_PAVO);
+            CIApplication application = (CIApplication) GlobazServer.getCurrentSystem()
+                    .getApplication(CIApplication.DEFAULT_APPLICATION_PAVO);
             AFAffiliation aff = new AFAffiliation();
             aff = application.getAffilieByNo(
-                    (BSession) ((FWController) session.getAttribute("objController")).getSession(), idAffiliation,
-                    true, false, "1", "12", annee, "", "");
+                    (BSession) ((FWController) session.getAttribute("objController")).getSession(), idAffiliation, true,
+                    false, "1", "12", annee, "", "");
             CIEcritureIdJournalManager idJournalMgr = new CIEcritureIdJournalManager();
             idJournalMgr.setForEmployeur(aff.getAffiliationId());
             idJournalMgr.setForAnnee(annee);
@@ -385,7 +385,7 @@ public class CIUtil {
     /**
      * Retourne une liste des Affilies (numéro et nom de l'affilié) en fonction des permiers chiffres du numéro affilié
      * donnés en paramètres. Date de création : (17.09.2003 17:032:13)
-     * 
+     *
      * @return la liste d'options (tag select) des affiliés existants de la caisse actuelle. Peut-être vide si aucune
      *         information n'a été trouvée
      * @param like
@@ -401,7 +401,7 @@ public class CIUtil {
     /**
      * Retourne une liste des Affilies (numéro et nom de l'affilié) en fonction des permiers chiffres du numéro affilié
      * donnés en paramètres. Date de création : (17.09.2003 17:032:13)
-     * 
+     *
      * @return la liste d'options (tag select) des affiliés existants de la caisse actuelle. Peut-être vide si aucune
      *         information n'a été trouvée
      * @param like
@@ -418,7 +418,7 @@ public class CIUtil {
     /**
      * Retourne une liste des Affilies (numéro et nom de l'affilié) en fonction des permiers chiffres du numéro affilié
      * donnés en paramètres. Date de création : (17.09.2003 17:032:13)
-     * 
+     *
      * @return la liste d'options (tag select) des affiliés existants de la caisse actuelle. Peut-être vide si aucune
      *         information n'a été trouvée
      * @param like
@@ -435,7 +435,7 @@ public class CIUtil {
      * Retourne une liste des Affilies (dernier employeur) pour un compte individuel : numéro, nom et adresses de
      * l'affilié en fonction des premiers chiffres du numéro affilié donnés en paramètres. Date de création :
      * (17.09.2003 17:032:13)
-     * 
+     *
      * @return la liste d'options (tag select) des affiliés existants de la caisse actuelle. Peut-être vide si aucune
      *         information n'a été trouvée
      * @param like
@@ -452,7 +452,7 @@ public class CIUtil {
      * Retourne une liste des Affilies pour un journal, cad les employeurs et indépendants (numéro et nom de l'affilié)
      * en fonction des premiers chiffres du numéro affilié donnés en paramètres. Date de création : (17.09.2003
      * 17:032:13)
-     * 
+     *
      * @return la liste d'options (tag select) des affiliés existants de la caisse actuelle. Peut-être vide si aucune
      *         information n'a été trouvée
      * @param like
@@ -468,7 +468,7 @@ public class CIUtil {
     /**
      * Retourne un employeur,un partenaire ou un organisme spécial (nom, prenom ou libellé) en fonction du numéro
      * d'affilié ou du numéro AVS du partenaire Date de création : (17.09.2003 17:032:13)
-     * 
+     *
      * @return une string contenant un nom,prenom ou libellé
      * @param like
      *            les primers chiffres du numéro affilié
@@ -483,7 +483,7 @@ public class CIUtil {
     /**
      * Retourne une liste des Affilies (numéro et nom de l'affilié) en fonction des permiers chiffres du numéro affilié
      * donnés en paramètres. Date de création : (17.09.2003 17:032:13)
-     * 
+     *
      * @return la liste d'options (tag select) des affiliés existants de la caisse actuelle. Peut-être vide si aucune
      *         information n'a été trouvée
      * @param like
@@ -498,7 +498,7 @@ public class CIUtil {
     /**
      * Retourne une liste des Affilies (numéro et nom de l'affilié) en fonction des permiers chiffres du numéro affilié
      * donnés en paramètres. Date de création : (17.09.2003 17:032:13)
-     * 
+     *
      * @return la liste d'options (tag select) des affiliés existants de la caisse actuelle. Peut-être vide si aucune
      *         information n'a été trouvée
      * @param like
@@ -559,8 +559,8 @@ public class CIUtil {
                     options.append("\" idAffiliation='");
                     options.append(af.getAffiliationId());
                     options.append("' brancheeco='");
-                    options.append(globaz.pavo.translation.CodeSystem.getCodeUtilisateur(af.getBrancheEconomique(),
-                            bsession));
+                    options.append(
+                            globaz.pavo.translation.CodeSystem.getCodeUtilisateur(af.getBrancheEconomique(), bsession));
                     options.append("'");
                     options.append("brancheecoCode='");
                     options.append(af.getBrancheEconomique());
@@ -610,7 +610,7 @@ public class CIUtil {
      * Retourne une liste des Affilies (dernier employeur) pour un compte individuel : numéro, nom et adresses de
      * l'affilié en fonction des premiers chiffres du numéro affilié donnés en paramètres. Date de création :
      * (17.09.2003 17:032:13)
-     * 
+     *
      * @return la liste d'options (tag select) des affiliés existants de la caisse actuelle. Peut-être vide si aucune
      *         information n'a été trouvée
      * @param like
@@ -667,7 +667,7 @@ public class CIUtil {
      * Retourne une liste des Affilies pour un journal, cad les employeurs et indépendants (numéro et nom de l'affilié)
      * en fonction des premiers chiffres du numéro affilié donnés en paramètres. Date de création : (17.09.2003
      * 17:032:13)
-     * 
+     *
      * @return la liste d'options (tag select) des affiliés existants de la caisse actuelle. Peut-être vide si aucune
      *         information n'a été trouvée
      * @param like
@@ -679,8 +679,8 @@ public class CIUtil {
 
         CIApplication ciApp = null;
         try {
-            ciApp = (CIApplication) GlobazServer.getCurrentSystem().getApplication(
-                    CIApplication.DEFAULT_APPLICATION_PAVO);
+            ciApp = (CIApplication) GlobazServer.getCurrentSystem()
+                    .getApplication(CIApplication.DEFAULT_APPLICATION_PAVO);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -745,7 +745,7 @@ public class CIUtil {
     /**
      * Retourne une liste des Affilies (numéro et nom de l'affilié) en fonction des permiers chiffres du numéro affilié
      * donnés en paramètres. Date de création : (17.09.2003 17:032:13)
-     * 
+     *
      * @return la liste d'options (tag select) des affiliés existants de la caisse actuelle. Peut-être vide si aucune
      *         information n'a été trouvée
      * @param like
@@ -769,8 +769,8 @@ public class CIUtil {
         CIApplication ciApp = null;
         try {
             // ciApp = (CIApplication) bsession.getApplication();
-            ciApp = (CIApplication) GlobazServer.getCurrentSystem().getApplication(
-                    CIApplication.DEFAULT_APPLICATION_PAVO);
+            ciApp = (CIApplication) GlobazServer.getCurrentSystem()
+                    .getApplication(CIApplication.DEFAULT_APPLICATION_PAVO);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -810,8 +810,8 @@ public class CIUtil {
                     options.append("\" idAffiliation='");
                     options.append(af.getAffiliationId());
                     options.append("' brancheeco='");
-                    options.append(globaz.pavo.translation.CodeSystem.getCodeUtilisateur(af.getBrancheEconomique(),
-                            bsession));
+                    options.append(
+                            globaz.pavo.translation.CodeSystem.getCodeUtilisateur(af.getBrancheEconomique(), bsession));
                     options.append("'");
                     options.append("brancheecoCode='");
                     options.append(af.getBrancheEconomique());
@@ -861,7 +861,7 @@ public class CIUtil {
     /**
      * Retourne un employeur,un partenaire ou un organisme spécial (nom, prenom ou libellé) en fonction du numéro
      * d'affilié ou du numéro AVS du partenaire Date de création : (09.02.2005 15:023:15)
-     * 
+     *
      * @return une string contenant un nom,prenom ou libellé
      * @param like
      *            les primers chiffres du numéro affilié
@@ -958,8 +958,8 @@ public class CIUtil {
 
         try {
 
-            CIApplication application = (CIApplication) GlobazServer.getCurrentSystem().getApplication(
-                    CIApplication.DEFAULT_APPLICATION_PAVO);
+            CIApplication application = (CIApplication) GlobazServer.getCurrentSystem()
+                    .getApplication(CIApplication.DEFAULT_APPLICATION_PAVO);
             return application.getAnnoncesABloquer();
         } catch (Exception e) {
             return new ArrayList();
@@ -979,7 +979,7 @@ public class CIUtil {
     /**
      * Retourne une liste de CI (numéro et nom de l'assuré) en fonction des permiers chiffres du numéro avs donnés en
      * paramètres. Date de création : (10.03.2004 09:05:13)
-     * 
+     *
      * @return le numéro d'affilié des ticket étudiants
      */
     public static int getAutoDigitAff(HttpSession session) {
@@ -995,7 +995,7 @@ public class CIUtil {
     /**
      * Retourne une liste de CI (numéro et nom de l'assuré) en fonction des permiers chiffres du numéro avs donnés en
      * paramètres. Date de création : (25.02.2003 09:05:13)=
-     * 
+     *
      * @return la liste d'options (tag select) des CI existants de la caisse actuelle. Peut-être vide si aucune
      *         information n'a été trouvée
      * @param like
@@ -1091,7 +1091,7 @@ public class CIUtil {
     /**
      * Retourne une liste de CI (numéro et nom de l'assuré) en fonction des permiers chiffres du numéro avs donnés en
      * paramètres. Date de création : (25.02.2003 09:05:13)
-     * 
+     *
      * @return la liste d'options (tag select) des CI existants de la caisse actuelle. Peut-être vide si aucune
      *         information n'a été trouvée
      * @param like
@@ -1108,7 +1108,7 @@ public class CIUtil {
      * Retourne une liste de CI (numéro et nom de l'assuré) en fonction des permiers chiffres du numéro avs donnés en
      * paramètres, sans le CI précisé dans except et sans les CI possédant une référence vers un autre CI. Date de
      * création : (12.08.2003 16:00:00)=
-     * 
+     *
      * @return la liste d'options (tag select) des CI existants de la caisse actuelle. Peut-être vide si aucune
      *         information n'a été trouvée
      * @param like
@@ -1190,7 +1190,7 @@ public class CIUtil {
      * Retourne une liste de CI (numéro et nom de l'assuré) en fonction des permiers chiffres du numéro avs donnés en
      * paramètres, sans le CI précisé dans except et sans les CI possédant une référence vers un autre CI. Date de
      * création : (12.08.2003 16:00:00)=
-     * 
+     *
      * @return la liste d'options (tag select) des CI existants de la caisse actuelle. Peut-être vide si aucune
      *         information n'a été trouvée
      * @param like
@@ -1303,7 +1303,7 @@ public class CIUtil {
 
     /**
      * Retourne la caisse du numéro avs donnés en paramètres. Date de création : (14.062004 09:05:13)
-     * 
+     *
      * @return la caisse
      */
     public static String getCaisseInterne(BSession bSession) {
@@ -1340,7 +1340,7 @@ public class CIUtil {
 
     /**
      * méthode qui retourne une ArrayList contenant les CS des type d'anomalies à comparer
-     * 
+     *
      * @return
      */
     public static ArrayList getCodesAComparer() {
@@ -1356,7 +1356,7 @@ public class CIUtil {
 
     /**
      * méthode qui retourne une ArrayList contenant les CS des type d'anomalies à corriger
-     * 
+     *
      * @return
      */
     public static ArrayList getCodesACorriger() {
@@ -1556,7 +1556,7 @@ public class CIUtil {
 
     /**
      * Method getFormatAffilie.
-     * 
+     *
      * @param session
      * @return IFormatData
      */
@@ -1603,7 +1603,7 @@ public class CIUtil {
             /*
              * CIAffilieManager affMgr= new CIAffilieManager(); affMgr.setSession((BSession) ((FWController)
              * session.getAttribute("objController")).getSession());
-             * 
+             *
              * ArrayList line = new ArrayList(); CIEcritureManager mgrEcrituresPositives = new CIEcritureManager();
              * CIEcritureManager mgrEcrituresNegatives = new CIEcritureManager();
              * mgrEcrituresPositives.setSession((BSession) ((FWController)
@@ -1707,7 +1707,7 @@ public class CIUtil {
 
     /**
      * Method getMasseSalarialePaAnnée.
-     * 
+     *
      * @param session
      * @param idAffiliation
      * @return ArrayList
@@ -1733,7 +1733,7 @@ public class CIUtil {
             /*
              * CIAffilieManager affMgr= new CIAffilieManager(); affMgr.setSession((BSession) ((FWController)
              * session.getAttribute("objController")).getSession());
-             * 
+             *
              * ArrayList line = new ArrayList(); CIEcritureManager mgrEcrituresPositives = new CIEcritureManager();
              * CIEcritureManager mgrEcrituresNegatives = new CIEcritureManager();
              * mgrEcrituresPositives.setSession((BSession) ((FWController)
@@ -1783,7 +1783,7 @@ public class CIUtil {
                     }
                     /*
                      * try { mgrCompteur.find(); } catch (Exception e) {
-                     * 
+                     *
                      * } cptr = (CACompteur)mgrCompteur.getFirstEntity(); if(cptr!=null){ resultCA =
                      * cptr.getCumulMasse(); }else{ resultCA="0"; }
                      */
@@ -1863,7 +1863,7 @@ public class CIUtil {
     /**
      * Retourne une liste de CI (numéro et nom de l'assuré) en fonction des permiers chiffres du numéro avs donnés en
      * paramètres. Date de création : (10.03.2004 09:05:13)
-     * 
+     *
      * @return le numéro d'affilié des ticket étudiants
      */
     public static String getNumeroTicketEtudiants(HttpSession session) {
@@ -1943,7 +1943,7 @@ public class CIUtil {
 
     /**
      * Retourne le nom complet d'un utilisateur en fonction d'une abbréviation. Date de création : (09.01.2003 15:20:45)
-     * 
+     *
      * @return le nom complet
      * @param abr
      *            l'abbréviation
@@ -2014,7 +2014,7 @@ public class CIUtil {
 
     /**
      * Teste si la date est située plus de 30 ans en arrière<br>
-     * 
+     *
      * @param date
      *            la date testée (JJ.MM.AAAA)
      * @return true si y'a plus de 30 ans, false sinon
@@ -2056,7 +2056,7 @@ public class CIUtil {
 
     /**
      * Renvoie true si les journaux d'assurance facultative doivent être affichés Date de création : (31.05.2005)
-     * 
+     *
      * @return true si les journaux d'assurance facultative doivent être affichés
      */
     public static boolean isAfficheJournalAssuranceFac(BSession bSession) {
@@ -2070,7 +2070,7 @@ public class CIUtil {
 
     /**
      * Teste si l'assuré peut utiliser le splitting (21 ans). Date de création : (16.05.2003 11:50:40)
-     * 
+     *
      * @return boolean
      */
     public static boolean isAgeSplitting(JADate date, int annee) {
@@ -2122,7 +2122,7 @@ public class CIUtil {
 
     /**
      * Méthode qui nous dit si les caisses sont différentes en plus des agences en cas de fusion
-     * 
+     *
      * @return
      */
     public static boolean isCaisseDifferente(BSession session) {
@@ -2220,7 +2220,7 @@ public class CIUtil {
     public static boolean isTestXML(BSession session) {
         try {
             CIApplication application = (CIApplication) session.getApplication();
-            return application.isAnnonceXML();
+            return application.isTestXML();
         } catch (Exception e) {
             return true;
         }
@@ -2300,7 +2300,7 @@ public class CIUtil {
 
     /**
      * Test si le mois de fin et de début sont égal à 66,77 ou 99
-     * 
+     *
      * @return true si les mois de début et de fin sont spéciaux (66,77,99)
      */
     public static boolean isMoisSpeciaux(String moisFin) {
@@ -2356,7 +2356,7 @@ public class CIUtil {
 
     /**
      * Teste si l'assuré à l'age de la retraite. Date de création : (16.05.2003 11:50:40)
-     * 
+     *
      * @return boolean
      */
     public static boolean isRetraite(String noAvs, int annee, String noAvsNNSS, BSession session) {
@@ -2383,8 +2383,8 @@ public class CIUtil {
                         if (JadeStringUtil.isBlankOrZero(ciRetraite.getDateNaissance())) {
                             return false;
                         }
-                        return CIUtil
-                                .isRetraite(new JADate(ciRetraite.getDateNaissance()), ciRetraite.getSexe(), annee);
+                        return CIUtil.isRetraite(new JADate(ciRetraite.getDateNaissance()), ciRetraite.getSexe(),
+                                annee);
                     }
                     return false;
                 }
@@ -2437,7 +2437,7 @@ public class CIUtil {
 
     /**
      * Ajoute des zéro au jour et mois d'une date au format dd.mm.yyyy. Date de création : (27.01.2003 08:44:58)
-     * 
+     *
      * @date la date à formater.
      * @return la date fotmatée
      */
@@ -2457,7 +2457,7 @@ public class CIUtil {
 
     /**
      * Renvoie le numéro avs sans les zéro superflus
-     * 
+     *
      * @param noAvs
      *            le numéro avs à convertir
      * @return le numéro avs sans zéro
@@ -2472,7 +2472,7 @@ public class CIUtil {
 
     /**
      * Sépare un texte avec la première occurence d'un charactère blanc. Date de création : (21.03.2003 13:32:32)
-     * 
+     *
      * @return java.lang.String[]
      * @param text
      *            java.lang.String
@@ -2493,7 +2493,7 @@ public class CIUtil {
 
     /**
      * Enlève les . de séparation du numéro avs. Date de création : (09.01.2003 10:07:14)
-     * 
+     *
      * @return le numéro avs formatté
      * @param avs
      *            le numéro avs à fomatter
@@ -2512,8 +2512,8 @@ public class CIUtil {
     }
 
     public static String UnFormatNumeroAffilie(BSession session, String numeroAffilie) throws Exception {
-        CIApplication app = (CIApplication) GlobazServer.getCurrentSystem().getApplication(
-                CIApplication.DEFAULT_APPLICATION_PAVO);
+        CIApplication app = (CIApplication) GlobazServer.getCurrentSystem()
+                .getApplication(CIApplication.DEFAULT_APPLICATION_PAVO);
         IFormatData affilieFormater = app.getAffileFormater();
         return affilieFormater.unformat(numeroAffilie);
     }
@@ -2536,7 +2536,7 @@ public class CIUtil {
 
     /**
      * Enlèves les 0 de la caisse pour recherche dans tiers Date de création : (09.01.2003 10:07:14)
-     * 
+     *
      * @return le numéro avs formatté
      * @param avs
      *            le numéro avs à fomatter
@@ -2559,8 +2559,8 @@ public class CIUtil {
 
     public static boolean wantSyncroNRa() {
         try {
-            CIApplication application = (CIApplication) GlobazServer.getCurrentSystem().getApplication(
-                    CIApplication.DEFAULT_APPLICATION_PAVO);
+            CIApplication application = (CIApplication) GlobazServer.getCurrentSystem()
+                    .getApplication(CIApplication.DEFAULT_APPLICATION_PAVO);
             return application.wantSyncroNra();
         } catch (Exception e) {
             return false;
@@ -2576,8 +2576,8 @@ public class CIUtil {
 
     public static String getRacineNom() {
         try {
-            CIApplication application = (CIApplication) GlobazServer.getCurrentSystem().getApplication(
-                    CIApplication.DEFAULT_APPLICATION_PAVO);
+            CIApplication application = (CIApplication) GlobazServer.getCurrentSystem()
+                    .getApplication(CIApplication.DEFAULT_APPLICATION_PAVO);
             return application.getRacineNom();
         } catch (Exception e) {
             return "";
