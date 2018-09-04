@@ -78,7 +78,7 @@ public class CIAnnonceCentraleException extends JadeApplicationException {
             }
 
             buf.append("\n");
-
+            buf.append("\n");
         }
 
         return buf.toString();

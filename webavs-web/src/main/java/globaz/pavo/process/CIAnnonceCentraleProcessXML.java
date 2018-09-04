@@ -38,8 +38,6 @@ import ch.admin.zas.rc.IKStatistikMeldungType.Aufzeichnungen.IKKopf;
 import ch.admin.zas.rc.IKStatistikMeldungType.StandIKStatistikNacher;
 import ch.admin.zas.rc.PoolFussType;
 import ch.admin.zas.rc.PoolKopfType;
-import ch.admin.zas.rc.PoolKopfType.Datentraegerstyp;
-import ch.admin.zas.rc.TDatentraegerstyp;
 import ch.admin.zas.rc.TEintragungIKMinDat.Beitragsdauer;
 import ch.admin.zas.rc.TStandIKStatistik;
 import ch.globaz.common.properties.CommonProperties;
@@ -417,10 +415,6 @@ public class CIAnnonceCentraleProcessXML extends BProcess {
         PoolKopfType poolKopf = factoryType.createPoolKopfType();
         if (poolKopfTest) {
             poolKopf.setTest("TEST");
-            Datentraegerstyp donnee = factoryType.createPoolKopfTypeDatentraegerstyp();
-            donnee.setPoolscode(true);
-            donnee.setValue(TDatentraegerstyp.T);
-            poolKopf.setDatentraegerstyp(donnee);
         }
         poolKopf.setSender(poolKopfSender);
 
@@ -741,7 +735,7 @@ public class CIAnnonceCentraleProcessXML extends BProcess {
                 ciPart.setCompteIndividuelId(ecriture.getPartenaireId());
                 ciPart.retrieve();
                 if (!ciPart.isNew()) {
-                    noAffilie = ciPart.getNumeroAvs();
+                    noAffilie = ciPart.getNumeroAvsForSplitting();
                     if (noAffilie.contains("-")) {
                         noAffilie = "756" + JadeStringUtil.removeChar(noAffilie, '-');
                     }
@@ -762,8 +756,8 @@ public class CIAnnonceCentraleProcessXML extends BProcess {
                 }
             }
             String numAffWithoutDot = StringUtils.removeDots(ecriture.getIdAffilie());
-            if (numAffWithoutDot.contains("-")) {
-                numAffWithoutDot = "756" + numAffWithoutDot.substring(1, numAffWithoutDot.length());
+            if (numAffWithoutDot.length() > CIAnnonceCentraleProcessXML.NUM_AVS_LENGTH) {
+                numAffWithoutDot = numAffWithoutDot.substring(0, CIAnnonceCentraleProcessXML.NUM_AVS_LENGTH);
             }
             return numAffWithoutDot;
         }
