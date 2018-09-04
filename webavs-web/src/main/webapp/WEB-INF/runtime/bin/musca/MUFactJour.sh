@@ -78,6 +78,8 @@ done
 ### =================================== ###
 
 # --- Information Produit ---
+. ~/.profile
+
    PRODUCT="webavs"
    MODULE="muscat-factjour"
 
@@ -116,7 +118,7 @@ case $ACTION in
         exit 2
      fi
     echo "Starting ${PRODUCT}_${MODULE}"
-    CALL_JAVA_PROCESS="$JAVA_HOME/bin/java -DPRODUCT=${PRODUCT}_${MODULE} -Djava.awt.headless=true -Dclient.encoding.override=ISO8859-1 -Duser.country=CH -Duser.language=fr -Duser.timezone=Europe/Zurich -Djava.ext.dirs=${BATCH_DIR}/${VERSION}/lib:$JAVA_HOME/lib/ext:/share/lib/db2:/share/lib/java -Xms512m -Xmx1024m   globaz.globall.tools.GlobazCommandLineJob $APPLICATION $CLASSNAME $USER $PASSWORD $EMAIL"
+    CALL_JAVA_PROCESS="${JAVA_HOME}/bin/java -DPRODUCT=${PRODUCT}_${MODULE} -Djava.awt.headless=true -Dclient.encoding.override=ISO8859-1 -Duser.country=CH -Duser.language=fr -Duser.timezone=Europe/Zurich -Djava.ext.dirs=${BATCH_DIR}/${VERSION}/lib:${JAVA_HOME}/lib/ext:/share/lib/db2:/share/lib/java -Xms512m -Xmx1024m   globaz.globall.tools.GlobazCommandLineJob $APPLICATION $CLASSNAME $USER $PASSWORD $EMAIL"
     TIMESTAMP=$(date +%Y%m%d%H%M%S)
     if [[ $(whoami) = $APPUSER ]] ;
     then
