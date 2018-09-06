@@ -66,7 +66,7 @@ public class REEnvoyerRecapARC8DXMLProcess extends BProcess {
 
         try {
             PoolMeldungZurZAS.Lot lotAnnonces = REEnvoyerRecapARC8DXMLService.getInstance().initPoolMeldungZurZASLot(
-                    REProperties.CENTRALE_TEST.getBooleanValue(), CommonProperties.KEY_NO_CAISSE.getValue());
+                    REProperties.RECAP_CENTRALE_TEST.getBooleanValue(), CommonProperties.KEY_NO_CAISSE.getValue());
 
             prepareEnvoieAnnonce(reDetRecMenViewBean, lotAnnonces);
             envoieRecap(lotAnnonces);
@@ -193,7 +193,8 @@ public class REEnvoyerRecapARC8DXMLProcess extends BProcess {
         }
 
         String fileName = REEnvoyerRecapARC8DXMLService.getInstance().genereFichier(lotAnnonces);
-        JadeFsFacade.copyFile(fileName, REProperties.FTP_CENTRALE_PATH.getValue() + "/" + new File(fileName).getName());
+        JadeFsFacade.copyFile(fileName,
+                REProperties.RECAP_FTP_CENTRALE_PATH.getValue() + "/" + new File(fileName).getName());
     }
 
     /**
