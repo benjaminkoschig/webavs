@@ -348,7 +348,7 @@
 						x="749"
 						y="215"
 						width="8"
-						height="0"
+						height="1"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
 						key="line-145"
@@ -402,7 +402,7 @@
 						x="749"
 						y="191"
 						width="8"
-						height="0"
+						height="1"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
 						key="line-151"
@@ -553,7 +553,7 @@
 						mode="Transparent"
 						x="165"
 						y="95"
-						width="0"
+						width="1"
 						height="28"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -650,7 +650,7 @@
 						x="186"
 						y="135"
 						width="8"
-						height="0"
+						height="1"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
 						key="line-176"
@@ -898,7 +898,7 @@
 						mode="Opaque"
 						x="86"
 						y="29"
-						width="0"
+						width="1"
 						height="32"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -916,7 +916,7 @@
 						mode="Opaque"
 						x="426"
 						y="29"
-						width="0"
+						width="1"
 						height="33"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -934,7 +934,7 @@
 						mode="Opaque"
 						x="477"
 						y="4"
-						width="0"
+						width="1"
 						height="57"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -952,7 +952,7 @@
 						mode="Opaque"
 						x="538"
 						y="30"
-						width="0"
+						width="1"
 						height="30"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -971,7 +971,7 @@
 						x="374"
 						y="45"
 						width="102"
-						height="0"
+						height="1"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
 						key="line-116"
@@ -988,7 +988,7 @@
 						mode="Opaque"
 						x="399"
 						y="45"
-						width="0"
+						width="1"
 						height="16"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -1006,7 +1006,7 @@
 						mode="Opaque"
 						x="451"
 						y="46"
-						width="0"
+						width="1"
 						height="16"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -1297,7 +1297,7 @@
 						isRemoveLineWhenBlank="false"
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="false"/>
-					<graphicElement stretchType="NoStretch" pen="1Point" fill="Solid" />
+					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
 				</rectangle>
 				<line direction="TopDown">
 					<reportElement
@@ -1305,7 +1305,7 @@
 						x="470"
 						y="29"
 						width="312"
-						height="0"
+						height="1"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
 						key="line-158"
@@ -1323,7 +1323,7 @@
 						x="1"
 						y="29"
 						width="506"
-						height="0"
+						height="1"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
 						key="line-157"
@@ -1384,7 +1384,7 @@
 						mode="Opaque"
 						x="295"
 						y="3"
-						width="0"
+						width="1"
 						height="58"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -1404,7 +1404,7 @@
 						mode="Opaque"
 						x="338"
 						y="3"
-						width="0"
+						width="1"
 						height="58"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -1444,7 +1444,7 @@
 						mode="Opaque"
 						x="662"
 						y="30"
-						width="0"
+						width="1"
 						height="30"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -1482,7 +1482,7 @@
 						mode="Opaque"
 						x="316"
 						y="3"
-						width="0"
+						width="1"
 						height="58"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -1500,7 +1500,7 @@
 						mode="Opaque"
 						x="373"
 						y="29"
-						width="0"
+						width="1"
 						height="33"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -1538,7 +1538,7 @@
 						mode="Opaque"
 						x="600"
 						y="30"
-						width="0"
+						width="1"
 						height="30"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -1556,7 +1556,7 @@
 						mode="Opaque"
 						x="724"
 						y="30"
-						width="0"
+						width="1"
 						height="30"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -1718,7 +1718,7 @@
 						mode="Transparent"
 						x="86"
 						y="-1"
-						width="0"
+						width="1"
 						height="23"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -1736,7 +1736,7 @@
 						mode="Transparent"
 						x="295"
 						y="-1"
-						width="0"
+						width="1"
 						height="23"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -1756,7 +1756,7 @@
 						mode="Transparent"
 						x="338"
 						y="-1"
-						width="0"
+						width="1"
 						height="23"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -1774,7 +1774,7 @@
 						mode="Transparent"
 						x="399"
 						y="-1"
-						width="0"
+						width="1"
 						height="23"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -1792,7 +1792,7 @@
 						mode="Transparent"
 						x="451"
 						y="-1"
-						width="0"
+						width="1"
 						height="23"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -1810,7 +1810,7 @@
 						mode="Transparent"
 						x="477"
 						y="-1"
-						width="0"
+						width="1"
 						height="23"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -1828,7 +1828,7 @@
 						mode="Transparent"
 						x="538"
 						y="-1"
-						width="0"
+						width="1"
 						height="23"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -1846,7 +1846,7 @@
 						mode="Transparent"
 						x="426"
 						y="-1"
-						width="0"
+						width="1"
 						height="23"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -1864,7 +1864,7 @@
 						mode="Transparent"
 						x="1"
 						y="-1"
-						width="0"
+						width="1"
 						height="23"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -1882,7 +1882,7 @@
 						mode="Transparent"
 						x="316"
 						y="-1"
-						width="0"
+						width="1"
 						height="23"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -1903,7 +1903,7 @@
 						x="1"
 						y="22"
 						width="781"
-						height="0"
+						height="1"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
 						key="line-156"
@@ -1920,7 +1920,7 @@
 						mode="Transparent"
 						x="662"
 						y="-1"
-						width="0"
+						width="1"
 						height="23"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -1938,7 +1938,7 @@
 						mode="Transparent"
 						x="782"
 						y="-1"
-						width="0"
+						width="1"
 						height="23"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -1956,7 +1956,7 @@
 						mode="Transparent"
 						x="373"
 						y="-2"
-						width="0"
+						width="1"
 						height="23"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -1994,7 +1994,7 @@
 						mode="Transparent"
 						x="600"
 						y="-1"
-						width="0"
+						width="1"
 						height="23"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -2012,7 +2012,7 @@
 						mode="Transparent"
 						x="724"
 						y="-1"
-						width="0"
+						width="1"
 						height="23"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -2065,14 +2065,14 @@
 						isRemoveLineWhenBlank="false"
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="false"/>
-					<graphicElement stretchType="NoStretch" pen="1Point" fill="Solid" />
+					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
 				</rectangle>
 				<line direction="TopDown">
 					<reportElement
 						mode="Transparent"
 						x="662"
 						y="0"
-						width="0"
+						width="1"
 						height="20"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -2083,14 +2083,14 @@
 						isRemoveLineWhenBlank="false"
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="false"/>
-					<graphicElement stretchType="NoStretch" pen="1Point" fill="Solid" />
+					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
 				</line>
 				<line direction="TopDown">
 					<reportElement
 						mode="Transparent"
 						x="538"
 						y="0"
-						width="0"
+						width="1"
 						height="20"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -2101,7 +2101,7 @@
 						isRemoveLineWhenBlank="false"
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="false"/>
-					<graphicElement stretchType="NoStretch" pen="1Point" fill="Solid" />
+					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
 				</line>
 				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
@@ -2128,7 +2128,7 @@
 						mode="Transparent"
 						x="600"
 						y="0"
-						width="0"
+						width="1"
 						height="20"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -2139,14 +2139,14 @@
 						isRemoveLineWhenBlank="false"
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="false"/>
-					<graphicElement stretchType="NoStretch" pen="1Point" fill="Solid" />
+					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
 				</line>
 				<line direction="TopDown">
 					<reportElement
 						mode="Transparent"
 						x="724"
 						y="0"
-						width="0"
+						width="1"
 						height="20"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -2157,7 +2157,7 @@
 						isRemoveLineWhenBlank="false"
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="false"/>
-					<graphicElement stretchType="NoStretch" pen="1Point" fill="Solid" />
+					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
 				</line>
 				<line direction="TopDown">
 					<reportElement
@@ -2165,7 +2165,7 @@
 						x="33"
 						y="65"
 						width="126"
-						height="0"
+						height="1"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
 						key="line-179"
@@ -2175,7 +2175,7 @@
 						isRemoveLineWhenBlank="false"
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="false"/>
-					<graphicElement stretchType="NoStretch" pen="1Point" fill="Solid" />
+					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
 				</line>
 				<line direction="TopDown">
 					<reportElement
@@ -2183,7 +2183,7 @@
 						x="255"
 						y="65"
 						width="235"
-						height="0"
+						height="1"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
 						key="line-180"
@@ -2193,7 +2193,7 @@
 						isRemoveLineWhenBlank="false"
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="false"/>
-					<graphicElement stretchType="NoStretch" pen="1Point" fill="Solid" />
+					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
 				</line>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
@@ -2275,24 +2275,16 @@
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_SIGNE}]]></textFieldExpression>
 				</textField>
-			</band>
-		</columnFooter>
-		<pageFooter>
-			<band height="0"  isSplitAllowed="true" >
-			</band>
-		</pageFooter>
-		<lastPageFooter>
-			<band height="1"  isSplitAllowed="true" >
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
 						x="14"
-						y="-49"
-						width="462"
+						y="19"
+						width="564"
 						height="12"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
 						key="textField-75"
-						stretchType="NoStretch"
+						stretchType="RelativeToTallestObject"
 						positionType="FixRelativeToTop"
 						isPrintRepeatedValues="true"
 						isRemoveLineWhenBlank="false"
@@ -2303,6 +2295,14 @@
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_CERTIFIE}]]></textFieldExpression>
 				</textField>
+			</band>
+		</columnFooter>
+		<pageFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</pageFooter>
+		<lastPageFooter>
+			<band height="1"  isSplitAllowed="true" >
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
 						x="14"
@@ -2339,7 +2339,7 @@
 						isRemoveLineWhenBlank="false"
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="false"/>
-					<graphicElement stretchType="NoStretch" pen="1Point" fill="Solid" />
+					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
 				</rectangle>
 			</band>
 		</lastPageFooter>
