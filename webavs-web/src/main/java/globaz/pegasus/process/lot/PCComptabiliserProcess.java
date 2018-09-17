@@ -1,5 +1,25 @@
 package globaz.pegasus.process.lot;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import ch.globaz.corvus.business.models.lots.SimpleLot;
+import ch.globaz.corvus.business.services.CorvusServiceLocator;
+import ch.globaz.osiris.business.service.CABusinessServiceLocator;
+import ch.globaz.pegasus.business.constantes.decision.DecisionTypes;
+import ch.globaz.pegasus.business.exceptions.models.decision.DecisionException;
+import ch.globaz.pegasus.business.exceptions.models.lot.ComptabiliserLotException;
+import ch.globaz.pegasus.business.exceptions.models.lot.PrestationException;
+import ch.globaz.pegasus.business.models.decision.DecisionApresCalcul;
+import ch.globaz.pegasus.business.models.decision.DecisionApresCalculSearch;
+import ch.globaz.pegasus.business.models.externalmodule.ExternalJobActionSource;
+import ch.globaz.pegasus.business.models.externalmodule.jsonparameters.ComptabilisationParameter;
+import ch.globaz.pegasus.business.models.lot.Prestation;
+import ch.globaz.pegasus.business.models.lot.PrestationSearch;
+import ch.globaz.pegasus.business.services.PegasusServiceLocator;
+import ch.globaz.pegasus.businessimpl.services.models.decision.ged.DACGedHandler;
+import ch.globaz.pegasus.businessimpl.services.models.lot.comptabilisation.process.ComptabilisationData;
 import globaz.corvus.api.lots.IRELot;
 import globaz.globall.db.BProcessLauncher;
 import globaz.globall.db.BSession;
@@ -21,38 +41,18 @@ import globaz.pegasus.process.PCAbstractJob;
 import globaz.pegasus.process.decision.PCImprimerDecisionsProcess;
 import globaz.pegasus.process.lot.ComptabiliserProcessMailHandler.PROCESS_TYPE;
 import globaz.pegasus.utils.ChrysaorUtil;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import ch.globaz.corvus.business.models.lots.SimpleLot;
-import ch.globaz.corvus.business.services.CorvusServiceLocator;
-import ch.globaz.osiris.business.service.CABusinessServiceLocator;
-import ch.globaz.pegasus.business.constantes.decision.DecisionTypes;
-import ch.globaz.pegasus.business.exceptions.models.decision.DecisionException;
-import ch.globaz.pegasus.business.exceptions.models.lot.ComptabiliserLotException;
-import ch.globaz.pegasus.business.exceptions.models.lot.PrestationException;
-import ch.globaz.pegasus.business.models.decision.DecisionApresCalcul;
-import ch.globaz.pegasus.business.models.decision.DecisionApresCalculSearch;
-import ch.globaz.pegasus.business.models.externalmodule.ExternalJobActionSource;
-import ch.globaz.pegasus.business.models.externalmodule.jsonparameters.ComptabilisationParameter;
-import ch.globaz.pegasus.business.models.lot.Prestation;
-import ch.globaz.pegasus.business.models.lot.PrestationSearch;
-import ch.globaz.pegasus.business.services.PegasusServiceLocator;
-import ch.globaz.pegasus.businessimpl.services.models.decision.ged.DACGedHandler;
-import ch.globaz.pegasus.businessimpl.services.models.lot.comptabilisation.process.ComptabilisationData;
 
 /**
  * Processus de comptabilisation PC
- * 
+ *
  * @author DMA
  * @author SCE (modifications mise en ged auto)
- * 
+ *
  */
 public class PCComptabiliserProcess extends PCAbstractJob {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
     private String adresseMail = "";
@@ -70,7 +70,7 @@ public class PCComptabiliserProcess extends PCAbstractJob {
     /**
      * Méthode appelé après le finnaly du process en lui même Test si le process n'est pas en erreur, et si c'est ok
      * lance la suite du traitement En l'occurence la mise en GED auto des décisions du lot
-     * 
+     *
      * @param simpleLot
      *            l'instance du lot qui doit être traité
      * @throws Exception
@@ -87,7 +87,9 @@ public class PCComptabiliserProcess extends PCAbstractJob {
                 // et de supprimer les logs relatifs à la comptabilisation des décisions
                 JadeThread.logClear();
                 launchMiseEnGedDecisionApresCalcul(simpleLot);
-                sendJobForChysaor(simpleLot.getIdLot());
+                if (simpleLot.getCsTypeLot().equals(IRELot.CS_TYP_LOT_DECISION)) {
+                    sendJobForChysaor(simpleLot.getIdLot());
+                }
             }
         }
     }
@@ -108,7 +110,7 @@ public class PCComptabiliserProcess extends PCAbstractJob {
 
     /**
      * Mandatory paramètres appelé depuis le helpers pour permettre un reafficher si erreur
-     * 
+     *
      * @throws ComptabiliserLotException
      */
     public void checkMandatoryParams(BSession session) throws ComptabiliserLotException {
@@ -225,7 +227,7 @@ public class PCComptabiliserProcess extends PCAbstractJob {
 
     /**
      * Point d'entrée de la mise en GED auto des décisions après calcul
-     * 
+     *
      * @throws Exception
      */
     private void launchMiseEnGedDecisionApresCalcul(SimpleLot simpleLot) throws Exception {
@@ -255,8 +257,8 @@ public class PCComptabiliserProcess extends PCAbstractJob {
         SimpleLot simpleLot = null;
         try {
             // lancement process de comptabilisation
-            ComptabilisationData data = PegasusServiceLocator.getLotService().comptabiliserLot(idLot,
-                    idOrganeExecution, numeroOG, null, dateComptable, dateEcheancePaiement);
+            ComptabilisationData data = PegasusServiceLocator.getLotService().comptabiliserLot(idLot, idOrganeExecution,
+                    numeroOG, null, dateComptable, dateEcheancePaiement);
 
             BigDecimal totalJournal = new BigDecimal(JANumberFormatter.deQuote(CABusinessServiceLocator
                     .getJournalService().getSommeEcritures(data.getJournalConteneur().getJournalModel())));
@@ -282,7 +284,7 @@ public class PCComptabiliserProcess extends PCAbstractJob {
 
     /**
      * Envoi du mail suite au process
-     * 
+     *
      * @param process
      * @param lot
      * @param gedHandler
