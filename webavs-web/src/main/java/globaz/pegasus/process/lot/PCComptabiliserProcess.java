@@ -94,7 +94,7 @@ public class PCComptabiliserProcess extends PCAbstractJob {
         }
     }
 
-    private void sendJobForChysaor(String idLot) {
+    private void sendJobForChysaor(String idLot) throws Exception {
         try {
 
             if (ChrysaorUtil.isChrysaorEnabled()) {
@@ -102,8 +102,9 @@ public class PCComptabiliserProcess extends PCAbstractJob {
                         new ComptabilisationParameter(idLot));
             }
         } catch (Exception e) {
-            JadeLogger.info(this, " [Chrysaor] The chrysaor service throw exception during submitting job for idLot:"
+            JadeLogger.error(this, " [Chrysaor] The chrysaor service throw exception during submitting job for idLot:"
                     + idLot + ", message: " + e.getMessage());
+            throw e;
         }
 
     }

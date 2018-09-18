@@ -1,16 +1,17 @@
 package ch.globaz.pegasus.businessimpl.services.chrysaor;
 
-import globaz.jade.exception.JadePersistenceException;
-import globaz.jade.log.JadeLogger;
-import globaz.jade.persistence.JadePersistenceManager;
+import com.google.gson.GsonBuilder;
 import ch.globaz.pegasus.business.models.externalmodule.ExternalJobActionSource;
 import ch.globaz.pegasus.business.models.externalmodule.ExternalJobEtat;
 import ch.globaz.pegasus.business.models.externalmodule.ExternalModule;
 import ch.globaz.pegasus.business.models.externalmodule.ExternalModuleSearch;
 import ch.globaz.pegasus.business.models.externalmodule.SimpleExternalModule;
+import ch.globaz.pegasus.business.models.externalmodule.jsonparameters.ComptabilisationParameter;
 import ch.globaz.pegasus.business.models.externalmodule.jsonparameters.ExternalModuleParameters;
 import ch.globaz.pegasus.business.services.chrysaor.ChrysaorService;
-import com.google.gson.GsonBuilder;
+import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.log.JadeLogger;
+import globaz.jade.persistence.JadePersistenceManager;
 
 public class ChrysaorServiceImpl implements ChrysaorService {
 
@@ -31,9 +32,11 @@ public class ChrysaorServiceImpl implements ChrysaorService {
             JadeLogger.info(this, " [Chrysaor] job submitted for chrysaor, job id: "
                     + externalModule.getSimpleExternalModule().getIdJob() + ", for the action : " + source);
         } else {
-            JadeLogger.info(this, " [Chrysaor] job not submitted for chrysaor, job id: "
-                    + externalModule.getSimpleExternalModule().getIdJob() + ", for the action : " + source
-                    + " , job already exist");
+            ComptabilisationParameter param = (ComptabilisationParameter) parameter;
+            String msg = " [Chrysaor] job not submitted for chrysaor,  id_lot: " + param.getIdLot()
+                    + ", for the action : " + source + " , job already exist";
+            JadeLogger.error(this, msg);
+            throw new JadePersistenceException(msg);
         }
 
         return externalModule;
@@ -58,12 +61,13 @@ public class ChrysaorServiceImpl implements ChrysaorService {
         // moduleExterneJob.getSimpleExternalModule().setEtatJob(ExternalJobEtat.SUBMIT);
         // moduleExterneJob.getSimpleExternalModule().setSourceAction(source);
 
-        externalModule.setSimpleExternalModule((SimpleExternalModule<E>) JadePersistenceManager.add(externalModule
-                .getSimpleExternalModule()));
+        externalModule.setSimpleExternalModule(
+                (SimpleExternalModule<E>) JadePersistenceManager.add(externalModule.getSimpleExternalModule()));
 
-        JadeLogger.info(this, " [Chrysaor] new job successfully submitted for chrysaor, job id: "
-                + externalModule.getSimpleExternalModule().getIdJob() + ", for the action : "
-                + externalModule.getSimpleExternalModule().getSourceAction());
+        JadeLogger.info(this,
+                " [Chrysaor] new job successfully submitted for chrysaor, job id: "
+                        + externalModule.getSimpleExternalModule().getIdJob() + ", for the action : "
+                        + externalModule.getSimpleExternalModule().getSourceAction());
         return externalModule;
 
     }

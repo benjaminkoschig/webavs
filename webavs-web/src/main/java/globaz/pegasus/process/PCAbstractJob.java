@@ -1,5 +1,8 @@
 package globaz.pegasus.process;
 
+import java.util.ArrayList;
+import java.util.List;
+import ch.globaz.corvus.business.models.lots.SimpleLot;
 import globaz.globall.db.BSession;
 import globaz.jade.admin.JadeAdminServiceLocatorProvider;
 import globaz.jade.client.util.JadeConversionUtil;
@@ -14,13 +17,10 @@ import globaz.jade.log.business.JadeBusinessMessage;
 import globaz.jade.log.business.JadeBusinessMessageLevels;
 import globaz.jade.log.business.renderer.JadeBusinessMessageRenderer;
 import globaz.jade.smtp.JadeSmtpClient;
-import java.util.ArrayList;
-import java.util.List;
-import ch.globaz.corvus.business.models.lots.SimpleLot;
 
 public abstract class PCAbstractJob extends AbstractJadeJob {
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
 
@@ -36,8 +36,8 @@ public abstract class PCAbstractJob extends AbstractJadeJob {
         JadeBusinessMessage message = null;
         currentException = e;
         while (currentException.getCause() != null) {
-            message = new JadeBusinessMessage(JadeBusinessMessageLevels.ERROR, getName(), currentException.getCause()
-                    .toString());
+            message = new JadeBusinessMessage(JadeBusinessMessageLevels.ERROR, getName(),
+                    currentException.getCause().toString());
             getLogSession().addMessage(message);
             currentException = currentException.getCause();
         }
@@ -71,9 +71,10 @@ public abstract class PCAbstractJob extends AbstractJadeJob {
         } catch (Exception e) {
             JadeThread.logError(this.getClass().getName(),
                     "Exception thrown during Pegasus Job Processing, exception : " + e.toString());
-
             List<String> l = new ArrayList<String>();
             l.add(getSession().getUserEMail());
+            JadeBusinessLogSession logs = getLogSession();
+            logs.error(e.getClass().toString(), e.getMessage());
             try {
                 sendCompletionMail(l);
             } catch (Exception e1) {
@@ -87,7 +88,7 @@ public abstract class PCAbstractJob extends AbstractJadeJob {
     }
 
     /**
-     * 
+     *
      * @param emailAdresses
      * @param simpleLot
      * @throws Exception
@@ -109,11 +110,11 @@ public abstract class PCAbstractJob extends AbstractJadeJob {
 
         JadeBusinessLogSession logs = getLogSession();
 
-        String logSession = JadeBusinessMessageRenderer.getInstance().getDefaultAdapter()
-                .render(logs.getMessages(), getSession().getIdLangueISO());
+        String logSession = JadeBusinessMessageRenderer.getInstance().getDefaultAdapter().render(logs.getMessages(),
+                getSession().getIdLangueISO());
 
-        String body = JadeBusinessMessageRenderer.getInstance().getDefaultAdapter()
-                .render(JadeThread.logMessages(), JadeThread.currentLanguage());
+        String body = JadeBusinessMessageRenderer.getInstance().getDefaultAdapter().render(JadeThread.logMessages(),
+                JadeThread.currentLanguage());
 
         // Si en erreur ajout ligne au body + logSession
         if ((logs.getMaxLevel() == JadeBusinessMessageLevels.ERROR)) {
