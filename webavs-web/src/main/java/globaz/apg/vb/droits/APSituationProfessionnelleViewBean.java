@@ -168,6 +168,7 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
 
     private boolean isIbanValide;
     private String lineAdressePaiementEmployeur;
+    private Boolean isRetourRechercheAffilie = false;
 
     // ~ Methods
     // --------------------------------------------------------------------------------------------------------
@@ -281,7 +282,8 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
         if ("CH0000000000000000000".equals(iban)) {
             isIbanValide = false;
             // Pas de mise à jour lorsque l'on clique sur des situations professionnelles existantes
-            if (isRetourDepuisAdresse() || isRetourDepuisPyxis() || isRetourDesTiers()) {
+            if (isRetourDepuisAdresse() || isRetourDepuisPyxis() || isRetourDesTiers()
+                    || getIsRetourRechercheAffilie()) {
                 setIsPorteEnCompte(true);
             }
         } else {
@@ -1690,6 +1692,14 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
      */
     public void setTypePrestation(final TypePrestation prestation) {
         typePrestation = prestation;
+    }
+
+    public Boolean getIsRetourRechercheAffilie() {
+        return isRetourRechercheAffilie;
+    }
+
+    public void setIsRetourRechercheAffilie(Boolean isRetourRechercheAffilie) {
+        this.isRetourRechercheAffilie = isRetourRechercheAffilie;
     }
 
 }

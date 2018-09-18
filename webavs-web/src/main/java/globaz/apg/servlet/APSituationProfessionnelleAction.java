@@ -3,6 +3,11 @@
  */
 package globaz.apg.servlet;
 
+import java.io.IOException;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import globaz.apg.db.droits.APDroitAPG;
 import globaz.apg.db.droits.APDroitLAPG;
 import globaz.apg.db.droits.APDroitMaternite;
@@ -34,15 +39,10 @@ import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.servlet.PRDefaultAction;
 import globaz.prestation.tools.PRSessionDataContainerHelper;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
-import java.io.IOException;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 /**
  * <H1>Description</H1>
- * 
+ *
  * @author dvh
  */
 public class APSituationProfessionnelleAction extends PRDefaultAction {
@@ -66,7 +66,7 @@ public class APSituationProfessionnelleAction extends PRDefaultAction {
 
     /**
      * Crée une nouvelle instance de la classe APSituationProfessionnelleAction.
-     * 
+     *
      * @param servlet
      *            DOCUMENT ME!
      */
@@ -80,7 +80,7 @@ public class APSituationProfessionnelleAction extends PRDefaultAction {
     /**
      * par défaut le framework redirige vers une action .chercher après un ajout. Nous préférons que la page soit
      * directement redirigée vers la page _de.jsp.
-     * 
+     *
      * @param session
      *            DOCUMENT ME!
      * @param request
@@ -89,9 +89,9 @@ public class APSituationProfessionnelleAction extends PRDefaultAction {
      *            DOCUMENT ME!
      * @param viewBean
      *            DOCUMENT ME!
-     * 
+     *
      * @return DOCUMENT ME!
-     * 
+     *
      * @see globaz.framework.controller.FWDefaultServletAction#_getDestAjouterSucces(javax.servlet.http.HttpSession,
      *      javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse,
      *      globaz.framework.bean.FWViewBeanInterface)
@@ -136,7 +136,7 @@ public class APSituationProfessionnelleAction extends PRDefaultAction {
     /**
      * redefinition pour intercepter les retours depuis pyxis et faire en sorte que le cadre de detail s'affiche avec
      * les donnes de la situation professionnelle dont l'id de l'employeur vient d'etre modifie et pas une ecran vide.
-     * 
+     *
      * @param session
      *            DOCUMENT ME!
      * @param request
@@ -145,7 +145,7 @@ public class APSituationProfessionnelleAction extends PRDefaultAction {
      *            DOCUMENT ME!
      * @param mainDispatcher
      *            DOCUMENT ME!
-     * 
+     *
      * @throws ServletException
      *             DOCUMENT ME!
      * @throws IOException
@@ -172,6 +172,7 @@ public class APSituationProfessionnelleAction extends PRDefaultAction {
         } else if (viewBean instanceof APSituationProfessionnelleViewBean
                 && ((APSituationProfessionnelleViewBean) viewBean).isActionRechercherAffilie()) {
             ((APSituationProfessionnelleViewBean) viewBean).setActionRechercherAffilie(false);
+            ((APSituationProfessionnelleViewBean) viewBean).setIsRetourRechercheAffilie(true);
 
             if (((APSituationProfessionnelleViewBean) viewBean).isNew()) {
                 forward(getRelativeURL(request, session) + VERS_ECRAN_DE_ADD, request, response);
@@ -186,13 +187,13 @@ public class APSituationProfessionnelleAction extends PRDefaultAction {
 
     /**
      * redefinition pour charger les informations qui doivent s'afficher dans l'ecran rc.
-     * 
+     *
      * <p>
      * cette methode inspecte la session pour savoir si l'on revient depuis pyxis. Si c'est le cas, l'ancien viewBean
      * est conserve dans la session et une propriete du viewBean est renseignee avec une action qui permettra de
      * rafficher le bon ecran de detail pour la repartition de paiement.
      * </p>
-     * 
+     *
      * @param session
      *            DOCUMENT ME!
      * @param request
@@ -201,7 +202,7 @@ public class APSituationProfessionnelleAction extends PRDefaultAction {
      *            DOCUMENT ME!
      * @param mainDispatcher
      *            DOCUMENT ME!
-     * 
+     *
      * @throws ServletException
      *             DOCUMENT ME!
      * @throws IOException
@@ -253,9 +254,9 @@ public class APSituationProfessionnelleAction extends PRDefaultAction {
     /**
      * ecrase une des valeurs sauvee dans la session par FWSelectorTag de telle sorte que l'on sache exactement quelle
      * action sera executee lorsque l'on revient de pyxis et avec quels parametres.
-     * 
+     *
      * @see FWSelectorTag
-     * 
+     *
      * @param session
      *            DOCUMENT ME!
      * @param request
@@ -264,7 +265,7 @@ public class APSituationProfessionnelleAction extends PRDefaultAction {
      *            DOCUMENT ME!
      * @param mainDispatcher
      *            DOCUMENT ME!
-     * 
+     *
      * @throws ServletException
      *             DOCUMENT ME!
      * @throws IOException
@@ -295,7 +296,7 @@ public class APSituationProfessionnelleAction extends PRDefaultAction {
 
     /**
      * renseigne le dto dans le viewBean (necessaire pour savoir si le droit est modfiable).
-     * 
+     *
      * @param session
      *            DOCUMENT ME!
      * @param request
@@ -304,7 +305,7 @@ public class APSituationProfessionnelleAction extends PRDefaultAction {
      *            DOCUMENT ME!
      * @param viewBean
      *            DOCUMENT ME!
-     * 
+     *
      * @return DOCUMENT ME!
      */
     @Override
@@ -317,7 +318,7 @@ public class APSituationProfessionnelleAction extends PRDefaultAction {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.framework.controller.IFWActionHandler#doAction(javax.servlet.http .HttpSession,
      * javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse,
      * globaz.framework.controller.FWController)
@@ -331,7 +332,7 @@ public class APSituationProfessionnelleAction extends PRDefaultAction {
 
     /**
      * CUSTOM action.
-     * 
+     *
      * @param session
      *            the HTTP session
      * @param request
@@ -382,9 +383,8 @@ public class APSituationProfessionnelleAction extends PRDefaultAction {
                             }
                         } else {
                             if (GroupdocPropagateUtil.isVerbose()) {
-                                JadeLogger.warn(this,
-                                        "Demande(" + droit.getIdDemande() + ") for Droit(" + droit.getId()
-                                                + ") not found");
+                                JadeLogger.warn(this, "Demande(" + droit.getIdDemande() + ") for Droit(" + droit.getId()
+                                        + ") not found");
                             }
                         }
                     } else {
@@ -394,8 +394,8 @@ public class APSituationProfessionnelleAction extends PRDefaultAction {
                     }
                 }
             }
-            return "/apg?userAction=" + spViewBean.getDestEcranSuivant() + "&"
-                    + APAbstractDroitDTOAction.PARAM_ID_DROIT + "=" + idDroit;
+            return "/apg?userAction=" + spViewBean.getDestEcranSuivant() + "&" + APAbstractDroitDTOAction.PARAM_ID_DROIT
+                    + "=" + idDroit;
         } catch (ClassCastException e) {
             // fack pour le retour de la creation de la sit. fam. APG
             return "/apg?userAction=" + IAPActions.ACTION_ENFANT_APG + ".chercher&"
@@ -414,14 +414,15 @@ public class APSituationProfessionnelleAction extends PRDefaultAction {
         for (int i = 0; i < managerSituation.getSize(); i++) {
             final APSituationProfessionnelle situation = (APSituationProfessionnelle) managerSituation.get(i);
             if (situation.getIsVersementEmployeur()
-                    && (JadeStringUtil.isBlankOrZero(situation.getIdDomainePaiementEmployeur()) || JadeStringUtil
-                            .isBlankOrZero(situation.getIdTiersPaiementEmployeur()))) {
+                    && (JadeStringUtil.isBlankOrZero(situation.getIdDomainePaiementEmployeur())
+                            || JadeStringUtil.isBlankOrZero(situation.getIdTiersPaiementEmployeur()))) {
 
                 final APEmployeur loadEmployeur = situation.loadEmployeur();
                 final String idTiersPaiementEmployeur = loadEmployeur.getIdTiers();
-                final String idDomainPaiementEmployeur = IPRDemande.CS_TYPE_MATERNITE.equals(spViewBean
-                        .getTypePrestation().toCodeSysteme()) ? IPRConstantesExternes.TIERS_CS_DOMAINE_MATERNITE
-                        : IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_APG;
+                final String idDomainPaiementEmployeur = IPRDemande.CS_TYPE_MATERNITE
+                        .equals(spViewBean.getTypePrestation().toCodeSysteme())
+                                ? IPRConstantesExternes.TIERS_CS_DOMAINE_MATERNITE
+                                : IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_APG;
 
                 // nous recherchons en cascade du domaine APG ou MATERNITE
                 final TIAdressePaiementData detailTiers = PRTiersHelper.getAdressePaiementData(spViewBean.getSession(),
@@ -441,23 +442,22 @@ public class APSituationProfessionnelleAction extends PRDefaultAction {
 
     /**
      * inspecte le viewBean et retourne vrai si celui-ci indique que l'on revient de pyxis.
-     * 
+     *
      * @param viewBean
-     * 
+     *
      * @return
      */
     private boolean isRetourDepuisPyxis(FWViewBeanInterface viewBean) {
-        return viewBean != null
-                && (viewBean instanceof APSituationProfessionnelleViewBean)
-                && (((APSituationProfessionnelleViewBean) viewBean).isRetourDepuisPyxis() || ((APSituationProfessionnelleViewBean) viewBean)
-                        .isRetourDepuisAdresse());
+        return viewBean != null && (viewBean instanceof APSituationProfessionnelleViewBean)
+                && (((APSituationProfessionnelleViewBean) viewBean).isRetourDepuisPyxis()
+                        || ((APSituationProfessionnelleViewBean) viewBean).isRetourDepuisAdresse());
     }
 
     /**
      * DOCUMENT ME ! --> hpe
-     * 
+     *
      * @see FWSelectorTag
-     * 
+     *
      * @param session
      *            DOCUMENT ME!
      * @param request
@@ -466,7 +466,7 @@ public class APSituationProfessionnelleAction extends PRDefaultAction {
      *            DOCUMENT ME!
      * @param mainDispatcher
      *            DOCUMENT ME!
-     * 
+     *
      * @throws ServletException
      *             DOCUMENT ME!
      * @throws IOException
@@ -521,11 +521,11 @@ public class APSituationProfessionnelleAction extends PRDefaultAction {
 
     /**
      * remplace le viewBean actuellement en session par un nouveau.
-     * 
+     *
      * <p>
      * cette action est parfois necessaire pour eviter par exemple qu'un enregistrement soit efface deux fois.
      * </p>
-     * 
+     *
      * @param session
      * @param oldViewBean
      */
@@ -541,11 +541,11 @@ public class APSituationProfessionnelleAction extends PRDefaultAction {
 
     /**
      * trouve un dto dans la session, en recree un si ce n'est pas le bon puis le renseigne dans le viewBean.
-     * 
+     *
      * <p>
      * note: cette methode doit etre appellee une fois qu'une session valide se trouve dans le viewBean.
      * </p>
-     * 
+     *
      * @param session
      * @param spViewBean
      */
