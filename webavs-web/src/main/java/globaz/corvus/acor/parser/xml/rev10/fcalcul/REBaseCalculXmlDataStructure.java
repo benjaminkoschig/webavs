@@ -38,6 +38,8 @@ public class REBaseCalculXmlDataStructure {
 
     private String tauxReductionAnticipation = null;
 
+    private REDecisionXmlDataStructure decision = null;
+
     public String getAnneeBte1() {
         return anneeBte1;
     }
@@ -236,6 +238,14 @@ public class REBaseCalculXmlDataStructure {
 
     public void setTauxReductionAnticipation(String tauxReductionAnticipation) {
         this.tauxReductionAnticipation = tauxReductionAnticipation;
+    }
+
+    public REDecisionXmlDataStructure getDecision() {
+        return decision;
+    }
+
+    public void setDecision(REDecisionXmlDataStructure decision) {
+        this.decision = decision;
     }
 
     public String toStringgg() {

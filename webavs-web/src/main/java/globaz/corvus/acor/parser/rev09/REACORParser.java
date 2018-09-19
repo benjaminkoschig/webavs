@@ -1862,7 +1862,7 @@ public class REACORParser extends REACORAbstractFlatFileParser {
                  * Niveau 101..150
                  */
 
-                if (level <= 150) {
+                if (level <= 150 && !line.startsWith(REACORAbstractFlatFileParser.CODE_BASE_FIN_CALCUL)) {
                     line = REACORParser.readRelevantLine(bufferedReader);
                 }
 

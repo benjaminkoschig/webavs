@@ -1,5 +1,12 @@
 package globaz.corvus.acor.parser.xml.rev10;
 
+import java.io.Reader;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import globaz.corvus.acor.parser.xml.rev10.fcalcul.REBaseCalculXmlDataStructure;
 import globaz.corvus.acor.parser.xml.rev10.fcalcul.REDecisionXmlDataStructure;
 import globaz.corvus.acor.parser.xml.rev10.fcalcul.REPrestationXmlDataStructure;
@@ -8,13 +15,6 @@ import globaz.corvus.acor.parser.xml.rev10.fcalcul.REXmlDataContainer;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BTransaction;
 import globaz.prestation.acor.PRACORException;
-import java.io.Reader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 /**
  * <H1>Description</H1>
@@ -23,7 +23,7 @@ import org.w3c.dom.NodeList;
  * calcul sont les suivantes : - année bonification pour tache éducative - Taux réduction pour anticipation - Décision
  * (utilisé pour déterminer a qui s'applique les info ci dessus.)
  * </p>
- * 
+ *
  * @author scr
  */
 public class REImportFCalculACOR extends REACORAbstractXMLFileParser {
@@ -33,7 +33,7 @@ public class REImportFCalculACOR extends REACORAbstractXMLFileParser {
 
     /**
      * Parse le fichier f_calcul.xml (Reader).
-     * 
+     *
      * @return RXmlDataContainer
      * @throws Exception
      */
@@ -52,8 +52,8 @@ public class REImportFCalculACOR extends REACORAbstractXMLFileParser {
 
         // Parsing de la feuille de calcul...
         REXmlDataContainer dc = new REXmlDataContainer();
-        dc.setDecisions(REImportFCalculACOR.parseDecisions(nFeuilleCalcul));
-        dc.setBasesCalcul(REImportFCalculACOR.parseBasesCalcul(nFeuilleCalcul));
+        // dc.setDecisions(REImportFCalculACOR.parseDecisions(nFeuilleCalcul));
+        dc.setBasesCalcul(REImportFCalculACOR.parseBasesCalcul(nFeuilleCalcul, dc));
 
         return dc;
     }
@@ -61,9 +61,10 @@ public class REImportFCalculACOR extends REACORAbstractXMLFileParser {
     // ~ Methods
     // --------------------------------------------------------------------------------------------------------
 
-    protected static REBaseCalculXmlDataStructure[] parseBasesCalcul(Node nFC) throws Exception {
+    protected static REBaseCalculXmlDataStructure[] parseBasesCalcul(Node nFC, REXmlDataContainer dc) throws Exception {
 
         List lst = new ArrayList();
+        List lstDecisions = new ArrayList();
 
         NodeList nl = nFC.getChildNodes();
         for (int i = 0; i < nl.getLength(); i++) {
@@ -88,10 +89,60 @@ public class REImportFCalculACOR extends REACORAbstractXMLFileParser {
                     }
 
                 }
-                bc.setTauxReductionAnticipation(REACORAbstractXMLFileParser.getNodeChildValue(mapBaseCalcul,
-                        "anticipation", "taux_reduction_anticipation", false));
+                Node nAnticipation = REACORAbstractXMLFileParser.getNode(mapBaseCalcul, "anticipation", false);
+                if (nAnticipation != null) {
+                    Map mapAnticipation = REACORAbstractXMLFileParser.childrenMap(nAnticipation);
+
+                    Node nTranche = REACORAbstractXMLFileParser.getNode(mapAnticipation, "tranche", false);
+                    if (nTranche != null) {
+                        Map mapTranche = REACORAbstractXMLFileParser.childrenMap(nTranche);
+                        bc.setTauxReductionAnticipation(REACORAbstractXMLFileParser.getNodeValue(mapTranche,
+                                "taux_reduction_anticipation", false));
+                    }
+
+                }
+
+                Node nDecision = REACORAbstractXMLFileParser.getNode(mapBaseCalcul, "decision", false);
+                if (nDecision != null) {
+                    Map mapDecision = REACORAbstractXMLFileParser.childrenMap(nDecision);
+                    /*
+                     * Prestations
+                     */
+                    Node nPrestation = REACORAbstractXMLFileParser.getNode(mapDecision, "prestation", true);
+                    Map mapPrestation = REACORAbstractXMLFileParser.childrenMap(nPrestation);
+
+                    REPrestationXmlDataStructure prestation = new REPrestationXmlDataStructure();
+                    prestation.setNssBeneficiaire(
+                            REACORAbstractXMLFileParser.getNodeValue(mapPrestation, "beneficiaire", true));
+                    /*
+                     *
+                     * Rente
+                     */
+                    Node nRente = REACORAbstractXMLFileParser.getNode(mapPrestation, "rente", true);
+                    Map mapRente = REACORAbstractXMLFileParser.childrenMap(nRente);
+
+                    RERenteXmlDataStructure rente = new RERenteXmlDataStructure();
+                    rente.setDateDebutDroit(REACORAbstractXMLFileParser.getNodeValue(mapRente, "debut_droit", false));
+                    rente.setIdBaseCalcul(bc.getId());
+                    rente.setCodePrestation(REACORAbstractXMLFileParser.getNodeValue(mapRente, "genre", true));
+                    // On ne récupère plus les remarques de cette manière
+                    // rente.setRemarques(REACORAbstractXMLFileParser.getNodeValue(mapRente, "remarques", false));
+
+                    prestation.setRente(rente);
+                    REDecisionXmlDataStructure decision = new REDecisionXmlDataStructure();
+                    decision.setPrestation(prestation);
+                    bc.setDecision(decision);
+                    lstDecisions.add(decision);
+                }
+
                 lst.add(bc);
             }
+        }
+        if (lstDecisions.isEmpty()) {
+            dc.setDecisions(null);
+        } else {
+            dc.setDecisions((REDecisionXmlDataStructure[]) lstDecisions
+                    .toArray(new REDecisionXmlDataStructure[lstDecisions.size()]));
         }
         if (lst.isEmpty()) {
             return null;
@@ -118,10 +169,10 @@ public class REImportFCalculACOR extends REACORAbstractXMLFileParser {
                 Map mapPrestation = REACORAbstractXMLFileParser.childrenMap(nPrestation);
 
                 REPrestationXmlDataStructure prestation = new REPrestationXmlDataStructure();
-                prestation.setNssBeneficiaire(REACORAbstractXMLFileParser.getNodeValue(mapPrestation, "beneficiaire",
-                        true));
+                prestation.setNssBeneficiaire(
+                        REACORAbstractXMLFileParser.getNodeValue(mapPrestation, "beneficiaire", true));
                 /*
-                 * 
+                 *
                  * Rente
                  */
                 Node nRente = REACORAbstractXMLFileParser.getNode(mapPrestation, "rente", true);
