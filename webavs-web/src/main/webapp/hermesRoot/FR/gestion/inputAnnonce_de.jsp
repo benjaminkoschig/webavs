@@ -304,20 +304,6 @@ function updateForm(tag){
 			document.forms[0].elements('TOLST118011').value = element.paysCode;
 		}		
 	}
-	showOrHideChkAjoutARC61(tag);
-}
-// La case ne peut être cochée que s'il y a un nss
-function showOrHideChkAjoutARC61(tag){
-	if(tag != null && tag.input != null){
-		var nss = tag.input.value;
-		if(nss != ""){
-			document.getElementById('idChkCreerArc61').removeAttribute("disabled");
-		}else{
-			disableChkAjoutARC61(document.getElementById('idChkCreerArc61'));
-		}
-	}else{
-		disableChkAjoutARC61(document.getElementById('idChkCreerArc61'));
-	}
 }
 
 function disableChkAjoutARC61(chkBox){
@@ -325,12 +311,6 @@ function disableChkAjoutARC61(chkBox){
 		chkBox.style.backgroundColor = '#b3c4db';
 		chkBox.setAttribute("disabled","disabled");
 		chkBox.checked = false;
-	}
-}
-
-function chkNSSVide(){
-	if(document.getElementById('partialTOSTR118007').value == ""){
-		disableChkAjoutARC61(document.getElementById('idChkCreerArc61'));
 	}
 }
 
@@ -346,6 +326,14 @@ function trim(valueToTrim)
   if (!cre.test(valueToTrim)) {
 	valueToTrim = "";
   }
+  // Contrôle à chaque touche si le NSS est vide pour activer ou non la case
+  if(document.getElementById('idChkCreerArc61') != null){
+	  if(valueToTrim == ""){
+		  disableChkAjoutARC61(document.getElementById('idChkCreerArc61'));
+	  }else{
+		document.getElementById('idChkCreerArc61').removeAttribute("disabled");
+	  }
+	}
   return valueToTrim;
 }
 
@@ -1121,13 +1109,12 @@ function updFieldsBoundedToCategorie(){
 			<tr>
 				<td width="400">&nbsp;<ct:FWLabel key="HERMES_JSP_GAZ0004_AJOUT_ARC_61"/></td>
 				<td>
-					<INPUT type="checkbox" value="on" id="idChkCreerArc61" onClick="chkNSSVide()" name="chkCreerArc61" <%=viewBean.getChkCreerArc61().booleanValue()?"CHECKED":""%>>&nbsp;
+					<INPUT type="checkbox" value="on" id="idChkCreerArc61" name="chkCreerArc61" <%=viewBean.getChkCreerArc61().booleanValue()?"CHECKED":""%>>&nbsp;
 				</td>
 			</tr>
 			
 			<% }%>
-			
-			
+			<tr><td></td>
 			</tr>
 			<%} %>
 		
