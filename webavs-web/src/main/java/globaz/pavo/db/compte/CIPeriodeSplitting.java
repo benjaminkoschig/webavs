@@ -404,12 +404,12 @@ public class CIPeriodeSplitting extends BEntity {
                                 return null;
                             }
                             // si pas d'erreur dans la transaction, envoie d'un
-                            // 65 --> 61 depuis le 01.01.19
+                            // 65 --> 63 depuis le 01.01.19
                             if (!transaction.hasErrors()) {
                                 if (ciConjoint != null) {
                                     CIApplication application = (CIApplication) GlobazServer.getCurrentSystem()
                                             .getApplication(CIApplication.DEFAULT_APPLICATION_PAVO);
-                                    String genreAnnonce = "61";
+                                    String genreAnnonce = "63";
                                     // annonce
                                     HashMap attributs = new HashMap();
                                     attributs.put(IHEAnnoncesViewBean.CODE_ENREGISTREMENT, "01");
@@ -922,7 +922,7 @@ public class CIPeriodeSplitting extends BEntity {
             }
         }
         if (JAUtil.isStringEmpty(container.getIdAnnonce65()) && need65) {
-            // effectuer un 65
+            // effectuer un 65 --> 63 depuis le 01.01.19
             String idAnnonce = null;
             // test si pas déjà présent
             BISession sessionHE = globaz.globall.db.GlobazServer.getCurrentSystem()
@@ -930,16 +930,16 @@ public class CIPeriodeSplitting extends BEntity {
             HEOutputAnnonceListViewBean annonceMgr = new HEOutputAnnonceListViewBean();
             annonceMgr.setISession(sessionHE);
             annonceMgr.setForNumeroAVS(getPartenaireNumeroAvs());
-            annonceMgr.setForMotif("61");
+            annonceMgr.setForMotif("63");
             annonceMgr.find(transaction);
             if (!annonceMgr.isEmpty()) {
                 // existe déjà
                 idAnnonce = ((HEOutputAnnonceViewBean) annonceMgr.getFirstEntity()).getIdAnnonce();
             } else {
-                // créer le 65 --> 61 depuis le 01.01.19
+                // créer le 65 --> 63 depuis le 01.01.19
                 HashMap attributs = new HashMap();
                 attributs.put(IHEAnnoncesViewBean.CODE_ENREGISTREMENT, "01");
-                attributs.put(IHEAnnoncesViewBean.MOTIF_ANNONCE, "61");
+                attributs.put(IHEAnnoncesViewBean.MOTIF_ANNONCE, "63");
                 // assuré
                 attributs.put(IHEAnnoncesViewBean.NUMERO_ASSURE, getPartenaireNumeroAvs());
                 idAnnonce = application.annonceARC(transaction, attributs, true);

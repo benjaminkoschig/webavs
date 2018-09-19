@@ -552,8 +552,8 @@ public class CIEcritureUtil {
             // genre 7, envoi d'un 67
             genreAnnonce = "67";
         } else {
-            // Tous les autres genres envoi d'un 65 --> Modification de l'ARC en 61 depuis 01.01.19
-            genreAnnonce = "61";
+            // Tous les autres genres envoi d'un 65 --> Modification de l'ARC en 63 depuis 01.01.19
+            genreAnnonce = "63";
         }
         if (genreAnnonce != null) {
             // annonce

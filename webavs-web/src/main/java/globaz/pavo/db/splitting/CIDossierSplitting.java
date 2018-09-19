@@ -2290,10 +2290,10 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
                 ciManager.orderByAvs(false);
                 CICompteIndividuel ciToCheck = ciManager.getCIRegistreAssures(getIdTiersAssure(), transaction);
                 if ((ciToCheck == null) || !ciToCheck.isCiOuvert().booleanValue()) {
-                    // aucun ci ouvert --> ARC65 --> Devenu ARC 61 depuis le 01.01.19
+                    // aucun ci ouvert --> ARC65 --> Devenu ARC 63 depuis le 01.01.19
                     HashMap attributs = new HashMap();
                     attributs.put(IHEAnnoncesViewBean.CODE_ENREGISTREMENT, "01");
-                    attributs.put(IHEAnnoncesViewBean.MOTIF_ANNONCE, "61");
+                    attributs.put(IHEAnnoncesViewBean.MOTIF_ANNONCE, "63");
                     // assuré
                     attributs.put(IHEAnnoncesViewBean.NUMERO_ASSURE, getIdTiersAssure());
                     // ref interne
@@ -2306,7 +2306,7 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
                     if (idAnnonce != null) {
                         // changer état
                         setIdEtat(CIDossierSplitting.CS_DEMANDE_OUVERTURE_CI);
-                        // mémorisé dans idArc65 qui est devenu 61 (depuis 01.01.19)
+                        // mémorisé dans idArc65 qui est devenu 63 (depuis 01.01.19)
                         setIdArc65Assure(idAnnonce);
                         // sauve l'état actuel
                         // update(transaction);
@@ -2316,10 +2316,10 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
                 // recherche CI pour conjoint
                 ciToCheck = ciManager.getCIRegistreAssures(getIdTiersConjoint(), transaction);
                 if ((ciToCheck == null) || !ciToCheck.isCiOuvert().booleanValue()) {
-                    // aucun ci ouvert --> ARC65 --> Devenu ARC 61 depuis le 01.01.19
+                    // aucun ci ouvert --> ARC65 --> Devenu ARC 63 depuis le 01.01.19
                     HashMap attributs = new HashMap();
                     attributs.put(IHEAnnoncesViewBean.CODE_ENREGISTREMENT, "01");
-                    attributs.put(IHEAnnoncesViewBean.MOTIF_ANNONCE, "61");
+                    attributs.put(IHEAnnoncesViewBean.MOTIF_ANNONCE, "63");
                     // conjoint
                     attributs.put(IHEAnnoncesViewBean.NUMERO_ASSURE, getIdTiersConjoint());
                     // ref interne
@@ -2332,7 +2332,7 @@ public class CIDossierSplitting extends BEntity implements java.io.Serializable 
                     if (idAnnonce != null) {
                         // changer état
                         setIdEtat(CIDossierSplitting.CS_DEMANDE_OUVERTURE_CI);
-                        // mémorisé dans idArc65 qui est devenu 61 (depuis 01.01.19)
+                        // mémorisé dans idArc65 qui est devenu 63 (depuis 01.01.19)
                         setIdArc65Conjoint(idAnnonce);
                         // sauve l'état actuel
                         // update(transaction);
