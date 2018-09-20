@@ -26,13 +26,13 @@ import globaz.webavs.common.CommonProperties;
 
 /**
  * Application NAOS
- * 
+ *
  * @author Emmanuel Fleury
  */
 public class AFApplication extends BApplication {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
     public final static String ADD_JOURDATE_FACTURATION = "addJourDateFacturation";
@@ -66,6 +66,7 @@ public class AFApplication extends BApplication {
     public final static String PROPERTY_QUITTANCE_PCG_CONTROLE_NBRE_QUITTANCES = "quittancePcgControleNbre";
     public static final String PROPERTY_RESTITUTION_TAXE_CO2_NON_JUIN = "restituerTaxeCO2NonJuin";
     public static final String PROPERTY_RESTITUTION_TAXE_CO2_MONTH = "restituerTaxeCO2Mois";
+    public static final String PROPERTY_TAXE_CO2_ID_FACTURE_EXTERNE = "taxeCO2IdFactureExterne";
     public static final String PROPERTY_ATTESTATION_RUBRIQUES_COMPLEMENTAIRES = "attestation.rubriques.complementaires";
 
     public final static String SYNCHROTAUX = "synchroTaux";
@@ -78,7 +79,7 @@ public class AFApplication extends BApplication {
 
     /**
      * Retourne la langue associée a un tier.
-     * 
+     *
      * @param tiers
      * @return la langue
      */
@@ -98,7 +99,7 @@ public class AFApplication extends BApplication {
 
     /**
      * PErmet la récupération d'un tiers par son identifiant
-     * 
+     *
      * @param session
      *            Une session
      * @param idTiers
@@ -141,7 +142,7 @@ public class AFApplication extends BApplication {
 
     /**
      * Initialise l'application.
-     * 
+     *
      * @exception Exception
      *                - si l'initialisation de l'application a échouée
      */
@@ -151,7 +152,7 @@ public class AFApplication extends BApplication {
 
     /**
      * Constructeur du type AFApplication.
-     * 
+     *
      * @param id
      *            - l'id de l'application
      * @exception Exception
@@ -173,7 +174,7 @@ public class AFApplication extends BApplication {
 
     /**
      * Initialisation de l'application.
-     * 
+     *
      * @see globaz.globall.db.BApplication#_initializeApplication()
      */
     @Override
@@ -253,7 +254,8 @@ public class AFApplication extends BApplication {
         FWAction.registerActionCustom("naos.wizard.wizard.afficherSaisieAffiliation", FWSecureConstants.UPDATE);
         FWAction.registerActionCustom("naos.annonceAffilie.impressionMutation.afficher", FWSecureConstants.UPDATE);
         FWAction.registerActionCustom("naos.rentier.export.detail", FWSecureConstants.UPDATE);
-        FWAction.registerActionCustom("naos.beneficiairepc.journalQuittances.afficherGenerer", FWSecureConstants.UPDATE);
+        FWAction.registerActionCustom("naos.beneficiairepc.journalQuittances.afficherGenerer",
+                FWSecureConstants.UPDATE);
         FWAction.registerActionCustom("naos.beneficiairepc.journalQuittances.afficherComptabiliser",
                 FWSecureConstants.UPDATE);
 
@@ -263,7 +265,8 @@ public class AFApplication extends BApplication {
         FWAction.registerActionCustom("naos.annoncesRee.annoncesRee.afficher", FWSecureConstants.UPDATE);
 
         FWAction.registerActionCustom("naos.beneficiairepc.journalQuittances.afficherNom", FWSecureConstants.UPDATE);
-        FWAction.registerActionCustom("naos.beneficiairepc.journalQuittances.executerGenerer", FWSecureConstants.UPDATE);
+        FWAction.registerActionCustom("naos.beneficiairepc.journalQuittances.executerGenerer",
+                FWSecureConstants.UPDATE);
         // PO 7327
         FWAction.registerActionCustom("naos.taxeCo2.reinjectionListeExcel.afficher", FWSecureConstants.UPDATE);
 
@@ -295,7 +298,7 @@ public class AFApplication extends BApplication {
     /**
      * Retourne le nombre de jour à ajouter lors de la création automatique du passage de facturation Date de création :
      * (20.04.2006 10:46:24)
-     * 
+     *
      * @return int nombre de jour à ajouter
      */
     public int getAddJourDateFacturation() {
@@ -304,9 +307,9 @@ public class AFApplication extends BApplication {
 
     /**
      * Renvoie le Formateur du numéro d'affilié.
-     * 
+     *
      * @return le formateur
-     * 
+     *
      * @throws Exception
      *             - si l'initialisation du formateur a échoué
      */
@@ -323,9 +326,9 @@ public class AFApplication extends BApplication {
 
     /**
      * Renvoie le Formateur de l'ancien numéro d'affilié.
-     * 
+     *
      * @return le formateur
-     * 
+     *
      * @throws Exception
      *             - si l'initialisation du formateur a échoué
      */
@@ -345,7 +348,7 @@ public class AFApplication extends BApplication {
 
     /**
      * Retourne CAApplication (OSIRIS) ou null si inaccessible Date de création : (24.02.2003 18:41:34)
-     * 
+     *
      * @return globaz.globall.api.BIApplication
      */
     public BIApplication getApplicationOsiris() {
@@ -363,7 +366,7 @@ public class AFApplication extends BApplication {
 
     /**
      * Renvoie le nombre de digits pour le numéro d'affilier.
-     * 
+     *
      * @return le nombre de digit.
      */
     public int getAutoDigitAffilie() {
@@ -374,9 +377,9 @@ public class AFApplication extends BApplication {
 
     /**
      * Renvoie le générateur du numéro d'affilié.
-     * 
+     *
      * @return le générateur
-     * 
+     *
      * @throws Exception
      *             - si l'initialisation a échoué
      */
@@ -397,7 +400,7 @@ public class AFApplication extends BApplication {
     /**
      * Méthode qui retourne l'id du modèle pour l'impression des DS lors d'une radiation Si pas renseigné => vide, comme
      * actuellement
-     * 
+     *
      * @return l'id
      */
     public String getModelDS() {
@@ -443,7 +446,7 @@ public class AFApplication extends BApplication {
 
     /**
      * Retourne une session OSIRIS ou null en cas d'execption Date de création : (24.02.2003 18:44:58)
-     * 
+     *
      * @return globaz.globall.api.BISession
      */
     public BISession getSessionOsiris(BISession session) {
@@ -467,7 +470,7 @@ public class AFApplication extends BApplication {
 
     /**
      * Liste des types d'affiliation interdits par la modification de la période active IDE
-     * 
+     *
      * @return string
      */
     public String getListeIDETypeAffiliationNonModifiable() {
@@ -480,7 +483,7 @@ public class AFApplication extends BApplication {
 
     /**
      * Liste des personnalités juridiques autorisées par la modification de la période active IDE
-     * 
+     *
      * @return string
      */
     public String getListeIDEPersonnaliteJuridiqueModifiable() {
@@ -498,8 +501,9 @@ public class AFApplication extends BApplication {
     }
 
     public boolean isControleNombreQuittances() {
-        return Boolean.valueOf(
-                this.getProperty(AFApplication.PROPERTY_QUITTANCE_PCG_CONTROLE_NBRE_QUITTANCES, "false").trim())
+        return Boolean
+                .valueOf(
+                        this.getProperty(AFApplication.PROPERTY_QUITTANCE_PCG_CONTROLE_NBRE_QUITTANCES, "false").trim())
                 .booleanValue();
     }
 
@@ -546,7 +550,7 @@ public class AFApplication extends BApplication {
 
     /**
      * Indique si la masse doit être annualiser avant la recherche du taux Inforom D0017
-     * 
+     *
      * @return boolean
      */
     public boolean wantAnnualiserMasse() {

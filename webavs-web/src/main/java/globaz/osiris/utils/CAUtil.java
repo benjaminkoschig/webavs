@@ -1,5 +1,10 @@
 package globaz.osiris.utils;
 
+import java.math.BigDecimal;
+import java.util.List;
+import javax.servlet.http.HttpSession;
+import ch.globaz.osiris.business.exception.OsirisException;
+import ch.globaz.osiris.business.model.JournalSimpleModel;
 import globaz.framework.controller.FWController;
 import globaz.framework.util.FWCurrency;
 import globaz.globall.api.BISession;
@@ -28,15 +33,10 @@ import globaz.osiris.db.comptes.CASectionManager;
 import globaz.osiris.db.ventilation.CAVPTypeDeProcedureOrdre;
 import globaz.osiris.db.ventilation.CAVPTypeDeProcedureOrdreManager;
 import globaz.osiris.exceptions.CATechnicalException;
-import java.math.BigDecimal;
-import java.util.List;
-import javax.servlet.http.HttpSession;
-import ch.globaz.osiris.business.exception.OsirisException;
-import ch.globaz.osiris.business.model.JournalSimpleModel;
 
 /**
  * Classe utilitaire pour OSIRIS.
- * 
+ *
  * @author: Sébastien Chappatte
  */
 public class CAUtil implements APIUtil {
@@ -55,7 +55,7 @@ public class CAUtil implements APIUtil {
     /**
      * Création d'un numéro de section unique pour un compte annexe identifié par idRole,idExterneRole, sur la base de
      * la racine du numéro de section idTypeFacture, année et idSousType.
-     * 
+     *
      * @param session
      *            la session
      * @param transaction
@@ -76,11 +76,25 @@ public class CAUtil implements APIUtil {
      */
     public static String creerNumeroSectionUnique(BISession session, BITransaction transaction, String idRole,
             String idExterneRole, String idTypeSection, String annee, String categorieSection) throws Exception {
+        return creerNumeroSectionUnique(session, transaction, idRole, idExterneRole, idTypeSection, annee,
+                categorieSection, null);
+    }
+
+    public static String creerNumeroSectionUnique(BISession session, BITransaction transaction, String idRole,
+            String idExterneRole, String idTypeSection, String annee, String categorieSection, String idExterneFacture)
+            throws Exception {
+
         CAUtil.validateCreerNumeroSectionParameters(session, transaction, idRole, idExterneRole, idTypeSection, annee,
                 categorieSection);
 
         // Préparer le numéro de la section Annee + pos.5 et 6 du sous type
-        String numeroSection = annee + categorieSection.substring(4, 6) + "000";
+        String numeroSection = annee;
+        if (idExterneFacture != null) {
+            numeroSection += idExterneFacture;
+        } else {
+            numeroSection += categorieSection.substring(4, 6) + "000";
+        }
+
         String numeroSectionMax = annee + categorieSection.substring(4, 6) + APISection.SECTION_900_INTERET_MORATOIRE;
 
         // Vérifier la longeur du no de section
@@ -139,7 +153,7 @@ public class CAUtil implements APIUtil {
 
     /**
      * Méthode permettant de transformer un objet CAJournal en JournalSimpleModel.
-     * 
+     *
      * @param journal Le CAJournal.
      * @return Un JournalSimpleModel.
      * @throws OsirisException Une exception.
@@ -170,7 +184,7 @@ public class CAUtil implements APIUtil {
     /**
      * Créer un numéro de section unique pour les intérêts moratoires. Incrémente le denier numéro de section par pas de
      * 1.
-     * 
+     *
      * @param session
      * @param transaction
      * @param ca
@@ -221,7 +235,7 @@ public class CAUtil implements APIUtil {
     /**
      * Créer un numéro de section unique pour les intérêts moratoires. Incrémente le denier numéro de section par pas de
      * 1.
-     * 
+     *
      * @param session
      * @param transaction
      * @param idRole
@@ -256,7 +270,7 @@ public class CAUtil implements APIUtil {
 
     /**
      * Cette méthode retourne le compteur en fonction des paramètres passés
-     * 
+     *
      * @param idCompteAnnexe
      * @param anneeCotisation
      * @param idRubrique
@@ -307,8 +321,8 @@ public class CAUtil implements APIUtil {
         }
 
         if (wrongArgument.length() >= 1) {
-            throw new Exception("unable to determine if section exist due to wrong arguments : "
-                    + wrongArgument.toString());
+            throw new Exception(
+                    "unable to determine if section exist due to wrong arguments : " + wrongArgument.toString());
         }
 
         CASectionManager sectionMgr = new CASectionManager();
@@ -323,7 +337,7 @@ public class CAUtil implements APIUtil {
     /**
      * Retourne une liste des comptes courants (numéro et descritption) en fonction des premiers chiffres du numéro de
      * compte introduit en paramètres.
-     * 
+     *
      * @return la liste d'options (tag select) des comptes courants existants de la caisse actuelle. Peut-être vide si
      *         aucune information n'a été trouvée
      * @param like
@@ -349,7 +363,7 @@ public class CAUtil implements APIUtil {
     /**
      * Retourne une liste des comptes courants (numéro et description) en fonction des premiers chiffres du numéro de
      * compte introduit en paramètres.
-     * 
+     *
      * @return la liste d'options (tag select) des comptes courants existants de la caisse actuelle. Peut-être vide si
      *         aucune information n'a été trouvée
      * @param like
@@ -385,7 +399,7 @@ public class CAUtil implements APIUtil {
 
     /**
      * Retourne une liste des rubriques (numéro et description) en fonction d'une plage de NATURERUBRIQUE
-     * 
+     *
      * @return la liste d'options (tag select) des rubriques existantes de la caisse actuelle. Peut-être vide si aucune
      *         information n'a été trouvée
      * @param like
@@ -432,7 +446,7 @@ public class CAUtil implements APIUtil {
 
     /**
      * Retourne une liste des rubriques (numéro et description) en fonction d'une plage de NATURERUBRIQUE
-     * 
+     *
      * @return la liste d'options (tag select) des rubriques existantes de la caisse actuelle. Peut-être vide si aucune
      *         information n'a été trouvée
      * @param like
@@ -477,7 +491,7 @@ public class CAUtil implements APIUtil {
 
     /**
      * Retourne une liste des rubriques (numéro et description) en fonction d'une plage de NATURERUBRIQUE
-     * 
+     *
      * @return la liste d'options (tag select) des rubriques existantes de la caisse actuelle. Peut-être vide si aucune
      *         information n'a été trouvée
      * @param like
@@ -493,7 +507,7 @@ public class CAUtil implements APIUtil {
     /**
      * Retourne une liste des rubriques (numéro et descritption) en fonction des premiers chiffres du numéro de compte
      * introduit en paramètres.
-     * 
+     *
      * @return la liste d'options (tag select) des rubriques existantes de la caisse actuelle. Peut-être vide si aucune
      *         information n'a été trouvée
      * @param like
@@ -541,7 +555,7 @@ public class CAUtil implements APIUtil {
     /**
      * Retourne une liste des rubriques (numéro et description) en fonction des premiers chiffres du numéro de compte
      * introduit en paramètres.
-     * 
+     *
      * @return la liste d'options (tag select) des rubriques existantes de la caisse actuelle. Peut-être vide si aucune
      *         information n'a été trouvée
      * @param like
@@ -557,7 +571,7 @@ public class CAUtil implements APIUtil {
     /**
      * Retourne une liste des rubriques de type 'compte financier'(numéro et descritption) en fonction des premiers
      * chiffres du numéro de compte introduit en paramètres.
-     * 
+     *
      * @return la liste d'options (tag select) des rubriques existantes de la caisse actuelle. Peut-être vide si aucune
      *         information n'a été trouvée
      * @param like
@@ -603,7 +617,7 @@ public class CAUtil implements APIUtil {
     /**
      * Retourne une liste des rubriques de type 'compte financier' (numéro et description) en fonction des premiers
      * chiffres du numéro de compte introduit en paramètres.
-     * 
+     *
      * @return la liste d'options (tag select) des rubriques existantes de la caisse actuelle. Peut-être vide si aucune
      *         information n'a été trouvée
      * @param like
@@ -618,7 +632,7 @@ public class CAUtil implements APIUtil {
 
     /**
      * Retourne la liste des mandats.
-     * 
+     *
      * @param session
      * @param like
      * @return
@@ -673,7 +687,7 @@ public class CAUtil implements APIUtil {
     /**
      * Cette méthode vérifie que pour un type de procédure il n'y ait pas, dans le paramétrage, une rubrique
      * irrécouvrable qui soit à la fois de type "simple" et "salarié" ou "employeur"
-     * 
+     *
      * @param typeDeProcedure
      * @param session
      * @return false si le paramétrage ne correspond pas ou en cas d'erreurs
@@ -701,7 +715,7 @@ public class CAUtil implements APIUtil {
     /**
      * Cette méthode vérifie que pour un type de procédure et une rubrique irrécouvrable donnée, il n'existe pas un
      * paramétrage qui ait à la fois un type "simple" et un type "salarié" et/ou "employeur" dans le paramétrage.
-     * 
+     *
      * @param typeDeProcedure
      * @param session
      * @return false si le paramétrage ne correspond pas ou en cas d'erreurs
@@ -738,9 +752,9 @@ public class CAUtil implements APIUtil {
             } else if (modeSalarieEmployeurTrouve
                     && CAVPTypeDeProcedureOrdre.TYPE_PROCEDURE_MONTANT_SIMPLE.equals(typeDeProcedure.getTypeOrdre())) {
                 paramRubriqueIrrecOk = false;
-            } else if (modeSimpleTrouve
-                    && (CAVPTypeDeProcedureOrdre.TYPE_PROCEDURE_PART_EMPLOYEUR.equals(typeDeProcedure.getTypeOrdre()) || CAVPTypeDeProcedureOrdre.TYPE_PROCEDURE_PART_SALARIE
-                            .equals(typeDeProcedure.getTypeOrdre()))) {
+            } else if (modeSimpleTrouve && (CAVPTypeDeProcedureOrdre.TYPE_PROCEDURE_PART_EMPLOYEUR
+                    .equals(typeDeProcedure.getTypeOrdre())
+                    || CAVPTypeDeProcedureOrdre.TYPE_PROCEDURE_PART_SALARIE.equals(typeDeProcedure.getTypeOrdre()))) {
                 paramRubriqueIrrecOk = false;
             } else {
                 paramRubriqueIrrecOk = true;
@@ -754,14 +768,14 @@ public class CAUtil implements APIUtil {
 
     /**
      * Cette méthode retourne true si le compteur est coché pour la rubrique passée en paramètre.
-     * 
+     *
      * @param idRubrique
      * @param session
      * @return True s'il faut tenir un compteur pour la rubrique, non si pas de compteur
      * @throws Exception Retourne une exception si les paramètres ne sont pas corrects.
      */
-    public static boolean isRubriqueAvecCompteur(String idRubrique, BSession session) throws CATechnicalException,
-            Exception {
+    public static boolean isRubriqueAvecCompteur(String idRubrique, BSession session)
+            throws CATechnicalException, Exception {
         boolean rubriqueAvecCompteur = false;
         if (!JadeStringUtil.isBlank(idRubrique) && session != null) {
             CARubrique rubrique = new CARubrique();
@@ -780,7 +794,7 @@ public class CAUtil implements APIUtil {
     /**
      * Cette méthode vérifie que pour un type de procédure et une rubrique donnée, il existe soit un type d'ordre
      * "simple" ou une paire "salarié" et "employeur" dans le paramétrage.
-     * 
+     *
      * @param typeDeProcedure
      * @param session
      * @return false si le paramétrage ne correspond pas ou en cas d'erreurs
@@ -830,7 +844,7 @@ public class CAUtil implements APIUtil {
 
     /**
      * Règles permettant de vérifier si le solde restant dans la section est inférieur ou égal aux montants des taxes.
-     * 
+     *
      * @param soldeSection Le solde de la section en FWCurrency.
      * @param sumTaxes Le total des taxes en FWCurrency.
      * @return Vrai si le solde de la section est (<=) aux montants des taxes.
@@ -845,7 +859,7 @@ public class CAUtil implements APIUtil {
 
     /**
      * Règles permettant de vérifier si le solde restant dans la section est inférieur ou égal aux montants des taxes.
-     * 
+     *
      * @param soldeSection Le solde de la section en String.
      * @param sumTaxes Le total des taxes en String.
      * @return Vrai si le solde de la section est (<=) aux montants des taxes.
@@ -878,7 +892,7 @@ public class CAUtil implements APIUtil {
 
     /**
      * Reourne le premier compte annexe selon les critères passés en paramètre
-     * 
+     *
      * @param session
      * @param idExterne
      * @param idRole
@@ -915,7 +929,7 @@ public class CAUtil implements APIUtil {
 
     /**
      * Vérifier les paramètres.
-     * 
+     *
      * @param session
      * @param transaction
      * @param idRole

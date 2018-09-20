@@ -9,8 +9,10 @@ import globaz.globall.db.FWFindParameter;
 import globaz.globall.util.JANumberFormatter;
 import globaz.globall.util.JAUtil;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.properties.JadePropertiesService;
 import globaz.musca.db.facturation.FAEnteteFacture;
 import globaz.musca.db.facturation.FAEnteteFactureManager;
+import globaz.naos.application.AFApplication;
 import globaz.naos.db.affiliation.AFAffiliation;
 import globaz.naos.db.affiliation.AFAffiliationUtil;
 import globaz.naos.db.taxeCo2.AFTaxeCo2;
@@ -19,18 +21,18 @@ import globaz.osiris.utils.CAUtil;
 
 /**
  * Process pour la facturation des Cotisations Personnelles, Paritaires
- * 
+ *
  * @author: mmu, sau
  */
 
 public final class AFProcessFacturerTaxeCo2Tout extends AFProcessFacturerTaxeCo2 {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
-    public final static String ID_EXTERNE_FACTURE = "06000";
-    public final static String ID_SOUS_TYPE = "227006";
+    private String ID_EXTERNE_FACTURE;
+    private String ID_SOUS_TYPE;
 
     public static FWCurrency getMontantMinimumRedistributionTaxeCO2(BTransaction transaction, String date)
             throws Exception {
@@ -42,16 +44,39 @@ public final class AFProcessFacturerTaxeCo2Tout extends AFProcessFacturerTaxeCo2
      */
     public AFProcessFacturerTaxeCo2Tout() {
         super();
+        initValues();
     }
 
     /**
      * Constructeur de AFProcessFacturation.
-     * 
+     *
      * @param parent
      *            globaz.framework.process.FWProcess
      */
     public AFProcessFacturerTaxeCo2Tout(BProcess parent) {
         super(parent);
+        initValues();
+    }
+
+    private void initValues() {
+        String monthAsValue = JadePropertiesService.getInstance()
+                .getProperty("naos." + AFApplication.PROPERTY_RESTITUTION_TAXE_CO2_MONTH);
+        ID_SOUS_TYPE = "2270";
+        if (monthAsValue != null && monthAsValue.length() == 2) {
+            ID_SOUS_TYPE += monthAsValue;
+        } else if (monthAsValue != null && monthAsValue.length() == 1) {
+            ID_SOUS_TYPE += "0" + monthAsValue;
+        } else {
+            // Default value
+            ID_SOUS_TYPE = "227009";
+        }
+
+        ID_EXTERNE_FACTURE = JadePropertiesService.getInstance()
+                .getProperty("naos." + AFApplication.PROPERTY_TAXE_CO2_ID_FACTURE_EXTERNE);
+
+        if (ID_EXTERNE_FACTURE == null || ID_EXTERNE_FACTURE.length() != 5) {
+            ID_EXTERNE_FACTURE = "09000";
+        }
     }
 
     @Override
@@ -93,11 +118,10 @@ public final class AFProcessFacturerTaxeCo2Tout extends AFProcessFacturerTaxeCo2
             // Création du numéro de section avec un incrément de celui-ci s'il existe déjà en comptabilité aux.
             // Correction pour BZ 8611
             String numSection = CAUtil.creerNumeroSectionUnique(session, getTransaction(), roleCoti,
-                    donneesFacturation.getNumAffilie(), "1", getAnneeFacturation(),
-                    AFProcessFacturerTaxeCo2Tout.ID_SOUS_TYPE);
+                    donneesFacturation.getNumAffilie(), "1", getAnneeFacturation(), ID_SOUS_TYPE, ID_EXTERNE_FACTURE);
             enteteFacture.setIdExterneFacture(numSection);
 
-            enteteFacture.setIdSousType(AFProcessFacturerTaxeCo2Tout.ID_SOUS_TYPE);
+            enteteFacture.setIdSousType(ID_SOUS_TYPE);
             enteteFacture.setNonImprimable(Boolean.FALSE);
             enteteFacture.setIdSoumisInteretsMoratoires(CodeSystem.INTERET_MORATOIRE_AUTOMATIQUE);
             enteteFacture.setIdModeRecouvrement(CodeSystem.MODE_RECOUV_AUTOMATIQUE);
@@ -106,12 +130,13 @@ public final class AFProcessFacturerTaxeCo2Tout extends AFProcessFacturerTaxeCo2
                     && !JadeStringUtil.isEmpty(donneesFacturation.getNumAffilie())
                     && !JadeStringUtil.isEmpty(getAnneeFacturation())) {
                 // Integration du numSection dans le chargement de l'affiliation. Lien avec le BZ 8611
-                AFAffiliation affToUse = AFAffiliationUtil.loadAffiliation(getSession(), donneesFacturation.getTiers()
-                        .getIdTiers(), donneesFacturation.getNumAffilie(), numSection, roleCoti);
+                AFAffiliation affToUse = AFAffiliationUtil.loadAffiliation(getSession(),
+                        donneesFacturation.getTiers().getIdTiers(), donneesFacturation.getNumAffilie(), numSection,
+                        roleCoti);
                 if (affToUse != null) {
                     AFAffiliationUtil util = new AFAffiliationUtil(affToUse);
-                    String genreAffilie = CaisseHelperFactory.getInstance().getRoleForAffilieParitaire(
-                            getSession().getApplication());
+                    String genreAffilie = CaisseHelperFactory.getInstance()
+                            .getRoleForAffilieParitaire(getSession().getApplication());
                     enteteFacture.setIdDomaineCourrier(util.getAdresseDomaineCourrier(genreAffilie));
                     enteteFacture.setIdDomaineLSV(util.getAdresseDomaineRecouvrement(genreAffilie));
                     enteteFacture.setIdDomaineRemboursement(util.getAdresseDomaineRemboursement(genreAffilie));
@@ -145,13 +170,13 @@ public final class AFProcessFacturerTaxeCo2Tout extends AFProcessFacturerTaxeCo2
         } else {
             taux = donneesFacturation.getTauxForce();
         }
-        Double mntFacture = (new FWCurrency(donneesFacturation.getMasse()).doubleValue() * JAUtil
-                .createBigDecimal(taux).doubleValue()) / 100;
+        Double mntFacture = (new FWCurrency(donneesFacturation.getMasse()).doubleValue()
+                * JAUtil.createBigDecimal(taux).doubleValue()) / 100;
         FWCurrency montant = new FWCurrency(JANumberFormatter.formatNoQuote(mntFacture));
         montant.abs();
 
-        FWCurrency limit = AFProcessFacturerTaxeCo2Tout.getMontantMinimumRedistributionTaxeCO2(getTransaction(), "0101"
-                + anneeFacturation);
+        FWCurrency limit = AFProcessFacturerTaxeCo2Tout.getMontantMinimumRedistributionTaxeCO2(getTransaction(),
+                "0101" + anneeFacturation);
 
         return (limit.compareTo(montant) > 0);
     }
