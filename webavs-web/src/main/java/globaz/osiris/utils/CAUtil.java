@@ -76,24 +76,12 @@ public class CAUtil implements APIUtil {
      */
     public static String creerNumeroSectionUnique(BISession session, BITransaction transaction, String idRole,
             String idExterneRole, String idTypeSection, String annee, String categorieSection) throws Exception {
-        return creerNumeroSectionUnique(session, transaction, idRole, idExterneRole, idTypeSection, annee,
-                categorieSection, null);
-    }
-
-    public static String creerNumeroSectionUnique(BISession session, BITransaction transaction, String idRole,
-            String idExterneRole, String idTypeSection, String annee, String categorieSection, String idExterneFacture)
-            throws Exception {
 
         CAUtil.validateCreerNumeroSectionParameters(session, transaction, idRole, idExterneRole, idTypeSection, annee,
                 categorieSection);
 
         // Préparer le numéro de la section Annee + pos.5 et 6 du sous type
-        String numeroSection = annee;
-        if (idExterneFacture != null) {
-            numeroSection += idExterneFacture;
-        } else {
-            numeroSection += categorieSection.substring(4, 6) + "000";
-        }
+        String numeroSection = annee + categorieSection.substring(4, 6) + "000";
 
         String numeroSectionMax = annee + categorieSection.substring(4, 6) + APISection.SECTION_900_INTERET_MORATOIRE;
 

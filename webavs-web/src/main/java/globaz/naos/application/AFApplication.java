@@ -66,7 +66,6 @@ public class AFApplication extends BApplication {
     public final static String PROPERTY_QUITTANCE_PCG_CONTROLE_NBRE_QUITTANCES = "quittancePcgControleNbre";
     public static final String PROPERTY_RESTITUTION_TAXE_CO2_NON_JUIN = "restituerTaxeCO2NonJuin";
     public static final String PROPERTY_RESTITUTION_TAXE_CO2_MONTH = "restituerTaxeCO2Mois";
-    public static final String PROPERTY_TAXE_CO2_ID_FACTURE_EXTERNE = "taxeCO2IdFactureExterne";
     public static final String PROPERTY_ATTESTATION_RUBRIQUES_COMPLEMENTAIRES = "attestation.rubriques.complementaires";
 
     public final static String SYNCHROTAUX = "synchroTaux";

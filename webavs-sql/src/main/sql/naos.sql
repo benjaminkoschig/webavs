@@ -12,6 +12,3 @@ UPDATE SCHEMA.FWCOUP SET PCOLUT='AGA ST - Arbeitgeberkontrolle der strukturierte
 UPDATE SCHEMA.FWCOUP SET PCOLUT='Ausdruck BGS Wiederholung' WHERE PCOSID = 6200058 AND PLAIDE = 'D';
 UPDATE SCHEMA.FWCOUP SET PCOLUT='Mahnung BGS Wiederholung' WHERE PCOSID = 6200059 AND PLAIDE = 'D';
 UPDATE SCHEMA.FWCOUP SET PCOLUT='Nicht erhaltene BGS Wiederholung behandeln' WHERE PCOSID = 6200060 AND PLAIDE = 'D';
-
--- ID facture externe, possibilité de personnaliser l'ID
-INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL) VALUES ('naos.taxeCO2IdFactureExterne','09000');

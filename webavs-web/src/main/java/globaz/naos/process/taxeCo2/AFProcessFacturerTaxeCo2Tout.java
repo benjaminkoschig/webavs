@@ -31,7 +31,6 @@ public final class AFProcessFacturerTaxeCo2Tout extends AFProcessFacturerTaxeCo2
      *
      */
     private static final long serialVersionUID = 1L;
-    private String ID_EXTERNE_FACTURE;
     private String ID_SOUS_TYPE;
 
     public static FWCurrency getMontantMinimumRedistributionTaxeCO2(BTransaction transaction, String date)
@@ -69,13 +68,6 @@ public final class AFProcessFacturerTaxeCo2Tout extends AFProcessFacturerTaxeCo2
         } else {
             // Default value
             ID_SOUS_TYPE = "227009";
-        }
-
-        ID_EXTERNE_FACTURE = JadePropertiesService.getInstance()
-                .getProperty("naos." + AFApplication.PROPERTY_TAXE_CO2_ID_FACTURE_EXTERNE);
-
-        if (ID_EXTERNE_FACTURE == null || ID_EXTERNE_FACTURE.length() != 5) {
-            ID_EXTERNE_FACTURE = "09000";
         }
     }
 
@@ -118,7 +110,7 @@ public final class AFProcessFacturerTaxeCo2Tout extends AFProcessFacturerTaxeCo2
             // Création du numéro de section avec un incrément de celui-ci s'il existe déjà en comptabilité aux.
             // Correction pour BZ 8611
             String numSection = CAUtil.creerNumeroSectionUnique(session, getTransaction(), roleCoti,
-                    donneesFacturation.getNumAffilie(), "1", getAnneeFacturation(), ID_SOUS_TYPE, ID_EXTERNE_FACTURE);
+                    donneesFacturation.getNumAffilie(), "1", getAnneeFacturation(), ID_SOUS_TYPE);
             enteteFacture.setIdExterneFacture(numSection);
 
             enteteFacture.setIdSousType(ID_SOUS_TYPE);
