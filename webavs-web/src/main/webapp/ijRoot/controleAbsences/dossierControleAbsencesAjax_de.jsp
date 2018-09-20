@@ -432,13 +432,13 @@ var langue = "<%=languePage%>";
 												<ct:FWLabel key="JSP_BASE_IND_REMARQUE" />
 											</div>
 											<div class="span8">
-												<textarea rows="10" cols="90" 
+												<textarea rows="6" cols="145" 
 														id="baseIndemnisation.remarque"
 														name="baseIndemnisation.remarque" 
 														data-g-string="" 
 														/>
 												</textarea>
-												<div id="errorNbChar" hidden class="alert alert-error"/>
+												<div id="errorNbChar" class="alert alert-error"></div>
 											</div>
 										</div>
 										<div class="row-fluid">										
