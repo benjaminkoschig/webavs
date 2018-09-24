@@ -81,6 +81,9 @@ bButtonNew = false;
 	
 	
 	$(function(){
+		if($('#partiallikeNss').val() != '') {
+			$('#hiddenlikeNss').val($('[name=likeNss]').val());
+		}
 		$('#partiallikeNss').change(function(){
 			$('#hiddenlikeNss').val($('[name=likeNss]').val());
 		});

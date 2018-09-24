@@ -43,11 +43,13 @@ public class PCDecisionListViewBean extends BJadePersistentObjectListViewBean {
     @Override
     public void find() throws DecisionException, JadeApplicationServiceNotAvailableException, JadePersistenceException {
 
-        // si for demande pas vide --> recherche avec demande
-        if (!JadeStringUtil.isEmpty(listDecisionsSearch.getForDemande())) {
-            listDecisionsSearch.setWhereKey("forDemandeSearch");
+        if(testHasOneParameter(listDecisionsSearch)) {
+            // si for demande pas vide --> recherche avec demande
+            if (!JadeStringUtil.isEmpty(listDecisionsSearch.getForDemande())) {
+                listDecisionsSearch.setWhereKey("forDemandeSearch");
+            }
+            listDecisionsSearch = PegasusServiceLocator.getDecisionService().searchDecisions(listDecisionsSearch);
         }
-        listDecisionsSearch = PegasusServiceLocator.getDecisionService().searchDecisions(listDecisionsSearch);
     }
 
     /*
@@ -120,5 +122,85 @@ public class PCDecisionListViewBean extends BJadePersistentObjectListViewBean {
      */
     public void setDecisionSearch(ListDecisionsSearch listDecisionsSearch) {
         this.listDecisionsSearch = listDecisionsSearch;
+    }
+    
+    private boolean testHasOneParameter(ListDecisionsSearch listDecisionsSearch) {
+        if(!JadeStringUtil.isEmpty(listDecisionsSearch.getLikeNss())) {
+            return true;
+        }
+        if(!JadeStringUtil.isEmpty(listDecisionsSearch.getLikeNom())) {
+            return true;
+        }
+        if(!JadeStringUtil.isEmpty(listDecisionsSearch.getLikePrenom())) {
+            return true;
+        }
+        if(!JadeStringUtil.isEmpty(listDecisionsSearch.getForDateNaissance())) {
+            return true;
+        }
+        if(!JadeStringUtil.isEmpty(listDecisionsSearch.getForCsEtat())) {
+            return true;
+        }
+        if(!JadeStringUtil.isEmpty(listDecisionsSearch.getForCsSexe())) {
+            return true;
+        }
+        if(!JadeStringUtil.isEmpty(listDecisionsSearch.getForCsTypeDecision())) {
+            return true;
+        }
+        if(!JadeStringUtil.isEmpty(listDecisionsSearch.getForDansDernierLot())) {
+            return true;
+        }
+        if(!JadeStringUtil.isEmpty(listDecisionsSearch.getForDateDebutDroit())) {
+            return true;
+        }
+        if(!JadeStringUtil.isEmpty(listDecisionsSearch.getForDateDecision())) {
+            return true;
+        }
+        if(!JadeStringUtil.isEmpty(listDecisionsSearch.getForDateValidationGreaterOrEqual())) {
+            return true;
+        }
+        if(!JadeStringUtil.isEmpty(listDecisionsSearch.getForDateValidationLessOrEqual())) {
+            return true;
+        }
+        if(!JadeStringUtil.isEmpty(listDecisionsSearch.getForDemande())) {
+            return true;
+        }
+        if(!JadeStringUtil.isEmpty(listDecisionsSearch.getForDepuisDebutDroit())) {
+            return true;
+        }
+        if(!JadeStringUtil.isEmpty(listDecisionsSearch.getForDepuisValidation())) {
+            return true;
+        }
+        if(!JadeStringUtil.isEmpty(listDecisionsSearch.getForDossier())) {
+            return true;
+        }
+        if(!JadeStringUtil.isEmpty(listDecisionsSearch.getForDroit())) {
+            return true;
+        }
+        if(!JadeStringUtil.isEmpty(listDecisionsSearch.getForIdDecision())) {
+            return true;
+        }
+        if(!JadeStringUtil.isEmpty(listDecisionsSearch.getForIdTiers())) {
+            return true;
+        }
+        if(!JadeStringUtil.isEmpty(listDecisionsSearch.getForNoDecision())) {
+            return true;
+        }
+        if(!JadeStringUtil.isEmpty(listDecisionsSearch.getForPcAccorde())) {
+            return true;
+        }
+        if(!JadeStringUtil.isEmpty(listDecisionsSearch.getForPreparePar())) {
+            return true;
+        }
+        if(!JadeStringUtil.isEmpty(listDecisionsSearch.getForValidePar())) {
+            return true;
+        }
+        if(!JadeStringUtil.isEmpty(listDecisionsSearch.getForVersionDroitApc())) {
+            return true;
+        }
+        if(!JadeStringUtil.isEmpty(listDecisionsSearch.getForVersionDroitSup())) {
+            return true;
+        }
+        
+        return false;
     }
 }
