@@ -936,13 +936,22 @@ public class CIPeriodeSplitting extends BEntity {
                 // existe déjà
                 idAnnonce = ((HEOutputAnnonceViewBean) annonceMgr.getFirstEntity()).getIdAnnonce();
             } else {
-                // créer le 65 --> 63 depuis le 01.01.19
-                HashMap attributs = new HashMap();
-                attributs.put(IHEAnnoncesViewBean.CODE_ENREGISTREMENT, "01");
-                attributs.put(IHEAnnoncesViewBean.MOTIF_ANNONCE, "63");
-                // assuré
-                attributs.put(IHEAnnoncesViewBean.NUMERO_ASSURE, getPartenaireNumeroAvs());
-                idAnnonce = application.annonceARC(transaction, attributs, true);
+
+                annonceMgr.setForMotif("65");
+                annonceMgr.find(transaction);
+
+                if (!annonceMgr.isEmpty()) {
+                    // existe déjà
+                    idAnnonce = ((HEOutputAnnonceViewBean) annonceMgr.getFirstEntity()).getIdAnnonce();
+                } else {
+                    // créer le 65 --> 63 depuis le 01.01.19
+                    HashMap attributs = new HashMap();
+                    attributs.put(IHEAnnoncesViewBean.CODE_ENREGISTREMENT, "01");
+                    attributs.put(IHEAnnoncesViewBean.MOTIF_ANNONCE, "63");
+                    // assuré
+                    attributs.put(IHEAnnoncesViewBean.NUMERO_ASSURE, getPartenaireNumeroAvs());
+                    idAnnonce = application.annonceARC(transaction, attributs, true);
+                }
             }
             container.setIdAnnonce65(idAnnonce);
         }
