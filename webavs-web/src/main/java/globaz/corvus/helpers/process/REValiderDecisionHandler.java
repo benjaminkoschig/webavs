@@ -2,6 +2,18 @@
  */
 package globaz.corvus.helpers.process;
 
+import java.math.BigDecimal;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+import ch.admin.ofit.anakin.donnee.AnnonceErreur;
+import ch.globaz.corvus.domaine.constantes.TypeOrdreVersement;
+import ch.globaz.prestation.domaine.CodePrestation;
 import globaz.commons.nss.NSUtil;
 import globaz.corvus.anakin.REAnakinParser;
 import globaz.corvus.api.annonces.IREAnnonces;
@@ -77,29 +89,17 @@ import globaz.prestation.tools.PRStringUtils;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
 import globaz.pyxis.db.tiers.TIRole;
 import globaz.pyxis.db.tiers.TIRoleManager;
-import java.math.BigDecimal;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-import ch.admin.ofit.anakin.donnee.AnnonceErreur;
-import ch.globaz.corvus.domaine.constantes.TypeOrdreVersement;
-import ch.globaz.prestation.domaine.CodePrestation;
 
 /**
  * Traitement effectuant la logique de validation des décisions.
- * 
+ *
  * @author scr
  */
 public class REValiderDecisionHandler {
 
     /**
      * Création des annonces 9ème ou 10ème revision pour les rentes accordées qui n'ont pas d'annonces
-     * 
+     *
      * @param idRenteAccordee
      *            la rente accordée que n'a pas d'annonce
      * @throws Exception
@@ -118,15 +118,15 @@ public class REValiderDecisionHandler {
             dateMoisRapport = ra.getDateDebutDroit();
         }
 
-        dateMoisRapport = PRDateFormater.convertDate_AAAAMM_to_MMAA(PRDateFormater
-                .convertDate_JJxMMxAAAA_to_AAAAMM(dateMoisRapport));
+        dateMoisRapport = PRDateFormater
+                .convertDate_AAAAMM_to_MMAA(PRDateFormater.convertDate_JJxMMxAAAA_to_AAAAMM(dateMoisRapport));
 
         REValiderDecisionHandler.createAnnonce4x(session, transaction, idRenteAccordee, dateMoisRapport);
     }
 
     /**
      * Création des annonces 9ème ou 10ème revision pour les rentes accordées qui n'ont pas d'annonces
-     * 
+     *
      * @param idRenteAccordee
      *            la rente accordée que n'a pas d'annonce
      * @param moisRapport
@@ -196,8 +196,8 @@ public class REValiderDecisionHandler {
                 // Creation de l'enregistrement 2
                 // ///////////////////////////////////////////////////////////////
                 REAnnoncesAbstractLevel2A annonce_02 = null;
-                CodePrestation codePrestation = CodePrestation.getCodePrestation(Integer.parseInt(ra
-                        .getCodePrestation()));
+                CodePrestation codePrestation = CodePrestation
+                        .getCodePrestation(Integer.parseInt(ra.getCodePrestation()));
 
                 if (codePrestation.isAPI()) {
                     annonce_02 = REValiderDecisionHandler.remplirEnregistrement02API(session, transaction, dr, ra);
@@ -228,8 +228,8 @@ public class REValiderDecisionHandler {
                 annonceHeader.update(transaction);
 
                 // Validation des annonces
-                Enumeration<AnnonceErreur> erreurs = REAnakinParser.getInstance().parse(session, annonce_01,
-                        annonce_02, moisRapport);
+                Enumeration<AnnonceErreur> erreurs = REAnakinParser.getInstance().parse(session, annonce_01, annonce_02,
+                        moisRapport);
                 StringBuffer buff = new StringBuffer();
 
                 while ((erreurs != null) && erreurs.hasMoreElements()) {
@@ -246,7 +246,7 @@ public class REValiderDecisionHandler {
     /**
      * Format un montant sur 5 positions avec des zéro comblant les vides<br/>
      * Exemple : 123.00 Fr. donnera 00123
-     * 
+     *
      * @param montant
      *            le montant à formatter
      * @return le montant sur 5 position arrondi au franc
@@ -254,8 +254,8 @@ public class REValiderDecisionHandler {
     private static String formatMontantPourAnnonce(final FWCurrency montant) {
         String montantToString = montant.toString();
 
-        int nbCaractereMontant = JANumberFormatter.formatZeroValues(
-                montantToString.substring(0, montantToString.length() - 3), 0).length();
+        int nbCaractereMontant = JANumberFormatter
+                .formatZeroValues(montantToString.substring(0, montantToString.length() - 3), 0).length();
         int nbZeroAAjouter = 5 - nbCaractereMontant;
         String chaineZero = "";
         for (int i = 0; i < nbZeroAAjouter; i++) {
@@ -264,7 +264,8 @@ public class REValiderDecisionHandler {
         return chaineZero + montantToString.substring(0, montantToString.length() - 3);
     }
 
-    private static String formatXPosAppendWithZero(final int nombrePos, final boolean isAppendLeft, final String value) {
+    private static String formatXPosAppendWithZero(final int nombrePos, final boolean isAppendLeft,
+            final String value) {
         StringBuffer result = new StringBuffer();
 
         if (JadeStringUtil.isEmpty(value)) {
@@ -307,13 +308,13 @@ public class REValiderDecisionHandler {
 
         annonce_01.setIdTiers(ra.getIdTiersBeneficiaire());
         PRTiersWrapper tierBeneficiaire = PRTiersHelper.getTiersParId(session, ra.getIdTiersBeneficiaire());
-        annonce_01.setNoAssAyantDroit(NSUtil.unFormatAVS(tierBeneficiaire
-                .getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL)));
+        annonce_01.setNoAssAyantDroit(
+                NSUtil.unFormatAVS(tierBeneficiaire.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL)));
 
         PRTiersWrapper tierBeneficiaireAdr = PRTiersHelper.getTiersAdresseDomicileParId(session,
                 ra.getIdTiersBeneficiaire(), JACalendar.todayJJsMMsAAAA());
-        PRTiersWrapper tierRequerantAdr = PRTiersHelper.getTiersAdresseDomicileParId(session,
-                ra.getIdTiersBaseCalcul(), JACalendar.todayJJsMMsAAAA());
+        PRTiersWrapper tierRequerantAdr = PRTiersHelper.getTiersAdresseDomicileParId(session, ra.getIdTiersBaseCalcul(),
+                JACalendar.todayJJsMMsAAAA());
 
         String codeCanton = "";
         ISFSituationFamiliale sf = SFSituationFamilialeFactory.getSituationFamiliale(session,
@@ -404,12 +405,12 @@ public class REValiderDecisionHandler {
 
         PRTiersWrapper tierComp1 = PRTiersHelper.getTiersParId(session, ra.getIdTiersComplementaire1());
         if (tierComp1 != null) {
-            annonce_01.setPremierNoAssComplementaire(NSUtil.unFormatAVS(tierComp1
-                    .getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL)));
+            annonce_01.setPremierNoAssComplementaire(
+                    NSUtil.unFormatAVS(tierComp1.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL)));
         } else if (codePrestation.isRenteComplementairePourEnfant()
                 || (!ISFSituationFamiliale.CS_ETAT_CIVIL_CELIBATAIRE.equals(csEtatCivil)
-                        && !ISFSituationFamiliale.CS_ETAT_CIVIL_PARTENARIAT_DISSOUS_JUDICIAIREMENT.equals(csEtatCivil) && !ISFSituationFamiliale.CS_ETAT_CIVIL_DIVORCE
-                            .equals(csEtatCivil))) {
+                        && !ISFSituationFamiliale.CS_ETAT_CIVIL_PARTENARIAT_DISSOUS_JUDICIAIREMENT.equals(csEtatCivil)
+                        && !ISFSituationFamiliale.CS_ETAT_CIVIL_DIVORCE.equals(csEtatCivil))) {
             annonce_01.setPremierNoAssComplementaire("00000000000");
         } else {
             annonce_01.setPremierNoAssComplementaire("");
@@ -417,8 +418,8 @@ public class REValiderDecisionHandler {
 
         PRTiersWrapper tierComp2 = PRTiersHelper.getTiersParId(session, ra.getIdTiersComplementaire2());
         if (tierComp2 != null) {
-            annonce_01.setSecondNoAssComplementaire(NSUtil.unFormatAVS(tierComp2
-                    .getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL)));
+            annonce_01.setSecondNoAssComplementaire(
+                    NSUtil.unFormatAVS(tierComp2.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL)));
         } else if (codePrestation.isRenteComplementairePourEnfant()) {
             annonce_01.setSecondNoAssComplementaire("00000000000");
         } else {
@@ -435,16 +436,16 @@ public class REValiderDecisionHandler {
 
         annonce_01.setReferenceCaisseInterne("AUG" + session.getUserId().toUpperCase());
         annonce_01.setGenrePrestation(ra.getCodePrestation());
-        annonce_01.setDebutDroit(PRDateFormater.convertDate_AAAAMM_to_MMAA(PRDateFormater
-                .convertDate_MMxAAAA_to_AAAAMM(ra.getDateDebutDroit())));
-        annonce_01.setFinDroit(PRDateFormater.convertDate_AAAAMM_to_MMAA(PRDateFormater
-                .convertDate_JJxMMxAAAA_to_AAAAMM(ra.getDateFinDroit())));
+        annonce_01.setDebutDroit(PRDateFormater
+                .convertDate_AAAAMM_to_MMAA(PRDateFormater.convertDate_MMxAAAA_to_AAAAMM(ra.getDateDebutDroit())));
+        annonce_01.setFinDroit(PRDateFormater
+                .convertDate_AAAAMM_to_MMAA(PRDateFormater.convertDate_JJxMMxAAAA_to_AAAAMM(ra.getDateFinDroit())));
         annonce_01.setMoisRapport(dateMoisRapport);
         annonce_01.setCodeMutation(ra.getCodeMutation());
         annonce_01.setIsRefugie(isRefugie ? "1" : "0");
 
-        annonce_01.setMensualitePrestationsFrancs(REValiderDecisionHandler.formatMontantPourAnnonce(new FWCurrency(ra
-                .getMontantPrestation())));
+        annonce_01.setMensualitePrestationsFrancs(
+                REValiderDecisionHandler.formatMontantPourAnnonce(new FWCurrency(ra.getMontantPrestation())));
 
         return annonce_01;
     }
@@ -504,19 +505,19 @@ public class REValiderDecisionHandler {
                 annonce_02.setNbreAnneeBonifTrans(annesBTR);
             }
 
-            annonce_02.setDateRevocationAjournement(PRDateFormater.convertDate_AAAAMM_to_MMAA(PRDateFormater
-                    .convertDate_MMxAAAA_to_AAAAMM(ra.getDateRevocationAjournement())));
+            annonce_02.setDateRevocationAjournement(PRDateFormater.convertDate_AAAAMM_to_MMAA(
+                    PRDateFormater.convertDate_MMxAAAA_to_AAAAMM(ra.getDateRevocationAjournement())));
             annonce_02.setDureeAjournement(PRStringUtils.replaceString(ra.getDureeAjournement(), ".", ""));
 
             if (JadeStringUtil.isBlankOrZero(ra.getSupplementAjournement())) {
                 annonce_02.setSupplementAjournement("");
             } else {
-                annonce_02.setSupplementAjournement(REValiderDecisionHandler.formatMontantPourAnnonce(new FWCurrency(ra
-                        .getSupplementAjournement())));
+                annonce_02.setSupplementAjournement(REValiderDecisionHandler
+                        .formatMontantPourAnnonce(new FWCurrency(ra.getSupplementAjournement())));
             }
 
-            annonce_02.setDateDebutAnticipation(PRDateFormater.convertDate_AAAAMM_to_MMAA(PRDateFormater
-                    .convertDate_MMxAAAA_to_AAAAMM(ra.getDateDebutAnticipation())));
+            annonce_02.setDateDebutAnticipation(PRDateFormater.convertDate_AAAAMM_to_MMAA(
+                    PRDateFormater.convertDate_MMxAAAA_to_AAAAMM(ra.getDateDebutAnticipation())));
 
             if (JadeStringUtil.isBlankOrZero(ra.getAnneeAnticipation())) {
                 annonce_02.setNbreAnneeAnticipation("");
@@ -527,8 +528,8 @@ public class REValiderDecisionHandler {
             if (JadeStringUtil.isBlankOrZero(ra.getMontantReducationAnticipation())) {
                 annonce_02.setReductionAnticipation("");
             } else {
-                annonce_02.setReductionAnticipation(REValiderDecisionHandler.formatMontantPourAnnonce(new FWCurrency(ra
-                        .getMontantReducationAnticipation())));
+                annonce_02.setReductionAnticipation(REValiderDecisionHandler
+                        .formatMontantPourAnnonce(new FWCurrency(ra.getMontantReducationAnticipation())));
             }
         }
 
@@ -542,10 +543,10 @@ public class REValiderDecisionHandler {
             annonce_02.setDureeCotManquante48_72("");
             annonce_02.setDureeCotManquante73_78("");
         } else {
-            annonce_02.setDureeCotManquante48_72(REValiderDecisionHandler.formatXPosAppendWithZero(2, true,
-                    bc.getMoisAppointsAvant73()));
-            annonce_02.setDureeCotManquante73_78(REValiderDecisionHandler.formatXPosAppendWithZero(2, true,
-                    bc.getMoisAppointsDes73()));
+            annonce_02.setDureeCotManquante48_72(
+                    REValiderDecisionHandler.formatXPosAppendWithZero(2, true, bc.getMoisAppointsAvant73()));
+            annonce_02.setDureeCotManquante73_78(
+                    REValiderDecisionHandler.formatXPosAppendWithZero(2, true, bc.getMoisAppointsDes73()));
         }
 
         if (JadeStringUtil.isBlankOrZero(bc.getCodeOfficeAi())) {
@@ -558,8 +559,8 @@ public class REValiderDecisionHandler {
             annonce_02.setDegreInvalidite("");
             annonce_02.setAgeDebutInvalidite("");
         } else {
-            annonce_02.setDegreInvalidite(REValiderDecisionHandler.formatXPosAppendWithZero(3, true,
-                    bc.getDegreInvalidite()));
+            annonce_02.setDegreInvalidite(
+                    REValiderDecisionHandler.formatXPosAppendWithZero(3, true, bc.getDegreInvalidite()));
             annonce_02.setAgeDebutInvalidite(bc.isInvaliditePrecoce().booleanValue() ? "1" : "0");
         }
 
@@ -572,15 +573,15 @@ public class REValiderDecisionHandler {
         if (JadeStringUtil.isBlankOrZero(bc.getSurvenanceEvtAssAyantDroit())) {
             annonce_02.setSurvenanceEvenAssure("");
         } else {
-            annonce_02.setSurvenanceEvenAssure(PRDateFormater.convertDate_AAAAMM_to_MMAA(PRDateFormater
-                    .convertDate_MMxAAAA_to_AAAAMM(bc.getSurvenanceEvtAssAyantDroit())));
+            annonce_02.setSurvenanceEvenAssure(PRDateFormater.convertDate_AAAAMM_to_MMAA(
+                    PRDateFormater.convertDate_MMxAAAA_to_AAAAMM(bc.getSurvenanceEvtAssAyantDroit())));
         }
 
         if (JadeStringUtil.isBlankOrZero(ra.getReductionFauteGrave())) {
             annonce_02.setReduction("");
         } else {
-            annonce_02.setReduction(REValiderDecisionHandler.formatMontantPourAnnonce(new FWCurrency(ra
-                    .getReductionFauteGrave())));
+            annonce_02.setReduction(
+                    REValiderDecisionHandler.formatMontantPourAnnonce(new FWCurrency(ra.getReductionFauteGrave())));
         }
 
         if (codePrestation.isSurvivant() && codePrestation.isRentePrincipale()) {
@@ -659,18 +660,18 @@ public class REValiderDecisionHandler {
             annonce_02.setDureeCotPourDetRAM(PRStringUtils.replaceString(bc.getDureeRevenuAnnuelMoyen(), ".", ""));
             annonce_02.setRevenuPrisEnCompte(bc.getRevenuPrisEnCompte());
             annonce_02.setEchelleRente(bc.getEchelleRente());
-            annonce_02.setDureeCoEchelleRenteAv73(JadeStringUtil.fillWithZeroes(
-                    PRStringUtils.replaceString(bc.getDureeCotiAvant73(), ".", ""), 2));
-            annonce_02.setDureeCoEchelleRenteDes73(JadeStringUtil.fillWithZeroes(
-                    PRStringUtils.replaceString(bc.getDureeCotiDes73(), ".", ""), 2));
+            annonce_02.setDureeCoEchelleRenteAv73(
+                    JadeStringUtil.fillWithZeroes(PRStringUtils.replaceString(bc.getDureeCotiAvant73(), ".", ""), 2));
+            annonce_02.setDureeCoEchelleRenteDes73(
+                    JadeStringUtil.fillWithZeroes(PRStringUtils.replaceString(bc.getDureeCotiDes73(), ".", ""), 2));
             annonce_02.setDureeCotManquante48_72(JadeStringUtil.fillWithZeroes(bc.getMoisAppointsAvant73(), 2));
             annonce_02.setDureeCotManquante73_78(JadeStringUtil.fillWithZeroes(bc.getMoisAppointsDes73(), 2));
             annonce_02.setRamDeterminant(JadeStringUtil.fillWithZeroes(bc.getRevenuAnnuelMoyen(), 8));
             annonce_02.setAnneeCotClasseAge(bc.getAnneeCotiClasseAge());
         }
 
-        annonce_02.setDateRevocationAjournement(PRDateFormater.convertDate_AAAAMM_to_MMAA(PRDateFormater
-                .convertDate_MMxAAAA_to_AAAAMM(ra.getDateRevocationAjournement())));
+        annonce_02.setDateRevocationAjournement(PRDateFormater.convertDate_AAAAMM_to_MMAA(
+                PRDateFormater.convertDate_MMxAAAA_to_AAAAMM(ra.getDateRevocationAjournement())));
         annonce_02.setDureeAjournement(PRStringUtils.replaceString(ra.getDureeAjournement(), ".", ""));
         // BZ 6270
         if (JadeStringUtil.isDecimalEmpty(ra.getSupplementAjournement())) {
@@ -697,20 +698,21 @@ public class REValiderDecisionHandler {
         }
 
         // Pour la 9ème, sur 3 position !!!!
-        if ((bc.getCodeOfficeAi() != null) && (bc.getCodeOfficeAi().length() == 3)) {
+        if ((bc.getCodeOfficeAi() != null && !JadeStringUtil.isBlankOrZero(bc.getCodeOfficeAi()))
+                && (bc.getCodeOfficeAi().length() == 3)) {
             String s = bc.getCodeOfficeAi().substring(1, 3);
             annonce_02.setOfficeAICompetent(s);
         }
 
-        annonce_02.setDegreInvalidite(JadeStringUtil.isDecimalEmpty(bc.getDegreInvalidite()) ? "" : bc
-                .getDegreInvalidite());
-        annonce_02.setCodeInfirmite(JadeStringUtil.isDecimalEmpty(bc.getCleInfirmiteAyantDroit()) ? "" : bc
-                .getCleInfirmiteAyantDroit());
-        annonce_02.setSurvenanceEvenAssure(PRDateFormater.convertDate_AAAAMM_to_MMAA(PRDateFormater
-                .convertDate_MMxAAAA_to_AAAAMM(bc.getSurvenanceEvtAssAyantDroit())));
+        annonce_02.setDegreInvalidite(
+                JadeStringUtil.isDecimalEmpty(bc.getDegreInvalidite()) ? "" : bc.getDegreInvalidite());
+        annonce_02.setCodeInfirmite(
+                JadeStringUtil.isDecimalEmpty(bc.getCleInfirmiteAyantDroit()) ? "" : bc.getCleInfirmiteAyantDroit());
+        annonce_02.setSurvenanceEvenAssure(PRDateFormater.convertDate_AAAAMM_to_MMAA(
+                PRDateFormater.convertDate_MMxAAAA_to_AAAAMM(bc.getSurvenanceEvtAssAyantDroit())));
         annonce_02.setAgeDebutInvalidite(bc.isInvaliditePrecoce().booleanValue() ? "1" : "0");
-        annonce_02.setReduction(JadeStringUtil.isDecimalEmpty(ra.getReductionFauteGrave()) ? "" : ra
-                .getReductionFauteGrave());
+        annonce_02.setReduction(
+                JadeStringUtil.isDecimalEmpty(ra.getReductionFauteGrave()) ? "" : ra.getReductionFauteGrave());
 
         annonce_02.setCasSpecial1(ra.getCodeCasSpeciaux1());
         annonce_02.setCasSpecial2(ra.getCodeCasSpeciaux2());
@@ -776,14 +778,14 @@ public class REValiderDecisionHandler {
         if (!JadeStringUtil.isDecimalEmpty(bc9.getBonificationTacheEducative())) {
             BigDecimal revenuSansBTE = new BigDecimal(bc.getRevenuAnnuelMoyen());
             revenuSansBTE = revenuSansBTE.subtract(new BigDecimal(bc9.getBonificationTacheEducative()));
-            annonce_02.setRevenuAnnuelMoyenSansBTE(JadeStringUtil.fillWithZeroes(revenuSansBTE.toBigInteger()
-                    .toString(), 8));
+            annonce_02.setRevenuAnnuelMoyenSansBTE(
+                    JadeStringUtil.fillWithZeroes(revenuSansBTE.toBigInteger().toString(), 8));
         } else {
             annonce_02.setRevenuAnnuelMoyenSansBTE("");
         }
 
-        annonce_02.setReduction(JadeStringUtil.isDecimalEmpty(ra.getReductionFauteGrave()) ? "" : ra
-                .getReductionFauteGrave());
+        annonce_02.setReduction(
+                JadeStringUtil.isDecimalEmpty(ra.getReductionFauteGrave()) ? "" : ra.getReductionFauteGrave());
 
         // BZ 7595
         // Si la rente accordées est de type invalidité extraordinaire
@@ -817,8 +819,8 @@ public class REValiderDecisionHandler {
 
     protected void assertNotIsNew(final BEntity entity, final String errorMsg) throws Exception {
         if (entity.isNew()) {
-            throw new Exception(errorMsg == null ? "" : errorMsg + " " + entity.getClass().getName()
-                    + " not Found. id=" + entity.getId());
+            throw new Exception(errorMsg == null ? ""
+                    : errorMsg + " " + entity.getClass().getName() + " not Found. id=" + entity.getId());
         }
     }
 
@@ -1051,7 +1053,7 @@ public class REValiderDecisionHandler {
 
         /*
          * Validation RETRO
-         * 
+         *
          * 1) Le courant doit avoir été préalablement validé, s'il y en a... 2) La RA doit etre dans l'état PARTIEL OU
          * CALCULE 3) Pas de prestation dues de type RETRO 4) La/les bases de calculs doivent être dans l'état ACTIF 5)
          * La demande de rente doit etre dans l'état PARTIEL s'il y a du courant, CALCULE autrement
@@ -1114,10 +1116,9 @@ public class REValiderDecisionHandler {
 
                     // Il est possible que la RA validée avec le courant aie été diminuée avant la validation du RETRO
                     // !!!
-                    if (((courant == 0))
-                            && (!IREPrestationAccordee.CS_ETAT_DIMINUE.equals(ra.getCsEtat())
-                                    && !IREPrestationAccordee.CS_ETAT_CALCULE.equals(ra.getCsEtat()) && !IREPrestationAccordee.CS_ETAT_PARTIEL
-                                        .equals(ra.getCsEtat()))) {
+                    if (((courant == 0)) && (!IREPrestationAccordee.CS_ETAT_DIMINUE.equals(ra.getCsEtat())
+                            && !IREPrestationAccordee.CS_ETAT_CALCULE.equals(ra.getCsEtat())
+                            && !IREPrestationAccordee.CS_ETAT_PARTIEL.equals(ra.getCsEtat()))) {
                         throw new Exception(
                                 "Incohérance dans les données, la RA doit être dans l'état 'CALCULE' pour la décision no : "
                                         + decision.getIdDecision());
@@ -1139,8 +1140,8 @@ public class REValiderDecisionHandler {
 
         /*
          * Validation COURANT
-         * 
-         * 
+         *
+         *
          * 20) La RA doit etre dans l'état CALCULE 30) Toute les prestations dues de la décision doivent être de type
          * COURANT et se trouver dans l'état ATTENTE. 40) La/les bases de calculs doivent être dans l'état ACTIF 50) La
          * demande de rente doit etre dans l'état CALCULE
@@ -1212,7 +1213,7 @@ public class REValiderDecisionHandler {
 
         /*
          * Validation STANDARD
-         * 
+         *
          * 100) Il ne doit pas y avoir de RETRO ni de COURANT 200) La RA doit etre dans l'état CALCULE 300) Toute les
          * prestations dues de la RA doivent être dans l'état ATTENTE. 400) La/les bases de calculs doivent être dans
          * l'état ACTIF 500) La demande de rente doit etre dans l'état CALCULE ou PARTIEL. Si plusieurs décisions à
@@ -1349,8 +1350,8 @@ public class REValiderDecisionHandler {
 
     }
 
-    private REValiderDecisionVO doPreparationMAJDemandeRente(final REValiderDecisionVO vo,
-            final REDemandeRente demande, final String csTypeValidation) throws Exception {
+    private REValiderDecisionVO doPreparationMAJDemandeRente(final REValiderDecisionVO vo, final REDemandeRente demande,
+            final String csTypeValidation) throws Exception {
 
         // Lors de la validation de plusieurs décisions pour une même demande,
         // la demande doit être maj lors du dernier traitement uniquement,
@@ -1557,14 +1558,14 @@ public class REValiderDecisionHandler {
                                 dfRAaDiminuer = new JADate(ddAncienDroitRAD.toStr("."));
                                 // Le mois précédent
                                 dfRAaDiminuer = cal.addMonths(dfRAaDiminuer, -1);
-                                raADiminuer.setDateFinDroit(PRDateFormater
-                                        .convertDate_AAAAMMJJ_to_MMxAAAA(dfRAaDiminuer.toStrAMJ()));
+                                raADiminuer.setDateFinDroit(
+                                        PRDateFormater.convertDate_AAAAMMJJ_to_MMxAAAA(dfRAaDiminuer.toStrAMJ()));
                             } else {
                                 dfRAaDiminuer = new JADate(ddNouveauDroit.toStr("."));
                                 // Le mois précédent
                                 dfRAaDiminuer = cal.addMonths(dfRAaDiminuer, -1);
-                                raADiminuer.setDateFinDroit(PRDateFormater
-                                        .convertDate_AAAAMMJJ_to_MMxAAAA(dfRAaDiminuer.toStrAMJ()));
+                                raADiminuer.setDateFinDroit(
+                                        PRDateFormater.convertDate_AAAAMMJJ_to_MMxAAAA(dfRAaDiminuer.toStrAMJ()));
                             }
                             raADiminuer.update(transaction);
 
@@ -1641,17 +1642,18 @@ public class REValiderDecisionHandler {
                                 annonce10Eme.setNumeroAgence(getSession().getApplication().getProperty("noAgence"));
                                 annonce10Eme.setNumeroAnnonce("");
                                 annonce10Eme.setReferenceCaisseInterne("DIM" + getSession().getUserId().toUpperCase());
-                                annonce10Eme.setNoAssAyantDroit(NSUtil.unFormatAVS(tier
-                                        .getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL)));
+                                annonce10Eme.setNoAssAyantDroit(
+                                        NSUtil.unFormatAVS(tier.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL)));
                                 annonce10Eme.setIdTiers(tier.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS));
                                 annonce10Eme.setGenrePrestation(raADiminuer.getCodePrestation());
 
-                                int lengthMontant = String.valueOf(
-                                        new FWCurrency(raADiminuer.getMontantPrestation()).intValue()).length();
+                                int lengthMontant = String
+                                        .valueOf(new FWCurrency(raADiminuer.getMontantPrestation()).intValue())
+                                        .length();
                                 int nbZeroAajouter = 5 - lengthMontant;
 
-                                String montant = String.valueOf(new FWCurrency(raADiminuer.getMontantPrestation())
-                                        .intValue());
+                                String montant = String
+                                        .valueOf(new FWCurrency(raADiminuer.getMontantPrestation()).intValue());
 
                                 for (int j = 0; j < nbZeroAajouter; j++) {
                                     montant = "0" + montant;
@@ -1659,8 +1661,8 @@ public class REValiderDecisionHandler {
 
                                 annonce10Eme.setMensualitePrestationsFrancs(montant);
 
-                                annonce10Eme.setFinDroit(PRDateFormater.convertDate_AAAAMM_to_MMAA(PRDateFormater
-                                        .convertDate_MMxAAAA_to_AAAAMM(raADiminuer.getDateFinDroit())));
+                                annonce10Eme.setFinDroit(PRDateFormater.convertDate_AAAAMM_to_MMAA(
+                                        PRDateFormater.convertDate_MMxAAAA_to_AAAAMM(raADiminuer.getDateFinDroit())));
                                 annonce10Eme.setMoisRapport(dateMoisRapport);
                                 annonce10Eme.setCodeMutation(raADiminuer.getCodeMutation());
                                 annonce10Eme.setEtat(IREAnnonces.CS_ETAT_OUVERT);
@@ -1692,17 +1694,18 @@ public class REValiderDecisionHandler {
                                 annonce9Eme.setNumeroAgence(getSession().getApplication().getProperty("noAgence"));
                                 annonce9Eme.setNumeroAnnonce("");
                                 annonce9Eme.setReferenceCaisseInterne("DIM" + getSession().getUserId().toUpperCase());
-                                annonce9Eme.setNoAssAyantDroit(NSUtil.unFormatAVS(tier
-                                        .getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL)));
+                                annonce9Eme.setNoAssAyantDroit(
+                                        NSUtil.unFormatAVS(tier.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL)));
                                 annonce9Eme.setIdTiers(tier.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS));
                                 annonce9Eme.setGenrePrestation(raADiminuer.getCodePrestation());
 
-                                int lengthMontant = String.valueOf(
-                                        new FWCurrency(raADiminuer.getMontantPrestation()).intValue()).length();
+                                int lengthMontant = String
+                                        .valueOf(new FWCurrency(raADiminuer.getMontantPrestation()).intValue())
+                                        .length();
                                 int nbZeroAajouter = 5 - lengthMontant;
 
-                                String montant = String.valueOf(new FWCurrency(raADiminuer.getMontantPrestation())
-                                        .intValue());
+                                String montant = String
+                                        .valueOf(new FWCurrency(raADiminuer.getMontantPrestation()).intValue());
 
                                 for (int j = 0; j < nbZeroAajouter; j++) {
                                     montant = "0" + montant;
@@ -1710,8 +1713,8 @@ public class REValiderDecisionHandler {
 
                                 annonce9Eme.setMensualitePrestationsFrancs(montant);
 
-                                annonce9Eme.setFinDroit(PRDateFormater.convertDate_AAAAMM_to_MMAA(PRDateFormater
-                                        .convertDate_MMxAAAA_to_AAAAMM(raADiminuer.getDateFinDroit())));
+                                annonce9Eme.setFinDroit(PRDateFormater.convertDate_AAAAMM_to_MMAA(
+                                        PRDateFormater.convertDate_MMxAAAA_to_AAAAMM(raADiminuer.getDateFinDroit())));
                                 annonce9Eme.setMoisRapport(dateMoisRapport);
                                 annonce9Eme.setCodeMutation(raADiminuer.getCodeMutation());
                                 annonce9Eme.setEtat(IREAnnonces.CS_ETAT_OUVERT);
@@ -1830,8 +1833,8 @@ public class REValiderDecisionHandler {
                 annonce4401new.setMensualitePrestationsFrancs(annonce44.getMensualitePrestationsFrancs());
 
                 String dateMoisRapport = REPmtMensuel.getDateDernierPmt(getSession());
-                dateMoisRapport = PRDateFormater.convertDate_AAAAMM_to_MMAA(PRDateFormater
-                        .convertDate_JJxMMxAAAA_to_AAAAMM(dateMoisRapport));
+                dateMoisRapport = PRDateFormater
+                        .convertDate_AAAAMM_to_MMAA(PRDateFormater.convertDate_JJxMMxAAAA_to_AAAAMM(dateMoisRapport));
 
                 annonce4401new.setMoisRapport(dateMoisRapport);
                 annonce4401new.setCodeMutation(IREAnnonces.CODE_MUTATION_AUTRE_EVENEMENT);
@@ -1876,8 +1879,8 @@ public class REValiderDecisionHandler {
             else {
 
                 String dateMoisRapport = REPmtMensuel.getDateDernierPmt(getSession());
-                dateMoisRapport = PRDateFormater.convertDate_AAAAMM_to_MMAA(PRDateFormater
-                        .convertDate_JJxMMxAAAA_to_AAAAMM(dateMoisRapport));
+                dateMoisRapport = PRDateFormater
+                        .convertDate_AAAAMM_to_MMAA(PRDateFormater.convertDate_JJxMMxAAAA_to_AAAAMM(dateMoisRapport));
 
                 // Création de la copie pour l'enregistrement 01 des annonces 41
                 // !
@@ -1950,7 +1953,7 @@ public class REValiderDecisionHandler {
     }
 
     /*
-     * 
+     *
      * Validation de la décision (Type = COURANT)
      */
     protected REValiderDecisionVO doTraitementCourant(REValiderDecisionVO vo, final REDecisionEntity decision,
@@ -1996,13 +1999,13 @@ public class REValiderDecisionHandler {
                     // rapport et date de début
                     // Le mois en cours.
                     ann.setMoisRapport(decision.getDecisionDepuis());
-                    ann.setDebutDroit(PRDateFormater.convertDate_AAAAMM_to_MMAA(PRDateFormater
-                            .convertDate_MMxAAAA_to_AAAAMM(decision.getDecisionDepuis())));
+                    ann.setDebutDroit(PRDateFormater.convertDate_AAAAMM_to_MMAA(
+                            PRDateFormater.convertDate_MMxAAAA_to_AAAAMM(decision.getDecisionDepuis())));
                     ann.update(transaction);
 
                 } else {
-                    throw new Exception("Erreur dans le traitement des annonces pour la décision no : "
-                            + decision.getIdDecision());
+                    throw new Exception(
+                            "Erreur dans le traitement des annonces pour la décision no : " + decision.getIdDecision());
                 }
             }
 
@@ -2053,8 +2056,8 @@ public class REValiderDecisionHandler {
                 int result = checkCourantPrestationDue(pd, decision.getDecisionDepuis());
                 // Courant déjà validé
                 if (result == 1) {
-                    throw new Exception("Le courant à déjà été validé pour la décision no : "
-                            + decision.getIdDecision());
+                    throw new Exception(
+                            "Le courant à déjà été validé pour la décision no : " + decision.getIdDecision());
                 }
                 // Courant non validé
                 else if (result == -1) {
@@ -2082,7 +2085,7 @@ public class REValiderDecisionHandler {
     }
 
     /*
-     * 
+     *
      * Validation de la décision (Type = RETRO)
      */
     protected REValiderDecisionVO doTraitementRetro(REValiderDecisionVO vo, final REDecisionEntity decision,
@@ -2193,8 +2196,8 @@ public class REValiderDecisionHandler {
                 // 1 :courant qui est validé
                 // 0 : pas de courant
                 if (result == -1) {
-                    throw new Exception("Le courant n'a pas encore été validé pour la décision no : "
-                            + decision.getIdDecision());
+                    throw new Exception(
+                            "Le courant n'a pas encore été validé pour la décision no : " + decision.getIdDecision());
                 }
 
                 // Pas de courant, on valide donc le rétro
@@ -2221,7 +2224,7 @@ public class REValiderDecisionHandler {
     }
 
     /*
-     * 
+     *
      * Validation de la décision (Type = STANDARD)
      */
     protected REValiderDecisionVO doTraitementStandard(REValiderDecisionVO vo, final REDecisionEntity decision,
@@ -2413,7 +2416,7 @@ public class REValiderDecisionHandler {
 
     /**
      * Met à jours le champ code mutation de la RA à diminuer
-     * 
+     *
      * @param raCourante
      * @param raADiminuer
      * @param isChangementEtatCivil
@@ -2593,7 +2596,7 @@ public class REValiderDecisionHandler {
 
     /**
      * Charge la demande de rente
-     * 
+     *
      * @param idBaseCalcul
      * @return
      * @throws Exception
