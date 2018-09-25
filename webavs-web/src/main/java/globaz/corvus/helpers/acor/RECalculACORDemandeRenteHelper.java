@@ -2948,7 +2948,7 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
          * } /*
          * /* Lecture du fichier annonce.xml si annonce.rr n'existe pas
          */
-        else if (!JadeStringUtil.isEmpty(caViewbean.getContenuAnnonceXML())) {
+        if (!JadeStringUtil.isEmpty(caViewbean.getContenuAnnonceXML())) {
             REACORAnnonceXmlReader annonceXmlReader = new REACORAnnonceXmlReader();
             annonceXmlReader.readAnnonceXmlContent(session, (BTransaction) transaction,
                     caViewbean.getContenuAnnonceXML(), rentesAccordees);
