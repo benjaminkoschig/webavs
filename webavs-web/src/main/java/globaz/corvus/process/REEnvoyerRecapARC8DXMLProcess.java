@@ -42,6 +42,7 @@ public class REEnvoyerRecapARC8DXMLProcess extends BProcess {
     private static final long serialVersionUID = 1L;
 
     private REDetailRecapMensuelleViewBean reDetRecMenViewBean = null;
+    RERecapMensuelle reRecapMensuelle;
 
     public REEnvoyerRecapARC8DXMLProcess() {
         super();
@@ -73,7 +74,7 @@ public class REEnvoyerRecapARC8DXMLProcess extends BProcess {
 
             // Modification de l'état de la récap
 
-            RERecapMensuelle reRecapMensuelle = new RERecapMensuelle();
+            reRecapMensuelle = new RERecapMensuelle();
             reRecapMensuelle.setSession(getSession());
             reRecapMensuelle.setIdRecapMensuelle(reDetRecMenViewBean.getIdRecapMensuelle());
             reRecapMensuelle.retrieve();
@@ -117,7 +118,7 @@ public class REEnvoyerRecapARC8DXMLProcess extends BProcess {
                         recapElemMoisSuivant.setCodeRecap(((String) noElements[i]).substring(4, 7) + "001");
                         recapElemMoisSuivant.retrieve();
 
-                        recapElemMoisSuivant.setMontant((String) mntRecapTotauxElems.get(noElements[i]));
+                        recapElemMoisSuivant.setMontant(mntRecapTotauxElems.get(noElements[i]));
 
                         if (recapElemMoisSuivant.isNew()) {
                             recapElemMoisSuivant.save();
@@ -204,10 +205,20 @@ public class REEnvoyerRecapARC8DXMLProcess extends BProcess {
      */
     @Override
     protected String getEMailObject() {
+        reRecapMensuelle = new RERecapMensuelle();
+        reRecapMensuelle.setSession(getSession());
+        reRecapMensuelle.setIdRecapMensuelle(reDetRecMenViewBean.getIdRecapMensuelle());
+        try {
+            reRecapMensuelle.retrieve();
+        } catch (Exception e) {
+            getMemoryLog().logMessage(e.getMessage(), FWViewBeanInterface.ERROR, this.getClass().getName());
+        }
         if (getMemoryLog().isOnErrorLevel() || getMemoryLog().isOnFatalLevel()) {
-            return getSession().getLabel("PROCESS_ENVOI_RECAP_FAILED");
+            return getSession().getLabel("PROCESS_ENVOI_RECAP_FAILED") + " - "
+                    + reRecapMensuelle.getDateRapportMensuel();
         } else {
-            return getSession().getLabel("PROCESS_ENVOI_RECAP_SUCCESS");
+            return getSession().getLabel("PROCESS_ENVOI_RECAP_SUCCESS") + " - "
+                    + reRecapMensuelle.getDateRapportMensuel();
         }
     }
 
