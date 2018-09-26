@@ -378,7 +378,7 @@ public class REAnnoncePonctuelleViewBean extends PRAbstractViewBeanSupport {
         montantPrestation = ra.getMontantPrestation();
         dateDebut = ra.getDateDebutDroit();
         codeEtatCivil = PRACORConst.csEtatCivilHeraToAcorForRentes(session, csEtatCivil);
-        this.csEtatCivil = PRACORConst.csEtatCivilHeraToCsEtatCivil(csEtatCivil);
+        this.csEtatCivil = csEtatCivil;
         canton = PRACORConst.csCantonToAcor(csCanton);
         this.csCanton = csCanton;
         codeRefugie = !JadeStringUtil.isEmpty(ra.getCodeRefugie()) && "1".equals(ra.getCodeRefugie());
