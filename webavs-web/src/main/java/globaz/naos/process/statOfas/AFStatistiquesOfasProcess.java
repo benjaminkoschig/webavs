@@ -3,6 +3,21 @@
  */
 package globaz.naos.process.statOfas;
 
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import org.apache.commons.io.IOUtils;
+import ch.globaz.al.business.constantes.ALCSDossier;
+import ch.globaz.al.business.constantes.ALCSDroit;
+import ch.globaz.al.business.constantes.ALCSPrestation;
+import ch.globaz.al.business.constantes.ALCSTarif;
+import ch.globaz.common.exceptions.CommonTechnicalException;
+import ch.globaz.naos.business.beans.StatOfasAFAgricoleBean;
 import globaz.aquila.api.ICOEtape;
 import globaz.corvus.api.decisions.IREDecision;
 import globaz.corvus.api.demandes.IREDemandeRente;
@@ -50,25 +65,10 @@ import globaz.naos.translation.CodeSystem;
 import globaz.pyxis.db.tiers.TIPersonne;
 import globaz.pyxis.util.TIToolBox;
 import globaz.webavs.common.CommonProperties;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import org.apache.commons.io.IOUtils;
-import ch.globaz.al.business.constantes.ALCSDossier;
-import ch.globaz.al.business.constantes.ALCSDroit;
-import ch.globaz.al.business.constantes.ALCSPrestation;
-import ch.globaz.al.business.constantes.ALCSTarif;
-import ch.globaz.common.exceptions.CommonTechnicalException;
-import ch.globaz.naos.business.beans.StatOfasAFAgricoleBean;
 
 /**
  * @author mar
- * 
+ *
  */
 
 public class AFStatistiquesOfasProcess extends BProcess {
@@ -445,7 +445,7 @@ public class AFStatistiquesOfasProcess extends BProcess {
     public static final String REQUETE_SURSIS_PAIEMENT_COL_NAME_TOTAL = "TOTAL";
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
 
@@ -531,10 +531,10 @@ public class AFStatistiquesOfasProcess extends BProcess {
         mapInfoHorsStatOfas = new HashMap<String, String>();
         mapInfoHorsStatOfas.put(AFStatistiquesOfasProcess.KEY_TOTAL_SURSIS_PAIEMENT_MAP_INFO_HORS_STAT_OFAS, "0");
         mapInfoHorsStatOfas.put(AFStatistiquesOfasProcess.KEY_TOTAL_REQUISITION_POURSUITE_MAP_INFO_HORS_STAT_OFAS, "0");
-        mapInfoHorsStatOfas.put(
-                AFStatistiquesOfasProcess.KEY_TOTAL_REQUISITION_CONTINUER_POURSUITE_MAP_INFO_HORS_STAT_OFAS, "0");
-        mapInfoHorsStatOfas.put(
-                AFStatistiquesOfasProcess.KEY_NOMBRE_CREANCE_REPARATION_DOMMAGE_MAP_INFO_HORS_STAT_OFAS, "0");
+        mapInfoHorsStatOfas
+                .put(AFStatistiquesOfasProcess.KEY_TOTAL_REQUISITION_CONTINUER_POURSUITE_MAP_INFO_HORS_STAT_OFAS, "0");
+        mapInfoHorsStatOfas.put(AFStatistiquesOfasProcess.KEY_NOMBRE_CREANCE_REPARATION_DOMMAGE_MAP_INFO_HORS_STAT_OFAS,
+                "0");
         mapInfoHorsStatOfas.put(AFStatistiquesOfasProcess.KEY_TOTAL_CREANCE_REPARATION_DOMMAGE_MAP_INFO_HORS_STAT_OFAS,
                 "0");
 
@@ -794,14 +794,14 @@ public class AFStatistiquesOfasProcess extends BProcess {
 
         mapStatControleLAALPP = new HashMap<String, String>();
 
-        mapStatControleLAALPP.put(
-                AFStatistiquesOfasProcess.KEY_NOMBRE_QUESTIONNAIRE_LAA_RETOURNE_MAP_STAT_CONTROLE_LAA_LPP, "0");
-        mapStatControleLAALPP.put(
-                AFStatistiquesOfasProcess.KEY_NOMBRE_QUESTIONNAIRE_LPP_RETOURNE_MAP_STAT_CONTROLE_LAA_LPP, "0");
-        mapStatControleLAALPP.put(
-                AFStatistiquesOfasProcess.KEY_NOMBRE_DECLARATION_SALAIRE_RETOURNE_MAP_STAT_CONTROLE_LAA_LPP, "0");
-        mapStatControleLAALPP.put(
-                AFStatistiquesOfasProcess.KEY_NOMBRE_CONTROLE_EMPLOYEUR_EFFECTUE_MAP_STAT_CONTROLE_LAA_LPP, "0");
+        mapStatControleLAALPP
+                .put(AFStatistiquesOfasProcess.KEY_NOMBRE_QUESTIONNAIRE_LAA_RETOURNE_MAP_STAT_CONTROLE_LAA_LPP, "0");
+        mapStatControleLAALPP
+                .put(AFStatistiquesOfasProcess.KEY_NOMBRE_QUESTIONNAIRE_LPP_RETOURNE_MAP_STAT_CONTROLE_LAA_LPP, "0");
+        mapStatControleLAALPP
+                .put(AFStatistiquesOfasProcess.KEY_NOMBRE_DECLARATION_SALAIRE_RETOURNE_MAP_STAT_CONTROLE_LAA_LPP, "0");
+        mapStatControleLAALPP
+                .put(AFStatistiquesOfasProcess.KEY_NOMBRE_CONTROLE_EMPLOYEUR_EFFECTUE_MAP_STAT_CONTROLE_LAA_LPP, "0");
 
         mapCodeCantonChiffreStatOfas = new HashMap<String, String>();
         mapCodeCantonChiffreStatOfas.put("505019", AFStatistiquesOfasProcess.KEY_120_MAP_STAT_OFAS);
@@ -984,8 +984,8 @@ public class AFStatistiquesOfasProcess extends BProcess {
 
     private void addAHorsStatistiqueLineInListCSVLine(String keyMapInfoHorsStatOfas) {
 
-        String theLabel = getSession().getLabel(
-                AFStatistiquesOfasProcess.LABEL_STATISTIQUE_OFAS_FIX_PART + keyMapInfoHorsStatOfas);
+        String theLabel = getSession()
+                .getLabel(AFStatistiquesOfasProcess.LABEL_STATISTIQUE_OFAS_FIX_PART + keyMapInfoHorsStatOfas);
         String theValue = mapInfoHorsStatOfas.get(keyMapInfoHorsStatOfas);
 
         addALineInListCSVLine(theLabel, theValue);
@@ -1118,22 +1118,18 @@ public class AFStatistiquesOfasProcess extends BProcess {
                     .equalsIgnoreCase(typeActivite) && ALCSTarif.CATEGORIE_LFP.equalsIgnoreCase(typeLoi);
             boolean isTravailleurAgricoleMontagne = ALCSDossier.ACTIVITE_TRAVAILLEUR_AGRICOLE
                     .equalsIgnoreCase(typeActivite) && ALCSTarif.CATEGORIE_LFM.equalsIgnoreCase(typeLoi);
-            boolean isAgriculteurPrincipalPlaine = (ALCSDossier.ACTIVITE_AGRICULTEUR.equalsIgnoreCase(typeActivite) || ALCSDossier.ACTIVITE_COLLAB_AGRICOLE
-                    .equalsIgnoreCase(typeActivite))
-                    && ALCSTarif.CATEGORIE_LFP.equalsIgnoreCase(typeLoi)
-                    && !isActiviteAccessoire;
-            boolean isAgriculteurPrincipalMontagne = (ALCSDossier.ACTIVITE_AGRICULTEUR.equalsIgnoreCase(typeActivite) || ALCSDossier.ACTIVITE_COLLAB_AGRICOLE
-                    .equalsIgnoreCase(typeActivite))
-                    && ALCSTarif.CATEGORIE_LFM.equalsIgnoreCase(typeLoi)
-                    && !isActiviteAccessoire;
-            boolean isAgriculteurAccessoirePlaine = (ALCSDossier.ACTIVITE_AGRICULTEUR.equalsIgnoreCase(typeActivite) || ALCSDossier.ACTIVITE_COLLAB_AGRICOLE
-                    .equalsIgnoreCase(typeActivite))
-                    && ALCSTarif.CATEGORIE_LFP.equalsIgnoreCase(typeLoi)
-                    && isActiviteAccessoire;
-            boolean isAgriculteurAccessoireMontagne = (ALCSDossier.ACTIVITE_AGRICULTEUR.equalsIgnoreCase(typeActivite) || ALCSDossier.ACTIVITE_COLLAB_AGRICOLE
-                    .equalsIgnoreCase(typeActivite))
-                    && ALCSTarif.CATEGORIE_LFM.equalsIgnoreCase(typeLoi)
-                    && isActiviteAccessoire;
+            boolean isAgriculteurPrincipalPlaine = (ALCSDossier.ACTIVITE_AGRICULTEUR.equalsIgnoreCase(typeActivite)
+                    || ALCSDossier.ACTIVITE_COLLAB_AGRICOLE.equalsIgnoreCase(typeActivite))
+                    && ALCSTarif.CATEGORIE_LFP.equalsIgnoreCase(typeLoi) && !isActiviteAccessoire;
+            boolean isAgriculteurPrincipalMontagne = (ALCSDossier.ACTIVITE_AGRICULTEUR.equalsIgnoreCase(typeActivite)
+                    || ALCSDossier.ACTIVITE_COLLAB_AGRICOLE.equalsIgnoreCase(typeActivite))
+                    && ALCSTarif.CATEGORIE_LFM.equalsIgnoreCase(typeLoi) && !isActiviteAccessoire;
+            boolean isAgriculteurAccessoirePlaine = (ALCSDossier.ACTIVITE_AGRICULTEUR.equalsIgnoreCase(typeActivite)
+                    || ALCSDossier.ACTIVITE_COLLAB_AGRICOLE.equalsIgnoreCase(typeActivite))
+                    && ALCSTarif.CATEGORIE_LFP.equalsIgnoreCase(typeLoi) && isActiviteAccessoire;
+            boolean isAgriculteurAccessoireMontagne = (ALCSDossier.ACTIVITE_AGRICULTEUR.equalsIgnoreCase(typeActivite)
+                    || ALCSDossier.ACTIVITE_COLLAB_AGRICOLE.equalsIgnoreCase(typeActivite))
+                    && ALCSTarif.CATEGORIE_LFM.equalsIgnoreCase(typeLoi) && isActiviteAccessoire;
             boolean isExploitantAlpage = ALCSDossier.ACTIVITE_EXPLOITANT_ALPAGE.equalsIgnoreCase(typeActivite);
             boolean isPecheur = ALCSDossier.ACTIVITE_PECHEUR.equalsIgnoreCase(typeActivite);
 
@@ -1184,8 +1180,8 @@ public class AFStatistiquesOfasProcess extends BProcess {
                 statOfasAFAgricoleBean.setNombreAyantDroit(statOfasAFAgricoleBean.getNombreAyantDroit() + 1);
 
                 if (!AFStatistiquesOfasProcess.CODE_PAYS_SUISSE.equalsIgnoreCase(paysAllocataire)) {
-                    statOfasAFAgricoleBean.setNombreAyantDroitEtranger(statOfasAFAgricoleBean
-                            .getNombreAyantDroitEtranger() + 1);
+                    statOfasAFAgricoleBean
+                            .setNombreAyantDroitEtranger(statOfasAFAgricoleBean.getNombreAyantDroitEtranger() + 1);
                 }
             }
 
@@ -1204,70 +1200,70 @@ public class AFStatistiquesOfasProcess extends BProcess {
                 nombreAllocation = 0;
             }
 
-            statOfasAFAgricoleBean.setNombreTotalAllocation(statOfasAFAgricoleBean.getNombreTotalAllocation()
-                    + nombreAllocation);
-            statOfasAFAgricoleBean.setMontantTotalAllocation(statOfasAFAgricoleBean.getMontantTotalAllocation()
-                    + montantAllocation);
+            statOfasAFAgricoleBean
+                    .setNombreTotalAllocation(statOfasAFAgricoleBean.getNombreTotalAllocation() + nombreAllocation);
+            statOfasAFAgricoleBean
+                    .setMontantTotalAllocation(statOfasAFAgricoleBean.getMontantTotalAllocation() + montantAllocation);
             if (isAllocationDifferentielle) {
-                statOfasAFAgricoleBean.setNombreTotalAllocationDifferentielle(statOfasAFAgricoleBean
-                        .getNombreTotalAllocationDifferentielle() + nombreAllocation);
-                statOfasAFAgricoleBean.setMontantTotalAllocationDifferentielle(statOfasAFAgricoleBean
-                        .getMontantTotalAllocationDifferentielle() + montantAllocation);
+                statOfasAFAgricoleBean.setNombreTotalAllocationDifferentielle(
+                        statOfasAFAgricoleBean.getNombreTotalAllocationDifferentielle() + nombreAllocation);
+                statOfasAFAgricoleBean.setMontantTotalAllocationDifferentielle(
+                        statOfasAFAgricoleBean.getMontantTotalAllocationDifferentielle() + montantAllocation);
             }
 
             if (ALCSDroit.TYPE_ENF.equalsIgnoreCase(typeAllocation)) {
 
-                statOfasAFAgricoleBean.setNombreTotalAllocationEnfant(statOfasAFAgricoleBean
-                        .getNombreTotalAllocationEnfant() + nombreAllocation);
-                statOfasAFAgricoleBean.setMontantTotalAllocationEnfant(statOfasAFAgricoleBean
-                        .getMontantTotalAllocationEnfant() + montantAllocation);
+                statOfasAFAgricoleBean.setNombreTotalAllocationEnfant(
+                        statOfasAFAgricoleBean.getNombreTotalAllocationEnfant() + nombreAllocation);
+                statOfasAFAgricoleBean.setMontantTotalAllocationEnfant(
+                        statOfasAFAgricoleBean.getMontantTotalAllocationEnfant() + montantAllocation);
 
                 if (AFStatistiquesOfasProcess.CODE_PAYS_SUISSE.equalsIgnoreCase(paysEnfant)) {
-                    statOfasAFAgricoleBean.setNombreAllocationEnfantSuisse(statOfasAFAgricoleBean
-                            .getNombreAllocationEnfantSuisse() + nombreAllocation);
-                    statOfasAFAgricoleBean.setMontantAllocationEnfantSuisse(statOfasAFAgricoleBean
-                            .getMontantAllocationEnfantSuisse() + montantAllocation);
+                    statOfasAFAgricoleBean.setNombreAllocationEnfantSuisse(
+                            statOfasAFAgricoleBean.getNombreAllocationEnfantSuisse() + nombreAllocation);
+                    statOfasAFAgricoleBean.setMontantAllocationEnfantSuisse(
+                            statOfasAFAgricoleBean.getMontantAllocationEnfantSuisse() + montantAllocation);
                 } else if (listCodePaysUE.contains(paysEnfant)) {
-                    statOfasAFAgricoleBean.setNombreAllocationEnfantUE(statOfasAFAgricoleBean
-                            .getNombreAllocationEnfantUE() + nombreAllocation);
-                    statOfasAFAgricoleBean.setMontantAllocationEnfantUE(statOfasAFAgricoleBean
-                            .getMontantAllocationEnfantUE() + montantAllocation);
+                    statOfasAFAgricoleBean.setNombreAllocationEnfantUE(
+                            statOfasAFAgricoleBean.getNombreAllocationEnfantUE() + nombreAllocation);
+                    statOfasAFAgricoleBean.setMontantAllocationEnfantUE(
+                            statOfasAFAgricoleBean.getMontantAllocationEnfantUE() + montantAllocation);
                 } else {
-                    statOfasAFAgricoleBean.setNombreAllocationEnfantHorsUE(statOfasAFAgricoleBean
-                            .getNombreAllocationEnfantHorsUE() + nombreAllocation);
-                    statOfasAFAgricoleBean.setMontantAllocationEnfantHorsUE(statOfasAFAgricoleBean
-                            .getMontantAllocationEnfantHorsUE() + montantAllocation);
+                    statOfasAFAgricoleBean.setNombreAllocationEnfantHorsUE(
+                            statOfasAFAgricoleBean.getNombreAllocationEnfantHorsUE() + nombreAllocation);
+                    statOfasAFAgricoleBean.setMontantAllocationEnfantHorsUE(
+                            statOfasAFAgricoleBean.getMontantAllocationEnfantHorsUE() + montantAllocation);
                 }
 
             } else if (ALCSDroit.TYPE_FORM.equalsIgnoreCase(typeAllocation)) {
 
-                statOfasAFAgricoleBean.setNombreTotalAllocationFormation(statOfasAFAgricoleBean
-                        .getNombreTotalAllocationFormation() + nombreAllocation);
-                statOfasAFAgricoleBean.setMontantTotalAllocationFormation(statOfasAFAgricoleBean
-                        .getMontantTotalAllocationFormation() + montantAllocation);
+                statOfasAFAgricoleBean.setNombreTotalAllocationFormation(
+                        statOfasAFAgricoleBean.getNombreTotalAllocationFormation() + nombreAllocation);
+                statOfasAFAgricoleBean.setMontantTotalAllocationFormation(
+                        statOfasAFAgricoleBean.getMontantTotalAllocationFormation() + montantAllocation);
 
                 if (AFStatistiquesOfasProcess.CODE_PAYS_SUISSE.equalsIgnoreCase(paysEnfant)) {
-                    statOfasAFAgricoleBean.setNombreAllocationFormationSuisse(statOfasAFAgricoleBean
-                            .getNombreAllocationFormationSuisse() + nombreAllocation);
-                    statOfasAFAgricoleBean.setMontantAllocationFormationSuisse(statOfasAFAgricoleBean
-                            .getMontantAllocationFormationSuisse() + montantAllocation);
+                    statOfasAFAgricoleBean.setNombreAllocationFormationSuisse(
+                            statOfasAFAgricoleBean.getNombreAllocationFormationSuisse() + nombreAllocation);
+                    statOfasAFAgricoleBean.setMontantAllocationFormationSuisse(
+                            statOfasAFAgricoleBean.getMontantAllocationFormationSuisse() + montantAllocation);
                 } else if (listCodePaysUE.contains(paysEnfant)) {
-                    statOfasAFAgricoleBean.setNombreAllocationFormationUE(statOfasAFAgricoleBean
-                            .getNombreAllocationFormationUE() + nombreAllocation);
-                    statOfasAFAgricoleBean.setMontantAllocationFormationUE(statOfasAFAgricoleBean
-                            .getMontantAllocationFormationUE() + montantAllocation);
+                    statOfasAFAgricoleBean.setNombreAllocationFormationUE(
+                            statOfasAFAgricoleBean.getNombreAllocationFormationUE() + nombreAllocation);
+                    statOfasAFAgricoleBean.setMontantAllocationFormationUE(
+                            statOfasAFAgricoleBean.getMontantAllocationFormationUE() + montantAllocation);
                 } else {
-                    statOfasAFAgricoleBean.setNombreAllocationFormationHorsUE(statOfasAFAgricoleBean
-                            .getNombreAllocationFormationHorsUE() + nombreAllocation);
-                    statOfasAFAgricoleBean.setMontantAllocationFormationHorsUE(statOfasAFAgricoleBean
-                            .getMontantAllocationFormationHorsUE() + montantAllocation);
+                    statOfasAFAgricoleBean.setNombreAllocationFormationHorsUE(
+                            statOfasAFAgricoleBean.getNombreAllocationFormationHorsUE() + nombreAllocation);
+                    statOfasAFAgricoleBean.setMontantAllocationFormationHorsUE(
+                            statOfasAFAgricoleBean.getMontantAllocationFormationHorsUE() + montantAllocation);
                 }
             } else if (ALCSDroit.TYPE_MEN.equalsIgnoreCase(typeAllocation)) {
 
-                statOfasAFAgricoleBean.setNombreAllocationMenage(statOfasAFAgricoleBean.getNombreAllocationMenage()
-                        + nombreAllocation);
-                statOfasAFAgricoleBean.setMontantAllocationMenage(statOfasAFAgricoleBean.getMontantAllocationMenage()
-                        + montantAllocation);
+                statOfasAFAgricoleBean.setNombreAllocationMenage(
+                        statOfasAFAgricoleBean.getNombreAllocationMenage() + nombreAllocation);
+                statOfasAFAgricoleBean.setMontantAllocationMenage(
+                        statOfasAFAgricoleBean.getMontantAllocationMenage() + montantAllocation);
 
             } else {
                 throw new CommonTechnicalException("Not implemented");
@@ -1683,7 +1679,8 @@ public class AFStatistiquesOfasProcess extends BProcess {
     private void calculAnticipeRente() throws Exception {
         String sqlQueryComptageCalculAnticipeRente = getSqlComptageCalculAnticipeRente();
 
-        List<Map<String, String>> listMapResultQueryComptageCalculAnticipeRente = executeQuery(sqlQueryComptageCalculAnticipeRente);
+        List<Map<String, String>> listMapResultQueryComptageCalculAnticipeRente = executeQuery(
+                sqlQueryComptageCalculAnticipeRente);
 
         // La requête retourne une seule ligne
         Map<String, String> aMapRowResultQueryComptageCalculAnticipeRente = listMapResultQueryComptageCalculAnticipeRente
@@ -1749,7 +1746,8 @@ public class AFStatistiquesOfasProcess extends BProcess {
     private void compterAffilieObligeCotiserAC() throws Exception {
         String sqlQueryComptageAffilieObligeCotiserAC = getSqlComptageAffilieObligeCotiserAC();
 
-        List<Map<String, String>> listMapResultQueryComptageAffilieObligeCotiserAC = executeQuery(sqlQueryComptageAffilieObligeCotiserAC);
+        List<Map<String, String>> listMapResultQueryComptageAffilieObligeCotiserAC = executeQuery(
+                sqlQueryComptageAffilieObligeCotiserAC);
 
         // La requête retourne une seule ligne
         Map<String, String> aMapRowResultQueryComptageAffilieObligeCotiserAC = listMapResultQueryComptageAffilieObligeCotiserAC
@@ -1780,7 +1778,8 @@ public class AFStatistiquesOfasProcess extends BProcess {
         cotiMinIndMajoree = cotiMinIndMajoree + 1;
 
         String sqlQueryComptageAffilieSommeCotisation = getSqlComptageAffilieSommeCotisation(theAnnee);
-        List<Map<String, String>> listMapResultQueryComptageAffilieSommeCotisation = executeQuery(sqlQueryComptageAffilieSommeCotisation);
+        List<Map<String, String>> listMapResultQueryComptageAffilieSommeCotisation = executeQuery(
+                sqlQueryComptageAffilieSommeCotisation);
 
         int nombreAffTotalCanton = 0;
         int nombreAff038 = 0;
@@ -1926,7 +1925,8 @@ public class AFStatistiquesOfasProcess extends BProcess {
 
         String sqlQueryNombreEmployeDecompteSimplifie = getSqlNombreEmployeDecompteSimplifie();
 
-        List<Map<String, String>> listMapResultQueryNombreEmployeDecompteSimplifie = executeQuery(sqlQueryNombreEmployeDecompteSimplifie);
+        List<Map<String, String>> listMapResultQueryNombreEmployeDecompteSimplifie = executeQuery(
+                sqlQueryNombreEmployeDecompteSimplifie);
 
         // La requête retourne une seule ligne
         Map<String, String> aMapRowResultQueryNombreEmployeDecompteSimplifie = listMapResultQueryNombreEmployeDecompteSimplifie
@@ -1942,7 +1942,8 @@ public class AFStatistiquesOfasProcess extends BProcess {
 
         String sqlQueryNombreEmployeurDecompteSimplifie = getSqlNombreEmployeurDecompteSimplifie();
 
-        List<Map<String, String>> listMapResultQueryNombreEmployeurDecompteSimplifie = executeQuery(sqlQueryNombreEmployeurDecompteSimplifie);
+        List<Map<String, String>> listMapResultQueryNombreEmployeurDecompteSimplifie = executeQuery(
+                sqlQueryNombreEmployeurDecompteSimplifie);
 
         // La requête retourne une seule ligne
         Map<String, String> aMapRowResultQueryNombreEmployeurDecompteSimplifie = listMapResultQueryNombreEmployeurDecompteSimplifie
@@ -1965,7 +1966,8 @@ public class AFStatistiquesOfasProcess extends BProcess {
     private void compterEtSommerCotisationIndTseWithRente() throws Exception {
 
         String sqlQueryCotiAndNombreIndTseWithRente = getSqlCotiAndNombreIndTseWithRente();
-        List<Map<String, String>> listMapResultQueryCotiAndNombreIndTseWithRente = executeQuery(sqlQueryCotiAndNombreIndTseWithRente);
+        List<Map<String, String>> listMapResultQueryCotiAndNombreIndTseWithRente = executeQuery(
+                sqlQueryCotiAndNombreIndTseWithRente);
 
         Map<String, Double> mapSommeCotisationParAffilie = new HashMap<String, Double>();
         for (Map<String, String> aMapRowResultQueryCotiAndNombreIndTseWithRente : listMapResultQueryCotiAndNombreIndTseWithRente) {
@@ -1984,12 +1986,12 @@ public class AFStatistiquesOfasProcess extends BProcess {
             int anneeCotisation = Integer.valueOf(anneeCotisationString).intValue();
             int anneeStatistique = Integer.valueOf(annee).intValue();
 
-            String dateFinPeriode = aMapRowResultQueryCotiAndNombreIndTseWithRente
-                    .get(AFStatistiquesOfasProcess.REQUETE_COTI_AND_NOMBRE_IND_TSE_WITH_RENTE_COL_NAME_DATE_FIN_PERIODE);
+            String dateFinPeriode = aMapRowResultQueryCotiAndNombreIndTseWithRente.get(
+                    AFStatistiquesOfasProcess.REQUETE_COTI_AND_NOMBRE_IND_TSE_WITH_RENTE_COL_NAME_DATE_FIN_PERIODE);
             dateFinPeriode = formatDate(dateFinPeriode);
 
-            String dateDebutPeriode = aMapRowResultQueryCotiAndNombreIndTseWithRente
-                    .get(AFStatistiquesOfasProcess.REQUETE_COTI_AND_NOMBRE_IND_TSE_WITH_RENTE_COL_NAME_DATE_DEBUT_PERIODE);
+            String dateDebutPeriode = aMapRowResultQueryCotiAndNombreIndTseWithRente.get(
+                    AFStatistiquesOfasProcess.REQUETE_COTI_AND_NOMBRE_IND_TSE_WITH_RENTE_COL_NAME_DATE_DEBUT_PERIODE);
             dateDebutPeriode = formatDate(dateDebutPeriode);
 
             String cotisationString = aMapRowResultQueryCotiAndNombreIndTseWithRente
@@ -2032,7 +2034,8 @@ public class AFStatistiquesOfasProcess extends BProcess {
     private void compterEtSommerCotisationSalarieWithRente() throws Exception {
 
         String sqlQueryCotiAndNombreSalarieWithRente = getSqlCotiAndNombreSalarieWithRente();
-        List<Map<String, String>> listMapResultQueryCotiAndNombreSalarieWithRente = executeQuery(sqlQueryCotiAndNombreSalarieWithRente);
+        List<Map<String, String>> listMapResultQueryCotiAndNombreSalarieWithRente = executeQuery(
+                sqlQueryCotiAndNombreSalarieWithRente);
 
         int nombreAff018 = 0;
         double coti045 = 0;
@@ -2048,8 +2051,8 @@ public class AFStatistiquesOfasProcess extends BProcess {
             revenuString = replaceDecimalCommaByDecimalPoint(revenuString);
             double revenu = Double.valueOf(revenuString);
 
-            String anneeCotisation = aMapRowResultQueryCotiAndNombreSalarieWithRente
-                    .get(AFStatistiquesOfasProcess.REQUETE_COTI_AND_NOMBRE_SALARIE_WITH_RENTE_COL_NAME_ANNEE_COTISATION);
+            String anneeCotisation = aMapRowResultQueryCotiAndNombreSalarieWithRente.get(
+                    AFStatistiquesOfasProcess.REQUETE_COTI_AND_NOMBRE_SALARIE_WITH_RENTE_COL_NAME_ANNEE_COTISATION);
 
             double tauxAssuranceAVS = findTauxAssuranceAVS("01.01." + anneeCotisation);
             double cotiAVS = (revenu * tauxAssuranceAVS) / 100;
@@ -2069,7 +2072,8 @@ public class AFStatistiquesOfasProcess extends BProcess {
 
         String sqlQueryNombreExclusionDecompteSimplifie = getSqlNombreExclusionDecompteSimplifie();
 
-        List<Map<String, String>> listMapResultQueryNombreExclusionDecompteSimplifie = executeQuery(sqlQueryNombreExclusionDecompteSimplifie);
+        List<Map<String, String>> listMapResultQueryNombreExclusionDecompteSimplifie = executeQuery(
+                sqlQueryNombreExclusionDecompteSimplifie);
 
         // La requête retourne une seule ligne
         Map<String, String> aMapRowResultQueryNombreExclusionDecompteSimplifie = listMapResultQueryNombreExclusionDecompteSimplifie
@@ -2084,7 +2088,8 @@ public class AFStatistiquesOfasProcess extends BProcess {
     private void compterNombreControleEmployeurEffectue() throws Exception {
         String sqlQueryCompterNombreControleEmployeurEffectue = getSqlComptageControleEmployeurEffectue();
 
-        List<Map<String, String>> listMapResultQueryCompterNombreControleEmployeurEffectue = executeQuery(sqlQueryCompterNombreControleEmployeurEffectue);
+        List<Map<String, String>> listMapResultQueryCompterNombreControleEmployeurEffectue = executeQuery(
+                sqlQueryCompterNombreControleEmployeurEffectue);
 
         // La requête retourne une seule ligne
         Map<String, String> aMapRowResultQueryCompterNombreControleEmployeurEffectue = listMapResultQueryCompterNombreControleEmployeurEffectue
@@ -2102,7 +2107,8 @@ public class AFStatistiquesOfasProcess extends BProcess {
         String sqlQueryCompterNombreDeclarationSalaireRetourne = getSqlComptageDocumentEnvoyeRetourne("6700003",
                 "6200017");
 
-        List<Map<String, String>> listMapResultQueryCompterNombreDeclarationSalaireRetourne = executeQuery(sqlQueryCompterNombreDeclarationSalaireRetourne);
+        List<Map<String, String>> listMapResultQueryCompterNombreDeclarationSalaireRetourne = executeQuery(
+                sqlQueryCompterNombreDeclarationSalaireRetourne);
 
         // La requête retourne une seule ligne
         Map<String, String> aMapRowResultQueryCompterNombreDeclarationSalaireRetourne = listMapResultQueryCompterNombreDeclarationSalaireRetourne
@@ -2120,7 +2126,8 @@ public class AFStatistiquesOfasProcess extends BProcess {
         String sqlQueryCompterNombreQuestionnaireLAARetourne = getSqlComptageDocumentEnvoyeRetourne("6700001",
                 "6200002");
 
-        List<Map<String, String>> listMapResultQueryCompterNombreQuestionnaireLAARetourne = executeQuery(sqlQueryCompterNombreQuestionnaireLAARetourne);
+        List<Map<String, String>> listMapResultQueryCompterNombreQuestionnaireLAARetourne = executeQuery(
+                sqlQueryCompterNombreQuestionnaireLAARetourne);
 
         // La requête retourne une seule ligne
         Map<String, String> aMapRowResultQueryCompterNombreQuestionnaireLAARetourne = listMapResultQueryCompterNombreQuestionnaireLAARetourne
@@ -2138,7 +2145,8 @@ public class AFStatistiquesOfasProcess extends BProcess {
         String sqlQueryCompterNombreQuestionnaireLPPRetourne = getSqlComptageDocumentEnvoyeRetourne("6700002",
                 "6200008");
 
-        List<Map<String, String>> listMapResultQueryCompterNombreQuestionnaireLPPRetourne = executeQuery(sqlQueryCompterNombreQuestionnaireLPPRetourne);
+        List<Map<String, String>> listMapResultQueryCompterNombreQuestionnaireLPPRetourne = executeQuery(
+                sqlQueryCompterNombreQuestionnaireLPPRetourne);
 
         // La requête retourne une seule ligne
         Map<String, String> aMapRowResultQueryCompterNombreQuestionnaireLPPRetourne = listMapResultQueryCompterNombreQuestionnaireLPPRetourne
@@ -2156,9 +2164,8 @@ public class AFStatistiquesOfasProcess extends BProcess {
 
         creerListCSVLineControleLAALPP();
 
-        String filePath = Jade.getInstance().getPersistenceDir()
-                + JadeFilenameUtil
-                        .addFilenameSuffixUID(AFStatistiquesOfasProcess.CSV_STATISTIQUE_CONTROLE_LAA_LPP_OUTPUT_FILE_NAME);
+        String filePath = Jade.getInstance().getPersistenceDir() + JadeFilenameUtil
+                .addFilenameSuffixUID(AFStatistiquesOfasProcess.CSV_STATISTIQUE_CONTROLE_LAA_LPP_OUTPUT_FILE_NAME);
 
         JadeFsFacade.writeFile(getLignesInByteFormat(listCSVLineControleLAALPP), filePath);
 
@@ -2169,9 +2176,8 @@ public class AFStatistiquesOfasProcess extends BProcess {
 
         creerListCSVLine();
 
-        String filePath = Jade.getInstance().getPersistenceDir()
-                + JadeFilenameUtil
-                        .addFilenameSuffixUID(AFStatistiquesOfasProcess.CSV_STATISTIQUE_OFAS_OUTPUT_FILE_NAME);
+        String filePath = Jade.getInstance().getPersistenceDir() + JadeFilenameUtil
+                .addFilenameSuffixUID(AFStatistiquesOfasProcess.CSV_STATISTIQUE_OFAS_OUTPUT_FILE_NAME);
 
         JadeFsFacade.writeFile(getLignesInByteFormat(listCSVLine), filePath);
 
@@ -2201,31 +2207,25 @@ public class AFStatistiquesOfasProcess extends BProcess {
 
         this.addAStatistiqueLineInListCSVLine(AFStatistiquesOfasProcess.KEY_128_MAP_STAT_OFAS);
 
-        addALineInListCSVLine(
-                getSession().getLabel(
-                        AFStatistiquesOfasProcess.LABEL_STATISTIQUE_OFAS_FIX_PART + "OBLIGATION_COTISER_AC"), " ");
+        addALineInListCSVLine(getSession()
+                .getLabel(AFStatistiquesOfasProcess.LABEL_STATISTIQUE_OFAS_FIX_PART + "OBLIGATION_COTISER_AC"), " ");
         this.addAStatistiqueLineInListCSVLine(AFStatistiquesOfasProcess.KEY_140_MAP_STAT_OFAS);
 
-        addALineInListCSVLine(
-                getSession().getLabel(
-                        AFStatistiquesOfasProcess.LABEL_STATISTIQUE_OFAS_FIX_PART + "COTISATION_AVS_AI_APG"), " ");
+        addALineInListCSVLine(getSession()
+                .getLabel(AFStatistiquesOfasProcess.LABEL_STATISTIQUE_OFAS_FIX_PART + "COTISATION_AVS_AI_APG"), " ");
         addASuiteStatistiqueLineInListCSVLine(703, 705, false);
         this.addAStatistiqueLineInListCSVLine(AFStatistiquesOfasProcess.KEY_726_MAP_STAT_OFAS);
 
-        addALineInListCSVLine(
-                getSession().getLabel(
-                        AFStatistiquesOfasProcess.LABEL_STATISTIQUE_OFAS_FIX_PART
-                                + "COTISATION_AVS_AI_APG_RENTE_VIEILLESSE"), " ");
-        addALineInListCSVLine(
-                getSession().getLabel(
-                        AFStatistiquesOfasProcess.LABEL_STATISTIQUE_OFAS_FIX_PART + "COTISATION_INDEPENDANT_TSE"), " ");
+        addALineInListCSVLine(getSession().getLabel(
+                AFStatistiquesOfasProcess.LABEL_STATISTIQUE_OFAS_FIX_PART + "COTISATION_AVS_AI_APG_RENTE_VIEILLESSE"),
+                " ");
+        addALineInListCSVLine(getSession().getLabel(
+                AFStatistiquesOfasProcess.LABEL_STATISTIQUE_OFAS_FIX_PART + "COTISATION_INDEPENDANT_TSE"), " ");
         this.addAStatistiqueLineInListCSVLine(AFStatistiquesOfasProcess.KEY_044_MAP_STAT_OFAS);
         this.addAStatistiqueLineInListCSVLine(AFStatistiquesOfasProcess.KEY_016_MAP_STAT_OFAS);
 
-        addALineInListCSVLine(
-                getSession()
-                        .getLabel(AFStatistiquesOfasProcess.LABEL_STATISTIQUE_OFAS_FIX_PART + "COTISATION_SALARIES"),
-                " ");
+        addALineInListCSVLine(getSession()
+                .getLabel(AFStatistiquesOfasProcess.LABEL_STATISTIQUE_OFAS_FIX_PART + "COTISATION_SALARIES"), " ");
         this.addAStatistiqueLineInListCSVLine(AFStatistiquesOfasProcess.KEY_045_MAP_STAT_OFAS);
         this.addAStatistiqueLineInListCSVLine(AFStatistiquesOfasProcess.KEY_018_MAP_STAT_OFAS);
 
@@ -2242,14 +2242,15 @@ public class AFStatistiquesOfasProcess extends BProcess {
                 " ");
         this.addAStatistiqueLineInListCSVLine(AFStatistiquesOfasProcess.KEY_056_MAP_STAT_OFAS);
         this.addAStatistiqueLineInListCSVLine(AFStatistiquesOfasProcess.KEY_055_MAP_STAT_OFAS);
-        addAHorsStatistiqueLineInListCSVLine(AFStatistiquesOfasProcess.KEY_TOTAL_SURSIS_PAIEMENT_MAP_INFO_HORS_STAT_OFAS);
+        addAHorsStatistiqueLineInListCSVLine(
+                AFStatistiquesOfasProcess.KEY_TOTAL_SURSIS_PAIEMENT_MAP_INFO_HORS_STAT_OFAS);
 
-        addALineInListCSVLine(
-                getSession().getLabel(
-                        AFStatistiquesOfasProcess.LABEL_STATISTIQUE_OFAS_FIX_PART + "REQUISITION_POURSUITE"), " ");
+        addALineInListCSVLine(getSession()
+                .getLabel(AFStatistiquesOfasProcess.LABEL_STATISTIQUE_OFAS_FIX_PART + "REQUISITION_POURSUITE"), " ");
         this.addAStatistiqueLineInListCSVLine(AFStatistiquesOfasProcess.KEY_058_MAP_STAT_OFAS);
         this.addAStatistiqueLineInListCSVLine(AFStatistiquesOfasProcess.KEY_057_MAP_STAT_OFAS);
-        addAHorsStatistiqueLineInListCSVLine(AFStatistiquesOfasProcess.KEY_TOTAL_REQUISITION_POURSUITE_MAP_INFO_HORS_STAT_OFAS);
+        addAHorsStatistiqueLineInListCSVLine(
+                AFStatistiquesOfasProcess.KEY_TOTAL_REQUISITION_POURSUITE_MAP_INFO_HORS_STAT_OFAS);
 
         addALineInListCSVLine(
                 getSession().getLabel(
@@ -2257,35 +2258,33 @@ public class AFStatistiquesOfasProcess extends BProcess {
                 " ");
         this.addAStatistiqueLineInListCSVLine(AFStatistiquesOfasProcess.KEY_710_MAP_STAT_OFAS);
         this.addAStatistiqueLineInListCSVLine(AFStatistiquesOfasProcess.KEY_711_MAP_STAT_OFAS);
-        addAHorsStatistiqueLineInListCSVLine(AFStatistiquesOfasProcess.KEY_TOTAL_REQUISITION_CONTINUER_POURSUITE_MAP_INFO_HORS_STAT_OFAS);
+        addAHorsStatistiqueLineInListCSVLine(
+                AFStatistiquesOfasProcess.KEY_TOTAL_REQUISITION_CONTINUER_POURSUITE_MAP_INFO_HORS_STAT_OFAS);
 
         addALineInListCSVLine(
                 getSession().getLabel(AFStatistiquesOfasProcess.LABEL_STATISTIQUE_OFAS_FIX_PART + "REPARATION_DOMMAGE"),
                 " ");
-        addALineInListCSVLine(
-                getSession().getLabel(
-                        AFStatistiquesOfasProcess.LABEL_STATISTIQUE_OFAS_FIX_PART
-                                + "REPARATION_DOMMAGE_PAS_DETERMINEE_AUTOMATIQUEMENT"), " ");
-        addALineInListCSVLine(
-                getSession().getLabel(
-                        AFStatistiquesOfasProcess.LABEL_STATISTIQUE_OFAS_FIX_PART
-                                + "REPARATION_DOMMAGE_DONNEE_INDICATIVE"), " ");
-        addAHorsStatistiqueLineInListCSVLine(AFStatistiquesOfasProcess.KEY_NOMBRE_CREANCE_REPARATION_DOMMAGE_MAP_INFO_HORS_STAT_OFAS);
-        addAHorsStatistiqueLineInListCSVLine(AFStatistiquesOfasProcess.KEY_TOTAL_CREANCE_REPARATION_DOMMAGE_MAP_INFO_HORS_STAT_OFAS);
+        addALineInListCSVLine(getSession().getLabel(AFStatistiquesOfasProcess.LABEL_STATISTIQUE_OFAS_FIX_PART
+                + "REPARATION_DOMMAGE_PAS_DETERMINEE_AUTOMATIQUEMENT"), " ");
+        addALineInListCSVLine(getSession().getLabel(
+                AFStatistiquesOfasProcess.LABEL_STATISTIQUE_OFAS_FIX_PART + "REPARATION_DOMMAGE_DONNEE_INDICATIVE"),
+                " ");
+        addAHorsStatistiqueLineInListCSVLine(
+                AFStatistiquesOfasProcess.KEY_NOMBRE_CREANCE_REPARATION_DOMMAGE_MAP_INFO_HORS_STAT_OFAS);
+        addAHorsStatistiqueLineInListCSVLine(
+                AFStatistiquesOfasProcess.KEY_TOTAL_CREANCE_REPARATION_DOMMAGE_MAP_INFO_HORS_STAT_OFAS);
 
         addALineInListCSVLine(
                 getSession().getLabel(AFStatistiquesOfasProcess.LABEL_STATISTIQUE_OFAS_FIX_PART + "PRESTATION"), " ");
 
-        addALineInListCSVLine(
-                getSession().getLabel(
-                        AFStatistiquesOfasProcess.LABEL_STATISTIQUE_OFAS_FIX_PART + "MODE_VERSEMENT_RENTE"), " ");
+        addALineInListCSVLine(getSession()
+                .getLabel(AFStatistiquesOfasProcess.LABEL_STATISTIQUE_OFAS_FIX_PART + "MODE_VERSEMENT_RENTE"), " ");
         this.addAStatistiqueLineInListCSVLine(AFStatistiquesOfasProcess.KEY_061_MAP_STAT_OFAS);
         this.addAStatistiqueLineInListCSVLine(AFStatistiquesOfasProcess.KEY_062_MAP_STAT_OFAS);
         this.addAStatistiqueLineInListCSVLine(AFStatistiquesOfasProcess.KEY_063_MAP_STAT_OFAS);
 
-        addALineInListCSVLine(
-                getSession().getLabel(
-                        AFStatistiquesOfasProcess.LABEL_STATISTIQUE_OFAS_FIX_PART + "RENTE_VIEILLESSE_AJOURNEE"), " ");
+        addALineInListCSVLine(getSession().getLabel(
+                AFStatistiquesOfasProcess.LABEL_STATISTIQUE_OFAS_FIX_PART + "RENTE_VIEILLESSE_AJOURNEE"), " ");
         this.addAStatistiqueLineInListCSVLine(AFStatistiquesOfasProcess.KEY_066_MAP_STAT_OFAS, annee);
 
         int anneeInt = Integer.valueOf(annee).intValue();
@@ -2300,9 +2299,8 @@ public class AFStatistiquesOfasProcess extends BProcess {
         this.addAStatistiqueLineInListCSVLine(AFStatistiquesOfasProcess.KEY_070_MAP_STAT_OFAS, anneeMoins4String, "4");
         this.addAStatistiqueLineInListCSVLine(AFStatistiquesOfasProcess.KEY_071_MAP_STAT_OFAS);
 
-        addALineInListCSVLine(
-                getSession().getLabel(
-                        AFStatistiquesOfasProcess.LABEL_STATISTIQUE_OFAS_FIX_PART + "CALCUL_ANTICIPE_RENTE"), " ");
+        addALineInListCSVLine(getSession()
+                .getLabel(AFStatistiquesOfasProcess.LABEL_STATISTIQUE_OFAS_FIX_PART + "CALCUL_ANTICIPE_RENTE"), " ");
 
         this.addAStatistiqueLineInListCSVLine(AFStatistiquesOfasProcess.KEY_306_MAP_STAT_OFAS);
 
@@ -2321,14 +2319,12 @@ public class AFStatistiquesOfasProcess extends BProcess {
                 " ");
         this.addAStatistiqueLineInListCSVLine(AFStatistiquesOfasProcess.KEY_075_MAP_STAT_OFAS);
 
-        addALineInListCSVLine(
-                getSession()
-                        .getLabel(
-                                AFStatistiquesOfasProcess.LABEL_STATISTIQUE_OFAS_FIX_PART
-                                        + "ALLOCATION_FAMILIALES_AGRICULTURE"), " ");
+        addALineInListCSVLine(getSession().getLabel(
+                AFStatistiquesOfasProcess.LABEL_STATISTIQUE_OFAS_FIX_PART + "ALLOCATION_FAMILIALES_AGRICULTURE"), " ");
         addALineInListCSVLine(
                 getSession().getLabel(
-                        AFStatistiquesOfasProcess.LABEL_STATISTIQUE_OFAS_FIX_PART + "TRAVAILLEUR_AGRICOLE_PLAINE"), " ");
+                        AFStatistiquesOfasProcess.LABEL_STATISTIQUE_OFAS_FIX_PART + "TRAVAILLEUR_AGRICOLE_PLAINE"),
+                " ");
         this.addAStatistiqueLineInListCSVLine(AFStatistiquesOfasProcess.KEY_082_MAP_STAT_OFAS);
         this.addAStatistiqueLineInListCSVLine(AFStatistiquesOfasProcess.KEY_182_MAP_STAT_OFAS);
         this.addAStatistiqueLineInListCSVLine(AFStatistiquesOfasProcess.KEY_601_MAP_STAT_OFAS);
@@ -2550,20 +2546,20 @@ public class AFStatistiquesOfasProcess extends BProcess {
                 getSession().getLabel("STATISTIQUE_CONTROLE_LAA_LPP_VALEUR"));
         addALineInListControleLAALPPCSVLine(
                 getSession().getLabel("STATISTIQUE_CONTROLE_LAA_LPP_NOMBRE_QUESTIONNAIRE_LAA_RETOURNE"),
-                mapStatControleLAALPP
-                        .get(AFStatistiquesOfasProcess.KEY_NOMBRE_QUESTIONNAIRE_LAA_RETOURNE_MAP_STAT_CONTROLE_LAA_LPP));
+                mapStatControleLAALPP.get(
+                        AFStatistiquesOfasProcess.KEY_NOMBRE_QUESTIONNAIRE_LAA_RETOURNE_MAP_STAT_CONTROLE_LAA_LPP));
         addALineInListControleLAALPPCSVLine(
                 getSession().getLabel("STATISTIQUE_CONTROLE_LAA_LPP_NOMBRE_QUESTIONNAIRE_LPP_RETOURNE"),
-                mapStatControleLAALPP
-                        .get(AFStatistiquesOfasProcess.KEY_NOMBRE_QUESTIONNAIRE_LPP_RETOURNE_MAP_STAT_CONTROLE_LAA_LPP));
+                mapStatControleLAALPP.get(
+                        AFStatistiquesOfasProcess.KEY_NOMBRE_QUESTIONNAIRE_LPP_RETOURNE_MAP_STAT_CONTROLE_LAA_LPP));
         addALineInListControleLAALPPCSVLine(
                 getSession().getLabel("STATISTIQUE_CONTROLE_LAA_LPP_NOMBRE_DECLARATION_SALAIRE_RETOURNEE"),
-                mapStatControleLAALPP
-                        .get(AFStatistiquesOfasProcess.KEY_NOMBRE_DECLARATION_SALAIRE_RETOURNE_MAP_STAT_CONTROLE_LAA_LPP));
+                mapStatControleLAALPP.get(
+                        AFStatistiquesOfasProcess.KEY_NOMBRE_DECLARATION_SALAIRE_RETOURNE_MAP_STAT_CONTROLE_LAA_LPP));
         addALineInListControleLAALPPCSVLine(
                 getSession().getLabel("STATISTIQUE_CONTROLE_LAA_LPP_NOMBRE_CONTROLE_EMPLOYEUR_EFFECTUE"),
-                mapStatControleLAALPP
-                        .get(AFStatistiquesOfasProcess.KEY_NOMBRE_CONTROLE_EMPLOYEUR_EFFECTUE_MAP_STAT_CONTROLE_LAA_LPP));
+                mapStatControleLAALPP.get(
+                        AFStatistiquesOfasProcess.KEY_NOMBRE_CONTROLE_EMPLOYEUR_EFFECTUE_MAP_STAT_CONTROLE_LAA_LPP));
 
     }
 
@@ -2592,8 +2588,8 @@ public class AFStatistiquesOfasProcess extends BProcess {
             }
 
         } catch (SQLException e) {
-            throw new JadePersistenceException(getName() + " - " + "Unable to execute query (" + sql
-                    + "), a SQLException happend!", e);
+            throw new JadePersistenceException(
+                    getName() + " - " + "Unable to execute query (" + sql + "), a SQLException happend!", e);
         } finally {
             if (stmt != null) {
                 try {
@@ -2641,7 +2637,7 @@ public class AFStatistiquesOfasProcess extends BProcess {
     }
 
     /**
-     * 
+     *
      * Transforme une date au format aaaammjj en une date au format jj.mm.yyyy
      */
     private String formatDate(String dateAMJ) {
@@ -2702,7 +2698,7 @@ public class AFStatistiquesOfasProcess extends BProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.db.BProcess#getEMailObject()
      */
     @Override
@@ -2736,8 +2732,7 @@ public class AFStatistiquesOfasProcess extends BProcess {
 
         String sql = " select count(*) as "
                 + AFStatistiquesOfasProcess.REQUETE_MODE_VERSEMENT_RENTE_COL_NAME_NOMBRE_VERSEMENT
-                + " from schema.caorgrp og "
-                + " inner join schema.caopovp ov on (og.IDORDREGROUPE = ov.IDORDREGROUPE) "
+                + " from schema.caorgrp og " + " inner join schema.caopovp ov on (og.IDORDREGROUPE = ov.IDORDREGROUPE) "
                 + " inner join schema.caoperp op on (ov.IDORDRE = op.IDOPERATION) "
                 + " inner join schema.tiapaip ap on (ov.IDADRESSEPAIEMENT = ap.HCIAIU) "
                 + " inner join schema.tiadrpp adp on (ap.HIIAPA = adp.HIIAPA) " + " where og.DATEECHEANCE between "
@@ -2831,8 +2826,7 @@ public class AFStatistiquesOfasProcess extends BProcess {
 
     private String getSqlAPG() {
 
-        String sql = " select count(*) as "
-                + AFStatistiquesOfasProcess.REQUETE_APG_COL_NAME_NOMBRE_APG
+        String sql = " select count(*) as " + AFStatistiquesOfasProcess.REQUETE_APG_COL_NAME_NOMBRE_APG
                 + " from schema.APDROIP as droit inner join schema.APSIPRP as situ_prof  on (droit.VAIDRO = situ_prof.VFIDRO) "
                 + " where VADDEP between " + annee + "0101 and " + annee + "1231 and VFBCOA = '1' and VFBAEX = '1' ";
 
@@ -2890,42 +2884,23 @@ public class AFStatistiquesOfasProcess extends BProcess {
     private String getSqlComptageAffilieSommeCotisation(String theAnnee) {
         String sql = " select " + " idtiers, "
                 + " sum(case when ru.idexterne like '%.4010.%' then op.montant else 0 end) as "
-                + AFStatistiquesOfasProcess.REQUETE_COMPTAGE_AFFILIE_COL_NAME_COTI_AVS_PAR
-                + ", "
+                + AFStatistiquesOfasProcess.REQUETE_COMPTAGE_AFFILIE_COL_NAME_COTI_AVS_PAR + ", "
                 + " sum(case when ru.idexterne like '%.4000.%' then op.montant else 0 end) as "
-                + AFStatistiquesOfasProcess.REQUETE_COMPTAGE_AFFILIE_COL_NAME_COTI_AVS_PERS
-                + ", "
-                + "(select max(loc.hjican) "
-                + "from schema.tiaadrp aad "
+                + AFStatistiquesOfasProcess.REQUETE_COMPTAGE_AFFILIE_COL_NAME_COTI_AVS_PERS + ", "
+                + "(select max(loc.hjican) " + "from schema.tiaadrp aad "
                 + "inner join schema.tiadrep adr on (aad.HAIADR=adr.HAIADR) "
-                + "inner join schema.tilocap loc on (adr.HJILOC=loc.HJILOC) "
-                + "where aad.htitie=ca.idtiers "
-                + "and aad.hedfad = 0 "
-                + "and aad.hettad = "
-                + idTypeAdresse
-                + " and aad.hfiapp = 519004 "
-                + ") as "
-                + AFStatistiquesOfasProcess.REQUETE_COMPTAGE_AFFILIE_COL_NAME_CODE_CANTON
-                + ", "
+                + "inner join schema.tilocap loc on (adr.HJILOC=loc.HJILOC) " + "where aad.htitie=ca.idtiers "
+                + "and aad.hedfad = 0 " + "and aad.hettad = " + idTypeAdresse + " and aad.hfiapp = 519004 " + ") as "
+                + AFStatistiquesOfasProcess.REQUETE_COMPTAGE_AFFILIE_COL_NAME_CODE_CANTON + ", "
                 + " (select MAX(matbra) "
                 + " from schema.afaffip aff where aff.htitie=ca.idtiers and (matbra = 805038 or (matbra=805044 and mattaf=804004)) and maddeb = (select MAX(maddeb) from schema.afaffip aff2 where aff2.htitie=ca.idtiers and (matbra = 805038 or (matbra=805044 and mattaf=804004))) ) as "
-                + AFStatistiquesOfasProcess.REQUETE_COMPTAGE_AFFILIE_COL_NAME_BRA_ECO
-                + ", "
-                + " (select MAX(mattaf) "
+                + AFStatistiquesOfasProcess.REQUETE_COMPTAGE_AFFILIE_COL_NAME_BRA_ECO + ", " + " (select MAX(mattaf) "
                 + " from schema.afaffip aff where aff.htitie=ca.idtiers and mattaf in (804001, 804005, 804008, 804004, 804011) and maddeb = (select MAX(maddeb) from schema.afaffip aff2 where aff2.htitie=ca.idtiers and mattaf in (804001, 804005, 804008, 804004, 804011)) ) as "
-                + AFStatistiquesOfasProcess.REQUETE_COMPTAGE_AFFILIE_COL_NAME_TYPE_AFFILIE
-                + " "
-                + " from schema.caoperp op "
-                + " inner join schema.cajourp jo on (op.idjournal=jo.idjournal) "
+                + AFStatistiquesOfasProcess.REQUETE_COMPTAGE_AFFILIE_COL_NAME_TYPE_AFFILIE + " "
+                + " from schema.caoperp op " + " inner join schema.cajourp jo on (op.idjournal=jo.idjournal) "
                 + " inner join schema.cacptap ca on (op.IDCOMPTEANNEXE = ca.idcompteannexe) "
-                + " inner join schema.carubrp ru on (op.idcompte=ru.idrubrique) "
-                + " where jo.datevaleurcg between "
-                + theAnnee
-                + "0101"
-                + " and "
-                + theAnnee
-                + "1231"
-                + " and op.etat=205002 "
+                + " inner join schema.carubrp ru on (op.idcompte=ru.idrubrique) " + " where jo.datevaleurcg between "
+                + theAnnee + "0101" + " and " + theAnnee + "1231" + " and op.etat=205002 "
                 + " and ca.idrole in (517002, 517039, 517040) "
                 + " and (ru.idexterne like '211_.4010.%' or ru.idexterne like '211_.4000.%') " + " group by idtiers";
 
@@ -3010,10 +2985,19 @@ public class AFStatistiquesOfasProcess extends BProcess {
                 .append(" AND ").append(REDecisionEntity.FIELDNAME_DATE_DECISION).append("<=").append(annee)
                 .append("1231 AND ").append(REDecisionEntity.FIELDNAME_DATE_DECISION).append(">=").append(annee)
                 .append("0101 ");
-        sql.append(" AND rac.")
-                .append(REPrestationsAccordees.FIELDNAME_CODE_PRESTATION)
-                .append(" in ('50','52','53','54','55','56','70','72','73','74','75','76','81','82','83','84','88','91','92','93')");
-
+        sql.append(" AND rac.").append(REPrestationsAccordees.FIELDNAME_CODE_PRESTATION).append(
+                " in ('50','52','53','54','55','56','70','72','73','74','75','76','81','82','83','84','88','91','92','93')");
+        // String sql = "Select count(distinct(ywidem)) as "
+        // + AFStatistiquesOfasProcess.REQUETE_COMPTAGE_NOMBRE_IM_CAS_AI
+        // + " from schema.redecis as decisions "
+        // + "inner join schema.represt as prestations on decisions.YWIDEC = prestations.YUIDEC "
+        // + "inner join schema.reorver as ov on (ov.YVIPRE = prestations.YUIPRE and YVMMON != 0) "
+        // + "inner join schema.rederen as demande on demande.yaidem = decisions.YWIDEM "
+        // + "left join schema.redeapi as demande_api on (demande_api.yeirap = demande.yaidem and yattyd = 52800001) "
+        // + "left join schema.repeapi as periode_api on (demande_api.yeirap = periode_api.yhidem) "
+        // + "WHERE YWTETA=52837003 " + "AND YWDVAL<=" + annee + "1231 " + "AND YWDVAL>=" + annee + "0101 "
+        // + "and ov.YVTTYP = 52842010 " + "and ( " + "yattyd in (52800002) " + "or( " + "yattyd = 52800001 "
+        // + "and " + "yhtgdr in(52809002,52809001) " + ") " + ")";
         return replaceSchemaInSqlQuery(sql.toString());
     }
 
@@ -3057,9 +3041,8 @@ public class AFStatistiquesOfasProcess extends BProcess {
                 .append(" AND ").append(REDecisionEntity.FIELDNAME_DATE_DECISION).append("<=").append(annee)
                 .append("1231 AND ").append(REDecisionEntity.FIELDNAME_DATE_DECISION).append(">=").append(annee)
                 .append("0101 ");
-        sql.append(" AND rac.")
-                .append(REPrestationsAccordees.FIELDNAME_CODE_PRESTATION)
-                .append(" in ('10','12','13','14','15','16','33','34','35','36','20','22','23','24','25','26','43','44','45','46','85','86','87','89','94','95','96','97')");
+        sql.append(" AND rac.").append(REPrestationsAccordees.FIELDNAME_CODE_PRESTATION).append(
+                " in ('10','12','13','14','15','16','33','34','35','36','20','22','23','24','25','26','43','44','45','46','85','86','87','89','94','95','96','97')");
         //
         // String sql = "Select count(distinct(ywidem)) as "
         // + AFStatistiquesOfasProcess.REQUETE_COMPTAGE_NOMBRE_IM_CAS_AVS
@@ -3162,9 +3145,9 @@ public class AFStatistiquesOfasProcess extends BProcess {
         sql.append(",");
         sql.append(IREDemandeRente.CS_GENRE_DROIT_API_API_AI_PRST);
         sql.append(",");
-        sql.append(IREDemandeRente.CS_TYPE_DEMANDE_RENTE_VIEILLESSE);
+        sql.append(IREDemandeRente.CS_GENRE_DROIT_API_API_AVS_SUITE_API_AI);
         sql.append(",");
-        sql.append(IREDemandeRente.CS_TYPE_DEMANDE_RENTE_SURVIVANT);
+        sql.append(IREDemandeRente.CS_GENRE_DROIT_API_API_AVS_RETRAITE);
         sql.append(")))) as montant_distinct");
 
         // String sql = "Select sum(montant_distinct.yvmmon) as "
@@ -3334,17 +3317,10 @@ public class AFStatistiquesOfasProcess extends BProcess {
 
         String sql = " select ztitbe as "
                 + AFStatistiquesOfasProcess.REQUETE_RENTE_VIEILLESSE_AJOURNEE_COL_NAME_ID_TIERS_BENEFICIAIRE
-                + ", ztdddr as "
-                + AFStatistiquesOfasProcess.REQUETE_RENTE_VIEILLESSE_AJOURNEE_COL_NAME_DATE_DEBUT_DROIT
-                + ", ztdfdr as "
-                + AFStatistiquesOfasProcess.REQUETE_RENTE_VIEILLESSE_AJOURNEE_COL_NAME_DATE_FIN_DROIT
-                + " from schema.repracc "
-                + " inner join schema.rereacc on ztipra = ylirac   "
-                + " where  ztteta = 52820002 "
-                + "    and ztdddr >= "
-                + anneeMoins4String
-                + "01 and ztdddr <= "
-                + annee
+                + ", ztdddr as " + AFStatistiquesOfasProcess.REQUETE_RENTE_VIEILLESSE_AJOURNEE_COL_NAME_DATE_DEBUT_DROIT
+                + ", ztdfdr as " + AFStatistiquesOfasProcess.REQUETE_RENTE_VIEILLESSE_AJOURNEE_COL_NAME_DATE_FIN_DROIT
+                + " from schema.repracc " + " inner join schema.rereacc on ztipra = ylirac   "
+                + " where  ztteta = 52820002 " + "    and ztdddr >= " + anneeMoins4String + "01 and ztdddr <= " + annee
                 + "12 and ztlcpr = '10' and (yllcs1 = '08' or yllcs2 = '08' or yllcs3 = '08' or yllcs4 = '08' or yllcs5 = '08') "
                 + " order by ztitbe, ztdddr desc  ";
 
@@ -3363,8 +3339,8 @@ public class AFStatistiquesOfasProcess extends BProcess {
                 + " inner join schema.carubrp ru on (op.IDCOMPTE = ru.idrubrique) "
                 + " inner join schema.cajourp jo on (se.idjournal=jo.idjournal) "
                 + " inner join schema.cajourp jo2 on (op.idjournal=jo2.idjournal) " + " where jo.datevaleurcg between "
-                + annee + "0101 and " + annee + "1231 " + " and jo2.datevaleurcg between " + annee + "0101 and "
-                + annee + "1231 " + " and se.CATEGORIESECTION = 227096 " + " and ru.idexterne like '200_.2740.%' "
+                + annee + "0101 and " + annee + "1231 " + " and jo2.datevaleurcg between " + annee + "0101 and " + annee
+                + "1231 " + " and se.CATEGORIESECTION = 227096 " + " and ru.idexterne like '200_.2740.%' "
                 + " and op.etat=205002 " + " group by idexternerole,se.idexterne ";
 
         sql = replaceSchemaInSqlQuery(sql);
@@ -3444,15 +3420,15 @@ public class AFStatistiquesOfasProcess extends BProcess {
 
     private boolean isSansRestitution() {
 
-        String isSansRestitutionsString = JadePropertiesService.getInstance().getProperty(
-                "al.statsOfas.isSansRestitutions");
+        String isSansRestitutionsString = JadePropertiesService.getInstance()
+                .getProperty("al.statsOfas.isSansRestitutions");
         boolean isSansRestitutions = Boolean.parseBoolean(isSansRestitutionsString);
         return isSansRestitutions;
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.db.BProcess#jobQueue()
      */
     @Override
@@ -3518,7 +3494,8 @@ public class AFStatistiquesOfasProcess extends BProcess {
     private void renteVieillesseAjournee() throws Exception {
 
         String sqlQueryRenteVieillesseAjournee = getSqlRenteVieillesseAjournee();
-        List<Map<String, String>> listMapResultQueryRenteVieillesseAjournee = executeQuery(sqlQueryRenteVieillesseAjournee);
+        List<Map<String, String>> listMapResultQueryRenteVieillesseAjournee = executeQuery(
+                sqlQueryRenteVieillesseAjournee);
 
         String keyAnnee = annee;
         int anneeInt = Integer.valueOf(annee).intValue();
@@ -3602,8 +3579,7 @@ public class AFStatistiquesOfasProcess extends BProcess {
             montantTotalCreanceReparationDommage = montantTotalCreanceReparationDommage + montantCreance;
         }
 
-        mapInfoHorsStatOfas.put(
-                AFStatistiquesOfasProcess.KEY_NOMBRE_CREANCE_REPARATION_DOMMAGE_MAP_INFO_HORS_STAT_OFAS,
+        mapInfoHorsStatOfas.put(AFStatistiquesOfasProcess.KEY_NOMBRE_CREANCE_REPARATION_DOMMAGE_MAP_INFO_HORS_STAT_OFAS,
                 String.valueOf(nombreCreanceReparationDommage));
         mapInfoHorsStatOfas.put(AFStatistiquesOfasProcess.KEY_TOTAL_CREANCE_REPARATION_DOMMAGE_MAP_INFO_HORS_STAT_OFAS,
                 new FWCurrency(montantTotalCreanceReparationDommage).toStringFormat());
@@ -3709,13 +3685,14 @@ public class AFStatistiquesOfasProcess extends BProcess {
     private void sommerCotisationEmployeurDecompteSimplifie() throws Exception {
 
         String sqlQueryCotiEmployeurDecompteSimplifie = getSqlCotiEmployeurDecompteSimplifie();
-        List<Map<String, String>> listMapResultQueryCotiEmployeurDecompteSimplifie = executeQuery(sqlQueryCotiEmployeurDecompteSimplifie);
+        List<Map<String, String>> listMapResultQueryCotiEmployeurDecompteSimplifie = executeQuery(
+                sqlQueryCotiEmployeurDecompteSimplifie);
 
         Map<String, String> aMapRowResultQueryCotiEmployeurDecompteSimplifie = listMapResultQueryCotiEmployeurDecompteSimplifie
                 .get(0);
 
-        String cotiAVSString = aMapRowResultQueryCotiEmployeurDecompteSimplifie
-                .get(AFStatistiquesOfasProcess.REQUETE_COTI_AND_NOMBRE_EMPLOYEUR_DECOMPTE_SIMPLIFIE_COL_NAME_COTISATION);
+        String cotiAVSString = aMapRowResultQueryCotiEmployeurDecompteSimplifie.get(
+                AFStatistiquesOfasProcess.REQUETE_COTI_AND_NOMBRE_EMPLOYEUR_DECOMPTE_SIMPLIFIE_COL_NAME_COTISATION);
         cotiAVSString = replaceDecimalCommaByDecimalPoint(cotiAVSString);
         double coti709 = Double.valueOf(cotiAVSString);
 
