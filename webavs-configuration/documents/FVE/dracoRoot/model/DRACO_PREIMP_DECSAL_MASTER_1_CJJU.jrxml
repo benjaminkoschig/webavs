@@ -2221,9 +2221,9 @@
 				<line direction="TopDown">
 					<reportElement
 						mode="Transparent"
-						x="255"
+						x="262"
 						y="65"
-						width="235"
+						width="228"
 						height="0"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -2279,7 +2279,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
 						x="192"
-						y="44"
+						y="42"
 						width="62"
 						height="12"
 						forecolor="#000000"

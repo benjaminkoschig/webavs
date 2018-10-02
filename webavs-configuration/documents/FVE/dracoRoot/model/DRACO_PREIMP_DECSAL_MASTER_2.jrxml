@@ -2180,9 +2180,9 @@
 				<line direction="TopDown">
 					<reportElement
 						mode="Transparent"
-						x="255"
+						x="258"
 						y="65"
-						width="235"
+						width="232"
 						height="0"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -2259,7 +2259,7 @@
 						mode="Transparent"
 						x="192"
 						y="55"
-						width="63"
+						width="72"
 						height="12"
 						forecolor="#000000"
 						backcolor="#FFFFFF"

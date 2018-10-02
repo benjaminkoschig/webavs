@@ -17,6 +17,9 @@
 		 whenNoDataType="BlankPage"
 		 isTitleNewPage="false"
 		 isSummaryNewPage="false">
+	<property name="ireport.zoom" value="1.0" />
+	<property name="ireport.x" value="0" />
+	<property name="ireport.y" value="0" />
 	<property name="ireport.scriptlethandling" value="2" />
 	<parameter name="P_HEAD_1" isForPrompting="true" class="java.lang.String"/>
 	<parameter name="P_HEAD_2" isForPrompting="true" class="java.lang.String"/>
@@ -252,7 +255,7 @@
 						mode="Transparent"
 						x="166"
 						y="94"
-						width="0"
+						width="1"
 						height="28"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -504,7 +507,7 @@
 						x="749"
 						y="215"
 						width="8"
-						height="0"
+						height="1"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
 						key="line-145"
@@ -558,7 +561,7 @@
 						x="184"
 						y="132"
 						width="8"
-						height="0"
+						height="1"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
 						key="line-148"
@@ -612,7 +615,7 @@
 						x="749"
 						y="191"
 						width="8"
-						height="0"
+						height="1"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
 						key="line-151"
@@ -920,7 +923,7 @@
 						mode="Opaque"
 						x="86"
 						y="29"
-						width="0"
+						width="1"
 						height="32"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -938,7 +941,7 @@
 						mode="Opaque"
 						x="388"
 						y="3"
-						width="0"
+						width="1"
 						height="58"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -958,7 +961,7 @@
 						mode="Opaque"
 						x="515"
 						y="29"
-						width="0"
+						width="1"
 						height="33"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -976,7 +979,7 @@
 						mode="Opaque"
 						x="563"
 						y="4"
-						width="0"
+						width="1"
 						height="57"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -994,7 +997,7 @@
 						mode="Opaque"
 						x="636"
 						y="30"
-						width="0"
+						width="1"
 						height="30"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -1013,7 +1016,7 @@
 						x="469"
 						y="45"
 						width="93"
-						height="0"
+						height="1"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
 						key="line-116"
@@ -1030,7 +1033,7 @@
 						mode="Opaque"
 						x="491"
 						y="45"
-						width="0"
+						width="1"
 						height="16"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -1048,7 +1051,7 @@
 						mode="Opaque"
 						x="540"
 						y="46"
-						width="0"
+						width="1"
 						height="16"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -1339,7 +1342,7 @@
 						isRemoveLineWhenBlank="false"
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="false"/>
-					<graphicElement stretchType="NoStretch" pen="1Point" fill="Solid" />
+					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
 				</rectangle>
 				<line direction="TopDown">
 					<reportElement
@@ -1347,7 +1350,7 @@
 						x="475"
 						y="29"
 						width="306"
-						height="0"
+						height="1"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
 						key="line-158"
@@ -1365,7 +1368,7 @@
 						x="2"
 						y="29"
 						width="506"
-						height="0"
+						height="1"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
 						key="line-157"
@@ -1448,7 +1451,7 @@
 						mode="Opaque"
 						x="324"
 						y="3"
-						width="0"
+						width="1"
 						height="58"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -1468,7 +1471,7 @@
 						mode="Opaque"
 						x="356"
 						y="3"
-						width="0"
+						width="1"
 						height="58"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -1488,7 +1491,7 @@
 						mode="Opaque"
 						x="418"
 						y="3"
-						width="0"
+						width="1"
 						height="58"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -1546,7 +1549,7 @@
 						mode="Opaque"
 						x="708"
 						y="30"
-						width="0"
+						width="1"
 						height="30"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -1688,7 +1691,7 @@
 						mode="Transparent"
 						x="86"
 						y="-1"
-						width="0"
+						width="1"
 						height="23"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -1706,7 +1709,7 @@
 						mode="Transparent"
 						x="324"
 						y="-1"
-						width="0"
+						width="1"
 						height="23"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -1726,7 +1729,7 @@
 						mode="Transparent"
 						x="356"
 						y="-1"
-						width="0"
+						width="1"
 						height="23"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -1746,7 +1749,7 @@
 						mode="Transparent"
 						x="418"
 						y="-1"
-						width="0"
+						width="1"
 						height="23"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -1764,7 +1767,7 @@
 						mode="Transparent"
 						x="491"
 						y="-1"
-						width="0"
+						width="1"
 						height="23"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -1782,7 +1785,7 @@
 						mode="Transparent"
 						x="540"
 						y="-1"
-						width="0"
+						width="1"
 						height="23"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -1800,7 +1803,7 @@
 						mode="Transparent"
 						x="563"
 						y="-1"
-						width="0"
+						width="1"
 						height="23"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -1818,7 +1821,7 @@
 						mode="Transparent"
 						x="636"
 						y="-1"
-						width="0"
+						width="1"
 						height="23"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -1836,7 +1839,7 @@
 						mode="Transparent"
 						x="0"
 						y="-1"
-						width="0"
+						width="1"
 						height="23"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -1854,7 +1857,7 @@
 						mode="Transparent"
 						x="388"
 						y="-1"
-						width="0"
+						width="1"
 						height="23"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -1875,7 +1878,7 @@
 						x="1"
 						y="22"
 						width="780"
-						height="0"
+						height="1"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
 						key="line-156"
@@ -1912,7 +1915,7 @@
 						mode="Transparent"
 						x="468"
 						y="-32"
-						width="0"
+						width="1"
 						height="53"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -1930,7 +1933,7 @@
 						mode="Transparent"
 						x="515"
 						y="-1"
-						width="0"
+						width="1"
 						height="23"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -1948,7 +1951,7 @@
 						mode="Transparent"
 						x="781"
 						y="-2"
-						width="0"
+						width="1"
 						height="23"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -1966,7 +1969,7 @@
 						mode="Transparent"
 						x="708"
 						y="-1"
-						width="0"
+						width="1"
 						height="23"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -2019,14 +2022,14 @@
 						isRemoveLineWhenBlank="false"
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="false"/>
-					<graphicElement stretchType="NoStretch" pen="1Point" fill="Solid" />
+					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
 				</rectangle>
 				<line direction="TopDown">
 					<reportElement
 						mode="Transparent"
 						x="636"
 						y="0"
-						width="0"
+						width="1"
 						height="20"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -2037,7 +2040,7 @@
 						isRemoveLineWhenBlank="false"
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="false"/>
-					<graphicElement stretchType="NoStretch" pen="1Point" fill="Solid" />
+					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
 				</line>
 				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
@@ -2064,7 +2067,7 @@
 						mode="Transparent"
 						x="708"
 						y="0"
-						width="0"
+						width="1"
 						height="20"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -2075,7 +2078,7 @@
 						isRemoveLineWhenBlank="false"
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="false"/>
-					<graphicElement stretchType="NoStretch" pen="1Point" fill="Solid" />
+					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
 				</line>
 				<line direction="TopDown">
 					<reportElement
@@ -2083,7 +2086,7 @@
 						x="33"
 						y="65"
 						width="126"
-						height="0"
+						height="1"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
 						key="line-167"
@@ -2093,15 +2096,15 @@
 						isRemoveLineWhenBlank="false"
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="false"/>
-					<graphicElement stretchType="NoStretch" pen="1Point" fill="Solid" />
+					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
 				</line>
 				<line direction="TopDown">
 					<reportElement
 						mode="Transparent"
-						x="255"
+						x="258"
 						y="65"
-						width="235"
-						height="0"
+						width="232"
+						height="1"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
 						key="line-168"
@@ -2111,7 +2114,7 @@
 						isRemoveLineWhenBlank="false"
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="false"/>
-					<graphicElement stretchType="NoStretch" pen="1Point" fill="Solid" />
+					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
 				</line>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
@@ -2193,6 +2196,26 @@
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_SIGNE}]]></textFieldExpression>
 				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Transparent"
+						x="14"
+						y="32"
+						width="489"
+						height="12"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-68"
+						stretchType="RelativeToBandHeight"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_CERTIFIE_2}]]></textFieldExpression>
+				</textField>
 			</band>
 		</columnFooter>
 		<pageFooter>
@@ -2205,19 +2228,19 @@
 						mode="Transparent"
 						x="14"
 						y="-48"
-						width="462"
+						width="564"
 						height="12"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
 						key="textField-67"
-						stretchType="NoStretch"
+						stretchType="RelativeToTallestObject"
 						positionType="FixRelativeToTop"
 						isPrintRepeatedValues="true"
 						isRemoveLineWhenBlank="false"
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="true"/>
 					<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
-						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_CERTIFIE}]]></textFieldExpression>
 				</textField>
@@ -2237,28 +2260,8 @@
 						isRemoveLineWhenBlank="false"
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="false"/>
-					<graphicElement stretchType="NoStretch" pen="1Point" fill="Solid" />
+					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
 				</rectangle>
-				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
-						mode="Transparent"
-						x="14"
-						y="-37"
-						width="462"
-						height="12"
-						forecolor="#000000"
-						backcolor="#FFFFFF"
-						key="textField-68"
-						stretchType="NoStretch"
-						positionType="FixRelativeToTop"
-						isPrintRepeatedValues="true"
-						isRemoveLineWhenBlank="false"
-						isPrintInFirstWholeBand="false"
-						isPrintWhenDetailOverflows="true"/>
-					<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
-						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
-					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_CERTIFIE_2}]]></textFieldExpression>
-				</textField>
 			</band>
 		</lastPageFooter>
 		<summary>
