@@ -1,5 +1,10 @@
 package globaz.phenix.process.communications;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Vector;
+import ch.globaz.common.domaine.Date;
 import globaz.framework.util.FWCurrency;
 import globaz.framework.util.FWMessage;
 import globaz.globall.db.BProcess;
@@ -52,11 +57,6 @@ import globaz.pyxis.constantes.IConstantes;
 import globaz.pyxis.db.tiers.TICompositionTiers;
 import globaz.pyxis.db.tiers.TICompositionTiersManager;
 import globaz.pyxis.db.tiers.TITiersViewBean;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Vector;
-import ch.globaz.common.domaine.Date;
 
 /**
  * @author btc
@@ -108,7 +108,7 @@ public class CPProcessReceptionGenererDecision extends BProcess {
 
     /**
      * Constructeur du type BProcess.
-     * 
+     *
      * @param parent
      *            BProcess
      */
@@ -118,7 +118,7 @@ public class CPProcessReceptionGenererDecision extends BProcess {
 
     /**
      * Constructeur du type BSession.
-     * 
+     *
      * @param session
      *            la session utilisée par le process
      */
@@ -128,7 +128,7 @@ public class CPProcessReceptionGenererDecision extends BProcess {
 
     /**
      * Calcul des cotisations à partir de la réception des communications fiscales
-     * 
+     *
      * @param myDecision
      * @param retour
      */
@@ -247,8 +247,9 @@ public class CPProcessReceptionGenererDecision extends BProcess {
                     }
                     if (modeReception.equalsIgnoreCase(CPParametreCanton.CS_SEDEXRECEPTION_CJT)
                             || (modeReception.equalsIgnoreCase(CPParametreCanton.CS_SEDEXRECEPTION_CJT_NA)
-                                    && CPDecision.CS_NON_ACTIF.equalsIgnoreCase(retour.getGenreAffilie()) && CPDecision.CS_NON_ACTIF
-                                        .equalsIgnoreCase(retour.getGenreConjoint()))) { // PO 9251
+                                    && CPDecision.CS_NON_ACTIF.equalsIgnoreCase(retour.getGenreAffilie())
+                                    && CPDecision.CS_NON_ACTIF.equalsIgnoreCase(retour.getGenreConjoint()))) { // PO
+                                                                                                               // 9251
                         retour.setIdTiers(newDecision.getIdConjoint());
                         traitementConjoint = true;
                         _executeProcessRetourGenererDecision(retour, revAf);
@@ -333,8 +334,8 @@ public class CPProcessReceptionGenererDecision extends BProcess {
                 }
                 if (modeReception.equalsIgnoreCase(CPParametreCanton.CS_SEDEXRECEPTION_CJT)
                         || (modeReception.equalsIgnoreCase(CPParametreCanton.CS_SEDEXRECEPTION_CJT_NA)
-                                && CPDecision.CS_NON_ACTIF.equalsIgnoreCase(retour.getGenreAffilie()) && CPDecision.CS_NON_ACTIF
-                                    .equalsIgnoreCase(retour.getGenreConjoint()))) { // PO 9251
+                                && CPDecision.CS_NON_ACTIF.equalsIgnoreCase(retour.getGenreAffilie())
+                                && CPDecision.CS_NON_ACTIF.equalsIgnoreCase(retour.getGenreConjoint()))) { // PO 9251
                     retour.setIdTiers(newDecision.getIdConjoint());
                     traitementConjoint = true;
                     _executeProcessRetourGenererDecision(retour, revAf);
@@ -358,7 +359,7 @@ public class CPProcessReceptionGenererDecision extends BProcess {
 
     /**
      * Calcul des montants de cotisation Date de création : (14.02.2002 14:26:51)
-     * 
+     *
      * @return boolean
      */
     @Override
@@ -437,11 +438,12 @@ public class CPProcessReceptionGenererDecision extends BProcess {
                         return true;
                     }
                 } else {
-                    affiliation = CPToolBox.returnAffiliation(getSession(), getTransaction(), this.getTiers()
-                            .getIdTiers(), newDecision.getAnneeDecision(), CPDecision.CS_NON_ACTIF, 1);
+                    affiliation = CPToolBox.returnAffiliation(getSession(), getTransaction(),
+                            this.getTiers().getIdTiers(), newDecision.getAnneeDecision(), CPDecision.CS_NON_ACTIF, 1);
                     if (affiliation == null) {
-                        affiliation = CPToolBox.returnAffiliation(getSession(), getTransaction(), this.getTiers()
-                                .getIdTiers(), newDecision.getAnneeDecision(), CPDecision.CS_ETUDIANT, 1);
+                        affiliation = CPToolBox.returnAffiliation(getSession(), getTransaction(),
+                                this.getTiers().getIdTiers(), newDecision.getAnneeDecision(), CPDecision.CS_ETUDIANT,
+                                1);
                         if (affiliation == null) {
                             return true;
                         }
@@ -561,8 +563,8 @@ public class CPProcessReceptionGenererDecision extends BProcess {
                 msg = retour.getIdRetour() + " - ";
             }
             getMemoryLog().logMessage(msg + e.toString(), FWMessage.FATAL, this.getClass().getName());
-            this._addError(getTransaction(), getSession().getLabel("PROCRECEPTGENDEC_EMAIL_OBJECT_FAILED") + ": " + msg
-                    + e.toString());
+            this._addError(getTransaction(),
+                    getSession().getLabel("PROCRECEPTGENDEC_EMAIL_OBJECT_FAILED") + ": " + msg + e.toString());
 
         }
         return true;
@@ -570,7 +572,7 @@ public class CPProcessReceptionGenererDecision extends BProcess {
 
     /**
      * Cette méthode est équivalente à CPDecisionViewBean _initEcran
-     * 
+     *
      * @param myDecision
      * @param retour
      * @return
@@ -605,8 +607,8 @@ public class CPProcessReceptionGenererDecision extends BProcess {
             newDecision.setTypeDecision(determinationTypeDecision());
             newDecision.setLettreSignature(lettreSignature);
             try {
-                newDecision.setResponsable(CPToolBox.getUserByCanton(this.getTiers().getIdCantonDomicile(),
-                        getTransaction()));
+                newDecision.setResponsable(
+                        CPToolBox.getUserByCanton(this.getTiers().getIdCantonDomicile(), getTransaction()));
             } catch (Exception e) {
                 newDecision.setResponsable("");
             }
@@ -671,18 +673,16 @@ public class CPProcessReceptionGenererDecision extends BProcess {
                         || (CPDecision.CS_INDEPENDANT.equalsIgnoreCase(newDecision.getGenreAffilie()))
                         || (CPDecision.CS_TSE.equalsIgnoreCase(newDecision.getGenreAffilie()))) {
                     // Détermination si rentier
-                    if ((anneeAvs < anneeDec)
-                            || ((anneeAvs == anneeDec) && BSessionUtil.compareDateFirstGreater(getSession(),
-                                    newDecision.getFinDecision(), dateAgeAvs))) {
+                    if ((anneeAvs < anneeDec) || ((anneeAvs == anneeDec) && BSessionUtil
+                            .compareDateFirstGreater(getSession(), newDecision.getFinDecision(), dateAgeAvs))) {
                         newDecision.setGenreAffilie(CPDecision.CS_RENTIER);
                     }
 
                 } else // Si non actif
                 if (newDecision.isNonActif()) {
                     // Cas âge AVS
-                    if ((anneeAvs == anneeDec)
-                            && BSessionUtil.compareDateFirstGreater(getSession(), newDecision.getFinDecision(),
-                                    dateAgeAvs)) {
+                    if ((anneeAvs == anneeDec) && BSessionUtil.compareDateFirstGreater(getSession(),
+                            newDecision.getFinDecision(), dateAgeAvs)) {
                         newDecision.setFinDecision(dateAgeAvs);
                         // Iniatisation des champs selon le mode d'encodage
                     }
@@ -761,15 +761,15 @@ public class CPProcessReceptionGenererDecision extends BProcess {
             }
         } catch (Exception e) {
             JadeLogger.error(this, e);
-            this._addError(getTransaction(), getSession().getLabel("CP_MSG_0142") + retour.getNumAffilieRecu() + " "
-                    + retour.getIdRetour());
+            this._addError(getTransaction(),
+                    getSession().getLabel("CP_MSG_0142") + retour.getNumAffilieRecu() + " " + retour.getIdRetour());
         }
         return newDecision;
     }
 
     /**
      * Cette méthode initialise les données nécessaire pour le calcul de la décision selon les données du fisc.
-     * 
+     *
      * @param newDecision
      * @param retour
      */
@@ -803,8 +803,9 @@ public class CPProcessReceptionGenererDecision extends BProcess {
             findDateExercice(newDecision, retour);
         }
         initRevenu(newDecision, retour);
-        if ((CodeSystem.TYPE_AFFILI_INDEP.equalsIgnoreCase(newDecision.getAffiliation().getTypeAffiliation()) || CodeSystem.TYPE_AFFILI_INDEP_EMPLOY
-                .equalsIgnoreCase(newDecision.getAffiliation().getTypeAffiliation()))) {
+        if ((CodeSystem.TYPE_AFFILI_INDEP.equalsIgnoreCase(newDecision.getAffiliation().getTypeAffiliation())
+                || CodeSystem.TYPE_AFFILI_INDEP_EMPLOY
+                        .equalsIgnoreCase(newDecision.getAffiliation().getTypeAffiliation()))) {
             // Test s'il faut ajouter les cotisations
             // Par défaut c'est true car on part du principe que les fiscs n'ont pas adaptés
             // et on garde le fonctionnement actuel comme quoi qu'il communique toujours le revenu
@@ -826,16 +827,14 @@ public class CPProcessReceptionGenererDecision extends BProcess {
                 rcM.find();
                 if (rcM.getSize() > 0) {
                     CPRevenuCotisationCanton rCot = (CPRevenuCotisationCanton) rcM.getFirstEntity();
-                    if (Boolean.TRUE.equals(rCot.getAvecCotisation())
-                            && BSessionUtil.compareDateFirstGreaterOrEqual(getSession(), retour.getDateRetour(),
-                                    rCot.getDateActivite())) {
+                    if (Boolean.TRUE.equals(rCot.getAvecCotisation()) && BSessionUtil.compareDateFirstGreaterOrEqual(
+                            getSession(), retour.getDateRetour(), rCot.getDateActivite())) {
                         revenuAvecCotisation = true;
                     }
                 }
                 // Calcul et ajout des cotisations aux revenus
-                if (!revenuAvecCotisation
-                        && BSessionUtil.compareDateFirstGreaterOrEqual(getSession(), retour.getDateRetour(),
-                                "01.01.2012")) {
+                if (!revenuAvecCotisation && BSessionUtil.compareDateFirstGreaterOrEqual(getSession(),
+                        retour.getDateRetour(), "01.01.2012")) {
                     calculRevenuAvecCotisation(retour, newDecision); // Modif PO 6336
                 }
             }
@@ -964,8 +963,8 @@ public class CPProcessReceptionGenererDecision extends BProcess {
         if (!JadeStringUtil.isBlank(newDecision.getCapital())) {
             capital = Float.parseFloat(JANumberFormatter.deQuote(newDecision.getCapital()));
             // Arrondir le capital au 1000 fr. supérieur
-            capital = JANumberFormatter
-                    .round(Float.parseFloat(Float.toString(capital)), 1000, 0, JANumberFormatter.SUP);
+            capital = JANumberFormatter.round(Float.parseFloat(Float.toString(capital)), 1000, 0,
+                    JANumberFormatter.SUP);
             // Recherche du taux dans la table des paramètres correspondant
             // au début de décision (praenumerando) ou à la date de fin
             // d'exercice (postnumerando)
@@ -1041,6 +1040,14 @@ public class CPProcessReceptionGenererDecision extends BProcess {
                 montantPourTaux = varTemp.toString();
             }
 
+            // S171221_015
+            if (!JadeStringUtil.isBlankOrZero(newDecision.getRachatLPP())) {
+                FWCurrency varTempRachat = new FWCurrency(JANumberFormatter.deQuote(newDecision.getRachatLPP()));
+                FWCurrency varTempMontantTaux = new FWCurrency(JANumberFormatter.deQuote(montantPourTaux));
+                varTempMontantTaux.sub(varTempRachat);
+                montantPourTaux = varTempMontantTaux.toString();
+            }
+
             // Pas de calcul de cotisation si l'affiliié a une activité accessoire
             if (determinineSiActiviteAccessoire(newDecision, revenu)) {
                 return;
@@ -1060,9 +1067,8 @@ public class CPProcessReceptionGenererDecision extends BProcess {
             tIndManager.orderByRevenuDescendant();
             tIndManager.find();
             if (tIndManager.size() == 0) {
-                this._addError(getTransaction(),
-                        "cotisation non trouvée: " + retour.getAnnee1() + "  " + retour.getRevenu1() + " "
-                                + getDescriptionTiers());
+                this._addError(getTransaction(), "cotisation non trouvée: " + retour.getAnnee1() + "  "
+                        + retour.getRevenu1() + " " + getDescriptionTiers());
             } else {
                 tInd = ((CPTableIndependant) tIndManager.getEntity(0));
             }
@@ -1073,8 +1079,9 @@ public class CPProcessReceptionGenererDecision extends BProcess {
                 if (JadeStringUtil.isEmpty(tInd.getTaux())) {
                     tauxCalcul = 100;
                 } else {
-                    tauxCalcul = Float.parseFloat(new FWCurrency(100 - Float.parseFloat(JANumberFormatter.deQuote(tInd
-                            .getTaux())), 4).toString());
+                    tauxCalcul = Float.parseFloat(
+                            new FWCurrency(100 - Float.parseFloat(JANumberFormatter.deQuote(tInd.getTaux())), 4)
+                                    .toString());
                 }
 
                 float calculCotisation = 0f;
@@ -1083,17 +1090,18 @@ public class CPProcessReceptionGenererDecision extends BProcess {
                     float revenuPourCalcul = Float.parseFloat(JANumberFormatter.deQuote(revenu)) - rachatLpp;
 
                     calculCotisation = (((revenuPourCalcul * 100)
-                            - (mFranchise * Float.parseFloat(JANumberFormatter.deQuote(tInd.getTaux()))) - (mInteretcapital * Float
-                            .parseFloat(JANumberFormatter.deQuote(tInd.getTaux())))) / tauxCalcul) - revenuPourCalcul;
+                            - (mFranchise * Float.parseFloat(JANumberFormatter.deQuote(tInd.getTaux())))
+                            - (mInteretcapital * Float.parseFloat(JANumberFormatter.deQuote(tInd.getTaux()))))
+                            / tauxCalcul) - revenuPourCalcul;
                 } else {
 
                     calculCotisation = (((Float.parseFloat(JANumberFormatter.deQuote(revenu)) * 100)
-                            - (mFranchise * Float.parseFloat(JANumberFormatter.deQuote(tInd.getTaux()))) - (mInteretcapital * Float
-                            .parseFloat(JANumberFormatter.deQuote(tInd.getTaux())))) / tauxCalcul)
-                            - Float.parseFloat(JANumberFormatter.deQuote(revenu));
+                            - (mFranchise * Float.parseFloat(JANumberFormatter.deQuote(tInd.getTaux())))
+                            - (mInteretcapital * Float.parseFloat(JANumberFormatter.deQuote(tInd.getTaux()))))
+                            / tauxCalcul) - Float.parseFloat(JANumberFormatter.deQuote(revenu));
                 }
-                newDecision.setCotisation1(JANumberFormatter.round(Float.toString(calculCotisation), 1, 2,
-                        JANumberFormatter.INF));
+                newDecision.setCotisation1(
+                        JANumberFormatter.round(Float.toString(calculCotisation), 1, 2, JANumberFormatter.INF));
 
             }
         }
@@ -1101,7 +1109,7 @@ public class CPProcessReceptionGenererDecision extends BProcess {
 
     /**
      * Determine si l'affilié à une activité accessoire
-     * 
+     *
      * @param newDecision
      * @param revenu
      * @return
@@ -1112,14 +1120,14 @@ public class CPProcessReceptionGenererDecision extends BProcess {
         if (AFParticulariteAffiliation.existeParticularite(getTransaction(), this.newDecision.getIdAffiliation(),
                 AFParticulariteAffiliation.CS_ACTIVITE_ACCESSOIRE, this.newDecision.getDebutDecision())) {
             // Recherche montant maximum pour activité accessoire
-            float revenuActviteAccessoire = Float.parseFloat(FWFindParameter.findParameter(getTransaction(),
-                    "10500130", "REVACTACC", this.newDecision.getDebutDecision(), "", 0));
+            float revenuActviteAccessoire = Float.parseFloat(FWFindParameter.findParameter(getTransaction(), "10500130",
+                    "REVACTACC", this.newDecision.getDebutDecision(), "", 0));
 
             float interet = calculInteret(newDecision);
             float montantActiviteAccessoire = Float.parseFloat(JANumberFormatter.deQuote(revenu.toString())) - interet;
             // Arrondir au 100 CHF pour les tests si le genre est différents de TSE
-            if (!CPDecision.CS_TSE.equalsIgnoreCase(newDecision.getGenreAffilie())
-                    && (JANumberFormatter.round(montantActiviteAccessoire, 100, 0, JANumberFormatter.INF) <= revenuActviteAccessoire)) {
+            if (!CPDecision.CS_TSE.equalsIgnoreCase(newDecision.getGenreAffilie()) && (JANumberFormatter
+                    .round(montantActiviteAccessoire, 100, 0, JANumberFormatter.INF) <= revenuActviteAccessoire)) {
                 return true;
             }
             // ne pas arrondir au 100 CHF pour les tests pour les TSE
@@ -1133,7 +1141,7 @@ public class CPProcessReceptionGenererDecision extends BProcess {
 
     /**
      * Chargement des propriétés
-     * 
+     *
      * @throws Exception
      */
     protected void chargementProprietes() throws Exception {
@@ -1229,7 +1237,7 @@ public class CPProcessReceptionGenererDecision extends BProcess {
 
     /**
      * Permet la génération en partant d'une liste d'id de journal de retour
-     * 
+     *
      * @return
      */
     protected boolean genererByIdJournalRetour() {
@@ -1250,8 +1258,8 @@ public class CPProcessReceptionGenererDecision extends BProcess {
                 }
 
             } catch (Exception e) {
-                this._addError(getTransaction(), getSession().getLabel("CP_MSG_0139") + retour.getIdRetour() + " - "
-                        + e.toString());
+                this._addError(getTransaction(),
+                        getSession().getLabel("CP_MSG_0139") + retour.getIdRetour() + " - " + e.toString());
                 getListIdNonTraite().add(idJournalRetour);
             }
 
@@ -1268,7 +1276,7 @@ public class CPProcessReceptionGenererDecision extends BProcess {
 
     /**
      * Permet la génération en partant d'une liste d'id de retour
-     * 
+     *
      * @return
      */
     protected boolean genererByIdRetour() {
@@ -1288,8 +1296,8 @@ public class CPProcessReceptionGenererDecision extends BProcess {
                         }
                     }
                 } catch (Exception e) {
-                    this._addError(getTransaction(), getSession().getLabel("CP_MSG_0139") + retour.getIdRetour()
-                            + " - " + e.toString());
+                    this._addError(getTransaction(),
+                            getSession().getLabel("CP_MSG_0139") + retour.getIdRetour() + " - " + e.toString());
                 }
                 if (isAborted()) {
                     return false;
@@ -1324,7 +1332,7 @@ public class CPProcessReceptionGenererDecision extends BProcess {
 
     /**
      * Execution de la génération des décisions
-     * 
+     *
      * @param idRetour
      * @return
      */
@@ -1383,7 +1391,7 @@ public class CPProcessReceptionGenererDecision extends BProcess {
 
     /**
      * Execution de la génération des décisions
-     * 
+     *
      * @param idRetour
      * @return
      */
@@ -1560,7 +1568,7 @@ public class CPProcessReceptionGenererDecision extends BProcess {
 
     /**
      * Récupération d'un tiers
-     * 
+     *
      * @param idTiers
      * @return
      * @throws Exception
@@ -1593,7 +1601,7 @@ public class CPProcessReceptionGenererDecision extends BProcess {
 
     /**
      * Permet d'initialiser la progress bar
-     * 
+     *
      * @param nbOccurence
      */
     protected void initProgressCounter(int nbOccurence) {
@@ -1624,19 +1632,20 @@ public class CPProcessReceptionGenererDecision extends BProcess {
             donnee.setSession(getSession());
             donnee.retrieve();
             if (!donnee.isNew()
-                    && !(newDecision.getAffiliation().getTypeAffiliation().equalsIgnoreCase(CodeSystem.TYPE_AFFILI_TSE) || newDecision
-                            .getAffiliation().getTypeAffiliation()
-                            .equalsIgnoreCase(CodeSystem.TYPE_AFFILI_TSE_VOLONTAIRE))) {
+                    && !(newDecision.getAffiliation().getTypeAffiliation().equalsIgnoreCase(CodeSystem.TYPE_AFFILI_TSE)
+                            || newDecision.getAffiliation().getTypeAffiliation()
+                                    .equalsIgnoreCase(CodeSystem.TYPE_AFFILI_TSE_VOLONTAIRE))) {
                 if (!newDecision.isNonActif()) {
                     BigDecimal mRevenu = new BigDecimal(0);
                     BigDecimal mRevenuAgricole = new BigDecimal(0);
                     if (traitementConjoint) {
                         if (!JadeStringUtil.isEmpty(donnee.getIncomeFromSelfEmploymentCjt())) {
-                            mRevenu = new BigDecimal(JANumberFormatter.deQuote(donnee.getIncomeFromSelfEmploymentCjt()));
+                            mRevenu = new BigDecimal(
+                                    JANumberFormatter.deQuote(donnee.getIncomeFromSelfEmploymentCjt()));
                         }
                         if (!JadeStringUtil.isEmpty(donnee.getMainIncomeInAgricultureCjt())) {
-                            mRevenuAgricole = new BigDecimal(JANumberFormatter.deQuote(donnee
-                                    .getMainIncomeInAgricultureCjt()));
+                            mRevenuAgricole = new BigDecimal(
+                                    JANumberFormatter.deQuote(donnee.getMainIncomeInAgricultureCjt()));
                         }
                         newDecision.setCapital(donnee.getCapitalCjt());
                     } else {
@@ -1644,8 +1653,8 @@ public class CPProcessReceptionGenererDecision extends BProcess {
                             mRevenu = new BigDecimal(JANumberFormatter.deQuote(donnee.getIncomeFromSelfEmployment()));
                         }
                         if (!JadeStringUtil.isEmpty(donnee.getMainIncomeInAgriculture())) {
-                            mRevenuAgricole = new BigDecimal(JANumberFormatter.deQuote(donnee
-                                    .getMainIncomeInAgriculture()));
+                            mRevenuAgricole = new BigDecimal(
+                                    JANumberFormatter.deQuote(donnee.getMainIncomeInAgriculture()));
                         }
                         newDecision.setCapital(donnee.getCapital());
                     }
@@ -1692,8 +1701,9 @@ public class CPProcessReceptionGenererDecision extends BProcess {
                     mRevenuTSE = new BigDecimal(JANumberFormatter.deQuote(donnee.getEmploymentIncome()));
                 }
                 newDecision.setRevenu1(mRevenuTSE.toString());
-            } else if (!(newDecision.getAffiliation().getTypeAffiliation().equalsIgnoreCase(CodeSystem.TYPE_AFFILI_TSE) || newDecision
-                    .getAffiliation().getTypeAffiliation().equalsIgnoreCase(CodeSystem.TYPE_AFFILI_TSE_VOLONTAIRE))
+            } else if (!(newDecision.getAffiliation().getTypeAffiliation().equalsIgnoreCase(CodeSystem.TYPE_AFFILI_TSE)
+                    || newDecision.getAffiliation().getTypeAffiliation()
+                            .equalsIgnoreCase(CodeSystem.TYPE_AFFILI_TSE_VOLONTAIRE))
                     && !JadeStringUtil.isEmpty(donnee.getEmploymentIncome())) {
                 if (!traitementConjoint && !JadeStringUtil.isEmpty(donnee.getEmploymentIncome())) {
                     mRevenuTSE = new BigDecimal(JANumberFormatter.deQuote(donnee.getEmploymentIncome()));
@@ -1717,17 +1727,18 @@ public class CPProcessReceptionGenererDecision extends BProcess {
             retourVS.retrieve();
             if (!retourVS.isNew()) {
                 if (retour.isNonActif(traitementConjoint)) {
-                    newDecision.setFortuneTotale(new FWCurrency(Float.parseFloat(JANumberFormatter.deQuote(retourVS
-                            .getVsFortunePriveeCtb()))
+                    newDecision.setFortuneTotale(new FWCurrency(Float
+                            .parseFloat(JANumberFormatter.deQuote(retourVS.getVsFortunePriveeCtb()))
                             + Float.parseFloat(JANumberFormatter.deQuote(retourVS.getVsFortunePriveeConjoint()))
-                            + Float.parseFloat(JANumberFormatter.deQuote(retourVS
-                                    .getVsCapitalPropreEngageEntrepriseCtb()))
-                            + Float.parseFloat(JANumberFormatter.deQuote(retourVS
-                                    .getVsCapitalPropreEngageEntrepriseConjoint()))).toString());
-                    newDecision.setRevenu1(new FWCurrency(Float.parseFloat(JANumberFormatter.deQuote(retourVS
-                            .getVsRevenuRenteCtb()))
-                            + Float.parseFloat(JANumberFormatter.deQuote(retourVS.getVsRevenuRenteConjoint())))
-                            .toString());
+                            + Float.parseFloat(
+                                    JANumberFormatter.deQuote(retourVS.getVsCapitalPropreEngageEntrepriseCtb()))
+                            + Float.parseFloat(
+                                    JANumberFormatter.deQuote(retourVS.getVsCapitalPropreEngageEntrepriseConjoint())))
+                                            .toString());
+                    newDecision.setRevenu1(
+                            new FWCurrency(Float.parseFloat(JANumberFormatter.deQuote(retourVS.getVsRevenuRenteCtb()))
+                                    + Float.parseFloat(JANumberFormatter.deQuote(retourVS.getVsRevenuRenteConjoint())))
+                                            .toString());
                 } else {
                     if (traitementConjoint) {
                         newDecision.setRevenu1(retourVS.getVsRevenuNonAgricoleConjoint());
@@ -1811,8 +1822,8 @@ public class CPProcessReceptionGenererDecision extends BProcess {
 
             rachatLPPCalcule = Math.abs(rachatLPPCalcule);
 
-            decisionViewBean.setRachatLPP(String.valueOf(JANumberFormatter.format(rachatLPPCalcule, 1.0, 0,
-                    JANumberFormatter.SUP)));
+            decisionViewBean.setRachatLPP(
+                    String.valueOf(JANumberFormatter.format(rachatLPPCalcule, 1.0, 0, JANumberFormatter.SUP)));
         }
     }
 
@@ -1843,8 +1854,8 @@ public class CPProcessReceptionGenererDecision extends BProcess {
 
             rachatLPPCalcule = Math.abs(rachatLPPCalcule);
 
-            decisionViewBean.setRachatLPP(String.valueOf(JANumberFormatter.format(rachatLPPCalcule, 1.0, 0,
-                    JANumberFormatter.SUP)));
+            decisionViewBean.setRachatLPP(
+                    String.valueOf(JANumberFormatter.format(rachatLPPCalcule, 1.0, 0, JANumberFormatter.SUP)));
         }
     }
 
@@ -1858,7 +1869,7 @@ public class CPProcessReceptionGenererDecision extends BProcess {
 
     /**
      * Récupération du journal
-     * 
+     *
      * @param idRetour
      * @return
      * @throws Exception
@@ -1961,7 +1972,7 @@ public class CPProcessReceptionGenererDecision extends BProcess {
 
     /**
      * Alimente la table CPValidationCalculCommunication Date de création : (18.03.2003 10:59:30)
-     * 
+     *
      * @return String
      */
     public void validationCalculCommunicationRetour(CPDecision newDecision) throws Exception {
@@ -1990,8 +2001,8 @@ public class CPProcessReceptionGenererDecision extends BProcess {
             }
             if (retour.getDecisionDeBase() != null) {
                 validation.setIdDecisionProvisoire(retour.getDecisionDeBase().getIdDecision());
-                CPCotisation oldCoti = CPCotisation._returnCotisation(getSession(), retour.getDecisionDeBase()
-                        .getIdDecision(), CodeSystem.TYPE_ASS_COTISATION_AVS_AI);
+                CPCotisation oldCoti = CPCotisation._returnCotisation(getSession(),
+                        retour.getDecisionDeBase().getIdDecision(), CodeSystem.TYPE_ASS_COTISATION_AVS_AI);
                 if (oldCoti != null) {
                     mOldCoti = new BigDecimal(JANumberFormatter.deQuote(oldCoti.getMontantAnnuel()));
                     // Test si crédit ( si nouvelle cotisation >0
