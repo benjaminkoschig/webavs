@@ -11,10 +11,11 @@ import globaz.globall.db.BTransaction;
 import globaz.globall.db.FWFindParameter;
 import globaz.globall.db.FWFindParameterManager;
 import globaz.globall.db.GlobazJobQueue;
-import globaz.globall.util.JADate;
+import globaz.globall.util.JADate; 
 import globaz.globall.util.JAException;
 import globaz.hercule.exception.HerculeException;
 import globaz.hercule.utils.CEUtils;
+import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeFilenameUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.client.zip.JadeZipUtil;
@@ -70,6 +71,7 @@ import java.util.TreeSet;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import org.apache.commons.lang.StringUtils;
+import org.joda.time.format.DateTimeFormatter;
 import ch.globaz.common.exceptions.CommonTechnicalException;
 import ch.globaz.common.domaine.Date;
 import ch.globaz.common.domaine.Montant;
@@ -331,11 +333,14 @@ public class AFControleLppAnnuelProcess extends BProcess {
                 numInforom + "_" + nomDoc, container);
 
         // Publication du document
+        
+        
         JadePublishDocumentInfo docInfo = createDocumentInfo();
         docInfo.setApplicationDomain(AFApplication.DEFAULT_APPLICATION_NAOS);
         docInfo.setDocumentTitle(nomDoc);
         docInfo.setPublishDocument(true);
         docInfo.setArchiveDocument(false);
+        docInfo.setProcessDate(JadeDateUtil.getGlobazDate(getDateCreation()));
         docInfo.setDocumentTypeNumber(numInforom);
         this.registerAttachedDocument(docInfo, docPath);
         if (ligne != null) {
