@@ -289,8 +289,7 @@ public class CIAnnonceCentraleProcessXML extends BProcess {
                 ecrPrepared.prepareStatement(ecrituresAAnnoncer.getSqlForUpdateDateCentrale());
                 ecrPrepared.setInt(1, Integer.parseInt(DateUtils.getCurrentDateAMJ()));
             } catch (Exception e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                throw new CIAnnonceCentraleException(e.getMessage());
             }
 
             int maxAAnnonces = isEncoreLotApres ? ecrituresAAnnoncer.size() - 1 : ecrituresAAnnoncer.size();
@@ -560,8 +559,7 @@ public class CIAnnonceCentraleProcessXML extends BProcess {
         try {
             annonceCI.setAKAbrechnungsNr(getAffilie(ciEcr));
         } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new CIAnnonceCentraleException(e.getMessage());
         }
 
         String genre = ciEcr.getGenreEcriture();
