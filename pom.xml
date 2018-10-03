@@ -627,7 +627,7 @@
 			<!-- Temporary fix for https://issues.apache.org/jira/browse/MRELEASE-926 -->
 			<plugin>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>${javadoc.version}</version>
+				<version>3.0.0</version>
 				<reportSets>
 					<reportSet>
 						<id>default</id>
