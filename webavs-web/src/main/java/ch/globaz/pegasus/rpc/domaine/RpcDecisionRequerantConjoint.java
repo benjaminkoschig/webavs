@@ -138,5 +138,9 @@ public class RpcDecisionRequerantConjoint {
         }
         return pcaCas;
     }
+    
+    public Demande getDemande() {
+        return demande;
+    }
 
 }
