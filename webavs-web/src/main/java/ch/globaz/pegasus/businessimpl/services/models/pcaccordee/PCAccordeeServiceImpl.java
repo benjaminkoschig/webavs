@@ -1,19 +1,5 @@
 package ch.globaz.pegasus.businessimpl.services.models.pcaccordee;
 
-import globaz.globall.db.BSessionUtil;
-import globaz.globall.util.JACalendar;
-import globaz.globall.util.JACalendarGregorian;
-import globaz.globall.util.JADate;
-import globaz.globall.util.JAException;
-import globaz.jade.client.util.JadeDateUtil;
-import globaz.jade.client.util.JadeListUtil;
-import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.exception.JadeApplicationException;
-import globaz.jade.exception.JadePersistenceException;
-import globaz.jade.persistence.JadePersistenceManager;
-import globaz.jade.persistence.model.JadeAbstractModel;
-import globaz.jade.persistence.model.JadeAbstractSearchModel;
-import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -86,12 +72,26 @@ import ch.globaz.pegasus.businessimpl.services.models.decision.validation.suppre
 import ch.globaz.pegasus.businessimpl.services.models.lot.comptabilisation.ComptabilisationUtil;
 import ch.globaz.pegasus.businessimpl.utils.PersistenceUtil;
 import ch.globaz.pyxis.business.model.PersonneEtendueComplexModel;
+import globaz.globall.db.BSessionUtil;
+import globaz.globall.util.JACalendar;
+import globaz.globall.util.JACalendarGregorian;
+import globaz.globall.util.JADate;
+import globaz.globall.util.JAException;
+import globaz.jade.client.util.JadeDateUtil;
+import globaz.jade.client.util.JadeListUtil;
+import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.exception.JadeApplicationException;
+import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.persistence.JadePersistenceManager;
+import globaz.jade.persistence.model.JadeAbstractModel;
+import globaz.jade.persistence.model.JadeAbstractSearchModel;
+import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 
 public class PCAccordeeServiceImpl extends PegasusAbstractServiceImpl implements PCAccordeeService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ch.globaz.pegasus.business.services.models.pcaccordee.PCAccordeeService
      * #count(ch.globaz.pegasus.business.models.pcaccordee.PCAccordeeSearch)
      */
@@ -121,8 +121,8 @@ public class PCAccordeeServiceImpl extends PegasusAbstractServiceImpl implements
             throw new PCAccordeeException("Unable to create pcAccordee, the model passed is null!");
         }
         try {
-            pcAccordee.setSimplePCAccordee(PegasusImplServiceLocator.getSimplePCAccordeeService().create(
-                    pcAccordee.getSimplePCAccordee()));
+            pcAccordee.setSimplePCAccordee(
+                    PegasusImplServiceLocator.getSimplePCAccordeeService().create(pcAccordee.getSimplePCAccordee()));
         } catch (JadeApplicationServiceNotAvailableException e) {
             throw new PCAccordeeException("Service not available - " + e.getMessage());
         }
@@ -130,8 +130,8 @@ public class PCAccordeeServiceImpl extends PegasusAbstractServiceImpl implements
     }
 
     @Override
-    public PCAccordee delete(PCAccordee pcAccordee) throws PCAccordeeException, JadePersistenceException,
-            JadeApplicationException {
+    public PCAccordee delete(PCAccordee pcAccordee)
+            throws PCAccordeeException, JadePersistenceException, JadeApplicationException {
         if (pcAccordee == null) {
             throw new PCAccordeeException("Unable to delete pcAccordee, the model passed is null!");
         }
@@ -141,8 +141,8 @@ public class PCAccordeeServiceImpl extends PegasusAbstractServiceImpl implements
         // try {
         // int count = PegasusImplServiceLocator.getValidationDecisionService().count(validationDecisionSearch);
         // if (count > 0) {
-        deleteDecisionsApresCalculByIdPdAccordee(pcAccordee.getSimplePCAccordee().getIdPCAccordee(), pcAccordee
-                .getSimpleVersionDroit().getIdVersionDroit());
+        deleteDecisionsApresCalculByIdPdAccordee(pcAccordee.getSimplePCAccordee().getIdPCAccordee(),
+                pcAccordee.getSimpleVersionDroit().getIdVersionDroit());
         // }
         // } catch (DecisionException e1) {
         // throw new PCAccordeeException("Unable to count decision - " + e1.getMessage());
@@ -181,8 +181,8 @@ public class PCAccordeeServiceImpl extends PegasusAbstractServiceImpl implements
         PegasusImplServiceLocator.getSimpleAllocationDeNoelService().delete(search);
 
         try {
-            pcAccordee.setSimplePCAccordee(PegasusImplServiceLocator.getSimplePCAccordeeService().delete(
-                    pcAccordee.getSimplePCAccordee()));
+            pcAccordee.setSimplePCAccordee(
+                    PegasusImplServiceLocator.getSimplePCAccordeeService().delete(pcAccordee.getSimplePCAccordee()));
         } catch (JadeApplicationServiceNotAvailableException e) {
             throw new PCAccordeeException("Service not available - " + e.getMessage());
         }
@@ -190,8 +190,8 @@ public class PCAccordeeServiceImpl extends PegasusAbstractServiceImpl implements
     }
 
     @Override
-    public void deleteByIdVersionDroit(Droit droit) throws JadePersistenceException, PCAccordeeException,
-            JadeApplicationException {
+    public void deleteByIdVersionDroit(Droit droit)
+            throws JadePersistenceException, PCAccordeeException, JadeApplicationException {
 
         if ((droit == null) || droit.isNew()) {
             throw new DroitException("Cannot delete from an non existing or empty droit");
@@ -231,8 +231,8 @@ public class PCAccordeeServiceImpl extends PegasusAbstractServiceImpl implements
         }
     }
 
-    private void deleteCreanceByIdPcAccordee(String idPcAccordee) throws JadeApplicationServiceNotAvailableException,
-            JadePersistenceException, PCAccordeeException {
+    private void deleteCreanceByIdPcAccordee(String idPcAccordee)
+            throws JadeApplicationServiceNotAvailableException, JadePersistenceException, PCAccordeeException {
         SimpleCreanceAccordeeSearch simpleCreanceAccordeeSearch = new SimpleCreanceAccordeeSearch();
         simpleCreanceAccordeeSearch.setForIdPcAccordee(idPcAccordee);
         try {
@@ -255,7 +255,7 @@ public class PCAccordeeServiceImpl extends PegasusAbstractServiceImpl implements
         search.setForIdPcAccordee(idPcAccordee);
         search.setInCsTypeDecsion(new ArrayList<String>() {
             /**
-             * 
+             *
              */
             private static final long serialVersionUID = 1L;
 
@@ -302,14 +302,14 @@ public class PCAccordeeServiceImpl extends PegasusAbstractServiceImpl implements
         }
     }
 
-    private void deleteJoursAppoint(SimpleJoursAppoint simpleJoursAppoint) throws PCAccordeeException,
-            JadeApplicationServiceNotAvailableException, JadePersistenceException {
+    private void deleteJoursAppoint(SimpleJoursAppoint simpleJoursAppoint)
+            throws PCAccordeeException, JadeApplicationServiceNotAvailableException, JadePersistenceException {
         PegasusImplServiceLocator.getSimpleJoursAppointService().delete(simpleJoursAppoint);
 
     }
 
-    private void deletePlanDeCalcule(String idPcAccordee) throws PCAccordeeException,
-            JadeApplicationServiceNotAvailableException, JadePersistenceException {
+    private void deletePlanDeCalcule(String idPcAccordee)
+            throws PCAccordeeException, JadeApplicationServiceNotAvailableException, JadePersistenceException {
 
         SimplePlanDeCalculSearch planCalculSearch = new SimplePlanDeCalculSearch();
         planCalculSearch.setForIdPCAccordee(idPcAccordee);
@@ -343,11 +343,11 @@ public class PCAccordeeServiceImpl extends PegasusAbstractServiceImpl implements
 
             // intstanciation de la simplePrestationsAccordees selon le membre de famille, si 2 simplePRest.
             if (membre.equals(IPCDroits.CS_ROLE_FAMILLE_REQUERANT)) {
-                prestation = PegasusImplServiceLocator.getSimplePrestatioAccordeeService().read(
-                        pcAccordee.getSimplePCAccordee().getIdPrestationAccordee());
+                prestation = PegasusImplServiceLocator.getSimplePrestatioAccordeeService()
+                        .read(pcAccordee.getSimplePCAccordee().getIdPrestationAccordee());
             } else if (membre.equals(IPCDroits.CS_ROLE_FAMILLE_CONJOINT)) {
-                prestation = PegasusImplServiceLocator.getSimplePrestatioAccordeeService().read(
-                        pcAccordee.getSimplePCAccordee().getIdPrestationAccordeeConjoint());
+                prestation = PegasusImplServiceLocator.getSimplePrestatioAccordeeService()
+                        .read(pcAccordee.getSimplePCAccordee().getIdPrestationAccordeeConjoint());
             } else {
                 throw new PCAccordeeException("Role famille (" + membre + ") should be either requerant or conjoint!!");
             }
@@ -361,8 +361,8 @@ public class PCAccordeeServiceImpl extends PegasusAbstractServiceImpl implements
                 SimpleInformationsComptabilite simpleInformationsComptabilite = CorvusServiceLocator
                         .getSimpleInformationsComptabiliteService().read(idInfoComptable);
                 if (!simpleInformationsComptabilite.isNew()) {
-                    CorvusServiceLocator.getSimpleInformationsComptabiliteService().delete(
-                            simpleInformationsComptabilite);
+                    CorvusServiceLocator.getSimpleInformationsComptabiliteService()
+                            .delete(simpleInformationsComptabilite);
                 }
             }
         }
@@ -370,14 +370,14 @@ public class PCAccordeeServiceImpl extends PegasusAbstractServiceImpl implements
     }
 
     public List<PcaForDecompte> findPcaPrecedante(String dateMax, String dateMin, String idDemande,
-            String noVersionDroitCourant) throws PCAccordeeException, JadeApplicationServiceNotAvailableException,
-            JadePersistenceException {
+            String noVersionDroitCourant)
+            throws PCAccordeeException, JadeApplicationServiceNotAvailableException, JadePersistenceException {
         return PcaPrecedante.findPcaToReplaced(dateMax, dateMin, idDemande, noVersionDroitCourant);
     }
 
     @Override
-    public SimplePlanDeCalcul findSimplePlanCalculeRetenu(String idPCAccordee) throws PCAccordeeException,
-            JadePersistenceException {
+    public SimplePlanDeCalcul findSimplePlanCalculeRetenu(String idPCAccordee)
+            throws PCAccordeeException, JadePersistenceException {
         SimplePlanDeCalculSearch search = new SimplePlanDeCalculSearch();
         search.setForIdPCAccordee(idPCAccordee);
         search.setForIsPlanRetenu(true);
@@ -412,13 +412,13 @@ public class PCAccordeeServiceImpl extends PegasusAbstractServiceImpl implements
     }
 
     @Override
-    public Map<String, String> getMapMontantRetroActif(PCAccordee pcAccordee) throws PCAccordeeException,
-            JadeApplicationServiceNotAvailableException, JadePersistenceException {
+    public Map<String, String> getMapMontantRetroActif(PCAccordee pcAccordee)
+            throws PCAccordeeException, JadeApplicationServiceNotAvailableException, JadePersistenceException {
         if (pcAccordee == null) {
             throw new PCAccordeeException("Unable to getMapMontantRetroActif, the model passed is null!");
         }
-        return this.getMapMontantRetroActif(pcAccordee.getSimpleDroit().getIdDemandePC(), pcAccordee
-                .getSimpleVersionDroit().getNoVersion());
+        return this.getMapMontantRetroActif(pcAccordee.getSimpleDroit().getIdDemandePC(),
+                pcAccordee.getSimpleVersionDroit().getNoVersion());
     }
 
     @Override
@@ -462,8 +462,8 @@ public class PCAccordeeServiceImpl extends PegasusAbstractServiceImpl implements
     }
 
     @Override
-    public void loadJoursAppoint(PCAccordee pcAccordee) throws JadePersistenceException, PCAccordeeException,
-            JadeApplicationServiceNotAvailableException {
+    public void loadJoursAppoint(PCAccordee pcAccordee)
+            throws JadePersistenceException, PCAccordeeException, JadeApplicationServiceNotAvailableException {
         // get jours appoint
         SimpleJoursAppointSearch appointSearch = new SimpleJoursAppointSearch();
         appointSearch.setForIdPCAccordee(pcAccordee.getSimplePCAccordee().getIdPCAccordee());
@@ -484,7 +484,7 @@ public class PCAccordeeServiceImpl extends PegasusAbstractServiceImpl implements
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ch.globaz.pegasus.business.services.models.pcaccordee.PCAccordeeService #read(java.lang.String)
      */
     @Override
@@ -499,7 +499,7 @@ public class PCAccordeeServiceImpl extends PegasusAbstractServiceImpl implements
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ch.globaz.pegasus.business.services.models.pcaccordee.PCAccordeeService #readDetail(java.lang.String)
      */
     @Override
@@ -542,7 +542,7 @@ public class PCAccordeeServiceImpl extends PegasusAbstractServiceImpl implements
 
     /**
      * Chargement de la pca et on set le plan retenu
-     * 
+     *
      * @param idPCAccordee
      * @return
      * @throws PCAccordeeException
@@ -561,8 +561,8 @@ public class PCAccordeeServiceImpl extends PegasusAbstractServiceImpl implements
     }
 
     @Override
-    public PCAccordeeIdMembresRetenusSearch search(PCAccordeeIdMembresRetenusSearch search) throws PCAccordeeException,
-            JadePersistenceException {
+    public PCAccordeeIdMembresRetenusSearch search(PCAccordeeIdMembresRetenusSearch search)
+            throws PCAccordeeException, JadePersistenceException {
         if (search == null) {
             throw new PCAccordeeException(
                     "Unable to search pcAccordeeIdMembresRetenusSearch, the model passed is null!");
@@ -582,13 +582,13 @@ public class PCAccordeeServiceImpl extends PegasusAbstractServiceImpl implements
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ch.globaz.pegasus.business.services.models.pcaccordee.PCAccordeeService
      * #search(ch.globaz.pegasus.business.models.pcaccordee.PCAccordeeSearch)
      */
     @Override
-    public PCAccordeeSearch search(PCAccordeeSearch pcAccordeeSearch) throws JadePersistenceException,
-            PCAccordeeException {
+    public PCAccordeeSearch search(PCAccordeeSearch pcAccordeeSearch)
+            throws JadePersistenceException, PCAccordeeException {
         if (pcAccordeeSearch == null) {
             throw new PCAccordeeException("Unable to search pcaccordee, the search model passed is null!");
         }
@@ -634,13 +634,13 @@ public class PCAccordeeServiceImpl extends PegasusAbstractServiceImpl implements
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ch.globaz.pegasus.business.services.models.pcaccordee.PCAccordeeService
      * #search(ch.globaz.pegasus.business.models.pcaccordee.PCAccordeeSearch)
      */
     @Override
-    public ListPCAccordeeSearch searchForList(ListPCAccordeeSearch pcAccordeeSearch) throws JadePersistenceException,
-            PCAccordeeException {
+    public ListPCAccordeeSearch searchForList(ListPCAccordeeSearch pcAccordeeSearch)
+            throws JadePersistenceException, PCAccordeeException {
         if (pcAccordeeSearch == null) {
             throw new PCAccordeeException("Unable to search pcaccordee, the search model passed is null!");
         }
@@ -652,14 +652,14 @@ public class PCAccordeeServiceImpl extends PegasusAbstractServiceImpl implements
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ch.globaz.pegasus.business.services.models.pcaccordee.PCAccordeeService
      * #searchPCAccordeePlanCalculRetenuEnfants(java.lang.String, java.lang.String, java.lang.String, java.lang.String)
      */
     @Override
     public List<PCAccordeePlanCalculRetenuEnfantsDansCalculVO> searchPCAccordeePlanCalculRetenuEnfants(String idTiers,
-            String dateDebut, String dateFin, String csEtat) throws PCAccordeeException, JadePersistenceException,
-            PersonneDansPlanCalculException {
+            String dateDebut, String dateFin, String csEtat)
+            throws PCAccordeeException, JadePersistenceException, PersonneDansPlanCalculException {
 
         PCAccordeeSearch pcaSearch = new PCAccordeeSearch();
         pcaSearch.setForIdTiers(idTiers);
@@ -673,9 +673,10 @@ public class PCAccordeeServiceImpl extends PegasusAbstractServiceImpl implements
 
         for (int i = 0; i < pcaSearch.getSearchResults().length; i++) {
             PCAccordee pca = (PCAccordee) pcaSearch.getSearchResults()[i];
-            PCAccordeeVO pcaVO = new PCAccordeeVO(pca.getSimplePCAccordee().getCsGenrePC(), pca.getSimplePCAccordee()
-                    .getCsTypePC(), pca.getSimplePCAccordee().getDateDebut(), pca.getSimplePCAccordee().getDateFin(),
-                    pca.getSimplePCAccordee().getCodeRente(), pca.getSimplePCAccordee().getIsCalculManuel());
+            PCAccordeeVO pcaVO = new PCAccordeeVO(pca.getSimplePCAccordee().getCsGenrePC(),
+                    pca.getSimplePCAccordee().getCsTypePC(), pca.getSimplePCAccordee().getDateDebut(),
+                    pca.getSimplePCAccordee().getDateFin(), pca.getSimplePCAccordee().getCodeRente(),
+                    pca.getSimplePCAccordee().getIsCalculManuel());
 
             PlanDeCalculVO planDeCalculVO = null;
             List<PersonneDansPlanCalcul> personnesDansCalculList = new ArrayList<PersonneDansPlanCalcul>();
@@ -731,7 +732,8 @@ public class PCAccordeeServiceImpl extends PegasusAbstractServiceImpl implements
                 throw new PCAccordeeException("Plusieurs plan de calcul retenu dans la PC accordee");
             }
 
-            result.add(new PCAccordeePlanCalculRetenuEnfantsDansCalculVO(pcaVO, planDeCalculVO, personnesDansCalculList));
+            result.add(
+                    new PCAccordeePlanCalculRetenuEnfantsDansCalculVO(pcaVO, planDeCalculVO, personnesDansCalculList));
         }
 
         return result;
@@ -739,7 +741,7 @@ public class PCAccordeeServiceImpl extends PegasusAbstractServiceImpl implements
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * ch.globaz.pegasus.business.services.models.pcaccordee.PCAccordeeService#searchPCAccordeeWithCalculeRetenuVO(java
      * .lang.String, java.lang.String)
@@ -759,7 +761,8 @@ public class PCAccordeeServiceImpl extends PegasusAbstractServiceImpl implements
         PCAAccordeePlanClaculeAndMembreFamilleVO pcaAccordeePlanClaculeAndMembreFamilleVO = null;
         String idPca = null;
         search.setForIdTiersMembreFamille(idTiersMembreFamille);
-        search.setWhereKey(PCAWithCalculMembreFamilleAndPrestationSearch.WITH_PCA_VALIDE_PLAN_CALCUL_RETENU_AND_DATE_VALABLE);
+        search.setWhereKey(
+                PCAWithCalculMembreFamilleAndPrestationSearch.WITH_PCA_VALIDE_PLAN_CALCUL_RETENU_AND_DATE_VALABLE);
         search.setIsPlanRetenu(Boolean.TRUE);
         search.setForDateValable(dateValable);
         search.setDefinedSearchSize(JadeAbstractSearchModel.SIZE_NOLIMIT);
@@ -782,23 +785,23 @@ public class PCAccordeeServiceImpl extends PegasusAbstractServiceImpl implements
                 pcaAccordeePlanClaculeAndMembreFamilleVO.setDateFin(pca.getSimplePCAccordee().getDateFin());
                 pcaAccordeePlanClaculeAndMembreFamilleVO.setIdDossier(pca.getIdDossier());
 
-                pcaAccordeePlanClaculeAndMembreFamilleVO.setExcedentPCAnnuel(pca.getPlanDeCalculWitMembreFamille()
-                        .getSimplePlanDeCalcul().getExcedentPCAnnuel());
+                pcaAccordeePlanClaculeAndMembreFamilleVO.setExcedentPCAnnuel(
+                        pca.getPlanDeCalculWitMembreFamille().getSimplePlanDeCalcul().getExcedentPCAnnuel());
 
-                pcaAccordeePlanClaculeAndMembreFamilleVO.setMontantPCMensuelle(pca.getPlanDeCalculWitMembreFamille()
-                        .getSimplePlanDeCalcul().getMontantPCMensuelle());
-                pcaAccordeePlanClaculeAndMembreFamilleVO.setMontantPrimeMoyenAssMaladie(pca
-                        .getPlanDeCalculWitMembreFamille().getSimplePlanDeCalcul().getPrimeMoyenneAssMaladie());
+                pcaAccordeePlanClaculeAndMembreFamilleVO.setMontantPCMensuelle(
+                        pca.getPlanDeCalculWitMembreFamille().getSimplePlanDeCalcul().getMontantPCMensuelle());
+                pcaAccordeePlanClaculeAndMembreFamilleVO.setMontantPrimeMoyenAssMaladie(
+                        pca.getPlanDeCalculWitMembreFamille().getSimplePlanDeCalcul().getPrimeMoyenneAssMaladie());
 
-                pcaAccordeePlanClaculeAndMembreFamilleVO.setCsEtatPC(pca.getPlanDeCalculWitMembreFamille()
-                        .getSimplePlanDeCalcul().getEtatPC());
+                pcaAccordeePlanClaculeAndMembreFamilleVO
+                        .setCsEtatPC(pca.getPlanDeCalculWitMembreFamille().getSimplePlanDeCalcul().getEtatPC());
 
-                pcaAccordeePlanClaculeAndMembreFamilleVO.setIdTiersBeneficiair(pca.getSimplePrestationsAccordees()
-                        .getIdTiersBeneficiaire());
+                pcaAccordeePlanClaculeAndMembreFamilleVO
+                        .setIdTiersBeneficiair(pca.getSimplePrestationsAccordees().getIdTiersBeneficiaire());
 
                 pcaAccordeePlanClaculeAndMembreFamilleVO.setIdPcAccordee(pca.getSimplePCAccordee().getId());
-                pcaAccordeePlanClaculeAndMembreFamilleVO.setIdVersionDroitPC(pca.getSimplePCAccordee()
-                        .getIdVersionDroit());
+                pcaAccordeePlanClaculeAndMembreFamilleVO
+                        .setIdVersionDroitPC(pca.getSimplePCAccordee().getIdVersionDroit());
             }
 
             PCAMembreFamilleVO membreFamilleVO = new PCAMembreFamilleVO();
@@ -808,19 +811,19 @@ public class PCAccordeeServiceImpl extends PegasusAbstractServiceImpl implements
                     .getSimpleMembreFamille().getIdTiers());
             membreFamilleVO.setNss(pca.getPlanDeCalculWitMembreFamille().getDroitMembreFamille().getMembreFamille()
                     .getPersonneEtendue().getPersonneEtendue().getNumAvsActuel());
-            membreFamilleVO.setNom(pca.getPlanDeCalculWitMembreFamille().getDroitMembreFamille().getMembreFamille()
-                    .getNom());
-            membreFamilleVO.setPrenom(pca.getPlanDeCalculWitMembreFamille().getDroitMembreFamille().getMembreFamille()
-                    .getPrenom());
+            membreFamilleVO
+                    .setNom(pca.getPlanDeCalculWitMembreFamille().getDroitMembreFamille().getMembreFamille().getNom());
+            membreFamilleVO.setPrenom(
+                    pca.getPlanDeCalculWitMembreFamille().getDroitMembreFamille().getMembreFamille().getPrenom());
             membreFamilleVO.setDateNaissance(pca.getPlanDeCalculWitMembreFamille().getDroitMembreFamille()
                     .getMembreFamille().getDateNaissance());
             membreFamilleVO.setCsNationalite(pca.getPlanDeCalculWitMembreFamille().getDroitMembreFamille()
                     .getMembreFamille().getCsNationalite());
-            membreFamilleVO.setCsSexe(pca.getPlanDeCalculWitMembreFamille().getDroitMembreFamille().getMembreFamille()
-                    .getCsSexe());
+            membreFamilleVO.setCsSexe(
+                    pca.getPlanDeCalculWitMembreFamille().getDroitMembreFamille().getMembreFamille().getCsSexe());
 
-            membreFamilleVO.setIsComprisDansCalcul(pca.getPlanDeCalculWitMembreFamille()
-                    .getSimplePersonneDansPlanCalcul().getIsComprisDansCalcul());
+            membreFamilleVO.setIsComprisDansCalcul(
+                    pca.getPlanDeCalculWitMembreFamille().getSimplePersonneDansPlanCalcul().getIsComprisDansCalcul());
             pcaAccordeePlanClaculeAndMembreFamilleVO.getListMembreFamilleVO().add(membreFamilleVO);
             idPca = pca.getId();
         }
@@ -834,15 +837,15 @@ public class PCAccordeeServiceImpl extends PegasusAbstractServiceImpl implements
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * ch.globaz.pegasus.business.services.models.pcaccordee.PCAccordeeService#searchPCAIdMembreFamilleRetenuSearch(
      * ch.globaz.pegasus.business.models.pcaccordee.PCAIdMembreFamilleRetenuSearch)
      */
     @Override
     public PCAIdMembreFamilleRetenuSearch searchPCAIdMembreFamilleRetenuSearch(
-            PCAIdMembreFamilleRetenuSearch pcaIdMembreFamilleRetenuSearch) throws PCAccordeeException,
-            JadePersistenceException {
+            PCAIdMembreFamilleRetenuSearch pcaIdMembreFamilleRetenuSearch)
+            throws PCAccordeeException, JadePersistenceException {
 
         if (pcaIdMembreFamilleRetenuSearch == null) {
             throw new PCAccordeeException("Unable to search PCAIdMembreFamilleRetenuSearch, the model passed is null!");
@@ -852,7 +855,7 @@ public class PCAccordeeServiceImpl extends PegasusAbstractServiceImpl implements
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ch.globaz.pegasus.business.services.models.pcaccordee.PCAccordeeService
      * #search(ch.globaz.pegasus.business.models.pcaccordee.PCAccordeeSearch)
      */
@@ -908,36 +911,36 @@ public class PCAccordeeServiceImpl extends PegasusAbstractServiceImpl implements
             try {
                 String idInfoCompta = pcAccordee.getSimplePrestationsAccordees().getIdInfoCompta();
 
-                pcAccordee.setSimpleInformationsComptabilite((CorvusServiceLocator
-                        .getSimpleInformationsComptabiliteService().update(pcAccordee
-                        .getSimpleInformationsComptabilite())));
+                pcAccordee.setSimpleInformationsComptabilite(
+                        (CorvusServiceLocator.getSimpleInformationsComptabiliteService()
+                                .update(pcAccordee.getSimpleInformationsComptabilite())));
 
                 // Si conjoint (DOM2Rentes)
                 // on fait ce test pour ne pas updater 2 fois l'info comptat, car on aurais un message d'erreur car le
                 // spy change
-                if (!pcAccordee.getSimpleInformationsComptabiliteConjoint().isNew()
-                        && !(idInfoCompta.equals(pcAccordee.getSimplePrestationsAccordeesConjoint().getIdInfoCompta()))) {
-                    pcAccordee.setSimpleInformationsComptabiliteConjoint((CorvusServiceLocator
-                            .getSimpleInformationsComptabiliteService().update(pcAccordee
-                            .getSimpleInformationsComptabiliteConjoint())));
+                if (!pcAccordee.getSimpleInformationsComptabiliteConjoint().isNew() && !(idInfoCompta
+                        .equals(pcAccordee.getSimplePrestationsAccordeesConjoint().getIdInfoCompta()))) {
+                    pcAccordee.setSimpleInformationsComptabiliteConjoint(
+                            (CorvusServiceLocator.getSimpleInformationsComptabiliteService()
+                                    .update(pcAccordee.getSimpleInformationsComptabiliteConjoint())));
                 }
 
             } catch (RentesAccordeesException e) {
                 throw new PCAccordeeException("Unable to update the informationComtable", e);
             }
 
-            pcAccordee.setSimplePCAccordee(PegasusImplServiceLocator.getSimplePCAccordeeService().update(
-                    pcAccordee.getSimplePCAccordee()));
+            pcAccordee.setSimplePCAccordee(
+                    PegasusImplServiceLocator.getSimplePCAccordeeService().update(pcAccordee.getSimplePCAccordee()));
 
             try {
                 pcAccordee.setSimplePrestationsAccordees(PegasusImplServiceLocator.getSimplePrestatioAccordeeService()
                         .update(pcAccordee.getSimplePrestationsAccordees()));
                 // Si conjoint (DOM2Rentes)
-                if (!JadeStringUtil.isBlankOrZero(pcAccordee.getSimplePrestationsAccordeesConjoint()
-                        .getIdPrestationAccordee())) {
-                    pcAccordee.setSimplePrestationsAccordeesConjoint(PegasusImplServiceLocator
-                            .getSimplePrestatioAccordeeService().update(
-                                    pcAccordee.getSimplePrestationsAccordeesConjoint()));
+                if (!JadeStringUtil
+                        .isBlankOrZero(pcAccordee.getSimplePrestationsAccordeesConjoint().getIdPrestationAccordee())) {
+                    pcAccordee.setSimplePrestationsAccordeesConjoint(
+                            PegasusImplServiceLocator.getSimplePrestatioAccordeeService()
+                                    .update(pcAccordee.getSimplePrestationsAccordeesConjoint()));
                 }
 
             } catch (JadeApplicationException e) {
@@ -951,8 +954,8 @@ public class PCAccordeeServiceImpl extends PegasusAbstractServiceImpl implements
     }
 
     @Override
-    public SimplePlanDeCalcul updatePlanDecalculeRetenu(String idPlanDeCalcul) throws JadePersistenceException,
-            PCAccordeeException {
+    public SimplePlanDeCalcul updatePlanDecalculeRetenu(String idPlanDeCalcul)
+            throws JadePersistenceException, PCAccordeeException {
 
         if (JadeStringUtil.isEmpty(idPlanDeCalcul)) {
             throw new PCAccordeeException("Unable to updatePlanDecalculeRetenu, the idPlanDeCalcul passed is null!");
@@ -964,10 +967,10 @@ public class PCAccordeeServiceImpl extends PegasusAbstractServiceImpl implements
             SimplePlanDeCalculSearch simplePlanDeCalculSearch = new SimplePlanDeCalculSearch();
             simplePlanDeCalculSearch.setForIsPlanRetenu(true);
             simplePlanDeCalculSearch.setForIdPCAccordee(simplePlanDeCalcul.getIdPCAccordee());
-            simplePlanDeCalculSearch = PegasusImplServiceLocator.getSimplePlanDeCalculService().search(
-                    simplePlanDeCalculSearch);
-            PCAccordee pcAccordee = PegasusServiceLocator.getPCAccordeeService().readDetail(
-                    simplePlanDeCalcul.getIdPCAccordee());
+            simplePlanDeCalculSearch = PegasusImplServiceLocator.getSimplePlanDeCalculService()
+                    .search(simplePlanDeCalculSearch);
+            PCAccordee pcAccordee = PegasusServiceLocator.getPCAccordeeService()
+                    .readDetail(simplePlanDeCalcul.getIdPCAccordee());
             if (simplePlanDeCalculSearch.getSize() > 0) {
                 if (simplePlanDeCalculSearch.getSize() == 1) {
 
@@ -997,34 +1000,33 @@ public class PCAccordeeServiceImpl extends PegasusAbstractServiceImpl implements
 
                     SimplePlanDeCalcul simplePlanDeCalculOld = (SimplePlanDeCalcul) simplePlanDeCalculSearch
                             .getSearchResults()[0];
-                    simplePlanDeCalculOld = PegasusImplServiceLocator.getSimplePlanDeCalculService().read(
-                            simplePlanDeCalculOld.getId());
+                    simplePlanDeCalculOld = PegasusImplServiceLocator.getSimplePlanDeCalculService()
+                            .read(simplePlanDeCalculOld.getId());
                     simplePlanDeCalculOld.setIsPlanRetenu(false);
                     PegasusImplServiceLocator.getSimplePlanDeCalculService().update(simplePlanDeCalculOld);
 
                     simplePlanDeCalcul.setIsPlanRetenu(true);
                     PegasusImplServiceLocator.getSimplePlanDeCalculService().update(simplePlanDeCalcul);
                     try {
-                        if (pcAccordee.getSimplePrestationsAccordeesConjoint() != null
-                                && !JadeStringUtil.isBlankOrZero(pcAccordee.getSimplePCAccordee()
-                                        .getIdPrestationAccordeeConjoint())) {
-                            BigDecimal[] montants = ComptabilisationUtil.splitMontant(new BigDecimal(simplePlanDeCalcul
-                                    .getMontantPCMensuelle()));
+                        if (pcAccordee.getSimplePrestationsAccordeesConjoint() != null && !JadeStringUtil
+                                .isBlankOrZero(pcAccordee.getSimplePCAccordee().getIdPrestationAccordeeConjoint())) {
+                            BigDecimal[] montants = ComptabilisationUtil
+                                    .splitMontant(new BigDecimal(simplePlanDeCalcul.getMontantPCMensuelle()));
                             SimplePrestationsAccordees simplePrestationsAccordees = pcAccordee
                                     .getSimplePrestationsAccordees();
                             simplePrestationsAccordees.setMontantPrestation(montants[0].toString());
-                            PegasusImplServiceLocator.getSimplePrestatioAccordeeService().update(
-                                    simplePrestationsAccordees);
-                            pcAccordee.getSimplePrestationsAccordeesConjoint().setMontantPrestation(
-                                    montants[1].toString());
-                            PegasusImplServiceLocator.getSimplePrestatioAccordeeService().update(
-                                    pcAccordee.getSimplePrestationsAccordeesConjoint());
+                            PegasusImplServiceLocator.getSimplePrestatioAccordeeService()
+                                    .update(simplePrestationsAccordees);
+                            pcAccordee.getSimplePrestationsAccordeesConjoint()
+                                    .setMontantPrestation(montants[1].toString());
+                            PegasusImplServiceLocator.getSimplePrestatioAccordeeService()
+                                    .update(pcAccordee.getSimplePrestationsAccordeesConjoint());
                         } else {
                             SimplePrestationsAccordees simplePrestationsAccordees = pcAccordee
                                     .getSimplePrestationsAccordees();
                             simplePrestationsAccordees.setMontantPrestation(simplePlanDeCalcul.getMontantPCMensuelle());
-                            PegasusImplServiceLocator.getSimplePrestatioAccordeeService().update(
-                                    simplePrestationsAccordees);
+                            PegasusImplServiceLocator.getSimplePrestatioAccordeeService()
+                                    .update(simplePrestationsAccordees);
                         }
                     } catch (JadeApplicationException e) {
                         throw new PCAccordeeException("Unable to update the prestationAccordee", e);
@@ -1043,8 +1045,8 @@ public class PCAccordeeServiceImpl extends PegasusAbstractServiceImpl implements
     }
 
     @Override
-    public Map<String, List<Map<String, Object>>> xxVisuel(String idDossier) throws JadePersistenceException,
-            PCAccordeeException {
+    public Map<String, List<Map<String, Object>>> xxVisuel(String idDossier)
+            throws JadePersistenceException, PCAccordeeException {
 
         // ListPCAccordeeSearch pcAccordeeSearch = new ListPCAccordeeSearch();
         // pcAccordeeSearch.setForIdDossier(idDossier);
@@ -1082,7 +1084,8 @@ public class PCAccordeeServiceImpl extends PegasusAbstractServiceImpl implements
                 if (IPCDroits.CS_ROLE_FAMILLE_REQUERANT.equals(pca.getSimplePCAccordee().getCsRoleBeneficiaire())) {
                     pcaRequerant = pca;
                     personnesDansCalRequerant.add(pca.getMembreFamille().getMembreFamille().getPersonneEtendue());
-                } else if (IPCDroits.CS_ROLE_FAMILLE_CONJOINT.equals(pca.getSimplePCAccordee().getCsRoleBeneficiaire())) {
+                } else if (IPCDroits.CS_ROLE_FAMILLE_CONJOINT
+                        .equals(pca.getSimplePCAccordee().getCsRoleBeneficiaire())) {
                     pcaConjoint = pca;
                     personnesDansCalConjoint.add(pca.getMembreFamille().getMembreFamille().getPersonneEtendue());
                 }
@@ -1102,9 +1105,10 @@ public class PCAccordeeServiceImpl extends PegasusAbstractServiceImpl implements
             } else {
                 map.put("courant", true);
                 if (JadeStringUtil.isBlankOrZero(pcaRequerant.getSimpleDemande().getDateFin())) {
-                    if (JadeDateUtil.isDateMonthYearBefore(pcaRequerant.getSimplePCAccordee().getDateDebut(), dateFin)) {
-                        calDatFin = JadeDateUtil.getGlobazCalendar("01."
-                                + pcaRequerant.getSimplePCAccordee().getDateDebut());
+                    if (JadeDateUtil.isDateMonthYearBefore(pcaRequerant.getSimplePCAccordee().getDateDebut(),
+                            dateFin)) {
+                        calDatFin = JadeDateUtil
+                                .getGlobazCalendar("01." + pcaRequerant.getSimplePCAccordee().getDateDebut());
                         lastDay = calDatFin.getActualMaximum(Calendar.DAY_OF_MONTH);
                         dateFin = lastDay + "." + pcaRequerant.getSimplePCAccordee().getDateDebut();
                     } else {
@@ -1123,23 +1127,15 @@ public class PCAccordeeServiceImpl extends PegasusAbstractServiceImpl implements
 
                 mapConjoint.put("montant", pcaConjoint.getSimplePlanDeCalcul().getMontantPCMensuelle());
                 mapConjoint.put("etat", pcaConjoint.getSimplePCAccordee().getCsEtatPC());
-                mapConjoint.put(
-                        "labelEtat",
-                        BSessionUtil.getSessionFromThreadContext().getCodeLibelle(
-                                pcaConjoint.getSimplePCAccordee().getCsEtatPC()));
-                mapConjoint.put(
-                        "labelGenre",
-                        BSessionUtil.getSessionFromThreadContext().getCodeLibelle(
-                                pcaConjoint.getSimplePCAccordee().getCsGenrePC()));
-                mapConjoint.put(
-                        "labelType",
-                        BSessionUtil.getSessionFromThreadContext().getCodeLibelle(
-                                pcaConjoint.getSimplePCAccordee().getCsTypePC()));
+                mapConjoint.put("labelEtat", BSessionUtil.getSessionFromThreadContext()
+                        .getCodeLibelle(pcaConjoint.getSimplePCAccordee().getCsEtatPC()));
+                mapConjoint.put("labelGenre", BSessionUtil.getSessionFromThreadContext()
+                        .getCodeLibelle(pcaConjoint.getSimplePCAccordee().getCsGenrePC()));
+                mapConjoint.put("labelType", BSessionUtil.getSessionFromThreadContext()
+                        .getCodeLibelle(pcaConjoint.getSimplePCAccordee().getCsTypePC()));
                 mapConjoint.put("csRoleBeneficiaire", pcaConjoint.getSimplePCAccordee().getCsRoleBeneficiaire());
-                mapConjoint.put(
-                        "labelRoleBeneficiaire",
-                        BSessionUtil.getSessionFromThreadContext().getCodeLibelle(
-                                pcaConjoint.getSimplePCAccordee().getCsRoleBeneficiaire()));
+                mapConjoint.put("labelRoleBeneficiaire", BSessionUtil.getSessionFromThreadContext()
+                        .getCodeLibelle(pcaConjoint.getSimplePCAccordee().getCsRoleBeneficiaire()));
                 map.put("conjoint", mapConjoint);
                 map.put("personneDansCal", personnesDansCalConjoint);
             }
@@ -1151,24 +1147,19 @@ public class PCAccordeeServiceImpl extends PegasusAbstractServiceImpl implements
 
             map.put("montant", pcaRequerant.getSimplePlanDeCalcul().getMontantPCMensuelle());
             map.put("etat", pcaRequerant.getSimplePCAccordee().getCsEtatPC());
-            map.put("labelEtat",
-                    BSessionUtil.getSessionFromThreadContext().getCodeLibelle(
-                            pcaRequerant.getSimplePCAccordee().getCsEtatPC()));
-            map.put("labelGenre",
-                    BSessionUtil.getSessionFromThreadContext().getCodeLibelle(
-                            pcaRequerant.getSimplePCAccordee().getCsGenrePC()));
-            map.put("labelType",
-                    BSessionUtil.getSessionFromThreadContext().getCodeLibelle(
-                            pcaRequerant.getSimplePCAccordee().getCsTypePC()));
+            map.put("labelEtat", BSessionUtil.getSessionFromThreadContext()
+                    .getCodeLibelle(pcaRequerant.getSimplePCAccordee().getCsEtatPC()));
+            map.put("labelGenre", BSessionUtil.getSessionFromThreadContext()
+                    .getCodeLibelle(pcaRequerant.getSimplePCAccordee().getCsGenrePC()));
+            map.put("labelType", BSessionUtil.getSessionFromThreadContext()
+                    .getCodeLibelle(pcaRequerant.getSimplePCAccordee().getCsTypePC()));
             map.put("csRoleBeneficiaire", pcaRequerant.getSimplePCAccordee().getCsRoleBeneficiaire());
-            map.put("labelRoleBeneficiaire",
-                    BSessionUtil.getSessionFromThreadContext().getCodeLibelle(
-                            pcaRequerant.getSimplePCAccordee().getCsRoleBeneficiaire()));
+            map.put("labelRoleBeneficiaire", BSessionUtil.getSessionFromThreadContext()
+                    .getCodeLibelle(pcaRequerant.getSimplePCAccordee().getCsRoleBeneficiaire()));
             map.put("idPcaParent", pcaRequerant.getSimplePCAccordee().getIdPcaParent());
             map.put("etatPlanCalPC", pcaRequerant.getSimplePlanDeCalcul().getEtatPC());
-            map.put("labelEtatPlanCalPC",
-                    BSessionUtil.getSessionFromThreadContext().getCodeLibelle(
-                            pcaRequerant.getSimplePlanDeCalcul().getEtatPC()));
+            map.put("labelEtatPlanCalPC", BSessionUtil.getSessionFromThreadContext()
+                    .getCodeLibelle(pcaRequerant.getSimplePlanDeCalcul().getEtatPC()));
 
             if (!mapDemande.containsKey(pcaRequerant.getSimpleDemande().getIdDemande())) {
                 mapDemande.put(pcaRequerant.getSimpleDemande().getIdDemande(), pcaRequerant.getSimpleDemande());
@@ -1272,13 +1263,12 @@ public class PCAccordeeServiceImpl extends PegasusAbstractServiceImpl implements
                     dateDebutPCHome = new JADate(pca.getSimplePCAccordee().getDateDebut());
                     dateSupression = new JADate(dateSuppressionDroit);
                 } catch (JAException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    throw new PCAccordeeException("Service not available - " + e.getMessage());
                 }
                 JACalendarGregorian cal = new JACalendarGregorian();
                 if (cal.compare(dateSupression, dateDebutPCHome) == JACalendar.COMPARE_FIRSTLOWER) {
-                    montantTotalRestitution = montantTotalRestitution.add(new BigDecimal(listeJoursAppoint.get(0)
-                            .getMontantTotal()));
+                    montantTotalRestitution = montantTotalRestitution
+                            .add(new BigDecimal(listeJoursAppoint.get(0).getMontantTotal()));
                 }
 
             }
