@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import ch.globaz.common.domaine.Date;
+import ch.globaz.pegasus.business.domaine.membreFamille.RoleMembreFamille;
 import ch.globaz.pegasus.rpc.domaine.RpcData;
 import ch.globaz.pegasus.rpc.domaine.RpcDecisionRequerantConjoint;
 
@@ -15,6 +16,7 @@ import ch.globaz.pegasus.rpc.domaine.RpcDecisionRequerantConjoint;
 public class RpcDataDecisionFilter {
 
     public static void filtre(RpcData rpcData) {
+        //filtreNonRequerant(rpcData);
         if (rpcData.getRpcDecisionRequerantConjoints().size() > 1) {
             if (isOnlyNegativ(rpcData.getRpcDecisionRequerantConjoints())) {
                 keepLast(rpcData);
@@ -26,17 +28,37 @@ public class RpcDataDecisionFilter {
             }
         }
     }
+    
+    static void filtreNonRequerant(RpcData rpcData) {
+        boolean hasRequerant = false;
+        List<RpcDecisionRequerantConjoint> decisionsToRemove = new ArrayList<>();
+        for(RpcDecisionRequerantConjoint decision : rpcData.getRpcDecisionRequerantConjoints()) {
+            if(!RoleMembreFamille.REQUERANT.equals(decision.getRequerant().getPca().getRoleBeneficiaire())) {
+                decisionsToRemove.add(decision);
+            } else {
+                hasRequerant = true;
+            }
+        }
+        if(hasRequerant) {
+            for(RpcDecisionRequerantConjoint decision :decisionsToRemove) {
+                rpcData.getRpcDecisionRequerantConjoints().remove(decision);
+            }
+        }
+    }
+    
 
     static void keepLast(RpcData rpcData) {
         sortOnDateFrom(rpcData);
         RpcDecisionRequerantConjoint last = rpcData.getRpcDecisionRequerantConjoints().get(rpcData.getRpcDecisionRequerantConjoints().size()-1);
         last = resolveConjoint(last, rpcData);
+        rpcData.setDemande(last.getDemande());
         rpcData.getRpcDecisionRequerantConjoints().clear();
         rpcData.add(last);
     }
 
     static void keepCurrent(RpcData rpcData, Date resolvedMinValidFrom) {
         RpcDecisionRequerantConjoint rpcDeci = rpcData.resolveCurrent();
+        rpcData.setDemande(rpcDeci.getDemande());
         rpcDeci.getRequerant().getDecision().setDateDebut(resolvedMinValidFrom);
         rpcDeci.getRequerant().getPca().setDateDebut(resolvedMinValidFrom);
         if (rpcDeci.hasConjoint()) {
@@ -50,6 +72,7 @@ public class RpcDataDecisionFilter {
 
     static void keepLastPositiv(RpcData rpcData, Date resolvedMinValidFrom, Date resolvedMaxValidTo) {
         RpcDecisionRequerantConjoint rpcDeci = resolveLastOctroy(rpcData);
+        rpcData.setDemande(rpcDeci.getDemande());
         rpcDeci.getRequerant().getDecision().setDateDebut(resolvedMinValidFrom);
         rpcDeci.getRequerant().getPca().setDateDebut(resolvedMinValidFrom);
         if (rpcDeci.hasConjoint()) {

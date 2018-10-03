@@ -7,6 +7,7 @@ import ch.globaz.pegasus.business.domaine.decision.Decision;
 import ch.globaz.pegasus.business.domaine.demande.Demande;
 import ch.globaz.pegasus.business.domaine.dossier.Dossier;
 import ch.globaz.pegasus.business.domaine.droit.VersionDroit;
+import ch.globaz.pegasus.business.domaine.membreFamille.RoleMembreFamille;
 import ch.globaz.pegasus.business.domaine.pca.PcaDecisions;
 import ch.globaz.pegasus.rpc.businessImpl.converter.ConverterDecisionCause;
 import ch.globaz.pegasus.rpc.domaine.annonce.AnnonceCase;
@@ -15,7 +16,7 @@ import ch.globaz.pyxis.domaine.PersonneAVS;
 public class RpcData {
     private final VersionDroit versionDroit;
     private final Dossier dossier;
-    private final Demande demande;
+    private Demande demande;
     private final List<RpcDecisionRequerantConjoint> rpcDecisionRequerantConjoints = new ArrayList<RpcDecisionRequerantConjoint>();
     private AnnonceCase annonce;
 
@@ -49,6 +50,10 @@ public class RpcData {
 
     public Demande getDemande() {
         return demande;
+    }
+    
+    public void setDemande(Demande demande) {
+        this.demande = demande;
     }
 
     public String descriptionHtml() {
