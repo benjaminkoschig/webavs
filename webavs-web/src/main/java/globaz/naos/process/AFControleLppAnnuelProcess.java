@@ -690,6 +690,7 @@ public class AFControleLppAnnuelProcess extends BProcess {
             JadePublishDocumentInfo documentInfo = createDocumentInfo();
             documentInfo.setDocumentType("");
             documentInfo.setDocumentTypeNumber("");
+            documentInfo.setProcessDate(JadeDateUtil.getGlobazDate(getDateCreation()));
             documentInfo.setArchiveDocument(false);
             documentInfo.setPublishDocument(true);
 
