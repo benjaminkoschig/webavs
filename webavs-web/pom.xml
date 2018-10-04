@@ -164,7 +164,7 @@
 				<version>3.0.0</version>
         		<configuration>
         			<doclint>none</doclint>
-	            	<maxmemory>3G</maxmemory>
+	            	<maxmemory>6G</maxmemory>
 	            </configuration>
 			</plugin>
 
