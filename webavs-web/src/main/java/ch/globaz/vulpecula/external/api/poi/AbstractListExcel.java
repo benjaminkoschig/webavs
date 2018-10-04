@@ -6,6 +6,7 @@ import globaz.globall.db.BSession;
 import globaz.globall.util.JACalendar;
 import globaz.jade.common.Jade;
 import globaz.jade.common.JadeCodingUtil;
+import globaz.jade.log.JadeLogger;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -633,7 +634,7 @@ public abstract class AbstractListExcel extends Observable {
         try {
             currentSheet = wb.createSheet(title);
         } catch (Exception e) {
-            e.printStackTrace();
+            JadeLogger.error(e, e.getMessage());
         }
 
         // Marges (unité en pouces)

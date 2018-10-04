@@ -31,6 +31,7 @@ import ch.globaz.vulpecula.util.I18NUtil;
 import globaz.jade.client.util.JadeNumericUtil;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.log.JadeLogger;
 import globaz.jade.persistence.JadePersistenceManager;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 
@@ -85,13 +86,13 @@ public class AdresseRepositoryJade implements AdresseRepository {
             return null;
         } catch (JadeApplicationServiceNotAvailableException e) {
             LOGGER.error(e.getMessage());
-            e.printStackTrace();
+            JadeLogger.error(e, e.getMessage());
         } catch (JadePersistenceException e) {
             LOGGER.error(e.getMessage());
-            e.printStackTrace();
+            JadeLogger.error(e, e.getMessage());
         } catch (JadeApplicationException e) {
             LOGGER.error(e.getMessage());
-            e.printStackTrace();
+            JadeLogger.error(e, e.getMessage());
         }
         return null;
     }
@@ -126,13 +127,13 @@ public class AdresseRepositoryJade implements AdresseRepository {
                     AvoirAdressePaiement.CS_DOMAINE_STANDARD, date.getSwissValue(), null);
         } catch (JadeApplicationServiceNotAvailableException e) {
             LOGGER.error(e.getMessage());
-            e.printStackTrace();
+            JadeLogger.error(e, e.getMessage());
         } catch (JadePersistenceException e) {
             LOGGER.error(e.getMessage());
-            e.printStackTrace();
+            JadeLogger.error(e, e.getMessage());
         } catch (JadeApplicationException e) {
             LOGGER.error(e.getMessage());
-            e.printStackTrace();
+            JadeLogger.error(e, e.getMessage());
         }
 
         return adresseDetail.getAdresseFormate();

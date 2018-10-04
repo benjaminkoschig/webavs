@@ -63,7 +63,7 @@ public class QualificationEbuServiceImpl extends VulpeculaAbstractService implem
 
         } catch (SQLException e) {
             session.addError(e.getMessage());
-            e.printStackTrace();
+            JadeLogger.error(e, e.getMessage());
         } finally {
             JadeThreadActivator.stopUsingContext(Thread.currentThread());
         }

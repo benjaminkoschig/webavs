@@ -68,7 +68,6 @@ public class VulpeculaPublisher {
                 JadeLogger.info(this, "No Web Service to publish");
             }
         } catch (Exception e) {
-            e.printStackTrace();
             JadeLogger.warn(this,
                     "An exception raised while starting WS. You can ignore this message on a job/publish/merge serveur. Exception: "
                             + e.toString());

@@ -6,6 +6,7 @@ import globaz.jade.context.JadeThreadActivator;
 import globaz.jade.context.JadeThreadContext;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.log.JadeLogger;
 import globaz.jade.persistence.JadePersistenceManager;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import globaz.naos.api.IAFAssurance;
@@ -120,7 +121,7 @@ public class EmployeurEbuServiceImpl extends VulpeculaAbstractService implements
 
         } catch (SQLException e) {
             session.addError(e.getMessage());
-            e.printStackTrace();
+            JadeLogger.error(e, e.getMessage());
         } finally {
             JadeThreadActivator.stopUsingContext(Thread.currentThread());
         }
@@ -191,7 +192,7 @@ public class EmployeurEbuServiceImpl extends VulpeculaAbstractService implements
             id = employeur.getId();
         } catch (SQLException e) {
             session.addError(e.getMessage());
-            e.printStackTrace();
+            JadeLogger.error(e, e.getMessage());
         } finally {
             JadeThreadActivator.stopUsingContext(Thread.currentThread());
         }
@@ -209,7 +210,7 @@ public class EmployeurEbuServiceImpl extends VulpeculaAbstractService implements
             return employeur.isEBusiness();
         } catch (SQLException e) {
             session.addError(e.getMessage());
-            e.printStackTrace();
+            JadeLogger.error(e, e.getMessage());
         } finally {
             JadeThreadActivator.stopUsingContext(Thread.currentThread());
         }

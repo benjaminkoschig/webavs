@@ -1,6 +1,7 @@
 package ch.globaz.vulpecula.process.salaires;
 
 import globaz.globall.db.BSession;
+import globaz.jade.log.JadeLogger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -58,8 +59,7 @@ public class ListSalairesAVSExcel extends AbstractListExcel {
         try {
             label = getSession().getApplication().getLabel(codeLabel, getLangueISO());
         } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            JadeLogger.error(e, e.getMessage());
         }
         return label;
     }

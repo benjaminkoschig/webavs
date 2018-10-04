@@ -1,6 +1,7 @@
 package ch.globaz.vulpecula.documents.listesinternes;
 
 import globaz.globall.db.BSession;
+import globaz.jade.log.JadeLogger;
 import java.util.Map;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.util.HSSFColor;
@@ -91,7 +92,7 @@ public class RecapitulatifParConventionParCaisseExcel extends AbstractRecapitula
 
             autosizeAllColumns(getCurrentSheet());
         } catch (RuntimeException e) {
-            e.printStackTrace(); // at least we have a stacktrace...
+            JadeLogger.error(e, e.getMessage()); // at least we have a stacktrace...
             throw e;
         }
     }

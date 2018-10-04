@@ -63,6 +63,7 @@ import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeListUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.log.JadeLogger;
 import globaz.jade.persistence.JadePersistenceManager;
 import globaz.jade.persistence.model.JadeAbstractModel;
 import globaz.jade.persistence.model.JadeAbstractSearchModel;
@@ -565,7 +566,7 @@ public class DecompteSalaireRepositoryJade
                         try {
                             JadePersistenceManager.search(searchModel);
                         } catch (JadePersistenceException ex) {
-                            ex.printStackTrace();
+                            JadeLogger.error(ex, ex.getMessage());
                         }
                         List<JadeAbstractModel> models = Arrays.asList(searchModel.getSearchResults());
                         List<CodeErreurDecompteSalaireComplexModel> codeErreurs = (List<CodeErreurDecompteSalaireComplexModel>) (List<?>) models;

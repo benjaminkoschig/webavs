@@ -15,10 +15,10 @@ import ch.globaz.vulpecula.repositoriesjade.postetravail.converters.EmployeurCon
 public class ControleEmployeurConverter implements
         DomaineConverterJade<ControleEmployeur, ControleEmployeurComplexModel, ControleEmployeurSimpleModel> {
 
-    public static ControleEmployeurConverter INSTANCE = new ControleEmployeurConverter();
+    private static ControleEmployeurConverter instance = new ControleEmployeurConverter();
 
     public static DomaineConverterJade<ControleEmployeur, ControleEmployeurComplexModel, ControleEmployeurSimpleModel> getInstance() {
-        return INSTANCE;
+        return instance;
     }
 
     @Override

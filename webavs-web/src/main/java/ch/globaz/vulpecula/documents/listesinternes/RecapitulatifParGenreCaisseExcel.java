@@ -1,6 +1,7 @@
 package ch.globaz.vulpecula.documents.listesinternes;
 
 import globaz.globall.db.BSession;
+import globaz.jade.log.JadeLogger;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFDataFormat;
@@ -84,8 +85,8 @@ public class RecapitulatifParGenreCaisseExcel extends AbstractRecapitulatifListE
             createCellFormula("SUM(D2:" + joinRowsForCols(3, getRowNum() - 1) + ")", styleTotal);
             createCellFormula("SUM(E2:" + joinRowsForCols(4, getRowNum() - 1) + ")", styleTotal);
         } catch (RuntimeException e) {
-            e.printStackTrace(); // at least we print a stacktrace... it's not that much, but could save your ass in a
-                                 // bad day...
+            JadeLogger.error(e, e.getMessage()); // at least we print a stacktrace... it's not that much, but could save your ass in a
+                                                 // bad day...
             throw e;
         }
     }

@@ -3,6 +3,7 @@ package ch.globaz.vulpecula.ws.services;
 import globaz.globall.db.BSession;
 import globaz.jade.context.JadeThreadActivator;
 import globaz.jade.context.JadeThreadContext;
+import globaz.jade.log.JadeLogger;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +40,7 @@ public class PosteTravailEbuServiceImpl extends VulpeculaAbstractService impleme
             }
         } catch (SQLException e) {
             session.addError(e.getMessage());
-            e.printStackTrace();
+            JadeLogger.error(e, e.getMessage());
         } finally {
             JadeThreadActivator.stopUsingContext(Thread.currentThread());
         }
@@ -72,7 +73,7 @@ public class PosteTravailEbuServiceImpl extends VulpeculaAbstractService impleme
             }
         } catch (SQLException e) {
             session.addError(e.getMessage());
-            e.printStackTrace();
+            JadeLogger.error(e, e.getMessage());
         } finally {
             JadeThreadActivator.stopUsingContext(Thread.currentThread());
         }
@@ -96,7 +97,7 @@ public class PosteTravailEbuServiceImpl extends VulpeculaAbstractService impleme
 
         } catch (SQLException e) {
             session.addError(e.getMessage());
-            e.printStackTrace();
+            JadeLogger.error(e, e.getMessage());
         } finally {
             JadeThreadActivator.stopUsingContext(Thread.currentThread());
         }
@@ -115,7 +116,7 @@ public class PosteTravailEbuServiceImpl extends VulpeculaAbstractService impleme
 
         } catch (SQLException e) {
             session.addError(e.getMessage());
-            e.printStackTrace();
+            JadeLogger.error(e, e.getMessage());
         } finally {
             JadeThreadActivator.stopUsingContext(Thread.currentThread());
         }
