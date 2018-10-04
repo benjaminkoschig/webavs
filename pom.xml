@@ -323,13 +323,13 @@
 			<dependency>
 				<groupId>ch.globaz</groupId>
 				<artifactId>uidwse</artifactId>
-				<version>1.0.1-RC1</version>
+				<version>1.0.1</version>
 			</dependency>
 			
 			<dependency>
 				<groupId>ch.globaz</groupId>
   				<artifactId>wirr-api</artifactId>
-  				<version>1.0.2-RC1</version>
+  				<version>1.0.2</version>
 			</dependency>
 			
 			<dependency>
