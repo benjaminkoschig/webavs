@@ -340,7 +340,7 @@ public class AFControleLppAnnuelProcess extends BProcess {
         docInfo.setDocumentTitle(nomDoc);
         docInfo.setPublishDocument(true);
         docInfo.setArchiveDocument(false);
-        docInfo.setProcessDate(JadeDateUtil.getGlobazDate(getDateCreation()));
+        docInfo.setDocumentDate(getDateCreation());
         docInfo.setDocumentTypeNumber(numInforom);
         this.registerAttachedDocument(docInfo, docPath);
         if (ligne != null) {
@@ -690,7 +690,7 @@ public class AFControleLppAnnuelProcess extends BProcess {
             JadePublishDocumentInfo documentInfo = createDocumentInfo();
             documentInfo.setDocumentType("");
             documentInfo.setDocumentTypeNumber("");
-            documentInfo.setProcessDate(JadeDateUtil.getGlobazDate(getDateCreation()));
+            documentInfo.setDocumentDate(getDateCreation());
             documentInfo.setArchiveDocument(false);
             documentInfo.setPublishDocument(true);
 
