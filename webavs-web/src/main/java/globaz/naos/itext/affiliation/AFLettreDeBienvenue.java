@@ -164,7 +164,29 @@ public class AFLettreDeBienvenue extends FWIDocumentManager {
      */
     @Override
     public void beforeExecuteReport() throws FWIException {
+
         aff = getAff();
+
+        try {
+            AFApplication app = (AFApplication) GlobazServer.getCurrentSystem().getApplication(
+                    AFApplication.DEFAULT_APPLICATION_NAOS);
+
+            if (app.getLettreBienvenueWaitInteractiveValidation()) {
+
+                int sleepDuring = 1000;
+                int numberMaxOfSleep = 5;
+
+                while (numberMaxOfSleep > 0 && JadeStringUtil.isBlankOrZero(aff.getIdTiers())) {
+                    Thread.sleep(sleepDuring);
+                    numberMaxOfSleep = numberMaxOfSleep - 1;
+                    aff = getAff();
+                }
+            }
+
+        } catch (Exception e) {
+            // Nothing to do, C'est le traitement normal qui est exécuté
+        }
+
     }
 
     /*
@@ -297,6 +319,7 @@ public class AFLettreDeBienvenue extends FWIDocumentManager {
      * @return
      */
     public AFAffiliation getAff() {
+
         AFAffiliation affiliation = new AFAffiliation();
         affiliation.setSession(getSession());
         affiliation.setAffiliationId(idAffiliation);

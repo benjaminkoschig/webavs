@@ -12,3 +12,6 @@ UPDATE SCHEMA.FWCOUP SET PCOLUT='AGA ST - Arbeitgeberkontrolle der strukturierte
 UPDATE SCHEMA.FWCOUP SET PCOLUT='Ausdruck BGS Wiederholung' WHERE PCOSID = 6200058 AND PLAIDE = 'D';
 UPDATE SCHEMA.FWCOUP SET PCOLUT='Mahnung BGS Wiederholung' WHERE PCOSID = 6200059 AND PLAIDE = 'D';
 UPDATE SCHEMA.FWCOUP SET PCOLUT='Nicht erhaltene BGS Wiederholung behandeln' WHERE PCOSID = 6200060 AND PLAIDE = 'D';
+
+--K181002_001 Impression de la lettre de bienvenue après validation du serveur interactif
+INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL) VALUES ('naos.lettre.bienvenue.wait.interactive.validation','false');
