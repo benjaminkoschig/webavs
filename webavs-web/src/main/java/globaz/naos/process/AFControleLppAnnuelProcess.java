@@ -227,6 +227,12 @@ public class AFControleLppAnnuelProcess extends BProcess {
 
                 for (Iterator<JadePublishDocument> iter = etapes.getAttachedDocuments().iterator(); iter.hasNext();) {
                     JadePublishDocument document = iter.next();
+                    try {
+                        document.getPublishJobDefinition().getDocumentInfo().setDocumentDate(getDateCreation());
+                    } catch (Exception e) {
+                        String erreur = "A traiter : " + e;
+                    }
+
                     JadeJobInfo attachedJob = JadePublishServerFacade
                             .publishDocument(new JadePublishDocumentMessage(document));
                 }
