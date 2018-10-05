@@ -1,18 +1,12 @@
 package ch.globaz.pegasus.rpc.domaine;
 
 import ch.globaz.common.domaine.Montant;
-import ch.globaz.pegasus.business.constantes.IPCValeursPlanCalcul;
 import ch.globaz.pegasus.business.domaine.pca.Calcul;
 import ch.globaz.pegasus.business.domaine.pca.PcaEtatCalcul;
 import ch.globaz.pegasus.business.exceptions.models.calcul.CalculException;
-import ch.globaz.pegasus.businessimpl.utils.calcul.PegasusCalculUtil;
-import ch.globaz.pegasus.businessimpl.utils.calcul.PeriodePCAccordee.TypeSeparationCC;
 import ch.globaz.pegasus.rpc.businessImpl.converter.Converter2469_101;
 import ch.globaz.pegasus.utils.PCApplicationUtil;
-import globaz.jade.common.JadeException;
-import globaz.jade.context.JadeThread;
 import globaz.jade.log.JadeLogger;
-import globaz.jade.persistence.JadePersistenceManager;
 
 public class RpcCalcul {
 
@@ -21,8 +15,7 @@ public class RpcCalcul {
 
     public RpcCalcul(Calcul calcul, boolean isCoupleSepare) {
         this.calcul = calcul;
-        this.isCoupleSepare =  TypeSeparationCC.CALCUL_SEPARE_MALADIE.getVal().equals(calcul.getTuple()
-                    .getLegendeEnfant(IPCValeursPlanCalcul.CLE_TOTAL_TYPE_SEPARATION_CC));
+        this.isCoupleSepare = isCoupleSepare;
     }
     
     /**
