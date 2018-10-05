@@ -8,6 +8,7 @@ import globaz.globall.util.JACalendarGregorian;
 import globaz.globall.util.JADate;
 import globaz.globall.util.JAException;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.log.JadeLogger;
 import globaz.naos.db.AFAbstractViewBean;
 
 /**
@@ -89,8 +90,9 @@ public class AFControleLppAnnuelViewBean extends AFAbstractViewBean {
             JADate nextWorkingDay = calendar.getNextWorkingDay(dateCreation);
             this.dateCreation = JACalendar.format(nextWorkingDay);
         } catch (JAException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            
+            JadeLogger
+            .info("Erreur dans la date de creation Controle Annuel LPP = ", e);
         }
     }
 }
