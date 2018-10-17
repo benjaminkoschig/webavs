@@ -1,14 +1,5 @@
 package ch.globaz.al.businessimpl.processus.traitementimpl;
 
-import globaz.globall.db.BSessionUtil;
-import globaz.jade.client.util.JadeCodesSystemsUtil;
-import globaz.jade.client.util.JadeDateUtil;
-import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.context.JadeThread;
-import globaz.jade.exception.JadeApplicationException;
-import globaz.jade.exception.JadePersistenceException;
-import globaz.jade.print.server.JadePrintDocumentContainer;
-import globaz.jade.publish.document.JadePublishDocumentInfo;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -24,13 +15,22 @@ import ch.globaz.al.businessimpl.services.ALImplServiceLocator;
 import ch.globaz.al.properties.ALProperties;
 import ch.globaz.common.properties.CommonProperties;
 import ch.globaz.orion.businessimpl.services.af.AfServiceImpl;
+import globaz.globall.db.BSessionUtil;
+import globaz.jade.client.util.JadeCodesSystemsUtil;
+import globaz.jade.client.util.JadeDateUtil;
+import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.context.JadeThread;
+import globaz.jade.exception.JadeApplicationException;
+import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.print.server.JadePrintDocumentContainer;
+import globaz.jade.publish.document.JadePublishDocumentInfo;
 
 /**
- * 
+ *
  * Traitement implémentant la génération des prestations
- * 
+ *
  * @author jts
- * 
+ *
  */
 public class GenerationPrestationsTraitement extends BusinessTraitement {
 
@@ -69,9 +69,11 @@ public class GenerationPrestationsTraitement extends BusinessTraitement {
         String numGeneration = getTraitementPeriodiqueModel().getId();
         String processus = JadeCodesSystemsUtil.getCodeLibelle(getProcessusConteneur().getCSProcessus());
         String traitement = JadeCodesSystemsUtil.getCodeLibelle(getCSTraitement());
+        String csProcessus = getProcessusConteneur().getCSProcessus();
 
         // clôture des récaps AF côté Ebusiness (si les récaps sont remontées dans EBusiness)
-        if (isEbusinessConnected && isManagedRecapAfInEbusiness) {
+        if (isEbusinessConnected && isManagedRecapAfInEbusiness
+                && ALCSProcessus.NAME_PROCESSUS_DIRECT_GENERATION_FICTIVE.equals(csProcessus)) {
             XMLGregorianCalendar anneeMoisRecap = computeAnneeMoisRecapXmlGregorian(periode);
             AfServiceImpl.cloturerRecapAf(BSessionUtil.getSessionFromThreadContext(), anneeMoisRecap);
         }
