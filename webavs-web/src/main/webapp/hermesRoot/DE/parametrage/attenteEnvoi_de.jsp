@@ -462,6 +462,7 @@ function Acatscript()
 						<%-- tpl:put name="zoneMain" --%> 
           <%
 String messageRetour = null;
+boolean champNSSExiste = false;
 for (int i = 0; i < viewBean.getChampsSize() ; i++){
 	globaz.hermes.db.parametrage.HEAttenteEnvoiChampsViewBean line = (globaz.hermes.db.parametrage.HEAttenteEnvoiChampsViewBean) viewBean.getChampsEnvoiAt(i);
 	if(messageRetour==null){
@@ -530,6 +531,7 @@ for (int i = 0; i < viewBean.getChampsSize() ; i++){
 				</tr>		
 			<%
 		}else if(globaz.hermes.db.gestion.HEAnnoncesViewBean.isNumeroAVS(hermesKey)) {
+		    champNSSExiste = true;
 %>
           <tr> 
             <td width="40%">&nbsp;<%=line.getLibelleChamp()%>&nbsp;:&nbsp;</td>
@@ -855,7 +857,7 @@ for (int i = 0; i < viewBean.getChampsSize() ; i++){
 }	
 		  %>
 		<% // Ne concerne que les motifs 11 et 31
-		if(MOTIF_11.equals(motif) || MOTIF_31.equals(motif)){ %>
+		if((MOTIF_11.equals(motif) || MOTIF_31.equals(motif)) && champNSSExiste){ %>
 		<tr>
 			<td width="400">&nbsp;<ct:FWLabel key="HERMES_JSP_GAZ0004_AJOUT_ARC_61"/></td>
 			<td>
