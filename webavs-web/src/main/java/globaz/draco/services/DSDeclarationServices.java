@@ -1,7 +1,9 @@
 package globaz.draco.services;
 
+import globaz.draco.application.DSApplication;
 import globaz.draco.db.inscriptions.DSCountNbrEmployesByCantonForDeclarationManager;
 import globaz.draco.exceptions.DSTechnicalException;
+import globaz.framework.secure.user.FWSecureUserDetail;
 import globaz.globall.db.BSession;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.naos.exceptions.AFTechnicalException;
@@ -17,7 +19,7 @@ public class DSDeclarationServices {
 
     /**
      * Permet le comptage des assurés par canton pour une déclaration donnée
-     * 
+     *
      * @param session Une session
      * @param codeCanton Le code system du canton
      * @param idDeclaration L'id d'une déclarartion de salaire
@@ -52,9 +54,36 @@ public class DSDeclarationServices {
         } catch (Exception e) {
             throw new DSTechnicalException(
                     "Impossible de compter le nombre d'assuré pour la déclaration (idDeclaration = " + idDeclaration
-                            + " / codeCanton = " + codeCanton, e);
+                            + " / codeCanton = " + codeCanton,
+                    e);
         }
 
         return nbrAssures;
+    }
+
+    /**
+     * Retourne l'information contenu dans le complément
+     *
+     */
+    public static String getPersValider(BSession session) {
+        try {
+            // recherche du complément "ValideDS" du user
+            FWSecureUserDetail user = new FWSecureUserDetail();
+
+            user.setSession(session);
+            user.setUser(session.getUserId().toLowerCase());
+            user.setLabel(DSApplication.COMPLEMENT_USER_VALIDATION_DS);
+
+            user.retrieve();
+
+            if (!JadeStringUtil.isEmpty(user.getData())) {
+                return user.getData();
+            } else {
+                return "";
+            }
+
+        } catch (Exception e) {
+            return "";
+        }
     }
 }

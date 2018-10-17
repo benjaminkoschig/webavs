@@ -12,12 +12,12 @@ import globaz.webavs.common.CommonProperties;
 
 /**
  * Application DRACO
- * 
+ *
  * @author Sébastien Chappatte
  */
 public class DSApplication extends globaz.globall.db.BApplication {
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
     public final static String AF = "af";
@@ -50,6 +50,8 @@ public class DSApplication extends globaz.globall.db.BApplication {
     public final static String TEXTE_CATEGORIE_PERSONNEL_DE = "texteCategoriePersonnelDe";
     public final static String TEXTE_CATEGORIE_PERSONNEL_IT = "texteCategoriePersonnelIt";
     public final static String TRI_AGENCE_COMMUNALE = "wantTriAgenceCom";
+    public final static String VALIDATION_SPY_COMPLEMENT = "validationSpyComplement";
+    public final static String COMPLEMENT_USER_VALIDATION_DS = "ValideDS";
     private IFormatData affileFormater = null;
     private BIApplication appMusca = null;
     private BIApplication appNaos = null;
@@ -57,7 +59,7 @@ public class DSApplication extends globaz.globall.db.BApplication {
 
     /**
      * Initialise l'application
-     * 
+     *
      * @exception java.lang.Exception
      *                si l'initialisation de l'application a échouée
      */
@@ -67,7 +69,7 @@ public class DSApplication extends globaz.globall.db.BApplication {
 
     /**
      * Constructeur du type DSApplication.
-     * 
+     *
      * @param id
      *            l'id de l'application
      * @exception java.lang.Exception
@@ -86,7 +88,7 @@ public class DSApplication extends globaz.globall.db.BApplication {
 
     /**
      * Initialise l'application
-     * 
+     *
      * @exception java.lang.Exception
      *                si l'initialisation de l'application a échouée
      */
@@ -135,7 +137,7 @@ public class DSApplication extends globaz.globall.db.BApplication {
 
     /**
      * Method getAffileFormater.
-     * 
+     *
      * @return IFormatData
      * @throws Exception
      */
@@ -157,7 +159,7 @@ public class DSApplication extends globaz.globall.db.BApplication {
 
     /**
      * Insérez la description de la méthode ici. Date de création : (24.02.2003 18:41:34)
-     * 
+     *
      * @return globaz.globall.api.BIApplication
      */
     public BIApplication getApplicationMusca() {
@@ -174,7 +176,7 @@ public class DSApplication extends globaz.globall.db.BApplication {
 
     /**
      * Insérez la description de la méthode ici. Date de création : (24.02.2003 18:41:34)
-     * 
+     *
      * @return globaz.globall.api.BIApplication
      */
     public BIApplication getApplicationNaos() {
@@ -191,7 +193,7 @@ public class DSApplication extends globaz.globall.db.BApplication {
 
     /**
      * Insérez la description de la méthode ici. Date de création : (24.02.2003 18:41:34)
-     * 
+     *
      * @return globaz.globall.api.BIApplication
      */
     public BIApplication getApplicationOsiris() {

@@ -1,5 +1,17 @@
 package globaz.draco.process;
 
+import java.math.BigDecimal;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import com.google.common.base.Splitter;
+import ch.globaz.orion.business.domaine.pucs.DeclarationSalaireProvenance;
+import ch.globaz.orion.business.models.pucs.PucsFile;
+import ch.globaz.orion.service.EBEbusinessInterface;
+import ch.globaz.orion.service.EBPucsFileService;
 import globaz.commons.nss.NSUtil;
 import globaz.draco.application.DSApplication;
 import globaz.draco.db.declaration.DSDeclarationListViewBean;
@@ -41,18 +53,6 @@ import globaz.osiris.api.APISection;
 import globaz.osiris.db.comptes.CACompteAnnexe;
 import globaz.osiris.db.comptes.CASectionManager;
 import globaz.pavo.db.inscriptions.CIJournal;
-import java.math.BigDecimal;
-import java.sql.ResultSet;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import ch.globaz.orion.business.domaine.pucs.DeclarationSalaireProvenance;
-import ch.globaz.orion.business.models.pucs.PucsFile;
-import ch.globaz.orion.service.EBEbusinessInterface;
-import ch.globaz.orion.service.EBPucsFileService;
-import com.google.common.base.Splitter;
 
 public class DSProcessValidation extends BProcess implements FWViewBeanInterface {
 
@@ -77,7 +77,7 @@ public class DSProcessValidation extends BProcess implements FWViewBeanInterface
 
     /**
      * Commentaire relatif au constructeur DSProcessValidation.
-     * 
+     *
      * @param parent globaz.framework.process.FWProcess
      */
     public DSProcessValidation(BProcess parent) {
@@ -86,7 +86,7 @@ public class DSProcessValidation extends BProcess implements FWViewBeanInterface
 
     /**
      * Commentaire relatif au constructeur DSProcessValidation.
-     * 
+     *
      * @param session globaz.globall.db.BSession
      */
     public DSProcessValidation(globaz.globall.db.BSession session) {
@@ -343,7 +343,8 @@ public class DSProcessValidation extends BProcess implements FWViewBeanInterface
                 return false;
             }
             if (DSDeclarationViewBean.CS_PRINCIPALE.equals(decl.getTypeDeclaration())) {
-                if ("true".equals(getSession().getApplication().getProperty(AFApplication.PROPERTY_IS_TAUX_PAR_PALIER))) {
+                if ("true"
+                        .equals(getSession().getApplication().getProperty(AFApplication.PROPERTY_IS_TAUX_PAR_PALIER))) {
                     for (int i = 0; i < ligneManager.size(); i++) {
                         DSLigneDeclarationViewBean ligne = (DSLigneDeclarationViewBean) ligneManager.get(i);
                         String annee = "";
@@ -356,9 +357,9 @@ public class DSProcessValidation extends BProcess implements FWViewBeanInterface
                         // Modif. calcul du taux moyen pour report dans NAOS
 
                         if (CodeSystem.GEN_VALEUR_ASS_TAUX_VARIABLE.equals(taux.getGenreValeur())) {
-                            AFCalculAssurance.calculTauxMoyen((BSession) getSessionNaos(getSession()), decl
-                                    .getAffiliation().getAffiliationId(), ligne.getAssuranceId(), ligne
-                                    .getMontantDeclaration(), annee);
+                            AFCalculAssurance.calculTauxMoyen((BSession) getSessionNaos(getSession()),
+                                    decl.getAffiliation().getAffiliationId(), ligne.getAssuranceId(),
+                                    ligne.getMontantDeclaration(), annee);
                         }
 
                     }
@@ -380,8 +381,8 @@ public class DSProcessValidation extends BProcess implements FWViewBeanInterface
 
                     // Gestion LPP
                     DSApplication application = null;
-                    application = (DSApplication) globaz.globall.db.GlobazServer.getCurrentSystem().getApplication(
-                            DSApplication.DEFAULT_APPLICATION_DRACO);
+                    application = (DSApplication) globaz.globall.db.GlobazServer.getCurrentSystem()
+                            .getApplication(DSApplication.DEFAULT_APPLICATION_DRACO);
                     if ((application != null) && application.isGestionLppDansValidationDS()
                             && !DSDeclarationViewBean.CS_LTN.equals(decl.getTypeDeclaration())) {
                         if (!AFAffiliationUtil.hasCaissseLPP(affilie, decl.getAnnee())) {
@@ -473,10 +474,17 @@ public class DSProcessValidation extends BProcess implements FWViewBeanInterface
             /**
              * InfoRom336
              */
+            String valideSpyComplement = getSession().getApplication()
+                    .getProperty(DSApplication.VALIDATION_SPY_COMPLEMENT, "false");
+
             decl.setNotImpressionDecFinalAZero(getNotImpressionDecFinalAZero());
             decl.setEtat(DSDeclarationViewBean.CS_AFACTURER);
             decl.setEnValidation(true);
-            decl.setValidationSpy(getSession().getUserFullName());
+            if (valideSpyComplement.equalsIgnoreCase("true")) {
+                decl.setValidationSpy(DSDeclarationServices.getPersValider(getSession()));
+            } else {
+                decl.setValidationSpy(getSession().getUserFullName());
+            }
             decl.setReferenceFacture(getSession().getUserId());
             decl.setValidationDateSpy(JACalendar.todayJJsMMsAAAA());
             decl.update(getTransaction());
@@ -530,7 +538,7 @@ public class DSProcessValidation extends BProcess implements FWViewBeanInterface
 
     /**
      * Indique si il existe un décompte final(13) en comptabilité
-     * 
+     *
      * @param declaration
      * @param session
      * @return
@@ -562,7 +570,7 @@ public class DSProcessValidation extends BProcess implements FWViewBeanInterface
 
     /**
      * Indique si il existe un décompte LTN(33) en comptabilité
-     * 
+     *
      * @param declaration
      * @param session
      * @return
@@ -594,7 +602,7 @@ public class DSProcessValidation extends BProcess implements FWViewBeanInterface
 
     /**
      * Envoi d'un Email pour les informations conernant la fin du process
-     * 
+     *
      * @see BProcess#getEMailObject()
      * @return java.lang.String
      */
@@ -613,7 +621,7 @@ public class DSProcessValidation extends BProcess implements FWViewBeanInterface
 
     /**
      * Returns the idDeclaration.
-     * 
+     *
      * @return String
      */
     public String getIdDeclaration() {
@@ -671,7 +679,7 @@ public class DSProcessValidation extends BProcess implements FWViewBeanInterface
 
     /**
      * Retourne une requête SQL permettant de récupérer les inscriptions individuelles justifiant un control LPP
-     * 
+     *
      * @return
      */
     private String getSqlChercheEmployeSoumisLpp() {
@@ -696,7 +704,8 @@ public class DSProcessValidation extends BProcess implements FWViewBeanInterface
         // and (jourFin-jourDebut)>90;
 
         StringBuffer sql = new StringBuffer();
-        sql.append("select count(*) from (select E.KBMMON as montant,(tenjof +((kbnmof-1)*30)) as jourFin,(tenjod+((kbnmod-1)*30)) as jourDebut from ");
+        sql.append(
+                "select count(*) from (select E.KBMMON as montant,(tenjof +((kbnmof-1)*30)) as jourFin,(tenjod+((kbnmod-1)*30)) as jourDebut from ");
         sql.append(Jade.getInstance().getDefaultJdbcSchema());
         sql.append(".DSINDP I inner join ");
         sql.append(Jade.getInstance().getDefaultJdbcSchema());
@@ -728,7 +737,7 @@ public class DSProcessValidation extends BProcess implements FWViewBeanInterface
     /**
      * Method jobQueue. Cette méthode définit la nature du traitement s'il s'agit d'un processus qui doit-être lancer de
      * jour en de nuit
-     * 
+     *
      * @return GlobazJobQueue
      */
     @Override
@@ -738,7 +747,7 @@ public class DSProcessValidation extends BProcess implements FWViewBeanInterface
 
     /**
      * Permet de signaler à eBusiness que la validation de la déclaration a été réalisé.
-     * 
+     *
      * @param decl
      * @throws Exception
      */
@@ -781,7 +790,7 @@ public class DSProcessValidation extends BProcess implements FWViewBeanInterface
 
     /**
      * Sets the idDeclaration.
-     * 
+     *
      * @param idDeclaration The idDeclaration to set
      */
     public void setIdDeclaration(String idDeclaration) {
