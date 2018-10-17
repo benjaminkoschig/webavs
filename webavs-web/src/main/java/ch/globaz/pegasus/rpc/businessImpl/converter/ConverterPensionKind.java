@@ -6,6 +6,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ch.globaz.pegasus.business.constantes.donneesfinancieres.IPCApiAvsAi;
+import ch.globaz.pegasus.business.constantes.donneesfinancieres.IPCIJAI;
 import ch.globaz.pegasus.business.constantes.donneesfinancieres.IPCRenteAvsAi;
 
 public class ConverterPensionKind {
@@ -61,8 +62,7 @@ public class ConverterPensionKind {
         // 993 = Sans rente AI
         aMap.put(IPCRenteAvsAi.CS_TYPE_SANS_RENTE_INVALIDITE, 993);
         // 994 = Indemnités journalières
-        // TODO, K141111_003
-
+        aMap.put(IPCIJAI.CS_TYPE_DONNEE_FINANCIERE,994);
         // 999 = Pas de rente
         aMap.put(IPCRenteAvsAi.CS_TYPE_SANS_RENTE, 999);
         returnValueOnCS = Collections.unmodifiableMap(aMap);

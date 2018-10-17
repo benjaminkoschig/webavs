@@ -3,6 +3,8 @@
  */
 package globaz.apg.itext;
 
+import java.awt.Color;
+import com.lowagie.text.DocumentException;
 import globaz.apg.db.prestation.APPrestation;
 import globaz.apg.db.prestation.APPrestationJointLotTiersDroit;
 import globaz.apg.db.prestation.APPrestationManager;
@@ -25,11 +27,10 @@ import globaz.prestation.acor.PRACORConst;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.tools.PRStringUtils;
-import com.lowagie.text.DocumentException;
 
 /**
  * <H1>Description</H1>
- * 
+ *
  * @author bsc
  */
 public class APListePrestations extends FWIAbstractManagerDocumentList {
@@ -38,7 +39,7 @@ public class APListePrestations extends FWIAbstractManagerDocumentList {
     // ------------------------------------------------------------------------------------------------
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
     private String derniereIdPrestation = null;
@@ -80,7 +81,7 @@ public class APListePrestations extends FWIAbstractManagerDocumentList {
 
     /**
      * Crée une nouvelle instance de la classe APListePrestations.
-     * 
+     *
      * @param session
      *            DOCUMENT ME!
      */
@@ -123,9 +124,9 @@ public class APListePrestations extends FWIAbstractManagerDocumentList {
 
         manager.setHasSumMontantNet(true);
 
-        manager.setOrderBy(APPrestationJointLotTiersDroit.FIELDNAME_NOM + " , "
-                + APPrestationJointLotTiersDroit.FIELDNAME_PRENOM + " , " + APPrestation.FIELDNAME_DATEDEBUT + ", "
-                + APPrestation.FIELDNAME_IDPRESTATIONAPG);
+        manager.setOrderBy(
+                APPrestationJointLotTiersDroit.FIELDNAME_NOM + " , " + APPrestationJointLotTiersDroit.FIELDNAME_PRENOM
+                        + " , " + APPrestation.FIELDNAME_DATEDEBUT + ", " + APPrestation.FIELDNAME_IDPRESTATIONAPG);
 
         try {
             if (manager.getCount(getTransaction()) == 0) {
@@ -168,13 +169,12 @@ public class APListePrestations extends FWIAbstractManagerDocumentList {
     /**
      * @param entity
      *            DOCUMENT ME!
-     * 
+     *
      * @throws FWIException
      *             DOCUMENT ME!
      */
     @Override
     protected void addRow(BEntity entity) throws FWIException {
-
         // Traitement de la prestation
         APPrestationJointLotTiersDroitViewBean prestation = (APPrestationJointLotTiersDroitViewBean) entity;
 
@@ -208,28 +208,32 @@ public class APListePrestations extends FWIAbstractManagerDocumentList {
             // IR521 : Ajout du montant des frais de garde au montant brut
             FWCurrency montantBrut = new FWCurrency(prestation.getMontantBrut());
             montantBrut.add(new FWCurrency(prestation.getFraisGarde()));
-            _addCell(montantBrut.toStringFormat());
 
             // calcul de la cotisation
             FWCurrency cotisations = new FWCurrency(prestation.getMontantNet());
             cotisations.sub(montantBrut);
+            _addCell(montantBrut.toStringFormat());
             _addCell(cotisations.toStringFormat());
-
             _addCell(new FWCurrency(prestation.getMontantNet()).toStringFormat());
 
             // mise a jour des totaux
-            totalMontantBrut.add(montantBrut);
-            totalMontantNet.add(prestation.getMontantNet());
-            totalMontantCotisation.add(cotisations);
-
+            if (!prestation.isAnnule()) {
+                // mise a jour des totaux
+                totalMontantBrut.add(montantBrut);
+                totalMontantNet.add(prestation.getMontantNet());
+                totalMontantCotisation.add(cotisations);
+            } else {
+                // Ligne grisée
+                _getDataTableModel().setColorBackGround(new Color(173, 173, 173));
+            }
             try {
                 this._addDataTableRow();
             } catch (DocumentException e) {
                 e.printStackTrace();
             }
 
-            if (((!JadeStringUtil.isEmpty(prestation.getMontantTotalAllocExploitation())) && !(new FWCurrency(
-                    prestation.getMontantTotalAllocExploitation()).isZero()))) {
+            if (((!JadeStringUtil.isEmpty(prestation.getMontantTotalAllocExploitation()))
+                    && !(new FWCurrency(prestation.getMontantTotalAllocExploitation()).isZero()))) {
                 _addCell("");
                 _addCell(getSession().getLabel("JSP_LISTE_PRESTATION_ALLOCATION_EXPLOITATION"));
                 _addCell("");
@@ -240,8 +244,8 @@ public class APListePrestations extends FWIAbstractManagerDocumentList {
                 _addCell("");
                 _addCell("");
 
-                montantTotalAllocationsListe.add(new FWCurrency(prestation.getMontantTotalAllocExploitation())
-                        .toString());
+                montantTotalAllocationsListe
+                        .add(new FWCurrency(prestation.getMontantTotalAllocExploitation()).toString());
 
                 try {
                     this._addDataTableRow();
@@ -251,8 +255,8 @@ public class APListePrestations extends FWIAbstractManagerDocumentList {
 
             }
 
-            if ((!JadeStringUtil.isEmpty(prestation.getFraisGarde()) && !(new FWCurrency(prestation.getFraisGarde())
-                    .isZero()))) {
+            if ((!JadeStringUtil.isEmpty(prestation.getFraisGarde())
+                    && !(new FWCurrency(prestation.getFraisGarde()).isZero()))) {
 
                 _addCell("");
                 _addCell(getSession().getLabel("JSP_LISTE_PRESTATION_FRAIS_DE_GARDE"));
@@ -353,7 +357,7 @@ public class APListePrestations extends FWIAbstractManagerDocumentList {
      */
     /**
      * getter pour l'attribut EMail object
-     * 
+     *
      * @return la valeur courante de l'attribut EMail object
      */
     @Override
@@ -371,7 +375,7 @@ public class APListePrestations extends FWIAbstractManagerDocumentList {
 
     /**
      * getter pour l'attribut for etat
-     * 
+     *
      * @return la valeur courante de l'attribut for etat
      */
     public String getForEtat() {
@@ -396,7 +400,7 @@ public class APListePrestations extends FWIAbstractManagerDocumentList {
 
     /**
      * Méthode qui retourne le libellé court du sexe par rapport au csSexe qui est passé en paramètre
-     * 
+     *
      * @return le libellé court du sexe (H ou F)
      */
     public String getLibelleCourtSexe(String csSexe) {
@@ -413,7 +417,7 @@ public class APListePrestations extends FWIAbstractManagerDocumentList {
 
     /**
      * Méthode qui retourne le libellé de la nationalité par rapport au csNationalité qui est passé en paramètre
-     * 
+     *
      * @return le libellé du pays (retourne une chaîne vide si pays inconnu)
      */
     public String getLibellePays(String csNationalite) {
@@ -444,7 +448,7 @@ public class APListePrestations extends FWIAbstractManagerDocumentList {
 
     /**
      * getter pour l'attribut order by
-     * 
+     *
      * @return la valeur courante de l'attribut order by
      */
     public String getOrderBy() {
@@ -581,7 +585,7 @@ public class APListePrestations extends FWIAbstractManagerDocumentList {
 
     /**
      * Set la jobQueue
-     * 
+     *
      * @return DOCUMENT ME!
      */
     @Override
@@ -603,7 +607,7 @@ public class APListePrestations extends FWIAbstractManagerDocumentList {
 
     /**
      * setter pour l'attribut for etat
-     * 
+     *
      * @param string
      *            une nouvelle valeur pour cet attribut
      */
@@ -645,7 +649,7 @@ public class APListePrestations extends FWIAbstractManagerDocumentList {
 
     /**
      * setter pour l'attribut order by
-     * 
+     *
      * @param string
      *            une nouvelle valeur pour cet attribut
      */
@@ -659,9 +663,9 @@ public class APListePrestations extends FWIAbstractManagerDocumentList {
 
     /**
      * Surcharge.
-     * 
+     *
      * @throws globaz.framework.printing.itext.exception.FWIException
-     * 
+     *
      * @see globaz.framework.printing.itext.dynamique.FWIAbstractManagerDocumentList#summary()
      **/
     @Override

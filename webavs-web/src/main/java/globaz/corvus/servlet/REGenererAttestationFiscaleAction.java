@@ -1,5 +1,15 @@
 package globaz.corvus.servlet;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import globaz.babel.api.ICTDocument;
 import globaz.caisse.helper.CaisseHelperFactory;
 import globaz.corvus.api.basescalcul.IREPrestationAccordee;
@@ -38,6 +48,7 @@ import globaz.framework.controller.FWDispatcher;
 import globaz.framework.controller.FWViewBeanActionFactory;
 import globaz.framework.servlets.FWServlet;
 import globaz.framework.util.FWCurrency;
+import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BTransaction;
 import globaz.globall.http.JSPUtils;
@@ -62,16 +73,6 @@ import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
 import globaz.pyxis.db.tiers.TIAdministrationManager;
 import globaz.pyxis.db.tiers.TIAdministrationViewBean;
 import globaz.pyxis.db.tiers.TITiers;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 /**
  * @author PCA
@@ -99,6 +100,9 @@ public class REGenererAttestationFiscaleAction extends REDefaultProcessAction {
     private PRTiersWrapper tiersAdresse;
     private PRTiersWrapper tiersBeneficiaire;
     private String titre = "";
+    private String idTiers = "";
+    private String idTiersBaseCalcul = "";
+    private String idAdressePaiement;
 
     public REGenererAttestationFiscaleAction(final FWServlet servlet) {
         super(servlet);
@@ -106,7 +110,8 @@ public class REGenererAttestationFiscaleAction extends REDefaultProcessAction {
 
     @Override
     protected void actionAfficher(final HttpSession session, final HttpServletRequest request,
-            final HttpServletResponse response, final FWDispatcher mainDispatcher) throws ServletException, IOException {
+            final HttpServletResponse response, final FWDispatcher mainDispatcher)
+            throws ServletException, IOException {
 
         String destination = getRelativeURL(request, session) + "_de.jsp";
 
@@ -143,7 +148,8 @@ public class REGenererAttestationFiscaleAction extends REDefaultProcessAction {
 
     @Override
     protected void actionExecuter(final HttpSession session, final HttpServletRequest request,
-            final HttpServletResponse response, final FWDispatcher mainDispatcher) throws ServletException, IOException {
+            final HttpServletResponse response, final FWDispatcher mainDispatcher)
+            throws ServletException, IOException {
 
         String isAttestationUnique = request.getParameter("isAttestationUnique");
         String nss = request.getParameter("NSS");
@@ -153,8 +159,6 @@ public class REGenererAttestationFiscaleAction extends REDefaultProcessAction {
         String anneeAttestation = request.getParameter("anneeAttestations");
         String mail = request.getParameter("eMailAddress");
         String dateAttJJMMAAAA = request.getParameter("dateImpressionAttJJMMAAA");
-        String idTiers = "";
-        String idTiersBaseCalcul = "";
 
         if ("false".equals(isAttestationUnique)) {
             super.actionExecuter(session, request, response, mainDispatcher);
@@ -186,14 +190,6 @@ public class REGenererAttestationFiscaleAction extends REDefaultProcessAction {
                     documentHelper.setActif(Boolean.TRUE);
                     documentHelper.setCodeIsoLangue(codeIsoLangue);
 
-                    ICTDocument[] documents = documentHelper.load();
-
-                    if ((documents == null) || (documents.length == 0)) {
-                        throw new Exception(bSession.getLabel("ERREUR_CHARGEMENT_CAT_TEXTE"));
-                    } else {
-                        document = documents[0];
-                    }
-
                     REAttestationFiscaleManager attmgr = new REAttestationFiscaleManager();
                     attmgr.setSession(bSession);
                     attmgr.setForAnnee(anneeAttestation);
@@ -215,7 +211,7 @@ public class REGenererAttestationFiscaleAction extends REDefaultProcessAction {
                         renteAccManager.setLikeNumeroAVS(nss);
                         renteAccManager.setRechercheFamille(true);
                         renteAccManager.setSession(bSession);
-                        renteAccManager.setDateDecesVide(true);
+                        // renteAccManager.setDateDecesVide(true);
                         renteAccManager.setOrderBy(RERenteAccordee.FIELDNAME_ID_TIERS_BASE_CALCUL);
                         renteAccManager.setForEnCoursAtMois("12." + anneeAttestation);
                         renteAccManager.setOrderBy(REPrestationsAccordees.FIELDNAME_CODE_PRESTATION);
@@ -231,6 +227,18 @@ public class REGenererAttestationFiscaleAction extends REDefaultProcessAction {
                             attmgr.setControleDateFinDansAnnee(false);
                             attmgr.find(transaction);
                         }
+                    }
+
+                    // K161215_001 -> recherche de la langue du tiers Bénéficiaire
+                    codeIsoLangue = getCodeLangue(codeIsoLangue, anneeAttestation, transaction, bSession, tierswrap,
+                            attmgr);
+
+                    ICTDocument[] documents = documentHelper.load();
+
+                    if ((documents == null) || (documents.length == 0)) {
+                        throw new Exception(bSession.getLabel("ERREUR_CHARGEMENT_CAT_TEXTE"));
+                    } else {
+                        document = documents[0];
                     }
 
                     for (int i = 0; i < attmgr.size(); i++) {
@@ -287,21 +295,37 @@ public class REGenererAttestationFiscaleAction extends REDefaultProcessAction {
                                 REAttestationFiscaleRenteAccordee ra = (REAttestationFiscaleRenteAccordee) mgr2
                                         .getEntity(j);
 
-                                if (REGenresPrestations.GENRE_10.equals(ra.getCodePrestation())
-                                        || REGenresPrestations.GENRE_20.equals(ra.getCodePrestation())
-                                        || REGenresPrestations.GENRE_50.equals(ra.getCodePrestation())
-                                        || REGenresPrestations.GENRE_70.equals(ra.getCodePrestation())
-                                        || REGenresPrestations.GENRE_72.equals(ra.getCodePrestation())
-                                        || REGenresPrestations.GENRE_13.equals(ra.getCodePrestation())
+                                if (REGenresPrestations.GENRE_13.equals(ra.getCodePrestation())
                                         || REGenresPrestations.GENRE_23.equals(ra.getCodePrestation())) {
-                                    // BZ 4507, je memorise l'adresse de paiement pour le tiers qui a une rente
-                                    // principale et qui n'est pas décédée
                                     if (!att.getNss().equals(ra.getNumeroAvsBenef())) {
                                         if (!JadeStringUtil.isEmpty(att.getDateDeces())) {
                                             idTiersAdresseSiDeces = ra.getIdTiersBeneficiaire();
                                         }
                                     }
                                 }
+                                if (REGenresPrestations.GENRE_13.equals(ra.getCodePrestation())
+                                        || REGenresPrestations.GENRE_14.equals(ra.getCodePrestation())
+                                        || REGenresPrestations.GENRE_15.equals(ra.getCodePrestation())
+                                        || REGenresPrestations.GENRE_16.equals(ra.getCodePrestation())
+                                        || REGenresPrestations.GENRE_23.equals(ra.getCodePrestation())
+                                        || REGenresPrestations.GENRE_24.equals(ra.getCodePrestation())
+                                        || REGenresPrestations.GENRE_25.equals(ra.getCodePrestation())
+                                        || REGenresPrestations.GENRE_26.equals(ra.getCodePrestation())) {
+                                    if (JadeStringUtil.isBlank(idAdressePaiement)) {
+                                        infocompta.setIdInfoCompta(ra.getIdInfoCompta());
+                                        infocompta.retrieve();
+                                        idAdressePaiement = infocompta.getIdTiersAdressePmt();
+                                    } else {
+                                        infocompta.setIdInfoCompta(ra.getIdInfoCompta());
+                                        infocompta.retrieve();
+                                        if (!IsMemeAdressePaiement(idAdressePaiement, ra.getIdTierAdressePmt())) {
+                                            continue;
+                                        }
+
+                                    }
+
+                                }
+
                                 if (REGenresPrestations.GENRE_81.equals(ra.getCodePrestation())
                                         || REGenresPrestations.GENRE_85.equals(ra.getCodePrestation())
                                         || REGenresPrestations.GENRE_89.equals(ra.getCodePrestation())
@@ -332,8 +356,8 @@ public class REGenererAttestationFiscaleAction extends REDefaultProcessAction {
                                     // format mm.aaaa
                                     String dateDernierPmt = REPmtMensuel.getDateDernierPmt(bSession);
                                     JADate df;
-                                    if (PRDateFormater.convertDate_MMxAAAA_to_AAAA(dateDernierPmt).equals(
-                                            anneeAttestation)) {
+                                    if (PRDateFormater.convertDate_MMxAAAA_to_AAAA(dateDernierPmt)
+                                            .equals(anneeAttestation)) {
                                         df = new JADate(dateDernierPmt);
                                         df.setDay(cal.daysInMonth(df.getMonth(), df.getYear()));
                                     } else {
@@ -368,16 +392,20 @@ public class REGenererAttestationFiscaleAction extends REDefaultProcessAction {
 
                                         REPrestationDue pa = (REPrestationDue) prm.get(a);
 
-                                        String dateDebutPrestation = PRDateFormater.convertDate_MMxAAAA_to_AAAA(pa
-                                                .getDateDebutPaiement());
-                                        String dateFinPrestation = PRDateFormater.convertDate_MMxAAAA_to_AAAA(pa
-                                                .getDateFinPaiement());
+                                        String dateDebutPrestation = PRDateFormater
+                                                .convertDate_MMxAAAA_to_AAAA(pa.getDateDebutPaiement());
+                                        String dateFinPrestation = PRDateFormater
+                                                .convertDate_MMxAAAA_to_AAAA(pa.getDateFinPaiement());
 
-                                        if (((cal.compare(dateDebutPrestation, anneeAttestation) == JACalendar.COMPARE_FIRSTLOWER) || (cal
-                                                .compare(dateDebutPrestation, anneeAttestation) == JACalendar.COMPARE_EQUALS))
-                                                && ((cal.compare(dateFinPrestation, anneeAttestation) == JACalendar.COMPARE_FIRSTUPPER)
-                                                        || (cal.compare(dateFinPrestation, anneeAttestation) == JACalendar.COMPARE_EQUALS) || JadeStringUtil
-                                                            .isEmpty(dateFinPrestation))) {
+                                        if (((cal.compare(dateDebutPrestation,
+                                                anneeAttestation) == JACalendar.COMPARE_FIRSTLOWER)
+                                                || (cal.compare(dateDebutPrestation,
+                                                        anneeAttestation) == JACalendar.COMPARE_EQUALS))
+                                                && ((cal.compare(dateFinPrestation,
+                                                        anneeAttestation) == JACalendar.COMPARE_FIRSTUPPER)
+                                                        || (cal.compare(dateFinPrestation,
+                                                                anneeAttestation) == JACalendar.COMPARE_EQUALS)
+                                                        || JadeStringUtil.isEmpty(dateFinPrestation))) {
                                             JADate dateDebut = new JADate("01.01." + anneeAttestation);
 
                                             JADate dateFin;
@@ -408,8 +436,8 @@ public class REGenererAttestationFiscaleAction extends REDefaultProcessAction {
 
                                                 if (cal.compare(dateFin, d) == JACalendar.COMPARE_FIRSTUPPER) {
                                                     dateFin = new JADate(pa.getDateFinPaiement());
-                                                    dateFin.setDay(cal.daysInMonth(dateFin.getMonth(),
-                                                            dateFin.getYear()));
+                                                    dateFin.setDay(
+                                                            cal.daysInMonth(dateFin.getMonth(), dateFin.getYear()));
                                                 }
                                             }
 
@@ -453,8 +481,8 @@ public class REGenererAttestationFiscaleAction extends REDefaultProcessAction {
                                         assure.put(index, infoTiers);
                                         periode.put(index, dd.toStr(".") + " - " + df.toStr("."));
                                         this.montant.put(index, montantAfficher.toStringFormat());
-                                        libelleRente.put(index, documentDecision.getTextes(2).getTexte(11)
-                                                .getDescription());
+                                        libelleRente.put(index,
+                                                documentDecision.getTextes(2).getTexte(11).getDescription());
 
                                     } else {
                                         String pourRechercheCodeSysteme = ra.getCodePrestation();
@@ -470,8 +498,8 @@ public class REGenererAttestationFiscaleAction extends REDefaultProcessAction {
                                         // langue de l'utilisateur
                                         FWParametersUserCode userCode = new FWParametersUserCode();
                                         userCode.setSession(bSession);
-                                        userCode.setIdCodeSysteme(bSession.getSystemCode("REGENRPRST",
-                                                pourRechercheCodeSysteme));
+                                        userCode.setIdCodeSysteme(
+                                                bSession.getSystemCode("REGENRPRST", pourRechercheCodeSysteme));
 
                                         if (codeIsoLangue.equals("IT")) {
                                             userCode.setIdLangue("I");
@@ -510,20 +538,20 @@ public class REGenererAttestationFiscaleAction extends REDefaultProcessAction {
                                             String designation = "";
 
                                             if (ov.getCsType().equals(IREOrdresVersements.CS_TYPE_TIERS)
-                                                    || ov.getCsType().equals(
-                                                            IREOrdresVersements.CS_TYPE_ASSURANCE_SOCIALE)
-                                                    || ov.getCsType().equals(
-                                                            IREOrdresVersements.CS_TYPE_INTERET_MORATOIRE)
-                                                    || ov.getCsType().equals(
-                                                            IREOrdresVersements.CS_TYPE_DETTE_RENTE_AVANCES)
-                                                    || ov.getCsType().equals(
-                                                            IREOrdresVersements.CS_TYPE_DETTE_RENTE_DECISION)
-                                                    || ov.getCsType().equals(
-                                                            IREOrdresVersements.CS_TYPE_DETTE_RENTE_PRST_BLOQUE)
-                                                    || ov.getCsType().equals(
-                                                            IREOrdresVersements.CS_TYPE_DETTE_RENTE_RESTITUTION)
-                                                    || ov.getCsType().equals(
-                                                            IREOrdresVersements.CS_TYPE_DETTE_RENTE_RETOUR)
+                                                    || ov.getCsType()
+                                                            .equals(IREOrdresVersements.CS_TYPE_ASSURANCE_SOCIALE)
+                                                    || ov.getCsType()
+                                                            .equals(IREOrdresVersements.CS_TYPE_INTERET_MORATOIRE)
+                                                    || ov.getCsType()
+                                                            .equals(IREOrdresVersements.CS_TYPE_DETTE_RENTE_AVANCES)
+                                                    || ov.getCsType()
+                                                            .equals(IREOrdresVersements.CS_TYPE_DETTE_RENTE_DECISION)
+                                                    || ov.getCsType()
+                                                            .equals(IREOrdresVersements.CS_TYPE_DETTE_RENTE_PRST_BLOQUE)
+                                                    || ov.getCsType()
+                                                            .equals(IREOrdresVersements.CS_TYPE_DETTE_RENTE_RESTITUTION)
+                                                    || ov.getCsType()
+                                                            .equals(IREOrdresVersements.CS_TYPE_DETTE_RENTE_RETOUR)
                                                     || ov.getCsType().equals(IREOrdresVersements.CS_TYPE_DETTE)) {
 
                                                 PRTiersWrapper tier;
@@ -546,8 +574,8 @@ public class REGenererAttestationFiscaleAction extends REDefaultProcessAction {
                                                 }
 
                                                 if (ov.getCsType().equals(IREOrdresVersements.CS_TYPE_TIERS)
-                                                        || ov.getCsType().equals(
-                                                                IREOrdresVersements.CS_TYPE_ASSURANCE_SOCIALE)
+                                                        || ov.getCsType()
+                                                                .equals(IREOrdresVersements.CS_TYPE_ASSURANCE_SOCIALE)
                                                         || ov.getCsType().equals(
                                                                 IREOrdresVersements.CS_TYPE_INTERET_MORATOIRE)) {
 
@@ -577,12 +605,13 @@ public class REGenererAttestationFiscaleAction extends REDefaultProcessAction {
                                                         designation = no + " - " + designation;
                                                     }
                                                 }
-                                            } else if (ov.getCsType().equals(IREOrdresVersements.CS_TYPE_IMPOT_SOURCE)) {
+                                            } else if (ov.getCsType()
+                                                    .equals(IREOrdresVersements.CS_TYPE_IMPOT_SOURCE)) {
 
                                                 designation = document.getTextes(8).getTexte(1).getDescription();
 
-                                            } else if (ov.getCsType().equals(
-                                                    IREOrdresVersements.CS_TYPE_BENEFICIAIRE_PRINCIPAL)) {
+                                            } else if (ov.getCsType()
+                                                    .equals(IREOrdresVersements.CS_TYPE_BENEFICIAIRE_PRINCIPAL)) {
                                                 continue;
                                             } else {
                                                 designation = "";
@@ -601,8 +630,8 @@ public class REGenererAttestationFiscaleAction extends REDefaultProcessAction {
                                                     csOv.setIdLangue("F");
                                                 }
                                                 csOv.retrieve();
-                                                OVDesignation.put(ovIndex, "+ " + csOv.getLibelle() + " ("
-                                                        + designation + ")");
+                                                OVDesignation.put(ovIndex,
+                                                        "+ " + csOv.getLibelle() + " (" + designation + ")");
                                             } else {
                                                 OVDesignation.put(ovIndex, "./. " + designation);
                                             }
@@ -616,7 +645,6 @@ public class REGenererAttestationFiscaleAction extends REDefaultProcessAction {
                             }
                         }
                     }
-
                     viewBean.setOVDesignation(OVDesignation);
                     viewBean.setOVMontant(OVMontant);
                     viewBean.setOVType(OVType);
@@ -647,7 +675,8 @@ public class REGenererAttestationFiscaleAction extends REDefaultProcessAction {
                     if (!attdecismgr.isEmpty()) {
                         for (int i = 0; i < attdecismgr.size(); i++) {
                             REAttestationFiscaleDecision rd = (REAttestationFiscaleDecision) attdecismgr.getEntity(i);
-                            JADate jDd = new JADate(PRDateFormater.convertDate_AAAAMM_to_MMAAAA(rd.getDateDebutDroit()));
+                            JADate jDd = new JADate(
+                                    PRDateFormater.convertDate_AAAAMM_to_MMAAAA(rd.getDateDebutDroit()));
                             JADate jDf = new JADate(PRDateFormater.convertDate_AAAAMM_to_MMAAAA(rd.getDateFinDroit()));
                             JACalendar cal = new JACalendarGregorian();
                             int cDd = cal.compare(Integer.toString(jDd.getYear()), anneeAttestation);
@@ -655,7 +684,9 @@ public class REGenererAttestationFiscaleAction extends REDefaultProcessAction {
                             // BZ4974 Modification du if ci-dessous, je ne contrôle que l'année mais plus le mois car,
                             // si date de fin api dans l'année, je dois afficher le texte pour l'api
                             if (JadeStringUtil.isBlankOrZero(rd.getDateFinDroit())
-                                    || (((cDd == JACalendar.COMPARE_EQUALS) || (cDd == JACalendar.COMPARE_FIRSTLOWER)) && ((cDf == JACalendar.COMPARE_EQUALS) || (cDf == JACalendar.COMPARE_FIRSTUPPER)))) {
+                                    || (((cDd == JACalendar.COMPARE_EQUALS) || (cDd == JACalendar.COMPARE_FIRSTLOWER))
+                                            && ((cDf == JACalendar.COMPARE_EQUALS)
+                                                    || (cDf == JACalendar.COMPARE_FIRSTUPPER)))) {
                                 if (REGenresPrestations.GENRE_81.equals(rd.getCodePrestation())
                                         || REGenresPrestations.GENRE_85.equals(rd.getCodePrestation())
                                         || REGenresPrestations.GENRE_89.equals(rd.getCodePrestation())
@@ -683,35 +714,6 @@ public class REGenererAttestationFiscaleAction extends REDefaultProcessAction {
                             }
                         }
                     }
-                    // Chargement de l'idTiers et de l'adresse
-                    // BZ 4507, si la personne pour qui on genere une attestation
-                    // est décédès, je utilise l'idtiers de la personne qui a la rente de
-                    // suirvivant pour autant qu'il y en ai une
-                    if (null != att) {
-                        idTiers = att.getIdTiersBeneficiaire();
-                        idTiersBaseCalcul = att.getIdTiersBaseCalcul();
-                        if (JadeStringUtil.isEmpty(att.getDateDeces())) {
-                            chargerAdresseEtTitre(idTiers, bSession, transaction);
-                        } else {
-                            if (JadeStringUtil.isEmpty(idTiersAdresseSiDeces)) {
-                                chargerAdresseEtTitre(idTiers, bSession, transaction);
-                            } else {
-                                chargerAdresseEtTitre(idTiersAdresseSiDeces, bSession, transaction);
-                            }
-                        }
-                    } else {
-                        ITITiers tiersTitre = (ITITiers) bSession.getAPIFor(ITITiers.class);
-                        Hashtable<String, String> params = new Hashtable<String, String>();
-                        params.put(ITITiers.FIND_FOR_IDTIERS, tierswrap.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS));
-                        ITITiers[] t = tiersTitre.findTiers(params);
-                        if ((t != null) && (t.length > 0)) {
-                            tiersTitre = t[0];
-                        }
-                        idTiers = tiersTitre.getIdTiers();
-                        idTiersBaseCalcul = idTiers;
-                        chargerAdresseEtTitre(idTiers, bSession, transaction);
-
-                    }
 
                     viewBean.setIdTiers(idTiers);
                     viewBean.setIdTiersBaseCalcul(idTiersBaseCalcul);
@@ -728,8 +730,8 @@ public class REGenererAttestationFiscaleAction extends REDefaultProcessAction {
                     viewBean.setDateImpressionAttJJMMAAA(dateAttJJMMAAAA);
                     viewBean.setCodeIsoLangue(codeIsoLangue);
                     viewBean.setPara1(document.getTextes(2).getTexte(1).getDescription());
-                    viewBean.setSalutation(PRStringUtils.replaceString(document.getTextes(5).getTexte(1)
-                            .getDescription(), "{TitreSalutation}", titre));
+                    viewBean.setSalutation(PRStringUtils.replaceString(
+                            document.getTextes(5).getTexte(1).getDescription(), "{TitreSalutation}", titre));
                     viewBean.setAssure(document.getTextes(3).getTexte(1).getDescription());
                     viewBean.setPeriode(document.getTextes(3).getTexte(2).getDescription());
                     viewBean.setMontant(document.getTextes(3).getTexte(3).getDescription());
@@ -750,6 +752,95 @@ public class REGenererAttestationFiscaleAction extends REDefaultProcessAction {
 
             servlet.getServletContext().getRequestDispatcher(destination).forward(request, response);
         }
+
+    }
+
+    private String getCodeLangue(String codeIsoLangue, String anneeAttestation, BTransaction transaction,
+            BSession bSession, PRTiersWrapper tierswrap, REAttestationFiscaleManager attmgr) throws Exception {
+        String newCodeIsoLangue = codeIsoLangue;
+        if (attmgr.getSize() > 0) {
+            att = (REAttestationFiscale) attmgr.getEntity(0);
+
+            REAttestationFiscaleRenteAccordeeManager mgr2 = new REAttestationFiscaleRenteAccordeeManager();
+            mgr2.setSession(bSession);
+
+            if (att.getNss().length() > 14) {
+                mgr2.setLikeNumeroAVSNNSS("true");
+            } else {
+                mgr2.setLikeNumeroAVSNNSS("false");
+            }
+
+            mgr2.wantCallMethodBeforeFind(true);
+            mgr2.setLikeNumeroAVS(att.getNss());
+            mgr2.setRechercheFamille(true);
+            // ddDroit <= DATE
+            mgr2.setFromDateDebutDroit("12." + anneeAttestation);
+            // dfDroit >= DATE
+            mgr2.setToDateFinDroit("01." + anneeAttestation);
+            mgr2.setForCsEtatNotIn(
+                    IREPrestationAccordee.CS_ETAT_CALCULE + ", " + IREPrestationAccordee.CS_ETAT_AJOURNE);
+            mgr2.setForOrderBy(REPrestationsAccordees.FIELDNAME_CODE_PRESTATION + ", "
+                    + RERenteAccJoinTblTiersJoinDemandeRente.FIELDNAME_NOM + ", "
+                    + RERenteAccJoinTblTiersJoinDemandeRente.FIELDNAME_PRENOM + ", "
+                    + REPrestationsAccordees.FIELDNAME_DATE_DEBUT_DROIT);
+
+            mgr2.find(transaction, BManager.SIZE_USEDEFAULT);
+            for (int j = 0; j < mgr2.size(); j++) {
+                REAttestationFiscaleRenteAccordee ra = (REAttestationFiscaleRenteAccordee) mgr2.getEntity(j);
+
+                if (REGenresPrestations.GENRE_13.equals(ra.getCodePrestation())
+                        || REGenresPrestations.GENRE_23.equals(ra.getCodePrestation())) {
+                    // BZ 4507, je memorise l'adresse de paiement pour le tiers qui a une rente
+                    // principale et qui n'est pas décédée
+                    if (!att.getNss().equals(ra.getNumeroAvsBenef())) {
+                        if (!JadeStringUtil.isEmpty(att.getDateDeces())) {
+                            idTiersAdresseSiDeces = ra.getIdTiersBeneficiaire();
+                        }
+                    }
+                }
+            }
+
+            // Chargement de l'idTiers et de l'adresse
+            // BZ 4507, si la personne pour qui on génère une attestation
+            // est décédée, j'utilise l'idtiers de la personne qui a la rente de
+            // survivant pour autant qu'il y en ai une
+            if (attmgr.getSize() > 0) {
+                idTiers = att.getIdTiersBeneficiaire();
+                idTiersBaseCalcul = att.getIdTiersBaseCalcul();
+                if (JadeStringUtil.isEmpty(att.getDateDeces())) {
+                    chargerAdresseEtTitre(idTiers, bSession, transaction);
+                } else {
+                    if (JadeStringUtil.isEmpty(idTiersAdresseSiDeces)) {
+                        chargerAdresseEtTitre(idTiers, bSession, transaction);
+                    } else {
+                        chargerAdresseEtTitre(idTiersAdresseSiDeces, bSession, transaction);
+                    }
+                }
+                newCodeIsoLangue = bSession.getCode(tiersBeneficiaire.getProperty(PRTiersWrapper.PROPERTY_LANGUE));
+                newCodeIsoLangue = PRUtil.getISOLangueTiers(newCodeIsoLangue);
+                documentHelper.setCodeIsoLangue(newCodeIsoLangue);
+            }
+        } else {
+            ITITiers tiersTitre = (ITITiers) bSession.getAPIFor(ITITiers.class);
+            Hashtable<String, String> params = new Hashtable<>();
+            params.put(ITITiers.FIND_FOR_IDTIERS, tierswrap.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS));
+            ITITiers[] t = tiersTitre.findTiers(params);
+            if ((t != null) && (t.length > 0)) {
+                tiersTitre = t[0];
+            }
+            idTiers = tiersTitre.getIdTiers();
+            idTiersBaseCalcul = idTiers;
+            chargerAdresseEtTitre(idTiers, bSession, transaction);
+
+        }
+        return newCodeIsoLangue;
+    }
+
+    private boolean IsMemeAdressePaiement(String idAdressePaiement1erRenteSurvivant, String idADressePaiement) {
+        if (idAdressePaiement1erRenteSurvivant.equals(idADressePaiement)) {
+            return true;
+        }
+        return false;
     }
 
     private void chargerAdresseEtTitre(final String idTiers, final BSession session, final BTransaction transaction)
@@ -837,8 +928,8 @@ public class REGenererAttestationFiscaleAction extends REDefaultProcessAction {
                                 tiersTitre = t[0];
                             }
 
-                            titre = tiersTitre.getFormulePolitesse(tiersAdresse
-                                    .getProperty(PRTiersWrapper.PROPERTY_LANGUE));
+                            titre = tiersTitre
+                                    .getFormulePolitesse(tiersAdresse.getProperty(PRTiersWrapper.PROPERTY_LANGUE));
                             break;
                         }
                     } else {
@@ -879,8 +970,8 @@ public class REGenererAttestationFiscaleAction extends REDefaultProcessAction {
                                 tiersTitre = t[0];
                             }
 
-                            titre = tiersTitre.getFormulePolitesse(tiersAdresse
-                                    .getProperty(PRTiersWrapper.PROPERTY_LANGUE));
+                            titre = tiersTitre
+                                    .getFormulePolitesse(tiersAdresse.getProperty(PRTiersWrapper.PROPERTY_LANGUE));
                             break;
                         }
                     }
@@ -917,8 +1008,8 @@ public class REGenererAttestationFiscaleAction extends REDefaultProcessAction {
 
             TIAdministrationManager tiAdminCaisseMgr = new TIAdministrationManager();
             tiAdminCaisseMgr.setSession(session);
-            tiAdminCaisseMgr.setForCodeAdministration(CaisseHelperFactory.getInstance().getNoCaisseFormatee(
-                    session.getApplication()));
+            tiAdminCaisseMgr.setForCodeAdministration(
+                    CaisseHelperFactory.getInstance().getNoCaisseFormatee(session.getApplication()));
             tiAdminCaisseMgr.setForGenreAdministration(CaisseHelperFactory.CS_CAISSE_COMPENSATION);
             tiAdminCaisseMgr.find();
 

@@ -1,5 +1,9 @@
 package globaz.osiris.db.comptes;
 
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Vector;
 import globaz.framework.util.FWLog;
 import globaz.framework.util.FWMemoryLog;
 import globaz.framework.util.FWMessage;
@@ -13,6 +17,7 @@ import globaz.jade.log.JadeLogger;
 import globaz.osiris.api.APICompteAnnexe;
 import globaz.osiris.api.APICompteCourant;
 import globaz.osiris.api.APIOperation;
+import globaz.osiris.api.APISection;
 import globaz.osiris.api.OsirisDef;
 import globaz.osiris.application.CAApplication;
 import globaz.osiris.db.ordres.CAOrdreGroupe;
@@ -20,10 +25,6 @@ import globaz.osiris.external.IntAdressePaiement;
 import globaz.osiris.external.IntJournalCG;
 import globaz.osiris.external.IntRole;
 import globaz.osiris.translation.CACodeSystem;
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Vector;
 
 /**
  * Date de création : (18.01.2002 08:44:22)
@@ -31,7 +32,7 @@ import java.util.Vector;
 public class CAOperation extends BEntity implements Serializable, APIOperation {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
     public static final String FIELD_ANNEECOTISATION = "ANNEECOTISATION";
@@ -235,7 +236,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
      * <code>_afterAdd()</code>
      * <p>
      * Ne pas oublier de partager la connexion avec les autres DAB !!! </i>
-     * 
+     *
      * @exception java.lang.Exception
      *                en cas d'erreur fatale
      */
@@ -312,7 +313,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
      * <code>_afterUpdate()</code>
      * <p>
      * Ne pas oublier de partager la connexion avec les autres DAB !!! </i>
-     * 
+     *
      * @exception java.lang.Exception
      *                en cas d'erreur fatale
      */
@@ -327,7 +328,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
      * <p>
      * Cette méthode doit être surchargée pour renvoyer <code>false</code> si les entités ont comme cible la même table
      * (dans ce cas, l'entité parente est certainement une classe abstraite...)
-     * 
+     *
      * @return <code>true</code> si l'implémentation des héritages est gérée automatiquement, <code>false</code> sinon
      */
     @Override
@@ -344,7 +345,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.db.BEntity#_beforeAdd(globaz.globall.db.BTransaction)
      */
     @Override
@@ -372,7 +373,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.db.BEntity#_beforeDelete(globaz.globall.db.BTransaction)
      */
     @Override
@@ -398,7 +399,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.db.BEntity#_beforeUpdate(globaz.globall.db.BTransaction)
      */
     @Override
@@ -442,7 +443,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
 
     /**
      * L'extourne sur une opération n'est pas possible. On renvoit une exception.
-     * 
+     *
      * @param transaction
      * @param text
      * @return
@@ -479,7 +480,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
     /**
      * Suppression du log <br />
      * Date de création : (22.11.2002 16:24:48)
-     * 
+     *
      * @param transaction
      *            globaz.globall.db.BTransaction la transaction
      */
@@ -894,16 +895,19 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
                 }
             }
         }
-
+        if ((getSection() != null) && APISection.ID_TYPE_SECTION_BULLETIN_NEUTRE.equals(getSection().getIdTypeSection())
+                && APISection.STATUTBN_ANNULE.equals(getSection().getIdModeCompensation())) {
+            getMemoryLog().logMessage("7405", null, FWMessage.ERREUR, this.getClass().getName());
+        }
         // Vérifier la date
         if (JadeStringUtil.isBlank(getDate())) {
             getMemoryLog().logMessage("5107", null, FWMessage.ERREUR, this.getClass().getName());
         } else {
             try {
-                globaz.globall.db.BSessionUtil
-                        .checkDateGregorian(((globaz.globall.db.BApplication) globaz.globall.db.GlobazServer
-                                .getCurrentSystem().getApplication(OsirisDef.DEFAULT_APPLICATION_OSIRIS))
-                                .getAnonymousSession(), getDate());
+                globaz.globall.db.BSessionUtil.checkDateGregorian(
+                        ((globaz.globall.db.BApplication) globaz.globall.db.GlobazServer.getCurrentSystem()
+                                .getApplication(OsirisDef.DEFAULT_APPLICATION_OSIRIS)).getAnonymousSession(),
+                        getDate());
             } catch (Exception e) {
                 getMemoryLog().logMessage("5108", getDate(), FWMessage.ERREUR, this.getClass().getName());
             }
@@ -1179,7 +1183,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
 
     /**
      * Validation complète si saisie à l'écran ou si accepter erreur = false
-     * 
+     *
      * @param statement
      */
     private void checkSaisieEcran(globaz.globall.db.BStatement statement) {
@@ -1231,7 +1235,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
 
     /**
      * Supprimer les groupements
-     * 
+     *
      * @param transaction
      * @throws Exception
      */
@@ -1252,7 +1256,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
 
     /**
      * Supprimer les éventuelles liaisons
-     * 
+     *
      * @param transaction
      * @throws Exception
      */
@@ -1368,7 +1372,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
     /**
      * Dupliquer les valeurs de l'opération passée en paramètres <br />
      * Date de création : (13.02.2002 10:37:01)
-     * 
+     *
      * @param oper
      *            globaz.osiris.db.comptes.CAOperation
      */
@@ -1460,7 +1464,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
 
     /**
      * Date de création : (04.03.2002 14:50:42)
-     * 
+     *
      * @return globaz.osiris.db.comptes.CAGroupementOperationManager
      */
     public CAGroupementOperationManager findAllGroupementOperations(BTransaction transaction) {
@@ -1484,7 +1488,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
 
     /**
      * Récupères tous les groupements dans lesquels l'opération est mère
-     * 
+     *
      * @param transaction
      *            la transaction
      * @return CAGroupementManager le manager sur les groupements
@@ -1501,7 +1505,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
 
     /**
      * Récupère le groupement associé à l'opération. Retourne null s'il n'y a pas de groupement.
-     * 
+     *
      * @param transaction
      *            la transaction
      * @param typeGroupement
@@ -1527,7 +1531,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
 
     /**
      * Méthode redéfinie dans CAOperationOrdreVersement et CAOperationOrdreRecouvrement
-     * 
+     *
      * @return null
      */
     public IntAdressePaiement getAdressePaiement() throws Exception {
@@ -1558,7 +1562,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.osiris.api.APIOperation#getCodeMaster()
      */
     @Override
@@ -1568,7 +1572,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
 
     /**
      * Date de création : (30.01.2002 07:44:40)
-     * 
+     *
      * @return globaz.osiris.db.comptes.CARubrique
      */
     public CARubrique getCompte() {
@@ -1589,7 +1593,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
 
     /**
      * Date de création : (18.01.2002 10:59:42)
-     * 
+     *
      * @return globaz.osiris.db.comptes.CACompteAnnexe
      */
     public CACompteAnnexe getCompteAnnexe() {
@@ -1611,7 +1615,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
 
     /**
      * Date de création : (18.01.2002 11:02:00)
-     * 
+     *
      * @return globaz.osiris.db.comptes.CACompteCourant
      */
     public CACompteCourant getCompteCourant() {
@@ -1636,7 +1640,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.osiris.api.APIOperation#getCsEtat()
      */
     @Override
@@ -1651,7 +1655,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.osiris.api.APIOperation#getCsEtats()
      */
     @Override
@@ -1682,7 +1686,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.osiris.api.APIOperation#getDate()
      */
     @Override
@@ -1693,7 +1697,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
 
     /**
      * Date de création : (11.03.2002 12:57:07)
-     * 
+     *
      * @return String
      */
     public String getDescription() {
@@ -1702,7 +1706,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
 
     /**
      * Date de création : (11.03.2002 12:57:36)
-     * 
+     *
      * @return String
      * @param codeISOLangue
      *            String
@@ -1714,7 +1718,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
     /**
      * Retourne vrai si l'opération a été comptabilisée <br/>
      * Date de création : (25.02.2002 13:28:26)
-     * 
+     *
      * @return Boolean
      */
     public Boolean getEstActive() {
@@ -1728,7 +1732,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
 
     /**
      * Date de création : (25.02.2002 13:35:20)
-     * 
+     *
      * @return Boolean
      */
     public Boolean getEstComptabilise() {
@@ -1742,7 +1746,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.osiris.api.APIOperation#getEtat()
      */
     @Override
@@ -1779,7 +1783,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
 
     /**
      * Retourne le Nom du compte annexe auxiliaire lié.
-     * 
+     *
      * @return
      */
     public String getIdCompteAnnexeAuxDesc() {
@@ -1833,7 +1837,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
 
     /**
      * Date de création : (20.03.2002 13:17:47)
-     * 
+     *
      * @return String
      */
     public String getIdExterneCompteCourantEcran() {
@@ -1851,7 +1855,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
 
     /**
      * Date de création : (20.03.2002 13:07:42)
-     * 
+     *
      * @return String
      */
     public String getIdExterneRoleEcran() {
@@ -1894,7 +1898,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
 
     /**
      * Date de création : (20.03.2002 13:12:54)
-     * 
+     *
      * @return String
      */
     public String getIdExterneSectionEcran() {
@@ -1912,7 +1916,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.osiris.api.APIOperation#getIdJournal()
      */
     @Override
@@ -1944,7 +1948,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
 
     /**
      * Méthode redéfinie dans CAOperationOrdreVersement et CAOperationOrdreRecouvrement
-     * 
+     *
      * @return null
      */
     public String getIdOrdreGroupe() {
@@ -1953,7 +1957,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
 
     /**
      * Date de création : (20.03.2002 13:11:54)
-     * 
+     *
      * @return String
      */
     public String getIdRoleEcran() {
@@ -1971,7 +1975,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.osiris.api.APIOperation#getIdSection()
      */
     @Override
@@ -1993,7 +1997,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.osiris.api.APIOperation#getIdTypeOperation()
      */
     @Override
@@ -2003,7 +2007,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
 
     /**
      * Date de création : (20.03.2002 13:13:46)
-     * 
+     *
      * @return String
      */
     public String getIdTypeSectionEcran() {
@@ -2021,7 +2025,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
 
     /**
      * Date de création : (18.01.2002 10:57:14)
-     * 
+     *
      * @return globaz.osiris.db.comptes.CAJournal
      */
     public CAJournal getJournal() {
@@ -2052,7 +2056,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
 
     /**
      * Date de création : (10.01.2002 16:53:13)
-     * 
+     *
      * @return globaz.osiris.db.utils.FWLog
      */
     public FWLog getLog() {
@@ -2096,7 +2100,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
 
     /**
      * Date de création : (21.01.2002 11:33:16)
-     * 
+     *
      * @return globaz.osiris.db.utils.FWMemoryLog
      */
     public FWMemoryLog getMemoryLog() {
@@ -2109,7 +2113,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
 
     /**
      * Date de création : (03.06.2002 10:02:46)
-     * 
+     *
      * @return String
      */
     public String getMontant() {
@@ -2125,7 +2129,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
 
     /**
      * Date de création : (28.03.2002 10:03:45)
-     * 
+     *
      * @return String
      */
     public String getNomEcran() {
@@ -2134,7 +2138,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
 
     /**
      * Méthode redéfinie dans CAOperationOrdreVersement et CAOperationOrdreRecouvrement
-     * 
+     *
      * @return null
      */
     public String getNumTransaction() {
@@ -2144,7 +2148,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
     /**
      * Instancie un nouvel objet en fonction du type d'opération <br/>
      * Date de création : (31.01.2002 13:23:00)
-     * 
+     *
      * @return globaz.osiris.db.comptes.CAOperation
      * @throws Exception
      */
@@ -2213,7 +2217,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
 
     /**
      * Méthode redéfinie dans CAOperationOrdreVersement et CAOperationOrdreRecouvrement
-     * 
+     *
      * @param idOrdreGroupe
      * @return null
      */
@@ -2241,7 +2245,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
 
     /**
      * Date de création : (20.02.2002 15:37:53)
-     * 
+     *
      * @return Boolean
      */
     public Boolean getQuittanceLogEcran() {
@@ -2250,7 +2254,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
 
     /**
      * Date de création : (25.03.2002 13:44:35)
-     * 
+     *
      * @return String
      */
     public Boolean getRechercheCompteAnnexeEcran() {
@@ -2259,7 +2263,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
 
     /**
      * Date de création : (26.03.2002 16:08:28)
-     * 
+     *
      * @return Boolean
      */
     public Boolean getRechercheCompteCourantEcran() {
@@ -2268,7 +2272,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
 
     /**
      * Date de création : (25.03.2002 13:44:35)
-     * 
+     *
      * @return String
      */
     public Boolean getRechercheSectionEcran() {
@@ -2277,7 +2281,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
 
     /**
      * Date de création : (07.02.2002 10:39:00)
-     * 
+     *
      * @return Boolean
      */
     public Boolean getSaisieEcran() {
@@ -2286,7 +2290,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
 
     /**
      * Date de création : (18.01.2002 11:15:02)
-     * 
+     *
      * @return globaz.osiris.db.comptes.CASection
      */
     public CASection getSection() {
@@ -2321,7 +2325,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
 
     /**
      * Pour savoir si cette opération à généré un report sur la section.
-     * 
+     *
      * @return the taxeEstReporte
      */
     public Boolean getTaxeEstReporte() {
@@ -2344,7 +2348,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
 
     /**
      * Date de création : (18.01.2002 11:04:54)
-     * 
+     *
      * @return globaz.osiris.db.comptes.CATypeOperation
      */
     public CATypeOperation getTypeOperation() {
@@ -2367,7 +2371,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.osiris.api.APIOperation#getUcEtat()
      */
     @Override
@@ -2396,7 +2400,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
 
     /**
      * Date de création : (28.03.2002 10:06:39)
-     * 
+     *
      * @return Vector
      */
     public Vector getValeurUtilisateur() {
@@ -2405,7 +2409,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
 
     /**
      * Indique s'il existe un groupement du type indiqué associé à l'opération
-     * 
+     *
      * @param transaction
      *            la transaction
      * @param typeGroupement
@@ -2428,7 +2432,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
 
     /**
      * Indique si l'opération fait partie d'un groupement (opération fille)
-     * 
+     *
      * @param transaction
      *            la transaction
      * @param typeGroupement
@@ -2453,7 +2457,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
 
     /**
      * Récupérer le compte annexe
-     * 
+     *
      * @return
      */
     private CACompteAnnexe initCompteAnnexe() {
@@ -2491,7 +2495,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
 
     /**
      * Récupérer la section (null autorisé)
-     * 
+     *
      * @return
      */
     private CASection initSection() {
@@ -2512,7 +2516,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
     /**
      * Retourne vrai si la classe est une instance ou une sous classe du type operation fourni <br/>
      * Date de création : (30.01.2002 17:11:14)
-     * 
+     *
      * @return boolean
      * @param typeOperation
      *            String
@@ -2532,7 +2536,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
 
     /**
      * Date de création : (24.04.2002 10:51:55)
-     * 
+     *
      * @return boolean
      */
     public boolean isNewCompteAnnexe() {
@@ -2541,7 +2545,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
 
     /**
      * Date de création : (18.04.2002 10:49:56)
-     * 
+     *
      * @return boolean
      */
     public boolean isNewSection() {
@@ -2565,7 +2569,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
     /**
      * Retourne vrai si l'opération peut être mise à jour <br/>
      * Date de création : (01.02.2002 14:30:40)
-     * 
+     *
      * @return boolean
      */
     public boolean isUpdatable() {
@@ -2579,7 +2583,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
 
     /**
      * Ouverture d'un compte annexe.
-     * 
+     *
      * @param transaction
      * @return
      * @throws Exception
@@ -2638,7 +2642,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
 
     /**
      * Supprimer les retours à la ligne dans un string. Nécessaire pour les motifs de versements et recouvrements.
-     * 
+     *
      * @param line
      * @return
      */
@@ -2687,7 +2691,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.osiris.api.APIOperation#setDate(java.lang.String)
      */
     @Override
@@ -2729,7 +2733,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.osiris.api.APIOperation#setIdCompteAnnexe(java.lang.String)
      */
     @Override
@@ -2776,7 +2780,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
 
     /**
      * Date de création : (20.03.2002 13:17:47)
-     * 
+     *
      * @param newIdExterneCompteCourant
      *            String
      */
@@ -2786,7 +2790,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
 
     /**
      * Date de création : (20.03.2002 13:07:42)
-     * 
+     *
      * @param newIdExterneRoleEcran
      *            String
      */
@@ -2803,7 +2807,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
 
     /**
      * Date de création : (20.03.2002 13:12:54)
-     * 
+     *
      * @param newIdExterneSectionEcran
      *            String
      */
@@ -2854,7 +2858,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
 
     /**
      * Date de création : (20.03.2002 13:11:54)
-     * 
+     *
      * @param newIdRoleEcran
      *            String
      */
@@ -2864,7 +2868,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
 
     /**
      * Date de création : (18.01.2002 11:14:01)
-     * 
+     *
      * @param newIdSection
      *            String
      */
@@ -2899,7 +2903,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.osiris.api.APIOperation#setIdTypeOperation(java.lang.String)
      */
     @Override
@@ -2910,7 +2914,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
 
     /**
      * Date de création : (20.03.2002 13:13:46)
-     * 
+     *
      * @param newIdTypeSectionEcran
      *            String
      */
@@ -2946,7 +2950,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
 
     /**
      * Date de création : (18.02.2002 13:52:56)
-     * 
+     *
      * @param newMemoryLog
      *            globaz.framework.util.FWMemoryLog
      */
@@ -2963,7 +2967,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
 
     /**
      * Date de création : (24.04.2002 10:51:55)
-     * 
+     *
      * @param newNewCompteAnnexe
      *            boolean
      */
@@ -2973,7 +2977,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
 
     /**
      * Date de création : (18.04.2002 10:49:56)
-     * 
+     *
      * @param newNewSection
      *            boolean
      */
@@ -2990,7 +2994,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
 
     /**
      * Date de création : (28.03.2002 10:03:45)
-     * 
+     *
      * @param newNomEcran
      *            String
      */
@@ -3015,7 +3019,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
 
     /**
      * Date de création : (20.02.2002 15:37:53)
-     * 
+     *
      * @param newQuittanceLogEcran
      *            Boolean
      */
@@ -3025,7 +3029,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
 
     /**
      * Date de création : (25.03.2002 10:52:35)
-     * 
+     *
      * @param newRechercheCompteAnnexeEcran
      *            String
      */
@@ -3039,7 +3043,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
 
     /**
      * Date de création : (25.03.2002 10:52:35)
-     * 
+     *
      * @param newRechercheSectionEcran
      *            String
      */
@@ -3053,7 +3057,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
 
     /**
      * Date de création : (25.03.2002 10:52:35)
-     * 
+     *
      * @param newRechercheSectionEcran
      *            String
      */
@@ -3067,7 +3071,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
 
     /**
      * Date de création : (19.02.2002 10:06:50)
-     * 
+     *
      * @param newSaisieEcran
      *            String
      */
@@ -3097,7 +3101,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
 
     /**
      * Pour savoir si cette opération à généré un report sur la section.
-     * 
+     *
      * @param taxeEstReporte
      *            the taxeEstReporte to set
      */
@@ -3107,7 +3111,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
 
     /**
      * Date de création : (28.03.2002 10:06:39)
-     * 
+     *
      * @param newValeurUtilisateur
      *            Vector
      */
@@ -3133,7 +3137,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
 
     /**
      * Mise à jour du compte annexe
-     * 
+     *
      * @param transaction
      * @param compteAnnexe
      * @throws Exception
@@ -3151,7 +3155,7 @@ public class CAOperation extends BEntity implements Serializable, APIOperation {
 
     /**
      * Mise à jour de la section
-     * 
+     *
      * @param transaction
      * @param sec
      * @throws Exception

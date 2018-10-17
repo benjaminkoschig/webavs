@@ -1,5 +1,6 @@
 package globaz.corvus.db.attestationsFiscales;
 
+import ch.globaz.corvus.process.attestationsfiscales.REAgregateurDonneesPourAttestationsFiscales;
 import globaz.corvus.api.basescalcul.IREPrestationAccordee;
 import globaz.corvus.db.decisions.REDecisionEntity;
 import globaz.corvus.db.rentesaccordees.REPrestationsAccordees;
@@ -8,24 +9,24 @@ import globaz.globall.db.BStatement;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.pyxis.db.tiers.ITIPersonneAvsDefTable;
 import globaz.pyxis.db.tiers.ITITiersDefTable;
-import ch.globaz.corvus.process.attestationsfiscales.REAgregateurDonneesPourAttestationsFiscales;
 
 /**
  * Permet la recherche des données nécessaires à la génération des attestations fiscales des rentes. Ces données sont
  * brutes et non utilisables en l'état. Pour réorganiser ces données par attestation (par famille de la situation
  * familiale), utilisez l'utilitaire {@link REAgregateurDonneesPourAttestationsFiscales}
- * 
+ *
  * @author PBA
  */
 public class REDonneesPourAttestationsFiscalesManager extends BManager {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
     private boolean filtrerParDateDeDecision;
     private String forAnnee;
     private String forIdTiersBaseCalcul;
+    private boolean isTiersBeneficiaire;
     private String forNssA;
     private String forNssDe;
 
@@ -35,6 +36,7 @@ public class REDonneesPourAttestationsFiscalesManager extends BManager {
         filtrerParDateDeDecision = true;
         forAnnee = null;
         forIdTiersBaseCalcul = null;
+        isTiersBeneficiaire = false;
         forNssA = null;
         forNssDe = null;
     }
@@ -116,8 +118,15 @@ public class REDonneesPourAttestationsFiscalesManager extends BManager {
             if (sql.length() > 0) {
                 sql.append(" AND ");
             }
+            sql.append(" ( ");
             sql.append(REDonneesPourAttestationsFiscales.ALIAS_TABLE_TIERS_BASE_CALCUL).append(".")
                     .append(ITITiersDefTable.ID_TIERS).append("=").append(forIdTiersBaseCalcul);
+            if (isTiersBeneficiaire) {
+                sql.append(" OR ");
+                sql.append(REDonneesPourAttestationsFiscales.ALIAS_TABLE_TIERS_BENEFICIAIRE).append(".")
+                        .append(ITITiersDefTable.ID_TIERS).append("=").append(forIdTiersBaseCalcul);
+            }
+            sql.append(" ) ");
         }
 
         return sql.toString();
@@ -183,5 +192,13 @@ public class REDonneesPourAttestationsFiscalesManager extends BManager {
 
     public void setForNssDe(String forNssDe) {
         this.forNssDe = forNssDe;
+    }
+
+    public boolean getIsTiersBeneficiaire() {
+        return isTiersBeneficiaire;
+    }
+
+    public void setIsTiersBeneficiaire(boolean isTiersBeneficiaire) {
+        this.isTiersBeneficiaire = isTiersBeneficiaire;
     }
 }

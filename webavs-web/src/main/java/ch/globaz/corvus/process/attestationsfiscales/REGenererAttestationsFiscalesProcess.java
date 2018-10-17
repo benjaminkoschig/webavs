@@ -51,6 +51,7 @@ import ch.globaz.jade.JadeBusinessServiceLocator;
 import ch.globaz.jade.business.models.Langues;
 import ch.globaz.jade.business.models.codesysteme.JadeCodeSysteme;
 import ch.globaz.jade.business.services.codesysteme.JadeCodeSystemeService;
+import ch.globaz.pegasus.business.domaine.pca.PcaEtatCalcul;
 import ch.globaz.prestation.domaine.CodePrestation;
 
 public class REGenererAttestationsFiscalesProcess extends BProcess {
@@ -146,7 +147,16 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
                 } else {
                     uneFamille.setTiersPourCorrespondance(tiersPourCorrespondance);
                 }
-
+                if (REAttestationsFiscalesUtils.isAjournementMontant0(uneFamille, 0)) {
+                    famillesSansLot.add(uneFamille);
+                    continue;
+                }
+                
+                if(REAttestationsFiscalesUtils.hasRenteDateFinAvantDebutUniquement(uneFamille)) {
+                    famillesSansLot.add(uneFamille);
+                    continue;                    
+                }
+                
                 // Les lots 1 à 4 ne contiennent pas de rétroactif
                 if (analyseurLot1.isFamilleDansLot(uneFamille)) {
                     uneFamille.setHasRetroactif(false);
@@ -193,14 +203,14 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
 
     /**
      * Test si la famille ne possède que des rentes de type API
-     * 
+     *
      * @param famille
      * @return <code>true</code> si la famille ne possède que des rentes de type API
      */
     private boolean hasOnlyRenteAPI(REFamillePourAttestationsFiscales famille) {
         for (RERentePourAttestationsFiscales uneRente : famille.getRentesDeLaFamille()) {
-            CodePrestation codePrestation = CodePrestation.getCodePrestation(Integer.parseInt(uneRente
-                    .getCodePrestation()));
+            CodePrestation codePrestation = CodePrestation
+                    .getCodePrestation(Integer.parseInt(uneRente.getCodePrestation()));
             if (codePrestation.isAPI()) {
                 continue;
             } else {
@@ -298,30 +308,30 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
 
         message = new StringBuilder();
 
-        logMailInfo(FWMessageFormat.format(getSession().getLabel("ATTESTATION_FISCALE_STAT_LOT_1"),
-                famillesDuLot1.size())
-                + "\n");
-        logMailInfo(FWMessageFormat.format(getSession().getLabel("ATTESTATION_FISCALE_STAT_LOT_2"),
-                famillesDuLot2.size())
-                + "\n");
-        logMailInfo(FWMessageFormat.format(getSession().getLabel("ATTESTATION_FISCALE_STAT_LOT_3"),
-                famillesDuLot3.size())
-                + "\n");
-        logMailInfo(FWMessageFormat.format(getSession().getLabel("ATTESTATION_FISCALE_STAT_LOT_4"),
-                famillesDuLot4.size())
-                + "\n");
-        logMailInfo(FWMessageFormat.format(getSession().getLabel("ATTESTATION_FISCALE_STAT_LOT_5"),
-                famillesDuLot5.size())
-                + "\n");
-        logMailInfo(FWMessageFormat.format(getSession().getLabel("ATTESTATION_FISCALE_STAT_LOT_6"),
-                famillesDuLot6.size())
-                + "\n");
-        logMailInfo(FWMessageFormat.format(getSession().getLabel("ATTESTATION_FISCALE_STAT_LOT_7"),
-                famillesDuLot7.size())
-                + "\n");
-        logMailInfo(FWMessageFormat.format(getSession().getLabel("ATTESTATION_FISCALE_STAT_LOT_8"),
-                famillesDuLot8.size())
-                + "\n");
+        logMailInfo(
+                FWMessageFormat.format(getSession().getLabel("ATTESTATION_FISCALE_STAT_LOT_1"), famillesDuLot1.size())
+                        + "\n");
+        logMailInfo(
+                FWMessageFormat.format(getSession().getLabel("ATTESTATION_FISCALE_STAT_LOT_2"), famillesDuLot2.size())
+                        + "\n");
+        logMailInfo(
+                FWMessageFormat.format(getSession().getLabel("ATTESTATION_FISCALE_STAT_LOT_3"), famillesDuLot3.size())
+                        + "\n");
+        logMailInfo(
+                FWMessageFormat.format(getSession().getLabel("ATTESTATION_FISCALE_STAT_LOT_4"), famillesDuLot4.size())
+                        + "\n");
+        logMailInfo(
+                FWMessageFormat.format(getSession().getLabel("ATTESTATION_FISCALE_STAT_LOT_5"), famillesDuLot5.size())
+                        + "\n");
+        logMailInfo(
+                FWMessageFormat.format(getSession().getLabel("ATTESTATION_FISCALE_STAT_LOT_6"), famillesDuLot6.size())
+                        + "\n");
+        logMailInfo(
+                FWMessageFormat.format(getSession().getLabel("ATTESTATION_FISCALE_STAT_LOT_7"), famillesDuLot7.size())
+                        + "\n");
+        logMailInfo(
+                FWMessageFormat.format(getSession().getLabel("ATTESTATION_FISCALE_STAT_LOT_8"), famillesDuLot8.size())
+                        + "\n");
 
         logMailInfo(getSession().getLabel("ATTESTATION_FISCALE_STAT_LOT_REMARQUE") + "\n");
 
@@ -333,9 +343,8 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
                 + famillesDuLot5.size() + famillesDuLot6.size() + famillesDuLot7.size() + +famillesDuLot8.size();
         message.append(FWMessageFormat.format(getSession().getLabel("ATTESTATION_FISCALE_TOTAL"), total, annee))
                 .append("\n");
-        message.append(
-                FWMessageFormat.format(getSession().getLabel("ATTESTATION_FISCALE_STAT_SANS_LOT"),
-                        famillesSansLot.size())).append("\n");
+        message.append(FWMessageFormat.format(getSession().getLabel("ATTESTATION_FISCALE_STAT_SANS_LOT"),
+                famillesSansLot.size())).append("\n");
 
         logMailInfo(message.toString());
 
@@ -356,8 +365,8 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
         // system rente invalide
         for (REDonneesPourAttestationsFiscales attestation : attestationInvalides) {
             message = new StringBuilder();
-            message.append("\n").append(
-                    "Le code système [" + attestation.getCodePrestation() + "." + attestation.getFractionRente()
+            message.append("\n")
+                    .append("Le code système [" + attestation.getCodePrestation() + "." + attestation.getFractionRente()
                             + "] ne correspond à aucune rente valide pour le cas : "
                             + attestation.getNumeroAvsTiersBaseCalcul());
 
@@ -368,7 +377,7 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
 
     /**
      * Ajoute une ligne d'info dans le mail
-     * 
+     *
      * @param message
      */
     private void logMailInfo(String message) {
@@ -380,8 +389,8 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
         String idTiersAdressePaiement = null;
 
         for (RERentePourAttestationsFiscales uneRenteDuTiers : unTiersBeneficiaire.getRentes()) {
-            CodePrestation codePrestation = CodePrestation.getCodePrestation(Integer.parseInt(uneRenteDuTiers
-                    .getCodePrestation()));
+            CodePrestation codePrestation = CodePrestation
+                    .getCodePrestation(Integer.parseInt(uneRenteDuTiers.getCodePrestation()));
             if (codePrestation.isAI()) {
                 continue;
             }
@@ -560,7 +569,7 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
         tiers.setDateNaissance(uneDonnee.getDateNaissanceTiersBeneficiaire());
         tiers.setDateDeces(uneDonnee.getDateDecesTiersBeneficiaire());
         tiers.setCsLangue(uneDonnee.getCsLangueTiersBeneficiaire());
-        tiers.setCodeIsoLangue(getCodeIsoFromCsLangue(uneDonnee.getCsLangueTiersBaseCalcul()));
+        tiers.setCodeIsoLangue(getCodeIsoFromCsLangue(uneDonnee.getCsLangueTiersBeneficiaire()));
         return tiers;
     }
 
@@ -608,7 +617,7 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
 
     /**
      * Lance un processus OpenOffice par langue
-     * 
+     *
      * @throws Exception
      */
     private void lancerProcessusOpenOffice() throws Exception {
@@ -623,6 +632,17 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
 
         // On récupère toutes les familles dans un Set
         SortedSet<REFamillePourAttestationsFiscales> toutesLesFamilles = getToutesLesFamillesDansLots();
+        boolean isMontant0 = false;
+        for (REFamillePourAttestationsFiscales famille : toutesLesFamilles) {
+            if (REAttestationsFiscalesUtils.isAjournementMontant0(famille, 0)) {
+                isMontant0 = true;
+            } else {
+                isMontant0 = false;
+            }
+        }
+        if (isMontant0) {
+            throw new RETechnicalException(getSession().getLabel("INFO_AJOURNEMENT"));
+        }
 
         Map<String, SortedSet<REFamillePourAttestationsFiscales>> famillesParLangues = new HashMap<String, SortedSet<REFamillePourAttestationsFiscales>>();
         // On boucle sur toutes les familles et on les tries par la langue du tiers de correspondance
@@ -751,6 +771,9 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
         request.append(" (");
         request.append("    repraccPC.ZTIPRA = pcAccordee.CUIPRA OR (repraccPC.ZTIPRA = pcAccordee.CUIPRC and pcAccordee.CUIPRC<>0)");
         request.append(" )");
+        request.append(" INNER JOIN " + schema + ".PCPLCAL AS pcPlancalcul ON");
+        request.append(" pcAccordee.CUIPCA = pcPlancalcul.CVIPCA ");
+        request.append(" AND pcPlancalcul.CVBPLR = '1' AND pcPlancalcul.CVLEPC in ("+PcaEtatCalcul.OCTROYE.getValue()+", "+PcaEtatCalcul.OCTROY_PARTIEL.getValue()+")"); 
         request.append(" AND pcAccordee.CUTETA = 64029002");
         request.append(" AND repraccPC.ZTTGEN = 52849002");
         request.append(" AND pcAccordee.CUBSUP <> 1");
@@ -770,7 +793,7 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
      * {@link REFamillePourAttestationsFiscales#hasPlusieursAdressePaiement()} sera à <code>true</code> afin qu'une
      * phrase supplémentaire soit imprimée dans l'attestation fiscale de cette famille.
      * </p>
-     * 
+     *
      * @param values
      * @return
      */
@@ -791,8 +814,8 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
                         hasAdressePmtAZero = true;
                     }
 
-                    CodePrestation codePrestation = CodePrestation.getCodePrestation(Integer.parseInt(uneRenteDuTiers
-                            .getCodePrestation()));
+                    CodePrestation codePrestation = CodePrestation
+                            .getCodePrestation(Integer.parseInt(uneRenteDuTiers.getCodePrestation()));
                     if (codePrestation.isAPI()) {
                         continue;
                     }
@@ -813,7 +836,8 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
 
             if (tiersParIdAdressePaiement.size() > 1) {
                 if (isRenteSurvivant) {
-                    for (Set<RETiersPourAttestationsFiscales> tiersPourUneAdresse : tiersParIdAdressePaiement.values()) {
+                    for (Set<RETiersPourAttestationsFiscales> tiersPourUneAdresse : tiersParIdAdressePaiement
+                            .values()) {
                         REFamillePourAttestationsFiscales nouvelleFamille = new REFamillePourAttestationsFiscales();
                         for (RETiersPourAttestationsFiscales unTiers : tiersPourUneAdresse) {
                             if (nouvelleFamille.getTiersRequerant() == null) {
@@ -846,7 +870,7 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
     /**
      * Regroupe les données brutes par tiers requérant (tiers auquel l'attestation fiscale sera envoyée) et ajoute tous
      * les tiers bénéficiaires (et leurs rentes) liés à ce tiers requérant (par ID tiers de la base de calcul)
-     * 
+     *
      * @param donnees
      *            les données brutes chargées par {@link REDonneesPourAttestationsFiscalesManager}
      * @return les données regroupées par tiers requérant

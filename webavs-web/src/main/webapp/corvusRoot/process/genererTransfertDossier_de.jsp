@@ -1,5 +1,7 @@
-<%-- tpl:insert page="/theme/process.jtpl" --%><%@ page language="java" errorPage="/errorPage.jsp" import="globaz.globall.http.*" contentType="text/html;charset=ISO-8859-1" %>
+<%@ page language="java" errorPage="/errorPage.jsp" import="globaz.globall.http.*" contentType="text/html;charset=ISO-8859-1" %>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
+<%@ taglib uri="/corvusRoot/corvustaglib.tld" prefix="re" %>
+<%@page import="globaz.prestation.jsp.taglib.PRDisplayRequerantInfoTag"%>
 <%@ include file="/theme/process/header.jspf" %>
 <%-- tpl:put name="zoneInit" --%>
 <%
@@ -8,6 +10,8 @@
 	idEcran="PRE2015";
 
 	REGenererTransfertDossierViewBean viewBean = (REGenererTransfertDossierViewBean)session.getAttribute("viewBean");
+	
+	BSession controller2 = (BSession)session.getAttribute("objSession");
 
 	userActionValue=globaz.corvus.servlet.IREActions.ACTION_GENERER_TRANSFERT_DOSSIER+ ".executer";
 %>
@@ -20,6 +24,8 @@
 
 <%@page import="globaz.jade.client.util.JadeStringUtil"%>
 <%@page import="globaz.globall.util.JACalendar"%><ct:menuChange displayId="menu" menuId="corvus-menuprincipal"/>
+<%@page import="globaz.globall.db.BSession"%>
+
 <ct:menuChange displayId="options" menuId="corvus-optionsempty" showTab="menu">
 </ct:menuChange>
 
@@ -55,6 +61,12 @@
 	 			errorObj.text = errorObj.text+"<br>"+texteError;
 	 		}
 	 }
+	 
+	 function testIfClear(inc) {
+		 if($('#nss'+inc).val().length == 0) {
+			 $('#infoTiers'+inc).val('');
+		 }
+	 }
 
 	$(document).ready(function() {
 		var $boutonOk = $('#btnOk');
@@ -71,7 +83,27 @@
 			<%-- tpl:put name="zoneTitle" --%><%=viewBean.getTitreEcran()%> <%-- /tpl:put --%>
 <%@ include file="/theme/process/bodyStart2.jspf" %>
 						<%-- tpl:put name="zoneMain" --%>
-						
+						<tr>
+							<td colspan="4">
+									<input	type="hidden" 
+											name="idDemandeRente" 
+											value="<%=viewBean.getIdDemandeRente()%>" />
+									<input	type="hidden" 
+											name="idInfoCompl" 
+											value="<%=viewBean.getIdInfoCompl()%>" />
+									<input	type="hidden" 
+											name="idTiers" 
+											value="<%=viewBean.getIdTiers()%>" />
+									<re:PRDisplayRequerantInfoTag	session="<%=controller2%>"
+																	idTiers="<%=viewBean.getIdTiers()%>"
+																	style="<%=PRDisplayRequerantInfoTag.STYLE_CONDENSED%>" />
+							</td>
+						</tr>
+						<tr>
+							<td colspan="4" height="40">
+								<hr />
+							</td>
+						</tr>
 						<%if(viewBean.isTransfertCaisseCompetenteAndValidate()){ %>
 						<TR>
 							<TD><LABEL for="langueAssure"><ct:FWLabel key="TRANSFERT_DOSSIER_LANQUE_ASSURE"/></LABEL></TD>
@@ -186,6 +218,43 @@
 										<INPUT type="hidden" name="displaySendToGed" value="0">
 						<%} %>
 						<input type="hidden" name="idInfoCompl" value="<%=viewBean.getIdInfoCompl()%>">
+						<TR>
+							<TD><ct:FWLabel key="JSP_NSS_A_TRANSFERER"/></TD>
+							<td>	
+								<table>
+								<%for (int i=0; i < viewBean.getListNss().size(); i++) {
+								    String _nss = viewBean.getListNss().get(i);
+								    String _idTiers = viewBean.getMapNssId().get(_nss).getIdTiers();%>
+									<tr><td>
+										<input id="nss<%=i%>" name="nss<%=i%>" value="<%=_nss%>"
+		                    			data-g-autocomplete="
+		                    							mandatory:false,
+		                    							manager:¦globaz.pyxis.db.tiers.TIPersonneAvsManager¦,
+		                                                method:¦find¦,
+		                                                criterias:¦{
+		                                                    forNumAvsActuelLike: '<ct:FWLabel key="JSP_NSS_NUMERO_AVS"/>' 	
+		                                                }¦,
+		                                                lineFormatter:¦<b>#{nom}</b> #{dateNaissance} #{numAvsActuel}  ¦,
+		                                                modelReturnVariables:¦nom,numAvsActuel,dateNaissance¦,
+		                                                functionReturn:¦
+		                                                    function(element){
+		                                                    	this.value=$(element).attr('numAvsActuel');
+		                                                    	$('#infoTiers<%=i%>').val($(element).attr('nom')+' / '+$(element).attr('dateNaissance'));
+		                                                    }
+		                                                ¦" type="text"
+		                                                onchange="testIfClear(<%=i%>)"/>
+		                                <input type="text" id='infoTiers<%=i%>' name="infoTiers<%=i%>" size="60" readonly class="disabled" 
+		                                	value="<%=viewBean.getMapNssId().get(_nss).getNom()+" "+viewBean.getMapNssId().get(_nss).getPrenom()+" / "+
+		                                	        viewBean.getMapNssId().get(_nss).getDateNaissance()%>"/>
+									</td></tr>
+					           	<%} %>
+					           	</table>
+				           	</td>
+						</TR>
+						
+						<TR>
+							<TD>&nbsp;</TD>
+						</TR>
 						
 <%-- /tpl:put --%>
 <%@ include file="/theme/process/footer.jspf" %>

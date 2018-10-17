@@ -1,5 +1,10 @@
 package globaz.osiris.process.importoperations;
 
+import java.rmi.RemoteException;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import ch.globaz.osiris.business.constantes.CAProperties;
 import globaz.framework.security.FWSecurityLoginException;
 import globaz.globall.api.GlobazSystem;
 import globaz.globall.db.BSession;
@@ -8,6 +13,7 @@ import globaz.globall.db.GlobazServer;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JADate;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.naos.api.IAFAffiliation;
 import globaz.naos.db.adhesion.AFAdhesion;
 import globaz.naos.db.adhesion.AFAdhesionManager;
 import globaz.osiris.api.APICompteAnnexe;
@@ -26,11 +32,12 @@ import globaz.osiris.db.comptes.CARubrique;
 import globaz.osiris.db.comptes.CASection;
 import globaz.osiris.db.comptes.CASectionManager;
 import globaz.osiris.external.IntRole;
-import java.rmi.RemoteException;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
+import globaz.osiris.external.TypeSection;
 
+/**
+ * @author MPE
+ *
+ */
 public class CAImportOperationsUtils {
     private static final String COMPENSATION_FIRST_SECTION_RIGHT_PART = "000";
 
@@ -40,6 +47,8 @@ public class CAImportOperationsUtils {
     private static final String LABEL_COMPTECOURANT_NON_RESOLU = "5039";
     private static final String LABEL_IDENTIFIANT_TIERS_NON_RENSEIGNE = "5045";
     private static final String LABEL_RUBRIQUE_NON_RESOLU = "5016";
+    private static final String LABEL_COMPTE_ANNEXE_NON_AUXILIAIRE = "COMPTE_ANNEXE_NON_AUXILIAIRE";
+    private static final String LABEL_SECTION_AUX_INEXISTANTE = "SECTION_AUX_INEXISTANTE";
 
     private static final String LABEL_SECTION_NON_RECUPEREE = "7231";
 
@@ -58,6 +67,7 @@ public class CAImportOperationsUtils {
     private static final String TAG_DATEINSCRIPTION = "dateinscription";
     private static final String TAG_DATETRAITEMENT = "datetraitement";
     private static final String TAG_ECRITURE = "ecriture";
+    private static final String TAG_ECRITUREARD = "ecritureard";
     private static final String TAG_GENRETRANSACTION = "genretransaction";
     private static final String TAG_IDADRESSEPAIEMENT = "idadressepaiement";
     private static final String TAG_IDCAISSEPROFSECTION = "idcaisseprofsection";
@@ -88,6 +98,22 @@ public class CAImportOperationsUtils {
     private static final String TAG_REFERENCEINTERNE = "referenceinterne";
     private static final String TAG_TAUX = "taux";
     private static final String TAG_TYPEBVR = "typebvr";
+    // Partie auxilaire
+    private static final String TAG_IDSECTIONAUX = "idsectionaux";
+    private static final String TAG_IDEXTERNESECTIONAUX = "idexternesectionaux";
+    private static final String TAG_IDTYPESECTIONAUX = "idtypesectionaux";
+    /**
+     * Correspond à l'ID du compte annexe de la section auxiliaire
+     */
+    private static final String TAG_IDADMINISTRATEURSECTIONAUX = "idadministrateursectionaux";
+    /**
+     * Correspond au numéro d'affilié du compte auxiliaire (idExterneRole)
+     */
+    private static final String TAG_IDEXTERNEADMINISTRATEURSECTIONAUX = "idexterneadministrateursectionaux";
+    /**
+     * Correspond au role du compte annexe de la section auxiliaire (idRole)
+     */
+    private static final String TAG_IDROLEADMINISTRATEURSECTIONAUX = "idroleadministrateursectionaux";
 
     private static final String TAG_TYPEVIREMENT = "typevirement";
 
@@ -101,7 +127,7 @@ public class CAImportOperationsUtils {
 
     /**
      * Créer une section de compensation.
-     * 
+     *
      * @param session
      * @param transaction
      * @param idCompteAnnexe
@@ -131,19 +157,19 @@ public class CAImportOperationsUtils {
 
     /**
      * Retourne l'année de cotisation.
-     * 
+     *
      * @param parent
      * @return
      * @throws Exception
      */
     public static String getAnneeCotisation(Element parent) throws Exception {
-        return CAImportOperationsUtils.getValue(CAImportOperationsUtils.getChildElement(parent,
-                CAImportOperationsUtils.TAG_ANNEECOTISATION));
+        return CAImportOperationsUtils
+                .getValue(CAImportOperationsUtils.getChildElement(parent, CAImportOperationsUtils.TAG_ANNEECOTISATION));
     }
 
     /**
      * Retourne les opérations auxiliaires spécifiées dans le document xml.
-     * 
+     *
      * @param doc
      * @return
      */
@@ -153,7 +179,7 @@ public class CAImportOperationsUtils {
 
     /**
      * Retourne le premier enfant correspondant au tag souhaité.
-     * 
+     *
      * @param parent
      * @param tag
      * @return
@@ -165,15 +191,15 @@ public class CAImportOperationsUtils {
 
     /**
      * Retourne le code debit/credit DB correspondant à la valeur par défaut du doc xml.
-     * 
+     *
      * @param session
      * @param parent
      * @return
      * @throws Exception
      */
     public static String getCodeDebitCredit(BSession session, Element parent) throws Exception {
-        String codeDebitCredit = CAImportOperationsUtils.getValue(CAImportOperationsUtils.getChildElement(parent,
-                CAImportOperationsUtils.TAG_CODEDEBITCREDIT));
+        String codeDebitCredit = CAImportOperationsUtils
+                .getValue(CAImportOperationsUtils.getChildElement(parent, CAImportOperationsUtils.TAG_CODEDEBITCREDIT));
         if (codeDebitCredit.equals(CAImportOperationsUtils.TAG_VALUE_DEBIT)) {
             return APIEcriture.DEBIT;
         } else if (codeDebitCredit.equals(CAImportOperationsUtils.TAG_VALUE_CREDIT)) {
@@ -189,7 +215,7 @@ public class CAImportOperationsUtils {
 
     /**
      * Retourne le code iso de la monnaie de bonification. éxemple : CHF.
-     * 
+     *
      * @param parent
      * @return
      * @throws Exception
@@ -206,14 +232,14 @@ public class CAImportOperationsUtils {
 
     /**
      * Retourne le code iso de la monnaie de dépot. éxemple : CHF.
-     * 
+     *
      * @param parent
      * @return
      * @throws Exception
      */
     public static String getCodeISOMonnaieDepot(Element parent) throws Exception {
-        String codeIso = CAImportOperationsUtils.getValue(CAImportOperationsUtils.getChildElement(parent,
-                CAImportOperationsUtils.TAG_CODEISOMONNAIEDEPOT));
+        String codeIso = CAImportOperationsUtils.getValue(
+                CAImportOperationsUtils.getChildElement(parent, CAImportOperationsUtils.TAG_CODEISOMONNAIEDEPOT));
         if (!JadeStringUtil.isBlank(codeIso)) {
             return codeIso.toUpperCase();
         } else {
@@ -223,7 +249,7 @@ public class CAImportOperationsUtils {
 
     /**
      * Retourne les écritures de compensation spécifiées dans le document xml.
-     * 
+     *
      * @param doc
      * @return
      */
@@ -233,7 +259,7 @@ public class CAImportOperationsUtils {
 
     /**
      * Retourne la date de valeur.
-     * 
+     *
      * @param parent
      * @param journal
      * @return La date spécifié dans le doc xml. Si vide la date de valeur CG du journal est retournée.
@@ -252,43 +278,43 @@ public class CAImportOperationsUtils {
 
     /**
      * Retourne la date de dépot.
-     * 
+     *
      * @param parent
      * @return
      * @throws Exception
      */
     public static String getDateDepot(Element parent) throws Exception {
-        return CAImportOperationsUtils.getValue(CAImportOperationsUtils.getChildElement(parent,
-                CAImportOperationsUtils.TAG_DATEDEPOT));
+        return CAImportOperationsUtils
+                .getValue(CAImportOperationsUtils.getChildElement(parent, CAImportOperationsUtils.TAG_DATEDEPOT));
     }
 
     /**
      * Retourne la date d'inscription.
-     * 
+     *
      * @param parent
      * @return
      * @throws Exception
      */
     public static String getDateInscription(Element parent) throws Exception {
-        return CAImportOperationsUtils.getValue(CAImportOperationsUtils.getChildElement(parent,
-                CAImportOperationsUtils.TAG_DATEINSCRIPTION));
+        return CAImportOperationsUtils
+                .getValue(CAImportOperationsUtils.getChildElement(parent, CAImportOperationsUtils.TAG_DATEINSCRIPTION));
     }
 
     /**
      * Retourne la date de traitement.
-     * 
+     *
      * @param parent
      * @return
      * @throws Exception
      */
     public static String getDateTraitement(Element parent) throws Exception {
-        return CAImportOperationsUtils.getValue(CAImportOperationsUtils.getChildElement(parent,
-                CAImportOperationsUtils.TAG_DATETRAITEMENT));
+        return CAImportOperationsUtils
+                .getValue(CAImportOperationsUtils.getChildElement(parent, CAImportOperationsUtils.TAG_DATETRAITEMENT));
     }
 
     /**
      * Retourne les écritures spécifiées dans le document xml.
-     * 
+     *
      * @param doc
      * @return
      */
@@ -297,56 +323,67 @@ public class CAImportOperationsUtils {
     }
 
     /**
+     * Retourne les écritures ARD spécifiées dans le document xml.
+     *
+     * @param doc
+     * @return
+     */
+    public static NodeList getEcrituresARD(Document doc) {
+        return doc.getDocumentElement().getElementsByTagName(CAImportOperationsUtils.TAG_ECRITUREARD);
+    }
+
+    /**
      * Retourne le premier enfant paiement. Utilisé pour les paiementsBVR.
-     * 
+     *
      * @param e
      * @return
      */
     public static Element getFirstPaiement(Element e) {
-        return (Element) e.getElementsByTagName(CAImportOperationsUtils.TAG_PAIEMENT).item(
-                CAImportOperationsUtils.FIRST_ITEM);
+        return (Element) e.getElementsByTagName(CAImportOperationsUtils.TAG_PAIEMENT)
+                .item(CAImportOperationsUtils.FIRST_ITEM);
     }
 
     /**
      * Retourne le genre de tranasaction du paiement bvr.
-     * 
+     *
      * @param parent
      * @return
      * @throws Exception
      */
     public static String getGenreTransaction(Element parent) throws Exception {
-        return CAImportOperationsUtils.getValue(CAImportOperationsUtils.getChildElement(parent,
-                CAImportOperationsUtils.TAG_GENRETRANSACTION));
+        return CAImportOperationsUtils.getValue(
+                CAImportOperationsUtils.getChildElement(parent, CAImportOperationsUtils.TAG_GENRETRANSACTION));
     }
 
     /**
      * Retourne l'id de l'adresse de paiement de l'ordre de versement.
-     * 
+     *
      * @param parent
      * @return
      * @throws Exception
      */
     public static String getIdAdressePaiement(Element parent) throws Exception {
-        return CAImportOperationsUtils.getValue(CAImportOperationsUtils.getChildElement(parent,
-                CAImportOperationsUtils.TAG_IDADRESSEPAIEMENT));
+        return CAImportOperationsUtils.getValue(
+                CAImportOperationsUtils.getChildElement(parent, CAImportOperationsUtils.TAG_IDADRESSEPAIEMENT));
     }
 
     /**
      * @param session
      * @param idCaisse
      * @param compteAnnexe
+     * @param affiliation
      * @throws RemoteException
      * @throws Exception
      * @throws FWSecurityLoginException
      */
-    private static String getIdCAisseFromAffiliation(BSession session, String idCaisse, CACompteAnnexe compteAnnexe)
-            throws RemoteException, Exception, FWSecurityLoginException {
+    private static String getIdCAisseFromAffiliation(BSession session, String idCaisse, IAFAffiliation affiliation)
+            throws Exception {
         BSession sessionAffiliation = (BSession) GlobazSystem.getApplication("NAOS").newSession();
         session.connectSession(sessionAffiliation);
 
         AFAdhesionManager adhmanager = new AFAdhesionManager();
         adhmanager.setSession(sessionAffiliation);
-        adhmanager.setForAffiliationId(compteAnnexe.getRole().getAffiliation().getAffiliationId());
+        adhmanager.setForAffiliationId(affiliation.getAffiliationId());
         adhmanager.find();
         for (int i = 0; i < adhmanager.size(); i++) {
             AFAdhesion adh = (AFAdhesion) adhmanager.getEntity(i);
@@ -361,13 +398,13 @@ public class CAImportOperationsUtils {
      * Retourne l'identifiant de la Caisse Professionnelle fournie dans l'importation des données. Vérifie que la
      * rubrique liée est renseignée et que si elle gère une caisse professionnelle, la caisse n'est liée qu'à un seul
      * tier.
-     * 
+     *
      * @return id de la caisse professionnelle ou null
      * @throws Exception
      */
     public static String getIdCaisseProfessionnelle(BSession session, Element parent) throws Exception {
-        String idCaisse = CAImportOperationsUtils.getValue(CAImportOperationsUtils.getChildElement(parent,
-                CAImportOperationsUtils.TAG_IDCAISSEPROFSECTION));
+        String idCaisse = CAImportOperationsUtils.getValue(
+                CAImportOperationsUtils.getChildElement(parent, CAImportOperationsUtils.TAG_IDCAISSEPROFSECTION));
         CARubrique rubrique = null;
         try {
             rubrique = CAImportOperationsUtils.getRubrique(session, parent);
@@ -390,8 +427,8 @@ public class CAImportOperationsUtils {
                 if (JadeStringUtil.isIntegerEmpty(CAImportOperationsUtils.getValue(idCompteAnnexe))) {
                     Element idExterneRole = CAImportOperationsUtils.getChildElement(parent,
                             CAImportOperationsUtils.TAG_IDEXTERNEROLE);
-                    Element idRole = CAImportOperationsUtils
-                            .getChildElement(parent, CAImportOperationsUtils.TAG_IDROLE);
+                    Element idRole = CAImportOperationsUtils.getChildElement(parent,
+                            CAImportOperationsUtils.TAG_IDROLE);
 
                     CACompteAnnexe compteAnnexe = new CACompteAnnexe();
                     compteAnnexe.setSession(session);
@@ -400,17 +437,27 @@ public class CAImportOperationsUtils {
                     compteAnnexe.setAlternateKey(APICompteAnnexe.AK_IDEXTERNE);
                     compteAnnexe.retrieve();
 
-                    if ((compteAnnexe.getRole() != null) && (compteAnnexe.getRole().getAffiliation() == null)) {
-                        throw new Exception(session.getLabel("IMPORT_NO_AFFILIATION") + " : "
-                                + compteAnnexe.getIdExterneRole());
-                    }
+                    IAFAffiliation affiliation;
+                    if (compteAnnexe.getRole() != null) {
+                        if ("true".equals(CAProperties.IMPORTATION_NEW_SEARCH_AFFILIATION.getValue())) {
+                            affiliation = compteAnnexe.getRole().getAffiliationByNumAffAndIDRoleAndIDTiers(
+                                    compteAnnexe.getIdExterneRole(), compteAnnexe.getIdRole(),
+                                    compteAnnexe.getIdTiers());
+                        } else {
+                            affiliation = compteAnnexe.getRole().getAffiliation();
+                        }
+                        if (affiliation == null) {
+                            throw new Exception(session.getLabel("IMPORT_NO_AFFILIATION") + " : "
+                                    + compteAnnexe.getIdExterneRole());
+                        }
 
-                    return CAImportOperationsUtils.getIdCAisseFromAffiliation(session, idCaisse, compteAnnexe);
+                        return CAImportOperationsUtils.getIdCAisseFromAffiliation(session, idCaisse, affiliation);
+                    }
                 }
                 return null;
             } catch (Exception e) {
-                throw new Exception(session.getLabel("IMPORT_CAISSE_PROF_NON_DISPO") + " idCaisse : " + idCaisse
-                        + " - " + e.toString());
+                throw new Exception(session.getLabel("IMPORT_CAISSE_PROF_NON_DISPO") + " idCaisse : " + idCaisse + " - "
+                        + e.toString());
             }
         } else {
             if (idCaisse != null) {
@@ -430,7 +477,7 @@ public class CAImportOperationsUtils {
      * Retroune l'idCompteAnnexe. Si l'idCompteAnnexe n'est pas renseigné alors le compte annexe sera résolu grâce à la
      * clef alternée (idExterneRole et idRole).<br/>
      * Si quittancer le compte annexe sera créé si non résolu.
-     * 
+     *
      * @param session
      * @param transaction
      * @param parent
@@ -505,9 +552,65 @@ public class CAImportOperationsUtils {
     }
 
     /**
+     * Retroune l'idCompteAnnexeAux. Si l'idCompteAnnexe n'est pas renseigné alors le compte annexe sera résolu grâce à
+     * la
+     * clef alternée (idExterneRole et idRole).<br/>
+     * Si quittancer le compte annexe sera créé si non résolu.
+     *
+     * @param session
+     * @param transaction
+     * @param parent
+     * @param journal
+     * @param compteAnnexeGenre
+     * @return
+     * @throws Exception
+     */
+    public static String getIdCompteAnnexeAux(BSession session, BTransaction transaction, Element parent,
+            CAJournal journal, String compteAnnexeGenre) throws Exception {
+        Element idCompteAnnexe = CAImportOperationsUtils.getChildElement(parent,
+                CAImportOperationsUtils.TAG_IDADMINISTRATEURSECTIONAUX);
+
+        if (JadeStringUtil.isIntegerEmpty(CAImportOperationsUtils.getValue(idCompteAnnexe))) {
+            Element idExterneRole = CAImportOperationsUtils.getChildElement(parent,
+                    CAImportOperationsUtils.TAG_IDEXTERNEADMINISTRATEURSECTIONAUX);
+            Element elementIdRole = CAImportOperationsUtils.getChildElement(parent,
+                    CAImportOperationsUtils.TAG_IDROLEADMINISTRATEURSECTIONAUX);
+            String idRole = IntRole.ROLE_ADMINISTRATEUR;
+            if (!JadeStringUtil.isIntegerEmpty(CAImportOperationsUtils.getValue(elementIdRole))) {
+                idRole = CAImportOperationsUtils.getValue(elementIdRole);
+            }
+
+            CACompteAnnexe compteAnnexe = new CACompteAnnexe();
+            compteAnnexe.setSession(session);
+
+            compteAnnexe.setIdExterneRole(CAImportOperationsUtils.getValue(idExterneRole));
+            compteAnnexe.setIdRole(idRole);
+            compteAnnexe.setAlternateKey(APICompteAnnexe.AK_IDEXTERNE);
+
+            compteAnnexe.retrieve();
+
+            if (compteAnnexe.isNew()) {
+                throw new Exception(session.getLabel(CAImportOperationsUtils.LABEL_COMPTE_ANNEXE_NON_CHARGE) + " (KEY "
+                        + CAImportOperationsUtils.TAG_IDEXTERNEADMINISTRATEURSECTIONAUX + " : "
+                        + CAImportOperationsUtils.getValue(idExterneRole) + ", "
+                        + CAImportOperationsUtils.TAG_IDROLEADMINISTRATEURSECTIONAUX + " : " + idRole + ")");
+            } else if (!compteAnnexe.getIdGenreCompte().equals(compteAnnexeGenre)) {
+                throw new Exception(session.getLabel(CAImportOperationsUtils.LABEL_COMPTE_ANNEXE_NON_AUXILIAIRE)
+                        + " (KEY " + CAImportOperationsUtils.TAG_IDEXTERNEADMINISTRATEURSECTIONAUX + " : "
+                        + CAImportOperationsUtils.getValue(idExterneRole) + ", "
+                        + CAImportOperationsUtils.TAG_IDROLEADMINISTRATEURSECTIONAUX + " : " + idRole + ")");
+            }
+
+            return compteAnnexe.getIdCompteAnnexe();
+        } else {
+            return CAImportOperationsUtils.getValue(idCompteAnnexe);
+        }
+    }
+
+    /**
      * Retourne l'id du compte courant. Si l'id n'est pas spécifié la clef alternée sera utilisé pour résoudre le compte
      * courant.
-     * 
+     *
      * @param session
      * @param parent
      * @return
@@ -548,20 +651,20 @@ public class CAImportOperationsUtils {
 
     /**
      * Retourne l'id de l'organe d'éxécution de l'ordre de versement.
-     * 
+     *
      * @param parent
      * @return
      * @throws Exception
      */
     public static String getIdOrganeExecution(Element parent) throws Exception {
-        return CAImportOperationsUtils.getValue(CAImportOperationsUtils.getChildElement(parent,
-                CAImportOperationsUtils.TAG_IDORGANEEXECUTION));
+        return CAImportOperationsUtils.getValue(
+                CAImportOperationsUtils.getChildElement(parent, CAImportOperationsUtils.TAG_IDORGANEEXECUTION));
     }
 
     /**
      * Retourne l'id de la rubrique. Si idrubrique n'est pas défini alors la rubrique sera résolu grâce à la clef
      * alternée.
-     * 
+     *
      * @param session
      * @param parent
      * @return
@@ -599,7 +702,7 @@ public class CAImportOperationsUtils {
      * Retourne l'id de la rubrique de compensation.<br/>
      * Si l'id rubrique et l'id externe rubrique ne sont pas spécifiées l'id rubrique par défaut en fonction du type de
      * section sera retourné.
-     * 
+     *
      * @param session
      * @param parent
      * @param section
@@ -641,8 +744,8 @@ public class CAImportOperationsUtils {
                     }
 
                     if (defaultRubrique == null) {
-                        throw new Exception(session.getLabel(CAImportOperationsUtils.LABEL_RUBRIQUE_NON_RESOLU)
-                                + "KEY " + CAImportOperationsUtils.TAG_IDEXTERNERUBRIQUE + " : "
+                        throw new Exception(session.getLabel(CAImportOperationsUtils.LABEL_RUBRIQUE_NON_RESOLU) + "KEY "
+                                + CAImportOperationsUtils.TAG_IDEXTERNERUBRIQUE + " : "
                                 + CAImportOperationsUtils.getValue(idExterneRubrique));
                     }
 
@@ -676,7 +779,7 @@ public class CAImportOperationsUtils {
     /**
      * Retourne l'idSection. Si idSection n'est pas défini alors la section sera résolu grâce au compte annexe.<br/>
      * Si quittancer la section sera créée.
-     * 
+     *
      * @param session
      * @param transaction
      * @param parent
@@ -685,8 +788,8 @@ public class CAImportOperationsUtils {
      * @return
      * @throws Exception
      */
-    public static String getIdSection(BSession session, BTransaction transaction, Element parent,
-            String idCompteAnnexe, CAJournal journal) throws Exception {
+    public static String getIdSection(BSession session, BTransaction transaction, Element parent, String idCompteAnnexe,
+            CAJournal journal) throws Exception {
         Element idSection = CAImportOperationsUtils.getChildElement(parent, CAImportOperationsUtils.TAG_IDSECTION);
 
         if (JadeStringUtil.isIntegerEmpty(CAImportOperationsUtils.getValue(idSection))) {
@@ -725,9 +828,106 @@ public class CAImportOperationsUtils {
     }
 
     /**
+     * Retourne l'idSection. Si idSection n'est pas défini alors la section sera résolu grâce au compte annexe.<br/>
+     * Si quittancer la section sera créée.
+     *
+     * @param session
+     * @param transaction
+     * @param parent
+     * @param idCompteAnnexe
+     * @param journal
+     * @return
+     * @throws Exception
+     */
+    public static String getIdSectionForARD(BSession session, BTransaction transaction, Element parent,
+            String idCompteAnnexe, CAJournal journal) throws Exception {
+        Element idSection = CAImportOperationsUtils.getChildElement(parent, CAImportOperationsUtils.TAG_IDSECTION);
+
+        if (JadeStringUtil.isIntegerEmpty(CAImportOperationsUtils.getValue(idSection))) {
+            Element idExterneSection = CAImportOperationsUtils.getChildElement(parent,
+                    CAImportOperationsUtils.TAG_IDEXTERNESECTION);
+            Element elementIdTypeSection = CAImportOperationsUtils.getChildElement(parent,
+                    CAImportOperationsUtils.TAG_IDTYPESECTION);
+            String idTypeSection = TypeSection.ARD.getValue();
+
+            if (!JadeStringUtil.isIntegerEmpty(CAImportOperationsUtils.getValue(elementIdTypeSection))) {
+                idTypeSection = CAImportOperationsUtils.getValue(elementIdTypeSection);
+            }
+
+            CASection section = CAImportOperationsUtils.getSection(session, idCompteAnnexe,
+                    CAImportOperationsUtils.getValue(idExterneSection), idTypeSection);
+
+            if (section.isNew()) {
+                if (CAImportOperationsUtils.isQuittancer(parent)) {
+                    section.setAlternateKey(null);
+                    section.setIdJournal(journal.getIdJournal());
+                    section.setDateSection(journal.getDateValeurCG());
+                    section.add(transaction);
+                } else {
+                    throw new Exception(session.getLabel(CAImportOperationsUtils.LABEL_SECTION_NON_RECUPEREE)
+                            + " (KEY : " + CAImportOperationsUtils.TAG_IDEXTERNESECTION + " : "
+                            + CAImportOperationsUtils.getValue(idExterneSection) + ", KEY "
+                            + CAImportOperationsUtils.TAG_IDTYPESECTION + " : " + idTypeSection + ", KEY "
+                            + CAImportOperationsUtils.TAG_IDCOMPTEANNEXE + " : " + idCompteAnnexe + ")");
+                }
+            }
+
+            return section.getIdSection();
+        } else {
+            return CAImportOperationsUtils.getValue(idSection);
+        }
+    }
+
+    /**
+     * Retourne l'idSectionAux. Si idSectionAux n'est pas défini alors la section aux sera résolu grâce au compte
+     * annexe.<br/>
+     * Si quittancer la section sera créée.
+     *
+     * @param session
+     * @param transaction
+     * @param parent
+     * @param idCompteAnnexeAux
+     * @param journal
+     * @return
+     * @throws Exception
+     */
+    public static String getIdSectionAux(BSession session, BTransaction transaction, Element parent,
+            String idCompteAnnexeAux, CAJournal journal) throws Exception {
+        Element idSectionAux = CAImportOperationsUtils.getChildElement(parent,
+                CAImportOperationsUtils.TAG_IDSECTIONAUX);
+
+        if (JadeStringUtil.isIntegerEmpty(CAImportOperationsUtils.getValue(idSectionAux))) {
+            Element idExterneSectionAux = CAImportOperationsUtils.getChildElement(parent,
+                    CAImportOperationsUtils.TAG_IDEXTERNESECTIONAUX);
+            Element elementIdTypeSection = CAImportOperationsUtils.getChildElement(parent,
+                    CAImportOperationsUtils.TAG_IDTYPESECTIONAUX);
+            String idTypeSectionAux = TypeSection.ARD.getValue();
+
+            if (!JadeStringUtil.isIntegerEmpty(CAImportOperationsUtils.getValue(elementIdTypeSection))) {
+                idTypeSectionAux = CAImportOperationsUtils.getValue(elementIdTypeSection);
+            }
+
+            CASection sectionAux = CAImportOperationsUtils.getSection(session, idCompteAnnexeAux,
+                    CAImportOperationsUtils.getValue(idExterneSectionAux), idTypeSectionAux);
+
+            if (sectionAux.isNew()) {
+                throw new Exception(session.getLabel(CAImportOperationsUtils.LABEL_SECTION_AUX_INEXISTANTE) + " (KEY : "
+                        + CAImportOperationsUtils.TAG_IDEXTERNESECTIONAUX + " : "
+                        + CAImportOperationsUtils.getValue(idExterneSectionAux) + ", KEY "
+                        + CAImportOperationsUtils.TAG_IDTYPESECTIONAUX + " : " + idTypeSectionAux + ", KEY "
+                        + CAImportOperationsUtils.TAG_IDADMINISTRATEURSECTIONAUX + " : " + idCompteAnnexeAux + ")");
+            }
+
+            return sectionAux.getIdSection();
+        } else {
+            return CAImportOperationsUtils.getValue(idSectionAux);
+        }
+    }
+
+    /**
      * Retourne l'idSection pour la compensation.<br/>
      * Si nécessaire la section sera créée.
-     * 
+     *
      * @param session
      * @param transaction
      * @param parent
@@ -752,8 +952,8 @@ public class CAImportOperationsUtils {
                     idTypeSection);
 
             return section.getIdSection();
-        } else if (!CAImportOperationsUtils.getValue(idTypeSection).equals(
-                APISection.ID_TYPE_SECTION_DECOMPTE_COTISATION)) {
+        } else if (!CAImportOperationsUtils.getValue(idTypeSection)
+                .equals(APISection.ID_TYPE_SECTION_DECOMPTE_COTISATION)) {
             String newIdExterneSection = "" + JACalendar.today().getYear();
             String idTypeSectionValue = CAImportOperationsUtils.getValue(idTypeSection);
 
@@ -784,9 +984,9 @@ public class CAImportOperationsUtils {
                 return CAImportOperationsUtils.createSectionCompensation(session, transaction, idCompteAnnexe, journal,
                         newIdExterneSection, idTypeSectionValue);
             } else {
-                if (CAImportOperationsUtils.getValue(
-                        CAImportOperationsUtils.getChildElement(parent, CAImportOperationsUtils.TAG_IDROLE)).equals(
-                        IntRole.ROLE_AFFILIE)) {
+                if (CAImportOperationsUtils
+                        .getValue(CAImportOperationsUtils.getChildElement(parent, CAImportOperationsUtils.TAG_IDROLE))
+                        .equals(IntRole.ROLE_AFFILIE)) {
                     return ((CASection) manager.getFirstEntity()).getIdSection();
                 } else {
                     int lastIdExterneSection = Integer.parseInt(((CASection) manager.getFirstEntity()).getIdExterne());
@@ -804,67 +1004,67 @@ public class CAImportOperationsUtils {
 
     /**
      * Retourne le libellé de l'opération.
-     * 
+     *
      * @param parent
      * @return
      * @throws Exception
      */
     public static String getLibelle(Element parent) throws Exception {
-        return CAImportOperationsUtils.getValue(CAImportOperationsUtils.getChildElement(parent,
-                CAImportOperationsUtils.TAG_LIBELLE));
+        return CAImportOperationsUtils
+                .getValue(CAImportOperationsUtils.getChildElement(parent, CAImportOperationsUtils.TAG_LIBELLE));
     }
 
     /**
      * Retourne la masse (liée au taux).
-     * 
+     *
      * @param parent
      * @return
      * @throws Exception
      */
     public static String getMasse(Element parent) throws Exception {
-        return CAImportOperationsUtils.getValue(CAImportOperationsUtils.getChildElement(parent,
-                CAImportOperationsUtils.TAG_MASSE));
+        return CAImportOperationsUtils
+                .getValue(CAImportOperationsUtils.getChildElement(parent, CAImportOperationsUtils.TAG_MASSE));
     }
 
     /**
      * Retourne le montant.
-     * 
+     *
      * @param parent
      * @return
      * @throws Exception
      */
     public static String getMontant(Element parent) throws Exception {
-        return CAImportOperationsUtils.getValue(CAImportOperationsUtils.getChildElement(parent,
-                CAImportOperationsUtils.TAG_MONTANT));
+        return CAImportOperationsUtils
+                .getValue(CAImportOperationsUtils.getChildElement(parent, CAImportOperationsUtils.TAG_MONTANT));
     }
 
     /**
      * Retourne le motif du versement.
-     * 
+     *
      * @param parent
      * @return
      * @throws Exception
      */
     public static String getMotif(Element parent) throws Exception {
-        return CAImportOperationsUtils.getValue(CAImportOperationsUtils.getChildElement(parent,
-                CAImportOperationsUtils.TAG_MOTIF));
+        return CAImportOperationsUtils
+                .getValue(CAImportOperationsUtils.getChildElement(parent, CAImportOperationsUtils.TAG_MOTIF));
     }
 
     /**
      * Retourne la nature de l'ordre de versement. Exemple : 209001.
-     * 
+     *
      * @param parent
      * @return
      * @throws Exception
      */
     public static String getNatureOrdre(Element parent) throws Exception {
-        return CAImportOperationsUtils.getValue(CAImportOperationsUtils.getChildElement(parent,
-                CAImportOperationsUtils.TAG_NATUREORDRE));
+        return CAImportOperationsUtils
+                .getValue(CAImportOperationsUtils.getChildElement(parent, CAImportOperationsUtils.TAG_NATUREORDRE));
     }
 
     /**
      * Retourne les ordres de versement spécifiés dans le document xml.
-     * 
+     *
      * @param doc
      * @return
      */
@@ -874,7 +1074,7 @@ public class CAImportOperationsUtils {
 
     /**
      * Retourne les opérations paiement auxiliaires spécifiées dans le document xml.
-     * 
+     *
      * @param doc
      * @return
      */
@@ -884,7 +1084,7 @@ public class CAImportOperationsUtils {
 
     /**
      * Retourne les paiements spécifiés dans le document xml.
-     * 
+     *
      * @param doc
      * @return
      */
@@ -894,7 +1094,7 @@ public class CAImportOperationsUtils {
 
     /**
      * Retourne les paiementsBVR spécifiés dans le document xml.
-     * 
+     *
      * @param doc
      * @return
      */
@@ -904,19 +1104,19 @@ public class CAImportOperationsUtils {
 
     /**
      * Retourne le numéro de pièce comptable.
-     * 
+     *
      * @param parent
      * @return
      * @throws Exception
      */
     public static String getPieceComptable(Element parent) throws Exception {
-        return CAImportOperationsUtils.getValue(CAImportOperationsUtils.getChildElement(parent,
-                CAImportOperationsUtils.TAG_PIECECOMPTABLE));
+        return CAImportOperationsUtils
+                .getValue(CAImportOperationsUtils.getChildElement(parent, CAImportOperationsUtils.TAG_PIECECOMPTABLE));
     }
 
     /**
      * Retourne les recouvrements spécifiés dans le document xml.
-     * 
+     *
      * @param doc
      * @return
      */
@@ -926,31 +1126,31 @@ public class CAImportOperationsUtils {
 
     /**
      * Retourne la référence du virement BVR.
-     * 
+     *
      * @param parent
      * @return
      * @throws Exception
      */
     public static String getReferenceBVR(Element parent) throws Exception {
-        return CAImportOperationsUtils.getValue(CAImportOperationsUtils.getChildElement(parent,
-                CAImportOperationsUtils.TAG_REFERENCEBVR));
+        return CAImportOperationsUtils
+                .getValue(CAImportOperationsUtils.getChildElement(parent, CAImportOperationsUtils.TAG_REFERENCEBVR));
     }
 
     /**
      * Retourne la référence interne.
-     * 
+     *
      * @param parent
      * @return
      * @throws Exception
      */
     public static String getReferenceInterne(Element parent) throws Exception {
-        return CAImportOperationsUtils.getValue(CAImportOperationsUtils.getChildElement(parent,
-                CAImportOperationsUtils.TAG_REFERENCEINTERNE));
+        return CAImportOperationsUtils.getValue(
+                CAImportOperationsUtils.getChildElement(parent, CAImportOperationsUtils.TAG_REFERENCEINTERNE));
     }
 
     /**
      * Retourne la rubrique. Si idrubrique n'est pas défini alors la rubrique sera résolu grâce à la clef alternée.
-     * 
+     *
      * @param session
      * @param parent
      * @return
@@ -987,7 +1187,7 @@ public class CAImportOperationsUtils {
 
     /**
      * Retrouve la section en fonction de l'idCompteAnnexe, de l'idExterne et du type de section.
-     * 
+     *
      * @param session
      * @param idCompteAnnexe
      * @param idExterneSection
@@ -1012,27 +1212,53 @@ public class CAImportOperationsUtils {
     }
 
     /**
+     * Retrouve la section en fonction de l'idCompteAnnexe, de l'idExterne et du type de section.
+     *
+     * @param session
+     * @param idCompteAnnexe
+     * @param idExterneSection
+     * @param idTypeSection
+     * @return
+     * @throws Exception
+     */
+    private static CASection getSection(BSession session, String idCompteAnnexe, String idExterneSection,
+            String idTypeSection) throws Exception {
+        CASection section = new CASection();
+        section.setSession(session);
+
+        section.setIdCompteAnnexe(idCompteAnnexe);
+        section.setIdExterne(idExterneSection);
+        section.setIdTypeSection(idTypeSection);
+
+        section.setAlternateKey(CASection.AK_IDEXTERNE);
+
+        section.retrieve();
+
+        return section;
+    }
+
+    /**
      * Retourne le taux (lié à la masse).
-     * 
+     *
      * @param parent
      * @return
      * @throws Exception
      */
     public static String getTaux(Element parent) throws Exception {
-        return CAImportOperationsUtils.getValue(CAImportOperationsUtils.getChildElement(parent,
-                CAImportOperationsUtils.TAG_TAUX));
+        return CAImportOperationsUtils
+                .getValue(CAImportOperationsUtils.getChildElement(parent, CAImportOperationsUtils.TAG_TAUX));
     }
 
     /**
      * Retourne le type de virement.
-     * 
+     *
      * @param parent
      * @return APIOperationOrdreVersement.BVR ou APIOperationOrdreVersement.VIREMENT sinon null
      * @throws Exception
      */
     public static String getTypeVirement(Element parent) throws Exception {
-        Element typeVirement = CAImportOperationsUtils
-                .getChildElement(parent, CAImportOperationsUtils.TAG_TYPEVIREMENT);
+        Element typeVirement = CAImportOperationsUtils.getChildElement(parent,
+                CAImportOperationsUtils.TAG_TYPEVIREMENT);
 
         if (typeVirement == null) {
             if (CAImportOperationsUtils.getChildElement(parent, CAImportOperationsUtils.TAG_TYPEBVR) != null) {
@@ -1047,7 +1273,7 @@ public class CAImportOperationsUtils {
 
     /**
      * Retourne la valeur de l'attribut.
-     * 
+     *
      * @param e
      * @return
      * @throws Exception
@@ -1062,14 +1288,14 @@ public class CAImportOperationsUtils {
 
     /**
      * L'ordre de versement doit-il être bloqué ?
-     * 
+     *
      * @param parent
      * @return
      * @throws Exception
      */
     public static Boolean isBloque(Element parent) throws Exception {
-        String bloque = CAImportOperationsUtils.getValue(CAImportOperationsUtils.getChildElement(parent,
-                CAImportOperationsUtils.TAG_BLOQUERVERSEMENT));
+        String bloque = CAImportOperationsUtils.getValue(
+                CAImportOperationsUtils.getChildElement(parent, CAImportOperationsUtils.TAG_BLOQUERVERSEMENT));
 
         if ((!JadeStringUtil.isBlank(bloque)) && (bloque.equals(CAImportOperationsUtils.TAG_VALUE_TRUE))) {
             return new Boolean(true);
@@ -1080,15 +1306,16 @@ public class CAImportOperationsUtils {
 
     /**
      * L'opération doit-elle être quittancer ?
-     * 
+     *
      * @param parent
      * @return
      * @throws Exception
      */
     public static boolean isQuittancer(Element parent) throws Exception {
-        String quittancer = CAImportOperationsUtils.getValue(CAImportOperationsUtils.getChildElement(parent,
-                CAImportOperationsUtils.TAG_QUITTANCER));
+        String quittancer = CAImportOperationsUtils
+                .getValue(CAImportOperationsUtils.getChildElement(parent, CAImportOperationsUtils.TAG_QUITTANCER));
 
         return ((!JadeStringUtil.isBlank(quittancer)) && (quittancer.equals(CAImportOperationsUtils.TAG_VALUE_TRUE)));
     }
+
 }

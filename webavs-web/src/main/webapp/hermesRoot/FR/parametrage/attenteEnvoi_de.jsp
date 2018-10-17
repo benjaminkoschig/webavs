@@ -22,6 +22,9 @@ String ref1 = "";
 String ref2 = "";
 boolean isDateNSS = globaz.hermes.utils.HEUtil.isNNSSActif(viewBean.getSession());
 boolean isMotifCert = globaz.hermes.utils.HEUtil.isMotifCert(viewBean.getSession(),viewBean.getMotifArc());
+String MOTIF_11 = viewBean.CODE_ARC_11;
+String MOTIF_31 = viewBean.CODE_ARC_31;
+String motif = viewBean.getMotifArc();
 
 boolean alreadySent = false;
 if((request.getParameter("isARC39")==null?false:request.getParameter("isARC39").equals("true"))||(!viewBean.getStatut().equals(IHEAnnoncesViewBean.CS_EN_ATTENTE) || !viewBean.isUserPermit())){
@@ -851,6 +854,16 @@ for (int i = 0; i < viewBean.getChampsSize() ; i++){
 	}
 }	
 		  %>
+		<% // Ne concerne que les motifs 11 et 31
+		if(MOTIF_11.equals(motif) || MOTIF_31.equals(motif)){ %>
+		<tr>
+			<td width="400">&nbsp;<ct:FWLabel key="HERMES_JSP_GAZ0004_AJOUT_ARC_61"/></td>
+			<td>
+				<INPUT type="checkbox" value="on" id="idChkCreerArc61" name="isArc61Cree" <%=viewBean.getIsArc61Cree().booleanValue()?"CHECKED":""%>>&nbsp;
+			</td>
+		</tr>
+		
+		<% }%>
 		<tr>
 		  <td>
 		  	<input type="hidden" name="modeSaisie" value="<%=request.getParameter("modeSaisie")==null?"false":request.getParameter("modeSaisie")%>">

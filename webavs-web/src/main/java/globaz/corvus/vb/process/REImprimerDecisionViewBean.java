@@ -23,13 +23,13 @@ public class REImprimerDecisionViewBean extends PRAbstractViewBeanSupport implem
     private String idDemandeRente = "";
     private String idTiersRequerant = "";
     private Boolean isSendToGed = Boolean.FALSE;
-
+    private boolean typeCaisse = true;
     // ~ Methods
     // --------------------------------------------------------------------------------------------------------
 
     /**
      * Donne l'etat de la decision
-     * 
+     *
      * @return
      */
     public String getCsEtatDecision() {
@@ -101,7 +101,7 @@ public class REImprimerDecisionViewBean extends PRAbstractViewBeanSupport implem
 
     /**
      * Méthode pour affichages des ordres de versement
-     * 
+     *
      * @throws Exception
      */
     public String getIdPrestation() throws Exception {
@@ -131,7 +131,7 @@ public class REImprimerDecisionViewBean extends PRAbstractViewBeanSupport implem
 
     /**
      * Méthode pour affichages des ordres de versement
-     * 
+     *
      * @throws Exception
      */
     public String getMontantPrestation() throws Exception {
@@ -167,17 +167,13 @@ public class REImprimerDecisionViewBean extends PRAbstractViewBeanSupport implem
 
             String nationalite = "";
 
-            if (!"999".equals(getSession()
-                    .getCode(
-                            getSession().getSystemCode("CIPAYORI",
-                                    tiers.getProperty(PRTiersWrapper.PROPERTY_ID_PAYS_DOMICILE))))) {
-                nationalite = getSession().getCodeLibelle(
-                        getSession().getSystemCode("CIPAYORI",
-                                tiers.getProperty(PRTiersWrapper.PROPERTY_ID_PAYS_DOMICILE)));
+            if (!"999".equals(getSession().getCode(getSession().getSystemCode("CIPAYORI",
+                    tiers.getProperty(PRTiersWrapper.PROPERTY_ID_PAYS_DOMICILE))))) {
+                nationalite = getSession().getCodeLibelle(getSession().getSystemCode("CIPAYORI",
+                        tiers.getProperty(PRTiersWrapper.PROPERTY_ID_PAYS_DOMICILE)));
             }
 
-            return PRNSSUtil.formatDetailRequerantDetail(
-                    tiers.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL),
+            return PRNSSUtil.formatDetailRequerantDetail(tiers.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL),
                     tiers.getProperty(PRTiersWrapper.PROPERTY_NOM) + " "
                             + tiers.getProperty(PRTiersWrapper.PROPERTY_PRENOM),
                     tiers.getProperty(PRTiersWrapper.PROPERTY_DATE_NAISSANCE),
@@ -223,6 +219,15 @@ public class REImprimerDecisionViewBean extends PRAbstractViewBeanSupport implem
     @Override
     public boolean validate() {
         return true;
+    }
+
+    public boolean isTypeCaisseCorrect() throws Exception {
+        return typeCaisse;
+
+    }
+
+    public void setIsTypeCorrect(boolean b) {
+        typeCaisse = b;
     }
 
 }

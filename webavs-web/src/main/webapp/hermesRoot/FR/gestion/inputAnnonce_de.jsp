@@ -30,7 +30,9 @@ boolean clearFields = request.getParameter("modeCancel")==null?false:request.get
 String detailLink = "hermes.parametrage.attenteEnvoi.afficher";
 idEcran="GAZ0004";
 String motif = viewBean.getReadOnlyFieldValue(IHEAnnoncesViewBean.MOTIF_ANNONCE,HttpUtils.getParamsAsMap(request));
-Boolean chkCreerArc61 = viewBean.getChkCreerArc61();
+Boolean isArc61Cree = viewBean.getIsArc61Cree();
+String MOTIF_11 = viewBean.CODE_ARC_11;
+String MOTIF_31 = viewBean.CODE_ARC_31;
 
 
 boolean isDateNSS = globaz.hermes.utils.HEUtil.isNNSSActif(viewBean.getSession());
@@ -217,7 +219,7 @@ function postInit()
 	}else {
 	input[1].focus();
 	}
-	<% if(!chkCreerArc61){ %>
+	<% if(!isArc61Cree){ %>
 		disableChkAjoutARC61(document.getElementById('idChkCreerArc61'));
 	<% } %>
 }
@@ -307,7 +309,7 @@ function updateForm(tag){
 }
 
 function disableChkAjoutARC61(chkBox){
-	if(<%=motif%> == "11"){
+	if(<%=MOTIF_11.equals(motif) || MOTIF_31.equals(motif)%>){
 		chkBox.style.backgroundColor = '#b3c4db';
 		chkBox.setAttribute("disabled","disabled");
 		chkBox.checked = false;
@@ -1104,12 +1106,12 @@ function updFieldsBoundedToCategorie(){
 					<textarea disabled="true" name="adresseRentier" id="txtarea" rows="4" cols="40" class="forceDisable"  disabled="true" style=" background-color : #b3c4db;"><%=adr%></textarea> 
 				</td>
 			</tr>
-			<% // Ne concerne que les motifs 11 
-			if("11".equals(motif)){ %>
+			<% // Ne concerne que les motifs 11 et 31
+			if(MOTIF_11.equals(motif) || MOTIF_31.equals(motif)){ %>
 			<tr>
 				<td width="400">&nbsp;<ct:FWLabel key="HERMES_JSP_GAZ0004_AJOUT_ARC_61"/></td>
 				<td>
-					<INPUT type="checkbox" value="on" id="idChkCreerArc61" name="chkCreerArc61" <%=viewBean.getChkCreerArc61().booleanValue()?"CHECKED":""%>>&nbsp;
+					<INPUT type="checkbox" value="on" id="idChkCreerArc61" name="isArc61Cree" <%=viewBean.getIsArc61Cree().booleanValue()?"CHECKED":""%>>&nbsp;
 				</td>
 			</tr>
 			

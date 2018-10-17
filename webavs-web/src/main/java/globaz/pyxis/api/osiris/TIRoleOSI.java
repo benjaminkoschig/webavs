@@ -1,5 +1,7 @@
 package globaz.pyxis.api.osiris;
 
+import java.util.Hashtable;
+import java.util.TreeMap;
 import globaz.alfagest.format.ALRecupNoDossierAF;
 import globaz.caisse.helper.CaisseHelperFactory;
 import globaz.commons.nss.NSUtil;
@@ -20,12 +22,10 @@ import globaz.pyxis.db.tiers.TIPersonneAvsManager;
 import globaz.pyxis.db.tiers.TITiersViewBean;
 import globaz.pyxis.util.TIToolBox;
 import globaz.webavs.common.CommonProperties;
-import java.util.Hashtable;
-import java.util.TreeMap;
 
 /**
  * Date de création : (12.02.2003 18:11:52) Date de modification : 17.08.2006
- * 
+ *
  */
 public class TIRoleOSI implements IntRole {
     private static final int LENGTH_NUMERO_NSS = 13;
@@ -45,7 +45,7 @@ public class TIRoleOSI implements IntRole {
 
     /**
      * Déformatter une chaîne contenant un numéro Date de création : (21.02.2003 15:52:59)
-     * 
+     *
      * @return String
      * @param toUnformat
      *            String
@@ -69,7 +69,7 @@ public class TIRoleOSI implements IntRole {
 
     /**
      * Date de création : (21.05.2002 17:07:31)
-     * 
+     *
      * @exception java.lang.Exception
      *                La description de l'exception.
      */
@@ -106,7 +106,7 @@ public class TIRoleOSI implements IntRole {
 
     /**
      * Date de création : (22.02.2002 08:33:37)
-     * 
+     *
      * @return String
      * @param idRole
      *            String
@@ -189,8 +189,56 @@ public class TIRoleOSI implements IntRole {
     }
 
     /**
+     * Renvoie l'affilié recherché avec les critères numéro d'affilié et le rôle
+     *
+     * @return l'affilié
+     */
+    public IAFAffiliation getAffiliationByNumAffAndIDRoleAndIDTiers(String numAff, String idRole, String idTiers) {
+        if (!JadeStringUtil.isBlankOrZero(numAff) && !JadeStringUtil.isBlankOrZero(idRole)
+                && !JadeStringUtil.isBlankOrZero(idTiers)) {
+            return this.getAffiliation(numAff, idRole, idTiers);
+        } else {
+            return this.getAffiliation(getIdExterne());
+        }
+    }
+
+    private IAFAffiliation getAffiliation(String idExterneRole, String idRole, String idTiers) {
+        if ((affiliation == null) || !affiliation.getAffilieNumero().equals(idExterneRole)) {
+            try {
+                BSession sessionAF = (BSession) GlobazSystem.getApplication("NAOS").newSession();
+                getISession().connectSession(sessionAF);
+                IAFAffiliation affiliation = (IAFAffiliation) sessionAF.getAPIFor(IAFAffiliation.class);
+                Hashtable<String, String> criteres = new Hashtable<String, String>();
+                if (IntRole.ROLE_AFFILIE_PARITAIRE.equals(idRole)) {
+                    criteres.put(IAFAffiliation.FIND_FOR_LISTTYPEAFFILIATION, IAFAffiliation.TYPES_AFFILI_PARITAIRES);
+                } else if (IntRole.ROLE_AFFILIE_PERSONNEL.equals(idRole)) {
+                    criteres.put(IAFAffiliation.FIND_FOR_LISTTYPEAFFILIATION, IAFAffiliation.TYPES_AFFILI_PERSONNELLES);
+                }
+                criteres.put(IAFAffiliation.FIND_FOR_IDTIERS, idTiers);
+                criteres.put(IAFAffiliation.FIND_FOR_NOAFFILIE, idExterneRole);
+                IAFAffiliation[] affiliations = affiliation.findAffiliation(criteres);
+                // s'il y a plusieurs résultats on prend celui le plus récent
+                if ((affiliations != null) && (affiliations.length > 0)) {
+                    // Ajout des Affiliations dans le TreeMap
+                    // int numeroAffiliationAPrendre = 0;
+                    // String date = null;
+                    TreeMap<String, IAFAffiliation> affiliationsSort = new TreeMap<String, IAFAffiliation>();
+                    for (int i = 0; i < affiliations.length; i++) {
+                        JADate tmp = new JADate(affiliations[i].getDateDebut());
+                        affiliationsSort.put(tmp.toStrAMJ(), affiliations[i]);
+                    }
+                    this.affiliation = affiliationsSort.get(affiliationsSort.lastKey());
+                }
+            } catch (Exception e) {
+                affiliation = null;
+            }
+        }
+        return affiliation;
+    }
+
+    /**
      * Renvoie le dernier affilié
-     * 
+     *
      * @return l'affilié courant
      */
     @Override
@@ -236,7 +284,7 @@ public class TIRoleOSI implements IntRole {
     /**
      * Renvoie la date de début d'affiliation au format jj.mm.aaaa. Date de création : (27.11.2001 15:15:33) Date de
      * modification : 17.08.2006
-     * 
+     *
      * @return String : la date de début d'affiliation
      */
     @Override
@@ -251,7 +299,7 @@ public class TIRoleOSI implements IntRole {
     /**
      * Retourne la date de début d'affiliation au format jj.mm.aaaa pour un idExterneRole donné En cas de problème
      * retourne ""
-     * 
+     *
      * @param idExterneRole
      * @return String : la date de début d'affiliation
      */
@@ -266,7 +314,7 @@ public class TIRoleOSI implements IntRole {
 
     /**
      * Renvoie la date de début et de fin d'affiliation. Date de création : (20.12.2001 09:30:15)
-     * 
+     *
      * @return String
      */
     @Override
@@ -282,7 +330,7 @@ public class TIRoleOSI implements IntRole {
     /**
      * Renvoie la date de fin d'affiliation au format jj.mm.aaaa. Date de création : (27.11.2001 15:15:46) Date de
      * modification : 17.08.2006
-     * 
+     *
      * @return String : la date de début d'affiliation
      */
     @Override
@@ -297,7 +345,7 @@ public class TIRoleOSI implements IntRole {
     /**
      * Retourne la date de fin d'affiliation au format jj.mm.aaaa pour un idExterneRole donné En cas de problème
      * retourne ""
-     * 
+     *
      * @param idExterneRole
      * @return String : la date de fin d'affiliation
      */
@@ -312,7 +360,7 @@ public class TIRoleOSI implements IntRole {
 
     /**
      * Date de création : (30.01.2002 11:40:08)
-     * 
+     *
      * @return String
      */
     @Override
@@ -322,7 +370,7 @@ public class TIRoleOSI implements IntRole {
 
     /**
      * Date de création : (27.11.2001 15:16:35)
-     * 
+     *
      * @return String
      * @param codeISOLangue
      *            String
@@ -356,7 +404,7 @@ public class TIRoleOSI implements IntRole {
 
     /**
      * Renvoie l'id unique de l'entité
-     * 
+     *
      * @return l'id unique de l'entité
      */
     @Override
@@ -394,7 +442,7 @@ public class TIRoleOSI implements IntRole {
     /**
      * Date de création : (27.11.2001 15:14:42) Date de modification :
      * 17.08.2006
-     * 
+     *
      * @return String
      */
     @Override
@@ -419,7 +467,7 @@ public class TIRoleOSI implements IntRole {
 
     /**
      * Date de création : (27.11.2001 15:13:11)
-     * 
+     *
      * @return String
      */
     @Override
@@ -429,7 +477,7 @@ public class TIRoleOSI implements IntRole {
 
     /**
      * Date de création : (27.11.2001 15:17:29)
-     * 
+     *
      * @return String
      */
     @Override
@@ -439,7 +487,7 @@ public class TIRoleOSI implements IntRole {
 
     /**
      * Renvoie la session en cours
-     * 
+     *
      * @return la session en cours
      */
     @Override
@@ -449,7 +497,7 @@ public class TIRoleOSI implements IntRole {
 
     /**
      * Renvoie la date de dernière modification de l'objet (format DD.MM.YYYY).
-     * 
+     *
      * @return la date de dernière modification de l'objet, null si pas disponible
      */
     @Override
@@ -462,7 +510,7 @@ public class TIRoleOSI implements IntRole {
 
     /**
      * Renvoie l'heure de dernière modification de l'objet (format HH:MM:SS).
-     * 
+     *
      * @return l'heure de dernière modification de l'objet, null si pas disponible
      */
     @Override
@@ -475,7 +523,7 @@ public class TIRoleOSI implements IntRole {
 
     /**
      * Renvoie l'id du dernier utilisateur qui a modifié l'objet.
-     * 
+     *
      * @return l'id du dernier utilisateur qui a modifié l'objet, null si pas disponible
      */
     @Override
@@ -512,7 +560,7 @@ public class TIRoleOSI implements IntRole {
 
     /**
      * Date de création : (27.11.2001 15:17:56)
-     * 
+     *
      * @return String
      */
     @Override
@@ -534,7 +582,7 @@ public class TIRoleOSI implements IntRole {
 
     /**
      * Indique si l'entité est nouvelle (i.e. n'existe pas dans la BD)
-     * 
+     *
      * @return true si l'entité n'existe pas dans la BD; false sinon
      */
     @Override
@@ -544,7 +592,7 @@ public class TIRoleOSI implements IntRole {
 
     /**
      * Date de création : (06.11.2002 16:36:09)
-     * 
+     *
      * @return boolean
      */
     @Override
@@ -657,7 +705,7 @@ public class TIRoleOSI implements IntRole {
 
     /**
      * Modifie la session en cours
-     * 
+     *
      * @param newISession
      *            la nouvelle session
      */

@@ -1,5 +1,22 @@
 package globaz.prestation.interfaces.tiers;
 
+import java.sql.ResultSet;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.Vector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import com.google.gson.Gson;
 import globaz.corvus.exceptions.RETechnicalException;
 import globaz.externe.IPRConstantesExternes;
 import globaz.framework.translation.FWTranslation;
@@ -56,25 +73,10 @@ import globaz.pyxis.db.tiers.TITiers;
 import globaz.pyxis.db.tiers.TITiersViewBean;
 import globaz.pyxis.util.TIAdressePmtResolver;
 import globaz.pyxis.util.TINSSFormater;
-import java.sql.ResultSet;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.Vector;
-import com.google.gson.Gson;
 
 /**
  * Utilitaire pour accéder aux données des tiers depuis les modules des prestations.
- * 
+ *
  * @author SCR
  */
 public class PRTiersHelper {
@@ -121,7 +123,12 @@ public class PRTiersHelper {
     public static final String ID_PAYS_BIDON = "999";
     public static final String ID_PAYS_SUISSE = "100";
     private static final Map<String, Vector<String[]>> LISTE_PAYS = new HashMap<String, Vector<String[]>>();
+    private static final String ID_CANTON_PROP = "default.canton.caisse.location";
+    public static final String TYPE_DE_CAISSE = "TYPE_de_CAISSE";
+    public static final String CAISSE_CANT = "Caisse_CANT";
+    public static final String CAISSE_PROF = "Caisse_PROF";
     private static Map<String, Map<String, String>> PAYS_PAR_LANGUE = null;
+    private static final Logger LOG = LoggerFactory.getLogger(PRTiersHelper.class);
 
     // ~ Methods
     // --------------------------------------------------------------------------------------------------------
@@ -330,7 +337,7 @@ public class PRTiersHelper {
 
     /**
      * getter pour les administrations d'un genre
-     * 
+     *
      * @deprecated replaced by getAdministrationActiveForGenre
      */
     @Deprecated
@@ -386,7 +393,7 @@ public class PRTiersHelper {
     /**
      * Va chercher dans les tiers standard, puis les administrations si non trouvé afin de retourner la langue de l'id
      * tiers passé en paramètre.
-     * 
+     *
      * @param session La session.
      * @param idTiers L'id tiers que l'on souhaite chercher sa langue.
      * @return La langue ISO.
@@ -415,15 +422,15 @@ public class PRTiersHelper {
      * Cette méthode utilise le système de cascade mis en place par pyxis, elle recherche une adresse d'abord pour le
      * domaine donnée en paramètre, puis pour le domaine standard, etc.
      * </p>
-     * 
+     *
      * @param session
      * @param idTiers
      * @param idAffilie
      * @param csDomaine
      *            définira le domaine dans lequel commencer la recherche d'adresse
-     * 
+     *
      * @return une adresse ou chaîne vide s'il n'y a pas d'adresse pour ce tiers.
-     * 
+     *
      * @throws Exception
      */
     public static final String getAdresseCourrierFormatee(BISession session, String idTiers, String idAffilie,
@@ -443,15 +450,15 @@ public class PRTiersHelper {
      * corvus.properties, dans le cas ou la properties est à false, elle recherche une adresse d'abord pour le domaine
      * passé en paramètre, puis pour le domaine standard, etc.
      * </p>
-     * 
+     *
      * @param session
      * @param idTiers
      * @param idAffilie
      * @param csDomaine
      *            définira le domaine dans lequel commencer la recherche d'adresse
-     * 
+     *
      * @return une adresse ou chaîne vide s'il n'y a pas d'adresse pour ce tiers.
-     * 
+     *
      * @throws Exception
      */
     public static final String getAdresseCourrierFormateeRente(BISession session, String idTiers, String csDomaine,
@@ -487,12 +494,12 @@ public class PRTiersHelper {
      * Cette méthode utilise le système de cascade mis en place par pyxis, elle recherche une adresse d'abord pour le
      * domaine de l'application passé en paramètre, puis pour le domaine standard, etc.
      * </p>
-     * 
+     *
      * @param session
      * @param idTiers
-     * 
+     *
      * @return une adresse ou chaîne vide s'il n'y a pas d'adresse pour ce tiers.
-     * 
+     *
      * @throws Exception
      */
     @Deprecated
@@ -503,7 +510,7 @@ public class PRTiersHelper {
 
     /**
      * retourne une adresse de domicile
-     * 
+     *
      * @param session
      * @param idTiers
      * @return
@@ -522,7 +529,7 @@ public class PRTiersHelper {
      * Cette méthode utilise le système de cascade mis en place par pyxis, elle recherche une adresse d'abord pour le
      * domaine passé en paramètre, puis pour le domaine standard, etc.
      * </p>
-     * 
+     *
      * @param session
      *            session en cours
      * @param idTiers
@@ -532,9 +539,9 @@ public class PRTiersHelper {
      * @param idAffilie
      * @param csDomaine
      *            définira le domaine dans lequel commencer la recherche d'adresse
-     * 
+     *
      * @return une adresse ou chaîne vide s'il n'y a pas d'adresse pour ce tiers.
-     * 
+     *
      * @throws Exception
      */
     public static final String getAdresseGeneriqueFormatee(BISession session, String idTiers, String typeAdresse,
@@ -578,7 +585,7 @@ public class PRTiersHelper {
      * Cette méthode utilise le système de cascade mis en place par pyxis, elle recherche une adresse d'abord pour le
      * domaine passé en paramètre, puis pour le domaine standard, etc.
      * </p>
-     * 
+     *
      * @param session
      *            session en cours
      * @param idTiers
@@ -588,9 +595,9 @@ public class PRTiersHelper {
      * @param idAffilie
      * @param csDomaine
      *            définira le domaine dans lequel commencer la recherche d'adresse
-     * 
+     *
      * @return une adresse ou chaîne vide s'il n'y a pas d'adresse pour ce tiers.
-     * 
+     *
      * @throws Exception
      */
     public static final String getAdresseGeneriqueFormateeRente(BISession session, String idTiers, String typeAdresse,
@@ -639,19 +646,20 @@ public class PRTiersHelper {
      * <p>
      * Retourne new TIAdressePaiementData() si aucune adresse
      * </p>
-     * 
+     *
      * @param BSession
      * @param idTiersAdressePmt
      * @param domainePaiement
      * @param idExterne
      *            (numAffilie ou idAffilie)
      * @param dateJJsMMsAAAA
-     * 
+     *
      * @throws Exception
-     * 
+     *
      */
     public static final TIAdressePaiementData getAdressePaiementData(BSession session, BTransaction transaction,
-            String idTiersAdressePmt, String domainePaiement, String idExterne, String dateJJsMMsAAAA) throws Exception {
+            String idTiersAdressePmt, String domainePaiement, String idExterne, String dateJJsMMsAAAA)
+            throws Exception {
 
         TIAdressePaiementDataManager mgr = new TIAdressePaiementDataManager();
 
@@ -840,7 +848,8 @@ public class PRTiersHelper {
                         if (!JadeStringUtil.isBlank(admAdr.getCasePostaleComp())) {
                             adresseTribunal += ", " + admAdr.getCasePostaleComp();
                         }
-                        if (!JadeStringUtil.isBlank(casePostal) && JadeStringUtil.isBlank(admAdr.getCasePostaleComp())) {
+                        if (!JadeStringUtil.isBlank(casePostal)
+                                && JadeStringUtil.isBlank(admAdr.getCasePostaleComp())) {
                             adresseTribunal += ", " + casePostal;
                         }
 
@@ -873,6 +882,9 @@ public class PRTiersHelper {
         String adresseTribunalDE = "";
         String adresseTribunalAutre = "";
         String canton = "";
+        String cantonTypeCant = "";
+        String cantonTypeProf = "";
+        String typeCaisse = "";
 
         TIAdministrationAdresseManager admAdrMgr = new TIAdministrationAdresseManager();
         admAdrMgr.setSession((BSession) session);
@@ -880,19 +892,30 @@ public class PRTiersHelper {
 
         PRTiersWrapper tiers2 = PRTiersHelper.getTiersAdresseDomicileParId(session,
                 tiers.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS), JACalendar.today().toString());
+        BSession sessionApp = (BSession) session;
 
+        cantonTypeCant = sessionApp.getApplication().getProperty(ID_CANTON_PROP);
+        typeCaisse = sessionApp.getApplication().getProperty(TYPE_DE_CAISSE);
         if (tiers2 == null) {
             adresseTribunal = PRTiersHelper.AUCUN_TRIBUNAL_TROUVE;
         } else {
             if (JadeStringUtil.isBlankOrZero(tiers2.getProperty(PRTiersWrapper.PROPERTY_ID_CANTON))) {
-                canton = PRTiersHelper.getCanton(
-                        session,
+                cantonTypeProf = PRTiersHelper.getCanton(session,
                         tiers2.getProperty(PRTiersWrapper.PROPERTY_NPA)
-                                + (tiers2.getProperty(PRTiersWrapper.PROPERTY_NPA_SUP).length() > 1 ? tiers2
-                                        .getProperty(PRTiersWrapper.PROPERTY_NPA_SUP) : "0"
-                                        + tiers2.getProperty(PRTiersWrapper.PROPERTY_NPA_SUP)));
+                                + (tiers2.getProperty(PRTiersWrapper.PROPERTY_NPA_SUP).length() > 1
+                                        ? tiers2.getProperty(PRTiersWrapper.PROPERTY_NPA_SUP)
+                                        : "0" + tiers2.getProperty(PRTiersWrapper.PROPERTY_NPA_SUP)));
             } else {
-                canton = tiers2.getProperty(PRTiersWrapper.PROPERTY_ID_CANTON);
+                cantonTypeProf = tiers2.getProperty(PRTiersWrapper.PROPERTY_ID_CANTON);
+            }
+            if (typeCaisse != null) {
+                if (typeCaisse.equals(CAISSE_CANT)) {
+                    canton = cantonTypeCant;
+                } else if (typeCaisse.equals(CAISSE_PROF)) {
+                    canton = cantonTypeProf;
+                } else {
+                    canton = cantonTypeProf;
+                }
             }
 
             admAdrMgr.setForCantonAdministration(canton);
@@ -916,8 +939,8 @@ public class PRTiersHelper {
                         TIAdministrationAdresse admAdr = (TIAdministrationAdresse) admAdrMgr.get(i);
 
                         // Si assuré FR, recours FR sinon DE
-                        if (IConstantes.CS_TIERS_LANGUE_FRANCAIS.equals(tiers
-                                .getProperty(PRTiersWrapper.PROPERTY_LANGUE))) {
+                        if (IConstantes.CS_TIERS_LANGUE_FRANCAIS
+                                .equals(tiers.getProperty(PRTiersWrapper.PROPERTY_LANGUE))) {
 
                             if (JadeStringUtil.isBlank(adresseTribunalFR)) {
 
@@ -931,10 +954,10 @@ public class PRTiersHelper {
 
                             }
                             // Si assuré DE, recours DE sinon FR
-                        } else if (IConstantes.CS_TIERS_LANGUE_ALLEMAND.equals(tiers
-                                .getProperty(PRTiersWrapper.PROPERTY_LANGUE))
-                                || IConstantes.CS_TIERS_LANGUE_ROMANCHE.equals(tiers
-                                        .getProperty(PRTiersWrapper.PROPERTY_LANGUE))) {
+                        } else if (IConstantes.CS_TIERS_LANGUE_ALLEMAND
+                                .equals(tiers.getProperty(PRTiersWrapper.PROPERTY_LANGUE))
+                                || IConstantes.CS_TIERS_LANGUE_ROMANCHE
+                                        .equals(tiers.getProperty(PRTiersWrapper.PROPERTY_LANGUE))) {
 
                             if (JadeStringUtil.isBlank(adresseTribunalDE)) {
 
@@ -965,7 +988,8 @@ public class PRTiersHelper {
 
                     }// fin boucle for
 
-                    if (IConstantes.CS_TIERS_LANGUE_FRANCAIS.equals(tiers.getProperty(PRTiersWrapper.PROPERTY_LANGUE))) {
+                    if (IConstantes.CS_TIERS_LANGUE_FRANCAIS
+                            .equals(tiers.getProperty(PRTiersWrapper.PROPERTY_LANGUE))) {
 
                         if (!JadeStringUtil.isBlank(adresseTribunalFR)) {
                             adresseTribunal = adresseTribunalFR;
@@ -977,10 +1001,10 @@ public class PRTiersHelper {
                             adresseTribunal = PRTiersHelper.AUCUN_TRIBUNAL_TROUVE;
                         }
 
-                    } else if (IConstantes.CS_TIERS_LANGUE_ALLEMAND.equals(tiers
-                            .getProperty(PRTiersWrapper.PROPERTY_LANGUE))
-                            || IConstantes.CS_TIERS_LANGUE_ROMANCHE.equals(tiers
-                                    .getProperty(PRTiersWrapper.PROPERTY_LANGUE))) {
+                    } else if (IConstantes.CS_TIERS_LANGUE_ALLEMAND
+                            .equals(tiers.getProperty(PRTiersWrapper.PROPERTY_LANGUE))
+                            || IConstantes.CS_TIERS_LANGUE_ROMANCHE
+                                    .equals(tiers.getProperty(PRTiersWrapper.PROPERTY_LANGUE))) {
 
                         if (!JadeStringUtil.isBlank(adresseTribunalDE)) {
                             adresseTribunal = adresseTribunalDE;
@@ -1118,12 +1142,12 @@ public class PRTiersHelper {
 
     /**
      * recherche le canton dans lequel se trouve la ville dont le no postal est transmis en argument.
-     * 
+     *
      * @param session
      * @param npa
-     * 
+     *
      * @return le code système du canton, ou <code>null</code> si non trouvé
-     * 
+     *
      * @throws Exception
      *             si erreur dans pyxis.
      */
@@ -1158,7 +1182,7 @@ public class PRTiersHelper {
      * La map sera triée par ordre alphabétique des noms de cantons (par exemple lors de l'utilisation de
      * {@link Map#values()})
      * </p>
-     * 
+     *
      * @param session
      *            une session utilisateur (définir la langue des noms des cantons)
      * @return une {@link Map} ayant comme clé les noms des cantons dans la langue de l'utilisateur (défini dans la
@@ -1187,8 +1211,8 @@ public class PRTiersHelper {
 
             for (int i = 0; i < parametersCodeManager.size(); i++) {
                 FWParametersSystemCode codeSysteme = (FWParametersSystemCode) parametersCodeManager.getEntity(i);
-                cantons.put(codeSysteme.getCurrentCodeUtilisateur().getLibelle(), codeSysteme
-                        .getCurrentCodeUtilisateur().getIdCodeSysteme());
+                cantons.put(codeSysteme.getCurrentCodeUtilisateur().getLibelle(),
+                        codeSysteme.getCurrentCodeUtilisateur().getIdCodeSysteme());
             }
 
             PRTiersHelper.CANTONS_PAR_LANGUE.put(langueUtilisateur, cantons);
@@ -1201,12 +1225,12 @@ public class PRTiersHelper {
      * <p>
      * recherche le (code OFAS du) canton dans lequel se trouve la ville dont le no postal est transmis en argument.
      * </p>
-     * 
+     *
      * @param session
      * @param npa
-     * 
+     *
      * @return le code système du canton, ou <code>null</code> si non trouvé
-     * 
+     *
      * @throws Exception
      */
     public static final String getCodeOFASCanton(BISession session, String npa) throws Exception {
@@ -1236,7 +1260,7 @@ public class PRTiersHelper {
      * Retourne l'âge d'arriver à l'AVS d'un tiers.<br/>
      * Exemple : date naissance du tiers (masculin) 19.06.1947 -> âge d'arrivé à l'AVS : 01.07.2012
      * </p>
-     * 
+     *
      * @param session
      *            une session utilisateur
      * @param idTiers
@@ -1273,7 +1297,7 @@ public class PRTiersHelper {
      * Exemple : <br/>
      * Date de naissance : 08.04.1950 -> retournera 01.05.2015 pour un homme (65ans + un mois)
      * </p>
-     * 
+     *
      * @param dateNaissance
      *            une date au format <code>"JJ.MM.AAAA"</code>
      * @param csSexe
@@ -1322,11 +1346,11 @@ public class PRTiersHelper {
      * retourne un vecteur de tableaux String[2]{codePays, NomPays}. La langue utilisée est celle transmise dans la
      * session.
      * </p>
-     * 
+     *
      * @param session
-     * 
+     *
      * @return la valeur courante de l'attribut pays
-     * 
+     *
      * @throws Exception
      * @deprecated veuillez utiliser {@link #getPaysAsMap(BSession)} et la libraire {@link Gson}
      */
@@ -1367,7 +1391,7 @@ public class PRTiersHelper {
      * librairie {@link Gson} (avec la méthode {@link Gson#toJson(com.google.gson.JsonElement)
      * toJson(Map&lt;String,String&gt;)})
      * </p>
-     * 
+     *
      * @param session
      *            une session utilisateur (qui déterminera la langue pour les noms des pays)
      * @return une {@link Map} avec comme clé les noms des pays dans la langue de l'utilisateur et comme valeurs les ID
@@ -1417,13 +1441,13 @@ public class PRTiersHelper {
      * <p>
      * cherche une "personneAVS" par son id
      * </p>
-     * 
+     *
      * @param session
      * @param idTiers
      *            l'id du tiers à chercher
-     * 
+     *
      * @return un VO de la personneAVS
-     * 
+     *
      * @throws Exception
      */
     public static final PRTiersWrapper getPersonneAVS(BISession session, String idTiers) throws Exception {
@@ -1450,13 +1474,13 @@ public class PRTiersHelper {
      * <p>
      * Recherche un "tiers" (sans adresse) à partir de son numéro AVS.
      * </p>
-     * 
+     *
      * @param session
      * @param noAvs
      *            Le noAVS du tiers à rechercher
-     * 
+     *
      * @return Le tiers, si trouvé ou null si non trouvé.
-     * 
+     *
      * @throws Exception
      *             si problème avec PYXIS
      */
@@ -1484,18 +1508,19 @@ public class PRTiersHelper {
      * <p>
      * Recherche un "tiers" et son adresse de domicile à partir de son identifiant.
      * </p>
-     * 
+     *
      * @param session
      *            la session
      * @param idTiers
      *            l'identifiant du tiers à rechercher
-     * 
+     *
      * @return Le tiers, si trouvé, ou <code>null</code> si non trouvé.
-     * 
+     *
      * @throws Exception
      *             si la recherche échoue.
      */
-    public static final PRTiersWrapper getTiersAdresseDomicileParId(BISession session, String idTiers) throws Exception {
+    public static final PRTiersWrapper getTiersAdresseDomicileParId(BISession session, String idTiers)
+            throws Exception {
         if (JadeStringUtil.isEmpty(idTiers)) {
             return null;
         }
@@ -1587,7 +1612,8 @@ public class PRTiersHelper {
         }
     }
 
-    public static final PRTiersWrapper[] getTiersAdresseLikeNoAVS(BISession session, String likeNoAVS) throws Exception {
+    public static final PRTiersWrapper[] getTiersAdresseLikeNoAVS(BISession session, String likeNoAVS)
+            throws Exception {
         return PRTiersHelper.getTiersAdresseLikeNoAVSForceFormat(session, likeNoAVS, null);
 
     }
@@ -1690,8 +1716,8 @@ public class PRTiersHelper {
         }
     }
 
-    public static final PRTiersWrapper[] getTiersAdresseLikeNoAVSForceSingleAdrMode(BISession session,
-            String likeNoAVS, Boolean isNNSS) throws Exception {
+    public static final PRTiersWrapper[] getTiersAdresseLikeNoAVSForceSingleAdrMode(BISession session, String likeNoAVS,
+            Boolean isNNSS) throws Exception {
 
         if (JadeStringUtil.isEmpty(likeNoAVS)) {
             return null;
@@ -1729,14 +1755,14 @@ public class PRTiersHelper {
      * <p>
      * Recherche un "tiers" à partir de son identifiant.
      * </p>
-     * 
+     *
      * @param session
      *            la session
      * @param idTiers
      *            l'identifiant du tiers à rechercher
-     * 
+     *
      * @return Le tiers, si trouvé, ou <code>null</code> si non trouvé.
-     * 
+     *
      * @throws Exception
      *             si la recherche échoue.
      */
@@ -1759,12 +1785,12 @@ public class PRTiersHelper {
      * <p>
      * cherche une "personneAVS" par son identifiant
      * </p>
-     * 
+     *
      * @param session
      * @param idTiers
-     * 
+     *
      * @return
-     * 
+     *
      * @throws Exception
      */
     public static final GlobazValueObject getTiersAdresseVOParId(BISession session, String idTiers) throws Exception {
@@ -1835,15 +1861,15 @@ public class PRTiersHelper {
      * <p>
      * retourne vrai si l'assuré portant l'identifiant transmis est en age AVS à une date donnée.
      * </p>
-     * 
+     *
      * @param session
      * @param idTiers
      *            l'identifiant de l'assuré dont on veut savoir s'il est rentier AVS
      * @param date
      *            la date à laquelle on veut savoir si l'assuré était, est ou sera rentier AVS.
-     * 
+     *
      * @return
-     * 
+     *
      * @throws Exception
      */
     public static final boolean isRentier(BISession session, String idTiers, String date) throws Exception {
@@ -1868,7 +1894,8 @@ public class PRTiersHelper {
         // on construit la date d'age avs
         JADate dateAVS = new JADate(JACalendar.getDay(dateNaissance), JACalendar.getMonth(dateNaissance), ageAvs);
 
-        return ((BSession) session).getApplication().getCalendar().compare(new JADate(date), dateAVS) != JACalendar.COMPARE_FIRSTLOWER;
+        return ((BSession) session).getApplication().getCalendar().compare(new JADate(date),
+                dateAVS) != JACalendar.COMPARE_FIRSTLOWER;
     }
 
     /**
@@ -1876,10 +1903,10 @@ public class PRTiersHelper {
      * argument.</strong></br>
      * Si le tiers n'a pas pu être retrouvé en fonction de l'<code>idTiers</code> une
      * <code>TiersNotFoundException</code> sera lancée</br>
-     * 
+     *
      * Si le tiers à bien été retrouvé mais que sa commune politique n'est pas renseignée, ce sera la clé
      * {@link CommunePolitique}.CommunePolitique traduite qui sera retournée</br>
-     * 
+     *
      * @param idTiers L'idTiers à rechercher en DB
      * @param session La session à utiliser pour les accès DB
      * @return La commune politique dans la langue de l'utilisateur si la commune politique à pu être retrouvée sinon
@@ -1890,7 +1917,7 @@ public class PRTiersHelper {
 
     /**
      * Cette méthode fait appel à <code>getCommunePolitique(Set<String> setIdTiers, Date date, BSession session)</code>
-     * 
+     *
      * @param idTiers Ul'idTiers pour lequel la commune politique doit être recherchée
      * @param date La date pour la recherche des périodes dans les liens entre tiers. <strong>La date doit contenir le
      *            jours, le mois et l'année</strong>
@@ -1918,8 +1945,8 @@ public class PRTiersHelper {
      * Si le tiers à bien été retrouvé mais que plusieurs commune politique sont renseignées pour une même date
      * (chevauchement), ce sera la clé {@link CommunePolitique}.LABEL_COMMUNE_POLITIQUE_PLUSIEURS_RESULTAT traduite qui
      * sera retournée</br>
-     * 
-     * 
+     *
+     *
      * @param idTiers Une list d'idTiers pour lesquels la commune politique doit être recherchée
      * @param date La date pour la recherche des périodes dans les liens entre tiers. <strong>La date doit contenir le
      *            jours, le mois et l'année</strong>
@@ -1950,8 +1977,8 @@ public class PRTiersHelper {
      * Si le tiers à bien été retrouvé mais que plusieurs commune politique sont renseignées pour une même date
      * (chevauchement), ce sera la clé {@link CommunePolitique}.LABEL_COMMUNE_POLITIQUE_PLUSIEURS_RESULTAT traduite qui
      * sera retournée</br>
-     * 
-     * 
+     *
+     *
      * @param idTiers Une list d'idTiers pour lesquels la commune politique doit être recherchée
      * @param date La date pour la recherche des périodes dans les liens entre tiers. <strong>La date doit contenir le
      *            jours, le mois et l'année</strong>
@@ -1998,20 +2025,18 @@ public class PRTiersHelper {
         StringBuilder startQuery = new StringBuilder();
         startQuery.append("SELECT tiers.HTITIE, administration.HBCADM, tiersAdmin.HTLDE1, tiersAdmin.HTLDE2 ");
         startQuery.append("FROM " + schema + ".TITIERP tiers ");
-        startQuery.append("inner join " + schema
-                + ".TICTIEP as compositionTiers ON tiers.HTITIE = compositionTiers.HTITIP ");
+        startQuery.append(
+                "inner join " + schema + ".TICTIEP as compositionTiers ON tiers.HTITIE = compositionTiers.HTITIP ");
         startQuery.append("inner join " + schema
                 + ".TITIERP as tiersCompose ON (compositionTiers.HTITIE = tiersCompose.HTITIE) ");
-        startQuery.append("inner join " + schema
-                + ".TIADMIP as administration ON  tiersCompose.HTITIE = administration.HTITIE ");
-        startQuery.append("inner join " + schema
-                + ".TITIERP as tiersAdmin ON administration.HTITIE = tiersAdmin.HTITIE ");
-        startQuery
-                .append("WHERE (("
-                        + dateFormatee
-                        + " BETWEEN compositionTiers.HGDDRE AND compositionTiers.HGDFRE) OR (compositionTiers.HGDFRE=0 AND compositionTiers.HGDDRE<="
-                        + dateFormatee + ")) and (compositionTiers.HGTTLI="
-                        + CommunePolitique.CS_PYXIS_COMMUNE_POLITIQUE.getKey() + ") AND tiers.HTITIE IN (");
+        startQuery.append(
+                "inner join " + schema + ".TIADMIP as administration ON  tiersCompose.HTITIE = administration.HTITIE ");
+        startQuery.append(
+                "inner join " + schema + ".TITIERP as tiersAdmin ON administration.HTITIE = tiersAdmin.HTITIE ");
+        startQuery.append("WHERE ((" + dateFormatee
+                + " BETWEEN compositionTiers.HGDDRE AND compositionTiers.HGDFRE) OR (compositionTiers.HGDFRE=0 AND compositionTiers.HGDDRE<="
+                + dateFormatee + ")) and (compositionTiers.HGTTLI="
+                + CommunePolitique.CS_PYXIS_COMMUNE_POLITIQUE.getKey() + ") AND tiers.HTITIE IN (");
 
         String stopQuery = ")";
 
@@ -2095,7 +2120,7 @@ public class PRTiersHelper {
 
     public static TIAdministrationViewBean resolveAdminFromTiersLanguage(PRTiersWrapper tiers,
 
-    TIAdministrationManager tiAdministrationMgr) {
+            TIAdministrationManager tiAdministrationMgr) {
 
         TIAdministrationViewBean tiAdministration = null;
 

@@ -9,6 +9,7 @@ import ch.globaz.corvus.process.attestationsfiscales.REAttestationsFiscalesUtils
 import ch.globaz.corvus.process.attestationsfiscales.REFamillePourAttestationsFiscales;
 import ch.globaz.corvus.process.attestationsfiscales.RETiersPourAttestationsFiscales;
 import ch.globaz.utils.excel.ExcelAbstractDocumentGenerator;
+import globaz.jade.log.JadeLogger;
 
 public class REListeExcelAttestationsFiscalesNonSorties extends ExcelAbstractDocumentGenerator {
 
@@ -95,7 +96,8 @@ public class REListeExcelAttestationsFiscalesNonSorties extends ExcelAbstractDoc
     }
 
     private String hasRenteTerminantDansAnnee(REFamillePourAttestationsFiscales uneFamille) {
-        if (REAttestationsFiscalesUtils.hasRenteFinissantDansAnnee(uneFamille, annee)) {
+        if (REAttestationsFiscalesUtils.hasRenteFinissantDansAnnee(uneFamille, annee)
+                || REAttestationsFiscalesUtils.hasRenteDateFinAvantDebutUniquement(uneFamille)) {
             return "X";
         }
         return "";
@@ -115,6 +117,17 @@ public class REListeExcelAttestationsFiscalesNonSorties extends ExcelAbstractDoc
         return "";
     }
 
+    private String hasAjournement(REFamillePourAttestationsFiscales uneFamille) {
+        try {
+            if (REAttestationsFiscalesUtils.isAjournementMontant0(uneFamille, anneeAsInteger)) {
+                return "X";
+            }
+        } catch (Exception e) {
+            JadeLogger.debug(this, e.getMessage());
+        }
+        return "";
+    }
+
     @Override
     public IMergingContainer loadData() throws Exception {
         CommonExcelmlContainer data = new CommonExcelmlContainer();
@@ -130,6 +143,7 @@ public class REListeExcelAttestationsFiscalesNonSorties extends ExcelAbstractDoc
             data.put("has_deces_dans_annee", hasPersonneDecedeeDurantAnneeFiscale(uneFamille));
             data.put("has_retroactif", hasRetroactif(uneFamille));
             data.put("has_superposition", hasRenteQuiSeChevauchent(uneFamille));
+            data.put("has_ajournement", hasAjournement(uneFamille));
         }
 
         return data;
@@ -147,6 +161,7 @@ public class REListeExcelAttestationsFiscalesNonSorties extends ExcelAbstractDoc
         data.put("label_deces_dans_annee", session.getLabel("EXCEL_ATTESTATION_FISCALES_DECES_DANS_ANNEE_FISCALE"));
         data.put("label_retroactif", session.getLabel("EXCEL_ATTESTATION_FISCALES_RETROACTIF"));
         data.put("label_has_superposition", session.getLabel("EXCEL_ATTESTATION_FISCALES_SUPERPOSITION_RENTES"));
+        data.put("label_is_ajournement", session.getLabel("EXCEL_ATTESTATION_FISCALES_AJOURNEMNT"));
     }
 
     public void setAnnee(String annee) {

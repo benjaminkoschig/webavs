@@ -18,6 +18,7 @@ import globaz.globall.util.JACalendarGregorian;
 import globaz.globall.util.JADate;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.helpers.PRAbstractHelper;
+import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.tools.PRDateFormater;
 
 public class REImprimerDecisionHelper extends PRAbstractHelper {
@@ -27,7 +28,7 @@ public class REImprimerDecisionHelper extends PRAbstractHelper {
 
     /**
      * (non javadoc)
-     * 
+     *
      * @see globaz.framework.controller.FWHelper#_start(globaz.framework.bean.FWViewBeanInterface,
      *      globaz.framework.controller.FWAction, globaz.globall.api.BISession)
      */
@@ -55,8 +56,8 @@ public class REImprimerDecisionHelper extends PRAbstractHelper {
             JADate datePmtMensuel = null;
 
             if (!JadeStringUtil.isBlankOrZero(REPmtMensuel.getDateDernierPmt((BSession) session))) {
-                datePmtMensuel = new JADate(PRDateFormater.convertDate_JJxMMxAAAA_to_MMxAAAA(REPmtMensuel
-                        .getDateDernierPmt((BSession) session)));
+                datePmtMensuel = new JADate(PRDateFormater
+                        .convertDate_JJxMMxAAAA_to_MMxAAAA(REPmtMensuel.getDateDernierPmt((BSession) session)));
             }
 
             JADate dateDebutDroit = new JADate(PRDateFormater.convertDate_JJxMMxAAAA_to_MMxAAAA(dem.getDateDebut()));
@@ -74,8 +75,8 @@ public class REImprimerDecisionHelper extends PRAbstractHelper {
 
                         if ((cal.compare(dateDecision, datePmtMensuel) == JACalendar.COMPARE_FIRSTUPPER &&
 
-                        (cal.compare(dateDecision, dateDebutDroit) == JACalendar.COMPARE_FIRSTUPPER || cal.compare(
-                                dateDecision, dateDebutDroit) == JACalendar.COMPARE_EQUALS))) {
+                                (cal.compare(dateDecision, dateDebutDroit) == JACalendar.COMPARE_FIRSTUPPER
+                                        || cal.compare(dateDecision, dateDebutDroit) == JACalendar.COMPARE_EQUALS))) {
                             vb._addError("JSP_PRP_D_RECDEM");
                         }
                     } else {
@@ -99,7 +100,12 @@ public class REImprimerDecisionHelper extends PRAbstractHelper {
 
                 BProcessLauncher.start(imprimerDecision, false);
             }
-
+            String typeCaisse = session.getRemoteApplication().getProperty(PRTiersHelper.TYPE_DE_CAISSE);
+            if (typeCaisse.contains(PRTiersHelper.CAISSE_CANT) || typeCaisse.contains(PRTiersHelper.CAISSE_PROF)) {
+                vb.setIsTypeCorrect(true);
+            } else {
+                vb.setIsTypeCorrect(false);
+            }
         } catch (Exception e) {
             viewBean.setMessage(e.toString());
             viewBean.setMsgType(FWMessage.ERREUR);

@@ -1,35 +1,12 @@
 package globaz.corvus.topaz;
 
-import globaz.babel.utils.CatalogueText;
-import globaz.caisse.helper.CaisseHelperFactory;
-import globaz.caisse.report.helper.CaisseHeaderReportBean;
-import globaz.caisse.report.helper.ICaisseReportHelperOO;
-import globaz.corvus.api.codesystem.IRECatalogueTexte;
-import globaz.corvus.api.topaz.IRENoDocumentInfoRom;
-import globaz.corvus.application.REApplication;
-import globaz.corvus.utils.REGedUtils;
-import globaz.docinfo.TIDocumentInfoHelper;
-import globaz.framework.util.FWCurrency;
-import globaz.globall.util.JACalendar;
-import globaz.globall.util.JADate;
-import globaz.globall.util.JANumberFormatter;
-import globaz.jade.client.util.JadeDateUtil;
-import globaz.jade.client.util.JadeNumericUtil;
-import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.exception.JadePersistenceException;
-import globaz.jade.print.server.JadePrintDocumentContainer;
-import globaz.jade.publish.document.JadePublishDocumentInfo;
-import globaz.jade.publish.document.JadePublishDocumentInfoProvider;
-import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
-import globaz.prestation.tools.PRDateFormater;
-import globaz.prestation.tools.PRStringUtils;
-import globaz.pyxis.api.ITIPersonne;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -49,6 +26,35 @@ import ch.globaz.prestation.domaine.CodePrestation;
 import ch.globaz.topaz.datajuicer.Collection;
 import ch.globaz.topaz.datajuicer.DataList;
 import ch.globaz.topaz.datajuicer.DocumentData;
+import ch.globaz.topaz.mixer.postprocessor.PostProcessor;
+import globaz.babel.utils.CatalogueText;
+import globaz.caisse.helper.CaisseHelperFactory;
+import globaz.caisse.report.helper.CaisseHeaderReportBean;
+import globaz.caisse.report.helper.ICaisseReportHelperOO;
+import globaz.corvus.api.basescalcul.IREPrestationDue;
+import globaz.corvus.api.codesystem.IRECatalogueTexte;
+import globaz.corvus.api.topaz.IRENoDocumentInfoRom;
+import globaz.corvus.application.REApplication;
+import globaz.corvus.db.attestationsFiscales.REAttestationFiscaleRentAccordOrdreVerse;
+import globaz.corvus.db.attestationsFiscales.REAttestationFiscaleRentAccordOrdreVerseManager;
+import globaz.corvus.utils.REGedUtils;
+import globaz.docinfo.TIDocumentInfoHelper;
+import globaz.framework.util.FWCurrency;
+import globaz.globall.db.BManager;
+import globaz.globall.util.JACalendar;
+import globaz.globall.util.JADate;
+import globaz.globall.util.JANumberFormatter;
+import globaz.jade.client.util.JadeDateUtil;
+import globaz.jade.client.util.JadeNumericUtil;
+import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.print.server.JadePrintDocumentContainer;
+import globaz.jade.publish.document.JadePublishDocumentInfo;
+import globaz.jade.publish.document.JadePublishDocumentInfoProvider;
+import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
+import globaz.prestation.tools.PRDateFormater;
+import globaz.prestation.tools.PRStringUtils;
+import globaz.pyxis.api.ITIPersonne;
 
 public class REAttestationsFiscalesOO extends REAbstractJobOO {
 
@@ -138,16 +144,16 @@ public class REAttestationsFiscalesOO extends REAbstractJobOO {
             public int compare(RETiersPourAttestationsFiscales tiers1, RETiersPourAttestationsFiscales tiers2) {
 
                 for (RERentePourAttestationsFiscales renteTiers1 : tiers1.getRentes()) {
-                    CodePrestation codePrestation = CodePrestation.getCodePrestation(Integer.parseInt(renteTiers1
-                            .getCodePrestation()));
+                    CodePrestation codePrestation = CodePrestation
+                            .getCodePrestation(Integer.parseInt(renteTiers1.getCodePrestation()));
                     if (codePrestation.isRentePrincipale()) {
                         return -1;
                     }
                 }
 
                 for (RERentePourAttestationsFiscales renteTiers2 : tiers2.getRentes()) {
-                    CodePrestation codePrestation = CodePrestation.getCodePrestation(Integer.parseInt(renteTiers2
-                            .getCodePrestation()));
+                    CodePrestation codePrestation = CodePrestation
+                            .getCodePrestation(Integer.parseInt(renteTiers2.getCodePrestation()));
                     if (codePrestation.isRentePrincipale()) {
                         return 1;
                     }
@@ -158,6 +164,7 @@ public class REAttestationsFiscalesOO extends REAbstractJobOO {
         });
 
         boolean hasRetroactifSurPlusieursAnnees = famille.getHasRetroactifSurPlusieursAnnees();
+        boolean hasRetroactifVersementCreancier = false;
 
         /*
          * Dans le cas ou la famille possède du rétro sur plusieurs années, un traitement particulier est requis pour
@@ -165,7 +172,8 @@ public class REAttestationsFiscalesOO extends REAbstractJobOO {
          * On recherche la date de décision la plus élevée dans l'année fiscales et on atteste toutes les rentes le mois
          * suivants cette date de décision
          */
-        Date dateDeDecisionFinale = null;
+        // Date dateDeDecisionFinale = null;
+        HashMap<String, REAttestationFiscaleRentAccordOrdreVerse> listOVRetroMultiAnnee = new HashMap<String, REAttestationFiscaleRentAccordOrdreVerse>();
         if (hasRetroactifSurPlusieursAnnees) {
             SimpleDateFormat reader = new SimpleDateFormat("dd.MM.yyyy");
             SimpleDateFormat yearsWriter = new SimpleDateFormat("yyyy");
@@ -195,20 +203,40 @@ public class REAttestationsFiscalesOO extends REAbstractJobOO {
                     if (year == 0 || !Integer.valueOf(getAnnee()).equals(year)) {
                         continue;
                     }
-
                     if (yearMonth > dateDeDecisionInteger) {
                         dateDeDecisionInteger = yearMonth;
-                        dateDeDecisionFinale = dateDeDecision;
+                        // dateDeDecisionFinale = dateDeDecision;
+                    }
+                    REAttestationFiscaleRentAccordOrdreVerseManager mgr = new REAttestationFiscaleRentAccordOrdreVerseManager();
+                    mgr.setSession(getSession());
+                    mgr.setForIdRenteAccordee(rente.getIdRenteAccordee());
+                    mgr.setForCsType(IREPrestationDue.CS_TYPE_PMT_MENS);
+                    mgr.find(BManager.SIZE_NOLIMIT);
+                    if (mgr.size() > 0) {
+                        for (int i = 0; i < mgr.size(); i++) {
+                            int value = Integer.parseInt(yearsMonthWriter.format(dateDeDecision));
+                            value++; // ajout d'un mois
+                            dateDeDecision = yearsMonthWriter.parse(String.valueOf(value));
+                            REAttestationFiscaleRentAccordOrdreVerse ovs = (REAttestationFiscaleRentAccordOrdreVerse) mgr
+                                    .get(i);
+                            if (ovs.hasVersementCreancier()) {
+                                ovs.setDateDecisionFinal(dateDeDecision);
+                                listOVRetroMultiAnnee.put(rente.getIdRenteAccordee(), ovs);
+                                hasRetroactifVersementCreancier = true;
+                            } else {
+                                listOVRetroMultiAnnee.put(rente.getIdRenteAccordee(), ovs);
+                            }
+                        }
                     }
 
                 }
             }
 
-            if (dateDeDecisionFinale != null) {
-                int value = Integer.valueOf(yearsMonthWriter.format(dateDeDecisionFinale));
-                value++; // ajout d'un mois
-                dateDeDecisionFinale = yearsMonthWriter.parse(String.valueOf(value));
-            }
+            // if (dateDeDecisionFinale != null) {
+            // int value = Integer.valueOf(yearsMonthWriter.format(dateDeDecisionFinale));
+            // value++; // ajout d'un mois
+            // dateDeDecisionFinale = yearsMonthWriter.parse(String.valueOf(value));
+            // }
         }
         /*
          * Traitement normal
@@ -225,10 +253,17 @@ public class REAttestationsFiscalesOO extends REAbstractJobOO {
 
                 String dateMoisDebut = null;
 
-                if (hasRetroactifSurPlusieursAnnees && dateDeDecisionFinale != null) {
-
-                    SimpleDateFormat writer = new SimpleDateFormat("MM.yyyy");
-                    dateMoisDebut = "01." + writer.format(dateDeDecisionFinale);
+                if (hasRetroactifSurPlusieursAnnees
+                        && listOVRetroMultiAnnee.containsKey(uneRenteDuBeneficiaire.getIdRenteAccordee())) {
+                    if (listOVRetroMultiAnnee.get(uneRenteDuBeneficiaire.getIdRenteAccordee())
+                            .hasVersementCreancier()) {
+                        Date dateDecisionRente = listOVRetroMultiAnnee.get(uneRenteDuBeneficiaire.getIdRenteAccordee())
+                                .getDateDecisionFinal();
+                        SimpleDateFormat writer = new SimpleDateFormat("MM.yyyy");
+                        dateMoisDebut = "01." + writer.format(dateDecisionRente);
+                    } else {
+                        dateMoisDebut = "01." + getMoisDebut(uneRenteDuBeneficiaire);
+                    }
                 } else {
                     dateMoisDebut = "01." + getMoisDebut(uneRenteDuBeneficiaire);
                 }
@@ -244,14 +279,17 @@ public class REAttestationsFiscalesOO extends REAbstractJobOO {
                  */
                 if (nbMois > 0) {
 
-                    CodePrestation codePrestation = CodePrestation.getCodePrestation(Integer
-                            .parseInt(uneRenteDuBeneficiaire.getCodePrestation()));
+                    CodePrestation codePrestation = CodePrestation
+                            .getCodePrestation(Integer.parseInt(uneRenteDuBeneficiaire.getCodePrestation()));
 
                     // si API, on ne l'affiche pas dans la liste, mais une remarque sera ajouté plus tard
                     // avec le degré de cette API
+                    Calendar finMois = JadeDateUtil.getGlobazCalendar(dateMoisFin);
                     if (codePrestation.isAPI()) {
-                        hasAPI = true;
-                        degreAPI = codePrestation.getDegreImpotenceAPI();
+                        if(Calendar.DECEMBER == finMois.get(Calendar.MONTH)) {
+                            hasAPI = true;
+                            degreAPI = codePrestation.getDegreImpotenceAPI();
+                        }
                         continue;
                     }
 
@@ -297,13 +335,14 @@ public class REAttestationsFiscalesOO extends REAbstractJobOO {
 
                     ligneInfoRente.addData("periode_rente", periodeRente.toString());
 
-                    double montantAnnuel = Double.parseDouble(JANumberFormatter.deQuote(uneRenteDuBeneficiaire
-                            .getMontantPrestation())) * nbMois;
+                    double montantAnnuel = Double.parseDouble(
+                            JANumberFormatter.deQuote(uneRenteDuBeneficiaire.getMontantPrestation())) * nbMois;
                     montantTotal += montantAnnuel;
 
                     ligneInfoRente.addData("montant_rente", new FWCurrency(montantAnnuel).toStringFormat());
 
                     tableauBeneficiaires.add(ligneInfoRente);
+
                 }
             }
         }
@@ -314,6 +353,8 @@ public class REAttestationsFiscalesOO extends REAbstractJobOO {
         // table vide pour enlever la section "Autres rentes" (utilisée uniquement pour les attestations uniques)
         Collection autreTable = new Collection("TableauAutre");
         data.add(autreTable);
+        
+        String lastLine = "";
 
         if (hasAPI) {
             String texteAPI = null;
@@ -335,17 +376,20 @@ public class REAttestationsFiscalesOO extends REAbstractJobOO {
             if (!JadeStringUtil.isBlank(texteAPI)) {
                 data.addData("TITRE_API", getTexte(catalogueTextesAttestationsFiscales, 4, 1));
                 data.addData("TEXTE_API", texteAPI);
+                lastLine = "TEXTE_API";
             }
         }
 
         if (famille.hasPlusieursAdressePaiement()) {
             data.addData("PLUSIEURS_ATT_FAMILLE", getTexte(catalogueTextesAttestationsFiscales, 4, 6) + SAUT_DE_LIGNE);
+            lastLine = "PLUSIEURS_ATT_FAMILLE";
         }
         // Si PC en décembre
         if (famille.getHasRentePC()) {
             String texte = getTexte(catalogueTextesAttestationsFiscales, 4, 7);
             texte = texte + SAUT_DE_LIGNE;
             data.addData("HAS_PC_DECEMBRE", texte);
+            lastLine = "HAS_PC_DECEMBRE";
         }
         // Si rétroactif
         if (famille.getHasRetroactif()) {
@@ -354,12 +398,25 @@ public class REAttestationsFiscalesOO extends REAbstractJobOO {
                 texte = texte.replace("{annee}", getAnnee());
                 texte = texte + SAUT_DE_LIGNE;
             }
-            data.addData("HAS_RETROACTIF", texte);
+            if (!hasRetroactifSurPlusieursAnnees) {
+                data.addData("HAS_RETROACTIF", texte);
+                lastLine = "HAS_RETROACTIF";
+            } else {
+                if (hasRetroactifVersementCreancier) {
+                    data.addData("HAS_RETROACTIF", texte);
+                    lastLine = "HAS_RETROACTIF";
+                }
+            }
+        }
+        
+        // pour lier le dernier paragraphe aux salutations
+        if(!lastLine.isEmpty()) {
+            data.addData(lastLine, data.getDatabag().get(lastLine) + PostProcessor.GLUE_PARAGRAPHS);
         }
 
-        data.addData("SALUTATION_ATTESTATION", PRStringUtils.replaceString(
-                getTexte(catalogueTextesAttestationsFiscales, 5, 1), "{TitreSalutation}",
-                tiersCorrespondance.getTitreTiers()));
+        data.addData("SALUTATION_ATTESTATION",
+                PRStringUtils.replaceString(getTexte(catalogueTextesAttestationsFiscales, 5, 1), "{TitreSalutation}",
+                        tiersCorrespondance.getTitreTiers()));
 
         return data;
     }
@@ -407,9 +464,9 @@ public class REAttestationsFiscalesOO extends REAbstractJobOO {
             singleDocInfo.setPublishDocument(false);
             singleDocInfo.setDocumentType(IRENoDocumentInfoRom.ATTESTATIONS_FISCALES_ANNUELLE);
             singleDocInfo.setDocumentTypeNumber(IRENoDocumentInfoRom.ATTESTATIONS_FISCALES_ANNUELLE);
-            singleDocInfo.setDocumentProperty(REGedUtils.PROPRIETE_GED_TYPE_DEMANDE_RENTE, REGedUtils
-                    .getCleGedPourTypeRente(getSession(), REGedUtils.getTypeRentePourListeCodesPrestation(getSession(),
-                            getCodePrestationFamille(uneFamille), false, true)));
+            singleDocInfo.setDocumentProperty(REGedUtils.PROPRIETE_GED_TYPE_DEMANDE_RENTE,
+                    REGedUtils.getCleGedPourTypeRente(getSession(), REGedUtils.getTypeRentePourListeCodesPrestation(
+                            getSession(), getCodePrestationFamille(uneFamille), false, true)));
 
             // bz-7950
             RETiersPourAttestationsFiscales tiersCorrespondance = null;
@@ -441,21 +498,21 @@ public class REAttestationsFiscalesOO extends REAbstractJobOO {
             CaisseHeaderReportBean crBean = new CaisseHeaderReportBean();
             crBean.setAdresse(tiersCorrespondance.getAdresseCourrierFormatee());
 
-            ICaisseReportHelperOO caisseHelper = CaisseHelperFactory.getInstance().getCaisseReportHelperOO(
-                    getSession().getApplication(), tiersCorrespondance.getCodeIsoLangue());
+            ICaisseReportHelperOO caisseHelper = CaisseHelperFactory.getInstance()
+                    .getCaisseReportHelperOO(getSession().getApplication(), tiersCorrespondance.getCodeIsoLangue());
             caisseHelper.setTemplateName(REAttestationsFiscalesOO.FICHIER_MODELE_ENTETE_CORVUS);
 
             if (Boolean.parseBoolean(getSession().getApplication().getProperty("isAfficherDossierTraitePar"))) {
                 StringBuilder nomCollaboration = new StringBuilder();
                 nomCollaboration.append(getTexte(catalogueTextesAttestationsFiscales, 6, 1)).append(" ")
                         .append(getSession().getUserFullName());
-                
+
                 // Uniquement pour la FERCIAM
-                if((NUM_CAISSE_FERCIAM).equals(CommonPropertiesUtils.getValue(CommonProperties.KEY_NO_CAISSE))) {
+                if ((NUM_CAISSE_FERCIAM).equals(CommonPropertiesUtils.getValue(CommonProperties.KEY_NO_CAISSE))) {
                     CatalogueText catalogue = definirCataloguesDeTextes().get(0);
                     crBean.setNomCollaborateur(getTexte(catalogue, 6, 1) + " " + getTexte(catalogue, 6, 2));
                     crBean.setTelCollaborateur(getTexte(catalogue, 6, 3));
-                }else {
+                } else {
                     crBean.setNomCollaborateur(nomCollaboration.toString());
                     crBean.setTelCollaborateur(getSession().getUserInfo().getPhone());
                 }
@@ -480,8 +537,8 @@ public class REAttestationsFiscalesOO extends REAbstractJobOO {
             } else if (JadeDateUtil.isGlobazDateMonthYear(dateImpression)) {
                 JADate date = new JADate(dateImpression);
                 StringBuilder dateImpression = new StringBuilder();
-                dateImpression.append(" ").append(
-                        JACalendar.getMonthName(date.getMonth(), tiersCorrespondance.getCodeIsoLangue()));
+                dateImpression.append(" ")
+                        .append(JACalendar.getMonthName(date.getMonth(), tiersCorrespondance.getCodeIsoLangue()));
                 dateImpression.append(" ").append(Integer.toString(date.getYear()));
 
                 crBean.setDate(dateImpression.toString());
@@ -507,8 +564,8 @@ public class REAttestationsFiscalesOO extends REAbstractJobOO {
         for (RERentePourAttestationsFiscales uneRente : famille.getRentesDeLaFamille()) {
             if (!JadeStringUtil.isBlankOrZero(uneRente.getCodePrestation())
                     && JadeNumericUtil.isInteger(uneRente.getCodePrestation())) {
-                CodePrestation codePrestation = CodePrestation.getCodePrestation(Integer.parseInt(uneRente
-                        .getCodePrestation()));
+                CodePrestation codePrestation = CodePrestation
+                        .getCodePrestation(Integer.parseInt(uneRente.getCodePrestation()));
                 codesPrestation.add(codePrestation);
             }
         }

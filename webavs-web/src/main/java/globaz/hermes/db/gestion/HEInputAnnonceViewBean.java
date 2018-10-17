@@ -86,8 +86,6 @@ public class HEInputAnnonceViewBean extends HEAnnoncesViewBean {
     private boolean wantCheckUnique = true;
     private String warningEmployeurSansPersoOrAccountZero = "";
 
-    private Boolean chkCreerArc61 = false;
-
     public HEInputAnnonceViewBean() {
         super();
     }
@@ -311,12 +309,13 @@ public class HEInputAnnonceViewBean extends HEAnnoncesViewBean {
 
     private void addARC61(BTransaction transaction) {
         try {
-            if (CODE_ARC_11.equals(getMotif()) && getChkCreerArc61() && !JadeStringUtil.isBlankOrZero(getNumeroAVS())) {
+            if ((CODE_ARC_11.equals(getMotif()) || CODE_ARC_31.equals(getMotif())) && getIsArc61Cree()
+                    && !JadeStringUtil.isBlankOrZero(getNumeroAVS())) {
                 HEInputAnnonceViewBean viewbean = (HEInputAnnonceViewBean) clone();
                 // Le critère 32 est celui utilisé lorsqu'on saisi un motif 61
                 viewbean.computeNeededFields(HECSMotif.CS_AVEC_CI_CA_PRESENTE, "32");
                 viewbean.setMotif(CODE_ARC_61);
-                viewbean.setChkCreerArc61(false);
+                viewbean.setIsArc61Cree(false);
                 viewbean.getInputTable().put(IHEAnnoncesViewBean.MOTIF_ANNONCE, CODE_ARC_61);
                 viewbean.getInputTable().put(IHEAnnoncesViewBean.ETAT_NOMINATIF, "");
                 viewbean.getInputTable().put(IHEAnnoncesViewBean.DATE_NAISSANCE_JJMMAAAA, "");
@@ -945,6 +944,10 @@ public class HEInputAnnonceViewBean extends HEAnnoncesViewBean {
 
     public int critereSize() {
         return motifCodeAppListe.size();
+    }
+
+    public HEInputAnnonceViewBean cloneViewBean() throws CloneNotSupportedException {
+        return (HEInputAnnonceViewBean) clone();
     }
 
     /**
@@ -1783,14 +1786,6 @@ public class HEInputAnnonceViewBean extends HEAnnoncesViewBean {
      */
     public void setFormulePolitesse(String formulePolitesse) {
         this.formulePolitesse = formulePolitesse;
-    }
-
-    public Boolean getChkCreerArc61() {
-        return chkCreerArc61;
-    }
-
-    public void setChkCreerArc61(Boolean chkCreerArc61) {
-        this.chkCreerArc61 = chkCreerArc61;
     }
 
 }

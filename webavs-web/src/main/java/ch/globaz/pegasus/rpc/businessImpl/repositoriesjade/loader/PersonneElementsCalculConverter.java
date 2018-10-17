@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ch.globaz.common.domaine.Date;
 import ch.globaz.common.domaine.Montant;
+import ch.globaz.pegasus.business.constantes.donneesfinancieres.IPCIJAI;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.DonneeFinanciereType;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.DonneesFinancieresContainer;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.Filtre;
@@ -17,8 +18,7 @@ import ch.globaz.pegasus.business.domaine.donneeFinanciere.autreRente.AutreRente
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.autreRente.AutreRenteGenre;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.autreRente.AutresRentes;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.bienImmobilier.BienImmobilier;
-import ch.globaz.pegasus.business.domaine.donneeFinanciere.bienImmobilier.bienImmobilierNonHabitable.BienImmobilierNonHabitable;
-import ch.globaz.pegasus.business.domaine.donneeFinanciere.bienImmobilier.bienImmobilierNonHabitable.BienImmobilierNonHabitableType;
+import ch.globaz.pegasus.business.domaine.donneeFinanciere.iJAi.IjsAi;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.pensionAlimentaire.PensionAlimentaireType;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.renteAvsAi.RenteAvsAi;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.taxeJournalierHome.TaxeJournaliereHome;
@@ -174,7 +174,7 @@ public class PersonneElementsCalculConverter {
 
         perElCal.setLegalAddress(legalAddress);
         perElCal.setLivingAddress(livingAddress);
-        perElCal.setTypeRenteCS(resolveMaxType(dfFiltre));
+        perElCal.setTypeRenteCS(resolveMaxType(dfFiltre, df.getIjAis()));
 
         Montant propIncome = Montant.ZERO;
         Montant usuIncome = Montant.ZERO;
@@ -251,7 +251,7 @@ public class PersonneElementsCalculConverter {
         return montantRentesEtranger;
     }
 
-    private String resolveMaxType(DonneesFinancieresContainer df) {
+    private String resolveMaxType(DonneesFinancieresContainer df, IjsAi ijsAi) {
         List<RenteAvsAi> typesRente = df.getRentesAvsAi().getList();
         List<ApiAvsAi> typesApi = df.getApisAvsAi().getList();
         Montant maxMontant = Montant.ZERO;
@@ -267,6 +267,9 @@ public class PersonneElementsCalculConverter {
                 maxMontant = api.getMontant();
                 typeRenteCS = api.getTypeApi().getValue();
             }
+        }
+        if("".equals(typeRenteCS) && ijsAi != null && !ijsAi.isEmpty()) {
+            typeRenteCS = IPCIJAI.CS_TYPE_DONNEE_FINANCIERE;
         }
 
         return typeRenteCS;

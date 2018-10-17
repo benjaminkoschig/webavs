@@ -3,6 +3,9 @@
  */
 package globaz.corvus.db.rentesaccordees;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import globaz.corvus.api.basescalcul.IREPrestationAccordee;
 import globaz.corvus.db.basescalcul.REBasesCalcul;
 import globaz.corvus.db.demandes.REDemandeRente;
@@ -25,18 +28,15 @@ import globaz.prestation.tools.PRDateFormater;
 import globaz.prestation.tools.PRStringUtils;
 import globaz.prestation.tools.nnss.PRNSSUtil;
 import globaz.webavs.common.BIGenericManager;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * @author SCR
  */
-public class RERenteAccJoinTblTiersJoinDemRenteManager extends PRAbstractManager implements
-        BIGenericManager<RERenteAccJoinTblTiersJoinDemandeRente> {
+public class RERenteAccJoinTblTiersJoinDemRenteManager extends PRAbstractManager
+        implements BIGenericManager<RERenteAccJoinTblTiersJoinDemandeRente> {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
     private boolean escapeString = true;
@@ -89,8 +89,8 @@ public class RERenteAccJoinTblTiersJoinDemRenteManager extends PRAbstractManager
             sfManager.setSession(getSession());
             sfManager.setLikeNoAvs(likeNumeroAVS);
             sfManager.setlikeNoAvsNNSS(likeNumeroAVSNNSS);
-            sfManager.setForCsDomainesIn(ISFSituationFamiliale.CS_DOMAINE_RENTES + ", "
-                    + ISFSituationFamiliale.CS_DOMAINE_STANDARD);
+            sfManager.setForCsDomainesIn(
+                    ISFSituationFamiliale.CS_DOMAINE_RENTES + ", " + ISFSituationFamiliale.CS_DOMAINE_STANDARD);
 
             sfManager.find(BManager.SIZE_NOLIMIT);
 
@@ -100,8 +100,8 @@ public class RERenteAccJoinTblTiersJoinDemRenteManager extends PRAbstractManager
             // prend donc la SF pour le domaine rente.
             // En passant null comme idTiersRequerant, aucun test n'est fait, et
             // on est certain d'en obtenir une.
-            globaz.hera.api.ISFSituationFamiliale sitFam = SFSituationFamilialeFactory.getSituationFamiliale(
-                    getSession(), ISFSituationFamiliale.CS_DOMAINE_RENTES, null);
+            globaz.hera.api.ISFSituationFamiliale sitFam = SFSituationFamilialeFactory
+                    .getSituationFamiliale(getSession(), ISFSituationFamiliale.CS_DOMAINE_RENTES, null);
 
             for (Iterator iter = sfManager.iterator(); iter.hasNext();) {
                 RESituationFamiliale sf = (RESituationFamiliale) iter.next();
@@ -135,8 +135,8 @@ public class RERenteAccJoinTblTiersJoinDemRenteManager extends PRAbstractManager
                 }
 
                 // Rechercher les autres membres de la famille
-                ISFMembreFamilleRequerant[] membresFamille1 = sitFam.getMembresFamilleRequerantParMbrFamille(sf
-                        .getIdMembreFamille());
+                ISFMembreFamilleRequerant[] membresFamille1 = sitFam
+                        .getMembresFamilleRequerantParMbrFamille(sf.getIdMembreFamille());
 
                 for (int i = 0; i < membresFamille1.length; i++) {
                     ISFMembreFamilleRequerant membreFamille1 = membresFamille1[i];
@@ -181,10 +181,10 @@ public class RERenteAccJoinTblTiersJoinDemRenteManager extends PRAbstractManager
 
             if ((!JadeStringUtil.isBlankOrZero(likeNumeroAVSNNSS) && !JadeStringUtil.isEmpty(getLikeNumeroAVS()))
                     && !(isRechercheFamille && (nbTiersFamille > 0))) {
-                from.append(" LEFT JOIN " + _getCollection() + IPRTiers.TABLE_AVS_HIST + " AS "
-                        + IPRTiers.TABLE_AVS_HIST + " ON (" + _getCollection() + IPRTiers.TABLE_AVS + "."
-                        + IPRTiers.FIELD_TI_IDTIERS + " = " + IPRTiers.TABLE_AVS_HIST + "." + IPRTiers.FIELD_TI_IDTIERS
-                        + ")");
+                from.append(
+                        " LEFT JOIN " + _getCollection() + IPRTiers.TABLE_AVS_HIST + " AS " + IPRTiers.TABLE_AVS_HIST
+                                + " ON (" + _getCollection() + IPRTiers.TABLE_AVS + "." + IPRTiers.FIELD_TI_IDTIERS
+                                + " = " + IPRTiers.TABLE_AVS_HIST + "." + IPRTiers.FIELD_TI_IDTIERS + ")");
             }
 
             fromClause = from.toString();
@@ -195,7 +195,7 @@ public class RERenteAccJoinTblTiersJoinDemRenteManager extends PRAbstractManager
 
     /**
      * Renvoie la clause WHERE de la requête SQL
-     * 
+     *
      * @param statement
      *            DOCUMENT ME!
      * @return DOCUMENT ME!
@@ -238,13 +238,9 @@ public class RERenteAccJoinTblTiersJoinDemRenteManager extends PRAbstractManager
                     sqlWhere += " AND ";
                 }
 
-                sqlWhere += schema
-                        + REDemandeRenteJointDemande.TABLE_TIERS
-                        + "."
-                        + REDemandeRenteJointDemande.FIELDNAME_NOM_FOR_SEARCH
-                        + " like "
-                        + this._dbWriteString(statement.getTransaction(),
-                                PRStringUtils.upperCaseWithoutSpecialChars(likeNom) + "%");
+                sqlWhere += schema + REDemandeRenteJointDemande.TABLE_TIERS + "."
+                        + REDemandeRenteJointDemande.FIELDNAME_NOM_FOR_SEARCH + " like " + this._dbWriteString(
+                                statement.getTransaction(), PRStringUtils.upperCaseWithoutSpecialChars(likeNom) + "%");
             }
 
             if (!JadeStringUtil.isEmpty(likePrenom)) {
@@ -252,11 +248,8 @@ public class RERenteAccJoinTblTiersJoinDemRenteManager extends PRAbstractManager
                     sqlWhere += " AND ";
                 }
 
-                sqlWhere += schema
-                        + REDemandeRenteJointDemande.TABLE_TIERS
-                        + "."
-                        + REDemandeRenteJointDemande.FIELDNAME_PRENOM_FOR_SEARCH
-                        + " like "
+                sqlWhere += schema + REDemandeRenteJointDemande.TABLE_TIERS + "."
+                        + REDemandeRenteJointDemande.FIELDNAME_PRENOM_FOR_SEARCH + " like "
                         + this._dbWriteString(statement.getTransaction(),
                                 PRStringUtils.upperCaseWithoutSpecialChars(likePrenom) + "%");
             }
@@ -408,14 +401,11 @@ public class RERenteAccJoinTblTiersJoinDemRenteManager extends PRAbstractManager
                 sqlWhere += " AND ";
             }
 
-            sqlWhere += "(("
-                    + _getCollection()
-                    + REPrestationsAccordees.TABLE_NAME_PRESTATIONS_ACCORDEES
-                    + "."
-                    + REPrestationsAccordees.FIELDNAME_DATE_FIN_DROIT
-                    + " >= "
+            sqlWhere += "((" + _getCollection() + REPrestationsAccordees.TABLE_NAME_PRESTATIONS_ACCORDEES + "."
+                    + REPrestationsAccordees.FIELDNAME_DATE_FIN_DROIT + " >= "
                     + this._dbWriteNumeric(statement.getTransaction(),
-                            PRDateFormater.convertDate_MMxAAAA_to_AAAAMM(forMoisFinRANotEmptyAndHigherOrEgal)) + ")";
+                            PRDateFormater.convertDate_MMxAAAA_to_AAAAMM(forMoisFinRANotEmptyAndHigherOrEgal))
+                    + ")";
 
             sqlWhere += " OR ";
 
@@ -437,14 +427,11 @@ public class RERenteAccJoinTblTiersJoinDemRenteManager extends PRAbstractManager
             sqlWhere += ")";
 
             sqlWhere += " AND ";
-            sqlWhere += "("
-                    + _getCollection()
-                    + REPrestationsAccordees.TABLE_NAME_PRESTATIONS_ACCORDEES
-                    + "."
-                    + REPrestationsAccordees.FIELDNAME_DATE_DEBUT_DROIT
-                    + " <= "
+            sqlWhere += "(" + _getCollection() + REPrestationsAccordees.TABLE_NAME_PRESTATIONS_ACCORDEES + "."
+                    + REPrestationsAccordees.FIELDNAME_DATE_DEBUT_DROIT + " <= "
                     + this._dbWriteNumeric(statement.getTransaction(),
-                            PRDateFormater.convertDate_MMxAAAA_to_AAAAMM(forMoisFinRANotEmptyAndHigherOrEgal)) + ")";
+                            PRDateFormater.convertDate_MMxAAAA_to_AAAAMM(forMoisFinRANotEmptyAndHigherOrEgal))
+                    + ")";
 
         }
 
@@ -453,11 +440,8 @@ public class RERenteAccJoinTblTiersJoinDemRenteManager extends PRAbstractManager
                 sqlWhere += " AND ";
             }
 
-            sqlWhere += _getCollection()
-                    + REPrestationsAccordees.TABLE_NAME_PRESTATIONS_ACCORDEES
-                    + "."
-                    + REPrestationsAccordees.FIELDNAME_DATE_DEBUT_DROIT
-                    + " <= "
+            sqlWhere += _getCollection() + REPrestationsAccordees.TABLE_NAME_PRESTATIONS_ACCORDEES + "."
+                    + REPrestationsAccordees.FIELDNAME_DATE_DEBUT_DROIT + " <= "
                     + this._dbWriteNumeric(statement.getTransaction(),
                             PRDateFormater.convertDate_MMxAAAA_to_AAAAMM(fromDateDebutDroit));
         }
@@ -489,13 +473,9 @@ public class RERenteAccJoinTblTiersJoinDemRenteManager extends PRAbstractManager
                 sqlWhere += " AND ";
             }
 
-            sqlWhere += _getCollection()
-                    + REPrestationsAccordees.TABLE_NAME_PRESTATIONS_ACCORDEES
-                    + "."
-                    + REPrestationsAccordees.FIELDNAME_DATE_DEBUT_DROIT
-                    + " = "
-                    + this._dbWriteNumeric(statement.getTransaction(),
-                            PRDateFormater.convertDate_MMxAAAA_to_AAAAMM(forDroitDu));
+            sqlWhere += _getCollection() + REPrestationsAccordees.TABLE_NAME_PRESTATIONS_ACCORDEES + "."
+                    + REPrestationsAccordees.FIELDNAME_DATE_DEBUT_DROIT + " = " + this._dbWriteNumeric(
+                            statement.getTransaction(), PRDateFormater.convertDate_MMxAAAA_to_AAAAMM(forDroitDu));
         }
 
         if (!JadeStringUtil.isBlankOrZero(forDroitAu)) {
@@ -523,7 +503,7 @@ public class RERenteAccJoinTblTiersJoinDemRenteManager extends PRAbstractManager
                     + REPrestationsAccordees.FIELDNAME_DATE_FIN_DROIT + " = 0" + " OR "
                     + REPrestationsAccordees.FIELDNAME_DATE_FIN_DROIT + " IS NULL " + " OR "
                     + REPrestationsAccordees.FIELDNAME_DATE_FIN_DROIT + " >= "
-                    + PRDateFormater.convertDate_MMxAAAA_to_AAAAMM(forEnCoursAtMois) + ")";
+                    + PRDateFormater.convertDate_MMxAAAA_to_AAAAMM(forEnCoursAtMois).substring(0, 4) + "01" + ")";
         }
 
         if (!JadeStringUtil.isEmpty(forCsEtatIn)) {
@@ -592,7 +572,7 @@ public class RERenteAccJoinTblTiersJoinDemRenteManager extends PRAbstractManager
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.db.BManager#_newEntity()
      */
     @Override
@@ -745,7 +725,7 @@ public class RERenteAccJoinTblTiersJoinDemRenteManager extends PRAbstractManager
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.prestation.db.PRAbstractManager#getOrderByDefaut()
      */
     @Override

@@ -6,7 +6,7 @@ import globaz.naos.api.IAFAffiliation;
 
 /**
  * Interface représentant un rôle au format définit par la comptabilité auxiliaire
- * 
+ *
  * @author auteur
  */
 public interface IntRole extends BIEntity {
@@ -34,8 +34,8 @@ public interface IntRole extends BIEntity {
     public String ROLE_ASSOCIATION_PROFESSIONNELLE = "68902003";
 
     /**
-     * 
-     * 
+     *
+     *
      * @param idRole
      *            idRole
      * @param idExterne
@@ -58,7 +58,7 @@ public interface IntRole extends BIEntity {
 
     /**
      * Renvoie l'affilié correspondant au numéro en paramètre.
-     * 
+     *
      * @param idExterneRole Un numéro d'affilié
      * @return Un objet affilié
      */
@@ -66,7 +66,7 @@ public interface IntRole extends BIEntity {
 
     /**
      * Retourne la date de début d'affiliation au format jj.mm.aaaa En cas de problème retourne ""
-     * 
+     *
      * @return la valeur de la propriété dateDebut
      */
     public String getDateDebut();
@@ -74,7 +74,7 @@ public interface IntRole extends BIEntity {
     /**
      * Retourne la date de début d'affiliation au format jj.mm.aaaa pour un idExterneRole donné En cas de problème
      * retourne ""
-     * 
+     *
      * @param idExterneRole
      * @return la valeur de la propriété dateDebut
      */
@@ -82,7 +82,7 @@ public interface IntRole extends BIEntity {
 
     /**
      * Retourne la date de début et date de fin d'affiliation au format jj.mm.aaaa En cas de problème retourne "-"
-     * 
+     *
      * @return la valeur de la propriété dateDebutDateFin
      */
     public String getDateDebutDateFin();
@@ -90,7 +90,7 @@ public interface IntRole extends BIEntity {
     /**
      * Retourne la date de début et date de fin d'affiliation au format jj.mm.aaaa pour un idExterneRole donné En cas de
      * problème retourne "-"
-     * 
+     *
      * @param idExterneRole
      * @return la valeur de la propriété dateDebutDateFin
      */
@@ -98,7 +98,7 @@ public interface IntRole extends BIEntity {
 
     /**
      * Retourne la date de fin d'affiliation au format jj.mm.aaaa En cas de problème retourne ""
-     * 
+     *
      * @return la valeur de la propriété dateFin
      */
     public String getDateFin();
@@ -106,7 +106,7 @@ public interface IntRole extends BIEntity {
     /**
      * Retourne la date de fin d'affiliation au format jj.mm.aaaa pour un idExterneRole donné En cas de problème
      * retourne ""
-     * 
+     *
      * @param idExterneRole
      * @return la valeur de la propriété dateFin
      */
@@ -114,14 +114,14 @@ public interface IntRole extends BIEntity {
 
     /**
      * Renvoie la valeur de la propriété description
-     * 
+     *
      * @return la valeur de la propriété description
      */
     public String getDescription();
 
     /**
      * Renvoie la valeur de la propriété description
-     * 
+     *
      * @return la valeur de la propriété description
      * @param codeISOLangue
      *            codeISOLangue
@@ -130,14 +130,14 @@ public interface IntRole extends BIEntity {
 
     /**
      * Renvoie la valeur de la propriété idCategorie
-     * 
+     *
      * @return la valeur de la propriété idCategorie
      */
     public String getIdCategorie();
 
     /**
      * Renvoie la valeur de la propriété idCategorie en fonction de lidExterneRole
-     * 
+     *
      * @param idExterneRole
      * @return la valeur de la propriété idCategorie en fonction de lidExterneRole
      */
@@ -145,21 +145,21 @@ public interface IntRole extends BIEntity {
 
     /**
      * Renvoie la valeur de la propriété idExterne
-     * 
+     *
      * @return la valeur de la propriété idExterne
      */
     public String getIdExterne();
 
     /**
      * Renvoie la valeur de la propriété idRole
-     * 
+     *
      * @return la valeur de la propriété idRole
      */
     public String getIdRole();
 
     /**
      * Renvoie la valeur de la propriété idTiers
-     * 
+     *
      * @return la valeur de la propriété idTiers
      */
     public String getIdTiers();
@@ -170,7 +170,7 @@ public interface IntRole extends BIEntity {
 
     /**
      * Renvoie la valeur de la propriété tiers
-     * 
+     *
      * @return la valeur de la propriété tiers
      */
 
@@ -203,4 +203,6 @@ public interface IntRole extends BIEntity {
      * @throws java.lang.Exception
      */
     public void retrieve(String idTiers, String idRole, BITransaction transaction) throws java.lang.Exception;
+
+    IAFAffiliation getAffiliationByNumAffAndIDRoleAndIDTiers(String numAff, String idRole, String idTiers);
 }

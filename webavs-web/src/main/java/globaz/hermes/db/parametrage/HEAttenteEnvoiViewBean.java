@@ -1,5 +1,10 @@
 package globaz.hermes.db.parametrage;
 
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.Vector;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.globall.db.BEntity;
 import globaz.globall.db.BManager;
@@ -16,6 +21,7 @@ import globaz.hermes.db.gestion.HEAnnoncesViewBean;
 import globaz.hermes.db.gestion.HEInputAnnonceViewBean;
 import globaz.hermes.db.gestion.HEOutputAnnonceListViewBean;
 import globaz.hermes.db.gestion.HEOutputAnnonceViewBean;
+import globaz.hermes.utils.HECSMotif;
 import globaz.hermes.utils.HENNSSUtils;
 import globaz.hermes.utils.HEUtil;
 import globaz.hermes.utils.StringUtils;
@@ -25,11 +31,6 @@ import globaz.pavo.util.CIAffilie;
 import globaz.pavo.util.CIAffilieManager;
 import globaz.pavo.util.CIUtil;
 import globaz.pyxis.db.tiers.TITiersViewBean;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.Vector;
 
 public class HEAttenteEnvoiViewBean extends BEntity implements FWViewBeanInterface {
     private static final long serialVersionUID = -4355046795181465477L;
@@ -48,6 +49,9 @@ public class HEAttenteEnvoiViewBean extends BEntity implements FWViewBeanInterfa
     private String enregistrement = "";
     private final String HEANNOP_ARCHIVE = "HEANNOR";
     private final String HEANNOP_EN_COURS = "HEANNOP";
+    public static final String CODE_ARC_11 = "11";
+    public static final String CODE_ARC_31 = "31";
+    public static final String CODE_ARC_61 = "61";
 
     protected String idAnnonce = ""; // IDANNONCE
     protected String idChamp = ""; // RDTCHA
@@ -83,6 +87,15 @@ public class HEAttenteEnvoiViewBean extends BEntity implements FWViewBeanInterfa
     //
     protected String typeEnvoi = "";
     protected String valeur = ""; // VALEUR
+
+    private HEInputAnnonceViewBean annonce61ACreer;
+
+    /**
+     * Champ permettant de savoir si un arc 61 a été créé lors de la création manuelle d'un arc 11 ou 31.
+     * Si la case était cochée, alors un arc 61 est créé
+     */
+    private Boolean isArc61Cree = new Boolean(false);
+    private Boolean isArc61CreeTmp = new Boolean(false);
 
     @Override
     protected void _afterDelete(BTransaction transaction) throws Exception {
@@ -120,8 +133,8 @@ public class HEAttenteEnvoiViewBean extends BEntity implements FWViewBeanInterfa
         }
         // de plus, je supprime les compléments informations
         if (("97".equals(getMotifArc()) && "true".equals(getSession().getApplication().getProperty("adresse.input")))
-                || (HEAnnoncesViewBean.isMotifCA(getMotifArc()) && "true".equals(getSession().getApplication()
-                        .getProperty("affilie.input")))) {
+                || (HEAnnoncesViewBean.isMotifCA(getMotifArc())
+                        && "true".equals(getSession().getApplication().getProperty("affilie.input")))) {
             HEInfos infos;
             // Recherche l'addresse de l'assuré
             HEInfosManager infosManager = new HEInfosManager();
@@ -145,7 +158,7 @@ public class HEAttenteEnvoiViewBean extends BEntity implements FWViewBeanInterfa
      * A surcharger pour effectuer les traitements après la lecture de l'entité dans la BD
      * <p>
      * Ne pas oublier de partager la connexion avec les autres DAB !!! </i>
-     * 
+     *
      * @exception java.lang.Exception
      *                en cas d'erreur fatale
      */
@@ -180,8 +193,8 @@ public class HEAttenteEnvoiViewBean extends BEntity implements FWViewBeanInterfa
             }
 
         }
-        if ((HEAnnoncesViewBean.isMotifCA(getMotifArc()) || HEAnnoncesViewBean.isMotifForDeclSalaire(getMotifArc()) || globaz.hermes.utils.HEUtil
-                .isMotifCert(getSession(), getMotifArc())) && !isLoadedFromManager()) {
+        if ((HEAnnoncesViewBean.isMotifCA(getMotifArc()) || HEAnnoncesViewBean.isMotifForDeclSalaire(getMotifArc())
+                || globaz.hermes.utils.HEUtil.isMotifCert(getSession(), getMotifArc())) && !isLoadedFromManager()) {
             HEInfosManager infosManager = new HEInfosManager();
             infosManager.setSession(getSession());
             infosManager.setForIdArc(getIdAnnonce());
@@ -240,6 +253,42 @@ public class HEAttenteEnvoiViewBean extends BEntity implements FWViewBeanInterfa
                 crt.update(transaction);
             }
         }
+        addARC61(transaction);
+    }
+
+    /**
+     * Création d'un arc 61 avec les mêmes données que l'arc sur lequel on se trouve
+     *
+     * @param transaction
+     */
+    private void addARC61(BTransaction transaction) {
+        try {
+            if (is61Possible() && annonce61ACreer != null) {
+                // Le critère 32 est celui utilisé lorsqu'on saisi un motif 61
+                annonce61ACreer.computeNeededFields(HECSMotif.CS_AVEC_CI_CA_PRESENTE, "32");
+                annonce61ACreer.setMotif(CODE_ARC_61);
+                annonce61ACreer.setIsArc61Cree(false);
+                annonce61ACreer.getInputTable().put(IHEAnnoncesViewBean.MOTIF_ANNONCE, CODE_ARC_61);
+                annonce61ACreer.getInputTable().put(IHEAnnoncesViewBean.ETAT_NOMINATIF, "");
+                annonce61ACreer.getInputTable().put(IHEAnnoncesViewBean.DATE_NAISSANCE_JJMMAAAA, "");
+                annonce61ACreer.getInputTable().put(IHEAnnoncesViewBean.ETAT_ORIGINE, "");
+                annonce61ACreer.getInputTable().put(IHEAnnoncesViewBean.SEXE, "");
+                annonce61ACreer.add(transaction);
+            }
+        } catch (Exception e) {
+            _addError(transaction, e.getMessage());
+        }
+    }
+
+    /**
+     * Test si un arc 61 peut être créé en fonction du motif de l'arc sur lequel on se trouve, la case à cocher, la
+     * valeur de celle-ci en DB et du numéro AVS
+     *
+     * @return true si les conditions permettent de créer un arc 61
+     */
+    private boolean is61Possible() {
+        return (CODE_ARC_11.equals(getMotifArc()) || CODE_ARC_31.equals(getMotifArc())) && getIsArc61Cree()
+                && !JadeStringUtil.isBlankOrZero(getNumavs()) && !isArc61CreeTmp;
     }
 
     /**
@@ -251,7 +300,7 @@ public class HEAttenteEnvoiViewBean extends BEntity implements FWViewBeanInterfa
      * <code>_beforeUpdate()</code>
      * <p>
      * Ne pas oublier de partager la connexion avec les autres DAB !!! </i>
-     * 
+     *
      * @exception java.lang.Exception
      *                en cas d'erreur fatale
      */
@@ -321,7 +370,8 @@ public class HEAttenteEnvoiViewBean extends BEntity implements FWViewBeanInterfa
                 }
             }
             annonceDeBase.wantCallMethodAfter(false);
-            if (HEAnnoncesViewBean.isMotifCA(getMotifArc()) || HEAnnoncesViewBean.isMotifForDeclSalaire(getMotifArc())) {
+            if (HEAnnoncesViewBean.isMotifCA(getMotifArc())
+                    || HEAnnoncesViewBean.isMotifForDeclSalaire(getMotifArc())) {
                 annonceDeBase.setNumeroAffilie(getNumeroAffilie());
             }
             if (HEAnnoncesViewBean.isMotifForDeclSalaire(getMotifArc())) {
@@ -339,8 +389,8 @@ public class HEAttenteEnvoiViewBean extends BEntity implements FWViewBeanInterfa
                 String csmotif = ((FWParametersSystemCode) motifs.getFirstEntity()).getIdCode();
                 annonceDeBase.computeNeededFields(csmotif, true);
                 if (annonceDeBase.getHEMotifcodeapplication(0) != null) {
-                    annonceDeBase.computeNeededFields(csmotif, annonceDeBase.getHEMotifcodeapplication(0)
-                            .getIdCritereMotif());
+                    annonceDeBase.computeNeededFields(csmotif,
+                            annonceDeBase.getHEMotifcodeapplication(0).getIdCritereMotif());
                 } else {
                     _addError(transaction,
                             "Erreur dans la validation de cet arc,cause: impossible de charger le critère du motif "
@@ -351,7 +401,8 @@ public class HEAttenteEnvoiViewBean extends BEntity implements FWViewBeanInterfa
                         + getMotifArc() + "en code système");
             }
 
-            if (HEUtil.isNNSSActif(getSession()) && globaz.hermes.utils.HEUtil.isMotifCert(getSession(), getMotifArc())) {
+            if (HEUtil.isNNSSActif(getSession())
+                    && globaz.hermes.utils.HEUtil.isMotifCert(getSession(), getMotifArc())) {
                 annonceDeBase.setCategorie(getCategorie());
                 if (getCategorie().equals(IHEAnnoncesViewBean.CS_CATEGORIE_RENTIER)) {
                     annonceDeBase.setTitreRentier(getTitreRentier());
@@ -359,7 +410,13 @@ public class HEAttenteEnvoiViewBean extends BEntity implements FWViewBeanInterfa
                     annonceDeBase.setFormulePolitesse(getFormulePolitesse());
                 }
             }
-
+            annonceDeBase.setIsArc61Cree(getIsArc61Cree());
+            // L'arc 61 ne peut être créé que sous certaines conditions
+            if (is61Possible()) {
+                annonce61ACreer = annonceDeBase.cloneViewBean();
+                annonce61ACreer.setLangueCorrespondance(getLangueCorrespondance());
+                annonce61ACreer.wantCallMethodAfter(true);
+            }
             annonceDeBase.update(transaction);
 
             // on met à jour le numAvs de l'attente
@@ -537,7 +594,7 @@ public class HEAttenteEnvoiViewBean extends BEntity implements FWViewBeanInterfa
 
     /**
      * Lit les valeurs des propriétés propres de l'entité à partir de la bdd
-     * 
+     *
      * @exception Exception
      *                si la lecture des propriétés échoue
      */
@@ -573,6 +630,8 @@ public class HEAttenteEnvoiViewBean extends BEntity implements FWViewBeanInterfa
             numavs = JAUtil.formatAvs(statement.dbReadString("RNAVS"));
             numeroAvsNNSS = "false";
         }
+        setIsArc61Cree(statement.dbReadBoolean("RNBARC"));
+        isArc61CreeTmp = statement.dbReadBoolean("RNBARC");
     }
 
     /**
@@ -709,7 +768,7 @@ public class HEAttenteEnvoiViewBean extends BEntity implements FWViewBeanInterfa
 
     /**
      * Returns the caisse.
-     * 
+     *
      * @return String
      */
     public String getCaisse() {
@@ -722,7 +781,7 @@ public class HEAttenteEnvoiViewBean extends BEntity implements FWViewBeanInterfa
 
     /**
      * Returns the champs.
-     * 
+     *
      * @return HEAttenteEnvoiChampsListViewBean
      */
     public HEAttenteEnvoiChampsListViewBean getChamps() {
@@ -754,7 +813,7 @@ public class HEAttenteEnvoiViewBean extends BEntity implements FWViewBeanInterfa
 
     /**
      * Returns the creator.
-     * 
+     *
      * @return String
      */
     public String getCreator() {
@@ -770,7 +829,7 @@ public class HEAttenteEnvoiViewBean extends BEntity implements FWViewBeanInterfa
 
     /**
      * Returns the dateCreation.
-     * 
+     *
      * @return String
      */
     public String getDateCreation() {
@@ -786,7 +845,7 @@ public class HEAttenteEnvoiViewBean extends BEntity implements FWViewBeanInterfa
 
     /**
      * Returns the debut.
-     * 
+     *
      * @return String
      */
     public String getDebut() {
@@ -795,7 +854,7 @@ public class HEAttenteEnvoiViewBean extends BEntity implements FWViewBeanInterfa
 
     /**
      * Returns the enregistrement.
-     * 
+     *
      * @return String
      */
     public String getEnregistrement() {
@@ -804,7 +863,7 @@ public class HEAttenteEnvoiViewBean extends BEntity implements FWViewBeanInterfa
 
     /**
      * Insérez la description de la méthode ici. Date de création : (24.03.2003 13:08:20)
-     * 
+     *
      * @return java.lang.String
      */
     public java.lang.String getIdAnnonce() {
@@ -813,7 +872,7 @@ public class HEAttenteEnvoiViewBean extends BEntity implements FWViewBeanInterfa
 
     /**
      * Returns the idChamp.
-     * 
+     *
      * @return String
      */
     public String getIdChamp() {
@@ -822,7 +881,7 @@ public class HEAttenteEnvoiViewBean extends BEntity implements FWViewBeanInterfa
 
     /**
      * Returns the idLot.
-     * 
+     *
      * @return String
      */
     public String getIdLot() {
@@ -840,7 +899,7 @@ public class HEAttenteEnvoiViewBean extends BEntity implements FWViewBeanInterfa
 
     /**
      * Returns the libelleChamp.
-     * 
+     *
      * @return String
      */
     public String getLibelleChamp() {
@@ -897,7 +956,7 @@ public class HEAttenteEnvoiViewBean extends BEntity implements FWViewBeanInterfa
 
     /**
      * Returns the longueur.
-     * 
+     *
      * @return String
      */
     public String getLongueur() {
@@ -906,7 +965,7 @@ public class HEAttenteEnvoiViewBean extends BEntity implements FWViewBeanInterfa
 
     /**
      * Returns the messageFormatted.
-     * 
+     *
      * @return String
      */
     public String getMessageFormatted() {
@@ -926,7 +985,7 @@ public class HEAttenteEnvoiViewBean extends BEntity implements FWViewBeanInterfa
 
     /**
      * Insérez la description de la méthode ici. Date de création : (10.04.2003 17:11:33)
-     * 
+     *
      * @return java.lang.String
      */
     public java.lang.String getNom() {
@@ -935,7 +994,7 @@ public class HEAttenteEnvoiViewBean extends BEntity implements FWViewBeanInterfa
 
     /**
      * Returns the nouveauNumAVS.
-     * 
+     *
      * @return String
      */
     public String getNouveauNumAVS() {
@@ -948,7 +1007,7 @@ public class HEAttenteEnvoiViewBean extends BEntity implements FWViewBeanInterfa
 
     /**
      * Returns the numavs.
-     * 
+     *
      * @return String
      */
     public String getNumavs() {
@@ -981,7 +1040,7 @@ public class HEAttenteEnvoiViewBean extends BEntity implements FWViewBeanInterfa
 
     /**
      * Insérez la description de la méthode ici. Date de création : (16.05.2003 10:09:50)
-     * 
+     *
      * @return java.lang.String
      */
     public java.lang.String getParamAnnonce() {
@@ -990,7 +1049,7 @@ public class HEAttenteEnvoiViewBean extends BEntity implements FWViewBeanInterfa
 
     /**
      * Returns the refUnique.
-     * 
+     *
      * @return String
      */
     public String getRefUnique() {
@@ -999,7 +1058,7 @@ public class HEAttenteEnvoiViewBean extends BEntity implements FWViewBeanInterfa
 
     /**
      * Returns the statut.
-     * 
+     *
      * @return String
      */
     public String getStatut() {
@@ -1025,7 +1084,7 @@ public class HEAttenteEnvoiViewBean extends BEntity implements FWViewBeanInterfa
 
     /**
      * Returns the typeEnvoi.
-     * 
+     *
      * @return String
      */
     public String getTypeEnvoi() {
@@ -1075,7 +1134,7 @@ public class HEAttenteEnvoiViewBean extends BEntity implements FWViewBeanInterfa
 
     /**
      * Returns the valeur.
-     * 
+     *
      * @return String
      */
     public String getValeur() {
@@ -1084,7 +1143,7 @@ public class HEAttenteEnvoiViewBean extends BEntity implements FWViewBeanInterfa
 
     /**
      * Returns the isArchivage.
-     * 
+     *
      * @return boolean
      */
     public boolean isArchivage() {
@@ -1093,7 +1152,7 @@ public class HEAttenteEnvoiViewBean extends BEntity implements FWViewBeanInterfa
 
     /**
      * Returns the isConfirmed.
-     * 
+     *
      * @return boolean
      */
     public boolean isConfirmed() {
@@ -1102,8 +1161,8 @@ public class HEAttenteEnvoiViewBean extends BEntity implements FWViewBeanInterfa
 
     public boolean isRevenuCache() {
         try {
-            return ((HEApplication) getSession().getApplication()).isRevenuCache(getSession().getUserId(),
-                    getSession(), StringUtils.removeDots(getNumavs()));
+            return ((HEApplication) getSession().getApplication()).isRevenuCache(getSession().getUserId(), getSession(),
+                    StringUtils.removeDots(getNumavs()));
         } catch (Exception e) {
             setMessage(e.getMessage());
             JadeLogger.error(this, e);
@@ -1145,7 +1204,7 @@ public class HEAttenteEnvoiViewBean extends BEntity implements FWViewBeanInterfa
 
     /**
      * Sets the caisse.
-     * 
+     *
      * @param caisse
      *            The caisse to set
      */
@@ -1159,7 +1218,7 @@ public class HEAttenteEnvoiViewBean extends BEntity implements FWViewBeanInterfa
 
     /**
      * Sets the champs.
-     * 
+     *
      * @param champs
      *            The champs to set
      */
@@ -1169,7 +1228,7 @@ public class HEAttenteEnvoiViewBean extends BEntity implements FWViewBeanInterfa
 
     /**
      * Sets the creator.
-     * 
+     *
      * @param creator
      *            The creator to set
      */
@@ -1186,7 +1245,7 @@ public class HEAttenteEnvoiViewBean extends BEntity implements FWViewBeanInterfa
 
     /**
      * Sets the dateCreation.
-     * 
+     *
      * @param dateCreation
      *            The dateCreation to set
      */
@@ -1203,7 +1262,7 @@ public class HEAttenteEnvoiViewBean extends BEntity implements FWViewBeanInterfa
 
     /**
      * Sets the debut.
-     * 
+     *
      * @param debut
      *            The debut to set
      */
@@ -1213,7 +1272,7 @@ public class HEAttenteEnvoiViewBean extends BEntity implements FWViewBeanInterfa
 
     /**
      * Sets the enregistrement.
-     * 
+     *
      * @param enregistrement
      *            The enregistrement to set
      */
@@ -1223,7 +1282,7 @@ public class HEAttenteEnvoiViewBean extends BEntity implements FWViewBeanInterfa
 
     /**
      * Insérez la description de la méthode ici. Date de création : (24.03.2003 13:08:20)
-     * 
+     *
      * @param newIdAnnonce
      *            java.lang.String
      */
@@ -1233,7 +1292,7 @@ public class HEAttenteEnvoiViewBean extends BEntity implements FWViewBeanInterfa
 
     /**
      * Sets the idChamp.
-     * 
+     *
      * @param idChamp
      *            The idChamp to set
      */
@@ -1243,7 +1302,7 @@ public class HEAttenteEnvoiViewBean extends BEntity implements FWViewBeanInterfa
 
     /**
      * Sets the idLot.
-     * 
+     *
      * @param idLot
      *            The idLot to set
      */
@@ -1253,7 +1312,7 @@ public class HEAttenteEnvoiViewBean extends BEntity implements FWViewBeanInterfa
 
     /**
      * Sets the isArchivage.
-     * 
+     *
      * @param isArchivage
      *            The isArchivage to set
      */
@@ -1263,7 +1322,7 @@ public class HEAttenteEnvoiViewBean extends BEntity implements FWViewBeanInterfa
 
     /**
      * Sets the isConfirmed.
-     * 
+     *
      * @param isConfirmed
      *            The isConfirmed to set
      */
@@ -1277,7 +1336,7 @@ public class HEAttenteEnvoiViewBean extends BEntity implements FWViewBeanInterfa
 
     /**
      * Sets the libelleChamp.
-     * 
+     *
      * @param libelleChamp
      *            The libelleChamp to set
      */
@@ -1287,7 +1346,7 @@ public class HEAttenteEnvoiViewBean extends BEntity implements FWViewBeanInterfa
 
     /**
      * Sets the longueur.
-     * 
+     *
      * @param longueur
      *            The longueur to set
      */
@@ -1297,7 +1356,7 @@ public class HEAttenteEnvoiViewBean extends BEntity implements FWViewBeanInterfa
 
     /**
      * Sets the messageFormatted.
-     * 
+     *
      * @param messageFormatted
      *            The messageFormatted to set
      */
@@ -1324,7 +1383,7 @@ public class HEAttenteEnvoiViewBean extends BEntity implements FWViewBeanInterfa
 
     /**
      * Insérez la description de la méthode ici. Date de création : (10.04.2003 17:11:33)
-     * 
+     *
      * @param newNom
      *            java.lang.String
      */
@@ -1334,7 +1393,7 @@ public class HEAttenteEnvoiViewBean extends BEntity implements FWViewBeanInterfa
 
     /**
      * Sets the nouveauNumAVS.
-     * 
+     *
      * @param nouveauNumAVS
      *            The nouveauNumAVS to set
      */
@@ -1344,7 +1403,7 @@ public class HEAttenteEnvoiViewBean extends BEntity implements FWViewBeanInterfa
 
     /**
      * Sets the numavs.
-     * 
+     *
      * @param numavs
      *            The numavs to set
      */
@@ -1373,7 +1432,7 @@ public class HEAttenteEnvoiViewBean extends BEntity implements FWViewBeanInterfa
 
     /**
      * Sets the paramAnnonce.
-     * 
+     *
      * @param paramAnnonce
      *            The paramAnnonce to set
      */
@@ -1383,7 +1442,7 @@ public class HEAttenteEnvoiViewBean extends BEntity implements FWViewBeanInterfa
 
     /**
      * Sets the refUnique.
-     * 
+     *
      * @param refUnique
      *            The refUnique to set
      */
@@ -1393,7 +1452,7 @@ public class HEAttenteEnvoiViewBean extends BEntity implements FWViewBeanInterfa
 
     /**
      * Sets the statut.
-     * 
+     *
      * @param statut
      *            The statut to set
      */
@@ -1414,7 +1473,7 @@ public class HEAttenteEnvoiViewBean extends BEntity implements FWViewBeanInterfa
 
     /**
      * Sets the valeur.
-     * 
+     *
      * @param valeur
      *            The valeur to set
      */
@@ -1424,7 +1483,7 @@ public class HEAttenteEnvoiViewBean extends BEntity implements FWViewBeanInterfa
 
     /**
      * Getter de formulePolitesse
-     * 
+     *
      * @return the formulePolitesse
      */
     public String getFormulePolitesse() {
@@ -1433,11 +1492,19 @@ public class HEAttenteEnvoiViewBean extends BEntity implements FWViewBeanInterfa
 
     /**
      * Setter de formulePolitesse
-     * 
+     *
      * @param formulePolitesse the formulePolitesse to set
      */
     public void setFormulePolitesse(String formulePolitesse) {
         this.formulePolitesse = formulePolitesse;
+    }
+
+    public Boolean getIsArc61Cree() {
+        return isArc61Cree;
+    }
+
+    public void setIsArc61Cree(Boolean isArc61Cree) {
+        this.isArc61Cree = isArc61Cree;
     }
 
 }

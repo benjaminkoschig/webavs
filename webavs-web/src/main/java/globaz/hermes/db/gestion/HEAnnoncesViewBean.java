@@ -657,8 +657,15 @@ public class HEAnnoncesViewBean extends BEntity implements FWViewBeanInterface {
 
     protected String wantCheckCiOuvert = HEAnnoncesViewBean.WANT_CHECK_CI_OUVERT_TRUE;
 
-    protected static final String CODE_ARC_61 = "61";
-    protected static final String CODE_ARC_11 = "11";
+    public static final String CODE_ARC_61 = "61";
+    public static final String CODE_ARC_11 = "11";
+    public static final String CODE_ARC_31 = "31";
+
+    /**
+     * Champ permettant de savoir si un arc 61 a été créé lors de la création manuelle d'un arc 11 ou 31.
+     * Si la case était cochée, alors un arc 61 est créé
+     */
+    private Boolean isArc61Cree = new Boolean(false);
 
     /**
      * Constructeur du type HEAnnoncesViewBean
@@ -836,6 +843,8 @@ public class HEAnnoncesViewBean extends BEntity implements FWViewBeanInterface {
             numeroAvsNNSS = "false";
             setNumeroAVS(statement.dbReadString("RNAVS"));
         }
+
+        setIsArc61Cree(statement.dbReadBoolean("RNBARC"));
     }
 
     /**
@@ -1213,6 +1222,8 @@ public class HEAnnoncesViewBean extends BEntity implements FWViewBeanInterface {
         }
         statement.writeField("RNBNNS",
                 this._dbWriteBoolean(statement.getTransaction(), getNnss(), BConstants.DB_TYPE_BOOLEAN_CHAR, "nnss"));
+        statement.writeField("RNBARC", this._dbWriteBoolean(statement.getTransaction(), getIsArc61Cree(),
+                BConstants.DB_TYPE_BOOLEAN_CHAR, "isArc61Cree"));
     }
 
     public boolean checkDate(int anneeNaissance, String dateDebut, String dateFin) {
@@ -2754,6 +2765,14 @@ public class HEAnnoncesViewBean extends BEntity implements FWViewBeanInterface {
     public void setNumeroAffilie(String string) {
         numeroAffilie = string;
 
+    }
+
+    public Boolean getIsArc61Cree() {
+        return isArc61Cree;
+    }
+
+    public void setIsArc61Cree(Boolean isArc61Cree) {
+        this.isArc61Cree = isArc61Cree;
     }
 
     public final void setNumeroAVS(java.lang.String newNumeroAVS) {

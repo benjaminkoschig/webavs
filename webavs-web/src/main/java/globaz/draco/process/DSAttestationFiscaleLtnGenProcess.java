@@ -1,5 +1,7 @@
 package globaz.draco.process;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import globaz.caisse.helper.CaisseHelperFactory;
 import globaz.draco.db.declaration.DSDeclarationListViewBean;
 import globaz.draco.db.declaration.DSDeclarationViewBean;
@@ -23,15 +25,13 @@ import globaz.osiris.api.APISection;
 import globaz.osiris.db.comptes.CACompteAnnexe;
 import globaz.osiris.db.comptes.CASection;
 import globaz.osiris.db.comptes.CASectionManager;
-import java.math.BigDecimal;
-import java.util.ArrayList;
 
 /**
  * @author BJO
  */
 public class DSAttestationFiscaleLtnGenProcess extends BProcess {
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
     private boolean affilieTous = false;
@@ -122,8 +122,8 @@ public class DSAttestationFiscaleLtnGenProcess extends BProcess {
                     CACompteAnnexe compteAnnexe = new CACompteAnnexe();
                     compteAnnexe.setISession(osirisSession);
                     compteAnnexe.setAlternateKey(APICompteAnnexe.AK_IDEXTERNE);
-                    compteAnnexe.setIdRole(CaisseHelperFactory.getInstance().getRoleForAffilieParitaire(
-                            getSession().getApplication()));
+                    compteAnnexe.setIdRole(CaisseHelperFactory.getInstance()
+                            .getRoleForAffilieParitaire(getSession().getApplication()));
                     compteAnnexe.setIdExterneRole(affEnCours.getAffilieNumero());
                     compteAnnexe.retrieve(getTransaction());
                     if (JadeStringUtil.isBlank(compteAnnexe.getIdCompteAnnexe())) {
@@ -168,12 +168,12 @@ public class DSAttestationFiscaleLtnGenProcess extends BProcess {
                             valable = false;
                         }
                     }
-                    if (sommeSolde != null) {
-                        // Si le solde est positif on imprime pas les attestations (l'employeur n'a pas payé)
-                        if (sommeSolde.doubleValue() > 0) {
-                            valable = false;
-                        }
-                    }
+                    // if (sommeSolde != null) {
+                    // // Si le solde est positif on imprime pas les attestations (l'employeur n'a pas payé)
+                    // if (sommeSolde.doubleValue() > 0) {
+                    // valable = false;
+                    // }
+                    // }
                     // si la somme est null on imprime pas les attestations car la déclaration n'est pas en comptabilité
                     // (OSIRIS)
                     if (sommeSolde == null) {
@@ -195,7 +195,8 @@ public class DSAttestationFiscaleLtnGenProcess extends BProcess {
             for (int i = 0; i < affilieValable.size(); i++) {
                 AFAffiliation affilie = (AFAffiliation) affilieValable.get(i);
                 cpt++;
-                setProgressDescription(affilie.getAffilieNumero() + "<br>" + cpt + "/" + affilieValable.size() + "<br>");
+                setProgressDescription(
+                        affilie.getAffilieNumero() + "<br>" + cpt + "/" + affilieValable.size() + "<br>");
                 if (isAborted()) {
                     // fusionner tous les documents en 1 seul fichier
                     JadePublishDocumentInfo docInfo = createDocumentInfo();

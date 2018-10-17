@@ -3,6 +3,10 @@
  */
 package globaz.osiris.process.importoperations;
 
+import java.io.FileInputStream;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.util.FWMemoryLog;
 import globaz.framework.util.FWMessageFormat;
@@ -33,10 +37,6 @@ import globaz.osiris.db.comptes.CAPaiement;
 import globaz.osiris.db.comptes.CAPaiementBVR;
 import globaz.osiris.process.journal.CAProcessComptabiliserJournal;
 import globaz.osiris.translation.CACodeSystem;
-import java.io.FileInputStream;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 
 /**
  * @author dda
@@ -44,7 +44,7 @@ import org.w3c.dom.NodeList;
 public class CAProcessImportOperations extends BProcess implements APIProcessUpload {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
     private static final String LABEL_IMPORT_ET_COMPTABILISATION_OPERATIONS_ERROR = "IMPORT_ET_COMPTABILISATION_OPERATIONS_ERROR";
@@ -83,7 +83,7 @@ public class CAProcessImportOperations extends BProcess implements APIProcessUpl
 
     /**
      * Constructor for CAProcessImportOperations.
-     * 
+     *
      * @param parent
      */
     public CAProcessImportOperations(BProcess parent) throws Exception {
@@ -92,7 +92,7 @@ public class CAProcessImportOperations extends BProcess implements APIProcessUpl
 
     /**
      * Constructor for CAProcessImportOperations.
-     * 
+     *
      * @param session
      */
     public CAProcessImportOperations(BSession session) throws Exception {
@@ -151,8 +151,7 @@ public class CAProcessImportOperations extends BProcess implements APIProcessUpl
                 JadeFsFacade.delete(getRemoteDirectoryATraiter() + "/" + JadeFilenameUtil.extractFilename(fileName));
                 JadeFsFacade.delete(fileName);
             } catch (Exception e) {
-                this._addError(
-                        getTransaction(),
+                this._addError(getTransaction(),
                         getSession().getLabel("IMPORT_ET_COMPTABILISATION_OPERATIONS_TECHNICAL_ERROR") + " : "
                                 + e.toString());
                 successfulExecution = false;
@@ -199,7 +198,7 @@ public class CAProcessImportOperations extends BProcess implements APIProcessUpl
 
     /**
      * Ajout des nouvelles opérations auxiliaires et paiement auxiliaires.
-     * 
+     *
      * @param session
      * @param transaction
      * @param doc
@@ -228,8 +227,8 @@ public class CAProcessImportOperations extends BProcess implements APIProcessUpl
 
         for (int i = 0; (i < elements.getLength()) && !isAborted(); i++) {
             try {
-                CAAuxiliairePaiement newAuxiliairePaiement = new CAAuxiliairePaiement(createAuxiliaire(session,
-                        transaction, (Element) elements.item(i)));
+                CAAuxiliairePaiement newAuxiliairePaiement = new CAAuxiliairePaiement(
+                        createAuxiliaire(session, transaction, (Element) elements.item(i)));
                 validerOperation(transaction, newAuxiliairePaiement);
                 newAuxiliairePaiement.add(transaction);
 
@@ -245,7 +244,7 @@ public class CAProcessImportOperations extends BProcess implements APIProcessUpl
 
     /**
      * Ajout des nouvelles écritures.
-     * 
+     *
      * @param session
      * @param transaction
      * @param doc
@@ -272,8 +271,36 @@ public class CAProcessImportOperations extends BProcess implements APIProcessUpl
     }
 
     /**
+     * Ajout des nouvelles écritures ARD.
+     *
+     * @param session
+     * @param transaction
+     * @param doc
+     * @param journal
+     * @throws Exception
+     */
+    private void addEcrituresARD(BSession session, BTransaction transaction, Document doc) throws Exception {
+        NodeList elements = CAImportOperationsUtils.getEcrituresARD(doc);
+
+        for (int i = 0; (i < elements.getLength()) && !isAborted(); i++) {
+            try {
+                CAEcriture newEcriture = createEcritureARD(session, transaction, (Element) elements.item(i));
+                validerOperation(transaction, newEcriture);
+                newEcriture.add(transaction);
+
+                confirmTransaction(transaction);
+            } catch (Exception e) {
+                getMemoryLog().logMessage(e.getMessage(), FWViewBeanInterface.ERROR, this.getClass().getName());
+
+                transaction.rollback();
+                transaction.clearErrorBuffer();
+            }
+        }
+    }
+
+    /**
      * Ajout des nouvelles écritures compensation.
-     * 
+     *
      * @param session
      * @param transaction
      * @param doc
@@ -307,7 +334,7 @@ public class CAProcessImportOperations extends BProcess implements APIProcessUpl
 
     /**
      * Ajout des nouvaux ordres de versement.
-     * 
+     *
      * @param session
      * @param transaction
      * @param doc
@@ -336,7 +363,7 @@ public class CAProcessImportOperations extends BProcess implements APIProcessUpl
 
     /**
      * Ajout des nouveaux paiements.
-     * 
+     *
      * @param session
      * @param transaction
      * @param doc
@@ -364,7 +391,7 @@ public class CAProcessImportOperations extends BProcess implements APIProcessUpl
 
     /**
      * Ajouts des nouveaux paiements BVR.
-     * 
+     *
      * @param session
      * @param transaction
      * @param doc
@@ -392,7 +419,7 @@ public class CAProcessImportOperations extends BProcess implements APIProcessUpl
 
     /**
      * Ajout des nouvaux recouvrements.
-     * 
+     *
      * @param session
      * @param transaction
      * @param doc
@@ -422,7 +449,7 @@ public class CAProcessImportOperations extends BProcess implements APIProcessUpl
     /**
      * Si la transaction contient aucunes erreurs => commit.<br/>
      * Sinon rollback + sauvegarde des erreurs dans le memory log.
-     * 
+     *
      * @param transaction
      * @throws Exception
      */
@@ -439,7 +466,7 @@ public class CAProcessImportOperations extends BProcess implements APIProcessUpl
 
     /**
      * Créé une nouvelle opération auxiliaire.
-     * 
+     *
      * @param session
      * @param transaction
      * @param e
@@ -470,7 +497,7 @@ public class CAProcessImportOperations extends BProcess implements APIProcessUpl
 
     /**
      * Créer une écriture de compensation.
-     * 
+     *
      * @param session
      * @param e
      * @param journal
@@ -500,7 +527,7 @@ public class CAProcessImportOperations extends BProcess implements APIProcessUpl
 
     /**
      * Créer l'écriture en fonction de l'élément xml.
-     * 
+     *
      * @param session
      * @param transaction
      * @param e
@@ -535,8 +562,48 @@ public class CAProcessImportOperations extends BProcess implements APIProcessUpl
     }
 
     /**
+     * Créer l'écriture ARD en fonction de l'élément xml.
+     *
+     * @param session
+     * @param transaction
+     * @param e
+     * @param journal
+     * @return
+     * @throws Exception
+     */
+    private CAEcriture createEcritureARD(BSession session, BTransaction transaction, Element e) throws Exception {
+        CAEcriture newEcriture = new CAEcriture();
+        newEcriture.setSession(session);
+        newEcriture.setIdJournal(journal.getIdJournal());
+
+        newEcriture.setIdCompteAnnexe(CAImportOperationsUtils.getIdCompteAnnexe(session, transaction, e, journal,
+                CACompteAnnexe.GENRE_COMPTE_STANDARD));
+        newEcriture.setIdSection(CAImportOperationsUtils.getIdSection(session, transaction, e,
+                newEcriture.getIdCompteAnnexe(), journal));
+        newEcriture.setDate(CAImportOperationsUtils.getDate(e, journal));
+        newEcriture.setIdCompte(CAImportOperationsUtils.getIdRubrique(session, e));
+        newEcriture.setAnneeCotisation(CAImportOperationsUtils.getAnneeCotisation(e));
+        newEcriture.setIdCaisseProfessionnelle(CAImportOperationsUtils.getIdCaisseProfessionnelle(session, e));
+        newEcriture.setMasse(CAImportOperationsUtils.getMasse(e));
+        newEcriture.setTaux(CAImportOperationsUtils.getTaux(e));
+        newEcriture.setMontant(CAImportOperationsUtils.getMontant(e));
+
+        newEcriture.setLibelle(CAImportOperationsUtils.getLibelle(e));
+        newEcriture.setPiece(CAImportOperationsUtils.getPieceComptable(e));
+
+        newEcriture.setCodeDebitCredit(CAImportOperationsUtils.getCodeDebitCredit(session, e));
+        newEcriture.setIdCompteCourant(CAImportOperationsUtils.getIdCompteCourant(session, e));
+        String idCompteAnnexeAux = CAImportOperationsUtils.getIdCompteAnnexeAux(session, transaction, e, journal,
+                CACodeSystem.COMPTE_AUXILIAIRE);
+        newEcriture.setIdSectionAux(
+                CAImportOperationsUtils.getIdSectionAux(session, transaction, e, idCompteAnnexeAux, journal));
+
+        return newEcriture;
+    }
+
+    /**
      * Créer le journal qui contiendra les nouvelles opérations.
-     * 
+     *
      * @param session
      * @param transaction
      * @param doc
@@ -570,7 +637,7 @@ public class CAProcessImportOperations extends BProcess implements APIProcessUpl
 
     /**
      * Créer l'ordre de versement en fonction de l'élément xml.
-     * 
+     *
      * @param session
      * @param transaction
      * @param e
@@ -607,7 +674,7 @@ public class CAProcessImportOperations extends BProcess implements APIProcessUpl
 
     /**
      * Créer le nouvau paiement en fonction de l'élément xml.
-     * 
+     *
      * @param session
      * @param transaction
      * @param e
@@ -638,7 +705,7 @@ public class CAProcessImportOperations extends BProcess implements APIProcessUpl
 
     /**
      * Créer un nouveau paiementBVR.
-     * 
+     *
      * @param session
      * @param transaction
      * @param e
@@ -667,7 +734,7 @@ public class CAProcessImportOperations extends BProcess implements APIProcessUpl
 
     /**
      * Créer un recouvrement en fonction de l'élément xml.
-     * 
+     *
      * @param session
      * @param transaction
      * @param e
@@ -706,7 +773,8 @@ public class CAProcessImportOperations extends BProcess implements APIProcessUpl
      * @return
      * @throws Exception
      */
-    private boolean executeImportations(BSession session, BTransaction transaction, String sourceFile) throws Exception {
+    private boolean executeImportations(BSession session, BTransaction transaction, String sourceFile)
+            throws Exception {
         setProgressScaleValue(9);
 
         Document doc = getDocument(sourceFile);
@@ -722,6 +790,7 @@ public class CAProcessImportOperations extends BProcess implements APIProcessUpl
 
         if (!journal.hasErrors() && !journal.isNew() && !isAborted()) {
             addEcritures(session, transaction, doc);
+            addEcrituresARD(session, transaction, doc);
 
             incProgressCounter();
             if (isAborted()) {
@@ -784,8 +853,8 @@ public class CAProcessImportOperations extends BProcess implements APIProcessUpl
     private Document getDocument(String sourceFileName) throws Exception {
         String filename = "";
         if (!isBatch.booleanValue()) {
-            JadeFsFacade.copyFile("jdbc://" + Jade.getInstance().getDefaultJdbcSchema() + "/" + sourceFileName, Jade
-                    .getInstance().getHomeDir() + "work/" + sourceFileName);
+            JadeFsFacade.copyFile("jdbc://" + Jade.getInstance().getDefaultJdbcSchema() + "/" + sourceFileName,
+                    Jade.getInstance().getHomeDir() + "work/" + sourceFileName);
             filename = Jade.getInstance().getHomeDir() + "work/" + sourceFileName;
         } else {
             filename = sourceFileName;
@@ -807,8 +876,8 @@ public class CAProcessImportOperations extends BProcess implements APIProcessUpl
             theLabel = getSession().getLabel(CAProcessImportOperations.LABEL_IMPORT_ET_COMPTABILISATION_OPERATIONS_OK);
 
             if (isProcessOnError || (journal == null) || !CAJournal.COMPTABILISE.equalsIgnoreCase(journal.getEtat())) {
-                theLabel = getSession().getLabel(
-                        CAProcessImportOperations.LABEL_IMPORT_ET_COMPTABILISATION_OPERATIONS_ERROR);
+                theLabel = getSession()
+                        .getLabel(CAProcessImportOperations.LABEL_IMPORT_ET_COMPTABILISATION_OPERATIONS_ERROR);
             }
 
         } else {
@@ -857,7 +926,7 @@ public class CAProcessImportOperations extends BProcess implements APIProcessUpl
 
     /**
      * Le nom de fichier est-il vide ?
-     * 
+     *
      * @return
      */
     private boolean isFileNameBlank() {
@@ -912,7 +981,7 @@ public class CAProcessImportOperations extends BProcess implements APIProcessUpl
 
     /**
      * Valide l'opération. Si la validation contient des erreurs l'état de l'opération est setter en erreur.
-     * 
+     *
      * @param transaction
      * @param operation
      */

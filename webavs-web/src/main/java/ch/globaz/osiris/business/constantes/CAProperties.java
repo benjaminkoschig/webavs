@@ -1,13 +1,14 @@
 package ch.globaz.osiris.business.constantes;
 
-import globaz.osiris.application.CAApplication;
 import java.util.List;
 import ch.globaz.common.properties.CommonPropertiesUtils;
 import ch.globaz.common.properties.IProperties;
 import ch.globaz.common.properties.PropertiesException;
+import globaz.osiris.application.CAApplication;
 
 public enum CAProperties implements IProperties {
-    RUBRIQUE_SANS_EXTOURNE("rubrique.sansExtourne", "Liste des rubriques pour lesquelles on extourne par les écritures"),
+    RUBRIQUE_SANS_EXTOURNE("rubrique.sansExtourne",
+            "Liste des rubriques pour lesquelles on extourne par les écritures"),
     MODE_AUTO_REPORT("modeReportAuto", "Activation du mode report auto"),
     ISO_SEPA_MAX_MULTIOG("iso.sepa.nbmax.multiog", "nombre max d'OG créé à la préparation"),
     ISO_SEPA_MAX_OVPAROG("iso.sepa.nbmax.ovparog", "nombre max d'OV par OG à la préparation"),
@@ -32,8 +33,7 @@ public enum CAProperties implements IProperties {
             "nom du folder de post pain008 pour les transmission ISO20022"),
     ISO_SEPA_FTP_CAMT054_FOLDER("iso.sepa.ftp.camt054.folder", "nom du folder pour les receptions camt054 ISO20022"),
 
-    ISO_SEPA_RESPONSABLE_OG_EMAIL(
-            "iso.sepa.responsable.og.email",
+    ISO_SEPA_RESPONSABLE_OG_EMAIL("iso.sepa.responsable.og.email",
             "email du responsable OG à qui la liste des transactions non executées est envoyée pas le process de traitement des quittances"),
 
     ISO_SEPA_ENABLE_IBAN_POSTAL("iso.sepa.enableIbanPostal",
@@ -41,7 +41,9 @@ public enum CAProperties implements IProperties {
     ISO_SEPA_CODE_TYPE_PRELEVEMENT_CHTA("iso.sepa.typeprelevement.code.chta",
             "permet de définir le code du type de prélévement pour CHTA"),
     ISO_SEPA_CODE_TYPE_PRELEVEMENT_CHDD("iso.sepa.typeprelevement.code.chdd",
-            "permet de définir le code du type de prélévement pour CHDD");
+            "permet de définir le code du type de prélévement pour CHDD"),
+    IMPORTATION_NEW_SEARCH_AFFILIATION("importationOperation.enableNewSearchAffiliation",
+            "Nouvelle manière de rechercher l'affiliation");
 
     private String description;
     private String propertyName;

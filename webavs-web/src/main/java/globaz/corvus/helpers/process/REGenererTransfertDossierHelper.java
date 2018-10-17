@@ -1,5 +1,6 @@
 package globaz.corvus.helpers.process;
 
+import globaz.corvus.process.REGenererARC3XMLTransfertCIProcess;
 import globaz.corvus.process.REGenererDemandeCalculProvisoireProcess;
 import globaz.corvus.process.REGenererTransfertDossierNonValideProcess;
 import globaz.corvus.process.REGenererTransfertDossierValideProcess;
@@ -18,7 +19,7 @@ public class REGenererTransfertDossierHelper extends PRAbstractHelper {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.framework.controller.FWHelper#_retrieve(globaz.framework.bean. FWViewBeanInterface,
      * globaz.framework.controller.FWAction, globaz.globall.api.BISession)
      */
@@ -28,7 +29,7 @@ public class REGenererTransfertDossierHelper extends PRAbstractHelper {
 
     /**
      * (non javadoc)
-     * 
+     *
      * @see globaz.framework.controller.FWHelper#_start(globaz.framework.bean.FWViewBeanInterface,
      *      globaz.framework.controller.FWAction, globaz.globall.api.BISession)
      */
@@ -38,6 +39,7 @@ public class REGenererTransfertDossierHelper extends PRAbstractHelper {
         REGenererTransfertDossierViewBean gldaViewBean = (REGenererTransfertDossierViewBean) viewBean;
 
         try {
+
             if (gldaViewBean.isTransfertCaisseCompetente()) {
                 REGenererTransfertDossierNonValideProcess process = new REGenererTransfertDossierNonValideProcess();
                 process.setSession((BSession) session);
@@ -80,6 +82,15 @@ public class REGenererTransfertDossierHelper extends PRAbstractHelper {
                 BProcessLauncher.start(process, false);
 
             }
+
+            REGenererARC3XMLTransfertCIProcess processARC = new REGenererARC3XMLTransfertCIProcess();
+            processARC.setSession((BSession) session);
+            processARC.setListNss(gldaViewBean.getListNss());
+            processARC.setIdInfoCompl(gldaViewBean.getIdInfoCompl());
+            processARC.setEMailAddress(gldaViewBean.getEMailAddress());
+            processARC.setIdDemandeRente(gldaViewBean.getIdDemandeRente());
+            BProcessLauncher.start(processARC, false);
+
         } catch (Exception e) {
             viewBean.setMsgType(FWViewBeanInterface.ERROR);
             viewBean.setMessage(e.toString());

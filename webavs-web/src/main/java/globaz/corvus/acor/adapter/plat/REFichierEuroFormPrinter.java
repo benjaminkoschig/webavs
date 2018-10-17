@@ -3,6 +3,7 @@ package globaz.corvus.acor.adapter.plat;
 import globaz.externe.IPRConstantesExternes;
 import globaz.externe.IPTConstantesExternes;
 import globaz.globall.db.BManager;
+import globaz.globall.db.BSession;
 import globaz.globall.util.JACalendar;
 import globaz.hera.api.ISFMembreFamilleRequerant;
 import globaz.hera.api.ISFSituationFamiliale;
@@ -34,6 +35,8 @@ import ch.globaz.hera.business.constantes.ISFMembreFamille;
  * @author vre
  */
 public class REFichierEuroFormPrinter implements PRFichierACORPrinter {
+    
+    private static final String IS_WANT_ADRESSE_COURRIER = "isWantAdresseCourrier";
 
     private static final String FIELD_DEPARATOR = "\t";
 
@@ -118,9 +121,17 @@ public class REFichierEuroFormPrinter implements PRFichierACORPrinter {
             TITiers t = new TITiers();
             t.setIdTiers(idTiers);
             t.setSession(adapter.getSession());
+            
+            TIAdresseDataSource adresse;            
+            String prop = getWantAdresseCourrierProperties();
 
-            TIAdresseDataSource adresse = t.getAdresseAsDataSource(IPTConstantesExternes.TIERS_ADRESSE_TYPE_DOMICILE,
-                    IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_RENTE, JACalendar.todayJJsMMsAAAA(), true);
+            if("true".equals(prop)) {
+                adresse = t.getAdresseAsDataSource(IPTConstantesExternes.TIERS_ADRESSE_TYPE_COURRIER,
+                        IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_RENTE, JACalendar.todayJJsMMsAAAA(), true);
+            } else {
+                adresse = t.getAdresseAsDataSource(IPTConstantesExternes.TIERS_ADRESSE_TYPE_DOMICILE,
+                        IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_RENTE, JACalendar.todayJJsMMsAAAA(), true);
+            }
 
             // Informations sur du tiers
             PRTiersWrapper tiers = PRTiersHelper.getTiersById(adapter.getSession(), idTiers);
@@ -135,6 +146,21 @@ public class REFichierEuroFormPrinter implements PRFichierACORPrinter {
         } catch (Exception e) {
             JadeLogger.error(this, e);
         }
+    }
+    
+    private String getWantAdresseCourrierProperties() {
+        String prop = null;
+        try {
+            BSession session = adapter.getSession();
+            if("corvus".equalsIgnoreCase(session.getApplicationId())) {
+                prop = session.getApplication().getProperty(IS_WANT_ADRESSE_COURRIER);
+            } else {
+                prop = null;
+            }
+        } catch (Exception e) {
+            prop = null;
+        }
+        return prop;
     }
 
     private StringBuilder writeDataToBuffer(PRTiersWrapper tiers, TIAdresseDataSource adresse,

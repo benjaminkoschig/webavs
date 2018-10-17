@@ -1,0 +1,15 @@
+	<%
+			if (condition) {
+				rowStyle = "row";
+			} else {
+				rowStyle = "rowOdd";
+			}
+	%>
+	<% if(isAnnule) {%>
+		<tr class="<%=rowStyle%>" style="background-color:#AFAFAF;" onMouseOver="jscss('swap', this, '<%=rowStyle%>', 'rowHighligthed')" onMouseOut="jscss('swap', this, 'rowHighligthed', '<%=rowStyle%>')">
+	<% }else{ %>
+		<tr class="<%=rowStyle%>" onMouseOver="jscss('swap', this, '<%=rowStyle%>', 'rowHighligthed')" onMouseOut="jscss('swap', this, 'rowHighligthed', '<%=rowStyle%>')">
+	<% } %>
+		<% if (isSelection) { %>
+			<td class="mtd" width="15px"><ct:FWChooserTag index="<%=i%>"/></td>
+		<% } %>

@@ -1,22 +1,38 @@
 package globaz.corvus.vb.process;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import ch.globaz.prestation.domaine.CodePrestation;
 import globaz.corvus.api.basescalcul.IREPrestationAccordee;
 import globaz.corvus.api.demandes.IREDemandeRente;
 import globaz.corvus.application.REApplication;
 import globaz.corvus.db.demandes.REDemandeRente;
 import globaz.corvus.db.rentesaccordees.RERenteAccJoinTblTiersJoinDemRenteManager;
 import globaz.corvus.db.rentesaccordees.RERenteAccJoinTblTiersJoinDemandeRente;
+import globaz.corvus.db.rentesaccordees.RERenteLieeJointPrestationAccordee;
+import globaz.corvus.db.rentesaccordees.RERenteLieeJointPrestationAccordeeManager;
 import globaz.corvus.utils.REPmtMensuel;
+import globaz.corvus.utils.enumere.genre.prestations.REGenrePrestationEnum;
+import globaz.corvus.utils.enumere.genre.prestations.REGenresPrestations;
+import globaz.globall.db.BManager;
+import globaz.globall.db.BSession;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JACalendarGregorian;
 import globaz.globall.util.JAException;
+import globaz.hera.api.ISFSituationFamiliale;
+import globaz.hera.utils.SFFamilleUtils;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.db.infos.PRInfoCompl;
 import globaz.prestation.interfaces.tiers.PRTiersAdresseCopyFormater06;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.vb.PRAbstractViewBeanSupport;
-import java.util.Iterator;
 
 public class REGenererTransfertDossierViewBean extends PRAbstractViewBeanSupport {
 
@@ -49,6 +65,10 @@ public class REGenererTransfertDossierViewBean extends PRAbstractViewBeanSupport
     private String remarque = "";
     private String remarqueTraEncous = "";
     private String texteRemarque = "";
+    
+    private List<String> listNss; 
+    private List<String> listExConjoint;
+    private Map<String, PRTiersWrapper> mapNssId;
 
     // ~ Methods
     // --------------------------------------------------------------------------------------------------------
@@ -93,7 +113,93 @@ public class REGenererTransfertDossierViewBean extends PRAbstractViewBeanSupport
             return false;
         }
     }
+    
+    private void genereListNss() throws Exception {
+        
+        listNss = new ArrayList<>();
+        
+        listExConjoint = getListExConjoint(idTiers);
+        
+        List<RERenteLieeJointPrestationAccordee> rentesLiees = getRentesLieesEnCours(getSession(), idTiers);
+        
+        Set<String> nssUnique = new HashSet<>();
+        mapNssId = new HashMap<>();
+        
+        for(RERenteLieeJointPrestationAccordee rente : rentesLiees) {
+            if(isRenteEnfant(rente) || isRenteSurvivant(rente)) {
+                addNssFromTiers(rente.getIdTiersComplementaire1(), nssUnique);
+            } else if(isRentePrincipale(rente)){
+                addNssFromTiers(rente.getIdTiersBeneficiaire(), nssUnique);
+            }
+        }
+        
+        for(String nssToAdd:nssUnique) {
+            listNss.add(nssToAdd);
+        }
+              
+    }
+    
+    private List<String> getListExConjoint(String idTiers) throws Exception {
+        List<String> listEx = new ArrayList<>();
+        
+      // exConjoints
+      List<PRTiersWrapper> exConjoints =  SFFamilleUtils.getExConjointsTiers(getSession(),
+          ISFSituationFamiliale.CS_DOMAINE_RENTES, idTiers);
+          
+      for (PRTiersWrapper unExConjoint : exConjoints) {
+          listEx.add(unExConjoint.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL));
+      }
+      
+      return listEx;
+        
+    }
 
+    
+    private List<RERenteLieeJointPrestationAccordee> getRentesLieesEnCours(final BSession session,
+            final String idTiers) throws Exception {
+
+        List<RERenteLieeJointPrestationAccordee> rentesComplementaires = new ArrayList<RERenteLieeJointPrestationAccordee>();
+
+        RERenteLieeJointPrestationAccordeeManager manager = new RERenteLieeJointPrestationAccordeeManager();
+        manager.setSession(session);
+        manager.setForIdTiersLiant(idTiers);
+        manager.setForCsEtatIn(
+                Arrays.asList(IREPrestationAccordee.CS_ETAT_VALIDE, IREPrestationAccordee.CS_ETAT_PARTIEL));
+        manager.find(BManager.SIZE_USEDEFAULT);
+
+        for (int i = 0; i < manager.getSize(); i++) {
+            RERenteLieeJointPrestationAccordee prestation = (RERenteLieeJointPrestationAccordee) manager.get(i);
+
+            if (JadeStringUtil.isBlankOrZero(prestation.getDateFinDroit())) {
+                rentesComplementaires.add(prestation);
+            }
+        }
+
+        return rentesComplementaires;
+    }
+    
+    private void addNssFromTiers(String idTiers, Set<String> nssUnique) throws Exception {
+        PRTiersWrapper tiers = PRTiersHelper.getTiersParId(getSession(), idTiers);
+        String nssTiers = tiers.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL);
+        if(!listExConjoint.contains(nssTiers)) {
+            nssUnique.add(nssTiers);
+            mapNssId.put(nssTiers, tiers);
+        }
+    }
+    
+    private boolean isRenteEnfant(RERenteLieeJointPrestationAccordee rente) {
+        return REGenrePrestationEnum.groupeEnfant.contains(rente.getCodePrestation()); 
+    }
+    
+    private boolean isRenteSurvivant(RERenteLieeJointPrestationAccordee rente) {
+        return REGenresPrestations.GENRE_13.equals(rente.getCodePrestation()) || REGenresPrestations.GENRE_23.equals(rente.getCodePrestation()); 
+    }
+    
+    private boolean isRentePrincipale(final RERenteLieeJointPrestationAccordee rente) {
+        CodePrestation codePrestation = CodePrestation.getCodePrestation(Integer.parseInt(rente.getCodePrestation()));
+        return codePrestation.isRentePrincipale();
+    }   
+    
     public String getDateEnvoi() {
         return DateEnvoi;
     }
@@ -180,12 +286,15 @@ public class REGenererTransfertDossierViewBean extends PRAbstractViewBeanSupport
      * Donne le titre de l'ecran en fonction du document a imprimer
      * 
      * @return
+     * @throws Exception 
      */
-    public String getTitreEcran() {
+    public String getTitreEcran() throws Exception {
 
         loadDemandeRente();
 
         if (demandeRente != null) {
+            
+            genereListNss();
 
             if (IREDemandeRente.CS_TYPE_CALCUL_STANDARD.equals(demandeRente.getCsTypeCalcul())
                     && (!isValide() || !asRaEnCours())) {
@@ -368,7 +477,7 @@ public class REGenererTransfertDossierViewBean extends PRAbstractViewBeanSupport
      */
     @Override
     public boolean validate() {
-
+        
         boolean isValidate = true;
 
         if (JadeStringUtil.isEmpty(eMailAddress)) {
@@ -449,4 +558,53 @@ public class REGenererTransfertDossierViewBean extends PRAbstractViewBeanSupport
             return false;
         }
     }
+
+    public String getNss0() {
+        return getNssNum(0);
+    }
+
+    public void setNss0(String nss0) {
+        setNssNum(0, nss0);
+    }
+
+    public String getNss1() {
+        return getNssNum(1);
+    }
+
+    public void setNss1(String nss1) {
+        setNssNum(1, nss1);
+    }
+
+    public String getNss2() {
+        return getNssNum(2);
+    }
+
+    public void setNss2(String nss2) {
+        setNssNum(2, nss2);
+    }
+   
+    private void setNssNum(int index, String nss) {
+        if(listNss.size() <= index) {
+            for (int i = 0; i <  index + 1 - listNss.size(); i++) {
+                listNss.add("");
+            }
+        }
+        listNss.set(index, nss);
+    }
+    
+    private String getNssNum(int index) {
+        if(listNss != null && listNss.size() > index) {
+            return listNss.get(index);
+        }
+        return "";
+    }
+
+    public List<String> getListNss() {
+        return listNss;
+    }
+
+    public Map<String, PRTiersWrapper> getMapNssId() {
+        return mapNssId;
+    }
+
 }

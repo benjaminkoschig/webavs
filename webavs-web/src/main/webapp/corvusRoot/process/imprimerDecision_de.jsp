@@ -58,7 +58,24 @@
 	    <%}%>	    
 	</ct:menuChange>
 <%}%>
+<script type="text/javascript">
 
+$( function() {
+    $( "#dialog-message" ).dialog({
+    	modal: true,
+    	width: '50%',
+      	height: 'auto',
+      	resizable: false
+    });
+} );
+</script>
+ <% if(!viewBean.isTypeCaisseCorrect()){ %>
+	<div id="dialog-message" title="Warning">
+	  <p>
+	    <%= objSession.getLabel("ERROR_PROP_TRIBUNAL_NOT_FOUND")%>
+	  </p>
+	</div>
+ <%}%>
 <%-- /tpl:put --%>
 <%@ include file="/theme/process/bodyStart.jspf" %>
 			<%-- tpl:put name="zoneTitle" --%><ct:FWLabel key="JSP_IMD_D_TITRE"/><%-- /tpl:put --%>

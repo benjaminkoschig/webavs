@@ -81,7 +81,6 @@
 				<ct:FWLabel key="JSP_TYPE" />
 			</th>
 <%@ include file="/theme/list/tableHeader.jspf" %>
-<%@ include file="/theme/list/lineStyle.jspf" %>
 <%
 	if (gbIter != null && gbIter.hasNext()) {
 
@@ -89,15 +88,23 @@
 		actionDetail = targetLocation  + "='" + detailLink + line.getIdPrestationApg() 
 											+ "&" + VueGlobaleTiersUtils.PARAMETRE_REQUETE_ID_TIERS_VUE_GLOBALE + "=" + line.getIdTiers() + "'";
 
+		boolean isAnnule = line.isAnnule();
+
 		// IR521 : Ajouter le montant des frais de garde au montant brut
 		montantBrutItr.add(new FWCurrency(line.getMontantBrut()));
 		montantBrutItr.add(new FWCurrency(line.getFraisGarde()));
+
+		// S180516_002 D0225
+		if(!isAnnule){
+			montantBrutTotal.add(new FWCurrency(line.getMontantBrut()));
+			montantBrutTotal.add(new FWCurrency(line.getFraisGarde()));
+					
+			montantNetTotal.add(new FWCurrency(line.getMontantNet()));
+		}
 		
-		montantBrutTotal.add(new FWCurrency(line.getMontantBrut()));
-		montantBrutTotal.add(new FWCurrency(line.getFraisGarde()));
-				
-		montantNetTotal.add(new FWCurrency(line.getMontantNet()));
-%>			<td class="mtd" width="">
+%>			
+<%@ include file="/theme/list/lineStyleAPG_Prestations.jspf" %>
+		<td class="mtd" width="">
 <%
 		if (line.isOkPourMiseEnLot()) {
 %>				<ct:menuPopup menu="ap-optionprestationlotok" detailLabelId="MENU_OPTION_DETAIL" detailLink="<%=detailLink + line.getIdPrestationApg()%>">

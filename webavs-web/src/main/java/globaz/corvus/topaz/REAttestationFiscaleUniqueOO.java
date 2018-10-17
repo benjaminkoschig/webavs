@@ -1,6 +1,19 @@
 package globaz.corvus.topaz;
 
-import globaz.babel.api.ICTDocument;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import ch.globaz.common.properties.CommonProperties;
+import ch.globaz.common.properties.CommonPropertiesUtils;
+import ch.globaz.corvus.process.attestationsfiscales.REAgregateurDonneesPourAttestationsFiscales;
+import ch.globaz.corvus.process.attestationsfiscales.REFamillePourAttestationsFiscales;
+import ch.globaz.corvus.process.attestationsfiscales.RERentePourAttestationsFiscales;
+import ch.globaz.prestation.domaine.CodePrestation;
+import ch.globaz.topaz.datajuicer.Collection;
+import ch.globaz.topaz.datajuicer.DataList;
+import ch.globaz.topaz.datajuicer.DocumentData;
+import ch.globaz.topaz.mixer.postprocessor.PostProcessor;
 import globaz.babel.utils.CatalogueText;
 import globaz.caisse.helper.CaisseHelperFactory;
 import globaz.caisse.report.helper.CaisseHeaderReportBean;
@@ -20,26 +33,12 @@ import globaz.jade.print.server.JadePrintDocumentContainer;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
 import globaz.jade.publish.document.JadePublishDocumentInfoProvider;
 import globaz.prestation.ged.PRGedHelper;
-import globaz.prestation.interfaces.babel.PRBabelHelper;
 import globaz.prestation.tools.PRStringUtils;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import ch.globaz.common.properties.CommonProperties;
-import ch.globaz.common.properties.CommonPropertiesUtils;
-import ch.globaz.corvus.process.attestationsfiscales.REAgregateurDonneesPourAttestationsFiscales;
-import ch.globaz.corvus.process.attestationsfiscales.REFamillePourAttestationsFiscales;
-import ch.globaz.corvus.process.attestationsfiscales.RERentePourAttestationsFiscales;
-import ch.globaz.prestation.domaine.CodePrestation;
-import ch.globaz.topaz.datajuicer.Collection;
-import ch.globaz.topaz.datajuicer.DataList;
-import ch.globaz.topaz.datajuicer.DocumentData;
 
 public class REAttestationFiscaleUniqueOO extends REAbstractJobOO {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
     private static final String NUM_CAISSE_FERCIAM = "106";
@@ -133,7 +132,7 @@ public class REAttestationFiscaleUniqueOO extends REAbstractJobOO {
 
     /**
      * Recherche la valeur à l'<code>index</code> demandé. Retourne une chaîne vide si aucun valeur n'est présente
-     * 
+     *
      * @param list La liste de valeur
      * @param index L'index à rechercher
      * @return la valeur à l'<code>index</code> demandé. Retourne une chaîne vide si aucun valeur n'est présente
@@ -174,17 +173,16 @@ public class REAttestationFiscaleUniqueOO extends REAbstractJobOO {
         caisseHelper.setTemplateName(REAttestationFiscaleUniqueOO.FICHIER_MODELE_ENTETE_CORVUS);
 
         if (("true").equals(getSession().getApplication().getProperty("isAfficherDossierTraitePar"))) {
-            //Uniquement pour la FERCIAM
-            if((NUM_CAISSE_FERCIAM).equals(CommonPropertiesUtils.getValue(CommonProperties.KEY_NO_CAISSE))) {
+            // Uniquement pour la FERCIAM
+            if ((NUM_CAISSE_FERCIAM).equals(CommonPropertiesUtils.getValue(CommonProperties.KEY_NO_CAISSE))) {
                 CatalogueText catalogue = definirCataloguesDeTextes().get(0);
                 crBean.setNomCollaborateur(getTraiterPar() + " " + getTexte(catalogue, 6, 2));
                 crBean.setTelCollaborateur(getTexte(catalogue, 6, 3));
-            }else {
-              crBean.setNomCollaborateur(getTraiterPar() + " " + getSession().getUserFullName());
-              crBean.setTelCollaborateur(getSession().getUserInfo().getPhone());
+            } else {
+                crBean.setNomCollaborateur(getTraiterPar() + " " + getSession().getUserFullName());
+                crBean.setTelCollaborateur(getSession().getUserInfo().getPhone());
             }
 
-            
         }
 
         // Ajoute le libelle CONFIDENTIEL dans l'adresse de l'entete du document
@@ -241,7 +239,8 @@ public class REAttestationFiscaleUniqueOO extends REAbstractJobOO {
             String periode = getListValue(getListeattPeriode(), ctr);
             String montant = getListValue(getListeattMontant(), ctr);
 
-            if (!JadeStringUtil.isEmpty(rente) || !JadeStringUtil.isEmpty(periode) || !JadeStringUtil.isEmpty(montant)) {
+            if (!JadeStringUtil.isEmpty(rente) || !JadeStringUtil.isEmpty(periode)
+                    || !JadeStringUtil.isEmpty(montant)) {
                 FWCurrency mt = new FWCurrency("0.00");
                 mt.add(montant);
 
@@ -273,7 +272,8 @@ public class REAttestationFiscaleUniqueOO extends REAbstractJobOO {
             String periode = getListValue(getListePeriode(), ctr);
             String montant = getListValue(getListeMontant(), ctr);
 
-            if (!JadeStringUtil.isEmpty(rente) || !JadeStringUtil.isEmpty(periode) || !JadeStringUtil.isEmpty(montant)) {
+            if (!JadeStringUtil.isEmpty(rente) || !JadeStringUtil.isEmpty(periode)
+                    || !JadeStringUtil.isEmpty(montant)) {
                 FWCurrency mt = new FWCurrency("0.00");
                 mt.add(montant);
 
@@ -294,7 +294,7 @@ public class REAttestationFiscaleUniqueOO extends REAbstractJobOO {
         }
         if (!JadeStringUtil.isEmpty(getParaAPI())) {
             paraAPI = PRStringUtils.replaceString(getParaAPI(), "\n", "");
-            data.addData("TEXTE_API", paraAPI);
+            data.addData("TEXTE_API", paraAPI + PostProcessor.GLUE_PARAGRAPHS);
         }
         salutation = PRStringUtils.replaceString(getSalutation(), "\n", "");
         data.addData("SALUTATION_ATTESTATION", salutation);
@@ -329,6 +329,7 @@ public class REAttestationFiscaleUniqueOO extends REAbstractJobOO {
         manager.setForAnnee(anneeAttestations);
         manager.setForIdTiersBaseCalcul(idTiersBaseCalcul);
         manager.setFiltrerParDateDeDecision(false);
+        manager.setIsTiersBeneficiaire(true);
         manager.find();
 
         List<REDonneesPourAttestationsFiscales> donnees = new ArrayList<REDonneesPourAttestationsFiscales>();
@@ -345,16 +346,16 @@ public class REAttestationFiscaleUniqueOO extends REAbstractJobOO {
             for (RERentePourAttestationsFiscales uneRenteDeLaFamille : uneAttestation.getRentesDeLaFamille()) {
                 if (!JadeStringUtil.isBlankOrZero(uneRenteDeLaFamille.getCodePrestation())
                         && JadeNumericUtil.isInteger(uneRenteDeLaFamille.getCodePrestation())) {
-                    CodePrestation codePrestation = CodePrestation.getCodePrestation(Integer
-                            .parseInt(uneRenteDeLaFamille.getCodePrestation()));
+                    CodePrestation codePrestation = CodePrestation
+                            .getCodePrestation(Integer.parseInt(uneRenteDeLaFamille.getCodePrestation()));
                     codesPrestationFamille.add(codePrestation);
                 }
             }
         }
 
-        pubInfoAttestation.setDocumentProperty(REGedUtils.PROPRIETE_GED_TYPE_DEMANDE_RENTE, REGedUtils
-                .getCleGedPourTypeRente(getSession(), REGedUtils.getTypeRentePourListeCodesPrestation(getSession(),
-                        codesPrestationFamille, false, true)));
+        pubInfoAttestation.setDocumentProperty(REGedUtils.PROPRIETE_GED_TYPE_DEMANDE_RENTE,
+                REGedUtils.getCleGedPourTypeRente(getSession(), REGedUtils
+                        .getTypeRentePourListeCodesPrestation(getSession(), codesPrestationFamille, false, true)));
 
         TIDocumentInfoHelper.fill(pubInfoAttestation, getIdTiers(), getSession(), null, null, null);
 

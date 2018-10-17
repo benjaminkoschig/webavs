@@ -1,5 +1,12 @@
 package globaz.corvus.process;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import ch.globaz.topaz.datajuicer.Collection;
+import ch.globaz.topaz.datajuicer.DocumentData;
 import globaz.babel.db.copies.CTCopies;
 import globaz.corvus.api.topaz.IRENoDocumentInfoRom;
 import globaz.corvus.db.decisions.RECopieDecision;
@@ -30,18 +37,11 @@ import globaz.prestation.itext.PRLettreEnTete;
 import globaz.prestation.topaz.PRLettreEnTeteOO;
 import globaz.pyxis.db.tiers.TIAdministrationManager;
 import globaz.pyxis.db.tiers.TIAdministrationViewBean;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import ch.globaz.topaz.datajuicer.Collection;
-import ch.globaz.topaz.datajuicer.DocumentData;
 
 public class REImprimerDecisionProcess extends AbstractJadeJob {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
     private String dateDocument = "";
@@ -115,8 +115,8 @@ public class REImprimerDecisionProcess extends AbstractJadeJob {
         }
 
         if (null == tier) {
-            errorBuffer.append("Impossible de créer la lettre en-tête : TIER = NULL (id=" + copie.getIdTiersCopie()
-                    + ")");
+            errorBuffer
+                    .append("Impossible de créer la lettre en-tête : TIER = NULL (id=" + copie.getIdTiersCopie() + ")");
             return null;
         } else {
             lettreEnTete.setTierAdresse(tier);
@@ -233,8 +233,7 @@ public class REImprimerDecisionProcess extends AbstractJadeJob {
             pubInfosDecision.setArchiveDocument(false);
             pubInfosDecision.setPublishDocument(false);
             pubInfosDecision.setDocumentType(IRENoDocumentInfoRom.DECISION_DE_RENTES);
-            pubInfosDecision.setDocumentProperty(
-                    REGedUtils.PROPRIETE_GED_TYPE_DEMANDE_RENTE,
+            pubInfosDecision.setDocumentProperty(REGedUtils.PROPRIETE_GED_TYPE_DEMANDE_RENTE,
                     REGedUtils.getCleGedPourTypeRente(getSession(),
                             REGedUtils.getTypeRentePourCetteDecision(getSession(), decision)));
             pubInfosDecision.setDocumentDate(getDateDocument());
@@ -329,6 +328,13 @@ public class REImprimerDecisionProcess extends AbstractJadeJob {
                     }
                     allDoc.addDocument(copieExacte, pubInfosCopieDecision);
                     isCopieCaissePrint = true;
+                }
+                String typeCaisse = getSession().getApplication().getProperty(PRTiersHelper.TYPE_DE_CAISSE);
+                if (typeCaisse.contains(PRTiersHelper.CAISSE_CANT) || typeCaisse.contains(PRTiersHelper.CAISSE_PROF)) {
+
+                } else {
+                    pubInfosGen.setDocumentSubject(pubInfosGen.getDocumentSubject() + "\n\n"
+                            + getSession().getLabel("ERROR_PROP_TRIBUNAL_NOT_FOUND"));
                 }
             }
 
