@@ -59,6 +59,7 @@ import globaz.hera.api.ISFRelationFamiliale;
 import globaz.hera.api.ISFSituationFamiliale;
 import globaz.hera.db.famille.SFMembreFamille;
 import globaz.hera.external.SFSituationFamilialeFactory;
+import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeNumericUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.acor.PRACORConst;
@@ -1279,8 +1280,15 @@ public class REAnnoncePonctuelleHelper extends PRAbstractHelper {
 
         annonce_01.setGenrePrestation(viewBean.getGenrePrestation());
         annonce_01.setCodeMutation("99");
-        annonce_01.setMoisRapport(PRDateFormater.convertDate_AAAAMM_to_MMAA(
-                PRDateFormater.convertDate_MMxAAAA_to_AAAAMM(REPmtMensuel.getDateDernierPmt(session))));
+        if (dateDecisionEstPosterieurDateDernierPaiement(viewBean.getDateDebut(),
+                REPmtMensuel.getDateDernierPmt(session))) {
+            annonce_01.setMoisRapport(PRDateFormater
+                    .convertDate_AAAAMM_to_MMAA(PRDateFormater.convertDate_MMxAAAA_to_AAAAMM(viewBean.getDateDebut())));
+        } else {
+            annonce_01.setMoisRapport(PRDateFormater.convertDate_AAAAMM_to_MMAA(
+                    PRDateFormater.convertDate_MMxAAAA_to_AAAAMM(REPmtMensuel.getDateDernierPmt(session))));
+        }
+
         annonce_01.setCasSpecial1(viewBean.getCs1());
         annonce_01.setCasSpecial2(viewBean.getCs2());
         annonce_01.setCasSpecial3(viewBean.getCs3());
@@ -1290,6 +1298,11 @@ public class REAnnoncePonctuelleHelper extends PRAbstractHelper {
         annonce_01.add(transaction);
 
         return annonce_01;
+    }
+
+    private boolean dateDecisionEstPosterieurDateDernierPaiement(String dateDebutDroit, String dateDernierPaiement) {
+
+        return JadeDateUtil.isDateMonthYearAfter(dateDebutDroit, dateDernierPaiement);
     }
 
     private REAnnoncesAbstractLevel2A ajouterAnnoncePonctuelleEnregistrement02(final BSession session,
@@ -1420,8 +1433,13 @@ public class REAnnoncePonctuelleHelper extends PRAbstractHelper {
             annonce43_01.setCantonEtatDomicile(vb.getCsCanton());
         }
         annonce43_01.setGenrePrestation(ra.getCodePrestation());
-        annonce43_01.setMoisRapport(PRDateFormater.convertDate_AAAAMM_to_MMAA(
-                PRDateFormater.convertDate_MMxAAAA_to_AAAAMM(REPmtMensuel.getDateDernierPmt(session))));
+        if (dateDecisionEstPosterieurDateDernierPaiement(vb.getDateDebut(), REPmtMensuel.getDateDernierPmt(session))) {
+            annonce43_01.setMoisRapport(PRDateFormater
+                    .convertDate_AAAAMM_to_MMAA(PRDateFormater.convertDate_MMxAAAA_to_AAAAMM(vb.getDateDebut())));
+        } else {
+            annonce43_01.setMoisRapport(PRDateFormater.convertDate_AAAAMM_to_MMAA(
+                    PRDateFormater.convertDate_MMxAAAA_to_AAAAMM(REPmtMensuel.getDateDernierPmt(session))));
+        }
 
         return annonce43_01;
     }
@@ -1450,8 +1468,14 @@ public class REAnnoncePonctuelleHelper extends PRAbstractHelper {
             annonce43_01.setCantonEtatDomicile(csCantonDomicile);
         }
         annonce43_01.setGenrePrestation(ra.getCodePrestation());
-        annonce43_01.setMoisRapport(PRDateFormater.convertDate_AAAAMM_to_MMAA(
-                PRDateFormater.convertDate_MMxAAAA_to_AAAAMM(REPmtMensuel.getDateDernierPmt(session))));
+        if (dateDecisionEstPosterieurDateDernierPaiement(ra.getDateDebutDroit(),
+                REPmtMensuel.getDateDernierPmt(session))) {
+            annonce43_01.setMoisRapport(PRDateFormater
+                    .convertDate_AAAAMM_to_MMAA(PRDateFormater.convertDate_MMxAAAA_to_AAAAMM(ra.getDateDebutDroit())));
+        } else {
+            annonce43_01.setMoisRapport(PRDateFormater.convertDate_AAAAMM_to_MMAA(
+                    PRDateFormater.convertDate_MMxAAAA_to_AAAAMM(REPmtMensuel.getDateDernierPmt(session))));
+        }
 
         return annonce43_01;
     }
@@ -1506,8 +1530,13 @@ public class REAnnoncePonctuelleHelper extends PRAbstractHelper {
             annonce46_01.setCantonEtatDomicile(vb.getCsCanton());
         }
         annonce46_01.setGenrePrestation(ra.getCodePrestation());
-        annonce46_01.setMoisRapport(PRDateFormater.convertDate_AAAAMM_to_MMAA(
-                PRDateFormater.convertDate_MMxAAAA_to_AAAAMM(REPmtMensuel.getDateDernierPmt(session))));
+        if (dateDecisionEstPosterieurDateDernierPaiement(vb.getDateDebut(), REPmtMensuel.getDateDernierPmt(session))) {
+            annonce46_01.setMoisRapport(PRDateFormater
+                    .convertDate_AAAAMM_to_MMAA(PRDateFormater.convertDate_MMxAAAA_to_AAAAMM(vb.getDateDebut())));
+        } else {
+            annonce46_01.setMoisRapport(PRDateFormater.convertDate_AAAAMM_to_MMAA(
+                    PRDateFormater.convertDate_MMxAAAA_to_AAAAMM(REPmtMensuel.getDateDernierPmt(session))));
+        }
 
         return annonce46_01;
     }
@@ -1536,8 +1565,14 @@ public class REAnnoncePonctuelleHelper extends PRAbstractHelper {
             annonce46_01.setCantonEtatDomicile(csCantonDomicile);
         }
         annonce46_01.setGenrePrestation(ra.getCodePrestation());
-        annonce46_01.setMoisRapport(PRDateFormater.convertDate_AAAAMM_to_MMAA(
-                PRDateFormater.convertDate_MMxAAAA_to_AAAAMM(REPmtMensuel.getDateDernierPmt(session))));
+        if (dateDecisionEstPosterieurDateDernierPaiement(ra.getDateDebutDroit(),
+                REPmtMensuel.getDateDernierPmt(session))) {
+            annonce46_01.setMoisRapport(PRDateFormater
+                    .convertDate_AAAAMM_to_MMAA(PRDateFormater.convertDate_MMxAAAA_to_AAAAMM(ra.getDateDebutDroit())));
+        } else {
+            annonce46_01.setMoisRapport(PRDateFormater.convertDate_AAAAMM_to_MMAA(
+                    PRDateFormater.convertDate_MMxAAAA_to_AAAAMM(REPmtMensuel.getDateDernierPmt(session))));
+        }
 
         return annonce46_01;
     }
