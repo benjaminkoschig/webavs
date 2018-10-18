@@ -1,25 +1,10 @@
 package ch.globaz.pegasus.businessimpl.utils.decision;
 
-import globaz.corvus.api.basescalcul.IREPrestationAccordee;
-import globaz.corvus.api.lots.IRELot;
-import globaz.globall.db.BSessionUtil;
-import globaz.globall.util.JACalendar;
-import globaz.globall.util.JACalendarGregorian;
-import globaz.globall.util.JADate;
-import globaz.globall.util.JAException;
-import globaz.jade.client.util.JadeDateUtil;
-import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.context.JadeThread;
-import globaz.jade.context.exception.JadeNoBusinessLogSessionError;
-import globaz.jade.exception.JadeApplicationException;
-import globaz.jade.exception.JadeCloneModelException;
-import globaz.jade.exception.JadePersistenceException;
-import globaz.jade.log.business.JadeBusinessMessageLevels;
-import globaz.jade.persistence.model.JadeAbstractModel;
-import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ch.globaz.corvus.business.models.rentesaccordees.SimplePrestationsAccordees;
 import ch.globaz.pegasus.business.constantes.IPCDecision;
 import ch.globaz.pegasus.business.constantes.IPCDemandes;
@@ -49,8 +34,27 @@ import ch.globaz.pegasus.businessimpl.services.PegasusImplServiceLocator;
 import ch.globaz.pegasus.businessimpl.services.models.decision.validation.suppression.GenerateOvsForSuppression;
 import ch.globaz.pegasus.businessimpl.services.models.decision.validation.suppression.GeneratePrestation;
 import ch.globaz.pegasus.businessimpl.utils.PersistenceUtil;
+import globaz.corvus.api.basescalcul.IREPrestationAccordee;
+import globaz.corvus.api.lots.IRELot;
+import globaz.globall.db.BSessionUtil;
+import globaz.globall.util.JACalendar;
+import globaz.globall.util.JACalendarGregorian;
+import globaz.globall.util.JADate;
+import globaz.globall.util.JAException;
+import globaz.jade.client.util.JadeDateUtil;
+import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.context.JadeThread;
+import globaz.jade.context.exception.JadeNoBusinessLogSessionError;
+import globaz.jade.exception.JadeApplicationException;
+import globaz.jade.exception.JadeCloneModelException;
+import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.log.business.JadeBusinessMessageLevels;
+import globaz.jade.persistence.model.JadeAbstractModel;
+import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 
 public class ValiderDecisionSuppression extends AbstractValiderDecision {
+
+    private static final Logger logger = LoggerFactory.getLogger(ValiderDecisionSuppression.class);
 
     /* Décision de suppression courantes */
     private DecisionSuppression decisionSuppression = null;
@@ -65,7 +69,7 @@ public class ValiderDecisionSuppression extends AbstractValiderDecision {
 
     /**
      * Création des ordres de versement et des prestations de restitution (liés à une décision de suppression)
-     * 
+     *
      * @throws DecisionException
      * @throws JadeApplicationServiceNotAvailableException
      * @throws JadePersistenceException
@@ -74,9 +78,9 @@ public class ValiderDecisionSuppression extends AbstractValiderDecision {
      * @throws OrdreVersementException
      * @throws PrestationException
      */
-    private void createPrestationAndOrdersVersementRestitution() throws DecisionException,
-            JadeApplicationServiceNotAvailableException, JadePersistenceException, PCAccordeeException,
-            PmtMensuelException, OrdreVersementException, PrestationException {
+    private void createPrestationAndOrdersVersementRestitution()
+            throws DecisionException, JadeApplicationServiceNotAvailableException, JadePersistenceException,
+            PCAccordeeException, PmtMensuelException, OrdreVersementException, PrestationException {
 
         String dateSuppression = decisionSuppression.getSimpleDecisionSuppression().getDateSuppression();
         String dateDernierPmt = PegasusServiceLocator.getPmtMensuelService().getDateDernierPmt();
@@ -97,15 +101,14 @@ public class ValiderDecisionSuppression extends AbstractValiderDecision {
                     dateDebutPCHome = new JADate(pca.getSimplePCAccordee().getDateDebut());
                     dateSupression = new JADate(dateSuppression);
                 } catch (JAException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    logger.error(e.getMessage());
                 }
                 JACalendarGregorian cal = new JACalendarGregorian();
                 if (cal.compare(dateSupression, dateDebutPCHome) == JACalendar.COMPARE_FIRSTLOWER) {
                     for (SimpleOrdreVersement simpleOrdreVersement : ovs) {
                         if (simpleOrdreVersement.getMontant().equals(montantTotalRestitution.toString())) {
-                            montantTotalRestitution = montantTotalRestitution.add(new BigDecimal(listeJoursAppoint.get(
-                                    0).getMontantTotal()));
+                            montantTotalRestitution = montantTotalRestitution
+                                    .add(new BigDecimal(listeJoursAppoint.get(0).getMontantTotal()));
                             simpleOrdreVersement.setMontant(montantTotalRestitution.toString());
                         }
                     }
@@ -114,11 +117,11 @@ public class ValiderDecisionSuppression extends AbstractValiderDecision {
             }
         }
 
-        GeneratePrestation generatePrestation = new GeneratePrestation(dateDernierPmt, decisionSuppression
-                .getSimpleDecisionSuppression().getDateSuppression());
+        GeneratePrestation generatePrestation = new GeneratePrestation(dateDernierPmt,
+                decisionSuppression.getSimpleDecisionSuppression().getDateSuppression());
 
-        SimplePrestation prestation = generatePrestation.generate(pcas, montantTotalRestitution, decisionSuppression
-                .getVersionDroit().getSimpleVersionDroit().getIdVersionDroit());
+        SimplePrestation prestation = generatePrestation.generate(pcas, montantTotalRestitution,
+                decisionSuppression.getVersionDroit().getSimpleVersionDroit().getIdVersionDroit());
 
         prestation.setIdLot(simpleLot.getIdLot());
         prestation = PegasusImplServiceLocator.getSimplePrestationService().create(prestation);
@@ -132,27 +135,27 @@ public class ValiderDecisionSuppression extends AbstractValiderDecision {
 
     /**
      * Lancement des recherches globales à la classe
-     * 
+     *
      * @throws JadePersistenceException
      * @throws JadeApplicationServiceNotAvailableException
      * @throws PCAccordeeException
      */
-    private void initSearch() throws PCAccordeeException, JadeApplicationServiceNotAvailableException,
-            JadePersistenceException {
+    private void initSearch()
+            throws PCAccordeeException, JadeApplicationServiceNotAvailableException, JadePersistenceException {
         // Recherche des pca crée pour cette version de droit, à savoir la courante et les pca deleted
         pcaForVersionSearch = new PCAccordeeSearch();
         pcaForVersionSearch.setWhereKey("forValidationDecisionSuppression");
         pcaForVersionSearch.setOrderKey("forDateDebutAsc");
-        pcaForVersionSearch.setForIdDemande(decisionSuppression.getVersionDroit().getDemande().getSimpleDemande()
-                .getIdDemande());
-        pcaForVersionSearch.setForVersionDroit(decisionSuppression.getVersionDroit().getSimpleVersionDroit()
-                .getIdVersionDroit());
+        pcaForVersionSearch
+                .setForIdDemande(decisionSuppression.getVersionDroit().getDemande().getSimpleDemande().getIdDemande());
+        pcaForVersionSearch
+                .setForVersionDroit(decisionSuppression.getVersionDroit().getSimpleVersionDroit().getIdVersionDroit());
         pcaForVersionSearch = PegasusServiceLocator.getPCAccordeeService().search(pcaForVersionSearch);
     }
 
     /**
      * Gère l'état (code système de la prestation accordées), en fonction du paramètre isOriginal.
-     * 
+     *
      * @param prestation
      *            , la prestation à gérer
      * @param isOriginal
@@ -173,7 +176,7 @@ public class ValiderDecisionSuppression extends AbstractValiderDecision {
 
     /**
      * Mise à jour de la décision de suppression, VALIDE
-     * 
+     *
      * @throws DecisionException
      * @throws JadeApplicationServiceNotAvailableException
      * @throws JadePersistenceException
@@ -183,30 +186,30 @@ public class ValiderDecisionSuppression extends AbstractValiderDecision {
     private void updateDecisionSuppression() throws DecisionException, JadeApplicationServiceNotAvailableException,
             JadePersistenceException, PmtMensuelException, JadeNoBusinessLogSessionError {
         // set spy
-        decisionSuppression.getSimpleDecisionSuppression().setSpy(
-                decisionSuppression.getSimpleDecisionSuppression().getSpy());
+        decisionSuppression.getSimpleDecisionSuppression()
+                .setSpy(decisionSuppression.getSimpleDecisionSuppression().getSpy());
 
         decisionSuppression.getDecisionHeader().getSimpleDecisionHeader().setCsEtatDecision(IPCDecision.CS_VALIDE);
 
-        decisionSuppression.getDecisionHeader().setSimpleDecisionHeader(
-                PegasusImplServiceLocator.getSimpleDecisionHeaderService().updateForValidation(
-                        decisionSuppression.getDecisionHeader().getSimpleDecisionHeader()));
+        decisionSuppression.getDecisionHeader()
+                .setSimpleDecisionHeader(PegasusImplServiceLocator.getSimpleDecisionHeaderService()
+                        .updateForValidation(decisionSuppression.getDecisionHeader().getSimpleDecisionHeader()));
 
         // decision suppression
-        decisionSuppression.setSimpleDecisionSuppression(PegasusImplServiceLocator
-                .getSimpleDecisionSuppressionService().update(decisionSuppression.getSimpleDecisionSuppression()));
+        decisionSuppression.setSimpleDecisionSuppression(PegasusImplServiceLocator.getSimpleDecisionSuppressionService()
+                .update(decisionSuppression.getSimpleDecisionSuppression()));
     }
 
     /**
      * Mise à jour de la demande
-     * 
+     *
      * @throws DemandeException
      * @throws DossierException
      * @throws JadeApplicationServiceNotAvailableException
      * @throws JadePersistenceException
      */
-    private void updateDemande() throws DemandeException, DossierException,
-            JadeApplicationServiceNotAvailableException, JadePersistenceException {
+    private void updateDemande() throws DemandeException, DossierException, JadeApplicationServiceNotAvailableException,
+            JadePersistenceException {
 
         // Mise à jour demande, set date fin avec dateSupression
         SimpleDemande simpleDemande = decisionSuppression.getVersionDroit().getDemande().getSimpleDemande();
@@ -229,13 +232,13 @@ public class ValiderDecisionSuppression extends AbstractValiderDecision {
 
     /**
      * Mise à jour du droit courant, validé
-     * 
+     *
      * @throws DroitException
      * @throws JadeApplicationServiceNotAvailableException
      * @throws JadePersistenceException
      */
-    private void updateDroit(boolean isAnnulation) throws DroitException, JadeApplicationServiceNotAvailableException,
-            JadePersistenceException {
+    private void updateDroit(boolean isAnnulation)
+            throws DroitException, JadeApplicationServiceNotAvailableException, JadePersistenceException {
         // Mise à jour des versionde droits
         if (isAnnulation) {
             decisionSuppression.getVersionDroit().getSimpleVersionDroit().setCsEtatDroit(IPCDroits.CS_ANNULE);
@@ -243,14 +246,13 @@ public class ValiderDecisionSuppression extends AbstractValiderDecision {
             decisionSuppression.getVersionDroit().getSimpleVersionDroit().setCsEtatDroit(IPCDroits.CS_VALIDE);
         }
 
-        decisionSuppression.getVersionDroit().setSimpleVersionDroit(
-                PegasusImplServiceLocator.getSimpleVersionDroitService().update(
-                        decisionSuppression.getVersionDroit().getSimpleVersionDroit()));
+        decisionSuppression.getVersionDroit().setSimpleVersionDroit(PegasusImplServiceLocator
+                .getSimpleVersionDroitService().update(decisionSuppression.getVersionDroit().getSimpleVersionDroit()));
     }
 
     /**
      * Mise à jour du droit précédent, Historisée
-     * 
+     *
      * @throws DroitException
      * @throws JadeApplicationServiceNotAvailableException
      * @throws JadePersistenceException
@@ -259,8 +261,8 @@ public class ValiderDecisionSuppression extends AbstractValiderDecision {
     private void updateOldDroit() throws DroitException, JadeApplicationServiceNotAvailableException,
             JadePersistenceException, DecisionException {
         SimpleVersionDroitSearch serachDroit = new SimpleVersionDroitSearch();
-        Integer noVersionToSearch = Integer.parseInt(decisionSuppression.getVersionDroit().getSimpleVersionDroit()
-                .getNoVersion()) - 1;
+        Integer noVersionToSearch = Integer
+                .parseInt(decisionSuppression.getVersionDroit().getSimpleVersionDroit().getNoVersion()) - 1;
         serachDroit.setForNoVersionDroit(noVersionToSearch.toString());
         serachDroit.setForIdDroit(decisionSuppression.getVersionDroit().getSimpleDroit().getId());
         serachDroit = PegasusImplServiceLocator.getSimpleVersionDroitService().search(serachDroit);
@@ -278,14 +280,14 @@ public class ValiderDecisionSuppression extends AbstractValiderDecision {
 
     /**
      * Mise à jour des anciennes pca
-     * 
+     *
      * @throws JadePersistenceException
      * @throws DecisionException
      * @throws JadeCloneModelException
      * @throws JadeApplicationException
      */
-    private void updateOldPca(boolean isAnnulation) throws JadePersistenceException, DecisionException,
-            JadeCloneModelException, JadeApplicationException {
+    private void updateOldPca(boolean isAnnulation)
+            throws JadePersistenceException, DecisionException, JadeCloneModelException, JadeApplicationException {
         oldPcaSearch = new PCAccordeeSearch();
         oldPcaSearch.setForIdDroit(decisionSuppression.getVersionDroit().getSimpleDroit().getIdDroit());
         oldPcaSearch.setForDateValable(decisionSuppression.getSimpleDecisionSuppression().getDateSuppression());
@@ -310,14 +312,14 @@ public class ValiderDecisionSuppression extends AbstractValiderDecision {
     /**
      * Mise à jour des pca de cette version. Pour les pca deleted (historisation et diminution, avec date de fin
      * forcée), pour les pca courantes, Validation.
-     * 
+     *
      * @throws JadePersistenceException
      * @throws DecisionException
      * @throws JadeCloneModelException
      * @throws JadeApplicationException
      */
-    private void updatePcaAndPrestations() throws JadePersistenceException, DecisionException, JadeCloneModelException,
-            JadeApplicationException {
+    private void updatePcaAndPrestations()
+            throws JadePersistenceException, DecisionException, JadeCloneModelException, JadeApplicationException {
 
         // Liste des pca old a updater (pca original des pc deleted)
         listeOldPcaToUpdate = new ArrayList<String>();
@@ -353,13 +355,13 @@ public class ValiderDecisionSuppression extends AbstractValiderDecision {
 
                 // ******************************* PCA du conjoint ***************************************
                 // Si la pc suivante a une date de debut egal, cas de la séparation par la maladie, -->conjoint
-                if ((nextPcaToUpdate != null)
-                        && nextPcaToUpdate.getSimplePCAccordee().getDateDebut()
-                                .equals(pcaToUpdate.getSimplePCAccordee().getDateDebut())) {
+                if ((nextPcaToUpdate != null) && nextPcaToUpdate.getSimplePCAccordee().getDateDebut()
+                        .equals(pcaToUpdate.getSimplePCAccordee().getDateDebut())) {
                     listeOldPcaToUpdateForConjoint.add(nextPcaToUpdate.getSimplePCAccordee().getIdPcaParent());
                     // on force la date de fin prestation, si elle est vide et on historise(pcpcacc) et on diminue
                     // (repracc)
-                    if (JadeStringUtil.isBlankOrZero(nextPcaToUpdate.getSimplePrestationsAccordees().getDateFinDroit())) {
+                    if (JadeStringUtil
+                            .isBlankOrZero(nextPcaToUpdate.getSimplePrestationsAccordees().getDateFinDroit())) {
                         updateSinglePca(nextPcaToUpdate, true);
 
                     }
@@ -375,9 +377,8 @@ public class ValiderDecisionSuppression extends AbstractValiderDecision {
                 listeOldPcaToUpdate.add(pcaToUpdate.getSimplePCAccordee().getIdPcaParent());
 
                 // ******************************* PCA du conjoint ***************************************
-                if ((nextPcaToUpdate != null)
-                        && nextPcaToUpdate.getSimplePCAccordee().getDateDebut()
-                                .equals(pcaToUpdate.getSimplePCAccordee().getDateDebut())) {
+                if ((nextPcaToUpdate != null) && nextPcaToUpdate.getSimplePCAccordee().getDateDebut()
+                        .equals(pcaToUpdate.getSimplePCAccordee().getDateDebut())) {
                     updateSinglePca(nextPcaToUpdate, false);
                     listeOldPcaToUpdateForConjoint.add(nextPcaToUpdate.getSimplePCAccordee().getIdPcaParent());
                     cpt++;// on en traite deux, donc double incrément
@@ -389,7 +390,7 @@ public class ValiderDecisionSuppression extends AbstractValiderDecision {
 
     /**
      * Méthode qui met a jour la pcaccordée passée en paramètres
-     * 
+     *
      * @param pcaToUpdate
      *            , la pca à mettre à jour
      * @param isOriginal
@@ -399,8 +400,8 @@ public class ValiderDecisionSuppression extends AbstractValiderDecision {
      * @throws JadeApplicationException
      * @throws DecisionException
      */
-    private void updateSinglePca(PCAccordee pcaToUpdate, Boolean isOriginal) throws JadePersistenceException,
-            JadeCloneModelException, JadeApplicationException, DecisionException {
+    private void updateSinglePca(PCAccordee pcaToUpdate, Boolean isOriginal)
+            throws JadePersistenceException, JadeCloneModelException, JadeApplicationException, DecisionException {
 
         SimplePCAccordee simplePcaToSave = pcaToUpdate.getSimplePCAccordee();
         SimplePrestationsAccordees simplePrestToSaveReq = pcaToUpdate.getSimplePrestationsAccordees();
@@ -409,15 +410,15 @@ public class ValiderDecisionSuppression extends AbstractValiderDecision {
         // ******************************* PCA du conjoint ***************************************
         // mise à jour repracc
         if (!JadeStringUtil.isBlankOrZero(simplePcaToSave.getIdPrestationAccordeeConjoint())) {
-            pcaToUpdate.setSimplePrestationsAccordeesConjoint(PegasusImplServiceLocator
-                    .getSimplePrestatioAccordeeService().update(
-                            setEtatPrestationAccordee(simplePrestToSaveCon, isOriginal)));
+            pcaToUpdate
+                    .setSimplePrestationsAccordeesConjoint(PegasusImplServiceLocator.getSimplePrestatioAccordeeService()
+                            .update(setEtatPrestationAccordee(simplePrestToSaveCon, isOriginal)));
         }
 
         // ******************************* PCA du requérant ***************************************
         // mise à jour repracc
-        pcaToUpdate.setSimplePrestationsAccordees(PegasusImplServiceLocator.getSimplePrestatioAccordeeService().update(
-                setEtatPrestationAccordee(simplePrestToSaveReq, isOriginal)));
+        pcaToUpdate.setSimplePrestationsAccordees(PegasusImplServiceLocator.getSimplePrestatioAccordeeService()
+                .update(setEtatPrestationAccordee(simplePrestToSaveReq, isOriginal)));
 
         // Gestion etat pc
         simplePcaToSave.setCsEtatPC(IPCPCAccordee.CS_ETAT_PCA_VALIDE);
@@ -433,7 +434,7 @@ public class ValiderDecisionSuppression extends AbstractValiderDecision {
 
     /**
      * Point d'entrée publique pour la validation des décisions de suppression
-     * 
+     *
      * @param decision
      *            , la décision de suppression qui va être valider
      * @throws JadePersistenceException
@@ -448,7 +449,7 @@ public class ValiderDecisionSuppression extends AbstractValiderDecision {
 
     /**
      * Point d'entrée publique pour la validation des décisions de suppression
-     * 
+     *
      * @param decision
      *            , la décision de suppression qui va être valider
      * @throws JadePersistenceException
@@ -509,20 +510,20 @@ public class ValiderDecisionSuppression extends AbstractValiderDecision {
      * Permet l'affectation d'un lot à la décision.
      * Si l'option de création de lot est à true, un lot spécifique est créé (Utilisé pour les décisions de restitution)
      * Sinon, si un lot ouvert existe, on le récupère, sinon on crée un lot.
-     * 
+     *
      * @param decision Une décision
      * @param forceCreateLotRestitution True si on veut forcer la création du lot
      * @throws DecisionException
      * @throws JadeApplicationServiceNotAvailableException
      * @throws JadePersistenceException
      */
-    private void setTheLot(DecisionSuppression decision, boolean forceCreateLotRestitution) throws DecisionException,
-            JadeApplicationServiceNotAvailableException, JadePersistenceException {
+    private void setTheLot(DecisionSuppression decision, boolean forceCreateLotRestitution)
+            throws DecisionException, JadeApplicationServiceNotAvailableException, JadePersistenceException {
         // Si on veut un lot unique spécifique
         if (forceCreateLotRestitution) {
             String monthYear = JACalendar.format(JACalendar.today(), JACalendar.FORMAT_MMsYYYY);
-            String libelle = BSessionUtil.getSessionFromThreadContext().getLabel(
-                    "PEGASUS_JAVA_NOM_LOT_DECISION_RESTITUTION");
+            String libelle = BSessionUtil.getSessionFromThreadContext()
+                    .getLabel("PEGASUS_JAVA_NOM_LOT_DECISION_RESTITUTION");
             String numNss = decision.getVersionDroit().getDemande().getDossier().getDemandePrestation()
                     .getPersonneEtendue().getPersonneEtendue().getNumAvsActuel();
 
