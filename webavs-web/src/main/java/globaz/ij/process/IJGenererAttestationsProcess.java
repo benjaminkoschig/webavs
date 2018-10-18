@@ -417,6 +417,7 @@ public class IJGenererAttestationsProcess extends BProcess {
         attestations.setParent(this);
         attestations.setTailleLot(1);
         attestations.setIsSendToGED(getIsSendToGed());
+        attestations.setIsGenerationUnique(isGenerationUnique);
         attestations.executeProcess();
 
         /*

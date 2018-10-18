@@ -51,6 +51,7 @@ import globaz.ij.helpers.process.IJDecisionACaisseReportHelper;
 import globaz.ij.module.IJDecisionCotisationBuilder;
 import globaz.ij.properties.IJProperties;
 import globaz.ij.utils.IJGestionnaireHelper;
+import globaz.jade.admin.user.bean.JadeUser;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.log.JadeLogger;
@@ -59,6 +60,7 @@ import globaz.osiris.external.IntRole;
 import globaz.prestation.application.PRAbstractApplication;
 import globaz.prestation.db.demandes.PRDemande;
 import globaz.prestation.interfaces.babel.PRBabelHelper;
+import globaz.prestation.interfaces.fx.PRGestionnaireHelper;
 import globaz.prestation.interfaces.tiers.PRTiersAdresseCopyFormater03;
 import globaz.prestation.interfaces.tiers.PRTiersAdresseCopyFormater04;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
@@ -93,6 +95,7 @@ import java.util.Map;
 import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import ch.globaz.common.properties.CommonPropertiesUtils;
 import ch.globaz.jade.JadeBusinessServiceLocator;
 import ch.globaz.jade.business.models.Langues;
 import ch.globaz.jade.business.models.codesysteme.JadeCodeSysteme;
@@ -124,7 +127,7 @@ import ch.globaz.jade.business.services.codesysteme.JadeCodeSystemeService;
  *                |                                                   |
  *                |                                                   |
  *                oui                                                 non
- *                |													  |
+ *                |                                                   |
  *                |                                                   |
  *              Si rev4------                          Si MB < 104(2008,rev4) ou 88(2007,rev4)
  *              |            |                      et Si rev4                            |
@@ -170,12 +173,13 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
     private static final String CDT_TITREPERIODE_DATEDEBUT = "{DateDebutIJ}";
     private static final String CDT_TITREPERIODE_DATEFIN = "{DateFinIJ}";
     private static final String CDT_TYPECOTI = "{TypeCoti}";
+    private static final String CDT_NOTELEPHONE = "{NoTelephone}";
 
     private static final String FICHIER_MODELE_DECISION = "IJ_DECISION";
     private static final String NO5EMEREVISION = "5";
     private static final String PREFIX_HEADER_DECISION = "Header_Dec_";
     private static final String SUFIX_HEADER_DECISION = ".jasper";
-
+    
     /**
      * Donne le montant journalier arrondi au franc supp. correspondant a la situation professionnelle
      * 
@@ -481,7 +485,7 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
             dataSource.setLangue(codeIsoLangue);
             dataSource.load((TIAbstractAdresseData) tiAdresseDatamgr.getFirstEntity(), "");
 
-            StringBuffer buffer = new StringBuffer();
+            StringBuilder buffer = new StringBuilder();
             buffer.setLength(0);
             String localiteNom = "";
 
@@ -508,7 +512,7 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
 
             // Remplissage du title PARAM_ZONE_1) qui contient les informations
             // "standard"
-            buffer = new StringBuffer();
+            buffer = new StringBuilder();
 
             buffer.append(document.getTextes(1).getTexte(1).getDescription());
 
@@ -774,7 +778,18 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
                 cdtPersonneDeReference = PRStringUtils.replaceString(cdtPersonneDeReference, IJDecision.CDT_NOMPRENOM,
                         "-");
             }
-
+            
+            String idPersonne = documentProperties.getParameter("idPersonneReference");
+            
+            if (cdtPersonneDeReference.contains(CDT_NOTELEPHONE)) {
+                String numTel = "";
+                if (!JadeStringUtil.isEmpty(idPersonne)) {
+                        JadeUser user = PRGestionnaireHelper.getGestionnaire(idPersonne);
+                    numTel = user.getPhone();
+                }
+                cdtPersonneDeReference = PRStringUtils.replaceString(cdtPersonneDeReference, IJDecision.CDT_NOTELEPHONE, numTel);
+            }
+            
             buffer.append(cdtPersonneDeReference);
 
             parametres.put("PARAM_ZONE_3", buffer.toString());
@@ -861,7 +876,7 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
 
             }
 
-            buffer = new StringBuffer(PRStringUtils.replaceString(buffer.toString(), "{valeurCopies}", copies));
+            buffer = new StringBuilder(PRStringUtils.replaceString(buffer.toString(), "{valeurCopies}", copies));
 
             // Et on insère les annexes
             Iterator iteratorAnnexeImpression = documentProperties.getAnnexesIterator();
@@ -880,7 +895,7 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
 
             }
 
-            buffer = new StringBuffer(PRStringUtils.replaceString(buffer.toString(), "{valeurAnnexe}", annexes));
+            buffer = new StringBuilder(PRStringUtils.replaceString(buffer.toString(), "{valeurAnnexe}", annexes));
 
             // Si le buffer contenant les copies et annexes contient du texte
             // stylé, on remplace le ou les " & " par " et "

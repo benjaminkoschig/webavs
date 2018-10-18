@@ -2,9 +2,23 @@
  */
 package globaz.ij.itext;
 
+import java.io.File;
+import java.rmi.RemoteException;
+import java.text.FieldPosition;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import globaz.babel.api.ICTDocument;
 import globaz.babel.api.ICTTexte;
 import globaz.caisse.helper.CaisseHelperFactory;
+import globaz.caisse.report.helper.ACaisseReportHelper;
 import globaz.caisse.report.helper.CaisseHeaderReportBean;
 import globaz.caisse.report.helper.ICaisseReportHelper;
 import globaz.docinfo.CTDocumentInfoHelper;
@@ -44,19 +58,6 @@ import globaz.prestation.tools.PRStringUtils;
 import globaz.pyxis.api.ITITiers;
 import globaz.pyxis.db.adressecourrier.TILocalite;
 import globaz.pyxis.db.adressecourrier.TILocaliteManager;
-import java.io.File;
-import java.rmi.RemoteException;
-import java.text.FieldPosition;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
 
 /**
  * <H1>Description</H1> Classe de documentManager qui crée le fichier pdf pour l'attestation fiscale.
@@ -79,6 +80,7 @@ public class IJAttestations extends FWIDocumentManager {
     }
 
     private static final String FICHIER_MODELE = "IJ_ATTESTATION_FISCALE";
+    private final static String HEADER_FILENAME = "header.filename.ij";
 
     // ~ Instance fields
     // ------------------------------------------------------------------------------------------------
@@ -116,6 +118,8 @@ public class IJAttestations extends FWIDocumentManager {
     public FWCurrency totalMontantImpot = new FWCurrency();
 
     public FWCurrency totalVentilation = new FWCurrency();
+    
+    private Boolean isGenerationUnique;
 
     // ~ Constructors
     // ---------------------------------------------------------------------------------------------------
@@ -241,7 +245,9 @@ public class IJAttestations extends FWIDocumentManager {
             } else {
                 parametres.clear();
             }
-
+            
+            String specialeHeader = getTemplateProperty(getDocumentInfo(), IJAttestations.HEADER_FILENAME);
+            
             prestation = new IJPrestation();
             prestation.setIdBaseIndemnisation(getIdBaseInd());
             prestation.setSession(getSession());
@@ -268,8 +274,15 @@ public class IJAttestations extends FWIDocumentManager {
             // + "\n" + tiers.getProperty(PRTiersWrapper.PROPERTY_NOM) + " " +
             // tiers.getProperty(PRTiersWrapper.PROPERTY_PRENOM));
             crBean.setAdresse(adresse);
-            if ("true".equals(getSession().getApplication().getProperty(IJApplication.PROPERTY_DOC_NOMCOLABO))) {
-                // nom du collaborateur
+            if (specialeHeader !=null && !specialeHeader.isEmpty()) {
+                if(getIsGenerationUnique().booleanValue()) {
+                    crBean.setNomCollaborateur(getSession().getUserFullName());
+                    crBean.setTelCollaborateur(getSession().getUserInfo().getPhone());
+                } else {
+                    crBean.setNomCollaborateur(getSession().getLabel("DOC_ATTEST_FISCAL_SERVICE"));
+                }
+            } else if ("true".equals(getSession().getApplication().getProperty(IJApplication.PROPERTY_DOC_NOMCOLABO))) {
+             // nom du collaborateur
                 crBean.setNomCollaborateur(getSession().getUserFullName());
             }
             // Ajoute le libelle CONFIDENTIEL dans l'adresse de l'entete du
@@ -279,6 +292,15 @@ public class IJAttestations extends FWIDocumentManager {
             }
 
             caisseHelper.addHeaderParameters(getImporter(), crBean);
+            
+            if (specialeHeader !=null && !specialeHeader.isEmpty()) {
+
+                getImporter().getParametre().put(
+                        ICaisseReportHelper.PARAM_SUBREPORT_HEADER,
+                        ((ACaisseReportHelper) caisseHelper).getDefaultModelPath() + "/"
+                                + specialeHeader);
+                
+            }
 
             String idTiers = tiers.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS);
 
@@ -887,6 +909,14 @@ public class IJAttestations extends FWIDocumentManager {
 
     public void setTotalMontantIJ(String totalMontantIJ) {
         this.totalMontantIJ = totalMontantIJ;
+    }
+    
+    public Boolean getIsGenerationUnique() {
+        return isGenerationUnique;
+    }
+
+    public void setIsGenerationUnique(Boolean isGenerationUnique) {
+        this.isGenerationUnique = isGenerationUnique;
     }
 
     private List traitementRegroupementPeriode(List listObjects) {
