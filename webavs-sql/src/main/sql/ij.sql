@@ -1,3 +1,7 @@
+--===============================================================================================================
+------------------------------------------ UNIQUEMENT POUR LA ***FPV*** ----------------------------------------
+--===============================================================================================================
+
 --S161216_003 - FPV - IJ - Uniformisation des entêtes des documents
 UPDATE SCHEMA.CTTEXTES SET CDIELE=14000000016,CDITXT=14000000046,CDLCIL='de',CDLDES='Route du Lac 2, 1094 Paudex',PSPY='' WHERE CDITXT=14000000046;
 UPDATE SCHEMA.CTTEXTES SET CDIELE=14000000016,CDITXT=14000000047,CDLCIL='fr',CDLDES='Route du Lac 2, 1094 Paudex',PSPY='' WHERE CDITXT=14000000047;
@@ -11,3 +15,7 @@ INSERT INTO SCHEMA.CTELEMEN (CCBDES,CCBEDI,CCBSBD,CCBSEL,CCIDOC,CCIELE,CCNNIV,CC
 INSERT INTO SCHEMA.CTTEXTES (CDIELE,CDITXT,CDLCIL,CDLDES,PSPY) VALUES (83000000019,83000000054,'it','Incarto trattato da :&nbsp;','');
 INSERT INTO SCHEMA.CTTEXTES (CDIELE,CDITXT,CDLCIL,CDLDES,PSPY) VALUES (83000000019,83000000053,'fr','Dossier trait&eacute; par :&nbsp;','');
 INSERT INTO SCHEMA.CTTEXTES (CDIELE,CDITXT,CDLCIL,CDLDES,PSPY) VALUES (83000000019,83000000052,'de','Dossier bearbeitet von :&nbsp;','');
+
+--===============================================================================================================
+--===============================================================================================================
+--===============================================================================================================
