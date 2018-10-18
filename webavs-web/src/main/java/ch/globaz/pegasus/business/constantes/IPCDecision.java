@@ -66,5 +66,7 @@ public interface IPCDecision {
     // "JSP_PC_DECALCUL_D_GUIDE_CARTE_LEGITIM";
 
     public final static String NOTICE_ANNEXES_STRING = "JSP_PC_DECALCUL_D_NOTICE";
+    
+    public final static String DESTINATAIRE_REDEVANCE = "nom.societe.redevance.radio.tele";
 
 }

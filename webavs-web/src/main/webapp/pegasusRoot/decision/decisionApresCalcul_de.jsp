@@ -33,6 +33,8 @@
 <%@page import="ch.globaz.pegasus.business.constantes.EPCProperties"%>
 <%@page import="ch.globaz.pegasus.business.constantes.decision.DecisionTypes"%>
 <%@page import="globaz.jade.log.business.JadeBusinessMessageLevels"%>
+<%@page import="java.text.MessageFormat"%>
+
 <script type="text/javascript" src="<%=servletContext%>/scripts/nss.js"></script>
 <link rel="stylesheet" type="text/css" href="<%=servletContext%><%=(mainServletPath+"Root")%>/css/decision/detail.css"/>
 <%@ taglib uri="/WEB-INF/nss.tld" prefix="nss" %>
@@ -124,7 +126,16 @@ var actionNavigator = "pegasus?userAction=pegasus.decision.decisionApresCalcul.a
 var lotDecisions = "<%= viewBean.getLotDecision() %>";
 var lotPagination = lotDecisions.split(",");
 //Libelle Billag a afficher automatiquement
-var billagAutoTexte = "<%= objSession.getLabel(IPCDecision.BILLAG_ANNEXES_STRING) %>";
+<%
+String prop = objSession.getApplication().getProperty(IPCDecision.DESTINATAIRE_REDEVANCE);
+String libelle = objSession.getLabel(IPCDecision.BILLAG_ANNEXES_STRING);
+String redevanceTexte = MessageFormat.format(libelle, prop);
+String redevanceTexteNonCoche = objSession.getLabel("JSP_PC_DECALCUL_D_PHRASE_BILLAG_NC");
+redevanceTexteNonCoche = MessageFormat.format(redevanceTexteNonCoche, prop);
+String redevanceTexteCoche = objSession.getLabel("JSP_PC_DECALCUL_D_PHRASE_BILLAG_C");
+redevanceTexteCoche = MessageFormat.format(redevanceTexteCoche, prop);
+%>
+var billagAutoTexte = "<%= redevanceTexte%>";
 var csAutoBillag = <%= IPCDecision.ANNEXE_BILLAG_AUTO %>;
 var csTexteLibre =<%= IPCDecision.ANNEXE_COPIE_MANUEL %>;
 var isMostRecentDecision = <%= viewBean.isMostRecentDecision()%>;
@@ -562,9 +573,9 @@ var openGedWindow = function (url){
 				
 				<div id="zoneBillag">	
 					<input type="checkbox" id="billagChk" name="decisionApresCalcul.simpleDecisionApresCalcul.billagSa" <%=viewBean.hasBillagAuto()?"checked='checked'":""%>/>
-					<label class="label4" id="lblBillag" ><ct:FWLabel key="JSP_PC_DECALCUL_D_BILLAG"/></label><br />
-					<div id="phraseCaseNonCoche"><ct:FWLabel key="JSP_PC_DECALCUL_D_PHRASE_BILLAG_NC"/></div>
-					<div id="phraseCaseCoche"><ct:FWLabel key="JSP_PC_DECALCUL_D_PHRASE_BILLAG_C"/></div>
+					<label class="label4" id="lblBillag" ><%=redevanceTexte%></label><br />
+					<div id="phraseCaseNonCoche"><%=redevanceTexteNonCoche%></div>
+					<div id="phraseCaseCoche"><%=redevanceTexteCoche%></div>
 				</div>
 			</c:if>
 			

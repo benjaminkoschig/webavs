@@ -16,6 +16,8 @@
 <%@page import="globaz.jade.persistence.model.JadeAbstractModel"%>
 <%@page import="globaz.pegasus.utils.PCGestionnaireHelper"%>
 <%@page import="globaz.pegasus.utils.BusinessExceptionHandler"%>
+<%@page import="ch.globaz.pegasus.business.constantes.IPCDecision"%>
+<%@page import="java.text.MessageFormat"%>
 
 <%
 	//Les labels de cette page commence par le préfix "JSP_PC_DECALCUL_D"
@@ -92,7 +94,10 @@ $(function () {
 
 <%-- /tpl:put --%>
 <%@ include file="/theme/detail/bodyStart.jspf" %>
-			<%-- tpl:put name="zoneTitle" --%><ct:FWLabel key="JSP_PC_IMPRBILLAG_D_TITRE"/><%-- /tpl:put --%>
+<%-- 			tpl:put name="zoneTitle"<ct:FWLabel key="JSP_PC_IMPRBILLAG_D_TITRE"/>/tpl:put --%>
+<%      String prop = objSession.getApplication().getProperty(IPCDecision.DESTINATAIRE_REDEVANCE);
+        String libelle = objSession.getLabel("JSP_PC_IMPRBILLAG_D_TITRE");%>
+<%=MessageFormat.format(libelle, prop)%>
 <%@ include file="/theme/detail/bodyStart2.jspf" %>
 <%-- tpl:put name="zoneMain" --%>
 <ct:menuChange displayId="menu" menuId="pegasus-menuprincipal" showTab="options"/>

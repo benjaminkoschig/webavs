@@ -60,6 +60,9 @@
 		<when attribute="idProcess" operator="eq" value="PCAttestationBillag">
 			<doc-id action="set">pegasus/decision/attestationBillag</doc-id>
 		</when>
+		<when attribute="idProcess" operator="eq" value="PCAttestationRedevance">
+			<doc-id action="set">pegasus/decision/attestationRedevance</doc-id>
+		</when>		
 		<!--  plan de calcul -->
 		<when attribute="idProcess" operator="eq" value="PCPlanDeCalcul">
 			<doc-id action="set">pegasus/plandecalcul/planDeCalcul</doc-id>

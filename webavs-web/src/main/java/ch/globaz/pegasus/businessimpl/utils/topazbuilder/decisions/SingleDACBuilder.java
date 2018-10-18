@@ -201,7 +201,12 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
                     .getPersonneEtendue().getPersonneEtendue().getNumAvsActuel(), this.dacOO.getVersionDroit()
                     .getDemande().getDossier().getDemandePrestation().getPersonneEtendue().getTiers().getIdTiers(),
                     preprateurDecision.getVisa());
-            dataBillag.addData(IPCCatalogueTextes.STR_ID_PROCESS, IPCCatalogueTextes.PROCESS_DECISION_BILLAG);
+            String prop = getSession().getApplication().getProperty(IPCDecision.DESTINATAIRE_REDEVANCE);
+            if("BILLAG".equalsIgnoreCase(prop)) {
+                dataBillag.addData(IPCCatalogueTextes.STR_ID_PROCESS, IPCCatalogueTextes.PROCESS_DECISION_BILLAG);
+            } else {
+                dataBillag.addData(IPCCatalogueTextes.STR_ID_PROCESS, IPCCatalogueTextes.PROCESS_DECISION_REDEVANCE);
+            }
             mergeDataAndPubInfosWithPixisFill(allDoc, dataBillag, new PegasusPubInfoBuilder().ged().rectoVersoLast()
                     .getPubInfo(), pubInfosPixisProperties, dacOO.getPersonneForDossier(), TYPE_DOCUMENT.ORIGINAL,
                     dacOO.getIdTiersCourrier(), dacOO.getNoDecision());

@@ -137,6 +137,20 @@ $(function (){
 	
 });
 
+var libelleRedevance = '<%=objSession.getApplication().getProperty(IPCDecision.DESTINATAIRE_REDEVANCE)%>';
+
+$(document).ready(function() {
+	$('.FWOptionSelectorButton').each(function() {
+		$(this).click(function() {
+			$('option').each(function() {
+			    var text = $(this).text().replace('{0}', libelleRedevance);
+			    $(this).text(text);
+			});
+		});
+	});
+});
+
+
 //resolveMembresFamilleToSynchronise	
 	
 </script>
@@ -145,10 +159,10 @@ $(function (){
 <%@ include file="/theme/list/javascripts.jspf" %>
 	    <%-- tpl:put name="zoneHeaders" --%>
 <%@page import="globaz.pegasus.vb.demande.PCDemandeListViewBean"%>
+<%@page import="globaz.pegasus.vb.demande.PCDemandeViewBean"%>
 <%@page import="ch.globaz.pegasus.business.constantes.IPCDecision"%>
 <%@page import="ch.globaz.pegasus.business.constantes.IPCActions"%>
 <%@page import="ch.globaz.pegasus.business.constantes.IPCDemandes"%>
-<%@page import="globaz.pegasus.vb.demande.PCDemandeViewBean"%>
 <%@page import="globaz.prestation.interfaces.fx.PRGestionnaireHelper"%>
 <%@page import="globaz.pegasus.utils.PCUserHelper"%><TH>&nbsp;</TH>
    	<TH><ct:FWLabel key="JSP_PC_DEM_L_DETAIL_ASSURE"/></TH>

@@ -4,6 +4,7 @@ import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -123,8 +124,9 @@ public class AnnexesDecisionHandler {
             }
 
             // Annexes Billag
-            annexeAuto.put(IPCDecision.BILLAG_ANNEXES_STRING, LanguageResolver.resolveLibelleFromLabel(
-                    langueTiers.getCodeIso(), IPCDecision.BILLAG_ANNEXES_STRING, session));
+            String prop = session.getApplication().getProperty(IPCDecision.DESTINATAIRE_REDEVANCE);
+            annexeAuto.put(IPCDecision.BILLAG_ANNEXES_STRING, MessageFormat.format(LanguageResolver.resolveLibelleFromLabel(
+                    langueTiers.getCodeIso(), IPCDecision.BILLAG_ANNEXES_STRING, session), prop));
 
             // exoneration telereseau
             if (Boolean.parseBoolean(session.getApplication().getProperty(

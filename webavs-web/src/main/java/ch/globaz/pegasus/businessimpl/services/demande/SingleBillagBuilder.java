@@ -12,6 +12,7 @@ import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAv
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.tools.PRStringUtils;
 import globaz.pyxis.db.tiers.TITiers;
+import java.text.MessageFormat;
 import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import ch.globaz.babel.business.exception.CatalogueTexteException;
@@ -20,6 +21,7 @@ import ch.globaz.common.business.language.LanguageResolver;
 import ch.globaz.common.business.models.CTDocumentImpl;
 import ch.globaz.jade.business.models.Langues;
 import ch.globaz.pegasus.business.constantes.IPCCatalogueTextes;
+import ch.globaz.pegasus.business.constantes.IPCDecision;
 import ch.globaz.pegasus.business.exceptions.models.decision.DecisionException;
 import ch.globaz.pegasus.business.models.demande.SimpleDemande;
 import ch.globaz.pegasus.business.services.demande.DemandeBuilder;
@@ -107,7 +109,12 @@ public class SingleBillagBuilder extends AbstractDemandeBuilder implements Deman
         this.gestionnaire = gestionnaire;
 
         DocumentData data = new DocumentData();
-        data.addData(IPCCatalogueTextes.STR_ID_PROCESS, IPCCatalogueTextes.PROCESS_DECISION_BILLAG);
+        String prop = getSession().getApplication().getProperty(IPCDecision.DESTINATAIRE_REDEVANCE);
+        if("BILLAG".equalsIgnoreCase(prop)) {
+            data.addData(IPCCatalogueTextes.STR_ID_PROCESS, IPCCatalogueTextes.PROCESS_DECISION_BILLAG);
+        } else {
+            data.addData(IPCCatalogueTextes.STR_ID_PROCESS, IPCCatalogueTextes.PROCESS_DECISION_REDEVANCE);
+        }
 
         // date debut pc non setter cas de billag par dac
         if (this.dateDebutPc == null) {
@@ -118,6 +125,7 @@ public class SingleBillagBuilder extends AbstractDemandeBuilder implements Deman
         // data = this.buildHeader(data, false);
         // Attestations
         data.addData("TITRE_BILLAG", this.babelDoc.getTextes(18).getTexte(10).getDescription());
+        data.addData("NSS_BILLAG", NSS);
         data.addData("POLITESSE_BILLAG",
                 new StringBuilder(addCommaIFFrench(getTitreTiers(), getTiersFromIdTiers().getLangue())).toString());
         data.addData("PAR1_BILLAG", this.babelDoc.getTextes(18).getTexte(30).getDescription());
@@ -134,6 +142,7 @@ public class SingleBillagBuilder extends AbstractDemandeBuilder implements Deman
 
         data.addData("TOURNEZ_BILLAG", this.babelDoc.getTextes(18).getTexte(80).getDescription());
 
+        data.addData("ADRESSE_FORM", this.babelDoc.getTextes(18).getTexte(100).getDescription());
         // Formulaire
         data.addData("TITRE_FORM_BILLAG", this.babelDoc.getTextes(18).getTexte(110).getDescription());
         data.addData("NOM_FORM_BILLAG", this.babelDoc.getTextes(18).getTexte(120).getDescription());
@@ -220,8 +229,9 @@ public class SingleBillagBuilder extends AbstractDemandeBuilder implements Deman
         return data;
     }
 
-    private String getDocumentMailTitle() {
-        return new StringBuilder(getSession().getLabel("TOPAZ_BILLAG_DEMANDE_NO")).append(SingleBillagBuilder.SPACE)
+    private String getDocumentMailTitle() throws Exception {
+        String prop = getSession().getApplication().getProperty(IPCDecision.DESTINATAIRE_REDEVANCE);
+        return new StringBuilder(MessageFormat.format(getSession().getLabel("TOPAZ_BILLAG_DEMANDE_NO"), prop)).append(SingleBillagBuilder.SPACE)
                 .append(SingleBillagBuilder.DEUX_POINT).append(demande.getIdDemande()).toString();
     }
 

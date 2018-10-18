@@ -33,6 +33,7 @@ public interface IPCCatalogueTextes {
     public static final String PROCESS_DECISION_APRESCALCUL_COPIE = "PCDecisionApresCalculCopie";
     public static final String PROCESS_DECISION_APRESCALCUL_PG = "PCDecisionApresCalculPg";
     public static final String PROCESS_DECISION_BILLAG = "PCAttestationBillag";
+    public static final String PROCESS_DECISION_REDEVANCE = "PCAttestationRedevance";
     public static final String PROCESS_DECISION_DECOMPTE = "PCRecapitulatif";
     public static final String PROCESS_DECISION_REFUS = "PCDecisionRefus";
     public static final String PROCESS_DEMANDE_RENSEIGNEMENT = "PCDemandeRenseignement";
