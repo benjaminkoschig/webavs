@@ -1,5 +1,8 @@
 package globaz.corvus.api.arc.downloader;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import globaz.corvus.api.annonces.IREAnnonces;
 import globaz.corvus.api.external.arc.REDownloaderException;
 import globaz.corvus.db.annonces.REAnnonce51;
@@ -18,14 +21,11 @@ import globaz.hermes.api.helper.IHEAnnoncesCentraleHelper;
 import globaz.hermes.application.HEApplication;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.tools.PRSession;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
- * 
+ *
  * @author HPE
- * 
+ *
  */
 public class REDownloaderAnnonces51_53 extends REAbstractDownloader {
 
@@ -48,13 +48,13 @@ public class REDownloaderAnnonces51_53 extends REAbstractDownloader {
 
     /**
      * Traitement des annonces 51 et 53 (Annonces 9ème et 10ème révision pour l'adaptation des rentes
-     * 
+     *
      * ----------------------------------------------------------------------
-     * 
+     *
      * Traitement: ===========
-     * 
+     *
      * - pour toutes les annonces - Importation des annonces - Stockage des annonces dans les tables REANN51 et REANN53
-     * 
+     *
      */
     public void doTraitement(BITransaction transaction, IHEOutputAnnonce[] annonces) throws REDownloaderException {
         try {
@@ -64,15 +64,15 @@ public class REDownloaderAnnonces51_53 extends REAbstractDownloader {
 
                 /*
                  * ATTENTION : ===========
-                 * 
+                 *
                  * Toutes les annnonces sont censées arriver dans l'ordre :
-                 * 
+                 *
                  * 51 / 01 51 / 02 51 / 03
-                 * 
+                 *
                  * 51 / 01 51 / 02 51 / 03
-                 * 
+                 *
                  * 53 / 01 53 / 02 53 / 03
-                 * 
+                 *
                  * ==> Il faut les traiter dans cet ordre pour les insérer correctemnt !!!
                  */
 
@@ -99,7 +99,7 @@ public class REDownloaderAnnonces51_53 extends REAbstractDownloader {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.corvus.api.external.arc.IREUploader#upload(globaz.globall.api. BITransaction,
      * globaz.corvus.api.external.arc.rassemblement.IArcVO[])
      */
@@ -215,11 +215,11 @@ public class REDownloaderAnnonces51_53 extends REAbstractDownloader {
 
     /**
      * Lecture de l'annonce 51
-     * 
+     *
      * => Enregistrement 01, 02 et 03
-     * 
+     *
      * Pour le détail des champs, voir le document de la centrale
-     * 
+     *
      */
     private int lireAnnonce51(BITransaction transaction, IHEOutputAnnonce[] annonces, int i) throws Exception {
 
@@ -480,16 +480,16 @@ public class REDownloaderAnnonces51_53 extends REAbstractDownloader {
         ann51_03.setCodeEnregistrement01("03");
 
         // 3 | Nom de famille - nom de jeune fille, prénom
-        // Non stocké
+        ann51_03.setEtatNominatif(JadeStringUtil.substring(getChampEnregistrement(annonce), 4, 40));
 
         // 4 | Nationalité
-        // Non stocké
+        ann51_03.setEtatOrigine(JadeStringUtil.substring(getChampEnregistrement(annonce), 44, 3));
 
         // 5 | Fraction de la rente
         ann51_03.setFractionRente(JadeStringUtil.substring(getChampEnregistrement(annonce), 47, 1));
 
         // 6 | Ancien revenu annuel déterminant moyen en francs
-        ann51_03.setAncienRAM(JadeStringUtil.substring(getChampEnregistrement(annonce), 49, 8));
+        ann51_03.setAncienRAM(JadeStringUtil.substring(getChampEnregistrement(annonce), 48, 8));
 
         // 7 | Ancienne RO remplacéé
         ann51_03.setMontantAncRenteRemplacee(JadeStringUtil.substring(getChampEnregistrement(annonce), 56, 5));
@@ -555,11 +555,11 @@ public class REDownloaderAnnonces51_53 extends REAbstractDownloader {
 
     /**
      * Lecture de l'annonce 53
-     * 
+     *
      * => Enregistrement 01, 02 et 03
-     * 
+     *
      * Pour le détail des champs, voir le document de la centrale
-     * 
+     *
      */
     private int lireAnnonce53(BITransaction transaction, IHEOutputAnnonce[] annonces, int i) throws Exception {
 
@@ -806,10 +806,10 @@ public class REDownloaderAnnonces51_53 extends REAbstractDownloader {
         ann53_03.setCodeEnregistrement01("03");
 
         // 3 | Nom de famille - nom de jeune fille, prénom
-        // Non stocké
+        ann53_03.setEtatNominatif(JadeStringUtil.substring(getChampEnregistrement(annonce), 4, 40));
 
         // 4 | Nationalité
-        // Non stocké
+        ann53_03.setEtatOrigine(JadeStringUtil.substring(getChampEnregistrement(annonce), 44, 3));
 
         // 5 | Fraction de la rente
         ann53_03.setFractionRente(JadeStringUtil.substring(getChampEnregistrement(annonce), 47, 1));
