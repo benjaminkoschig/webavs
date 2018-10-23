@@ -100,11 +100,20 @@ public class REImprimerDecisionHelper extends PRAbstractHelper {
 
                 BProcessLauncher.start(imprimerDecision, false);
             }
+            /*
+             * Si c'est une décision sur opposition, on vérifie si la propriété est configuré correctement sinon il
+             * devront définir le choix du tribunal
+             * Si ce n'est pas une décision sur opposition, alors on ne fait pas de vérification.
+             */
             String typeCaisse = session.getRemoteApplication().getProperty(PRTiersHelper.TYPE_DE_CAISSE);
-            if (typeCaisse.contains(PRTiersHelper.CAISSE_CANT) || typeCaisse.contains(PRTiersHelper.CAISSE_PROF)) {
-                vb.setIsTypeCorrect(true);
+            if (decision.getCsGenreDecision().equals(IREDecision.CS_GENRE_DECISION_DECISION_SUR_OPPOSITION)) {
+                if (typeCaisse.contains(PRTiersHelper.CAISSE_CANT) || typeCaisse.contains(PRTiersHelper.CAISSE_PROF)) {
+                    vb.setIsTypeCorrect(true);
+                } else {
+                    vb.setIsTypeCorrect(false);
+                }
             } else {
-                vb.setIsTypeCorrect(false);
+                vb.setIsTypeCorrect(true);
             }
         } catch (Exception e) {
             viewBean.setMessage(e.toString());
