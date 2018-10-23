@@ -11,7 +11,7 @@ import java.util.Locale;
  * Classe d'utilitaires de date utilisant le package java.text et<br>
  * la classe java.util.Calendar La date utilisée dans les commentaires est celle du 10.05.2005 Date de création :
  * (11.03.2003 14:12:50)
- * 
+ *
  * @author: ado
  * @deprecated Devrait être dans le FW
  */
@@ -83,7 +83,7 @@ public class DateUtils {
     /**
      * Convertit une date d'une format vers un autre<br>
      * On peux utiliser les patterns de java.text.SimpleDateFormat
-     * 
+     *
      * @param value
      *            la date à convertir
      * @param fromFormat
@@ -118,7 +118,7 @@ public class DateUtils {
     /**
      * Convertit une date avec une année sur 2 chiffres à une date avec<br>
      * l'année sur 4 chiffres.
-     * 
+     *
      * @param dateToFormat
      *            la date à convertir au format AAMMJJ
      * @return L'année sur 4 positions : AAAAMMJJ
@@ -127,7 +127,8 @@ public class DateUtils {
         // String retour = "";
         String currentYear = "" + Calendar.getInstance().get(Calendar.YEAR);
         currentYear = currentYear.substring(2, 4);
-        if ((Integer.parseInt(dateToFormat) >= 0) && (Integer.parseInt(dateToFormat) <= Integer.parseInt(currentYear))) {
+        if ((Integer.parseInt(dateToFormat) >= 0)
+                && (Integer.parseInt(dateToFormat) <= Integer.parseInt(currentYear))) {
             return "20" + dateToFormat;
         } else {
             return "19" + dateToFormat;
@@ -136,7 +137,7 @@ public class DateUtils {
 
     /**
      * Convertit une date JJMMAA en JJMMAAAA
-     * 
+     *
      * @param dateToFormat
      *            la date à convertir
      * @return la date convertie
@@ -158,7 +159,7 @@ public class DateUtils {
 
     /**
      * Passe une année sur deux chiffres à quatre chiffres
-     * 
+     *
      * @param aa
      *            L'année
      * @return L'année sur 4 chiffres
@@ -184,7 +185,7 @@ public class DateUtils {
 
     /**
      * Renvoi un Calendar en fonction d'une date
-     * 
+     *
      * @param date
      *            La date
      * @param fromFormat
@@ -211,7 +212,7 @@ public class DateUtils {
 
     /**
      * Renvoit la date du jour
-     * 
+     *
      * @return la date sous forme AAAAMMJJ : 20050510
      */
     public static String getCurrentDateAMJ() {
@@ -233,7 +234,7 @@ public class DateUtils {
 
     /**
      * Renvoit l'heure système courante
-     * 
+     *
      * @return l'heure (ex : 08:40)
      */
     public static String getCurrentTime() {
@@ -242,7 +243,7 @@ public class DateUtils {
 
     /**
      * Renvoit l'heure courante en fonction de l'objet Calendar
-     * 
+     *
      * @param cal
      *            le calendrier
      * @return l'heure courant (ex : 08:40)
@@ -254,7 +255,7 @@ public class DateUtils {
 
     /**
      * Renvoit l'heure courante formattée en fonction de la locale
-     * 
+     *
      * @param locale
      *            le format selon le format de la locale
      * @return l'heure courante formattée
@@ -265,7 +266,7 @@ public class DateUtils {
 
     /**
      * Renvoit l'heure courante
-     * 
+     *
      * @param locale
      *            format de la Locale
      * @param simpleDateFormat
@@ -280,7 +281,7 @@ public class DateUtils {
 
     /**
      * Renvoit l'heure courante
-     * 
+     *
      * @return l'heure au format HH:MM:SS
      */
     public static String getCurrentTimeHMS() {
@@ -292,7 +293,7 @@ public class DateUtils {
 
     /**
      * Renvoit la date à partir d'un Calendar
-     * 
+     *
      * @param c
      *            le calendrier
      * @return la date au format AAAAMMJJ
@@ -308,7 +309,7 @@ public class DateUtils {
 
     /**
      * Renvoit la date courante au format JJ.MM.AAAA
-     * 
+     *
      * @return la date courante
      */
     public static String getDateJJMMAAAA_Dots() {
@@ -317,7 +318,7 @@ public class DateUtils {
 
     /**
      * Renvoit la date d'aujourd'hui plus X jours
-     * 
+     *
      * @param nbreDay
      *            le nombre de jours à rajouter
      * @return La date au format AAAAMMJJ
@@ -342,7 +343,7 @@ public class DateUtils {
 
     /**
      * Ajoute un nombre X de jours à une date formattée comme on veux
-     * 
+     *
      * @param date
      *            La date de départ
      * @param fromFormat
@@ -372,7 +373,7 @@ public class DateUtils {
     /**
      * Renvoit la date et l'heure formatté<br>
      * selon la locale Locale.GERMANY
-     * 
+     *
      * @return la date est l'heure : 10.05.05_15h49
      */
     public static String getLocaleDateAndTime() {
@@ -386,7 +387,7 @@ public class DateUtils {
 
     /**
      * Renvoit le mois et l'année de la date courante
-     * 
+     *
      * @return la date au format MM.AAAA
      */
     public static String getMonthYear() {
@@ -395,7 +396,7 @@ public class DateUtils {
 
     /**
      * Renvoit un horodatage lisible
-     * 
+     *
      * @return l'horodatage au format "JJ.MM.AAAA HH:MM:SS : "
      */
     public static String getTimeStamp() {
@@ -405,7 +406,7 @@ public class DateUtils {
     /**
      * Renvoit la date écrite selon la langue spécifiée :<br>
      * ex : 10 mai 2005 10. Mai 2005 10 maggio 2005
-     * 
+     *
      * @param langue
      *            La langue courante (cf:constantes)
      * @param date
@@ -432,7 +433,7 @@ public class DateUtils {
 
     /**
      * Renvoit l'année en fonction d'une date
-     * 
+     *
      * @param date
      *            La date
      * @param fromFormat
@@ -454,7 +455,7 @@ public class DateUtils {
 
     /**
      * Teste si la date est située 17 ans revolus (+1 jour) en arrière
-     * 
+     *
      * @param date
      *            La date au format JJ.MM.AAAA
      * @return true si c'est y'a plus de 17 ans révolus, sinon false
@@ -478,9 +479,17 @@ public class DateUtils {
         return (today.get(Calendar.YEAR) - birthDate.get(Calendar.YEAR)) >= 17;
     }
 
+    public static boolean is17YearsAgoDateNaissanceIncomplete(int anneeNaissance) throws Exception {
+        // la date d'aujourd'hui
+        Calendar today = Calendar.getInstance();
+        // la date à partir de JJ.MM.AAAA
+
+        return (today.get(Calendar.YEAR) - anneeNaissance) >= 17;
+    }
+
     /**
      * Teste le format d'une date
-     * 
+     *
      * @param value
      *            La date courante
      * @param format
