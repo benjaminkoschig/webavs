@@ -1,5 +1,14 @@
 package globaz.hermes.utils;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Enumeration;
+import java.util.GregorianCalendar;
+import java.util.Iterator;
+import java.util.StringTokenizer;
+import java.util.Vector;
+import javax.servlet.http.HttpSession;
 import globaz.commons.nss.NSUtil;
 import globaz.framework.controller.FWController;
 import globaz.globall.db.BApplication;
@@ -31,15 +40,6 @@ import globaz.naos.services.AFAffiliationServices;
 import globaz.naos.translation.CodeSystem;
 import globaz.pyxis.db.tiers.TITiers;
 import globaz.webavs.common.CommonProperties;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Enumeration;
-import java.util.GregorianCalendar;
-import java.util.Iterator;
-import java.util.StringTokenizer;
-import java.util.Vector;
-import javax.servlet.http.HttpSession;
 
 //
 public class HEUtil {
@@ -90,7 +90,7 @@ public class HEUtil {
     /**
      * Cette méthode a été créée pour le mandat Inforom 573, elle permet de contrôler si une affiliation est de type
      * paritaire sans particularité personnelle
-     * 
+     *
      * @param numeroAffilie Un numéro d'affilié
      * @param session Une session de type BSession
      * @return
@@ -167,7 +167,7 @@ public class HEUtil {
     /**
      * Cette méthode permet de retourner le numéro AVS formatté passé en paramètre s'il est existant, sinon la méthode
      * retournera la désignation de l'assuré (nom + prénom)
-     * 
+     *
      * @param numeroAVS
      * @param designation
      * @return
@@ -206,8 +206,8 @@ public class HEUtil {
 
     public static String checkReferenceUnique(String s) {
         String[] charOk = { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R",
-                "S", "T", "U", "V", "W", "X", "Y", "Z", ".", ",", "-", "/", "0", "1", "2", "3", "4", "5", "6", "7",
-                "8", "9" };
+                "S", "T", "U", "V", "W", "X", "Y", "Z", ".", ",", "-", "/", "0", "1", "2", "3", "4", "5", "6", "7", "8",
+                "9" };
         String source = s.toUpperCase();
         String res = "";
         for (int i = 0; i < source.length(); i++) {
@@ -223,7 +223,7 @@ public class HEUtil {
     /**
      * Méthode qui contrôle si un mot qu'on inséré contient des - avec des espaces, si c'est le cas cette méthode va
      * retourner false
-     * 
+     *
      * @param word
      * @return
      */
@@ -278,7 +278,7 @@ public class HEUtil {
     /**
      * Cette méthode a été créée suite au BZ 8457, elle permet de formatter un mot qui contient des espaces avant les
      * traits d'union Exemple : input: Jean -Michel => output: Jean-Michel
-     * 
+     *
      * @param word
      * @return formatedword
      */
@@ -344,15 +344,15 @@ public class HEUtil {
                 // modif NNSS
                 // numAVSAyantDroit = AVSUtils.formatAVS8Or9(res[0]);
                 numAVSAyantDroit = res[0];
-                dateCloture = JadeStringUtil.isEmpty(res[1]) ? "" : DateUtils.convertDate(res[1], DateUtils.MMAA,
-                        DateUtils.MMAA_DOTS);
+                dateCloture = JadeStringUtil.isEmpty(res[1]) ? ""
+                        : DateUtils.convertDate(res[1], DateUtils.MMAA, DateUtils.MMAA_DOTS);
                 //
                 // remplir la liste
                 options.append("<option value='");
                 // modif NNSS
                 // options.append(JAStringFormatter.formatAVS(arc.getNumeroAVS()));
-                options.append(globaz.commons.nss.NSUtil.formatWithoutPrefixe(arc.getNumeroAVS(), arc
-                        .getNumeroAvsNNSS().equals("true")));
+                options.append(globaz.commons.nss.NSUtil.formatWithoutPrefixe(arc.getNumeroAVS(),
+                        arc.getNumeroAvsNNSS().equals("true")));
                 options.append("'");
                 /**/
                 options.append(" refUnique='");
@@ -412,7 +412,7 @@ public class HEUtil {
     /**
      * Retourne une liste de CI (numéro et nom de l'assuré) en fonction des permiers chiffres du numéro avs donnés en
      * paramètres. Date de création : (25.02.2003 09:05:13)
-     * 
+     *
      * @return la liste d'options (tag select) des CI existants de la caisse actuelle. Peut-être vide si aucune
      *         information n'a été trouvée
      * @param like
@@ -500,7 +500,7 @@ public class HEUtil {
     /**
      * Retourne une liste de CI (numéro et nom de l'assuré) en fonction des permiers chiffres du numéro avs donnés en
      * paramètres. Date de création : (25.02.2003 09:05:13)
-     * 
+     *
      * @return la liste d'options (tag select) des CI existants de la caisse actuelle. Peut-être vide si aucune
      *         information n'a été trouvée
      * @param like
@@ -533,7 +533,7 @@ public class HEUtil {
     /**
      * Retourne une liste de CI (numéro et nom de l'assuré) en fonction des permiers chiffres du numéro avs donnés en
      * paramètres. Date de création : (25.02.2003 09:05:13)
-     * 
+     *
      * @return la liste d'options (tag select) des CI existants de la caisse actuelle. Peut-être vide si aucune
      *         information n'a été trouvée
      * @param like
@@ -547,8 +547,8 @@ public class HEUtil {
 
     public static String getModeleCA() {
         try {
-            HEApplication application = (HEApplication) GlobazServer.getCurrentSystem().getApplication(
-                    HEApplication.DEFAULT_APPLICATION_HERMES);
+            HEApplication application = (HEApplication) GlobazServer.getCurrentSystem()
+                    .getApplication(HEApplication.DEFAULT_APPLICATION_HERMES);
             return application.getModeleCA();
         } catch (Exception e) {
             return "HERMES_LETTRE_REMISE_CA_ACC";
@@ -557,8 +557,8 @@ public class HEUtil {
 
     public static String getModeleCAEmp() {
         try {
-            HEApplication application = (HEApplication) GlobazServer.getCurrentSystem().getApplication(
-                    HEApplication.DEFAULT_APPLICATION_HERMES);
+            HEApplication application = (HEApplication) GlobazServer.getCurrentSystem()
+                    .getApplication(HEApplication.DEFAULT_APPLICATION_HERMES);
             return application.getModeleCAEmp();
         } catch (Exception e) {
             return "HERMES_LETTRE_REMISE_CA_ACC_EMP";
@@ -644,9 +644,29 @@ public class HEUtil {
         }
     }
 
+    public static boolean isDateNaissanceIncompletAutorisee(BSession session) {
+        String isAutorise;
+        try {
+            isAutorise = ((HEApplication) session.getApplication()).getProperty("autoriseDateNaissanceUniquementAnnee");
+            if (!JadeStringUtil.isEmpty(isAutorise)) {
+                if (isAutorise.equals("true")) {
+                    return true;
+                } else {
+                    return false;
+                }
+
+            } else {
+                return false;
+            }
+        } catch (Exception e) {
+            return false;
+        }
+
+    }
+
     /**
      * Permet de commaitre le nombre d'info sotckée selon les critères de sélection passés en paramètre
-     * 
+     *
      * @param session
      * @param typeInfo
      * @param libInfo

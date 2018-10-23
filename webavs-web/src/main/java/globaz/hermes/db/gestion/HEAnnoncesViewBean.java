@@ -1060,10 +1060,23 @@ public class HEAnnoncesViewBean extends BEntity implements FWViewBeanInterface {
                 if (!JadeStringUtil.isBlank(dateNaissance)) {
                     try {
                         // on a une date de naissance, on contrôle l'age minimum
-                        if (!DateUtils.is17YearsAgo(dateNaissance)) {
-                            // l'assuré a moins de 17 ans, donc erreur
-                            _addError(statement.getTransaction(), getSession().getLabel("HERMES_00008"));
+                        if (HEUtil.isDateNaissanceIncompletAutorisee(getSession())
+                                && !JadeStringUtil.isBlank(dateNaissance) && dateNaissance.length() >= 5
+                                && dateNaissance.substring(0, 5).contains("00.00")) {
+
+                            if (!DateUtils.is17YearsAgoDateNaissanceIncomplete(Integer.parseInt(
+                                    dateNaissance.substring(dateNaissance.length() - 4, dateNaissance.length())))) {
+                                // l'assuré a moins de 17 ans, donc erreur
+                                _addError(statement.getTransaction(), getSession().getLabel("HERMES_00008"));
+                            }
+
+                        } else {
+                            if (!DateUtils.is17YearsAgo(dateNaissance)) {
+                                // l'assuré a moins de 17 ans, donc erreur
+                                _addError(statement.getTransaction(), getSession().getLabel("HERMES_00008"));
+                            }
                         }
+
                     } catch (Exception e) {
                         _addError(statement.getTransaction(), getSession().getLabel("HERMES_10024"));
                     }
@@ -2512,7 +2525,14 @@ public class HEAnnoncesViewBean extends BEntity implements FWViewBeanInterface {
                     if (HEAnnoncesViewBean.isDateField(champAnnonce.getIdChamp())) {
 
                         if (Arrays.asList(HEAnnoncesViewBean.dateFields_JJMMAAAA).contains(champAnnonce.getIdChamp())) {
-                            _checkDate(transaction, field, getSession().getLabel("HERMES_00003"));
+                            if (HEUtil.isDateNaissanceIncompletAutorisee(getSession())) {
+                                if (!field.contains("0000")) {
+                                    _checkDate(transaction, field, getSession().getLabel("HERMES_00003"));
+                                }
+
+                            } else {
+                                _checkDate(transaction, field, getSession().getLabel("HERMES_00003"));
+                            }
                         }
 
                         field = HEAnnoncesViewBean.formatDate(champAnnonce.getIdChamp(), field);
