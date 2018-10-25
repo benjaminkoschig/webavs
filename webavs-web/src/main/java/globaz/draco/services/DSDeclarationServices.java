@@ -71,7 +71,7 @@ public class DSDeclarationServices {
             FWSecureUserDetail user = new FWSecureUserDetail();
 
             user.setSession(session);
-            user.setUser(session.getUserId().toLowerCase());
+            user.setUser(session.getUserId());
             user.setLabel(DSApplication.COMPLEMENT_USER_VALIDATION_DS);
 
             user.retrieve();

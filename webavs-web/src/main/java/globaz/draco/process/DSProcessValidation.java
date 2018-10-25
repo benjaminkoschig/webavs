@@ -477,14 +477,21 @@ public class DSProcessValidation extends BProcess implements FWViewBeanInterface
             String valideSpyComplement = getSession().getApplication()
                     .getProperty(DSApplication.VALIDATION_SPY_COMPLEMENT, "false");
 
-            decl.setNotImpressionDecFinalAZero(getNotImpressionDecFinalAZero());
-            decl.setEtat(DSDeclarationViewBean.CS_AFACTURER);
-            decl.setEnValidation(true);
-            if (valideSpyComplement.equalsIgnoreCase("true")) {
-                decl.setValidationSpy(DSDeclarationServices.getPersValider(getSession()));
+            if ("true".equalsIgnoreCase(valideSpyComplement)) {
+                String complementUser = DSDeclarationServices.getPersValider(getSession());
+                if (JadeStringUtil.isBlankOrZero(complementUser)) {
+                    this._addError(getTransaction(), getSession().getLabel("MSG_COMPLEMENT_SPY_MANQUANT"));
+                    abort();
+                    return false;
+                }
+                decl.setValidationSpy(complementUser);
             } else {
                 decl.setValidationSpy(getSession().getUserFullName());
             }
+
+            decl.setNotImpressionDecFinalAZero(getNotImpressionDecFinalAZero());
+            decl.setEtat(DSDeclarationViewBean.CS_AFACTURER);
+            decl.setEnValidation(true);
             decl.setReferenceFacture(getSession().getUserId());
             decl.setValidationDateSpy(JACalendar.todayJJsMMsAAAA());
             decl.update(getTransaction());
