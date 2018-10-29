@@ -144,7 +144,7 @@ $(document).ready(function() {
 		$(this).click(function() {
 			$('option').each(function() {
 			    var text = $(this).text().replace('{0}', libelleRedevance);
-			    $(this).text(text);
+			    $(this).html(text);
 			});
 		});
 	});
