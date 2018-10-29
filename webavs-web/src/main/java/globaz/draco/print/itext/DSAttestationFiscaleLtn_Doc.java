@@ -1,5 +1,11 @@
 package globaz.draco.print.itext;
 
+import java.math.BigDecimal;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Set;
 import globaz.babel.api.ICTDocument;
 import globaz.caisse.helper.CaisseHelperFactory;
 import globaz.caisse.report.helper.ACaisseReportHelper;
@@ -51,21 +57,16 @@ import globaz.pyxis.db.tiers.TIHistoriqueAvsManager;
 import globaz.pyxis.db.tiers.TIPersonneAvsManager;
 import globaz.pyxis.db.tiers.TITiers;
 import globaz.pyxis.db.tiers.TITiersViewBean;
-import java.math.BigDecimal;
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Set;
 
 /**
- * @author BJO <h1>description</h1> Classe permettant d'imprimer les attestations fiscales pour tous les salariés dont
+ * @author BJO
+ *         <h1>description</h1> Classe permettant d'imprimer les attestations fiscales pour tous les salariés dont
  *         l'employeur a payé ses cotisations, et qu'aucune attesation n'a encore été imprimée (LTN009) en deux
  *         exemplaires (salarié et fisc) avec la dernière adresse connue du salarié.
  */
 public class DSAttestationFiscaleLtn_Doc extends FWIDocumentManager {
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
     public final static String DS_ATTESTATION = "125005";
@@ -78,7 +79,7 @@ public class DSAttestationFiscaleLtn_Doc extends FWIDocumentManager {
      * Evite que {@link MessageFormat} ne lance une erreur ou ne se comporte pas correctement si le message contient des
      * apostrophes
      * </p>
-     * 
+     *
      * @param message
      *            le message dans lequel se trouve les groupes à remplacer
      * @param args
@@ -200,7 +201,7 @@ public class DSAttestationFiscaleLtn_Doc extends FWIDocumentManager {
 
     /**
      * Envoi les paramètre au header du documents
-     * 
+     *
      * @param bean
      * @throws Exception
      */
@@ -420,8 +421,8 @@ public class DSAttestationFiscaleLtn_Doc extends FWIDocumentManager {
                 CACompteAnnexe compteAnnexe = new CACompteAnnexe();
                 compteAnnexe.setISession(osirisSession);
                 compteAnnexe.setAlternateKey(APICompteAnnexe.AK_IDEXTERNE);
-                compteAnnexe.setIdRole(CaisseHelperFactory.getInstance().getRoleForAffilieParitaire(
-                        getSession().getApplication()));
+                compteAnnexe.setIdRole(
+                        CaisseHelperFactory.getInstance().getRoleForAffilieParitaire(getSession().getApplication()));
                 compteAnnexe.setIdExterneRole(affEnCours.getAffilieNumero());
                 compteAnnexe.retrieve(getTransaction());
                 if (JadeStringUtil.isBlank(compteAnnexe.getIdCompteAnnexe())) {
@@ -462,12 +463,12 @@ public class DSAttestationFiscaleLtn_Doc extends FWIDocumentManager {
                     this.abort(getSession().getLabel("ERREUR_LTN_INCOHERENCE_COMPTA_DS"), FWMessage.ERREUR);
                 }
 
-                if (sommeSolde != null) {
-                    // Si le solde est positif on imprime pas les attestations (l'employeur n'a pas payé)
-                    if (sommeSolde.doubleValue() != 0) {
-                        this.abort(getSession().getLabel("EMPLOYEUR_PAS_PAYE_COTISATIONS"), FWMessage.ERREUR);
-                    }
-                }
+                // if (sommeSolde != null) {
+                // // Si le solde est positif on imprime pas les attestations (l'employeur n'a pas payé)
+                // if (sommeSolde.doubleValue() != 0) {
+                // this.abort(getSession().getLabel("EMPLOYEUR_PAS_PAYE_COTISATIONS"), FWMessage.ERREUR);
+                // }
+                // }
                 // si la somme est null on imprime pas les attestations car la déclaration n'est pas en comptabilité
                 // (OSIRIS)
                 if (sommeSolde == null) {
@@ -518,8 +519,8 @@ public class DSAttestationFiscaleLtn_Doc extends FWIDocumentManager {
         getDocumentInfo().setDocumentProperty("pyxis.tiers.numero.avs.non.formatte", NSUtil.unFormatAVS(nssSalarie));
         getDocumentInfo().setDocumentProperty("numero.affilie.formatte", affEnCours.getAffilieNumero());
         try {
-            IFormatData affilieFormater = ((AFApplication) GlobazServer.getCurrentSystem().getApplication(
-                    AFApplication.DEFAULT_APPLICATION_NAOS)).getAffileFormater();
+            IFormatData affilieFormater = ((AFApplication) GlobazServer.getCurrentSystem()
+                    .getApplication(AFApplication.DEFAULT_APPLICATION_NAOS)).getAffileFormater();
             getDocumentInfo().setDocumentProperty("numero.affilie.non.formatte",
                     affilieFormater.unformat(affEnCours.getAffilieNumero()));
         } catch (Exception e) {
@@ -539,14 +540,13 @@ public class DSAttestationFiscaleLtn_Doc extends FWIDocumentManager {
         _table();
         _afterTable();
 
-        ICaisseReportHelper caisseReportHelper = CaisseHelperFactory.getInstance().getCaisseReportHelper(
-                getDocumentInfo(), getSession().getApplication(), langueIsoTiers);
+        ICaisseReportHelper caisseReportHelper = CaisseHelperFactory.getInstance()
+                .getCaisseReportHelper(getDocumentInfo(), getSession().getApplication(), langueIsoTiers);
         setTemplateFile(MODEL_NAME);
         CaisseHeaderReportBean headerBean = new CaisseHeaderReportBean();
         _setHeader(headerBean);
         caisseReportHelper.addHeaderParameters(this, headerBean);
-        getImporter().getParametre().put(
-                ICaisseReportHelper.PARAM_SUBREPORT_HEADER,
+        getImporter().getParametre().put(ICaisseReportHelper.PARAM_SUBREPORT_HEADER,
                 ((ACaisseReportHelper) caisseReportHelper).getDefaultModelPath() + "/"
                         + getTemplateProperty(getDocumentInfo(), "header.filename"));
 
@@ -569,7 +569,7 @@ public class DSAttestationFiscaleLtn_Doc extends FWIDocumentManager {
 
     /**
      * remplace dans message {n} par args[n].
-     * 
+     *
      * @param message
      *            le message dans lequel se trouve les groupes à remplacer
      * @param args
@@ -617,7 +617,7 @@ public class DSAttestationFiscaleLtn_Doc extends FWIDocumentManager {
 
     /**
      * retourne "true" si le document est généré par le processus général (depuis le menu principal)
-     * 
+     *
      * @return
      */
     public boolean getProcessMenu() {
@@ -631,7 +631,7 @@ public class DSAttestationFiscaleLtn_Doc extends FWIDocumentManager {
     /**
      * Récupère le texte du catalogue en fonction du niveau et de la position, et remplace les {n} par les textes passés
      * dans le tableau d'objet "args"
-     * 
+     *
      * @param niveau
      * @param position
      * @param args
@@ -642,8 +642,8 @@ public class DSAttestationFiscaleLtn_Doc extends FWIDocumentManager {
         String texte;
         try {
             if (args != null) {
-                texte = DSAttestationFiscaleLtn_Doc.formatMessage(catalogue.getTextes(niveau).getTexte(position)
-                        .getDescription(), args);
+                texte = DSAttestationFiscaleLtn_Doc
+                        .formatMessage(catalogue.getTextes(niveau).getTexte(position).getDescription(), args);
             } else {
                 texte = catalogue.getTextes(niveau).getTexte(position).getDescription();
             }
@@ -776,8 +776,8 @@ public class DSAttestationFiscaleLtn_Doc extends FWIDocumentManager {
 
             if (adresseSalarie == null) {
                 System.out.println("Adresse null : " + nssSalarie);
-                getMemoryLog().logMessage(getSession().getLabel("ERROR_GETTING_ADRESSE") + nssSalarie,
-                        FWMessage.ERREUR, this.getClass().toString());
+                getMemoryLog().logMessage(getSession().getLabel("ERROR_GETTING_ADRESSE") + nssSalarie, FWMessage.ERREUR,
+                        this.getClass().toString());
                 this.abort();
             }
 
@@ -802,9 +802,9 @@ public class DSAttestationFiscaleLtn_Doc extends FWIDocumentManager {
                 throw new Exception(getSession().getLabel("AUCUN_TAUX_POUR_CANTON"));
             }
 
-            impotCantonal = new BigDecimal(
-                    AFCalculAssurance.calculResultatAssurance(dateDebut, dateFin, tauxCantonal, new Double(
-                            JANumberFormatter.deQuote(salaireBrutAvsSalarie.toString())).doubleValue(), getSession()));
+            impotCantonal = new BigDecimal(AFCalculAssurance.calculResultatAssurance(dateDebut, dateFin, tauxCantonal,
+                    new Double(JANumberFormatter.deQuote(salaireBrutAvsSalarie.toString())).doubleValue(),
+                    getSession()));
             impotCantonal = JANumberFormatter.formatBigD(impotCantonal);// arrondie le montant au plus proche
 
             // calcul de l'impot fédéral
@@ -823,9 +823,9 @@ public class DSAttestationFiscaleLtn_Doc extends FWIDocumentManager {
                 throw new Exception("Aucun taux pour l'impot fédéral");
             }
 
-            impotFederal = new BigDecimal(
-                    AFCalculAssurance.calculResultatAssurance(dateDebut, dateFin, tauxFederal, new Double(
-                            JANumberFormatter.deQuote(salaireBrutAvsSalarie.toString())).doubleValue(), getSession()));
+            impotFederal = new BigDecimal(AFCalculAssurance.calculResultatAssurance(dateDebut, dateFin, tauxFederal,
+                    new Double(JANumberFormatter.deQuote(salaireBrutAvsSalarie.toString())).doubleValue(),
+                    getSession()));
             impotFederal = JANumberFormatter.formatBigD(impotFederal);// arrondie le montant au plus proche
 
             // calcul du total de l'impot
