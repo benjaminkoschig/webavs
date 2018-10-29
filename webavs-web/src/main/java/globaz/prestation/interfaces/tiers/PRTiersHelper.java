@@ -124,7 +124,7 @@ public class PRTiersHelper {
     public static final String ID_PAYS_SUISSE = "100";
     private static final Map<String, Vector<String[]>> LISTE_PAYS = new HashMap<String, Vector<String[]>>();
     private static final String ID_CANTON_PROP = "default.canton.caisse.location";
-    public static final String TYPE_DE_CAISSE = "TYPE_de_CAISSE";
+    public static final String TYPE_DE_CAISSE = "type_de_caisse";
     public static final String CAISSE_CANT = "Caisse_CANT";
     public static final String CAISSE_PROF = "Caisse_PROF";
     private static Map<String, Map<String, String>> PAYS_PAR_LANGUE = null;
