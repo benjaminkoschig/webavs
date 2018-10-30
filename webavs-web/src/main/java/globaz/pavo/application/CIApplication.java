@@ -102,6 +102,7 @@ public class CIApplication extends globaz.globall.db.BApplication {
     public static final String NO_AGENCE = "noAgence";
     public static final String PATH_FTP = "centrale.url";
     public static final String RACINE_NOM = "racine.fichier.centrale";
+    public static final String PROPERTY_PUCS4_AUTORISE_AVS_DIFFERENT_AF = "pucs4.autorise.avs.different.af";
 
     // le format du numéro d'affilié
     private IFormatData affileFormater = null;
@@ -320,6 +321,14 @@ public class CIApplication extends globaz.globall.db.BApplication {
             }
         }
         return idAnnonce;
+    }
+
+    public boolean getPucs4AutoriseAvsDifferentAf() {
+        try {
+            return "true".equalsIgnoreCase(this.getProperty(PROPERTY_PUCS4_AUTORISE_AVS_DIFFERENT_AF).trim());
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     public String annonceARC(BTransaction transaction, HashMap<?, ?> attributs, boolean withErrors) {
