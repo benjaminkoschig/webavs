@@ -39,6 +39,7 @@ public class SingleBillagBuilder extends AbstractDemandeBuilder implements Deman
     private static final String DEUX_POINT = ":";
     private static final String SPACE = " ";
     private static final String TITRE_REPLACE = "{titre}";
+    private static final String NSS_REPLACE = "{nss}";
     private static final String VIRGULE = ",";
     private ICTDocument babelDoc = null;
     private String dateDebutPc = null;
@@ -125,7 +126,7 @@ public class SingleBillagBuilder extends AbstractDemandeBuilder implements Deman
         // data = this.buildHeader(data, false);
         // Attestations
         data.addData("TITRE_BILLAG", this.babelDoc.getTextes(18).getTexte(10).getDescription());
-        data.addData("NSS_BILLAG", NSS);
+        data.addData("NSS_BILLAG",babelDoc.getTextes(1).getTexte(30).getDescription().replace(SingleBillagBuilder.NSS_REPLACE,NSS));
         data.addData("POLITESSE_BILLAG",
                 new StringBuilder(addCommaIFFrench(getTitreTiers(), getTiersFromIdTiers().getLangue())).toString());
         data.addData("PAR1_BILLAG", this.babelDoc.getTextes(18).getTexte(30).getDescription());
