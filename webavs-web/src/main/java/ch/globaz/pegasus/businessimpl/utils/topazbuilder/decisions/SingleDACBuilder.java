@@ -19,6 +19,7 @@ import globaz.prestation.tools.PRStringUtils;
 import globaz.pyxis.db.tiers.TITiers;
 import java.math.BigDecimal;
 import java.rmi.RemoteException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Map;
 import ch.globaz.common.business.language.LanguageResolver;
@@ -437,7 +438,7 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
      * 
      * @throws DecisionException
      */
-    private DocumentData buildBlocInformations(DocumentData data) throws DecisionException {
+    private DocumentData buildBlocInformations(DocumentData data) throws Exception {
         data.addData("INFORMATIONS", babelDoc.getTextes(9).getTexte(10).getDescription());
         data.addData("B_INFORMATIONS_1", babelDoc.getTextes(9).getTexte(20).getDescription());
         data.addData("B_INFORMATIONS_2", babelDoc.getTextes(9).getTexte(30).getDescription());
@@ -1440,9 +1441,16 @@ public class SingleDACBuilder extends AbstractDecisionBuilder {
         return membreComprisStr;
     }
 
-    private Boolean isAnnexeBillag() {
+    private Boolean isAnnexeBillag() throws Exception {
         for (SimpleAnnexesDecision annexe : dacOO.getDecisionHeader().getListeAnnexes()) {
             if (annexe.getCsType().equals(IPCDecision.ANNEXE_BILLAG_AUTO)) {
+                Langues langueTiers = LanguageResolver.resolveISOCode(dacOO.getPcAccordee().getPersonneEtendue().getTiers()
+                        .getLangue());
+                String prop = getSession().getApplication().getProperty(IPCDecision.DESTINATAIRE_REDEVANCE);
+                String message = 
+                        MessageFormat.format(LanguageResolver.resolveLibelleFromLabel(
+                        langueTiers.getCodeIso(), IPCDecision.BILLAG_ANNEXES_STRING, getSession()), prop);
+                annexe.setValeur(message);
                 return true;
             }
         }

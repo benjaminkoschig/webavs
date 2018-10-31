@@ -24,11 +24,13 @@ import globaz.prestation.tools.PRStringUtils;
 import globaz.prestation.tools.nnss.PRNSSUtil;
 import java.math.BigDecimal;
 import java.rmi.RemoteException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import ch.globaz.babel.business.exception.CatalogueTexteException;
 import ch.globaz.babel.business.services.BabelServiceLocator;
+import ch.globaz.common.business.language.LanguageResolver;
 import ch.globaz.common.business.models.CTDocumentImpl;
 import ch.globaz.common.properties.PropertiesException;
 import ch.globaz.jade.business.models.Langues;
@@ -523,7 +525,7 @@ public class PCDecisionApresCalculViewBean extends BJadePersistentObjectViewBean
      * 
      * @return
      */
-    public ArrayList<SimpleAnnexesDecision> getListeAnnexes() {
+    public ArrayList<SimpleAnnexesDecision> getListeAnnexes() {       
         return decisionApresCalcul.getDecisionHeader().getListeAnnexes();
     }
 
@@ -783,11 +785,19 @@ public class PCDecisionApresCalculViewBean extends BJadePersistentObjectViewBean
      * Retourne l'état (true/false) de létat d'insertion de l'att Billag (auto ou manuel)
      * 
      * @return
+     * @throws Exception 
      */
-    public boolean hasBillagAuto() {
+    public boolean hasBillagAuto() throws Exception {
         // if (!isPcaEnRefus()) {
         for (SimpleAnnexesDecision annexe : decisionApresCalcul.getDecisionHeader().getListeAnnexes()) {
             if (IPCDecision.ANNEXE_BILLAG_AUTO.equals(annexe.getCsType())) {
+                Langues langueTiers = LanguageResolver.resolveISOCode(decisionApresCalcul.getPcAccordee().getPersonneEtendue().getTiers()
+                        .getLangue());
+                String prop = getSession().getApplication().getProperty(IPCDecision.DESTINATAIRE_REDEVANCE);
+                String message = 
+                        MessageFormat.format(LanguageResolver.resolveLibelleFromLabel(
+                        langueTiers.getCodeIso(), IPCDecision.BILLAG_ANNEXES_STRING, getSession()), prop);
+                annexe.setValeur(message);
                 return true;
             }
         }
