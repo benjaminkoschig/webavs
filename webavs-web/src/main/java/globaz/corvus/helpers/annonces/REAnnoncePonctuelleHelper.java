@@ -1249,10 +1249,10 @@ public class REAnnoncePonctuelleHelper extends PRAbstractHelper {
             annonce_01.setPremierNoAssComplementaire(
                     NSUtil.unFormatAVS(twCompl1.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL)));
         } else if (codePrestation.isRenteComplementairePourEnfant()
-                || (!ISFSituationFamiliale.CS_ETAT_CIVIL_CELIBATAIRE.equals(viewBean.getCsEtatCivil())
+                || (!ISFSituationFamiliale.CS_ETAT_CIVIL_CELIBATAIRE.equals(viewBean.getCsEtatCivilSF())
                         && !ISFSituationFamiliale.CS_ETAT_CIVIL_PARTENARIAT_DISSOUS_JUDICIAIREMENT
-                                .equals(viewBean.getCsEtatCivil())
-                        && !ISFSituationFamiliale.CS_ETAT_CIVIL_DIVORCE.equals(viewBean.getCsEtatCivil()))) {
+                                .equals(viewBean.getCsEtatCivilSF())
+                        && !ISFSituationFamiliale.CS_ETAT_CIVIL_DIVORCE.equals(viewBean.getCsEtatCivilSF()))) {
             annonce_01.setPremierNoAssComplementaire("00000000000");
         } else {
             annonce_01.setPremierNoAssComplementaire("");

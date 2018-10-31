@@ -89,6 +89,7 @@ public class REAnnoncePonctuelleViewBean extends PRAbstractViewBeanSupport {
     private String revenuPrisEnCompte9 = "";
     private String survenanceEvenementAssure = "";
     private PRTiersWrapper tiersBeneficiaire = null;
+    private String csEtatCivilSF = "";
 
     private void chargerAncienNSS() {
 
@@ -378,7 +379,8 @@ public class REAnnoncePonctuelleViewBean extends PRAbstractViewBeanSupport {
         montantPrestation = ra.getMontantPrestation();
         dateDebut = ra.getDateDebutDroit();
         codeEtatCivil = PRACORConst.csEtatCivilHeraToAcorForRentes(session, csEtatCivil);
-        this.csEtatCivil = csEtatCivil;
+        this.csEtatCivil = PRACORConst.csEtatCivilHeraToCsEtatCivil(csEtatCivil);
+        csEtatCivilSF = csEtatCivil;
         canton = PRACORConst.csCantonToAcor(csCanton);
         this.csCanton = csCanton;
         codeRefugie = !JadeStringUtil.isEmpty(ra.getCodeRefugie()) && "1".equals(ra.getCodeRefugie());
@@ -857,5 +859,13 @@ public class REAnnoncePonctuelleViewBean extends PRAbstractViewBeanSupport {
     @Override
     public boolean validate() {
         return true;
+    }
+
+    public String getCsEtatCivilSF() {
+        return csEtatCivilSF;
+    }
+
+    public void setCsEtatCivilSF(String csEtatCivilSF) {
+        this.csEtatCivilSF = csEtatCivilSF;
     }
 }
