@@ -399,7 +399,7 @@ public class AMEnvoiData extends EnvoiData {
         int nbreCaisses = allCaisses.size();
         int nbreSubsides = allSubsides.size();
         if ((nbreCaisses != 0) && (nbreSubsides != 0)) {
-            if (isSubsidePCFamille) {
+            if (isSubsidePCFamille && isDocumentPCFamille()) {
                 if (nbreCaisses > 1) {
                     if (getIdProcess().contains("DECMST8") || !hasSupplementPC) {
                         toReturn.add(getTableauToDelete("pcftablexdroitsxassureurs1"));
@@ -736,6 +736,14 @@ public class AMEnvoiData extends EnvoiData {
             String newId = idProcess + complementProcess;
             setIdProcess(newId);
         }
+    }
+
+    private boolean isDocumentPCFamille() {
+        return getIdProcess().equals("ATSUBS1") || getIdProcess().equals("ATSUBS2") || getIdProcess().equals("ATSUBS3")
+                || getIdProcess().equals("DECMST1") || getIdProcess().equals("DECMST2")
+                || getIdProcess().equals("DECMST5") || getIdProcess().equals("DECMST8")
+                || getIdProcess().equals("DECMISA") || getIdProcess().equals("DECMASB")
+                || getIdProcess().equals("DECMPCE");
     }
 
     private Collection getTableauToDelete(String tableName) {
