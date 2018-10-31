@@ -269,10 +269,11 @@ public class CalculsSubsides {
                 && revenuHistoriqueComplex.getRevenuFullComplex().getSimpleRevenu() != null) {
             SimpleRevenuContribuable revenu = revenuHistoriqueComplex.getRevenuFullComplex()
                     .getSimpleRevenuContribuable();
-            if (revenuHistoriqueComplex.getRevenuFullComplex().getSimpleRevenu().isSourcier()) {
+            if (revenuHistoriqueComplex.getRevenuFullComplex().getSimpleRevenu().getTypeRevenu()
+                    .equals(IAMCodeSysteme.CS_TYPE_SOURCIER)) {
                 return revenuHistoriqueComplex.getRevenuFullComplex().getSimpleRevenu().getRevDetUnique() != null
                         && !JadeStringUtil.isBlankOrZero(
-                                revenuHistoriqueComplex.getRevenuFullComplex().getSimpleRevenu().getRevDetUnique());
+                                revenuHistoriqueComplex.getSimpleRevenuDeterminant().getRevenuDeterminantCalcul());
             } else {
                 return !JadeStringUtil.isBlankOrZero(revenu.getRevenuNetEmploi())
                         || !JadeStringUtil.isBlankOrZero(revenu.getRevenuNetEpouse())
