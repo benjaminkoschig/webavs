@@ -1,12 +1,5 @@
 package ch.globaz.al.businessimpl.services.decision;
 
-import globaz.globall.util.JANumberFormatter;
-import globaz.jade.client.util.JadeCodesSystemsUtil;
-import globaz.jade.client.util.JadeDateUtil;
-import globaz.jade.client.util.JadeNumericUtil;
-import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.exception.JadeApplicationException;
-import globaz.jade.exception.JadePersistenceException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import ch.globaz.al.business.constantes.ALCSDossier;
@@ -27,17 +20,24 @@ import ch.globaz.al.businessimpl.services.ALImplServiceLocator;
 import ch.globaz.topaz.datajuicer.Collection;
 import ch.globaz.topaz.datajuicer.DataList;
 import ch.globaz.topaz.datajuicer.DocumentData;
+import globaz.globall.util.JANumberFormatter;
+import globaz.jade.client.util.JadeCodesSystemsUtil;
+import globaz.jade.client.util.JadeDateUtil;
+import globaz.jade.client.util.JadeNumericUtil;
+import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.exception.JadeApplicationException;
+import globaz.jade.exception.JadePersistenceException;
 
 /**
  * Classe fille de DecisionAbstractServiceImpl qui contient toutes les spécificités des décisions pour salariés
- * 
+ *
  * @author JER/PTA
  */
 public class DecisionSalarieServiceImpl extends DecisionAbstractServiceImpl implements DecisionSalarieService {
 
     /**
      * Méthode qui retourne les différents calculs pour un même droit dont le montant effectif est supérieur à 0
-     * 
+     *
      * @param listDroitCalculDossier
      *            liste des calculs pour un dossier
      * @param idDroit
@@ -45,15 +45,16 @@ public class DecisionSalarieServiceImpl extends DecisionAbstractServiceImpl impl
      * @return
      */
     private ArrayList<CalculBusinessModel> listCalculDroitIdentique(
-            ArrayList<CalculBusinessModel> listDroitCalculDossier, String idDroit) throws JadeApplicationException,
-            JadePersistenceException {
+            ArrayList<CalculBusinessModel> listDroitCalculDossier, String idDroit)
+            throws JadeApplicationException, JadePersistenceException {
         ArrayList<CalculBusinessModel> listCalculDroitIdentique = new ArrayList<CalculBusinessModel>();
         for (int i = 0; i < listDroitCalculDossier.size(); i++) {
 
             if (JadeStringUtil.equals(listDroitCalculDossier.get(i).getDroit().getDroitModel().getIdDroit(), idDroit,
                     false)
-                    && (!JadeStringUtil.equals(ALCSDroit.TYPE_NAIS, listDroitCalculDossier.get(i).getType(), false) && !JadeStringUtil
-                            .equals(ALCSDroit.TYPE_ACCE, listDroitCalculDossier.get(i).getType(), false))) {
+                    && (!JadeStringUtil.equals(ALCSDroit.TYPE_NAIS, listDroitCalculDossier.get(i).getType(), false)
+                            && !JadeStringUtil.equals(ALCSDroit.TYPE_ACCE, listDroitCalculDossier.get(i).getType(),
+                                    false))) {
                 listCalculDroitIdentique.add(listDroitCalculDossier.get(i));
             }
         }
@@ -65,31 +66,34 @@ public class DecisionSalarieServiceImpl extends DecisionAbstractServiceImpl impl
             DataList list, String typeTarif, String typePrestation, DossierComplexModel dossier, String langueDocument,
             Collection tableau_colonne, Boolean isHide) throws JadeApplicationException, JadePersistenceException {
 
-        if ((!JadeNumericUtil.isEmptyOrZero(montantDroit) || droit.getDroitModel().getForce())
+        boolean hasMontantDroit = !JadeNumericUtil.isEmptyOrZero(montantDroit);
+        boolean hasMontantForce = !JadeNumericUtil.isEmptyOrZero(droit.getDroitModel().getMontantForce());
+        hasMontantForce = hasMontantForce && droit.getDroitModel().getForce();
+
+        if ((hasMontantDroit || hasMontantForce)
                 && (!ALCSDroit.TYPE_NAIS.equals(typePrestation) && !ALCSDroit.TYPE_ACCE.equals(typePrestation))) {
             list = new DataList("colonne");
 
             // si le droit est de type ménage
             if (JadeStringUtil.equals(droit.getDroitModel().getTypeDroit(), ALCSDroit.TYPE_MEN, false)) {
-                list.addData("colonne_enfant", this.getText("al.decision.liste.droit.alloc.typeMenage", langueDocument));
+                list.addData("colonne_enfant",
+                        this.getText("al.decision.liste.droit.alloc.typeMenage", langueDocument));
 
             } else {
 
                 // FORMATION et ENFANT avec supplément
-                list.addData(
-                        "colonne_enfant",
+                list.addData("colonne_enfant",
                         (droit.getEnfantComplexModel().getPersonneEtendueComplexModel().getTiers().getDesignation1())
                                 + " "
                                 + (droit.getEnfantComplexModel().getPersonneEtendueComplexModel().getTiers()
                                         .getDesignation2())
-                                + "\n"
-                                + (droit.getEnfantComplexModel().getPersonneEtendueComplexModel().getPersonneEtendue()
-                                        .getNumAvsActuel()));
+                                + "\n" + (droit.getEnfantComplexModel().getPersonneEtendueComplexModel()
+                                        .getPersonneEtendue().getNumAvsActuel()));
 
             }
 
-            list.addData("colonne_naissance", droit.getEnfantComplexModel().getPersonneEtendueComplexModel()
-                    .getPersonne().getDateNaissance());
+            list.addData("colonne_naissance",
+                    droit.getEnfantComplexModel().getPersonneEtendueComplexModel().getPersonne().getDateNaissance());
             list.addData("colonne_echeance", droit.getDroitModel().getFinDroitForcee());
             // récupère le libellé du motif de fin de droit
 
@@ -98,55 +102,51 @@ public class DecisionSalarieServiceImpl extends DecisionAbstractServiceImpl impl
                 if (droit.getDroitModel().getForce()
                         && JadeNumericUtil.isEmptyOrZero(droit.getDroitModel().getMontantForce())
                         && !JadeNumericUtil.isEmptyOrZero(montantSupplHorloger)) {
-                    list.addData(
-                            "colonne_motif",
+                    list.addData("colonne_motif",
 
-                            ""
-                                    + "\n"
+                            "" + "\n"
 
-                                    + (JadeStringUtil.equals(ALCSDroit.TYPE_ENF, droit.getDroitModel().getTypeDroit(),
-                                            false) ? this.getText("al.decision.liste.droit.supplHorlogerEnfant",
-                                            langueDocument) : this.getText(
-                                            "al.decision.liste.droit.supplHorlogerFormation", langueDocument)));
+                                    + (JadeStringUtil
+                                            .equals(ALCSDroit.TYPE_ENF, droit.getDroitModel().getTypeDroit(), false)
+                                                    ? this.getText("al.decision.liste.droit.supplHorlogerEnfant",
+                                                            langueDocument)
+                                                    : this.getText("al.decision.liste.droit.supplHorlogerFormation",
+                                                            langueDocument)));
 
                 }
 
                 else {
-                    list.addData(
-                            "colonne_motif",
-                            (JadeStringUtil.isBlankOrZero(montantSupplHorloger)) ? ALServiceLocator
-                                    .getDroitEcheanceService().getLibelleMotif(droit, langueDocument)
-                                    : ALServiceLocator.getDroitEcheanceService().getLibelleMotif(droit, langueDocument)
-                                            + "\n"
+                    list.addData("colonne_motif", (JadeStringUtil.isBlankOrZero(montantSupplHorloger))
+                            ? ALServiceLocator.getDroitEcheanceService().getLibelleMotif(droit, langueDocument)
+                            : ALServiceLocator.getDroitEcheanceService().getLibelleMotif(droit, langueDocument) + "\n"
 
-                                            + (JadeStringUtil.equals(ALCSDroit.TYPE_ENF, droit.getDroitModel()
-                                                    .getTypeDroit(), false) ? this.getText(
-                                                    "al.decision.liste.droit.supplHorlogerEnfant", langueDocument)
+                                    + (JadeStringUtil
+                                            .equals(ALCSDroit.TYPE_ENF, droit.getDroitModel().getTypeDroit(), false)
+                                                    ? this.getText("al.decision.liste.droit.supplHorlogerEnfant",
+                                                            langueDocument)
                                                     : this.getText("al.decision.liste.droit.supplHorlogerFormation",
                                                             langueDocument)));
 
                 }
             }
 
-            list.addData(
-                    "colonne_code_monnaie",
-                    JadeStringUtil.isBlankOrZero(montantSupplHorloger) /* || (!isHide) */? this.getText(
-                            "al.decision.liste.droit.chf", langueDocument) : this.getText(
-                            "al.decision.liste.droit.chf", langueDocument)
-                            + "\n"
-                            + this.getText("al.decision.liste.droit.chf", langueDocument));
+            list.addData("colonne_code_monnaie",
+                    JadeStringUtil.isBlankOrZero(montantSupplHorloger)
+                            /* || (!isHide) */ ? this.getText("al.decision.liste.droit.chf", langueDocument)
+                            : this.getText("al.decision.liste.droit.chf", langueDocument) + "\n"
+                                    + this.getText("al.decision.liste.droit.chf", langueDocument));
             //
-            list.addData(
-                    "colonne_montant",
-                    JadeStringUtil.isBlankOrZero(montantSupplHorloger) /* || (!isHide) */? JANumberFormatter.fmt(
-                            montantDroit, true, true, false, 2) : JANumberFormatter.fmt(montantDroit, true, true,
-                            false, 2) + "\n" + JANumberFormatter.fmt(montantSupplHorloger, true, true, false, 2));
+            list.addData("colonne_montant",
+                    JadeStringUtil.isBlankOrZero(montantSupplHorloger)
+                            /* || (!isHide) */ ? JANumberFormatter.fmt(montantDroit, true, true, false, 2)
+                            : JANumberFormatter.fmt(montantDroit, true, true, false, 2) + "\n"
+                                    + JANumberFormatter.fmt(montantSupplHorloger, true, true, false, 2));
 
             tableau_colonne.add(list);
 
             if (!JadeStringUtil.isBlankOrZero(droit.getDroitModel().getIdTiersBeneficiaire())
-                    && !JadeStringUtil.equals(dossier.getDossierModel().getIdTiersBeneficiaire(), droit.getDroitModel()
-                            .getIdTiersBeneficiaire(), false)) {
+                    && !JadeStringUtil.equals(dossier.getDossierModel().getIdTiersBeneficiaire(),
+                            droit.getDroitModel().getIdTiersBeneficiaire(), false)) {
 
                 DataList DroitBenef = new DataList("droitBeneficiaire");
 
@@ -162,14 +162,17 @@ public class DecisionSalarieServiceImpl extends DecisionAbstractServiceImpl impl
 
     private void loadChampsNonHorlogere(DataList list, Collection tableau_colonne, String langueDocument,
             ArrayList<CalculBusinessModel> calcul, DossierComplexModel dossier,
-            ArrayList<String> listTiersBeneficiaireDroit, int i) throws JadeApplicationException,
-            JadePersistenceException {
+            ArrayList<String> listTiersBeneficiaireDroit, int i)
+            throws JadeApplicationException, JadePersistenceException {
         // si le montant calcul de base est <> de 0 ou que le montant a été forcé et le type de droit
         // autre que naissance et accueil
-        if ((!JadeNumericUtil.isEmptyOrZero((calcul.get(i)).getCalculResultMontantBase()) || (calcul.get(i)).getDroit()
-                .getDroitModel().getForce())
-                && (!ALCSDroit.TYPE_NAIS.equals((calcul.get(i)).getType()) && !ALCSDroit.TYPE_ACCE.equals((calcul
-                        .get(i)).getType()))) {
+        boolean hasMontantBase = !JadeNumericUtil.isEmptyOrZero((calcul.get(i)).getCalculResultMontantBase());
+        boolean hasMontantForce = !JadeNumericUtil
+                .isEmptyOrZero((calcul.get(i)).getDroit().getDroitModel().getMontantForce());
+        hasMontantForce = hasMontantForce && (calcul.get(i)).getDroit().getDroitModel().getForce();
+
+        if ((hasMontantBase || hasMontantForce) && (!ALCSDroit.TYPE_NAIS.equals((calcul.get(i)).getType())
+                && !ALCSDroit.TYPE_ACCE.equals((calcul.get(i)).getType()))) {
             list = new DataList("colonne");
 
             listTiersBeneficiaireDroit.add(calcul.get(i).getDroit().getDroitModel().getIdTiersBeneficiaire());
@@ -177,18 +180,19 @@ public class DecisionSalarieServiceImpl extends DecisionAbstractServiceImpl impl
             // si le droit est de type ménage
             if (JadeStringUtil.equals((calcul.get(i)).getDroit().getDroitModel().getTypeDroit(), ALCSDroit.TYPE_MEN,
                     false)) {
-                list.addData("colonne_enfant", this.getText("al.decision.liste.droit.alloc.typeMenage", langueDocument));
+                list.addData("colonne_enfant",
+                        this.getText("al.decision.liste.droit.alloc.typeMenage", langueDocument));
 
             } else {
 
-                list.addData("colonne_enfant", (calcul.get(i)).getDroit().getEnfantComplexModel()
-                        .getPersonneEtendueComplexModel().getTiers().getDesignation1()
-                        + " "
-                        + (calcul.get(i)).getDroit().getEnfantComplexModel().getPersonneEtendueComplexModel()
-                                .getTiers().getDesignation2()
-                        + "\n"
-                        + (calcul.get(i)).getDroit().getEnfantComplexModel().getPersonneEtendueComplexModel()
-                                .getPersonneEtendue().getNumAvsActuel());
+                list.addData("colonne_enfant",
+                        (calcul.get(i)).getDroit().getEnfantComplexModel().getPersonneEtendueComplexModel().getTiers()
+                                .getDesignation1()
+                                + " "
+                                + (calcul.get(i)).getDroit().getEnfantComplexModel().getPersonneEtendueComplexModel()
+                                        .getTiers().getDesignation2()
+                                + "\n" + (calcul.get(i)).getDroit().getEnfantComplexModel()
+                                        .getPersonneEtendueComplexModel().getPersonneEtendue().getNumAvsActuel());
 
                 listTiersBeneficiaireDroit.add(calcul.get(i).getDroit().getDroitModel().getIdTiersBeneficiaire());
             }
@@ -200,12 +204,11 @@ public class DecisionSalarieServiceImpl extends DecisionAbstractServiceImpl impl
             if (!JadeStringUtil.equals((calcul.get(i)).getDroit().getDroitModel().getTypeDroit(), ALCSDroit.TYPE_MEN,
                     false)) {
 
-                list.addData(
-                        "colonne_motif",
+                list.addData("colonne_motif",
 
                         ALImplServiceLocator.getCalculMontantsService().isMontantForceZero(calcul.get(i)) ? ""
-                                : ALServiceLocator.getDroitEcheanceService().getLibelleMotif(
-                                        (calcul.get(i)).getDroit(), langueDocument));
+                                : ALServiceLocator.getDroitEcheanceService().getLibelleMotif((calcul.get(i)).getDroit(),
+                                        langueDocument));
             }
 
             list.addData("colonne_code_monnaie", this.getText("al.decision.liste.droit.chf", langueDocument));
@@ -218,8 +221,8 @@ public class DecisionSalarieServiceImpl extends DecisionAbstractServiceImpl impl
             tableau_colonne.add(list);
 
             if (!JadeStringUtil.isBlankOrZero((calcul.get(i)).getDroit().getDroitModel().getIdTiersBeneficiaire())
-                    && !JadeStringUtil.equals(dossier.getDossierModel().getIdTiersBeneficiaire(), (calcul.get(i))
-                            .getDroit().getDroitModel().getIdTiersBeneficiaire(), false)) {
+                    && !JadeStringUtil.equals(dossier.getDossierModel().getIdTiersBeneficiaire(),
+                            (calcul.get(i)).getDroit().getDroitModel().getIdTiersBeneficiaire(), false)) {
 
                 DataList DroitBenef = new DataList("droitBeneficiaire");
 
@@ -237,8 +240,8 @@ public class DecisionSalarieServiceImpl extends DecisionAbstractServiceImpl impl
     private void loadChampsSpecificiteHorlogere(DataList list, Collection tableau_colonne, String langueDocument,
             ArrayList<CalculBusinessModel> calcul, DossierComplexModel dossier,
             ArrayList<String> listTiersBeneficiaireDroit /* , int i */, String idDroit, String montantDroit,
-            String montantSupplHorloger, String typePrestation) throws JadeApplicationException,
-            JadePersistenceException {
+            String montantSupplHorloger, String typePrestation)
+            throws JadeApplicationException, JadePersistenceException {
         if (calcul.size() > 0) {
 
             // si c'est le premier et le dernier
@@ -269,8 +272,8 @@ public class DecisionSalarieServiceImpl extends DecisionAbstractServiceImpl impl
                         typeTarif = calcul.get(i).getTarif();
                     }
 
-                    if ((JadeStringUtil.equals(ALCSDroit.TYPE_ENF, calcul.get(i).getType(), false) || JadeStringUtil
-                            .equals(ALCSDroit.TYPE_FORM, calcul.get(i).getType(), false))
+                    if ((JadeStringUtil.equals(ALCSDroit.TYPE_ENF, calcul.get(i).getType(), false)
+                            || JadeStringUtil.equals(ALCSDroit.TYPE_FORM, calcul.get(i).getType(), false))
                             && !JadeStringUtil.equals(ALCSTarif.CATEGORIE_SUP_HORLO, calcul.get(i).getTarif(), false)) {
                         // montantSupplHorloger = calcul.get(i).getCalculResultMontantEffectif();
                         calculEnfForm = calcul.get(i);
@@ -293,7 +296,7 @@ public class DecisionSalarieServiceImpl extends DecisionAbstractServiceImpl impl
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ch.globaz.al.businessimpl.services.decision.DecisionAbstractServiceImpl
      * #loadListDroit(ch.globaz.topaz.datajuicer.DocumentData, ch.globaz.al.business.models.dossier.DossierComplexModel,
      * java.util.ArrayList)
@@ -301,8 +304,8 @@ public class DecisionSalarieServiceImpl extends DecisionAbstractServiceImpl impl
     @SuppressWarnings("unchecked")
     @Override
     protected void loadListDroit(DocumentData documentData, DossierComplexModel dossier,
-            ArrayList<CalculBusinessModel> calcul, String date, String langueDocument) throws JadeApplicationException,
-            JadePersistenceException {
+            ArrayList<CalculBusinessModel> calcul, String date, String langueDocument)
+            throws JadeApplicationException, JadePersistenceException {
 
         // vérification des paramètres
 
@@ -316,14 +319,14 @@ public class DecisionSalarieServiceImpl extends DecisionAbstractServiceImpl impl
             throw new ALDecisionException("DecisionSalarieServiceImpl#loadListDroit: calcul is null");
         }
         if (!JadeDateUtil.isGlobazDate(date)) {
-            throw new ALDecisionException("DecisionSalarieServiceImpl#loadListDroit: " + date
-                    + " is not a valid globaz's date (dd.mm.yyyy");
+            throw new ALDecisionException(
+                    "DecisionSalarieServiceImpl#loadListDroit: " + date + " is not a valid globaz's date (dd.mm.yyyy");
         }
         if (!JadeStringUtil.equals(langueDocument, ALConstLangue.LANGUE_ISO_FRANCAIS, false)
                 && !JadeStringUtil.equals(langueDocument, ALConstLangue.LANGUE_ISO_ALLEMAND, false)
                 && !JadeStringUtil.equals(langueDocument, ALConstLangue.LANGUE_ISO_ITALIEN, false)) {
-            throw new ALDecisionException("DecisionSalarieServiceImpl#loadListDroit: language  " + langueDocument
-                    + " is not  valid ");
+            throw new ALDecisionException(
+                    "DecisionSalarieServiceImpl#loadListDroit: language  " + langueDocument + " is not  valid ");
         }
 
         documentData.addData("isSalarie", "OUI");
@@ -357,14 +360,14 @@ public class DecisionSalarieServiceImpl extends DecisionAbstractServiceImpl impl
         HashMap<String, String> droitDecision = new HashMap<String, String>();
         for (int i = 0; i < calcul.size(); i++) {
 
-            if ((ALImplServiceLocator.getHorlogerBusinessService().isCaisseHorlogere() == true)
-                    && (JadeDateUtil.areDatesEquals(dossier.getDossierModel().getDebutValidite(),
+            if ((ALImplServiceLocator.getHorlogerBusinessService().isCaisseHorlogere() == true) && (JadeDateUtil
+                    .areDatesEquals(dossier.getDossierModel().getDebutValidite(), ALConstDecisions.DEB_SUP_HORL)
+                    || JadeDateUtil.isDateAfter(dossier.getDossierModel().getDebutValidite(),
                             ALConstDecisions.DEB_SUP_HORL)
-                            || JadeDateUtil.isDateAfter(dossier.getDossierModel().getDebutValidite(),
-                                    ALConstDecisions.DEB_SUP_HORL)
-                            || JadeDateUtil.areDatesEquals(dossier.getDossierModel().getFinValidite(),
-                                    ALConstDecisions.DEB_SUP_HORL) || JadeDateUtil.isDateAfter(dossier
-                            .getDossierModel().getFinValidite(), ALConstDecisions.DEB_SUP_HORL))) {
+                    || JadeDateUtil.areDatesEquals(dossier.getDossierModel().getFinValidite(),
+                            ALConstDecisions.DEB_SUP_HORL)
+                    || JadeDateUtil.isDateAfter(dossier.getDossierModel().getFinValidite(),
+                            ALConstDecisions.DEB_SUP_HORL))) {
                 if (!JadeStringUtil.equals(calcul.get(i).getDroit().getDroitModel().getTypeDroit(), ALCSDroit.TYPE_MEN,
                         false)/* || !JadeStringUtil.isBlankOrZero(calcul.get(i).getCalculResultMontantEffectif()) */) {
 
@@ -373,7 +376,7 @@ public class DecisionSalarieServiceImpl extends DecisionAbstractServiceImpl impl
                         // récupère id Droit
                         idDroit = (calcul.get(i)).getDroit().getDroitModel().getIdDroit();
 
-                        // récupère la lsite des calcul pour le même droit
+                        // récupère la liste des calcul pour le même droit
                         ArrayList<CalculBusinessModel> listCalculUnDroitDossier = listCalculDroitIdentique(calcul,
                                 idDroit);
 
@@ -401,8 +404,8 @@ public class DecisionSalarieServiceImpl extends DecisionAbstractServiceImpl impl
         // charge, le cas échéant l'adresse de paiement au niveau du dossier
         if (!JadeStringUtil.isBlankOrZero(dossier.getDossierModel().getIdTiersBeneficiaire())) {
             // savoir si adresse de paiement est nécessaire
-            boolean notAdressePaiementDossier = isNotAllDroitBenEgalBenDos(listTiersBeneficiaireDroit, dossier
-                    .getDossierModel().getIdTiersBeneficiaire());
+            boolean notAdressePaiementDossier = isNotAllDroitBenEgalBenDos(listTiersBeneficiaireDroit,
+                    dossier.getDossierModel().getIdTiersBeneficiaire());
             // si adresse de paiement est nécessaire
             if (!notAdressePaiementDossier) {
                 loadInfoVersementDirect(documentData, dossier, langueDocument);
@@ -425,7 +428,8 @@ public class DecisionSalarieServiceImpl extends DecisionAbstractServiceImpl impl
                     JANumberFormatter.fmt((String) total.get(ALConstCalcul.TOTAL_BASE), true, true, false, 2));
             tableau_total.add(list);
             // taux de versement différent de 0
-        } else if (Double.valueOf(dossier.getDossierModel().getTauxVersement()).compareTo(ALConstNumeric.ZERO_VALEUR) != 0) {
+        } else if (Double.valueOf(dossier.getDossierModel().getTauxVersement())
+                .compareTo(ALConstNumeric.ZERO_VALEUR) != 0) {
             // total des allocations pour un 100%
             list = new DataList("partiel");
             list.addData("tableau_partiel_0", this.getText("al.decision.liste.droit.total.alloc", langueDocument));
@@ -438,14 +442,12 @@ public class DecisionSalarieServiceImpl extends DecisionAbstractServiceImpl impl
 
             // total à payer par rapport au taux d'occupation
             list = new DataList("total");
-            list.addData(
-                    "tableau_total_0",
-                    this.getText("al.decision.liste.droit.alloc.taux.dossier", langueDocument) + " "
-                            + dossier.getDossierModel().getTauxVersement() + " "
-                            + this.getText("al.decision.liste.droit.alloc.taux.dossier.pourcent", langueDocument) + " "
-                            + this.getText("al.decision.liste.droit.chf", langueDocument) + " "
+            list.addData("tableau_total_0", this.getText("al.decision.liste.droit.alloc.taux.dossier", langueDocument)
+                    + " " + dossier.getDossierModel().getTauxVersement() + " "
+                    + this.getText("al.decision.liste.droit.alloc.taux.dossier.pourcent", langueDocument) + " "
+                    + this.getText("al.decision.liste.droit.chf", langueDocument) + " "
 
-                            + JANumberFormatter.fmt((String) total.get(ALConstCalcul.TOTAL_BASE), true, true, false, 2));
+                    + JANumberFormatter.fmt((String) total.get(ALConstCalcul.TOTAL_BASE), true, true, false, 2));
             list.addData("tableau_total_1", this.getText("al.decision.liste.droit.chf", langueDocument));
             list.addData("tableau_total_2",
                     JANumberFormatter.fmt((String) total.get(ALConstCalcul.TOTAL_EFFECTIF), true, true, false, 2));
@@ -466,19 +468,20 @@ public class DecisionSalarieServiceImpl extends DecisionAbstractServiceImpl impl
         // création des tableaux "jours de début/fin"
         tableau_sous_total = loadMontantJoursDebut(dossier, calcul, total, date, list, tableau_sous_total,
                 langueDocument);
-        tableau_sous_total = loadMontantJoursFin(dossier, calcul, total, date, list, tableau_sous_total, langueDocument);
+        tableau_sous_total = loadMontantJoursFin(dossier, calcul, total, date, list, tableau_sous_total,
+                langueDocument);
         documentData.add(tableau_sous_total);
 
         // Rempli la partie jour
         Collection tableau_jour = new Collection("tableau_jour");
 
-        if (!JadeStringUtil.equals(dossier.getDossierModel().getActiviteAllocataire(),
-                ALCSDossier.ACTIVITE_INDEPENDANT, false)) {
+        if (!JadeStringUtil.equals(dossier.getDossierModel().getActiviteAllocataire(), ALCSDossier.ACTIVITE_INDEPENDANT,
+                false)) {
             list = new DataList("jour");
             list.addData("tableau_jour_0", this.getText("al.decision.liste.droit.total.jour", langueDocument));
             list.addData("tableau_jour_1", this.getText("al.decision.liste.droit.chf", langueDocument));
-            list.addData("tableau_jour_2",
-                    JANumberFormatter.fmt((String) total.get(ALConstCalcul.TOTAL_UNITE_EFFECTIF), true, true, false, 2));
+            list.addData("tableau_jour_2", JANumberFormatter.fmt((String) total.get(ALConstCalcul.TOTAL_UNITE_EFFECTIF),
+                    true, true, false, 2));
             // ajoute la liste à la collection
             tableau_jour.add(list);
         }
@@ -488,8 +491,8 @@ public class DecisionSalarieServiceImpl extends DecisionAbstractServiceImpl impl
 
     @Override
     protected void loadListNaissance(DocumentData documentData, DossierComplexModel dossier,
-            ArrayList<CalculBusinessModel> calcul, String date, String langueDocument) throws JadeApplicationException,
-            JadePersistenceException {
+            ArrayList<CalculBusinessModel> calcul, String date, String langueDocument)
+            throws JadeApplicationException, JadePersistenceException {
 
         Collection tableau_naissance = new Collection("tableau_naissance");
 
@@ -512,16 +515,15 @@ public class DecisionSalarieServiceImpl extends DecisionAbstractServiceImpl impl
 
                 calcul = (ArrayList<CalculBusinessModel>) total.get(ALConstCalcul.DROITS_CALCULES);
 
-                list.addData("tableau_naissance_0", libelle
-                        + " "
-                        + (calcul.get(i)).getDroit().getEnfantComplexModel().getPersonneEtendueComplexModel()
-                                .getTiers().getDesignation1()
-                        + " "
-                        + (calcul.get(i)).getDroit().getEnfantComplexModel().getPersonneEtendueComplexModel()
-                                .getTiers().getDesignation2()
-                        + "\n"
-                        + (calcul.get(i)).getDroit().getEnfantComplexModel().getPersonneEtendueComplexModel()
-                                .getPersonneEtendue().getNumAvsActuel());
+                list.addData("tableau_naissance_0",
+                        libelle + " "
+                                + (calcul.get(i)).getDroit().getEnfantComplexModel().getPersonneEtendueComplexModel()
+                                        .getTiers().getDesignation1()
+                                + " "
+                                + (calcul.get(i)).getDroit().getEnfantComplexModel().getPersonneEtendueComplexModel()
+                                        .getTiers().getDesignation2()
+                                + "\n" + (calcul.get(i)).getDroit().getEnfantComplexModel()
+                                        .getPersonneEtendueComplexModel().getPersonneEtendue().getNumAvsActuel());
 
                 String chaineVide = "";
                 list.addData("tableau_naissance_1", chaineVide);
@@ -576,8 +578,8 @@ public class DecisionSalarieServiceImpl extends DecisionAbstractServiceImpl impl
             String commentaire, String langueDocument) throws JadeApplicationException, JadePersistenceException {
 
         // INFOROMD0028 - AF - Modifications montants AF VD (CBU)
-        if (JadeStringUtil.equals(ALCSTarif.CATEGORIE_VD_DROIT_ACQUIS, dossierComplexModel.getDossierModel()
-                .getTarifForce(), false)) {
+        if (JadeStringUtil.equals(ALCSTarif.CATEGORIE_VD_DROIT_ACQUIS,
+                dossierComplexModel.getDossierModel().getTarifForce(), false)) {
             documentData.addData("texte_paragraphe_droitAcquis",
                     this.getText("al.decision.standard.paragraphe.droitAcquis", langueDocument));
         }
@@ -595,18 +597,18 @@ public class DecisionSalarieServiceImpl extends DecisionAbstractServiceImpl impl
                     this.getText("al.decision.standard.signature.ligne1", langueDocument));
             documentData.addData("texte_signature_ligne_2",
                     this.getText("al.decision.standard.signature.ligne2", langueDocument));
-        } else if (ALCSDossier.ACTIVITE_INDEPENDANT.equals(dossierComplexModel.getDossierModel()
-                .getActiviteAllocataire())
+        } else if (ALCSDossier.ACTIVITE_INDEPENDANT
+                .equals(dossierComplexModel.getDossierModel().getActiviteAllocataire())
                 && !JadeStringUtil.equals(ALServiceLocator.getParametersServices().getNomCaisse(),
                         ALConstCaisse.CAISSE_CCVD, true)) {
             if (!JadeStringUtil.isBlank(commentaire)) {
                 documentData.addData("texte_paragraphe_libre", JadeStringUtil.removeChar(commentaire, '\n'));
             }
 
-            documentData
-                    .addData("texte_paragraphe_2", this.getText("al.decision.standard.paragraphe2", langueDocument));
-            documentData
-                    .addData("texte_paragraphe_3", this.getText("al.decision.standard.paragraphe3", langueDocument));
+            documentData.addData("texte_paragraphe_2",
+                    this.getText("al.decision.standard.paragraphe2", langueDocument));
+            documentData.addData("texte_paragraphe_3",
+                    this.getText("al.decision.standard.paragraphe3", langueDocument));
 
             documentData.addData("texte_signature_ligne_1",
                     this.getText("al.decision.standard.signature.ligne1", langueDocument));
