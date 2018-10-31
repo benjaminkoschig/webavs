@@ -1,5 +1,10 @@
 package globaz.osiris.db.comptes;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import ch.globaz.osiris.business.constantes.CAProperties;
 import globaz.aquila.api.ICOEtape;
 import globaz.aquila.db.process.COSectionBulletinNeutreABloquerManager;
 import globaz.framework.util.FWCurrency;
@@ -24,20 +29,15 @@ import globaz.osiris.db.contentieux.CADateExecutionSommationAquila;
 import globaz.osiris.db.contentieux.CADateExecutionSommationAquilaManager;
 import globaz.osiris.db.ordres.CAOrganeExecution;
 import globaz.osiris.utils.CAUtil;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import ch.globaz.osiris.business.constantes.CAProperties;
 
 /**
  * Date de création : (14.02.2002 10:06:48)
- * 
+ *
  * @author: Administrator
  */
 public class CAPaiementBVR extends CAPaiement implements APIPaiementBVR {
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
     private static final String DESC = " DESC";
@@ -84,7 +84,7 @@ public class CAPaiementBVR extends CAPaiement implements APIPaiementBVR {
      * <code>_afterAdd()</code>
      * <p>
      * Ne pas oublier de partager la connexion avec les autres DAB !!! </i>
-     * 
+     *
      * @exception java.lang.Exception en cas d'erreur fatale
      */
     @Override
@@ -120,7 +120,7 @@ public class CAPaiementBVR extends CAPaiement implements APIPaiementBVR {
      * <code>_afterUpdate()</code>
      * <p>
      * Ne pas oublier de partager la connexion avec les autres DAB !!! </i>
-     * 
+     *
      * @exception java.lang.Exception en cas d'erreur fatale
      */
     @Override
@@ -210,7 +210,7 @@ public class CAPaiementBVR extends CAPaiement implements APIPaiementBVR {
 
     /**
      * Chargement des valeurs par défaut par utilisateur
-     * 
+     *
      * @param transaction
      */
     @Override
@@ -290,7 +290,7 @@ public class CAPaiementBVR extends CAPaiement implements APIPaiementBVR {
 
     /**
      * Mise à jour du fichier AJPPVUT pour les valeur par défaut par utilisateur
-     * 
+     *
      * @see globaz.osiris.db.comptes.CAPaiement#_synchroValUtili(globaz.globall.db.BTransaction)
      */
     @Override
@@ -343,7 +343,7 @@ public class CAPaiementBVR extends CAPaiement implements APIPaiementBVR {
 
     /**
      * Validation des données
-     * 
+     *
      * @see globaz.osiris.db.comptes.CAOperation#_valider(globaz.globall.db.BTransaction)
      */
     @Override
@@ -364,7 +364,7 @@ public class CAPaiementBVR extends CAPaiement implements APIPaiementBVR {
             getMemoryLog().logMessage("7395", null, FWMessage.ERREUR, this.getClass().getName());
         }
         if ((getSection() != null) && APISection.ID_TYPE_SECTION_BULLETIN_NEUTRE.equals(getSection().getIdTypeSection())
-                && APISection.STATUTBN_ANNULE.equals(getSection().getIdModeCompensation())) {
+                && APISection.STATUTBN_ANNULE.equals(getSection().getStatutBN())) {
             getMemoryLog().logMessage("7405", null, FWMessage.ERREUR, this.getClass().getName());
         }
     }
@@ -395,7 +395,7 @@ public class CAPaiementBVR extends CAPaiement implements APIPaiementBVR {
 
     /**
      * Vérifier le solde de la section
-     * 
+     *
      * @param isPlanPaiement
      */
     private void checkSoldeSection(boolean isPlanPaiement) {
@@ -454,7 +454,7 @@ public class CAPaiementBVR extends CAPaiement implements APIPaiementBVR {
 
     /**
      * Créer l'écriture d'extourne.
-     * 
+     *
      * @param ecr l'écriture à extourner.
      * @return l'écriture.
      */
@@ -547,7 +547,7 @@ public class CAPaiementBVR extends CAPaiement implements APIPaiementBVR {
      * Cette méthode permet de rechercher les sections plus anciennes d'un compte annexe qui ont un solde identique au
      * montant du paiement BVR à traiter. Les sections qui font partie d'un plan de recouvrement ne sont pas prise en
      * compte
-     * 
+     *
      * @return CASectionManager
      */
     private CASectionManager findSectionSoldeIdentique() {
@@ -693,7 +693,7 @@ public class CAPaiementBVR extends CAPaiement implements APIPaiementBVR {
 
     /**
      * Récupérer la transaction BVR.
-     * 
+     *
      * @param transaction
      */
     public void initTransactionBVR(BTransaction transaction) {
@@ -712,7 +712,7 @@ public class CAPaiementBVR extends CAPaiement implements APIPaiementBVR {
 
     /**
      * Sauve l'écriture en base
-     * 
+     *
      * @param extourne l'écriture à extourner.
      * @throws Exception
      */
@@ -859,7 +859,7 @@ public class CAPaiementBVR extends CAPaiement implements APIPaiementBVR {
 
     /**
      * Traitement des taxes impayées.
-     * 
+     *
      * @param fSolde Le solde restant après déduction du montant payé.
      */
     private void traitementTaxesImpayees(FWCurrency fSolde) {
@@ -911,7 +911,7 @@ public class CAPaiementBVR extends CAPaiement implements APIPaiementBVR {
     /**
      * Test si un décompte final, un bouclement d'acompte ou une taxation d'office (qui s'apparente à un décompte 13)
      * figure dans le compte pour la période couverte par le bulletin neutre.
-     * 
+     *
      * @param transaction
      * @throws Exception
      */
