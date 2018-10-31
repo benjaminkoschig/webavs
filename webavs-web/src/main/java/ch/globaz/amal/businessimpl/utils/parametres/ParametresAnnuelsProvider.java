@@ -1,7 +1,5 @@
 package ch.globaz.amal.businessimpl.utils.parametres;
 
-import globaz.jade.log.JadeLogger;
-import globaz.jade.persistence.model.JadeAbstractSearchModel;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -10,14 +8,15 @@ import ch.globaz.amal.business.constantes.IAMParametresAnnuels;
 import ch.globaz.amal.business.models.parametreannuel.SimpleParametreAnnuel;
 import ch.globaz.amal.business.models.parametreannuel.SimpleParametreAnnuelSearch;
 import ch.globaz.amal.business.services.AmalServiceLocator;
+import globaz.jade.log.JadeLogger;
+import globaz.jade.persistence.model.JadeAbstractSearchModel;
 
 public class ParametresAnnuelsProvider {
     private final static List<String> champsParametresAnnuels = Arrays.asList(new String[] {
             IAMParametresAnnuels.CS_IPS_LIMITE_COTI_AC, IAMParametresAnnuels.CS_IPS_LIMITE_COTI_AC_SUPPL,
-            IAMParametresAnnuels.CS_IPS_LIMITE_DEDUC_FRAIS_OBTENTION,
-            IAMParametresAnnuels.CS_IPS_LIMITE_DEDUCTION_ASSU, IAMParametresAnnuels.CS_IPS_LIMITE_PRIME_AANP,
-            IAMParametresAnnuels.CS_IPS_TX_CALCUL_COTI_AC, IAMParametresAnnuels.CS_IPS_TX_CALCUL_COTI_AC_SUPPL,
-            IAMParametresAnnuels.CS_IPS_TX_CALCUL_COTI_AVS_AI_APG,
+            IAMParametresAnnuels.CS_IPS_LIMITE_DEDUC_FRAIS_OBTENTION, IAMParametresAnnuels.CS_IPS_LIMITE_DEDUCTION_ASSU,
+            IAMParametresAnnuels.CS_IPS_LIMITE_PRIME_AANP, IAMParametresAnnuels.CS_IPS_TX_CALCUL_COTI_AC,
+            IAMParametresAnnuels.CS_IPS_TX_CALCUL_COTI_AC_SUPPL, IAMParametresAnnuels.CS_IPS_TX_CALCUL_COTI_AVS_AI_APG,
             IAMParametresAnnuels.CS_IPS_TX_CALCUL_DEDUC_ASSU_ENFA,
             IAMParametresAnnuels.CS_IPS_TX_CALCUL_DEDUC_ASSU_JEUNE,
             IAMParametresAnnuels.CS_IPS_TX_CALCUL_DEDUC_DOUBLE_GAIN,
@@ -34,8 +33,10 @@ public class ParametresAnnuelsProvider {
             IAMParametresAnnuels.CS_MONTANT_NOMBRE_ENFANT_PLUS_PETIT_3,
             IAMParametresAnnuels.CS_MONTANT_SANS_ENFANT_CHARGE,
             IAMParametresAnnuels.CS_MONTANT_SUBSIDE_FAMILLE_1_PERSONNE,
-            IAMParametresAnnuels.CS_MONTANT_SUBSIDE_FAMILLE_2_PERSONNES, IAMParametresAnnuels.CS_REVENU_MAX_SUBSIDE,
-            IAMParametresAnnuels.CS_REVENU_MIN_SUBSIDE, IAMParametresAnnuels.CS_TAUX_CALCUL_FORTUNE_IMPOSABLE });
+            IAMParametresAnnuels.CS_MONTANT_SUBSIDE_FAMILLE_2_PERSONNES,
+            IAMParametresAnnuels.CS_MONTANT_SUBSIDE_MONOPARENTALE, IAMParametresAnnuels.CS_MONTANT_SUBSIDE_BIPARENTAL,
+            IAMParametresAnnuels.CS_REVENU_MAX_SUBSIDE, IAMParametresAnnuels.CS_REVENU_MIN_SUBSIDE,
+            IAMParametresAnnuels.CS_TAUX_CALCUL_FORTUNE_IMPOSABLE });
     public static ContainerParametres containerParametres = null;
 
     public static List<String> getChampsparametresannuels() {
@@ -47,10 +48,10 @@ public class ParametresAnnuelsProvider {
             ParametresAnnuelsProvider.containerParametres = new ContainerParametres();
             SimpleParametreAnnuelSearch simpleParametreAnnuelSearch = new SimpleParametreAnnuelSearch();
             simpleParametreAnnuelSearch.setDefinedSearchSize(JadeAbstractSearchModel.SIZE_NOLIMIT);
-            simpleParametreAnnuelSearch = AmalServiceLocator.getParametreAnnuelService().search(
-                    simpleParametreAnnuelSearch);
-            ParametresAnnuelsProvider.containerParametres.setParametresAnnuelsProvider(new ParametresAnnuelsProvider(
-                    simpleParametreAnnuelSearch));
+            simpleParametreAnnuelSearch = AmalServiceLocator.getParametreAnnuelService()
+                    .search(simpleParametreAnnuelSearch);
+            ParametresAnnuelsProvider.containerParametres
+                    .setParametresAnnuelsProvider(new ParametresAnnuelsProvider(simpleParametreAnnuelSearch));
         } catch (Exception e) {
             JadeLogger.error("ParametresAnnuelsProvider().initParametresAnnuels()",
                     "Error loading parametre annuels --> " + e.getMessage());

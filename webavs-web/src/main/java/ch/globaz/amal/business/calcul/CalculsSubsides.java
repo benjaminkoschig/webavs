@@ -1,16 +1,5 @@
 package ch.globaz.amal.business.calcul;
 
-import globaz.globall.util.JACalendar;
-import globaz.globall.util.JADate;
-import globaz.globall.util.JAException;
-import globaz.globall.util.JANumberFormatter;
-import globaz.globall.util.JAUtil;
-import globaz.jade.client.util.JadeDateUtil;
-import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.exception.JadePersistenceException;
-import globaz.jade.log.JadeLogger;
-import globaz.jade.persistence.model.JadeAbstractSearchModel;
-import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -29,6 +18,7 @@ import ch.globaz.amal.business.models.detailfamille.SimpleDetailFamille;
 import ch.globaz.amal.business.models.detailfamille.SimpleDetailFamilleSearch;
 import ch.globaz.amal.business.models.famille.SimpleFamille;
 import ch.globaz.amal.business.models.famille.SimpleFamilleSearch;
+import ch.globaz.amal.business.models.parametreannuel.SimpleParametreAnnuel;
 import ch.globaz.amal.business.models.parametreannuel.SimpleParametreAnnuelSearch;
 import ch.globaz.amal.business.models.primeavantageuse.SimplePrimeAvantageuse;
 import ch.globaz.amal.business.models.primeavantageuse.SimplePrimeAvantageuseSearch;
@@ -36,31 +26,55 @@ import ch.globaz.amal.business.models.primemoyenne.SimplePrimeMoyenne;
 import ch.globaz.amal.business.models.primemoyenne.SimplePrimeMoyenneSearch;
 import ch.globaz.amal.business.models.revenu.RevenuHistoriqueComplex;
 import ch.globaz.amal.business.models.revenu.SimpleRevenu;
+import ch.globaz.amal.business.models.revenu.SimpleRevenuContribuable;
 import ch.globaz.amal.business.models.subsideannee.SimpleSubsideAnnee;
 import ch.globaz.amal.business.models.subsideannee.SimpleSubsideAnneeSearch;
 import ch.globaz.amal.business.services.AmalServiceLocator;
+import ch.globaz.amal.businessimpl.checkers.subsideannee.SimpleSubsideAnneeChecker;
 import ch.globaz.amal.businessimpl.services.AmalImplServiceLocator;
 import ch.globaz.amal.businessimpl.utils.parametres.ContainerParametres;
 import ch.globaz.amal.businessimpl.utils.parametres.ParametresAnnuelsProvider;
+import ch.globaz.common.domaine.Montant;
+import globaz.globall.util.JACalendar;
+import globaz.globall.util.JADate;
+import globaz.globall.util.JAException;
+import globaz.globall.util.JANumberFormatter;
+import globaz.globall.util.JAUtil;
+import globaz.jade.client.util.JadeDateUtil;
+import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.log.JadeLogger;
+import globaz.jade.persistence.model.JadeAbstractSearchModel;
+import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 
 public class CalculsSubsides {
     public static final int REVENU_MAX = 99999;
     private ContainerParametres containerParametres = null;
-    // private HashMap<String, String> mapParamAnnuels = null;
+    private String anneeCalcul;
     private int mtMaxRevenu = 0;
     private int mtSubsideFamille1Personne = 0;
     private int mtSubsideFamille2Personnes = 0;
+    private List<ParamsPCFamilleContainer> listSubsideMonoParental = new ArrayList<ParamsPCFamilleContainer>();
+    private List<ParamsPCFamilleContainer> listSubsideBiParental = new ArrayList<ParamsPCFamilleContainer>();
     private boolean stillInFamily = true;
+    private Montant montantRevenuPrisEnComptePC = Montant.ZERO;
 
     public CalculsSubsides(String anneeCalcul) throws NumberFormatException, ParametreAnnuelException {
         super();
+        this.anneeCalcul = anneeCalcul;
         initParamAnnuels();
-        mtSubsideFamille1Personne = Integer.parseInt(containerParametres.getParametresAnnuelsProvider()
-                .getListeParametresAnnuels().get(IAMParametresAnnuels.CS_MONTANT_SUBSIDE_FAMILLE_1_PERSONNE)
-                .getFormatedValueByYear(anneeCalcul, null, 0));
-        mtSubsideFamille2Personnes = Integer.parseInt(containerParametres.getParametresAnnuelsProvider()
-                .getListeParametresAnnuels().get(IAMParametresAnnuels.CS_MONTANT_SUBSIDE_FAMILLE_2_PERSONNES)
-                .getFormatedValueByYear(anneeCalcul, null, 0));
+        boolean isSubsidePCFamille = SimpleSubsideAnneeChecker.checkIsSubsidePCFKind(anneeCalcul);
+
+        if (!isSubsidePCFamille) {
+            mtSubsideFamille1Personne = Integer.parseInt(containerParametres.getParametresAnnuelsProvider()
+                    .getListeParametresAnnuels().get(IAMParametresAnnuels.CS_MONTANT_SUBSIDE_FAMILLE_1_PERSONNE)
+                    .getFormatedValueByYear(anneeCalcul, null, 0));
+
+            mtSubsideFamille2Personnes = Integer.parseInt(containerParametres.getParametresAnnuelsProvider()
+                    .getListeParametresAnnuels().get(IAMParametresAnnuels.CS_MONTANT_SUBSIDE_FAMILLE_2_PERSONNES)
+                    .getFormatedValueByYear(anneeCalcul, null, 0));
+        }
+
         mtMaxRevenu = Integer.parseInt(containerParametres.getParametresAnnuelsProvider().getListeParametresAnnuels()
                 .get(IAMParametresAnnuels.CS_MONTANT_MAX_REVENU_MODESTE).getFormatedValueByYear(anneeCalcul, null, 0));
     }
@@ -97,7 +111,7 @@ public class CalculsSubsides {
 
     /**
      * Cette méthode va calculer le montant des subsides pour chaque membre de la famille
-     * 
+     *
      * @param simpleRevenu
      *            le SimpleRevenu
      * @param simpleDetailFamille
@@ -141,10 +155,8 @@ public class CalculsSubsides {
                 revenuPrisEnCompte = simpleRevenu.getRevDetUnique();
             }
         }
-
-        // if (this.mapParamAnnuels == null) {
+        montantRevenuPrisEnComptePC = new Montant(revenuPrisEnCompte);
         if (containerParametres == null) {
-            // this.initParamAnnuels(simpleDetailFamille.getAnneeHistorique());
             initParamAnnuels();
         }
 
@@ -182,8 +194,16 @@ public class CalculsSubsides {
                     // On ajoute un supplément pour les adultes, toujours présents, si le rev. det est inférieur à
                     // mtMaxRevenu (réduction pour familles modestes)
                     int supplementContribution = 0;
-                    if (revenuExist) {
+                    // Check année d'activation pour le nouvelle calcul des supplements PCF.
+                    boolean isSubsidePCFamille = SimpleSubsideAnneeChecker
+                            .checkIsSubsidePCFKind(simpleDetailFamilleMembre);
+                    if (revenuExist && !isSubsidePCFamille) {
                         supplementContribution = calculSupplementContribution(simpleDetailFamille,
+                                simpleDetailFamilleMembre.getDebutDroit(), simpleDetailFamilleMembre.getFinDroit());
+                        setMontantSupplementFamilleModeste(simpleDetailFamille, simpleRevenu, revenuPrisEnCompte,
+                                supplementContribution, simpleFamille, simpleDetailFamilleMembre);
+                    } else if (isSubsidePCFamille && hasRightPCFamille(revenuHistoriqueComplex)) {
+                        supplementContribution = calculSupplementContributionPCFamille(simpleDetailFamille,
                                 simpleDetailFamilleMembre.getDebutDroit(), simpleDetailFamilleMembre.getFinDroit());
                         setMontantSupplementFamilleModeste(simpleDetailFamille, simpleRevenu, revenuPrisEnCompte,
                                 supplementContribution, simpleFamille, simpleDetailFamilleMembre);
@@ -200,8 +220,7 @@ public class CalculsSubsides {
                                         + Double.valueOf(simpleDetailFamilleMembre.getMontantContribution());
                             }
 
-                            if (!JadeStringUtil
-                                    .isBlankOrZero(simpleDetailFamilleMembre.getMontantContributionAssiste())
+                            if (!JadeStringUtil.isBlankOrZero(simpleDetailFamilleMembre.getMontantContributionAssiste())
                                     && simpleDetailFamilleMembre.getCodeActif()) {
                                 montantTotalSubsidesAssistes = montantTotalSubsidesAssistes
                                         + Double.valueOf(simpleDetailFamilleMembre.getMontantContributionAssiste());
@@ -228,8 +247,8 @@ public class CalculsSubsides {
                         }
                         subsideContainer.setMontantSupplementContribution(String.valueOf(supplementContribution));
                         subsideContainer.setMontantContributionsTotal(String.valueOf(montantTotalSubsides));
-                        subsideContainer.setMontantContributionPCAssisteTotal(String
-                                .valueOf(montantTotalSubsidesAssistes));
+                        subsideContainer
+                                .setMontantContributionPCAssisteTotal(String.valueOf(montantTotalSubsidesAssistes));
 
                         subsideContainer.getMapSimpleDetailFamille().put(designation, simpleDetailFamilleMembre);
 
@@ -245,7 +264,30 @@ public class CalculsSubsides {
         return subsideContainer;
     }
 
-    private int calculSupplementContribution(SimpleDetailFamille simpleDetailFamille, String debutDroit, String finDroit)
+    private boolean hasRightPCFamille(RevenuHistoriqueComplex revenuHistoriqueComplex) {
+        if (revenuHistoriqueComplex != null && revenuHistoriqueComplex.getRevenuFullComplex() != null
+                && revenuHistoriqueComplex.getRevenuFullComplex().getSimpleRevenu() != null) {
+            SimpleRevenuContribuable revenu = revenuHistoriqueComplex.getRevenuFullComplex()
+                    .getSimpleRevenuContribuable();
+            if (revenuHistoriqueComplex.getRevenuFullComplex().getSimpleRevenu().isSourcier()) {
+                return revenuHistoriqueComplex.getRevenuFullComplex().getSimpleRevenu().getRevDetUnique() != null
+                        && !JadeStringUtil.isBlankOrZero(
+                                revenuHistoriqueComplex.getRevenuFullComplex().getSimpleRevenu().getRevDetUnique());
+            } else {
+                return !JadeStringUtil.isBlankOrZero(revenu.getRevenuNetEmploi())
+                        || !JadeStringUtil.isBlankOrZero(revenu.getRevenuNetEpouse())
+                        || !JadeStringUtil.isBlankOrZero(revenu.getRevenuActIndep())
+                        || !JadeStringUtil.isBlankOrZero(revenu.getRevenuActIndepEpouse())
+                        || !JadeStringUtil.isBlankOrZero(revenu.getRevenuActAgricole())
+                        || !JadeStringUtil.isBlankOrZero(revenu.getRevenuActAgricoleEpouse());
+            }
+        } else {
+            return false;
+        }
+    }
+
+    private int calculSupplementContribution(SimpleDetailFamille simpleDetailFamille, String debutDroit,
+            String finDroit)
             throws JadePersistenceException, JadeApplicationServiceNotAvailableException, CalculSubsidesException {
         int supplementContribution = 0;
         SimpleFamilleSearch nbParentsSearch = new SimpleFamilleSearch();
@@ -270,6 +312,46 @@ public class CalculsSubsides {
                     + simpleDetailFamille.getIdContribuable() + " ==> " + fe.getMessage());
         }
         return supplementContribution;
+    }
+
+    // Nouveau calcul depuis 01.01.2019 => la date est prise depuis Jadeprop
+    private int calculSupplementContributionPCFamille(SimpleDetailFamille simpleDetailFamille, String debutDroit,
+            String finDroit)
+            throws JadePersistenceException, JadeApplicationServiceNotAvailableException, CalculSubsidesException {
+        int supplementContribution = 0;
+        SimpleFamilleSearch nbParentsSearch = new SimpleFamilleSearch();
+        nbParentsSearch.setWhereKey("calculSupplementContribution");
+        nbParentsSearch.setForIdContribuable(simpleDetailFamille.getIdContribuable());
+        nbParentsSearch.setForDifferentPereMereEnfant(IAMCodeSysteme.CS_TYPE_ENFANT);
+        if (JadeStringUtil.isBlankOrZero(finDroit)) {
+            nbParentsSearch.setForFinDefinitiveGOE("12." + simpleDetailFamille.getAnneeHistorique());
+        } else {
+            nbParentsSearch.setForFinDefinitiveGOE(finDroit);
+        }
+        nbParentsSearch.setForFinDefinitive("0");
+        try {
+            int nbParents = AmalServiceLocator.getFamilleContribuableService().count(nbParentsSearch);
+            if (nbParents == 1) {
+                supplementContribution = getSupplementPC(listSubsideMonoParental);
+            } else if (nbParents >= 2) {
+                supplementContribution = getSupplementPC(listSubsideBiParental);
+            }
+        } catch (FamilleException fe) {
+            throw new CalculSubsidesException("Error while counting nbParentsSearch with idContribuable : "
+                    + simpleDetailFamille.getIdContribuable() + " ==> " + fe.getMessage());
+        }
+        return supplementContribution;
+    }
+
+    private int getSupplementPC(List<ParamsPCFamilleContainer> listSubsideParental) {
+        int montantSupplement = 0;
+        for (ParamsPCFamilleContainer element : listSubsideParental) {
+            if (montantRevenuPrisEnComptePC.greaterOrEquals(element.getMontantFrom())
+                    && montantRevenuPrisEnComptePC.getValueDouble() <= element.getMontantTo().getValueDouble()) {
+                montantSupplement = element.getValeurNumerique().getMontantSansCentimes();
+            }
+        }
+        return montantSupplement;
     }
 
     private int countNbEnfantsCharge(String idContribuable, String anneeHistorique, String debutDroit, String finDroit)
@@ -299,7 +381,8 @@ public class CalculsSubsides {
         SimpleSubsideAnneeSearch simpleSubsideAnneeSearch = new SimpleSubsideAnneeSearch();
         simpleSubsideAnneeSearch.setForAnneeSubside(simpleDetailFamille.getAnneeHistorique());
 
-        if (Integer.parseInt(JANumberFormatter.fmt(revenuPrisEnCompte, false, false, false, 0)) > CalculsSubsides.REVENU_MAX) {
+        if (Integer.parseInt(
+                JANumberFormatter.fmt(revenuPrisEnCompte, false, false, false, 0)) > CalculsSubsides.REVENU_MAX) {
             simpleSubsideAnneeSearch.setForLimiteRevenuGOE(String.valueOf(CalculsSubsides.REVENU_MAX));
         } else {
             simpleSubsideAnneeSearch.setForLimiteRevenuGOE(revenuPrisEnCompte);
@@ -307,14 +390,14 @@ public class CalculsSubsides {
 
         SimpleSubsideAnnee simpleSubsideAnnee = new SimpleSubsideAnnee();
         try {
-            simpleSubsideAnneeSearch = AmalServiceLocator.getSimpleSubsideAnneeService().search(
-                    simpleSubsideAnneeSearch);
+            simpleSubsideAnneeSearch = AmalServiceLocator.getSimpleSubsideAnneeService()
+                    .search(simpleSubsideAnneeSearch);
             simpleSubsideAnnee = (SimpleSubsideAnnee) simpleSubsideAnneeSearch.getSearchResults()[0];
         } catch (Exception e) {
-            throw new SubsideAnneeException("Error while searching SubsideAnnee with year "
-                    + simpleDetailFamille.getAnneeHistorique() + " and revenu " + revenuPrisEnCompte
-                    + " ! (idSimpleDetailFamille : " + simpleDetailFamille.getIdDetailFamille() + ") ==> "
-                    + e.getMessage());
+            throw new SubsideAnneeException(
+                    "Error while searching SubsideAnnee with year " + simpleDetailFamille.getAnneeHistorique()
+                            + " and revenu " + revenuPrisEnCompte + " ! (idSimpleDetailFamille : "
+                            + simpleDetailFamille.getIdDetailFamille() + ") ==> " + e.getMessage());
         }
 
         return simpleSubsideAnnee;
@@ -346,13 +429,50 @@ public class CalculsSubsides {
             containerParametres = new ContainerParametres();
             SimpleParametreAnnuelSearch simpleParametreAnnuelSearch = new SimpleParametreAnnuelSearch();
             simpleParametreAnnuelSearch.setDefinedSearchSize(JadeAbstractSearchModel.SIZE_NOLIMIT);
-            simpleParametreAnnuelSearch = AmalServiceLocator.getParametreAnnuelService().search(
-                    simpleParametreAnnuelSearch);
+            simpleParametreAnnuelSearch = AmalServiceLocator.getParametreAnnuelService()
+                    .search(simpleParametreAnnuelSearch);
             containerParametres
                     .setParametresAnnuelsProvider(new ParametresAnnuelsProvider(simpleParametreAnnuelSearch));
+
+            initParamPCFamille(simpleParametreAnnuelSearch);
         } catch (Exception e) {
             JadeLogger.error(this, "Error loading parametre annuels --> " + e.getMessage());
         }
+    }
+
+    private void initParamPCFamille(SimpleParametreAnnuelSearch parametresAnnuelSearch) {
+        for (globaz.jade.persistence.model.JadeAbstractModel absDonnee : parametresAnnuelSearch.getSearchResults()) {
+            SimpleParametreAnnuel simpleParametreAnnuel = (SimpleParametreAnnuel) absDonnee;
+            if (simpleParametreAnnuel.getAnneeParametre().equals(anneeCalcul)) {
+                if (simpleParametreAnnuel.getCodeTypeParametre()
+                        .equals(IAMParametresAnnuels.CS_MONTANT_SUBSIDE_MONOPARENTALE)) {
+                    listSubsideMonoParental.add(getPCContainer(simpleParametreAnnuel));
+                } else if (simpleParametreAnnuel.getCodeTypeParametre()
+                        .equals(IAMParametresAnnuels.CS_MONTANT_SUBSIDE_BIPARENTAL)) {
+                    listSubsideBiParental.add(getPCContainer(simpleParametreAnnuel));
+                }
+            }
+        }
+
+    }
+
+    private ParamsPCFamilleContainer getPCContainer(SimpleParametreAnnuel parametreAnnuel) {
+        ParamsPCFamilleContainer container = new ParamsPCFamilleContainer();
+        if (parametreAnnuel.getValeurFrom() != null) {
+            container.setMontantFrom(new Montant(parametreAnnuel.getValeurFrom()));
+        }
+        if (parametreAnnuel.getValeurTo() != null) {
+            container.setMontantTo(new Montant(parametreAnnuel.getValeurTo()));
+        }
+        container.setParamYear(parametreAnnuel.getAnneeParametre());
+        container.setTypeSubside(parametreAnnuel.getCodeTypeParametre());
+        if (parametreAnnuel.getValeurParametre() != null) {
+            container.setValeurNumerique(new Montant(parametreAnnuel.getValeurParametre()));
+        }
+        if (parametreAnnuel.getValeurParametreString() != null) {
+            container.setValeurString(parametreAnnuel.getValeurParametreString());
+        }
+        return container;
     }
 
     private void searchDebutAndFinDroit(String anneeHistorique, String idFamille,
@@ -369,8 +489,8 @@ public class CalculsSubsides {
         simpleDetailFamilleExistantSearch.setForIdFamille(idFamille);
         simpleDetailFamilleExistantSearch.setForCodeActif(true);
         try {
-            simpleDetailFamilleExistantSearch = AmalServiceLocator.getDetailFamilleService().search(
-                    simpleDetailFamilleExistantSearch);
+            simpleDetailFamilleExistantSearch = AmalServiceLocator.getDetailFamilleService()
+                    .search(simpleDetailFamilleExistantSearch);
             nbSubsideExistant = simpleDetailFamilleExistantSearch.getSize();
         } catch (Exception e) {
             JadeLogger.error(this, "Error loading detailFamille ==> idFamille : " + idFamille + " / Year : "
@@ -464,8 +584,8 @@ public class CalculsSubsides {
             simpleDetailFamilleSearch.setForIdFamille(idFamille);
             simpleDetailFamilleSearch.setForCodeActif(true);
             try {
-                simpleDetailFamilleSearch = AmalServiceLocator.getDetailFamilleService().search(
-                        simpleDetailFamilleSearch);
+                simpleDetailFamilleSearch = AmalServiceLocator.getDetailFamilleService()
+                        .search(simpleDetailFamilleSearch);
             } catch (Exception e) {
                 JadeLogger.error(this, "Error loading detailFamille, complete list ==> idFamille : " + idFamille
                         + " / Year : " + anneeHistorique + " -- " + e.getMessage());
@@ -507,8 +627,8 @@ public class CalculsSubsides {
             // moyennes pour les PC
             SimplePrimeAvantageuseSearch simplePrimeAvantageuseSearch = new SimplePrimeAvantageuseSearch();
             simplePrimeAvantageuseSearch.setForAnneeSubside(simpleDetailFamille.getAnneeHistorique());
-            simplePrimeAvantageuseSearch = AmalServiceLocator.getSimplePrimeAvantageuseService().search(
-                    simplePrimeAvantageuseSearch);
+            simplePrimeAvantageuseSearch = AmalServiceLocator.getSimplePrimeAvantageuseService()
+                    .search(simplePrimeAvantageuseSearch);
             SimplePrimeAvantageuse simplePrimeAvantageuse = null;
 
             // Récupération des primes avantageuses
@@ -519,8 +639,8 @@ public class CalculsSubsides {
             // Récupération des primes moyennes
             SimplePrimeMoyenneSearch simplePrimeMoyenneSearch = new SimplePrimeMoyenneSearch();
             simplePrimeMoyenneSearch.setForAnneeSubside(simpleDetailFamille.getAnneeHistorique());
-            simplePrimeMoyenneSearch = AmalServiceLocator.getSimplePrimeMoyenneService().search(
-                    simplePrimeMoyenneSearch);
+            simplePrimeMoyenneSearch = AmalServiceLocator.getSimplePrimeMoyenneService()
+                    .search(simplePrimeMoyenneSearch);
             SimplePrimeMoyenne simplePrimeMoyenne = null;
             if (simplePrimeMoyenneSearch.getSearchResults().length > 0) {
                 simplePrimeMoyenne = (SimplePrimeMoyenne) simplePrimeMoyenneSearch.getSearchResults()[0];
@@ -636,8 +756,8 @@ public class CalculsSubsides {
 
         if ((Integer.parseInt(JANumberFormatter.fmt(revenuPrisEnCompte, false, false, false, 0)) < mtMaxRevenu)
                 && !IAMCodeSysteme.CS_TYPE_ENFANT.equals(simpleFamille.getPereMereEnfant())
-                && (!JadeStringUtil.isBlankOrZero(simpleDetailFamille.getAnneeHistorique()) && (Integer
-                        .valueOf(simpleDetailFamille.getAnneeHistorique()) >= 2009))) {
+                && (!JadeStringUtil.isBlankOrZero(simpleDetailFamille.getAnneeHistorique())
+                        && (Integer.valueOf(simpleDetailFamille.getAnneeHistorique()) >= 2009))) {
 
             int nbEnfantsACharge = countNbEnfantsCharge(simpleFamille.getIdContribuable(),
                     simpleDetailFamille.getAnneeHistorique(), simpleDetailFamilleMembre.getDebutDroit(),
@@ -648,12 +768,7 @@ public class CalculsSubsides {
                 simpleDetailFamilleMembre.setSupplExtra(String.valueOf(supplementContribution));
                 simpleDetailFamilleMembre
                         .setMontantContribSansSuppl(simpleDetailFamilleMembre.getMontantContribution());
-                Double contriPlusSuppl = Double.valueOf(JANumberFormatter.fmt(
-                        simpleDetailFamilleMembre.getMontantContribution(), false, false, false, 0));
-                // simpleDetailFamilleMembre.setMontantContribution(String.valueOf(contriPlusSuppl
-                // + Double.valueOf(supplementContribution)));
             }
         }
-
     }
 }

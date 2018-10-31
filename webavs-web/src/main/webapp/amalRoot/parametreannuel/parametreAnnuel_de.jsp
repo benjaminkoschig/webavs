@@ -130,29 +130,26 @@
 								<div class="areaDetail">								
 									<table>
 										<TR>
-											<TD><ct:FWLabel key="JSP_AM_PARAM_PARAMETRE_ANNUEL_D_TYPE"/></TD>
-											<TD><ct:select name="codeTypeParametre" wantBlank="false" notation="data-g-select='mandatory:true'">
+											<TD style="width:140px"><ct:FWLabel key="JSP_AM_PARAM_PARAMETRE_ANNUEL_D_TYPE"/></TD>
+											<TD colspan= "5"><ct:select name="codeTypeParametre" wantBlank="false" notation="data-g-select='mandatory:true'">
 													<ct:optionsCodesSystems csFamille="AMPARAM"/>
 												</ct:select></TD>										
-											<TD></TD>													
 										</TR>					
 										<TR>
 											<TD><ct:FWLabel key="JSP_AM_PARAM_PARAMETRE_ANNUEL_D_ANNEE"/></TD>
 											<TD><input tabindex="2" type="text" name="simpleParametreAnnuel.anneeParametre" id="anneeParametre" value="<%=viewBean.getSimpleParametreAnnuel().getAnneeParametre()%>" class="numeroCourt" data-g-integer="sizeMax:4"/></TD>
-											<TD></TD>
-											<TD></TD>							
+											<TD style="width:100px;text-align:right;"><ct:FWLabel key="JSP_AM_PARAM_PARAMETRE_ANNUEL_D_FROM"/></TD>
+											<TD><input tabindex="3" type="text" name="simpleParametreAnnuel.valeurFrom" id="valeurFrom" value="<%=viewBean.getSimpleParametreAnnuel().getValeurFrom()%>" data-g-amount=" " class="montant"/></TD>
+											<TD style="width:100px;text-align:right;"><ct:FWLabel key="JSP_AM_PARAM_PARAMETRE_ANNUEL_D_TO"/></TD>
+											<TD><input tabindex="4" type="text" name="simpleParametreAnnuel.valeurTo" id="valeurTo" value="<%=viewBean.getSimpleParametreAnnuel().getValeurTo()%>" data-g-amount=" " class="montant""/></TD>
 										</TR>
 										<TR>
 											<TD><ct:FWLabel key="JSP_AM_PARAM_PARAMETRE_ANNUEL_D_VALEUR"/> (numérique)</TD>
-											<TD><input tabindex="3" type="text" name="simpleParametreAnnuel.valeurParametre" id="valeurParametre" value="<%=viewBean.getSimpleParametreAnnuel().getValeurParametre()%>" data-g-amount=" " class="montant"/></TD>
-											<TD></TD>
-											<TD></TD>							
+											<TD colspan="5"><input tabindex="5" type="text" name="simpleParametreAnnuel.valeurParametre" id="valeurParametre" value="<%=viewBean.getSimpleParametreAnnuel().getValeurParametre()%>" data-g-amount=" " class="montant"/></TD>
 										</TR>
 										<TR>										
 											<TD><ct:FWLabel key="JSP_AM_PARAM_PARAMETRE_ANNUEL_D_VALEUR"/> (chaîne)</TD>
-											<TD><input tabindex="4" type="text" name="simpleParametreAnnuel.valeurParametreString" id="valeurParametreString" value="<%=viewBean.getSimpleParametreAnnuel().getValeurParametreString()%>" /></TD>
-											<TD></TD>
-											<TD></TD>							
+											<TD colspan="5"><input tabindex="6" type="text" name="simpleParametreAnnuel.valeurParametreString" id="valeurParametreString" value="<%=viewBean.getSimpleParametreAnnuel().getValeurParametreString()%>" /></TD>
 										</TR>
 									</table>
 									<div align="right" class="btnAjax">

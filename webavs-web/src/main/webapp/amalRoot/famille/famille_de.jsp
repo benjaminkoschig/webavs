@@ -453,7 +453,7 @@ function delDetailFamille(finalUrl){
 											String yearMontantContributionTotal = "0.0";
 											try{
 												yearMontantContribution = Double.parseDouble(familleContribuable.getMontantContribution());
-			                					yearMontantSupplement= Double.parseDouble(familleContribuable.getSupplExtra());
+			                					yearMontantSupplement = Double.parseDouble(familleContribuable.getSupplExtra());
 			                					yearMontantContributionTotal = ""+(yearMontantContribution+yearMontantSupplement);
 			                					FWCurrency currentMontant = new FWCurrency();
 			                					currentMontant.add(yearMontantContributionTotal);

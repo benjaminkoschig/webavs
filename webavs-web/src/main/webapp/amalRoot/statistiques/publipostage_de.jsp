@@ -471,6 +471,7 @@ Liste publipostage
 												<option selected="selected" value="<%=AMPublipostageSimpleDetailFamille.TYPEDEMANDE.getValue()%>">Type de demande</option>
 												<option selected="selected" value="<%=AMPublipostageSimpleDetailFamille.MONTANTCONTRIBUTION.getValue()%>">Montant contribution</option>
 												<option selected="selected" value="<%=AMPublipostageSimpleDetailFamille.MONTANTCONTRIBUTIONSUPPLEMENT.getValue()%>">Montant contribution supplement</option>
+												<option selected="selected" value="<%=AMPublipostageSimpleDetailFamille.MONTANTCONTRIBUTIONSUPPLEMENTPCFAMILLE.getValue()%>">Montant supplément PC famille</option>
 												<option selected="selected" value="<%=AMPublipostageSimpleDetailFamille.DOCUMENT.getValue()%>">Document</option>
 												<option selected="selected" value="<%=AMPublipostageSimpleDetailFamille.ASSUREUR.getValue()%>">Assureur</option>
 												<option selected="selected" value="<%=AMPublipostageSimpleDetailFamille.CODETRAITEMENTDOSSIER.getValue()%>">Code de traitement dossier</option>

@@ -1,22 +1,8 @@
 /**
- * 
+ *
  */
 package ch.globaz.amal.businessimpl.services.models.famille;
 
-import globaz.globall.db.BSession;
-import globaz.globall.db.BSessionUtil;
-import globaz.globall.parameters.FWParametersCode;
-import globaz.globall.parameters.FWParametersSystemCodeManager;
-import globaz.globall.util.JACalendar;
-import globaz.globall.util.JADate;
-import globaz.globall.util.JANumberFormatter;
-import globaz.jade.client.util.JadeDateUtil;
-import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.exception.JadePersistenceException;
-import globaz.jade.log.JadeLogger;
-import globaz.jade.persistence.JadePersistenceManager;
-import globaz.jade.persistence.model.JadeAbstractModel;
-import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -44,10 +30,24 @@ import ch.globaz.amal.business.services.AmalServiceLocator;
 import ch.globaz.amal.business.services.models.famille.FamilleContribuableService;
 import ch.globaz.amal.businessimpl.services.AmalImplServiceLocator;
 import ch.globaz.amal.businessimpl.utils.AMGestionTiers;
+import globaz.globall.db.BSession;
+import globaz.globall.db.BSessionUtil;
+import globaz.globall.parameters.FWParametersCode;
+import globaz.globall.parameters.FWParametersSystemCodeManager;
+import globaz.globall.util.JACalendar;
+import globaz.globall.util.JADate;
+import globaz.globall.util.JANumberFormatter;
+import globaz.jade.client.util.JadeDateUtil;
+import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.log.JadeLogger;
+import globaz.jade.persistence.JadePersistenceManager;
+import globaz.jade.persistence.model.JadeAbstractModel;
+import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 
 /**
  * @author CBU
- * 
+ *
  */
 public class FamilleContribuableServiceImpl implements FamilleContribuableService {
 
@@ -78,12 +78,12 @@ public class FamilleContribuableServiceImpl implements FamilleContribuableServic
                 // Traitement des subsides qui n'ont pas de date de fin
                 if (JadeStringUtil.isBlankOrZero(currentSubside.getFinDroit())) {
                     // Contrôle sur le code de fin définitive
-                    if (currentCodeFin.equals(IAMCodeSysteme.AMCodeTraitementDossierFamille.DEPART_AUTRE_CANTON
-                            .getValue())) {
-                        if (currentSubside.getTypeDemande().equals(
-                                IAMCodeSysteme.AMTypeDemandeSubside.ASSISTE.getValue())
-                                || currentSubside.getTypeDemande().equals(
-                                        IAMCodeSysteme.AMTypeDemandeSubside.PC.getValue())) {
+                    if (currentCodeFin
+                            .equals(IAMCodeSysteme.AMCodeTraitementDossierFamille.DEPART_AUTRE_CANTON.getValue())) {
+                        if (currentSubside.getTypeDemande()
+                                .equals(IAMCodeSysteme.AMTypeDemandeSubside.ASSISTE.getValue())
+                                || currentSubside.getTypeDemande()
+                                        .equals(IAMCodeSysteme.AMTypeDemandeSubside.PC.getValue())) {
                             // Date de fin de subside à la date de fin définitive
                             currentSubside.setFinDroit(currentDateFin);
                             if (currentDateFin.indexOf("12.") == 0) {
@@ -111,14 +111,14 @@ public class FamilleContribuableServiceImpl implements FamilleContribuableServic
                                 AmalImplServiceLocator.getSimpleDetailFamilleService().update(currentSubside);
                             }
                         }
-                    } else if (currentCodeFin.equals(IAMCodeSysteme.AMCodeTraitementDossierFamille.CHGT_ETAT_CIVIL
-                            .getValue())
-                            || currentCodeFin.equals(IAMCodeSysteme.AMCodeTraitementDossierFamille.CHGT_ETAT_CIVIL_MERE
-                                    .getValue())
-                            || currentCodeFin.equals(IAMCodeSysteme.AMCodeTraitementDossierFamille.MODIF_SELON_FISC
-                                    .getValue())
-                            || currentCodeFin.equals(IAMCodeSysteme.AMCodeTraitementDossierFamille.PLUS_CHARGE_PARENTS
-                                    .getValue())) {
+                    } else if (currentCodeFin
+                            .equals(IAMCodeSysteme.AMCodeTraitementDossierFamille.CHGT_ETAT_CIVIL.getValue())
+                            || currentCodeFin.equals(
+                                    IAMCodeSysteme.AMCodeTraitementDossierFamille.CHGT_ETAT_CIVIL_MERE.getValue())
+                            || currentCodeFin
+                                    .equals(IAMCodeSysteme.AMCodeTraitementDossierFamille.MODIF_SELON_FISC.getValue())
+                            || currentCodeFin.equals(
+                                    IAMCodeSysteme.AMCodeTraitementDossierFamille.PLUS_CHARGE_PARENTS.getValue())) {
                         // Date de fin de subside à 12.xxxx
                         currentSubside.setFinDroit("12." + anneeHistorique);
                         // currentSubside.setAnnonceCaisseMaladie(false);
@@ -130,31 +130,27 @@ public class FamilleContribuableServiceImpl implements FamilleContribuableServic
                     } else if (currentCodeFin.equals(IAMCodeSysteme.AMCodeTraitementDossierFamille.DECES.getValue())
                             || currentCodeFin.equals(IAMCodeSysteme.AMCodeTraitementDossierFamille.DEPART.getValue())
                             || currentCodeFin.equals(IAMCodeSysteme.AMCodeTraitementDossierFamille.DISPENSE.getValue())
-                            || currentCodeFin.equals(IAMCodeSysteme.AMCodeTraitementDossierFamille.SUSPENSION
-                                    .getValue())
                             || currentCodeFin
-                                    .equals(IAMCodeSysteme.AMCodeTraitementDossierFamille.EXEMPTION.getValue())
-                            || currentCodeFin.equals(IAMCodeSysteme.AMCodeTraitementDossierFamille.RENONCEMENT
-                                    .getValue())
-                            || currentCodeFin.equals(IAMCodeSysteme.AMCodeTraitementDossierFamille.ADRESSE_INCONNUE
-                                    .getValue())
+                                    .equals(IAMCodeSysteme.AMCodeTraitementDossierFamille.SUSPENSION.getValue())
+                            || currentCodeFin.equals(IAMCodeSysteme.AMCodeTraitementDossierFamille.EXEMPTION.getValue())
                             || currentCodeFin
-                                    .equals(IAMCodeSysteme.AMCodeTraitementDossierFamille.ATTRIBUTION_AUTRE_PARENT
-                                            .getValue())
-                            || currentCodeFin.equals(IAMCodeSysteme.AMCodeTraitementDossierFamille.DEPART_ETRANGER
-                                    .getValue())
+                                    .equals(IAMCodeSysteme.AMCodeTraitementDossierFamille.RENONCEMENT.getValue())
                             || currentCodeFin
-                                    .equals(IAMCodeSysteme.AMCodeTraitementDossierFamille.ATTRIBUTION_AUTRE_CANTON
-                                            .getValue())
+                                    .equals(IAMCodeSysteme.AMCodeTraitementDossierFamille.ADRESSE_INCONNUE.getValue())
+                            || currentCodeFin.equals(
+                                    IAMCodeSysteme.AMCodeTraitementDossierFamille.ATTRIBUTION_AUTRE_PARENT.getValue())
                             || currentCodeFin
-                                    .equals(IAMCodeSysteme.AMCodeTraitementDossierFamille.ATTRIBUTION_PROPRE_NO
-                                            .getValue())
-                            || currentCodeFin.equals(IAMCodeSysteme.AMCodeTraitementDossierFamille.CHARGE_AUTRE_PARENT
-                                    .getValue())
-                            || currentCodeFin.equals(IAMCodeSysteme.AMCodeTraitementDossierFamille.ATTRIBUTION_AUTRE_NO
-                                    .getValue())
-                            || currentCodeFin.equals(IAMCodeSysteme.AMCodeTraitementDossierFamille.FIN_FORMATION
-                                    .getValue())) {
+                                    .equals(IAMCodeSysteme.AMCodeTraitementDossierFamille.DEPART_ETRANGER.getValue())
+                            || currentCodeFin.equals(
+                                    IAMCodeSysteme.AMCodeTraitementDossierFamille.ATTRIBUTION_AUTRE_CANTON.getValue())
+                            || currentCodeFin.equals(
+                                    IAMCodeSysteme.AMCodeTraitementDossierFamille.ATTRIBUTION_PROPRE_NO.getValue())
+                            || currentCodeFin.equals(
+                                    IAMCodeSysteme.AMCodeTraitementDossierFamille.CHARGE_AUTRE_PARENT.getValue())
+                            || currentCodeFin.equals(
+                                    IAMCodeSysteme.AMCodeTraitementDossierFamille.ATTRIBUTION_AUTRE_NO.getValue())
+                            || currentCodeFin
+                                    .equals(IAMCodeSysteme.AMCodeTraitementDossierFamille.FIN_FORMATION.getValue())) {
                         // Date de fin de subside à fin définitive
                         currentSubside.setFinDroit(currentDateFin);
                         if (currentDateFin.indexOf("12.") == 0) {
@@ -192,12 +188,13 @@ public class FamilleContribuableServiceImpl implements FamilleContribuableServic
             int iNextAnneeHistorique = Integer.parseInt(anneeHistorique) + 1;
             subsidesAnneeSuivanteSearch.setForGOEAnneeHistorique(String.valueOf(iNextAnneeHistorique));
             subsidesAnneeSuivanteSearch.setForIdFamille(currentFamilleContribuable.getSimpleFamille().getIdFamille());
-            subsidesAnneeSuivanteSearch.setForIdContribuable(currentFamilleContribuable.getSimpleFamille()
-                    .getIdContribuable());
-            subsidesAnneeSuivanteSearch = AmalImplServiceLocator.getSimpleDetailFamilleService().search(
-                    subsidesAnneeSuivanteSearch);
+            subsidesAnneeSuivanteSearch
+                    .setForIdContribuable(currentFamilleContribuable.getSimpleFamille().getIdContribuable());
+            subsidesAnneeSuivanteSearch = AmalImplServiceLocator.getSimpleDetailFamilleService()
+                    .search(subsidesAnneeSuivanteSearch);
             for (int iSubside = 0; iSubside < subsidesAnneeSuivanteSearch.getSize(); iSubside++) {
-                SimpleDetailFamille nextSubside = (SimpleDetailFamille) subsidesAnneeSuivanteSearch.getSearchResults()[iSubside];
+                SimpleDetailFamille nextSubside = (SimpleDetailFamille) subsidesAnneeSuivanteSearch
+                        .getSearchResults()[iSubside];
                 nextSubside.setCodeActif(false);
                 // update sedex message en état initial
                 try {
@@ -216,7 +213,7 @@ public class FamilleContribuableServiceImpl implements FamilleContribuableServic
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * ch.globaz.amal.business.services.models.famille.FamilleContribuableService#count(ch.globaz.amal.business.models
      * .famille.FamilleContribuableSearch)
@@ -247,24 +244,24 @@ public class FamilleContribuableServiceImpl implements FamilleContribuableServic
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * ch.globaz.amal.business.services.models.famille.FamilleContribuableService#create(ch.globaz.amal.business.models
      * .famille.FamilleContribuable)
      */
     @Override
-    public FamilleContribuable create(FamilleContribuable familleContribuable) throws JadePersistenceException,
-            FamilleException {
+    public FamilleContribuable create(FamilleContribuable familleContribuable)
+            throws JadePersistenceException, FamilleException {
         if (familleContribuable == null) {
             throw new FamilleException("Unable to create familleContribuable, the given model is null!");
         }
         try {
             // Création du tiers si nécessaire
             if (JadeStringUtil.isBlankOrZero(familleContribuable.getPersonneEtendue().getTiers().getIdTiers())
-                    && !JadeStringUtil.isBlankOrZero(familleContribuable.getPersonneEtendue().getTiers()
-                            .getDesignation1())
-                    && !JadeStringUtil.isBlankOrZero(familleContribuable.getPersonneEtendue().getTiers()
-                            .getDesignation2())) {
+                    && !JadeStringUtil
+                            .isBlankOrZero(familleContribuable.getPersonneEtendue().getTiers().getDesignation1())
+                    && !JadeStringUtil
+                            .isBlankOrZero(familleContribuable.getPersonneEtendue().getTiers().getDesignation2())) {
 
                 AMGestionTiers gestionTiers = new AMGestionTiers();
 
@@ -309,14 +306,14 @@ public class FamilleContribuableServiceImpl implements FamilleContribuableServic
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * ch.globaz.amal.business.services.models.famille.FamilleContribuableService#delete(ch.globaz.amal.business.models
      * .famille.FamilleContribuable)
      */
     @Override
-    public FamilleContribuable delete(FamilleContribuable familleContribuable) throws FamilleException,
-            JadePersistenceException {
+    public FamilleContribuable delete(FamilleContribuable familleContribuable)
+            throws FamilleException, JadePersistenceException {
         if (familleContribuable == null) {
             throw new FamilleException("Unable to delete FamilleContribuable, the given model is null!");
         }
@@ -368,8 +365,8 @@ public class FamilleContribuableServiceImpl implements FamilleContribuableServic
                 currentFamilleSearch.setLikeNoAVS(JadeStringUtil.change(currentAVS, ".", ""));
                 currentFamilleSearch.setDefinedSearchSize(0);
                 try {
-                    currentFamilleSearch = AmalServiceLocator.getFamilleContribuableService().search(
-                            currentFamilleSearch);
+                    currentFamilleSearch = AmalServiceLocator.getFamilleContribuableService()
+                            .search(currentFamilleSearch);
                     return currentFamilleSearch;
                 } catch (Exception ex) {
                     return currentFamilleSearch;
@@ -416,8 +413,8 @@ public class FamilleContribuableServiceImpl implements FamilleContribuableServic
                 currentFamilleSearch.setForDateNaissance(currentDateNaissance);
                 currentFamilleSearch.setDefinedSearchSize(0);
                 try {
-                    currentFamilleSearch = AmalServiceLocator.getFamilleContribuableService().search(
-                            currentFamilleSearch);
+                    currentFamilleSearch = AmalServiceLocator.getFamilleContribuableService()
+                            .search(currentFamilleSearch);
                     return currentFamilleSearch;
                 } catch (Exception ex) {
                     return currentFamilleSearch;
@@ -461,8 +458,8 @@ public class FamilleContribuableServiceImpl implements FamilleContribuableServic
                 currentFamilleSearch.setLikeNomPrenom(currentName);
                 currentFamilleSearch.setDefinedSearchSize(0);
                 try {
-                    currentFamilleSearch = AmalServiceLocator.getFamilleContribuableService().search(
-                            currentFamilleSearch);
+                    currentFamilleSearch = AmalServiceLocator.getFamilleContribuableService()
+                            .search(currentFamilleSearch);
                     return currentFamilleSearch;
                 } catch (Exception ex) {
                     return currentFamilleSearch;
@@ -502,8 +499,8 @@ public class FamilleContribuableServiceImpl implements FamilleContribuableServic
                 currentFamilleSearch.setLikeNoAVS(JadeStringUtil.change(currentNSS, ".", ""));
                 currentFamilleSearch.setDefinedSearchSize(0);
                 try {
-                    currentFamilleSearch = AmalServiceLocator.getFamilleContribuableService().search(
-                            currentFamilleSearch);
+                    currentFamilleSearch = AmalServiceLocator.getFamilleContribuableService()
+                            .search(currentFamilleSearch);
                     return currentFamilleSearch;
                 } catch (Exception ex) {
                     return currentFamilleSearch;
@@ -534,13 +531,8 @@ public class FamilleContribuableServiceImpl implements FamilleContribuableServic
     @Override
     public ArrayList<FamilleContribuableView> getListSubsideMember(String year, String idContribuable)
             throws JadePersistenceException, FamilleException, JadeApplicationServiceNotAvailableException {
-
-        // List<FamilleContribuableView> listeFamilleContribuableView = new ArrayList<FamilleContribuableView>();
         // Get all subsides informations by year
         Map<String, List<FamilleContribuableView>> listeFamilleContribuableViewAnnee = new HashMap<String, List<FamilleContribuableView>>();
-        // Get all subsides informations by family member
-        // Map<String, List<FamilleContribuableView>> listeFamilleContribuableViewMember = new HashMap<String,
-        // List<FamilleContribuableView>>();
         // Retrieve Detail Famille
         FamilleContribuableViewSearch famillesearch = new FamilleContribuableViewSearch();
         // Set searched parameters
@@ -559,8 +551,8 @@ public class FamilleContribuableServiceImpl implements FamilleContribuableServic
             String codeTraitementDossier = familleContribuableView.getCodeTraitementDossier();
             String noModele = familleContribuableView.getNoModeles();
             String typeDemande = familleContribuableView.getTypeDemande();
-            familleContribuableView.setCodeTraitementDossierLibelleAJAX(currentSession
-                    .getCodeLibelle(codeTraitementDossier));
+            familleContribuableView
+                    .setCodeTraitementDossierLibelleAJAX(currentSession.getCodeLibelle(codeTraitementDossier));
             familleContribuableView.setCodeTraitementDossierCodeAJAX(currentSession.getCode(codeTraitementDossier));
             familleContribuableView.setNoModelesLibelleAJAX(currentSession.getCodeLibelle(noModele));
             String idCode = currentSession.getCode(noModele);
@@ -569,13 +561,14 @@ public class FamilleContribuableServiceImpl implements FamilleContribuableServic
             familleContribuableView.setTypeDemandeCodeAJAX(currentSession.getCode(typeDemande));
 
             try {
-                Double montantBase = Double.valueOf(familleContribuableView.getMontantContribution());
-                Double supplExtra = Double.valueOf(familleContribuableView.getSupplExtra());
-                familleContribuableView.setMontantTotalSubsideAJAX(JANumberFormatter.fmt(
-                        String.valueOf(montantBase + supplExtra), true, true, false, 2));
+                Double montantBase = checkAndGetValueOf(familleContribuableView.getMontantContribution());
+                Double supplExtra = checkAndGetValueOf(familleContribuableView.getSupplExtra());
+                familleContribuableView.setMontantTotalSubsideAJAX(
+                        JANumberFormatter.fmt(String.valueOf(montantBase + supplExtra), true, true, false, 2));
             } catch (NumberFormatException nfe) {
-                familleContribuableView.setMontantTotalSubsideAJAX(String.valueOf(familleContribuableView
-                        .getMontantContribution()) + " / " + String.valueOf(familleContribuableView.getSupplExtra()));
+                familleContribuableView
+                        .setMontantTotalSubsideAJAX(String.valueOf(familleContribuableView.getMontantContribution())
+                                + " / " + String.valueOf(familleContribuableView.getSupplExtra()));
             }
 
             if (!JadeStringUtil.isBlankOrZero(idCode)) {
@@ -609,8 +602,8 @@ public class FamilleContribuableServiceImpl implements FamilleContribuableServic
                 inStatusEnvoi.add(IAMCodeSysteme.AMDocumentStatus.PRINTED.getValue());
                 inStatusEnvoi.add(IAMCodeSysteme.AMDocumentStatus.INPROGRESS.getValue());
                 complexControleurEnvoiDetailSearch.setInStatusEnvoi(inStatusEnvoi);
-                complexControleurEnvoiDetailSearch = AmalServiceLocator.getControleurEnvoiService().search(
-                        complexControleurEnvoiDetailSearch);
+                complexControleurEnvoiDetailSearch = AmalServiceLocator.getControleurEnvoiService()
+                        .search(complexControleurEnvoiDetailSearch);
 
                 if (complexControleurEnvoiDetailSearch.getSize() > 0) {
                     int size = complexControleurEnvoiDetailSearch.getSize();
@@ -642,8 +635,8 @@ public class FamilleContribuableServiceImpl implements FamilleContribuableServic
                     }
 
                     familleContribuableView.setNoModelesTemporaireCodeAJAX(idCodeTemp);
-                    familleContribuableView.setNoModelesTemporaireLibelleAJAX(currentSession
-                            .getCodeLibelle(noModeleTemp));
+                    familleContribuableView
+                            .setNoModelesTemporaireLibelleAJAX(currentSession.getCodeLibelle(noModeleTemp));
                     familleContribuableView.setIdDetailFamilleAJAX(complexControleurEnvoiDetail.getIdDetailFamille());
                 } else {
                     familleContribuableView.setNoModelesTemporaireCodeAJAX("");
@@ -662,9 +655,17 @@ public class FamilleContribuableServiceImpl implements FamilleContribuableServic
         return arrayListMembreSubsides;
     }
 
+    private Double checkAndGetValueOf(String montant) throws NumberFormatException {
+        Double returnValue = 0.0;
+        if (!JadeStringUtil.isBlank(montant)) {
+            returnValue = Double.valueOf(montant);
+        }
+        return returnValue;
+    }
+
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ch.globaz.amal.business.services.models.famille.FamilleContribuableService#read(java.lang.String)
      */
     @Override
@@ -677,8 +678,8 @@ public class FamilleContribuableServiceImpl implements FamilleContribuableServic
         familleContribuable = (FamilleContribuable) JadePersistenceManager.read(familleContribuable);
         // Synchronize with tiers : read simple famille
         try {
-            SimpleFamille currentFamille = AmalImplServiceLocator.getSimpleFamilleService().read(
-                    familleContribuable.getSimpleFamille().getId());
+            SimpleFamille currentFamille = AmalImplServiceLocator.getSimpleFamilleService()
+                    .read(familleContribuable.getSimpleFamille().getId());
             familleContribuable.setSimpleFamille(currentFamille);
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -689,7 +690,7 @@ public class FamilleContribuableServiceImpl implements FamilleContribuableServic
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ch.globaz.amal.business.services.models.revenu.RevenuService#search(ch
      * .globaz.amal.business.models.revenu.RevenuSearch)
      */
@@ -704,7 +705,7 @@ public class FamilleContribuableServiceImpl implements FamilleContribuableServic
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ch.globaz.amal.business.services.models.revenu.RevenuService#search(ch
      * .globaz.amal.business.models.revenu.RevenuSearch)
      */
@@ -719,14 +720,14 @@ public class FamilleContribuableServiceImpl implements FamilleContribuableServic
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * ch.globaz.amal.business.services.models.famille.FamilleContribuableService#search(ch.globaz.amal.business.models
      * .famille.SimpleFamilleSearch)
      */
     @Override
-    public SimpleFamilleSearch search(SimpleFamilleSearch simpleFamilleSearch) throws JadePersistenceException,
-            FamilleException {
+    public SimpleFamilleSearch search(SimpleFamilleSearch simpleFamilleSearch)
+            throws JadePersistenceException, FamilleException {
         if (simpleFamilleSearch == null) {
             throw new FamilleException("Unable to search simpleFamille, the given model is null!");
         }
@@ -750,14 +751,14 @@ public class FamilleContribuableServiceImpl implements FamilleContribuableServic
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * ch.globaz.amal.business.services.models.famille.FamilleContribuableService#update(ch.globaz.amal.business.models
      * .famille.FamilleContribuable)
      */
     @Override
-    public FamilleContribuable update(FamilleContribuable familleContribuable) throws JadePersistenceException,
-            FamilleException {
+    public FamilleContribuable update(FamilleContribuable familleContribuable)
+            throws JadePersistenceException, FamilleException {
         if (familleContribuable == null) {
             throw new FamilleException("Unable to update FamilleContribuable, the given model is null!");
         }
@@ -765,26 +766,27 @@ public class FamilleContribuableServiceImpl implements FamilleContribuableServic
         // Création du tiers si nécessaire
         if (JadeStringUtil.isBlankOrZero(familleContribuable.getPersonneEtendue().getTiers().getIdTiers())
                 && !JadeStringUtil.isBlankOrZero(familleContribuable.getPersonneEtendue().getTiers().getDesignation1())
-                && !JadeStringUtil.isBlankOrZero(familleContribuable.getPersonneEtendue().getTiers().getDesignation2())) {
+                && !JadeStringUtil
+                        .isBlankOrZero(familleContribuable.getPersonneEtendue().getTiers().getDesignation2())) {
 
             AMGestionTiers gestionTiers = new AMGestionTiers();
             try {
                 gestionTiers.createTiersContribuable(familleContribuable);
             } catch (ContribuableException e) {
-                throw new FamilleException("Error while creating Tiers in FamilleContribuable().update() - "
-                        + e.getMessage());
+                throw new FamilleException(
+                        "Error while creating Tiers in FamilleContribuable().update() - " + e.getMessage());
             }
         }
 
         try {
             if (!familleContribuable.getSimpleFamille().getIdTier()
                     .equals(familleContribuable.getPersonneEtendue().getTiers().getIdTiers())) {
-                familleContribuable.getSimpleFamille().setIdTier(
-                        familleContribuable.getPersonneEtendue().getTiers().getIdTiers());
+                familleContribuable.getSimpleFamille()
+                        .setIdTier(familleContribuable.getPersonneEtendue().getTiers().getIdTiers());
                 if (familleContribuable.getSimpleFamille().getIsContribuable()) {
                     SimpleContribuable contribuable = new SimpleContribuable();
-                    contribuable = AmalImplServiceLocator.getSimpleContribuableService().read(
-                            familleContribuable.getSimpleFamille().getIdContribuable());
+                    contribuable = AmalImplServiceLocator.getSimpleContribuableService()
+                            .read(familleContribuable.getSimpleFamille().getIdContribuable());
                     if (!contribuable.isNew()) {
                         contribuable.setIdTier(familleContribuable.getPersonneEtendue().getTiers().getIdTiers());
                         contribuable = AmalImplServiceLocator.getSimpleContribuableService().update(contribuable);
@@ -801,9 +803,9 @@ public class FamilleContribuableServiceImpl implements FamilleContribuableServic
         if (JadeStringUtil.isBlank(simpleFamille.getNomPrenom())) {
             simpleFamille.setNomPrenom(familleContribuable.getPersonneEtendue().getTiers().getDesignation1() + ' '
                     + familleContribuable.getPersonneEtendue().getTiers().getDesignation2());
-            simpleFamille.setNomPrenomUpper(familleContribuable.getPersonneEtendue().getTiers().getDesignation1()
-                    .toUpperCase()
-                    + ' ' + familleContribuable.getPersonneEtendue().getTiers().getDesignation2().toUpperCase());
+            simpleFamille.setNomPrenomUpper(
+                    familleContribuable.getPersonneEtendue().getTiers().getDesignation1().toUpperCase() + ' '
+                            + familleContribuable.getPersonneEtendue().getTiers().getDesignation2().toUpperCase());
         }
 
         if (JadeStringUtil.isBlank(simpleFamille.getDateNaissance())) {
@@ -811,8 +813,8 @@ public class FamilleContribuableServiceImpl implements FamilleContribuableServic
         }
 
         if (JadeStringUtil.isBlankOrZero(familleContribuable.getSimpleFamille().getIdTier())) {
-            familleContribuable.getSimpleFamille().setIdTier(
-                    familleContribuable.getPersonneEtendue().getTiers().getIdTiers());
+            familleContribuable.getSimpleFamille()
+                    .setIdTier(familleContribuable.getPersonneEtendue().getTiers().getIdTiers());
         }
 
         try {
@@ -822,8 +824,8 @@ public class FamilleContribuableServiceImpl implements FamilleContribuableServic
             sfSearchRead = AmalImplServiceLocator.getSimpleFamilleService().search(sfSearchRead);
 
             if (sfSearchRead.getSize() != 1) {
-                throw new JadeApplicationServiceNotAvailableException("Error searching familly member no : "
-                        + simpleFamille.getIdFamille() + "!");
+                throw new JadeApplicationServiceNotAvailableException(
+                        "Error searching familly member no : " + simpleFamille.getIdFamille() + "!");
             }
             SimpleFamille sfRead = (SimpleFamille) sfSearchRead.getSearchResults()[0];
             boolean wasContribuablePrincipal = sfRead.getIsContribuable();
@@ -852,8 +854,8 @@ public class FamilleContribuableServiceImpl implements FamilleContribuableServic
 
                 SimpleContribuable contri = new SimpleContribuable();
                 try {
-                    contri = AmalImplServiceLocator.getSimpleContribuableService().read(
-                            simpleFamille.getIdContribuable());
+                    contri = AmalImplServiceLocator.getSimpleContribuableService()
+                            .read(simpleFamille.getIdContribuable());
                     contri.setIdTier(simpleFamille.getIdTier());
                     contri = AmalImplServiceLocator.getSimpleContribuableService().update(contri);
                 } catch (ContribuableException e) {
@@ -866,8 +868,8 @@ public class FamilleContribuableServiceImpl implements FamilleContribuableServic
             AmalImplServiceLocator.getSimpleFamilleService().update(simpleFamille);
 
         } catch (JadeApplicationServiceNotAvailableException e) {
-            throw new FamilleException("Service not available (Looking for all principals contribuables) - "
-                    + e.getMessage());
+            throw new FamilleException(
+                    "Service not available (Looking for all principals contribuables) - " + e.getMessage());
         }
 
         try {

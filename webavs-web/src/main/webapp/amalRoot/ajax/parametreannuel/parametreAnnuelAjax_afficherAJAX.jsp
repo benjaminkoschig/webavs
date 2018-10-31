@@ -17,6 +17,8 @@ SimpleParametreAnnuel entity= viewBean.getSimpleParametreAnnuel();
 		<anneeParametre><%=JadeStringUtil.toNotNullString(entity.getAnneeParametre())%></anneeParametre>
 		<valeurParametre><%=JadeStringUtil.toNotNullString(entity.getValeurParametre())%></valeurParametre>				
 		<valeurParametreString><%=JadeStringUtil.toNotNullString(entity.getValeurParametreString())%></valeurParametreString>
+		<valeurFrom><%=JadeStringUtil.toNotNullString(entity.getValeurFrom())%></valeurFrom>
+		<valeurTo><%=JadeStringUtil.toNotNullString(entity.getValeurTo())%></valeurTo>
 	</contenu>
 	<ct:serializeObject destination="xml"/>
 	<error>

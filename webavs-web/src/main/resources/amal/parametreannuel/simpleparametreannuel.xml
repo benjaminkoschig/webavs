@@ -9,6 +9,8 @@
 			<field name="anneeParametre" column="ANPARAM" type="NUMERIC" dataType="NUMERIC(4,0)" mandatory="true" comment="Année"/>
 			<field name="valeurParametre" column="PAVALUE" type="NUMERIC" dataType="NUMERIC(12,2)" mandatory="false" comment="Valeur paramètre"/>					
 			<field name="valeurParametreString" column="VALSTR" type="STRING" dataType="VARCHAR(35)" mandatory="false" comment="Valeur paramètre string"/>
+			<field name="valeurFrom" column="PVALFROM" type="NUMERIC" dataType="NUMERIC(12,2)" mandatory="false" comment="Valeur paramètre de"/>
+			<field name="valeurTo" column="PVALTO" type="NUMERIC" dataType="NUMERIC(12,2)" mandatory="false" comment="Valeur paramètre à"/>
 		</fields>
 		
 		<search-definition>
@@ -18,6 +20,8 @@
 				<search-field operation="LESS_OR_EQUALS" name="untilAnneeParametre" field-ref="anneeParametre"/>
 				<search-field operation="EQUALS" name="forCodeTypeParametre" field-ref="codeTypeParametre"/>
 				<search-field operation="IN" name="inCodeTypeParametre" field-ref="codeTypeParametre"/>
+				<search-field operation="GREATER_OR_EQUALS" name="valueFrom" field-ref="valeurFrom"/>
+				<search-field operation="LESS_OR_EQUALS" name="valueTo" field-ref="valeurTo"/>
 			</search-group>
 		</search-definition>
 		

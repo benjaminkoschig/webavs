@@ -1,16 +1,16 @@
 /**
- * 
+ *
  */
 package globaz.amal.vb.parametreannuel;
 
-import globaz.globall.db.BSpy;
-import globaz.globall.vb.BJadePersistentObjectViewBean;
 import ch.globaz.amal.business.models.parametreannuel.SimpleParametreAnnuel;
 import ch.globaz.amal.business.services.AmalServiceLocator;
+import globaz.globall.db.BSpy;
+import globaz.globall.vb.BJadePersistentObjectViewBean;
 
 /**
  * @author CBU
- * 
+ *
  */
 public class AMParametreAnnuelViewBean extends BJadePersistentObjectViewBean {
     private SimpleParametreAnnuel simpleParametreAnnuel = null;
@@ -27,7 +27,7 @@ public class AMParametreAnnuelViewBean extends BJadePersistentObjectViewBean {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.db.BIPersistentObject#add()
      */
     @Override
@@ -37,7 +37,7 @@ public class AMParametreAnnuelViewBean extends BJadePersistentObjectViewBean {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.db.BIPersistentObject#delete()
      */
     @Override
@@ -47,7 +47,7 @@ public class AMParametreAnnuelViewBean extends BJadePersistentObjectViewBean {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.db.BIPersistentObject#getId()
      */
     @Override
@@ -61,7 +61,7 @@ public class AMParametreAnnuelViewBean extends BJadePersistentObjectViewBean {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.vb.BJadePersistentObjectViewBean#getSpy()
      */
     @Override
@@ -75,29 +75,17 @@ public class AMParametreAnnuelViewBean extends BJadePersistentObjectViewBean {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.db.BIPersistentObject#retrieve()
      */
     @Override
     public void retrieve() throws Exception {
-        // cherche les données financières
-        // SimpleParametreAnnuel search = new SimpleParametreAnnuel();
-        //
-        // search.setIdParametreAnnuel(this.getId());
-        //
-        // this.simpleParametreAnnuel = AmalServiceLocator.getParametreAnnuelService().read(this.getId());
-        //
-        // for (Iterator<JadeAbstractModel> it = Arrays.asList(search.getSearchResults()).iterator(); it.hasNext();) {
-        // SimpleSubsideAnnee simpleSubsideAnnee = (SimpleSubsideAnnee) it.next();
-        // this.donnees.add(simpleSubsideAnnee);
-        // }
-        // this.simpleParametreAnnuel = AmalServiceLocator.getParametreAnnuelService().read(
-        // this.simpleParametreAnnuel.getId());
+
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.db.BIPersistentObject#setId(java.lang.String)
      */
     @Override
@@ -111,7 +99,7 @@ public class AMParametreAnnuelViewBean extends BJadePersistentObjectViewBean {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.db.BIPersistentObject#update()
      */
     @Override

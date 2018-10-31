@@ -1,18 +1,18 @@
 package ch.globaz.amal.business.models.detailfamille;
 
-import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.persistence.model.JadeSimpleModel;
 import ch.globaz.pyxis.business.model.AdministrationComplexModel;
 import ch.globaz.pyxis.business.service.TIBusinessServiceLocator;
+import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.persistence.model.JadeSimpleModel;
 
 /**
  * @author CBU
- * 
+ *
  */
 public class SimpleDetailFamille extends JadeSimpleModel implements Cloneable {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
     private AdministrationComplexModel administration = null;
@@ -41,14 +41,15 @@ public class SimpleDetailFamille extends JadeSimpleModel implements Cloneable {
     private String montantContributionPC = null;
     private String montantExact = null;
     private String montantPrimeAssurance = null;
-    private String montantSupplement = null;
     private String noAssure = null;
     private String noCaisseMaladie = null;
     private String noLot = null;
     private String noModeles = null;
     private String oldMontantContribAnnuelle = null;
     private Boolean refus = null;
+    private String montantSupplement = null;
     private String supplExtra = null;
+
     private String tauxEnfantCharge = null;
     private String typeAvisRIP = null;
     private String typeDemande = null;
@@ -61,7 +62,7 @@ public class SimpleDetailFamille extends JadeSimpleModel implements Cloneable {
 
     /**
      * Gets the current administration linked to the current detail famille
-     * 
+     *
      * @return
      */
     public AdministrationComplexModel getAdministration() {
@@ -211,7 +212,7 @@ public class SimpleDetailFamille extends JadeSimpleModel implements Cloneable {
 
     /**
      * This field doesn't exist in DB. Only for simulation
-     * 
+     *
      * @return
      */
     public String getMontantContribSansSuppl() {
@@ -228,7 +229,7 @@ public class SimpleDetailFamille extends JadeSimpleModel implements Cloneable {
     /**
      * Champs pour accueilir le montant de subside pour un assisté (utilisé uniquement en simulation, n'est pas inséré
      * en DB)
-     * 
+     *
      * @return montantContributionAssiste
      */
     public String getMontantContributionAssiste() {
@@ -237,7 +238,7 @@ public class SimpleDetailFamille extends JadeSimpleModel implements Cloneable {
 
     /**
      * Retourne le montant de la contribution avec le suppl extra donc le montant total attribué. Pas en DB.
-     * 
+     *
      * @return
      */
     public String getMontantContributionAvecSupplExtra() {
@@ -290,7 +291,7 @@ public class SimpleDetailFamille extends JadeSimpleModel implements Cloneable {
 
     /**
      * This field doesn't exist in DB. Only for simulation
-     * 
+     *
      * @return
      */
     public String getMontantSupplement() {
@@ -320,7 +321,7 @@ public class SimpleDetailFamille extends JadeSimpleModel implements Cloneable {
 
     /**
      * Gets the name of the caissemaladie from the linked administration
-     * 
+     *
      * @return
      */
     public String getNomCaisseMaladieFromAdministration() {
@@ -543,7 +544,7 @@ public class SimpleDetailFamille extends JadeSimpleModel implements Cloneable {
 
     /**
      * This field doesn't exist in DB. Only for simulation
-     * 
+     *
      * @param montantContribSansSuppl
      */
     public void setMontantContribSansSuppl(String montantContribSansSuppl) {
@@ -561,7 +562,7 @@ public class SimpleDetailFamille extends JadeSimpleModel implements Cloneable {
     /**
      * Champs pour accueilir le montant de subside pour un assisté (utilisé uniquement en simulation, n'est pas inséré
      * en DB)
-     * 
+     *
      * @param montantContributionAssiste
      */
     public void setMontantContributionAssiste(String montantContributionAssiste) {
@@ -586,7 +587,7 @@ public class SimpleDetailFamille extends JadeSimpleModel implements Cloneable {
 
     /**
      * This field doesn't exist in DB. Only for simulation
-     * 
+     *
      * @param montantSupplement
      */
     public void setMontantSupplement(String montantSupplement) {

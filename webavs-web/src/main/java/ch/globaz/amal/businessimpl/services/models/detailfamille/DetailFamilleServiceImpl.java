@@ -1,32 +1,8 @@
 /**
- * 
+ *
  */
 package ch.globaz.amal.businessimpl.services.models.detailfamille;
 
-import globaz.docinfo.TIDocumentInfoHelper;
-import globaz.globall.db.BSession;
-import globaz.globall.db.BSessionUtil;
-import globaz.globall.parameters.FWParametersCode;
-import globaz.globall.parameters.FWParametersSystemCodeManager;
-import globaz.globall.util.JADate;
-import globaz.globall.util.JAVector;
-import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.client.util.JadeUtil;
-import globaz.jade.common.Jade;
-import globaz.jade.context.JadeThread;
-import globaz.jade.exception.JadePersistenceException;
-import globaz.jade.fs.JadeFsFacade;
-import globaz.jade.ged.target.JadeGedTargetProperties;
-import globaz.jade.log.JadeLogger;
-import globaz.jade.log.business.JadeBusinessMessageLevels;
-import globaz.jade.persistence.JadePersistenceManager;
-import globaz.jade.persistence.model.JadeAbstractModel;
-import globaz.jade.publish.document.JadePublishDocumentInfo;
-import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
-import globaz.op.common.model.common.Node;
-import globaz.op.common.model.document.Document;
-import globaz.op.wordml.model.document.WordmlDocument;
-import globaz.op.wordml.model.element.WWordDocument;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -95,16 +71,40 @@ import ch.globaz.envoi.business.services.ENServiceLocator;
 import ch.globaz.pyxis.business.model.AdministrationComplexModel;
 import ch.globaz.pyxis.business.model.AdministrationSearchComplexModel;
 import ch.globaz.pyxis.business.service.TIBusinessServiceLocator;
+import globaz.docinfo.TIDocumentInfoHelper;
+import globaz.globall.db.BSession;
+import globaz.globall.db.BSessionUtil;
+import globaz.globall.parameters.FWParametersCode;
+import globaz.globall.parameters.FWParametersSystemCodeManager;
+import globaz.globall.util.JADate;
+import globaz.globall.util.JAVector;
+import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.client.util.JadeUtil;
+import globaz.jade.common.Jade;
+import globaz.jade.context.JadeThread;
+import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.fs.JadeFsFacade;
+import globaz.jade.ged.target.JadeGedTargetProperties;
+import globaz.jade.log.JadeLogger;
+import globaz.jade.log.business.JadeBusinessMessageLevels;
+import globaz.jade.persistence.JadePersistenceManager;
+import globaz.jade.persistence.model.JadeAbstractModel;
+import globaz.jade.publish.document.JadePublishDocumentInfo;
+import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
+import globaz.op.common.model.common.Node;
+import globaz.op.common.model.document.Document;
+import globaz.op.wordml.model.document.WordmlDocument;
+import globaz.op.wordml.model.element.WWordDocument;
 
 /**
  * @author DHI
- * 
+ *
  */
 public class DetailFamilleServiceImpl implements DetailFamilleService {
 
     /**
      * Contrôle la validité du supplément famille accordé
-     * 
+     *
      * @param newSubside
      * @param newSubsides
      * @return
@@ -140,14 +140,14 @@ public class DetailFamilleServiceImpl implements DetailFamilleService {
                                 && subsideEnfant.getFinDroit().equals(newSubside.getFinDroit())) {
                             // contrôle si pas refus et document différent de ATENFx
                             if (subsideEnfant.getRefus() == false) {
-                                if (subsideEnfant.getNoModeles().equals(
-                                        IAMCodeSysteme.AMDocumentModeles.ATENF1.getValue())) {
+                                if (subsideEnfant.getNoModeles()
+                                        .equals(IAMCodeSysteme.AMDocumentModeles.ATENF1.getValue())) {
                                     needSuppl = false;
-                                } else if (subsideEnfant.getNoModeles().equals(
-                                        IAMCodeSysteme.AMDocumentModeles.ATENF2.getValue())) {
+                                } else if (subsideEnfant.getNoModeles()
+                                        .equals(IAMCodeSysteme.AMDocumentModeles.ATENF2.getValue())) {
                                     needSuppl = false;
-                                } else if (subsideEnfant.getNoModeles().equals(
-                                        IAMCodeSysteme.AMDocumentModeles.ATENF8.getValue())) {
+                                } else if (subsideEnfant.getNoModeles()
+                                        .equals(IAMCodeSysteme.AMDocumentModeles.ATENF8.getValue())) {
                                     needSuppl = false;
                                 } else if (JadeStringUtil.isBlankOrZero(subsideEnfant.getNoModeles())) {
                                     needSuppl = false;
@@ -187,8 +187,8 @@ public class DetailFamilleServiceImpl implements DetailFamilleService {
                     if (!subsideEnfant.getIdFamille().equals(newSubside.getIdFamille())) {
                         String idFamilleEnfant = subsideEnfant.getIdFamille();
                         try {
-                            SimpleFamille familleEnfant = AmalImplServiceLocator.getSimpleFamilleService().read(
-                                    idFamilleEnfant);
+                            SimpleFamille familleEnfant = AmalImplServiceLocator.getSimpleFamilleService()
+                                    .read(idFamilleEnfant);
                             if (familleEnfant.isEnfant()) {
                                 subsidesEnfants.add(subsideEnfant);
                                 // Contrôle des périodes
@@ -196,14 +196,14 @@ public class DetailFamilleServiceImpl implements DetailFamilleService {
                                         && subsideEnfant.getFinDroit().equals(newSubside.getFinDroit())) {
                                     // contrôle si pas refus et document différent de ATENFx
                                     if (subsideEnfant.getRefus() == false) {
-                                        if (subsideEnfant.getNoModeles().equals(
-                                                IAMCodeSysteme.AMDocumentModeles.ATENF1.getValue())) {
+                                        if (subsideEnfant.getNoModeles()
+                                                .equals(IAMCodeSysteme.AMDocumentModeles.ATENF1.getValue())) {
                                             needSuppl = false;
-                                        } else if (subsideEnfant.getNoModeles().equals(
-                                                IAMCodeSysteme.AMDocumentModeles.ATENF2.getValue())) {
+                                        } else if (subsideEnfant.getNoModeles()
+                                                .equals(IAMCodeSysteme.AMDocumentModeles.ATENF2.getValue())) {
                                             needSuppl = false;
-                                        } else if (subsideEnfant.getNoModeles().equals(
-                                                IAMCodeSysteme.AMDocumentModeles.ATENF8.getValue())) {
+                                        } else if (subsideEnfant.getNoModeles()
+                                                .equals(IAMCodeSysteme.AMDocumentModeles.ATENF8.getValue())) {
                                             needSuppl = false;
                                         } else if (JadeStringUtil.isBlankOrZero(subsideEnfant.getNoModeles())) {
                                             needSuppl = false;
@@ -241,7 +241,7 @@ public class DetailFamilleServiceImpl implements DetailFamilleService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * ch.globaz.amal.business.services.models.detailFamille.DetailFamilleService#count(ch.globaz.amal.business.models
      * .detailfamille.SimpleDetailFamille)
@@ -256,14 +256,14 @@ public class DetailFamilleServiceImpl implements DetailFamilleService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * ch.globaz.amal.business.services.models.detailFamille.DetailFamilleService#create(ch.globaz.amal.business.models
      * .detailfamille.SimpleDetailFamille)
      */
     @Override
-    public SimpleDetailFamille create(SimpleDetailFamille detailFamille) throws JadePersistenceException,
-            DetailFamilleException {
+    public SimpleDetailFamille create(SimpleDetailFamille detailFamille)
+            throws JadePersistenceException, DetailFamilleException {
         if (detailFamille == null) {
             throw new DetailFamilleException("Unable to create detailFamille the given model is null!");
         }
@@ -276,7 +276,7 @@ public class DetailFamilleServiceImpl implements DetailFamilleService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * ch.globaz.amal.business.services.models.detailFamille.DetailFamilleService#delete(ch.globaz.amal.business.models
      * .detailfamille.SimpleDetailFamille)
@@ -292,7 +292,7 @@ public class DetailFamilleServiceImpl implements DetailFamilleService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ch.globaz.amal.business.services.models.detailFamille.DetailFamilleService#essaiAjax(String)
      */
     @Override
@@ -305,7 +305,7 @@ public class DetailFamilleServiceImpl implements DetailFamilleService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * ch.globaz.amal.business.services.models.detailfamille.DetailFamilleService#generateDocumentCorrespondance(java
      * .lang.String, java.lang.String)
@@ -370,17 +370,17 @@ public class DetailFamilleServiceImpl implements DetailFamilleService {
                     bError = true;
                 }
                 if (JadeThread.logHasMessagesOfLevel(JadeBusinessMessageLevels.WARN)) {
-                    for (int iMessage = 0; iMessage < JadeThread.logMessagesOfLevel(JadeBusinessMessageLevels.WARN).length; iMessage++) {
-                        msgWarning += "\n"
-                                + JadeThread.logMessagesOfLevel(JadeBusinessMessageLevels.WARN)[iMessage]
-                                        .getContents(JadeThread.currentLanguage());
+                    for (int iMessage = 0; iMessage < JadeThread
+                            .logMessagesOfLevel(JadeBusinessMessageLevels.WARN).length; iMessage++) {
+                        msgWarning += "\n" + JadeThread.logMessagesOfLevel(JadeBusinessMessageLevels.WARN)[iMessage]
+                                .getContents(JadeThread.currentLanguage());
                     }
                 }
                 if (JadeThread.logHasMessagesOfLevel(JadeBusinessMessageLevels.ERROR)) {
-                    for (int iMessage = 0; iMessage < JadeThread.logMessagesOfLevel(JadeBusinessMessageLevels.ERROR).length; iMessage++) {
-                        msgError += "\n"
-                                + JadeThread.logMessagesOfLevel(JadeBusinessMessageLevels.ERROR)[iMessage]
-                                        .getContents(JadeThread.currentLanguage());
+                    for (int iMessage = 0; iMessage < JadeThread
+                            .logMessagesOfLevel(JadeBusinessMessageLevels.ERROR).length; iMessage++) {
+                        msgError += "\n" + JadeThread.logMessagesOfLevel(JadeBusinessMessageLevels.ERROR)[iMessage]
+                                .getContents(JadeThread.currentLanguage());
                     }
                     try {
                         JadeThread.rollbackSession();
@@ -402,17 +402,17 @@ public class DetailFamilleServiceImpl implements DetailFamilleService {
             return returnMap;
         } else {
             if (JadeThread.logHasMessagesOfLevel(JadeBusinessMessageLevels.WARN)) {
-                for (int iMessage = 0; iMessage < JadeThread.logMessagesOfLevel(JadeBusinessMessageLevels.WARN).length; iMessage++) {
-                    msgWarning += "\n"
-                            + JadeThread.logMessagesOfLevel(JadeBusinessMessageLevels.WARN)[iMessage]
-                                    .getContents(JadeThread.currentLanguage());
+                for (int iMessage = 0; iMessage < JadeThread
+                        .logMessagesOfLevel(JadeBusinessMessageLevels.WARN).length; iMessage++) {
+                    msgWarning += "\n" + JadeThread.logMessagesOfLevel(JadeBusinessMessageLevels.WARN)[iMessage]
+                            .getContents(JadeThread.currentLanguage());
                 }
             }
             if (JadeThread.logHasMessagesOfLevel(JadeBusinessMessageLevels.ERROR)) {
-                for (int iMessage = 0; iMessage < JadeThread.logMessagesOfLevel(JadeBusinessMessageLevels.ERROR).length; iMessage++) {
-                    msgError += "\n"
-                            + JadeThread.logMessagesOfLevel(JadeBusinessMessageLevels.ERROR)[iMessage]
-                                    .getContents(JadeThread.currentLanguage());
+                for (int iMessage = 0; iMessage < JadeThread
+                        .logMessagesOfLevel(JadeBusinessMessageLevels.ERROR).length; iMessage++) {
+                    msgError += "\n" + JadeThread.logMessagesOfLevel(JadeBusinessMessageLevels.ERROR)[iMessage]
+                            .getContents(JadeThread.currentLanguage());
                 }
             }
             JadeThread.logClear();
@@ -425,7 +425,7 @@ public class DetailFamilleServiceImpl implements DetailFamilleService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ch.globaz.amal.business.services.models.detailFamille.DetailFamilleService#generateSubside(ch.globaz
      * .amal.business.models .detailfamille.SimpleDetailFamille)
      */
@@ -440,16 +440,16 @@ public class DetailFamilleServiceImpl implements DetailFamilleService {
     }
 
     @Override
-    public void generateSubside(CalculsSubsidesContainer calculs, String csTypeJob) throws DetailFamilleException,
-            JadePersistenceException, RevenuException, JadeApplicationServiceNotAvailableException, DocumentException,
-            ControleurEnvoiException, AnnonceException, ControleurJobException, FamilleException,
-            ParametreModelException, FormuleListException {
+    public void generateSubside(CalculsSubsidesContainer calculs, String csTypeJob)
+            throws DetailFamilleException, JadePersistenceException, RevenuException,
+            JadeApplicationServiceNotAvailableException, DocumentException, ControleurEnvoiException, AnnonceException,
+            ControleurJobException, FamilleException, ParametreModelException, FormuleListException {
         this.generateSubside(calculs, csTypeJob, false);
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ch.globaz.amal.business.services.models.detailFamille.DetailFamilleService#generateSubside(ch.globaz
      * .amal.business.models .detailfamille.SimpleDetailFamille)
      */
@@ -548,7 +548,8 @@ public class DetailFamilleServiceImpl implements DetailFamilleService {
                     modelParametreSearch.setWhereKey("basic");
                     modelParametreSearch = AmalServiceLocator.getParametreModelService().search(modelParametreSearch);
                     if (modelParametreSearch.getSize() == 1) {
-                        ParametreModelComplex model = (ParametreModelComplex) modelParametreSearch.getSearchResults()[0];
+                        ParametreModelComplex model = (ParametreModelComplex) modelParametreSearch
+                                .getSearchResults()[0];
                         if (model.getSimpleParametreModel().getDocumentAvecListe()) {
                             String nbElements = model.getSimpleParametreModel().getNombreElementListe();
                             iLimiteParPage = Integer.parseInt(nbElements);
@@ -571,8 +572,8 @@ public class DetailFamilleServiceImpl implements DetailFamilleService {
                 }
             }
             int iNoGroupe = ((currentCalendar.get(Calendar.HOUR) * 10000000)
-                    + (currentCalendar.get(Calendar.MINUTE) * 100000) + (currentCalendar.get(Calendar.SECOND) * 1000) + currentCalendar
-                    .get(Calendar.MILLISECOND));
+                    + (currentCalendar.get(Calendar.MINUTE) * 100000) + (currentCalendar.get(Calendar.SECOND) * 1000)
+                    + currentCalendar.get(Calendar.MILLISECOND));
 
             int incNoGroupe = 1;
             for (int iNewDetailFamille = 0; iNewDetailFamille < subsidesDoc.size(); iNewDetailFamille++) {
@@ -609,7 +610,7 @@ public class DetailFamilleServiceImpl implements DetailFamilleService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * ch.globaz.amal.business.services.models.detailfamille.DetailFamilleService#generateSubsidesFromAttribution(java
      * .lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.Boolean, java.lang.String)
@@ -639,7 +640,7 @@ public class DetailFamilleServiceImpl implements DetailFamilleService {
 
     /**
      * 1ère étape d'enregistrement du subside - revenu
-     * 
+     *
      * @param calculs
      * @throws JadePersistenceException
      * @throws JadeApplicationServiceNotAvailableException
@@ -665,24 +666,23 @@ public class DetailFamilleServiceImpl implements DetailFamilleService {
             if (revenuSearch.getSize() == 1) {
                 RevenuHistoriqueComplex revenuHistorique = (RevenuHistoriqueComplex) revenuSearch.getSearchResults()[0];
                 // Si le calcul est favorable OU si c'est une taxation provisoire
-                if (!isRecalculUnfavorable
-                        || IAMCodeSysteme.AMTaxationType.PROVISOIRE.getValue().equals(
-                                revenuHistorique.getRevenuFullComplex().getSimpleRevenu().getTypeTaxation())) {
+                if (!isRecalculUnfavorable || IAMCodeSysteme.AMTaxationType.PROVISOIRE.getValue()
+                        .equals(revenuHistorique.getRevenuFullComplex().getSimpleRevenu().getTypeTaxation())) {
                     // Mise à jour avec la taxation
                     revenuHistorique.setRevenuFullComplex(taxation);
                     revenuHistorique = AmalServiceLocator.getRevenuService().update(revenuHistorique);
                 } else {
                     RevenuHistoriqueComplex revenuHistoriqueUnfavorable = new RevenuHistoriqueComplex();
                     revenuHistoriqueUnfavorable.setRevenuFullComplex(taxation);
-                    revenuHistoriqueUnfavorable.getSimpleRevenuHistorique().setAnneeHistorique(
-                            calculs.getAnneeHistorique());
-                    revenuHistoriqueUnfavorable.getSimpleRevenuHistorique().setIdContribuable(
-                            calculs.getIdContribuable());
+                    revenuHistoriqueUnfavorable.getSimpleRevenuHistorique()
+                            .setAnneeHistorique(calculs.getAnneeHistorique());
+                    revenuHistoriqueUnfavorable.getSimpleRevenuHistorique()
+                            .setIdContribuable(calculs.getIdContribuable());
                     revenuHistoriqueUnfavorable.getSimpleRevenuHistorique().setCodeActif(false);
                     revenuHistoriqueUnfavorable.getSimpleRevenuHistorique().setIsRecalcul(true);
                     revenuHistoriqueUnfavorable.getSimpleRevenuHistorique().setIdRevenu(taxation.getId());
-                    revenuHistoriqueUnfavorable = AmalServiceLocator.getRevenuService().create(
-                            revenuHistoriqueUnfavorable);
+                    revenuHistoriqueUnfavorable = AmalServiceLocator.getRevenuService()
+                            .create(revenuHistoriqueUnfavorable);
                 }
             } else if (revenuSearch.getSize() == 0) {
                 // Création du revenu historique
@@ -698,8 +698,8 @@ public class DetailFamilleServiceImpl implements DetailFamilleService {
             } else {
                 // Exception
                 // ----------------------------------------------------------------
-                throw new RevenuException("Plus de 1 revenu historique actif trouvé pour l'année "
-                        + calculs.getAnneeHistorique());
+                throw new RevenuException(
+                        "Plus de 1 revenu historique actif trouvé pour l'année " + calculs.getAnneeHistorique());
             }
 
         }
@@ -707,13 +707,14 @@ public class DetailFamilleServiceImpl implements DetailFamilleService {
 
     /**
      * 2ème étape d'enregistrement du subside - detailfamille (subside)
-     * 
+     *
      * @param subside
      * @throws JadePersistenceException
      * @throws DetailFamilleException
      */
-    private SimpleDetailFamille generateSubsideStep2Item(SimpleDetailFamille subside) throws DetailFamilleException,
-            JadePersistenceException {
+    private SimpleDetailFamille generateSubsideStep2Item(SimpleDetailFamille subside)
+            throws DetailFamilleException, JadePersistenceException {
+
         // ----------------------------------------------------------------
         // Subside updaté ou créé
         // ----------------------------------------------------------------
@@ -831,7 +832,7 @@ public class DetailFamilleServiceImpl implements DetailFamilleService {
 
     /**
      * 3ème étape d'enregistrement du subside - documents
-     * 
+     *
      * @param subside
      * @throws JadePersistenceException
      * @throws JadeApplicationServiceNotAvailableException
@@ -844,10 +845,10 @@ public class DetailFamilleServiceImpl implements DetailFamilleService {
      * @throws FormuleListException
      */
     private void generateSubsideStep3Documents(String dateWellFormatted, SimpleDetailFamille currentSubside,
-            SimpleDetailFamille newSubside, String noGroupe, String csTypeJob) throws DocumentException,
-            DetailFamilleException, ControleurEnvoiException, AnnonceException, ControleurJobException,
-            JadeApplicationServiceNotAvailableException, JadePersistenceException, ParametreModelException,
-            FormuleListException {
+            SimpleDetailFamille newSubside, String noGroupe, String csTypeJob)
+            throws DocumentException, DetailFamilleException, ControleurEnvoiException, AnnonceException,
+            ControleurJobException, JadeApplicationServiceNotAvailableException, JadePersistenceException,
+            ParametreModelException, FormuleListException {
 
         if (!JadeStringUtil.isEmpty(currentSubside.getNoModeles())) {
             int iNoGroupe = 0;
@@ -943,10 +944,8 @@ public class DetailFamilleServiceImpl implements DetailFamilleService {
                         returnMap.put("document", "");// currentDoc);
                     } else {
                         // Save the link into the hashmap
-                        returnMap
-                                .put("document",
-                                        getInteractivDocumentFilePathFromClient(csDateComplete, idDossier, idFormule,
-                                                csFormule));
+                        returnMap.put("document", getInteractivDocumentFilePathFromClient(csDateComplete, idDossier,
+                                idFormule, csFormule));
                     }
                 } else {
                     msgWarning = "The word file cannot be saved on the server (SMB).\nAutomatic features are disabled : ";
@@ -976,17 +975,17 @@ public class DetailFamilleServiceImpl implements DetailFamilleService {
         // Si ok, clé file contient le chemin du fichier
         // ---------------------------------------------------------------
         if (JadeThread.logHasMessagesOfLevel(JadeBusinessMessageLevels.WARN)) {
-            for (int iMessage = 0; iMessage < JadeThread.logMessagesOfLevel(JadeBusinessMessageLevels.WARN).length; iMessage++) {
-                msgWarning += "\n"
-                        + JadeThread.logMessagesOfLevel(JadeBusinessMessageLevels.WARN)[iMessage]
-                                .getContents(JadeThread.currentLanguage());
+            for (int iMessage = 0; iMessage < JadeThread
+                    .logMessagesOfLevel(JadeBusinessMessageLevels.WARN).length; iMessage++) {
+                msgWarning += "\n" + JadeThread.logMessagesOfLevel(JadeBusinessMessageLevels.WARN)[iMessage]
+                        .getContents(JadeThread.currentLanguage());
             }
         }
         if (JadeThread.logHasMessagesOfLevel(JadeBusinessMessageLevels.ERROR)) {
-            for (int iMessage = 0; iMessage < JadeThread.logMessagesOfLevel(JadeBusinessMessageLevels.ERROR).length; iMessage++) {
-                msgError += "\n"
-                        + JadeThread.logMessagesOfLevel(JadeBusinessMessageLevels.ERROR)[iMessage]
-                                .getContents(JadeThread.currentLanguage());
+            for (int iMessage = 0; iMessage < JadeThread
+                    .logMessagesOfLevel(JadeBusinessMessageLevels.ERROR).length; iMessage++) {
+                msgError += "\n" + JadeThread.logMessagesOfLevel(JadeBusinessMessageLevels.ERROR)[iMessage]
+                        .getContents(JadeThread.currentLanguage());
             }
         }
         JadeThread.logClear();
@@ -997,7 +996,7 @@ public class DetailFamilleServiceImpl implements DetailFamilleService {
 
     /**
      * Création du document en fonction d'un idDossier et d'un idFormule
-     * 
+     *
      * @param idDossier
      * @param idFormule
      * @return WordMLDocument ou null si erreurs
@@ -1023,7 +1022,7 @@ public class DetailFamilleServiceImpl implements DetailFamilleService {
 
     /**
      * Enregistrement du document en persistence
-     * 
+     *
      * @param currentDoc
      * @param idDossier
      * @param idFormule
@@ -1058,8 +1057,8 @@ public class DetailFamilleServiceImpl implements DetailFamilleService {
                     out.close();
                 } catch (IOException e) {
                     bError = true;
-                    JadeThread
-                            .logError(toString(), "Error closing Writer Tempory file wordExport.doc" + e.getMessage());
+                    JadeThread.logError(toString(),
+                            "Error closing Writer Tempory file wordExport.doc" + e.getMessage());
                 }
             }
         }
@@ -1068,7 +1067,7 @@ public class DetailFamilleServiceImpl implements DetailFamilleService {
 
     /**
      * Copy du document dans le répertoire de travail des utilisateurs
-     * 
+     *
      * @param currentDoc
      * @param idDossier
      * @param idFormule
@@ -1084,8 +1083,8 @@ public class DetailFamilleServiceImpl implements DetailFamilleService {
         String filePathTarget = "";
 
         SimpleParametreApplicationSearch paramSearch = new SimpleParametreApplicationSearch();
-        paramSearch.setForCsTypeParametre(IAMCodeSysteme.AMParametreApplication.CHEMIN_EXPORT_WORD_SERVER_WAS
-                .getValue());
+        paramSearch
+                .setForCsTypeParametre(IAMCodeSysteme.AMParametreApplication.CHEMIN_EXPORT_WORD_SERVER_WAS.getValue());
         try {
             paramSearch = AmalServiceLocator.getSimpleParametreApplicationService().search(paramSearch);
             if (paramSearch.getSize() == 1) {
@@ -1127,7 +1126,7 @@ public class DetailFamilleServiceImpl implements DetailFamilleService {
 
     /**
      * Ecriture du document généré en db pour trace et mise en GED postérieure
-     * 
+     *
      * @param idDossier
      * @param idFormule
      * @param csDateShort
@@ -1187,9 +1186,8 @@ public class DetailFamilleServiceImpl implements DetailFamilleService {
                         if (userReference != null) {
                             // récupération du chemin de base
                             SimpleParametreApplicationSearch paramSearch = new SimpleParametreApplicationSearch();
-                            paramSearch
-                                    .setForCsTypeParametre(IAMCodeSysteme.AMParametreApplication.CHEMIN_EXPORT_WORD_CLIENT
-                                            .getValue());
+                            paramSearch.setForCsTypeParametre(
+                                    IAMCodeSysteme.AMParametreApplication.CHEMIN_EXPORT_WORD_CLIENT.getValue());
                             paramSearch = AmalServiceLocator.getSimpleParametreApplicationService().search(paramSearch);
                             if (paramSearch.getSize() == 1) {
                                 String currentPath = ((SimpleParametreApplication) paramSearch.getSearchResults()[0])
@@ -1218,9 +1216,10 @@ public class DetailFamilleServiceImpl implements DetailFamilleService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
-     * ch.globaz.amal.business.services.models.detailfamille.DetailFamilleService#getAvailableDocumentsListCorrespondance
+     * ch.globaz.amal.business.services.models.detailfamille.DetailFamilleService#
+     * getAvailableDocumentsListCorrespondance
      * (java.lang.String)
      */
     @Override
@@ -1235,7 +1234,8 @@ public class DetailFamilleServiceImpl implements DetailFamilleService {
         try {
             searchModel = AmalServiceLocator.getParametreModelService().search(searchModel);
             for (int iCurrentModel = 0; iCurrentModel < searchModel.getSize(); iCurrentModel++) {
-                ParametreModelComplex currentModel = (ParametreModelComplex) searchModel.getSearchResults()[iCurrentModel];
+                ParametreModelComplex currentModel = (ParametreModelComplex) searchModel
+                        .getSearchResults()[iCurrentModel];
                 if (currentModel.getSimpleParametreModel().getVisibleCorrespondance()) {
                     allTemplates.add(currentModel);
                 }
@@ -1250,7 +1250,7 @@ public class DetailFamilleServiceImpl implements DetailFamilleService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ch.globaz.amal.business.services.models.contribuable.ContribuableService #read(java .lang.String)
      */
     public AdministrationComplexModel getCaisseMaladie(String idTiers) throws JadePersistenceException {
@@ -1272,7 +1272,8 @@ public class DetailFamilleServiceImpl implements DetailFamilleService {
     }
 
     @Override
-    public Properties getGEDPublishProperties(SimpleDetailFamille detailFamille, SimpleControleurEnvoiStatus statusEnvoi) {
+    public Properties getGEDPublishProperties(SimpleDetailFamille detailFamille,
+            SimpleControleurEnvoiStatus statusEnvoi) {
 
         // ----------------------------------------
         // Test des informations d'entrées
@@ -1282,8 +1283,8 @@ public class DetailFamilleServiceImpl implements DetailFamilleService {
         try {
             currentDocument = AmalImplServiceLocator.getSimpleDocumentService().read(statusEnvoi.getIdEnvoi());
         } catch (Exception e) {
-            JadeLogger
-                    .error(this, "Exception getting the document " + statusEnvoi.getIdEnvoi() + " >> " + e.toString());
+            JadeLogger.error(this,
+                    "Exception getting the document " + statusEnvoi.getIdEnvoi() + " >> " + e.toString());
             e.printStackTrace();
         }
         SimpleContribuable contribuable = null;
@@ -1293,8 +1294,8 @@ public class DetailFamilleServiceImpl implements DetailFamilleService {
                     .read(detailFamille.getIdContribuable());
             currentContribuable = AmalServiceLocator.getContribuableService().read(detailFamille.getIdContribuable());
         } catch (Exception e) {
-            JadeLogger.error(this, "Exception getting the contribuable " + detailFamille.getIdContribuable() + " >> "
-                    + e.toString());
+            JadeLogger.error(this,
+                    "Exception getting the contribuable " + detailFamille.getIdContribuable() + " >> " + e.toString());
             e.printStackTrace();
         }
         // ----------------------------------------
@@ -1347,12 +1348,13 @@ public class DetailFamilleServiceImpl implements DetailFamilleService {
         try {
             searchModel = AmalServiceLocator.getParametreModelService().search(searchModel);
             for (int iCurrentModel = 0; iCurrentModel < searchModel.getSize(); iCurrentModel++) {
-                ParametreModelComplex currentModel = (ParametreModelComplex) searchModel.getSearchResults()[iCurrentModel];
-                if (currentDocument.getNumModele().equals(
-                        currentModel.getSimpleParametreModel().getCodeSystemeFormule())) {
+                ParametreModelComplex currentModel = (ParametreModelComplex) searchModel
+                        .getSearchResults()[iCurrentModel];
+                if (currentDocument.getNumModele()
+                        .equals(currentModel.getSimpleParametreModel().getCodeSystemeFormule())) {
                     gedDocumentType = currentSession.getCode(currentModel.getSimpleParametreModel().getTypeGed());
-                    gedDocumentTypeLibelle = currentSession.getCodeLibelle(currentModel.getSimpleParametreModel()
-                            .getTypeGed());
+                    gedDocumentTypeLibelle = currentSession
+                            .getCodeLibelle(currentModel.getSimpleParametreModel().getTypeGed());
                     break;
                 }
             }
@@ -1469,8 +1471,8 @@ public class DetailFamilleServiceImpl implements DetailFamilleService {
                     for (int iStatus = 0; iStatus < statusSearch.getSize(); iStatus++) {
                         SimpleControleurEnvoiStatus status = (SimpleControleurEnvoiStatus) statusSearch
                                 .getSearchResults()[iStatus];
-                        SimpleControleurJob currentJob = AmalImplServiceLocator.getSimpleControleurJobService().read(
-                                status.getIdJob());
+                        SimpleControleurJob currentJob = AmalImplServiceLocator.getSimpleControleurJobService()
+                                .read(status.getIdJob());
                         ComplexControleurEnvoiDetail detail = new ComplexControleurEnvoiDetail();
                         detail.setDateEnvoi(document.getDateEnvoi());
                         detail.setStatusEnvoi(status.getStatusEnvoi());
@@ -1495,8 +1497,8 @@ public class DetailFamilleServiceImpl implements DetailFamilleService {
     }
 
     @Override
-    public String getIdFormuleFromNoFormule(String noFormule) throws FormuleListException,
-            JadeApplicationServiceNotAvailableException, JadePersistenceException {
+    public String getIdFormuleFromNoFormule(String noFormule)
+            throws FormuleListException, JadeApplicationServiceNotAvailableException, JadePersistenceException {
         FormuleListSearch formuleListSearch = new FormuleListSearch();
         // en fait, for libelle is for cs document...
         formuleListSearch.setForlibelle(noFormule);
@@ -1514,7 +1516,7 @@ public class DetailFamilleServiceImpl implements DetailFamilleService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ch.globaz.amal.business.services.models.detailFamille.DetailFamilleService#getInteractivDocumentFileName()
      */
     @Override
@@ -1533,7 +1535,7 @@ public class DetailFamilleServiceImpl implements DetailFamilleService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ch.globaz.amal.business.services.models.detailFamille.DetailFamilleService#getInteractivDocumentFileName()
      */
     @Override
@@ -1562,7 +1564,7 @@ public class DetailFamilleServiceImpl implements DetailFamilleService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ch.globaz.amal.business.services.models.detailFamille.DetailFamilleService#getInteractivDocumentFileName()
      */
     @Override
@@ -1570,8 +1572,8 @@ public class DetailFamilleServiceImpl implements DetailFamilleService {
             String idFormule, String csFormule) {
         String filePathTarget = "";
         SimpleParametreApplicationSearch paramSearch = new SimpleParametreApplicationSearch();
-        paramSearch.setForCsTypeParametre(IAMCodeSysteme.AMParametreApplication.CHEMIN_EXPORT_WORD_SERVER_JOB
-                .getValue());
+        paramSearch
+                .setForCsTypeParametre(IAMCodeSysteme.AMParametreApplication.CHEMIN_EXPORT_WORD_SERVER_JOB.getValue());
         try {
             paramSearch = AmalServiceLocator.getSimpleParametreApplicationService().search(paramSearch);
             if (paramSearch.getSize() == 1) {
@@ -1598,7 +1600,8 @@ public class DetailFamilleServiceImpl implements DetailFamilleService {
             allCMSearch.setForGenreAdministration(AMGestionTiers.CS_TYPE_CAISSE_MALADIE);
             allCMSearch = TIBusinessServiceLocator.getAdministrationService().find(allCMSearch);
             for (int iCaisse = 0; iCaisse < allCMSearch.getSize(); iCaisse++) {
-                AdministrationComplexModel caisse = (AdministrationComplexModel) allCMSearch.getSearchResults()[iCaisse];
+                AdministrationComplexModel caisse = (AdministrationComplexModel) allCMSearch
+                        .getSearchResults()[iCaisse];
                 if ((caisse.getTiers().getInactif() == true) || caisse.getTiers().get_inactif().equals("1")) {
                     continue;
                 }
@@ -1703,9 +1706,9 @@ public class DetailFamilleServiceImpl implements DetailFamilleService {
     /**
      * @param id
      *            ID du code système
-     * 
+     *
      * @return libelle général du code système correspondant
-     * 
+     *
      */
     @Override
     public ArrayList<String> getListeTypeDemandeCalcul(String empty) {
@@ -1752,8 +1755,8 @@ public class DetailFamilleServiceImpl implements DetailFamilleService {
         revenuHistoriqueSearch.setForIdContribuable(idContribuable);
         revenuHistoriqueSearch.setForAnneeHistorique(annee);
         revenuHistoriqueSearch.setForRevenuActif(true);
-        revenuHistoriqueSearch = (RevenuHistoriqueSearch) AmalServiceLocator.getRevenuService().search(
-                revenuHistoriqueSearch);
+        revenuHistoriqueSearch = (RevenuHistoriqueSearch) AmalServiceLocator.getRevenuService()
+                .search(revenuHistoriqueSearch);
 
         if (revenuHistoriqueSearch.getSize() > 0) {
             RevenuHistorique revenuHistorique = (RevenuHistorique) revenuHistoriqueSearch.getSearchResults()[0];
@@ -1772,7 +1775,7 @@ public class DetailFamilleServiceImpl implements DetailFamilleService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ch.globaz.amal.business.services.models.detailFamille.DetailFamilleService#getListSubsidesCalculAjax
      */
     @Override
@@ -1788,7 +1791,7 @@ public class DetailFamilleServiceImpl implements DetailFamilleService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ch.globaz.amal.business.services.models.detailFamille.DetailFamilleService#getListTaxations
      */
     @Override
@@ -1874,12 +1877,13 @@ public class DetailFamilleServiceImpl implements DetailFamilleService {
 
     @Override
     public ArrayList<CalculsTaxationContainer> getListTaxationsCalculAjax(HashMap<?, ?> values) {
-        return getListTaxationsCalcul(values.get("idContribuable").toString(), values.get("anneeHistorique").toString());
+        return getListTaxationsCalcul(values.get("idContribuable").toString(),
+                values.get("anneeHistorique").toString());
     }
 
     /**
      * Préparation du tableau d'id nécessaire au merge du document wordml
-     * 
+     *
      * @param currentDetail
      *            information du document courant
      * @return map renseignée
@@ -1920,7 +1924,7 @@ public class DetailFamilleServiceImpl implements DetailFamilleService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ch.globaz.amal.business.services.models.detailFamille.DetailFamilleService#read(java.lang.String)
      */
     @Override
@@ -1937,7 +1941,7 @@ public class DetailFamilleServiceImpl implements DetailFamilleService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * ch.globaz.amal.business.services.models.detailFamille.DetailFamilleService#search(ch.globaz.amal.business.models
      * .detailfamille.SimpleDetailFamille)
@@ -1957,14 +1961,14 @@ public class DetailFamilleServiceImpl implements DetailFamilleService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * ch.globaz.amal.business.services.models.detailFamille.DetailFamilleService#search(ch.globaz.amal.business.models
      * .detailfamille.SimpleDetailFamille)
      */
     @Override
-    public SimpleDocumentSearch search(SimpleDocumentSearch simpleDocumentSearch) throws JadePersistenceException,
-            DocumentException {
+    public SimpleDocumentSearch search(SimpleDocumentSearch simpleDocumentSearch)
+            throws JadePersistenceException, DocumentException {
         if (simpleDocumentSearch == null) {
             throw new DocumentException("Unable to search document, the search model passed is null!");
         }
@@ -1973,14 +1977,14 @@ public class DetailFamilleServiceImpl implements DetailFamilleService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * ch.globaz.amal.business.services.models.detailFamille.DetailFamilleService#update(ch.globaz.amal.business.models
      * .detailfamille.SimpleDetailFamille)
      */
     @Override
-    public SimpleDetailFamille update(SimpleDetailFamille detailFamille) throws DetailFamilleException,
-            JadePersistenceException {
+    public SimpleDetailFamille update(SimpleDetailFamille detailFamille)
+            throws DetailFamilleException, JadePersistenceException {
         if (detailFamille == null) {
             throw new DetailFamilleException("Unable to update detailFamille the given model is null!");
         }
@@ -1993,15 +1997,15 @@ public class DetailFamilleServiceImpl implements DetailFamilleService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ch.globaz.amal.business.services.models.detailFamille.DetailFamilleService#writeInJobTable(ch.globaz
      * .amal.business.models .detailfamille.SimpleDetailFamille)
      */
     @Override
     public void writeInJobTable(String dateJourComplete, String csModele, String csJobType, String idDetailFamille,
-            int noGroupe) throws JadeApplicationServiceNotAvailableException, JadePersistenceException,
-            DocumentException, DetailFamilleException, ControleurEnvoiException, AnnonceException,
-            ControleurJobException {
+            int noGroupe)
+            throws JadeApplicationServiceNotAvailableException, JadePersistenceException, DocumentException,
+            DetailFamilleException, ControleurEnvoiException, AnnonceException, ControleurJobException {
 
         if (!JadeStringUtil.isBlankOrZero(idDetailFamille)) {
             // Récupération de la date du jour
@@ -2156,7 +2160,7 @@ public class DetailFamilleServiceImpl implements DetailFamilleService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * ch.globaz.amal.business.services.models.detailFamille.DetailFamilleService#writeInteractiveDocument(ch.globaz
      * .amal.business.models .detailfamille.SimpleDetailFamille)

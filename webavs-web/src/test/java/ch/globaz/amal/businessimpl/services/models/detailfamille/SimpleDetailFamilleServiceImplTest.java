@@ -1,22 +1,22 @@
 /**
- * 
+ *
  */
 package ch.globaz.amal.businessimpl.services.models.detailfamille;
 
-import globaz.jade.context.JadeThread;
-import globaz.jade.exception.JadePersistenceException;
-import globaz.jade.log.business.JadeBusinessMessageLevels;
 import org.junit.Assert;
 import ch.globaz.amal.business.exceptions.models.detailFamille.DetailFamilleException;
 import ch.globaz.amal.business.models.detailfamille.SimpleDetailFamille;
 import ch.globaz.amal.business.models.detailfamille.SimpleDetailFamilleSearch;
 import ch.globaz.amal.businessimpl.services.AmalImplServiceLocator;
+import globaz.jade.context.JadeThread;
+import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.log.business.JadeBusinessMessageLevels;
 
 /**
  * @author DHI
- * 
+ *
  */
-public class SimpleDetailFamilleServiceImplTest /* extends AMTestCase */{
+public class SimpleDetailFamilleServiceImplTest /* extends AMTestCase */ {
 
     /**
      * @param name
@@ -27,7 +27,7 @@ public class SimpleDetailFamilleServiceImplTest /* extends AMTestCase */{
 
     /**
      * Test de création d'un detailFamille
-     * 
+     *
      */
     public void testCreate() {
         try {
@@ -36,8 +36,8 @@ public class SimpleDetailFamilleServiceImplTest /* extends AMTestCase */{
             SimpleDetailFamille currentDetailFamille = new SimpleDetailFamille();
             currentDetailFamille.setAnneeHistorique("-1");
             try {
-                currentDetailFamille = AmalImplServiceLocator.getSimpleDetailFamilleService().create(
-                        currentDetailFamille);
+                currentDetailFamille = AmalImplServiceLocator.getSimpleDetailFamilleService()
+                        .create(currentDetailFamille);
             } catch (Exception ex) {
                 Assert.fail("Exception soulevée lors de la création d'un détail famille avec paramètres erronés "
                         + ex.toString());
@@ -52,8 +52,8 @@ public class SimpleDetailFamilleServiceImplTest /* extends AMTestCase */{
             currentDetailFamille.setIdFamille("1");
             currentDetailFamille.setRefus(false);
             try {
-                currentDetailFamille = AmalImplServiceLocator.getSimpleDetailFamilleService().create(
-                        currentDetailFamille);
+                currentDetailFamille = AmalImplServiceLocator.getSimpleDetailFamilleService()
+                        .create(currentDetailFamille);
             } catch (Exception ex) {
                 Assert.fail("Exception soulevée lors de la création d'un détail famille avec paramètres corrects "
                         + ex.toString());
@@ -76,7 +76,7 @@ public class SimpleDetailFamilleServiceImplTest /* extends AMTestCase */{
 
     /**
      * Test de suppression d'un detailFamille
-     * 
+     *
      */
     public void testDelete() {
         try {
@@ -100,8 +100,8 @@ public class SimpleDetailFamilleServiceImplTest /* extends AMTestCase */{
             currentDetailFamille = new SimpleDetailFamille();
             currentDetailFamille.setId("-10"); // id sans historique
             try {
-                currentDetailFamille = AmalImplServiceLocator.getSimpleDetailFamilleService().delete(
-                        currentDetailFamille);
+                currentDetailFamille = AmalImplServiceLocator.getSimpleDetailFamilleService()
+                        .delete(currentDetailFamille);
             } catch (JadePersistenceException ex) {
                 bJadePersistenceException = true;
             } catch (Exception ex) {
@@ -121,8 +121,8 @@ public class SimpleDetailFamilleServiceImplTest /* extends AMTestCase */{
             currentDetailFamille = AmalImplServiceLocator.getSimpleDetailFamilleService().read("36");
             boolean bDeleteOK = true;
             try {
-                currentDetailFamille = AmalImplServiceLocator.getSimpleDetailFamilleService().delete(
-                        currentDetailFamille);
+                currentDetailFamille = AmalImplServiceLocator.getSimpleDetailFamilleService()
+                        .delete(currentDetailFamille);
             } catch (Exception ex) {
                 bDeleteOK = false;
             }
@@ -138,7 +138,7 @@ public class SimpleDetailFamilleServiceImplTest /* extends AMTestCase */{
 
     /**
      * Test de lecture d'un detailFamille
-     * 
+     *
      */
     public void testRead() {
         try {
@@ -232,9 +232,9 @@ public class SimpleDetailFamilleServiceImplTest /* extends AMTestCase */{
     }
 
     /**
-     * 
+     *
      * Test de recherche d'un détail Famille
-     * 
+     *
      */
     public void testSearch() {
         try {
@@ -310,7 +310,7 @@ public class SimpleDetailFamilleServiceImplTest /* extends AMTestCase */{
 
     /**
      * Test de mise à jour d'une entité detailFamille
-     * 
+     *
      */
     public void testUpdate() {
 
@@ -323,8 +323,8 @@ public class SimpleDetailFamilleServiceImplTest /* extends AMTestCase */{
             currentDetailFamille.setIdFamille("1");
             currentDetailFamille.setRefus(false);
             try {
-                currentDetailFamille = AmalImplServiceLocator.getSimpleDetailFamilleService().update(
-                        currentDetailFamille);
+                currentDetailFamille = AmalImplServiceLocator.getSimpleDetailFamilleService()
+                        .update(currentDetailFamille);
                 Assert.fail("Exception non soulevée lors de la mise à jour d'une detail Famille isNew");
             } catch (Exception ex) {
             }
@@ -334,8 +334,8 @@ public class SimpleDetailFamilleServiceImplTest /* extends AMTestCase */{
             currentDetailFamille = AmalImplServiceLocator.getSimpleDetailFamilleService().read("1");
             currentDetailFamille.setAnneeHistorique("-1");
             try {
-                currentDetailFamille = AmalImplServiceLocator.getSimpleDetailFamilleService().update(
-                        currentDetailFamille);
+                currentDetailFamille = AmalImplServiceLocator.getSimpleDetailFamilleService()
+                        .update(currentDetailFamille);
             } catch (Exception ex) {
                 Assert.fail("Exception soulevée lors de la mise à jour d'une detail Famille avec paramètres erronés "
                         + ex.toString());
@@ -348,8 +348,8 @@ public class SimpleDetailFamilleServiceImplTest /* extends AMTestCase */{
             currentDetailFamille.setAnneeHistorique("1996");
             currentDetailFamille.setAnneeRecalcul("1995");
             try {
-                currentDetailFamille = AmalImplServiceLocator.getSimpleDetailFamilleService().update(
-                        currentDetailFamille);
+                currentDetailFamille = AmalImplServiceLocator.getSimpleDetailFamilleService()
+                        .update(currentDetailFamille);
             } catch (Exception ex) {
                 Assert.fail("Exception soulevée lors de la mise à jour d'un detail Famille avec paramètres corrects "
                         + ex.toString());

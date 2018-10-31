@@ -74,6 +74,7 @@ public interface IAMPublipostage {
         FINDROIT("FinDroit"),
         MONTANTCONTRIBUTION("MontantContribution"),
         MONTANTCONTRIBUTIONSUPPLEMENT("MontantContributionSupplement"),
+        MONTANTCONTRIBUTIONSUPPLEMENTPCFAMILLE("MontantContributionSupplementPCFamille"),
         TYPEDEMANDE("TypeDemande");
 
         // Value storage

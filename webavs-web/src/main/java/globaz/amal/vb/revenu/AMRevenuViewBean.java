@@ -1,15 +1,8 @@
 /**
- * 
+ *
  */
 package globaz.amal.vb.revenu;
 
-import globaz.globall.db.BSession;
-import globaz.globall.db.BSpy;
-import globaz.globall.vb.BJadePersistentObjectViewBean;
-import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.log.JadeLogger;
-import globaz.pyxis.db.adressecourrier.TIPays;
-import globaz.pyxis.db.adressecourrier.TIPaysManager;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -27,12 +20,19 @@ import ch.globaz.amal.business.models.revenu.SimpleRevenu;
 import ch.globaz.amal.business.models.revenu.SimpleRevenuSearch;
 import ch.globaz.amal.business.services.AmalServiceLocator;
 import ch.globaz.amal.businessimpl.services.AmalImplServiceLocator;
+import globaz.globall.db.BSession;
+import globaz.globall.db.BSpy;
+import globaz.globall.vb.BJadePersistentObjectViewBean;
+import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.log.JadeLogger;
+import globaz.pyxis.db.adressecourrier.TIPays;
+import globaz.pyxis.db.adressecourrier.TIPaysManager;
 
 /**
  * @author DHI
- * 
+ *
  *         Viewbean for revenu management (taxation)
- * 
+ *
  */
 public class AMRevenuViewBean extends BJadePersistentObjectViewBean {
     private int anneeOld = 2005;
@@ -45,7 +45,7 @@ public class AMRevenuViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Default Constructor
-     * 
+     *
      */
     public AMRevenuViewBean() {
         super();
@@ -58,7 +58,7 @@ public class AMRevenuViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Consructor with parameters
-     * 
+     *
      * @param revenuFullComplex
      */
     public AMRevenuViewBean(RevenuFullComplex revenuFullComplex) {
@@ -72,7 +72,7 @@ public class AMRevenuViewBean extends BJadePersistentObjectViewBean {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.db.BIPersistentObject#add()
      */
     @Override
@@ -85,7 +85,7 @@ public class AMRevenuViewBean extends BJadePersistentObjectViewBean {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.db.BIPersistentObject#delete()
      */
     @Override
@@ -96,7 +96,7 @@ public class AMRevenuViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Get the contribuable
-     * 
+     *
      * @return
      */
     public Contribuable getContribuable() {
@@ -105,7 +105,7 @@ public class AMRevenuViewBean extends BJadePersistentObjectViewBean {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.db.BIPersistentObject#getId()
      */
     @Override
@@ -115,7 +115,7 @@ public class AMRevenuViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Gets the id for next year
-     * 
+     *
      * @return
      */
     public String getIdRevenuAnneeNext() {
@@ -128,7 +128,7 @@ public class AMRevenuViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Gets the id for previous year
-     * 
+     *
      * @return
      */
     public String getIdRevenuAnneePrec() {
@@ -141,7 +141,7 @@ public class AMRevenuViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Generate Id for navigation previous and next year
-     * 
+     *
      */
     public void getNavigation() {
         SimpleRevenuSearch simpleRevenuSearch = new SimpleRevenuSearch();
@@ -184,7 +184,7 @@ public class AMRevenuViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Retrouve un paramètre avec l'année et le code type
-     * 
+     *
      * @param _type
      * @param _annee
      * @return la valeur du paramètre
@@ -194,8 +194,8 @@ public class AMRevenuViewBean extends BJadePersistentObjectViewBean {
         simpleParametreAnnuelSearch.setForCodeTypeParametre(_type);
         simpleParametreAnnuelSearch.setForAnneeParametre(_annee);
         try {
-            simpleParametreAnnuelSearch = AmalServiceLocator.getParametreAnnuelService().search(
-                    simpleParametreAnnuelSearch);
+            simpleParametreAnnuelSearch = AmalServiceLocator.getParametreAnnuelService()
+                    .search(simpleParametreAnnuelSearch);
         } catch (Exception e) {
             JadeLogger.error(this, "Error while searching ParametreAnnuel (codeType : " + _type + " / annee " + _annee
                     + ") : " + e.getMessage());
@@ -212,7 +212,7 @@ public class AMRevenuViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Find a country from a id pays
-     * 
+     *
      * @param idPays
      * @return
      */
@@ -237,7 +237,7 @@ public class AMRevenuViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Get the linked revenu historique complex
-     * 
+     *
      * @return
      */
     public RevenuFullComplex getRevenuFullComplex() {
@@ -246,7 +246,7 @@ public class AMRevenuViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Récupération du revenu historique actif lié
-     * 
+     *
      * @return
      */
     public RevenuHistoriqueComplexSearch getRevenuHistoriqueActif() {
@@ -267,7 +267,7 @@ public class AMRevenuViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Récupération du revenu historique actif lié
-     * 
+     *
      * @return
      */
     public RevenuHistoriqueComplexSearch getRevenuHistoriqueNonActif() {
@@ -288,7 +288,7 @@ public class AMRevenuViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Gets the taxation rubrique
-     * 
+     *
      * @param propertyName
      * @param anneeHistorique
      * @return
@@ -311,8 +311,12 @@ public class AMRevenuViewBean extends BJadePersistentObjectViewBean {
             propertyList.add(IAMCodeSysteme.CS_RUBRIQUE_INTERETSPASSIFSPRIVE);
             propertyList.add(IAMCodeSysteme.CS_RUBRIQUE_PERSONNECHARGEENFANT);
             propertyList.add(IAMCodeSysteme.CS_RUBRIQUE_PERTEACTIVITEACCESSINDEP);
-            propertyList.add(IAMCodeSysteme.CS_RUBRIQUE_PERTEACTIVITEAGRIC);
             propertyList.add(IAMCodeSysteme.CS_RUBRIQUE_PERTEACTIVITEINDEP);
+            propertyList.add(IAMCodeSysteme.CS_RUBRIQUE_REVENUACTIVINDEP);
+            propertyList.add(IAMCodeSysteme.CS_RUBRIQUE_REVENUACTIVINDEPEPOUSE);
+            propertyList.add(IAMCodeSysteme.CS_RUBRIQUE_PERTEACTIVITEAGRIC);
+            propertyList.add(IAMCodeSysteme.CS_RUBRIQUE_REVENUACTIVITEAGRIC);
+            propertyList.add(IAMCodeSysteme.CS_RUBRIQUE_REVENUACTIVITEAGRICEPOUSE);
             propertyList.add(IAMCodeSysteme.CS_RUBRIQUE_PERTESEXERCICESCOMM);
             propertyList.add(IAMCodeSysteme.CS_RUBRIQUE_PERTESOCIETE);
             propertyList.add(IAMCodeSysteme.CS_RUBRIQUE_RENDEMENTFORTUNEIMMOBCOMM);
@@ -344,8 +348,8 @@ public class AMRevenuViewBean extends BJadePersistentObjectViewBean {
                     }
                 }
             } catch (Exception e) {
-                JadeLogger.error("getCodeRubrique", "Error while loading CodeRubrique for " + propertyName
-                        + " / year : " + anneeHistorique);
+                JadeLogger.error("getCodeRubrique",
+                        "Error while loading CodeRubrique for " + propertyName + " / year : " + anneeHistorique);
             }
         }
         try {
@@ -363,7 +367,7 @@ public class AMRevenuViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Gets the BSession
-     * 
+     *
      * @return
      */
     private BSession getSession() {
@@ -372,7 +376,7 @@ public class AMRevenuViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Gets the sexe as H-F
-     * 
+     *
      * @param idSexe
      * @return
      */
@@ -389,7 +393,7 @@ public class AMRevenuViewBean extends BJadePersistentObjectViewBean {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.vb.BJadePersistentObjectViewBean#getSpy()
      */
     @Override
@@ -403,7 +407,7 @@ public class AMRevenuViewBean extends BJadePersistentObjectViewBean {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.db.BIPersistentObject#retrieve()
      */
     @Override
@@ -413,7 +417,7 @@ public class AMRevenuViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Gets the Contribuable informations
-     * 
+     *
      * @throws Exception
      */
     public void retrieveContribuable() throws Exception {
@@ -432,14 +436,13 @@ public class AMRevenuViewBean extends BJadePersistentObjectViewBean {
         for (Iterator it = Arrays.asList(search.getSearchResults()).iterator(); it.hasNext();) {
             Contribuable currentContribuable = (Contribuable) it.next();
             // Set contribuable
-            if ((null != resultContribuableSeul)
-                    && resultContribuableSeul.getContribuable().getIdTier()
-                            .equals(currentContribuable.getPersonneEtendue().getPersonneEtendue().getIdTiers())) {
+            if ((null != resultContribuableSeul) && resultContribuableSeul.getContribuable().getIdTier()
+                    .equals(currentContribuable.getPersonneEtendue().getPersonneEtendue().getIdTiers())) {
                 contribuable = currentContribuable;
                 // Setting the adresse
                 try {
-                    contribuable.setAdresseComplexModel(AmalServiceLocator.getContribuableService()
-                            .getContribuableAdresse(
+                    contribuable
+                            .setAdresseComplexModel(AmalServiceLocator.getContribuableService().getContribuableAdresse(
                                     currentContribuable.getPersonneEtendue().getPersonneEtendue().getIdTiers()));
                 } catch (Exception e) {
                     JadeLogger.error(this, "Error Loading adresse : " + contribuable.getId() + " _ " + e.getMessage());
@@ -447,8 +450,8 @@ public class AMRevenuViewBean extends BJadePersistentObjectViewBean {
                 }
                 // Setting the histo numero
                 try {
-                    contribuable.setHistoNumeroContribuable(AmalServiceLocator.getContribuableService()
-                            .getContribuableHistoriqueNoContribuable(
+                    contribuable.setHistoNumeroContribuable(
+                            AmalServiceLocator.getContribuableService().getContribuableHistoriqueNoContribuable(
                                     currentContribuable.getPersonneEtendue().getPersonneEtendue().getIdTiers()));
                 } catch (Exception e) {
                     JadeLogger.error(this, "Error Loading histo numéro contribuable : " + contribuable.getId() + " _ "
@@ -460,7 +463,7 @@ public class AMRevenuViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Set the contribuable
-     * 
+     *
      * @param contribuable
      */
     public void setContribuable(Contribuable contribuable) {
@@ -469,7 +472,7 @@ public class AMRevenuViewBean extends BJadePersistentObjectViewBean {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.db.BIPersistentObject#setId(java.lang.String)
      */
     @Override
@@ -479,7 +482,7 @@ public class AMRevenuViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Set the id contribuable
-     * 
+     *
      * @param contribuableId
      */
     public void setIdContribuable(String contribuableId) {
@@ -488,7 +491,7 @@ public class AMRevenuViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Set the revenuhistoriquecomplex
-     * 
+     *
      * @param revenuHistoriqueComplex
      */
     public void setRevenuFullComplex(RevenuFullComplex revenuFullComplex) {
@@ -497,7 +500,7 @@ public class AMRevenuViewBean extends BJadePersistentObjectViewBean {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.db.BIPersistentObject#update()
      */
     @Override

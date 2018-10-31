@@ -119,7 +119,8 @@ function createListeSubsides(data) {
 				textToInsert += '		<td align="center">R</td>';
 			}
 			textToInsert += '		<td align="center" title="'+data[iElement].codeTraitementDossierLibelleAJAX+'">'+data[iElement].codeTraitementDossierCodeAJAX+'</td>';
-			if (parseFloat(data[iElement].supplExtra) > 0 ) {
+			if (parseFloat(data[iElement].supplExtra) > 0 ||
+					parseFloat(data[iElement].montantSupplementPCFamille) > 0) {
 				var colorSupplExtra = 'green';
 				if (!data[iElement].codeActif) {
 					colorSupplExtra = 'red';

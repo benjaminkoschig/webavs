@@ -1,9 +1,5 @@
 package ch.globaz.amal.business.calcul;
 
-import globaz.globall.util.JANumberFormatter;
-import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.context.JadeThread;
-import globaz.jade.log.JadeLogger;
 import ch.globaz.amal.business.constantes.IAMCodeSysteme;
 import ch.globaz.amal.business.constantes.IAMParametresAnnuels;
 import ch.globaz.amal.business.exceptions.models.parametreannuel.ParametreAnnuelException;
@@ -15,14 +11,18 @@ import ch.globaz.amal.business.models.revenu.RevenuFullComplex;
 import ch.globaz.amal.business.models.revenu.RevenuHistoriqueComplex;
 import ch.globaz.amal.business.services.AmalServiceLocator;
 import ch.globaz.amal.businessimpl.utils.parametres.ParametresAnnuelsProvider;
+import globaz.globall.util.JANumberFormatter;
+import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.context.JadeThread;
+import globaz.jade.log.JadeLogger;
 
 /**
  * Classe de calcul de revenu déterminant et revenu imposable sourcier
- * 
+ *
  * TODO: secure all interger.parse !
- * 
+ *
  * @author cbu
- * 
+ *
  */
 public class CalculsRevenuFormules {
     private int nbRevenus = 0;
@@ -95,7 +95,7 @@ public class CalculsRevenuFormules {
 
     /**
      * Calcul les éléments du revenus déterminants
-     * 
+     *
      * @param revenuHistoriqueComplex
      */
     public CalculsRevenuFormules(RevenuHistoriqueComplex revenuHistoriqueComplex) {
@@ -124,7 +124,7 @@ public class CalculsRevenuFormules {
 
     /**
      * Calcul des déductions cotisations pour un contribuable de type sourcier
-     * 
+     *
      * @param revenuFullComplex
      * @throws ParametreAnnuelException
      */
@@ -132,8 +132,8 @@ public class CalculsRevenuFormules {
 
         if (revenuFullComplex.getSimpleRevenu().isSourcier()) {
             String txCotisationAvsAijApg = this.getParametreAnnuel(
-                    IAMParametresAnnuels.CS_IPS_TX_CALCUL_COTI_AVS_AI_APG, revenuFullComplex.getSimpleRevenu()
-                            .getAnneeTaxation(), 2);
+                    IAMParametresAnnuels.CS_IPS_TX_CALCUL_COTI_AVS_AI_APG,
+                    revenuFullComplex.getSimpleRevenu().getAnneeTaxation(), 2);
             String txCotisationAc = this.getParametreAnnuel(IAMParametresAnnuels.CS_IPS_TX_CALCUL_COTI_AC,
                     revenuFullComplex.getSimpleRevenu().getAnneeTaxation(), 2);
             String limiteCotisationAc = this.getParametreAnnuel(IAMParametresAnnuels.CS_IPS_LIMITE_COTI_AC,
@@ -144,8 +144,8 @@ public class CalculsRevenuFormules {
             String limiteCotisationAcSuppl = this.getParametreAnnuel(IAMParametresAnnuels.CS_IPS_LIMITE_COTI_AC_SUPPL,
                     revenuFullComplex.getSimpleRevenu().getAnneeTaxation(), 2);
 
-            String revPrisEnCompte = this.dequoteAndFormat(revenuFullComplex.getSimpleRevenuSourcier()
-                    .getRevenuPrisEnCompte());
+            String revPrisEnCompte = this
+                    .dequoteAndFormat(revenuFullComplex.getSimpleRevenuSourcier().getRevenuPrisEnCompte());
 
             sCotisationAvsAijApg = calculPercentage(revPrisEnCompte, txCotisationAvsAijApg);
 
@@ -188,7 +188,7 @@ public class CalculsRevenuFormules {
 
     /**
      * Calcul les déduction assurance pour le contribuable de type sourcier
-     * 
+     *
      * @param revenuFullComplex
      * @param revPrisEnCompte
      * @throws ParametreAnnuelException
@@ -197,19 +197,18 @@ public class CalculsRevenuFormules {
             throws ParametreAnnuelException {
         if (revenuFullComplex.getSimpleRevenu().isSourcier()) {
             // Calcul déduction assurance
-            Boolean isMaried = IAMCodeSysteme.CS_ETAT_CIVIL_MARIED.equals(revenuFullComplex.getSimpleRevenu()
-                    .getEtatCivil());
+            Boolean isMaried = IAMCodeSysteme.CS_ETAT_CIVIL_MARIED
+                    .equals(revenuFullComplex.getSimpleRevenu().getEtatCivil());
             String deductionAssurance = this.getParametreAnnuel(
-                    IAMParametresAnnuels.CS_IPS_TX_CALCUL_DEDUCTION_ASSU_CELIB, revenuFullComplex.getSimpleRevenu()
-                            .getAnneeTaxation(), 2);
+                    IAMParametresAnnuels.CS_IPS_TX_CALCUL_DEDUCTION_ASSU_CELIB,
+                    revenuFullComplex.getSimpleRevenu().getAnneeTaxation(), 2);
             if (isMaried) {
                 deductionAssurance = this.getParametreAnnuel(
-                        IAMParametresAnnuels.CS_IPS_TX_CALCUL_DEDUCTION_ASSU_COUPLE, revenuFullComplex
-                                .getSimpleRevenu().getAnneeTaxation(), 2);
+                        IAMParametresAnnuels.CS_IPS_TX_CALCUL_DEDUCTION_ASSU_COUPLE,
+                        revenuFullComplex.getSimpleRevenu().getAnneeTaxation(), 2);
             }
-            String limiteDeductionAssurance = this.getParametreAnnuel(
-                    IAMParametresAnnuels.CS_IPS_LIMITE_DEDUCTION_ASSU, revenuFullComplex.getSimpleRevenu()
-                            .getAnneeTaxation(), 2);
+            String limiteDeductionAssurance = this.getParametreAnnuel(IAMParametresAnnuels.CS_IPS_LIMITE_DEDUCTION_ASSU,
+                    revenuFullComplex.getSimpleRevenu().getAnneeTaxation(), 2);
 
             sDeductionAssurance = calculPercentage(revPrisEnCompte, deductionAssurance);
 
@@ -229,13 +228,13 @@ public class CalculsRevenuFormules {
 
     /**
      * Calcul les déduction assurance enfants jeunes pour le contribuable de type sourcier
-     * 
+     *
      * @param revenuFullComplex
      * @throws RevenuException
      * @throws ParametreAnnuelException
      */
-    private void calculDeductionAssurancesEnfantsJeunes(RevenuFullComplex revenuFullComplex) throws RevenuException,
-            ParametreAnnuelException {
+    private void calculDeductionAssurancesEnfantsJeunes(RevenuFullComplex revenuFullComplex)
+            throws RevenuException, ParametreAnnuelException {
 
         if (revenuFullComplex.getSimpleRevenu().isSourcier()) {
             int nbEnfants = 0;
@@ -258,36 +257,31 @@ public class CalculsRevenuFormules {
                     nbChildrenUntil16 = nbEnfants - nbChildrenBetween16And25;
                 }
             }
-            // try {
-            // nbChildrenUntil16 = nbEnfants - nbChildrenBetween16And25;
-            // } catch (NumberFormatException nfe) {
-            // nbChildrenUntil16 = 0;
-            // }
 
             if ((nbChildrenUntil16 > 0) && (nbEnfants > 0)) {
                 String deductionAssuEnfants = this.getParametreAnnuel(
-                        IAMParametresAnnuels.CS_IPS_TX_CALCUL_DEDUC_ASSU_ENFA, revenuFullComplex.getSimpleRevenu()
-                                .getAnneeTaxation(), 2);
+                        IAMParametresAnnuels.CS_IPS_TX_CALCUL_DEDUC_ASSU_ENFA,
+                        revenuFullComplex.getSimpleRevenu().getAnneeTaxation(), 2);
                 sDeductionAssuranceEnfant = String.valueOf(nbChildrenUntil16 * Double.valueOf(deductionAssuEnfants));
             }
 
             if ((nbChildrenBetween16And25 > 0) && (nbEnfants > 0)) {
                 String deductionAssuranceJeune = this.getParametreAnnuel(
-                        IAMParametresAnnuels.CS_IPS_TX_CALCUL_DEDUC_ASSU_JEUNE, revenuFullComplex.getSimpleRevenu()
-                                .getAnneeTaxation(), 2);
-                sDeductionAssuranceJeune = String.valueOf(nbChildrenBetween16And25
-                        * Double.valueOf(deductionAssuranceJeune));
+                        IAMParametresAnnuels.CS_IPS_TX_CALCUL_DEDUC_ASSU_JEUNE,
+                        revenuFullComplex.getSimpleRevenu().getAnneeTaxation(), 2);
+                sDeductionAssuranceJeune = String
+                        .valueOf(nbChildrenBetween16And25 * Double.valueOf(deductionAssuranceJeune));
             }
             // Fin calcul déduction assurance enfants et jeunes
 
             // Calcul déduction enfants
             String deductionEnfant = this.getParametreAnnuel(
-                    IAMParametresAnnuels.CS_IPS_TX_CALCUL_DEDUCTION_ENFANT_LESS_EQUAL_2, revenuFullComplex
-                            .getSimpleRevenu().getAnneeTaxation(), 2);
+                    IAMParametresAnnuels.CS_IPS_TX_CALCUL_DEDUCTION_ENFANT_LESS_EQUAL_2,
+                    revenuFullComplex.getSimpleRevenu().getAnneeTaxation(), 2);
             if (nbEnfants > 2) {
                 deductionEnfant = this.getParametreAnnuel(
-                        IAMParametresAnnuels.CS_IPS_TX_CALCUL_DEDUCTION_ENFANT_GREATER_2, revenuFullComplex
-                                .getSimpleRevenu().getAnneeTaxation(), 2);
+                        IAMParametresAnnuels.CS_IPS_TX_CALCUL_DEDUCTION_ENFANT_GREATER_2,
+                        revenuFullComplex.getSimpleRevenu().getAnneeTaxation(), 2);
             }
             sDeductionEnfants = String.valueOf(Double.valueOf(deductionEnfant) * (nbEnfants));
             // Fin calcul déduction enfants
@@ -304,7 +298,7 @@ public class CalculsRevenuFormules {
 
     /**
      * Calcul la déduction double gain pour un contribuable de type sourcier
-     * 
+     *
      * @param revenuFullComplex
      * @throws ParametreAnnuelException
      */
@@ -314,8 +308,8 @@ public class CalculsRevenuFormules {
             // Calcul déduction double gain
             if (nbRevenus == 2) {
                 String deductionDoubleGain = this.getParametreAnnuel(
-                        IAMParametresAnnuels.CS_IPS_TX_CALCUL_DEDUC_DOUBLE_GAIN, revenuFullComplex.getSimpleRevenu()
-                                .getAnneeTaxation(), 2);
+                        IAMParametresAnnuels.CS_IPS_TX_CALCUL_DEDUC_DOUBLE_GAIN,
+                        revenuFullComplex.getSimpleRevenu().getAnneeTaxation(), 2);
                 sDeductionDoubleGain = deductionDoubleGain;
             } else {
                 sDeductionDoubleGain = "0";
@@ -329,16 +323,16 @@ public class CalculsRevenuFormules {
 
     /**
      * Calcul les déductions assurances, frais obtention, double gain pour un contribuable de type sourcier
-     * 
+     *
      * @param revenuFullComplex
      * @throws RevenuException
      * @throws ParametreAnnuelException
      */
-    private final void calculDeductions(RevenuFullComplex revenuFullComplex) throws RevenuException,
-            ParametreAnnuelException {
+    private final void calculDeductions(RevenuFullComplex revenuFullComplex)
+            throws RevenuException, ParametreAnnuelException {
         if (revenuFullComplex.getSimpleRevenu().isSourcier()) {
-            String revPrisEnCompte = this.dequoteAndFormat(revenuFullComplex.getSimpleRevenuSourcier()
-                    .getRevenuPrisEnCompte());
+            String revPrisEnCompte = this
+                    .dequoteAndFormat(revenuFullComplex.getSimpleRevenuSourcier().getRevenuPrisEnCompte());
 
             calculDeductionAssurance(revenuFullComplex, revPrisEnCompte);
             calculDeductionAssurancesEnfantsJeunes(revenuFullComplex);
@@ -349,7 +343,7 @@ public class CalculsRevenuFormules {
 
     /**
      * Méthode de calcul des déductions AMAL pour enfants et enfants en suspens
-     * 
+     *
      * @param revenuFullComplex
      * @return
      * @throws RevenuException
@@ -417,11 +411,11 @@ public class CalculsRevenuFormules {
                     revenuFullComplex.getSimpleRevenuContribuable().setRevenuTaux(String.valueOf(revenuTaux_Double));
                 } else {
                     revenuImposable_Double = totalRevenuPersCharge - mtDeductionPersChargeEnf_Double;
-                    revenuFullComplex.getSimpleRevenuContribuable().setRevenuImposable(
-                            String.valueOf(revenuImposable_Double));
+                    revenuFullComplex.getSimpleRevenuContribuable()
+                            .setRevenuImposable(String.valueOf(revenuImposable_Double));
                 }
-                revenuFullComplex.getSimpleRevenuContribuable().setPersChargeEnf(
-                        String.valueOf(mtDeductionPersChargeEnf_Double));
+                revenuFullComplex.getSimpleRevenuContribuable()
+                        .setPersChargeEnf(String.valueOf(mtDeductionPersChargeEnf_Double));
 
                 // Mêmes calculs pour les enfants en suspens
                 if (!JadeStringUtil.isBlankOrZero(nbEnfantsSuspens)) {
@@ -435,11 +429,11 @@ public class CalculsRevenuFormules {
                                 .setRevenuTaux(String.valueOf(revenuTaux_Double));
                     } else {
                         revenuImposable_Double = totalRevenuPersCharge - persCharEnfSuspens_Double;
-                        revenuFullComplex.getSimpleRevenuContribuable().setRevenuImposable(
-                                String.valueOf(revenuImposable_Double));
+                        revenuFullComplex.getSimpleRevenuContribuable()
+                                .setRevenuImposable(String.valueOf(revenuImposable_Double));
                     }
-                    revenuFullComplex.getSimpleRevenuContribuable().setPersChargeEnf(
-                            String.valueOf(persCharEnfSuspens_Double));
+                    revenuFullComplex.getSimpleRevenuContribuable()
+                            .setPersChargeEnf(String.valueOf(persCharEnfSuspens_Double));
                 }
             } else {
                 revenuFullComplex.getSimpleRevenuContribuable().setPersChargeEnf("0");
@@ -458,7 +452,7 @@ public class CalculsRevenuFormules {
 
     /**
      * Calcul les déductions de frais d'obtention pour un contribuable de type sourcier
-     * 
+     *
      * @param revenuFullComplex
      * @param revPrisEnCompte
      * @throws ParametreAnnuelException
@@ -467,11 +461,11 @@ public class CalculsRevenuFormules {
             throws ParametreAnnuelException {
         if (revenuFullComplex.getSimpleRevenu().isSourcier()) {
             String deductionFraisObtention = this.getParametreAnnuel(
-                    IAMParametresAnnuels.CS_IPS_TX_CALCUL_DEDUC_FRAIS_OBTENTION, revenuFullComplex.getSimpleRevenu()
-                            .getAnneeTaxation(), 2);
+                    IAMParametresAnnuels.CS_IPS_TX_CALCUL_DEDUC_FRAIS_OBTENTION,
+                    revenuFullComplex.getSimpleRevenu().getAnneeTaxation(), 2);
             String limiteDeductionFraisObtention = this.getParametreAnnuel(
-                    IAMParametresAnnuels.CS_IPS_LIMITE_DEDUC_FRAIS_OBTENTION, revenuFullComplex.getSimpleRevenu()
-                            .getAnneeTaxation(), 2);
+                    IAMParametresAnnuels.CS_IPS_LIMITE_DEDUC_FRAIS_OBTENTION,
+                    revenuFullComplex.getSimpleRevenu().getAnneeTaxation(), 2);
             sDeductionFraisObtention = calculPercentage(revPrisEnCompte, deductionFraisObtention);
 
             // Adaptation au nombre de revenus
@@ -491,7 +485,7 @@ public class CalculsRevenuFormules {
 
     /**
      * Utilitaire pour calculer le pourcentage d'un nombre
-     * 
+     *
      * @param number
      * @param percentage
      * @return
@@ -512,15 +506,15 @@ public class CalculsRevenuFormules {
 
     /**
      * Calcul des primes LPP ET AANP pour un contribuable de type sourcier
-     * 
+     *
      * @param revenuFullComplex
      * @throws ParametreAnnuelException
      */
     private final void calculPrimes(RevenuFullComplex revenuFullComplex) throws ParametreAnnuelException {
 
         if (revenuFullComplex.getSimpleRevenu().isSourcier()) {
-            String revPrisEnCompte = this.dequoteAndFormat(revenuFullComplex.getSimpleRevenuSourcier()
-                    .getRevenuPrisEnCompte());
+            String revPrisEnCompte = this
+                    .dequoteAndFormat(revenuFullComplex.getSimpleRevenuSourcier().getRevenuPrisEnCompte());
 
             String txPrimesAANP = this.getParametreAnnuel(IAMParametresAnnuels.CS_IPS_TX_CALCUL_PRIME_AANP,
                     revenuFullComplex.getSimpleRevenu().getAnneeTaxation(), 2);
@@ -551,7 +545,7 @@ public class CalculsRevenuFormules {
 
     /**
      * Calcul du revenu prise en compte (montant par mois * nb mois) pour un contribuable de type sourcier
-     * 
+     *
      * @param revenuFullComplex
      * @throws ParametreAnnuelException
      */
@@ -584,7 +578,8 @@ public class CalculsRevenuFormules {
             revenuFullComplex.getSimpleRevenuSourcier().setRevenuPrisEnCompte(sRevenuPrisEnCompte);
 
             // On vérifie combien de revenu il y a
-            if (!JadeStringUtil.isBlankOrZero(revenuMensuelEpouse) || !JadeStringUtil.isBlankOrZero(revenuAnnuelEpouse)) {
+            if (!JadeStringUtil.isBlankOrZero(revenuMensuelEpouse)
+                    || !JadeStringUtil.isBlankOrZero(revenuAnnuelEpouse)) {
                 nbRevenus++;
             }
 
@@ -599,7 +594,7 @@ public class CalculsRevenuFormules {
 
     /**
      * Utilitaire de formatage
-     * 
+     *
      * @param value
      * @return
      */
@@ -609,7 +604,7 @@ public class CalculsRevenuFormules {
 
     /**
      * Utilitaire de formatage
-     * 
+     *
      * @param value
      * @return
      */
@@ -626,7 +621,7 @@ public class CalculsRevenuFormules {
 
     /**
      * Calcul du revenu déterminant en fonction d'informations de revenus complètes
-     * 
+     *
      * @param revenuHistoriqueComplex
      * @return
      * @throws ParametreAnnuelException
@@ -652,8 +647,8 @@ public class CalculsRevenuFormules {
 
             // Do the calcul for normal contribuable
             // --------------------------------------------------
-            if (!IAMCodeSysteme.CS_TYPE_SOURCIER.equals(revenuHistoriqueComplex.getRevenuFullComplex()
-                    .getSimpleRevenu().getTypeRevenu())) {
+            if (!IAMCodeSysteme.CS_TYPE_SOURCIER
+                    .equals(revenuHistoriqueComplex.getRevenuFullComplex().getSimpleRevenu().getTypeRevenu())) {
                 excedentDepensesPropImmoCalcul = getSommeExcDepPropImmo(revenuHistoriqueComplex);
                 rendementFortuneImmoCalcul = getSommeRendementFortuneImmobiliere(revenuHistoriqueComplex);
                 excDepSuccNp = revenuHistoriqueComplex.getRevenuFullComplex().getSimpleRevenuContribuable()
@@ -661,9 +656,8 @@ public class CalculsRevenuFormules {
                 excDepSuccNp = JadeStringUtil.isBlankOrZero(excDepSuccNp) ? "0" : excDepSuccNp;
                 perteReporteeExercicesCommerciauxCalcul = revenuHistoriqueComplex.getRevenuFullComplex()
                         .getSimpleRevenuContribuable().getPerteCommercial();
-                perteReporteeExercicesCommerciauxCalcul = JadeStringUtil
-                        .isBlankOrZero(perteReporteeExercicesCommerciauxCalcul) ? "0"
-                        : perteReporteeExercicesCommerciauxCalcul;
+                perteReporteeExercicesCommerciauxCalcul = JadeStringUtil.isBlankOrZero(
+                        perteReporteeExercicesCommerciauxCalcul) ? "0" : perteReporteeExercicesCommerciauxCalcul;
                 intPassifs = getSommeIntPassifs(revenuHistoriqueComplex);
                 perteExercicesCommerciaux = getSommePertesExCommerciaux(revenuHistoriqueComplex);
                 partRendementImmob = getSommePartRendementImmob(revenuHistoriqueComplex);
@@ -671,10 +665,12 @@ public class CalculsRevenuFormules {
                 fortuneImposablePercentCalcul = getFortuneImposablePercentCalcul(revenuHistoriqueComplex);
 
                 // On prend 'Fortune taux' s'il existe, sinon 'Fortune Imposable'
-                fortuneImposableCalcul = JadeStringUtil.isBlankOrZero(revenuHistoriqueComplex.getRevenuFullComplex()
-                        .getSimpleRevenuContribuable().getFortuneTaux()) ? revenuHistoriqueComplex
-                        .getRevenuFullComplex().getSimpleRevenuContribuable().getFortuneImposable()
-                        : revenuHistoriqueComplex.getRevenuFullComplex().getSimpleRevenuContribuable().getFortuneTaux();
+                fortuneImposableCalcul = JadeStringUtil.isBlankOrZero(
+                        revenuHistoriqueComplex.getRevenuFullComplex().getSimpleRevenuContribuable().getFortuneTaux())
+                                ? revenuHistoriqueComplex.getRevenuFullComplex().getSimpleRevenuContribuable()
+                                        .getFortuneImposable()
+                                : revenuHistoriqueComplex.getRevenuFullComplex().getSimpleRevenuContribuable()
+                                        .getFortuneTaux();
                 // On enlève les quotes sinon ca pète dans le parseInt ou dans le round
                 fortuneImposableCalcul = this.dequoteAndFormat(fortuneImposableCalcul);
                 // Si la fortune est plus grande que 1000 on arrondi
@@ -693,41 +689,43 @@ public class CalculsRevenuFormules {
             revenuImposableCalcul = getRevenuImposableCalcul(revenuHistoriqueComplex);
 
             String deductionSelonNbreEnfantCalcul = getDeductionSelonNbreEnfantCalcul(revenuHistoriqueComplex);
-            String deductionContribAvecEnfantChargeCalcul = getDeductionContribAvecEnfantChargeCalcul(revenuHistoriqueComplex);
-            String deductionContribNonCelibSansEnfantChargeCalcul = getDeductionContribNonCelibSansEnfantChargeCalcul(revenuHistoriqueComplex);
+            String deductionContribAvecEnfantChargeCalcul = getDeductionContribAvecEnfantChargeCalcul(
+                    revenuHistoriqueComplex);
+            String deductionContribNonCelibSansEnfantChargeCalcul = getDeductionContribNonCelibSansEnfantChargeCalcul(
+                    revenuHistoriqueComplex);
             String nbEnfantsPlusEnfantsSuspens = groupChildrens(revenuHistoriqueComplex);
 
             // Set the revenu historique complex with new values
             // --------------------------------------------------
-            revenuHistoriqueComplex.getSimpleRevenuDeterminant().setExcedentDepensesPropImmoCalcul(
-                    excedentDepensesPropImmoCalcul);
-            revenuHistoriqueComplex.getSimpleRevenuDeterminant().setRendementFortuneImmoCalcul(
-                    rendementFortuneImmoCalcul);
+            revenuHistoriqueComplex.getSimpleRevenuDeterminant()
+                    .setExcedentDepensesPropImmoCalcul(excedentDepensesPropImmoCalcul);
+            revenuHistoriqueComplex.getSimpleRevenuDeterminant()
+                    .setRendementFortuneImmoCalcul(rendementFortuneImmoCalcul);
             revenuHistoriqueComplex.getSimpleRevenuDeterminant()
                     .setExcedentDepensesSuccNonPartageesCalcul(excDepSuccNp);
             revenuHistoriqueComplex.getSimpleRevenuDeterminant().setInteretsPassifsCalcul(intPassifs);
-            revenuHistoriqueComplex.getSimpleRevenuDeterminant().setPerteExercicesCommerciauxCalcul(
-                    perteExercicesCommerciaux);
-            revenuHistoriqueComplex.getSimpleRevenuDeterminant().setPerteReporteeExercicesCommerciauxCalcul(
-                    perteReporteeExercicesCommerciauxCalcul);
+            revenuHistoriqueComplex.getSimpleRevenuDeterminant()
+                    .setPerteExercicesCommerciauxCalcul(perteExercicesCommerciaux);
+            revenuHistoriqueComplex.getSimpleRevenuDeterminant()
+                    .setPerteReporteeExercicesCommerciauxCalcul(perteReporteeExercicesCommerciauxCalcul);
             revenuHistoriqueComplex.getSimpleRevenuDeterminant().setPerteLiquidationCalcul(perteLiquidation);
-            revenuHistoriqueComplex.getSimpleRevenuDeterminant().setPartRendementImmobExedantIntPassifsCalcul(
-                    partRendementImmob);
+            revenuHistoriqueComplex.getSimpleRevenuDeterminant()
+                    .setPartRendementImmobExedantIntPassifsCalcul(partRendementImmob);
             revenuHistoriqueComplex.getSimpleRevenuDeterminant().setDeductionCouplesMaries(deductionCoupleMarie);
             revenuHistoriqueComplex.getSimpleRevenuDeterminant().setFortuneImposableCalcul(fortuneImposableCalcul);
-            revenuHistoriqueComplex.getSimpleRevenuDeterminant().setFortuneImposablePercentCalcul(
-                    fortuneImposablePercentCalcul);
+            revenuHistoriqueComplex.getSimpleRevenuDeterminant()
+                    .setFortuneImposablePercentCalcul(fortuneImposablePercentCalcul);
             revenuHistoriqueComplex.getSimpleRevenuDeterminant().setRevenuImposableCalcul(revenuImposableCalcul);
             revenuHistoriqueComplex.getRevenuFullComplex().getSimpleRevenuContribuable()
                     .setPerteExercicesComm(perteExercicesCommerciaux);
-            revenuHistoriqueComplex.getSimpleRevenuDeterminant().setDeductionContribAvecEnfantChargeCalcul(
-                    deductionContribAvecEnfantChargeCalcul);
-            revenuHistoriqueComplex.getSimpleRevenuDeterminant().setDeductionSelonNbreEnfantCalcul(
-                    deductionSelonNbreEnfantCalcul);
-            revenuHistoriqueComplex.getSimpleRevenuDeterminant().setDeductionContribNonCelibSansEnfantChargeCalcul(
-                    deductionContribNonCelibSansEnfantChargeCalcul);
-            revenuHistoriqueComplex.getSimpleRevenuDeterminant().setDeductionContribNonCelibSansEnfantChargeCalcul(
-                    deductionContribNonCelibSansEnfantChargeCalcul);
+            revenuHistoriqueComplex.getSimpleRevenuDeterminant()
+                    .setDeductionContribAvecEnfantChargeCalcul(deductionContribAvecEnfantChargeCalcul);
+            revenuHistoriqueComplex.getSimpleRevenuDeterminant()
+                    .setDeductionSelonNbreEnfantCalcul(deductionSelonNbreEnfantCalcul);
+            revenuHistoriqueComplex.getSimpleRevenuDeterminant()
+                    .setDeductionContribNonCelibSansEnfantChargeCalcul(deductionContribNonCelibSansEnfantChargeCalcul);
+            revenuHistoriqueComplex.getSimpleRevenuDeterminant()
+                    .setDeductionContribNonCelibSansEnfantChargeCalcul(deductionContribNonCelibSansEnfantChargeCalcul);
             revenuHistoriqueComplex.getSimpleRevenuDeterminant().setNbEnfants(nbEnfantsPlusEnfantsSuspens);
 
             // Etape finale, récupération du calcul du revenu déterminant
@@ -745,7 +743,7 @@ public class CalculsRevenuFormules {
 
     /**
      * Calcul du revenu prise en compte, du revenu imposable sourcier ainsi que de ses déductions
-     * 
+     *
      * @param revenuFullComplex
      * @return
      * @throws RevenuException
@@ -763,7 +761,6 @@ public class CalculsRevenuFormules {
             values[1] = "-" + revenuFullComplex.getSimpleRevenuSourcier().getCotisationAvsAiApg();
             values[2] = "-" + revenuFullComplex.getSimpleRevenuSourcier().getCotisationAc();
             values[3] = "0";
-            // values[3] = "-" + revenuFullComplex.getSimpleRevenuSourcier().getCotisationAcSupplementaires();
             values[4] = "-" + revenuFullComplex.getSimpleRevenuSourcier().getPrimesAANP();
             values[5] = "-" + revenuFullComplex.getSimpleRevenuSourcier().getPrimesLPP();
             values[6] = "-" + revenuFullComplex.getSimpleRevenuSourcier().getDeductionAssurances();
@@ -784,7 +781,7 @@ public class CalculsRevenuFormules {
 
     /**
      * Calcul de la déduction contribuable avec enfant à charge
-     * 
+     *
      * @param revenuHistoriqueComplex
      * @return
      * @throws ParametreAnnuelException
@@ -795,14 +792,15 @@ public class CalculsRevenuFormules {
         // ou
         // si sourcier et nbEnfant > 0
         // alors on calcul la déduction
-        if (!JadeStringUtil.isBlankOrZero(revenuHistoriqueComplex.getRevenuFullComplex().getSimpleRevenuContribuable()
-                .getPersChargeEnf())
-                || (IAMCodeSysteme.CS_TYPE_SOURCIER.equals(revenuHistoriqueComplex.getRevenuFullComplex()
-                        .getSimpleRevenu().getTypeRevenu()) && !JadeStringUtil.isBlankOrZero(revenuHistoriqueComplex
-                        .getRevenuFullComplex().getSimpleRevenu().getNbEnfants()))) {
+        if (!JadeStringUtil.isBlankOrZero(
+                revenuHistoriqueComplex.getRevenuFullComplex().getSimpleRevenuContribuable().getPersChargeEnf())
+                || (IAMCodeSysteme.CS_TYPE_SOURCIER
+                        .equals(revenuHistoriqueComplex.getRevenuFullComplex().getSimpleRevenu().getTypeRevenu())
+                        && !JadeStringUtil.isBlankOrZero(
+                                revenuHistoriqueComplex.getRevenuFullComplex().getSimpleRevenu().getNbEnfants()))) {
             sommeDeductionContribAvecEnfantChargeCalcul = this.getParametreAnnuel(
-                    IAMParametresAnnuels.CS_MONTANT_AVEC_ENFANT_CHARGE, revenuHistoriqueComplex
-                            .getSimpleRevenuHistorique().getAnneeHistorique());
+                    IAMParametresAnnuels.CS_MONTANT_AVEC_ENFANT_CHARGE,
+                    revenuHistoriqueComplex.getSimpleRevenuHistorique().getAnneeHistorique());
         } else {
             sommeDeductionContribAvecEnfantChargeCalcul = "0";
         }
@@ -812,7 +810,7 @@ public class CalculsRevenuFormules {
 
     /**
      * Calcul de la déduction contribuable non célibataire sans enfant à charge
-     * 
+     *
      * @param revenuHistoriqueComplex
      * @return
      * @throws ParametreAnnuelException
@@ -825,13 +823,13 @@ public class CalculsRevenuFormules {
             // ---------------------------------------------
             // Contribuable, check chiffre 620 et état civil
             // ---------------------------------------------
-            if (!IAMCodeSysteme.CS_ETAT_CIVIL_CELIBATAIRE.equals(revenuHistoriqueComplex.getRevenuFullComplex()
-                    .getSimpleRevenu().getEtatCivil())
+            if (!IAMCodeSysteme.CS_ETAT_CIVIL_CELIBATAIRE
+                    .equals(revenuHistoriqueComplex.getRevenuFullComplex().getSimpleRevenu().getEtatCivil())
                     && JadeStringUtil.isBlankOrZero(revenuHistoriqueComplex.getRevenuFullComplex()
                             .getSimpleRevenuContribuable().getPersChargeEnf())) {
                 sommeDeductionContribNonCelibSansEnfantChargeCalcul = this.getParametreAnnuel(
-                        IAMParametresAnnuels.CS_MONTANT_SANS_ENFANT_CHARGE, revenuHistoriqueComplex
-                                .getSimpleRevenuHistorique().getAnneeHistorique());
+                        IAMParametresAnnuels.CS_MONTANT_SANS_ENFANT_CHARGE,
+                        revenuHistoriqueComplex.getSimpleRevenuHistorique().getAnneeHistorique());
             } else {
                 sommeDeductionContribNonCelibSansEnfantChargeCalcul = "0";
             }
@@ -840,13 +838,13 @@ public class CalculsRevenuFormules {
             // ---------------------------------------------
             // Sourcier, check info annoncée et état civil
             // ---------------------------------------------
-            if (!IAMCodeSysteme.CS_ETAT_CIVIL_CELIBATAIRE.equals(revenuHistoriqueComplex.getRevenuFullComplex()
-                    .getSimpleRevenu().getEtatCivil())
-                    && JadeStringUtil.isBlankOrZero(revenuHistoriqueComplex.getRevenuFullComplex().getSimpleRevenu()
-                            .getNbEnfants())) {
+            if (!IAMCodeSysteme.CS_ETAT_CIVIL_CELIBATAIRE
+                    .equals(revenuHistoriqueComplex.getRevenuFullComplex().getSimpleRevenu().getEtatCivil())
+                    && JadeStringUtil.isBlankOrZero(
+                            revenuHistoriqueComplex.getRevenuFullComplex().getSimpleRevenu().getNbEnfants())) {
                 sommeDeductionContribNonCelibSansEnfantChargeCalcul = this.getParametreAnnuel(
-                        IAMParametresAnnuels.CS_MONTANT_SANS_ENFANT_CHARGE, revenuHistoriqueComplex
-                                .getSimpleRevenuHistorique().getAnneeHistorique());
+                        IAMParametresAnnuels.CS_MONTANT_SANS_ENFANT_CHARGE,
+                        revenuHistoriqueComplex.getSimpleRevenuHistorique().getAnneeHistorique());
             } else {
                 sommeDeductionContribNonCelibSansEnfantChargeCalcul = "0";
             }
@@ -860,7 +858,7 @@ public class CalculsRevenuFormules {
 
     /**
      * Calcul de la déduction selon le nombre d'enfant
-     * 
+     *
      * @param revenuHistoriqueComplex
      * @return
      * @throws ParametreAnnuelException
@@ -875,8 +873,8 @@ public class CalculsRevenuFormules {
             // ---------------------------------------------
             // Contribuable, check chiffre 620
             // ---------------------------------------------
-            if (!JadeStringUtil.isBlankOrZero(revenuHistoriqueComplex.getRevenuFullComplex()
-                    .getSimpleRevenuContribuable().getPersChargeEnf())) {
+            if (!JadeStringUtil.isBlankOrZero(
+                    revenuHistoriqueComplex.getRevenuFullComplex().getSimpleRevenuContribuable().getPersChargeEnf())) {
                 bNbEnfantsNeedTreatment = true;
             } else {
                 bNbEnfantsNeedTreatment = false;
@@ -886,8 +884,8 @@ public class CalculsRevenuFormules {
             // ---------------------------------------------
             // Sourcier, check info annoncée
             // ---------------------------------------------
-            if (!JadeStringUtil.isBlankOrZero(revenuHistoriqueComplex.getRevenuFullComplex().getSimpleRevenu()
-                    .getNbEnfants())) {
+            if (!JadeStringUtil
+                    .isBlankOrZero(revenuHistoriqueComplex.getRevenuFullComplex().getSimpleRevenu().getNbEnfants())) {
                 bNbEnfantsNeedTreatment = true;
             } else {
                 bNbEnfantsNeedTreatment = false;
@@ -898,24 +896,24 @@ public class CalculsRevenuFormules {
 
         if (bNbEnfantsNeedTreatment) {
             String montantSmallerThree = this.getParametreAnnuel(
-                    IAMParametresAnnuels.CS_MONTANT_NOMBRE_ENFANT_PLUS_PETIT_3, revenuHistoriqueComplex
-                            .getSimpleRevenuHistorique().getAnneeHistorique());
+                    IAMParametresAnnuels.CS_MONTANT_NOMBRE_ENFANT_PLUS_PETIT_3,
+                    revenuHistoriqueComplex.getSimpleRevenuHistorique().getAnneeHistorique());
             String montantGreaterEqualThree = this.getParametreAnnuel(
-                    IAMParametresAnnuels.CS_MONTANT_NOMBRE_ENFANT_PLUS_GRAND_EGAL_3, revenuHistoriqueComplex
-                            .getSimpleRevenuHistorique().getAnneeHistorique());
+                    IAMParametresAnnuels.CS_MONTANT_NOMBRE_ENFANT_PLUS_GRAND_EGAL_3,
+                    revenuHistoriqueComplex.getSimpleRevenuHistorique().getAnneeHistorique());
 
             int nbEnfantsInt = 0;
             try {
-                nbEnfantsInt = Integer.parseInt(this.dequoteAndFormat(revenuHistoriqueComplex.getRevenuFullComplex()
-                        .getSimpleRevenu().getNbEnfants()));
+                nbEnfantsInt = Integer.parseInt(this.dequoteAndFormat(
+                        revenuHistoriqueComplex.getRevenuFullComplex().getSimpleRevenu().getNbEnfants()));
             } catch (NumberFormatException nfe) {
                 nbEnfantsInt = 0;
             }
 
             int nbEnfantsSuspensInt = 0;
             try {
-                nbEnfantsSuspensInt = Integer.parseInt(this.dequoteAndFormat(revenuHistoriqueComplex
-                        .getRevenuFullComplex().getSimpleRevenu().getNbEnfantSuspens()));
+                nbEnfantsSuspensInt = Integer.parseInt(this.dequoteAndFormat(
+                        revenuHistoriqueComplex.getRevenuFullComplex().getSimpleRevenu().getNbEnfantSuspens()));
             } catch (NumberFormatException nfe) {
                 nbEnfantsSuspensInt = 0;
             }
@@ -936,17 +934,17 @@ public class CalculsRevenuFormules {
                 }
             } else {
                 int deductionEnfantsSmallerThree = Integer.parseInt(this.dequoteAndFormat(montantSmallerThree));
-                int deductionEnfantsGreaterEqualThree = Integer.parseInt(this
-                        .dequoteAndFormat(montantGreaterEqualThree));
+                int deductionEnfantsGreaterEqualThree = Integer
+                        .parseInt(this.dequoteAndFormat(montantGreaterEqualThree));
                 int deductionDemiEnfantsSmallerThree = Integer.parseInt(this.dequoteAndFormat(montantSmallerThree)) / 2;
-                int deductionDemiEnfantsGreaterEqualThree = Integer.parseInt(this
-                        .dequoteAndFormat(montantGreaterEqualThree)) / 2;
+                int deductionDemiEnfantsGreaterEqualThree = Integer
+                        .parseInt(this.dequoteAndFormat(montantGreaterEqualThree)) / 2;
                 // Si il n'y a que des enfants en suspens
                 if (nbEnfantsInt == 0) {
                     // Si moins de 3 ==> Standard
                     if (nbEnfantsSuspensInt < 3) {
-                        sommeDeductionSelonNbreEnfantCalcul = String.valueOf(nbEnfantsSuspensInt
-                                * deductionDemiEnfantsSmallerThree);
+                        sommeDeductionSelonNbreEnfantCalcul = String
+                                .valueOf(nbEnfantsSuspensInt * deductionDemiEnfantsSmallerThree);
                     } else {
                         // Sinon, calcul différents entre les 2 premiers et les suivants
                         int deductions2DemiEnfants = 2 * deductionDemiEnfantsSmallerThree;
@@ -965,8 +963,8 @@ public class CalculsRevenuFormules {
                         int sommeDeductionsSelonNbreEnfantEntier = nbEnfantsInt * deductionEnfantsSmallerThree;
                         int sommeDeductionsSelonNbreEnfantDemi = nbEnfantsSuspensInt * deductionDemiEnfantsSmallerThree;
 
-                        sommeDeductionSelonNbreEnfantCalcul = String.valueOf(sommeDeductionsSelonNbreEnfantEntier
-                                + sommeDeductionsSelonNbreEnfantDemi);
+                        sommeDeductionSelonNbreEnfantCalcul = String
+                                .valueOf(sommeDeductionsSelonNbreEnfantEntier + sommeDeductionsSelonNbreEnfantDemi);
                     } else {
                         int sommeDeductionsSelonNbreEnfantEntier = 0;
                         int sommeDeductionsSelonNbreEnfantDemi = 0;
@@ -974,8 +972,8 @@ public class CalculsRevenuFormules {
                             sommeDeductionsSelonNbreEnfantEntier = 2 * deductionEnfantsSmallerThree;
                             sommeDeductionsSelonNbreEnfantDemi = nbEnfantsSuspensInt
                                     * deductionDemiEnfantsGreaterEqualThree;
-                            sommeDeductionSelonNbreEnfantCalcul = String.valueOf(sommeDeductionsSelonNbreEnfantEntier
-                                    + sommeDeductionsSelonNbreEnfantDemi);
+                            sommeDeductionSelonNbreEnfantCalcul = String
+                                    .valueOf(sommeDeductionsSelonNbreEnfantEntier + sommeDeductionsSelonNbreEnfantDemi);
                         } else if (nbEnfantsInt == 1) {
                             // On calcul pour 1 enfant 100%
                             sommeDeductionsSelonNbreEnfantEntier = deductionEnfantsSmallerThree;
@@ -987,8 +985,8 @@ public class CalculsRevenuFormules {
                             sommeDeductionsSelonNbreEnfantDemi = nbEnfantsSuspensInt
                                     * deductionDemiEnfantsGreaterEqualThree;
                             // et on fait le total
-                            sommeDeductionSelonNbreEnfantCalcul = String.valueOf(sommeDeductionsSelonNbreEnfantEntier
-                                    + sommeDeductionsSelonNbreEnfantDemi);
+                            sommeDeductionSelonNbreEnfantCalcul = String
+                                    .valueOf(sommeDeductionsSelonNbreEnfantEntier + sommeDeductionsSelonNbreEnfantDemi);
                         } else {
                             // X enfants 100% et X enfant 50%
                             // On calcul pour les 2 premiier enfant 100%
@@ -998,8 +996,8 @@ public class CalculsRevenuFormules {
                             sommeDeductionsSelonNbreEnfantDemi = nbEnfantsSuspensInt
                                     * deductionDemiEnfantsGreaterEqualThree;
                             // et on fait le total
-                            sommeDeductionSelonNbreEnfantCalcul = String.valueOf(sommeDeductionsSelonNbreEnfantEntier
-                                    + sommeDeductionsSelonNbreEnfantDemi);
+                            sommeDeductionSelonNbreEnfantCalcul = String
+                                    .valueOf(sommeDeductionsSelonNbreEnfantEntier + sommeDeductionsSelonNbreEnfantDemi);
                         }
                     }
                 }
@@ -1013,7 +1011,7 @@ public class CalculsRevenuFormules {
 
     /**
      * Calcul du pourcentage de la fortune imposable à prendre en compte
-     * 
+     *
      * @param revenuHistoriqueComplex
      * @return
      * @throws ParametreAnnuelException
@@ -1025,13 +1023,13 @@ public class CalculsRevenuFormules {
             return "0";
         }
 
-        String fortuneImposableCalcul = this.dequoteAndFormat(revenuHistoriqueComplex.getRevenuFullComplex()
-                .getSimpleRevenuContribuable().getFortuneImposable());
+        String fortuneImposableCalcul = this.dequoteAndFormat(
+                revenuHistoriqueComplex.getRevenuFullComplex().getSimpleRevenuContribuable().getFortuneImposable());
 
-        if (!JadeStringUtil.isBlankOrZero(revenuHistoriqueComplex.getRevenuFullComplex().getSimpleRevenuContribuable()
-                .getFortuneTaux())) {
-            fortuneImposableCalcul = this.dequoteAndFormat(revenuHistoriqueComplex.getRevenuFullComplex()
-                    .getSimpleRevenuContribuable().getFortuneTaux());
+        if (!JadeStringUtil.isBlankOrZero(
+                revenuHistoriqueComplex.getRevenuFullComplex().getSimpleRevenuContribuable().getFortuneTaux())) {
+            fortuneImposableCalcul = this.dequoteAndFormat(
+                    revenuHistoriqueComplex.getRevenuFullComplex().getSimpleRevenuContribuable().getFortuneTaux());
         }
 
         if (Integer.parseInt(fortuneImposableCalcul) > 1000) {
@@ -1045,9 +1043,9 @@ public class CalculsRevenuFormules {
 
         int fortuneImposableCalculInt = Integer.parseInt(fortuneImposableCalcul);
 
-        PERCENT_FORTUNE_IMPOSABLE = Integer.parseInt(this.getParametreAnnuel(
-                IAMParametresAnnuels.CS_TAUX_CALCUL_FORTUNE_IMPOSABLE, revenuHistoriqueComplex
-                        .getSimpleRevenuHistorique().getAnneeHistorique()));
+        PERCENT_FORTUNE_IMPOSABLE = Integer
+                .parseInt(this.getParametreAnnuel(IAMParametresAnnuels.CS_TAUX_CALCUL_FORTUNE_IMPOSABLE,
+                        revenuHistoriqueComplex.getSimpleRevenuHistorique().getAnneeHistorique()));
 
         fortuneImposableCalculInt = (fortuneImposableCalculInt / 100) * PERCENT_FORTUNE_IMPOSABLE;
 
@@ -1058,7 +1056,7 @@ public class CalculsRevenuFormules {
 
     /**
      * Récupération du nombre d'enfant entre 16 et 25 ans
-     * 
+     *
      * @param revenuFullComplex
      * @return
      * @throws RevenuException
@@ -1077,7 +1075,6 @@ public class CalculsRevenuFormules {
             simpleFamilleSearch.setForFinDefinitiveGOE("12." + annee);
             simpleFamilleSearch.setForFinDefinitive("0");
             // le where calcul récupère aussi tout les "findefinitif" à NULL
-            // simpleFamilleSearch.setWhereKey("calculs");
             simpleFamilleSearch.setWhereKey("subsides");
             return AmalServiceLocator.getFamilleContribuableService().count(simpleFamilleSearch);
         } catch (Exception e) {
@@ -1088,7 +1085,7 @@ public class CalculsRevenuFormules {
 
     /**
      * Récupération du nombre d'enfant entre 0 et 16 ans
-     * 
+     *
      * @param revenuFullComplex
      * @return
      * @throws RevenuException
@@ -1113,75 +1110,12 @@ public class CalculsRevenuFormules {
         }
     }
 
-    /**
-     * Récupération d'une valeur de paramètre particulière
-     * 
-     * @param _type
-     * @param _annee
-     * @param nbDecimals
-     * @return
-     * @throws ParametreAnnuelException
-     */
-    // private String getParametreAnnuel(String _type, String _annee, int nbDecimals) {
-    // return this.getParametreAnnuel(_type, _annee, false, false, false, nbDecimals);
-    // }
-
     private String getParametreAnnuel(String type, String year) throws ParametreAnnuelException {
         return this.getParametreAnnuel(type, year, 0);
     }
 
-    /**
-     * Récupération d'une valeur de paramètre particulière
-     * 
-     * @param _type
-     * @param _annee
-     * @return
-     */
-    // private String getParametreAnnuel(String _type, String _annee) {
-    // return this.getParametreAnnuel(_type, _annee, false, false, false, 0);
-    // }
-
-    /**
-     * Récupération d'une valeur de paramètre partculière
-     * 
-     * @param _type
-     * @param _annee
-     * @param wantQuote
-     * @param wantDecimalsIfZero
-     * @param wantBlankIfZero
-     * @param nDecimals
-     * @return
-     */
-    // private String getParametreAnnuel(String _type, String _annee, boolean wantQuote, boolean wantDecimalsIfZero,
-    // boolean wantBlankIfZero, int nDecimals) {
-    // SimpleParametreAnnuelSearch simpleParametreAnnuelSearch = new SimpleParametreAnnuelSearch();
-    // simpleParametreAnnuelSearch.setForCodeTypeParametre(_type);
-    // simpleParametreAnnuelSearch.setForAnneeParametre(_annee);
-    // try {
-    // simpleParametreAnnuelSearch = AmalServiceLocator.getParametreAnnuelService().search(
-    // simpleParametreAnnuelSearch);
-    // } catch (Exception e) {
-    // JadeLogger.error(this, "Error while searching ParametreAnnuel (codeType : " + _type + " / annee " + _annee
-    // + ") : " + e.getMessage());
-    // }
-    //
-    // if (simpleParametreAnnuelSearch.getSearchResults().length > 0) {
-    // SimpleParametreAnnuel simpleParametreAnnuel = (SimpleParametreAnnuel) simpleParametreAnnuelSearch
-    // .getSearchResults()[0];
-    // return this.dequoteAndFormat(simpleParametreAnnuel.getValeurParametre(), wantQuote, wantDecimalsIfZero,
-    // wantBlankIfZero, nDecimals);
-    // } else {
-    // JadeLogger.error(this, "No parameter founded with codeType : " + _type + " and annee " + _annee + ") ");
-    // return "0";
-    // }
-    // }
-
     private String getParametreAnnuel(String type, String year, int nDecimals) throws ParametreAnnuelException {
         return this.getParametreAnnuel(type, year, null, nDecimals);
-    }
-
-    private String getParametreAnnuel(String type, String year, String defaultValue) throws ParametreAnnuelException {
-        return this.getParametreAnnuel(type, year, defaultValue, 0);
     }
 
     private String getParametreAnnuel(String type, String year, String defaultValue, int nDecimals)
@@ -1192,7 +1126,7 @@ public class CalculsRevenuFormules {
 
     /**
      * Récupération de la valeur du revenu imposable
-     * 
+     *
      * @param revenuHistoriqueComplex
      * @return
      */
@@ -1200,13 +1134,13 @@ public class CalculsRevenuFormules {
         String revenuImposableCalcul = "0";
 
         if (!revenuHistoriqueComplex.getRevenuFullComplex().getSimpleRevenu().isSourcier()) {
-            revenuImposableCalcul = this.dequoteAndFormat(revenuHistoriqueComplex.getRevenuFullComplex()
-                    .getSimpleRevenuContribuable().getRevenuImposable());
+            revenuImposableCalcul = this.dequoteAndFormat(
+                    revenuHistoriqueComplex.getRevenuFullComplex().getSimpleRevenuContribuable().getRevenuImposable());
 
-            if (!JadeStringUtil.isBlankOrZero(revenuHistoriqueComplex.getRevenuFullComplex()
-                    .getSimpleRevenuContribuable().getRevenuTaux())) {
-                revenuImposableCalcul = this.dequoteAndFormat(revenuHistoriqueComplex.getRevenuFullComplex()
-                        .getSimpleRevenuContribuable().getRevenuTaux());
+            if (!JadeStringUtil.isBlankOrZero(
+                    revenuHistoriqueComplex.getRevenuFullComplex().getSimpleRevenuContribuable().getRevenuTaux())) {
+                revenuImposableCalcul = this.dequoteAndFormat(
+                        revenuHistoriqueComplex.getRevenuFullComplex().getSimpleRevenuContribuable().getRevenuTaux());
             }
         } else {
             revenuImposableCalcul = revenuHistoriqueComplex.getRevenuFullComplex().getSimpleRevenuSourcier()
@@ -1227,9 +1161,9 @@ public class CalculsRevenuFormules {
 
     /**
      * Get somme 310, 330, 330c
-     * 
+     *
      * @param revenuFullComplex
-     * 
+     *
      * @return
      */
     public final String getSommeExcDepPropImmo(RevenuHistoriqueComplex revenuHistoriqueComplex) {
@@ -1250,7 +1184,7 @@ public class CalculsRevenuFormules {
 
     /**
      * Calcul la somme de 1 à n string (int)
-     * 
+     *
      * @return la somme recherchée
      */
     private String getSommeInt(String[] values) {
@@ -1273,7 +1207,7 @@ public class CalculsRevenuFormules {
 
     /**
      * Get somme 530, 535
-     * 
+     *
      * @return
      */
     public final String getSommeIntPassifs(RevenuHistoriqueComplex revenuHistoriqueComplex) {
@@ -1293,7 +1227,7 @@ public class CalculsRevenuFormules {
 
     /**
      * Get somme 300, 320, 320c - 530,535,310,330,330c,390
-     * 
+     *
      * @return
      */
     public final String getSommePartRendementImmob(RevenuHistoriqueComplex revenuHistoriqueComplex) {
@@ -1319,9 +1253,9 @@ public class CalculsRevenuFormules {
 
     /**
      * Get somme 140,140c,150,150c,160,160c,170,170c
-     * 
+     *
      * @param anneeHistorique
-     * 
+     *
      * @return
      */
     public final String getSommePertesExCommerciaux(RevenuHistoriqueComplex revenuHistoriqueComplex) {
@@ -1330,14 +1264,6 @@ public class CalculsRevenuFormules {
                 sommePertesExCommerciaux = revenuHistoriqueComplex.getRevenuFullComplex().getSimpleRevenuContribuable()
                         .getPerteExercicesComm();
             } else {
-                /*
-                 * if (Integer.parseInt(dequoteAndFormat(values[0])) < 0) {
-                 * values[0] = revenuHistoriqueComplex.getRevenuFullComplex().getSimpleRevenuContribuable()
-                 * .getPerteActIndep();
-                 * values[0] = values[0].substring(1);
-                 * }
-                 */
-
                 String[] values = new String[4];
                 values[0] = revenuHistoriqueComplex.getRevenuFullComplex().getSimpleRevenuContribuable()
                         .getPerteActIndep();
@@ -1358,7 +1284,7 @@ public class CalculsRevenuFormules {
 
     /**
      * Get somme 300, 320, 320c
-     * 
+     *
      * @return
      */
     public final String getSommeRendementFortuneImmobiliere(RevenuHistoriqueComplex revenuHistoriqueComplex) {
@@ -1380,7 +1306,7 @@ public class CalculsRevenuFormules {
 
     /**
      * Get somme 680
-     * 
+     *
      * @return
      */
     public String getSommeDeductionCouplesMaries(RevenuHistoriqueComplex revenuHistoriqueComplex) {
@@ -1400,7 +1326,7 @@ public class CalculsRevenuFormules {
 
     /**
      * Calcul du revenu déterminant
-     * 
+     *
      * @return
      */
     public final String getTotalRevenuDeterminant() {
@@ -1428,7 +1354,7 @@ public class CalculsRevenuFormules {
 
     /**
      * Groupe le nombre d'enfant
-     * 
+     *
      * @param nbEnfants
      * @param nbEnfantsSuspens
      * @return

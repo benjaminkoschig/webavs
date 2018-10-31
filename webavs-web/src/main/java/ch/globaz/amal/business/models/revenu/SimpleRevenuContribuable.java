@@ -4,7 +4,7 @@ import globaz.jade.persistence.model.JadeSimpleModel;
 
 public class SimpleRevenuContribuable extends JadeSimpleModel implements Cloneable {
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
     private String allocationFamiliale = null;
@@ -22,8 +22,12 @@ public class SimpleRevenuContribuable extends JadeSimpleModel implements Cloneab
     private String interetsPassifsPrive = null;
     private String persChargeEnf = null;
     private String perteActAccInd = null;
-    private String perteActAgricole = null;
     private String perteActIndep = null;
+    private String revenuActIndep = null;
+    private String revenuActIndepEpouse = null;
+    private String perteActAgricole = null;
+    private String revenuActAgricole = null;
+    private String revenuActAgricoleEpouse = null;
     private String perteCommercial = null;
     private String perteExercicesComm = null;
     private String perteLiquidation = null;
@@ -144,6 +148,27 @@ public class SimpleRevenuContribuable extends JadeSimpleModel implements Cloneab
     }
 
     /**
+     * @return the perteActIndep
+     */
+    public String getPerteActIndep() {
+        return perteActIndep;
+    }
+
+    /**
+     * @return the revenuActIndep
+     */
+    public String getRevenuActIndep() {
+        return revenuActIndep;
+    }
+
+    /**
+     * @return the revenuActIndepEpouse
+     */
+    public String getRevenuActIndepEpouse() {
+        return revenuActIndepEpouse;
+    }
+
+    /**
      * @return the perteActAgricole
      */
     public String getPerteActAgricole() {
@@ -151,10 +176,17 @@ public class SimpleRevenuContribuable extends JadeSimpleModel implements Cloneab
     }
 
     /**
-     * @return the perteActIndep
+     * @return the revenuActAgricole
      */
-    public String getPerteActIndep() {
-        return perteActIndep;
+    public String getRevenuActAgricole() {
+        return revenuActAgricole;
+    }
+
+    /**
+     * @return the revenuActAgricoleEpouse
+     */
+    public String getRevenuActAgricoleEpouse() {
+        return revenuActAgricoleEpouse;
     }
 
     /**
@@ -333,12 +365,28 @@ public class SimpleRevenuContribuable extends JadeSimpleModel implements Cloneab
         this.perteActAccInd = perteActAccInd;
     }
 
+    public void setPerteActIndep(String perteActIndep) {
+        this.perteActIndep = perteActIndep;
+    }
+
+    public void setRevenuActIndep(String revenuActIndep) {
+        this.revenuActIndep = revenuActIndep;
+    }
+
+    public void setRevenuActIndepEpouse(String revenuActIndepEpouse) {
+        this.revenuActIndepEpouse = revenuActIndepEpouse;
+    }
+
     public void setPerteActAgricole(String perteActAgricole) {
         this.perteActAgricole = perteActAgricole;
     }
 
-    public void setPerteActIndep(String perteActIndep) {
-        this.perteActIndep = perteActIndep;
+    public void setRevenuActAgricole(String revenuActAgricole) {
+        this.revenuActAgricole = revenuActAgricole;
+    }
+
+    public void setRevenuActAgricoleEpouse(String revenuActAgricoleEpouse) {
+        this.revenuActAgricoleEpouse = revenuActAgricoleEpouse;
     }
 
     public void setPerteCommercial(String perteCommercial) {

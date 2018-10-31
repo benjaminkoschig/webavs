@@ -1,18 +1,5 @@
 package globaz.amal.process.statistiques;
 
-import globaz.amal.process.AMALabstractProcess;
-import globaz.globall.db.BSessionUtil;
-import globaz.globall.parameters.FWParametersCode;
-import globaz.globall.parameters.FWParametersSystemCodeManager;
-import globaz.globall.util.JADate;
-import globaz.globall.util.JAException;
-import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.common.Jade;
-import globaz.jade.context.JadeThread;
-import globaz.jade.exception.JadePersistenceException;
-import globaz.jade.persistence.model.JadeAbstractModel;
-import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
-import globaz.jade.smtp.JadeSmtpClient;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -36,14 +23,28 @@ import ch.globaz.amal.business.models.famille.FamilleContribuableSearch;
 import ch.globaz.amal.business.models.famille.SimpleFamille;
 import ch.globaz.amal.business.models.famille.SimpleFamilleSearch;
 import ch.globaz.amal.business.services.AmalServiceLocator;
+import ch.globaz.amal.businessimpl.checkers.subsideannee.SimpleSubsideAnneeChecker;
 import ch.globaz.amal.businessimpl.services.AmalImplServiceLocator;
 import ch.globaz.pyxis.business.model.AdministrationComplexModel;
 import ch.globaz.pyxis.business.model.AdresseTiersDetail;
 import ch.globaz.pyxis.business.service.TIBusinessServiceLocator;
+import globaz.amal.process.AMALabstractProcess;
+import globaz.globall.db.BSessionUtil;
+import globaz.globall.parameters.FWParametersCode;
+import globaz.globall.parameters.FWParametersSystemCodeManager;
+import globaz.globall.util.JADate;
+import globaz.globall.util.JAException;
+import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.common.Jade;
+import globaz.jade.context.JadeThread;
+import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.persistence.model.JadeAbstractModel;
+import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
+import globaz.jade.smtp.JadeSmtpClient;
 
 public class AMStatistiquesPublipostageProcess extends AMALabstractProcess {
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
     public final static String CS_DOMAINE_AMAL = "42002700";
@@ -63,7 +64,7 @@ public class AMStatistiquesPublipostageProcess extends AMALabstractProcess {
     /**
      * Génère le fichier selon les colonnes choisies dans la liste déroulante. Génération dans un Stringbuffer dans un
      * premier temps
-     * 
+     *
      * @param mapFamille
      * @throws Exception
      */
@@ -95,7 +96,7 @@ public class AMStatistiquesPublipostageProcess extends AMALabstractProcess {
 
     /**
      * Récupération des valeurs de l'adresse
-     * 
+     *
      * @param mapValues
      * @param idContribuable
      * @param adresseTiersDetail
@@ -105,15 +106,15 @@ public class AMStatistiquesPublipostageProcess extends AMALabstractProcess {
      * @throws Exception
      */
     private void getAdresseValues(Map<String, String> mapValues, String idContribuable,
-            AdresseTiersDetail adresseTiersDetail) throws FamilleException, JadePersistenceException,
-            JadeApplicationServiceNotAvailableException, Exception {
+            AdresseTiersDetail adresseTiersDetail)
+            throws FamilleException, JadePersistenceException, JadeApplicationServiceNotAvailableException, Exception {
         String dateToday = "";
         Calendar cal = Calendar.getInstance();
         SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
         dateToday = sdf.format(cal.getTime());
         // On récupère le chef de famille pour l'adresse
-        SimpleFamilleSearch familleSearch = AmalImplServiceLocator.getSimpleFamilleService().getChefDeFamille(
-                idContribuable);
+        SimpleFamilleSearch familleSearch = AmalImplServiceLocator.getSimpleFamilleService()
+                .getChefDeFamille(idContribuable);
         if (familleSearch.getSize() == 1) {
             SimpleFamille sf = (SimpleFamille) familleSearch.getSearchResults()[0];
 
@@ -264,7 +265,7 @@ public class AMStatistiquesPublipostageProcess extends AMALabstractProcess {
     }
 
     /**
-     * 
+     *
      * @param id
      *            code system to find
      * @param codeGroupe
@@ -309,26 +310,26 @@ public class AMStatistiquesPublipostageProcess extends AMALabstractProcess {
 
     /**
      * Récupération des valeurs PYXIS
-     * 
+     *
      * @param mapValues
      * @param familleContribuable
      */
     private void getPyxisValues(Map<String, String> mapValues, FamilleContribuable familleContribuable) {
-        mapValues.put(AMPublipostagePyxis.NUMCONTRIBUABLE.getValue(), familleContribuable.getPersonneEtendue()
-                .getPersonneEtendue().getNumContribuableActuel());
-        mapValues.put(AMPublipostagePyxis.NNSS.getValue(), familleContribuable.getPersonneEtendue()
-                .getPersonneEtendue().getNumAvsActuel());
+        mapValues.put(AMPublipostagePyxis.NUMCONTRIBUABLE.getValue(),
+                familleContribuable.getPersonneEtendue().getPersonneEtendue().getNumContribuableActuel());
+        mapValues.put(AMPublipostagePyxis.NNSS.getValue(),
+                familleContribuable.getPersonneEtendue().getPersonneEtendue().getNumAvsActuel());
     }
 
     /**
      * Récupération des valeurs CARTECULTURE
-     * 
+     *
      * @param mapValues
      * @param familleContribuable
      */
     private void getCarteCultureValues(Map<String, String> mapValues, FamilleContribuable familleContribuable) {
-        mapValues.put(AMPublipostageCarteCulture.CARTECULTURE.getValue(), familleContribuable.getSimpleFamille()
-                .getCarteCulture() ? "Oui" : "Non");
+        mapValues.put(AMPublipostageCarteCulture.CARTECULTURE.getValue(),
+                familleContribuable.getSimpleFamille().getCarteCulture() ? "Oui" : "Non");
     }
 
     public int getRecordsSize() {
@@ -337,31 +338,47 @@ public class AMStatistiquesPublipostageProcess extends AMALabstractProcess {
 
     /**
      * Récupération des valeurs de SimpleDetailFamille
-     * 
+     *
      * @param mapValues
      * @param familleContribuable
      */
     private void getSimpleDetailFamilleValues(Map<String, String> mapValues, FamilleContribuable familleContribuable) {
         mapValues.put(AMPublipostageSimpleDetailFamille.TYPEDEMANDE.getValue(),
                 getSession().getCode(familleContribuable.getSimpleDetailFamille().getTypeDemande()));
-        mapValues.put(AMPublipostageSimpleDetailFamille.MONTANTCONTRIBUTION.getValue(), familleContribuable
-                .getSimpleDetailFamille().getMontantContribution());
-        if (familleContribuable.getSimpleDetailFamille().getSupplExtra() == null) {
+        mapValues.put(AMPublipostageSimpleDetailFamille.MONTANTCONTRIBUTION.getValue(),
+                familleContribuable.getSimpleDetailFamille().getMontantContribution());
+
+        boolean isSubsidePCFamille = SimpleSubsideAnneeChecker
+                .checkIsSubsidePCFKind(familleContribuable.getSimpleDetailFamille());
+        if (isSubsidePCFamille) {
             mapValues.put(AMPublipostageSimpleDetailFamille.MONTANTCONTRIBUTIONSUPPLEMENT.getValue(), "0.00");
+            if (familleContribuable.getSimpleDetailFamille().getSupplExtra() == null) {
+                mapValues.put(AMPublipostageSimpleDetailFamille.MONTANTCONTRIBUTIONSUPPLEMENTPCFAMILLE.getValue(),
+                        "0.00");
+            } else {
+                mapValues.put(AMPublipostageSimpleDetailFamille.MONTANTCONTRIBUTIONSUPPLEMENTPCFAMILLE.getValue(),
+                        familleContribuable.getSimpleDetailFamille().getSupplExtra());
+            }
+
         } else {
-            mapValues.put(AMPublipostageSimpleDetailFamille.MONTANTCONTRIBUTIONSUPPLEMENT.getValue(),
-                    familleContribuable.getSimpleDetailFamille().getSupplExtra());
+            mapValues.put(AMPublipostageSimpleDetailFamille.MONTANTCONTRIBUTIONSUPPLEMENTPCFAMILLE.getValue(), "0.00");
+            if (familleContribuable.getSimpleDetailFamille().getSupplExtra() == null) {
+                mapValues.put(AMPublipostageSimpleDetailFamille.MONTANTCONTRIBUTIONSUPPLEMENT.getValue(), "0.00");
+            } else {
+                mapValues.put(AMPublipostageSimpleDetailFamille.MONTANTCONTRIBUTIONSUPPLEMENT.getValue(),
+                        familleContribuable.getSimpleDetailFamille().getSupplExtra());
+            }
         }
-        mapValues.put(AMPublipostageSimpleDetailFamille.DOCUMENT.getValue(), getLibelleCodeSysteme(getSession()
-                .getCode(familleContribuable.getSimpleDetailFamille().getNoModeles())));
+        mapValues.put(AMPublipostageSimpleDetailFamille.DOCUMENT.getValue(), getLibelleCodeSysteme(
+                getSession().getCode(familleContribuable.getSimpleDetailFamille().getNoModeles())));
         mapValues.put(AMPublipostageSimpleDetailFamille.CODETRAITEMENTDOSSIER.getValue(),
                 getSession().getCode(familleContribuable.getSimpleDetailFamille().getCodeTraitementDossier()));
 
         String noCaisseMaladie = familleContribuable.getSimpleDetailFamille().getNoCaisseMaladie();
         if (!JadeStringUtil.isBlankOrZero(noCaisseMaladie)) {
             try {
-                AdministrationComplexModel cm = TIBusinessServiceLocator.getAdministrationService().read(
-                        familleContribuable.getSimpleDetailFamille().getNoCaisseMaladie());
+                AdministrationComplexModel cm = TIBusinessServiceLocator.getAdministrationService()
+                        .read(familleContribuable.getSimpleDetailFamille().getNoCaisseMaladie());
                 mapValues.put(AMPublipostageSimpleDetailFamille.ASSUREUR.getValue(), cm.getTiers().getDesignation1());
             } catch (Exception e) {
                 mapValues.put(AMPublipostageSimpleDetailFamille.ASSUREUR.getValue(), "");
@@ -369,33 +386,33 @@ public class AMStatistiquesPublipostageProcess extends AMALabstractProcess {
         } else {
             mapValues.put(AMPublipostageSimpleDetailFamille.ASSUREUR.getValue(), "");
         }
-        mapValues.put(AMPublipostageSimpleDetailFamille.DEBUTDROIT.getValue(), familleContribuable
-                .getSimpleDetailFamille().getDebutDroit());
-        mapValues.put(AMPublipostageSimpleDetailFamille.FINDROIT.getValue(), familleContribuable
-                .getSimpleDetailFamille().getFinDroit());
-        mapValues.put(AMPublipostageSimpleDetailFamille.CODE_ACTIF.getValue(), familleContribuable
-                .getSimpleDetailFamille().getCodeActif() ? "Oui" : "Non");
+        mapValues.put(AMPublipostageSimpleDetailFamille.DEBUTDROIT.getValue(),
+                familleContribuable.getSimpleDetailFamille().getDebutDroit());
+        mapValues.put(AMPublipostageSimpleDetailFamille.FINDROIT.getValue(),
+                familleContribuable.getSimpleDetailFamille().getFinDroit());
+        mapValues.put(AMPublipostageSimpleDetailFamille.CODE_ACTIF.getValue(),
+                familleContribuable.getSimpleDetailFamille().getCodeActif() ? "Oui" : "Non");
     }
 
     /**
      * Récupération des valeurs de SimpleFamille
-     * 
+     *
      * @param mapValues
      * @param familleContribuable
      */
     private void getSimpleFamilleValues(Map<String, String> mapValues, FamilleContribuable familleContribuable) {
-        mapValues.put(AMPublipostageSimpleFamille.IDCONTRIBUABLE.getValue(), familleContribuable.getSimpleFamille()
-                .getIdContribuable());
-        mapValues.put(AMPublipostageSimpleFamille.ISCONTRIBUABLEPRINCIPAL.getValue(), familleContribuable
-                .getSimpleFamille().getIsContribuable() ? "Oui" : "Non");
+        mapValues.put(AMPublipostageSimpleFamille.IDCONTRIBUABLE.getValue(),
+                familleContribuable.getSimpleFamille().getIdContribuable());
+        mapValues.put(AMPublipostageSimpleFamille.ISCONTRIBUABLEPRINCIPAL.getValue(),
+                familleContribuable.getSimpleFamille().getIsContribuable() ? "Oui" : "Non");
         // mapValues.put(AMPublipostageSimpleFamille.ISCARTECULTURE.getValue(), familleContribuable.getSimpleFamille()
         // .getIsCarteCulture() ? "Oui" : "Non");
-        mapValues.put(AMPublipostageSimpleFamille.NOMPRENOM.getValue(), familleContribuable.getSimpleFamille()
-                .getNomPrenom());
+        mapValues.put(AMPublipostageSimpleFamille.NOMPRENOM.getValue(),
+                familleContribuable.getSimpleFamille().getNomPrenom());
         mapValues.put(AMPublipostageSimpleFamille.PEREMEREENFANT.getValue(),
                 getSession().getCode(familleContribuable.getSimpleFamille().getPereMereEnfant()));
-        mapValues.put(AMPublipostageSimpleFamille.DATENAISSANCE.getValue(), familleContribuable.getSimpleFamille()
-                .getDateNaissance());
+        mapValues.put(AMPublipostageSimpleFamille.DATENAISSANCE.getValue(),
+                familleContribuable.getSimpleFamille().getDateNaissance());
         try {
             JADate d = new JADate(familleContribuable.getSimpleFamille().getDateNaissance());
             mapValues.put(AMPublipostageSimpleFamille.DATENAISSANCE_YYYYMMDD.getValue(), d.toAMJ().toString());
@@ -403,8 +420,8 @@ public class AMStatistiquesPublipostageProcess extends AMALabstractProcess {
             mapValues.put(AMPublipostageSimpleFamille.DATENAISSANCE_YYYYMMDD.getValue(), "");
         }
 
-        mapValues.put(AMPublipostageSimpleFamille.DATEFINDEFINITIVE.getValue(), familleContribuable.getSimpleFamille()
-                .getFinDefinitive());
+        mapValues.put(AMPublipostageSimpleFamille.DATEFINDEFINITIVE.getValue(),
+                familleContribuable.getSimpleFamille().getFinDefinitive());
         mapValues.put(AMPublipostageSimpleFamille.CODEFIN.getValue(),
                 getSession().getCodeLibelle(familleContribuable.getSimpleFamille().getCodeTraitementDossier()));
         mapValues.put(AMPublipostageSimpleFamille.SEXE.getValue(),
@@ -415,7 +432,7 @@ public class AMStatistiquesPublipostageProcess extends AMALabstractProcess {
 
     /**
      * Insert le contenu du stackTrace dans une String pour affichage dans le mail
-     * 
+     *
      * @param aThrowable
      * @return Stacktrace sous forme de String
      */
@@ -466,7 +483,8 @@ public class AMStatistiquesPublipostageProcess extends AMALabstractProcess {
                     List listInTypeDemande = JadeStringUtil.tokenize(inTypeDemande, ",");
                     familleContribuableSearch.setInTypeDemande(listInTypeDemande);
                 }
-                if (!JadeStringUtil.isBlankOrZero(inNumeroContribuable) && !JadeStringUtil.isNull(inNumeroContribuable)) {
+                if (!JadeStringUtil.isBlankOrZero(inNumeroContribuable)
+                        && !JadeStringUtil.isNull(inNumeroContribuable)) {
                     List listInNoContribuables = JadeStringUtil.tokenize(inNumeroContribuable, ",");
                     familleContribuableSearch.setInNumerosContribuables(listInNoContribuables);
                 }
@@ -481,9 +499,8 @@ public class AMStatistiquesPublipostageProcess extends AMALabstractProcess {
                 }
                 familleContribuableSearch.setDefinedSearchSize(recordsSize);
                 familleContribuableSearch.setOrderKey("processPublipostage");
-                // familleContribuableSearch.setForContribuableActif(true);
-                familleContribuableSearch = AmalServiceLocator.getFamilleContribuableService().search(
-                        familleContribuableSearch);
+                familleContribuableSearch = AmalServiceLocator.getFamilleContribuableService()
+                        .search(familleContribuableSearch);
 
                 String idContribuable = "";
                 String idMembreFamille = "";
@@ -493,8 +510,8 @@ public class AMStatistiquesPublipostageProcess extends AMALabstractProcess {
                 for (JadeAbstractModel model : familleContribuableSearch.getSearchResults()) {
                     FamilleContribuable familleContribuable = (FamilleContribuable) model;
 
-                    SimpleFamille sf = AmalImplServiceLocator.getSimpleFamilleService().read(
-                            familleContribuable.getSimpleFamille().getIdFamille());
+                    SimpleFamille sf = AmalImplServiceLocator.getSimpleFamilleService()
+                            .read(familleContribuable.getSimpleFamille().getIdFamille());
 
                     familleContribuable.setSimpleFamille(sf);
 
@@ -671,7 +688,7 @@ public class AMStatistiquesPublipostageProcess extends AMALabstractProcess {
 
     /**
      * Ecriture du contenu dans un fichier
-     * 
+     *
      * @return
      * @throws Exception
      */

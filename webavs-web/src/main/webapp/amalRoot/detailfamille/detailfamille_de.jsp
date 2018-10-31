@@ -107,10 +107,6 @@
 	if (JadeStringUtil.isBlankOrZero(selectedTabId)) {
 		selectedTabId = "0";
 	}
-	//String linkRetourContribuable = "amal?userAction="+IAMActions.ACTION_FAMILLE+".afficher&selectedId="+viewBean.getFamilleContribuable().getSimpleFamille().getId();
-	//String linkRetourContribuableLibelle = "Retour famille";
-	//String linkRetourDetail = "amal?userAction="+IAMActions.ACTION_CONTRIBUABLE+".afficher&selectedTabId="+selectedTabId+"&selectedId="+viewBean.getFamilleContribuable().getSimpleFamille().getIdContribuable();
-	//String linkRetourDetailLibelle = "Retour dossier";
 
 	String linkRetourDetail = "amal?userAction="+IAMActions.ACTION_FAMILLE+".afficher&selectedId="+viewBean.getFamilleContribuable().getSimpleFamille().getId();
 	String linkRetourDetailLibelle = "Détails";
@@ -549,6 +545,7 @@ function upd() {
 	$('#montantExact').prop('disabled', 'disabled');
 	$('#montantExact1').prop('disabled', 'disabled');
 	$('#montantExact2').prop('disabled', 'disabled');
+	$('#montantExact3').prop('disabled', 'disabled');
 	$('select[name="detailFamille.codeTraitementDossier"]').prop('disabled','disabled');
 }
 
@@ -866,7 +863,7 @@ Nouveau subside
 											String yearMontantContributionTotal = "0.0";
 											try{
 												yearMontantContribution = Double.parseDouble(detailFamille.getMontantContribution());
-			                					yearMontantSupplement= Double.parseDouble(detailFamille.getSupplExtra());
+			                					yearMontantSupplement = Double.parseDouble(detailFamille.getSupplExtra());
 			                					yearMontantContributionTotal = ""+(yearMontantContribution+yearMontantSupplement);
 			                					FWCurrency currentMontant = new FWCurrency();
 			                					currentMontant.add(yearMontantContributionTotal);
@@ -1153,7 +1150,7 @@ Nouveau subside
 									<td><input id="montantExact1" disabled="disabled" type="text"
 										name="detailFamille.supplExtra"
 										data-g-amount=" "
-										value='<%=(!viewBeanIsNew?(!viewBean.getDetailFamille().getAnneeHistorique().equals("1997")?viewBean.getDetailFamille().getSupplExtra():""):"")%>'/>
+										value='<%=(!viewBeanIsNew?(!viewBean.getDetailFamille().getAnneeHistorique().equals("1997") && !viewBean.isSupplementPCFamille()? viewBean.getDetailFamille().getSupplExtra():""):"")%>'/>
 									</td>
 			                		<td></td>
 			                		<td>No assuré</td>
@@ -1168,11 +1165,11 @@ Nouveau subside
 			                	</tr>
 			                	<tr>
 			                		<td>+</td>
-			                		<td>Supplément extraordinaire</td>
-									<td><input id="montantExact2" disabled="disabled" type="text"
-										name="detailFamille.supplExtra"
+			                		<td>Supplément PC famille</td>
+									<td><input id="montantExact3" disabled="disabled" type="text"
+										name="detailFamille.montantSupplementPCFamille"
 										data-g-amount=" "
-										value='<%=(!viewBeanIsNew?(viewBean.getDetailFamille().getAnneeHistorique().equals("1997")?viewBean.getDetailFamille().getSupplExtra():""):"")%>'/>
+										value='<%=(!viewBeanIsNew?(!viewBean.getDetailFamille().getAnneeHistorique().equals("1997") && viewBean.isSupplementPCFamille() ?viewBean.getDetailFamille().getSupplExtra():""):"")%>'/>
 									</td>
 			                		<td></td>
 		                			<td>Prime</td>
@@ -1187,23 +1184,12 @@ Nouveau subside
 			                		<td></td>
 			                	</tr>
 			                	<tr>
-			                		<td>=</td>
-			                		<td>Montant total</td>
-			                		<%
-			                		String montantContributionTotal="0.0";
-			                		double montantContribution = 0.0;
-			                		double montantSupplement= 0.0;
-			                		try{
-			                			montantContribution = Double.parseDouble(viewBean.getDetailFamille().getMontantContribution());
-			                			montantSupplement= Double.parseDouble(viewBean.getDetailFamille().getSupplExtra());
-			                			montantContributionTotal = ""+(montantContribution+montantSupplement);
-			                		}catch(Exception ex){
-			                		}
-			                		%>
-									<td><input id="montantContribution1" disabled="disabled" type="text"
-										name="detailFamille.montantContribution"
+			                		<td>+</td>
+			                		<td>Supplément extraordinaire</td>
+									<td><input id="montantExact2" disabled="disabled" type="text"
+										name="detailFamille.supplExtra"
 										data-g-amount=" "
-										value='<%=(!viewBeanIsNew?""+montantContributionTotal:"")%>'/>
+										value='<%=(!viewBeanIsNew || !viewBean.isSupplementPCFamille()?(viewBean.getDetailFamille().getAnneeHistorique().equals("1997")?viewBean.getDetailFamille().getSupplExtra():""):"")%>'/>
 									</td>
 			                		<td></td>
 		                			<td>Prime exacte</td>
@@ -1216,6 +1202,28 @@ Nouveau subside
 			                		<td></td>
 			                		<td></td>
 			                		<td></td>
+			                	</tr>
+			                	<tr>
+			                		<td>=</td>
+			                		<td>Montant total</td>
+			                		<%
+			                		String montantContributionTotal="0.0";
+			                		double montantContribution = 0.0;
+			                		double montantSupplement = 0.0;
+			                		double montantSupplementPCFamille = 0.0;
+			                		try{
+			                			montantContribution = Double.parseDouble(viewBean.getDetailFamille().getMontantContribution());
+			                			montantSupplement = Double.parseDouble(viewBean.getDetailFamille().getSupplExtra());
+			                			montantContributionTotal = ""+(montantContribution+montantSupplement);
+			                		}catch(Exception ex){
+			                		}
+			                		%>
+									<td><input id="montantContribution1" disabled="disabled" type="text"
+										name="detailFamille.montantContribution"
+										data-g-amount=" "
+										value='<%=(!viewBeanIsNew?""+montantContributionTotal:"")%>'/>
+									</td>
+			                		<td colspan="7"></td>
 			                	</tr>
 			                	<tr style="height:4px">
 				                	<td colspan="10"></td>

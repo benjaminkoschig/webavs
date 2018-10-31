@@ -29,6 +29,8 @@ public interface IAMParametresAnnuels {
     public final static String CS_MONTANT_SANS_ENFANT_CHARGE = "42002204";
     public final static String CS_MONTANT_SUBSIDE_FAMILLE_1_PERSONNE = "42002236";
     public final static String CS_MONTANT_SUBSIDE_FAMILLE_2_PERSONNES = "42002237";
+    public final static String CS_MONTANT_SUBSIDE_MONOPARENTALE = "42002266";
+    public final static String CS_MONTANT_SUBSIDE_BIPARENTAL = "42002267";
     public final static String CS_RDU_MAXIMUM = "42002264";
     public final static String CS_REVENU_MAX_SUBSIDE = "42002235";
     public final static String CS_REVENU_MIN_SUBSIDE = "42002234";

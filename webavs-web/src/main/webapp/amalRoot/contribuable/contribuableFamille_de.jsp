@@ -302,7 +302,7 @@ $(document).ready(function() {
 							String familleMontantContributionTotal = "0.0";
 							try{
 								familleMontantContribution = Double.parseDouble(familleContribuable.getMontantContribution());
-               					familleMontantSupplement= Double.parseDouble(familleContribuable.getSupplExtra());
+               					familleMontantSupplement = Double.parseDouble(familleContribuable.getSupplExtra());
                					familleMontantContributionTotal = ""+(familleMontantContribution+familleMontantSupplement);
                					FWCurrency currentMontant = new FWCurrency();
                					currentMontant.add(familleMontantContributionTotal);

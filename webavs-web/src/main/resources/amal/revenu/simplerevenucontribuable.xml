@@ -18,8 +18,12 @@
 			<field name="excedDepPropImmoPriv" column="EXDPIP" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="Excéd. de dép. prop. immob. privée (310)"/>
 			<field name="excedDepPropImmoComm" column="EXDPIC" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="Excéd. de dép. prop. immob. comm. (330 330c)"/>
 			<field name="perteExercicesComm" column="PEXCOM" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="Pertes exercices commerciaux"/> 			
-			<field name="perteActIndep" column="PEACIN" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="Perte de l'activité indépendante (140 140c)"/>					
+			<field name="perteActIndep" column="PEACIN" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="Perte de l'activité indépendante (140 140c)"/>	
+			<field name="revenuActIndep" column="REACIN" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="Revenu de l'activité indépendante (140)"/>							
+			<field name="revenuActIndepEpouse" column="REINEP" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="Revenu de l'activité indépendante de l'épouse (140c)"/>
 			<field name="perteActAgricole" column="PEACAG" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="Perte de l'activité agricole (150 150c)"/>
+			<field name="revenuActAgricole" column="REACAG" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="Revenu de l'activité agricole (150)"/>
+			<field name="revenuActAgricoleEpouse" column="REAGEP" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="Revenu de l'activité agricole de l'épouse (150c)"/>
 			<field name="perteSociete" column="PERSOC" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="Perte de société (160 160c)"/>
 			<field name="perteActAccInd" column="PEACAI" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="Perte de l'activité accessoire indépendante (170 170c)"/>
 			<field name="excDepSuccNp" column="EXDSNP" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="false" comment="Excédent dép. succession non partagées (390)"/>			

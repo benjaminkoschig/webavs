@@ -1,18 +1,5 @@
 package ch.globaz.amal.process.repriseDecisionsTaxations.step3;
 
-import globaz.globall.util.JADate;
-import globaz.globall.util.JAException;
-import globaz.jade.client.util.JadeDateUtil;
-import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.context.JadeThread;
-import globaz.jade.context.exception.JadeNoBusinessLogSessionError;
-import globaz.jade.exception.JadeApplicationException;
-import globaz.jade.exception.JadePersistenceException;
-import globaz.jade.log.JadeLogger;
-import globaz.jade.log.business.JadeBusinessMessageLevels;
-import globaz.jade.persistence.model.JadeAbstractModel;
-import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
-import globaz.pyxis.util.TINSSFormater;
 import java.io.StringReader;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -51,9 +38,22 @@ import ch.globaz.jade.process.business.bean.JadeProcessEntity;
 import ch.globaz.jade.process.business.interfaceProcess.entity.JadeProcessEntityInterface;
 import ch.globaz.jade.process.business.interfaceProcess.entity.JadeProcessEntityNeedProperties;
 import ch.horizon.jaspe.util.JANumberFormatter;
+import globaz.globall.util.JADate;
+import globaz.globall.util.JAException;
+import globaz.jade.client.util.JadeDateUtil;
+import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.context.JadeThread;
+import globaz.jade.context.exception.JadeNoBusinessLogSessionError;
+import globaz.jade.exception.JadeApplicationException;
+import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.log.JadeLogger;
+import globaz.jade.log.business.JadeBusinessMessageLevels;
+import globaz.jade.persistence.model.JadeAbstractModel;
+import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
+import globaz.pyxis.util.TINSSFormater;
 
-public class AMProcessRepriseDecisionsTaxationsEntityHandler implements JadeProcessEntityInterface,
-        JadeProcessEntityNeedProperties {
+public class AMProcessRepriseDecisionsTaxationsEntityHandler
+        implements JadeProcessEntityInterface, JadeProcessEntityNeedProperties {
     private static final String RUBRIQUE_DEDUCTION_PERSONNE_CHARGE = "620";
     private static final String TAXATION_OFFICE_SELON_FICHIER_FISC = "5";
     private ContainerParametres containerParametres = null;
@@ -110,8 +110,8 @@ public class AMProcessRepriseDecisionsTaxationsEntityHandler implements JadeProc
             SimpleDeductionsFiscalesEnfantsSearch deductionsFiscalesEnfantsSearch = new SimpleDeductionsFiscalesEnfantsSearch();
             deductionsFiscalesEnfantsSearch.setForNbEnfant("2");
             deductionsFiscalesEnfantsSearch.setForAnneeTaxationLOE(anneeTaxation);
-            deductionsFiscalesEnfantsSearch = AmalServiceLocator.getDeductionsFiscalesEnfantsService().search(
-                    deductionsFiscalesEnfantsSearch);
+            deductionsFiscalesEnfantsSearch = AmalServiceLocator.getDeductionsFiscalesEnfantsService()
+                    .search(deductionsFiscalesEnfantsSearch);
             float nbDeductionUntil2Enfants = 0;
             if (deductionsFiscalesEnfantsSearch.getSize() > 0) {
                 String mt = ((SimpleDeductionsFiscalesEnfants) deductionsFiscalesEnfantsSearch.getSearchResults()[0])
@@ -123,8 +123,8 @@ public class AMProcessRepriseDecisionsTaxationsEntityHandler implements JadeProc
             deductionsFiscalesEnfantsSearch = new SimpleDeductionsFiscalesEnfantsSearch();
             deductionsFiscalesEnfantsSearch.setForNbEnfant("3");
             deductionsFiscalesEnfantsSearch.setForAnneeTaxationLOE(anneeTaxation);
-            deductionsFiscalesEnfantsSearch = AmalServiceLocator.getDeductionsFiscalesEnfantsService().search(
-                    deductionsFiscalesEnfantsSearch);
+            deductionsFiscalesEnfantsSearch = AmalServiceLocator.getDeductionsFiscalesEnfantsService()
+                    .search(deductionsFiscalesEnfantsSearch);
             float nbDeduction3MoreEnfants = 0;
             if (deductionsFiscalesEnfantsSearch.getSize() > 0) {
                 String mt = ((SimpleDeductionsFiscalesEnfants) deductionsFiscalesEnfantsSearch.getSearchResults()[0])
@@ -150,8 +150,8 @@ public class AMProcessRepriseDecisionsTaxationsEntityHandler implements JadeProc
                         + ") incorrect par rapport au nombre 620 (" + rubPersCharge + ");");
             }
         } catch (Exception e) {
-            JadeThread.logError("ERREUR", "Erreur récupération montants déductions enfants pour l'année "
-                    + anneeTaxation + ";");
+            JadeThread.logError("ERREUR",
+                    "Erreur récupération montants déductions enfants pour l'année " + anneeTaxation + ";");
         }
     }
 
@@ -161,8 +161,8 @@ public class AMProcessRepriseDecisionsTaxationsEntityHandler implements JadeProc
         simpleUploadFichierRepriseSearch.setForNoContribuable(currentNoContribuable);
         simpleUploadFichierRepriseSearch.setLikeTypeReprise("PCHARG");
         simpleUploadFichierRepriseSearch.setForIdJob(idJob);
-        simpleUploadFichierRepriseSearch = AmalServiceLocator.getSimpleUploadFichierService().search(
-                simpleUploadFichierRepriseSearch);
+        simpleUploadFichierRepriseSearch = AmalServiceLocator.getSimpleUploadFichierService()
+                .search(simpleUploadFichierRepriseSearch);
 
         if (simpleUploadFichierRepriseSearch.getSize() > 0) {
             SimpleUploadFichierReprise simpleUploadFichierReprise = (SimpleUploadFichierReprise) simpleUploadFichierRepriseSearch
@@ -223,7 +223,7 @@ public class AMProcessRepriseDecisionsTaxationsEntityHandler implements JadeProc
 
     /**
      * Recherche du contribuable dans les dossiers actifs
-     * 
+     *
      * @param searchedNSS
      * @param searchedAVS
      * @param searchedFamilyName
@@ -248,8 +248,8 @@ public class AMProcessRepriseDecisionsTaxationsEntityHandler implements JadeProc
         // Recherche par NSS, puis date de naissance
         if (bSearchByNoNSS && !JadeStringUtil.isBlankOrZero(searchedNSS)) {
             JadeLogger.info(null, "RECHERCHE PAR NSS : " + searchedNSS);
-            currentContribuableRCListeSearch = AmalServiceLocator.getContribuableService().getDossierByNSS(
-                    currentContribuableRCListeSearch, searchedNSS);
+            currentContribuableRCListeSearch = AmalServiceLocator.getContribuableService()
+                    .getDossierByNSS(currentContribuableRCListeSearch, searchedNSS);
             if (currentContribuableRCListeSearch.getSize() == 1) {
                 bSearchByNoContribuable = false;
                 bSearchByName = false;
@@ -258,8 +258,8 @@ public class AMProcessRepriseDecisionsTaxationsEntityHandler implements JadeProc
                 JadeLogger.info(null, "SOUS RECHERCHE PAR DOB : " + searchedDateOfBirth);
                 bSearchByNoContribuable = false;
                 bSearchByName = false;
-                currentContribuableRCListeSearch = AmalServiceLocator.getContribuableService().getDossierByDateOfBirth(
-                        currentContribuableRCListeSearch, searchedDateOfBirth);
+                currentContribuableRCListeSearch = AmalServiceLocator.getContribuableService()
+                        .getDossierByDateOfBirth(currentContribuableRCListeSearch, searchedDateOfBirth);
                 if (currentContribuableRCListeSearch.getSize() == 1) {
                     bFound = true;
                 } else if (currentContribuableRCListeSearch.getSize() > 1) {
@@ -276,8 +276,8 @@ public class AMProcessRepriseDecisionsTaxationsEntityHandler implements JadeProc
         // Recherche par N° contribuable, puis date de naissance
         if (bSearchByNoContribuable && !JadeStringUtil.isBlankOrZero(searchedNoContribuable)) {
             JadeLogger.info(null, "RECHERCHE PAR NO CONTRIBUABLE : " + searchedNoContribuable);
-            currentContribuableRCListeSearch = AmalServiceLocator.getContribuableService().getDossierByNoContribuable(
-                    currentContribuableRCListeSearch, searchedNoContribuable);
+            currentContribuableRCListeSearch = AmalServiceLocator.getContribuableService()
+                    .getDossierByNoContribuable(currentContribuableRCListeSearch, searchedNoContribuable);
             if (currentContribuableRCListeSearch.getSize() == 1) {
                 // bSearchByNoNSS = false;
                 bSearchByName = false;
@@ -285,8 +285,8 @@ public class AMProcessRepriseDecisionsTaxationsEntityHandler implements JadeProc
             } else if (currentContribuableRCListeSearch.getSize() > 1) {
                 JadeLogger.info(null, "SOUS RECHERCHE PAR DOB : " + searchedDateOfBirth);
                 bSearchByName = false;
-                currentContribuableRCListeSearch = AmalServiceLocator.getContribuableService().getDossierByDateOfBirth(
-                        currentContribuableRCListeSearch, searchedDateOfBirth);
+                currentContribuableRCListeSearch = AmalServiceLocator.getContribuableService()
+                        .getDossierByDateOfBirth(currentContribuableRCListeSearch, searchedDateOfBirth);
                 if (currentContribuableRCListeSearch.getSize() == 1) {
                     bFound = true;
                 } else if (currentContribuableRCListeSearch.getSize() > 1) {
@@ -303,12 +303,12 @@ public class AMProcessRepriseDecisionsTaxationsEntityHandler implements JadeProc
         if (bSearchByName && !JadeStringUtil.isBlankOrZero(searchedDateOfBirth)
                 && !JadeStringUtil.isEmpty(searchedFamilyName) && !JadeStringUtil.isEmpty(searchedGivenName)) {
             JadeLogger.info(null, "RECHERCHE PAR DOB : " + searchedDateOfBirth);
-            currentContribuableRCListeSearch = AmalServiceLocator.getContribuableService().getDossierByDateOfBirth(
-                    currentContribuableRCListeSearch, searchedDateOfBirth);
+            currentContribuableRCListeSearch = AmalServiceLocator.getContribuableService()
+                    .getDossierByDateOfBirth(currentContribuableRCListeSearch, searchedDateOfBirth);
             if (currentContribuableRCListeSearch.getSize() >= 1) {
                 JadeLogger.info(null, "SOUS RECHERCHE PAR NOM : " + searchedFamilyName);
-                currentContribuableRCListeSearch = AmalServiceLocator.getContribuableService().getDossierByFamilyName(
-                        currentContribuableRCListeSearch, searchedFamilyName);
+                currentContribuableRCListeSearch = AmalServiceLocator.getContribuableService()
+                        .getDossierByFamilyName(currentContribuableRCListeSearch, searchedFamilyName);
                 if (currentContribuableRCListeSearch.getSize() >= 1) {
                     JadeLogger.info(null, "SOUS RECHERCHE PAR PRENOM : " + searchedGivenName);
                     currentContribuableRCListeSearch = AmalServiceLocator.getContribuableService()
@@ -347,7 +347,7 @@ public class AMProcessRepriseDecisionsTaxationsEntityHandler implements JadeProc
 
     /**
      * Recherche du contribuable dans les dossiers historiques
-     * 
+     *
      * @param searchedNSS
      * @param searchedAVS
      * @param searchedFamilyName
@@ -399,8 +399,8 @@ public class AMProcessRepriseDecisionsTaxationsEntityHandler implements JadeProc
         // Recherche par NSS, puis date de naissance
         if (bSearchByNoNSS && !JadeStringUtil.isBlankOrZero(searchedNSS)) {
             JadeLogger.info(null, "RECHERCHE PAR NSS : " + searchedNSS);
-            currentContribuableHistoriqueRCListeSearch = AmalServiceLocator.getContribuableService().getDossierByNSS(
-                    currentContribuableHistoriqueRCListeSearch, searchedNSS);
+            currentContribuableHistoriqueRCListeSearch = AmalServiceLocator.getContribuableService()
+                    .getDossierByNSS(currentContribuableHistoriqueRCListeSearch, searchedNSS);
             if (currentContribuableHistoriqueRCListeSearch.getSize() == 1) {
                 bSearchByName = false;
                 bFound = true;
@@ -541,7 +541,7 @@ public class AMProcessRepriseDecisionsTaxationsEntityHandler implements JadeProc
 
     /**
      * Récupération du nss formatté
-     * 
+     *
      * @return
      */
     private String getCurrentValidFormattedNSS(String val) {
@@ -627,8 +627,23 @@ public class AMProcessRepriseDecisionsTaxationsEntityHandler implements JadeProc
                 }
                 revenu.getSimpleRevenuContribuable().setPerteActAccInd(value.toString());
             }
-        } else if (AMRubriqueRevenu.PERTE_ACTIVITE_AGRICOLE.getValue().equals(idRubrique)
-                || AMRubriqueRevenu.PERTE_ACTIVITE_AGRICOLE_C.getValue().equals(idRubrique)) {
+        } else if (AMRubriqueRevenu.REVENU_ACTIVITE_INDEP.getValue().equals(idRubrique)
+                || AMRubriqueRevenu.REVENU_ACTIVITE_INDEP_C.getValue().equals(idRubrique)) {
+            if (value.compareTo(new BigInteger("0")) == -1) {
+                value = value.negate();
+                if (!JadeStringUtil.isBlankOrZero(revenu.getSimpleRevenuContribuable().getPerteActIndep())) {
+                    BigInteger mt = new BigInteger(revenu.getSimpleRevenuContribuable().getPerteActIndep());
+                    value = mt.add(value);
+                }
+                revenu.getSimpleRevenuContribuable().setPerteActIndep(value.toString());
+            }
+            if (AMRubriqueRevenu.REVENU_ACTIVITE_INDEP.getValue().equals(idRubrique)) {
+                revenu.getSimpleRevenuContribuable().setRevenuActIndep(value.toString());
+            } else {
+                revenu.getSimpleRevenuContribuable().setRevenuActIndepEpouse(value.toString());
+            }
+        } else if (AMRubriqueRevenu.REVENU_ACTIVITE_AGRICOLE.getValue().equals(idRubrique)
+                || AMRubriqueRevenu.REVENU_ACTIVITE_AGRICOLE_C.getValue().equals(idRubrique)) {
             if (value.compareTo(new BigInteger("0")) == -1) {
                 value = value.negate();
                 if (!JadeStringUtil.isBlankOrZero(revenu.getSimpleRevenuContribuable().getPerteActAgricole())) {
@@ -637,15 +652,10 @@ public class AMProcessRepriseDecisionsTaxationsEntityHandler implements JadeProc
                 }
                 revenu.getSimpleRevenuContribuable().setPerteActAgricole(value.toString());
             }
-        } else if (AMRubriqueRevenu.PERTE_ACTIVITE_INDEP.getValue().equals(idRubrique)
-                || AMRubriqueRevenu.PERTE_ACTIVITE_INDEP_C.getValue().equals(idRubrique)) {
-            if (value.compareTo(new BigInteger("0")) == -1) {
-                value = value.negate();
-                if (!JadeStringUtil.isBlankOrZero(revenu.getSimpleRevenuContribuable().getPerteActIndep())) {
-                    BigInteger mt = new BigInteger(revenu.getSimpleRevenuContribuable().getPerteActIndep());
-                    value = mt.add(value);
-                }
-                revenu.getSimpleRevenuContribuable().setPerteActIndep(value.toString());
+            if (AMRubriqueRevenu.REVENU_ACTIVITE_AGRICOLE.getValue().equals(idRubrique)) {
+                revenu.getSimpleRevenuContribuable().setRevenuActAgricole(value.toString());
+            } else {
+                revenu.getSimpleRevenuContribuable().setRevenuActAgricoleEpouse(value.toString());
             }
         } else if (AMRubriqueRevenu.PERTE_EXERCICES_COMM.getValue().equals(idRubrique)) {
             revenu.getSimpleRevenuContribuable().setPerteExercicesComm(value.toString());
@@ -741,7 +751,7 @@ public class AMProcessRepriseDecisionsTaxationsEntityHandler implements JadeProc
 
     /**
      * Recherche du contribuable
-     * 
+     *
      * @return
      * @throws JadeNoBusinessLogSessionError
      * @throws JadePersistenceException
@@ -839,8 +849,8 @@ public class AMProcessRepriseDecisionsTaxationsEntityHandler implements JadeProc
                     boolean taxationExist = isTaxationAlreadyExist(taxation);
 
                     if (taxationExist) {
-                        JadeThread
-                                .logInfo("INFO", "Taxation " + taxation.getPeriode().toString() + " déjà présente !;");
+                        JadeThread.logInfo("INFO",
+                                "Taxation " + taxation.getPeriode().toString() + " déjà présente !;");
                     } else {
 
                         if ((taxation.getDateDec() == null) && (taxation.getEcTax() == null)
@@ -848,8 +858,8 @@ public class AMProcessRepriseDecisionsTaxationsEntityHandler implements JadeProc
                             SimpleRevenuSearch revenuPrecedentSearch = new SimpleRevenuSearch();
                             revenuPrecedentSearch.setForIdContribuable(idContribuable);
                             revenuPrecedentSearch.setOrderKey("orderByAnneeTaxation");
-                            revenuPrecedentSearch = AmalImplServiceLocator.getSimpleRevenuService().search(
-                                    revenuPrecedentSearch);
+                            revenuPrecedentSearch = AmalImplServiceLocator.getSimpleRevenuService()
+                                    .search(revenuPrecedentSearch);
                             SimpleRevenu revenuPrecedent = new SimpleRevenu();
                             String etatCivil = "";
                             String codeProf = "";
@@ -882,8 +892,8 @@ public class AMProcessRepriseDecisionsTaxationsEntityHandler implements JadeProc
                             revenuToCreate.getSimpleRevenu().setTypeTaxation(getCSTypeTaxation(2));
                             revenuToCreate.getSimpleRevenu().setTypeRevenu(IAMCodeSysteme.CS_TYPE_CONTRIBUABLE);
                             revenuToCreate.getSimpleRevenu().setIdContribuable(idContribuable);
-                            revenuToCreate.getSimpleRevenu().setTypeSource(
-                                    IAMCodeSysteme.AMTypeSourceTaxation.AUTO_FISC.getValue());
+                            revenuToCreate.getSimpleRevenu()
+                                    .setTypeSource(IAMCodeSysteme.AMTypeSourceTaxation.AUTO_FISC.getValue());
                             revenuToCreate.getSimpleRevenu().setRevDetUniqueOuiNon(false);
                             revenuToCreate.getSimpleRevenu().setRevDetUnique("0");
 
@@ -918,17 +928,17 @@ public class AMProcessRepriseDecisionsTaxationsEntityHandler implements JadeProc
 
                             revenuToCreate.getSimpleRevenu().setNbEnfants(String.valueOf(nbEnfants));
                             revenuToCreate.getSimpleRevenu().setNbEnfantSuspens(String.valueOf(nbEnfantsSuspens));
-                            revenuToCreate.getSimpleRevenu().setEtatCivil(
-                                    getCsEtatCivil(taxation.getEcTax().intValue()));
+                            revenuToCreate.getSimpleRevenu()
+                                    .setEtatCivil(getCsEtatCivil(taxation.getEcTax().intValue()));
                             revenuToCreate.getSimpleRevenu().setNbJours(taxation.getNbJours().toString());
-                            revenuToCreate.getSimpleRevenu().setTypeTaxation(
-                                    getCSTypeTaxation(taxation.getGenre().intValue()));
-                            revenuToCreate.getSimpleRevenu().setProfession(
-                                    getCSCodeProfession(taxation.getCodeProfession()));
+                            revenuToCreate.getSimpleRevenu()
+                                    .setTypeTaxation(getCSTypeTaxation(taxation.getGenre().intValue()));
+                            revenuToCreate.getSimpleRevenu()
+                                    .setProfession(getCSCodeProfession(taxation.getCodeProfession()));
                             revenuToCreate.getSimpleRevenu().setTypeRevenu(IAMCodeSysteme.CS_TYPE_CONTRIBUABLE);
                             revenuToCreate.getSimpleRevenu().setIdContribuable(idContribuable);
-                            revenuToCreate.getSimpleRevenu().setTypeSource(
-                                    IAMCodeSysteme.AMTypeSourceTaxation.AUTO_FISC.getValue());
+                            revenuToCreate.getSimpleRevenu()
+                                    .setTypeSource(IAMCodeSysteme.AMTypeSourceTaxation.AUTO_FISC.getValue());
                             if (taxation.getRdu().compareTo(new BigInteger("0")) == 1) {
                                 revenuToCreate.getSimpleRevenu().setRevDetUniqueOuiNon(true);
                                 revenuToCreate.getSimpleRevenu().setRevDetUnique(taxation.getRdu().toString());
@@ -960,8 +970,8 @@ public class AMProcessRepriseDecisionsTaxationsEntityHandler implements JadeProc
                                 }
 
                                 BigInteger anneeHistorique = taxation.getPeriode().add(new BigInteger("2"));
-                                revenuHistorique.getSimpleRevenuHistorique().setAnneeHistorique(
-                                        anneeHistorique.toString());
+                                revenuHistorique.getSimpleRevenuHistorique()
+                                        .setAnneeHistorique(anneeHistorique.toString());
                                 revenuHistorique.setRevenuFullComplex(revenuHistorique.getRevenuFullComplex());
                             } else {
                                 revenuHistorique.getRevenuFullComplex().getSimpleRevenuContribuable()
@@ -971,8 +981,8 @@ public class AMProcessRepriseDecisionsTaxationsEntityHandler implements JadeProc
                             if (!JadeThread.logHasMessagesFromLevel(JadeBusinessMessageLevels.ERROR)) {
                                 // Création du revenu
                                 AmalServiceLocator.getRevenuService().create(revenuHistorique.getRevenuFullComplex());
-                                JadeThread.logInfo("INFO", "Taxation année  " + taxation.getPeriode().toString()
-                                        + " crée;");
+                                JadeThread.logInfo("INFO",
+                                        "Taxation année  " + taxation.getPeriode().toString() + " crée;");
                             } else {
                                 JadeThread.logInfo("INFO", "Erreur lors de la création de la taxation "
                                         + taxation.getPeriode().toString() + ";");
@@ -995,7 +1005,7 @@ public class AMProcessRepriseDecisionsTaxationsEntityHandler implements JadeProc
 
     /**
      * Enregistrement de informations utiles aux étapes suivantes
-     * 
+     *
      * @param idContribuableDossier
      * @param newDossier
      */
@@ -1005,8 +1015,8 @@ public class AMProcessRepriseDecisionsTaxationsEntityHandler implements JadeProc
             fileUploaded = AmalServiceLocator.getSimpleUploadFichierService().read(currentEntity.getIdRef());
             if (!JadeStringUtil.isEmpty(fileUploaded.getXmlLignes())) {
                 String typeDossier = "A";
-                fileUploaded.setCustomValue(idContribuableDossier + ";" + nbEnfants + ";" + nbEnfantsSuspens + ";"
-                        + typeDossier);
+                fileUploaded.setCustomValue(
+                        idContribuableDossier + ";" + nbEnfants + ";" + nbEnfantsSuspens + ";" + typeDossier);
                 fileUploaded = AmalServiceLocator.getSimpleUploadFichierService().update(fileUploaded);
                 JadeThread.logInfo("INFO", "Informations de reprise mis à jour !;");
             }

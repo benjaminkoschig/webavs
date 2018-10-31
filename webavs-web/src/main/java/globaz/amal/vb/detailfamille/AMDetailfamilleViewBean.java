@@ -1,23 +1,8 @@
 /**
- * 
+ *
  */
 package globaz.amal.vb.detailfamille;
 
-import globaz.globall.db.BSession;
-import globaz.globall.db.BSessionUtil;
-import globaz.globall.db.BSpy;
-import globaz.globall.parameters.FWParametersCode;
-import globaz.globall.parameters.FWParametersSystemCodeManager;
-import globaz.globall.util.JAVector;
-import globaz.globall.vb.BJadePersistentObjectViewBean;
-import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.exception.JadePersistenceException;
-import globaz.jade.log.JadeLogger;
-import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
-import globaz.op.common.model.document.Document;
-import globaz.op.wordml.model.document.WordmlDocument;
-import globaz.pyxis.db.adressecourrier.TIPays;
-import globaz.pyxis.db.adressecourrier.TIPaysManager;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -42,6 +27,7 @@ import ch.globaz.amal.business.models.revenu.RevenuHistorique;
 import ch.globaz.amal.business.models.revenu.RevenuHistoriqueComplex;
 import ch.globaz.amal.business.models.revenu.RevenuHistoriqueSearch;
 import ch.globaz.amal.business.services.AmalServiceLocator;
+import ch.globaz.amal.businessimpl.checkers.subsideannee.SimpleSubsideAnneeChecker;
 import ch.globaz.amal.businessimpl.utils.AMGestionTiers;
 import ch.globaz.envoi.business.exceptions.models.parametrageEnvoi.FormuleListException;
 import ch.globaz.envoi.business.models.parametrageEnvoi.FormuleListSearch;
@@ -49,10 +35,25 @@ import ch.globaz.envoi.business.services.ENServiceLocator;
 import ch.globaz.pyxis.business.model.AdministrationComplexModel;
 import ch.globaz.pyxis.business.model.AdministrationSearchComplexModel;
 import ch.globaz.pyxis.business.service.TIBusinessServiceLocator;
+import globaz.globall.db.BSession;
+import globaz.globall.db.BSessionUtil;
+import globaz.globall.db.BSpy;
+import globaz.globall.parameters.FWParametersCode;
+import globaz.globall.parameters.FWParametersSystemCodeManager;
+import globaz.globall.util.JAVector;
+import globaz.globall.vb.BJadePersistentObjectViewBean;
+import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.log.JadeLogger;
+import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
+import globaz.op.common.model.document.Document;
+import globaz.op.wordml.model.document.WordmlDocument;
+import globaz.pyxis.db.adressecourrier.TIPays;
+import globaz.pyxis.db.adressecourrier.TIPaysManager;
 
 /**
  * @author DHI
- * 
+ *
  */
 public class AMDetailfamilleViewBean extends BJadePersistentObjectViewBean {
 
@@ -77,9 +78,9 @@ public class AMDetailfamilleViewBean extends BJadePersistentObjectViewBean {
     private SimpleDocumentSearch simpleDocumentSearch = null;
 
     /**
-     * 
+     *
      * Default constructor
-     * 
+     *
      */
     public AMDetailfamilleViewBean() {
         super();
@@ -90,9 +91,9 @@ public class AMDetailfamilleViewBean extends BJadePersistentObjectViewBean {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.db.BIPersistentObject#add()
-     * 
+     *
      * ADD a new subside
      */
     @Override
@@ -110,9 +111,9 @@ public class AMDetailfamilleViewBean extends BJadePersistentObjectViewBean {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.db.BIPersistentObject#delete()
-     * 
+     *
      * Delete the current subside
      */
     @Override
@@ -121,7 +122,7 @@ public class AMDetailfamilleViewBean extends BJadePersistentObjectViewBean {
     }
 
     /**
-     * 
+     *
      * @param simulation
      * @throws DetailFamilleException
      * @throws JadeApplicationServiceNotAvailableException
@@ -141,6 +142,16 @@ public class AMDetailfamilleViewBean extends BJadePersistentObjectViewBean {
         AmalServiceLocator.getDetailFamilleService().generateSubside(getCalculs(), false);
     }
 
+    public boolean isSupplementPCFamille() {
+        SimpleDetailFamille detailleFam = getDetailFamille();
+        boolean isSubsidePCFamille = false;
+
+        if (detailleFam != null) {
+            isSubsidePCFamille = SimpleSubsideAnneeChecker.checkIsSubsidePCFKind(detailleFam);
+        }
+        return isSubsidePCFamille;
+    }
+
     /**
      * @return the calculs
      */
@@ -150,7 +161,7 @@ public class AMDetailfamilleViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Get the current contribuable information (family responsible)
-     * 
+     *
      * @return
      */
     public Contribuable getContribuable() {
@@ -159,7 +170,7 @@ public class AMDetailfamilleViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Get the current detailFamille information (subside)
-     * 
+     *
      * @return
      */
     public SimpleDetailFamille getDetailFamille() {
@@ -175,7 +186,7 @@ public class AMDetailfamilleViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Get the current famille contribuable information (family member)
-     * 
+     *
      * @return
      */
     public FamilleContribuable getFamilleContribuable() {
@@ -191,9 +202,9 @@ public class AMDetailfamilleViewBean extends BJadePersistentObjectViewBean {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.db.BIPersistentObject#getId()
-     * 
+     *
      * Get the current subside Id
      */
     @Override
@@ -203,7 +214,7 @@ public class AMDetailfamilleViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Création du nom du document interactif en appelant le service correspondant
-     * 
+     *
      * @param csDateComplete
      * @param modeleId
      * @return
@@ -218,9 +229,9 @@ public class AMDetailfamilleViewBean extends BJadePersistentObjectViewBean {
     /**
      * @param id
      *            ID du code système
-     * 
+     *
      * @return libelle général du code système correspondant
-     * 
+     *
      */
     public String getLibelleCodeSysteme(String id) {
 
@@ -252,9 +263,9 @@ public class AMDetailfamilleViewBean extends BJadePersistentObjectViewBean {
     /**
      * @param id
      *            ID du code système
-     * 
+     *
      * @return libelle général du code système correspondant
-     * 
+     *
      */
     public JAVector getListeDocuments() {
         FWParametersSystemCodeManager cm = new FWParametersSystemCodeManager();
@@ -276,7 +287,7 @@ public class AMDetailfamilleViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Retourne le nom de l'assurance liée à ce subside
-     * 
+     *
      * @return
      */
     public String getNomAssurance() {
@@ -291,7 +302,7 @@ public class AMDetailfamilleViewBean extends BJadePersistentObjectViewBean {
     }
 
     /**
-     * 
+     *
      * @param noCaisse
      *            idTiers de l'assurance
      * @return le nom de l'assurance correspondant à l'id Tiers (nocaisse)
@@ -308,7 +319,7 @@ public class AMDetailfamilleViewBean extends BJadePersistentObjectViewBean {
     }
 
     /**
-     * 
+     *
      * @param noCaisse
      *            annonce
      * @return le nom clair ou ""
@@ -323,7 +334,7 @@ public class AMDetailfamilleViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Retourne toutes les caisses-maladie présentes dans pyxis
-     * 
+     *
      * @return
      */
     public String[] getNomAssurancesAll() {
@@ -334,7 +345,8 @@ public class AMDetailfamilleViewBean extends BJadePersistentObjectViewBean {
             allCMSearch = TIBusinessServiceLocator.getAdministrationService().find(allCMSearch);
             ArrayList<String> myArray = new ArrayList<String>();
             for (int iCaisse = 0; iCaisse < allCMSearch.getSize(); iCaisse++) {
-                AdministrationComplexModel caisse = (AdministrationComplexModel) allCMSearch.getSearchResults()[iCaisse];
+                AdministrationComplexModel caisse = (AdministrationComplexModel) allCMSearch
+                        .getSearchResults()[iCaisse];
                 if ((caisse.getTiers().getInactif() == true) || caisse.getTiers().get_inactif().equals("1")) {
                     continue;
                 }
@@ -350,8 +362,8 @@ public class AMDetailfamilleViewBean extends BJadePersistentObjectViewBean {
             return returnResults;
 
         } catch (Exception e) {
-            JadeLogger.error(this, "Error loading administration " + getDetailFamille().getNoCaisseMaladie() + " - "
-                    + e.getMessage());
+            JadeLogger.error(this,
+                    "Error loading administration " + getDetailFamille().getNoCaisseMaladie() + " - " + e.getMessage());
             return new String[0];
         }
     }
@@ -364,7 +376,7 @@ public class AMDetailfamilleViewBean extends BJadePersistentObjectViewBean {
     }
 
     /**
-     * 
+     *
      * @param idPays
      * @return String pays ISO
      */
@@ -395,7 +407,7 @@ public class AMDetailfamilleViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Get the linked session
-     * 
+     *
      * @return BSession session
      */
     private BSession getSession() {
@@ -403,7 +415,7 @@ public class AMDetailfamilleViewBean extends BJadePersistentObjectViewBean {
     }
 
     /**
-     * 
+     *
      * @param idSexe
      * @return String 1 letter H/F sexe
      */
@@ -427,9 +439,9 @@ public class AMDetailfamilleViewBean extends BJadePersistentObjectViewBean {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.vb.BJadePersistentObjectViewBean#getSpy()
-     * 
+     *
      * get the spy
      */
     @Override
@@ -443,7 +455,7 @@ public class AMDetailfamilleViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Merge du document (Wordml) appelé par la servlet action merge
-     * 
+     *
      * @param idFormule
      * @return
      * @throws Exception
@@ -469,7 +481,7 @@ public class AMDetailfamilleViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Préparation du tableau d'id nécessaire au merge du document wordml
-     * 
+     *
      * @param currentDetail
      *            information du document courant
      * @return map renseignée
@@ -497,8 +509,8 @@ public class AMDetailfamilleViewBean extends BJadePersistentObjectViewBean {
         // classe - id
         map.put(getContribuable().getClass().getName(), getContribuable().getId());
         map.put(getDetailFamille().getClass().getName(), getDetailFamille().getId());
-        map.put(getFamilleContribuable().getSimpleFamille().getClass().getName(), getFamilleContribuable()
-                .getSimpleFamille().getId());
+        map.put(getFamilleContribuable().getSimpleFamille().getClass().getName(),
+                getFamilleContribuable().getSimpleFamille().getId());
         BSession currentSession = BSessionUtil.getSessionFromThreadContext();
         map.put(currentSession.getClass().getName(), currentSession.getUserId());
 
@@ -508,9 +520,9 @@ public class AMDetailfamilleViewBean extends BJadePersistentObjectViewBean {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.db.BIPersistentObject#retrieve()
-     * 
+     *
      * Read the current subside information Read the current famillecontribuable information Read the current
      * contribuable information
      */
@@ -529,7 +541,7 @@ public class AMDetailfamilleViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Retrieve Contribuable informations
-     * 
+     *
      * @throws Exception
      */
     public void retrieveContribuable() throws Exception {
@@ -541,9 +553,9 @@ public class AMDetailfamilleViewBean extends BJadePersistentObjectViewBean {
     }
 
     /**
-     * 
+     *
      * Retrieve subside (detailfamille) information
-     * 
+     *
      * @throws Exception
      */
     public void retrieveDetailFamilleContribuable() throws Exception {
@@ -554,7 +566,7 @@ public class AMDetailfamilleViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Retrieve the list of detail famille for a specific annee historique
-     * 
+     *
      * @throws Exception
      */
     public void retrieveDetailFamilleSearch() throws Exception {
@@ -569,9 +581,9 @@ public class AMDetailfamilleViewBean extends BJadePersistentObjectViewBean {
     }
 
     /**
-     * 
+     *
      * Retrieve Famille Contribuable informations
-     * 
+     *
      * @throws Exception
      */
     public void retrieveFamilleContribuable() throws Exception {
@@ -594,8 +606,8 @@ public class AMDetailfamilleViewBean extends BJadePersistentObjectViewBean {
         parametreModelComplexSearch = new ParametreModelComplexSearch();
         parametreModelComplexSearch.setWhereKey("basic");
         try {
-            parametreModelComplexSearch = AmalServiceLocator.getParametreModelService().search(
-                    parametreModelComplexSearch);
+            parametreModelComplexSearch = AmalServiceLocator.getParametreModelService()
+                    .search(parametreModelComplexSearch);
         } catch (Exception e) {
             JadeLogger.error(this, "Error getting parameter model list");
         }
@@ -611,7 +623,7 @@ public class AMDetailfamilleViewBean extends BJadePersistentObjectViewBean {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.db.BIPersistentObject#setId(java.lang.String)
      */
     @Override
@@ -621,7 +633,7 @@ public class AMDetailfamilleViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Set the contribuable Id (case : add new subside) Please invoke retrievecontribuable after
-     * 
+     *
      * @param newId
      */
     public void setIdContribuable(String newId) {
@@ -630,7 +642,7 @@ public class AMDetailfamilleViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Set the family id (case : add new subside) Please invoke retrieveFamille after
-     * 
+     *
      * @param newId
      */
     public void setIdFamille(String newId) {
@@ -643,9 +655,9 @@ public class AMDetailfamilleViewBean extends BJadePersistentObjectViewBean {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.db.BIPersistentObject#update()
-     * 
+     *
      * Update the current subside information
      */
     @Override
@@ -655,7 +667,7 @@ public class AMDetailfamilleViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Inscription de l'étape de création de document dans le status de job
-     * 
+     *
      * @param csDateComplete
      * @param csModele
      * @param csJobType
@@ -668,7 +680,7 @@ public class AMDetailfamilleViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Create the WordML file and put it on a shared folder
-     * 
+     *
      * @return the path where the file is saved
      * @throws JadeApplicationServiceNotAvailableException
      */

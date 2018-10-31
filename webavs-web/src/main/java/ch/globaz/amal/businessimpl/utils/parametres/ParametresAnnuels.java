@@ -1,16 +1,16 @@
 package ch.globaz.amal.businessimpl.utils.parametres;
 
+import java.util.Map;
+import java.util.TreeMap;
+import ch.globaz.amal.business.exceptions.models.parametreannuel.ParametreAnnuelException;
+import ch.globaz.amal.business.models.parametreannuel.SimpleParametreAnnuelSearch;
+import ch.globaz.amal.business.services.AmalServiceLocator;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
 import globaz.globall.util.JANumberFormatter;
 import globaz.jade.context.JadeThread;
 import globaz.jade.log.JadeLogger;
 import globaz.jade.persistence.model.JadeAbstractSearchModel;
-import java.util.Map;
-import java.util.TreeMap;
-import ch.globaz.amal.business.exceptions.models.parametreannuel.ParametreAnnuelException;
-import ch.globaz.amal.business.models.parametreannuel.SimpleParametreAnnuelSearch;
-import ch.globaz.amal.business.services.AmalServiceLocator;
 
 public class ParametresAnnuels {
     private ContainerParametres containerParametres = null;
@@ -58,7 +58,7 @@ public class ParametresAnnuels {
     }
 
     /**
-     * 
+     *
      * @param year
      * @param defaultValue
      *            La valeur par défaut si pas trouvé. Si defaultValue==null alors on lève une exception
@@ -70,14 +70,11 @@ public class ParametresAnnuels {
             return parametresAnnuels.get(year);
         } else {
             if (defaultValue == null) {
-                // JadeThread.logError(this.getClass().getName(), "Parameter '" + this.csTypeParametreAnnuel
-                // + "' for year '" + year + "' not exist !");
                 BSession currentSession = BSessionUtil.getSessionFromThreadContext();
                 JadeThread.logError("Parameter", "Parameter '" + currentSession.getCodeLibelle(csTypeParametreAnnuel)
                         + " (" + csTypeParametreAnnuel + ") ' for year '" + year + "' not found !");
                 throw new ParametreAnnuelException("Parameter '" + currentSession.getCodeLibelle(csTypeParametreAnnuel)
                         + " (" + csTypeParametreAnnuel + ") ' for year '" + year + "' not found !");
-                // return null;
             }
             return defaultValue;
         }
@@ -87,8 +84,8 @@ public class ParametresAnnuels {
         try {
             SimpleParametreAnnuelSearch simpleParametreAnnuelSearch = new SimpleParametreAnnuelSearch();
             simpleParametreAnnuelSearch.setDefinedSearchSize(JadeAbstractSearchModel.SIZE_NOLIMIT);
-            simpleParametreAnnuelSearch = AmalServiceLocator.getParametreAnnuelService().search(
-                    simpleParametreAnnuelSearch);
+            simpleParametreAnnuelSearch = AmalServiceLocator.getParametreAnnuelService()
+                    .search(simpleParametreAnnuelSearch);
             containerParametres
                     .setParametresAnnuelsProvider(new ParametresAnnuelsProvider(simpleParametreAnnuelSearch));
         } catch (Exception e) {

@@ -803,366 +803,482 @@ function postInit(){
 			<!-- ONGLET INFORMATIONS FISCALES REVENU -->
 			
 			<div id="idConteneurDeclarationImpots" class="conteneurDeclarationImpots">
-			<table id="zoneDeclarationImpots"  border="0" width="100%" style="border-collapse:collapse;border:2px solid #226194;background-color: #D7E4FF">
-				<col width="20px" align="center"></col>
-				<col style="font-style: italic;font-size:11px" width="68px" align="left"></col>
-				<col width="240px" align="left"></col>
-				<col width="20px" align="right"></col>
-				<col width="120px" align="right"></col>
-				<col width="*" align="center"></col>
-				<col style="font-style: italic;font-size:11px" width="68px" align="left"></col>
-				<col width="240px" align="left"></col>
-				<col width="20px" align="right"></col>
-				<col width="120px" align="right"></col>
-				<col width="20px" align="right"></col>
-				<!-- Empty Line -->
-				<tr style="height:4px;">
-					<td></td>
-				</tr>
-				<!-- LIGNE 1 -->
-				<tr>
-					<!-- Revenu net provenant d'un emploi -->
-					<td></td>
-					<td><%=viewBean.getRubrique(IAMCodeSysteme.CS_RUBRIQUE_REVENUNETEMPLOI,anneeTaxation)%></td>
-					<td><ct:FWLabel key="JSP_AM_RE_D_REV_NET_EMPLOI"/></td>
-					<td>Fr.</td>
-					<td><input disabled="disabled"
-						name="revenuHistoriqueComplex.revenuFullComplex.simpleRevenuContribuable.revenuNetEmploi" type="text"
-						data-g-amount=" " id="revenuNetEmploi"
-						value="<%=viewBean.getRevenuHistoriqueComplex().getRevenuFullComplex().getSimpleRevenuContribuable().getRevenuNetEmploi()%>" />
-					</td>
-					<!-- Rendement de la fortune immobilière commerciale -->
-					<td></td>
-					<td><%=viewBean.getRubrique(IAMCodeSysteme.CS_RUBRIQUE_RENDEMENTFORTUNEIMMOBCOMM,anneeTaxation)%></td>
-					<td><ct:FWLabel key="JSP_AM_RE_D_REND_FORT_IMMO_COMM"/></td>
-					<td>Fr.</td>
-					<td><input disabled="disabled"
-						name="revenuHistoriqueComplex.revenuFullComplex.simpleRevenuContribuable.rendFortImmobComm" type="text"
-						data-g-amount=" " id="rendFortImmobComm"
-						value="<%=viewBean.getRevenuHistoriqueComplex().getRevenuFullComplex().getSimpleRevenuContribuable().getRendFortImmobComm()%>" />
-					</td>
-					<td>&nbsp;</td>
-				</tr>
-				<!-- LIGNE 2 -->
-				<tr>
-					<!-- Revenu net pour l'épouse -->
-					<td></td>
-					<td><%=viewBean.getRubrique(IAMCodeSysteme.CS_RUBRIQUE_REVENUNETEPOUSE,anneeTaxation)%></td>
-					<td><ct:FWLabel key="JSP_AM_RE_D_REV_NET_EPOUSE"/></td>
-					<td>Fr.</td>
-					<td><input disabled="disabled"
-						name="revenuHistoriqueComplex.revenuFullComplex.simpleRevenuContribuable.revenuNetEpouse" type="text"
-						data-g-amount=" " id="revenuNetEpouse"
-						value="<%=viewBean.getRevenuHistoriqueComplex().getRevenuFullComplex().getSimpleRevenuContribuable().getRevenuNetEpouse()%>" />
-					</td>
-					<!-- Excédent de dépenses propriété immobilière commerciale -->
-					<td></td>
-					<td><%=viewBean.getRubrique(IAMCodeSysteme.CS_RUBRIQUE_EXCEDENTDEPENSESPROPIMMOCOMM,anneeTaxation)%></td>
-					<td><ct:FWLabel key="JSP_AM_RE_D_EXCED_DEP_PROP_IMMO_COMM"/></td>
-					<td>Fr.</td>
-					<td><input disabled="disabled"
-						name="revenuHistoriqueComplex.revenuFullComplex.simpleRevenuContribuable.excedDepPropImmoComm" id="excedDepPropImmoComm" type="text"
-						data-g-amount=" "
-						value="<%=viewBean.getRevenuHistoriqueComplex().getRevenuFullComplex().getSimpleRevenuContribuable().getExcedDepPropImmoComm()%>" />
-					</td>
-					<td>&nbsp;</td>
-				</tr>
-				<!-- LIGNE 3 -->
-				<tr>
-					<!-- Perte de l'activité indépendante -->					
-					<td></td>					
-					<%if (!isOldRevenu) { %>
-						<td><%=viewBean.getRubrique(IAMCodeSysteme.CS_RUBRIQUE_PERTEACTIVITEINDEP,anneeTaxation)%></td>
-						<td><ct:FWLabel key="JSP_AM_RE_D_PERTE_ACTIV_INDEP"/></td>
-						<td>Fr.</td>
-						<td><input disabled="disabled" id="perteActIndep"
-							name="revenuHistoriqueComplex.revenuFullComplex.simpleRevenuContribuable.perteActIndep" type="text" data-g-amount=" "
-							value="<%=viewBean.getRevenuHistoriqueComplex().getRevenuFullComplex().getSimpleRevenuContribuable().getPerteActIndep()%>" />
-						</td>
-					<% } else { %>
-						<td>&nbsp;</td>
-						<td>&nbsp;</td>
-						<td>&nbsp;</td>
-						<td>&nbsp;</td>
-					<% } %>
-					<!-- Excédent dépense concernant les successions non partagées -->
-					<%if (!isOldRevenu) { %>
-						<td></td>
-						<td><%=viewBean.getRubrique(IAMCodeSysteme.CS_RUBRIQUE_EXCEDENTDEPSUCCNONPART,anneeTaxation)%></td>
-						<td><ct:FWLabel key="JSP_AM_RE_D_EXCED_SUCC_NON_PART"/></td>
-						<td>Fr.</td>
-						<td><input disabled="disabled" id="excDepSuccNp"
-							name="revenuHistoriqueComplex.revenuFullComplex.simpleRevenuContribuable.excDepSuccNp" type="text" data-g-amount=" "
-							value="<%=viewBean.getRevenuHistoriqueComplex().getRevenuFullComplex().getSimpleRevenuContribuable().getExcDepSuccNp()%>" />
-						</td>
-					<% } else { %>
-						<td>&nbsp;</td>
-						<td><%=viewBean.getRubrique(IAMCodeSysteme.CS_RUBRIQUE_PERTESEXERCICESCOMM,anneeTaxation)%></td>
-						<td><ct:FWLabel key="JSP_AM_RE_D_PERTE_EXERC_COMM" /></td>
-						<td>Fr.</td>
-						<td><input disabled="disabled" id="perteExercicesComm"
-							name="revenuHistoriqueComplex.revenuFullComplex.simpleRevenuContribuable.perteExercicesComm" type="text" data-g-amount=" "
-							value="<%=viewBean.getRevenuHistoriqueComplex().getRevenuFullComplex().getSimpleRevenuContribuable().getPerteExercicesComm()%>" /></td>
-					<% } %>
-					<td>&nbsp;</td>
-				</tr>
-				<!-- LIGNE 4 -->
-				<tr>
-					<!-- Perte de l'activité agricole -->
-					<td></td>
-					<%if (!isOldRevenu) { %>
-						<td><%=viewBean.getRubrique(IAMCodeSysteme.CS_RUBRIQUE_PERTEACTIVITEAGRIC,anneeTaxation)%></td>
-						<td><ct:FWLabel key="JSP_AM_RE_D_PERTE_ACTIV_AGRI"/></td>
-						<td>Fr.</td>
-						<td><input disabled="disabled"
-							name="revenuHistoriqueComplex.revenuFullComplex.simpleRevenuContribuable.perteActAgricole" id="perteActAgricole" type="text" data-g-amount=" "
-							value="<%=viewBean.getRevenuHistoriqueComplex().getRevenuFullComplex().getSimpleRevenuContribuable().getPerteActAgricole()%>"  />
-						</td>
-					<% } else { %>
-						<td>&nbsp;</td>
-						<td>&nbsp;</td>
-						<td>&nbsp;</td>
-						<td>&nbsp;</td>						
-					<% } %>
-					<!-- Totaux des revenus nets -->
-					<td></td>
-					<td><%=viewBean.getRubrique(IAMCodeSysteme.CS_RUBRIQUE_TOTAUXREVENUSNETS,anneeTaxation)%></td>
-					<td><ct:FWLabel key="JSP_AM_RE_D_TOT_REV_NET"/></td>
-					<td>Fr.</td>
-					<td><input disabled="disabled" id="totalRevenusNets"
-						name="revenuHistoriqueComplex.revenuFullComplex.simpleRevenuContribuable.totalRevenusNets" type="text"
-						data-g-amount=" "
-						value="<%=viewBean.getRevenuHistoriqueComplex().getRevenuFullComplex().getSimpleRevenuContribuable().getTotalRevenusNets()%>" />
-					</td>
-					<td>&nbsp;</td>
-				</tr>
-				<!-- LIGNE 5 -->
-				<tr>
-					<!-- Perte de société -->
-					<td></td>
-					<%if (!isOldRevenu) { %>
-						<td><%=viewBean.getRubrique(IAMCodeSysteme.CS_RUBRIQUE_PERTESOCIETE,anneeTaxation)%></td>
-						<td><ct:FWLabel key="JSP_AM_RE_D_PERTE_SOCIETE"/></td>
-						<td>Fr.</td>
-						<td><input disabled="disabled" id="perteSociete"
-							name="revenuHistoriqueComplex.revenuFullComplex.simpleRevenuContribuable.perteSociete" type="text" data-g-amount=" "
-							value="<%=viewBean.getRevenuHistoriqueComplex().getRevenuFullComplex().getSimpleRevenuContribuable().getPerteSociete()%>" />
-						</td>
-					<% } else { %>
-						<td>&nbsp;</td>
-						<td>&nbsp;</td>
-						<td>&nbsp;</td>
-						<td>&nbsp;</td>
-					<% } %>
-					<!-- Intérêts passifs privés -->
-					<td></td>
-					<td><%=viewBean.getRubrique(IAMCodeSysteme.CS_RUBRIQUE_INTERETSPASSIFSPRIVE,anneeTaxation)%></td>
-					<td><ct:FWLabel key="JSP_AM_RE_D_INT_PASSIFS_PRIV"/></td>
-					<td>Fr.</td>
-					<td><input disabled="disabled"
-						name="revenuHistoriqueComplex.revenuFullComplex.simpleRevenuContribuable.interetsPassifsPrive" type="text"
-						data-g-amount=" " id="interetsPassifsPrive"
-						value="<%=viewBean.getRevenuHistoriqueComplex().getRevenuFullComplex().getSimpleRevenuContribuable().getInteretsPassifsPrive()%>" />
-					</td>
-					<td>&nbsp;</td>
-				</tr>
-				<!-- LIGNE 6 -->
-				<tr>
-					<!-- Perte de l'activité accessoire indépendante -->					
-					<td></td>
-					<%if (!isOldRevenu) { %>
-						<td><%=viewBean.getRubrique(IAMCodeSysteme.CS_RUBRIQUE_PERTEACTIVITEACCESSINDEP,anneeTaxation)%></td>
-						<td><ct:FWLabel key="JSP_AM_RE_D_PERTE_ACTIV_ACC_INDEP"/></td>
-						<td>Fr.</td>
-						<td><input disabled="disabled"
-							name="revenuHistoriqueComplex.revenuFullComplex.simpleRevenuContribuable.perteActAccInd" id="perteActAccInd" type="text" data-g-amount=" "
-							value="<%=viewBean.getRevenuHistoriqueComplex().getRevenuFullComplex().getSimpleRevenuContribuable().getPerteActAccInd()%>" />
-						</td>
-					<% } else { %>
-						<td>&nbsp;</td>
-						<td>&nbsp;</td>
-						<td>&nbsp;</td>
-						<td>&nbsp;</td>
-					<% } %>
-					<!-- Intérêts passifs commerciaux -->
-					<td></td>
-					<td><%=viewBean.getRubrique(IAMCodeSysteme.CS_RUBRIQUE_INTERETSPASSIFSCOMM,anneeTaxation)%></td>
-					<td><ct:FWLabel key="JSP_AM_RE_D_INT_PASSIFS_COMM"/></td>
-					<td>Fr.</td>
-					<td><input disabled="disabled"
-						name="revenuHistoriqueComplex.revenuFullComplex.simpleRevenuContribuable.interetsPassifsComm" type="text"
-						data-g-amount=" " id="interetsPassifsComm"
-						value="<%=viewBean.getRevenuHistoriqueComplex().getRevenuFullComplex().getSimpleRevenuContribuable().getInteretsPassifsComm()%>" />
-					</td>
-					<td>&nbsp;</td>
-				</tr>
-				<!-- LIGNE 7 -->
-				<tr>
-					<!-- Perte reportée des exercices commerciaux -->					
-					<td></td>
-					<td><%=viewBean.getRubrique(IAMCodeSysteme.CS_RUBRIQUE_PERTEREPEXCOMM,anneeTaxation)%></td>
-					<td>Perte reportée des ex. commerciaux</td>
-					<td>Fr.</td>
-					<td><input disabled="disabled"
-						name="revenuHistoriqueComplex.revenuFullComplex.simpleRevenuContribuable.perteCommercial" id="perteCommercial" type="text" data-g-amount=" "
-						value="<%=viewBean.getRevenuHistoriqueComplex().getRevenuFullComplex().getSimpleRevenuContribuable().getPerteCommercial()%>" />
-					</td>
-					<!-- Personnes à charge ou enfants -->
-					<td></td>
-					<td><%=viewBean.getRubrique(IAMCodeSysteme.CS_RUBRIQUE_PERSONNECHARGEENFANT,anneeTaxation)%></td>
-					<td><ct:FWLabel key="JSP_AM_RE_D_PERS_CHARGE_ENFANTS"/></td>
-					<td>Fr.</td>
-					<td><input disabled="disabled"
-						name="revenuHistoriqueComplex.revenuFullComplex.simpleRevenuContribuable.persChargeEnf" type="text"
-						data-g-amount=" " id="persChargeEnf"
-						value="<%=viewBean.getRevenuHistoriqueComplex().getRevenuFullComplex().getSimpleRevenuContribuable().getPersChargeEnf()%>" />
-					</td>
-					<td>&nbsp;</td>
-				</tr>
-				<!-- LIGNE 8 -->
-				<tr>
-					<!-- Perte de liquidation -->					
-					<td></td>
-					<%if (!isOldRevenu) { %>
-						<td><%=viewBean.getRubrique(IAMCodeSysteme.CS_RUBRIQUE_PERTELIQUIDATION,anneeTaxation)%></td>
-						<td>Perte de liquidation</td>
-						<td>Fr.</td>
-						<td><input disabled="disabled"
-							name="revenuHistoriqueComplex.revenuFullComplex.simpleRevenuContribuable.perteLiquidation" id="perteLiquidation" type="text" data-g-amount=" "
-							value="<%=viewBean.getRevenuHistoriqueComplex().getRevenuFullComplex().getSimpleRevenuContribuable().getPerteLiquidation()%>" />
-						</td>
-					<% } else { %>
-						<td>&nbsp;</td>
-						<td>&nbsp;</td>
-						<td>&nbsp;</td>
-						<td>&nbsp;</td>
-					<% } %>
-					<!-- Déductions pour les apprentis et étudiants -->
-					<td></td>
-					<td><%=viewBean.getRubrique(IAMCodeSysteme.CS_RUBRIQUE_DEDUCAPPRENTIETUDIANT,anneeTaxation)%></td>
-					<td><ct:FWLabel key="JSP_AM_RE_D_DEDUC_APPR_ETUD"/></td>
-					<td>Fr.</td>
-					<td><input disabled="disabled" id="deducAppEtu"
-						name="revenuHistoriqueComplex.revenuFullComplex.simpleRevenuContribuable.deducAppEtu" type="text" data-g-amount=" "
-						value="<%=viewBean.getRevenuHistoriqueComplex().getRevenuFullComplex().getSimpleRevenuContribuable().getDeducAppEtu()%>" />
-					</td>
-					<td>&nbsp;</td>
-				</tr>
-				<!-- LIGNE 9 -->
-				<tr>
-					<!-- Allocation de famille -->
-					<td></td>
-					<td><%=viewBean.getRubrique(IAMCodeSysteme.CS_RUBRIQUE_ALLOCATIONFAMILLE,anneeTaxation)%></td>
-					<td><ct:FWLabel key="JSP_AM_RE_D_ALLOC_FAM" /></td>
-					<td>Fr.</td>
-					<td><input disabled="disabled"
-						name="revenuHistoriqueComplex.revenuFullComplex.simpleRevenuContribuable.allocationFamiliale" type="text"
-						data-g-amount=" " id="allocationFamiliale"
-						value="<%=viewBean.getRevenuHistoriqueComplex().getRevenuFullComplex().getSimpleRevenuContribuable().getAllocationFamiliale()%>" />
-					</td>
-					<!-- Déduction fiscale pour couple mariés-->
-					<td></td>
-					<td><%=viewBean.getRubrique(IAMCodeSysteme.CS_RUBRIQUE_DEDUCTIONCOUPLESMARIES,anneeTaxation)%></td>
-					<td><ct:FWLabel key="JSP_AM_RE_D_DEDUC_FISC_COUPLE_MARIES"/></td>
-					<td>Fr.</td>
-					<td><input disabled="disabled" id="deducCouplesMaries"
-						name="revenuHistoriqueComplex.revenuFullComplex.simpleRevenuContribuable.deductionCouplesMaries" type="text" data-g-amount=" "
-						value="<%=viewBean.getRevenuHistoriqueComplex().getRevenuFullComplex().getSimpleRevenuContribuable().getDeductionCouplesMaries()%>" />
-					</td>
-					<td>&nbsp;</td>
-				</tr>
-				<!-- LIGNE 10 -->
-				<tr>
-					<!-- Indemnité imposable à 90% -->
-					<td></td>
-					<td><%=viewBean.getRubrique(IAMCodeSysteme.CS_RUBRIQUE_INDEMNITEIMPOSABLE,anneeTaxation)%></td>
-					<td><ct:FWLabel key="JSP_AM_RE_D_INDEMN_IMPOS"/></td>
-					<td>Fr.</td>
-					<td><input disabled="disabled"
-						name="revenuHistoriqueComplex.revenuFullComplex.simpleRevenuContribuable.indemniteImposable" type="text"
-						data-g-amount=" " id="indemniteImposable"
-						value="<%=viewBean.getRevenuHistoriqueComplex().getRevenuFullComplex().getSimpleRevenuContribuable().getIndemniteImposable()%>" />
-					</td>
-					<!-- Revenu imposable -->
-					<td></td>
-					<td><%=viewBean.getRubrique(IAMCodeSysteme.CS_RUBRIQUE_REVENUIMPOSABLE,anneeTaxation)%></td>
-					<td><ct:FWLabel key="JSP_AM_RE_D_REV_IMPOS"/></td>
-					<td>Fr.</td>
-					<td><input disabled="disabled" id="revenuImposable"
-						name="revenuHistoriqueComplex.revenuFullComplex.simpleRevenuContribuable.revenuImposable" type="text" data-g-amount=" "
-						value="<%=viewBean.getRevenuHistoriqueComplex().getRevenuFullComplex().getSimpleRevenuContribuable().getRevenuImposable()%>" />
-					</td>
-					<td>&nbsp;</td>
-				</tr>
-				<!-- LIGNE 11 -->
-				<tr>
-					<!-- Rendement de la fortune immobilière privée -->
-					<td></td>
-					<td><%=viewBean.getRubrique(IAMCodeSysteme.CS_RUBRIQUE_RENDEMENTFORTUNEIMMOBPRIVE,anneeTaxation)%></td>
-					<td><ct:FWLabel key="JSP_AM_RE_D_REND_FORT_IMMO_PRIV"/></td>
-					<td>Fr.</td>
-					<td><input disabled="disabled"
-						name="revenuHistoriqueComplex.revenuFullComplex.simpleRevenuContribuable.rendFortImmobPrive" type="text"
-						data-g-amount=" " id="rendFortImmobPrive"
-						value="<%=viewBean.getRevenuHistoriqueComplex().getRevenuFullComplex().getSimpleRevenuContribuable().getRendFortImmobPrive()%>" />
-					</td>
-					<!-- Revenu taux -->
-					<td></td>
-					<td><%=viewBean.getRubrique(IAMCodeSysteme.CS_RUBRIQUE_REVENUTAUX,anneeTaxation)%></td>
-					<td><ct:FWLabel key="JSP_AM_RE_D_REV_TAUX"/></td>
-					<td>Fr.</td>
-					<td><input disabled="disabled" id="revenuTaux"
-						name="revenuHistoriqueComplex.revenuFullComplex.simpleRevenuContribuable.revenuTaux" type="text" data-g-amount=" "
-						value="<%=viewBean.getRevenuHistoriqueComplex().getRevenuFullComplex().getSimpleRevenuContribuable().getRevenuTaux()%>" />
-					</td>
-					<td>&nbsp;</td>
-				</tr>
-				<!-- LIGNE 12 -->
-				<tr>
-					<!-- Excédent de dépenses propriété immobilière privée -->
-					<td></td>
-					<td><%=viewBean.getRubrique(IAMCodeSysteme.CS_RUBRIQUE_EXCEDENTDEPENSESPROPIMMOPRIVE,anneeTaxation)%></td>
-					<td><ct:FWLabel key="JSP_AM_RE_D_EXCED_DEP_PROP_IMMO_PRIV"/></td>
-					<td>Fr.</td>
-					<td><input disabled="disabled"
-						name="revenuHistoriqueComplex.revenuFullComplex.simpleRevenuContribuable.excedDepPropImmoPriv" id="excedDepPropImmoPriv" type="text"
-						data-g-amount=" "
-						value="<%=viewBean.getRevenuHistoriqueComplex().getRevenuFullComplex().getSimpleRevenuContribuable().getExcedDepPropImmoPriv()%>" />
-					</td>
-					<!-- Fortune imposable -->	
-					<td></td>
-					<td><%=viewBean.getRubrique(IAMCodeSysteme.CS_RUBRIQUE_FORTUNEIMPOSABLE,anneeTaxation)%></td>
-					<td><ct:FWLabel key="JSP_AM_RE_D_FORT_IMPOS"/></td>
-					<td>Fr.</td>
-					<td><input disabled="disabled" id="fortuneImposable"
-						name="revenuHistoriqueComplex.revenuFullComplex.simpleRevenuContribuable.fortuneImposable" type="text"
-						data-g-amount=" "
-						value="<%=viewBean.getRevenuHistoriqueComplex().getRevenuFullComplex().getSimpleRevenuContribuable().getFortuneImposable()%>" />
-					</td>
-					<td>&nbsp;</td>
-				</tr>
-				<!-- LIGNE 13 -->
-				<tr>
-					<!-- Excédent de dépenses propriété immobilière privée -->
-					<td></td>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td></td>
-					<!-- Fortune taux -->
-					<td></td>
-					<td><%=viewBean.getRubrique(IAMCodeSysteme.CS_RUBRIQUE_FORTUNETAUX,anneeTaxation)%></td>
-					<td><ct:FWLabel key="JSP_AM_RE_D_FORT_TAUX"/></td>
-					<td>Fr.</td>
-					<td><input disabled="disabled" id="fortuneTaux"
-						name="revenuHistoriqueComplex.revenuFullComplex.simpleRevenuContribuable.fortuneTaux" type="text" data-g-amount=" "
-						value="<%=viewBean.getRevenuHistoriqueComplex().getRevenuFullComplex().getSimpleRevenuContribuable().getFortuneTaux()%>" />
-					</td>
-					<td>&nbsp;</td>					
-				</tr>
+				<table id="zoneDeclarationImpots"  border="0" width="100%" style="border-collapse:collapse;border:2px solid #226194;background-color: #D7E4FF">
+					<col width="10px" align="center"></col>
+					<col width="67px" style="font-style: italic;font-size:11px" align="left"></col>
+					<col width="240px" align="left"></col>
+					<col width="20px" align="right"></col>
+					<col width="100px" align="right"></col>
 				
-				<tr style="height:4px;"><td></td></tr>
-			</table>
+					<col width="10px" align="center"></col>
+					<col width="35px" style="font-style: italic;font-size:11px" align="left"></col>
+					<col width="240px" align="left"></col>
+					<col width="20px" align="right"></col>
+					<col width="80px" align="right"></col>
+					
+					<col width="10px" align="center"></col>
+					<col width="67px" style="font-style: italic;font-size:11px" align="left"></col>
+					<col width="240px" align="left"></col>
+					<col width="20px" align="right"></col>
+					<col width="100px" align="right"></col>
+					<col width="10px" align="right"></col>
+					
+					<!-- Empty Line -->
+					<tr style="height:4px;">
+						<td></td>
+					</tr>
+					<!-- LIGNE 1 -->
+					<tr>
+						<!-- Perte de l'activité indépendante -->					
+						<td></td>					
+						<%if (!isOldRevenu) { %>
+							<td><%=viewBean.getRubrique(IAMCodeSysteme.CS_RUBRIQUE_PERTEACTIVITEINDEP,anneeTaxation)%></td>
+							<td><ct:FWLabel key="JSP_AM_RE_D_PERTE_ACTIV_INDEP"/></td>
+							<td>Fr.</td>
+							<td><input disabled="disabled" id="perteActIndep"
+								name="revenuHistoriqueComplex.revenuFullComplex.simpleRevenuContribuable.perteActIndep" type="text"
+								data-g-amount=" "
+								style="width:100px"
+								value="<%=viewBean.getRevenuHistoriqueComplex().getRevenuFullComplex().getSimpleRevenuContribuable().getPerteActIndep()%>" />
+							</td>
+						<% } else { %>
+							<td colspan="4">&nbsp;</td>
+						<% } %>
+						
+						<!-- Revenu net provenant d'un emploi -->
+						<td></td>
+						<td><%=viewBean.getRubrique(IAMCodeSysteme.CS_RUBRIQUE_REVENUNETEMPLOI,anneeTaxation)%></td>
+						<td><ct:FWLabel key="JSP_AM_RE_D_REV_NET_EMPLOI"/></td>
+						<td>Fr.</td>
+						<td><input disabled="disabled" id="revenuNetEmploi"
+							name="revenuHistoriqueComplex.revenuFullComplex.simpleRevenuContribuable.revenuNetEmploi" type="text"
+							data-g-amount=" "
+							style="width:100px"
+							value="<%=viewBean.getRevenuHistoriqueComplex().getRevenuFullComplex().getSimpleRevenuContribuable().getRevenuNetEmploi()%>" />
+						</td>
+						
+						<!-- Rendement de la fortune immobilière commerciale -->
+						<td></td>
+						<td><%=viewBean.getRubrique(IAMCodeSysteme.CS_RUBRIQUE_RENDEMENTFORTUNEIMMOBCOMM,anneeTaxation)%></td>
+						<td><ct:FWLabel key="JSP_AM_RE_D_REND_FORT_IMMO_COMM"/></td>
+						<td>Fr.</td>
+						<td><input disabled="disabled" id="rendFortImmobComm"
+							name="revenuHistoriqueComplex.revenuFullComplex.simpleRevenuContribuable.rendFortImmobComm" type="text"
+							data-g-amount=" "
+							style="width:100px"
+							value="<%=viewBean.getRevenuHistoriqueComplex().getRevenuFullComplex().getSimpleRevenuContribuable().getRendFortImmobComm()%>" />
+						</td>
+						<td>&nbsp;</td>
+					</tr>
+					<!-- LIGNE 2 -->
+					<tr>
+						<!-- Perte de l'activité agricole -->
+						<td></td>
+						<%if (!isOldRevenu) { %>
+							<td><%=viewBean.getRubrique(IAMCodeSysteme.CS_RUBRIQUE_PERTEACTIVITEAGRIC,anneeTaxation)%></td>
+							<td><ct:FWLabel key="JSP_AM_RE_D_PERTE_ACTIV_AGRI"/></td>
+							<td>Fr.</td>
+							<td><input disabled="disabled" id="perteActAgricole"
+								name="revenuHistoriqueComplex.revenuFullComplex.simpleRevenuContribuable.perteActAgricole" type="text"
+								data-g-amount=" "
+								style="width:100px"
+								value="<%=viewBean.getRevenuHistoriqueComplex().getRevenuFullComplex().getSimpleRevenuContribuable().getPerteActAgricole()%>"  />
+							</td>
+						<% } else { %>
+							<td colspan="4">&nbsp;</td>
+						<% } %>
+						
+						<!-- Revenu net pour l'épouse -->
+						<td></td>
+						<td><%=viewBean.getRubrique(IAMCodeSysteme.CS_RUBRIQUE_REVENUNETEPOUSE,anneeTaxation)%></td>
+						<td><ct:FWLabel key="JSP_AM_RE_D_REV_NET_EPOUSE"/></td>
+						<td>Fr.</td>
+						<td><input disabled="disabled" id="revenuNetEpouse"
+							name="revenuHistoriqueComplex.revenuFullComplex.simpleRevenuContribuable.revenuNetEpouse" type="text"
+							data-g-amount=" "
+							style="width:100px"
+							value="<%=viewBean.getRevenuHistoriqueComplex().getRevenuFullComplex().getSimpleRevenuContribuable().getRevenuNetEpouse()%>" />
+						</td>
+						
+						<!-- Excédent de dépenses propriété immobilière commerciale -->
+						<td></td>
+						<td><%=viewBean.getRubrique(IAMCodeSysteme.CS_RUBRIQUE_EXCEDENTDEPENSESPROPIMMOCOMM,anneeTaxation)%></td>
+						<td><ct:FWLabel key="JSP_AM_RE_D_EXCED_DEP_PROP_IMMO_COMM"/></td>
+						<td>Fr.</td>
+						<td><input disabled="disabled" id="excedDepPropImmoComm"
+							name="revenuHistoriqueComplex.revenuFullComplex.simpleRevenuContribuable.excedDepPropImmoComm" type="text"
+							data-g-amount=" "
+							style="width:100px"
+							value="<%=viewBean.getRevenuHistoriqueComplex().getRevenuFullComplex().getSimpleRevenuContribuable().getExcedDepPropImmoComm()%>" />
+						</td>
+						<td>&nbsp;</td>
+					</tr>
+					<!-- LIGNE 3 -->
+					<tr>
+						<!-- Perte de société -->
+						<td></td>
+						<%if (!isOldRevenu) { %>
+							<td><%=viewBean.getRubrique(IAMCodeSysteme.CS_RUBRIQUE_PERTESOCIETE,anneeTaxation)%></td>
+							<td><ct:FWLabel key="JSP_AM_RE_D_PERTE_SOCIETE"/></td>
+							<td>Fr.</td>
+							<td><input disabled="disabled" id="perteSociete"
+								name="revenuHistoriqueComplex.revenuFullComplex.simpleRevenuContribuable.perteSociete" type="text"
+								data-g-amount=" "
+								style="width:100px"
+								value="<%=viewBean.getRevenuHistoriqueComplex().getRevenuFullComplex().getSimpleRevenuContribuable().getPerteSociete()%>" />
+							</td>
+						<% } else { %>
+							<td colspan="4">&nbsp;</td>
+						<% } %>
+						
+						<!-- Revenu activité indépendante -->
+						<td></td>
+						<td><%=viewBean.getRubrique(IAMCodeSysteme.CS_RUBRIQUE_REVENUACTIVINDEP,anneeTaxation)%></td>
+						<td><ct:FWLabel key="JSP_AM_RE_D_REVENU_ACTIV_INDEP"/></td>
+						<td>Fr.</td>
+						<td><input disabled="disabled" id="revenuIndep"
+							name="revenuHistoriqueComplex.revenuFullComplex.simpleRevenuContribuable.revenuActIndep" type="text"
+							data-g-amount=" "
+							style="width:100px"
+							value="<%=viewBean.getRevenuHistoriqueComplex().getRevenuFullComplex().getSimpleRevenuContribuable().getRevenuActIndep()%>" />
+						</td>
+						
+						<!-- Excédent dépense concernant les successions non partagées -->
+						<%if (!isOldRevenu) { %>
+							<td></td>
+							<td><%=viewBean.getRubrique(IAMCodeSysteme.CS_RUBRIQUE_EXCEDENTDEPSUCCNONPART,anneeTaxation)%></td>
+							<td><ct:FWLabel key="JSP_AM_RE_D_EXCED_SUCC_NON_PART"/></td>
+							<td>Fr.</td>
+							<td><input disabled="disabled" id="excDepSuccNp"
+								name="revenuHistoriqueComplex.revenuFullComplex.simpleRevenuContribuable.excDepSuccNp" type="text"
+								data-g-amount=" "
+								style="width:100px"
+								value="<%=viewBean.getRevenuHistoriqueComplex().getRevenuFullComplex().getSimpleRevenuContribuable().getExcDepSuccNp()%>" />
+							</td>
+						<% } else { %>
+							<td>&nbsp;</td>
+							<td><%=viewBean.getRubrique(IAMCodeSysteme.CS_RUBRIQUE_PERTESEXERCICESCOMM,anneeTaxation)%></td>
+							<td><ct:FWLabel key="JSP_AM_RE_D_PERTE_EXERC_COMM" /></td>
+							<td>Fr.</td>
+							<td><input disabled="disabled" id="perteExercicesComm"
+								name="revenuHistoriqueComplex.revenuFullComplex.simpleRevenuContribuable.perteExercicesComm" type="text"
+								data-g-amount=" "
+								style="width:100px"
+								value="<%=viewBean.getRevenuHistoriqueComplex().getRevenuFullComplex().getSimpleRevenuContribuable().getPerteExercicesComm()%>" /></td>
+						<% } %>
+						<td>&nbsp;</td>
+					</tr>
+					<!-- LIGNE 4 -->
+					<tr>
+						<!-- Perte de l'activité accessoire indépendante -->					
+						<td></td>
+						<%if (!isOldRevenu) { %>
+							<td><%=viewBean.getRubrique(IAMCodeSysteme.CS_RUBRIQUE_PERTEACTIVITEACCESSINDEP,anneeTaxation)%></td>
+							<td><ct:FWLabel key="JSP_AM_RE_D_PERTE_ACTIV_ACC_INDEP"/></td>
+							<td>Fr.</td>
+							<td><input disabled="disabled" id="perteActAccInd"
+								name="revenuHistoriqueComplex.revenuFullComplex.simpleRevenuContribuable.perteActAccInd" type="text"
+								data-g-amount=" "
+								style="width=100px"
+								value="<%=viewBean.getRevenuHistoriqueComplex().getRevenuFullComplex().getSimpleRevenuContribuable().getPerteActAccInd()%>" />
+							</td>
+						<% } else { %>
+							<td colspan="4">&nbsp;</td>
+						<% } %>
+				
+						<!-- Revenu activité indépendante épouse -->
+						<td></td>
+						<td><%=viewBean.getRubrique(IAMCodeSysteme.CS_RUBRIQUE_REVENUACTIVINDEPEPOUSE,anneeTaxation)%></td>
+						<td><ct:FWLabel key="JSP_AM_RE_D_REVENU_ACTIV_INDEP_EPOUSE"/></td>
+						<td>Fr.</td>
+						<td><input disabled="disabled" id="revenuIndepEpouse"
+							name="revenuHistoriqueComplex.revenuFullComplex.simpleRevenuContribuable.revenuActIndepEpouse" type="text"
+							data-g-amount=" "
+							style="width:100px"
+							value="<%=viewBean.getRevenuHistoriqueComplex().getRevenuFullComplex().getSimpleRevenuContribuable().getRevenuActIndepEpouse()%>" />
+						</td>
+				
+						<!-- Totaux des revenus nets -->
+						<td></td>
+						<td><%=viewBean.getRubrique(IAMCodeSysteme.CS_RUBRIQUE_TOTAUXREVENUSNETS,anneeTaxation)%></td>
+						<td><ct:FWLabel key="JSP_AM_RE_D_TOT_REV_NET"/></td>
+						<td>Fr.</td>
+						<td><input disabled="disabled" id="totalRevenusNets"
+							name="revenuHistoriqueComplex.revenuFullComplex.simpleRevenuContribuable.totalRevenusNets" type="text"
+							data-g-amount=" "
+							style="width=100px"
+							value="<%=viewBean.getRevenuHistoriqueComplex().getRevenuFullComplex().getSimpleRevenuContribuable().getTotalRevenusNets()%>" />
+						</td>
+						<td>&nbsp;</td>
+					</tr>
+					<!-- LIGNE 5 -->
+					<tr>
+						<!-- Perte reportée des exercices commerciaux -->					
+						<td></td>
+						<td><%=viewBean.getRubrique(IAMCodeSysteme.CS_RUBRIQUE_PERTEREPEXCOMM,anneeTaxation)%></td>
+						<td>Perte reportée des ex. commerciaux</td>
+						<td>Fr.</td>
+						<td><input disabled="disabled" id="perteCommercial"
+							name="revenuHistoriqueComplex.revenuFullComplex.simpleRevenuContribuable.perteCommercial" type="text"
+							data-g-amount=" "
+							style="width=100px"
+							value="<%=viewBean.getRevenuHistoriqueComplex().getRevenuFullComplex().getSimpleRevenuContribuable().getPerteCommercial()%>" />
+						</td>
+				
+						<!-- Revenu activité agricole -->
+						<td></td>
+						<td><%=viewBean.getRubrique(IAMCodeSysteme.CS_RUBRIQUE_REVENUACTIVITEAGRIC,anneeTaxation)%></td>
+						<td><ct:FWLabel key="JSP_AM_RE_D_REVENU_ACTIV_AGRI"/></td>
+						<td>Fr.</td>
+						<td><input disabled="disabled" id="revenuActAgricole"
+							name="revenuHistoriqueComplex.revenuFullComplex.simpleRevenuContribuable.revenuActAgricole" type="text"
+							data-g-amount=" "
+							style="width:100px"
+							value="<%=viewBean.getRevenuHistoriqueComplex().getRevenuFullComplex().getSimpleRevenuContribuable().getRevenuActAgricole()%>" />
+						</td>
+				
+						<!-- Intérêts passifs privés -->
+						<td></td>
+						<td><%=viewBean.getRubrique(IAMCodeSysteme.CS_RUBRIQUE_INTERETSPASSIFSPRIVE,anneeTaxation)%></td>
+						<td><ct:FWLabel key="JSP_AM_RE_D_INT_PASSIFS_PRIV"/></td>
+						<td>Fr.</td>
+						<td><input disabled="disabled" id="interetsPassifsPrive"
+							name="revenuHistoriqueComplex.revenuFullComplex.simpleRevenuContribuable.interetsPassifsPrive" type="text"
+							data-g-amount=" "
+							style="width=100px"
+							value="<%=viewBean.getRevenuHistoriqueComplex().getRevenuFullComplex().getSimpleRevenuContribuable().getInteretsPassifsPrive()%>" />
+						</td>
+						<td>&nbsp;</td>
+					</tr>
+					<!-- LIGNE 6 -->
+					<tr>
+						<!-- Perte de liquidation -->					
+						<td></td>
+						<%if (!isOldRevenu) { %>
+							<td><%=viewBean.getRubrique(IAMCodeSysteme.CS_RUBRIQUE_PERTELIQUIDATION,anneeTaxation)%></td>
+							<td>Perte de liquidation</td>
+							<td>Fr.</td>
+							<td><input disabled="disabled" id="perteLiquidation"
+								name="revenuHistoriqueComplex.revenuFullComplex.simpleRevenuContribuable.perteLiquidation" type="text"
+								data-g-amount=" "
+								style="width=100px"
+								value="<%=viewBean.getRevenuHistoriqueComplex().getRevenuFullComplex().getSimpleRevenuContribuable().getPerteLiquidation()%>" />
+							</td>
+						<% } else { %>
+							<td colspan="4">&nbsp;</td>
+						<% } %>
+				
+						<!-- Revenu activité agricole épouse -->
+						<td></td>
+						<td><%=viewBean.getRubrique(IAMCodeSysteme.CS_RUBRIQUE_REVENUACTIVITEAGRICEPOUSE,anneeTaxation)%></td>
+						<td><ct:FWLabel key="JSP_AM_RE_D_REVENU_ACTIV_AGRI_EPOUSE"/></td>
+						<td>Fr.</td>
+						<td><input disabled="disabled" id="revenuActAgricoleEpouse"
+							name="revenuHistoriqueComplex.revenuFullComplex.simpleRevenuContribuable.revenuActAgricoleEpouse" type="text"
+							data-g-amount=" "
+							style="width:100px"
+							value="<%=viewBean.getRevenuHistoriqueComplex().getRevenuFullComplex().getSimpleRevenuContribuable().getRevenuActAgricoleEpouse()%>" />
+						</td>
+				
+						<!-- Intérêts passifs commerciaux -->
+						<td></td>
+						<td><%=viewBean.getRubrique(IAMCodeSysteme.CS_RUBRIQUE_INTERETSPASSIFSCOMM,anneeTaxation)%></td>
+						<td><ct:FWLabel key="JSP_AM_RE_D_INT_PASSIFS_COMM"/></td>
+						<td>Fr.</td>
+						<td><input disabled="disabled" id="interetsPassifsComm"
+							name="revenuHistoriqueComplex.revenuFullComplex.simpleRevenuContribuable.interetsPassifsComm" type="text"
+							data-g-amount=" "
+							style="width=100px"
+							value="<%=viewBean.getRevenuHistoriqueComplex().getRevenuFullComplex().getSimpleRevenuContribuable().getInteretsPassifsComm()%>" />
+						</td>
+						<td>&nbsp;</td>
+					</tr>
+					<!-- LIGNE 7 -->
+					<tr>
+						<!-- Allocation de famille -->
+						<td></td>
+						<td><%=viewBean.getRubrique(IAMCodeSysteme.CS_RUBRIQUE_ALLOCATIONFAMILLE,anneeTaxation)%></td>
+						<td><ct:FWLabel key="JSP_AM_RE_D_ALLOC_FAM" /></td>
+						<td>Fr.</td>
+						<td><input disabled="disabled" id="allocationFamiliale"
+							name="revenuHistoriqueComplex.revenuFullComplex.simpleRevenuContribuable.allocationFamiliale" type="text"
+							data-g-amount=" "
+							style="width=100px"
+							value="<%=viewBean.getRevenuHistoriqueComplex().getRevenuFullComplex().getSimpleRevenuContribuable().getAllocationFamiliale()%>" />
+						</td>
+						
+						<!-- Middle empty space -->
+						<td colspan="5">&nbsp;</td>
+						
+						<!-- Personnes à charge ou enfants -->
+						<td></td>
+						<td><%=viewBean.getRubrique(IAMCodeSysteme.CS_RUBRIQUE_PERSONNECHARGEENFANT,anneeTaxation)%></td>
+						<td><ct:FWLabel key="JSP_AM_RE_D_PERS_CHARGE_ENFANTS"/></td>
+						<td>Fr.</td>
+						<td><input disabled="disabled" id="persChargeEnf"
+							name="revenuHistoriqueComplex.revenuFullComplex.simpleRevenuContribuable.persChargeEnf" type="text"
+							data-g-amount=" "
+							style="width=100px"
+							value="<%=viewBean.getRevenuHistoriqueComplex().getRevenuFullComplex().getSimpleRevenuContribuable().getPersChargeEnf()%>" />
+						</td>
+						<td>&nbsp;</td>
+					</tr>
+					<!-- LIGNE 8 -->
+					<tr>
+						<!-- Indemnité imposable à 90% -->
+						<td></td>
+						<td><%=viewBean.getRubrique(IAMCodeSysteme.CS_RUBRIQUE_INDEMNITEIMPOSABLE,anneeTaxation)%></td>
+						<td><ct:FWLabel key="JSP_AM_RE_D_INDEMN_IMPOS"/></td>
+						<td>Fr.</td>
+						<td><input disabled="disabled" id="indemniteImposable"
+							name="revenuHistoriqueComplex.revenuFullComplex.simpleRevenuContribuable.indemniteImposable" type="text"
+							data-g-amount=" "
+							style="width=100px"
+							value="<%=viewBean.getRevenuHistoriqueComplex().getRevenuFullComplex().getSimpleRevenuContribuable().getIndemniteImposable()%>" />
+						</td>
+						
+						<!-- Middle empty space -->
+						<td colspan="5">&nbsp;</td>
+						
+						<!-- Déductions pour les apprentis et étudiants -->
+						<td></td>
+						<td><%=viewBean.getRubrique(IAMCodeSysteme.CS_RUBRIQUE_DEDUCAPPRENTIETUDIANT,anneeTaxation)%></td>
+						<td><ct:FWLabel key="JSP_AM_RE_D_DEDUC_APPR_ETUD"/></td>
+						<td>Fr.</td>
+						<td><input disabled="disabled" id="deducAppEtu"
+							name="revenuHistoriqueComplex.revenuFullComplex.simpleRevenuContribuable.deducAppEtu" type="text" 
+							data-g-amount=" "
+							style="width=100px"
+							value="<%=viewBean.getRevenuHistoriqueComplex().getRevenuFullComplex().getSimpleRevenuContribuable().getDeducAppEtu()%>" />
+						</td>
+						<td>&nbsp;</td>
+					</tr>
+					<!-- LIGNE 9 -->
+					<tr>
+						<!-- Rendement de la fortune immobilière privée -->
+						<td></td>
+						<td><%=viewBean.getRubrique(IAMCodeSysteme.CS_RUBRIQUE_RENDEMENTFORTUNEIMMOBPRIVE,anneeTaxation)%></td>
+						<td><ct:FWLabel key="JSP_AM_RE_D_REND_FORT_IMMO_PRIV"/></td>
+						<td>Fr.</td>
+						<td><input disabled="disabled" id="rendFortImmobPrive"
+							name="revenuHistoriqueComplex.revenuFullComplex.simpleRevenuContribuable.rendFortImmobPrive" type="text"
+							data-g-amount=" "
+							style="width=100px"
+							value="<%=viewBean.getRevenuHistoriqueComplex().getRevenuFullComplex().getSimpleRevenuContribuable().getRendFortImmobPrive()%>" />
+						</td>
+						
+						<!-- Middle empty space -->
+						<td colspan="5">&nbsp;</td>
+						
+						<!-- Déduction fiscale pour couple mariés-->
+						<td></td>
+						<td><%=viewBean.getRubrique(IAMCodeSysteme.CS_RUBRIQUE_DEDUCTIONCOUPLESMARIES,anneeTaxation)%></td>
+						<td><ct:FWLabel key="JSP_AM_RE_D_DEDUC_FISC_COUPLE_MARIES"/></td>
+						<td>Fr.</td>
+						<td><input disabled="disabled" id="deducCouplesMaries"
+							name="revenuHistoriqueComplex.revenuFullComplex.simpleRevenuContribuable.deductionCouplesMaries" type="text"
+							data-g-amount=" "
+							style="width=100px"
+							value="<%=viewBean.getRevenuHistoriqueComplex().getRevenuFullComplex().getSimpleRevenuContribuable().getDeductionCouplesMaries()%>" />
+						</td>
+						<td>&nbsp;</td>
+					</tr>
+					<!-- LIGNE 10 -->
+					<tr>
+						<!-- Excédent de dépenses propriété immobilière privée -->
+						<td></td>
+						<td><%=viewBean.getRubrique(IAMCodeSysteme.CS_RUBRIQUE_EXCEDENTDEPENSESPROPIMMOPRIVE,anneeTaxation)%></td>
+						<td><ct:FWLabel key="JSP_AM_RE_D_EXCED_DEP_PROP_IMMO_PRIV"/></td>
+						<td>Fr.</td>
+						<td><input disabled="disabled" id="excedDepPropImmoPriv"
+							name="revenuHistoriqueComplex.revenuFullComplex.simpleRevenuContribuable.excedDepPropImmoPriv" type="text"
+							data-g-amount=" "
+							style="width=100px"
+							value="<%=viewBean.getRevenuHistoriqueComplex().getRevenuFullComplex().getSimpleRevenuContribuable().getExcedDepPropImmoPriv()%>" />
+						</td>
+						
+						<!-- Middle empty space -->
+						<td colspan="5">&nbsp;</td>
+						
+						<!-- Revenu imposable -->
+						<td></td>
+						<td><%=viewBean.getRubrique(IAMCodeSysteme.CS_RUBRIQUE_REVENUIMPOSABLE,anneeTaxation)%></td>
+						<td><ct:FWLabel key="JSP_AM_RE_D_REV_IMPOS"/></td>
+						<td>Fr.</td>
+						<td><input disabled="disabled" id="revenuImposable"
+							name="revenuHistoriqueComplex.revenuFullComplex.simpleRevenuContribuable.revenuImposable" type="text"
+							data-g-amount=" "
+							style="width=100px"
+							value="<%=viewBean.getRevenuHistoriqueComplex().getRevenuFullComplex().getSimpleRevenuContribuable().getRevenuImposable()%>" />
+						</td>
+						<td>&nbsp;</td>
+					</tr>
+					<!-- LIGNE 11 -->
+					<tr>
+						<!-- Start empty space -->
+						<td colspan="5">&nbsp;</td>
+						
+						<!-- Middle empty space -->
+						<td colspan="5">&nbsp;</td>
+						
+						<!-- Revenu taux -->
+						<td></td>
+						<td><%=viewBean.getRubrique(IAMCodeSysteme.CS_RUBRIQUE_REVENUTAUX,anneeTaxation)%></td>
+						<td><ct:FWLabel key="JSP_AM_RE_D_REV_TAUX"/></td>
+						<td>Fr.</td>
+						<td><input disabled="disabled" id="revenuTaux"
+							name="revenuHistoriqueComplex.revenuFullComplex.simpleRevenuContribuable.revenuTaux" type="text" 
+							data-g-amount=" "
+							style="width=100px"
+							value="<%=viewBean.getRevenuHistoriqueComplex().getRevenuFullComplex().getSimpleRevenuContribuable().getRevenuTaux()%>" />
+						</td>
+						<td>&nbsp;</td>
+					</tr>
+					<!-- LIGNE 12 -->
+					<tr>
+						<!-- Start empty space -->
+						<td colspan="5">&nbsp;</td>
+						
+						<!-- Middle empty space -->
+						<td colspan="5">&nbsp;</td>
+						
+						<!-- Fortune imposable -->	
+						<td></td>
+						<td><%=viewBean.getRubrique(IAMCodeSysteme.CS_RUBRIQUE_FORTUNEIMPOSABLE,anneeTaxation)%></td>
+						<td><ct:FWLabel key="JSP_AM_RE_D_FORT_IMPOS"/></td>
+						<td>Fr.</td>
+						<td><input disabled="disabled" id="fortuneImposable"
+							name="revenuHistoriqueComplex.revenuFullComplex.simpleRevenuContribuable.fortuneImposable" type="text"
+							data-g-amount=" "
+							style="width=100px"
+							value="<%=viewBean.getRevenuHistoriqueComplex().getRevenuFullComplex().getSimpleRevenuContribuable().getFortuneImposable()%>" />
+						</td>
+						<td>&nbsp;</td>
+					</tr>
+					<!-- LIGNE 13 -->
+					<tr>
+						<!-- Start empty space -->
+						<td colspan="5">&nbsp;</td>
+						
+						<!-- Middle empty space -->
+						<td colspan="5">&nbsp;</td>
+						
+						<!-- Fortune taux -->
+						<td></td>
+						<td><%=viewBean.getRubrique(IAMCodeSysteme.CS_RUBRIQUE_FORTUNETAUX,anneeTaxation)%></td>
+						<td><ct:FWLabel key="JSP_AM_RE_D_FORT_TAUX"/></td>
+						<td>Fr.</td>
+						<td><input disabled="disabled" id="fortuneTaux"
+							name="revenuHistoriqueComplex.revenuFullComplex.simpleRevenuContribuable.fortuneTaux" type="text" 
+							data-g-amount=" "
+							style="width=100px"
+							value="<%=viewBean.getRevenuHistoriqueComplex().getRevenuFullComplex().getSimpleRevenuContribuable().getFortuneTaux()%>" />
+						</td>
+						<td>&nbsp;</td>					
+					</tr>
+					
+					<tr style="height:4px;"><td></td></tr>
+				</table>
 			</div>
 			
 			<!-- ************************************************************************************* -->

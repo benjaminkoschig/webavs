@@ -1,16 +1,8 @@
 /**
- * 
+ *
  */
 package ch.globaz.amal.business.envois;
 
-import globaz.globall.db.BSession;
-import globaz.globall.db.BSessionUtil;
-import globaz.jade.admin.JadeAdminServiceLocatorProvider;
-import globaz.jade.admin.user.bean.JadeUser;
-import globaz.jade.client.util.JadeDateUtil;
-import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.context.JadeThread;
-import globaz.jsp.util.GlobazJSPBeanUtil;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -36,6 +28,7 @@ import ch.globaz.amal.business.models.revenu.RevenuHistoriqueComplex;
 import ch.globaz.amal.business.models.revenu.SimpleRevenuDeterminant;
 import ch.globaz.amal.business.models.subsideannee.SimpleSubsideAnnee;
 import ch.globaz.amal.business.services.AmalServiceLocator;
+import ch.globaz.amal.businessimpl.checkers.subsideannee.SimpleSubsideAnneeChecker;
 import ch.globaz.amal.businessimpl.services.AmalImplServiceLocator;
 import ch.globaz.amal.businessimpl.utils.AMGestionTiers;
 import ch.globaz.envoi.business.models.parametrageEnvoi.SignetListModel;
@@ -48,16 +41,28 @@ import ch.globaz.pyxis.business.service.TIBusinessServiceLocator;
 import ch.globaz.topaz.datajuicer.Collection;
 import ch.globaz.topaz.datajuicer.DataList;
 import ch.globaz.topaz.datajuicer.DocumentData;
+import globaz.globall.db.BSession;
+import globaz.globall.db.BSessionUtil;
+import globaz.jade.admin.JadeAdminServiceLocatorProvider;
+import globaz.jade.admin.user.bean.JadeUser;
+import globaz.jade.client.util.JadeDateUtil;
+import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.context.JadeThread;
+import globaz.jsp.util.GlobazJSPBeanUtil;
 
 /**
  * Classe par défaut de génération des données nécessaires à envoi
- * 
+ *
  * @author dhi
- * 
+ *
  */
 public class AMEnvoiData extends EnvoiData {
     private ArrayList<String> allCaisses = new ArrayList<String>();
     private ArrayList<String> allSubsides = new ArrayList<String>();
+
+    // S180621_007 : Adaptation subsides normalement à partir de 01.2019
+    private boolean isSubsidePCFamille = false;
+    private boolean hasSupplementPC = false;
 
     /**
      * @param dataInput
@@ -70,49 +75,11 @@ public class AMEnvoiData extends EnvoiData {
     private String formatTitreFamille(String FirstLineInput) {
         // Selon demande PAC 02.10.2012
         return FirstLineInput;
-
-        /*
-         * if (JadeStringUtil.isEmpty(FirstLineInput)) {
-         * return FirstLineInput;
-         * }
-         * if ((FirstLineInput.toUpperCase().indexOf("MONSIEUR") == 0)
-         * || (FirstLineInput.toUpperCase().indexOf("MADAME") == 0)) {
-         * // ----------------------------------------------------------
-         * // 1) Depuis les objects chargés, on récupère le subside
-         * // ----------------------------------------------------------
-         * try {
-         * SimpleDetailFamille currentSubside = (SimpleDetailFamille) this
-         * .getLoadedObject(SimpleDetailFamille.class.getName());
-         * String idContribuable = currentSubside.getIdContribuable();
-         * String anneeHistorique = currentSubside.getAnneeHistorique();
-         * String finDroit = currentSubside.getFinDroit();
-         * // ----------------------------------------------------------
-         * // 2) Recherche des membres de famille en activité
-         * // ----------------------------------------------------------
-         * SimpleFamilleSearch nbMembresSearch = new SimpleFamilleSearch();
-         * nbMembresSearch.setWhereKey("subsides");
-         * nbMembresSearch.setForIdContribuable(idContribuable);
-         * if (JadeStringUtil.isBlankOrZero(finDroit)) {
-         * nbMembresSearch.setForFinDefinitiveGOE("12." + anneeHistorique);
-         * } else {
-         * nbMembresSearch.setForFinDefinitiveGOE(finDroit);
-         * }
-         * nbMembresSearch.setForFinDefinitive("0");
-         * int nbMembres = AmalServiceLocator.getFamilleContribuableService().count(nbMembresSearch);
-         * if (nbMembres > 1) {
-         * return "Famille";
-         * }
-         * } catch (Exception ex) {
-         * ex.printStackTrace();
-         * }
-         * }
-         * return FirstLineInput;
-         */
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ch.globaz.envoi.business.utils.EnvoiData#loadData()
      */
     @Override
@@ -126,6 +93,10 @@ public class AMEnvoiData extends EnvoiData {
         // 2) Cas spéciaux - Adresse - Listes - check si document en contient
         // -------------------------------------------------------------------
         try {
+            // S180621_007 : Adaptation subsides normalement à partir de 01.2019
+            String moisAnnee = "01." + mapSignetValues.get("RELATIV1");
+            isSubsidePCFamille = SimpleSubsideAnneeChecker.checkIsSubsidePCFKind(moisAnnee);
+
             // Recherche des signets pour le document en cours
             SignetListModelSearch signetListModelSearch = new SignetListModelSearch();
             signetListModelSearch.setForIdFormule(getIdFormule());
@@ -168,18 +139,14 @@ public class AMEnvoiData extends EnvoiData {
     /**
      * Renseignement de la hashmap signet - value pour le cas de l'adresse Renseignement des signets ADR01
      * (signetLigne0) à ADR05
-     * 
+     *
      * @param mapSignetValuesInput
-     * 
+     *
      * @return return l'hash map complétée format ADR01 - Ac Tacim format ADR02 - Et Medine format ADR03 - Rue des
      *         Prejures 23 format ADR04 - VILLAGE
      */
     private HashMap<Object, Object> loadDataAdresse(HashMap<Object, Object> mapSignetValuesInput,
             String signetMethodName, String signetLigne0) {
-        // TODO CONSTANTE à AJOUTER DANS constantes de avsservice
-        String CS_DOMAINE_AMAL = "42002700";
-        String CS_TYPE_COURRIER = "508001";
-
         // Variables utiles
         Contribuable currentContribuable = null;
         AdresseTiersDetail adresseDetail = null;
@@ -190,9 +157,6 @@ public class AMEnvoiData extends EnvoiData {
         if (currentContribuable != null) {
             // On récupère l'adresse du contribuable et affectation si document famille
             try {
-                // adresseDetail = TIBusinessServiceLocator.getAdresseService().getAdresseTiers(
-                // currentContribuable.getPersonneEtendue().getTiers().getIdTiers(), true,
-                // JadeDateUtil.getGlobazFormattedDate(new Date()), CS_DOMAINE_AMAL, CS_TYPE_COURRIER, "");
                 adresseDetail = TIBusinessServiceLocator.getAdresseService().getAdresseTiers(
                         currentContribuable.getPersonneEtendue().getTiers().getIdTiers(), true,
                         JadeDateUtil.getGlobazFormattedDate(new Date()), AMGestionTiers.CS_DOMAINE_AMAL,
@@ -223,7 +187,7 @@ public class AMEnvoiData extends EnvoiData {
 
     /**
      * Chargement des paramètres annuels
-     * 
+     *
      * @param mapSignetValues
      * @param signetCode
      * @return
@@ -254,9 +218,8 @@ public class AMEnvoiData extends EnvoiData {
                     }
                 }
             } catch (Exception ex) {
-                getErrorBuffer().append(
-                        "Error : unable to retrieve param ! CS : " + codeSystemeParametre + " / Year : "
-                                + anneeHistorique);
+                getErrorBuffer().append("Error : unable to retrieve param ! CS : " + codeSystemeParametre + " / Year : "
+                        + anneeHistorique);
             }
         }
 
@@ -265,7 +228,7 @@ public class AMEnvoiData extends EnvoiData {
 
     /**
      * Renseignement de la hash map pour un tableau dans le document
-     * 
+     *
      * @param mapSignetValues
      *            map à compléter
      * @param signetMethodName
@@ -274,7 +237,7 @@ public class AMEnvoiData extends EnvoiData {
      *            nom du signet
      * @return map complétée avec les infos suivantes : NOMPRENOM - <Josiane, Paul, Marc>
      * @throws Exception
-     * 
+     *
      */
     private HashMap<Object, Object> loadDataTableau(HashMap<Object, Object> mapSignetValues, String signetMethodName,
             String signetName, String signetCode) throws Exception {
@@ -289,8 +252,8 @@ public class AMEnvoiData extends EnvoiData {
         // 1) Depuis les objects chargés, on récupère l'envoi courant
         // et recherche des envois d'un même groupe
         // ----------------------------------------------------------
-        SimpleControleurEnvoiStatus currentEnvoi = (SimpleControleurEnvoiStatus) getLoadedObject(SimpleControleurEnvoiStatus.class
-                .getName());
+        SimpleControleurEnvoiStatus currentEnvoi = (SimpleControleurEnvoiStatus) getLoadedObject(
+                SimpleControleurEnvoiStatus.class.getName());
 
         SimpleControleurEnvoiStatusSearch currentEnvoiSearch = new SimpleControleurEnvoiStatusSearch();
         currentEnvoiSearch.setForIdJob(currentEnvoi.getIdJob());
@@ -308,7 +271,8 @@ public class AMEnvoiData extends EnvoiData {
         // 2) Chargement des beans en fonction des envois
         // ----------------------------------------------------------
         for (int iEnvoi = 0; iEnvoi < currentEnvoiSearch.getSize(); iEnvoi++) {
-            SimpleControleurEnvoiStatus envoi = (SimpleControleurEnvoiStatus) currentEnvoiSearch.getSearchResults()[iEnvoi];
+            SimpleControleurEnvoiStatus envoi = (SimpleControleurEnvoiStatus) currentEnvoiSearch
+                    .getSearchResults()[iEnvoi];
             ComplexControleurEnvoiDetailSearch detailSearch = new ComplexControleurEnvoiDetailSearch();
             detailSearch.setForIdStatus(envoi.getIdStatus());
             detailSearch.setForIdJob(envoi.getIdJob());
@@ -321,13 +285,17 @@ public class AMEnvoiData extends EnvoiData {
             }
             // Chargement des beans
             for (int iDetail = 0; iDetail < detailSearch.getSize(); iDetail++) {
-                ComplexControleurEnvoiDetail detail = (ComplexControleurEnvoiDetail) detailSearch.getSearchResults()[iDetail];
+                ComplexControleurEnvoiDetail detail = (ComplexControleurEnvoiDetail) detailSearch
+                        .getSearchResults()[iDetail];
                 try {
-                    SimpleDetailFamille detailFamille = AmalServiceLocator.getDetailFamilleService().read(
-                            detail.getIdDetailFamille());
+                    SimpleDetailFamille detailFamille = AmalServiceLocator.getDetailFamilleService()
+                            .read(detail.getIdDetailFamille());
+                    if (!hasSupplementPC && !JadeStringUtil.isBlankOrZero(detailFamille.getSupplExtra())) {
+                        hasSupplementPC = true;
+                    }
                     allNeededObjects.add(detailFamille);
-                    FamilleContribuable famille = AmalServiceLocator.getFamilleContribuableService().read(
-                            detailFamille.getIdFamille());
+                    FamilleContribuable famille = AmalServiceLocator.getFamilleContribuableService()
+                            .read(detailFamille.getIdFamille());
                     if (famille.getSimpleFamille().getNomPrenom() != null) {
                         allNeededObjects.add(famille.getSimpleFamille());
                     }
@@ -361,8 +329,8 @@ public class AMEnvoiData extends EnvoiData {
                         // ----------------------------------------------------------
                         if (signetMethodName.equals("finDroit")) {
                             if (JadeStringUtil.isBlankOrZero(currentPropertyValue.toString())) {
-                                SimpleDetailFamille currentDetail = (SimpleDetailFamille) getLoadedObject(SimpleDetailFamille.class
-                                        .getName());
+                                SimpleDetailFamille currentDetail = (SimpleDetailFamille) getLoadedObject(
+                                        SimpleDetailFamille.class.getName());
                                 if (currentDetail != null) {
                                     currentPropertyValue = ("12." + currentDetail.getAnneeHistorique());
                                 }
@@ -419,53 +387,86 @@ public class AMEnvoiData extends EnvoiData {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ch.globaz.envoi.business.utils.EnvoiData#loadDocumentDataTopaz(java.util.HashMap)
      */
     @Override
     protected DocumentData loadDocumentDataTopaz(HashMap<Object, Object> mapData) {
         DocumentData toReturn = super.loadDocumentDataTopaz(mapData);
-
         // ---------------------------------------------------------------------------------
         // Travail sur le nombre de caisse et de subside pour déterminer le texte des documents
         // ---------------------------------------------------------------------------------
         int nbreCaisses = allCaisses.size();
         int nbreSubsides = allSubsides.size();
         if ((nbreCaisses != 0) && (nbreSubsides != 0)) {
-            if (nbreCaisses > 1) {
-                Collection tableauToKeep = new Collection("tablexdroitsxassureurs");
-                DataList ligneTableau = new DataList("maligne");
-                ligneTableau.addData("CONTENT", "");
-                ligneTableau.addData("RELATIV1", toReturn.getDatabag().get("RELATIV1"));
-                tableauToKeep.add(ligneTableau);
-                toReturn.add(tableauToKeep);
-                Collection tableauToDelete1 = new Collection("tableundroitunassureur");
-                toReturn.add(tableauToDelete1);
-                Collection tableauToDelete2 = new Collection("tablexdroitsunassureur");
-                toReturn.add(tableauToDelete2);
-            } else {
-                if (nbreSubsides > 1) {
-                    Collection tableauToKeep = new Collection("tablexdroitsunassureur");
-                    DataList ligneTableau = new DataList("maligne");
-                    ligneTableau.addData("CONTENT", "");
-                    ligneTableau.addData("RELATIV1", toReturn.getDatabag().get("RELATIV1"));
-                    tableauToKeep.add(ligneTableau);
-                    toReturn.add(tableauToKeep);
-                    Collection tableauToDelete1 = new Collection("tablexdroitsxassureurs");
-                    toReturn.add(tableauToDelete1);
-                    Collection tableauToDelete2 = new Collection("tableundroitunassureur");
-                    toReturn.add(tableauToDelete2);
+            if (isSubsidePCFamille) {
+                if (nbreCaisses > 1) {
+                    if (getIdProcess().contains("DECMST8") || !hasSupplementPC) {
+                        toReturn.add(getTableauToDelete("pcftablexdroitsxassureurs1"));
+                    } else {
+                        toReturn.add(
+                                getTableauToKeep("pcftablexdroitsxassureurs1", toReturn.getDatabag().get("RELATIV1")));
+                    }
+                    toReturn.add(getTableauToKeep("pcftablexdroitsxassureurs2", toReturn.getDatabag().get("RELATIV1")));
+                    toReturn.add(getTableauToKeep("pcftablexdroitsxassureurs3", toReturn.getDatabag().get("RELATIV1")));
+                    toReturn.add(getTableauToDelete("pcftableundroitunassureur1"));
+                    toReturn.add(getTableauToDelete("pcftableundroitunassureur2"));
+                    toReturn.add(getTableauToDelete("pcftableundroitunassureur3"));
+                    toReturn.add(getTableauToDelete("pcftablexdroitsunassureur1"));
+                    toReturn.add(getTableauToDelete("pcftablexdroitsunassureur2"));
+                    toReturn.add(getTableauToDelete("pcftablexdroitsunassureur3"));
                 } else {
-                    Collection tableauToKeep = new Collection("tableundroitunassureur");
-                    DataList ligneTableau = new DataList("maligne");
-                    ligneTableau.addData("CONTENT", "");
-                    ligneTableau.addData("RELATIV1", toReturn.getDatabag().get("RELATIV1"));
-                    tableauToKeep.add(ligneTableau);
-                    toReturn.add(tableauToKeep);
-                    Collection tableauToDelete1 = new Collection("tablexdroitsxassureurs");
-                    toReturn.add(tableauToDelete1);
-                    Collection tableauToDelete2 = new Collection("tablexdroitsunassureur");
-                    toReturn.add(tableauToDelete2);
+                    if (nbreSubsides > 1) {
+                        if (getIdProcess().contains("DECMST8") || !hasSupplementPC) {
+                            toReturn.add(getTableauToDelete("pcftablexdroitsunassureur1"));
+                        } else {
+                            toReturn.add(getTableauToKeep("pcftablexdroitsunassureur1",
+                                    toReturn.getDatabag().get("RELATIV1")));
+                        }
+                        toReturn.add(
+                                getTableauToKeep("pcftablexdroitsunassureur2", toReturn.getDatabag().get("RELATIV1")));
+                        toReturn.add(
+                                getTableauToKeep("pcftablexdroitsunassureur3", toReturn.getDatabag().get("RELATIV1")));
+                        toReturn.add(getTableauToDelete("pcftablexdroitsxassureurs1"));
+                        toReturn.add(getTableauToDelete("pcftablexdroitsxassureurs2"));
+                        toReturn.add(getTableauToDelete("pcftablexdroitsxassureurs3"));
+                        toReturn.add(getTableauToDelete("pcftableundroitunassureur1"));
+                        toReturn.add(getTableauToDelete("pcftableundroitunassureur2"));
+                        toReturn.add(getTableauToDelete("pcftableundroitunassureur3"));
+                    } else {
+                        if (getIdProcess().contains("DECMST8") || !hasSupplementPC) {
+                            toReturn.add(getTableauToDelete("pcftableundroitunassureur1"));
+                        } else {
+                            toReturn.add(getTableauToKeep("pcftableundroitunassureur1",
+                                    toReturn.getDatabag().get("RELATIV1")));
+                        }
+                        toReturn.add(
+                                getTableauToKeep("pcftableundroitunassureur2", toReturn.getDatabag().get("RELATIV1")));
+                        toReturn.add(
+                                getTableauToKeep("pcftableundroitunassureur3", toReturn.getDatabag().get("RELATIV1")));
+                        toReturn.add(getTableauToDelete("pcftablexdroitsxassureurs1"));
+                        toReturn.add(getTableauToDelete("pcftablexdroitsxassureurs2"));
+                        toReturn.add(getTableauToDelete("pcftablexdroitsxassureurs3"));
+                        toReturn.add(getTableauToDelete("pcftablexdroitsunassureur1"));
+                        toReturn.add(getTableauToDelete("pcftablexdroitsunassureur2"));
+                        toReturn.add(getTableauToDelete("pcftablexdroitsunassureur3"));
+                    }
+                }
+            } else {
+                if (nbreCaisses > 1) {
+                    toReturn.add(getTableauToKeep("tablexdroitsxassureurs", toReturn.getDatabag().get("RELATIV1")));
+                    toReturn.add(getTableauToDelete("tableundroitunassureur"));
+                    toReturn.add(getTableauToDelete("tablexdroitsunassureur"));
+                } else {
+                    if (nbreSubsides > 1) {
+                        toReturn.add(getTableauToKeep("tablexdroitsunassureur", toReturn.getDatabag().get("RELATIV1")));
+                        toReturn.add(getTableauToDelete("tablexdroitsxassureurs"));
+                        toReturn.add(getTableauToDelete("tableundroitunassureur"));
+                    } else {
+                        toReturn.add(getTableauToKeep("tableundroitunassureur", toReturn.getDatabag().get("RELATIV1")));
+                        toReturn.add(getTableauToDelete("tablexdroitsxassureurs"));
+                        toReturn.add(getTableauToDelete("tablexdroitsunassureur"));
+                    }
                 }
             }
         }
@@ -536,8 +537,8 @@ public class AMEnvoiData extends EnvoiData {
         // ---------------------------------------------------------------------------------
         try {
             // Depuis les objects chargés, on récupère le current détail famille
-            SimpleDetailFamille currentSubside = (SimpleDetailFamille) getLoadedObject(SimpleDetailFamille.class
-                    .getName());
+            SimpleDetailFamille currentSubside = (SimpleDetailFamille) getLoadedObject(
+                    SimpleDetailFamille.class.getName());
             String dateDebut = currentSubside.getDebutDroit();
             String datePrevious = JadeDateUtil.addDays("01." + dateDebut, -1);
             toReturn.addData("DATEFINASSISTE", EnvoiDataFormatter.getFormattedValueDateJJMMMMYYYY(datePrevious));
@@ -549,20 +550,39 @@ public class AMEnvoiData extends EnvoiData {
             // Particularités DECMST10,11,12 et 13
             if (getIdProcess().contains("DECMST10") || getIdProcess().contains("DECMST11")
                     || getIdProcess().contains("DECMST12") || getIdProcess().contains("DECMST13")) {
-                SimpleRevenuDeterminant simpleRevenuDeterminant = (SimpleRevenuDeterminant) getLoadedObject(SimpleRevenuDeterminant.class
-                        .getName());
-                RevenuHistoriqueComplex revenuSearch = AmalServiceLocator.getRevenuService().readHistoriqueComplex(
-                        simpleRevenuDeterminant.getIdRevenuHistorique());
+                SimpleRevenuDeterminant simpleRevenuDeterminant = (SimpleRevenuDeterminant) getLoadedObject(
+                        SimpleRevenuDeterminant.class.getName());
+                RevenuHistoriqueComplex revenuSearch = AmalServiceLocator.getRevenuService()
+                        .readHistoriqueComplex(simpleRevenuDeterminant.getIdRevenuHistorique());
 
-                toReturn.addData("ANNEETAXREC", revenuSearch.getRevenuFullComplex().getSimpleRevenu()
-                        .getAnneeTaxation());
-                toReturn.addData("DATAXREC", revenuSearch.getRevenuFullComplex().getSimpleRevenu()
-                        .getDateAvisTaxation());
+                toReturn.addData("ANNEETAXREC",
+                        revenuSearch.getRevenuFullComplex().getSimpleRevenu().getAnneeTaxation());
+                toReturn.addData("DATAXREC",
+                        revenuSearch.getRevenuFullComplex().getSimpleRevenu().getDateAvisTaxation());
             }
         } catch (Exception e) {
             e.printStackTrace();
             JadeThread.logWarn("AMEnvoiData.loadDocumentDataTopaz()", e.getMessage());
         }
+
+        // BEGIN-- S180621_007 modification dans les documents:
+        // ATSUBS1, ATSUBS2, ATSUBS3
+        // DECMST1, DECMST2, DECMST5, DECMST8,
+        // DECMISA, DECMASB, DECMPCE
+        if (isSubsidePCFamille) {
+            String complement = "_2019";
+            checkAndSetIdProcessEndText("ATSUBS1", complement);
+            checkAndSetIdProcessEndText("ATSUBS2", complement);
+            checkAndSetIdProcessEndText("ATSUBS3", complement);
+            checkAndSetIdProcessEndText("DECMST1", complement);
+            checkAndSetIdProcessEndText("DECMST2", complement);
+            checkAndSetIdProcessEndText("DECMST5", complement);
+            checkAndSetIdProcessEndText("DECMST8", complement);
+            checkAndSetIdProcessEndText("DECMISA", complement);
+            checkAndSetIdProcessEndText("DECMASB", complement);
+            checkAndSetIdProcessEndText("DECMPCE", complement);
+        }
+        // END-- S180621_007 modification dans les documents:
 
         // ---------------------------------------------------------------------------------
         // Tableau enfants ATENF1, ATENF8
@@ -605,8 +625,8 @@ public class AMEnvoiData extends EnvoiData {
         // ---------------------------------------------------------------------------------
         if (getIdProcess().contains("DECMPC7")) {
             // Depuis les objects chargés, on récupère le current détail famille
-            SimpleDetailFamille currentSubside = (SimpleDetailFamille) getLoadedObject(SimpleDetailFamille.class
-                    .getName());
+            SimpleDetailFamille currentSubside = (SimpleDetailFamille) getLoadedObject(
+                    SimpleDetailFamille.class.getName());
             int iAnneeHistorique = 0;
             String anneHistorique = currentSubside.getAnneeHistorique();
             try {
@@ -636,8 +656,8 @@ public class AMEnvoiData extends EnvoiData {
         // ---------------------------------------------------------------------------------
         if (getIdProcess().contains("DECMPCM")) {
             // Depuis les objects chargés, on récupère le current détail famille
-            SimpleDetailFamille currentSubside = (SimpleDetailFamille) getLoadedObject(SimpleDetailFamille.class
-                    .getName());
+            SimpleDetailFamille currentSubside = (SimpleDetailFamille) getLoadedObject(
+                    SimpleDetailFamille.class.getName());
             int iAnneeHistorique = 0;
             String anneHistorique = currentSubside.getAnneeHistorique();
             try {
@@ -665,8 +685,8 @@ public class AMEnvoiData extends EnvoiData {
         // ---------------------------------------------------------------------------------
         if (getIdProcess().contains("DECMAS7")) {
             // Depuis les objects chargés, on récupère le current détail famille
-            SimpleDetailFamille currentSubside = (SimpleDetailFamille) getLoadedObject(SimpleDetailFamille.class
-                    .getName());
+            SimpleDetailFamille currentSubside = (SimpleDetailFamille) getLoadedObject(
+                    SimpleDetailFamille.class.getName());
             int iAnneeHistorique = 0;
             String anneHistorique = currentSubside.getAnneeHistorique();
             try {
@@ -692,8 +712,8 @@ public class AMEnvoiData extends EnvoiData {
         // ---------------------------------------------------------------------------------
         if (getIdProcess().contains("DECMASM")) {
             // Depuis les objects chargés, on récupère le current détail famille
-            SimpleDetailFamille currentSubside = (SimpleDetailFamille) getLoadedObject(SimpleDetailFamille.class
-                    .getName());
+            SimpleDetailFamille currentSubside = (SimpleDetailFamille) getLoadedObject(
+                    SimpleDetailFamille.class.getName());
             int iAnneeHistorique = 0;
             String anneHistorique = currentSubside.getAnneeHistorique();
             try {
@@ -711,9 +731,29 @@ public class AMEnvoiData extends EnvoiData {
         return toReturn;
     }
 
+    private void checkAndSetIdProcessEndText(String idProcess, String complementProcess) {
+        if (getIdProcess().contains(idProcess)) {
+            String newId = idProcess + complementProcess;
+            setIdProcess(newId);
+        }
+    }
+
+    private Collection getTableauToDelete(String tableName) {
+        return new Collection(tableName);
+    }
+
+    private Collection getTableauToKeep(String tableName, String relativeData) {
+        Collection tableauToKeep = new Collection(tableName);
+        DataList ligneTableau = new DataList("maligne");
+        ligneTableau.addData("CONTENT", "");
+        ligneTableau.addData("RELATIV1", relativeData);
+        tableauToKeep.add(ligneTableau);
+        return tableauToKeep;
+    }
+
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ch.globaz.envoi.business.utils.EnvoiData#prepareData(java.util.HashMap)
      */
     @Override
@@ -757,7 +797,7 @@ public class AMEnvoiData extends EnvoiData {
 
     /**
      * Retrieve du contribuable en fonction de son id
-     * 
+     *
      * @param idContribuable
      * @return
      */
@@ -779,9 +819,9 @@ public class AMEnvoiData extends EnvoiData {
 
     /**
      * Retrieve du controleur envoi detail status en fonction de son id
-     * 
+     *
      * @param currentId
-     * 
+     *
      * @return
      */
     protected Object retrieveControleurEnvoiStatus(String currentId) {
@@ -804,7 +844,7 @@ public class AMEnvoiData extends EnvoiData {
     }
 
     /**
-     * 
+     *
      * @param currentId
      * @return
      */
@@ -827,7 +867,7 @@ public class AMEnvoiData extends EnvoiData {
 
     /**
      * Retrieve du revenuDeterminant en fonction de son id
-     * 
+     *
      * @param idSimpleFamille
      * @return
      */
@@ -849,7 +889,7 @@ public class AMEnvoiData extends EnvoiData {
 
     /**
      * Retrieve du revenuDeterminant en fonction de son id
-     * 
+     *
      * @param idSimpleFamille
      * @return
      */
@@ -871,7 +911,7 @@ public class AMEnvoiData extends EnvoiData {
 
     /**
      * Retrieve du simplefamille en fonction de son id
-     * 
+     *
      * @param idSimpleFamille
      * @return
      */
@@ -893,7 +933,7 @@ public class AMEnvoiData extends EnvoiData {
 
     /**
      * Retrieve de la session
-     * 
+     *
      * @param currentUserId
      * @return
      */
@@ -915,7 +955,7 @@ public class AMEnvoiData extends EnvoiData {
 
     /**
      * Retrieve du simpledetailfamille (subside) en fonction de son id
-     * 
+     *
      * @param idSimpleDetailFamille
      * @return
      */
@@ -935,15 +975,15 @@ public class AMEnvoiData extends EnvoiData {
 
     /**
      * Retrieve du simplefamille en fonction de son id
-     * 
+     *
      * @param idSimpleFamille
      * @return
      */
     protected Object retrieveSimpleFamille(String idSimpleFamille) {
         SimpleFamille famille = null;
         try {
-            FamilleContribuable currentFamille = AmalServiceLocator.getFamilleContribuableService().read(
-                    idSimpleFamille);
+            FamilleContribuable currentFamille = AmalServiceLocator.getFamilleContribuableService()
+                    .read(idSimpleFamille);
             if (currentFamille.getSimpleFamille().getNomPrenom() == null) {
                 return null;
             } else {
@@ -957,7 +997,7 @@ public class AMEnvoiData extends EnvoiData {
     }
 
     /**
-     * 
+     *
      * @param currentId
      * @return
      */

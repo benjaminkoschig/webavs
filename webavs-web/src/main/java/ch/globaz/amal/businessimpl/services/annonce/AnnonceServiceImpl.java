@@ -1,17 +1,8 @@
 /**
- * 
+ *
  */
 package ch.globaz.amal.businessimpl.services.annonce;
 
-import globaz.globall.db.BSession;
-import globaz.globall.db.BSessionUtil;
-import globaz.jade.client.util.JadeDateUtil;
-import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.context.JadeThread;
-import globaz.jade.log.JadeLogger;
-import globaz.jade.log.business.JadeBusinessMessage;
-import globaz.jade.persistence.model.JadeAbstractModel;
-import globaz.pyxis.constantes.IConstantes;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -33,16 +24,26 @@ import ch.globaz.amal.business.models.parametremodel.ParametreModelComplexSearch
 import ch.globaz.amal.business.services.AmalServiceLocator;
 import ch.globaz.amal.business.services.annonce.AnnonceService;
 import ch.globaz.amal.businessimpl.services.AmalImplServiceLocator;
+import ch.globaz.common.domaine.Montant;
+import globaz.globall.db.BSession;
+import globaz.globall.db.BSessionUtil;
+import globaz.jade.client.util.JadeDateUtil;
+import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.context.JadeThread;
+import globaz.jade.log.JadeLogger;
+import globaz.jade.log.business.JadeBusinessMessage;
+import globaz.jade.persistence.model.JadeAbstractModel;
+import globaz.pyxis.constantes.IConstantes;
 
 /**
  * @author dhi
- * 
+ *
  */
 public class AnnonceServiceImpl implements AnnonceService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ch.globaz.amal.business.services.annonce.AnnonceService#createAnnoncesSimulationJobs(java.lang.String,
      * java.util.List)
      */
@@ -121,7 +122,7 @@ public class AnnonceServiceImpl implements AnnonceService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ch.globaz.amal.business.services.annonce.AnnonceService#getAnnoncesToCreate(java.lang.String,
      * java.util.List, java.lang.String)
      */
@@ -223,9 +224,8 @@ public class AnnonceServiceImpl implements AnnonceService {
                     // ---------------------------------------------------------------------------
                     try {
                         // contrôle sur les dates : date de début doit être avant date de fin
-                        if ((currentSubside.getFinDroit() != null)
-                                && ((currentSubside.getDebutDroit() != null) && !JadeStringUtil
-                                        .isBlankOrZero(currentSubside.getFinDroit()))) {
+                        if ((currentSubside.getFinDroit() != null) && ((currentSubside.getDebutDroit() != null)
+                                && !JadeStringUtil.isBlankOrZero(currentSubside.getFinDroit()))) {
                             if (!currentSubside.getDebutDroit().equals(currentSubside.getFinDroit())) {
                                 if (!JadeDateUtil.isDateMonthYearBefore(currentSubside.getDebutDroit(),
                                         currentSubside.getFinDroit())) {
@@ -258,15 +258,15 @@ public class AnnonceServiceImpl implements AnnonceService {
                             SimpleDetailFamille currentSubsideAdditionnel = AmalImplServiceLocator
                                     .getSimpleDetailFamilleService().read(idSubsideAdditionnel);
                             // Même caisse maladie, ok traitement normal
-                            if (currentSubsideAdditionnel.getNoCaisseMaladie().equals(
-                                    currentSubside.getNoCaisseMaladie())) {
+                            if (currentSubsideAdditionnel.getNoCaisseMaladie()
+                                    .equals(currentSubside.getNoCaisseMaladie())) {
                                 if (!subsidesParCaisse.contains(idSubsideAdditionnel)) {
                                     subsidesParCaisse.add(idSubsideAdditionnel);
                                 }
                             } else {
                                 // Autre caisse maladie
-                                List<String> subsidesParCaisseAdditionnel = returnedMap.get(currentSubsideAdditionnel
-                                        .getNoCaisseMaladie());
+                                List<String> subsidesParCaisseAdditionnel = returnedMap
+                                        .get(currentSubsideAdditionnel.getNoCaisseMaladie());
                                 if (subsidesParCaisseAdditionnel == null) {
                                     subsidesParCaisseAdditionnel = new ArrayList<String>();
                                 } else {
@@ -306,7 +306,7 @@ public class AnnonceServiceImpl implements AnnonceService {
     /**
      * Recherche des subsides du même membre de famille, avec la même année
      * qui doivent également être annoncés
-     * 
+     *
      * @param idDetailFamille
      * @return
      */
@@ -316,8 +316,8 @@ public class AnnonceServiceImpl implements AnnonceService {
         idSubsides.add(idDetailFamille);
         // Recherche des autres annonces à effectuer pour le même membre de famille
         try {
-            SimpleDetailFamille currentSubside = AmalImplServiceLocator.getSimpleDetailFamilleService().read(
-                    idDetailFamille);
+            SimpleDetailFamille currentSubside = AmalImplServiceLocator.getSimpleDetailFamilleService()
+                    .read(idDetailFamille);
             SimpleDetailFamilleSearch currentSearch = new SimpleDetailFamilleSearch();
             currentSearch.setDefinedSearchSize(0);
             currentSearch.setForCodeActif(true);
@@ -342,7 +342,7 @@ public class AnnonceServiceImpl implements AnnonceService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ch.globaz.amal.business.services.annonce.AnnonceService#getIdTiersCMAnnonceInProgress()
      */
     @Override
@@ -369,7 +369,7 @@ public class AnnonceServiceImpl implements AnnonceService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ch.globaz.amal.business.services.annonce.AnnonceService#getIdTiersCMSimulationInProgress()
      */
     @Override
@@ -381,7 +381,7 @@ public class AnnonceServiceImpl implements AnnonceService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ch.globaz.amal.business.services.annonce.AnnonceService#writeAnnoncesInTables()
      */
     @Override
@@ -443,7 +443,14 @@ public class AnnonceServiceImpl implements AnnonceService {
                         currentAnnonce.setNoModele(currentSubside.getNoModeles());
                         currentAnnonce.setNumeroLot(currentSubside.getNoLot());
                         currentAnnonce.setRefuse(currentSubside.getRefus());
-                        currentAnnonce.setSupplementExtraordinaire(currentSubside.getSupplExtra());
+                        double supExtra = 0.0;
+                        if (currentSubside.getSupplExtra() != null) {
+                            supExtra += Double.parseDouble(currentSubside.getSupplExtra());
+                        }
+                        Montant mtSupExtra = new Montant(supExtra);
+                        mtSupExtra = mtSupExtra.normalize();
+                        currentAnnonce.setSupplementExtraordinaire(mtSupExtra.toString());
+
                         currentAnnonce.setTauxEnfantCharge(currentSubside.getTauxEnfantCharge());
                         currentAnnonce.setTypeAvisRIP(currentSubside.getTypeAvisRIP());
                         currentAnnonce.setTypeDemande(currentSubside.getTypeDemande());
@@ -464,8 +471,8 @@ public class AnnonceServiceImpl implements AnnonceService {
                         currentStatus.setIdJob(currentJob.getId());
                         currentStatus.setStatusEnvoi(IAMCodeSysteme.AMDocumentStatus.SENT.getValue());
                         currentStatus.setTypeEnvoi(IAMCodeSysteme.AMDocumentType.ANNONCE.getValue());
-                        currentStatus = AmalImplServiceLocator.getSimpleControleurEnvoiStatusService().create(
-                                currentStatus);
+                        currentStatus = AmalImplServiceLocator.getSimpleControleurEnvoiStatusService()
+                                .create(currentStatus);
                         // ---------------------------------------------------------------------------
                         // 5) Inscription dans journalisation
                         // ---------------------------------------------------------------------------
@@ -531,7 +538,7 @@ public class AnnonceServiceImpl implements AnnonceService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see ch.globaz.amal.business.services.annonce.AnnonceService#writeAnnoncesInTables(java.lang.String,
      * java.util.List, java.lang.String)
      */

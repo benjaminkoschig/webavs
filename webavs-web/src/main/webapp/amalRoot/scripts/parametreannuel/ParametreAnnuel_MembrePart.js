@@ -1,5 +1,5 @@
 /*
- * Scripts pour les écrans paramètres subsideAnnée
+ * Scripts pour les ?crans param?tres subsideAnn?e
  * CBU, 03.2011
  */
 
@@ -29,7 +29,9 @@ function ParametreAnnuelPart(container){
 			'simpleParametreAnnuel.codeTypeParametre':this.detail.find('#codeTypeParametre').val(),
 			'simpleParametreAnnuel.anneeParametre':this.detail.find('#anneeParametre').val(),
 			'simpleParametreAnnuel.valeurParametre':this.detail.find('#valeurParametre').val(),
-			'simpleParametreAnnuel.valeurParametreString':this.detail.find('#valeurParametreString').val()
+			'simpleParametreAnnuel.valeurParametreString':this.detail.find('#valeurParametreString').val(),
+			'simpleParametreAnnuel.valeurFrom':this.detail.find('#valeurFrom').val(),
+			'simpleParametreAnnuel.valeurTo':this.detail.find('#valeurTo').val()
 		};
 		$.extend(o_map,this.getParametresForFind());
 		return o_map;
@@ -43,7 +45,7 @@ function ParametreAnnuelPart(container){
 	};
 	
 	this.clearFields=function(){
-		 this.detail.find('#codeTypeParametre, #anneeParametre, #valeurParametre, #valeurParametreString').val('').end();		
+		 this.detail.find('#codeTypeParametre, #anneeParametre, #valeurParametre, #valeurParametreString, #valeurFrom, #valeurTo').val('').end();		
 	};
 	
 	this.getParentViewBean=function(){

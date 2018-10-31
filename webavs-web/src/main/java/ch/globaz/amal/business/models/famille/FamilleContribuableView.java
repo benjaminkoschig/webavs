@@ -1,18 +1,18 @@
 package ch.globaz.amal.business.models.famille;
 
 /**
- * 
+ *
  */
 import globaz.jade.persistence.model.JadeComplexModel;
 
 /**
  * @author DHI
- * 
+ *
  */
 public class FamilleContribuableView extends JadeComplexModel {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
     private String anneeHistorique = null;
@@ -20,16 +20,18 @@ public class FamilleContribuableView extends JadeComplexModel {
     private String codeTraitement = null;
     private String codeTraitementDossier = null;
     /**
-     * 
+     *
      * Utilisé pour afficher le code du CS dans le tableau AJAX contribuableRevenu.jsp
-     * </br></br>
+     * </br>
+     * </br>
      * <b>CE CHAMP N'EXISTE PAS EN DB !!!</b>
      */
     private String codeTraitementDossierCodeAJAX = null;
     /**
-     * 
+     *
      * Utilisé pour afficher le libelle du CS dans le tableau AJAX contribuableRevenu.jsp
-     * </br></br>
+     * </br>
+     * </br>
      * <b>CE CHAMP N'EXISTE PAS EN DB !!!</b>
      */
     private String codeTraitementDossierLibelleAJAX = null;
@@ -43,9 +45,10 @@ public class FamilleContribuableView extends JadeComplexModel {
     private String finDefinitive = null;
     private String finDroit = null;
     /**
-     * 
+     *
      * Utilisé pour afficher le libelle du CS dans le tableau AJAX contribuableRevenu.jsp
-     * </br></br>
+     * </br>
+     * </br>
      * <b>CE CHAMP N'EXISTE PAS EN DB !!!</b>
      */
     private String idDetailFamilleAJAX = null;
@@ -53,52 +56,59 @@ public class FamilleContribuableView extends JadeComplexModel {
     private Boolean isContribuableActif = null;
     private String montantContribution = null;
     /**
-     * 
+     *
      * Utilisé pour afficher le montant total dans le tableau AJAX contribuableRevenu.jsp
-     * </br></br>
+     * </br>
+     * </br>
      * <b>CE CHAMP N'EXISTE PAS EN DB !!!</b>
      */
     private String montantTotalSubsideAJAX = null;
     private String noModeles = null;
     /**
-     * 
+     *
      * Utilisé pour afficher le libelle du CS dans le tableau AJAX contribuableRevenu.jsp
-     * </br></br>
+     * </br>
+     * </br>
      * <b>CE CHAMP N'EXISTE PAS EN DB !!!</b>
      */
     private String noModelesAbreviationAJAX = null;
     /**
-     * 
+     *
      * Utilisé pour afficher le code du CS dans le tableau AJAX contribuableRevenu.jsp
-     * </br></br>
+     * </br>
+     * </br>
      * <b>CE CHAMP N'EXISTE PAS EN DB !!!</b>
      */
     private String noModelesCodeAJAX = null;
     /**
-     * 
+     *
      * Utilisé pour afficher le libelle du CS dans le tableau AJAX contribuableRevenu.jsp
-     * </br></br>
+     * </br>
+     * </br>
      * <b>CE CHAMP N'EXISTE PAS EN DB !!!</b>
      */
     private String noModelesLibelleAJAX = null;
     /**
-     * 
+     *
      * Utilisé pour afficher le libelle du CS dans le tableau AJAX contribuableRevenu.jsp
-     * </br></br>
+     * </br>
+     * </br>
      * <b>CE CHAMP N'EXISTE PAS EN DB !!!</b>
      */
     private String noModelesTemporaireAbreviationAJAX = null;
     /**
-     * 
+     *
      * Utilisé pour afficher le code du CS dans le tableau AJAX contribuableRevenu.jsp
-     * </br></br>
+     * </br>
+     * </br>
      * <b>CE CHAMP N'EXISTE PAS EN DB !!!</b>
      */
     private String noModelesTemporaireCodeAJAX = null;
     /**
-     * 
+     *
      * Utilisé pour afficher le libelle du CS dans le tableau AJAX contribuableRevenu.jsp
-     * </br></br>
+     * </br>
+     * </br>
      * <b>CE CHAMP N'EXISTE PAS EN DB !!!</b>
      */
     private String noModelesTemporaireLibelleAJAX = null;
@@ -117,16 +127,18 @@ public class FamilleContribuableView extends JadeComplexModel {
     private String supplExtra = null;
     private String typeDemande = null;
     /**
-     * 
+     *
      * Utilisé pour afficher le code du CS dans le tableau AJAX contribuableRevenu.jsp
-     * </br></br>
+     * </br>
+     * </br>
      * <b>CE CHAMP N'EXISTE PAS EN DB !!!</b>
      */
     private String typeDemandeCodeAJAX = null;
     /**
-     * 
+     *
      * Utilisé pour afficher le libelle du CS dans le tableau AJAX contribuableRevenu.jsp
-     * </br></br>
+     * </br>
+     * </br>
      * <b>CE CHAMP N'EXISTE PAS EN DB !!!</b>
      */
     private String typeDemandeLibelleAJAX = null;
@@ -157,9 +169,10 @@ public class FamilleContribuableView extends JadeComplexModel {
     }
 
     /**
-     * 
+     *
      * Utilisé pour afficher le code du CS dans le tableau AJAX contribuableRevenu.jsp
-     * </br></br>
+     * </br>
+     * </br>
      * <b>CE CHAMP N'EXISTE PAS EN DB !!!</b>
      */
     public String getCodeTraitementDossierCodeAJAX() {
@@ -167,9 +180,10 @@ public class FamilleContribuableView extends JadeComplexModel {
     }
 
     /**
-     * 
+     *
      * Utilisé pour afficher le libelle du CS dans le tableau AJAX contribuableRevenu.jsp
-     * </br></br>
+     * </br>
+     * </br>
      * <b>CE CHAMP N'EXISTE PAS EN DB !!!</b>
      */
     public String getCodeTraitementDossierLibelleAJAX() {
@@ -220,7 +234,7 @@ public class FamilleContribuableView extends JadeComplexModel {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.jade.persistence.model.JadeAbstractModel#getId()
      */
     public String getFamilleId() {
@@ -266,9 +280,10 @@ public class FamilleContribuableView extends JadeComplexModel {
     }
 
     /**
-     * 
+     *
      * Utilisé pour afficher le montant total dans le tableau AJAX contribuableRevenu.jsp
-     * </br></br>
+     * </br>
+     * </br>
      * <b>CE CHAMP N'EXISTE PAS EN DB !!!</b>
      */
     public String getMontantTotalSubsideAJAX() {
@@ -283,9 +298,10 @@ public class FamilleContribuableView extends JadeComplexModel {
     }
 
     /**
-     * 
+     *
      * Utilisé pour afficher le libelle du CS dans le tableau AJAX contribuableRevenu.jsp
-     * </br></br>
+     * </br>
+     * </br>
      * <b>CE CHAMP N'EXISTE PAS EN DB !!!</b>
      */
     public String getNoModelesAbreviationAJAX() {
@@ -293,9 +309,10 @@ public class FamilleContribuableView extends JadeComplexModel {
     }
 
     /**
-     * 
+     *
      * Utilisé pour afficher le code du CS dans le tableau AJAX contribuableRevenu.jsp
-     * </br></br>
+     * </br>
+     * </br>
      * <b>CE CHAMP N'EXISTE PAS EN DB !!!</b>
      */
     public String getNoModelesCodeAJAX() {
@@ -303,9 +320,10 @@ public class FamilleContribuableView extends JadeComplexModel {
     }
 
     /**
-     * 
+     *
      * Utilisé pour afficher le libelle du CS dans le tableau AJAX contribuableRevenu.jsp
-     * </br></br>
+     * </br>
+     * </br>
      * <b>CE CHAMP N'EXISTE PAS EN DB !!!</b>
      */
     public String getNoModelesLibelleAJAX() {
@@ -368,7 +386,7 @@ public class FamilleContribuableView extends JadeComplexModel {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.jade.persistence.model.JadeAbstractModel#getSpy()
      */
     @Override
@@ -392,9 +410,10 @@ public class FamilleContribuableView extends JadeComplexModel {
     }
 
     /**
-     * 
+     *
      * Utilisé pour afficher le code du CS dans le tableau AJAX contribuableRevenu.jsp
-     * </br></br>
+     * </br>
+     * </br>
      * <b>CE CHAMP N'EXISTE PAS EN DB !!!</b>
      */
     public String getTypeDemandeCodeAJAX() {
@@ -402,9 +421,10 @@ public class FamilleContribuableView extends JadeComplexModel {
     }
 
     /**
-     * 
+     *
      * Utilisé pour afficher le libelle du CS dans le tableau AJAX contribuableRevenu.jsp
-     * </br></br>
+     * </br>
+     * </br>
      * <b>CE CHAMP N'EXISTE PAS EN DB !!!</b>
      */
     public String getTypeDemandeLibelleAJAX() {
@@ -444,9 +464,10 @@ public class FamilleContribuableView extends JadeComplexModel {
     }
 
     /**
-     * 
+     *
      * Utilisé pour afficher le code du CS dans le tableau AJAX contribuableRevenu.jsp
-     * </br></br>
+     * </br>
+     * </br>
      * <b>CE CHAMP N'EXISTE PAS EN DB !!!</b>
      */
     public void setCodeTraitementDossierCodeAJAX(String codeTraitementDossierCodeAJAX) {
@@ -454,9 +475,10 @@ public class FamilleContribuableView extends JadeComplexModel {
     }
 
     /**
-     * 
+     *
      * Utilisé pour afficher le libelle du CS dans le tableau AJAX contribuableRevenu.jsp
-     * </br></br>
+     * </br>
+     * </br>
      * <b>CE CHAMP N'EXISTE PAS EN DB !!!</b>
      */
     public void setCodeTraitementDossierLibelleAJAX(String codeTraitementDossierLibelleAJAX) {
@@ -513,7 +535,7 @@ public class FamilleContribuableView extends JadeComplexModel {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.jade.persistence.model.JadeAbstractModel#setId(java.lang.String)
      */
     public void setFamilleId(String id) {
@@ -563,9 +585,10 @@ public class FamilleContribuableView extends JadeComplexModel {
     }
 
     /**
-     * 
+     *
      * Utilisé pour afficher le montant total dans le tableau AJAX contribuableRevenu.jsp
-     * </br></br>
+     * </br>
+     * </br>
      * <b>CE CHAMP N'EXISTE PAS EN DB !!!</b>
      */
     public void setMontantTotalSubsideAJAX(String montantTotalSubsideAJAX) {
@@ -581,9 +604,10 @@ public class FamilleContribuableView extends JadeComplexModel {
     }
 
     /**
-     * 
+     *
      * Utilisé pour afficher le libelle du CS dans le tableau AJAX contribuableRevenu.jsp
-     * </br></br>
+     * </br>
+     * </br>
      * <b>CE CHAMP N'EXISTE PAS EN DB !!!</b>
      */
     public void setNoModelesAbreviationAJAX(String noModelesAbreviationAJAX) {
@@ -591,9 +615,10 @@ public class FamilleContribuableView extends JadeComplexModel {
     }
 
     /**
-     * 
+     *
      * Utilisé pour afficher le code du CS dans le tableau AJAX contribuableRevenu.jsp
-     * </br></br>
+     * </br>
+     * </br>
      * <b>CE CHAMP N'EXISTE PAS EN DB !!!</b>
      */
     public void setNoModelesCodeAJAX(String noModelesCodeAJAX) {
@@ -601,9 +626,10 @@ public class FamilleContribuableView extends JadeComplexModel {
     }
 
     /**
-     * 
+     *
      * Utilisé pour afficher le libelle du CS dans le tableau AJAX contribuableRevenu.jsp
-     * </br></br>
+     * </br>
+     * </br>
      * <b>CE CHAMP N'EXISTE PAS EN DB !!!</b>
      */
     public void setNoModelesLibelleAJAX(String noModelesLibelleAJAX) {
@@ -672,7 +698,7 @@ public class FamilleContribuableView extends JadeComplexModel {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.jade.persistence.model.JadeAbstractModel#setSpy(java.lang.String)
      */
     @Override
@@ -698,9 +724,10 @@ public class FamilleContribuableView extends JadeComplexModel {
     }
 
     /**
-     * 
+     *
      * Utilisé pour afficher le code du CS dans le tableau AJAX contribuableRevenu.jsp
-     * </br></br>
+     * </br>
+     * </br>
      * <b>CE CHAMP N'EXISTE PAS EN DB !!!</b>
      */
     public void setTypeDemandeCodeAJAX(String typeDemandeCodeAJAX) {
@@ -708,9 +735,10 @@ public class FamilleContribuableView extends JadeComplexModel {
     }
 
     /**
-     * 
+     *
      * Utilisé pour afficher le libelle du CS dans le tableau AJAX contribuableRevenu.jsp
-     * </br></br>
+     * </br>
+     * </br>
      * <b>CE CHAMP N'EXISTE PAS EN DB !!!</b>
      */
     public void setTypeDemandeLibelleAJAX(String typeDemandeLibelleAJAX) {

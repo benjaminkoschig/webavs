@@ -1,17 +1,8 @@
 /**
- * 
+ *
  */
 package globaz.amal.vb.revenuHistorique;
 
-import globaz.globall.db.BSession;
-import globaz.globall.db.BSpy;
-import globaz.globall.vb.BJadePersistentObjectViewBean;
-import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.exception.JadePersistenceException;
-import globaz.jade.log.JadeLogger;
-import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
-import globaz.pyxis.db.adressecourrier.TIPays;
-import globaz.pyxis.db.adressecourrier.TIPaysManager;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -33,12 +24,21 @@ import ch.globaz.amal.business.models.revenu.SimpleRevenuHistorique;
 import ch.globaz.amal.business.models.revenu.SimpleRevenuHistoriqueSearch;
 import ch.globaz.amal.business.services.AmalServiceLocator;
 import ch.globaz.amal.businessimpl.services.AmalImplServiceLocator;
+import globaz.globall.db.BSession;
+import globaz.globall.db.BSpy;
+import globaz.globall.vb.BJadePersistentObjectViewBean;
+import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.log.JadeLogger;
+import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
+import globaz.pyxis.db.adressecourrier.TIPays;
+import globaz.pyxis.db.adressecourrier.TIPaysManager;
 
 /**
  * @author dhi
- * 
+ *
  *         ViewBean for revenuhistorique management (revenu - annee historique - reve det)
- * 
+ *
  */
 public class AMRevenuHistoriqueViewBean extends BJadePersistentObjectViewBean {
     private int anneeOld = 2007;
@@ -54,7 +54,7 @@ public class AMRevenuHistoriqueViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Default constructor
-     * 
+     *
      */
     public AMRevenuHistoriqueViewBean() {
         revenuHistoriqueComplex = new RevenuHistoriqueComplex();
@@ -66,7 +66,7 @@ public class AMRevenuHistoriqueViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Constructor with parameters
-     * 
+     *
      * @param revenuHistoriqueComplex
      */
     public AMRevenuHistoriqueViewBean(RevenuHistoriqueComplex revenuHistoriqueComplex) {
@@ -74,13 +74,14 @@ public class AMRevenuHistoriqueViewBean extends BJadePersistentObjectViewBean {
         this.revenuHistoriqueComplex = revenuHistoriqueComplex;
         contribuable = new Contribuable();
         if (this.revenuHistoriqueComplex.getRevenuFullComplex().getSimpleRevenu().getIdContribuable() != null) {
-            setIdContribuable(this.revenuHistoriqueComplex.getRevenuFullComplex().getSimpleRevenu().getIdContribuable());
+            setIdContribuable(
+                    this.revenuHistoriqueComplex.getRevenuFullComplex().getSimpleRevenu().getIdContribuable());
         }
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.db.BIPersistentObject#add()
      */
     @Override
@@ -91,7 +92,7 @@ public class AMRevenuHistoriqueViewBean extends BJadePersistentObjectViewBean {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.db.BIPersistentObject#delete()
      */
     @Override
@@ -102,7 +103,7 @@ public class AMRevenuHistoriqueViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Get the contribuable
-     * 
+     *
      * @return
      */
     public Contribuable getContribuable() {
@@ -111,7 +112,7 @@ public class AMRevenuHistoriqueViewBean extends BJadePersistentObjectViewBean {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.db.BIPersistentObject#getId()
      */
     @Override
@@ -121,7 +122,7 @@ public class AMRevenuHistoriqueViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Gets the id for next year
-     * 
+     *
      * @return
      */
     public String getIdRevenuAnneeNext() {
@@ -134,7 +135,7 @@ public class AMRevenuHistoriqueViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Gets the id for previous year
-     * 
+     *
      * @return
      */
     public String getIdRevenuAnneePrec() {
@@ -161,7 +162,7 @@ public class AMRevenuHistoriqueViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Generate Id map for taxation navigation (previous and next year)
-     * 
+     *
      */
     public void getNavigation() {
         SimpleRevenuHistoriqueSearch simpleRevenuHistoriqueSearch = new SimpleRevenuHistoriqueSearch();
@@ -169,8 +170,8 @@ public class AMRevenuHistoriqueViewBean extends BJadePersistentObjectViewBean {
         simpleRevenuHistoriqueSearch.setForRevenuActif(true);
         simpleRevenuHistoriqueSearch.setOrderKey("revenuNavigation");
         try {
-            simpleRevenuHistoriqueSearch = AmalImplServiceLocator.getSimpleRevenuHistoriqueService().search(
-                    simpleRevenuHistoriqueSearch);
+            simpleRevenuHistoriqueSearch = AmalImplServiceLocator.getSimpleRevenuHistoriqueService()
+                    .search(simpleRevenuHistoriqueSearch);
 
             for (int i = 0; i < simpleRevenuHistoriqueSearch.getSearchResults().length; i++) {
                 SimpleRevenuHistorique simpleRevenuHistorique = (SimpleRevenuHistorique) simpleRevenuHistoriqueSearch
@@ -207,7 +208,7 @@ public class AMRevenuHistoriqueViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Retrouve un paramètre avec l'année et le code type
-     * 
+     *
      * @param _type
      * @param _annee
      * @return la valeur du paramètre
@@ -219,8 +220,8 @@ public class AMRevenuHistoriqueViewBean extends BJadePersistentObjectViewBean {
             simpleParametreAnnuelSearch.setForAnneeParametre(_annee);
         }
         try {
-            simpleParametreAnnuelSearch = AmalServiceLocator.getParametreAnnuelService().search(
-                    simpleParametreAnnuelSearch);
+            simpleParametreAnnuelSearch = AmalServiceLocator.getParametreAnnuelService()
+                    .search(simpleParametreAnnuelSearch);
         } catch (Exception e) {
             JadeLogger.error(this, "Error while searching ParametreAnnuel (codeType : " + _type + " / annee " + _annee
                     + ") : " + e.getMessage());
@@ -237,7 +238,7 @@ public class AMRevenuHistoriqueViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Find a country from a id pays
-     * 
+     *
      * @param idPays
      * @return
      */
@@ -262,7 +263,7 @@ public class AMRevenuHistoriqueViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Get the linked revenu historique complex
-     * 
+     *
      * @return
      */
     public RevenuHistoriqueComplex getRevenuHistoriqueComplex() {
@@ -285,7 +286,7 @@ public class AMRevenuHistoriqueViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Gets the taxation rubrique
-     * 
+     *
      * @param propertyName
      * @param anneeHistorique
      * @return
@@ -308,8 +309,12 @@ public class AMRevenuHistoriqueViewBean extends BJadePersistentObjectViewBean {
             propertyList.add(IAMCodeSysteme.CS_RUBRIQUE_INTERETSPASSIFSPRIVE);
             propertyList.add(IAMCodeSysteme.CS_RUBRIQUE_PERSONNECHARGEENFANT);
             propertyList.add(IAMCodeSysteme.CS_RUBRIQUE_PERTEACTIVITEACCESSINDEP);
-            propertyList.add(IAMCodeSysteme.CS_RUBRIQUE_PERTEACTIVITEAGRIC);
             propertyList.add(IAMCodeSysteme.CS_RUBRIQUE_PERTEACTIVITEINDEP);
+            propertyList.add(IAMCodeSysteme.CS_RUBRIQUE_REVENUACTIVINDEP);
+            propertyList.add(IAMCodeSysteme.CS_RUBRIQUE_REVENUACTIVINDEPEPOUSE);
+            propertyList.add(IAMCodeSysteme.CS_RUBRIQUE_PERTEACTIVITEAGRIC);
+            propertyList.add(IAMCodeSysteme.CS_RUBRIQUE_REVENUACTIVITEAGRIC);
+            propertyList.add(IAMCodeSysteme.CS_RUBRIQUE_REVENUACTIVITEAGRICEPOUSE);
             propertyList.add(IAMCodeSysteme.CS_RUBRIQUE_PERTESEXERCICESCOMM);
             propertyList.add(IAMCodeSysteme.CS_RUBRIQUE_PERTESOCIETE);
             propertyList.add(IAMCodeSysteme.CS_RUBRIQUE_RENDEMENTFORTUNEIMMOBCOMM);
@@ -341,8 +346,8 @@ public class AMRevenuHistoriqueViewBean extends BJadePersistentObjectViewBean {
                     }
                 }
             } catch (Exception e) {
-                JadeLogger.error("getCodeRubrique", "Error while loading CodeRubrique for " + propertyName
-                        + " / year : " + anneeHistorique);
+                JadeLogger.error("getCodeRubrique",
+                        "Error while loading CodeRubrique for " + propertyName + " / year : " + anneeHistorique);
             }
         }
         try {
@@ -360,7 +365,7 @@ public class AMRevenuHistoriqueViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Gets the BSession
-     * 
+     *
      * @return
      */
     private BSession getSession() {
@@ -369,7 +374,7 @@ public class AMRevenuHistoriqueViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Gets the sexe as H-F
-     * 
+     *
      * @param idSexe
      * @return
      */
@@ -386,7 +391,7 @@ public class AMRevenuHistoriqueViewBean extends BJadePersistentObjectViewBean {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.vb.BJadePersistentObjectViewBean#getSpy()
      */
     @Override
@@ -400,7 +405,7 @@ public class AMRevenuHistoriqueViewBean extends BJadePersistentObjectViewBean {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.db.BIPersistentObject#retrieve()
      */
     @Override
@@ -413,7 +418,7 @@ public class AMRevenuHistoriqueViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Gets the Contribuable informations
-     * 
+     *
      * @throws Exception
      */
     public void retrieveContribuable() throws Exception {
@@ -432,14 +437,13 @@ public class AMRevenuHistoriqueViewBean extends BJadePersistentObjectViewBean {
         for (Iterator it = Arrays.asList(search.getSearchResults()).iterator(); it.hasNext();) {
             Contribuable currentContribuable = (Contribuable) it.next();
             // Set contribuable
-            if ((null != resultContribuableSeul)
-                    && resultContribuableSeul.getContribuable().getIdTier()
-                            .equals(currentContribuable.getPersonneEtendue().getPersonneEtendue().getIdTiers())) {
+            if ((null != resultContribuableSeul) && resultContribuableSeul.getContribuable().getIdTier()
+                    .equals(currentContribuable.getPersonneEtendue().getPersonneEtendue().getIdTiers())) {
                 contribuable = currentContribuable;
                 // Setting the adresse
                 try {
-                    contribuable.setAdresseComplexModel(AmalServiceLocator.getContribuableService()
-                            .getContribuableAdresse(
+                    contribuable
+                            .setAdresseComplexModel(AmalServiceLocator.getContribuableService().getContribuableAdresse(
                                     currentContribuable.getPersonneEtendue().getPersonneEtendue().getIdTiers()));
                 } catch (Exception e) {
                     JadeLogger.error(this, "Error Loading adresse : " + contribuable.getId() + " _ " + e.getMessage());
@@ -447,8 +451,8 @@ public class AMRevenuHistoriqueViewBean extends BJadePersistentObjectViewBean {
                 }
                 // Setting the histo numero
                 try {
-                    contribuable.setHistoNumeroContribuable(AmalServiceLocator.getContribuableService()
-                            .getContribuableHistoriqueNoContribuable(
+                    contribuable.setHistoNumeroContribuable(
+                            AmalServiceLocator.getContribuableService().getContribuableHistoriqueNoContribuable(
                                     currentContribuable.getPersonneEtendue().getPersonneEtendue().getIdTiers()));
                 } catch (Exception e) {
                     JadeLogger.error(this, "Error Loading histo numéro contribuable : " + contribuable.getId() + " _ "
@@ -460,13 +464,13 @@ public class AMRevenuHistoriqueViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Gets the list of historique, related to the current annee historique
-     * 
+     *
      * @throws RevenuException
      * @throws JadeApplicationServiceNotAvailableException
      * @throws JadePersistenceException
      */
-    public void retrieveHistoriqueList() throws RevenuException, JadeApplicationServiceNotAvailableException,
-            JadePersistenceException {
+    public void retrieveHistoriqueList()
+            throws RevenuException, JadeApplicationServiceNotAvailableException, JadePersistenceException {
         revenuHistoriqueSearch = new RevenuHistoriqueSearch();
         if ((getRevenuHistoriqueComplex() != null)
                 && (getRevenuHistoriqueComplex().getSimpleRevenuHistorique() != null)) {
@@ -479,8 +483,8 @@ public class AMRevenuHistoriqueViewBean extends BJadePersistentObjectViewBean {
                 revenuHistoriqueSearch.setForAnneeHistorique(anneeHistorique);
                 revenuHistoriqueSearch.setForIdContribuable(idContribuable);
                 revenuHistoriqueSearch.setForRevenuActif(false);
-                revenuHistoriqueSearch = (RevenuHistoriqueSearch) AmalServiceLocator.getRevenuService().search(
-                        revenuHistoriqueSearch);
+                revenuHistoriqueSearch = (RevenuHistoriqueSearch) AmalServiceLocator.getRevenuService()
+                        .search(revenuHistoriqueSearch);
             }
 
         }
@@ -488,7 +492,7 @@ public class AMRevenuHistoriqueViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Gets the list of taxation, for the year historique - 2
-     * 
+     *
      * @throws JadePersistenceException
      * @throws JadeApplicationServiceNotAvailableException
      * @throws RevenuException
@@ -506,8 +510,8 @@ public class AMRevenuHistoriqueViewBean extends BJadePersistentObjectViewBean {
             if (JadeStringUtil.isBlankOrZero(idContribuable) || JadeStringUtil.isBlankOrZero(anneeHistorique)) {
                 setListTaxations(new ArrayList<Revenu>());
             } else {
-                setListTaxations(AmalServiceLocator.getDetailFamilleService().getListTaxations(idContribuable,
-                        anneeHistorique));
+                setListTaxations(
+                        AmalServiceLocator.getDetailFamilleService().getListTaxations(idContribuable, anneeHistorique));
             }
             // contrôle que dans cette liste, nous trouvions la taxation liée si nous en avons une
             if (!JadeStringUtil.isEmpty(idRevenu)) {
@@ -537,7 +541,7 @@ public class AMRevenuHistoriqueViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Set the contribuable
-     * 
+     *
      * @param contribuable
      */
     public void setContribuable(Contribuable contribuable) {
@@ -546,7 +550,7 @@ public class AMRevenuHistoriqueViewBean extends BJadePersistentObjectViewBean {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.db.BIPersistentObject#setId(java.lang.String)
      */
     @Override
@@ -556,7 +560,7 @@ public class AMRevenuHistoriqueViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Set the id contribuable
-     * 
+     *
      * @param contribuableId
      */
     public void setIdContribuable(String contribuableId) {
@@ -573,7 +577,7 @@ public class AMRevenuHistoriqueViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Set the revenuhistoriquecomplex
-     * 
+     *
      * @param revenuHistoriqueComplex
      */
     public void setRevenuHistoriqueComplex(RevenuHistoriqueComplex revenuHistoriqueComplex) {
@@ -590,7 +594,7 @@ public class AMRevenuHistoriqueViewBean extends BJadePersistentObjectViewBean {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.db.BIPersistentObject#update()
      */
     @Override
