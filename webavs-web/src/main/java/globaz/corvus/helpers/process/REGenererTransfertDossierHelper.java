@@ -4,6 +4,7 @@ import globaz.corvus.process.REGenererARC3XMLTransfertCIProcess;
 import globaz.corvus.process.REGenererDemandeCalculProvisoireProcess;
 import globaz.corvus.process.REGenererTransfertDossierNonValideProcess;
 import globaz.corvus.process.REGenererTransfertDossierValideProcess;
+import globaz.corvus.properties.REProperties;
 import globaz.corvus.vb.process.REGenererTransfertDossierViewBean;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.controller.FWAction;
@@ -39,8 +40,18 @@ public class REGenererTransfertDossierHelper extends PRAbstractHelper {
         REGenererTransfertDossierViewBean gldaViewBean = (REGenererTransfertDossierViewBean) viewBean;
 
         try {
+            
+            if (REProperties.TRANSFERT_ACTIVER_ANNONCES_XML.getBooleanValue()) {
 
-            if (gldaViewBean.isTransfertCaisseCompetente()) {
+                REGenererARC3XMLTransfertCIProcess processARC = new REGenererARC3XMLTransfertCIProcess();
+                processARC.setSession((BSession) session);
+                processARC.setListNss(gldaViewBean.getListNss());
+                processARC.setIdInfoCompl(gldaViewBean.getIdInfoCompl());
+                processARC.setEMailAddress(gldaViewBean.getEMailAddress());
+                processARC.setIdDemandeRente(gldaViewBean.getIdDemandeRente());
+                BProcessLauncher.start(processARC, false);
+
+            } else if (gldaViewBean.isTransfertCaisseCompetente()) {
                 REGenererTransfertDossierNonValideProcess process = new REGenererTransfertDossierNonValideProcess();
                 process.setSession((BSession) session);
                 process.setEMailAddress(gldaViewBean.getEMailAddress());
@@ -80,17 +91,8 @@ public class REGenererTransfertDossierHelper extends PRAbstractHelper {
                 process.setIsSendToGed(gldaViewBean.getIsSendToGed());
 
                 BProcessLauncher.start(process, false);
-
-            }
-
-            REGenererARC3XMLTransfertCIProcess processARC = new REGenererARC3XMLTransfertCIProcess();
-            processARC.setSession((BSession) session);
-            processARC.setListNss(gldaViewBean.getListNss());
-            processARC.setIdInfoCompl(gldaViewBean.getIdInfoCompl());
-            processARC.setEMailAddress(gldaViewBean.getEMailAddress());
-            processARC.setIdDemandeRente(gldaViewBean.getIdDemandeRente());
-            BProcessLauncher.start(processARC, false);
-
+    
+            } 
         } catch (Exception e) {
             viewBean.setMsgType(FWViewBeanInterface.ERROR);
             viewBean.setMessage(e.toString());

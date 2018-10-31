@@ -21,8 +21,11 @@ import ch.globaz.common.properties.PropertiesException;
 import globaz.commons.nss.NSUtil;
 import globaz.corvus.annonce.service.REAnnonceARC3DXmlService;
 import globaz.corvus.annonce.service.REGenererARC3XMLTransfertCIService;
+import globaz.corvus.api.basescalcul.IREPrestationAccordee;
+import globaz.corvus.api.basescalcul.IRERenteAccordee;
 import globaz.corvus.api.demandes.IREDemandeRente;
 import globaz.corvus.db.demandes.REDemandeRente;
+import globaz.corvus.db.rentesaccordees.RERenteAccordeeFamille;
 import globaz.corvus.properties.REProperties;
 import globaz.framework.util.FWMessage;
 import globaz.globall.db.BProcess;
@@ -133,11 +136,12 @@ public class REGenererARC3XMLTransfertCIProcess extends BProcess {
                     .initPoolMeldungZurZASLot(REProperties.CENTRALE_TEST.getBooleanValue(),
                             CommonProperties.KEY_NO_CAISSE.getValue());
 
-            prepareEnvoieAnnonce(lotAnnonces, newNumCaisseAgence, listNss, demandeRente.getIdDemandeRente());
-            envoiARC3(lotAnnonces);
+            if(prepareEnvoieAnnonce(lotAnnonces, newNumCaisseAgence, listNss, demandeRente.getIdDemandeRente())
+                    && envoiARC3(lotAnnonces)) {
+                   demandeRente.setCsEtat(IREDemandeRente.CS_ETAT_DEMANDE_RENTE_TRANSFERE);
+                   demandeRente.update();
+            }
 
-            demandeRente.setCsEtat(IREDemandeRente.CS_ETAT_DEMANDE_RENTE_TRANSFERE);
-            demandeRente.update();
 
         } catch (ValidationException e) {
             try {
@@ -161,6 +165,13 @@ public class REGenererARC3XMLTransfertCIProcess extends BProcess {
 
         return true;
     }
+    
+    private void formatErreurMessage(Exception e) {
+        for(String nss: listNss) {
+            logMessage(getSession().getLabel("PROCESS_ENVOI_ANNONCES_ERROR_NSS")+nss);
+            logMessage(getSession().getLabel("PROCESS_ENVOI_ANNONCES_ERROR_DONNES")+e.getMessage());
+        }
+    }
 
     @Override
     public String getSubjectDetail() {
@@ -171,15 +182,21 @@ public class REGenererARC3XMLTransfertCIProcess extends BProcess {
         }
     }
 
-    private void envoiARC3(Lot lotAnnonces)
+    private boolean envoiARC3(Lot lotAnnonces)
             throws JadeException, PropertiesException, IOException, SAXException, JAXBException {
-        if (lotAnnonces
-                .getVAIKMeldungNeuerVersicherterOrVAIKMeldungAenderungVersichertenDatenOrVAIKMeldungVerkettungVersichertenNr()
-                .isEmpty()) {
-            throw new JadeException(getSession().getLabel("PROCESS_ENVOI_ANNONCES_ERREUR_AUCUNE_ANNONCE"));
+        try {
+            if (lotAnnonces
+                    .getVAIKMeldungNeuerVersicherterOrVAIKMeldungAenderungVersichertenDatenOrVAIKMeldungVerkettungVersichertenNr()
+                    .isEmpty()) {
+                throw new JadeException(getSession().getLabel("PROCESS_ENVOI_ANNONCES_ERREUR_AUCUNE_ANNONCE"));
+            }
+            String fileName = REGenererARC3XMLTransfertCIService.getInstance().genereFichier(lotAnnonces);
+            chemin = REGenererARC3XMLTransfertCIService.getInstance().envoiFichier(fileName);
+        } catch (Exception e) {
+            formatErreurMessage(e);
+            return false;
         }
-        String fileName = REGenererARC3XMLTransfertCIService.getInstance().genereFichier(lotAnnonces);
-        chemin = REGenererARC3XMLTransfertCIService.getInstance().envoiFichier(fileName);
+        return true;
     }
 
     /**
@@ -240,7 +257,7 @@ public class REGenererARC3XMLTransfertCIProcess extends BProcess {
      * @throws Exception
      *             si une erreur dans la validation par ANAKIN surivent, une exception est lancée
      */
-    void prepareEnvoieAnnonce(PoolMeldungZurZAS.Lot poolMeldungLot, String newNumCaisseAgence, List<String> listNss, String idDemande)
+    public boolean prepareEnvoieAnnonce(PoolMeldungZurZAS.Lot poolMeldungLot, String newNumCaisseAgence, List<String> listNss, String idDemande)
             throws ValidationException, Exception {
 
         String noCaisse = CommonProperties.KEY_NO_CAISSE.getValue();
@@ -269,7 +286,9 @@ public class REGenererARC3XMLTransfertCIProcess extends BProcess {
         
         if(!mapErreur.isEmpty()) {
             formatErreurMessage(mapErreur);
+            return false;
         }
+        return true;
     }
     
     private void formatErreurMessage(Map<String, ValidationException> mapErreur) {
