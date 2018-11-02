@@ -1,5 +1,12 @@
 package globaz.corvus.process;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import ch.globaz.prestation.domaine.CodePrestation;
 import globaz.corvus.api.basescalcul.IREPrestationAccordee;
 import globaz.corvus.api.basescalcul.IRERenteAccordee;
 import globaz.corvus.api.demandes.IREDemandeRente;
@@ -13,6 +20,7 @@ import globaz.corvus.db.rentesaccordees.RERenteAccJoinTblTiersJoinDemRenteJoinAj
 import globaz.corvus.db.rentesaccordees.RERenteAccordeeFamille;
 import globaz.corvus.db.rentesaccordees.RERenteAccordeeFamilleManager;
 import globaz.corvus.db.rentesaccordees.RERenteCalculee;
+import globaz.corvus.properties.REProperties;
 import globaz.corvus.topaz.REChangementCaisseOO;
 import globaz.corvus.topaz.RETransfertValideOO;
 import globaz.corvus.utils.REGedUtils;
@@ -37,18 +45,11 @@ import globaz.pyxis.db.tiers.TIAdministrationViewBean;
 import globaz.pyxis.db.tiers.TICompositionTiers;
 import globaz.pyxis.db.tiers.TICompositionTiersManager;
 import globaz.pyxis.db.tiers.TITiers;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import ch.globaz.prestation.domaine.CodePrestation;
 
 public class REGenererTransfertDossierValideProcess extends REAbstractInfoComplPrintProcess {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
     private String CessationPaiement = "";
@@ -69,7 +70,7 @@ public class REGenererTransfertDossierValideProcess extends REAbstractInfoComplP
     /**
      * BZ 5358, récupération des ID Tiers des ex-conjoints du tiers afin d'exclure les données des ex-conjoints du
      * transfert
-     * 
+     *
      * @param idTiers
      *            l'ID tiers du dossier à transférer
      * @return un {@link Set}&lt;{@link String}&gt; contenant les ID Tiers des ex-conjoints, est vide si aucun
@@ -336,8 +337,8 @@ public class REGenererTransfertDossierValideProcess extends REAbstractInfoComplP
             setNumCaisse(info.getNoCaisse());
             setNumAgence(info.getNoAgence());
 
-            setIsCopieAgenceCommunale(Boolean.parseBoolean(getSession().getApplication().getProperty(
-                    "isCopieAgenceCommunale")));
+            setIsCopieAgenceCommunale(
+                    Boolean.parseBoolean(getSession().getApplication().getProperty("isCopieAgenceCommunale")));
 
             // Le but est d'obtenir deux listes en fonction des adresses de
             // paiement des bénéficiaires des rentes accordées.
@@ -368,9 +369,8 @@ public class REGenererTransfertDossierValideProcess extends REAbstractInfoComplP
                 t.setIdTiers(getIdTiersDemande());
                 t.retrieve();
 
-                getLogSession().addMessage(
-                        new JadeBusinessMessage(JadeBusinessMessageLevels.WARN, "REGenererTransfertDossierValide",
-                                getSession().getLabel("ERREUR_AUCUNE_RA_ENCOURS")));
+                getLogSession().addMessage(new JadeBusinessMessage(JadeBusinessMessageLevels.WARN,
+                        "REGenererTransfertDossierValide", getSession().getLabel("ERREUR_AUCUNE_RA_ENCOURS")));
 
                 demandeRente.setCsEtat(IREDemandeRente.CS_ETAT_DEMANDE_RENTE_TRANSFERE);
                 demandeRente.update();
@@ -450,8 +450,8 @@ public class REGenererTransfertDossierValideProcess extends REAbstractInfoComplP
                             // Recherche du code de l'office AI
                             String codeOfficeAi = rechercherOfficeAI(raPourOfficeAi);
                             if (JadeStringUtil.isBlank(codeOfficeAi)) {
-                                String message = getSession().getLabel(
-                                        "ERREUR_IMPOSSIBLE_REROUVER_OFFICE_AI_RENTE_ACCORDEE");
+                                String message = getSession()
+                                        .getLabel("ERREUR_IMPOSSIBLE_REROUVER_OFFICE_AI_RENTE_ACCORDEE");
                                 messageErreur.append(message.replace("{0}", raPourOfficeAi.getIdRenteAccordee()));
                                 throw new Exception();
                             } else {
@@ -542,14 +542,11 @@ public class REGenererTransfertDossierValideProcess extends REAbstractInfoComplP
 
                         if (compTiersMgr.size() == 0) {
                             PRTiersWrapper tiers = PRTiersHelper.getTiersParId(getSession(), getIdTiersDemande());
-                            getLogSession().addMessage(
-                                    new JadeBusinessMessage(JadeBusinessMessageLevels.WARN,
-                                            REGenererTransfertDossierValideProcess.class.getName(), getSession()
-                                                    .getLabel("ERREUR_AGENCE_COMMUNALE")
-                                                    + " "
-                                                    + tiers.getProperty(PRTiersWrapper.PROPERTY_NOM)
-                                                    + " "
-                                                    + tiers.getProperty(PRTiersWrapper.PROPERTY_PRENOM) + "."));
+                            getLogSession().addMessage(new JadeBusinessMessage(JadeBusinessMessageLevels.WARN,
+                                    REGenererTransfertDossierValideProcess.class.getName(),
+                                    getSession().getLabel("ERREUR_AGENCE_COMMUNALE") + " "
+                                            + tiers.getProperty(PRTiersWrapper.PROPERTY_NOM) + " "
+                                            + tiers.getProperty(PRTiersWrapper.PROPERTY_PRENOM) + "."));
                         } else {
                             setIsAgenceTrouve(Boolean.TRUE);
                         }
@@ -569,12 +566,10 @@ public class REGenererTransfertDossierValideProcess extends REAbstractInfoComplP
                     // posait problème pour
                     // les paramètres de mise en GED.
 
-                    JadePublishDocumentInfo docInfoTransfertDossier = this.generateAndFillDocInfo(
-                            titreTransfertDossier, IRENoDocumentInfoRom.TRANSFERT_DOSSIER_EN_COURS_A_UNE_AUTRE_CAISSE,
-                            isSendToGed());
+                    JadePublishDocumentInfo docInfoTransfertDossier = this.generateAndFillDocInfo(titreTransfertDossier,
+                            IRENoDocumentInfoRom.TRANSFERT_DOSSIER_EN_COURS_A_UNE_AUTRE_CAISSE, isSendToGed());
                     if (isRaUnique) {
-                        docInfoTransfertDossier.setDocumentProperty(
-                                REGedUtils.PROPRIETE_GED_TYPE_DEMANDE_RENTE,
+                        docInfoTransfertDossier.setDocumentProperty(REGedUtils.PROPRIETE_GED_TYPE_DEMANDE_RENTE,
                                 REGedUtils.getCleGedPourTypeRente(getSession(),
                                         REGedUtils.getTypeRentePourCetteDemandeRente(getSession(), demandeRente)));
                     } else {
@@ -583,15 +578,15 @@ public class REGenererTransfertDossierValideProcess extends REAbstractInfoComplP
                         for (RERenteAccordeeFamille uneRente : list) {
                             if (!JadeStringUtil.isBlankOrZero(uneRente.getCodePrestation())
                                     && JadeNumericUtil.isInteger(uneRente.getCodePrestation())) {
-                                codesPrestationDesRentes.add(CodePrestation.getCodePrestation(Integer.parseInt(uneRente
-                                        .getCodePrestation())));
+                                codesPrestationDesRentes.add(CodePrestation
+                                        .getCodePrestation(Integer.parseInt(uneRente.getCodePrestation())));
                             }
                         }
 
                         docInfoTransfertDossier.setDocumentProperty(REGedUtils.PROPRIETE_GED_TYPE_DEMANDE_RENTE,
-                                REGedUtils.getCleGedPourTypeRente(getSession(), REGedUtils
-                                        .getTypeRentePourListeCodesPrestation(getSession(), codesPrestationDesRentes,
-                                                true)));
+                                REGedUtils.getCleGedPourTypeRente(getSession(),
+                                        REGedUtils.getTypeRentePourListeCodesPrestation(getSession(),
+                                                codesPrestationDesRentes, true)));
                     }
 
                     JadePublishDocumentInfo docInfoCopieTransfertDossier = this.generateAndFillDocInfo(
@@ -600,8 +595,7 @@ public class REGenererTransfertDossierValideProcess extends REAbstractInfoComplP
                     JadePublishDocumentInfo docInfoLettreAccompagnement = this.generateAndFillDocInfo(
                             titreTransfertDossier, IRENoDocumentInfoRom.LETTRE_ACCOMPAGNEMENT_DE_COPIE_RENTES);
 
-                    JadePublishDocumentInfo docInfoChangementCaisse = this.generateAndFillDocInfo(
-                            titreChangementCaisse,
+                    JadePublishDocumentInfo docInfoChangementCaisse = this.generateAndFillDocInfo(titreChangementCaisse,
                             IRENoDocumentInfoRom.LETTRE_POUR_INDICATION_DE_CHANGEMENT_DE_CAISSE_A_LA_CENTRALE,
                             isSendToGed());
                     if (listeRenteAccordee.size() > 0) {
@@ -609,16 +603,15 @@ public class REGenererTransfertDossierValideProcess extends REAbstractInfoComplP
                         for (RERenteAccordeeFamille uneRente : listeRenteAccordee) {
                             if (!JadeStringUtil.isBlankOrZero(uneRente.getCodePrestation())
                                     && JadeNumericUtil.isInteger(uneRente.getCodePrestation())) {
-                                codesPrestation.add(CodePrestation.getCodePrestation(Integer.parseInt(uneRente
-                                        .getCodePrestation())));
+                                codesPrestation.add(CodePrestation
+                                        .getCodePrestation(Integer.parseInt(uneRente.getCodePrestation())));
                             }
                         }
                         docInfoChangementCaisse.setDocumentProperty(REGedUtils.PROPRIETE_GED_TYPE_DEMANDE_RENTE,
                                 REGedUtils.getCleGedPourTypeRente(getSession(), REGedUtils
                                         .getTypeRentePourListeCodesPrestation(getSession(), codesPrestation, true)));
                     } else {
-                        docInfoChangementCaisse.setDocumentProperty(
-                                REGedUtils.PROPRIETE_GED_TYPE_DEMANDE_RENTE,
+                        docInfoChangementCaisse.setDocumentProperty(REGedUtils.PROPRIETE_GED_TYPE_DEMANDE_RENTE,
                                 REGedUtils.getCleGedPourTypeRente(getSession(),
                                         REGedUtils.getTypeRentePourCetteDemandeRente(getSession(), demandeRente)));
                     }
@@ -631,7 +624,7 @@ public class REGenererTransfertDossierValideProcess extends REAbstractInfoComplP
                     transfertValide = createDocumentOriginale();
                     mergedDoc.addDocument(transfertValide.getDocumentData(), docInfoTransfertDossier);
 
-                    if (!isOnlyRaCompl) {
+                    if (!isOnlyRaCompl && !REProperties.TRANSFERT_ACTIVER_ANNONCES_XML.getBooleanValue()) {
                         // 2. Création du document de changement de caisse
                         // originale
                         changementCaisse = createDocumentChangementOriginale(idTiersChangementCaisse);
@@ -646,7 +639,7 @@ public class REGenererTransfertDossierValideProcess extends REAbstractInfoComplP
                     transfertValide = createDocumentCopie();
                     mergedDoc.addDocument(transfertValide.getDocumentData(), docInfoCopieTransfertDossier);
 
-                    if (!isOnlyRaCompl) {
+                    if (!isOnlyRaCompl && !REProperties.TRANSFERT_ACTIVER_ANNONCES_XML.getBooleanValue()) {
                         // 5. Création du document de changement de caisse copie
                         // pour la nouvelle caisse
                         REChangementCaisseOO changementCopie = createDocumentChangementCopie(idTiersChangementCaisse);
@@ -668,10 +661,11 @@ public class REGenererTransfertDossierValideProcess extends REAbstractInfoComplP
                         transfertValide = createDocumentCopie();
                         mergedDoc.addDocument(transfertValide.getDocumentData(), docInfoCopieTransfertDossier);
 
-                        if (!isOnlyRaCompl) {
+                        if (!isOnlyRaCompl && !REProperties.TRANSFERT_ACTIVER_ANNONCES_XML.getBooleanValue()) {
                             // 9. Création du document de changement de caisse
                             // copie pour la nouvelle caisse
-                            REChangementCaisseOO changementCopieOfficeAi = createDocumentChangementCopie(idTiersChangementCaisse);
+                            REChangementCaisseOO changementCopieOfficeAi = createDocumentChangementCopie(
+                                    idTiersChangementCaisse);
                             mergedDoc.addDocument(changementCopieOfficeAi.getDocumentData(),
                                     docInfoCopieChangementCaisse);
                         }
@@ -724,10 +718,9 @@ public class REGenererTransfertDossierValideProcess extends REAbstractInfoComplP
                 }
             }
         } catch (Exception e) {
-            getLogSession().addMessage(
-                    new JadeBusinessMessage(JadeBusinessMessageLevels.ERROR,
-                            REGenererTransfertDossierValideProcess.class.getName(), JadeStringUtil
-                                    .isBlank(messageErreur.toString()) ? e.toString() : messageErreur.toString()));
+            getLogSession().addMessage(new JadeBusinessMessage(JadeBusinessMessageLevels.ERROR,
+                    REGenererTransfertDossierValideProcess.class.getName(),
+                    JadeStringUtil.isBlank(messageErreur.toString()) ? e.toString() : messageErreur.toString()));
         } finally {
             try {
                 if (getLogSession().hasMessages()) {
@@ -737,8 +730,8 @@ public class REGenererTransfertDossierValideProcess extends REAbstractInfoComplP
                 }
             } catch (Exception e) {
                 new JadeBusinessMessage(JadeBusinessMessageLevels.ERROR,
-                        REGenererTransfertDossierValideProcess.class.getName(), getSession().getLabel(
-                                "ERREUR_ENVOI_MAIL_COMPLETION"));
+                        REGenererTransfertDossierValideProcess.class.getName(),
+                        getSession().getLabel("ERREUR_ENVOI_MAIL_COMPLETION"));
             }
         }
     }
@@ -748,7 +741,7 @@ public class REGenererTransfertDossierValideProcess extends REAbstractInfoComplP
      * ensuite dans la demande
      * de rente.</br>
      * La rente accordée doit être de type AI ou API.
-     * 
+     *
      * @param renteAccordee La rente accordée à analyser
      * @return Le code office AI ou null si non trouvé
      * @throws Exception dans le cas ou des incohérence de données serait détectées
@@ -823,8 +816,8 @@ public class REGenererTransfertDossierValideProcess extends REAbstractInfoComplP
                         demandeAPI.retrieve();
 
                         if (JadeStringUtil.isBlank(demandeAPI.getCodeOfficeAI())) {
-                            String message = getSession().getLabel(
-                                    "ERREUR_OFFICE_AI_NON_TROUVE_DANS_BASE_CALCUL_ET_DEMANDE_API");
+                            String message = getSession()
+                                    .getLabel("ERREUR_OFFICE_AI_NON_TROUVE_DANS_BASE_CALCUL_ET_DEMANDE_API");
                             message = message.replace("{0}", bc.getIdBasesCalcul());
                             messageErreur.append(message.replace("{1}", demandeAPI.getIdDemandeRente()));
                             throw new Exception();
@@ -840,8 +833,8 @@ public class REGenererTransfertDossierValideProcess extends REAbstractInfoComplP
                         demandeAI.retrieve();
 
                         if (JadeStringUtil.isBlank(demandeAI.getCodeOfficeAI())) {
-                            String message = getSession().getLabel(
-                                    "ERREUR_OFFICE_AI_NON_TROUVE_DANS_BASE_CALCUL_ET_DEMANDE_INVALIDITE");
+                            String message = getSession()
+                                    .getLabel("ERREUR_OFFICE_AI_NON_TROUVE_DANS_BASE_CALCUL_ET_DEMANDE_INVALIDITE");
                             message.replace("{0}", bc.getIdBasesCalcul());
                             messageErreur.append(message.replace("{1}", demandeAI.getIdDemandePrestation()));
                             throw new Exception();
@@ -850,8 +843,8 @@ public class REGenererTransfertDossierValideProcess extends REAbstractInfoComplP
                     }
 
                     else {
-                        String message = getSession().getLabel(
-                                "ERREUR_PAS_DEMANDE_DE_TYPE_AI_OU_API_TROUVEE_DEPUIS_RENTE_CALCULEE");
+                        String message = getSession()
+                                .getLabel("ERREUR_PAS_DEMANDE_DE_TYPE_AI_OU_API_TROUVEE_DEPUIS_RENTE_CALCULEE");
                         messageErreur.append(message.replace("{0}", renteCalculee.getIdRenteCalculee()));
                         throw new Exception();
                     }

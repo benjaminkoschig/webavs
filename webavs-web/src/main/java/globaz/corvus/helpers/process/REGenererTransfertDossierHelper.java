@@ -40,7 +40,7 @@ public class REGenererTransfertDossierHelper extends PRAbstractHelper {
         REGenererTransfertDossierViewBean gldaViewBean = (REGenererTransfertDossierViewBean) viewBean;
 
         try {
-            
+
             if (REProperties.TRANSFERT_ACTIVER_ANNONCES_XML.getBooleanValue()) {
 
                 REGenererARC3XMLTransfertCIProcess processARC = new REGenererARC3XMLTransfertCIProcess();
@@ -51,7 +51,9 @@ public class REGenererTransfertDossierHelper extends PRAbstractHelper {
                 processARC.setIdDemandeRente(gldaViewBean.getIdDemandeRente());
                 BProcessLauncher.start(processARC, false);
 
-            } else if (gldaViewBean.isTransfertCaisseCompetente()) {
+            }
+
+            if (gldaViewBean.isTransfertCaisseCompetente()) {
                 REGenererTransfertDossierNonValideProcess process = new REGenererTransfertDossierNonValideProcess();
                 process.setSession((BSession) session);
                 process.setEMailAddress(gldaViewBean.getEMailAddress());
@@ -91,8 +93,8 @@ public class REGenererTransfertDossierHelper extends PRAbstractHelper {
                 process.setIsSendToGed(gldaViewBean.getIsSendToGed());
 
                 BProcessLauncher.start(process, false);
-    
-            } 
+
+            }
         } catch (Exception e) {
             viewBean.setMsgType(FWViewBeanInterface.ERROR);
             viewBean.setMessage(e.toString());
