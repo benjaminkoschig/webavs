@@ -1,7 +1,5 @@
 package ch.globaz.vulpecula.domain.models.parametrage;
 
-import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.common.Jade;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -31,6 +29,8 @@ import ch.globaz.vulpecula.domain.models.parametrage.Predicats.Predicat;
 import ch.globaz.vulpecula.domain.models.parametrage.ServiceMilitaire.Genre;
 import ch.globaz.vulpecula.domain.models.parametrage.Vacances.Vacance;
 import ch.globaz.vulpecula.domain.models.servicemilitaire.GenreSM;
+import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.common.Jade;
 
 /**
  * Table paramétrage pour les prestations accordées (Absences justifiées, Congés payés, Service militaire)
@@ -96,8 +96,8 @@ public class TableParametrage {
         return mapParametrage.get(year);
     }
 
-    private void loadTable(String year) throws JAXBException, URISyntaxException, FileNotFoundException,
-            SecurityException {
+    private void loadTable(String year)
+            throws JAXBException, URISyntaxException, FileNotFoundException, SecurityException {
         JAXBContext jc = JAXBContext.newInstance(ParametragePrestation.class);
         Unmarshaller unmarshaller = jc.createUnmarshaller();
 
@@ -125,7 +125,6 @@ public class TableParametrage {
             }
             return getParametrePath(String.valueOf(numericYear));
         } else {
-            System.out.println("LBE : " + path);
             return path;
         }
     }
@@ -134,7 +133,7 @@ public class TableParametrage {
      * Retourne le nombre de jours accordés lors d'une absence justifiée de type mariage pour la caisse métier dont l'id
      * est passé en paramètre.
      * Cette méthode retournera le nombre de jours standard accordé à un mariage
-     * 
+     *
      * @param noCaisseMetier Integer représentant l'id de la caisse métier
      * @return Nombre de jours accordé pour une absence de type mariage
      */
@@ -146,7 +145,7 @@ public class TableParametrage {
      * Retourne le nombre de jours accordés lors d'une absence justifiée de type mariage des enfants pour la caisse
      * métier dont l'id est passé en paramètre.
      * Cette méthode retournera 0 si l'attribut n'est pas défini par une caisse métier.
-     * 
+     *
      * @param noCaisseMetier Integer représentant l'id de la caisse métier
      * @return Nombre de jours accordé pour une absence de type mariage pour les enfants d'un travailleur
      */
@@ -163,7 +162,7 @@ public class TableParametrage {
      * Retourne le nombre de jours accordés lors d'une absence justifiée de type inspection pour la caisse métier dont
      * l'id est passé en paramètre.
      * Cette méthode retournera 0 si l'attribut n'est pas défini par une caisse métier.
-     * 
+     *
      * @param noCaisseMetier Integer représentant l'id de la caisse métier
      */
     public double getJoursInspection(int noCaisseMetier) {
@@ -178,7 +177,7 @@ public class TableParametrage {
     /**
      * Retourne le nombre de jours accordés lors d'une absence justifiée de type décès dont l'id de la caisse métier
      * est passé en paramètre.
-     * 
+     *
      * @param noCaisseMetier Integer représentant l'id de la caisse métier
      * @param lienParenteARechercher Le lien de parenté avec la personne décédée
      * @return Nombre de jours accordés
@@ -202,7 +201,7 @@ public class TableParametrage {
      * passée en paramètre.
      * Lorsque l'on accède à cette méthode, il est nécessaire que SEULE une entrée soit présente dans le fichier de
      * paramètrage. Celle-ci sera prise peu importe la condition définie.
-     * 
+     *
      * @param noCaisseMetier Integer représentant l'id de la caisse métier
      * @return Nombre de jours accordé pour une allocation de type naissance
      * @throws IllegalArgumentException lorsqu'il existe plusieurs options possibles et que le nombre de jours ne peut
@@ -214,8 +213,8 @@ public class TableParametrage {
             return naissances.get(0).nbjours.intValue();
         } else {
             LOGGER.error("On retrouve plusieurs règles concernant la caisse {} pour des naissances", noCaisseMetier);
-            throw new IllegalArgumentException("On retrouve plusieurs règles concernant la caisse " + noCaisseMetier
-                    + " pour des naissances");
+            throw new IllegalArgumentException(
+                    "On retrouve plusieurs règles concernant la caisse " + noCaisseMetier + " pour des naissances");
         }
     }
 
@@ -223,7 +222,7 @@ public class TableParametrage {
      * Retourne le nombre de jours accordées lors d'une absence justifiée de type naissance pour la caisse métier passée
      * en paramètre.
      * Cette méthode calcul le nombre de jours en fonction du nombre d'années de services effectuées par le travailleur.
-     * 
+     *
      * @param noCaisseMetier Integer représentant l'id de la caisse métier
      * @param nbAnneesService Nombre de jours de service effectuées
      * @return Nombre de jours d'absences accordées
@@ -252,7 +251,7 @@ public class TableParametrage {
 
     /**
      * Retourne le nombre de jours accordé lors d'une journée de recrutement ou d'information.
-     * 
+     *
      * @param noCaisseMetier Integer représentant l'id de la caisse métier
      * @return Nombre de jours accordé
      */
@@ -262,7 +261,7 @@ public class TableParametrage {
 
     /**
      * Retourne le nombre de jours accordé lors d'une journée de "liber".
-     * 
+     *
      * @return Nombre de jours accordé
      */
     public double getJoursLiber(int noCaisseMetier) {
@@ -274,7 +273,7 @@ public class TableParametrage {
      * On prend en compte la propriété "payé" de la balise &lt;demenagement&gt; : Si == "non" alors le nombre de jour
      * sera
      * forcé à 0
-     * 
+     *
      * @param noCaisseMetier Integer représentant l'id de la caisse métier
      * @return Nombre de jours accordé ou "0" si payé == non
      */
@@ -291,7 +290,7 @@ public class TableParametrage {
 
     /**
      * Retourne le nombre de jours fériés accordé.
-     * 
+     *
      * @param noCaisseMetier Integer représentant l'id de la caisse métier
      * @return Nombre de jours fériés
      */
@@ -301,7 +300,7 @@ public class TableParametrage {
 
     /**
      * Retourne le nombre de jours de formation accordé.
-     * 
+     *
      * @param noCaisseMetier Integer représentant l'id de la caisse métier
      * @return Nombre de jours de formation
      */
@@ -312,7 +311,7 @@ public class TableParametrage {
     /**
      * Retourne le nombre d'heure de travail à effectuer par jour pour la caisse métier dont l'id est passé en
      * paramètre.
-     * 
+     *
      * @param noCaisseMetier Integer représentant l'id de la caisse métier
      * @return double représentant le nombre d'heures de travail par jour
      */
@@ -323,7 +322,7 @@ public class TableParametrage {
     /**
      * Retourne le nombre d'heure de travail à effectuer par semaine pour la caisse métier dont l'id est passé en
      * paramètre.
-     * 
+     *
      * @param noCaisseMetier Integer représentant l'id de la caisse métier
      * @return double représentant le nombre d'heures de travail par semaine
      */
@@ -338,7 +337,7 @@ public class TableParametrage {
     /**
      * Retourne le nombre d'heure de travail à effectuer par semaine pour la caisse métier dont l'id est passé en
      * paramètre.
-     * 
+     *
      * @param noCaisseMetier Integer représentant l'id de la caisse métier
      * @return double représentant le nombre d'heures de travail par mois
      */
@@ -353,7 +352,7 @@ public class TableParametrage {
     /**
      * Retourne le nombre de jours de vacances accordées par rapport à la caisse métier et l'âge de la personne.
      * Le nombre d'année de service considéré sera de 0.
-     * 
+     *
      * @param noCaisseMetier No° de caisse métier
      * @param age Age de la personne
      * @return Nombre de jours accordé
@@ -365,7 +364,7 @@ public class TableParametrage {
     /**
      * Retourne le nombre de jours de vacances accordées par rapport à la caisse métier, l'âge et le nombre d'années de
      * service d'un employé.
-     * 
+     *
      * @param noCaisseMetier No° de caisse métier
      * @param age Age de la personne
      * @param anneeService Nombre d'année de services
@@ -378,7 +377,7 @@ public class TableParametrage {
     /**
      * Retourne le couple nbJours et taux pour les vacances pour la caisse métier, l'âge et le nombre d'année de service
      * passés en paramètres.
-     * 
+     *
      * @param noCaisseMetier No de la caisse métier
      * @param age Age de la personne
      * @param anneeService Nombre d'années de service
@@ -392,7 +391,7 @@ public class TableParametrage {
     /**
      * Retourne le couple nbJours et taux pour les vacances pour la caisse métier, l'âge et le nombre d'année de service
      * passés en paramètres.
-     * 
+     *
      * @param noCaisseMetier No de la caisse métier
      * @param age Age de la personne
      * @param anneeService Nombre d'années de service
@@ -405,7 +404,7 @@ public class TableParametrage {
 
     /**
      * Retourne la gratification que la caisse métier octroie dans le cas de service militaire.
-     * 
+     *
      * @return double représentant un taux de gratification
      */
     public double getGratification(int noCaisseMetier) {
@@ -414,7 +413,7 @@ public class TableParametrage {
 
     /**
      * Retourne le taux de couverture APG que la caisse métier octroie.
-     * 
+     *
      * @param noCaisseMetier Numéro de la caisse métier
      * @param genre Genre de prestation service militaire
      * @return Taux de couverture octroyé
@@ -457,7 +456,7 @@ public class TableParametrage {
 
     /**
      * Retourne la configuration relative à un genre de service militaire pour une caisse métier.
-     * 
+     *
      * @param noCaisseMetier Numéro de la caisse métier
      * @param genreToSearch Enumération représentant la liste des codes systèmes relatifs aux genres de service
      *            militaire
@@ -476,7 +475,7 @@ public class TableParametrage {
 
     /**
      * Retourne la "balise" vacance remplissant les conditions caisseMetier, age et anneeDeService.
-     * 
+     *
      * @param noCaisseMetier No° de caisse métier
      * @param age Age de la personne
      * @param anneeService Nombre d'années de service
@@ -502,7 +501,7 @@ public class TableParametrage {
 
     /**
      * Retourne l'objet vacance dont le nombre de jours est le plus élevé.
-     * 
+     *
      * @param vacance1 Vacance de base
      * @param vacance2 Vacance à comparer
      * @return L'objet vacance dont le nombre de jours est le plus élevé. Si vacance1 est null, retourne vacance2.
@@ -521,7 +520,7 @@ public class TableParametrage {
 
     /**
      * Retourne le taux de vacances par rapport à un nombre de jours et une caisse sociale.
-     * 
+     *
      * @param noCaisseMetier No° de la caisse sociale
      * @param nbJours Nombre de jours de vacances
      * @return double représentant le taux pour ce nombre de jours de vacances
@@ -533,14 +532,15 @@ public class TableParametrage {
                 return vacance.getTaux();
             }
         }
-        LOGGER.error("Il n'existe pas de taux pour le nombre {} de vacances pour la caisse {}", nbJours, noCaisseMetier);
-        throw new IllegalArgumentException("Il n'existe pas de taux pour le nombre " + nbJours
-                + " de vacances pour la caisse " + noCaisseMetier);
+        LOGGER.error("Il n'existe pas de taux pour le nombre {} de vacances pour la caisse {}", nbJours,
+                noCaisseMetier);
+        throw new IllegalArgumentException(
+                "Il n'existe pas de taux pour le nombre " + nbJours + " de vacances pour la caisse " + noCaisseMetier);
     }
 
     /**
      * Détermine si la caisse métier dispose d'un calcul de congé payé par rapport à toutes les cotisations du poste.
-     * 
+     *
      * @param noCaisseMetier No de la caisse métier
      * @return true si cotisation requises
      */
@@ -554,7 +554,7 @@ public class TableParametrage {
 
     /**
      * Retourne si le taux CP a été forcé à 0.
-     * 
+     *
      * @return true si force à 0
      */
     public boolean isTauxCPForce0(int noCaisseMetier) {
@@ -567,7 +567,7 @@ public class TableParametrage {
 
     /**
      * Retourne le nombre de jours accordés dans le cas d'un type de prestation AJ.
-     * 
+     *
      * @param noCaisseMetier No de la caisse métier
      * @param type Type d'absence justifiée
      * @param lien Lien de parenté dans le cas d'un deuil
@@ -602,7 +602,7 @@ public class TableParametrage {
     /**
      * Retourne une liste des assurances obligatoires afin de pouvoir disposer d'une prestation absence justifiée.
      * Il suffit de disposer de l'UNE DE CES ASSURANCES pour avoir droit aux prestations absences justifiées.
-     * 
+     *
      * @param noCaisseMetier caisse métier sur lequel retrouver les assurances obligatoires
      * @return Liste des assurances
      */
@@ -623,7 +623,7 @@ public class TableParametrage {
     /**
      * Retourne une liste des assurances obligatoires afin de pouvoir disposer d'une prestation congé payé.
      * Il suffit de disposer de l'UNE DE CES ASSURANCES pour avoir droit au congé payé.
-     * 
+     *
      * @param noCaisseMetier caisse métier sur lequel retrouver les assurances obligatoires
      * @return Liste des assurances
      */
@@ -645,7 +645,7 @@ public class TableParametrage {
     /**
      * Retourne une liste des assurances obligatoires afin de pouvoir disposer d'une prestation service militaire.
      * Il suffit de disposer de l'UNE DE CES ASSURANCES pour avoir droit aux prestations service militaire.
-     * 
+     *
      * @param noCaisseMetier caisse métier sur lequel retrouver les assurances obligatoires
      * @return Liste des assurances
      */
@@ -666,7 +666,7 @@ public class TableParametrage {
 
     /**
      * Retourne si la caisse métier dispose des droits AJ si ces types d'assurance sont saisis
-     * 
+     *
      * @param noCaisseMetier No de la caisse métier
      * @param types Type d'assurance
      * @return true si dispose des droits AJ
@@ -682,7 +682,7 @@ public class TableParametrage {
 
     /**
      * Retourne si la caisse métier dispose des droits CP si ces types d'assurance sont saisis
-     * 
+     *
      * @param noCaisseMetier No de la caisse métier
      * @param types Type d'assurance
      * @return true si dispose des droits CP
@@ -701,7 +701,7 @@ public class TableParametrage {
 
     /**
      * Retourne si la caisse métier dispose des droits SM si ces types d'assurance sont saisis
-     * 
+     *
      * @param noCaisseMetier No de la caisse métier
      * @param types Type d'assurance
      * @return true si dispose des droits SM
@@ -751,7 +751,7 @@ public class TableParametrage {
 
     /**
      * Retourne la valeur maximum par rapport aux deux paramètres.
-     * 
+     *
      * @param nombre1 Un nombre
      * @param nombre2 Un nombre
      * @return Le nombre le plus élevé par rapport aux deux paramètres
@@ -766,7 +766,7 @@ public class TableParametrage {
 
     /**
      * Retourne si le prédicat vérifie le nombre d'années de service.
-     * 
+     *
      * @param predicat Prédicat à contrôler
      * @return true si le champ de contrôle est "anneeService"
      */
@@ -776,7 +776,7 @@ public class TableParametrage {
 
     /**
      * Retourne si le prédicat vérifie l'âge.
-     * 
+     *
      * @param predicat Prédicat à contrôler
      * @return true si le champ de contrôle est "age"
      */

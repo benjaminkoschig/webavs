@@ -598,7 +598,6 @@ public class CalculsSubsides {
                     SimpleDetailFamille currentSubside = (SimpleDetailFamille) simpleDetailFamilleSearch
                             .getSearchResults()[iSubside];
                     if (!JadeStringUtil.isBlankOrZero(currentSubside.getNoCaisseMaladie())
-                            && !JadeStringUtil.isBlankOrZero(currentSubside.getNoAssure())
                             && !JadeStringUtil.isBlankOrZero(currentSubside.getDebutDroit())) {
                         Long dateStart = JadeDateUtil.getGlobazDate("01." + currentSubside.getDebutDroit()).getTime();
                         allSubsides.put(dateStart, currentSubside);
@@ -611,7 +610,9 @@ public class CalculsSubsides {
                     Collections.reverse(allKeyDates);
                     SimpleDetailFamille lastFilledSubside = allSubsides.get(allKeyDates.get(0));
                     // récupération de la caisse maladie et no assuré
-                    simpleDetailFamilleMembre.setNoAssure(lastFilledSubside.getNoAssure());
+                    simpleDetailFamilleMembre
+                            .setNoAssure(JadeStringUtil.isBlankOrZero(lastFilledSubside.getNoAssure()) ? "0"
+                                    : lastFilledSubside.getNoAssure());
                     simpleDetailFamilleMembre.setNoCaisseMaladie(lastFilledSubside.getNoCaisseMaladie());
                 }
             }
