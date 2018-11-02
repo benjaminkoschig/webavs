@@ -1,23 +1,23 @@
 package ch.globaz.al.businessimpl.checker.model.rafam;
 
+import ch.globaz.al.business.models.rafam.AnnonceRafamModel;
+import ch.globaz.al.businessimpl.checker.ALAbstractChecker;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.context.JadeThread;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
-import ch.globaz.al.business.models.rafam.AnnonceRafamModel;
-import ch.globaz.al.businessimpl.checker.ALAbstractChecker;
 
 /**
  * classe de validation des données de {@link ch.globaz.al.business.models.rafam.AnnonceRafamModel}
- * 
+ *
  * @author jts
- * 
+ *
  */
 public abstract class AnnonceRafam68aModelChecker extends ALAbstractChecker {
 
     /**
      * Vérifie l'intégritée "business" des données
-     * 
+     *
      * @param model
      *            Modèle à valider
      * @throws JadePersistenceException
@@ -26,14 +26,14 @@ public abstract class AnnonceRafam68aModelChecker extends ALAbstractChecker {
      * @throws JadeApplicationException
      *             Exception levée par la couche métier lorsqu'elle n'a pu effectuer l'opération souhaitée
      */
-    protected static void checkBusinessIntegrity(AnnonceRafamModel model) throws JadePersistenceException,
-            JadeApplicationException {
+    protected static void checkBusinessIntegrity(AnnonceRafamModel model)
+            throws JadePersistenceException, JadeApplicationException {
         // DO NOTHING
     }
 
     /**
      * Vérification des codesSystems
-     * 
+     *
      * @param model
      *            Modèle à valider
      * @throws JadeApplicationException
@@ -42,14 +42,14 @@ public abstract class AnnonceRafam68aModelChecker extends ALAbstractChecker {
      *             Exception levée lorsque le chargement ou la mise à jour en DB par la couche de persistence n'a pu se
      *             faire
      */
-    protected static void checkCodesystemIntegrity(AnnonceRafamModel model) throws JadeApplicationException,
-            JadePersistenceException {
+    protected static void checkCodesystemIntegrity(AnnonceRafamModel model)
+            throws JadeApplicationException, JadePersistenceException {
         // DO NOTHING
     }
 
     /**
      * vérification de l'intégrité des données
-     * 
+     *
      * @param model
      *            Modèle à valider
      */
@@ -59,7 +59,7 @@ public abstract class AnnonceRafam68aModelChecker extends ALAbstractChecker {
 
     /**
      * vérification des données requises
-     * 
+     *
      * @param model
      *            Modèle à valider
      * @throws JadeApplicationException
@@ -68,8 +68,8 @@ public abstract class AnnonceRafam68aModelChecker extends ALAbstractChecker {
      *             Exception levée lorsque le chargement ou la mise à jour en DB par la couche de persistence n'a pu se
      *             faire
      */
-    protected static void checkMandatory(AnnonceRafamModel model) throws JadeApplicationException,
-            JadePersistenceException {
+    protected static void checkMandatory(AnnonceRafamModel model)
+            throws JadeApplicationException, JadePersistenceException {
 
         // base légale
         if (JadeStringUtil.isEmpty(model.getBaseLegale())) {
@@ -114,6 +114,11 @@ public abstract class AnnonceRafam68aModelChecker extends ALAbstractChecker {
         if (JadeStringUtil.isBlank(model.getLegalOffice())) {
             JadeThread.logError(AnnonceRafamModelChecker.class.getName(),
                     "al.rafam.annonceRafamModel.legalOffice.mandatory");
+        }
+
+        if (JadeStringUtil.isBlank(model.getCodeCentralePaysEnfant())) {
+            JadeThread.logError(AnnonceRafamModelChecker.class.getName(),
+                    "al.rafam.annonceRafamModel.codeCentralePaysEnfant.mandatory");
         }
     }
 }

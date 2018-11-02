@@ -7,6 +7,7 @@ import ch.globaz.al.business.models.rafam.AnnonceRafamComplexModel;
 import ch.globaz.al.business.models.rafam.AnnonceRafamErrorComplexSearchModel;
 import ch.globaz.al.business.services.ALServiceLocator;
 import ch.globaz.al.businessimpl.services.ALImplServiceLocator;
+import ch.globaz.jade.business.models.Langues;
 import ch.globaz.param.business.models.ParameterModel;
 import ch.globaz.param.business.service.ParamServiceLocator;
 import ch.globaz.pyxis.business.model.PaysSearchSimpleModel;
@@ -203,12 +204,22 @@ public class ALAnnonceRafamViewBean extends BJadePersistentObjectViewBean {
                 searchModel.setForIdPays(codeCentrale);
                 searchModel = (PaysSearchSimpleModel) JadePersistenceManager.search(searchModel);
                 if (searchModel.getSearchResults().length > 0) {
-                    return ((PaysSimpleModel) searchModel.getSearchResults()[0]).getLibelleFr();
+                    return getLibellePaysBylangage(searchModel, getSession().getIdLangueISO());
                 }
             }
             return "";
         } catch (JadePersistenceException e) {
             return "";
+        }
+    }
+
+    private String getLibellePaysBylangage(PaysSearchSimpleModel searchModel, String idLangueISO) {
+        if (Langues.Francais.getCodeIso().equals(idLangueISO)) {
+            return ((PaysSimpleModel) searchModel.getSearchResults()[0]).getLibelleFr();
+        } else if (Langues.Allemand.getCodeIso().equals(idLangueISO)) {
+            return ((PaysSimpleModel) searchModel.getSearchResults()[0]).getLibelleAl();
+        } else {
+            return ((PaysSimpleModel) searchModel.getSearchResults()[0]).getLibelleIt();
         }
     }
 }

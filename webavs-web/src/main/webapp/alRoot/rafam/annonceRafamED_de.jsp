@@ -243,7 +243,7 @@ function callbackAjaxValidationAnnonce(){
                   <hr />
                   <% } %>
 
-                  <table class="tab2Col">
+                  <table class="tab3Col">
                   
                   <td class="label subtitle" colspan="6">
                        <ct:FWLabel key="AL0031_ENFANT"/>
@@ -312,13 +312,14 @@ function callbackAjaxValidationAnnonce(){
                         <td>
                            <input type="text" value="<%=(JadeStringUtil.isBlankOrZero(viewBean.getAnnonce().getEcheanceDroit()))?"":viewBean.getAnnonce().getEcheanceDroit()%>" name="annonce.echeanceDroit" disabled="disabled" class="readOnly" readonly="readonly"/>
                         </td>
-
-                        <td colspan="2">
+						<td class="label"><ct:FWLabel key="AL0031_PAYS_DOMICILE_ENFANT"/></td>
+                        <td>
+                           <input type="text" value="<%=(JadeStringUtil.isBlankOrZero(viewBean.getPays()))?"":viewBean.getPays()%>" name="annonce.codeCentralePaysEnfant" disabled="disabled" class="readOnly" readonly="readonly"/>
                         </td>
                      </tr>
                   </table>
                   
-                  <table class="tab2Col">
+                  <table class="tab3Col">
                      <caption><ct:FWLabel key="AL0031_ENFANT_CENTRALE"/></caption>
 
                      <tr>
@@ -350,15 +351,16 @@ function callbackAjaxValidationAnnonce(){
                         <td>
                            <input type="text" value="<%=viewBean.getAnnonce().getPrenomEnfant()%>" disabled="disabled" class="readOnly" readonly="readonly" />
                         </td>
-
-                        <td colspan="2">
+						<!-- Pour la mise en page -->
+                        <td >&nbsp;
                         </td>
+                        <td >&nbsp;
                      </tr>
                   </table>
 
                   <hr />
 
-                  <table class="tab2Col">
+                  <table class="tab3Col">
                      
                      
                         <td class="label subtitle" colspan="6">
@@ -378,8 +380,10 @@ function callbackAjaxValidationAnnonce(){
                          <td>
                            <input type="text" value="<%=viewBean.getAnnonce().getDateNaissanceAllocataire()%>" disabled="disabled" class="readOnly" readonly="readonly" />
                         </td>
-
-                        <td colspan="2">
+						<!-- Pour la mise en page -->
+                        <td >&nbsp;
+                        </td>
+                        <td >&nbsp;
                         </td>
                      </tr>
 
@@ -395,8 +399,10 @@ function callbackAjaxValidationAnnonce(){
                         <td>
                            <input type="text" value="-" disabled="disabled" class="readOnly" readonly="readonly" />
                         </td>
-
-                        <td colspan="2">
+						<!-- Pour la mise en page -->
+                        <td >&nbsp;
+                        </td>
+                        <td >&nbsp;
                         </td>
                      </tr>
 
@@ -418,7 +424,7 @@ function callbackAjaxValidationAnnonce(){
                      </tr>
                   </table>
                   
-                  <table class="tab2Col">
+                  <table class="tab3Col">
                        <caption><ct:FWLabel key="AL0031_BENEFICIAIRE_CENTRALE"/></caption>
 						
                      <tr>
@@ -433,8 +439,10 @@ function callbackAjaxValidationAnnonce(){
                          <td>
                            <input type="text" value="<%=viewBean.getAnnonce().getDateNaissanceAllocataire()%>" disabled="disabled" class="readOnly" readonly="readonly" />
                         </td>
-
-                        <td colspan="2">
+						<!-- Pour la mise en page -->
+                        <td >&nbsp;
+                        </td>
+                        <td >&nbsp;
                         </td>
                      </tr>
 
@@ -450,8 +458,10 @@ function callbackAjaxValidationAnnonce(){
                         <td>
                            <input type="text" value="<%=viewBean.getAnnonce().getPrenomAllocataire()%>" disabled="disabled" class="readOnly" readonly="readonly" />
                         </td>
-
-                        <td colspan="2">
+						<!-- Pour la mise en page -->
+                        <td >&nbsp;
+                        </td>
+                        <td >&nbsp;
                         </td>
                      </tr>
                   </table>

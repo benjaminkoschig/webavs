@@ -1,18 +1,24 @@
 package globaz.al.vb.rafam;
 
-import globaz.globall.db.BSession;
-import globaz.globall.db.BSpy;
-import globaz.globall.vb.BJadePersistentObjectViewBean;
 import ch.globaz.al.business.constantes.enumerations.RafamEtatAnnonce;
 import ch.globaz.al.business.models.rafam.AnnonceRafamErrorComplexSearchModel;
 import ch.globaz.al.business.models.rafam.AnnonceRafamModel;
 import ch.globaz.al.business.services.ALServiceLocator;
+import ch.globaz.jade.business.models.Langues;
+import ch.globaz.pyxis.business.model.PaysSearchSimpleModel;
+import ch.globaz.pyxis.business.model.PaysSimpleModel;
+import globaz.globall.db.BSession;
+import globaz.globall.db.BSpy;
+import globaz.globall.vb.BJadePersistentObjectViewBean;
+import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.persistence.JadePersistenceManager;
 
 /**
  * ViewBean représentant une annonce RAFAM delégué
- * 
+ *
  * @author gmo
- * 
+ *
  */
 public class ALAnnonceRafamEDViewBean extends BJadePersistentObjectViewBean {
 
@@ -54,7 +60,7 @@ public class ALAnnonceRafamEDViewBean extends BJadePersistentObjectViewBean {
 
     /**
      * Retourne le modèle d'annonce Rafam
-     * 
+     *
      * @return the annonce
      */
     public AnnonceRafamModel getAnnonce() {
@@ -62,7 +68,7 @@ public class ALAnnonceRafamEDViewBean extends BJadePersistentObjectViewBean {
     }
 
     /**
-     * 
+     *
      * @return Erreurs liées à l'annonce
      * @throws Exception
      *             Exception levée si l'id de l'annonce n'est pas défini ou si les erreurs n'ont pas pu être chargées
@@ -77,7 +83,7 @@ public class ALAnnonceRafamEDViewBean extends BJadePersistentObjectViewBean {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.db.BIPersistentObject#getId()
      */
     @Override
@@ -98,7 +104,7 @@ public class ALAnnonceRafamEDViewBean extends BJadePersistentObjectViewBean {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.vb.BJadePersistentObjectViewBean#getSpy()
      */
     @Override
@@ -108,7 +114,7 @@ public class ALAnnonceRafamEDViewBean extends BJadePersistentObjectViewBean {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.db.BIPersistentObject#retrieve()
      */
     @Override
@@ -128,7 +134,7 @@ public class ALAnnonceRafamEDViewBean extends BJadePersistentObjectViewBean {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.db.BIPersistentObject#setId(java.lang.String)
      */
     @Override
@@ -143,12 +149,39 @@ public class ALAnnonceRafamEDViewBean extends BJadePersistentObjectViewBean {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.db.BIPersistentObject#update()
      */
     @Override
     public void update() throws Exception {
         throw new Exception(this.getClass() + " - Method called (update) not implemented (might be never called)");
 
+    }
+
+    public String getPays() {
+        try {
+            String codeCentrale = getAnnonce().getCodeCentralePaysEnfant();
+            if (!JadeStringUtil.isBlankOrZero(codeCentrale)) {
+                PaysSearchSimpleModel searchModel = new PaysSearchSimpleModel();
+                searchModel.setForIdPays(codeCentrale);
+                searchModel = (PaysSearchSimpleModel) JadePersistenceManager.search(searchModel);
+                if (searchModel.getSearchResults().length > 0) {
+                    return getLibellePaysBylangage(searchModel, getSession().getIdLangueISO());
+                }
+            }
+            return "";
+        } catch (JadePersistenceException e) {
+            return "";
+        }
+    }
+
+    private String getLibellePaysBylangage(PaysSearchSimpleModel searchModel, String idLangueISO) {
+        if (Langues.Francais.getCodeIso().equals(idLangueISO)) {
+            return ((PaysSimpleModel) searchModel.getSearchResults()[0]).getLibelleFr();
+        } else if (Langues.Allemand.getCodeIso().equals(idLangueISO)) {
+            return ((PaysSimpleModel) searchModel.getSearchResults()[0]).getLibelleAl();
+        } else {
+            return ((PaysSimpleModel) searchModel.getSearchResults()[0]).getLibelleIt();
+        }
     }
 }

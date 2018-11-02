@@ -745,6 +745,7 @@ public class InitAnnoncesRafamServiceImpl extends ALAbstractBusinessServiceImpl 
         annonce.setGenrePrestation(allowance.getAllowanceType());
         annonce.setBaseLegale(allowance.getAllowanceApplicableLegislation());
         annonce.setCanton(allowance.getAllowanceBenefitCanton());
+        annonce.setCodeCentralePaysEnfant(String.valueOf(allowance.getAllowanceChildCountryResidence()));
 
         annonce.setDebutDroit(ALDateUtils.XMLGregorianCalendarToGlobazDate(allowance.getAllowanceDateFrom()));
         annonce.setEcheanceDroit(ALDateUtils.XMLGregorianCalendarToGlobazDate(allowance.getAllowanceDateTo()));
@@ -788,6 +789,7 @@ public class InitAnnoncesRafamServiceImpl extends ALAbstractBusinessServiceImpl 
         annonce.setGenrePrestation(allowance.getAllowanceType());
         annonce.setBaseLegale(allowance.getAllowanceApplicableLegislation());
         annonce.setCanton(allowance.getAllowanceBenefitCanton());
+        annonce.setCodeCentralePaysEnfant(String.valueOf(allowance.getAllowanceChildCountryResidence()));
 
         if (!allowance.getAllowanceType().equals(RafamFamilyAllowanceType.ADOPTION.getCodeCentrale())
                 && !allowance.getAllowanceType().equals(RafamFamilyAllowanceType.NAISSANCE.getCodeCentrale())

@@ -33,7 +33,6 @@ import ch.globaz.al.business.models.rafam.AnnonceRafamSearchModel;
 import ch.globaz.al.business.services.ALServiceLocator;
 import ch.globaz.al.business.services.rafam.AnnonceRafamBusinessService;
 import ch.globaz.al.business.services.rafam.sedex.ExportAnnoncesNewXSDVersionRafamService;
-import ch.globaz.al.businessimpl.rafam.sedex.builder.MessageBuilderFactory;
 import ch.globaz.al.businessimpl.rafam.sedex.builder.MessageBuilderFactoryNewXSDVersion;
 import ch.globaz.al.businessimpl.services.ALAbstractBusinessServiceImpl;
 import ch.globaz.al.businessimpl.services.ALImplServiceLocator;
@@ -45,7 +44,6 @@ import globaz.jade.context.JadeThread;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.i18n.JadeI18n;
-import globaz.jade.jaxb.JAXBServices;
 import globaz.jade.jaxb.JAXBValidationError;
 import globaz.jade.log.JadeLogger;
 import globaz.jade.log.business.JadeBusinessMessage;
@@ -424,7 +422,8 @@ public class ExportAnnoncesNewXSDVersionRafamServiceImpl extends ALAbstractBusin
                     annonceComplex.setAnnonceRafamModel(annonceSimple);
 
                     try {
-                        Object messageDroit = MessageBuilderFactory.getMessageBuilder(annonceComplex).build();
+                        Object messageDroit = MessageBuilderFactoryNewXSDVersion.getMessageBuilder(annonceComplex)
+                                .build();
 
                         if (JadeThread.logMessages() != null) {
                             errors.append("Erreur pendant la préparation d'une annonce (ID " + annonceSimple.getId())
@@ -502,15 +501,16 @@ public class ExportAnnoncesNewXSDVersionRafamServiceImpl extends ALAbstractBusin
                     if (content.getNewBenefitOrBenefitMutationOrBenefitCancellation().size() > 0) {
                         message.setContent(content);
 
-                        JAXBServices jaxb = JAXBServices.getInstance();
-                        Class<?>[] addClasses = new Class[] { /*
-                                                               * Message.class, ReportType.class,
-                                                               * ch.ech.xmlns.ech_0104._2.DeliveryOffice.class,
-                                                               * ch.ech.xmlns.ech_0044._1.NamedPersonIdType.class,
-                                                               * ch.ech.xmlns.ech_0007._4.CantonAbbreviationType.class
-                                                               */ };
-                        String file = jaxb.marshal(message, false, false, addClasses);
-                        JadeSedexService.getInstance().sendSimpleMessage(file, null);
+                        // JAXBServices jaxb = JAXBServices.getInstance();
+                        // Class<?>[] addClasses = new Class[] { /*
+                        // * Message.class, ReportType.class,
+                        // * ch.ech.xmlns.ech_0104._2.DeliveryOffice.class,
+                        // * ch.ech.xmlns.ech_0044._1.NamedPersonIdType.class,
+                        // * ch.ech.xmlns.ech_0007._4.CantonAbbreviationType.class
+                        // */ };
+                        // String file = jaxb.marshal(message, false, false, addClasses);
+                        File xmlMarshaled = marshallCompleteMessage(message);
+                        JadeSedexService.getInstance().sendSimpleMessage(xmlMarshaled.getAbsolutePath(), null);
                     }
                 } catch (Exception e) {
 

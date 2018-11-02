@@ -1,13 +1,5 @@
 package ch.globaz.al.utils;
 
-import globaz.jade.client.util.JadeDateUtil;
-import globaz.jade.client.util.JadeNumericUtil;
-import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.exception.JadeApplicationException;
-import globaz.jade.exception.JadePersistenceException;
-import globaz.jade.log.JadeLogger;
-import globaz.jade.properties.JadePropertiesService;
-import globaz.jade.smtp.JadeSmtpClient;
 import java.util.ArrayList;
 import ch.eahv_iv.xmlns.eahv_iv_fao_empl._0.AllowanceType;
 import ch.eahv_iv.xmlns.eahv_iv_fao_empl._0.BeneficiaryType;
@@ -26,11 +18,19 @@ import ch.globaz.al.business.models.rafam.AnnonceRafamSearchModel;
 import ch.globaz.al.business.models.rafam.ErreurAnnonceRafamModel;
 import ch.globaz.al.business.models.rafam.ErreurAnnonceRafamSearchModel;
 import ch.globaz.al.business.services.ALServiceLocator;
+import globaz.jade.client.util.JadeDateUtil;
+import globaz.jade.client.util.JadeNumericUtil;
+import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.exception.JadeApplicationException;
+import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.log.JadeLogger;
+import globaz.jade.properties.JadePropertiesService;
+import globaz.jade.smtp.JadeSmtpClient;
 
 /**
- * 
+ *
  * @author jts,gmo
- * 
+ *
  */
 
 public class ALRafamUtils {
@@ -69,7 +69,7 @@ public class ALRafamUtils {
     }
 
     /**
-     * 
+     *
      * @param annonce
      * @return
      * @throws JadeApplicationException
@@ -81,8 +81,8 @@ public class ALRafamUtils {
 
         AnnonceRafamModel last68 = null;
         if (RafamTypeAnnonce._69B_SYNCHRO_UPI.getCode().equals(annonce.getAnnonceRafamModel().getTypeAnnonce())
-                || RafamTypeAnnonce._69C_REGISTER_STATUS.getCode().equals(
-                        annonce.getAnnonceRafamModel().getTypeAnnonce())
+                || RafamTypeAnnonce._69C_REGISTER_STATUS.getCode()
+                        .equals(annonce.getAnnonceRafamModel().getTypeAnnonce())
                 || RafamTypeAnnonce._68C_ANNULATION.getCode().equals(annonce.getAnnonceRafamModel().getTypeAnnonce())) {
             last68 = ALRafamUtils.getLastActive68(annonce);
         }
@@ -91,12 +91,12 @@ public class ALRafamUtils {
             if (!JadeStringUtil.isEmpty(last68.getDebutDroit())) {
                 newAllowance.setAllowanceDateFrom(ALDateUtils.globazDateToXMLGregorianCalendar(last68.getDebutDroit()));
             } else {
-                newAllowance.setAllowanceDateFrom(ALDateUtils
-                        .globazDateToXMLGregorianCalendar(ALConstRafam.DATE_DEBUT_MINIMUM));
+                newAllowance.setAllowanceDateFrom(
+                        ALDateUtils.globazDateToXMLGregorianCalendar(ALConstRafam.DATE_DEBUT_MINIMUM));
             }
         } else {
-            newAllowance.setAllowanceDateFrom(ALDateUtils.globazDateToXMLGregorianCalendar(annonce
-                    .getAnnonceRafamModel().getDebutDroit()));
+            newAllowance.setAllowanceDateFrom(
+                    ALDateUtils.globazDateToXMLGregorianCalendar(annonce.getAnnonceRafamModel().getDebutDroit()));
         }
 
         if (!JadeDateUtil.isGlobazDate(annonce.getAnnonceRafamModel().getEcheanceDroit()) && (last68 != null)) {
@@ -104,12 +104,12 @@ public class ALRafamUtils {
                 newAllowance
                         .setAllowanceDateTo(ALDateUtils.globazDateToXMLGregorianCalendar(last68.getEcheanceDroit()));
             } else {
-                newAllowance.setAllowanceDateTo(ALDateUtils
-                        .globazDateToXMLGregorianCalendar(ALConstRafam.DATE_DEBUT_MINIMUM));
+                newAllowance.setAllowanceDateTo(
+                        ALDateUtils.globazDateToXMLGregorianCalendar(ALConstRafam.DATE_DEBUT_MINIMUM));
             }
         } else {
-            newAllowance.setAllowanceDateTo(ALDateUtils.globazDateToXMLGregorianCalendar(annonce.getAnnonceRafamModel()
-                    .getEcheanceDroit()));
+            newAllowance.setAllowanceDateTo(
+                    ALDateUtils.globazDateToXMLGregorianCalendar(annonce.getAnnonceRafamModel().getEcheanceDroit()));
         }
 
         if ((annonce.getAnnonceRafamModel().getInternalOfficeReference() != null)
@@ -118,22 +118,22 @@ public class ALRafamUtils {
                     .substring(annonce.getAnnonceRafamModel().getInternalOfficeReference().lastIndexOf("-") + 1));
         } else {
             if (last68 != null) {
-                newAllowance.setAllowanceRefNumber(last68.getInternalOfficeReference().substring(
-                        last68.getInternalOfficeReference().lastIndexOf("-") + 1));
+                newAllowance.setAllowanceRefNumber(last68.getInternalOfficeReference()
+                        .substring(last68.getInternalOfficeReference().lastIndexOf("-") + 1));
             }
         }
 
         if (JadeStringUtil.isBlankOrZero(annonce.getAnnonceRafamModel().getBaseLegale())) {
             if (last68 != null) {
-                newAllowance.setAllowanceApplicableLegislation(RafamLegalBasis.getLegalBasis(last68.getBaseLegale())
-                        .getCodeCentrale());
+                newAllowance.setAllowanceApplicableLegislation(
+                        RafamLegalBasis.getLegalBasis(last68.getBaseLegale()).getCodeCentrale());
             } else {
                 newAllowance.setAllowanceApplicableLegislation(RafamLegalBasis.getLegalBasis("1").getCodeCentrale());
             }
 
         } else {
-            newAllowance.setAllowanceApplicableLegislation(RafamLegalBasis.getLegalBasis(
-                    annonce.getAnnonceRafamModel().getBaseLegale()).getCodeCentrale());
+            newAllowance.setAllowanceApplicableLegislation(
+                    RafamLegalBasis.getLegalBasis(annonce.getAnnonceRafamModel().getBaseLegale()).getCodeCentrale());
         }
 
         if (JadeStringUtil.isEmpty(annonce.getAnnonceRafamModel().getCanton())) {
@@ -151,13 +151,14 @@ public class ALRafamUtils {
             newAllowance.setAllowanceCompleteStorno("02");
         }
 
-        newAllowance.setAllowanceType(RafamFamilyAllowanceType.getFamilyAllowanceType(
-                annonce.getAnnonceRafamModel().getGenrePrestation()).getCodeCentrale());
+        newAllowance.setAllowanceType(RafamFamilyAllowanceType
+                .getFamilyAllowanceType(annonce.getAnnonceRafamModel().getGenrePrestation()).getCodeCentrale());
 
         if (RafamTypeAnnonce._69C_REGISTER_STATUS.getCode().equals(annonce.getAnnonceRafamModel().getTypeAnnonce())) {
-            newAllowance.setAllowanceErrorMessage(JadeStringUtil.isEmpty(annonce.getAnnonceRafamModel()
-                    .getInternalErrorMessage()) ? ALConstRafam.MESSAGE_ED_NOERROR_CODE : annonce.getAnnonceRafamModel()
-                    .getInternalErrorMessage());
+            newAllowance.setAllowanceErrorMessage(
+                    JadeStringUtil.isEmpty(annonce.getAnnonceRafamModel().getInternalErrorMessage())
+                            ? ALConstRafam.MESSAGE_ED_NOERROR_CODE
+                            : annonce.getAnnonceRafamModel().getInternalErrorMessage());
         } else {
 
             ErreurAnnonceRafamSearchModel searchErreurs = new ErreurAnnonceRafamSearchModel();
@@ -166,8 +167,8 @@ public class ALRafamUtils {
 
             if (searchErreurs.getSize() > 0) {
                 // TODO v2 mettre la liste des erreurs car ce champ est libre dans le xsd employeur délégué
-                newAllowance.setAllowanceErrorMessage(((ErreurAnnonceRafamModel) searchErreurs.getSearchResults()[0])
-                        .getCode());
+                newAllowance.setAllowanceErrorMessage(
+                        ((ErreurAnnonceRafamModel) searchErreurs.getSearchResults()[0]).getCode());
                 //
             } else {
                 newAllowance.setAllowanceErrorMessage(ALConstRafam.MESSAGE_ED_NOERROR_CODE);
@@ -183,12 +184,24 @@ public class ALRafamUtils {
         if (annonce.getComplementDelegueModel() != null) {
             newAllowance.setAllowanceAmount(annonce.getComplementDelegueModel().getAllowanceAmount());
         }
+
+        if (JadeStringUtil.isEmpty(annonce.getAnnonceRafamModel().getCodeCentralePaysEnfant())) {
+            if (last68 != null && !JadeStringUtil.isBlankOrZero(last68.getCodeCentralePaysEnfant())) {
+                newAllowance.setAllowanceChildCountryResidence(Integer.valueOf(last68.getCodeCentralePaysEnfant()));
+            } else {
+                newAllowance.setAllowanceChildCountryResidence(0);
+            }
+        } else {
+            newAllowance.setAllowanceChildCountryResidence(
+                    Integer.valueOf(annonce.getAnnonceRafamModel().getCodeCentralePaysEnfant()));
+        }
+
         ALRafamUtils.validateAllowanceType(newAllowance);
         return newAllowance;
     }
 
     /**
-     * 
+     *
      * @param beneficiaire
      *            ch.ech.xmlns.ech_0104_69._3.ReceiptType.Beneficiary
      * @return
@@ -211,34 +224,34 @@ public class ALRafamUtils {
         }
 
         if (JadeDateUtil.isGlobazDate(annonce.getAnnonceRafamModel().getDateNaissanceAllocataire())) {
-            newBeneficiary.setBeneficiaryDateOfBirth(ALDateUtils.globazDateToXMLGregorianCalendar(annonce
-                    .getAnnonceRafamModel().getDateNaissanceAllocataire()));
+            newBeneficiary.setBeneficiaryDateOfBirth(ALDateUtils
+                    .globazDateToXMLGregorianCalendar(annonce.getAnnonceRafamModel().getDateNaissanceAllocataire()));
         } else if ((last68 != null) && JadeDateUtil.isGlobazDate(last68.getDateNaissanceAllocataire())) {
-            newBeneficiary.setBeneficiaryDateOfBirth(ALDateUtils.globazDateToXMLGregorianCalendar(last68
-                    .getDateNaissanceAllocataire()));
+            newBeneficiary.setBeneficiaryDateOfBirth(
+                    ALDateUtils.globazDateToXMLGregorianCalendar(last68.getDateNaissanceAllocataire()));
         }
 
         if (JadeDateUtil.isGlobazDate(annonce.getAnnonceRafamModel().getDateMortAllocataire())) {
-            newBeneficiary.setBeneficiaryDateOfDeath(ALDateUtils.globazDateToXMLGregorianCalendar(annonce
-                    .getAnnonceRafamModel().getDateMortAllocataire()));
+            newBeneficiary.setBeneficiaryDateOfDeath(ALDateUtils
+                    .globazDateToXMLGregorianCalendar(annonce.getAnnonceRafamModel().getDateMortAllocataire()));
         }
 
         if ((annonce.getComplementDelegueModel() != null)
                 && JadeDateUtil.isGlobazDate(annonce.getComplementDelegueModel().getBeneficiaryEndDate())) {
-            newBeneficiary.setBeneficiaryEndDateEmployment(ALDateUtils.globazDateToXMLGregorianCalendar(annonce
-                    .getComplementDelegueModel().getBeneficiaryEndDate()));
+            newBeneficiary.setBeneficiaryEndDateEmployment(ALDateUtils
+                    .globazDateToXMLGregorianCalendar(annonce.getComplementDelegueModel().getBeneficiaryEndDate()));
         }
         if ((annonce.getComplementDelegueModel() != null)
                 && JadeDateUtil.isGlobazDate(annonce.getComplementDelegueModel().getBeneficiaryStartDate())) {
-            newBeneficiary.setBeneficiaryStartDateEmployment(ALDateUtils.globazDateToXMLGregorianCalendar(annonce
-                    .getComplementDelegueModel().getBeneficiaryStartDate()));
+            newBeneficiary.setBeneficiaryStartDateEmployment(ALDateUtils
+                    .globazDateToXMLGregorianCalendar(annonce.getComplementDelegueModel().getBeneficiaryStartDate()));
         }
         if (!JadeStringUtil.isEmpty(annonce.getAnnonceRafamModel().getPrenomAllocataire())) {
-            newBeneficiary
-                    .setBeneficiaryFirstName(annonce.getAnnonceRafamModel().getPrenomAllocataire().length() > ALConstRafam.MESSAGE_ED_NAME_MAX_LENGTH ? JadeStringUtil
-                            .leftJustify(annonce.getAnnonceRafamModel().getPrenomAllocataire(),
-                                    ALConstRafam.MESSAGE_ED_NAME_MAX_LENGTH) : annonce.getAnnonceRafamModel()
-                            .getPrenomAllocataire());
+            newBeneficiary.setBeneficiaryFirstName(annonce.getAnnonceRafamModel().getPrenomAllocataire()
+                    .length() > ALConstRafam.MESSAGE_ED_NAME_MAX_LENGTH
+                            ? JadeStringUtil.leftJustify(annonce.getAnnonceRafamModel().getPrenomAllocataire(),
+                                    ALConstRafam.MESSAGE_ED_NAME_MAX_LENGTH)
+                            : annonce.getAnnonceRafamModel().getPrenomAllocataire());
         } else {
             newBeneficiary.setBeneficiaryFirstName(ALConstRafam.MESSAGE_ED_DATA_BLANK);
         }
@@ -246,8 +259,8 @@ public class ALRafamUtils {
         if (JadeNumericUtil.isEmptyOrZero(annonce.getAnnonceRafamModel().getCodeTypeActivite())) {
             newBeneficiary.setBeneficiaryStatus(RafamOccupationStatus.SALARIE.getCodeCentrale());
         } else {
-            newBeneficiary.setBeneficiaryStatus(RafamOccupationStatus.getOccupationStatus(
-                    annonce.getAnnonceRafamModel().getCodeTypeActivite()).getCodeCentrale());
+            newBeneficiary.setBeneficiaryStatus(RafamOccupationStatus
+                    .getOccupationStatus(annonce.getAnnonceRafamModel().getCodeTypeActivite()).getCodeCentrale());
         }
 
         if (ALCSTiers.SEXE_FEMME.equals(annonce.getAnnonceRafamModel().getSexeAllocataire())) {
@@ -257,11 +270,11 @@ public class ALRafamUtils {
         }
 
         if (!JadeStringUtil.isEmpty(annonce.getAnnonceRafamModel().getNomAllocataire())) {
-            newBeneficiary
-                    .setBeneficiarySurname(annonce.getAnnonceRafamModel().getNomAllocataire().length() > ALConstRafam.MESSAGE_ED_NAME_MAX_LENGTH ? JadeStringUtil
-                            .leftJustify(annonce.getAnnonceRafamModel().getNomAllocataire(),
-                                    ALConstRafam.MESSAGE_ED_NAME_MAX_LENGTH) : annonce.getAnnonceRafamModel()
-                            .getNomAllocataire());
+            newBeneficiary.setBeneficiarySurname(annonce.getAnnonceRafamModel().getNomAllocataire()
+                    .length() > ALConstRafam.MESSAGE_ED_NAME_MAX_LENGTH
+                            ? JadeStringUtil.leftJustify(annonce.getAnnonceRafamModel().getNomAllocataire(),
+                                    ALConstRafam.MESSAGE_ED_NAME_MAX_LENGTH)
+                            : annonce.getAnnonceRafamModel().getNomAllocataire());
         } else {
             newBeneficiary.setBeneficiarySurname(ALConstRafam.MESSAGE_ED_DATA_BLANK);
         }
@@ -271,7 +284,7 @@ public class ALRafamUtils {
     }
 
     /**
-     * 
+     *
      * @return
      * @throws JadeApplicationException
      */
@@ -282,8 +295,8 @@ public class ALRafamUtils {
         AnnonceRafamModel last68 = null;
 
         if (RafamTypeAnnonce._69B_SYNCHRO_UPI.getCode().equals(annonce.getAnnonceRafamModel().getTypeAnnonce())
-                || RafamTypeAnnonce._69C_REGISTER_STATUS.getCode().equals(
-                        annonce.getAnnonceRafamModel().getTypeAnnonce())
+                || RafamTypeAnnonce._69C_REGISTER_STATUS.getCode()
+                        .equals(annonce.getAnnonceRafamModel().getTypeAnnonce())
                 || RafamTypeAnnonce._68C_ANNULATION.getCode().equals(annonce.getAnnonceRafamModel().getTypeAnnonce())) {
             last68 = ALRafamUtils.getLastActive68(annonce);
             if (!JadeStringUtil.isBlankOrZero(last68.getCodeStatutFamilial())) {
@@ -300,16 +313,18 @@ public class ALRafamUtils {
 
         newChild.setChildAHVN13(annonce.getAnnonceRafamModel().getNssEnfant());
         if (JadeDateUtil.isGlobazDate(annonce.getAnnonceRafamModel().getDateNaissanceEnfant())) {
-            newChild.setChildDateOfBirth(ALDateUtils.globazDateToXMLGregorianCalendar(annonce.getAnnonceRafamModel()
-                    .getDateNaissanceEnfant()));
+            newChild.setChildDateOfBirth(ALDateUtils
+                    .globazDateToXMLGregorianCalendar(annonce.getAnnonceRafamModel().getDateNaissanceEnfant()));
         } else if ((last68 != null) && JadeDateUtil.isGlobazDate(last68.getDateNaissanceEnfant())) {
             newChild.setChildDateOfBirth(ALDateUtils.globazDateToXMLGregorianCalendar(last68.getDateNaissanceEnfant()));
         }
 
         if (!JadeStringUtil.isEmpty(annonce.getAnnonceRafamModel().getPrenomEnfant())) {
-            newChild.setChildFirstName(annonce.getAnnonceRafamModel().getPrenomEnfant().length() > ALConstRafam.MESSAGE_ED_NAME_MAX_LENGTH ? JadeStringUtil
-                    .leftJustify(annonce.getAnnonceRafamModel().getPrenomEnfant(),
-                            ALConstRafam.MESSAGE_ED_NAME_MAX_LENGTH) : annonce.getAnnonceRafamModel().getPrenomEnfant());
+            newChild.setChildFirstName(
+                    annonce.getAnnonceRafamModel().getPrenomEnfant().length() > ALConstRafam.MESSAGE_ED_NAME_MAX_LENGTH
+                            ? JadeStringUtil.leftJustify(annonce.getAnnonceRafamModel().getPrenomEnfant(),
+                                    ALConstRafam.MESSAGE_ED_NAME_MAX_LENGTH)
+                            : annonce.getAnnonceRafamModel().getPrenomEnfant());
         } else {
             newChild.setChildFirstName(ALConstRafam.MESSAGE_ED_DATA_BLANK);
         }
@@ -322,9 +337,11 @@ public class ALRafamUtils {
         }
 
         if (!JadeStringUtil.isEmpty(annonce.getAnnonceRafamModel().getNomEnfant())) {
-            newChild.setChildSurname(annonce.getAnnonceRafamModel().getNomEnfant().length() > ALConstRafam.MESSAGE_ED_NAME_MAX_LENGTH ? JadeStringUtil
-                    .leftJustify(annonce.getAnnonceRafamModel().getNomEnfant(), ALConstRafam.MESSAGE_ED_NAME_MAX_LENGTH)
-                    : annonce.getAnnonceRafamModel().getNomEnfant());
+            newChild.setChildSurname(
+                    annonce.getAnnonceRafamModel().getNomEnfant().length() > ALConstRafam.MESSAGE_ED_NAME_MAX_LENGTH
+                            ? JadeStringUtil.leftJustify(annonce.getAnnonceRafamModel().getNomEnfant(),
+                                    ALConstRafam.MESSAGE_ED_NAME_MAX_LENGTH)
+                            : annonce.getAnnonceRafamModel().getNomEnfant());
         } else {
             newChild.setChildSurname(ALConstRafam.MESSAGE_ED_DATA_BLANK);
         }
@@ -334,7 +351,7 @@ public class ALRafamUtils {
 
     /**
      * Traduit un recordNumber employeur délégué en refNumber employeur délégué (n° utilisé par l'employeur)
-     * 
+     *
      * @param recordNumber
      * @return
      * @throws JadeApplicationException
@@ -342,12 +359,12 @@ public class ALRafamUtils {
     public static String translateInRefNumber(String recordNumber) throws JadeApplicationException {
 
         String prefixEmployeur = recordNumber.substring(0, 2);
-        String prefixInReferenceNumber = JadePropertiesService.getInstance().getProperty(
-                "al.rafam.delegue." + prefixEmployeur + ".refTranslator");
+        String prefixInReferenceNumber = JadePropertiesService.getInstance()
+                .getProperty("al.rafam.delegue." + prefixEmployeur + ".refTranslator");
 
         if (prefixInReferenceNumber == null) {
-            throw new ALAnnonceRafamException("ALRafamUtils#translateInRefNumber : prefixInReferenceNumber is null:"
-                    + recordNumber);
+            throw new ALAnnonceRafamException(
+                    "ALRafamUtils#translateInRefNumber : prefixInReferenceNumber is null:" + recordNumber);
         }
 
         return prefixInReferenceNumber.concat(recordNumber.substring(2));
@@ -381,6 +398,10 @@ public class ALRafamUtils {
         }
 
         if (!allowance.getAllowanceType().matches("[0-9]{2}")) {
+            throw new ALRafamException("validateAllowanceType#allowanceType n'est pas valide");
+        }
+
+        if (!String.valueOf(allowance.getAllowanceChildCountryResidence()).matches("[0-9]{4}")) {
             throw new ALRafamException("validateAllowanceType#allowanceType n'est pas valide");
         }
 
