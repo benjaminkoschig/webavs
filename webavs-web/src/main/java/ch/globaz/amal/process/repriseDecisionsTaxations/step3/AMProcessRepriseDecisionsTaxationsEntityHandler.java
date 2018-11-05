@@ -629,6 +629,14 @@ public class AMProcessRepriseDecisionsTaxationsEntityHandler
             }
         } else if (AMRubriqueRevenu.REVENU_ACTIVITE_INDEP.getValue().equals(idRubrique)
                 || AMRubriqueRevenu.REVENU_ACTIVITE_INDEP_C.getValue().equals(idRubrique)) {
+            // Set la valeur reel dans les champs Independante et Independante épouse
+            if (AMRubriqueRevenu.REVENU_ACTIVITE_INDEP.getValue().equals(idRubrique)) {
+                revenu.getSimpleRevenuContribuable().setRevenuActIndep(value.toString());
+            } else {
+                revenu.getSimpleRevenuContribuable().setRevenuActIndepEpouse(value.toString());
+            }
+
+            // Prends la valeurs absolute pour la perte si la valeur est negative
             if (value.compareTo(new BigInteger("0")) == -1) {
                 value = value.negate();
                 if (!JadeStringUtil.isBlankOrZero(revenu.getSimpleRevenuContribuable().getPerteActIndep())) {
@@ -637,13 +645,15 @@ public class AMProcessRepriseDecisionsTaxationsEntityHandler
                 }
                 revenu.getSimpleRevenuContribuable().setPerteActIndep(value.toString());
             }
-            if (AMRubriqueRevenu.REVENU_ACTIVITE_INDEP.getValue().equals(idRubrique)) {
-                revenu.getSimpleRevenuContribuable().setRevenuActIndep(value.toString());
-            } else {
-                revenu.getSimpleRevenuContribuable().setRevenuActIndepEpouse(value.toString());
-            }
         } else if (AMRubriqueRevenu.REVENU_ACTIVITE_AGRICOLE.getValue().equals(idRubrique)
                 || AMRubriqueRevenu.REVENU_ACTIVITE_AGRICOLE_C.getValue().equals(idRubrique)) {
+            // Set la valeur reel dans les champs Agricole et Agricole épouse
+            if (AMRubriqueRevenu.REVENU_ACTIVITE_AGRICOLE.getValue().equals(idRubrique)) {
+                revenu.getSimpleRevenuContribuable().setRevenuActAgricole(value.toString());
+            } else {
+                revenu.getSimpleRevenuContribuable().setRevenuActAgricoleEpouse(value.toString());
+            }
+            // Prends la valeurs absolute pour la perte si la valeur est negative
             if (value.compareTo(new BigInteger("0")) == -1) {
                 value = value.negate();
                 if (!JadeStringUtil.isBlankOrZero(revenu.getSimpleRevenuContribuable().getPerteActAgricole())) {
@@ -651,11 +661,6 @@ public class AMProcessRepriseDecisionsTaxationsEntityHandler
                     value = mt.add(value);
                 }
                 revenu.getSimpleRevenuContribuable().setPerteActAgricole(value.toString());
-            }
-            if (AMRubriqueRevenu.REVENU_ACTIVITE_AGRICOLE.getValue().equals(idRubrique)) {
-                revenu.getSimpleRevenuContribuable().setRevenuActAgricole(value.toString());
-            } else {
-                revenu.getSimpleRevenuContribuable().setRevenuActAgricoleEpouse(value.toString());
             }
         } else if (AMRubriqueRevenu.PERTE_EXERCICES_COMM.getValue().equals(idRubrique)) {
             revenu.getSimpleRevenuContribuable().setPerteExercicesComm(value.toString());
