@@ -254,22 +254,37 @@ public class PersonneElementsCalculConverter {
     private String resolveMaxType(DonneesFinancieresContainer df, IjsAi ijsAi) {
         List<RenteAvsAi> typesRente = df.getRentesAvsAi().getList();
         List<ApiAvsAi> typesApi = df.getApisAvsAi().getList();
-        Montant maxMontant = Montant.ZERO;
+        Montant maxMontantAPI = Montant.ZERO;
+        Montant maxMontantRente = Montant.ZERO;
         String typeRenteCS = "";
-        for (RenteAvsAi rente : typesRente) {
-            if (rente.getMontant().greater(maxMontant)) {
-                maxMontant = rente.getMontant();
-                typeRenteCS = rente.getTypeRente().getValue();
-            }
+        String typeRenteCSIJ = "";
+        String typeRenteCSAPI = "";
+        String typeRenteCSRente = "";
+        
+        if(ijsAi != null && !ijsAi.isEmpty()) {
+            typeRenteCSIJ = IPCIJAI.CS_TYPE_DONNEE_FINANCIERE;
         }
+        
         for (ApiAvsAi api : typesApi) {
-            if (api.getMontant().greater(maxMontant)) {
-                maxMontant = api.getMontant();
-                typeRenteCS = api.getTypeApi().getValue();
+            if (api.getMontant().greater(maxMontantAPI)) {
+                maxMontantAPI = api.getMontant();
+                typeRenteCSAPI = api.getTypeApi().getValue();
             }
         }
-        if("".equals(typeRenteCS) && ijsAi != null && !ijsAi.isEmpty()) {
-            typeRenteCS = IPCIJAI.CS_TYPE_DONNEE_FINANCIERE;
+
+        for (RenteAvsAi rente : typesRente) {
+            if (rente.getMontant().greater(maxMontantRente)) {
+                maxMontantRente = rente.getMontant();
+                typeRenteCSRente = rente.getTypeRente().getValue();
+            }
+        }
+        
+        if(!typeRenteCSRente.isEmpty()) {
+            typeRenteCS = typeRenteCSRente;
+        } else if (!typeRenteCSAPI.isEmpty()) {
+            typeRenteCS = typeRenteCSAPI;
+        } else if (!typeRenteCSIJ.isEmpty()){
+            typeRenteCS = typeRenteCSIJ;
         }
 
         return typeRenteCS;
