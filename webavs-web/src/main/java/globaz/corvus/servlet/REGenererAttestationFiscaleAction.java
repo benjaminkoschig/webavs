@@ -56,6 +56,9 @@ import globaz.globall.parameters.FWParametersUserCode;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JACalendarGregorian;
 import globaz.globall.util.JADate;
+import globaz.hera.api.ISFMembreFamilleRequerant;
+import globaz.hera.api.ISFSituationFamiliale;
+import globaz.hera.external.SFSituationFamilialeFactory;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.acor.PRACORConst;
 import globaz.prestation.interfaces.babel.PRBabelHelper;
@@ -291,15 +294,59 @@ public class REGenererAttestationFiscaleAction extends REDefaultProcessAction {
                                     + REPrestationsAccordees.FIELDNAME_DATE_DEBUT_DROIT);
 
                             mgr2.find(transaction);
+                            /*
+                             * K160602_004 - attestation fiscale - rente survivant, afficher les rentes versées à la
+                             * même
+                             * adresse
+                             */
+                            for (int k = 0; k < mgr2.size(); k++) {
+                                REAttestationFiscaleRenteAccordee raccoNSSConcerne = (REAttestationFiscaleRenteAccordee) mgr2
+                                        .getEntity(k);
+                                if (raccoNSSConcerne.getNumeroAvsBenef().equals(att.getNss())) {
+                                    idAdressePaiement = infocompta.getIdTiersAdressePmt();
+                                    break;
+                                }
+                            }
+                            /*
+                             * Si le NSS choisi n'a pas de rente alors on prends la 1ère rente comme adresse de paiement
+                             * de référence
+                             */
+                            if (JadeStringUtil.isBlank(idAdressePaiement)) {
+                                REAttestationFiscaleRenteAccordee Rente1ereTrouve = (REAttestationFiscaleRenteAccordee) mgr2
+                                        .getFirstEntity();
+                                infocompta.setIdInfoCompta(Rente1ereTrouve.getIdInfoCompta());
+                                infocompta.retrieve();
+                                idAdressePaiement = infocompta.getIdTiersAdressePmt();
+                            }
+
                             for (int j = 0; j < mgr2.size(); j++) {
                                 REAttestationFiscaleRenteAccordee ra = (REAttestationFiscaleRenteAccordee) mgr2
                                         .getEntity(j);
 
-                                if (REGenresPrestations.GENRE_13.equals(ra.getCodePrestation())
+                                if (REGenresPrestations.GENRE_10.equals(ra.getCodePrestation())
+                                        || REGenresPrestations.GENRE_20.equals(ra.getCodePrestation())
+                                        || REGenresPrestations.GENRE_50.equals(ra.getCodePrestation())
+                                        || REGenresPrestations.GENRE_70.equals(ra.getCodePrestation())
+                                        || REGenresPrestations.GENRE_72.equals(ra.getCodePrestation())
+                                        || REGenresPrestations.GENRE_13.equals(ra.getCodePrestation())
                                         || REGenresPrestations.GENRE_23.equals(ra.getCodePrestation())) {
                                     if (!att.getNss().equals(ra.getNumeroAvsBenef())) {
                                         if (!JadeStringUtil.isEmpty(att.getDateDeces())) {
-                                            idTiersAdresseSiDeces = ra.getIdTiersBeneficiaire();
+                                            ISFSituationFamiliale sf = SFSituationFamilialeFactory
+                                                    .getSituationFamiliale(bSession,
+                                                            ISFSituationFamiliale.CS_DOMAINE_RENTES,
+                                                            att.getIdTiersBeneficiaire());
+                                            ISFMembreFamilleRequerant[] mbrsFam = sf
+                                                    .getMembresFamille(att.getIdTiersBeneficiaire());
+                                            for (ISFMembreFamilleRequerant mbrs : mbrsFam) {
+                                                if (att.getNss().equals(mbrs.getNss())
+                                                        && !ISFSituationFamiliale.CS_ETAT_CIVIL_DIVORCE
+                                                                .equals(mbrs.getCsEtatCivil())) {
+                                                    idTiersAdresseSiDeces = ra.getIdTiersBeneficiaire();
+                                                    break;
+                                                }
+                                            }
+
                                         }
                                     }
                                 }
@@ -311,19 +358,15 @@ public class REGenererAttestationFiscaleAction extends REDefaultProcessAction {
                                         || REGenresPrestations.GENRE_24.equals(ra.getCodePrestation())
                                         || REGenresPrestations.GENRE_25.equals(ra.getCodePrestation())
                                         || REGenresPrestations.GENRE_26.equals(ra.getCodePrestation())) {
-                                    if (JadeStringUtil.isBlank(idAdressePaiement)) {
-                                        infocompta.setIdInfoCompta(ra.getIdInfoCompta());
-                                        infocompta.retrieve();
-                                        idAdressePaiement = infocompta.getIdTiersAdressePmt();
-                                    } else {
-                                        infocompta.setIdInfoCompta(ra.getIdInfoCompta());
-                                        infocompta.retrieve();
-                                        if (!IsMemeAdressePaiement(idAdressePaiement, ra.getIdTierAdressePmt())) {
-                                            continue;
-                                        }
-
+                                    infocompta.setIdInfoCompta(ra.getIdInfoCompta());
+                                    infocompta.retrieve();
+                                    if (!IsMemeAdressePaiement(idAdressePaiement, ra.getIdTierAdressePmt())) {
+                                        continue;
                                     }
-
+                                } else {
+                                    if (!att.getIdTiersBaseCalcul().equals(ra.getIdTiersBaseCalcul())) {
+                                        continue;
+                                    }
                                 }
 
                                 if (REGenresPrestations.GENRE_81.equals(ra.getCodePrestation())
@@ -342,10 +385,6 @@ public class REGenererAttestationFiscaleAction extends REDefaultProcessAction {
                                         || REGenresPrestations.GENRE_87.equals(ra.getCodePrestation())
                                         || REGenresPrestations.GENRE_93.equals(ra.getCodePrestation())
                                         || REGenresPrestations.GENRE_97.equals(ra.getCodePrestation())) {
-                                    continue;
-                                }
-
-                                if (!att.getIdTiersBaseCalcul().equals(ra.getIdTiersBaseCalcul())) {
                                     continue;
                                 } else {
                                     String infoTiers = ra.getNumeroAvsBenef() + " " + ra.getNomBenef() + " "
@@ -788,13 +827,28 @@ public class REGenererAttestationFiscaleAction extends REDefaultProcessAction {
             for (int j = 0; j < mgr2.size(); j++) {
                 REAttestationFiscaleRenteAccordee ra = (REAttestationFiscaleRenteAccordee) mgr2.getEntity(j);
 
-                if (REGenresPrestations.GENRE_13.equals(ra.getCodePrestation())
+                if (REGenresPrestations.GENRE_10.equals(ra.getCodePrestation())
+                        || REGenresPrestations.GENRE_20.equals(ra.getCodePrestation())
+                        || REGenresPrestations.GENRE_50.equals(ra.getCodePrestation())
+                        || REGenresPrestations.GENRE_70.equals(ra.getCodePrestation())
+                        || REGenresPrestations.GENRE_72.equals(ra.getCodePrestation())
+                        || REGenresPrestations.GENRE_13.equals(ra.getCodePrestation())
                         || REGenresPrestations.GENRE_23.equals(ra.getCodePrestation())) {
                     // BZ 4507, je memorise l'adresse de paiement pour le tiers qui a une rente
                     // principale et qui n'est pas décédée
                     if (!att.getNss().equals(ra.getNumeroAvsBenef())) {
                         if (!JadeStringUtil.isEmpty(att.getDateDeces())) {
-                            idTiersAdresseSiDeces = ra.getIdTiersBeneficiaire();
+                            ISFSituationFamiliale sf = SFSituationFamilialeFactory.getSituationFamiliale(bSession,
+                                    ISFSituationFamiliale.CS_DOMAINE_RENTES, att.getIdTiersBeneficiaire());
+                            ISFMembreFamilleRequerant[] mbrsFam = sf.getMembresFamille(att.getIdTiersBeneficiaire());
+                            for (ISFMembreFamilleRequerant mbrs : mbrsFam) {
+                                if (att.getNss().equals(mbrs.getNss())
+                                        && !ISFSituationFamiliale.CS_ETAT_CIVIL_DIVORCE.equals(mbrs.getCsEtatCivil())) {
+                                    idTiersAdresseSiDeces = ra.getIdTiersBeneficiaire();
+                                    break;
+                                }
+                            }
+
                         }
                     }
                 }

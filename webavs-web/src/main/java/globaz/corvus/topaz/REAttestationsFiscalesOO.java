@@ -286,7 +286,7 @@ public class REAttestationsFiscalesOO extends REAbstractJobOO {
                     // avec le degré de cette API
                     Calendar finMois = JadeDateUtil.getGlobazCalendar(dateMoisFin);
                     if (codePrestation.isAPI()) {
-                        if(Calendar.DECEMBER == finMois.get(Calendar.MONTH)) {
+                        if (Calendar.DECEMBER == finMois.get(Calendar.MONTH)) {
                             hasAPI = true;
                             degreAPI = codePrestation.getDegreImpotenceAPI();
                         }
@@ -353,7 +353,7 @@ public class REAttestationsFiscalesOO extends REAbstractJobOO {
         // table vide pour enlever la section "Autres rentes" (utilisée uniquement pour les attestations uniques)
         Collection autreTable = new Collection("TableauAutre");
         data.add(autreTable);
-        
+
         String lastLine = "";
 
         if (hasAPI) {
@@ -398,20 +398,23 @@ public class REAttestationsFiscalesOO extends REAbstractJobOO {
                 texte = texte.replace("{annee}", getAnnee());
                 texte = texte + SAUT_DE_LIGNE;
             }
-            if (!hasRetroactifSurPlusieursAnnees) {
+            // if (!hasRetroactifSurPlusieursAnnees) {
+            if (hasRetroactifVersementCreancier) {
                 data.addData("HAS_RETROACTIF", texte);
                 lastLine = "HAS_RETROACTIF";
-            } else {
-                if (hasRetroactifVersementCreancier) {
-                    data.addData("HAS_RETROACTIF", texte);
-                    lastLine = "HAS_RETROACTIF";
-                }
             }
+            // } else {
+            // if (hasRetroactifVersementCreancier) {
+            // data.addData("HAS_RETROACTIF", texte);
+            // lastLine = "HAS_RETROACTIF";
+            // }
+            // }
         }
-        
+
         // pour lier le dernier paragraphe aux salutations
-        if(!lastLine.isEmpty()) {
+        if (!lastLine.isEmpty()) {
             data.addData(lastLine, data.getDatabag().get(lastLine) + PostProcessor.GLUE_PARAGRAPHS);
+
         }
 
         data.addData("SALUTATION_ATTESTATION",
