@@ -279,6 +279,7 @@ public class PersonneElementsCalculConverter {
             }
         }
         
+        // S180817_002 : si Rente + API annoncer code Rente, Si API + IJ annoncer API
         if(!typeRenteCSRente.isEmpty()) {
             typeRenteCS = typeRenteCSRente;
         } else if (!typeRenteCSAPI.isEmpty()) {
