@@ -67,6 +67,18 @@
 			 $('#infoTiers'+inc).val('');
 		 }
 	 }
+	 
+	function addLine(val) {
+		for(var inc = 0; inc <= 8; inc++) {
+		  	if($('#nss'+inc).val().length == 0 && $('#line'+inc).is(":hidden")) {
+		  		$('#line'+inc).show();
+		  		if(inc == 8) {
+		  			$('#addBtn').hide();
+		  		}
+		  		break;
+		  	}
+		}
+	}
 
 	$(document).ready(function() {
 		var $boutonOk = $('#btnOk');
@@ -76,6 +88,14 @@
 
 			ajaxUtils.addOverlay($('html'));
 		});
+		
+  
+		for(var inc = 0; inc <= 8; inc++) {
+			if($('#nss'+inc).val().length == 0) {
+				$('#line'+inc).hide();
+			}
+		}
+		  
 	});
 </script>
 <%-- /tpl:put --%>
@@ -220,12 +240,12 @@
 						<input type="hidden" name="idInfoCompl" value="<%=viewBean.getIdInfoCompl()%>">
 						<TR>
 							<TD><ct:FWLabel key="JSP_NSS_A_TRANSFERER"/></TD>
-							<td>	
-								<table>
+							<td>
+								<table >
 								<%for (int i=0; i < viewBean.getListNss().size(); i++) {
 								    String _nss = viewBean.getListNss().get(i);
-								    String _idTiers = viewBean.getMapNssId().get(_nss).getIdTiers();%>
-									<tr><td>
+								    %>
+									<tr id="line<%=i%>"><td>
 										<input id="nss<%=i%>" name="nss<%=i%>" value="<%=_nss%>"
 		                    			data-g-autocomplete="
 		                    							mandatory:false,
@@ -244,10 +264,10 @@
 		                                                ¦" type="text"
 		                                                onchange="testIfClear(<%=i%>)"/>
 		                                <input type="text" id='infoTiers<%=i%>' name="infoTiers<%=i%>" size="60" readonly class="disabled" 
-		                                	value="<%=viewBean.getMapNssId().get(_nss).getNom()+" "+viewBean.getMapNssId().get(_nss).getPrenom()+" / "+
+		                                	value="<%=_nss.isEmpty() ?"":viewBean.getMapNssId().get(_nss).getNom()+" "+viewBean.getMapNssId().get(_nss).getPrenom()+" / "+
 		                                	        viewBean.getMapNssId().get(_nss).getDateNaissance()%>"/>
-									</td></tr>
-					           	<%} %>
+									<%	}%>
+									<tr><td><input id="addBtn" type="button" value="+" style="padding-left: 1em; padding-right: 1em" onClick="addLine();"></td></tr>
 					           	</table>
 				           	</td>
 						</TR>

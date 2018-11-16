@@ -116,8 +116,6 @@ public class REGenererTransfertDossierViewBean extends PRAbstractViewBeanSupport
     
     private void genereListNss() throws Exception {
         
-        listNss = new ArrayList<>();
-        
         listExConjoint = getListExConjoint(idTiers);
         
         List<RERenteLieeJointPrestationAccordee> rentesLiees = getRentesLieesEnCours(getSession(), idTiers);
@@ -129,14 +127,20 @@ public class REGenererTransfertDossierViewBean extends PRAbstractViewBeanSupport
             if(isRenteEnfant(rente) || isRenteSurvivant(rente)) {
                 addNssFromTiers(rente.getIdTiersComplementaire1(), nssUnique);
             } else if(isRentePrincipale(rente)){
-                addNssFromTiers(rente.getIdTiersBeneficiaire(), nssUnique);
+                addNssFromTiersSansExConjoint(rente.getIdTiersBeneficiaire(), nssUnique);
             }
         }
+        
+        listNss = new ArrayList<>(); 
         
         for(String nssToAdd:nssUnique) {
             listNss.add(nssToAdd);
         }
-              
+        
+        int reste = 8 - listNss.size();
+        for(int i = 0; i <= reste;i++) {
+            listNss.add("");
+        }
     }
     
     private List<String> getListExConjoint(String idTiers) throws Exception {
@@ -153,8 +157,16 @@ public class REGenererTransfertDossierViewBean extends PRAbstractViewBeanSupport
       return listEx;
         
     }
-
     
+    public void updateIdTiers() throws Exception  {
+        for(String nss : listNss) { 
+            if(!JadeStringUtil.isEmpty(nss)) {
+                PRTiersWrapper tiers = PRTiersHelper.getTiers(getSession(), nss);
+                mapNssId.put(nss, tiers);
+            }
+        }
+    }
+
     private List<RERenteLieeJointPrestationAccordee> getRentesLieesEnCours(final BSession session,
             final String idTiers) throws Exception {
 
@@ -178,13 +190,20 @@ public class REGenererTransfertDossierViewBean extends PRAbstractViewBeanSupport
         return rentesComplementaires;
     }
     
-    private void addNssFromTiers(String idTiers, Set<String> nssUnique) throws Exception {
+    private void addNssFromTiersSansExConjoint(String idTiers, Set<String> nssUnique) throws Exception {
         PRTiersWrapper tiers = PRTiersHelper.getTiersParId(getSession(), idTiers);
         String nssTiers = tiers.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL);
         if(!listExConjoint.contains(nssTiers)) {
             nssUnique.add(nssTiers);
             mapNssId.put(nssTiers, tiers);
         }
+    }
+    
+    private void addNssFromTiers(String idTiers, Set<String> nssUnique) throws Exception {
+        PRTiersWrapper tiers = PRTiersHelper.getTiersParId(getSession(), idTiers);
+        String nssTiers = tiers.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL);
+        nssUnique.add(nssTiers);
+        mapNssId.put(nssTiers, tiers);
     }
     
     private boolean isRenteEnfant(RERenteLieeJointPrestationAccordee rente) {
@@ -294,7 +313,11 @@ public class REGenererTransfertDossierViewBean extends PRAbstractViewBeanSupport
 
         if (demandeRente != null) {
             
-            genereListNss();
+            if(listNss == null || listNss.isEmpty()) {
+                genereListNss();
+            } else {
+                updateIdTiers();
+             }
 
             if (IREDemandeRente.CS_TYPE_CALCUL_STANDARD.equals(demandeRente.getCsTypeCalcul())
                     && (!isValide() || !asRaEnCours())) {
@@ -313,7 +336,7 @@ public class REGenererTransfertDossierViewBean extends PRAbstractViewBeanSupport
         }
         return "";
     }
-
+    
     /**
      * Vrais si le docement a imprimer est "Demande calcul previsionnel"
      * 
@@ -581,6 +604,46 @@ public class REGenererTransfertDossierViewBean extends PRAbstractViewBeanSupport
 
     public void setNss2(String nss2) {
         setNssNum(2, nss2);
+    }
+    
+    public String getNss3() {
+        return getNssNum(3);
+    }
+
+    public void setNss3(String nss3) {
+        setNssNum(3, nss3);
+    }
+    
+    public String getNss4() {
+        return getNssNum(4);
+    }
+
+    public void setNss4(String nss4) {
+        setNssNum(4, nss4);
+    }
+    
+    public String getNss5() {
+        return getNssNum(5);
+    }
+
+    public void setNss5(String nss5) {
+        setNssNum(5, nss5);
+    }
+    
+    public String getNss6() {
+        return getNssNum(6);
+    }
+
+    public void setNss6(String nss6) {
+        setNssNum(6, nss6);
+    }
+    
+    public String getNss7() {
+        return getNssNum(7);
+    }
+
+    public void setNss7(String nss7) {
+        setNssNum(7, nss7);
     }
    
     private void setNssNum(int index, String nss) {
