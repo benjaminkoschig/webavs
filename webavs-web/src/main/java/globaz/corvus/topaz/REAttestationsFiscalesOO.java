@@ -387,9 +387,11 @@ public class REAttestationsFiscalesOO extends REAbstractJobOO {
         // Si PC en décembre
         if (famille.getHasRentePC()) {
             String texte = getTexte(catalogueTextesAttestationsFiscales, 4, 7);
-            texte = texte + SAUT_DE_LIGNE;
-            data.addData("HAS_PC_DECEMBRE", texte);
-            lastLine = "HAS_PC_DECEMBRE";
+            if(!texte.isEmpty()) {
+                texte = texte + SAUT_DE_LIGNE;
+                data.addData("HAS_PC_DECEMBRE", texte);
+                lastLine = "HAS_PC_DECEMBRE";
+            }
         }
         // Si rétroactif
         if (famille.getHasRetroactif()) {
