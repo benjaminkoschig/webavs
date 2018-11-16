@@ -1,11 +1,21 @@
 package globaz.phenix.process.communications;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Vector;
+import ch.globaz.common.domaine.Date;
+import ch.globaz.orion.business.domaine.demandeacompte.DemandeModifAcompteStatut;
+import ch.globaz.orion.db.EBDemandeModifAcompteEntity;
+import globaz.framework.util.FWCurrency;
 import globaz.framework.util.FWMessage;
 import globaz.globall.db.BProcess;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
+import globaz.globall.db.FWFindParameter;
 import globaz.globall.db.GlobazJobQueue;
 import globaz.globall.util.JACalendar;
+import globaz.globall.util.JANumberFormatter;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.log.JadeLogger;
 import globaz.musca.api.IFAPassage;
@@ -14,26 +24,24 @@ import globaz.musca.external.ServicesFacturation;
 import globaz.naos.db.affiliation.AFAffiliation;
 import globaz.naos.db.affiliation.AFAffiliationUtil;
 import globaz.naos.db.cotisation.AFCotisation;
+import globaz.naos.db.particulariteAffiliation.AFParticulariteAffiliation;
 import globaz.osiris.db.interets.CAInteretMoratoire;
 import globaz.phenix.application.CPApplication;
 import globaz.phenix.db.communications.CPJournalRetour;
+import globaz.phenix.db.divers.CPTableIndependant;
+import globaz.phenix.db.divers.CPTableIndependantManager;
 import globaz.phenix.db.principale.CPDecision;
 import globaz.phenix.db.principale.CPDecisionViewBean;
 import globaz.phenix.db.principale.CPDonneesBase;
+import globaz.phenix.db.principale.CPDonneesCalcul;
 import globaz.phenix.process.CPProcessCalculCotisation;
 import globaz.phenix.toolbox.CPToolBox;
 import globaz.phenix.util.CPUtil;
 import globaz.pyxis.db.tiers.TITiersViewBean;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Vector;
-import ch.globaz.orion.business.domaine.demandeacompte.DemandeModifAcompteStatut;
-import ch.globaz.orion.db.EBDemandeModifAcompteEntity;
 
 /**
  * Génération des décisions lors de la validation d'une décision depuis ORION
- * 
+ *
  */
 public class CPProcessDemandePortailGenererDecision extends BProcess {
     private static final long serialVersionUID = -1161457272987315919L;
@@ -71,7 +79,7 @@ public class CPProcessDemandePortailGenererDecision extends BProcess {
 
     /**
      * Constructeur du type BProcess.
-     * 
+     *
      * @param parent
      *            BProcess
      */
@@ -81,7 +89,7 @@ public class CPProcessDemandePortailGenererDecision extends BProcess {
 
     /**
      * Constructeur du type BSession.
-     * 
+     *
      * @param session
      *            la session utilisée par le process
      */
@@ -91,7 +99,7 @@ public class CPProcessDemandePortailGenererDecision extends BProcess {
 
     /**
      * Calcul des cotisations à partir de la réception des communications fiscales
-     * 
+     *
      * @param myDecision
      * @param retour
      */
@@ -140,8 +148,279 @@ public class CPProcessDemandePortailGenererDecision extends BProcess {
             }
             // Création des remarques
             calcul.createRemarqueAutomatique(getTransaction(), newDecision);
+            // Mise à jour cotisation (WEBAVS-5955 - K181109_001)
+            Date date = new Date();
+            if (!newDecision.getAnneeDecision().equals(date.getAnnee())) {
+                calculRevenuAvecCotisation(newDecision);
+            }
+
         } catch (Exception e) {
             JadeLogger.error(this, e);
+        }
+    }
+
+    protected void calculRevenuAvecCotisation(CPDecisionViewBean newDecision) throws Exception {
+        // Recherche taux dans la table des indépendant qui permet de
+        // recalculer la revenu (modification AVS 2012)
+        if (!JadeStringUtil.isBlankOrZero(newDecision.getRevenu1())
+                || !JadeStringUtil.isBlankOrZero(newDecision.getRevenuAutre1())) {
+            String revenu = "0";
+            // Si les 2 revenus (Exemple revenu et revenu agricole sont renseignés
+            // il ne faut pas calculer les cotisations pour chaque revenus mais prendre le total
+            // et ajouter les cotisation sur le revenu non agricole => PO 6336 (I120216_000026)
+            FWCurrency varTemp = new FWCurrency(revenu);
+            if (!JadeStringUtil.isBlankOrZero(newDecision.getRevenu1())) {
+                varTemp.add(JANumberFormatter.deQuote(newDecision.getRevenu1()));
+            }
+            if (!JadeStringUtil.isBlankOrZero(newDecision.getRevenuAutre1())) {
+                varTemp.add(JANumberFormatter.deQuote(newDecision.getRevenuAutre1()));
+            }
+            revenu = varTemp.toString();
+            if (varTemp.isNegative()) { // PO 6469
+                return; // PO 6469
+            }
+            // Nouvelle directive au 01.01.2013 (tenir compte de la franchise pour les rentiers
+            String montantPourTaux = revenu;
+            float mFranchise = 0;
+            if (CPDecision.CS_RENTIER.equalsIgnoreCase(newDecision.getGenreAffilie())) {
+                // Détermination du montant de franchise
+                mFranchise = getFranchise(this);
+                varTemp = new FWCurrency(JANumberFormatter.deQuote(revenu));
+                varTemp.sub(mFranchise);
+                if (varTemp.isNegative()) { // PO 8272
+                    return; // PO 8272
+                }
+                montantPourTaux = varTemp.toString();
+            }
+
+            // S150911_009
+            float mInteretcapital = 0;
+            if (!JadeStringUtil.isBlankOrZero(newDecision.getCapital())) {
+                // Détermination du montant d'intérêt
+                mInteretcapital = CPDonneesCalcul.calculInteretCapital(this, newDecision);
+                varTemp = new FWCurrency(JANumberFormatter.deQuote(revenu));
+                varTemp.sub(mFranchise);
+                varTemp.sub(mInteretcapital);
+                if (varTemp.isNegative()) { // PO 8272
+                    return; // PO 8272
+                }
+                montantPourTaux = varTemp.toString();
+            }
+
+            // S171221_015
+            if (!JadeStringUtil.isBlankOrZero(newDecision.getRachatLPP())) {
+                FWCurrency varTempRachat = new FWCurrency(JANumberFormatter.deQuote(newDecision.getRachatLPP()));
+                FWCurrency varTempMontantTaux = new FWCurrency(JANumberFormatter.deQuote(montantPourTaux));
+                varTempMontantTaux.sub(varTempRachat);
+                montantPourTaux = varTempMontantTaux.toString();
+            }
+
+            // Pas de calcul de cotisation si l'affiliié a une activité accessoire
+            if (determinineSiActiviteAccessoire(newDecision, revenu)) {
+                return;
+            }
+            //
+            CPTableIndependant tInd = null;
+            float tauxCalcul = 0;
+            CPTableIndependantManager tIndManager = new CPTableIndependantManager();
+            tIndManager.setSession(getSession());
+            tIndManager.setFromAnneeInd(newDecision.getAnneeDecision());
+            if (Float.parseFloat(JANumberFormatter.deQuote(montantPourTaux)) < 0) {
+                tIndManager.setFromRevenuInd("0");
+            } else {
+                tIndManager.setFromRevenuInd(montantPourTaux);
+            }
+            tIndManager.orderByAnneeDescendant();
+            tIndManager.orderByRevenuDescendant();
+            tIndManager.find();
+            if (tIndManager.size() == 0) {
+                this._addError(getTransaction(), "cotisation non trouvée: " + newDecision.getAnneeDecision() + "  "
+                        + newDecision.getRevenu1() + " " + getDescriptionTiers());
+            } else {
+                tInd = ((CPTableIndependant) tIndManager.getEntity(0));
+            }
+            if (tInd == null) {
+                this._addError(getTransaction(), getSession().getLabel("CP_MSG_0110") + " " + getDescriptionTiers());
+            }
+            if (!getTransaction().hasErrors()) {
+                if (JadeStringUtil.isEmpty(tInd.getTaux())) {
+                    tauxCalcul = 100;
+                } else {
+                    tauxCalcul = Float.parseFloat(
+                            new FWCurrency(100 - Float.parseFloat(JANumberFormatter.deQuote(tInd.getTaux())), 4)
+                                    .toString());
+                }
+
+                float calculCotisation = 0f;
+                if (!JadeStringUtil.isDecimalEmpty(JANumberFormatter.deQuote(newDecision.getRachatLPP()))) {
+                    float rachatLpp = Float.parseFloat(JANumberFormatter.deQuote(newDecision.getRachatLPP()));
+                    float revenuPourCalcul = Float.parseFloat(JANumberFormatter.deQuote(revenu)) - rachatLpp;
+
+                    calculCotisation = (((revenuPourCalcul * 100)
+                            - (mFranchise * Float.parseFloat(JANumberFormatter.deQuote(tInd.getTaux())))
+                            - (mInteretcapital * Float.parseFloat(JANumberFormatter.deQuote(tInd.getTaux()))))
+                            / tauxCalcul) - revenuPourCalcul;
+                } else {
+
+                    calculCotisation = (((Float.parseFloat(JANumberFormatter.deQuote(revenu)) * 100)
+                            - (mFranchise * Float.parseFloat(JANumberFormatter.deQuote(tInd.getTaux())))
+                            - (mInteretcapital * Float.parseFloat(JANumberFormatter.deQuote(tInd.getTaux()))))
+                            / tauxCalcul) - Float.parseFloat(JANumberFormatter.deQuote(revenu));
+                }
+                newDecision.setCotisation1(
+                        JANumberFormatter.round(Float.toString(calculCotisation), 1, 2, JANumberFormatter.INF));
+                newDecision.update(getTransaction());
+            }
+        }
+    }
+
+    /**
+     * Determine si l'affilié à une activité accessoire
+     *
+     * @param newDecision
+     * @param revenu
+     * @return
+     * @throws Exception
+     */
+    private boolean determinineSiActiviteAccessoire(CPDecisionViewBean newDecision, String revenu) throws Exception {
+        // PO 8272 - Si activité accessoire ne pas ajouter les cotisations
+        if (AFParticulariteAffiliation.existeParticularite(getTransaction(), this.newDecision.getIdAffiliation(),
+                AFParticulariteAffiliation.CS_ACTIVITE_ACCESSOIRE, this.newDecision.getDebutDecision())) {
+            // Recherche montant maximum pour activité accessoire
+            float revenuActviteAccessoire = Float.parseFloat(FWFindParameter.findParameter(getTransaction(), "10500130",
+                    "REVACTACC", this.newDecision.getDebutDecision(), "", 0));
+
+            float interet = calculInteret(newDecision);
+            float montantActiviteAccessoire = Float.parseFloat(JANumberFormatter.deQuote(revenu.toString())) - interet;
+            // Arrondir au 100 CHF pour les tests si le genre est différents de TSE
+            if (!CPDecision.CS_TSE.equalsIgnoreCase(newDecision.getGenreAffilie()) && (JANumberFormatter
+                    .round(montantActiviteAccessoire, 100, 0, JANumberFormatter.INF) <= revenuActviteAccessoire)) {
+                return true;
+            }
+            // ne pas arrondir au 100 CHF pour les tests pour les TSE
+            if (CPDecision.CS_TSE.equalsIgnoreCase(newDecision.getGenreAffilie())
+                    && (montantActiviteAccessoire <= revenuActviteAccessoire)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    protected float calculInteret(CPDecisionViewBean newDecision) throws Exception {
+        float capital = 0;
+        float interet = 0;
+        String tauxInteret = "";
+        // Détermination des intérêts du capital investi
+        // interet = capital arrondi au 1000fr. supérieur * taux
+        if (!JadeStringUtil.isBlank(newDecision.getCapital())) {
+            capital = Float.parseFloat(JANumberFormatter.deQuote(newDecision.getCapital()));
+            // Arrondir le capital au 1000 fr. supérieur
+            capital = JANumberFormatter.round(Float.parseFloat(Float.toString(capital)), 1000, 0,
+                    JANumberFormatter.SUP);
+            // Recherche du taux dans la table des paramètres correspondant
+            // au début de décision (praenumerando) ou à la date de fin
+            // d'exercice (postnumerando)
+            if (newDecision.getTaxation().equalsIgnoreCase("A")) {
+                tauxInteret = FWFindParameter.findParameter(getTransaction(), "10500020", "TAUXINTERE",
+                        newDecision.getDebutDecision(), "", 2);
+            } else {
+                tauxInteret = FWFindParameter.findParameter(getTransaction(), "10500020", "TAUXINTERE",
+                        newDecision.getFinExercice1(), "", 2);
+            }
+            // Calcul des intêrets
+            if (!JadeStringUtil.isBlank(tauxInteret)) {
+                interet = (capital * Float.parseFloat(tauxInteret)) / 100;
+            }
+            // Ramener au prorata de la période de l'exercice pour le
+            // mode de taxation postnumerando
+            interet = Float.parseFloat(CPToolBox.prorataInteret(newDecision.getDebutExercice1(),
+                    newDecision.getFinExercice1(), Float.toString(interet)));
+            interet = JANumberFormatter.round(interet, 1, 0, JANumberFormatter.INF);
+            if (interet < 0) {
+                interet = 0;
+            }
+        }
+        return interet;
+    }
+
+    public float getFranchise(BProcess process) {
+        // Pour le mode preanumerando, le montant de la franchise était valable
+        // pour toute l'année soit 12* montant mensuel.
+        // Depuis le mode postnumerando, le nombre de mois est déterminer depuis
+        // le
+        // début de la période de décision (ou le début de l'âge AVS si c'est
+        // l'année ou
+        // l'affilié atteint l'âge AVS) jusqu'à la fin de la decision.
+        float mFranchise = 0;
+        try {
+            // Recherche du montant de franchise mensuel
+            mFranchise = Float.parseFloat(FWFindParameter.findParameter(getTransaction(), "10500030", "FRANCHISE",
+                    newDecision.getDebutDecision(), "", 0));
+            String dateAvs = this.getTiers().getDateAvs();
+            int anneeAvs = JACalendar.getYear(dateAvs);
+            // Recherche de l'âge AVS
+            int moisDebut = 0;
+            int moisFin = 0;
+            boolean exerciceSur2Annee = false;
+            int anneeDebutExercice = JACalendar.getYear(newDecision.getDebutExercice1());
+            int anneeFinExercice = JACalendar.getYear(newDecision.getFinExercice1());
+            if ((anneeDebutExercice != anneeFinExercice) && newDecision.getTaxation().equalsIgnoreCase("N")
+                    && newDecision.getDebutActivite().equals(new Boolean(true))) {
+                exerciceSur2Annee = true;
+            }
+            if (exerciceSur2Annee) {
+                if (BSessionUtil.compareDateBetweenOrEqual(process.getSession(), newDecision.getDebutExercice1(),
+                        newDecision.getFinExercice1(), dateAvs)) {
+                    moisDebut = JACalendar.getMonth(dateAvs) + 1;
+                    moisFin = JACalendar.getMonth(newDecision.getFinExercice1());
+                    if (JACalendar.getYear(dateAvs) < JACalendar.getYear(newDecision.getFinExercice1())) {
+                        moisFin = moisFin + 12;
+                    }
+                } else {
+                    moisDebut = JACalendar.getMonth(newDecision.getDebutExercice1());
+                    moisFin = JACalendar.getMonth(newDecision.getFinExercice1()) + 12;
+                }
+            } else {
+                // Voir CPProcessReceptionGenererDecisionTest, si un changement se fait dans cette partie de code, il
+                // faudrait adapter le
+                // test unitaire
+                moisDebut = JACalendar.getMonth(newDecision.getDebutDecision());
+                moisFin = JACalendar.getMonth(newDecision.getFinDecision());
+                int varNum = Integer.parseInt(newDecision.getNombreMoisTotalDecision());
+                if (varNum != 0) {
+                    // Recaler la date de début et de fin par rapport à la
+                    // période totale
+                    int vNum = (moisDebut + varNum) - 1;
+                    if (vNum <= 12) { // décalage du mois de fin
+                        moisFin = vNum;
+                    } else { // Décalage du mois de début
+                        vNum = (moisFin - varNum) + 1;
+                        if (vNum >= 1) {
+                            moisDebut = vNum;
+                        } else { // Période ne tenant pas dans la décision
+                            moisDebut = 1;
+                            moisFin = varNum;
+                        }
+                    }
+                    // Nouveau code pour corriger la problématique des rentiers (K160704_001)
+                    if (newDecision.getAnneeDecision().equalsIgnoreCase(Integer.toString(anneeAvs))
+                            && moisDebut < (JACalendar.getMonth(dateAvs) + 1)) {
+                        moisDebut = JACalendar.getMonth(dateAvs) + 1;
+                    }
+                }
+                if (newDecision.getAnneeDecision().equalsIgnoreCase(Integer.toString(anneeAvs))
+                        && BSessionUtil.compareDateFirstLower(getSession(), newDecision.getDebutDecision(), dateAvs)) {
+                    moisDebut = JACalendar.getMonth(dateAvs) + 1;
+                }
+            }
+            // Calcul de la franchise
+            return mFranchise * ((moisFin - moisDebut) + 1);
+
+        } catch (Exception e) {
+            this._addError(process.getTransaction(), " Echec lors du calcul de la franchise pour "
+                    + getDescriptionTiers() + " année " + newDecision.getAnneeDecision());
+            this._addError(process.getTransaction(), e.toString());
+            return 0;
         }
     }
 
@@ -159,7 +438,8 @@ public class CPProcessDemandePortailGenererDecision extends BProcess {
             demande.retrieve();
 
             // Génération de la décision
-            if (DemandeModifAcompteStatut.A_TRAITER.equals(DemandeModifAcompteStatut.fromValue(demande.getCsStatut()))) {
+            if (DemandeModifAcompteStatut.A_TRAITER
+                    .equals(DemandeModifAcompteStatut.fromValue(demande.getCsStatut()))) {
                 _executeProcessDemandeGenererDecision(demande, revAf);
             }
 
@@ -180,7 +460,7 @@ public class CPProcessDemandePortailGenererDecision extends BProcess {
 
     /**
      * Calcul des montants de cotisation Date de création : (14.02.2002 14:26:51)
-     * 
+     *
      * @return boolean
      */
     @Override
@@ -279,8 +559,8 @@ public class CPProcessDemandePortailGenererDecision extends BProcess {
                 msg = demande.getId() + " - ";
             }
             getMemoryLog().logMessage(msg + e.toString(), FWMessage.FATAL, this.getClass().getName());
-            this._addError(getTransaction(), getSession().getLabel("PROCDEMANDEGENDEC_EMAIL_OBJECT_FAILED") + ": "
-                    + msg + e.toString());
+            this._addError(getTransaction(),
+                    getSession().getLabel("PROCDEMANDEGENDEC_EMAIL_OBJECT_FAILED") + ": " + msg + e.toString());
 
         }
         return true;
@@ -288,7 +568,7 @@ public class CPProcessDemandePortailGenererDecision extends BProcess {
 
     /**
      * Cette méthode est équivalente à CPDecisionViewBean _initEcran
-     * 
+     *
      * @param myDecision
      * @param retour
      * @return
@@ -324,16 +604,16 @@ public class CPProcessDemandePortailGenererDecision extends BProcess {
             // newDecision.setIdTiers(this.getTiers().getIdTiers());
             newDecision.setTiers(this.getTiers());
             if (decisionActuelle != null) {
-                newDecision.setTypeDecision(CPUtil.determinerTypeDecision(demande.getAnnee(),
-                        decisionActuelle.getTypeDecision()));
+                newDecision.setTypeDecision(
+                        CPUtil.determinerTypeDecision(demande.getAnnee(), decisionActuelle.getTypeDecision()));
             } else {
                 newDecision.setGenreAffilie(CPToolBox.conversionTypeAffiliationEnGenreAffilie(affiliation));
                 newDecision.setTypeDecision(CPUtil.determinerTypeDecision(demande.getAnnee(), null));
             }
             newDecision.setLettreSignature(lettreSignature);
             try {
-                newDecision.setResponsable(CPToolBox.getUserByCanton(this.getTiers().getIdCantonDomicile(),
-                        getTransaction()));
+                newDecision.setResponsable(
+                        CPToolBox.getUserByCanton(this.getTiers().getIdCantonDomicile(), getTransaction()));
             } catch (Exception e) {
                 newDecision.setResponsable("");
             }
@@ -392,9 +672,8 @@ public class CPProcessDemandePortailGenererDecision extends BProcess {
             int anneeAvs = JACalendar.getYear(dateAgeAvs);
             int anneeDec = JACalendar.getYear(newDecision.getDebutDecision());
             // Détermination si rentier
-            if ((anneeAvs < anneeDec)
-                    || ((anneeAvs == anneeDec) && BSessionUtil.compareDateFirstGreater(getSession(),
-                            newDecision.getFinDecision(), dateAgeAvs))) {
+            if ((anneeAvs < anneeDec) || ((anneeAvs == anneeDec)
+                    && BSessionUtil.compareDateFirstGreater(getSession(), newDecision.getFinDecision(), dateAgeAvs))) {
                 newDecision.setGenreAffilie(CPDecision.CS_RENTIER);
             }
             newDecision.setBloque(new Boolean(false));
@@ -415,8 +694,8 @@ public class CPProcessDemandePortailGenererDecision extends BProcess {
             newDecision.add(getTransaction());
         } catch (Exception e) {
             JadeLogger.error(this, e);
-            this._addError(getTransaction(), getSession().getLabel("CP_MSG_0142") + demande.getNumAffilie() + " "
-                    + demande.getId());
+            this._addError(getTransaction(),
+                    getSession().getLabel("CP_MSG_0142") + demande.getNumAffilie() + " " + demande.getId());
         }
         return newDecision;
     }
@@ -424,7 +703,7 @@ public class CPProcessDemandePortailGenererDecision extends BProcess {
     /**
      * Cette méthode initialise les données nécessaire pour le calcul de la décision selon la demande en prevenance
      * d'Ebusiness.
-     * 
+     *
      * @param newDecision
      * @param retour
      */
@@ -484,7 +763,7 @@ public class CPProcessDemandePortailGenererDecision extends BProcess {
 
     /**
      * Chargement des propriétés
-     * 
+     *
      * @throws Exception
      */
     protected void chargementProprietes() throws Exception {
@@ -506,7 +785,7 @@ public class CPProcessDemandePortailGenererDecision extends BProcess {
 
     /**
      * Permet la génération en partant d'une liste d'id de retour
-     * 
+     *
      * @return
      */
     protected boolean genererByIdDemande() {
@@ -620,7 +899,7 @@ public class CPProcessDemandePortailGenererDecision extends BProcess {
 
     /**
      * Récupération d'un tiers
-     * 
+     *
      * @param idTiers
      * @return
      * @throws Exception
@@ -649,7 +928,7 @@ public class CPProcessDemandePortailGenererDecision extends BProcess {
 
     /**
      * Permet d'initialiser la progress bar
-     * 
+     *
      * @param nbOccurence
      */
     protected void initProgressCounter(int nbOccurence) {
