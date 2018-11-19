@@ -1189,7 +1189,14 @@ Nouveau subside
 									<td><input id="montantExact2" disabled="disabled" type="text"
 										name="detailFamille.supplExtra"
 										data-g-amount=" "
-										value='<%=(!viewBeanIsNew || !viewBean.isSupplementPCFamille()?(viewBean.getDetailFamille().getAnneeHistorique().equals("1997")?viewBean.getDetailFamille().getSupplExtra():""):"")%>'/>
+										value='<%=(!viewBeanIsNew?
+										        			(viewBean.isSupplementPCFamille() ? 
+										        			        "": 
+											        				(viewBean.getDetailFamille().getAnneeHistorique().equals("1997")?
+											        			        viewBean.getDetailFamille().getSupplExtra()
+											        			        :"")
+										        			    )
+										        			:"")%>'/>
 									</td>
 			                		<td></td>
 		                			<td>Prime exacte</td>
