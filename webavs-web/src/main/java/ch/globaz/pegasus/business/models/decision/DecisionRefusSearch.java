@@ -25,6 +25,7 @@ public class DecisionRefusSearch extends JadeSearchComplexModel {
     private String forDateDecisionMax;
     private Collection<String> forIdsDecisionHeader = new HashSet<String>();
     private String forCsEtatDemande = null;
+    private Collection<String> forNss = null;
 
     public DecisionRefusSearch whereKeyForRpc() {
         setWhereKey("RPC");
@@ -118,4 +119,12 @@ public class DecisionRefusSearch extends JadeSearchComplexModel {
         return DecisionRefus.class;
     }
 
+    public Collection<String> getForNss() {
+        return forNss;
+    }
+
+    public void setForNss(Collection<String> forNss) {
+        this.forNss = forNss;
+    }
+    
 }

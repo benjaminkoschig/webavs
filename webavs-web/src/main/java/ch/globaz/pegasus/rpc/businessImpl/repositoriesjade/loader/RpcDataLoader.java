@@ -1,11 +1,9 @@
 package ch.globaz.pegasus.rpc.businessImpl.repositoriesjade.loader;
 
-import globaz.externe.IPRConstantesExternes;
-import globaz.jade.persistence.model.JadeAbstractSearchModel;
-import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import java.beans.XMLDecoder;
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -16,6 +14,8 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.google.common.base.Preconditions;
+import com.google.gson.JsonSyntaxException;
 import ch.globaz.common.domaine.Date;
 import ch.globaz.common.exceptions.CommonTechnicalException;
 import ch.globaz.common.persistence.RepositoryJade;
@@ -55,8 +55,10 @@ import ch.globaz.pyxis.business.service.AdresseService;
 import ch.globaz.pyxis.converter.PersonneAvsConverter;
 import ch.globaz.pyxis.domaine.PaysList;
 import ch.globaz.pyxis.loader.PaysLoader;
-import com.google.common.base.Preconditions;
-import com.google.gson.JsonSyntaxException;
+import globaz.externe.IPRConstantesExternes;
+import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.persistence.model.JadeAbstractSearchModel;
+import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 
 public class RpcDataLoader {
 
@@ -83,11 +85,13 @@ public class RpcDataLoader {
     private final Date dateMoisAnnoncesPrise;
     private final Double toleranceDifferenceAnnonces;
     private Boolean parallel = true;
+    private List<String> simulationListNss = new ArrayList<>();
+    private Date simulationDate = null;
 
     public RpcDataLoader() {
         try {
             Map<String, String> map = EPCProperties.RPC_LOAD_PARTION_SIZE.getValueJson();
-
+            
             partitionSize = Integer.valueOf(map.get("all"));
             partitionBlobSize = Integer.valueOf(map.get("blob"));
 
@@ -106,12 +110,19 @@ public class RpcDataLoader {
             } else {
                 toleranceDifferenceAnnonces = 0.2;
             }
-
-            dateDernierPaiement = loadDateDernierPaiement();
+            
+            testSimulationProprietes();
+            
+            if(simulationDate != null) {
+                dateDernierPaiement = simulationDate;
+            } else {
+                dateDernierPaiement = loadDateDernierPaiement();
+            }
+            
             dateMoisAnnoncesPrise = offsetDateToMoisAnnoncesPrise(dateDernierPaiement);
             infos.setDateDernierPaiement(dateDernierPaiement);
             infos.setDateMoisAnnoncesPrise(dateMoisAnnoncesPrise);
-            LOG.info("Date dérnier paiement: {}", dateDernierPaiement.getSwissValue());
+            LOG.info("Date dernier paiement: {}", dateDernierPaiement.getSwissValue());
             LOG.info("Mois des annonces: {}", dateMoisAnnoncesPrise.getSwissMonthValue());
             LOG.info(
                     "This parmeters will be use to load RPC datas: partitionSize[{}],partitionBlobSize[{}],limitSize[{}],parallel[{}]",
@@ -125,6 +136,27 @@ public class RpcDataLoader {
             } catch (PropertiesException e1) {
                 throw new RuntimeException(e1);
             }
+        }
+    }
+
+    private void testSimulationProprietes() {
+        try {
+            Map<String, String> simulation = EPCProperties.RPC_SIMULATION.getValueJson();
+            
+   
+            if(simulation.get("nss") != null) {
+                String listNssProperty = String.valueOf(simulation.get("nss")); 
+                if(!JadeStringUtil.isEmpty(listNssProperty)) {
+                    simulationListNss = Arrays.asList(listNssProperty.split(";"));
+                }
+            }
+            
+            if(simulation.get("date") != null) {
+                String simulationDateProperty  = String.valueOf(simulation.get("date"));
+                simulationDate = new Date(simulationDateProperty);
+            }
+        } catch (PropertiesException e) {
+            LOG.info("pas de propriété pegasus.rpc.simulation");
         }
     }
 
@@ -204,13 +236,12 @@ public class RpcDataLoader {
 
         List<RPCDecionsPriseDansLeMois> decionsPriseDansLeMois = loadDecisionPriseDansLeMois(dateMoisAnnoncesPrise);
         infos.setNbDecisionAc(decionsPriseDansLeMois.size());
-        RPCDecionsPriseDansLeMois choise = null;
         LOG.info("Decisions AC loaded for the month : {}", infos.getNbDecisionAc());
 
         List<RPCDecionsPriseDansLeMois> decionsMoisSuivantDuMoisPrecedent = loadDecisionMoisSuivantDuMoisPrecendant(dateMoisAnnoncesPrise);
         LOG.info("Decisions de type 'Mois suivant' du mois précédent : {}", decionsMoisSuivantDuMoisPrecedent.size());
         decionsPriseDansLeMois.addAll(decionsMoisSuivantDuMoisPrecedent);
-
+        
         /* Control de population: Retours annonce en erreur dans le lot precedent et avec fin de droit */
         List<RPCDecionsPriseDansLeMois> decionsEnErreurMoisPrecedent = loadDecisionEnErreurMoisPrecedent(dateMoisAnnoncesPrise);
         infos.setNbErrorRetoursAnnoncePreviousMonth(decionsEnErreurMoisPrecedent.size());
@@ -436,6 +467,9 @@ public class RpcDataLoader {
         search.setForDateDecisionMinMoins1(dateMoisAnnoncesPrise.addMonth(-1).getFirstDayOfMonth().getSwissValue());
         search.setForDateDecisionMoisAnneMoins1(dateMoisAnnoncesPrise.addMonth(-1).getSwissMonthValue());
         search.setForDebutDecision(dateMoisAnnoncesPrise.getMoisAnneeFormatte());
+        if(!simulationListNss.isEmpty()) {
+            search.setForNss(simulationListNss);
+        }
 
         LOG.info("requête loadDecisionPriseDansLeMois");
         return RepositoryJade.searchForAndFetch(search, limitSize);
@@ -451,6 +485,9 @@ public class RpcDataLoader {
         search.setForDateDecisionMaxMoins1(dateMoisPrecedent.addMonth(-1).getLastDayOfMonth().getSwissValue());
         search.setForDateDecisionMinMoins1(dateMoisPrecedent.addMonth(-1).getFirstDayOfMonth().getSwissValue());
         search.setForDateDecisionMoisAnneMoins1(dateMoisPrecedent.addMonth(-1).getSwissMonthValue());
+        if(!simulationListNss.isEmpty()) {
+            search.setForNss(simulationListNss);
+        }
 
         LOG.info("requête loadDecisionMoisSuivantDuMoisPrecendant");
         return RepositoryJade.searchForAndFetch(search, limitSize);
@@ -470,7 +507,6 @@ public class RpcDataLoader {
         List<SimpleLotAnnonce> lots = RepositoryJade.searchForAndFetch(lotSearch, limitSize);
         if (!lots.isEmpty()) {
             RetourAnnonceSearch retourSearch = new RetourAnnonceSearch();
-            // RetourAnnonceConverter.toCsCode(RpcPlausiCategory.ERROR= 64080004)
             retourSearch.setForCategoryPlausi(plausiCategoryERROR);
             retourSearch.setForIdLot(lots.get(0).getId());
             List<RetourAnnonce> retoursEnErreur = RepositoryJade.searchForAndFetch(retourSearch, limitSize);
@@ -485,6 +521,9 @@ public class RpcDataLoader {
                 search.setForDateDecisionMoisAnneMoins1(dateDernierPaiement.addMonth(-1).getLastDayOfMonth()
                         .getSwissMonthValue());
                 search.setForIdsDecsion(decisionsEnErreur);
+                if(!simulationListNss.isEmpty()) {
+                    search.setForNss(simulationListNss);
+                }
                 LOG.info("requête loadDecisionEnErreurMoisPrecedent");
                 return RepositoryJade.searchForAndFetch(search, limitSize);
             }
@@ -497,6 +536,9 @@ public class RpcDataLoader {
         search.whereKeyForRpc();
         search.setForDateDecisionMax(dateDernierPaiement.getLastDayOfMonth().getSwissValue());
         search.setForDateDecisionMin(dateDernierPaiement.getFirstDayOfMonth().getSwissValue());
+        if(!simulationListNss.isEmpty()) {
+            search.setForNss(simulationListNss);
+        }
         LOG.info("requête loadDecisionsRefus");
         return RepositoryJade.searchForAndFetch(search, limitSize);
     }
@@ -529,16 +571,20 @@ public class RpcDataLoader {
      * possibility to test in test local/internal use to set <code>search.setForIdDemande("idDem");</code> please take
      * care ton not commit this
      */
-    private List<RPCDecionsPriseDansLeMois> loadPcaCourante(Set<String> idsVersionDroitNotIn, Date dateDernierPaiement) {
+    private List<RPCDecionsPriseDansLeMois> loadPcaCourante(Set<String> idsVersionDroitNotIn, Date dateGeneration) {
         RPCDecionsPriseDansLeMoisSearch search = new RPCDecionsPriseDansLeMoisSearch();
         search.setForCsEtatDemande(IPCDemandes.CS_OCTROYE);
         search.setWhereKey("pcaCourante");
         search.setForCsEtatDroit(EtatDroit.VALIDE.getValue());
         search.setForCsEtatPca(PcaEtat.VALIDE.getValue());
-        search.setForDebutDecision(dateDernierPaiement.getMoisAnneeFormatte());
+        search.setForDebutDecision(dateGeneration.getMoisAnneeFormatte());
+        if(!simulationListNss.isEmpty()) {
+            search.setForNss(simulationListNss);
+        }
+        search.setForDateFinPca(dateGeneration.getMoisAnneeFormatte());
 
         // Ou date ultérieur au mois paiement
-        search.setForDateFinMoisFutur(dateDernierPaiement.getSwissMonthValue());
+        search.setForDateFinMoisFutur(dateGeneration.getSwissMonthValue());
         search.getForCsEtatDemandeMoisFutur().add(IPCDemandes.CS_REFUSE);
         // search.getForCsMotifNotIn().add(MotifDroit.ADAPTATION.getValue());
         search.setForIdsVersionDroitNotIn(idsVersionDroitNotIn);

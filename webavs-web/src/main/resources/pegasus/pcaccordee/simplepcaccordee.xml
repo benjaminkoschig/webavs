@@ -32,6 +32,7 @@
 				<search-field name="forIdPrestationsAccordee" operation="EQUALS" field-ref="idPrestationsAccordee"/>
 				<search-field name="forIsCalculRetro" operation="EQUALS" field-ref="isCalculRetro" />
 			    <search-field name="forIsSupprime" operation="EQUALS" field-ref="isSupprime" />
+			    <search-field name="forDateFinPca" operation="EQUALS" field-ref="dateFin" />
 			</search-group>
 		</search-definition>
 		

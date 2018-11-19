@@ -17,12 +17,14 @@ public class RPCDecionsPriseDansLeMoisSearch extends JadeSearchComplexModel {
     private String forCsEtatDroit;
     private String forDateFinPca;
     private String forIdDemande;
+    private String forIdVersionDroitSup;
     private Collection<String> forCsMotifNotIn = new ArrayList<String>();
     private Collection<String> forCsEtatDemandeMoisFutur = new ArrayList<String>();
     private Collection<String> forIdsVersionDroit = new ArrayList<String>();
     private Collection<String> forIdsVersionDroitNotIn = new ArrayList<String>();
     private Collection<String> forIdsDecsion = new ArrayList<String>();
     private Collection<String> inCsType = new ArrayList<String>();
+    private Collection<String> forNss = new ArrayList<String>();
 
     public Collection<String> getForCsMotifNotIn() {
         return forCsMotifNotIn;
@@ -175,6 +177,22 @@ public class RPCDecionsPriseDansLeMoisSearch extends JadeSearchComplexModel {
     @Override
     public Class<RPCDecionsPriseDansLeMois> whichModelClass() {
         return RPCDecionsPriseDansLeMois.class;
+    }
+
+    public Collection<String> getForNss() {
+        return forNss;
+    }
+
+    public void setForNss(Collection<String> forNss) {
+        this.forNss = forNss;
+    }
+
+    public String getForIdVersionDroitSup() {
+        return forIdVersionDroitSup;
+    }
+
+    public void setForIdVersionDroitSup(String forIdVersionDroitSup) {
+        this.forIdVersionDroitSup = forIdVersionDroitSup;
     }
 
 }

@@ -15,6 +15,7 @@ public class SimplePCAccordeeSearch extends JadeSearchSimpleModel {
     private String forIdVersionDroit = null;
     private Boolean forIsCalculRetro = null;
     private Boolean forIsSupprime = false;
+    private Boolean forDateFinPca = null;
 
     /**
      * @return the forIdPCAccordee
@@ -78,6 +79,14 @@ public class SimplePCAccordeeSearch extends JadeSearchSimpleModel {
 
     public void setForIsSupprime(Boolean forIsSupprime) {
         this.forIsSupprime = forIsSupprime;
+    }
+
+    public Boolean getForDateFinPca() {
+        return forDateFinPca;
+    }
+
+    public void setForDateFinPca(Boolean forDateFinPca) {
+        this.forDateFinPca = forDateFinPca;
     }
 
 }

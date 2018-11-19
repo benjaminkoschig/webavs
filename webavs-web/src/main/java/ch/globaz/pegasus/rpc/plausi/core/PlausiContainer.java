@@ -4,8 +4,11 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import ch.globaz.common.domaine.Montant;
+import ch.globaz.common.properties.PropertiesException;
+import ch.globaz.pegasus.business.constantes.EPCProperties;
 import ch.globaz.pegasus.rpc.domaine.RpcData;
 import ch.globaz.pegasus.rpc.domaine.RpcDecisionAnnonceComplete;
 import ch.globaz.pegasus.rpc.domaine.annonce.AnnonceCase;
@@ -79,7 +82,18 @@ public class PlausiContainer {
 
     public static PlausisResults buildPlausis(RpcData rpcData) {
         Set<RpcPlausiCategory> inCategory = EnumSet.allOf(RpcPlausiCategory.class);
-        return buildPlausisInCategory(rpcData, inCategory, false);
+        return buildPlausisInCategory(rpcData, inCategory, isDateSimulation());
+    }
+    
+    public static boolean isDateSimulation() {
+        Map<String, String> simulation;
+        try {
+            simulation = EPCProperties.RPC_SIMULATION.getValueJson();
+            return simulation.get("date") != null;
+        } catch (PropertiesException e) {
+            return false;
+        }
+        
     }
 
     public static PlausisResults buildPlausisInCategory(RpcData rpcData, Set<RpcPlausiCategory> inCategory,

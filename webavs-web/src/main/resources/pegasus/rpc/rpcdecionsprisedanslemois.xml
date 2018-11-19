@@ -132,6 +132,7 @@
 				</search-group>
 				<search-field name="forDebutDecision" operation="LESS_OR_EQUALS"  field-ref="simpleDecisionHeader.dateDebutDecision"/>
 				<search-field name="forCsEtatDemande" operation="NOT_EQUALS"  field-ref="simpleDemande.csEtatDemande" value="64001010"/>
+				<search-field name="forNss" operation="IN"  field-ref="nssTiersBeneficiaire" />
 			</search-group>
 		</search-definition>
 		
@@ -159,6 +160,7 @@
 				</search-group>
 				<search-field name="forDebutDecision" operation="EQUALS"  field-ref="simpleDecisionHeader.dateDebutDecision"/>
 				<search-field name="forCsEtatDemande" operation="NOT_EQUALS"  field-ref="simpleDemande.csEtatDemande" value="64001010"/>
+				<search-field name="forNss" operation="IN"  field-ref="nssTiersBeneficiaire" />
 			</search-group>
 		</search-definition>
 		
@@ -175,9 +177,26 @@
 		</search-definition>		
 		
 		<search-definition name="pcaCourante">
-			<search-group operator="AND">	
-				<search-field name="forCsEtatDroit" operation="EQUALS" field-ref="simpleVersionDroit.csEtatDroit"/>
-				<search-field name="forCsEtatPca" operation="EQUALS" field-ref="simplePCAccordee.csEtatPC"/>
+			<search-group operator="AND">
+				<search-group operator="OR">	
+					<search-group operator="AND">
+						<search-field name="forCsEtatDroit" operation="EQUALS" field-ref="simpleVersionDroit.csEtatDroit"/>
+						<search-field name="forCsEtatPca" operation="EQUALS" field-ref="simplePCAccordee.csEtatPC"/>
+					</search-group>
+					<search-literal>
+						<declare-model name="pca" model-ref="ch.globaz.pegasus.business.models.pcaccordee.SimplePCAccordee"/>
+						<![CDATA[ 
+							#{simpleVersionDroit.csEtatDroit} = 64003005 and
+							#{simplePCAccordee.csEtatPC} = 64029004 and
+							#{simplePCAccordee.idPCAccordee} in (
+								select #{pca.idPcaParent} from @{pca}
+								where #{pca.dateFin} = ${forDateFinPca:pca.dateFin}
+								and #{pca.idPcaParent} <> 0
+							)
+						 ]]>
+					</search-literal>
+				</search-group>
+				
 				<search-field name="forIdDemande" operation="EQUALS" field-ref="simpleDemande.idDemande"/>
 				<search-field name="forIdsVersionDroitNotIn" operation="NOT_IN" field-ref="simpleVersionDroit.idVersionDroit"/>
 				<search-field name="inCsType" operation="IN" field-ref="simplePCAccordee.csTypePC"  />	
@@ -191,11 +210,15 @@
 					</search-group>
 					<search-group operator="AND">	
 						<search-field name="forCsEtatDemande" operation="EQUALS" field-ref="simpleDemande.csEtatDemande"/>
-						<search-field name="forDateFinPca" operation="NULL" field-ref="simplePCAccordee.dateFin"/>
+						<search-group operator="OR">
+							<search-field name="forDateFinPca" operation="NULL" field-ref="simplePCAccordee.dateFin"/>
+							<search-field name="forDateFinPca" operation="EQUALS" field-ref="simplePCAccordee.dateFin"/>
+						</search-group>
 					</search-group>
 				</search-group>
 				<search-field name="forDebutDecision" operation="LESS_OR_EQUALS"  field-ref="simpleDecisionHeader.dateDebutDecision"/>
 				<search-field name="forCsEtatDemande" operation="NOT_EQUALS"  field-ref="simpleDemande.csEtatDemande" value="64001010"/>
+				<search-field name="forNss" operation="IN"  field-ref="nssTiersBeneficiaire" />
 			</search-group>
 		</search-definition>
 		
@@ -203,6 +226,7 @@
 			<search-group operator="AND">	
 				<search-field name="forIdsDecsion" operation="IN" field-ref="simpleDecisionHeader.idDecisionHeader"  />
 				<search-field name="forDateDecisionMoisAnneMoins1" operation="LESS_OR_EQUALS"  field-ref="simpleDecisionHeader.dateFinDecision"/>
+				<search-field name="forNss" operation="IN"  field-ref="nssTiersBeneficiaire" />
 			</search-group>
 		</search-definition>
 		
