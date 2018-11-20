@@ -1,5 +1,25 @@
 package ch.globaz.corvus.process.attestationsfiscales;
 
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
+import ch.globaz.jade.JadeBusinessServiceLocator;
+import ch.globaz.jade.business.models.Langues;
+import ch.globaz.jade.business.models.codesysteme.JadeCodeSysteme;
+import ch.globaz.jade.business.services.codesysteme.JadeCodeSystemeService;
+import ch.globaz.pegasus.business.domaine.pca.PcaEtatCalcul;
+import ch.globaz.prestation.domaine.CodePrestation;
 import globaz.corvus.api.basescalcul.IREPrestationDue;
 import globaz.corvus.application.REApplication;
 import globaz.corvus.db.attestationsFiscales.REDonneesPourAttestationsFiscales;
@@ -33,26 +53,6 @@ import globaz.pyxis.adresse.formater.TIAdresseFormater;
 import globaz.pyxis.adresse.formater.TIAdressePaiementBeneficiaireFormater;
 import globaz.pyxis.api.ITITiers;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
-import java.sql.ResultSet;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-import ch.globaz.jade.JadeBusinessServiceLocator;
-import ch.globaz.jade.business.models.Langues;
-import ch.globaz.jade.business.models.codesysteme.JadeCodeSysteme;
-import ch.globaz.jade.business.services.codesysteme.JadeCodeSystemeService;
-import ch.globaz.pegasus.business.domaine.pca.PcaEtatCalcul;
-import ch.globaz.prestation.domaine.CodePrestation;
 
 public class REGenererAttestationsFiscalesProcess extends BProcess {
 
@@ -151,12 +151,12 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
                     famillesSansLot.add(uneFamille);
                     continue;
                 }
-                
-                if(REAttestationsFiscalesUtils.hasRenteDateFinAvantDebutUniquement(uneFamille)) {
+
+                if (REAttestationsFiscalesUtils.hasRenteDateFinAvantDebutUniquement(uneFamille)) {
                     famillesSansLot.add(uneFamille);
-                    continue;                    
+                    continue;
                 }
-                
+
                 // Les lots 1 à 4 ne contiennent pas de rétroactif
                 if (analyseurLot1.isFamilleDansLot(uneFamille)) {
                     uneFamille.setHasRetroactif(false);
@@ -632,17 +632,6 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
 
         // On récupère toutes les familles dans un Set
         SortedSet<REFamillePourAttestationsFiscales> toutesLesFamilles = getToutesLesFamillesDansLots();
-        boolean isMontant0 = false;
-        for (REFamillePourAttestationsFiscales famille : toutesLesFamilles) {
-            if (REAttestationsFiscalesUtils.isAjournementMontant0(famille, 0)) {
-                isMontant0 = true;
-            } else {
-                isMontant0 = false;
-            }
-        }
-        if (isMontant0) {
-            throw new RETechnicalException(getSession().getLabel("INFO_AJOURNEMENT"));
-        }
 
         Map<String, SortedSet<REFamillePourAttestationsFiscales>> famillesParLangues = new HashMap<String, SortedSet<REFamillePourAttestationsFiscales>>();
         // On boucle sur toutes les familles et on les tries par la langue du tiers de correspondance
@@ -769,17 +758,19 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
         request.append(" from " + schema + ".REPRACC AS repraccPC");
         request.append(" INNER JOIN " + schema + ".PCPCACC AS pcAccordee ON");
         request.append(" (");
-        request.append("    repraccPC.ZTIPRA = pcAccordee.CUIPRA OR (repraccPC.ZTIPRA = pcAccordee.CUIPRC and pcAccordee.CUIPRC<>0)");
+        request.append(
+                "    repraccPC.ZTIPRA = pcAccordee.CUIPRA OR (repraccPC.ZTIPRA = pcAccordee.CUIPRC and pcAccordee.CUIPRC<>0)");
         request.append(" )");
         request.append(" INNER JOIN " + schema + ".PCPLCAL AS pcPlancalcul ON");
         request.append(" pcAccordee.CUIPCA = pcPlancalcul.CVIPCA ");
-        request.append(" AND pcPlancalcul.CVBPLR = '1' AND pcPlancalcul.CVLEPC in ("+PcaEtatCalcul.OCTROYE.getValue()+", "+PcaEtatCalcul.OCTROY_PARTIEL.getValue()+")"); 
+        request.append(" AND pcPlancalcul.CVBPLR = '1' AND pcPlancalcul.CVLEPC in (" + PcaEtatCalcul.OCTROYE.getValue()
+                + ", " + PcaEtatCalcul.OCTROY_PARTIEL.getValue() + ")");
         request.append(" AND pcAccordee.CUTETA = 64029002");
         request.append(" AND repraccPC.ZTTGEN = 52849002");
         request.append(" AND pcAccordee.CUBSUP <> 1");
         request.append(" AND pcAccordee.CUDDEB <" + String.valueOf((annee + 1)) + "00"); // année + 1
-        request.append(" AND (pcAccordee.CUDFIN is null OR pcAccordee.CUDFIN =0 OR pcAccordee.CUDFIN = " + annee
-                + "12)");
+        request.append(
+                " AND (pcAccordee.CUDFIN is null OR pcAccordee.CUDFIN =0 OR pcAccordee.CUDFIN = " + annee + "12)");
         return request.toString();
     }
 
