@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.GregorianCalendar;
 import java.util.List;
 import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import ch.admin.zas.rc.ListeFolgerecordNrType;
@@ -43,6 +44,7 @@ public class REAnnonceARC3DXmlService {
         GregorianCalendar gregory = new GregorianCalendar();
         gregory.setTime(dDate);
         XMLGregorianCalendar dealCloseDate = DatatypeFactory.newInstance().newXMLGregorianCalendar(gregory);
+        dealCloseDate.setTimezone(DatatypeConstants.FIELD_UNDEFINED);
         meldung.setAuftragsdatum(dealCloseDate);
 
         meldung.setVersichertennummer(nss);
