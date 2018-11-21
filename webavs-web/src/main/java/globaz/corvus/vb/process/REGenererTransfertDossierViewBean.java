@@ -116,6 +116,7 @@ public class REGenererTransfertDossierViewBean extends PRAbstractViewBeanSupport
     
     private void genereListNss() throws Exception {
         
+            
         listExConjoint = getListExConjoint(idTiers);
         
         List<RERenteLieeJointPrestationAccordee> rentesLiees = getRentesLieesEnCours(getSession(), idTiers);
@@ -141,6 +142,7 @@ public class REGenererTransfertDossierViewBean extends PRAbstractViewBeanSupport
         for(int i = 0; i <= reste;i++) {
             listNss.add("");
         }
+            
     }
     
     private List<String> getListExConjoint(String idTiers) throws Exception {
@@ -192,18 +194,22 @@ public class REGenererTransfertDossierViewBean extends PRAbstractViewBeanSupport
     
     private void addNssFromTiersSansExConjoint(String idTiers, Set<String> nssUnique) throws Exception {
         PRTiersWrapper tiers = PRTiersHelper.getTiersParId(getSession(), idTiers);
-        String nssTiers = tiers.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL);
-        if(!listExConjoint.contains(nssTiers)) {
-            nssUnique.add(nssTiers);
-            mapNssId.put(nssTiers, tiers);
+        if(tiers != null) {
+            String nssTiers = tiers.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL);
+            if(!listExConjoint.contains(nssTiers)) {
+                nssUnique.add(nssTiers);
+                mapNssId.put(nssTiers, tiers);
+            }
         }
     }
     
     private void addNssFromTiers(String idTiers, Set<String> nssUnique) throws Exception {
         PRTiersWrapper tiers = PRTiersHelper.getTiersParId(getSession(), idTiers);
-        String nssTiers = tiers.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL);
-        nssUnique.add(nssTiers);
-        mapNssId.put(nssTiers, tiers);
+        if(tiers != null) {
+            String nssTiers = tiers.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL);
+            nssUnique.add(nssTiers);
+            mapNssId.put(nssTiers, tiers);
+       }
     }
     
     private boolean isRenteEnfant(RERenteLieeJointPrestationAccordee rente) {
