@@ -240,8 +240,9 @@ public class REGenererARC3XMLTransfertCIService {
      */
     public String envoiFichier(String fichier) throws JadeServiceLocatorException, JadeServiceActivatorException,
             JadeClassCastException, PropertiesException {
-        JadeFsFacade.copyFile(fichier, REProperties.FTP_CENTRALE_PATH.getValue() + "/" + getFileNameTimeStamp());
-        return REProperties.FTP_CENTRALE_PATH.getValue() + "/" + getFileNameTimeStamp();
+        String chemin = REProperties.FTP_CENTRALE_PATH.getValue() + "/" + getFileNameTimeStamp();
+        JadeFsFacade.copyFile(fichier, chemin);
+        return chemin;
     }
 
 }
