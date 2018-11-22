@@ -18,6 +18,7 @@ import ch.admin.zas.rc.JahresUmsatzBilanzType;
 import ch.admin.zas.rc.MonatsRekapitulationBeitragsBuchhaltungType;
 import ch.admin.zas.rc.ObjectFactory;
 import ch.globaz.common.exceptions.ValidationException;
+import ch.globaz.eavs.utils.StringUtils;
 import globaz.caisse.helper.CaisseHelperFactory;
 import globaz.framework.util.FWCurrency;
 import globaz.globall.db.BSession;
@@ -314,8 +315,12 @@ public class CGPeriodeComptableEnvoiAnnoncesXMLService {
         String numCaisseAgence = "";
 
         if (!JadeStringUtil.isIntegerEmpty(periode.getExerciceComptable().getMandat().getNoCaisse())) {
-            numCaisseAgence = periode.getExerciceComptable().getMandat().getNoCaisse()
-                    + periode.getExerciceComptable().getMandat().getNoAgence();
+            
+            numCaisseAgence = periode.getExerciceComptable().getMandat().getNoCaisse();
+            numCaisseAgence = org.apache.commons.lang.StringUtils.leftPad(numCaisseAgence, 3, '0');
+            String numAgence = periode.getExerciceComptable().getMandat().getNoAgence();
+            numAgence = org.apache.commons.lang.StringUtils.leftPad(numAgence, 3, '0');
+            numCaisseAgence += numAgence;
         } else {
             numCaisseAgence = CaisseHelperFactory.getInstance().getNoCaisse(application)
                     + CaisseHelperFactory.getInstance().getNoAgence(application);
