@@ -1,15 +1,5 @@
 package ch.globaz.al.businessimpl.services.recapitulatifs;
 
-import globaz.globall.util.JANumberFormatter;
-import globaz.jade.client.util.JadeCodesSystemsUtil;
-import globaz.jade.client.util.JadeDateUtil;
-import globaz.jade.client.util.JadeNumericUtil;
-import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.context.JadeThread;
-import globaz.jade.context.exception.JadeNoBusinessLogSessionError;
-import globaz.jade.exception.JadeApplicationException;
-import globaz.jade.exception.JadePersistenceException;
-import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import ch.globaz.al.business.constantes.ALCSDossier;
@@ -34,19 +24,29 @@ import ch.globaz.naos.business.service.AFBusinessServiceLocator;
 import ch.globaz.topaz.datajuicer.Collection;
 import ch.globaz.topaz.datajuicer.DataList;
 import ch.globaz.topaz.datajuicer.DocumentData;
+import globaz.globall.util.JANumberFormatter;
+import globaz.jade.client.util.JadeCodesSystemsUtil;
+import globaz.jade.client.util.JadeDateUtil;
+import globaz.jade.client.util.JadeNumericUtil;
+import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.context.JadeThread;
+import globaz.jade.context.exception.JadeNoBusinessLogSessionError;
+import globaz.jade.exception.JadeApplicationException;
+import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 
 /**
  * Classe d'implémentation des services liés aux récapitulatifs d'entreprise
- * 
+ *
  * @author PTA
- * 
+ *
  */
-public class RecapitulatifsListeAffilieServiceImpl extends AbstractDocument implements
-        RecapitulatifsListeAffilieService {
+public class RecapitulatifsListeAffilieServiceImpl extends AbstractDocument
+        implements RecapitulatifsListeAffilieService {
 
     /**
      * Méthode retournant texte ADI/ADC
-     * 
+     *
      * @param statutDossier
      * @param langue
      * @param forCsv - indique si il faut le libellé pour le CSV(true) ou PDF (false)
@@ -60,14 +60,14 @@ public class RecapitulatifsListeAffilieServiceImpl extends AbstractDocument impl
         if (!JadeStringUtil.equals(langue, ALConstLangue.LANGUE_ISO_FRANCAIS, false)
                 && !JadeStringUtil.equals(langue, ALConstLangue.LANGUE_ISO_ALLEMAND, false)
                 && !JadeStringUtil.equals(langue, ALConstLangue.LANGUE_ISO_ITALIEN, false)) {
-            throw new ALDocumentException("RecapitulatifsListeAffilieServiceImpl#getStatutDossier: language  " + langue
-                    + " is not  valid ");
+            throw new ALDocumentException(
+                    "RecapitulatifsListeAffilieServiceImpl#getStatutDossier: language  " + langue + " is not  valid ");
         }
         // statut du dossier
         try {
             if (!JadeCodesSystemsUtil.checkCodeSystemType(ALCSDossier.GROUP_STATUT, statutDossier)) {
-                JadeThread
-                        .logError(RecapitulatifsListeAffilieServiceImpl.class.getName(), "statutDossier is not valid");
+                JadeThread.logError(RecapitulatifsListeAffilieServiceImpl.class.getName(),
+                        "statutDossier is not valid");
             }
         } catch (Exception e) {
             throw new ALRecapitulatifEntrepriseImpressionModelException("statutDossier is not valid ", e);
@@ -134,8 +134,9 @@ public class RecapitulatifsListeAffilieServiceImpl extends AbstractDocument impl
         // logo caisse
         this.setIdEntete(document, activiteAllocataire, ALConstDocument.RECAPITULATIF_DOCUMENT, langueDocument);
 
-        this.addDateAdresse(document, dateImpression, AFBusinessServiceLocator.getAffiliationService()
-                .findIdTiersForNumeroAffilie(numAffilie), langueDocument, numAffilie);
+        this.addDateAdresse(document, dateImpression,
+                AFBusinessServiceLocator.getAffiliationService().findIdTiersForNumeroAffilie(numAffilie),
+                langueDocument, numAffilie);
 
         // entête
         // recherche pour affichage du dossier ou du numéro externe
@@ -207,30 +208,28 @@ public class RecapitulatifsListeAffilieServiceImpl extends AbstractDocument impl
             // numéro dossier
             csvContent.append(lignesRecap.getIdDossier()).append(";");
             // numéro de nss non formatté
-            csvContent.append(" ").append(JadeStringUtil.removeChar(lignesRecap.getNumNSS(), '.')).append(";");
+            csvContent.append("'").append(JadeStringUtil.removeChar(lignesRecap.getNumNSS(), '.')).append(";");
 
             // nom
             csvContent.append(lignesRecap.getNomAllocataire()).append(" ;");
             // prénom de l'allocataire pour la recap
             csvContent.append(lignesRecap.getPrenomAllocataire()).append(";");
             // début de la période
-            csvContent.append(
-                    JadeStringUtil.substring(lignesRecap.getRecapEntrepriseModel().getPeriodeDe(), 3)
+            csvContent
+                    .append(JadeStringUtil.substring(lignesRecap.getRecapEntrepriseModel().getPeriodeDe(), 3)
                             + JadeStringUtil.substring(lignesRecap.getRecapEntrepriseModel().getPeriodeDe(), 0, 2))
                     .append(";");
             // fin de la période pour la récap
-            csvContent.append(
-                    JadeStringUtil.substring(lignesRecap.getRecapEntrepriseModel().getPeriodeA(), 3)
+            csvContent
+                    .append(JadeStringUtil.substring(lignesRecap.getRecapEntrepriseModel().getPeriodeA(), 3)
                             + JadeStringUtil.substring(lignesRecap.getRecapEntrepriseModel().getPeriodeA(), 0, 2))
                     .append(";");
             // période début de l'entête de la recap
-            csvContent.append(
-                    JadeStringUtil.substring(lignesRecap.getPeriodeDeEntete(), 3)
-                            + JadeStringUtil.substring(lignesRecap.getPeriodeDeEntete(), 0, 2)).append(";");
+            csvContent.append(JadeStringUtil.substring(lignesRecap.getPeriodeDeEntete(), 3)
+                    + JadeStringUtil.substring(lignesRecap.getPeriodeDeEntete(), 0, 2)).append(";");
             // apériode fin période pour l'enteter
-            csvContent.append(
-                    JadeStringUtil.substring(lignesRecap.getPeriodeAEntete(), 3)
-                            + JadeStringUtil.substring(lignesRecap.getPeriodeAEntete(), 0, 2)).append(";");
+            csvContent.append(JadeStringUtil.substring(lignesRecap.getPeriodeAEntete(), 3)
+                    + JadeStringUtil.substring(lignesRecap.getPeriodeAEntete(), 0, 2)).append(";");
 
             // nombre d'unité
             csvContent.append(lignesRecap.getNbreUnite()).append(";");
@@ -266,7 +265,7 @@ public class RecapitulatifsListeAffilieServiceImpl extends AbstractDocument impl
 
     /**
      * Méthode qui ajoute l'agence communale avs
-     * 
+     *
      * @param document
      *            document à compléter
      * @param AgenceCommunaleAvs
@@ -307,8 +306,8 @@ public class RecapitulatifsListeAffilieServiceImpl extends AbstractDocument impl
      * Gère la valeur du champ "recapitulatifEntreprise_alloc_label" du template listeRecapitulatifEntreprise
      */
     private DocumentData setAllocLabel(DocumentData document, String langueDocument, String etatRecap,
-            String typeBonification) throws JadeApplicationException, JadePersistenceException,
-            JadeApplicationServiceNotAvailableException {
+            String typeBonification)
+            throws JadeApplicationException, JadePersistenceException, JadeApplicationServiceNotAvailableException {
 
         String nomCaisse = ALServiceLocator.getParametersServices().getNomCaisse().toLowerCase();
         String texteComplementCaisse = this.getText("al.recapitulatif.infos.allocation.complement.".concat(nomCaisse),
@@ -357,7 +356,7 @@ public class RecapitulatifsListeAffilieServiceImpl extends AbstractDocument impl
 
     /**
      * Définition des constantes entête de la récap
-     * 
+     *
      * @param document
      * @param langueDocument
      * @param numeroAffilie
@@ -382,7 +381,8 @@ public class RecapitulatifsListeAffilieServiceImpl extends AbstractDocument impl
 
         if (numSalarie) {
 
-            document.addData("entete_idDossier", this.getText("al.recapitulatif.entete.salarieExterne", langueDocument));
+            document.addData("entete_idDossier",
+                    this.getText("al.recapitulatif.entete.salarieExterne", langueDocument));
         } else {
             document.addData("entete_idDossier", this.getText("al.recapitulatif.entete.numeroDossier", langueDocument));
         }
@@ -417,7 +417,7 @@ public class RecapitulatifsListeAffilieServiceImpl extends AbstractDocument impl
 
     /**
      * Méthode qui charge les infos relatives à la récapitulation
-     * 
+     *
      * @param document
      *            document à compléter
      * @param numAffilie
@@ -542,7 +542,7 @@ public class RecapitulatifsListeAffilieServiceImpl extends AbstractDocument impl
 
     /**
      * Méthode qui charge les différentes lignes de la liste du récapitulatif
-     * 
+     *
      * @param document
      *            document à complèter
      * @param numeroAffilie
@@ -556,7 +556,8 @@ public class RecapitulatifsListeAffilieServiceImpl extends AbstractDocument impl
      */
 
     private void setTable(DocumentData document, ArrayList prestations, String idRecap, String numeroAffilie,
-            String langueDocument, boolean numSalarieDisplay) throws JadeApplicationException, JadePersistenceException {
+            String langueDocument, boolean numSalarieDisplay)
+            throws JadeApplicationException, JadePersistenceException {
         // vérification des paramètres
 
         if (document == null) {
@@ -599,15 +600,11 @@ public class RecapitulatifsListeAffilieServiceImpl extends AbstractDocument impl
 
                 if (numSalarieDisplay) {
 
-                    ligne.addData(
-                            "col_idDossier",
-                            recapModel.getNumSalarieExterne()
-                                    + getStatutDossier(recapModel.getStatutDossier(), false, langueDocument));
+                    ligne.addData("col_idDossier", recapModel.getNumSalarieExterne()
+                            + getStatutDossier(recapModel.getStatutDossier(), false, langueDocument));
                 } else {
-                    ligne.addData(
-                            "col_idDossier",
-                            recapModel.getIdDossier()
-                                    + getStatutDossier(recapModel.getStatutDossier(), false, langueDocument));
+                    ligne.addData("col_idDossier", recapModel.getIdDossier()
+                            + getStatutDossier(recapModel.getStatutDossier(), false, langueDocument));
                 }
 
                 // Traitement pour le nom et prénom de l'allocataire
@@ -616,10 +613,10 @@ public class RecapitulatifsListeAffilieServiceImpl extends AbstractDocument impl
                 // Traitement pour les Date de début de la mutation et la date
                 // de
                 // fin de mutation
-                if (JadeStringUtil.equals(recapModel.getPeriodeDeEntete(), recapModel.getRecapEntrepriseModel()
-                        .getPeriodeDe(), false)
-                        && JadeStringUtil.equals(recapModel.getPeriodeAEntete(), recapModel.getRecapEntrepriseModel()
-                                .getPeriodeA(), false)) {
+                if (JadeStringUtil.equals(recapModel.getPeriodeDeEntete(),
+                        recapModel.getRecapEntrepriseModel().getPeriodeDe(), false)
+                        && JadeStringUtil.equals(recapModel.getPeriodeAEntete(),
+                                recapModel.getRecapEntrepriseModel().getPeriodeA(), false)) {
                     // Traitement pour la date de début de mutation
                     ligne.addData("col_periode_debut", "");
                     // Traitement pour la Date de fin de la mutation
@@ -632,8 +629,8 @@ public class RecapitulatifsListeAffilieServiceImpl extends AbstractDocument impl
 
                 }
                 // Traitement pour le nombre unité
-                ligne.addData("col_nbre_unite", JadeNumericUtil.isZeroValue(recapModel.getNbreUnite()) ? " "
-                        : recapModel.getNbreUnite());
+                ligne.addData("col_nbre_unite",
+                        JadeNumericUtil.isZeroValue(recapModel.getNbreUnite()) ? " " : recapModel.getNbreUnite());
                 // Traitement pour le type d'unité
                 if (JadeStringUtil.equals(recapModel.getTypeUnite(), ALCSDossier.UNITE_CALCUL_HEURE, false)) {
                     ligne.addData("col_type_unite",
@@ -656,8 +653,8 @@ public class RecapitulatifsListeAffilieServiceImpl extends AbstractDocument impl
                 // INFOROMD0028 : Si il y a un tarif forcé "Vaud droit acquis" on ajout une '*'
                 DetailPrestationSearchModel detailPrestationSearchModel = new DetailPrestationSearchModel();
                 detailPrestationSearchModel.setForIdEntetePrestation(recapModel.getIdEntete());
-                detailPrestationSearchModel = ALImplServiceLocator.getDetailPrestationModelService().search(
-                        detailPrestationSearchModel);
+                detailPrestationSearchModel = ALImplServiceLocator.getDetailPrestationModelService()
+                        .search(detailPrestationSearchModel);
                 DetailPrestationModel detailPrestationModel = new DetailPrestationModel();
 
                 if (detailPrestationSearchModel.getSize() > 0) {
