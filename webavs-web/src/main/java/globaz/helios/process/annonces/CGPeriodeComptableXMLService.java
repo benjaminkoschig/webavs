@@ -17,6 +17,7 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.ValidationEvent;
 import javax.xml.bind.ValidationEventHandler;
 import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.validation.Schema;
@@ -119,6 +120,7 @@ public class CGPeriodeComptableXMLService {
         gregory.setTime(dDate);
 
         XMLGregorianCalendar dealCloseDate = DatatypeFactory.newInstance().newXMLGregorianCalendar(gregory);
+        dealCloseDate.setTimezone(DatatypeConstants.FIELD_UNDEFINED);
         poolKopf.setErstellungsdatum(dealCloseDate);
         lot.setPoolKopf(poolKopf);
 
