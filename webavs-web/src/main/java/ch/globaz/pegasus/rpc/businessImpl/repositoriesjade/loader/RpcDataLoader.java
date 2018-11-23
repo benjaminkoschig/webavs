@@ -147,7 +147,7 @@ public class RpcDataLoader {
             if(simulation.get("nss") != null) {
                 String listNssProperty = String.valueOf(simulation.get("nss")); 
                 if(!JadeStringUtil.isEmpty(listNssProperty)) {
-                    simulationListNss = Arrays.asList(listNssProperty.split(";"));
+                    simulationListNss = Arrays.asList(listNssProperty.split("-"));
                 }
             }
             
