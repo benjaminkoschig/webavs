@@ -11,8 +11,8 @@ public enum EBProperties implements IProperties {
 
     VALIDATION_SWISSDEC("pucs.validation.swissdec",
             "Permet d'activer les écrans de validation des fichiers en provenance de SwissDec", String.class),
-    MISE_EN_GED_DEFAULT("pucs.validation.declaration.miseEnGed",
-            "Indique s'y il faut cocher par défaut la mise en ged", Boolean.class),
+    MISE_EN_GED_DEFAULT("pucs.validation.declaration.miseEnGed", "Indique s'y il faut cocher par défaut la mise en ged",
+            Boolean.class),
     VALIDATION_DEFAULT("pucs.validation.declaration.validationDs",
             "Indique s'y il faut cocher par défaut la validation des DS", Boolean.class),
     PUCS_SWISS_DEC_DIRECTORY("pucs.remotePucsFileDirectory",
@@ -33,6 +33,8 @@ public enum EBProperties implements IProperties {
             "Adresse email à laquelle envoyer les mutations d'adresses caf", String.class),
     EMAIL_MUTATION_ADRESSE_AVS("email.mutation.adresse.avs",
             "Adresse email à laquelle envoyer les mutations d'adresses avs", String.class),
+    ADI_CALCUL_COTISATION("adi.calculCotisation.enable",
+            "Permet d'activer le calcul des cotisations lors de la validation des demandes", Boolean.class),
     GENERIC_USER("generic.user", "Nom de l'utilisateur générique EBusiness", String.class);
 
     private String property;

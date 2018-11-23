@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Vector;
 import ch.globaz.common.domaine.Date;
+import ch.globaz.orion.business.constantes.EBProperties;
 import ch.globaz.orion.business.domaine.demandeacompte.DemandeModifAcompteStatut;
 import ch.globaz.orion.db.EBDemandeModifAcompteEntity;
 import globaz.framework.util.FWCurrency;
@@ -150,7 +151,8 @@ public class CPProcessDemandePortailGenererDecision extends BProcess {
             calcul.createRemarqueAutomatique(getTransaction(), newDecision);
             // Mise à jour cotisation (WEBAVS-5955 - K181109_001)
             Date date = new Date();
-            if (!newDecision.getAnneeDecision().equals(date.getAnnee())) {
+            if (EBProperties.ADI_CALCUL_COTISATION.getBooleanValue()
+                    && !newDecision.getAnneeDecision().equals(date.getAnnee())) {
                 calculRevenuAvecCotisation(newDecision);
             }
 
