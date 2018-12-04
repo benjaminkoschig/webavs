@@ -68,9 +68,10 @@ public class DecisionSalarieServiceImpl extends DecisionAbstractServiceImpl impl
 
         boolean hasMontantDroit = !JadeNumericUtil.isEmptyOrZero(montantDroit);
         boolean hasMontantForce = !JadeNumericUtil.isEmptyOrZero(droit.getDroitModel().getMontantForce());
+        boolean hasSupplementActif = droit.getDroitModel().getSupplementActif();
         hasMontantForce = hasMontantForce && droit.getDroitModel().getForce();
 
-        if ((hasMontantDroit || hasMontantForce)
+        if ((hasMontantDroit || hasMontantForce || hasSupplementActif)
                 && (!ALCSDroit.TYPE_NAIS.equals(typePrestation) && !ALCSDroit.TYPE_ACCE.equals(typePrestation))) {
             list = new DataList("colonne");
 
