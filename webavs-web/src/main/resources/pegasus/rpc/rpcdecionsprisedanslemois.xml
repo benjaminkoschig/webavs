@@ -182,15 +182,21 @@
 					<search-group operator="AND">
 						<search-field name="forCsEtatDroit" operation="EQUALS" field-ref="simpleVersionDroit.csEtatDroit"/>
 						<search-field name="forCsEtatPca" operation="EQUALS" field-ref="simplePCAccordee.csEtatPC"/>
+						<search-field name="forCsEtatDemande" operation="EQUALS" field-ref="simpleDemande.csEtatDemande"/>
 					</search-group>
 					<search-literal>
 						<declare-model name="pca" model-ref="ch.globaz.pegasus.business.models.pcaccordee.SimplePCAccordee"/>
+						<declare-model name="validationDecision" model-ref="ch.globaz.pegasus.business.models.decision.SimpleValidationDecision"/>
+						<declare-model name="decision" model-ref="ch.globaz.pegasus.business.models.decision.SimpleDecisionHeader"/>
 						<![CDATA[ 
 							#{simpleVersionDroit.csEtatDroit} = 64003005 and
 							#{simplePCAccordee.csEtatPC} = 64029004 and
 							#{simplePCAccordee.idPCAccordee} in (
 								select #{pca.idPcaParent} from @{pca}
-								where #{pca.dateFin} = ${forDateFinPca:pca.dateFin}
+								inner join  @{validationDecision} on #{validationDecision.idPCAccordee} = #{pca.idPCAccordee}
+								inner join  @{decision} on #{decision.idDecisionHeader} = #{validationDecision.idDecisionHeader}
+								where #{pca.dateFin} >= ${forDateFinPca:pca.dateFin}
+								and #{decision.dateDecision} >= ${forDateDecisionMin:decision.dateDecision}
 								and #{pca.idPcaParent} <> 0
 							)
 						 ]]>
@@ -209,7 +215,6 @@
 						<search-field name="forDateFinMoisFutur" operation="EQUALS" field-ref="simplePCAccordee.dateFin" />
 					</search-group>
 					<search-group operator="AND">	
-						<search-field name="forCsEtatDemande" operation="EQUALS" field-ref="simpleDemande.csEtatDemande"/>
 						<search-group operator="OR">
 							<search-field name="forDateFinPca" operation="NULL" field-ref="simplePCAccordee.dateFin"/>
 							<search-field name="forDateFinPca" operation="EQUALS" field-ref="simplePCAccordee.dateFin"/>

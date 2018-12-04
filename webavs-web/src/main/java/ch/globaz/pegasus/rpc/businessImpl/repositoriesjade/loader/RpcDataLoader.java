@@ -463,9 +463,9 @@ public class RpcDataLoader {
         RPCDecionsPriseDansLeMoisSearch search = new RPCDecionsPriseDansLeMoisSearch();
         search.setForDateDecisionMax(dateMoisAnnoncesPrise.getLastDayOfMonth().getSwissValue());
         search.setForDateDecisionMin(dateMoisAnnoncesPrise.getFirstDayOfMonth().getSwissValue());
-        search.setForDateDecisionMaxMoins1(dateMoisAnnoncesPrise.addMonth(-1).getLastDayOfMonth().getSwissValue());
-        search.setForDateDecisionMinMoins1(dateMoisAnnoncesPrise.addMonth(-1).getFirstDayOfMonth().getSwissValue());
-        search.setForDateDecisionMoisAnneMoins1(dateMoisAnnoncesPrise.addMonth(-1).getSwissMonthValue());
+//        search.setForDateDecisionMaxMoins1(dateMoisAnnoncesPrise.addMonth(-1).getLastDayOfMonth().getSwissValue());
+//        search.setForDateDecisionMinMoins1(dateMoisAnnoncesPrise.addMonth(-1).getFirstDayOfMonth().getSwissValue());
+//        search.setForDateDecisionMoisAnneMoins1(dateMoisAnnoncesPrise.addMonth(-1).getSwissMonthValue());
         search.setForDebutDecision(dateMoisAnnoncesPrise.getMoisAnneeFormatte());
         if(!simulationListNss.isEmpty()) {
             search.setForNss(simulationListNss);
@@ -482,9 +482,9 @@ public class RpcDataLoader {
         Date dateMoisPrecedent = dateMoisAnnoncesPrise.addMonth(-1);
         search.setForDateDecisionMax(dateMoisPrecedent.getLastDayOfMonth().getSwissValue());
         search.setForDateDecisionMin(dateMoisPrecedent.getFirstDayOfMonth().getSwissValue());
-        search.setForDateDecisionMaxMoins1(dateMoisPrecedent.addMonth(-1).getLastDayOfMonth().getSwissValue());
-        search.setForDateDecisionMinMoins1(dateMoisPrecedent.addMonth(-1).getFirstDayOfMonth().getSwissValue());
-        search.setForDateDecisionMoisAnneMoins1(dateMoisPrecedent.addMonth(-1).getSwissMonthValue());
+//        search.setForDateDecisionMaxMoins1(dateMoisPrecedent.addMonth(-1).getLastDayOfMonth().getSwissValue());
+//        search.setForDateDecisionMinMoins1(dateMoisPrecedent.addMonth(-1).getFirstDayOfMonth().getSwissValue());
+//        search.setForDateDecisionMoisAnneMoins1(dateMoisPrecedent.addMonth(-1).getSwissMonthValue());
         if(!simulationListNss.isEmpty()) {
             search.setForNss(simulationListNss);
         }
@@ -581,7 +581,8 @@ public class RpcDataLoader {
         if(!simulationListNss.isEmpty()) {
             search.setForNss(simulationListNss);
         }
-        search.setForDateFinPca(dateGeneration.getMoisAnneeFormatte());
+        search.setForDateFinPca(dateGeneration.addMonth(-1).getMoisAnneeFormatte());
+        search.setForDateDecisionMin(dateGeneration.getFirstDayOfMonth().getSwissValue());
 
         // Ou date ultérieur au mois paiement
         search.setForDateFinMoisFutur(dateGeneration.getSwissMonthValue());
