@@ -17,6 +17,7 @@ import ch.globaz.al.business.models.droit.DroitComplexModel;
 import ch.globaz.al.business.services.ALServiceLocator;
 import ch.globaz.al.business.services.decision.DecisionSalarieService;
 import ch.globaz.al.businessimpl.services.ALImplServiceLocator;
+import ch.globaz.common.domaine.Date;
 import ch.globaz.topaz.datajuicer.Collection;
 import ch.globaz.topaz.datajuicer.DataList;
 import ch.globaz.topaz.datajuicer.DocumentData;
@@ -71,7 +72,23 @@ public class DecisionSalarieServiceImpl extends DecisionAbstractServiceImpl impl
         boolean hasSupplementActif = droit.getDroitModel().getSupplementActif();
         hasMontantForce = hasMontantForce && droit.getDroitModel().getForce();
 
-        if ((hasMontantDroit || hasMontantForce || hasSupplementActif)
+        boolean isDroitActif = false;
+        Date dateFinDroit = null;
+        Date dateDebutDossier = null;
+
+        if (!JadeStringUtil.isBlank(droit.getDroitModel().getFinDroitForcee())) {
+            dateFinDroit = new Date(droit.getDroitModel().getFinDroitForcee());
+        }
+
+        if (!JadeStringUtil.isBlank(dossier.getDossierModel().getDebutValidite())) {
+            dateDebutDossier = new Date(dossier.getDossierModel().getDebutValidite());
+        }
+
+        if (dateFinDroit != null && dateDebutDossier != null) {
+            isDroitActif = dateFinDroit.afterOrEquals(dateDebutDossier);
+        }
+
+        if (isDroitActif && (hasMontantDroit || hasMontantForce || hasSupplementActif)
                 && (!ALCSDroit.TYPE_NAIS.equals(typePrestation) && !ALCSDroit.TYPE_ACCE.equals(typePrestation))) {
             list = new DataList("colonne");
 
@@ -172,8 +189,25 @@ public class DecisionSalarieServiceImpl extends DecisionAbstractServiceImpl impl
                 .isEmptyOrZero((calcul.get(i)).getDroit().getDroitModel().getMontantForce());
         hasMontantForce = hasMontantForce && (calcul.get(i)).getDroit().getDroitModel().getForce();
 
-        if ((hasMontantBase || hasMontantForce) && (!ALCSDroit.TYPE_NAIS.equals((calcul.get(i)).getType())
-                && !ALCSDroit.TYPE_ACCE.equals((calcul.get(i)).getType()))) {
+        boolean isDroitActif = false;
+        Date dateFinDroit = null;
+        Date dateDebutDossier = null;
+
+        if (!JadeStringUtil.isBlank((calcul.get(i)).getDroit().getDroitModel().getFinDroitForcee())) {
+            dateFinDroit = new Date((calcul.get(i)).getDroit().getDroitModel().getFinDroitForcee());
+        }
+
+        if (!JadeStringUtil.isBlank(dossier.getDossierModel().getDebutValidite())) {
+            dateDebutDossier = new Date(dossier.getDossierModel().getDebutValidite());
+        }
+
+        if (dateFinDroit != null && dateDebutDossier != null) {
+            isDroitActif = dateFinDroit.afterOrEquals(dateDebutDossier);
+        }
+
+        if (isDroitActif && (hasMontantBase || hasMontantForce)
+                && (!ALCSDroit.TYPE_NAIS.equals((calcul.get(i)).getType())
+                        && !ALCSDroit.TYPE_ACCE.equals((calcul.get(i)).getType()))) {
             list = new DataList("colonne");
 
             listTiersBeneficiaireDroit.add(calcul.get(i).getDroit().getDroitModel().getIdTiersBeneficiaire());
