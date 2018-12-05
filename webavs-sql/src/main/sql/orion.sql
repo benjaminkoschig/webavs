@@ -1,1 +1,0 @@
-INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL) VALUES ('orion.adi.calculCotisation.enable','false');
