@@ -212,6 +212,24 @@
 							</bindingIncludes>
 						</configuration>
 					</execution>
+					<execution>
+						<id>generate-rapg</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<specVersion>2.1</specVersion>
+							<schemaDirectory>src/main/resources/xsd</schemaDirectory>
+							<generateDirectory>target/generated-sources/xjc-rapg</generateDirectory>
+							<schemaIncludes>
+								<include>rapg/*.xsd</include> 
+							</schemaIncludes>
+							<bindingDirectory>src/main/resources/xjb</bindingDirectory>
+							<bindingIncludes>
+								<include>rapg-bindings.xjb</include> 
+							</bindingIncludes>
+						</configuration>
+					</execution>
 				</executions>
 			</plugin>
 		</plugins>

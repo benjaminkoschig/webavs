@@ -1,0 +1,68 @@
+<jaxb:bindings xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" version="2.1">
+
+    <!-- Configure our custom xsd -->
+    <jaxb:bindings schemaLocation="../xsd/rapg/eahv-iv-2015-000101-4-3.xsd"
+        node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="rapg.ch.eahv_iv.xmlns.eahv_iv_2015_000101._1" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+
+    <jaxb:bindings schemaLocation="../xsd/rapg/eahv-iv-2015-000301-4-3.xsd"
+        node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="rapg.ch.eahv_iv.xmlns.eahv_iv_2015_000301._1" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+
+    <jaxb:bindings schemaLocation="../xsd/rapg/eahv-iv-2015-000401-4-3.xsd"
+        node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="rapg.ch.eahv_iv.xmlns.eahv_iv_2015_000401._1" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+
+    <jaxb:bindings schemaLocation="../xsd/rapg/eahv-iv-2015-000501-4-3.xsd"
+        node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="rapg.ch.eahv_iv.xmlns.eahv_iv_2015_000501._1" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+
+    <jaxb:bindings schemaLocation="../xsd/rapg/eahv-iv-2015-000601-4-3.xsd"
+        node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="rapg.ch.eahv_iv.xmlns.eahv_iv_2015_000601._1" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+
+    <jaxb:bindings schemaLocation="../xsd/rapg/eahv-iv-2015-000701-4-3.xsd"
+        node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="rapg.ch.eahv_iv.xmlns.eahv_iv_2015_000701._1" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+    
+    <jaxb:bindings schemaLocation="../xsd/rapg/eahv-iv-2015-common-4-3.xsd"
+        node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="rapg.ch.eahv_iv.xmlns.eahv_iv_2015_common._1" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+    
+    <jaxb:bindings schemaLocation="../xsd/rapg/eCH-0044-2-0.xsd"
+        node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="rapg.ch.ech.xmlns.ech_0044._2" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+    
+    <jaxb:bindings schemaLocation="../xsd/rapg/eCH-0058-4-0.xsd"
+        node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="rapg.ch.ech.xmlns.ech_0058._4" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+    
+</jaxb:bindings>
