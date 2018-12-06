@@ -88,6 +88,12 @@ public interface IAPDroitLAPG {
 
     /** DOCUMENT ME! */
     public static final String CS_SERVICE_CIVIL_AVEC_TAUX_RECRUES = "52001010";
+    
+    /** DOCUMENT ME! */
+    public static final String CS_SERVICE_INTERRUPTION_AVANT_ECOLE_SOUS_OFF = "52001015";
+    
+    /** DOCUMENT ME! */
+    public static final String CS_SERVICE_INTERRUPTION_PENDANT_SERVICE_AVANCEMENT = "52001016";
 
     /** DOCUMENT ME! */
     public static final String CS_SERVICE_CIVIL_SERVICE_NORMAL = "52001009";
