@@ -74,18 +74,26 @@ public class DecisionSalarieServiceImpl extends DecisionAbstractServiceImpl impl
 
         boolean isDroitActif = false;
         Date dateFinDroit = null;
-        Date dateDebutDossier = null;
+        Date dateDebutFinDossier = null;
 
         if (!JadeStringUtil.isBlank(droit.getDroitModel().getFinDroitForcee())) {
             dateFinDroit = new Date(droit.getDroitModel().getFinDroitForcee());
         }
 
         if (!JadeStringUtil.isBlank(dossier.getDossierModel().getDebutValidite())) {
-            dateDebutDossier = new Date(dossier.getDossierModel().getDebutValidite());
+            dateDebutFinDossier = new Date(dossier.getDossierModel().getDebutValidite());
         }
 
-        if (dateFinDroit != null && dateDebutDossier != null) {
-            isDroitActif = dateFinDroit.afterOrEquals(dateDebutDossier);
+        if (dateFinDroit != null && dateDebutFinDossier != null) {
+            isDroitActif = dateFinDroit.afterOrEquals(dateDebutFinDossier);
+        }
+
+        // Cas de radiation, pas de date de debut du dossier, comparer les dates de fin
+        if (dateFinDroit != null && dateDebutFinDossier == null
+                && !JadeStringUtil.isBlank(dossier.getDossierModel().getFinValidite())) {
+            dateDebutFinDossier = new Date(dossier.getDossierModel().getFinValidite());
+            isDroitActif = !JadeStringUtil.isBlankOrZero(montantDroit) || hasSupplementActif;
+            isDroitActif = isDroitActif && dateFinDroit.afterOrEquals(dateDebutFinDossier);
         }
 
         if (isDroitActif && (hasMontantDroit || hasMontantForce || hasSupplementActif)
@@ -191,18 +199,26 @@ public class DecisionSalarieServiceImpl extends DecisionAbstractServiceImpl impl
 
         boolean isDroitActif = false;
         Date dateFinDroit = null;
-        Date dateDebutDossier = null;
+        Date dateDebutFinDossier = null;
 
         if (!JadeStringUtil.isBlank((calcul.get(i)).getDroit().getDroitModel().getFinDroitForcee())) {
             dateFinDroit = new Date((calcul.get(i)).getDroit().getDroitModel().getFinDroitForcee());
         }
 
         if (!JadeStringUtil.isBlank(dossier.getDossierModel().getDebutValidite())) {
-            dateDebutDossier = new Date(dossier.getDossierModel().getDebutValidite());
+            dateDebutFinDossier = new Date(dossier.getDossierModel().getDebutValidite());
         }
 
-        if (dateFinDroit != null && dateDebutDossier != null) {
-            isDroitActif = dateFinDroit.afterOrEquals(dateDebutDossier);
+        if (dateFinDroit != null && dateDebutFinDossier != null) {
+            isDroitActif = dateFinDroit.afterOrEquals(dateDebutFinDossier);
+        }
+
+        // Cas de radiation, pas de date de debut du dossier, comparer les dates de fin
+        if (dateFinDroit != null && dateDebutFinDossier == null
+                && !JadeStringUtil.isBlank(dossier.getDossierModel().getFinValidite())) {
+            dateDebutFinDossier = new Date(dossier.getDossierModel().getFinValidite());
+            isDroitActif = !JadeStringUtil.isBlankOrZero((calcul.get(i)).getCalculResultMontantBase());
+            isDroitActif = isDroitActif && dateFinDroit.afterOrEquals(dateDebutFinDossier);
         }
 
         if (isDroitActif && (hasMontantBase || hasMontantForce)
