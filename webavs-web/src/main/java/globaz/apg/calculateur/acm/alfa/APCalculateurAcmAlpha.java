@@ -227,7 +227,9 @@ public class APCalculateurAcmAlpha {
                     if ((IAPDroitLAPG.CS_SERVICE_EN_QUALITE_DE_RECRUE.equals(genreService)
                             || IAPDroitLAPG.CS_RECRUTEMENT.equals(genreService)
                             || IAPDroitLAPG.CS_FORMATION_DE_BASE.equals(genreService) || IAPDroitLAPG.CS_SERVICE_CIVIL_AVEC_TAUX_RECRUES
-                                .equals(genreService)) && ((nbrEnfants == 0) && !isEtatCivilMarie)) {
+                                .equals(genreService)
+                            || IAPDroitLAPG.CS_SERVICE_INTERRUPTION_AVANT_ECOLE_SOUS_OFF.equals(genreService) 
+                                ) && ((nbrEnfants == 0) && !isEtatCivilMarie)) {
                         // Le revenu journalier est pris à 50%
                         rmd = rmd.multiply(new BigDecimal("0.5"));
                     }
@@ -235,7 +237,9 @@ public class APCalculateurAcmAlpha {
                     else if ((IAPDroitLAPG.CS_SERVICE_EN_QUALITE_DE_RECRUE.equals(genreService)
                             || IAPDroitLAPG.CS_RECRUTEMENT.equals(genreService)
                             || IAPDroitLAPG.CS_FORMATION_DE_BASE.equals(genreService) || IAPDroitLAPG.CS_SERVICE_CIVIL_AVEC_TAUX_RECRUES
-                                .equals(genreService)) && ((nbrEnfants > 0) || isEtatCivilMarie)) {
+                                .equals(genreService)
+                            || IAPDroitLAPG.CS_SERVICE_INTERRUPTION_AVANT_ECOLE_SOUS_OFF.equals(genreService)
+                                ) && ((nbrEnfants > 0) || isEtatCivilMarie)) {
                         // Le revenu journalier est pris à 75%
                         rmd = rmd.multiply(new BigDecimal("0.75"));
                     }

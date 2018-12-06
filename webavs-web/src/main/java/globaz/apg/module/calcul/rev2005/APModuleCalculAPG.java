@@ -49,7 +49,9 @@ public class APModuleCalculAPG implements IAPCalculateur {
                 || (IAPDroitLAPG.CS_RECRUTEMENT.equals(baseCalcul.getTypeAllocation()) && (baseCalcul
                         .getNombreEnfants() == 0))
                 || (IAPDroitLAPG.CS_SERVICE_CIVIL_AVEC_TAUX_RECRUES.equals(baseCalcul.getTypeAllocation()) && (baseCalcul
-                        .getNombreEnfants() == 0))) {
+                        .getNombreEnfants() == 0))
+                || (IAPDroitLAPG.CS_SERVICE_INTERRUPTION_AVANT_ECOLE_SOUS_OFF.equals(baseCalcul.getTypeAllocation()) && (baseCalcul
+                        .getNombreEnfants() == 0))){
             alloc = new APModuleCalculAllocBaseRecrue();
         } else if (IAPDroitLAPG.CS_SOF_EN_SERVICE_LONG.equals(baseCalcul.getTypeAllocation())) {
             alloc = new APModuleCalculAllocCadreServiceLong();
@@ -62,6 +64,7 @@ public class APModuleCalculAPG implements IAPCalculateur {
                 || IAPDroitLAPG.CS_PROTECTION_CIVILE_COMMANDANT.equals(baseCalcul.getTypeAllocation())
                 || IAPDroitLAPG.CS_FORMATION_DE_CADRE_JEUNESSE_SPORTS.equals(baseCalcul.getTypeAllocation())
                 || IAPDroitLAPG.CS_SERVICE_CIVIL_SERVICE_NORMAL.equals(baseCalcul.getTypeAllocation())
+                || IAPDroitLAPG.CS_SERVICE_INTERRUPTION_PENDANT_SERVICE_AVANCEMENT.equals(baseCalcul.getTypeAllocation())
                 || (IAPDroitLAPG.CS_SERVICE_EN_QUALITE_DE_RECRUE.equals(baseCalcul.getTypeAllocation()) && (baseCalcul
                         .getNombreEnfants() > 0))
                 || (IAPDroitLAPG.CS_RECRUTEMENT.equals(baseCalcul.getTypeAllocation()) && (baseCalcul
@@ -69,6 +72,8 @@ public class APModuleCalculAPG implements IAPCalculateur {
                 || (IAPDroitLAPG.CS_FORMATION_DE_BASE.equals(baseCalcul.getTypeAllocation()) && (baseCalcul
                         .getNombreEnfants() > 0))
                 || (IAPDroitLAPG.CS_SERVICE_CIVIL_AVEC_TAUX_RECRUES.equals(baseCalcul.getTypeAllocation()) && (baseCalcul
+                        .getNombreEnfants() > 0))
+                || (IAPDroitLAPG.CS_SERVICE_INTERRUPTION_AVANT_ECOLE_SOUS_OFF.equals(baseCalcul.getTypeAllocation()) && (baseCalcul
                         .getNombreEnfants() > 0))) {
             alloc = new APModuleCalculAllocServiceNormal();
         } else {
