@@ -11,6 +11,8 @@ public enum APGenreServiceAPG {
     MilitaireRecrutement("13", IAPDroitLAPG.CS_RECRUTEMENT),
     MilitaireServiceNormal("10", IAPDroitLAPG.CS_ARMEE_SERVICE_NORMAL),
     MilitaireSousOfficierEnServiceLong("14", IAPDroitLAPG.CS_SOF_EN_SERVICE_LONG),
+    InterruptionAvantEcoleSousOfficier("15", IAPDroitLAPG.CS_SERVICE_INTERRUPTION_AVANT_ECOLE_SOUS_OFF),
+    InterruptionPendantServiceAvancement("16", IAPDroitLAPG.CS_SERVICE_INTERRUPTION_PENDANT_SERVICE_AVANCEMENT),
     ProtectionCivileCadreSpecialiste("22", IAPDroitLAPG.CS_PROTECTION_CIVILE_CADRE_SPECIALISTE),
     ProtectionCivileCommandant("23", IAPDroitLAPG.CS_PROTECTION_CIVILE_COMMANDANT),
     ProtectionCivileFormationDeBase("21", IAPDroitLAPG.CS_FORMATION_DE_BASE),
