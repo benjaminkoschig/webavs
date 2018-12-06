@@ -47,6 +47,8 @@ public class Rule314 extends Rule {
         services.add("12");
         services.add("13");
         services.add("14");
+        services.add("15");
+        services.add("16");
         services.add("20");
         services.add("21");
         services.add("22");

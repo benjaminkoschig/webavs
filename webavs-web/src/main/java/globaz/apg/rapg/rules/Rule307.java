@@ -54,6 +54,7 @@ public class Rule307 extends Rule {
             List<String> serviceCivils = new ArrayList<String>();
             serviceCivils.add("11");
             serviceCivils.add("13");
+            serviceCivils.add("15");
             serviceCivils.add("21");
             serviceCivils.add("41");
 

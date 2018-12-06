@@ -38,7 +38,9 @@ public class Rule414 extends Rule {
                     APGenreServiceAPG.MilitaireEcoleDeRecrue.getCodeSysteme(),
                     APGenreServiceAPG.MilitaireServiceNormal.getCodeSysteme(),
                     APGenreServiceAPG.MilitairePaiementGallons.getCodeSysteme(),
-                    APGenreServiceAPG.MilitaireSousOfficierEnServiceLong.getCodeSysteme()));
+                    APGenreServiceAPG.MilitaireSousOfficierEnServiceLong.getCodeSysteme(),
+                    APGenreServiceAPG.InterruptionAvantEcoleSousOfficier.getCodeSysteme(),
+                    APGenreServiceAPG.InterruptionPendantServiceAvancement.getCodeSysteme()));
             manager.setLikeNumeroAvs(champsAnnonce.getInsurant());
             try {
                 manager.find();

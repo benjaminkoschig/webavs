@@ -14,12 +14,12 @@ import java.util.List;
  * 
  * @author lga
  */
-public class Rule315 extends Rule {
+public class Rule322 extends Rule {
 
     /**
      * @param errorCode
      */
-    public Rule315(String errorCode) {
+    public Rule322(String errorCode) {
         super(errorCode, false);
     }
 
@@ -32,28 +32,27 @@ public class Rule315 extends Rule {
     @Override
     public boolean check(APChampsAnnonce champsAnnonce) throws APRuleExecutionException, IllegalArgumentException {
         String serviceType = champsAnnonce.getServiceType();
-        String startOfPeriod = champsAnnonce.getStartOfPeriod();
-        String insurantBirthDate = champsAnnonce.getInsurantBirthDate();
+        String activityBeforeService = champsAnnonce.getActivityBeforeService();
+        String paymentMethod = champsAnnonce.getPaymentMethod();
+        Boolean allowanceFarm = champsAnnonce.getAllowanceFarm();
         int typeAnnonce = getTypeAnnonce(champsAnnonce);
         if (typeAnnonce == 1) {
             validNotEmpty(serviceType, "serviceType");
-            validNotEmpty(startOfPeriod, "startOfPeriod");
         }
 
         List<String> services = new ArrayList<String>();
-        services.add("10");
-        services.add("11");
-        services.add("12");
-        services.add("13");
-        services.add("14");
         services.add("15");
         services.add("16");
-        services.add("40");
-        services.add("41");
-        services.add("50");
         if (services.contains(serviceType)) {
-            validNotEmpty(insurantBirthDate, "insurantBirthDate");
-            if (JadeDateUtil.getNbYearsBetween(insurantBirthDate, startOfPeriod) < 18) {
+            validNotEmpty(paymentMethod, "paymentMethod");
+            validNotEmpty(activityBeforeService, "activityBeforeService");
+            if ((activityBeforeService.equals("2")) || (activityBeforeService.equals("3"))) {
+                return false;
+            }
+            if ((paymentMethod.equals("2")) || (paymentMethod.equals("3"))) {
+                return false;
+            }
+            if (allowanceFarm == true) {
                 return false;
             }
         }
