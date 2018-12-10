@@ -211,7 +211,6 @@
 								<include>al-bindings.xjb</include> 
 							</bindingIncludes>
 						</configuration>
-						<verbose>true</verbose>
 					</execution>
 				</executions>
 			</plugin>
