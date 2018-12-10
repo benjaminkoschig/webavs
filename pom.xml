@@ -58,7 +58,7 @@
 		<simple-output-list.version>1.3.2</simple-output-list.version>
 		<sqlClassMapper.version>1.0.1</sqlClassMapper.version>
 		<op.version>5.0.4</op.version>
-		<globaz-external-xsd.version>1.2.6-SNAPSHOT</globaz-external-xsd.version>
+		<globaz-external-xsd.version>1.2.6-jre7-SNAPSHOT</globaz-external-xsd.version>
 		<ebback-api.version>9.0.0</ebback-api.version>
 
 
