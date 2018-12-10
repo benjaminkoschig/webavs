@@ -8,11 +8,12 @@ import java.util.List;
 
 /**
  * <strong>Règles de validation des plausibilités RAPG</br> Description :</strong></br> </br><strong>Champs concerné(s)
- * :</strong></br> Si le champ « serviceType » = 10, 11, 12, 13, 14, 40, 41 ou 50 et la date de naissance issue du
- * NAVS13
- * indique un âge < 18 ans -> erreur.</br>
+ * :</strong></br> Si le champ « serviceType » = 15 et/ou 16 et que l'activité n'est pas Independant et/ou Non actif
+ * que la méthode de paiement ne soit pas à l'employeur ni réparti entre assureur et personne assué, qu'il n'y ait 
+ * pas d'allocation d'exploitation et qu'il n'y ait pas d'allocation de frais de garde
  * 
- * @author lga
+ * 
+ * @author eniv
  */
 public class Rule322 extends Rule {
 
@@ -33,6 +34,7 @@ public class Rule322 extends Rule {
     public boolean check(APChampsAnnonce champsAnnonce) throws APRuleExecutionException, IllegalArgumentException {
         String serviceType = champsAnnonce.getServiceType();
         String activityBeforeService = champsAnnonce.getActivityBeforeService();
+        String allowanceCareExpenses = champsAnnonce.getAllowanceCareExpenses();
         String paymentMethod = champsAnnonce.getPaymentMethod();
         Boolean allowanceFarm = champsAnnonce.getAllowanceFarm();
         int typeAnnonce = getTypeAnnonce(champsAnnonce);
@@ -52,11 +54,10 @@ public class Rule322 extends Rule {
             if ((paymentMethod.equals("2")) || (paymentMethod.equals("3"))) {
                 return false;
             }
-            if (allowanceFarm == true) {
+            if ((allowanceFarm == true) || !(allowanceCareExpenses.equals("0"))) {
                 return false;
             }
         }
-
         return true;
     }
 

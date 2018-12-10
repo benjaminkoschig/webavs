@@ -49,12 +49,47 @@ public class Rule417 extends Rule {
         services.add("16");
 
         if (services.contains(serviceType)) {
-            String numberOfDays = champsAnnonce.getNumberOfDays();
+        
+            int totalDeJours = 0;
+            String nss = champsAnnonce.getInsurant();
+            validNotEmpty(nss, "NSS");
 
-            if (Integer.valueOf(numberOfDays) > NB_JOUR_MAX) {
+            List<String> forIn = new ArrayList<String>();
+            forIn.add(APGenreServiceAPG.ServiceCivilNormal.getCodeSysteme());
+            forIn.add(APGenreServiceAPG.ServiceCivilTauxRecrue.getCodeSysteme());
+
+            APDroitAPGJointTiersManager manager = new APDroitAPGJointTiersManager();
+            manager.setSession(getSession());
+            manager.setForCsGenreServiceIn(forIn);
+            manager.setLikeNumeroAvs(nss);
+
+            // Ne pas traiter les droits en état refusé ou transféré
+            List<String> etatIndesirable = new ArrayList<String>();
+            etatIndesirable.add(IAPDroitLAPG.CS_ETAT_DROIT_REFUSE);
+            etatIndesirable.add(IAPDroitLAPG.CS_ETAT_DROIT_TRANSFERE);
+            manager.setForEtatDroitNotIn(etatIndesirable);
+            List<APDroitAvecParent> droitsSansParents = null;
+            try {
+                manager.find();
+                List<APDroitAvecParent> tousLesDroits = manager.getContainer();
+                droitsSansParents = skipDroitParent(tousLesDroits);
+            } catch (Exception e) {
+                throwRuleExecutionException(e);
+            }
+
+            for (Object d : droitsSansParents) {
+                APDroitAPGJointTiers droit = (APDroitAPGJointTiers) d;
+                if (!JadeStringUtil.isEmpty(droit.getNbrJourSoldes())) {
+                    totalDeJours += Integer.valueOf(droit.getNbrJourSoldes());
+                }
+
+            }
+            if (totalDeJours > NB_JOUR_MAX) {
                 return false;
             }
+            
         }
+        
         return true;
     }
 
