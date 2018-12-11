@@ -1,5 +1,7 @@
 package globaz.apg.rapg.rules;
 
+import java.util.ArrayList;
+import java.util.List;
 import globaz.apg.api.droits.IAPDroitLAPG;
 import globaz.apg.db.droits.APDroitAPGJointTiers;
 import globaz.apg.db.droits.APDroitAPGJointTiersManager;
@@ -8,21 +10,20 @@ import globaz.apg.exceptions.APRuleExecutionException;
 import globaz.apg.interfaces.APDroitAvecParent;
 import globaz.apg.pojo.APChampsAnnonce;
 import globaz.jade.client.util.JadeStringUtil;
-import globaz.prestation.utils.DateException;
-import globaz.prestation.utils.PRDateUtils;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
- * <strong>Règles de validation des plausibilités RAPG</br> Description :</strong></br> Si le champ « serviceType » = 15
- * et/ou 16 et le champ « numberOfDays » est > 42 jours -> erreur </br><strong>Champs concerné(s) :</strong></br>
- * 
+ * <strong>Règles de validation des plausibilités RAPG</br>
+ * Description :</strong></br>
+ * Si le champ « serviceType » = 15
+ * et/ou 16 et le champ « numberOfDays » est > 42 jours -> erreur </br>
+ * <strong>Champs concerné(s) :</strong></br>
+ *
  * @author eniv
  */
 public class Rule417 extends Rule {
 
     private static final int NB_JOUR_MAX = 42;
-    
+
     /**
      * @param errorCode
      */
@@ -32,7 +33,7 @@ public class Rule417 extends Rule {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * ch.globaz.apg.businessimpl.plausibilites.Rule#check(ch.globaz.apg.business.models.plausibilites.ChampsAnnonce)
      */
@@ -49,14 +50,14 @@ public class Rule417 extends Rule {
         services.add("16");
 
         if (services.contains(serviceType)) {
-        
+
             int totalDeJours = 0;
             String nss = champsAnnonce.getInsurant();
             validNotEmpty(nss, "NSS");
 
             List<String> forIn = new ArrayList<String>();
-            forIn.add(APGenreServiceAPG.ServiceCivilNormal.getCodeSysteme());
-            forIn.add(APGenreServiceAPG.ServiceCivilTauxRecrue.getCodeSysteme());
+            forIn.add(APGenreServiceAPG.InterruptionAvantEcoleSousOfficier.getCodeSysteme());
+            forIn.add(APGenreServiceAPG.InterruptionPendantServiceAvancement.getCodeSysteme());
 
             APDroitAPGJointTiersManager manager = new APDroitAPGJointTiersManager();
             manager.setSession(getSession());
@@ -87,9 +88,9 @@ public class Rule417 extends Rule {
             if (totalDeJours > NB_JOUR_MAX) {
                 return false;
             }
-            
+
         }
-        
+
         return true;
     }
 
