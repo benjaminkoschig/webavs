@@ -2,7 +2,7 @@
 <!--Jade: proprietes generales du systeme-->
 <Jade>
 	<!--homeDir: repertoire de base de l'application, necessaire pour trouver les fichiers de l'application-->
-	<homeDir>D:\workspaces\OXYGEN\webavs\trunk\webavs-parent\webavs-web\src\main\webapp</homeDir>
+	<homeDir>D:\workspaces\WebAvs 1.21 Java 1.7\webavs-parent\webavs-web\src\main\webapp</homeDir>
 	<!--persistenceDir: repertoire pour la persistance interne, si vide: homeDir + /persistence-->
 	<persistenceDir></persistenceDir>
 	<!--logDir: repertoire pour les fichiers LOG de l'application, si vide: homeDir + /logs-->
@@ -26,8 +26,8 @@
 	<!-- 	<defaultJdbcUrl>jdbc:jade:CCVD_DEV</defaultJdbcUrl> -->
 	<!-- 	<defaultJdbcSchema>CCVDDEV</defaultJdbcSchema> -->
 	
-<!-- 		<defaultJdbcUrl>jdbc:jade:CCJU_DEV</defaultJdbcUrl> -->
-<!-- 		<defaultJdbcSchema>CCJUWEB</defaultJdbcSchema> -->
+		<defaultJdbcUrl>jdbc:jade:CCJU_DEV</defaultJdbcUrl>
+		<defaultJdbcSchema>CCJUWEB</defaultJdbcSchema>
 	
 <!-- 		<defaultJdbcUrl>jdbc:jade:CICICAM_DEV</defaultJdbcUrl> -->
 <!-- 		<defaultJdbcSchema>CICIWEB</defaultJdbcSchema> -->
@@ -57,8 +57,8 @@
 <!-- 		<defaultJdbcUrl>jdbc:jade:CCVD_TEST_CLIENTS</defaultJdbcUrl> -->
 <!-- 		<defaultJdbcSchema>PC_CCVD</defaultJdbcSchema> -->
 	
-		<defaultJdbcUrl>jdbc:jade:CCJU_QUALITE_1_6</defaultJdbcUrl>
-		<defaultJdbcSchema>CCJUWEB</defaultJdbcSchema>	
+<!-- 		<defaultJdbcUrl>jdbc:jade:CCJU_QUALITE_1_6</defaultJdbcUrl> -->
+<!-- 		<defaultJdbcSchema>CCJUWEB</defaultJdbcSchema>	 -->
 
 <!-- 		<defaultJdbcUrl>jdbc:jade:H51_X_QUALITE</defaultJdbcUrl> -->
 <!-- 		<defaultJdbcSchema>H51XWEB</defaultJdbcSchema> -->

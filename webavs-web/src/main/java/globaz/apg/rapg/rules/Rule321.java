@@ -66,7 +66,7 @@ public class Rule321 extends Rule {
         if (services1.contains(serviceType)) {
             validNotEmpty(basicDailyAmount, "basicDailyAmount");
             validNotEmpty(numberOfChilren, "numberOfChilren");
-            if (numberOfChilren.equals("0") && (Integer.valueOf(basicDailyAmount) > montantMiniAllocationJournalier)) {
+            if (numberOfChilren.equals("0") && (Float.valueOf(basicDailyAmount) > montantMiniAllocationJournalier)) {
                 return false;
             }
             
@@ -76,7 +76,7 @@ public class Rule321 extends Rule {
         if (services2.contains(serviceType)) {
             validNotEmpty(basicDailyAmount, "basicDailyAmount");
             validNotEmpty(numberOfChilren, "numberOfChilren");
-            if (numberOfChilren.equals("0") && (Integer.valueOf(basicDailyAmount) > montantMiniAllocationJournalierMaternite)) {
+            if (numberOfChilren.equals("0") && (Float.valueOf(basicDailyAmount) > montantMiniAllocationJournalierMaternite)) {
                 return false;
             }            
         }
@@ -86,7 +86,7 @@ public class Rule321 extends Rule {
                 return false;
             }
         } else {
-            if ((Integer.valueOf(numberOfChilren) > 0) && (Integer.valueOf(basicDailyAmount) > montantMiniAllocationJournalierCadre)) {
+            if ((Integer.valueOf(numberOfChilren) > 0) && (Float.valueOf(basicDailyAmount) > montantMiniAllocationJournalierCadre)) {
                 return false;
             }
         }

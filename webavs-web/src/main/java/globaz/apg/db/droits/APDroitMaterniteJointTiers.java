@@ -160,11 +160,11 @@ public class APDroitMaterniteJointTiers extends BEntity implements APDroitAvecPa
         return prenomTiers;
     }
 
-    String getUneDateDebutPeriode() {
+    public String getUneDateDebutPeriode() {
         return uneDateDebutPeriode;
     }
 
-    String getUneDateFinPeriode() {
+    public String getUneDateFinPeriode() {
         return uneDateFinPeriode;
     }
 
