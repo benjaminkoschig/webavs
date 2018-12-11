@@ -121,6 +121,7 @@ public class Rule400 extends Rule {
                         && JadeDateUtil.isDateAfter(dateDebutMat, endOfPeriod))
                         && (JadeDateUtil.isDateAfter(dateFinMat, startOfPeriod)
                                 && JadeDateUtil.isDateAfter(dateFinMat, endOfPeriod))) {
+            isHorsPeriode = true;
 
         }
 
