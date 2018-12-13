@@ -100,11 +100,19 @@ public interface ALConstDocument {
      * ente de document H510 en français
      */
     public static final String H510_ENTETE_STANDARD_FR = "ENTETE_H510_STANDARD_FR";
+    /**
+     * ente de document H510 en italien
+     */
+    public static final String H510_ENTETE_STANDARD_IT = "ENTETE_H510_STANDARD_IT";
 
     /**
      * entete de document standard h513
      */
     public static final String H513_ENTETE_STANDARD_FR = "ENTETE_H513_STANDARD_FR";
+    /**
+     * entete de document standard h513 en italien
+     */
+    public static final String H513_ENTETE_STANDARD_IT = "ENTETE_H513_STANDARD_IT";    
     /**
      * entete de document h514 en français
      */
@@ -113,6 +121,10 @@ public interface ALConstDocument {
      * entete de document h514 en français
      */
     public static final String H514_ENTETE_STANDARD_FR = "ENTETE_H514_STANDARD_FR";
+    /**
+     * entete de document h514 en italien
+     */
+    public static final String H514_ENTETE_STANDARD_IT = "ENTETE_H514_STANDARD_IT";    
 
     /**
      * entete de document h515 Allemand
@@ -122,7 +134,12 @@ public interface ALConstDocument {
      * ente de document H515 en français
      */
     public static final String H515_ENTETE_STANDARD_FR = "ENTETE_H515_STANDARD_FR";
+    /**
+     * ente de document H515 en italien
+     */
+    public static final String H515_ENTETE_STANDARD_IT = "ENTETE_H515_STANDARD_IT";
 
+    
     /**
      * entete de document h517 Allemand
      */
@@ -132,6 +149,10 @@ public interface ALConstDocument {
      */
     public static final String H517_ENTETE_STANDARD_FR = "ENTETE_H517_STANDARD_FR";
     /**
+     * ente de document H517 en italien
+     */
+    public static final String H517_ENTETE_STANDARD_IT = "ENTETE_H517_STANDARD_IT";    
+    /**
      * entete de document H51X décision en allemand
      */
     public static final String H51X_ENTETE_DECISION_DE = "ENTETE_H51X_DECISION_DE";
@@ -140,6 +161,10 @@ public interface ALConstDocument {
      */
     public static final String H51X_ENTETE_DECISION_FR = "ENTETE_H51X_DECISION_FR";
     /**
+     * entete de document H51X décision en italien
+     */
+    public static final String H51X_ENTETE_DECISION_IT = "ENTETE_H51X_DECISION_IT";    
+    /**
      * entete de document H51X décision en allemand
      */
     public static final String H51X_ENTETE_STANDARD_DE = "ENTETE_H51X_STANDARD_DE";
@@ -147,6 +172,10 @@ public interface ALConstDocument {
      * entete de document H51X décision en français
      */
     public static final String H51X_ENTETE_STANDARD_FR = "ENTETE_H51X_STANDARD_FR";
+    /**
+     * entete de document H51X décision en italien
+     */
+    public static final String H51X_ENTETE_STANDARD_IT = "ENTETE_H51X_STANDARD_IT";    
     /**
      * constante langue affilié
      */

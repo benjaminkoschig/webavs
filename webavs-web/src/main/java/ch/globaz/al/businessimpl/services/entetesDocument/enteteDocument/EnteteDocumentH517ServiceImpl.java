@@ -45,6 +45,9 @@ public class EnteteDocumentH517ServiceImpl extends ALAbstractBusinessServiceImpl
         } else if (JadeStringUtil.equals(langue, ALConstLangue.LANGUE_ISO_ALLEMAND, false)) {
             return ALConstDocument.H517_ENTETE_STANDARD_DE;
 
+        } else if (JadeStringUtil.equals(langue, ALConstLangue.LANGUE_ISO_ITALIEN, false)) {
+            return ALConstDocument.H517_ENTETE_STANDARD_IT;
+
         }
 
         else {

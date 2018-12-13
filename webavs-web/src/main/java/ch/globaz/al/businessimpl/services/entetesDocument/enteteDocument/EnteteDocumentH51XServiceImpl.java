@@ -39,6 +39,10 @@ public class EnteteDocumentH51XServiceImpl extends AbstractEnteteDocumentService
         } else if (JadeStringUtil.equals(langue, ALConstLangue.LANGUE_ISO_FRANCAIS, false)
                 && JadeStringUtil.equals(typeDocument, ALConstDocument.DOCUMENT_DECISION, false)) {
             return ALConstDocument.H51X_ENTETE_DECISION_FR;
+            
+        } else if (JadeStringUtil.equals(langue, ALConstLangue.LANGUE_ISO_ITALIEN, false)
+                && JadeStringUtil.equals(typeDocument, ALConstDocument.DOCUMENT_DECISION, false)) {
+            return ALConstDocument.H51X_ENTETE_DECISION_IT;            
 
         } else if (JadeStringUtil.equals(langue, ALConstLangue.LANGUE_ISO_FRANCAIS, false)
                 && !JadeStringUtil.equals(typeDocument, ALConstDocument.DOCUMENT_DECISION, false)) {
@@ -47,6 +51,10 @@ public class EnteteDocumentH51XServiceImpl extends AbstractEnteteDocumentService
         } else if (JadeStringUtil.equals(langue, ALConstLangue.LANGUE_ISO_ALLEMAND, false)
                 && !JadeStringUtil.equals(typeDocument, ALConstDocument.DOCUMENT_DECISION, false)) {
             return ALConstDocument.H51X_ENTETE_STANDARD_DE;
+            
+        } else if (JadeStringUtil.equals(langue, ALConstLangue.LANGUE_ISO_ITALIEN, false)
+                && !JadeStringUtil.equals(typeDocument, ALConstDocument.DOCUMENT_DECISION, false)) {
+            return ALConstDocument.H51X_ENTETE_STANDARD_IT;            
 
         } else {
             return ALConstDocument.H51X_ENTETE_STANDARD_FR;
