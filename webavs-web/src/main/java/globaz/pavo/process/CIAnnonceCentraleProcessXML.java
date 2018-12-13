@@ -725,6 +725,9 @@ public class CIAnnonceCentraleProcessXML extends BProcess {
     }
 
     private String getAffilie(CIEcriture ecriture) throws Exception {
+        if (CIEcriture.CS_CIGENRE_5.equals(ecriture.getGenreEcriture())) {
+            return "0";
+        }
         if (CIEcriture.CS_CIGENRE_8.equals(ecriture.getGenreEcriture())) {
             String noAffilie = "";
             if (!JadeStringUtil.isIntegerEmpty(ecriture.getPartenaireId())) {
