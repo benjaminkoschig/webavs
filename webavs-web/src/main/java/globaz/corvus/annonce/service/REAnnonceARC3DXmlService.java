@@ -38,7 +38,7 @@ public class REAnnonceARC3DXmlService {
         meldung.setMeldungsnummer(increment);
         meldung.setMZRSchluesselzahl(MOTIF_ARC);
 
-        final DateFormat format = new SimpleDateFormat("dd.mm.yyyy");
+        final DateFormat format = new SimpleDateFormat("dd.MM.yyyy");
         final String dateStr = JACalendar.todayjjMMMMaaaa();
         final java.util.Date dDate = format.parse(dateStr);
         GregorianCalendar gregory = new GregorianCalendar();

@@ -303,7 +303,7 @@ public class REEnvoyerAnnoncesXMLProcess extends BProcess {
         }
         poolKopf.setSender(poolKopfSender);
 
-        final DateFormat format = new SimpleDateFormat("dd.mm.yyyy");
+        final DateFormat format = new SimpleDateFormat("dd.MM.yyyy");
         final String dateStr = JACalendar.todayjjMMMMaaaa();
         final java.util.Date dDate = format.parse(dateStr);
 
