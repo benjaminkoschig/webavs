@@ -208,7 +208,7 @@ public class RecapitulatifsListeAffilieServiceImpl extends AbstractDocument
             // numéro dossier
             csvContent.append(lignesRecap.getIdDossier()).append(";");
             // numéro de nss non formatté
-            csvContent.append("'").append(JadeStringUtil.removeChar(lignesRecap.getNumNSS(), '.')).append(";");
+            csvContent.append(JadeStringUtil.removeChar(lignesRecap.getNumNSS(), '.')).append(";");
 
             // nom
             csvContent.append(lignesRecap.getNomAllocataire()).append(" ;");
