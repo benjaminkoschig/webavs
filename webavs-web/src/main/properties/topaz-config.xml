@@ -710,12 +710,21 @@
 		<when attribute="idEntete" operator="eq" value="ENTETE_H51X_STANDARD_DE">
 			<doc-id action="set">AL/H51X/commun/entetes/H51X_CaisseAF_STANDARD_DE</doc-id>
 		</when>
+		<when attribute="idEntete" operator="eq" value="ENTETE_H51X_DECISION_IT">
+		    <doc-id action="set">AL/H51X/commun/entetes/H51X_CaisseAF_DECISION_IT</doc-id>
+		</when>
+		<when attribute="idEntete" operator="eq" value="ENTETE_H51X_STANDARD_IT">
+		    <doc-id action="set">AL/H51X/commun/entetes/H51X_CaisseAF_STANDARD_IT</doc-id>
+		</when>		
 		<when attribute="idEntete" operator="eq" value="ENTETE_H515_STANDARD_FR">
 			<doc-id action="set">AL/H515/commun/entetes/H515_CaisseAF_FR</doc-id>
 		</when>
 		<when attribute="idEntete" operator="eq" value="ENTETE_H515_STANDARD_DE">
 			<doc-id action="set">AL/H515/commun/entetes/H515_CaisseAF_DE</doc-id>
 		</when>
+		<when attribute="idEntete" operator="eq" value="ENTETE_H515_STANDARD_IT">
+		    <doc-id action="set">AL/H515/commun/entetes/H515_CaisseAF_IT</doc-id>
+		</when>		
 		<when attribute="idEntete" operator="eq" value="ENTETE_CCVD_CAI_COMPENS">
 			<doc-id action="set">AL/CCVD/commun/entetes/CCVD_Compensation</doc-id>
 		</when>
@@ -731,6 +740,9 @@
 		<when attribute="idEntete" operator="eq" value="ENTETE_H514_STANDARD_FR">
 			<doc-id action="set">AL/H514/commun/entetes/H514_CaisseAF_FR</doc-id>
 		</when>
+		<when attribute="idEntete" operator="eq" value="ENTETE_H514_STANDARD_IT">
+		    <doc-id action="set">AL/H514/commun/entetes/H514_CaisseAF_IT</doc-id>
+		</when>		
 </doc-selection>
 
 <!-- ################################################################################################################ -->
