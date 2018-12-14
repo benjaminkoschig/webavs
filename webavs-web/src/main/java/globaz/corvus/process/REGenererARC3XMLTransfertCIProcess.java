@@ -167,10 +167,14 @@ public class REGenererARC3XMLTransfertCIProcess extends BProcess {
     }
     
     private void formatErreurMessage(Exception e) {
+        StringBuilder messageNss = new StringBuilder(getSession().getLabel("PROCESS_ENVOI_ANNONCES_ERROR_NSS"));
         for(String nss: listNss) {
-            logMessage(getSession().getLabel("PROCESS_ENVOI_ANNONCES_ERROR_NSS")+nss);
-            logMessage(getSession().getLabel("PROCESS_ENVOI_ANNONCES_ERROR_DONNES")+e.getMessage());
+            if(!JadeStringUtil.isEmpty(nss)) {
+                messageNss.append(" ").append(nss);
+            }
         }
+        logMessage(messageNss.toString());
+        logMessage(getSession().getLabel("PROCESS_ENVOI_ANNONCES_ERROR_DONNES")+e.getMessage());
     }
 
     @Override

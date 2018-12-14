@@ -1,5 +1,6 @@
 package globaz.corvus.helpers.process;
 
+import java.util.List;
 import globaz.corvus.process.REGenererARC3XMLTransfertCIProcess;
 import globaz.corvus.process.REGenererDemandeCalculProvisoireProcess;
 import globaz.corvus.process.REGenererTransfertDossierNonValideProcess;
@@ -11,6 +12,7 @@ import globaz.framework.controller.FWAction;
 import globaz.globall.api.BISession;
 import globaz.globall.db.BProcessLauncher;
 import globaz.globall.db.BSession;
+import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.helpers.PRAbstractHelper;
 
 public class REGenererTransfertDossierHelper extends PRAbstractHelper {
@@ -41,7 +43,7 @@ public class REGenererTransfertDossierHelper extends PRAbstractHelper {
 
         try {
 
-            if (REProperties.TRANSFERT_ACTIVER_ANNONCES_XML.getBooleanValue()) {
+            if (REProperties.TRANSFERT_ACTIVER_ANNONCES_XML.getBooleanValue() && hasNss(gldaViewBean.getListNss())) {
 
                 REGenererARC3XMLTransfertCIProcess processARC = new REGenererARC3XMLTransfertCIProcess();
                 processARC.setSession((BSession) session);
@@ -100,5 +102,14 @@ public class REGenererTransfertDossierHelper extends PRAbstractHelper {
             viewBean.setMessage(e.toString());
         }
 
+    }
+    
+    private boolean hasNss(List<String> list) {
+        for(String nss: list) {
+            if(!JadeStringUtil.isEmpty(nss)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
