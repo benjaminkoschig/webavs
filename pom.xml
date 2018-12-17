@@ -389,7 +389,7 @@
 			<dependency>
 				<groupId>ch.globaz</groupId>
 				<artifactId>rafam-e-delegue</artifactId>
-				<version>0.1.0</version>
+				<version>3.0.0</version>
 			</dependency>
 
 			<dependency>
