@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import javax.xml.bind.JAXBException;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
@@ -130,13 +131,11 @@ public class REGenererARC3XMLTransfertCIProcess extends BProcess {
                 newNumAgence = "000";
             }
 
-            String newNumCaisseAgence = info.getNoCaisse() + newNumAgence;
-
             PoolMeldungZurZAS.Lot lotAnnonces = REGenererARC3XMLTransfertCIService.getInstance()
                     .initPoolMeldungZurZASLot(REProperties.CENTRALE_TEST.getBooleanValue(),
                             CommonProperties.KEY_NO_CAISSE.getValue());
 
-            if(prepareEnvoieAnnonce(lotAnnonces, newNumCaisseAgence, listNss, demandeRente.getIdDemandeRente())
+            if(prepareEnvoieAnnonce(lotAnnonces, formatNumCaisseAgence(info.getNoCaisse(), newNumAgence), listNss, demandeRente.getIdDemandeRente())
                     && envoiARC3(lotAnnonces)) {
                    demandeRente.setCsEtat(IREDemandeRente.CS_ETAT_DEMANDE_RENTE_TRANSFERE);
                    demandeRente.update();
@@ -274,7 +273,7 @@ public class REGenererARC3XMLTransfertCIProcess extends BProcess {
             try {
                 if (!JadeStringUtil.isBlankOrZero(nss)) {
                     VAIKMeldungKassenWechselType annonceXml = REAnnonceARC3DXmlService.getInstance().getAnnonceXml(
-                            newNumCaisseAgence, NSUtil.unFormatAVS(nss), noCaisse + noAgence, new Long(idBase + counter));
+                            newNumCaisseAgence, NSUtil.unFormatAVS(nss), formatNumCaisseAgence(noCaisse, noAgence), new Long(idBase + counter));
                     REGenererARC3XMLTransfertCIService.getInstance().validateUnitMessage(annonceXml);
                     poolMeldungLot
                             .getVAIKMeldungNeuerVersicherterOrVAIKMeldungAenderungVersichertenDatenOrVAIKMeldungVerkettungVersichertenNr()
@@ -303,6 +302,15 @@ public class REGenererARC3XMLTransfertCIProcess extends BProcess {
                 logMessage(messErreur);
             }
         }
+    }
+    
+    private String formatNumCaisseAgence(String caisse, String agence) {
+        String numCaisseAgence =caisse;
+        numCaisseAgence = StringUtils.leftPad(numCaisseAgence, 3, '0');
+        String numAgence = agence;
+        numAgence = StringUtils.leftPad(numAgence, 3, '0');
+        numCaisseAgence += numAgence;
+        return numCaisseAgence;
     }
     
     private void logMessage(String message) {
