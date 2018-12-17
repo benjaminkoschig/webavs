@@ -116,6 +116,7 @@ public class RpcDataDecisionFilter {
         Date maxValidTo = null;
         for (RpcDecisionRequerantConjoint rpcDecisionRequerantConjoint : decisions) {
             if (rpcDecisionRequerantConjoint.getRequerant().getPca().getEtatCalcul().isOctroieOuOctroiePartiel()
+                    && rpcDecisionRequerantConjoint.getRequerant().getDecision().getDateFin() != null 
                     && (maxValidTo == null || rpcDecisionRequerantConjoint.getRequerant().getDecision().getDateFin()
                             .after(maxValidTo))) {
                 maxValidTo = rpcDecisionRequerantConjoint.getRequerant().getDecision().getDateFin();
