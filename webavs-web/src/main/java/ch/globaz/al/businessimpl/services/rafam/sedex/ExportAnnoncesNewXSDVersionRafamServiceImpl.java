@@ -71,11 +71,11 @@ public class ExportAnnoncesNewXSDVersionRafamServiceImpl extends ALAbstractBusin
      * @return l'en-tête initialisée
      *
      * @throws JadeSedexDirectoryInitializationException
-     *             Exception levée si dépôt Sedex ne peut être trouvé
+     *                                                       Exception levée si dépôt Sedex ne peut être trouvé
      * @throws DatatypeConfigurationException
-     *             Exception levée si l'en-tête ne peut être initialisée
+     *                                                       Exception levée si l'en-tête ne peut être initialisée
      * @throws ALAnnonceRafamException
-     *             Exception levée si une erreur métier se produit
+     *                                                       Exception levée si une erreur métier se produit
      */
     private HeaderType getHeader(boolean isDelegue)
             throws JadeSedexDirectoryInitializationException, DatatypeConfigurationException, ALAnnonceRafamException {
@@ -129,7 +129,7 @@ public class ExportAnnoncesNewXSDVersionRafamServiceImpl extends ALAbstractBusin
      * Récupère les messages contenu dans le log passé en paramètre
      *
      * @param logMessages
-     *            Le message de log
+     *                        Le message de log
      * @return StringBuffer contenant les messages
      */
     private StringBuffer getMessages(JadeBusinessMessage[] logMessages) {
@@ -162,16 +162,18 @@ public class ExportAnnoncesNewXSDVersionRafamServiceImpl extends ALAbstractBusin
      *
      *
      * @param updatedAnnonces
-     *            les annonces à restaurer
+     *                            les annonces à restaurer
      *
      * @throws JadeApplicationException
-     *             Exception levée par la couche métier lorsqu'elle n'a pu effectuer l'opération souhaitée
+     *                                      Exception levée par la couche métier lorsqu'elle n'a pu effectuer
+     *                                      l'opération souhaitée
      * @throws JadePersistenceException
-     *             Exception levée lorsque le chargement ou la mise à jour en DB par la couche de persistence n'a pu se
-     *             faire
+     *                                      Exception levée lorsque le chargement ou la mise à jour en DB par la couche
+     *                                      de persistence n'a pu se
+     *                                      faire
      *
      * @throws Exception
-     *             Exception levée si une erreur se produit à l'enregistrement des données
+     *                                      Exception levée si une erreur se produit à l'enregistrement des données
      */
     protected void restoreEtatAnnonces(ArrayList<AnnonceRafamModel> updatedAnnonces)
             throws JadeApplicationException, JadePersistenceException, Exception {
@@ -206,11 +208,11 @@ public class ExportAnnoncesNewXSDVersionRafamServiceImpl extends ALAbstractBusin
      * Envoie un e-mail contenant la chaîne du paramètre <code>mailContent</code>
      *
      * @param mailContent
-     *            Contenu du message
+     *                        Contenu du message
      * @param recipientId
-     *            Recipient Id (affiché dans le sujet du message)
+     *                        Recipient Id (affiché dans le sujet du message)
      * @throws Exception
-     *             Exception levée si une erreur se produit à l'envoi de l'e-mail
+     *                       Exception levée si une erreur se produit à l'envoi de l'e-mail
      */
     protected void sendMailError(StringBuffer mailContent, String recipientId) throws Exception {
 
@@ -250,7 +252,7 @@ public class ExportAnnoncesNewXSDVersionRafamServiceImpl extends ALAbstractBusin
 
                 ObjectFactory of = new ObjectFactory();
                 Message message = of.createMessage();
-                message.setMinorVersion(Integer.valueOf(ALConstRafam.MINOR_VERSION_XSD));
+                message.setMinorVersion(Integer.valueOf(ALConstRafam.MINOR_VERSION_XSD_4_1));
                 message.setHeader(getHeader(false));
                 ContentType content = of.createContentType();
 
@@ -407,7 +409,7 @@ public class ExportAnnoncesNewXSDVersionRafamServiceImpl extends ALAbstractBusin
 
                 ObjectFactory of = new ObjectFactory();
                 Message message = of.createMessage();
-                message.setMinorVersion(Integer.valueOf(ALConstRafam.MINOR_VERSION_XSD));
+                message.setMinorVersion(Integer.valueOf(ALConstRafam.MINOR_VERSION_XSD_4_1));
                 message.setHeader(getHeader(true));
                 ContentType content = of.createContentType();
 

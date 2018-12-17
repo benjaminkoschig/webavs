@@ -32,6 +32,7 @@ public interface ALConstRafam {
     public static final String RAFAM_CONTACT_EMAIL = "al.rafamContactEmail";
     public static final String RAFAM_CONTACT_TECHNIQUE_EMAIL = "al.rafamContactTechniqueEmail";
     public static final String VERSION_ANNONCES_XSD_4_1 = "al.generation.annonces.xsd.4.1";
+    public static final String MINOR_VERSION_XSD_4_1 = "1";
 
     public static final String RAFAM_IS_MULTI_CAISSE = "rafam.isMultiCaisse";
     public static final String RAFAM_OFFICE_IDENTIFIER = "rafam.officeIdentifier";
