@@ -405,7 +405,10 @@ public class InitAnnoncesRafamServiceImpl extends ALAbstractBusinessServiceImpl 
         annonce.setLegalOffice(lastAnnonce.getLegalOffice());
 
         annonce.setNumeroIDE(lastAnnonce.getNumeroIDE());
+
+        if(!JadeStringUtil.isBlankOrZero(lastAnnonce.getCodeCentralePaysEnfant())) {
         annonce.setCodeCentralePaysEnfant(lastAnnonce.getCodeCentralePaysEnfant());
+        }
 
         return annonce;
     }
@@ -745,7 +748,9 @@ public class InitAnnoncesRafamServiceImpl extends ALAbstractBusinessServiceImpl 
         annonce.setGenrePrestation(allowance.getAllowanceType());
         annonce.setBaseLegale(allowance.getAllowanceApplicableLegislation());
         annonce.setCanton(allowance.getAllowanceBenefitCanton());
+        if(allowance.getAllowanceChildCountryResidence() != null) {
         annonce.setCodeCentralePaysEnfant(String.valueOf(allowance.getAllowanceChildCountryResidence()));
+        }
 
         annonce.setDebutDroit(ALDateUtils.XMLGregorianCalendarToGlobazDate(allowance.getAllowanceDateFrom()));
         annonce.setEcheanceDroit(ALDateUtils.XMLGregorianCalendarToGlobazDate(allowance.getAllowanceDateTo()));
@@ -789,7 +794,9 @@ public class InitAnnoncesRafamServiceImpl extends ALAbstractBusinessServiceImpl 
         annonce.setGenrePrestation(allowance.getAllowanceType());
         annonce.setBaseLegale(allowance.getAllowanceApplicableLegislation());
         annonce.setCanton(allowance.getAllowanceBenefitCanton());
+        if(allowance.getAllowanceChildCountryResidence() != null) {
         annonce.setCodeCentralePaysEnfant(String.valueOf(allowance.getAllowanceChildCountryResidence()));
+        }
 
         if (!allowance.getAllowanceType().equals(RafamFamilyAllowanceType.ADOPTION.getCodeCentrale())
                 && !allowance.getAllowanceType().equals(RafamFamilyAllowanceType.NAISSANCE.getCodeCentrale())
@@ -973,6 +980,10 @@ public class InitAnnoncesRafamServiceImpl extends ALAbstractBusinessServiceImpl 
         } catch (Exception e) {
             throw new ALRafamSedexException(
                     "InitAnnoncesRafamServiceImpl#initAnnonce69c : unable to check child's NSS " + e.getMessage());
+        }
+
+        if (message.getChild().getCountryId() != null) {
+            annonce.setCodeCentralePaysEnfant(String.valueOf(message.getChild().getCountryId()));
         }
 
         // enfant

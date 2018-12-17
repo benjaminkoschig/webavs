@@ -19,6 +19,7 @@ import ch.globaz.al.businessimpl.services.ALImplServiceLocator;
 import ch.globaz.al.utils.ALDateUtils;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeNumericUtil;
+import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.log.JadeLogger;
@@ -259,7 +260,18 @@ public class AnnonceDelegueHandler extends AnnonceHandlerAbstract {
     }
 
     private static boolean paysResidenceEnfantChanged(AnnonceRafamModel annonce, AnnonceRafamModel lastAnnonce) {
-        return !lastAnnonce.getCodeCentralePaysEnfant().equals(annonce.getCodeCentralePaysEnfant());
+        // Si les deux codes pays existent
+        if(!JadeStringUtil.isBlankOrZero(annonce.getCodeCentralePaysEnfant()) 
+                && !JadeStringUtil.isBlankOrZero(lastAnnonce.getCodeCentralePaysEnfant())) {
+            // On retourne s'ils sont identiques
+            return !lastAnnonce.getCodeCentralePaysEnfant().equals(annonce.getCodeCentralePaysEnfant());
+        // Si le dernier est vide et que le nouveau est rempli
+        }else if(JadeStringUtil.isBlankOrZero(lastAnnonce.getCodeCentralePaysEnfant()) 
+                && !JadeStringUtil.isBlankOrZero(annonce.getCodeCentralePaysEnfant())){
+            return true;
+        }else {
+            return false;
+        }
     }
 
     @Override

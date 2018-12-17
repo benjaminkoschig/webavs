@@ -185,11 +185,9 @@ public class ALRafamUtils {
             newAllowance.setAllowanceAmount(annonce.getComplementDelegueModel().getAllowanceAmount());
         }
 
-        if (JadeStringUtil.isEmpty(annonce.getAnnonceRafamModel().getCodeCentralePaysEnfant())) {
+        if (JadeStringUtil.isBlankOrZero(annonce.getAnnonceRafamModel().getCodeCentralePaysEnfant())) {
             if (last68 != null && !JadeStringUtil.isBlankOrZero(last68.getCodeCentralePaysEnfant())) {
                 newAllowance.setAllowanceChildCountryResidence(Integer.valueOf(last68.getCodeCentralePaysEnfant()));
-            } else {
-                newAllowance.setAllowanceChildCountryResidence(0);
             }
         } else {
             newAllowance.setAllowanceChildCountryResidence(
@@ -401,9 +399,9 @@ public class ALRafamUtils {
             throw new ALRafamException("validateAllowanceType#allowanceType n'est pas valide");
         }
 
-        if (!String.valueOf(allowance.getAllowanceChildCountryResidence()).matches("[0-9]{4}")) {
-            throw new ALRafamException("validateAllowanceType#allowanceType n'est pas valide");
-        }
+//        if (!String.valueOf(allowance.getAllowanceChildCountryResidence()).matches("[0-9]{4}")) {
+//            throw new ALRafamException("validateAllowanceType#allowanceType n'est pas valide");
+//        }
 
         return true;
     }

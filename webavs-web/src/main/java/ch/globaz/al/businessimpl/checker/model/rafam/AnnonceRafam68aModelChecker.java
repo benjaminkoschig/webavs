@@ -116,9 +116,9 @@ public abstract class AnnonceRafam68aModelChecker extends ALAbstractChecker {
                     "al.rafam.annonceRafamModel.legalOffice.mandatory");
         }
 
-        if (JadeStringUtil.isBlank(model.getCodeCentralePaysEnfant())) {
-            JadeThread.logError(AnnonceRafamModelChecker.class.getName(),
-                    "al.rafam.annonceRafamModel.codeCentralePaysEnfant.mandatory");
-        }
+//        if (JadeStringUtil.isBlank(model.getCodeCentralePaysEnfant())) {
+//            JadeThread.logError(AnnonceRafamModelChecker.class.getName(),
+//                    "al.rafam.annonceRafamModel.codeCentralePaysEnfant.mandatory");
+//        }
     }
 }

@@ -96,8 +96,10 @@ public class BenefitMutationBuilderNewXSDVersion extends MessageBuilderAbstractN
         Child child = of.createNewBenefitTypeChild();
         try {
             child.setVn(Long.parseLong(nssf.unformat(annonce.getAnnonceRafamModel().getNssEnfant())));
-            child.setCountryId(
+            if(!JadeStringUtil.isBlankOrZero(annonce.getAnnonceRafamModel().getCodeCentralePaysEnfant())) {
+                child.setCountryId(
                     Integer.valueOf(CODE_PAYS_OFS + annonce.getAnnonceRafamModel().getCodeCentralePaysEnfant()));
+            }
         } catch (Exception e) {
             throw new ALRafamSedexException("NewBenefitBuilder#buildMessage : unable to format NSS");
         }
