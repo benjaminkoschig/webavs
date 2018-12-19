@@ -17,6 +17,7 @@ import ch.globaz.al.business.models.droit.DroitComplexModel;
 import ch.globaz.al.business.services.ALServiceLocator;
 import ch.globaz.al.business.services.decision.DecisionSalarieService;
 import ch.globaz.al.businessimpl.services.ALImplServiceLocator;
+import ch.globaz.al.properties.ALProperties;
 import ch.globaz.common.domaine.Date;
 import ch.globaz.topaz.datajuicer.Collection;
 import ch.globaz.topaz.datajuicer.DataList;
@@ -40,9 +41,10 @@ public class DecisionSalarieServiceImpl extends DecisionAbstractServiceImpl impl
      * Méthode qui retourne les différents calculs pour un même droit dont le montant effectif est supérieur à 0
      *
      * @param listDroitCalculDossier
-     *            liste des calculs pour un dossier
+     *                                   liste des calculs pour un dossier
      * @param idDroit
-     *            identifiant du droit pour lequel on recherche des droits calculés on recherche les calculs
+     *                                   identifiant du droit pour lequel on recherche des droits calculés on recherche
+     *                                   les calculs
      * @return
      */
     private ArrayList<CalculBusinessModel> listCalculDroitIdentique(
@@ -71,6 +73,8 @@ public class DecisionSalarieServiceImpl extends DecisionAbstractServiceImpl impl
         boolean hasMontantForce = !JadeNumericUtil.isEmptyOrZero(droit.getDroitModel().getMontantForce());
         boolean hasSupplementActif = droit.getDroitModel().getSupplementActif();
         hasMontantForce = hasMontantForce && droit.getDroitModel().getForce();
+        boolean hasMontantSupplHorloger = !JadeNumericUtil.isEmptyOrZero(montantSupplHorloger);
+        boolean afficherLigne = true;
 
         boolean isDroitActif = false;
         Date dateFinDroit = null;
@@ -96,7 +100,13 @@ public class DecisionSalarieServiceImpl extends DecisionAbstractServiceImpl impl
             isDroitActif = isDroitActif && dateFinDroit.afterOrEquals(dateDebutFinDossier);
         }
 
-        if (isDroitActif && (hasMontantDroit || hasMontantForce || hasSupplementActif)
+        if (ALProperties.GENERER_DECISION_NEW_TEST_MONTANT_ZERO.getBooleanValue()) {
+            afficherLigne = hasMontantDroit || hasMontantSupplHorloger;
+        } else {
+            afficherLigne = isDroitActif && (hasMontantDroit || hasMontantForce || hasSupplementActif);
+        }
+
+        if (afficherLigne
                 && (!ALCSDroit.TYPE_NAIS.equals(typePrestation) && !ALCSDroit.TYPE_ACCE.equals(typePrestation))) {
             list = new DataList("colonne");
 
@@ -196,6 +206,8 @@ public class DecisionSalarieServiceImpl extends DecisionAbstractServiceImpl impl
         boolean hasMontantForce = !JadeNumericUtil
                 .isEmptyOrZero((calcul.get(i)).getDroit().getDroitModel().getMontantForce());
         hasMontantForce = hasMontantForce && (calcul.get(i)).getDroit().getDroitModel().getForce();
+        boolean hasMontantEffectif = !JadeNumericUtil.isEmptyOrZero(calcul.get(i).getCalculResultMontantEffectif());
+        boolean afficherLigne = true;
 
         boolean isDroitActif = false;
         Date dateFinDroit = null;
@@ -221,9 +233,14 @@ public class DecisionSalarieServiceImpl extends DecisionAbstractServiceImpl impl
             isDroitActif = isDroitActif && dateFinDroit.afterOrEquals(dateDebutFinDossier);
         }
 
-        if (isDroitActif && (hasMontantBase || hasMontantForce)
-                && (!ALCSDroit.TYPE_NAIS.equals((calcul.get(i)).getType())
-                        && !ALCSDroit.TYPE_ACCE.equals((calcul.get(i)).getType()))) {
+        if (ALProperties.GENERER_DECISION_NEW_TEST_MONTANT_ZERO.getBooleanValue()) {
+            afficherLigne = hasMontantEffectif;
+        } else {
+            afficherLigne = isDroitActif && (hasMontantBase || hasMontantForce);
+        }
+
+        if (afficherLigne && (!ALCSDroit.TYPE_NAIS.equals((calcul.get(i)).getType())
+                && !ALCSDroit.TYPE_ACCE.equals((calcul.get(i)).getType()))) {
             list = new DataList("colonne");
 
             listTiersBeneficiaireDroit.add(calcul.get(i).getDroit().getDroitModel().getIdTiersBeneficiaire());

@@ -29,6 +29,13 @@ public enum ALProperties implements IProperties {
         public boolean isValidValue(String propertyValue) {
             return CommonPropertiesUtils.isValidBooleanPropertyValue(propertyValue);
         }
+    },
+    GENERER_DECISION_NEW_TEST_MONTANT_ZERO("decisions.generation.new.test.montant.zero",
+            "Indique si le nouveau test concernant le montant des décisions doit être utilisé") {
+        @Override
+        public boolean isValidValue(final String propertyValue) {
+            return CommonPropertiesUtils.isValidBooleanPropertyValue(propertyValue);
+        }
     };
 
     private String description;
@@ -41,9 +48,9 @@ public enum ALProperties implements IProperties {
 
     /**
      * Déterminer si la valeur renseignée dans la property est correcte
-     * 
+     *
      * @param propertyValue
-     *            La valeur à évaluer
+     *                          La valeur à évaluer
      * @return <code>true</code> si la valeur de la propriété est correcte
      */
     public abstract boolean isValidValue(final String propertyValue);

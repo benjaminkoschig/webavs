@@ -17,6 +17,7 @@ import ch.globaz.al.business.models.droit.CalculBusinessModel;
 import ch.globaz.al.business.services.ALServiceLocator;
 import ch.globaz.al.business.services.decision.DecisionAgricoleService;
 import ch.globaz.al.businessimpl.services.ALImplServiceLocator;
+import ch.globaz.al.properties.ALProperties;
 import ch.globaz.common.domaine.Date;
 import ch.globaz.topaz.datajuicer.Collection;
 import ch.globaz.topaz.datajuicer.DataList;
@@ -114,13 +115,19 @@ public class DecisionAgricoleServiceImpl extends DecisionAbstractServiceImpl imp
                 isDroitActif = !JadeStringUtil.isBlankOrZero((calcul.get(i)).getCalculResultMontantBase());
                 isDroitActif = isDroitActif && dateFinDroit.afterOrEquals(dateDebutFinDossier);
             }
+            boolean afficherLigne = true;
+
+            if (ALProperties.GENERER_DECISION_NEW_TEST_MONTANT_ZERO.getBooleanValue()) {
+                afficherLigne = hasMontantBase;
+            } else {
+                afficherLigne = isDroitActif && (hasMontantBase || hasMontantForce)
+                        && (!JadeNumericUtil.isEmptyOrZero((calcul.get(i)).getCalculResultMontantBase())
+                                || (calcul.get(i)).getDroit().getDroitModel().getForce());
+            }
 
             // si montant <>0 et type de droit autre que accueil et naissance
-            if (isDroitActif && (hasMontantBase || hasMontantForce)
-                    && (!JadeNumericUtil.isEmptyOrZero((calcul.get(i)).getCalculResultMontantBase())
-                            || (calcul.get(i)).getDroit().getDroitModel().getForce())
-                    && (!ALCSDroit.TYPE_NAIS.equals((calcul.get(i)).getType())
-                            && !ALCSDroit.TYPE_ACCE.equals((calcul.get(i)).getType()))) {
+            if (afficherLigne && (!ALCSDroit.TYPE_NAIS.equals((calcul.get(i)).getType())
+                    && !ALCSDroit.TYPE_ACCE.equals((calcul.get(i)).getType()))) {
                 list = new DataList("colonne");
 
                 listTiersBeneficiaireDroit.add((calcul.get(i)).getDroit().getDroitModel().getIdTiersBeneficiaire());
@@ -426,11 +433,11 @@ public class DecisionAgricoleServiceImpl extends DecisionAbstractServiceImpl imp
      * agriculteurs)
      *
      * @param document
-     *            document à générer
+     *                     document à générer
      * @throws JadePersistenceException
-     *             Exception levée si le nom de la caisse n'a pas pu être récupéré
+     *                                      Exception levée si le nom de la caisse n'a pas pu être récupéré
      * @throws JadeApplicationException
-     *             Exception levée si le nom de la caisse n'a pas pu être récupéré
+     *                                      Exception levée si le nom de la caisse n'a pas pu être récupéré
      */
     @Override
     protected void setIdEntete(DocumentData document) throws JadePersistenceException, JadeApplicationException {
@@ -442,11 +449,11 @@ public class DecisionAgricoleServiceImpl extends DecisionAbstractServiceImpl imp
      * Définit la signature pour le document
      *
      * @param document
-     *            document à générer
+     *                     document à générer
      * @throws JadePersistenceException
-     *             Exception levée si le nom de la caisse n'a pas pu être récupéré
+     *                                      Exception levée si le nom de la caisse n'a pas pu être récupéré
      * @throws JadeApplicationException
-     *             Exception levée si le nom de la caisse n'a pas pu être récupéré
+     *                                      Exception levée si le nom de la caisse n'a pas pu être récupéré
      */
     @Override
     protected void setIdSignature(DocumentData document) throws JadeApplicationException, JadePersistenceException {
