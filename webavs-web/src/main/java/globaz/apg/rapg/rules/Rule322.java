@@ -54,7 +54,7 @@ public class Rule322 extends Rule {
             if ((paymentMethod.equals("2")) || (paymentMethod.equals("3"))) {
                 return false;
             }
-            if ((allowanceFarm == true) || !(allowanceCareExpenses.equals("0"))) {
+            if ((allowanceFarm == true) || !(Float.valueOf(allowanceCareExpenses).equals(Float.valueOf("0")))) {
                 return false;
             }
         }
