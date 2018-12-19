@@ -82,7 +82,7 @@ public class Rule321 extends Rule {
         }
         
         if (serviceType.equals(APGenreServiceAPG.Maternite.getCodePourAnnonce())) {
-            if ((Integer.valueOf(basicDailyAmount) > montantMiniAllocationJournalierMaternite)) {
+            if ((Float.valueOf(basicDailyAmount) > montantMiniAllocationJournalierMaternite)) {
                 return false;
             }
         } else {
