@@ -13,6 +13,7 @@ import globaz.apg.interfaces.APDroitAvecParent;
 import globaz.apg.pojo.APChampsAnnonce;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadePeriodWrapper;
+import globaz.jade.client.util.JadeStringUtil;
 
 /**
  * <strong>Règles de validation des plausibilités RAPG</br>
@@ -89,14 +90,23 @@ public class Rule400 extends Rule {
                     manager.find();
                     List<APDroitAvecParent> tousLesDroits = manager.getContainer();
                     droitsSansParents = skipDroitParent(tousLesDroits);
-
-                    for (Object d : tousLesDroits) {
-                        APDroitMaterniteJointTiers droit = (APDroitMaterniteJointTiers) d;
-
-                        if ((droit.getUneDateDebutPeriode().equals(startOfPeriod)) || (droit.getUneDateFinPeriode().equals(endOfPeriod))) {
-                            isDroitAAjouter = false;
+                    
+                    // On supprime le droit courant de la liste des droits triés
+                    List<APDroitAvecParent> droitsTries = new ArrayList<APDroitAvecParent>();
+                    for (APDroitAvecParent d : droitsSansParents) {
+                        if (!JadeStringUtil.isBlankOrZero(d.getIdDroit()) && d.getIdDroit().equals(champsAnnonce.getIdDroit())) {
+                            continue;
                         }
-                        if (isDroitAAjouter) {
+                        droitsTries.add(d);
+                    }
+
+                    for (Object d : droitsTries) {
+                        APDroitMaterniteJointTiers droit = (APDroitMaterniteJointTiers) d;
+//
+//                        if ((droit.getUneDateDebutPeriode().equals(startOfPeriod)) || (droit.getUneDateFinPeriode().equals(endOfPeriod))) {
+//                            isDroitAAjouter = false;
+//                        }
+//                        if (isDroitAAjouter) {
                             boolean isPrestationDansPeriodeControle = isHorsPeriode(startOfPeriod, endOfPeriod, droit);
 
                             // periodeControle.isDateDansLaPeriode(droit.getUneDateDebutPeriode())
@@ -104,8 +114,8 @@ public class Rule400 extends Rule {
                             if (!isPrestationDansPeriodeControle) {
                                 return false;
                             }
-                        } 
-                        isDroitAAjouter = true;
+//                        } 
+//                        isDroitAAjouter = true;
                     }
                 } catch (Exception e) {
                     throwRuleExecutionException(e);
