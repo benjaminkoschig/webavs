@@ -728,6 +728,9 @@ public class CIAnnonceCentraleProcessXML extends BProcess {
         if (CIEcriture.CS_CIGENRE_5.equals(ecriture.getGenreEcriture())) {
             return "0";
         }
+        if (!JadeStringUtil.isBlankOrZero(ecriture.getPartBta())) {
+            return "11111111111";
+        }
         if (CIEcriture.CS_CIGENRE_8.equals(ecriture.getGenreEcriture())) {
             String noAffilie = "";
             if (!JadeStringUtil.isIntegerEmpty(ecriture.getPartenaireId())) {
