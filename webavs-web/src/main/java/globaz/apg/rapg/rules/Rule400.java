@@ -61,8 +61,10 @@ public class Rule400 extends Rule {
             String nss = champsAnnonce.getInsurant();
             String startOfPeriod = champsAnnonce.getStartOfPeriod();
             String endOfPeriod = champsAnnonce.getEndOfPeriod();
+            
+            boolean isDroitAAjouter = true;
 
-            DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyyMMdd");
+            DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyyMMdd");        
 
             testDateNotEmptyAndValid(startOfPeriod, "startOfPeriod");
             testDateNotEmptyAndValid(endOfPeriod, "endOfPeriod");
@@ -91,13 +93,19 @@ public class Rule400 extends Rule {
                     for (Object d : tousLesDroits) {
                         APDroitMaterniteJointTiers droit = (APDroitMaterniteJointTiers) d;
 
-                        boolean isPrestationDansPeriodeControle = isHorsPeriode(startOfPeriod, endOfPeriod, droit);
-
-                        // periodeControle.isDateDansLaPeriode(droit.getUneDateDebutPeriode())
-                        // && periodeControle.isDateDansLaPeriode(droit.getUneDateFinPeriode());
-                        if (!isPrestationDansPeriodeControle) {
-                            return false;
+                        if ((droit.getUneDateDebutPeriode().equals(startOfPeriod)) || (droit.getUneDateFinPeriode().equals(endOfPeriod))) {
+                            isDroitAAjouter = false;
                         }
+                        if (isDroitAAjouter) {
+                            boolean isPrestationDansPeriodeControle = isHorsPeriode(startOfPeriod, endOfPeriod, droit);
+
+                            // periodeControle.isDateDansLaPeriode(droit.getUneDateDebutPeriode())
+                            // && periodeControle.isDateDansLaPeriode(droit.getUneDateFinPeriode());
+                            if (!isPrestationDansPeriodeControle) {
+                                return false;
+                            }
+                        } 
+                        isDroitAAjouter = true;
                     }
                 } catch (Exception e) {
                     throwRuleExecutionException(e);
