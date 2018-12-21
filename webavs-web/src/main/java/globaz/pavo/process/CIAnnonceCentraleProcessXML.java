@@ -745,6 +745,9 @@ public class CIAnnonceCentraleProcessXML extends BProcess {
                     }
                 }
             }
+            if(JadeStringUtil.isBlankOrZero(noAffilie)) {
+                return "0";
+            }
             return noAffilie;
         } else { // recherche journal
             CIJournal journal = ecriture.getJournal(null, false);
