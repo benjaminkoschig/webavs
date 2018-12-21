@@ -1,13 +1,24 @@
 package ch.globaz.al.businessimpl.rafam.sedex;
 
 import java.io.File;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import javax.xml.XMLConstants;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.ValidationEvent;
+import javax.xml.bind.ValidationEventHandler;
 import javax.xml.datatype.XMLGregorianCalendar;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import org.xml.sax.SAXException;
 import al.ch.ech.xmlns.ech_0104_69._4.HeaderType;
 import al.ch.ech.xmlns.ech_0104_69._4.Message;
 import al.ch.ech.xmlns.ech_0104_69._4.NoticeType;
@@ -23,7 +34,6 @@ import ch.globaz.al.business.constantes.enumerations.RafamImportProtocolFields;
 import ch.globaz.al.business.constantes.enumerations.RafamReturnCode;
 import ch.globaz.al.business.constantes.enumerations.RafamTypeAnnonce;
 import ch.globaz.al.business.exceptions.model.annonces.rafam.ALAnnonceRafamNotFoundException;
-import ch.globaz.al.business.exceptions.rafam.ALRafamSedexException;
 import ch.globaz.al.business.models.rafam.AnnonceRafamDelegueComplexModel;
 import ch.globaz.al.business.models.rafam.AnnonceRafamModel;
 import ch.globaz.al.business.services.ALServiceLocator;
@@ -55,7 +65,6 @@ import globaz.jade.crypto.JadeDefaultEncrypters;
 import globaz.jade.crypto.JadeEncrypterNotFoundException;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.fs.JadeFsFacade;
-import globaz.jade.jaxb.JAXBServices;
 import globaz.jade.log.JadeLogger;
 import globaz.jade.log.business.renderer.JadeBusinessMessageRendererDefaultStringAdapter;
 import globaz.jade.properties.JadePropertiesService;
@@ -76,6 +85,9 @@ import globaz.jade.smtp.JadeSmtpClient;
 public class ImportAnnoncesRafamNewXSDVersion {
 
     private static final String APPLICATION_NAME = "AL";
+    private static final String XSD_FOLDER = "/xsd/al/";
+    private static final String XSD_FILE_NAME = "eCH-0104-68-4-1.xsd";
+    private final static String MARSHALLED_XML = "marshalled.xml";
     private JadeContext context;
     private String passSedex;
     private BSession session;
@@ -409,7 +421,7 @@ public class ImportAnnoncesRafamNewXSDVersion {
      * @return le contexte
      *
      * @throws Exception
-     *             Exception levée si le contexte ne peut être initialisé
+     *                       Exception levée si le contexte ne peut être initialisé
      */
     public JadeContext getContext() throws Exception {
         if (context == null) {
@@ -437,7 +449,7 @@ public class ImportAnnoncesRafamNewXSDVersion {
      * @return la session
      *
      * @throws Exception
-     *             Exception levée si la session ne peut être initialisée
+     *                       Exception levée si la session ne peut être initialisée
      */
     public BSession getSession() throws Exception {
         if (session == null) {
@@ -454,7 +466,7 @@ public class ImportAnnoncesRafamNewXSDVersion {
      * employeurs délégués est appelée
      *
      * @param messageCentrale
-     *            Le message contenant les annonces à importer
+     *                            Le message contenant les annonces à importer
      * @throws Exception
      */
     public void importMessage(SedexMessage messageCentrale) throws Exception {
@@ -465,7 +477,7 @@ public class ImportAnnoncesRafamNewXSDVersion {
 
             ArrayList<HashMap<RafamImportProtocolFields, String>> protocole = new ArrayList<HashMap<RafamImportProtocolFields, String>>();
             String recipientId = "?";
-            Message message = (Message) messageCentrale;
+            Message message = unmarshalMessage(messageCentrale);
 
             // /////////////////////////////////////////////////////////////////////////////////////////////////////
             // Traitement du message
@@ -517,10 +529,10 @@ public class ImportAnnoncesRafamNewXSDVersion {
      * Initialise un contexte
      *
      * @param session
-     *            session
+     *                    session
      * @return le contexte initialisé
      * @throws Exception
-     *             Exception levée si le contexte ne peut être initialisé
+     *                       Exception levée si le contexte ne peut être initialisé
      */
     private JadeThreadContext initContext(BSession session) throws Exception {
         JadeThreadContext context;
@@ -657,9 +669,9 @@ public class ImportAnnoncesRafamNewXSDVersion {
      * handler est instancié et exécuté.
      *
      * @param errors
-     *            buffer destiné à recevoir d'éventuels message d'erreurs
+     *                    buffer destiné à recevoir d'éventuels message d'erreurs
      * @param message
-     *            message sedex
+     *                    message sedex
      *
      * @see ch.globaz.al.businessimpl.rafam.sedex.handler.MessageHandler
      */
@@ -708,9 +720,9 @@ public class ImportAnnoncesRafamNewXSDVersion {
      * handler est instancié et exécuté.
      *
      * @param errors
-     *            buffer destiné à recevoir d'éventuels message d'erreurs
+     *                    buffer destiné à recevoir d'éventuels message d'erreurs
      * @param message
-     *            message sedex
+     *                    message sedex
      *
      * @see ch.globaz.al.businessimpl.rafam.sedex.handler.MessageHandler
      */
@@ -761,9 +773,9 @@ public class ImportAnnoncesRafamNewXSDVersion {
      * un handler est instancié et exécuté.
      *
      * @param errors
-     *            buffer destiné à recevoir d'éventuels message d'erreurs
+     *                    buffer destiné à recevoir d'éventuels message d'erreurs
      * @param message
-     *            message sedex
+     *                    message sedex
      *
      * @see ch.globaz.al.businessimpl.rafam.sedex.handler.MessageHandler
      */
@@ -832,9 +844,9 @@ public class ImportAnnoncesRafamNewXSDVersion {
      * annonce, un handler est instancié et exécuté.
      *
      * @param errors
-     *            buffer destiné à recevoir d'éventuels message d'erreurs
+     *                   buffer destiné à recevoir d'éventuels message d'erreurs
      * @param m
-     *            message sedex
+     *                   message sedex
      *
      * @see ch.globaz.al.businessimpl.rafam.sedex.handler.MessageHandler
      */
@@ -886,11 +898,11 @@ public class ImportAnnoncesRafamNewXSDVersion {
      * Envoie un e-mail à l'adresse de l'utilisateur connecté
      *
      * @param mailContent
-     *            contenu du message
+     *                        contenu du message
      * @param recipientId
-     *            recipient ID contenu dans le message sedex
+     *                        recipient ID contenu dans le message sedex
      * @throws Exception
-     *             Exception levée si l'e-mail n'a pas pu être envoyée
+     *                       Exception levée si l'e-mail n'a pas pu être envoyée
      */
     protected void sendMailError(StringBuffer mailContent, String recipientId) throws Exception {
 
@@ -930,35 +942,42 @@ public class ImportAnnoncesRafamNewXSDVersion {
      * Charge le message sedex
      *
      * @param message
-     *            Le message à charger
+     *                    Le message à charger
      * @return l'objet message
      *
      * @throws JadeApplicationException
-     *             Exception levée si le message ne peut être traité
+     *                                      Exception levée si le message ne peut être traité
+     * @throws SAXException
+     * @throws JAXBException
      */
-    private Message unmarshalMessage(SedexMessage message) throws JadeApplicationException {
+    private Message unmarshalMessage(SedexMessage message)
+            throws JadeApplicationException, SAXException, JAXBException {
+        SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
 
-        if (!(message instanceof SimpleSedexMessage)) {
-            throw new ALRafamSedexException("Le message sedex " + message.getFileLocation()
-                    + " n'est pas un message SimpleSedexMessage et n'a pas été traité");
-        } else {
+        URL url = getClass().getResource(XSD_FOLDER + XSD_FILE_NAME);
 
-            Object brutMessage = null;
-            try {
-                JAXBServices jaxbService = JAXBServices.getInstance();
-                brutMessage = jaxbService.unmarshal(((SimpleSedexMessage) message).fileLocation, false, false,
-                        (Class<?>[]) null);
+        Schema schema = sf.newSchema(url);
+        JAXBContext jc = JAXBContext.newInstance(Message.class);
 
-                if (brutMessage instanceof Message) {
-                    return (Message) brutMessage;
-                } else {
-                    throw new ALRafamSedexException("Le message sedex " + message.getFileLocation()
-                            + " n'est pas un message ch.ech.xmlns.ech_0104_69._3.Message et n'a pas été traité");
+        Unmarshaller unmarshaller = jc.createUnmarshaller();
+        unmarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+        unmarshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
+        unmarshaller.setSchema(schema);
+
+        try {
+            unmarshaller.setEventHandler(new ValidationEventHandler() {
+
+                @Override
+                public boolean handleEvent(ValidationEvent event) {
+                    JadeLogger.error(this, "JAXB validation error : " + event.getMessage());
+                    return false;
                 }
-            } catch (Exception e) {
-                throw new ALRafamSedexException("Une erreur s'est produite pendant la lecture du message sedex "
-                        + message.getFileLocation() + " : " + e.getMessage());
-            }
+            });
+            return (Message) unmarshaller.unmarshal(new File(((SimpleSedexMessage) message).fileLocation));
+
+        } catch (JAXBException exception) {
+            JadeLogger.error(this, "JAXB validation has thrown a JAXBException : " + exception.toString());
+            throw exception;
         }
     }
 }

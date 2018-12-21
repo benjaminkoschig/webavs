@@ -408,7 +408,7 @@ public class ImportAnnoncesRafam {
      * @return le contexte
      *
      * @throws Exception
-     *             Exception levée si le contexte ne peut être initialisé
+     *                       Exception levée si le contexte ne peut être initialisé
      */
     public JadeContext getContext() throws Exception {
         if (context == null) {
@@ -436,7 +436,7 @@ public class ImportAnnoncesRafam {
      * @return la session
      *
      * @throws Exception
-     *             Exception levée si la session ne peut être initialisée
+     *                       Exception levée si la session ne peut être initialisée
      */
     public BSession getSession() throws Exception {
         if (session == null) {
@@ -461,23 +461,39 @@ public class ImportAnnoncesRafam {
             throw new ALRafamSedexException("Le message sedex " + messageCentrale.getFileLocation()
                     + " n'est pas un message SimpleSedexMessage et n'a pas été traité");
         } else {
-            Object brutMessage = null;
-            try {
-                JAXBServices jaxbService = JAXBServices.getInstance();
-                brutMessage = jaxbService.unmarshal(((SimpleSedexMessage) messageCentrale).fileLocation, false, false,
-                        (Class<?>[]) null);
-                if (brutMessage instanceof al.ch.ech.xmlns.ech_0104_69._4.Message) {
+            if ("true".equals(JadePropertiesService.getInstance().getProperty(ALConstRafam.VERSION_ANNONCES_XSD_4_1))) {
+                try {
                     // On va utiliser le processus pour l'importation des nouvelles annonces
                     ImportAnnoncesRafamNewXSDVersion importAnnoncesRafam = new ImportAnnoncesRafamNewXSDVersion();
                     importAnnoncesRafam.importMessage(messageCentrale);
-                } else {
-                    // On se trouve avec un message d'ancienne version, donc on utilise le process de base (qu'on aura
-                    // pas modifié)
-                    importMessage(messageCentrale);
+                } catch (Exception e) {
+                    try {
+                        JAXBServices jaxbService = JAXBServices.getInstance();
+                        jaxbService.unmarshal(((SimpleSedexMessage) messageCentrale).fileLocation, false, false,
+                                (Class<?>[]) null);
+                        importMessage(messageCentrale);
+                    } catch (Exception e2) {
+                        throw new ALRafamSedexException("Une erreur s'est produite pendant la lecture du message sedex "
+                                + messageCentrale.getFileLocation() + " : " + e.getMessage());
+                    }
                 }
-            } catch (Exception e) {
-                throw new ALRafamSedexException("Une erreur s'est produite pendant la lecture du message sedex "
-                        + messageCentrale.getFileLocation() + " : " + e.getMessage());
+            } else {
+                // Normalement, si la propriété n'est pas à true, le message doit être avec l'ancienne version
+                try {
+                    JAXBServices jaxbService = JAXBServices.getInstance();
+                    jaxbService.unmarshal(((SimpleSedexMessage) messageCentrale).fileLocation, false, false,
+                            (Class<?>[]) null);
+                    importMessage(messageCentrale);
+                } catch (Exception e) {
+                    try {
+                        // On va utiliser le processus pour l'importation des nouvelles annonces
+                        ImportAnnoncesRafamNewXSDVersion importAnnoncesRafam = new ImportAnnoncesRafamNewXSDVersion();
+                        importAnnoncesRafam.importMessage(messageCentrale);
+                    } catch (Exception e1) {
+                        throw new ALRafamSedexException("Une erreur s'est produite pendant la lecture du message sedex "
+                                + messageCentrale.getFileLocation() + " : " + e.getMessage());
+                    }
+                }
             }
         }
     }
@@ -488,7 +504,7 @@ public class ImportAnnoncesRafam {
      * employeurs délégués est appelée
      *
      * @param messageCentrale
-     *            Le message contenant les annonces à importer
+     *                            Le message contenant les annonces à importer
      * @throws Exception
      */
     public void importMessage(SedexMessage messageCentrale) throws Exception {
@@ -561,10 +577,10 @@ public class ImportAnnoncesRafam {
      * Initialise un contexte
      *
      * @param session
-     *            session
+     *                    session
      * @return le contexte initialisé
      * @throws Exception
-     *             Exception levée si le contexte ne peut être initialisé
+     *                       Exception levée si le contexte ne peut être initialisé
      */
     private JadeThreadContext initContext(BSession session) throws Exception {
         JadeThreadContext context;
@@ -701,9 +717,9 @@ public class ImportAnnoncesRafam {
      * handler est instancié et exécuté.
      *
      * @param errors
-     *            buffer destiné à recevoir d'éventuels message d'erreurs
+     *                    buffer destiné à recevoir d'éventuels message d'erreurs
      * @param message
-     *            message sedex
+     *                    message sedex
      *
      * @see ch.globaz.al.businessimpl.rafam.sedex.handler.MessageHandler
      */
@@ -752,9 +768,9 @@ public class ImportAnnoncesRafam {
      * handler est instancié et exécuté.
      *
      * @param errors
-     *            buffer destiné à recevoir d'éventuels message d'erreurs
+     *                    buffer destiné à recevoir d'éventuels message d'erreurs
      * @param message
-     *            message sedex
+     *                    message sedex
      *
      * @see ch.globaz.al.businessimpl.rafam.sedex.handler.MessageHandler
      */
@@ -805,9 +821,9 @@ public class ImportAnnoncesRafam {
      * un handler est instancié et exécuté.
      *
      * @param errors
-     *            buffer destiné à recevoir d'éventuels message d'erreurs
+     *                    buffer destiné à recevoir d'éventuels message d'erreurs
      * @param message
-     *            message sedex
+     *                    message sedex
      *
      * @see ch.globaz.al.businessimpl.rafam.sedex.handler.MessageHandler
      */
@@ -876,9 +892,9 @@ public class ImportAnnoncesRafam {
      * annonce, un handler est instancié et exécuté.
      *
      * @param errors
-     *            buffer destiné à recevoir d'éventuels message d'erreurs
+     *                   buffer destiné à recevoir d'éventuels message d'erreurs
      * @param m
-     *            message sedex
+     *                   message sedex
      *
      * @see ch.globaz.al.businessimpl.rafam.sedex.handler.MessageHandler
      */
@@ -929,11 +945,11 @@ public class ImportAnnoncesRafam {
      * Envoie un e-mail à l'adresse de l'utilisateur connecté
      *
      * @param mailContent
-     *            contenu du message
+     *                        contenu du message
      * @param recipientId
-     *            recipient ID contenu dans le message sedex
+     *                        recipient ID contenu dans le message sedex
      * @throws Exception
-     *             Exception levée si l'e-mail n'a pas pu être envoyée
+     *                       Exception levée si l'e-mail n'a pas pu être envoyée
      */
     protected void sendMailError(StringBuffer mailContent, String recipientId) throws Exception {
 
@@ -973,11 +989,11 @@ public class ImportAnnoncesRafam {
      * Charge le message sedex
      *
      * @param message
-     *            Le message à charger
+     *                    Le message à charger
      * @return l'objet message
      *
      * @throws JadeApplicationException
-     *             Exception levée si le message ne peut être traité
+     *                                      Exception levée si le message ne peut être traité
      */
     private Message unmarshalMessage(SedexMessage message) throws JadeApplicationException {
 
