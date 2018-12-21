@@ -464,40 +464,43 @@ public class ImportAnnoncesRafam {
             if ("true".equals(JadePropertiesService.getInstance().getProperty(ALConstRafam.VERSION_ANNONCES_XSD_4_1))) {
                 try {
                     // On va utiliser le processus pour l'importation des nouvelles annonces
-                    ImportAnnoncesRafamNewXSDVersion importAnnoncesRafam = new ImportAnnoncesRafamNewXSDVersion();
-                    importAnnoncesRafam.setContext(getContext());
-                    importAnnoncesRafam.setSession(getSession());
-                    importAnnoncesRafam.setUserSedex(userSedex);
-                    importAnnoncesRafam.setPassSedex(passSedex);
-                    importAnnoncesRafam.importMessage(messageCentrale);
+                    importNewAnnonce(messageCentrale);
                 } catch (Exception e) {
                     try {
+                        // L'importation a échoué du coup on se retrouve peut-être dans un cas d'ancienne version
                         importMessage(messageCentrale);
                     } catch (Exception e2) {
                         throw new ALRafamSedexException("Une erreur s'est produite pendant la lecture du message sedex "
-                                + messageCentrale.getFileLocation() + " : " + e.getMessage());
+                                + messageCentrale.getFileLocation() + " : " + e2.getMessage());
                     }
                 }
             } else {
                 // Normalement, si la propriété n'est pas à true, le message doit être avec l'ancienne version
                 try {
+                    JAXBServices jaxbService = JAXBServices.getInstance();
+                    jaxbService.unmarshal(((SimpleSedexMessage) messageCentrale).fileLocation, false, false,
+                            (Class<?>[]) null);
                     importMessage(messageCentrale);
                 } catch (Exception e) {
                     try {
-                        // On va utiliser le processus pour l'importation des nouvelles annonces
-                        ImportAnnoncesRafamNewXSDVersion importAnnoncesRafam = new ImportAnnoncesRafamNewXSDVersion();
-                        importAnnoncesRafam.setContext(getContext());
-                        importAnnoncesRafam.setSession(getSession());
-                        importAnnoncesRafam.setUserSedex(userSedex);
-                        importAnnoncesRafam.setPassSedex(passSedex);
-                        importAnnoncesRafam.importMessage(messageCentrale);
+                        // L'importation a échoué du coup on se retrouve peut-être dans un cas de nouvelle version
+                        importNewAnnonce(messageCentrale);
                     } catch (Exception e1) {
                         throw new ALRafamSedexException("Une erreur s'est produite pendant la lecture du message sedex "
-                                + messageCentrale.getFileLocation() + " : " + e.getMessage());
+                                + messageCentrale.getFileLocation() + " : " + e1.getMessage());
                     }
                 }
             }
         }
+    }
+
+    public void importNewAnnonce(SedexMessage messageCentrale) throws Exception {
+        ImportAnnoncesRafamNewXSDVersion importAnnoncesRafam = new ImportAnnoncesRafamNewXSDVersion();
+        importAnnoncesRafam.setContext(getContext());
+        importAnnoncesRafam.setSession(getSession());
+        importAnnoncesRafam.setUserSedex(userSedex);
+        importAnnoncesRafam.setPassSedex(passSedex);
+        importAnnoncesRafam.importMessage(messageCentrale);
     }
 
     /**
