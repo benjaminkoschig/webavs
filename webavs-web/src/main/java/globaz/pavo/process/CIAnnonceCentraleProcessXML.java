@@ -760,6 +760,9 @@ public class CIAnnonceCentraleProcessXML extends BProcess {
                 }
             }
             String numAffWithoutDot = StringUtils.removeDots(ecriture.getIdAffilie());
+            if(JadeStringUtil.isBlankOrZero(numAffWithoutDot)) {
+                return "0";
+            }
             if (numAffWithoutDot.length() > CIAnnonceCentraleProcessXML.NUM_AVS_LENGTH) {
                 numAffWithoutDot = numAffWithoutDot.substring(0, CIAnnonceCentraleProcessXML.NUM_AVS_LENGTH);
             }
