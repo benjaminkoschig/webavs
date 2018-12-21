@@ -1,23 +1,15 @@
 package ch.globaz.al.businessimpl.rafam.sedex;
 
 import java.io.File;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
-import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.ValidationEvent;
-import javax.xml.bind.ValidationEventHandler;
 import javax.xml.datatype.XMLGregorianCalendar;
-import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
 import org.xml.sax.SAXException;
 import al.ch.ech.xmlns.ech_0104_69._4.HeaderType;
 import al.ch.ech.xmlns.ech_0104_69._4.Message;
@@ -50,19 +42,12 @@ import ch.globaz.al.utils.ALRafamUtils;
 import ch.globaz.jaxbUtils.MarshallerEmployeurDelegueSingleton;
 import globaz.globall.api.GlobazSystem;
 import globaz.globall.db.BSession;
-import globaz.jade.admin.JadeAdminServiceLocatorProvider;
-import globaz.jade.client.util.JadeConversionUtil;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.common.Jade;
 import globaz.jade.context.JadeContext;
-import globaz.jade.context.JadeContextImplementation;
 import globaz.jade.context.JadeThread;
 import globaz.jade.context.JadeThreadActivator;
-import globaz.jade.context.JadeThreadContext;
-import globaz.jade.crypto.JadeDecryptionNotSupportedException;
-import globaz.jade.crypto.JadeDefaultEncrypters;
-import globaz.jade.crypto.JadeEncrypterNotFoundException;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.fs.JadeFsFacade;
 import globaz.jade.log.JadeLogger;
@@ -70,7 +55,6 @@ import globaz.jade.log.business.renderer.JadeBusinessMessageRendererDefaultStrin
 import globaz.jade.properties.JadePropertiesService;
 import globaz.jade.sedex.JadeSedexDirectoryInitializationException;
 import globaz.jade.sedex.JadeSedexService;
-import globaz.jade.sedex.annotation.Setup;
 import globaz.jade.sedex.message.SedexMessage;
 import globaz.jade.sedex.message.SimpleSedexMessage;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
@@ -90,6 +74,7 @@ public class ImportAnnoncesRafamNewXSDVersion {
     private final static String MARSHALLED_XML = "marshalled.xml";
     private JadeContext context;
     private String passSedex;
+
     private BSession session;
     private String userSedex;
 
@@ -424,9 +409,6 @@ public class ImportAnnoncesRafamNewXSDVersion {
      *                       Exception levée si le contexte ne peut être initialisé
      */
     public JadeContext getContext() throws Exception {
-        if (context == null) {
-            context = initContext(getSession()).getContext();
-        }
         return context;
     }
 
@@ -523,33 +505,6 @@ public class ImportAnnoncesRafamNewXSDVersion {
         } finally {
             JadeThreadActivator.stopUsingContext(Thread.currentThread());
         }
-    }
-
-    /**
-     * Initialise un contexte
-     *
-     * @param session
-     *                    session
-     * @return le contexte initialisé
-     * @throws Exception
-     *                       Exception levée si le contexte ne peut être initialisé
-     */
-    private JadeThreadContext initContext(BSession session) throws Exception {
-        JadeThreadContext context;
-        JadeContextImplementation ctxtImpl = new JadeContextImplementation();
-        ctxtImpl.setApplicationId(ImportAnnoncesRafamNewXSDVersion.APPLICATION_NAME);
-        ctxtImpl.setLanguage(session.getIdLangueISO());
-        ctxtImpl.setUserEmail(session.getUserEMail());
-        ctxtImpl.setUserId(session.getUserId());
-        ctxtImpl.setUserName(session.getUserName());
-        String[] roles = JadeAdminServiceLocatorProvider.getInstance().getServiceLocator().getRoleUserService()
-                .findAllIdRoleForIdUser(session.getUserId());
-        if ((roles != null) && (roles.length > 0)) {
-            ctxtImpl.setUserRoles(JadeConversionUtil.toList(roles));
-        }
-        context = new JadeThreadContext(ctxtImpl);
-        context.storeTemporaryObject("bsession", session);
-        return context;
     }
 
     /**
@@ -919,25 +874,6 @@ public class ImportAnnoncesRafamNewXSDVersion {
 
     }
 
-    @Setup
-    public void setUp(Properties properties)
-            throws JadeDecryptionNotSupportedException, JadeEncrypterNotFoundException, Exception {
-
-        String encryptedUser = properties.getProperty("userSedex");
-        if (encryptedUser == null) {
-            JadeLogger.error(this, "Réception message RAFam: user sedex non renseigné. ");
-            throw new IllegalStateException("Réception message RAFam: user sedex non renseigné. ");
-        }
-        userSedex = JadeDefaultEncrypters.getJadeDefaultEncrypter().decrypt(encryptedUser);
-
-        String encryptedPass = properties.getProperty("passSedex");
-        if (encryptedPass == null) {
-            JadeLogger.error(this, "Réception message RAFam: pass sedex non renseigné. ");
-            throw new IllegalStateException("Réception message RAFam: pass sedex non renseigné. ");
-        }
-        passSedex = JadeDefaultEncrypters.getJadeDefaultEncrypter().decrypt(encryptedPass);
-    }
-
     /**
      * Charge le message sedex
      *
@@ -950,34 +886,39 @@ public class ImportAnnoncesRafamNewXSDVersion {
      * @throws SAXException
      * @throws JAXBException
      */
-    private Message unmarshalMessage(SedexMessage message)
-            throws JadeApplicationException, SAXException, JAXBException {
-        SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-
-        URL url = getClass().getResource(XSD_FOLDER + XSD_FILE_NAME);
-
-        Schema schema = sf.newSchema(url);
+    private Message unmarshalMessage(SedexMessage message) throws JAXBException {
         JAXBContext jc = JAXBContext.newInstance(Message.class);
-
         Unmarshaller unmarshaller = jc.createUnmarshaller();
-        unmarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-        unmarshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
-        unmarshaller.setSchema(schema);
-
         try {
-            unmarshaller.setEventHandler(new ValidationEventHandler() {
-
-                @Override
-                public boolean handleEvent(ValidationEvent event) {
-                    JadeLogger.error(this, "JAXB validation error : " + event.getMessage());
-                    return false;
-                }
-            });
             return (Message) unmarshaller.unmarshal(new File(((SimpleSedexMessage) message).fileLocation));
 
         } catch (JAXBException exception) {
             JadeLogger.error(this, "JAXB validation has thrown a JAXBException : " + exception.toString());
             throw exception;
         }
+    }
+
+    public String getPassSedex() {
+        return passSedex;
+    }
+
+    public String getUserSedex() {
+        return userSedex;
+    }
+
+    public void setContext(JadeContext context) {
+        this.context = context;
+    }
+
+    public void setPassSedex(String passSedex) {
+        this.passSedex = passSedex;
+    }
+
+    public void setSession(BSession session) {
+        this.session = session;
+    }
+
+    public void setUserSedex(String userSedex) {
+        this.userSedex = userSedex;
     }
 }

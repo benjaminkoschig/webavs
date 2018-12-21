@@ -465,12 +465,13 @@ public class ImportAnnoncesRafam {
                 try {
                     // On va utiliser le processus pour l'importation des nouvelles annonces
                     ImportAnnoncesRafamNewXSDVersion importAnnoncesRafam = new ImportAnnoncesRafamNewXSDVersion();
+                    importAnnoncesRafam.setContext(getContext());
+                    importAnnoncesRafam.setSession(getSession());
+                    importAnnoncesRafam.setUserSedex(userSedex);
+                    importAnnoncesRafam.setPassSedex(passSedex);
                     importAnnoncesRafam.importMessage(messageCentrale);
                 } catch (Exception e) {
                     try {
-                        JAXBServices jaxbService = JAXBServices.getInstance();
-                        jaxbService.unmarshal(((SimpleSedexMessage) messageCentrale).fileLocation, false, false,
-                                (Class<?>[]) null);
                         importMessage(messageCentrale);
                     } catch (Exception e2) {
                         throw new ALRafamSedexException("Une erreur s'est produite pendant la lecture du message sedex "
@@ -480,14 +481,15 @@ public class ImportAnnoncesRafam {
             } else {
                 // Normalement, si la propriété n'est pas à true, le message doit être avec l'ancienne version
                 try {
-                    JAXBServices jaxbService = JAXBServices.getInstance();
-                    jaxbService.unmarshal(((SimpleSedexMessage) messageCentrale).fileLocation, false, false,
-                            (Class<?>[]) null);
                     importMessage(messageCentrale);
                 } catch (Exception e) {
                     try {
                         // On va utiliser le processus pour l'importation des nouvelles annonces
                         ImportAnnoncesRafamNewXSDVersion importAnnoncesRafam = new ImportAnnoncesRafamNewXSDVersion();
+                        importAnnoncesRafam.setContext(getContext());
+                        importAnnoncesRafam.setSession(getSession());
+                        importAnnoncesRafam.setUserSedex(userSedex);
+                        importAnnoncesRafam.setPassSedex(passSedex);
                         importAnnoncesRafam.importMessage(messageCentrale);
                     } catch (Exception e1) {
                         throw new ALRafamSedexException("Une erreur s'est produite pendant la lecture du message sedex "
