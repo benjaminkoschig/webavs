@@ -753,7 +753,7 @@ public class CIAnnonceCentraleProcessXML extends BProcess {
                     return "77777777777";
                 } else if (CIJournal.CS_IJAI.equals(journal.getIdTypeInscription())) {
                     return "88888888888";
-                } else if (CIJournal.CS_ASSURANCE_CHOMAGE.equals(journal.getIdTypeInscription())) {
+                } else if (CIJournal.CS_ASSURANCE_CHOMAGE.equals(journal.getIdTypeInscription())||!JadeStringUtil.isBlankOrZero(ecriture.getCaisseChomage()) ) {
                     return ecriture.getCaisseChomageFormattee();
                 } else if (CIJournal.CS_ASSURANCE_MILITAIRE.equals(journal.getIdTypeInscription())) {
                     return "66666666666";
