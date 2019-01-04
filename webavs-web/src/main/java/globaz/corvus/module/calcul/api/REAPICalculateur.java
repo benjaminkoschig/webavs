@@ -273,7 +273,7 @@ public class REAPICalculateur {
             // 2 décimal après la virgule
             // si chiffres apres la virgule, arrondir au franc sup.
             montant = montant.setScale(2, BigDecimal.ROUND_HALF_UP);
-            montant = JANumberFormatter.round(montant, 1, 2, JANumberFormatter.SUP);
+            montant = JANumberFormatter.round(montant, 1, 2, JANumberFormatter.NEAR);
             pp.setMontant(montant);
             result.add(pp);
         }
