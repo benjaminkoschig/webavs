@@ -164,6 +164,7 @@ public class REAttestationsFiscalesOO extends REAbstractJobOO {
         });
 
         boolean hasRetroactifSurPlusieursAnnees = famille.getHasRetroactifSurPlusieursAnnees();
+        boolean hasRetroactifSurUneAnnee = famille.getHasRetroactif();
         boolean hasRetroactifVersementCreancier = false;
 
         /*
@@ -174,7 +175,7 @@ public class REAttestationsFiscalesOO extends REAbstractJobOO {
          */
         // Date dateDeDecisionFinale = null;
         HashMap<String, REAttestationFiscaleRentAccordOrdreVerse> listOVRetroMultiAnnee = new HashMap<String, REAttestationFiscaleRentAccordOrdreVerse>();
-        if (hasRetroactifSurPlusieursAnnees) {
+        if (hasRetroactifSurUneAnnee || hasRetroactifSurPlusieursAnnees) {
             SimpleDateFormat reader = new SimpleDateFormat("dd.MM.yyyy");
             SimpleDateFormat yearsWriter = new SimpleDateFormat("yyyy");
             SimpleDateFormat yearsMonthWriter = new SimpleDateFormat("yyyyMM");
@@ -182,7 +183,7 @@ public class REAttestationsFiscalesOO extends REAbstractJobOO {
             for (RETiersPourAttestationsFiscales tiers : tiersBeneficiaires) {
                 for (RERentePourAttestationsFiscales rente : tiers.getRentes()) {
                     Date dateDeDecision = null;
-                    // date vide, on s'en bat les ....
+                    // On ignore les rentes qui n'ont pas de date de décision
                     if (JadeStringUtil.isBlankOrZero(rente.getDateDecision())) {
                         continue;
                     }
@@ -219,25 +220,31 @@ public class REAttestationsFiscalesOO extends REAbstractJobOO {
                             dateDeDecision = yearsMonthWriter.parse(String.valueOf(value));
                             REAttestationFiscaleRentAccordOrdreVerse ovs = (REAttestationFiscaleRentAccordOrdreVerse) mgr
                                     .get(i);
-                            if (ovs.hasVersementCreancier()) {
+                            if (hasRetroactifSurPlusieursAnnees) {
                                 ovs.setDateDecisionFinal(dateDeDecision);
                                 listOVRetroMultiAnnee.put(rente.getIdRenteAccordee(), ovs);
                                 hasRetroactifVersementCreancier = true;
+                                break;
                             } else {
-                                listOVRetroMultiAnnee.put(rente.getIdRenteAccordee(), ovs);
+                                if (ovs.hasVersementCreancier()) {
+                                    ovs.setDateDecisionFinal(dateDeDecision);
+                                    listOVRetroMultiAnnee.put(rente.getIdRenteAccordee(), ovs);
+                                    hasRetroactifVersementCreancier = true;
+                                    break;
+                                }
                             }
                         }
                     }
 
                 }
             }
-
-            // if (dateDeDecisionFinale != null) {
-            // int value = Integer.valueOf(yearsMonthWriter.format(dateDeDecisionFinale));
-            // value++; // ajout d'un mois
-            // dateDeDecisionFinale = yearsMonthWriter.parse(String.valueOf(value));
-            // }
         }
+
+        // if (dateDeDecisionFinale != null) {
+        // int value = Integer.valueOf(yearsMonthWriter.format(dateDeDecisionFinale));
+        // value++; // ajout d'un mois
+        // dateDeDecisionFinale = yearsMonthWriter.parse(String.valueOf(value));
+        // }
         /*
          * Traitement normal
          */
@@ -253,17 +260,12 @@ public class REAttestationsFiscalesOO extends REAbstractJobOO {
 
                 String dateMoisDebut = null;
 
-                if (hasRetroactifSurPlusieursAnnees
+                if (!listOVRetroMultiAnnee.isEmpty()
                         && listOVRetroMultiAnnee.containsKey(uneRenteDuBeneficiaire.getIdRenteAccordee())) {
-                    if (listOVRetroMultiAnnee.get(uneRenteDuBeneficiaire.getIdRenteAccordee())
-                            .hasVersementCreancier()) {
-                        Date dateDecisionRente = listOVRetroMultiAnnee.get(uneRenteDuBeneficiaire.getIdRenteAccordee())
-                                .getDateDecisionFinal();
-                        SimpleDateFormat writer = new SimpleDateFormat("MM.yyyy");
-                        dateMoisDebut = "01." + writer.format(dateDecisionRente);
-                    } else {
-                        dateMoisDebut = "01." + getMoisDebut(uneRenteDuBeneficiaire);
-                    }
+                    Date dateDecisionRente = listOVRetroMultiAnnee.get(uneRenteDuBeneficiaire.getIdRenteAccordee())
+                            .getDateDecisionFinal();
+                    SimpleDateFormat writer = new SimpleDateFormat("MM.yyyy");
+                    dateMoisDebut = "01." + writer.format(dateDecisionRente);
                 } else {
                     dateMoisDebut = "01." + getMoisDebut(uneRenteDuBeneficiaire);
                 }
@@ -387,7 +389,7 @@ public class REAttestationsFiscalesOO extends REAbstractJobOO {
         // Si PC en décembre
         if (famille.getHasRentePC()) {
             String texte = getTexte(catalogueTextesAttestationsFiscales, 4, 7);
-            if(!texte.isEmpty()) {
+            if (!texte.isEmpty()) {
                 texte = texte + SAUT_DE_LIGNE;
                 data.addData("HAS_PC_DECEMBRE", texte);
                 lastLine = "HAS_PC_DECEMBRE";
@@ -400,17 +402,10 @@ public class REAttestationsFiscalesOO extends REAbstractJobOO {
                 texte = texte.replace("{annee}", getAnnee());
                 texte = texte + SAUT_DE_LIGNE;
             }
-            // if (!hasRetroactifSurPlusieursAnnees) {
             if (hasRetroactifVersementCreancier) {
                 data.addData("HAS_RETROACTIF", texte);
                 lastLine = "HAS_RETROACTIF";
             }
-            // } else {
-            // if (hasRetroactifVersementCreancier) {
-            // data.addData("HAS_RETROACTIF", texte);
-            // lastLine = "HAS_RETROACTIF";
-            // }
-            // }
         }
 
         // pour lier le dernier paragraphe aux salutations
