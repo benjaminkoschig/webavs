@@ -165,21 +165,20 @@ public class REAttestationsFiscalesOO extends REAbstractJobOO {
 
         boolean hasRetroactifSurPlusieursAnnees = famille.getHasRetroactifSurPlusieursAnnees();
         boolean hasRetroactifSurUneAnnee = famille.getHasRetroactif();
-        boolean hasRetroactifVersementCreancier = false;
+        boolean hasRetroactifPlusieursAnneeeOuVersementCreancier = false;
 
         /*
-         * Dans le cas ou la famille possède du rétro sur plusieurs années, un traitement particulier est requis pour
-         * attester les rentes.
-         * On recherche la date de décision la plus élevée dans l'année fiscales et on atteste toutes les rentes le mois
-         * suivants cette date de décision
+         * On atteste la date du mois suivant la date de décision pour la rente si :
+         * Cette rente est rétroactif sur une année et a des versements à des créanciers.
+         * Cette rente est rétraoactif sur plusierus années.
          */
         // Date dateDeDecisionFinale = null;
-        HashMap<String, REAttestationFiscaleRentAccordOrdreVerse> listOVRetroMultiAnnee = new HashMap<String, REAttestationFiscaleRentAccordOrdreVerse>();
-        if (hasRetroactifSurUneAnnee || hasRetroactifSurPlusieursAnnees) {
+        HashMap<String, Date> listRenteRetroDateDebutChanged = new HashMap<>();
+        if (hasRetroactifSurUneAnnee) {
             SimpleDateFormat reader = new SimpleDateFormat("dd.MM.yyyy");
             SimpleDateFormat yearsWriter = new SimpleDateFormat("yyyy");
             SimpleDateFormat yearsMonthWriter = new SimpleDateFormat("yyyyMM");
-            int dateDeDecisionInteger = 0;
+            // int dateDeDecisionInteger = 0;
             for (RETiersPourAttestationsFiscales tiers : tiersBeneficiaires) {
                 for (RERentePourAttestationsFiscales rente : tiers.getRentes()) {
                     Date dateDeDecision = null;
@@ -189,48 +188,43 @@ public class REAttestationsFiscalesOO extends REAbstractJobOO {
                     }
 
                     int year = 0;
-                    int yearMonth = 0;
+                    // int yearMonth = 0;
 
                     try {
                         dateDeDecision = reader.parse(rente.getDateDecision());
                         year = Integer.valueOf(yearsWriter.format(dateDeDecision));
-                        yearMonth = Integer.valueOf(yearsMonthWriter.format(dateDeDecision));
+                        // yearMonth = Integer.valueOf(yearsMonthWriter.format(dateDeDecision));
                     } catch (Exception e) {
-                        // Bon ben pas de bol, problème de données du coup on ignore cette rente
-                        // TODO logger le binz
+                        // On ignore la rente
                     }
 
                     // Que les décisions dans l'année fiscales
                     if (year == 0 || !Integer.valueOf(getAnnee()).equals(year)) {
                         continue;
                     }
-                    if (yearMonth > dateDeDecisionInteger) {
-                        dateDeDecisionInteger = yearMonth;
-                        // dateDeDecisionFinale = dateDeDecision;
-                    }
+                    // if (yearMonth > dateDeDecisionInteger) {
+                    // dateDeDecisionInteger = yearMonth;
+                    // // dateDeDecisionFinale = dateDeDecision;
+                    // }
                     REAttestationFiscaleRentAccordOrdreVerseManager mgr = new REAttestationFiscaleRentAccordOrdreVerseManager();
                     mgr.setSession(getSession());
                     mgr.setForIdRenteAccordee(rente.getIdRenteAccordee());
                     mgr.setForCsType(IREPrestationDue.CS_TYPE_PMT_MENS);
                     mgr.find(BManager.SIZE_NOLIMIT);
+                    int value = Integer.parseInt(yearsMonthWriter.format(dateDeDecision));
+                    value++; // ajout d'un mois
+                    dateDeDecision = yearsMonthWriter.parse(String.valueOf(value));
                     if (mgr.size() > 0) {
                         for (int i = 0; i < mgr.size(); i++) {
-                            int value = Integer.parseInt(yearsMonthWriter.format(dateDeDecision));
-                            value++; // ajout d'un mois
-                            dateDeDecision = yearsMonthWriter.parse(String.valueOf(value));
                             REAttestationFiscaleRentAccordOrdreVerse ovs = (REAttestationFiscaleRentAccordOrdreVerse) mgr
                                     .get(i);
                             if (hasRetroactifSurPlusieursAnnees) {
-                                ovs.setDateDecisionFinal(dateDeDecision);
-                                listOVRetroMultiAnnee.put(rente.getIdRenteAccordee(), ovs);
-                                hasRetroactifVersementCreancier = true;
-                                break;
+                                listRenteRetroDateDebutChanged.put(rente.getIdRenteAccordee(), dateDeDecision);
+                                hasRetroactifPlusieursAnneeeOuVersementCreancier = true;
                             } else {
                                 if (ovs.hasVersementCreancier()) {
-                                    ovs.setDateDecisionFinal(dateDeDecision);
-                                    listOVRetroMultiAnnee.put(rente.getIdRenteAccordee(), ovs);
-                                    hasRetroactifVersementCreancier = true;
-                                    break;
+                                    listRenteRetroDateDebutChanged.put(rente.getIdRenteAccordee(), dateDeDecision);
+                                    hasRetroactifPlusieursAnneeeOuVersementCreancier = true;
                                 }
                             }
                         }
@@ -260,12 +254,11 @@ public class REAttestationsFiscalesOO extends REAbstractJobOO {
 
                 String dateMoisDebut = null;
 
-                if (!listOVRetroMultiAnnee.isEmpty()
-                        && listOVRetroMultiAnnee.containsKey(uneRenteDuBeneficiaire.getIdRenteAccordee())) {
-                    Date dateDecisionRente = listOVRetroMultiAnnee.get(uneRenteDuBeneficiaire.getIdRenteAccordee())
-                            .getDateDecisionFinal();
+                if (!listRenteRetroDateDebutChanged.isEmpty()
+                        && listRenteRetroDateDebutChanged.containsKey(uneRenteDuBeneficiaire.getIdRenteAccordee())) {
+                    Date newDateDebut = listRenteRetroDateDebutChanged.get(uneRenteDuBeneficiaire.getIdRenteAccordee());
                     SimpleDateFormat writer = new SimpleDateFormat("MM.yyyy");
-                    dateMoisDebut = "01." + writer.format(dateDecisionRente);
+                    dateMoisDebut = "01." + writer.format(newDateDebut);
                 } else {
                     dateMoisDebut = "01." + getMoisDebut(uneRenteDuBeneficiaire);
                 }
@@ -402,7 +395,7 @@ public class REAttestationsFiscalesOO extends REAbstractJobOO {
                 texte = texte.replace("{annee}", getAnnee());
                 texte = texte + SAUT_DE_LIGNE;
             }
-            if (hasRetroactifVersementCreancier) {
+            if (hasRetroactifPlusieursAnneeeOuVersementCreancier) {
                 data.addData("HAS_RETROACTIF", texte);
                 lastLine = "HAS_RETROACTIF";
             }
