@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<model-mapping>
+	<complexe-model className="ch.globaz.pegasus.business.models.pcaccordee.PcaDecisionHistorisee">
+		<root-model name="simplePCAccordee" model-ref="ch.globaz.pegasus.business.models.pcaccordee.SimplePCAccordee"/>
+		
+		<select-fields>
+			<select-field name="idPCAccordee" field-ref="simplePCAccordee.idPCAccordee" />
+			<select-field name="idPcaParent" field-ref="simplePCAccordee.idPcaParent" />
+			<select-field name="idVersionDroit" field-ref="simplePCAccordee.idVersionDroit" />
+		</select-fields>
+		
+		<linked-model name="decisionSup" model-ref="ch.globaz.pegasus.business.models.decision.SimpleDecisionSuppression" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idVersionDroit" operation="EQUALS" field-ref="simplePCAccordee.idVersionDroit"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="decisionApCal" model-ref="ch.globaz.pegasus.business.models.decision.SimpleDecisionApresCalcul" join-type="LEFT_OUTER" select-fields="false">
+			<join-group operator="AND">
+				<join-field name="idVersionDroit" operation="EQUALS" field-ref="simplePCAccordee.idVersionDroit"/>
+			</join-group>
+		</linked-model>
+		
+		<linked-model name="decision" model-ref="ch.globaz.pegasus.business.models.decision.SimpleDecisionHeader" join-type="INNER" select-fields="false">
+			<join-group operator="OR">
+				<join-field name="idDecisionHeader" operation="EQUALS" field-ref="decisionApCal.idDecisionHeader"/>
+				<join-field name="idDecisionHeader" operation="EQUALS" field-ref="decisionSup.idDecisionHeader"/>
+			</join-group>
+		</linked-model>			
+	
+		<search-definition>
+			<search-group operator="AND">
+				<search-field name="forDateValidite" operation="GREATER_OR_EQUALS" field-ref="simplePCAccordee.dateFin"/>
+				<search-field name="forDateDecision" operation="GREATER_OR_EQUALS" field-ref="decision.dateDecision"/>
+				<search-field name="forIdPcaParent" operation="NOT_EQUALS" field-ref="simplePCAccordee.idPcaParent" value="0"/>	
+			</search-group>
+		</search-definition>
+		
+	</complexe-model>
+</model-mapping>

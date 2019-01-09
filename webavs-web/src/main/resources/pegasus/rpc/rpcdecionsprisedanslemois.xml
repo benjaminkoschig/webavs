@@ -174,37 +174,54 @@
 				<search-field name="inCsType" operation="IN" field-ref="simplePCAccordee.csTypePC"  />	
 				<search-field name="forIdsVersionDroit" operation="IN" field-ref="simpleVersionDroit.idVersionDroit"/>
 			</search-group>
-		</search-definition>		
+		</search-definition>
+		
+		<search-definition name="pcaHistorisee">
+			<search-group operator="AND">
+				<search-literal>
+					<declare-model name="pca" model-ref="ch.globaz.pegasus.business.models.pcaccordee.SimplePCAccordee"/>
+					<![CDATA[ 
+						#{simpleVersionDroit.csEtatDroit} = 64003005 and
+						#{simplePCAccordee.csEtatPC} = 64029004 and
+						#{simplePCAccordee.idPCAccordee} in (
+							select #{pca.idPcaParent} from @{pca}
+							where #{pca.dateFin} >= ${forDateFinPca:pca.dateFin}
+							and #{pca.idPcaParent} <> 0
+						)
+					 ]]>
+				</search-literal>
+				<search-field name="forIdDemande" operation="EQUALS" field-ref="simpleDemande.idDemande"/>
+				<search-field name="forIdsVersionDroitNotIn" operation="NOT_IN" field-ref="simpleVersionDroit.idVersionDroit"/>
+				<search-field name="inCsType" operation="IN" field-ref="simplePCAccordee.csTypePC"  />	
+				<search-field name="forCsMotifNotIn" operation="NOT_IN" field-ref="simpleVersionDroit.csMotif"/>
+		
+				<search-group operator="OR">
+					<search-group operator="AND">	
+						<search-field name="forDateFinMoisFutur" operation="NOT_NULL" field-ref="simpleDecisionHeader.dateFinDecision" />
+						<search-field name="forCsEtatDemandeMoisFutur" operation="NOT_IN" field-ref="simpleDemande.csEtatDemande" />
+						<search-field name="forDateFinMoisFutur" operation="EQUALS" field-ref="simplePCAccordee.dateFin" />
+					</search-group>
+					<search-group operator="AND">	
+						<search-group operator="OR">
+							<search-field name="forDateFinPca" operation="NULL" field-ref="simplePCAccordee.dateFin"/>
+							<search-field name="forDateFinPca" operation="EQUALS" field-ref="simplePCAccordee.dateFin"/>
+						</search-group>
+					</search-group>
+				</search-group>
+				<search-field name="forDebutDecision" operation="LESS_OR_EQUALS"  field-ref="simpleDecisionHeader.dateDebutDecision"/>
+				<search-field name="forCsEtatDemande" operation="NOT_EQUALS"  field-ref="simpleDemande.csEtatDemande" value="64001010"/>
+				<search-field name="forNss" operation="IN"  field-ref="nssTiersBeneficiaire" />
+			</search-group>
+		</search-definition>
+		
+				
 		
 		<search-definition name="pcaCourante">
 			<search-group operator="AND">
-				<search-group operator="OR">	
-					<search-group operator="AND">
-						<search-field name="forCsEtatDroit" operation="EQUALS" field-ref="simpleVersionDroit.csEtatDroit"/>
-						<search-field name="forCsEtatPca" operation="EQUALS" field-ref="simplePCAccordee.csEtatPC"/>
-						<search-field name="forCsEtatDemande" operation="EQUALS" field-ref="simpleDemande.csEtatDemande"/>
-					</search-group>
-					<search-literal>
-						<declare-model name="pca" model-ref="ch.globaz.pegasus.business.models.pcaccordee.SimplePCAccordee"/>
-						<declare-model name="decision" model-ref="ch.globaz.pegasus.business.models.decision.SimpleDecisionHeader"/>
-						<declare-model name="decisionApCal" model-ref="ch.globaz.pegasus.business.models.decision.SimpleDecisionApresCalcul"/>
-						<declare-model name="decisionSup" model-ref="ch.globaz.pegasus.business.models.decision.SimpleDecisionSuppression"/>
-						<![CDATA[ 
-							#{simpleVersionDroit.csEtatDroit} = 64003005 and
-							#{simplePCAccordee.csEtatPC} = 64029004 and
-							#{simplePCAccordee.idPCAccordee} in (
-								select #{pca.idPcaParent} from @{pca}
-								left outer join  @{decisionApCal} on #{decisionApCal.idVersionDroit} = #{pca.idVersionDroit}
-								left outer join  @{decisionSup} on #{decisionSup.idVersionDroit} = #{pca.idVersionDroit}
-								left outer join  @{decision} on (#{decision.idDecisionHeader} = #{decisionApCal.idDecisionHeader} or #{decision.idDecisionHeader} = #{decisionSup.idDecisionHeader})
-								where #{pca.dateFin} >= ${forDateFinPca:pca.dateFin}
-								and #{decision.dateDecision} >= ${forDateDecisionMin:decision.dateDecision}
-								and #{pca.idPcaParent} <> 0
-							)
-						 ]]>
-					</search-literal>
-				</search-group>
-				
+				<search-field name="forCsEtatDroit" operation="EQUALS" field-ref="simpleVersionDroit.csEtatDroit"/>
+				<search-field name="forCsEtatPca" operation="EQUALS" field-ref="simplePCAccordee.csEtatPC"/>
+				<search-field name="forCsEtatDemande" operation="EQUALS" field-ref="simpleDemande.csEtatDemande"/>
+			
 				<search-field name="forIdDemande" operation="EQUALS" field-ref="simpleDemande.idDemande"/>
 				<search-field name="forIdsVersionDroitNotIn" operation="NOT_IN" field-ref="simpleVersionDroit.idVersionDroit"/>
 				<search-field name="inCsType" operation="IN" field-ref="simplePCAccordee.csTypePC"  />	

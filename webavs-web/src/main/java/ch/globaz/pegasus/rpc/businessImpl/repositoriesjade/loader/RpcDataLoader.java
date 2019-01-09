@@ -35,6 +35,8 @@ import ch.globaz.pegasus.business.domaine.pca.PcaEtat;
 import ch.globaz.pegasus.business.exceptions.models.pmtmensuel.PmtMensuelException;
 import ch.globaz.pegasus.business.models.decision.DecisionRefus;
 import ch.globaz.pegasus.business.models.decision.DecisionRefusSearch;
+import ch.globaz.pegasus.business.models.pcaccordee.PcaDecisionHistorisee;
+import ch.globaz.pegasus.business.models.pcaccordee.PcaDecisionHistoriseeSearch;
 import ch.globaz.pegasus.business.services.PegasusServiceLocator;
 import ch.globaz.pegasus.businessimpl.services.donneeFinanciere.DonneeFinanciereLoader;
 import ch.globaz.pegasus.businessimpl.services.loader.ParametersLoader;
@@ -255,6 +257,9 @@ public class RpcDataLoader {
                 idsVersionDroitNotIn.add(rpcDecionsPriseDansLeMois.getSimpleVersionDroit().getIdVersionDroit());
             }
         }
+        
+        List<RPCDecionsPriseDansLeMois> pcaHistorisee = loadPcaHistorise(idsVersionDroitNotIn, dateMoisAnnoncesPrise);
+        decionsPriseDansLeMois.addAll(pcaHistorisee);
 
         List<RPCDecionsPriseDansLeMois> currentPca = loadPcaCourante(idsVersionDroitNotIn, dateMoisAnnoncesPrise);
 
@@ -592,4 +597,64 @@ public class RpcDataLoader {
         LOG.info("requête loadPcaCourante");
         return RepositoryJade.searchForAndFetch(search, limitSize);
     }
+    
+    private List<RPCDecionsPriseDansLeMois> loadPcaHistorise(Set<String> idsVersionDroitNotIn,  Date dateGeneration) {
+        RPCDecionsPriseDansLeMoisSearch search = new RPCDecionsPriseDansLeMoisSearch();
+        search.setWhereKey("pcaHistorisee");
+        search.setForCsEtatDroit(EtatDroit.HISTORISE.getValue());
+        search.setForCsEtatPca(PcaEtat.HISTORISEE.getValue());
+        search.setForDebutDecision(dateGeneration.getMoisAnneeFormatte());
+        if(!simulationListNss.isEmpty()) {
+            search.setForNss(simulationListNss);
+        }
+        search.setForDateFinPca(dateGeneration.addMonth(-1).getMoisAnneeFormatte());
+        search.setForDateDecisionMin(dateGeneration.getFirstDayOfMonth().getSwissValue());
+
+        // Ou date ultérieur au mois paiement
+        search.setForDateFinMoisFutur(dateGeneration.getSwissMonthValue());
+        search.getForCsEtatDemandeMoisFutur().add(IPCDemandes.CS_REFUSE);
+        search.setForIdsVersionDroitNotIn(idsVersionDroitNotIn);
+        LOG.info("requête loadPcaHistorise");
+        List<RPCDecionsPriseDansLeMois> list = RepositoryJade.searchForAndFetch(search, limitSize);
+        
+        List<PcaDecisionHistorisee> pcaHistorisee1 = loadPcaHistorise1(dateMoisAnnoncesPrise);
+        List<PcaDecisionHistorisee> pcaHistorisee2 = loadPcaHistorise2(dateMoisAnnoncesPrise);
+        
+        Set<String> setPca1 = convertIdPcaParent(pcaHistorisee1);
+        Set<String> setPca2 = convertIdPcaParent(pcaHistorisee2);
+        setPca2.removeAll(setPca1);
+        
+        List<RPCDecionsPriseDansLeMois> newList = new ArrayList<>();
+        for(RPCDecionsPriseDansLeMois decision : list) {
+            if(!setPca2.contains(decision.getIdPCAccordee())) {
+                newList.add(decision);
+            }
+        }
+        
+        return newList;
+    }
+    
+    private Set<String> convertIdPcaParent(List<PcaDecisionHistorisee> list) {
+        Set<String> idPcaParent = new HashSet<>();
+        for(PcaDecisionHistorisee pca : list) {
+            idPcaParent.add(pca.getIdPcaParent());
+        }
+        return idPcaParent;
+    }
+    
+    private List<PcaDecisionHistorisee> loadPcaHistorise1(Date dateGeneration) {
+        PcaDecisionHistoriseeSearch search = new PcaDecisionHistoriseeSearch();
+        search.setForDateValidite(dateGeneration.addMonth(-1).getMoisAnneeFormatte());
+        search.setForDateDecision(dateGeneration.getFirstDayOfMonth().getSwissValue());
+        LOG.info("requête loadPcaHistorise");
+        return RepositoryJade.searchForAndFetch(search, limitSize);
+    }
+    
+    private List<PcaDecisionHistorisee> loadPcaHistorise2(Date dateGeneration) {
+        PcaDecisionHistoriseeSearch search = new PcaDecisionHistoriseeSearch();
+        search.setForDateValidite(dateGeneration.addMonth(-1).getMoisAnneeFormatte());
+        LOG.info("requête loadPcaHistorise");
+        return RepositoryJade.searchForAndFetch(search, limitSize);
+    }
+
 }

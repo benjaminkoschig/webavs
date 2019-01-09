@@ -13,5 +13,6 @@
 	<model-mapping import="pegasus/rpc/lienannoncedecision.xml" />
 	<model-mapping import="pegasus/rpc/retourannonce.xml" />
 	<model-mapping import="pegasus/rpc/lotdossierdecision.xml" />
+	<model-mapping import="pegasus/rpc/pcadecisionhistorisee.xml"/>
 	
 </model-mapping>
