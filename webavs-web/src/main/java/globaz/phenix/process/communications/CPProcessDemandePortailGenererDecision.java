@@ -108,6 +108,13 @@ public class CPProcessDemandePortailGenererDecision extends BProcess {
 
         // Sous contrôle d'exception
         try {
+            // Mise à jour cotisation (WEBAVS-5955 - K181109_001)
+            // WEBAVS-6104 : calculRevenuAvecCotisation : à calculer avant calculIndependant pour mettre à jour les cotisation des donneesBases
+            Date date = new Date();
+            if (EBProperties.ADI_CALCUL_COTISATION.getBooleanValue()
+                    && !newDecision.getAnneeDecision().equals(date.getAnnee())) {
+                calculRevenuAvecCotisation(newDecision);
+            }
             // recherhe des données de Base de la décision
             CPDonneesBase donneesBase = new CPDonneesBase();
             donneesBase.setSession(getSession());
@@ -149,12 +156,6 @@ public class CPProcessDemandePortailGenererDecision extends BProcess {
             }
             // Création des remarques
             calcul.createRemarqueAutomatique(getTransaction(), newDecision);
-            // Mise à jour cotisation (WEBAVS-5955 - K181109_001)
-            Date date = new Date();
-            if (EBProperties.ADI_CALCUL_COTISATION.getBooleanValue()
-                    && !newDecision.getAnneeDecision().equals(date.getAnnee())) {
-                calculRevenuAvecCotisation(newDecision);
-            }
 
         } catch (Exception e) {
             JadeLogger.error(this, e);
