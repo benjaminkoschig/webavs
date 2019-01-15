@@ -260,6 +260,7 @@ public class RpcDataLoader {
         
         List<RPCDecionsPriseDansLeMois> pcaHistorisee = loadPcaHistorise(idsVersionDroitNotIn, dateMoisAnnoncesPrise);
         decionsPriseDansLeMois.addAll(pcaHistorisee);
+        LOG.info("Nb pca historisee : {}", pcaHistorisee.size());
 
         List<RPCDecionsPriseDansLeMois> currentPca = loadPcaCourante(idsVersionDroitNotIn, dateMoisAnnoncesPrise);
 

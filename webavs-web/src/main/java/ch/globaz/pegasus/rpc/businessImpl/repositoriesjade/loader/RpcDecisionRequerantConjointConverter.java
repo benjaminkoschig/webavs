@@ -97,8 +97,20 @@ class RpcDecisionRequerantConjointConverter {
             TupleDonneeRapport tauxChangeRentesEtrangere = calcul.getTauxAutresRentesEtranger();
             pcaDecision.getPca().setCalcul(calcul);
             RpcCalcul rpcCalcul = new RpcCalcul(calcul, false);
-            PersonsElementsCalcul personsElementsCalculs = convertToPersonElementsCalcul(membresFam, dateDebut,
-                    tauxChangeRentesEtrangere);
+            PersonsElementsCalcul personsElementsCalculs;
+            if(rpcCalcul.isCoupleSepare()) {
+                MembreFamilleWithDonneesFinanciere membreChoisi = membresFam.get(0);
+                for(MembreFamilleWithDonneesFinanciere membre : membresFam) {
+                    if(model.getNssTiersBeneficiaire().equals(membre.getFamille().getPersonne().getNss().toString())) {
+                        membreChoisi = membre;
+                    }
+                }
+                personsElementsCalculs =  convertToPersonElementsCalcul(membresFam, dateDebut,
+                        membreChoisi.getRoleMembreFamille(), true, tauxChangeRentesEtrangere);
+            } else {
+                personsElementsCalculs  = convertToPersonElementsCalcul(membresFam, dateDebut,
+                        tauxChangeRentesEtrangere);
+            }
 
             decisionRequerantConjoint = new RpcDecisionRequerantConjoint(demande, pcaDecision, rpcCalcul, membresFam,
                     personsElementsCalculs, para.getVariablesMetier());
@@ -239,7 +251,7 @@ class RpcDecisionRequerantConjointConverter {
 
     private Calcul resolvePlanCalcul(RPCDecionsPriseDansLeMois model) {
         String idPlanCalcul = model.getIdPlanDeCalculParent();
-        if (idPlanCalcul == null || "0".equals(idPlanCalcul) || idPlanCalcul.isEmpty()) {
+        if (idPlanCalcul == null || "0".equals(idPlanCalcul) || idPlanCalcul.isEmpty() || !mapIdPlanCalculWithCalcul.containsKey(idPlanCalcul)) {
             idPlanCalcul = model.getSimplePlanDeCalcul().getId();
         }
         return mapIdPlanCalculWithCalcul.get(idPlanCalcul);
