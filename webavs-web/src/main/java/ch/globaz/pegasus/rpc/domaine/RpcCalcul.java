@@ -1,6 +1,7 @@
 package ch.globaz.pegasus.rpc.domaine;
 
 import ch.globaz.common.domaine.Montant;
+import ch.globaz.pegasus.business.constantes.IPCValeursPlanCalcul;
 import ch.globaz.pegasus.business.domaine.pca.Calcul;
 import ch.globaz.pegasus.business.domaine.pca.PcaEtatCalcul;
 import ch.globaz.pegasus.business.exceptions.models.calcul.CalculException;
@@ -15,7 +16,7 @@ public class RpcCalcul {
 
     public RpcCalcul(Calcul calcul, boolean isCoupleSepare) {
         this.calcul = calcul;
-        this.isCoupleSepare = isCoupleSepare;
+        this.isCoupleSepare = IPCValeursPlanCalcul.STATUS_CALCUL_SEPARE_MALADIE.equals(calcul.getTypeSeparation());
     }
     
     /**
@@ -100,6 +101,21 @@ public class RpcCalcul {
         // FIXME eclaircir la spec
         // return new Montant(tuple.getValeurEnfant(IPCValeursPlanCalcul.CLE_FORTU_SOUS_TOTAL));
     }
+    
+    
+    /**
+     * FC27
+     */
+    public Montant getRentGrossTotal() {
+        return calcul.getDepensesLoyerBrut()
+            .add(calcul.getDepensesLoyerNet())
+            .add(calcul.getDepensesLoyerCharge())
+            .add(calcul.getDepensesLoyerValeurLocativeAppHabite())
+            .add(calcul.getDepensesLoyerChargesForfaitaires())
+            .add(calcul.getDepensesLoyerDroitHabitation())
+            .add(calcul.getDepensesLoyerFraisDeChauffage())
+            .add(calcul.getDepensesLoyerPensionNonReconnue());
+    }
 
     /**
      * FC20
@@ -126,11 +142,8 @@ public class RpcCalcul {
      */
     public Montant getRevenusTotalAPrendreEnCompte() {
         // DIVISION PAR DEUX NECESSAIRE
-        if (calcul.getRevenusAutreIJAI() !=  null && !calcul.getRevenusAutreIJAI().isZero()) {
-            return divideByTwoIfCoupleSepare(calcul.getRevenusActiviteLucrativeRevenuPrisEnCompte());
-        } else {
-            return divideByTwoIfCoupleSepare(calcul.getRevenusActiviteLucrativeRevenuPrivilegie());
-        }
+        return divideByTwoIfCoupleSepare(calcul.getRevenusActiviteLucrativeRevenuPrisEnCompte()
+                .add(calcul.getRevenusActiviteLucrativeRevenuPrivilegie()));
     }
     
     /**

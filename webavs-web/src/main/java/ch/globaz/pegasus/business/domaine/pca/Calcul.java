@@ -534,5 +534,40 @@ public class Calcul {
         return Montant.newMensuel(tuple.getValeurEnfant(IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_PART_CANTONALE))
                 .annualise();
     }
+    
+    /**
+     * CLE_TOTAL_TYPE_SEPARATION_CC
+     */
+    public String getTypeSeparation() {
+        return tuple.getLegendeEnfant(IPCValeursPlanCalcul.CLE_TOTAL_TYPE_SEPARATION_CC);
+    }
+    
+    /**
+     * CLE_DEPEN_GR_LOYER_CHARGES_FORFAITAIRES
+     */
+    public Montant getDepensesLoyerChargesForfaitaires() {
+        return Montant.newAnnuel(tuple.getValeurEnfant(IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_CHARGES_FORFAITAIRES));
+    }
+    
+    /**
+     * CLE_DEPEN_GR_LOYER_DROIT_HABITATION
+     */
+    public Montant getDepensesLoyerDroitHabitation() {
+        return Montant.newAnnuel(tuple.getValeurEnfant(IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_DROIT_HABITATION));
+    }
+    
+    /**
+     * CLE_DEPEN_GR_LOYER_FRAIS_CHAUFFAGE
+     */
+    public Montant getDepensesLoyerFraisDeChauffage() {
+        return Montant.newAnnuel(tuple.getValeurEnfant(IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_FRAIS_CHAUFFAGE));
+    }
+    
+    /**
+     * CLE_DEPEN_GR_LOYER_TAXES_PENSION_NON_RECONNUE
+     */
+    public Montant getDepensesLoyerPensionNonReconnue() {
+        return Montant.newAnnuel(tuple.getValeurEnfant(IPCValeursPlanCalcul.CLE_DEPEN_GR_LOYER_TAXES_PENSION_NON_RECONNUE));
+    }
 
 }
