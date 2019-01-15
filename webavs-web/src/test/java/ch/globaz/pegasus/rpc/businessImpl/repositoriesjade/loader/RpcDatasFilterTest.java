@@ -32,12 +32,12 @@ public class RpcDatasFilterTest {
     public void testFiltreWith6CorrectionCoupleSepare() throws Exception {
         List<RPCDecionsPriseDansLeMois> rpcDatas = new ArrayList<RPCDecionsPriseDansLeMois>();
         rpcDatas.add(create("1", EtatDroit.HISTORISE, "10"));
-        rpcDatas.add(create("6", EtatDroit.VALIDE, "10"));
+        rpcDatas.add(create("6", EtatDroit.VALIDE, "10", "61"));
         rpcDatas.add(create("2", EtatDroit.HISTORISE, "10"));
-        rpcDatas.add(create("5", EtatDroit.HISTORISE, "10"));
+        rpcDatas.add(create("5", EtatDroit.HISTORISE, "10", "51"));
         rpcDatas.add(create("3", EtatDroit.HISTORISE, "10"));
-        rpcDatas.add(create("6", EtatDroit.VALIDE, "10"));
-        rpcDatas.add(create("5", EtatDroit.HISTORISE, "10"));
+        rpcDatas.add(create("6", EtatDroit.VALIDE, "10", "62"));
+        rpcDatas.add(create("5", EtatDroit.HISTORISE, "10", "52"));
         RpcDatasFilter filtrer = new RpcDatasFilter();
         Map<String, List<RPCDecionsPriseDansLeMois>> map = filtrer.filtre(rpcDatas);
         assertThat(map).hasSize(1);
@@ -55,13 +55,18 @@ public class RpcDatasFilterTest {
         RpcDatasFilter filtrer = new RpcDatasFilter();
         assertThat(filtrer.filtre(rpcDatas)).hasSize(1);
     }
-
+    
     private RPCDecionsPriseDansLeMois create(String noVersion, EtatDroit etat, String idDemande) {
+        return create(noVersion, etat, idDemande, noVersion);
+    }
+
+    private RPCDecionsPriseDansLeMois create(String noVersion, EtatDroit etat, String idDemande, String idPca) {
         RPCDecionsPriseDansLeMois decision = new RPCDecionsPriseDansLeMois();
         decision.setIdDemande(idDemande);
         decision.setSimpleVersionDroit(new SimpleVersionDroit());
         decision.getSimpleVersionDroit().setIdVersionDroit(noVersion);
         decision.getSimpleVersionDroit().setNoVersion(noVersion);
+        decision.setIdPCAccordee(idPca);
         return decision;
     }
 }
