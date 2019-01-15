@@ -91,11 +91,6 @@ class AnnonceItem extends ProcessItem {
             if (rpcDataConverter.isRefus()) {
                 annonce = createAnnonce(TypeAnnonce.PARTIEL);
                 file = annonceGenerator.getSedexConvertor201().generateMessageFileWithValidation(rpcData);
-            } else if (rpcData.isSuppressionDecesRequerant()) {
-                annonce = createAnnonce(TypeAnnonce.ANNULATION);
-                RpcUtil.deleteSuffixDecisionId(rpcData.getRpcDecisionRequerantConjoints().get(0).getRequerant()
-                        .getDecision(), rpcData.getRpcDecisionRequerantConjoints().get(0).getConjoint().getDecision());
-                file = annonceGenerator.getSedexConvertor301().generateMessageFileWithValidation(rpcData);
             } else {
                 annonce = createAnnonce(TypeAnnonce.COMPLET);
                 file = annonceGenerator.getSedexConvertor101().generateMessageFileWithValidation(rpcData);

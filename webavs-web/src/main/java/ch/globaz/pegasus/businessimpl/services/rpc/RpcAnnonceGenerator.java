@@ -105,10 +105,6 @@ public class RpcAnnonceGenerator implements Closeable {
         try {
             if (!rpcData.hasVersionDroit()) {
                 file = sedexConvertor201.generateMessageFile(rpcData);
-            } else if (rpcData.isSuppressionDecesRequerant()) {
-                RpcUtil.deleteSuffixDecisionId(rpcData.getRpcDecisionRequerantConjoints().get(0).getRequerant()
-                        .getDecision(), rpcData.getRpcDecisionRequerantConjoints().get(0).getConjoint().getDecision());
-                file = sedexConvertor301.generateMessageFile(rpcData);
             } else {
                 file = sedexConvertor101.generateMessageFile(rpcData);
             }
