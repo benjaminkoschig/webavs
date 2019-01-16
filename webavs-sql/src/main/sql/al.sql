@@ -1,1 +1,0 @@
-INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL,CSPY,PSPY) VALUES ('al.decisions.generation.new.test.montant.zero','true','20181219120000Globaz    ','20181219120000Globaz    ');
