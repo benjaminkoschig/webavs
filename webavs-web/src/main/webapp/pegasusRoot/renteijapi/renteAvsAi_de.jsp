@@ -17,6 +17,8 @@
 <%@page import="java.util.Arrays"%>
 <%@page import="ch.globaz.pegasus.business.constantes.IPCDroits"%>
 <%@page import="ch.globaz.pegasus.business.constantes.IPCRenteijapi"%>
+<%@page import="ch.globaz.pegasus.business.constantes.donneesfinancieres.IPCRenteAvsAi"%>
+<%@page import="ch.globaz.pegasus.business.constantes.IPCVariableMetier"%>
 <%@page import="ch.globaz.pegasus.business.models.droit.DroitMembreFamille"%>
 <%@page import="ch.globaz.pegasus.business.models.renteijapi.RenteIjApi"%>
 <%@page import="ch.globaz.pegasus.business.models.droit.SimpleDonneeFinanciereHeader"%>
@@ -69,6 +71,7 @@
 	var PAGE_ID_DROIT="<%=viewBean.getId() %>";
 	var ACTION_AJAX_DONNEE_FINANCIERE="<%=IPCActions.ACTION_DROIT_AVS_AI_AJAX %>";
 	var CS_SANS_RENTE ="<%=IPCRenteijapi.CS_SANS_RENTE_AVS%>";
+	var CS_RENTE_VEUVE = "<%=IPCRenteAvsAi.CS_TYPE_RENTE_13%>";
 	var ID_TIERS_REQURANT ;
 	$(function () {
 		ID_TIERS_REQURANT = $("[idtiersmembrefamillerequerant]").attr("idtiersmembrefamillerequerant");
@@ -187,6 +190,18 @@
 													<ct:optionsCodesSystems csFamille="PCTYPPC"/>
 												</ct:select>
 											 </td>
+											 <td class="imputationFortune"><ct:FWLabel key="JSP_PC_RENTEAVSAI_D_IMPOT"/></td>
+											 <td class="imputationFortune" data-g-commutator="context:$(this).parents('.areaDFDetail'),
+																	   master:context.find('[name=renteAvsAi\\.simpleRenteAvsAi\\.csTypeRente]'),
+																	   condition:context.find('[name=renteAvsAi\\.simpleRenteAvsAi\\.csTypeRente]').val()==CS_RENTE_VEUVE,
+																	   actionTrue:¦show(context.find('.imputationFortune'))¦,
+																	   actionFalse:¦hide(context.find('.imputationFortune'))¦">
+												<ct:select name="renteAvsAi.simpleRenteAvsAi.imputationFortune" styleClass="renteAvsAi.simpleRenteAvsAi.imputationFortune" notation="data-g-select='mandatory:true'" >
+													<ct:option label="1/5" value="1/5"/>
+													<ct:option label="1/10" value="1/10"/>
+													<ct:option label="1/15" value="1/15"/>
+												</ct:select>
+											</td>											 
 											 <td class="degrelabel"><ct:FWLabel key="JSP_PC_RENTEAVSAI_D_DEGRE"/></td>
 											 <td class="degre"><input  type="text" class="renteAvsAi.simpleRenteAvsAi.degreInvalidite" name="renteAvsAi.simpleRenteAvsAi.degreInvalidite"  data-g-amount="mandatory:false" /></td>
 											 </td>

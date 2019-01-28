@@ -165,7 +165,8 @@
 			<select-field name="loyerCsDeplafonnementAppartementPartage" field-ref="simpleLoyer.csDeplafonnementAppartementPartage"/>
 			<select-field name="isDessaisissementFortune" field-ref="simpleDonneeFinanciereHeader.isDessaisissementFortune"/>
 			<select-field name="isDessaisissementRevenu" field-ref="simpleDonneeFinanciereHeader.isDessaisissementRevenu"/>
-			<select-field name="autreRentesEtrangeresCSTypeDevise" field-ref="simpleAutreRente.csMonnaie"/> 
+			<select-field name="autreRentesEtrangeresCSTypeDevise" field-ref="simpleAutreRente.csMonnaie"/>
+			<select-field name="imputationFortune" field-ref="simpleRenteAVSAI.imputationFortune"/> 
 		</select-fields>
 		
 		<linked-model name="simpleDonneeFinanciereHeader" model-ref="ch.globaz.pegasus.business.models.droit.SimpleDonneeFinanciereHeader" join-type="INNER" select-fields="false">

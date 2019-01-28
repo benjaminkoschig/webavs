@@ -2,6 +2,8 @@ package ch.globaz.pegasus.businessimpl.utils.calcul.strategiesFinalisation.coupl
 
 import java.util.Date;
 import ch.globaz.pegasus.business.constantes.IPCValeursPlanCalcul;
+import ch.globaz.pegasus.business.constantes.IPCVariableMetier;
+import ch.globaz.pegasus.business.constantes.donneesfinancieres.IPCRenteAvsAi;
 import ch.globaz.pegasus.business.exceptions.models.calcul.CalculBusinessException;
 import ch.globaz.pegasus.business.exceptions.models.calcul.CalculException;
 import ch.globaz.pegasus.businessimpl.utils.calcul.CalculContext;
@@ -10,6 +12,7 @@ import ch.globaz.pegasus.businessimpl.utils.calcul.TupleDonneeRapport;
 import ch.globaz.pegasus.businessimpl.utils.calcul.TypeRenteMap;
 import ch.globaz.pegasus.businessimpl.utils.calcul.containercalcul.ControlleurVariablesMetier;
 import ch.globaz.pegasus.businessimpl.utils.calcul.strategiesFinalisation.StrategieCalculFusion;
+import globaz.jade.client.util.JadeStringUtil;
 
 public class StrategieFusionRevenuTotalDeterminant implements StrategieCalculFusion {
 
@@ -91,6 +94,7 @@ public class StrategieFusionRevenuTotalDeterminant implements StrategieCalculFus
             throws CalculException {
 
         Attribut legende = null;
+        String legendeValue = null;
 
         String typeRenteRequerant;
         if (donnee.getEnfants().containsKey(IPCValeursPlanCalcul.CLE_INTER_TYPE_RENTE_REQUERANT)) {
@@ -118,7 +122,17 @@ public class StrategieFusionRevenuTotalDeterminant implements StrategieCalculFus
 
         Float fractionFortune = null;
 
-        if (TypeRenteMap.listeCsRenteSurvivant.contains(typeRenteRequerant)
+        if(IPCRenteAvsAi.CS_TYPE_RENTE_13.equals(typeRenteRequerant)
+                && !JadeStringUtil.isEmpty(donnee.getLegendeEnfant(IPCValeursPlanCalcul.CLE_REVEN_IMP_FORT_TOTAL))){
+            String value = donnee.getLegendeEnfant(IPCValeursPlanCalcul.CLE_REVEN_IMP_FORT_TOTAL);
+            legendeValue = value;
+            if (value.contains("/")) {
+                String[] rat = value.split("/");
+                fractionFortune =  Float.parseFloat(rat[0]) / Float.parseFloat(rat[1]);
+            } else {
+                fractionFortune =  Float.parseFloat(value);
+            }
+        } else if (TypeRenteMap.listeCsRenteSurvivant.contains(typeRenteRequerant)
                 || TypeRenteMap.listeCsRenteInvalidite.contains(typeRenteRequerant)) {
             // rente survivant ou invalidite
             if (isAllHome) {
@@ -168,8 +182,12 @@ public class StrategieFusionRevenuTotalDeterminant implements StrategieCalculFus
         TupleDonneeRapport tupleImputationFortuneNette = new TupleDonneeRapport(
                 IPCValeursPlanCalcul.CLE_REVEN_IMP_FORT_TOTAL, somme);
 
-        tupleImputationFortuneNette
+        if(legendeValue != null) {
+            tupleImputationFortuneNette.setLegende(legendeValue);
+        } else {
+            tupleImputationFortuneNette
                 .setLegende(((ControlleurVariablesMetier) context.get(legende)).getLegendeCourante());
+        }
 
         return tupleImputationFortuneNette;
     }

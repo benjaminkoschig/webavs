@@ -17,6 +17,7 @@
 			<field name="montant" column="CNMMON" type="NUMERIC" dataType="NUMERIC(15,2)" mandatory="true" comment="MONTANT"/>
 			<field name="csTypePc" column="CNTTPC" type="NUMERIC" mandatory="false" comment="CS_TYPE_PC"/>
 			<field name="degreInvalidite" column="CNIDEG" type="NUMERIC" dataType="NUMERIC(5,2)" mandatory="false" comment="DEGRE_INVALIDITE"/>
+			<field name="imputationFortune" column="CNIMFO" type="STRING" mandatory="false" comment="IMPUTATION_FORTUNE"/>	
 		</fields>
 		<search-definition>
 			<search-group operator="AND">

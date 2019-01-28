@@ -75,9 +75,17 @@ public class StrategieRenteAVSAI extends StrategieCalculRevenu {
             // le code system est mis dans la légende car le montant étant un flottant, il se produit une perte de
             // précision qui change le code system
             tuple.setLegende(csTypeRente);
+            
+            if (IPCRenteAvsAi.CS_TYPE_RENTE_13.equals(csTypeRente)) {
+                TupleDonneeRapport tupleImputationFortuneNette = new TupleDonneeRapport(
+                        IPCValeursPlanCalcul.CLE_REVEN_IMP_FORT_TOTAL, 0.0f, donnee.getImputationFortune());
+                resultatExistant.addEnfantTuple(tupleImputationFortuneNette);
+            }   
+            
         }
+        
 
         return resultatExistant;
     }
-
+    
 }

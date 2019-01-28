@@ -280,6 +280,8 @@ public class CalculDonneesCC extends JadeComplexModel {
     private String vehiculeFractionNumerateur = null;
 
     private String vehiculeMontant = null;
+    
+    private String imputationFortune = null;
 
     /**
      * @return the allocationFamilialeMontantMensuel
@@ -2224,6 +2226,14 @@ public class CalculDonneesCC extends JadeComplexModel {
     @Override
     public String toString() {
         return CalculDonneesCC.class.getSimpleName() + "(" + csTypeDonneeFinanciere + ")@" + hashCode();
+    }
+
+    public String getImputationFortune() {
+        return imputationFortune;
+    }
+
+    public void setImputationFortune(String imputationFortune) {
+        this.imputationFortune = imputationFortune;
     }
 
 }

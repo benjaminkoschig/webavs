@@ -24,6 +24,7 @@ public class SimpleRenteAvsAi extends JadeSimpleModel {
     // FinanciereHeader
     private String idRenteAvsAi = null; // clé primaire
     private String montant = null; // montant
+    private String imputationFortune = null;
 
     /**
      * @return the csTypePc
@@ -168,6 +169,14 @@ public class SimpleRenteAvsAi extends JadeSimpleModel {
      */
     public void setMontant(String montant) {
         this.montant = montant;
+    }
+
+    public String getImputationFortune() {
+        return imputationFortune;
+    }
+
+    public void setImputationFortune(String imputationFortune) {
+        this.imputationFortune = imputationFortune;
     }
 
 }

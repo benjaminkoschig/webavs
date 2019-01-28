@@ -2,6 +2,7 @@ package ch.globaz.pegasus.businessimpl.utils.calcul.strategiesFinalisation.reven
 
 import java.util.Date;
 import ch.globaz.pegasus.business.constantes.IPCValeursPlanCalcul;
+import ch.globaz.pegasus.business.constantes.IPCVariableMetier;
 import ch.globaz.pegasus.business.constantes.donneesfinancieres.IPCRenteAvsAi;
 import ch.globaz.pegasus.business.exceptions.models.calcul.CalculBusinessException;
 import ch.globaz.pegasus.business.exceptions.models.calcul.CalculException;
@@ -100,6 +101,7 @@ public class StrategieFinalRevenuTotalDeterminant implements StrategieCalculFina
             throws CalculException {
 
         Attribut legende = null;
+        String legendeValue = null;
 
         String typeRenteRequerant;
         if (donnee.getEnfants().containsKey(IPCValeursPlanCalcul.CLE_INTER_TYPE_RENTE_REQUERANT)) {
@@ -139,7 +141,16 @@ public class StrategieFinalRevenuTotalDeterminant implements StrategieCalculFina
         // détermination de la fraction pour
         Float fractionFortune = null;
 
-        if ((Boolean) context.get(Attribut.IS_FRATRIE)) {
+        if(IPCRenteAvsAi.CS_TYPE_RENTE_13.equals(typeRenteRequerant)){
+            String value = donnee.getLegendeEnfant(IPCValeursPlanCalcul.CLE_REVEN_IMP_FORT_TOTAL);
+            legendeValue = value;
+            if (value.contains("/")) {
+                String[] rat = value.split("/");
+                fractionFortune =  Float.parseFloat(rat[0]) / Float.parseFloat(rat[1]);
+            } else {
+                fractionFortune =  Float.parseFloat(value);
+            }
+        } else if ((Boolean) context.get(Attribut.IS_FRATRIE)) {
             if (isAllHome) {
                 fractionFortune = Float.parseFloat(((ControlleurVariablesMetier) context
                         .get(Attribut.CS_FRACTIONS_FORTUNE_NON_VIEILLESSE_HOME)).getValeurCourante());
@@ -229,8 +240,12 @@ public class StrategieFinalRevenuTotalDeterminant implements StrategieCalculFina
         TupleDonneeRapport tupleImputationFortuneNette = new TupleDonneeRapport(
                 IPCValeursPlanCalcul.CLE_REVEN_IMP_FORT_TOTAL, somme);
 
-        tupleImputationFortuneNette
+        if(legendeValue != null) {
+            tupleImputationFortuneNette.setLegende(legendeValue);
+        } else {
+            tupleImputationFortuneNette
                 .setLegende(((ControlleurVariablesMetier) context.get(legende)).getLegendeCourante());
+        }
 
         return tupleImputationFortuneNette;
     }
