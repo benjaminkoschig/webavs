@@ -6,9 +6,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import ch.globaz.common.domaine.Date;
 import ch.globaz.common.domaine.Montant;
 import ch.globaz.common.properties.PropertiesException;
 import ch.globaz.pegasus.business.constantes.EPCProperties;
+import ch.globaz.pegasus.business.constantes.IPCVariableMetier;
+import ch.globaz.pegasus.business.domaine.decision.TypeDecision;
+import ch.globaz.pegasus.business.exceptions.models.variablemetier.VariableMetierException;
+import ch.globaz.pegasus.business.models.variablemetier.SimpleVariableMetier;
+import ch.globaz.pegasus.business.models.variablemetier.SimpleVariableMetierSearch;
+import ch.globaz.pegasus.businessimpl.services.PegasusImplServiceLocator;
 import ch.globaz.pegasus.rpc.domaine.RpcData;
 import ch.globaz.pegasus.rpc.domaine.RpcDecisionAnnonceComplete;
 import ch.globaz.pegasus.rpc.domaine.annonce.AnnonceCase;
@@ -26,6 +33,7 @@ import ch.globaz.pegasus.rpc.plausi.intra.pi011.RpcPlausiPI011;
 import ch.globaz.pegasus.rpc.plausi.intra.pi013.RpcPlausiPI013;
 import ch.globaz.pegasus.rpc.plausi.intra.pi014.RpcPlausiPI014;
 import ch.globaz.pegasus.rpc.plausi.intra.pi015.RpcPlausiPI015;
+import ch.globaz.pegasus.rpc.plausi.intra.pi021.RpcPlausiPI021;
 import ch.globaz.pegasus.rpc.plausi.intra.pi023.RpcPlausiPI023;
 import ch.globaz.pegasus.rpc.plausi.intra.pi024.RpcPlausiPI024;
 import ch.globaz.pegasus.rpc.plausi.intra.pi025.RpcPlausiPI025;
@@ -39,13 +47,21 @@ import ch.globaz.pegasus.rpc.plausi.intra.pi049.RpcPlausiPI049;
 import ch.globaz.pegasus.rpc.plausi.intra.pi064.RpcPlausiPI064;
 import ch.globaz.pegasus.rpc.plausi.simple.ps010.RpcPlausiPS010;
 import ch.globaz.pegasus.rpc.plausi.simple.ps011.RpcPlausiPS011;
+import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.persistence.model.JadeAbstractModel;
+import globaz.jade.persistence.model.JadeAbstractSearchModel;
+import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 
 public class PlausiContainer {
 
-    private static final List<RpcPlausiMetier<? extends PlausiResult>> listMetier = new ArrayList<RpcPlausiMetier<? extends PlausiResult>>();
-    private static final List<RpcPlausiMetier<? extends PlausiResult>> plausisSkippedOnPrevalidation = new ArrayList<RpcPlausiMetier<? extends PlausiResult>>();
+    private List<RpcPlausiMetier<? extends PlausiResult>> listMetier = new ArrayList<RpcPlausiMetier<? extends PlausiResult>>();
+    private List<RpcPlausiMetier<? extends PlausiResult>> plausisSkippedOnPrevalidation = new ArrayList<RpcPlausiMetier<? extends PlausiResult>>();
 
-    static {
+    public PlausiContainer(Date date) throws VariableMetierException, JadeApplicationServiceNotAvailableException, JadePersistenceException {
+        this(loadVariablesMetier(date));
+    }
+    
+    public PlausiContainer(SimpleVariableMetierSearch variablesMetier) {
         listMetier.add(new RpcPlausiPI002(new Montant(300)));
         listMetier.add(new RpcPlausiPI003());
         listMetier.add(new RpcPlausiPI008(new Montant(300)));
@@ -73,14 +89,21 @@ public class PlausiContainer {
         RpcPlausiPS011 plausi11 = new RpcPlausiPS011();
         listMetier.add(plausi11);
         plausisSkippedOnPrevalidation.add(plausi11);
+        listMetier.add(new RpcPlausiPI021());
         listMetier.add(new RpcPlausiPI023());
         listMetier.add(new RpcPlausiPI024());
-        listMetier.add(new RpcPlausiPI025(new Montant(19290), new Montant(28935), new Montant(19290),
-                new Montant(10080), new Montant(6720), new Montant(3360)));
-        // listMetier.add(new RpcPlausiPI027(new Montant(37500), new Montant(60000), new Montant(15000)));
+        
+        Montant par1 = getMontant(IPCVariableMetier.CS_BESOINS_VITAUX_CELIBATAIRES, variablesMetier);
+        Montant par2 = getMontant(IPCVariableMetier.CS_BESOINS_VITAUX_COUPLES, variablesMetier);
+        Montant par3 = getMontant(IPCVariableMetier.CS_BESOINS_VITAUX_CELIBATAIRES, variablesMetier);
+        Montant par4 = getMontant(IPCVariableMetier.CS_BESOINS_VITAUX_2_ENFANTS, variablesMetier);
+        Montant par5 = getMontant(IPCVariableMetier.CS_BESOINS_VITAUX_4_ENFANTS, variablesMetier);
+        Montant par6 = getMontant(IPCVariableMetier.CS_BESOINS_VITAUX_5_ENFANTS, variablesMetier);
+        listMetier.add(new RpcPlausiPI025(par1, par2, par3, par4, par5, par6));
+     // listMetier.add(new RpcPlausiPI027(new Montant(37500), new Montant(60000), new Montant(15000)));
     }
 
-    public static PlausisResults buildPlausis(RpcData rpcData) {
+    public PlausisResults buildPlausis(RpcData rpcData) {
         Set<RpcPlausiCategory> inCategory = EnumSet.allOf(RpcPlausiCategory.class);
         return buildPlausisInCategory(rpcData, inCategory, isDateSimulation());
     }
@@ -96,7 +119,7 @@ public class PlausiContainer {
         
     }
 
-    public static PlausisResults buildPlausisInCategory(RpcData rpcData, Set<RpcPlausiCategory> inCategory,
+    public PlausisResults buildPlausisInCategory(RpcData rpcData, Set<RpcPlausiCategory> inCategory,
             boolean skippedOnPrevalidation) {
 
         PlausisResults plausisResults = new PlausisResults();
@@ -128,7 +151,7 @@ public class PlausiContainer {
 
     static RpcPlausiApplyToDecision resolveApplyTo(RpcDecisionAnnonceComplete data, boolean hasVersionDroit) {
         if (hasVersionDroit) {
-            if (data.getPcaDecision().getPca().getEtatCalcul().isRefus()) {
+            if (data.getPcaDecision().getPca().getEtatCalcul().isRefus() || TypeDecision.SUPPRESSION_SANS_CALCUL.equals(data.getPcaDecision().getDecision().getType())) {
                 return RpcPlausiApplyToDecision.REJECT_FULL;
             } else {
                 return RpcPlausiApplyToDecision.POSITIVE;
@@ -150,4 +173,24 @@ public class PlausiContainer {
             }
         });
     }
+    
+    private Montant getMontant(String codeSystem, SimpleVariableMetierSearch variablesMetier) {
+        for (JadeAbstractModel absDonnee : variablesMetier.getSearchResults()) {
+            SimpleVariableMetier donnee = (SimpleVariableMetier) absDonnee;
+            if (donnee.getCsTypeVariableMetier().equals(codeSystem)) {
+                return new Montant(donnee.getMontant());
+            }
+        }
+        return null;
+    }
+    
+    private static SimpleVariableMetierSearch loadVariablesMetier(Date date) throws VariableMetierException, JadeApplicationServiceNotAvailableException, JadePersistenceException {
+        SimpleVariableMetierSearch variablesMetier = new SimpleVariableMetierSearch();
+        variablesMetier.setWhereKey("withDateValable");
+        variablesMetier.setDefinedSearchSize(JadeAbstractSearchModel.SIZE_NOLIMIT);
+        variablesMetier.setForDateValable(date.getSwissMonthValue());
+        variablesMetier = PegasusImplServiceLocator.getSimpleVariableMetierService().search(variablesMetier);
+        return variablesMetier;
+    }
+    
 }

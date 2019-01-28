@@ -18,7 +18,6 @@ import ch.globaz.pegasus.rpc.domaine.RpcDecisionWithIdPlanCal;
 import ch.globaz.pegasus.rpc.domaine.TypeAnnonce;
 import ch.globaz.pegasus.rpc.plausi.core.PlausiContainer;
 import ch.globaz.pegasus.rpc.plausi.core.PlausisResults;
-import ch.globaz.pegasus.utils.RpcUtil;
 
 class AnnonceItem extends ProcessItem {
     private static final Logger LOG = LoggerFactory.getLogger(AnnonceItem.class);
@@ -30,11 +29,13 @@ class AnnonceItem extends ProcessItem {
     private File file;
     private PlausisResults results = new PlausisResults();
     private AnnonceRpc annonce = new Annonce();
+    private PlausiContainer plausis;
 
-    public AnnonceItem(RpcDataConverter rpcDataConverter, LotAnnonceRpc lotAnnonce, RpcAnnonceGenerator annonceGenerator) {
+    public AnnonceItem(RpcDataConverter rpcDataConverter, LotAnnonceRpc lotAnnonce, RpcAnnonceGenerator annonceGenerator, PlausiContainer plausis) {
         this.rpcDataConverter = rpcDataConverter;
         this.lotAnnonce = lotAnnonce;
         this.annonceGenerator = annonceGenerator;
+        this.plausis = plausis;
     }
 
     @Override
@@ -54,7 +55,7 @@ class AnnonceItem extends ProcessItem {
     }
 
     public PlausisResults checkPlausis() {
-        return PlausiContainer.buildPlausis(rpcData);
+        return plausis.buildPlausis(rpcData);
     }
 
     protected AnnonceRpc createAnnonce(TypeAnnonce type) {
@@ -86,7 +87,7 @@ class AnnonceItem extends ProcessItem {
     public void treat() throws Exception {
         try {
             rpcData = rpcDataConverter.convert();
-            results = PlausiContainer.buildPlausis(rpcData);
+            results = plausis.buildPlausis(rpcData);
 
             if (rpcDataConverter.isRefus()) {
                 annonce = createAnnonce(TypeAnnonce.PARTIEL);

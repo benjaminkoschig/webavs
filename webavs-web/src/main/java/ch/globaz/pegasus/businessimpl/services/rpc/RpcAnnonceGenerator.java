@@ -84,22 +84,27 @@ public class RpcAnnonceGenerator implements Closeable {
     public String generateByIdAnnonce(String idAnnonce) {
         RpcDataLoader loader = new RpcDataLoader();
         RpcData rpcData = loader.loadByIdAnnonce(idAnnonce);
-        PlausisResults results = PlausiContainer.buildPlausis(rpcData);
-        if (!results.isAllPlausiOk()) {
-            Gson gson = new GsonBuilder().setPrettyPrinting()
-                    .registerTypeAdapter(Montant.class, new com.google.gson.JsonSerializer<Montant>() {
+        try {
+        PlausisResults results = new PlausiContainer(rpcData.getAnnonce().getDecisions().get(0).getValidFrom()).buildPlausis(rpcData);
 
-                        @Override
-                        public JsonElement serialize(Montant src, Type typeOfSrc, JsonSerializationContext context) {
-                            return new JsonPrimitive(src.getValueDouble());
-                        }
-                    }).create();
-            LOG.error(rpcData.description());
-            for (Entry<PlausiResult, Boolean> entry : results.filtrePlausiKo().getPlausis().entrySet()) {
-                LOG.error(entry.getKey().getPlausi().getID() + " " + entry.getKey().getPlausi().getReferance() + " "
-                        + entry.getKey().getPlausi().getType());
-                LOG.error(gson.toJson(entry.getKey()));
+            if (!results.isAllPlausiOk()) {
+                Gson gson = new GsonBuilder().setPrettyPrinting()
+                        .registerTypeAdapter(Montant.class, new com.google.gson.JsonSerializer<Montant>() {
+    
+                            @Override
+                            public JsonElement serialize(Montant src, Type typeOfSrc, JsonSerializationContext context) {
+                                return new JsonPrimitive(src.getValueDouble());
+                            }
+                        }).create();
+                LOG.error(rpcData.description());
+                for (Entry<PlausiResult, Boolean> entry : results.filtrePlausiKo().getPlausis().entrySet()) {
+                    LOG.error(entry.getKey().getPlausi().getID() + " " + entry.getKey().getPlausi().getReferance() + " "
+                            + entry.getKey().getPlausi().getType());
+                    LOG.error(gson.toJson(entry.getKey()));
+                }
             }
+        } catch (Exception e) {
+            throw new RpcTechnicalException(e.getMessage(), e);
         }
         File file;
         try {

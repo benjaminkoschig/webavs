@@ -47,6 +47,7 @@ import ch.globaz.pegasus.business.exceptions.models.demande.DemandeException;
 import ch.globaz.pegasus.business.exceptions.models.pcaccordee.AllocationDeNoelException;
 import ch.globaz.pegasus.business.exceptions.models.pcaccordee.PCAccordeeException;
 import ch.globaz.pegasus.business.exceptions.models.pcaccordee.PersonneDansPlanCalculException;
+import ch.globaz.pegasus.business.exceptions.models.variablemetier.VariableMetierException;
 import ch.globaz.pegasus.business.models.decision.CopiesDecision;
 import ch.globaz.pegasus.business.models.decision.CopiesDecisionSearch;
 import ch.globaz.pegasus.business.models.decision.DecisionApresCalcul;
@@ -938,8 +939,10 @@ public class PCDecisionApresCalculViewBean extends BJadePersistentObjectViewBean
      * Methode de test des plausi
      * 
      * @throws JadeApplicationServiceNotAvailableException
+     * @throws JadePersistenceException 
+     * @throws VariableMetierException 
      */
-    public void checkPlausi(String... idDecision) throws JadeApplicationServiceNotAvailableException {
+    public void checkPlausi(String... idDecision) throws JadeApplicationServiceNotAvailableException, VariableMetierException, JadePersistenceException {
         PegasusServiceLocator.getRpcService().testPlausiForDecision(idDecision);
     }
 

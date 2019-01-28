@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
+import org.apache.commons.lang.StringUtils;
 import ch.globaz.pegasus.rpc.business.models.RPCDecionsPriseDansLeMois;
 
 /**
@@ -57,7 +58,7 @@ class RpcDatasFilter {
         Map<String, TreeMap<String, List<RPCDecionsPriseDansLeMois>>> map = new HashMap<String, TreeMap<String, List<RPCDecionsPriseDansLeMois>>>();
         for (RPCDecionsPriseDansLeMois decision : decisionsFiltre) {
             String key = decision.getIdDemande();
-            String idVersionDroit = decision.getSimpleVersionDroit().getNoVersion()+decision.getSimpleVersionDroit().getIdVersionDroit();
+            String idVersionDroit = StringUtils.leftPad(decision.getSimpleVersionDroit().getNoVersion(),3,'0')+decision.getSimpleVersionDroit().getIdVersionDroit();
             if (!map.containsKey(key)) {
                 map.put(key, new TreeMap<String, List<RPCDecionsPriseDansLeMois>>(newComparatorNoVersion()));
             }

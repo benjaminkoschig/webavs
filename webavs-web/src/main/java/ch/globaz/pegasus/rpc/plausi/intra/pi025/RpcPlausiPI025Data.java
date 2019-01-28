@@ -50,7 +50,7 @@ class RpcPlausiPI025Data extends RpcPlausiHeader {
                 besoinsVitaux = besoinsVitaux.add(par3);
                 break;
             case PAR4:
-                besoinsVitaux = besoinsVitaux.add(par4);
+                // enfant requérant compris dans nbTotalEnfants
                 break;
             case PAR0:
             default:

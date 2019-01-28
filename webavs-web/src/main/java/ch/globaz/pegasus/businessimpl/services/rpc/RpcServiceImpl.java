@@ -2,6 +2,8 @@ package ch.globaz.pegasus.businessimpl.services.rpc;
 
 import globaz.globall.db.BSessionUtil;
 import globaz.jade.context.JadeThread;
+import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import java.lang.reflect.Type;
 import java.util.HashSet;
 import java.util.Map.Entry;
@@ -15,6 +17,7 @@ import com.google.gson.JsonSerializationContext;
 import java.util.Set;
 import ch.globaz.common.domaine.Montant;
 import ch.globaz.common.exceptions.ValidationException;
+import ch.globaz.pegasus.business.exceptions.models.variablemetier.VariableMetierException;
 import ch.globaz.pegasus.business.services.rpc.RpcService;
 import ch.globaz.pegasus.rpc.businessImpl.converter.RpcBusinessException;
 import ch.globaz.pegasus.rpc.businessImpl.repositoriesjade.loader.RpcDataLoader;
@@ -54,13 +57,14 @@ public class RpcServiceImpl implements RpcService {
     }
 
     @Override
-    public void testPlausiForDecision(String... idDecision) {
+    public void testPlausiForDecision(String... idDecision) throws VariableMetierException, JadeApplicationServiceNotAvailableException, JadePersistenceException {
         RpcDataLoader loader = new RpcDataLoader();
         RpcData rpcData = loader.loadByIdDecision(idDecision);
         Set<RpcPlausiCategory> inCategory = new HashSet<RpcPlausiCategory>();
         inCategory.add(RpcPlausiCategory.BLOCKING);
         inCategory.add(RpcPlausiCategory.ERROR);
-        PlausisResults results = PlausiContainer.buildPlausisInCategory(rpcData, inCategory, true);
+        PlausiContainer plausis = new PlausiContainer((rpcData.getAnnonce().getDecisions().get(0).getValidFrom()));
+        PlausisResults results = plausis.buildPlausisInCategory(rpcData, inCategory, true);
         if (!results.isAllPlausiOk()) {
 
             for (Entry<PlausiResult, Boolean> entry : results.filtrePlausiKo().getPlausis().entrySet()) {

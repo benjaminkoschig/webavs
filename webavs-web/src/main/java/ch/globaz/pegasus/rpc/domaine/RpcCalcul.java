@@ -126,7 +126,6 @@ public class RpcCalcul {
         // 8690.7179.41 getRevenusImposableFortuneTotal
         // getRevenusInteretTitre
         return divideByTwoIfCoupleSepare(sum);
-        // return (sum);
     }
 
     /**
@@ -134,7 +133,6 @@ public class RpcCalcul {
      */
     public Montant getRevenusDeLaFortunePrisEnCompte() {
         return divideByTwoIfCoupleSepare(calcul.getRevenusImposableFortuneTotal());
-        // return (calcul.getRevenusImposableFortuneTotal());
     }
 
     /**
@@ -198,6 +196,9 @@ public class RpcCalcul {
      */
     public Montant getRevenusFortuneImmobiliere() {
         Montant sum = calcul.getRevenusLoyerSousLocationNet();
+        if(sum.isZero()) {
+            sum = sum.add(calcul.getRevenusLoyerSousLocation());
+        }
         sum = sum.add(calcul.getRevenusRevenusLocations());
         sum = sum.add(calcul.getRevenusBiensImmoNonHabitable());
 
@@ -268,7 +269,28 @@ public class RpcCalcul {
      * FC22
      */
     public Montant getDepensesLoyerValeurLocativeAppHabite() {
-        return calcul.getDepensesLoyerValeurLocativeAppHabite();
+        if(getValeurImmeubleHabitation().isZero() || calcul.isHomeDroitHabitation()) {
+            return Montant.ZERO; 
+        } else {
+            return calcul.getRevenuValeurLocativeAppHabite();
+        }
+    }
+    
+    
+    /**
+     * FC23
+     */
+    public Montant getUsufruit() {
+        
+        if(!calcul.isHomeDroitHabitation()) {
+            Montant usuFruit = divideByTwoIfCoupleSepare(calcul.getRevenuDroitHabitation());
+            if(getValeurImmeubleHabitation().isZero()) {
+                return usuFruit.add(calcul.getRevenuValeurLocativeAppHabite());
+            }
+            return usuFruit;
+        }
+        return Montant.ZERO; 
+        
     }
 
     /**
@@ -303,7 +325,7 @@ public class RpcCalcul {
     public Montant getLoyerMaximum() {
         Montant plafondFed = getPlafondFederal();
         try {
-            if (!PCApplicationUtil.isCantonVD() && plafondFed != null && plafondFed.greater(Montant.ZERO)) {
+            if (!PCApplicationUtil.isCantonVD() && !PCApplicationUtil.isCantonVS()  && plafondFed != null && plafondFed.greater(Montant.ZERO)) {
                 return plafondFed;
             }
         } catch (CalculException e) {

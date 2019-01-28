@@ -28,11 +28,14 @@ public class AnnonceDecision {
     protected AnnonceCalculationElements calculationElements;
     protected List<AnnoncePerson> persons;
     protected AnnoncePerson personRequerant;
+    protected AnnoncePerson personRepresentative;
 
     protected BigInteger decisionKind;
     protected BigInteger decisionCause;
     protected Date validTo;
     protected String decisionIdPartnerDecision;
+    
+    protected Boolean coupleSepare;
 
     protected RpcDecisionAnnonceComplete annonce;
 
@@ -53,7 +56,7 @@ public class AnnonceDecision {
         decisionKind = ConverterDecisionKind.convert(decision.getType(), decision.getMotif(), etatCalculFederal);
         // null pour les annonces partielles
         if (annonce.getVersionDroit() != null) {
-            decisionCause = ConverterDecisionCause.convert(annonce.getVersionDroit());
+            decisionCause = ConverterDecisionCause.convert(annonce.getVersionDroit(), decision);
         }
         if (annonce.hasDateFin()) {
             validTo = decision.getDateFin();
@@ -70,6 +73,7 @@ public class AnnonceDecision {
         if (annonce.hasPartner()) {
             decisionIdPartnerDecision = annonce.getDecisionIdPartner();
         }
+        coupleSepare = decision.getType().isRefusSansCalcul() ? false : annonce.getRpcCalcul().isCoupleSepare();
 
     }
 
@@ -91,6 +95,10 @@ public class AnnonceDecision {
 
             if (personData.equals(requerantData)) {
                 personRequerant = person;
+            }
+            
+            if(person.getRepresentative()) {
+                personRepresentative = person;
             }
 
             persons.add(person);
@@ -298,6 +306,23 @@ public class AnnonceDecision {
 
         return sum.arrondiAUnIntierSupperior();
     }
+    
+    public Montant getSumavsAipensionNotChild() {
+        Montant sum = Montant.ZERO_ANNUEL;
+
+        for (AnnoncePerson person : persons) {
+            AnnoncePensionCategory pensionCategory = person.getPersonalCalculationElements().getPensionCategory();
+
+            if (!RoleMembreFamille.ENFANT.equals(person.getPersonData().getMembreFamille().getRoleMembreFamille())
+                    && pensionCategory != null && pensionCategory.getPension() != null
+                    && pensionCategory.getPension().getAvsAipension() != null) {
+                sum = sum.add(
+                        person.getPersonalCalculationElements().getPensionCategory().getPension().getAvsAipension());
+            }
+        }
+
+        return sum.arrondiAUnIntierSupperior();
+    }
 
     public Montant getSumRenteIj() {
         Montant sum = Montant.ZERO_ANNUEL;
@@ -314,12 +339,42 @@ public class AnnonceDecision {
 
         return sum;
     }
+    
+    public Montant getSumRenteIjNotChild() {
+        Montant sum = Montant.ZERO_ANNUEL;
+
+        for (AnnoncePerson person : persons) {
+            AnnoncePensionCategory pensionCategory = person.getPersonalCalculationElements().getPensionCategory();
+
+            if (!RoleMembreFamille.ENFANT.equals(person.getPersonData().getMembreFamille().getRoleMembreFamille())
+                    && pensionCategory != null && pensionCategory.getPension() != null
+                    && pensionCategory.getPension().getDailyAllowance() != null) {
+                sum = sum.add(
+                        person.getPersonalCalculationElements().getPensionCategory().getPension().getDailyAllowance());
+            }
+        }
+
+        return sum;
+    }
 
     public Montant getSumTotalRentes() {
         Montant sum = Montant.ZERO_ANNUEL;
 
         for (AnnoncePerson person : persons) {
             if (person.getPersonalCalculationElements().getTotalPension() != null) {
+                sum = sum.add(person.getPersonalCalculationElements().getTotalPension());
+            }
+        }
+
+        return sum.arrondiAUnIntier();
+    }
+    
+    public Montant getSumTotalRentesNotChild() {
+        Montant sum = Montant.ZERO_ANNUEL;
+
+        for (AnnoncePerson person : persons) {
+            if (!RoleMembreFamille.ENFANT.equals(person.getPersonData().getMembreFamille().getRoleMembreFamille())
+                    && person.getPersonalCalculationElements().getTotalPension() != null) {
                 sum = sum.add(person.getPersonalCalculationElements().getTotalPension());
             }
         }
@@ -352,7 +407,7 @@ public class AnnonceDecision {
 
         return sum.arrondiAUnIntier();
     }
-
+    
     public Montant getSumResidencePatientContribution() {
         Montant sum = Montant.ZERO_ANNUEL;
 
@@ -387,6 +442,19 @@ public class AnnonceDecision {
 
         for (AnnoncePerson person : persons) {
             if (person.getPersonalCalculationElements().getOtherIncomes() != null) {
+                sum = sum.add(person.getPersonalCalculationElements().getOtherIncomes());
+            }
+        }
+
+        return sum.arrondiAUnIntierSupperior();
+    }
+    
+    public Montant getSumAutresRevenusNotChild() {
+        Montant sum = Montant.ZERO_ANNUEL;
+
+        for (AnnoncePerson person : persons) {
+            if (!RoleMembreFamille.ENFANT.equals(person.getPersonData().getMembreFamille().getRoleMembreFamille())
+                    && person.getPersonalCalculationElements().getOtherIncomes() != null) {
                 sum = sum.add(person.getPersonalCalculationElements().getOtherIncomes());
             }
         }
@@ -462,5 +530,18 @@ public class AnnonceDecision {
 
         return sum;
     }
+    
+    public Boolean getCoupleSepare() {
+        return coupleSepare;
+    }
+
+    public void setCoupleSepare(Boolean coupleSepare) {
+        this.coupleSepare = coupleSepare;
+    }
+
+    public AnnoncePerson getPersonRepresentative() {
+        return personRepresentative;
+    }
+
 
 }

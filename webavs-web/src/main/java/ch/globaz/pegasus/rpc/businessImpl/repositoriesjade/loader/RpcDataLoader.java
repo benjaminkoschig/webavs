@@ -22,6 +22,7 @@ import ch.globaz.common.persistence.RepositoryJade;
 import ch.globaz.common.properties.PropertiesException;
 import ch.globaz.jade.JadeBusinessServiceLocator;
 import ch.globaz.pegasus.business.constantes.EPCProperties;
+import ch.globaz.pegasus.business.constantes.IPCDecision;
 import ch.globaz.pegasus.business.constantes.IPCDemandes;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.DonneesFinancieresContainer;
 import ch.globaz.pegasus.business.domaine.droit.EtatDroit;
@@ -260,7 +261,7 @@ public class RpcDataLoader {
         
         List<RPCDecionsPriseDansLeMois> pcaHistorisee = loadPcaHistorise(idsVersionDroitNotIn, dateMoisAnnoncesPrise);
         decionsPriseDansLeMois.addAll(pcaHistorisee);
-        LOG.info("Nb pca historisee : {}", pcaHistorisee.size());
+        LOG.info("Nb pca historisee loaded: {}", pcaHistorisee.size());
 
         List<RPCDecionsPriseDansLeMois> currentPca = loadPcaCourante(idsVersionDroitNotIn, dateMoisAnnoncesPrise);
 
@@ -517,7 +518,8 @@ public class RpcDataLoader {
             retourSearch.setForIdLot(lots.get(0).getId());
             List<RetourAnnonce> retoursEnErreur = RepositoryJade.searchForAndFetch(retourSearch, limitSize);
             for (RetourAnnonce enErreur : retoursEnErreur) {
-                if(ANNONCE_POUR_ENVOIE.equals(enErreur.getSimpleAnnonce().getCsEtat())) {
+                if(ANNONCE_POUR_ENVOIE.equals(enErreur.getSimpleAnnonce().getCsEtat())
+                        && isDecisionAvecFin(enErreur)) {
                     decisionsEnErreur.add(enErreur.getSimpleDecisionHeader().getIdDecisionHeader());
                 }
             }
@@ -535,6 +537,12 @@ public class RpcDataLoader {
             }
         }
         return new ArrayList<RPCDecionsPriseDansLeMois>();
+    }
+
+    private boolean isDecisionAvecFin(RetourAnnonce enErreur) {
+        return IPCDecision.CS_TYPE_SUPPRESSION_SC.equals(enErreur.getSimpleDecisionHeader().getCsTypeDecision())
+        || IPCDecision.CS_TYPE_REFUS_AC.equals(enErreur.getSimpleDecisionHeader().getCsTypeDecision())
+        || IPCDecision.CS_TYPE_REFUS_SC.equals(enErreur.getSimpleDecisionHeader().getCsTypeDecision());
     }
 
     private List<DecisionRefus> loadDecisionsRefus(Date dateDernierPaiement) {
@@ -599,6 +607,11 @@ public class RpcDataLoader {
         return RepositoryJade.searchForAndFetch(search, limitSize);
     }
     
+    
+    /*
+     * Récupère les pca historisées date mois-1 et mois-2 qui ont été cloturées au cours du mois 
+     *  
+     */
     private List<RPCDecionsPriseDansLeMois> loadPcaHistorise(Set<String> idsVersionDroitNotIn,  Date dateGeneration) {
         RPCDecionsPriseDansLeMoisSearch search = new RPCDecionsPriseDansLeMoisSearch();
         search.setWhereKey("pcaHistorisee");
@@ -658,4 +671,8 @@ public class RpcDataLoader {
         return RepositoryJade.searchForAndFetch(search, limitSize);
     }
 
+    public Date getDateMoisAnnoncesPrise() {
+        return dateMoisAnnoncesPrise;
+    }
+    
 }

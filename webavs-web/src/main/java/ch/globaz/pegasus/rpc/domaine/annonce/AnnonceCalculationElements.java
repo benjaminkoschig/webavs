@@ -50,7 +50,6 @@ public class AnnonceCalculationElements {
         wealthDeductible = annonce.getRpcCalcul().getFranchiseSurFortune();
         wealthConsidered = annonce.getRpcCalcul().getFortuneAPrendreEnCompte();
         wealthIncome = annonce.getRpcCalcul().getRevenusDeLaFortune();
-        usufructIncome = annonce.getPersonsElementsCalcul().sumUsufructIncome();
         wealthIncomeConsidered = annonce.getRpcCalcul().getRevenusDeLaFortunePrisEnCompte();
         incomeConsideredTotal = annonce.getRpcCalcul().getRevenusTotalAPrendreEnCompte();
         wealthIncomeRate = BigDecimal.valueOf(annonce.getRpcCalcul().getPartDesRevenusdeLaFortunePrisEnCompte());
@@ -66,11 +65,8 @@ public class AnnonceCalculationElements {
          
         selfInhabitedProperty = setZeroIfNull(annonce.getRpcCalcul().getValeurImmeubleHabitation());
         selfInhabitedPropertyDeductible = setZeroIfNull(annonce.getRpcCalcul().getFranchiseImmeubleHabitation());
-        if(setZeroIfNull(annonce.getRpcCalcul().getRevenusActiviteLucrativeIndependanteAgricole()).isZero()) {
-            rentalValue = setZeroIfNull(annonce.getPersonsElementsCalcul().sumValeurLocativeProprietaire());
-        } else {
-            rentalValue = Montant.ZERO ;
-        }
+        usufructIncome = setZeroIfNull(annonce.getRpcCalcul().getUsufruit());
+        rentalValue = setZeroIfNull(annonce.getRpcCalcul().getDepensesLoyerValeurLocativeAppHabite());
         
         grossRental = setZeroIfNull(annonce.getRpcCalcul().getLoyerBrutEnCompte());
         rentCategory = annonce.getMembresFamilleWithDonneesFinanciere().isLoyerValeurLocative() ? XSD_RENTCATEGORY_RENTAL_VALUE
@@ -98,16 +94,6 @@ public class AnnonceCalculationElements {
             rent = false;
         }
         
-//        if (annonce.hasImmobilier() || annonce.hasInteretsHypotecaire() || annonce.hasDettesHypotecaire()) {
-//            realProperty = new AnnonceRealProperty(annonce);
-//        }
-//        if (annonce.isProrietaire() || annonce.isConjointProprietaire()) {
-//            housingOwner = new AnnonceHousingOwner(annonce);
-//        }
-//        if (annonce.hasLoyers()) {
-//            rents = new AnnonceRents(annonce);
-//        }
-
     }
     
     public Montant setZeroIfNull(Montant value) {
@@ -161,19 +147,7 @@ public class AnnonceCalculationElements {
     public int getChildren() {
         return children;
     }
-
-//    public AnnonceRealProperty getRealProperty() {
-//        return realProperty;
-//    }
-//
-//    public AnnonceHousingOwner getHousingOwner() {
-//        return housingOwner;
-//    }
-//
-//    public AnnonceRents getRents() {
-//        return rents;
-//    }
-    
+   
     public Montant getSelfInhabitedProperty() {
         return selfInhabitedProperty;
     }

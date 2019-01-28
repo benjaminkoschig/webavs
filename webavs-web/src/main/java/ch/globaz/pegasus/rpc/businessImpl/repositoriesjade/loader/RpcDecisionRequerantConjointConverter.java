@@ -106,7 +106,7 @@ class RpcDecisionRequerantConjointConverter {
                     }
                 }
                 personsElementsCalculs =  convertToPersonElementsCalcul(membresFam, dateDebut,
-                        membreChoisi.getRoleMembreFamille(), true, tauxChangeRentesEtrangere);
+                        membreChoisi.getRoleMembreFamille(), true, false, tauxChangeRentesEtrangere);
             } else {
                 personsElementsCalculs  = convertToPersonElementsCalcul(membresFam, dateDebut,
                         tauxChangeRentesEtrangere);
@@ -156,10 +156,13 @@ class RpcDecisionRequerantConjointConverter {
                 PcaDecision pcaDecisionC = converToPcaDecision(modelC);
                 pcaDecisionC.getPca().setCalcul(calculC);
                 RpcCalcul rpcCalculC = new RpcCalcul(calculC, true);
+                
+                boolean isRequerantHome = pcaDecisionR.getPca().getGenre().isHome();
+                boolean isConjointHome = pcaDecisionC.getPca().getGenre().isHome();
                 PersonsElementsCalcul personsElementsCalculsR = convertToPersonElementsCalcul(membresFam, dateDebut,
-                        RoleMembreFamille.REQUERANT, true, tauxChangeRentesEtrangere);
+                        RoleMembreFamille.REQUERANT, true, isRequerantHome, tauxChangeRentesEtrangere);
                 PersonsElementsCalcul personsElementsCalculsC = convertToPersonElementsCalcul(membresFam, dateDebut,
-                        RoleMembreFamille.CONJOINT, true, tauxChangeRentesEtrangere);
+                        RoleMembreFamille.CONJOINT, true, isConjointHome, tauxChangeRentesEtrangere);
 
                 RpcUtil.suffixDecisionId(pcaDecisionR.getDecision(), pcaDecisionC.getDecision());
 
@@ -178,13 +181,13 @@ class RpcDecisionRequerantConjointConverter {
     private PersonsElementsCalcul convertToPersonElementsCalcul(
             List<MembreFamilleWithDonneesFinanciere> membresFamilleWithDonneesFinanciere, Date dateDebut,
             TupleDonneeRapport tauxChangeRentesEtrangere) {
-        return this.convertToPersonElementsCalcul(membresFamilleWithDonneesFinanciere, dateDebut, null, false,
+        return this.convertToPersonElementsCalcul(membresFamilleWithDonneesFinanciere, dateDebut, null, false, false,
                 tauxChangeRentesEtrangere);
     }
 
     private PersonsElementsCalcul convertToPersonElementsCalcul(
             List<MembreFamilleWithDonneesFinanciere> membresFamilleWithDonneesFinanciere, Date dateDebut,
-            RoleMembreFamille roleMembreFamille, boolean isCoupleSepare, TupleDonneeRapport tauxChangeRentesEtrangere) {
+            RoleMembreFamille roleMembreFamille, boolean isCoupleSepare, boolean isHome, TupleDonneeRapport tauxChangeRentesEtrangere) {
         List<PersonElementsCalcul> personsElementsCalculs = new ArrayList<PersonElementsCalcul>();
         Parameters para = parameters.filtreByPeriode(dateDebut);
         boolean isCantonValais;
@@ -201,11 +204,16 @@ class RpcDecisionRequerantConjointConverter {
         List<MembreFamilleWithDonneesFinanciere> membresFam = membresFamilleWithDonneesFinanciere;
 
         if (isCoupleSepare) {
+            List<MembreFamilleWithDonneesFinanciere> membresFamNew = new ArrayList<>();
             for (MembreFamilleWithDonneesFinanciere membreFamilleWithDonneesFinanciere : membresFamilleWithDonneesFinanciere) {
-                if (membreFamilleWithDonneesFinanciere.getRoleMembreFamille().equals(roleMembreFamille)) {
-                    membresFam = new ArrayList<MembreFamilleWithDonneesFinanciere>();
-                    membresFam.add(membreFamilleWithDonneesFinanciere);
+                // ajout de l enfant si pas en HOME
+                if (membreFamilleWithDonneesFinanciere.getRoleMembreFamille().equals(roleMembreFamille)
+                        || (!isHome && RoleMembreFamille.ENFANT.equals(membreFamilleWithDonneesFinanciere.getRoleMembreFamille()))) {
+                    membresFamNew.add(membreFamilleWithDonneesFinanciere);
                 }
+            }
+            if(!membresFamNew.isEmpty()) {
+                membresFam = membresFamNew;
             }
         }
 

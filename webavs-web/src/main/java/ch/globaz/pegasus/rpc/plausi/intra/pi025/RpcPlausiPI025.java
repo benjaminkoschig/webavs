@@ -3,6 +3,7 @@ package ch.globaz.pegasus.rpc.plausi.intra.pi025;
 import java.util.ArrayList;
 import java.util.List;
 import ch.globaz.common.domaine.Montant;
+import ch.globaz.pegasus.business.models.variablemetier.SimpleVariableMetierSearch;
 import ch.globaz.pegasus.rpc.domaine.RpcVitalNeedsCategory;
 import ch.globaz.pegasus.rpc.domaine.annonce.AnnonceCase;
 import ch.globaz.pegasus.rpc.domaine.annonce.AnnonceDecision;
@@ -21,6 +22,8 @@ public class RpcPlausiPI025 implements RpcPlausiMetier<RpcPlausiPI025Data> {
     private Montant par4;
     private Montant par5;
     private Montant par6;
+    
+    SimpleVariableMetierSearch variablesMetier;
 
     public RpcPlausiPI025(Montant par1, Montant par2, Montant par3, Montant par4, Montant par5, Montant par6) {
         this.par1 = par1;
@@ -29,6 +32,7 @@ public class RpcPlausiPI025 implements RpcPlausiMetier<RpcPlausiPI025Data> {
         this.par4 = par4;
         this.par5 = par5;
         this.par6 = par6;
+        
     }
 
     @Override
@@ -43,13 +47,17 @@ public class RpcPlausiPI025 implements RpcPlausiMetier<RpcPlausiPI025Data> {
         dataPlausi.idPca = decision.getPcaDecisionId();
         dataPlausi.FC33 = decision.getVitalNeeds();
         dataPlausi.isDomicile = decision.getPersons().get(0).getHousingMode().isDomicile();
-        dataPlausi.nbTotalEnfants = decision.getChildren();
+        //dataPlausi.nbTotalEnfants = decision.getChildren();
+        dataPlausi.nbTotalEnfants = 0;
         for (AnnoncePerson person : decision.getPersons()) {
             resolvePar(person.getVitalNeedsCategory(), dataPlausi);
+            if(person.getVitalNeedsCategory().isChild()) {
+                dataPlausi.nbTotalEnfants++;
+            }
         }
         return dataPlausi;
     }
-
+    
     private void resolvePar(RpcVitalNeedsCategory category, RpcPlausiPI025Data dataPlausi) {
 
         if (category.isNoNeed()) {
@@ -71,7 +79,7 @@ public class RpcPlausiPI025 implements RpcPlausiMetier<RpcPlausiPI025Data> {
         }
 
     }
-
+    
     @Override
     public RpcPlausiType getType() {
         return RpcPlausiType.INTRA;

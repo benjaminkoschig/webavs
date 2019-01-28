@@ -113,8 +113,14 @@ public class RpcDatasListConverter implements Iterator<RpcDataConverter>, Iterab
         for (RPCDecionsPriseDansLeMois model : entry.getValue()) {
             if (!map.containsKey(model.keyForGroup())) {
                 map.put(model.keyForGroup(), new ArrayList<RPCDecionsPriseDansLeMois>());
+                map.get(model.keyForGroup()).add(model);
+            } else if(isSameRequerant(map.get(model.keyForGroup()).get(0), model)) {
+                // 2 pca pour la même personne sur une même version de droit ? A voir avec les retenues/bloquantes 
+                map.put(model.keyForGroup()+"_2", new ArrayList<RPCDecionsPriseDansLeMois>());
+                map.get(model.keyForGroup()+"_2").add(model);
+            } else {
+                map.get(model.keyForGroup()).add(model);
             }
-            map.get(model.keyForGroup()).add(model);
         }
         
         RpcData annonceData = null;
@@ -135,6 +141,12 @@ public class RpcDatasListConverter implements Iterator<RpcDataConverter>, Iterab
         }
         RpcDataDecisionFilter.filtre(annonceData);
         return annonceData;
+    }
+    
+    private boolean isSameRequerant(RPCDecionsPriseDansLeMois model1, RPCDecionsPriseDansLeMois model2) {
+        return model1.getNssTiersBeneficiaire().equals(model2.getNssTiersBeneficiaire())
+        && model1.getIdTiersRequerant().equals(model2.getIdTiersRequerant())
+        && model1.getSimplePCAccordee().getCsRoleBeneficiaire().equals(model2.getSimplePCAccordee().getCsRoleBeneficiaire());
     }
 
     VersionDroit toVersionDroit(SimpleVersionDroit verDroit) {

@@ -18,7 +18,7 @@ public class RpcPlausiPI042 implements RpcPlausiMetier<RpcPlausiPI042Data> {
         dataPlausi.idPca = decision.getPcaDecisionId();
         dataPlausi.FC19 = decision.getGrossRental();
         dataPlausi.FC27 = decision.getRentGrossTotal();
-        dataPlausi.isDomicile = data.isRequerantDomicile();
+        dataPlausi.isDomicile = decision.getPersonRepresentative().getHousingMode().isDomicile();
 
         return dataPlausi;
     }

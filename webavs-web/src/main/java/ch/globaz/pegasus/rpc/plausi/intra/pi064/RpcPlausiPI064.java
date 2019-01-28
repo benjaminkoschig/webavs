@@ -32,13 +32,21 @@ public class RpcPlausiPI064 implements RpcPlausiMetier<RpcPlausiPI064Data> {
 
             for (AnnonceDecision deci : data.getDecisions()) {
                 if (pensionKind == 0) {
-                    pensionKind = deci.getPersonRequerant().getPensionKind();
+                    if(decision.getPersonRequerant() == null) {
+                        pensionKind = decision.getPersons().get(0).getPensionKind();
+                    } else {
+                        pensionKind = decision.getPersonRequerant().getPensionKind();
+                    }
                 }
                 dataPlausi.E6 = dataPlausi.E6.add(deci.getSumRevenuBruteActiviteLucrative());
                 dataPlausi.E28 = dataPlausi.E28.add(deci.getSumRevenuBrutHypothetique());
             }
         } else {
-            pensionKind = decision.getPersonRequerant().getPensionKind();
+            if(decision.getPersonRequerant() == null) {
+                pensionKind = decision.getPersons().get(0).getPensionKind();
+            } else {
+                pensionKind = decision.getPersonRequerant().getPensionKind();
+            }
             dataPlausi.E6 = decision.getSumRevenuBruteActiviteLucrative();
             dataPlausi.E28 = decision.getSumRevenuBrutHypothetique();
         }

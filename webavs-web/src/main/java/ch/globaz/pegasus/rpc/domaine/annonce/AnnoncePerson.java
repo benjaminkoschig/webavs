@@ -2,6 +2,7 @@ package ch.globaz.pegasus.rpc.domaine.annonce;
 
 import java.util.List;
 import ch.globaz.common.domaine.Montant;
+import ch.globaz.pegasus.business.domaine.membreFamille.RoleMembreFamille;
 import ch.globaz.pegasus.business.domaine.pca.PcaDecision;
 import ch.globaz.pegasus.business.domaine.pca.PcaGenre;
 import ch.globaz.pegasus.rpc.businessImpl.converter.ConverterMaritalStatus;
@@ -33,6 +34,7 @@ public class AnnoncePerson {
             PersonElementsCalcul requerantData) {
         personsElementsCalcul = annonce.getPersonsElementsCalcul();
         pcaDecision = annonce.getPcaDecision();
+        this.personData = personData;
         if (personData.isValidLegalAddress()) {
             legalAddress = new AnnonceAddress(personData, personData.getLegalAddress());
         }
@@ -42,7 +44,8 @@ public class AnnoncePerson {
         personalCalculationElements = new AnnoncePersonalCalculationElements(personData, requerantData, pcaDecision,
                 annonce.getRpcCalcul());
         vn = personData.getMembreFamille().getPersonne().getNss().formatInLong();
-        representative = annonce.getRpcCalcul().isCoupleSepare() ? true : personData.isMandataire();
+        representative = !RoleMembreFamille.ENFANT.equals(personData.getMembreFamille().getRoleMembreFamille());
+        representative = annonce.getRpcCalcul().isCoupleSepare() ? representative : personData.isMandataire();
         pensionKind = ConverterPensionKind.convert(personData.getTypeRenteCS());
         vitalNeedsCategory = annonce.resolveVitalNeedsCategory(personData, annonce.getDemande());
         maritalStatus = ConverterMaritalStatus.convert(personData.getSituationFamiliale());

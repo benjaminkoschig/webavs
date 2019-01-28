@@ -10,6 +10,7 @@ import ch.globaz.common.domaine.Montant;
 import ch.globaz.pegasus.business.constantes.donneesfinancieres.IPCIJAI;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.DonneeFinanciereType;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.DonneesFinancieresContainer;
+import ch.globaz.pegasus.business.domaine.donneeFinanciere.DonneesFinancieresListBase;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.Filtre;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.ProprieteType;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.api.avsAi.ApiAvsAi;
@@ -18,6 +19,7 @@ import ch.globaz.pegasus.business.domaine.donneeFinanciere.autreRente.AutreRente
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.autreRente.AutreRenteGenre;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.autreRente.AutresRentes;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.bienImmobilier.BienImmobilier;
+import ch.globaz.pegasus.business.domaine.donneeFinanciere.contratEntretienViager.ContratEntretienViager;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.iJAi.IjsAi;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.pensionAlimentaire.PensionAlimentaireType;
 import ch.globaz.pegasus.business.domaine.donneeFinanciere.renteAvsAi.RenteAvsAi;
@@ -120,12 +122,6 @@ public class PersonneElementsCalculConverter {
                 .add(dfFiltre.getPensionsAlimentaireByType(PensionAlimentaireType.VERSEE).sumDepense()));
         TaxeJournaliereHome taxeJournaliereHome = dfFiltre.getTaxesJournaliereHome().resolveCurrentTaxejournaliere();
         Montant entretienViager = Montant.ZERO;
-        if (isCoupleSepare) {
-            entretienViager = df.getContratsEntretienViager().filtreForMembreFamille(donneesFinanciere.getFamille())
-                    .sumRevenuAnnuel();
-        } else {
-            entretienViager = df.getContratsEntretienViager().sumRevenuAnnuel();
-        }
 
         if (taxeJournaliereHome != null) {
 
@@ -154,13 +150,36 @@ public class PersonneElementsCalculConverter {
             perElCal.setHomeParticipationAuxCoutDesPatients(Montant.ZERO_ANNUEL);
             perElCal.setHomeIsApiFacturee(typeChambrePrix.isApiFacturee());
 
-        } else {
+        } else {               
             perElCal.setHomeIsApiFacturee(false);
             perElCal.setHomeContributionLca(Montant.ZERO_ANNUEL);
             perElCal.setHomeTaxeHomeTotal(Montant.ZERO_ANNUEL);
             perElCal.setHomeTaxeHomePrisEnCompte(Montant.ZERO_ANNUEL);
             perElCal.setHomeDepensesPersonnelles(Montant.ZERO_ANNUEL);
             perElCal.setHomeParticipationAuxCoutDesPatients(Montant.ZERO_ANNUEL);
+        }
+        
+        // calcul pour le contrat entretien viager, repris du Plan de calcul (cf StrategieContratRenteViager)
+        boolean isHomeViager = false;
+        if (taxeJournaliereHome != null && 
+                perElCal.getHomeIsApiFacturee()) {
+            DonneesFinancieresListBase<ContratEntretienViager> contratEntretiens = df.getContratsEntretienViager().filtreForMembreFamille(donneesFinanciere.getFamille());
+                    
+            if(!contratEntretiens.isEmpty()) {
+                //ContratEntretienViager contrat = (ContratEntretienViager) contratEntretien.get(0);
+                String dateDebutViager = contratEntretiens.get(0).getDebut().getSwissMonthValue();
+                String dateDebutHome = taxeJournaliereHome.getDebut().getSwissMonthValue();
+                isHomeViager = dateDebutViager.equals(dateDebutHome);
+            }
+        }
+        
+        if(!isHomeViager) {
+            if (isCoupleSepare) {
+                entretienViager = df.getContratsEntretienViager().filtreForMembreFamille(donneesFinanciere.getFamille())
+                        .sumRevenuAnnuel();
+            } else {
+                entretienViager = df.getContratsEntretienViager().sumRevenuAnnuel();
+            }
         }
 
         // TODO Dessaisissement automatique et Dessaisissement fortune ????
@@ -187,13 +206,23 @@ public class PersonneElementsCalculConverter {
                 .filtreByProprieteType(ProprieteType.PROPRIETAIRE, ProprieteType.CO_PROPRIETAIRE)
                 .sumMontantValeurLocativePartProprieteEtCoPropiete());
         
-        usuIncome = df.getBiensImmobiliersServantHbitationPrincipale()
-                .filtreByProprieteType(ProprieteType.USUFRUITIER, ProprieteType.DROIT_HABITATION)
-                .sumMontantValeurLocativeDH_RPC();
-        
-        usuIncome = usuIncome.add(df.getBiensImmobiliersNonPrincipale()
-                .filtreByProprieteType(ProprieteType.USUFRUITIER, ProprieteType.DROIT_HABITATION)
-                .sumMontantValeurLocativeDH_RPC());
+        if (taxeJournaliereHome != null) {
+            usuIncome = df.getBiensImmobiliersServantHbitationPrincipale()
+                    .filtreByProprieteType(ProprieteType.USUFRUITIER)
+                    .sumMontantValeurLocativeDH_RPC();
+            
+            usuIncome = usuIncome.add(df.getBiensImmobiliersNonPrincipale()
+                    .filtreByProprieteType(ProprieteType.USUFRUITIER)
+                    .sumMontantValeurLocativeDH_RPC());
+        } else {
+            usuIncome = df.getBiensImmobiliersServantHbitationPrincipale()
+                    .filtreByProprieteType(ProprieteType.USUFRUITIER, ProprieteType.DROIT_HABITATION)
+                    .sumMontantValeurLocativeDH_RPC();
+            
+            usuIncome = usuIncome.add(df.getBiensImmobiliersNonPrincipale()
+                    .filtreByProprieteType(ProprieteType.USUFRUITIER, ProprieteType.DROIT_HABITATION)
+                    .sumMontantValeurLocativeDH_RPC());
+        }
     
         perElCal.setUsufructIncome(usuIncome);
         

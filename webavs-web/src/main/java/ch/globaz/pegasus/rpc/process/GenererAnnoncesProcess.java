@@ -2,7 +2,10 @@ package ch.globaz.pegasus.rpc.process;
 
 import globaz.globall.db.BSessionUtil;
 import globaz.jade.context.JadeThread;
+import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.job.common.JadeJobQueueNames;
+import globaz.jade.persistence.model.JadeAbstractSearchModel;
+import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,6 +19,9 @@ import ch.globaz.common.exceptions.ExceptionFormatter;
 import ch.globaz.common.exceptions.ValidationException;
 import ch.globaz.common.listoutput.SimpleOutputListBuilderJade;
 import ch.globaz.common.process.byitem.ProcessItemsHandlerJadeJob;
+import ch.globaz.pegasus.business.exceptions.models.variablemetier.VariableMetierException;
+import ch.globaz.pegasus.business.models.variablemetier.SimpleVariableMetierSearch;
+import ch.globaz.pegasus.businessimpl.services.PegasusImplServiceLocator;
 import ch.globaz.pegasus.businessimpl.services.rpc.RpcAnnonceGenerator;
 import ch.globaz.pegasus.rpc.businessImpl.converter.RpcBusinessException;
 import ch.globaz.pegasus.rpc.businessImpl.repositoriesjade.annonce.AnnonceRepositoryJade;
@@ -29,6 +35,7 @@ import ch.globaz.pegasus.rpc.domaine.LotAnnonce;
 import ch.globaz.pegasus.rpc.domaine.LotAnnonceRpc;
 import ch.globaz.pegasus.rpc.domaine.LotRpcWithNbAnnonces;
 import ch.globaz.pegasus.rpc.domaine.TypeLot;
+import ch.globaz.pegasus.rpc.plausi.core.PlausiContainer;
 
 public class GenererAnnoncesProcess extends ProcessItemsHandlerJadeJob<AnnonceItem> {
     private static final Logger LOG = LoggerFactory.getLogger(GenererAnnoncesProcess.class);
@@ -44,6 +51,7 @@ public class GenererAnnoncesProcess extends ProcessItemsHandlerJadeJob<AnnonceIt
     private final transient AnnonceRepositoryJade annonceRepo = new AnnonceRepositoryJade();
 
     private transient ToleranceDifferenceAnnonce toleranceAnnonces = new ToleranceDifferenceAnnonce();
+    private transient SimpleVariableMetierSearch variablesMetier;
 
     public GenererAnnoncesProcess() {
     }
@@ -118,10 +126,21 @@ public class GenererAnnoncesProcess extends ProcessItemsHandlerJadeJob<AnnonceIt
             if (!executionMode.isSimultate()) {
                 lotAnnonce = lotAnnonceRepository.create(lotAnnonce);
             }
+            
+            loadVariablesMetier(annonceDataLoader.getDateMoisAnnoncesPrise());
         } catch (Exception e) {
             throw new CommonTechnicalException(e);
         }
         addFormatersForException();
+        
+    }
+    
+    private void loadVariablesMetier(Date date) throws VariableMetierException, JadeApplicationServiceNotAvailableException, JadePersistenceException {
+        variablesMetier = new SimpleVariableMetierSearch();
+        variablesMetier.setWhereKey("withDateValable");
+        variablesMetier.setDefinedSearchSize(JadeAbstractSearchModel.SIZE_NOLIMIT);
+        variablesMetier.setForDateValable(date.getSwissMonthValue());
+        variablesMetier = PegasusImplServiceLocator.getSimpleVariableMetierService().search(variablesMetier);
     }
 
     private void cleanUpAnnoncesAndLots() {
@@ -145,8 +164,9 @@ public class GenererAnnoncesProcess extends ProcessItemsHandlerJadeJob<AnnonceIt
     @Override
     public List<AnnonceItem> resolveItems() {
         List<AnnonceItem> list = new ArrayList<AnnonceItem>();
+        PlausiContainer plausis = new PlausiContainer(variablesMetier);
         for (RpcDataConverter rpcDataConverter : rpcDatasConvertors) {
-            list.add(new AnnonceItem(rpcDataConverter, lotAnnonce, annoncesedexGenerator));
+            list.add(new AnnonceItem(rpcDataConverter, lotAnnonce, annoncesedexGenerator, plausis));
         }
         LOG.info("Nb annonce resolved: {}", list.size());
         annonces.addAll(list);
@@ -177,8 +197,8 @@ public class GenererAnnoncesProcess extends ProcessItemsHandlerJadeJob<AnnonceIt
                 protocol.setNombreSansCalcul(annonceItems.countAnnonce201());
                 LOG.info("Nb item 2469_201: {}", protocol.getNombreSansCalcul());
 
-                protocol.setNombreAnnulation(annonceItems.countAnnonce301());
-                LOG.info("Nb item 2469_301: {}", protocol.getNombreAnnulation());
+//                protocol.setNombreAnnulation(annonceItems.countAnnonce301());
+//                LOG.info("Nb item 2469_301: {}", protocol.getNombreAnnulation());
 
                 if (!executionMode.isSimultate()) {
                     annonceRepo.buildPKproviders(annonces.size(), annonceItems.getNbDecision());

@@ -42,6 +42,10 @@ public class VariablesMetier extends MapWithListSortedByDate<VariableMetierType,
     public VariablesMetier getForfaitCharge() {
         return getParameters(VariableMetierType.FORFAIT_CHARGES);
     }
+    
+    public VariablesMetier getTauxPensionNonReconnue() {
+        return getParameters(VariableMetierType.TAUX_PENSION_NON_RECONNUE);
+    }
 
     @Override
     public Class<VariablesMetier> getTypeClass() {
