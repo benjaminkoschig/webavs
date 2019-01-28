@@ -201,7 +201,7 @@ public class RpcData {
      * Décision de suppression prise dans ce mois
      */
     private boolean isMotifDeces() {
-        return ConverterDecisionCause.convert(getVersionDroit(), rpcDecisionRequerantConjoints.get(0).getRequerant().getDecision()).compareTo(BigInteger.valueOf(4)) == 0;
+        return ConverterDecisionCause.convert(getVersionDroit(), rpcDecisionRequerantConjoints.get(0).getRequerant().getDecision().getMotif()).compareTo(BigInteger.valueOf(4)) == 0;
     }
 
     /**

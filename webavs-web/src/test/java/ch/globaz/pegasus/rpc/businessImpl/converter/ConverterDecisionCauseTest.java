@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+import ch.globaz.pegasus.business.domaine.decision.MotifDecision;
 import ch.globaz.pegasus.business.domaine.droit.EtatDroit;
 import ch.globaz.pegasus.business.domaine.droit.MotifDroit;
 import ch.globaz.pegasus.business.domaine.droit.VersionDroit;
@@ -42,7 +43,7 @@ public class ConverterDecisionCauseTest {
     }
 
     private BigInteger convert(MotifDroit motifDroit) {
-        return ConverterDecisionCause.convert(new VersionDroit("0001", 2, EtatDroit.VALIDE, motifDroit));
+        return ConverterDecisionCause.convert(new VersionDroit("0001", 2, EtatDroit.VALIDE, motifDroit), MotifDecision.AUTRE);
     }
 
 }

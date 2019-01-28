@@ -56,7 +56,7 @@ public class AnnonceDecision {
         decisionKind = ConverterDecisionKind.convert(decision.getType(), decision.getMotif(), etatCalculFederal);
         // null pour les annonces partielles
         if (annonce.getVersionDroit() != null) {
-            decisionCause = ConverterDecisionCause.convert(annonce.getVersionDroit(), decision);
+            decisionCause = ConverterDecisionCause.convert(annonce.getVersionDroit(), decision.getMotif());
         }
         if (annonce.hasDateFin()) {
             validTo = decision.getDateFin();

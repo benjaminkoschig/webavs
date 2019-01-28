@@ -1,10 +1,12 @@
 package ch.globaz.pegasus.rpc.businessImpl.converter;
 
 import java.math.BigInteger;
+import ch.globaz.pegasus.business.domaine.decision.Decision;
+import ch.globaz.pegasus.business.domaine.decision.MotifDecision;
 import ch.globaz.pegasus.business.domaine.droit.VersionDroit;
 
 public class ConverterDecisionCause {
-    public static BigInteger convert(VersionDroit versionDroit) {
+    public static BigInteger convert(VersionDroit versionDroit, MotifDecision motif) {
         if (versionDroit.getNumero() == 1) {
             return toBigInt(1);
         } else if (versionDroit.getMotif() != null) {
@@ -20,11 +22,13 @@ public class ConverterDecisionCause {
                 case MODIFICATIONS_DIVERSES:
                 case MODIFICATION_RETOUR_REGISTRE:
                 case REPRISE:
-
-                    return toBigInt(2);
+                    if(MotifDecision.DECES.equals(motif)) {
+                        return toBigInt(4);
+                    } else {
+                        return toBigInt(2);
+                    }
                 case ADAPTATION:
                 case ADAPTATION_HOME:
-
                     return toBigInt(3);
                 case DECES:
                 case VEUVAGE:
@@ -40,7 +44,7 @@ public class ConverterDecisionCause {
         }
         throw new RpcBusinessException("pegasus.rpc.converter.decisionCause.introuvable", versionDroit);
     }
-
+    
     private static BigInteger toBigInt(int nb) {
         return BigInteger.valueOf(nb);
     }
