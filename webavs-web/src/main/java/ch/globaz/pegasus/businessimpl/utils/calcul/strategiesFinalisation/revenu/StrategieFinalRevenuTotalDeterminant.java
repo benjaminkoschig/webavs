@@ -13,6 +13,7 @@ import ch.globaz.pegasus.businessimpl.utils.calcul.TupleDonneeRapport;
 import ch.globaz.pegasus.businessimpl.utils.calcul.TypeRenteMap;
 import ch.globaz.pegasus.businessimpl.utils.calcul.containercalcul.ControlleurVariablesMetier;
 import ch.globaz.pegasus.businessimpl.utils.calcul.strategiesFinalisation.StrategieCalculFinalisation;
+import globaz.jade.client.util.JadeStringUtil;
 
 public class StrategieFinalRevenuTotalDeterminant implements StrategieCalculFinalisation {
 
@@ -141,7 +142,8 @@ public class StrategieFinalRevenuTotalDeterminant implements StrategieCalculFina
         // détermination de la fraction pour
         Float fractionFortune = null;
 
-        if(IPCRenteAvsAi.CS_TYPE_RENTE_13.equals(typeRenteRequerant)){
+        if(IPCRenteAvsAi.CS_TYPE_RENTE_13.equals(typeRenteRequerant) 
+                && !JadeStringUtil.isEmpty(donnee.getLegendeEnfant(IPCValeursPlanCalcul.CLE_REVEN_IMP_FORT_TOTAL))){
             String value = donnee.getLegendeEnfant(IPCValeursPlanCalcul.CLE_REVEN_IMP_FORT_TOTAL);
             legendeValue = value;
             if (value.contains("/")) {
