@@ -1,7 +1,5 @@
 package globaz.pavo.db.acl;
 
-import java.rmi.RemoteException;
-import java.util.List;
 import globaz.commons.nss.NSUtil;
 import globaz.commons.nss.db.NSSinfo;
 import globaz.commons.nss.db.NSSinfoManager;
@@ -26,6 +24,8 @@ import globaz.pavo.db.compte.CICompteIndividuelManager;
 import globaz.pavo.db.compte.CIExceptions;
 import globaz.pavo.util.CIUtil;
 import globaz.pyxis.constantes.IConstantes;
+import java.rmi.RemoteException;
+import java.util.List;
 
 /**
  * @author BJO Cette classe offre des services pour les annonces de collaborateurs (ACL - EBusiness)
@@ -48,7 +48,7 @@ public abstract class CIAnnonceCollaborateurService {
 
     /**
      * Détermine si un CI correspondant au nss existe dans la caisse et le retourne le cas échéant
-     *
+     * 
      * @param session
      * @param nss
      * @return le Ci si il existe dans la caisse
@@ -84,7 +84,7 @@ public abstract class CIAnnonceCollaborateurService {
 
     /**
      * Crée une CIException (permet de lier un assuré à un affilié pour le pré-remplissage de la DS de l'affilié)
-     *
+     * 
      * @param session
      * @param compteIndividuel
      * @param numeroAffilie
@@ -134,7 +134,7 @@ public abstract class CIAnnonceCollaborateurService {
 
     /**
      * Recherche dans la table NSSRA en fonction du nss
-     *
+     * 
      * @param session
      * @param nss
      * @return un objet de type NSSinfo
@@ -184,7 +184,7 @@ public abstract class CIAnnonceCollaborateurService {
     /**
      * Permet de générer un ARC (dans HERMES). Attention les Exceptions sont parfois traitées par HERMES et donc pas
      * remontées
-     *
+     * 
      * @param session
      * @param nss
      * @param numeroAffilie
@@ -239,7 +239,7 @@ public abstract class CIAnnonceCollaborateurService {
 
     /**
      * Renvoi l'affiliation associé à l'id
-     *
+     * 
      * @param idAffiliation
      * @return l'affiliation
      * @throws Exception
@@ -259,13 +259,12 @@ public abstract class CIAnnonceCollaborateurService {
 
     /**
      * Renvoi le compteIndividuel associé à l'id
-     *
+     * 
      * @param idCompteIndividuel
      * @return le compte individuel
      * @throws Exception
      */
-    private static CICompteIndividuel getCompteIndividuel(BSession session, String idCompteIndividuel)
-            throws Exception {
+    private static CICompteIndividuel getCompteIndividuel(BSession session, String idCompteIndividuel) throws Exception {
         // recherche du ci
         CICompteIndividuel compteIndividuel = new CICompteIndividuel();
         compteIndividuel.setSession(session);
@@ -280,7 +279,7 @@ public abstract class CIAnnonceCollaborateurService {
 
     /**
      * Retourne l'id de l'affilié en fonction de son numéro d'affilié
-     *
+     * 
      * @param session
      * @param numeroAffilie
      * @return L'id de l'affilié
@@ -315,7 +314,7 @@ public abstract class CIAnnonceCollaborateurService {
 
     /**
      * Permet d'obtenir une propriété de PAVO.properties
-     *
+     * 
      * @param propertyName
      * @return la valeur de la propriété
      * @throws Exception
@@ -333,7 +332,7 @@ public abstract class CIAnnonceCollaborateurService {
 
     /**
      * Retourne une session HERMES
-     *
+     * 
      * @param session
      * @return une session HERMES
      * @throws RemoteException
@@ -345,7 +344,7 @@ public abstract class CIAnnonceCollaborateurService {
 
     /**
      * Retourne une session PAVO
-     *
+     * 
      * @param session
      * @return une session PAVO
      * @throws RemoteException
@@ -357,7 +356,7 @@ public abstract class CIAnnonceCollaborateurService {
 
     /**
      * Imprime une attestation d'assurance et retourne le chemin du fichier généré
-     *
+     * 
      * @param sessionHermes
      * @param ciException
      * @return le chemin du fichier généré
@@ -435,7 +434,7 @@ public abstract class CIAnnonceCollaborateurService {
 
     /**
      * Détermine si il s'agit d'un numéro AVS à 13 chiffres
-     *
+     * 
      * @param nss
      * @return true si il s'agit d'un NAVS13
      * @throws Exception
@@ -456,7 +455,7 @@ public abstract class CIAnnonceCollaborateurService {
 
     /**
      * Permet de retourner le nom et prénom sépraré par une virgule dans un tableau : tab[0]=nom tab[1]=prenom
-     *
+     * 
      * @param nomPrenom
      * @return un tableau contenant le nom et le prénom
      * @throws Exception
@@ -471,7 +470,7 @@ public abstract class CIAnnonceCollaborateurService {
 
     /**
      * Vérifie si la centrale à répondu à l'ARC et crée une CIException si nécessaire
-     *
+     * 
      * @param transaction
      * @param idAnnonceCollaborateur
      * @param nss
@@ -508,11 +507,11 @@ public abstract class CIAnnonceCollaborateurService {
                 if ((arc != null) && arc.getStatut().equals(CIAnnonceCollaborateurService.ARC_STATUT_TERMINE)) {
                     resultAclContainer.setArcStatut(CIAnnonceCollaborateurService.ARC_STATUT_TERMINE);
                     // Regarder si la référence interne contient l'abréviation EX indiquant qu'il faut créer une CIEX
-                    if (arc.getChampEnregistrement()
-                            .contains(refInterne + CIAnnonceCollaborateurService.REFINTERNE_EXCEPTION)) {
+                    if (arc.getChampEnregistrement().contains(
+                            refInterne + CIAnnonceCollaborateurService.REFINTERNE_EXCEPTION)) {
                         // Recherche du CI
-                        CICompteIndividuel compteIndividuel = CIAnnonceCollaborateurService
-                                .CiNnssExist(transaction.getSession(), arc.getNumeroAVS());
+                        CICompteIndividuel compteIndividuel = CIAnnonceCollaborateurService.CiNnssExist(
+                                transaction.getSession(), arc.getNumeroAVS());
                         if (compteIndividuel == null) {
                             compteIndividuel = CIAnnonceCollaborateurService.CiNnssExist(transaction.getSession(), nss);
                         }
@@ -553,11 +552,11 @@ public abstract class CIAnnonceCollaborateurService {
 
                     // Regarder si la référence interne contient l'abréviation EX indiquant qu'il faut créer une CIEX
                     HEOutputAnnonceViewBean firstArc = (HEOutputAnnonceViewBean) heOutputArc.getFirstEntity();
-                    if (firstArc.getChampEnregistrement()
-                            .contains(refInterne + CIAnnonceCollaborateurService.REFINTERNE_EXCEPTION)) {
+                    if (firstArc.getChampEnregistrement().contains(
+                            refInterne + CIAnnonceCollaborateurService.REFINTERNE_EXCEPTION)) {
                         // Recherche du CI
-                        CICompteIndividuel compteIndividuel = CIAnnonceCollaborateurService
-                                .CiNnssExist(transaction.getSession(), firstArc.getNumeroAVS());
+                        CICompteIndividuel compteIndividuel = CIAnnonceCollaborateurService.CiNnssExist(
+                                transaction.getSession(), firstArc.getNumeroAVS());
                         if (compteIndividuel == null) {
                             compteIndividuel = CIAnnonceCollaborateurService.CiNnssExist(transaction.getSession(), nss);
                         }
@@ -583,7 +582,7 @@ public abstract class CIAnnonceCollaborateurService {
      * Détermine le motif de l'ARC et génère l'ARC (dans HERMES) Détermine si il faut générer une exception dans PAVO en
      * l'indiquant dans la référence interne de l'ARC (permet de lier un assuré à un affilié pour le pré-remplissage de
      * la DS de l'affilié)
-     *
+     * 
      * @param transaction
      * @param idAnnonceCollaborateur
      * @param nss
@@ -606,43 +605,48 @@ public abstract class CIAnnonceCollaborateurService {
 
             if (CIAnnonceCollaborateurService.isNavs13(nss)) {
                 if (duplicata.booleanValue()) {
-                    CICompteIndividuel compteIndividuel = CIAnnonceCollaborateurService
-                            .CiNnssExist(transaction.getSession(), nss);
+                    CICompteIndividuel compteIndividuel = CIAnnonceCollaborateurService.CiNnssExist(
+                            transaction.getSession(), nss);
                     if (compteIndividuel != null) {
-                        // arc motif = 33 + CIException
+                        // arc motif = 31 + CIException (S190124_003)
                         resultAclContainer.loadInfoFromCi(compteIndividuel, transaction.getSession());
-                        typeArc = CIAnnonceCollaborateurService.ARC_MOTIF_33 + " + Exception";
+                        typeArc = CIAnnonceCollaborateurService.ARC_MOTIF_31 + " + Exception";
                         CIAnnonceCollaborateurService.genererArc(transaction.getSession(), nss, numeroAffilie,
-                                dateEngagement, CIAnnonceCollaborateurService.ARC_MOTIF_33,
-                                refInterne + CIAnnonceCollaborateurService.REFINTERNE_EXCEPTION, noEmploye,
-                                noSuccursale);
+                                dateEngagement, CIAnnonceCollaborateurService.ARC_MOTIF_31, refInterne
+                                        + CIAnnonceCollaborateurService.REFINTERNE_EXCEPTION, noEmploye, noSuccursale);
                     } else {
                         NSSinfo nssInfo = CIAnnonceCollaborateurService.findInNssra(transaction.getSession(), nss);
                         if (nssInfo != null) {
                             resultAclContainer.loadInfoFromNssInfo(nssInfo, transaction.getSession());
                         }
-                        if ((nssInfo != null) && CIUtil.isRetraite(new JADate(nssInfo.getDateNaissance()),
-                                nssInfo.getSexe(), Integer.parseInt(JACalendar.todayJJsMMsAAAA().substring(6)))) {
-                            // arc motif = 67 + 33
+                        if ((nssInfo != null)
+                                && CIUtil.isRetraite(new JADate(nssInfo.getDateNaissance()), nssInfo.getSexe(),
+                                        Integer.parseInt(JACalendar.todayJJsMMsAAAA().substring(6)))) {
+                            // arc motif = 67 + 31 (S190124_003)
                             typeArc = CIAnnonceCollaborateurService.ARC_MOTIF_67 + " + "
-                                    + CIAnnonceCollaborateurService.ARC_MOTIF_33;
+                                    + CIAnnonceCollaborateurService.ARC_MOTIF_31;
                             CIAnnonceCollaborateurService.genererArc(transaction.getSession(), nss, numeroAffilie,
                                     dateEngagement, CIAnnonceCollaborateurService.ARC_MOTIF_67, refInterne, noEmploye,
                                     noSuccursale);
                             CIAnnonceCollaborateurService.genererArc(transaction.getSession(), nss, numeroAffilie,
-                                    dateEngagement, CIAnnonceCollaborateurService.ARC_MOTIF_33, refInterne, noEmploye,
+                                    dateEngagement, CIAnnonceCollaborateurService.ARC_MOTIF_31, refInterne, noEmploye,
                                     noSuccursale);
                         } else {
-                            // arc motif = 43 -> Remplacé par l'ARC 31 le 01.01.19
-                            typeArc = CIAnnonceCollaborateurService.ARC_MOTIF_31;
+                            // arc motif = 43 -> Remplacé par l'ARC 31 le 01.01.19 oui, mais il faut aussi l'ouverture
+                            // (S190124_003)
+                            typeArc = CIAnnonceCollaborateurService.ARC_MOTIF_61 + " + "
+                                    + CIAnnonceCollaborateurService.ARC_MOTIF_31;
+                            CIAnnonceCollaborateurService.genererArc(transaction.getSession(), nss, numeroAffilie,
+                                    dateEngagement, CIAnnonceCollaborateurService.ARC_MOTIF_61, refInterne, noEmploye,
+                                    noSuccursale);
                             CIAnnonceCollaborateurService.genererArc(transaction.getSession(), nss, numeroAffilie,
                                     dateEngagement, CIAnnonceCollaborateurService.ARC_MOTIF_31, refInterne, noEmploye,
                                     noSuccursale);
                         }
                     }
                 } else {
-                    CICompteIndividuel compteIndividuel = CIAnnonceCollaborateurService
-                            .CiNnssExist(transaction.getSession(), nss);
+                    CICompteIndividuel compteIndividuel = CIAnnonceCollaborateurService.CiNnssExist(
+                            transaction.getSession(), nss);
                     if (compteIndividuel != null) {
                         // CIException (si ouvert) ou arc motif = 65/67 (si
                         // cloturé)
@@ -676,8 +680,9 @@ public abstract class CIAnnonceCollaborateurService {
                         if (nssInfo != null) {
                             resultAclContainer.loadInfoFromNssInfo(nssInfo, transaction.getSession());
                         }
-                        if ((nssInfo != null) && CIUtil.isRetraite(new JADate(nssInfo.getDateNaissance()),
-                                nssInfo.getSexe(), Integer.parseInt(JACalendar.todayJJsMMsAAAA().substring(6)))) {
+                        if ((nssInfo != null)
+                                && CIUtil.isRetraite(new JADate(nssInfo.getDateNaissance()), nssInfo.getSexe(),
+                                        Integer.parseInt(JACalendar.todayJJsMMsAAAA().substring(6)))) {
                             // arc motif = 67
                             typeArc = CIAnnonceCollaborateurService.ARC_MOTIF_67;
                             CIAnnonceCollaborateurService.genererArc(transaction.getSession(), nss, numeroAffilie,
@@ -697,32 +702,36 @@ public abstract class CIAnnonceCollaborateurService {
 
                 if ((nssInfo != null) && !JadeStringUtil.isBlank(nssInfo.getNNSS())) {
                     String navs13 = nssInfo.getNNSS();
-                    CICompteIndividuel compteIndividuel = CIAnnonceCollaborateurService
-                            .CiNnssExist(transaction.getSession(), navs13);
+                    CICompteIndividuel compteIndividuel = CIAnnonceCollaborateurService.CiNnssExist(
+                            transaction.getSession(), navs13);
                     if (compteIndividuel != null) {
-                        // arc motif = 33 + CIException
+                        // arc motif = 31 + CIException (S190124_003)
                         resultAclContainer.loadInfoFromCi(compteIndividuel, transaction.getSession());
-                        typeArc = CIAnnonceCollaborateurService.ARC_MOTIF_33 + " + Exception";
+                        typeArc = CIAnnonceCollaborateurService.ARC_MOTIF_31 + " + Exception";
                         CIAnnonceCollaborateurService.genererArc(transaction.getSession(), navs13, numeroAffilie,
-                                dateEngagement, CIAnnonceCollaborateurService.ARC_MOTIF_33,
-                                refInterne + CIAnnonceCollaborateurService.REFINTERNE_EXCEPTION, noEmploye,
-                                noSuccursale);
+                                dateEngagement, CIAnnonceCollaborateurService.ARC_MOTIF_31, refInterne
+                                        + CIAnnonceCollaborateurService.REFINTERNE_EXCEPTION, noEmploye, noSuccursale);
                     } else {
                         resultAclContainer.loadInfoFromNssInfo(nssInfo, transaction.getSession());
                         if (CIUtil.isRetraite(new JADate(nssInfo.getDateNaissance()), nssInfo.getSexe(),
                                 Integer.parseInt(JACalendar.todayJJsMMsAAAA().substring(6)))) {
-                            // arc motif = 67 + 33
+                            // arc motif = 67 + 31 (S190124_003)
                             typeArc = CIAnnonceCollaborateurService.ARC_MOTIF_67 + " + "
-                                    + CIAnnonceCollaborateurService.ARC_MOTIF_33;
+                                    + CIAnnonceCollaborateurService.ARC_MOTIF_31;
                             CIAnnonceCollaborateurService.genererArc(transaction.getSession(), navs13, numeroAffilie,
                                     dateEngagement, CIAnnonceCollaborateurService.ARC_MOTIF_67, refInterne, noEmploye,
                                     noSuccursale);
                             CIAnnonceCollaborateurService.genererArc(transaction.getSession(), navs13, numeroAffilie,
-                                    dateEngagement, CIAnnonceCollaborateurService.ARC_MOTIF_33, refInterne, noEmploye,
+                                    dateEngagement, CIAnnonceCollaborateurService.ARC_MOTIF_31, refInterne, noEmploye,
                                     noSuccursale);
                         } else {
-                            // arc motif = 43 -> Remplacé par l'ARC 31 le 01.01.19
-                            typeArc = CIAnnonceCollaborateurService.ARC_MOTIF_31;
+                            // arc motif = 43 -> Remplacé par l'ARC 31 le 01.01.19 oui, mais il faut aussi faire
+                            // l'ouverture (S190124_003)
+                            typeArc = CIAnnonceCollaborateurService.ARC_MOTIF_61 + " + "
+                                    + CIAnnonceCollaborateurService.ARC_MOTIF_31;
+                            CIAnnonceCollaborateurService.genererArc(transaction.getSession(), nss, numeroAffilie,
+                                    dateEngagement, CIAnnonceCollaborateurService.ARC_MOTIF_61, refInterne, noEmploye,
+                                    noSuccursale);
                             CIAnnonceCollaborateurService.genererArc(transaction.getSession(), navs13, numeroAffilie,
                                     dateEngagement, CIAnnonceCollaborateurService.ARC_MOTIF_31, refInterne, noEmploye,
                                     noSuccursale);
@@ -731,8 +740,8 @@ public abstract class CIAnnonceCollaborateurService {
                 } else {
                     // Erreur de l'utilisateur
                     resultAclContainer.setSuccess(false);
-                    resultAclContainer.setTypeArc(CIAnnonceCollaborateurService.getSessionPavo(transaction.getSession())
-                            .getLabel("ERREUR_UTILISATEUR"));
+                    resultAclContainer.setTypeArc(CIAnnonceCollaborateurService
+                            .getSessionPavo(transaction.getSession()).getLabel("ERREUR_UTILISATEUR"));
                     return resultAclContainer;
                 }
             }
