@@ -6,6 +6,7 @@ import globaz.jade.context.exception.JadeNoBusinessLogSessionError;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import ch.globaz.pegasus.business.constantes.IPCRenteijapi;
+import ch.globaz.pegasus.business.constantes.donneesfinancieres.IPCRenteAvsAi;
 import ch.globaz.pegasus.business.exceptions.models.home.PeriodeServiceEtatException;
 import ch.globaz.pegasus.business.exceptions.models.renteijapi.IndemniteJournaliereAiException;
 import ch.globaz.pegasus.business.exceptions.models.renteijapi.RenteAvsAiException;
@@ -118,6 +119,13 @@ public class SimpleRenteAvsAiChecker extends PegasusAbstractChecker {
             JadeThread
                     .logError(simpleRenteAvsAi.getClass().getName(), "pegasus.simpleRenteAvsAi.csTypeRente.mandatory");
         }
+         // Si le code cs du genre de rente est 3 le type de pc est
+         // obligatoire         
+         if (simpleRenteAvsAi.getCsTypeRente().equals(IPCRenteAvsAi.CS_TYPE_RENTE_13)) {
+             if (JadeStringUtil.isEmpty(simpleRenteAvsAi.getImputationFortune())) {
+                 JadeThread.logError(simpleRenteAvsAi.getClass().getName(), "pegasus.simpleRenteAvsAi.imputationFortune.mandatory");
+             }
+         }
 
     }
 }

@@ -196,7 +196,7 @@
 																	   condition:context.find('[name=renteAvsAi\\.simpleRenteAvsAi\\.csTypeRente]').val()==CS_RENTE_VEUVE,
 																	   actionTrue:¦show(context.find('.imputationFortune'))¦,
 																	   actionFalse:¦hide(context.find('.imputationFortune'))¦">
-												<ct:select name="renteAvsAi.simpleRenteAvsAi.imputationFortune" styleClass="renteAvsAi.simpleRenteAvsAi.imputationFortune" notation="data-g-select='mandatory:true'" >
+												<ct:select name="renteAvsAi.simpleRenteAvsAi.imputationFortune" wantBlank="true" styleClass="renteAvsAi.simpleRenteAvsAi.imputationFortune" notation="data-g-select='mandatory:true'" >
 													<ct:option label="1/5" value="1/5"/>
 													<ct:option label="1/10" value="1/10"/>
 													<ct:option label="1/15" value="1/15"/>
