@@ -729,7 +729,7 @@ public abstract class CIAnnonceCollaborateurService {
                             // l'ouverture (S190124_003)
                             typeArc = CIAnnonceCollaborateurService.ARC_MOTIF_61 + " + "
                                     + CIAnnonceCollaborateurService.ARC_MOTIF_31;
-                            CIAnnonceCollaborateurService.genererArc(transaction.getSession(), nss, numeroAffilie,
+                            CIAnnonceCollaborateurService.genererArc(transaction.getSession(), navs13, numeroAffilie,
                                     dateEngagement, CIAnnonceCollaborateurService.ARC_MOTIF_61, refInterne, noEmploye,
                                     noSuccursale);
                             CIAnnonceCollaborateurService.genererArc(transaction.getSession(), navs13, numeroAffilie,
