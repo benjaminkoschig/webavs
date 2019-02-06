@@ -43,6 +43,7 @@ import ch.globaz.pegasus.rpc.domaine.TypeAnnonce;
 import ch.globaz.pegasus.rpc.domaine.plausi.AnnoncePlausiRetour;
 import ch.globaz.pegasus.rpc.domaine.plausi.PlausiRetour;
 import ch.globaz.pegasus.rpc.plausi.core.RpcPlausiCategory;
+import ch.globaz.pegasus.utils.RpcUtil;
 
 public class RetourAnnonceRepository extends RepositoryJade<RetourAnnonceRpc, SimpleRetourAnnonce> {
 
@@ -120,6 +121,7 @@ public class RetourAnnonceRepository extends RepositoryJade<RetourAnnonceRpc, Si
         search.setForMonth(decision.getReceiptMonth().getSwissValue());
         List<LotDossierDecision> annoncesLien = RepositoryJade.searchForAndFetch(search);
         if (annoncesLien.isEmpty()) {
+            RpcUtil.deleteSuffixDecisionId(decision);
             // Pas de decision annoncée à cette date -> creation de l'annonce
             return createAnnonce(annonce, decision);
         } else {

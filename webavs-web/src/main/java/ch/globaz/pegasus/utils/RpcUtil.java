@@ -7,6 +7,7 @@ import ch.globaz.common.properties.PropertiesException;
 import ch.globaz.naos.ree.tools.InfoCaisse;
 import ch.globaz.pegasus.business.constantes.EPCProperties;
 import ch.globaz.pegasus.business.domaine.decision.Decision;
+import ch.globaz.pegasus.rpc.domaine.plausi.PlausiRetour;
 
 public class RpcUtil {
 
@@ -43,6 +44,14 @@ public class RpcUtil {
                 && (decisionConjoint.getId().endsWith(SUFFIXE_DECISION_ID_REQUERANT) || decisionConjoint.getId()
                         .endsWith(SUFFIXE_DECISION_ID_CONJOINT))) {
             decisionConjoint.setId(decisionConjoint.getId().substring(0, decisionConjoint.getId().length() - 1));
+        }
+    }
+    
+    public static void deleteSuffixDecisionId(PlausiRetour decision) {
+        if (decision != null
+                && (decision.getIdDecision().endsWith(SUFFIXE_DECISION_ID_REQUERANT) || decision.getIdDecision()
+                        .endsWith(SUFFIXE_DECISION_ID_CONJOINT))) {
+            decision.setIdDecision(decision.getIdDecision().substring(0, decision.getIdDecision().length() - 1));
         }
     }
 
