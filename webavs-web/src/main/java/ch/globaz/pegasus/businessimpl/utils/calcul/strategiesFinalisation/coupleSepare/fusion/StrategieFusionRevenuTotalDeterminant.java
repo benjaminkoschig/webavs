@@ -125,7 +125,7 @@ public class StrategieFusionRevenuTotalDeterminant implements StrategieCalculFus
 
         if(IPCRenteAvsAi.CS_TYPE_RENTE_13.equals(typeRenteRequerant)) {
             if(JadeStringUtil.isEmpty(donnee.getLegendeEnfant(IPCValeursPlanCalcul.CLE_REVEN_IMP_FORT_TOTAL))) {
-                JadeThread.logError(this.getClass().getName(), "pegasus.simpleRenteAvsAi.imputationFortune.mandatory");
+                throw new CalculBusinessException("pegasus.simpleRenteAvsAi.imputationFortune.mandatory");
             } else {
                 String value = donnee.getLegendeEnfant(IPCValeursPlanCalcul.CLE_REVEN_IMP_FORT_TOTAL);
                 legendeValue = value;
