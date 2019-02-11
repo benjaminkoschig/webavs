@@ -2,7 +2,7 @@ package globaz.apg.api.droits;
 
 /**
  * Descpription
- * 
+ *
  * @author scr Date de création 23 mai 05
  */
 public interface IAPDroitLAPG {
@@ -88,10 +88,10 @@ public interface IAPDroitLAPG {
 
     /** DOCUMENT ME! */
     public static final String CS_SERVICE_CIVIL_AVEC_TAUX_RECRUES = "52001010";
-    
+
     /** DOCUMENT ME! */
     public static final String CS_SERVICE_INTERRUPTION_AVANT_ECOLE_SOUS_OFF = "52001015";
-    
+
     /** DOCUMENT ME! */
     public static final String CS_SERVICE_INTERRUPTION_PENDANT_SERVICE_AVANCEMENT = "52001016";
 
@@ -112,5 +112,15 @@ public interface IAPDroitLAPG {
     public final static String CS_VERSEMENT_RENTE_AI = "52017002";
 
     public final static String CS_VERSEMENT_RENTE_AVS = "52017001";
+    /**
+     * Constante pour FERCIAB
+     */
+    public final static String CS_DEMENAGEMENT_CIAB = "52001050";
+    public final static String CS_NAISSANCE_CIAB = "52001051";
+    public final static String CS_MARIAGE_LPART_CIAB = "52001052";
+    public final static String CS_DECES_CIAB = "52001053";
+    public final static String CS_JOURNEES_DIVERSES_CIAB = "52001054";
+    public final static String CS_CONGE_JEUNESSE_CIAB = "52001055";
+    public final static String CS_SERVICE_ETRANGER_CIAB = "52001056";
 
 }

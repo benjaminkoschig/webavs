@@ -19,7 +19,16 @@ public enum APGenreServiceAPG {
     ProtectionCivileFormationDeBase("21", IAPDroitLAPG.CS_FORMATION_DE_BASE),
     ProtectionCivileServiceNormale("20", IAPDroitLAPG.CS_PROTECTION_CIVILE_SERVICE_NORMAL),
     ServiceCivilNormal("40", IAPDroitLAPG.CS_SERVICE_CIVIL_SERVICE_NORMAL),
-    ServiceCivilTauxRecrue("41", IAPDroitLAPG.CS_SERVICE_CIVIL_AVEC_TAUX_RECRUES);
+    ServiceCivilTauxRecrue("41", IAPDroitLAPG.CS_SERVICE_CIVIL_AVEC_TAUX_RECRUES),
+    Demenagement("501", IAPDroitLAPG.CS_DEMENAGEMENT_CIAB),
+    Naissance("502", IAPDroitLAPG.CS_NAISSANCE_CIAB),
+    MariageLPart("503", IAPDroitLAPG.CS_MARIAGE_LPART_CIAB),
+    Deces("504", IAPDroitLAPG.CS_DECES_CIAB),
+    InspectionRecrutementLiberation("505", IAPDroitLAPG.CS_JOURNEES_DIVERSES_CIAB),
+    CongeJeunesse("506", IAPDroitLAPG.CS_CONGE_JEUNESSE_CIAB),
+    ServiceEtranger("507", IAPDroitLAPG.CS_SERVICE_ETRANGER_CIAB);
+
+    ;
 
     public static boolean isValidGenreService(String genreService) {
         if (genreService == null) {
