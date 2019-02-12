@@ -52,6 +52,7 @@
 	<parameter name="PARAM_FIELD_REMARQUE_VAL" isForPrompting="true" class="java.lang.String"/>
 	<parameter name="PARAM_FIELD_DETAIL_JOURNALIER" isForPrompting="true" class="java.lang.String"/>
 	<parameter name="PARAM_FIELD_PREST_COMPL" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="PARAM_FIELD_IS_APG_FED" isForPrompting="true" class="java.lang.String"/>
 	<field name="Field_PREST_COMPL" class="java.lang.String"/>
 		<background>
 			<band height="0"  isSplitAllowed="true" >
@@ -760,6 +761,26 @@
 						<font fontName="Arial" pdfFontName="ARIAL.TTF" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$P{PARAM_FIELD_PREST_COMPL}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="434"
+						y="0"
+						width="9"
+						height="12"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-68"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="true"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{PARAM_FIELD_IS_APG_FED}]]></textFieldExpression>
 				</textField>
 			</band>
 		</pageHeader>

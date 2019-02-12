@@ -57,6 +57,7 @@
 	<parameter name="PARAM_FIELD_MONTANT_COMPENSATION_5" isForPrompting="true" class="java.lang.String"/>
 	<parameter name="PARAM_FIELD_TEXTE_ADRESSE_PAIEMENT" isForPrompting="true" class="java.lang.String"/>
 	<parameter name="PARAM_FIELD_ADRESSE_PAIEMENT" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="PARAM_FIELD_TEXTE_PAS_SOUMIS_LAA" isForPrompting="true" class="java.lang.String"/>
 		<background>
 			<band height="0"  isSplitAllowed="true" >
 			</band>
@@ -66,7 +67,7 @@
 			</band>
 		</title>
 		<pageHeader>
-			<band height="207"  isSplitAllowed="false" >
+			<band height="214"  isSplitAllowed="false" >
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="3"
@@ -932,6 +933,26 @@
 						<font fontName="Arial" pdfFontName="ARIAL.TTF" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$P{PARAM_FIELD_TEXTE_ADRESSE_PAIEMENT}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Opaque"
+						x="3"
+						y="201"
+						width="504"
+						height="12"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-93"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="true"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="ARIAL.TTF" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{PARAM_FIELD_TEXTE_PAS_SOUMIS_LAA}]]></textFieldExpression>
 				</textField>
 			</band>
 		</pageHeader>

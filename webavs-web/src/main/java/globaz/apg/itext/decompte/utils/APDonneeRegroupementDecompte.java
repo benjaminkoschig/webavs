@@ -1,5 +1,7 @@
 package globaz.apg.itext.decompte.utils;
 
+import java.util.HashMap;
+import java.util.Map;
 import globaz.apg.api.prestation.IAPRepartitionPaiements;
 import globaz.apg.db.droits.APSituationProfessionnelle;
 import globaz.apg.db.prestation.APRepartitionJointPrestation;
@@ -11,20 +13,18 @@ import globaz.jade.log.JadeLogger;
 import globaz.prestation.db.employeurs.PRDepartement;
 import globaz.prestation.tools.PRBlankBNumberFormater;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Cette classe définit la clé de regroupement utilisée pour le regroupement des différentes prestationsJointRepartition
  * contenues dans le lot
- * 
+ *
  * @author lga
  */
 public class APDonneeRegroupementDecompte {
 
     /**
      * Ensemble de clés qui seront utilisé pour gérer le regroupement ou pas de certain type de prestations
-     * 
+     *
      * @author lga
      */
     private class Regroupement {
@@ -62,6 +62,7 @@ public class APDonneeRegroupementDecompte {
          * Chaque type de prestation sera sur un décompte séparé
          */
         APDonneeRegroupementDecompte.regroupementSepare.put(APTypeDePrestation.STANDARD, Regroupement.STANDARD);
+        APDonneeRegroupementDecompte.regroupementSepare.put(APTypeDePrestation.COMPCIAB, Regroupement.STANDARD);
         APDonneeRegroupementDecompte.regroupementSepare.put(APTypeDePrestation.LAMAT, Regroupement.LAMAT);
 
         // Même regroupement pour ACM et ACM2
@@ -126,22 +127,22 @@ public class APDonneeRegroupementDecompte {
 
     /**
      * Constructeur unique
-     * 
+     *
      * @param repartitionJointPrestation
-     *            Ne peut pas être null
+     *                                       Ne peut pas être null
      * @param situationProfessionnelle
-     *            Peut être null
+     *                                       Peut être null
      * @param departement
-     *            Peut être null
+     *                                       Peut être null
      * @param typeDePrestation
-     *            Ne peut pas être null
+     *                                       Ne peut pas être null
      * @throws IllegalArgumentException
-     *             Si APRepartitionJointPrestation est null
+     *                                      Si APRepartitionJointPrestation est null
      */
     public APDonneeRegroupementDecompte(final APRepartitionJointPrestation repartitionJointPrestation,
             final APSituationProfessionnelle situationProfessionnelle, final PRDepartement departement,
-            final APTypeDePrestation typeDePrestation, boolean isModuleCompensationPorteEnCompteActif,
-            BSession session, BITransaction transaction) {
+            final APTypeDePrestation typeDePrestation, boolean isModuleCompensationPorteEnCompteActif, BSession session,
+            BITransaction transaction) {
 
         if (repartitionJointPrestation == null) {
             throw new IllegalArgumentException(
@@ -158,8 +159,9 @@ public class APDonneeRegroupementDecompte {
 
         isEmployeur = repartitionJointPrestation.getTypePaiement()
                 .equals(IAPRepartitionPaiements.CS_PAIEMENT_EMPLOYEUR);
-        isIndependant = repartitionJointPrestation.getSituatuionPro() != null ? repartitionJointPrestation
-                .getSituatuionPro().getIsIndependant() : false;
+        isIndependant = repartitionJointPrestation.getSituatuionPro() != null
+                ? repartitionJointPrestation.getSituatuionPro().getIsIndependant()
+                : false;
 
         isPaiementEmployeur = determinerSiPaiementAEmployeur(repartitionJointPrestation, situationProfessionnelle);
         this.departement = determinerDepartement(isPaiementEmployeur, situationProfessionnelle, departement);
@@ -204,12 +206,12 @@ public class APDonneeRegroupementDecompte {
     //
     /**
      * Determine le département lié à une situation professionnelle
-     * 
+     *
      * @param isPaiementEmployeur
      * @param situationProfessionnelle
      * @return Le département si existant, sinon <code>null</code>
      * @throws Exception
-     *             En cas de problème d'accès à la db
+     *                       En cas de problème d'accès à la db
      */
     private PRDepartement determinerDepartement(final boolean isPaiementEmployeur,
             final APSituationProfessionnelle situationProfessionnelle, final PRDepartement departement) {
@@ -224,7 +226,7 @@ public class APDonneeRegroupementDecompte {
 
     /**
      * Détermine si le versement doit être fait à l'emplyoeur ou à l'assuré
-     * 
+     *
      * @param repartition
      * @return
      * @throws Exception
@@ -257,7 +259,7 @@ public class APDonneeRegroupementDecompte {
 
     /**
      * @param idTiers
-     *            the idTiers to set
+     *                    the idTiers to set
      */
     public final void setIdTiers(final String idTiers) {
         this.idTiers = idTiers;
@@ -272,7 +274,7 @@ public class APDonneeRegroupementDecompte {
 
     /**
      * @param idAffilie
-     *            the idAffilie to set
+     *                      the idAffilie to set
      */
     public final void setIdAffilie(final String idAffilie) {
         this.idAffilie = idAffilie;
@@ -305,7 +307,7 @@ public class APDonneeRegroupementDecompte {
 
     /**
      * @param departement
-     *            the departement to set
+     *                        the departement to set
      */
     public final void setDepartement(final PRDepartement departement) {
         this.departement = departement;
@@ -320,7 +322,7 @@ public class APDonneeRegroupementDecompte {
 
     /**
      * @param typeDePrestation
-     *            the typeDePrestation to set
+     *                             the typeDePrestation to set
      */
     public final void setTypeDePrestation(final APTypeDePrestation typeDePrestation) {
         this.typeDePrestation = typeDePrestation;

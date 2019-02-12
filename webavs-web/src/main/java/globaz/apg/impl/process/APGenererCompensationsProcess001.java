@@ -3,6 +3,17 @@
  */
 package globaz.apg.impl.process;
 
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import globaz.apg.api.lots.IAPLot;
 import globaz.apg.api.prestation.IAPRepartitionPaiements;
 import globaz.apg.api.process.IAPGenererCompensationProcess;
@@ -42,36 +53,25 @@ import globaz.osiris.db.comptes.CASection;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.tools.PRSession;
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedMap;
-import java.util.TreeMap;
 
 /**
  * <H1>Process de la génération des compensations</H1>
- * 
+ *
  * Traitement :
- * 
+ *
  * Compensations sur prochaines factures si :
- * 
+ *
  * 1. Si la périodicité de l'affilié est mensuelle 2. Si la périodicité de l'affilié est trimestrielle ET que le mois de
  * la prochaine facturation est égale à 3, 6, 9 ou 12 3. Si la périodicité de l'affilié est annuelle ET que le mois de
  * la prochaine facturation est égale à 12 4. Si affilié non radié (sans date de fin)
- * 
+ *
  * Autrement, si l'affilié a des dettes, la compensation est "préparée" automatiquement, mais la case "Compenser" n'est
  * pas cochée.
- * 
- * 
+ *
+ *
  * hpe
- * 
- * 
+ *
+ *
  * @author dvh
  */
 public class APGenererCompensationsProcess001 extends BProcess implements IAPGenererCompensationProcess {
@@ -80,7 +80,7 @@ public class APGenererCompensationsProcess001 extends BProcess implements IAPGen
     // ------------------------------------------------------------------------------------------------
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
     private String forIdLot = "";
@@ -98,9 +98,9 @@ public class APGenererCompensationsProcess001 extends BProcess implements IAPGen
 
     /**
      * Crée une nouvelle instance de la classe APGenererCompensationsProcess.
-     * 
+     *
      * @param parent
-     *            DOCUMENT ME!
+     *                   DOCUMENT ME!
      */
     public APGenererCompensationsProcess001(BProcess parent) {
         super(parent);
@@ -108,9 +108,9 @@ public class APGenererCompensationsProcess001 extends BProcess implements IAPGen
 
     /**
      * Crée une nouvelle instance de la classe APGenererCompensationsProcess.
-     * 
+     *
      * @param session
-     *            DOCUMENT ME!
+     *                    DOCUMENT ME!
      */
     public APGenererCompensationsProcess001(BSession session) {
         super(session);
@@ -121,7 +121,7 @@ public class APGenererCompensationsProcess001 extends BProcess implements IAPGen
 
     /**
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.db.BProcess#_executeCleanUp()
      */
     @Override
@@ -152,11 +152,11 @@ public class APGenererCompensationsProcess001 extends BProcess implements IAPGen
 
                 /*
                  * Test pour les adresses de paiement absente
-                 * 
+                 *
                  * On génère une erreur uniquement dans le cas où la personne reçoit quelque chose !
-                 * 
+                 *
                  * 2) Si total des ventilations = montant net 3) Si adresse de paiement = null
-                 * 
+                 *
                  * --> > Si 3 && !2 => KO > Sinon, OK
                  */
                 APDroitLAPG droitLAPG = new APDroitLAPG();
@@ -173,8 +173,8 @@ public class APGenererCompensationsProcess001 extends BProcess implements IAPGen
                                             + tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL),
                                     new Object[] { repartitionJointPrestation.getNom(),
                                             tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL),
-                                            repartitionJointPrestation.getIdPrestationApg() }), FWMessage.ERREUR,
-                            getSession().getLabel(PROCESS_GENERER_COMPENSATIONS));
+                                            repartitionJointPrestation.getIdPrestationApg() }),
+                            FWMessage.ERREUR, getSession().getLabel(PROCESS_GENERER_COMPENSATIONS));
                 }
 
                 // unique test
@@ -192,37 +192,37 @@ public class APGenererCompensationsProcess001 extends BProcess implements IAPGen
 
                 }
 
-                if (repartitionJointPrestation.loadAdressePaiement(null) == null
-                        && !montantTotalVentilations.equals(new FWCurrency(repartitionJointPrestation.getMontantNet()))) {
+                if (repartitionJointPrestation.loadAdressePaiement(null) == null && !montantTotalVentilations
+                        .equals(new FWCurrency(repartitionJointPrestation.getMontantNet()))) {
 
                     String noAVS = tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL);
 
                     getMemoryLog().logMessage(
                             java.text.MessageFormat.format(getSession().getLabel("ADRESSE_PAIEMENT_ABSENTE"),
                                     new Object[] { repartitionJointPrestation.getNom(), noAVS,
-                                            repartitionJointPrestation.getIdPrestationApg() }), FWMessage.ERREUR,
-                            getSession().getLabel(PROCESS_GENERER_COMPENSATIONS));
+                                            repartitionJointPrestation.getIdPrestationApg() }),
+                            FWMessage.ERREUR, getSession().getLabel(PROCESS_GENERER_COMPENSATIONS));
                 }
 
                 // adresse de courrier absente
-                if (JadeStringUtil.isEmpty(PRTiersHelper.getAdresseCourrierFormatee(getSession(),
-                        repartitionJointPrestation.getIdTiers(), repartitionJointPrestation.getIdAffilie(),
-                        APApplication.CS_DOMAINE_ADRESSE_APG))) {
+                if (JadeStringUtil.isEmpty(
+                        PRTiersHelper.getAdresseCourrierFormatee(getSession(), repartitionJointPrestation.getIdTiers(),
+                                repartitionJointPrestation.getIdAffilie(), APApplication.CS_DOMAINE_ADRESSE_APG))) {
 
                     String noAVS = tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL);
 
                     getMemoryLog().logMessage(
                             java.text.MessageFormat.format(getSession().getLabel("ADRESSE_COURRIER_ABSENTE"),
                                     new Object[] { repartitionJointPrestation.getNom(), noAVS,
-                                            repartitionJointPrestation.getIdPrestationApg() }), FWMessage.ERREUR,
-                            getSession().getLabel(PROCESS_GENERER_COMPENSATIONS));
+                                            repartitionJointPrestation.getIdPrestationApg() }),
+                            FWMessage.ERREUR, getSession().getLabel(PROCESS_GENERER_COMPENSATIONS));
                 }
 
                 // Etat civil absent
                 if (PRTiersHelper.getPersonneAVS(getSession(), droitLAPG.loadDemande().getIdTiers()) != null) {
-                    if (JadeStringUtil.isIntegerEmpty(PRTiersHelper.getPersonneAVS(getSession(),
-                            droitLAPG.loadDemande().getIdTiers()).getProperty(
-                            PRTiersWrapper.PROPERTY_PERSONNE_AVS_ETAT_CIVIL))) {
+                    if (JadeStringUtil.isIntegerEmpty(
+                            PRTiersHelper.getPersonneAVS(getSession(), droitLAPG.loadDemande().getIdTiers())
+                                    .getProperty(PRTiersWrapper.PROPERTY_PERSONNE_AVS_ETAT_CIVIL))) {
 
                         String noAVS = droitLAPG.loadDemande().loadTiers()
                                 .getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL);
@@ -230,8 +230,8 @@ public class APGenererCompensationsProcess001 extends BProcess implements IAPGen
                         getMemoryLog().logMessage(
                                 java.text.MessageFormat.format(getSession().getLabel("ETAT_CIVIL_ABSENT"),
                                         new Object[] { repartitionJointPrestation.getNom(), noAVS,
-                                                repartitionJointPrestation.getIdPrestationApg() }), FWMessage.ERREUR,
-                                getSession().getLabel(PROCESS_GENERER_COMPENSATIONS));
+                                                repartitionJointPrestation.getIdPrestationApg() }),
+                                FWMessage.ERREUR, getSession().getLabel(PROCESS_GENERER_COMPENSATIONS));
                     }
                 } else {
                     getMemoryLog().logMessage(
@@ -306,21 +306,25 @@ public class APGenererCompensationsProcess001 extends BProcess implements IAPGen
                     }
 
                     // Volonté d'assembler les ACM2 et ACM dans les mêmes montants de compensations
+                    // ainsi que les COMBCIAB et STANDARD
                     String genre = repartitionPaiementsJointEmployeur.getGenrePrestationPrestation();
                     if (APTypeDePrestation.ACM2_ALFA.isCodeSystemEqual(genre)) {
                         genre = APTypeDePrestation.ACM_ALFA.getCodesystemString();
+                    } else if (APTypeDePrestation.COMPCIAB.isCodeSystemEqual(genre)) {
+                        genre = APTypeDePrestation.STANDARD.getCodesystemString();
                     }
                     final String idAssureDeBase = droit.loadDemande().getIdTiers();
 
-                    Boolean isPorteEnCompte = isSituationProfPorteEnCompte(repartitionPaiementsJointEmployeur
-                            .getIdSituationProfessionnelle());
+                    Boolean isPorteEnCompte = isSituationProfPorteEnCompte(
+                            repartitionPaiementsJointEmployeur.getIdSituationProfessionnelle());
                     Key key = null;
                     // Cas ou le bénéficiaire est l'assuré de base
                     if (idAssureDeBase.equals(repartitionPaiementsJointEmployeur.getIdTiers())) {
 
                         key = new Key(repartitionPaiementsJointEmployeur.getIdTiers(),
                                 repartitionPaiementsJointEmployeur.getIdAffilie(), "0",
-                                repartitionPaiementsJointEmployeur.getIdParticularite(), genre, false, false, "", false);
+                                repartitionPaiementsJointEmployeur.getIdParticularite(), genre, false, false, "",
+                                false);
                     }
                     // Cas ou le bénéficiaire est un affilié
                     else if (!JadeStringUtil.isIntegerEmpty(repartitionPaiementsJointEmployeur.getIdAffilie())) {
@@ -331,7 +335,8 @@ public class APGenererCompensationsProcess001 extends BProcess implements IAPGen
                     } else {
                         key = new Key(repartitionPaiementsJointEmployeur.getIdTiers(),
                                 repartitionPaiementsJointEmployeur.getIdAffilie(), "0",
-                                repartitionPaiementsJointEmployeur.getIdParticularite(), genre, false, false, "", false);
+                                repartitionPaiementsJointEmployeur.getIdParticularite(), genre, false, false, "",
+                                false);
 
                     }
 
@@ -365,8 +370,8 @@ public class APGenererCompensationsProcess001 extends BProcess implements IAPGen
                                 .get(repartitionPaiementsJointEmployeur.getIdTiers());
                         sommePourCeTiers.add(new FWCurrency(montantRepartition.toString()));
                     } else {
-                        sommePourUnTiers.put(repartitionPaiementsJointEmployeur.getIdTiers(), new FWCurrency(
-                                montantRepartition.toString()));
+                        sommePourUnTiers.put(repartitionPaiementsJointEmployeur.getIdTiers(),
+                                new FWCurrency(montantRepartition.toString()));
                     }
 
                 }
@@ -398,8 +403,8 @@ public class APGenererCompensationsProcess001 extends BProcess implements IAPGen
                     compensation.add(transaction);
                     getMemoryLog().logMessage(
                             MessageFormat.format(getSession().getLabel("COMPENSATION_AJOUTEE"),
-                                    new Object[] { compensation.getIdCompensation() }), FWMessage.INFORMATION,
-                            getSession().getLabel(PROCESS_GENERER_COMPENSATIONS));
+                                    new Object[] { compensation.getIdCompensation() }),
+                            FWMessage.INFORMATION, getSession().getLabel(PROCESS_GENERER_COMPENSATIONS));
 
                     IAFAffiliation employeur = (IAFAffiliation) session.getAPIFor(IAFAffiliation.class);
                     employeur.setAffiliationId(key.idAffilie);
@@ -425,7 +430,7 @@ public class APGenererCompensationsProcess001 extends BProcess implements IAPGen
                     // transformer getMoisPeriodeFacturation en chiffre du mois
                     String moisFac = getMoisPeriodeFacturation();
 
-                    // Si le code de périodicité n'est pas trouvé
+                    // Si le code de périodicité n'est pas vide
                     // ET
                     // Si le code de la périodicité est mensuel
                     // ou si le code de la périodicité est trimestriel ET que la
@@ -435,10 +440,11 @@ public class APGenererCompensationsProcess001 extends BProcess implements IAPGen
                     // prochaine facturation périodique est égale à 12
                     if (!JadeStringUtil.isEmpty(codePeriodiciteAffilie)
                             && ((CodeSystem.PERIODICITE_MENSUELLE.equals(codePeriodiciteAffilie))
-                                    || ((CodeSystem.PERIODICITE_TRIMESTRIELLE.equals(codePeriodiciteAffilie)) && (("03"
-                                            .equals(moisFac)) || ("06".equals(moisFac)) || ("09".equals(moisFac)) || ("12"
-                                                .equals(moisFac)))) || ((CodeSystem.PERIODICITE_ANNUELLE
-                                    .equals(codePeriodiciteAffilie)) && ("12".equals(moisFac))))) {
+                                    || ((CodeSystem.PERIODICITE_TRIMESTRIELLE.equals(codePeriodiciteAffilie))
+                                            && (("03".equals(moisFac)) || ("06".equals(moisFac))
+                                                    || ("09".equals(moisFac)) || ("12".equals(moisFac))))
+                                    || ((CodeSystem.PERIODICITE_ANNUELLE.equals(codePeriodiciteAffilie))
+                                            && ("12".equals(moisFac))))) {
 
                         APFactureACompenser factureACompenser = new APFactureACompenser();
                         factureACompenser.setSession(session);
@@ -483,17 +489,17 @@ public class APGenererCompensationsProcess001 extends BProcess implements IAPGen
                         if (sectionEnCours != null) {
                             // si on n'a pas encore tout compensé sur la section
                             // en cours
-                            if (Math.abs(montantDejaCompenseSurSectionEnCours.doubleValue()) != Math.abs(Double
-                                    .parseDouble(sectionEnCours.getSolde()))) {
+                            if (Math.abs(montantDejaCompenseSurSectionEnCours.doubleValue()) != Math
+                                    .abs(Double.parseDouble(sectionEnCours.getSolde()))) {
                                 APFactureACompenser factureACompenser = new APFactureACompenser();
                                 factureACompenser.setSession(session);
                                 factureACompenser.setIdAffilie(compensation.getIdAffilie());
 
                                 // on va compenser ce qui reste a compenser sur
                                 // cette section si on peu
-                                if (Math.abs(Double.parseDouble(compensation.getMontantTotal())) > ((Math.abs(Double
-                                        .parseDouble(sectionEnCours.getSolde()))) - Math
-                                        .abs(montantDejaCompenseSurSectionEnCours.doubleValue()))) {
+                                if (Math.abs(Double.parseDouble(compensation.getMontantTotal())) > ((Math
+                                        .abs(Double.parseDouble(sectionEnCours.getSolde())))
+                                        - Math.abs(montantDejaCompenseSurSectionEnCours.doubleValue()))) {
                                     // on compense la totalité de ce qui reste
                                     // de la section
                                     FWCurrency montantCompense = new FWCurrency(sectionEnCours.getSolde());
@@ -507,8 +513,8 @@ public class APGenererCompensationsProcess001 extends BProcess implements IAPGen
                                     // on compense ce que l'on peut
                                     factureACompenser.setMontant(compensation.getMontantTotal());
                                     montantTotalCompense.add(new FWCurrency(compensation.getMontantTotal()));
-                                    montantDejaCompenseSurSectionEnCours.add(new FWCurrency(compensation
-                                            .getMontantTotal()));
+                                    montantDejaCompenseSurSectionEnCours
+                                            .add(new FWCurrency(compensation.getMontantTotal()));
                                 }
 
                                 factureACompenser.setIdCompensationParente(compensation.getIdCompensation());
@@ -524,8 +530,8 @@ public class APGenererCompensationsProcess001 extends BProcess implements IAPGen
                         // compensation des suivantes, tant qu'on en a a
                         // compenser et qu'on peut encore compenser
                         while (propositionsCompensationsIterator.hasNext()
-                                && (Math.abs(montantTotalCompense.doubleValue()) < Math.abs(Double
-                                        .parseDouble(compensation.getMontantTotal())))) {
+                                && (Math.abs(montantTotalCompense.doubleValue()) < Math
+                                        .abs(Double.parseDouble(compensation.getMontantTotal())))) {
                             sectionEnCours = (CASection) propositionsCompensationsIterator.next();
                             montantDejaCompenseSurSectionEnCours = new FWCurrency(0);
 
@@ -537,9 +543,9 @@ public class APGenererCompensationsProcess001 extends BProcess implements IAPGen
                             // supérieur au montant total moins ce qu'on a déjà
                             // compensé. Si oui, on compense ce qu'on peut, si
                             // non, on compense tout.
-                            if (Math.abs(Double.parseDouble(compensation.getMontantTotal())) > (Math
-                                    .abs(montantTotalCompense.doubleValue()) + Math.abs(Double
-                                    .parseDouble(sectionEnCours.getSolde())))) {
+                            if (Math.abs(Double.parseDouble(
+                                    compensation.getMontantTotal())) > (Math.abs(montantTotalCompense.doubleValue())
+                                            + Math.abs(Double.parseDouble(sectionEnCours.getSolde())))) {
                                 factureACompenser.setMontant(sectionEnCours.getSolde());
                                 montantTotalCompense.add(new FWCurrency(sectionEnCours.getSolde()));
                                 montantDejaCompenseSurSectionEnCours.add(new FWCurrency(sectionEnCours.getSolde()));
@@ -548,8 +554,8 @@ public class APGenererCompensationsProcess001 extends BProcess implements IAPGen
                                 montantQuonPeutCompenser.sub(new FWCurrency(montantTotalCompense.toString()));
                                 factureACompenser.setMontant(montantQuonPeutCompenser.toString());
                                 montantTotalCompense.add(new FWCurrency(montantQuonPeutCompenser.toString()));
-                                montantDejaCompenseSurSectionEnCours.add(new FWCurrency(montantQuonPeutCompenser
-                                        .toString()));
+                                montantDejaCompenseSurSectionEnCours
+                                        .add(new FWCurrency(montantQuonPeutCompenser.toString()));
                             }
 
                             factureACompenser.setIdCompensationParente(compensation.getIdCompensation());
@@ -575,9 +581,12 @@ public class APGenererCompensationsProcess001 extends BProcess implements IAPGen
 
                     // On prend les repartitions provenant de prestations ACM et ACM 2 ensemble pour leur attribuer le
                     // même id compensation
+                    // Pareil pour les prestations COMPCIAB et STANDARD
                     final List<String> genres = new ArrayList<String>();
                     if (APTypeDePrestation.ACM_ALFA.isCodeSystemEqual(key.genrePrestation)) {
                         genres.add(APTypeDePrestation.ACM2_ALFA.getCodesystemString());
+                    } else if (APTypeDePrestation.STANDARD.isCodeSystemEqual(key.genrePrestation)) {
+                        genres.add(APTypeDePrestation.COMPCIAB.getCodesystemString());
                     }
                     genres.add(key.genrePrestation);
 
@@ -593,10 +602,9 @@ public class APGenererCompensationsProcess001 extends BProcess implements IAPGen
                         repartitionPaiements.setIdCompensation(compensation.getIdCompensation());
                         repartitionPaiements.wantMiseAJourLot(false);
                         repartitionPaiements.update(transaction);
-                        getMemoryLog()
-                                .logMessage(
-                                        "repart updatée " + repartitionPaiements.getIdRepartitionBeneficiairePaiement(),
-                                        "", "");
+                        getMemoryLog().logMessage(
+                                "repart updatée " + repartitionPaiements.getIdRepartitionBeneficiairePaiement(), "",
+                                "");
                     }
 
                     repartitionPaiementsJointEmployeurManager = null;
@@ -627,11 +635,11 @@ public class APGenererCompensationsProcess001 extends BProcess implements IAPGen
 
     /**
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.db.BProcess#_validate()
-     * 
+     *
      * @throws Exception
-     *             DOCUMENT ME!
+     *                       DOCUMENT ME!
      */
     @Override
     protected void _validate() throws Exception {
@@ -651,14 +659,14 @@ public class APGenererCompensationsProcess001 extends BProcess implements IAPGen
 
     /**
      * @param idTiers
-     *            l'idTiers de la personne susceptible de devoir compenser des trucs
+     *                    l'idTiers de la personne susceptible de devoir compenser des trucs
      * @param montant
-     *            montant qu'on peut compenser
-     * 
+     *                    montant qu'on peut compenser
+     *
      * @return une Collection de CAPropositionCompensation
-     * 
+     *
      * @throws Exception
-     *             DOCUMENT ME!
+     *                       DOCUMENT ME!
      */
     private Collection getCollectionSectionsACompenser(String idTiers, FWCurrency montant) throws Exception {
         BISession sessionOsiris = PRSession.connectSession(getSession(), "OSIRIS");
@@ -686,12 +694,12 @@ public class APGenererCompensationsProcess001 extends BProcess implements IAPGen
 
     /**
      * @param idTiers
-     *            Le tiers dont on veut avoir les dettes
-     * 
+     *                    Le tiers dont on veut avoir les dettes
+     *
      * @return le montant des dettes
-     * 
+     *
      * @throws Exception
-     *             si il y a un pb dans OSIRIS pendant la récupération des dettes
+     *                       si il y a un pb dans OSIRIS pendant la récupération des dettes
      */
     private String getDettes(String idTiers) throws Exception {
         // TODO voir si y a un autre moyen que d'instancier un manager d'OSIRIS
@@ -716,9 +724,9 @@ public class APGenererCompensationsProcess001 extends BProcess implements IAPGen
 
     /**
      * (non-Javadoc)
-     * 
+     *
      * @return la valeur courante de l'attribut EMail object
-     * 
+     *
      * @see globaz.globall.db.BProcess#getEMailObject()
      */
     @Override
@@ -739,7 +747,7 @@ public class APGenererCompensationsProcess001 extends BProcess implements IAPGen
 
     /**
      * getter pour l'attribut for id lot
-     * 
+     *
      * @return la valeur courante de l'attribut for id lot
      */
     public String getForIdLot() {
@@ -754,9 +762,9 @@ public class APGenererCompensationsProcess001 extends BProcess implements IAPGen
     }
 
     /**
-     * 
+     *
      * Retourne la somme des montants ventilés d'une répartition à partir du parent.
-     * 
+     *
      * @param session
      * @param idParent
      * @param idLot
@@ -783,9 +791,9 @@ public class APGenererCompensationsProcess001 extends BProcess implements IAPGen
 
     /**
      * (non-Javadoc)
-     * 
+     *
      * @return DOCUMENT ME!
-     * 
+     *
      * @see globaz.globall.db.BProcess#_executeProcess()
      */
 
@@ -800,9 +808,9 @@ public class APGenererCompensationsProcess001 extends BProcess implements IAPGen
 
     /**
      * (non-Javadoc)
-     * 
+     *
      * @return DOCUMENT ME!
-     * 
+     *
      * @see globaz.globall.db.BProcess#jobQueue()
      */
     @Override
@@ -812,9 +820,9 @@ public class APGenererCompensationsProcess001 extends BProcess implements IAPGen
 
     /**
      * setter pour l'attribut for id lot
-     * 
+     *
      * @param string
-     *            une nouvelle valeur pour cet attribut
+     *                   une nouvelle valeur pour cet attribut
      */
     @Override
     public void setForIdLot(String string) {
@@ -836,9 +844,10 @@ public class APGenererCompensationsProcess001 extends BProcess implements IAPGen
 
     /**
      * Recherche la situation professionnelle avec son ID et récupère son champ isPorteEnCompte
-     * 
+     *
      * @param idSituationProfessionnelle
-     *            Retourne true si la situation professionnelle passée en paramètre est portée en compte
+     *                                       Retourne true si la situation professionnelle passée en paramètre est
+     *                                       portée en compte
      * @throws Exception
      */
     private boolean isSituationProfPorteEnCompte(String idSituationProfessionnelle) throws Exception {

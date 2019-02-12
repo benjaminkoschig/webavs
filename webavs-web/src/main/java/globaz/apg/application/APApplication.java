@@ -1,21 +1,21 @@
 /*
  * Créé le 20 avr. 05
- * 
+ *
  * Pour changer le modèle de ce fichier généré, allez à : Fenêtre&gt;Préférences&gt;Java&gt;Génération de code&gt;Code
  * et commentaires
  */
 package globaz.apg.application;
 
+import java.util.Properties;
 import globaz.apg.servlet.IAPActions;
 import globaz.framework.controller.FWAction;
 import globaz.framework.menu.FWMenuCache;
 import globaz.framework.secure.FWSecureConstants;
 import globaz.prestation.application.PRAbstractApplication;
-import java.util.Properties;
 
 /**
  * <H1>Description</H1>
- * 
+ *
  * @author scr
  *         <p>
  *         Application APG
@@ -27,7 +27,7 @@ public class APApplication extends PRAbstractApplication {
     // -------------------------------------------------------------------------------------
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
 
@@ -153,14 +153,17 @@ public class APApplication extends PRAbstractApplication {
     /** Service de la ged a utiliser */
     public static final String PROPERTY_SERVICE_GED = "service.ged";
 
+    /** Service de la ged a utiliser */
+    public static final String PROPERTY_IS_FERCIAB = "apg.isFERCIAB";
+
     // ~ Constructors
     // ---------------------------------------------------------------------------------------------------
 
     /**
      * Crée une nouvelle instance de la classe APApplication.
-     * 
+     *
      * @throws Exception
-     *             DOCUMENT ME!
+     *                       DOCUMENT ME!
      */
     public APApplication() throws Exception {
         super(APApplication.DEFAULT_APPLICATION_APG);
@@ -168,11 +171,11 @@ public class APApplication extends PRAbstractApplication {
 
     /**
      * Crée une nouvelle instance de la classe APApplication.
-     * 
+     *
      * @param id
-     *            DOCUMENT ME!
+     *               DOCUMENT ME!
      * @throws Exception
-     *             DOCUMENT ME!
+     *                       DOCUMENT ME!
      */
     public APApplication(String id) throws Exception {
         super(id);
@@ -183,7 +186,7 @@ public class APApplication extends PRAbstractApplication {
 
     /**
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.db.BApplication#_declareAPI()
      */
     @Override
@@ -193,9 +196,9 @@ public class APApplication extends PRAbstractApplication {
 
     /**
      * (non-Javadoc)
-     * 
+     *
      * @throws Exception
-     *             DOCUMENT ME!
+     *                       DOCUMENT ME!
      * @see globaz.globall.db.BApplication#_initializeApplication()
      */
     @Override
@@ -268,8 +271,9 @@ public class APApplication extends PRAbstractApplication {
 
         FWAction.registerActionCustom(IAPActions.ACTION_PRESTATIONS + ".actionCalculerPrestations",
                 FWSecureConstants.UPDATE);
-        FWAction.registerActionCustom(IAPActions.ACTION_PRESTATIONS + "."
-                + IAPActions.ACTION_CONTROLE_PRESTATION_CALCULEES, FWSecureConstants.UPDATE);
+        FWAction.registerActionCustom(
+                IAPActions.ACTION_PRESTATIONS + "." + IAPActions.ACTION_CONTROLE_PRESTATION_CALCULEES,
+                FWSecureConstants.UPDATE);
         FWAction.registerActionCustom(IAPActions.ACTION_PRESTATIONS + ".actionCalculerToutesLesPrestations",
                 FWSecureConstants.UPDATE);
         FWAction.registerActionCustom(IAPActions.ACTION_PRESTATIONS + ".actionImporterPrestationsDepuisACOR",
@@ -298,7 +302,8 @@ public class APApplication extends PRAbstractApplication {
         // FWAction.registerActionCustom(IAPActions.ACTION_COMPENSATIONS_LOT,
         // FWSecureConstants.UPDATE);
 
-        FWAction.registerActionCustom(IAPActions.ACTION_FACTURES_LOT + ".actionAfficherEcranDE", FWSecureConstants.READ);
+        FWAction.registerActionCustom(IAPActions.ACTION_FACTURES_LOT + ".actionAfficherEcranDE",
+                FWSecureConstants.READ);
 
         FWAction.registerActionCustom(IAPActions.ACTION_GENERER_LOT + ".afficher", FWSecureConstants.UPDATE);
 
@@ -306,8 +311,9 @@ public class APApplication extends PRAbstractApplication {
                 FWSecureConstants.UPDATE);
         FWAction.registerActionCustom(IAPActions.ACTION_PRESTATION_JOINT_LOT_TIERS_DROIT + ".actionMettreDansLot",
                 FWSecureConstants.UPDATE);
-        FWAction.registerActionCustom(IAPActions.ACTION_PRESTATION_JOINT_LOT_TIERS_DROIT
-                + ".actionRepartitionPaiements", FWSecureConstants.READ);
+        FWAction.registerActionCustom(
+                IAPActions.ACTION_PRESTATION_JOINT_LOT_TIERS_DROIT + ".actionRepartitionPaiements",
+                FWSecureConstants.READ);
         FWAction.registerActionCustom(IAPActions.ACTION_PRESTATION_JOINT_LOT_TIERS_DROIT + ".imprimerListePrestations",
                 FWSecureConstants.READ);
 
@@ -380,9 +386,9 @@ public class APApplication extends PRAbstractApplication {
 
     /**
      * (non-Javadoc)!
-     * 
+     *
      * @param arg0
-     *            DOCUMENT ME!
+     *                 DOCUMENT ME!
      * @see globaz.globall.db.BApplication#_readProperties(java.util.Properties)
      */
     protected void _readProperties(Properties arg0) {
@@ -391,7 +397,7 @@ public class APApplication extends PRAbstractApplication {
 
     /**
      * retourne l'identifiant du rôle représentant un administrateur du système
-     * 
+     *
      * @return la valeur courante de l'attribut id role administrateur
      */
     public String getIdRoleAdministrateur() {

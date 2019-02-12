@@ -1,22 +1,22 @@
 package globaz.apg.itext.decompte.utils;
 
-import globaz.apg.enums.APTypeDePrestation;
 import java.util.ArrayList;
 import java.util.List;
+import globaz.apg.enums.APTypeDePrestation;
 
 public enum APTypeDeDecompte {
 
-    ACM_GE(2, "acm", "AP_DECOMPTE_DETAIL.jasper", new APTypeDePrestation[] { APTypeDePrestation.ACM_ALFA,
-            APTypeDePrestation.ACM2_ALFA }),
+    ACM_GE(2, "acm", "AP_DECOMPTE_DETAIL.jasper",
+            new APTypeDePrestation[] { APTypeDePrestation.ACM_ALFA, APTypeDePrestation.ACM2_ALFA }),
     AMAT_GE(3, "LAMat", "AP_DECOMPTE_DETAIL.jasper", new APTypeDePrestation[] { APTypeDePrestation.LAMAT }),
     NORMAL(1, "normal", "AP_DECOMPTE_DETAIL.jasper", new APTypeDePrestation[] { APTypeDePrestation.STANDARD }),
-    NORMAL_ACM_NE(5, "normal_acmne", "AP_DECOMPTE_DETAIL_ACMNE.jasper", new APTypeDePrestation[] {
-            APTypeDePrestation.STANDARD, APTypeDePrestation.ACM_NE });
+    NORMAL_ACM_NE(5, "normal_acmne", "AP_DECOMPTE_DETAIL_ACMNE.jasper",
+            new APTypeDePrestation[] { APTypeDePrestation.STANDARD, APTypeDePrestation.ACM_NE });
 
     /**
      * Le but de cette méthode est de déterminer le type de décompte en fonction du(des) type(s) de prestations qu'il
      * contient
-     * 
+     *
      * @param typesDePrestationContenuesDansDecompte
      * @return Le type de décompte en fonction des prestations qu'il contient
      */
@@ -47,6 +47,9 @@ public enum APTypeDeDecompte {
                     case STANDARD:
                         typeDuDecompte = APTypeDeDecompte.NORMAL;
                         break;
+                    case COMPCIAB:
+                        typeDuDecompte = APTypeDeDecompte.NORMAL;
+                        break;
                     case LAMAT:
                         typeDuDecompte = APTypeDeDecompte.AMAT_GE;
                         break;
@@ -73,7 +76,8 @@ public enum APTypeDeDecompte {
                     typeDuDecompte = APTypeDeDecompte.ACM_GE;
                 }
             } else { // Trop de type de prestation, aucun décompte n'en contient plus que 2
-                throw new IllegalArgumentException("Too many APTypeDePrestation founded to resole the APTypeDuDecompte");
+                throw new IllegalArgumentException(
+                        "Too many APTypeDePrestation founded to resole the APTypeDuDecompte");
             }
         } else { // Aucune type de prestation trouvés, impossible de résoudre le type de décompte
             throw new IllegalArgumentException("Any APTypeDePrestation founded to resole the APTypeDuDecompte");
@@ -88,11 +92,11 @@ public enum APTypeDeDecompte {
 
     /**
      * Recherche le {@link APTypeDePrestation} 'typeRecherche' dans le tableau
-     * 
+     *
      * @param typeRecherche
-     *            Le type de prestation à rechercher
+     *                          Le type de prestation à rechercher
      * @param t2
-     *            Un tableau contenant des types de prestations
+     *                          Un tableau contenant des types de prestations
      * @return <code>true</code> si le type recherche est trouvé dans le tableau
      */
     private static boolean searchTypeInArray(final APTypeDePrestation typeRecherche, final APTypeDePrestation[] tab) {
@@ -170,7 +174,7 @@ public enum APTypeDeDecompte {
 
     /**
      * Retourne le nom du document
-     * 
+     *
      * @return le nom du document
      */
     public String getNomDocument() {
@@ -179,7 +183,7 @@ public enum APTypeDeDecompte {
 
     /**
      * Retourne le nom du modèle à utiliser pour l'impression du détails des décomptes
-     * 
+     *
      * @return le nom du modèle à utiliser pour l'impression du détails des décomptes
      */
     public String getNomModeleDetailDecompte() {
@@ -188,7 +192,7 @@ public enum APTypeDeDecompte {
 
     /**
      * Retourne le(s) type(s) de prestations supportées pas ce type de décomptes
-     * 
+     *
      * @return le(s) type(s) de prestations supportées pas ce type de décomptes
      */
     public APTypeDePrestation[] getTypesDePrestation() {

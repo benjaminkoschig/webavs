@@ -1,5 +1,18 @@
 package globaz.apg.itext.decompte;
 
+import java.io.File;
+import java.math.BigDecimal;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import globaz.apg.ApgServiceLocator;
 import globaz.apg.application.APApplication;
 import globaz.apg.db.droits.APDroitLAPG;
@@ -42,6 +55,7 @@ import globaz.globall.util.JAException;
 import globaz.globall.util.JANumberFormatter;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.log.JadeLogger;
+import globaz.jade.properties.JadePropertiesService;
 import globaz.jade.publish.client.JadePublishDocument;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
 import globaz.naos.application.AFApplication;
@@ -65,26 +79,15 @@ import globaz.pyxis.api.ITIRole;
 import globaz.pyxis.api.ITITiers;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
 import globaz.webavs.common.CommonProperties;
-import java.io.File;
-import java.math.BigDecimal;
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
 
 /**
- * Cette classe abstraite s'ocupe de la génération des documents de décomptes</br> La préparation des données
- * (regroupement, ventilations, catalogue de textes, etc) doit être réalisé par la classe mère.</br> Les différentes
+ * Cette classe abstraite s'ocupe de la génération des documents de décomptes</br>
+ * La préparation des données
+ * (regroupement, ventilations, catalogue de textes, etc) doit être réalisé par la classe mère.</br>
+ * Les différentes
  * informations sont récupérées depuis la classe mère via les différentes méthodes abstraites définies dans cette classe
  * </br>
- * 
+ *
  * @author lga
  */
 public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentManager {
@@ -106,28 +109,28 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
 
     /**
      * Retourne le code système du type de prestation contenue dans le lot
-     * 
+     *
      * @return le code système du type de prestation contenue dans le lot
      */
     public abstract String getCSTypePrestationsLot();
 
     /**
      * Retourne le code ISO de la langue à utiliser pour le décompte courant
-     * 
+     *
      * @return le code ISO de la langue à utiliser pour le décompte courant
      */
     public abstract String getCodeIsoLangue();
 
     /**
      * Retourne la date comptable
-     * 
+     *
      * @return la date comptable
      */
     public abstract JADate getDateComptable();
 
     /**
      * Retourne la date de publication du document
-     * 
+     *
      * @return la date de publication du document
      */
     public abstract JADate getDateDocument();
@@ -144,8 +147,9 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
 
                 try {
                     // si CVCI et impression definitive
-                    if (APApplication.NO_CAISSE_CVCI.equals(PRAbstractApplication.getApplication(
-                            APApplication.DEFAULT_APPLICATION_APG).getProperty(CommonProperties.KEY_NO_CAISSE))
+                    if (APApplication.NO_CAISSE_CVCI
+                            .equals(PRAbstractApplication.getApplication(APApplication.DEFAULT_APPLICATION_APG)
+                                    .getProperty(CommonProperties.KEY_NO_CAISSE))
                             && (getIsSendToGED())) {
 
                         // on enlève de la liste les éléments qui ne sont pas archivé, ni publié
@@ -298,8 +302,9 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
 
                         // Correction BZ 10007
                         // afin de se prémunir contre 22, 022 on transforme les valeurs en integer
-                        int caisseCourante = Integer.parseInt(PRAbstractApplication.getApplication(
-                                APApplication.DEFAULT_APPLICATION_APG).getProperty(CommonProperties.KEY_NO_CAISSE));
+                        int caisseCourante = Integer
+                                .parseInt(PRAbstractApplication.getApplication(APApplication.DEFAULT_APPLICATION_APG)
+                                        .getProperty(CommonProperties.KEY_NO_CAISSE));
 
                         int ccvdConstante = Integer.parseInt(APApplication.NO_CAISSE_CCVD);
                         int agrivitConstante = Integer.parseInt(APApplication.NO_CAISSE_AGRIVIT);
@@ -338,8 +343,8 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                 docInfo.setDocumentProperty(APAbstractDecomptesGenerationProcess.ORDER_PRINTING_BY,
                         buildOrderPrintingByKey(decompteCourant.getIdAffilie(), decompteCourant.getIdTiers()));
 
-                final IFormatData affilieFormatter = ((AFApplication) GlobazServer.getCurrentSystem().getApplication(
-                        AFApplication.DEFAULT_APPLICATION_NAOS)).getAffileFormater();
+                final IFormatData affilieFormatter = ((AFApplication) GlobazServer.getCurrentSystem()
+                        .getApplication(AFApplication.DEFAULT_APPLICATION_NAOS)).getAffileFormater();
 
                 docInfo.setDocumentProperty("numero.affilie.formatte", noAffiliePourLaGED);
 
@@ -358,8 +363,8 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
             // 000.00.000.000
 
             if (!getIsBlankIndexGedNssAZero()) {
-                final String avsnf = PRAbstractApplication.getAffileFormater().unformat(
-                        docInfo.getDocumentProperty(TIDocumentInfoHelper.TIERS_NUMERO_AVS_NON_FORMATTE));
+                final String avsnf = PRAbstractApplication.getAffileFormater()
+                        .unformat(docInfo.getDocumentProperty(TIDocumentInfoHelper.TIERS_NUMERO_AVS_NON_FORMATTE));
                 final String avsf = docInfo.getDocumentProperty(TIDocumentInfoHelper.TIERS_NUMERO_AVS_FORMATTE);
 
                 if (JadeStringUtil.isBlank(avsnf) || JadeStringUtil.isBlank(avsf) || (avsnf.equals("00000000000"))) {
@@ -406,16 +411,16 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                 throw new IllegalArgumentException("The name of the sub-report 'détail' is empty");
             }
 
-            parametres.put(
-                    "PARAM_AP_DECOMPTE_DETAIL",
-                    JadeStringUtil.change(getSession().getApplication().getExternalModelPath()
-                            + APApplication.APPLICATION_APG_REP, '\\', '/')
+            parametres.put("PARAM_AP_DECOMPTE_DETAIL",
+                    JadeStringUtil
+                            .change(getSession().getApplication().getExternalModelPath()
+                                    + APApplication.APPLICATION_APG_REP, '\\', '/')
                             + "/" + "model" + "/" + nomModeleDetailDecompte);
 
-            parametres.put(
-                    "PARAM_AP_DECOMPTE_DETAIL2",
-                    JadeStringUtil.change(getSession().getApplication().getExternalModelPath()
-                            + APApplication.APPLICATION_APG_REP, '\\', '/')
+            parametres.put("PARAM_AP_DECOMPTE_DETAIL2",
+                    JadeStringUtil
+                            .change(getSession().getApplication().getExternalModelPath()
+                                    + APApplication.APPLICATION_APG_REP, '\\', '/')
                             + "/" + "model" + "/" + "AP_DECOMPTE_DETAIL2.jasper");
 
             // remplissage de l'entête
@@ -434,13 +439,11 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                         tiers = PRTiersHelper.getAdministrationParId(getISession(), decompteCourant.getIdTiers());
                     }
 
-                    adresse = PRTiersHelper
-                            .getAdresseCourrierFormatee(
-                                    getISession(),
-                                    decompteCourant.getIdTiers(),
-                                    decompteCourant.getIdAffilie(),
-                                    IPRDemande.CS_TYPE_APG.equals(getCSTypePrestationsLot()) ? IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_APG
-                                            : IPRConstantesExternes.TIERS_CS_DOMAINE_MATERNITE);
+                    adresse = PRTiersHelper.getAdresseCourrierFormatee(getISession(), decompteCourant.getIdTiers(),
+                            decompteCourant.getIdAffilie(),
+                            IPRDemande.CS_TYPE_APG.equals(getCSTypePrestationsLot())
+                                    ? IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_APG
+                                    : IPRConstantesExternes.TIERS_CS_DOMAINE_MATERNITE);
 
                 } catch (final Exception e) {
                     throw new FWIException("impossible de charger le tiers", e);
@@ -465,16 +468,14 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                 String adresse;
                 IPRAffilie affilie;
                 try {
-                    affilie = PRAffiliationHelper.getEmployeurParIdAffilie(getISession(), getSession()
-                            .getCurrentThreadTransaction(), decompteCourant.getIdAffilie(), decompteCourant
-                            .getIdTiers());
-                    adresse = PRTiersHelper
-                            .getAdresseCourrierFormatee(
-                                    getISession(),
-                                    decompteCourant.getIdTiers(),
-                                    decompteCourant.getIdAffilie(),
-                                    IPRDemande.CS_TYPE_APG.equals(getCSTypePrestationsLot()) ? IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_APG
-                                            : IPRConstantesExternes.TIERS_CS_DOMAINE_MATERNITE);
+                    affilie = PRAffiliationHelper.getEmployeurParIdAffilie(getISession(),
+                            getSession().getCurrentThreadTransaction(), decompteCourant.getIdAffilie(),
+                            decompteCourant.getIdTiers());
+                    adresse = PRTiersHelper.getAdresseCourrierFormatee(getISession(), decompteCourant.getIdTiers(),
+                            decompteCourant.getIdAffilie(),
+                            IPRDemande.CS_TYPE_APG.equals(getCSTypePrestationsLot())
+                                    ? IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_APG
+                                    : IPRConstantesExternes.TIERS_CS_DOMAINE_MATERNITE);
 
                     noAffilie = affilie.getNumAffilie();
 
@@ -572,19 +573,18 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                 tiers = PRTiersHelper.getAdministrationParId(getISession(), decompteCourant.getIdTiers());
             }
 
-            parametres.put("P_HEADER_NOM_PAGE2", PRStringUtils.replaceString(
-                    document.getTextes(5).getTexte(4).getDescription(),
-                    "{nomPrenom}",
-                    tiers.getProperty(PRTiersWrapper.PROPERTY_NOM) + " "
-                            + tiers.getProperty(PRTiersWrapper.PROPERTY_PRENOM)));
+            parametres.put("P_HEADER_NOM_PAGE2",
+                    PRStringUtils.replaceString(document.getTextes(5).getTexte(4).getDescription(), "{nomPrenom}",
+                            tiers.getProperty(PRTiersWrapper.PROPERTY_NOM) + " "
+                                    + tiers.getProperty(PRTiersWrapper.PROPERTY_PRENOM)));
 
             if (JadeStringUtil.isEmpty((noAffilie))) {
 
                 final String nAvs = tiers.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL);
                 final String idTiers = tiers.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS);
                 if (!JadeStringUtil.isEmpty(nAvs)) {
-                    parametres.put("P_HEADER_NO_AVS_PAGE2", PRStringUtils.replaceString(
-                            document.getTextes(5).getTexte(3).getDescription(), "{noAVS}", nAvs));
+                    parametres.put("P_HEADER_NO_AVS_PAGE2", PRStringUtils
+                            .replaceString(document.getTextes(5).getTexte(3).getDescription(), "{noAVS}", nAvs));
                 }
 
                 if (!JadeStringUtil.isBlankOrZero(idTiers)) {
@@ -597,8 +597,8 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
 
             } else {
 
-                parametres.put("P_HEADER_NO_AFFILIE_PAGE2", PRStringUtils.replaceString(
-                        document.getTextes(5).getTexte(2).getDescription(), "{noAffilie}", noAffilie));
+                parametres.put("P_HEADER_NO_AFFILIE_PAGE2", PRStringUtils
+                        .replaceString(document.getTextes(5).getTexte(2).getDescription(), "{noAffilie}", noAffilie));
             }
 
             parametres.put("PARAM_PAGE", document.getTextes(5).getTexte(5).getDescription());
@@ -779,7 +779,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
 
     /**
      * Methode pour formatter le caractère '&'
-     * 
+     *
      * @param texte
      * @return
      */
@@ -899,8 +899,8 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                                     String prenom1 = null;
                                     try {
                                         prenom1 = getNom(objRepartition1, PRTiersWrapper.PROPERTY_PRENOM)
-                                                + PRDateFormater.convertDate_JJxMMxAAAA_to_AAAAMMJJ(objRepartition1
-                                                        .getDateDebut())
+                                                + PRDateFormater.convertDate_JJxMMxAAAA_to_AAAAMMJJ(
+                                                        objRepartition1.getDateDebut())
                                                 + objRepartition1.getIdRepartitionBeneficiairePaiement();
                                     } catch (final JAException e) {
                                         prenom1 = getNom(objRepartition1, PRTiersWrapper.PROPERTY_PRENOM)
@@ -911,8 +911,8 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                                     String prenom2;
                                     try {
                                         prenom2 = getNom(objRepartition2, PRTiersWrapper.PROPERTY_PRENOM)
-                                                + PRDateFormater.convertDate_JJxMMxAAAA_to_AAAAMMJJ(objRepartition2
-                                                        .getDateDebut())
+                                                + PRDateFormater.convertDate_JJxMMxAAAA_to_AAAAMMJJ(
+                                                        objRepartition2.getDateDebut())
                                                 + objRepartition2.getIdRepartitionBeneficiairePaiement();
                                     } catch (final JAException e) {
                                         prenom2 = getNom(objRepartition2, PRTiersWrapper.PROPERTY_PRENOM)
@@ -931,7 +931,8 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                             }
                         }
 
-                        private String getNom(final APRepartitionJointPrestation objRepartition, final String propriete) {
+                        private String getNom(final APRepartitionJointPrestation objRepartition,
+                                final String propriete) {
                             try {
                                 if (objRepartition != null) {
                                     final PRDemande demande = ApgServiceLocator.getEntityService().getDemandeDuDroit(
@@ -954,6 +955,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
 
             repartitionsTreeSet.addAll(decompteCourant.getRepartitionsPeres());
 
+            Boolean hasPrestationAPGFederale = false;
             for (final APRepartitionJointPrestation repartition : repartitionsTreeSet) {
                 setTailleLot(1);
                 setImpressionParLot(true);
@@ -978,19 +980,17 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                 final PRDemande demande = droit.loadDemande();
                 tiers = PRTiersHelper.getTiersParId(getSession(), demande.getIdTiers());
 
-                champs.put("FIELD_ASSURE", PRStringUtils.replaceString(
-                        document.getTextes(3).getTexte(13).getDescription(),
-                        "{nomAVS}",
-                        tiers.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL) + " "
-                                + tiers.getProperty(PRTiersWrapper.PROPERTY_NOM) + " "
-                                + tiers.getProperty(PRTiersWrapper.PROPERTY_PRENOM)));
+                champs.put("FIELD_ASSURE",
+                        PRStringUtils.replaceString(document.getTextes(3).getTexte(13).getDescription(), "{nomAVS}",
+                                tiers.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL) + " "
+                                        + tiers.getProperty(PRTiersWrapper.PROPERTY_NOM) + " "
+                                        + tiers.getProperty(PRTiersWrapper.PROPERTY_PRENOM)));
 
                 // 2. les infos sur la prestation
-                champs.put("FIELD_DETAIL_PERIODE", PRStringUtils.replaceString(
-                        document.getTextes(3).getTexte(14).getDescription(),
-                        "{periode}",
-                        JACalendar.format(repartition.getDateDebut(), getCodeIsoLangue()) + " - "
-                                + JACalendar.format(repartition.getDateFin(), getCodeIsoLangue())));
+                champs.put("FIELD_DETAIL_PERIODE",
+                        PRStringUtils.replaceString(document.getTextes(3).getTexte(14).getDescription(), "{periode}",
+                                JACalendar.format(repartition.getDateDebut(), getCodeIsoLangue()) + " - "
+                                        + JACalendar.format(repartition.getDateFin(), getCodeIsoLangue())));
 
                 // 3. détail sur la prestation journalière (nbr de jours + montant journalier), si non ventilé
                 if (!isTraitementDesVentilations()) {
@@ -1003,35 +1003,42 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
 
                 // 4. le montant de la répartition
                 if (isTraitementDesVentilations()) {
-                    champs.put("FIELD_MONTANT_APG", PRStringUtils.replaceString(document.getTextes(3).getTexte(16)
-                            .getDescription(), "{montantPeriode}",
-                            JANumberFormatter.formatNoRound(repartition.getMontantVentile())));
+                    champs.put("FIELD_MONTANT_APG",
+                            PRStringUtils.replaceString(document.getTextes(3).getTexte(16).getDescription(),
+                                    "{montantPeriode}",
+                                    JANumberFormatter.formatNoRound(repartition.getMontantVentile())));
 
                 } else {
-                    champs.put("FIELD_MONTANT_APG", PRStringUtils.replaceString(document.getTextes(3).getTexte(16)
-                            .getDescription(), "{montantPeriode}",
-                            JANumberFormatter.formatNoRound(repartition.getMontantBrut())));
+                    champs.put("FIELD_MONTANT_APG",
+                            PRStringUtils.replaceString(document.getTextes(3).getTexte(16).getDescription(),
+                                    "{montantPeriode}", JANumberFormatter.formatNoRound(repartition.getMontantBrut())));
 
                 }
 
+                if ("true".equals(JadePropertiesService.getInstance().getProperty(APApplication.PROPERTY_IS_FERCIAB))
+                        && APTypeDePrestation.STANDARD.isCodeSystemEqual(repartition.getGenrePrestationPrestation())) {
+                    champs.put("FIELD_IS_APG_FED", "*");
+                    hasPrestationAPGFederale = true;
+                }
                 // Type de prestation complémentaire
-                // Dans le cas des décomptes 'normal-acmne' (les 2 types de prestations sont présentes sur le décomptes)
+                // Dans le cas des décomptes 'normal-acmne' (les 2 types de prestations sont présentes sur le
+                // décomptes)
                 // une remarque prestation complémentaire est insérée
                 // 1 - le décompte doit être un décompte standard-acmne
                 if ((decompteCourant != null)
                         && APTypeDeDecompte.NORMAL_ACM_NE.equals(decompteCourant.getTypeDeDecompte())) {
                     // 2 - la prestation doit être de type ACMNE
                     if (APTypeDePrestation.ACM_NE.isCodeSystemEqual(repartition.getGenrePrestationPrestation())) {
-                        champs.put(APAbstractDecomptesGenerationProcess.PARAMETER_PRESTATION_COMPLEMENTAIRE, document
-                                .getTextes(3).getTexte(50).getDescription());
+                        champs.put(APAbstractDecomptesGenerationProcess.PARAMETER_PRESTATION_COMPLEMENTAIRE,
+                                document.getTextes(3).getTexte(50).getDescription());
                     }
                 }
 
                 // Remarques
                 if (!JadeStringUtil.isEmpty(repartition.getRemarque())) {
-                    champs.put("FIELD_REMARQUE_PRESTATION", PRStringUtils.replaceString(
-                            document.getTextes(3).getTexte(19).getDescription(), "{remarque}",
-                            repartition.getRemarque()));
+                    champs.put("FIELD_REMARQUE_PRESTATION",
+                            PRStringUtils.replaceString(document.getTextes(3).getTexte(19).getDescription(),
+                                    "{remarque}", repartition.getRemarque()));
                 }
 
                 if (isTraitementDesVentilations()) {
@@ -1114,17 +1121,18 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                 if (!totalMontantCotisation.equals(new FWCurrency(0))) {
                     champs.put("FIELD_DETAIL_COTISATIONS", libelleCot + libelleAVS + libelleAC + libelleLFA);
 
-                    champs.put("FIELD_MONTANT_COTISATIONS", PRStringUtils.replaceString(
-                            document.getTextes(3).getTexte(17).getDescription(), "{montantCoti}",
-                            JANumberFormatter.formatNoRound(totalMontantCotisation.toString())));
+                    champs.put("FIELD_MONTANT_COTISATIONS",
+                            PRStringUtils.replaceString(document.getTextes(3).getTexte(17).getDescription(),
+                                    "{montantCoti}",
+                                    JANumberFormatter.formatNoRound(totalMontantCotisation.toString())));
 
                     totalCotisations.add(totalMontantCotisation.toString());
                 }
 
                 // afficher Cotisations FNE sur une nouvelle ligne si le montant est supérieur à 0
                 if (!cotisationsFNE.isZero()) {
-                    champs.put(APAbstractDecomptesGenerationProcess.DETAIL_COTISATIONS_FNE, document.getTextes(3)
-                            .getTexte(51).getDescription());
+                    champs.put(APAbstractDecomptesGenerationProcess.DETAIL_COTISATIONS_FNE,
+                            document.getTextes(3).getTexte(51).getDescription());
                     champs.put(APAbstractDecomptesGenerationProcess.MONTANT_COTISATIONS_FNE, cotisationsFNE.toString());
                 }
 
@@ -1132,9 +1140,10 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                 if (!totalMontantImpotSource.equals(new FWCurrency(0))) {
                     champs.put("FIELD_DETAIL_IMPOT", document.getTextes(3).getTexte(12).getDescription());
 
-                    champs.put("FIELD_MONTANT_IMPOT", PRStringUtils.replaceString(document.getTextes(3).getTexte(22)
-                            .getDescription(), "{montantImpot}",
-                            JANumberFormatter.formatNoRound(totalMontantImpotSource.toString())));
+                    champs.put("FIELD_MONTANT_IMPOT",
+                            PRStringUtils.replaceString(document.getTextes(3).getTexte(22).getDescription(),
+                                    "{montantImpot}",
+                                    JANumberFormatter.formatNoRound(totalMontantImpotSource.toString())));
 
                     totalImpotSource.add(totalMontantImpotSource.toString());
                 }
@@ -1196,12 +1205,12 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                         // Verifie et format les caratères spéciaux
                         nom = checkFormatCaracter(nom);
 
-                        champs.put("FIELD_DETAIL_VENTILATIONS_" + nbVentilations, PRStringUtils.replaceString(document
-                                .getTextes(3).getTexte(6).getDescription(), "{ventilation}", nom));
+                        champs.put("FIELD_DETAIL_VENTILATIONS_" + nbVentilations, PRStringUtils.replaceString(
+                                document.getTextes(3).getTexte(6).getDescription(), "{ventilation}", nom));
 
-                        champs.put("FIELD_MONTANT_VENTILATIONS_" + nbVentilations, PRStringUtils.replaceString(document
-                                .getTextes(3).getTexte(24).getDescription(), "{montantVentilation}", "-"
-                                + JANumberFormatter.formatNoRound(uneRepartitionEnfant.getMontantVentile())));
+                        champs.put("FIELD_MONTANT_VENTILATIONS_" + nbVentilations, PRStringUtils.replaceString(
+                                document.getTextes(3).getTexte(24).getDescription(), "{montantVentilation}",
+                                "-" + JANumberFormatter.formatNoRound(uneRepartitionEnfant.getMontantVentile())));
 
                         total.sub(uneRepartitionEnfant.getMontantVentile());
                         totalMontantVentile.sub(uneRepartitionEnfant.getMontantVentile());
@@ -1212,8 +1221,9 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                 // le total
                 champs.put("FIELD_TOTAL_REPARTITION", document.getTextes(3).getTexte(7).getDescription());
 
-                champs.put("FIELD_MONTANT_REPARTITION", PRStringUtils.replaceString(document.getTextes(3).getTexte(18)
-                        .getDescription(), "{montantTotal}", JANumberFormatter.formatNoRound(total.toString())));
+                champs.put("FIELD_MONTANT_REPARTITION",
+                        PRStringUtils.replaceString(document.getTextes(3).getTexte(18).getDescription(),
+                                "{montantTotal}", JANumberFormatter.formatNoRound(total.toString())));
 
                 lignes.add(champs);
                 grandTotal.add(total);
@@ -1296,15 +1306,15 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                         champs.put("FIELD_COMPENSATION_" + numLigneFactureAvecNum, buffer.toString());
                         if (Double.parseDouble(facture.getMontant()) < 0) {
 
-                            champs.put("FIELD_MONTANT_COMPENSATION_" + numLigneFactureAvecNum, PRStringUtils
-                                    .replaceString(document.getTextes(3).getTexte(26).getDescription(),
+                            champs.put("FIELD_MONTANT_COMPENSATION_" + numLigneFactureAvecNum,
+                                    PRStringUtils.replaceString(document.getTextes(3).getTexte(26).getDescription(),
                                             "{montantCompensation}",
                                             JANumberFormatter.formatNoRound(facture.getMontant())));
 
                         } else {
 
-                            champs.put("FIELD_MONTANT_COMPENSATION_" + numLigneFactureAvecNum, PRStringUtils
-                                    .replaceString(document.getTextes(3).getTexte(26).getDescription(),
+                            champs.put("FIELD_MONTANT_COMPENSATION_" + numLigneFactureAvecNum,
+                                    PRStringUtils.replaceString(document.getTextes(3).getTexte(26).getDescription(),
                                             "{montantCompensation}",
                                             "-" + JANumberFormatter.formatNoRound(facture.getMontant())));
 
@@ -1315,8 +1325,9 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                         // Si j'ai atteint le nombre max de ligne
                         if (numLigneFactureAvecNum == nbLignesFactureAvecNum) {
                             // Je récupère une seul fois le texte à afficher
-                            bufferDernierLigneFactureAvecNum.append(PRStringUtils.replaceString(document.getTextes(3)
-                                    .getTexte(43).getDescription(), "{compSurFacture}", facture.getNoFacture()));
+                            bufferDernierLigneFactureAvecNum.append(
+                                    PRStringUtils.replaceString(document.getTextes(3).getTexte(43).getDescription(),
+                                            "{compSurFacture}", facture.getNoFacture()));
                         } else if (numLigneFactureAvecNum <= (nbLignesFactureAvecNum + 4)) {
                             // comme le texte a été récupéré ci-dessus, j'y ajoute le numéro de facture (max 4 num de
                             // facture)
@@ -1345,15 +1356,16 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                             bufferDernierLigneFactureAvecNum.toString());
                     if (Double.parseDouble(totalDernierLigneFactureAvecNum.toString()) < 0) {
 
-                        champs.put("FIELD_MONTANT_COMPENSATION_" + nbLignesFactureAvecNum, PRStringUtils.replaceString(
-                                document.getTextes(3).getTexte(26).getDescription(), "{montantCompensation}",
-                                JANumberFormatter.formatNoRound(totalDernierLigneFactureAvecNum.toString())));
+                        champs.put("FIELD_MONTANT_COMPENSATION_" + nbLignesFactureAvecNum,
+                                PRStringUtils.replaceString(document.getTextes(3).getTexte(26).getDescription(),
+                                        "{montantCompensation}",
+                                        JANumberFormatter.formatNoRound(totalDernierLigneFactureAvecNum.toString())));
 
                     } else {
 
                         champs.put("FIELD_MONTANT_COMPENSATION_" + nbLignesFactureAvecNum, PRStringUtils.replaceString(
-                                document.getTextes(3).getTexte(26).getDescription(), "{montantCompensation}", "-"
-                                        + JANumberFormatter.formatNoRound(totalDernierLigneFactureAvecNum.toString())));
+                                document.getTextes(3).getTexte(26).getDescription(), "{montantCompensation}",
+                                "-" + JANumberFormatter.formatNoRound(totalDernierLigneFactureAvecNum.toString())));
 
                     }
                 }
@@ -1380,21 +1392,21 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                         numLigneFactureAvecZero = listeFacturesAvecNumero.size() + 1;
                     }
 
-                    champs.put("FIELD_COMPENSATION_" + numLigneFactureAvecZero, document.getTextes(3).getTexte(8)
-                            .getDescription());
+                    champs.put("FIELD_COMPENSATION_" + numLigneFactureAvecZero,
+                            document.getTextes(3).getTexte(8).getDescription());
 
                     // On doit inverser le signe des factures à compenser.
                     if (Double.parseDouble(totalFactureNumZero.toString()) < 0) {
 
-                        champs.put("FIELD_MONTANT_COMPENSATION_" + numLigneFactureAvecZero, PRStringUtils
-                                .replaceString(document.getTextes(3).getTexte(26).getDescription(),
+                        champs.put("FIELD_MONTANT_COMPENSATION_" + numLigneFactureAvecZero,
+                                PRStringUtils.replaceString(document.getTextes(3).getTexte(26).getDescription(),
                                         "{montantCompensation}",
                                         JANumberFormatter.formatNoRound(totalFactureNumZero.toString())));
 
                     } else {
 
-                        champs.put("FIELD_MONTANT_COMPENSATION_" + numLigneFactureAvecZero, PRStringUtils
-                                .replaceString(document.getTextes(3).getTexte(26).getDescription(),
+                        champs.put("FIELD_MONTANT_COMPENSATION_" + numLigneFactureAvecZero,
+                                PRStringUtils.replaceString(document.getTextes(3).getTexte(26).getDescription(),
                                         "{montantCompensation}",
                                         "-" + JANumberFormatter.formatNoRound(totalFactureNumZero.toString())));
 
@@ -1410,8 +1422,9 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                 champs.put("FIELD_TOTAL_FINAL", document.getTextes(3).getTexte(9).getDescription());
             }
 
-            champs.put("FIELD_MONTANT_FINAL", PRStringUtils.replaceString(document.getTextes(3).getTexte(27)
-                    .getDescription(), "{montantFinal}", JANumberFormatter.formatNoRound(grandTotal.toString())));
+            champs.put("FIELD_MONTANT_FINAL",
+                    PRStringUtils.replaceString(document.getTextes(3).getTexte(27).getDescription(), "{montantFinal}",
+                            JANumberFormatter.formatNoRound(grandTotal.toString())));
 
             // Insertion de l'addresse de paiement, si non ventilé
             if ((grandTotal.compareTo(new FWCurrency(0)) > 0)) {
@@ -1425,33 +1438,38 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                     if (adressePaiement.contains(",")) {
                         champs.put("FIELD_TEXTE_ADRESSE_PAIEMENT", document.getTextes(3).getTexte(45).getDescription());
                         // Adresse de paiement
-                        champs.put("FIELD_ADRESSE_PAIEMENT", PRStringUtils.replaceString(document.getTextes(3)
-                                .getTexte(48).getDescription(), "{adressePaiement}", adressePaiement));
+                        champs.put("FIELD_ADRESSE_PAIEMENT",
+                                PRStringUtils.replaceString(document.getTextes(3).getTexte(48).getDescription(),
+                                        "{adressePaiement}", adressePaiement));
 
                     }
                     // Sinon, si l'adresse ne contient ni virgule, ni retour à la ligne, c'est une adresse postale
                     else if (!adressePaiement.contains(",") && !adressePaiement.contains("\n")) {
-                        champs.put(
-                                "FIELD_TEXTE_ADRESSE_PAIEMENT",
-                                document.getTextes(3).getTexte(46).getDescription()
-                                        + " "
-                                        + PRStringUtils.replaceString(document.getTextes(3).getTexte(48)
-                                                .getDescription(), "{adressePaiement}", adressePaiement));
+                        champs.put("FIELD_TEXTE_ADRESSE_PAIEMENT",
+                                document.getTextes(3).getTexte(46).getDescription() + " "
+                                        + PRStringUtils.replaceString(
+                                                document.getTextes(3).getTexte(48).getDescription(),
+                                                "{adressePaiement}", adressePaiement));
 
                     }
                     // Sinon, c'est une adresse de mandat postale
                     else {
                         try {
-                            champs.put("FIELD_TEXTE_ADRESSE_PAIEMENT", document.getTextes(3).getTexte(47)
-                                    .getDescription());
+                            champs.put("FIELD_TEXTE_ADRESSE_PAIEMENT",
+                                    document.getTextes(3).getTexte(47).getDescription());
                             // Adresse de paiement
-                            champs.put("FIELD_ADRESSE_PAIEMENT", PRStringUtils.replaceString(document.getTextes(3)
-                                    .getTexte(48).getDescription(), "{adressePaiement}", adressePaiement.trim()));
+                            champs.put("FIELD_ADRESSE_PAIEMENT",
+                                    PRStringUtils.replaceString(document.getTextes(3).getTexte(48).getDescription(),
+                                            "{adressePaiement}", adressePaiement.trim()));
                         } catch (Exception e) {
                             JadeLogger.error(this.getClass().getName(), e);
                         }
                     }
                 }
+            }
+
+            if (hasPrestationAPGFederale) {
+                champs.put("PARAM_FIELD_TEXTE_PAS_SOUMIS_LAA", document.getTextes(3).getTexte(49).getDescription());
             }
 
             // Anciennement champs de classe
@@ -1471,52 +1489,54 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
 
                                 champs.put("FIELD_RECAP", document.getTextes(3).getTexte(28).getDescription());
                                 champs.put("FIELD_RECAP_APG", document.getTextes(3).getTexte(29).getDescription());
-                                champs.put("FIELD_MONTANT_RECAP_APG", PRStringUtils.replaceString(document.getTextes(3)
-                                        .getTexte(30).getDescription(), "{montantAPGbrut}", totalAPG.toString()));
+                                champs.put("FIELD_MONTANT_RECAP_APG",
+                                        PRStringUtils.replaceString(document.getTextes(3).getTexte(30).getDescription(),
+                                                "{montantAPGbrut}", totalAPG.toString()));
                             }
 
                             if (!totalCotisations.isZero()) {
-                                champs.put("FIELD_RECAP_COTISATIONS", document.getTextes(3).getTexte(31)
-                                        .getDescription());
-                                champs.put("FIELD_MONTANT_RECAP_COTISATIONS", PRStringUtils.replaceString(document
-                                        .getTextes(3).getTexte(32).getDescription(), "{montantCotisations}",
-                                        totalCotisations.toString()));
+                                champs.put("FIELD_RECAP_COTISATIONS",
+                                        document.getTextes(3).getTexte(31).getDescription());
+                                champs.put("FIELD_MONTANT_RECAP_COTISATIONS",
+                                        PRStringUtils.replaceString(document.getTextes(3).getTexte(32).getDescription(),
+                                                "{montantCotisations}", totalCotisations.toString()));
                             }
 
                             if (!totalImpotSource.isZero()) {
                                 champs.put("FIELD_RECAP_IMPOT", document.getTextes(3).getTexte(35).getDescription());
-                                champs.put("FIELD_MONTANT_RECAP_IMPOT", PRStringUtils.replaceString(
-                                        document.getTextes(3).getTexte(36).getDescription(), "{impotMontant}",
-                                        totalImpotSource.toString()));
+                                champs.put("FIELD_MONTANT_RECAP_IMPOT",
+                                        PRStringUtils.replaceString(document.getTextes(3).getTexte(36).getDescription(),
+                                                "{impotMontant}", totalImpotSource.toString()));
                             }
 
                             if (!totalMontantVentile.isZero()) {
-                                champs.put("FIELD_RECAP_VENTILATION", document.getTextes(3).getTexte(37)
-                                        .getDescription());
-                                champs.put("FIELD_MONTANT_RECAP_VENTILATION", PRStringUtils.replaceString(document
-                                        .getTextes(3).getTexte(38).getDescription(), "{ventilationsMontant}",
-                                        totalMontantVentile.toString()));
+                                champs.put("FIELD_RECAP_VENTILATION",
+                                        document.getTextes(3).getTexte(37).getDescription());
+                                champs.put("FIELD_MONTANT_RECAP_VENTILATION",
+                                        PRStringUtils.replaceString(document.getTextes(3).getTexte(38).getDescription(),
+                                                "{ventilationsMontant}", totalMontantVentile.toString()));
                             }
 
                             if (!totalCompensations.isZero()) {
-                                champs.put("FIELD_RECAP_COMPENSATION", document.getTextes(3).getTexte(33)
-                                        .getDescription());
-                                champs.put("FIELD_MONTANT_RECAP_COMPENSATION", PRStringUtils.replaceString(document
-                                        .getTextes(3).getTexte(34).getDescription(), "{compensationsMontant}",
-                                        totalCompensations.toString()));
+                                champs.put("FIELD_RECAP_COMPENSATION",
+                                        document.getTextes(3).getTexte(33).getDescription());
+                                champs.put("FIELD_MONTANT_RECAP_COMPENSATION",
+                                        PRStringUtils.replaceString(document.getTextes(3).getTexte(34).getDescription(),
+                                                "{compensationsMontant}", totalCompensations.toString()));
                             }
 
                             if (grandTotal.isNegative() || grandTotal.isZero()) {
-                                champs.put("FIELD_TOTAL_FINAL_RECAP", document.getTextes(3).getTexte(11)
-                                        .getDescription());
+                                champs.put("FIELD_TOTAL_FINAL_RECAP",
+                                        document.getTextes(3).getTexte(11).getDescription());
                             } else {
-                                champs.put("FIELD_TOTAL_FINAL_RECAP", document.getTextes(3).getTexte(9)
-                                        .getDescription());
+                                champs.put("FIELD_TOTAL_FINAL_RECAP",
+                                        document.getTextes(3).getTexte(9).getDescription());
                             }
 
-                            champs.put("FIELD_MONTANT_FINAL_RECAP", PRStringUtils.replaceString(document.getTextes(3)
-                                    .getTexte(39).getDescription(), "{montantFinalRecap}",
-                                    JANumberFormatter.formatNoRound(grandTotal.toString())));
+                            champs.put("FIELD_MONTANT_FINAL_RECAP",
+                                    PRStringUtils.replaceString(document.getTextes(3).getTexte(39).getDescription(),
+                                            "{montantFinalRecap}",
+                                            JANumberFormatter.formatNoRound(grandTotal.toString())));
                         }
                     }
                 }
@@ -1672,8 +1692,8 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                 String noAff = PRBlankBNumberFormater.getEmptyNoAffilieFormatte();
                 String noAffNonFormatte = PRAbstractApplication.getAffileFormater().unformat(noAff);
 
-                final IFormatData affilieFormatter = ((AFApplication) GlobazServer.getCurrentSystem().getApplication(
-                        AFApplication.DEFAULT_APPLICATION_NAOS)).getAffileFormater();
+                final IFormatData affilieFormatter = ((AFApplication) GlobazServer.getCurrentSystem()
+                        .getApplication(AFApplication.DEFAULT_APPLICATION_NAOS)).getAffileFormater();
 
                 if (affilie != null) {
                     docInfo.setDocumentType("globaz.apg.itext.APAbstractDecomptesGenerationProcess" + "Aff");
@@ -1712,8 +1732,8 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
             if (!JadeStringUtil.isEmpty(extensionModelCaisse)) {
                 setTemplateFile(APAbstractDecomptesGenerationProcess.FICHIER_MODELE + extensionModelCaisse);
                 final FWIImportManager im = getImporter();
-                final File sourceFile = new File(im.getImportPath() + im.getDocumentTemplate()
-                        + FWITemplateType.TEMPLATE_JASPER.toString());
+                final File sourceFile = new File(
+                        im.getImportPath() + im.getDocumentTemplate() + FWITemplateType.TEMPLATE_JASPER.toString());
                 if (sourceFile != null && sourceFile.exists()) {
                     // NOTHING TO DO
                 } else {
@@ -1729,7 +1749,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
 
     /**
      * Methode pour retourner l'adresse de paiement formatée
-     * 
+     *
      * @return
      */
     public String getAdressePaiementAffilie(final BSession session, final String idTiers, String idAffilie)
@@ -1786,8 +1806,8 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
             return descAdressePaiement;
 
         } catch (final Exception e) {
-            throw new Exception(e + ": "
-                    + "Erreur dans le chargement de la'dresse de paiement. APDecompte/getDescAdressePaiement");
+            throw new Exception(
+                    e + ": " + "Erreur dans le chargement de la'dresse de paiement. APDecompte/getDescAdressePaiement");
         }
     }
 
@@ -1800,7 +1820,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
 
     /**
      * Methode pour retourner le détail journalier du décompte : nb de jours + montant journalier
-     * 
+     *
      * @return String
      * @param APRepartitionJointPrestation
      */
@@ -1883,14 +1903,14 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
     public abstract boolean hasNextDocument() throws FWIException;
 
     private boolean isCaisse(final String noCaisse) throws Exception {
-        return noCaisse.equals(PRAbstractApplication.getApplication(APApplication.DEFAULT_APPLICATION_APG).getProperty(
-                CommonProperties.KEY_NO_CAISSE));
+        return noCaisse.equals(PRAbstractApplication.getApplication(APApplication.DEFAULT_APPLICATION_APG)
+                .getProperty(CommonProperties.KEY_NO_CAISSE));
     }
 
     /**
      * Renseigne si on traite les ventilations par opposition au répartitions Return true si l'on traite les
      * ventilations Return false si on traite les répartitions
-     * 
+     *
      * @return <code>true</code> si on est dans la phase de traitement des ventilations
      */
     public abstract boolean isTraitementDesVentilations();
@@ -1996,8 +2016,8 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                         } catch (final Exception e) {
                             e.printStackTrace();
                         }
-                        docInfo.setDocumentDate(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(getDateDocument()
-                                .toStrAMJ()));
+                        docInfo.setDocumentDate(
+                                PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(getDateDocument().toStrAMJ()));
 
                         if (!JadeStringUtil.isIntegerEmpty(affiliecourant.getIdAffilie())) {
                             // Employeur affilié --> rôle AFFILIE
@@ -2028,8 +2048,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
 
                                 // on ajoute au doc info le critère de tri pour les impressions
                                 // ORDER_PRINTING_BY toujours selon le décompte courant (Assuré)
-                                docInfo.setDocumentProperty(
-                                        APAbstractDecomptesGenerationProcess.ORDER_PRINTING_BY,
+                                docInfo.setDocumentProperty(APAbstractDecomptesGenerationProcess.ORDER_PRINTING_BY,
                                         buildOrderPrintingByKey(decompteCourant.getIdAffilie(),
                                                 decompteCourant.getIdTiers()));
 
@@ -2059,7 +2078,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
 
     /**
      * @param decompteCourant
-     *            the decompteCourant to set
+     *                            the decompteCourant to set
      */
     public final void setDecompteCourant(final APDecompte decompteCourant) {
         this.decompteCourant = decompteCourant;
