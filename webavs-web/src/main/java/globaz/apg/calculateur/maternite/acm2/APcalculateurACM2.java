@@ -25,10 +25,10 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-public class APcalculateurACM2 implements IAPPrestationCalculateur {
+public class APcalculateurACM2 implements IAPPrestationCalculateur<APPrestationCalculeeAPersister, ACM2BusinessDataParEmployeur, ACM2PersistenceInputData> {
 
     @Override
-    public List<Object> calculerPrestation(List<Object> donneesDomainCalcul) throws Exception {
+    public List<APPrestationCalculeeAPersister> calculerPrestation(List<ACM2BusinessDataParEmployeur> donneesDomainCalcul) throws Exception {
         //
 
         if (donneesDomainCalcul == null || donneesDomainCalcul.size() == 0) {
@@ -36,7 +36,7 @@ public class APcalculateurACM2 implements IAPPrestationCalculateur {
         }
 
         // On prend le premier employeur pour récupérer certaines données invariable d'un employeur à l'autre
-        ACM2BusinessDataParEmployeur donneesEmployeurTmp = (ACM2BusinessDataParEmployeur) donneesDomainCalcul.get(0);
+        ACM2BusinessDataParEmployeur donneesEmployeurTmp = donneesDomainCalcul.get(0);
         String idDroit = donneesEmployeurTmp.getIdDroit();
         int nombreJoursACM2 = donneesEmployeurTmp.getNombreJoursPrestationACM2();
         PRPeriode periodeACM1 = null;
@@ -47,8 +47,8 @@ public class APcalculateurACM2 implements IAPPrestationCalculateur {
          * ET recherche de la période ACM 1 -> au moins un des employeurs doit payer des ACM 1 !
          */
         FWCurrency revenuMoyenDeterminantACM2 = new FWCurrency("0");
-        for (Object object : donneesDomainCalcul) {
-            revenuMoyenDeterminantACM2.add(((ACM2BusinessDataParEmployeur) object).getRevenuMoyenDeterminant());
+        for (ACM2BusinessDataParEmployeur object : donneesDomainCalcul) {
+            revenuMoyenDeterminantACM2.add(object.getRevenuMoyenDeterminant());
             if (donneesEmployeurTmp.hasPrestationACM1() && periodeACM1 == null) {
                 periodeACM1 = donneesEmployeurTmp.getPeriodeACM1();
             }
@@ -93,7 +93,7 @@ public class APcalculateurACM2 implements IAPPrestationCalculateur {
             periodes.add(periodeACM2);
         }
 
-        List<Object> resultatCalcul = new LinkedList<Object>();
+        List<APPrestationCalculeeAPersister> resultatCalcul = new LinkedList<>();
 
         // Pour chaque période on créer une prestation
         for (PRPeriode periode : periodes) {
@@ -127,11 +127,10 @@ public class APcalculateurACM2 implements IAPPrestationCalculateur {
             prestationCalculeeAPersister.setRepartitions(repartitions);
 
             // Pour chaque employeur on créer une répartition
-            for (Object object : donneesDomainCalcul) {
+            for (ACM2BusinessDataParEmployeur donneesParEmployeur : donneesDomainCalcul) {
                 APRepartitionCalculeeAPersister repartitionCalculeeAPersister = new APRepartitionCalculeeAPersister();
                 repartitions.add(repartitionCalculeeAPersister);
 
-                ACM2BusinessDataParEmployeur donneesParEmployeur = (ACM2BusinessDataParEmployeur) object;
                 APSitProJointEmployeur sitPro = donneesParEmployeur.getSituationProfJointEmployeur();
 
                 // Création de la répartition de paiement, on se base sur la 1ère prestation standard
@@ -207,10 +206,10 @@ public class APcalculateurACM2 implements IAPPrestationCalculateur {
     }
 
     @Override
-    public List<Object> persistenceToDomain(Object donneesDepuisPersistance) throws Exception {
-        ACM2PersistenceInputData persistenceInputData = (ACM2PersistenceInputData) donneesDepuisPersistance;
+    public List<ACM2BusinessDataParEmployeur> persistenceToDomain(ACM2PersistenceInputData donneesDepuisPersistance) throws Exception {
+        ACM2PersistenceInputData persistenceInputData = donneesDepuisPersistance;
 
-        List<Object> donneesBusiness = new LinkedList<Object>();
+        List<ACM2BusinessDataParEmployeur> donneesBusiness = new LinkedList<>();
         // On boucle sur les sit prof
         for (APSitProJointEmployeur sitPro : persistenceInputData.getSituationProfessionnelleEmployeur()) {
             // Doit-on calculer de l'ACM2 pour cette sit prof
@@ -258,12 +257,8 @@ public class APcalculateurACM2 implements IAPPrestationCalculateur {
     }
 
     @Override
-    public List<APPrestationCalculeeAPersister> domainToPersistence(List<Object> resultat) throws Exception {
-        List<APPrestationCalculeeAPersister> list = new ArrayList<APPrestationCalculeeAPersister>();
-        for (Object o : resultat) {
-            list.add((APPrestationCalculeeAPersister) o);
-        }
-        return list;
+    public List<APPrestationCalculeeAPersister> domainToPersistence(List<APPrestationCalculeeAPersister> resultat) throws Exception {
+        return resultat;
     }
 
 }

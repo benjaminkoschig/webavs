@@ -407,6 +407,7 @@ public class PeriodesServiceImpl extends PegasusAbstractServiceImpl implements
             donneesPersonnellesSearch.setForIdDroit(droit.getSimpleDroit().getId());
             donneesPersonnellesSearch.setDefinedSearchSize(1);
             donneesPersonnellesSearch.setWhereKey(DonneesPersonnellesSearch.FOR_DROIT);
+            //donneesPersonnellesSearch.setForCsRoleFamillePC(IPCDroits.CS_ROLE_FAMILLE_REQUERANT);
             donneesPersonnellesSearch = PegasusServiceLocator.getDroitService().searchDonneesPersonnelles(
                     donneesPersonnellesSearch);
             if (donneesPersonnellesSearch.getSize() > 0) {

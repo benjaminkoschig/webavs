@@ -92,16 +92,20 @@ public abstract class DonneeFinanciere {
                 throw new RuntimeException("The dateDebut is before the dateFin");
             }
         }
-        if (this.debut.beforeOrEquals(debutPeriode)) {
-            if (this.fin == null) {
-                return true;
-            } else if (this.fin.before(this.debut)) {
-                return false;
-            } else if (finPeriode == null && this.fin.afterOrEquals(debutPeriode)) {
-                return true;
-            } else if (finPeriode != null && this.fin.afterOrEquals(finPeriode) && this.fin.afterOrEquals(debutPeriode)) {
-                return true;
-            }
+//        if (this.debut.beforeOrEquals(debutPeriode)) {
+//            if (this.fin == null) {
+//                return true;
+//            } else if (this.fin.before(this.debut)) {
+//                return false;
+//            } else if (finPeriode == null && this.fin.afterOrEquals(debutPeriode)) {
+//                return true;
+//            } else if (finPeriode != null && this.fin.afterOrEquals(finPeriode) && this.fin.afterOrEquals(debutPeriode)) {
+//                return true;
+//            }
+//        }
+        if (debutPeriode.afterOrEquals(this.debut) && 
+                (this.fin == null ||  debutPeriode.beforeOrEquals(this.fin))) {
+            return true;
         }
 
         return false;

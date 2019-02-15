@@ -1,6 +1,7 @@
 package globaz.apg.calculateur;
 
 import globaz.apg.calculateur.acm.ne.APCalculateurAcmNe;
+import globaz.apg.calculateur.complement.APCalculateurComplement;
 import globaz.apg.calculateur.maternite.acm2.APcalculateurACM2;
 import globaz.apg.enums.APTypeDePrestation;
 import globaz.apg.module.calcul.standard.APCalculateurPrestationStandardLamatAcmAlpha;
@@ -36,6 +37,9 @@ public class APPrestationCalculateurFactory {
                 break;
             case ACM2_ALFA:
                 calculateurInstance = new APcalculateurACM2();
+                break;
+            case COMPCIAB:
+                calculateurInstance = new APCalculateurComplement();
                 break;
             default:
                 /*

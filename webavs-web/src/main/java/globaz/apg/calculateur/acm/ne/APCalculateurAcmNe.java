@@ -37,18 +37,17 @@ import java.util.Map;
  * 
  * @author jje
  */
-public class APCalculateurAcmNe implements IAPPrestationCalculateur {
+public class APCalculateurAcmNe implements IAPPrestationCalculateur<APCalculateurAcmNeDonneesPersistence, APCalculateurAcmNeDonneeDomaine, APCalculateurAcmAlphaDonnesPersistence> {
 
     private static final String DATE_FIN_MAX = "31.12.9999";
 
     @Override
-    public List<Object> calculerPrestation(final List<Object> listeObjectDeDomainePourCalcul) throws Exception,
+    public List<APCalculateurAcmNeDonneesPersistence> calculerPrestation(final List<APCalculateurAcmNeDonneeDomaine> listeObjectDeDomainePourCalcul) throws Exception,
             JAException, APCalculerAcmNeException {
 
-        final List<Object> prestationsCalculees = new ArrayList<Object>();
+        final List<APCalculateurAcmNeDonneesPersistence> prestationsCalculees = new ArrayList<>();
 
-        for (final Object object : listeObjectDeDomainePourCalcul) {
-            final APCalculateurAcmNeDonneeDomaine prestationStandard = (APCalculateurAcmNeDonneeDomaine) object;
+        for (final APCalculateurAcmNeDonneeDomaine prestationStandard : listeObjectDeDomainePourCalcul) {
 
             // initialisation des dates et des montants totaux de la nouvelle prestation acm ne
             final JADate prestationStandardDateDebutJd = new JADate(prestationStandard.getDateDebut());
@@ -178,17 +177,14 @@ public class APCalculateurAcmNe implements IAPPrestationCalculateur {
      * @return Une liste d'objects de type @see {APResultatCalculPrestationEntite}
      */
     @Override
-    public List<APPrestationCalculeeAPersister> domainToPersistence(final List<Object> listePrestationDomainCalculees)
+    public List<APPrestationCalculeeAPersister> domainToPersistence(final List<APCalculateurAcmNeDonneesPersistence> listePrestationDomainCalculees)
             throws Exception {
 
         // La liste d'entitées de persistance converties
         final List<APPrestationCalculeeAPersister> entitesConverties = new ArrayList<APPrestationCalculeeAPersister>();
 
         // Pour chacune de prestation de domain calculées
-        for (final Object o : listePrestationDomainCalculees) {
-
-            // Prestation calculée, c'est un objet de domaine
-            final APCalculateurAcmNeDonneesPersistence prestationDomainCalculee = (APCalculateurAcmNeDonneesPersistence) o;
+        for (final APCalculateurAcmNeDonneesPersistence prestationDomainCalculee : listePrestationDomainCalculees) {
 
             // Prestation calculée convertie vers la persistence
             final APPrestationCalculeeAPersister prestationPersistente = new APPrestationCalculeeAPersister();
@@ -378,7 +374,7 @@ public class APCalculateurAcmNe implements IAPPrestationCalculateur {
      * @throws Exception
      */
     @Override
-    public List<Object> persistenceToDomain(final Object data) throws JadePersistenceException, Exception {
+    public List<APCalculateurAcmNeDonneeDomaine> persistenceToDomain(final APCalculateurAcmAlphaDonnesPersistence data) throws JadePersistenceException, Exception {
 
         final APCalculateurAcmAlphaDonnesPersistence donneesPersistancePourCalcul = (APCalculateurAcmAlphaDonnesPersistence) data;
         final String idDroit = donneesPersistancePourCalcul.getIdDroit();
@@ -412,7 +408,7 @@ public class APCalculateurAcmNe implements IAPPrestationCalculateur {
         }
 
         // Données en sortie
-        final List<Object> listePrestationsAcmNeDomaineConverties = new ArrayList<Object>();
+        final List<APCalculateurAcmNeDonneeDomaine> listePrestationsAcmNeDomaineConverties = new ArrayList<>();
 
         // Pour chacune des prestations standard Joint répartition
         for (final APCalculateurAcmNeDonneeDomaine prestationStandard : listePrestations.values()) {

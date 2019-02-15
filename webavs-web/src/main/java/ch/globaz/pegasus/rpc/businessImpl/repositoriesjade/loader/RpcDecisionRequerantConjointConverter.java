@@ -155,6 +155,8 @@ class RpcDecisionRequerantConjointConverter {
                 Calcul calculC = resolvePlanCalcul(modelC);
                 PcaDecision pcaDecisionC = converToPcaDecision(modelC);
                 pcaDecisionC.getPca().setCalcul(calculC);
+                pcaDecisionC.setPcaDecisionPartner(pcaDecisionR);
+                pcaDecisionR.setPcaDecisionPartner(pcaDecisionC);
                 RpcCalcul rpcCalculC = new RpcCalcul(calculC, true);
                 
                 boolean isRequerantHome = pcaDecisionR.getPca().getGenre().isHome();

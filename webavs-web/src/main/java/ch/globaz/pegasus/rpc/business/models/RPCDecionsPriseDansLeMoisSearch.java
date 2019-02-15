@@ -25,6 +25,7 @@ public class RPCDecionsPriseDansLeMoisSearch extends JadeSearchComplexModel {
     private Collection<String> forIdsDecsion = new ArrayList<String>();
     private Collection<String> inCsType = new ArrayList<String>();
     private Collection<String> forNss = new ArrayList<String>();
+    private Collection<String> forIdPcaIn = new ArrayList<String>();
 
     public Collection<String> getForCsMotifNotIn() {
         return forCsMotifNotIn;
@@ -195,4 +196,12 @@ public class RPCDecionsPriseDansLeMoisSearch extends JadeSearchComplexModel {
         this.forIdVersionDroitSup = forIdVersionDroitSup;
     }
 
+    public Collection<String> getForIdPcaIn() {
+        return forIdPcaIn;
+    }
+
+    public void setForIdPcaIn(Collection<String> forIdPcaIn) {
+        this.forIdPcaIn = forIdPcaIn;
+    }
+    
 }

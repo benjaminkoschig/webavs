@@ -137,7 +137,7 @@ import ch.globaz.common.properties.CommonPropertiesUtils;
  * 
  * @author SCR
  */
-public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestationCalculateur {
+public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestationCalculateur<Object, Object, Object> {
 
     // en cas de service d'avancement le salaire est considéré a 100% pendant ce nombre de jours
     private static final int NB_JOURS_APG_PLEINE_SERVICE_AVANCEMENT = 30;
