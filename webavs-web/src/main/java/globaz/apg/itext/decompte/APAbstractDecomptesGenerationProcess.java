@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import org.safehaus.uuid.Logger;
 import globaz.apg.ApgServiceLocator;
 import globaz.apg.application.APApplication;
 import globaz.apg.db.droits.APDroitLAPG;
@@ -1467,9 +1468,12 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                     }
                 }
             }
-
-            if (hasPrestationAPGFederale) {
-                champs.put("PARAM_FIELD_TEXTE_PAS_SOUMIS_LAA", document.getTextes(3).getTexte(49).getDescription());
+            try {
+                if (hasPrestationAPGFederale) {
+                    champs.put("PARAM_FIELD_TEXTE_PAS_SOUMIS_LAA", document.getTextes(3).getTexte(49).getDescription());
+                }
+            } catch (IndexOutOfBoundsException e) {
+                Logger.logInfo("Pas de texte pour maternité : " + e.getMessage());
             }
 
             // Anciennement champs de classe
@@ -2078,7 +2082,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
 
     /**
      * @param decompteCourant
-     *                            the decompteCourant to set
+     *            the decompteCourant to set
      */
     public final void setDecompteCourant(final APDecompte decompteCourant) {
         this.decompteCourant = decompteCourant;
