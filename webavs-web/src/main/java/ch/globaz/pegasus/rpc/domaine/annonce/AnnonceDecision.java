@@ -70,13 +70,9 @@ public class AnnonceDecision {
             initPersons(annonce);
         }
 
-//        if (annonce.hasPartner()) {
-//            decisionIdPartnerDecision = annonce.getDecisionIdPartner();
-//        }
-        if(annonce.getPcaDecision().getPcaDecisionPartner() != null) {
-            decisionIdPartnerDecision = annonce.getPcaDecision().getPcaDecisionPartner().getDecision().getId();
+        if (annonce.hasPartner()) {
+            decisionIdPartnerDecision = annonce.getDecisionIdPartner();
         }
-        
         coupleSepare = decision.getType().isRefusSansCalcul() ? false : annonce.getRpcCalcul().isCoupleSepare();
 
     }
