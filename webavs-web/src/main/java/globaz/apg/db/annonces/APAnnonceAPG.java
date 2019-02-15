@@ -3,6 +3,7 @@
  */
 package globaz.apg.db.annonces;
 
+import java.util.Hashtable;
 import globaz.apg.api.annonces.IAPAnnonce;
 import globaz.apg.db.prestation.APPrestation;
 import globaz.apg.db.prestation.APPrestationManager;
@@ -19,17 +20,16 @@ import globaz.prestation.tools.PRHierarchique;
 import globaz.prestation.tools.PRSession;
 import globaz.pyxis.api.ITIPays;
 import globaz.pyxis.application.TIApplication;
-import java.util.Hashtable;
 
 /**
  * <H1>Description</H1>
- * 
+ *
  * @author dvh
  */
 public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
     public static final String FIELDNAME_BREAK_RULES = "VKBRRU";
@@ -139,10 +139,11 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
     private String timeStamp = "";
     private String totalAPG = "";
     private String typeAnnonce = "";
+    private String idDroit = "";
 
     /**
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.globall.db.BEntity#_afterDelete(globaz.globall.db.BTransaction)
      * @param transaction
      *            DOCUMENT ME!
@@ -195,8 +196,8 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
         codeEnregistrement = statement.dbReadString(APAnnonceAPG.FIELDNAME_CODEENREGISTREMENT);
         numeroCaisse = statement.dbReadString(APAnnonceAPG.FIELDNAME_NUMEROCAISSE);
         numeroAgence = statement.dbReadString(APAnnonceAPG.FIELDNAME_NUMEROAGENCE);
-        moisAnneeComptable = formatMoisAnneeComptableFromDB(statement
-                .dbReadNumeric(APAnnonceAPG.FIELDNAME_MOISANNEECOMPTABLE));
+        moisAnneeComptable = formatMoisAnneeComptableFromDB(
+                statement.dbReadNumeric(APAnnonceAPG.FIELDNAME_MOISANNEECOMPTABLE));
         contenuAnnonce = statement.dbReadString(APAnnonceAPG.FIELDNAME_CONTENUANNONCE);
         genre = statement.dbReadString(APAnnonceAPG.FIELDNAME_GENRE);
         numeroCompte = statement.dbReadString(APAnnonceAPG.FIELDNAME_NUMEROCOMPTE);
@@ -319,9 +320,8 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
                 this._dbWriteString(statement.getTransaction(), numeroAgence, "numeroAgence"));
 
         if (!JadeStringUtil.isEmpty(moisAnneeComptable)) {
-            statement
-                    .writeField(APAnnonceAPG.FIELDNAME_MOISANNEECOMPTABLE, this._dbWriteNumeric(
-                            statement.getTransaction(), formatMoisAnneeComptableToDB(moisAnneeComptable),
+            statement.writeField(APAnnonceAPG.FIELDNAME_MOISANNEECOMPTABLE,
+                    this._dbWriteNumeric(statement.getTransaction(), formatMoisAnneeComptableToDB(moisAnneeComptable),
                             "moisAnneeComptable"));
         } else {
             statement.writeField(APAnnonceAPG.FIELDNAME_MOISANNEECOMPTABLE, null);
@@ -410,9 +410,8 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
                 this._dbWriteNumeric(statement.getTransaction(), etat, "etat"));
         statement.writeField(APAnnonceAPG.FIELDNAME_ISRECRUE,
                 this._dbWriteString(statement.getTransaction(), isRecrue, "isRecrue"));
-        statement
-                .writeField(APAnnonceAPG.FIELDNAME_ISALLOCATIONPERSONNESEULE, this._dbWriteString(
-                        statement.getTransaction(), isAllocationPersonneSeule, "isAllocationPersonneSeule"));
+        statement.writeField(APAnnonceAPG.FIELDNAME_ISALLOCATIONPERSONNESEULE, this
+                ._dbWriteString(statement.getTransaction(), isAllocationPersonneSeule, "isAllocationPersonneSeule"));
         statement.writeField(APAnnonceAPG.FIELDNAME_ISALLOCATIONMENAGE,
                 this._dbWriteString(statement.getTransaction(), isAllocationMenage, "isAllocationMenage"));
 
@@ -435,9 +434,8 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
             statement.writeField(APAnnonceAPG.FIELDNAME_TAUXJOURNALIERALLOCATIONBASE, null);
         }
 
-        statement
-                .writeField(APAnnonceAPG.FIELDNAME_SIGNEALLOCATIONFRAISGARDE, this._dbWriteString(
-                        statement.getTransaction(), signeAllocationFraisGarde, "signeAllocationFraisGarde"));
+        statement.writeField(APAnnonceAPG.FIELDNAME_SIGNEALLOCATIONFRAISGARDE, this
+                ._dbWriteString(statement.getTransaction(), signeAllocationFraisGarde, "signeAllocationFraisGarde"));
         statement.writeField(APAnnonceAPG.FIELDNAME_ISALLOCATIONISOLEEFRAISGARDE, this._dbWriteString(
                 statement.getTransaction(), isAllocationIsoleeFraisGarde, "isAllocationIsoleeFraisGarde"));
         statement.writeField(APAnnonceAPG.FIELDNAME_DATEENVOI,
@@ -470,7 +468,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * copie tous les champs excepté la clef primaire dans un nouvel entity, et donne la session du parent
-     * 
+     *
      * @return DOCUMENT ME!
      */
     public APAnnonceAPG createClone() {
@@ -552,7 +550,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * Permet de passer d'une annonce RAPG à une annonce en base de donnée
-     * 
+     *
      * @param champsAnnonce
      */
     public void fromChampsAnnonce(APChampsAnnonce champsAnnonce) {
@@ -616,7 +614,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * getter pour l'attribut canton etat
-     * 
+     *
      * @return la valeur courante de l'attribut canton etat
      */
     public String getCantonEtat() {
@@ -625,7 +623,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * getter pour l'attribut code application
-     * 
+     *
      * @return la valeur courante de l'attribut code application
      */
     public String getCodeApplication() {
@@ -634,7 +632,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * getter pour l'attribut code enregistrement
-     * 
+     *
      * @return la valeur courante de l'attribut code enregistrement
      */
     public String getCodeEnregistrement() {
@@ -643,7 +641,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * getter pour l'attribut contenu annonce
-     * 
+     *
      * @return la valeur courante de l'attribut contenu annonce
      */
     public String getContenuAnnonce() {
@@ -652,7 +650,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * getter pour l'attribut date debut droit
-     * 
+     *
      * @return la valeur courante de l'attribut date debut droit
      */
     public String getDateDebutDroit() {
@@ -661,7 +659,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * getter pour l'attribut date envoi
-     * 
+     *
      * @return la valeur courante de l'attribut date envoi
      */
     public String getDateEnvoi() {
@@ -670,7 +668,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * getter pour l'attribut date fin droit
-     * 
+     *
      * @return la valeur courante de l'attribut date fin droit
      */
     public String getDateFinDroit() {
@@ -686,7 +684,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * getter pour l'attribut etat
-     * 
+     *
      * @return la valeur courante de l'attribut etat
      */
     public String getEtat() {
@@ -695,7 +693,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * getter pour l'attribut etat civil
-     * 
+     *
      * @return la valeur courante de l'attribut etat civil
      */
     public String getEtatCivil() {
@@ -711,7 +709,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * getter pour l'attribut garantie IJ
-     * 
+     *
      * @return la valeur courante de l'attribut garantie IJ
      */
     public String getGarantieIJ() {
@@ -720,7 +718,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * getter pour l'attribut genre
-     * 
+     *
      * @return la valeur courante de l'attribut genre
      */
     public String getGenre() {
@@ -729,7 +727,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * getter pour l'attribut genre activite
-     * 
+     *
      * @return la valeur courante de l'attribut genre activite
      */
     public String getGenreActivite() {
@@ -738,7 +736,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * getter pour l'attribut id annonce
-     * 
+     *
      * @return la valeur courante de l'attribut id annonce
      */
     public String getIdAnnonce() {
@@ -747,7 +745,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.prestation.tools.PRHierarchique#getIdMajeur()
      * @return la valeur courante de l'attribut id majeur
      */
@@ -758,7 +756,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * getter pour l'attribut id parent
-     * 
+     *
      * @return la valeur courante de l'attribut id parent
      */
     @Override
@@ -775,7 +773,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * getter pour l'attribut is allocation base
-     * 
+     *
      * @return la valeur courante de l'attribut is allocation base
      */
     public String getIsAllocationBase() {
@@ -784,7 +782,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * getter pour l'attribut is allocation exploitation
-     * 
+     *
      * @return la valeur courante de l'attribut is allocation exploitation
      */
     public String getIsAllocationExploitation() {
@@ -793,7 +791,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * getter pour l'attribut is allocation frais garde
-     * 
+     *
      * @return la valeur courante de l'attribut is allocation frais garde
      */
     public String getIsAllocationFraisGarde() {
@@ -802,7 +800,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * getter pour l'attribut is allocation isolee frais garde
-     * 
+     *
      * @return la valeur courante de l'attribut is allocation isolee frais garde
      */
     public String getIsAllocationIsoleeFraisGarde() {
@@ -811,7 +809,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * getter pour l'attribut is allocation menage
-     * 
+     *
      * @return la valeur courante de l'attribut is allocation menage
      */
     public String getIsAllocationMenage() {
@@ -820,7 +818,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * getter pour l'attribut is allocation personne seule
-     * 
+     *
      * @return la valeur courante de l'attribut is allocation personne seule
      */
     public String getIsAllocationPersonneSeule() {
@@ -829,7 +827,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * getter pour l'attribut is recrue
-     * 
+     *
      * @return la valeur courante de l'attribut is recrue
      */
     public String getIsRecrue() {
@@ -845,7 +843,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * getter pour l'attribut mode paiement
-     * 
+     *
      * @return la valeur courante de l'attribut mode paiement
      */
     public String getModePaiement() {
@@ -854,7 +852,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * getter pour l'attribut mois annee comptable
-     * 
+     *
      * @return la valeur courante de l'attribut mois annee comptable
      */
     public String getMoisAnneeComptable() {
@@ -863,7 +861,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * getter pour l'attribut montant allocation assistance
-     * 
+     *
      * @return la valeur courante de l'attribut montant allocation assistance
      */
     public String getMontantAllocationAssistance() {
@@ -872,7 +870,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * getter pour l'attribut montant allocation frais garde
-     * 
+     *
      * @return la valeur courante de l'attribut montant allocation frais garde
      */
     public String getMontantAllocationFraisGarde() {
@@ -881,7 +879,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * getter pour l'attribut nombre enfant
-     * 
+     *
      * @return la valeur courante de l'attribut nombre enfant
      */
     public String getNombreEnfants() {
@@ -890,7 +888,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * getter pour l'attribut nombre jours service
-     * 
+     *
      * @return la valeur courante de l'attribut nombre jours service
      */
     public String getNombreJoursService() {
@@ -899,7 +897,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * getter pour l'attribut numero agence
-     * 
+     *
      * @return la valeur courante de l'attribut numero agence
      */
     public String getNumeroAgence() {
@@ -908,7 +906,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * getter pour l'attribut numero assure
-     * 
+     *
      * @return la valeur courante de l'attribut numero assure
      */
     public String getNumeroAssure() {
@@ -917,7 +915,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * getter pour l'attribut numero assure pere enfant
-     * 
+     *
      * @return la valeur courante de l'attribut numero assure pere enfant
      */
     public String getNumeroAssurePereEnfant() {
@@ -926,7 +924,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * getter pour l'attribut numero caisse
-     * 
+     *
      * @return la valeur courante de l'attribut numero caisse
      */
     public String getNumeroCaisse() {
@@ -935,7 +933,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * getter pour l'attribut numero compte
-     * 
+     *
      * @return la valeur courante de l'attribut numero compte
      */
     public String getNumeroCompte() {
@@ -944,7 +942,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * getter pour l'attribut numero controle
-     * 
+     *
      * @return la valeur courante de l'attribut numero controle
      */
     public String getNumeroControle() {
@@ -953,7 +951,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * getter pour l'attribut periode a
-     * 
+     *
      * @return la valeur courante de l'attribut periode a
      */
     public String getPeriodeA() {
@@ -962,7 +960,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * getter pour l'attribut periode de
-     * 
+     *
      * @return la valeur courante de l'attribut periode de
      */
     public String getPeriodeDe() {
@@ -997,7 +995,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * getter pour l'attribut revenu moyen determinant
-     * 
+     *
      * @return la valeur courante de l'attribut revenu moyen determinant
      */
     public String getRevenuMoyenDeterminant() {
@@ -1006,7 +1004,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * getter pour l'attribut signe allocation frais garde
-     * 
+     *
      * @return la valeur courante de l'attribut signe allocation frais garde
      */
     public String getSigneAllocationFraisGarde() {
@@ -1015,7 +1013,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * getter pour l'attribut signe montant allocation
-     * 
+     *
      * @return la valeur courante de l'attribut signe montant allocation
      */
     public String getSigneMontantAllocation() {
@@ -1031,7 +1029,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * getter pour l'attribut taux journalier
-     * 
+     *
      * @return la valeur courante de l'attribut taux journalier
      */
     public String getTauxJournalier() {
@@ -1040,7 +1038,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * getter pour l'attribut taux journalier allocation base
-     * 
+     *
      * @return la valeur courante de l'attribut taux journalier allocation base
      */
     public String getTauxJournalierAllocationBase() {
@@ -1056,7 +1054,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * getter pour l'attribut total APG
-     * 
+     *
      * @return la valeur courante de l'attribut total APG
      */
     public String getTotalAPG() {
@@ -1065,7 +1063,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * getter pour l'attribut type annonce
-     * 
+     *
      * @return la valeur courante de l'attribut type annonce
      */
     public String getTypeAnnonce() {
@@ -1098,7 +1096,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * setter pour l'attribut canton etat
-     * 
+     *
      * @param cantonEtat
      *            une nouvelle valeur pour cet attribut
      */
@@ -1108,7 +1106,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * setter pour l'attribut code application
-     * 
+     *
      * @param codeApplication
      *            une nouvelle valeur pour cet attribut
      */
@@ -1118,7 +1116,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * setter pour l'attribut code enregistrement
-     * 
+     *
      * @param codeEnregistrement
      *            une nouvelle valeur pour cet attribut
      */
@@ -1128,7 +1126,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * setter pour l'attribut contenu annonce
-     * 
+     *
      * @param contenuAnnonce
      *            une nouvelle valeur pour cet attribut
      */
@@ -1138,7 +1136,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * setter pour l'attribut date debut droit
-     * 
+     *
      * @param dateDebutDroit
      *            une nouvelle valeur pour cet attribut
      */
@@ -1148,7 +1146,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * setter pour l'attribut date envoi
-     * 
+     *
      * @param dateEnvoi
      *            une nouvelle valeur pour cet attribut
      */
@@ -1158,7 +1156,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * setter pour l'attribut date fin droit
-     * 
+     *
      * @param dateFinDroit
      *            une nouvelle valeur pour cet attribut
      */
@@ -1176,7 +1174,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * setter pour l'attribut etat
-     * 
+     *
      * @param etat
      *            une nouvelle valeur pour cet attribut
      */
@@ -1186,7 +1184,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * setter pour l'attribut etat civil
-     * 
+     *
      * @param etatCivil
      *            une nouvelle valeur pour cet attribut
      */
@@ -1204,7 +1202,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * setter pour l'attribut garantie IJ
-     * 
+     *
      * @param garantieIJ
      *            une nouvelle valeur pour cet attribut
      */
@@ -1214,7 +1212,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * setter pour l'attribut genre
-     * 
+     *
      * @param genre
      *            une nouvelle valeur pour cet attribut
      */
@@ -1224,7 +1222,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * setter pour l'attribut genre activite
-     * 
+     *
      * @param genreActivite
      *            une nouvelle valeur pour cet attribut
      */
@@ -1234,7 +1232,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * setter pour l'attribut id annonce
-     * 
+     *
      * @param idAnnonce
      *            une nouvelle valeur pour cet attribut
      */
@@ -1244,7 +1242,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * setter pour l'attribut id parent
-     * 
+     *
      * @param idParent
      *            une nouvelle valeur pour cet attribut
      */
@@ -1262,7 +1260,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * setter pour l'attribut is allocation base
-     * 
+     *
      * @param isAllocationBase
      *            une nouvelle valeur pour cet attribut
      */
@@ -1272,7 +1270,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * setter pour l'attribut is allocation exploitation
-     * 
+     *
      * @param isAllocationExploitation
      *            une nouvelle valeur pour cet attribut
      */
@@ -1282,7 +1280,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * setter pour l'attribut is allocation frais garde
-     * 
+     *
      * @param isAllocationFraisGarde
      *            une nouvelle valeur pour cet attribut
      */
@@ -1292,7 +1290,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * setter pour l'attribut is allocation isolee frais garde
-     * 
+     *
      * @param isAllocationIsoleeFraisGarde
      *            une nouvelle valeur pour cet attribut
      */
@@ -1302,7 +1300,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * setter pour l'attribut is allocation menage
-     * 
+     *
      * @param isAllocationMenage
      *            une nouvelle valeur pour cet attribut
      */
@@ -1312,7 +1310,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * setter pour l'attribut is allocation personne seule
-     * 
+     *
      * @param isAllocationPersonneSeule
      *            une nouvelle valeur pour cet attribut
      */
@@ -1322,7 +1320,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * setter pour l'attribut is recrue
-     * 
+     *
      * @param isRecrue
      *            une nouvelle valeur pour cet attribut
      */
@@ -1340,7 +1338,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * setter pour l'attribut mode paiement
-     * 
+     *
      * @param modePaiement
      *            une nouvelle valeur pour cet attribut
      */
@@ -1350,7 +1348,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * setter pour l'attribut mois annee comptable
-     * 
+     *
      * @param moisAnneeComptable
      *            une nouvelle valeur pour cet attribut
      */
@@ -1360,7 +1358,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * setter pour l'attribut montant allocation assistance
-     * 
+     *
      * @param montantAllocationAssistance
      *            une nouvelle valeur pour cet attribut
      */
@@ -1370,7 +1368,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * setter pour l'attribut montant allocation frais garde
-     * 
+     *
      * @param montantAllocationFraisGarde
      *            une nouvelle valeur pour cet attribut
      */
@@ -1380,7 +1378,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * setter pour l'attribut nombre enfant
-     * 
+     *
      * @param nombreEnfant
      *            une nouvelle valeur pour cet attribut
      */
@@ -1390,7 +1388,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * setter pour l'attribut nombre jours service
-     * 
+     *
      * @param nombreJoursService
      *            une nouvelle valeur pour cet attribut
      */
@@ -1400,7 +1398,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * setter pour l'attribut numero agence
-     * 
+     *
      * @param numeroAgence
      *            une nouvelle valeur pour cet attribut
      */
@@ -1410,7 +1408,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * setter pour l'attribut numero assure
-     * 
+     *
      * @param numeroAssure
      *            une nouvelle valeur pour cet attribut
      */
@@ -1420,7 +1418,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * setter pour l'attribut numero assure pere enfant
-     * 
+     *
      * @param numeroAssurePereEnfant
      *            une nouvelle valeur pour cet attribut
      */
@@ -1430,7 +1428,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * setter pour l'attribut numero caisse
-     * 
+     *
      * @param numeroCaisse
      *            une nouvelle valeur pour cet attribut
      */
@@ -1440,7 +1438,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * setter pour l'attribut numero compte
-     * 
+     *
      * @param numeroCompte
      *            une nouvelle valeur pour cet attribut
      */
@@ -1450,7 +1448,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * setter pour l'attribut numero controle
-     * 
+     *
      * @param numeroControle
      *            une nouvelle valeur pour cet attribut
      */
@@ -1460,7 +1458,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * setter pour l'attribut periode a
-     * 
+     *
      * @param periodeA
      *            une nouvelle valeur pour cet attribut
      */
@@ -1470,7 +1468,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * setter pour l'attribut periode de
-     * 
+     *
      * @param periodeDe
      *            une nouvelle valeur pour cet attribut
      */
@@ -1480,7 +1478,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * setter pour l'attribut revenu moyen determinant
-     * 
+     *
      * @param revenuMoyenDeterminant
      *            une nouvelle valeur pour cet attribut
      */
@@ -1490,7 +1488,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * setter pour l'attribut signe allocation frais garde
-     * 
+     *
      * @param signeAllocationFraisGarde
      *            une nouvelle valeur pour cet attribut
      */
@@ -1500,7 +1498,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * setter pour l'attribut signe montant allocation
-     * 
+     *
      * @param signeMontantAllocation
      *            une nouvelle valeur pour cet attribut
      */
@@ -1518,7 +1516,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * setter pour l'attribut taux journalier
-     * 
+     *
      * @param tauxJournalier
      *            une nouvelle valeur pour cet attribut
      */
@@ -1528,7 +1526,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * setter pour l'attribut taux journalier allocation base
-     * 
+     *
      * @param tauxJournalierAllocationBase
      *            une nouvelle valeur pour cet attribut
      */
@@ -1546,7 +1544,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * setter pour l'attribut total APG
-     * 
+     *
      * @param totalAPG
      *            une nouvelle valeur pour cet attribut
      */
@@ -1556,7 +1554,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * setter pour l'attribut type annonce
-     * 
+     *
      * @param typeAnnonce
      *            une nouvelle valeur pour cet attribut
      */
@@ -1566,7 +1564,7 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
 
     /**
      * Permet de transformer l'annonce en BD en annonce RAPG
-     * 
+     *
      * @return
      */
     public APChampsAnnonce toChampsAnnonce() {
@@ -1604,8 +1602,13 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
         champsAnnonce.setCsEtat(getEtat());
         champsAnnonce.setTimeStamp(getTimeStamp());
         champsAnnonce.setEnvelopeMessageId(getEnvelopeMessageId());
+        champsAnnonce.setIdDroit(getIdDroit());
 
         return champsAnnonce;
+    }
+
+    private String getIdDroit() {
+        return idDroit;
     }
 
     // Ensemble de getter en anglais pour matcher selon les directives RAPG
@@ -1758,5 +1761,10 @@ public class APAnnonceAPG extends BEntity implements PRHierarchique {
      */
     public String getControlNumber() {
         return numeroControle;
+    }
+
+    public void setIdDroit(String idDroit) {
+        this.idDroit = idDroit;
+
     }
 }

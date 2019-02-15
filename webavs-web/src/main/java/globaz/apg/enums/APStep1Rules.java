@@ -1,11 +1,11 @@
 /**
- * 
+ *
  */
 package globaz.apg.enums;
 
 /**
  * @author dde
- * 
+ *
  */
 public enum APStep1Rules {
 
@@ -48,6 +48,9 @@ public enum APStep1Rules {
     R_507,
     R_508,
     R_509,
-    R_510
-
+    R_510,
+    R_10000,
+    R_10001,
+    R_10002,
+    R_10003
 }

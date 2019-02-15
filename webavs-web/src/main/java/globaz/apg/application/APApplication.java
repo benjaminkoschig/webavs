@@ -152,6 +152,9 @@ public class APApplication extends PRAbstractApplication {
 
     /** Service de la ged a utiliser */
     public static final String PROPERTY_SERVICE_GED = "service.ged";
+    /** ID Assurance pour les compléments CIAB */
+    public static final String PROPERTY_ASSURANCE_COMPLEMENT_JU_ID = "apg.assurance.complémentCIAB.ju.id";
+    public static final String PROPERTY_ASSURANCE_COMPLEMENT_BE_ID = "apg.assurance.complémentCIAB.ju.id";
 
     /** Service de la ged a utiliser */
     public static final String PROPERTY_IS_FERCIAB = "apg.isFERCIAB";
@@ -163,7 +166,7 @@ public class APApplication extends PRAbstractApplication {
      * Crée une nouvelle instance de la classe APApplication.
      *
      * @throws Exception
-     *                       DOCUMENT ME!
+     *             DOCUMENT ME!
      */
     public APApplication() throws Exception {
         super(APApplication.DEFAULT_APPLICATION_APG);
@@ -173,9 +176,9 @@ public class APApplication extends PRAbstractApplication {
      * Crée une nouvelle instance de la classe APApplication.
      *
      * @param id
-     *               DOCUMENT ME!
+     *            DOCUMENT ME!
      * @throws Exception
-     *                       DOCUMENT ME!
+     *             DOCUMENT ME!
      */
     public APApplication(String id) throws Exception {
         super(id);
@@ -198,7 +201,7 @@ public class APApplication extends PRAbstractApplication {
      * (non-Javadoc)
      *
      * @throws Exception
-     *                       DOCUMENT ME!
+     *             DOCUMENT ME!
      * @see globaz.globall.db.BApplication#_initializeApplication()
      */
     @Override
@@ -388,7 +391,7 @@ public class APApplication extends PRAbstractApplication {
      * (non-Javadoc)!
      *
      * @param arg0
-     *                 DOCUMENT ME!
+     *            DOCUMENT ME!
      * @see globaz.globall.db.BApplication#_readProperties(java.util.Properties)
      */
     protected void _readProperties(Properties arg0) {

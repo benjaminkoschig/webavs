@@ -44,6 +44,7 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
     private String subMessageType;
     private String timeStamp;
     private String totalAPG;
+    private Boolean hasComplementCIAB;
 
     public APChampsAnnonce() {
         accountingMonth = "";
@@ -86,11 +87,12 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
         subMessageType = "";
         timeStamp = "";
         totalAPG = "";
+        hasComplementCIAB = Boolean.FALSE;
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.pojo.IAPAnnonce#getAccountingMonth()
      */
     @Override
@@ -100,7 +102,7 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.pojo.IAPAnnonce#getAction()
      */
     @Override
@@ -110,7 +112,7 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.pojo.IAPAnnonce#getActivityBeforeService()
      */
     @Override
@@ -120,7 +122,7 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.pojo.IAPAnnonce#getAllowanceCareExpenses()
      */
     @Override
@@ -130,7 +132,7 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.pojo.IAPAnnonce#getAllowanceFarm()
      */
     @Override
@@ -140,7 +142,7 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.pojo.IAPAnnonce#getAverageDailyIncome()
      */
     @Override
@@ -150,7 +152,7 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.pojo.IAPAnnonce#getBasicDailyAmount()
      */
     @Override
@@ -160,7 +162,7 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.pojo.IAPAnnonce#getBreakRules()
      */
     @Override
@@ -170,7 +172,7 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.pojo.IAPAnnonce#getBusinessProcessId()
      */
     @Override
@@ -180,7 +182,7 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.pojo.IAPAnnonce#getBusinessProcessIdFormatted()
      */
     @Override
@@ -194,7 +196,7 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.pojo.IAPAnnonce#getControlNumber()
      */
     @Override
@@ -204,7 +206,7 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.pojo.IAPAnnonce#getCsEtat()
      */
     @Override
@@ -214,7 +216,7 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.pojo.IAPAnnonce#getDailyIndemnityGuaranteeAI()
      */
     @Override
@@ -224,7 +226,7 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.pojo.IAPAnnonce#getDeliveryOfficeBranch()
      */
     @Override
@@ -234,7 +236,7 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.pojo.IAPAnnonce#getDeliveryOfficeOfficeIdentifier()
      */
     @Override
@@ -244,7 +246,7 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.pojo.IAPAnnonce#getEndOfPeriod()
      */
     @Override
@@ -254,7 +256,7 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.pojo.IAPAnnonce#getEnvelopeMessageId()
      */
     @Override
@@ -264,7 +266,7 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.pojo.IAPAnnonce#getEventDate()
      */
     @Override
@@ -274,7 +276,7 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.pojo.IAPAnnonce#getIdDroit()
      */
     @Override
@@ -284,7 +286,7 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.pojo.IAPAnnonce#getIdDroitParent()
      */
     @Override
@@ -294,7 +296,7 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.pojo.IAPAnnonce#getInsurant()
      */
     @Override
@@ -304,7 +306,7 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.pojo.IAPAnnonce#getInsurantBirthDate()
      */
     @Override
@@ -314,7 +316,7 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.pojo.IAPAnnonce#getInsurantDomicileCanton()
      */
     @Override
@@ -324,7 +326,7 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.pojo.IAPAnnonce#getInsurantDomicileCountry()
      */
     @Override
@@ -334,7 +336,7 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.pojo.IAPAnnonce#getInsurantDomicileNpa()
      */
     @Override
@@ -344,7 +346,7 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.pojo.IAPAnnonce#getInsurantMaritalStatus()
      */
     @Override
@@ -354,7 +356,7 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.pojo.IAPAnnonce#getInsurantSexe()
      */
     @Override
@@ -364,7 +366,7 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.pojo.IAPAnnonce#getMessageDate()
      */
     @Override
@@ -374,7 +376,7 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.pojo.IAPAnnonce#getMessageId()
      */
     @Override
@@ -384,7 +386,7 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.pojo.IAPAnnonce#getMessageType()
      */
     @Override
@@ -394,7 +396,7 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.pojo.IAPAnnonce#getNumberOfChildren()
      */
     @Override
@@ -404,7 +406,7 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.pojo.IAPAnnonce#getNumberOfDays()
      */
     @Override
@@ -414,7 +416,7 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.pojo.IAPAnnonce#getPaymentMethod()
      */
     @Override
@@ -424,7 +426,7 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.pojo.IAPAnnonce#getRecipientId()
      */
     @Override
@@ -434,7 +436,7 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.pojo.IAPAnnonce#getReferenceNumber()
      */
     @Override
@@ -444,7 +446,7 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.pojo.IAPAnnonce#getSenderId()
      */
     @Override
@@ -454,7 +456,7 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.pojo.IAPAnnonce#getServiceType()
      */
     @Override
@@ -464,7 +466,7 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.pojo.IAPAnnonce#getStartOfPeriod()
      */
     @Override
@@ -474,7 +476,7 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.pojo.IAPAnnonce#getSubMessageType()
      */
     @Override
@@ -484,7 +486,7 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.pojo.IAPAnnonce#getTimeStamp()
      */
     @Override
@@ -494,7 +496,7 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.pojo.IAPAnnonce#getTotalAPG()
      */
     @Override
@@ -504,7 +506,7 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.pojo.IAPAnnonce#setAccountingMonth(java.lang.String)
      */
     @Override
@@ -514,7 +516,7 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.pojo.IAPAnnonce#setAction(java.lang.String)
      */
     @Override
@@ -524,7 +526,7 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.pojo.IAPAnnonce#setActivityBeforeService(java.lang.String)
      */
     @Override
@@ -534,7 +536,7 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.pojo.IAPAnnonce#setAllowanceCareExpenses(java.lang.String)
      */
     @Override
@@ -544,7 +546,7 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.pojo.IAPAnnonce#setAllowanceFarm(java.lang.Boolean)
      */
     @Override
@@ -554,7 +556,7 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.pojo.IAPAnnonce#setAverageDailyIncome(java.lang.String)
      */
     @Override
@@ -564,7 +566,7 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.pojo.IAPAnnonce#setBasicDailyAmount(java.lang.String)
      */
     @Override
@@ -574,7 +576,7 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.pojo.IAPAnnonce#setBreakRules(java.lang.String)
      */
     @Override
@@ -584,7 +586,7 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.pojo.IAPAnnonce#setBusinessProcessId(java.lang.String)
      */
     @Override
@@ -594,7 +596,7 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.pojo.IAPAnnonce#setControlNumber(java.lang.String)
      */
     @Override
@@ -604,7 +606,7 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.pojo.IAPAnnonce#setCsEtat(java.lang.String)
      */
     @Override
@@ -614,7 +616,7 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.pojo.IAPAnnonce#setDailyIndemnityGuaranteeAI(java.lang.Boolean)
      */
     @Override
@@ -624,7 +626,7 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.pojo.IAPAnnonce#setDeliveryOfficeBranch(java.lang.String)
      */
     @Override
@@ -634,7 +636,7 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.pojo.IAPAnnonce#setDeliveryOfficeOfficeIdentifier(java.lang.String)
      */
     @Override
@@ -644,7 +646,7 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.pojo.IAPAnnonce#setEndOfPeriod(java.lang.String)
      */
     @Override
@@ -654,7 +656,7 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.pojo.IAPAnnonce#setEnvelopeMessageId(java.lang.String)
      */
     @Override
@@ -664,7 +666,7 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.pojo.IAPAnnonce#setEventDate(java.lang.String)
      */
     @Override
@@ -674,7 +676,7 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.pojo.IAPAnnonce#setIdDroit(java.lang.String)
      */
     @Override
@@ -684,7 +686,7 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.pojo.IAPAnnonce#setIdDroitParent(java.lang.String)
      */
     @Override
@@ -694,7 +696,7 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.pojo.IAPAnnonce#setInsurant(java.lang.String)
      */
     @Override
@@ -704,7 +706,7 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.pojo.IAPAnnonce#setInsurantBirthDate(java.lang.String)
      */
     @Override
@@ -714,7 +716,7 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.pojo.IAPAnnonce#setInsurantDomicileCanton(java.lang.String)
      */
     @Override
@@ -724,7 +726,7 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.pojo.IAPAnnonce#setInsurantDomicileCountry(java.lang.String)
      */
     @Override
@@ -734,7 +736,7 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.pojo.IAPAnnonce#setInsurantDomicileNpa(java.lang.String)
      */
     @Override
@@ -744,7 +746,7 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.pojo.IAPAnnonce#setInsurantMaritalStatus(java.lang.String)
      */
     @Override
@@ -754,7 +756,7 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.pojo.IAPAnnonce#setInsurantSexe(java.lang.String)
      */
     @Override
@@ -764,7 +766,7 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.pojo.IAPAnnonce#setMessageDate(java.lang.String)
      */
     @Override
@@ -774,7 +776,7 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.pojo.IAPAnnonce#setMessageId(java.lang.String)
      */
     @Override
@@ -784,7 +786,7 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.pojo.IAPAnnonce#setMessageType(java.lang.String)
      */
     @Override
@@ -794,7 +796,7 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.pojo.IAPAnnonce#setNumberOfChildren(java.lang.String)
      */
     @Override
@@ -804,7 +806,7 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.pojo.IAPAnnonce#setNumberOfDays(java.lang.String)
      */
     @Override
@@ -814,7 +816,7 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.pojo.IAPAnnonce#setPaymentMethod(java.lang.String)
      */
     @Override
@@ -824,7 +826,7 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.pojo.IAPAnnonce#setRecipientId(java.lang.String)
      */
     @Override
@@ -834,7 +836,7 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.pojo.IAPAnnonce#setReferenceNumber(java.lang.String)
      */
     @Override
@@ -844,7 +846,7 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.pojo.IAPAnnonce#setSenderId(java.lang.String)
      */
     @Override
@@ -854,7 +856,7 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.pojo.IAPAnnonce#setServiceType(java.lang.String)
      */
     @Override
@@ -864,7 +866,7 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.pojo.IAPAnnonce#setStartOfPeriod(java.lang.String)
      */
     @Override
@@ -874,7 +876,7 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.pojo.IAPAnnonce#setSubMessageType(java.lang.String)
      */
     @Override
@@ -884,7 +886,7 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.pojo.IAPAnnonce#setTimeStamp(java.lang.String)
      */
     @Override
@@ -894,12 +896,16 @@ public class APChampsAnnonce implements IAPChampsAnnonceTTT {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.pojo.IAPAnnonce#setTotalAPG(java.lang.String)
      */
     @Override
     public void setTotalAPG(String totalAPG) {
         this.totalAPG = totalAPG;
+    }
+
+    public void setComplementCIAB(Boolean hasComplementCIAB) {
+        this.hasComplementCIAB = hasComplementCIAB;
     }
 
 }
