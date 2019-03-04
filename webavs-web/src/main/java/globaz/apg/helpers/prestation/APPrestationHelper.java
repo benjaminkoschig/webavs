@@ -460,11 +460,17 @@ public class APPrestationHelper extends PRAbstractHelper {
     private void calculerComplement(final BSession session, final BTransaction transaction,
             final APDroitLAPG droit, APPrestationStandardLamatAcmAlphaData apPrestation) throws Exception {
 
-        if (!JadeStringUtil.isBlankOrZero(droit.getGenreService())) {
-            if (IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE.equals(droit.getGenreService())) {
-                return;
-            }
+        if (IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE.equals(droit.getGenreService())) {
+            return;
         }
+        
+        String hasComplement = JadePropertiesService.getInstance()
+                .getProperty(APApplication.PROPERTY_IS_FERCIAB);
+        
+        if(!"true".equals(hasComplement)) {
+            return;
+        }
+        
         final IAPPrestationCalculateur calculateurComplement = APPrestationCalculateurFactory
                 .getCalculateurInstance(APTypeDePrestation.COMPCIAB);
 
