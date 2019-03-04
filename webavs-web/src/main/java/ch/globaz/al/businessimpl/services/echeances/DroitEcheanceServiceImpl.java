@@ -15,6 +15,7 @@ import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAv
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 import ch.globaz.al.business.constantes.ALCSDossier;
 import ch.globaz.al.business.constantes.ALCSDroit;
 import ch.globaz.al.business.constantes.ALCSTiers;
@@ -30,6 +31,7 @@ import ch.globaz.al.business.services.echeances.DroitEcheanceService;
 import ch.globaz.al.businessimpl.services.ALAbstractBusinessServiceImpl;
 import ch.globaz.al.businessimpl.services.ALImplServiceLocator;
 import ch.globaz.al.utils.ALDateUtils;
+import ch.globaz.al.utils.ALEcheanceUtils;
 
 /**
  * Implémentation des services liées à l'échéance des droits
@@ -48,7 +50,9 @@ public class DroitEcheanceServiceImpl extends ALAbstractBusinessServiceImpl impl
             throw new ALDroitEcheanceException("DroitEcheanceServiceImpl# getLibelleMotif: droit is null");
 
         }
-
+        
+        JadeI18n i18n = JadeI18n.getInstance();
+        
         String dateNaissance = droit.getEnfantComplexModel().getPersonneEtendueComplexModel().getPersonne()
                 .getDateNaissance();
         // la date de naissance peut être vide (cas d'un droit ménage)
@@ -57,7 +61,6 @@ public class DroitEcheanceServiceImpl extends ALAbstractBusinessServiceImpl impl
                     + " is not a valid globaz's date");
         }
 
-        JadeI18n i18n = JadeI18n.getInstance();
 
         // traitement motif Echéance ménage
         if (droit.getDroitModel().getTypeDroit().equals(ALCSDroit.TYPE_MEN)) {
@@ -90,6 +93,11 @@ public class DroitEcheanceServiceImpl extends ALAbstractBusinessServiceImpl impl
         if (droit == null) {
             throw new ALDroitEcheanceException("DroitEcheanceServiceImpl#getLibelleMotif: droit is null");
         }
+        
+        if (ALEcheanceUtils.isMotifMotifE411(droit)) {
+            JadeI18n i18n = JadeI18n.getInstance();
+            return (i18n.getMessage(langue, "al.echeances.motif.caf"));
+        }
 
         DroitComplexModel droitComplexModel = ALServiceLocator.getDroitComplexModelService().read(
                 droit.getDroitModel().getIdDroit());
@@ -97,7 +105,7 @@ public class DroitEcheanceServiceImpl extends ALAbstractBusinessServiceImpl impl
         return this.getLibelleMotif(droitComplexModel, langue);
 
     }
-
+    
     private String getLibellePourDroitEnfant(DroitComplexModel droit, String langue, String dateNaissance, JadeI18n i18n)
             throws JadeApplicationException, JadePersistenceException, JadeApplicationServiceNotAvailableException {
 
@@ -197,8 +205,8 @@ public class DroitEcheanceServiceImpl extends ALAbstractBusinessServiceImpl impl
         return listDroitsEcheance;
     }
 
-    private HashSet getListEtatDroit() throws JadeApplicationException, JadePersistenceException {
-        HashSet etatDroit = new HashSet();
+    private Set<String> getListEtatDroit() throws JadeApplicationException, JadePersistenceException {
+        Set<String> etatDroit = new HashSet<>();
         etatDroit.add(ALCSDroit.ETAT_S);
         etatDroit.add(ALCSDroit.ETAT_G);
 
@@ -206,8 +214,8 @@ public class DroitEcheanceServiceImpl extends ALAbstractBusinessServiceImpl impl
     }
 
     @Override
-    public HashSet getListMotifsAutres() throws JadeApplicationException, JadePersistenceException {
-        HashSet avisEcheance = new HashSet();
+    public Set<String> getListMotifsAutres() throws JadeApplicationException, JadePersistenceException {
+        Set<String> avisEcheance = new HashSet<>();
 
         // type de fin de droit pris en compte pour les dossiers à réviser
         avisEcheance.add(ALCSDroit.MOTIF_FIN_CTAR);
@@ -217,8 +225,8 @@ public class DroitEcheanceServiceImpl extends ALAbstractBusinessServiceImpl impl
     }
 
     @Override
-    public HashSet getListMotifsAvis() throws JadeApplicationException, JadePersistenceException {
-        HashSet autreEcheance = new HashSet();
+    public Set<String> getListMotifsAvis() throws JadeApplicationException, JadePersistenceException {
+        Set<String> autreEcheance = new HashSet<>();
 
         // type de fin de droit pris en compte pour les avis d'échéances
         autreEcheance.add(ALCSDroit.MOTIF_FIN_ECH);
@@ -233,8 +241,8 @@ public class DroitEcheanceServiceImpl extends ALAbstractBusinessServiceImpl impl
      * (ch.globaz.al.business.models.droit.DroitEcheanceComplexSearchModel)
      */
     @Override
-    public HashSet getListTypeDroit() throws JadeApplicationException, JadePersistenceException {
-        HashSet typeDroit = new HashSet();
+    public Set<String> getListTypeDroit() throws JadeApplicationException, JadePersistenceException {
+        Set<String> typeDroit = new HashSet<>();
 
         // type de droit pris en compte pour la recherche
         typeDroit.add(ALCSDroit.TYPE_ENF);
@@ -267,7 +275,7 @@ public class DroitEcheanceServiceImpl extends ALAbstractBusinessServiceImpl impl
     }
 
     @Override
-    public ArrayList<DroitEcheanceComplexModel> searchDroitsForEcheance(HashSet motifFin, HashSet typeDroit,
+    public ArrayList<DroitEcheanceComplexModel> searchDroitsForEcheance(Set<String> motifFin, Set<String> typeDroit,
             String dateEcheance, String typeBonification, String typeListe, Boolean adiDossier)
             throws JadeApplicationException, JadePersistenceException {
 

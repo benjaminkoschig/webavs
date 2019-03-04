@@ -13,6 +13,7 @@
 			<select-field name="numAffilie" field-ref="dossierModel.numeroAffilie"/>
 			<select-field name="numNssEnfant" field-ref="personneEtendueModelenfant.numAvsActuel"/>
 			<select-field name="idTiersAllocataire" field-ref="allocataireModel.idTiersAllocataire"/>
+			<select-field name="idPaysResidence" field-ref="allocataireModel.idPaysResidence"/>
 			<select-field name="titre" field-ref="tiersAllocModel.titreTiers"/>
 			<select-field name="idTiersBeneficiaire" field-ref="dossierModel.idTiersBeneficiaire"/>
 			<select-field name="activiteAllocataire" field-ref="dossierModel.activiteAllocataire"/>

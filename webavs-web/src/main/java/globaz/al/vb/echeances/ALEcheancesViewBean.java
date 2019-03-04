@@ -3,6 +3,7 @@
  */
 package globaz.al.vb.echeances;
 
+import globaz.al.process.echeances.ALEcheancesExcelProcess;
 import globaz.al.process.echeances.ALEcheancesImprimerProcess;
 import globaz.al.process.echeances.ALProtocoleEcheancesProcess;
 import globaz.globall.db.BProcessLauncher;
@@ -11,6 +12,8 @@ import globaz.globall.db.BSpy;
 import globaz.globall.vb.BJadePersistentObjectViewBean;
 import globaz.jade.client.util.JadeStringUtil;
 import ch.globaz.al.business.constantes.ALConstEcheances;
+import ch.globaz.al.business.constantes.enumerations.echeances.ALEnumDocumentGroup;
+import ch.globaz.al.business.constantes.enumerations.echeances.ALEnumDocumentMode;
 
 /**
  * ViewBean gérant le modèle permettant l'impression d'échéances et la création de listes provisoires
@@ -39,6 +42,14 @@ public class ALEcheancesViewBean extends BJadePersistentObjectViewBean {
      * type de liste à traiter (listes provisoire ou traitement définitifs)
      */
     private String typeAvis = null;
+    
+    private String typeDocument = null;
+    
+    private String groupPar = null;
+    
+    private String mailSepare = null;
+    
+    private String groupParPays = null;
 
     /**
      * Constucteur
@@ -66,15 +77,27 @@ public class ALEcheancesViewBean extends BJadePersistentObjectViewBean {
             processImprimerEcheances.setSession(getSession());
             processImprimerEcheances.setAdiExclu(adiExclu);
             processImprimerEcheances.setCopieAllocPourDossierBeneficiaire(copieAllocPourDossierBeneficiaire);
+            processImprimerEcheances.setGroupParPays("on".equals(groupParPays));
             BProcessLauncher.start(processImprimerEcheances, false);
 
         } else if (JadeStringUtil.equals(typeAvis, ALConstEcheances.LISTE_PROVISOIRE, false)) {
-
-            ALProtocoleEcheancesProcess processEcheances = new ALProtocoleEcheancesProcess();
-            processEcheances.setDateEcheance(date);
-            processEcheances.setAdiExclu(adiExclu);
-            processEcheances.setSession(getSession());
-            BProcessLauncher.start(processEcheances, false);
+            if(ALEnumDocumentMode.EXCEL.getValue().equals(typeDocument)) {
+                ALEcheancesExcelProcess processEcheances = new ALEcheancesExcelProcess();
+                processEcheances.setDateEcheance(date);
+                processEcheances.setAdiExclu(adiExclu);
+                processEcheances.setGroupPar(ALEnumDocumentGroup.fromValue(groupPar));
+                processEcheances.setMailSepare("on".equals(mailSepare));
+                processEcheances.setSession(getSession());
+                BProcessLauncher.start(processEcheances, false);
+            } else {
+                ALProtocoleEcheancesProcess processEcheances = new ALProtocoleEcheancesProcess();
+                processEcheances.setDateEcheance(date);
+                processEcheances.setAdiExclu(adiExclu);
+                processEcheances.setGroupPar(ALEnumDocumentGroup.fromValue(groupPar));
+                processEcheances.setMailSepare("on".equals(mailSepare));
+                processEcheances.setSession(getSession());
+                BProcessLauncher.start(processEcheances, false);
+            }
 
         }
 
@@ -192,5 +215,38 @@ public class ALEcheancesViewBean extends BJadePersistentObjectViewBean {
     public void update() throws Exception {
         throw new Exception(this.getClass() + " - Method called (update) not implemented (might be never called)");
     }
+
+    public String getTypeDocument() {
+        return typeDocument;
+    }
+
+    public void setTypeDocument(String typeDocument) {
+        this.typeDocument = typeDocument;
+    }
+
+    public String getGroupPar() {
+        return groupPar;
+    }
+
+    public void setGroupPar(String groupPar) {
+        this.groupPar = groupPar;
+    }
+
+    public String getMailSepare() {
+        return mailSepare;
+    }
+
+    public void setMailSepare(String mailSepare) {
+        this.mailSepare = mailSepare;
+    }
+
+    public String getGroupParPays() {
+        return groupParPays;
+    }
+
+    public void setGroupParPays(String groupParPays) {
+        this.groupParPays = groupParPays;
+    }
+    
 
 }

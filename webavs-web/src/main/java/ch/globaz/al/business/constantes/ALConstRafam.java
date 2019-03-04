@@ -44,6 +44,6 @@ public interface ALConstRafam {
     public static final String SUBJECT_ANNONCE_RAFAM = "Annonces RAFam";
     public static final String SUBJECT_ANNONCE_RAFAM_DELEGUE = "Annonces RAFam - employeur(s) délégué(s)";
     public static final String UPI_UNKNOWN_NSS = "756.9999.9999.99";
-
+    
     public static final String PATTERN_LEGAL_OFFICE = "^[0-9]{3}\\.[0-9]{3}|ALK\\.[0-9]{3}$";
 }

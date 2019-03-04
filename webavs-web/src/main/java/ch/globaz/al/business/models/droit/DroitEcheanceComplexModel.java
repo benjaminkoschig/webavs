@@ -50,6 +50,11 @@ public class DroitEcheanceComplexModel extends JadeComplexModel {
      * identifiant du tiers beneficiaire défini au niveau du dossier
      */
     private String idTiersBeneficiaire = null;
+    
+    /**
+     * identifiant du Pays de résidence du tiers beneficiaire
+     */
+    private String idPaysResidence = null;
 
     /**
      * nom l'allocataire
@@ -417,6 +422,14 @@ public class DroitEcheanceComplexModel extends JadeComplexModel {
      */
     public void setTitre(String titre) {
         this.titre = titre;
+    }
+
+    public String getIdPaysResidence() {
+        return idPaysResidence;
+    }
+
+    public void setIdPaysResidence(String idPaysResidence) {
+        this.idPaysResidence = idPaysResidence;
     }
 
 }

@@ -108,6 +108,10 @@ public interface ALCSDroit {
      * CS : motif de fin de droit "Radiation"
      */
     public static final String MOTIF_FIN_RAD = "61100003";
+    /**
+     * CS : motif de fin de droit spécifique E411
+     */
+    public static final String MOTIF_FIN_E411 = "61100010";
 
     /*
      * Motifs de réduction d'un droit

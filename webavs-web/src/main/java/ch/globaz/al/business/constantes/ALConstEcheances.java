@@ -77,5 +77,7 @@ public interface ALConstEcheances {
      * type de paiement indirect
      */
     public static final String TYPE_INDIRECT = "2";
-
+    
+    public static final String MOTIF_E411 = "al.motifE411";
+    
 }

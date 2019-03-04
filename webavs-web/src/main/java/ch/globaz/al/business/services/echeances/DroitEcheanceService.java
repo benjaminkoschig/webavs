@@ -5,6 +5,7 @@ import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.service.provider.application.JadeApplicationService;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Set;
 import ch.globaz.al.business.loggers.ProtocoleLogger;
 import ch.globaz.al.business.models.droit.DroitComplexModel;
 import ch.globaz.al.business.models.droit.DroitEcheanceComplexModel;
@@ -60,7 +61,7 @@ public interface DroitEcheanceService extends JadeApplicationService {
      * @throws JadeApplicationException
      *             Exception levée par la couche métier lorsqu'elle n'a pu effectuer l'opération souhaitée
      */
-    public HashSet getListMotifsAutres() throws JadeApplicationException, JadePersistenceException;
+    public Set<String> getListMotifsAutres() throws JadeApplicationException, JadePersistenceException;
 
     /**
      * Méthode qui retourne une collection comprenant les motifs de fin relatifs à un changement de tarif
@@ -72,7 +73,7 @@ public interface DroitEcheanceService extends JadeApplicationService {
      * @throws JadeApplicationException
      *             Exception levée par la couche métier lorsqu'elle n'a pu effectuer l'opération souhaitée
      */
-    public HashSet getListMotifsAvis() throws JadeApplicationException, JadePersistenceException;
+    public Set<String> getListMotifsAvis() throws JadeApplicationException, JadePersistenceException;
 
     /**
      * Méthode qui retourne une collection comprenant les types de droits
@@ -84,7 +85,7 @@ public interface DroitEcheanceService extends JadeApplicationService {
      * @throws JadeApplicationException
      *             Exception levée par la couche métier lorsqu'elle n'a pu effectuer l'opération souhaitée
      */
-    public HashSet getListTypeDroit() throws JadeApplicationException, JadePersistenceException;
+    public Set<String> getListTypeDroit() throws JadeApplicationException, JadePersistenceException;
 
     /**
      * Méthode qui retourne un booléen pour type de paiement (true direct, false indirect)
@@ -123,7 +124,7 @@ public interface DroitEcheanceService extends JadeApplicationService {
      * @throws JadeApplicationException
      *             Exception levée par la couche métier lorsqu'elle n'a pu effectuer l'opération souhaitée
      */
-    public ArrayList<DroitEcheanceComplexModel> searchDroitsForEcheance(HashSet motifFin, HashSet typeDroit,
+    public ArrayList<DroitEcheanceComplexModel> searchDroitsForEcheance(Set<String> motifFin, Set<String> typeDroit,
             String dateEcheance, String typeBonification, String typeListe, Boolean adi)
             throws JadeApplicationException, JadePersistenceException;
 
