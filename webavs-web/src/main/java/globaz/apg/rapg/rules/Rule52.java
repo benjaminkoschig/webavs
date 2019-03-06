@@ -16,14 +16,14 @@ import globaz.prestation.utils.PRDateUtils;
  *
  * @author eniv
  */
-public class Rule10002 extends Rule {
+public class Rule52 extends Rule {
 
     private static final int NB_MAX_AGE = 30;
 
     /**
      * @param errorCode
      */
-    public Rule10002(String errorCode) {
+    public Rule52(String errorCode) {
         super(errorCode, true);
     }
 

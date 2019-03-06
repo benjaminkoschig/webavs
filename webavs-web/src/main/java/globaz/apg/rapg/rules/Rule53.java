@@ -22,14 +22,14 @@ import globaz.naos.api.IAFAssurance;
  *
  * @author eniv
  */
-public class Rule10003 extends Rule {
+public class Rule53 extends Rule {
 
     private static final int NB_JOUR_MAX = 31;
 
     /**
      * @param errorCode
      */
-    public Rule10003(String errorCode) {
+    public Rule53(String errorCode) {
         super(errorCode, true);
     }
 

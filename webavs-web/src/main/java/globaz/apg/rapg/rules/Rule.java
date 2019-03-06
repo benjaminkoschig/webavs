@@ -1,5 +1,9 @@
 package globaz.apg.rapg.rules;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import globaz.apg.api.annonces.IAPAnnonce;
 import globaz.apg.business.service.APAnnoncesRapgService;
 import globaz.apg.db.annonces.APAnnonceAPG;
@@ -19,14 +23,10 @@ import globaz.jade.client.util.JadePeriodWrapper;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.beans.PRPeriode;
 import globaz.prestation.utils.PRDateUtils;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Classe abstraite pour les règles de validation des données de l'annonces
- * 
+ *
  * @author lga
  */
 public abstract class Rule implements APRuleDBDataProvider {
@@ -44,23 +44,24 @@ public abstract class Rule implements APRuleDBDataProvider {
 
     /**
      * Exécution de la règle. Doit retourner true si la validation s'est passée sans problème sinon false
-     * 
+     *
      * @param champsAnnonce
-     *            L'ensemble des champs de l'annonce
+     *                          L'ensemble des champs de l'annonce
      * @return <code>true</code> si la validation s'est passé sans erreur sinon <code>false</code>
      * @throws IllegalArgumentException
-     *             Dans le cas ou les champs qui doivent êtres testé par la règle sont null, vide ou invalid (mauvais
-     *             format de date, etc)
+     *                                      Dans le cas ou les champs qui doivent êtres testé par la règle sont null,
+     *                                      vide ou invalid (mauvais
+     *                                      format de date, etc)
      * @throws APRuleExecutionException
-     *             Lors d'exception interne à la règle (accès DB, etc)
+     *                                      Lors d'exception interne à la règle (accès DB, etc)
      */
-    public abstract boolean check(APChampsAnnonce champsAnnonce) throws APRuleExecutionException,
-            IllegalArgumentException;
+    public abstract boolean check(APChampsAnnonce champsAnnonce)
+            throws APRuleExecutionException, IllegalArgumentException;
 
     /**
      * Set l'objet responsable de l'accès à la base de données. Cette composition est nécessaire pour pouvoir passer les
      * règles sous tests unitaires dans être tributaire d'une base de données
-     * 
+     *
      * @param dataBaseDataProvider
      */
     public void setDataBaseDataProvider(APRuleDBDataProvider dataBaseDataProvider) {
@@ -77,13 +78,18 @@ public abstract class Rule implements APRuleDBDataProvider {
     }
 
     /**
-     * Retourne le type d'annonce en fonction du subMessageType</br> Valeurs retournée :</br> 1 - Annonce
-     * augmentation</br> 3 - Annonce correction</br> 4 - Annonce restitution</br>
-     * 
+     * Retourne le type d'annonce en fonction du subMessageType</br>
+     * Valeurs retournée :</br>
+     * 1 - Annonce
+     * augmentation</br>
+     * 3 - Annonce correction</br>
+     * 4 - Annonce restitution</br>
+     *
      * @param champsAnnonce
      * @return
      * @throws IllegalArgumentException
-     *             Dans le cas ou le type d'annonce ne peut pas être résolut. Ce champ doit toujours être renseigné
+     *                                      Dans le cas ou le type d'annonce ne peut pas être résolut. Ce champ doit
+     *                                      toujours être renseigné
      */
     protected int getTypeAnnonce(APChampsAnnonce champsAnnonce) throws IllegalArgumentException {
         String subMessageType = champsAnnonce.getSubMessageType();
@@ -103,13 +109,13 @@ public abstract class Rule implements APRuleDBDataProvider {
 
     /**
      * Test que le champ passé en paramètre ne soit pas null ou une chaîne vide
-     * 
+     *
      * @param value
-     *            La valeur à tester
+     *                       La valeur à tester
      * @param nomDuChamp
-     *            Le nom du champ. Utilisé pour générer le message d'erreur
+     *                       Le nom du champ. Utilisé pour générer le message d'erreur
      * @throws IllegalArgumentException
-     *             Si le paramètre <code>value</code> est null ou une chaîne vide
+     *                                      Si le paramètre <code>value</code> est null ou une chaîne vide
      */
     protected final void validNotEmpty(String value, String nomDuChamp) throws IllegalArgumentException {
         if (JadeStringUtil.isEmpty(value)) {
@@ -120,7 +126,7 @@ public abstract class Rule implements APRuleDBDataProvider {
     /**
      * Test que le champ passé en paramètre ne soit pas null ou une chaîne vide et qu'il soit conforme au test
      * isGlobazDate
-     * 
+     *
      * @param value
      * @param nomDuChamp
      * @throws IllegalArgumentException
@@ -128,7 +134,8 @@ public abstract class Rule implements APRuleDBDataProvider {
     protected final void testDateNotEmptyAndValid(String value, String nomDuChamp) throws IllegalArgumentException {
         validNotEmpty(value, nomDuChamp);
         if (!JadeDateUtil.isGlobazDate(value)) {
-            throw new IllegalArgumentException("The value of the field [" + nomDuChamp + "] is not a valid Globaz date");
+            throw new IllegalArgumentException(
+                    "The value of the field [" + nomDuChamp + "] is not a valid Globaz date");
         }
     }
 
@@ -157,11 +164,11 @@ public abstract class Rule implements APRuleDBDataProvider {
      * <p>
      * Si <code>nombreAnneeEnMoins = 1</code>, retournera le 1er janvier de l'année passée en paramètre.
      * </p>
-     * 
+     *
      * @param date
-     *            une date au format JJ.MM.AAAA
+     *                               une date au format JJ.MM.AAAA
      * @param nombreAnneeEnMoins
-     *            un nombre d'année à retirer à la date
+     *                               un nombre d'année à retirer à la date
      * @return une date au format JJ.MM.AAAA, ou <code>null</code> si la date passée en paramètre n'est pas au bon
      *         format
      */
@@ -175,14 +182,15 @@ public abstract class Rule implements APRuleDBDataProvider {
 
     /**
      * Recherche et retourne le nombre de jours que le tiers de cette annonce a passer à l'école de recrue
-     * 
+     *
      * @param champsAnnonce
      * @param nombreAnneeCouvert
-     *            le nombre d'année civile à remonter pour vérifier (si 1, recherche à partir du 1er janvier du début de
-     *            la période dans l'annonce)
+     *                               le nombre d'année civile à remonter pour vérifier (si 1, recherche à partir du 1er
+     *                               janvier du début de
+     *                               la période dans l'annonce)
      * @return
      * @throws Exception
-     *             si un problème survient lors de la recherche avec le manager
+     *                       si un problème survient lors de la recherche avec le manager
      */
     protected int getNombreJoursEcoleRecrue(APAnnonceAPG champsAnnonce, int nombreAnneeCouvert) throws Exception {
 
@@ -218,7 +226,7 @@ public abstract class Rule implements APRuleDBDataProvider {
      * s'il ne correspond à aucun numéro connu (voir le document 2.10 de l'OFAS, et la doc de
      * {@link APTypeProtectionCivile})
      * </p>
-     * 
+     *
      * @param refNumber
      * @return
      */
@@ -234,11 +242,11 @@ public abstract class Rule implements APRuleDBDataProvider {
      * Retournera <code>false</code> si une des dates n'est pas valide ou si la date de fin est plus ancienne que celle
      * de début
      * </p>
-     * 
+     *
      * @param dateDebut
-     *            date au format JJ.MM.AAAA
+     *                      date au format JJ.MM.AAAA
      * @param dateFin
-     *            date au format JJ.MM.AAAA
+     *                      date au format JJ.MM.AAAA
      * @return
      */
     protected boolean isPeriodePendantNoel(String dateDebut, String dateFin) {
@@ -251,9 +259,19 @@ public abstract class Rule implements APRuleDBDataProvider {
         return periodeDroit.isDateDansLaPeriode("25.12." + anneeDroit);
     }
 
+    protected List<APDroitAvecParent> skipDroitLuiMeme(List<APDroitAvecParent> tousLesDroits, String idDroit) {
+        List<APDroitAvecParent> droitFinaux = new ArrayList<APDroitAvecParent>();
+        for (APDroitAvecParent droit : tousLesDroits) {
+            if (!idDroit.equals(droit.getIdDroit())) {
+                droitFinaux.add(droit);
+            }
+        }
+        return droitFinaux;
+    }
+
     /**
      * Tri des droits pour garder uniquement la dernière correction d'un droit
-     * 
+     *
      * @param tousLesDroits
      * @return
      * @throws APRuleExecutionException
@@ -310,15 +328,15 @@ public abstract class Rule implements APRuleDBDataProvider {
     /**
      * Recherche dans la liste des droits fournis en paramètres si des prestations d'allocation (pas de restit,
      * duplicata, etc) existent pour la période définie par startOfPeriod et endOfPeriod
-     * 
+     *
      * @param startOfPeriod
-     *            Le début de la période
+     *                          Le début de la période
      * @param endOfPeriod
-     *            La fin de la période
+     *                          La fin de la période
      * @param droits
-     *            La liste des droits
+     *                          La liste des droits
      * @throws Exception
-     *             En cas d'erreur liée au manager
+     *                       En cas d'erreur liée au manager
      */
     protected boolean hasPrestationEnConflit(String startOfPeriod, String endOfPeriod,
             List<APDroitAvecParent> droitsTries) throws Exception {
@@ -369,7 +387,8 @@ public abstract class Rule implements APRuleDBDataProvider {
     }
 
     @Override
-    public boolean isCodePaysExistant(String insurantDomicileCountry, BSession session) throws APRuleExecutionException {
+    public boolean isCodePaysExistant(String insurantDomicileCountry, BSession session)
+            throws APRuleExecutionException {
         return dataBaseDataProvider.isCodePaysExistant(insurantDomicileCountry, session);
     }
 

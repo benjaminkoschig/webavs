@@ -482,8 +482,10 @@ public class APPrestationHelper extends PRAbstractHelper {
         // si versé à l'assuré pas de calcul de complément
         // si l’une des cotisations suivantes existe dans le dans le plan d’affiliation de l’employeur au début de la
         // période APG, alors un complément est calculé
-        if (donnesPersistencePourCalcul.getSituationProfessionnelleEmployeur().isEmpty() || !isComplement(session,
-                droit.getIdDroit(), donnesPersistencePourCalcul.getSituationProfessionnelleEmployeur())) {
+        if (donnesPersistencePourCalcul == null
+                || donnesPersistencePourCalcul.getSituationProfessionnelleEmployeur().isEmpty()
+                || !isComplement(session, droit.getIdDroit(),
+                        donnesPersistencePourCalcul.getSituationProfessionnelleEmployeur())) {
             return;
         }
 
@@ -1135,11 +1137,15 @@ public class APPrestationHelper extends PRAbstractHelper {
         final List<APRepartitionJointPrestation> repartitionJointRepartitionsFiltree = new ArrayList<APRepartitionJointPrestation>();
         for (APRepartitionJointPrestation repJointPrest : listeTemporaire) {
             // On prend les prestation allocation et duplicata
-            if ((IAPAnnonce.CS_DEMANDE_ALLOCATION.equals(repJointPrest.getContenuAnnonce()) 
-                    || IAPAnnonce.CS_DUPLICATA.equals(repJointPrest.getContenuAnnonce())
-                   ) && !JadeStringUtil.isBlankOrZero(repJointPrest.getIdSituationProfessionnelle())) {
+            if ((IAPAnnonce.CS_DEMANDE_ALLOCATION.equals(repJointPrest.getContenuAnnonce())
+                    || IAPAnnonce.CS_DUPLICATA.equals(repJointPrest.getContenuAnnonce()))
+                    && !JadeStringUtil.isBlankOrZero(repJointPrest.getIdSituationProfessionnelle())) {
                 repartitionJointRepartitionsFiltree.add(repJointPrest);
             }
+        }
+
+        if (repartitionJointRepartitionsFiltree.isEmpty()) {
+            return null;
         }
 
         donneesPersistence.setPrestationJointRepartitions(repartitionJointRepartitionsFiltree);

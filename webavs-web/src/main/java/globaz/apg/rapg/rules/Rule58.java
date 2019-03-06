@@ -17,12 +17,12 @@ import globaz.globall.db.FWFindParameter;
  *
  * @author mpe
  */
-public class Rule10007 extends Rule {
+public class Rule58 extends Rule {
 
     /**
      * @param errorCode
      */
-    public Rule10007(String errorCode) {
+    public Rule58(String errorCode) {
         super(errorCode, true);
     }
 
@@ -35,17 +35,13 @@ public class Rule10007 extends Rule {
     @Override
     public boolean check(APChampsAnnonce champsAnnonce) throws APRuleExecutionException, IllegalArgumentException {
         String serviceType = champsAnnonce.getServiceType();
-        int typeAnnonce = getTypeAnnonce(champsAnnonce);
-        if (typeAnnonce == 1) {
-            validNotEmpty(serviceType, "serviceType");
-        }
 
-        if (serviceType.equals(APGenreServiceAPG.Deces.getCodePourAnnonce())) {
+        if (serviceType.equals(APGenreServiceAPG.InspectionRecrutementLiberation.getCodePourAnnonce())) {
             try {
                 BigDecimal nbJours = new BigDecimal(champsAnnonce.getNumberOfDays());
                 BigDecimal valPlage = new BigDecimal(
                         FWFindParameter.findParameter(getSession().getCurrentThreadTransaction(), "1",
-                                APParameter.NOMBRE_JOURS_ISOLES_DECES.getParameterName(),
+                                APParameter.NOMBRE_JOURS_ISOLES_INSPECTION_RECRUTEMENT_LIBERATION.getParameterName(),
                                 champsAnnonce.getStartOfPeriod(), "", 0));
                 if (nbJours.compareTo(valPlage) >= 1) {
                     return false;

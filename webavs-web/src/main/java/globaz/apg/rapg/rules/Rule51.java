@@ -19,14 +19,12 @@ import globaz.jade.client.util.JadeDateUtil;
  *
  * @author eniv
  */
-public class Rule10001 extends Rule {
-
-    private static final int NB_JOUR_MAX = 31;
+public class Rule51 extends Rule {
 
     /**
      * @param errorCode
      */
-    public Rule10001(String errorCode) {
+    public Rule51(String errorCode) {
         super(errorCode, true);
     }
 
@@ -41,10 +39,6 @@ public class Rule10001 extends Rule {
         String startOfPeriod = champsAnnonce.getStartOfPeriod();
 
         String serviceType = champsAnnonce.getServiceType();
-        int typeAnnonce = getTypeAnnonce(champsAnnonce);
-        if (typeAnnonce == 1) {
-            validNotEmpty(serviceType, "serviceType");
-        }
 
         if (serviceType.equals(APGenreServiceAPG.Demenagement.getCodePourAnnonce())) {
             String dateDebutPeriodeControle = JadeDateUtil.addMonths(startOfPeriod, -6);
@@ -66,15 +60,16 @@ public class Rule10001 extends Rule {
             etatIndesirable.add(IAPDroitLAPG.CS_ETAT_DROIT_TRANSFERE);
             manager.setForEtatDroitNotIn(etatIndesirable);
 
-            List<APDroitAvecParent> droitsTries = null;
+            List<APDroitAvecParent> droitsTries = new ArrayList<>();
             try {
                 manager.find();
                 List<APDroitAvecParent> tousLesDroits = manager.getContainer();
                 droitsTries = skipDroitParent(tousLesDroits);
+                droitsTries = skipDroitLuiMeme(droitsTries, champsAnnonce.getIdDroit());
             } catch (Exception e) {
                 throwRuleExecutionException(e);
             }
-            if (!manager.isEmpty()) {
+            if (!droitsTries.isEmpty()) {
                 return false;
             }
 

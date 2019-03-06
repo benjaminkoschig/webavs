@@ -8,6 +8,16 @@ package globaz.apg.enums;
  */
 public enum APAllPlausibiliteRules {
 
+    R_50(false, 50),
+    R_51(false, 51),
+    R_52(false, 52),
+    R_53(false, 53),
+    R_54(false, 54),
+    R_55(false, 55),
+    R_56(false, 56),
+    R_57(false, 57),
+    R_58(false, 58),
+    R_59(false, 59),
     R_104(false, 104),
     R_105(false, 105),
     R_201(false, 201),
@@ -61,17 +71,7 @@ public enum APAllPlausibiliteRules {
     R_507(true, 507),
     R_508(true, 508),
     R_509(true, 509),
-    R_510(true, 510),
-    R_10000(false, 10000),
-    R_10001(false, 10001),
-    R_10002(false, 10002),
-    R_10003(false, 10003),
-    R_10004(false, 10004),
-    R_10005(false, 10005),
-    R_10006(false, 10006),
-    R_10007(false, 10007),
-    R_10008(false, 10008),
-    R_10009(false, 10009),;
+    R_510(true, 510);
 
     public static APAllPlausibiliteRules valueOfCode(String code) {
         return APAllPlausibiliteRules.valueOf("R_" + code);
