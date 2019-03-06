@@ -1,5 +1,16 @@
 package globaz.apg.module.calcul.standard;
 
+import java.math.BigDecimal;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeSet;
+import ch.globaz.common.properties.CommonPropertiesUtils;
 import globaz.apg.api.annonces.IAPAnnonce;
 import globaz.apg.api.droits.IAPDroitAPG;
 import globaz.apg.api.droits.IAPDroitLAPG;
@@ -65,58 +76,48 @@ import globaz.globall.util.JACalendarGregorian;
 import globaz.globall.util.JADate;
 import globaz.globall.util.JANumberFormatter;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.properties.JadePropertiesService;
 import globaz.prestation.application.PRAbstractApplication;
 import globaz.prestation.db.demandes.PRDemande;
-import java.math.BigDecimal;
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeSet;
-import ch.globaz.common.properties.CommonPropertiesUtils;
 
 /**
  * <pre>
  * Description Calcul de la prestation APG
- * 
- * 
+ *
+ *
  *    Cas de figure :
  *                     Définition : [ Prestation   + montant CHF de la prestation ]    [] == date début/date fin de la prestation
  *                                  Rest. == Prestation de restitution
  *                                  PB == période de base
  *                                  PGPC == plus grande période commune
  *                                  PGPCE == plus grande période commune étendue, pour restitutions
- * 
+ *
  *    Droit id - id parent  (description)          :  Prestations
  *    ------------------------------------------------------------------------------------------------
- * 
+ *
  *     Droit 1 -   null                            : [    P1         35.-       ][    P2    45.-  ]
  *     Droit 2 -    1      (correction Droit 1)    : [    P3         +5.-       ]
- * 
+ *
  *     Droit 3 -    1      (+ 1 enfant)            : [    P4      Rest. 40.-    ]
  *                                                 : [  P5 40.-   ][ P6   60.-  ][   P7   +20.-   ]
- * 
+ *
  *     Droit 4 -    1      (correction)            : [ P8 +5.-    ]              [   P9  + 10.-   ]
- * 
- * 
+ *
+ *
  *     Droit 5 -    1      (correction, dans la)   : [Rest.  45.- ][Rest.   60.-]                              -- A3
  *                         (date de naiss. de  )   : ¦  PGPCE  1  ¦¦ PGPCE  2   ¦
  *                         (l'enfant           )
  *                                                 : [    P10  45.-       ][ 60.- ]                            -- A1
- * 
+ *
  *     Définition pour traitement cas 5            : ¦       PB  1        ¦¦PB 2  ¦                            -- A2
  *                                                 : ¦   PGPC 1   ¦¦PGPC 2¦
  *                                                 :
- * 
- * 
+ *
+ *
  *     Algorithme :
- * 
+ *
  *     Cas droit 5
- * 
+ *
  *     1) Calcul des prestations sans prises en compte des evt. prestations précédentes (A1)
  *     2) Récupérer les plus grandes périodes communes (pgpc) pour une période donnée (PB (A2))
  *     3) Pour chacune de ces PGPC (PGPC1)
@@ -134,7 +135,7 @@ import ch.globaz.common.properties.CommonPropertiesUtils;
  *             fusionner les 2 prestations
  *     5)Pour chaque object prestation, créer la prestation.
  * </pre>
- * 
+ *
  * @author SCR
  */
 public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestationCalculateur<Object, Object, Object> {
@@ -202,6 +203,10 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
         prestCalculee.setDateDebut(pgpc.getDateDebut());
         prestCalculee.setDateFin(pgpc.getDateFin());
         prestCalculee.setEtat(IAPPrestation.CS_ETAT_PRESTATION_VALIDE);
+        // Code défensif -> impact moindre vu que seule la FERCIAB utilise les jours isolés
+        if ("true".equals(JadePropertiesService.getInstance().getProperty(APApplication.PROPERTY_IS_FERCIAB))) {
+            prestCalculee.setCsGenrePrestation(prestationWrapper.getPrestationBase().getCsGenrePrestion());
+        }
 
         // gestion du duplicata pour les APG militaire
         if (!IAPDroitMaternite.CS_REVISION_MATERNITE_2005.equals(prestationWrapper.getPrestationBase().getRevision())) {
@@ -262,8 +267,9 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
         // Si nombre de jours = zero, on set le montant journalier a zero
         BigDecimal montantJournalierFG = prestationWrapper.getFraisGarde().getBigDecimalValue();
         if (prestationWrapper.getPrestationBase().getNombreJoursSoldes() != 0) {
-            montantJournalierFG = montantJournalierFG.divide(new BigDecimal(prestationWrapper.getPrestationBase()
-                    .getNombreJoursSoldes()), 5, BigDecimal.ROUND_HALF_EVEN);
+            montantJournalierFG = montantJournalierFG.divide(
+                    new BigDecimal(prestationWrapper.getPrestationBase().getNombreJoursSoldes()), 5,
+                    BigDecimal.ROUND_HALF_EVEN);
         } else {
             montantJournalierFG = new BigDecimal("0");
         }
@@ -272,10 +278,10 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
         if (montantJournalierFG.compareTo(prestationWrapper.getPrestationBase().getAllocationJournaliereMaxFraisGarde()
                 .getBigDecimalValue()) == 1) {
             // TE = BKmax
-            BigDecimal montantFraisGarde = prestationWrapper.getPrestationBase()
-                    .getAllocationJournaliereMaxFraisGarde().getBigDecimalValue();
-            montantFraisGarde = montantFraisGarde.multiply(new BigDecimal(prestationWrapper.getPrestationBase()
-                    .getNombreJoursSoldes()));
+            BigDecimal montantFraisGarde = prestationWrapper.getPrestationBase().getAllocationJournaliereMaxFraisGarde()
+                    .getBigDecimalValue();
+            montantFraisGarde = montantFraisGarde
+                    .multiply(new BigDecimal(prestationWrapper.getPrestationBase().getNombreJoursSoldes()));
             prestationWrapper.setFraisGarde(new FWCurrency(montantFraisGarde.toString()));
         }
 
@@ -348,8 +354,7 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
 
                 // Calcul des prestations courantes, pour chaque base de calculs données.
                 // Toutes les prestations sont ajoutées dans la liste prestationCourantes
-                traiterPrestationsMaternite(session, transaction, droit,
-                        APTypeDePrestation.LAMAT.getCodesystemString(),
+                traiterPrestationsMaternite(session, transaction, droit, APTypeDePrestation.LAMAT.getCodesystemString(),
                         isAllocationMax(session, transaction, droit.getIdDroit()));
             }
         } catch (final Exception e) {
@@ -376,7 +381,7 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
 
     /**
      * Récupère les plus grandes périodes communes (PGPC) des périodes données (PD)
-     * 
+     *
      * @return Collection d'objects de type {@link APPrestationWrapper}
      */
     private Collection calculerPGPCs(final BSession session, final BTransaction transaction, final String idDroitPere,
@@ -410,8 +415,9 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
                 // [ PGPC ][ PGPC2 ][ PGPC3 ]
 
                 // Calcul de PGPC2
-                while (BSessionUtil.compareDateFirstLower(session, ppw.getLastPeriodePGPCAdded().getDateFin()
-                        .toStr("."), ppw.getPeriodeBaseCalcul().getDateFin().toStr("."))) {
+                while (BSessionUtil.compareDateFirstLower(session,
+                        ppw.getLastPeriodePGPCAdded().getDateFin().toStr("."),
+                        ppw.getPeriodeBaseCalcul().getDateFin().toStr("."))) {
                     final APPeriodeWrapper pw = new APPeriodeWrapper();
 
                     // Date début = date fin PGPC + 1 jour
@@ -464,10 +470,11 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
 
     /**
      * Calcul de la prestation
-     * 
+     *
      * @param dateRevision
-     *            Date utilisée pour rechercher la bonne révision. Si null, l'on prendra le no de révision qui doit être
-     *            stocké dans la base de calcul.
+     *                         Date utilisée pour rechercher la bonne révision. Si null, l'on prendra le no de révision
+     *                         qui doit être
+     *                         stocké dans la base de calcul.
      * @return Une Collection contenant les prestations calculées {@link APPrestationWrapper}. La liste retournée n'est
      *         jamais null, mais peut être vide. La collection retournée est ordonnée par date de début des prestations
      */
@@ -484,8 +491,8 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
         }
 
         if (baseCalcul.getNombreJoursSoldes() <= 0) {
-            throw new APCalculException(this.getClass().getName()
-                    + session.getLabel("MODULE_CALCUL_NBR_JOURS_SOLDE_OBLIGATOIRE"));
+            throw new APCalculException(
+                    this.getClass().getName() + session.getLabel("MODULE_CALCUL_NBR_JOURS_SOLDE_OBLIGATOIRE"));
         }
 
         // Recherche des prestations à partir d'une période
@@ -505,7 +512,7 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
                 final IAPReferenceDataPrestation element = (IAPReferenceDataPrestation) iter.next();
 
                 final IAPCalculateur calculateur = APCalculateurFactory.getInstance().getCalculateur(element);
-                final APResultatCalcul resultatCalcul = calculateur.calculerPrestation(baseCalcul);
+                final APResultatCalcul resultatCalcul = calculateur.calculerPrestation(baseCalcul, session);
 
                 resultatCalcul.setTypeAllocation(baseCalcul.getTypeAllocation());
                 resultatCalcul.setSoumisImpotSource(baseCalcul.isSoumisImpotSource());
@@ -532,8 +539,8 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
 
                 final APPrestationWrapper prestationWrapper = new APPrestationWrapper();
                 prestationWrapper.setPrestationBase(resultatCalcul);
-                prestationWrapper.setPeriodeBaseCalcul(new APPeriodeWrapper(baseCalcul.getDateDebut(), baseCalcul
-                        .getDateFin()));
+                prestationWrapper
+                        .setPeriodeBaseCalcul(new APPeriodeWrapper(baseCalcul.getDateDebut(), baseCalcul.getDateFin()));
 
                 listPrestationWrapper.add(prestationWrapper);
             }
@@ -543,7 +550,7 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
                     baseCalcul.getNoRevision());
 
             final IAPCalculateur calculateur = APCalculateurFactory.getInstance().getCalculateur(element);
-            final APResultatCalcul resultatCalcul = calculateur.calculerPrestation(baseCalcul);
+            final APResultatCalcul resultatCalcul = calculateur.calculerPrestation(baseCalcul, session);
             resultatCalcul.setTypeAllocation(baseCalcul.getTypeAllocation());
 
             resultatCalcul.setSoumisImpotSource(baseCalcul.isSoumisImpotSource());
@@ -557,8 +564,8 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
 
             final APPrestationWrapper prestationWrapper = new APPrestationWrapper();
             prestationWrapper.setPrestationBase(resultatCalcul);
-            prestationWrapper.setPeriodeBaseCalcul(new APPeriodeWrapper(baseCalcul.getDateDebut(), baseCalcul
-                    .getDateFin()));
+            prestationWrapper
+                    .setPeriodeBaseCalcul(new APPeriodeWrapper(baseCalcul.getDateDebut(), baseCalcul.getDateFin()));
 
             listPrestationWrapper.add(prestationWrapper);
         }
@@ -569,11 +576,11 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
     /**
      * Calcul des prestations courantes, pour chaque base de calculs données. Toutes les prestations sont ajoutées dans
      * la liste prestationCourantes
-     * 
+     *
      * @return Collection contenant les prestations courantes ({@link APPrestationWrapper}). La collection retournée est
      *         ordonnée par date de début.
      * @throws Exception
-     *             en cas d'erreurs
+     *                       en cas d'erreurs
      */
 
     private Collection calculerPrestationsCourantes(final BSession session, final List basesCalcul,
@@ -590,8 +597,8 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
         APBaseCalcul bcSuivante = (APBaseCalcul) basesCalcul.get(basesCalcul.size() - 1);
 
         dateRevision = bcSuivante.getDateFin();
-        prestationsCourantes.addAll(this
-                .calculerPrestationsCourantes(session, bcSuivante, apgOuMaternite, dateRevision));
+        prestationsCourantes
+                .addAll(this.calculerPrestationsCourantes(session, bcSuivante, apgOuMaternite, dateRevision));
 
         // Pour toutes les périodes de bases de calcul contiguës, on calcul chacune des ces bases de calculs avec comme
         // date de révision la date la plus ancienne.
@@ -671,9 +678,9 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
 
                 // Si la caisse donne une maternite cantonale => calculer la
                 // LAMat
-                if ((droit instanceof APDroitMaternite)
-                        && "true".equals(PRAbstractApplication.getApplication(APApplication.DEFAULT_APPLICATION_APG)
-                                .getProperty("isDroitMaterniteCantonale")) && !hasDroitAcquis) {
+                if ((droit instanceof APDroitMaternite) && "true".equals(PRAbstractApplication
+                        .getApplication(APApplication.DEFAULT_APPLICATION_APG).getProperty("isDroitMaterniteCantonale"))
+                        && !hasDroitAcquis) {
 
                     // si c'est une adoption, avant de calculer les
                     // nouvelles prestations LAMat,
@@ -720,7 +727,8 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
                             // 01.07.2005
                             this.deletePrestationStandard(droit, session, transaction, "01.07.2005");
                         } catch (final Exception e) {
-                            session.addError(session.getLabel("ERROR_CALCUL_LAMAT_AVANT_01072005") + " " + e.toString());
+                            session.addError(
+                                    session.getLabel("ERROR_CALCUL_LAMAT_AVANT_01072005") + " " + e.toString());
                             pViewBean.setMessage(e.toString());
                             pViewBean.setMsgType(FWViewBeanInterface.ERROR);
                             transaction.setRollbackOnly();
@@ -792,8 +800,8 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
 
         // Dernière étape, comparaison des deux montants pour savoir s'ils sont identiques...
         if (!montantBrutPrestation.equals(montantBrutRepartitions)) {
-            transaction
-                    .addErrors("Le montant brut des répartitions de paiement n'est pas égal au montant brut de la prestation avec l'id ["
+            transaction.addErrors(
+                    "Le montant brut des répartitions de paiement n'est pas égal au montant brut de la prestation avec l'id ["
                             + idPrestation + "]");
         }
     }
@@ -828,6 +836,10 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
             entity.setNoRevision(prestationACreer.getResultatCalcul().getRevision());
             entity.setEtat(prestationACreer.getEtat());
             entity.setIdDroit(prestationACreer.getIdDroit());
+            // Code défensif -> impact moindre vu que seule la FERCIAB utilise les jours isolés
+            if ("true".equals(JadePropertiesService.getInstance().getProperty(APApplication.PROPERTY_IS_FERCIAB))) {
+                entity.setGenre(prestationACreer.getCsGenrePrestation());
+            }
 
             // On prend le maximum entre le montant journalier et le droit acquis
             BigDecimal mb = null;
@@ -855,8 +867,8 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
             // Cumul du montant journalier avec le montant journalier de l'allocation d'exploitation
             if ((prestationACreer.getResultatCalcul().getAllocationJournaliereExploitation() != null)
                     && !prestationACreer.getResultatCalcul().getAllocationJournaliereExploitation().isZero()) {
-                entity.setMontantAllocationExploitation(prestationACreer.getResultatCalcul()
-                        .getAllocationJournaliereExploitation().toString());
+                entity.setMontantAllocationExploitation(
+                        prestationACreer.getResultatCalcul().getAllocationJournaliereExploitation().toString());
 
                 mb = mb.add(prestationACreer.getResultatCalcul().getAllocationJournaliereExploitation()
                         .getBigDecimalValue());
@@ -875,8 +887,8 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
             }
 
             entity.setNombreJoursSoldes(prestationACreer.getNombreJoursSoldes());
-            entity.setRevenuMoyenDeterminant(prestationACreer.getRevenuDeterminantMoyen().getBigDecimalValue()
-                    .toString());
+            entity.setRevenuMoyenDeterminant(
+                    prestationACreer.getRevenuDeterminantMoyen().getBigDecimalValue().toString());
             entity.setType(prestationACreer.getTypePrestation());
             entity.setDroitAcquis(prestationACreer.getDroitAcquis().toString());
 
@@ -912,9 +924,10 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
     /**
      * Création des prestations des droits spécifiques, prends en compte les anciennes prestations pour le calcul des
      * montants rétroactifs.
-     * 
+     *
      * @param plusDeTrenteJours
-     *            pour les APG de service d'avancement, pour savoir si il faut calculer avec 50% ou 80% du revenu
+     *                              pour les APG de service d'avancement, pour savoir si il faut calculer avec 50% ou
+     *                              80% du revenu
      */
     private void creerPrestationsACM(final BSession session, final BTransaction transaction,
             final APPrestation lastPrestation, final APDroitLAPG droit, final FWCurrency sommeMontantsJournalier,
@@ -972,8 +985,8 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
     private void creerPrestationsLAMat(final BSession session, final BTransaction transaction,
             final APPrestation lastPrestation, final APDroitLAPG droit, final FWCurrency sommeMontantsJournalier,
             final FWCurrency revenuMoyenDeterminant, final String genrePrestation, final String dateDebut,
-            final String dateFin, final String nombreJoursSoldes, final String noRevision, final boolean isAllocationMax)
-            throws Exception {
+            final String dateFin, final String nombreJoursSoldes, final String noRevision,
+            final boolean isAllocationMax) throws Exception {
 
         // si la prestation LAMat des 14 jours supplémentaires comprend le 01.01.2008
         // on coupe cette prestation en 2 pour pouvoir profiter du nouveau barème valable dès le 01.01.2008
@@ -989,8 +1002,8 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
                     Long.toString(jourFirstPeriod + 1), noRevision, isAllocationMax);
 
             creerPrestationsLAMat(session, transaction, lastPrestation, droit, sommeMontantsJournalier,
-                    revenuMoyenDeterminant, genrePrestation, "01.01.2008", dateFin,
-                    Long.toString(jourSecondPeriod + 1), noRevision, isAllocationMax);
+                    revenuMoyenDeterminant, genrePrestation, "01.01.2008", dateFin, Long.toString(jourSecondPeriod + 1),
+                    noRevision, isAllocationMax);
 
         } else {
             // le cas normal
@@ -1126,7 +1139,7 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
 
     /**
      * Efface toutes les prestation Standard du droit donne
-     * 
+     *
      * @param droit
      * @param session
      */
@@ -1232,8 +1245,8 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
 
             if (!JadeStringUtil.isIntegerEmpty(droitAPG.getDroitAcquis())) {
                 final FWCurrency montantDroitAcquis = new FWCurrency(droitAPG.getDroitAcquis());
-                montantJournalierPrestationMaternite = montantJournalierPrestationMaternite.add(montantDroitAcquis
-                        .getBigDecimalValue());
+                montantJournalierPrestationMaternite = montantJournalierPrestationMaternite
+                        .add(montantDroitAcquis.getBigDecimalValue());
             }
 
             // Fusion de toutes les prestations si pas de changement au niveau du versement des employeurs
@@ -1242,11 +1255,11 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
             // c'est a dire montant journalier < 200/98
             // Par contre, si changement dans les versement par employeur, on ne peut pas fusionner.
 
-            BigDecimal montantJournalierMinMaternite = new BigDecimal(session.getApplication().getProperty(
-                    APApplication.PROPERTY_MONTANT_MIN_MATERNITE));
-            montantJournalierMinMaternite = montantJournalierMinMaternite.divide(new BigDecimal(session
-                    .getApplication().getProperty(APApplication.PROPERTY_DROIT_MAT_DUREE_JOURS)), 8,
-                    BigDecimal.ROUND_HALF_EVEN);
+            BigDecimal montantJournalierMinMaternite = new BigDecimal(
+                    session.getApplication().getProperty(APApplication.PROPERTY_MONTANT_MIN_MATERNITE));
+            montantJournalierMinMaternite = montantJournalierMinMaternite.divide(
+                    new BigDecimal(session.getApplication().getProperty(APApplication.PROPERTY_DROIT_MAT_DUREE_JOURS)),
+                    8, BigDecimal.ROUND_HALF_EVEN);
 
             if (montantJournalierPrestationMaternite.compareTo(montantJournalierMinMaternite) <= 0) {
                 HashMap sitProfElementPrecedent = getSituationsProfesionnelRef(elementPrecedent);
@@ -1319,17 +1332,19 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
 
     /**
      * Génération des prestations Cette méthode génère toutes les prestations pour un droit donné.
-     * 
+     *
      * @param session
      * @param droit
-     *            Le droit pour lequel doivent être générées les prestations
+     *                        Le droit pour lequel doivent être générées les prestations
      * @param fraisGarde
-     *            frais de garde
+     *                        frais de garde
      * @param basesCalcul
-     *            La base de calcul, référence utilisée pour le calcul des prestations. Les bases de calculs doivent
-     *            être ordonnée dans le temps.
+     *                        La base de calcul, référence utilisée pour le calcul des prestations. Les bases de calculs
+     *                        doivent
+     *                        être ordonnée dans le temps.
      * @throws Exception
-     *             en cas d'erreurs. Dans ce cas, toute la transaction est rollbackée, aucune prestation n'est créée.
+     *                       en cas d'erreurs. Dans ce cas, toute la transaction est rollbackée, aucune prestation n'est
+     *                       créée.
      */
     public void genererPrestations(final BSession session, final APDroitLAPG droit, final FWCurrency fraisGarde,
             final List basesCalcul) throws Exception {
@@ -1358,9 +1373,10 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
                     // à la main.
                     // On crée des prestations avec des repartitions a zero.
                     if (!((calendar.compare(droit.getDateDebutDroit(), "01.07.2005") == JACalendar.COMPARE_FIRSTLOWER)
-                            && (calendar.compare(droit.getDateFinDroit(), "01.07.2001") == JACalendar.COMPARE_FIRSTUPPER) && "true"
-                                .equals(PRAbstractApplication.getApplication(APApplication.DEFAULT_APPLICATION_APG)
-                                        .getProperty("isDroitMaterniteCantonale")))) {
+                            && (calendar.compare(droit.getDateFinDroit(),
+                                    "01.07.2001") == JACalendar.COMPARE_FIRSTUPPER)
+                            && "true".equals(PRAbstractApplication.getApplication(APApplication.DEFAULT_APPLICATION_APG)
+                                    .getProperty("isDroitMaterniteCantonale")))) {
                         throw new APCalculACORException(session.getLabel("MODULE_CALCUL_ACOR_ERROR"));
                     }
                 }
@@ -1425,7 +1441,7 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
 
     /**
      * Retourne un tableau de prestation dont les dates de début/fin chevauchent la période PGPC.
-     * 
+     *
      * @return APPrestation[] Le tableau de prestation
      */
     private APPrestation[] getPrestationsContenueDansPeriodes(final BSession session, final BTransaction transaction,
@@ -1458,7 +1474,8 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
         while (sitProfIteraror.hasNext()) {
             final APResultatCalculSituationProfessionnel sitProf = (APResultatCalculSituationProfessionnel) sitProfIteraror
                     .next();
-            map.put(sitProf.getIdAffilie() + "-" + sitProf.getIdTiers(), sitProf.getSalaireJournalierVerse().toString());
+            map.put(sitProf.getIdAffilie() + "-" + sitProf.getIdTiers(),
+                    sitProf.getSalaireJournalierVerse().toString());
         }
 
         return map;
@@ -1554,39 +1571,39 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
     /**
      * Charge la plus grande période commune (pgpc) pour une période de base donnée (pd) parmi toutes les prestations
      * incluses dans cette périodes de base. La période de base est : pc.getDateDebut() - pc.getDateFin()
-     * 
+     *
      * <pre>
      * Example 1 [   P1         ][   P2      ]
      *                     [  pd  ]
-     * 
+     *
      *        pgpc = pd
-     * 
+     *
      *        Example 2 [   P1   ][   P2      ] [      P3   ]
      *                     [  pd         ]
-     * 
+     *
      *        pgpc = P1
-     * 
+     *
      *        Example 3 [   P1        ][   P2           ]
      *                     [          pd          ]
      *                     [pgpc1        ][ pgpc2 ]
      * </pre>
-     * 
+     *
      * @param session
      * @param transaction
      * @param idDroitPere
-     *            Identifiant du père du droit;
+     *                        Identifiant du père du droit;
      * @param ppw
-     *            la prestation pour laquelle l'on veut calculer toutes les pgpc
+     *                        la prestation pour laquelle l'on veut calculer toutes les pgpc
      * @return APPrestationWrapper, la prestation mise à jour.
      * @throws Exception
      */
     /*
      * Exemple de cas : [ P1 ][ P2 annule][ P3 ]
-     * 
+     *
      * Retourne [ ] [ P3 ]
-     * 
+     *
      * La méthode loadPGPC retourne la période complète (une seule)
-     * 
+     *
      * La correction du po #00619 à un effet de bord non désiré pour le calcul des prestations de restitutions. Cette
      * méthode annule la modification du po 00619 faite dans loadPGPC().
      */
@@ -1656,7 +1673,8 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
             final APPrestation prestation = (APPrestation) iter.next();
 
             // point ouvert 00619 changer compareDateFirstLower en compareDateFirstGreater
-            if (BSessionUtil.compareDateFirstLower(session, prestation.getDateFin(), pgpc.getDateFin().toStr(".")) == true) {
+            if (BSessionUtil.compareDateFirstLower(session, prestation.getDateFin(),
+                    pgpc.getDateFin().toStr(".")) == true) {
                 pgpc.setDateFin(new JADate(prestation.getDateFin()));
             }
 
@@ -1672,8 +1690,8 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
         // Prestations [ P1 ] [ P2 ]
         // PGPC [pgpc1] [ pgpc2 ]
 
-        if (BSessionUtil.compareDateFirstGreater(session, dateDebutPrestationLaPlusRecente.toStr("."), ppw
-                .getPeriodeBaseCalcul().getDateDebut().toStr(".")) == true) {
+        if (BSessionUtil.compareDateFirstGreater(session, dateDebutPrestationLaPlusRecente.toStr("."),
+                ppw.getPeriodeBaseCalcul().getDateDebut().toStr(".")) == true) {
             pgpc.setDateDebut(dateDebutPrestationLaPlusRecente);
         }
 
@@ -1839,7 +1857,7 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
 
     /**
      * Recherche si tous les enfants liés au droit ont ete adopte et retourne true dans ce cas.
-     * 
+     *
      * @param droit
      * @return
      */
@@ -2142,8 +2160,8 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
                         // Calcul du nombre de jours des deux périodes et des dates de début et de fin des périodes
                         final int nbJoursPremierePeriode = APCalculateurPrestationStandardLamatAcmAlpha.NB_JOURS_APG_PLEINE_SERVICE_AVANCEMENT
                                 - nbJoursDepuisDebutDroitAvantPeriode;
-                        final int nbJoursDeuxiemePeriode = Integer.parseInt(prestations[prestations.length - 1]
-                                .getNombreJoursSoldes()) - nbJoursPremierePeriode;
+                        final int nbJoursDeuxiemePeriode = Integer.parseInt(
+                                prestations[prestations.length - 1].getNombreJoursSoldes()) - nbJoursPremierePeriode;
 
                         final JADate dateDebutPremierePeriode = new JADate(
                                 prestations[prestations.length - 1].getDateDebut());
@@ -2187,10 +2205,10 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
 
         // ACM pour allocation de maternité, supplément de 14 jours
         if (droit instanceof APDroitMaternite) {
-            final String dureeACM = session.getApplication().getProperty(
-                    APApplication.PROPERTY_DROIT_ACM_MAT_DUREE_JOURS);
-            final String dureeMatFederale = session.getApplication().getProperty(
-                    APApplication.PROPERTY_DROIT_MAT_DUREE_JOURS);
+            final String dureeACM = session.getApplication()
+                    .getProperty(APApplication.PROPERTY_DROIT_ACM_MAT_DUREE_JOURS);
+            final String dureeMatFederale = session.getApplication()
+                    .getProperty(APApplication.PROPERTY_DROIT_MAT_DUREE_JOURS);
             final int diff = Integer.parseInt(dureeACM) - Integer.parseInt(dureeMatFederale);
 
             final JACalendar jaCal = new JACalendarGregorian();
@@ -2208,8 +2226,9 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
             // si on calcul des prestations LAMat.
             // OK SI DUREE ACM = DUREE LAMat
             FWCurrency mj = null;
-            if ("false".equals(PRAbstractApplication.getApplication(APApplication.DEFAULT_APPLICATION_APG).getProperty(
-                    APApplication.PROPERTY_IS_DROIT_MAT_CANTONALE))
+            if ("false"
+                    .equals(PRAbstractApplication.getApplication(APApplication.DEFAULT_APPLICATION_APG)
+                            .getProperty(APApplication.PROPERTY_IS_DROIT_MAT_CANTONALE))
                     || !APPrestationHelper.hasLAMatFalgInSitPro(session, droit)) {
                 mj = new FWCurrency(0);
             } else {
@@ -2254,9 +2273,9 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
                                 dateFinDePrestation.toStr("."))) {
 
                             this.creerPrestationsACM(session, transaction, lastPrestation, droit, mj, lastRMD,
-                                    genrePrestation, dateDebut.toStr("."), jaCal.addDays(dateFinDePrestation, -1)
-                                            .toStr("."), String.valueOf(nombreJoursSoldes), lastNoRevision,
-                                    isAllocationMax);
+                                    genrePrestation, dateDebut.toStr("."),
+                                    jaCal.addDays(dateFinDePrestation, -1).toStr("."),
+                                    String.valueOf(nombreJoursSoldes), lastNoRevision, isAllocationMax);
                         } else {
                             this.creerPrestationsACM(session, transaction, lastPrestation, droit, mj, lastRMD,
                                     genrePrestation, dateDebut.toStr("."), dateFin.toStr("."),
@@ -2265,8 +2284,8 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
                     }
                 } else {
                     this.creerPrestationsACM(session, transaction, lastPrestation, droit, mj, lastRMD, genrePrestation,
-                            dateDebut.toStr("."), dateFin.toStr("."), String.valueOf(nombreJoursSoldes),
-                            lastNoRevision, isAllocationMax);
+                            dateDebut.toStr("."), dateFin.toStr("."), String.valueOf(nombreJoursSoldes), lastNoRevision,
+                            isAllocationMax);
                 }
             }
         }
@@ -2438,10 +2457,10 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
 
             // LAMat, supplément de 14 jours du droit fédéral
             if (droit instanceof APDroitMaternite) {
-                final String dureeLAMat = session.getApplication().getProperty(
-                        APApplication.PROPERTY_DROIT_ACM_MAT_DUREE_JOURS);
-                final String dureeMatFederale = session.getApplication().getProperty(
-                        APApplication.PROPERTY_DROIT_MAT_DUREE_JOURS);
+                final String dureeLAMat = session.getApplication()
+                        .getProperty(APApplication.PROPERTY_DROIT_ACM_MAT_DUREE_JOURS);
+                final String dureeMatFederale = session.getApplication()
+                        .getProperty(APApplication.PROPERTY_DROIT_MAT_DUREE_JOURS);
                 final int diff = Integer.parseInt(dureeLAMat) - Integer.parseInt(dureeMatFederale);
 
                 final JACalendar jaCal = new JACalendarGregorian();
@@ -2477,31 +2496,26 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
                             dateFinPeriode = jaCal.addDays(dateReprise, -1).toStr(".");
                         }
 
-                        if (JadeStringUtil.isEmpty(dateFinDeContrat)
-                                || BSessionUtil.compareDateFirstLower(session, dateFinDeContrat, dateDebut.toStr("."))) {
+                        if (JadeStringUtil.isEmpty(dateFinDeContrat) || BSessionUtil.compareDateFirstLower(session,
+                                dateFinDeContrat, dateDebut.toStr("."))) {
                             creerPrestationsLAMat(session, transaction, lastPrestation, droit, new FWCurrency(0),
                                     lastRMD, genrePrestation, dateDebut.toStr("."), dateFinPeriode,
                                     String.valueOf(nombreJoursSoldes), lastNoRevision, isAllocationMax);
                         } else {
 
-                            creerPrestationsLAMat(
-                                    session,
-                                    transaction,
-                                    lastPrestation,
-                                    droit,
-                                    new FWCurrency(0),
-                                    lastRMD,
-                                    genrePrestation,
-                                    dateDebut.toStr("."),
-                                    jaCal.addDays(dateFinDeContrat, -1),
+                            creerPrestationsLAMat(session, transaction, lastPrestation, droit, new FWCurrency(0),
+                                    lastRMD, genrePrestation, dateDebut.toStr("."), jaCal.addDays(dateFinDeContrat, -1),
                                     String.valueOf(new Long(jaCal.daysBetween(dateDebut,
                                             new JADate(jaCal.addDays(dateFinDeContrat, -1)))).intValue() + 1),
                                     lastNoRevision, isAllocationMax);
 
                             creerPrestationsLAMat(session, transaction, lastPrestation, droit, new FWCurrency(0),
                                     lastRMD, genrePrestation, dateFinDeContrat, dateFinPeriode,
-                                    String.valueOf(new Long(jaCal.daysBetween(new JADate(dateFinDeContrat), new JADate(
-                                            dateFinPeriode))).intValue() + 1), lastNoRevision, isAllocationMax);
+                                    String.valueOf(new Long(
+                                            jaCal.daysBetween(new JADate(dateFinDeContrat), new JADate(dateFinPeriode)))
+                                                    .intValue()
+                                            + 1),
+                                    lastNoRevision, isAllocationMax);
 
                         }
 
@@ -2513,23 +2527,19 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
                                 genrePrestation, dateDebut.toStr("."), dateFin.toStr("."),
                                 String.valueOf(nombreJoursSoldes), lastNoRevision, isAllocationMax);
                     } else {
-                        creerPrestationsLAMat(
-                                session,
-                                transaction,
-                                lastPrestation,
-                                droit,
-                                new FWCurrency(0),
-                                lastRMD,
-                                genrePrestation,
-                                dateDebut.toStr("."),
-                                jaCal.addDays(dateFinDeContrat, -1),
-                                String.valueOf(new Long(jaCal.daysBetween(dateDebut,
-                                        new JADate(jaCal.addDays(dateFinDeContrat, -1)))).intValue() + 1),
+                        creerPrestationsLAMat(session, transaction, lastPrestation, droit, new FWCurrency(0), lastRMD,
+                                genrePrestation, dateDebut.toStr("."), jaCal.addDays(dateFinDeContrat, -1),
+                                String.valueOf(new Long(
+                                        jaCal.daysBetween(dateDebut, new JADate(jaCal.addDays(dateFinDeContrat, -1))))
+                                                .intValue()
+                                        + 1),
                                 lastNoRevision, isAllocationMax);
 
                         creerPrestationsLAMat(session, transaction, lastPrestation, droit, new FWCurrency(0), lastRMD,
-                                genrePrestation, dateFinDeContrat, dateFin.toStr("."), String.valueOf(new Long(jaCal
-                                        .daysBetween(new JADate(dateFinDeContrat), dateFin)).intValue() + 1),
+                                genrePrestation, dateFinDeContrat, dateFin.toStr("."),
+                                String.valueOf(
+                                        new Long(jaCal.daysBetween(new JADate(dateFinDeContrat), dateFin)).intValue()
+                                                + 1),
                                 lastNoRevision, isAllocationMax);
                     }
                 }
@@ -2538,10 +2548,10 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
     }
 
     private BigDecimal[] getMontantMaxMinLamat(BSession session) throws Exception {
-        BigDecimal montantMax = new BigDecimal(FWFindParameter.findParameter(session.getCurrentThreadTransaction(),
-                "0", "M_MAXGROS", "01.03.2015", "", 2));
-        BigDecimal montantMin = new BigDecimal(FWFindParameter.findParameter(session.getCurrentThreadTransaction(),
-                "0", "M_MAXGROS", "01.03.2015", "", 2));
+        BigDecimal montantMax = new BigDecimal(FWFindParameter.findParameter(session.getCurrentThreadTransaction(), "0",
+                "M_MAXGROS", "01.03.2015", "", 2));
+        BigDecimal montantMin = new BigDecimal(FWFindParameter.findParameter(session.getCurrentThreadTransaction(), "0",
+                "M_MAXGROS", "01.03.2015", "", 2));
 
         return new BigDecimal[] { montantMax, montantMin };
 
@@ -2568,7 +2578,7 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
 
     /**
      * Modifie à 0 CHF le taux journalier des prestations du Droit donne
-     * 
+     *
      * @param droit
      * @param session
      */

@@ -7,7 +7,8 @@ public enum APTypeDePrestation implements Comparable<APTypeDePrestation> {
     ACM_NE("ACM_NE", 52015004, true, false),
     LAMAT("LAMAT", 52015003, true, true),
     STANDARD("Standard", 52015001, true, true),
-    COMPCIAB("COMPCIAB", 52015006, true, false);
+    COMPCIAB("COMPCIAB", 52015006, true, false),
+    JOUR_ISOLE("ISOLES", 52015007, true, false);
 
     public static APTypeDePrestation resoudreTypeDePrestationParCodeSystem(final int codeSystem) {
         for (final APTypeDePrestation type : APTypeDePrestation.values()) {
