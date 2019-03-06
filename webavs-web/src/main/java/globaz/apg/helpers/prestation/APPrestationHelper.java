@@ -1135,8 +1135,9 @@ public class APPrestationHelper extends PRAbstractHelper {
         final List<APRepartitionJointPrestation> repartitionJointRepartitionsFiltree = new ArrayList<APRepartitionJointPrestation>();
         for (APRepartitionJointPrestation repJointPrest : listeTemporaire) {
             // On prend les prestation allocation et duplicata
-            if (IAPAnnonce.CS_DEMANDE_ALLOCATION.equals(repJointPrest.getContenuAnnonce())
-                    || IAPAnnonce.CS_DUPLICATA.equals(repJointPrest.getContenuAnnonce())) {
+            if ((IAPAnnonce.CS_DEMANDE_ALLOCATION.equals(repJointPrest.getContenuAnnonce()) 
+                    || IAPAnnonce.CS_DUPLICATA.equals(repJointPrest.getContenuAnnonce())
+                   ) && !JadeStringUtil.isBlankOrZero(repJointPrest.getIdSituationProfessionnelle())) {
                 repartitionJointRepartitionsFiltree.add(repJointPrest);
             }
         }

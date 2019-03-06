@@ -70,6 +70,8 @@ public class APCalculateurComplement implements IAPPrestationCalculateur<APCalcu
                 prestationCalculeeAPersister.setMontantBrut(montantBrut);
                 prestationCalculeeAPersister.setMontantJournalier(montantBrut.divide(BigDecimal.valueOf(calculateur.getNbJourPrisEnCompte()),2, RoundingMode.HALF_UP));
                 prestationCalculeeAPersister.setNombreDeJoursSoldes(calculateur.getNbJourPrisEnCompte());
+            } else {
+                return resultatCalcul;
             }
 
             BigDecimal montantPrestationComplementJournalier = new BigDecimal("0");
