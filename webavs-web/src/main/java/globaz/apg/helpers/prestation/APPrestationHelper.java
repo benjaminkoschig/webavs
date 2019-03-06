@@ -404,7 +404,7 @@ public class APPrestationHelper extends PRAbstractHelper {
             ((APCalculateurPrestationStandardLamatAcmAlpha) calculateur).calculerPrestation(apPreStaLamAcmAlpDat,
                     session, transaction);
 
-            // calculerComplement(session, transaction, droit, apPreStaLamAcmAlpDat);
+            calculerComplement(session, transaction, droit, apPreStaLamAcmAlpDat);
 
             calculerPrestationsAcmNe(session, transaction, droit);
 
@@ -449,43 +449,44 @@ public class APPrestationHelper extends PRAbstractHelper {
 
     /**
      * Calcul des prestations ACM NE si la propriété APProperties.TYPE_DE_PRESTATION_ACM vaut ACM_NE et si nous somme
-     * dans les APG</br> Pas de prestastions ACM_NE pour la maternité
-     * 
+     * dans les APG</br>
+     * Pas de prestastions ACM_NE pour la maternité
+     *
      * @see{APProperties.TYPE_DE_PRESTATION_ACM
      * @param session
      * @param transaction
      * @param viewBean
      * @throws Exception
      */
-    private void calculerComplement(final BSession session, final BTransaction transaction,
-            final APDroitLAPG droit, APPrestationStandardLamatAcmAlphaData apPrestation) throws Exception {
+    private void calculerComplement(final BSession session, final BTransaction transaction, final APDroitLAPG droit,
+            APPrestationStandardLamatAcmAlphaData apPrestation) throws Exception {
 
         if (IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE.equals(droit.getGenreService())) {
             return;
         }
-        
-        String hasComplement = JadePropertiesService.getInstance()
-                .getProperty(APApplication.PROPERTY_IS_FERCIAB);
-        
-        if(!"true".equals(hasComplement)) {
+
+        String hasComplement = JadePropertiesService.getInstance().getProperty(APApplication.PROPERTY_IS_FERCIAB);
+
+        if (!"true".equals(hasComplement)) {
             return;
         }
-        
+
         final IAPPrestationCalculateur calculateurComplement = APPrestationCalculateurFactory
                 .getCalculateurInstance(APTypeDePrestation.COMPCIAB);
 
         // Récupération des données depuis la persistence pour le calcul des prestations Complémentaires
-        
+
         APCalculateurComplementDonneesPersistence donnesPersistencePourCalcul = getDonneesPersistancePourCalculComplementaire(
-              droit.getIdDroit(), session, transaction);
-        
+                droit.getIdDroit(), session, transaction);
+
         // si versé à l'assuré pas de calcul de complément
-        // si l’une des cotisations suivantes existe dans le dans le plan d’affiliation de l’employeur au début de la période APG, alors un complément est calculé 
-        if(donnesPersistencePourCalcul.getSituationProfessionnelleEmployeur().isEmpty() 
-                || !isComplement(session, droit.getIdDroit(), donnesPersistencePourCalcul.getSituationProfessionnelleEmployeur())) {
+        // si l’une des cotisations suivantes existe dans le dans le plan d’affiliation de l’employeur au début de la
+        // période APG, alors un complément est calculé
+        if (donnesPersistencePourCalcul.getSituationProfessionnelleEmployeur().isEmpty() || !isComplement(session,
+                droit.getIdDroit(), donnesPersistencePourCalcul.getSituationProfessionnelleEmployeur())) {
             return;
         }
-        
+
         donnesPersistencePourCalcul.setListBaseCalcul(apPrestation.getBasesCalcul());
 
         // Conversion vers des objets métier (domain) pour le calculateur
@@ -499,7 +500,7 @@ public class APPrestationHelper extends PRAbstractHelper {
         // Conversion des entités de domain vers des entités de persistance
         final List<APPrestationCalculeeAPersister> resultatCalculAPersister = calculateurComplement
                 .domainToPersistence(entiteesDomainResultatCalcul);
-        
+
         // Sauvegarde des entités de persistance
         persisterResultatCalculPrestation(resultatCalculAPersister, session, transaction);
     }
