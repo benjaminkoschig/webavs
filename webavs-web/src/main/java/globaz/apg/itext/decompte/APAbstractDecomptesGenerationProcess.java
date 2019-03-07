@@ -29,6 +29,7 @@ import globaz.apg.db.prestation.APRepartitionJointPrestation;
 import globaz.apg.enums.APTypeDePrestation;
 import globaz.apg.groupdoc.ccju.GroupdocPropagateUtil;
 import globaz.apg.itext.decompte.utils.APDecompte;
+import globaz.apg.itext.decompte.utils.APPrestationLibelleCodeSystem;
 import globaz.apg.itext.decompte.utils.APTypeDeDecompte;
 import globaz.apg.properties.APProperties;
 import globaz.babel.api.ICTDocument;
@@ -99,6 +100,8 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
     private static final String ORDER_PRINTING_BY = "orderPrintingBy";
     private static final String PARAMETER_PRESTATION_COMPLEMENTAIRE = "FIELD_PREST_COMPL";
     private static final long serialVersionUID = -6053653641306384554L;
+    
+    private static final String NB_JOURS_ISOLES = "0.5";
 
     private ICaisseReportHelper caisseHelper;
     private APDecompte decompteCourant;
@@ -527,7 +530,11 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
             }
 
             // le titre
-            parametres.put("PARAM_TITRE", document.getTextes(1).getTexte(1).getDescription());
+            if (APTypeDeDecompte.JOUR_ISOLE.equals(decompteCourant.getTypeDeDecompte())) {
+                parametres.put("PARAM_TITRE", document.getTextes(1).getTexte(2).getDescription());
+            } else {
+                parametres.put("PARAM_TITRE", document.getTextes(1).getTexte(1).getDescription());
+            }
 
             // Les données de l'entête dès la deuxième page
             // Les autres paramètres sont repris de l'entête normal
@@ -554,6 +561,14 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                     case NORMAL_ACM_NE:
                         type_decompte = document.getTextes(5).getTexte(8).getDescription();
                         break;
+                        
+                    case JOUR_ISOLE:
+                        type_decompte = document.getTextes(5).getTexte(6).getDescription();
+                        break;
+                        
+                    case COMPCIAB:
+                        type_decompte = document.getTextes(5).getTexte(6).getDescription();
+                        break;                         
 
                     default:
                         throw new Exception("Impossible de résoudre le type de décompte actuellement généré !");
@@ -638,6 +653,8 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
 
             if (restitution) {
                 buffer.append(document.getTextes(2).getTexte(102).getDescription());
+            } else if(APTypeDeDecompte.JOUR_ISOLE.equals(decompteCourant.getTypeDeDecompte())){
+                buffer.append(document.getTextes(2).getTexte(201).getDescription());
             } else {
                 buffer.append(document.getTextes(2).getTexte(101).getDescription());
             }
@@ -981,11 +998,19 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                 final PRDemande demande = droit.loadDemande();
                 tiers = PRTiersHelper.getTiersParId(getSession(), demande.getIdTiers());
 
+                String infoSup = "";
+                if (APTypeDePrestation.JOUR_ISOLE.isCodeSystemEqual(repartition.getGenrePrestationPrestation())) {
+                    infoSup = "\n" + APPrestationLibelleCodeSystem.getLibelleJourIsole(getSession(), repartition.getGenreService(), getCodeIsoLangue());
+                } else if (APTypeDePrestation.COMPCIAB.isCodeSystemEqual(repartition.getGenrePrestationPrestation())) {
+                    infoSup = "\n" + APPrestationLibelleCodeSystem.getLibelleComplement(getSession(), getCodeIsoLangue());
+                }
+                
                 champs.put("FIELD_ASSURE",
                         PRStringUtils.replaceString(document.getTextes(3).getTexte(13).getDescription(), "{nomAVS}",
                                 tiers.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL) + " "
                                         + tiers.getProperty(PRTiersWrapper.PROPERTY_NOM) + " "
-                                        + tiers.getProperty(PRTiersWrapper.PROPERTY_PRENOM)));
+                                        + tiers.getProperty(PRTiersWrapper.PROPERTY_PRENOM) 
+                                        + infoSup));
 
                 // 2. les infos sur la prestation
                 champs.put("FIELD_DETAIL_PERIODE",
@@ -1591,6 +1616,12 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                             case NORMAL_ACM_NE:
                                 docInfo.setDocumentTypeNumber(IPRConstantesExternes.DECOMPTE_APG_NORMAL_ACMNE);
                                 break;
+                            case JOUR_ISOLE:
+                                docInfo.setDocumentTypeNumber(IPRConstantesExternes.DECOMPTE_APG_NORMAL);
+                                break;
+                            case COMPCIAB:
+                                docInfo.setDocumentTypeNumber(IPRConstantesExternes.DECOMPTE_APG_NORMAL);
+                                break;                                  
                             default:
                                 throw new Exception(
                                         "Impossible de résoudre le type de décompte APG pour la génération du doc info");
@@ -1848,8 +1879,13 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                 // Récupération du texte dans le catalogue
                 texteDetailJournalier = document.getTextes(3).getTexte(44).getDescription();
                 // Insertion du nombre de jours dans le texte
-                texteDetailJournalier = PRStringUtils.replaceString(texteDetailJournalier, "{nbJours}",
-                        Integer.toString(nbJours));
+                if(APTypeDePrestation.JOUR_ISOLE.isCodeSystemEqual(repartition.getGenrePrestationPrestation())) {
+                    texteDetailJournalier = PRStringUtils.replaceString(texteDetailJournalier, "{nbJours}",
+                            NB_JOURS_ISOLES);
+                } else {
+                    texteDetailJournalier = PRStringUtils.replaceString(texteDetailJournalier, "{nbJours}",
+                            Integer.toString(nbJours));
+                }
                 // Insertion du montant journalier dans le texte
                 texteDetailJournalier = PRStringUtils.replaceString(texteDetailJournalier, "{mntJournalier}",
                         String.valueOf(montantJournalier));
@@ -2071,7 +2107,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
 
         return docInfo;
     }
-
+    
     public void setCatalogueTextesCourant(final ICTDocument document) {
         this.document = document;
     }

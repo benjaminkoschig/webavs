@@ -11,7 +11,9 @@ public enum APTypeDeDecompte {
     AMAT_GE(3, "LAMat", "AP_DECOMPTE_DETAIL.jasper", new APTypeDePrestation[] { APTypeDePrestation.LAMAT }),
     NORMAL(1, "normal", "AP_DECOMPTE_DETAIL.jasper", new APTypeDePrestation[] { APTypeDePrestation.STANDARD }),
     NORMAL_ACM_NE(5, "normal_acmne", "AP_DECOMPTE_DETAIL_ACMNE.jasper",
-            new APTypeDePrestation[] { APTypeDePrestation.STANDARD, APTypeDePrestation.ACM_NE });
+            new APTypeDePrestation[] { APTypeDePrestation.STANDARD, APTypeDePrestation.ACM_NE }),
+    COMPCIAB(6, "normal", "AP_DECOMPTE_DETAIL.jasper", new APTypeDePrestation[] { APTypeDePrestation.COMPCIAB }),
+    JOUR_ISOLE(7, "normal", "AP_DECOMPTE_DETAIL.jasper", new APTypeDePrestation[] { APTypeDePrestation.JOUR_ISOLE });
 
     /**
      * Le but de cette méthode est de déterminer le type de décompte en fonction du(des) type(s) de prestations qu'il
@@ -48,7 +50,10 @@ public enum APTypeDeDecompte {
                         typeDuDecompte = APTypeDeDecompte.NORMAL;
                         break;
                     case COMPCIAB:
-                        typeDuDecompte = APTypeDeDecompte.NORMAL;
+                        typeDuDecompte = APTypeDeDecompte.COMPCIAB;
+                        break;
+                    case JOUR_ISOLE:
+                        typeDuDecompte = APTypeDeDecompte.JOUR_ISOLE;
                         break;
                     case LAMAT:
                         typeDuDecompte = APTypeDeDecompte.AMAT_GE;
@@ -67,6 +72,8 @@ public enum APTypeDeDecompte {
                 boolean acm_ne = APTypeDeDecompte.searchTypeInArray(APTypeDePrestation.ACM_NE, vals);
                 boolean acm1 = APTypeDeDecompte.searchTypeInArray(APTypeDePrestation.ACM_ALFA, vals);
                 boolean acm2 = APTypeDeDecompte.searchTypeInArray(APTypeDePrestation.ACM2_ALFA, vals);
+                boolean jour_isole = APTypeDeDecompte.searchTypeInArray(APTypeDePrestation.JOUR_ISOLE, vals);
+                boolean complement = APTypeDeDecompte.searchTypeInArray(APTypeDePrestation.COMPCIAB, vals);
 
                 if (standard && acm_ne) {
                     typeDuDecompte = APTypeDeDecompte.NORMAL_ACM_NE;
@@ -74,6 +81,14 @@ public enum APTypeDeDecompte {
 
                 if (acm1 && acm2) {
                     typeDuDecompte = APTypeDeDecompte.ACM_GE;
+                }
+                
+                if (standard && complement) {
+                    typeDuDecompte = APTypeDeDecompte.COMPCIAB;
+                }
+                
+                if (jour_isole && complement) {
+                    typeDuDecompte = APTypeDeDecompte.JOUR_ISOLE;
                 }
             } else { // Trop de type de prestation, aucun décompte n'en contient plus que 2
                 throw new IllegalArgumentException(
