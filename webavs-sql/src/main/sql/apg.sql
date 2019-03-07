@@ -57,3 +57,25 @@ INSERT INTO SCHEMA.CTTEXTES (CDITXT,CDLDES,CDLCIL,CDIELE,PSPY) VALUES (200000058
 INSERT INTO SCHEMA.CTTEXTES (CDITXT,CDLDES,CDLCIL,CDIELE,PSPY) VALUES (2000000581,'Le montant des lignes comportant une * n''est pas soumis à la LAA','fr',2000000195,'20190211161243globaz    ');
 INSERT INTO SCHEMA.CTTEXTES (CDITXT,CDLDES,CDLCIL,CDIELE,PSPY) VALUES (2000000582,'Le montant des lignes comportant une * n''est pas soumis à la LAA','it',2000000195,'20190211161243globaz    ');
 INSERT INTO SCHEMA.CTELEMEN (CCIELE,CCIDOC,CCNPOS,CCNNIV,PSPY,CCBSBD,CCBDES,CCBSEL,CCBEDI) VALUES (2000000196,2000000002,49,3,'20190211161010globaz    ','2','                    ','2','2');
+
+-- Ajout texte pour titre document jours isolés
+
+INSERT INTO WEBAVSCIAM.CTELEMEN (CCBDES,CCBEDI,CCBSBD,CCBSEL,CCIDOC,CCIELE,CCNNIV,CCNPOS,PSPY) VALUES ('','2','2','2',2000000002,2000000197,1,2,'20190307143831');
+INSERT INTO WEBAVSCIAM.CTTEXTES (CDIELE,CDITXT,CDLCIL,CDLDES,PSPY) VALUES (2000000197,2000000586,'de','[DE]D&eacute;compte de prestations - indemnisation de jours isol&eacute;s','20190307143831');
+INSERT INTO WEBAVSCIAM.CTTEXTES (CDIELE,CDITXT,CDLCIL,CDLDES,PSPY) VALUES (2000000197,2000000587,'fr','D&eacute;compte de prestations - indemnisation de jours isol&eacute;s','20190307143831');
+INSERT INTO WEBAVSCIAM.CTTEXTES (CDIELE,CDITXT,CDLCIL,CDLDES,PSPY) VALUES (2000000197,2000000588,'it','[IT]D&eacute;compte de prestations - indemnisation de jours isol&eacute;s','20190307143831');
+
+INSERT INTO WEBAVSCIAM.CTELEMEN (CCBDES,CCBEDI,CCBSBD,CCBSEL,CCIDOC,CCIELE,CCNNIV,CCNPOS,PSPY) VALUES ('','2','2','2',2000000003,2000000198,1,2,'20190307150845');
+INSERT INTO WEBAVSCIAM.CTTEXTES (CDIELE,CDITXT,CDLCIL,CDLDES,PSPY) VALUES (2000000198,2000000589,'de','[DE]D&eacute;compte de prestations - indemnisation de jours isol&eacute;s','20190307150845');
+INSERT INTO WEBAVSCIAM.CTTEXTES (CDIELE,CDITXT,CDLCIL,CDLDES,PSPY) VALUES (2000000198,2000000590,'fr','D&eacute;compte de prestations - indemnisation de jours isol&eacute;s','20190307150845');
+INSERT INTO WEBAVSCIAM.CTTEXTES (CDIELE,CDITXT,CDLCIL,CDLDES,PSPY) VALUES (2000000198,2000000591,'it','[IT]D&eacute;compte de prestations - indemnisation de jours isol&eacute;s','20190307150845');
+
+INSERT INTO WEBAVSCIAM.CTELEMEN (CCBDES,CCBEDI,CCBSBD,CCBSEL,CCIDOC,CCIELE,CCNNIV,CCNPOS,PSPY) VALUES ('','2','2','2',2000000002,2000000199,2,201,'20190307151704');
+INSERT INTO WEBAVSCIAM.CTTEXTES (CDIELE,CDITXT,CDLCIL,CDLDES,PSPY) VALUES (2000000199,2000000592,'de','[DE]Vous trouverez ci-apr&egrave;s le d&eacute;compte de prestations - indemnisation de jours isol&eacute;s&nbsp;conform&eacute;ment aux demandes que vous nous avez fait parvenir.','20190307151704');
+INSERT INTO WEBAVSCIAM.CTTEXTES (CDIELE,CDITXT,CDLCIL,CDLDES,PSPY) VALUES (2000000199,2000000593,'fr','Vous trouverez ci-apr&egrave;s le&nbsp;d&eacute;compte de prestations - indemnisation de jours isol&eacute;s conform&eacute;ment aux demandes que vous nous avez fait parvenir.','20190307151704');
+INSERT INTO WEBAVSCIAM.CTTEXTES (CDIELE,CDITXT,CDLCIL,CDLDES,PSPY) VALUES (2000000199,2000000594,'it','[IT]Vous trouverez ci-apr&egrave;s le d&eacute;compte de prestations - indemnisation de jours isol&eacute;s&nbsp;conform&eacute;ment aux demandes que vous nous avez fait parvenir.','20190307151704');
+
+INSERT INTO WEBAVSCIAM.CTELEMEN (CCBDES,CCBEDI,CCBSBD,CCBSEL,CCIDOC,CCIELE,CCNNIV,CCNPOS,PSPY) VALUES ('','2','2','2',2000000003,2000000200,2,201,'20190307151704');
+INSERT INTO WEBAVSCIAM.CTTEXTES (CDIELE,CDITXT,CDLCIL,CDLDES,PSPY) VALUES (2000000200,2000000595,'de','[DE]Vous trouverez ci-apr&egrave;s le d&eacute;compte de prestations - indemnisation de jours isol&eacute;s&nbsp;conform&eacute;ment aux demandes que vous nous avez fait parvenir.','20190307151704');
+INSERT INTO WEBAVSCIAM.CTTEXTES (CDIELE,CDITXT,CDLCIL,CDLDES,PSPY) VALUES (2000000200,2000000596,'fr','Vous trouverez ci-apr&egrave;s le&nbsp;d&eacute;compte de prestations - indemnisation de jours isol&eacute;s conform&eacute;ment aux demandes que vous nous avez fait parvenir.','20190307151704');
+INSERT INTO WEBAVSCIAM.CTTEXTES (CDIELE,CDITXT,CDLCIL,CDLDES,PSPY) VALUES (2000000200,2000000597,'it','[IT]Vous trouverez ci-apr&egrave;s le d&eacute;compte de prestations - indemnisation de jours isol&eacute;s&nbsp;conform&eacute;ment aux demandes que vous nous avez fait parvenir.','20190307151704');
