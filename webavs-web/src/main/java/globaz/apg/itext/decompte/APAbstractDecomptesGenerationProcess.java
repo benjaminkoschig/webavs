@@ -26,6 +26,7 @@ import globaz.apg.db.prestation.APCotisationManager;
 import globaz.apg.db.prestation.APPrestationJointLotTiersDroit;
 import globaz.apg.db.prestation.APPrestationJointLotTiersDroitManager;
 import globaz.apg.db.prestation.APRepartitionJointPrestation;
+import globaz.apg.enums.APGenreServiceAPG;
 import globaz.apg.enums.APTypeDePrestation;
 import globaz.apg.groupdoc.ccju.GroupdocPropagateUtil;
 import globaz.apg.itext.decompte.utils.APDecompte;
@@ -101,7 +102,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
     private static final String PARAMETER_PRESTATION_COMPLEMENTAIRE = "FIELD_PREST_COMPL";
     private static final long serialVersionUID = -6053653641306384554L;
     
-    private static final String NB_JOURS_ISOLES = "0.5";
+    private static final String NB_JOURS_DECES = "0.5";
 
     private ICaisseReportHelper caisseHelper;
     private APDecompte decompteCourant;
@@ -1879,9 +1880,9 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                 // Récupération du texte dans le catalogue
                 texteDetailJournalier = document.getTextes(3).getTexte(44).getDescription();
                 // Insertion du nombre de jours dans le texte
-                if(APTypeDePrestation.JOUR_ISOLE.isCodeSystemEqual(repartition.getGenrePrestationPrestation())) {
+                if(repartition.getGenreService().equals(APGenreServiceAPG.Deces.getCodeSysteme())) {
                     texteDetailJournalier = PRStringUtils.replaceString(texteDetailJournalier, "{nbJours}",
-                            NB_JOURS_ISOLES);
+                            NB_JOURS_DECES);
                 } else {
                     texteDetailJournalier = PRStringUtils.replaceString(texteDetailJournalier, "{nbJours}",
                             Integer.toString(nbJours));

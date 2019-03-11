@@ -29,6 +29,15 @@ public enum APGenreServiceAPG {
     ServiceEtranger("507", IAPDroitLAPG.CS_SERVICE_ETRANGER_CIAB);
 
     ;
+    
+    public static APGenreServiceAPG resoudreGenreParCodeSystem(final String codeSystem) {
+        for (final APGenreServiceAPG genre : APGenreServiceAPG.values()) {
+            if (genre.codeSysteme.equals(codeSystem)) {
+                return genre;
+            }
+        }
+        return null;
+    }
 
     public static boolean isValidGenreService(String genreService) {
         if (genreService == null) {
