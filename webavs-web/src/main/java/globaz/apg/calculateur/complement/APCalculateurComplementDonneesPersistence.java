@@ -5,10 +5,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import globaz.apg.db.droits.APDroitLAPG;
 import globaz.apg.db.droits.APSitProJointEmployeur;
 import globaz.apg.db.prestation.APPrestation;
 import globaz.apg.db.prestation.APRepartitionJointPrestation;
-import globaz.apg.module.calcul.APBaseCalcul;
 import globaz.apg.module.calcul.APRepartitionPaiementData;
 import globaz.apg.module.calcul.constantes.ECanton;
 import globaz.apg.module.calcul.constantes.EMontantsMax;
@@ -28,7 +28,7 @@ public class APCalculateurComplementDonneesPersistence {
     private List<APRepartitionJointPrestation> prestationJointRepartitions = null;
     private List<APSitProJointEmployeur> situationProfessionnelleEmployeur = null;
     private List<APPrestation> listPrestationStandard;
-    private List<APBaseCalcul> listBaseCalcul;
+    private APDroitLAPG droit;
     
     private Map<String, BigDecimal[]> taux = new HashMap<String, BigDecimal[]>();
     private Map<String, FWCurrency> mapRMD;
@@ -67,12 +67,12 @@ public class APCalculateurComplementDonneesPersistence {
         this.idDroit = idDroit;
     }
 
-    public List<APBaseCalcul> getListBaseCalcul() {
-        return listBaseCalcul;
+    public APDroitLAPG getDroit() {
+        return droit;
     }
 
-    public void setListBaseCalcul(List<APBaseCalcul> listBaseCalcul) {
-        this.listBaseCalcul = listBaseCalcul;
+    public void setDroit(APDroitLAPG droit) {
+        this.droit = droit;
     }
 
     public String getDateDebut() {

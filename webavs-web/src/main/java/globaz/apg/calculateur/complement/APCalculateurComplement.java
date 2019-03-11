@@ -12,6 +12,8 @@ import globaz.apg.api.prestation.IAPRepartitionPaiements;
 import globaz.apg.calculateur.IAPPrestationCalculateur;
 import globaz.apg.calculateur.pojo.APPrestationCalculeeAPersister;
 import globaz.apg.calculateur.pojo.APRepartitionCalculeeAPersister;
+import globaz.apg.db.droits.APDroitAPG;
+import globaz.apg.db.droits.APDroitLAPG;
 import globaz.apg.db.droits.APSitProJointEmployeur;
 import globaz.apg.db.prestation.APCotisation;
 import globaz.apg.db.prestation.APPrestation;
@@ -53,13 +55,13 @@ public class APCalculateurComplement implements IAPPrestationCalculateur<APCalcu
             
             // Calculateur
             String idSituationProf = prestationStandard.getRepartitions().get(0).getIdSituationProfessionnelle();
-            APBaseCalcul baseCalcul = prestationStandard.getBaseCalcul();
+            APDroitAPG droit = (APDroitAPG)prestationStandard.getDroit();
             APComplementCalculateur calculateur = APComplementCalculateur.getCalculateur(
                     prestationStandard.getMontantsMax(),
                     prestationStandard.getSituationProfessionnelle().get(idSituationProf).getCanton(),
                     prestation.getDateDebut(), 
-                    baseCalcul.getTypeAllocation(),
-                    baseCalcul.getNombreEnfants());
+                    droit.getGenreService(),
+                    Integer.valueOf(droit.loadSituationFamilliale().getNbrEnfantsDebutDroit()));
             
             BigDecimal montant = calculateur.calculerMontant(salaireMensuel,
                     Integer.valueOf(prestation.getNombreJoursSoldes()));
@@ -286,7 +288,7 @@ public class APCalculateurComplement implements IAPPrestationCalculateur<APCalcu
                     throw new Exception("APCalculerComplementService.convert(): impossible de retrouver la prestation");
                 }
             }
-            prestationStandard.setBaseCalcul(donneesPersistancePourCalcul.getListBaseCalcul().get(0));
+            prestationStandard.setDroit(donneesPersistancePourCalcul.getDroit());
         }
 
         return listePrestationsComplementDomaineConverties;

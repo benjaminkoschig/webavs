@@ -5,16 +5,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import globaz.apg.db.droits.APDroitLAPG;
 import globaz.apg.db.prestation.APPrestation;
 import globaz.apg.db.prestation.APRepartitionJointPrestation;
-import globaz.apg.module.calcul.APBaseCalcul;
 import globaz.apg.module.calcul.APSituationProfessionnelleCanton;
 import globaz.apg.module.calcul.constantes.EMontantsMax;
 
 public class APCalculateurComplementDonneeDomaine {
     
     private APPrestation prestation;
-    private APBaseCalcul baseCalcul;
+    private APDroitLAPG droit;
     
     private List <APRepartitionJointPrestation> repartitions= new ArrayList<>();
 
@@ -59,12 +59,12 @@ public class APCalculateurComplementDonneeDomaine {
         this.prestation = prestation;
     }
     
-    public APBaseCalcul getBaseCalcul() {
-        return baseCalcul;
+    public APDroitLAPG getDroit() {
+        return droit;
     }
     
-    public void setBaseCalcul(APBaseCalcul baseCalcul) {
-        this.baseCalcul = baseCalcul;
+    public void setDroit(APDroitLAPG droit) {
+        this.droit = droit;
     }
 
     public Map<EMontantsMax, BigDecimal> getMontantsMax() {

@@ -330,6 +330,8 @@ public class APPrestationHelper extends PRAbstractHelper {
             // Calcul des prestations standard, LAMat et ACM_ALFA
             final APCalculateurPrestationStandardLamatAcmAlpha calculateur = new APCalculateurPrestationStandardLamatAcmAlpha();
             pViewBean = calculateur.calculPrestationAMAT_ACM(session, transaction, droit, action);
+            
+            calculerComplement(session, transaction, (APDroitAPG)droit);
 
             // calcul des ACM NE si la propriété TYPE_DE_PRESTATION_ACM vaut ACM_NE
             calculerPrestationsAcmNe(session, transaction, droit);
@@ -404,7 +406,7 @@ public class APPrestationHelper extends PRAbstractHelper {
             ((APCalculateurPrestationStandardLamatAcmAlpha) calculateur).calculerPrestation(apPreStaLamAcmAlpDat,
                     session, transaction);
 
-            calculerComplement(session, transaction, droit, apPreStaLamAcmAlpDat);
+            calculerComplement(session, transaction, (APDroitAPG)droit);
 
             calculerPrestationsAcmNe(session, transaction, droit);
 
@@ -458,8 +460,7 @@ public class APPrestationHelper extends PRAbstractHelper {
      * @param viewBean
      * @throws Exception
      */
-    private void calculerComplement(final BSession session, final BTransaction transaction, final APDroitLAPG droit,
-            APPrestationStandardLamatAcmAlphaData apPrestation) throws Exception {
+    private void calculerComplement(final BSession session, final BTransaction transaction, final APDroitAPG droit) throws Exception {
 
         if (IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE.equals(droit.getGenreService())) {
             return;
@@ -489,7 +490,7 @@ public class APPrestationHelper extends PRAbstractHelper {
             return;
         }
 
-        donnesPersistencePourCalcul.setListBaseCalcul(apPrestation.getBasesCalcul());
+        donnesPersistencePourCalcul.setDroit(droit);
 
         // Conversion vers des objets métier (domain) pour le calculateur
         final List<Object> entiteesDomainPourCalcul = calculateurComplement
@@ -524,7 +525,7 @@ public class APPrestationHelper extends PRAbstractHelper {
                 }
             }
         }
-        return false;
+        return true;
     }
 
     /**
