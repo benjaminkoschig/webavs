@@ -101,6 +101,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
     private static final String ORDER_PRINTING_BY = "orderPrintingBy";
     private static final String PARAMETER_PRESTATION_COMPLEMENTAIRE = "FIELD_PREST_COMPL";
     private static final long serialVersionUID = -6053653641306384554L;
+
     
     private static final String NB_JOURS_DECES = "0.5";
 
@@ -562,14 +563,14 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                     case NORMAL_ACM_NE:
                         type_decompte = document.getTextes(5).getTexte(8).getDescription();
                         break;
-                        
+
                     case JOUR_ISOLE:
                         type_decompte = document.getTextes(5).getTexte(6).getDescription();
                         break;
-                        
+
                     case COMPCIAB:
                         type_decompte = document.getTextes(5).getTexte(6).getDescription();
-                        break;                         
+                        break;
 
                     default:
                         throw new Exception("Impossible de résoudre le type de décompte actuellement généré !");
@@ -654,7 +655,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
 
             if (restitution) {
                 buffer.append(document.getTextes(2).getTexte(102).getDescription());
-            } else if(APTypeDeDecompte.JOUR_ISOLE.equals(decompteCourant.getTypeDeDecompte())){
+            } else if (APTypeDeDecompte.JOUR_ISOLE.equals(decompteCourant.getTypeDeDecompte())) {
                 buffer.append(document.getTextes(2).getTexte(201).getDescription());
             } else {
                 buffer.append(document.getTextes(2).getTexte(101).getDescription());
@@ -1001,17 +1002,18 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
 
                 String infoSup = "";
                 if (APTypeDePrestation.JOUR_ISOLE.isCodeSystemEqual(repartition.getGenrePrestationPrestation())) {
-                    infoSup = "\n" + APPrestationLibelleCodeSystem.getLibelleJourIsole(getSession(), repartition.getGenreService(), getCodeIsoLangue());
+                    infoSup = "\n" + APPrestationLibelleCodeSystem.getLibelleJourIsole(getSession(),
+                            repartition.getGenreService(), getCodeIsoLangue());
                 } else if (APTypeDePrestation.COMPCIAB.isCodeSystemEqual(repartition.getGenrePrestationPrestation())) {
-                    infoSup = "\n" + APPrestationLibelleCodeSystem.getLibelleComplement(getSession(), getCodeIsoLangue());
+                    infoSup = "\n"
+                            + APPrestationLibelleCodeSystem.getLibelleComplement(getSession(), getCodeIsoLangue());
                 }
-                
+
                 champs.put("FIELD_ASSURE",
                         PRStringUtils.replaceString(document.getTextes(3).getTexte(13).getDescription(), "{nomAVS}",
                                 tiers.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL) + " "
                                         + tiers.getProperty(PRTiersWrapper.PROPERTY_NOM) + " "
-                                        + tiers.getProperty(PRTiersWrapper.PROPERTY_PRENOM) 
-                                        + infoSup));
+                                        + tiers.getProperty(PRTiersWrapper.PROPERTY_PRENOM) + infoSup));
 
                 // 2. les infos sur la prestation
                 champs.put("FIELD_DETAIL_PERIODE",
@@ -1044,7 +1046,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
 
                 if ("true".equals(JadePropertiesService.getInstance().getProperty(APApplication.PROPERTY_IS_FERCIAB))
                         && APTypeDePrestation.STANDARD.isCodeSystemEqual(repartition.getGenrePrestationPrestation())) {
-                    champs.put("FIELD_IS_APG_FED", "*");
+                    champs.put("FIELD_APG_FED", "*");
                     hasPrestationAPGFederale = true;
                 }
                 // Type de prestation complémentaire
@@ -1496,7 +1498,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
             }
             try {
                 if (hasPrestationAPGFederale) {
-                    champs.put("PARAM_FIELD_TEXTE_PAS_SOUMIS_LAA", document.getTextes(3).getTexte(49).getDescription());
+                    champs.put("FIELD_TEXTE_PAS_SOUMIS_LAA", document.getTextes(3).getTexte(49).getDescription());
                 }
             } catch (IndexOutOfBoundsException e) {
                 Logger.logInfo("Pas de texte pour maternité : " + e.getMessage());
@@ -1622,7 +1624,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                                 break;
                             case COMPCIAB:
                                 docInfo.setDocumentTypeNumber(IPRConstantesExternes.DECOMPTE_APG_NORMAL);
-                                break;                                  
+                                break;
                             default:
                                 throw new Exception(
                                         "Impossible de résoudre le type de décompte APG pour la génération du doc info");
@@ -2108,7 +2110,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
 
         return docInfo;
     }
-    
+
     public void setCatalogueTextesCourant(final ICTDocument document) {
         this.document = document;
     }

@@ -2,7 +2,7 @@
 <!-- Created with iReport - A designer for JasperReports -->
 <!DOCTYPE jasperReport PUBLIC "//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
 <jasperReport
-		 name="untitled_report_1"
+		 name="AP_DECOMPTE"
 		 columnCount="1"
 		 printOrder="Vertical"
 		 orientation="Portrait"
@@ -110,6 +110,8 @@
 	<field name="FIELD_PREST_COMPL" class="java.lang.String"/>
 	<field name="FIELD_MONTANT_COTISATIONS_FNE" class="java.lang.String"/>
 	<field name="FIELD_DETAIL_COTISATIONS_FNE" class="java.lang.String"/>
+	<field name="FIELD_TEXTE_PAS_SOUMIS_LAA" class="java.lang.String"/>
+	<field name="FIELD_APG_FED" class="java.lang.String"/>
 	<variable name="MY_PAGE_NUMBER" class="java.lang.String" resetType="Page" calculation="Nothing">
 		<variableExpression><![CDATA[$V{PAGE_NUMBER}.toString()]]></variableExpression>
 	</variable>
@@ -611,6 +613,9 @@
 					<subreportParameter  name="PARAM_FIELD_DETAIL_COTISATIONS_FNE">
 						<subreportParameterExpression><![CDATA[$F{FIELD_DETAIL_COTISATIONS_FNE}]]></subreportParameterExpression>
 					</subreportParameter>
+					<subreportParameter  name="PARAM_FIELD_APG_FED">
+						<subreportParameterExpression><![CDATA[$F{FIELD_APG_FED}]]></subreportParameterExpression>
+					</subreportParameter>
 					<subreportExpression  class="java.lang.String"><![CDATA[$P{PARAM_AP_DECOMPTE_DETAIL}]]></subreportExpression>
 				</subreport>
 				<subreport  isUsingCache="true">
@@ -713,6 +718,9 @@
 					</subreportParameter>
 					<subreportParameter  name="PARAM_FIELD_ADRESSE_PAIEMENT">
 						<subreportParameterExpression><![CDATA[$F{FIELD_ADRESSE_PAIEMENT}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="PARAM_FIELD_TEXTE_PAS_SOUMIS_LAA">
+						<subreportParameterExpression><![CDATA[$F{FIELD_TEXTE_PAS_SOUMIS_LAA}]]></subreportParameterExpression>
 					</subreportParameter>
 					<subreportExpression  class="java.lang.String"><![CDATA[$P{PARAM_AP_DECOMPTE_DETAIL2}]]></subreportExpression>
 				</subreport>
