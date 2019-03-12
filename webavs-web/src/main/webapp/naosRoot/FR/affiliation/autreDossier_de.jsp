@@ -51,6 +51,7 @@ function init(){
 function updateNumAffilie(tag){
 	if(tag.select && tag.select.selectedIndex != -1){
 		document.getElementById('numAffilie').value =  tag.select[tag.select.selectedIndex].value;
+		document.getElementById('_method').value = null;
 		parent.fr_main.location.href ="<%=(servletContext + mainServletPath)%>?userAction=naos.affiliation.autreDossier.modifier&numAffilie=" + document.getElementById('numAffilie').value + "&forAction="+document.getElementById('forAction').value;
 	}	
 }
@@ -77,7 +78,8 @@ function updateNumAffilie(tag){
 											autoNbrDigit="<%=autoDigiAff%>" 
 											size="25"
 											onChange="updateNumAffilie(tag);"
-											minNbrDigit="3"/>
+											params="max=100"
+											minNbrDigit="5"/>
 										<!--IMG
 											src="<%=servletContext%>/images/down.gif"
 											alt="presser sur la touche 'flèche bas' pour effectuer une recherche"

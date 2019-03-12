@@ -2,7 +2,7 @@
 <%@ page language="java" errorPage="/errorPage.jsp" contentType="text/html;charset=ISO-8859-1" %>
 
 <%
-    String options = globaz.naos.util.AFUtil.getAffilies(request.getParameter("like"),session);
+	String options = globaz.naos.util.AFUtil.getAffilies(request.getParameter("like"),request.getParameter("max"),session);
 %>	
 <body>
 <form>

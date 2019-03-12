@@ -282,6 +282,27 @@ public class AFUtil {
         return AFUtil
                 .getAffillies(like, (BSession) ((FWController) session.getAttribute("objController")).getSession());
     }
+    
+    /**
+     * Retourne une liste des Affilies (numéro et nom de l'affilié) en fonction des permiers chiffres du numéro affilié
+     * donnés en paramètres.
+     * 
+     * 
+     * @return la liste d'options (tag select) des affiliés existants de la caisse actuelle. Peut-être vide si aucune
+     *         information n'a été trouvée
+     * @param like
+     *            - les primers chiffres du numéro affilié
+     * @param session
+     *            - la session HTTP actuelle
+     */
+    public static String getAffilies(String like, String max, HttpSession session) {
+        return AFUtil
+                .getAffillies(like, max, (BSession) ((FWController) session.getAttribute("objController")).getSession());
+    }
+
+    public static String getAffillies(String like, BSession bsession) {
+        return getAffillies(like, null, bsession);
+    }
 
     /**
      * Retourne une liste des Affilies (numéro et nom de l'affilié) en fonction des permiers chiffres du numéro affilié
@@ -312,7 +333,7 @@ public class AFUtil {
      * @param bsession
      *            - la session actuelle (provenant du viewBean de la page jsp)
      */
-    public static String getAffillies(String like, BSession bsession) {
+    public static String getAffillies(String like, String max, BSession bsession) {
         if (JadeStringUtil.isBlank(like)) {
             like = "";
         }
@@ -342,7 +363,7 @@ public class AFUtil {
             manager.setSession(bsession);
             manager.setLikeAffilieNumero(like);
             if (!JadeStringUtil.isBlank(like)) {
-                manager.find(BManager.SIZE_NOLIMIT);
+                manager.find(getMaxValue(max));    
             }
             for (int i = 0; i < manager.size(); i++) {
                 AFAffiliation affilie = (AFAffiliation) manager.getEntity(i);
@@ -396,6 +417,17 @@ public class AFUtil {
             JadeLogger.error(null, ex);
         }
         return options.toString();
+    }
+    
+    private static Integer getMaxValue(String value) {
+        if(value != null) {
+            try {
+                return Integer.parseInt(value);    
+            } catch (NumberFormatException e) {
+                return BManager.SIZE_USEDEFAULT;
+            }
+        }
+        return BManager.SIZE_USEDEFAULT;
     }
 
     /**
