@@ -30,6 +30,8 @@ import globaz.lupus.db.data.LUProvenanceDataSource;
 import globaz.lupus.db.journalisation.LUJournalListViewBean;
 import globaz.naos.application.AFApplication;
 import globaz.naos.db.affiliation.AFAffiliation;
+import globaz.naos.db.affiliation.AFAffiliationJTiers;
+import globaz.naos.db.affiliation.AFAffiliationJTiersManager;
 import globaz.naos.db.affiliation.AFAffiliationManager;
 import globaz.naos.db.assurance.AFAssurance;
 import globaz.naos.db.assurance.AFAssuranceManager;
@@ -358,31 +360,32 @@ public class AFUtil {
         try {
             // K170119_001, ne pas faire la recherche si le no d'affilié est vide, évite de lancer une recherche sur
             // tout
+            // I190125_018 : Modification de l'écran de recherche d'affiliation : paramètre limite + modification de la requête : jointure
 
-            AFAffiliationManager manager = new AFAffiliationManager();
+            AFAffiliationJTiersManager manager = new AFAffiliationJTiersManager();
             manager.setSession(bsession);
             manager.setLikeAffilieNumero(like);
             if (!JadeStringUtil.isBlank(like)) {
                 manager.find(getMaxValue(max));    
             }
             for (int i = 0; i < manager.size(); i++) {
-                AFAffiliation affilie = (AFAffiliation) manager.getEntity(i);
-                String nom = "";
-                String designation1 = "";
-                String designation2 = "";
+                AFAffiliationJTiers affilie = (AFAffiliationJTiers) manager.getEntity(i);
+                String nom = affilie.getNom();
+                String designation1 = affilie.getDesignation1();
+                String designation2 = affilie.getDesignation2();
                 if (!affSet.contains(affilie.getIdTiers() + "-" + affilie.getAffilieNumero())) {
                     options.append("<option value='");
                     options.append(affilie.getAffilieNumero());
                     options.append("' nom='");
-                    TITiers tiers = new TITiers();
-                    tiers.setSession(bsession);
-                    tiers.setIdTiers(affilie.getIdTiers());
-                    tiers.retrieve();
-                    if (!tiers.isNew()) {
-                        nom = tiers.getNom();
-                        designation1 = tiers.getDesignation1();
-                        designation2 = tiers.getDesignation2();
-                    }
+//                    TITiers tiers = new TITiers();
+//                    tiers.setSession(bsession);
+//                    tiers.setIdTiers(affilie.getIdTiers());
+//                    tiers.retrieve();
+//                    if (!tiers.isNew()) {
+//                        nom = tiers.getNom();
+//                        designation1 = tiers.getDesignation1();
+//                        designation2 = tiers.getDesignation2();
+//                    }
                     options.append(nom);
                     options.append("' idTiers='");
                     options.append(affilie.getIdTiers());

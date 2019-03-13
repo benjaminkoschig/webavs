@@ -79,7 +79,7 @@ function updateNumAffilie(tag){
 											size="25"
 											onChange="updateNumAffilie(tag);"
 											params="max=100"
-											minNbrDigit="5"/>
+											minNbrDigit="3"/>
 										<!--IMG
 											src="<%=servletContext%>/images/down.gif"
 											alt="presser sur la touche 'flèche bas' pour effectuer une recherche"
