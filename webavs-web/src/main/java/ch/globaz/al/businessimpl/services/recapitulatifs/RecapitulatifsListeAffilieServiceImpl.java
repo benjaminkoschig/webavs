@@ -1,14 +1,6 @@
 package ch.globaz.al.businessimpl.services.recapitulatifs;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import ch.globaz.al.business.constantes.ALCSDossier;
-import ch.globaz.al.business.constantes.ALCSPrestation;
-import ch.globaz.al.business.constantes.ALCSTarif;
-import ch.globaz.al.business.constantes.ALConstAttributsEntite;
-import ch.globaz.al.business.constantes.ALConstCaisse;
-import ch.globaz.al.business.constantes.ALConstDocument;
-import ch.globaz.al.business.constantes.ALConstLangue;
+import ch.globaz.al.business.constantes.*;
 import ch.globaz.al.business.exceptions.document.ALDocumentException;
 import ch.globaz.al.business.exceptions.model.prestation.ALRecapitulatifEntrepriseImpressionModelException;
 import ch.globaz.al.business.exceptions.protocoles.ALProtocoleException;
@@ -34,6 +26,9 @@ import globaz.jade.context.exception.JadeNoBusinessLogSessionError;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
+
+import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  * Classe d'implémentation des services liés aux récapitulatifs d'entreprise
@@ -97,8 +92,8 @@ public class RecapitulatifsListeAffilieServiceImpl extends AbstractDocument
 
     @Override
     public DocumentData loadData(ArrayList recapitulatifs, String numAffilie, String idRecap, String periodeDe,
-            String periodeA, String agenceCommunaleAvs, String activiteAllocataire, String dateImpression,
-            String typeBonification) throws JadePersistenceException, JadeApplicationException {
+                                 String periodeA, String agenceCommunaleAvs, String activiteAllocataire, String dateImpression,
+                                 String typeBonification) throws JadePersistenceException, JadeApplicationException {
 
         // contrôle des paramètres
         if (recapitulatifs == null) {
@@ -169,13 +164,13 @@ public class RecapitulatifsListeAffilieServiceImpl extends AbstractDocument
     }
 
     @Override
-    public StringBuffer loadDataCSV(ArrayList listTempRecap) throws JadePersistenceException, JadeApplicationException {
+    public StringBuffer loadDataCSV(ArrayList listTempRecap, Boolean isCharNssRecap) throws JadePersistenceException, JadeApplicationException {
         // vérification des paramètres
         if (listTempRecap == null) {
             throw new ALRecapitulatifEntrepriseImpressionModelException(
                     "RecapitulatifsListeAffilieServiceImpl#loadData: recapitulatifs is null");
-        }
-
+        } 
+        
         StringBuffer csvContent = new StringBuffer();
 
         // langue du document
@@ -207,8 +202,12 @@ public class RecapitulatifsListeAffilieServiceImpl extends AbstractDocument
             csvContent.append(lignesRecap.getRecapEntrepriseModel().getNumeroAffilie()).append(";");
             // numéro dossier
             csvContent.append(lignesRecap.getIdDossier()).append(";");
-            // numéro de nss non formatté
-            csvContent.append(JadeStringUtil.removeChar(lignesRecap.getNumNSS(), '.')).append(";");
+            
+            if (isCharNssRecap){
+                csvContent.append("'").append(JadeStringUtil.removeChar(lignesRecap.getNumNSS(), '.')).append(";");
+            } else {
+                csvContent.append(JadeStringUtil.removeChar(lignesRecap.getNumNSS(), '.')).append(";");
+            }
 
             // nom
             csvContent.append(lignesRecap.getNomAllocataire()).append(" ;");
@@ -306,7 +305,7 @@ public class RecapitulatifsListeAffilieServiceImpl extends AbstractDocument
      * Gère la valeur du champ "recapitulatifEntreprise_alloc_label" du template listeRecapitulatifEntreprise
      */
     private DocumentData setAllocLabel(DocumentData document, String langueDocument, String etatRecap,
-            String typeBonification)
+                                       String typeBonification)
             throws JadeApplicationException, JadePersistenceException, JadeApplicationServiceNotAvailableException {
 
         String nomCaisse = ALServiceLocator.getParametersServices().getNomCaisse().toLowerCase();
@@ -437,7 +436,7 @@ public class RecapitulatifsListeAffilieServiceImpl extends AbstractDocument
      * @throws JadePersistenceException
      */
     private void setInfos(DocumentData document, String numAffilie, String idRecap, String periodeDe, String periodeA,
-            String typeBonification, String langueDocument) throws JadeApplicationException, JadePersistenceException {
+                          String typeBonification, String langueDocument) throws JadeApplicationException, JadePersistenceException {
 
         // contrôle des paramètres
         if (document == null) {
@@ -556,7 +555,7 @@ public class RecapitulatifsListeAffilieServiceImpl extends AbstractDocument
      */
 
     private void setTable(DocumentData document, ArrayList prestations, String idRecap, String numeroAffilie,
-            String langueDocument, boolean numSalarieDisplay)
+                          String langueDocument, boolean numSalarieDisplay)
             throws JadeApplicationException, JadePersistenceException {
         // vérification des paramètres
 

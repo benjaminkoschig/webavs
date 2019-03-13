@@ -1,5 +1,6 @@
 package globaz.al.helpers.prestation;
 
+import ch.globaz.al.business.constantes.ALConstPrestations;
 import globaz.al.helpers.ALAbstractHelper;
 import globaz.al.process.recapitulatifsEntreprises.ALRecapitulatifEntreprisesImprimerProcess;
 import globaz.al.vb.prestation.ALRecapViewBean;
@@ -9,8 +10,8 @@ import globaz.globall.api.BISession;
 import globaz.globall.db.BProcessLauncher;
 import globaz.globall.db.BSession;
 import globaz.jade.client.util.JadeDateUtil;
+
 import java.util.Date;
-import ch.globaz.al.business.constantes.ALConstPrestations;
 
 /**
  * Helper dédié au viewBean ALRecapViewBean
@@ -37,6 +38,7 @@ public class ALRecapHelper extends ALAbstractHelper {
                 process.setTypeTraitRecapImpr(ALConstPrestations.TRAITEMENT_NO_RECAP);
                 process.setEnvoiGED(((ALRecapViewBean) viewBean).isPrintGed());
                 process.setDateImpression(JadeDateUtil.getGlobazFormattedDate(new Date()));
+                process.setIsCharNssRecap(((ALRecapViewBean) viewBean).getIsCharNssRecap());
 
                 BProcessLauncher.start(process, false);
             } catch (Exception e) {

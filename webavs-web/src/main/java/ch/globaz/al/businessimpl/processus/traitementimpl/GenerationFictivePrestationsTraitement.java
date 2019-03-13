@@ -1,38 +1,6 @@
 package ch.globaz.al.businessimpl.processus.traitementimpl;
 
-import globaz.globall.db.BSessionUtil;
-import globaz.jade.client.util.JadeDateUtil;
-import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.context.JadeThread;
-import globaz.jade.exception.JadeApplicationException;
-import globaz.jade.exception.JadePersistenceException;
-import globaz.jade.log.JadeLogger;
-import globaz.jade.persistence.model.JadeAbstractModel;
-import globaz.jade.persistence.model.JadeAbstractSearchModel;
-import globaz.jade.print.server.JadePrintDocumentContainer;
-import globaz.jade.publish.client.JadePublishDocument;
-import globaz.jade.publish.client.JadePublishServerFacade;
-import globaz.jade.publish.document.JadePublishDocumentInfo;
-import globaz.jade.publish.message.JadePublishDocumentMessage;
-import java.io.File;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
-import ch.globaz.al.business.constantes.ALCSDossier;
-import ch.globaz.al.business.constantes.ALCSPrestation;
-import ch.globaz.al.business.constantes.ALCSProcessus;
-import ch.globaz.al.business.constantes.ALConstDocument;
-import ch.globaz.al.business.constantes.ALConstPrestations;
+import ch.globaz.al.business.constantes.*;
 import ch.globaz.al.business.loggers.ProtocoleLogger;
 import ch.globaz.al.business.models.dossier.AffilieListComplexModel;
 import ch.globaz.al.business.models.dossier.AffilieListComplexSearchModel;
@@ -51,6 +19,27 @@ import ch.globaz.orion.businessimpl.services.af.AfServiceImpl;
 import ch.globaz.orion.businessimpl.services.partnerWeb.PartnerWebServiceImpl;
 import ch.globaz.xmlns.eb.recapaf.NouvelleLigneRecapAf;
 import ch.globaz.xmlns.eb.recapaf.UniteTempsEnum;
+import globaz.globall.db.BSessionUtil;
+import globaz.jade.client.util.JadeDateUtil;
+import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.context.JadeThread;
+import globaz.jade.exception.JadeApplicationException;
+import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.log.JadeLogger;
+import globaz.jade.persistence.model.JadeAbstractModel;
+import globaz.jade.persistence.model.JadeAbstractSearchModel;
+import globaz.jade.print.server.JadePrintDocumentContainer;
+import globaz.jade.publish.client.JadePublishDocument;
+import globaz.jade.publish.client.JadePublishServerFacade;
+import globaz.jade.publish.document.JadePublishDocumentInfo;
+import globaz.jade.publish.message.JadePublishDocumentMessage;
+
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
+import java.io.File;
+import java.math.BigDecimal;
+import java.util.*;
 
 public class GenerationFictivePrestationsTraitement extends BusinessTraitement {
     private JadePrintDocumentContainer containerA = new JadePrintDocumentContainer();
@@ -214,7 +203,7 @@ public class GenerationFictivePrestationsTraitement extends BusinessTraitement {
             listRecapCsv = ALServiceLocator.getRecapitulatifEntrepriseImpressionService()
                     .loadArrayListCsv(recapToPrint);
             if (listRecapCsv.size() != 0) {
-                recapCSV = ALServiceLocator.getRecapitulatifEntrepriseImpressionService().loadCSVDocument(listRecapCsv);
+                recapCSV = ALServiceLocator.getRecapitulatifEntrepriseImpressionService().loadCSVDocument(listRecapCsv, true);
 
             }
         } catch (Exception e) {
@@ -285,7 +274,7 @@ public class GenerationFictivePrestationsTraitement extends BusinessTraitement {
     }
 
     private void createRecapForEbusiness(Map<String, List<RecapitulatifEntrepriseImpressionComplexModel>> mapDossier,
-            String periode) throws DatatypeConfigurationException {
+                                         String periode) throws DatatypeConfigurationException {
         for (Map.Entry<String, List<RecapitulatifEntrepriseImpressionComplexModel>> entry : mapDossier.entrySet()) {
             String numAffilie = entry.getKey();
 

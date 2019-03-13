@@ -23,6 +23,8 @@
 	bButtonDelete = hasDeleteRight;
 	
 	String rootPath = servletContext+(mainServletPath+"Root");
+	
+	Boolean charNss = viewBean.getIsCharNssRecap();
 %>
 <%@ include file="/theme/detail_ajax/javascripts.jspf"%>
 
@@ -33,6 +35,7 @@
 <SCRIPT type="text/javascript" src="<%=servletContext%>/scripts/params.js"></SCRIPT>
 <SCRIPT type="text/javascript" src="<%=servletContext%>/scripts/actionsForButtons.js"></SCRIPT>
 <SCRIPT type="text/javascript" src="<%=servletContext%>/scripts/utils.js"></SCRIPT>
+
 <script type="text/javascript" src="<%=servletContext%>/alRoot/util_webaf.js"></script>
 <script type="text/javascript" src="<%=servletContext%>/alRoot/ajax_webaf.js"></script>
 <script type="text/javascript">
@@ -195,9 +198,9 @@
 	</td>
 </tr>
 
-
 <%@ include file="/theme/detail/bodyButtons.jspf"%>
 <input class="btnCtrl" id="btnPrint" type="button" value="Aperçu" onclick="printRecap(false);">
+<input type="checkbox" id="charNssRecap" name="charNssRecap">Ajout du caractère</input>
 <ct:ifhasright element="<%=userActionNew%>" crud="c">
 	<input class="btnCtrl" id="btnSend" type="button" value="Ins. GED" onclick="printRecap(true);">
 </ct:ifhasright>
@@ -215,3 +218,14 @@
 	</c:otherwise>
 </c:choose>
 <%@ include file="/theme/detail_ajax/footer.jspf"%>
+
+<script type="text/javascript">
+window.onload = init;
+ 
+ function init(){
+	 var checkBoxCharRecapNss = document.getElementById('charNssRecap');
+	 if (<%=charNss%>){
+		 checkBoxCharRecapNss.checked = true;		 
+	 }	 
+ }
+</script>

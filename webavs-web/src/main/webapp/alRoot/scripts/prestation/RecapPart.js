@@ -25,10 +25,11 @@ $(function () {
 			return {"searchModel.forIdRecap": globazGlobal.ID_RECAP_MODEL};
 		}
 	});
+
 	
-	/* Désactivation des boutons radio lorsque l'AJAX est complet. Actuellement 
-	 *non implémenté car ces cases ne sont utilisés qu'avec le bouton "+" qui est lui 
-	 *accessible même lorsque la modification est désactivée */
+	/* Dï¿½sactivation des boutons radio lorsque l'AJAX est complet. Actuellement 
+	 *non implï¿½mentï¿½ car ces cases ne sont utilisï¿½s qu'avec le bouton "+" qui est lui 
+	 *accessible mï¿½me lorsque la modification est dï¿½sactivï¿½e */
 	/*t_zone[0].mainContainer.on(eventConstant.AJAX_FIND_COMPLETE, function () {
 		$("input[name='idDossierSelected']").prop("disabled", true);
 	});*/
@@ -76,7 +77,8 @@ function displayAjaxResult(result) {
 
 function printRecap(inGed) {
 	
-	ajaxQuery(globazGlobal.ACTION_GED+inGed, displayAjaxResult);
+	var checkBoxCharRecapNss = document.getElementById('charNssRecap');
+	ajaxQuery(globazGlobal.ACTION_GED+inGed+"&charNssRecap="+checkBoxCharRecapNss.checked, displayAjaxResult);
 }
 
 function ajaxQuery(query,handlerStateFunction){

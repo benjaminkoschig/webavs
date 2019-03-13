@@ -141,6 +141,10 @@ public interface ALConstParametres {
      */
     public static final String RAFAM_ADMIN_EDITION = "RAFAM_ADMIN_EDITION";
     /**
+     * Nom du paramètre indiquant si le NSS doit être reformatté sur le recap CSV
+     */
+    public static final String RECAP_FORMAT_NSS = "RECAP_FORMAT_NSS";    
+    /**
      * paramètre pour affichages de toutes les annonces rafam d'an droit ou seulement
      */
     public static final String RAFAM_AFFICHAGE_ANNONCE = "AF_ANNONCES_RAFAM_LIST";

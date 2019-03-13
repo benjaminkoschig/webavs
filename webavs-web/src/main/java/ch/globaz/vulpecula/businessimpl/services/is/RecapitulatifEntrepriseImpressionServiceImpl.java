@@ -1,30 +1,6 @@
 package ch.globaz.vulpecula.businessimpl.services.is;
 
-import globaz.globall.db.BSession;
-import globaz.globall.db.BSessionUtil;
-import globaz.jade.client.util.JadeDateUtil;
-import globaz.jade.client.util.JadeNumericUtil;
-import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.context.JadeThread;
-import globaz.jade.exception.JadeApplicationException;
-import globaz.jade.exception.JadePersistenceException;
-import globaz.jade.persistence.model.JadeAbstractModel;
-import globaz.jade.print.server.JadePrintDocumentContainer;
-import globaz.jade.publish.document.JadePublishDocumentInfo;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import ch.globaz.al.business.constantes.ALCSAffilie;
-import ch.globaz.al.business.constantes.ALCSDossier;
-import ch.globaz.al.business.constantes.ALCSDroit;
-import ch.globaz.al.business.constantes.ALCSPrestation;
-import ch.globaz.al.business.constantes.ALCSTiers;
-import ch.globaz.al.business.constantes.ALConstAttributsEntite;
-import ch.globaz.al.business.constantes.ALConstCalcul;
-import ch.globaz.al.business.constantes.ALConstDocument;
-import ch.globaz.al.business.constantes.ALConstPrestations;
+import ch.globaz.al.business.constantes.*;
 import ch.globaz.al.business.constantes.enumerations.generation.prestations.Bonification;
 import ch.globaz.al.business.exceptions.model.prestation.ALRecapitulatifEntrepriseImpressionModelException;
 import ch.globaz.al.business.exceptions.model.prestation.ALRecapitulatifEntrepriseModelException;
@@ -49,6 +25,23 @@ import ch.globaz.topaz.datajuicer.DocumentData;
 import ch.globaz.vulpecula.business.services.VulpeculaRepositoryLocator;
 import ch.globaz.vulpecula.domain.models.postetravail.Employeur;
 import ch.globaz.vulpecula.domain.models.registre.TypeFacturation;
+import globaz.globall.db.BSession;
+import globaz.globall.db.BSessionUtil;
+import globaz.jade.client.util.JadeDateUtil;
+import globaz.jade.client.util.JadeNumericUtil;
+import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.context.JadeThread;
+import globaz.jade.exception.JadeApplicationException;
+import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.persistence.model.JadeAbstractModel;
+import globaz.jade.print.server.JadePrintDocumentContainer;
+import globaz.jade.publish.document.JadePublishDocumentInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 
 /**
  * COPIE DE LA CLASSE PRESENTE DANS LES AF afin de pouvoir ajouter un champ supplémentaire liée au BMS.
@@ -377,10 +370,10 @@ public class RecapitulatifEntrepriseImpressionServiceImpl extends ALAbstractBusi
      *             faire
      */
     private void createDocRecapAffilie(ArrayList recapitulatifsTemp, String numAffilie, String periodeDe,
-            String periodeA, String idRecap, String agenceCommunaleAvs, String activiteAllocataire,
-            String dateImpression, String typeBonification, boolean isGed,
-            JadePrintDocumentContainer conteneurNonActif, JadePrintDocumentContainer conteneurCollaAgri,
-            JadePrintDocumentContainer conteneurSalarie, JadePrintDocumentContainer conteneurTavailleurAgri
+                                       String periodeA, String idRecap, String agenceCommunaleAvs, String activiteAllocataire,
+                                       String dateImpression, String typeBonification, boolean isGed,
+                                       JadePrintDocumentContainer conteneurNonActif, JadePrintDocumentContainer conteneurCollaAgri,
+                                       JadePrintDocumentContainer conteneurSalarie, JadePrintDocumentContainer conteneurTavailleurAgri
     /* JadePrintDocumentContainer conteneurAgriInd, */) throws JadeApplicationException, JadePersistenceException {
 
         if (recapitulatifsTemp == null) {
@@ -593,7 +586,7 @@ public class RecapitulatifEntrepriseImpressionServiceImpl extends ALAbstractBusi
     }
 
     private JadePublishDocumentInfo fillRecapInfo(JadePublishDocumentInfo pubInfosRecap, String periodeDe,
-            String dateImpression, String numAffilie, boolean isGed)
+                                                  String dateImpression, String numAffilie, boolean isGed)
             throws ALRecapitulatifEntrepriseImpressionModelException {
 
         pubInfosRecap.setOwnerEmail(JadeThread.currentUserEmail());
@@ -806,7 +799,7 @@ public class RecapitulatifEntrepriseImpressionServiceImpl extends ALAbstractBusi
     }
 
     @Override
-    public HashMap loadCSVDocument(ArrayList recapList) throws JadePersistenceException, JadeApplicationException {
+    public HashMap loadCSVDocument(ArrayList recapList, Boolean isCharNssRecap) throws JadePersistenceException, JadeApplicationException {
         HashMap container = new HashMap();
         // identifiant de la récap
         String idRecap = null;
@@ -830,7 +823,7 @@ public class RecapitulatifEntrepriseImpressionServiceImpl extends ALAbstractBusi
             } else {
 
                 container.put(idRecap,
-                        ALImplServiceLocator.getRecapitulatifsListeAffilieService().loadDataCSV(listRecapTemp));
+                        ALImplServiceLocator.getRecapitulatifsListeAffilieService().loadDataCSV(listRecapTemp, isCharNssRecap));
 
                 listRecapTemp.clear();
                 listRecapTemp.add(recapEntreprise);
@@ -841,7 +834,7 @@ public class RecapitulatifEntrepriseImpressionServiceImpl extends ALAbstractBusi
             if (i == (listRecapEnteteUnique.size() - 1)) {
 
                 container.put(recapEntreprise.getRecapEntrepriseModel().getIdRecap(), ALImplServiceLocator
-                        .getRecapitulatifsListeAffilieService().loadDataCSV(listRecapTemp));
+                        .getRecapitulatifsListeAffilieService().loadDataCSV(listRecapTemp, isCharNssRecap));
 
                 listRecapTemp.clear();
 

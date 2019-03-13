@@ -1,5 +1,10 @@
 package globaz.al.process.recapitulatifsEntreprises;
 
+import ch.globaz.al.business.constantes.ALConstDocument;
+import ch.globaz.al.business.constantes.ALConstPrestations;
+import ch.globaz.al.business.models.prestation.RecapitulatifEntrepriseImpressionComplexSearchModel;
+import ch.globaz.al.business.services.ALServiceLocator;
+import ch.globaz.al.utils.ALFileCSVUtils;
 import globaz.al.process.ALAbsrtactProcess;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
@@ -13,19 +18,9 @@ import globaz.jade.publish.client.JadePublishDocument;
 import globaz.jade.publish.client.JadePublishServerFacade;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
 import globaz.jade.publish.message.JadePublishDocumentMessage;
+
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-import ch.globaz.al.business.constantes.ALConstDocument;
-import ch.globaz.al.business.constantes.ALConstPrestations;
-import ch.globaz.al.business.models.prestation.RecapitulatifEntrepriseImpressionComplexSearchModel;
-import ch.globaz.al.business.services.ALServiceLocator;
-import ch.globaz.al.utils.ALFileCSVUtils;
+import java.util.*;
 
 /**
  * Classe de gestion des récapitulatifs des entreprises (affilié) à imprimer
@@ -82,6 +77,8 @@ public class ALRecapitulatifEntreprisesImprimerProcess extends ALAbsrtactProcess
      */
     private String typeTraitRecapImpr = null;
 
+    private boolean isCharNssRecap = true;
+
     /**
      * @return the activiteAllocParitaire
      */
@@ -116,6 +113,12 @@ public class ALRecapitulatifEntreprisesImprimerProcess extends ALAbsrtactProcess
         return etatRecap;
     }
 
+    /**
+     * @return isCharNssRecap
+     */
+    public boolean getIsCharNssRecap() {
+        return this.isCharNssRecap;
+    }
     /**
      * @return the idRecap
      */
@@ -284,7 +287,7 @@ public class ALRecapitulatifEntreprisesImprimerProcess extends ALAbsrtactProcess
             listRecapCsv = ALServiceLocator.getRecapitulatifEntrepriseImpressionService().loadArrayListCsv(
                     listResultatRecherche);
             if (listRecapCsv.size() != 0) {
-                recapCSV = ALServiceLocator.getRecapitulatifEntrepriseImpressionService().loadCSVDocument(listRecapCsv);
+                recapCSV = ALServiceLocator.getRecapitulatifEntrepriseImpressionService().loadCSVDocument(listRecapCsv, getIsCharNssRecap());
 
             }
         } catch (Exception e) {
@@ -485,6 +488,12 @@ public class ALRecapitulatifEntreprisesImprimerProcess extends ALAbsrtactProcess
      */
     public void setTypeTraitRecapImpr(String typeTraitRecapImpr) {
         this.typeTraitRecapImpr = typeTraitRecapImpr;
+    }
+
+    public void setIsCharNssRecap(boolean isCharNssRecap) {
+        // TODO Auto-generated method stub
+        this.isCharNssRecap = isCharNssRecap;
+        
     }
 
 }

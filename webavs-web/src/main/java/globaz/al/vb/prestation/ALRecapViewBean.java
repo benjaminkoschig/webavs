@@ -1,13 +1,6 @@
 package globaz.al.vb.prestation;
 
-import globaz.globall.db.BSession;
-import globaz.globall.db.BSpy;
-import globaz.globall.util.JANumberFormatter;
-import globaz.globall.vb.BJadePersistentObjectViewBean;
-import globaz.jade.client.util.JadeCodesSystemsUtil;
-import globaz.jade.client.util.JadeNumericUtil;
-import java.util.ArrayList;
-import java.util.List;
+import ch.globaz.al.business.constantes.ALConstParametres;
 import ch.globaz.al.business.models.periodeAF.PeriodeAFModel;
 import ch.globaz.al.business.models.prestation.EntetePrestationListRecapComplexSearchModel;
 import ch.globaz.al.business.models.prestation.RecapitulatifEntrepriseModel;
@@ -17,6 +10,22 @@ import ch.globaz.al.business.services.ALServiceLocator;
 import ch.globaz.naos.business.model.AffiliationSearchSimpleModel;
 import ch.globaz.naos.business.model.AffiliationSimpleModel;
 import ch.globaz.naos.business.service.AFBusinessServiceLocator;
+import ch.globaz.param.business.models.ParameterModel;
+import ch.globaz.param.business.service.ParamServiceLocator;
+import globaz.globall.db.BSession;
+import globaz.globall.db.BSpy;
+import globaz.globall.util.JANumberFormatter;
+import globaz.globall.vb.BJadePersistentObjectViewBean;
+import globaz.jade.client.util.JadeCodesSystemsUtil;
+import globaz.jade.client.util.JadeDateUtil;
+import globaz.jade.client.util.JadeNumericUtil;
+import globaz.jade.exception.JadeApplicationException;
+import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * ViewBean gérant le modèle représentant une récap. et ses prestations
@@ -36,6 +45,10 @@ public class ALRecapViewBean extends BJadePersistentObjectViewBean {
      */
     private boolean isRecapVerrouillee = false;
 
+    /**
+     * indique si le caractère au début du NSS pour les récaps est activé
+     */
+    private Boolean isCharNssRecap = true ;
     /**
      * Montant total de la récap
      */
@@ -69,6 +82,20 @@ public class ALRecapViewBean extends BJadePersistentObjectViewBean {
         prestationSearchModel = new EntetePrestationListRecapComplexSearchModel();
         recapModel = new RecapitulatifEntrepriseModel();
         setAffilie(new AffiliationSimpleModel());
+        
+        ParameterModel paramNSSCsv = new ParameterModel();
+        try {
+            paramNSSCsv = ParamServiceLocator.getParameterModelService().getParameterByName(ALConstParametres.APPNAME,
+                    ALConstParametres.RECAP_FORMAT_NSS,
+                    JadeDateUtil.getGlobazFormattedDate(new Date()));
+            this.isCharNssRecap = paramNSSCsv.getValeurAlphaParametre().equals("true");
+        } catch (JadeApplicationServiceNotAvailableException e) {
+            e.printStackTrace();
+        } catch (JadeApplicationException e) {
+            e.printStackTrace();
+        } catch (JadePersistenceException e) {
+            e.printStackTrace();
+        }
     }
 
     /*
@@ -305,6 +332,15 @@ public class ALRecapViewBean extends BJadePersistentObjectViewBean {
 
     public void setRecapVerrouillee(boolean isRecapVerrouillee) {
         this.isRecapVerrouillee = isRecapVerrouillee;
+    }
+        
+
+    public Boolean getIsCharNssRecap() {
+        return this.isCharNssRecap;
+    }
+
+    public void setCharNssRecap(Boolean charNssRecap) {
+        this.isCharNssRecap = charNssRecap;
     }
 
     /*

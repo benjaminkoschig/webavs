@@ -1,11 +1,12 @@
 package ch.globaz.al.business.services.recapitulatifs;
 
+import ch.globaz.al.business.models.prestation.RecapitulatifEntrepriseImpressionComplexSearchModel;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.service.provider.application.JadeApplicationService;
+
 import java.util.ArrayList;
 import java.util.HashMap;
-import ch.globaz.al.business.models.prestation.RecapitulatifEntrepriseImpressionComplexSearchModel;
 
 /**
  * Service pour les récapitulatifs d'entreprise (destinés aux employeurs) à imprimer
@@ -68,8 +69,8 @@ public interface RecapitulatifEntrepriseImpressionService extends JadeApplicatio
      *             Exception levée lorsque le chargement ou la mise à jour en DB par la couche de persistence n'a pu se
      *             faire
      */
-
-    public HashMap loadCSVDocument(ArrayList recapList) throws JadePersistenceException, JadeApplicationException;
+    
+    public HashMap loadCSVDocument(ArrayList recapList, Boolean isCharNssRecap) throws JadePersistenceException, JadeApplicationException;
 
     /**
      * Méthode qui retourne le container renfermant les listes des récapitulatifs

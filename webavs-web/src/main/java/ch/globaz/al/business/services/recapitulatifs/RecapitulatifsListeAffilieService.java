@@ -1,10 +1,11 @@
 package ch.globaz.al.business.services.recapitulatifs;
 
+import ch.globaz.topaz.datajuicer.DocumentData;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.service.provider.application.JadeApplicationService;
+
 import java.util.ArrayList;
-import ch.globaz.topaz.datajuicer.DocumentData;
 
 /**
  * Service permettant la gestion des listes dews récapitulatifs liés aux affiliés
@@ -41,8 +42,8 @@ public interface RecapitulatifsListeAffilieService extends JadeApplicationServic
      *             faire
      */
     DocumentData loadData(ArrayList recapitulatifs, String numAffilie, String idRecap, String periodeDe,
-            String periodeA, String agenceCommunaleAvs, String ActiviteAllocataire, String dateImpression,
-            String typeBonification) throws JadePersistenceException, JadeApplicationException;
+                          String periodeA, String agenceCommunaleAvs, String ActiviteAllocataire, String dateImpression,
+                          String typeBonification) throws JadePersistenceException, JadeApplicationException;
 
     /**
      * Méthode qui retourne les données pour fichier CSV
@@ -56,5 +57,6 @@ public interface RecapitulatifsListeAffilieService extends JadeApplicationServic
      *             Exception levée lorsque le chargement ou la mise à jour en DB par la couche de persistence n'a pu se
      *             faire
      */
-    StringBuffer loadDataCSV(ArrayList listTempRecap) throws JadePersistenceException, JadeApplicationException;
+    //StringBuffer loadDataCSV(ArrayList listTempRecap) throws JadePersistenceException, JadeApplicationException;
+    StringBuffer loadDataCSV(ArrayList listTempRecap, Boolean isCharNssRecap) throws JadePersistenceException, JadeApplicationException;
 }

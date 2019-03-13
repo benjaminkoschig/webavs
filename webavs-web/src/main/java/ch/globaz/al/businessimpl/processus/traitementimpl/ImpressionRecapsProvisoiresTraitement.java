@@ -1,5 +1,14 @@
 package ch.globaz.al.businessimpl.processus.traitementimpl;
 
+import ch.globaz.al.business.constantes.ALCSPrestation;
+import ch.globaz.al.business.constantes.ALCSProcessus;
+import ch.globaz.al.business.constantes.ALConstDocument;
+import ch.globaz.al.business.constantes.ALConstPrestations;
+import ch.globaz.al.business.loggers.ProtocoleLogger;
+import ch.globaz.al.business.models.prestation.RecapitulatifEntrepriseImpressionComplexSearchModel;
+import ch.globaz.al.business.services.ALServiceLocator;
+import ch.globaz.al.businessimpl.processus.BusinessTraitement;
+import ch.globaz.al.utils.ALFileCSVUtils;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.context.JadeThread;
 import globaz.jade.exception.JadeApplicationException;
@@ -11,22 +20,9 @@ import globaz.jade.publish.client.JadePublishDocument;
 import globaz.jade.publish.client.JadePublishServerFacade;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
 import globaz.jade.publish.message.JadePublishDocumentMessage;
+
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-import ch.globaz.al.business.constantes.ALCSPrestation;
-import ch.globaz.al.business.constantes.ALCSProcessus;
-import ch.globaz.al.business.constantes.ALConstDocument;
-import ch.globaz.al.business.constantes.ALConstPrestations;
-import ch.globaz.al.business.loggers.ProtocoleLogger;
-import ch.globaz.al.business.models.prestation.RecapitulatifEntrepriseImpressionComplexSearchModel;
-import ch.globaz.al.business.services.ALServiceLocator;
-import ch.globaz.al.businessimpl.processus.BusinessTraitement;
-import ch.globaz.al.utils.ALFileCSVUtils;
+import java.util.*;
 
 public class ImpressionRecapsProvisoiresTraitement extends BusinessTraitement {
 
@@ -111,7 +107,7 @@ public class ImpressionRecapsProvisoiresTraitement extends BusinessTraitement {
             listRecapCsv = ALServiceLocator.getRecapitulatifEntrepriseImpressionService().loadArrayListCsv(
                     listResultatRecherche);
             if (listRecapCsv.size() != 0) {
-                recapCSV = ALServiceLocator.getRecapitulatifEntrepriseImpressionService().loadCSVDocument(listRecapCsv);
+                recapCSV = ALServiceLocator.getRecapitulatifEntrepriseImpressionService().loadCSVDocument(listRecapCsv, true);
 
             }
         } catch (Exception e) {

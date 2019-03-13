@@ -1,5 +1,11 @@
 package ch.globaz.vulpecula.process.is;
 
+import ch.globaz.al.business.constantes.ALConstDocument;
+import ch.globaz.al.business.constantes.ALConstPrestations;
+import ch.globaz.al.business.models.prestation.RecapitulatifEntrepriseImpressionComplexSearchModel;
+import ch.globaz.al.business.services.ALServiceLocator;
+import ch.globaz.al.utils.ALFileCSVUtils;
+import ch.globaz.vulpecula.businessimpl.services.is.RecapitulatifEntrepriseImpressionServiceImpl;
 import globaz.al.process.ALAbsrtactProcess;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
@@ -13,20 +19,9 @@ import globaz.jade.publish.client.JadePublishDocument;
 import globaz.jade.publish.client.JadePublishServerFacade;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
 import globaz.jade.publish.message.JadePublishDocumentMessage;
+
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-import ch.globaz.al.business.constantes.ALConstDocument;
-import ch.globaz.al.business.constantes.ALConstPrestations;
-import ch.globaz.al.business.models.prestation.RecapitulatifEntrepriseImpressionComplexSearchModel;
-import ch.globaz.al.business.services.ALServiceLocator;
-import ch.globaz.al.utils.ALFileCSVUtils;
-import ch.globaz.vulpecula.businessimpl.services.is.RecapitulatifEntrepriseImpressionServiceImpl;
+import java.util.*;
 
 /**
  * COPIE DE LA CLASSE PRESENTE DANS LES AF afin de pouvoir ajouter un champ supplémentaire liée au BMS.
@@ -291,7 +286,7 @@ public class ImpressionRecapitulatifs extends ALAbsrtactProcess {
             // publication document CSV
             listRecapCsv = recapitulatifEntrepriseImpressionServiceImpl.loadArrayListCsv(listResultatRecherche);
             if (listRecapCsv.size() != 0) {
-                recapCSV = recapitulatifEntrepriseImpressionServiceImpl.loadCSVDocument(listRecapCsv);
+                recapCSV = recapitulatifEntrepriseImpressionServiceImpl.loadCSVDocument(listRecapCsv, true);
 
             }
         } catch (Exception e) {
