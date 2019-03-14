@@ -407,7 +407,8 @@ public class InitAnnoncesRafamServiceImpl extends ALAbstractBusinessServiceImpl 
         annonce.setNumeroIDE(lastAnnonce.getNumeroIDE());
 
         if (!JadeStringUtil.isBlankOrZero(lastAnnonce.getCodeCentralePaysEnfant())) {
-            annonce.setCodeCentralePaysEnfant(lastAnnonce.getCodeCentralePaysEnfant());
+            Integer countryID = Integer.valueOf(lastAnnonce.getCodeCentralePaysEnfant());
+            annonce.setCodeCentralePaysEnfant(String.valueOf(ALRafamUtils.formatCountryIDToThreePositions(countryID)));
         }
 
         return annonce;
@@ -749,7 +750,8 @@ public class InitAnnoncesRafamServiceImpl extends ALAbstractBusinessServiceImpl 
         annonce.setBaseLegale(allowance.getAllowanceApplicableLegislation());
         annonce.setCanton(allowance.getAllowanceBenefitCanton());
         if (allowance.getAllowanceChildCountryResidence() != null) {
-            annonce.setCodeCentralePaysEnfant(String.valueOf(allowance.getAllowanceChildCountryResidence()));
+            annonce.setCodeCentralePaysEnfant(String.valueOf(
+                    ALRafamUtils.formatCountryIDToThreePositions(allowance.getAllowanceChildCountryResidence())));
         }
 
         annonce.setDebutDroit(ALDateUtils.XMLGregorianCalendarToGlobazDate(allowance.getAllowanceDateFrom()));
@@ -795,7 +797,8 @@ public class InitAnnoncesRafamServiceImpl extends ALAbstractBusinessServiceImpl 
         annonce.setBaseLegale(allowance.getAllowanceApplicableLegislation());
         annonce.setCanton(allowance.getAllowanceBenefitCanton());
         if (allowance.getAllowanceChildCountryResidence() != null) {
-            annonce.setCodeCentralePaysEnfant(String.valueOf(allowance.getAllowanceChildCountryResidence()));
+            annonce.setCodeCentralePaysEnfant(String.valueOf(
+                    ALRafamUtils.formatCountryIDToThreePositions(allowance.getAllowanceChildCountryResidence())));
         }
 
         if (!allowance.getAllowanceType().equals(RafamFamilyAllowanceType.ADOPTION.getCodeCentrale())
@@ -983,7 +986,8 @@ public class InitAnnoncesRafamServiceImpl extends ALAbstractBusinessServiceImpl 
         }
 
         if (message.getChild().getCountryId() != null) {
-            annonce.setCodeCentralePaysEnfant(String.valueOf(message.getChild().getCountryId()));
+            annonce.setCodeCentralePaysEnfant(
+                    String.valueOf(ALRafamUtils.formatCountryIDToThreePositions(message.getChild().getCountryId())));
         }
 
         // enfant

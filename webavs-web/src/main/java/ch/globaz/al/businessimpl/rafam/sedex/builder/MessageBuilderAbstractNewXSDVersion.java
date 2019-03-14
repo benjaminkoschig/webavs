@@ -32,7 +32,7 @@ public abstract class MessageBuilderAbstractNewXSDVersion {
     AnnonceRafamComplexModel annonce = null;
 
     /**
-     * Les codes de pays OFS commence à 8000 alors que nos code sont entre 100 et 9999
+     * Les codes de pays OFS commence à 8000 alors que nos code sont entre 100 et 999
      * Exemple :
      * Suisse OFS : 8100
      * Suisse Globaz : 100
@@ -111,10 +111,12 @@ public abstract class MessageBuilderAbstractNewXSDVersion {
      * @return L'annonce préparée. Retourne <code>null</code> si une erreur a été détectée pendant le traitement.
      *
      * @throws JadeApplicationException
-     *             Exception levée par la couche métier lorsqu'elle n'a pu effectuer l'opération souhaitée
+     *                                      Exception levée par la couche métier lorsqu'elle n'a pu effectuer
+     *                                      l'opération souhaitée
      * @throws JadePersistenceException
-     *             Exception levée lorsque le chargement ou la mise à jour en DB par la couche de persistence n'a pu se
-     *             faire
+     *                                      Exception levée lorsque le chargement ou la mise à jour en DB par la couche
+     *                                      de persistence n'a pu se
+     *                                      faire
      */
     public abstract Object build() throws JadeApplicationException, JadePersistenceException;
 
@@ -122,17 +124,19 @@ public abstract class MessageBuilderAbstractNewXSDVersion {
      * Récupère les informations de contact à enregistrer dans l'annonce
      *
      * @param noAffilie
-     *            Numéro d'affilié
+     *                      Numéro d'affilié
      * @param date
-     *            Date pour laquelle récupérer les informations
+     *                      Date pour laquelle récupérer les informations
      *
      * @return les informations de contact
      *
      * @throws JadeApplicationException
-     *             Exception levée par la couche métier lorsqu'elle n'a pu effectuer l'opération souhaitée
+     *                                      Exception levée par la couche métier lorsqu'elle n'a pu effectuer
+     *                                      l'opération souhaitée
      * @throws JadePersistenceException
-     *             Exception levée lorsque le chargement ou la mise à jour en DB par la couche de persistence n'a pu se
-     *             faire
+     *                                      Exception levée lorsque le chargement ou la mise à jour en DB par la couche
+     *                                      de persistence n'a pu se
+     *                                      faire
      */
     protected Contact getContact(String noAffilie, String date)
             throws JadePersistenceException, JadeApplicationException {

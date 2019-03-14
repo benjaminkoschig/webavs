@@ -389,7 +389,7 @@
 			<dependency>
 				<groupId>ch.globaz</groupId>
 				<artifactId>rafam-e-delegue</artifactId>
-				<version>3.0.0</version>
+				<version>3.0.2</version>
 			</dependency>
 
 			<dependency>
@@ -404,22 +404,22 @@
 				<version>${op.version}</version>
 			</dependency>
 
-			<dependency>
-				<groupId>ch.globaz</groupId>
-				<artifactId>globaz-services</artifactId>
-				<version>1.0.4</version>
-				<exclusions>
-					<!-- log4j is replaced with log4j-over-slf4j -->
-					<exclusion>
-						<artifactId>log4j</artifactId>
-						<groupId>log4j</groupId>
-					</exclusion>
-					<exclusion>
-						<artifactId>jaxws-rt</artifactId>
-						<groupId>com.sun.xml.ws</groupId>
-					</exclusion>
-				</exclusions>
-			</dependency>
+<!-- 			<dependency> -->
+<!-- 				<groupId>ch.globaz</groupId> -->
+<!-- 				<artifactId>globaz-services</artifactId> -->
+<!-- 				<version>1.0.4</version> -->
+<!-- 				<exclusions> -->
+<!-- 					log4j is replaced with log4j-over-slf4j -->
+<!-- 					<exclusion> -->
+<!-- 						<artifactId>log4j</artifactId> -->
+<!-- 						<groupId>log4j</groupId> -->
+<!-- 					</exclusion> -->
+<!-- 					<exclusion> -->
+<!-- 						<artifactId>jaxws-rt</artifactId> -->
+<!-- 						<groupId>com.sun.xml.ws</groupId> -->
+<!-- 					</exclusion> -->
+<!-- 				</exclusions> -->
+<!-- 			</dependency> -->
 
 			<dependency>
 				<groupId>ch.globaz</groupId>

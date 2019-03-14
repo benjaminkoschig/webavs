@@ -7,20 +7,21 @@ import ch.eahv_iv.xmlns.eahv_iv_fao_empl._0.ChildType;
 import ch.globaz.al.business.constantes.enumerations.RafamEtatAnnonce;
 import ch.globaz.al.business.constantes.enumerations.RafamEvDeclencheur;
 import ch.globaz.al.business.exceptions.model.annonces.rafam.ALAnnonceRafamException;
+import ch.globaz.al.utils.ALRafamUtils;
 
 public class ContextAnnonceRafamDelegue extends ContextAnnonceRafam {
     /**
      * Retourne une instance de <code>ContextAnnonceRafam</code>
-     * 
+     *
      * @param dossier
-     *            Dossier en cours de traitement
+     *                    Dossier en cours de traitement
      * @param droit
-     *            Droit en cours de traitement. Doit être lié au dossier
-     * 
+     *                    Droit en cours de traitement. Doit être lié au dossier
+     *
      * @return nouvelle instance du contexte
-     * 
+     *
      * @throws ALAnnonceRafamException
-     *             Exception levée si l'un des paramètres n'est pas valide.
+     *                                     Exception levée si l'un des paramètres n'est pas valide.
      */
     public static ContextAnnonceRafamDelegue getContext(RafamEvDeclencheur evDecl, RafamEtatAnnonce etat,
             String idEmployeur, ChildAllowanceType header, BeneficiaryType beneficiary, ChildType child,
@@ -90,6 +91,8 @@ public class ContextAnnonceRafamDelegue extends ContextAnnonceRafam {
         context.allowance.setAllowancePeriodeTo(allowance.getAllowancePeriodeTo());
         context.allowance.setAllowanceRefNumber(allowance.getAllowanceRefNumber());
         context.allowance.setAllowanceType(allowance.getAllowanceType());
+        context.allowance.setAllowanceChildCountryResidence(
+                ALRafamUtils.formatCountryIDToThreePositions(allowance.getAllowanceChildCountryResidence()));
 
         context.setEtat(etat);
         context.setEvDecl(evDecl);

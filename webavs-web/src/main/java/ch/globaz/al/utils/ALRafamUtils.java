@@ -34,6 +34,8 @@ import globaz.jade.smtp.JadeSmtpClient;
  */
 
 public class ALRafamUtils {
+
+    public static final Integer numberCountryIDCentrale = 8000;
     /**
      * @deprecated à usage temporaire en attendant le passage à Web@AF des caisses FVE, CVCI, CCVD
      */
@@ -187,11 +189,12 @@ public class ALRafamUtils {
 
         if (JadeStringUtil.isBlankOrZero(annonce.getAnnonceRafamModel().getCodeCentralePaysEnfant())) {
             if (last68 != null && !JadeStringUtil.isBlankOrZero(last68.getCodeCentralePaysEnfant())) {
-                newAllowance.setAllowanceChildCountryResidence(Integer.valueOf(last68.getCodeCentralePaysEnfant()));
+                newAllowance.setAllowanceChildCountryResidence(
+                        formatCountryIDToFourPositions(Integer.valueOf(last68.getCodeCentralePaysEnfant())));
             }
         } else {
-            newAllowance.setAllowanceChildCountryResidence(
-                    Integer.valueOf(annonce.getAnnonceRafamModel().getCodeCentralePaysEnfant()));
+            newAllowance.setAllowanceChildCountryResidence(formatCountryIDToFourPositions(
+                    Integer.valueOf(annonce.getAnnonceRafamModel().getCodeCentralePaysEnfant())));
         }
 
         ALRafamUtils.validateAllowanceType(newAllowance);
@@ -201,7 +204,7 @@ public class ALRafamUtils {
     /**
      *
      * @param beneficiaire
-     *            ch.ech.xmlns.ech_0104_69._3.ReceiptType.Beneficiary
+     *                         ch.ech.xmlns.ech_0104_69._3.ReceiptType.Beneficiary
      * @return
      * @throws JadeApplicationException
      */
@@ -399,9 +402,9 @@ public class ALRafamUtils {
             throw new ALRafamException("validateAllowanceType#allowanceType n'est pas valide");
         }
 
-//        if (!String.valueOf(allowance.getAllowanceChildCountryResidence()).matches("[0-9]{4}")) {
-//            throw new ALRafamException("validateAllowanceType#allowanceType n'est pas valide");
-//        }
+        // if (!String.valueOf(allowance.getAllowanceChildCountryResidence()).matches("[0-9]{4}")) {
+        // throw new ALRafamException("validateAllowanceType#allowanceType n'est pas valide");
+        // }
 
         return true;
     }
@@ -431,6 +434,20 @@ public class ALRafamUtils {
             throw new ALRafamException("validateChildType#childFamilyRelation n'est pas valide");
         }
         return true;
+    }
+
+    public static Integer formatCountryIDToThreePositions(Integer countryID) {
+        if (countryID != null && countryID >= 1000 && countryID <= 9999) {
+            return countryID - numberCountryIDCentrale;
+        }
+        return countryID;
+    }
+
+    public static Integer formatCountryIDToFourPositions(Integer countryID) {
+        if (countryID != null && countryID < 1000) {
+            return countryID + numberCountryIDCentrale;
+        }
+        return countryID;
     }
 
 }
