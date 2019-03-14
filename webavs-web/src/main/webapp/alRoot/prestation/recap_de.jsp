@@ -205,7 +205,7 @@
 <ct:ifhasright element="<%=userActionNew%>" crud="c">
 	<input class="btnCtrl" id="btnSend" type="button" value="Ins. GED" onclick="printRecap(true);">
 </ct:ifhasright>
-<input class="btnCtrl" id="btnParam" type="button" value="Param" onclick="openParam();">
+<input class="btnCtrl" id="btnParam" type="button" value="Param." onclick="openParam();">
 
 <%@ include file="/theme/detail_ajax/bodyErrors.jspf"%>
 <ct:menuChange displayId="menu" menuId="menuWEBAF" showTab="menu"/>
