@@ -76,9 +76,8 @@ function displayAjaxResult(result) {
 }
 
 function printRecap(inGed) {
-	
-	var checkBoxCharRecapNss = document.getElementById('charNssRecap');
-	ajaxQuery(globazGlobal.ACTION_GED+inGed+"&charNssRecap="+checkBoxCharRecapNss.checked, displayAjaxResult);
+
+	ajaxQuery(globazGlobal.ACTION_GED+inGed+"&charNssRecap="+globazGlobal.CHAR_NSS, displayAjaxResult);
 }
 
 function ajaxQuery(query,handlerStateFunction){

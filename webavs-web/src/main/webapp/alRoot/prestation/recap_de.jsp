@@ -45,6 +45,8 @@
 	globazGlobal.MSG_DELETE = "<%=JavascriptEncoder.getInstance().encode(objSession.getLabel("MESSAGE_SUPPRESSION"))%>";
 	globazGlobal.MESSAGE_GENDOSSIER_NOTID = "<%= JavascriptEncoder.getInstance().encode(objSession.getLabel("MESSAGE_GENDOSSIER_NOTID"))%>";
 	globazGlobal.ACTION_ADD_LINK = '<%=servletContext + mainServletPath + "?userAction=al.prestation.generationDossier.afficher&_method=add&idDossier="%>';
+	globazGlobal.MSG_PARAM = "<%=JavascriptEncoder.getInstance().encode(objSession.getLabel("RECAP_NSS_CSV"))%>";
+	globazGlobal.CHAR_NSS = ${viewBean.getIsCharNssRecap()};
 </script>
 
 <%@ include file="/theme/detail_ajax/bodyStart.jspf"%>
@@ -200,10 +202,10 @@
 
 <%@ include file="/theme/detail/bodyButtons.jspf"%>
 <input class="btnCtrl" id="btnPrint" type="button" value="Aperçu" onclick="printRecap(false);">
-<input type="checkbox" id="charNssRecap" name="charNssRecap">Ajout du caractère</input>
 <ct:ifhasright element="<%=userActionNew%>" crud="c">
 	<input class="btnCtrl" id="btnSend" type="button" value="Ins. GED" onclick="printRecap(true);">
 </ct:ifhasright>
+<input class="btnCtrl" id="btnParam" type="button" value="Param" onclick="openParam();">
 
 <%@ include file="/theme/detail_ajax/bodyErrors.jspf"%>
 <ct:menuChange displayId="menu" menuId="menuWEBAF" showTab="menu"/>
@@ -221,11 +223,12 @@
 
 <script type="text/javascript">
 window.onload = init;
- 
- function init(){
-	 var checkBoxCharRecapNss = document.getElementById('charNssRecap');
-	 if (<%=charNss%>){
-		 checkBoxCharRecapNss.checked = true;		 
-	 }	 
- }
+
+function openParam() {
+	if (window.confirm(globazGlobal.MSG_PARAM)){
+		globazGlobal.CHAR_NSS = true;
+	} else {
+		globazGlobal.CHAR_NSS = false;
+	}
+}
 </script>
