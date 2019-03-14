@@ -56,6 +56,12 @@ function updateNumAffilie(tag){
 	}	
 }
 
+//pour forcer l'affichage de l'écran affiliation en lecture par défaut
+$(document).submit(function() {
+	document.getElementById('_method').value = null;
+});
+
+
 </SCRIPT> 
 <%-- /tpl:put --%>
 <%@ include file="/theme/detail/bodyStart.jspf" %>
