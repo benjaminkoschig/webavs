@@ -79,6 +79,8 @@ public class APDonneeRegroupementDecompte {
                 Regroupement.STANDARD);
         APDonneeRegroupementDecompte.regroupementPrestationStandardEtACM_Ne.put(APTypeDePrestation.ACM_NE,
                 Regroupement.STANDARD);
+        APDonneeRegroupementDecompte.regroupementPrestationStandardEtACM_Ne.put(APTypeDePrestation.COMPCIAB,
+                Regroupement.STANDARD);
 
         APDonneeRegroupementDecompte.regroupementPrestationStandardEtACM_Ne.put(APTypeDePrestation.LAMAT,
                 Regroupement.LAMAT);

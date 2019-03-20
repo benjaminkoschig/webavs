@@ -79,7 +79,7 @@ public class APModuleCalculAPG implements IAPCalculateur {
                 || (IAPDroitLAPG.CS_SERVICE_INTERRUPTION_AVANT_ECOLE_SOUS_OFF.equals(baseCalcul.getTypeAllocation())
                         && (baseCalcul.getNombreEnfants() > 0))) {
             alloc = new APModuleCalculAllocServiceNormal();
-        } else if (isTypeAllocationJourIsole(baseCalcul.getTypeAllocation())) {
+        } else if (APModuleCalculAPG.isTypeAllocationJourIsole(baseCalcul.getTypeAllocation())) {
             APModuleCalculAllocJourIsole allocJoursIsole = new APModuleCalculAllocJourIsole();
             result = allocJoursIsole.calculerMontantAllocation(baseCalcul, refDataPrestation, session);
             return result;
@@ -91,7 +91,7 @@ public class APModuleCalculAPG implements IAPCalculateur {
         return result;
     }
 
-    private Boolean isTypeAllocationJourIsole(String csTypeAllocation) {
+    public static Boolean isTypeAllocationJourIsole(String csTypeAllocation) {
         String isFerciab = JadePropertiesService.getInstance().getProperty(APApplication.PROPERTY_IS_FERCIAB);
         return (IAPDroitLAPG.CS_DEMENAGEMENT_CIAB.equals(csTypeAllocation)
                 || IAPDroitLAPG.CS_NAISSANCE_CIAB.equals(csTypeAllocation)

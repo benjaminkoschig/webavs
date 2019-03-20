@@ -331,7 +331,7 @@ public class APPrestationHelper extends PRAbstractHelper {
             final APCalculateurPrestationStandardLamatAcmAlpha calculateur = new APCalculateurPrestationStandardLamatAcmAlpha();
             pViewBean = calculateur.calculPrestationAMAT_ACM(session, transaction, droit, action);
             
-            calculerComplement(session, transaction, (APDroitAPG)droit);
+            calculerComplement(session, transaction, droit);
 
             // calcul des ACM NE si la propriété TYPE_DE_PRESTATION_ACM vaut ACM_NE
             calculerPrestationsAcmNe(session, transaction, droit);
@@ -406,7 +406,7 @@ public class APPrestationHelper extends PRAbstractHelper {
             ((APCalculateurPrestationStandardLamatAcmAlpha) calculateur).calculerPrestation(apPreStaLamAcmAlpDat,
                     session, transaction);
 
-            calculerComplement(session, transaction, (APDroitAPG)droit);
+            calculerComplement(session, transaction, droit);
 
             calculerPrestationsAcmNe(session, transaction, droit);
 
@@ -460,7 +460,7 @@ public class APPrestationHelper extends PRAbstractHelper {
      * @param viewBean
      * @throws Exception
      */
-    private void calculerComplement(final BSession session, final BTransaction transaction, final APDroitAPG droit) throws Exception {
+    private void calculerComplement(final BSession session, final BTransaction transaction, final APDroitLAPG droit) throws Exception {
 
         if (IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE.equals(droit.getGenreService())) {
             return;
@@ -490,7 +490,7 @@ public class APPrestationHelper extends PRAbstractHelper {
             return;
         }
 
-        donnesPersistencePourCalcul.setDroit(droit);
+        donnesPersistencePourCalcul.setDroit((APDroitAPG) droit);
 
         // Conversion vers des objets métier (domain) pour le calculateur
         final List<Object> entiteesDomainPourCalcul = calculateurComplement
