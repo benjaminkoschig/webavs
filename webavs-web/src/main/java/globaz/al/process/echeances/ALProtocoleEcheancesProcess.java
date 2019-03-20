@@ -10,6 +10,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import ch.globaz.al.business.constantes.ALConstEcheances;
 import ch.globaz.al.business.constantes.enumerations.echeances.ALEnumDocumentGroup;
+import ch.globaz.al.business.exceptions.echeances.ALEcheancesException;
 import ch.globaz.al.business.models.droit.DroitEcheanceComplexModel;
 import ch.globaz.al.business.services.ALServiceLocator;
 import ch.globaz.al.business.services.echeances.DroitEcheanceService;
@@ -18,6 +19,7 @@ import ch.globaz.topaz.datajuicer.DocumentData;
 import globaz.al.process.ALAbsrtactProcess;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.common.JadeClassCastException;
+import globaz.jade.common.JadeException;
 import globaz.jade.context.JadeThread;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
@@ -29,6 +31,7 @@ import globaz.jade.publish.document.JadePublishDocumentInfo;
 import globaz.jade.service.exception.JadeServiceActivatorException;
 import globaz.jade.service.exception.JadeServiceLocatorException;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
+import globaz.jade.smtp.JadeSmtpClient;
 
 /**
  * Process pour l'échéances des droits, pour les listes provisoires
@@ -133,11 +136,12 @@ public class ALProtocoleEcheancesProcess extends ALAbsrtactProcess {
         JadePrintDocumentContainer container = new JadePrintDocumentContainer();
 
         // génération de la liste des dossiers avec avis d'échéance
+        boolean nePasCree = false;
         
         if (listeDroitUniqueEcheanceFin.size() > 0) {
             
             try {
-                publishDocument(container, listeDroitUniqueEcheanceFin);
+                nePasCree = publishDocument(container, listeDroitUniqueEcheanceFin);
 
             } catch (Exception e) {
                 JadeLogger.error(this, new Exception("Erreur à l'utilisation du service loadData", e));
@@ -173,7 +177,9 @@ public class ALProtocoleEcheancesProcess extends ALAbsrtactProcess {
 
         }
         try {
-            this.createDocuments(container);
+            if(!nePasCree) {
+                this.createDocuments(container);
+            }
         } catch (Exception e) {
             JadeLogger.error(this, new Exception("Erreur à l'utilisation du service updateDroitImprimerEcheance"));
             JadeThread.logError(this.getClass().getName() + ".process()",
@@ -183,9 +189,8 @@ public class ALProtocoleEcheancesProcess extends ALAbsrtactProcess {
 
     }
     
-    private void publishDocument(JadePrintDocumentContainer container, ArrayList<DroitEcheanceComplexModel> listeDroits)
-            throws JadePersistenceException, JadeApplicationException, JadeApplicationServiceNotAvailableException,
-            JadeServiceLocatorException, JadeServiceActivatorException, JadeClassCastException {
+    private boolean publishDocument(JadePrintDocumentContainer container, ArrayList<DroitEcheanceComplexModel> listeDroits)
+            throws Exception {
         
         if (ALEnumDocumentGroup.AUCUN.equals(groupPar)) {
             
@@ -252,14 +257,45 @@ public class ALProtocoleEcheancesProcess extends ALAbsrtactProcess {
                     container.addDocument(data, pubInfo);
                 }
             } else {
-//                JadeSmtpClient.getInstance().sendMail(
-//                        JadeThread.currentUserEmail(),
-//                        JadeThread.getMessage("al.echeances.titre.protocole.avisEcheance"),
-//                        JadeThread.getMessage("al.echeances.titre.protocole.avisEcheance") + " : "
-//                                + dateEcheance.substring(3), filesPath);
+                JadePublishDocumentInfo pubInfoTemp = new JadePublishDocumentInfo();
+                pubInfoTemp.setOwnerEmail(JadeThread.currentUserEmail());
+                pubInfoTemp.setOwnerId(JadeThread.currentUserId());
+                pubInfoTemp.setDocumentTitle(JadeThread.getMessage("al.echeances.titre.protocole.avisEcheance"));
+                pubInfoTemp.setDocumentSubject(JadeThread.getMessage("al.echeances.titre.protocole.avisEcheance"));
+                pubInfoTemp.setDocumentDate(JadeDateUtil.getGlobazFormattedDate(new Date()));
+                pubInfoTemp.setPublishDocument(false);
+                List<JadePublishDocumentInfo> infoDocs = new ArrayList<>();
+                for(DocumentData data:listData){
+                    JadePublishDocumentInfo pubInfo = pubInfoTemp.createCopy();
+                    infoDocs.add(pubInfo);
+                    container.addDocument(data, pubInfo);
+                }
+                this.createDocuments(container);
+                
+                if(!infoDocs.isEmpty()) {
+                    List<String> outputFiles = new ArrayList<>();
+                    for(JadePublishDocumentInfo docInfo : infoDocs) {
+                        long startTime = System.currentTimeMillis(); 
+                        while(docInfo.getCurrentFilePath() == null) {
+                            Thread.sleep(500);
+                            if(System.currentTimeMillis() - startTime>300000) {
+                                throw new ALEcheancesException("Time out");
+                            }
+                        }
+                        outputFiles.add(docInfo.getCurrentPathName());
+                    }
+                    String[] filesPath = new String[outputFiles.size()];
+                    outputFiles.toArray(filesPath);
+                    JadeSmtpClient.getInstance().sendMail(
+                            JadeThread.currentUserEmail(),
+                            JadeThread.getMessage("al.echeances.titre.protocole.avisEcheance"),
+                            JadeThread.getMessage("al.echeances.titre.protocole.avisEcheance") + " : "
+                                    + dateEcheance.substring(3), filesPath);
+                    return true;
+                }
             }
         }
-        
+        return false;
     }
     
     public void setAdiExclu(Boolean adiExclu) {
@@ -289,6 +325,7 @@ public class ALProtocoleEcheancesProcess extends ALAbsrtactProcess {
     public void setMailSepare(Boolean mailSepare) {
         this.mailSepare = mailSepare;
     }
+    
     
 
 }
