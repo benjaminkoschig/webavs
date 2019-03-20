@@ -12,6 +12,7 @@ import globaz.apg.db.droits.APDroitMaternite;
 import globaz.apg.db.droits.APSituationProfessionnelle;
 import globaz.apg.db.droits.APSituationProfessionnelleManager;
 import globaz.apg.exceptions.APRulesException;
+import globaz.apg.module.calcul.rev2005.APModuleCalculAPG;
 import globaz.globall.db.BSession;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
@@ -80,6 +81,9 @@ public class APCalculAcorUtil {
      * @return true si le calcul doit s'effectuer par ACOR, false sinon
      */
     public static boolean grantCalulAcorAPG(BSession session, APDroitAPG droit) throws Exception {
+        if(APModuleCalculAPG.isTypeAllocationJourIsole(droit.getGenreService())) {
+            return false;
+        }
         try {
 
             // -------------------------------------------------------------------
