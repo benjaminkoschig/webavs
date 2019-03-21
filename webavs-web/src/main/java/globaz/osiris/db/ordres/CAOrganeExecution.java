@@ -1,5 +1,23 @@
 package globaz.osiris.db.ordres;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.InputStream;
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import org.w3c.dom.Document;
 import globaz.framework.util.FWCurrency;
 import globaz.framework.util.FWMemoryLog;
 import globaz.framework.util.FWMessage;
@@ -57,28 +75,10 @@ import globaz.osiris.parser.IntReferenceBVRParser;
 import globaz.osiris.process.CAProcessBVR;
 import globaz.osiris.process.journal.CAComptabiliserJournal;
 import globaz.pyxis.util.TIIbanFormater;
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.InputStream;
-import java.io.Serializable;
-import java.math.BigDecimal;
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import org.w3c.dom.Document;
 
 /**
  * CA organe d'exécution Date de création : (13.12.2001 12:15:03)
- * 
+ *
  * @author: Brand
  */
 public class CAOrganeExecution extends BEntity implements Serializable, APIOrganeExecution {
@@ -264,7 +264,7 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
 
     /**
      * Contrôle que le compte annexe du plan corresponde à l'idExterneRole de la référence BVR
-     * 
+     *
      * @param refBVR
      * @param planRecouvrement
      * @param oper
@@ -284,7 +284,7 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
 
     /**
      * Si part pénale, le paiement est mis en erreur
-     * 
+     *
      * @author: sel Créé le : 13 févr. 07
      * @param planRecouvrement
      */
@@ -298,7 +298,7 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
 
     /**
      * Instancier un nouveau paiement BVR
-     * 
+     *
      * @author: sel Créé le : 9 févr. 07
      * @param context
      * @param fTotal
@@ -355,7 +355,7 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
 
     /**
      * Création des paiements BVR selon le sursis au paiement et Incrémenter le montant total
-     * 
+     *
      * @author: sel Créé le : 9 févr. 07
      * @param context
      * @param fTotal
@@ -398,7 +398,7 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
 
     /**
      * @param refBVR parser référence BVR
-     * @param jrn journal de création
+     * @param jrn    journal de création
      * @return section créée
      */
     private CASection createSection(IntReferenceBVRParser refBVR, CAJournal jrn) {
@@ -416,11 +416,11 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
 
     /**
      * Mise à jour du yellow report file (si on en fait et qu'on est pas en mode simulation)
-     * 
-     * @param state L'état souhaité.
+     *
+     * @param state          L'état souhaité.
      * @param idYellowReport L'id report file.
-     * @param isSimulation True si mode simulation.
-     * @param message Le message à donner si l'état souhaité est en erreur.
+     * @param isSimulation   True si mode simulation.
+     * @param message        Le message à donner si l'état souhaité est en erreur.
      * @throws Exception Une exception de la persistence.
      */
     private void majYellowReportFile(CAYellowReportFileState state, String idYellowReport, boolean isSimulation,
@@ -551,9 +551,8 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
     }
 
     private CACamt054GroupTxMessage manageNotificationBVR(globaz.osiris.process.CAProcessBVR context,
-            final List<String> idJournaux, final IntReferenceBVRParser refBVR,
-            final CACamt054Notification notification, final CAJournal journal,
-            final Map<String, CAOrganeExecution> organesExecutions) throws Exception {
+            final List<String> idJournaux, final IntReferenceBVRParser refBVR, final CACamt054Notification notification,
+            final CAJournal journal, final Map<String, CAOrganeExecution> organesExecutions) throws Exception {
 
         // Log de ce qu'il se passe pour un B Level avec ces transactions C/D Level
         final CACamt054GroupTxMessage groupTxMessage = new CACamt054GroupTxMessage(notification);
@@ -667,7 +666,10 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
 
         /*** Si le même numéro d'adhérent n'est pas le même que l'organe d'exécution */
         if ((!getNoAdherentBVR().equals(groupTx.getNoAdherent()) && CACamt054DefinitionType.BVR.equals(type))
-                || (!getNoAdherent().equals(groupTx.getNoAdherent()) && CACamt054DefinitionType.LSV.equals(type))) {
+                || genre.equals(APIOrganeExecution.POSTE) && (!getNoAdherent().equals(groupTx.getNoAdherent())
+                        && CACamt054DefinitionType.LSV.equals(type))
+                || genre.equals(APIOrganeExecution.BANQUE) && (!getNoAdherentBVR().equals(groupTx.getNoAdherent())
+                        && CACamt054DefinitionType.LSV.equals(type))) {
 
             String noAdherentOrganeExecution = getNoAdherentBVR();
             if (CACamt054DefinitionType.LSV.equals(type)) {
@@ -714,8 +716,8 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
 
         // Vérifier le nombre de transactions
         if (nbTransactionTotal != groupTx.getNbTransactions()) {
-            groupTxMessage.addMessage(Level.SEVERE, getSession().getLabel("5354") + " " + nbTransactionTotal + " / "
-                    + groupTx.getNbTransactions());
+            groupTxMessage.addMessage(Level.SEVERE,
+                    getSession().getLabel("5354") + " " + nbTransactionTotal + " / " + groupTx.getNbTransactions());
         }
 
         FWCurrency montantControle = groupTx.getCtrlAmount();
@@ -788,7 +790,8 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
         }
     }
 
-    private void transformMemoryLogToDetailMessage(FWMemoryLog memoryLog, final CACamt054DetailMessage txDetailMessage) {
+    private void transformMemoryLogToDetailMessage(FWMemoryLog memoryLog,
+            final CACamt054DetailMessage txDetailMessage) {
 
         final List<Object> messagesToVector = Arrays.asList(memoryLog.getMessagesToVector().toArray());
 
@@ -830,8 +833,8 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
             try {
                 if (retrieveFromDataBase) {
                     JadeFsFacade.copyFile(
-                            "jdbc://" + Jade.getInstance().getDefaultJdbcSchema() + "/" + context.getFileName(), Jade
-                                    .getInstance().getHomeDir() + "work/" + context.getFileName());
+                            "jdbc://" + Jade.getInstance().getDefaultJdbcSchema() + "/" + context.getFileName(),
+                            Jade.getInstance().getHomeDir() + "work/" + context.getFileName());
                 }
 
                 fileInput = new FileInputStream(Jade.getInstance().getHomeDir() + "work/" + context.getFileName());
@@ -846,7 +849,7 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
 
     /**
      * count the total number of transaction into all groups
-     * 
+     *
      * @param listGroupeBvr
      * @return
      */
@@ -862,7 +865,7 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
 
     /**
      * Ajouter les nouvelles informations remontées du header du bloc xml du camt054
-     * 
+     *
      * @param groupe
      * @param jrn
      * @throws Exception
@@ -1003,8 +1006,8 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
                     this.getClass().getName());
             getMemoryLog().logMessage("5342", String.valueOf(totTransactionErreur), FWMessage.INFORMATION,
                     this.getClass().getName());
-            getMemoryLog()
-                    .logMessage("5347", fTotal.toStringFormat(), FWMessage.INFORMATION, this.getClass().getName());
+            getMemoryLog().logMessage("5347", fTotal.toStringFormat(), FWMessage.INFORMATION,
+                    this.getClass().getName());
 
             // Libérer le reader
             try {
@@ -1022,9 +1025,9 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
 
     /**
      * Date de création : (18.02.2002 10:55:57)
-     * 
+     *
      * @param context
-     *            globaz.osiris.process.CAProcessBVR
+     *                    globaz.osiris.process.CAProcessBVR
      */
     public List<String> executeBVR(globaz.osiris.process.CAProcessBVR context) {
 
@@ -1054,9 +1057,9 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
 
     /**
      * Insérez la description de la méthode ici. Date de création : (18.02.2002 10:55:57)
-     * 
+     *
      * @param context
-     *            globaz.osiris.process.CAProcessLSV
+     *                    globaz.osiris.process.CAProcessLSV
      */
     public void executeLSV(globaz.osiris.process.CAProcessLSV context) {
 
@@ -1124,9 +1127,9 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
 
     }
 
-    private CACamt054GroupTxMessage manageNotificationLSV(globaz.osiris.process.CAProcessLSV context,
-            CAJournal journal, CACamt054Notification notification,
-            final Map<String, CAOrganeExecution> organesExecutions, IntReferenceBVRParser parser) throws Exception {
+    private CACamt054GroupTxMessage manageNotificationLSV(globaz.osiris.process.CAProcessLSV context, CAJournal journal,
+            CACamt054Notification notification, final Map<String, CAOrganeExecution> organesExecutions,
+            IntReferenceBVRParser parser) throws Exception {
 
         final CACamt054GroupTxMessage groupTxMessage = new CACamt054GroupTxMessage(notification);
         CACamt054Statistiques statistiques = new CACamt054Statistiques();
@@ -1184,10 +1187,8 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
 
         /*** Seule la devise CHF est acceptée */
         if (type == CACamt054DefinitionType.LSV && !validationCodeMonnaie(groupTx.getCtrlCodeMonnaie())) {
-            groupTxMessage.addMessage(
-                    Level.SEVERE,
-                    MessageFormat.format(FWMessageFormat.prepareQuotes(getSession().getLabel("5411"), false),
-                            groupTx.getStatus()));
+            groupTxMessage.addMessage(Level.SEVERE, MessageFormat
+                    .format(FWMessageFormat.prepareQuotes(getSession().getLabel("5411"), false), groupTx.getStatus()));
             isValid &= false;
         }
 
@@ -1200,8 +1201,8 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
             final IntBVRPojo txDetail, final FWCurrency montantTotal, CAJournal jrn, IntReferenceBVRParser parser,
             CACamt054Statistiques statistiques) {
 
-        final CACamt054DetailMessage txDetailMessage = new CACamt054DetailMessage(txDetail, getNumeroReferenceBrut(
-                txDetail, getIdTypeTraitementLS()));
+        final CACamt054DetailMessage txDetailMessage = new CACamt054DetailMessage(txDetail,
+                getNumeroReferenceBrut(txDetail, getIdTypeTraitementLS()));
 
         try {
             final String numReference = getNumeroRefLSV(txDetail, getIdTypeTraitementLS());
@@ -1277,8 +1278,8 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
         oper.setMontant(txDetail.getMontant());
     }
 
-    private void doStatsAndOthersThings(final globaz.osiris.process.CAProcessLSV context,
-            final FWCurrency montantTotal, CACamt054Statistiques statistiques, final CARecouvrement oper) {
+    private void doStatsAndOthersThings(final globaz.osiris.process.CAProcessLSV context, final FWCurrency montantTotal,
+            CACamt054Statistiques statistiques, final CARecouvrement oper) {
         if (oper.getMemoryLog().hasErrors()) {
             statistiques.incNbTxErrors();
             statistiques.incTotTransactionErrors();
@@ -1373,11 +1374,11 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
             // Instancier un stream de lecture
             try {
                 JadeFsFacade.copyFile(
-                        "jdbc://" + Jade.getInstance().getDefaultJdbcSchema() + "/" + context.getFileName(), Jade
-                                .getInstance().getHomeDir() + "work/" + context.getFileName());
+                        "jdbc://" + Jade.getInstance().getDefaultJdbcSchema() + "/" + context.getFileName(),
+                        Jade.getInstance().getHomeDir() + "work/" + context.getFileName());
 
-                parser.setInputReader(new BufferedReader(new FileReader(new File(Jade.getInstance().getHomeDir()
-                        + "work/" + context.getFileName()))));
+                parser.setInputReader(new BufferedReader(
+                        new FileReader(new File(Jade.getInstance().getHomeDir() + "work/" + context.getFileName()))));
             } catch (FileNotFoundException ex) {
                 _addError(context.getTransaction(), getSession().getLabel("5264") + " " + context.getFileName());
                 return;
@@ -1474,8 +1475,8 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
                             oper.setIdCompteAnnexe(refLSV.getIdCompteAnnexe());
                             oper.setIdSection(refLSV.getIdSection());
                         } catch (Exception e) {
-                            getMemoryLog()
-                                    .logMessage("5334", e.toString(), FWMessage.ERREUR, this.getClass().getName());
+                            getMemoryLog().logMessage("5334", e.toString(), FWMessage.ERREUR,
+                                    this.getClass().getName());
                         }
 
                         // Demander une validation sur la base des informations
@@ -1593,10 +1594,10 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
             // Indiquer les statistique
             getMemoryLog().logMessage("5340", String.valueOf(lNombreTr), FWMessage.INFORMATION,
                     this.getClass().getName());
-            getMemoryLog()
-                    .logMessage("5341", String.valueOf(lStatOK), FWMessage.INFORMATION, this.getClass().getName());
-            getMemoryLog()
-                    .logMessage("5342", String.valueOf(lStatKO), FWMessage.INFORMATION, this.getClass().getName());
+            getMemoryLog().logMessage("5341", String.valueOf(lStatOK), FWMessage.INFORMATION,
+                    this.getClass().getName());
+            getMemoryLog().logMessage("5342", String.valueOf(lStatKO), FWMessage.INFORMATION,
+                    this.getClass().getName());
             getMemoryLog().logMessage("5347", fTotalCredit.toStringFormat(), FWMessage.INFORMATION,
                     this.getClass().getName());
 
@@ -1620,7 +1621,7 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
 
     /**
      * Date de création : (08.02.2002 11:01:56)
-     * 
+     *
      * @return globaz.osiris.interfaceext.tiers.IntAdressePaiement
      */
     @Override
@@ -1655,7 +1656,7 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
 
     /**
      * Date de création : (08.02.2002 11:01:56)
-     * 
+     *
      * @return globaz.osiris.interfaceext.tiers.IntAdressePaiement
      */
     @Override
@@ -1694,7 +1695,7 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
 
     /**
      * Date de création : (10.01.2002 16:37:11)
-     * 
+     *
      * @return FWParametersSystemCode
      */
     public FWParametersSystemCode getCsGenre() {
@@ -1708,7 +1709,7 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
 
     /**
      * Date de création : (10.01.2002 16:38:30)
-     * 
+     *
      * @return FWParametersSystemCodeManager
      */
     public FWParametersSystemCodeManager getCsGenres() {
@@ -1724,7 +1725,7 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
 
     /**
      * Date de création : (10.01.2002 16:38:30)
-     * 
+     *
      * @return FWParametersSystemCodeManager
      */
     public FWParametersSystemCodeManager getCsTypeTraitementBVs() {
@@ -1740,7 +1741,7 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
 
     /**
      * Date de création : (10.01.2002 16:38:30)
-     * 
+     *
      * @return FWParametersSystemCodeManager
      */
     public FWParametersSystemCodeManager getCsTypeTraitementLSs() {
@@ -1797,7 +1798,7 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
 
     /**
      * Date de création : (18.02.2002 10:16:36)
-     * 
+     *
      * @return String
      */
     public String getIdTypeTraitementBV() {
@@ -1806,7 +1807,7 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
 
     /**
      * Date de création : (18.02.2002 10:16:50)
-     * 
+     *
      * @return String
      */
     public String getIdTypeTraitementLS() {
@@ -1815,7 +1816,7 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
 
     /**
      * Date de création : (18.02.2002 10:54:35)
-     * 
+     *
      * @return FWMemoryLog
      */
     public FWMemoryLog getMemoryLog() {
@@ -1833,7 +1834,7 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
 
     /**
      * Date de création : (28.11.2002 11:49:32)
-     * 
+     *
      * @return String
      */
     @Override
@@ -1843,7 +1844,7 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
 
     /**
      * Date de création : (21.02.2002 15:39:51)
-     * 
+     *
      * @return String
      */
     @Override
@@ -1858,7 +1859,7 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
 
     /**
      * Date de création : (21.02.2002 09:06:20)
-     * 
+     *
      * @return String
      */
     public String getNomClasseParserBvr() {
@@ -1867,7 +1868,7 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
 
     /**
      * Date de création : (28.11.2002 11:48:12)
-     * 
+     *
      * @return String
      */
     public String getNomClasseParserLSV() {
@@ -1901,7 +1902,7 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
 
     /**
      * Date de création : (10.01.2002 16:53:13)
-     * 
+     *
      * @return globaz.osiris.db.utils.CALog
      */
     public CARubrique getRubrique() {
@@ -1931,7 +1932,7 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
 
     /**
      * Date de création : (17.01.2002 16:36:04)
-     * 
+     *
      * @return FWParametersUserCode
      */
     public FWParametersUserCode getUcGenre() {
@@ -1957,7 +1958,7 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
 
     /**
      * Date de création : (17.01.2002 16:36:04)
-     * 
+     *
      * @return FWParametersUserCode
      */
     public FWParametersUserCode getUcTypeTraitementBV() {
@@ -1984,7 +1985,7 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
 
     /**
      * Date de création : (17.01.2002 16:36:04)
-     * 
+     *
      * @return FWParametersUserCode
      */
     public FWParametersUserCode getUcTypeTraitementLS() {
@@ -2103,7 +2104,7 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
     /**
      * Instancie un parser en fonction du type <br>
      * Instancie un stream de lecture
-     * 
+     *
      * @author: sel Créé le : 8 févr. 07
      * @param context
      * @param parser
@@ -2112,8 +2113,8 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
      * @throws JadeServiceActivatorException
      * @throws JadeClassCastException
      */
-    private IntBVRFlatFileParser initParser(CAProcessBVR context) throws JadeServiceLocatorException,
-            JadeServiceActivatorException, JadeClassCastException, Exception {
+    private IntBVRFlatFileParser initParser(CAProcessBVR context)
+            throws JadeServiceLocatorException, JadeServiceActivatorException, JadeClassCastException, Exception {
         IntBVRFlatFileParser parser = null;
 
         // Vérifier si fin de processus désirée
@@ -2133,12 +2134,12 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
             try {
                 if (retrieveFromDataBase) {
                     JadeFsFacade.copyFile(
-                            "jdbc://" + Jade.getInstance().getDefaultJdbcSchema() + "/" + context.getFileName(), Jade
-                                    .getInstance().getHomeDir() + "work/" + context.getFileName());
+                            "jdbc://" + Jade.getInstance().getDefaultJdbcSchema() + "/" + context.getFileName(),
+                            Jade.getInstance().getHomeDir() + "work/" + context.getFileName());
                 }
 
-                parser.setInputReader(new BufferedReader(new FileReader(new File(Jade.getInstance().getHomeDir()
-                        + "work/" + context.getFileName()))));
+                parser.setInputReader(new BufferedReader(
+                        new FileReader(new File(Jade.getInstance().getHomeDir() + "work/" + context.getFileName()))));
             } catch (FileNotFoundException ex) {
                 throw new Exception(getSession().getLabel("5326") + " " + Jade.getInstance().getDefaultJdbcSchema()
                         + "/" + context.getFileName());
@@ -2152,7 +2153,7 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
 
     /**
      * Instancier la classe qui permet de décomposer le numéro de référence
-     * 
+     *
      * @author: sel Créé le : 8 févr. 07
      * @param context
      * @param refBVR
@@ -2194,7 +2195,7 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
 
     /**
      * Exécuter le mise en compte
-     * 
+     *
      * @author: sel Créé le : 8 févr. 07
      * @param context
      * @param lStatKO
@@ -2259,9 +2260,9 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
 
     /**
      * Date de création : (18.02.2002 10:16:36)
-     * 
+     *
      * @param newIdTypeTraitementBV
-     *            String
+     *                                  String
      */
     public void setIdTypeTraitementBV(String newIdTypeTraitementBV) {
         idTypeTraitementBV = newIdTypeTraitementBV;
@@ -2270,9 +2271,9 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
 
     /**
      * Date de création : (18.02.2002 10:16:50)
-     * 
+     *
      * @param newIdTypeTraitementLS
-     *            String
+     *                                  String
      */
     public void setIdTypeTraitementLS(String newIdTypeTraitementLS) {
         idTypeTraitementLS = newIdTypeTraitementLS;
@@ -2281,9 +2282,9 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
 
     /**
      * Date de création : (18.02.2002 10:54:35)
-     * 
+     *
      * @param newMemoryLog
-     *            FWMemoryLog
+     *                         FWMemoryLog
      */
     public void setMemoryLog(FWMemoryLog newMemoryLog) {
         memoryLog = newMemoryLog;
@@ -2295,9 +2296,9 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
 
     /**
      * Date de création : (28.11.2002 11:49:32)
-     * 
+     *
      * @param newNoAdherent
-     *            String
+     *                          String
      */
     public void setNoAdherent(String newNoAdherent) {
         noAdherent = newNoAdherent;
@@ -2305,9 +2306,9 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
 
     /**
      * Date de création : (21.02.2002 15:39:51)
-     * 
+     *
      * @param newNoAdherentBVR
-     *            String
+     *                             String
      */
     public void setNoAdherentBVR(String newNoAdherentBVR) {
         noAdherentBVR = newNoAdherentBVR;
@@ -2319,9 +2320,9 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
 
     /**
      * Date de création : (21.02.2002 09:06:20)
-     * 
+     *
      * @param newNomClasseParserBvr
-     *            String
+     *                                  String
      */
     public void setNomClasseParserBvr(String newNomClasseParserBvr) {
         nomClasseParserBvr = newNomClasseParserBvr;
@@ -2329,9 +2330,9 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
 
     /**
      * Date de création : (28.11.2002 11:48:12)
-     * 
+     *
      * @param newNomClasseParserLSV
-     *            String
+     *                                  String
      */
     public void setNomClasseParserLSV(String newNomClasseParserLSV) {
         nomClasseParserLSV = newNomClasseParserLSV;
@@ -2355,7 +2356,7 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
 
     /**
      * Convertir total et nombre de transactions
-     * 
+     *
      * @author: sel Créé le : 9 févr. 07
      * @param lNombreTr
      * @param fTotal
@@ -2399,10 +2400,8 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
 
         if (planRecouvrement.isNew() || !planRecouvrement.getIdEtat().equals(CAPlanRecouvrement.CS_ACTIF)) {
             if (!planRecouvrement.getIdCompteAnnexe().equals(refBVR.getIdCompteAnnexe())) {
-                parser.getMemoryLog().logMessage(
-                        "7397",
-                        "plan idCA=" + planRecouvrement.getIdCompteAnnexe() + "<> refBVR idCA="
-                                + refBVR.getIdCompteAnnexe(), FWMessage.ERREUR, this.getClass().getName());
+                parser.getMemoryLog().logMessage("7397", "plan idCA=" + planRecouvrement.getIdCompteAnnexe()
+                        + "<> refBVR idCA=" + refBVR.getIdCompteAnnexe(), FWMessage.ERREUR, this.getClass().getName());
             }
 
             // Message d'erreur : Le plan n'existe pas ou est inactif
@@ -2418,7 +2417,7 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
 
     /**
      * Met à jour le total de transactions ok et en erreur
-     * 
+     *
      * @param paiements
      * @param i
      */
