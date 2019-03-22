@@ -82,11 +82,15 @@ public class REDonneesPourAttestationsFiscalesManager extends BManager {
         sql.append(")");
 
         if (isFiltrerParDateDeDecision()) {
-            sql.append(" AND ");
+            sql.append(" AND (");
             // et dont la date de la décision est antérieure ou égale à l'année fiscale
             sql.append(tableDecision).append(".").append(REDecisionEntity.FIELDNAME_DATE_DECISION);
             sql.append("<=");
             sql.append(forAnnee).append("1231");
+            sql.append(" OR ");
+            sql.append(tableDecision).append(".").append(REDecisionEntity.FIELDNAME_DATE_DECISION);
+            sql.append(" is NULL )");
+
         }
 
         sql.append(" AND ");

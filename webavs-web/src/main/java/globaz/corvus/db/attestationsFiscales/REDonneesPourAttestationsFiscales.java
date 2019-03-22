@@ -27,13 +27,13 @@ import globaz.pyxis.db.tiers.ITITiersDefTable;
  * <p>
  * Les données doivent être agrégées par une instance de {@link REDonneesPourAttestationsFiscalesManager}
  * <p>
- * 
+ *
  * @author PBA
  */
 public class REDonneesPourAttestationsFiscales extends BEntity {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
     public static final String ALIAS_PERSONNE_AVS_BASE_CALCUL_NO_AVS = "pers_avs_base_calcul_no_avs";
@@ -252,7 +252,7 @@ public class REDonneesPourAttestationsFiscales extends BEntity {
         sql.append("=");
         sql.append(tableDemandeRente).append(".").append(REDemandeRente.FIELDNAME_ID_RENTE_CALCULEE);
 
-        sql.append(" INNER JOIN ");
+        sql.append(" LEFT OUTER JOIN ");
         sql.append(tableDecision);
         sql.append(" ON ");
         sql.append(tableDemandeRente).append(".").append(REDemandeRente.FIELDNAME_ID_DEMANDE_RENTE);
@@ -352,19 +352,19 @@ public class REDonneesPourAttestationsFiscales extends BEntity {
         csSexeTiersBeneficiaire = statement
                 .dbReadNumeric(REDonneesPourAttestationsFiscales.ALIAS_PERSONNE_BENEFICIAIRE_CS_SEXE);
         csTypeRetenue = statement.dbReadNumeric(RERetenuesPaiement.FIELDNAME_TYPE_RETENU);
-        dateDebutDroit = PRDateFormater.convertDate_AAAAMM_to_MMxAAAA(statement
-                .dbReadNumeric(REPrestationsAccordees.FIELDNAME_DATE_DEBUT_DROIT));
-        dateDebutRetenue = PRDateFormater.convertDate_AAAAMM_to_MMxAAAA(statement
-                .dbReadNumeric(RERetenuesPaiement.FIELDNAME_DATE_DEBUT_RETENUE));
+        dateDebutDroit = PRDateFormater.convertDate_AAAAMM_to_MMxAAAA(
+                statement.dbReadNumeric(REPrestationsAccordees.FIELDNAME_DATE_DEBUT_DROIT));
+        dateDebutRetenue = PRDateFormater.convertDate_AAAAMM_to_MMxAAAA(
+                statement.dbReadNumeric(RERetenuesPaiement.FIELDNAME_DATE_DEBUT_RETENUE));
         dateDecesTiersBaseCalcul = statement
                 .dbReadDateAMJ(REDonneesPourAttestationsFiscales.ALIAS_PERSONNE_BASE_CALCUL_DATE_DECES);
         dateDecesTiersBeneficiaire = statement
                 .dbReadDateAMJ(REDonneesPourAttestationsFiscales.ALIAS_PERSONNE_BENEFICIAIRE_DATE_DECES);
         dateDecision = statement.dbReadDateAMJ(REDecisionEntity.FIELDNAME_DATE_DECISION);
-        dateFinDroit = PRDateFormater.convertDate_AAAAMM_to_MMxAAAA(statement
-                .dbReadString(REPrestationsAccordees.FIELDNAME_DATE_FIN_DROIT));
-        dateFinRetenue = PRDateFormater.convertDate_AAAAMM_to_MMxAAAA(statement
-                .dbReadNumeric(RERetenuesPaiement.FIELDNAME_DATE_FIN_RETENUE));
+        dateFinDroit = PRDateFormater
+                .convertDate_AAAAMM_to_MMxAAAA(statement.dbReadString(REPrestationsAccordees.FIELDNAME_DATE_FIN_DROIT));
+        dateFinRetenue = PRDateFormater
+                .convertDate_AAAAMM_to_MMxAAAA(statement.dbReadNumeric(RERetenuesPaiement.FIELDNAME_DATE_FIN_RETENUE));
         dateNaissanceTiersBaseCalcul = statement
                 .dbReadDateAMJ(REDonneesPourAttestationsFiscales.ALIAS_PERSONNE_BASE_CALCUL_DATE_NAISSANCE);
         dateNaissanceTiersBeneficiaire = statement
