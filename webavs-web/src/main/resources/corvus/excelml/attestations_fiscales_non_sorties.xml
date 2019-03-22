@@ -192,7 +192,7 @@
       ss:Name="label_retroactif"/></Cell>
     <Cell ss:StyleID="s74"><Data ss:Type="String">label_has_superposition</Data><NamedCell
       ss:Name="label_has_superposition"/></Cell>
-    <Cell ss:StyleID="s75"><Data ss:Type="String">label_is_ajournement</Data><NamedCell
+    <Cell ss:StyleID="s74"><Data ss:Type="String">label_is_ajournement</Data><NamedCell
       ss:Name="label_is_ajournement"/></Cell>
    </Row>
    <Row ss:AutoFitHeight="0">
