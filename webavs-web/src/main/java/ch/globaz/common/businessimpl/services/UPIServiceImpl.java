@@ -118,11 +118,4 @@ public class UPIServiceImpl implements UPIService {
         }
         return personResponse;
     }
-
-    private void getInfoPerson() {
-        // Création de la requête
-
-        upi.ch.ech.xmlns.ech_0085._1.GetInfoPersonResponseType infoPerson = new upi.ch.ech.xmlns.ech_0085._1.GetInfoPersonResponseType();
-
-    }
 }
