@@ -59,7 +59,7 @@
 		<sqlClassMapper.version>1.0.1</sqlClassMapper.version>
 		<op.version>5.0.4</op.version>
 		<globaz-external-xsd.version>1.2.6-JRE7</globaz-external-xsd.version>
-		<ebback-api.version>9.0.0</ebback-api.version>
+		<ebback-api.version>9.0.1-SNAPSHOT</ebback-api.version>
 
 
 		<!-- CONTINUOUS INTEGRATION -->
@@ -407,7 +407,7 @@
 			<dependency>
 				<groupId>ch.globaz</groupId>
 				<artifactId>globaz-services</artifactId>
-				<version>1.0.4</version>
+				<version>1.0.5</version>
 				<exclusions>
 					<!--log4j is replaced with log4j-over-slf4j-->
 					<exclusion>
