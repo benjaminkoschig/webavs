@@ -21,6 +21,7 @@ public class UPIServiceImpl implements UPIService {
     private static final short CODE_ERREUR_AVS_NON_TROUVE = 3;
     private static final short CODE_ERREUR_AVS_ANNULE = 4;
     private static final short CODE_ERREUR_SERVICE_NON_DISPONIBLE = 10;
+    private static final short UPI_ERREUR_ACCES_SERVICES_UPI = 99;
 
     @Override
     public InfosPersonResponseType getPerson(String nss) throws Exception {
@@ -113,7 +114,7 @@ public class UPIServiceImpl implements UPIService {
                 personResponse.setMessageErreur(session.getLabel("UPI_ERREUR_10_SERVICE_INDISPONIBLE"));
                 break;
             default:
-                personResponse.setCodeErreur("0");
+                personResponse.setCodeErreur(String.valueOf(UPI_ERREUR_ACCES_SERVICES_UPI));
                 personResponse.setMessageErreur(session.getLabel("UPI_ERREUR_ACCES_SERVICES_UPI"));
         }
         return personResponse;
