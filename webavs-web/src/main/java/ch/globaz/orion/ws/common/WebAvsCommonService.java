@@ -5,13 +5,15 @@ import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebResult;
 import javax.jws.WebService;
+import ch.globaz.common.business.models.InfosPersonResponseType;
+import ch.globaz.orion.ws.exceptions.WebAvsException;
 
 @WebService
 @HandlerChain(file = "handlers.xml")
 public interface WebAvsCommonService {
     /**
      * Permet de télécharger (tableau de byte) un fichier en fonction du path
-     * 
+     *
      * @param filepath
      * @return
      */
@@ -21,7 +23,7 @@ public interface WebAvsCommonService {
 
     /**
      * Permet de retourner la date de la retraite en fonction du sexe et de la date de naissance
-     * 
+     *
      * @param sexe
      * @param dateNaissance
      * @return
@@ -30,4 +32,15 @@ public interface WebAvsCommonService {
     @WebResult(name = "dateRetraite")
     public abstract String findDateRetraite(@WebParam(name = "sexe") String sexe,
             @WebParam(name = "dateNaissance") String dateNaissance);
+
+    /**
+     * Permet de retourner les informations d'une personne provenant des services web UPI en fonction de son NSS
+     *
+     * @param nss
+     * @return
+     * @throws Exception
+     */
+    @WebMethod
+    @WebResult(name = "informationsPersonne")
+    public abstract InfosPersonResponseType getInformationsPersonne(@WebParam(name = "nss") String nss) throws WebAvsException;
 }
