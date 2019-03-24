@@ -1,5 +1,15 @@
 package globaz.orion.process;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import ch.globaz.orion.business.models.acl.Acl;
+import ch.globaz.orion.businessimpl.services.acl.AclServiceImpl;
+import ch.globaz.xmlns.eb.acl.AclStatutEnum;
+import ch.globaz.xmlns.eb.acl.EBACLException_Exception;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.common.Jade;
 import globaz.jade.context.JadeThread;
@@ -13,26 +23,16 @@ import globaz.orion.utils.AclComparatorSuccursale;
 import globaz.pavo.db.acl.CIAnnonceCollaborateurService;
 import globaz.pavo.db.acl.CITreatAclEnCoursResult;
 import globaz.pavo.db.acl.CITreatAclSaisieResult;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import ch.globaz.orion.business.models.acl.Acl;
-import ch.globaz.orion.businessimpl.services.acl.AclServiceImpl;
-import ch.globaz.xmlns.eb.acl.AclStatutEnum;
-import ch.globaz.xmlns.eb.acl.EBACLException_Exception;
 
 /**
  * Processus de traitement des annonces de collaborateurs en provenance d'EBusiness
- * 
+ *
  * @author BJO
- * 
+ *
  */
 public class EBTreatAcl extends EBAbstractJadeJob {
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
     private static final String ATTESTATIONS_ASSURANCES_DOC_NAME = "ATT_ASS.pdf";
@@ -50,7 +50,7 @@ public class EBTreatAcl extends EBAbstractJadeJob {
     /**
      * Imprime sous forme d'une liste Excel le tableau d'annonces de collaborateurs passé en paramètre et retourne le
      * pathfile
-     * 
+     *
      * @param acl
      * @throws Exception
      */
@@ -100,10 +100,11 @@ public class EBTreatAcl extends EBAbstractJadeJob {
         for (int i = 0; i < aclEnCours.length; i++) {
             try {
                 // Vérifier l'état de l'ARC pour l'ACL (si la centrale à répondue à l'annonce)
-                treatAclEnCoursResult = CIAnnonceCollaborateurService.treatAclEnCours(getSession()
-                        .getCurrentThreadTransaction(), aclEnCours[i].getIdAnnonceCollaborateur(), aclEnCours[i]
-                        .getNumeroAssure(), aclEnCours[i].getNouveauNumero(), aclEnCours[i].getDateEngagement(),
-                        aclEnCours[i].getDuplicata(), aclEnCours[i].getNumeroAffilie(), aclEnCours[i].getNoEmploye(),
+                treatAclEnCoursResult = CIAnnonceCollaborateurService.treatAclEnCours(
+                        getSession().getCurrentThreadTransaction(), aclEnCours[i].getIdAnnonceCollaborateur(),
+                        aclEnCours[i].getNumeroAssure(), aclEnCours[i].getNouveauNumero(),
+                        aclEnCours[i].getDateEngagement(), aclEnCours[i].getDuplicata(),
+                        aclEnCours[i].getNumeroAffilie(), aclEnCours[i].getNoEmploye(),
                         aclEnCours[i].getNoSuccursale());
 
                 // Si une attestation pour la CIException a été imprimée
@@ -116,19 +117,17 @@ public class EBTreatAcl extends EBAbstractJadeJob {
                 // log et met le thread en erreur
                 JadeThread.logError(this.getClass().toString(), "Unable to treat the ACL en cours " + e.getMessage());
             } finally {
-                if (getSession().hasErrors()
-                        || getSession().getCurrentThreadTransaction().hasErrors()
-                        || threadOnError()
-                        || treatAclEnCoursResult.getArcStatut().equals(
-                                CIAnnonceCollaborateurService.ARC_STATUT_PROBLEME)) {
+                if (getSession().hasErrors() || getSession().getCurrentThreadTransaction().hasErrors()
+                        || threadOnError() || treatAclEnCoursResult.getArcStatut()
+                                .equals(CIAnnonceCollaborateurService.ARC_STATUT_PROBLEME)) {
                     JadeThread.rollbackSession();
 
                     // Mise à jour du statut de l'annonce ("En cours" -> "Problème")
                     AclServiceImpl.changeStatus(Integer.parseInt(aclEnCours[i].getIdAnnonceCollaborateur()),
                             AclStatutEnum.PROBLEME, getSession());
 
-                    JadeThread.logError(this.getClass().toString(), getSession().getCurrentThreadTransaction()
-                            .getErrors().toString());
+                    JadeThread.logError(this.getClass().toString(),
+                            getSession().getCurrentThreadTransaction().getErrors().toString());
 
                     // Suppression des logs d'erreur
                     getSession().getCurrentThreadTransaction().clearErrorBuffer();
@@ -159,10 +158,12 @@ public class EBTreatAcl extends EBAbstractJadeJob {
         // Traitement des ACL ayant le statut "Saisie"
         for (int i = 0; i < aclSaisie.length; i++) {
             try {
-                treatAclSaisieResult = CIAnnonceCollaborateurService.treatAclSaisie(getSession()
-                        .getCurrentThreadTransaction(), aclSaisie[i].getIdAnnonceCollaborateur(), aclSaisie[i]
-                        .getNumeroAssure(), aclSaisie[i].getDateEngagement(), aclSaisie[i].getDuplicata(), aclSaisie[i]
-                        .getNumeroAffilie(), aclSaisie[i].getNoEmploye(), aclSaisie[i].getNoSuccursale());
+                treatAclSaisieResult = CIAnnonceCollaborateurService.treatAclSaisie(
+                        getSession().getCurrentThreadTransaction(), aclSaisie[i].getIdAnnonceCollaborateur(),
+                        aclSaisie[i].getNumeroAssure(), aclSaisie[i].getDateEngagement(), aclSaisie[i].getDuplicata(),
+                        aclSaisie[i].getNumeroAffilie(), aclSaisie[i].getNoEmploye(), aclSaisie[i].getNoSuccursale(),
+                        aclSaisie[i].getNomEmploye(), aclSaisie[i].getPrenomEmploye(), aclSaisie[i].getDateNaissance(),
+                        aclSaisie[i].getSexeEmploye(), aclSaisie[i].getNationaliteEmploye());
 
                 // Récupération des paramètres retournés par treatAclSaisie
                 if (!JadeStringUtil.isBlank(treatAclSaisieResult.getNnssFindInNssra())) {
@@ -201,8 +202,8 @@ public class EBTreatAcl extends EBAbstractJadeJob {
                     AclServiceImpl.changeStatus(Integer.parseInt(aclSaisie[i].getIdAnnonceCollaborateur()),
                             AclStatutEnum.PROBLEME, getSession());
                     aclSaisie[i].setStatut(getSession().getLabel("ACL_STATUT_PROBLEME"));
-                    JadeThread.logError(this.getClass().toString(), getSession().getCurrentThreadTransaction()
-                            .getErrors().toString());
+                    JadeThread.logError(this.getClass().toString(),
+                            getSession().getCurrentThreadTransaction().getErrors().toString());
 
                     // Suppression des logs d'erreur
                     getSession().getCurrentThreadTransaction().clearErrorBuffer();
@@ -287,8 +288,8 @@ public class EBTreatAcl extends EBAbstractJadeJob {
                 docInfoAttestationsAssurances.setPublishDocument(true);
                 docInfoAttestationsAssurances.setDocumentTitle(getSession().getLabel("ATT_ASSURANCES_ACL_TITRE"));
                 docInfoAttestationsAssurances.setDocumentSubject(getSession().getLabel("ATT_ASSURANCES_ACL_DOC_SUJET"));
-                JadePublishDocument publishDocAttestationsAssurances = new JadePublishDocument(Jade.getInstance()
-                        .getPersistenceDir() + EBTreatAcl.ATTESTATIONS_ASSURANCES_DOC_NAME,
+                JadePublishDocument publishDocAttestationsAssurances = new JadePublishDocument(
+                        Jade.getInstance().getPersistenceDir() + EBTreatAcl.ATTESTATIONS_ASSURANCES_DOC_NAME,
                         docInfoAttestationsAssurances);
                 JadePublishServerFacade
                         .publishDocument(new JadePublishDocumentMessage(publishDocAttestationsAssurances));

@@ -24,6 +24,10 @@ public class Acl implements EBAttestationComparatorInterface {
     private String refInterne = "";// acl+idAnnonceCollaborateur dans Ebusiness
     private String statut = null;// saisie,en cours, terminé ou problème
     private String typeArc = "?";// arc générés
+    private String nomEmploye = null;
+    private String prenomEmploye = null;
+    private String sexeEmploye = null;
+    private String nationaliteEmploye = null;
 
     public String getDateEngagement() {
         return dateEngagement;
@@ -131,7 +135,7 @@ public class Acl implements EBAttestationComparatorInterface {
 
     /**
      * @param noEmploye
-     *            the noEmploye to set
+     *                      the noEmploye to set
      */
     public void setNoEmploye(String noEmploye) {
         this.noEmploye = noEmploye;
@@ -143,7 +147,7 @@ public class Acl implements EBAttestationComparatorInterface {
 
     /**
      * @param noSuccursale
-     *            the noSuccursale to set
+     *                         the noSuccursale to set
      */
     public void setNoSuccursale(String noSuccursale) {
         this.noSuccursale = noSuccursale;
@@ -171,5 +175,37 @@ public class Acl implements EBAttestationComparatorInterface {
 
     public void setTypeArc(String typeArc) {
         this.typeArc = typeArc;
+    }
+
+    public String getNomEmploye() {
+        return nomEmploye;
+    }
+
+    public String getPrenomEmploye() {
+        return prenomEmploye;
+    }
+
+    public void setNomEmploye(String nomEmploye) {
+        this.nomEmploye = nomEmploye;
+    }
+
+    public void setPrenomEmploye(String prenomEmploye) {
+        this.prenomEmploye = prenomEmploye;
+    }
+
+    public String getSexeEmploye() {
+        return sexeEmploye;
+    }
+
+    public String getNationaliteEmploye() {
+        return nationaliteEmploye;
+    }
+
+    public void setSexeEmploye(String sexeEmploye) {
+        this.sexeEmploye = sexeEmploye;
+    }
+
+    public void setNationaliteEmploye(String nationaliteEmploye) {
+        this.nationaliteEmploye = nationaliteEmploye;
     }
 }

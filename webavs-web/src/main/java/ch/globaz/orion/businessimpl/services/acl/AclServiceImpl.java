@@ -1,6 +1,5 @@
 package ch.globaz.orion.businessimpl.services.acl;
 
-import globaz.globall.db.BSession;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -10,6 +9,7 @@ import ch.globaz.xmlns.eb.acl.ACLService;
 import ch.globaz.xmlns.eb.acl.AclFindResultBeanForWebAvs;
 import ch.globaz.xmlns.eb.acl.AclStatutEnum;
 import ch.globaz.xmlns.eb.acl.EBACLException_Exception;
+import globaz.globall.db.BSession;
 
 public class AclServiceImpl {
 
@@ -54,12 +54,34 @@ public class AclServiceImpl {
         acl.setNouveauNumero(annonceCollaborateur.getNouveauNumeroAvs());
         acl.setNoEmploye(annonceCollaborateur.getNoEmploye());
         acl.setNoSuccursale(annonceCollaborateur.getNoSuccursale());
+        acl.setDateNaissance(AclServiceImpl.parseDateNaiss(annonceCollaborateur.getDateNaissanceEmploye()));
+        acl.setNomEmploye(annonceCollaborateur.getNomEmploye());
+        acl.setPrenomEmploye(annonceCollaborateur.getPrenomEmploye());
+        acl.setSexeEmploye(parseSexeToNumSexe(annonceCollaborateur.getSexeEmploye()));
+        acl.setNationaliteEmploye(annonceCollaborateur.getNationaliteEmploye());
         return acl;
+    }
+
+    private static String parseSexeToNumSexe(String sexeEmploye) {
+        if ("F".equals(sexeEmploye)) {
+            return "2";
+        } else {
+            return "1";
+        }
     }
 
     private static String parseDate(XMLGregorianCalendar date) {
         return AclServiceImpl.mapLength(date.getDay()) + "." + AclServiceImpl.mapLength(date.getMonth()) + "."
                 + String.valueOf(date.getYear());
+
+    }
+
+    private static String parseDateNaiss(XMLGregorianCalendar date) {
+        if (date != null) {
+            return AclServiceImpl.mapLength(date.getDay()) + "." + AclServiceImpl.mapLength(date.getMonth()) + "."
+                    + String.valueOf(date.getYear());
+        }
+        return null;
 
     }
 
