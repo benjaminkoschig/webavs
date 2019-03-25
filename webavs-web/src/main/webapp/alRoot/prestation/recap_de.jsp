@@ -30,7 +30,7 @@
 
 <link rel="stylesheet" type="text/css" href="<%=servletContext%>/theme/widget.css" />
 <script type="text/javascript" src="<%=servletContext%>/scripts/widget/globazwidget.js"></script>
-<script type="text/javascript" src="<%=servletContext%>/scripts/ajax/DefaultTableAjax.js" /></script>
+<script type="text/javascript" src="<%=servletContext%>/scripts/ajax/DefaultTableAjax.js"></script>
 <script type="text/javascript" src="<%=rootPath %>/scripts/prestation/RecapPart.js"></script>
 <SCRIPT type="text/javascript" src="<%=servletContext%>/scripts/params.js"></SCRIPT>
 <SCRIPT type="text/javascript" src="<%=servletContext%>/scripts/actionsForButtons.js"></SCRIPT>
@@ -46,6 +46,8 @@
 	globazGlobal.MESSAGE_GENDOSSIER_NOTID = "<%= JavascriptEncoder.getInstance().encode(objSession.getLabel("MESSAGE_GENDOSSIER_NOTID"))%>";
 	globazGlobal.ACTION_ADD_LINK = '<%=servletContext + mainServletPath + "?userAction=al.prestation.generationDossier.afficher&_method=add&idDossier="%>';
 	globazGlobal.MSG_PARAM = "<%=JavascriptEncoder.getInstance().encode(objSession.getLabel("RECAP_NSS_CSV"))%>";
+	globazGlobal.OUI = "<%=JavascriptEncoder.getInstance().encode(objSession.getLabel("JSP_POPUP_OUI"))%>";
+	globazGlobal.NON = "<%=JavascriptEncoder.getInstance().encode(objSession.getLabel("JSP_POPUP_NON"))%>";
 	globazGlobal.CHAR_NSS = ${viewBean.getIsCharNssRecap()};
 </script>
 
@@ -199,6 +201,9 @@
 		</div>
 	</td>
 </tr>
+<div id="dialog" style="display: none" align="center">
+	<%=JavascriptEncoder.getInstance().encode(objSession.getLabel("RECAP_NSS_CSV"))%>
+</div>
 
 <%@ include file="/theme/detail/bodyButtons.jspf"%>
 <input class="btnCtrl" id="btnPrint" type="button" value="Aperçu" onclick="printRecap(false);">
@@ -224,11 +229,36 @@
 <script type="text/javascript">
 window.onload = init;
 
+$(function () {
+
+});
+
 function openParam() {
-	if (window.confirm(globazGlobal.MSG_PARAM)){
-		globazGlobal.CHAR_NSS = true;
-	} else {
-		globazGlobal.CHAR_NSS = false;
-	}
+	$("#dialog").dialog({
+		modal: true,
+		title: "Confirmation",
+		width: 350,
+		height: 160,
+		buttons: [
+			{
+				id: "Delete",
+				text: globazGlobal.OUI,
+				click: function () {
+					globazGlobal.CHAR_NSS = true;
+					alert("Vous venez d'activer le char.");
+					$(this).dialog('close');
+				}
+			},
+			{
+				id: "Cancel",
+				text: globazGlobal.NON,
+				click: function () {
+					globazGlobal.CHAR_NSS = false;
+					alert("Vous venez de désactiver le char.");
+					$(this).dialog('close');
+				}
+			}
+		]
+	});
 }
 </script>
