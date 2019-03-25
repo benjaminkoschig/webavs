@@ -66,7 +66,7 @@ public class APCalculateurComplement implements IAPPrestationCalculateur<APCalcu
             BigDecimal montant = calculateur.calculerMontant(salaireMensuel,
                     Integer.valueOf(prestation.getNombreJoursSoldes()));
             BigDecimal montantBrut = arrondir(montant);
-            BigDecimal montantBrutFederal = new BigDecimal(prestation.getMontantBrut());
+            BigDecimal montantBrutFederal = getMontantFederal(prestation);
             if (montantBrut.compareTo(montantBrutFederal) > 0) {
                 montantBrut = montantBrut.subtract(montantBrutFederal);
                 prestationCalculeeAPersister.setMontantBrut(montantBrut);
@@ -136,6 +136,15 @@ public class APCalculateurComplement implements IAPPrestationCalculateur<APCalcu
         }
 
         return resultatCalcul;
+    }
+
+    private BigDecimal getMontantFederal(APPrestation prestation) {
+        BigDecimal montantBrutFederal = new BigDecimal(prestation.getMontantBrut());
+        BigDecimal montantAllocationExploitation = new BigDecimal(prestation.getMontantAllocationExploitation());
+        BigDecimal nbJours = new BigDecimal(prestation.getNombreJoursSoldes());
+        montantAllocationExploitation = montantAllocationExploitation.multiply(nbJours);
+        BigDecimal fraisGarde = new BigDecimal(prestation.getFraisGarde());
+        return montantBrutFederal.subtract(montantAllocationExploitation).subtract(fraisGarde);
     }
     
     private APCotisationData creerCotisation(final BigDecimal montantBrutRepartition, final BigDecimal tauxAc,
@@ -209,9 +218,7 @@ public class APCalculateurComplement implements IAPPrestationCalculateur<APCalcu
     /**
      * Créé l'objet en fonction des entités situation professionnelle et droit
      * 
-     * @param idDroit
-     * @param montantJournalierAcm
-     * @param session
+     * @param donneesPersistancePourCalcul
      * @return APPrestationStandardData
      * @throws JadePersistenceException
      * @throws Exception

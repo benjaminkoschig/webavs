@@ -80,10 +80,15 @@ public class APModuleCalculAllocJourIsole extends AAPModuleCalculSalaireJournali
 
     private ECanton getCantonFromSituationProf(APBaseCalcul baseCalcul, BSession session) throws Exception {
         // Récupération des deux propriétés
-        String idAssuranceJU = JadePropertiesService.getInstance()
-                .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_JU_ID);
-        String idAssuranceBE = JadePropertiesService.getInstance()
-                .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_BE_ID);
+        String idAssuranceParitaireJU = JadePropertiesService.getInstance()
+                .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_PARITAIRE_JU_ID);
+        String idAssurancePersonnelJU = JadePropertiesService.getInstance()
+                .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_PERSONNEL_JU_ID);
+
+        String idAssuranceParitaireBE = JadePropertiesService.getInstance()
+                .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_PARITAIRE_BE_ID);
+        String idAssurancePersonnelBE = JadePropertiesService.getInstance()
+                .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_PERSONNEL_BE_ID);
 
         // Parcours des IDs des situations professionnelles de la base de calcul
         for (Iterator iter = baseCalcul.getBasesCalculSituationProfessionnel().iterator(); iter.hasNext();) {
@@ -104,9 +109,11 @@ public class APModuleCalculAllocJourIsole extends AAPModuleCalculSalaireJournali
                 List<IAFAssurance> listAssurance = APRechercherAssuranceFromDroitCotisationService
                         .rechercher(sitPro.getIdDroit(), bcSitProf.getIdAffilie(), session);
                 for (IAFAssurance assurance : listAssurance) {
-                    if (assurance.getAssuranceId().equals(idAssuranceBE)) {
+                    if (assurance.getAssuranceId().equals(idAssuranceParitaireBE)
+                            || assurance.getAssuranceId().equals(idAssurancePersonnelBE)) {
                         return ECanton.BE;
-                    } else if (assurance.getAssuranceId().equals(idAssuranceJU)) {
+                    } else if (assurance.getAssuranceId().equals(idAssuranceParitaireJU)
+                            || assurance.getAssuranceId().equals(idAssurancePersonnelJU) ){
                         return ECanton.JU;
                     }
                 }

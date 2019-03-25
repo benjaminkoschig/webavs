@@ -153,8 +153,10 @@ public class APApplication extends PRAbstractApplication {
     /** Service de la ged a utiliser */
     public static final String PROPERTY_SERVICE_GED = "service.ged";
     /** ID Assurance pour les compléments CIAB */
-    public static final String PROPERTY_ASSURANCE_COMPLEMENT_JU_ID = "apg.assurance.complementCIAB.ju.id";
-    public static final String PROPERTY_ASSURANCE_COMPLEMENT_BE_ID = "apg.assurance.complementCIAB.be.id";
+    public static final String PROPERTY_ASSURANCE_COMPLEMENT_PARITAIRE_JU_ID = "apg.assurance.complementCIAB.ju.paritaire.id";
+    public static final String PROPERTY_ASSURANCE_COMPLEMENT_PERSONNEL_JU_ID = "apg.assurance.complementCIAB.ju.personnel.id";
+    public static final String PROPERTY_ASSURANCE_COMPLEMENT_PARITAIRE_BE_ID = "apg.assurance.complementCIAB.be.paritaire.id";
+    public static final String PROPERTY_ASSURANCE_COMPLEMENT_PERSONNEL_BE_ID = "apg.assurance.complementCIAB.be.personnel.id";
 
     /** Service de la ged a utiliser */
     public static final String PROPERTY_IS_FERCIAB = "apg.isFERCIAB";

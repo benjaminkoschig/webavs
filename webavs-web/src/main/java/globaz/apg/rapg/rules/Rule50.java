@@ -65,16 +65,24 @@ public class Rule50 extends Rule {
             for (APSitProJointEmployeur employeur : list) {
                 listAssurance = APRechercherAssuranceFromDroitCotisationService.rechercher(idDroit,
                         employeur.getIdAffilie(), getSession());
-                String idAssuranceJU = JadePropertiesService.getInstance()
-                        .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_JU_ID);
-                String idAssuranceBE = JadePropertiesService.getInstance()
-                        .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_BE_ID);
+                String idAssuranceParitaireJU = JadePropertiesService.getInstance()
+                        .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_PARITAIRE_JU_ID);
+                String idAssurancePersonnelJU = JadePropertiesService.getInstance()
+                        .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_PERSONNEL_JU_ID);
+
+                String idAssuranceParitaireBE = JadePropertiesService.getInstance()
+                        .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_PARITAIRE_BE_ID);
+                String idAssurancePersonnelBE = JadePropertiesService.getInstance()
+                        .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_PERSONNEL_BE_ID);
+
                 if (employeur.getIsVersementEmployeur()) {
                     isVersementEmployeur = true;
                 }
                 for (IAFAssurance assurance : listAssurance) {
-                    if ((assurance.getAssuranceId().equals(idAssuranceBE)
-                            || assurance.getAssuranceId().equals(idAssuranceJU))) {
+                    if (assurance.getAssuranceId().equals(idAssuranceParitaireJU)
+                            || assurance.getAssuranceId().equals(idAssurancePersonnelJU)
+                            || assurance.getAssuranceId().equals(idAssuranceParitaireBE)
+                            || assurance.getAssuranceId().equals(idAssurancePersonnelBE)) {
                         hasComplementCIAB = true;
                     }
 

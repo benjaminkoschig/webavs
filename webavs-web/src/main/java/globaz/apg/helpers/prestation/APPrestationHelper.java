@@ -511,16 +511,22 @@ public class APPrestationHelper extends PRAbstractHelper {
     private boolean isComplement(BSession session, String idDroit, List<APSitProJointEmployeur> listEmployeur)
             throws Exception {
         List<IAFAssurance> listAssurance;
-        String idAssuranceJU = JadePropertiesService.getInstance()
-                .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_JU_ID);
-        String idAssuranceBE = JadePropertiesService.getInstance()
-                .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_BE_ID);
+        String idAssuranceParitaireJU = JadePropertiesService.getInstance()
+                .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_PARITAIRE_JU_ID);
+        String idAssuranceParitaireBE = JadePropertiesService.getInstance()
+                .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_PARITAIRE_BE_ID);
+        String idAssurancePersonnelJU = JadePropertiesService.getInstance()
+                .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_PERSONNEL_JU_ID);
+        String idAssurancePersonnelBE = JadePropertiesService.getInstance()
+                .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_PERSONNEL_BE_ID);
         for (APSitProJointEmployeur employeur : listEmployeur) {
             listAssurance = APRechercherAssuranceFromDroitCotisationService.rechercher(idDroit,
                     employeur.getIdAffilie(), session);
             for (IAFAssurance assurance : listAssurance) {
-                if ((assurance.getAssuranceId().equals(idAssuranceBE)
-                        || assurance.getAssuranceId().equals(idAssuranceJU))) {
+                if (assurance.getAssuranceId().equals(idAssuranceParitaireJU)
+                        || assurance.getAssuranceId().equals(idAssurancePersonnelJU)
+                        || assurance.getAssuranceId().equals(idAssuranceParitaireBE)
+                        || assurance.getAssuranceId().equals(idAssurancePersonnelBE)) {
                     return true;
                 }
             }
@@ -1178,16 +1184,23 @@ public class APPrestationHelper extends PRAbstractHelper {
 
             // list les cantons
             Map<String, ECanton> mCanton = new HashMap<>();
-            String idAssuranceJU = JadePropertiesService.getInstance()
-                    .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_JU_ID);
-            String idAssuranceBE = JadePropertiesService.getInstance()
-                    .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_BE_ID);
+            String idAssuranceParitaireJU = JadePropertiesService.getInstance()
+                    .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_PARITAIRE_JU_ID);
+            String idAssurancePersonnelJU = JadePropertiesService.getInstance()
+                    .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_PERSONNEL_JU_ID);
+
+            String idAssuranceParitaireBE = JadePropertiesService.getInstance()
+                    .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_PARITAIRE_BE_ID);
+            String idAssurancePersonnelBE = JadePropertiesService.getInstance()
+                    .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_PERSONNEL_BE_ID);
             List<IAFAssurance> listAssurance = APRechercherAssuranceFromDroitCotisationService.rechercher(idDroit,
                     apSitProJoiEmp.getIdAffilie(), session);
             for (IAFAssurance assurance : listAssurance) {
-                if (assurance.getAssuranceId().equals(idAssuranceBE)) {
+                if (assurance.getAssuranceId().equals(idAssuranceParitaireBE)
+                    || assurance.getAssuranceId().equals(idAssurancePersonnelBE)) {
                     mCanton.put(apSitProJoiEmp.getIdSitPro(), ECanton.BE);
-                } else if (assurance.getAssuranceId().equals(idAssuranceJU)) {
+                } else if (assurance.getAssuranceId().equals(idAssuranceParitaireJU) ||
+                        assurance.getAssuranceId().equals(idAssurancePersonnelJU)) {
                     mCanton.put(apSitProJoiEmp.getIdSitPro(), ECanton.JU);
                 }
             }
