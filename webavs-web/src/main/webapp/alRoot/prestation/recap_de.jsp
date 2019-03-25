@@ -236,7 +236,7 @@ $(function () {
 function openParam() {
 	$("#dialog").dialog({
 		modal: true,
-		title: "Confirmation",
+		title: "Paramètre",
 		width: 350,
 		height: 160,
 		buttons: [
@@ -245,7 +245,6 @@ function openParam() {
 				text: globazGlobal.OUI,
 				click: function () {
 					globazGlobal.CHAR_NSS = true;
-					alert("Vous venez d'activer le char.");
 					$(this).dialog('close');
 				}
 			},
@@ -254,7 +253,6 @@ function openParam() {
 				text: globazGlobal.NON,
 				click: function () {
 					globazGlobal.CHAR_NSS = false;
-					alert("Vous venez de désactiver le char.");
 					$(this).dialog('close');
 				}
 			}
