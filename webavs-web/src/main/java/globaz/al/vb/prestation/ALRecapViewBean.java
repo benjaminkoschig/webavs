@@ -1,6 +1,7 @@
 package globaz.al.vb.prestation;
 
 import ch.globaz.al.business.constantes.ALConstParametres;
+import ch.globaz.al.business.constantes.ALConstRafam;
 import ch.globaz.al.business.models.periodeAF.PeriodeAFModel;
 import ch.globaz.al.business.models.prestation.EntetePrestationListRecapComplexSearchModel;
 import ch.globaz.al.business.models.prestation.RecapitulatifEntrepriseModel;
@@ -21,6 +22,7 @@ import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeNumericUtil;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.properties.JadePropertiesService;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 
 import java.util.ArrayList;
@@ -82,20 +84,7 @@ public class ALRecapViewBean extends BJadePersistentObjectViewBean {
         prestationSearchModel = new EntetePrestationListRecapComplexSearchModel();
         recapModel = new RecapitulatifEntrepriseModel();
         setAffilie(new AffiliationSimpleModel());
-        
-        ParameterModel paramNSSCsv = new ParameterModel();
-        try {
-            paramNSSCsv = ParamServiceLocator.getParameterModelService().getParameterByName(ALConstParametres.APPNAME,
-                    ALConstParametres.RECAP_FORMAT_NSS,
-                    JadeDateUtil.getGlobazFormattedDate(new Date()));
-            this.isCharNssRecap = paramNSSCsv.getValeurAlphaParametre().equals("true");
-        } catch (JadeApplicationServiceNotAvailableException e) {
-            e.printStackTrace();
-        } catch (JadeApplicationException e) {
-            e.printStackTrace();
-        } catch (JadePersistenceException e) {
-            e.printStackTrace();
-        }
+        this.isCharNssRecap = JadePropertiesService.getInstance().getProperty(ALConstParametres.RECAP_FORMAT_NSS).equals("true");
     }
 
     /*
