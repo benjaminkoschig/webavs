@@ -503,7 +503,7 @@ public class RERenteAccJoinTblTiersJoinDemRenteManager extends PRAbstractManager
                     + REPrestationsAccordees.FIELDNAME_DATE_FIN_DROIT + " = 0" + " OR "
                     + REPrestationsAccordees.FIELDNAME_DATE_FIN_DROIT + " IS NULL " + " OR "
                     + REPrestationsAccordees.FIELDNAME_DATE_FIN_DROIT + " >= "
-                    + PRDateFormater.convertDate_MMxAAAA_to_AAAAMM(forEnCoursAtMois).substring(0, 4) + "01" + ")";
+                    + PRDateFormater.convertDate_MMxAAAA_to_AAAAMM(forEnCoursAtMois) + ")";
         }
 
         if (!JadeStringUtil.isEmpty(forCsEtatIn)) {
