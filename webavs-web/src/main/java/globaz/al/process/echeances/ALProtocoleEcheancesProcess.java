@@ -173,7 +173,7 @@ public class ALProtocoleEcheancesProcess extends ALAbsrtactProcess {
 
         }
         try {
-            if(!nePasCree) {
+            if(!nePasCree || !listeDroitUniqueEcheanceAReviser.isEmpty()) {
                 this.createDocuments(container);
             }
         } catch (Exception e) {

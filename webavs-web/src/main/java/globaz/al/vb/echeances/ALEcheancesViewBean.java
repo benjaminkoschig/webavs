@@ -3,6 +3,7 @@
  */
 package globaz.al.vb.echeances;
 
+import globaz.al.process.echeances.ALEcheanceAReviserProcess;
 import globaz.al.process.echeances.ALEcheancesExcelProcess;
 import globaz.al.process.echeances.ALEcheancesImprimerProcess;
 import globaz.al.process.echeances.ALProtocoleEcheancesProcess;
@@ -89,6 +90,12 @@ public class ALEcheancesViewBean extends BJadePersistentObjectViewBean {
                 processEcheances.setMailSepare("on".equals(mailSepare));
                 processEcheances.setSession(getSession());
                 BProcessLauncher.start(processEcheances, false);
+
+                ALEcheanceAReviserProcess processEcheancesReviser = new ALEcheanceAReviserProcess();
+                processEcheancesReviser.setDateEcheance(date);
+                processEcheancesReviser.setAdiExclu(adiExclu);
+                processEcheancesReviser.setSession(getSession());
+                BProcessLauncher.start(processEcheancesReviser, false);
             } else {
                 ALProtocoleEcheancesProcess processEcheances = new ALProtocoleEcheancesProcess();
                 processEcheances.setDateEcheance(date);
