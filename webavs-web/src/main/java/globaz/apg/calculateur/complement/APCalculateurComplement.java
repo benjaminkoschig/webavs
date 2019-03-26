@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import globaz.apg.api.prestation.IAPPrestation;
 import globaz.apg.api.prestation.IAPRepartitionPaiements;
+import globaz.apg.application.APApplication;
 import globaz.apg.calculateur.IAPPrestationCalculateur;
 import globaz.apg.calculateur.pojo.APPrestationCalculeeAPersister;
 import globaz.apg.calculateur.pojo.APRepartitionCalculeeAPersister;
@@ -27,9 +28,13 @@ import globaz.apg.module.calcul.APRepartitionPaiementData;
 import globaz.apg.module.calcul.APSituationProfessionnelleCanton;
 import globaz.apg.module.calcul.complement.APComplementCalculateur;
 import globaz.apg.properties.APProperties;
+import globaz.apg.services.APRechercherAssuranceFromDroitCotisationService;
+import globaz.globall.db.BSession;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JANumberFormatter;
 import globaz.jade.exception.JadePersistenceException;
+import globaz.jade.properties.JadePropertiesService;
+import globaz.naos.api.IAFAssurance;
 
 public class APCalculateurComplement implements IAPPrestationCalculateur<APCalculateurComplementDonneesPersistence, APCalculateurComplementDonneeDomaine, APCalculateurComplementDonneesPersistence> {
     
@@ -52,26 +57,29 @@ public class APCalculateurComplement implements IAPPrestationCalculateur<APCalcu
             APCalculateurComplementDonneesPersistence prestationCalculeeAPersister = new APCalculateurComplementDonneesPersistence(
                     prestation.getDateDebut(), prestation.getDateFin(), Integer.valueOf(prestation.getNombreJoursSoldes()),
                     prestation.getIdDroit());
-            
+
             // Calculateur
-            String idSituationProf = prestationStandard.getRepartitions().get(0).getIdSituationProfessionnelle();
+            //String idSituationProf = prestationStandard.getRepartitions().get(0).getIdSituationProfessionnelle();
+            String idSituationProf = prestationStandard.getSituationProfessionnelle().keySet().iterator().next();
             APDroitAPG droit = (APDroitAPG)prestationStandard.getDroit();
             APComplementCalculateur calculateur = APComplementCalculateur.getCalculateur(
                     prestationStandard.getMontantsMax(),
                     prestationStandard.getSituationProfessionnelle().get(idSituationProf).getCanton(),
-                    prestation.getDateDebut(), 
+                    prestation.getDateDebut(),
                     droit.getGenreService(),
                     Integer.valueOf(droit.loadSituationFamilliale().getNbrEnfantsDebutDroit()));
-            
+
             BigDecimal montant = calculateur.calculerMontant(salaireMensuel,
                     Integer.valueOf(prestation.getNombreJoursSoldes()));
             BigDecimal montantBrut = arrondir(montant);
             BigDecimal montantBrutFederal = getMontantFederal(prestation);
+            BigDecimal montantBrutJournalier = BigDecimal.ZERO;
             if (montantBrut.compareTo(montantBrutFederal) > 0) {
                 montantBrut = montantBrut.subtract(montantBrutFederal);
                 prestationCalculeeAPersister.setMontantBrut(montantBrut);
                 prestationCalculeeAPersister.setMontantJournalier(montantBrut.divide(BigDecimal.valueOf(calculateur.getNbJourPrisEnCompte()),2, RoundingMode.HALF_UP));
                 prestationCalculeeAPersister.setNombreDeJoursSoldes(calculateur.getNbJourPrisEnCompte());
+                montantBrutJournalier = montantBrut.divide(BigDecimal.valueOf(calculateur.getNbJourPrisEnCompte()), 10, RoundingMode.HALF_UP);
             } else {
                 return resultatCalcul;
             }
@@ -79,26 +87,25 @@ public class APCalculateurComplement implements IAPPrestationCalculateur<APCalcu
             BigDecimal montantPrestationComplementJournalier = new BigDecimal("0");
             BigDecimal montantPrestationComplementBrut = new BigDecimal("0");
             BigDecimal montantPrestationComplementNet = new BigDecimal("0");
-            
+
             for(APRepartitionJointPrestation repartition : prestationStandard.getRepartitions()) {
-                APSituationProfessionnelleCanton sitProf = prestationStandard.getSituationProfessionnelle().get(repartition.getIdSituationProfessionnelle());
-                // tester si sitProf cotise
-                BigDecimal montantBrutReparti =  prestationCalculeeAPersister.getMontantJournalier().multiply((new BigDecimal(repartition.getTauxRJM()).divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP)));
-                
+                if (prestationStandard.getSituationProfessionnelle().get(repartition.getIdSituationProfessionnelle()) != null) {
 
-                //if (isCalculPrestationAcmNeRequis(sitProf)) {
-                        
-                        final BigDecimal montantBrutRepartition = getMontantBrutRepartition(
-                                montantBrutReparti, prestationCalculeeAPersister.getNombreDeJoursSoldes());
-                        final BigDecimal[] tauxAvsAcFne = prestationStandard.getTaux().get(sitProf.getId());
+                    APSituationProfessionnelleCanton sitProf = prestationStandard.getSituationProfessionnelle().get(repartition.getIdSituationProfessionnelle());
 
-                        // Création des cotisations
-                        final APCotisationData cotisationAvs = creerCotisation(montantBrutRepartition, tauxAvsAcFne[0],
-                                APProperties.ASSURANCE_AVS_PAR_ID.getValue());
-                        final APCotisationData cotisationAc = creerCotisation(montantBrutRepartition, tauxAvsAcFne[1],
-                                APProperties.ASSURANCE_AC_PAR_ID.getValue());
-                        APCotisationData cotisationFne = null;
-                        // si FNE, ajout d'une cotisation supplémentaire
+                    BigDecimal montantBrutReparti =  montantBrutJournalier.multiply((new BigDecimal(repartition.getTauxRJM()).divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP)));
+
+                    final BigDecimal montantBrutRepartition = getMontantBrutRepartition(
+                            montantBrutReparti, prestationCalculeeAPersister.getNombreDeJoursSoldes());
+                    final BigDecimal[] tauxAvsAcFne = prestationStandard.getTaux().get(sitProf.getId());
+
+                    // Création des cotisations
+                    final APCotisationData cotisationAvs = creerCotisation(montantBrutRepartition, tauxAvsAcFne[0],
+                            APProperties.ASSURANCE_AVS_PAR_ID.getValue());
+                    final APCotisationData cotisationAc = creerCotisation(montantBrutRepartition, tauxAvsAcFne[1],
+                            APProperties.ASSURANCE_AC_PAR_ID.getValue());
+                    APCotisationData cotisationFne = null;
+                    // si FNE, ajout d'une cotisation supplémentaire
 //                        if (isAssociationFne(sitProf)) {
 //                            // Pour du FNE, Le montant est le montant brut de la repartition de la prestation
 //                            // standard
@@ -109,29 +116,31 @@ public class APCalculateurComplement implements IAPPrestationCalculateur<APCalcu
 //                                    APProperties.ASSURANCE_FNE_ID.getValue());
 //                        }
 
-                        // création de la répartition
-                        final APRepartitionPaiementData repartitionPaiementData = creerRepartition(
-                                montantBrutRepartition, cotisationAvs, cotisationAc, cotisationFne,
-                                IAPRepartitionPaiements.CS_NORMAL, IAPRepartitionPaiements.CS_PAIEMENT_EMPLOYEUR,
-                                sitProf.getIdTiersEmployeur(), sitProf.getIdTiersPaiementEmployeur(),
-                                sitProf.getIdDomainePaiementEmployeur(), sitProf.getAssociation()
-                                        .getCodesystemToString(), sitProf.getId(), sitProf.getNom(),
-                                        sitProf.getIdAffilie());
-                        prestationCalculeeAPersister.getRepartitionsPaiementMap().add(repartitionPaiementData);
+                    // création de la répartition
+                    final APRepartitionPaiementData repartitionPaiementData = creerRepartition(
+                            montantBrutRepartition, cotisationAvs, cotisationAc, cotisationFne,
+                            IAPRepartitionPaiements.CS_NORMAL, IAPRepartitionPaiements.CS_PAIEMENT_EMPLOYEUR,
+                            sitProf.getIdTiersEmployeur(), sitProf.getIdTiersPaiementEmployeur(),
+                            sitProf.getIdDomainePaiementEmployeur(), sitProf.getAssociation()
+                                    .getCodesystemToString(), sitProf.getId(), sitProf.getNom(),
+                                    sitProf.getIdAffilie());
+                    prestationCalculeeAPersister.getRepartitionsPaiementMap().add(repartitionPaiementData);
 
-                        // màj montant prestation
-                        montantPrestationComplementJournalier = montantPrestationComplementJournalier.add(sitProf
-                                .getMontantJournalier());
-                        montantPrestationComplementBrut = montantPrestationComplementBrut.add(repartitionPaiementData
-                                .getMontantBrut());
-                        montantPrestationComplementNet = montantPrestationComplementNet.add(repartitionPaiementData
-                                .getMontantNet());
-               // }
+                    // màj montant prestation
+                    montantPrestationComplementJournalier = montantPrestationComplementJournalier.add(sitProf
+                            .getMontantJournalier());
+                    montantPrestationComplementBrut = montantPrestationComplementBrut.add(repartitionPaiementData
+                            .getMontantBrut());
+                    montantPrestationComplementNet = montantPrestationComplementNet.add(repartitionPaiementData
+                            .getMontantNet());
+                }
             }
+
             prestationCalculeeAPersister.setMontantNet(montantPrestationComplementNet);
             prestationCalculeeAPersister.setMontantBrut(montantPrestationComplementBrut);
-            
+
             resultatCalcul.add(prestationCalculeeAPersister);
+
 
         }
 
@@ -229,11 +238,11 @@ public class APCalculateurComplement implements IAPPrestationCalculateur<APCalcu
         // Données en entrée
         final List<APRepartitionJointPrestation> listePrestationsPersistance = donneesPersistancePourCalcul
                 .getPrestationJointRepartitions();
-        
+
         // Données en sortie
         final List<APCalculateurComplementDonneeDomaine> listePrestationsComplementDomaineConverties = new ArrayList<>();
 
-        
+
         Map<String, List<APRepartitionJointPrestation>> mapPrestations = new HashMap<>();
         // Pour chacune des prestations standard joint répartition
         for (APRepartitionJointPrestation prestationJoinRepartition : listePrestationsPersistance) {

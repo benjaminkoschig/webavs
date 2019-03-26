@@ -531,7 +531,7 @@ public class APPrestationHelper extends PRAbstractHelper {
                 }
             }
         }
-        return true;
+        return false;
     }
 
     /**
@@ -1160,10 +1160,20 @@ public class APPrestationHelper extends PRAbstractHelper {
         // Situations professionnelles
         final List<APSitProJointEmployeur> apSitProJoiEmpList = servicePersistance
                 .getSituationProfJointEmployeur(session, transaction, idDroit);
-        donneesPersistence.setSituationProfessionnelleEmployeur(apSitProJoiEmpList);
 
         final String dateDebutPrestationStandard = donneesPersistence.getPrestationJointRepartitions().get(0)
                 .getDateDebut();
+
+        String idAssuranceParitaireJU = JadePropertiesService.getInstance()
+                .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_PARITAIRE_JU_ID);
+        String idAssurancePersonnelJU = JadePropertiesService.getInstance()
+                .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_PERSONNEL_JU_ID);
+        String idAssuranceParitaireBE = JadePropertiesService.getInstance()
+                .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_PARITAIRE_BE_ID);
+        String idAssurancePersonnelBE = JadePropertiesService.getInstance()
+                .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_PERSONNEL_BE_ID);
+
+        List<APSitProJointEmployeur> apEmpList = new ArrayList<>();
         // Récupération des taux
         for (final APSitProJointEmployeur apSitProJoiEmp : apSitProJoiEmpList) {
             // {taux AVS par, taux AC par,taux FNE par}>
@@ -1184,29 +1194,35 @@ public class APPrestationHelper extends PRAbstractHelper {
 
             // list les cantons
             Map<String, ECanton> mCanton = new HashMap<>();
-            String idAssuranceParitaireJU = JadePropertiesService.getInstance()
-                    .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_PARITAIRE_JU_ID);
-            String idAssurancePersonnelJU = JadePropertiesService.getInstance()
-                    .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_PERSONNEL_JU_ID);
-
-            String idAssuranceParitaireBE = JadePropertiesService.getInstance()
-                    .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_PARITAIRE_BE_ID);
-            String idAssurancePersonnelBE = JadePropertiesService.getInstance()
-                    .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_PERSONNEL_BE_ID);
             List<IAFAssurance> listAssurance = APRechercherAssuranceFromDroitCotisationService.rechercher(idDroit,
                     apSitProJoiEmp.getIdAffilie(), session);
+            String idAssuranceEmployeur = null;
             for (IAFAssurance assurance : listAssurance) {
-                if (assurance.getAssuranceId().equals(idAssuranceParitaireBE)
-                    || assurance.getAssuranceId().equals(idAssurancePersonnelBE)) {
-                    mCanton.put(apSitProJoiEmp.getIdSitPro(), ECanton.BE);
-                } else if (assurance.getAssuranceId().equals(idAssuranceParitaireJU) ||
-                        assurance.getAssuranceId().equals(idAssurancePersonnelJU)) {
-                    mCanton.put(apSitProJoiEmp.getIdSitPro(), ECanton.JU);
+                if (assurance.getAssuranceId().equals(idAssuranceParitaireBE)) {
+                    idAssuranceEmployeur = idAssuranceParitaireBE;
+                } else if (assurance.getAssuranceId().equals(idAssurancePersonnelBE)) {
+                    idAssuranceEmployeur = idAssurancePersonnelBE;
+                } else if (assurance.getAssuranceId().equals(idAssuranceParitaireJU)) {
+                    idAssuranceEmployeur = idAssuranceParitaireJU;
+                } else if (assurance.getAssuranceId().equals(idAssurancePersonnelJU)) {
+                    idAssuranceEmployeur = idAssurancePersonnelJU;
                 }
             }
-            donneesPersistence.setMapCanton(mCanton);
 
+            // pas d'assurance pour cet employeur
+            if(idAssuranceEmployeur != null) {
+                apEmpList.add(apSitProJoiEmp);
+                if (idAssuranceEmployeur.equals(idAssuranceParitaireBE)
+                        || idAssuranceEmployeur.equals(idAssurancePersonnelBE)) {
+                    mCanton.put(apSitProJoiEmp.getIdSitPro(), ECanton.BE);
+                } else if (idAssuranceEmployeur.equals(idAssuranceParitaireJU) ||
+                        idAssuranceEmployeur.equals(idAssurancePersonnelJU)) {
+                    mCanton.put(apSitProJoiEmp.getIdSitPro(), ECanton.JU);
+                }
+                donneesPersistence.setMapCanton(mCanton);
+            }
         }
+        donneesPersistence.setSituationProfessionnelleEmployeur(apEmpList);
 
         Map<EMontantsMax, BigDecimal> montantsMax = new HashMap<>();
         putMontantMax(session, dateDebutPrestationStandard, montantsMax, EMontantsMax.COMCIABJUR);
