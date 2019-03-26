@@ -1,5 +1,6 @@
 package globaz.al.process.echeances;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -10,26 +11,21 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import ch.globaz.al.business.constantes.ALConstEcheances;
 import ch.globaz.al.business.constantes.enumerations.echeances.ALEnumDocumentGroup;
-import ch.globaz.al.business.exceptions.echeances.ALEcheancesException;
 import ch.globaz.al.business.models.droit.DroitEcheanceComplexModel;
 import ch.globaz.al.business.services.ALServiceLocator;
 import ch.globaz.al.business.services.echeances.DroitEcheanceService;
 import ch.globaz.al.utils.ALEcheanceUtils;
+import ch.globaz.topaz.core.TopazSystem;
 import ch.globaz.topaz.datajuicer.DocumentData;
 import globaz.al.process.ALAbsrtactProcess;
 import globaz.jade.client.util.JadeDateUtil;
-import globaz.jade.common.JadeClassCastException;
-import globaz.jade.common.JadeException;
+import globaz.jade.client.util.JadeFilenameUtil;
+import globaz.jade.common.Jade;
 import globaz.jade.context.JadeThread;
-import globaz.jade.exception.JadeApplicationException;
-import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.i18n.JadeI18n;
 import globaz.jade.log.JadeLogger;
 import globaz.jade.print.server.JadePrintDocumentContainer;
-import globaz.jade.properties.JadePropertiesService;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
-import globaz.jade.service.exception.JadeServiceActivatorException;
-import globaz.jade.service.exception.JadeServiceLocatorException;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 import globaz.jade.smtp.JadeSmtpClient;
 
@@ -257,33 +253,25 @@ public class ALProtocoleEcheancesProcess extends ALAbsrtactProcess {
                     container.addDocument(data, pubInfo);
                 }
             } else {
-                JadePublishDocumentInfo pubInfoTemp = new JadePublishDocumentInfo();
-                pubInfoTemp.setOwnerEmail(JadeThread.currentUserEmail());
-                pubInfoTemp.setOwnerId(JadeThread.currentUserId());
-                pubInfoTemp.setDocumentTitle(JadeThread.getMessage("al.echeances.titre.protocole.avisEcheance"));
-                pubInfoTemp.setDocumentSubject(JadeThread.getMessage("al.echeances.titre.protocole.avisEcheance"));
-                pubInfoTemp.setDocumentDate(JadeDateUtil.getGlobazFormattedDate(new Date()));
-                pubInfoTemp.setPublishDocument(false);
-                List<JadePublishDocumentInfo> infoDocs = new ArrayList<>();
-                for(DocumentData data:listData){
-                    JadePublishDocumentInfo pubInfo = pubInfoTemp.createCopy();
-                    infoDocs.add(pubInfo);
-                    container.addDocument(data, pubInfo);
-                }
-                this.createDocuments(container);
-                
-                if(!infoDocs.isEmpty()) {
-                    List<String> outputFiles = new ArrayList<>();
-                    for(JadePublishDocumentInfo docInfo : infoDocs) {
-                        long startTime = System.currentTimeMillis(); 
-                        while(docInfo.getCurrentFilePath() == null) {
-                            Thread.sleep(500);
-                            if(System.currentTimeMillis() - startTime>300000) {
-                                throw new ALEcheancesException("Time out");
-                            }
-                        }
-                        outputFiles.add(docInfo.getCurrentPathName());
+                TopazSystem ts = TopazSystem.getInstance();
+                String filenamePrefix = "doc-doc";
+                List<String> outputFiles = new ArrayList<>();
+                getProgressHelper().setMax(listData.size());
+                int fileNameIndex = 0;
+                for (DocumentData data : listData) {
+                    String workDir = Jade.getInstance().getPersistenceDir();
+                    String pdfDocLoc = JadeFilenameUtil.addOrReplaceFilenameSuffixUID(workDir + filenamePrefix
+                            + fileNameIndex + ".pdf");
+                    String pdfDocURI = JadeFilenameUtil.asURI(pdfDocLoc);
+                    ts.createDocument(data, pdfDocURI);
+                    if(new File(pdfDocLoc).exists()) {
+                        outputFiles.add(pdfDocLoc);
                     }
+                    fileNameIndex++;
+                    getProgressHelper().setCurrent(fileNameIndex);
+                }
+
+                if(!outputFiles.isEmpty()) {
                     String[] filesPath = new String[outputFiles.size()];
                     outputFiles.toArray(filesPath);
                     JadeSmtpClient.getInstance().sendMail(
