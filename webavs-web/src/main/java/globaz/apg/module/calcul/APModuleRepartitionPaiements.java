@@ -1,15 +1,11 @@
 package globaz.apg.module.calcul;
 
 import globaz.apg.acor.parser.APACORPrestationsParser;
+import globaz.apg.api.droits.IAPDroitLAPG;
 import globaz.apg.api.droits.IAPDroitMaternite;
 import globaz.apg.api.prestation.IAPRepartitionPaiements;
 import globaz.apg.application.APApplication;
-import globaz.apg.db.droits.APDroitLAPG;
-import globaz.apg.db.droits.APEmployeur;
-import globaz.apg.db.droits.APEnfantMat;
-import globaz.apg.db.droits.APEnfantMatManager;
-import globaz.apg.db.droits.APSituationProfessionnelle;
-import globaz.apg.db.droits.APSituationProfessionnelleManager;
+import globaz.apg.db.droits.*;
 import globaz.apg.db.prestation.APCotisation;
 import globaz.apg.db.prestation.APCotisationManager;
 import globaz.apg.db.prestation.APPrestation;
@@ -18,6 +14,8 @@ import globaz.apg.db.prestation.APRepartitionPaiements;
 import globaz.apg.db.prestation.APRepartitionPaiementsManager;
 import globaz.apg.enums.APTypeDePrestation;
 import globaz.apg.helpers.droits.APSituationProfessionnelleHelper;
+import globaz.apg.module.calcul.rev2005.APModuleCalculAPG;
+import globaz.apg.services.APRechercherAssuranceFromDroitCotisationService;
 import globaz.externe.IPRConstantesExternes;
 import globaz.framework.util.FWCurrency;
 import globaz.globall.db.BManager;
@@ -30,7 +28,9 @@ import globaz.globall.util.JADate;
 import globaz.globall.util.JANumberFormatter;
 import globaz.globall.util.JAVector;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.properties.JadePropertiesService;
 import globaz.naos.api.IAFAffiliation;
+import globaz.naos.api.IAFAssurance;
 import globaz.naos.db.tauxAssurance.AFTauxAssurance;
 import globaz.prestation.db.demandes.PRDemande;
 import globaz.prestation.db.tauxImposition.PRTauxImposition;
@@ -1492,8 +1492,11 @@ public class APModuleRepartitionPaiements {
             APPrestationCalculee prestationCalculee, String idPrestation) throws Exception {
         // TODO assurances sociales, + maj du montant net
 
-        List listBeneficiairePmtPotentiel = prestationCalculee.getResultatCalcul()
+        List listBeneficiairePmtPotentielTmp = prestationCalculee.getResultatCalcul()
                 .getResultatsCalculsSitProfessionnelle();
+
+        List<APResultatCalculSituationProfessionnel> listBeneficiairePmtPotentiel = getListForJoursIsolees(listBeneficiairePmtPotentielTmp, prestationCalculee, session);
+
         BigDecimal nbJours = new BigDecimal(prestationCalculee.getNombreJoursSoldes());
 
         PRTiersWrapper tiersWrapper = PRTiersHelper.getTiersAdresseParId(session, idAssure);
@@ -1734,11 +1737,12 @@ public class APModuleRepartitionPaiements {
                 repartitionBenefPaiement.setIdTiers(benefPotentiel.getIdTiers());
 
                 // Dernier benef paiement, et pas de pmt à l'assuré
+                // et pas dans le cas de jour isolé (pas de cotisation employeur)
                 // Pour éviter des erreurs d'arrondi, le dernier montant
                 // A verser n'est pas calculé au prorata mais par différence du
                 // reste.
 
-                if (isLastRecord && !isVersementAssure) {
+                if (isLastRecord && !isVersementAssure && listBeneficiairePmtPotentielTmp.size() == listBeneficiairePmtPotentiel.size()) {
                     montantBrutPrestation = montantBrutTotalPrestation.subtract(montantTotalVerse);
                 }
 
@@ -1841,6 +1845,38 @@ public class APModuleRepartitionPaiements {
             repartitionBenefPaiement.setMontantNet(montantNet.toString());
             repartitionBenefPaiement.update(transaction);
         }
+    }
+
+    List<APResultatCalculSituationProfessionnel> getListForJoursIsolees (List<APResultatCalculSituationProfessionnel> list, APPrestationCalculee prestation, BSession session) throws Exception {
+
+        String isFerciab = JadePropertiesService.getInstance().getProperty(APApplication.PROPERTY_IS_FERCIAB);
+        if(!"true".equals(isFerciab) || !APTypeDePrestation.JOUR_ISOLE.getCodesystemString().equals(prestation.getCsGenrePrestation()) ) {
+            return list;
+        }
+
+        List<APResultatCalculSituationProfessionnel> newList = new ArrayList<>();
+
+        String idAssuranceParitaireJU = JadePropertiesService.getInstance()
+                .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_PARITAIRE_JU_ID);
+        String idAssuranceParitaireBE = JadePropertiesService.getInstance()
+                .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_PARITAIRE_BE_ID);
+        String idAssurancePersonnelJU = JadePropertiesService.getInstance()
+                .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_PERSONNEL_JU_ID);
+        String idAssurancePersonnelBE = JadePropertiesService.getInstance()
+                .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_PERSONNEL_BE_ID);
+        for (APResultatCalculSituationProfessionnel employeur : list) {
+            List<IAFAssurance> listAssurance = APRechercherAssuranceFromDroitCotisationService.rechercher(prestation.getIdDroit(),
+                    employeur.getIdAffilie(), session);
+            for (IAFAssurance assurance : listAssurance) {
+                if (assurance.getAssuranceId().equals(idAssuranceParitaireJU)
+                        || assurance.getAssuranceId().equals(idAssurancePersonnelJU)
+                        || assurance.getAssuranceId().equals(idAssuranceParitaireBE)
+                        || assurance.getAssuranceId().equals(idAssurancePersonnelBE)) {
+                    newList.add(employeur);
+                }
+            }
+        }
+        return newList;
     }
 
     /**

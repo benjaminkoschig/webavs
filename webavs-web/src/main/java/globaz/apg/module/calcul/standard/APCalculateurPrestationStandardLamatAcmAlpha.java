@@ -49,6 +49,7 @@ import globaz.apg.module.calcul.APResultatCalculSituationProfessionnel;
 import globaz.apg.module.calcul.interfaces.IAPCalculateur;
 import globaz.apg.module.calcul.interfaces.IAPReferenceDataPrestation;
 import globaz.apg.module.calcul.lamat.LAMatCalculateur;
+import globaz.apg.module.calcul.rev2005.APModuleCalculAPG;
 import globaz.apg.module.calcul.wrapper.APPeriodeWrapper;
 import globaz.apg.module.calcul.wrapper.APPrestationWrapper;
 import globaz.apg.module.calcul.wrapper.APPrestationWrapperComparator;
@@ -807,6 +808,49 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
     }
 
     /**
+     * Pour les jours isolées si un emplyeur ne cotise pas il faut retirer le montant du montant
+     * total de la prestations
+     */
+    private void ajusteMontantPrestationPourJourIsolee(final BSession session, final BTransaction transaction, final APPrestation entity)
+            throws Exception {
+
+        String isFerciab = JadePropertiesService.getInstance().getProperty(APApplication.PROPERTY_IS_FERCIAB);
+        if(!"true".equals(isFerciab) || !APTypeDePrestation.JOUR_ISOLE.getCodesystemString().equals(entity.getGenre()) ) {
+            return ;
+        }
+
+        final FWCurrency montantBrutPrestation = new FWCurrency();
+        final FWCurrency montantBrutRepartitions = new FWCurrency();
+
+        montantBrutPrestation.add(entity.getMontantBrut());
+        // On rajoute le montant des frais de garde au total pour la comparaison !!!
+        if (!JadeStringUtil.isIntegerEmpty(entity.getFraisGarde())) {
+            montantBrutPrestation.add(entity.getFraisGarde());
+        }
+
+        // reprendre le montant brut de toutes les répartitions
+        final APRepartitionPaiementsManager repartitions = new APRepartitionPaiementsManager();
+        repartitions.setSession(session);
+        repartitions.setParentOnly(true);
+        repartitions.setForIdPrestation(entity.getIdPrestation());
+        repartitions.find();
+
+        for (final Iterator iterator = repartitions.iterator(); iterator.hasNext();) {
+            final APRepartitionPaiements rep = (APRepartitionPaiements) iterator.next();
+            montantBrutRepartitions.add(rep.getMontantBrut());
+        }
+
+        if (!montantBrutPrestation.equals(montantBrutRepartitions)) {
+            montantBrutRepartitions.sub(entity.getFraisGarde());
+            entity.setMontantBrut(montantBrutRepartitions.toString());
+            BigDecimal montantJournalier = new BigDecimal(montantBrutRepartitions.doubleValue()).divide(new BigDecimal(entity.getNombreJoursSoldes()), 10, BigDecimal.ROUND_HALF_UP);
+            entity.setMontantJournalier(montantJournalier.toString());
+            entity.update();
+        }
+
+    }
+
+    /**
      * WARNING : cette méthode n'est pas implémentée, il faut une mise en conformité du calculateur avant de pouvoir
      * découpler la persistence du calculateur
      */
@@ -902,6 +946,8 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
 
             repartitionPaiements.repartirPaiements(session, transaction, droit.loadDemande().getIdTiers(),
                     prestationACreer, entity.getIdPrestationApg());
+
+            ajusteMontantPrestationPourJourIsolee(session, transaction, entity);
 
             controleRepartitions(session, transaction, entity.getIdPrestationApg());
 
