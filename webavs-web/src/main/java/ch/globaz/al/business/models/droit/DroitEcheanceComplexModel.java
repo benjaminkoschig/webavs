@@ -76,6 +76,11 @@ public class DroitEcheanceComplexModel extends JadeComplexModel {
     private String numNss = null;
 
     /**
+     * Numéro Contribuable de l'allocataire
+     */
+    private String numContribuable = null;
+
+    /**
      * Numéro nss de l'enfant
      */
 
@@ -191,6 +196,13 @@ public class DroitEcheanceComplexModel extends JadeComplexModel {
      */
     public String getNumNss() {
         return numNss;
+    }
+
+    /**
+     * @return the numContribuable
+     */
+    public String getNumContribuable() {
+        return numContribuable;
     }
 
     /**
@@ -372,6 +384,14 @@ public class DroitEcheanceComplexModel extends JadeComplexModel {
      */
     public void setNumNss(String numNss) {
         this.numNss = numNss;
+    }
+
+    /**
+     * @param numContribuable
+     *            the numContribuable to set
+     */
+    public void setNumContribuable(String numContribuable) {
+        this.numContribuable = numContribuable;
     }
 
     /**

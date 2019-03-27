@@ -22,13 +22,8 @@ public interface EcheancesAffilie {
      *            liste des droits à imprimer
      * @param numAffilie
      *            numeroAffilie
-     * @param idTiersLie
-     *            tiersLie
      * @param typeActivite
      *            type de l'activité
-     * @param logger
-     *            protocole d'infos erreur
-     * 
      * @return document document à imprimer
      * @throws JadeApplicationException
      *             Exception levée par la couche métier lorsqu'elle n'a pu effectuer l'opération souhaitée

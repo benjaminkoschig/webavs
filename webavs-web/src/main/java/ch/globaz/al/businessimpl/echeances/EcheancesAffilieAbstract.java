@@ -68,7 +68,7 @@ public abstract class EcheancesAffilieAbstract extends AbstractDocument implemen
      *            document à imprimer
      * @param numAffilie
      *            numéro de l'affilié
-     * @param langue
+     * @param langueDocument
      *            du documnet
      * @throws JadePersistenceException
      *             Exception levée lorsque le chargement ou la mise à jour en DB par la couche de persistence n'a pu se

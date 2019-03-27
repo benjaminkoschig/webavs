@@ -38,7 +38,7 @@ public final class PersonneEtendueConverter {
     /**
      * Conversion d'un objet {@link PersonneEtendueComplexModel} en un objet métier {@link PersonneEtendue}
      * 
-     * @param personneEtendueComplexModel {@link PersonneEtendueComplexModel} représentant une {@link PerosnneEtendue}
+     * @param personneEtendueComplexModel {@link PersonneEtendueComplexModel} représentant une {@link PersonneEtendue}
      *            en base de données
      * @return {@link PersonneEtendue} représentant un objet du domaine (tiers)
      */

@@ -119,6 +119,41 @@ public abstract class EcheancesAllocataireAbstract extends AbstractDocument impl
         return document;
     }
 
+    @Override
+    public DocumentData loadData(ArrayList<DroitEcheanceComplexModel> droits, String nss, String idTiersAllocataire,
+                                 String numDossier, String numAffilie, String numContribuable, String nomAlloc, String prenomAlloc, String titre,
+                                 String idTiersBenficiaire) throws JadePersistenceException, JadeApplicationException {
+
+        // document à créer
+        DocumentData document = new DocumentData();
+        // langue pour les documents
+        String langueDocument = null;
+        // Si langue reprise langue affilié
+        DossierComplexModel dossier = ALServiceLocator.getDossierComplexModelService().read(numDossier);
+
+        if (dossier.getAllocataireComplexModel().getAllocataireModel().getLangueAffilie()) {
+            this.langueDocument = ALServiceLocator.getLangueAllocAffilieService().langueTiersAffilie(numAffilie);
+        }// si reprise langue allocataire
+        else {
+            this.langueDocument = ALServiceLocator.getLangueAllocAffilieService().langueTiersAlloc(idTiersAllocataire,
+                    numAffilie);
+        }
+
+        setIdDocument(document);
+
+        // infos relatives à l'allocataire
+        setInfos(document, numDossier, numAffilie, numContribuable, nss, nomAlloc, prenomAlloc, titre, idTiersBenficiaire,
+                idTiersAllocataire, this.langueDocument);
+
+        // données de l'allocataire
+        setTable(document, droits, numDossier, this.langueDocument);
+
+        // infos textes
+        setTexte(document, titre, this.langueDocument);
+
+        return document;
+    }
+
     public void setIdTiersDestinataire(String idTiersDestinataire) {
         this.idTiersDestinataire = idTiersDestinataire;
     }
@@ -212,6 +247,107 @@ public abstract class EcheancesAllocataireAbstract extends AbstractDocument impl
     }
 
     /**
+     *
+     * @param document
+     *            à imprimer
+     * @param titre
+     *            politesse de l'allocataire
+     * @param noDossier
+     *            identifiant du dossier
+     * @param noAffilie
+     *            numéro de l'affilié
+     * @param noNSS
+     *            numéro d'assuré
+     * @param numContribuable
+     *            numéro de contribuable
+     * @param nomAlloc
+     *            nom de l'allocataire
+     * @param prenomAlloc
+     *            Prénom de l'allocataire
+     * @param idTiersBeneficiaire
+     *            identifiant du tiers bénéficiaire
+     * @param idTiersAllocataire
+     *            identifiant du tiers allocataire
+     * @param langueDocument
+     * @throws JadePersistenceException
+     *             Exception levée lorsque le chargement ou la mise à jour en DB par la couche de persistence n'a pu se
+     *             faire
+     * @throws JadeApplicationException
+     *             Exception levée par la couche métier lorsqu'elle n'a pu effectuer l'opération souhaitée
+     */
+    protected void setInfos(DocumentData document, String noDossier, String noAffilie, String numContribuable, String noNSS, String nomAlloc,
+                            String prenomAlloc, String titre, String idTiersBeneficiaire, String idTiersAllocataire,
+                            String langueDocument) throws JadeApplicationException, JadePersistenceException {
+
+        // vérification des paramètres
+
+        if (document == null) {
+            throw new ALEcheanceModelException("EcheancesListeAllocataireAbstract#setInfos : document is null");
+        }
+
+        if (noDossier == null) {
+            throw new ALEcheanceModelException("EcheancesListeAllocataireAbstract#setInfos : noDossier is null");
+
+        }
+        if (noAffilie == null) {
+            throw new ALEcheanceModelException("EcheancesListeAllocataireAbstract#setInfos : noAffilie is null");
+
+        }
+        if (numContribuable == null) {
+            throw new ALEcheanceModelException("EcheancesListeAllocataireAbstract#setInfos : numContribuable is null");
+
+        }
+        if (noNSS == null) {
+            throw new ALEcheanceModelException("EcheancesListeAllocataireAbstract#setInfos : noNss is null");
+
+        }
+        if (nomAlloc == null) {
+            throw new ALEcheanceModelException("EcheancesListeAllocataireAbstract#setInfos : nomAlloc is null");
+
+        }
+        if (prenomAlloc == null) {
+            throw new ALEcheanceModelException("EcheancesListeAllocataireAbstract#setInfos : prenomAlloc is null");
+
+        }
+        if (idTiersAllocataire == null) {
+            throw new ALEcheanceModelException(
+                    "EcheancesListeAllocataireAbstract#setInfos : idTiersAllocataire is null");
+        }
+        if (!JadeStringUtil.equals(langueDocument, ALConstLangue.LANGUE_ISO_FRANCAIS, false)
+                && !JadeStringUtil.equals(langueDocument, ALConstLangue.LANGUE_ISO_ALLEMAND, false)
+                && !JadeStringUtil.equals(langueDocument, ALConstLangue.LANGUE_ISO_ITALIEN, false)) {
+            throw new ALEcheanceModelException("EcheancesListeAllocataireAbstract#setInfos: language  "
+                    + langueDocument + " is not  valid ");
+        }
+
+        // numéro de dossier
+        document.addData("droitEcheanceDossier_no_label",
+                this.getText("al.echeances.info.numDossier.libelle", langueDocument));
+        document.addData("droitEcheanceDossier_no_val", noDossier);
+        // numéro de l'affilié
+        document.addData("droitEcheanceAffilieInd_no_label",
+                this.getText("al.echeances.info.numAffilie.libelle", langueDocument));
+        document.addData("droitEcheanceAffilieInd_no_val", noAffilie);
+        // nss
+        document.addData("droitEcheanceAlloc_nss_label",
+                this.getText("al.echeances.info.numNss.libelle", langueDocument));
+        document.addData("droitEcheanceAlloc_nss_val", noNSS);
+
+        //num Contribuable
+        if (!numContribuable.isEmpty()){
+            document.addData("droitEcheanceAlloc_numContribuable_label",
+                    this.getText("al.echeances.info.numContribuable.libelle", langueDocument));
+            document.addData("droitEcheanceAlloc_numContribuable_val", numContribuable);
+        }
+        // concerne
+        document.addData("droitEcheanceAllocataire_concerne_label",
+                this.getText("al.echeances.info.concerne.libelle", langueDocument));
+        document.addData("droitEcheanceAllocataire_concerne_val",
+                this.getText("al.echeances.info.concerne.val", langueDocument));
+
+    }
+
+    /**
      * charge dans le document les données liées aux droits arrivant à échéance
      * 
      * @param document
@@ -220,7 +356,7 @@ public abstract class EcheancesAllocataireAbstract extends AbstractDocument impl
      *            liste des droits
      * @param noDossier
      *            numéro de dossier
-     * @param langueDocumebt
+     * @param langueDocument
      *            langue à utiliser pour le document
      * @throws JadePersistenceException
      *             Exception levée lorsque le chargement ou la mise à jour en DB par la couche de persistence n'a pu se

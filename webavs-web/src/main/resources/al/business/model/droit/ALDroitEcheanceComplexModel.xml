@@ -10,6 +10,7 @@
 			<select-field name="nomEnfant" field-ref="tiersEnfantModel.designation1"/>
 			<select-field name="prenomEnfant" field-ref="tiersEnfantModel.designation2"/>
 			<select-field name="numNss" field-ref="personneEtendueModel.numAvsActuel"/>
+			<select-field name="numContribuable" field-ref="personneEtendueModel.numContribuableActuel"/>
 			<select-field name="numAffilie" field-ref="dossierModel.numeroAffilie"/>
 			<select-field name="numNssEnfant" field-ref="personneEtendueModelenfant.numAvsActuel"/>
 			<select-field name="idTiersAllocataire" field-ref="allocataireModel.idTiersAllocataire"/>

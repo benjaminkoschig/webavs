@@ -266,6 +266,7 @@ public class ImpressionEcheancesServiceImpl implements ImpressionEcheancesServic
                         docAffilie = echAffilie.loadData(droitsAffilieTemp, droitsAffilieTemp.get(0).getNumAffilie(),
                                 droitsAffilieTemp.get(0).getActiviteAllocataire());
 
+
                         JadePublishDocumentInfo pubInfos = fillDocInfos(droitsAffilieTemp, true,
                                 Integer.toString(incrementAffilie));
 
@@ -354,7 +355,7 @@ public class ImpressionEcheancesServiceImpl implements ImpressionEcheancesServic
 
                 DocumentData docAlloc = echAlloc.loadData(droitsAllocTemp, droitModelAlloc.getNumNss(),
                         droitModelAlloc.getIdTiersAllocataire(), droitModelAlloc.getDroitModel().getIdDossier(),
-                        droitModelAlloc.getNumAffilie(), droitModelAlloc.getNomAllocataire(),
+                        droitModelAlloc.getNumAffilie(), droitModelAlloc.getNumContribuable(), droitModelAlloc.getNomAllocataire(),
                         droitModelAlloc.getPrenomAllocataire(), droitModelAlloc.getTitre(),
                         droitModelAlloc.getIdTiersBeneficiaire());
 
