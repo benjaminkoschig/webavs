@@ -1,5 +1,8 @@
 package globaz.apg.businessimpl.service;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import globaz.apg.business.service.APAnnoncesRapgService;
 import globaz.apg.business.service.APPlausibilitesApgService;
 import globaz.apg.db.annonces.APAnnonceAPG;
@@ -18,17 +21,17 @@ import globaz.apg.pojo.APChampsAnnonce;
 import globaz.apg.pojo.APErreurValidationPeriode;
 import globaz.apg.pojo.APValidationPrestationAPGContainer;
 import globaz.apg.pojo.ViolatedRule;
+import globaz.apg.properties.APParameter;
 import globaz.apg.rapg.rules.Rule;
 import globaz.apg.rapg.rules.RulesFactory;
 import globaz.globall.db.BSession;
+import globaz.globall.db.FWFindParameter;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.log.JadeLogger;
 import globaz.prestation.beans.PRPeriode;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.utils.PRDateUtils;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author dde
@@ -39,7 +42,7 @@ public class APPlausibilitesApgServiceImpl implements APPlausibilitesApgService 
 
     /**
      * Méthode commune de check des plausibilités
-     * 
+     *
      * @param rules
      * @param champsAnnonce
      * @return
@@ -57,7 +60,11 @@ public class APPlausibilitesApgServiceImpl implements APPlausibilitesApgService 
                 rule = RulesFactory.getRule(code, session);
                 try {
                     if (!rule.check(annonce)) {
-                        listErrors.add(getViolatedRuleDetail(session, rule.getErrorCode()));
+                        if (ruleConcernePlageValeurs(rule)) {
+                            listErrors.add(getViolatedRuleDetail(session, rule.getErrorCode(), annonce));
+                        } else {
+                            listErrors.add(getViolatedRuleDetail(session, rule.getErrorCode()));
+                        }
                     }
                 }
                 // Survient dans le cas ou un champs contrôlé par une règle est invalid
@@ -89,17 +96,26 @@ public class APPlausibilitesApgServiceImpl implements APPlausibilitesApgService 
 
         // Survient dans le cas ou une erreur survient lors de la création d'une instance de règle
         catch (APRuleFactoryException e) {
-            throw new APPlausibilitesException("Exception pendant l'instantiation de la règle [" + code + "] : "
-                    + e.toString(), e);
+            throw new APPlausibilitesException(
+                    "Exception pendant l'instantiation de la règle [" + code + "] : " + e.toString(), e);
         } catch (Throwable t) {
             JadeLogger.error(this, t);
         }
         return listErrors;
     }
 
+    private boolean ruleConcernePlageValeurs(Rule rule) {
+        return APAllPlausibiliteRules.R_54.getCodeAsString().equals(rule.getErrorCode())
+                || APAllPlausibiliteRules.R_55.getCodeAsString().equals(rule.getErrorCode())
+                || APAllPlausibiliteRules.R_56.getCodeAsString().equals(rule.getErrorCode())
+                || APAllPlausibiliteRules.R_57.getCodeAsString().equals(rule.getErrorCode())
+                || APAllPlausibiliteRules.R_58.getCodeAsString().equals(rule.getErrorCode())
+                || APAllPlausibiliteRules.R_59.getCodeAsString().equals(rule.getErrorCode());
+    }
+
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * ch.globaz.apg.business.services.plausibilites.PlausibilitesApgService#checkPlausisXSD(ch.globaz.apg.business.
      * models.annonces.APChampsAnnonce)
@@ -245,10 +261,11 @@ public class APPlausibilitesApgServiceImpl implements APPlausibilitesApgService 
     }
 
     /**
-     * Test lié à la plausibilité 208 :</br> empêcher l'envoi des annonces si le mois du message date est < que
+     * Test lié à la plausibilité 208 :</br>
+     * empêcher l'envoi des annonces si le mois du message date est < que
      * l'accountingMonth si on paie le 08.08.2012, envoi auto annonce -> accountingMonth = 08.2012, messageDate =
      * 08.2012
-     * 
+     *
      * @param champsAnnonce
      * @param errorList
      */
@@ -280,13 +297,14 @@ public class APPlausibilitesApgServiceImpl implements APPlausibilitesApgService 
     /**
      * Le mois comptable d'une annonce de type 3 (Correction) ou de type 4 (Restitution) ne peut pas être inférieur au
      * mois comptable de l'annonce initiale (Plausibilité 209)
-     * 
+     *
      * @param champsAnnonce
      * @param session
      * @param errorList
      * @throws Exception
      */
-    private void tryToCheckRule209(final APChampsAnnonce champsAnnonce, BSession session, final List<String> errorList) {
+    private void tryToCheckRule209(final APChampsAnnonce champsAnnonce, BSession session,
+            final List<String> errorList) {
         if (isAnnonceDeType3Ou4(champsAnnonce)) {
             if (isAccountingMonthSet(champsAnnonce)) {
                 doCheckRule209(champsAnnonce, session, errorList);
@@ -345,7 +363,7 @@ public class APPlausibilitesApgServiceImpl implements APPlausibilitesApgService 
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * ch.globaz.apg.business.services.plausibilites.PlausibilitesApgService#checkStepSendAnnonce(ch.globaz.apg.business
      * .models.plausibilites.APChampsAnnonce)
@@ -362,7 +380,7 @@ public class APPlausibilitesApgServiceImpl implements APPlausibilitesApgService 
 
     /**
      * Contrôle qu'une prestation existe pour chaque périodes
-     * 
+     *
      * @param droit
      * @param periodes
      * @param prestations
@@ -411,8 +429,43 @@ public class APPlausibilitesApgServiceImpl implements APPlausibilitesApgService 
         return session.getLabel(APPlausibilitesApgServiceImpl.PREFIX_LABEL + code);
     }
 
+    private String getRuleMessage(BSession session, String code, APChampsAnnonce annonce)
+            throws APRuleExecutionException {
+        String message = null;
+        try {
+            message = session.getLabel(APPlausibilitesApgServiceImpl.PREFIX_LABEL + code);
+            String parametre = null;
+            if (APAllPlausibiliteRules.R_54.getCodeAsString().equals(code)) {
+                parametre = APParameter.NOMBRE_JOURS_ISOLES_DEMENAGEMENT.getParameterName();
+            } else if (APAllPlausibiliteRules.R_55.getCodeAsString().equals(code)) {
+                parametre = APParameter.NOMBRE_JOURS_ISOLES_NAISSANCE.getParameterName();
+            } else if (APAllPlausibiliteRules.R_56.getCodeAsString().equals(code)) {
+                parametre = APParameter.NOMBRE_JOURS_ISOLES_MARIAGE_LPART.getParameterName();
+            } else if (APAllPlausibiliteRules.R_57.getCodeAsString().equals(code)) {
+                parametre = APParameter.NOMBRE_JOURS_ISOLES_DECES.getParameterName();
+            } else if (APAllPlausibiliteRules.R_58.getCodeAsString().equals(code)) {
+                parametre = APParameter.NOMBRE_JOURS_ISOLES_INSPECTION_RECRUTEMENT_LIBERATION.getParameterName();
+            } else if (APAllPlausibiliteRules.R_59.getCodeAsString().equals(code)) {
+                parametre = APParameter.NOMBRE_JOURS_ISOLES_CONGE_JEUNESSE.getParameterName();
+            }
+            if (parametre != null) {
+                BigDecimal valPlage = new BigDecimal(FWFindParameter.findParameter(
+                        session.getCurrentThreadTransaction(), "1", parametre, annonce.getStartOfPeriod(), "", 0));
+                message = message.replace("{0}", valPlage.toString());
+            }
+        } catch (Exception e) {
+            throw new APRuleExecutionException(e);
+        }
+        return message;
+    }
+
     private ViolatedRule getViolatedRuleDetail(BSession session, String code) {
         return new ViolatedRule(code, getRuleMessage(session, code), isRuleBreakable(code));
+    }
+
+    private ViolatedRule getViolatedRuleDetail(BSession session, String code, APChampsAnnonce annonce)
+            throws APRuleExecutionException {
+        return new ViolatedRule(code, getRuleMessage(session, code, annonce), isRuleBreakable(code));
     }
 
     private Boolean isRuleBreakable(String code) {
