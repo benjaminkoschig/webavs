@@ -1,8 +1,9 @@
 /**
- * 
+ *
  */
 package globaz.apg.business.service;
 
+import java.util.List;
 import globaz.apg.db.droits.APDroitLAPG;
 import globaz.apg.db.droits.APPeriodeAPG;
 import globaz.apg.db.prestation.APPrestation;
@@ -14,7 +15,6 @@ import globaz.apg.pojo.ViolatedRule;
 import globaz.globall.db.BSession;
 import globaz.jade.service.provider.application.JadeApplicationService;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
-import java.util.List;
 
 /**
  * @author dde
@@ -31,7 +31,7 @@ public interface APPlausibilitesApgService extends JadeApplicationService {
 
     /**
      * Contrôle des plausibilités APG de l'étape 1
-     * 
+     *
      * @param champsAnnonce
      * @return Liste des régles violées
      */
@@ -40,7 +40,7 @@ public interface APPlausibilitesApgService extends JadeApplicationService {
 
     /**
      * Validation des plausibilités contrôlées dans le XSD
-     * 
+     *
      * @param champsAnnonce
      * @return Liste de messages d'erreur
      */
@@ -65,7 +65,7 @@ public interface APPlausibilitesApgService extends JadeApplicationService {
 
     /**
      * Contrôle des plausibilités APG juste avant d'envoyer l'annonce à la centrale
-     * 
+     *
      * @param champsAnnonce
      * @return Liste des régles violées
      */
@@ -74,4 +74,7 @@ public interface APPlausibilitesApgService extends JadeApplicationService {
 
     List<APErreurValidationPeriode> controllerPrestationEnFonctionPeriodes(BSession session, APDroitLAPG droit,
             List<APPeriodeAPG> periodesAPG, List<APPrestation> prestations);
+
+    public List<APErreurValidationPeriode> controllerPrestationsJoursIsolesNotEmpty(BSession session,
+            List<APPrestation> prestations);
 }

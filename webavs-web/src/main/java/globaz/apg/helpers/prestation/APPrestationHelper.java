@@ -66,6 +66,7 @@ import globaz.apg.properties.APProperties;
 import globaz.apg.properties.APPropertyTypeDePrestationAcmValues;
 import globaz.apg.services.APRechercherAssuranceFromDroitCotisationService;
 import globaz.apg.utils.APCalculAcorUtil;
+import globaz.apg.utils.APGUtils;
 import globaz.apg.utils.APGenerateurAnnonceRAPG;
 import globaz.apg.vb.prestation.APCalculACORViewBean;
 import globaz.apg.vb.prestation.APDeterminerTypeCalculPrestationViewBean;
@@ -331,7 +332,7 @@ public class APPrestationHelper extends PRAbstractHelper {
             // Calcul des prestations standard, LAMat et ACM_ALFA
             final APCalculateurPrestationStandardLamatAcmAlpha calculateur = new APCalculateurPrestationStandardLamatAcmAlpha();
             pViewBean = calculateur.calculPrestationAMAT_ACM(session, transaction, droit, action);
-            
+
             calculerComplement(session, transaction, droit);
 
             // calcul des ACM NE si la propriété TYPE_DE_PRESTATION_ACM vaut ACM_NE
@@ -461,7 +462,8 @@ public class APPrestationHelper extends PRAbstractHelper {
      * @param viewBean
      * @throws Exception
      */
-    private void calculerComplement(final BSession session, final BTransaction transaction, final APDroitLAPG droit) throws Exception {
+    private void calculerComplement(final BSession session, final BTransaction transaction, final APDroitLAPG droit)
+            throws Exception {
 
         if (IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE.equals(droit.getGenreService())) {
             return;
@@ -469,7 +471,7 @@ public class APPrestationHelper extends PRAbstractHelper {
 
         String hasComplement = JadePropertiesService.getInstance().getProperty(APApplication.PROPERTY_IS_FERCIAB);
 
-        if(!"true".equals(hasComplement) || APModuleCalculAPG.isTypeAllocationJourIsole(droit.getGenreService())) {
+        if (!"true".equals(hasComplement) || APModuleCalculAPG.isTypeAllocationJourIsole(droit.getGenreService())) {
             return;
         }
 
@@ -491,7 +493,7 @@ public class APPrestationHelper extends PRAbstractHelper {
             return;
         }
 
-        donnesPersistencePourCalcul.setDroit((APDroitAPG) droit);
+        donnesPersistencePourCalcul.setDroit(droit);
 
         // Conversion vers des objets métier (domain) pour le calculateur
         final List<Object> entiteesDomainPourCalcul = calculateurComplement
@@ -866,6 +868,10 @@ public class APPrestationHelper extends PRAbstractHelper {
                 container.setValidationErrors(validationErrors);
             }
 
+            if (APGUtils.isTypeAllocationJourIsole(droit.getGenreService())) {
+                viewBean.setErreursValidationPeriodes(
+                        plausiService.controllerPrestationsJoursIsolesNotEmpty(session, prestations));
+            } else
             // Contrôle qu'une prestation existe pour chaque période. Pas de contrôle pour les droits Mat
             if (!IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE.equals(droit.getGenreService())) {
                 final List<APPeriodeAPG> periodesAPG = ApgServiceLocator.getEntityService()
@@ -1211,13 +1217,13 @@ public class APPrestationHelper extends PRAbstractHelper {
             }
 
             // pas d'assurance pour cet employeur
-            if(idAssuranceEmployeur != null) {
+            if (idAssuranceEmployeur != null) {
                 apEmpList.add(apSitProJoiEmp);
                 if (idAssuranceEmployeur.equals(idAssuranceParitaireBE)
                         || idAssuranceEmployeur.equals(idAssurancePersonnelBE)) {
                     mCanton.put(apSitProJoiEmp.getIdSitPro(), ECanton.BE);
-                } else if (idAssuranceEmployeur.equals(idAssuranceParitaireJU) ||
-                        idAssuranceEmployeur.equals(idAssurancePersonnelJU)) {
+                } else if (idAssuranceEmployeur.equals(idAssuranceParitaireJU)
+                        || idAssuranceEmployeur.equals(idAssurancePersonnelJU)) {
                     mCanton.put(apSitProJoiEmp.getIdSitPro(), ECanton.JU);
                 }
                 donneesPersistence.setMapCanton(mCanton);

@@ -482,4 +482,15 @@ public class APPlausibilitesApgServiceImpl implements APPlausibilitesApgService 
 
         return trouve;
     }
+
+    @Override
+    public List<APErreurValidationPeriode> controllerPrestationsJoursIsolesNotEmpty(BSession session,
+            List<APPrestation> prestations) {
+        List<APErreurValidationPeriode> resultsString = new ArrayList<APErreurValidationPeriode>();
+        if (prestations.isEmpty()) {
+            String message = session.getLabel("VALIDATION_PRESTATION_EXCEPTION_ASSURANCE_CIAB_EMPTY_EMPLOYEUR");
+            resultsString.add(new APErreurValidationPeriode(null, message));
+        }
+        return resultsString;
+    }
 }
