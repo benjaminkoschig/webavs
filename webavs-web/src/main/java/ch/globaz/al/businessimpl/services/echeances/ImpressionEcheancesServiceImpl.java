@@ -81,13 +81,15 @@ public class ImpressionEcheancesServiceImpl implements ImpressionEcheancesServic
      * @throws JadeApplicationServiceNotAvailableException
      */
     private void addInSuitableDocumentContainer(DocumentData documentToAdd, AttributEntiteModel attrAffilieTypeEch,
-            boolean isTypeDocAffilie, boolean docAffilieGenerated, JadePublishDocumentInfo pubInfos)
+            boolean isTypeDocAffilie, boolean docAffilieGenerated, JadePublishDocumentInfo pubInfos, boolean docAllocSeul)
             throws JadeApplicationServiceNotAvailableException, JadePersistenceException, JadeApplicationException {
 
+        if(docAllocSeul) {
+            containerAllocSeuls.addDocument(documentToAdd, pubInfos);
         // si l'attribut est liste + lettres allocataires
         // ET
         // (document est un docAffilié OU (doc est un docAlloc ET un docAffilié a été généré)),
-        if (ALCSAffilie.ATTRIBUT_AVIS_ECH_AFFILIE.equals(attrAffilieTypeEch.getValeurAlpha())
+        } else if (ALCSAffilie.ATTRIBUT_AVIS_ECH_AFFILIE.equals(attrAffilieTypeEch.getValeurAlpha())
                 && (isTypeDocAffilie || (!isTypeDocAffilie && docAffilieGenerated))) {
             containerAffAllocs.addDocument(documentToAdd, pubInfos);
         } else {
@@ -220,7 +222,8 @@ public class ImpressionEcheancesServiceImpl implements ImpressionEcheancesServic
 
     @Override
     public JadePrintDocumentContainer loadDocuments(ArrayList<DroitEcheanceComplexModel> droitsResult,
-            String dateEcheance, boolean printCopieAllocPourDossierBeneficiaire, ProtocoleLogger logger)
+            String dateEcheance, boolean printCopieAllocPourDossierBeneficiaire, ProtocoleLogger logger,
+            boolean allocSeul)
             throws ALEcheanceModelException {
 
         containerAffAllocs = new JadePrintDocumentContainer();
@@ -258,7 +261,7 @@ public class ImpressionEcheancesServiceImpl implements ImpressionEcheancesServic
                             .getAttributAffilieByNumAffilie(ALConstAttributsEntite.AVIS_ECHEANCE_DESTINATAIRE,
                                     droitModel.getNumAffilie());
 
-                    if (isDocAffilieRequired(droitModel.getActiviteAllocataire())) {
+                    if (isDocAffilieRequired(droitModel.getActiviteAllocataire()) && !allocSeul) {
                         docAffilieGenerated = true;
                         EcheancesAffilie echAffilie = EcheancesAffilieFactory
                                 .getEcheanceListeAffilie(attributAffilieTypeAvisEch);
@@ -270,7 +273,7 @@ public class ImpressionEcheancesServiceImpl implements ImpressionEcheancesServic
                         JadePublishDocumentInfo pubInfos = fillDocInfos(droitsAffilieTemp, true,
                                 Integer.toString(incrementAffilie));
 
-                        addInSuitableDocumentContainer(docAffilie, attributAffilieTypeAvisEch, true, true, pubInfos);
+                        addInSuitableDocumentContainer(docAffilie, attributAffilieTypeAvisEch, true, true, pubInfos, false);
 
                     }
                     // pas besoin de générer les avis échéances allocataires si le paramètre est liste récapitulative ET
@@ -284,7 +287,7 @@ public class ImpressionEcheancesServiceImpl implements ImpressionEcheancesServic
                             .getActiviteAllocataire()))) {
                         traiterAvisAllocatairesDeAffilie(droitsAffilieTemp, attributAffilieTypeAvisEch,
                                 docAffilieGenerated, printCopieAllocPourDossierBeneficiaire, logger,
-                                Integer.toString(incrementAffilie));
+                                Integer.toString(incrementAffilie), allocSeul);
                     }
                 } catch (Exception e) {
                     String idDossier = droitModel.getDroitModel().getIdDossier();
@@ -334,12 +337,16 @@ public class ImpressionEcheancesServiceImpl implements ImpressionEcheancesServic
 
     private void traiterAvisAllocatairesDeAffilie(ArrayList<DroitEcheanceComplexModel> droitsAffilie,
             AttributEntiteModel attributAffilieTypeAvisEch, boolean docAffilieGenerated, boolean printCopieAlloc,
-            ProtocoleLogger logger, String incrementAffilie) throws JadePersistenceException, JadeApplicationException {
+            ProtocoleLogger logger, String incrementAffilie, boolean allocSeul) throws JadePersistenceException, JadeApplicationException {
 
         ArrayList<DroitEcheanceComplexModel> droitsAllocTemp = new ArrayList<DroitEcheanceComplexModel>();
 
         // incrementer pour les paiements directs
         int incrementPourPaiementDirect = 0;
+
+        if(allocSeul) {
+            docAffilieGenerated = true;
+        }
 
         // boucle sur la liste des enfants des allocataires de l'affilié
         for (int i = 0; i < droitsAffilie.size(); i++) {
@@ -400,17 +407,17 @@ public class ImpressionEcheancesServiceImpl implements ImpressionEcheancesServic
                 }
 
                 addInSuitableDocumentContainer(docAlloc, attributAffilieTypeAvisEch, false, docAffilieGenerated,
-                        pubInfos);
+                        pubInfos, allocSeul);
 
                 // si dossier non-actif => copie AC texte sur le doc allocataire
-                if (ALCSDossier.ACTIVITE_NONACTIF.equals(droitModelAlloc.getActiviteAllocataire())
+                if (!allocSeul && ALCSDossier.ACTIVITE_NONACTIF.equals(droitModelAlloc.getActiviteAllocataire())
                         && ALServiceLocator.getAffiliationBusinessService().requireDocumentLienAgenceCommunale()) {
                     DocumentData copiePourAC = (DocumentData) ALDeepCopy.copy(docAlloc);
                     containerCopiesAlloc.addDocument(copiePourAC, null);
                 }
 
                 // si dossier à tiersBenef ET (docAffilié pas généré OU attributAffilieTypeEch = Lettres allocataires)
-                if (printCopieAlloc
+                if (!allocSeul && printCopieAlloc
                         && (JadeNumericUtil.isIntegerPositif(droitModelAlloc.getIdTiersBeneficiaire()) && !droitModelAlloc
                                 .getIdTiersBeneficiaire().equals(droitModelAlloc.getIdTiersAllocataire()))
                         && (!docAffilieGenerated || ALCSAffilie.ATTRIBUT_AVIS_ECH_ALLOCATAIRE

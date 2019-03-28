@@ -12,6 +12,9 @@ import globaz.globall.db.BSession;
 import globaz.jade.client.util.JadeFilenameUtil;
 import globaz.jade.context.JadeThread;
 import globaz.jade.log.JadeLogger;
+import globaz.osiris.print.list.CAAbstractListExcel;
+import org.apache.poi.hssf.usermodel.HSSFFooter;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
 
 /**
  * Manage the excel output of the deadline notif list
@@ -30,6 +33,8 @@ public class ALEcheancesExcelResultList extends COAbstractListExcel {
     
     private ALEnumDocumentGroup groupPar;
 
+    private static final String PAGE_SEPARATOR = "/";
+
     /**
      * The constructor
      * 
@@ -37,17 +42,12 @@ public class ALEcheancesExcelResultList extends COAbstractListExcel {
      * @param dateEcheance
      */
     public ALEcheancesExcelResultList(BSession session, String dateEcheance, String affilie, ALEnumDocumentGroup groupPar) {
-        super(session, session.getLabel("ECHEANCES_EXCEL_PROCESS_FILENAME") + "_", session
-                .getLabel("ECHEANCES_EXCEL_PROCESS_FILENAME"));
+        super(session,JadeThread.getMessage("al.echeances.titre.protocole.avisEcheance")
+                + "_",JadeThread.getMessage("al.echeances.titre.protocole.avisEcheance"));
         this.session = session;
         this.dateEcheance = dateEcheance;
         this.groupPar = groupPar;
         setFilenameRoot("echeance");
-//        if (affilie != null) {
-//            setFilenameRoot(labels.get("ECHEANCES_EXCEL_PROCESS_FILENAME") + "_" + affilie + "_");
-//        } else {
-//            setFilenameRoot(labels.get("ECHEANCES_EXCEL_PROCESS_FILENAME") + "_");
-//        }
     }
 
     /**
@@ -61,11 +61,6 @@ public class ALEcheancesExcelResultList extends COAbstractListExcel {
             createSheet(sheetName, key, map.get(key));
         }
 
-//        if (map.isEmpty()) {
-//            createSheet((String) labels.get("ECHEANCES_EXCEL_PROCESS_NO_DATA_SHEET"));
-//            createRow();
-//            createCell((String) labels.get("ECHEANCES_EXCEL_PROCESS_NO_DATA"));
-//        }
     }
     
     public void createResultList(List<DroitEcheanceComplexModel> listeDroits) {
@@ -84,10 +79,10 @@ public class ALEcheancesExcelResultList extends COAbstractListExcel {
      */
     private void createSheet(String sheetName, String group, List<DroitEcheanceComplexModel> list) {
 
-        createSheet(sheetName);
+        HSSFSheet currentSheet = createSheet(sheetName);
         initPage(true);
         createHeader();
-        //createFooter(JadeThread.getMessage("al.protocoles.echeances.liste.entete.affilie"));
+        createFooter(JadeThread.getMessage("al.protocoles.echeances.liste.entete.affilie"));
 
         int numCol = 0;
         currentSheet.setColumnWidth((short) numCol++, (short) 5000);
@@ -127,6 +122,11 @@ public class ALEcheancesExcelResultList extends COAbstractListExcel {
             createRow(model);
         }
 
+        currentSheet.setFitToPage(true);
+        currentSheet.setAutobreaks(true);
+        currentSheet.getPrintSetup().setFitWidth((short)1);
+        currentSheet.getPrintSetup().setFitHeight((short)0);
+
     }
 
     private String getGroupName(String group) {
@@ -159,6 +159,23 @@ public class ALEcheancesExcelResultList extends COAbstractListExcel {
             JadeThread.logError(this.getClass().getName() + ".process()",
                     "Error : impossible to get the libelleMotif of the droit");
         }
+    }
+
+    /**
+     * Crée le pied de page
+     *
+     * @param refInforom
+     * @return le pied de page
+     */
+    protected HSSFFooter createFooter(String refInforom) {
+        // pied de page
+        HSSFFooter footer = currentSheet.getFooter();
+        footer.setRight(getSession().getLabel("PAGE") + HSSFFooter.page() + PAGE_SEPARATOR
+                + HSSFFooter.numPages());
+        footer.setLeft(getSession().getLabel("CACPAGE") + " : " + refInforom + " - "
+                + this.getClass().getName().substring(this.getClass().getName().lastIndexOf('.') + 1) + " - "
+                + getDateImpression() + " - " + getSession().getUserName());
+        return footer;
     }
 
     /**

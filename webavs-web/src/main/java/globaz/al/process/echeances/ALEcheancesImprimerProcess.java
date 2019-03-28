@@ -180,7 +180,7 @@ public class ALEcheancesImprimerProcess extends ALAbsrtactProcess {
             pubInfo.setDocumentTypeNumber(ALEcheancesImprimerProcess.CODE_INFOROM_AVIS_ECHEANCE);
 
             container = ALServiceLocator.getImpressionEcheancesServices().loadDocuments(listeDroitUniqueEcheanceFin,
-                    getDateEcheance(), copieAllocPourDossierBeneficiaire, logger);
+                    getDateEcheance(), copieAllocPourDossierBeneficiaire, logger, false);
 
             container.setMergedDocDestination(pubInfo);
 
@@ -274,8 +274,6 @@ public class ALEcheancesImprimerProcess extends ALAbsrtactProcess {
             if(pays.get(key) == null) {
                 pays.put(key, ALEcheanceUtils.getLibellePays(key, getSession().getIdLangueISO()));
             }
-            key = pays.get(key);
-            infosMailTmp.put(key, key);
             ALEcheanceUtils.createMap(map, droit, key);
         }
         
@@ -283,24 +281,24 @@ public class ALEcheancesImprimerProcess extends ALAbsrtactProcess {
         SortedSet<String> keys = new TreeSet<>(map.keySet());
         
         for (String keyByFile : keys) {
-            DocumentData data = ALServiceLocator.getProtocoleDroitEcheancesService().loadData(map.get(keyByFile),
-                    ALConstEcheances.LISTE_AVIS_ECHEANCES, getDateEcheance());
-            
-            JadePrintDocumentContainer container = ALServiceLocator.getImpressionEcheancesServices().loadDocuments(listeDroits,
-                    getDateEcheance(), copieAllocPourDossierBeneficiaire, logger) ; 
-            
-            JadePublishDocumentInfo pubInfo = new JadePublishDocumentInfo();
-            pubInfo.setOwnerEmail(JadeThread.currentUserEmail());
-            pubInfo.setOwnerId(JadeThread.currentUserId());
-            pubInfo.setDocumentTitle(JadeThread.getMessage("al.echeances.titre.protocole.avisEcheance"));
-            pubInfo.setDocumentSubject(JadeThread.getMessage("al.echeances.titre.protocole.avisEcheance") + " - "
-                    + infosMailTmp.get(keyByFile));
-            pubInfo.setDocumentDate(JadeDateUtil.getGlobazFormattedDate(new Date()));
-            pubInfo.setPublishDocument(true);
-            container.addDocument(data, pubInfo);
-            
-            //container.setMergedDocDestination(pubInfo);
-            createDocuments(container);
+            // Pour les pays autre que Suisse
+            if(!"100".equals(keyByFile)){
+
+                JadePrintDocumentContainer container = ALServiceLocator.getImpressionEcheancesServices().loadDocuments(map.get(keyByFile),
+                        getDateEcheance(), copieAllocPourDossierBeneficiaire, logger, true) ;
+
+                JadePublishDocumentInfo pubInfo = new JadePublishDocumentInfo();
+                pubInfo.setOwnerEmail(JadeThread.currentUserEmail());
+                pubInfo.setOwnerId(JadeThread.currentUserId());
+                pubInfo.setDocumentTitle(JadeThread.getMessage("al.echeances.titre.protocole.avisEcheance"));
+                pubInfo.setDocumentSubject(JadeThread.getMessage("al.echeances.titre.protocole.avisEcheance") + " - "
+                        + pays.get(keyByFile));
+                pubInfo.setDocumentDate(JadeDateUtil.getGlobazFormattedDate(new Date()));
+                pubInfo.setPublishDocument(true);
+                container.setMergedDocDestination(pubInfo);
+
+                createDocuments(container);
+            }
         }
         
     }

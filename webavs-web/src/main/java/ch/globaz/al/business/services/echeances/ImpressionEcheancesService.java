@@ -34,7 +34,8 @@ public interface ImpressionEcheancesService extends JadeApplicationService {
      *             faire
      */
     public JadePrintDocumentContainer loadDocuments(ArrayList<DroitEcheanceComplexModel> droitsResult,
-            String dateEcheance, boolean printCopieAllocPourDossierBeneficiaire, ProtocoleLogger logger)
+            String dateEcheance, boolean printCopieAllocPourDossierBeneficiaire, ProtocoleLogger logger,
+            boolean allocSeul)
             throws JadePersistenceException, JadeApplicationException;
 
 }
