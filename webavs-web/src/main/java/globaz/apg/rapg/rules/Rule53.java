@@ -56,6 +56,7 @@ public class Rule53 extends Rule {
         services.add(APGenreServiceAPG.InspectionRecrutementLiberation.getCodePourAnnonce());
         services.add(APGenreServiceAPG.CongeJeunesse.getCodePourAnnonce());
         services.add(APGenreServiceAPG.ServiceEtranger.getCodePourAnnonce());
+        services.add(APGenreServiceAPG.DecesDemiJour.getCodePourAnnonce());
 
         if (services.contains(serviceType)) {
             boolean hasComplementCIAB = false;

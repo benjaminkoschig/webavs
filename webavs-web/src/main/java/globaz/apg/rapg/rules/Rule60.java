@@ -11,18 +11,18 @@ import globaz.globall.db.FWFindParameter;
 /**
  * <strong>Règles de validation des plausibilités RAPG des jours isolés</br>
  * Description :</strong></br>
- * Si le champ « serviceType » = 504
- * et le champ « numberOfDays » est > la plage de valeur ISOLEDECED (normalement = 3) -> erreur </br>
+ * Si le champ « serviceType » = 508
+ * et le champ « numberOfDays » est > la plage de valeur ISOLEDECED (normalement = 1) -> erreur </br>
  * <strong>Champs concerné(s) :</strong></br>
  *
  * @author mpe
  */
-public class Rule57 extends Rule {
+public class Rule60 extends Rule {
 
     /**
      * @param errorCode
      */
-    public Rule57(String errorCode) {
+    public Rule60(String errorCode) {
         super(errorCode, true);
     }
 
@@ -36,12 +36,12 @@ public class Rule57 extends Rule {
     public boolean check(APChampsAnnonce champsAnnonce) throws APRuleExecutionException, IllegalArgumentException {
         String serviceType = champsAnnonce.getServiceType();
 
-        if (serviceType.equals(APGenreServiceAPG.Deces.getCodePourAnnonce())) {
+        if (serviceType.equals(APGenreServiceAPG.DecesDemiJour.getCodePourAnnonce())) {
             try {
                 BigDecimal nbJours = new BigDecimal(champsAnnonce.getNumberOfDays());
                 BigDecimal valPlage = new BigDecimal(
                         FWFindParameter.findParameter(getSession().getCurrentThreadTransaction(), "1",
-                                APParameter.NOMBRE_JOURS_ISOLES_DECES.getParameterName(),
+                                APParameter.NOMBRE_JOURS_ISOLES_DECES_DEMI_JOUR.getParameterName(),
                                 champsAnnonce.getStartOfPeriod(), "", 0));
                 if (nbJours.compareTo(valPlage) >= 1) {
                     return false;

@@ -102,7 +102,6 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
     private static final String PARAMETER_PRESTATION_COMPLEMENTAIRE = "FIELD_PREST_COMPL";
     private static final long serialVersionUID = -6053653641306384554L;
 
-    
     private static final String NB_JOURS_DECES = "0.5";
 
     private ICaisseReportHelper caisseHelper;
@@ -1882,7 +1881,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                 // Récupération du texte dans le catalogue
                 texteDetailJournalier = document.getTextes(3).getTexte(44).getDescription();
                 // Insertion du nombre de jours dans le texte
-                if(repartition.getGenreService().equals(APGenreServiceAPG.Deces.getCodeSysteme())) {
+                if (repartition.getGenreService().equals(APGenreServiceAPG.DecesDemiJour.getCodeSysteme())) {
                     texteDetailJournalier = PRStringUtils.replaceString(texteDetailJournalier, "{nbJours}",
                             NB_JOURS_DECES);
                 } else {
@@ -2121,7 +2120,7 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
 
     /**
      * @param decompteCourant
-     *            the decompteCourant to set
+     *                            the decompteCourant to set
      */
     public final void setDecompteCourant(final APDecompte decompteCourant) {
         this.decompteCourant = decompteCourant;

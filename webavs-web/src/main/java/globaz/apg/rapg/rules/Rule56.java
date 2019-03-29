@@ -11,8 +11,8 @@ import globaz.globall.db.FWFindParameter;
 /**
  * <strong>Règles de validation des plausibilités RAPG des jours isolés</br>
  * Description :</strong></br>
- * Si le champ « serviceType » = 501
- * et le champ « numberOfDays » est > la plage de valeur ISOLEDEMEN (normalement = 1) -> erreur </br>
+ * Si le champ « serviceType » = 503
+ * et le champ « numberOfDays » est > la plage de valeur ISOLEMARIA (normalement = 2) -> erreur </br>
  * <strong>Champs concerné(s) :</strong></br>
  *
  * @author mpe

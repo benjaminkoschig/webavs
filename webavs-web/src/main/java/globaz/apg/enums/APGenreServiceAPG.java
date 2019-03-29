@@ -26,10 +26,11 @@ public enum APGenreServiceAPG {
     Deces("504", IAPDroitLAPG.CS_DECES_CIAB),
     InspectionRecrutementLiberation("505", IAPDroitLAPG.CS_JOURNEES_DIVERSES_CIAB),
     CongeJeunesse("506", IAPDroitLAPG.CS_CONGE_JEUNESSE_CIAB),
-    ServiceEtranger("507", IAPDroitLAPG.CS_SERVICE_ETRANGER_CIAB);
+    ServiceEtranger("507", IAPDroitLAPG.CS_SERVICE_ETRANGER_CIAB),
+    DecesDemiJour("508", IAPDroitLAPG.CS_DECES_DEMI_JOUR_CIAB);
 
     ;
-    
+
     public static APGenreServiceAPG resoudreGenreParCodeSystem(final String codeSystem) {
         for (final APGenreServiceAPG genre : APGenreServiceAPG.values()) {
             if (genre.codeSysteme.equals(codeSystem)) {

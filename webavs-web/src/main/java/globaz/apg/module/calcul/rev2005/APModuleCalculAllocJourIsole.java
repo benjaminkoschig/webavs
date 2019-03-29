@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Iterator;
 import java.util.List;
+import globaz.apg.api.droits.IAPDroitLAPG;
 import globaz.apg.application.APApplication;
 import globaz.apg.db.droits.APSituationProfessionnelle;
 import globaz.apg.db.droits.APSituationProfessionnelleManager;
@@ -54,6 +55,11 @@ public class APModuleCalculAllocJourIsole extends AAPModuleCalculSalaireJournali
         BigDecimal salaireMensuel = new BigDecimal(revenuDeterminantMoyen.toString()).multiply(new BigDecimal(30));
         BigDecimal salaireJournalier = arrondir(
                 salaireMensuel.divide(DIVISION_CALCUL_JOUR_ISOLE, 2, RoundingMode.HALF_UP));
+
+        // Diviser le montant journalier par deux car c'est un demi jour et non un jour complet
+        if (IAPDroitLAPG.CS_DECES_DEMI_JOUR_CIAB.equals(baseCalcul.getTypeAllocation())) {
+            salaireJournalier = salaireJournalier.divide(new BigDecimal(2));
+        }
 
         if (salaireJournalier.compareTo(salaireMax) >= 1) {
             salaireJournalier = salaireMax;
@@ -113,7 +119,7 @@ public class APModuleCalculAllocJourIsole extends AAPModuleCalculSalaireJournali
                             || assurance.getAssuranceId().equals(idAssurancePersonnelBE)) {
                         return ECanton.BE;
                     } else if (assurance.getAssuranceId().equals(idAssuranceParitaireJU)
-                            || assurance.getAssuranceId().equals(idAssurancePersonnelJU) ){
+                            || assurance.getAssuranceId().equals(idAssurancePersonnelJU)) {
                         return ECanton.JU;
                     }
                 }

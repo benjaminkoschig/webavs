@@ -29,6 +29,9 @@ insert into SCHEMA.FWCOUP(pcosid,plaide,pcouid,pcolut, pspy)values (52001055,'D'
 insert into SCHEMA.FWCOSP(pcosid,pptygr,pconcs,pptycn,pptycl,pptysa,pcosli,pcosdf,pcosdm,pcosdp,pcoian,pcoide,pcodfi,pcoitc,pcoise, pspy)values (52001056,'APGENSERVI',1,1,0,0,'SERVICE_ETRANGER',2,1,2,2,2,2,51000001,0, 'spy'); 
 insert into SCHEMA.FWCOUP(pcosid,plaide,pcouid,pcolut, pspy)values (52001056,'F','507','Service à  l''étranger','spy'); 
 insert into SCHEMA.FWCOUP(pcosid,plaide,pcouid,pcolut, pspy)values (52001056,'D','507','Service à  l''étranger','spy'); 
+insert into SCHEMA.FWCOSP(pcosid,pptygr,pconcs,pptycn,pptycl,pptysa,pcosli,pcosdf,pcosdm,pcosdp,pcoian,pcoide,pcodfi,pcoitc,pcoise, pspy)values (52001057,'APGENSERVI',1,1,0,0,'DECES_DEMI_JOUR',2,1,2,2,2,2,51000001,0, 'spy'); 
+insert into SCHEMA.FWCOUP(pcosid,plaide,pcouid,pcolut, pspy)values (52001057,'F','508','Décès (demi-journée)','spy'); 
+insert into SCHEMA.FWCOUP(pcosid,plaide,pcouid,pcolut, pspy)values (52001057,'D','508','Décès (demi-journée)','spy'); 
 
 delete from SCHEMA.FWCOSP where pcosid in(52015006, 52015007);
 delete from SCHEMA.FWCOUP where pcosid in(52015006, 52015007);
@@ -50,6 +53,7 @@ INSERT INTO SCHEMA.FWPARP (PPARAP,PPACDI,PPARIA,PPADDE,PPARPD,PCOSID,PPARPF,PPAR
 INSERT INTO SCHEMA.FWPARP (PPARAP,PPACDI,PPARIA,PPADDE,PPARPD,PCOSID,PPARPF,PPARVA,PPRAVN,PPRADE,CSTYUN,PCOITC,PSPY) VALUES ('APG       ','ISOLEDECES',0,20100101,0.000000,1,0.000000,'',3.000000,'Jours isolés, décès',0,0,'                        ');
 INSERT INTO SCHEMA.FWPARP (PPARAP,PPACDI,PPARIA,PPADDE,PPARPD,PCOSID,PPARPF,PPARVA,PPRAVN,PPRADE,CSTYUN,PCOITC,PSPY) VALUES ('APG       ','ISOLEDIVER',0,20100101,0.000000,1,0.000000,'',1.000000,'Jours isolés, Inspection Recrutement Libération',0,0,'                        ');
 INSERT INTO SCHEMA.FWPARP (PPARAP,PPACDI,PPARIA,PPADDE,PPARPD,PCOSID,PPARPF,PPARVA,PPRAVN,PPRADE,CSTYUN,PCOITC,PSPY) VALUES ('APG       ','ISOLEJEUNE',0,20100101,0.000000,1,0.000000,'',5.000000,'Jours isolés, congé jeunesse',0,0,'                        ');
+INSERT INTO SCHEMA.FWPARP (PPARAP,PPACDI,PPARIA,PPADDE,PPARPD,PCOSID,PPARPF,PPARVA,PPRAVN,PPRADE,CSTYUN,PCOITC,PSPY) VALUES ('APG       ','ISOLEDECED',0,20100101,0.000000,1,0.000000,'',1.000000,'Jours isolés, décès (demi-journée)',0,0,'                        ');
 
 INSERT INTO SCHEMA.CTTEXTES (CDITXT,CDLDES,CDLCIL,CDIELE,PSPY) VALUES (2000000583,'Le montant des lignes comportant une * n''est pas soumis à la LAA','de',2000000196,'20190211161010globaz    ');
 INSERT INTO SCHEMA.CTTEXTES (CDITXT,CDLDES,CDLCIL,CDIELE,PSPY) VALUES (2000000584,'Le montant des lignes comportant une * n''est pas soumis à la LAA','fr',2000000196,'20190211161010globaz    ');

@@ -10,8 +10,8 @@ import globaz.prestation.utils.PRDateUtils;
 /**
  * <strong>Règles de validation des plausibilités RAPG</br>
  * Description :</strong></br>
- * Si le champ « serviceType » = 15
- * et/ou 16 et le champ « numberOfDays » est > 42 jours -> erreur </br>
+ * Si le champ « serviceType » = 506
+ * i l’assuré a plus de 30 ans -> erreur </br>
  * <strong>Champs concerné(s) :</strong></br>
  *
  * @author eniv

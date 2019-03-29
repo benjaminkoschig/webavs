@@ -110,7 +110,8 @@ public class APPlausibilitesApgServiceImpl implements APPlausibilitesApgService 
                 || APAllPlausibiliteRules.R_56.getCodeAsString().equals(rule.getErrorCode())
                 || APAllPlausibiliteRules.R_57.getCodeAsString().equals(rule.getErrorCode())
                 || APAllPlausibiliteRules.R_58.getCodeAsString().equals(rule.getErrorCode())
-                || APAllPlausibiliteRules.R_59.getCodeAsString().equals(rule.getErrorCode());
+                || APAllPlausibiliteRules.R_59.getCodeAsString().equals(rule.getErrorCode())
+                || APAllPlausibiliteRules.R_60.getCodeAsString().equals(rule.getErrorCode());
     }
 
     /*
@@ -447,6 +448,8 @@ public class APPlausibilitesApgServiceImpl implements APPlausibilitesApgService 
                 parametre = APParameter.NOMBRE_JOURS_ISOLES_INSPECTION_RECRUTEMENT_LIBERATION.getParameterName();
             } else if (APAllPlausibiliteRules.R_59.getCodeAsString().equals(code)) {
                 parametre = APParameter.NOMBRE_JOURS_ISOLES_CONGE_JEUNESSE.getParameterName();
+            } else if (APAllPlausibiliteRules.R_60.getCodeAsString().equals(code)) {
+                parametre = APParameter.NOMBRE_JOURS_ISOLES_DECES_DEMI_JOUR.getParameterName();
             }
             if (parametre != null) {
                 BigDecimal valPlage = new BigDecimal(FWFindParameter.findParameter(

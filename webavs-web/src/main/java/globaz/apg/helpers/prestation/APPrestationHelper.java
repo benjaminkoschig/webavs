@@ -473,7 +473,7 @@ public class APPrestationHelper extends PRAbstractHelper {
 
         String hasComplement = JadePropertiesService.getInstance().getProperty(APApplication.PROPERTY_IS_FERCIAB);
 
-        if (!"true".equals(hasComplement) || APModuleCalculAPG.isTypeAllocationJourIsole(droit.getGenreService())) {
+        if (!"true".equals(hasComplement) || APGUtils.isTypeAllocationJourIsole(droit.getGenreService())) {
             return;
         }
 

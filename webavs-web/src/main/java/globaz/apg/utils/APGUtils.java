@@ -85,6 +85,7 @@ public class APGUtils {
                 || IAPDroitLAPG.CS_DECES_CIAB.equals(csTypeAllocation)
                 || IAPDroitLAPG.CS_JOURNEES_DIVERSES_CIAB.equals(csTypeAllocation)
                 || IAPDroitLAPG.CS_CONGE_JEUNESSE_CIAB.equals(csTypeAllocation)
-                || IAPDroitLAPG.CS_SERVICE_ETRANGER_CIAB.equals(csTypeAllocation)) && "true".equals(isFerciab);
+                || IAPDroitLAPG.CS_SERVICE_ETRANGER_CIAB.equals(csTypeAllocation)
+                || IAPDroitLAPG.CS_DECES_DEMI_JOUR_CIAB.equals(csTypeAllocation)) && "true".equals(isFerciab);
     }
 }

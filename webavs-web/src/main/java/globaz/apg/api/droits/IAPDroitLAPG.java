@@ -122,5 +122,6 @@ public interface IAPDroitLAPG {
     public final static String CS_JOURNEES_DIVERSES_CIAB = "52001054";
     public final static String CS_CONGE_JEUNESSE_CIAB = "52001055";
     public final static String CS_SERVICE_ETRANGER_CIAB = "52001056";
+    public final static String CS_DECES_DEMI_JOUR_CIAB = "52001057";
 
 }

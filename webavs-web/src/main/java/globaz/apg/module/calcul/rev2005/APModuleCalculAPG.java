@@ -4,15 +4,14 @@
 package globaz.apg.module.calcul.rev2005;
 
 import globaz.apg.api.droits.IAPDroitLAPG;
-import globaz.apg.application.APApplication;
 import globaz.apg.module.calcul.APBaseCalcul;
 import globaz.apg.module.calcul.APCalculException;
 import globaz.apg.module.calcul.APResultatCalcul;
 import globaz.apg.module.calcul.interfaces.IAPCalculateur;
 import globaz.apg.module.calcul.interfaces.IAPModuleCalcul;
 import globaz.apg.module.calcul.interfaces.IAPReferenceDataPrestation;
+import globaz.apg.utils.APGUtils;
 import globaz.globall.db.BSession;
-import globaz.jade.properties.JadePropertiesService;
 
 /**
  * Description : Facade fournissant un point d'entrée pour le calcul des prestation APG selon la révision 1999.
@@ -79,7 +78,7 @@ public class APModuleCalculAPG implements IAPCalculateur {
                 || (IAPDroitLAPG.CS_SERVICE_INTERRUPTION_AVANT_ECOLE_SOUS_OFF.equals(baseCalcul.getTypeAllocation())
                         && (baseCalcul.getNombreEnfants() > 0))) {
             alloc = new APModuleCalculAllocServiceNormal();
-        } else if (APModuleCalculAPG.isTypeAllocationJourIsole(baseCalcul.getTypeAllocation())) {
+        } else if (APGUtils.isTypeAllocationJourIsole(baseCalcul.getTypeAllocation())) {
             APModuleCalculAllocJourIsole allocJoursIsole = new APModuleCalculAllocJourIsole();
             result = allocJoursIsole.calculerMontantAllocation(baseCalcul, refDataPrestation, session);
             return result;
@@ -89,17 +88,6 @@ public class APModuleCalculAPG implements IAPCalculateur {
 
         result = alloc.calculerMontantAllocation(baseCalcul, refDataPrestation);
         return result;
-    }
-
-    public static Boolean isTypeAllocationJourIsole(String csTypeAllocation) {
-        String isFerciab = JadePropertiesService.getInstance().getProperty(APApplication.PROPERTY_IS_FERCIAB);
-        return (IAPDroitLAPG.CS_DEMENAGEMENT_CIAB.equals(csTypeAllocation)
-                || IAPDroitLAPG.CS_NAISSANCE_CIAB.equals(csTypeAllocation)
-                || IAPDroitLAPG.CS_MARIAGE_LPART_CIAB.equals(csTypeAllocation)
-                || IAPDroitLAPG.CS_DECES_CIAB.equals(csTypeAllocation)
-                || IAPDroitLAPG.CS_JOURNEES_DIVERSES_CIAB.equals(csTypeAllocation)
-                || IAPDroitLAPG.CS_CONGE_JEUNESSE_CIAB.equals(csTypeAllocation)
-                || IAPDroitLAPG.CS_SERVICE_ETRANGER_CIAB.equals(csTypeAllocation)) && "true".equals(isFerciab);
     }
 
     /*
