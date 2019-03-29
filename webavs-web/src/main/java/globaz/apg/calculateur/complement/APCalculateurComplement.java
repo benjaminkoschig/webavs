@@ -98,9 +98,9 @@ public class APCalculateurComplement implements IAPPrestationCalculateur<APCalcu
 
                     APSituationProfessionnelleCanton sitProf = prestationStandard.getSituationProfessionnelle().get(repartition.getIdSituationProfessionnelle());
 
-                    BigDecimal montantBrutReparti =  montantBrutJournalier.multiply((new BigDecimal(repartition.getTauxRJM()).divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP)));
+                    BigDecimal montantBrutReparti =  montantBrutJournalier.multiply((new BigDecimal(repartition.getTauxRJM()).divide(new BigDecimal("100"), 10, RoundingMode.HALF_UP)));
 
-                    final BigDecimal montantBrutRepartition = getMontantBrutRepartition(
+                    BigDecimal montantBrutRepartition = getMontantBrutRepartition(
                             montantBrutReparti, prestationCalculeeAPersister.getNombreDeJoursSoldes());
                     final BigDecimal[] tauxAvsAcFne = prestationStandard.getTaux().get(sitProf.getId());
 
@@ -111,6 +111,7 @@ public class APCalculateurComplement implements IAPPrestationCalculateur<APCalcu
                             APProperties.ASSURANCE_AC_PAR_ID.getValue());
 
                     // création de la répartition
+                    montantBrutRepartition = arrondir(montantBrutRepartition);
                     final APRepartitionPaiementData repartitionPaiementData = creerRepartition(
                             montantBrutRepartition, cotisationAvs, cotisationAc,
                             IAPRepartitionPaiements.CS_NORMAL, IAPRepartitionPaiements.CS_PAIEMENT_EMPLOYEUR,
@@ -173,10 +174,10 @@ public class APCalculateurComplement implements IAPPrestationCalculateur<APCalcu
         final BigDecimal montantNetRepartition;
         if(IAFAffiliation.TYPE_AFFILI_INDEP.equals(typeAffiliation)) {
             montantNetRepartition = getMontantNetRepartitionIndependant(montantBrutRepartition,
-                    arrondir(cotisationAvs.getMontantCotisation()), arrondir(cotisationAc.getMontantCotisation()));
+                    cotisationAvs.getMontantCotisation(), cotisationAc.getMontantCotisation());
         } else {
             montantNetRepartition = getMontantNetRepartition(montantBrutRepartition,
-                    arrondir(cotisationAvs.getMontantCotisation()), arrondir(cotisationAc.getMontantCotisation()));
+                    cotisationAvs.getMontantCotisation(), cotisationAc.getMontantCotisation());
         }
 
         // création de la répartition
