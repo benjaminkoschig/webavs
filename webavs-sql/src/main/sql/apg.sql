@@ -1,8 +1,8 @@
 --S170313_002-FERCIAB-Implémentation du module APG
-INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL) VALUES ('apg.assurance.complementCIAB.ju.paritaire.id','');
-INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL) VALUES ('apg.assurance.complementCIAB.ju.personnel.id','');
-INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL) VALUES ('apg.assurance.complementCIAB.be.paritaire.id','');
-INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL) VALUES ('apg.assurance.complementCIAB.be.personnel.id','');
+INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL) VALUES ('apg.assurance.complementCIAB.ju.paritaire.id','0');
+INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL) VALUES ('apg.assurance.complementCIAB.ju.personnel.id','0');
+INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL) VALUES ('apg.assurance.complementCIAB.be.paritaire.id','0');
+INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL) VALUES ('apg.assurance.complementCIAB.be.personnel.id','0');
 
 INSERT INTO SCHEMA.JADEPROP (PROPNAME,PROPVAL) VALUES ('apg.isFERCIAB','false');
 
