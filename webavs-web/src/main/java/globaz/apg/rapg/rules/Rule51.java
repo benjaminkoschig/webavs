@@ -13,8 +13,8 @@ import globaz.jade.client.util.JadeDateUtil;
 /**
  * <strong>Règles de validation des plausibilités RAPG</br>
  * Description :</strong></br>
- * Si le champ « serviceType » = 15
- * et/ou 16 et le champ « numberOfDays » est > 42 jours -> erreur </br>
+ * Si l'assuré a déjà bénéficié d'un déménagement dans les 6 mois
+ * avant et / ou après le droit actuel -> erreur </br>
  * <strong>Champs concerné(s) :</strong></br>
  *
  * @author eniv
@@ -42,7 +42,7 @@ public class Rule51 extends Rule {
 
         if (serviceType.equals(APGenreServiceAPG.Demenagement.getCodePourAnnonce())) {
             String dateDebutPeriodeControle = JadeDateUtil.addMonths(startOfPeriod, -6);
-            String dateFinPeriodeControle = startOfPeriod;
+            String dateFinPeriodeControle = JadeDateUtil.addMonths(startOfPeriod, 6);
             List<String> forIn = new ArrayList<String>();
             forIn.add(APGenreServiceAPG.Demenagement.getCodeSysteme());
             String nss = champsAnnonce.getInsurant();
