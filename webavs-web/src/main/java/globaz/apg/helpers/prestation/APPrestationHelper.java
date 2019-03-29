@@ -97,6 +97,8 @@ import globaz.naos.api.IAFAffiliation;
 import globaz.naos.api.IAFAssurance;
 import globaz.naos.api.IAFCotisation;
 import globaz.naos.application.AFApplication;
+import globaz.naos.db.affiliation.AFAffiliation;
+import globaz.naos.db.affiliation.AFAffiliationManager;
 import globaz.naos.db.tauxAssurance.AFTauxAssurance;
 import globaz.naos.db.tauxAssurance.AFTauxAssuranceManager;
 import globaz.prestation.acor.PRACORException;
@@ -1183,6 +1185,11 @@ public class APPrestationHelper extends PRAbstractHelper {
         List<APSitProJointEmployeur> apEmpList = new ArrayList<>();
         // Récupération des taux
         for (final APSitProJointEmployeur apSitProJoiEmp : apSitProJoiEmpList) {
+
+            String typeAffiliation = getTypeAffiliation(session, apSitProJoiEmp.getIdAffilie());
+
+            donneesPersistence.getMapTypeAffiliation().put(apSitProJoiEmp.getIdSitPro(), typeAffiliation);
+
             // {taux AVS par, taux AC par,taux FNE par}>
             final BigDecimal[] taux = new BigDecimal[3];
 
@@ -1238,6 +1245,20 @@ public class APPrestationHelper extends PRAbstractHelper {
         putMontantMax(session, dateDebutPrestationStandard, montantsMax, EMontantsMax.COMCIABBEA);
         donneesPersistence.setMontantsMax(montantsMax);
         return donneesPersistence;
+    }
+
+    private String getTypeAffiliation(BSession session, String idAffiliation) throws Exception {
+        AFAffiliationManager affiliationManager = new AFAffiliationManager();
+        affiliationManager.setSession(session);
+        affiliationManager.setForAffiliationId(idAffiliation);
+
+        affiliationManager.find(BManager.SIZE_USEDEFAULT);
+        if (affiliationManager.size() > 0) {
+            // récupération de l'affiliation
+            AFAffiliation affiliation = (AFAffiliation) affiliationManager.getFirstEntity();
+            return affiliation.getTypeAffiliation();
+        }
+        return null;
     }
 
     private void putMontantMax(BSession session, String date, Map<EMontantsMax, BigDecimal> montantsMax,

@@ -17,10 +17,11 @@ public class APSituationProfessionnelleCanton {
     private String idTiersPaiementEmployeur = "";
     private String idDomainePaiementEmployeur = "";
     private ECanton canton = null;
+    private String typeAffiliation = "";
 
     public APSituationProfessionnelleCanton(APAssuranceTypeAssociation association, String dateDebut, String dateFin,
             BigDecimal montantJournalier, String id, String idTiersEmployeur, String idAffilie, String nom,
-            String idTiersPaiementEmployeur, String idDomainePaiementEmployeur) {
+            String idTiersPaiementEmployeur, String idDomainePaiementEmployeur, String typeAffiliation) {
         super();
         this.association = association;
         this.dateDebut = dateDebut;
@@ -32,6 +33,7 @@ public class APSituationProfessionnelleCanton {
         this.nom = nom;
         this.idTiersPaiementEmployeur = idTiersPaiementEmployeur;
         this.idDomainePaiementEmployeur = idDomainePaiementEmployeur;
+        this.typeAffiliation = typeAffiliation;
     }
 
     public APAssuranceTypeAssociation getAssociation() {
@@ -64,6 +66,10 @@ public class APSituationProfessionnelleCanton {
 
     public String getNom() {
         return nom;
+    }
+
+    public String getTypeAffiliation() {
+        return typeAffiliation;
     }
 
     public void setAssociation(APAssuranceTypeAssociation association) {
@@ -120,5 +126,9 @@ public class APSituationProfessionnelleCanton {
 
     public void setCanton(ECanton canton) {
         this.canton = canton;
+    }
+
+    private void setTypeAffiliation(String typeAffiliation) {
+        this.typeAffiliation = typeAffiliation;
     }
 }

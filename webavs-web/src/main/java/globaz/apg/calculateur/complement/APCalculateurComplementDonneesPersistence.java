@@ -29,11 +29,14 @@ public class APCalculateurComplementDonneesPersistence {
     private List<APSitProJointEmployeur> situationProfessionnelleEmployeur = null;
     private List<APPrestation> listPrestationStandard;
     private APDroitLAPG droit;
+
+    private Map<String, String> mapTypeAffiliation = new HashMap<>();
     
     private Map<String, BigDecimal[]> taux = new HashMap<String, BigDecimal[]>();
     private Map<String, FWCurrency> mapRMD;
     private Map<EMontantsMax, BigDecimal> montantsMax;
     private Map<String, ECanton> mapCanton;
+
 
     // Ecriture
     private List<APRepartitionPaiementData> repartitionsPaiementMap = new ArrayList<>();
@@ -186,4 +189,14 @@ public class APCalculateurComplementDonneesPersistence {
     public void setMapCanton(Map<String, ECanton> mapCanton) {
         this.mapCanton = mapCanton;
     }
+
+    public Map<String, String> getMapTypeAffiliation() {
+        return mapTypeAffiliation;
+    }
+
+    public void setMapTypeAffiliation(Map<String, String> mapTypeAffiliation) {
+        this.mapTypeAffiliation = mapTypeAffiliation;
+    }
+
+
 }
