@@ -7,6 +7,7 @@ import java.util.SortedSet;
 import ch.globaz.al.business.constantes.enumerations.echeances.ALEnumDocumentGroup;
 import ch.globaz.al.business.models.droit.DroitEcheanceComplexModel;
 import ch.globaz.al.business.services.ALServiceLocator;
+import globaz.al.process.echeances.ALEcheancesExcelProcess;
 import globaz.aquila.print.list.COAbstractListExcel;
 import globaz.globall.db.BSession;
 import globaz.jade.client.util.JadeFilenameUtil;
@@ -82,7 +83,7 @@ public class ALEcheancesExcelResultList extends COAbstractListExcel {
         HSSFSheet currentSheet = createSheet(sheetName);
         initPage(true);
         createHeader();
-        createFooter(JadeThread.getMessage("al.protocoles.echeances.liste.entete.affilie"));
+        createFooter(ALEcheancesExcelProcess.CODE_INFOROM_AVIS_ECHEANCE_EXCEL);
 
         int numCol = 0;
         currentSheet.setColumnWidth((short) numCol++, (short) 5000);

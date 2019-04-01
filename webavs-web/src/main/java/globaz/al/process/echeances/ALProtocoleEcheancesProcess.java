@@ -11,16 +11,14 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import ch.globaz.al.business.constantes.ALConstEcheances;
 import ch.globaz.al.business.constantes.enumerations.echeances.ALEnumDocumentGroup;
+import ch.globaz.al.business.exceptions.echeances.ALEcheancesException;
 import ch.globaz.al.business.models.droit.DroitEcheanceComplexModel;
 import ch.globaz.al.business.services.ALServiceLocator;
 import ch.globaz.al.business.services.echeances.DroitEcheanceService;
 import ch.globaz.al.utils.ALEcheanceUtils;
-import ch.globaz.topaz.core.TopazSystem;
 import ch.globaz.topaz.datajuicer.DocumentData;
 import globaz.al.process.ALAbsrtactProcess;
 import globaz.jade.client.util.JadeDateUtil;
-import globaz.jade.client.util.JadeFilenameUtil;
-import globaz.jade.common.Jade;
 import globaz.jade.context.JadeThread;
 import globaz.jade.i18n.JadeI18n;
 import globaz.jade.log.JadeLogger;
@@ -40,6 +38,8 @@ public class ALProtocoleEcheancesProcess extends ALAbsrtactProcess {
      * 
      */
     private static final long serialVersionUID = 1L;
+
+    private static final String CODE_INFOROM_AVIS_ECHEANCE = "3001WAF";
     /**
      * Exclusion en compte des dossiers adi, par défaut oui
      */
@@ -157,6 +157,7 @@ public class ALProtocoleEcheancesProcess extends ALAbsrtactProcess {
             pubInfo.setDocumentTitle(JadeThread.getMessage("al.echeances.titre.protocole.dossierReviser"));
             pubInfo.setDocumentSubject(JadeThread.getMessage("al.echeances.titre.protocole.dossierReviser"));
             pubInfo.setDocumentDate(JadeDateUtil.getGlobazFormattedDate(new Date()));
+            pubInfo.setDocumentTypeNumber(ALEcheanceAReviserProcess.CODE_INFOROM_AVIS_ECHEANCE_REVISER);
             pubInfo.setPublishDocument(true);
 
             try {
@@ -197,6 +198,7 @@ public class ALProtocoleEcheancesProcess extends ALAbsrtactProcess {
             pubInfo.setDocumentTitle(JadeThread.getMessage("al.echeances.titre.protocole.avisEcheance"));
             pubInfo.setDocumentSubject(JadeThread.getMessage("al.echeances.titre.protocole.avisEcheance"));
             pubInfo.setDocumentDate(JadeDateUtil.getGlobazFormattedDate(new Date()));
+            pubInfo.setDocumentTypeNumber(CODE_INFOROM_AVIS_ECHEANCE);
             pubInfo.setPublishDocument(true);
             
             container.addDocument(ALServiceLocator.getProtocoleDroitEcheancesService().loadData(listeDroits,
@@ -249,43 +251,97 @@ public class ALProtocoleEcheancesProcess extends ALAbsrtactProcess {
                     pubInfo.setDocumentSubject(JadeThread.getMessage("al.echeances.titre.protocole.avisEcheance") + " - "
                             + infosMail.get(data));
                     pubInfo.setDocumentDate(JadeDateUtil.getGlobazFormattedDate(new Date()));
+                    pubInfo.setDocumentTypeNumber(CODE_INFOROM_AVIS_ECHEANCE);
                     pubInfo.setPublishDocument(true);
                     container.addDocument(data, pubInfo);
                 }
             } else {
-                TopazSystem ts = TopazSystem.getInstance();
-                String filenamePrefix = "doc-doc";
-                List<String> outputFiles = new ArrayList<>();
-                getProgressHelper().setMax(listData.size());
-                int fileNameIndex = 0;
-                for (DocumentData data : listData) {
-                    String workDir = Jade.getInstance().getPersistenceDir();
-                    String pdfDocLoc = JadeFilenameUtil.addOrReplaceFilenameSuffixUID(workDir + filenamePrefix
-                            + fileNameIndex + ".pdf");
-                    String pdfDocURI = JadeFilenameUtil.asURI(pdfDocLoc);
-                    ts.createDocument(data, pdfDocURI);
-                    if(new File(pdfDocLoc).exists()) {
-                        outputFiles.add(pdfDocLoc);
-                    }
-                    fileNameIndex++;
-                    getProgressHelper().setCurrent(fileNameIndex);
+                JadePublishDocumentInfo pubInfoTemp = new JadePublishDocumentInfo();
+                pubInfoTemp.setOwnerEmail(JadeThread.currentUserEmail());
+                pubInfoTemp.setOwnerId(JadeThread.currentUserId());
+                pubInfoTemp.setDocumentTitle(JadeThread.getMessage("al.echeances.titre.protocole.avisEcheance"));
+                pubInfoTemp.setDocumentSubject(JadeThread.getMessage("al.echeances.titre.protocole.avisEcheance"));
+                pubInfoTemp.setDocumentDate(JadeDateUtil.getGlobazFormattedDate(new Date()));
+                pubInfoTemp.setDocumentTypeNumber(CODE_INFOROM_AVIS_ECHEANCE);
+                pubInfoTemp.setPublishDocument(false);
+
+                List<JadePublishDocumentInfo> infoDocs = new ArrayList<>();
+                for(DocumentData data:listData){
+                    JadePublishDocumentInfo pubInfo = pubInfoTemp.createCopy();
+                    infoDocs.add(pubInfo);
+                    JadePrintDocumentContainer cont = new JadePrintDocumentContainer();
+                    cont.addDocument(data, pubInfo);
+                    this.createDocuments(cont);
                 }
 
-                if(!outputFiles.isEmpty()) {
-                    String[] filesPath = new String[outputFiles.size()];
-                    outputFiles.toArray(filesPath);
-                    JadeSmtpClient.getInstance().sendMail(
-                            JadeThread.currentUserEmail(),
-                            JadeThread.getMessage("al.echeances.titre.protocole.avisEcheance"),
-                            JadeThread.getMessage("al.echeances.titre.protocole.avisEcheance") + " : "
-                                    + dateEcheance.substring(3), filesPath);
+                getProgressHelper().setMax(listData.size());
+                long startTime = System.currentTimeMillis();
+                int fileNameIndex = 0;
+                if(!infoDocs.isEmpty()) {
+                    List<String> outputFiles = new ArrayList<>();
+                    List<JadePublishDocumentInfo> listTaskInfoDone = new ArrayList<>(infoDocs);
+
+                    while (!listTaskInfoDone.isEmpty()) {
+                        for (JadePublishDocumentInfo docInfo : infoDocs) {
+
+                            if (docInfo.getCurrentFilePath() != null) {
+                                outputFiles.add(docInfo.getCurrentPathName());
+                                listTaskInfoDone.remove(docInfo);
+                                getProgressHelper().setCurrent(fileNameIndex++);
+                            }
+                        }
+
+                        Thread.sleep(500);
+                        if (System.currentTimeMillis() - startTime > 3000000) {
+                            throw new ALEcheancesException("Time out");
+                        }
+                        infoDocs = new ArrayList<>(listTaskInfoDone);
+
+                    }
+
+                    String[] filesPathTotal = new String[outputFiles.size()];
+                    outputFiles.toArray(filesPathTotal);
+                    for(String[] filesPath : splitPdfFilesForMail(filesPathTotal)) {
+                        JadeSmtpClient.getInstance().sendMail(
+                                JadeThread.currentUserEmail(),
+                                JadeThread.getMessage("al.echeances.titre.protocole.avisEcheance"),
+                                JadeThread.getMessage("al.echeances.titre.protocole.avisEcheance") + " : "
+                                        + dateEcheance.substring(3), filesPath);
+                    }
                     return true;
                 }
             }
         }
         return false;
     }
-    
+
+    /**
+     * @param filesPath
+     * @return Une liste de fichier séparée selon la taille maximun à envoyer par mail en pièce jointe
+     */
+    private List<String[]> splitPdfFilesForMail(String[] filesPath) {
+        long maxSize = JadeSmtpClient.getInstance().getAuthorizedDomain(new String[]{JadeThread.currentUserEmail()}).getMaxSizeBytes();
+        long pdfSize = 0;
+        List<String[]> listFiles = new ArrayList<>();
+        List<String> listFileArray = new ArrayList<>();
+
+        for(String filename: filesPath) {
+            pdfSize += (new File(filename)).length();
+            if(pdfSize>maxSize) {
+                String[] listArray = listFileArray.toArray(new String[listFileArray.size()]);
+                listFiles.add(listArray);
+                listFileArray.clear();
+                pdfSize = (new File(filename)).length();
+            }
+            listFileArray.add(filename);
+        }
+        if(!listFileArray.isEmpty()) {
+            String[] listArray = listFileArray.toArray(new String[listFileArray.size()]);
+            listFiles.add(listArray);
+        }
+        return listFiles;
+    }
+
     public void setAdiExclu(Boolean adiExclu) {
         this.adiExclu = adiExclu;
     }

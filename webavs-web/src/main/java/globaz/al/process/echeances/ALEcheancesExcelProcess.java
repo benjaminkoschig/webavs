@@ -35,6 +35,8 @@ import globaz.jade.smtp.JadeSmtpClient;
 public class ALEcheancesExcelProcess extends ALAbsrtactProcess {
 
     private static final long serialVersionUID = 1L;
+
+    public static final String CODE_INFOROM_AVIS_ECHEANCE_EXCEL = "3028WAF";
     
     private Boolean adiExclu = true;
 
@@ -142,6 +144,7 @@ public class ALEcheancesExcelProcess extends ALAbsrtactProcess {
                     pubInfo.setDocumentSubject(JadeThread.getMessage("al.echeances.titre.protocole.avisEcheance") + " - "
                             + infosMail.get(file));
                     pubInfo.setDocumentDate(JadeDateUtil.getGlobazFormattedDate(new Date()));
+                    pubInfo.setDocumentTypeNumber(CODE_INFOROM_AVIS_ECHEANCE_EXCEL);
                     pubInfo.setPublishDocument(true);
                     JadePublishDocument docInfo = new JadePublishDocument(file, pubInfo);
                     JadePublishServerFacade.publishDocument(new JadePublishDocumentMessage(docInfo));

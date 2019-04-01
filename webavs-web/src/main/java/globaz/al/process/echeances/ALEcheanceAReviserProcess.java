@@ -24,6 +24,8 @@ public class ALEcheanceAReviserProcess extends ALAbsrtactProcess {
      */
     private static final long serialVersionUID = 1L;
 
+    public static final String CODE_INFOROM_AVIS_ECHEANCE_REVISER = "3002WAF";
+
     public void setAdiExclu(Boolean adiExclu) {
         this.adiExclu = adiExclu;
     }
@@ -102,6 +104,7 @@ public class ALEcheanceAReviserProcess extends ALAbsrtactProcess {
             pubInfo.setDocumentTitle(JadeThread.getMessage("al.echeances.titre.protocole.dossierReviser"));
             pubInfo.setDocumentSubject(JadeThread.getMessage("al.echeances.titre.protocole.dossierReviser"));
             pubInfo.setDocumentDate(JadeDateUtil.getGlobazFormattedDate(new Date()));
+            pubInfo.setDocumentTypeNumber(CODE_INFOROM_AVIS_ECHEANCE_REVISER);
             pubInfo.setPublishDocument(true);
 
             try {
