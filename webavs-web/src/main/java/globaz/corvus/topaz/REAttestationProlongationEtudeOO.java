@@ -1,5 +1,9 @@
 package globaz.corvus.topaz;
 
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.List;
+import ch.globaz.topaz.datajuicer.DocumentData;
 import globaz.babel.api.ICTDocument;
 import globaz.caisse.helper.CaisseHelperFactory;
 import globaz.caisse.report.helper.CaisseHeaderReportBean;
@@ -31,10 +35,6 @@ import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
 import globaz.pyxis.db.tiers.TIAdministrationManager;
 import globaz.pyxis.db.tiers.TIAdministrationViewBean;
 import globaz.pyxis.db.tiers.TITiers;
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.List;
-import ch.globaz.topaz.datajuicer.DocumentData;
 
 public class REAttestationProlongationEtudeOO {
 
@@ -131,6 +131,7 @@ public class REAttestationProlongationEtudeOO {
         data.addData("LETTRE_PARA4", document.getTextes(6).getTexte(1).getDescription());
         data.addData("LETTRE_PARA5", PRStringUtils.replaceString(document.getTextes(7).getTexte(1).getDescription(),
                 REAttestationProlongationEtudeOO.CDT_TITRETIERS, titreTiers));
+        data.addData("LETTRE_PARA_GRAS_1", document.getTextes(4).getTexte(2).getDescription());
 
         setDocumentData(data);
     }
@@ -195,8 +196,8 @@ public class REAttestationProlongationEtudeOO {
             BSession bs = new BSession();
             bs.setApplication("CORVUS");
             if (("true").equals(bs.getApplication().getProperty("isAfficherDossierTraitePar"))) {
-                crBean.setNomCollaborateur(document.getTextes(1).getTexte(1).getDescription() + " "
-                        + getSession().getUserFullName());
+                crBean.setNomCollaborateur(
+                        document.getTextes(1).getTexte(1).getDescription() + " " + getSession().getUserFullName());
                 crBean.setTelCollaborateur(getSession().getUserInfo().getPhone());
             }
 
@@ -313,8 +314,8 @@ public class REAttestationProlongationEtudeOO {
 
                             // BZ 5220, recherche de l'adresse en cascade en fonction du parametre isWantAdresseCourrier
                             // se trouvant dans le fichier corvus.properties
-                            adresseTiers = PRTiersHelper.getAdresseCourrierFormateeRente(getSession(),
-                                    adr.getIdTiers(), REApplication.CS_DOMAINE_ADRESSE_CORVUS, "", "", null, "");
+                            adresseTiers = PRTiersHelper.getAdresseCourrierFormateeRente(getSession(), adr.getIdTiers(),
+                                    REApplication.CS_DOMAINE_ADRESSE_CORVUS, "", "", null, "");
 
                             // Si une adresse est trouvée, je recherche le titre du tiers del'adresse de paiement
                             if (!JadeStringUtil.isEmpty(adresseTiers)) {
@@ -326,8 +327,8 @@ public class REAttestationProlongationEtudeOO {
                                     tiersTitre = t[0];
                                 }
 
-                                titreTiers = tiersTitre.getFormulePolitesse(tiersAdresse
-                                        .getProperty(PRTiersWrapper.PROPERTY_LANGUE));
+                                titreTiers = tiersTitre
+                                        .getFormulePolitesse(tiersAdresse.getProperty(PRTiersWrapper.PROPERTY_LANGUE));
                                 break;
                             }
                         } else {
@@ -356,8 +357,8 @@ public class REAttestationProlongationEtudeOO {
 
                             // BZ 5220, recherche de l'adresse en cascade en fonction du parametre isWantAdresseCourrier
                             // se trouvant dans le fichier corvus.properties
-                            adresseTiers = PRTiersHelper.getAdresseCourrierFormateeRente(getSession(),
-                                    adr.getIdTiers(), REApplication.CS_DOMAINE_ADRESSE_CORVUS, "", "", null, "");
+                            adresseTiers = PRTiersHelper.getAdresseCourrierFormateeRente(getSession(), adr.getIdTiers(),
+                                    REApplication.CS_DOMAINE_ADRESSE_CORVUS, "", "", null, "");
 
                             // Si une adresse est trouvée, je recherche le titre du tiers de l'adresse de paiement
                             if (!JadeStringUtil.isEmpty(adresseTiers)) {
@@ -369,8 +370,8 @@ public class REAttestationProlongationEtudeOO {
                                     tiersTitre = t[0];
                                 }
 
-                                titreTiers = tiersTitre.getFormulePolitesse(tiersAdresse
-                                        .getProperty(PRTiersWrapper.PROPERTY_LANGUE));
+                                titreTiers = tiersTitre
+                                        .getFormulePolitesse(tiersAdresse.getProperty(PRTiersWrapper.PROPERTY_LANGUE));
                                 break;
                             }
                         }
@@ -412,8 +413,8 @@ public class REAttestationProlongationEtudeOO {
 
                 TIAdministrationManager tiAdminCaisseMgr = new TIAdministrationManager();
                 tiAdminCaisseMgr.setSession(session);
-                tiAdminCaisseMgr.setForCodeAdministration(CaisseHelperFactory.getInstance().getNoCaisseFormatee(
-                        getSession().getApplication()));
+                tiAdminCaisseMgr.setForCodeAdministration(
+                        CaisseHelperFactory.getInstance().getNoCaisseFormatee(getSession().getApplication()));
                 tiAdminCaisseMgr.setForGenreAdministration(CaisseHelperFactory.CS_CAISSE_COMPENSATION);
                 tiAdminCaisseMgr.find();
 
