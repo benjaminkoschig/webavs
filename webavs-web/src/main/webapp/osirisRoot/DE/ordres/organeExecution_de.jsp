@@ -164,6 +164,18 @@ top.document.title = "Auftrag - Detail eines Ausführungsorgans - " + top.locatio
 			<ct:FWCodeSelectTag name="modeTransfert" defaut="<%=viewBean.getModeTransfert()%>" codeType="OSIMODTRA" wantBlank="false"/>
 		</td>
 	</tr>
+			<tr>
+		<td>Wurzelverzeichnis</td>
+		<td>
+			<input type="text" name="dossierRacineChemin" value="<%=viewBean.getDossierRacineChemin()%>"  STYLE="background-color: #b3c4db;"  readonly size="40" maxlength="40"/>
+		</td>
+	</tr>
+	<tr>
+		<td>Sous r&eacute;pertoire de transfert</td>
+		<td>
+			<input type="text" name="sousDossierChemin" size="40" maxlength="40" value="<%=viewBean.getSousDossierChemin()%>" />
+		</td>
+	</tr>
 
           <%-- /tpl:put --%>
 <%@ include file="/theme/detail/bodyButtons.jspf" %>
