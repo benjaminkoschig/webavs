@@ -15,7 +15,7 @@ import globaz.osiris.external.IntAdressePaiement;
 public class LXOrganeExecution extends BEntity implements APIOrganeExecution {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
     public static final String CS_GENRE_BANQUE = "7300001";
@@ -122,9 +122,8 @@ public class LXOrganeExecution extends BEntity implements APIOrganeExecution {
             _addError(statement.getTransaction(), getSession().getLabel("VAL_NOM_ORGANE"));
         }
 
-        if (JadeStringUtil.isBlank(getIdentifiantDta())
-                && (LXOrganeExecution.CS_GENRE_POSTE.equals(getCsGenre()) || LXOrganeExecution.CS_GENRE_BANQUE
-                        .equals(getCsGenre()))) {
+        if (JadeStringUtil.isBlank(getIdentifiantDta()) && (LXOrganeExecution.CS_GENRE_POSTE.equals(getCsGenre())
+                || LXOrganeExecution.CS_GENRE_BANQUE.equals(getCsGenre()))) {
             _addError(statement.getTransaction(), getSession().getLabel("VAL_IDENTIFIANT_DTA"));
         }
         // Controle de la présence dans tiers d'une adresse de paiement pour le
@@ -384,6 +383,12 @@ public class LXOrganeExecution extends BEntity implements APIOrganeExecution {
 
     @Override
     public String getCSTypeTraitementOG() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public String getSousDossierChemin() {
         // TODO Auto-generated method stub
         return null;
     }
