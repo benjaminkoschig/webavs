@@ -10,6 +10,7 @@ public interface APIOrganeExecution {
 
     public static final String CS_BY_FTPPOST = "246002"; // Mode de transfert
     public static final String CS_BY_MAIL = "246001"; // Mode de transfert
+    public static final String CS_BY_REPERTOIRE_LOCAL = "246003"; // Mode de transfert
 
     public static final String LSV_AUCUN = "212001";
     public static final String LSV_POSTE = "212002";
@@ -45,4 +46,6 @@ public interface APIOrganeExecution {
     public String getNumInterneLsv();
 
     public String getCSTypeTraitementOG();
+
+    public String getSousDossierChemin();
 }

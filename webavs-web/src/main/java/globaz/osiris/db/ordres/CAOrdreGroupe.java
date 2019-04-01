@@ -1,5 +1,20 @@
 package globaz.osiris.db.ordres;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.io.Serializable;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.List;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.slf4j.LoggerFactory;
+import ch.globaz.common.properties.PropertiesException;
+import ch.globaz.osiris.business.constantes.CAProperties;
 import globaz.framework.util.FWCurrency;
 import globaz.framework.util.FWLog;
 import globaz.framework.util.FWMemoryLog;
@@ -20,6 +35,7 @@ import globaz.globall.util.JANumberFormatter;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.common.Jade;
 import globaz.jade.log.JadeLogger;
+import globaz.jade.properties.JadePropertiesService;
 import globaz.osiris.api.APIOperation;
 import globaz.osiris.api.ordre.APIOrdreGroupe;
 import globaz.osiris.api.ordre.APIOrganeExecution;
@@ -56,25 +72,10 @@ import globaz.osiris.process.CAProcessOrdre;
 import globaz.osiris.process.journal.CAComptabiliserJournal;
 import globaz.osiris.process.journal.CAProcessAnnulerJournal;
 import globaz.osiris.translation.CACodeSystem;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.io.Serializable;
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.List;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.slf4j.LoggerFactory;
-import ch.globaz.common.properties.PropertiesException;
-import ch.globaz.osiris.business.constantes.CAProperties;
 
 /**
  * CA ordre groupé Date de création : (13.12.2001 10:20:46)
- * 
+ *
  * @author: Brand
  * @revision SCO 19 mars 2010
  */
@@ -141,12 +142,12 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
     /**
      * OCA préventif Au cas ou l'implementation "Lite" de l'opae aurait un bug, on peut toujours forcer l'utilisation de
      * la version 1 pour tout les cas.
-     * 
-     * 
+     *
+     *
      * pour avoir la cle dans fx : insert into SCHEMA.fwparp
      * (pparia,pparap,ppacdi,pcosid,pparpd,ppadde,pcoitc,pparva,pprade) values
      * (0,'FX','OPAE_V1',1,0,20110317,0,'false','force opae v1');
-     * 
+     *
      */
     public static boolean isForceOPAEV1(BSession session) throws Exception {
         FWFindParameterManager mgr = new FWFindParameterManager();
@@ -239,7 +240,7 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
 
     /**
      * Insérez la description de la méthode ici. Date de création : (13.02.2002 14:47:48)
-     * 
+     *
      * @exception Exception
      *                La description de l'exception.
      */
@@ -259,7 +260,7 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
 
     /**
      * Insérez la description de la méthode ici. Date de création : (13.02.2002 14:47:48)
-     * 
+     *
      * @exception Exception
      *                La description de l'exception.
      */
@@ -513,7 +514,7 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
 
     /**
      * Détacher un ordre de versement du journal Date de création : (13.05.2002 14:56:46)
-     * 
+     *
      * @param ordreVersement
      *            globaz.osiris.db.comptes.CAOperationOrdreVersement
      */
@@ -579,7 +580,7 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
 
     /**
      * Annulation d'un versement Date de création : (29.04.2002 09:16:32)
-     * 
+     *
      * @param context
      *            CAProcessAnnulerOrdre
      * @throws Exception
@@ -631,7 +632,7 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
 
     /**
      * Insérez la description de la méthode ici. Date de création : (29.04.2002 09:33:49)
-     * 
+     *
      * @param context
      *            globaz.osiris.process.CAProcessAnnulerOrdre
      * @throws Exception
@@ -708,7 +709,7 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
 
     /**
      * Insérez la description de la méthode ici. Date de création : (29.04.2002 09:33:26)
-     * 
+     *
      * @param context
      *            CAProcessAnnulerOrdre
      * @throws Exception
@@ -784,7 +785,7 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
 
     /**
      * Insérez la description de la méthode ici. Date de création : (22.02.2002 10:35:30)
-     * 
+     *
      * @param param
      *            CAProcessAttacherOrdre
      * @throws CAOGOVMaxISODepassement
@@ -834,8 +835,8 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
         return;
     }
 
-    private void executeAttacherOrdreRecouvrement(CAProcessAttacherOrdre context) throws CAOGRegroupISODepassement,
-            CAOGOVMaxISODepassement {
+    private void executeAttacherOrdreRecouvrement(CAProcessAttacherOrdre context)
+            throws CAOGRegroupISODepassement, CAOGOVMaxISODepassement {
         // Initialiser
         FWCurrency cTotal = new FWCurrency();
         long lNTransactions = 0;
@@ -916,8 +917,8 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
                          * Afin de contrer les IBAN postaux
                          */
                         if (oper.getAdressePaiement() == null) {
-                            String message = FWMessageFormat
-                                    .prepareQuotes(context.getSession().getLabel("5603"), false);
+                            String message = FWMessageFormat.prepareQuotes(context.getSession().getLabel("5603"),
+                                    false);
 
                             message = MessageFormat.format(message, oper.getMotif());
                             oper.setEstBloque(true);
@@ -1012,7 +1013,7 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
 
     /**
      * Insérez la description de la méthode ici. Date de création : (22.02.2002 10:46:32)
-     * 
+     *
      * @param context
      *            CAProcessAttacherOrdre
      */
@@ -1110,14 +1111,14 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
                             getMemoryLog().logMessage(
                                     getSession().getLabel("SOLDE_SECTION_INFERIEUR_MONTANT_REMBOURSE") + " ("
                                             + oper.getCompteAnnexe().getIdExterneRole() + " - "
-                                            + oper.getSection().getIdExterne() + ")", FWMessage.INFORMATION,
-                                    this.getClass().getName());
+                                            + oper.getSection().getIdExterne() + ")",
+                                    FWMessage.INFORMATION, this.getClass().getName());
                         } else if (!chekAdressePaiementNoError(oper)) {
                             getMemoryLog().logMessage(
                                     getSession().getLabel("OG_PREPA_ERROR_MISSING_INVALID_ADDRESS_PAIMENT") + " ("
                                             + oper.getCompteAnnexe().getIdExterneRole() + " - "
-                                            + oper.getSection().getIdExterne() + ")", FWMessage.INFORMATION,
-                                    this.getClass().getName());
+                                            + oper.getSection().getIdExterne() + ")",
+                                    FWMessage.INFORMATION, this.getClass().getName());
                         } else {
                             // Le rattacher
                             oper.setIdOrdreGroupe(getIdOrdreGroupe());
@@ -1176,7 +1177,7 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
 
     /**
      * Exécution d'un ordre de versement / recouvrement Date de création : (13.02.2002 11:17:52)
-     * 
+     *
      * @param context
      *            CAProcessContext les paramètres pour l'exécution de l'ordre
      */
@@ -1193,6 +1194,22 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
         setEtat(CAOrdreGroupe.ERREUR);
 
         try {
+            if (getOrganeExecution().getModeTransfert().equals(APIOrganeExecution.CS_BY_REPERTOIRE_LOCAL)) {
+
+                if (JadePropertiesService.getInstance().getProperty(CAOrganeExecution.PROP_DOSSIER_RACINE) == null
+                        || JadeStringUtil.isBlank(JadePropertiesService.getInstance()
+                                .getProperty(CAOrganeExecution.PROP_DOSSIER_RACINE))) {
+                    _addError(context.getTransaction(), getSession().getLabel("REPERTOIRE_VIDE"));
+                    return;
+                } else {
+                    File file = new File(
+                            JadePropertiesService.getInstance().getProperty(CAOrganeExecution.PROP_DOSSIER_RACINE));
+                    if (!file.exists()) {
+                        _addError(context.getTransaction(), getSession().getLabel("REPERTOIRE_VIDE"));
+                        return;
+                    }
+                }
+            }
 
             CAOrdreFormateur of = null;
             boolean isSepa = APIOrganeExecution.OG_ISO_20022.equals(getOrganeExecution().getCSTypeTraitementOG());
@@ -1241,8 +1258,8 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
                             + "ordreGroupe" + getIdOrdreGroupe() + ".out";
 
                     try {
-                        of.setPrintWriter(new PrintWriter(new OutputStreamWriter(new java.io.FileOutputStream(
-                                sLocalFilename), "ISO8859_1")));
+                        of.setPrintWriter(new PrintWriter(
+                                new OutputStreamWriter(new java.io.FileOutputStream(sLocalFilename), "ISO8859_1")));
                     } catch (Exception e) {
                         _addError(context.getTransaction(), e.getMessage());
                         _addError(context.getTransaction(), getSession().getLabel("5229") + " " + sLocalFilename);
@@ -1305,7 +1322,8 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
                         FileUtils.moveFile(fSrc, fDest);
                     } catch (IOException exception) {
                         JadeLogger.error(exception, exception.getMessage());
-                        _addError(context.getTransaction(), getSession().getLabel("5229") + " " + context.getFileName());
+                        _addError(context.getTransaction(),
+                                getSession().getLabel("5229") + " " + context.getFileName());
                         return;
                     }
                 }
@@ -1322,9 +1340,8 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
                         // première
                         // (validation de l'OG complet)
                         if (getJournal().getMemoryLog() != null && getJournal().getMemoryLog().size() > 0) {
-                            _addError(context.getTransaction(), getJournal().getMemoryLog().getMessage(0)
-                                    .getComplement()
-                                    + "\n...");
+                            _addError(context.getTransaction(),
+                                    getJournal().getMemoryLog().getMessage(0).getComplement() + "\n...");
                         }
                         _addError(context.getTransaction(), getSession().getLabel("5226"));
                         return;
@@ -1350,14 +1367,23 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
 
                 if (context.getGenererFichierEchange()) {
 
-                    // Fichier OPAE
-                    if (getOrganeExecution().getCSTypeTraitementOG().equals(APIOrganeExecution.OG_OPAE_DTA)) {
+                    if (!(getOrganeExecution().getModeTransfert().equals(APIOrganeExecution.CS_BY_REPERTOIRE_LOCAL))) {
+                        // Fichier OPAE
+                        if (getOrganeExecution().getCSTypeTraitementOG().equals(APIOrganeExecution.OG_OPAE_DTA)) {
 
-                        CAOrdreGroupeFtpUtils.sendOrRegisterFile(context, this, getOrganeExecution(),
-                                context.getFileName());
-                    } else if (getOrganeExecution().getCSTypeTraitementOG().equals(APIOrganeExecution.OG_ISO_20022)) {
-
-                        sendXMLSepa(context);
+                            CAOrdreGroupeFtpUtils.sendOrRegisterFile(context, this, getOrganeExecution(),
+                                    context.getFileName());
+                        } else if (getOrganeExecution().getCSTypeTraitementOG()
+                                .equals(APIOrganeExecution.OG_ISO_20022)) {
+                            sendXMLSepa(context);
+                        }
+                    } else {
+                        File fileSrc = new File(context.getFileName());
+                        File fileDest = new File(
+                                JadePropertiesService.getInstance().getProperty(CAOrganeExecution.PROP_DOSSIER_RACINE)
+                                        + getOrganeExecution().getSousDossierChemin() + "/" + "og" + getIdOrdreGroupe()
+                                        + ".xml");
+                        FileUtils.copyFile(fileSrc, fileDest);
                     }
                 }
             }
@@ -1477,7 +1503,7 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
                      * utiliser le formateur OPAE "lite" qui ne fait que sortir le fichier OPAE, sans aucune
                      * opération comptable. La version lite ne traite que les transaction 22 (poste suisse),
                      * 24(mandat suisse) et 27 (banque suisse).
-                     * 
+                     *
                      * A noter également que les transactions 28 ne sont par supportées pour le moment.
                      */
                     of = new CAProcessFormatOrdreOPAELite();
@@ -1601,7 +1627,7 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
 
     /**
      * Insérez la description de la méthode ici. Date de création : (10.01.2002 16:37:11)
-     * 
+     *
      * @return FWParametersSystemCode
      */
     public FWParametersSystemCode getCsEtat() {
@@ -1616,7 +1642,7 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
 
     /**
      * Insérez la description de la méthode ici. Date de création : (10.01.2002 16:38:30)
-     * 
+     *
      * @return FWParametersSystemCodeManager
      */
     public FWParametersSystemCodeManager getCsEtats() {
@@ -1632,7 +1658,7 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
 
     /**
      * Insérez la description de la méthode ici. Date de création : (10.01.2002 16:37:11)
-     * 
+     *
      * @return FWParametersSystemCode
      */
     public FWParametersSystemCode getCsNatureOrdresLivres() {
@@ -1648,7 +1674,7 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
 
     /**
      * Insérez la description de la méthode ici. Date de création : (10.01.2002 16:38:30)
-     * 
+     *
      * @return FWParametersSystemCodeManager
      */
     public FWParametersSystemCodeManager getCsNaturesOrdresLivres() {
@@ -1660,7 +1686,7 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
 
     /**
      * Insérez la description de la méthode ici. Date de création : (08.03.2002 15:08:14)
-     * 
+     *
      * @return String
      */
     public globaz.osiris.db.ordres.CAOrganeExecutionManager getCsOrganeExecution() {
@@ -1676,7 +1702,7 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
 
     /**
      * Insérez la description de la méthode ici. Date de création : (10.01.2002 16:37:11)
-     * 
+     *
      * @return FWParametersSystemCode
      */
     public FWParametersSystemCode getCsTypeOrdreGroupe() {
@@ -1692,7 +1718,7 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
 
     /**
      * Insérez la description de la méthode ici. Date de création : (10.01.2002 16:38:30)
-     * 
+     *
      * @return FWParametersSystemCodeManager
      */
     public FWParametersSystemCodeManager getCsTypesOrdreGroupe() {
@@ -1725,7 +1751,7 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
 
     /**
      * Retourne le nom du fichier d'échange selon les paramètres de l'ordre Date de création : (17.04.2002 15:45:30)
-     * 
+     *
      * @return String
      */
     public String getDefaultFilename() throws Exception {
@@ -1783,7 +1809,7 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
 
     /**
      * Insérez la description de la méthode ici. Date de création : (13.02.2002 15:03:11)
-     * 
+     *
      * @return globaz.osiris.db.comptes.CAJournal
      */
     public CAJournal getJournal() {
@@ -1841,7 +1867,7 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
 
     /**
      * Insérez la description de la méthode ici. Date de création : (10.01.2002 16:53:13)
-     * 
+     *
      * @return globaz.osiris.db.utils.FWLog
      */
     public FWLog getLog() {
@@ -1875,7 +1901,7 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
 
     /**
      * Insérez la description de la méthode ici. Date de création : (13.02.2002 11:13:19)
-     * 
+     *
      * @return globaz.osiris.db.utils.FWMemoryLog
      */
     public FWMemoryLog getMemoryLog() {
@@ -1951,7 +1977,7 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
 
     /**
      * Insérez la description de la méthode ici. Date de création : (21.03.2002 15:45:13)
-     * 
+     *
      * @return String
      */
     public String getOrdreGroupeLong() {
@@ -1961,7 +1987,7 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
 
     /**
      * Insérez la description de la méthode ici. Date de création : (08.02.2002 13:46:51)
-     * 
+     *
      * @return globaz.osiris.db.ordres.CAOrganeExecution
      */
     @Override
@@ -2001,7 +2027,7 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
 
     /**
      * Insérez la description de la méthode ici. Date de création : (31.05.2002 08:23:08)
-     * 
+     *
      * @return globaz.framework.util.FWCurrency
      */
     public FWCurrency getTotalToCurrency() {
@@ -2015,7 +2041,7 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
 
     /**
      * Insérez la description de la méthode ici. Date de création : (17.01.2002 16:36:04)
-     * 
+     *
      * @return FWParametersUserCode
      */
     public FWParametersUserCode getUcEtat() {
@@ -2045,7 +2071,7 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
 
     /**
      * Insérez la description de la méthode ici. Date de création : (17.01.2002 16:36:04)
-     * 
+     *
      * @return FWParametersUserCode
      */
     public FWParametersUserCode getUcNatureOrdresLivres() {
@@ -2073,7 +2099,7 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
 
     /**
      * Insérez la description de la méthode ici. Date de création : (17.01.2002 16:36:04)
-     * 
+     *
      * @return FWParametersUserCode
      */
     public FWParametersUserCode getUcTypeOrdreGroupe() {
@@ -2101,7 +2127,7 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
 
     /**
      * Retourne vrai si l'ordre groupé contient des ordres (opérations) Date de création : (25.04.2002 14:22:28)
-     * 
+     *
      * @return boolean vrai si l'ordre groupé contient des ordres
      */
     public boolean hasOperations() {
@@ -2126,7 +2152,7 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
 
     /**
      * Insérez la description de la méthode ici. Date de création : (08.03.2002 15:08:14)
-     * 
+     *
      * @param newOrganesExecution
      *            String
      */
@@ -2191,7 +2217,7 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
 
     /**
      * Insérez la description de la méthode ici. Date de création : (13.02.2002 11:13:19)
-     * 
+     *
      * @param newMemoryLog
      *            globaz.osiris.db.utils.FWMemoryLog
      */

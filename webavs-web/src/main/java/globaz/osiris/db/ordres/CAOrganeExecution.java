@@ -34,6 +34,7 @@ import globaz.jade.common.Jade;
 import globaz.jade.common.JadeClassCastException;
 import globaz.jade.fs.JadeFsFacade;
 import globaz.jade.log.JadeLogger;
+import globaz.jade.properties.JadePropertiesService;
 import globaz.jade.service.exception.JadeServiceActivatorException;
 import globaz.jade.service.exception.JadeServiceLocatorException;
 import globaz.osiris.api.APIEcriture;
@@ -99,8 +100,10 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
     private static final String FIELD_NOMCLASSEPARSERBVR = "NOMCLASSEPARSERBVR";
     private static final String FIELD_NOMCLASSEPARSERLSV = "NOMCLASSEPARSERLSV";
     private static final String FIELD_NUMINTERNELSV = "NUMINTERNELSV";
+    private static final String FIELD_NOMREPERTOIRE = "NOMREPERTOIRE";
 
     public static final String TABLE_NAME = "CAOREXP";
+    public static final String PROP_DOSSIER_RACINE = "osiris.DossierRacineOrganeExe";
 
     private IntAdressePaiement _adresseDebitTaxes = null;
     private IntAdressePaiement _adressePaiement = null;
@@ -131,6 +134,9 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
     private String numeroRubrique;
     private String numInterneLsv = new String();
     private boolean retrieveFromDataBase = true;
+
+    private String sousDossierChemin = new String();
+    private String dossierRacineChemin = new String();
     // création des variable de travail
     private globaz.osiris.db.comptes.CARubrique rubrique = null;
     private long totTransactionErreur = 0;
@@ -191,6 +197,7 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
         noAdherent = statement.dbReadString(CAOrganeExecution.FIELD_NOADHERENT);
         numInterneLsv = statement.dbReadString(CAOrganeExecution.FIELD_NUMINTERNELSV);
         modeTransfert = statement.dbReadNumeric(CAOrganeExecution.FIELD_MODETRANSFERT);
+        sousDossierChemin = statement.dbReadString(CAOrganeExecution.FIELD_NOMREPERTOIRE);
     }
 
     /**
@@ -260,6 +267,8 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
                 this._dbWriteString(statement.getTransaction(), getNumInterneLsv(), "numeroInterneLSV"));
         statement.writeField(CAOrganeExecution.FIELD_MODETRANSFERT,
                 this._dbWriteNumeric(statement.getTransaction(), getModeTransfert(), "modeTransfert"));
+        statement.writeField(CAOrganeExecution.FIELD_NOMREPERTOIRE,
+                this._dbWriteString(statement.getTransaction(), getSousDossierChemin(), "sousDossierChemin"));
     }
 
     /**
@@ -398,7 +407,7 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
 
     /**
      * @param refBVR parser référence BVR
-     * @param jrn    journal de création
+     * @param jrn journal de création
      * @return section créée
      */
     private CASection createSection(IntReferenceBVRParser refBVR, CAJournal jrn) {
@@ -417,10 +426,10 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
     /**
      * Mise à jour du yellow report file (si on en fait et qu'on est pas en mode simulation)
      *
-     * @param state          L'état souhaité.
+     * @param state L'état souhaité.
      * @param idYellowReport L'id report file.
-     * @param isSimulation   True si mode simulation.
-     * @param message        Le message à donner si l'état souhaité est en erreur.
+     * @param isSimulation True si mode simulation.
+     * @param message Le message à donner si l'état souhaité est en erreur.
      * @throws Exception Une exception de la persistence.
      */
     private void majYellowReportFile(CAYellowReportFileState state, String idYellowReport, boolean isSimulation,
@@ -1027,7 +1036,7 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
      * Date de création : (18.02.2002 10:55:57)
      *
      * @param context
-     *                    globaz.osiris.process.CAProcessBVR
+     *            globaz.osiris.process.CAProcessBVR
      */
     public List<String> executeBVR(globaz.osiris.process.CAProcessBVR context) {
 
@@ -1059,7 +1068,7 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
      * Insérez la description de la méthode ici. Date de création : (18.02.2002 10:55:57)
      *
      * @param context
-     *                    globaz.osiris.process.CAProcessLSV
+     *            globaz.osiris.process.CAProcessLSV
      */
     public void executeLSV(globaz.osiris.process.CAProcessLSV context) {
 
@@ -2262,7 +2271,7 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
      * Date de création : (18.02.2002 10:16:36)
      *
      * @param newIdTypeTraitementBV
-     *                                  String
+     *            String
      */
     public void setIdTypeTraitementBV(String newIdTypeTraitementBV) {
         idTypeTraitementBV = newIdTypeTraitementBV;
@@ -2273,7 +2282,7 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
      * Date de création : (18.02.2002 10:16:50)
      *
      * @param newIdTypeTraitementLS
-     *                                  String
+     *            String
      */
     public void setIdTypeTraitementLS(String newIdTypeTraitementLS) {
         idTypeTraitementLS = newIdTypeTraitementLS;
@@ -2284,7 +2293,7 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
      * Date de création : (18.02.2002 10:54:35)
      *
      * @param newMemoryLog
-     *                         FWMemoryLog
+     *            FWMemoryLog
      */
     public void setMemoryLog(FWMemoryLog newMemoryLog) {
         memoryLog = newMemoryLog;
@@ -2298,7 +2307,7 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
      * Date de création : (28.11.2002 11:49:32)
      *
      * @param newNoAdherent
-     *                          String
+     *            String
      */
     public void setNoAdherent(String newNoAdherent) {
         noAdherent = newNoAdherent;
@@ -2308,7 +2317,7 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
      * Date de création : (21.02.2002 15:39:51)
      *
      * @param newNoAdherentBVR
-     *                             String
+     *            String
      */
     public void setNoAdherentBVR(String newNoAdherentBVR) {
         noAdherentBVR = newNoAdherentBVR;
@@ -2322,7 +2331,7 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
      * Date de création : (21.02.2002 09:06:20)
      *
      * @param newNomClasseParserBvr
-     *                                  String
+     *            String
      */
     public void setNomClasseParserBvr(String newNomClasseParserBvr) {
         nomClasseParserBvr = newNomClasseParserBvr;
@@ -2332,7 +2341,7 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
      * Date de création : (28.11.2002 11:48:12)
      *
      * @param newNomClasseParserLSV
-     *                                  String
+     *            String
      */
     public void setNomClasseParserLSV(String newNomClasseParserLSV) {
         nomClasseParserLSV = newNomClasseParserLSV;
@@ -2451,5 +2460,19 @@ public class CAOrganeExecution extends BEntity implements Serializable, APIOrgan
 
     public CACamt054GroupsMessage getGroupesMessage() {
         return groupesMessage;
+    }
+
+    @Override
+    public String getSousDossierChemin() {
+        return sousDossierChemin;
+    }
+
+    public void setSousDossierChemin(String sousDossierChemin) {
+        this.sousDossierChemin = sousDossierChemin;
+    }
+
+    public String getDossierRacineChemin() {
+        dossierRacineChemin = JadePropertiesService.getInstance().getProperty(PROP_DOSSIER_RACINE);
+        return dossierRacineChemin;
     }
 }
