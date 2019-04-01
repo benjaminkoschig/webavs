@@ -50,7 +50,7 @@ public class ALRecapViewBean extends BJadePersistentObjectViewBean {
     /**
      * indique si le caractère au début du NSS pour les récaps est activé
      */
-    private Boolean isCharNssRecap = true ;
+    private Boolean isCharNssRecap = false ;
     /**
      * Montant total de la récap
      */
@@ -84,7 +84,12 @@ public class ALRecapViewBean extends BJadePersistentObjectViewBean {
         prestationSearchModel = new EntetePrestationListRecapComplexSearchModel();
         recapModel = new RecapitulatifEntrepriseModel();
         setAffilie(new AffiliationSimpleModel());
-        this.isCharNssRecap = JadePropertiesService.getInstance().getProperty(ALConstParametres.RECAP_FORMAT_NSS).equals("true");
+        try {
+            this.isCharNssRecap = JadePropertiesService.getInstance().getProperty(ALConstParametres.RECAP_FORMAT_NSS).equals("true");
+        } catch (Exception e){
+            this.isCharNssRecap = false;
+        }
+
     }
 
     /*
