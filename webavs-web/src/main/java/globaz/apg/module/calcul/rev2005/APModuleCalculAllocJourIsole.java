@@ -56,13 +56,13 @@ public class APModuleCalculAllocJourIsole extends AAPModuleCalculSalaireJournali
         BigDecimal salaireJournalier = arrondir(
                 salaireMensuel.divide(DIVISION_CALCUL_JOUR_ISOLE, 2, RoundingMode.HALF_UP));
 
+        if (salaireJournalier.compareTo(salaireMax) >= 1) {
+            salaireJournalier = salaireMax;
+        }
+
         // Diviser le montant journalier par deux car c'est un demi jour et non un jour complet
         if (IAPDroitLAPG.CS_DECES_DEMI_JOUR_CIAB.equals(baseCalcul.getTypeAllocation())) {
             salaireJournalier = salaireJournalier.divide(new BigDecimal(2));
-        }
-
-        if (salaireJournalier.compareTo(salaireMax) >= 1) {
-            salaireJournalier = salaireMax;
         }
 
         result.setMontantJournalier(new FWCurrency(salaireJournalier.toString()));

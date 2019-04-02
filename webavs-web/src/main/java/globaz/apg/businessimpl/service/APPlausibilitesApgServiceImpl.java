@@ -3,6 +3,7 @@ package globaz.apg.businessimpl.service;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import globaz.apg.application.APApplication;
 import globaz.apg.business.service.APAnnoncesRapgService;
 import globaz.apg.business.service.APPlausibilitesApgService;
 import globaz.apg.db.annonces.APAnnonceAPG;
@@ -24,11 +25,13 @@ import globaz.apg.pojo.ViolatedRule;
 import globaz.apg.properties.APParameter;
 import globaz.apg.rapg.rules.Rule;
 import globaz.apg.rapg.rules.RulesFactory;
+import globaz.apg.utils.APGUtils;
 import globaz.globall.db.BSession;
 import globaz.globall.db.FWFindParameter;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.log.JadeLogger;
+import globaz.jade.properties.JadePropertiesService;
 import globaz.prestation.beans.PRPeriode;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.utils.PRDateUtils;
@@ -59,7 +62,7 @@ public class APPlausibilitesApgServiceImpl implements APPlausibilitesApgService 
                 code = r.substring(r.indexOf("_") + 1);
                 rule = RulesFactory.getRule(code, session);
                 try {
-                    if (!rule.check(annonce)) {
+                    if (!isRuleInSkipListFerciab(rule, annonce) && !rule.check(annonce)) {
                         if (ruleConcernePlageValeurs(rule)) {
                             listErrors.add(getViolatedRuleDetail(session, rule.getErrorCode(), annonce));
                         } else {
@@ -102,6 +105,21 @@ public class APPlausibilitesApgServiceImpl implements APPlausibilitesApgService 
             JadeLogger.error(this, t);
         }
         return listErrors;
+    }
+
+    private boolean isRuleInSkipListFerciab(Rule rule, APChampsAnnonce annonce) {
+        String hasComplement = JadePropertiesService.getInstance().getProperty(APApplication.PROPERTY_IS_FERCIAB);
+        if (!"true".equals(hasComplement)) {
+            return false;
+        } else if (APGUtils.isTypeAnnonceJourIsole(annonce.getServiceType()) && ruleInSkipList(rule)) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean ruleInSkipList(Rule rule) {
+        return APAllPlausibiliteRules.R_307.getCodeAsString().equals(rule.getErrorCode())
+                || APAllPlausibiliteRules.R_321.getCodeAsString().equals(rule.getErrorCode());
     }
 
     private boolean ruleConcernePlageValeurs(Rule rule) {

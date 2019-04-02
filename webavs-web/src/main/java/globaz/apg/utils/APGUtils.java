@@ -5,6 +5,7 @@ import globaz.apg.application.APApplication;
 import globaz.apg.db.droits.APDroitAPG;
 import globaz.apg.db.droits.APDroitLAPG;
 import globaz.apg.db.droits.APDroitMaternite;
+import globaz.apg.enums.APGenreServiceAPG;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BTransaction;
 import globaz.jade.client.util.JadeStringUtil;
@@ -87,5 +88,16 @@ public class APGUtils {
                 || IAPDroitLAPG.CS_CONGE_JEUNESSE_CIAB.equals(csTypeAllocation)
                 || IAPDroitLAPG.CS_SERVICE_ETRANGER_CIAB.equals(csTypeAllocation)
                 || IAPDroitLAPG.CS_DECES_DEMI_JOUR_CIAB.equals(csTypeAllocation)) && "true".equals(isFerciab);
+    }
+
+    public static Boolean isTypeAnnonceJourIsole(String serviceType) {
+        return APGenreServiceAPG.Demenagement.getCodePourAnnonce().equals(serviceType)
+                || APGenreServiceAPG.Naissance.getCodePourAnnonce().equals(serviceType)
+                || APGenreServiceAPG.MariageLPart.getCodePourAnnonce().equals(serviceType)
+                || APGenreServiceAPG.Deces.getCodePourAnnonce().equals(serviceType)
+                || APGenreServiceAPG.InspectionRecrutementLiberation.getCodePourAnnonce().equals(serviceType)
+                || APGenreServiceAPG.CongeJeunesse.getCodePourAnnonce().equals(serviceType)
+                || APGenreServiceAPG.ServiceEtranger.getCodePourAnnonce().equals(serviceType)
+                || APGenreServiceAPG.DecesDemiJour.getCodePourAnnonce().equals(serviceType);
     }
 }
