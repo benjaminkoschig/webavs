@@ -10,6 +10,8 @@ import java.io.Serializable;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
+
+import globaz.jade.fs.JadeFsFacade;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.LoggerFactory;
@@ -1383,7 +1385,11 @@ public class CAOrdreGroupe extends BEntity implements Serializable, APIOrdreGrou
                                 JadePropertiesService.getInstance().getProperty(CAOrganeExecution.PROP_DOSSIER_RACINE)
                                         + getOrganeExecution().getSousDossierChemin() + "/" + "og" + getIdOrdreGroupe()
                                         + ".xml");
-                        FileUtils.copyFile(fileSrc, fileDest);
+                        String folderDest = JadePropertiesService.getInstance().getProperty(CAOrganeExecution.PROP_DOSSIER_RACINE)+getOrganeExecution().getSousDossierChemin();
+                        if (!JadeFsFacade.exists(folderDest)) {
+                            JadeFsFacade.createFolder(folderDest);
+                        }
+                        JadeFsFacade.copyFile(fileSrc.getAbsolutePath(), fileDest.getAbsolutePath());
                     }
                 }
             }
