@@ -50,11 +50,16 @@ $(document).ready(function(){
         	}
         }
 	 });
-	
+
+	$('.formatChoice').change(function(event) {
+		testFormatChoice();
+	});
+
 	$('#idGroupPar').change(function(event) {
 		testOptionMail(this);
 	 });
-	
+
+
 });
 
 function add() {
@@ -66,8 +71,19 @@ function testOptionMail(obj) {
   		$('.optionMail').hide();
 	}else{
   		$('.optionMail').show();
+		testFormatChoice();
 	}
 }
+
+function testFormatChoice() {
+	if($('#pdfChoice').is(':checked')) {
+		$('.optionMail input').attr('checked','checked');
+		$('.optionMail').prop('disabled', true);
+	} else {
+		$('.optionMail').prop('disabled', false);
+	}
+}
+
 function upd() {
     document.forms[0].elements('userAction').value="al.echeances.echeances.modifier";
 }
@@ -158,9 +174,9 @@ function postInit(){
 	                <tr class="optionsProvisoire">
 	               	 	<td></td>
 	                	<td><ct:FWLabel key="AL0018_TRAITEMENT_TYPE_IMPRESSION"/>
-	                		<input type="radio"  name="typeDocument" value="<%=ALEnumDocumentMode.PDF.getValue()%>" checked="checked" />
+	                		<input type="radio" id="pdfChoice" class="formatChoice" name="typeDocument" value="<%=ALEnumDocumentMode.PDF.getValue()%>" checked="checked" />
 							<ct:FWLabel key="AL0018_TRAITEMENT_TYPE_IMPRESSION_PDF"/>
-							<input type="radio"  name="typeDocument" value="<%=ALEnumDocumentMode.EXCEL.getValue()%>"  />
+							<input type="radio" class="formatChoice" name="typeDocument" value="<%=ALEnumDocumentMode.EXCEL.getValue()%>"  />
 							<ct:FWLabel key="AL0018_TRAITEMENT_TYPE_IMPRESSION_EXCEL"/>
 	                	</td>
 	                </tr>
