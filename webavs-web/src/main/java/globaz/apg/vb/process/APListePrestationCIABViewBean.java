@@ -3,6 +3,7 @@
  */
 package globaz.apg.vb.process;
 
+import globaz.apg.process.APListePrestationCIABProcess;
 import globaz.prestation.vb.PRAbstractViewBeanSupport;
 
 /**
@@ -17,7 +18,7 @@ public class APListePrestationCIABViewBean extends PRAbstractViewBeanSupport {
     private String eMailAddress = "";
     private Boolean envoyerGed = new Boolean(false);
     private String numeroAffilie = "";
-    private String selecteurPrestation = "";
+    private String selecteurPrestation = APListePrestationCIABProcess.SELECTEUR_PRESTATION_PAR_PAIEMENT;
 
     public String getDateDebut() {
         return dateDebut;
