@@ -44,7 +44,7 @@ if(IPRDemande.CS_TYPE_APG.equalsIgnoreCase(keyTypePrestation)){
 							<ct:FWLabel key="JSP_LISTE_PRESTATION_VERSEE_GENRE_PERIODE"/>&nbsp;
 						</TD>
 						<TD>
-							<ct:FWCodeSelectTag name="selecteurPrestation" defaut="<%=viewBean.getSelecteurPrestation()%>" codeType="APLPVPRSEL" wantBlank="false"  />                                        
+							<ct:FWCodeSelectTag name="selecteurPrestation" defaut="<%=viewBean.getSelecteurPrestation()%>" codeType="APLPVPRSEL" wantBlank="false" />
 						</TD>
 					</TR>
 					
@@ -86,3 +86,11 @@ if(IPRDemande.CS_TYPE_APG.equalsIgnoreCase(keyTypePrestation)){
 <%-- tpl:put name="zoneEndPage" --%><%	if (request.getParameter("_back") != null && request.getParameter("_back").equals("sl")) { %> <%	}%> <%-- /tpl:put --%>
 <%@ include file="/theme/process/bodyClose.jspf" %>
 <%-- /tpl:insert --%>
+
+<script type="text/javascript">
+
+	window.onload = function(){
+		document.getElementById("selecteurPrestation").disabled = true;
+	}
+
+</script>

@@ -10,7 +10,10 @@
 <script type="text/javascript" src="<%=request.getContextPath()%>/scripts/jquery-ui.js"></script>
 <%@ page import="globaz.framework.screens.menu.*"%>
 <%@ page import="globaz.templates.*"%>
-<%
+	<%@ page import="globaz.jade.properties.JadePropertiesService" %>
+	<%@ page import="globaz.apg.application.APApplication" %>
+	<%@ page import="globaz.fweb.util.JavascriptEncoder" %>
+	<%
 	boolean displayOptionsAsDefault = false;
 	String tabToShow = request.getParameter("tab");
 	if ("options".equals(tabToShow)) {
@@ -55,6 +58,16 @@ function selectOptions() {
 	jscss("add", document.all.optionsButton, "btnSelected");
 	jscss("remove", document.all.menuButton, "btnSelected");
 }
+
+$(function () {
+	$var = "<%=JadePropertiesService.getInstance().getProperty(APApplication.PROPERTY_IS_FERCIAB)%>";
+
+
+	if ($var == "false"){
+		$('[onclick*="listePrestationCIAB"]').hide();
+	}
+
+});
 /*
 This example function takes four parameters:
 
