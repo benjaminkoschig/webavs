@@ -78,6 +78,13 @@
 							<parameter name="userAction" value="apg.process.listePrestationVersee.afficher" />
 						</action>
 					</node>
+
+					<node>
+						<label refId="MENU_OPTION_LISTE_PRESTATION_CIAB" />
+						<action command="/apg" responseTarget="fr_main">
+							<parameter name="userAction" value="apg.process.listePrestationCIAB.afficher" />
+						</action>
+					</node>
 					
 					<node>
 						<label refId="MENU_OPTION_LISTE_TAXATIONS_DEFINITIVES" />
@@ -557,6 +564,12 @@
 						<label refId="MENU_OPTION_LISTE_PRESTATION_VERSEE" />
 						<action command="/apg" responseTarget="fr_main">
 							<parameter name="userAction" value="apg.process.listePrestationVersee.afficher" />
+						</action>
+					</node>
+					<node>
+						<label refId="MENU_OPTION_LISTE_PRESTATION_CIAB" />
+						<action command="/apg" responseTarget="fr_main">
+							<parameter name="userAction" value="apg.process.listePrestationCIAB.afficher" />
 						</action>
 					</node>
 					<node>
