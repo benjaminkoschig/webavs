@@ -266,7 +266,7 @@ public class ImpressionEcheancesServiceImpl implements ImpressionEcheancesServic
                         EcheancesAffilie echAffilie = EcheancesAffilieFactory
                                 .getEcheanceListeAffilie(attributAffilieTypeAvisEch);
 
-                        docAffilie = echAffilie.loadData(droitsAffilieTemp, droitsAffilieTemp.get(0).getNumAffilie(), droitsAffilieTemp.get(0).getNumContribuable(),
+                        docAffilie = echAffilie.loadData(droitsAffilieTemp, droitsAffilieTemp.get(0).getNumAffilie(),
                                 droitsAffilieTemp.get(0).getActiviteAllocataire());
 
 
