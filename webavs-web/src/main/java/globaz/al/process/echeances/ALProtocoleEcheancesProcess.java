@@ -242,7 +242,7 @@ public class ALProtocoleEcheancesProcess extends ALAbsrtactProcess {
                 infosMail.put(data, infosMailTmp.get(keyByFile));
             }
             
-            if(mailSepare) {
+//            if(mailSepare) {
                 for(DocumentData data:listData){
                     JadePublishDocumentInfo pubInfo = new JadePublishDocumentInfo();
                     pubInfo.setOwnerEmail(JadeThread.currentUserEmail());
@@ -255,62 +255,7 @@ public class ALProtocoleEcheancesProcess extends ALAbsrtactProcess {
                     pubInfo.setPublishDocument(true);
                     container.addDocument(data, pubInfo);
                 }
-            } else {
-                JadePublishDocumentInfo pubInfoTemp = new JadePublishDocumentInfo();
-                pubInfoTemp.setOwnerEmail(JadeThread.currentUserEmail());
-                pubInfoTemp.setOwnerId(JadeThread.currentUserId());
-                pubInfoTemp.setDocumentTitle(JadeThread.getMessage("al.echeances.titre.protocole.avisEcheance"));
-                pubInfoTemp.setDocumentSubject(JadeThread.getMessage("al.echeances.titre.protocole.avisEcheance"));
-                pubInfoTemp.setDocumentDate(JadeDateUtil.getGlobazFormattedDate(new Date()));
-                pubInfoTemp.setDocumentTypeNumber(CODE_INFOROM_AVIS_ECHEANCE);
-                pubInfoTemp.setPublishDocument(false);
-
-                List<JadePublishDocumentInfo> infoDocs = new ArrayList<>();
-                for(DocumentData data:listData){
-                    JadePublishDocumentInfo pubInfo = pubInfoTemp.createCopy();
-                    infoDocs.add(pubInfo);
-                    JadePrintDocumentContainer cont = new JadePrintDocumentContainer();
-                    cont.addDocument(data, pubInfo);
-                    this.createDocuments(cont);
-                }
-
-                getProgressHelper().setMax(listData.size());
-                long startTime = System.currentTimeMillis();
-                int fileNameIndex = 0;
-                if(!infoDocs.isEmpty()) {
-                    List<String> outputFiles = new ArrayList<>();
-                    List<JadePublishDocumentInfo> listTaskInfoDone = new ArrayList<>(infoDocs);
-
-                    while (!listTaskInfoDone.isEmpty()) {
-                        for (JadePublishDocumentInfo docInfo : infoDocs) {
-
-                            if (docInfo.getCurrentFilePath() != null) {
-                                outputFiles.add(docInfo.getCurrentPathName());
-                                listTaskInfoDone.remove(docInfo);
-                                getProgressHelper().setCurrent(fileNameIndex++);
-                            }
-                        }
-
-                        Thread.sleep(500);
-                        if (System.currentTimeMillis() - startTime > 3000000) {
-                            throw new ALEcheancesException("Time out");
-                        }
-                        infoDocs = new ArrayList<>(listTaskInfoDone);
-
-                    }
-
-                    String[] filesPathTotal = new String[outputFiles.size()];
-                    outputFiles.toArray(filesPathTotal);
-                    for(String[] filesPath : splitPdfFilesForMail(filesPathTotal)) {
-                        JadeSmtpClient.getInstance().sendMail(
-                                JadeThread.currentUserEmail(),
-                                JadeThread.getMessage("al.echeances.titre.protocole.avisEcheance"),
-                                JadeThread.getMessage("al.echeances.titre.protocole.avisEcheance") + " : "
-                                        + dateEcheance.substring(3), filesPath);
-                    }
-                    return true;
-                }
-            }
+//            }
         }
         return false;
     }
