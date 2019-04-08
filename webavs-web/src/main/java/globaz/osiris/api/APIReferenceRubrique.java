@@ -73,6 +73,28 @@ public interface APIReferenceRubrique {
     public static final String APG_PRESTATION_A_RESTITUER_INDEPENDANT = "237508";
 
     public static final String APG_SANS_COTISATIONS = "237017";
+
+    public static final String APG_COMPCIAB_JU_PARITAIRE_PARTICIPATION      = "237520";
+    public static final String APG_COMPCIAB_JU_PARITAIRE_MONTANT_BRUT       = "237521";
+    public static final String APG_COMPCIAB_JU_PARITAIRE_MONTANT_RESTITUTION = "237522";
+    public static final String APG_COMPCIAB_JU_PERSONNEL_COTISATIONS_AC     = "237523";
+    public static final String APG_COMPCIAB_JU_PERSONNEL_COTISATIONS_AVS    = "237524";
+    public static final String APG_COMPCIAB_JU_PERSONNEL_PARTICIPATION      = "237525";
+    public static final String APG_COMPCIAB_JU_PERSONNEL_MONTANT_BRUT       = "237526";
+    public static final String APG_COMPCIAB_JU_PERSONNEL_MONTANT_RESTITUTION = "237527";
+    public static final String APG_COMPCIAB_BE_PARITAIRE_PARTICIPATION      = "237528";
+    public static final String APG_COMPCIAB_BE_PARITAIRE_MONTANT_BRUT       = "237529";
+    public static final String APG_COMPCIAB_BE_PARITAIRE_MONTANT_RESTITUTION = "237530";
+    public static final String APG_COMPCIAB_BE_PERSONNEL_COTISATIONS_AC     = "237531";
+    public static final String APG_COMPCIAB_BE_PERSONNEL_COTISATIONS_AVS    = "237532";
+    public static final String APG_COMPCIAB_BE_PERSONNEL_PARTICIPATION      = "237533";
+    public static final String APG_COMPCIAB_BE_PERSONNEL_MONTANT_BRUT       = "237534";
+    public static final String APG_COMPCIAB_BE_PERSONNEL_MONTANT_RESTITUTION = "237535";
+    public static final String APG_COMPCIAB_JU_PARITAIRE_IMPOT_SOURCE       = "237536";
+    public static final String APG_COMPCIAB_JU_PERSONNEL_IMPOT_SOURCE       = "237537";
+    public static final String APG_COMPCIAB_BE_PARITAIRE_IMPOT_SOURCE       = "237538";
+    public static final String APG_COMPCIAB_BE_PERSONNEL_IMPOT_SOURCE       = "237539";
+
     public static final String API_AI = "237068";
     public static final String API_AI_EXTOURNE = "237080";
     public static final String API_AI_RETROACTIF = "237074";

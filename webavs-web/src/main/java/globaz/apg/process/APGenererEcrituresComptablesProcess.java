@@ -6,6 +6,7 @@ package globaz.apg.process;
 import globaz.apg.api.annonces.IAPAnnonce;
 import globaz.apg.api.droits.IAPDroitMaternite;
 import globaz.apg.api.prestation.IAPRepartitionPaiements;
+import globaz.apg.application.APApplication;
 import globaz.apg.db.droits.APDroitLAPG;
 import globaz.apg.db.droits.APSituationFamilialeMat;
 import globaz.apg.db.droits.APSituationProfessionnelle;
@@ -20,9 +21,12 @@ import globaz.apg.db.prestation.APRepartitionPaiements;
 import globaz.apg.db.prestation.APRepartitionPaiementsManager;
 import globaz.apg.enums.APAssuranceTypeAssociation;
 import globaz.apg.enums.APTypeDePrestation;
+import globaz.apg.module.calcul.constantes.ECanton;
 import globaz.apg.pojo.AcmNeBean;
 import globaz.apg.pojo.AcmNeFneBean;
+import globaz.apg.pojo.ComplementBean;
 import globaz.apg.properties.APProperties;
+import globaz.apg.services.APRechercherAssuranceFromDroitCotisationService;
 import globaz.caisse.helper.CaisseHelperFactory;
 import globaz.externe.IPRConstantesExternes;
 import globaz.framework.util.FWCurrency;
@@ -45,6 +49,8 @@ import globaz.jade.context.JadeThreadActivator;
 import globaz.jade.context.JadeThreadContext;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.log.JadeLogger;
+import globaz.jade.properties.JadePropertiesService;
+import globaz.naos.api.IAFAssurance;
 import globaz.naos.process.statOfas.AFStatistiquesOfasProcess;
 import globaz.osiris.api.APICompteAnnexe;
 import globaz.osiris.api.APIEcriture;
@@ -208,12 +214,14 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
         public static final String TYPE_AMAT = "AMATF";
         public static final String TYPE_APG = "APG";
         public static final String TYPE_LAMAT = "LAMAT";
+        public static final String TYPE_COMPCIAB = "COMPCIAB";
 
         private final FWCurrency montantACM = new FWCurrency(0);
         private final FWCurrency montantACMNE = new FWCurrency(0);
         private final FWCurrency montantAMAT = new FWCurrency(0);
         private final FWCurrency montantAPG = new FWCurrency(0);
         private final FWCurrency montantLAMAT = new FWCurrency(0);
+        private final FWCurrency montantCOMPCIAB = new FWCurrency(0);
 
         public void add(final Montants montant) {
             montantACMNE.add(montant.montantACMNE);
@@ -221,11 +229,12 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
             montantLAMAT.add(montant.montantLAMAT);
             montantAMAT.add(montant.montantAMAT);
             montantAPG.add(montant.montantAPG);
+            montantCOMPCIAB.add(montant.montantCOMPCIAB);
         }
 
         /**
          * @param type
-         *            Valeur possible : TYPE_ACM, TYPE_LAMAT, TYPE_APG, TYPE_AMAT, TYPE_ACM_NE
+         *            Valeur possible : TYPE_ACM, TYPE_LAMAT, TYPE_APG, TYPE_AMAT, TYPE_ACM_NE, TYPE_COMPCIAB
          * @param montant
          */
         public void add(final String type, final FWCurrency montant) {
@@ -239,12 +248,14 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
                 montantAPG.add(montant);
             } else if (Montants.TYPE_ACM_NE.equals(type)) {
                 montantACMNE.add(montant);
-            }
+            } else if (Montants.TYPE_COMPCIAB.equals(type)) {
+                montantCOMPCIAB.add(montant);
+        }
         }
 
         /**
          * @param type
-         *            Valeur possible : TYPE_ACM, TYPE_LAMAT, TYPE_APG, TYPE_AMAT, TYPE_ACM_NE
+         *            Valeur possible : TYPE_ACM, TYPE_LAMAT, TYPE_APG, TYPE_AMAT, TYPE_ACM_NE, TYPE_COMPCIAB
          * @param montant
          */
         public void add(final String type, final String montant) {
@@ -263,6 +274,8 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
                 return new FWCurrency(montantAPG.toString());
             } else if (Montants.TYPE_ACM_NE.equals(type)) {
                 return new FWCurrency(montantACMNE.toString());
+            } else if (Montants.TYPE_COMPCIAB.equals(type)) {
+                return new FWCurrency(montantCOMPCIAB.toString());
             } else {
                 return null;
             }
@@ -293,12 +306,15 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
             if (expression.indexOf(Montants.TYPE_ACM_NE) != -1) {
                 result.add(montantACMNE);
             }
+            if (expression.indexOf(Montants.TYPE_COMPCIAB) != -1) {
+                result.add(montantCOMPCIAB);
+            }
             return result;
         }
 
         public boolean isZero() {
             return montantACM.isZero() && montantACMNE.isZero() && montantAMAT.isZero() && montantAPG.isZero()
-                    && montantLAMAT.isZero();
+                    && montantLAMAT.isZero() && montantCOMPCIAB.isZero();
         }
 
         public void sub(final Montants montant) {
@@ -307,6 +323,7 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
             montantLAMAT.sub(montant.montantLAMAT);
             montantAMAT.sub(montant.montantAMAT);
             montantAPG.sub(montant.montantAPG);
+            montantCOMPCIAB.sub(montant.montantCOMPCIAB);
         }
 
     }
@@ -390,6 +407,29 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
         System.out.println(mapMontants.get("m1").getMontant(Montants.TYPE_ACM));
     }
 
+    public enum TypeComplement {
+        JU_PARITAIRE (ECanton.JU, "PARITAIRE"),
+        JU_PERSONNEL (ECanton.JU, "PERSONNEL"),
+        BE_PARITAIRE (ECanton.BE, "PARITAIRE"),
+        BE_PERSONNEL (ECanton.BE, "PERSONNEL");
+
+        private TypeComplement(ECanton canton, String genre) {
+            this.canton = canton;
+            this.genre = genre;
+        }
+
+        private final ECanton canton;
+        private final String genre;
+
+        public ECanton getCanton() {
+            return canton;
+        }
+
+        public String getGenre() {
+            return genre;
+        }
+    }
+
     // ~ Instance fields
     // ------------------------------------------------------------------------------------------------
     // ACM
@@ -438,6 +478,7 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
     private String idLot = "";
     private boolean isLotMaternite = false;
     private final Map<String, AcmNeBean> mapAcmNeBean = new HashMap<String, AcmNeBean>();
+    private final Map<String, ComplementBean> mapComplementBean = new HashMap<String, ComplementBean>();
     private String schemaDBWithTablePrefix = null;
 
     /**
@@ -708,6 +749,10 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
             return Montants.TYPE_ACM;
         } else if (APTypeDePrestation.ACM_NE.isCodeSystemEqual(genrePrestation)) {
             return Montants.TYPE_ACM_NE;
+        } else if (APTypeDePrestation.COMPCIAB.isCodeSystemEqual(genrePrestation)) {
+            return Montants.TYPE_COMPCIAB;
+        } else if (APTypeDePrestation.JOUR_ISOLE.isCodeSystemEqual(genrePrestation)) {
+            return Montants.TYPE_COMPCIAB;
         } else {
             return Montants.TYPE_APG;
         }
@@ -1153,7 +1198,7 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
             final Montants montants = (Montants) cotisations.get(annee);
             result.add(montants);
             final FWCurrency montant = montants.getMontantCumule(Montants.TYPE_ACM + "_" + Montants.TYPE_APG + "_"
-                    + Montants.TYPE_ACM_NE);
+                    + Montants.TYPE_ACM_NE );
             doEcriture(compta, montant.toString(), rubrique, idCompteAnnexe, idSection, annee);
         }
         return result;
@@ -1292,7 +1337,8 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
         final APISection sectionNormale = compta.getSectionByIdExterne(compteAnnexeAPG.getIdCompteAnnexe(),
                 APISection.ID_TYPE_SECTION_APG, noFactureNormale);
 
-        // Plein plein plein de variables pour garder ce qu'on a besoin
+
+                // Plein plein plein de variables pour garder ce qu'on a besoin
         // les cotisations sont sommées dans une map avec comme clef l'année de
         // cotisation (nécessaire pour les
         // écritures en compta)
@@ -1328,6 +1374,15 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
         final Montants totalFondDeCompensationRestitutionIndependant = new Montants();
         final Montants totalFondDeCompensationRestitutionACM = new Montants();
         final Montants totalFondDeCompensationRestitutionACMNE = new Montants();
+
+        final Montants totalFondDeCompensationComplementEmployeur = new Montants();
+        final Montants totalFondDeCompensationComplementIndependant = new Montants();
+        final Montants totalCotiAvsComplement = new Montants();
+        final Montants totalCotiAcComplement = new Montants();
+        final Montants totalFondDeCompensationComplementRestitutionEmployeur = new Montants();
+        final Montants totalFondDeCompensationComplementRestitutionIndependant = new Montants();
+        final Montants totalCotiAvsComplementRestitution = new Montants();
+        final Montants totalCotiAcComplementRestitution = new Montants();
 
         final Map mapEcrituresRubriquesConcernees = new HashMap();
 
@@ -1373,6 +1428,10 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
                     .isCodeSystemEqual(repartition.genrePrestation)
                     || APTypeDePrestation.ACM2_ALFA.isCodeSystemEqual(repartition.genrePrestation);
             final boolean isGenrePrestationACMNe = APTypeDePrestation.ACM_NE
+                    .isCodeSystemEqual(repartition.genrePrestation);
+            final boolean isGenrePrestationCompCIAB = APTypeDePrestation.COMPCIAB
+                    .isCodeSystemEqual(repartition.genrePrestation);
+            final boolean isGenrePrestationJoursIsoles = APTypeDePrestation.JOUR_ISOLE
                     .isCodeSystemEqual(repartition.genrePrestation);
 
             final GenreDestinataire destinataire = GenreDestinataire.getDestinataire(repartition.isEmployeur,
@@ -1472,6 +1531,22 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
                             throw new Exception("Not implemented");
                         }
                     }
+                } else if (isGenrePrestationCompCIAB || isGenrePrestationJoursIsoles) {
+                    final Montants mnt = new Montants();
+                    mnt.add(convertGenrePrestToRubrique(repartition.genrePrestation), repartition.cotisationAC);
+                    if (repartition.isEmployeur && !isRestitution) {
+                        totalFondDeCompensationComplementEmployeur.add(mnt);
+                    } else if (repartition.isEmployeur && isRestitution) {
+                        totalFondDeCompensationComplementRestitutionEmployeur.add(mnt);
+                    } else if (!isRestitution){
+                        totalCotiAcComplement.add(mnt);
+                        totalCotiAcComplement.add(mnt);
+                        totalFondDeCompensationComplementIndependant.sub(mnt);
+                    } else {
+                        totalCotiAcComplementRestitution.add(mnt);
+                        totalCotiAcComplementRestitution.add(mnt);
+                        totalFondDeCompensationComplementRestitutionIndependant.sub(mnt);
+                    }
                 } else {
                     if (!isRestitution) {
                         if (GenreDestinataire.INDEPENDANT.equals(destinataire)) {
@@ -1538,7 +1613,23 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
                             throw new Exception("Not implemented");
                         }
                     }
+                } else if (isGenrePrestationCompCIAB || isGenrePrestationJoursIsoles) {
+                    final Montants mnt = new Montants();
+                    mnt.add(convertGenrePrestToRubrique(repartition.genrePrestation), repartition.cotisationAVS);
 
+                    if (repartition.isEmployeur && !isRestitution) {
+                        totalFondDeCompensationComplementEmployeur.add(mnt);
+                    } else if (repartition.isEmployeur && isRestitution) {
+                        totalFondDeCompensationComplementRestitutionEmployeur.add(mnt);
+                    } else if (!isRestitution){
+                        totalCotiAvsComplement.add(mnt);
+                        totalCotiAvsComplement.add(mnt);
+                        totalFondDeCompensationComplementIndependant.sub(mnt);
+                    } else {
+                        totalCotiAvsComplementRestitution.add(mnt);
+                        totalCotiAvsComplementRestitution.add(mnt);
+                        totalFondDeCompensationComplementRestitutionIndependant.sub(mnt);
+                    }
                 } else {
                     if (!isRestitution) {
                         if (GenreDestinataire.INDEPENDANT.equals(destinataire)) {
@@ -1737,7 +1828,7 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
             final Montants montants = (Montants) (mapEcrituresRubriquesConcernees.get(keyRegroupementRubriqueConcernee));
             montantTotalStandard.add(montants);
             final FWCurrency montant = montants.getMontantCumule(Montants.TYPE_ACM + "_" + Montants.TYPE_APG + "_"
-                    + Montants.TYPE_ACM_NE);
+                    + Montants.TYPE_ACM_NE + "_" + Montants.TYPE_COMPCIAB);
             doEcriture(compta, montant.toString(), keyRegroupementRubriqueConcernee.rubrique,
                     compteAnnexeAPG.getIdCompteAnnexe(), sectionNormale.getIdSection(), null);
         }
@@ -1767,7 +1858,7 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
 
             montantTotalRestitution.add(montants);
             final FWCurrency montant = montants.getMontantCumule(Montants.TYPE_ACM + "_" + Montants.TYPE_APG + "_"
-                    + Montants.TYPE_ACM_NE);
+                    + Montants.TYPE_ACM_NE+ "_" + Montants.TYPE_COMPCIAB);
 
             doEcriture(compta, montant.toString(), keyRegroupementRubriqueConcernee.rubrique,
                     compteAnnexeAPG.getIdCompteAnnexe(), sectionRestitution.getIdSection(), null);
@@ -1896,6 +1987,23 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
 
                 mntIS.add(Montants.TYPE_ACM_NE, montantIndependant);
             }
+
+            montantAssure = totalISAssure.getMontant(Montants.TYPE_COMPCIAB);
+            montantIndependant = totalISIndependant.getMontant(Montants.TYPE_COMPCIAB);
+            if ((montantAssure != null) && !montantAssure.isZero()) {
+                doEcriture(compta, montantAssure.toString(), mapComplementBean.get(key.typeComplement.canton)
+                                .getRubriquePersonnelImpotSource(), compteAnnexeAPG.getIdCompteAnnexe(), sectionNormale.getIdSection(),
+                        null);
+
+                mntIS.add(Montants.TYPE_COMPCIAB, montantAssure);
+            }
+            if ((montantIndependant != null) && !montantIndependant.isZero()) {
+                doEcriture(compta, montantIndependant.toString(), mapComplementBean.get(key.typeComplement.canton)
+                                .getRubriqueParitaireImpotSource(), compteAnnexeAPG.getIdCompteAnnexe(), sectionNormale.getIdSection(),
+                        null);
+
+                mntIS.add(Montants.TYPE_COMPCIAB, montantIndependant);
+            }
         }
 
         montantTotalStandard.add(mntIS);
@@ -1928,6 +2036,44 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
                             .toString(), mapAcmNeBean.get(typeAssociationPourAcmNe).getRubriqueFondCompensation(),
                     compteAnnexeAPG.getIdCompteAnnexe(), sectionNormale.getIdSection(), null);
 
+        }
+
+        if ((totalFondDeCompensationComplementEmployeur!= null) && !totalFondDeCompensationComplementEmployeur.isZero()) {
+            APIRubrique rubrique = null;
+            rubrique = mapComplementBean.get(key.typeComplement.getCanton().getValue()).getRubriqueParitaireParticipationCotisation();
+
+            montantTotalStandard.add(totalFondDeCompensationComplementEmployeur);
+            doEcriture(compta,
+                    totalFondDeCompensationComplementEmployeur.getMontantCumule(Montants.TYPE_COMPCIAB + "_" + Montants.TYPE_APG)
+                            .toString(), rubrique, compteAnnexeAPG.getIdCompteAnnexe(), sectionNormale.getIdSection(), null);
+
+        }
+
+        if ((totalFondDeCompensationComplementIndependant!= null) && !totalFondDeCompensationComplementIndependant.isZero()) {
+            APIRubrique rubrique = null;
+            rubrique = mapComplementBean.get(key.typeComplement.getCanton().getValue()).getRubriquePersonnelParticipationCotisation();
+
+            montantTotalStandard.add(totalFondDeCompensationComplementIndependant);
+            doEcriture(compta,
+                    totalFondDeCompensationComplementIndependant.getMontantCumule(Montants.TYPE_COMPCIAB + "_" + Montants.TYPE_APG)
+                            .toString(), rubrique, compteAnnexeAPG.getIdCompteAnnexe(), sectionNormale.getIdSection(), null);
+
+        }
+
+        if ((totalCotiAcComplement!= null) && !totalCotiAcComplement.isZero()) {
+            APIRubrique rubrique = mapComplementBean.get(key.typeComplement.getCanton().getValue()).getRubriquePersonnelCotisationAC();
+            montantTotalStandard.add(totalCotiAcComplement);
+            doEcriture(compta,
+                    totalCotiAcComplement.getMontantCumule(Montants.TYPE_COMPCIAB + "_" + Montants.TYPE_APG)
+                            .toString(), rubrique, compteAnnexeAPG.getIdCompteAnnexe(), sectionNormale.getIdSection(), null);
+        }
+
+        if ((totalCotiAvsComplement!= null) && !totalCotiAvsComplement.isZero()) {
+            APIRubrique rubrique = mapComplementBean.get(key.typeComplement.getCanton().getValue()).getRubriquePersonnelCotisationAVS();
+            montantTotalStandard.add(totalCotiAvsComplement);
+            doEcriture(compta,
+                    totalCotiAvsComplement.getMontantCumule(Montants.TYPE_COMPCIAB + "_" + Montants.TYPE_APG)
+                            .toString(), rubrique, compteAnnexeAPG.getIdCompteAnnexe(), sectionNormale.getIdSection(), null);
         }
 
         if (hasRestitution) {
@@ -2052,6 +2198,23 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
 
                     mntISRestit.add(Montants.TYPE_ACM_NE, montantIndependant);
                 }
+
+                montantAssure = totalISAssure.getMontant(Montants.TYPE_COMPCIAB);
+                montantIndependant = totalISIndependant.getMontant(Montants.TYPE_COMPCIAB);
+                if ((montantAssure != null) && !montantAssure.isZero()) {
+                    doEcriture(compta, montantAssure.toString(), mapComplementBean.get(key.typeComplement.canton)
+                                    .getRubriquePersonnelImpotSource(), compteAnnexeAPG.getIdCompteAnnexe(), sectionNormale.getIdSection(),
+                            null);
+
+                    mntIS.add(Montants.TYPE_COMPCIAB, montantAssure);
+                }
+                if ((montantIndependant != null) && !montantIndependant.isZero()) {
+                    doEcriture(compta, montantIndependant.toString(), mapComplementBean.get(key.typeComplement.canton)
+                                    .getRubriquePersonnelImpotSource(), compteAnnexeAPG.getIdCompteAnnexe(), sectionNormale.getIdSection(),
+                            null);
+
+                    mntIS.add(Montants.TYPE_COMPCIAB, montantIndependant);
+                }
             }
 
             montantTotalRestitution.add(mntISRestit);
@@ -2091,6 +2254,43 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
                         mapAcmNeBean.get(typeAssociationPourAcmNe).getRubriqueFondCompensation(),
                         compteAnnexeAPG.getIdCompteAnnexe(), sectionRestitution.getIdSection(), null);
 
+            }
+
+            if ((totalFondDeCompensationComplementRestitutionEmployeur!= null) && !totalFondDeCompensationComplementRestitutionEmployeur.isZero()) {
+                APIRubrique rubrique = null;
+                rubrique = mapComplementBean.get(key.typeComplement.getCanton().getValue()).getRubriqueParitaireParticipationCotisation();
+
+                montantTotalRestitution.add(totalFondDeCompensationComplementRestitutionEmployeur);
+                doEcriture(compta,
+                        totalFondDeCompensationComplementRestitutionEmployeur.getMontantCumule(Montants.TYPE_COMPCIAB + "_" + Montants.TYPE_APG)
+                                .toString(), rubrique, compteAnnexeAPG.getIdCompteAnnexe(), sectionRestitution.getIdSection(), null);
+            }
+
+            if ((totalFondDeCompensationComplementRestitutionIndependant!= null) && !totalFondDeCompensationComplementRestitutionIndependant.isZero()) {
+                APIRubrique rubrique = null;
+                rubrique = mapComplementBean.get(key.typeComplement.getCanton().getValue()).getRubriquePersonnelParticipationCotisation();
+
+                montantTotalRestitution.add(totalFondDeCompensationComplementRestitutionIndependant);
+                doEcriture(compta,
+                        totalFondDeCompensationComplementRestitutionIndependant.getMontantCumule(Montants.TYPE_COMPCIAB + "_" + Montants.TYPE_APG)
+                                .toString(), rubrique, compteAnnexeAPG.getIdCompteAnnexe(), sectionRestitution.getIdSection(), null);
+
+            }
+
+            if ((totalCotiAcComplementRestitution!= null) && !totalCotiAcComplementRestitution.isZero()) {
+                APIRubrique rubrique = mapComplementBean.get(key.typeComplement.getCanton().getValue()).getRubriquePersonnelCotisationAC();
+                montantTotalRestitution.add(totalCotiAcComplementRestitution);
+                doEcriture(compta,
+                        totalCotiAcComplementRestitution.getMontantCumule(Montants.TYPE_COMPCIAB + "_" + Montants.TYPE_APG)
+                                .toString(), rubrique, compteAnnexeAPG.getIdCompteAnnexe(), sectionRestitution.getIdSection(), null);
+            }
+
+            if ((totalCotiAvsComplementRestitution!= null) && !totalCotiAvsComplementRestitution.isZero()) {
+                APIRubrique rubrique = mapComplementBean.get(key.typeComplement.getCanton().getValue()).getRubriquePersonnelCotisationAVS();
+                montantTotalRestitution.add(totalCotiAvsComplementRestitution);
+                doEcriture(compta,
+                        totalCotiAvsComplementRestitution.getMontantCumule(Montants.TYPE_COMPCIAB + "_" + Montants.TYPE_APG)
+                                .toString(), rubrique, compteAnnexeAPG.getIdCompteAnnexe(), sectionRestitution.getIdSection(), null);
             }
 
         }
@@ -2406,6 +2606,14 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
             montants.add(Montants.TYPE_ACM_NE, montant);
         }
 
+        if (APTypeDePrestation.COMPCIAB.isCodeSystemEqual(genrePrestation)) {
+            montants.add(Montants.TYPE_COMPCIAB, montant);
+        }
+
+        if (APTypeDePrestation.JOUR_ISOLE.isCodeSystemEqual(genrePrestation)) {
+            montants.add(Montants.TYPE_COMPCIAB, montant);
+        }
+
         if (isLotMaternite) {
             if (APTypeDePrestation.LAMAT.isCodeSystemEqual(genrePrestation)) {
                 montants.add(Montants.TYPE_LAMAT, montant);
@@ -2616,9 +2824,15 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
                 isAdoption = sfMat.getIsAdoption().booleanValue();
             }
 
+            TypeComplement typeComplement = null;
+            if (APTypeDePrestation.COMPCIAB.isCodeSystemEqual(repartition.genrePrestation) ||
+                APTypeDePrestation.JOUR_ISOLE.isCodeSystemEqual(repartition.genrePrestation)) {
+                typeComplement = getTypeComplementFromAssurance(getSession(), idAffilie, prestation.getIdDroit());
+            }
+
             // choix de la rubrique
             repartition.rubriqueConcernee = getRubriqueConcernee(isEmployeur, isIndependant, hasAC, hasCotisation,
-                    isRestitution, repartition.genrePrestation, isAdoption, repartition.typeAssociation);
+                    isRestitution, repartition.genrePrestation, isAdoption, repartition.typeAssociation, typeComplement);
 
             final String idAssureDeBase = droit.loadDemande().getIdTiers();
 
@@ -2626,7 +2840,7 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
             if (idAssureDeBase.equals(idTiers)) {
                 // choix de la section
                 repartition.section = getSection(idTiers, idAffilie, isRestitution);
-                key = new Key(idTiers, idAffilie, "0", "0", "0", false, false, repartition.idAdressePaiement, false);
+                key = new Key(idTiers, idAffilie, "0", "0", "0", false, false, repartition.idAdressePaiement, false, typeComplement);
 
             }
             // Cas ou le bénéficiaire est un affilié
@@ -2634,7 +2848,7 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
                 // choix de la section
                 repartition.section = getSection(idTiers, idAffilie, isRestitution);
                 key = new Key(idTiers, idAffilie, "0", "0", "0", false, false, repartition.idAdressePaiement,
-                        isPorteEnCompte);
+                        isPorteEnCompte, typeComplement);
 
             }
             // Cas ou le bénéficiaire est un employeur non affilié,
@@ -2647,7 +2861,7 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
                 // choix de la section
                 repartition.section = getSection(idAssureDeBase, idAffilie, isRestitution);
                 key = new Key(idAssureDeBase, "0", idTiers, "0", "0", false, false, repartition.idAdressePaiement,
-                        false);
+                        false, typeComplement);
             }
 
             if (repartitions.containsKey(key)) {
@@ -2660,6 +2874,32 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
         }
 
         return repartitions;
+    }
+
+    private TypeComplement getTypeComplementFromAssurance(BSession session, String idAffilie, String idDroit) throws Exception {
+        // list les cantons
+        String idAssuranceParitaireJU = JadePropertiesService.getInstance()
+                .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_PARITAIRE_JU_ID);
+        String idAssurancePersonnelJU = JadePropertiesService.getInstance()
+                .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_PERSONNEL_JU_ID);
+        String idAssuranceParitaireBE = JadePropertiesService.getInstance()
+                .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_PARITAIRE_BE_ID);
+        String idAssurancePersonnelBE = JadePropertiesService.getInstance()
+                .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_PERSONNEL_BE_ID);
+        List<IAFAssurance> listAssurance = APRechercherAssuranceFromDroitCotisationService.rechercher(idDroit,
+                idAffilie, session);
+        for (IAFAssurance assurance : listAssurance) {
+            if (assurance.getAssuranceId().equals(idAssuranceParitaireBE)) {
+                return TypeComplement.BE_PARITAIRE;
+            } else if (assurance.getAssuranceId().equals(idAssurancePersonnelBE)) {
+                return TypeComplement.BE_PERSONNEL;
+            } else if (assurance.getAssuranceId().equals(idAssuranceParitaireJU)) {
+                return TypeComplement.JU_PARITAIRE;
+            } else if (assurance.getAssuranceId().equals(idAssurancePersonnelJU)) {
+                return TypeComplement.JU_PERSONNEL;
+            }
+        }
+        return null;
     }
 
     /**
@@ -2744,7 +2984,7 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
      */
     protected APIRubrique getRubriqueConcernee(final boolean isEmployeur, final boolean isIndependant,
             final boolean hasAC, final boolean hasCotisation, final boolean isRestitution,
-            final String genrePrestation, final boolean isAdoption, final String typeAssociation) {
+            final String genrePrestation, final boolean isAdoption, final String typeAssociation, TypeComplement typeComplement) {
         APIRubrique rubrique = null;
 
         final GenreDestinataire destinataire = GenreDestinataire.getDestinataire(isEmployeur, isIndependant);
@@ -2767,6 +3007,21 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
                 rubrique = mapAcmNeBean.get(typeAssociation).getRubriqueRestitution();
             } else {
                 rubrique = mapAcmNeBean.get(typeAssociation).getRubriqueDeBase();
+            }
+        } else if (APTypeDePrestation.COMPCIAB.isCodeSystemEqual(genrePrestation)
+                    || APTypeDePrestation.JOUR_ISOLE.isCodeSystemEqual(genrePrestation)) { // Complément
+            if (isRestitution) {
+                if("PARITAIRE".equals(typeComplement.genre)){
+                    rubrique = mapComplementBean.get(typeComplement.getCanton().getValue()).getRubriqueParitaireRestitution();
+                } else if("PERSONNEL".equals(typeComplement.genre)) {
+                    rubrique = mapComplementBean.get(typeComplement.getCanton().getValue()).getRubriquePersonnelRestitution();
+                }
+            } else {
+                if("PARITAIRE".equals(typeComplement.genre)){
+                    rubrique = mapComplementBean.get(typeComplement.getCanton().getValue()).getRubriqueParitaireMontantBrut();
+                } else if("PERSONNEL".equals(typeComplement.genre)) {
+                    rubrique = mapComplementBean.get(typeComplement.getCanton().getValue()).getRubriquePersonnelMontantBrut();
+                }
             }
         } else if (isRestitution) {
             if (isLamat) {
@@ -3097,7 +3352,66 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
 
             mapAcmNeBean.put(APAssuranceTypeAssociation.FNE.getCodesystemToString(), acmNeFneBean);
 
+            final ComplementBean complementJUBean = new ComplementBean();
+            complementJUBean.setRubriqueParitaireParticipationCotisation(referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.APG_COMPCIAB_JU_PARITAIRE_PARTICIPATION));
+            complementJUBean.setRubriqueParitaireMontantBrut(referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.APG_COMPCIAB_JU_PARITAIRE_MONTANT_BRUT));
+            complementJUBean.setRubriqueParitaireRestitution(referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.APG_COMPCIAB_JU_PARITAIRE_MONTANT_RESTITUTION));
+            complementJUBean.setRubriquePersonnelParticipationCotisation(referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.APG_COMPCIAB_JU_PERSONNEL_PARTICIPATION));
+            complementJUBean.setRubriquePersonnelMontantBrut(referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.APG_COMPCIAB_JU_PERSONNEL_MONTANT_BRUT));
+            complementJUBean.setRubriquePersonnelRestitution(referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.APG_COMPCIAB_JU_PERSONNEL_MONTANT_RESTITUTION));
+            complementJUBean.setRubriquePersonnelCotisationAC(referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.APG_COMPCIAB_JU_PERSONNEL_COTISATIONS_AC));
+            complementJUBean.setRubriquePersonnelCotisationAVS(referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.APG_COMPCIAB_JU_PERSONNEL_COTISATIONS_AVS));
+            complementJUBean.setRubriqueParitaireImpotSource(referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.APG_COMPCIAB_JU_PARITAIRE_IMPOT_SOURCE));
+            complementJUBean.setRubriquePersonnelImpotSource(referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.APG_COMPCIAB_JU_PERSONNEL_IMPOT_SOURCE));
+
+            mapComplementBean.put(ECanton.JU.getValue(), complementJUBean);
+
+            final ComplementBean complementBEBean = new ComplementBean();
+            complementBEBean.setRubriqueParitaireParticipationCotisation(referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.APG_COMPCIAB_BE_PARITAIRE_PARTICIPATION));
+            complementBEBean.setRubriqueParitaireMontantBrut(referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.APG_COMPCIAB_BE_PARITAIRE_MONTANT_BRUT));
+            complementBEBean.setRubriqueParitaireRestitution(referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.APG_COMPCIAB_BE_PARITAIRE_MONTANT_RESTITUTION));
+            complementBEBean.setRubriquePersonnelParticipationCotisation(referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.APG_COMPCIAB_BE_PERSONNEL_PARTICIPATION));
+            complementBEBean.setRubriquePersonnelMontantBrut(referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.APG_COMPCIAB_BE_PERSONNEL_MONTANT_BRUT));
+            complementBEBean.setRubriquePersonnelRestitution(referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.APG_COMPCIAB_BE_PERSONNEL_MONTANT_RESTITUTION));
+            complementBEBean.setRubriquePersonnelCotisationAC(referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.APG_COMPCIAB_BE_PERSONNEL_COTISATIONS_AC));
+            complementBEBean.setRubriquePersonnelCotisationAVS(referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.APG_COMPCIAB_BE_PERSONNEL_COTISATIONS_AVS));
+            complementBEBean.setRubriqueParitaireImpotSource(referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.APG_COMPCIAB_BE_PARITAIRE_IMPOT_SOURCE));
+            complementBEBean.setRubriquePersonnelImpotSource(referenceRubrique
+                    .getRubriqueByCodeReference(APIReferenceRubrique.APG_COMPCIAB_BE_PERSONNEL_IMPOT_SOURCE));
+
+            mapComplementBean.put(ECanton.BE.getValue(), complementBEBean);
+
         }
+    }
+
+    private ECanton getCanton(TypeComplement type) {
+        if(TypeComplement.JU_PARITAIRE.equals(type)
+                || TypeComplement.JU_PERSONNEL.equals(type)) {
+            return ECanton.JU;
+        } else if (TypeComplement.BE_PARITAIRE.equals(type)
+                || TypeComplement.BE_PERSONNEL.equals(type)) {
+            return ECanton.BE;
+        }
+        return null;
     }
 
     private JadeThreadContext initThreadContext(BSession session) throws Exception {
