@@ -1534,18 +1534,18 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
                 } else if (isGenrePrestationCompCIAB || isGenrePrestationJoursIsoles) {
                     final Montants mnt = new Montants();
                     mnt.add(convertGenrePrestToRubrique(repartition.genrePrestation), repartition.cotisationAC);
-                    if (repartition.isEmployeur && !isRestitution) {
-                        totalFondDeCompensationComplementEmployeur.add(mnt);
-                    } else if (repartition.isEmployeur && isRestitution) {
-                        totalFondDeCompensationComplementRestitutionEmployeur.add(mnt);
-                    } else if (!isRestitution){
+                    if (GenreDestinataire.INDEPENDANT.equals(destinataire) && !isRestitution){
                         totalCotiAcComplement.add(mnt);
                         totalCotiAcComplement.add(mnt);
                         totalFondDeCompensationComplementIndependant.sub(mnt);
-                    } else {
+                    } else if(GenreDestinataire.INDEPENDANT.equals(destinataire) && isRestitution){
                         totalCotiAcComplementRestitution.add(mnt);
                         totalCotiAcComplementRestitution.add(mnt);
                         totalFondDeCompensationComplementRestitutionIndependant.sub(mnt);
+                    } else if (!isRestitution) {
+                        totalFondDeCompensationComplementEmployeur.add(mnt);
+                    } else {
+                        totalFondDeCompensationComplementRestitutionEmployeur.add(mnt);
                     }
                 } else {
                     if (!isRestitution) {
@@ -1616,19 +1616,18 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
                 } else if (isGenrePrestationCompCIAB || isGenrePrestationJoursIsoles) {
                     final Montants mnt = new Montants();
                     mnt.add(convertGenrePrestToRubrique(repartition.genrePrestation), repartition.cotisationAVS);
-
-                    if (repartition.isEmployeur && !isRestitution) {
-                        totalFondDeCompensationComplementEmployeur.add(mnt);
-                    } else if (repartition.isEmployeur && isRestitution) {
-                        totalFondDeCompensationComplementRestitutionEmployeur.add(mnt);
-                    } else if (!isRestitution){
+                    if (GenreDestinataire.INDEPENDANT.equals(destinataire) && !isRestitution){
                         totalCotiAvsComplement.add(mnt);
                         totalCotiAvsComplement.add(mnt);
                         totalFondDeCompensationComplementIndependant.sub(mnt);
-                    } else {
+                    } else if(GenreDestinataire.INDEPENDANT.equals(destinataire) && isRestitution){
                         totalCotiAvsComplementRestitution.add(mnt);
                         totalCotiAvsComplementRestitution.add(mnt);
                         totalFondDeCompensationComplementRestitutionIndependant.sub(mnt);
+                    } else if (!isRestitution) {
+                        totalFondDeCompensationComplementEmployeur.add(mnt);
+                    } else {
+                        totalFondDeCompensationComplementRestitutionEmployeur.add(mnt);
                     }
                 } else {
                     if (!isRestitution) {
@@ -2505,7 +2504,7 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
                     case 0:
                         nature = getSession().getApplication().getProperty(
                                 APGenererEcrituresComptablesProcess.PROP_NATURE_VERSEMENT_APG);
-                        typeMontant = Montants.TYPE_APG;
+                        typeMontant = Montants.TYPE_APG+ "_" + Montants.TYPE_COMPCIAB;
                         break;
                     case 1:
                         nature = getSession().getApplication().getProperty(
