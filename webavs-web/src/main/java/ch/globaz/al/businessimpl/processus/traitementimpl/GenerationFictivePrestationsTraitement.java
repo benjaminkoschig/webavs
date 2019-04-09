@@ -274,7 +274,7 @@ public class GenerationFictivePrestationsTraitement extends BusinessTraitement {
     }
 
     private void createRecapForEbusiness(Map<String, List<RecapitulatifEntrepriseImpressionComplexModel>> mapDossier,
-                                         String periode) throws DatatypeConfigurationException {
+            String periode) throws DatatypeConfigurationException {
         for (Map.Entry<String, List<RecapitulatifEntrepriseImpressionComplexModel>> entry : mapDossier.entrySet()) {
             String numAffilie = entry.getKey();
 

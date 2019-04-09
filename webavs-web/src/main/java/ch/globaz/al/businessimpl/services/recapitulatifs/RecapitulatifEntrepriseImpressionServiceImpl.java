@@ -364,10 +364,10 @@ public class RecapitulatifEntrepriseImpressionServiceImpl extends ALAbstractBusi
      *             faire
      */
     private void createDocRecapAffilie(ArrayList recapitulatifsTemp, String numAffilie, String periodeDe,
-                                       String periodeA, String idRecap, String agenceCommunaleAvs, String activiteAllocataire,
-                                       String dateImpression, String typeBonification, boolean isGed,
-                                       JadePrintDocumentContainer conteneurNonActif, JadePrintDocumentContainer conteneurCollaAgri,
-                                       JadePrintDocumentContainer conteneurSalarie, JadePrintDocumentContainer conteneurTavailleurAgri
+            String periodeA, String idRecap, String agenceCommunaleAvs, String activiteAllocataire,
+            String dateImpression, String typeBonification, boolean isGed,
+            JadePrintDocumentContainer conteneurNonActif, JadePrintDocumentContainer conteneurCollaAgri,
+            JadePrintDocumentContainer conteneurSalarie, JadePrintDocumentContainer conteneurTavailleurAgri
     /* JadePrintDocumentContainer conteneurAgriInd, */) throws JadeApplicationException, JadePersistenceException {
 
         if (recapitulatifsTemp == null) {
@@ -567,7 +567,7 @@ public class RecapitulatifEntrepriseImpressionServiceImpl extends ALAbstractBusi
     }
 
     private JadePublishDocumentInfo fillRecapInfo(JadePublishDocumentInfo pubInfosRecap, String periodeDe,
-                                                  String dateImpression, String numAffilie, boolean isGed)
+            String dateImpression, String numAffilie, boolean isGed)
             throws ALRecapitulatifEntrepriseImpressionModelException {
 
         pubInfosRecap.setOwnerEmail(JadeThread.currentUserEmail());

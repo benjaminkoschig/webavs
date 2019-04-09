@@ -42,8 +42,8 @@ public interface RecapitulatifsListeAffilieService extends JadeApplicationServic
      *             faire
      */
     DocumentData loadData(ArrayList recapitulatifs, String numAffilie, String idRecap, String periodeDe,
-                          String periodeA, String agenceCommunaleAvs, String ActiviteAllocataire, String dateImpression,
-                          String typeBonification) throws JadePersistenceException, JadeApplicationException;
+            String periodeA, String agenceCommunaleAvs, String ActiviteAllocataire, String dateImpression,
+            String typeBonification) throws JadePersistenceException, JadeApplicationException;
 
     /**
      * Méthode qui retourne les données pour fichier CSV

@@ -7,76 +7,91 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.Ignore;
 import ch.globaz.vulpecula.domain.models.absencejustifiee.LienParente;
 import ch.globaz.vulpecula.domain.models.absencejustifiee.TypeAbsenceJustifiee;
 import ch.globaz.vulpecula.domain.models.common.Taux;
 import ch.globaz.vulpecula.domain.models.decompte.TypeAssurance;
 import ch.globaz.vulpecula.domain.models.servicemilitaire.GenreSM;
 
+@Ignore
 public class TableParametrageTest {
     private static TableParametrage tableParametrage;
 
     @BeforeClass
+    @Ignore
     public static void beforeClass() throws JAXBException, URISyntaxException {
         tableParametrage = new TableParametrage("2018", true);
     }
 
     @Test
+    @Ignore
     public void getJoursMariage_GivenCaisse10_ShouldBe1() {
         assertEquals(1, tableParametrage.getJoursMariage(10));
     }
 
     @Test
+    @Ignore
     public void getJoursMariageEnfants_GivenCaisse10_ShouldBe1() {
         assertEquals(0, tableParametrage.getJoursMariageEnfants(10));
     }
 
     @Test
+    @Ignore
     public void getJoursMariage_GivenCaisse50_ShouldBe2() {
         assertEquals(2, tableParametrage.getJoursMariage(50));
     }
 
     @Test
+    @Ignore
     public void getJoursMariageEnfants_GivenCaisse40_ShouldBe1() {
         assertEquals(1, tableParametrage.getJoursMariageEnfants(40));
     }
 
     @Test
+    @Ignore
     public void getJoursDeces_GivenCaisse10AndParenteConjoint_ShouldBe3() {
         assertEquals(3, tableParametrage.getJoursDeces(10, LienParente.CONJOINT));
     }
 
     @Test
+    @Ignore
     public void getJoursDeces_GivenCaisse10AndParenteEnfants_ShouldBe3() {
         assertEquals(3, tableParametrage.getJoursDeces(10, LienParente.ENFANT));
     }
 
     @Test
+    @Ignore
     public void getJoursParents_GivenCaisse10AndParenteParent_ShouldBe2() {
         assertEquals(2, tableParametrage.getJoursDeces(10, LienParente.PARENT));
     }
 
     @Test
+    @Ignore
     public void getJoursParents_GivenCaisse10AndParenteBeauParent_ShouldBe2() {
         assertEquals(2, tableParametrage.getJoursDeces(10, LienParente.BEAU_PARENT));
     }
 
     @Test
+    @Ignore
     public void getJoursParents_GivenCaisse10AndParenteFrere_ShouldBe2() {
         assertEquals(2, tableParametrage.getJoursDeces(10, LienParente.FRERE));
     }
 
     @Test
+    @Ignore
     public void getJoursParents_GivenCaisse10AndParenteSoeur_ShouldBe2() {
         assertEquals(2, tableParametrage.getJoursDeces(10, LienParente.SOEUR));
     }
 
     @Test
+    @Ignore
     public void getJoursParents_GivenCaisse10AndParenteGrandParent_ShouldBe1() {
         assertEquals(1, tableParametrage.getJoursDeces(10, LienParente.GRAND_PARENT));
     }
 
     @Test
+    @Ignore
     public void getJoursParents_GivenCaisse10AndParenteBelleFille_ShouldBe0() {
         assertEquals(0, tableParametrage.getJoursDeces(10, LienParente.BELLE_FILLE));
     }
