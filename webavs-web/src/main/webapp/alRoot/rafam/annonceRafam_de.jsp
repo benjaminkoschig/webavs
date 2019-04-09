@@ -25,6 +25,21 @@
 	btnValLabel = objSession.getLabel("VALIDER");
 	btnCanLabel = objSession.getLabel("ANNULER");
 	btnNewLabel = objSession.getLabel("NOUVEAU");
+	String btnArchive;
+    if(RafamEtatAnnonce.ARCHIVE.equals(RafamEtatAnnonce.getRafamEtatAnnonceCS(viewBean.getAnnonce().getAnnonceRafamModel().getEtat()))){
+        btnArchive = objSession.getLabel("ARCHIVE_OFF");
+    }else{
+        btnArchive = objSession.getLabel("ARCHIVE_ON");
+    }
+    boolean isErreur208OR209 = false;
+    for(int i=0;i<viewBean.getErrors().getSize();i++){
+        AnnonceRafamErrorComplexModel errorRafam = (AnnonceRafamErrorComplexModel)viewBean.getErrors().getSearchResults()[i];
+        if(errorRafam.getErreurAnnonceRafamModel().getCode().equals("208") || errorRafam.getErreurAnnonceRafamModel().getCode().equals("209")){
+            isErreur208OR209=true;
+        }
+
+    }
+
 		
 	idEcran="AL0031";
 	
@@ -119,6 +134,16 @@ function suspendreAnnonce(){
 	ajaxQuery.noResultCallback = alert;
 	ajaxQuery.noResultCallbackParams = new Array("fini");
 	ajaxQuery.launch();
+}
+function toggleArchive(){
+    var req = "<%=servletContext + mainServletPath%>?userAction=al.rafam.annonceRafam.archiver&id=<%=viewBean.getId()%>";
+    var ajaxQuery = new AjaxQuery(req);
+
+    ajaxQuery.noResultCallback = alert;
+    ajaxQuery.noResultCallbackParams = new Array("fini");
+    ajaxQuery.launch();
+    document.forms[0].elements('userAction').value="al.rafam.annonceRafam.afficher";
+    document.forms[0].submit();
 }
 
 </script>
@@ -504,6 +529,11 @@ function suspendreAnnonce(){
 			<%-- /tpl:insert --%>
 			</td></tr>						
 <%@ include file="/theme/detail/bodyButtons.jspf" %>
+<%if (isErreur208OR209) {%>
+        <input class="btnCtrl" id="btnArchive" type="button" value="<%=btnArchive%>" onclick="toggleArchive()">
+<%}%>
+
+
 <%if (viewBean.canValidate()) {%>
 	<input class="btnCtrl" id="btnValider" type="button" value="Valider Annonce" onclick="validerAnnonce()">
 <%}%>

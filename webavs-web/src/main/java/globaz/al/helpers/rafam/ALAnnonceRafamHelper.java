@@ -1,5 +1,8 @@
 package globaz.al.helpers.rafam;
 
+import ch.globaz.al.business.constantes.enumerations.RafamEtatAnnonce;
+import ch.globaz.al.business.models.rafam.AnnonceRafamComplexModel;
+import ch.globaz.al.business.models.rafam.AnnonceRafamModel;
 import globaz.al.helpers.ALAbstractHelper;
 import globaz.al.process.rafam.ALProtocoleRafamProcess;
 import globaz.al.vb.rafam.ALAnnonceRafamViewBean;
@@ -9,6 +12,7 @@ import globaz.globall.api.BISession;
 import globaz.globall.db.BProcessLauncher;
 import globaz.globall.db.BSession;
 import ch.globaz.al.business.services.ALServiceLocator;
+import globaz.jade.exception.JadeApplicationException;
 
 /**
  * Helper dédié au viewBean ALAnnonceRafamViewBean
@@ -20,6 +24,7 @@ public class ALAnnonceRafamHelper extends ALAbstractHelper {
 
     private static final String suspendreAnnonce = "suspendreAnnonce";
     private static final String validerAnnonce = "validerAnnonce";
+    private static final String archiver = "archiver";
 
     /*
      * (non-Javadoc)
@@ -74,6 +79,27 @@ public class ALAnnonceRafamHelper extends ALAbstractHelper {
             }
             return viewBean;
         }
+        if (ALAnnonceRafamHelper.archiver.equals(action.getActionPart())
+                && (viewBean instanceof ALAnnonceRafamViewBean)) {
+            ALAnnonceRafamViewBean vb = (ALAnnonceRafamViewBean)viewBean;
+            try {
+                if (((ALAnnonceRafamViewBean) viewBean).getAnnonce().isNew()) {
+                    ((ALAnnonceRafamViewBean) viewBean).retrieve();
+                }
+                if (RafamEtatAnnonce.ARCHIVE.equals(RafamEtatAnnonce.getRafamEtatAnnonceCS(vb.getAnnonce().getAnnonceRafamModel().getEtat()))){
+                    vb.getAnnonce().getAnnonceRafamModel().setEtat(RafamEtatAnnonce.RECU.getCS());
+                 }else{
+                    vb.getAnnonce().getAnnonceRafamModel().setEtat(RafamEtatAnnonce.ARCHIVE.getCS());
+                }
+                _update(viewBean,action,session);
+            } catch (Exception e) {
+                viewBean.setMessage(e.toString());
+                viewBean.setMsgType(FWViewBeanInterface.ERROR);
+            }
+
+
+        }
+
 
         if ("creer68c".equals(action.getActionPart()) && (viewBean instanceof ALAnnonceRafamViewBean)) {
 
