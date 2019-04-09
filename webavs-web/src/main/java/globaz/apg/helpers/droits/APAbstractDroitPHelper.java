@@ -1,5 +1,7 @@
 package globaz.apg.helpers.droits;
 
+import java.util.Date;
+import java.util.Hashtable;
 import globaz.apg.api.droits.IAPDroitLAPG;
 import globaz.apg.db.annonces.APBreakRule;
 import globaz.apg.db.annonces.APBreakRuleManager;
@@ -8,6 +10,7 @@ import globaz.apg.db.droits.APDroitMaternite;
 import globaz.apg.db.droits.APEmployeur;
 import globaz.apg.db.droits.APSituationProfessionnelle;
 import globaz.apg.db.droits.APSituationProfessionnelleManager;
+import globaz.apg.utils.APGUtils;
 import globaz.apg.vb.droits.APAbstractDroitProxyViewBean;
 import globaz.apg.vb.droits.APDroitMatPViewBean;
 import globaz.framework.bean.FWViewBeanInterface;
@@ -41,12 +44,10 @@ import globaz.pyxis.application.TIApplication;
 import globaz.pyxis.db.adressecourrier.TIPays;
 import globaz.pyxis.db.tiers.TIRole;
 import globaz.pyxis.db.tiers.TIRoleManager;
-import java.util.Date;
-import java.util.Hashtable;
 
 /**
  * <H1>Description</H1> Créé le 6 juil. 05
- * 
+ *
  * @author vre
  */
 public class APAbstractDroitPHelper extends PRAbstractHelper {
@@ -71,8 +72,8 @@ public class APAbstractDroitPHelper extends PRAbstractHelper {
             if (!JadeStringUtil.endsWith(droitVB.getDroit().getDroitAcquis(), "5")) {
                 if (!JadeStringUtil.endsWith(droitVB.getDroit().getDroitAcquis(), "0")) {
                     droitVB.setMsgType(FWViewBeanInterface.ERROR);
-                    droitVB.setMessage(droitVB.getSession().getLabel(
-                            APAbstractDroitPHelper.ERREUR_DROITS_ACQUIS_PAS_ARRONDI));
+                    droitVB.setMessage(
+                            droitVB.getSession().getLabel(APAbstractDroitPHelper.ERREUR_DROITS_ACQUIS_PAS_ARRONDI));
                 }
             }
         }
@@ -148,8 +149,8 @@ public class APAbstractDroitPHelper extends PRAbstractHelper {
             if (!JadeStringUtil.endsWith(droitVB.getDroit().getDroitAcquis(), "5")) {
                 if (!JadeStringUtil.endsWith(droitVB.getDroit().getDroitAcquis(), "0")) {
                     droitVB.setMsgType(FWViewBeanInterface.ERROR);
-                    droitVB.setMessage(droitVB.getSession().getLabel(
-                            APAbstractDroitPHelper.ERREUR_DROITS_ACQUIS_PAS_ARRONDI));
+                    droitVB.setMessage(
+                            droitVB.getSession().getLabel(APAbstractDroitPHelper.ERREUR_DROITS_ACQUIS_PAS_ARRONDI));
                 }
             }
         }
@@ -182,11 +183,9 @@ public class APAbstractDroitPHelper extends PRAbstractHelper {
         // si le doit est lie a la demande APG bidon, on le supprime
         // uniquement pour les APG car le ajouter periode insert le droit dans
         // la DB
-        if (droitVB.getIdDemande().equals(
-                PRDemande.getDemandeBidon(
-                        session,
-                        (droitVB instanceof APDroitMatPViewBean) ? IPRDemande.CS_TYPE_MATERNITE
-                                : IPRDemande.CS_TYPE_APG).getIdDemande())) {
+        if (droitVB.getIdDemande().equals(PRDemande.getDemandeBidon(session,
+                (droitVB instanceof APDroitMatPViewBean) ? IPRDemande.CS_TYPE_MATERNITE : IPRDemande.CS_TYPE_APG)
+                .getIdDemande())) {
             APAbstractDroitProxyViewBean viewBeanProxy = droitVB;
 
             viewBeanProxy.setISession(session);
@@ -200,7 +199,7 @@ public class APAbstractDroitPHelper extends PRAbstractHelper {
     /**
      * Si pas de situation prof. et que le tiers possède une affiliation personnelle en cours durant la période du
      * droit, on crée une situation prof. avec cette affiliation
-     * 
+     *
      * @param idTiers
      * @param session
      */
@@ -234,14 +233,13 @@ public class APAbstractDroitPHelper extends PRAbstractHelper {
                     if (IAFAffiliation.TYPE_AFFILI_INDEP.equals(aff.getTypeAffiliation())
                             || IAFAffiliation.TYPE_AFFILI_INDEP_EMPLOY.equals(aff.getTypeAffiliation())) {
 
-                        boolean dateDebutDroitGreaterOrEqualDateDebutApg = BSessionUtil.compareDateFirstGreaterOrEqual(
-                                session, droit.getDateDebutDroit(), aff.getDateDebut());
-                        boolean dateDebutDroitLowerOrEqualDateFinApg = BSessionUtil.compareDateFirstLowerOrEqual(
-                                session, droit.getDateDebutDroit(), aff.getDateFin());
+                        boolean dateDebutDroitGreaterOrEqualDateDebutApg = BSessionUtil
+                                .compareDateFirstGreaterOrEqual(session, droit.getDateDebutDroit(), aff.getDateDebut());
+                        boolean dateDebutDroitLowerOrEqualDateFinApg = BSessionUtil
+                                .compareDateFirstLowerOrEqual(session, droit.getDateDebutDroit(), aff.getDateFin());
                         // si l'affiliation est en cours
-                        if (dateDebutDroitGreaterOrEqualDateDebutApg
-                                && (dateDebutDroitLowerOrEqualDateFinApg || globaz.jade.client.util.JadeStringUtil
-                                        .isEmpty(aff.getDateFin()))) {
+                        if (dateDebutDroitGreaterOrEqualDateDebutApg && (dateDebutDroitLowerOrEqualDateFinApg
+                                || globaz.jade.client.util.JadeStringUtil.isEmpty(aff.getDateFin()))) {
 
                             // creation de l'employeur
                             APEmployeur emp = new APEmployeur();
@@ -297,7 +295,8 @@ public class APAbstractDroitPHelper extends PRAbstractHelper {
 
                                 // pas d'allocations d'exploitation si pour un droit
                                 // maternite
-                                if (!IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE.equals(droit.getGenreService())) {
+                                if (!IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE.equals(droit.getGenreService())
+                                        && !APGUtils.isTypeAllocationJourIsole(droit.getGenreService())) {
                                     sp.setIsAllocationExploitation(Boolean.TRUE);
                                 }
                             }
@@ -381,8 +380,9 @@ public class APAbstractDroitPHelper extends PRAbstractHelper {
 
         String idTiers = PRTiersHelper.addTiers(session, droitPViewBean.getNss(), droitPViewBean.getNom(),
                 droitPViewBean.getPrenom(), droitPViewBean.getCsSexe(), droitPViewBean.getDateNaissance(),
-                droitPViewBean.getDateDeces(), avsUtils.isSuisse(droitPViewBean.getNss()) ? TIPays.CS_SUISSE
-                        : PRTiersHelper.ID_PAYS_BIDON, canton, "", droitPViewBean.getCsEtatCivil());
+                droitPViewBean.getDateDeces(),
+                avsUtils.isSuisse(droitPViewBean.getNss()) ? TIPays.CS_SUISSE : PRTiersHelper.ID_PAYS_BIDON, canton, "",
+                droitPViewBean.getCsEtatCivil());
 
         // on remonte les erreurs dans le viewBean si jamais.
         if (session.hasErrors()) {

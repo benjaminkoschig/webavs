@@ -1,5 +1,14 @@
 package globaz.apg.businessimpl.service;
 
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import ch.globaz.common.properties.CommonProperties;
+import ch.globaz.common.properties.PropertiesException;
 import globaz.apg.api.droits.IAPDroitLAPG;
 import globaz.apg.api.prestation.IAPPrestation;
 import globaz.apg.business.service.APEntityService;
@@ -29,6 +38,7 @@ import globaz.apg.enums.APModeEditionDroit;
 import globaz.apg.enums.APValidationDroitError;
 import globaz.apg.exceptions.APEntityNotFoundException;
 import globaz.apg.pojo.APBreakRulesFromView;
+import globaz.apg.utils.APGUtils;
 import globaz.apg.vb.droits.APDroitAPGPViewBean;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.globall.db.BManager;
@@ -59,19 +69,10 @@ import globaz.prestation.utils.PRDateUtils;
 import globaz.prestation.utils.PRDateUtils.DateOrder;
 import globaz.prestation.utils.PRDateUtils.PRDateEquality;
 import globaz.pyxis.constantes.IConstantes;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import ch.globaz.common.properties.CommonProperties;
-import ch.globaz.common.properties.PropertiesException;
 
 /**
  * Service pour la manipulation des entitées APG/Mat en base de données
- * 
+ *
  * @author lga
  */
 /**
@@ -86,7 +87,7 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.utils.APEntityService#creerDroitComplet(globaz.globall.db.BSession,
      * globaz.globall.db.BTransaction, globaz.apg.vb.droits.APDroitAPGPViewBean)
      */
@@ -100,9 +101,8 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
         }
         // On va d'abord s'assurer que le droit n'existe pas
         if (!JadeStringUtil.isBlankOrZero(viewBean.getDroit().getIdDroit())) {
-            throw new IllegalArgumentException(
-                    "Unable to create a new APDroitAPG because it is already exist with id ["
-                            + viewBean.getDroit().getIdDroit() + "]");
+            throw new IllegalArgumentException("Unable to create a new APDroitAPG because it is already exist with id ["
+                    + viewBean.getDroit().getIdDroit() + "]");
         }
 
         // Validation des infos du viewBean
@@ -174,12 +174,11 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
 
                     final boolean dateDebutDroitGreaterOrEqualDateDebutApg = BSessionUtil
                             .compareDateFirstGreaterOrEqual(session, droit.getDateDebutDroit(), aff.getDateDebut());
-                    final boolean dateDebutDroitLowerOrEqualDateFinApg = BSessionUtil.compareDateFirstLowerOrEqual(
-                            session, droit.getDateDebutDroit(), aff.getDateFin());
+                    final boolean dateDebutDroitLowerOrEqualDateFinApg = BSessionUtil
+                            .compareDateFirstLowerOrEqual(session, droit.getDateDebutDroit(), aff.getDateFin());
                     // si l'affiliation est en cours
-                    if (dateDebutDroitGreaterOrEqualDateDebutApg
-                            && (dateDebutDroitLowerOrEqualDateFinApg || globaz.jade.client.util.JadeStringUtil
-                                    .isEmpty(aff.getDateFin()))) {
+                    if (dateDebutDroitGreaterOrEqualDateDebutApg && (dateDebutDroitLowerOrEqualDateFinApg
+                            || globaz.jade.client.util.JadeStringUtil.isEmpty(aff.getDateFin()))) {
 
                         // creation de l'employeur
                         final APEmployeur emp = new APEmployeur();
@@ -234,7 +233,8 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
                         if (!IAFAffiliation.TYPE_AFFILI_NON_ACTIF.equals(aff.getTypeAffiliation())) {
 
                             // pas d'allocations d'exploitation si pour un droit maternité
-                            if (!IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE.equals(droit.getGenreService())) {
+                            if (!IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE.equals(droit.getGenreService())
+                                    && !APGUtils.isTypeAllocationJourIsole(droit.getGenreService())) {
                                 situationProfessionnelle.setIsAllocationExploitation(Boolean.TRUE);
                             }
                         }
@@ -300,8 +300,8 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
         if (modeEdition.equals(APModeEditionDroit.EDITION)) {
             // On va d'abord s'assurer qu'on a bien un id droit
             if (JadeStringUtil.isBlankOrZero(viewBean.getDroit().getIdDroit())) {
-                throw new Exception("Unable to update the APDroitAPG with the empty id ["
-                        + viewBean.getDroit().getIdDroit() + "]");
+                throw new Exception(
+                        "Unable to update the APDroitAPG with the empty id [" + viewBean.getDroit().getIdDroit() + "]");
             }
             // Ensuite on s'assure que le droit existe
             droitAPG.setIdDroit(viewBean.getIdDroit());
@@ -370,7 +370,8 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
 
         int nombreDeJoursPeriodes = 0;
         for (PRPeriode periode : periodes) {
-            nombreDeJoursPeriodes += (PRDateUtils.getNbDayBetween(periode.getDateDeDebut(), periode.getDateDeFin()) + 1);
+            nombreDeJoursPeriodes += (PRDateUtils.getNbDayBetween(periode.getDateDeDebut(), periode.getDateDeFin())
+                    + 1);
         }
         if (Integer.valueOf(viewBean.getNbrJourSoldes()) > nombreDeJoursPeriodes) {
             throw new Exception("Le nombre de jours soldés dépasse le nombre de jours des périodes saisies");
@@ -478,21 +479,25 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
     }
 
     /**
-     * La PRDemande est gérée de la façon suivante :</br> - Une seule PRDemande existe pour un tiers dans un domaine
-     * particulier(rente, apg, ij, etc)</br> - Si une demande existe dans le domain des APG pour l'idTiers fournis en
-     * paramètre, elle sera retournée</br> - Si aucune demande existe dans le domain des APG pour l'idTiers, elle sera
-     * créée et retournée</br> <strong>INFO : L'état de la demande (ouverte, clôturée) n'est pas pris en compte. Toute
+     * La PRDemande est gérée de la façon suivante :</br>
+     * - Une seule PRDemande existe pour un tiers dans un domaine
+     * particulier(rente, apg, ij, etc)</br>
+     * - Si une demande existe dans le domain des APG pour l'idTiers fournis en
+     * paramètre, elle sera retournée</br>
+     * - Si aucune demande existe dans le domain des APG pour l'idTiers, elle sera
+     * créée et retournée</br>
+     * <strong>INFO : L'état de la demande (ouverte, clôturée) n'est pas pris en compte. Toute
      * les demande sont en état 'ouverte'</strong>
-     * 
+     *
      * @param session
-     *            LA session courante
+     *                        LA session courante
      * @param transaction
-     *            La transaction courante
+     *                        La transaction courante
      * @param idTiers
-     *            L'idTiers du tiers en question
+     *                        L'idTiers du tiers en question
      * @return Une PRDemande liée au tiers dans le domain des APG
      * @throws Exception
-     *             Si l'idTiers est null ou vide ou en cas d'erreur de persistance
+     *                       Si l'idTiers est null ou vide ou en cas d'erreur de persistance
      */
     public PRDemande getOrCreateDemandeDuTiers(final BSession session, final BTransaction transaction,
             final String idTiers) throws Exception {
@@ -513,7 +518,7 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.utils.APEntityService#controllerEtDecouperPeriodeAPGSiEnfantNeEnCoursDePeriode(globaz.globall.db
      * .BSession, java.lang.String, java.lang.String)
      */
@@ -569,7 +574,7 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
 
     /**
      * Retourne les répartitions liées à chaque prestation standard du droit
-     * 
+     *
      * @param session
      * @param transaction
      * @param idDroit
@@ -630,7 +635,7 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
 
     /**
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.utils.APEntityService#miseAjourDroit(globaz.globall.db.BSession, globaz.globall.db.BTransaction,
      *      globaz.apg.vb.droits.APDroitAPGPViewBean)
      */
@@ -644,8 +649,8 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
                     "The viewBean from type APDroitAPGPViewBean has a null APDroitLAPG. Can not found the idDroit ");
         }
         if (JadeStringUtil.isBlankOrZero(viewBean.getDroit().getIdDroit())) {
-            throw new Exception("Unable to update the APDroitAPG with the empty id ["
-                    + viewBean.getDroit().getIdDroit() + "]");
+            throw new Exception(
+                    "Unable to update the APDroitAPG with the empty id [" + viewBean.getDroit().getIdDroit() + "]");
         }
         // Validation des infos du viewBean
         validationViewBean(session, transaction, viewBean);
@@ -658,8 +663,8 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
             throw new Exception("Unable to retrieve the APDroitAPG with id [" + viewBean.getDroit().getIdDroit() + "]");
         }
         if (!droit.isModifiable()) {
-            throw new Exception("Unable to edit the APDroitAPG with id [" + droit.getIdDroit()
-                    + "] becuse it is not editable");
+            throw new Exception(
+                    "Unable to edit the APDroitAPG with id [" + droit.getIdDroit() + "] becuse it is not editable");
         }
 
         // Suppression des périodes déjà existante pour ce droit
@@ -678,8 +683,8 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
         return editionDroit(session, transaction, viewBean, demande, APModeEditionDroit.EDITION);
     }
 
-    private void reactiverDroitParent(final BSession session, final BTransaction transaction, final String idDroitParent)
-            throws Exception {
+    private void reactiverDroitParent(final BSession session, final BTransaction transaction,
+            final String idDroitParent) throws Exception {
         final APPrestationManager pMgr = new APPrestationManager();
 
         pMgr.setSession(session);
@@ -710,8 +715,8 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
     }
 
     @Override
-    public void remplacerBreakRulesDuDroit(final BSession session, final BTransaction transaction,
-            final String idDroit, final List<APBreakRulesFromView> nouvellesBreakRules) throws Exception {
+    public void remplacerBreakRulesDuDroit(final BSession session, final BTransaction transaction, final String idDroit,
+            final List<APBreakRulesFromView> nouvellesBreakRules) throws Exception {
         validateSessionAndTransactionNotNull(session, transaction);
         supprimerLesBreakRulesDuDroit(session, transaction, idDroit);
 
@@ -771,7 +776,7 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see globaz.apg.utils.APEntityService#supprimerDroitComplet(globaz.globall.db.BSession,
      * globaz.globall.db.BTransaction, java.lang.String)
      */
@@ -792,12 +797,13 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
         }
 
         if (!droit.isModifiable()) {
-            throw new Exception("Unable to delete the APDroitAPG with id [" + idDroit + "] because it is nott editable");
+            throw new Exception(
+                    "Unable to delete the APDroitAPG with id [" + idDroit + "] because it is nott editable");
         }
 
         if (IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE.equals(droit.getGenreService())) {
-            throw new Exception("The provided id [" + idDroit
-                    + "] does not match an APDroitAPG, it's an APDroitMaternite");
+            throw new Exception(
+                    "The provided id [" + idDroit + "] does not match an APDroitAPG, it's an APDroitMaternite");
         }
 
         supprimerSituationFamilialle(session, transaction, droit.getIdSituationFam());
@@ -817,8 +823,8 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
     private void supprimerEmployeur(final BSession session, final BTransaction transaction, final String idEmployeur)
             throws Exception {
         if (JadeStringUtil.isBlankOrZero(idEmployeur)) {
-            throw new Exception("Unable to retrieve the APEmployeur with an empty id [" + idEmployeur
-                    + "] to delete it");
+            throw new Exception(
+                    "Unable to retrieve the APEmployeur with an empty id [" + idEmployeur + "] to delete it");
         }
         final APEmployeur employeur = new APEmployeur();
         employeur.setSession(session);
@@ -863,8 +869,8 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
     private void supprimerLesPeriodesDuDroit(final BSession session, final BTransaction transaction,
             final String idDroit) throws Exception {
         if (JadeStringUtil.isBlankOrZero(idDroit)) {
-            throw new Exception("Unable to delete the APPeriodeAPG for an APDroitAPG with an empty id [" + idDroit
-                    + "]");
+            throw new Exception(
+                    "Unable to delete the APPeriodeAPG for an APDroitAPG with an empty id [" + idDroit + "]");
         }
         final APPeriodeAPGManager mgr = new APPeriodeAPGManager();
         mgr.setSession(session);
@@ -886,8 +892,8 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
     public void supprimerLesPrestationsDuDroit(final BSession session, final BTransaction transaction,
             final String idDroit) throws Exception {
         if (JadeStringUtil.isBlankOrZero(idDroit)) {
-            throw new Exception("Unable to delete the APPrestation for an APDroitAPG with an empty id [" + idDroit
-                    + "]");
+            throw new Exception(
+                    "Unable to delete the APPrestation for an APDroitAPG with an empty id [" + idDroit + "]");
         }
         final APPrestationManager prestationManager = new APPrestationManager();
         prestationManager.setSession(session);
@@ -904,7 +910,7 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
     /**
      * Supprime toutes les situations professionnelles liées au droit ainsi que les employeurs associés à chaque sit
      * prof
-     * 
+     *
      * @param session
      * @param transaction
      * @param idDroit
@@ -932,7 +938,7 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
 
     /**
      * Supprime la situation familiale ainsi que tous les enfants associés
-     * 
+     *
      * @param session
      * @param transaction
      * @param idSituationFamiliale
@@ -941,8 +947,8 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
     private void supprimerSituationFamilialle(final BSession session, final BTransaction transaction,
             final String idSituationFamiliale) throws Exception {
         if (JadeStringUtil.isBlankOrZero(idSituationFamiliale)) {
-            throw new Exception("Unable to delete the APSituationFamilialeAPG with an empty id ["
-                    + idSituationFamiliale + "]");
+            throw new Exception(
+                    "Unable to delete the APSituationFamilialeAPG with an empty id [" + idSituationFamiliale + "]");
         }
 
         final APSituationFamilialeAPG situationFamilialeAPG = new APSituationFamilialeAPG();
@@ -1017,8 +1023,10 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
                         || !JadeDateUtil.isGlobazDate(periode.getDateDeFin())) {
                     periodeErrorsfounded = true;
                     errors.add(APValidationDroitError.FORMAT_DATE_INVALID);
-                } else if ((PRDateUtils.compare(periode.getDateDeDebut(), periode.getDateDeFin()) != PRDateEquality.AFTER)
-                        && (PRDateUtils.compare(periode.getDateDeDebut(), periode.getDateDeFin()) != PRDateEquality.EQUALS)) {
+                } else if ((PRDateUtils.compare(periode.getDateDeDebut(),
+                        periode.getDateDeFin()) != PRDateEquality.AFTER)
+                        && (PRDateUtils.compare(periode.getDateDeDebut(),
+                                periode.getDateDeFin()) != PRDateEquality.EQUALS)) {
                     errors.add(APValidationDroitError.PERIODE_INCOHERENTE);
                     periodeErrorsfounded = true;
                 } else if ((PRDateUtils.compare(PRDateUtils.convertCalendarToGlobazDate(Calendar.getInstance()),
@@ -1119,7 +1127,7 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
 
     /**
      * Validation du numero de compte en fonction du genre de service
-     * 
+     *
      * @param statement
      */
     private List<APValidationDroitError> validerNoCompte(final BSession session, final String genreServiceCS,
@@ -1147,8 +1155,9 @@ public class APEntityServiceImpl extends JadeAbstractService implements APEntity
         // F = filiale = 1 ou 2
         if ((APGenreServiceAPG.ProtectionCivileServiceNormale.getCodePourAnnonce().equals(genreService)
                 || APGenreServiceAPG.ProtectionCivileCadreSpecialiste.getCodePourAnnonce().equals(genreService)
-                || APGenreServiceAPG.ProtectionCivileCommandant.getCodePourAnnonce().equals(genreService) || APGenreServiceAPG.ProtectionCivileFormationDeBase
-                .getCodePourAnnonce().equals(genreService)) && !JadeStringUtil.isIntegerEmpty(numeroCompte)) {
+                || APGenreServiceAPG.ProtectionCivileCommandant.getCodePourAnnonce().equals(genreService)
+                || APGenreServiceAPG.ProtectionCivileFormationDeBase.getCodePourAnnonce().equals(genreService))
+                && !JadeStringUtil.isIntegerEmpty(numeroCompte)) {
 
             // format=CCIIF
             if (Integer.parseInt(numeroCompte) < 100000) {

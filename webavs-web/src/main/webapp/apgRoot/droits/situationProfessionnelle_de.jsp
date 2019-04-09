@@ -46,6 +46,18 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
 	  	document.forms[0].elements('isVersementEmployeur')[0].disabled = true;
 	  	document.forms[0].elements('isVersementEmployeur')[1].disabled = true;
 	}
+  	disableIsAllocExpl();
+  }
+  
+  function disableIsAllocExpl(){
+	if(isEmployeurActif() && isJourIsole()){
+		document.forms[0].elements('isAllocationExploitation').checked = false;
+	}
+  }
+  
+  function isJourIsole(){
+	var isJourIsole = <%=viewBean.isJourIsole()%>;
+	return isJourIsole;
   }
 
   function validate() {
@@ -195,13 +207,15 @@ bButtonDelete = viewBean.isModifiable() && bButtonUpdate && controller.getSessio
 		  	document.all('blockAnneeTaxation').style.display = 'block';
 		  	
 		  	document.forms[0].elements('anneeTaxation').value = '<%=viewBean.getAnneeFromDateDebutDroit()%>';
-		  	
+
 		  	//si independant cocher auto. alloc. expl. sauf si non-actif
-		  	if(isEmployeurActif()){
+		  	if(isEmployeurActif() && !isJourIsole()){
 		  		// pour la maternite, on ne donne pas les allocations d'exploitation se independant et actif
 		  		<%if (!globaz.apg.util.TypePrestation.TYPE_MATERNITE.equals(viewBean.getTypePrestation())) {%>
 		  			document.forms[0].elements('isAllocationExploitation').checked = true;
 		  		<%}%>
+		  	}else{
+		  	  	disableIsAllocExpl();
 		  	}
 		} else {
 			

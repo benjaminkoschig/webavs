@@ -27,6 +27,7 @@ import globaz.apg.services.APRechercherAssuranceFromDroitCotisationService;
 import globaz.apg.services.APRechercherTypeAcmService;
 import globaz.apg.servlet.IAPActions;
 import globaz.apg.util.TypePrestation;
+import globaz.apg.utils.APGUtils;
 import globaz.commons.nss.NSUtil;
 import globaz.externe.IPRConstantesExternes;
 import globaz.framework.bean.FWViewBeanInterface;
@@ -580,6 +581,13 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
      */
     public APDroitDTO getDroitDTO() {
         return droitDTO;
+    }
+
+    public boolean isJourIsole() {
+        if (droitDTO != null) {
+            return APGUtils.isTypeAllocationJourIsole(droitDTO.getGenreService());
+        }
+        return false;
     }
 
     /**
@@ -1343,7 +1351,7 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
      * </p>
      *
      * @param affiliationsEmployeur
-     *            une nouvelle valeur pour cet attribut
+     *                                  une nouvelle valeur pour cet attribut
      */
     public void setAffiliationsEmployeur(final Vector<String[]> affiliationsEmployeur) {
         if (affiliationsEmployeur != null) {
@@ -1388,7 +1396,7 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
      * setter pour l'attribut droit DTO
      *
      * @param droitDTO
-     *            une nouvelle valeur pour cet attribut
+     *                     une nouvelle valeur pour cet attribut
      */
     public void setDroitDTO(final APDroitDTO droitDTO) {
         this.droitDTO = droitDTO;
@@ -1406,7 +1414,7 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
      * setter pour l'attribut id affilie employeur
      *
      * @param idAffilieEmployeur
-     *            une nouvelle valeur pour cet attribut
+     *                               une nouvelle valeur pour cet attribut
      */
     public void setIdAffilieEmployeur(final String idAffilieEmployeur) {
         try {
@@ -1421,7 +1429,7 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
      * setter pour l'attribut id droit LAPGBackup
      *
      * @param idDroitLAPGBackup
-     *            une nouvelle valeur pour cet attribut
+     *                              une nouvelle valeur pour cet attribut
      */
     public void setIdDroitLAPGBackup(final String idDroitLAPGBackup) {
         this.idDroitLAPGBackup = idDroitLAPGBackup;
@@ -1431,7 +1439,7 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
      * setter pour l'attribut id particulier
      *
      * @param string
-     *            une nouvelle valeur pour cet attribut
+     *                   une nouvelle valeur pour cet attribut
      */
     public void setIdParticularite(final String string) {
         try {
@@ -1446,7 +1454,7 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
      * setter pour l'attribut id particularite employeur
      *
      * @param idParticulariteEmployeur
-     *            une nouvelle valeur pour cet attribut
+     *                                     une nouvelle valeur pour cet attribut
      */
     public void setIdParticulariteEmployeur(final String idParticulariteEmployeur) {
         try {
@@ -1461,7 +1469,7 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
      * setter pour l'attribut id tiers employeur
      *
      * @param idTiersEmployeur
-     *            une nouvelle valeur pour cet attribut
+     *                             une nouvelle valeur pour cet attribut
      */
     public void setIdTiersEmployeur(final String idTiersEmployeur) {
         try {
@@ -1480,7 +1488,7 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
      * </p>
      *
      * @param idTiersEmployeur
-     *            une nouvelle valeur pour cet attribut
+     *                             une nouvelle valeur pour cet attribut
      */
     public void setIdTiersEmployeurDepuisPyxis(final String idTiersEmployeur) {
         setIdTiersEmployeur(idTiersEmployeur);
@@ -1501,7 +1509,7 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
      * </p>
      *
      * @param idTiersEmployeur
-     *            une nouvelle valeur pour cet attribut
+     *                             une nouvelle valeur pour cet attribut
      */
     public void setIdTiersPaiementEmployeurDepuisAdresse(final String idTiersPaiement) {
         setIdTiersPaiementEmployeur(idTiersPaiement);
@@ -1520,7 +1528,7 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
      * setter pour l'attribut nom employeur
      *
      * @param string
-     *            une nouvelle valeur pour cet attribut
+     *                   une nouvelle valeur pour cet attribut
      */
     public void setNomEmployeur(final String string) {
         nomEmployeur = string;
@@ -1619,7 +1627,7 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
      * setter pour l'attribut num affilie employeur
      *
      * @param numAffilieEmployeur
-     *            une nouvelle valeur pour cet attribut
+     *                                une nouvelle valeur pour cet attribut
      */
     public void setNumAffilieEmployeur(final String numAffilieEmployeur) {
         this.numAffilieEmployeur = numAffilieEmployeur;
@@ -1629,7 +1637,7 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
      * setter pour l'attribut retour depuis pyxis
      *
      * @param retourDepuisPyxis
-     *            une nouvelle valeur pour cet attribut
+     *                              une nouvelle valeur pour cet attribut
      */
     public void setRetourDepuisPyxis(final boolean retourDepuisPyxis) {
         this.retourDepuisPyxis = retourDepuisPyxis;
@@ -1639,7 +1647,7 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
      * setter pour l'attribut retour depuis pyxis
      *
      * @param retourDepuisAdresse
-     *            une nouvelle valeur pour cet attribut
+     *                                une nouvelle valeur pour cet attribut
      */
     public void setRetourDepuisAdresse(final boolean retourDepuisAdresse) {
         this.retourDepuisAdresse = retourDepuisAdresse;
@@ -1688,7 +1696,7 @@ public class APSituationProfessionnelleViewBean extends APSituationProfessionnel
      * setter pour l'attribut type prestation
      *
      * @param prestation
-     *            une nouvelle valeur pour cet attribut
+     *                       une nouvelle valeur pour cet attribut
      */
     public void setTypePrestation(final TypePrestation prestation) {
         typePrestation = prestation;
