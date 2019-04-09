@@ -1,16 +1,12 @@
 package ch.globaz.al.businessimpl.rafam.handlers;
 
+import ch.globaz.al.business.constantes.enumerations.*;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.persistence.model.JadeAbstractModel;
 import ch.globaz.al.business.constantes.ALCSDossier;
 import ch.globaz.al.business.constantes.ALConstRafam;
-import ch.globaz.al.business.constantes.enumerations.RafamEvDeclencheur;
-import ch.globaz.al.business.constantes.enumerations.RafamFamilyAllowanceType;
-import ch.globaz.al.business.constantes.enumerations.RafamReturnCode;
-import ch.globaz.al.business.constantes.enumerations.RafamTypeAction;
-import ch.globaz.al.business.constantes.enumerations.RafamTypeAnnonce;
 import ch.globaz.al.business.exceptions.rafam.ALRafamException;
 import ch.globaz.al.business.models.rafam.AnnonceRafamModel;
 import ch.globaz.al.business.models.rafam.AnnonceRafamSearchModel;
@@ -335,10 +331,11 @@ public abstract class AnnonceHandlerAbstract {
                 // cas en erreur (code 1 ou 2)
             } else {
                 if (returnCode.equals(RafamReturnCode.REJETEE)) {
-
-                    ALImplServiceLocator.getAnnonceRafamBusinessService().deleteRefusees(
-                            getLastAnnonce().getRecordNumber());
-                    lastAnnonce = null;
+                    if(lastAnnonce.getEtat() != null &&!RafamEtatAnnonce.ARCHIVE.equals(RafamEtatAnnonce.getRafamEtatAnnonceCS(lastAnnonce.getEtat()))){
+                        ALImplServiceLocator.getAnnonceRafamBusinessService().deleteRefusees(
+                                getLastAnnonce().getRecordNumber());
+                        lastAnnonce = null;
+                    }
 
                     if (type.equals(RafamTypeAnnonce._68A_CREATION)) {
                         return RafamTypeAction.CREATION;

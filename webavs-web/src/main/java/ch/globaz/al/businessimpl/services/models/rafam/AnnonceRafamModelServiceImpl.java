@@ -1,5 +1,10 @@
 package ch.globaz.al.businessimpl.services.models.rafam;
 
+import ch.globaz.al.business.constantes.enumerations.RafamEtatAnnonce;
+import ch.globaz.al.business.constantes.enumerations.RafamFamilyAllowanceType;
+import ch.globaz.al.business.models.rafam.AnnonceRafamErrorComplexModel;
+import ch.globaz.al.business.models.rafam.AnnonceRafamErrorComplexSearchModel;
+import ch.globaz.al.businessimpl.services.ALImplServiceLocator;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeNumericUtil;
 import globaz.jade.exception.JadeApplicationException;
@@ -55,6 +60,9 @@ public class AnnonceRafamModelServiceImpl extends ALAbstractBusinessServiceImpl 
         }
 
         AnnonceRafamModelChecker.validate(model);
+        AnnonceRafamModel lastAnnonce = null;
+        lastAnnonce  = ALImplServiceLocator.getAnnoncesRafamSearchService().getLastActive(
+                model.getIdDroit(), RafamFamilyAllowanceType.getFamilyAllowanceType(model.getGenrePrestation()));
 
         if (JadeNumericUtil.isEmptyOrZero(model.getEcheanceDroit())
                 || JadeDateUtil.isDateBefore(ALConstRafam.DATE_FIN_MINIMUM, model.getEcheanceDroit())
@@ -63,9 +71,20 @@ public class AnnonceRafamModelServiceImpl extends ALAbstractBusinessServiceImpl 
 
             model = (AnnonceRafamModel) JadePersistenceManager.add(model);
 
-            if (!model.isNew() && JadeNumericUtil.isEmptyOrZero(model.getRecordNumber())) {
+            if ((!model.isNew() && JadeNumericUtil.isEmptyOrZero(model.getRecordNumber()))) {
                 model.setRecordNumber(model.getId());
                 model = (AnnonceRafamModel) JadePersistenceManager.update(model);
+            }else if(lastAnnonce.getEtat() !=null && RafamEtatAnnonce.ARCHIVE.equals(RafamEtatAnnonce.getRafamEtatAnnonceCS(lastAnnonce.getEtat()))){
+                AnnonceRafamErrorComplexSearchModel errors = ALServiceLocator.getAnnoncesRafamErrorBusinessService().getErrorsForAnnonce(lastAnnonce.getIdAnnonce());
+                for(int i=0;i<errors.getSize();i++){
+                    AnnonceRafamErrorComplexModel errorRafam = (AnnonceRafamErrorComplexModel)errors.getSearchResults()[i];
+                    if(errorRafam.getErreurAnnonceRafamModel().getCode().equals("208") || errorRafam.getErreurAnnonceRafamModel().getCode().equals("209")){
+                        model.setRecordNumber(model.getId());
+                        model = (AnnonceRafamModel) JadePersistenceManager.update(model);
+                        ALImplServiceLocator.getAnnonceRafamBusinessService().deleteRefusees(
+                                lastAnnonce.getRecordNumber());
+                    }
+                }
             }
         }
 
