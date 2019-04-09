@@ -14,7 +14,8 @@ public enum RafamEtatAnnonce {
     RECU("61370003"),
     SUSPENDU("61370005"),
     TRANSMIS("61370002"),
-    VALIDE("61370004");
+    VALIDE("61370004"),
+    ARCHIVE("61370007");
 
     public static RafamEtatAnnonce getRafamEtatAnnonceCS(String cs) throws JadeApplicationException {
         if (ENREGISTRE.getCS().equals(cs)) {
@@ -29,7 +30,9 @@ public enum RafamEtatAnnonce {
             return SUSPENDU;
         } else if (VALIDE.getCS().equals(cs)) {
             return VALIDE;
-        } else {
+        } else if(ARCHIVE.getCS().equals(cs)) {
+            return ARCHIVE;
+        }else{
             throw new ALRafamException("RafamEtatAnnonce#getRafamEtatAnnonceCS : this type is not supported");
         }
     }
