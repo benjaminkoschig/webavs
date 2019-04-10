@@ -199,6 +199,7 @@ public class AnnoncesRafamSearchServiceImpl extends ALAbstractBusinessServiceImp
         etats.add(RafamEtatAnnonce.SUSPENDU.getCS());
         etats.add(RafamEtatAnnonce.TRANSMIS.getCS());
         etats.add(RafamEtatAnnonce.VALIDE.getCS());
+        etats.add(RafamEtatAnnonce.ARCHIVE.getCS());
 
         return this.getLastActive(idDroit, type, etats);
 
