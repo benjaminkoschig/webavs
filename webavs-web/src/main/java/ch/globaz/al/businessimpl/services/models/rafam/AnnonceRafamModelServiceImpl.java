@@ -74,7 +74,8 @@ public class AnnonceRafamModelServiceImpl extends ALAbstractBusinessServiceImpl 
             if ((!model.isNew() && JadeNumericUtil.isEmptyOrZero(model.getRecordNumber()))) {
                 model.setRecordNumber(model.getId());
                 model = (AnnonceRafamModel) JadePersistenceManager.update(model);
-            }else if(lastAnnonce.getEtat() !=null && RafamEtatAnnonce.ARCHIVE.equals(RafamEtatAnnonce.getRafamEtatAnnonceCS(lastAnnonce.getEtat()))){
+            }
+            if(lastAnnonce.getEtat() !=null && RafamEtatAnnonce.ARCHIVE.equals(RafamEtatAnnonce.getRafamEtatAnnonceCS(lastAnnonce.getEtat()))){
                 AnnonceRafamErrorComplexSearchModel errors = ALServiceLocator.getAnnoncesRafamErrorBusinessService().getErrorsForAnnonce(lastAnnonce.getIdAnnonce());
                 for(int i=0;i<errors.getSize();i++){
                     AnnonceRafamErrorComplexModel errorRafam = (AnnonceRafamErrorComplexModel)errors.getSearchResults()[i];
@@ -83,6 +84,7 @@ public class AnnonceRafamModelServiceImpl extends ALAbstractBusinessServiceImpl 
                         model = (AnnonceRafamModel) JadePersistenceManager.update(model);
                         ALImplServiceLocator.getAnnonceRafamBusinessService().deleteRefusees(
                                 lastAnnonce.getRecordNumber());
+                        break;
                     }
                 }
             }
