@@ -1101,14 +1101,14 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
      *            DOCUMENT ME!
      * @param idSection
      *            DOCUMENT ME!
-     * @param montant
+     * @param montantParNature
      *            DOCUMENT ME!
      * @param idAdressePaiement
      *            DOCUMENT ME!
      * @param nature
      *            String, valeurs possibles : - NATURE_VERSEMENT_APG - NATURE_ASSURANCE_MATERNITE -
      *            NATURE_ASSURANCE_MATERNITE_CANTONALE (non utilisé) - NATURE_VERSEMENT_ACM - NATURE_VERSEMENT_LAMAT
-     * @param nssRequerant
+     * @param nomRequerant
      *            String, NSS du requérant principal. Cette valeur peut être null.
      * @throws Exception
      *             Si le montant est négatif
@@ -1198,7 +1198,7 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
             final Montants montants = (Montants) cotisations.get(annee);
             result.add(montants);
             final FWCurrency montant = montants.getMontantCumule(Montants.TYPE_ACM + "_" + Montants.TYPE_APG + "_"
-                    + Montants.TYPE_ACM_NE );
+                    + Montants.TYPE_ACM_NE + "_" + Montants.TYPE_COMPCIAB);
             doEcriture(compta, montant.toString(), rubrique, idCompteAnnexe, idSection, annee);
         }
         return result;
@@ -1283,11 +1283,11 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
      *            Une List de répartitions concernant le même idTiers, idAffilie et idAdressePaiement
      * @param compensationsPourCetId
      *            Les compensations ratachées aux répartitions
-     * @param montantBrutTotal
+     * @param montantsBrutTotal
      *            Le montant brut total des répartitions
      * @param ventilationTotale
      *            Le montant total des ventilations pour les répartitions
-     * @param compensationTotale
+     * @param compensationsTotale
      *            le montant total des compensations pour les répartitions
      * @param key
      *            une clef contenant les infos sur le regroupement des répartitions
@@ -1375,14 +1375,15 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
         final Montants totalFondDeCompensationRestitutionACM = new Montants();
         final Montants totalFondDeCompensationRestitutionACMNE = new Montants();
 
+        // variables pour les compléments CIAB
         final Montants totalFondDeCompensationComplementEmployeur = new Montants();
         final Montants totalFondDeCompensationComplementIndependant = new Montants();
-        final Montants totalCotiAvsComplement = new Montants();
-        final Montants totalCotiAcComplement = new Montants();
         final Montants totalFondDeCompensationComplementRestitutionEmployeur = new Montants();
         final Montants totalFondDeCompensationComplementRestitutionIndependant = new Montants();
-        final Montants totalCotiAvsComplementRestitution = new Montants();
-        final Montants totalCotiAcComplementRestitution = new Montants();
+        final Map mapTotalACComplementIndependant = new HashMap();
+        final Map mapTotalACComplementRestitutionIndependant = new HashMap();
+        final Map mapTotalAVSComplementIndependant = new HashMap();
+        final Map mapTotalAVSComplementRestitutionIndependant = new HashMap();
 
         final Map mapEcrituresRubriquesConcernees = new HashMap();
 
@@ -1535,12 +1536,10 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
                     final Montants mnt = new Montants();
                     mnt.add(convertGenrePrestToRubrique(repartition.genrePrestation), repartition.cotisationAC);
                     if (GenreDestinataire.INDEPENDANT.equals(destinataire) && !isRestitution){
-                        totalCotiAcComplement.add(mnt);
-                        totalCotiAcComplement.add(mnt);
+                        putMontantIntoMap(mapTotalACComplementIndependant, repartition, repartition.cotisationAC);
                         totalFondDeCompensationComplementIndependant.sub(mnt);
                     } else if(GenreDestinataire.INDEPENDANT.equals(destinataire) && isRestitution){
-                        totalCotiAcComplementRestitution.add(mnt);
-                        totalCotiAcComplementRestitution.add(mnt);
+                        putMontantIntoMap(mapTotalACComplementRestitutionIndependant, repartition, repartition.cotisationAC);
                         totalFondDeCompensationComplementRestitutionIndependant.sub(mnt);
                     } else if (!isRestitution) {
                         totalFondDeCompensationComplementEmployeur.add(mnt);
@@ -1617,12 +1616,10 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
                     final Montants mnt = new Montants();
                     mnt.add(convertGenrePrestToRubrique(repartition.genrePrestation), repartition.cotisationAVS);
                     if (GenreDestinataire.INDEPENDANT.equals(destinataire) && !isRestitution){
-                        totalCotiAvsComplement.add(mnt);
-                        totalCotiAvsComplement.add(mnt);
+                        putMontantIntoMap(mapTotalAVSComplementIndependant, repartition, repartition.cotisationAVS);
                         totalFondDeCompensationComplementIndependant.sub(mnt);
                     } else if(GenreDestinataire.INDEPENDANT.equals(destinataire) && isRestitution){
-                        totalCotiAvsComplementRestitution.add(mnt);
-                        totalCotiAvsComplementRestitution.add(mnt);
+                        putMontantIntoMap(mapTotalAVSComplementRestitutionIndependant, repartition, repartition.cotisationAVS);
                         totalFondDeCompensationComplementRestitutionIndependant.sub(mnt);
                     } else if (!isRestitution) {
                         totalFondDeCompensationComplementEmployeur.add(mnt);
@@ -2059,20 +2056,18 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
 
         }
 
-        if ((totalCotiAcComplement!= null) && !totalCotiAcComplement.isZero()) {
+        if(!mapTotalACComplementIndependant.isEmpty()) {
             APIRubrique rubrique = mapComplementBean.get(key.typeComplement.getCanton().getValue()).getRubriquePersonnelCotisationAC();
-            montantTotalStandard.add(totalCotiAcComplement);
-            doEcriture(compta,
-                    totalCotiAcComplement.getMontantCumule(Montants.TYPE_COMPCIAB + "_" + Montants.TYPE_APG)
-                            .toString(), rubrique, compteAnnexeAPG.getIdCompteAnnexe(), sectionNormale.getIdSection(), null);
+            montantTemp = ecrisCotisations(compta, rubrique, compteAnnexeAPG.getIdCompteAnnexe(),
+                    sectionNormale.getIdSection(), mapTotalACComplementIndependant);
+            montantTotalStandard.add(montantTemp);
         }
 
-        if ((totalCotiAvsComplement!= null) && !totalCotiAvsComplement.isZero()) {
+        if(!mapTotalAVSComplementIndependant.isEmpty()) {
             APIRubrique rubrique = mapComplementBean.get(key.typeComplement.getCanton().getValue()).getRubriquePersonnelCotisationAVS();
-            montantTotalStandard.add(totalCotiAvsComplement);
-            doEcriture(compta,
-                    totalCotiAvsComplement.getMontantCumule(Montants.TYPE_COMPCIAB + "_" + Montants.TYPE_APG)
-                            .toString(), rubrique, compteAnnexeAPG.getIdCompteAnnexe(), sectionNormale.getIdSection(), null);
+            montantTemp = ecrisCotisations(compta, rubrique, compteAnnexeAPG.getIdCompteAnnexe(),
+                    sectionNormale.getIdSection(), mapTotalAVSComplementIndependant);
+            montantTotalStandard.add(montantTemp);
         }
 
         if (hasRestitution) {
@@ -2276,20 +2271,18 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
 
             }
 
-            if ((totalCotiAcComplementRestitution!= null) && !totalCotiAcComplementRestitution.isZero()) {
+            if(!mapTotalACComplementRestitutionIndependant.isEmpty()) {
                 APIRubrique rubrique = mapComplementBean.get(key.typeComplement.getCanton().getValue()).getRubriquePersonnelCotisationAC();
-                montantTotalRestitution.add(totalCotiAcComplementRestitution);
-                doEcriture(compta,
-                        totalCotiAcComplementRestitution.getMontantCumule(Montants.TYPE_COMPCIAB + "_" + Montants.TYPE_APG)
-                                .toString(), rubrique, compteAnnexeAPG.getIdCompteAnnexe(), sectionRestitution.getIdSection(), null);
+                montantTemp = ecrisCotisations(compta, rubrique, compteAnnexeAPG.getIdCompteAnnexe(),
+                        sectionNormale.getIdSection(), mapTotalACComplementRestitutionIndependant);
+                montantTotalRestitution.add(montantTemp);
             }
 
-            if ((totalCotiAvsComplementRestitution!= null) && !totalCotiAvsComplementRestitution.isZero()) {
+            if(!mapTotalAVSComplementRestitutionIndependant.isEmpty()) {
                 APIRubrique rubrique = mapComplementBean.get(key.typeComplement.getCanton().getValue()).getRubriquePersonnelCotisationAVS();
-                montantTotalRestitution.add(totalCotiAvsComplementRestitution);
-                doEcriture(compta,
-                        totalCotiAvsComplementRestitution.getMontantCumule(Montants.TYPE_COMPCIAB + "_" + Montants.TYPE_APG)
-                                .toString(), rubrique, compteAnnexeAPG.getIdCompteAnnexe(), sectionRestitution.getIdSection(), null);
+                montantTemp = ecrisCotisations(compta, rubrique, compteAnnexeAPG.getIdCompteAnnexe(),
+                        sectionNormale.getIdSection(), mapTotalAVSComplementRestitutionIndependant);
+                montantTotalRestitution.add(montantTemp);
             }
 
         }
@@ -2973,8 +2966,6 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
      *            si il a des cotisations AC
      * @param hasCotisation
      *            si il a des cotisations
-     * @param noRevision
-     *            le No révision (dans IAPDroitAPG et IAPDroitMaternite)
      * @param isRestitution
      *            s'il s'agit d'une restitution
      * @param genrePrestation
