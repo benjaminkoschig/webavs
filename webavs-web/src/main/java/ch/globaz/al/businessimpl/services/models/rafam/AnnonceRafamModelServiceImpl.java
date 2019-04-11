@@ -23,7 +23,7 @@ import ch.globaz.al.businessimpl.checker.model.rafam.AnnonceRafamModelChecker;
 import ch.globaz.al.businessimpl.services.ALAbstractBusinessServiceImpl;
 
 /**
- * Implémentation du service de gestion de la persistence des annonces RAFAM
+ * Implï¿½mentation du service de gestion de la persistence des annonces RAFAM
  * 
  * @author jts
  * 
@@ -75,7 +75,7 @@ public class AnnonceRafamModelServiceImpl extends ALAbstractBusinessServiceImpl 
                 model.setRecordNumber(model.getId());
                 model = (AnnonceRafamModel) JadePersistenceManager.update(model);
             }
-            if(lastAnnonce.getEtat() !=null && RafamEtatAnnonce.ARCHIVE.equals(RafamEtatAnnonce.getRafamEtatAnnonceCS(lastAnnonce.getEtat()))){
+            if(lastAnnonce.getEtat() !=null && RafamEtatAnnonce.ARCHIVE.equals(RafamEtatAnnonce.getRafamEtatAnnonceCS(lastAnnonce.getEtat()))&& !lastAnnonce.getDelegated()){
                 AnnonceRafamErrorComplexSearchModel errors = ALServiceLocator.getAnnoncesRafamErrorBusinessService().getErrorsForAnnonce(lastAnnonce.getIdAnnonce());
                 for(int i=0;i<errors.getSize();i++){
                     AnnonceRafamErrorComplexModel errorRafam = (AnnonceRafamErrorComplexModel)errors.getSearchResults()[i];
