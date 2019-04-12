@@ -71,7 +71,7 @@ public class AFMasseAffilieParitaireManager extends BManager implements Serializ
         StringBuffer fromClause = new StringBuffer(_getCollection() + AFAffiliation.TABLE_NAME + " aff");
         fromClause.append(AFMasseAffilieParitaireManager.INNER_JOIN + "(");
         fromClause.append(getSqlIdAffiliation());
-        fromClause.append(") plan" + AFMasseAffilieParitaireManager.ON + "plan.MAIAFF = aff."
+        fromClause.append(") as plan" + AFMasseAffilieParitaireManager.ON + "plan.MAIAFF = aff."
                 + AFAffiliation.FIELDNAME_AFFILIATION_ID);
 
         return fromClause.toString();
