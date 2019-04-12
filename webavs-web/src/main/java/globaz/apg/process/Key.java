@@ -108,8 +108,10 @@ public final class Key implements Comparable {
                 && key.isEmployeur.equals(isEmployeur)
                 && key.isIndependant.equals(isIndependant)
                 && key.idAdressePaiement.equals(idAdressePaiement) && key.isPorteEnCompte.equals(isPorteEnCompte)
-                && key.typeComplement.equals(typeComplement);
+                && typeComplement == key.typeComplement;
     }
+
+
 
     @Override
     public int hashCode() {
