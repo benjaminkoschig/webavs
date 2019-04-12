@@ -33,7 +33,11 @@ import globaz.jade.publish.document.JadePublishDocumentInfoProvider;
 import globaz.naos.process.statOfas.AFStatistiquesOfasProcess;
 import globaz.pyxis.util.TIToolBox;
 
-import java.sql.*;
+import java.io.IOException;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -239,7 +243,7 @@ public class APListePrestationCIABProcess extends BProcess {
 
     }
 
-    private JadePublishDocument creerListePrestationCIABDocumentsExcel() throws Exception {
+    private JadePublishDocument creerListePrestationCIABDocumentsExcel() throws IOException {
 
         APListePrestationCIABExcel listePrestationCIABExcel = new APListePrestationCIABExcel(getSession());
         listePrestationCIABExcel.setListePrestationCIABPojo(listePrestationCIABPojo);
@@ -636,7 +640,7 @@ public class APListePrestationCIABProcess extends BProcess {
         return GlobazJobQueue.READ_LONG;
     }
 
-    private void publierListePrestationVerseeDocumentsExcel(JadePublishDocument documentAPublier) throws Exception {
+    private void publierListePrestationVerseeDocumentsExcel(JadePublishDocument documentAPublier) throws IOException {
 
         this.registerAttachedDocument(documentAPublier);
 
