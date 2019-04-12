@@ -3,17 +3,20 @@
  */
 package globaz.apg.process;
 
-import com.sun.xml.internal.bind.v2.runtime.reflect.opt.Const;
 import globaz.apg.application.APApplication;
 import globaz.apg.enums.APTypeDePrestation;
 import globaz.apg.excel.APListePrestationCIABExcel;
-import globaz.apg.pojo.*;
+import globaz.apg.pojo.PrestationCIABAssuranceComplPojo;
+import globaz.apg.pojo.PrestationCIABLigneRecapitulationPojo;
+import globaz.apg.pojo.PrestationCIABPojo;
+import globaz.apg.pojo.PrestationVerseeLigneRecapitulationPojo;
 import globaz.framework.util.FWMessage;
 import globaz.globall.db.BProcess;
 import globaz.globall.db.BSession;
 import globaz.globall.db.GlobazJobQueue;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JADate;
+import globaz.globall.util.JAException;
 import globaz.jade.admin.JadeAdminServiceLocatorProvider;
 import globaz.jade.client.util.JadeConversionUtil;
 import globaz.jade.client.util.JadeDateUtil;
@@ -29,13 +32,12 @@ import globaz.jade.publish.document.JadePublishDocumentInfo;
 import globaz.jade.publish.document.JadePublishDocumentInfoProvider;
 import globaz.naos.process.statOfas.AFStatistiquesOfasProcess;
 import globaz.pyxis.util.TIToolBox;
-import inetsoft.uql.schema.StringValue;
 
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.*;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 
@@ -277,7 +279,7 @@ public class APListePrestationCIABProcess extends BProcess {
 
         // traitement des données
         PrestationCIABLigneRecapitulationPojo aPrestationCIABLigneRecapPojo = null;
-        ArrayList<PrestationCIABAssuranceComplPojo> aListPrestationCIABAssuranceCompl = new ArrayList<PrestationCIABAssuranceComplPojo>();
+        ArrayList<PrestationCIABAssuranceComplPojo> aListPrestationCIABAssuranceCompl = new ArrayList<>();
         PrestationCIABAssuranceComplPojo aPrestationCIABAssuranceCompl = new PrestationCIABAssuranceComplPojo();
 
         listePrestationCIABPojo.setDateDebut(getDateDebut());
@@ -336,7 +338,8 @@ public class APListePrestationCIABProcess extends BProcess {
                     aPrestationCIDABAssCompl = listePrestationCIABPojo.getMapPrestationComplementaireAssuranceCIAB().get(codeAssuranceCompl);
                 }
                 aPrestationCIDABAssCompl.setNbCas(aPrestationCIDABAssCompl.getNbCas()+1);
-                aPrestationCIDABAssCompl.setMontantBrut(aPrestationCIDABAssCompl.getMontantBrut()+ Double.valueOf(montantBrut).doubleValue());
+                aPrestationCIDABAssCompl.setMontantBrut(aPrestationCIDABAssCompl.getMontantBrut()
+                        + Double.valueOf(montantBrut).doubleValue());
                 aPrestationCIDABAssCompl.setCodeAssuranceCompl(codeAssuranceCompl);
                 aPrestationCIDABAssCompl.setLibelleAssuranceCompl(libelleAssuranceCompl);
                 totalMontantBrutService += Double.valueOf(montantBrut).doubleValue();
@@ -383,7 +386,7 @@ public class APListePrestationCIABProcess extends BProcess {
                     libelleCodeServicePrecedent = libelleCodeService;
                     codeAssuranceComplPrecedent = codeAssuranceCompl;
                     libelleAssuranceComplPrecedent = libelleAssuranceCompl;
-                    aListPrestationCIABAssuranceCompl = new ArrayList<PrestationCIABAssuranceComplPojo>();
+                    aListPrestationCIABAssuranceCompl = new ArrayList<>();
                     totalMontantBrutService = 0;
                     totalNbCasService = 0;
                     montantBrutService = 0;
@@ -439,26 +442,30 @@ public class APListePrestationCIABProcess extends BProcess {
         }
     }
 
-    private List<Map<String, String>> executeQuery(String sql) throws JadePersistenceException {
+    private List<Map<String, String>> executeQuery(String sql) throws JadePersistenceException, JAException {
 
-        Statement stmt = null;
+        PreparedStatement stmt = null;
         ResultSet resultSet = null;
-        List<Map<String, String>> results = new ArrayList<Map<String, String>>();
+        List<Map<String, String>> results = new ArrayList<>();
+
+        String dateDebutAMJ = (new JADate(dateDebut)).toAMJ().toString();
+        String dateFinAMJ = (new JADate(dateFin)).toAMJ().toString();
+
 
         try {
-            stmt = JadeThread.currentJdbcConnection().createStatement();
-            resultSet = stmt.executeQuery(sql);
+            stmt = JadeThread.currentJdbcConnection().prepareStatement(sql);
+            stmt.setString(1, dateDebutAMJ);
+            stmt.setString(2, dateFinAMJ);
+            resultSet = stmt.executeQuery();
 
             ResultSetMetaData md = resultSet.getMetaData();
             int columns = md.getColumnCount();
 
             while (resultSet.next()) {
-                Map<String, String> row = new HashMap<String, String>();
+                Map<String, String> row = new HashMap<>();
 
                 // Attention ! La première colonne du Resultset est 1 et non 0
-                for (int i = 1; i <= columns; i++) {
-                    row.put(md.getColumnName(i), resultSet.getString(i));
-                }
+                for (int i = 1; i <= columns; i++) row.put(md.getColumnName(i), resultSet.getString(i));
 
                 results.add(row);
             }
@@ -525,8 +532,7 @@ public class APListePrestationCIABProcess extends BProcess {
 
     private String getSqlListePrestationCIAB() throws Exception {
 
-        String dateDebutAMJ = (new JADate(dateDebut)).toAMJ().toString();
-        String dateFinAMJ = (new JADate(dateFin)).toAMJ().toString();
+
         String langueUser = getSession().getIdLangue();
 
         // Création des conditions
@@ -535,10 +541,12 @@ public class APListePrestationCIABProcess extends BProcess {
         // Selon le selecteur, la condition change
         // Le selecteur est désactivé actuellement, seul Prestation par période est activé.
         if (APListePrestationCIABProcess.SELECTEUR_PRESTATION_PAR_PAIEMENT.equalsIgnoreCase(selecteurPrestation)) {
-            sqlWhere += " AND pres.VHDPMT >= " + dateDebutAMJ + " AND  pres.VHDPMT <= " + dateFinAMJ + " ";
+            //sqlWhere += " AND pres.VHDPMT >= " + dateDebutAMJ + " AND  pres.VHDPMT <= " + dateFinAMJ + " ";
+            sqlWhere += " AND pres.VHDPMT >= ? AND  pres.VHDPMT <= ? ";
         } else if (APListePrestationCIABProcess.SELECTEUR_PRESTATION_PAR_PERIODE
                 .equalsIgnoreCase(selecteurPrestation)) {
-            sqlWhere += " AND pres.VHDDEB <= " + dateFinAMJ + " AND  pres.VHDFIN >= " + dateDebutAMJ + " ";
+            //sqlWhere += " AND pres.VHDDEB <= " + dateFinAMJ + " AND  pres.VHDFIN >= " + dateDebutAMJ + " ";
+            sqlWhere += " AND pres.VHDDEB <= ? AND  pres.VHDFIN >= ? ";
         } else {
             throw new Exception("Not implemented");
         }
