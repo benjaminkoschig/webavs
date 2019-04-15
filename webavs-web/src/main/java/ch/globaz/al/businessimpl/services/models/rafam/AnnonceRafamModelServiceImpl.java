@@ -64,6 +64,8 @@ public class AnnonceRafamModelServiceImpl extends ALAbstractBusinessServiceImpl 
         lastAnnonce  = ALImplServiceLocator.getAnnoncesRafamSearchService().getLastActive(
                 model.getIdDroit(), RafamFamilyAllowanceType.getFamilyAllowanceType(model.getGenrePrestation()));
 
+        String lastAnnonceErreurRecordNumber = lastAnnonce.getRecordNumber();
+
         if (JadeNumericUtil.isEmptyOrZero(model.getEcheanceDroit())
                 || JadeDateUtil.isDateBefore(ALConstRafam.DATE_FIN_MINIMUM, model.getEcheanceDroit())
                 || (RafamEvDeclencheur.RADIATION.getCS().equals(model.getEvDeclencheur()) && !RafamTypeAnnonce
@@ -82,11 +84,24 @@ public class AnnonceRafamModelServiceImpl extends ALAbstractBusinessServiceImpl 
                     if(errorRafam.getErreurAnnonceRafamModel().getCode().equals("208") || errorRafam.getErreurAnnonceRafamModel().getCode().equals("209")){
                         model.setRecordNumber(model.getId());
                         model = (AnnonceRafamModel) JadePersistenceManager.update(model);
+                        if(errorRafam.getErreurAnnonceRafamModel().getCode().equals("208")) {
+                            AnnonceRafamSearchModel searchresult = ALImplServiceLocator.getAnnoncesRafamSearchService().getAnnoncesForRecordNumber(lastAnnonceErreurRecordNumber);
+                            for (int j = 0; j < searchresult.getSize(); j++) {
+                                AnnonceRafamModel annonceAArchive = (AnnonceRafamModel) searchresult.getSearchResults()[j];
+                                annonceAArchive.setEtat(RafamEtatAnnonce.ARCHIVE.getCS());
+                                annonceAArchive = (AnnonceRafamModel) JadePersistenceManager.update(annonceAArchive);
+                            }
+
+                        }
                         ALImplServiceLocator.getAnnonceRafamBusinessService().deleteRefusees(
-                                lastAnnonce.getRecordNumber());
+                                    lastAnnonce.getRecordNumber());
                         break;
                     }
                 }
+
+
+
+
             }
         }
 
