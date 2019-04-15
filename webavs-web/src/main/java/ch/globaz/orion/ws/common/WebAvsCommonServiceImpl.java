@@ -39,7 +39,8 @@ public class WebAvsCommonServiceImpl implements WebAvsCommonService {
     }
 
     @Override
-    public InfosPersonResponseType getInformationsPersonne(String nss) throws WebAvsException {
+    public InfosPersonResponseType getInformationsPersonne(String nss, String numeroAffilie, String loginName,
+            String userEmail, String langue) throws WebAvsException {
         if (JadeStringUtil.isBlankOrZero(nss)) {
             JadeLogger.error(this, "nss cannot be null or zero");
             throw new WebAvsException("nss cannot be null or zero");
@@ -47,7 +48,7 @@ public class WebAvsCommonServiceImpl implements WebAvsCommonService {
 
         try {
             UPIService upiService = CommonServiceLocator.getUPIService();
-            return upiService.getPerson(nss);
+            return upiService.getPerson(nss, numeroAffilie, loginName, userEmail, langue);
         } catch (Exception e) {
             JadeLogger.error(this, "Problème de connexion aux services Web UPI");
             throw new WebAvsException("Problème de connexion aux services Web UPI");

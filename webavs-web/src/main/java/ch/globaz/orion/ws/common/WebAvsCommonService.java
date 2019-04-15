@@ -42,5 +42,8 @@ public interface WebAvsCommonService {
      */
     @WebMethod
     @WebResult(name = "informationsPersonne")
-    public abstract InfosPersonResponseType getInformationsPersonne(@WebParam(name = "nss") String nss) throws WebAvsException;
+    public abstract InfosPersonResponseType getInformationsPersonne(@WebParam(name = "nss") String nss,
+            @WebParam(name = "numeroAffilie") String numeroAffilie, @WebParam(name = "loginName") String loginName,
+            @WebParam(name = "userEmail") String userEmail, @WebParam(name = "langue") String langue)
+            throws WebAvsException;
 }

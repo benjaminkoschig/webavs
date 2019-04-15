@@ -3,6 +3,7 @@ package ch.globaz.common.businessimpl.services;
 import java.net.MalformedURLException;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.Locale;
 import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.ws.WebServiceException;
 import ch.ech.xmlns.ech_0085._1.GetInfoPersonResponseType;
@@ -24,7 +25,8 @@ public class UPIServiceImpl implements UPIService {
     private static final short UPI_ERREUR_ACCES_SERVICES_UPI = 99;
 
     @Override
-    public InfosPersonResponseType getPerson(String nss) throws Exception {
+    public InfosPersonResponseType getPerson(String nss, String numeroAffilie, String loginName, String userEmail,
+            String langue) throws Exception {
         if (JadeStringUtil.isBlank(nss)) {
             throw new IllegalArgumentException("Empty NSS received [" + nss + "]");
         }
@@ -33,11 +35,12 @@ public class UPIServiceImpl implements UPIService {
         InfosPersonResponseType personResponseType = new InfosPersonResponseType();
         try {
             session = new BSession(EBApplication.APPLICATION_ID);
+            session.setIdLangueISO(langue);
             // initialise un contexte et le start
             BSessionUtil.initContext(session, Thread.currentThread());
 
             GetInfoPersonResponseType personUpi = ch.globaz.common.business.services.upi.UPIService.getInstance()
-                    .getInfoPersonByCommonWebAVSUPI(session.getUserId(), nss);
+                    .getInfoPersonByCommonWebAVSUPI(numeroAffilie, loginName, userEmail, nss);
 
             personResponseType = buildPersonResponse(personUpi, nss, session);
         } catch (WebServiceException wsException) {
