@@ -92,8 +92,15 @@
 		else {
 			$('#boutonValider').prop("disabled", true);
 		}
+		checkErrorsValidationsJoursIsoles();
 	}
 	
+	function checkErrorsValidationsJoursIsoles(){
+		var hasErrors = "${viewBean.hasErreursValidationsJoursIsoles}";
+		if(hasErrors == "true"){
+			$('#boutonValider').prop("disabled", true);
+		}
+	}
 	
 	
 	$(document).ready(function(){		
@@ -250,6 +257,26 @@
 					</td>	
 					<td style="text-align: center; ">
 						<span data-g-bubble="text:¦<ct:FWLabel key="JSP_PAP2004_MANQUE_JOURS_SOLDES"/>¦">
+							<strong>&nbsp;</strong>
+						</span>			
+					</td>
+				</tr>
+			</c:forEach>
+				
+			<c:forEach var="erreursValidationsJoursIsoles" items="${viewBean.erreursValidationsJoursIsoles}">
+
+				<c:set var="style" value="styleError" scope="page"></c:set>
+			
+				<tr class="${style}" >
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td>
+						${erreursValidationsJoursIsoles}
+					</td>	
+					<td style="text-align: center; ">
+						<span data-g-bubble="text:¦<ct:FWLabel key="JSP_PAP2004_ERRORS_VALIDATION_PRESTATIONS_JOURS_ISOLES"/>¦">
 							<strong>&nbsp;</strong>
 						</span>			
 					</td>
