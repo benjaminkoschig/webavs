@@ -75,6 +75,6 @@ public interface APPlausibilitesApgService extends JadeApplicationService {
     List<APErreurValidationPeriode> controllerPrestationEnFonctionPeriodes(BSession session, APDroitLAPG droit,
             List<APPeriodeAPG> periodesAPG, List<APPrestation> prestations);
 
-    public List<APErreurValidationPeriode> controllerPrestationsJoursIsolesNotEmpty(BSession session,
-            List<APPrestation> prestations);
+    public List<String> controllerPrestationsJoursIsoles(BSession session, List<APPrestation> prestations,
+            APDroitLAPG droit);
 }

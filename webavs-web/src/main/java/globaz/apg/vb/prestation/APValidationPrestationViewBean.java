@@ -1,5 +1,7 @@
 package globaz.apg.vb.prestation;
 
+import java.util.ArrayList;
+import java.util.List;
 import globaz.apg.api.droits.IAPDroitLAPG;
 import globaz.apg.enums.APAllPlausibiliteRules;
 import globaz.apg.pojo.APBreakRulesFromView;
@@ -9,8 +11,6 @@ import globaz.framework.bean.FWViewBean;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.common.Jade;
-import java.util.ArrayList;
-import java.util.List;
 
 public class APValidationPrestationViewBean extends FWViewBean implements FWViewBeanInterface {
 
@@ -33,6 +33,7 @@ public class APValidationPrestationViewBean extends FWViewBean implements FWView
     private String genreService;
     private List<APValidationPrestationAPGContainer> prestationValidees = new ArrayList<APValidationPrestationAPGContainer>();
     private List<APErreurValidationPeriode> erreursValidationPeriodes = new ArrayList<APErreurValidationPeriode>();
+    private List<String> erreursValidationsJoursIsoles = new ArrayList<String>();
 
     public final List<APValidationPrestationAPGContainer> getPrestationValidees() {
         return prestationValidees;
@@ -54,9 +55,13 @@ public class APValidationPrestationViewBean extends FWViewBean implements FWView
         return (erreursValidationPeriodes != null) && (erreursValidationPeriodes.size() > 0);
     }
 
+    public boolean getHasErreursValidationsJoursIsoles() {
+        return (erreursValidationsJoursIsoles != null) && (erreursValidationsJoursIsoles.size() > 0);
+    }
+
     /**
      * Informe si, lors de la validation des prestation, des erreurs sont survenue
-     * 
+     *
      * @return si des erreurs de validation sont survenue lors de la validation des prestation
      */
     public boolean hasValidationError() {
@@ -72,7 +77,7 @@ public class APValidationPrestationViewBean extends FWViewBean implements FWView
 
     /**
      * Informe si, lors de la validation des prestation, des erreurs non 'quittançable' sont survenue
-     * 
+     *
      * @return si des erreurs de validation non 'quittançable' sont survenue lors de la validation des prestation
      */
     public boolean hasUnbreakableValidationError() {
@@ -127,10 +132,12 @@ public class APValidationPrestationViewBean extends FWViewBean implements FWView
     }
 
     /**
-     * Retourne une liste de breakRules reçu lors de la contrôle des erreurs de validation des prestations</br> Le
-     * format du champ de classe breakRules est le suivant : idPrestation + . +numéroRègle + separateur (_)</br> Exemple
+     * Retourne une liste de breakRules reçu lors de la contrôle des erreurs de validation des prestations</br>
+     * Le
+     * format du champ de classe breakRules est le suivant : idPrestation + . +numéroRègle + separateur (_)</br>
+     * Exemple
      * : 71255.509_71256.510_
-     * 
+     *
      * @return
      */
     public List<APBreakRulesFromView> getBreakRules() throws IllegalArgumentException {
@@ -200,7 +207,7 @@ public class APValidationPrestationViewBean extends FWViewBean implements FWView
     // breakRules.add(new APBreakRulesFromView(codeEnum.getCode(), true));
     // }
     // catch (Exception e) {
-    // throw new APMalformedBreakRule("Bad breakRule code  [" + rule
+    // throw new APMalformedBreakRule("Bad breakRule code [" + rule
     // + "]. The breakRule code is not a valid APBreakRule code [" + code + "]. Exception : " + e.toString());
     // }
     // }
@@ -233,6 +240,14 @@ public class APValidationPrestationViewBean extends FWViewBean implements FWView
 
     public void setGenreService(String genreService) {
         this.genreService = genreService;
+    }
+
+    public List<String> getErreursValidationsJoursIsoles() {
+        return erreursValidationsJoursIsoles;
+    }
+
+    public void setErreursValidationsJoursIsoles(List<String> erreursValidationsJoursIsoles) {
+        this.erreursValidationsJoursIsoles = erreursValidationsJoursIsoles;
     }
 
     public String getAppColor() {

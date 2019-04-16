@@ -57,7 +57,6 @@ import globaz.apg.module.calcul.APPrestationCalculee;
 import globaz.apg.module.calcul.APPrestationStandardLamatAcmAlphaData;
 import globaz.apg.module.calcul.constantes.ECanton;
 import globaz.apg.module.calcul.constantes.EMontantsMax;
-import globaz.apg.module.calcul.rev2005.APModuleCalculAPG;
 import globaz.apg.module.calcul.standard.APCalculateurPrestationStandardLamatAcmAlpha;
 import globaz.apg.module.calcul.wrapper.APPrestationWrapper;
 import globaz.apg.pojo.APValidationPrestationAPGContainer;
@@ -871,8 +870,8 @@ public class APPrestationHelper extends PRAbstractHelper {
             }
 
             if (APGUtils.isTypeAllocationJourIsole(droit.getGenreService())) {
-                viewBean.setErreursValidationPeriodes(
-                        plausiService.controllerPrestationsJoursIsolesNotEmpty(session, prestations));
+                viewBean.setErreursValidationsJoursIsoles(
+                        plausiService.controllerPrestationsJoursIsoles(session, prestations, droit));
             } else
             // Contrôle qu'une prestation existe pour chaque période. Pas de contrôle pour les droits Mat
             if (!IAPDroitLAPG.CS_ALLOCATION_DE_MATERNITE.equals(droit.getGenreService())) {

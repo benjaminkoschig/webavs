@@ -10,6 +10,8 @@ import globaz.apg.db.annonces.APAnnonceAPG;
 import globaz.apg.db.annonces.APAnnonceAPGManager;
 import globaz.apg.db.droits.APDroitLAPG;
 import globaz.apg.db.droits.APPeriodeAPG;
+import globaz.apg.db.droits.APSituationProfessionnelle;
+import globaz.apg.db.droits.APSituationProfessionnelleManager;
 import globaz.apg.db.prestation.APPrestation;
 import globaz.apg.enums.APAllPlausibiliteRules;
 import globaz.apg.enums.APBreakableRules;
@@ -505,13 +507,34 @@ public class APPlausibilitesApgServiceImpl implements APPlausibilitesApgService 
     }
 
     @Override
-    public List<APErreurValidationPeriode> controllerPrestationsJoursIsolesNotEmpty(BSession session,
-            List<APPrestation> prestations) {
-        List<APErreurValidationPeriode> resultsString = new ArrayList<APErreurValidationPeriode>();
-        if (prestations.isEmpty()) {
-            String message = session.getLabel("VALIDATION_PRESTATION_EXCEPTION_ASSURANCE_CIAB_EMPTY_EMPLOYEUR");
-            resultsString.add(new APErreurValidationPeriode(null, message));
+    public List<String> controllerPrestationsJoursIsoles(BSession session, List<APPrestation> prestations,
+            APDroitLAPG droit) {
+        List<String> resultsString = new ArrayList<String>();
+        try {
+            if (prestations.isEmpty()) {
+                resultsString.add(session.getLabel("VALIDATION_PRESTATION_EXCEPTION_ASSURANCE_CIAB_EMPTY_EMPLOYEUR"));
+            } else if (prestationVerseeAssure(session, droit)) {
+                resultsString.add(session.getLabel("VALIDATION_PRESTATION_EXCEPTION_PRESTATION_CIAB_VERSEE_ASSURE"));
+            }
+        } catch (Exception e) {
+            resultsString.add(session.getLabel("VALIDATION_PRESTATION_EXCEPTION_SITUATION_PROF_NON_TROUVEE"));
         }
         return resultsString;
+    }
+
+    private boolean prestationVerseeAssure(BSession session, APDroitLAPG droit) throws Exception {
+        APSituationProfessionnelleManager mgr = new APSituationProfessionnelleManager();
+        mgr.setSession(session);
+        mgr.setForIdDroit(droit.getIdDroit());
+        mgr.find(session.getCurrentThreadTransaction());
+
+        // pour chaque situation professionnelle
+        for (int idSitPro = 0; idSitPro < mgr.size(); ++idSitPro) {
+            APSituationProfessionnelle sitPro = (APSituationProfessionnelle) mgr.get(idSitPro);
+            if (!sitPro.getIsVersementEmployeur()) {
+                return true;
+            }
+        }
+        return false;
     }
 }
