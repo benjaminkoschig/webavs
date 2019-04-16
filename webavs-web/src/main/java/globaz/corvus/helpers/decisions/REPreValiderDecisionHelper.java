@@ -2986,7 +2986,8 @@ public class REPreValiderDecisionHelper extends PRHybridHelper {
                 isRemarqueRenteAvecDebutDroit5AnsAvantDepotDemande);
         decision.setIsRemarqueRenteAvecMontantMinimumMajoreInvalidite(
                 isRemarqueRenteAvecMontantMinimumMajoreInvalidite);
-        decision.setIsRemarqueRenteReduitePourSurassurance(isRemarqueRenteReduitePourSurassurance);
+        decision.setIsRemarqueRenteReduitePourSurassurance(isCodeCasSpecial(renteAccordees, "02"));
+
 
         PRTiersWrapper tiers = PRTiersHelper.getTiersParId(session, idTiersBeneficiairePrincipal);
         if (tiers == null) {
