@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- edited with XMLSpy v2018 (x64) (http://www.altova.com) by administrator (GLOBAZ SA) -->
 <!--
 	2009-05-01 - v 0.1 - First Release
 	2009-05-05 - v 0.2 - Each record type - Validity period is optional
@@ -83,7 +82,12 @@
                           Remove maxOccurs for eCH-0104:comment and eCH-0104:specialTreatment
     2018-03-09 - v 4.1    Change country of type countryType to countryId of type countryIdType
 -->
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:eCH-0104="http://www.ech.ch/xmlns/eCH-0104/4" xmlns:eCH-0104-68="http://www.ech.ch/xmlns/eCH-0104-68/4" xmlns:eCH-0058="http://www.ech.ch/xmlns/eCH-0058/5" xmlns:eCH-0008="http://www.ech.ch/xmlns/eCH-0008/3" targetNamespace="http://www.ech.ch/xmlns/eCH-0104-68/4" elementFormDefault="qualified" attributeFormDefault="unqualified" version="4.1">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+		   xmlns:eCH-0104="http://www.ech.ch/xmlns/eCH-0104/4" 
+		   xmlns:eCH-0104-68="http://www.ech.ch/xmlns/eCH-0104-68/4" 
+		   xmlns:eCH-0058="http://www.ech.ch/xmlns/eCH-0058/5"
+		   xmlns:eCH-0008="http://www.ech.ch/xmlns/eCH-0008/3" 
+		   targetNamespace="http://www.ech.ch/xmlns/eCH-0104-68/4" elementFormDefault="qualified" attributeFormDefault="unqualified" version="4.1">
 	<xs:annotation>
 		<xs:documentation xml:lang="fr">Schéma pour l'échange de données entre les caisses d'allocations familiales et la Centrale de Compensation</xs:documentation>
 		<xs:documentation xml:lang="de">Datenaustauschschema zwischen den Familienausgleichskassen und der zentralen Ausgleichsstelle</xs:documentation>
@@ -155,7 +159,7 @@
 				<xs:complexType>
 					<xs:sequence>
 						<xs:element ref="eCH-0104:vn"/>
-						<xs:element name="countryId" type="eCH-0008:countryIdType" minOccurs="0"/>
+						<xs:element name="countryId" type="eCH-0008:countryIdType"/>
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
