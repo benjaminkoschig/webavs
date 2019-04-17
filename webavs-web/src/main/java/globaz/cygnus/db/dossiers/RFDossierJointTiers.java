@@ -253,6 +253,12 @@ public class RFDossierJointTiers extends BEntity implements Comparable<RFDossier
             return -1 * comparePrenom;
         }
 
+        int compareIdossier = JadeStringUtil.convertSpecialChars(o.getIdDossier()).compareTo(
+                JadeStringUtil.convertSpecialChars(getIdDossier()));
+        if (compareIdossier != 0) {
+            return -1 * compareIdossier;
+        }
+
         return getIdTiers().compareTo(o.getIdTiers());
     }
 

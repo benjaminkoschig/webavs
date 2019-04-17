@@ -433,6 +433,31 @@ public class RFUtils {
         }
     }
 
+
+    private static RFPrDemandeJointDossier getDossierJointPrDemandePlusiseursDossiers(String idTiers, BSession session) throws Exception {
+        // Recherche du dossier en fonction de l'idTiers
+        RFPrDemandeJointDossierManager rfPrDemandeJointDossierMgr = new RFPrDemandeJointDossierManager();
+        rfPrDemandeJointDossierMgr.setSession(session);
+        rfPrDemandeJointDossierMgr.setForIdTiers(idTiers);
+        rfPrDemandeJointDossierMgr.setForTypeDemande(IPRDemande.CS_TYPE_RFM);
+        rfPrDemandeJointDossierMgr.setForEtatDemande(IPRDemande.CS_ETAT_OUVERT);
+        rfPrDemandeJointDossierMgr.setForEtatDossier(IRFDossiers.OUVERT);
+        rfPrDemandeJointDossierMgr.changeManagerSize(0);
+        rfPrDemandeJointDossierMgr.find();
+
+        if (rfPrDemandeJointDossierMgr.size() == 1) {
+            RFPrDemandeJointDossier rfPrDemandeJointDossier = (RFPrDemandeJointDossier) rfPrDemandeJointDossierMgr
+                    .getFirstEntity();
+            return rfPrDemandeJointDossier;
+        } else if (rfPrDemandeJointDossierMgr.size() > 1) {
+            throw new Exception("Plusieurs dossiers trouvés pour cet assuré !");
+        } else {
+            return null;
+        }
+    }
+
+
+
     public static Map<String, String[]> getIdsMotifDeRefusSysteme(BSession session, BTransaction transaction)
             throws Exception {
 
@@ -1193,9 +1218,9 @@ public class RFUtils {
         RFAssQdDossierManager rfAssQdDosMgr = new RFAssQdDossierManager();
         rfAssQdDosMgr.setSession(session);
         rfAssQdDosMgr.setForIdQdBase(idQd);
-        String idDossier = RFUtils.getDossierJointPrDemande(idTier, session).getIdDossier();
-        if (null != idDossier) {
-            rfAssQdDosMgr.setForIdDossier(idDossier);
+        RFPrDemandeJointDossier dossier = RFUtils.getDossierJointPrDemandePlusiseursDossiers(idTier, session);
+        if(dossier != null && dossier.getIdDossier() != null) {
+            rfAssQdDosMgr.setForIdDossier(dossier.getIdDossier());
             rfAssQdDosMgr.changeManagerSize(0);
             rfAssQdDosMgr.find();
             if (rfAssQdDosMgr.size() == 1) {
