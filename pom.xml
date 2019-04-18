@@ -389,7 +389,7 @@
 			<dependency>
 				<groupId>ch.globaz</groupId>
 				<artifactId>rafam-e-delegue</artifactId>
-				<version>3.0.2</version>
+				<version>3.1.0</version>
 			</dependency>
 
 			<dependency>
@@ -605,7 +605,7 @@
 			<dependency>
 				<groupId>xerces</groupId>
 				<artifactId>xercesImpl</artifactId>
-				<version>2.6.2</version>
+				<version>2.9.1</version>
 			</dependency>
 
 			<dependency>
