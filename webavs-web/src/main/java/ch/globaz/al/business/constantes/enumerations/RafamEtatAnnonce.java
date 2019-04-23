@@ -15,7 +15,7 @@ public enum RafamEtatAnnonce {
     SUSPENDU("61370005"),
     TRANSMIS("61370002"),
     VALIDE("61370004"),
-    ARCHIVE("61370007");
+    ARCHIVE("61370009");
 
     public static RafamEtatAnnonce getRafamEtatAnnonceCS(String cs) throws JadeApplicationException {
         if (ENREGISTRE.getCS().equals(cs)) {
