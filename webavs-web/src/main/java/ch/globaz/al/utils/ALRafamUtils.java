@@ -87,6 +87,10 @@ public class ALRafamUtils {
                         .equals(annonce.getAnnonceRafamModel().getTypeAnnonce())
                 || RafamTypeAnnonce._68C_ANNULATION.getCode().equals(annonce.getAnnonceRafamModel().getTypeAnnonce())) {
             last68 = ALRafamUtils.getLastActive68(annonce);
+        } else if (RafamTypeAnnonce._68B_MUTATION.getCode().equals(annonce.getAnnonceRafamModel().getTypeAnnonce())) {
+            // On se trouve dans le cas d'une mutation et qui n'aurait pas tous les champs (Ex : mutation du pays de
+            // résidence de l'enfant -> l'annonce n'a pas de date de début et fin de droit)
+            last68 = ALRafamUtils.getLastActive68Creation(annonce);
         }
 
         if (!JadeDateUtil.isGlobazDate(annonce.getAnnonceRafamModel().getDebutDroit()) && (last68 != null)) {
@@ -97,8 +101,13 @@ public class ALRafamUtils {
                         ALDateUtils.globazDateToXMLGregorianCalendar(ALConstRafam.DATE_DEBUT_MINIMUM));
             }
         } else {
-            newAllowance.setAllowanceDateFrom(
-                    ALDateUtils.globazDateToXMLGregorianCalendar(annonce.getAnnonceRafamModel().getDebutDroit()));
+            if (!JadeStringUtil.isBlankOrZero(annonce.getAnnonceRafamModel().getDebutDroit())) {
+                newAllowance.setAllowanceDateFrom(
+                        ALDateUtils.globazDateToXMLGregorianCalendar(annonce.getAnnonceRafamModel().getDebutDroit()));
+            } else {
+                newAllowance.setAllowanceDateFrom(
+                        ALDateUtils.globazDateToXMLGregorianCalendar(ALConstRafam.DATE_DEBUT_MINIMUM));
+            }
         }
 
         if (!JadeDateUtil.isGlobazDate(annonce.getAnnonceRafamModel().getEcheanceDroit()) && (last68 != null)) {
@@ -110,8 +119,13 @@ public class ALRafamUtils {
                         ALDateUtils.globazDateToXMLGregorianCalendar(ALConstRafam.DATE_DEBUT_MINIMUM));
             }
         } else {
-            newAllowance.setAllowanceDateTo(
-                    ALDateUtils.globazDateToXMLGregorianCalendar(annonce.getAnnonceRafamModel().getEcheanceDroit()));
+            if (!JadeStringUtil.isBlankOrZero(annonce.getAnnonceRafamModel().getEcheanceDroit())) {
+                newAllowance.setAllowanceDateTo(ALDateUtils
+                        .globazDateToXMLGregorianCalendar(annonce.getAnnonceRafamModel().getEcheanceDroit()));
+            } else {
+                newAllowance.setAllowanceDateTo(
+                        ALDateUtils.globazDateToXMLGregorianCalendar(ALConstRafam.DATE_DEBUT_MINIMUM));
+            }
         }
 
         if ((annonce.getAnnonceRafamModel().getInternalOfficeReference() != null)
@@ -199,6 +213,30 @@ public class ALRafamUtils {
 
         ALRafamUtils.validateAllowanceType(newAllowance);
         return newAllowance;
+    }
+
+    /**
+     * Méthode permettant de rechercher la dernière annonce active de type création (68a)
+     *
+     * @param annonceImported
+     * @return dernière annonce de création active
+     */
+    private static AnnonceRafamModel getLastActive68Creation(AnnonceRafamDelegueComplexModel annonceImported) {
+        AnnonceRafamSearchModel search = new AnnonceRafamSearchModel();
+        search.setForRecordNumber(annonceImported.getAnnonceRafamModel().getRecordNumber());
+        ArrayList<String> types = new ArrayList<String>();
+        types.add(RafamTypeAnnonce._68A_CREATION.getCode());
+        search.setInTypeAnnonce(types);
+        search.setOrderKey("lastActive");
+        try {
+            search = ALServiceLocator.getAnnonceRafamModelService().search(search);
+        } catch (Exception e) {
+            JadeLogger.warn(ALRafamUtils.class, "Unable to find a 68 type annonce according to "
+                    + annonceImported.getAnnonceRafamModel().getTypeAnnonce() + " to getting of childFamilyRelation");
+        }
+
+        AnnonceRafamModel lastActive = ((AnnonceRafamModel) search.getSearchResults()[0]);
+        return lastActive;
     }
 
     /**
