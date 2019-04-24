@@ -460,6 +460,16 @@ public class APListePrestationCIABProcess extends BProcess {
             stmt = JadeThread.currentJdbcConnection().prepareStatement(sql);
             stmt.setString(1, dateDebutAMJ);
             stmt.setString(2, dateFinAMJ);
+            stmt.setInt(3, APTypeDePrestation.COMPCIAB.getCodesystem());
+            stmt.setInt(4, APTypeDePrestation.JOUR_ISOLE.getCodesystem());
+            stmt.setString(5, idAssuranceParitaireJU);
+            stmt.setString(6, idAssurancePersonnelJU);
+            stmt.setString(7, idAssuranceParitaireBE);
+            stmt.setString(8, idAssurancePersonnelBE);
+            stmt.setString(9, idAssuranceParitaireJU);
+            stmt.setString(10, idAssuranceParitaireBE);
+            stmt.setString(11, idAssurancePersonnelJU);
+            stmt.setString(12, idAssurancePersonnelBE);
             resultSet = stmt.executeQuery();
 
             ResultSetMetaData md = resultSet.getMetaData();
@@ -555,11 +565,11 @@ public class APListePrestationCIABProcess extends BProcess {
             throw new Exception("Not implemented");
         }
 
-        sqlWhere += " AND pres.VHTGEN IN ("+ APTypeDePrestation.COMPCIAB.getCodesystem() +","+ APTypeDePrestation.JOUR_ISOLE.getCodesystem()+") ";
-        sqlWhere += " AND afc.MBIASS IN ("+idAssuranceParitaireJU+","+idAssurancePersonnelJU+","+idAssuranceParitaireBE+","+idAssurancePersonnelBE+") ";
+        sqlWhere += " AND pres.VHTGEN IN (?,?) ";
+        sqlWhere += " AND afc.MBIASS IN (?,?,?,?) ";
         sqlWhere += " AND pres.VHDDEB >= afc.MEDDEB ";
-        sqlWhere += " AND (( repa.VIMMOB < repa.VIMMON AND afc.MBIASS IN ("+idAssuranceParitaireJU+ ","+idAssuranceParitaireBE+") ) ";
-        sqlWhere += " OR ( repa.VIMMOB > repa.VIMMON AND afc.MBIASS IN ("+idAssurancePersonnelJU+ ","+idAssurancePersonnelBE+") )) ";
+        sqlWhere += " AND (( repa.VIMMOB < repa.VIMMON AND afc.MBIASS IN (?,?) ) ";
+        sqlWhere += " OR ( repa.VIMMOB > repa.VIMMON AND afc.MBIASS IN (?,?) )) ";
 
 
        String sql = " select affi.MALNAF as "
