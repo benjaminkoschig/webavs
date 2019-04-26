@@ -265,19 +265,15 @@ public class APCalculateurComplement implements IAPPrestationCalculateur<APCalcu
             }
             mapPrestations.get(prestationJoinRepartition.getIdPrestationApg()).add(prestationJoinRepartition);
         }
-        
-        for(APPrestation prestation : donneesPersistancePourCalcul.getListPrestationStandard()) {
-            APCalculateurComplementDonneeDomaine donneeDomaine = new  APCalculateurComplementDonneeDomaine(prestation);
-            donneeDomaine.setRepartitions(mapPrestations.get(prestation.getIdPrestationApg()));
-            listePrestationsComplementDomaineConverties.add(donneeDomaine);
-        }
 
-        Map<String, APPrestation> listePrestationsStandard = new HashMap<>();
-        
         for(APPrestation prestation : donneesPersistancePourCalcul.getListPrestationStandard()) {
-            listePrestationsStandard.put(prestation.getIdPrestationApg(), prestation);
+            List<APRepartitionJointPrestation> repartitions = mapPrestations.get(prestation.getIdPrestationApg());
+            if(repartitions != null) {
+                APCalculateurComplementDonneeDomaine donneeDomaine = new  APCalculateurComplementDonneeDomaine(prestation);
+                donneeDomaine.setRepartitions(repartitions);
+                listePrestationsComplementDomaineConverties.add(donneeDomaine);
+            }
         }
-
 
         // Pour chacune des prestations standard Joint répartition
         for (final APCalculateurComplementDonneeDomaine prestationStandard : listePrestationsComplementDomaineConverties) {
