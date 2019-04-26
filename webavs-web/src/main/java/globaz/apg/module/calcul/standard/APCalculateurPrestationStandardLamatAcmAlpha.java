@@ -1142,6 +1142,22 @@ public class APCalculateurPrestationStandardLamatAcmAlpha implements IAPPrestati
             }
         }
         doRestitutionAndClear(session, transaction, idDroit, pgpcRestitution, prestations);
+
+        for (int i = 0; i < prestationsARestituer.length; i++) {
+            if (APTypeDePrestation.JOUR_ISOLE.isCodeSystemEqual(prestationsARestituer[i].getGenre())
+                    && IAPPrestation.CS_ETAT_PRESTATION_DEFINITIF.equals(prestationsARestituer[i].getEtat())) {
+                prestations.add(prestationsARestituer[i]);
+            }
+        }
+        doRestitutionAndClear(session, transaction, idDroit, pgpcRestitution, prestations);
+
+        for (int i = 0; i < prestationsARestituer.length; i++) {
+            if (APTypeDePrestation.COMPCIAB.isCodeSystemEqual(prestationsARestituer[i].getGenre())
+                    && IAPPrestation.CS_ETAT_PRESTATION_DEFINITIF.equals(prestationsARestituer[i].getEtat())) {
+                prestations.add(prestationsARestituer[i]);
+            }
+        }
+        doRestitutionAndClear(session, transaction, idDroit, pgpcRestitution, prestations);
     }
 
     private void doRestitutionAndClear(final BSession session, final BTransaction transaction, final String idDroit,
