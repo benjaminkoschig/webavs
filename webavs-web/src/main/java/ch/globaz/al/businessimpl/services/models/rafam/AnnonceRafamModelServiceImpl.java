@@ -94,6 +94,7 @@ public class AnnonceRafamModelServiceImpl extends ALAbstractBusinessServiceImpl 
                         if (errorRafam.getErreurAnnonceRafamModel().getCode().equals("208")
                                 || errorRafam.getErreurAnnonceRafamModel().getCode().equals("209")) {
                             model.setRecordNumber(model.getId());
+                            model.setTypeAnnonce(RafamTypeAnnonce._68A_CREATION.getCode());
                             model = (AnnonceRafamModel) JadePersistenceManager.update(model);
                             if (errorRafam.getErreurAnnonceRafamModel().getCode().equals("208")) {
                                 AnnonceRafamSearchModel searchresult = ALImplServiceLocator
