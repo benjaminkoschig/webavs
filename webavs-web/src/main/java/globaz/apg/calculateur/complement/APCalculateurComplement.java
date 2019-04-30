@@ -98,7 +98,9 @@ public class APCalculateurComplement implements IAPPrestationCalculateur<APCalcu
 
                     APSituationProfessionnelleCanton sitProf = prestationStandard.getSituationProfessionnelle().get(repartition.getIdSituationProfessionnelle());
 
-                    BigDecimal montantBrutReparti =  montantBrutJournalier.multiply((new BigDecimal(repartition.getTauxRJM()).divide(new BigDecimal("100"), 10, RoundingMode.HALF_UP)));
+                    BigDecimal tauxCalcul = new BigDecimal(repartition.getMontantBrut()).divide(new BigDecimal(prestation.getMontantBrut()), 10, RoundingMode.HALF_UP);
+
+                    BigDecimal montantBrutReparti =  montantBrutJournalier.multiply(tauxCalcul);
 
                     BigDecimal montantBrutRepartition = getMontantBrutRepartition(
                             montantBrutReparti, prestationCalculeeAPersister.getNombreDeJoursSoldes());
@@ -172,7 +174,8 @@ public class APCalculateurComplement implements IAPPrestationCalculateur<APCalcu
             final String typeAffiliation) {
 
         final BigDecimal montantNetRepartition;
-        if(IAFAffiliation.TYPE_AFFILI_INDEP.equals(typeAffiliation)) {
+        if(IAFAffiliation.TYPE_AFFILI_INDEP.equals(typeAffiliation)
+                || IAFAffiliation.TYPE_AFFILI_INDEP_EMPLOY.equals(typeAffiliation)) {
             montantNetRepartition = getMontantNetRepartitionIndependant(montantBrutRepartition,
                     cotisationAvs.getMontantCotisation(), cotisationAc.getMontantCotisation());
         } else {
@@ -185,20 +188,21 @@ public class APCalculateurComplement implements IAPPrestationCalculateur<APCalcu
                 montantNetRepartition, typePrestation, typePaiement, idTiersEmployeur, idTiersPaiementEmployeur,
                 idDomainePaiementEmployeur, typeAssociationAssurance, idSituationProfessionnelle, nom, idAffilie);
 
-        if(IAFAffiliation.TYPE_AFFILI_INDEP.equals(typeAffiliation)) {
+        if(IAFAffiliation.TYPE_AFFILI_INDEP.equals(typeAffiliation)
+                || IAFAffiliation.TYPE_AFFILI_INDEP_EMPLOY.equals(typeAffiliation)) {
             cotisationAvs.setMontantCotisation(cotisationAvs.getMontantCotisation().negate());
-            cotisationAc.setMontantCotisation(cotisationAc.getMontantCotisation().negate());
+            repartition.getCotisations().add(cotisationAvs);
+        } else {
+            repartition.getCotisations().add(cotisationAvs);
+            repartition.getCotisations().add(cotisationAc);
         }
-        repartition.getCotisations().add(cotisationAvs);
-        repartition.getCotisations().add(cotisationAc);
-
 
         return repartition;
 
     }
     
-    private BigDecimal getMontantBrutCotisation(final BigDecimal montantBrutRepartition, final BigDecimal tauxAc) {
-        final BigDecimal montantBrutCotisation = montantBrutRepartition.multiply(tauxAc);
+    private BigDecimal getMontantBrutCotisation(final BigDecimal montantBrutRepartition, final BigDecimal taux) {
+        final BigDecimal montantBrutCotisation = montantBrutRepartition.multiply(taux);
         return montantBrutCotisation;
     }
     
@@ -218,8 +222,7 @@ public class APCalculateurComplement implements IAPPrestationCalculateur<APCalcu
     private BigDecimal getMontantNetRepartitionIndependant(final BigDecimal montantBrutRepartition,
                                                 final BigDecimal montantCotisationAvs, final BigDecimal montantCotisationAc) {
 
-        final BigDecimal montantNetRepartition = montantBrutRepartition.subtract(montantCotisationAvs)
-                .subtract(montantCotisationAc);
+        final BigDecimal montantNetRepartition = montantBrutRepartition.subtract(montantCotisationAvs);
 
         return montantNetRepartition;
     }
