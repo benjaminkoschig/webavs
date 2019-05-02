@@ -16,6 +16,7 @@ import globaz.globall.db.BSession;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JACalendarGregorian;
 import globaz.globall.util.JADate;
+import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.helpers.PRAbstractHelper;
 import java.util.Iterator;
@@ -65,7 +66,8 @@ public class RFPrestationsAccordeesHelper extends PRAbstractHelper {
                 JADate todayJd = JACalendar.today();
                 JADate dateDernier = new JADate(REPmtMensuel.getDateDernierPmt(rfPrestationsAccordeesVB.getSession()));
 
-                if (cal.compare(dateFinDroitJd, dateDernier) == JACalendar.COMPARE_FIRSTUPPER) {
+                if (cal.compare(dateFinDroitJd, dateDernier) == JACalendar.COMPARE_FIRSTUPPER
+                        || cal.compare(dateFinDroitJd, dateDernier) == JACalendar.COMPARE_EQUALS) {
                     demande.setDateFinTraitement(dateFinPresFinal);
                     demande.update(transaction);
                     RFPrestationAccordee rfPrestationAccordee = new RFPrestationAccordee();
