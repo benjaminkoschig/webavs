@@ -356,6 +356,7 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
         public String tauxCotisationFNE = "";
         public String typeAssociation = "";
         public List ventilations = new ArrayList();
+        public String idDroit = "";
     }
 
     /**
@@ -947,6 +948,43 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
             }
 
             //
+            // Compensation des prestations de genre Standard (COMPCIAB) :
+            //
+            // /////////////////////////////////////////////////////////////////////////
+
+            propRubrique = getSession().getApplication().getProperty(
+                    APGenererEcrituresComptablesProcess.PROP_RUBRIQUE_COMPENSATION);
+
+            if (!ci.montantTotPrestations.montantCOMPCIAB.isZero() && !ci.montantTotRestitutions.montantCOMPCIAB.isZero()) {
+
+                ci.montantTotRestitutions.montantCOMPCIAB.abs();
+                ci.montantTotPrestations.montantCOMPCIAB.abs();
+
+                FWCurrency plusPetitDesMontantAbs = null;
+                // prendre le plus petit des montant en val. abs
+                if (ci.montantTotPrestations.montantAPG.compareTo(ci.montantTotRestitutions.montantCOMPCIAB) < 0) {
+                    plusPetitDesMontantAbs = ci.montantTotPrestations.montantCOMPCIAB;
+                } else {
+                    plusPetitDesMontantAbs = ci.montantTotRestitutions.montantCOMPCIAB;
+                }
+
+                final FWCurrency montantInverse = new FWCurrency(plusPetitDesMontantAbs.toString());
+                montantInverse.negate();
+
+                getMemoryLog().logMessage("Compensations internes à la CA >>>>>>>>", FWMessage.INFORMATION,
+                        getSession().getLabel("ECR_COM_GENERER_ECRITURES_COMPTABLES_PROCESS"));
+
+                if ("RUBRIQUE_DE_LISSAGE".equals(propRubrique)) {
+                    doEcriture(compta, plusPetitDesMontantAbs.toString(), COMPENSATION, ci.idCompteAnnexe,
+                            ci.idSectionRestitution, null);
+
+                    doEcriture(compta, montantInverse.toString(), COMPENSATION, ci.idCompteAnnexe, ci.idSectionNormale,
+                            null);
+                }
+            }
+
+
+            //
             // Compensation des prestations de genre Standard (APG) :
             //
             // /////////////////////////////////////////////////////////////////////////
@@ -1419,6 +1457,16 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
                 }
             }
 
+        }
+
+        TypeComplement typeComplement = null;
+        for(Object repar: repartitions) {
+            Repartition repartition1 = (Repartition) repar;
+            if (APTypeDePrestation.COMPCIAB.isCodeSystemEqual(repartition1.genrePrestation) ||
+                    APTypeDePrestation.JOUR_ISOLE.isCodeSystemEqual(repartition1.genrePrestation)) {
+                typeComplement = getTypeComplementFromAssurance(getSession(), key.idAffilie, repartition1.idDroit);
+                break;
+            }
         }
 
         // parcours de toutes les répartitions
@@ -1987,14 +2035,15 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
             montantAssure = totalISAssure.getMontant(Montants.TYPE_COMPCIAB);
             montantIndependant = totalISIndependant.getMontant(Montants.TYPE_COMPCIAB);
             if ((montantAssure != null) && !montantAssure.isZero()) {
-                doEcriture(compta, montantAssure.toString(), mapComplementBean.get(key.typeComplement.canton)
+
+                doEcriture(compta, montantAssure.toString(), mapComplementBean.get(typeComplement.canton)
                                 .getRubriquePersonnelImpotSource(), compteAnnexeAPG.getIdCompteAnnexe(), sectionNormale.getIdSection(),
                         null);
 
                 mntIS.add(Montants.TYPE_COMPCIAB, montantAssure);
             }
             if ((montantIndependant != null) && !montantIndependant.isZero()) {
-                doEcriture(compta, montantIndependant.toString(), mapComplementBean.get(key.typeComplement.canton)
+                doEcriture(compta, montantIndependant.toString(), mapComplementBean.get(typeComplement.canton)
                                 .getRubriqueParitaireImpotSource(), compteAnnexeAPG.getIdCompteAnnexe(), sectionNormale.getIdSection(),
                         null);
 
@@ -2036,7 +2085,7 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
 
         if ((totalFondDeCompensationComplementEmployeur!= null) && !totalFondDeCompensationComplementEmployeur.isZero()) {
             APIRubrique rubrique = null;
-            rubrique = mapComplementBean.get(key.typeComplement.getCanton().getValue()).getRubriqueParitaireParticipationCotisation();
+            rubrique = mapComplementBean.get(typeComplement.getCanton().getValue()).getRubriqueParitaireParticipationCotisation();
 
             montantTotalStandard.add(totalFondDeCompensationComplementEmployeur);
             doEcriture(compta,
@@ -2047,7 +2096,7 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
 
         if ((totalFondDeCompensationComplementIndependant!= null) && !totalFondDeCompensationComplementIndependant.isZero()) {
             APIRubrique rubrique = null;
-            rubrique = mapComplementBean.get(key.typeComplement.getCanton().getValue()).getRubriquePersonnelParticipationCotisation();
+            rubrique = mapComplementBean.get(typeComplement.getCanton().getValue()).getRubriquePersonnelParticipationCotisation();
 
             montantTotalStandard.add(totalFondDeCompensationComplementIndependant);
             doEcriture(compta,
@@ -2057,14 +2106,14 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
         }
 
         if(!mapTotalACComplementIndependant.isEmpty()) {
-            APIRubrique rubrique = mapComplementBean.get(key.typeComplement.getCanton().getValue()).getRubriquePersonnelCotisationAC();
+            APIRubrique rubrique = mapComplementBean.get(typeComplement.getCanton().getValue()).getRubriquePersonnelCotisationAC();
             montantTemp = ecrisCotisations(compta, rubrique, compteAnnexeAPG.getIdCompteAnnexe(),
                     sectionNormale.getIdSection(), mapTotalACComplementIndependant);
             montantTotalStandard.add(montantTemp);
         }
 
         if(!mapTotalAVSComplementIndependant.isEmpty()) {
-            APIRubrique rubrique = mapComplementBean.get(key.typeComplement.getCanton().getValue()).getRubriquePersonnelCotisationAVS();
+            APIRubrique rubrique = mapComplementBean.get(typeComplement.getCanton().getValue()).getRubriquePersonnelCotisationAVS();
             montantTemp = ecrisCotisations(compta, rubrique, compteAnnexeAPG.getIdCompteAnnexe(),
                     sectionNormale.getIdSection(), mapTotalAVSComplementIndependant);
             montantTotalStandard.add(montantTemp);
@@ -2196,15 +2245,15 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
                 montantAssure = totalISAssure.getMontant(Montants.TYPE_COMPCIAB);
                 montantIndependant = totalISIndependant.getMontant(Montants.TYPE_COMPCIAB);
                 if ((montantAssure != null) && !montantAssure.isZero()) {
-                    doEcriture(compta, montantAssure.toString(), mapComplementBean.get(key.typeComplement.canton)
-                                    .getRubriquePersonnelImpotSource(), compteAnnexeAPG.getIdCompteAnnexe(), sectionNormale.getIdSection(),
+                    doEcriture(compta, montantAssure.toString(), mapComplementBean.get(typeComplement.canton)
+                                    .getRubriquePersonnelImpotSource(), compteAnnexeAPG.getIdCompteAnnexe(), sectionRestitution.getIdSection(),
                             null);
 
                     mntIS.add(Montants.TYPE_COMPCIAB, montantAssure);
                 }
                 if ((montantIndependant != null) && !montantIndependant.isZero()) {
-                    doEcriture(compta, montantIndependant.toString(), mapComplementBean.get(key.typeComplement.canton)
-                                    .getRubriquePersonnelImpotSource(), compteAnnexeAPG.getIdCompteAnnexe(), sectionNormale.getIdSection(),
+                    doEcriture(compta, montantIndependant.toString(), mapComplementBean.get(typeComplement.canton)
+                                    .getRubriquePersonnelImpotSource(), compteAnnexeAPG.getIdCompteAnnexe(), sectionRestitution.getIdSection(),
                             null);
 
                     mntIS.add(Montants.TYPE_COMPCIAB, montantIndependant);
@@ -2252,7 +2301,7 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
 
             if ((totalFondDeCompensationComplementRestitutionEmployeur!= null) && !totalFondDeCompensationComplementRestitutionEmployeur.isZero()) {
                 APIRubrique rubrique = null;
-                rubrique = mapComplementBean.get(key.typeComplement.getCanton().getValue()).getRubriqueParitaireParticipationCotisation();
+                rubrique = mapComplementBean.get(typeComplement.getCanton().getValue()).getRubriqueParitaireParticipationCotisation();
 
                 montantTotalRestitution.add(totalFondDeCompensationComplementRestitutionEmployeur);
                 doEcriture(compta,
@@ -2262,7 +2311,7 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
 
             if ((totalFondDeCompensationComplementRestitutionIndependant!= null) && !totalFondDeCompensationComplementRestitutionIndependant.isZero()) {
                 APIRubrique rubrique = null;
-                rubrique = mapComplementBean.get(key.typeComplement.getCanton().getValue()).getRubriquePersonnelParticipationCotisation();
+                rubrique = mapComplementBean.get(typeComplement.getCanton().getValue()).getRubriquePersonnelParticipationCotisation();
 
                 montantTotalRestitution.add(totalFondDeCompensationComplementRestitutionIndependant);
                 doEcriture(compta,
@@ -2272,16 +2321,16 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
             }
 
             if(!mapTotalACComplementRestitutionIndependant.isEmpty()) {
-                APIRubrique rubrique = mapComplementBean.get(key.typeComplement.getCanton().getValue()).getRubriquePersonnelCotisationAC();
+                APIRubrique rubrique = mapComplementBean.get(typeComplement.getCanton().getValue()).getRubriquePersonnelCotisationAC();
                 montantTemp = ecrisCotisations(compta, rubrique, compteAnnexeAPG.getIdCompteAnnexe(),
-                        sectionNormale.getIdSection(), mapTotalACComplementRestitutionIndependant);
+                        sectionRestitution.getIdSection(), mapTotalACComplementRestitutionIndependant);
                 montantTotalRestitution.add(montantTemp);
             }
 
             if(!mapTotalAVSComplementRestitutionIndependant.isEmpty()) {
-                APIRubrique rubrique = mapComplementBean.get(key.typeComplement.getCanton().getValue()).getRubriquePersonnelCotisationAVS();
+                APIRubrique rubrique = mapComplementBean.get(typeComplement.getCanton().getValue()).getRubriquePersonnelCotisationAVS();
                 montantTemp = ecrisCotisations(compta, rubrique, compteAnnexeAPG.getIdCompteAnnexe(),
-                        sectionNormale.getIdSection(), mapTotalAVSComplementRestitutionIndependant);
+                        sectionRestitution.getIdSection(), mapTotalAVSComplementRestitutionIndependant);
                 montantTotalRestitution.add(montantTemp);
             }
 
@@ -2797,6 +2846,8 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
             prestation.setIdPrestationApg(idPrestation);
             prestation.retrieve(getTransaction());
 
+            repartition.idDroit = prestation.getIdDroit();
+
             final APDroitLAPG droit = new APDroitLAPG();
             droit.setSession(getSession());
             droit.setIdDroit(prestation.getIdDroit());
@@ -2832,7 +2883,7 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
             if (idAssureDeBase.equals(idTiers)) {
                 // choix de la section
                 repartition.section = getSection(idTiers, idAffilie, isRestitution);
-                key = new Key(idTiers, idAffilie, "0", "0", "0", false, false, repartition.idAdressePaiement, false, typeComplement);
+                key = new Key(idTiers, idAffilie, "0", "0", "0", false, false, repartition.idAdressePaiement, false);
 
             }
             // Cas ou le bénéficiaire est un affilié
@@ -2840,7 +2891,7 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
                 // choix de la section
                 repartition.section = getSection(idTiers, idAffilie, isRestitution);
                 key = new Key(idTiers, idAffilie, "0", "0", "0", false, false, repartition.idAdressePaiement,
-                        isPorteEnCompte, typeComplement);
+                        isPorteEnCompte);
 
             }
             // Cas ou le bénéficiaire est un employeur non affilié,
@@ -2853,7 +2904,7 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
                 // choix de la section
                 repartition.section = getSection(idAssureDeBase, idAffilie, isRestitution);
                 key = new Key(idAssureDeBase, "0", idTiers, "0", "0", false, false, repartition.idAdressePaiement,
-                        false, typeComplement);
+                        false);
             }
 
             if (repartitions.containsKey(key)) {
