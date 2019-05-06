@@ -5,8 +5,21 @@ package globaz.cygnus.helpers.dossiers;
 
 import globaz.corvus.utils.REPmtMensuel;
 import globaz.cygnus.api.dossiers.IRFDossiers;
+import globaz.cygnus.db.attestations.RFAssAttestationDossier;
+import globaz.cygnus.db.attestations.RFAssAttestationDossierManager;
+import globaz.cygnus.db.contributions.RFContributionsAssistanceAIManager;
+import globaz.cygnus.db.contributions.RFContributionsJointTiers;
+import globaz.cygnus.db.contributions.RFContributionsJointTiersManager;
+import globaz.cygnus.db.decisions.RFAssDossierDecision;
+import globaz.cygnus.db.decisions.RFAssDossierDecisionManager;
+import globaz.cygnus.db.demandes.RFDemande;
+import globaz.cygnus.db.demandes.RFDemandeManager;
 import globaz.cygnus.db.demandes.RFPrDemandeJointDossier;
 import globaz.cygnus.db.dossiers.RFDossier;
+import globaz.cygnus.db.dossiers.RFDossierJointTiers;
+import globaz.cygnus.db.dossiers.RFDossierJointTiersManager;
+import globaz.cygnus.db.qds.RFAssQdDossier;
+import globaz.cygnus.db.qds.RFAssQdDossierManager;
 import globaz.cygnus.utils.RFUtils;
 import globaz.cygnus.vb.dossiers.RFDossierJointTiersListViewBean;
 import globaz.cygnus.vb.dossiers.RFDossierJointTiersViewBean;
@@ -15,7 +28,9 @@ import globaz.framework.controller.FWAction;
 import globaz.globall.api.BISession;
 import globaz.globall.api.BITransaction;
 import globaz.globall.db.BIPersistentObjectList;
+import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
+import globaz.jade.client.util.JadePeriodWrapper;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.api.IPRDemande;
 import globaz.prestation.db.demandes.PRDemande;
@@ -32,8 +47,8 @@ public class RFDossierJointTiersHelper extends PRAbstractHelper {
     /**
      * Ajout d'un dossier
      * 
-     * @param FWViewBeanInterface
-     *            , FWAction, BSession
+     * @param viewBean
+     *            , action, session
      * @throws Exception
      */
     @Override
@@ -108,8 +123,7 @@ public class RFDossierJointTiersHelper extends PRAbstractHelper {
     /**
      * Modification d'un dossier
      * 
-     * @param FWViewBeanInterface
-     *            , FWAction, BSession
+     * @param viewBean, action, session
      * @throws Exception
      */
     @Override
@@ -153,6 +167,10 @@ public class RFDossierJointTiersHelper extends PRAbstractHelper {
                         demandePrestation.update(transaction);
                         dossierRFM.update(transaction);
 
+                        if(IRFDossiers.CLOTURE.equals(rfdosVb.getCsEtatDossier())) {
+                            controlLienIdDossierCloture((BSession) session, rfdosVb);
+                        }
+
                     } else {
                         RFUtils.setMsgErreurViewBean(viewBean,
                                 "RFDossierJointTiersHelper._update(): Impossible de retrouver le demande de prestation");
@@ -190,6 +208,91 @@ public class RFDossierJointTiersHelper extends PRAbstractHelper {
 
     }
 
+    private void controlLienIdDossierCloture(BSession session, RFDossierJointTiersViewBean dossierSupprime) throws Exception {
+
+        RFDossierJointTiersManager managerDossier = new RFDossierJointTiersManager();
+        managerDossier.setSession(session);
+        managerDossier.setForIdTiers(dossierSupprime.getIdTiers());
+        managerDossier.setForCsEtatDossier(IRFDossiers.OUVERT);
+        managerDossier.setForOrderBy(RFDossierJointTiersManager.OrdreDeTri.DateDebut.getOrdre());
+        managerDossier.find(BManager.SIZE_USEDEFAULT);
+
+        // recherche si encore des dossiers ouvert pour le même idTiers
+        RFDossierJointTiers prochainDossierOuvert = null;
+        if (managerDossier.size() > 0) {
+            for (int i = 0; i < managerDossier.size(); i++) {
+                RFDossierJointTiers dossierFound = (RFDossierJointTiers) managerDossier.get(i);
+                if(!dossierFound.getIdDossier().equals(dossierSupprime.getIdDossier())) {
+                    prochainDossierOuvert = dossierFound;
+                    break;
+                }
+            }
+        }
+
+        // Mise à jour des différents lien avec le prochain idDossier disponible
+        if(prochainDossierOuvert != null) {
+            // Mise à jour des contributions
+            RFContributionsJointTiersManager managerContribution = new RFContributionsJointTiersManager();
+            managerContribution.setSession(session);
+            managerContribution.setForIdDossierRFM(dossierSupprime.getIdDossier());
+            managerContribution.find(BManager.SIZE_NOLIMIT);
+            for (int i = 0; i < managerContribution.size(); i++) {
+                RFContributionsJointTiers contribution = (RFContributionsJointTiers) managerContribution.get(i);
+                contribution.setIdDossierRFM(prochainDossierOuvert.getIdDossier());
+                contribution.update();
+            }
+
+            // Mise à jour des décisions
+            RFAssDossierDecisionManager managerDecision = new RFAssDossierDecisionManager();
+            managerDecision.setSession(session);
+            managerDecision.setForIdDossier(dossierSupprime.getIdDossier());
+            managerDecision.find(BManager.SIZE_NOLIMIT);
+            for (int i = 0; i < managerDecision.size(); i++) {
+                RFAssDossierDecision decision = (RFAssDossierDecision) managerDecision.get(i);
+                decision.setIdDossier(prochainDossierOuvert.getIdDossier());
+                decision.update();
+            }
+
+            // Mise à jour des demandes
+            RFDemandeManager managerDemande = new RFDemandeManager();
+            managerDemande.setSession(session);
+            managerDemande.setForIdDossier(dossierSupprime.getIdDossier());
+            managerDemande.find(BManager.SIZE_NOLIMIT);
+            for (int i = 0; i < managerDemande.size(); i++) {
+                RFDemande demande = (RFDemande) managerDemande.get(i);
+                demande.setIdDossier(prochainDossierOuvert.getIdDossier());
+                demande.update();
+            }
+
+            // Mise à jour des qd
+            RFAssQdDossierManager managerQd = new RFAssQdDossierManager();
+            managerQd.setSession(session);
+            managerQd.setForIdDossier(dossierSupprime.getIdDossier());
+            managerQd.find(BManager.SIZE_NOLIMIT);
+            for (int i = 0; i < managerQd.size(); i++) {
+                RFAssQdDossier qd = (RFAssQdDossier) managerQd.get(i);
+                qd.setIdDossier(prochainDossierOuvert.getIdDossier());
+                qd.update();
+            }
+
+            // Mise à jour des attestations
+            RFAssAttestationDossierManager managerAttestation = new RFAssAttestationDossierManager();
+            managerAttestation.setSession(session);
+            managerAttestation.setForIdDossier(dossierSupprime.getIdDossier());
+            managerAttestation.find(BManager.SIZE_NOLIMIT);
+            for (int i = 0; i < managerAttestation.size(); i++) {
+                RFAssAttestationDossier attestation = (RFAssAttestationDossier) managerAttestation.get(i);
+                attestation.setIdDossier(prochainDossierOuvert.getIdDossier());
+                attestation.update();
+            }
+
+
+        }
+
+
+
+    }
+
     /**
      * @see globaz.framework.controller.FWHelper#execute(globaz.framework.bean.FWViewBeanInterface,
      *      globaz.framework.controller.FWAction, globaz.globall.api.BISession)
@@ -202,9 +305,9 @@ public class RFDossierJointTiersHelper extends PRAbstractHelper {
     /**
      * Méthode qui valide l'ajout d'un dossier RFM
      * 
-     * @param session
+     * @param viewBean
      * 
-     * @param statement
+     * @param isUpdate
      * @throws Exception
      */
     private void validate(FWViewBeanInterface viewBean, boolean isUpdate) throws Exception {

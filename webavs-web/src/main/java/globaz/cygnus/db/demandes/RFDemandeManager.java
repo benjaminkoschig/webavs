@@ -43,6 +43,7 @@ public class RFDemandeManager extends BManager {
     private String[] forIdsDecision = null;
     private List<String> forIdsDemande = null;
     private transient String fromClause = null;
+    private String forIdDossier = "";
 
     /**
      * Crée une nouvelle instance de la classe RFDemandeManager.
@@ -262,6 +263,15 @@ public class RFDemandeManager extends BManager {
             sqlWhere.append(this._dbWriteNumeric(statement.getTransaction(), forIdProcess));
         }
 
+        if (!JadeStringUtil.isEmpty(forIdDossier)) {
+            if (sqlWhere.length() != 0) {
+                sqlWhere.append(" AND ");
+            }
+
+            sqlWhere.append(RFDemande.FIELDNAME_ID_DOSSIER
+                    + "=" + this._dbWriteNumeric(statement.getTransaction(), forIdDossier));
+        }
+
         return sqlWhere.toString();
     }
 
@@ -370,6 +380,10 @@ public class RFDemandeManager extends BManager {
 
     public void setForIdsDemande(List<String> forIdsDemande) {
         this.forIdsDemande = forIdsDemande;
+    }
+
+    public void setForIdDossier(String forIdDossier) {
+        this.forIdDossier = forIdDossier;
     }
 
 }

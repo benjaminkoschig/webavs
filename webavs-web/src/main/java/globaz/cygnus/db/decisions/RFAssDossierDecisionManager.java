@@ -17,6 +17,7 @@ public class RFAssDossierDecisionManager extends PRAbstractManager {
      */
     private static final long serialVersionUID = 1L;
     private String forIdDecision = "";
+    private String forIdDossier = "";
 
     /**
      * Crée une nouvelle instance de la classe LIDossiersJointTiersManager.
@@ -61,6 +62,15 @@ public class RFAssDossierDecisionManager extends PRAbstractManager {
                     + "=" + this._dbWriteNumeric(statement.getTransaction(), forIdDecision));
         }
 
+        if (!JadeStringUtil.isEmpty(forIdDossier)) {
+            if (sqlWhere.length() != 0) {
+                sqlWhere.append(" AND ");
+            }
+
+            sqlWhere.append(schema + RFAssDossierDecision.TABLE_NAME + "." + RFAssDossierDecision.FIELDNAME_ID_DOSSIER
+                    + "=" + this._dbWriteNumeric(statement.getTransaction(), forIdDossier));
+        }
+
         return sqlWhere.toString();
     }
 
@@ -97,6 +107,10 @@ public class RFAssDossierDecisionManager extends PRAbstractManager {
 
     public void setForIdDecision(String forIdDecision) {
         this.forIdDecision = forIdDecision;
+    }
+
+    public void setForIdDossier(String forIdDossier) {
+        this.forIdDossier = forIdDossier;
     }
 
 }

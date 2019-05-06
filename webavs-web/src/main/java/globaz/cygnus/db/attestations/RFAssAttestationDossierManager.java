@@ -33,6 +33,8 @@ public class RFAssAttestationDossierManager extends PRAbstractManager {
 
     private String forOrderBy = "";
 
+    private String forIdDossier = "";
+
     // ~ Constructors
     // ---------------------------------------------------------------------------------------------------
 
@@ -70,6 +72,25 @@ public class RFAssAttestationDossierManager extends PRAbstractManager {
     }
 
     /**
+     * Redéfinition de la méthode _getWhere du parent afin de générer le WHERE de la requête en fonction des besoins
+     *
+     * @param statement
+     */
+    @Override
+    protected String _getWhere(BStatement statement) {
+
+        StringBuilder sqlWhere = new StringBuilder();
+
+        if (!JadeStringUtil.isEmpty(forIdDossier)) {
+
+            sqlWhere.append(RFAssAttestationDossier.FIELDNAME_ID_DOSSIER
+                    + "=" + this._dbWriteNumeric(statement.getTransaction(), forIdDossier));
+        }
+
+        return sqlWhere.toString();
+    }
+
+    /**
      * Définition de l'entité (RFAssAttestationDossier)
      */
     @Override
@@ -97,5 +118,9 @@ public class RFAssAttestationDossierManager extends PRAbstractManager {
 
     public void setFromClause(String fromClause) {
         this.fromClause = fromClause;
+    }
+
+    public void setForIdDossier(String forIdDossier) {
+        this.forIdDossier = forIdDossier;
     }
 }
