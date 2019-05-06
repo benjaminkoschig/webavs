@@ -99,9 +99,13 @@
 			<search-group operator="AND">
 				<search-field name="forRecordNumber" field-ref="recordNumber" operation="EQUALS"/>
 				<search-field name="forTypeAnnonce" field-ref="typeAnnonce" operation="EQUALS"/>
+			<search-group operator="OR">
 				<search-field name="forCodeRetour" field-ref="codeRetour" operation="NOT_EQUALS"/>
+				<search-field name="forEtatAnnonce" field-ref="etat" operation="EQUALS"/>
+			</search-group>
 			</search-group>
 		</search-definition>
+
 		
 		<search-definition name="doublon68c">
 			<search-group operator="AND">

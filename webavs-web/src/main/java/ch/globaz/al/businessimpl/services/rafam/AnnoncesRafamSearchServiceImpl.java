@@ -257,6 +257,7 @@ public class AnnoncesRafamSearchServiceImpl extends ALAbstractBusinessServiceImp
                 search68c.setForRecordNumber(annonce68ab.getRecordNumber());
                 search68c.setForTypeAnnonce(RafamTypeAnnonce._68C_ANNULATION.getCode());
                 search68c.setForCodeRetour(RafamReturnCode.REJETEE.getCode()); // NOT_EQUALS dans le xml
+                search68c.setForEtatAnnonce(RafamEtatAnnonce.ARCHIVE.getCS());
                 search68c.setDefinedSearchSize(JadeAbstractSearchModel.SIZE_NOLIMIT);
                 search68c.setWhereKey("lastActive68c");
                 search68c = ALServiceLocator.getAnnonceRafamModelService().search(search68c);
