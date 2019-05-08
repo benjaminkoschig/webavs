@@ -948,7 +948,7 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
             }
 
             //
-            // Compensation des prestations de genre Standard (COMPCIAB) :
+            // Compensation des prestations de genre Complément (COMPCIAB) :
             //
             // /////////////////////////////////////////////////////////////////////////
 
@@ -962,7 +962,7 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
 
                 FWCurrency plusPetitDesMontantAbs = null;
                 // prendre le plus petit des montant en val. abs
-                if (ci.montantTotPrestations.montantAPG.compareTo(ci.montantTotRestitutions.montantCOMPCIAB) < 0) {
+                if (ci.montantTotPrestations.montantCOMPCIAB.compareTo(ci.montantTotRestitutions.montantCOMPCIAB) < 0) {
                     plusPetitDesMontantAbs = ci.montantTotPrestations.montantCOMPCIAB;
                 } else {
                     plusPetitDesMontantAbs = ci.montantTotRestitutions.montantCOMPCIAB;
@@ -2249,14 +2249,14 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
                                     .getRubriquePersonnelImpotSource(), compteAnnexeAPG.getIdCompteAnnexe(), sectionRestitution.getIdSection(),
                             null);
 
-                    mntIS.add(Montants.TYPE_COMPCIAB, montantAssure);
+                    mntISRestit.add(Montants.TYPE_COMPCIAB, montantAssure);
                 }
                 if ((montantIndependant != null) && !montantIndependant.isZero()) {
                     doEcriture(compta, montantIndependant.toString(), mapComplementBean.get(typeComplement.canton)
                                     .getRubriquePersonnelImpotSource(), compteAnnexeAPG.getIdCompteAnnexe(), sectionRestitution.getIdSection(),
                             null);
 
-                    mntIS.add(Montants.TYPE_COMPCIAB, montantIndependant);
+                    mntISRestit.add(Montants.TYPE_COMPCIAB, montantIndependant);
                 }
             }
 
