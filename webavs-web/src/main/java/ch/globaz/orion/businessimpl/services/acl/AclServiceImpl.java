@@ -54,34 +54,12 @@ public class AclServiceImpl {
         acl.setNouveauNumero(annonceCollaborateur.getNouveauNumeroAvs());
         acl.setNoEmploye(annonceCollaborateur.getNoEmploye());
         acl.setNoSuccursale(annonceCollaborateur.getNoSuccursale());
-        acl.setDateNaissance(AclServiceImpl.parseDateNaiss(annonceCollaborateur.getDateNaissanceEmploye()));
-        acl.setNomEmploye(annonceCollaborateur.getNomEmploye());
-        acl.setPrenomEmploye(annonceCollaborateur.getPrenomEmploye());
-        acl.setSexeEmploye(parseSexeToNumSexe(annonceCollaborateur.getSexeEmploye()));
-        acl.setNationaliteEmploye(annonceCollaborateur.getNationaliteEmploye());
         return acl;
-    }
-
-    private static String parseSexeToNumSexe(String sexeEmploye) {
-        if ("F".equals(sexeEmploye)) {
-            return "2";
-        } else {
-            return "1";
-        }
     }
 
     private static String parseDate(XMLGregorianCalendar date) {
         return AclServiceImpl.mapLength(date.getDay()) + "." + AclServiceImpl.mapLength(date.getMonth()) + "."
                 + String.valueOf(date.getYear());
-
-    }
-
-    private static String parseDateNaiss(XMLGregorianCalendar date) {
-        if (date != null) {
-            return AclServiceImpl.mapLength(date.getDay()) + "." + AclServiceImpl.mapLength(date.getMonth()) + "."
-                    + String.valueOf(date.getYear());
-        }
-        return null;
 
     }
 
