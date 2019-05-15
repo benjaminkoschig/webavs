@@ -56,7 +56,8 @@ public class APSitProJointEmployeur extends BEntity {
                 + ", " + APSituationProfessionnelle.FIELDNAME_MONTANT_JOURNALIER_ACM_NE + ", "
                 + APSituationProfessionnelle.FIELDNAME_CS_ASSURANCE_ASSOCIATION + " , "
                 + APEmployeur.FIELDNAME_ID_TIERS + ", " + APSituationProfessionnelle.FIELDNAME_IDDOMAINE_PAIEMENT
-                + ", " + APSituationProfessionnelle.FIELDNAME_IDTIERS_PAIEMENT + " ";
+                + ", " + APSituationProfessionnelle.FIELDNAME_IDTIERS_PAIEMENT + " "
+                + ", " + APSituationProfessionnelle.FIELDNAME_ISINDEPENDANT + " ";
     }
 
     /**
@@ -156,6 +157,7 @@ public class APSitProJointEmployeur extends BEntity {
     private String montantJournalierAcmNe = "";
     private String idDomainePaiementEmployeur = "";
     private String idTiersPaiementEmployeur = "";
+    private Boolean isIndependant = Boolean.FALSE;
 
     // ~ Methods
     // --------------------------------------------------------------------------------------------------------
@@ -250,6 +252,7 @@ public class APSitProJointEmployeur extends BEntity {
         csAssuranceAssociation = statement.dbReadNumeric(APSituationProfessionnelle.FIELDNAME_CS_ASSURANCE_ASSOCIATION);
         idDomainePaiementEmployeur = statement.dbReadNumeric(APSituationProfessionnelle.FIELDNAME_IDDOMAINE_PAIEMENT);
         idTiersPaiementEmployeur = statement.dbReadNumeric(APSituationProfessionnelle.FIELDNAME_IDTIERS_PAIEMENT);
+        isIndependant = statement.dbReadBoolean(APSituationProfessionnelle.FIELDNAME_ISINDEPENDANT);
     }
 
     /**
@@ -456,5 +459,13 @@ public class APSitProJointEmployeur extends BEntity {
 
     public String getIdTiersPaiementEmployeur() {
         return idTiersPaiementEmployeur;
+    }
+
+    public Boolean getIndependant() {
+    return isIndependant;
+}
+
+    public void setIndependant(Boolean independant) {
+        isIndependant = independant;
     }
 }

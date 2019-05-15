@@ -122,7 +122,9 @@ public class APCalculateurComplement implements IAPPrestationCalculateur<APCalcu
                             sitProf.getAssociation().getCodesystemToString(),
                             sitProf.getId(), sitProf.getNom(),
                             sitProf.getIdAffilie(),
-                            sitProf.getTypeAffiliation());
+                            sitProf.getTypeAffiliation(),
+                            sitProf.getIndependant()
+                            );
                     prestationCalculeeAPersister.getRepartitionsPaiementMap().add(repartitionPaiementData);
 
                     // màj montant prestation
@@ -171,11 +173,10 @@ public class APCalculateurComplement implements IAPPrestationCalculateur<APCalcu
             final String idTiersEmployeur, final String idTiersPaiementEmployeur,
             final String idDomainePaiementEmployeur, final String typeAssociationAssurance,
             final String idSituationProfessionnelle, final String nom, final String idAffilie,
-            final String typeAffiliation) {
+            final String typeAffiliation, final Boolean isIndependant) {
 
         final BigDecimal montantNetRepartition;
-        if(IAFAffiliation.TYPE_AFFILI_INDEP.equals(typeAffiliation)
-                || IAFAffiliation.TYPE_AFFILI_INDEP_EMPLOY.equals(typeAffiliation)) {
+        if(isIndependant) {
             montantNetRepartition = getMontantNetRepartitionIndependant(montantBrutRepartition,
                     cotisationAvs.getMontantCotisation(), cotisationAc.getMontantCotisation());
         } else {
@@ -188,8 +189,7 @@ public class APCalculateurComplement implements IAPPrestationCalculateur<APCalcu
                 montantNetRepartition, typePrestation, typePaiement, idTiersEmployeur, idTiersPaiementEmployeur,
                 idDomainePaiementEmployeur, typeAssociationAssurance, idSituationProfessionnelle, nom, idAffilie);
 
-        if(IAFAffiliation.TYPE_AFFILI_INDEP.equals(typeAffiliation)
-                || IAFAffiliation.TYPE_AFFILI_INDEP_EMPLOY.equals(typeAffiliation)) {
+        if(isIndependant) {
             cotisationAvs.setMontantCotisation(cotisationAvs.getMontantCotisation().negate());
             repartition.getCotisations().add(cotisationAvs);
         } else {
@@ -309,7 +309,8 @@ public class APCalculateurComplement implements IAPPrestationCalculateur<APCalcu
                                 apSitProJoiEmpEnt.getIdTiers(), apSitProJoiEmpEnt.getIdAffilie(),
                                 apSitProJoiEmpEnt.getNom(), apSitProJoiEmpEnt.getIdTiersPaiementEmployeur(),
                                 apSitProJoiEmpEnt.getIdDomainePaiementEmployeur(),
-                                donneesPersistancePourCalcul.getMapTypeAffiliation().get(apSitProJoiEmpEnt.getIdSitPro()));
+                                donneesPersistancePourCalcul.getMapTypeAffiliation().get(apSitProJoiEmpEnt.getIdSitPro()),
+                                apSitProJoiEmpEnt.getIndependant());
                         sitProf.setCanton(donneesPersistancePourCalcul.getMapCanton().get(apSitProJoiEmpEnt.getIdSitPro()));
                         prestationStandard.getSituationProfessionnelle().put(
                                 apSitProJoiEmpEnt.getIdSitPro(),sitProf

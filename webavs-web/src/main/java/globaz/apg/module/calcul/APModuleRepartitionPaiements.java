@@ -614,6 +614,12 @@ public class APModuleRepartitionPaiements {
                             APModuleRepartitionPaiements.SOUSTRACTION);
                 }
 
+                // ajouter l'imposition a la source
+                if (prestation.getResultatCalcul().isSoumisImpotSource()) {
+                    ajouterLigneImpotSource(session, prestation, repa, prestation.getResultatCalcul().getIdTauxImposition(),
+                            prestation.getResultatCalcul().getTauxImposition());
+                }
+
                 // InfoRom557 pas de cotisations LFA pour les travailleurs agricoles si versement à l'assuré
                 // if (isAjouterLFA) {
                 // // il s'agit d'une exploitation agricole, on ajoute la LFA

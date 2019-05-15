@@ -18,10 +18,11 @@ public class APSituationProfessionnelleCanton {
     private String idDomainePaiementEmployeur = "";
     private ECanton canton = null;
     private String typeAffiliation = "";
+    private Boolean isIndependant = null;
 
     public APSituationProfessionnelleCanton(APAssuranceTypeAssociation association, String dateDebut, String dateFin,
             BigDecimal montantJournalier, String id, String idTiersEmployeur, String idAffilie, String nom,
-            String idTiersPaiementEmployeur, String idDomainePaiementEmployeur, String typeAffiliation) {
+            String idTiersPaiementEmployeur, String idDomainePaiementEmployeur, String typeAffiliation, Boolean isIndependant) {
         super();
         this.association = association;
         this.dateDebut = dateDebut;
@@ -34,6 +35,7 @@ public class APSituationProfessionnelleCanton {
         this.idTiersPaiementEmployeur = idTiersPaiementEmployeur;
         this.idDomainePaiementEmployeur = idDomainePaiementEmployeur;
         this.typeAffiliation = typeAffiliation;
+        this.isIndependant = isIndependant;
     }
 
     public APAssuranceTypeAssociation getAssociation() {
@@ -130,5 +132,13 @@ public class APSituationProfessionnelleCanton {
 
     private void setTypeAffiliation(String typeAffiliation) {
         this.typeAffiliation = typeAffiliation;
+    }
+
+    public Boolean getIndependant() {
+        return isIndependant;
+    }
+
+    public void setIndependant(Boolean independant) {
+        isIndependant = independant;
     }
 }
