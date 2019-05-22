@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import globaz.apg.db.droits.APDroitLAPG;
+import globaz.apg.db.prestation.APCotisation;
 import globaz.apg.db.prestation.APPrestation;
 import globaz.apg.db.prestation.APRepartitionJointPrestation;
 import globaz.apg.module.calcul.APSituationProfessionnelleCanton;
@@ -22,6 +23,8 @@ public class APCalculateurComplementDonneeDomaine {
 
     private Map<String, BigDecimal[]> taux = new HashMap<String, BigDecimal[]>();
     private Map<EMontantsMax, BigDecimal> montantsMax;
+
+    private Map<APRepartitionJointPrestation,Map<String, APCotisation>> mapCotisation = new HashMap<>();
     
     public APCalculateurComplementDonneeDomaine(APPrestation prestation) {
         this.prestation = prestation;
@@ -74,5 +77,12 @@ public class APCalculateurComplementDonneeDomaine {
     public void setMontantsMax(Map<EMontantsMax, BigDecimal> montantsMax) {
         this.montantsMax = montantsMax;
     }
-    
+
+    public Map<APRepartitionJointPrestation, Map<String, APCotisation>> getMapCotisation() {
+        return mapCotisation;
+    }
+
+    public void setMapCotisation (Map<APRepartitionJointPrestation,Map<String, APCotisation>> mapCotisation) {
+        this.mapCotisation = mapCotisation;
+    }
 }

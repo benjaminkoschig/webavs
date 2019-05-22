@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import globaz.apg.db.droits.APDroitLAPG;
 import globaz.apg.db.droits.APSitProJointEmployeur;
+import globaz.apg.db.prestation.APCotisation;
 import globaz.apg.db.prestation.APPrestation;
 import globaz.apg.db.prestation.APRepartitionJointPrestation;
 import globaz.apg.module.calcul.APRepartitionPaiementData;
@@ -28,6 +29,7 @@ public class APCalculateurComplementDonneesPersistence {
     private List<APRepartitionJointPrestation> prestationJointRepartitions = null;
     private List<APSitProJointEmployeur> situationProfessionnelleEmployeur = null;
     private List<APPrestation> listPrestationStandard;
+    private List<APCotisation> listCotisation = null;
     private APDroitLAPG droit;
 
     private Map<String, String> mapTypeAffiliation = new HashMap<>();
@@ -60,6 +62,14 @@ public class APCalculateurComplementDonneesPersistence {
     
     public void setListPrestationStandard(List<APPrestation> listPrestationStandard) {
         this.listPrestationStandard = listPrestationStandard;
+    }
+
+    public List<APCotisation> getListCotisation() {
+        return listCotisation;
+    }
+
+    public void setListCotisation(List<APCotisation> listCotisation) {
+        this.listCotisation = listCotisation;
     }
     
     public String getIdDroit() {

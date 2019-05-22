@@ -104,13 +104,35 @@ public class APCalculateurComplement implements IAPPrestationCalculateur<APCalcu
 
                     BigDecimal montantBrutRepartition = getMontantBrutRepartition(
                             montantBrutReparti, prestationCalculeeAPersister.getNombreDeJoursSoldes());
-                    final BigDecimal[] tauxAvsAcFne = prestationStandard.getTaux().get(sitProf.getId());
+                    final BigDecimal[] tauxAvsAc = prestationStandard.getTaux().get(sitProf.getId());
+
+                    APCotisation cotisationAvsStandardParitaire = getCotisationFromMap(prestationStandard.getMapCotisation().get(repartition), APProperties.ASSURANCE_AVS_PAR_ID.getValue());
+                    APCotisation cotisationAvsStandardPersonnelle = getCotisationFromMap(prestationStandard.getMapCotisation().get(repartition), APProperties.ASSURANCE_AVS_PER_ID.getValue());
+                    APCotisation cotisationAcStandardParitaire = getCotisationFromMap(prestationStandard.getMapCotisation().get(repartition), APProperties.ASSURANCE_AC_PAR_ID.getValue());
+                    APCotisation cotisationAcStandardPersonnelle = getCotisationFromMap(prestationStandard.getMapCotisation().get(repartition), APProperties.ASSURANCE_AC_PER_ID.getValue());
+
+                    APCotisation cotisationAvsStandard = null;
+                    APCotisation cotisationAcStandard = null;
 
                     // Création des cotisations
-                    final APCotisationData cotisationAvs = creerCotisation(montantBrutRepartition, tauxAvsAcFne[0],
-                            APProperties.ASSURANCE_AVS_PAR_ID.getValue());
-                    final APCotisationData cotisationAc = creerCotisation(montantBrutRepartition, tauxAvsAcFne[1],
-                            APProperties.ASSURANCE_AC_PAR_ID.getValue());
+                    APCotisationData cotisationAvs = null;
+                    APCotisationData cotisationAc = null;
+
+                    if(cotisationAvsStandardParitaire != null) {
+                        cotisationAvsStandard = cotisationAvsStandardParitaire;
+                        cotisationAvs = creerCotisation(montantBrutRepartition, tauxAvsAc[0], APProperties.ASSURANCE_AVS_PAR_ID.getValue());
+                    } else if (cotisationAvsStandardPersonnelle != null){
+                        cotisationAvsStandard = cotisationAvsStandardPersonnelle;
+                        cotisationAvs = creerCotisation(montantBrutRepartition, tauxAvsAc[2], APProperties.ASSURANCE_AVS_PER_ID.getValue());
+                    }
+
+                    if(cotisationAcStandardParitaire != null) {
+                        cotisationAcStandard = cotisationAcStandardParitaire;
+                        cotisationAc = creerCotisation(montantBrutRepartition, tauxAvsAc[1], APProperties.ASSURANCE_AC_PAR_ID.getValue());
+                    } else if (cotisationAcStandardPersonnelle != null){
+                        cotisationAcStandard = cotisationAcStandardPersonnelle;
+                        cotisationAc = creerCotisation(montantBrutRepartition, tauxAvsAc[3], APProperties.ASSURANCE_AC_PER_ID.getValue());
+                    }
 
                     // création de la répartition
                     montantBrutRepartition = arrondir(montantBrutRepartition);
@@ -123,7 +145,9 @@ public class APCalculateurComplement implements IAPPrestationCalculateur<APCalcu
                             sitProf.getId(), sitProf.getNom(),
                             sitProf.getIdAffilie(),
                             sitProf.getTypeAffiliation(),
-                            sitProf.getIndependant()
+                            sitProf.getIndependant(),
+                            cotisationAvsStandard,
+                            cotisationAcStandard
                             );
                     prestationCalculeeAPersister.getRepartitionsPaiementMap().add(repartitionPaiementData);
 
@@ -173,15 +197,24 @@ public class APCalculateurComplement implements IAPPrestationCalculateur<APCalcu
             final String idTiersEmployeur, final String idTiersPaiementEmployeur,
             final String idDomainePaiementEmployeur, final String typeAssociationAssurance,
             final String idSituationProfessionnelle, final String nom, final String idAffilie,
-            final String typeAffiliation, final Boolean isIndependant) {
+            final String typeAffiliation, final Boolean isIndependant,
+            final APCotisation cotisationAvsStandard, final APCotisation cotisationAcStandard) {
 
-        final BigDecimal montantNetRepartition;
-        if(isIndependant) {
-            montantNetRepartition = getMontantNetRepartitionIndependant(montantBrutRepartition,
-                    cotisationAvs.getMontantCotisation(), cotisationAc.getMontantCotisation());
-        } else {
-            montantNetRepartition = getMontantNetRepartition(montantBrutRepartition,
-                    cotisationAvs.getMontantCotisation(), cotisationAc.getMontantCotisation());
+        BigDecimal montantNetRepartition;
+
+        BigDecimal cotFinalAvs = null;
+        BigDecimal cotFinalAc = null;
+        cotFinalAvs = getCotisationFinal(cotisationAvs, cotisationAvsStandard);
+        cotFinalAc = getCotisationFinal(cotisationAc, cotisationAcStandard);
+
+        montantNetRepartition = montantBrutRepartition;
+        if(cotFinalAvs != null) {
+            montantNetRepartition = montantNetRepartition.add(cotFinalAvs);
+            cotisationAvs.setMontantCotisation(cotFinalAvs);
+        }
+        if(cotFinalAc != null) {
+            montantNetRepartition = montantNetRepartition.add(cotFinalAc);
+            cotisationAc.setMontantCotisation(cotFinalAc);
         }
 
         // création de la répartition
@@ -189,18 +222,34 @@ public class APCalculateurComplement implements IAPPrestationCalculateur<APCalcu
                 montantNetRepartition, typePrestation, typePaiement, idTiersEmployeur, idTiersPaiementEmployeur,
                 idDomainePaiementEmployeur, typeAssociationAssurance, idSituationProfessionnelle, nom, idAffilie);
 
-        if(isIndependant) {
-            cotisationAvs.setMontantCotisation(cotisationAvs.getMontantCotisation().negate());
+        if(cotFinalAvs != null) {
             repartition.getCotisations().add(cotisationAvs);
-        } else {
-            repartition.getCotisations().add(cotisationAvs);
+        }
+
+        if(cotFinalAc != null) {
             repartition.getCotisations().add(cotisationAc);
         }
 
         return repartition;
 
     }
-    
+
+    private BigDecimal getCotisationFinal(APCotisationData cotisation, APCotisation cotisationStandard) {
+        if (cotisationStandard != null && cotisation != null) {
+            BigDecimal cotFinal;
+            if (new BigDecimal(cotisationStandard.getMontant()).compareTo(BigDecimal.ZERO) > 0) {
+                cotFinal = cotisation.getMontantCotisation();
+            } else {
+                cotFinal = cotisation.getMontantCotisation().negate();
+
+            }
+            cotFinal = arrondir(cotFinal);
+            return cotFinal;
+        }
+        return null;
+
+    }
+
     private BigDecimal getMontantBrutCotisation(final BigDecimal montantBrutRepartition, final BigDecimal taux) {
         final BigDecimal montantBrutCotisation = montantBrutRepartition.multiply(taux);
         return montantBrutCotisation;
@@ -210,21 +259,11 @@ public class APCalculateurComplement implements IAPPrestationCalculateur<APCalcu
         return montantJournalierAcmNe.multiply(new BigDecimal(nombreDeJoursSoldes));
     }
     
-    private BigDecimal getMontantNetRepartition(final BigDecimal montantBrutRepartition,
-            final BigDecimal montantCotisationAvs, final BigDecimal montantCotisationAc) {
-
-        final BigDecimal montantNetRepartition = montantBrutRepartition.add(montantCotisationAvs)
-                .add(montantCotisationAc);
-
-        return montantNetRepartition;
-    }
-
-    private BigDecimal getMontantNetRepartitionIndependant(final BigDecimal montantBrutRepartition,
-                                                final BigDecimal montantCotisationAvs, final BigDecimal montantCotisationAc) {
-
-        final BigDecimal montantNetRepartition = montantBrutRepartition.subtract(montantCotisationAvs);
-
-        return montantNetRepartition;
+    private APCotisation getCotisationFromMap(Map<String, APCotisation> mapCotisation, String idAssurance) {
+        if (mapCotisation != null && mapCotisation.get(idAssurance) != null) {
+            return mapCotisation.get(idAssurance);
+        }
+        return null;
     }
     
     /**
@@ -272,7 +311,7 @@ public class APCalculateurComplement implements IAPPrestationCalculateur<APCalcu
         for(APPrestation prestation : donneesPersistancePourCalcul.getListPrestationStandard()) {
             List<APRepartitionJointPrestation> repartitions = mapPrestations.get(prestation.getIdPrestationApg());
             if(repartitions != null) {
-                APCalculateurComplementDonneeDomaine donneeDomaine = new  APCalculateurComplementDonneeDomaine(prestation);
+                APCalculateurComplementDonneeDomaine donneeDomaine = new APCalculateurComplementDonneeDomaine(prestation);
                 donneeDomaine.setRepartitions(repartitions);
                 listePrestationsComplementDomaineConverties.add(donneeDomaine);
             }
@@ -322,6 +361,18 @@ public class APCalculateurComplement implements IAPPrestationCalculateur<APCalcu
                 }
             }
             prestationStandard.setDroit(donneesPersistancePourCalcul.getDroit());
+
+            for (APCotisation cotisation : donneesPersistancePourCalcul.getListCotisation()) {
+                for(APRepartitionJointPrestation prestation : prestationStandard.getRepartitions()) {
+                    if(prestation.getId().equals(cotisation.getIdRepartitionBeneficiairePaiement())) {
+                        if(prestationStandard.getMapCotisation().get(prestation) == null) {
+                            prestationStandard.getMapCotisation().put(prestation, new HashMap<>());
+                        }
+                        prestationStandard.getMapCotisation().get(prestation).put(cotisation.getIdExterne(), cotisation);
+                    }
+                }
+            }
+
         }
 
         return listePrestationsComplementDomaineConverties;
@@ -341,7 +392,7 @@ public class APCalculateurComplement implements IAPPrestationCalculateur<APCalcu
         return association;
     }
 
-    
+
     @Override
     public List<APPrestationCalculeeAPersister> domainToPersistence(List<APCalculateurComplementDonneesPersistence> resultat) throws Exception {
         List<APPrestationCalculeeAPersister> list = new ArrayList<APPrestationCalculeeAPersister>();

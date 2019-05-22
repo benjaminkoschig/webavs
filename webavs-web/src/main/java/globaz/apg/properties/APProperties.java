@@ -33,6 +33,20 @@ public enum APProperties implements IProperties {
         }
     },
 
+    ASSURANCE_AC_PER_ID("assurance.ac.personnelle.id", "Défini l'id de l'assurance (-> affiliation) AC paritaire") {
+        @Override
+        public boolean isValidValue(final String propertyValue) {
+            return CommonPropertiesUtils.isValidIntegerPropertyValue(propertyValue);
+        }
+    },
+
+    ASSURANCE_AVS_PER_ID("assurance.avsai.personnelle.id", "Défini l'id de l'assurance (-> affiliation) AVS paritaire") {
+        @Override
+        public boolean isValidValue(final String propertyValue) {
+            return CommonPropertiesUtils.isValidIntegerPropertyValue(propertyValue);
+        }
+    },
+
     ASSURANCE_FNE_ID("assurance.fne.id", "Défini l'id de l'assurance (-> affiliation) FNE") {
         @Override
         public boolean isValidValue(final String propertyValue) {

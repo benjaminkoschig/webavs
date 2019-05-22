@@ -1165,6 +1165,21 @@ public class APPrestationHelper extends PRAbstractHelper {
 
         donneesPersistence.setPrestationJointRepartitions(repartitionJointRepartitionsFiltree);
 
+        APCotisationManager cotisations = new APCotisationManager();
+
+        List<APCotisation> listCotisation = new ArrayList<>();
+
+        for(APRepartitionJointPrestation repartition : repartitionJointRepartitionsFiltree) {
+            cotisations.setSession(session);
+            cotisations.setForIdRepartitionBeneficiairePaiement(repartition.getId());
+            cotisations.find(transaction);
+            for (int i = 0; i < cotisations.size(); i++) {
+                APCotisation cotisation = (APCotisation) cotisations.get(i);
+                listCotisation.add(cotisation);
+            }
+        }
+        donneesPersistence.setListCotisation(listCotisation);
+
         // Situations professionnelles
         final List<APSitProJointEmployeur> apSitProJoiEmpList = servicePersistance
                 .getSituationProfJointEmployeur(session, transaction, idDroit);
@@ -1189,19 +1204,17 @@ public class APPrestationHelper extends PRAbstractHelper {
 
             donneesPersistence.getMapTypeAffiliation().put(apSitProJoiEmp.getIdSitPro(), typeAffiliation);
 
-            // {taux AVS par, taux AC par,taux FNE par}>
-            final BigDecimal[] taux = new BigDecimal[3];
+            // {taux AVS par, taux AC par}>
+            final BigDecimal[] taux = new BigDecimal[4];
 
             taux[0] = getTauxAssurance(APProperties.ASSURANCE_AVS_PAR_ID.getValue(), dateDebutPrestationStandard,
                     session);
             taux[1] = getTauxAssurance(APProperties.ASSURANCE_AC_PAR_ID.getValue(), dateDebutPrestationStandard,
                     session);
-
-            // taux particulier pour l'association FNE
-            if (APAssuranceTypeAssociation.FNE.isCodeSystemEqual(apSitProJoiEmp.getCsAssuranceAssociation())) {
-                taux[2] = getTauxAssurance(APProperties.ASSURANCE_FNE_ID.getValue(), dateDebutPrestationStandard,
-                        session);
-            }
+            taux[2] = getTauxAssurance(APProperties.ASSURANCE_AVS_PER_ID.getValue(), dateDebutPrestationStandard,
+                    session);
+            taux[3] = getTauxAssurance(APProperties.ASSURANCE_AC_PER_ID.getValue(), dateDebutPrestationStandard,
+                    session);
 
             donneesPersistence.getTaux().put(apSitProJoiEmp.getIdSitPro(), taux);
 
