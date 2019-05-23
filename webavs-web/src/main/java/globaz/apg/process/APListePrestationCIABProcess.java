@@ -30,7 +30,7 @@ import globaz.jade.properties.JadePropertiesService;
 import globaz.jade.publish.client.JadePublishDocument;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
 import globaz.jade.publish.document.JadePublishDocumentInfoProvider;
-import globaz.naos.process.statOfas.AFStatistiquesOfasProcess;
+import globaz.phenix.db.taxation.definitive.CPTaxationDefinitiveManager;
 import globaz.pyxis.util.TIToolBox;
 
 import java.io.IOException;
@@ -458,19 +458,17 @@ public class APListePrestationCIABProcess extends BProcess {
 
         try {
             stmt = JadeThread.currentJdbcConnection().prepareStatement(sql);
-            stmt.setString(1, dateDebutAMJ);
-            stmt.setString(2, dateFinAMJ);
-            stmt.setInt(3, APTypeDePrestation.COMPCIAB.getCodesystem());
-            stmt.setInt(4, APTypeDePrestation.JOUR_ISOLE.getCodesystem());
-            stmt.setString(5, idAssuranceParitaireJU);
-            stmt.setString(6, idAssurancePersonnelJU);
-            stmt.setString(7, idAssuranceParitaireBE);
-            stmt.setString(8, idAssurancePersonnelBE);
-            stmt.setString(9, idAssuranceParitaireJU);
-            stmt.setString(10, idAssuranceParitaireBE);
-            stmt.setString(11, idAssurancePersonnelJU);
-            stmt.setString(12, idAssurancePersonnelBE);
+            stmt.setString(1, CPTaxationDefinitiveManager.CS_ETAT_PRESTATION_DEFINITIF);
+            stmt.setString(2, dateDebutAMJ);
+            stmt.setString(3, dateFinAMJ);
+            stmt.setInt(4, APTypeDePrestation.COMPCIAB.getCodesystem());
+            stmt.setInt(5, APTypeDePrestation.JOUR_ISOLE.getCodesystem());
+            stmt.setString(6, idAssuranceParitaireJU);
+            stmt.setString(7, idAssurancePersonnelJU);
+            stmt.setString(8, idAssuranceParitaireBE);
+            stmt.setString(9, idAssurancePersonnelBE);
             resultSet = stmt.executeQuery();
+
 
             ResultSetMetaData md = resultSet.getMetaData();
             int columns = md.getColumnCount();
@@ -491,9 +489,10 @@ public class APListePrestationCIABProcess extends BProcess {
             if (stmt != null) {
                 try {
                     stmt.close();
+                    resultSet.close();
                 } catch (SQLException e) {
-                    JadeLogger.warn(AFStatistiquesOfasProcess.class,
-                            "Problem to close statement in AFStatistiquesOfasProcess, reason : " + e.toString());
+                    JadeLogger.warn(APListePrestationCIABProcess.class,
+                            "Problem to close statement in APListePrestationCIABProcess, reason : " + e.toString());
                 }
             }
 
@@ -550,7 +549,7 @@ public class APListePrestationCIABProcess extends BProcess {
         String langueUser = getSession().getIdLangue();
 
         // Création des conditions
-        String sqlWhere = " where pres.VHTETA = 52006005 ";
+        String sqlWhere = " where pres.VHTETA = ? ";
 
         // Selon le selecteur, la condition change
         // Le selecteur est désactivé actuellement, seul Prestation par période est activé.
@@ -567,9 +566,10 @@ public class APListePrestationCIABProcess extends BProcess {
 
         sqlWhere += " AND pres.VHTGEN IN (?,?) ";
         sqlWhere += " AND afc.MBIASS IN (?,?,?,?) ";
-        sqlWhere += " AND pres.VHDDEB >= afc.MEDDEB ";
-        sqlWhere += " AND (( repa.VIMMOB < repa.VIMMON AND afc.MBIASS IN (?,?) ) ";
-        sqlWhere += " OR ( repa.VIMMOB > repa.VIMMON AND afc.MBIASS IN (?,?) )) ";
+        sqlWhere += " AND ((pres.VHDFIN <= afc.MEDFIN or afc.MEDFIN = 0) AND pres.VHDDEB >= afc.MEDDEB)";
+//        sqlWhere += " AND pres.VHDDEB >= afc.MEDDEB ";
+//        sqlWhere += " AND (( repa.VIMMOB < repa.VIMMON AND afc.MBIASS IN (?,?) ) ";
+//        sqlWhere += " OR ( repa.VIMMOB > repa.VIMMON AND afc.MBIASS IN (?,?) )) ";
 
 
        String sql = " select affi.MALNAF as "
