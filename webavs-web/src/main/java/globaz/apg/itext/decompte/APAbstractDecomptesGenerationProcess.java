@@ -1879,7 +1879,12 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                 montantJournalier = montantJournalier.setScale(2, BigDecimal.ROUND_HALF_UP);
 
                 // Récupération du texte dans le catalogue
-                texteDetailJournalier = document.getTextes(3).getTexte(44).getDescription();
+                if(APTypeDeDecompte.JOUR_ISOLE.equals(decompteCourant.getTypeDeDecompte())
+                    || APTypeDePrestation.COMPCIAB.isCodeSystemEqual(repartition.getGenrePrestationPrestation())) {
+                    texteDetailJournalier = document.getTextes(3).getTexte(50).getDescription();
+                } else {
+                    texteDetailJournalier = document.getTextes(3).getTexte(44).getDescription();
+                }
                 // Insertion du nombre de jours dans le texte
                 if (repartition.getGenreService().equals(APGenreServiceAPG.DecesDemiJour.getCodeSysteme())) {
                     texteDetailJournalier = PRStringUtils.replaceString(texteDetailJournalier, "{nbJours}",
