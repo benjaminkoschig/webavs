@@ -428,6 +428,12 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                                     + APApplication.APPLICATION_APG_REP, '\\', '/')
                             + "/" + "model" + "/" + "AP_DECOMPTE_DETAIL2.jasper");
 
+            parametres.put("PARAM_AP_DECOMPTE_DETAIL3",
+                    JadeStringUtil
+                            .change(getSession().getApplication().getExternalModelPath()
+                                    + APApplication.APPLICATION_APG_REP, '\\', '/')
+                            + "/" + "model" + "/" + "AP_DECOMPTE_DETAIL3.jasper");
+
             // remplissage de l'entête
             final CaisseHeaderReportBean crBean = new CaisseHeaderReportBean();
             String noAffilie = "";
@@ -999,20 +1005,19 @@ public abstract class APAbstractDecomptesGenerationProcess extends FWIDocumentMa
                 final PRDemande demande = droit.loadDemande();
                 tiers = PRTiersHelper.getTiersParId(getSession(), demande.getIdTiers());
 
-                String infoSup = "";
                 if (APTypeDePrestation.JOUR_ISOLE.isCodeSystemEqual(repartition.getGenrePrestationPrestation())) {
-                    infoSup = "\n" + APPrestationLibelleCodeSystem.getLibelleJourIsole(getSession(),
-                            repartition.getGenreService(), getCodeIsoLangue());
+                    champs.put(APAbstractDecomptesGenerationProcess.PARAMETER_PRESTATION_COMPLEMENTAIRE, APPrestationLibelleCodeSystem.getLibelleJourIsole(getSession(),
+                            repartition.getGenreService(), getCodeIsoLangue()));
                 } else if (APTypeDePrestation.COMPCIAB.isCodeSystemEqual(repartition.getGenrePrestationPrestation())) {
-                    infoSup = "\n"
-                            + APPrestationLibelleCodeSystem.getLibelleComplement(getSession(), getCodeIsoLangue());
+                    champs.put(APAbstractDecomptesGenerationProcess.PARAMETER_PRESTATION_COMPLEMENTAIRE, APPrestationLibelleCodeSystem.getLibelleComplement(getSession(),
+                            getCodeIsoLangue()));
                 }
 
                 champs.put("FIELD_ASSURE",
                         PRStringUtils.replaceString(document.getTextes(3).getTexte(13).getDescription(), "{nomAVS}",
                                 tiers.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL) + " "
                                         + tiers.getProperty(PRTiersWrapper.PROPERTY_NOM) + " "
-                                        + tiers.getProperty(PRTiersWrapper.PROPERTY_PRENOM) + infoSup));
+                                        + tiers.getProperty(PRTiersWrapper.PROPERTY_PRENOM)));
 
                 // 2. les infos sur la prestation
                 champs.put("FIELD_DETAIL_PERIODE",

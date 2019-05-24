@@ -56,6 +56,7 @@
 	<parameter name="P_HEADER_NO_AFFILIE_PAGE2" isForPrompting="true" class="java.lang.String"/>
 	<parameter name="P_HEADER_NOM_PAGE2" isForPrompting="true" class="java.lang.String"/>
 	<parameter name="PARAM_SALUTATIONS" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="PARAM_AP_DECOMPTE_DETAIL3" isForPrompting="true" class="java.lang.String"/>
 	<field name="FIELD_ASSURE" class="java.lang.String"/>
 	<field name="FIELD_DETAIL_PERIODE" class="java.lang.String"/>
 	<field name="FIELD_MONTANT_APG" class="java.lang.String"/>
@@ -112,6 +113,7 @@
 	<field name="FIELD_DETAIL_COTISATIONS_FNE" class="java.lang.String"/>
 	<field name="FIELD_TEXTE_PAS_SOUMIS_LAA" class="java.lang.String"/>
 	<field name="FIELD_APG_FED" class="java.lang.String"/>
+	<field name="FIELD_COMPLEMENT" class="java.lang.String"/>
 	<variable name="MY_PAGE_NUMBER" class="java.lang.String" resetType="Page" calculation="Nothing">
 		<variableExpression><![CDATA[$V{PAGE_NUMBER}.toString()]]></variableExpression>
 	</variable>
@@ -615,6 +617,9 @@
 					</subreportParameter>
 					<subreportParameter  name="PARAM_FIELD_APG_FED">
 						<subreportParameterExpression><![CDATA[$F{FIELD_APG_FED}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="PARAM_AP_DECOMPTE_DETAIL3">
+						<subreportParameterExpression><![CDATA[$P{PARAM_AP_DECOMPTE_DETAIL3}]]></subreportParameterExpression>
 					</subreportParameter>
 					<subreportExpression  class="java.lang.String"><![CDATA[$P{PARAM_AP_DECOMPTE_DETAIL}]]></subreportExpression>
 				</subreport>
