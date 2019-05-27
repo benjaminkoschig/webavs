@@ -464,9 +464,13 @@ public class APListePrestationCIABProcess extends BProcess {
             stmt.setInt(4, APTypeDePrestation.COMPCIAB.getCodesystem());
             stmt.setInt(5, APTypeDePrestation.JOUR_ISOLE.getCodesystem());
             stmt.setString(6, idAssuranceParitaireJU);
-            stmt.setString(7, idAssurancePersonnelJU);
-            stmt.setString(8, idAssuranceParitaireBE);
+            stmt.setString(7, idAssuranceParitaireBE);
+            stmt.setString(8, idAssurancePersonnelJU);
             stmt.setString(9, idAssurancePersonnelBE);
+            stmt.setString(10, idAssurancePersonnelJU);
+            stmt.setString(11, idAssurancePersonnelBE);
+            stmt.setString(12, idAssuranceParitaireJU);
+            stmt.setString(13, idAssuranceParitaireBE);
             resultSet = stmt.executeQuery();
 
 
@@ -565,8 +569,13 @@ public class APListePrestationCIABProcess extends BProcess {
         }
 
         sqlWhere += " AND pres.VHTGEN IN (?,?) ";
-        sqlWhere += " AND afc.MBIASS IN (?,?,?,?) ";
+        //sqlWhere += " AND afc.MBIASS IN (?,?,?,?) ";
         sqlWhere += " AND ((pres.VHDFIN <= afc.MEDFIN or afc.MEDFIN = 0) AND pres.VHDDEB >= afc.MEDDEB)";
+        sqlWhere += " AND ((( repa.VIMMOB < repa.VIMMON AND afc.MBIASS IN (?, ?))";
+        sqlWhere += "   OR ( repa.VIMMOB > repa.VIMMON AND afc.MBIASS IN (?, ?)) AND (repa.VIMMON > 0))";
+        sqlWhere += " OR (((repa.VIMMOB < repa.VIMMON AND afc.MBIASS IN (?, ?)) OR ( repa.VIMMOB > repa.VIMMON AND afc.MBIASS IN (?, ?)))";
+        sqlWhere += "   AND (repa.VIMMON < 0)))";
+
 //        sqlWhere += " AND pres.VHDDEB >= afc.MEDDEB ";
 //        sqlWhere += " AND (( repa.VIMMOB < repa.VIMMON AND afc.MBIASS IN (?,?) ) ";
 //        sqlWhere += " OR ( repa.VIMMOB > repa.VIMMON AND afc.MBIASS IN (?,?) )) ";
