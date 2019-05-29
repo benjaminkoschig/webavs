@@ -1224,14 +1224,18 @@ public class APPrestationHelper extends PRAbstractHelper {
                     apSitProJoiEmp.getIdAffilie(), session);
             String idAssuranceEmployeur = null;
             for (IAFAssurance assurance : listAssurance) {
-                if (assurance.getAssuranceId().equals(idAssuranceParitaireBE)) {
-                    idAssuranceEmployeur = idAssuranceParitaireBE;
-                } else if (assurance.getAssuranceId().equals(idAssurancePersonnelBE)) {
-                    idAssuranceEmployeur = idAssurancePersonnelBE;
-                } else if (assurance.getAssuranceId().equals(idAssuranceParitaireJU)) {
-                    idAssuranceEmployeur = idAssuranceParitaireJU;
-                } else if (assurance.getAssuranceId().equals(idAssurancePersonnelJU)) {
-                    idAssuranceEmployeur = idAssurancePersonnelJU;
+                if(apSitProJoiEmp.getIndependant()){
+                    if (assurance.getAssuranceId().equals(idAssurancePersonnelBE)) {
+                        idAssuranceEmployeur = idAssurancePersonnelBE;
+                    } else if (assurance.getAssuranceId().equals(idAssurancePersonnelJU)) {
+                        idAssuranceEmployeur = idAssurancePersonnelJU;
+                    }
+                }else{
+                    if (assurance.getAssuranceId().equals(idAssuranceParitaireBE)) {
+                        idAssuranceEmployeur = idAssuranceParitaireBE;
+                    } else if (assurance.getAssuranceId().equals(idAssuranceParitaireJU)) {
+                        idAssuranceEmployeur = idAssuranceParitaireJU;
+                    }
                 }
             }
 

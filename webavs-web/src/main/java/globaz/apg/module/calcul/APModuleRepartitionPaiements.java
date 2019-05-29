@@ -1874,10 +1874,15 @@ public class APModuleRepartitionPaiements {
             List<IAFAssurance> listAssurance = APRechercherAssuranceFromDroitCotisationService.rechercher(prestation.getIdDroit(),
                     employeur.getIdAffilie(), session);
             for (IAFAssurance assurance : listAssurance) {
-                if (assurance.getAssuranceId().equals(idAssuranceParitaireJU)
-                        || assurance.getAssuranceId().equals(idAssurancePersonnelJU)
-                        || assurance.getAssuranceId().equals(idAssuranceParitaireBE)
+                if(employeur.isIndependant()){
+                    // Concerne uniquement les employeurs indépendant cotisants à une assurance personnelle
+                    if(assurance.getAssuranceId().equals(idAssurancePersonnelJU)
                         || assurance.getAssuranceId().equals(idAssurancePersonnelBE)) {
+                        newList.add(employeur);
+                    }
+                    // S'il n'est pas indépendant, on va contrôler s'il cotise à une assurance paritaire
+                }else if(assurance.getAssuranceId().equals(idAssuranceParitaireJU)
+                        || assurance.getAssuranceId().equals(idAssuranceParitaireBE)) {
                     newList.add(employeur);
                 }
             }
