@@ -571,8 +571,8 @@ public class APListePrestationCIABProcess extends BProcess {
         sqlWhere += " AND pres.VHTGEN IN (?,?) ";
         //sqlWhere += " AND afc.MBIASS IN (?,?,?,?) ";
         sqlWhere += " AND ((pres.VHDFIN <= afc.MEDFIN or afc.MEDFIN = 0) AND pres.VHDDEB >= afc.MEDDEB)";
-        sqlWhere += " AND ((( repa.VIMMOB < repa.VIMMON AND afc.MBIASS IN (?, ?))";
-        sqlWhere += "   OR ( repa.VIMMOB > repa.VIMMON AND afc.MBIASS IN (?, ?)) AND (repa.VIMMON > 0))";
+        sqlWhere += " AND (((( repa.VIMMOB < repa.VIMMON AND afc.MBIASS IN (?, ?))";
+        sqlWhere += "   OR ( repa.VIMMOB > repa.VIMMON AND afc.MBIASS IN (?, ?))) AND (repa.VIMMON > 0))";
         sqlWhere += " OR (((repa.VIMMOB < repa.VIMMON AND afc.MBIASS IN (?, ?)) OR ( repa.VIMMOB > repa.VIMMON AND afc.MBIASS IN (?, ?)))";
         sqlWhere += "   AND (repa.VIMMON < 0)))";
 
