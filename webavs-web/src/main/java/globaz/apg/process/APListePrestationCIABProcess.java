@@ -608,7 +608,7 @@ public class APListePrestationCIABProcess extends BProcess {
                 + " pres.VHDFIN as "
                 + APListePrestationCIABProcess.REQUETE_LISTE_PRESTATION_VERSEE_COL_NAME_DATE_FIN
                 + " , "
-                + " pres.VHDMOB as "
+                + " repa.VIMMOB as "
                 + APListePrestationCIABProcess.REQUETE_LISTE_PRESTATION_VERSEE_COL_NAME_MONTANT_BRUT
                 + " , "
                 + " pres.VHDPMT as "
