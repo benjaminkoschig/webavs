@@ -407,7 +407,7 @@
 			<dependency>
 				<groupId>ch.globaz</groupId>
 				<artifactId>globaz-services</artifactId>
-				<version>1.0.5-RC1</version>
+				<version>1.0.5</version>
 				<exclusions>
 					<!--log4j is replaced with log4j-over-slf4j-->
 					<exclusion>
