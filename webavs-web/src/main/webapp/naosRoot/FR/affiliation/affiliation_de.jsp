@@ -113,7 +113,24 @@ function validate() {
 			return ;
 		}
 	}
-	
+    var tempBufferActive = document.forms[0].elements('activite').value;
+    var tempBufferRaisonSocial = document.forms[0].elements('raisonSociale').value;
+    var tempBufferRaisonSocialCourt = document.forms[0].elements('raisonSocialeCourt').value;
+	var fixedstring = escape(tempBufferActive);
+	fixedstring = fixedstring.replace('%u0153','oe');
+    fixedstring = fixedstring.replace('%u0152','OE');
+    fixedstring = unescape(fixedstring);
+    document.forms[0].elements('activite').value = fixedstring;
+    fixedstring = escape(tempBufferRaisonSocial);
+    fixedstring = fixedstring.replace('%u0153','oe');
+    fixedstring = fixedstring.replace('%u0152','OE');
+    fixedstring = unescape(fixedstring);
+    document.forms[0].elements('raisonSociale').value = fixedstring;
+    fixedstring = escape(tempBufferRaisonSocialCourt);
+    fixedstring = fixedstring.replace('%u0153','oe');
+    fixedstring = fixedstring.replace('%u0152','OE');
+    fixedstring = unescape(fixedstring);
+    document.forms[0].elements('raisonSocialeCourt').value = fixedstring;
 	var exit = true;
     state = validateFields();
 
