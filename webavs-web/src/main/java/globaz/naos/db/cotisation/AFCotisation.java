@@ -1613,7 +1613,7 @@ public class AFCotisation extends BEntity {
             }
         }
 
-        manager.find();
+        manager.find(BManager.SIZE_NOLIMIT);
         return manager;
     }
 
