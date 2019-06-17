@@ -20,8 +20,10 @@
 			<!--  security.principal      [REQUIRED for LDAP] : utilisateur LDAP-->
 			<!--  security.credentials    [REQUIRED for LDAP] : mot de passe de l'utilisateur LDAP-->
 			<!--  security.authentication [REQUIRED for LDAP] : mode d'autentification LDAP (en principe: simple)-->
-			<param name="technical.user"><![CDATA[7RcBU1zGtiU=]]></param>
-			<param name="technical.password"><![CDATA[7RcBU1zGtiU=]]></param>
+			<!--<param name="technical.user"><![CDATA[7RcBU1zGtiU=]]></param>-->
+			<!--<param name="technical.password"><![CDATA[7RcBU1zGtiU=]]></param>-->
+			<param name="technical.user"><![CDATA[QeyBaNPNVasgGrKtE7me+g==]]></param>
+			<param name="technical.password"><![CDATA[QeyBaNPNVasgGrKtE7me+g==]]></param>
 			<param name="application">FRAMEWORK</param>
 		</params>
 	</configurator>
