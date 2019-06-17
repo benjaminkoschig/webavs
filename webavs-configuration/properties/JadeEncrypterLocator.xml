@@ -24,6 +24,12 @@
 			<!--  key: cle (utilisation d'une cle par defaut si pas renseignee ici)-->
 			<param name="algorithm">DES</param> <!-- HmacSHA1-->
 		</adapter>
+		<adapter name="AES_Encrypter" class="globaz.jade.crypto.JadeJCEEncrypter">
+			<!--param: liste des parametres-->
+			<!--  algorithm [REQUIRED]: nom de l'algorithme-->
+			<!--  key: cle (utilisation d'une cle par defaut si pas renseignee ici)-->
+			<param name="algorithm">AES</param> <!-- HmacSHA1-->
+		</adapter>
 		<adapter name="GLOBAZ_Encrypter" class="globaz.jade.crypto.JadeAdapterEncrypter">
 			<!--param: liste des parametres-->
 			<!--  algorithm [REQUIRED]: nom de l'algorithme-->
