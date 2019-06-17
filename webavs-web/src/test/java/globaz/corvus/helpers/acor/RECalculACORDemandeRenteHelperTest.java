@@ -9,13 +9,11 @@ import globaz.corvus.exceptions.REBusinessException;
 
 import java.util.*;
 
-import globaz.globall.db.BEntity;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BTransaction;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import ch.globaz.corvus.TestUnitaireAvecGenerateurIDUnique;
 import ch.globaz.corvus.domaine.BaseCalcul;
@@ -33,14 +31,12 @@ import ch.globaz.pyxis.domaine.PersonneAVS;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.MockGateway;
 import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.core.classloader.annotations.PrepareOnlyThisForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.reflect.Whitebox;
 
 @RunWith(PowerMockRunner.class)
-@PrepareOnlyThisForTest({RECalculACORDemandeRenteHelper.class, BSession.class, BTransaction.class, RERenteAccordeeManager.class, PRTiersHelper.class, REBasesCalcul.class, RERenteAccordee.class, BEntity.class})
+@PrepareForTest({RECalculACORDemandeRenteHelper.class, BSession.class, BTransaction.class, RERenteAccordeeManager.class, PRTiersHelper.class, REBasesCalcul.class})
 public class RECalculACORDemandeRenteHelperTest extends TestUnitaireAvecGenerateurIDUnique {
 
     private void laDateDeTraitementDoitEtreCelleDeLaDemandeInitiale(final DemandeRente copie,
