@@ -102,22 +102,13 @@
 		// transformation XSLT est appliquée.
 		//----------------------------------------------------------------------------
 		var xml = loadXMLFile("<%=viewBean.getCheminFCalculXML()%>");
-		var xsl = loadXMLTxt("<%=viewBean.getXSLT()%>");
-		var ex;
 
 		// code for IE
 		if (window.ActiveXObject) {
 			document.forms("mainForm").contenuFeuilleCalculXML.value = xml.xml;
-			ex = xml.transformNode(xsl);
-			document.forms("mainForm").contenuFCalculXML.value = ex;
 		} else if (document.implementation && document.implementation.createDocument) {
 			// code for Mozilla, Firefox, Opera, etc.
 			document.forms("mainForm").contenuFeuilleCalculXML.value = (new XMLSerializer()).serializeToString(xml);
-			xsltProcessor = new XSLTProcessor();
-			xsltProcessor.importStylesheet(xsl);
-			resultDocument = xsltProcessor.transformToFragment(xml, document);
-			document.getElementById("xsltContent").appendChild(resultDocument);
-			document.forms("mainForm").contenuFCalculXML.value = document.getElementById("xsltContent").innerHTML;
 		} else {
 			return false;
 		}
@@ -257,9 +248,7 @@
 										name="contenuAnnoncePay" />
 								<input	type="hidden" 
 										name="contenuAnnonceRR" />
-								<input	type="hidden" 
-										name="contenuFCalculXML" />
-								<input	type="hidden" 
+								<input	type="hidden"
 										name="contenuFeuilleCalculXML" />
 								<input	type="hidden" 
 										name="contenuAnnonceXML" />

@@ -1,10 +1,21 @@
 package globaz.corvus.helpers.acor;
 
+import acor.FCalcul;
+import acor.Rente;
+import globaz.corvus.db.basescalcul.REBasesCalcul;
+import globaz.corvus.db.rentesaccordees.RERenteAccordee;
+import globaz.corvus.db.rentesaccordees.RERenteAccordeeManager;
 import globaz.corvus.exceptions.REBusinessException;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+
+import java.util.*;
+
+import globaz.globall.db.BEntity;
+import globaz.globall.db.BSession;
+import globaz.globall.db.BTransaction;
+import globaz.prestation.interfaces.tiers.PRTiersHelper;
+import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import ch.globaz.corvus.TestUnitaireAvecGenerateurIDUnique;
 import ch.globaz.corvus.domaine.BaseCalcul;
@@ -19,11 +30,21 @@ import ch.globaz.prestation.domaine.CodePrestation;
 import ch.globaz.prestation.domaine.DossierPrestation;
 import ch.globaz.prestation.domaine.InformationsComplementaires;
 import ch.globaz.pyxis.domaine.PersonneAVS;
+import org.junit.runner.RunWith;
+import org.mockito.Mockito;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.MockGateway;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.core.classloader.annotations.PrepareOnlyThisForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
+import org.powermock.reflect.Whitebox;
 
+@RunWith(PowerMockRunner.class)
+@PrepareOnlyThisForTest({RECalculACORDemandeRenteHelper.class, BSession.class, BTransaction.class, RERenteAccordeeManager.class, PRTiersHelper.class, REBasesCalcul.class, RERenteAccordee.class, BEntity.class})
 public class RECalculACORDemandeRenteHelperTest extends TestUnitaireAvecGenerateurIDUnique {
 
     private void laDateDeTraitementDoitEtreCelleDeLaDemandeInitiale(final DemandeRente copie,
-            final DemandeRente demandeInitiale) {
+                                                                    final DemandeRente demandeInitiale) {
         Assert.assertEquals("La date de traitement doit être celle de la demande intiale",
                 demandeInitiale.getDateTraitement(), copie.getDateTraitement());
     }
@@ -40,7 +61,7 @@ public class RECalculACORDemandeRenteHelperTest extends TestUnitaireAvecGenerate
     }
 
     private void lesDonneesDesDemandesSontLesMemesSaufIdDateTraitementEtRentes(final DemandeRente demande1,
-            final DemandeRente demande2) {
+                                                                               final DemandeRente demande2) {
         String message = "ce n'est pas la bonne demande qui a été copiée";
 
         Assert.assertEquals(message, demande1.getDateDepot(), demande2.getDateDepot());
@@ -228,14 +249,14 @@ public class RECalculACORDemandeRenteHelperTest extends TestUnitaireAvecGenerate
 
         /**
          * Arrivée du requérant à l'âge AVS, avec son conjoint ayant ajourné précédemment
-         * 
+         *
          * <pre>
          * Nouvelle demande (au nom du requérant)  ----  Rente01 (au bénéfice du requérant) sans code cas spécial
          *                                          `--  Rente02 (au bénéfice du conjoint) avec code cas spécial 08
-         * 
+         *
          * Ancienne demande (au nom du conjoint)   ----  Rente03 (au bénéfice du conjoint) avec code cas spécial 08
          * </pre>
-         * 
+         *
          * L'ancienne demande doit être copiée, et sur cette copie doit être rattachée la rente02
          */
         DemandeRente copie = RECalculACORDemandeRenteHelper.repartirLesRentesPourCodeCasSpecial(nouvelleDemande,
@@ -266,14 +287,14 @@ public class RECalculACORDemandeRenteHelperTest extends TestUnitaireAvecGenerate
         /**
          * Arrivée du requérant à l'âge AVS, celui-ci veut ajourner. Son conjoint est déjà à l'AVS (et a donc déjà une
          * demande et une rente)
-         * 
+         *
          * <pre>
          * Nouvelle demande (au nom du requérant)  ----  Rente01 (au bénéfice du requérant) avec code cas spécial 08
          *                                          `--  Rente02 (au bénéfice du conjoint) sans code cas spécial
-         * 
+         *
          * Ancienne demande (au nom du conjoint)   ----  Rente03 (au bénéfice du conjoint) sans code cas spécial
          * </pre>
-         * 
+         *
          * L'ancienne demande doit être copiée, et sur cette copie doit être rattachée la rente02
          */
         copie = RECalculACORDemandeRenteHelper.repartirLesRentesPourCodeCasSpecial(nouvelleDemande,
@@ -393,12 +414,12 @@ public class RECalculACORDemandeRenteHelperTest extends TestUnitaireAvecGenerate
         /**
          * <pre>
          * Simulation d'une reprise d'un cas fait avant le mandat D0095 :
-         * 
+         *
          * 		- Le requérant avait ajourné avant son épouse
          * 		- L'épouse du requérant a ajourné en arrivant à l'âge AVS
          * 		- Vu que fait sous l'ancien système, les deux demandes sont à l'état calculé
          * 		- On calcul et importe sur la demande du requérant
-         * 
+         *
          * 	But du test : vérifier qu'aucune demande ne soit copiée, mais qu'elles soient utilisées
          * 	tel quel (elle sont à l'état calculé)
          * </pre>
@@ -840,4 +861,375 @@ public class RECalculACORDemandeRenteHelperTest extends TestUnitaireAvecGenerate
                 "La demande non-validée sur laquelle on rattache des rentes doit voir son état changé à 'Calculé'",
                 EtatDemandeRente.CALCULE, demandeSurvivant.getEtat());
     }
+
+    @Test
+    public void testMAJan1() throws Exception {
+        // Arrange
+        BSession sessionMock = PowerMockito.mock(BSession.class);
+        BTransaction transactionMock = PowerMockito.mock(BTransaction.class);
+        FCalcul fCalculMock = Mockito.mock(FCalcul.class);
+        List<Long> renteAccordeIds = new ArrayList<>();
+        renteAccordeIds.add(1L);
+        renteAccordeIds.add(2L);
+
+        RERenteAccordeeManager managerMock = PowerMockito.mock(RERenteAccordeeManager.class);
+        PowerMockito.whenNew(RERenteAccordeeManager.class).withNoArguments().thenReturn(managerMock);
+
+        List<FCalcul.Evenement> evenements = new ArrayList<>();
+        FCalcul.Evenement evenementMock = Mockito.mock(FCalcul.Evenement.class);
+        FCalcul.Evenement evenementEmpty = Mockito.mock(FCalcul.Evenement.class);
+        evenements.add(evenementMock);
+        evenements.add(evenementEmpty);
+        Mockito.when(fCalculMock.getEvenement()).thenReturn(evenements);
+
+        List<FCalcul.Evenement.BasesCalcul> basesCalculs = new ArrayList<>();
+        FCalcul.Evenement.BasesCalcul basesCalculMock = Mockito.mock(FCalcul.Evenement.BasesCalcul.class);
+        FCalcul.Evenement.BasesCalcul basesCalculEmpty = Mockito.mock(FCalcul.Evenement.BasesCalcul.class);
+        basesCalculs.add(basesCalculMock);
+        basesCalculs.add(basesCalculEmpty);
+        Mockito.when(evenementMock.getBasesCalcul()).thenReturn(basesCalculs);
+
+        FCalcul.Evenement.BasesCalcul.BaseRam baseRamMock = Mockito.mock(FCalcul.Evenement.BasesCalcul.BaseRam.class);
+        Mockito.when(basesCalculMock.getBaseRam()).thenReturn(baseRamMock);
+        FCalcul.Evenement.BasesCalcul.BaseRam.Bte bteMock = Mockito.mock(FCalcul.Evenement.BasesCalcul.BaseRam.Bte.class);
+        Mockito.when(baseRamMock.getBte()).thenReturn(bteMock);
+        Mockito.when(bteMock.getAn1()).thenReturn(new Integer(1));
+
+        List<FCalcul.Evenement.BasesCalcul.Decision> decisions = new ArrayList<>();
+        FCalcul.Evenement.BasesCalcul.Decision decisionMock = Mockito.mock(FCalcul.Evenement.BasesCalcul.Decision.class);
+        FCalcul.Evenement.BasesCalcul.Decision decisionEmpty = Mockito.mock(FCalcul.Evenement.BasesCalcul.Decision.class);
+        decisions.add(decisionMock);
+        decisions.add(decisionEmpty);
+        Mockito.when(basesCalculMock.getDecision()).thenReturn(decisions);
+
+        List<FCalcul.Evenement.BasesCalcul.Decision.Prestation> prestataions = new ArrayList<>();
+        FCalcul.Evenement.BasesCalcul.Decision.Prestation prestationMock = Mockito.mock(FCalcul.Evenement.BasesCalcul.Decision.Prestation.class);
+        FCalcul.Evenement.BasesCalcul.Decision.Prestation prestationEmpty = Mockito.mock(FCalcul.Evenement.BasesCalcul.Decision.Prestation.class);
+        prestataions.add(prestationMock);
+        prestataions.add(prestationEmpty);
+        Mockito.when(decisionMock.getPrestation()).thenReturn(prestataions);
+
+        Rente renteMock = Mockito.mock(Rente.class);
+        Mockito.when(prestationMock.getRente()).thenReturn(renteMock);
+        String nss = "1234.56";
+        Mockito.when(prestationMock.getBeneficiaire()).thenReturn(nss);
+        Mockito.when(renteMock.getDebutDroit()).thenReturn(20190614);
+
+        List<RERenteAccordee> renteAccordees = new ArrayList<>();
+        RERenteAccordee renteAccordeeMock1 = Mockito.mock(RERenteAccordee.class);
+        RERenteAccordee renteAccordeeMock2 = Mockito.mock(RERenteAccordee.class);
+        Mockito.when(renteAccordeeMock1.isNew()).thenReturn(false);
+        Mockito.when(renteAccordeeMock2.isNew()).thenReturn(false);
+        renteAccordees.add(renteAccordeeMock1);
+        renteAccordees.add(renteAccordeeMock2);
+        Mockito.when(managerMock.getContainerAsList()).thenReturn(renteAccordees);
+
+        PRTiersWrapper tiersWrapperMock = Mockito.mock(PRTiersWrapper.class);
+        Mockito.when(renteAccordeeMock1.getIdTiersBeneficiaire()).thenReturn(nss);
+        Mockito.when(renteAccordeeMock2.getIdTiersBeneficiaire()).thenReturn(nss);
+        PowerMockito.mockStatic(PRTiersHelper.class);
+        PowerMockito.when(PRTiersHelper.getTiersParId(sessionMock, nss)).thenReturn(tiersWrapperMock);
+        Mockito.when(tiersWrapperMock.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL)).thenReturn(nss);
+        Mockito.when(renteAccordeeMock1.getDateDebutDroit()).thenReturn("14062019");
+        Mockito.when(renteAccordeeMock2.getDateDebutDroit()).thenReturn("15062019");
+        Mockito.when(renteAccordeeMock1.getCodePrestation()).thenReturn("68440");
+        Mockito.when(renteAccordeeMock2.getCodePrestation()).thenReturn("68440");
+        Mockito.when(renteMock.getGenre()).thenReturn(new Integer(68440));
+
+        REBasesCalcul basesCalculEntityMock = PowerMockito.mock(REBasesCalcul.class);
+        PowerMockito.whenNew(REBasesCalcul.class).withNoArguments().thenReturn(basesCalculEntityMock);
+
+        // Act
+        RECalculACORDemandeRenteHelper helper = new RECalculACORDemandeRenteHelper();
+        Whitebox.invokeMethod(helper, "doMAJExtraData", sessionMock, transactionMock, fCalculMock, renteAccordeIds);
+
+        // Assert
+        Mockito.verify(managerMock, Mockito.times(1)).setForIdsRentesAccordees("1,2");
+        Mockito.verify(basesCalculEntityMock, Mockito.times(1)).setNombreAnneeBTE1("1");
+        Mockito.verify(basesCalculEntityMock, Mockito.times(1)).setNombreAnneeBTE2("0");
+        Mockito.verify(basesCalculEntityMock, Mockito.times(1)).setNombreAnneeBTE4("0");
+        Mockito.verify(basesCalculEntityMock, Mockito.times(1)).update(transactionMock);
+    }
+
+    @Test
+    public void testMAJan2() throws Exception {
+        // Arrange
+        BSession sessionMock = PowerMockito.mock(BSession.class);
+        BTransaction transactionMock = PowerMockito.mock(BTransaction.class);
+        FCalcul fCalculMock = Mockito.mock(FCalcul.class);
+        List<Long> renteAccordeIds = new ArrayList<>();
+        renteAccordeIds.add(1L);
+        renteAccordeIds.add(2L);
+
+        RERenteAccordeeManager managerMock = PowerMockito.mock(RERenteAccordeeManager.class);
+        PowerMockito.whenNew(RERenteAccordeeManager.class).withNoArguments().thenReturn(managerMock);
+
+        List<FCalcul.Evenement> evenements = new ArrayList<>();
+        FCalcul.Evenement evenementMock = Mockito.mock(FCalcul.Evenement.class);
+        FCalcul.Evenement evenementEmpty = Mockito.mock(FCalcul.Evenement.class);
+        evenements.add(evenementMock);
+        evenements.add(evenementEmpty);
+        Mockito.when(fCalculMock.getEvenement()).thenReturn(evenements);
+
+        List<FCalcul.Evenement.BasesCalcul> basesCalculs = new ArrayList<>();
+        FCalcul.Evenement.BasesCalcul basesCalculMock = Mockito.mock(FCalcul.Evenement.BasesCalcul.class);
+        FCalcul.Evenement.BasesCalcul basesCalculEmpty = Mockito.mock(FCalcul.Evenement.BasesCalcul.class);
+        basesCalculs.add(basesCalculMock);
+        basesCalculs.add(basesCalculEmpty);
+        Mockito.when(evenementMock.getBasesCalcul()).thenReturn(basesCalculs);
+
+        FCalcul.Evenement.BasesCalcul.BaseRam baseRamMock = Mockito.mock(FCalcul.Evenement.BasesCalcul.BaseRam.class);
+        Mockito.when(basesCalculMock.getBaseRam()).thenReturn(baseRamMock);
+        FCalcul.Evenement.BasesCalcul.BaseRam.Bte bteMock = Mockito.mock(FCalcul.Evenement.BasesCalcul.BaseRam.Bte.class);
+        Mockito.when(baseRamMock.getBte()).thenReturn(bteMock);
+        Mockito.when(bteMock.getAn2()).thenReturn(new Integer(2));
+
+        List<FCalcul.Evenement.BasesCalcul.Decision> decisions = new ArrayList<>();
+        FCalcul.Evenement.BasesCalcul.Decision decisionMock = Mockito.mock(FCalcul.Evenement.BasesCalcul.Decision.class);
+        FCalcul.Evenement.BasesCalcul.Decision decisionEmpty = Mockito.mock(FCalcul.Evenement.BasesCalcul.Decision.class);
+        decisions.add(decisionMock);
+        decisions.add(decisionEmpty);
+        Mockito.when(basesCalculMock.getDecision()).thenReturn(decisions);
+
+        List<FCalcul.Evenement.BasesCalcul.Decision.Prestation> prestataions = new ArrayList<>();
+        FCalcul.Evenement.BasesCalcul.Decision.Prestation prestationMock = Mockito.mock(FCalcul.Evenement.BasesCalcul.Decision.Prestation.class);
+        FCalcul.Evenement.BasesCalcul.Decision.Prestation prestationEmpty = Mockito.mock(FCalcul.Evenement.BasesCalcul.Decision.Prestation.class);
+        prestataions.add(prestationMock);
+        prestataions.add(prestationEmpty);
+        Mockito.when(decisionMock.getPrestation()).thenReturn(prestataions);
+
+        Rente renteMock = Mockito.mock(Rente.class);
+        Mockito.when(prestationMock.getRente()).thenReturn(renteMock);
+        String nss = "1234.56";
+        Mockito.when(prestationMock.getBeneficiaire()).thenReturn(nss);
+        Mockito.when(renteMock.getDebutDroit()).thenReturn(20190614);
+
+        List<RERenteAccordee> renteAccordees = new ArrayList<>();
+        RERenteAccordee renteAccordeeMock1 = Mockito.mock(RERenteAccordee.class);
+        RERenteAccordee renteAccordeeMock2 = Mockito.mock(RERenteAccordee.class);
+        Mockito.when(renteAccordeeMock1.isNew()).thenReturn(false);
+        Mockito.when(renteAccordeeMock2.isNew()).thenReturn(false);
+        renteAccordees.add(renteAccordeeMock1);
+        renteAccordees.add(renteAccordeeMock2);
+        Mockito.when(managerMock.getContainerAsList()).thenReturn(renteAccordees);
+
+        PRTiersWrapper tiersWrapperMock = Mockito.mock(PRTiersWrapper.class);
+        Mockito.when(renteAccordeeMock1.getIdTiersBeneficiaire()).thenReturn(nss);
+        Mockito.when(renteAccordeeMock2.getIdTiersBeneficiaire()).thenReturn(nss);
+        PowerMockito.mockStatic(PRTiersHelper.class);
+        PowerMockito.when(PRTiersHelper.getTiersParId(sessionMock, nss)).thenReturn(tiersWrapperMock);
+        Mockito.when(tiersWrapperMock.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL)).thenReturn(nss);
+        Mockito.when(renteAccordeeMock1.getDateDebutDroit()).thenReturn("14062019");
+        Mockito.when(renteAccordeeMock2.getDateDebutDroit()).thenReturn("14062019");
+        Mockito.when(renteAccordeeMock1.getCodePrestation()).thenReturn("68440");
+        Mockito.when(renteAccordeeMock2.getCodePrestation()).thenReturn("68000");
+        Mockito.when(renteMock.getGenre()).thenReturn(new Integer(68440));
+
+        REBasesCalcul basesCalculEntityMock = PowerMockito.mock(REBasesCalcul.class);
+        PowerMockito.whenNew(REBasesCalcul.class).withNoArguments().thenReturn(basesCalculEntityMock);
+
+        // Act
+        RECalculACORDemandeRenteHelper helper = new RECalculACORDemandeRenteHelper();
+        Whitebox.invokeMethod(helper, "doMAJExtraData", sessionMock, transactionMock, fCalculMock, renteAccordeIds);
+
+        // Assert
+        Mockito.verify(managerMock, Mockito.times(1)).setForIdsRentesAccordees("1,2");
+        Mockito.verify(basesCalculEntityMock, Mockito.times(1)).setNombreAnneeBTE1("0");
+        Mockito.verify(basesCalculEntityMock, Mockito.times(1)).setNombreAnneeBTE2("2");
+        Mockito.verify(basesCalculEntityMock, Mockito.times(1)).setNombreAnneeBTE4("0");
+        Mockito.verify(basesCalculEntityMock, Mockito.times(1)).update(transactionMock);
+
+
+    }
+
+    @Test
+    public void testMAJan4() throws Exception {
+        // Arrange
+        BSession sessionMock = PowerMockito.mock(BSession.class);
+        BTransaction transactionMock = PowerMockito.mock(BTransaction.class);
+        FCalcul fCalculMock = Mockito.mock(FCalcul.class);
+        List<Long> renteAccordeIds = new ArrayList<>();
+        renteAccordeIds.add(1L);
+        renteAccordeIds.add(2L);
+
+        RERenteAccordeeManager managerMock = PowerMockito.mock(RERenteAccordeeManager.class);
+        PowerMockito.whenNew(RERenteAccordeeManager.class).withNoArguments().thenReturn(managerMock);
+
+        List<FCalcul.Evenement> evenements = new ArrayList<>();
+        FCalcul.Evenement evenementMock = Mockito.mock(FCalcul.Evenement.class);
+        FCalcul.Evenement evenementEmpty = Mockito.mock(FCalcul.Evenement.class);
+        evenements.add(evenementMock);
+        evenements.add(evenementEmpty);
+        Mockito.when(fCalculMock.getEvenement()).thenReturn(evenements);
+
+        List<FCalcul.Evenement.BasesCalcul> basesCalculs = new ArrayList<>();
+        FCalcul.Evenement.BasesCalcul basesCalculMock = Mockito.mock(FCalcul.Evenement.BasesCalcul.class);
+        FCalcul.Evenement.BasesCalcul basesCalculEmpty = Mockito.mock(FCalcul.Evenement.BasesCalcul.class);
+        basesCalculs.add(basesCalculMock);
+        basesCalculs.add(basesCalculEmpty);
+        Mockito.when(evenementMock.getBasesCalcul()).thenReturn(basesCalculs);
+
+        FCalcul.Evenement.BasesCalcul.BaseRam baseRamMock = Mockito.mock(FCalcul.Evenement.BasesCalcul.BaseRam.class);
+        Mockito.when(basesCalculMock.getBaseRam()).thenReturn(baseRamMock);
+        FCalcul.Evenement.BasesCalcul.BaseRam.Bte bteMock = Mockito.mock(FCalcul.Evenement.BasesCalcul.BaseRam.Bte.class);
+        Mockito.when(baseRamMock.getBte()).thenReturn(bteMock);
+        Mockito.when(bteMock.getAn4()).thenReturn(new Integer(4));
+
+        List<FCalcul.Evenement.BasesCalcul.Decision> decisions = new ArrayList<>();
+        FCalcul.Evenement.BasesCalcul.Decision decisionMock = Mockito.mock(FCalcul.Evenement.BasesCalcul.Decision.class);
+        FCalcul.Evenement.BasesCalcul.Decision decisionEmpty = Mockito.mock(FCalcul.Evenement.BasesCalcul.Decision.class);
+        decisions.add(decisionMock);
+        decisions.add(decisionEmpty);
+        Mockito.when(basesCalculMock.getDecision()).thenReturn(decisions);
+
+        List<FCalcul.Evenement.BasesCalcul.Decision.Prestation> prestataions = new ArrayList<>();
+        FCalcul.Evenement.BasesCalcul.Decision.Prestation prestationMock = Mockito.mock(FCalcul.Evenement.BasesCalcul.Decision.Prestation.class);
+        FCalcul.Evenement.BasesCalcul.Decision.Prestation prestationEmpty = Mockito.mock(FCalcul.Evenement.BasesCalcul.Decision.Prestation.class);
+        prestataions.add(prestationMock);
+        prestataions.add(prestationEmpty);
+        Mockito.when(decisionMock.getPrestation()).thenReturn(prestataions);
+
+        Rente renteMock = Mockito.mock(Rente.class);
+        Mockito.when(prestationMock.getRente()).thenReturn(renteMock);
+        String nss = "1234.56";
+        String nss2 = "6543.21";
+        Mockito.when(prestationMock.getBeneficiaire()).thenReturn(nss);
+        Mockito.when(renteMock.getDebutDroit()).thenReturn(20190614);
+
+        List<RERenteAccordee> renteAccordees = new ArrayList<>();
+        RERenteAccordee renteAccordeeMock1 = Mockito.mock(RERenteAccordee.class);
+        RERenteAccordee renteAccordeeMock2 = Mockito.mock(RERenteAccordee.class);
+        Mockito.when(renteAccordeeMock1.isNew()).thenReturn(false);
+        Mockito.when(renteAccordeeMock2.isNew()).thenReturn(false);
+        renteAccordees.add(renteAccordeeMock1);
+        renteAccordees.add(renteAccordeeMock2);
+        Mockito.when(managerMock.getContainerAsList()).thenReturn(renteAccordees);
+
+        PRTiersWrapper tiersWrapperMock = Mockito.mock(PRTiersWrapper.class);
+        PRTiersWrapper tiersWrapperMock2 = Mockito.mock(PRTiersWrapper.class);
+        Mockito.when(renteAccordeeMock1.getIdTiersBeneficiaire()).thenReturn(nss);
+        Mockito.when(renteAccordeeMock2.getIdTiersBeneficiaire()).thenReturn(nss2);
+        PowerMockito.mockStatic(PRTiersHelper.class);
+        PowerMockito.when(PRTiersHelper.getTiersParId(sessionMock, nss)).thenReturn(tiersWrapperMock);
+        PowerMockito.when(PRTiersHelper.getTiersParId(sessionMock, nss2)).thenReturn(tiersWrapperMock2);
+        Mockito.when(tiersWrapperMock.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL)).thenReturn(nss);
+        Mockito.when(tiersWrapperMock2.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL)).thenReturn(nss2);
+        Mockito.when(renteAccordeeMock1.getDateDebutDroit()).thenReturn("14062019");
+        Mockito.when(renteAccordeeMock2.getDateDebutDroit()).thenReturn("14062019");
+        Mockito.when(renteAccordeeMock1.getCodePrestation()).thenReturn("68440");
+        Mockito.when(renteAccordeeMock2.getCodePrestation()).thenReturn("68440");
+        Mockito.when(renteMock.getGenre()).thenReturn(new Integer(68440));
+
+        REBasesCalcul basesCalculEntityMock = PowerMockito.mock(REBasesCalcul.class);
+        PowerMockito.whenNew(REBasesCalcul.class).withNoArguments().thenReturn(basesCalculEntityMock);
+
+        // Act
+        RECalculACORDemandeRenteHelper helper = new RECalculACORDemandeRenteHelper();
+        Whitebox.invokeMethod(helper, "doMAJExtraData", sessionMock, transactionMock, fCalculMock, renteAccordeIds);
+
+        // Assert
+        Mockito.verify(managerMock, Mockito.times(1)).setForIdsRentesAccordees("1,2");
+        Mockito.verify(basesCalculEntityMock, Mockito.times(1)).setNombreAnneeBTE1("0");
+        Mockito.verify(basesCalculEntityMock, Mockito.times(1)).setNombreAnneeBTE2("0");
+        Mockito.verify(basesCalculEntityMock, Mockito.times(1)).setNombreAnneeBTE4("4");
+        Mockito.verify(basesCalculEntityMock, Mockito.times(1)).update(transactionMock);
+    }
+
+    @Ignore
+    @Test
+    public void testMAJtauxReductionAnticipation() throws Exception {
+        MockGateway.MOCK_STANDARD_METHODS = false;
+
+        // Arrange
+        BSession sessionMock = PowerMockito.mock(BSession.class);
+        BTransaction transactionMock = PowerMockito.mock(BTransaction.class);
+        FCalcul fCalculMock = Mockito.mock(FCalcul.class);
+        List<Long> renteAccordeIds = new ArrayList<>();
+        renteAccordeIds.add(1L);
+        renteAccordeIds.add(2L);
+
+        RERenteAccordeeManager managerMock = PowerMockito.mock(RERenteAccordeeManager.class);
+        PowerMockito.whenNew(RERenteAccordeeManager.class).withNoArguments().thenReturn(managerMock);
+
+        List<FCalcul.Evenement> evenements = new ArrayList<>();
+        FCalcul.Evenement evenementMock = Mockito.mock(FCalcul.Evenement.class);
+        FCalcul.Evenement evenementEmpty = Mockito.mock(FCalcul.Evenement.class);
+        evenements.add(evenementMock);
+        evenements.add(evenementEmpty);
+        Mockito.when(fCalculMock.getEvenement()).thenReturn(evenements);
+
+        List<FCalcul.Evenement.BasesCalcul> basesCalculs = new ArrayList<>();
+        FCalcul.Evenement.BasesCalcul basesCalculMock = Mockito.mock(FCalcul.Evenement.BasesCalcul.class);
+        FCalcul.Evenement.BasesCalcul basesCalculEmpty = Mockito.mock(FCalcul.Evenement.BasesCalcul.class);
+        basesCalculs.add(basesCalculMock);
+        basesCalculs.add(basesCalculEmpty);
+        Mockito.when(evenementMock.getBasesCalcul()).thenReturn(basesCalculs);
+
+        FCalcul.Evenement.BasesCalcul.Anticipation anticipationMock = Mockito.mock(FCalcul.Evenement.BasesCalcul.Anticipation.class);
+        Mockito.when(basesCalculMock.getAnticipation()).thenReturn(anticipationMock);
+        List<FCalcul.Evenement.BasesCalcul.Anticipation.Tranche> tranches = new ArrayList<>();
+        FCalcul.Evenement.BasesCalcul.Anticipation.Tranche trancheMock = Mockito.mock(FCalcul.Evenement.BasesCalcul.Anticipation.Tranche.class);
+        tranches.add(trancheMock);
+        Mockito.when(anticipationMock.getTranche()).thenReturn(tranches);
+        Mockito.when(trancheMock.getTauxReductionAnticipation()).thenReturn(10.5f);
+
+        List<FCalcul.Evenement.BasesCalcul.Decision> decisions = new ArrayList<>();
+        FCalcul.Evenement.BasesCalcul.Decision decisionMock = Mockito.mock(FCalcul.Evenement.BasesCalcul.Decision.class);
+        FCalcul.Evenement.BasesCalcul.Decision decisionEmpty = Mockito.mock(FCalcul.Evenement.BasesCalcul.Decision.class);
+        decisions.add(decisionMock);
+        decisions.add(decisionEmpty);
+        Mockito.when(basesCalculMock.getDecision()).thenReturn(decisions);
+
+        List<FCalcul.Evenement.BasesCalcul.Decision.Prestation> prestataions = new ArrayList<>();
+        FCalcul.Evenement.BasesCalcul.Decision.Prestation prestationMock = Mockito.mock(FCalcul.Evenement.BasesCalcul.Decision.Prestation.class);
+        FCalcul.Evenement.BasesCalcul.Decision.Prestation prestationEmpty = Mockito.mock(FCalcul.Evenement.BasesCalcul.Decision.Prestation.class);
+        prestataions.add(prestationMock);
+        prestataions.add(prestationEmpty);
+        Mockito.when(decisionMock.getPrestation()).thenReturn(prestataions);
+
+        Rente renteMock = Mockito.mock(Rente.class);
+        Mockito.when(prestationMock.getRente()).thenReturn(renteMock);
+        String nss = "1234.56";
+        Mockito.when(prestationMock.getBeneficiaire()).thenReturn(nss);
+        Mockito.when(renteMock.getDebutDroit()).thenReturn(20190614);
+
+        List<RERenteAccordee> renteAccordees = new ArrayList<>();
+        RERenteAccordee renteAccordeeMock1 = PowerMockito.mock(RERenteAccordee.class);
+        RERenteAccordee renteAccordeeMock2 = PowerMockito.mock(RERenteAccordee.class);
+        renteAccordees.add(renteAccordeeMock1);
+        renteAccordees.add(renteAccordeeMock2);
+        Mockito.when(managerMock.getContainerAsList()).thenReturn(renteAccordees);
+
+        PRTiersWrapper tiersWrapperMock = Mockito.mock(PRTiersWrapper.class);
+        Mockito.when(renteAccordeeMock1.getIdTiersBeneficiaire()).thenReturn(nss);
+        Mockito.when(renteAccordeeMock2.getIdTiersBeneficiaire()).thenReturn(nss);
+        PowerMockito.mockStatic(PRTiersHelper.class);
+        PowerMockito.when(PRTiersHelper.getTiersParId(sessionMock, nss)).thenReturn(tiersWrapperMock);
+        Mockito.when(tiersWrapperMock.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL)).thenReturn(nss);
+        Mockito.when(renteAccordeeMock1.getDateDebutDroit()).thenReturn("14062019");
+        Mockito.when(renteAccordeeMock2.getDateDebutDroit()).thenReturn("15062019");
+        Mockito.when(renteAccordeeMock1.getCodePrestation()).thenReturn("68440");
+        Mockito.when(renteAccordeeMock2.getCodePrestation()).thenReturn("68440");
+        Mockito.when(renteMock.getGenre()).thenReturn(new Integer(68440));
+
+        REBasesCalcul basesCalculEntityMock = PowerMockito.mock(REBasesCalcul.class);
+        PowerMockito.whenNew(REBasesCalcul.class).withNoArguments().thenReturn(basesCalculEntityMock);
+
+        // Act
+        RECalculACORDemandeRenteHelper helper = new RECalculACORDemandeRenteHelper();
+        Whitebox.invokeMethod(helper, "doMAJExtraData", sessionMock, transactionMock, fCalculMock, renteAccordeIds);
+
+        // Assert
+        Mockito.verify(managerMock, Mockito.times(1)).setForIdsRentesAccordees("1,2");
+        Mockito.verify(basesCalculEntityMock, Mockito.times(0)).setNombreAnneeBTE1("0");
+        Mockito.verify(basesCalculEntityMock, Mockito.times(0)).setNombreAnneeBTE2("0");
+        Mockito.verify(basesCalculEntityMock, Mockito.times(0)).setNombreAnneeBTE4("0");
+        Mockito.verify(basesCalculEntityMock, Mockito.times(0)).update(transactionMock);
+        Mockito.verify(renteAccordeeMock1, Mockito.times(1)).setTauxReductionAnticipation("10.5");
+        Mockito.verify(renteAccordeeMock1, Mockito.times(1)).update(transactionMock);
+        Mockito.verify(renteAccordeeMock2, Mockito.times(0)).setTauxReductionAnticipation("10.5");
+        Mockito.verify(renteAccordeeMock2, Mockito.times(0)).update(transactionMock);
+    }
+
+
 }

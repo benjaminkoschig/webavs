@@ -25,7 +25,6 @@ public abstract class REAbstractCalculACORViewBean extends PRAbstractViewBeanSup
     private String contenuAnnonceRR;
     private String contenuAnnonceXML;
 
-    private String contenuFCalculXML;
     private String contenuFeuilleCalculXML;
     private transient Map filesContent;
     private String noAVSAssure;
@@ -105,10 +104,6 @@ public abstract class REAbstractCalculACORViewBean extends PRAbstractViewBeanSup
 
     public String getContenuAnnonceXML() {
         return contenuAnnonceXML;
-    }
-
-    public String getContenuFCalculXML() {
-        return contenuFCalculXML;
     }
 
     /**
@@ -218,10 +213,6 @@ public abstract class REAbstractCalculACORViewBean extends PRAbstractViewBeanSup
 
     public void setContenuAnnonceXML(String contenuAnnonceXML) {
         this.contenuAnnonceXML = contenuAnnonceXML;
-    }
-
-    public void setContenuFCalculXML(String contenuFCalculXML) {
-        this.contenuFCalculXML = contenuFCalculXML;
     }
 
     /**

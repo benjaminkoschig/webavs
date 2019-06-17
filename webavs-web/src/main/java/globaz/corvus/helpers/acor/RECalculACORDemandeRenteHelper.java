@@ -1,19 +1,19 @@
 package globaz.corvus.helpers.acor;
 
+import java.io.File;
 import java.io.StringReader;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.servlet.ServletException;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+
+import acor.FCalcul;
+import globaz.corvus.acor.parser.xml.rev10.fcalcul.REAssureXmlDataStructure;
+import globaz.jade.sedex.message.SimpleSedexMessage;
 import org.apache.commons.lang.StringEscapeUtils;
 import ch.globaz.common.domaine.Checkers;
 import ch.globaz.corvus.business.services.CorvusCrudServiceLocator;
@@ -119,6 +119,7 @@ import globaz.prestation.tools.PRAssert;
 import globaz.prestation.tools.PRDateFormater;
 import globaz.prestation.utils.PRDateUtils;
 import globaz.prestation.utils.PRDateUtils.PRDateEquality;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * <H1>Description</H1>
@@ -137,7 +138,6 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
      * demande de rente
      *
      * @author lga
-     *
      */
     private abstract class CleWrapper {
 
@@ -188,7 +188,7 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
          * Cette méthode construit les données pour la génération de la clé de comparaison sur la base d'une base de
          * calcul et de ses rentes accordées
          *
-         * @param baseCalcul La base de calcul en question
+         * @param baseCalcul     La base de calcul en question
          * @param renteAccordees Les rentes accordées liées à la base de calcul
          */
         private void build(REBasesCalcul baseCalcul, List<RERenteAccordee> renteAccordees) {
@@ -388,7 +388,7 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
         if (((dateFin == null) || (JACalendar.COMPARE_FIRSTLOWER == resultComparaison1)
                 || (JACalendar.COMPARE_EQUALS == resultComparaison1))
                 && ((dateDebut != null) && ((JACalendar.COMPARE_FIRSTUPPER == resultComparaison2)
-                        || (JACalendar.COMPARE_EQUALS == resultComparaison2)))) {
+                || (JACalendar.COMPARE_EQUALS == resultComparaison2)))) {
             identificationCas = 1;
         }
         // Cas 2 : rentes dans le futur
@@ -430,7 +430,7 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
     // --------------------------------------------------------------------------------------------------------
 
     private static DemandeRente copierDemandePourLaRenteAccordee(final Set<DemandeRente> demandesDeLaFamille,
-            final RenteAccordee uneRenteAvecCodeCasSpecial) {
+                                                                 final RenteAccordee uneRenteAvecCodeCasSpecial) {
         PersonneAVS donneurDeDroitRenteAccordee = uneRenteAvecCodeCasSpecial.getBaseCalcul().getDonneurDeDroit();
 
         DemandeRente copie = null;
@@ -478,24 +478,19 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
      * Ce sera cette demande qui sera copiée.
      * </p>
      *
-     * @param demande
-     *            la demande contenant des rentes possédant et ne possédant pas le code cas spécial 07 / 08 et
-     *            nécessitant donc une séparation en deux
-     * @param demandesDeLaFamille
-     *            les demandes de la famille, une de ces demandes sera copiée et retournée après que les rentes aient
-     *            été rattachées à cette demande
-     * @param codeCasSpecial
-     *            le code cas spécial determinant si une demande doit être séparée en deux
+     * @param demande             la demande contenant des rentes possédant et ne possédant pas le code cas spécial 07 / 08 et
+     *                            nécessitant donc une séparation en deux
+     * @param demandesDeLaFamille les demandes de la famille, une de ces demandes sera copiée et retournée après que les rentes aient
+     *                            été rattachées à cette demande
+     * @param codeCasSpecial      le code cas spécial determinant si une demande doit être séparée en deux
      * @return la nouvelle demande qui a été créé depuis la séparation (n'est pas encore en BDD), ou la demande initiale
-     *         s'il n'y a pas eu lieu de copier une demande (les demandes étaient en état calculé)
-     * @throws REBusinessException
-     *             si le donneur de droit d'une base de calcul (tiers BC) est différent du requérant et qu'aucune
-     *             demande n'est au nom de ce tiers base calcul dans les demandes de la famille
-     * @throws IllegalArgumentException
-     *             si aucune rente n'est présente dans la demande
+     * s'il n'y a pas eu lieu de copier une demande (les demandes étaient en état calculé)
+     * @throws REBusinessException      si le donneur de droit d'une base de calcul (tiers BC) est différent du requérant et qu'aucune
+     *                                  demande n'est au nom de ce tiers base calcul dans les demandes de la famille
+     * @throws IllegalArgumentException si aucune rente n'est présente dans la demande
      */
     static DemandeRente repartirLesRentesPourCodeCasSpecial(final DemandeRente demande,
-            final Set<DemandeRente> demandesDeLaFamille, final CodeCasSpecialRente codeCasSpecial)
+                                                            final Set<DemandeRente> demandesDeLaFamille, final CodeCasSpecialRente codeCasSpecial)
             throws REBusinessException {
 
         Checkers.checkNotNull(demande, "demande");
@@ -657,13 +652,13 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
      * cette méthode sur les demandes.
      * </p>
      *
-     * @param demandeSurLaquelleOnTravail une demande, à l'état calculé, contenant des rentes dont le code prestation ne
-     *            correspondant pas au type de la demande
+     * @param demandeSurLaquelleOnTravail    une demande, à l'état calculé, contenant des rentes dont le code prestation ne
+     *                                       correspondant pas au type de la demande
      * @param demandesNonValideesDeLaFamille la liste des demandes non validées de la famille du requérant de la demande
-     *            sur laquelle on travail
+     *                                       sur laquelle on travail
      */
     static void repartirLesRentesSelonLesTypesDesDemandes(DemandeRente demandeSurLaquelleOnTravail,
-            Set<DemandeRente> demandesNonValideesDeLaFamille) {
+                                                          Set<DemandeRente> demandesNonValideesDeLaFamille) {
 
         for (RenteAccordee uneRenteADeplacer : demandeSurLaquelleOnTravail
                 .filtrerRentesAccordeesNeCorrespondantPasAuTypeDeLaDemande()) {
@@ -686,7 +681,7 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
     }
 
     private static Collection<RenteAccordee> retirerRenteAccordee(final Collection<RenteAccordee> rentesAccordees,
-            final RenteAccordee uneRente) {
+                                                                  final RenteAccordee uneRente) {
         Collection<RenteAccordee> listeSansLaRente = new ArrayList<RenteAccordee>();
 
         for (RenteAccordee uneRenteAccordeeDeLaListe : rentesAccordees) {
@@ -709,18 +704,14 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
     /**
      * DOCUMENT ME!
      *
-     * @param viewBean
-     *            DOCUMENT ME!
-     * @param action
-     *            DOCUMENT ME!
-     * @param session
-     *            DOCUMENT ME!
+     * @param viewBean DOCUMENT ME!
+     * @param action   DOCUMENT ME!
+     * @param session  DOCUMENT ME!
      * @return DOCUMENT ME!
-     * @throws Exception
-     *             DOCUMENT ME!
+     * @throws Exception DOCUMENT ME!
      */
     public FWViewBeanInterface actionCalculerAPI(final FWViewBeanInterface viewBean, final FWAction action,
-            final BSession session) throws Exception {
+                                                 final BSession session) throws Exception {
 
         RECalculACORDemandeRenteViewBean caViewBean = (RECalculACORDemandeRenteViewBean) viewBean;
         BITransaction transaction = null;
@@ -1005,7 +996,7 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
                 if (IREDemandeRente.CS_GENRE_DROIT_API_API_AI_RENTE
                         .equalsIgnoreCase(montantsPrstAPI[i].getCsGenreDroitApi())
                         || IREDemandeRente.CS_GENRE_DROIT_API_API_AI_PRST
-                                .equalsIgnoreCase(montantsPrstAPI[i].getCsGenreDroitApi())) {
+                        .equalsIgnoreCase(montantsPrstAPI[i].getCsGenreDroitApi())) {
                     isAPIAI = true;
 
                     if (null != tiers) {
@@ -1075,7 +1066,7 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
                 if ((isDateFinEcheance && (cal.compare(dateFinEcheance,
                         new JADate(montantsPrstAPI[i].getDateDebut())) != JACalendar.COMPARE_SECONDLOWER))
                         || (isDateEcheance && (cal.compare(dateEcheance,
-                                new JADate(montantsPrstAPI[i].getDateDebut())) != JACalendar.COMPARE_SECONDLOWER))) {
+                        new JADate(montantsPrstAPI[i].getDateDebut())) != JACalendar.COMPARE_SECONDLOWER))) {
                     continue;
                 }
 
@@ -1086,14 +1077,14 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
                     // d'échéance
                     if (JadeStringUtil.isBlankOrZero(montantsPrstAPI[i].getDateFin())
                             && (cal.compare(montantsPrstAPI[i].getDateDebut(),
-                                    dateFinEcheance.toStr(".")) == JACalendar.COMPARE_FIRSTLOWER)) {
+                            dateFinEcheance.toStr(".")) == JACalendar.COMPARE_FIRSTLOWER)) {
                         montantsPrstAPI[i].setDateFin(dateFinEcheance.toStr("."));
                         // Si date de fin plus grande que date échéance et
                         // datedébut plus petite que date d'échéance
                     } else if ((cal.compare(montantsPrstAPI[i].getDateFin(),
                             dateFinEcheance.toStr(".")) == JACalendar.COMPARE_FIRSTUPPER)
                             && (cal.compare(montantsPrstAPI[i].getDateDebut(),
-                                    dateFinEcheance.toStr(".")) == JACalendar.COMPARE_FIRSTLOWER)) {
+                            dateFinEcheance.toStr(".")) == JACalendar.COMPARE_FIRSTLOWER)) {
                         montantsPrstAPI[i].setDateFin(dateFinEcheance.toStr("."));
                     }
                 }
@@ -1315,12 +1306,12 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
                         if (((cal.compare(montantsPrstAPI[i].getDateDebut(),
                                 dateEcheance.toStr(".")) == JACalendar.COMPARE_FIRSTLOWER)
                                 || (cal.compare(montantsPrstAPI[i].getDateDebut(),
-                                        dateEcheance.toStr(".")) == JACalendar.COMPARE_EQUALS))
+                                dateEcheance.toStr(".")) == JACalendar.COMPARE_EQUALS))
 
                                 && ((cal.compare(montantsPrstAPI[i].getDateFin(),
-                                        dateEcheance.toStr(".")) == JACalendar.COMPARE_FIRSTUPPER)
-                                        || (cal.compare(montantsPrstAPI[i].getDateFin(),
-                                                dateEcheance.toStr(".")) == JACalendar.COMPARE_EQUALS))) {
+                                dateEcheance.toStr(".")) == JACalendar.COMPARE_FIRSTUPPER)
+                                || (cal.compare(montantsPrstAPI[i].getDateFin(),
+                                dateEcheance.toStr(".")) == JACalendar.COMPARE_EQUALS))) {
                             ra.setDateEcheance(
                                     PRDateFormater.convertDate_JJxMMxAAAA_to_MMxAAAA(dateEcheance.toStr(".")));
                             ra.update(transaction);
@@ -1410,7 +1401,7 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
                             if (BSessionUtil.compareDateFirstLower(session, lastDateDebutPeriodeAPI,
                                     ra.getDateFinDroit())
                                     || BSessionUtil.compareDateEqual(session, lastDateDebutPeriodeAPI,
-                                            ra.getDateFinDroit())) {
+                                    ra.getDateFinDroit())) {
 
                                 if (isAPIAI && isDateEcheance) {
                                     ra.setDateEcheance(
@@ -1534,7 +1525,7 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
     }
 
     public FWViewBeanInterface actionExporterScriptACOR(final FWViewBeanInterface viewBean, final FWAction action,
-            final BSession session) throws Exception {
+                                                        final BSession session) throws Exception {
 
         RECalculACORDemandeRenteViewBean caViewBean = (RECalculACORDemandeRenteViewBean) viewBean;
 
@@ -1587,7 +1578,7 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
     }
 
     public FWViewBeanInterface actionImporterScriptACOR(final FWViewBeanInterface viewBean, final FWAction action,
-            final BSession session) throws Exception {
+                                                        final BSession session) throws Exception {
 
         RECalculACORDemandeRenteViewBean caViewbean = (RECalculACORDemandeRenteViewBean) viewBean;
         Long idCopieDemande = null;
@@ -1632,26 +1623,14 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
                 throw new PRACORException(session.getLabel("ERREUR_RECALCUL_CAS"));
             }
 
-            REXmlDataContainer dc = null;
-            if (!JadeStringUtil.isEmpty(caViewbean.getContenuFCalculXML())) {
-                caViewbean.setContenuFCalculXML(StringEscapeUtils.unescapeHtml(caViewbean.getContenuFCalculXML()));
-
-                if ("<?xml version=\"1.0\" encoding=\"UTF-16\"?>".equals(caViewbean.getContenuFCalculXML())) {
-                    dc = new REXmlDataContainer();
-                    dc.setDecisions(new REDecisionXmlDataStructure[0]);
-                } else {
-                    try {
-                        dc = REImportFCalculACOR.importFCalcul(session, (BTransaction) transaction,
-                                new StringReader(caViewbean.getContenuFCalculXML()));
-                    }
-                    // Si erreur lors de la lecture du fichier xml, on la saute.
-                    catch (Exception e) {
-                        dc = null;
-                    }
-                }
+            FCalcul fCalcul = null;
+            if (!JadeStringUtil.isEmpty(caViewbean.getContenuFeuilleCalculXML())) {
+                fCalcul = unmarshalFile(caViewbean.getCheminFCalculXML());
             }
 
-            if ((dc == null) || (dc.getDecisions() == null)) {
+            List<FCalcul.Evenement> filterEvents = fCalcul.getEvenement().stream().filter(evenement -> !evenement.getBasesCalcul().stream().filter(basesCalcul -> !basesCalcul.getDecision().isEmpty()).collect(Collectors.toList()).isEmpty()).collect(Collectors.toList());
+
+            if ((fCalcul == null) || (filterEvents.isEmpty())) {
                 // Dans ce cas de figure, il n'y a rien à remonter.
                 // On contrôle l'arrivée d'un ci additionnel pour le requérant
                 // ainsi que ces conjoints et ex-conjoints !!!!
@@ -1754,13 +1733,13 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
                     // Traitement standard....
                     if (ret == 1) {
                         idCopieDemande = importationDesAnnoncesDuCalculACOR(session, caViewbean, transaction,
-                                idsRentesAccordeesNouveauDroit, noCasATraiter, dc);
+                                idsRentesAccordeesNouveauDroit, noCasATraiter, fCalcul);
                     }
                 }
                 // Pas de ci additionnel, traitement standard.
                 else {
                     idCopieDemande = importationDesAnnoncesDuCalculACOR(session, caViewbean, transaction,
-                            idsRentesAccordeesNouveauDroit, noCasATraiter, dc);
+                            idsRentesAccordeesNouveauDroit, noCasATraiter, fCalcul);
                 }
             }
 
@@ -1898,6 +1877,26 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
         return viewBean;
     }
 
+
+    /**
+     * Récupère le contenu du fichier f_calcul.xml venant de ACOR.
+     *
+     * @param xmlClassPath : le chemin du fichier à extraire.
+     * @return la feuille de calcul.
+     * @throws JAXBException
+     */
+    private FCalcul unmarshalFile(String xmlClassPath) throws JAXBException {
+        JAXBContext jc = JAXBContext.newInstance(FCalcul.class);
+        Unmarshaller unmarshaller = jc.createUnmarshaller();
+        try {
+            return (FCalcul) unmarshaller.unmarshal(new File((xmlClassPath)));
+
+        } catch (JAXBException exception) {
+            JadeLogger.error(this, "JAXB validation has thrown a JAXBException : " + exception.toString());
+            throw exception;
+        }
+    }
+
     private void miseAjourDateDesDemandes(BSession session, Set<DemandeRenteWrapper> ids) throws Exception {
         for (DemandeRenteWrapper demande : ids) {
             miseAjourDateDeLaDemande(session, demande.getDemandeRente().getId());
@@ -1910,7 +1909,7 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
      * Si aucune rente accordée n'est présente les dates de la demande ne seront pas mis a jour.
      *
      * @param session la session à utiliser
-     * @param id L'id de la demande à mettre à jour
+     * @param id      L'id de la demande à mettre à jour
      * @throws Exception
      */
     private void miseAjourDateDeLaDemande(BSession session, Long id) throws Exception {
@@ -1977,7 +1976,7 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
      * Réinitialise toutes les demandes de la famille (sauf API) en état non validé avant remonté du calcul
      *
      * @param session
-     * @param caViewbean
+     * @param idTiersRequerant
      * @throws IllegalArgumentException
      * @throws NumberFormatException
      * @throws ServletException
@@ -2038,7 +2037,7 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
     /**
      * Réinitialise une demande
      *
-     * @param demandeReinitialisees
+     * @param session
      * @param id
      */
     private void reinitialiserDemande(BSession session, long id) {
@@ -2060,7 +2059,7 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
     }
 
     private void calculerEtSauverRentesVerseesATort(final BSession session, final BTransaction transaction,
-            final Long idDemandeRente, final List<Long> idsRA) throws Exception {
+                                                    final Long idDemandeRente, final List<Long> idsRA) throws Exception {
 
         // suppression des rentes versées à tort de la demande (dans le cas d'une ré-importation)
         RERenteVerseeATortManager renteVerseeATortManager = new RERenteVerseeATortManager();
@@ -2191,7 +2190,7 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
      * l'importation et permettre l'importation sans planter l'applic.
      */
     private void doMajDateTraitementCIAdditionnel(final BSession session, final BITransaction transaction,
-            final String idTiers) throws Exception {
+                                                  final String idTiers) throws Exception {
 
         // Identification de l'arrivée d'un CI additionnel
         RERassemblementCIManager mgr = new RERassemblementCIManager();
@@ -2210,178 +2209,98 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
         }
     }
 
-    private void doMAJExtraData(final BSession session, final BTransaction transaction, final REXmlDataContainer dc,
-            final List<Long> rentesAccordees) throws Exception {
-        // Pour chacune des rentes accordées et $p, maj du taux de réduction
-        // pour anticipation
-        // et maj des année bte entière, demi et quart dans les bases de
-        // calculs.
-        // Ces données sont remontées de la feuille de calcul.
-        if (dc != null) {
-            REBaseCalculXmlDataStructure[] bcsXML = dc.getBasesCalcul();
-            REDecisionXmlDataStructure[] decisionsXML = dc.getDecisions();
+    private void doMAJExtraData(final BSession session, final BTransaction transaction, final FCalcul fCalcul,
+                                final List<Long> rentesAccordees) throws Exception {
+        /* Pour chacune des rentes accordées et $p, maj du taux de réduction pour anticipation et maj des années bte entière, demi et quart dans les bases de calculs.
+         Ces données sont remontées de la feuille de calcul. */
+        if (fCalcul != null) {
 
-            for (int i = 0; i < bcsXML.length; i++) {
-                REBaseCalculXmlDataStructure bcXML = bcsXML[i];
-                // Tests des BTE et du taux de reduction pour anticipation !!!!
-                // Si le test passe, il y a qqch à mettre à jours.
-                if (!JadeStringUtil.isBlankOrZero(bcXML.getAnneeBte1())
-                        || !JadeStringUtil.isBlankOrZero(bcXML.getAnneeBte2())
-                        || !JadeStringUtil.isBlankOrZero(bcXML.getAnneeBte4())
-                        || !JadeStringUtil.isBlankOrZero(bcXML.getTauxReductionAnticipation())) {
+            // On récupère la liste des Rentes Accordées.
+            RERenteAccordeeManager raManager = new RERenteAccordeeManager();
+            raManager.setSession(session);
+            raManager.setForIdsRentesAccordees(StringUtils.join(rentesAccordees, ","));
+            raManager.find(transaction, BManager.SIZE_NOLIMIT);
 
-                    // On récupère la/les décisions liée(s) à cette base de
-                    // calcul
-                    String idBC = bcXML.getId();
+            for (FCalcul.Evenement eachEvenement : fCalcul.getEvenement()) {
+                for (FCalcul.Evenement.BasesCalcul eachBaseCalcul : eachEvenement.getBasesCalcul()) {
 
-                    for (int j = 0; j < decisionsXML.length; j++) {
-                        REDecisionXmlDataStructure decisionXML = decisionsXML[j];
-                        if (idBC.equals(decisionXML.getPrestation().getRente().getIdBaseCalcul())) {
+                    // Pour chaque Base de Calcul, on récupère les années BTE et le taux de réduction d'anticipation s'ils existent.
+                    String an1 = null;
+                    String an2 = null;
+                    String an4 = null;
+                    if (Objects.nonNull(eachBaseCalcul.getBaseRam()) && Objects.nonNull(eachBaseCalcul.getBaseRam().getBte())) {
+                        an1 = String.valueOf(eachBaseCalcul.getBaseRam().getBte().getAn1());
+                        an2 = String.valueOf(eachBaseCalcul.getBaseRam().getBte().getAn2());
+                        an4 = String.valueOf(eachBaseCalcul.getBaseRam().getBte().getAn4());
+                    }
+                    String tauxReductionAnticipation = null;
+                    if (Objects.nonNull(eachBaseCalcul.getAnticipation()) && !eachBaseCalcul.getAnticipation().getTranche().isEmpty())
+                        tauxReductionAnticipation = String.valueOf(eachBaseCalcul.getAnticipation().getTranche().get(0).getTauxReductionAnticipation());
 
+                    for (FCalcul.Evenement.BasesCalcul.Decision eachDecision : eachBaseCalcul.getDecision()) {
+                        for (FCalcul.Evenement.BasesCalcul.Decision.Prestation eachPrestation : eachDecision.getPrestation()) {
                             // Il faut retrouver la base de calcul + rente
                             // accordee et $p
                             // pour leur affecter les années bte et taux
                             // réduction
-                            String nss = decisionXML.getPrestation().getNssBeneficiaire();
-                            String ddAAAAMMJJ = decisionXML.getPrestation().getRente().getDateDebutDroit();
+                            if (Objects.nonNull(eachPrestation.getRente())) {
+                                String nss = eachPrestation.getBeneficiaire();
+                                String ddAAAAMMJJ = String.valueOf(eachPrestation.getRente().getDebutDroit());
 
-                            for (Long id : rentesAccordees) {
-                                RERenteAccordee ra = new RERenteAccordee();
-                                ra.setSession(session);
-                                ra.setIdPrestationAccordee(id.toString());
-                                ra.retrieve(transaction);
-                                PRAssert.notIsNew(ra, null);
+                                for (RERenteAccordee eachRA : raManager.getContainerAsList()) {
+                                    PRAssert.notIsNew(eachRA, null);
 
-                                PRTiersWrapper tw = PRTiersHelper.getTiersParId(session, ra.getIdTiersBeneficiaire());
-                                String nss2 = tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL);
+                                    PRTiersWrapper tw = PRTiersHelper.getTiersParId(session, eachRA.getIdTiersBeneficiaire());
+                                    String nss2 = tw.getProperty(PRTiersWrapper.PROPERTY_NUM_AVS_ACTUEL);
 
-                                nss = NSUtil.unFormatAVS(nss);
-                                nss2 = NSUtil.unFormatAVS(nss2);
+                                    nss = NSUtil.unFormatAVS(nss);
+                                    nss2 = NSUtil.unFormatAVS(nss2);
 
-                                String ddAAAAMMJJ2 = PRDateFormater
-                                        .convertDate_JJxMMxAAAA_to_AAAAMMJJ(ra.getDateDebutDroit());
+                                    String ddAAAAMMJJ2 = PRDateFormater
+                                            .convertDate_JJxMMxAAAA_to_AAAAMMJJ(eachRA.getDateDebutDroit());
 
-                                String codePrst1 = ra.getCodePrestation();
-                                String codePrst2 = decisionXML.getPrestation().getRente().getCodePrestation();
-                                // On effectue les maj
-                                if (nss.equals(nss2) && ddAAAAMMJJ.equals(ddAAAAMMJJ2) && codePrst1.equals(codePrst2)) {
+                                    String codePrst1 = eachRA.getCodePrestation();
+                                    String codePrst2 = String.valueOf(eachPrestation.getRente().getGenre());
 
-                                    // A valider à 100%, depuis la version 1.12.03, manadat Inforom D0112, les remarques
-                                    // ne sont plus insérés dans les rentes accordées !
-                                    String remarques = null;
-                                    if (decisionXML.getPrestation() != null) {
-                                        if (decisionXML.getPrestation().getRente() != null) {
-                                            if (!JadeStringUtil
-                                                    .isEmpty(decisionXML.getPrestation().getRente().getRemarques())) {
-                                                remarques = decisionXML.getPrestation().getRente().getRemarques()
-                                                        .trim();
-                                            }
+                                    if (nss.equals(nss2) && ddAAAAMMJJ.equals(ddAAAAMMJJ2) && codePrst1.equals(codePrst2)) {
+
+                                        if (Objects.nonNull(tauxReductionAnticipation)) {
+                                            eachRA.setTauxReductionAnticipation(tauxReductionAnticipation);
+                                            eachRA.update(transaction);
+                                        }
+
+                                        if (!JadeStringUtil.isBlankOrZero(an1) || !JadeStringUtil.isBlankOrZero(an2) || !JadeStringUtil.isBlankOrZero(an4)) {
+                                            // On récupère la base de calcul liée à cette rente de calcul depuis la base de données.
+                                            REBasesCalcul basesCalc = new REBasesCalcul();
+                                            basesCalc.setSession(session);
+                                            basesCalc.setIdBasesCalcul(eachRA.getIdBaseCalcul());
+                                            basesCalc.retrieve(transaction);
+                                            PRAssert.notIsNew(basesCalc, null);
+
+                                            basesCalc.setNombreAnneeBTE1(an1);
+                                            basesCalc.setNombreAnneeBTE2(an2);
+                                            basesCalc.setNombreAnneeBTE4(an4);
+                                            basesCalc.update(transaction);
                                         }
                                     }
 
-                                    boolean isUpdateRA = false;
-                                    if (!JadeStringUtil.isBlankOrZero(remarques)) {
-                                        ra.setRemarques(remarques);
-                                        isUpdateRA = true;
-                                    }
-
-                                    if (!JadeStringUtil.isBlankOrZero(bcXML.getTauxReductionAnticipation())) {
-                                        ra.setTauxReductionAnticipation(bcXML.getTauxReductionAnticipation());
-                                        isUpdateRA = true;
-
-                                        // On récupère les $p
-                                        REPrestationsDuesManager mgr = new REPrestationsDuesManager();
-                                        mgr.setSession(session);
-                                        mgr.setForIdRenteAccordes(ra.getIdPrestationAccordee());
-                                        mgr.setForCsType(IREPrestationDue.CS_TYPE_PMT_MENS);
-                                        mgr.find(transaction);
-                                        for (int k = 0; k < mgr.size(); k++) {
-                                            REPrestationDue pd = (REPrestationDue) mgr.getEntity(k);
-                                            pd.update(transaction);
-                                        }
-                                    }
-
-                                    if (isUpdateRA) {
-                                        ra.update(transaction);
-                                    }
-
-                                    if (!JadeStringUtil.isBlankOrZero(bcXML.getAnneeBte1())
-                                            || !JadeStringUtil.isBlankOrZero(bcXML.getAnneeBte2())
-                                            || !JadeStringUtil.isBlankOrZero(bcXML.getAnneeBte4())) {
-
-                                        // On récupère la base de calcul
-                                        REBasesCalcul bc = new REBasesCalcul();
-                                        bc.setSession(session);
-                                        bc.setIdBasesCalcul(ra.getIdBaseCalcul());
-                                        bc.retrieve(transaction);
-                                        PRAssert.notIsNew(bc, null);
-
-                                        bc.setNombreAnneeBTE1(bcXML.getAnneeBte1());
-                                        bc.setNombreAnneeBTE2(bcXML.getAnneeBte2());
-                                        bc.setNombreAnneeBTE4(bcXML.getAnneeBte4());
-                                        bc.update(transaction);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                } else {
-
-                    // On récupère la/les décisions liée(s) à cette base de
-                    // calcul
-                    String idBC = bcXML.getId();
-
-                    for (int j = 0; j < decisionsXML.length; j++) {
-                        REDecisionXmlDataStructure decisionXML = decisionsXML[j];
-                        if (idBC.equals(decisionXML.getPrestation().getRente().getIdBaseCalcul())) {
-
-                            for (Long id : rentesAccordees) {
-
-                                // A valider à 100%, depuis la version 1.12.03, manadat Inforom D0112, les remarques
-                                // ne sont plus insérés dans les rentes accordées !
-                                String remarques = null;
-                                if (decisionXML.getPrestation() != null) {
-                                    if (decisionXML.getPrestation().getRente() != null) {
-                                        if (!JadeStringUtil
-                                                .isEmpty(decisionXML.getPrestation().getRente().getRemarques())) {
-                                            remarques = decisionXML.getPrestation().getRente().getRemarques().trim();
-                                        }
-                                    }
-                                }
-                                if (!JadeStringUtil.isBlankOrZero(remarques)) {
-                                    RERenteAccordee ra = new RERenteAccordee();
-                                    ra.setSession(session);
-                                    ra.setIdPrestationAccordee(id.toString());
-                                    ra.retrieve(transaction);
-                                    PRAssert.notIsNew(ra, null);
-
-                                    boolean isUpdateRA = false;
-                                    if (!JadeStringUtil.isBlankOrZero(remarques)) {
-                                        ra.setRemarques(remarques);
-                                        isUpdateRA = true;
-                                    }
-
-                                    if (isUpdateRA) {
-                                        ra.update(transaction);
-                                    }
                                 }
                             }
                         }
                     }
                 }
-
             }
         }
     }
 
     private void doMigrationBasesCalculRentesAccordee(final BSession session, final BTransaction transaction,
-            final List<Long> rentesAccordees, final RECalculACORDemandeRenteViewBean viewBean) throws Exception {
+                                                      final List<Long> rentesAccordees, final RECalculACORDemandeRenteViewBean viewBean) throws Exception {
     }
 
     private void doTraitementCIAdd(final BSession session, final BITransaction transaction, final KeyAP k,
-            final ValueAP v) throws Exception {
+                                   final ValueAP v) throws Exception {
         List<String> l = v.idsRCI;
-        for (Iterator<String> iterator = l.iterator(); iterator.hasNext();) {
+        for (Iterator<String> iterator = l.iterator(); iterator.hasNext(); ) {
             String idRCI = iterator.next();
             RERassemblementCI rci = new RERassemblementCI();
             rci.setSession(session);
@@ -2473,7 +2392,7 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
     }
 
     private int doTraitementForCIAdditionnel(final BSession session, final BITransaction transaction,
-            final Map<KeyAP, ValueAP> mapAP) throws Exception {
+                                             final Map<KeyAP, ValueAP> mapAP) throws Exception {
 
         /*
          * 1)
@@ -2519,13 +2438,12 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
      * @param session
      * @param transaction
      * @param demandeSource
-     * @param bc
      * @param noCasATraiter
      * @return l'id de la base de calcul.
      * @throws Exception
      */
     private String doTraiterBaseCalcul(final BSession session, final BTransaction transaction,
-            final REDemandeRente demandeSource, final int noCasATraiter) throws Exception {
+                                       final REDemandeRente demandeSource, final int noCasATraiter) throws Exception {
 
         switch (noCasATraiter) {
 
@@ -2790,17 +2708,14 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
     /**
      * retrouve par introspection la methode a executer quand on arrive dans ce helper avec une action custom.
      *
-     * @param viewBean
-     *            DOCUMENT ME!
-     * @param action
-     *            DOCUMENT ME!
-     * @param session
-     *            DOCUMENT ME!
+     * @param viewBean DOCUMENT ME!
+     * @param action   DOCUMENT ME!
+     * @param session  DOCUMENT ME!
      * @return DOCUMENT ME!
      */
     @Override
     protected FWViewBeanInterface execute(final FWViewBeanInterface viewBean, final FWAction action,
-            final BISession session) {
+                                          final BISession session) {
 
         return deleguerExecute(viewBean, action, session);
     }
@@ -2827,11 +2742,10 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
      * seront crées et référencé dans la demande
      *
      * @return Dans tous les cas, l'entité PRInfoCompl associée à la demande
-     * @throws Exception
-     *             S'il n'est pas possible de récupérer les infos compl
+     * @throws Exception S'il n'est pas possible de récupérer les infos compl
      */
     private PRInfoCompl getOrCreateInfoComplementaire(final BSession session, final BTransaction transaction,
-            final REDemandeRente demande) throws Exception {
+                                                      final REDemandeRente demande) throws Exception {
         PRInfoCompl infoComplementaire = new PRInfoCompl();
         infoComplementaire.setSession(session);
 
@@ -2867,8 +2781,8 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
      * @throws Exception
      */
     private int importationCIAdditionnelsDepuisCalculACOR(final BSession session,
-            final RECalculACORDemandeRenteViewBean caViewbean, final BITransaction transaction,
-            final Map<KeyAP, ValueAP> mapAP) throws PRACORException, Exception {
+                                                          final RECalculACORDemandeRenteViewBean caViewbean, final BITransaction transaction,
+                                                          final Map<KeyAP, ValueAP> mapAP) throws PRACORException, Exception {
 
         List<REFeuilleCalculVO> fcs = globaz.corvus.acor.parser.rev09.REACORParser.parseCIAdd(session, transaction,
                 caViewbean.loadDemandeRente(null), new StringReader(caViewbean.getContenuAnnoncePay()));
@@ -2878,17 +2792,17 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
         // de la feuille de calcul !!!
         Set<KeyAP> keys = mapAP.keySet();
 
-        for (Iterator<KeyAP> iterator2 = keys.iterator(); iterator2.hasNext();) {
+        for (Iterator<KeyAP> iterator2 = keys.iterator(); iterator2.hasNext(); ) {
             KeyAP keyAP = iterator2.next();
 
             // On itère pour voir si cette clé correspond à une BC-RA
             // remontée de ACOR !!!
-            for (Iterator<REFeuilleCalculVO> iterator = fcs.iterator(); iterator.hasNext();) {
+            for (Iterator<REFeuilleCalculVO> iterator = fcs.iterator(); iterator.hasNext(); ) {
                 REFeuilleCalculVO fcvo = iterator.next();
 
                 List<REFeuilleCalculVO.ElementVO> elementsFC = fcvo.getElementsAP();
 
-                for (Iterator<REFeuilleCalculVO.ElementVO> iterator3 = elementsFC.iterator(); iterator3.hasNext();) {
+                for (Iterator<REFeuilleCalculVO.ElementVO> iterator3 = elementsFC.iterator(); iterator3.hasNext(); ) {
                     REFeuilleCalculVO.ElementVO elmFC = iterator3.next();
 
                     if (keyAP.idTiers.equals(elmFC.getIdTiers()) && keyAP.genreRente.equals(elmFC.getGenreRente())) {
@@ -2907,20 +2821,19 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
     }
 
     /**
-     *
      * @param session
      * @param caViewbean
      * @param transaction
      * @param rentesAccordees
      * @param noCasATraiter
-     * @param dc
+     * @param fCalcul
      * @return L'id de la copie de la demande si la demande original à été copié
      * @throws PRACORException
      * @throws Exception
      */
     private Long importationDesAnnoncesDuCalculACOR(final BSession session,
-            final RECalculACORDemandeRenteViewBean caViewbean, final BITransaction transaction,
-            final LinkedList<Long> rentesAccordees, final int noCasATraiter, final REXmlDataContainer dc)
+                                                    final RECalculACORDemandeRenteViewBean caViewbean, final BITransaction transaction,
+                                                    final LinkedList<Long> rentesAccordees, final int noCasATraiter, final FCalcul fCalcul)
             throws PRACORException, Exception {
 
         StringReader annoncePayReader = new StringReader(caViewbean.getContenuAnnoncePay());
@@ -2935,8 +2848,8 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
          * Maj de qqes données supplémentaire récupérée depuis la
          * feuille de calcul acor taux de reduction, BTE entière, demi, quart...
          */
-        if ((dc != null) && (dc.getDecisions().length > 0)) {
-            doMAJExtraData(session, (BTransaction) transaction, dc, rentesAccordees);
+        if ((fCalcul != null) && (fCalcul.getEvenement().size() > 0)) {
+            doMAJExtraData(session, (BTransaction) transaction, fCalcul, rentesAccordees);
         }
 
         /* Lecture du fichier annonce.rr en priorité */
@@ -2959,7 +2872,7 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
     }
 
     private ValueAP initVAP(final BSession session, final BITransaction transaction, final RERenteAccordee ra,
-            final List<String> idsRCI) throws Exception {
+                            final List<String> idsRCI) throws Exception {
 
         ValueAP v = new ValueAP();
         v.ancienMontantRA = ra.getMontantPrestation();
@@ -2987,9 +2900,9 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
      * @throws Exception
      */
     private void miseAJourInfoComplementaire(final BSession session, final BITransaction transaction,
-            final String idDemande, final boolean hasRenteLimitee, final boolean isRenteAvecSupplementPourPersonneVeuve,
-            final boolean isRenteAvecDebutDroit5AnsAvantDepotDemande,
-            final boolean isRenteAvecMontantMinimumMajoreInvalidite, final boolean isRenteReduitePourSurassurance)
+                                             final String idDemande, final boolean hasRenteLimitee, final boolean isRenteAvecSupplementPourPersonneVeuve,
+                                             final boolean isRenteAvecDebutDroit5AnsAvantDepotDemande,
+                                             final boolean isRenteAvecMontantMinimumMajoreInvalidite, final boolean isRenteReduitePourSurassurance)
             throws Exception {
         if (JadeStringUtil.isBlankOrZero(idDemande)) {
             String message = session.getLabel("CALCULER_DECISION_ERREUR_ID_DEMANDE_EST_VIDE");
@@ -3014,12 +2927,12 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
     }
 
     /**
-     *
-     * @param idTiersRequrant L'id tiers du requérant de la demande pour laquelle on remonte le calcul
-     * @param idDemandeCournante Id de la demande pour laquelle on est en train de remonter le calcul
+     * @param idTiersRequrant   L'id tiers du requérant de la demande pour laquelle on remonte le calcul
+     * @param idDemandeCourante Id de la demande pour laquelle on est en train de remonter le calcul
      * @throws Exception
      */
-    private String separerLesDemandesSiBesoin(final Long idTiersRequrant, long idDemandeCourante) throws Exception {
+    private String separerLesDemandesSiBesoin(final Long idTiersRequrant, long idDemandeCourante) throws
+            Exception {
 
         BSession session = BSessionUtil.getSessionFromThreadContext();
         if (session == null) {
@@ -3104,7 +3017,6 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
     /**
      * @param demandeCourante
      * @param session
-     * @param basesCalculs
      * @throws Exception
      */
     private List<BaseCalculWrapper> getBCWrapperDeLaDemande(DemandeRente demandeCourante, BSession session)
@@ -3156,8 +3068,8 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
      * @throws Exception
      */
     private void deplacerRenteAccordeesModeA(PersonneAVS requerant, DemandeRenteWrapper demandeCouranteCle,
-            List<BaseCalculWrapper> basesCalculsDemandeCourante, Set<DemandeRenteWrapper> demandesDeLaFamilleCle,
-            BSession session) throws Exception {
+                                             List<BaseCalculWrapper> basesCalculsDemandeCourante, Set<DemandeRenteWrapper> demandesDeLaFamilleCle,
+                                             BSession session) throws Exception {
         // Si des demandes ouverte existent pour la famille. Sinon on ne fait rien
         if (demandesDeLaFamilleCle != null && demandesDeLaFamilleCle.size() > 0) {
             String cleDemandeCourante = demandeCouranteCle.getCleDeComparaison();
@@ -3194,8 +3106,8 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
      * @throws Exception
      */
     private String deplacerRenteAccordeesModeB(PersonneAVS requerant, DemandeRenteWrapper demandeCouranteCle,
-            List<BaseCalculWrapper> basesCalculsDemandeCourante, Set<DemandeRenteWrapper> demandesDeLaFamilleWrapper,
-            BSession session) throws Exception {
+                                               List<BaseCalculWrapper> basesCalculsDemandeCourante, Set<DemandeRenteWrapper> demandesDeLaFamilleWrapper,
+                                               BSession session) throws Exception {
 
         List<String> messages = new ArrayList<String>();
 
@@ -3367,14 +3279,16 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
     /**
      * Créer une copie de la demande et déplace la rente accordées dedans
      *
-     * @param baseDeCalcul La base de calcul à déplacer
-     * @param demandeValidee La demande à copier
+     * @param session
+     * @param baseDeCalcul    La base de calcul à déplacer
+     * @param demandeOriginal
      * @return <code>true</code> si le déplacement à pu être réalisé
      * @throws Exception
      * @throws REReglesException
      */
-    private REDemandeRente deplacerBaseDeCalculDansCopieDeLaDemande(BSession session, REBasesCalcul baseDeCalcul,
-            DemandeRenteWrapper demandeOriginal) throws REReglesException, Exception {
+    private REDemandeRente deplacerBaseDeCalculDansCopieDeLaDemande(BSession session, REBasesCalcul
+            baseDeCalcul,
+                                                                    DemandeRenteWrapper demandeOriginal) throws REReglesException, Exception {
 
         // Recherche du bon type de demande avant la copie
         TypeDemandeRente type = demandeOriginal.getDemandeRente().getTypeDemandeRente();
@@ -3420,9 +3334,9 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
     /**
      * Déplace la base de calcul dans la demande
      *
+     * @param session
      * @param basesCalcul La base de calcul à déplacer
-     * @param demandeRente La demande dans laquelle déplacer la base de calcul
-     * @return <code>true</code> si le déplacement à réussit
+     * @param idDemande
      * @throws Exception
      */
     private void deplacerBaseDeCalculDansDemande(BSession session, REBasesCalcul basesCalcul, String idDemande)
@@ -3485,7 +3399,7 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
      * 2 - Si la demande à été trouvée, elle sera supprimé du Set de demandes <code>demandes</code> Méthode safe si
      * demandes est null
      *
-     * @param demandes Le Set de demandes dans lequel la recherche sera effectué
+     * @param demandes          Le Set de demandes dans lequel la recherche sera effectué
      * @param idDemandeCourante L'id de la demande à récupérer
      * @return La demande courante si trouvée sinon null.
      */
@@ -3526,7 +3440,7 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
     }
 
     private void traitementDeplacementBCRAPD(final String idDemandeRente, final String idBaseCalcul,
-            final BSession session, final BITransaction transaction) throws Exception {
+                                             final BSession session, final BITransaction transaction) throws Exception {
 
         REDemandeRente newDemande = new REDemandeRente();
         newDemande.setIdDemandeRente(idDemandeRente);
@@ -3604,7 +3518,7 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
      * @throws Exception
      */
     private void traiterLesRemarquesParticulieresDeLaFeuilleDeCalculAcor(final BSession session,
-            final BITransaction transaction, final RECalculACORDemandeRenteViewBean caViewbean) throws Exception {
+                                                                         final BITransaction transaction, final RECalculACORDemandeRenteViewBean caViewbean) throws Exception {
         String feuilleDeCalculAcor = caViewbean.getContenuFeuilleCalculXML();
 
         boolean isRenteLimitee = false;
