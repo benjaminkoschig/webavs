@@ -1,0 +1,11 @@
+<table style="width: 300px;background-color: #E8EEF4;border : 1px solid black;font-style: italic;">
+    <tr>
+        <td><span style="font-weight: bold; "><ct:FWLabel key="JSP_JOB_PRIORITY_INFO_TITRE"/></span></td>
+    </tr>
+    <tr>
+        <td><span style="margin-left: 2em; "><%=globaz.jade.job.common.JadeJobPriorities.MAX_PRIORITY%>=<ct:FWLabel key="JSP_JOB_PRIORITY_INFO_ELEVEE"/></span></td>
+    </tr>
+    <tr>
+        <td><span style="margin-left: 2em; "><%=globaz.jade.job.common.JadeJobPriorities.MIN_PRIORITY%>=<ct:FWLabel key="JSP_JOB_PRIORITY_INFO_BAS"/></span></td>
+    </tr>
+</table>
