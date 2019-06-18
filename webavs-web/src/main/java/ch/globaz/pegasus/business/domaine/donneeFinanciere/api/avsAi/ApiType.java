@@ -19,6 +19,7 @@ public enum ApiType implements CodeSystemEnum<ApiType> {
     API_91("64012009", ApiGenre.INVALIDITE, ApiDegre.FAIBLE),
     API_92("64012010", ApiGenre.INVALIDITE, ApiDegre.MOYEN),
     API_93("64012011", ApiGenre.INVALIDITE, ApiDegre.GRAVE),
+    API_94("64012016", ApiGenre.VIELLESSE, ApiDegre.FAIBLE),
     API_95("64012012", ApiGenre.VIELLESSE, ApiDegre.FAIBLE),
     API_96("64012013", ApiGenre.VIELLESSE, ApiDegre.MOYEN),
     API_97("64012014", ApiGenre.VIELLESSE, ApiDegre.GRAVE);

@@ -31,6 +31,7 @@ public class ConverterPensionKindTest {
                 { IPCApiAvsAi.CS_TYPE_API_91, 91 }, { IPCApiAvsAi.CS_TYPE_API_92, 92 },
                 { IPCApiAvsAi.CS_TYPE_API_93, 93 }, { IPCApiAvsAi.CS_TYPE_API_85, 85 },
                 { IPCApiAvsAi.CS_TYPE_API_86, 86 }, { IPCApiAvsAi.CS_TYPE_API_87, 87 },
+                { IPCApiAvsAi.CS_TYPE_API_94, 94 },
                 { IPCApiAvsAi.CS_TYPE_API_89, 89 }, { IPCApiAvsAi.CS_TYPE_API_95, 95 },
                 { IPCApiAvsAi.CS_TYPE_API_96, 96 }, { IPCApiAvsAi.CS_TYPE_API_97, 97 },
                 // 991 = Sans rente vieillesse (AV)

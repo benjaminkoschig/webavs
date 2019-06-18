@@ -83,6 +83,7 @@ public final class TypeRenteMap {
             this.add(IPCApiAvsAi.CS_TYPE_API_86);
             this.add(IPCApiAvsAi.CS_TYPE_API_87);
             this.add(IPCApiAvsAi.CS_TYPE_API_89);
+            this.add(IPCApiAvsAi.CS_TYPE_API_94);
             this.add(IPCApiAvsAi.CS_TYPE_API_95);
             this.add(IPCApiAvsAi.CS_TYPE_API_96);
             this.add(IPCApiAvsAi.CS_TYPE_API_97);

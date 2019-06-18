@@ -57,7 +57,7 @@ public class ApiUtil {
         map.put("91", ApiUtil.AI);
         map.put("92", ApiUtil.AI);
         map.put("93", ApiUtil.AI);
-        map.put("94", ApiUtil.AI);
+        map.put("94", ApiUtil.AVS);
         map.put("95", ApiUtil.AVS);
         map.put("96", ApiUtil.AVS);
         map.put("97", ApiUtil.AVS);
@@ -78,6 +78,7 @@ public class ApiUtil {
         map.put(IPCApiAvsAi.CS_TYPE_API_91, ApiUtil.AI);
         map.put(IPCApiAvsAi.CS_TYPE_API_92, ApiUtil.AI);
         map.put(IPCApiAvsAi.CS_TYPE_API_93, ApiUtil.AI);
+        map.put(IPCApiAvsAi.CS_TYPE_API_94, ApiUtil.AVS);
         map.put(IPCApiAvsAi.CS_TYPE_API_95, ApiUtil.AVS);
         map.put(IPCApiAvsAi.CS_TYPE_API_96, ApiUtil.AVS);
         map.put(IPCApiAvsAi.CS_TYPE_API_97, ApiUtil.AVS);

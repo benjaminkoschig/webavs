@@ -52,6 +52,7 @@ public class ConverterPensionKind {
         aMap.put(IPCApiAvsAi.CS_TYPE_API_86, 86);
         aMap.put(IPCApiAvsAi.CS_TYPE_API_87, 87);
         aMap.put(IPCApiAvsAi.CS_TYPE_API_89, 89);
+        aMap.put(IPCApiAvsAi.CS_TYPE_API_94, 94);
         aMap.put(IPCApiAvsAi.CS_TYPE_API_95, 95);
         aMap.put(IPCApiAvsAi.CS_TYPE_API_96, 96);
         aMap.put(IPCApiAvsAi.CS_TYPE_API_97, 97);

@@ -14,6 +14,7 @@ public interface IPCApiAvsAi {
     String CS_TYPE_API_91 = "64012009";
     String CS_TYPE_API_92 = "64012010";
     String CS_TYPE_API_93 = "64012011";
+    String CS_TYPE_API_94 = "64012016";
     String CS_TYPE_API_95 = "64012012";
     String CS_TYPE_API_96 = "64012013";
     String CS_TYPE_API_97 = "64012014";

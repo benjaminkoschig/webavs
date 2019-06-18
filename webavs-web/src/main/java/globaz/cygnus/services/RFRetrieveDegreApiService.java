@@ -56,6 +56,7 @@ public class RFRetrieveDegreApiService {
         typeApiFaible.add(IPCApiAvsAi.CS_TYPE_API_85);
         typeApiFaible.add(IPCApiAvsAi.CS_TYPE_API_89);
         typeApiFaible.add(IPCApiAvsAi.CS_TYPE_API_91);
+        typeApiFaible.add(IPCApiAvsAi.CS_TYPE_API_94);
         typeApiFaible.add(IPCApiAvsAi.CS_TYPE_API_95);
     }
 
