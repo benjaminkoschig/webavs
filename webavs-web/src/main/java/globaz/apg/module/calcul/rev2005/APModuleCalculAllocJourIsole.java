@@ -114,12 +114,13 @@ public class APModuleCalculAllocJourIsole extends AAPModuleCalculSalaireJournali
 
                 List<IAFAssurance> listAssurance = APRechercherAssuranceFromDroitCotisationService
                         .rechercher(sitPro.getIdDroit(), bcSitProf.getIdAffilie(), session);
+
                 for (IAFAssurance assurance : listAssurance) {
-                    if (assurance.getAssuranceId().equals(idAssuranceParitaireBE)
-                            || assurance.getAssuranceId().equals(idAssurancePersonnelBE)) {
+                    if ((assurance.getAssuranceId().equals(idAssuranceParitaireBE) && !sitPro.getIsIndependant())
+                            || (assurance.getAssuranceId().equals(idAssurancePersonnelBE) && sitPro.getIsIndependant())) {
                         return ECanton.BE;
-                    } else if (assurance.getAssuranceId().equals(idAssuranceParitaireJU)
-                            || assurance.getAssuranceId().equals(idAssurancePersonnelJU)) {
+                    } else if ((assurance.getAssuranceId().equals(idAssuranceParitaireJU) && !sitPro.getIsIndependant())
+                            || (assurance.getAssuranceId().equals(idAssurancePersonnelJU) && sitPro.getIsIndependant())) {
                         return ECanton.JU;
                     }
                 }

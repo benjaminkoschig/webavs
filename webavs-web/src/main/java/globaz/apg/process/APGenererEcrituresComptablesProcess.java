@@ -1460,17 +1460,19 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
         }
 
         TypeComplement typeComplement = null;
-        for(Object repar: repartitions) {
-            Repartition repartition1 = (Repartition) repar;
-            if (APTypeDePrestation.COMPCIAB.isCodeSystemEqual(repartition1.genrePrestation) ||
-                    APTypeDePrestation.JOUR_ISOLE.isCodeSystemEqual(repartition1.genrePrestation)) {
-                typeComplement = getTypeComplementFromAssurance(getSession(), key.idAffilie, repartition1.idDroit);
-                break;
-            }
-        }
 
         // parcours de toutes les répartitions
         while (repartitionsIterator.hasNext()) {
+
+            for(Object repar: repartitions) {
+                Repartition repartition1 = (Repartition) repar;
+                if (APTypeDePrestation.COMPCIAB.isCodeSystemEqual(repartition1.genrePrestation) ||
+                        APTypeDePrestation.JOUR_ISOLE.isCodeSystemEqual(repartition1.genrePrestation)) {
+                    typeComplement = getTypeComplementFromAssurance(getSession(), key.idAffilie, repartition1.idDroit, repartition1.isIndependant);
+                    break;
+                }
+            }
+
             repartition = (Repartition) repartitionsIterator.next();
 
             final boolean isGenrePrestationACMAlpha = APTypeDePrestation.ACM_ALFA
@@ -2870,7 +2872,7 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
             TypeComplement typeComplement = null;
             if (APTypeDePrestation.COMPCIAB.isCodeSystemEqual(repartition.genrePrestation) ||
                 APTypeDePrestation.JOUR_ISOLE.isCodeSystemEqual(repartition.genrePrestation)) {
-                typeComplement = getTypeComplementFromAssurance(getSession(), idAffilie, prestation.getIdDroit());
+                typeComplement = getTypeComplementFromAssurance(getSession(), idAffilie, prestation.getIdDroit(), isIndependant);
             }
 
             // choix de la rubrique
@@ -2919,7 +2921,7 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
         return repartitions;
     }
 
-    private TypeComplement getTypeComplementFromAssurance(BSession session, String idAffilie, String idDroit) throws Exception {
+    private TypeComplement getTypeComplementFromAssurance(BSession session, String idAffilie, String idDroit, boolean isIndependant) throws Exception {
         // list les cantons
         String idAssuranceParitaireJU = JadePropertiesService.getInstance()
                 .getProperty(APApplication.PROPERTY_ASSURANCE_COMPLEMENT_PARITAIRE_JU_ID);
@@ -2932,14 +2934,18 @@ public class APGenererEcrituresComptablesProcess extends BProcess {
         List<IAFAssurance> listAssurance = APRechercherAssuranceFromDroitCotisationService.rechercher(idDroit,
                 idAffilie, session);
         for (IAFAssurance assurance : listAssurance) {
-            if (assurance.getAssuranceId().equals(idAssuranceParitaireBE)) {
-                return TypeComplement.BE_PARITAIRE;
-            } else if (assurance.getAssuranceId().equals(idAssurancePersonnelBE)) {
-                return TypeComplement.BE_PERSONNEL;
-            } else if (assurance.getAssuranceId().equals(idAssuranceParitaireJU)) {
-                return TypeComplement.JU_PARITAIRE;
-            } else if (assurance.getAssuranceId().equals(idAssurancePersonnelJU)) {
-                return TypeComplement.JU_PERSONNEL;
+            if(isIndependant) {
+                if (assurance.getAssuranceId().equals(idAssurancePersonnelBE)) {
+                    return TypeComplement.BE_PERSONNEL;
+                } else if (assurance.getAssuranceId().equals(idAssurancePersonnelJU)) {
+                    return TypeComplement.JU_PERSONNEL;
+                }
+            } else {
+                if (assurance.getAssuranceId().equals(idAssuranceParitaireBE)) {
+                    return TypeComplement.BE_PARITAIRE;
+                } else if (assurance.getAssuranceId().equals(idAssuranceParitaireJU)) {
+                    return TypeComplement.JU_PARITAIRE;
+                }
             }
         }
         return null;
