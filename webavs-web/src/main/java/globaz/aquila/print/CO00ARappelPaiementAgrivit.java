@@ -7,7 +7,6 @@
 package globaz.aquila.print;
 
 import globaz.aquila.api.ICOSequenceConstante;
-import globaz.aquila.db.access.batch.transition.CODocumentDelaiPaiement;
 import globaz.aquila.service.cataloguetxt.COCatalogueTextesService;
 import globaz.aquila.service.taxes.COTaxe;
 import globaz.framework.printing.itext.exception.FWIException;
