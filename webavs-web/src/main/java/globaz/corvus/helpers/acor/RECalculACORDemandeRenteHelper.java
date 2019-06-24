@@ -1615,11 +1615,13 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
             }
 
             FCalcul fCalcul = null;
+            List<FCalcul.Evenement> filterEvents = new ArrayList<>();
             if (!JadeStringUtil.isEmpty(caViewbean.getContenuFeuilleCalculXML())) {
-                fCalcul = unmarshalFile(caViewbean.getCheminFCalculXML());
+                fCalcul = unmarshalXml(caViewbean.getContenuFeuilleCalculXML());
             }
-
-            List<FCalcul.Evenement> filterEvents = fCalcul.getEvenement().stream().filter(evenement -> !evenement.getBasesCalcul().stream().filter(basesCalcul -> !basesCalcul.getDecision().isEmpty()).collect(Collectors.toList()).isEmpty()).collect(Collectors.toList());
+            if(fCalcul != null && fCalcul.getEvenement() != null){
+                filterEvents = fCalcul.getEvenement().stream().filter(evenement -> !evenement.getBasesCalcul().stream().filter(basesCalcul -> !basesCalcul.getDecision().isEmpty()).collect(Collectors.toList()).isEmpty()).collect(Collectors.toList());
+            }
 
             if ((fCalcul == null) || (filterEvents.isEmpty())) {
                 // Dans ce cas de figure, il n'y a rien à remonter.
@@ -1872,15 +1874,15 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
     /**
      * Récupère le contenu du fichier f_calcul.xml venant de ACOR.
      *
-     * @param xmlClassPath : le chemin du fichier à extraire.
+     * @param xml : le contenu du fichier f_calcul.xml
      * @return la feuille de calcul.
      * @throws JAXBException
      */
-    private FCalcul unmarshalFile(String xmlClassPath) throws JAXBException {
+    private FCalcul unmarshalXml(String xml) throws JAXBException {
         JAXBContext jc = JAXBContext.newInstance(FCalcul.class);
         Unmarshaller unmarshaller = jc.createUnmarshaller();
         try {
-            return (FCalcul) unmarshaller.unmarshal(new File((xmlClassPath)));
+            return (FCalcul) unmarshaller.unmarshal(new StringReader(xml));
 
         } catch (JAXBException exception) {
             JadeLogger.error(this, "JAXB validation has thrown a JAXBException : " + exception.toString());
