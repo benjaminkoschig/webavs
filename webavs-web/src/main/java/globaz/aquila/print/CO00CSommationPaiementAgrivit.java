@@ -73,7 +73,7 @@ public class CO00CSommationPaiementAgrivit extends CODocumentManager {
     private static final int STATE_VD = 2;
 
     /** Modele Jasper */
-    private static final String TEMPLATE_NAME = "CO_00C_SOMMATION_AF_CCVD";
+    private static final String TEMPLATE_NAME = "CO_00C_SOMMATION_AF_AGRIVIT";
     /** Le nom du modèle Jasper pour les voies de droits */
     private static final String TEMPLATE_NAME_VD = "CO_00C_SOMMATION_VOIES_DROIT";
 
@@ -367,20 +367,17 @@ public class CO00CSommationPaiementAgrivit extends CODocumentManager {
         LinkedList<HashMap<String, String>> lignes = new LinkedList<HashMap<String, String>>();
         HashMap<String, String> fields = new HashMap<String, String>();
 
+        fields.put(COParameter.F1, getCatalogueTextesUtil().texte(key, 3, 1));
+        fields.put(COParameter.F2, getCatalogueTextesUtil().texte(key, 3, 2));
+        fields.put(COParameter.F3, formatMontant(curContentieux.getSection().getSolde()));
+        lignes.add(fields);
+
         // ajout des taxes si necessaire
         FWCurrency montantTotal = curContentieux.getSection().getSoldeToCurrency();
 
         for (Iterator taxesIter = getTaxes().iterator(); taxesIter.hasNext();) {
             COTaxe taxe = (COTaxe) taxesIter.next();
             montantTotal.add(taxe.getMontantTaxe());
-        }
-
-        if (montantTotal != null) {
-            fields = new HashMap<String, String>();
-            fields.put(COParameter.F2, getCatalogueTextesUtil().texte(key, 3, 2));
-            fields.put(COParameter.F3, formatMontant(montantTotal.toString()));
-            fields.put(COParameter.F4, getCatalogueTextesUtil().texte(key, 3, 3));
-            lignes.add(fields);
         }
 
         this.setDataSource(lignes);

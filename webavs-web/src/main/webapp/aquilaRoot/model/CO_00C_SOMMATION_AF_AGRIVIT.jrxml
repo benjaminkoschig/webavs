@@ -56,7 +56,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
 						x="0"
-						y="9"
+						y="8"
 						width="535"
 						height="49"
 						forecolor="#000000"
@@ -105,7 +105,7 @@
 			</band>
 		</background>
 		<title>
-			<band height="236"  isSplitAllowed="true" >
+			<band height="235"  isSplitAllowed="true" >
 				<subreport  isUsingCache="true">
 					<reportElement
 						mode="Opaque"
