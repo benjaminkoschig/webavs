@@ -8,7 +8,6 @@ import globaz.globall.parameters.FWParametersSystemCode;
 import globaz.globall.parameters.FWParametersSystemCodeManager;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.properties.JadePropertiesService;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.HashMap;
