@@ -23,6 +23,10 @@ import globaz.corvus.db.annonces.REAnnoncesAugmentationModification10Eme;
 import globaz.corvus.db.annonces.REAnnoncesAugmentationModification9Eme;
 import globaz.corvus.db.rentesaccordees.RERenteAccordee;
 import globaz.corvus.db.rentesaccordees.RERenteAccordeeManager;
+import globaz.globall.db.BSession;
+import globaz.globall.db.BSessionUtil;
+import globaz.globall.db.BTransaction;
+import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.acor.PRACORException;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
@@ -63,7 +67,7 @@ public class REImportAnnonceACOR extends REACORAbstractXMLFileParser {
     // ---------------------------------------------------------------------------------------------------
 
     private static REAnnoncesAugmentationModification9Eme importAnnonce41_01(BSession session,
-            REAnnonce09XmlDataStructure annonceXML) throws Exception {
+                                                                             REAnnonce09XmlDataStructure annonceXML) throws Exception {
 
         REAnnoncesAugmentationModification9Eme annonce41 = new REAnnoncesAugmentationModification9Eme();
 
