@@ -7,6 +7,7 @@ import globaz.globall.db.BProcess;
 import globaz.globall.db.GlobazJobQueue;
 import globaz.globall.db.GlobazServer;
 import globaz.globall.util.JANumberFormatter;
+import globaz.jade.properties.JadePropertiesService;
 import globaz.naos.db.affiliation.AFAffiliation;
 import globaz.naos.db.assurance.AFAssurance;
 import globaz.naos.db.assurance.AFCalculAssurance;
@@ -16,9 +17,7 @@ import globaz.naos.db.tauxAssurance.AFTauxAssurance;
 import globaz.naos.translation.CodeSystem;
 import globaz.pavo.application.CIApplication;
 import java.math.BigDecimal;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class DSImportDonneesValidationProcess extends BProcess {
 
@@ -81,7 +80,12 @@ public class DSImportDonneesValidationProcess extends BProcess {
                     ligneDec.setIdDeclaration(declaration.getIdDeclaration());
                     // S'il s'agit de l'assurance chômage on prend masseACTotal
                     ligneDec.setAssuranceId(cotisation.getAssuranceId());
-                    ligneDec.setMontantDeclaration(getMasseMoinsLesExclus(cotisation.getAssurance(), String.valueOf(j)));
+                    if(cotisation.getAssurance().getTypeAssurance().equals(CodeSystem.TYPE_ASS_LAA)){
+                        ligneDec.setMontantDeclaration(getMasseLAA(String.valueOf(j)));
+                    }else{
+                        ligneDec.setMontantDeclaration(getMasseMoinsLesExclus(cotisation.getAssurance(), String.valueOf(j)));
+                    }
+
 
                     if (cotisation.getAssurance().getAssuranceReference() != null) {
                         String dateDebut = "01.01." + String.valueOf(j);
@@ -101,6 +105,23 @@ public class DSImportDonneesValidationProcess extends BProcess {
             }
         }
         return !isOnError();
+    }
+
+    private String getMasseLAA(String annee) {
+        BigDecimal masseLAA = BigDecimal.ZERO;
+        String propRaw = JadePropertiesService.getInstance().getProperty("draco.CotisationLAACatAgrivit");
+        List<String> listCat = Arrays.asList(propRaw.split(","));
+
+        for(String keyCat :listCat){
+            DSStructureSyncroAgrivit struct = (DSStructureSyncroAgrivit) donneeAssures.get(keyCat + "/" + annee);
+            masseLAA = masseLAA.add(new BigDecimal(struct.getMontantLAA()));
+        }
+
+
+        return masseLAA.toString();
+
+
+
     }
 
     /**

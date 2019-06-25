@@ -1,15 +1,16 @@
 package globaz.draco.db.declaration;
 
+import globaz.draco.api.TestDSImportDonneesValidationProcess;
 import globaz.draco.api.TestIDSImportDonnees;
-import globaz.draco.db.inscriptions.DSInscAnneeMaxMinEntity;
-import globaz.draco.db.inscriptions.DSInscAnneeMaxMinManager;
-import globaz.draco.db.inscriptions.DSInscriptionsCalculMontantCI;
-import globaz.draco.db.inscriptions.DSInscriptionsIndividuellesManager;
-import globaz.globall.db.BSession;
+import globaz.draco.db.inscriptions.*;
+import globaz.globall.db.*;
 import globaz.globall.parameters.FWParametersSystemCode;
 import globaz.globall.parameters.FWParametersSystemCodeManager;
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.jade.properties.JadePropertiesService;
+
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,10 +30,11 @@ public class DSExportDonneesDistantes {
     private String numeroAfffillie = "";
     private BSession session = null;
     private String typeDeclaration = "";
-
+    private static final String CS_PARAMETRES_IM = "12000006";
+    private final String LIST_CAT_AGRIVIT_LAA = "draco.CotisationLAACatAgrivit";
     /**
      * Set les totaux individuels dans la structure DSStructureSyncroAgrivit prévue à cet effet
-     * 
+     *
      * @throws Exception
      */
     public void exportDonnees() throws Exception {
@@ -76,6 +78,7 @@ public class DSExportDonneesDistantes {
                 dsMgr.setForCategoriePersonnel(catPers.getIdCode());
                 dsMgr.setForAnneeChomage(String.valueOf(k));
                 dsMgr.setSession(getSession());
+                dsMgr.find(BManager.SIZE_NOLIMIT);
                 BigDecimal montantAC = dsMgr.getSum("TEMAI");
                 BigDecimal montantAc2 = dsMgr.getSum("TEMAII");
                 // Mise à jour des montants chômage dans la structure
@@ -89,6 +92,47 @@ public class DSExportDonneesDistantes {
                 mgrSomme.setForCategoriePersonnel(catPers.getIdCode());
                 BigDecimal montantAvs = mgrSomme.getSum("KBMMON");
                 syncro.setMontantAvs(montantAvs.toString());
+                /**
+                 *
+                 *POAVS-671  CCVD - S170306_005 - Cotisation LAA
+                 *
+                 */
+                if(JadePropertiesService.getInstance().getProperty(LIST_CAT_AGRIVIT_LAA).contains(catPers.getIdCode())){
+                    FWFindParameterManager param = new FWFindParameterManager();
+                    param.setSession(getSession());
+                    param.setIdApplParametre(getSession().getApplicationId());
+                    param.setIdCodeSysteme(CS_PARAMETRES_IM);
+                    param.setIdCleDiffere("PLAFONDAC1");
+                    param.setIdActeurParametre("0");
+                    param.setPlageValDeParametre("0");
+                    if (globaz.draco.translation.CodeSystem.CS_SALAIRE_DIFFERES.equals(declaration.getTypeDeclaration())) {
+                        param.setDateDebutValidite("01.01." + declaration.getAnneeTaux());
+                    } else {
+                        param.setDateDebutValidite("01.01." + declaration.getAnnee());
+                    }
+
+                    param.find(BManager.SIZE_NOLIMIT);
+                    BigDecimal plafondAc = new BigDecimal(((FWFindParameter) param.getFirstEntity()).getValeurNumParametre());
+                    plafondAc = plafondAc.setScale(2);
+                    BigDecimal montantLAA = BigDecimal.ZERO;
+                    for(int index=0;index<dsMgr.size();index++){
+                        DSInscriptionsIndividuelles inscrp=(DSInscriptionsIndividuelles) dsMgr.get(index);
+                        BigDecimal montantAVSDetail = new BigDecimal(inscrp.getMontant());
+                        if(montantAVSDetail.compareTo(plafondAc) > 0){
+                            montantLAA = montantLAA.add(plafondAc);
+                        }else{
+                            montantLAA = montantLAA.add(montantAVSDetail);
+                        }
+
+                    }
+
+
+                    syncro.setMontantLAA(montantLAA.toString());
+                }else{
+                    syncro.setMontantLAA(BigDecimal.ZERO.toString());
+                }
+
+
                 // Mise à jour du total par code
                 FWParametersSystemCodeManager csCanton = new FWParametersSystemCodeManager();
                 csCanton.setSession(getSession());
@@ -113,7 +157,7 @@ public class DSExportDonneesDistantes {
 
     /**
      * Exporte les totaux bruts par canton
-     * 
+     *
      * @throws Exception
      */
     public void exportMasseAFParCanton() throws Exception {
@@ -169,19 +213,29 @@ public class DSExportDonneesDistantes {
         // appel distant
         String adapterName = "agrivit";
         BSession session = new BSession();
+
         TestIDSImportDonnees test = new TestIDSImportDonnees();
         test.importDonnees(session, adapterName, declaration.getNoDecompte(), declaration.getAffilieNumero(),
                 idDeclaration, declaration.getDateRetourEff(), anneeMin, anneeMax, declaration.getTypeDeclaration(),
                 masseTotale, masseAc, masseAc2, donneeAssures, afParCanton);
 
-        /*
-         * DSImportDonneesValidationProcess proc = new DSImportDonneesValidationProcess ();
-         * proc.setSession(getSession()); proc.setAffiliationId(decl.getAffilieNumero()); proc.setMasseAc(masseAc);
-         * proc.setMasseTotale(masseTotale); proc.setMasseAc2(masseAc2); proc.setDonneeAssures(donneeAssures);
-         * proc.setAfParCanton(afParCanton); proc.setAnnee(annee); proc.setTypeDeclaration(typeDeclaration);
-         * proc.setDateReception(dateReception);
-         */
-        // proc.executeProcess();
+//        TestDSImportDonneesValidationProcess process = new TestDSImportDonneesValidationProcess()
+//        session = getSession();
+//        process.setAffiliationId(affiliationId);
+//        process.setAnneeMaxStr(anneeMax);
+//        process.setAnneeMinStr(anneeMin);
+//        process.setMasseAc(masseAc);
+//        process.setMasseAc2(masseAc2);
+//        process.setMasseTotale(masseTotale);
+//        process.setIdDeclarationDistante(declaration.getTypeDeclaration());
+//        process.setDateReception(dateReception);
+//        process.setTypeDeclaration(typeDeclaration);
+//        process.setDeclaration(declaration);
+//        process.setDonneeAssures(donneeAssures);
+//        process.setAfParCanton(afParCanton);
+//        process.setNoDecompte(declaration.getNoDecompte());
+//        process.setSession(session);
+//        process.executeProcess();
 
     }
 

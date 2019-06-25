@@ -15,6 +15,7 @@ public class DSStructureSyncroAgrivit implements Serializable {
     private String catPersonnel = "";
     private String montantAc = "";
     private String montantAvs = "";
+    private String montantLAA = "";
 
     public String getAc2() {
         return ac2;
@@ -50,6 +51,10 @@ public class DSStructureSyncroAgrivit implements Serializable {
         return montantAvs;
     }
 
+    public String getMontantLAA() {
+        return montantLAA;
+    }
+
     public void setAc2(String ac2) {
         this.ac2 = ac2;
     }
@@ -69,6 +74,8 @@ public class DSStructureSyncroAgrivit implements Serializable {
     public void setMontantAvs(String montantAvs) {
         this.montantAvs = montantAvs;
     }
+
+    public void setMontantLAA(String montantLAA){this.montantLAA = montantLAA;}
 
     /**
      * Permet de setter le total exclu par canton pour l'af
