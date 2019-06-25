@@ -21,6 +21,8 @@ import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.pdf.JadePdfUtil;
 import globaz.osiris.api.APISection;
 import globaz.osiris.db.utils.CAReferenceBVR;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -53,6 +55,8 @@ import java.util.LinkedList;
  */
 public class CO00CSommationPaiementAgrivit extends CODocumentManager {
 
+    private static final Logger LOG = LoggerFactory.getLogger(CO00ARappelPaiementAgrivit.class);
+
     public static final String NOM_DOCUMENT_SOMMATION_CAP_CGAS = "Sommation CAP/CGAS";
     /** Numéro Inforom pour la sommation LTN */
     public static final String NUM_REF_SOMMATION_LTN = "0197GCO";
@@ -83,7 +87,7 @@ public class CO00CSommationPaiementAgrivit extends CODocumentManager {
     // ~ Instance fields
     // ------------------------------------------------------------------------------------------------
 
-    private CAReferenceBVR bvr = null;
+    private transient CAReferenceBVR bvr = null;
     private String dateDelaiPaiement = null;
     private int state = CO00CSommationPaiementAgrivit.STATE_IDLE;
 
@@ -92,10 +96,8 @@ public class CO00CSommationPaiementAgrivit extends CODocumentManager {
 
     /**
      * Crée une nouvelle instance de la classe CO00CSommationPaiement.
-     *
-     * @throws Exception
      */
-    public CO00CSommationPaiementAgrivit() throws Exception {
+    public CO00CSommationPaiementAgrivit() {
         super();
     }
 
@@ -224,10 +226,8 @@ public class CO00CSommationPaiementAgrivit extends CODocumentManager {
 
     /**
      * DataSource pour les voies de droits
-     *
-     * @throws Exception
      */
-    private void createDataSourceVoiesDroit() throws Exception {
+    private void createDataSourceVoiesDroit() {
         getCatalogueTextesUtil().setNomDocument(CO00CSommationPaiementAgrivit.TITLE_VOIES_DE_DROIT);
 
         if (getCatalogueTextesUtil().isExistDocument(getParent(), CO00CSommationPaiementAgrivit.TITLE_VOIES_DE_DROIT)) {
@@ -305,7 +305,7 @@ public class CO00CSommationPaiementAgrivit extends CODocumentManager {
         try {
             adresseDebiteur = getAdresseDestinataire();
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error("A error occured while retrieving the address of the addressee.", e);
         }
         try {
             super.setParametres(COParameter.P_ADRESSE, getBvr().getAdresseBVR());
@@ -361,9 +361,8 @@ public class CO00CSommationPaiementAgrivit extends CODocumentManager {
      * boucle de detail
      * 
      * @return
-     * @throws Exception
      */
-    private FWCurrency initDetail(Object key) throws Exception {
+    private FWCurrency initDetail(Object key) {
         LinkedList<HashMap<String, String>> lignes = new LinkedList<HashMap<String, String>>();
         HashMap<String, String> fields = new HashMap<String, String>();
 

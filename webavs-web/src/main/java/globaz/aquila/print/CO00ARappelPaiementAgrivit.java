@@ -17,6 +17,8 @@ import globaz.globall.db.BSession;
 import globaz.globall.util.JANumberFormatter;
 import globaz.globall.util.JAUtil;
 import globaz.osiris.db.utils.CAReferenceBVR;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.util.Iterator;
@@ -27,6 +29,8 @@ import java.util.Iterator;
  * @author vre
  */
 public class CO00ARappelPaiementAgrivit extends CODocumentManager {
+
+    private static final Logger LOG = LoggerFactory.getLogger(CO00ARappelPaiementAgrivit.class);
 
     // ~ Static fields/initializers
     // -------------------------------------------------------------------------------------
@@ -43,7 +47,7 @@ public class CO00ARappelPaiementAgrivit extends CODocumentManager {
 
     private String dateDelaiPaiement = null;
 
-    private CAReferenceBVR bvr = null;
+    private transient CAReferenceBVR bvr = null;
 
     // ~ Constructors
     // ---------------------------------------------------------------------------------------------------
@@ -183,7 +187,7 @@ public class CO00ARappelPaiementAgrivit extends CODocumentManager {
         try {
             adresseDebiteur = getAdresseDestinataire();
         } catch (Exception e) {
-            e.printStackTrace();
+           LOG.error("A error occured while retrieving the address of the addressee.", e);
         }
         try {
             super.setParametres(COParameter.P_ADRESSE, getBvr().getAdresseBVR());
@@ -207,7 +211,7 @@ public class CO00ARappelPaiementAgrivit extends CODocumentManager {
      *
      * @return la référence BVR.
      */
-    public CAReferenceBVR getBvr() {
+    private CAReferenceBVR getBvr() {
         if (bvr == null) {
             bvr = new CAReferenceBVR();
         }

@@ -23,10 +23,6 @@ import globaz.corvus.db.annonces.REAnnoncesAugmentationModification10Eme;
 import globaz.corvus.db.annonces.REAnnoncesAugmentationModification9Eme;
 import globaz.corvus.db.rentesaccordees.RERenteAccordee;
 import globaz.corvus.db.rentesaccordees.RERenteAccordeeManager;
-import globaz.globall.db.BSession;
-import globaz.globall.db.BSessionUtil;
-import globaz.globall.db.BTransaction;
-import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.acor.PRACORException;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
@@ -44,7 +40,7 @@ import org.w3c.dom.NodeList;
  * <H1>Description</H1>
  * 
  * <p>
- * Un parser capable de parser le fichier xml annonce.xml retourné par ACOR.
+ * Un parser capable de parser le fichier xml annonce.xml retournï¿½ par ACOR.
  * </p>
  * 
  * @author scr
@@ -364,27 +360,27 @@ public class REImportAnnonceACOR extends REACORAbstractXMLFileParser {
                 annonce44.add(transaction);
                 idAnnonce44_01 = annonce44.getId();
 
-                // Retrouver la rente accordée et setter REAnnonceRente
+                // Retrouver la rente accordï¿½e et setter REAnnonceRente
                 RERenteAccordeeManager raMan = new RERenteAccordeeManager();
                 raMan.setSession(session);
                 raMan.setForIdsRentesAccordees(idsRA);
                 raMan.find(transaction);
-                // On parcourt les rentes accordées dont les ids sont passés en
-                // paramètres dans la liste des ra crées précédemment
+                // On parcourt les rentes accordï¿½es dont les ids sont passï¿½s en
+                // paramï¿½tres dans la liste des ra crï¿½es prï¿½cï¿½demment
                 String idRA = "";
                 if (raMan.size() == 1) {
                     RERenteAccordee ra = (RERenteAccordee) raMan.getEntity(0);
                     idRA = ra.getIdPrestationAccordee();
                 } else {
                     // si il y a plusieurs rentes accordee on prend celle qui a
-                    // les mêmes:
+                    // les mï¿½mes:
                     // - NSS (idTiersBeneficiaire)
                     // - Genre de rente (genrePrestation)
                     // - Date de debut
                     for (Iterator iterator = raMan.iterator(); iterator.hasNext();) {
                         RERenteAccordee ra = (RERenteAccordee) iterator.next();
 
-                        // Tests pour être sûr que c'est la bonne rente accordée
+                        // Tests pour ï¿½tre sï¿½r que c'est la bonne rente accordï¿½e
                         if (ra.getCodePrestation().equals(annonce44.getGenrePrestation())) {
                             if (ra.getIdTiersBeneficiaire().equals(annonce44.getIdTiers())) {
                                 if (BSessionUtil.compareDateEqual(session, ra.getDateDebutDroit(),
@@ -422,7 +418,7 @@ public class REImportAnnonceACOR extends REACORAbstractXMLFileParser {
                 idAnnonce44_02 = annonce44.getId();
 
                 if (!JadeStringUtil.isEmpty(idAnnonce44_01) && !JadeStringUtil.isEmpty(idAnnonce44_02)) {
-                    // mise à jour de l'annonce 44 01
+                    // mise ï¿½ jour de l'annonce 44 01
                     REAnnonceHeader annonceHeader = new REAnnonceHeader();
                     annonceHeader.setSession(session);
                     annonceHeader.setIdAnnonce(idAnnonce44_01);
@@ -443,27 +439,27 @@ public class REImportAnnonceACOR extends REACORAbstractXMLFileParser {
                 annonce41.add(transaction);
                 idAnnonce41_01 = annonce41.getId();
 
-                // Retrouver la rente accordée et setter REAnnonceRente
+                // Retrouver la rente accordï¿½e et setter REAnnonceRente
                 RERenteAccordeeManager raMan = new RERenteAccordeeManager();
                 raMan.setSession(session);
                 raMan.setForIdsRentesAccordees(idsRA);
                 raMan.find(transaction);
-                // On parcourt les rentes accordées dont les ids sont passés en
-                // paramètres dans la liste des ra crées précédemment
+                // On parcourt les rentes accordï¿½es dont les ids sont passï¿½s en
+                // paramï¿½tres dans la liste des ra crï¿½es prï¿½cï¿½demment
                 String idRA = "";
                 if (raMan.size() == 1) {
                     RERenteAccordee ra = (RERenteAccordee) raMan.getEntity(0);
                     idRA = ra.getIdPrestationAccordee();
                 } else {
                     // si il y a plusieurs rentes accordee on prend celle qui a
-                    // les mêmes:
+                    // les mï¿½mes:
                     // - NSS (idTiersBeneficiaire)
                     // - Genre de rente (genrePrestation)
                     // - Date de debut
                     for (Iterator iterator = raMan.iterator(); iterator.hasNext();) {
                         RERenteAccordee ra = (RERenteAccordee) iterator.next();
 
-                        // Tests pour être sûr que c'est la bonne rente accordée
+                        // Tests pour ï¿½tre sï¿½r que c'est la bonne rente accordï¿½e
                         if (ra.getCodePrestation().equals(annonce41.getGenrePrestation())) {
                             if (ra.getIdTiersBeneficiaire().equals(annonce41.getIdTiers())) {
                                 if (BSessionUtil.compareDateEqual(session, ra.getDateDebutDroit(),
@@ -501,7 +497,7 @@ public class REImportAnnonceACOR extends REACORAbstractXMLFileParser {
                 idAnnonce41_02 = annonce41.getId();
 
                 if (!JadeStringUtil.isEmpty(idAnnonce41_01) && !JadeStringUtil.isEmpty(idAnnonce41_02)) {
-                    // mise à jour de l'annonce 41 01
+                    // mise ï¿½ jour de l'annonce 41 01
                     REAnnonceHeader annonceHeader = new REAnnonceHeader();
                     annonceHeader.setSession(session);
                     annonceHeader.setIdAnnonce(idAnnonce41_01);
@@ -758,7 +754,7 @@ public class REImportAnnonceACOR extends REACORAbstractXMLFileParser {
 
                 result.setInfoAIEpouse(aiXML);
 
-                // Traitement des info propre à la retraite flexible.
+                // Traitement des info propre ï¿½ la retraite flexible.
                 NodeList nl2 = n.getChildNodes();
                 for (int j = 0; j < nl2.getLength(); j++) {
                     Node n2 = nl2.item(j);
@@ -875,7 +871,7 @@ public class REImportAnnonceACOR extends REACORAbstractXMLFileParser {
 
                 result.setInfoAI(aiXML);
 
-                // Traitement des info propre à la retraite flexible.
+                // Traitement des info propre ï¿½ la retraite flexible.
                 NodeList nl2 = n.getChildNodes();
                 for (int j = 0; j < nl2.getLength(); j++) {
                     Node n2 = nl2.item(j);
@@ -959,7 +955,7 @@ public class REImportAnnonceACOR extends REACORAbstractXMLFileParser {
     }
 
     /**
-     * Crée une nouvelle instance de la classe REACORPrestationsParser.
+     * Crï¿½e une nouvelle instance de la classe REACORPrestationsParser.
      */
     private REImportAnnonceACOR() {
     }
