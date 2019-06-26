@@ -145,9 +145,7 @@ $(document).ready(function() {
 			<td>
 			<%=AMSedexHelper.getPeriodeInfo(currentAnnonce.getSimpleAnnonceSedex().getMessageSubType(), currentAnnonce.getSimpleAnnonceSedex().getMessageContent()) %>			
 			</td>
-			<td><%=AMSedexHelper.getMontant(currentAnnonce)
-			//new FWCurrency(currentAnnonce.getSimpleDetailFamille().getMontantContributionAvecSupplExtra()) 
-			%></td>
+			<td><%=AMSedexHelper.getMontant(currentAnnonce) %></td>
 			<td><%=new FWCurrency(currentAnnonce.getSimpleDetailFamille().getMontantPrimeAssurance()) %> </td>
 		</tr>
 		<tr style="background-color:#B3C4DB"><td colspan="10"></td></tr>
