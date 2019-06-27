@@ -53,7 +53,7 @@
 
 		<ch.globaz.mercato.notification.version>1.0.6</ch.globaz.mercato.notification.version>
 		<itucana.version>0.0.1</itucana.version>
-		<jade.version>5.6.0</jade.version>
+		<jade.version>5.7.0-SNAPSHOT</jade.version>
 		<pyxis.version>1.23.5</pyxis.version>
 		<simple-output-list.version>1.3.2</simple-output-list.version>
 		<sqlClassMapper.version>1.0.1</sqlClassMapper.version>
