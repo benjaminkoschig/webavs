@@ -22,6 +22,7 @@
 	<TH><ct:FWLabel key="NAOS_JSP_IDE_SEARCH_RAISON_SOCIALE"/></TH>
 	<TH><ct:FWLabel key="NAOS_JSP_IDE_SEARCH_ADRESSE"/></TH>
 	<TH><ct:FWLabel key="NAOS_JSP_IDE_SEARCH_NAISSANCE"/></TH>
+    <TH><ct:FWLabel key="NAOS_JSP_IDE_SEARCH_NUMERO_AVS"/></TH>
 	
 
 <%-- /tpl:put --%> 
@@ -39,6 +40,7 @@
 	<TD class="mtd" onClick="<%=actionDetail%>"><%=viewBean.getRaisonSociale(i)%></TD>
 	<TD class="mtd" onClick="<%=actionDetail%>" ><%=viewBean.getAdresse(i)%></TD>
 	<TD class="mtd" onClick="<%=actionDetail%>" ><%=viewBean.getNaissance(i)%></TD>
+	<TD class="mtd" onClick="<%=actionDetail%>" ><%=viewBean.getNumeroAVS(i)%></TD>
 	
 <%-- /tpl:put --%>
 <%@ include file="/theme/list/lineEnd.jspf" %>

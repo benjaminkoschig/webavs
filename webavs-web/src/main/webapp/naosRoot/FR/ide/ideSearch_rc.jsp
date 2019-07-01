@@ -8,11 +8,15 @@
 <%@ page language="java" errorPage="/errorPage.jsp" import="globaz.globall.http.*" %>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ include file="/theme/find/header.jspf" %>
+<script type="text/javascript"
+        src="<%=servletContext%>/scripts/nss.js"></script>
+<%@ taglib uri="/WEB-INF/nss.tld" prefix="nss" %>
 <%-- tpl:put name="zoneInit" --%>
 
 <%
 	idEcran="CAF0074";	
 	bButtonNew=false;
+    String nss = request.getParameter("forNumeroAVS");
 %>
 <SCRIPT language="JavaScript">
 <!--hide this script from non-javascript-enabled browsers
@@ -23,52 +27,43 @@ function prepareCreationEntiteIde(){
 	document.forms[0].submit();	
 }
 
+var fieldsIde = ["#idePrefixe", "#forNumeroIDE", "#libSearchNumeroIDE"];
+var fieldsOther = ["#forRaisonSociale", "#forNpa", "#forLocalite", "#forRue", "#forNumeroRue", "#forNaissance", "#forNumeroAVS", "#helpForRaisonSociale", "#libSearchRaisonSociale", "#libSearchNpa", "#libSearchLocalite", "#libSearchRue", "#libSearchNumeroRue", "#libSearchNaissance", "#divForNaissance", "#libSearchNumeroAVS"];
+var fieldsAvs = ["#forNumeroAVS","#navsligne", "#libSearchNumeroAVS"];
+
 function showHideChamRecherche() {
 	if (eval(document.getElementById("modeSearch1").checked == true)) {
-		jscss("remove", document.forms[0].idePrefixe, "hidden");
-		jscss("remove", document.forms[0].forNumeroIDE, "hidden");
-		jscss("add", document.forms[0].forRaisonSociale, "hidden");
-		$("#helpForRaisonSociale").hide();
-		jscss("add", document.forms[0].forNpa, "hidden");
-		jscss("add", document.forms[0].forLocalite, "hidden");
-		jscss("add", document.forms[0].forRue, "hidden");
-		jscss("add", document.forms[0].forNumeroRue, "hidden");
-		jscss("add", document.forms[0].forNaissance, "hidden");
-		/* jscss("add", document.forms[0].wantSemblable, "hidden"); */
-		$("#libSearchNumeroIDE").show();
-		$("#libSearchRaisonSociale").hide();
-		$("#libSearchNpa").hide();
-		$("#libSearchLocalite").hide();
-		$("#libSearchRue").hide();
-		$("#libSearchNumeroRue").hide();
-		$("#libSearchNaissance").hide();
-		$("#divForNaissance").hide();
-		/* $("#libSearchSemblable").hide(); */
+        showFields(fieldsIde);
+        hideFields(fieldsOther);
+        hideFields(fieldsAvs);
 		
 	} 
 	if (eval(document.getElementById("modeSearch2").checked == true)) {
-		jscss("add", document.forms[0].idePrefixe, "hidden");
-		jscss("add", document.forms[0].forNumeroIDE, "hidden");
-		jscss("remove", document.forms[0].forRaisonSociale, "hidden");
-		$("#helpForRaisonSociale").show();
-		jscss("remove", document.forms[0].forNpa, "hidden");
-		jscss("remove", document.forms[0].forLocalite, "hidden");
-		jscss("remove", document.forms[0].forRue, "hidden");
-		jscss("remove", document.forms[0].forNumeroRue, "hidden");
-		jscss("remove", document.forms[0].forNaissance, "hidden");
-		/* jscss("remove", document.forms[0].wantSemblable, "hidden"); */
-		$("#libSearchNumeroIDE").hide();
-		$("#libSearchRaisonSociale").show();
-		$("#libSearchNpa").show();
-		$("#libSearchLocalite").show();
-		$("#libSearchRue").show();
-		$("#libSearchNumeroRue").show();
-		$("#libSearchNaissance").show();
-		$("#divForNaissance").show();
-		/* $("#libSearchSemblable").show(); */
+        hideFields(fieldsIde);
+        showFields(fieldsOther);
+        hideFields(fieldsAvs);
 	}
 
+    if (eval(document.getElementById("modeSearch3").checked == true)) {
+        hideFields(fieldsIde);
+        hideFields(fieldsOther);
+        showFields(fieldsAvs);
+    }
+
 }
+
+function hideFields(fields) {
+    for(var i= 0; i < fields.length; i++) {
+        $(fields[i]).hide();
+    }
+}
+
+function showFields (fields) {
+    for(var i= 0; i < fields.length; i++) {
+        $(fields[i]).show();
+    }
+}
+
 
 function postInit(){
 
@@ -77,8 +72,10 @@ function postInit(){
 	showHideChamRecherche();
 	
 	$("#btnAddAnnonceCreationEntiteIde").click(function(){prepareCreationEntiteIde();});
-	
 
+    $('#partialdossierSearchlikeNss').change(function(){
+        $('#forNumeroAVS').val($('[name=dossierSearchlikeNss]').val());
+    });
 }
 
 
@@ -116,6 +113,8 @@ function postInit(){
             	<INPUT TYPE="radio" name="forTypeRecherche" id="modeSearch1" value="<%=AFIDEUtil.TYPE_RECHERCHE_NUM_IDE %>" onclick="showHideChamRecherche()">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             	<label id="libRadioSearchAutreChamp"><ct:FWLabel key="NAOS_JSP_IDE_RADIO_AUTRECHAMP"/></label>
             	<INPUT TYPE="radio" name="forTypeRecherche" id="modeSearch2" value="<%=AFIDEUtil.TYPE_RECHERCHE_RAISON_SOCIALE %>" onclick="showHideChamRecherche()">
+                <label id="libRadioSearchAutreChamp"><ct:FWLabel key="NAOS_JSP_IDE_RADIO_AVS"/></label>
+                <INPUT TYPE="radio" name="forTypeRecherche" id="modeSearch3" value="<%=AFIDEUtil.TYPE_RECHERCHE_AVS %>" onclick="showHideChamRecherche()">
             </TD>
            
       	</TR>
@@ -123,6 +122,18 @@ function postInit(){
       	<TR>
       		<TD colspan="10">&nbsp;</TD>
       	</TR>
+
+        <TR id="navsligne">
+            <TD><label id="libSearchNumeroAVS"><ct:FWLabel key="NAOS_JSP_IDE_SEARCH_NUMERO_AVS"/></label></TD>
+            <TD><nss:nssPopup avsMinNbrDigit="99"
+                              nssMinNbrDigit="99"
+                              newnss=""
+                              cssclass="nssPrefixe"
+                              value="<%=nss%>"
+                              name="dossierSearchlikeNss" />
+                <input type="hidden" id="forNumeroAVS" name="forNumeroAVS"></TD>
+            <TD colspan="9"></TD>
+        </TR>
 
 	  	<TR>
             <TD><label id="libSearchNumeroIDE"><ct:FWLabel key="NAOS_JSP_IDE_SEARCH_NUMERO_IDE"/></label></TD>

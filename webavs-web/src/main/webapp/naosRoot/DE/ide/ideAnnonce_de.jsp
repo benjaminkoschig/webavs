@@ -94,8 +94,8 @@ function init() {
 		<TR>
 			<TD nowrap width="140"><ct:FWLabel key="NAOS_JSP_IDE_ANNONCE_NUMERO_IDE_REMPLACEMENT"/></TD>
         	<TD nowrap width="300"><INPUT name="" type="text" value="<%=AFIDEUtil.giveMeNumIdeFormatedWithPrefix(numeroIdeRemplacement)%>" class="libelleLongDisabled" readonly></TD>
-        	<TD nowrap width="140">&nbsp;</TD>
-        	<TD nowrap width="300">&nbsp;</TD>
+			<TD nowrap width="140"><ct:FWLabel key="NAOS_JSP_IDE_ANNONCE_NUMERO_AVS"/></TD>
+			<TD nowrap width="300"><INPUT name="" type="text" value="<%=viewBean.getNss()%>" class="libelleLong10Disabled" readonly></TD>
 		</TR>
 		
 		<TR>

@@ -23,6 +23,7 @@ public class IDEDataBean {
     private String numeroAffilie = "";
     // FOSC,Faillite
     private String messageSedex50 = "";
+    private String numeroAVS = "";
     /**
      * code noga selon le registre != code noga dans l'affiliation
      */
@@ -206,4 +207,11 @@ public class IDEDataBean {
         return messageSedex50;
     }
 
+    public String getNumeroAVS() {
+        return numeroAVS;
+    }
+
+    public void setNumeroAVS(String numeroAVS) {
+        this.numeroAVS = numeroAVS;
+    }
 }

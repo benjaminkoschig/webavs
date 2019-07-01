@@ -59,6 +59,11 @@ public class AFIdeAnnonce extends BEntity implements Serializable {
     public static final String IDE_ANNONCE_FIELD_LIST_NUMERO_AFFILIE_LIEE = "AIDENA";
     public static final String IDE_ANNONCE_FIELD_MESSAGE_SEDEX_50 = "AIDEMS";
 
+    public static final String TABLE_TIERS= "TIPAVSP";
+    private static final String ALIAS_TABLE_TIERS = "TI.";
+    private static final String ALIAS_TABLE_TIERS_WITHOUT_POINT = "TI";
+    public static final String IDE_ANNONCE_FIELD_NSS= "HXNAVS";
+
     private String ideAnnonceIdAnnonce = "";
     private String ideAnnonceIdAffiliation = "";
     private String ideAnnonceIdCotisation = "";
@@ -101,6 +106,7 @@ public class AFIdeAnnonce extends BEntity implements Serializable {
     private String raisonSociale = "";
     private String statutIde = "";
     private String idTiers = "";
+    private String nss = "";
 
     private String typeAnnonceDate = "";
 
@@ -292,6 +298,10 @@ public class AFIdeAnnonce extends BEntity implements Serializable {
         sqlFrom.append(_getCollection() + AFCotisation.TABLE_NAME + " AS " + ALIAS_TABLE_COTISATION_WITHOUT_POINT);
         sqlFrom.append(" ON(" + ALIAS_TABLE_COTISATION + AFCotisation.FIELDNAME_COTISATION_ID + " = "
                 + ALIAS_TABLE_ANNONCE + AFIdeAnnonce.IDE_ANNONCE_FIELD_ID_COTISATION + ")");
+        sqlFrom.append(" INNER JOIN ");
+        sqlFrom.append(_getCollection() + TABLE_TIERS + " AS " +ALIAS_TABLE_TIERS_WITHOUT_POINT);
+        sqlFrom.append(" ON(" + ALIAS_TABLE_TIERS + AFAffiliation.FIELDNAME_TIER_ID + " = "
+                + ALIAS_TABLE_AFFILIATION + AFAffiliation.FIELDNAME_TIER_ID + ")");
         return sqlFrom.toString();
 
     }
@@ -398,6 +408,7 @@ public class AFIdeAnnonce extends BEntity implements Serializable {
         raisonSociale = statement.dbReadString(AFAffiliation.FIELDNAME_RAISON_SOCIALE);
         statutIde = statement.dbReadNumeric(AFAffiliation.FIELDNAME_STATUT_IDE);
         idTiers = statement.dbReadNumeric(AFAffiliation.FIELDNAME_TIER_ID);
+        nss = statement.dbReadString(AFIdeAnnonce.IDE_ANNONCE_FIELD_NSS);
 
         if (!CodeSystem.ETAT_ANNONCE_IDE_TRAITE.equalsIgnoreCase(ideAnnonceEtat)) {
             if (JadeStringUtil.isBlankOrZero(ideAnnonceIdCotisation)) {
@@ -639,4 +650,11 @@ public class AFIdeAnnonce extends BEntity implements Serializable {
         this.remove = remove;
     }
 
+    public String getNss() {
+        return nss;
+    }
+
+    public void setNss(String nss) {
+        this.nss = nss;
+    }
 }

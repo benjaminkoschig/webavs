@@ -7,6 +7,7 @@ import globaz.jade.crypto.JadeDecryptionNotSupportedException;
 import globaz.jade.crypto.JadeDefaultEncrypters;
 import globaz.jade.crypto.JadeEncrypterNotFoundException;
 import globaz.naos.properties.AFProperties;
+import globaz.pyxis.util.CommonNSSFormater;
 import idech.admin.bit.xmlns.uid_wse_f._3.RegisterDeregisterItem;
 import idech.admin.bit.xmlns.uid_wse_f._3.RegisterDeregisterResult;
 import idech.admin.bit.xmlns.uid_wse_shared._1.RegisterDeregisterStatus;
@@ -723,6 +724,8 @@ public class IDEServiceCallUtil {
         ideDataBean.setNumeroAffilie(IDEServiceMappingUtil.getNumeroAffilie(organisation));
         ideDataBean.setNogaCode(IDEServiceMappingUtil.getNogaCode(organisation));
 
+        ideDataBean.setNumeroAVS(IDEServiceMappingUtil.getNumeroAVS(organisation));
+
         return ideDataBean;
     }
 
@@ -751,6 +754,34 @@ public class IDEServiceCallUtil {
 
         } finally {
             logCallWebService(session, "searchForNumeroIDE", "search", giveMeSendedDataForLog(organisationType));
+        }
+
+        listEntiteIde = formatdata(arrayOrganisation);
+
+        return listEntiteIde;
+    }
+
+    public static final List<IDEDataBean> searchForNumeroAVS(String numeroAVS, BSession session)
+            throws MalformedURLException, Exception, RemoteException {
+
+        String nss = AFIDEUtil.formatNSSForWS(numeroAVS);
+
+        List<IDEDataBean> listEntiteIde = new ArrayList<IDEDataBean>();
+
+        OrganisationType organisationType = IDEServiceMappingUtil
+                .getStructureForSearchByNumeroAVS(nss);
+
+        ArrayOfRatedOrganisation arrayOrganisation;
+        try {
+            IPartnerServices port = initService();
+            arrayOrganisation = port.search(organisationType, SERVICE_MAX_RECORD_RETURN, SearchMode.AUTO);
+        } catch (Exception e) {
+
+            String messageForUser = AFIDEUtil.logExceptionAndCreateMessageForUser(session, e);
+            throw new Exception(messageForUser);
+
+        } finally {
+            logCallWebService(session, "searchForNumeroAVS", "search", giveMeSendedDataForLog(organisationType));
         }
 
         listEntiteIde = formatdata(arrayOrganisation);

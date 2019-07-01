@@ -37,6 +37,7 @@ import globaz.pyxis.adresse.datasource.TIAbstractAdresseDataSource;
 import globaz.pyxis.adresse.datasource.TIAdresseDataSource;
 import globaz.pyxis.constantes.IConstantes;
 import globaz.pyxis.db.tiers.TITiersViewBean;
+import globaz.pyxis.util.CommonNSSFormater;
 import globaz.webavs.common.ICommonConstantes;
 import idech.admin.bit.xmlns.uid_wse_shared._1.RegisterDeregisterStatus;
 import idech.admin.uid.xmlns.uid_wse.IPartnerServicesCreateBusinessFaultFaultFaultMessage;
@@ -84,6 +85,7 @@ public class AFIDEUtil {
 
     public static final String TYPE_RECHERCHE_NUM_IDE = "searchNumeroIde";
     public static final String TYPE_RECHERCHE_RAISON_SOCIALE = "searchRaisonSociale";
+    public static final String TYPE_RECHERCHE_AVS = "searchNumeroAVS";
     public static final String IDE_PREFIXE = "CHE";
     public static final String IDE_FORMATED_PREFIXE = "CHE-";
     public static final String IDE_FORMAT = "   -   .   .   ";
@@ -851,6 +853,7 @@ public class AFIDEUtil {
         ideDataBean.setNumeroAffilie(ideAnnonce.getNumeroAffilie());
         // le code noga n'est rempli qu'en annonce entrante
         ideDataBean.setNogaCode("");
+        ideDataBean.setNumeroAVS(tiers.getNumAvsActuel());
 
         return ideDataBean;
     }
@@ -2937,6 +2940,18 @@ public class AFIDEUtil {
             return session.getLabel("NAOS_IDE_UTIL_OFS_NOGA_UNDETERMINATED");
         }
         return noga;
+    }
+
+    public static String formatNSSForWS(String numeroAVS) throws Exception {
+        CommonNSSFormater nssf = new CommonNSSFormater();
+        String nss = nssf.unformat(numeroAVS);
+        if(nss.length() < 13) {
+            nss = nss + "*";
+        } else if(nss.length() == 13) {
+            nssf.checkNss(nss);
+        }
+
+        return nss;
     }
 
 }

@@ -31,6 +31,7 @@ public class AFIdeSearchListViewBean extends BAccessBean implements FWViewBeanIn
     private String forRaisonSociale;
     private String forNaissance;
     private String forTypeRecherche = "";
+    private String forNumeroAVS;
 
     private String message = "";
     private String msgType = "";
@@ -43,6 +44,8 @@ public class AFIdeSearchListViewBean extends BAccessBean implements FWViewBeanIn
             } else if (AFIDEUtil.TYPE_RECHERCHE_RAISON_SOCIALE.equalsIgnoreCase(forTypeRecherche)) {
                 listIdeDataBean = IDEServiceCallUtil.search(getForRaisonSociale(), getForNpa(), getForLocalite(),
                         getForRue(), getForNumeroRue(), getForNaissance(), getSession());
+            } else if (AFIDEUtil.TYPE_RECHERCHE_AVS.equalsIgnoreCase(forTypeRecherche)) {
+                listIdeDataBean = IDEServiceCallUtil.searchForNumeroAVS(getForNumeroAVS(), getSession());
             }
         } catch (Exception e) {
             setMsgType(FWViewBeanInterface.ERROR);
@@ -123,6 +126,14 @@ public class AFIdeSearchListViewBean extends BAccessBean implements FWViewBeanIn
 
     public void setForRaisonSociale(String forRaisonSociale) {
         this.forRaisonSociale = forRaisonSociale;
+    }
+
+    public void setForNumeroAVS(String forNumeroAVS) {
+        this.forNumeroAVS = forNumeroAVS;
+    }
+
+    public String getForNumeroAVS() {
+        return forNumeroAVS;
     }
 
     /**
@@ -214,6 +225,10 @@ public class AFIdeSearchListViewBean extends BAccessBean implements FWViewBeanIn
 
     public String getNumeroIDE(int i) {
         return AFIDEUtil.giveMeNumIdeFormatedWithPrefix(listIdeDataBean.get(i).getNumeroIDE());
+    }
+
+    public String getNumeroAVS(int i) {
+        return listIdeDataBean.get(i).getNumeroAVS();
     }
 
     public String getRaisonSociale(int i) {

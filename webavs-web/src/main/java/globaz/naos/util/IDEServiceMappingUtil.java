@@ -1,6 +1,7 @@
 package globaz.naos.util;
 
 import globaz.jade.client.util.JadeStringUtil;
+import globaz.pyxis.util.CommonNSSFormater;
 import idech.admin.bit.xmlns.uid_wse_f._3.RegisterDeregisterItem;
 import idech.admin.bit.xmlns.uid_wse_shared._1.RegisterDeregisterStatus;
 import idech.ech.xmlns.ech_0007_f._6.CantonAbbreviationType;
@@ -34,6 +35,7 @@ public class IDEServiceMappingUtil {
     public static final String CATEGORIE_NUMERO_AFFILIE = "CH.AK";
     public static final String COUNTRY_CH = "CH";
     public static final String ADRESSE_CATEGORY_MAIN = "main";
+    public static final String CATEGORIE_NUMERO_AVS = "CH.AHVN13";
 
     public static final String getNumeroIDE(RegisterDeregisterItem registerDeregisterItem) {
         return getNumeroIDE(registerDeregisterItem.getUid());
@@ -343,6 +345,8 @@ public class IDEServiceMappingUtil {
 
         organisationType.setUidregInformation(uidregInformationType);
 
+        addNssIfNeeded(ideDataBean, organisationType.getOrganisation());
+
         return organisationType;
 
     }
@@ -438,5 +442,64 @@ public class IDEServiceMappingUtil {
         organisationType.setOrganisation(org);
 
         return organisationType;
+    }
+
+    public static final idech.ech.xmlns.ech_0108_f._3.OrganisationType getStructureForSearchByNumeroAVS(
+            String numeroAVS) {
+        idech.ech.xmlns.ech_0098_f._3.OrganisationType organisation = new idech.ech.xmlns.ech_0098_f._3.OrganisationType();
+        setOtherOrganisationWithNumeroAVS(organisation, numeroAVS);
+
+        idech.ech.xmlns.ech_0108_f._3.OrganisationType organisationType = new idech.ech.xmlns.ech_0108_f._3.OrganisationType();
+        organisationType.setOrganisation(organisation);
+
+        return organisationType;
+    }
+
+
+    public static final idech.ech.xmlns.ech_0098_f._3.OrganisationType setOtherOrganisationWithNumeroAVS(
+            idech.ech.xmlns.ech_0098_f._3.OrganisationType organisation,
+            String numeroAVS) {
+        OrganisationIdentificationType organisationIdentification = organisation.getOrganisationIdentification();
+        if(organisationIdentification == null) {
+            organisationIdentification = new OrganisationIdentificationType();
+            organisation.setOrganisationIdentification(organisationIdentification);
+        }
+        NamedOrganisationIdType otherOrganisationId = new NamedOrganisationIdType();
+        otherOrganisationId.setOrganisationIdCategory(CATEGORIE_NUMERO_AVS);
+        otherOrganisationId.setOrganisationId(numeroAVS);
+        organisationIdentification.getOtherOrganisationId().add(otherOrganisationId);
+        return organisation;
+
+    }
+
+    private static void addNssIfNeeded(IDEDataBean ideDataBean, idech.ech.xmlns.ech_0098_f._3.OrganisationType organisation) {
+        if(!JadeStringUtil.isEmpty(ideDataBean.getNumeroAVS())) {
+            setOtherOrganisationWithNumeroAVS(organisation, ideDataBean.getNumeroAVS());
+        }
+    }
+
+    /**
+     * extract data from ech_0108_f._3.OrganisationType
+     *
+     * @param organisationType
+     * @return
+     */
+    public static final String getNumeroAVS(idech.ech.xmlns.ech_0108_f._3.OrganisationType organisationType) {
+        for(NamedOrganisationIdType otherOrg : organisationType.getOrganisation().getOrganisationIdentification().getOtherOrganisationId()) {
+            if(CATEGORIE_NUMERO_AVS.equals(otherOrg.getOrganisationIdCategory())) {
+                try {
+                    return formatNss(otherOrg.getOrganisationId());
+                } catch (Exception e) {
+                    logger.error("Unable to parse ideDataBean.getNumeroAVS() into correct format : " + otherOrg.getOrganisationId(),  e);
+                    return "";
+                }
+            }
+        }
+        return "";
+    }
+
+    public static String formatNss(String nss) throws Exception {
+        CommonNSSFormater commonNSSFormater = new CommonNSSFormater();
+        return commonNSSFormater.format(nss);
     }
 }
