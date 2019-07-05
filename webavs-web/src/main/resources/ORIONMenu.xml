@@ -77,6 +77,20 @@
 			</node>
 		</nodes>
 	</menu>
+
+	<!-- Menu Option Recap AF -->
+	<menu id="orion-optionsrecapitulationsaf">
+		<label refId="MENU_OPTION_TITRE" />
+		<nodes>
+			<node>
+				<label refId="RECAP_OPTION_MENU_CLOTURER" />
+				<action command="/orion" responseTarget="fr_main">
+					<parameter name="userAction" value="orion.recap.recapAf.cloturer" />
+					<parameter name="selectedId" />
+				</action>
+			</node>
+		</nodes>
+	</menu>
 	
 	<!-- Menu Option vide -->
 	<menu id="EBMenuVide">
