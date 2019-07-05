@@ -45,9 +45,15 @@ public class EBRecapAfService {
     private static String ID_LIGNE_RECAP = "idLigneRecapDetail";
     private static String NUMERO_AFFILIE = "numeroAffilie";
     private static String TEXTE_LIBRE = "texteLibre";
+    private static String ID_SELECTED = "selectedId";
 
     private EBRecapAfService() {
 
+    }
+
+    public static void cloturerRecapAf(HttpSession session, HttpServletRequest request) throws Exception {
+        BSession bsession = (BSession) ((FWController) session.getAttribute("objController")).getSession();
+        AfServiceImpl.cloturerRecapAfById(bsession, request.getParameter(ID_SELECTED));
     }
 
     public static void validerLigneRecapAf(HttpSession session, HttpServletRequest request) throws Exception {

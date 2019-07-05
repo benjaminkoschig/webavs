@@ -20,9 +20,9 @@ import ch.globaz.xmlns.eb.recapaf.UniteTempsEnum;
 
 public class AfServiceImpl {
     public static void createRecapAf(BSession session, String numAffilie, XMLGregorianCalendar anneeMoisRecap,
-            XMLGregorianCalendar misADispo, List<NouvelleLigneRecapAf> lignesRecap) throws EBRecapAfException_Exception {
+            XMLGregorianCalendar misADispo, List<NouvelleLigneRecapAf> lignesRecap, Boolean isClotureRecapManuelle) throws EBRecapAfException_Exception {
         ServicesProviders.recapAfServiceProvide(session).createRecapAf(numAffilie, anneeMoisRecap, misADispo,
-                lignesRecap);
+                lignesRecap, isClotureRecapManuelle);
     }
 
     public static FindResultBean listRecapAf(BSession session, String likeNumeroAffilie, String likeRaisonSociale,
@@ -84,5 +84,9 @@ public class AfServiceImpl {
 
     public static void cloturerRecapAf(BSession session, XMLGregorianCalendar periode) {
         ServicesProviders.recapAfServiceProvide(session).cloturerRecapAf(periode);
+    }
+
+    public static void cloturerRecapAfById(BSession session, String idRecapAf) {
+        ServicesProviders.recapAfServiceProvide(session).cloturerRecapAfById(idRecapAf);
     }
 }

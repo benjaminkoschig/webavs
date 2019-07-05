@@ -33,7 +33,7 @@ public class RecapAfAndLignes {
 
         recapAf = new RecapAf(recapAfAndLignesEbu.getRecap().getIdRecap(), recapAfAndLignesEbu.getRecap().getPartner(),
                 anneeMoisRecapAf, dateMiseADispoRecapAf, lastModificationDate, statutWebAvs, recapAfAndLignesEbu
-                        .getRecap().isAucunChangement());
+                        .getRecap().isAucunChangement(), recapAfAndLignesEbu.getRecap().isClotureManuelle());
 
         listLignesRecapAf = prepareListFromEbu(recapAfAndLignesEbu.getLignesRecap());
 

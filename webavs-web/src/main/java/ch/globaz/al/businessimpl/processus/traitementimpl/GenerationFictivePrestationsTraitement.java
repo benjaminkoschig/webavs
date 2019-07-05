@@ -17,9 +17,13 @@ import ch.globaz.al.utils.ALFileCSVUtils;
 import ch.globaz.common.properties.CommonProperties;
 import ch.globaz.orion.businessimpl.services.af.AfServiceImpl;
 import ch.globaz.orion.businessimpl.services.partnerWeb.PartnerWebServiceImpl;
+import ch.globaz.orion.ws.service.AppAffiliationService;
 import ch.globaz.xmlns.eb.recapaf.NouvelleLigneRecapAf;
 import ch.globaz.xmlns.eb.recapaf.UniteTempsEnum;
+import globaz.globall.db.BManager;
+import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
+import globaz.globall.util.JACalendar;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.context.JadeThread;
@@ -33,6 +37,10 @@ import globaz.jade.publish.client.JadePublishDocument;
 import globaz.jade.publish.client.JadePublishServerFacade;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
 import globaz.jade.publish.message.JadePublishDocumentMessage;
+import globaz.naos.db.affiliation.AFAffiliation;
+import globaz.naos.db.affiliation.AFAffiliationManager;
+import globaz.naos.db.particulariteAffiliation.AFParticulariteAffiliation;
+import globaz.naos.translation.CodeSystem;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
@@ -278,6 +286,18 @@ public class GenerationFictivePrestationsTraitement extends BusinessTraitement {
         for (Map.Entry<String, List<RecapitulatifEntrepriseImpressionComplexModel>> entry : mapDossier.entrySet()) {
             String numAffilie = entry.getKey();
 
+            // Récupération de la particularité si les récap doivent être clotûrées manuellement ou automatiquement
+            Boolean isClotureRecapManuelle = false;
+            try {
+                String idAffilieFromDossier = getIdAffilie(BSessionUtil.getSessionFromThreadContext(), numAffilie);
+                if(!JadeStringUtil.isBlankOrZero(idAffilieFromDossier)){
+                    isClotureRecapManuelle = AFParticulariteAffiliation.existeParticulariteDateDonnee(BSessionUtil.getSessionFromThreadContext(), idAffilieFromDossier, CodeSystem.PARTIC_AFFILIE_CLOTURE_RECAP_MANUELLE, JACalendar.todayJJsMMsAAAA());
+                }
+            } catch (Exception e) {
+                JadeLogger.error(this, "Impossible de déterminer si les récap pour l'affilié " + numAffilie + " doivent être clôturées manuellement ou automatiquement ("
+                        + e.getMessage()+")");
+            }
+
             GregorianCalendar anneeMoiDateCal = new GregorianCalendar();
             GregorianCalendar misADispoCal = new GregorianCalendar();
 
@@ -326,13 +346,35 @@ public class GenerationFictivePrestationsTraitement extends BusinessTraitement {
 
             try {
                 AfServiceImpl.createRecapAf(BSessionUtil.getSessionFromThreadContext(), numAffilie, anneeMoisRecap,
-                        miseADispo, lignesRecap);
+                        miseADispo, lignesRecap, isClotureRecapManuelle);
             } catch (Exception e) {
                 JadeLogger.error(this, "Erreur lors de la création de la récapAf pour l'affilié " + numAffilie + " "
                         + e.getMessage());
             }
         }
 
+    }
+
+    private String getIdAffilie(BSession session, String numAffilie) throws Exception {
+            // recherche de l'affiliation
+            AFAffiliationManager affiliationManager = new AFAffiliationManager();
+            affiliationManager.setSession(session);
+            affiliationManager.setForAffilieNumero(numAffilie);
+
+            try {
+                affiliationManager.find(BManager.SIZE_NOLIMIT);
+                if (affiliationManager.size() > 0) {
+                    // récupération de l'affiliation
+                    return ((AFAffiliation) affiliationManager.getFirstEntity()).getAffiliationId();
+                } else {
+                    JadeLogger.error(AppAffiliationService.class, "affiliation not found : " + numAffilie);
+                    throw new Exception("affiliation not found : " + numAffilie);
+                }
+            } catch (Exception e) {
+                JadeLogger.error(AppAffiliationService.class, "technical error when findAffiliation for numeroAffilie : "
+                        + numAffilie);
+                throw new Exception("technical error when findAffiliation for numeroAffilie : " + numAffilie);
+            }
     }
 
     @Override

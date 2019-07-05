@@ -27,6 +27,10 @@ public class EBRecapAfAction extends EBAbstractServletAction {
             } else if ("validerRadier".equals(getAction().getActionPart())) {
                 // Processus de validation de la demande
                 EBRecapAfService.validerRadierLigneRecapAf(session, request);
+            }else if("cloturer".equals(getAction().getActionPart())){
+                EBRecapAfService.cloturerRecapAf(session, request);
+                String _myDestination = getRelativeURL(request, session) + "_rc.jsp";
+                servlet.getServletContext().getRequestDispatcher(_myDestination).forward(request, response);
             }
         } catch (Exception e) {
             JadeLogger.error(e, e.getMessage());

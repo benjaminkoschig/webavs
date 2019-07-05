@@ -338,7 +338,7 @@ public class CodeSystem {
     public final static String PARTIC_AFFILIE_SANS_PERSONNEL = "818011";
     // Particularité Affiliation
     public final static String PARTIC_AFFILIE_SURSIS = "818001";
-
+    public final static String PARTIC_AFFILIE_CLOTURE_RECAP_MANUELLE = "818030";
     public final static String PARTIC_PERIO_CONTR_EMPLOYEUR = "818016";
 
     // public final static String PERIODICITE_SEMESTRIELLE = "802003";

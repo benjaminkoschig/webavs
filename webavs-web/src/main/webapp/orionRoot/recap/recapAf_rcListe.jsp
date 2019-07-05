@@ -10,13 +10,14 @@
 
 
 <%
-	EBRecapAfListViewBean viewBean = (EBRecapAfListViewBean) request.getAttribute("viewBean"); 
+	EBRecapAfListViewBean viewBean = (EBRecapAfListViewBean) request.getAttribute("viewBean");
 	
 	size = viewBean.getSize();
 
 // 	size = viewBean.getSize();
 
 	detailLink = "orion?userAction=orion.recap.recapAf.afficher&selectedId=";
+	String clotureLink = "orion?userAction=orion.recap.recapAf.afficher&selectedId=";
 %>
 <%-- /tpl:insert --%>
 
@@ -44,10 +45,16 @@
 		actionDetail = targetLocation  + "='" + detailLink + recap.getIdRecap()+"'";
 	%>
 		<td></td>
-		<TD class="mtd" width="">		
-<%--    			<ct:menuPopup menu="orion-optionslot" detailLabelId="MENU_OPTION_DETAIL" detailLink="<%=detailLink + recap.getIdRecap()%>"> --%>
-<%-- 			<ct:menuParam key="selectedId" value="<%=recap.getIdRecap().toString()%>"/> --%>
-<%-- 			</ct:menuPopup> --%>
+		<TD class="mtd" width="">
+			<%
+				if(recap.getControleManuelle() && recap.getStatut().equals(StatutRecapAfWebAvsEnum.A_TRAITER)){
+			%>
+				<ct:menuPopup menu="orion-optionsrecapitulationsaf" detailLabelId="MENU_OPTION_DETAIL" detailLink="<%=detailLink + recap.getIdRecap()%>">
+					<ct:menuParam key="selectedId" value="<%=recap.getIdRecap().toString()%>"/>
+				</ct:menuPopup>
+			<%
+				}
+			%>
    		 </TD>
 			<td class="mtd" nowrap="nowrap" onClick="<%=actionDetail%>" ><%=recap.getPartner().getNumeroAffilie()%></td>
 			<td class="mtd" nowrap="nowrap" onClick="<%=actionDetail%>" ><%=recap.getPartner().getNom()%></td>

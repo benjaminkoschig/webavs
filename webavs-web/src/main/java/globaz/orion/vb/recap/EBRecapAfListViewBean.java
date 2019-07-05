@@ -176,7 +176,7 @@ public class EBRecapAfListViewBean extends EBAbstractListViewBeanPagination {
 
             RecapAf recapAfWebAvs = new RecapAf(recapAfEnrichie.getRecapAf().getIdRecap(), recapAfEnrichie.getRecapAf()
                     .getPartner(), anneeMoisRecapAf, dateMiseADispoRecapAf, lastModificationDate, statutWebAvs,
-                    recapAfEnrichie.getRecapAf().isAucunChangement());
+                    recapAfEnrichie.getRecapAf().isAucunChangement(), recapAfEnrichie.getRecapAf().isClotureManuelle());
 
             listRecapAf.add(recapAfWebAvs);
         }

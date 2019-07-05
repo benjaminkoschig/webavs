@@ -17,6 +17,7 @@ public class RecapAf {
     private String lastModificationDateStr;
     private StatutRecapAfWebAvsEnum statut;
     private Boolean aucunChangement;
+    private Boolean controleManuelle;
 
     private static final DateFormat moisAnneeFormat = new SimpleDateFormat("MM.yyyy");
     private static final DateFormat jourMoisAnneeFormat = new SimpleDateFormat("dd.MM.yyyy");
@@ -26,7 +27,7 @@ public class RecapAf {
     }
 
     public RecapAf(Integer idRecap, Partner partner, Date anneeMoisRecap, Date dateMiseADisposition,
-            Date lastModificationDate, StatutRecapAfWebAvsEnum statut, Boolean aucunChangement) {
+            Date lastModificationDate, StatutRecapAfWebAvsEnum statut, Boolean aucunChangement, Boolean controleManuelle) {
         this.idRecap = idRecap;
         this.partner = partner;
         this.anneeMoisRecap = anneeMoisRecap;
@@ -37,6 +38,7 @@ public class RecapAf {
         lastModificationDateStr = jourMoisAnneeFormat.format(lastModificationDate);
         this.statut = statut;
         this.aucunChangement = aucunChangement;
+        this.controleManuelle = controleManuelle;
     }
 
     public Integer getIdRecap() {
@@ -117,6 +119,14 @@ public class RecapAf {
 
     public void setLastModificationDateStr(String lastModificationDateStr) {
         this.lastModificationDateStr = lastModificationDateStr;
+    }
+
+    public Boolean getControleManuelle() {
+        return controleManuelle;
+    }
+
+    public void setControleManuelle(Boolean controleManuelle) {
+        this.controleManuelle = controleManuelle;
     }
 
 }
