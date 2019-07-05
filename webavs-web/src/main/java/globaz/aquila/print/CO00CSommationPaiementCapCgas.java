@@ -1,6 +1,6 @@
 /*
  * Créé le 10 janv. 06
- * 
+ *
  * Pour changer le modèle de ce fichier généré, allez à : Fenêtre&gt;Préférences&gt;Java&gt;Génération de code&gt;Code
  * et commentaires
  */
@@ -30,6 +30,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 /**
+ * Cette classe permet de créer un document de sommation pour CCVD et Agrivit dans le cadre d'une séquence CAP/CGAS.
+ *
  * <H1>Description</H1> Document : Sommation <br>
  * Niveaux et paramètres utilisés : <br>
  * <ul>
@@ -50,24 +52,30 @@ import java.util.LinkedList;
  * </ul>
  * Document : Voies de droits <br>
  * Prend tous les niveaux et les concatènes. Aucun paramètre possible.
- * 
+ *
  * @author vre, sel
  */
-public class CO00CSommationPaiementAgrivit extends CODocumentManager {
+public class CO00CSommationPaiementCapCgas extends CODocumentManager {
 
-    private static final Logger LOG = LoggerFactory.getLogger(CO00ARappelPaiementAgrivit.class);
+    private static final Logger LOG = LoggerFactory.getLogger(CO00CSommationPaiementCapCgas.class);
 
     public static final String NOM_DOCUMENT_SOMMATION_CAP_CGAS = "Sommation CAP/CGAS";
-    /** Numéro Inforom pour la sommation LTN */
+    /**
+     * Numéro Inforom pour la sommation LTN
+     */
     public static final String NUM_REF_SOMMATION_LTN = "0197GCO";
-    /** Numéro Inforom */
+    /**
+     * Numéro Inforom
+     */
     public static final String NUMERO_REFERENCE_INFOROM = "0022GCO";
 
     public static final String NUMERO_REFERENCE_INFOROM_SOMMATION_CAP_CGAS = "0297GCO";
 
     private static final long serialVersionUID = -3645938861761414428L;
 
-    /** Nom du document du catalogue de textes à utiliser pour les sommation LTN */
+    /**
+     * Nom du document du catalogue de textes à utiliser pour les sommation LTN
+     */
     private static final String SOMMATION_LTN = "sommation LTN";
 
     // ~ Static fields/initializers
@@ -76,9 +84,13 @@ public class CO00CSommationPaiementAgrivit extends CODocumentManager {
     private static final int STATE_LETTRE = 1;
     private static final int STATE_VD = 2;
 
-    /** Modele Jasper */
-    private static final String TEMPLATE_NAME = "CO_00C_SOMMATION_AF_AGRIVIT";
-    /** Le nom du modèle Jasper pour les voies de droits */
+    /**
+     * Modele Jasper
+     */
+    private static final String TEMPLATE_NAME = "CO_00C_SOMMATION_AF_CAP_CGAS";
+    /**
+     * Le nom du modèle Jasper pour les voies de droits
+     */
     private static final String TEMPLATE_NAME_VD = "CO_00C_SOMMATION_VOIES_DROIT";
 
     private static final String TITLE_VOIES_DE_DROIT = "sommation voies de droit";
@@ -89,7 +101,7 @@ public class CO00CSommationPaiementAgrivit extends CODocumentManager {
 
     private transient CAReferenceBVR bvr = null;
     private String dateDelaiPaiement = null;
-    private int state = CO00CSommationPaiementAgrivit.STATE_IDLE;
+    private int state = CO00CSommationPaiementCapCgas.STATE_IDLE;
 
     // ~ Constructors
     // ---------------------------------------------------------------------------------------------------
@@ -97,7 +109,7 @@ public class CO00CSommationPaiementAgrivit extends CODocumentManager {
     /**
      * Crée une nouvelle instance de la classe CO00CSommationPaiement.
      */
-    public CO00CSommationPaiementAgrivit() {
+    public CO00CSommationPaiementCapCgas() {
         super();
     }
 
@@ -107,7 +119,7 @@ public class CO00CSommationPaiementAgrivit extends CODocumentManager {
      * @param session
      * @throws FWIException
      */
-    public CO00CSommationPaiementAgrivit(BSession session) throws FWIException {
+    public CO00CSommationPaiementCapCgas(BSession session) throws FWIException {
         super(session, session.getLabel("AQUILA_SOMMATION"));
     }
 
@@ -142,7 +154,7 @@ public class CO00CSommationPaiementAgrivit extends CODocumentManager {
         try {
             if ((getSession().getApplication().getProperty(CODocumentManager.GESTION_VERSO_AQUILA) == null)
                     || getSession().getApplication().getProperty(CODocumentManager.GESTION_VERSO_AQUILA)
-                            .equals(CODocumentManager.AVEC_VERSO)) {
+                    .equals(CODocumentManager.AVEC_VERSO)) {
                 this.mergePDF(getDocumentInfo(), true, 500, false, null, JadePdfUtil.DUPLEX_ON_FIRST);
             } else {
                 this.mergePDF(getDocumentInfo(), true, 500, false, null);
@@ -158,9 +170,9 @@ public class CO00CSommationPaiementAgrivit extends CODocumentManager {
     @Override
     public void beforeExecuteReport() throws FWIException {
         super.beforeExecuteReport();
-        setTemplateFile(CO00CSommationPaiementAgrivit.TEMPLATE_NAME);
+        setTemplateFile(CO00CSommationPaiementCapCgas.TEMPLATE_NAME);
         setDocumentTitle(getSession().getLabel("AQUILA_SOMMATION"));
-        setNumeroReferenceInforom(CO00CSommationPaiementAgrivit.NUMERO_REFERENCE_INFOROM);
+        setNumeroReferenceInforom(CO00CSommationPaiementCapCgas.NUMERO_REFERENCE_INFOROM);
     }
 
     /**
@@ -170,7 +182,7 @@ public class CO00CSommationPaiementAgrivit extends CODocumentManager {
     public void createDataSource() throws Exception {
 
         try {
-            if (state == CO00CSommationPaiementAgrivit.STATE_LETTRE) {
+            if (state == CO00CSommationPaiementCapCgas.STATE_LETTRE) {
                 createDataSourceLettre();
             } else {
                 createDataSourceVoiesDroit();
@@ -189,17 +201,15 @@ public class CO00CSommationPaiementAgrivit extends CODocumentManager {
 
         if (APISection.ID_CATEGORIE_SECTION_LTN.equals(curContentieux.getSection().getCategorieSection())
                 || APISection.ID_CATEGORIE_SECTION_LTN_COMPLEMENTAIRE.equals(curContentieux.getSection()
-                        .getCategorieSection())) {
+                .getCategorieSection())) {
             // Setter pour un CT différent
-            getCatalogueTextesUtil().setNomDocument(CO00CSommationPaiementAgrivit.SOMMATION_LTN);
-            setNumeroReferenceInforom(CO00CSommationPaiementAgrivit.NUM_REF_SOMMATION_LTN);
+            getCatalogueTextesUtil().setNomDocument(CO00CSommationPaiementCapCgas.SOMMATION_LTN);
+            setNumeroReferenceInforom(CO00CSommationPaiementCapCgas.NUM_REF_SOMMATION_LTN);
         }
 
-        if (ICOSequenceConstante.CS_SEQUENCE_CAP_CGAS.equalsIgnoreCase(curContentieux.getSequence().getLibSequence())) {
-            setNumeroReferenceInforom(CO00CSommationPaiementAgrivit.NUMERO_REFERENCE_INFOROM_SOMMATION_CAP_CGAS);
-            getCatalogueTextesUtil().setDomaineDocument(COCatalogueTextesService.CS_DOMAINE_CONTENTIEUX_CAP_CGAS);
-            getCatalogueTextesUtil().setNomDocument(CO00CSommationPaiementAgrivit.NOM_DOCUMENT_SOMMATION_CAP_CGAS);
-        }
+        setNumeroReferenceInforom(CO00CSommationPaiementCapCgas.NUMERO_REFERENCE_INFOROM_SOMMATION_CAP_CGAS);
+        getCatalogueTextesUtil().setDomaineDocument(COCatalogueTextesService.CS_DOMAINE_CONTENTIEUX_CAP_CGAS);
+        getCatalogueTextesUtil().setNomDocument(CO00CSommationPaiementCapCgas.NOM_DOCUMENT_SOMMATION_CAP_CGAS);
 
         String adresse = getAdresseDestinataire();
 
@@ -228,10 +238,10 @@ public class CO00CSommationPaiementAgrivit extends CODocumentManager {
      * DataSource pour les voies de droits
      */
     private void createDataSourceVoiesDroit() {
-        getCatalogueTextesUtil().setNomDocument(CO00CSommationPaiementAgrivit.TITLE_VOIES_DE_DROIT);
+        getCatalogueTextesUtil().setNomDocument(CO00CSommationPaiementCapCgas.TITLE_VOIES_DE_DROIT);
 
-        if (getCatalogueTextesUtil().isExistDocument(getParent(), CO00CSommationPaiementAgrivit.TITLE_VOIES_DE_DROIT)) {
-            setTemplateFile(CO00CSommationPaiementAgrivit.TEMPLATE_NAME_VD);
+        if (getCatalogueTextesUtil().isExistDocument(getParent(), CO00CSommationPaiementCapCgas.TITLE_VOIES_DE_DROIT)) {
+            setTemplateFile(CO00CSommationPaiementCapCgas.TEMPLATE_NAME_VD);
             setDocumentTitle(getSession().getLabel("AQUILA_SOMMATION"));
 
             StringBuffer body = new StringBuffer("");
@@ -326,7 +336,7 @@ public class CO00CSommationPaiementAgrivit extends CODocumentManager {
 
     /**
      * corps du doc
-     * 
+     *
      * @throws Exception
      */
     private void initCorpsDoc(Object key) throws Exception {
@@ -351,15 +361,15 @@ public class CO00CSommationPaiementAgrivit extends CODocumentManager {
                 COParameter.T5,
                 formatMessage(
                         body,
-                        new Object[] {
+                        new Object[]{
                                 getFormulePolitesse(destinataireDocument),
-                                formatMessage(optionnel, new Object[] { formatDate(curContentieux.getDateExecution()) }),
-                                formatDate(curContentieux.getSection().getDateSection()) }));
+                                formatMessage(optionnel, new Object[]{formatDate(curContentieux.getDateExecution())}),
+                                formatDate(curContentieux.getSection().getDateSection())}));
     }
 
     /**
      * boucle de detail
-     * 
+     *
      * @return
      */
     private FWCurrency initDetail(Object key) {
@@ -374,7 +384,7 @@ public class CO00CSommationPaiementAgrivit extends CODocumentManager {
         // ajout des taxes si necessaire
         FWCurrency montantTotal = curContentieux.getSection().getSoldeToCurrency();
 
-        for (Iterator taxesIter = getTaxes().iterator(); taxesIter.hasNext();) {
+        for (Iterator taxesIter = getTaxes().iterator(); taxesIter.hasNext(); ) {
             COTaxe taxe = (COTaxe) taxesIter.next();
             montantTotal.add(taxe.getMontantTaxe());
         }
@@ -385,7 +395,7 @@ public class CO00CSommationPaiementAgrivit extends CODocumentManager {
 
     /**
      * texte en dessous du detail
-     * 
+     *
      * @throws Exception
      */
     private void initTexteDetail(Object key) throws Exception {
@@ -393,7 +403,7 @@ public class CO00CSommationPaiementAgrivit extends CODocumentManager {
 
         // Si l'affiliation est de type employeur on affiche la phrase de niveau 5
         if (curContentieux.getSection().getCompteAnnexe().getIdCategorie()
-                .equals(CO00CSommationPaiementAgrivit.TYPE_AFFILI_EMPLOY)) {
+                .equals(CO00CSommationPaiementCapCgas.TYPE_AFFILI_EMPLOY)) {
             getCatalogueTextesUtil().dumpNiveau(key, 5, body, "\n\n");
         }
 
@@ -407,13 +417,13 @@ public class CO00CSommationPaiementAgrivit extends CODocumentManager {
          */
         this.setParametres(
                 COParameter.T6,
-                formatMessage(body, new Object[] { getFormulePolitesse(destinataireDocument),
-                        formatDate(dateDelaiPaiement) }));
+                formatMessage(body, new Object[]{getFormulePolitesse(destinataireDocument),
+                        formatDate(dateDelaiPaiement)}));
     }
 
     /**
      * titre du doc
-     * 
+     *
      * @return
      */
     private StringBuffer initTitreDoc(Object key) {
@@ -430,8 +440,8 @@ public class CO00CSommationPaiementAgrivit extends CODocumentManager {
          */
         this.setParametres(
                 COParameter.T1,
-                formatMessage(body, new Object[] { curContentieux.getSection().getDescription(getLangue()),
-                        curContentieux.getSection().getDateSection() }));
+                formatMessage(body, new Object[]{curContentieux.getSection().getDescription(getLangue()),
+                        curContentieux.getSection().getDateSection()}));
         return body;
     }
 
@@ -443,7 +453,7 @@ public class CO00CSommationPaiementAgrivit extends CODocumentManager {
         switch (state) {
             case STATE_IDLE:
                 if (super.next()) {
-                    state = CO00CSommationPaiementAgrivit.STATE_LETTRE;
+                    state = CO00CSommationPaiementCapCgas.STATE_LETTRE;
                     // on va créer la lettre
                     return true;
                 } else {
@@ -452,24 +462,23 @@ public class CO00CSommationPaiementAgrivit extends CODocumentManager {
                 }
             case STATE_LETTRE:
                 // on vient de créer la lettre, on va créer les voies de droits
-                state = CO00CSommationPaiementAgrivit.STATE_VD;
-                if (getCatalogueTextesUtil().isExistDocument(getParent(), CO00CSommationPaiementAgrivit.TITLE_VOIES_DE_DROIT)) {
+                state = CO00CSommationPaiementCapCgas.STATE_VD;
+                if (getCatalogueTextesUtil().isExistDocument(getParent(), CO00CSommationPaiementCapCgas.TITLE_VOIES_DE_DROIT)) {
                     return true;
                 } else {
                     return false;
                 }
             default:
                 // on regarder s'il y a encore des contentieux à traiter.
-                state = CO00CSommationPaiementAgrivit.STATE_IDLE;
+                state = CO00CSommationPaiementCapCgas.STATE_IDLE;
                 return next();
         }
     }
 
     /**
      * setter pour l'attribut date delai paiement.
-     * 
-     * @param dateDelaiPaiement
-     *            une nouvelle valeur pour cet attribut
+     *
+     * @param dateDelaiPaiement une nouvelle valeur pour cet attribut
      */
     public void setDateDelaiPaiement(String dateDelaiPaiement) {
         this.dateDelaiPaiement = dateDelaiPaiement;

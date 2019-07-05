@@ -7,8 +7,7 @@
 package globaz.aquila.db.access.batch.transition;
 
 import globaz.aquila.db.access.poursuite.COContentieux;
-import globaz.aquila.print.CO00CSommationPaiement;
-import globaz.aquila.print.CO00CSommationPaiementAgrivit;
+import globaz.aquila.print.*;
 import globaz.aquila.process.COProcessContentieux;
 import globaz.globall.db.BTransaction;
 import globaz.jade.client.util.JadeStringUtil;
@@ -16,9 +15,11 @@ import globaz.jade.client.util.JadeStringUtil;
 import java.util.List;
 
 /**
- * @author dostes
+ * Cette classe est appelée pour créer un document de Sommation pour les instances CCVD et Agrivit pour la séquence CAP/CGAS.
+ *
+ * @author ebsc
  */
-public class CO003ExecuterSommationAgrivit extends COAbstractDelaiPaiementAction {
+public class CO003ExecuterSommationCapCgas extends COAbstractDelaiPaiementAction {
 
     /**
      * Génération et envoi du document
@@ -27,9 +28,9 @@ public class CO003ExecuterSommationAgrivit extends COAbstractDelaiPaiementAction
     @Override
     protected void _execute(COContentieux contentieux, List taxes, BTransaction transaction) throws COTransitionException {
         try {
-            CO00CSommationPaiementAgrivit sommation = new CO00CSommationPaiementAgrivit(transaction.getSession());
-
+            CO00CSommationPaiementCapCgas sommation = new CO00CSommationPaiementCapCgas(transaction.getSession());
             sommation.setDateDelaiPaiement(dateDelaiPaiement);
+
             if ((getParent() == null)
                     || JadeStringUtil.isBlank(((COProcessContentieux) getParent()).getUserIdCollaborateur())) {
                 sommation.setCollaborateur(transaction.getSession().getUserInfo());

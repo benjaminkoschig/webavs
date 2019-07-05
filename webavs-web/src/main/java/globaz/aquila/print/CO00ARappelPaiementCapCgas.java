@@ -24,13 +24,13 @@ import java.math.BigDecimal;
 import java.util.Iterator;
 
 /**
- * <H1>Description</H1>
+ * Cette classe permet de créer un document de rappel pour CCVD et Agrivit dans le cadre d'une séquence CAP/CGAS.
  * 
- * @author vre
+ * @author ebsc
  */
-public class CO00ARappelPaiementAgrivit extends CODocumentManager {
+public class CO00ARappelPaiementCapCgas extends CODocumentManager {
 
-    private static final Logger LOG = LoggerFactory.getLogger(CO00ARappelPaiementAgrivit.class);
+    private static final Logger LOG = LoggerFactory.getLogger(CO00ARappelPaiementCapCgas.class);
 
     // ~ Static fields/initializers
     // -------------------------------------------------------------------------------------
@@ -40,7 +40,7 @@ public class CO00ARappelPaiementAgrivit extends CODocumentManager {
 
     public static final String NUMERO_REFERENCE_INFOROM_RAPPEL_CAP_CGAS = "0300GCO";
     private static final long serialVersionUID = 4866945152594877861L;
-    private static final String TEMPLATE_NAME = "CO_00A_RAPPEL_AF_AGRIVIT";
+    private static final String TEMPLATE_NAME = "CO_00A_RAPPEL_AF_CAP_CGAS";
 
     // ~ Instance fields
     // ------------------------------------------------------------------------------------------------
@@ -55,7 +55,7 @@ public class CO00ARappelPaiementAgrivit extends CODocumentManager {
     /**
      * Crée une nouvelle instance de la classe CO00ARappelPaiement.
      */
-    public CO00ARappelPaiementAgrivit() {
+    public CO00ARappelPaiementCapCgas() {
     }
 
     /**
@@ -66,7 +66,7 @@ public class CO00ARappelPaiementAgrivit extends CODocumentManager {
      * @throws FWIException
      *             DOCUMENT ME!
      */
-    public CO00ARappelPaiementAgrivit(BSession session) throws FWIException {
+    public CO00ARappelPaiementCapCgas(BSession session) throws FWIException {
         super(session);
     }
 
@@ -80,9 +80,9 @@ public class CO00ARappelPaiementAgrivit extends CODocumentManager {
     @Override
     public void beforeExecuteReport() throws FWIException {
         super.beforeExecuteReport();
-        setTemplateFile(CO00ARappelPaiementAgrivit.TEMPLATE_NAME);
+        setTemplateFile(CO00ARappelPaiementCapCgas.TEMPLATE_NAME);
         setDocumentTitle(getSession().getLabel("AQUILA_RAPPEL_PAIEMENT"));
-        setNumeroReferenceInforom(CO00ARappelPaiementAgrivit.NUMERO_REFERENCE_INFOROM);
+        setNumeroReferenceInforom(CO00ARappelPaiementCapCgas.NUMERO_REFERENCE_INFOROM);
 
     }
 
@@ -95,11 +95,11 @@ public class CO00ARappelPaiementAgrivit extends CODocumentManager {
 
             if (ICOSequenceConstante.CS_SEQUENCE_CAP_CGAS.equalsIgnoreCase(curContentieux.getSequence()
                     .getLibSequence())) {
-                setNumeroReferenceInforom(CO00ARappelPaiementAgrivit.NUMERO_REFERENCE_INFOROM_RAPPEL_CAP_CGAS);
+                setNumeroReferenceInforom(CO00ARappelPaiementCapCgas.NUMERO_REFERENCE_INFOROM_RAPPEL_CAP_CGAS);
                 super.getDocumentInfo().setDocumentTypeNumber(
-                        CO00ARappelPaiementAgrivit.NUMERO_REFERENCE_INFOROM_RAPPEL_CAP_CGAS);
+                        CO00ARappelPaiementCapCgas.NUMERO_REFERENCE_INFOROM_RAPPEL_CAP_CGAS);
                 getCatalogueTextesUtil().setDomaineDocument(COCatalogueTextesService.CS_DOMAINE_CONTENTIEUX_CAP_CGAS);
-                getCatalogueTextesUtil().setNomDocument(CO00ARappelPaiementAgrivit.NOM_DOCUMENT_RAPPEL_CAP_CGAS);
+                getCatalogueTextesUtil().setNomDocument(CO00ARappelPaiementCapCgas.NOM_DOCUMENT_RAPPEL_CAP_CGAS);
             }
 
             // destinataire est l'affilié

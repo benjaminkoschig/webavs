@@ -1,13 +1,10 @@
 <%@ page language="java" errorPage="/errorPage.jsp" import="globaz.globall.http.*" contentType="text/html;charset=ISO-8859-1" %>
 <%@ page import="globaz.prestation.beans.PRPeriode"%>
-<%@ page import="java.util.Calendar"%>
 <%@ page import="globaz.apg.enums.APModeEditionDroit"%>
-<%@ page import="globaz.apg.business.service.APAnnoncesRapgService"%>
 <%@ page import="globaz.apg.api.droits.IAPDroitAPG"%>
 <%@ page import="globaz.apg.api.droits.IAPDroitLAPG"%>
 <%@ page import="globaz.apg.api.droits.IAPDroitMaternite"%>
 <%@ page import="globaz.apg.db.droits.APDroitAPG"%>
-<%@ page import="globaz.apg.db.droits.APDroitLAPG"%>
 <%@ page import="globaz.apg.servlet.APAbstractDroitDTOAction"%>
 <%@ page import="globaz.apg.servlet.IAPActions"%>
 <%@ page import="globaz.apg.vb.droits.APDroitAPGPViewBean"%>
@@ -16,7 +13,6 @@
 <%@ page import="globaz.prestation.interfaces.util.nss.PRUtil"%>
 <%@ page import="globaz.prestation.tools.PRCodeSystem"%>
 <%@ page import="globaz.pyxis.db.adressecourrier.TIPays"%>
-<%@ page import="globaz.pyxis.db.tiers.TIPersonne"%>
 <%@ page import="java.util.HashSet"%>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ taglib uri="/WEB-INF/nss.tld" prefix="ct1" %>

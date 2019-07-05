@@ -7,8 +7,7 @@
 package globaz.aquila.db.access.batch.transition;
 
 import globaz.aquila.db.access.poursuite.COContentieux;
-import globaz.aquila.print.CO00ARappelPaiement;
-import globaz.aquila.print.CO00ARappelPaiementAgrivit;
+import globaz.aquila.print.CO00ARappelPaiementCapCgas;
 import globaz.aquila.process.COProcessContentieux;
 import globaz.globall.db.BTransaction;
 import globaz.jade.client.util.JadeStringUtil;
@@ -16,10 +15,11 @@ import globaz.jade.client.util.JadeStringUtil;
 import java.util.List;
 
 /**
- * @author dostes Pour changer le modèle de ce commentaire de type généré, allez à :
- * Fenêtre&gt;Préférences&gt;Java&gt;Génération de code&gt;Code et commentaires
+ * Cette classe est appelée pour créer un document de Rappel pour les instances CCVD et Agrivit pour la séquence CAP/CGAS.
+ *
+ * @author ebsc
  */
-public class CO001ExecuterRappelAgrivit extends COAbstractDelaiPaiementAction {
+public class CO001ExecuterRappelCapCgas extends COAbstractDelaiPaiementAction {
 
     /*
      * (non-Javadoc)
@@ -31,9 +31,9 @@ public class CO001ExecuterRappelAgrivit extends COAbstractDelaiPaiementAction {
     protected void _execute(COContentieux contentieux, List taxes, BTransaction transaction)
             throws COTransitionException {
         try {
-            CO00ARappelPaiementAgrivit rappel = new CO00ARappelPaiementAgrivit(transaction.getSession());
+            CO00ARappelPaiementCapCgas rappel = new CO00ARappelPaiementCapCgas(transaction.getSession());
+                rappel.setDateDelaiPaiement(dateDelaiPaiement);
 
-            rappel.setDateDelaiPaiement(dateDelaiPaiement);
             if ((getParent() == null)
                     || JadeStringUtil.isBlank(((COProcessContentieux) getParent()).getUserIdCollaborateur())) {
                 rappel.setCollaborateur(transaction.getSession().getUserInfo());

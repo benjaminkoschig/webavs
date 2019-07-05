@@ -76,16 +76,6 @@ public class CO00ARappelPaiement extends CODocumentManager {
     @Override
     public void createDataSource() throws Exception {
         try {
-
-            if (ICOSequenceConstante.CS_SEQUENCE_CAP_CGAS.equalsIgnoreCase(curContentieux.getSequence()
-                    .getLibSequence())) {
-                setNumeroReferenceInforom(CO00ARappelPaiement.NUMERO_REFERENCE_INFOROM_RAPPEL_CAP_CGAS);
-                super.getDocumentInfo().setDocumentTypeNumber(
-                        CO00ARappelPaiement.NUMERO_REFERENCE_INFOROM_RAPPEL_CAP_CGAS);
-                getCatalogueTextesUtil().setDomaineDocument(COCatalogueTextesService.CS_DOMAINE_CONTENTIEUX_CAP_CGAS);
-                getCatalogueTextesUtil().setNomDocument(CO00ARappelPaiement.NOM_DOCUMENT_RAPPEL_CAP_CGAS);
-            }
-
             // destinataire est l'affilié
             destinataireDocument = curContentieux.getCompteAnnexe().getTiers();
             _setLangueFromTiers(destinataireDocument);

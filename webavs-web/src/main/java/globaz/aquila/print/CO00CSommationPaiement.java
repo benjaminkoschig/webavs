@@ -191,13 +191,6 @@ public class CO00CSommationPaiement extends CODocumentManager {
             getCatalogueTextesUtil().setNomDocument(CO00CSommationPaiement.SOMMATION_LTN);
             setNumeroReferenceInforom(CO00CSommationPaiement.NUM_REF_SOMMATION_LTN);
         }
-
-        if (ICOSequenceConstante.CS_SEQUENCE_CAP_CGAS.equalsIgnoreCase(curContentieux.getSequence().getLibSequence())) {
-            setNumeroReferenceInforom(CO00CSommationPaiement.NUMERO_REFERENCE_INFOROM_SOMMATION_CAP_CGAS);
-            getCatalogueTextesUtil().setDomaineDocument(COCatalogueTextesService.CS_DOMAINE_CONTENTIEUX_CAP_CGAS);
-            getCatalogueTextesUtil().setNomDocument(CO00CSommationPaiement.NOM_DOCUMENT_SOMMATION_CAP_CGAS);
-        }
-
         String adresse = getAdresseDestinataire();
 
         // Bug 7823
