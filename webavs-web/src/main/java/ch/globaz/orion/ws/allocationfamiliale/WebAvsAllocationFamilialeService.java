@@ -92,5 +92,7 @@ public interface WebAvsAllocationFamilialeService {
             @WebParam(name = "adresseDomicile") ALAdresse adresseDomicile,
             @WebParam(name = "adresseCourrier") ALAdresse adresseCourrier,
             @WebParam(name = "remarqueDomicile") String remarqueDomicile,
-            @WebParam(name = "remarqueCourrier") String remarqueCourrier) throws WebAvsException;
+            @WebParam(name = "remarqueCourrier") String remarqueCourrier,
+            @WebParam(name = "numeroAffilie") String numeroAffilie,
+            @WebParam(name = "email") String email) throws WebAvsException;
 }

@@ -141,5 +141,6 @@ public interface WebAvsAffiliationService {
             @WebParam(name = "adresseDomicile") AffiliationAdresse adresseDomicile,
             @WebParam(name = "adresseCourrier") AffiliationAdresse adresseCourrier,
             @WebParam(name = "remarqueDomicile") String remarqueDomicile,
-            @WebParam(name = "remarqueCourrier") String remarqueCourrier) throws WebAvsException;
+            @WebParam(name = "remarqueCourrier") String remarqueCourrier,
+            @WebParam(name = "email") String email) throws WebAvsException;
 }

@@ -345,7 +345,7 @@ public class WebAvsAffiliationServiceImpl implements WebAvsAffiliationService {
 
     @Override
     public Boolean announceMutationsAdressesAffiliation(String numeroAffilie, AffiliationAdresse adresseDomicile,
-            AffiliationAdresse adresseCourrier, String remarqueDomicile, String remarqueCourrier)
+            AffiliationAdresse adresseCourrier, String remarqueDomicile, String remarqueCourrier, String email)
             throws WebAvsException {
         if (JadeStringUtil.isEmpty(numeroAffilie)) {
             throw new IllegalArgumentException("numeroAffilie is null");
@@ -358,7 +358,7 @@ public class WebAvsAffiliationServiceImpl implements WebAvsAffiliationService {
             AffiliationAdresse adresseCourrierActuelle = findAdresseCourrierAffilie(numeroAffilie);
             AffiliationAdresse adresseDomicileActuelle = findAdresseDomicileAffilie(numeroAffilie);
             sendMailMutationsAdresses(adresseDomicile, adresseCourrier, numeroAffilie, affiliation.getRaisonSociale(),
-                    adresseCourrierActuelle, adresseDomicileActuelle, remarqueDomicile, remarqueCourrier);
+                    adresseCourrierActuelle, adresseDomicileActuelle, remarqueDomicile, remarqueCourrier, email);
             return true;
         } catch (Exception e) {
             throw new WebAvsException("unable to send mail");
@@ -367,7 +367,7 @@ public class WebAvsAffiliationServiceImpl implements WebAvsAffiliationService {
 
     private void sendMailMutationsAdresses(AffiliationAdresse adresseDomicile, AffiliationAdresse adresseCourrier,
             String numeroAffilie, String raisonSociale, AffiliationAdresse adresseCourrierActuelle,
-            AffiliationAdresse adresseDomicileActuelle, String remarqueDomicile, String remarqueCourrier)
+            AffiliationAdresse adresseDomicileActuelle, String remarqueDomicile, String remarqueCourrier, String email)
             throws PropertiesException {
         String to = EBProperties.EMAIL_MUTATION_ADRESSE_AVS.getValue();
         if (JadeStringUtil.isEmpty(to)) {
@@ -473,6 +473,12 @@ public class WebAvsAffiliationServiceImpl implements WebAvsAffiliationService {
         body.append("</td>");
         body.append("</tr>");
         body.append("</table>");
+
+        body.append("<br>");
+        body.append("<br>");
+        body.append("Numéro d'affilié: "+numeroAffilie);
+        body.append("<br>");
+        body.append("Adresse email: "+email);
 
         sendMail(to, subject, body.toString());
     }

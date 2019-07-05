@@ -1,5 +1,6 @@
 package ch.globaz.orion.ws.allocationfamiliale;
 
+import ch.globaz.al.business.constantes.ALCSDossier;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
 import globaz.jade.client.util.JadeStringUtil;
@@ -7,12 +8,7 @@ import globaz.jade.log.JadeLogger;
 import globaz.jade.persistence.model.JadeAbstractModel;
 import globaz.jade.smtp.JadeSmtpClient;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 import javax.jws.WebService;
 import ch.globaz.al.business.constantes.ALCSTiers;
@@ -73,14 +69,15 @@ public class WebAvsAllocationFamilialeServiceImpl implements WebAvsAllocationFam
                     dossierListComplexSearchModel);
 
             // récupération des résultats
-            int nbMatchingRows = dossierListComplexSearchModel.getNbOfResultMatchingQuery();
             List<JadeAbstractModel> listDossiers = Arrays.asList(dossierListComplexSearchModel.getSearchResults());
+
+            Map<String, DossierListComplexModel> mapDossierAf = filterListDossierAf(listDossiers);
+            int nbMatchingRows = mapDossierAf.size();
 
             // parcours du résultat et construction de l'objet de retour
             List<ALDossier> listDossiersAf = new ArrayList<ALDossier>();
-            for (JadeAbstractModel jadeAbstractModel : listDossiers) {
-                DossierListComplexModel dossierAf = (DossierListComplexModel) jadeAbstractModel;
-
+            for (Entry<String, DossierListComplexModel> entry : mapDossierAf.entrySet()) {
+                DossierListComplexModel dossierAf = entry.getValue();
                 // récupération de la date de radiation si non vide
                 Date dateRadiation = null;
                 if (!JadeStringUtil.isEmpty(dossierAf.getFinValidite())) {
@@ -104,6 +101,66 @@ public class WebAvsAllocationFamilialeServiceImpl implements WebAvsAllocationFam
             throw new WebAvsException("Unable to searchDossiersAf for affilie : " + forNumeroAffilie);
         } finally {
             BSessionUtil.stopUsingContext(Thread.currentThread());
+        }
+    }
+
+    private Map<String, DossierListComplexModel> filterListDossierAf(List<JadeAbstractModel> listDossiers) {
+        Map<String, DossierListComplexModel> mapDossiers = new HashMap<>();
+
+        for (JadeAbstractModel jadeAbstractModel : listDossiers) {
+            DossierListComplexModel dossierAf = (DossierListComplexModel) jadeAbstractModel;
+            if(!mapDossiers.containsKey(dossierAf.getNss())){
+                // Si le NSS n'existe pas dans la map alors on l'ajoute
+                mapDossiers.put(dossierAf.getNss(), dossierAf);
+            }else if(dossierAf.getFinValidite().equals(mapDossiers.get(dossierAf.getNss()).getFinValidite())
+                    || isDossiersEtatRefuse(dossierAf, mapDossiers.get(dossierAf.getNss()))){
+                // Si les dates sont égales OU un des deux dossier est à l'état refusé (ne contient jamais de date de fin) :
+                // il faut prendre le dossier avec le plus grand ID
+                DossierListComplexModel dossierAfRecent = getDossierRecentBetween(dossierAf, mapDossiers.get(dossierAf.getNss()));
+                mapDossiers.put(dossierAfRecent.getNss(), dossierAfRecent);
+            }else if(isFirstDateAfterSecondDate(dossierAf.getFinValidite(), mapDossiers.get(dossierAf.getNss()).getFinValidite())){
+                // Si la date passée en premier paramètre est plus grande que la deuxième alors il faut mettre ce dossier dans la map
+                mapDossiers.put(dossierAf.getNss(), dossierAf);
+            }
+        }
+        return mapDossiers;
+    }
+
+    private boolean isDossiersEtatRefuse(DossierListComplexModel dossierAf, DossierListComplexModel dossierAfInMap) {
+        return ALCSDossier.ETAT_REFUSE.equals(dossierAf.getEtatDossier()) || ALCSDossier.ETAT_REFUSE.equals(dossierAfInMap.getEtatDossier());
+    }
+
+    /**
+     * @param dossierAf
+     * @param secDossierAf
+     * @return Le dossier af qui possède la plus grande clé primaire
+     */
+    private DossierListComplexModel getDossierRecentBetween(DossierListComplexModel dossierAf, DossierListComplexModel secDossierAf) {
+        if(Integer.valueOf(dossierAf.getIdDossier()) > Integer.valueOf(secDossierAf.getIdDossier())){
+            return dossierAf;
+        }else{
+            return secDossierAf;
+        }
+    }
+
+    /**
+     * Permet de tester si la première date passée en paramètre est plus récente que la seconde. Si la date vaut 0,
+     * cela signifie qu'elle n'est pas définie et donc sera de toute façon plus grande qu'une date définie.
+     * @param firstDate
+     * @param secondDate
+     * @return True si la première date est plus récente et false dans tous les autres cas
+     */
+    private Boolean isFirstDateAfterSecondDate(String firstDate, String secondDate){
+        if(JadeStringUtil.isBlankOrZero(firstDate) && !JadeStringUtil.isBlankOrZero(secondDate)){
+            return true;
+        }else if(!JadeStringUtil.isBlankOrZero(firstDate) && JadeStringUtil.isBlankOrZero(secondDate)){
+            return false;
+        }else if(firstDate.equals(secondDate)){
+            return false;
+        }else{
+            ch.globaz.common.domaine.Date date1 = new ch.globaz.common.domaine.Date(firstDate);
+            ch.globaz.common.domaine.Date date2 = new ch.globaz.common.domaine.Date(secondDate);
+            return date1.after(date2);
         }
     }
 
@@ -332,7 +389,8 @@ public class WebAvsAllocationFamilialeServiceImpl implements WebAvsAllocationFam
 
     @Override
     public Boolean updateOrCreateAdressesAllocataire(String numeroDossier, ALAdresse adresseDomicile,
-            ALAdresse adresseCourrier, String remarqueDomicile, String remarqueCourrier) throws WebAvsException {
+            ALAdresse adresseCourrier, String remarqueDomicile, String remarqueCourrier, String numeroAffilie, String email)
+            throws WebAvsException {
         if (JadeStringUtil.isEmpty(numeroDossier)) {
             throw new IllegalArgumentException("numeroDossier is null or empty");
         }
@@ -388,7 +446,7 @@ public class WebAvsAllocationFamilialeServiceImpl implements WebAvsAllocationFam
             // envoi de l'email
             sendMailMutationAdresses(adresseDomicile, adresseCourrier, nssAllocataire, nomAllocataire,
                     prenomAllocataire, adresseCourrierActuelle, adresseDomicileActuelle, remarqueDomicile,
-                    remarqueCourrier);
+                    remarqueCourrier, numeroAffilie, email);
             return true;
         } catch (Exception e) {
             JadeLogger.error(this.getClass(),
@@ -401,8 +459,8 @@ public class WebAvsAllocationFamilialeServiceImpl implements WebAvsAllocationFam
     }
 
     private void sendMailMutationAdresses(ALAdresse adresseDomicile, ALAdresse adresseCourrier, String nssAllocataire,
-            String nomAllocataire, String prenomAllocataire, Adresse adresseCourrierActuelle,
-            Adresse adresseDomicileActuelle, String remarqueDomicile, String remarqueCourrier)
+                                          String nomAllocataire, String prenomAllocataire, Adresse adresseCourrierActuelle,
+                                          Adresse adresseDomicileActuelle, String remarqueDomicile, String remarqueCourrier, String numeroAffilie, String email)
             throws PropertiesException {
         String to = EBProperties.EMAIL_MUTATION_ADRESSE_CAF.getValue();
         if (JadeStringUtil.isEmpty(to)) {
@@ -509,6 +567,12 @@ public class WebAvsAllocationFamilialeServiceImpl implements WebAvsAllocationFam
         body.append("</td>");
         body.append("</tr>");
         body.append("</table>");
+
+        body.append("<br>");
+        body.append("<br>");
+        body.append("Numéro d'affilié: "+numeroAffilie);
+        body.append("<br>");
+        body.append("Adresse email: "+email);
 
         sendMail(to, subject, body.toString());
     }
