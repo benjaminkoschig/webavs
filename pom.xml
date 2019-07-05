@@ -59,7 +59,7 @@
 		<sqlClassMapper.version>1.0.1</sqlClassMapper.version>
 		<op.version>5.0.4</op.version>
 		<globaz-external-xsd.version>1.2.6</globaz-external-xsd.version>
-		<ebback-api.version>9.1.0</ebback-api.version>
+		<ebback-api.version>9.2.0-SNAPSHOT</ebback-api.version>
 
 
 		<!-- CONTINUOUS INTEGRATION -->
