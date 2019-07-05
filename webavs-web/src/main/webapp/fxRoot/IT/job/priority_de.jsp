@@ -1,11 +1,12 @@
 <%-- tpl:insert page="/theme/detail.jtpl" --%><%@ page language="java" errorPage="/errorPage.jsp" import="globaz.globall.http.*" contentType="text/html;charset=ISO-8859-1" %>
+<%@ page import="globaz.framework.secure.FWSecureConstants" %>
 <%@ taglib uri="/WEB-INF/taglib.tld" prefix="ct" %>
 <%@ include file="/theme/detail/header.jspf" %>
 <%-- tpl:put name="zoneInit" --%>
 <%
 	globaz.fx.job.client.bean.FXJobPriorityViewBean viewBean = (globaz.fx.job.client.bean.FXJobPriorityViewBean) request.getAttribute("viewBean");
   	selectedIdValue = request.getParameter("selectedId");
-  	bButtonDelete=false;
+	bButtonDelete = objSession.hasRight("fx.job.priority.supprimer", FWSecureConstants.REMOVE);
   	idEcran="FX0306";
 %>
 <%-- /tpl:put --%>

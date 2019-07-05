@@ -78,7 +78,7 @@
 <tr>
 	<td><ct:FWLabel key="JSP_JOB_PRIORITY_LISTE_JOB"/></td>
 	<td>
-		<input name="forJob" value="<%=job%>" size="100">
+		<input name="likeJob" value="<%=job%>" size="100">
 	</td>
 </tr>
 </table></td></tr>
