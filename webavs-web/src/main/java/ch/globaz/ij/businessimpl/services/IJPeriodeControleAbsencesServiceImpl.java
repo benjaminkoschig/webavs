@@ -9,11 +9,8 @@ import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.persistence.JadePersistenceManager;
 import globaz.jade.persistence.model.JadeAbstractModel;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+
+import java.util.*;
 import java.util.Map.Entry;
 import ch.globaz.ij.business.models.IJAbsence;
 import ch.globaz.ij.business.models.IJAbsenceSearchModel;
@@ -90,7 +87,7 @@ public class IJPeriodeControleAbsencesServiceImpl implements IJPeriodeControleAb
 
     private List<IJPeriodeControleAbsences> chargerAbsencesPourLesPeriodes(List<IJPeriodeControleAbsences> periodes)
             throws ServiceTechnicalException {
-        Map<IJSimpleDossierControleAbsences, List<IJPeriodeControleAbsences>> periodesParDossiers = new HashMap<IJSimpleDossierControleAbsences, List<IJPeriodeControleAbsences>>();
+        Map<IJSimpleDossierControleAbsences, List<IJPeriodeControleAbsences>> periodesParDossiers = new HashMap<>();
         for (IJPeriodeControleAbsences unePeriode : periodes) {
 
             if (periodesParDossiers.containsKey(unePeriode.getDossier())) {
@@ -110,10 +107,16 @@ public class IJPeriodeControleAbsencesServiceImpl implements IJPeriodeControleAb
             }
         }
 
-        List<IJPeriodeControleAbsences> listePeriodes = new ArrayList<IJPeriodeControleAbsences>();
+        List<IJPeriodeControleAbsences> listePeriodes = new ArrayList<>();
         for (List<IJPeriodeControleAbsences> uneListeDePeriodes : periodesParDossiers.values()) {
             listePeriodes.addAll(uneListeDePeriodes);
         }
+
+        Collections.sort(listePeriodes, new Comparator<IJPeriodeControleAbsences>() {
+            public int compare(IJPeriodeControleAbsences o1, IJPeriodeControleAbsences o2) {
+                return o1.getPeriode().getOrdre().compareTo(o2.getPeriode().getOrdre());
+            }
+        });
         return listePeriodes;
     }
 
