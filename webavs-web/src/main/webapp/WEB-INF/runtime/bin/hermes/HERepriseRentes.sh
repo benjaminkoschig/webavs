@@ -44,9 +44,9 @@ fi
 
 # --- Process definition
 JAVA_EXTDIR="${BATCH_DIR}/${VERSION}/lib:$JAVA_HOME/lib/ext:/share/lib/db2"
-CALL_JAVA_PROCESS_1="$JAVA_HOME/bin/java -DPRODUCT=${PRODUCT}_${MODULE} -Djava.awt.headless=true -Djava.ext.dirs=${JAVA_EXTDIR} -Xms512m -Xmx2048m globaz.hermes.zas.HEReprise $2 $3 $4 $5"
+CALL_JAVA_PROCESS_1="$JAVA_HOME/bin/java -DPRODUCT=${PRODUCT}_${MODULE} -Djava.awt.headless=true -Djava.ext.dirs=${JAVA_EXTDIR} -Xms512m -Xmx3072m globaz.hermes.zas.HEReprise $2 $3 $4 $5"
 
-CALL_JAVA_PROCESS_2="$JAVA_HOME/bin/java -DPRODUCT=${PRODUCT}_${MODULE} -Djava.awt.headless=true -Djava.ext.dirs=${JAVA_EXTDIR} -Xms512m -Xmx2048m globaz.corvus.process.REImporterCIProcess $4 $5"
+CALL_JAVA_PROCESS_2="$JAVA_HOME/bin/java -DPRODUCT=${PRODUCT}_${MODULE} -Djava.awt.headless=true -Djava.ext.dirs=${JAVA_EXTDIR} -Xms512m -Xmx3072m globaz.corvus.process.REImporterCIProcess $4 $5"
 
 echo "Running batch : $APP"
 TIMESTAMP=$(date +%Y%m%d%H%M%S)

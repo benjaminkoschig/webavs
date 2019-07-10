@@ -44,7 +44,7 @@ fi
 
 # --- Process definition
 JAVA_EXTDIR="${BATCH_DIR}/${VERSION}/lib:$JAVA_HOME/lib/ext:/share/lib/db2"
-CALL_JAVA_PROCESS="$JAVA_HOME/bin/java -DPRODUCT=${PRODUCT}_${MODULE} -Djava.awt.headless=true -Djava.ext.dirs=${JAVA_EXTDIR} -Xms512m -Xmx1024m globaz.globall.tools.GlobazCommandLineJob $2 $3 $4 $5 $6 $7 $8 $9 ${10} ${11} ${12} ${13}"
+CALL_JAVA_PROCESS="$JAVA_HOME/bin/java -DPRODUCT=${PRODUCT}_${MODULE} -Djava.awt.headless=true -Djava.ext.dirs=${JAVA_EXTDIR} -Xms512m -Xmx2048m globaz.globall.tools.GlobazCommandLineJob $2 $3 $4 $5 $6 $7 $8 $9 ${10} ${11} ${12} ${13}"
 
 echo "Running batch : $APP"
 TIMESTAMP=$(date +%Y%m%d%H%M%S)
