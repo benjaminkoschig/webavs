@@ -59,10 +59,7 @@ public class AFIdeAnnonce extends BEntity implements Serializable {
     public static final String IDE_ANNONCE_FIELD_LIST_NUMERO_AFFILIE_LIEE = "AIDENA";
     public static final String IDE_ANNONCE_FIELD_MESSAGE_SEDEX_50 = "AIDEMS";
 
-    public static final String TABLE_TIERS= "TIPAVSP";
-    private static final String ALIAS_TABLE_TIERS = "TI.";
-    private static final String ALIAS_TABLE_TIERS_WITHOUT_POINT = "TI";
-    public static final String IDE_ANNONCE_FIELD_NSS= "HXNAVS";
+    public static final String IDE_ANNONCE_FIELD_NSS= "AIDNSS";
 
     private String ideAnnonceIdAnnonce = "";
     private String ideAnnonceIdAffiliation = "";
@@ -298,10 +295,6 @@ public class AFIdeAnnonce extends BEntity implements Serializable {
         sqlFrom.append(_getCollection() + AFCotisation.TABLE_NAME + " AS " + ALIAS_TABLE_COTISATION_WITHOUT_POINT);
         sqlFrom.append(" ON(" + ALIAS_TABLE_COTISATION + AFCotisation.FIELDNAME_COTISATION_ID + " = "
                 + ALIAS_TABLE_ANNONCE + AFIdeAnnonce.IDE_ANNONCE_FIELD_ID_COTISATION + ")");
-        sqlFrom.append(" INNER JOIN ");
-        sqlFrom.append(_getCollection() + TABLE_TIERS + " AS " +ALIAS_TABLE_TIERS_WITHOUT_POINT);
-        sqlFrom.append(" ON(" + ALIAS_TABLE_TIERS + AFAffiliation.FIELDNAME_TIER_ID + " = "
-                + ALIAS_TABLE_AFFILIATION + AFAffiliation.FIELDNAME_TIER_ID + ")");
         return sqlFrom.toString();
 
     }
@@ -507,6 +500,8 @@ public class AFIdeAnnonce extends BEntity implements Serializable {
         // FOSC, Faillite
         statement.writeField(AFIdeAnnonce.IDE_ANNONCE_FIELD_MESSAGE_SEDEX_50,
                 this._dbWriteString(statement.getTransaction(), messageSedex50, "messageSedex50"));
+        statement.writeField(AFIdeAnnonce.IDE_ANNONCE_FIELD_NSS,
+                this._dbWriteString(statement.getTransaction(), nss, "nss"));
 
     }
 

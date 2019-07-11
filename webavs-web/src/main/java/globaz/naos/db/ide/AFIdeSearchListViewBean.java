@@ -228,7 +228,7 @@ public class AFIdeSearchListViewBean extends BAccessBean implements FWViewBeanIn
     }
 
     public String getNumeroAVS(int i) {
-        return listIdeDataBean.get(i).getNumeroAVS();
+        return listIdeDataBean.get(i).getNss();
     }
 
     public String getRaisonSociale(int i) {

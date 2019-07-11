@@ -40,6 +40,7 @@ public class AFIdeAnnonceViewBean extends AFIdeAnnonce implements FWViewBeanInte
     private String noga = "";
     private String erreurNoga = "";
     private String prenomNom = "";
+    private String nssAffiche = "";
 
     public boolean isTraite() {
         return CodeSystem.ETAT_ANNONCE_IDE_TRAITE.equalsIgnoreCase(getIdeAnnonceEtat());
@@ -133,6 +134,7 @@ public class AFIdeAnnonceViewBean extends AFIdeAnnonce implements FWViewBeanInte
             if (tiers.getPersonnePhysique()) {
                 naissance = tiers.getDateNaissance();
                 prenomNom = tiers.getPrenomNom();
+                nssAffiche = tiers.getNumAvsActuel();
             }
 
         }
@@ -141,7 +143,7 @@ public class AFIdeAnnonceViewBean extends AFIdeAnnonce implements FWViewBeanInte
 
     /***
      * Méthode qui permet de récupérer l'id d'un code noga
-     * 
+     *
      * @param ideDataBean
      * @throws Exception
      */
@@ -205,7 +207,6 @@ public class AFIdeAnnonceViewBean extends AFIdeAnnonce implements FWViewBeanInte
     }
 
     /**
-     * 
      * @see globaz.naos.util.AFIDEUtil#isAnnonceSupprimable(String, String)
      */
     public boolean canDeleteAnnonce() {
@@ -255,6 +256,14 @@ public class AFIdeAnnonceViewBean extends AFIdeAnnonce implements FWViewBeanInte
     public String getErreurNoga() {
         return erreurNoga;
     }
-    
-    
+
+    @Override
+    public String getNss() {
+        if (JadeStringUtil.isBlankOrZero(nssAffiche)) {
+            return super.getNss();
+        }
+        return nssAffiche;
+    }
 }
+
+

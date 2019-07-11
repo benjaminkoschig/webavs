@@ -928,6 +928,7 @@ public class AFIdeTraitementAnnonceProcess extends BProcess implements FWViewBea
         ideAnnonce.setRaisonSociale(ideDataBean.getRaisonSociale());
         ideAnnonce.setIdeAnnonceEtat(etatAnnonce);
         ideAnnonce.setIdeAnnonceDateTraitement(JACalendar.todayJJsMMsAAAA());
+        ideAnnonce.setNss(ideDataBean.getNss());
         ideAnnonce.update(getTransaction());
     }
 
@@ -941,11 +942,11 @@ public class AFIdeTraitementAnnonceProcess extends BProcess implements FWViewBea
 
     }
 
-    private void updateAnnonceAfterTraitementAnnonceEntrante(AFIdeAnnonce ideAnnonce, String etatAnnonce)
+        private void updateAnnonceAfterTraitementAnnonceEntrante(AFIdeAnnonce ideAnnonce, String etatAnnonce)
             throws Exception {
 
-        ideAnnonce.setIdeAnnonceEtat(etatAnnonce);
-        ideAnnonce.setIdeAnnonceDateTraitement(JACalendar.todayJJsMMsAAAA());
+            ideAnnonce.setIdeAnnonceEtat(etatAnnonce);
+            ideAnnonce.setIdeAnnonceDateTraitement(JACalendar.todayJJsMMsAAAA());
         ideAnnonce.update(getTransaction());
 
     }

@@ -724,7 +724,7 @@ public class IDEServiceCallUtil {
         ideDataBean.setNumeroAffilie(IDEServiceMappingUtil.getNumeroAffilie(organisation));
         ideDataBean.setNogaCode(IDEServiceMappingUtil.getNogaCode(organisation));
 
-        ideDataBean.setNumeroAVS(IDEServiceMappingUtil.getNumeroAVS(organisation));
+        ideDataBean.setNss(IDEServiceMappingUtil.getNumeroAVS(organisation));
 
         return ideDataBean;
     }

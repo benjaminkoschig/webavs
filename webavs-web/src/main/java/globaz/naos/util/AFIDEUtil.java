@@ -853,7 +853,7 @@ public class AFIDEUtil {
         ideDataBean.setNumeroAffilie(ideAnnonce.getNumeroAffilie());
         // le code noga n'est rempli qu'en annonce entrante
         ideDataBean.setNogaCode("");
-        ideDataBean.setNumeroAVS(tiers.getNumAvsActuel());
+        ideDataBean.setNss(tiers.getNumAvsActuel());
 
         return ideDataBean;
     }
@@ -1680,6 +1680,16 @@ public class AFIDEUtil {
             }
 
             return annonce;
+        }
+        return null;
+    }
+
+    private static String getNss(BSession session, String idTiers) throws Exception{
+        if(!JadeStringUtil.isEmpty(idTiers)) {
+            TITiersViewBean tiers = loadTiers(session, idTiers);
+            if(tiers != null) {
+                return tiers.getNumAvsActuel();
+            }
         }
         return null;
     }

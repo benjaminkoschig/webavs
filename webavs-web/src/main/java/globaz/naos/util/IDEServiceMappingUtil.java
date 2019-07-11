@@ -473,8 +473,8 @@ public class IDEServiceMappingUtil {
     }
 
     private static void addNssIfNeeded(IDEDataBean ideDataBean, idech.ech.xmlns.ech_0098_f._3.OrganisationType organisation) {
-        if(!JadeStringUtil.isEmpty(ideDataBean.getNumeroAVS())) {
-            setOtherOrganisationWithNumeroAVS(organisation, ideDataBean.getNumeroAVS());
+        if(!JadeStringUtil.isEmpty(ideDataBean.getNss())) {
+            setOtherOrganisationWithNumeroAVS(organisation, ideDataBean.getNss());
         }
     }
 
