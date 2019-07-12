@@ -211,7 +211,7 @@ public class IDEDataBean {
         return nss;
     }
 
-    public void setNss(String numeroAVS) {
+    public void setNss(String nss) {
         this.nss = nss;
     }
 }

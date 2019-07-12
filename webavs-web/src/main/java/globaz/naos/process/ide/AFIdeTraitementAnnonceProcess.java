@@ -1339,7 +1339,7 @@ public class AFIdeTraitementAnnonceProcess extends BProcess implements FWViewBea
             xmlml.createLigne(getSession().getCodeLibelle(aIdeAnnonce.getIdeAnnonceType()), getSession()
                     .getCodeLibelle(aIdeAnnonce.getIdeAnnonceEtat()), aIdeAnnonce.getIdeAnnonceDateCreation(),
                     AFIDEUtil.giveMeNumIdeFormatedWithPrefix(numIDE), getSession().getCodeLibelle(statutIDE), AFIDEUtil
-                            .giveMeAllNumeroAffilieInAnnonceSeparatedByVirgul(aIdeAnnonce), raisonSoc, aIdeAnnonce
+                            .giveMeAllNumeroAffilieInAnnonceSeparatedByVirgul(aIdeAnnonce), aIdeAnnonce.getNss(), raisonSoc, aIdeAnnonce
                             .getHistRue(), aIdeAnnonce.getHistNPA(), aIdeAnnonce.getHistLocalite(), aIdeAnnonce
                             .getHistCanton(), aIdeAnnonce.getHistNaissance(), aIdeAnnonce.getHistActivite(),
                     aIdeAnnonce.getMessageErreurForBusinessUser());

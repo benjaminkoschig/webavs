@@ -201,10 +201,13 @@
    <Column ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="57"/>
    <Column ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="102.75"/>
    <Column ss:Index="6" ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="69"/>
+   <Column ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="69"/>
    <Column ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="147.75"/>
    <Column ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="73.5"/>
    <Column ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="67.5"/>
    <Column ss:Index="12" ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="86.25"/>
+   <Column ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="67.5"/>
+   <Column ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="73.5"/>
    <Column ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="240"/>
    <Row ss:AutoFitHeight="0">
     <Cell><Data ss:Type="String">numeroInforom</Data><NamedCell
@@ -255,6 +258,7 @@
     <Cell ss:StyleID="s74"><Data ss:Type="String">Numéro IDE</Data></Cell>
     <Cell ss:StyleID="s75"><Data ss:Type="String">Statut du numéro IDE</Data></Cell>
     <Cell ss:StyleID="s74"><Data ss:Type="String">Numéro d'affilié</Data></Cell>
+    <Cell ss:StyleID="s74"><Data ss:Type="String">NSS</Data></Cell>
     <Cell ss:StyleID="s74"><Data ss:Type="String">Raison sociale</Data></Cell>
     <Cell ss:StyleID="s74"><Data ss:Type="String">Rue</Data></Cell>
     <Cell ss:StyleID="s74"><Data ss:Type="String">NPA</Data></Cell>
@@ -277,6 +281,8 @@
       ss:Name="STATUT_NUM"/></Cell>
     <Cell ss:StyleID="s79"><Data ss:Type="String">num</Data><NamedCell
       ss:Name="NUM_AFFILIATION"/></Cell>
+    <Cell ss:StyleID="s79"><Data ss:Type="String">NSS</Data><NamedCell
+            ss:Name="NSS"/></Cell>
     <Cell ss:StyleID="s78"><Data ss:Type="String">xxx SA</Data><NamedCell
       ss:Name="RAISON_SOCIALE"/></Cell>
     <Cell ss:StyleID="s78"><Data ss:Type="String">Rue</Data><NamedCell
