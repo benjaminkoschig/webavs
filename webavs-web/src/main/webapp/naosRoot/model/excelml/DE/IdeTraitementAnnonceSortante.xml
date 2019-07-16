@@ -201,12 +201,12 @@
    <Column ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="57"/>
    <Column ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="102.75"/>
    <Column ss:Index="6" ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="69"/>
-   <Column ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="69"/>
    <Column ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="147.75"/>
    <Column ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="73.5"/>
    <Column ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="67.5"/>
    <Column ss:Index="12" ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="86.25"/>
    <Column ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="67.5"/>
+   <Column ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="69"/>
    <Column ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="73.5"/>
    <Column ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="240"/>
    <Row ss:AutoFitHeight="0">
@@ -258,13 +258,13 @@
     <Cell ss:StyleID="s74"><Data ss:Type="String">UID-Nr.</Data></Cell>
     <Cell ss:StyleID="s75"><Data ss:Type="String">Status der UID-Nr.</Data></Cell>
     <Cell ss:StyleID="s74"><Data ss:Type="String">Abr.-Nr.</Data></Cell>
-    <Cell ss:StyleID="s74"><Data ss:Type="String">SVN</Data></Cell>
     <Cell ss:StyleID="s74"><Data ss:Type="String">Firmenname</Data></Cell>
     <Cell ss:StyleID="s74"><Data ss:Type="String">Strasse</Data></Cell>
     <Cell ss:StyleID="s74"><Data ss:Type="String">PLZ</Data></Cell>
     <Cell ss:StyleID="s74"><Data ss:Type="String">Ort</Data></Cell>
     <Cell ss:StyleID="s74"><Data ss:Type="String">Kanton</Data></Cell>
     <Cell ss:StyleID="s74"><Data ss:Type="String">Geburtsdatum</Data></Cell>
+    <Cell ss:StyleID="s74"><Data ss:Type="String">SVN</Data></Cell>
     <Cell ss:StyleID="s74"><Data ss:Type="String">Aktivität(en)</Data></Cell>
     <Cell ss:StyleID="s74"><Data ss:Type="String">Fehlermeldung</Data></Cell>
    </Row>
@@ -281,8 +281,6 @@
       ss:Name="STATUT_NUM"/></Cell>
     <Cell ss:StyleID="s84"><Data ss:Type="String">num</Data><NamedCell
       ss:Name="NUM_AFFILIATION"/></Cell>
-    <Cell ss:StyleID="s83"><Data ss:Type="String">NSS</Data><NamedCell
-            ss:Name="NSS"/></Cell>
     <Cell ss:StyleID="s83"><Data ss:Type="String">xxx SA</Data><NamedCell
       ss:Name="RAISON_SOCIALE"/></Cell>
       <Cell ss:StyleID="s83"><Data ss:Type="String">Rue</Data><NamedCell
@@ -295,6 +293,8 @@
       ss:Name="CANTON"/></Cell>
     <Cell ss:StyleID="s83"><Data ss:Type="String">Naissance</Data><NamedCell
       ss:Name="NAISSANCE"/></Cell>
+    <Cell ss:StyleID="s83"><Data ss:Type="String">NSS</Data><NamedCell
+            ss:Name="NSS"/></Cell>
     <Cell ss:StyleID="s83"><Data ss:Type="String">Activité(s)</Data><NamedCell
       ss:Name="ACTIVITE"/></Cell>
     <Cell ss:StyleID="s83"><Data ss:Type="String">error</Data><NamedCell
