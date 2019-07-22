@@ -1,5 +1,9 @@
 package globaz.ij.itext;
 
+import ch.globaz.jade.JadeBusinessServiceLocator;
+import ch.globaz.jade.business.models.Langues;
+import ch.globaz.jade.business.models.codesysteme.JadeCodeSysteme;
+import ch.globaz.jade.business.services.codesysteme.JadeCodeSystemeService;
 import globaz.babel.api.ICTDocument;
 import globaz.babel.api.doc.ICTScalableDocumentAnnexe;
 import globaz.babel.api.doc.ICTScalableDocumentCopie;
@@ -35,18 +39,8 @@ import globaz.ij.api.prononces.IIJMesure;
 import globaz.ij.api.prononces.IIJPrononce;
 import globaz.ij.api.prononces.IIJSituationProfessionnelle;
 import globaz.ij.application.IJApplication;
-import globaz.ij.db.prestations.IJGrandeIJCalculee;
-import globaz.ij.db.prestations.IJIJCalculee;
-import globaz.ij.db.prestations.IJIJCalculeeManager;
-import globaz.ij.db.prestations.IJIndemniteJournaliere;
-import globaz.ij.db.prestations.IJIndemniteJournaliereManager;
-import globaz.ij.db.prestations.IJPetiteIJCalculee;
-import globaz.ij.db.prononces.IJEmployeur;
-import globaz.ij.db.prononces.IJPetiteIJJointRevenu;
-import globaz.ij.db.prononces.IJPrononce;
-import globaz.ij.db.prononces.IJRevenu;
-import globaz.ij.db.prononces.IJSituationProfessionnelle;
-import globaz.ij.db.prononces.IJSituationProfessionnelleManager;
+import globaz.ij.db.prestations.*;
+import globaz.ij.db.prononces.*;
 import globaz.ij.helpers.process.IJDecisionACaisseReportHelper;
 import globaz.ij.module.IJDecisionCotisationBuilder;
 import globaz.ij.properties.IJProperties;
@@ -83,23 +77,12 @@ import globaz.pyxis.db.tiers.TIAdministrationViewBean;
 import globaz.pyxis.db.tiers.TIBanqueViewBean;
 import globaz.pyxis.db.tiers.TITiers;
 import globaz.webavs.common.CommonProperties;
+
 import java.io.File;
 import java.math.BigDecimal;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Vector;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import ch.globaz.common.properties.CommonPropertiesUtils;
-import ch.globaz.jade.JadeBusinessServiceLocator;
-import ch.globaz.jade.business.models.Langues;
-import ch.globaz.jade.business.models.codesysteme.JadeCodeSysteme;
-import ch.globaz.jade.business.services.codesysteme.JadeCodeSystemeService;
 
 /**
  * <p>
@@ -108,22 +91,22 @@ import ch.globaz.jade.business.services.codesysteme.JadeCodeSystemeService;
  * </p>
  * <p>
  * Si Petite IJ:
- * 
+ *
  * <pre>
- *     Si MB >= 88(2007,rev 4) ou 104(2008, rev 4) ou 103.80(2008,rev5)  
+ *     Si MB >= 88(2007,rev 4) ou 104(2008, rev 4) ou 103.80(2008,rev5)
  *                |                               |
  *                |                               |
  *                oui                             non
  *                |                               |
  *                ctd 3.3                         ctd 3.7
  * </pre>
- * 
+ *
  * </p>
  * <p>
  * Si Grande IJ:
- * 
+ *
  * <pre>
- *    Si MB >= 235(2007,rev4) ou 277(2008,rev4,rev5)------------------  
+ *    Si MB >= 235(2007,rev4) ou 277(2008,rev4,rev5)------------------
  *                |                                                   |
  *                |                                                   |
  *                oui                                                 non
@@ -134,18 +117,18 @@ import ch.globaz.jade.business.services.codesysteme.JadeCodeSystemeService;
  *              |            |                         |                                  |
  *              oui          non                       oui                                non
  *              |            |                         |                                  |
- *        RD=293(2007)     RD=346                   RD=88(2007)                         RD=MB 
+ *        RD=293(2007)     RD=346                   RD=88(2007)                         RD=MB
  *        RD=346(2008)     cdt 3.2                  RD=104(2008)                        cdt 3.8
- *        cdt 3.2          cdt 3.6                  cdt 3.13                            cdt 3.4           
+ *        cdt 3.2          cdt 3.6                  cdt 3.13                            cdt 3.4
  *        cdt 3.6                                   cdt 3.17
  * </pre>
- * 
+ *
  * @author JJE
  */
 public class IJDecision extends FWIDocumentManager implements ICTScalableDocumentGenerator {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
     private static final String CDT_DATEDEBUTPRONONCE = "{DateDebutPrononce}";
@@ -179,10 +162,10 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
     private static final String NO5EMEREVISION = "5";
     private static final String PREFIX_HEADER_DECISION = "Header_Dec_";
     private static final String SUFIX_HEADER_DECISION = ".jasper";
-    
+
     /**
      * Donne le montant journalier arrondi au franc supp. correspondant a la situation professionnelle
-     * 
+     *
      * @param repartition
      * @return
      */
@@ -621,7 +604,7 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
 
                 if ("standard".equals(documentProperties.getParameter("personnalisationAdressePaiement"))) {
                     adressePmtAssure = PRTiersHelper.getAdressePaiementData(getSession(), getSession()
-                            .getCurrentThreadTransaction(), tiers.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS),
+                                    .getCurrentThreadTransaction(), tiers.getProperty(PRTiersWrapper.PROPERTY_ID_TIERS),
                             IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_IJAI, "", JACalendar.todayJJsMMsAAAA());
 
                     // formatter les infos de l'adresse pour l'affichage correct dans l'écran
@@ -675,7 +658,7 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
                         idTierEmployeur = employeur.getIdTiers();
 
                         adressePaiementEmployeur = PRTiersHelper.getAdressePaiementData(getSession(), getSession()
-                                .getCurrentThreadTransaction(), idTierEmployeur,
+                                        .getCurrentThreadTransaction(), idTierEmployeur,
                                 IPRConstantesExternes.TIERS_CS_DOMAINE_APPLICATION_IJAI, employeur.getIdAffilie(),
                                 JACalendar.todayJJsMMsAAAA());
 
@@ -778,18 +761,18 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
                 cdtPersonneDeReference = PRStringUtils.replaceString(cdtPersonneDeReference, IJDecision.CDT_NOMPRENOM,
                         "-");
             }
-            
+
             String idPersonne = documentProperties.getParameter("idPersonneReference");
-            
+
             if (cdtPersonneDeReference.contains(CDT_NOTELEPHONE)) {
                 String numTel = "";
                 if (!JadeStringUtil.isEmpty(idPersonne)) {
-                        JadeUser user = PRGestionnaireHelper.getGestionnaire(idPersonne);
+                    JadeUser user = PRGestionnaireHelper.getGestionnaire(idPersonne);
                     numTel = user.getPhone();
                 }
                 cdtPersonneDeReference = PRStringUtils.replaceString(cdtPersonneDeReference, IJDecision.CDT_NOTELEPHONE, numTel);
             }
-            
+
             buffer.append(cdtPersonneDeReference);
 
             parametres.put("PARAM_ZONE_3", buffer.toString());
@@ -1546,13 +1529,13 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
 
                                         if (!ijRevenuDurantReadaptation.isNew()
                                                 && !(new BigDecimal(ijRevenuDurantReadaptation.getRevenu())
-                                                        .equals(new BigDecimal("0.000")))
+                                                .equals(new BigDecimal("0.000")))
                                                 && !(new BigDecimal(ijRevenuDurantReadaptation.getRevenu())
-                                                        .equals(new BigDecimal("0.00")))
+                                                .equals(new BigDecimal("0.00")))
                                                 && !(new BigDecimal(ijRevenuDurantReadaptation.getRevenu())
-                                                        .equals(new BigDecimal("0.0")))
+                                                .equals(new BigDecimal("0.0")))
                                                 && !(new BigDecimal(ijRevenuDurantReadaptation.getRevenu())
-                                                        .equals(new BigDecimal("0")))) {
+                                                .equals(new BigDecimal("0")))) {
 
                                             if (IIJSituationProfessionnelle.CS_MENSUEL
                                                     .equals(ijRevenuDurantReadaptation.getCsPeriodiciteRevenu())) {
@@ -1689,7 +1672,7 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
 
                         if (!ijPetiteIjJointRevenu.isNew()
                                 && IIJPetiteIJCalculee.CS_NOUVELLE_FORME_APRES_INTERRUPTION
-                                        .equals(((IJPetiteIJCalculee) ijGrandePetiteIjCalculee).getCsModeCalcul())
+                                .equals(((IJPetiteIJCalculee) ijGrandePetiteIjCalculee).getCsModeCalcul())
                                 && !JadeStringUtil.isBlankOrZero(ijPetiteIjJointRevenu.getRevenu())) {
 
                             bufferBaseCalcul.append(document.getTextes(3).getTexte(21).getDescription());
@@ -1842,7 +1825,7 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
                 } else {
                     if (!JadeStringUtil.isBlankOrZero(ijIndemniteJournaliereInterne.getMontantGarantiAANonReduit())
                             || !JadeStringUtil.isBlankOrZero(ijIndemniteJournaliereExterne
-                                    .getMontantGarantiAANonReduit())) {
+                            .getMontantGarantiAANonReduit())) {
 
                         ijIndemniteJournaliereExterneMontantGarantiAA = ijIndemniteJournaliereExterne
                                 .getMontantGarantiAANonReduit();
@@ -1904,11 +1887,11 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
                 if (!JadeStringUtil.isBlankOrZero(ijIndemniteJournaliereInterne
                         .getMontantReductionSiRevenuAvantReadaptation())
                         || !JadeStringUtil.isBlankOrZero(ijIndemniteJournaliereExterne
-                                .getMontantReductionSiRevenuAvantReadaptation())
+                        .getMontantReductionSiRevenuAvantReadaptation())
                         || !JadeStringUtil.isBlankOrZero(ijIndemniteJournaliereInterne.getDeductionRenteAI())
                         || !JadeStringUtil.isBlankOrZero(ijIndemniteJournaliereExterne.getDeductionRenteAI())
                         || !JadeStringUtil.isBlankOrZero(ijIndemniteJournaliereInterne
-                                .getMontantSupplementaireReadaptation())) {
+                        .getMontantSupplementaireReadaptation())) {
 
                     boolean isLibelleAffiche = false;
 
@@ -1994,7 +1977,7 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
                     if (!JadeStringUtil.isBlankOrZero(ijIndemniteJournaliereInterne
                             .getMontantReductionSiRevenuAvantReadaptation())
                             || !JadeStringUtil.isBlankOrZero(ijIndemniteJournaliereExterne
-                                    .getMontantReductionSiRevenuAvantReadaptation())) {
+                            .getMontantReductionSiRevenuAvantReadaptation())) {
 
                         if (!isLibelleAffiche) {
                             // Ajout du libelle "Déductions:"
@@ -2089,8 +2072,7 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
                             }
                             if (IIJSituationProfessionnelle.CS_ANNUEL.equals(ijRevenuReadaptation
                                     .getCsPeriodiciteRevenu())) {
-                                revenuMensuelDurantReadaptation = new BigDecimal(ijRevenuReadaptation.getRevenu()
-                                        .toString()).divide(new BigDecimal(12), 10, BigDecimal.ROUND_DOWN);
+                                revenuMensuelDurantReadaptation = new BigDecimal(ijRevenuReadaptation.getRevenu()).divide(new BigDecimal(12), 2, BigDecimal.ROUND_DOWN);
                             }
                             if (IIJSituationProfessionnelle.CS_HEBDOMADAIRE.equals(ijRevenuReadaptation
                                     .getCsPeriodiciteRevenu())) {
@@ -2134,7 +2116,7 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
                     if (!JadeStringUtil.isBlankOrZero(ijIndemniteJournaliereInterne
                             .getMontantSupplementaireReadaptation())
                             || !JadeStringUtil.isBlankOrZero(ijIndemniteJournaliereExterne
-                                    .getMontantSupplementaireReadaptation())) {
+                            .getMontantSupplementaireReadaptation())) {
                         if (prononce.getCsTypeHebergement().equals(IIJPrononce.CS_INTERNE_EXTERNE)
                                 || prononce.getCsTypeHebergement().equals(IIJPrononce.CS_INTERNE)) {
 
@@ -2567,7 +2549,7 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
                 if (hasRenteAIDurantReadaptation
                         && !hasBCRenteAISupprimée3emeMois
                         && (JadeStringUtil.isBlankOrZero(ijIndemniteJournaliereInterne.getDeductionRenteAI()) || JadeStringUtil
-                                .isBlankOrZero(ijIndemniteJournaliereExterne.getDeductionRenteAI()))) {
+                        .isBlankOrZero(ijIndemniteJournaliereExterne.getDeductionRenteAI()))) {
 
                     hasBCRenteAISupprimée3emeMois = true;
                     bufferBaseCalcul.append(document.getTextes(3).getTexte(20).getDescription());
