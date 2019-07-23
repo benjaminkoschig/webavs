@@ -76,7 +76,7 @@
 			</band>
 			</groupHeader>
 			<groupFooter>
-			<band height="10"  isSplitAllowed="true" >
+			<band height="19"  isSplitAllowed="true" >
 			</band>
 			</groupFooter>
 		</group>
@@ -154,7 +154,7 @@
 			</band>
 		</columnHeader>
 		<detail>
-			<band height="9"  isSplitAllowed="true" >
+			<band height="19"  isSplitAllowed="true" >
 			</band>
 		</detail>
 		<columnFooter>
@@ -166,7 +166,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
 						x="-12"
-						y="12"
+						y="15"
 						width="150"
 						height="73"
 						forecolor="#000000"
@@ -186,7 +186,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
 						x="56"
-						y="108"
+						y="111"
 						width="72"
 						height="13"
 						forecolor="#000000"
@@ -206,7 +206,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
 						x="332"
-						y="136"
+						y="139"
 						width="206"
 						height="73"
 						forecolor="#000000"
@@ -226,7 +226,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Page" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
 						x="141"
-						y="228"
+						y="231"
 						width="402"
 						height="16"
 						forecolor="#000000"
@@ -246,7 +246,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Page" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
 						x="-12"
-						y="133"
+						y="136"
 						width="98"
 						height="15"
 						forecolor="#000000"
@@ -266,7 +266,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Page" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
 						x="98"
-						y="133"
+						y="136"
 						width="25"
 						height="15"
 						forecolor="#000000"
@@ -286,7 +286,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Page" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
 						x="160"
-						y="133"
+						y="136"
 						width="98"
 						height="15"
 						forecolor="#000000"
@@ -306,7 +306,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Page" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
 						x="273"
-						y="133"
+						y="136"
 						width="22"
 						height="15"
 						forecolor="#000000"
@@ -326,7 +326,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
 						x="-12"
-						y="159"
+						y="162"
 						width="148"
 						height="85"
 						forecolor="#000000"
@@ -346,7 +346,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
 						x="164"
-						y="12"
+						y="15"
 						width="150"
 						height="73"
 						forecolor="#000000"
@@ -366,7 +366,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
 						x="233"
-						y="108"
+						y="111"
 						width="72"
 						height="12"
 						forecolor="#000000"
@@ -386,7 +386,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
 						x="316"
-						y="84"
+						y="87"
 						width="220"
 						height="19"
 						forecolor="#000000"
