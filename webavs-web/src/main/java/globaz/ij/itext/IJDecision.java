@@ -1540,38 +1540,38 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
                                             if (IIJSituationProfessionnelle.CS_MENSUEL
                                                     .equals(ijRevenuDurantReadaptation.getCsPeriodiciteRevenu())) {
                                                 revenuDurantReadaptation = new BigDecimal(ijRevenuDurantReadaptation
-                                                        .getRevenu().toString());
+                                                        .getRevenu());
                                             }
                                             if (IIJSituationProfessionnelle.CS_ANNUEL.equals(ijRevenuDurantReadaptation
                                                     .getCsPeriodiciteRevenu())) {
                                                 revenuDurantReadaptation = new BigDecimal(ijRevenuDurantReadaptation
-                                                        .getRevenu().toString()).divide(new BigDecimal(12), 10,
+                                                        .getRevenu()).divide(new BigDecimal(12), 2,
                                                         BigDecimal.ROUND_DOWN);
                                             }
                                             if (IIJSituationProfessionnelle.CS_HEBDOMADAIRE
                                                     .equals(ijRevenuDurantReadaptation.getCsPeriodiciteRevenu())) {
                                                 revenuDurantReadaptation = new BigDecimal(ijRevenuDurantReadaptation
-                                                        .getRevenu().toString()).multiply(new BigDecimal(4));
+                                                        .getRevenu()).multiply(new BigDecimal(4));
                                             }
                                             if (IIJSituationProfessionnelle.CS_JOURNALIER
                                                     .equals(ijRevenuDurantReadaptation.getCsPeriodiciteRevenu())) {
                                                 revenuDurantReadaptation = new BigDecimal(ijRevenuDurantReadaptation
-                                                        .getRevenu().toString()).multiply(new BigDecimal(30));
+                                                        .getRevenu()).multiply(new BigDecimal(30));
                                             }
                                             if (IIJSituationProfessionnelle.CS_4_SEMAINES
                                                     .equals(ijRevenuDurantReadaptation.getCsPeriodiciteRevenu())) {
                                                 revenuDurantReadaptation = new BigDecimal(ijRevenuDurantReadaptation
-                                                        .getRevenu().toString());
+                                                        .getRevenu());
                                             }
                                             if (IIJSituationProfessionnelle.CS_HORAIRE
                                                     .equals(ijRevenuDurantReadaptation.getCsPeriodiciteRevenu())) {
                                                 revenuDurantReadaptation = new BigDecimal(ijRevenuDurantReadaptation
-                                                        .getRevenu().toString()).multiply(new BigDecimal(4));
+                                                        .getRevenu()).multiply(new BigDecimal(4));
                                             }
                                             if (IIJSituationProfessionnelle.CS_GROUPE_PERIODICITE_SALAIRE
                                                     .equals(ijRevenuDurantReadaptation.getCsPeriodiciteRevenu())) {
                                                 revenuDurantReadaptation = new BigDecimal(ijRevenuDurantReadaptation
-                                                        .getRevenu().toString());
+                                                        .getRevenu());
                                             }
                                         } else {
                                             revenuDurantReadaptation = new BigDecimal(
@@ -2067,8 +2067,7 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
 
                             if (IIJSituationProfessionnelle.CS_MENSUEL.equals(ijRevenuReadaptation
                                     .getCsPeriodiciteRevenu())) {
-                                revenuMensuelDurantReadaptation = new BigDecimal(ijRevenuReadaptation.getRevenu()
-                                        .toString());
+                                revenuMensuelDurantReadaptation = new BigDecimal(ijRevenuReadaptation.getRevenu());
                             }
                             if (IIJSituationProfessionnelle.CS_ANNUEL.equals(ijRevenuReadaptation
                                     .getCsPeriodiciteRevenu())) {
@@ -2076,28 +2075,23 @@ public class IJDecision extends FWIDocumentManager implements ICTScalableDocumen
                             }
                             if (IIJSituationProfessionnelle.CS_HEBDOMADAIRE.equals(ijRevenuReadaptation
                                     .getCsPeriodiciteRevenu())) {
-                                revenuMensuelDurantReadaptation = new BigDecimal(ijRevenuReadaptation.getRevenu()
-                                        .toString()).multiply(new BigDecimal(4));
+                                revenuMensuelDurantReadaptation = new BigDecimal(ijRevenuReadaptation.getRevenu()).multiply(new BigDecimal(4));
                             }
                             if (IIJSituationProfessionnelle.CS_JOURNALIER.equals(ijRevenuReadaptation
                                     .getCsPeriodiciteRevenu())) {
-                                revenuMensuelDurantReadaptation = new BigDecimal(ijRevenuReadaptation.getRevenu()
-                                        .toString()).multiply(new BigDecimal(30));
+                                revenuMensuelDurantReadaptation = new BigDecimal(ijRevenuReadaptation.getRevenu()).multiply(new BigDecimal(30));
                             }
                             if (IIJSituationProfessionnelle.CS_4_SEMAINES.equals(ijRevenuReadaptation
                                     .getCsPeriodiciteRevenu())) {
-                                revenuMensuelDurantReadaptation = new BigDecimal(ijRevenuReadaptation.getRevenu()
-                                        .toString());
+                                revenuMensuelDurantReadaptation = new BigDecimal(ijRevenuReadaptation.getRevenu());
                             }
                             if (IIJSituationProfessionnelle.CS_HORAIRE.equals(ijRevenuReadaptation
                                     .getCsPeriodiciteRevenu())) {
-                                revenuMensuelDurantReadaptation = new BigDecimal(ijRevenuReadaptation.getRevenu()
-                                        .toString()).multiply(new BigDecimal(4));
+                                revenuMensuelDurantReadaptation = new BigDecimal(ijRevenuReadaptation.getRevenu()).multiply(new BigDecimal(4));
                             }
                             if (IIJSituationProfessionnelle.CS_GROUPE_PERIODICITE_SALAIRE.equals(ijRevenuReadaptation
                                     .getCsPeriodiciteRevenu())) {
-                                revenuMensuelDurantReadaptation = new BigDecimal(ijRevenuReadaptation.getRevenu()
-                                        .toString());
+                                revenuMensuelDurantReadaptation = new BigDecimal(ijRevenuReadaptation.getRevenu());
                             }
 
                             cdtDifferenceRevenuActiviteLucrative = PRStringUtils.replaceString(
