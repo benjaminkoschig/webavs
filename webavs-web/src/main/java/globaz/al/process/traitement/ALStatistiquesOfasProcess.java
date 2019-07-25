@@ -1676,8 +1676,8 @@ public class ALStatistiquesOfasProcess extends BProcess {
                 + "JOIN schema.aldroit dro ON dro.fid=det.fid LEFT OUTER "
                 + "JOIN schema.aldos dos ON dos.eid=dro.eid LEFT OUTER "
                 + "JOIN schema.fwcoup cs ON "
-                + "((cs.pcosid=ent.cscant and det.cstcan = 0 ) "
-                + "or (cs.pcosid=det.cstcan and det.cstcan <> 0)) "
+                + "((cs.pcosid=ent.cscant and (det.cstcan = 0 or det.cstcan = 61190097)) "
+                + "or (cs.pcosid=det.cstcan and (det.cstcan <> 0 and det.cstcan <> 61190097))) "
                 + " and cs.PLAIDE = 'F' "
                 + "left outer join schema.alparam param on param.pparva=det.numcpt AND param.ppacdi LIKE 'rubrique.multicaisse.%'"
                 + " WHERE nmont > 0 AND " + "det.cstcai <> " + ALCSTarif.CATEGORIE_SUP_HORLO + " ";
@@ -1791,7 +1791,10 @@ public class ALStatistiquesOfasProcess extends BProcess {
                 + "JOIN schema.alentpre ent ON ent.mid = det.mid LEFT OUTER "
                 + "JOIN schema.aldroit dro ON dro.fid=det.fid LEFT OUTER "
                 + "JOIN schema.aldos dos ON dos.eid=dro.eid LEFT OUTER "
-                + "JOIN schema.fwcoup cs ON cs.pcosid=ent.cscant and cs.PLAIDE = 'F' "
+                + "JOIN schema.fwcoup cs ON "
+                + "((cs.pcosid=ent.cscant and (det.cstcan = 0 or det.cstcan = 61190097)) "
+                + "or (cs.pcosid=det.cstcan and (det.cstcan <> 0 and det.cstcan <> 61190097))) "
+                + " and cs.PLAIDE = 'F' "
                 + "left outer join schema.alparam param on param.pparva=det.numcpt AND param.ppacdi LIKE 'rubrique.multicaisse.%'"
                 + " WHERE nmont > 0 AND " + "det.cstcai <> " + ALCSTarif.CATEGORIE_SUP_HORLO + " ";
         if (isSansRestitutions) {
@@ -1820,7 +1823,10 @@ public class ALStatistiquesOfasProcess extends BProcess {
                 + "JOIN schema.alentpre ent ON ent.mid = det.mid LEFT OUTER "
                 + "JOIN schema.aldroit dro ON dro.fid=det.fid LEFT OUTER "
                 + "JOIN schema.aldos dos ON dos.eid=dro.eid LEFT OUTER "
-                + "JOIN schema.fwcoup cs ON cs.pcosid=ent.cscant and cs.PLAIDE = 'F' "
+                + "JOIN schema.fwcoup cs ON "
+                + "((cs.pcosid=ent.cscant and (det.cstcan = 0 or det.cstcan = 61190097)) "
+                + "or (cs.pcosid=det.cstcan and (det.cstcan <> 0 and det.cstcan <> 61190097))) "
+                + " and cs.PLAIDE = 'F' "
                 + "left outer join schema.alparam param on param.pparva=det.numcpt AND param.ppacdi LIKE 'rubrique.multicaisse.%'"
                 + " WHERE nmont > 0 AND " + "det.cstcai <> " + ALCSTarif.CATEGORIE_SUP_HORLO + " ";
         if (isSansRestitutions) {
