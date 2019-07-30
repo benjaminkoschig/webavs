@@ -29,6 +29,7 @@ import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.List;
 
 /**
  * La classe définissant l'entité Adhésion.
@@ -139,12 +140,14 @@ public class AFAdhesion extends BEntity implements Serializable {
                         dateDebutToUpd = getData(couverture.getDateDebut(), cotisation.getDateDebut(),
                                 oldAdhesion.getDateDebut(), cotisation.getMotifFin());
                     }
-                    if (cotisation.getInactive().booleanValue() == true) {
-                        dateFinToUpd = getDataCotisationInactive(cotisation.getDateDebut(), oldAdhesion.getDateFin());
-                        cotisation.setInactive(new Boolean(false));
-                    } else {
-                        dateFinToUpd = getData("", cotisation.getDateFin(), oldAdhesion.getDateFin(),
-                                cotisation.getMotifFin());
+                    if(isDerniereCotisation(cotisationList, cotisation)) {
+                        if (cotisation.getInactive().booleanValue() == true) {
+                            dateFinToUpd = getDataCotisationInactive(cotisation.getDateDebut(), oldAdhesion.getDateFin());
+                            cotisation.setInactive(new Boolean(false));
+                        } else {
+                            dateFinToUpd = getData("", cotisation.getDateFin(), oldAdhesion.getDateFin(),
+                                    cotisation.getMotifFin());
+                        }
                     }
                     motifFinUpd = CodeSystem.MOTIF_FIN_AUCUN;
                     // }
@@ -312,6 +315,27 @@ public class AFAdhesion extends BEntity implements Serializable {
                 }
             }
         }
+    }
+
+    /**
+     * Vérifie s'il s'agit de la dernière cotisation du même type
+     *
+     * @param listCoti
+     *             liste des cotisations
+     * @param coti
+     *             cotisation à vérifier
+     * @throws Exception
+     */
+    private boolean isDerniereCotisation(AFCotisationListViewBean listCoti, AFCotisation coti) throws Exception {
+        for (int i = 0; i < listCoti.size(); i++) {
+            AFCotisation cotisation = (AFCotisation) listCoti.getEntity(i);
+            if(!cotisation.equals(coti) && cotisation.getAssuranceId().equals(coti.getAssuranceId()) ) {
+                if(BSessionUtil.compareDateFirstGreaterOrEqual(getSession(), cotisation.getDateDebut(), coti.getDateDebut())) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     @Override
