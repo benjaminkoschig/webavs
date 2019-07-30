@@ -105,15 +105,16 @@
     function validate() {
         if (document.forms[0].elements('_method').value == "upd" && document.forms[0].elements('dateDebut').value != '<%=viewBean.getDateDebut()%>') {
             popupConfirmation();
+            return false;
         } else {
-            proceedValidation();
+            return proceedValidation();
         }
     }
 
     function proceedValidation() {
         // si attendre sur popup?
         if (confirmerMutationActivite()) {
-            return;
+            return false;
         }
 
         if (document.forms[0].elements('affilieNumero').value != '<%= viewBean.getAffilieNumero()%>' && '<%= viewBean.getAffilieNumero()%>' != '') {
@@ -929,7 +930,7 @@ Affiliation - D&eacute;tail
                     }%>
                 </TD>
                 <!--TD nowrap>&nbsp;Irr&eacute;couvrable</TD>
-								<TD nowrap> 
+								<TD nowrap>
 									<INPUT type="checkbox" name="irrecouvrable" <%=(viewBean.isIrrecouvrable().booleanValue())? "checked" : ""%> >
 								</TD-->
                 <!--TD nowrap></TD-->
@@ -956,7 +957,7 @@ Affiliation - D&eacute;tail
                     Affiliation provisoire
                 </TD>
                 <!--TD nowrap>&nbsp;Bonus/malus</TD>
-								<TD nowrap> 
+								<TD nowrap>
 									<INPUT type="checkbox" name="bonusMalus" <%=(viewBean.getBonusMalus().booleanValue())? "checked" : ""%>>
 								</TD-->
             </TR>
@@ -1160,35 +1161,35 @@ Affiliation - D&eacute;tail
         <TABLE border="0" cellspacing="0" cellpadding="0" id="tPartie2" style="display:none">
             <TBODY>
             <!--TR>
-								<TD nowrap width="161" height="31">RS listes</TD> 
+								<TD nowrap width="161" height="31">RS listes</TD>
 								<TD nowrap width="310">
 								<input type="text" name="raisonSocialeCourt" size="30" maxlength="30" value="<%=designationCourt%>" tabindex="-1" ></TD>
 								<TD nowrap width="140">&nbsp;Demande d'affiliation</TD>
 								<TD nowrap width="300"><ct:FWCalendarTag name="dateDemandeAffiliation" value="<%=viewBean.getDateDemandeAffiliation()%>" /></TD>
 							</TR>
 							<TR>
-							<TR> 
+							<TR>
 								<TD nowrap width="161" height="31" >Membre du comit&eacute;</TD>
 								<TD nowrap colspan="3">
-									<ct:FWCodeSelectTag 
-		                				name="membreComite" 
+									<ct:FWCodeSelectTag
+		                				name="membreComite"
 										defaut="<%=viewBean.getMembreComite()%>"
 										codeType="VEMEMBRECO"
-										wantBlank="true"/> 									
+										wantBlank="true"/>
 								</TD>
 							</TR>
-							<TR> 
+							<TR>
 								<TD width="161" height="31" >Contrôle LAA</TD>
 								<TD nowrap colspan="3">
 								<% if (method != null && method.equals("add")) { %>
 									<INPUT type="checkbox" name="envoiAutomatique" <%=(viewBean.getEnvoiAutomatiqueLAA().booleanValue())? "checked" : ""%> >
-								<% } else { 
+								<% } else {
 								       if (viewBean.isEnvoiAutomatiqueLAA().booleanValue()) {
 								%>
 									<INPUT type="checkbox" name="envoiAutomatiqueReadOnly" checked tabindex="-1" readonly disabled>
-								<%     } else { %> 
+								<%     } else { %>
 									<INPUT type="checkbox" name="envoiAutomatique">
-								<%     } 
+								<%     }
 								   } %>
 								</TD>
 							</TR-->
