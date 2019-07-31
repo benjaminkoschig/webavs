@@ -1,5 +1,6 @@
 package ch.globaz.orion;
 
+import ch.globaz.naos.ws.AFExposeWS;
 import globaz.jade.client.xml.JadeXmlException;
 import globaz.jade.client.xml.JadeXmlUtil;
 import globaz.jade.common.JadeInitializationException;
@@ -43,6 +44,7 @@ public class EBOrionAppStarter extends JadeServiceContainer {
     public synchronized void start() throws JadeInitializationException {
         if (port != null) {
             new EBExposeWS().go(port);
+            new AFExposeWS().go(port);
         } else {
             throw new JadeInitializationException("property [orion.cotiservice.ws.port] is null");
         }
