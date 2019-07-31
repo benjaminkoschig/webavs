@@ -6,3 +6,21 @@ insert into SCHEMA.FWCOUP(pcosid,plaide,pcouid,pcolut, pspy)values (818030,'D','
 
 ALTER TABLE SCHEMA.AFANOIDE ADD AIDNSS CHAR(20);
 REORG TABLE SCHEMA.AFANOIDE allow read access;
+
+
+-- Création de la table du paramétrage des priorités des jobs
+CREATE TABLE SCHEMA.AF_CONTACT_FPV
+(
+   KEY varchar(255) PRIMARY KEY NOT NULL,
+   AFFNUM char(15)  UNIQUE NOT NULL,
+   NOM varchar(50) NOT NULL,
+   PRENOM varchar(50) NOT NULL,
+   SEXE varchar(15) NOT NULL,
+   EMAIL varchar(100) NOT NULL,
+   PROSPECTION varchar(1) NOT NULL,
+   PSPY char(24),
+   CSPY char(24)
+);
+CREATE UNIQUE INDEX AF_CONTACT_FPV ON SCHEMA.AF_CONTACT_FPV(KEY);
+
+

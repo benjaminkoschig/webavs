@@ -722,9 +722,17 @@
 						<parameter name="likeNumAffilie" value="" />
 				</action>
 			</node>
+			<node>
+				<label refId="OPTION_CONTACTFPV"/>
+				<action command="/naos" responseTarget="fr_main">
+					<parameter name="userAction" value="naos.contactFpv.contactFpv.afficher"/>
+					<parameter name="selectedId" value="" />
+					<parameter name="likeNumAffilie" value="" />
+				</action>
+			</node>
 		</nodes>
 	</menu>
-	
+
 	<!-- Options liste affiliation -->
 	<menu id="AFOptionsAffiliationListe">
 		<label refId="MENU_OPTIONS"/>
@@ -995,5 +1003,6 @@
 			</node>
 		</nodes>
 	</menu>
-	
+
+
 </menus>

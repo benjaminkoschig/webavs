@@ -168,6 +168,8 @@ public class AFMainServletAction extends FWActionHandlerFactoryMapSupport {
 
         // D0198
         AFMainServletAction.hActionsTable.put("naos.noga.listeAffiliesCodeNoga", AFActionListeAffilieCodeNoga.class);
+
+        AFMainServletAction.hActionsTable.put("naos.contactFpv.contactFpv", FWDefaultServletAction.class);
     }
 
     /**
