@@ -104,8 +104,9 @@
     function validate() {
         if (document.forms[0].elements('_method').value == "upd" && document.forms[0].elements('dateDebut').value != '<%=viewBean.getDateDebut()%>') {
             popupConfirmation();
+            return false;
         } else {
-            proceedValidation();
+            return proceedValidation();
         }
     }
 
@@ -113,7 +114,7 @@
 
         // si attendre sur popup?
         if (confirmerMutationActivite()) {
-            return;
+            return false;
         }
 
         if (document.forms[0].elements('affilieNumero').value != '<%= viewBean.getAffilieNumero()%>' && '<%= viewBean.getAffilieNumero()%>' != '') {

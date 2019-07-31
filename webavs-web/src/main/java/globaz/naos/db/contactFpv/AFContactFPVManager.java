@@ -1,7 +1,7 @@
 /*
  * Créé le 29 jui. 05
  */
-package globaz.fpv.contactFPV;
+package globaz.naos.db.contactFpv;
 
 import globaz.globall.db.BEntity;
 import globaz.globall.db.BManager;

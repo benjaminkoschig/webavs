@@ -15,6 +15,7 @@ import globaz.jade.ged.client.JadeGedFacade;
 import globaz.jade.log.JadeLogger;
 import globaz.naos.application.AFApplication;
 import globaz.naos.stack.rules.AFUrlStackRule;
+
 import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -35,7 +36,7 @@ public class AFMainServlet extends FWServlet {
 
     /**
      * Crée un controller de type dispatcher pour l'application Affiliation.
-     * 
+     *
      * @see globaz.framework.servlets.FWServlet#createController(globaz.globall.api.BISession)
      */
     @Override
@@ -46,7 +47,7 @@ public class AFMainServlet extends FWServlet {
 
     /**
      * Définis règles gérant la pile d'URLs.
-     * 
+     *
      * @see globaz.framework.servlets.FWServlet#customize(globaz.framework.utils.urls.FWUrlsStack)
      */
     @Override
@@ -64,17 +65,22 @@ public class AFMainServlet extends FWServlet {
                     .getApplication(AFApplication.DEFAULT_APPLICATION_NAOS))
                     .getProperty("showMenuAncienControleEmployeur");
             showMenuAncienControleEmployeur = Boolean.parseBoolean(propertyShowMenuAncienControleEmployeur);
+
         } catch (Exception e) {
             showMenuAncienControleEmployeur = false;
             JadeLogger.info(this, "Properties problem : showMenuAncienControleEmployeur >> " + e.getMessage());
 
         } finally {
-            if (!showMenuAncienControleEmployeur) {
-                try {
+            try {
+                if (!showMenuAncienControleEmployeur) {
                     FWMenuBlackBox.ensureNodeDoesntExist("menu_node_ancien_controle_employeur", "AFMenuPrincipal");
-                } catch (Exception e) {
-                    e.printStackTrace();
                 }
+                if (!((AFApplication) GlobazSystem
+                        .getApplication(AFApplication.DEFAULT_APPLICATION_NAOS)).hasContactFpvActive()) {
+                    FWMenuBlackBox.ensureNodeDoesntExist("ContactFpv", "AFOptionsAffiliation");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
 
@@ -82,14 +88,14 @@ public class AFMainServlet extends FWServlet {
 
     /**
      * Traitement des actions de l'Affiliation.
-     * 
+     *
      * @see globaz.framework.servlets.FWServlet#doAction(javax.servlet.http.HttpSession,
-     *      javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse,
-     *      globaz.framework.controller.FWController)
+     * javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse,
+     * globaz.framework.controller.FWController)
      */
     @Override
     public void doAction(HttpSession session, HttpServletRequest request, HttpServletResponse response,
-            FWController mainController) throws ServletException, IOException {
+                         FWController mainController) throws ServletException, IOException {
 
         request.setAttribute("mainServletPath", request.getServletPath());
         String action = request.getParameter("userAction");
@@ -127,9 +133,9 @@ public class AFMainServlet extends FWServlet {
 
     /**
      * Spécifie la page principale de l'application.
-     * 
+     *
      * @see globaz.framework.servlets.FWServlet#goHomePage(javax.servlet.http.HttpSession,
-     *      javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+     * javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
      */
     @Override
     protected void goHomePage(HttpSession session, HttpServletRequest request, HttpServletResponse response)
@@ -147,9 +153,9 @@ public class AFMainServlet extends FWServlet {
     /**
      * Détermine si le servlet actuel doit utiliser la langue utilisateur pour trouver les pages .jsp (genre
      * <CODE>/FR</CODE>, <CODE>/DE</CODE>, etc.).
-     * 
+     *
      * @return <code>true</code> si le servlet utilise la langue utilisateur, <code>false</code> sinon. Avec FW V29 Date
-     *         de création : (18.05.2005 11:00:00)
+     * de création : (18.05.2005 11:00:00)
      */
     @Override
     public boolean hasLanguageInPagesPath() {
@@ -158,7 +164,7 @@ public class AFMainServlet extends FWServlet {
 
     /**
      * Initialise les menus de l'application
-     * 
+     *
      * @param session
      * @throws Exception
      */

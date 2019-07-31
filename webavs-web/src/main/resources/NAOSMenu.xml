@@ -722,7 +722,7 @@
 						<parameter name="likeNumAffilie" value="" />
 				</action>
 			</node>
-			<node>
+			<node id="ContactFpv">
 				<label refId="OPTION_CONTACTFPV"/>
 				<action command="/naos" responseTarget="fr_main">
 					<parameter name="userAction" value="naos.contactFpv.contactFpv.afficher"/>

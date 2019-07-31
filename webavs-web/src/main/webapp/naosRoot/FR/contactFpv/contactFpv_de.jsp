@@ -46,7 +46,11 @@
 
 </SCRIPT>
 
+    <INPUT type="hidden" id="selectedId" name="selectedId"
+           value="<%=viewBean.getContactId()%>">
+
 <TABLE border="0" cellspacing="0" cellpadding="0">
+
     <TR>
         <TD nowrap>N&deg; d'affili&eacute;</TD>
         <TD nowrap>
@@ -89,10 +93,10 @@
     <TR>
         <TD nowrap width="135">Stop prospection</TD>
         <TD nowrap>
-            <INPUT name="stopProspection" type="radio" disabled <%=(viewBean.isStopProspection())? "checked" : ""%>>Oui
-            <INPUT name="stopProspection" type="radio" disabled <%=(!viewBean.isStopProspection())? "checked" : ""%>>Non
+            <INPUT id="stopProspection" name="stopProspection" type="checkbox" disabled <%=(viewBean.isStopProspection())? "checked" : ""%>>
         </TD>
     </TR>
+
     <%@ include file="/theme/detail/bodyButtons.jspf" %>
     <%-- /tpl:put --%>
     <%@ include file="/theme/detail/bodyErrors.jspf" %>

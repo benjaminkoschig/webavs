@@ -78,6 +78,8 @@ public class AFApplication extends BApplication {
 
     public static final String PROPERTY_LETTRE_BIENVENUE_WAIT_INTERACTIVE_VALIDATION = "lettre.bienvenue.wait.interactive.validation";
 
+    public static final String PROPERTY_CONTACT_FPV = "contactFpv";
+
     /**
      * Retourne la langue associée a un tier.
      * 
@@ -271,6 +273,13 @@ public class AFApplication extends BApplication {
 
         // D0050 IDE
         FWAction.registerActionCustom("naos.ide.ideAnnonce.prepareAjoutAnnonceIdeCreation", FWSecureConstants.ADD);
+    }
+
+    /**
+     * @return true si l'option "contact FPV" doit être activée.
+     */
+    public boolean hasContactFpvActive() {
+        return  Boolean.valueOf(this.getProperty(AFApplication.PROPERTY_CONTACT_FPV).trim()).booleanValue();
     }
 
     /**

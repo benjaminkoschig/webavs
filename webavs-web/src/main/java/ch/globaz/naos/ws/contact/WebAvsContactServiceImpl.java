@@ -2,8 +2,8 @@ package ch.globaz.naos.ws.contact;
 
 import ch.globaz.orion.ws.exceptions.WebAvsException;
 import ch.globaz.orion.ws.service.UtilsService;
-import globaz.fpv.contactFPV.AFContactFPV;
-import globaz.fpv.contactFPV.AFContactFPVManager;
+import globaz.naos.db.contactFpv.AFContactFPV;
+import globaz.naos.db.contactFpv.AFContactFPVManager;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
 import globaz.jade.client.util.JadeStringUtil;
@@ -99,8 +99,11 @@ public class WebAvsContactServiceImpl implements WebAvsContactService {
                 entity.update();
             }
         } catch (Exception e) {
-            logger.error("Impossible d'erregistrer le contact pour l'affilié : " + numeroAffilie + " \n" + e.getLocalizedMessage());
-            throw new WebAvsException("Impossible de récupérer le contact pour le numéro d'affilié : " + numeroAffilie + " \n" + e.getLocalizedMessage(), e);
+            logger.error("Impossible d'enregistrer le contact pour l'affilié : " + numeroAffilie + " \n" + e.getLocalizedMessage());
+            throw new WebAvsException("Impossible d'enregistrer le contact pour l'affilié : " + numeroAffilie + " \n" + e.getLocalizedMessage(), e);
+        }
+        if (session.hasErrors()) {
+            throw new WebAvsException("Impossible d'insérer le contact en raison des erreurs suivantes : " + session.getErrors());
         }
 
         return true;
@@ -138,11 +141,11 @@ public class WebAvsContactServiceImpl implements WebAvsContactService {
         return (AFAffiliation) affiliationManager.getFirstEntity();
     }
 
-    public static final String getCodeSexe(BSession session, String sexe) {
+    private static final String getCodeSexe(BSession session, String sexe) {
         return session.getSystemCode("PYSEXE", sexe);
     }
 
-    public static final String getLibelleSexe(BSession session, String codeSexe) {
+    private static final String getLibelleSexe(BSession session, String codeSexe) {
         return session.getCode(codeSexe);
     }
 

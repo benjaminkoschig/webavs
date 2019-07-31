@@ -1,13 +1,14 @@
-package globaz.fpv.contactFPV;
+package globaz.naos.db.contactFpv;
 
 import globaz.globall.db.BEntity;
 import globaz.globall.db.BStatement;
 import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.common.Jade;
 import globaz.naos.db.affiliation.AFAffiliation;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.regex.Pattern;
 
 public class AFContactFPV extends BEntity {
 
@@ -36,6 +37,10 @@ public class AFContactFPV extends BEntity {
 
     private boolean stopProspection;
 
+    Pattern nomPattern = Pattern.compile("\\p{L}*(-\\p{L}*)*");
+
+    Pattern emailPattern = Pattern.compile("^[A-Za-z0-9+_.-]+@(.+)$");
+
     @Override
     protected String _getTableName() {
         return TABLE_NAME;
@@ -56,14 +61,14 @@ public class AFContactFPV extends BEntity {
     protected void _validate(BStatement bStatement) throws Exception {
         if (JadeStringUtil.isEmpty(getNom())) {
             _addError(bStatement.getTransaction(),"Le nom doit être renseigné.");
-        } else if (JadeStringUtil.containsSpecialChars(getNom())) {
-            _addError(bStatement.getTransaction(),"Le format du nom n'est pas correct.");
+        } else if (!nomPattern.matcher(getNom()).matches()) {
+            _addError(bStatement.getTransaction(),"Le format du nom renseigné n'est pas correct.");
         }
 
         if (JadeStringUtil.isEmpty(getPrenom())) {
             _addError(bStatement.getTransaction(),"Le prénom doit être renseigné.");
-        } else if (JadeStringUtil.containsSpecialChars(getPrenom())) {
-            _addError(bStatement.getTransaction(),"Le format du prénom n'est pas correct.");
+        } else if (!nomPattern.matcher(getPrenom()).matches()) {
+            _addError(bStatement.getTransaction(),"Le format du prénom renseigné n'est pas correct.");
         }
 
         if (JadeStringUtil.isEmpty(getSexe())) {
@@ -72,6 +77,8 @@ public class AFContactFPV extends BEntity {
 
         if (JadeStringUtil.isEmpty(getEmail())) {
             _addError(bStatement.getTransaction(),"L'e-mail doit être renseigné.");
+        } else if (!emailPattern.matcher(getEmail()).matches()) {
+            _addError(bStatement.getTransaction(),"Le format de l'adresse e-mail renseigné n'est pas correct.");
         }
 
     }
