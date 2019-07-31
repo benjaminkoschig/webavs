@@ -3,6 +3,7 @@ package ch.globaz.naos.ws.contact;
 import ch.globaz.orion.ws.exceptions.WebAvsException;
 
 import javax.jws.*;
+import javax.xml.bind.annotation.XmlElement;
 import java.util.List;
 
 @WebService
@@ -15,7 +16,7 @@ public interface WebAvsContactService {
      **/
     @WebMethod
     @WebResult(name = "contactFPV")
-    public abstract Contact getContactFPV(@WebParam(name = "numeroAffilie") String numeroAffilie) throws WebAvsException;
+    public abstract Contact getContactFPV(@WebParam(name = "numeroAffilie") @XmlElement(required=true) String numeroAffilie) throws WebAvsException;
 
     /**
      * Recherche la liste de tous les contacts
@@ -33,11 +34,11 @@ public interface WebAvsContactService {
     @WebMethod
     @WebResult(name = "isSuccess")
     public abstract Boolean setContactFPV(
-            @WebParam(name = "numeroAffilie") String numeroAffilie,
-            @WebParam(name = "nom") String nom,
-            @WebParam(name = "prenom") String prenom,
-            @WebParam(name = "sex") String sexe,
-            @WebParam(name = "email") String email,
-            @WebParam(name = "stopProspection") String stopProspection)
+            @WebParam(name = "numeroAffilie") @XmlElement(required=true) String numeroAffilie,
+            @WebParam(name = "nom") @XmlElement(required=true)  String nom,
+            @WebParam(name = "prenom") @XmlElement(required=true)  String prenom,
+            @WebParam(name = "sex") @XmlElement(required=true)  String sexe,
+            @WebParam(name = "email") @XmlElement(required=true)  String email,
+            @WebParam(name = "stopProspection") @XmlElement(required=true)  String stopProspection)
             throws WebAvsException;
 }
