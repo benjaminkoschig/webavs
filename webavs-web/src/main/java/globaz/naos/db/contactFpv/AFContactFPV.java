@@ -3,16 +3,13 @@ package globaz.naos.db.contactFpv;
 import globaz.globall.db.BEntity;
 import globaz.globall.db.BStatement;
 import globaz.jade.client.util.JadeStringUtil;
-import globaz.naos.db.affiliation.AFAffiliation;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.regex.Pattern;
 
 public class AFContactFPV extends BEntity {
 
-    private static final Logger logger = LoggerFactory.getLogger(AFAffiliation.class);
+    private static final long serialVersionUID = 1L;
 
     public static final String TABLE_NAME = "AF_CONTACT_FPV";
     public static final String COLUMN_CONTACT_ID = "KEY";
@@ -37,9 +34,13 @@ public class AFContactFPV extends BEntity {
 
     private boolean stopProspection;
 
-    Pattern nomPattern = Pattern.compile("\\p{L}*(-\\p{L}*)*");
+    private Pattern nomPattern = Pattern.compile("\\p{L}*(-\\p{L}*)*");
 
-    Pattern emailPattern = Pattern.compile("^[A-Za-z0-9+_.-]+@(.+)$");
+    private Pattern emailPattern = Pattern.compile("^[A-Za-z0-9+_.-]+@(.+)$");
+
+    public AFContactFPV() {
+        super();
+    }
 
     @Override
     protected String _getTableName() {

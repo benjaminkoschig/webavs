@@ -4,15 +4,15 @@ public class Contact {
     String numeroAffilie;
     String nom;
     String prenom;
-    String sexe;
+    EnumSexe sexe;
     String email;
-    String stopProspection;
+    boolean stopProspection;
 
     public Contact() {
         // need for jaxws
     }
 
-    public Contact(String numeroAffilie, String nom, String prenom, String sexe, String email, String stopProspection) {
+    public Contact(String numeroAffilie, String nom, String prenom, EnumSexe sexe, String email, boolean stopProspection) {
         super();
         this.numeroAffilie = numeroAffilie;
         this.nom = nom;
@@ -46,11 +46,11 @@ public class Contact {
         this.prenom = prenom;
     }
 
-    public String getSexe() {
+    public EnumSexe getSexe() {
         return sexe;
     }
 
-    public void setSexe(String sexe) {
+    public void setSexe(EnumSexe sexe) {
         this.sexe = sexe;
     }
 
@@ -62,11 +62,10 @@ public class Contact {
         this.email = email;
     }
 
-    public String getStopProspection() {
+    public boolean getStopProspection() {
         return stopProspection;
     }
 
-    public void setStopProspection(String stopProspection) {
-        this.stopProspection = stopProspection;
+    public void setStopProspection(boolean stopProspection) {this.stopProspection = stopProspection;
     }
 }

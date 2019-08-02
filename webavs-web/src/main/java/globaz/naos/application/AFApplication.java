@@ -279,7 +279,7 @@ public class AFApplication extends BApplication {
      * @return true si l'option "contact FPV" doit être activée.
      */
     public boolean hasContactFpvActive() {
-        return  Boolean.valueOf(this.getProperty(AFApplication.PROPERTY_CONTACT_FPV).trim()).booleanValue();
+        return  Boolean.parseBoolean(this.getProperty(AFApplication.PROPERTY_CONTACT_FPV).trim());
     }
 
     /**

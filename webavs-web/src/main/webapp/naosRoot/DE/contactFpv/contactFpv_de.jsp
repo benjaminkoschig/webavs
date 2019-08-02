@@ -17,7 +17,7 @@
 <%-- tpl:put name="zoneScripts" --%>
 <%-- /tpl:put --%>
 <%@ include file="/theme/detail/bodyStart.jspf" %>
-<%-- tpl:put name="zoneTitle" --%>Contact FPV - Détail<%-- /tpl:put --%>
+<%-- tpl:put name="zoneTitle" --%>FPV Kontakt ? Details<%-- /tpl:put --%>
 <%@ include file="/theme/detail/bodyStart2.jspf" %>
 <%-- tpl:put name="zoneMain" --%>
 
@@ -52,7 +52,7 @@
 <TABLE border="0" cellspacing="0" cellpadding="0">
 
     <TR>
-        <TD nowrap>N&deg; d'affili&eacute;</TD>
+        <TD nowrap>Abr.-Nr.</TD>
         <TD nowrap>
             <INPUT id="affiliationNumero" name="affiliationNumero" size="20" maxlength="20" type="text"
                    value="<%=(viewBean.getAffiliationNumero().isEmpty()) ? request.getParameter("likeNumAffilie") : viewBean.getAffiliationNumero()%>"
@@ -60,21 +60,21 @@
         </TD>
     </TR>
     <TR>
-        <TD nowrap>Nom</TD>
+        <TD nowrap>Name</TD>
         <TD nowrap>
             <INPUT id="nom" name="nom" type="text" size="20" maxlength="20"
                    value="<%=viewBean.getNom()%>" disabled>
         </TD>
     </TR>
     <TR>
-        <TD nowrap>Pr&eacute;nom</TD>
+        <TD nowrap>Vorname</TD>
         <TD nowrap>
             <INPUT id="prenom" name="prenom" type="text" size="20" maxlength="20"
                    value="<%=viewBean.getPrenom()%>" disabled>
         </TD>
     </TR>
     <TR>
-        <TD nowrap>Sexe</TD>
+        <TD nowrap>Geschlecht</TD>
         <TD nowrap>
             <ct:FWCodeSelectTag
                     name="sexe"
@@ -91,7 +91,7 @@
         </TD>
     </TR>
     <TR>
-        <TD nowrap width="135">Stop prospection</TD>
+        <TD nowrap width="135">Kundengewinnung aufhören</TD>
         <TD nowrap>
             <INPUT id="stopProspection" name="stopProspection" type="checkbox" disabled <%=(viewBean.isStopProspection())? "checked" : ""%>>
         </TD>

@@ -65,7 +65,7 @@ public class WebAvsContactServiceImpl implements WebAvsContactService {
     }
 
     @Override
-    public Boolean setContactFPV(String numeroAffilie, String nom, String prenom, String sexe, String email, String stopProspection) throws WebAvsException {
+    public Boolean setContactFPV(String numeroAffilie, String nom, String prenom, EnumSexe sexe, String email, boolean stopProspection) throws WebAvsException {
         BSession session = UtilsService.initSession();
         AFAffiliation affiliation = getAffiliation(numeroAffilie, session);
 
@@ -88,9 +88,9 @@ public class WebAvsContactServiceImpl implements WebAvsContactService {
         entity.setAffiliationNumero(numeroAffilie);
         entity.setNom(nom);
         entity.setPrenom(prenom);
-        entity.setSexe(getCodeSexe(session, sexe));
+        entity.setSexe(getCodeSexe(session,sexe.getSexe()));
         entity.setEmail(email);
-        entity.setStopProspection(new Boolean(stopProspection));
+        entity.setStopProspection(stopProspection);
         entity.setContactId(affiliation.getAffiliationId());
         try {
             if(entity.isNew()){
@@ -114,9 +114,9 @@ public class WebAvsContactServiceImpl implements WebAvsContactService {
         contact.setNumeroAffilie(entity.getAffiliationNumero());
         contact.setNom(entity.getNom());
         contact.setPrenom(entity.getPrenom());
-        contact.setSexe(getLibelleSexe(session, entity.getSexe()));
+        contact.setSexe(EnumSexe.valueOf(getLibelleSexe(session,entity.getSexe())));
         contact.setEmail(entity.getEmail());
-        contact.setStopProspection(entity.isStopProspection() ? "true" : "false");
+        contact.setStopProspection(entity.isStopProspection());
         return contact;
     }
 
@@ -131,6 +131,7 @@ public class WebAvsContactServiceImpl implements WebAvsContactService {
 
         AFAffiliationManager affiliationManager = new AFAffiliationManager();
         affiliationManager.setForAffilieNumero(numeroAffilie);
+        affiliationManager.setForActif(Boolean.TRUE);
         affiliationManager.setSession(session);
 
         try {
