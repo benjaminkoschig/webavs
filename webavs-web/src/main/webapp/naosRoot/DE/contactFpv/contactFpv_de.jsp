@@ -17,7 +17,7 @@
 <%-- tpl:put name="zoneScripts" --%>
 <%-- /tpl:put --%>
 <%@ include file="/theme/detail/bodyStart.jspf" %>
-<%-- tpl:put name="zoneTitle" --%>FPV Kontakt ? Details<%-- /tpl:put --%>
+<%-- tpl:put name="zoneTitle" --%>CPB Kontakt - Details<%-- /tpl:put --%>
 <%@ include file="/theme/detail/bodyStart2.jspf" %>
 <%-- tpl:put name="zoneMain" --%>
 
