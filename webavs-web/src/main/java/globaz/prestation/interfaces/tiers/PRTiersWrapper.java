@@ -6,9 +6,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.SortedSet;
+
 import globaz.globall.db.BSession;
 import globaz.globall.shared.GlobazValueObject;
 import globaz.pyxis.db.tiers.TITiersViewBean;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * <p>
@@ -41,6 +43,7 @@ public class PRTiersWrapper implements Serializable, Comparable<PRTiersWrapper> 
     public static final String PROPERTY_DATE_NAISSANCE = "DATE_NAISSANCE";
     public static final String PROPERTY_ID_CANTON = "ID_CANTON";
     public static final String PROPERTY_ID_PAYS = "ID_PAYS";
+    public static final String PROPERTY_ID_ADRESSE = "ID_ADRESSE";
     /** Nationalité */
     public static final String PROPERTY_ID_PAYS_DOMICILE = "ID_PAYS_DOMICILE";
     public static final String PROPERTY_ID_TIERS = "ID_TIERS";
@@ -87,6 +90,7 @@ public class PRTiersWrapper implements Serializable, Comparable<PRTiersWrapper> 
         fields.put(PRTiersWrapper.PROPERTY_LANGUE, "langue");
         fields.put(PRTiersWrapper.PROPERTY_INACTIF, "inactif");
         fields.put(PRTiersWrapper.PROPERTY_NUM_AFFILIE, "numAffilieActuel");
+        fields.put(PRTiersWrapper.PROPERTY_ID_ADRESSE, "idAdresseUnique");
 
         PRTiersWrapper.FIELDNAMES.put(PRTiersWrapper.TI_PERSONNE_AVS_ADRESSE, fields);
 

@@ -19,36 +19,31 @@ import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import org.apache.commons.lang.StringUtils;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Utilitaire pour récupérer des info multiples sur les familles ou relations familiales (tel que le conjoint actuel, ou
  * les ex-conjoints)
- * 
+ *
  * @author PBA
  */
 public class SFFamilleUtils {
 
     /**
      * Retourne la conjoint actuel (état de la relation marié ou séparé de fait) du tiers passé en paramètre.<br/>
-     * 
-     * @param session
-     *            La session utilisateur
-     * @param csDomaine
-     *            le domaine d'application dans lequel on veut chercher la relation. Si aucune relation n'est trouvée
-     *            dans ce domaine, une recherche dans le domaine standard sera effectuée
-     * @param idTiers
-     *            l'ID du tiers duquel on recherche le conjoint
+     *
+     * @param session   La session utilisateur
+     * @param csDomaine le domaine d'application dans lequel on veut chercher la relation. Si aucune relation n'est trouvée
+     *                  dans ce domaine, une recherche dans le domaine standard sera effectuée
+     * @param idTiers   l'ID du tiers duquel on recherche le conjoint
      * @return Le conjoint du tiers (si marié ou séparé de fait) ou <code>null</code> si le tiers n'est pas dans une
-     *         relation actuellement. Retourne aussi <code>null</code> si le tiers est veuf
-     * @throws Exception
-     *             dans les cas suivants : <li>Si la session est <code>null</code></li><li>Si l'ID Tiers est vide ou
-     *             <code>null</code></li><li>
-     *             Si un erreur survient lors de la récupération des relations du tiers</li>
+     * relation actuellement. Retourne aussi <code>null</code> si le tiers est veuf
+     * @throws Exception dans les cas suivants : <li>Si la session est <code>null</code></li><li>Si l'ID Tiers est vide ou
+     *                   <code>null</code></li><li>
+     *                   Si un erreur survient lors de la récupération des relations du tiers</li>
      */
     public static PRTiersWrapper getConjointActuel(BSession session, String csDomaine, String idTiers) throws Exception {
         if (session == null) {
@@ -118,7 +113,7 @@ public class SFFamilleUtils {
      * Cela comprend les parents, les frères et soeurs, les (ex-)conjoints et les enfants découlant des relations
      * conjugales du tiers.
      * </p>
-     * 
+     *
      * @param session
      * @param idTiersPrincipal
      * @return
@@ -150,7 +145,6 @@ public class SFFamilleUtils {
             membreFamilleLiant.setCsDomaineApplication(ISFSituationFamiliale.CS_DOMAINE_STANDARD);
             membreFamilleLiant.retrieve();
         }
-        System.out.println();
         if (!membreFamilleLiant.isNew()) {
             String idMembreFamilleLiant = membreFamilleLiant.getIdMembreFamille();
 
@@ -186,20 +180,16 @@ public class SFFamilleUtils {
 
     /**
      * Retourne les ex-conjoints (vivants) du tiers dont l'ID est passé en paramètre
-     * 
-     * @param session
-     *            La session utilisateur
-     * @param csDomaine
-     *            le domaine d'application dans lequel on veut chercher la relation. Si aucune relation n'est trouvée
-     *            dans ce domaine, une recherche dans le domaine standard sera effectuée
-     * @param idTiers
-     *            l'ID du tiers duquel on recherche les ex-conjoint
+     *
+     * @param session   La session utilisateur
+     * @param csDomaine le domaine d'application dans lequel on veut chercher la relation. Si aucune relation n'est trouvée
+     *                  dans ce domaine, une recherche dans le domaine standard sera effectuée
+     * @param idTiers   l'ID du tiers duquel on recherche les ex-conjoint
      * @return une {@link List}&lt;{@link PRTiersWrapper}&gt; avec les ex-conjoints à l'intérieur, la liste peut être
-     *         vide si aucune relation antérieure existe.<br/>
-     *         Un ex-conjoint décédé ne sera pas présent dans la liste.
-     * @throws Exception
-     *             dans les cas suivants : <li>Si la session est <code>null</code></li><li>si l'ID tiers est vide</li>
-     *             <li>Si un erreur survient lors de la récupération des relations du tiers</li>
+     * vide si aucune relation antérieure existe.<br/>
+     * Un ex-conjoint décédé ne sera pas présent dans la liste.
+     * @throws Exception dans les cas suivants : <li>Si la session est <code>null</code></li><li>si l'ID tiers est vide</li>
+     *                   <li>Si un erreur survient lors de la récupération des relations du tiers</li>
      */
     public static List<PRTiersWrapper> getExConjointsTiers(BSession session, String csDomaine, String idTiers)
             throws Exception {
@@ -219,32 +209,27 @@ public class SFFamilleUtils {
      * Il est possible de spécifier un filtre pour les relations avec le paramètre <code>csTypeLien</code>.<br/>
      * Si <code>csTypeLien</code> est vide ou <code>null</code>, tous les tiers en liaison (donc conjoint et
      * ex-conjoint, décédé ou non) avec le tiers passé en paramètre seront retournés
-     * 
-     * @param session
-     *            La session utilisateur
-     * @param csDomaine
-     *            le domaine d'application dans lequel on veut chercher la relation. Si aucune relation n'est trouvée
-     *            dans ce domaine, une recherche dans le domaine standard sera effectuée
-     * @param idTiers
-     *            l'ID du tiers duquel on recherche les relations
-     * @param csTypeRelation
-     *            Les type de relation qu'on veut avoir. Si le {@link Set}&lt;{@link String}&gt; est vide ou
-     *            <code>null</code>, tous les tiers en relations avec celui passé en paramètre seront retournés (donc
-     *            conjoint et ex-conjoint, décédé ou non)
+     *
+     * @param session        La session utilisateur
+     * @param csDomaine      le domaine d'application dans lequel on veut chercher la relation. Si aucune relation n'est trouvée
+     *                       dans ce domaine, une recherche dans le domaine standard sera effectuée
+     * @param idTiers        l'ID du tiers duquel on recherche les relations
+     * @param csTypeRelation Les type de relation qu'on veut avoir. Si le {@link Set}&lt;{@link String}&gt; est vide ou
+     *                       <code>null</code>, tous les tiers en relations avec celui passé en paramètre seront retournés (donc
+     *                       conjoint et ex-conjoint, décédé ou non)
      * @return une {@link List}&lt;{@link PRTiersWrapper}&gt; des relations du tiers selon les filtres définis dans les
-     *         paramètres
-     * @throws Exception
-     *             dans les cas suivants : <li>Si la session est <code>null</code></li><li>Si l'ID Tiers est vide ou
-     *             <code>null</code></li><li>Si un erreur survient lors du chargement d'un tiers depuis la base de
-     *             données</li><li>Si un erreur survient lors du chargement des relations du tiers, passé en paramètre,
-     *             depuis la base de données</li>
+     * paramètres
+     * @throws Exception dans les cas suivants : <li>Si la session est <code>null</code></li><li>Si l'ID Tiers est vide ou
+     *                   <code>null</code></li><li>Si un erreur survient lors du chargement d'un tiers depuis la base de
+     *                   données</li><li>Si un erreur survient lors du chargement des relations du tiers, passé en paramètre,
+     *                   depuis la base de données</li>
      * @see {@link ISFSituationFamiliale#CS_REL_CONJ_DIVORCE}
      * @see {@link ISFSituationFamiliale#CS_REL_CONJ_MARIE}
      * @see {@link ISFSituationFamiliale#CS_REL_CONJ_SEPARE_DE_FAIT}
      * @see {@link ISFSituationFamiliale#CS_REL_CONJ_SEPARE_JUDICIAIREMENT}
      */
     private static List<PRTiersWrapper> getRelationsInTypeRelation(BSession session, String csDomaine, String idTiers,
-            Set<String> csTypeRelation) throws Exception {
+                                                                   Set<String> csTypeRelation) throws Exception {
         if (session == null) {
             throw new NullPointerException("La session ne doit pas être null");
         }
@@ -277,21 +262,17 @@ public class SFFamilleUtils {
 
     /**
      * Recherche toutes les relations conjugales du tiers
-     * 
-     * @param session
-     *            La session utilisateur
-     * @param csDomainecsDomaine
-     *            le domaine d'application dans lequel on veut chercher la relation. Si aucune relation n'est trouvée
-     *            dans ce domaine, une recherche dans le domaine standard sera effectuée
-     * @param idTiers
-     *            l'ID du tiers duquel on recherche les relations
+     *
+     * @param session   La session utilisateur
+     * @param csDomaine le domaine d'application dans lequel on veut chercher la relation. Si aucune relation n'est trouvée
+     *                  dans ce domaine, une recherche dans le domaine standard sera effectuée
+     * @param idTiers   l'ID du tiers duquel on recherche les relations
      * @return un tableau avec les relations conjugales du tiers, peut être <code>null</code> si aucune relation
-     *         n'existe
-     * @throws Exception
-     *             dans les cas suivants : <li>Si la session est <code>null</code></li><li>Si l'ID Tiers est vide ou
-     *             <code>null</code></li><li>Si un erreur survient lors du chargement de la situation familiale du tiers
-     *             depuis la base de données</li> <li>Si un erreur survient lors de la recherche des relations
-     *             conjugales dans la situation familiale du tiers</li>
+     * n'existe
+     * @throws Exception dans les cas suivants : <li>Si la session est <code>null</code></li><li>Si l'ID Tiers est vide ou
+     *                   <code>null</code></li><li>Si un erreur survient lors du chargement de la situation familiale du tiers
+     *                   depuis la base de données</li> <li>Si un erreur survient lors de la recherche des relations
+     *                   conjugales dans la situation familiale du tiers</li>
      */
     private static ISFRelationFamiliale[] getRelationsPourTiers(BSession session, String csDomaine, String idTiers)
             throws Exception {
@@ -318,17 +299,14 @@ public class SFFamilleUtils {
      * Cela comprend les parents, les frères et soeurs, les (ex-)conjoints et les enfants découlant des relations
      * conjugales du tiers.
      * </p>
-     * 
-     * @param session
-     *            une session utilisateur
-     * @param idTiers
-     *            l'ID du tiers dont on aimerait avoir les tiers de la famille proche
+     *
+     * @param session une session utilisateur
+     * @param idTiers l'ID du tiers dont on aimerait avoir les tiers de la famille proche
      * @return un {@link Set} de {@link PRTiersWrapper} contenant la famille proche du tiers passé en paramètre. Si le
-     *         tiers n'est pas trouvé dans la situation familiale (domaine rente, puis standard), le {@link Set} sera
-     *         vide
-     * @throws Exception
-     *             si la session est <code>null</code>, si l'ID tiers n'est pas renseigné ou si un problème survient
-     *             lors de la recherche dans la base de données
+     * tiers n'est pas trouvé dans la situation familiale (domaine rente, puis standard), le {@link Set} sera
+     * vide
+     * @throws Exception si la session est <code>null</code>, si l'ID tiers n'est pas renseigné ou si un problème survient
+     *                   lors de la recherche dans la base de données
      */
     public static Set<PRTiersWrapper> getTiersFamilleProche(BSession session, String idTiers) throws Exception {
         // si la session est null, retourne null
@@ -423,8 +401,41 @@ public class SFFamilleUtils {
     }
 
     /**
+     * Permet de récupérer le tiers éligible pour le transfert d'une rente.
+     * Les règles sont les suivantes :
+     *  - Conjoint si non décédé
+     *  - Plus jeune enfant si non décédé
+     *  - Ex-conjoint si non décédé
+     * On contrôle également qu'il existe une adresse à ce tiers pour qu'il soit éligible.
+     *
+     * @param session
+     * @param idTiers
+     * @return le tiers éligible pour le transfert
+     * @throws Exception
+     */
+    public static PRTiersWrapper getTiersTransfert(BSession session, String idTiers) throws Exception {
+        PRTiersWrapper conjoint = getConjointActuel(session, ISFSituationFamiliale.CS_DOMAINE_STANDARD, idTiers);
+        if (Objects.nonNull(conjoint) && StringUtils.isNotEmpty(PRTiersHelper.getTiersAdresseParId(session,conjoint.getIdTiers()).getProperty(PRTiersWrapper.PROPERTY_ID_ADRESSE))) {
+            return conjoint;
+        } else {
+            Set<PRTiersWrapper> enfants = getEnfantsDuTiers(session, idTiers);
+            List<PRTiersWrapper> enfantsVivants = enfants.stream().filter(e -> StringUtils.isEmpty(e.getDateDeces())).sorted(Comparator.comparing(PRTiersWrapper::getDateNaissance).reversed()).collect(Collectors.toList());
+            if (!enfantsVivants.isEmpty() && StringUtils.isNotEmpty(PRTiersHelper.getTiersAdresseParId(session,enfantsVivants.get(0).getIdTiers()).getProperty(PRTiersWrapper.PROPERTY_ID_ADRESSE))) {
+                return enfantsVivants.get(0);
+            } else {
+                List<PRTiersWrapper> exConjoints = getExConjointsTiers(session, ISFSituationFamiliale.CS_DOMAINE_STANDARD, idTiers);
+                List<PRTiersWrapper> exConjointsAlive = exConjoints.stream().filter(e -> StringUtils.isEmpty(e.getDateDeces())).collect(Collectors.toList());
+                if (!exConjointsAlive.isEmpty() && StringUtils.isNotEmpty(PRTiersHelper.getTiersAdresseParId(session,exConjointsAlive.get(0).getIdTiers()).getProperty(PRTiersWrapper.PROPERTY_ID_ADRESSE))) {
+                    return exConjointsAlive.get(0);
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
      * Test des méthodes de {@link SFFamilleUtils}
-     * 
+     *
      * @param args
      */
     public static void main(String[] args) {
@@ -496,4 +507,6 @@ public class SFFamilleUtils {
         }
         System.out.println("End...");
     }
+
+
 }

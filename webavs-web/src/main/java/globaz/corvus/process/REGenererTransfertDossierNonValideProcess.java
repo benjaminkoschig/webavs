@@ -1,5 +1,6 @@
 package globaz.corvus.process;
 
+import ch.globaz.corvus.domaine.constantes.TypeDemandeRente;
 import globaz.corvus.api.demandes.IREDemandeRente;
 import globaz.corvus.api.topaz.IRENoDocumentInfoRom;
 import globaz.corvus.dao.REDeleteCascadeDemandeAPrestationsDues;
@@ -11,6 +12,7 @@ import globaz.corvus.db.rentesaccordees.RERenteAccJoinTblTiersJoinDemRenteManage
 import globaz.corvus.db.rentesaccordees.RERenteAccJoinTblTiersJoinDemandeRente;
 import globaz.corvus.topaz.RETransfertNonValideOO;
 import globaz.corvus.utils.REGedUtils;
+import globaz.hera.utils.SFFamilleUtils;
 import globaz.jade.log.business.JadeBusinessMessage;
 import globaz.jade.log.business.JadeBusinessMessageLevels;
 import globaz.jade.print.server.JadePrintDocumentContainer;
@@ -25,8 +27,11 @@ import globaz.pyxis.db.tiers.TIAdministrationManager;
 import globaz.pyxis.db.tiers.TIAdministrationViewBean;
 import globaz.pyxis.db.tiers.TICompositionTiers;
 import globaz.pyxis.db.tiers.TICompositionTiersManager;
+import org.apache.commons.lang.StringUtils;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class REGenererTransfertDossierNonValideProcess extends REAbstractInfoComplPrintProcess {
 
@@ -216,6 +221,16 @@ public class REGenererTransfertDossierNonValideProcess extends REAbstractInfoCom
             demandePrestation.retrieve();
 
             setIdTiersDemande(demandePrestation.getIdTiers());
+
+            if (StringUtils.equals(TypeDemandeRente.DEMANDE_SURVIVANT.getCodeSysteme().toString(),demandeRente.getCsTypeDemandeRente())){
+                PRTiersWrapper tiersCourant = PRTiersHelper.getTiersById(getSession(), demandePrestation.getIdTiers());
+                if (StringUtils.isNotEmpty(tiersCourant.getDateDeces())) {
+                    PRTiersWrapper tiersTransfert = SFFamilleUtils.getTiersTransfert(getSession(),tiersCourant.getIdTiers());
+                    if (Objects.nonNull(tiersTransfert )){
+                        setIdTiersDemande(tiersTransfert .getIdTiers());
+                    }
+                }
+            }
 
             String transfertDocument = getSession().getLabel("TRANSFERT_DOCUMENT");
 
