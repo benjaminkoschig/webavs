@@ -41,7 +41,7 @@
     }
 
     function cancel() {
-        document.getElementById('userAction').value = "back";
+        document.getElementById('userAction').value = "naos.contactFpv.contactFpv.afficher";
     }
 
 </SCRIPT>
