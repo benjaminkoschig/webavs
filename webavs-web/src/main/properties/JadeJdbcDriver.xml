@@ -1,7 +1,15 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <globaz.jade.jdbc.JadeJdbcDriver>
 	<datasources>
-
+		<datasource name="DEV1PROD" class="globaz.jade.jdbc.JadeJdbcDatasourceDirect">
+		<driver>com.ibm.db2.jcc.DB2Driver</driver>
+		<url>jdbc:db2://sglobdev1.ju.globaz.ch:50005/dev1prod</url>
+		<user>db2inst1</user>
+		<password>db2inst1</password>
+		<maxConnections>100</maxConnections>
+		<transactionIsolation>READ_UNCOMMITTED</transactionIsolation>
+		<urlParameter name="prompt" value="false"/>
+	</datasource>
 	<datasource name="CCVD_TEST_CLIENTS" class="globaz.jade.jdbc.JadeJdbcDatasourceDirect">
 			<driver>com.ibm.as400.access.AS400JDBCDriver</driver>
 			<url>jdbc:as400://10.204.22.14</url>
@@ -119,8 +127,8 @@
 		<datasource name="CCB_QUALITE" class="globaz.jade.jdbc.JadeJdbcDatasourceDirect">
 			<driver>com.ibm.as400.access.AS400JDBCDriver</driver>
 			<url>jdbc:as400://ASGLOB2</url>
-			<user>jmc</user>
-			<password>qduna8ro</password>
+			<user>ssii</user>
+			<password>ssiiadm</password>
 			<maxConnections>100</maxConnections>
 			<transactionIsolation>READ_UNCOMMITTED</transactionIsolation>
 			<urlParameter name="prompt" value="false"/>
