@@ -34,7 +34,7 @@ public class AFContactFPV extends BEntity {
 
     private boolean stopProspection;
 
-    private Pattern nomPattern = Pattern.compile("\\p{L}*(-\\p{L}*)*");
+    private Pattern nomPattern = Pattern.compile("^[\\p{L}]++(?:[ ',-][\\p{L}]++)*+$");
 
     private Pattern emailPattern = Pattern.compile("^[A-Za-z0-9+_.-]+@(.+)$");
 
