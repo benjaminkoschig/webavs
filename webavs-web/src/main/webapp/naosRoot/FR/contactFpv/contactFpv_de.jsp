@@ -6,6 +6,7 @@
 <%-- tpl:put name="zoneInit" --%>
 <%@ taglib uri="/WEB-INF/naos.tld" prefix="naos" %>
 <%@page import="globaz.naos.db.contactFpv.AFContactFpvViewBean" %>
+<%@ page import="java.util.Objects" %>
 <%
     AFContactFpvViewBean viewBean = (AFContactFpvViewBean) session.getAttribute("viewBean");
     idEcran = "CAF0077";
@@ -32,7 +33,7 @@
     }
 
     function validate() {
-        if (<%=viewBean.getAffiliationNumero().isEmpty()%>) {
+        if (<%=Objects.isNull(viewBean.getSpy())%>) {
             document.getElementById('userAction').value = "naos.contactFpv.contactFpv.ajouter";
         } else {
             document.getElementById('userAction').value = "naos.contactFpv.contactFpv.modifier";
@@ -46,8 +47,8 @@
 
 </SCRIPT>
 
-    <INPUT type="hidden" id="selectedId" name="selectedId"
-           value="<%=viewBean.getContactId()%>">
+<INPUT type="hidden" id="selectedId" name="selectedId"
+       value="<%=viewBean.getContactId()%>">
 
 <TABLE border="0" cellspacing="0" cellpadding="0">
 
@@ -55,7 +56,7 @@
         <TD nowrap>N&deg; d'affili&eacute;</TD>
         <TD nowrap>
             <INPUT id="affiliationNumero" name="affiliationNumero" size="20" maxlength="20" type="text"
-                   value="<%=(viewBean.getAffiliationNumero().isEmpty()) ? request.getParameter("likeNumAffilie") : viewBean.getAffiliationNumero()%>"
+                   value="<%=(Objects.nonNull(request.getParameter("likeNumAffilie"))) ? request.getParameter("likeNumAffilie") : request.getParameter("affiliationNumero")%>"
                    readonly class="disabled">
         </TD>
     </TR>
@@ -93,7 +94,8 @@
     <TR>
         <TD nowrap width="135">Stop prospection</TD>
         <TD nowrap>
-            <INPUT id="stopProspection" name="stopProspection" type="checkbox" disabled <%=(viewBean.isStopProspection())? "checked" : ""%>>
+            <INPUT id="stopProspection" name="stopProspection" type="checkbox"
+                   disabled <%=(viewBean.isStopProspection())? "checked" : ""%>>
         </TD>
     </TR>
 
@@ -101,5 +103,5 @@
     <%-- /tpl:put --%>
     <%@ include file="/theme/detail/bodyErrors.jspf" %>
     <%@ include file="/theme/detail/footer.jspf" %>
-    <%-- tpl:put name="zoneEndPage" --%><%	if (request.getParameter("_back") != null && request.getParameter("_back").equals("sl")) { %> <%	}%> <%-- /tpl:put --%>
+    <%-- tpl:put name="zoneEndPage" --%><% if (request.getParameter("_back") != null && request.getParameter("_back").equals("sl")) { %> <% }%> <%-- /tpl:put --%>
 <%-- /tpl:insert --%>
