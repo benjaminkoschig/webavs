@@ -238,12 +238,16 @@
                     if (proceedValidation()) action(COMMIT);
                 }
             }, {
+                id: "no",
                 text: "<ct:FWLabel key='NAOS_DIALOG_LINK_OR_CREATE_ANNONCE_BOUTON_NON'/>",
                 click: function () {
                     $(this).dialog("close");
                     return;
                 }
-            }]
+            }],
+            open : function() {
+                $("#no").focus();
+            }
         });
     }
 

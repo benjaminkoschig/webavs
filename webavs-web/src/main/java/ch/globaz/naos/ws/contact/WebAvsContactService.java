@@ -1,6 +1,5 @@
 package ch.globaz.naos.ws.contact;
 
-import ch.globaz.orion.ws.enums.SexeSalarie;
 import ch.globaz.orion.ws.exceptions.WebAvsException;
 
 import javax.jws.*;
@@ -42,4 +41,13 @@ public interface WebAvsContactService {
             @WebParam(name = "email") @XmlElement(required=true)  String email,
             @WebParam(name = "stopProspection") @XmlElement(required=true)  boolean stopProspection)
             throws WebAvsException;
+
+    /**
+     * Supprime un contact
+     *
+     **/
+    @WebMethod
+    @WebResult(name = "isSuccess")
+    public abstract Boolean deleteContactFPV(@WebParam(name = "numeroAffilie") @XmlElement(required=true) List<String> listNumeroAffilie) throws WebAvsException;
+
 }

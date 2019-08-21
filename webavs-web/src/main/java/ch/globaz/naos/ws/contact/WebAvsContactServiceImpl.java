@@ -14,8 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.jws.WebService;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @WebService(endpointInterface = "ch.globaz.naos.ws.contact.WebAvsContactService")
 public class WebAvsContactServiceImpl implements WebAvsContactService {
@@ -35,7 +34,7 @@ public class WebAvsContactServiceImpl implements WebAvsContactService {
             throw new WebAvsException("Impossible de récupérer le contact pour le numéro d'affilié : " + numeroAffilie + " \n" + e.getLocalizedMessage(), e);
         }
 
-        if(manager.size() > 0) {
+        if (manager.size() > 0) {
             return convertFromEntity(session, (AFContactFPV) manager.getFirstEntity());
         }
         return null;
@@ -53,7 +52,7 @@ public class WebAvsContactServiceImpl implements WebAvsContactService {
             throw new WebAvsException("Impossible de récupérer la liste des contacts" + " \n" + e.getLocalizedMessage());
         }
 
-        if(manager.size() > 0) {
+        if (manager.size() > 0) {
             List<Contact> listContact = new ArrayList<>();
             List<AFContactFPV> result = manager.toList();
             for (AFContactFPV entity : result) {
@@ -69,7 +68,7 @@ public class WebAvsContactServiceImpl implements WebAvsContactService {
         BSession session = UtilsService.initSession();
         AFAffiliation affiliation = getAffiliation(numeroAffilie, session);
 
-        if(affiliation == null || affiliation.getAffiliationId() == null) {
+        if (affiliation == null || affiliation.getAffiliationId() == null) {
             logger.error("Impossible de récupérer l'affilié : " + numeroAffilie);
             throw new WebAvsException("Impossible de récupérer l'affilié : " + numeroAffilie);
         }
@@ -88,12 +87,12 @@ public class WebAvsContactServiceImpl implements WebAvsContactService {
         entity.setAffiliationNumero(numeroAffilie);
         entity.setNom(nom);
         entity.setPrenom(prenom);
-        entity.setSexe(getCodeSexe(session,sexe.getSexe()));
+        entity.setSexe(getCodeSexe(session, sexe.getSexe()));
         entity.setEmail(email);
         entity.setStopProspection(stopProspection);
         entity.setContactId(affiliation.getAffiliationId());
         try {
-            if(entity.isNew()){
+            if (entity.isNew()) {
                 entity.add();
             } else {
                 entity.update();
@@ -109,12 +108,36 @@ public class WebAvsContactServiceImpl implements WebAvsContactService {
         return true;
     }
 
+    @Override
+    public Boolean deleteContactFPV(List<String> listNumeroAffilie) throws WebAvsException {
+        for (String eachNumAffilie : listNumeroAffilie) {
+            Contact contact = this.getContactFPV(eachNumAffilie);
+            if (Objects.isNull(contact)) {
+                logger.error("Impossible de supprimer les contacts car le contact pour le numéro d'affilié " + eachNumAffilie + " n'existe pas");
+                throw new WebAvsException("Impossible de supprimer les contacts car le contact pour le numéro d'affilié " + eachNumAffilie + " n'existe pas");
+            }
+        }
+        for (String eachNumAffilie : listNumeroAffilie) {
+            BSession session = UtilsService.initSession();
+            AFContactFPVManager manager = new AFContactFPVManager();
+            manager.setForNumeroAffilier(eachNumAffilie);
+            manager.setSession(session);
+            try {
+                manager.delete();
+            } catch (Exception e) {
+                logger.error("Impossible de supprimer le contact pour le numéro d'affilié : " + eachNumAffilie + " \n" + e.getLocalizedMessage());
+                throw new WebAvsException("Impossible de supprimer le contact pour le numéro d'affilié : " + eachNumAffilie + " \n" + e.getLocalizedMessage(), e);
+            }
+        }
+        return true;
+    }
+
     private Contact convertFromEntity(BSession session, AFContactFPV entity) {
         Contact contact = new Contact();
         contact.setNumeroAffilie(entity.getAffiliationNumero());
         contact.setNom(entity.getNom());
         contact.setPrenom(entity.getPrenom());
-        contact.setSexe(EnumSexe.valueOf(getLibelleSexe(session,entity.getSexe())));
+        contact.setSexe(EnumSexe.valueOf(getLibelleSexe(session, entity.getSexe())));
         contact.setEmail(entity.getEmail());
         contact.setStopProspection(entity.isStopProspection());
         return contact;

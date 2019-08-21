@@ -24,5 +24,9 @@ public class AFActionContactFpv extends FWDefaultServletAction {
         return this.getActionFullURL() + ".afficher";
     }
 
+    @Override
+    protected String _getDestSupprimerSucces(HttpSession session, HttpServletRequest request, HttpServletResponse response, FWViewBeanInterface viewBean) {
+        return this.getActionFullURL() + ".afficher";
+    }
 
 }

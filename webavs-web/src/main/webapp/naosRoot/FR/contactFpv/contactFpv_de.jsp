@@ -26,7 +26,6 @@
 
     function init() {
         document.getElementById("sexe").disabled = true;
-        document.getElementById("btnDel").style.display = 'none';
     }
 
     function upd() {
@@ -45,10 +44,50 @@
         document.getElementById('userAction').value = "naos.contactFpv.contactFpv.afficher";
     }
 
+    function del() {
+        if (<%=Objects.nonNull(viewBean.getSpy())%>) {
+            supprime();
+        }
+    }
+
+    function supprime() {
+        $("#dialog_confirm_suppression").dialog({
+            resizable: false,
+            height: 170,
+            modal: true,
+            buttons: [{
+                id: "yes",
+                text: "<ct:FWLabel key='NAOS_LIBELLE_OUI'/>",
+                click: function () {
+                    $(this).dialog("close");
+                    document.getElementById('userAction').value = "naos.contactFpv.contactFpv.supprimer";
+                    document.forms[0].submit();
+                }
+            }, {
+                id: "no",
+                text: "<ct:FWLabel key='NAOS_LIBELLE_NON'/>",
+                click: function () {
+                    $(this).dialog("close");
+                    return;
+                }
+            }],
+            open : function() {
+            $("#no").focus();
+        }
+        });
+    }
+
 </SCRIPT>
 
 <INPUT type="hidden" id="selectedId" name="selectedId"
        value="<%=viewBean.getContactId()%>">
+
+<div style="display:none" id="dialog_confirm_suppression"
+     title="<ct:FWLabel key='NAOS_DIALOG_CONFIRM_SUPRRESSION_CONTACT_FPV_TITRE'/>" >
+    <p>
+        <ct:FWLabel key='NAOS_DIALOG_CONFIRM_SUPRRESSION_CONTACT_FPV_TEXTE'/>
+    </p>
+</div>
 
 <TABLE border="0" cellspacing="0" cellpadding="0">
 
