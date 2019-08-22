@@ -180,7 +180,7 @@ public class CPDecisionListViewBean extends BManager implements FWViewBeanInterf
             if (sqlWhere.length() != 0) {
                 sqlWhere += " AND ";
             }
-            sqlWhere += "EBIDDP=0 OR EBIDDP is null";
+            sqlWhere += "(EBIDDP=0 OR EBIDDP is null)";
         }
         // Pour un type de décision
         if (getForTypeDecision().length() != 0) {
