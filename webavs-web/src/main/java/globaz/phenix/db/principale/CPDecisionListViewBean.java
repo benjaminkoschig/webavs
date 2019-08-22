@@ -19,6 +19,7 @@ public class CPDecisionListViewBean extends BManager implements FWViewBeanInterf
     private java.lang.String forAnnee = "";
     private java.lang.String forCotisation = "";
     private java.lang.String forEtat = "";
+    private java.lang.String forProvenance = "";
     private java.lang.String forGenreAffilie = "";
     private java.lang.String forIdAffiliation = "";
     private java.lang.String forIdDecision = "";
@@ -59,13 +60,14 @@ public class CPDecisionListViewBean extends BManager implements FWViewBeanInterf
         String champDateFacturation = "IADFAC";
         String champActive = "COALESCE(IAACTI, '1') IAACTI";
         String champIdPassage = "EBIPAS";
+        String champIDDemandePortail = "EBIDDP";
         // String champModifiable = "UBBMOD";
         String field = champIdDecision + " , " + champDernierEtat + " , " + champTypeDecision + " , "
                 + champGenreAffilie + " , " + champDebutAffiliation + " , " + champFinAffiliation + " , "
                 + champDateInformation + " , " + champDateFacturation + " , " + champAnneeDecision + " , "
                 + champDebutDecision + " , " + champFinDecision + " , " + champSpecification + " , "
                 + champCotisationAnnuelle + " , " + champRevenuFortune + " , " + champMiseEnCompte + " , "
-                + champIfdDefinitif + " , " + champIdTiers + " , " + champIdPassage + " , " + champActive;
+                + champIfdDefinitif + " , " + champIdTiers + " , " + champIdPassage + " , " + champActive + ", " + champIDDemandePortail;
         // Ajout des champs du tiers pour écran de recherche (mandat 194)
         if (getUseTiers().equals(Boolean.TRUE)) {
             field = field + ", " + fieldTiers;
@@ -167,6 +169,18 @@ public class CPDecisionListViewBean extends BManager implements FWViewBeanInterf
                 sqlWhere += " AND ";
             }
             sqlWhere += "IATETA=" + this._dbWriteNumeric(statement.getTransaction(), getForEtat());
+        }
+        // Pour savoir si la cotisation personnelle provient du portail
+        if(CPDecision.CS_PROVENANCE_PORTAIL.equals(getForProvenance())){
+            if (sqlWhere.length() != 0) {
+                sqlWhere += " AND ";
+            }
+            sqlWhere += "EBIDDP > 0";
+        }else if(CPDecision.CS_PROVENANCE_NON_PORTAIL.equals(getForProvenance())){
+            if (sqlWhere.length() != 0) {
+                sqlWhere += " AND ";
+            }
+            sqlWhere += "EBIDDP=0 OR EBIDDP is null";
         }
         // Pour un type de décision
         if (getForTypeDecision().length() != 0) {
@@ -560,5 +574,13 @@ public class CPDecisionListViewBean extends BManager implements FWViewBeanInterf
 
     public void setUseTiers(Boolean useTiers) {
         this.useTiers = useTiers;
+    }
+
+    public String getForProvenance() {
+        return forProvenance;
+    }
+
+    public void setForProvenance(String forProvenance) {
+        this.forProvenance = forProvenance;
     }
 }

@@ -108,8 +108,13 @@ servlet = "phenix";
 			<input type="hidden" name="selectorName" value="">
 			</TD>
             <TD height="20" width=""></TD>
-            <TD nowrap></TD>
-            <TD></TD>
+          <TD nowrap width="100">Etat</TD>
+          <TD nowrap><ct:FWCodeSelectTag name="forProvenance"
+             defaut=""
+             wantBlank="<%=false%>"
+             codeType="CPPROVENAN"
+          />
+          </TD>
             <TD nowrap align="left"></TD>
             <TD nowrap ></TD> 
           </TR>

@@ -42,7 +42,7 @@
     <%	String style = "";
     	String typeDecision = lineBean.getTypeDecision();
     	String idEtatDecision = lineBean.getDernierEtat();
-    
+    	String decisionFromPortail = "";
     if("1".equals(lineBean.getModifiable())){
  			style = "style=font-style:italic;";
 	}
@@ -66,6 +66,9 @@
 		||(typeDecision.equalsIgnoreCase(globaz.phenix.db.principale.CPDecision.CS_CORRECTION))) {	     
 		 style += " style=font-style:italic;";
 	}
+	if(lineBean.isDecisionFromPortail()) {
+		decisionFromPortail = " @";
+	}
 	/*if(lineBean.isInclusSortie()){
 		if(!lineBean.getActive().booleanValue()){
 			style = "style=color:#FFC0CB";
@@ -82,9 +85,9 @@
 	 </ct:menuPopup>
      </TD>
     <%if (lineBean.isInclusSortie()) {%>
-	    <TD class="mtd" <%=style%> onclick="<%=actionDetail%>" width="4%" align="center"><%=lineBean.getAnneeMoisRadiation()%>&nbsp;</TD>
+	    <TD class="mtd" <%=style%> onclick="<%=actionDetail%>" width="5%" align="center"><%=lineBean.getAnneeMoisRadiation()+decisionFromPortail%>&nbsp;</TD>
 	<%} else {%>
-		<TD class="mtd" <%=style%> onclick="<%=actionDetail%>" width="4%" align="center"><%=lineBean.getAnneeDecision()%>&nbsp;</TD>
+		<TD class="mtd" <%=style%> onclick="<%=actionDetail%>" width="5%" align="center"><%=lineBean.getAnneeDecision()+decisionFromPortail%>&nbsp;</TD>
 	<%}%>    
     <TD class="mtd" <%=style%> onclick="<%=actionDetail%>" width="15%" align="left"><%=lineBean.getTypeDecisionLibelle()%>&nbsp;</TD>
     <TD class="mtd" <%=style%> onClick="<%=actionDetail%>" width="18%" align="center"><%=lineBean.getPeriodeDecision()%>&nbsp;</TD>

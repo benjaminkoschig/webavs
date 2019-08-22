@@ -46,6 +46,7 @@ public class CPDecisionListerViewBean extends BEntity implements FWViewBeanInter
     private java.lang.String revenuFortuneDeterminant = "";
     private java.lang.String specification = "";
     private java.lang.String typeDecision = "";
+    private String idDemandeIssuPortail = "";
 
     /**
      * @see globaz.globall.db.BEntity#_getTableName()
@@ -83,6 +84,7 @@ public class CPDecisionListerViewBean extends BEntity implements FWViewBeanInter
         idPassage = statement.dbReadNumeric("EBIPAS");
         numAffilie = statement.dbReadString("MALNAF");
         nomPrenom = statement.dbReadString("HTLDE1") + " " + statement.dbReadString("HTLDE2");
+        idDemandeIssuPortail = statement.dbReadString("EBIDDP");
     }
 
     /**
@@ -554,4 +556,19 @@ public class CPDecisionListerViewBean extends BEntity implements FWViewBeanInter
         this.idPassage = idPassage;
     }
 
+
+    public String getIdDemandeIssuPortail() {
+        return idDemandeIssuPortail;
+    }
+
+    public void setIdDemandeIssuPortail(String idDemandeIssuPortail) {
+        this.idDemandeIssuPortail = idDemandeIssuPortail;
+    }
+
+    public Boolean isDecisionFromPortail(){
+        if(!JadeStringUtil.isBlankOrZero(getIdDemandeIssuPortail())){
+            return true;
+        }
+        return false;
+    }
 }

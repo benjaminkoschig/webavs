@@ -46,6 +46,10 @@ public class CPDecision extends globaz.globall.db.BEntity implements IDecision, 
     public final static java.lang.String CS_ACT_LUCRATIVE = "602007";
     public final static java.lang.String CS_ACT_NON_LUCRATIVE = "602008";
 
+    public final static java.lang.String CS_PROVENANCE_TOUTES = "623001";
+    public final static java.lang.String CS_PROVENANCE_PORTAIL = "623002";
+    public final static java.lang.String CS_PROVENANCE_NON_PORTAIL = "623003";
+
     public final static java.lang.String CS_AGRICULTEUR = "602006";
     public final static String CS_ANNULEE = "604008";
     public final static String CS_CALCUL = "604002";
