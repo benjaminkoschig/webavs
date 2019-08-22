@@ -37,7 +37,7 @@ public interface WebAvsContactService {
             @WebParam(name = "numeroAffilie") @XmlElement(required=true) String numeroAffilie,
             @WebParam(name = "nom") @XmlElement(required=true)  String nom,
             @WebParam(name = "prenom") @XmlElement(required=true)  String prenom,
-            @WebParam(name = "sex") @XmlElement(required=true) EnumSexe sexe,
+            @WebParam(name = "sexe") @XmlElement(required=true) EnumSexe sexe,
             @WebParam(name = "email") @XmlElement(required=true)  String email,
             @WebParam(name = "stopProspection") @XmlElement(required=true)  boolean stopProspection)
             throws WebAvsException;

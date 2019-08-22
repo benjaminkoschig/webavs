@@ -87,7 +87,11 @@ public class WebAvsContactServiceImpl implements WebAvsContactService {
         entity.setAffiliationNumero(numeroAffilie);
         entity.setNom(nom);
         entity.setPrenom(prenom);
-        entity.setSexe(getCodeSexe(session, sexe.getSexe()));
+        if (Objects.nonNull(sexe)) {
+            entity.setSexe(getCodeSexe(session, sexe.getSexe()));
+        } else {
+            session.addError("Le sexe n'est pas renseigné ou le format saisi n'est pas correct (H ou F)");
+        }
         entity.setEmail(email);
         entity.setStopProspection(stopProspection);
         entity.setContactId(affiliation.getAffiliationId());
@@ -102,7 +106,7 @@ public class WebAvsContactServiceImpl implements WebAvsContactService {
             throw new WebAvsException("Impossible d'enregistrer le contact pour l'affilié : " + numeroAffilie + " \n" + e.getLocalizedMessage(), e);
         }
         if (session.hasErrors()) {
-            throw new WebAvsException("Impossible d'insérer le contact en raison des erreurs suivantes : " + session.getErrors());
+            throw new WebAvsException("Impossible d'insérer le contact en raison des erreurs suivantes : \n" + session.getErrors());
         }
 
         return true;

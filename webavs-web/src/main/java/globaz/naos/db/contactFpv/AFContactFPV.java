@@ -72,7 +72,8 @@ public class AFContactFPV extends BEntity {
             _addError(bStatement.getTransaction(),"Le format du prénom renseigné n'est pas correct.");
         }
 
-        if (JadeStringUtil.isEmpty(getSexe())) {
+        // On vérifie que le sexe est renseigné et qu'il n'y pas déjà une erreur remontée dans la session depuis le webservice.
+        if (JadeStringUtil.isEmpty(getSexe()) && !getSession().hasErrors()) {
             _addError(bStatement.getTransaction(),"Le sexe doit être renseigné.");
         }
 
