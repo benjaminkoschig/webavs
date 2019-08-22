@@ -109,25 +109,72 @@ public class WebAvsAllocationFamilialeServiceImpl implements WebAvsAllocationFam
 
         for (JadeAbstractModel jadeAbstractModel : listDossiers) {
             DossierListComplexModel dossierAf = (DossierListComplexModel) jadeAbstractModel;
-            if(!mapDossiers.containsKey(dossierAf.getNss())){
+            if(!mapDossiers.containsKey(dossierAf.getNss())) {
                 // Si le NSS n'existe pas dans la map alors on l'ajoute
                 mapDossiers.put(dossierAf.getNss(), dossierAf);
-            }else if(dossierAf.getFinValidite().equals(mapDossiers.get(dossierAf.getNss()).getFinValidite())
-                    || isDossiersEtatRefuse(dossierAf, mapDossiers.get(dossierAf.getNss()))){
-                // Si les dates sont égales OU un des deux dossier est à l'état refusé (ne contient jamais de date de fin) :
-                // il faut prendre le dossier avec le plus grand ID
-                DossierListComplexModel dossierAfRecent = getDossierRecentBetween(dossierAf, mapDossiers.get(dossierAf.getNss()));
-                mapDossiers.put(dossierAfRecent.getNss(), dossierAfRecent);
-            }else if(isFirstDateAfterSecondDate(dossierAf.getFinValidite(), mapDossiers.get(dossierAf.getNss()).getFinValidite())){
-                // Si la date passée en premier paramètre est plus grande que la deuxième alors il faut mettre ce dossier dans la map
-                mapDossiers.put(dossierAf.getNss(), dossierAf);
+            }else {
+                mapDossiers.put(dossierAf.getNss(), getMostRecentDossier(dossierAf, mapDossiers.get(dossierAf.getNss())));
             }
         }
         return mapDossiers;
     }
 
-    private boolean isDossiersEtatRefuse(DossierListComplexModel dossierAf, DossierListComplexModel dossierAfInMap) {
-        return ALCSDossier.ETAT_REFUSE.equals(dossierAf.getEtatDossier()) || ALCSDossier.ETAT_REFUSE.equals(dossierAfInMap.getEtatDossier());
+    /**
+     * @param dossierAf
+     * @param dossierAfInMap
+     * @return Le dossier le plus récent (actif sans date de fin, sinon le dossier avec ID le plus grand)
+     */
+    private DossierListComplexModel getMostRecentDossier(DossierListComplexModel dossierAf, DossierListComplexModel dossierAfInMap){
+        if(isDossiersActifs(dossierAf, dossierAfInMap)){
+            // Retourne le dossier avec la date de fin validité la plus récente (uniquement si les deux sont actifs)
+            return getDossierRecent(dossierAf, dossierAfInMap);
+        }else if(isOneDossierActifWithouDateFinValidite(dossierAf, dossierAfInMap)){
+            return getDossierActif(dossierAf, dossierAfInMap);
+        }else{
+            return getDossierRecentByID(dossierAf, dossierAfInMap);
+        }
+    }
+
+    private DossierListComplexModel getDossierActif(DossierListComplexModel dossierAf, DossierListComplexModel dossierAfInMap) {
+        if(isDossierActif(dossierAf)){
+            return dossierAf;
+        }else{
+            return dossierAfInMap;
+        }
+    }
+
+    private DossierListComplexModel getDossierRecent(DossierListComplexModel dossierAf, DossierListComplexModel dossierAfInMap){
+        if(isFirstDateAfterSecondDate(dossierAf.getFinValidite(), dossierAfInMap.getFinValidite())){
+            return dossierAf;
+        }else{
+            return dossierAfInMap;
+        }
+    }
+
+    /**
+     * @param dossierAf
+     * @param dossierAfInMap
+     * @return True si un est actif sans date de fin et l'autre non (état différent d'actif)
+     */
+    private boolean isOneDossierActifWithouDateFinValidite(DossierListComplexModel dossierAf, DossierListComplexModel dossierAfInMap){
+        boolean result = false;
+        // Si le dossier est actif et sans date de fin, et le deuxième dossier n'est pas actif
+        if((isDossierActif(dossierAf) && JadeStringUtil.isBlankOrZero(dossierAf.getFinValidite())) && !isDossierActif(dossierAfInMap)){
+            result = true;
+        }
+        // Si le premier dosser n'est pas actif et que le second l'est et n'a pas de date de fin
+        if(!isDossierActif(dossierAf) && (isDossierActif(dossierAfInMap) && JadeStringUtil.isBlankOrZero(dossierAfInMap.getFinValidite()))){
+            result = true;
+        }
+        return result;
+    }
+
+    private boolean isDossiersActifs(DossierListComplexModel dossierAf, DossierListComplexModel dossierAfInMap){
+        return isDossierActif(dossierAf) && isDossierActif(dossierAfInMap);
+    }
+
+    private boolean isDossierActif(DossierListComplexModel dossierAf){
+        return ALCSDossier.ETAT_ACTIF.equals(dossierAf.getEtatDossier());
     }
 
     /**
@@ -135,7 +182,7 @@ public class WebAvsAllocationFamilialeServiceImpl implements WebAvsAllocationFam
      * @param secDossierAf
      * @return Le dossier af qui possède la plus grande clé primaire
      */
-    private DossierListComplexModel getDossierRecentBetween(DossierListComplexModel dossierAf, DossierListComplexModel secDossierAf) {
+    private DossierListComplexModel getDossierRecentByID(DossierListComplexModel dossierAf, DossierListComplexModel secDossierAf) {
         if(Integer.valueOf(dossierAf.getIdDossier()) > Integer.valueOf(secDossierAf.getIdDossier())){
             return dossierAf;
         }else{
