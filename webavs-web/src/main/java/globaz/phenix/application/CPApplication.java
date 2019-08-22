@@ -96,6 +96,7 @@ public class CPApplication extends globaz.globall.db.BApplication {
     public final static String USE_SESSION_USER_FOR_HEADER = "useSessionUserForHeader";
     public final static String VALIDATION_DECISION = "validationDecision";
     public static final String MISE_EN_GED_COM_FISC_RETOUR = "phenix.com.fiscale.retour.mettreGed";
+    public static final String NOM_USER_PORTAIL = "phenix.nomUserPortail";
 
     /**
      * Renvoie une instance de l'application enregistrée dans le système
@@ -1069,6 +1070,15 @@ public class CPApplication extends globaz.globall.db.BApplication {
         } catch (Exception e) {
             return CPApplication.NBRE_MAX_ENVOI_SEDEX_DEFAUT;
         }
+    }
+
+    public static String getNomUserPortail() throws PropertiesException {
+        String value = JadePropertiesService.getInstance().getProperty(NOM_USER_PORTAIL);
+        // on s'assure que la propriété ne soit pas null
+        if (null == value) {
+            throw new PropertiesException("The properties [" + NOM_USER_PORTAIL + "] doesn't exist.");
+        }
+        return value;
     }
 
     /**
