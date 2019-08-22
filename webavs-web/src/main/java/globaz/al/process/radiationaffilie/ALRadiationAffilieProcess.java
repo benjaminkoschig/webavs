@@ -173,7 +173,7 @@ public class ALRadiationAffilieProcess extends ALAbsrtactProcess {
                         // génération de prestations
                         boolean hasTransfert = !JadeStringUtil.isBlank(getAffilieDestinataire()) && newDossierIsActif;
                         prestations.put(oldDossier.getId(),
-                                serviceRadiation.genererPrestationForDossier(oldDossier, hasTransfert));
+                                serviceRadiation.genererPrestationForDossier(oldDossier, hasTransfert, false));
                     }
 
                     // erreur pendant l'exécution

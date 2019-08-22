@@ -50,6 +50,9 @@ public interface RadiationAffilieService extends JadeApplicationService {
      * @param hasTransfert
      *            Indique si le dossier de l'allocataire a été transféré à un autre affilié. Si c'est le cas, les
      *            prestation sont générées en extourne. Dans le cas contraire c'est une restitution qui est générée
+     * @param isFromEbu
+     *            Indique si l'appel provient du module E-Business (E-Business -> Recap AF -> Radier et valider) ou
+     *            s'il provient de la radiation d'un affilié depuis les allocations familiales)
      * 
      * @return Liste des prestations générées
      * 
@@ -60,7 +63,7 @@ public interface RadiationAffilieService extends JadeApplicationService {
      *             faire
      */
     public DetailPrestationComplexSearchModel genererPrestationForDossier(DossierComplexModel dossier,
-            boolean hasTransfert) throws JadeApplicationException, JadePersistenceException;
+            boolean hasTransfert, boolean isFromEbu) throws JadeApplicationException, JadePersistenceException;
 
     /**
      * Récupère la liste des dossiers actifs après la date de radiation pour un affilié donné.

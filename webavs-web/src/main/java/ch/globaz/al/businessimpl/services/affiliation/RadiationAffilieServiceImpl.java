@@ -135,7 +135,7 @@ public class RadiationAffilieServiceImpl extends ALAbstractBusinessServiceImpl i
 
     @Override
     public DetailPrestationComplexSearchModel genererPrestationForDossier(DossierComplexModel dossier,
-            boolean hasTransfert) throws JadeApplicationException, JadePersistenceException {
+            boolean hasTransfert, boolean isFromEbu) throws JadeApplicationException, JadePersistenceException {
 
         if ((dossier == null) || dossier.isNew()) {
             throw new ALAffiliationException("RadiationAffilieServiceImpl#genererPrestationForDossier"
@@ -149,8 +149,14 @@ public class RadiationAffilieServiceImpl extends ALAbstractBusinessServiceImpl i
         if (JadeDateUtil.isDateMonthYearBefore(moisRadiationDossier, moisCourant)) {
 
             // préparation des périodes
+            int nbMonthToAdd = 1;
+            // Si la génération provient du module E-Business, les prestations doivent être générées depuis le mois concerné
+            // Notamment si la date de radiation est durant le mois et non le dernier jour du mois (restit au prorata)
+            if(isFromEbu){
+                nbMonthToAdd = 0;
+            }
             String debutPeriode = JadeDateUtil.convertDateMonthYear(JadeDateUtil.addMonths(
-                    JadeDateUtil.getFirstDateOfMonth(dossier.getDossierModel().getFinValidite()), 1));
+                    JadeDateUtil.getFirstDateOfMonth(dossier.getDossierModel().getFinValidite()), nbMonthToAdd));
             String finPeriode = JadeDateUtil.convertDateMonthYear(JadeDateUtil.getGlobazFormattedDate(new Date()));
 
             // préparation du type de bonification

@@ -269,7 +269,7 @@ public class ALRadiationDossiersFromEbuProcess extends ALAbsrtactProcess {
             JadeApplicationException {
         if (JadeDateUtil.isDateMonthYearBefore(JadeDateUtil.convertDateMonthYear(dateRadiation), periode)) {
             RadiationAffilieService serviceRadiation = ALServiceLocator.getRadiationAffilieService();
-            serviceRadiation.genererPrestationForDossier(dossier, false);
+            serviceRadiation.genererPrestationForDossier(dossier, false, true);
         }
     }
 

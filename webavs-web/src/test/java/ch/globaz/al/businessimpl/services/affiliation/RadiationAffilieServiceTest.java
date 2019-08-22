@@ -126,7 +126,7 @@ public class RadiationAffilieServiceTest extends ALTestCaseJU4 {
                     .read("58"), "30.11.2011", "Toto")).get(ALEnumProtocoleRadiationAffilie.DOSSIER);
 
             DetailPrestationComplexSearchModel prestations = ALServiceLocator.getRadiationAffilieService()
-                    .genererPrestationForDossier(dossier, false);
+                    .genererPrestationForDossier(dossier, false, false);
 
             // nombre de détail de prestations
             Assert.assertEquals(3, prestations.getSize());
