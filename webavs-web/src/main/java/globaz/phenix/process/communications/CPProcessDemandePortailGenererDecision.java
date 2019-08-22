@@ -17,6 +17,9 @@ import globaz.globall.db.FWFindParameter;
 import globaz.globall.db.GlobazJobQueue;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JANumberFormatter;
+import globaz.jade.admin.JadeAdminServiceLocatorProvider;
+import globaz.jade.admin.user.bean.JadeUser;
+import globaz.jade.admin.user.service.JadeUserService;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.log.JadeLogger;
 import globaz.musca.api.IFAPassage;
@@ -602,6 +605,7 @@ public class CPProcessDemandePortailGenererDecision extends BProcess {
                 return null;
             }
             newDecision.setIdDecision("");
+            newDecision.setIdDemandePortail("");
             newDecision.setSession(getSession());
             newDecision.setProcessExterne(new Boolean(true));
             // newDecision.setIdTiers(this.getTiers().getIdTiers());
@@ -615,8 +619,7 @@ public class CPProcessDemandePortailGenererDecision extends BProcess {
             }
             newDecision.setLettreSignature(lettreSignature);
             try {
-                newDecision.setResponsable(
-                        CPToolBox.getUserByCanton(this.getTiers().getIdCantonDomicile(), getTransaction()));
+                newDecision.setResponsable(getIdUserByVisa(CPApplication.getNomUserPortail()));
             } catch (Exception e) {
                 newDecision.setResponsable("");
             }
@@ -694,6 +697,14 @@ public class CPProcessDemandePortailGenererDecision extends BProcess {
             } else {
                 newDecision.setInteret(CAInteretMoratoire.CS_AUTOMATIQUE);
             }
+            // PCA-619 Calcul des intérets au prorata
+            int dureeDecision = JACalendar.getMonth(newDecision.getFinDecision())
+                    - JACalendar.getMonth(newDecision.getDebutDecision()) + 1;
+            newDecision.setNbMoisExercice1(Integer.toString(dureeDecision));
+            newDecision.setNbMoisRevenuAutre1(Integer.toString(dureeDecision));
+            newDecision.setDebutExercice1(newDecision.getDebutDecision());
+            newDecision.setFinExercice1(newDecision.getFinDecision());
+
             newDecision.add(getTransaction());
         } catch (Exception e) {
             JadeLogger.error(this, e);
@@ -701,6 +712,21 @@ public class CPProcessDemandePortailGenererDecision extends BProcess {
                     getSession().getLabel("CP_MSG_0142") + demande.getNumAffilie() + " " + demande.getId());
         }
         return newDecision;
+    }
+
+    private String getIdUserByVisa(String nomUserPortail) {
+        String idUser = "";
+        try {
+            JadeUser user;
+            JadeUserService service = JadeAdminServiceLocatorProvider.getLocator().getUserService();
+            user = service.loadForVisa(nomUserPortail);
+            if (user != null) {
+                return user.getIdUser();
+            }
+        } catch (Exception e) {
+            return idUser;
+        }
+        return idUser;
     }
 
     /**
@@ -724,8 +750,6 @@ public class CPProcessDemandePortailGenererDecision extends BProcess {
         // si il n'y a pas de décision de base (cas du 1er acompte de l'année ou nouvel indépendant
         if (JadeStringUtil.isBlankOrZero(demande.getIdDecision())) {
             newDecision.setAnneeDecision(demande.getAnnee().toString());
-            newDecision.setDebutExercice1("01.01." + demande.getAnnee());
-            newDecision.setFinExercice1("31.12." + demande.getAnnee());
             newDecision.setNombreMoisTotalDecision("0");
         }
     }

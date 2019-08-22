@@ -635,6 +635,7 @@ public class CPProcessAcompteCreationAnnuelle extends BProcess {
             CPDecisionViewBean copyDecision) throws Exception {
         copyDecision.setId("");
         copyDecision.setIdDecision("");
+        copyDecision.setIdDemandePortail("");
         copyDecision.setIdPassage(getIdPassage());
         // Initialiser la copyDecision avec les valeurs de la reprise
         dateAvs = copyDecision.loadTiers().getDateAvs();

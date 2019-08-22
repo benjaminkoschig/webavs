@@ -591,6 +591,7 @@ public class CPProcessReceptionGenererDecision extends BProcess {
                 return null;
             }
             newDecision.setIdDecision("");
+            newDecision.setIdDemandePortail("");
             newDecision.setSession(getSession());
             newDecision.setProcessExterne(new Boolean(true));
             newDecision.setIdPassage(getIdPassage());
