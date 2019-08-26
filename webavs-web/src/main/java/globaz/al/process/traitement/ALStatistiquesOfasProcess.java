@@ -1674,11 +1674,8 @@ public class ALStatistiquesOfasProcess extends BProcess {
                 + ALStatistiquesOfasProcess.REQUETE_AF_COL_NAME_ACTIVITE_ALLOC + " FROM schema.aldetpre det LEFT OUTER "
                 + "JOIN schema.alentpre ent ON ent.mid = det.mid LEFT OUTER "
                 + "JOIN schema.aldroit dro ON dro.fid=det.fid LEFT OUTER "
-                + "JOIN schema.aldos dos ON dos.eid=dro.eid LEFT OUTER "
-                + "JOIN schema.fwcoup cs ON "
-                + "((cs.pcosid=ent.cscant and (det.cstcan = 0 or det.cstcan = 61190097)) "
-                + "or (cs.pcosid=det.cstcan and (det.cstcan <> 0 and det.cstcan <> 61190097))) "
-                + " and cs.PLAIDE = 'F' "
+                + "JOIN schema.aldos dos ON dos.eid=dro.eid "
+                + addJointureCaisse()
                 + "left outer join schema.alparam param on param.pparva=det.numcpt AND param.ppacdi LIKE 'rubrique.multicaisse.%'"
                 + " WHERE nmont > 0 AND " + "det.cstcai <> " + ALCSTarif.CATEGORIE_SUP_HORLO + " ";
         if (isSansRestitutions) {
@@ -1706,8 +1703,8 @@ public class ALStatistiquesOfasProcess extends BProcess {
                 + ALStatistiquesOfasProcess.REQUETE_AF_COL_NAME_ACTIVITE_ALLOC + " FROM schema.aldetpre det LEFT OUTER "
                 + "JOIN schema.alentpre ent ON ent.mid = det.mid LEFT OUTER "
                 + "JOIN schema.aldroit dro ON dro.fid=det.fid LEFT OUTER "
-                + "JOIN schema.aldos dos ON dos.eid=dro.eid LEFT OUTER "
-                + "JOIN schema.fwcoup cs ON cs.pcosid=ent.cscant and cs.PLAIDE = 'F' "
+                + "JOIN schema.aldos dos ON dos.eid=dro.eid "
+                + addJointureCaisse()
                 + "left outer join schema.alparam param on param.pparva=det.numcpt AND param.ppacdi LIKE 'rubrique.multicaisse.%'"
                 + " WHERE nmont > 0 AND " + "det.cstcai <> " + ALCSTarif.CATEGORIE_SUP_HORLO + " ";
         if (isSansRestitutions) {
@@ -1737,8 +1734,8 @@ public class ALStatistiquesOfasProcess extends BProcess {
                 + "JOIN schema.alentpre ent ON ent.mid = det.mid LEFT OUTER "
                 + "JOIN schema.aldroit dro ON dro.fid=det.fid LEFT OUTER "
                 + "JOIN schema.alenfant enf ON enf.cid = dro.cid LEFT OUTER "
-                + "JOIN schema.aldos dos ON dos.eid=dro.eid LEFT OUTER "
-                + "JOIN schema.fwcoup cs ON cs.pcosid=ent.cscant and cs.PLAIDE = 'F' "
+                + "JOIN schema.aldos dos ON dos.eid=dro.eid "
+                + addJointureCaisse()
                 + "left outer join schema.alparam param on param.pparva=det.numcpt AND param.ppacdi LIKE 'rubrique.multicaisse.%'"
                 + " WHERE nmont > 0 AND " + "det.cstcai <> " + ALCSTarif.CATEGORIE_SUP_HORLO + " ";
         if (isSansRestitutions) {
@@ -1765,7 +1762,7 @@ public class ALStatistiquesOfasProcess extends BProcess {
                 + "LEFT OUTER JOIN schema.alenfant enf ON enf.cid = dro.cid "
                 + "LEFT OUTER JOIN schema.titierp ti ON ti.htitie = enf.htitie "
                 + "LEFT OUTER JOIN schema.aldos dos ON dos.eid=dro.eid "
-                + "LEFT OUTER JOIN schema.fwcoup cs ON cs.pcosid=ent.cscant " + "and cs.PLAIDE = 'F' "
+                + addJointureCaisse()
                 + "left outer join schema.alparam param on param.pparva=det.numcpt"
                 + " AND param.ppacdi LIKE 'rubrique.multicaisse.%'" + " WHERE nmont > 0"
                 + " AND det.cstcai <> 61190096";
@@ -1790,11 +1787,8 @@ public class ALStatistiquesOfasProcess extends BProcess {
                 + ALStatistiquesOfasProcess.REQUETE_AF_COL_VAL + " FROM schema.aldetpre det LEFT OUTER "
                 + "JOIN schema.alentpre ent ON ent.mid = det.mid LEFT OUTER "
                 + "JOIN schema.aldroit dro ON dro.fid=det.fid LEFT OUTER "
-                + "JOIN schema.aldos dos ON dos.eid=dro.eid LEFT OUTER "
-                + "JOIN schema.fwcoup cs ON "
-                + "((cs.pcosid=ent.cscant and (det.cstcan = 0 or det.cstcan = 61190097)) "
-                + "or (cs.pcosid=det.cstcan and (det.cstcan <> 0 and det.cstcan <> 61190097))) "
-                + " and cs.PLAIDE = 'F' "
+                + "JOIN schema.aldos dos ON dos.eid=dro.eid "
+                + addJointureCaisse()
                 + "left outer join schema.alparam param on param.pparva=det.numcpt AND param.ppacdi LIKE 'rubrique.multicaisse.%'"
                 + " WHERE nmont > 0 AND " + "det.cstcai <> " + ALCSTarif.CATEGORIE_SUP_HORLO + " ";
         if (isSansRestitutions) {
@@ -1822,11 +1816,8 @@ public class ALStatistiquesOfasProcess extends BProcess {
                 + ALStatistiquesOfasProcess.REQUETE_AF_COL_NAME_NUMERO_AFFILIE + " FROM schema.aldetpre det LEFT OUTER "
                 + "JOIN schema.alentpre ent ON ent.mid = det.mid LEFT OUTER "
                 + "JOIN schema.aldroit dro ON dro.fid=det.fid LEFT OUTER "
-                + "JOIN schema.aldos dos ON dos.eid=dro.eid LEFT OUTER "
-                + "JOIN schema.fwcoup cs ON "
-                + "((cs.pcosid=ent.cscant and (det.cstcan = 0 or det.cstcan = 61190097)) "
-                + "or (cs.pcosid=det.cstcan and (det.cstcan <> 0 and det.cstcan <> 61190097))) "
-                + " and cs.PLAIDE = 'F' "
+                + "JOIN schema.aldos dos ON dos.eid=dro.eid "
+                + addJointureCaisse()
                 + "left outer join schema.alparam param on param.pparva=det.numcpt AND param.ppacdi LIKE 'rubrique.multicaisse.%'"
                 + " WHERE nmont > 0 AND " + "det.cstcai <> " + ALCSTarif.CATEGORIE_SUP_HORLO + " ";
         if (isSansRestitutions) {
@@ -1862,8 +1853,8 @@ public class ALStatistiquesOfasProcess extends BProcess {
                 + ALStatistiquesOfasProcess.REQUETE_AF_COL_NAME_TYPE_ALLOC + ", cscaal as "
                 + ALStatistiquesOfasProcess.REQUETE_AF_COL_NAME_ACTIVITE_ALLOC + " FROM schema.aldetpre det LEFT OUTER "
                 + "JOIN schema.alentpre ent ON ent.mid = det.mid LEFT OUTER "
-                + "JOIN schema.aldos dos ON dos.eid=ent.eid LEFT OUTER "
-                + "JOIN schema.fwcoup cs ON cs.pcosid=ent.cscant and cs.PLAIDE = 'F' "
+                + "JOIN schema.aldos dos ON dos.eid=ent.eid "
+                + addJointureCaisse()
                 + "left outer join schema.alparam param on param.pparva=det.numcpt AND param.ppacdi LIKE 'rubrique.multicaisse.%'"
                 + " WHERE cstype  IN (" + ALCSDroit.TYPE_ENF + ", " + ALCSDroit.TYPE_FORM + ", " + ALCSDroit.TYPE_ACCE
                 + ", " + ALCSDroit.TYPE_NAIS + ")" + " AND cscaal IN (" + ALCSDossier.ACTIVITE_SALARIE + ", "
@@ -1889,8 +1880,8 @@ public class ALStatistiquesOfasProcess extends BProcess {
                 + ALStatistiquesOfasProcess.REQUETE_AF_COL_NAME_TYPE_ALLOC + ", cscaal as "
                 + ALStatistiquesOfasProcess.REQUETE_AF_COL_NAME_ACTIVITE_ALLOC + " FROM schema.aldetpre det LEFT OUTER "
                 + "JOIN schema.alentpre ent ON ent.mid = det.mid LEFT OUTER "
-                + "JOIN schema.aldos dos ON dos.eid=ent.eid LEFT OUTER "
-                + "JOIN schema.fwcoup cs ON cs.pcosid=ent.cscant and cs.PLAIDE = 'F' "
+                + "JOIN schema.aldos dos ON dos.eid=ent.eid "
+                + addJointureCaisse()
                 + "left outer join schema.alparam param on param.pparva=det.numcpt AND param.ppacdi LIKE 'rubrique.multicaisse.%'"
                 + " WHERE cstype  IN (" + ALCSDroit.TYPE_ENF + ", " + ALCSDroit.TYPE_FORM + ", " + ALCSDroit.TYPE_ACCE
                 + ", " + ALCSDroit.TYPE_NAIS + ")" + " AND cscaal IN (" + ALCSDossier.ACTIVITE_SALARIE + ", "
@@ -1918,8 +1909,8 @@ public class ALStatistiquesOfasProcess extends BProcess {
                 + ALStatistiquesOfasProcess.REQUETE_AF_COL_NAME_ACTIVITE_ALLOC + ", ent.CSTATU as "
                 + ALStatistiquesOfasProcess.REQUETE_AF_COL_NAME_STATUT + " FROM schema.aldetpre det LEFT OUTER "
                 + "JOIN schema.alentpre ent ON ent.mid = det.mid LEFT OUTER "
-                + "JOIN schema.aldos dos ON dos.eid=ent.eid LEFT OUTER "
-                + "JOIN schema.fwcoup cs ON cs.pcosid=ent.cscant and cs.PLAIDE = 'F' "
+                + "JOIN schema.aldos dos ON dos.eid=ent.eid "
+                + addJointureCaisse()
                 + "left outer join schema.alparam param on param.pparva=det.numcpt AND param.ppacdi LIKE 'rubrique.multicaisse.%'"
                 + " WHERE cstype  IN (" + ALCSDroit.TYPE_ENF + ", " + ALCSDroit.TYPE_FORM + ", " + ALCSDroit.TYPE_ACCE
                 + ", " + ALCSDroit.TYPE_NAIS + ")" + " AND cscaal IN (" + ALCSDossier.ACTIVITE_SALARIE + ", "
@@ -1947,8 +1938,8 @@ public class ALStatistiquesOfasProcess extends BProcess {
                 + ALStatistiquesOfasProcess.REQUETE_AF_COL_NAME_ACTIVITE_ALLOC + ", ent.csunit as "
                 + ALStatistiquesOfasProcess.REQUETE_AF_COL_NAME_CS_UNIT + " FROM schema.aldetpre det LEFT OUTER "
                 + "JOIN schema.alentpre ent ON ent.mid = det.mid LEFT OUTER "
-                + "JOIN schema.aldos dos ON dos.eid=ent.eid LEFT OUTER "
-                + "JOIN schema.fwcoup cs ON cs.pcosid=ent.cscant and cs.PLAIDE = 'F' "
+                + "JOIN schema.aldos dos ON dos.eid=ent.eid "
+                + addJointureCaisse()
                 + "left outer join schema.alparam param on param.pparva=det.numcpt AND param.ppacdi LIKE 'rubrique.multicaisse.%'"
                 + " WHERE cstype  IN (" + ALCSDroit.TYPE_ENF + ", " + ALCSDroit.TYPE_FORM + ", " + ALCSDroit.TYPE_ACCE
                 + ", " + ALCSDroit.TYPE_NAIS + ")" + " AND cscaal IN (" + ALCSDossier.ACTIVITE_SALARIE + ", "
@@ -1979,7 +1970,7 @@ public class ALStatistiquesOfasProcess extends BProcess {
                 + "LEFT OUTER JOIN schema.aldetpre det ON dro.fid=det.fid "
                 + "LEFT OUTER JOIN schema.alentpre ent ON ent.mid=det.mid "
                 + "LEFT OUTER JOIN schema.aldos dos ON dos.eid=ent.eid "
-                + "LEFT OUTER JOIN schema.fwcoup cs ON cs.pcosid=ent.cscant and cs.PLAIDE = 'F' "
+                + addJointureCaisse()
                 + "left outer join schema.alparam param on param.pparva=det.numcpt AND param.ppacdi LIKE 'rubrique.multicaisse.%'"
                 + " WHERE mdvc between " + getStartDate(true) + " AND " + getEndDate(true) + " AND " + "det.cstcai <> "
                 + ALCSTarif.CATEGORIE_SUP_HORLO + " ";
@@ -2010,7 +2001,7 @@ public class ALStatistiquesOfasProcess extends BProcess {
                 + "LEFT OUTER JOIN schema.aldetpre det ON dro.fid=det.fid "
                 + "LEFT OUTER JOIN schema.alentpre ent ON ent.mid=det.mid "
                 + "LEFT OUTER JOIN schema.aldos dos ON dos.eid=ent.eid "
-                + "LEFT OUTER JOIN schema.fwcoup cs ON cs.pcosid=ent.cscant and cs.PLAIDE = 'F' "
+                + addJointureCaisse()
                 + "left outer join schema.alparam param on param.pparva=det.numcpt AND param.ppacdi LIKE 'rubrique.multicaisse.%'"
                 + " WHERE mdvc between " + getStartDate(true) + " AND " + getEndDate(true) + " AND " + "det.cstcai <> "
                 + ALCSTarif.CATEGORIE_SUP_HORLO + " ";
@@ -2042,7 +2033,7 @@ public class ALStatistiquesOfasProcess extends BProcess {
                 + "LEFT OUTER JOIN schema.aldetpre det ON dro.fid=det.fid "
                 + "LEFT OUTER JOIN schema.alentpre ent ON ent.mid=det.mid "
                 + "LEFT OUTER JOIN schema.aldos dos ON dos.eid=ent.eid "
-                + "LEFT OUTER JOIN schema.fwcoup cs ON cs.pcosid=ent.cscant and cs.PLAIDE = 'F' "
+                + addJointureCaisse()
                 + "left outer join schema.alparam param on param.pparva=det.numcpt AND param.ppacdi LIKE 'rubrique.multicaisse.%'"
                 + " WHERE mdvc between " + getStartDate(true) + " AND " + getEndDate(true) + " AND " + "det.cstcai <> "
                 + ALCSTarif.CATEGORIE_SUP_HORLO + " ";
@@ -2060,6 +2051,13 @@ public class ALStatistiquesOfasProcess extends BProcess {
                 + " order by cstype, ppacdi";
         sql = replaceSchemaInSqlQuery(sql);
         return sql;
+    }
+
+    private String addJointureCaisse() {
+        return " LEFT OUTER JOIN schema.fwcoup cs ON "
+                + "((cs.pcosid=ent.cscant and (det.cstcan = 0 or det.cstcan = 61190097)) "
+                + "or (cs.pcosid=det.cstcan and (det.cstcan <> 0 and det.cstcan <> 61190097))) "
+                + " and cs.PLAIDE = 'F' ";
     }
 
     private JadeThreadContext initThreadContext(BSession session) throws Exception {
