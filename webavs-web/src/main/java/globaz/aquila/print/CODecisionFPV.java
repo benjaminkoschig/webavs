@@ -61,7 +61,7 @@ public class CODecisionFPV extends CODocumentManager {
      * @throws Exception
      *             DOCUMENT ME!
      */
-    public CODecisionFPV() throws Exception {
+    public CODecisionFPV() {
         super();
     }
 
