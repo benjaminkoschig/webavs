@@ -19,6 +19,9 @@ import globaz.globall.util.JAUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.pdf.JadePdfUtil;
 import globaz.osiris.db.utils.CAReferenceBVR;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -45,6 +48,8 @@ public class CODecisionFPV extends CODocumentManager {
     private static final int STATE_IDLE = 0;
 
     private static final String TEMPLATE_NAME = "CO_DECISION";
+
+    private static final Logger LOG = LoggerFactory.getLogger(CODecisionFPV.class);
 
     // ~ Instance fields
     // ------------------------------------------------------------------------------------------------
@@ -202,7 +207,7 @@ public class CODecisionFPV extends CODocumentManager {
         try {
             adresseDebiteur = getAdresseDestinataire();
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error("La récupération de l'addresse du destinaire a échoué", e);
         }
         try {
             super.setParametres(FWIImportParametre.PARAM_REFERENCE + "_X", CODecisionFPV.REFERENCE_NON_FACTURABLE_DEFAUT);
