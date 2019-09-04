@@ -25,6 +25,7 @@ public class ALAnnonceRafamHelper extends ALAbstractHelper {
     private static final String suspendreAnnonce = "suspendreAnnonce";
     private static final String validerAnnonce = "validerAnnonce";
     private static final String archiver = "archiver";
+    private static final String desarchiver = "desarchiver";
 
     /*
      * (non-Javadoc)
@@ -86,18 +87,28 @@ public class ALAnnonceRafamHelper extends ALAbstractHelper {
                 if (((ALAnnonceRafamViewBean) viewBean).getAnnonce().isNew()) {
                     ((ALAnnonceRafamViewBean) viewBean).retrieve();
                 }
-                if (RafamEtatAnnonce.ARCHIVE.equals(RafamEtatAnnonce.getRafamEtatAnnonceCS(vb.getAnnonce().getAnnonceRafamModel().getEtat()))){
-                    vb.getAnnonce().getAnnonceRafamModel().setEtat(RafamEtatAnnonce.RECU.getCS());
-                 }else{
-                    vb.getAnnonce().getAnnonceRafamModel().setEtat(RafamEtatAnnonce.ARCHIVE.getCS());
-                }
+                vb.getAnnonce().getAnnonceRafamModel().setEtat(RafamEtatAnnonce.ARCHIVE.getCS());
                 _update(viewBean,action,session);
             } catch (Exception e) {
                 viewBean.setMessage(e.toString());
                 viewBean.setMsgType(FWViewBeanInterface.ERROR);
             }
+        }
 
 
+        if (ALAnnonceRafamHelper.desarchiver.equals(action.getActionPart())
+                && (viewBean instanceof ALAnnonceRafamViewBean)) {
+            ALAnnonceRafamViewBean vb = (ALAnnonceRafamViewBean)viewBean;
+            try {
+                if (((ALAnnonceRafamViewBean) viewBean).getAnnonce().isNew()) {
+                    ((ALAnnonceRafamViewBean) viewBean).retrieve();
+                }
+                vb.getAnnonce().getAnnonceRafamModel().setEtat(RafamEtatAnnonce.RECU.getCS());
+                _update(viewBean,action,session);
+            } catch (Exception e) {
+                viewBean.setMessage(e.toString());
+                viewBean.setMsgType(FWViewBeanInterface.ERROR);
+            }
         }
 
 

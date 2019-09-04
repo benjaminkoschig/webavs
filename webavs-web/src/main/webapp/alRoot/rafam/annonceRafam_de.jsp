@@ -25,22 +25,17 @@
 	btnValLabel = objSession.getLabel("VALIDER");
 	btnCanLabel = objSession.getLabel("ANNULER");
 	btnNewLabel = objSession.getLabel("NOUVEAU");
-	String btnArchive;
-    if(RafamEtatAnnonce.ARCHIVE.equals(RafamEtatAnnonce.getRafamEtatAnnonceCS(viewBean.getAnnonce().getAnnonceRafamModel().getEtat()))){
-        btnArchive = objSession.getLabel("ARCHIVE_OFF");
-    }else{
-        btnArchive = objSession.getLabel("ARCHIVE_ON");
-    }
+
     boolean isErreur208OR209 = false;
     for(int i=0;i<viewBean.getErrors().getSize();i++){
         AnnonceRafamErrorComplexModel errorRafam = (AnnonceRafamErrorComplexModel)viewBean.getErrors().getSearchResults()[i];
         if(errorRafam.getErreurAnnonceRafamModel().getCode().equals("208") || errorRafam.getErreurAnnonceRafamModel().getCode().equals("209")){
             isErreur208OR209=true;
         }
-
     }
 
-		
+
+
 	idEcran="AL0031";
 	
 	String baseLegale = "";
@@ -116,8 +111,14 @@ function del() {
 }
 
 function init(){
-	
+    document.getElementById("btnDel").style.display = 'none';
+    if (<%=RafamEtatAnnonce.ARCHIVE.equals(RafamEtatAnnonce.getRafamEtatAnnonceCS(viewBean.getAnnonce().getAnnonceRafamModel().getEtat()))%>) {
+        document.getElementById("btnArchive").style.display = 'none';
+    } else {
+        document.getElementById("btnDesarchive").style.display = 'none';
+    }
 }
+
 function validerAnnonce(){
 	var req = "<%=servletContext + mainServletPath%>?userAction=al.rafam.annonceRafam.validerAnnonce&id=<%=viewBean.getId()%>";
 	var ajaxQuery = new AjaxQuery(req);
@@ -125,6 +126,9 @@ function validerAnnonce(){
 	ajaxQuery.noResultCallback = alert;
 	ajaxQuery.noResultCallbackParams = new Array("fini");
 	ajaxQuery.launch();
+
+    document.forms[0].elements('userAction').value="al.rafam.annonceRafam.afficher";
+    document.forms[0].submit();
 }
 
 function suspendreAnnonce(){
@@ -134,9 +138,23 @@ function suspendreAnnonce(){
 	ajaxQuery.noResultCallback = alert;
 	ajaxQuery.noResultCallbackParams = new Array("fini");
 	ajaxQuery.launch();
+
+    document.forms[0].elements('userAction').value="al.rafam.annonceRafam.afficher";
+    document.forms[0].submit();
 }
-function toggleArchive(){
+function archive(){
     var req = "<%=servletContext + mainServletPath%>?userAction=al.rafam.annonceRafam.archiver&id=<%=viewBean.getId()%>";
+    var ajaxQuery = new AjaxQuery(req);
+
+    ajaxQuery.noResultCallback = alert;
+    ajaxQuery.noResultCallbackParams = new Array("fini");
+    ajaxQuery.launch();
+    document.forms[0].elements('userAction').value="al.rafam.annonceRafam.afficher";
+    document.forms[0].submit();
+}
+
+function desarchive() {
+    var req = "<%=servletContext + mainServletPath%>?userAction=al.rafam.annonceRafam.desarchiver&id=<%=viewBean.getId()%>";
     var ajaxQuery = new AjaxQuery(req);
 
     ajaxQuery.noResultCallback = alert;
@@ -530,7 +548,8 @@ function toggleArchive(){
 			</td></tr>						
 <%@ include file="/theme/detail/bodyButtons.jspf" %>
 <%if (isErreur208OR209) {%>
-        <input class="btnCtrl" id="btnArchive" type="button" value="<%=btnArchive%>" onclick="toggleArchive()">
+        <input class="btnCtrl" id="btnArchive" type="button" value="Marquer 'Archivé'" onclick="archive()">
+        <input class="btnCtrl" id="btnDesarchive" type="button" value="Marquer 'Désarchivé'" onclick="desarchive()">
 <%}%>
 
 
@@ -560,8 +579,8 @@ document.getElementById("btnDel").style.visibility="hidden";
 	<ct:menuSetAllParams key="idDroit"  checkAdd="no"
 		value="<%=viewBean.getAnnonce().getDroitComplexModel().getDroitModel().getIdDroit()%>"  />
 </ct:menuChange>
-<%-- tpl:insert attribute="zoneEndPage" --%>
 <%-- /tpl:insert --%>
 <%@ include file="/theme/detail/footer.jspf"%>
+
 
 

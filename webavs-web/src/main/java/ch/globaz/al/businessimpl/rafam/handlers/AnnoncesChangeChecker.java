@@ -17,6 +17,14 @@ import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.properties.JadePropertiesService;
 
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.regex.Pattern;
+
 public class AnnoncesChangeChecker {
 
     /**
@@ -37,7 +45,11 @@ public class AnnoncesChangeChecker {
             DossierComplexModel dossier, DroitComplexModel droit)
             throws JadeApplicationException, JadePersistenceException {
 
-        if (lastAnnonce.isNew()) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        LocalDate dateFinDroit = LocalDate.parse(lastAnnonce.getEcheanceDroit(), formatter);
+        LocalDate dateExpiration = LocalDate.now().minusYears(5).minusMonths(3);
+
+        if (dateFinDroit.isBefore(dateExpiration) || lastAnnonce.isNew()) {
             return false;
         }
 
