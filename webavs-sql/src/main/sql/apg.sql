@@ -1,0 +1,2 @@
+-- spécifique FERCIAM - Set une valeur par défaut dans PCOITC pour autoriser la modification des plages depuis l'interface
+UPDATE SCHEMA.FWPARP SET PCOITC = 100000 WHERE PPARAP = 'APG' AND PPACDI = 'ISOLENAISS';
