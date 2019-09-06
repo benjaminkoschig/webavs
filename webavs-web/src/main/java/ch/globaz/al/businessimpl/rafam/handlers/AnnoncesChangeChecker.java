@@ -47,7 +47,7 @@ public class AnnoncesChangeChecker {
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
         LocalDate dateFinDroit = LocalDate.parse(lastAnnonce.getEcheanceDroit(), formatter);
-        LocalDate dateExpiration = LocalDate.now().minusYears(5).minusMonths(3);
+        LocalDate dateExpiration = LocalDate.now().minusYears(5).minusMonths(3).plusDays(1);
 
         if (dateFinDroit.isBefore(dateExpiration) || lastAnnonce.isNew()) {
             return false;
