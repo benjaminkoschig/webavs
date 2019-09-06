@@ -1,11 +1,7 @@
 package globaz.corvus.servlet;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -38,6 +34,7 @@ import globaz.corvus.db.rentesaccordees.RERenteAccJoinTblTiersJoinDemRenteManage
 import globaz.corvus.db.rentesaccordees.RERenteAccJoinTblTiersJoinDemandeRente;
 import globaz.corvus.db.rentesaccordees.RERenteAccordee;
 import globaz.corvus.utils.REPmtMensuel;
+import globaz.corvus.utils.RERentesToCompare;
 import globaz.corvus.utils.enumere.genre.prestations.REGenresPrestations;
 import globaz.corvus.vb.process.REGenererAttestationFiscaleUniqueViewBean;
 import globaz.corvus.vb.process.REGenererAttestationFiscaleViewBean;
@@ -85,7 +82,8 @@ public class REGenererAttestationFiscaleAction extends REDefaultProcessAction {
     private static final String VERS_ECRAN_DE = "_de.jsp?";
     private TIAdressePaiementData adr;
     private String adresse = "";
-    private final Map<String, String> assure = new HashMap<String, String>();
+    private final Map<String, String> assure = new HashMap<>();
+    private final Map<String,String> codePrestation = new HashMap<>();
     private REAttestationFiscale att;
     private final JACalendar cal = new JACalendarGregorian();
     private ICTDocument document;
@@ -93,13 +91,13 @@ public class REGenererAttestationFiscaleAction extends REDefaultProcessAction {
     private ICTDocument documentHelper;
     private ICTDocument documentHelperDecision;
     private String idTiersAdresseSiDeces = "";
-    private final Map<String, String> libelleRente = new HashMap<String, String>();
-    private final Map<String, String> montant = new HashMap<String, String>();
+    private final Map<String, String> libelleRente = new HashMap<>();
+    private final Map<String, String> montant = new HashMap<>();
     private final FWCurrency montantTotal = new FWCurrency("0.00");
-    private final Map<String, String> OVDesignation = new HashMap<String, String>();
-    private final Map<String, String> OVMontant = new HashMap<String, String>();
-    private final Map<String, String> OVType = new HashMap<String, String>();
-    private final Map<String, String> periode = new HashMap<String, String>();
+    private final Map<String, String> OVDesignation = new HashMap<>();
+    private final Map<String, String> OVMontant = new HashMap<>();
+    private final Map<String, String> OVType = new HashMap<>();
+    private final Map<String, String> periode = new HashMap<>();
     private PRTiersWrapper tiersAdresse;
     private PRTiersWrapper tiersBeneficiaire;
     private String titre = "";
@@ -522,7 +520,7 @@ public class REGenererAttestationFiscaleAction extends REDefaultProcessAction {
                                         this.montant.put(index, montantAfficher.toStringFormat());
                                         libelleRente.put(index,
                                                 documentDecision.getTextes(2).getTexte(11).getDescription());
-
+                                        codePrestation.put(index, ra.getCodePrestation());
                                     } else {
                                         String pourRechercheCodeSysteme = ra.getCodePrestation();
 
@@ -554,6 +552,7 @@ public class REGenererAttestationFiscaleAction extends REDefaultProcessAction {
                                         periode.put(index, dd.toStr(".") + " - " + df.toStr("."));
                                         this.montant.put(index, montantAfficher.toStringFormat());
                                         libelleRente.put(index, userCode.getLibelle());
+                                        codePrestation.put(index, ra.getCodePrestation());
                                     }
 
                                     REDecisionsManager decismgr = new REDecisionsManager();
@@ -688,6 +687,8 @@ public class REGenererAttestationFiscaleAction extends REDefaultProcessAction {
                     viewBean.setOVMontant(OVMontant);
                     viewBean.setOVType(OVType);
 
+                    this.sortRentes();
+
                     viewBean.setMapassure(assure);
                     viewBean.setMapperiode(periode);
                     viewBean.setMapmontant(montant);
@@ -790,6 +791,31 @@ public class REGenererAttestationFiscaleAction extends REDefaultProcessAction {
             }
 
             servlet.getServletContext().getRequestDispatcher(destination).forward(request, response);
+        }
+
+    }
+
+    private void sortRentes() {
+        List<RERentesToCompare> rentes = new ArrayList<>();
+        for (int i = 0 ; i < assure.size() ; i++) {
+            String key = String.valueOf(i);
+            RERentesToCompare eachRentes = new RERentesToCompare(assure.get(key), periode.get(key), montant.get(key), libelleRente.get(key), codePrestation.get(key));
+            rentes.add(eachRentes);
+        }
+        Collections.sort(rentes);
+
+        assure.clear();
+        periode.clear();
+        montant.clear();
+        libelleRente.clear();
+        codePrestation.clear();
+
+        for (int i = 0 ; i < rentes.size() ; i++) {
+            String key = String.valueOf(i);
+            assure.put(key,rentes.get(i).getAssure());
+            periode.put(key,rentes.get(i).getPeriode());
+            montant.put(key,rentes.get(i).getMontant());
+            libelleRente.put(key,rentes.get(i).getLibelleRente());
         }
 
     }

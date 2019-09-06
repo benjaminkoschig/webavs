@@ -1,17 +1,8 @@
 package globaz.corvus.topaz;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
+
 import ch.globaz.common.properties.CommonProperties;
 import ch.globaz.common.properties.CommonPropertiesUtils;
 import ch.globaz.corvus.domaine.constantes.DegreImpotenceAPI;
@@ -23,9 +14,8 @@ import ch.globaz.jade.business.models.Langues;
 import ch.globaz.jade.business.models.codesysteme.JadeCodeSysteme;
 import ch.globaz.jade.business.services.codesysteme.JadeCodeSystemeService;
 import ch.globaz.prestation.domaine.CodePrestation;
+import ch.globaz.topaz.datajuicer.*;
 import ch.globaz.topaz.datajuicer.Collection;
-import ch.globaz.topaz.datajuicer.DataList;
-import ch.globaz.topaz.datajuicer.DocumentData;
 import ch.globaz.topaz.mixer.postprocessor.PostProcessor;
 import globaz.babel.utils.CatalogueText;
 import globaz.caisse.helper.CaisseHelperFactory;
@@ -38,6 +28,7 @@ import globaz.corvus.application.REApplication;
 import globaz.corvus.db.attestationsFiscales.REAttestationFiscaleRentAccordOrdreVerse;
 import globaz.corvus.db.attestationsFiscales.REAttestationFiscaleRentAccordOrdreVerseManager;
 import globaz.corvus.utils.REGedUtils;
+import globaz.corvus.utils.RERentesToCompare;
 import globaz.docinfo.TIDocumentInfoHelper;
 import globaz.framework.util.FWCurrency;
 import globaz.globall.db.BManager;
@@ -55,6 +46,7 @@ import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAv
 import globaz.prestation.tools.PRDateFormater;
 import globaz.prestation.tools.PRStringUtils;
 import globaz.pyxis.api.ITIPersonne;
+import org.apache.commons.lang.StringUtils;
 
 public class REAttestationsFiscalesOO extends REAbstractJobOO {
 
@@ -336,12 +328,15 @@ public class REAttestationsFiscalesOO extends REAbstractJobOO {
 
                     ligneInfoRente.addData("montant_rente", new FWCurrency(montantAnnuel).toStringFormat());
 
+                    ligneInfoRente.addData("code_prestation", uneRenteDuBeneficiaire.getCodePrestation());
+
                     tableauBeneficiaires.add(ligneInfoRente);
 
                 }
             }
         }
-        data.add(tableauBeneficiaires);
+
+        data.add(sortedRentes(tableauBeneficiaires));
 
         data.addData("montant_total", new FWCurrency(montantTotal).toStringFormat());
 
@@ -412,6 +407,70 @@ public class REAttestationsFiscalesOO extends REAbstractJobOO {
                         tiersCorrespondance.getTitreTiers()));
 
         return data;
+    }
+
+    /**
+     * Méthode permettant de trier les lignes du tableau des bénéficiaires.
+     *
+     * @param tableauBeneficiaires : le tableau à trier.
+     * @return le tableau trié.
+     */
+    private Collection sortedRentes(Collection tableauBeneficiaires) {
+        // On récupère toutes les infos nécessaires au tri.
+        List<RERentesToCompare> rentes = new ArrayList<>();
+        String assure = StringUtils.EMPTY;
+        for(Iterator<Collectionable> iterator = tableauBeneficiaires.iterator(); iterator.hasNext();) {
+            DataList dataList = (DataList) iterator.next();
+            if (Objects.equals(dataList.getFlavor(), "ligneInfoAssure")) {
+                assure = dataList.iterator().next().getValue();
+            } else {
+                String libelleRente = StringUtils.EMPTY;
+                String periode = StringUtils.EMPTY;
+                String montant = StringUtils.EMPTY;
+                String codePrestation = StringUtils.EMPTY;
+                for (Iterator<Data> it = dataList.iterator(); it.hasNext(); ) {
+                    Data eachData = it.next();
+                    switch (eachData.getKey()) {
+                        case "genre_rente":
+                            libelleRente = eachData.getValue();
+                            break;
+                        case "periode_rente":
+                            periode = eachData.getValue();
+                            break;
+                        case "montant_rente":
+                            montant = eachData.getValue();
+                            break;
+                        case "code_prestation":
+                            codePrestation = eachData.getValue();
+                            break;
+                        default:
+                            break;
+                    }
+
+                }
+                RERentesToCompare rente = new RERentesToCompare(assure, periode, montant,libelleRente, codePrestation);
+                rentes.add(rente);
+            }
+        }
+
+        // On trie les rentes.
+        Collections.sort(rentes);
+
+        // On réinitialise le tableau des bénéficiaires suite au tri.
+        tableauBeneficiaires = new Collection("TableauRenteAccordee");
+        for (RERentesToCompare eachRente : rentes) {
+            DataList ligneInfoBeneficiaire = new DataList("ligneInfoAssure");
+            ligneInfoBeneficiaire.addData("infoTiers", eachRente.getAssure());
+            tableauBeneficiaires.add(ligneInfoBeneficiaire);
+
+            DataList ligneInfoRente = new DataList("ligneInfoRente");
+            ligneInfoRente.addData("genre_rente", eachRente.getLibelleRente());
+            ligneInfoRente.addData("periode_rente", eachRente.getPeriode());
+            ligneInfoRente.addData("montant_rente", eachRente.getMontant());
+            tableauBeneficiaires.add(ligneInfoRente);
+        }
+
+        return tableauBeneficiaires;
     }
 
     @Override
