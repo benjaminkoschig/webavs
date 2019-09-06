@@ -795,21 +795,28 @@ public class REGenererAttestationFiscaleAction extends REDefaultProcessAction {
 
     }
 
+    /**
+     * Permet de trier les rentes.
+     */
     private void sortRentes() {
+        // On récupère toutes les infos nécessaires au tri.
         List<RERentesToCompare> rentes = new ArrayList<>();
         for (int i = 0 ; i < assure.size() ; i++) {
             String key = String.valueOf(i);
             RERentesToCompare eachRentes = new RERentesToCompare(assure.get(key), periode.get(key), montant.get(key), libelleRente.get(key), codePrestation.get(key));
             rentes.add(eachRentes);
         }
+        // On trie les rentes.
         Collections.sort(rentes);
 
+        // On réinitialise les maps.
         assure.clear();
         periode.clear();
         montant.clear();
         libelleRente.clear();
         codePrestation.clear();
 
+        // On repeuple les maps suite au tri.
         for (int i = 0 ; i < rentes.size() ; i++) {
             String key = String.valueOf(i);
             assure.put(key,rentes.get(i).getAssure());
@@ -817,7 +824,6 @@ public class REGenererAttestationFiscaleAction extends REDefaultProcessAction {
             montant.put(key,rentes.get(i).getMontant());
             libelleRente.put(key,rentes.get(i).getLibelleRente());
         }
-
     }
 
     private String getCodeLangue(String codeIsoLangue, String anneeAttestation, BTransaction transaction,
