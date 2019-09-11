@@ -127,6 +127,17 @@ public class REListeExcelAttestationsFiscalesNonSorties extends ExcelAbstractDoc
         }
         return "";
     }
+    private String hasDecisionDecembre(REFamillePourAttestationsFiscales uneFamille) {
+        try {
+            if (REAttestationsFiscalesUtils.hasDecisionEnDecembreAndCreancier(uneFamille,session, annee)) {
+                return "X";
+            }
+        } catch (Exception e) {
+            JadeLogger.debug(this, e.getMessage());
+        }
+        return "";
+    }
+
 
     @Override
     public IMergingContainer loadData() throws Exception {
@@ -142,6 +153,7 @@ public class REListeExcelAttestationsFiscalesNonSorties extends ExcelAbstractDoc
             data.put("has_rente_fin_dans_annee", hasRenteTerminantDansAnnee(uneFamille));
             data.put("has_deces_dans_annee", hasPersonneDecedeeDurantAnneeFiscale(uneFamille));
             data.put("has_retroactif", hasRetroactif(uneFamille));
+            data.put("has_decision_decembre", hasDecisionDecembre(uneFamille));
             data.put("has_superposition", hasRenteQuiSeChevauchent(uneFamille));
             data.put("has_ajournement", hasAjournement(uneFamille));
         }
@@ -160,6 +172,7 @@ public class REListeExcelAttestationsFiscalesNonSorties extends ExcelAbstractDoc
                 session.getLabel("EXCEL_ATTESTATION_FISCALES_RENTE_FIN_DROIT_ANNEE_FISCALE"));
         data.put("label_deces_dans_annee", session.getLabel("EXCEL_ATTESTATION_FISCALES_DECES_DANS_ANNEE_FISCALE"));
         data.put("label_retroactif", session.getLabel("EXCEL_ATTESTATION_FISCALES_RETROACTIF"));
+        data.put("label_has_decision_decembre", session.getLabel("EXCEL_ATTESTATION_FISCALES_HAS_DECISION_DECEMBRE"));
         data.put("label_has_superposition", session.getLabel("EXCEL_ATTESTATION_FISCALES_SUPERPOSITION_RENTES"));
         data.put("label_is_ajournement", session.getLabel("EXCEL_ATTESTATION_FISCALES_AJOURNEMNT"));
     }

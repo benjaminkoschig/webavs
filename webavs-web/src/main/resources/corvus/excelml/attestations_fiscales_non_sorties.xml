@@ -154,7 +154,7 @@
    ss:RefersTo="='Attestations non sorties'!R3C8"/>
  </Names>
  <Worksheet ss:Name="Attestations non sorties">
-  <Table ss:ExpandedColumnCount="10" ss:ExpandedRowCount="5" x:FullColumns="1"
+  <Table ss:ExpandedColumnCount="12" ss:ExpandedRowCount="5" x:FullColumns="1"
    x:FullRows="1" ss:DefaultColumnWidth="60" ss:DefaultRowHeight="15">
    <Column ss:AutoFitWidth="0" ss:Width="7.5"/>
    <Column ss:AutoFitWidth="0" ss:Width="300"/>
@@ -174,7 +174,7 @@
     <Cell ss:Index="2" ss:MergeDown="1" ss:StyleID="m303884776"><Data
       ss:Type="String">label_description_tiers</Data><NamedCell
       ss:Name="label_description_tiers"/></Cell>
-    <Cell ss:MergeAcross="7" ss:StyleID="m303884796"><Data ss:Type="String">label_raison</Data><NamedCell
+    <Cell ss:MergeAcross="8" ss:StyleID="m303884796"><Data ss:Type="String">label_raison</Data><NamedCell
       ss:Name="label_raison"/></Cell>
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="30">
@@ -190,6 +190,8 @@
       ss:Name="label_deces_dans_annee"/></Cell>
     <Cell ss:StyleID="s74"><Data ss:Type="String">label_retroactif</Data><NamedCell
       ss:Name="label_retroactif"/></Cell>
+    <Cell ss:StyleID="s74"><Data ss:Type="String">label_has_decision_decembre</Data><NamedCell
+            ss:Name="label_has_decision_decembre"/></Cell>
     <Cell ss:StyleID="s74"><Data ss:Type="String">label_has_superposition</Data><NamedCell
       ss:Name="label_has_superposition"/></Cell>
     <Cell ss:StyleID="s74"><Data ss:Type="String">label_is_ajournement</Data><NamedCell
@@ -210,6 +212,8 @@
       ss:Name="has_deces_dans_annee"/></Cell>
     <Cell ss:StyleID="s78"><Data ss:Type="String">has_retroactif</Data><NamedCell
       ss:Name="has_retroactif"/></Cell>
+    <Cell ss:StyleID="s78"><Data ss:Type="String">has_decision_decembre</Data><NamedCell
+            ss:Name="has_decision_decembre"/></Cell>
     <Cell ss:StyleID="s78"><Data ss:Type="String">has_superposition</Data><NamedCell
       ss:Name="has_superposition"/></Cell>
     <Cell ss:StyleID="s78"><Data ss:Type="String">has_ajournement</Data><NamedCell
@@ -243,7 +247,7 @@
     <Pane>
      <Number>3</Number>
      <ActiveRow>4</ActiveRow>
-     <ActiveCol>9</ActiveCol>
+     <ActiveCol>10</ActiveCol>
     </Pane>
    </Panes>
    <ProtectObjects>False</ProtectObjects>

@@ -2,16 +2,14 @@ package ch.globaz.corvus.process.attestationsfiscales;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
+
+import globaz.corvus.api.basescalcul.IREPrestationDue;
+import globaz.corvus.db.attestationsFiscales.REAttestationFiscaleRentAccordOrdreVerse;
+import globaz.corvus.db.attestationsFiscales.REAttestationFiscaleRentAccordOrdreVerseManager;
+import globaz.globall.db.BManager;
+import globaz.globall.db.BSession;
+import globaz.jade.client.util.JadeNumericUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ch.globaz.prestation.domaine.CodePrestation;
@@ -42,8 +40,7 @@ public class REAttestationsFiscalesUtils {
      * </p>
      *
      * @param famille
-     * @param annee
-     *            l'année fiscale voulue
+     * @param annee   l'année fiscale voulue
      * @return
      */
     public static boolean hasImpotSourceVerseeDansAnnee(REFamillePourAttestationsFiscales famille, String annee) {
@@ -67,15 +64,15 @@ public class REAttestationsFiscalesUtils {
     /**
      * Test si l'<code>annee</code> est contenue dans la période
      *
-     * @param dateDeDebut la date de début de la période
-     * @param dateDeFin la date de fin de la période
+     * @param dateDeDebut    la date de début de la période
+     * @param dateDeFin      la date de fin de la période
      * @param anneeReference l'année de référence
-     * @throws IllegalArgumentException Si le paramètre <code>dateDeDebut</code> est vide OU si le paramètre
-     *             <code>anneeReference</code>
-     * @throws NumberFormatException Si la récupération des années sous forme d'entiers des paramètres
-     *             <code>dateDeDebut, dateDeFin, anneeReference</code> échoue
      * @return <code>true</code> si la période déterminée par <code>dateDeDebut, dateDeFin</code> chevauche ou est
-     *         comprise dans l'année de référence <code>anneeReference</code>
+     * comprise dans l'année de référence <code>anneeReference</code>
+     * @throws IllegalArgumentException Si le paramètre <code>dateDeDebut</code> est vide OU si le paramètre
+     *                                  <code>anneeReference</code>
+     * @throws NumberFormatException    Si la récupération des années sous forme d'entiers des paramètres
+     *                                  <code>dateDeDebut, dateDeFin, anneeReference</code> échoue
      */
     public static boolean isPeriodeDeRetenueDansAnnee(String dateDeDebut, String dateDeFin, String anneeReference) {
         if (JadeStringUtil.isBlank(dateDeDebut)) {
@@ -118,7 +115,7 @@ public class REAttestationsFiscalesUtils {
     }
 
     public static boolean hasPersonneDecedeeDurantAnneeFiscale(REFamillePourAttestationsFiscales famille,
-            String annee) {
+                                                               String annee) {
         JadePeriodWrapper anneeFiscale = new JadePeriodWrapper("01.01." + annee, "31.12." + annee);
         for (RETiersPourAttestationsFiscales unTiers : famille.getTiersBeneficiaires()) {
             if (anneeFiscale.isDateDansLaPeriode(unTiers.getDateDeces())) {
@@ -139,8 +136,7 @@ public class REAttestationsFiscalesUtils {
      * </p>
      *
      * @param famille
-     * @param annee
-     *            l'année fiscale voulue
+     * @param annee   l'année fiscale voulue
      * @return
      */
     public static boolean hasRenteBloquee(REFamillePourAttestationsFiscales famille, String annee) {
@@ -276,7 +272,7 @@ public class REAttestationsFiscalesUtils {
         // parcours des périodes à la recherche de trous dans l'année fiscale (elle sont ordonnées par ancienneté)
         for (SortedSet<JadePeriodWrapper> periodesDuTiers : periodesDesRentesParTiers.values()) {
             JadePeriodWrapper periodeGlobaleDuTiers = null;
-            for (Iterator<JadePeriodWrapper> iterator = periodesDuTiers.iterator(); iterator.hasNext();) {
+            for (Iterator<JadePeriodWrapper> iterator = periodesDuTiers.iterator(); iterator.hasNext(); ) {
                 JadePeriodWrapper unePeriodeDuTiers = iterator.next();
 
                 if (!isDateDefinPlusPetiteQueDateDeDebut(unePeriodeDuTiers)) {
@@ -368,9 +364,9 @@ public class REAttestationsFiscalesUtils {
      * en décembre
      *
      * @param famille La famille à analyser
-     * @param annee L'année fiscales
+     * @param annee   L'année fiscales
      * @return <code>true</code> si la famille n'a pas de décision en cours d'année MAIS possède au moins une décision
-     *         en décembre
+     * en décembre
      */
     public static boolean hasSeulementDecisionEnDecembre(REFamillePourAttestationsFiscales famille, int annee) {
         List<RERentePourAttestationsFiscales> rentesSansDecembre = rechercherLesrentesAvecRetro(famille, annee, true);
@@ -393,8 +389,8 @@ public class REAttestationsFiscalesUtils {
      * Recherche toutes les rentes qui possèdent du rétro. Les rentes de types API sont exclues de l'analyse
      * Les règles d'analyse du rétro son centralisés dans cette méthode
      *
-     * @param famille la famille à analyser
-     * @param annee l'année fiscale
+     * @param famille              la famille à analyser
+     * @param annee                l'année fiscale
      * @param skipDecisionDecembre si les décision du mois de décembre de l'année fiscale doivent être ignorées
      * @return
      */
@@ -474,7 +470,7 @@ public class REAttestationsFiscalesUtils {
      * Les rentes API ne sont pas prisent en compte
      *
      * @param famille la famille à analyser
-     * @param annee l'année fiscale
+     * @param annee   l'année fiscale
      * @return
      */
     public static boolean hasDecisionEnDecembre(REFamillePourAttestationsFiscales famille, int annee) {
@@ -523,13 +519,13 @@ public class REAttestationsFiscalesUtils {
      * Cette méthode s'appuie sur la méthode {@link REAttestationsFiscalesUtils.rechercherLesrentesAvecRetro()} Cette
      * méthode ignore les décision du mois de décembre de l'année fiscale
      *
-     * @param famille La famille à analyser
+     * @param famille           La famille à analyser
      * @param surPlusieursAnnee Si le rétro doit s'étendre sur plusieurs années
-     * @param annee L'année fiscale
+     * @param annee             L'année fiscale
      * @return <code>true</code> si au moins une décision avec rétro est retrouvée
      */
     public static boolean analyserRetro(REFamillePourAttestationsFiscales famille,
-            boolean rechercherRetroSurUneAnneeUniquement, int annee) {
+                                        boolean rechercherRetroSurUneAnneeUniquement, int annee) {
 
         List<RERentePourAttestationsFiscales> listeRentes = rechercherLesrentesAvecRetro(famille, annee, true);
 
@@ -607,7 +603,7 @@ public class REAttestationsFiscalesUtils {
     }
 
     public static boolean isSansDecisionPendantEtApresAnneeFiscale(REFamillePourAttestationsFiscales famille,
-            String annee) {
+                                                                   String annee) {
 
         for (RERentePourAttestationsFiscales uneRente : famille.getRentesDeLaFamille()) {
             if (!JadeStringUtil.isBlank(uneRente.getDateDecision()) && (Integer.parseInt(annee) <= Integer
@@ -623,12 +619,12 @@ public class REAttestationsFiscalesUtils {
      * complémentaire ont une date de fin
      *
      * @param famille Les données de la famille à analyser
-     * @param annee L'année concernée
+     * @param annee   L'année concernée
      * @return <code>true</code> si la famille ne possède pas de rente principale et que toute les rentes
-     *         complémentaire ont une date de fin
+     * complémentaire ont une date de fin
      */
     public static boolean hasUniquementRenteComplementaireAvecDateFin(REFamillePourAttestationsFiscales famille,
-            String annee) {
+                                                                      String annee) {
         // En premier lieu on regarde déjà si une ou es rentes principales sont présentes
         for (RERentePourAttestationsFiscales rente : famille.getRentesDeLaFamille()) {
             if (RECodePrestationResolver.isPrestationPrincipale(rente.getCodePrestation())) {
@@ -648,11 +644,11 @@ public class REAttestationsFiscalesUtils {
      * Retourne le tiers de correspondance si le tiers de correspondance à peu être retrouvé selon différentes règles et
      * s'il
      * possède une adresse valide.
-     *
+     * <p>
      * Cette méthode s'appuye sur la méthode {@link REAttestationsFiscalesUtils}.getTiersCorrespondance(famille, annee)
      *
      * @param uneFamille la famille à analyser
-     * @param annee L'année fiscale
+     * @param annee      L'année fiscale
      * @return <code>true</code> si le tiers de correspondance à peu être retrouvé selon différentes règles et s'il
      */
     public static RETiersPourAttestationsFiscales getTiersCorrespondanceAvecAdresseValide(
@@ -676,7 +672,7 @@ public class REAttestationsFiscalesUtils {
      * @return
      */
     public static RETiersPourAttestationsFiscales getTiersCorrespondance(REFamillePourAttestationsFiscales uneFamille,
-            String annee) {
+                                                                         String annee) {
         REAnalyseurLot2 analyseurLot2 = new REAnalyseurLot2(annee);
         REAnalyseurLot4 analyseurLot4 = new REAnalyseurLot4(annee);
         REAnalyseurLot7 analyseurLot7 = new REAnalyseurLot7(annee);
@@ -756,17 +752,18 @@ public class REAttestationsFiscalesUtils {
         }
         return tiersBeneficiaire;
     }
-    
-    
+
+
     /**
-     * Vérifie qu'il n'y a que des rentes avec des dates de fin inférieure à la date de début 
+     * Vérifie qu'il n'y a que des rentes avec des dates de fin inférieure à la date de début
+     *
      * @param famille
      * @return boolean
      */
     public static boolean hasRenteDateFinAvantDebutUniquement(REFamillePourAttestationsFiscales famille) {
         SimpleDateFormat reader1 = new SimpleDateFormat("MM.yyyy");
         List<RERentePourAttestationsFiscales> listPeriodeInverse = new ArrayList<>();
-        if(famille.getRentesDeLaFamille().isEmpty()) {
+        if (famille.getRentesDeLaFamille().isEmpty()) {
             return false;
         }
         for (RERentePourAttestationsFiscales rente : famille.getRentesDeLaFamille()) {
@@ -785,7 +782,7 @@ public class REAttestationsFiscalesUtils {
                 }
             }
         }
-        
+
         // s'il n'y a que des periode avec des dates de fin avant date de début
         return listPeriodeInverse.size() == famille.getRentesDeLaFamille().size();
     }
@@ -811,5 +808,42 @@ public class REAttestationsFiscalesUtils {
         }
 
         return isAjournement;
+    }
+
+    public static boolean hasDecisionEnDecembreAndCreancier(REFamillePourAttestationsFiscales uneFamille, BSession session, String annee) throws Exception {
+        int anneeNum = Integer.parseInt(annee);
+        for (RERentePourAttestationsFiscales att : uneFamille.getRentesDeLaFamille()) {
+            if (JadeStringUtil.isBlankOrZero(att.getDateDecision())) {
+                continue;
+            }
+            Calendar dateDecision = JadeDateUtil.getGlobazCalendar(att.getDateDecision());
+            if (dateDecision.get(Calendar.MONTH) == Calendar.DECEMBER) {
+                Calendar dateDebutRente = JadeDateUtil.getGlobazCalendar("01."+att.getDateDebutDroit());
+                if (dateDebutRente.get(Calendar.YEAR) == anneeNum && hasCreancier(att.getIdRenteAccordee(),session)) {
+                    return true;
+                }
+                if (dateDebutRente.get(Calendar.YEAR) < anneeNum) {
+                    return true;
+                }
+            }
+
+        }
+        return false;
+    }
+    private static boolean hasCreancier(String idRenteAccordee, BSession session) throws Exception {
+        REAttestationFiscaleRentAccordOrdreVerseManager mgr = new REAttestationFiscaleRentAccordOrdreVerseManager();
+        mgr.setSession(session);
+        mgr.setForIdRenteAccordee(idRenteAccordee);
+        mgr.find(BManager.SIZE_NOLIMIT);
+        if (mgr.size() > 0) {
+            for (int i = 0; i < mgr.size(); i++) {
+                REAttestationFiscaleRentAccordOrdreVerse ovs = (REAttestationFiscaleRentAccordOrdreVerse) mgr
+                        .get(i);
+                if (ovs.hasVersementCreancier() || !JadeStringUtil.isBlankOrZero(ovs.getMontantDette())) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }
