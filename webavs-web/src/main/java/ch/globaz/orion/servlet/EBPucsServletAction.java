@@ -8,10 +8,12 @@ import globaz.framework.controller.FWDispatcher;
 import globaz.framework.controller.FWViewBeanActionFactory;
 import globaz.framework.servlets.FWServlet;
 import globaz.globall.db.BIPersistentObject;
+import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.orion.process.importpucs.EBImportPucsDanProcess;
 import globaz.orion.process.importpucs.EBImportSwissDecProcess;
+import globaz.orion.vb.pucs.EBPucsFileListViewBean;
 import globaz.orion.vb.pucs.EBPucsFileViewBean;
 import globaz.orion.vb.pucs.EBPucsImportViewBean;
 import java.io.IOException;
@@ -24,6 +26,7 @@ import ch.globaz.common.process.byitem.ProcessItemsFactory;
 import ch.globaz.common.process.byitem.ProcessItemsService;
 import ch.globaz.common.properties.PropertiesException;
 import ch.globaz.orion.business.constantes.EBProperties;
+import globaz.orion.vb.swissdec.EBPucsValidationDetailViewBean;
 
 public class EBPucsServletAction extends EBAbstractServletAction {
 
@@ -199,4 +202,42 @@ public class EBPucsServletAction extends EBAbstractServletAction {
          */
         servlet.getServletContext().getRequestDispatcher(destination).forward(request, response);
     }
+
+    @Override
+    protected void actionChercher(HttpSession session, HttpServletRequest request, HttpServletResponse response,
+                                  FWDispatcher mainDispatcher) throws ServletException, IOException {
+
+        EBPucsFileListViewBean vBean = new EBPucsFileListViewBean();
+        EBPucsFileListViewBean listVBean = new EBPucsFileListViewBean();
+
+
+
+        try {
+
+            if (session.getAttribute("listViewBean") instanceof EBPucsFileListViewBean
+                    && (session.getAttribute("viewBean") instanceof EBPucsValidationDetailViewBean
+                    || session.getAttribute("viewBean") instanceof EBPucsFileListViewBean
+                    || session.getAttribute("viewBean") instanceof EBPucsImportViewBean)) {
+                listVBean = (EBPucsFileListViewBean) session.getAttribute("listViewBean");
+            }
+
+            vBean = (EBPucsFileListViewBean) mainDispatcher.dispatch(vBean, getAction());
+            vBean.getManager().find(BManager.SIZE_NOLIMIT);
+            vBean.perpareList();
+        } catch (Exception e) {
+            vBean.setMsgType(FWViewBeanInterface.ERROR);
+            vBean.setMessage(e.getMessage());
+        }
+
+
+        session.removeAttribute("viewBean");
+        session.setAttribute("viewBean", vBean);
+
+        session.removeAttribute("listViewBean");
+        session.setAttribute("listViewBean", listVBean);
+
+        String destination = getRelativeURL(request, session) + "_rc.jsp";
+        servlet.getServletContext().getRequestDispatcher(destination).forward(request, response);
+    }
+
 }

@@ -8,15 +8,12 @@ import globaz.naos.db.particulariteAffiliation.AFParticulariteAffiliation;
 import globaz.naos.services.AFAffiliationServices;
 import globaz.naos.translation.CodeSystem;
 import globaz.orion.vb.EBAbstractListViewBeanPagination;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
+
 import ch.globaz.orion.business.domaine.pucs.DeclarationSalaireProvenance;
 import ch.globaz.orion.business.models.pucs.PucsFile;
 import ch.globaz.orion.db.EBPucsFileDefTable;
@@ -24,6 +21,7 @@ import ch.globaz.orion.db.EBPucsFileEntity;
 import ch.globaz.orion.db.EBPucsFileManager;
 import ch.globaz.orion.service.EBPucsFileService;
 import ch.globaz.xmlns.eb.pucs.PucsEntrySummary;
+import org.springframework.web.servlet.ModelAndView;
 
 public class EBPucsFileListViewBean extends EBAbstractListViewBeanPagination {
 
@@ -53,26 +51,62 @@ public class EBPucsFileListViewBean extends EBAbstractListViewBeanPagination {
 
     @Override
     public void find() throws Exception {
-        if ("DATE_RECEPTION".equalsIgnoreCase(orderBy)) {
+
+        // Transformation des date"String" en date"LocalDate" pour comparaison
+        DateTimeFormatter format2 = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+
+        // Ajout des conditions sur les dates
+
+        if (!Objects.isNull(manager.getForDateDebut()) && (manager.getForDateDebut() != "")) {
+            LocalDate dateDebut = LocalDate.parse(manager.getForDateDebut(), format2);
+            LocalDate dateFin = dateDebut;
+
+            if (!Objects.isNull(manager.getForDateFin()) && (manager.getForDateFin() != "")) {
+                dateFin = LocalDate.parse(manager.getForDateFin(), format2);
+            }
+
+            // La date de début ne peut pas être aprés la date de fin
+            if (dateDebut.isAfter(dateFin)) {
+                throw new Exception("La date de fin ne peut pas être antérieur à la date de début");
+            }
+
+
+        }
+
+
+        if ("HANDLING_USER".equalsIgnoreCase(orderBy)) {
+            manager.setOrderBy("UPPER(" +EBPucsFileDefTable.HANDLING_USER.getColumnName()+ ") ASC, "+ EBPucsFileDefTable.NUMERO_AFFILIE.getColumnName());
+        } else if ("DATE_RECEPTION".equalsIgnoreCase(orderBy)) {
             manager.setOrderBy(EBPucsFileDefTable.DATE_RECEPTION.getColumnName() + " ASC");
         } else if ("NOM_AFFILIE".equalsIgnoreCase(orderBy)) {
             manager.setOrderBy(EBPucsFileDefTable.NOM_AFFILIE.getColumnName());
         } else if ("NUMERO_AFFILIE".equalsIgnoreCase(orderBy)) {
             manager.setOrderBy(EBPucsFileDefTable.NUMERO_AFFILIE.getColumnName());
         }
+
+
         manager.find(BManager.SIZE_USEDEFAULT);
+
+
         perpareList();
     }
 
-    private void perpareList() {
+    public void perpareList() {
         List<EBPucsFileEntity> list = manager.toList();
         pucsFilesFinal = EBPucsFileService.entitiesToPucsFile(list);
+
+
 
         mapAffiliation = findAffiliations(list);
         mapNumAffiliationParticularite = resolveParticularites(mapAffiliation);
 
         if (orderBy == null || orderBy.isEmpty()) {
             sortByFusionable();
+        }
+
+        // Liste des Users mise dans une List triée par ordre alphabétique
+        for ( PucsFile pucsFile : pucsFilesFinal) {
+            manager.setUsers(pucsFile.getHandlingUser().toUpperCase());
         }
     }
 
@@ -152,6 +186,10 @@ public class EBPucsFileListViewBean extends EBAbstractListViewBeanPagination {
         this.orderBy = orderBy;
     }
 
+    public String getOrderBy() {
+        return orderBy;
+    }
+
     public List<PucsEntrySummary> getPucsFiles() {
         return pucsFiles;
     }
@@ -172,6 +210,10 @@ public class EBPucsFileListViewBean extends EBAbstractListViewBeanPagination {
         manager.setForProvenance(DeclarationSalaireProvenance.fromValueWithOutException(type));
     }
 
+    public String getTypeValue() {
+        return manager.getForProvenance().getValue();
+    }
+
     public void setFullText(String fullText) {
         manager.setFullText(fullText);
     }
@@ -184,4 +226,67 @@ public class EBPucsFileListViewBean extends EBAbstractListViewBeanPagination {
         manager.setForTypeDeclaration(typeDeclaration);
     }
 
+    public void setForDateDebut(String forDateDebut) {
+        manager.setForDateDebut(forDateDebut);
+    }
+
+    public String getForDateDebut() {
+        return manager.getForDateDebut();
+    }
+
+    public void setforDateFin(String forDateFin) {
+        manager.setForDateFin(forDateFin);
+    }
+
+    public String getForDateFin() {
+        return manager.getForDateFin();
+    }
+
+    public void setForUser(String forUser) {
+        manager.setForUser(forUser);
+    }
+
+    public String getForUser() {
+        return manager.getForUser();
+    }
+
+    public List getUsers() {
+        return manager.getUsers();
+    }
+
+    public Map getUsersJson() {
+        return manager.getUsersJson();
+    }
+
+    public String getForTypeDeclaration(){
+        return manager.getForTypeDeclaration();
+    }
+
+    public String getForStatut(){
+        return manager.getForStatut();
+    }
+
+    public String getLikeAffilie(){
+        return manager.getLikeAffilie();
+    }
+
+    public String getFullText(){
+        return manager.getFullText();
+    }
+
+    public Boolean getIsSelectionnerAllHandling() {
+        return manager.getIsSelectionnerAllHandling();
+    }
+
+    public void setIsSelectionnerAllHandling(Boolean isSelectionnerAllHandling) {
+        this.manager.setIsSelectionnerAllHandling(isSelectionnerAllHandling);
+    }
+
+    public Boolean getIsSelectionnerToHandle() {
+        return  manager.getIsSelectionnerToHandle();
+    }
+
+    public void setIsSelectionnerToHandle(Boolean isSelectionnerToHandle) {
+        this.manager.setIsSelectionnerToHandle(isSelectionnerToHandle);
+    }
 }
