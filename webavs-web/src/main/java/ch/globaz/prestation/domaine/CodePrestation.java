@@ -874,4 +874,32 @@ public enum CodePrestation {
             }
         }
     }
+    public boolean isRenteComplementaireForConjoint(){
+        switch (this) {
+            case CODE_33:
+            case CODE_43:
+                return true;
+            default:
+                return false;
+        }
+    }
+    public boolean isRenteComplementaires() {
+        switch (this) {
+            case CODE_34:
+            case CODE_35:
+            case CODE_36:
+            case CODE_44:
+            case CODE_45:
+            case CODE_46:
+            case CODE_54:
+            case CODE_55:
+            case CODE_56:
+            case CODE_74:
+            case CODE_75:
+            case CODE_76:
+                return true;
+            default:
+                return false;
+        }
+    }
 }

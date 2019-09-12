@@ -374,6 +374,10 @@ public class REAttestationsFiscalesOO extends REAbstractJobOO {
             data.addData("PLUSIEURS_ATT_FAMILLE", getTexte(catalogueTextesAttestationsFiscales, 4, 6) + SAUT_DE_LIGNE);
             lastLine = "PLUSIEURS_ATT_FAMILLE";
         }
+        if (famille.hasRenteConjointAdressePaiementSepare()) {
+            data.addData("RENTE_COMPLT_SEPARE", getTexte(catalogueTextesAttestationsFiscales, 4, 9) + SAUT_DE_LIGNE);
+            lastLine = "RENTE_COMPLT_SEPARE";
+        }
         // Si PC en décembre
         if (famille.getHasRentePC()) {
             String texte = getTexte(catalogueTextesAttestationsFiscales, 4, 7);

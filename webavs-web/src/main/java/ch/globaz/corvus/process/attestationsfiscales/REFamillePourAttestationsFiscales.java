@@ -20,6 +20,9 @@ public class REFamillePourAttestationsFiscales implements Comparable<REFamillePo
     private RETiersPourAttestationsFiscales tiersPourCorrespondance;
     private boolean hasRetroactif;
     private boolean hasRetroactifSurPlusieursAnnees;
+    private boolean hasRenteConjointAdressePaiementSepare;
+
+
 
     public REFamillePourAttestationsFiscales() {
         super();
@@ -129,4 +132,13 @@ public class REFamillePourAttestationsFiscales implements Comparable<REFamillePo
     public boolean getHasRetroactifSurPlusieursAnnees() {
         return hasRetroactifSurPlusieursAnnees;
     }
+
+    public boolean hasRenteConjointAdressePaiementSepare() {
+        return hasRenteConjointAdressePaiementSepare;
+    }
+
+    public void setHasRenteConjointAdressePaiementSepare(boolean hasRenteConjointAdressePaiementSepare) {
+        this.hasRenteConjointAdressePaiementSepare = hasRenteConjointAdressePaiementSepare;
+    }
+
 }

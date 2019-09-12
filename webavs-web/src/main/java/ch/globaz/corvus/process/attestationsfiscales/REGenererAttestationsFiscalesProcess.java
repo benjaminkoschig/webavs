@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+
 import ch.globaz.jade.JadeBusinessServiceLocator;
 import ch.globaz.jade.business.models.Langues;
 import ch.globaz.jade.business.models.codesysteme.JadeCodeSysteme;
@@ -156,7 +157,7 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
                     famillesSansLot.add(uneFamille);
                     continue;
                 }
-                if(REAttestationsFiscalesUtils.hasDecisionEnDecembreAndCreancier(uneFamille,getSession(),annee)){
+                if (REAttestationsFiscalesUtils.hasDecisionEnDecembreAndCreancier(uneFamille, getSession(), annee)) {
                     famillesSansLot.add(uneFamille);
                     continue;
                 }
@@ -795,13 +796,22 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
     private List<REFamillePourAttestationsFiscales> spliterSiNecessaire(
             Collection<REFamillePourAttestationsFiscales> values) {
         List<REFamillePourAttestationsFiscales> familles = new ArrayList<REFamillePourAttestationsFiscales>();
-
+        List<Integer> listCodesForRemarqueAdresseDiff = new ArrayList<>();
+        boolean hasRenteEnfant = false;
+        boolean hasRenteComplPourConjoint = false;
         for (REFamillePourAttestationsFiscales uneFamille : values) {
-
+            boolean hasRentePrincipal = false;
             boolean isRenteSurvivant = false;
             boolean hasAdressePmtAZero = false;
+
             Map<String, Set<RETiersPourAttestationsFiscales>> tiersParIdAdressePaiement = new HashMap<String, Set<RETiersPourAttestationsFiscales>>();
 
+            listCodesForRemarqueAdresseDiff.add(10);
+            listCodesForRemarqueAdresseDiff.add(13);
+            listCodesForRemarqueAdresseDiff.add(20);
+            listCodesForRemarqueAdresseDiff.add(23);
+            listCodesForRemarqueAdresseDiff.add(50);
+            listCodesForRemarqueAdresseDiff.add(70);
             for (RETiersPourAttestationsFiscales unTiersBeneficiaire : uneFamille.getTiersBeneficiaires()) {
                 for (RERentePourAttestationsFiscales uneRenteDuTiers : unTiersBeneficiaire.getRentes()) {
 
@@ -817,7 +827,13 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
                     if (codePrestation.isSurvivant()) {
                         isRenteSurvivant = true;
                     }
-
+                    /**
+                     * Vérifier si la famille une rente principal 10/20, 13/23 ou 50/70 et que l'adresse bénéficiaire de la rente correpond à l'adresse principal de l'attestation.
+                     */
+                    if(listCodesForRemarqueAdresseDiff.contains(codePrestation.getCodePrestation())
+                            && uneRenteDuTiers.getIdTiersAdressePaiement().equals(uneFamille.getTiersRequerant().getIdTiers())){
+                        hasRentePrincipal = true;
+                    }
                     if (tiersParIdAdressePaiement.containsKey(uneRenteDuTiers.getIdTiersAdressePaiement())) {
                         Set<RETiersPourAttestationsFiscales> tiersAvecCetteAdressePaiement = tiersParIdAdressePaiement
                                 .get(uneRenteDuTiers.getIdTiersAdressePaiement());
@@ -842,14 +858,27 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
                         }
                         familles.add(nouvelleFamille);
                     }
-                } else {
-                    if (hasAdressePmtAZero && tiersParIdAdressePaiement.size() == 2) {
-                        uneFamille.setHasPlusieursAdressePaiement(false);
-                    } else {
-                        uneFamille.setHasPlusieursAdressePaiement(true);
-                    }
-                    familles.add(uneFamille);
                 }
+                if(hasRentePrincipal){
+                    /**
+                     * Vérifier si il a des rentes complémentaires
+                     */
+                    for(RERentePourAttestationsFiscales uneRenteDuTiers: uneFamille.getRentesDeLaFamille()){
+                        CodePrestation codePrestation = CodePrestation
+                                .getCodePrestation(Integer.parseInt(uneRenteDuTiers.getCodePrestation()));
+                        if (codePrestation.isRenteComplementaireForConjoint()) {
+                            uneFamille.setHasRenteConjointAdressePaiementSepare(true);
+                        }
+                        if(codePrestation.isRenteComplementaires()){
+                            if (hasAdressePmtAZero && tiersParIdAdressePaiement.size() == 2) {
+                                uneFamille.setHasPlusieursAdressePaiement(false);
+                            } else  {
+                                uneFamille.setHasPlusieursAdressePaiement(true);
+                            }
+                        }
+                    }
+                }
+                familles.add(uneFamille);
             } else {
                 familles.add(uneFamille);
             }
@@ -857,6 +886,7 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
 
         return familles;
     }
+
 
     private int getAnneeAsInteger() {
         return Integer.valueOf(annee);
@@ -866,15 +896,13 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
      * Regroupe les données brutes par tiers requérant (tiers auquel l'attestation fiscale sera envoyée) et ajoute tous
      * les tiers bénéficiaires (et leurs rentes) liés à ce tiers requérant (par ID tiers de la base de calcul)
      *
-     * @param donnees
-     *            les données brutes chargées par {@link REDonneesPourAttestationsFiscalesManager}
+     * @param donnees les données brutes chargées par {@link REDonneesPourAttestationsFiscalesManager}
      * @return les données regroupées par tiers requérant
-     * @throws Exception
-     *             dans le cas où un problème survient lors de la récupération des adresses de courrier/paiement et du
-     *             titre du tiers requérant
+     * @throws Exception dans le cas où un problème survient lors de la récupération des adresses de courrier/paiement et du
+     *                   titre du tiers requérant
      */
     public List<REFamillePourAttestationsFiscales> transformer(List<REDonneesPourAttestationsFiscales> donnees,
-            String annee, Set<String> listeBeneficiairePCDecembre) throws Exception {
+                                                               String annee, Set<String> listeBeneficiairePCDecembre) throws Exception {
         Map<String, REFamillePourAttestationsFiscales> famillesParIdTiersBaseCalcul = new HashMap<String, REFamillePourAttestationsFiscales>();
 
         for (REDonneesPourAttestationsFiscales uneDonnee : donnees) {
