@@ -57,11 +57,11 @@ public class EBPucsFileListViewBean extends EBAbstractListViewBeanPagination {
 
         // Ajout des conditions sur les dates
 
-        if (!Objects.isNull(manager.getForDateDebut()) && (manager.getForDateDebut() != "")) {
+        if (!Objects.isNull(manager.getForDateDebut()) && (!Objects.equals(manager.getForDateDebut(),""))) {
             LocalDate dateDebut = LocalDate.parse(manager.getForDateDebut(), format2);
             LocalDate dateFin = dateDebut;
 
-            if (!Objects.isNull(manager.getForDateFin()) && (manager.getForDateFin() != "")) {
+            if (!Objects.isNull(manager.getForDateFin()) && (!Objects.equals(manager.getForDateFin(),""))) {
                 dateFin = LocalDate.parse(manager.getForDateFin(), format2);
             }
 
