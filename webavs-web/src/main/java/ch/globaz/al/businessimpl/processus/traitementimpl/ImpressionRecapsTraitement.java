@@ -3,6 +3,7 @@ package ch.globaz.al.businessimpl.processus.traitementimpl;
 import ch.globaz.al.business.constantes.ALCSPrestation;
 import ch.globaz.al.business.constantes.ALCSProcessus;
 import ch.globaz.al.business.constantes.ALConstDocument;
+import ch.globaz.al.business.constantes.ALConstParametres;
 import ch.globaz.al.business.loggers.ProtocoleLogger;
 import ch.globaz.al.business.models.prestation.RecapitulatifEntrepriseImpressionComplexSearchModel;
 import ch.globaz.al.business.services.ALServiceLocator;
@@ -13,6 +14,7 @@ import globaz.jade.context.JadeThread;
 import globaz.jade.log.JadeLogger;
 import globaz.jade.persistence.model.JadeAbstractSearchModel;
 import globaz.jade.print.server.JadePrintDocumentContainer;
+import globaz.jade.properties.JadePropertiesService;
 import globaz.jade.publish.client.JadePublishDocument;
 import globaz.jade.publish.client.JadePublishServerFacade;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
@@ -122,7 +124,8 @@ public class ImpressionRecapsTraitement extends BusinessTraitement {
             listRecapCsv = ALServiceLocator.getRecapitulatifEntrepriseImpressionService().loadArrayListCsv(
                     listResultatRecherche);
             if (listRecapCsv.size() != 0) {
-                recapCSV = ALServiceLocator.getRecapitulatifEntrepriseImpressionService().loadCSVDocument(listRecapCsv, true);
+                boolean isCharNssRecap = JadePropertiesService.getInstance().getProperty(ALConstParametres.RECAP_FORMAT_NSS).equals("true");
+                recapCSV = ALServiceLocator.getRecapitulatifEntrepriseImpressionService().loadCSVDocument(listRecapCsv, isCharNssRecap);
 
             }
         } catch (Exception e) {

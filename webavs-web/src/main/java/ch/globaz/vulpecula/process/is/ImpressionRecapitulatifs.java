@@ -1,6 +1,7 @@
 package ch.globaz.vulpecula.process.is;
 
 import ch.globaz.al.business.constantes.ALConstDocument;
+import ch.globaz.al.business.constantes.ALConstParametres;
 import ch.globaz.al.business.constantes.ALConstPrestations;
 import ch.globaz.al.business.models.prestation.RecapitulatifEntrepriseImpressionComplexSearchModel;
 import ch.globaz.al.business.services.ALServiceLocator;
@@ -15,6 +16,7 @@ import globaz.jade.job.common.JadeJobQueueNames;
 import globaz.jade.log.JadeLogger;
 import globaz.jade.persistence.model.JadeAbstractSearchModel;
 import globaz.jade.print.server.JadePrintDocumentContainer;
+import globaz.jade.properties.JadePropertiesService;
 import globaz.jade.publish.client.JadePublishDocument;
 import globaz.jade.publish.client.JadePublishServerFacade;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
@@ -286,7 +288,8 @@ public class ImpressionRecapitulatifs extends ALAbsrtactProcess {
             // publication document CSV
             listRecapCsv = recapitulatifEntrepriseImpressionServiceImpl.loadArrayListCsv(listResultatRecherche);
             if (listRecapCsv.size() != 0) {
-                recapCSV = recapitulatifEntrepriseImpressionServiceImpl.loadCSVDocument(listRecapCsv, true);
+                boolean isCharNssRecap = JadePropertiesService.getInstance().getProperty(ALConstParametres.RECAP_FORMAT_NSS).equals("true");
+                recapCSV = recapitulatifEntrepriseImpressionServiceImpl.loadCSVDocument(listRecapCsv, isCharNssRecap);
 
             }
         } catch (Exception e) {

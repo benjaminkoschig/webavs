@@ -33,6 +33,7 @@ import globaz.jade.log.JadeLogger;
 import globaz.jade.persistence.model.JadeAbstractModel;
 import globaz.jade.persistence.model.JadeAbstractSearchModel;
 import globaz.jade.print.server.JadePrintDocumentContainer;
+import globaz.jade.properties.JadePropertiesService;
 import globaz.jade.publish.client.JadePublishDocument;
 import globaz.jade.publish.client.JadePublishServerFacade;
 import globaz.jade.publish.document.JadePublishDocumentInfo;
@@ -211,7 +212,8 @@ public class GenerationFictivePrestationsTraitement extends BusinessTraitement {
             listRecapCsv = ALServiceLocator.getRecapitulatifEntrepriseImpressionService()
                     .loadArrayListCsv(recapToPrint);
             if (listRecapCsv.size() != 0) {
-                recapCSV = ALServiceLocator.getRecapitulatifEntrepriseImpressionService().loadCSVDocument(listRecapCsv, true);
+                boolean isCharNssRecap = JadePropertiesService.getInstance().getProperty(ALConstParametres.RECAP_FORMAT_NSS).equals("true");
+                recapCSV = ALServiceLocator.getRecapitulatifEntrepriseImpressionService().loadCSVDocument(listRecapCsv, isCharNssRecap);
 
             }
         } catch (Exception e) {
