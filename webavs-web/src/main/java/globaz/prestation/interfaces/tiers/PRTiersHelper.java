@@ -2,18 +2,12 @@ package globaz.prestation.interfaces.tiers;
 
 import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.Vector;
+import java.util.*;
+
+import globaz.pyxis.db.adressecourrier.TIAbstractAdresseData;
+import globaz.pyxis.db.adressecourrier.TIAdresseDataManager;
+import globaz.pyxis.db.tiers.*;
+import globaz.pyxis.util.TIAdresseResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
@@ -64,13 +58,6 @@ import globaz.pyxis.db.adressecourrier.TIPays;
 import globaz.pyxis.db.adressecourrier.TIPaysManager;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementData;
 import globaz.pyxis.db.adressepaiement.TIAdressePaiementDataManager;
-import globaz.pyxis.db.tiers.TIAdministrationAdresse;
-import globaz.pyxis.db.tiers.TIAdministrationAdresseManager;
-import globaz.pyxis.db.tiers.TIAdministrationManager;
-import globaz.pyxis.db.tiers.TIAdministrationViewBean;
-import globaz.pyxis.db.tiers.TIPersonneAvsManager;
-import globaz.pyxis.db.tiers.TITiers;
-import globaz.pyxis.db.tiers.TITiersViewBean;
 import globaz.pyxis.util.TIAdressePmtResolver;
 import globaz.pyxis.util.TINSSFormater;
 
@@ -80,6 +67,8 @@ import globaz.pyxis.util.TINSSFormater;
  * @author SCR
  */
 public class PRTiersHelper {
+
+
 
     private static class PRAdressePmtKey {
 
@@ -485,7 +474,56 @@ public class PRTiersHelper {
                     IConstantes.CS_AVOIR_ADRESSE_COURRIER, csDomaine, idExterne, formater, langue, date, true);
         }
     }
+    public static String getTitreFromAdresseCourrier(BISession session, String idTiers, String csDomaine,
+                                                   String idExterne, String langue, ITIAdresseFormater formater, String date)  {
+        String titre = "";
+        boolean herite = false;
+        String prop = null;
 
+        try {
+            BSession sessionTransmise = (BSession) session;
+
+            if (sessionTransmise.getApplicationId().toLowerCase().equals("corvus")) {
+                prop = sessionTransmise.getApplication().getProperty("isWantAdresseCourrier");
+            } else {
+                prop = null;
+            }
+        } catch (Exception e) {
+            prop = null;
+        }
+        if ((prop != null) && prop.equals("true")) {
+            herite = false;
+        } else {
+            herite = true;
+        }
+        date = JACalendar.todayJJsMMsAAAA();
+        TIAdresseDataManager mgr = new TITiersAdresseManager();
+        mgr.setSession((BSession)session);
+        mgr.setForIdTiers(idTiers);
+        mgr.setForDateEntreDebutEtFin(date);
+        mgr.changeManagerSize(0);
+        if (!herite) {
+            mgr.setForTypeAdresse(IConstantes.CS_AVOIR_ADRESSE_COURRIER);
+            mgr.setForIdApplication(csDomaine);
+            mgr.setForIdExternAvoirAdresse(idExterne);
+        }
+        TIAbstractAdresseData test;
+        try {
+            mgr.find();
+            Collection<BIEntity> list = TIAdresseResolver.resolveForOneTiers(mgr,IConstantes.CS_AVOIR_ADRESSE_COURRIER,csDomaine,idExterne);
+
+            if (list.size() == 1) {
+                test = (TIAbstractAdresseData) list.iterator().next();
+                titre = test.getTitre_adr();
+            }
+
+        } catch (Exception ex) {
+            throw new RETechnicalException(ex);
+        }
+
+
+        return titre;
+    }
     /**
      * <p>
      * retourne une adresse de domicile valide pour un tiers
@@ -507,6 +545,27 @@ public class PRTiersHelper {
         return PRTiersHelper.getAdresseGeneriqueFormatee(session, idTiers, IConstantes.CS_AVOIR_ADRESSE_COURRIER, null,
                 "");
     }
+
+    public static String getTitrefromAdresseDomicileFormatee(BSession session, String idTiers) throws Exception {
+        String titre="";
+        Hashtable<String, Object> params = new Hashtable<String, Object>();
+        params.put(ITITiers.FIND_FOR_IDTIERS, idTiers);
+
+        ITITiers helper = (ITITiers) session.getAPIFor(ITITiers.class);
+        helper.setISession(PRSession.connectSession(session, TIApplication.DEFAULT_APPLICATION_PYXIS));
+
+        ITITiers[] result = helper.findTiers(params);
+
+        if ((result == null) || (result.length == 0)) {
+            return "";
+        } else {
+            ITITiers tiers = result[0];
+            tiers.setISession(helper.getISession());
+            titre = tiers.getTitreTiers();
+        }
+        return titre;
+    }
+
 
     /**
      * retourne une adresse de domicile

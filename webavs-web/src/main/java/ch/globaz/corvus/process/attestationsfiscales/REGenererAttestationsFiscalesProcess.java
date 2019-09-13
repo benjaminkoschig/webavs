@@ -227,7 +227,7 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
 
     private void chargerAdresseCourrierEtTitreTiers(RETiersPourAttestationsFiscales tiers) throws Exception {
         ITITiers tiersTitre = (ITITiers) getSession().getAPIFor(ITITiers.class);
-
+        String titreFromAdresse;
         Hashtable<String, String> params = new Hashtable<String, String>();
         params.put(ITITiers.FIND_FOR_IDTIERS, tiers.getIdTiers());
 
@@ -236,14 +236,18 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
             tiersTitre = t[0];
         }
 
-        tiers.setTitreTiers(tiersTitre.getFormulePolitesse(tiers.getCsLangue()));
+
         String adresseCourrier = PRTiersHelper.getAdresseCourrierFormateeRente(getSession(), tiers.getIdTiers(),
+                REApplication.CS_DOMAINE_ADRESSE_CORVUS, "", "", null, "");
+        titreFromAdresse = PRTiersHelper.getTitreFromAdresseCourrier(getSession(), tiers.getIdTiers(),
                 REApplication.CS_DOMAINE_ADRESSE_CORVUS, "", "", null, "");
 
         if (JadeStringUtil.isBlank(adresseCourrier)) {
             adresseCourrier = PRTiersHelper.getAdresseDomicileFormatee(getSession(), tiers.getIdTiers());
+            titreFromAdresse = PRTiersHelper.getTitrefromAdresseDomicileFormatee(getSession(), tiers.getIdTiers());
         }
-
+        tiersTitre.setTitreTiers(titreFromAdresse);
+        tiers.setTitreTiers(tiersTitre.getFormulePolitesse(tiers.getCsLangue()));
         if (JadeStringUtil.isBlank(adresseCourrier) && (tiers.getRentes().size() > 0)) {
             Iterator<RERentePourAttestationsFiscales> iterateurDesRentes = tiers.getRentes().iterator();
             do {
@@ -262,6 +266,19 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
 
         tiers.setAdresseCourrierFormatee(adresseCourrier);
     }
+
+    //TODO : A utiliser si on a besoin d'appliquer le titre (Mr,Madame,...) de l'adresse du courier pour des cas spécifiques
+//    private boolean hasOnlyRenteOrphelins(RETiersPourAttestationsFiscales tiers) {
+//        for(RERentePourAttestationsFiscales rentes :   tiers.getRentes()){
+//            CodePrestation codePrestation = CodePrestation
+//                    .getCodePrestation(Integer.parseInt(rentes.getCodePrestation()));
+//                if(codePrestation.isRenteComplementairePourEnfant())
+//
+//
+//        }
+//
+//
+//    }
 
     private void chargerAdressesCourrierEtTitresFamilles(List<REFamillePourAttestationsFiscales> familles)
             throws Exception {
