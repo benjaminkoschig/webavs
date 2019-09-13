@@ -1,6 +1,5 @@
 package ch.globaz.orion.db;
 
-import ch.globaz.vulpecula.domain.models.postetravail.PosteTravail;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import globaz.globall.db.BEntity;
 import globaz.jade.client.util.JadeStringUtil;
@@ -10,12 +9,16 @@ import java.util.*;
 import ch.globaz.common.jadedb.JadeManager;
 import ch.globaz.common.sql.SQLWriter;
 import ch.globaz.orion.business.domaine.pucs.DeclarationSalaireProvenance;
-import org.apache.poi.hssf.record.formula.functions.Upper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.ModelAndView;
+
 
 public class EBPucsFileManager extends JadeManager<EBPucsFileEntity> {
 
     private static final long serialVersionUID = 1L;
+    private static final Logger LOG = LoggerFactory.getLogger(EBPucsFileManager.class);
+
     private String forDateSoumission;
     private String likeAffilie;
     private String statut;
@@ -158,7 +161,7 @@ public class EBPucsFileManager extends JadeManager<EBPucsFileEntity> {
         try {
             json = mapper.writeValueAsString(users);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.info("Erreur lors du mappage des Users en JSON.");
         }
 
         usersJson.addObject("usersJson",json);
