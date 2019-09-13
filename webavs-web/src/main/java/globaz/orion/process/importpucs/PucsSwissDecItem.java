@@ -53,8 +53,7 @@ public class PucsSwissDecItem extends ProcessItem {
             PucsFile pucsFile = buildPucsByFile(remotePathFileSourceUri, session);
             AFAffiliation affiliation = findAffiation(pucsFile);
             if (affiliation == null) {
-                this.addErrors("PROCESS_IMPORT_PUCSINDB_AFFILIATION_NOT_FOUND", pucsFile.getNumeroAffilie(),
-                        pucsFile.getAnneeDeclaration());
+                this.buildErrors(pucsFile);
             } else {
                 PucsItem.save(pucsFile, affiliation, idJob, session);
             }
@@ -68,6 +67,26 @@ public class PucsSwissDecItem extends ProcessItem {
             JadeFsFacade.copyFile(remotePathFileSourceUri, path + Files.getNameWithoutExtension(name).replace(".", "_")
                     + ".xml");
             JadeFsFacade.delete(remotePathFileSourceUri);
+        }
+    }
+
+    private void buildErrors(PucsFile pucsFile) {
+        this.addErrors("PROCESS_IMPORT_PUCSINDB_AFFILIATION_NOT_FOUND", pucsFile.getNumeroAffilie(),
+                pucsFile.getAnneeDeclaration());
+        if(!JadeStringUtil.isBlankOrZero(pucsFile.getNomAffilie())) {
+            this.addErrors("PROCESS_IMPORT_PUCSINDB_AFFILIATION_NOT_FOUND_NOM_AFFILIE", pucsFile.getNomAffilie());
+        }
+        if(pucsFile.getAdresse() != null) {
+            this.addErrors("PROCESS_IMPORT_PUCSINDB_AFFILIATION_NOT_FOUND_ADRESSE_AFFILIE", pucsFile.getAdresse().getStreet(), pucsFile.getAdresse().getZipCode(), pucsFile.getAdresse().getCity());
+        }
+        if(!JadeStringUtil.isBlankOrZero(pucsFile.getNumeroIDE())) {
+            this.addErrors("PROCESS_IMPORT_PUCSINDB_AFFILIATION_NOT_FOUND_NO_IDE", pucsFile.getNumeroIDE());
+        }
+        this.addErrors("PROCESS_IMPORT_PUCSINDB_AFFILIATION_NOT_FOUND_MONTANT_TOTAL_AVS", pucsFile.getMontantAvs().toStringFormat());
+        this.addErrors("PROCESS_IMPORT_PUCSINDB_AFFILIATION_NOT_FOUND_MONTANT_TOTAL_AC", pucsFile.getMontantAc1().toStringFormat());
+        this.addErrors("PROCESS_IMPORT_PUCSINDB_AFFILIATION_NOT_FOUND_MONTANT_TOTAL_AC2", pucsFile.getMontantAc2().toStringFormat());
+        if(!JadeStringUtil.isBlankOrZero(pucsFile.getNbSalaires())) {
+            this.addErrors("PROCESS_IMPORT_PUCSINDB_AFFILIATION_NOT_FOUND_NOMBRE_SALARIES", pucsFile.getNbSalaires());
         }
     }
 
@@ -114,6 +133,11 @@ public class PucsSwissDecItem extends ProcessItem {
                 pucsFile.setTotalControle(ds.getMontantCaf().toStringFormat());
             }
             pucsFile.setTypeDeclaration(DeclarationSalaireType.PRINCIPALE);
+            pucsFile.setAdresse(ds.getAdresse());
+            pucsFile.setNumeroIDE(ds.getNumeroIde());
+            pucsFile.setMontantAvs(ds.getMontantAvs());
+            pucsFile.setMontantAc1(ds.getMontantAc1());
+            pucsFile.setMontantAc2(ds.getMontantAc2());
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         } finally {

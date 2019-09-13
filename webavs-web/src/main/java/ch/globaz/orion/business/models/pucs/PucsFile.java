@@ -2,6 +2,9 @@ package ch.globaz.orion.business.models.pucs;
 
 import java.io.File;
 import java.io.Serializable;
+
+import ch.globaz.common.domaine.Montant;
+import ch.globaz.orion.business.domaine.pucs.Adresse;
 import ch.globaz.orion.business.domaine.pucs.DeclarationSalaireProvenance;
 import ch.globaz.orion.business.domaine.pucs.DeclarationSalaireType;
 import ch.globaz.orion.business.domaine.pucs.EtatPucsFile;
@@ -35,6 +38,11 @@ public class PucsFile implements Serializable {
     private String dateValidation;
     private String nomValidation;
     private DeclarationSalaireType typeDeclaration;
+    private String numeroIDE;
+    private Adresse adresse;
+    private Montant montantAvs = Montant.ZERO;
+    private Montant montantAc1 = Montant.ZERO;
+    private Montant montantAc2 = Montant.ZERO;
 
     public File getFile() {
         return file;
@@ -297,5 +305,45 @@ public class PucsFile implements Serializable {
 
     public void setNomValidation(String nomValidation) {
         this.nomValidation = nomValidation;
+    }
+
+    public String getNumeroIDE() {
+        return numeroIDE;
+    }
+
+    public void setNumeroIDE(String numeroIDE) {
+        this.numeroIDE = numeroIDE;
+    }
+
+    public Adresse getAdresse() {
+        return adresse;
+    }
+
+    public void setAdresse(Adresse adresse) {
+        this.adresse = adresse;
+    }
+
+    public Montant getMontantAvs() {
+        return montantAvs;
+    }
+
+    public void setMontantAvs(Montant montantAvs) {
+        this.montantAvs = montantAvs;
+    }
+
+    public Montant getMontantAc1() {
+        return montantAc1;
+    }
+
+    public void setMontantAc1(Montant montantAc1) {
+        this.montantAc1 = montantAc1;
+    }
+
+    public Montant getMontantAc2() {
+        return montantAc2;
+    }
+
+    public void setMontantAc2(Montant montantAc2) {
+        this.montantAc2 = montantAc2;
     }
 }

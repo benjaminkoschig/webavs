@@ -1,13 +1,9 @@
 package ch.globaz.common.process.byitem;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public abstract class ProcessItem implements Runnable {
-    private Map<String, List<String>> errors = new HashMap<String, List<String>>();
+    private LinkedHashMap<String, List<String>> errors = new LinkedHashMap<String, List<String>>();
     private Throwable exception;
 
     public abstract void treat() throws Exception;
@@ -45,7 +41,7 @@ public abstract class ProcessItem implements Runnable {
         return exception != null;
     }
 
-    public Map<String, List<String>> getErrors() {
+    public LinkedHashMap<String, List<String>> getErrors() {
         return errors;
     }
 
