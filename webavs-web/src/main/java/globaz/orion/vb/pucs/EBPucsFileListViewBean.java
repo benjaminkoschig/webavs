@@ -199,7 +199,7 @@ public class EBPucsFileListViewBean extends EBAbstractListViewBeanPagination {
     }
 
     public void setStatut(String statut) {
-        manager.setForStatut(statut);
+        manager.setStatut(statut);
     }
 
     public void setLikeAffilie(String likeAffilie) {
@@ -262,8 +262,8 @@ public class EBPucsFileListViewBean extends EBAbstractListViewBeanPagination {
         return manager.getForTypeDeclaration();
     }
 
-    public String getForStatut(){
-        return manager.getForStatut();
+    public String getStatut(){
+        return manager.getStatut();
     }
 
     public String getLikeAffilie(){

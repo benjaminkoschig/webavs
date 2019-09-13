@@ -162,7 +162,7 @@ function postInit() {
 	if(viewBeanFind != null) {
 		isSelectionnerAllHandling = viewBeanFind.getIsSelectionnerAllHandling();
 		isSelectionnerToHandle = viewBeanFind.getIsSelectionnerToHandle();
-		statut = viewBeanFind.getForStatut();
+		statut = viewBeanFind.getStatut();
 		recherche = viewBeanFind.getFullText();
 		likeAffilie = viewBeanFind.getLikeAffilie();
 		forTypeDeclaration = viewBeanFind.getForTypeDeclaration();
@@ -199,11 +199,15 @@ function postInit() {
 	</td>
 	<td>
 	<select id='statut' name='statut'>
+		<% if(Objects.equals(statut, "")) {%>
+		<OPTION value=''  selected="selected"></OPTION>
+		<%} else {%>
 		<OPTION value=''></OPTION>
+		<%} %>
 		<%for(Entry<String, String> entry : map.entrySet()) {%>
 			<% if(Objects.equals(entry.getKey(), statut)) {%>
 				<OPTION selected="selected" value='<%=entry.getKey()%>'><%=entry.getValue() %></OPTION>
-			<%} else if(codesEnCours.equals(entry.getKey())) {%>
+			<%} else if(codesEnCours.equals(entry.getKey()) && !Objects.equals(statut, "")) {%>
 				<OPTION selected="selected" value='<%=entry.getKey()%>'><%=entry.getValue() %></OPTION>
 			<%} else {%>
 				<OPTION value='<%=entry.getKey()%>'><%=entry.getValue() %></OPTION>

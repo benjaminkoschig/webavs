@@ -18,7 +18,7 @@ public class EBPucsFileManager extends JadeManager<EBPucsFileEntity> {
     private static final long serialVersionUID = 1L;
     private String forDateSoumission;
     private String likeAffilie;
-    private String forStatut;
+    private String statut;
     private DeclarationSalaireProvenance forProvenance = DeclarationSalaireProvenance.UNDEFINDED;
     private String fullText;
     private Collection<String> inIds;
@@ -47,7 +47,7 @@ public class EBPucsFileManager extends JadeManager<EBPucsFileEntity> {
         sqlWhere.and(EBPucsFileDefTable.DATE_RECEPTION).beforeOrEqualForDate(forDateFin);
         sqlWhere.and("UPPER("+EBPucsFileDefTable.HANDLING_USER+")").equal(Objects.isNull(forUser)? forUser : forUser.toUpperCase());
         sqlWhere.and(EBPucsFileDefTable.NUMERO_AFFILIE).fullLike(likeAffilie);
-        sqlWhere.and(EBPucsFileDefTable.STATUS).in(forStatut);
+        sqlWhere.and(EBPucsFileDefTable.STATUS).in(statut);
         sqlWhere.and(EBPucsFileDefTable.PROVENANCE).equal(provenance);
         sqlWhere.and(EBPucsFileDefTable.ID).in(inIds);
         if (!JadeStringUtil.isEmpty(forTypeDeclaration)) {
@@ -93,12 +93,12 @@ public class EBPucsFileManager extends JadeManager<EBPucsFileEntity> {
         this.likeAffilie = likeAffilie;
     }
 
-    public String getForStatut() {
-        return forStatut;
+    public String getStatut() {
+        return statut;
     }
 
-    public void setForStatut(String forStatut) {
-        this.forStatut = forStatut;
+    public void setStatut(String statut) {
+        this.statut = statut;
     }
 
     public String getFullText() {
