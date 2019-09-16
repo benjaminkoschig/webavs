@@ -2,6 +2,9 @@ package ch.globaz.corvus.process.attestationsfiscales;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.Month;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import globaz.corvus.api.basescalcul.IREPrestationDue;
@@ -10,6 +13,7 @@ import globaz.corvus.db.attestationsFiscales.REAttestationFiscaleRentAccordOrdre
 import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
 import globaz.jade.client.util.JadeNumericUtil;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ch.globaz.prestation.domaine.CodePrestation;
@@ -145,92 +149,6 @@ public class REAttestationsFiscalesUtils {
             if (uneRente.isRenteBloquee() && (JadeStringUtil.isBlank(uneRente.getDateFinDroit())
                     || JadeDateUtil.isDateMonthYearAfter(uneRente.getDateFinDroit(), "12." + annee))) {
                 return true;
-            }
-        }
-        return false;
-    }
-
-    public static boolean hasRenteQuiSeChevauchent(REFamillePourAttestationsFiscales famille, int annee) {
-        Map<String, LinkedList<PRPeriode>> periodesParTiersEtRentes = new HashMap<String, LinkedList<PRPeriode>>();
-        SimpleDateFormat reader1 = new SimpleDateFormat("MM.yyyy");
-        SimpleDateFormat writter1 = new SimpleDateFormat("yyyyMM");
-        SimpleDateFormat reader2 = new SimpleDateFormat("dd.MM.yyyy");
-        SimpleDateFormat writter2 = new SimpleDateFormat("yyyyMMdd");
-        /*
-         * Regroupement des périodes par tiers bénéficiaire et genre de rente
-         */
-        for (RERentePourAttestationsFiscales rente : famille.getRentesDeLaFamille()) {
-            /*
-             * Si la date de fin est plus petite ou égale à la date de début, on ignore cette rente
-             */
-            if (!JadeStringUtil.isBlankOrZero(rente.getDateDebutDroit())
-                    && !JadeStringUtil.isBlankOrZero(rente.getDateFinDroit())) {
-                try {
-                    int ddd = Integer.valueOf(writter1.format(reader1.parse(rente.getDateDebutDroit())));
-                    int ddf = Integer.valueOf(writter1.format(reader1.parse(rente.getDateFinDroit())));
-                    if (ddf <= ddd) {
-                        continue;
-                    }
-                } catch (Exception e) {
-                    logger.warn(
-                            "Exception lors du contrôle du chevauchement de période pour la rente accordée avec l'id =["
-                                    + rente.getIdRenteAccordee() + "]");
-                    continue;
-                }
-            }
-
-            String cle = rente.getIdTiersBeneficiaire() + "-" + rente.getCodePrestation();
-            PRPeriode periode = new PRPeriode("01." + rente.getDateDebutDroit(), "01." + rente.getDateFinDroit());
-
-            if (!periodesParTiersEtRentes.containsKey(cle)) {
-                periodesParTiersEtRentes.put(cle, new LinkedList<PRPeriode>());
-            }
-            periodesParTiersEtRentes.get(cle).add(periode);
-        }
-
-        for (String cle : periodesParTiersEtRentes.keySet()) {
-            LinkedList<PRPeriode> periodes = periodesParTiersEtRentes.get(cle);
-
-            /*
-             * 1er test :
-             * Est-ce qu'il y a 2 rentes sans date de fin -> chevauchement obligatoire
-             */
-            int ctr = 0;
-            for (PRPeriode periode : periodes) {
-                if (JadeStringUtil.isBlankOrZero(periode.getDateDeFin())) {
-                    ctr++;
-                }
-            }
-            if (ctr > 1) {
-                return true;
-            }
-
-            /*
-             * 2ème test, on analyse les périodes
-             */
-            Collections.sort(periodes);
-            PRPeriode previous = null;
-            for (PRPeriode periode : periodes) {
-
-                if (previous == null) {
-                    previous = periode;
-                } else {
-                    try {
-                        int dateDebut = Integer.valueOf(writter2.format(reader2.parse(periode.getDateDeDebut())));
-                        int dateFin = Integer.valueOf(writter2.format(reader2.parse(previous.getDateDeFin())));
-
-                        if (dateDebut <= dateFin) {
-                            return true;
-                        } else {
-                            previous = periode;
-                        }
-                    } catch (Exception e) {
-                        logger.warn("Exception lors du contrôle du chevauchement des périodes pour le tiers réquérant avec l'id =["
-                                + famille.getTiersRequerant().getIdTiers()
-                                + "]. Périodes ayant poyé problème : 1=["
-                                + previous == null ? "" : previous.toString() + "], 2=[" + periode.toString() + "]");
-                    }
-                }
             }
         }
         return false;
@@ -845,5 +763,84 @@ public class REAttestationsFiscalesUtils {
             }
         }
         return false;
+    }
+
+    /**
+     * On contrôle s'il existe un chevauchement de rente pour cette famille : même type de rente et période qui se chevauche.
+     *
+     * @param uneFamille : la famille pour laquelle on teste le chevauchement.
+     * @param annee : l'année analysée.
+     * @return vrai s'il y a un chevauchement.
+     */
+    public static boolean hasRenteQuiSeChevauchent(REFamillePourAttestationsFiscales uneFamille, int annee) {
+        List<RERentePourAttestationsFiscales> allRentes = uneFamille.getRentesDeLaFamille();
+        RERentePourAttestationsFiscales rente1;
+        RERentePourAttestationsFiscales rente2;
+        LocalDate anneeAnalyse = LocalDate.ofYearDay(annee,1);
+        for (int i = 0; i < allRentes.size(); i++) {
+            for (int j = i + 1; j < allRentes.size(); j++) {
+                rente1 = allRentes.get(i);
+                rente2 = allRentes.get(j);
+                if (hasSameCodePrestation(rente1, rente2) && hasPeriodOverlap(rente1, rente2, anneeAnalyse)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Vérifie si les deux rentes sont de même type : si elles ont le même code prestation.
+     *
+     * @param rente1 : première rente à comparer.
+     * @param rente2 : seconde rente à comparer.
+     * @return vrai si les deux rentes sont de même type, non sinon.
+     */
+    private static boolean hasSameCodePrestation(RERentePourAttestationsFiscales rente1, RERentePourAttestationsFiscales rente2) {
+        return Objects.equals(rente1.getCodePrestation(), rente2.getCodePrestation());
+    }
+
+    /**
+     * Vérifie si les deux rentes ont une période qui se chevauche.
+     *
+     * @param rente1 : première rente à comparer.
+     * @param rente2 : seconde rente à comparer.
+     * @param annee : l'année analysée.
+     * @return vrai si les deux rentes ont une période qui se chevauche, non sinon.
+     */
+    private static boolean hasPeriodOverlap(RERentePourAttestationsFiscales rente1, RERentePourAttestationsFiscales rente2, LocalDate annee) {
+        // Si la période de fin est null pour les deux rentes, il y a chevauchement.
+        if (StringUtils.isEmpty(rente1.getDateFinDroit()) && StringUtils.isEmpty(rente2.getDateFinDroit())) {
+            return true;
+        }
+
+        LocalDate rente1DateDebut = getDateDebut(rente1.getDateDebutDroit());
+        LocalDate rente2DateDebut = getDateDebut(rente2.getDateDebutDroit());
+        LocalDate rente1DateFin = getDateFin(rente1.getDateFinDroit(), annee);
+        LocalDate rente2DateFin = getDateFin(rente2.getDateFinDroit() , annee);
+
+        if (rente1DateDebut.isAfter(rente1DateFin) || rente2DateDebut.isAfter(rente2DateFin)) {
+            return false;
+        }
+
+        if (!rente1DateDebut.isAfter(rente2DateFin) && !rente2DateDebut.isAfter(rente1DateFin)) {
+            return true;
+        }
+        return false;
+    }
+
+    private static LocalDate getDateDebut(String dateDebutDroit) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        LocalDate renteDateDebut = LocalDate.parse("01." + dateDebutDroit , formatter);
+        return renteDateDebut;
+    }
+
+    private static LocalDate getDateFin(String dateFinDroit, LocalDate annee) {
+        if (StringUtils.isNotEmpty(dateFinDroit)) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+            LocalDate renteDateFin = LocalDate.parse("01." + dateFinDroit , formatter);
+                return renteDateFin;
+        }
+        return LocalDate.of(annee.getYear(), Month.DECEMBER,31);
     }
 }

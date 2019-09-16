@@ -358,9 +358,8 @@ public class REAttestationsFiscalesUtilsTest {
         Assert.assertFalse(REAttestationsFiscalesUtils.isSansDecisionPendantEtApresAnneeFiscale(famille, annee));
     }
 
-    @Ignore
     @Test
-    public void hasRenteQuiSeChevauchent() {
+    public void testHasRenteQuiSeChevauchent() {
 
         REFamillePourAttestationsFiscales famille = new REFamillePourAttestationsFiscales();
         RETiersPourAttestationsFiscales tiers1 = new RETiersPourAttestationsFiscales();
@@ -415,7 +414,7 @@ public class REAttestationsFiscalesUtilsTest {
         rente1.setDateFinDroit("05.2013");
 
         rente2.setDateDebutDroit("06.2011");
-        rente2.setDateDebutDroit("06.2012");
+        rente2.setDateFinDroit("06.2012");
 
         rente3.setDateDebutDroit("01.2011");
         rente3.setDateFinDroit("05.2011");
@@ -447,6 +446,6 @@ public class REAttestationsFiscalesUtilsTest {
         rente4.setDateDebutDroit("02.2011");
         rente4.setDateFinDroit("");
         tiers2.getMapRentes().put("4", rente4);
-        Assert.assertFalse(REAttestationsFiscalesUtils.hasRenteQuiSeChevauchent(famille, anneeAsInteger));
+        Assert.assertTrue(REAttestationsFiscalesUtils.hasRenteQuiSeChevauchent(famille, anneeAsInteger));
     }
 }
