@@ -161,6 +161,10 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
                     famillesSansLot.add(uneFamille);
                     continue;
                 }
+                if (REAttestationsFiscalesUtils.hasRenteQuiSeChevauchent(uneFamille, getAnneeAsInteger())) {
+                    famillesSansLot.add(uneFamille);
+                    continue;
+                }
 
                 // Les lots 1 à 4 ne contiennent pas de rétroactif
                 if (analyseurLot1.isFamilleDansLot(uneFamille)) {

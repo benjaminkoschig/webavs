@@ -766,7 +766,7 @@ public class REAttestationsFiscalesUtils {
     }
 
     /**
-     * On contrôle s'il existe un chevauchement de rente pour cette famille : même type de rente et période qui se chevauche.
+     * On contrôle s'il existe un chevauchement de rente pour cette famille : même assuré, même type de rente et période qui se chevauche.
      *
      * @param uneFamille : la famille pour laquelle on teste le chevauchement.
      * @param annee : l'année analysée.
@@ -781,12 +781,23 @@ public class REAttestationsFiscalesUtils {
             for (int j = i + 1; j < allRentes.size(); j++) {
                 rente1 = allRentes.get(i);
                 rente2 = allRentes.get(j);
-                if (hasSameCodePrestation(rente1, rente2) && hasPeriodOverlap(rente1, rente2, anneeAnalyse)) {
+                if (hasSameAssure(rente1,rente2) && hasSameCodePrestation(rente1, rente2) && hasPeriodOverlap(rente1, rente2, anneeAnalyse)) {
                     return true;
                 }
             }
         }
         return false;
+    }
+
+    /**
+     * Vérifie si les deux rentes sont rattachées au même assuré.
+     *
+     * @param rente1 : première rente à comparer.
+     * @param rente2 : seconde rente à comparer.
+     * @return vrai si les deux rentes sont rattachées au même assuré, non sinon.
+     */
+    private static boolean hasSameAssure(RERentePourAttestationsFiscales rente1, RERentePourAttestationsFiscales rente2) {
+        return Objects.equals(rente1.getIdTiersBeneficiaire(), rente2.getIdTiersBeneficiaire());
     }
 
     /**

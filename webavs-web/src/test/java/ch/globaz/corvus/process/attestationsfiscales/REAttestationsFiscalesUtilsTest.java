@@ -446,6 +446,6 @@ public class REAttestationsFiscalesUtilsTest {
         rente4.setDateDebutDroit("02.2011");
         rente4.setDateFinDroit("");
         tiers2.getMapRentes().put("4", rente4);
-        Assert.assertTrue(REAttestationsFiscalesUtils.hasRenteQuiSeChevauchent(famille, anneeAsInteger));
+        Assert.assertFalse(REAttestationsFiscalesUtils.hasRenteQuiSeChevauchent(famille, anneeAsInteger));
     }
 }
