@@ -72,6 +72,7 @@ import globaz.hera.utils.SFFamilleUtils;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.ged.client.JadeGedFacade;
+import globaz.jade.log.JadeLogger;
 import globaz.jade.service.JadeTarget;
 import globaz.prestation.acor.PRACORConst;
 import globaz.prestation.api.IPRDemande;
@@ -1125,7 +1126,7 @@ public class RESaisieDemandeRenteHelper extends PRAbstractHelper {
                 transaction.commit();
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            JadeLogger.error(e, e.getMessage());
             throw e;
         } finally {
             if (transaction != null) {
@@ -2333,7 +2334,7 @@ public class RESaisieDemandeRenteHelper extends PRAbstractHelper {
      *      globaz.framework.controller.FWAction, globaz.globall.api.BISession)
      */
     @Override
-    protected FWViewBeanInterface execute(FWViewBeanInterface viewBean, FWAction action, BISession session) {
+    protected FWViewBeanInterface execute(FWViewBeanInterface viewBean, FWAction action, BISession session){
         return deleguerExecute(viewBean, action, session);
     }
 

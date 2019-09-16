@@ -35,6 +35,7 @@ import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.servlet.PRDefaultAction;
 import globaz.prestation.tools.PRSessionDataContainerHelper;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.TreeSet;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -256,7 +257,7 @@ public class RESaisieDemandeRenteAction extends PRDefaultAction {
     protected String _getDestAjouterSuccesInfoComp(HttpSession session, HttpServletRequest request,
             HttpServletResponse response, FWViewBeanInterface viewBean) {
 
-        return this.getUserActionURL(request, IREActions.ACTION_SAISIE_DEMANDE_RENTE, FWAction.ACTION_AFFICHER);
+        return this.getUserActionURL(request, IREActions.ACTION_SAISIE_DEMANDE_RENTE, "afficherInformationsComplementaires");
 
     }
 
@@ -771,7 +772,9 @@ public class RESaisieDemandeRenteAction extends PRDefaultAction {
             infoComplViewBean.setIdDemandeRente(vb.getIdDemandeRente());
 
             infoComplViewBean = (REInfoComplViewBean) mainDispatcher.dispatch(infoComplViewBean, getAction());
-        } else {
+        } else if (viewBean instanceof REInfoComplViewBean){
+            infoComplViewBean = (REInfoComplViewBean)viewBean;
+        } else{
             infoComplViewBean = (REInfoComplViewBean) mainDispatcher.dispatch(viewBean, getAction());
         }
 
@@ -866,7 +869,6 @@ public class RESaisieDemandeRenteAction extends PRDefaultAction {
             boolean goesToSuccessDest = !viewBean.getMsgType().equals(FWViewBeanInterface.ERROR);
 
             REInfoComplViewBean infoComplViewBean = (REInfoComplViewBean) viewBean;
-
             String chaineIdInfoCompl = "";
             if (!JadeStringUtil.isBlankOrZero(infoComplViewBean.getIdInfoCompl())) {
                 chaineIdInfoCompl = "&idInfoComplementaire=" + infoComplViewBean.getIdInfoCompl();
@@ -889,9 +891,10 @@ public class RESaisieDemandeRenteAction extends PRDefaultAction {
 
             // On mémorise le NSS dans la session
             RENSSDTO dto = new RENSSDTO();
-            dto.setNSS(((RESaisieDemandeRenteViewBean) viewBean).getNssRequerant());
-            PRSessionDataContainerHelper.setData(session, PRSessionDataContainerHelper.KEY_NSS_DTO, dto);
-
+            if(viewBean instanceof  RESaisieDemandeRenteViewBean) {
+                dto.setNSS(((RESaisieDemandeRenteViewBean) viewBean).getNssRequerant());
+                PRSessionDataContainerHelper.setData(session, PRSessionDataContainerHelper.KEY_NSS_DTO, dto);
+            }
             PRSessionDataContainerHelper.setData(session, PRSessionDataContainerHelper.KEY_PRONONCE_PARAMETRES_RC_DTO,
                     null);
 
