@@ -60,6 +60,15 @@ public class AFContactFPV extends BEntity {
 
     @Override
     protected void _validate(BStatement bStatement) throws Exception {
+
+        if (JadeStringUtil.isEmpty(getSexe())) {
+            if (getSession().getErrors().toString().contains("sexe")) {
+                _addError(bStatement.getTransaction(),"Le sexe n'est pas renseigné ou le format saisi n'est pas correct (H ou F)");
+            } else {
+                _addError(bStatement.getTransaction(),"Le sexe doit être renseigné.");
+            }
+        }
+
         if (JadeStringUtil.isEmpty(getNom())) {
             _addError(bStatement.getTransaction(),"Le nom doit être renseigné.");
         } else if (!nomPattern.matcher(getNom()).matches()) {
@@ -72,10 +81,6 @@ public class AFContactFPV extends BEntity {
             _addError(bStatement.getTransaction(),"Le format du prénom renseigné n'est pas correct.");
         }
 
-        // On vérifie que le sexe est renseigné et qu'il n'y pas déjà une erreur remontée dans la session depuis le webservice.
-        if (JadeStringUtil.isEmpty(getSexe()) && !getSession().hasErrors()) {
-            _addError(bStatement.getTransaction(),"Le sexe doit être renseigné.");
-        }
 
         if (JadeStringUtil.isEmpty(getEmail())) {
             _addError(bStatement.getTransaction(),"L'e-mail doit être renseigné.");
