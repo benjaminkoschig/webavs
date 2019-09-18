@@ -1,5 +1,9 @@
 package ch.globaz.al.business.services.rafam;
 
+import ch.globaz.al.business.constantes.enumerations.RafamFamilyAllowanceType;
+import ch.globaz.al.business.models.adi.AdiEnfantMoisComplexModel;
+import ch.globaz.al.business.models.adi.DecompteAdiModel;
+import ch.globaz.al.business.models.dossier.DossierModel;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.service.provider.application.JadeApplicationService;
@@ -9,6 +13,8 @@ import ch.globaz.al.business.constantes.enumerations.RafamEvDeclencheur;
 import ch.globaz.al.business.models.dossier.DossierComplexModel;
 import ch.globaz.al.business.models.droit.DroitComplexModel;
 import ch.globaz.al.business.models.rafam.AnnonceRafamModel;
+
+import java.util.List;
 
 /**
  * Service de création d'annonces RAFAM
@@ -168,6 +174,9 @@ public interface AnnonceRafamCreationService extends JadeApplicationService {
 
     public void creerAnnoncesDelegue(String idEmployeur, ChildAllowanceType currentAnnonces) throws Exception;
 
+    public void creerAnnoncesADI(List<AdiEnfantMoisComplexModel> listAdi)
+            throws JadeApplicationException, JadePersistenceException;
+
     /**
      * Suspend l'annonce passée en paramètre
      * 
@@ -210,4 +219,13 @@ public interface AnnonceRafamCreationService extends JadeApplicationService {
      */
     public AnnonceRafamModel validerAnnonce(AnnonceRafamModel annonceRafamModel) throws JadeApplicationException,
             JadePersistenceException;
+
+    public List<RafamFamilyAllowanceType> getTypesAllocation(DossierModel dossier, DroitComplexModel droit)
+            throws JadeApplicationException, JadePersistenceException;
+
+    public List<RafamFamilyAllowanceType> getTypesAllocationForAnnulation(DossierModel dossier, DroitComplexModel droit)
+            throws JadeApplicationException, JadePersistenceException;
+
+    public void creerAnnoncesWithoutDelete(RafamEvDeclencheur evDecl, RafamEtatAnnonce etat, DossierComplexModel dossier,
+                                           DroitComplexModel droit) throws JadeApplicationException, JadePersistenceException ;
 }

@@ -1,5 +1,14 @@
 package ch.globaz.al.businessimpl.services.adiDecomptes;
 
+import ch.globaz.al.business.constantes.enumerations.*;
+import ch.globaz.al.business.models.adi.*;
+import ch.globaz.al.business.models.droit.DroitComplexModel;
+import ch.globaz.al.business.models.rafam.AnnonceRafamModel;
+import ch.globaz.al.business.models.rafam.AnnonceRafamSearchModel;
+import ch.globaz.al.businessimpl.services.ALImplServiceLocator;
+import ch.globaz.common.domaine.Montant;
+import ch.globaz.common.domaine.Periode;
+import globaz.al.vb.rafam.ALAnnonceRafamViewBean;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeNumericUtil;
 import globaz.jade.client.util.JadeStringUtil;
@@ -7,13 +16,10 @@ import globaz.jade.context.JadeThread;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
 import globaz.jade.log.business.JadeBusinessMessageLevels;
+import globaz.jade.persistence.model.JadeAbstractModel;
 import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
+
+import java.util.*;
 import java.util.Map.Entry;
 import ch.globaz.al.business.constantes.ALCSAffilie;
 import ch.globaz.al.business.constantes.ALCSPrestation;
@@ -22,12 +28,6 @@ import ch.globaz.al.business.constantes.ALConstParametres;
 import ch.globaz.al.business.constantes.enumerations.generation.prestations.Bonification;
 import ch.globaz.al.business.exceptions.business.ALPrestationBusinessException;
 import ch.globaz.al.business.exceptions.model.adi.ALDecompteAdiModelException;
-import ch.globaz.al.business.models.adi.AdiEnfantMoisComplexModel;
-import ch.globaz.al.business.models.adi.AdiEnfantMoisComplexSearchModel;
-import ch.globaz.al.business.models.adi.AdiSaisieComplexModel;
-import ch.globaz.al.business.models.adi.AdiSaisieComplexSearchModel;
-import ch.globaz.al.business.models.adi.DecompteAdiModel;
-import ch.globaz.al.business.models.adi.DecompteAdiSearchModel;
 import ch.globaz.al.business.models.dossier.DossierComplexModel;
 import ch.globaz.al.business.models.dossier.DossierModel;
 import ch.globaz.al.business.models.droit.CalculBusinessModel;
@@ -324,11 +324,14 @@ public class DecompteAdiBusinessServiceImpl implements DecompteAdiBusinessServic
             listeCalculAdiEnfant.put(periodeCouverte, new ArrayList<CalculBusinessModel>());
         }
 
+        List<AdiEnfantMoisComplexModel> listAdi = new ArrayList<>();
+
         // pour chaque adiEnfantMois lié au décompte, on crée un
         // calculBusinessModel correspondant
         for (int i = 0; i < adiEnfantMoisComplexSearch.getSize(); i++) {
             AdiEnfantMoisComplexModel currentAdiEnfantMoisComplex = (AdiEnfantMoisComplexModel) adiEnfantMoisComplexSearch
                     .getSearchResults()[i];
+            listAdi.add(currentAdiEnfantMoisComplex);
 
             ArrayList<DetailPrestationComplexModel> listCorrespDetail = searchDetailInPrestationTravail(
                     prestationTravailSearchModel, currentAdiEnfantMoisComplex.getAdiEnfantMoisModel().getIdDroit(),
@@ -446,7 +449,26 @@ public class DecompteAdiBusinessServiceImpl implements DecompteAdiBusinessServic
             }
         }
 
+        Map<String, List<AdiEnfantMoisComplexModel>> adiParDroit = getAdiParDroit(listAdi);
+
+        for(String idDroit : adiParDroit.keySet()) {
+            ALImplServiceLocator.getAnnonceRafamBusinessService().deleteNotSent(idDroit);
+            ALServiceLocator.getAnnonceRafamCreationService().creerAnnoncesADI(adiParDroit.get(idDroit));
+        }
+
     }
+
+    private Map<String, List<AdiEnfantMoisComplexModel>> getAdiParDroit(List<AdiEnfantMoisComplexModel> listAdi) {
+        Map<String, List<AdiEnfantMoisComplexModel>> map = new HashMap<>();
+        for(AdiEnfantMoisComplexModel adi : listAdi) {
+            if(map.get(adi.getDroitComplexModel().getId()) == null) {
+                map.put(adi.getDroitComplexModel().getId(), new ArrayList<>());
+            }
+            map.get(adi.getDroitComplexModel().getId()).add(adi);
+        }
+        return map;
+    }
+
 
     /**
      * Cherche dans les décomptes CO de l'année passée en paramètre, le plus récent qui a au moins une période commune

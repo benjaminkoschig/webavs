@@ -1,5 +1,7 @@
 package ch.globaz.al.businessimpl.services.models.prestation;
 
+import ch.globaz.al.business.exceptions.model.prestation.ALDetailPrestationModelException;
+import ch.globaz.al.business.models.prestation.DetailPrestationModel;
 import globaz.jade.client.util.JadeNumericUtil;
 import globaz.jade.exception.JadeApplicationException;
 import globaz.jade.exception.JadePersistenceException;
@@ -16,6 +18,10 @@ import ch.globaz.al.business.services.models.prestation.EntetePrestationModelSer
 import ch.globaz.al.businessimpl.checker.model.prestation.EntetePrestationModelChecker;
 import ch.globaz.al.businessimpl.services.ALAbstractBusinessServiceImpl;
 import ch.globaz.al.businessimpl.services.ALImplServiceLocator;
+import globaz.jade.persistence.model.JadeAbstractModel;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * classe d'implémentation des services de EntetePrestationModel
@@ -87,6 +93,11 @@ public class EntetePrestationModelServiceImpl extends ALAbstractBusinessServiceI
         // validation avant suppression
         EntetePrestationModelChecker.validateForDelete(entetePrestModel);
 
+        // suppression des annonces RAFAM ADI A transmettre avant suppression de l'entête
+        if (ALCSPrestation.STATUT_ADI.equals(entetePrestModel.getStatut())) {
+            deleteRAFAMForIdEntete(entetePrestModel.getIdEntete());
+        }
+
         // suppression des détails de la prestation
         ALImplServiceLocator.getDetailPrestationModelService().deleteForIdEntete(entetePrestModel.getIdEntete());
 
@@ -113,6 +124,29 @@ public class EntetePrestationModelServiceImpl extends ALAbstractBusinessServiceI
 
         // suppression de l'en-tête
         return (EntetePrestationModel) JadePersistenceManager.delete(entetePrestModel);
+    }
+
+    private void deleteRAFAMForIdEntete(String idEntete) throws JadePersistenceException, JadeApplicationException {
+
+        if (!JadeNumericUtil.isIntegerPositif(idEntete)) {
+            throw new ALDetailPrestationModelException(
+                    "DetailPrestationModelServiceImpl#deleteForIdEntete : idEntete is null or zero");
+        }
+
+        DetailPrestationSearchModel search = new DetailPrestationSearchModel();
+        search.setForIdEntetePrestation(idEntete);
+        search = (DetailPrestationSearchModel) JadePersistenceManager.search(search);
+        List<String> listIdDroit = new ArrayList<>();
+        for (JadeAbstractModel abstractEnteteModel : search.getSearchResults()) {
+            DetailPrestationModel detail = (DetailPrestationModel) abstractEnteteModel;
+            if(!listIdDroit.contains(detail.getIdDroit())) {
+                listIdDroit.add(detail.getIdDroit());
+            }
+        }
+
+        for (String idDroit : listIdDroit) {
+            ALImplServiceLocator.getAnnonceRafamBusinessService().deleteNotSent(idDroit);
+        }
     }
 
     /*

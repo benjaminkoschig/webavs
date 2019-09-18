@@ -1,5 +1,10 @@
 package ch.globaz.al.businessimpl.checker.model.prestation;
 
+import ch.globaz.al.business.constantes.enumerations.RafamEtatAnnonce;
+import ch.globaz.al.business.models.prestation.DetailPrestationModel;
+import ch.globaz.al.business.models.prestation.DetailPrestationSearchModel;
+import ch.globaz.al.business.models.rafam.AnnonceRafamModel;
+import ch.globaz.al.business.models.rafam.AnnonceRafamSearchModel;
 import globaz.jade.client.util.JadeCodesSystemsUtil;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeNumericUtil;
@@ -18,6 +23,11 @@ import ch.globaz.al.business.services.ALServiceLocator;
 import ch.globaz.al.businessimpl.checker.ALAbstractChecker;
 import ch.globaz.al.businessimpl.services.ALImplServiceLocator;
 import ch.globaz.al.utils.ALImportUtils;
+import globaz.jade.persistence.JadePersistenceManager;
+import globaz.jade.persistence.model.JadeAbstractModel;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * contrôle la validité des données de EntetePrestation
@@ -349,7 +359,7 @@ public abstract class EntetePrestationModelChecker extends ALAbstractChecker {
      *             Exception levée lorsque le chargement ou la mise à jour en DB par la couche de persistence n'a pu se
      *             faire
      */
-    private static void checkDeleteIntegrity(EntetePrestationModel entetePrestationModel)
+    private static void  checkDeleteIntegrity(EntetePrestationModel entetePrestationModel)
             throws JadePersistenceException, JadeApplicationException {
         if (ALAbstractChecker.hasError()) {
             return;
@@ -371,6 +381,37 @@ public abstract class EntetePrestationModelChecker extends ALAbstractChecker {
             }
         }
 
+        // Vérifie si les annonces des prestations ADI ont été envoyées
+        if (ALCSPrestation.STATUT_ADI.equals(entetePrestationModel.getStatut())) {
+            DetailPrestationSearchModel search = new DetailPrestationSearchModel();
+            search.setForIdEntetePrestation(entetePrestationModel.getIdEntete());
+            search = (DetailPrestationSearchModel) JadePersistenceManager.search(search);
+
+            List<String> listIdDroit = new ArrayList<>();
+            for (JadeAbstractModel abstractEnteteModel : search.getSearchResults()) {
+                DetailPrestationModel detail = (DetailPrestationModel) abstractEnteteModel;
+                if(!listIdDroit.contains(detail.getIdDroit())) {
+                    listIdDroit.add(detail.getIdDroit());
+                }
+            }
+
+            for (String idDroit : listIdDroit) {
+                AnnonceRafamSearchModel annonceSearch = ALImplServiceLocator.getAnnoncesRafamSearchService().loadAnnoncesForDroit(idDroit);
+                // Si une annonce est à l'état A_TRANSMETTRE pour le droit alors l'annonce n'a pas été envoyée
+                boolean aTransmettre = false;
+                for(JadeAbstractModel abstractModel : annonceSearch.getSearchResults()) {
+                    AnnonceRafamModel annonce = (AnnonceRafamModel) abstractModel;
+                    if(annonce.getEtat() != null
+                            &&RafamEtatAnnonce.A_TRANSMETTRE.equals(RafamEtatAnnonce.getRafamEtatAnnonceCS(annonce.getEtat()))){
+                        aTransmettre = true;
+                    }
+                }
+                if(!aTransmettre) {
+                    JadeThread.logError(EntetePrestationModelChecker.class.getName(),
+                            "al.prestation.entetePrestationModel.idEntete.deleteIntegrity.adi.rafam.envoyee");
+                }
+            }
+        }
     }
 
     /**

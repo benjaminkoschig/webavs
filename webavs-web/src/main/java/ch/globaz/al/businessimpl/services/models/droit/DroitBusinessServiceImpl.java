@@ -1,5 +1,12 @@
 package ch.globaz.al.businessimpl.services.models.droit;
 
+import ch.globaz.al.business.constantes.ALCSDossier;
+import ch.globaz.al.business.constantes.ALConstCalcul;
+import ch.globaz.al.business.constantes.enumerations.RafamTypeAction;
+import ch.globaz.al.business.models.droit.*;
+import ch.globaz.al.business.models.rafam.AnnonceRafamComplexModel;
+import ch.globaz.al.business.models.rafam.AnnonceRafamComplexSearchModel;
+import ch.globaz.common.domaine.Montant;
 import globaz.jade.client.util.JadeCodesSystemsUtil;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadeNumericUtil;
@@ -21,10 +28,6 @@ import ch.globaz.al.business.constantes.enumerations.RafamFamilyAllowanceType;
 import ch.globaz.al.business.constantes.enumerations.droit.ALEnumMsgDroitPC;
 import ch.globaz.al.business.exceptions.business.ALDroitBusinessException;
 import ch.globaz.al.business.models.dossier.DossierComplexModel;
-import ch.globaz.al.business.models.droit.DroitComplexModel;
-import ch.globaz.al.business.models.droit.DroitComplexSearchModel;
-import ch.globaz.al.business.models.droit.DroitModel;
-import ch.globaz.al.business.models.droit.DroitSearchModel;
 import ch.globaz.al.business.models.prestation.DetailPrestationSearchModel;
 import ch.globaz.al.business.models.rafam.AnnonceRafamModel;
 import ch.globaz.al.business.models.rafam.AnnonceRafamSearchModel;
@@ -37,6 +40,7 @@ import ch.globaz.al.utils.ALDateUtils;
 import ch.globaz.pegasus.business.exceptions.models.droit.DroitException;
 import ch.globaz.pegasus.business.models.dossier.DossierRCListSearch;
 import ch.globaz.pegasus.business.services.PegasusServiceLocator;
+import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAvailableException;
 
 /**
  * Implémentation des services métier liés au droit
@@ -880,8 +884,88 @@ public class DroitBusinessServiceImpl implements DroitBusinessService {
 
         droit = ALServiceLocator.getDroitComplexModelService().update(droit);
 
-        ALServiceLocator.getAnnonceRafamCreationService().creerAnnonces(RafamEvDeclencheur.MODIF_DROIT, droit);
+        generationAnnonce(droit);
 
         return droit;
     }
+
+    private void generationAnnonce(DroitComplexModel droit) throws JadeApplicationException,
+            JadePersistenceException {
+
+        DossierComplexModel dossierComplexModel = ALServiceLocator.getDossierComplexModelService().read(droit.getDroitModel().getIdDossier());
+
+        if(ALCSDossier.STATUT_IS.equals(dossierComplexModel.getDossierModel().getStatut())){
+            return;
+        }
+
+        String montantAfter = getMontantCalcule(dossierComplexModel, droit);
+
+        genererAnnonceSelonPrecedant(dossierComplexModel, droit, montantAfter);
+    }
+
+    private String getMontantCalcule(DossierComplexModel dossierComplexModel, DroitComplexModel droit) throws JadeApplicationException, JadePersistenceException {
+
+        String dateCalcul = droit.getDroitModel().getDebutDroit();
+        ArrayList<CalculBusinessModel> droitsList = new ArrayList<>();
+
+        // Chargement des droits calculés
+        try {
+            ArrayList<CalculBusinessModel> droitsListTemp = ALServiceLocator.getCalculBusinessService().getCalcul(dossierComplexModel, dateCalcul);
+            for(CalculBusinessModel calcul : droitsListTemp) {
+                if(calcul.getDroit().getId().equals(droit.getId())) {
+                    droitsList.add(calcul);
+                }
+            }
+        } catch (JadeApplicationException e) {
+            boolean calculError = true;
+            String calculErrorMessage = e.getMessage();
+        }
+
+        String montantTotal = null;
+
+        // Montant total calculé
+        if (droitsList.size() > 0) {
+            montantTotal = (ALServiceLocator.getCalculBusinessService().getTotal(dossierComplexModel.getDossierModel(),
+                    droitsList, dossierComplexModel.getDossierModel().getUniteCalcul(), "1", false, dateCalcul)).get(
+                    ALConstCalcul.TOTAL_EFFECTIF).toString();
+        }
+
+        return montantTotal;
+    }
+
+    private void genererAnnonceSelonPrecedant(DossierComplexModel dossier,
+                                              DroitComplexModel droit,
+                                              String montantAfter ) throws JadeApplicationException, JadePersistenceException {
+
+        List<RafamFamilyAllowanceType> types = ALServiceLocator.getAnnonceRafamCreationService().getTypesAllocationForAnnulation(dossier.getDossierModel(), droit);
+
+        AnnonceRafamModel lastAnnonce = ALImplServiceLocator.getAnnoncesRafamSearchService().getLastActive(droit.getId(),types.get(0));
+        AnnonceRafamSearchModel annoncesATranmettre = ALImplServiceLocator.getAnnoncesRafamSearchService()
+                .loadAnnoncesToSendForDroit(droit.getId());
+        boolean hasAnnoncesATranmettre = annoncesATranmettre.getSize() > 0;
+
+        Montant montAfter = new Montant(montantAfter);
+
+        if(montAfter.isZero()) {
+            if (RafamTypeAction.ANNULATION.equals(lastAnnonce.getTypeAnnonce())) {
+                if(hasAnnoncesATranmettre) {
+                    ALImplServiceLocator.getAnnonceRafamBusinessService().deleteNotSent(droit.getId());
+                }
+            } else { //RafamTypeAction.CREATION + RafamTypeAction.MODIFICATION
+                ALServiceLocator.getAnnonceRafamCreationService().creerAnnonces(RafamEvDeclencheur.ANNULATION, droit);
+            }
+        } else {
+            if (RafamTypeAction.ANNULATION.equals(lastAnnonce.getTypeAnnonce())) {
+                if(hasAnnoncesATranmettre) {
+                    ALImplServiceLocator.getAnnonceRafamBusinessService().deleteNotSent(droit.getId());
+                }
+                ALServiceLocator.getAnnonceRafamCreationService().creerAnnonces(RafamEvDeclencheur.CREATION, droit);
+            } else { //RafamTypeAction.CREATION + RafamTypeAction.MODIFICATION
+                ALServiceLocator.getAnnonceRafamCreationService().creerAnnonces(RafamEvDeclencheur.MODIF_DROIT, droit);
+            }
+        }
+
+    }
+
+
 }
