@@ -1620,6 +1620,7 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
                 fCalcul = unmarshalXml(caViewbean.getContenuFeuilleCalculXML());
             }
             if(fCalcul != null && fCalcul.getEvenement() != null){
+                // On analyse filtre les évènements de la feuille de calcul pour ne garder que ceux qui possèdent une base de calcul dont la décision n'est pas vide.
                 filterEvents = fCalcul.getEvenement().stream().filter(evenement -> !evenement.getBasesCalcul().stream().filter(basesCalcul -> !basesCalcul.getDecision().isEmpty()).collect(Collectors.toList()).isEmpty()).collect(Collectors.toList());
             }
 
