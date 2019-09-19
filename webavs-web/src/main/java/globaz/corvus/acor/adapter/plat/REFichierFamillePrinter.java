@@ -306,7 +306,8 @@ public class REFichierFamillePrinter extends PRAbstractFichierPlatPrinter {
 
                 if (!globaz.hera.api.ISFSituationFamiliale.CS_TYPE_LIEN_MARIE.equals(relation.getTypeLien())
                         && !globaz.hera.api.ISFSituationFamiliale.CS_TYPE_LIEN_LPART_ENREGISTRE.equals(relation
-                                .getTypeLien())) {
+                                .getTypeLien()) && !globaz.hera.api.ISFSituationFamiliale.CS_REL_CONJ_SEPARE_DE_FAIT.equals(relation
+                        .getTypeRelation())) {
 
                     l.setDateFin(relation.getDateDebut());
                 } else {
