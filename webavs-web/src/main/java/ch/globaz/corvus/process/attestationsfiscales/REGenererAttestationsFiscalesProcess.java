@@ -1,19 +1,7 @@
 package ch.globaz.corvus.process.attestationsfiscales;
 
 import java.sql.ResultSet;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 
 import ch.globaz.jade.JadeBusinessServiceLocator;
 import ch.globaz.jade.business.models.Langues;
@@ -851,18 +839,22 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
                     /**
                      * Vérifier si la famille une rente principal 10/20, 13/23 ou 50/70 et que l'adresse bénéficiaire de la rente correpond à l'adresse principal de l'attestation.
                      */
-                    if(listCodesForRemarqueAdresseDiff.contains(codePrestation.getCodePrestation())
-                            && uneRenteDuTiers.getIdTiersAdressePaiement().equals(uneFamille.getTiersRequerant().getIdTiers())){
+                    if (listCodesForRemarqueAdresseDiff.contains(codePrestation.getCodePrestation())
+                            && uneRenteDuTiers.getIdTiersAdressePaiement().equals(uneFamille.getTiersRequerant().getIdTiers())) {
                         hasRentePrincipal = true;
                     }
-                    if (tiersParIdAdressePaiement.containsKey(uneRenteDuTiers.getIdTiersAdressePaiement())) {
-                        Set<RETiersPourAttestationsFiscales> tiersAvecCetteAdressePaiement = tiersParIdAdressePaiement
-                                .get(uneRenteDuTiers.getIdTiersAdressePaiement());
-                        tiersAvecCetteAdressePaiement.add(unTiersBeneficiaire);
-                    } else {
-                        tiersParIdAdressePaiement.put(uneRenteDuTiers.getIdTiersAdressePaiement(),
-                                new HashSet<RETiersPourAttestationsFiscales>(Arrays.asList(unTiersBeneficiaire)));
-                    }
+
+                }
+                List<RERentePourAttestationsFiscales> listRentesSorted = sortRentesForIdAdressePaiement(unTiersBeneficiaire.getRentes());
+                String idAdressePaiement = listRentesSorted.get(0).getIdTiersAdressePaiement();
+
+                if (tiersParIdAdressePaiement.containsKey(idAdressePaiement)) {
+                    Set<RETiersPourAttestationsFiscales> tiersAvecCetteAdressePaiement = tiersParIdAdressePaiement
+                            .get(idAdressePaiement);
+                    tiersAvecCetteAdressePaiement.add(unTiersBeneficiaire);
+                } else {
+                    tiersParIdAdressePaiement.put(idAdressePaiement,
+                            new HashSet<RETiersPourAttestationsFiscales>(Arrays.asList(unTiersBeneficiaire)));
                 }
             }
 
@@ -880,20 +872,20 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
                         familles.add(nouvelleFamille);
                     }
                 }
-                if(hasRentePrincipal){
+                if (hasRentePrincipal) {
                     /**
                      * Vérifier si il a des rentes complémentaires
                      */
-                    for(RERentePourAttestationsFiscales uneRenteDuTiers: uneFamille.getRentesDeLaFamille()){
+                    for (RERentePourAttestationsFiscales uneRenteDuTiers : uneFamille.getRentesDeLaFamille()) {
                         CodePrestation codePrestation = CodePrestation
                                 .getCodePrestation(Integer.parseInt(uneRenteDuTiers.getCodePrestation()));
                         if (codePrestation.isRenteComplementaireForConjoint()) {
                             uneFamille.setHasRenteConjointAdressePaiementSepare(true);
                         }
-                        if(codePrestation.isRenteComplementaires()){
+                        if (codePrestation.isRenteComplementaires()) {
                             if (hasAdressePmtAZero && tiersParIdAdressePaiement.size() == 2) {
                                 uneFamille.setHasPlusieursAdressePaiement(false);
-                            } else  {
+                            } else {
                                 uneFamille.setHasPlusieursAdressePaiement(true);
                             }
                         }
@@ -906,6 +898,38 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
         }
 
         return familles;
+    }
+
+    private List<RERentePourAttestationsFiscales> sortRentesForIdAdressePaiement(Collection<RERentePourAttestationsFiscales> listRentes) {
+        List<RERentePourAttestationsFiscales> rentes = new ArrayList<>(listRentes);
+        Collections.sort(rentes, new Comparator<RERentePourAttestationsFiscales>() {
+            public int compare (RERentePourAttestationsFiscales rente1, RERentePourAttestationsFiscales rente2){
+                if(!JadeStringUtil.isBlankOrZero(rente1.getIdTiersAdressePaiement())
+                    && JadeStringUtil.isBlankOrZero(rente2.getIdTiersAdressePaiement())) {
+                    return -1;
+                } else if(JadeStringUtil.isBlankOrZero(rente1.getIdTiersAdressePaiement())
+                        && !JadeStringUtil.isBlankOrZero(rente2.getIdTiersAdressePaiement())) {
+                    return 1;
+                } else {
+                    CodePrestation code1 = CodePrestation.getCodePrestation(Integer.parseInt(rente1.getCodePrestation()));
+                    CodePrestation code2 = CodePrestation.getCodePrestation(Integer.parseInt(rente2.getCodePrestation()));
+                    if(code1.isSurvivant() && !code2.isSurvivant()) {
+                        return -1;
+                    } else if(!code1.isSurvivant() && code2.isSurvivant()) {
+                        return 1;
+                    } else {
+                        Date date1 = JadeDateUtil.getGlobazDate("01." + rente1.getDateDebutDroit());
+                        Date date2 = JadeDateUtil.getGlobazDate("01." + rente2.getDateDebutDroit());
+                        if (date2.before(date1)) {
+                            return -1;
+                        } else {
+                            return 1;
+                        }
+                    }
+                }
+            }
+        });
+        return rentes;
     }
 
 
