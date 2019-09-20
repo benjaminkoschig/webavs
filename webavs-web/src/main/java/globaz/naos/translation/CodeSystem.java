@@ -417,12 +417,15 @@ public class CodeSystem {
     // Type assurance
     public final static String TYPE_ASS_CAP_15 = "812036";
     public final static String TYPE_ASS_CAP_16 = "812037";
+    public final static String TYPE_ASS_CAP_17 = "812040";
     public final static String TYPE_ASS_CAP_20 = "812030";
     public final static String TYPE_ASS_CAP_30 = "812031";
     public final static String TYPE_ASS_CAP_31 = "812032";
     public final static String TYPE_ASS_CAP_40 = "812033";
     public final static String TYPE_ASS_CAP_41 = "812034";
+    public final static String TYPE_ASS_CAP_42 = "812041";
     public final static String TYPE_ASS_CAP_50 = "812035";
+    public final static String TYPE_ASS_CAP_60 = "812042";
     public final static String TYPE_ASS_CGAS = "812029";
     public final static String TYPE_ASS_COTISATION_AC = "812006";
     public final static String TYPE_ASS_COTISATION_AC2 = "812007";

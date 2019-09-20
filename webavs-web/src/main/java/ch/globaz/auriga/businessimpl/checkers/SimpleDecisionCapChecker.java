@@ -118,7 +118,7 @@ public class SimpleDecisionCapChecker {
         }
 
         if (CodeSystem.TYPE_ASS_CAP_15.equalsIgnoreCase(decisionCap.getCategorie())
-                || CodeSystem.TYPE_ASS_CAP_16.equalsIgnoreCase(decisionCap.getCategorie())) {
+                || CodeSystem.TYPE_ASS_CAP_16.equalsIgnoreCase(decisionCap.getCategorie()) || CodeSystem.TYPE_ASS_CAP_17.equalsIgnoreCase(decisionCap.getCategorie())) {
             JadeThread.logError(SimpleDecisionCapChecker.class.getName(),
                     "auriga.decisioncap.categorie.assurance.non.autorisee");
         }
