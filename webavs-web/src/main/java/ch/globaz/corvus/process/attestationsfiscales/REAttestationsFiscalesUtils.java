@@ -735,7 +735,8 @@ public class REAttestationsFiscalesUtils {
                 continue;
             }
             Calendar dateDecision = JadeDateUtil.getGlobazCalendar(att.getDateDecision());
-            if (dateDecision.get(Calendar.MONTH) == Calendar.DECEMBER) {
+            if (dateDecision.get(Calendar.MONTH) == Calendar.DECEMBER
+                    && dateDecision.get(Calendar.YEAR) == anneeNum) {
                 Calendar dateDebutRente = JadeDateUtil.getGlobazCalendar("01."+att.getDateDebutDroit());
                 if (dateDebutRente.get(Calendar.YEAR) == anneeNum && hasCreancier(att.getIdRenteAccordee(),session)) {
                     return true;
