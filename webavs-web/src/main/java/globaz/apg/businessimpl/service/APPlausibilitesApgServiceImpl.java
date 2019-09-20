@@ -294,8 +294,7 @@ public class APPlausibilitesApgServiceImpl implements APPlausibilitesApgService 
         String messageDate = champsAnnonce.getMessageDate();
         String accountingMonth = champsAnnonce.getAccountingMonth();
         if (!JadeStringUtil.isEmpty(accountingMonth)) {
-            String jourEnvoiAnnonce = messageDate.substring(0, 2);
-            String accountingMonthPourTest = jourEnvoiAnnonce + "." + accountingMonth;
+            String accountingMonthPourTest = JadeDateUtil.getLastDateOfMonth(accountingMonth);
             switch (PRDateUtils.compare(messageDate, accountingMonthPourTest)) {
                 case EQUALS:
                 case BEFORE:
