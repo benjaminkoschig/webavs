@@ -1182,7 +1182,12 @@ public class AFUtil {
     }
 
     public static String getPlanAffiliationInfoRom280(String affiliationId, String planAffiliationId,
-            BSession bsession, boolean vide) {
+                                                      BSession bsession, boolean vide) {
+        return getPlanAffiliationInfoRom280(affiliationId, planAffiliationId, bsession, vide, false);
+    }
+
+    public static String getPlanAffiliationInfoRom280(String affiliationId, String planAffiliationId,
+            BSession bsession, boolean vide, boolean filtreInactif) {
         StringBuffer options = new StringBuffer();
         if (!JadeStringUtil.isIntegerEmpty(affiliationId)) {
             try {
@@ -1192,6 +1197,9 @@ public class AFUtil {
                 AFPlanAffiliationManager manager = new AFPlanAffiliationManager();
                 manager.setSession(bsession);
                 manager.setForAffiliationId(affiliationId);
+                if(filtreInactif) {
+                    manager.setForPlanActif(true);
+                }
                 manager.setOrder("MUIPLA DESC");
                 manager.find();
 
@@ -1259,6 +1267,12 @@ public class AFUtil {
             HttpSession session, boolean vide) {
         return AFUtil.getPlanAffiliationInfoRom280(affiliationId, planAffiliationId,
                 (BSession) ((FWController) session.getAttribute("objController")).getSession(), vide);
+    }
+
+    public static String getPlanAffiliationInfoRom280FitreInactif(String affiliationId, String planAffiliationId,
+                                                      HttpSession session, boolean vide) {
+        return AFUtil.getPlanAffiliationInfoRom280(affiliationId, planAffiliationId,
+                (BSession) ((FWController) session.getAttribute("objController")).getSession(), vide, true);
     }
 
     /**

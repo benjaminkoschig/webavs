@@ -146,7 +146,7 @@ function setPeriode(){
 						<TD width="140" height="31" colspan="2">Plan affilié</TD>
 						<TD width="340" colspan="2">
 							<select name="planAffiliationId">
-								<%=globaz.naos.util.AFUtil.getPlanAffiliationInfoRom280(viewBean.getAffiliationId(), null, session, false)%>
+								<%=globaz.naos.util.AFUtil.getPlanAffiliationInfoRom280FitreInactif(viewBean.getAffiliationId(), null, session, false)%>
 							</select>
 						</TD>
 					</TR>
