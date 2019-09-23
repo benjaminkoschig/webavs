@@ -180,6 +180,10 @@ public class EBPucsFileService {
         changeStatut(id, EtatPucsFile.A_VALIDE, session);
     }
 
+    public static void annulerRejeterPucsDAN(String id, BSession session) {
+        changeStatut(id, EtatPucsFile.A_TRAITER, session);
+    }
+
     public static void enErreur(String id, BTransaction transaction) {
         changeStatut(id, EtatPucsFile.EN_ERREUR, transaction);
     }

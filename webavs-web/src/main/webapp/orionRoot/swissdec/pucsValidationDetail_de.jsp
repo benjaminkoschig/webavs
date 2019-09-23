@@ -442,7 +442,7 @@ $(document).ready(function(){
 		</div>
 		
 		<c:if test="${!viewBean.isEditable()}">
-			<c:if test="${!viewBean.isRefuser() && viewBean.swissDec}">
+			<c:if test="${!viewBean.isRefuser()}">
 			<div class="row-fluid">
 				  <c:if test="${viewBean.hasNext()}">
 					  <div class="span12 text-right">
@@ -455,7 +455,7 @@ $(document).ready(function(){
 			</div>
 			<div class="row-fluid">
 				  <div class="span12 text-right">
-				  	<c:if test="${viewBean.isAffiliationExistante()}">
+				  	<c:if test="${viewBean.isAffiliationExistante() && viewBean.swissDec}">
 				  	<ct:ifhasright element="orion.swissdec.pucsValidationDetail.accepter" crud="cud">	
 				   	<button type="button" id="accepter" class="btn btn-success"><strong><ct:FWLabel key="ORION_JSP_GEB0004_ACCEPTER"/></strong></button>
 				   	</ct:ifhasright>
@@ -466,7 +466,7 @@ $(document).ready(function(){
 				  </div>
 			</div>
 			</c:if> 
-			<c:if test="${viewBean.isRefuser() && viewBean.swissDec}">
+			<c:if test="${viewBean.isRefuser()}">
 			<div class="row-fluid">
 				<div class="span12 text-right">
 					<ct:ifhasright element="orion.swissdec.pucsValidationDetail.annulerRefus" crud="cud">
