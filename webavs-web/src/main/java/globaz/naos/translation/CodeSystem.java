@@ -657,12 +657,15 @@ public class CodeSystem {
         listTypeAssuranceCAP.add(CodeSystem.TYPE_ASS_CAP_10);
         listTypeAssuranceCAP.add(CodeSystem.TYPE_ASS_CAP_15);
         listTypeAssuranceCAP.add(CodeSystem.TYPE_ASS_CAP_16);
+        listTypeAssuranceCAP.add(CodeSystem.TYPE_ASS_CAP_17);
         listTypeAssuranceCAP.add(CodeSystem.TYPE_ASS_CAP_20);
         listTypeAssuranceCAP.add(CodeSystem.TYPE_ASS_CAP_30);
         listTypeAssuranceCAP.add(CodeSystem.TYPE_ASS_CAP_31);
         listTypeAssuranceCAP.add(CodeSystem.TYPE_ASS_CAP_40);
         listTypeAssuranceCAP.add(CodeSystem.TYPE_ASS_CAP_41);
+        listTypeAssuranceCAP.add(CodeSystem.TYPE_ASS_CAP_42);
         listTypeAssuranceCAP.add(CodeSystem.TYPE_ASS_CAP_50);
+        listTypeAssuranceCAP.add(CodeSystem.TYPE_ASS_CAP_60);
 
         return listTypeAssuranceCAP;
 

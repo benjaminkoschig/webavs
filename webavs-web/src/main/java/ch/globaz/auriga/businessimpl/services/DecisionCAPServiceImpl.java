@@ -144,12 +144,15 @@ public class DecisionCAPServiceImpl implements DecisionCAPService {
             decisionCap.setPrestation(montantAfTotal.toStringFormat());
         }
 
-        // si assurance de type CAP30->50
+        // si assurance de type CAP30->60
         else if (assurance.getTypeAssurance().equals(CodeSystem.TYPE_ASS_CAP_30)
                 || assurance.getTypeAssurance().equals(CodeSystem.TYPE_ASS_CAP_31)
                 || assurance.getTypeAssurance().equals(CodeSystem.TYPE_ASS_CAP_40)
                 || assurance.getTypeAssurance().equals(CodeSystem.TYPE_ASS_CAP_41)
-                || assurance.getTypeAssurance().equals(CodeSystem.TYPE_ASS_CAP_50)) {
+                || assurance.getTypeAssurance().equals(CodeSystem.TYPE_ASS_CAP_42)
+                || assurance.getTypeAssurance().equals(CodeSystem.TYPE_ASS_CAP_50)
+                || assurance.getTypeAssurance().equals(CodeSystem.TYPE_ASS_CAP_60)
+        ) {
             // set du forfait
             decisionCap.setForfait(taux.getValeurEmployeur());
 
