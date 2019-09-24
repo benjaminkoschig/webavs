@@ -2,6 +2,8 @@ package globaz.apg.rapg.rules;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import globaz.apg.enums.APGenreServiceAPG;
 import org.safehaus.uuid.Logger;
 import globaz.apg.ApgServiceLocator;
 import globaz.apg.application.APApplication;
@@ -49,11 +51,11 @@ public class Rule50 extends Rule {
         }
 
         List<String> services = new ArrayList<String>();
-        services.add("15");
-        services.add("16");
+        services.add(APGenreServiceAPG.Maternite.getCodePourAnnonce());
 
+        // ne pas executer la rule pour les prestations maternités
         if (services.contains(serviceType)) {
-
+            return true;
         }
 
         boolean hasComplementCIAB = false;
