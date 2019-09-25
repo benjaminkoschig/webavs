@@ -1,7 +1,7 @@
 package globaz.corvus.helpers.acor;
 
-import acor.FCalcul;
-import acor.Rente;
+import acor.fcalcul.FCalcul;
+import acor.fcalcul.Rente;
 import globaz.corvus.db.basescalcul.REBasesCalcul;
 import globaz.corvus.db.rentesaccordees.RERenteAccordee;
 import globaz.corvus.db.rentesaccordees.RERenteAccordeeManager;

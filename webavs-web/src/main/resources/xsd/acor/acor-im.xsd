@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2013 sp1 (x64) (http://www.altova.com) by Bundesamt für Informatik und Telekommunikation (Bundesamt für Informatik und Telekommunikation) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:im="http://www.zas.admin.ch/xmlns/acor-im/0" targetNamespace="http://www.zas.admin.ch/xmlns/acor-im/0" elementFormDefault="qualified" attributeFormDefault="unqualified" version="0.9">
+	<xs:simpleType name="ref_idType">
+		<xs:annotation>
+			<xs:documentation>fait référence à l'id de l'élément "assure"</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<xs:simpleType name="langue">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="d"/>
+			<xs:enumeration value="f"/>
+			<xs:enumeration value="i"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="code_prestation">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="3"/>
+			<xs:enumeration value="4"/>
+			<xs:enumeration value="8"/>
+			<xs:enumeration value="9"/>
+			<xs:enumeration value="10"/>
+			<xs:enumeration value="11"/>
+			<xs:enumeration value="12"/>
+			<xs:enumeration value="13"/>
+			<xs:enumeration value="14"/>
+			<xs:enumeration value="15"/>
+			<xs:enumeration value="16"/>
+			<xs:enumeration value="20"/>
+			<xs:enumeration value="23"/>
+			<xs:enumeration value="24"/>
+			<xs:enumeration value="25"/>
+			<xs:enumeration value="26"/>
+			<xs:enumeration value="33"/>
+			<xs:enumeration value="34"/>
+			<xs:enumeration value="35"/>
+			<xs:enumeration value="36"/>
+			<xs:enumeration value="45"/>
+			<xs:enumeration value="50"/>
+			<xs:enumeration value="70"/>
+			<xs:enumeration value="51"/>
+			<xs:enumeration value="52"/>
+			<xs:enumeration value="53"/>
+			<xs:enumeration value="54"/>
+			<xs:enumeration value="55"/>
+			<xs:enumeration value="56"/>
+			<xs:enumeration value="60"/>
+			<xs:enumeration value="61"/>
+			<xs:enumeration value="62"/>
+			<xs:enumeration value="63"/>
+			<xs:enumeration value="64"/>
+			<xs:enumeration value="65"/>
+			<xs:enumeration value="66"/>
+			<xs:enumeration value="71"/>
+			<xs:enumeration value="72"/>
+			<xs:enumeration value="73"/>
+			<xs:enumeration value="74"/>
+			<xs:enumeration value="75"/>
+			<xs:enumeration value="80"/>
+			<xs:enumeration value="81"/>
+			<xs:enumeration value="82"/>
+			<xs:enumeration value="83"/>
+			<xs:enumeration value="84"/>
+			<xs:enumeration value="85"/>
+			<xs:enumeration value="86"/>
+			<xs:enumeration value="87"/>
+			<xs:enumeration value="88"/>
+			<xs:enumeration value="89"/>
+			<xs:enumeration value="91"/>
+			<xs:enumeration value="92"/>
+			<xs:enumeration value="93"/>
+			<xs:enumeration value="94"/>
+			<xs:enumeration value="95"/>
+			<xs:enumeration value="96"/>
+			<xs:enumeration value="97"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="Assure">
+		<xs:sequence>
+			<xs:element name="select" type="xs:boolean" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>concerne GUI, possibilité de sélectionner ou non l'assuré en question
+                        </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="id">
+				<xs:annotation>
+					<xs:documentation>id de l'assure
+                                        VersicherterId
+                                    </xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="xs:string">
+							<xs:attribute name="type">
+								<xs:annotation>
+									<xs:documentation>navs, nnss ou autre</xs:documentation>
+								</xs:annotation>
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:enumeration value="navs"/>
+										<xs:enumeration value="navs11"/>
+										<xs:enumeration value="autre"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:attribute>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="nom" type="xs:string" minOccurs="0"/>
+			<xs:element name="depot_demande" type="xs:date" minOccurs="0"/>
+			<xs:element name="date_reception" type="xs:date" minOccurs="0"/>
+			<xs:element name="date_decompte" type="xs:date"/>
+			<xs:element name="date_paiement" type="xs:date" minOccurs="0"/>
+			<xs:element name="deduction_tiers" type="xs:float" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="Prestation">
+		<xs:sequence>
+			<xs:element name="rente" type="im:Rente"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="Rente">
+		<xs:sequence>
+			<xs:element name="select" type="xs:boolean" minOccurs="0"/>
+			<xs:element name="evenement" type="xs:string" minOccurs="0"/>
+			<xs:element name="id_benef" type="im:ref_idType">
+				<xs:annotation>
+					<xs:documentation>fait référence à l'id de l'élément "assure", ayant droit à la rente
+                        </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="code_prestation" type="im:code_prestation"/>
+			<xs:element name="debut_droit" type="xs:date"/>
+			<xs:element name="fin_droit" type="xs:date" minOccurs="0"/>
+			<xs:element name="fraction" type="xs:float"/>
+			<xs:element name="echelle" type="xs:integer"/>
+			<xs:element name="montant_mensuel" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="debut" type="xs:date"/>
+						<xs:element name="fin" type="xs:date" minOccurs="0"/>
+						<xs:element name="ram" type="xs:integer"/>
+						<xs:element name="montant" type="xs:float"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="id_benef_pay" type="im:ref_idType">
+				<xs:annotation>
+					<xs:documentation>fait référence à l'id de l'élément "assure", bénéficiaire du paiement
+                            effectif
+                        </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="id_dossier" type="im:ref_idType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>l'identifiant du dossier (Gedo)  pour savoir dans quel dossier vont les im</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="Decision">
+		<xs:sequence>
+			<xs:element name="evenement" type="xs:string" minOccurs="0"/>
+			<xs:element name="select" type="xs:boolean" minOccurs="0"/>
+			<xs:element name="id_generateur" type="im:ref_idType">
+				<xs:annotation>
+					<xs:documentation>fait référence à l'id de l'élément "assure", donneur de droit aux prestations
+                            liées à la décision
+                        </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="etat">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="nouveau"/>
+						<xs:enumeration value="en cours"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="date_decision" type="xs:date"/>
+			<xs:element name="prestation" type="im:Prestation" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="InteretsMoratoires">
+		<xs:sequence>
+			<xs:element name="id_benef_pay" type="im:ref_idType">
+				<xs:annotation>
+					<xs:documentation>fait référence à l'id de l'élément "assure", bénéficiaire de la
+                                        prestation.
+                                    </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="id_generateur" type="im:ref_idType">
+				<xs:annotation>
+					<xs:documentation>fait référence à l'id de l'élément "assuré", générateur des
+                                        décisions prises en compte
+                                    </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="depot_demande" type="xs:date"/>
+			<xs:element name="date_reception" type="xs:date" minOccurs="0"/>
+			<xs:element name="debut_droit" type="xs:date"/>
+			<xs:element name="date_decompte" type="xs:date"/>
+			<xs:element name="date_decision" type="xs:date"/>
+			<xs:element name="date_versement_retro" type="xs:date"/>
+			<xs:element name="date_debut_im" type="xs:date"/>
+			<xs:element name="mois" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="mois_comptable" type="xs:gYearMonth"/>
+						<xs:element name="montant_mensuel" type="xs:float"/>
+						<xs:element name="cumul_prestations" type="xs:float"/>
+						<xs:element name="taux_interets" type="xs:float"/>
+						<xs:element name="interets" type="xs:float"/>
+						<xs:element name="cumul_interets" type="xs:float"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="mois_rapport" type="xs:gYearMonth"/>
+			<xs:element name="nb_mois_retro" type="xs:integer"/>
+			<xs:element name="nb_mois_im" type="xs:integer"/>
+			<xs:element name="versement_retro" type="xs:float"/>
+			<xs:element name="im" type="xs:float"/>
+			<xs:element name="deduction_tiers" type="xs:float"/>
+			<xs:element name="pourcentage" type="xs:float"/>
+			<xs:element name="versement_retro_benef_pay" type="xs:float"/>
+			<xs:element name="im_benef_pay" type="xs:float"/>
+			<xs:element name="remarque" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="AcorIm">
+		<xs:sequence>
+			<xs:element name="id_session" type="xs:string" minOccurs="0"/>
+			<xs:element name="version_expert" type="xs:string" minOccurs="0"/>
+			<xs:element name="langue" type="im:langue" minOccurs="0"/>
+			<xs:element name="date_traitement" type="xs:date"/>
+			<xs:element name="caisse" type="xs:string"/>
+			<xs:element name="param_mrapp" type="xs:integer">
+				<xs:annotation>
+					<xs:documentation>paramètre contenu dans acor.ini (voir doc. io)</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="assure" type="im:Assure" maxOccurs="unbounded"/>
+			<xs:element name="historique" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="prestation" type="im:Prestation" minOccurs="1" maxOccurs="unbounded"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="decision" type="im:Decision" maxOccurs="unbounded"/>
+			<xs:element name="interets_moratoires" type="im:InteretsMoratoires" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="remarque" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="acor_im" type="im:AcorIm"/>
+</xs:schema>

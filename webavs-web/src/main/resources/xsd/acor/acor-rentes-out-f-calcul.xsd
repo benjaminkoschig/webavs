@@ -1,6 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- edited with XMLSpy v2013 sp1 (x64) (http://www.altova.com) by Bundesamt für Informatik und Telekommunikation (Bundesamt für Informatik und Telekommunikation) -->
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.2.11-DEV">
+<!-- Pour des raisons de compatibilité du xsl qui affiche la feuille ce schema ne peut être avec un targetNamespace (ni avec un namespace). Il faudra voir ci cela est viable-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:e202="http://www.gotess.org/xns/e202" xmlns:e203="http://www.gotess.org/xns/e203" xmlns:e205="http://www.gotess.org/xns/e205" xmlns:e210="http://www.gotess.org/xns/e210" xmlns:eahv-iv-2401-000501="http://www.eahv-iv.ch/xmlns/eahv-iv-2401-000501/1" xmlns:eai-2401-common="http://www.eahv-iv.ch/xmlns/eahv-iv-2401-common/1" xmlns:splitting_interne="http://www.zas.admin.ch/xmlns/splitting-interne-out/0" xmlns:arc95="http://www.zas.admin.ch/xmlns/arc95-out/0" xmlns:im="http://www.zas.admin.ch/xmlns/acor-im/0" elementFormDefault="unqualified" attributeFormDefault="unqualified" version="3.0">
+	<!--NOTE : il faudrait passer en elementFormDefault="qualified" et targetNamespace="http://www.zas.admin.ch/xmlns/acor-rentes-out-f-calcul/0" et xmlns="http://www.zas.admin.ch/xmlns/acor-rentes-out-f-calcul/0"
+	mais cela pose des problème de xslt, on reste pour l'instanta "sans" namespace, le composant acor-converter (etclips-util sont prévu pour produire
+	un f_calcul.xml avec un namespace par défaut http://www.zas.admin.ch/xmlns/acor-rentes-out-f-calcul/0 (sans les prefixe dans le xml) mais cela ne suffit pas pour xslt. Pour activer
+	cette possibilité il faut lancer ch.admin.cdc.clips.converter.ClipsXmlToInsConverter.setDefaultNamespace("http://www.zas.admin.ch/xmlns/acor-rentes-out-f-calcul/0")
+	(voir aussi ch.admin.cdc.acor.converter.AcorRente10InstancesConverter.initialisation et ch.admin.cdc.acor.converter.AcorRente10InstancesConverter.initMapper-->
+	<xs:import namespace="http://www.gotess.org/xns/e202" schemaLocation="e202.xsd"/>
+	<xs:import namespace="http://www.gotess.org/xns/e203" schemaLocation="e203.xsd"/>
+	<xs:import namespace="http://www.gotess.org/xns/e205" schemaLocation="e205.xsd"/>
+	<xs:import namespace="http://www.gotess.org/xns/e210" schemaLocation="e210.xsd"/>
+	<xs:import namespace="http://www.zas.admin.ch/xmlns/splitting-interne-out/0" schemaLocation="splitting-interne-out.xsd"/>
+	<xs:import namespace="http://www.zas.admin.ch/xmlns/arc95-out/0" schemaLocation="arc95-out.xsd"/>
+	<xs:import namespace="http://www.zas.admin.ch/xmlns/acor-im/0" schemaLocation="acor-im.xsd"/>
+	<xs:import namespace="http://www.eahv-iv.ch/xmlns/eahv-iv-2401-000501/1" schemaLocation="eahv-iv-2401-000501-1-1.xsd"/>
+	<xs:import namespace="http://www.eahv-iv.ch/xmlns/eahv-iv-2401-common/1" schemaLocation="eahv-iv-2401-common-1-1.xsd"/>
 	<xs:simpleType name="NAVS">
 		<xs:restriction base="xs:string"/>
 	</xs:simpleType>
@@ -18,7 +33,7 @@
 	</xs:simpleType>
 	<xs:simpleType name="gcot">
 		<xs:restriction base="xs:string">
-			<xs:pattern value="[0-9A]"/>
+			<xs:pattern value="[0-9]|99"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="vact">
@@ -165,16 +180,16 @@
 						<xs:element name="type">
 							<xs:annotation>
 								<xs:documentation>1=cotisations personnelles;
-									2=mariage/veuvage sans cotisations;
-									3=bonifications pour taches educatives;
-									4=bonifications pour taches d'assistance;
-									5=annees de jeunesse;
-									6=mois d'appoint;
-									7=annee d'ouverture;
-									8=assurance etrangere;
-									9=total;
-									10=durees totales sans les mois d'appoint (pour annonce au RR)
-								</xs:documentation>
+                                    2=mariage/veuvage sans cotisations;
+                                    3=bonifications pour taches educatives;
+                                    4=bonifications pour taches d'assistance;
+                                    5=annees de jeunesse;
+                                    6=mois d'appoint;
+                                    7=annee d'ouverture;
+                                    8=assurance etrangere;
+                                    9=total;
+                                    10=durees totales sans les mois d'appoint (pour annonce au RR)
+                                </xs:documentation>
 							</xs:annotation>
 							<xs:simpleType>
 								<xs:restriction base="xs:int">
@@ -203,6 +218,16 @@
 			</xs:element>
 			<xs:element name="remarque" type="xs:string" minOccurs="0"/>
 		</xs:sequence>
+		<xs:attribute name="type">
+			<xs:annotation>
+				<xs:documentation>absent par defaut, si présent vaut 'historique' cela signifie que les informations sont historique : non calculée par acor pour cette base (c'est-à-dire reprise de l'historique ou d'un calcul précédent</xs:documentation>
+			</xs:annotation>
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="historique"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
 	</xs:complexType>
 	<xs:complexType name="dcot">
 		<xs:sequence>
@@ -270,7 +295,7 @@
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:element>
-			<xs:element name="mont_cot_brut" type="xs:float"/>
+			<xs:element name="mont_cot_brut" type="xs:double"/>
 			<xs:element name="mont_rbt_equite" type="xs:int" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>Comparaison avec rente escomptée.</xs:documentation>
@@ -314,12 +339,12 @@
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
-			<xs:element name="mont_deja_verse" type="xs:float" minOccurs="0">
+			<xs:element name="mont_deja_verse" type="xs:double" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>Montant déjà versé.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="mont_rbt_net" type="xs:float">
+			<xs:element name="mont_rbt_net" type="xs:double">
 				<xs:annotation>
 					<xs:documentation>Montant effectivement remboursé.</xs:documentation>
 				</xs:annotation>
@@ -394,7 +419,7 @@
 						<xs:element name="cotis_tot">
 							<xs:simpleType>
 								<xs:restriction base="xs:float">
-									<xs:pattern value="(-1\.00)|(\d+\.\d{2})"/>
+									<xs:pattern value="(-1\.0)|(\d+\.\d+)"/>
 								</xs:restriction>
 							</xs:simpleType>
 						</xs:element>
@@ -405,7 +430,7 @@
 								</xs:restriction>
 							</xs:simpleType>
 						</xs:element>
-						<xs:element name="cot_avs" type="xs:float"/>
+						<xs:element name="cot_avs" type="xs:double"/>
 						<xs:element name="split">
 							<xs:simpleType>
 								<xs:restriction base="xs:int">
@@ -418,14 +443,14 @@
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
-			<xs:element name="tot_cot" type="xs:float" minOccurs="0"/>
+			<xs:element name="tot_cot" type="xs:double" minOccurs="0"/>
 		</xs:sequence>
 	</xs:complexType>
 	<xs:complexType name="info_remb_transf_type">
 		<xs:annotation>
 			<xs:documentation>Indemnité forfaitaire
-				Abfindung
-			</xs:documentation>
+                Abfindung
+            </xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
 			<xs:element name="assure" type="id_acor"/>
@@ -437,18 +462,18 @@
 			<xs:element name="calcul_equite" type="calcul_equite_type" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>* annonce CdC /
-						Meldung ZAS
-						Mois de rapport
-						Berichtsmonat
-					</xs:documentation>
+                        Meldung ZAS
+                        Mois de rapport
+                        Berichtsmonat
+                    </xs:documentation>
 				</xs:annotation>
 			</xs:element>
 		</xs:sequence>
 		<xs:attribute name="type">
 			<xs:annotation>
 				<xs:documentation>remboursement=remboursement des cotisations
-					transfert=transfert des cotisations
-				</xs:documentation>
+                    transfert=transfert des cotisations
+                </xs:documentation>
 			</xs:annotation>
 			<xs:simpleType>
 				<xs:restriction base="xs:string">
@@ -461,19 +486,60 @@
 	<xs:complexType name="indemnite_journaliere">
 		<xs:annotation>
 			<xs:documentation>indemnité journalière de l'AI
-				IV-Taggeld
-			</xs:documentation>
+                IV-Taggeld
+            </xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
 			<xs:element name="debut_droit" type="AAAAMM"/>
 			<xs:element name="fin_droit" type="AAAAMM" minOccurs="0"/>
 		</xs:sequence>
 	</xs:complexType>
+	<xs:complexType name="DiminutionType">
+		<xs:sequence>
+			<xs:element name="navs" type="NAVS"/>
+			<xs:element name="genre" type="GenrePrestation"/>
+			<xs:element name="debut_droit" type="AAAAMMJJ"/>
+			<xs:element name="fin_droit" type="AAAAMMJJ"/>
+			<xs:element name="code_mutation">
+				<xs:simpleType>
+					<xs:restriction base="xs:int">
+						<xs:minInclusive value="0"/>
+						<xs:maxInclusive value="99"/>
+						<!-- 2020 TODO: Attention il y a des nouveaux codes spéciaux supérieurs à 99. Sous 2020, il faut donc adapter maxInclusive -->
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="montant">
+				<xs:simpleType>
+					<xs:restriction base="xs:int">
+						<xs:minInclusive value="0"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="droit">
+				<xs:simpleType>
+					<xs:restriction base="xs:int">
+						<xs:enumeration value="9"/>
+						<xs:enumeration value="10"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="type">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="ordinaire"/>
+						<xs:enumeration value="extraordinaire"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="mois_rapport" type="AAAAMMJJ"/>
+		</xs:sequence>
+	</xs:complexType>
 	<xs:complexType name="rente">
 		<xs:annotation>
 			<xs:documentation>rente
-				Rente
-			</xs:documentation>
+                Rente
+            </xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
 			<xs:element name="label" type="xs:string" minOccurs="0"/>
@@ -492,10 +558,10 @@
 			<xs:element name="genre" type="GenrePrestation" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>* annonce CdC /
-						Meldung ZAS
-						genre de prestation
-						Leistungsart
-					</xs:documentation>
+                        Meldung ZAS
+                        genre de prestation
+                        Leistungsart
+                    </xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="transfert" type="empty" minOccurs="0">
@@ -516,10 +582,10 @@
 			<xs:element name="echelle" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>* annonce CdC /
-						Meldung ZAS
-						échelle de rente
-						Skala. Les rente extrordinaire n'ont pas d'échelle.
-					</xs:documentation>
+                        Meldung ZAS
+                        échelle de rente
+                        Skala. Les rente extrordinaire n'ont pas d'échelle.
+                    </xs:documentation>
 				</xs:annotation>
 				<xs:simpleType>
 					<xs:restriction base="xs:int">
@@ -544,15 +610,15 @@
 						<xs:element name="an" type="AAAA">
 							<xs:annotation>
 								<xs:documentation>année d'état du ram et du montant
-									Jahr des DJE und Betrags
-								</xs:documentation>
+                                    Jahr des DJE und Betrags
+                                </xs:documentation>
 							</xs:annotation>
 						</xs:element>
 						<xs:element name="ram" minOccurs="0">
 							<xs:annotation>
 								<xs:documentation>revenu annuel moyen
-									Durchschnittliches Jahreseinkommen. Les rentes extraordinaires n'ont pas de ram.
-								</xs:documentation>
+                                    Durchschnittliches Jahreseinkommen. Les rentes extraordinaires n'ont pas de ram.
+                                </xs:documentation>
 							</xs:annotation>
 							<xs:simpleType>
 								<xs:restriction base="xs:int">
@@ -563,7 +629,7 @@
 						<xs:element name="montant_complet_np" minOccurs="0">
 							<xs:annotation>
 								<xs:documentation>montant complte (100%) avant réduction pour plafonnement
-								</xs:documentation>
+                                </xs:documentation>
 							</xs:annotation>
 							<xs:simpleType>
 								<xs:restriction base="xs:int">
@@ -594,7 +660,18 @@
 						<xs:element name="montant_plaf" minOccurs="0">
 							<xs:annotation>
 								<xs:documentation>montant plafonné, avant les autres réductions ou supplément
-								</xs:documentation>
+                                </xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:int">
+									<xs:minInclusive value="0"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="montant_compl_diff" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>montant du complément différentiel
+                                </xs:documentation>
 							</xs:annotation>
 							<xs:simpleType>
 								<xs:restriction base="xs:int">
@@ -615,9 +692,9 @@
 						<xs:element name="montant_nr_naj" minOccurs="0">
 							<xs:annotation>
 								<xs:documentation>montant de rente avant réduction pour anticipation et supplément
-									d'ajournement
-									Ungekürzter Betrag
-								</xs:documentation>
+                                    d'ajournement
+                                    Ungekürzter Betrag
+                                </xs:documentation>
 							</xs:annotation>
 							<xs:simpleType>
 								<xs:restriction base="xs:int">
@@ -628,8 +705,8 @@
 						<xs:element name="red_ant" minOccurs="0">
 							<xs:annotation>
 								<xs:documentation>montant de reduction pour anticipation
-									Kürzung wegen Vorbezug
-								</xs:documentation>
+                                    Kürzung wegen Vorbezug
+                                </xs:documentation>
 							</xs:annotation>
 							<xs:simpleType>
 								<xs:restriction base="xs:int">
@@ -660,7 +737,7 @@
 						<xs:element name="montant_nr_non_coll" minOccurs="0">
 							<xs:annotation>
 								<xs:documentation>montant avant réduction pour manque de collaboration
-								</xs:documentation>
+                                </xs:documentation>
 							</xs:annotation>
 							<xs:simpleType>
 								<xs:restriction base="xs:int">
@@ -681,10 +758,10 @@
 						<xs:element name="montant">
 							<xs:annotation>
 								<xs:documentation>* annonce CdC /
-									Meldung ZAS
-									montant effectif de la rente
-									Betrag
-								</xs:documentation>
+                                    Meldung ZAS
+                                    montant effectif de la rente
+                                    Betrag
+                                </xs:documentation>
 							</xs:annotation>
 							<xs:simpleType>
 								<xs:restriction base="xs:int">
@@ -724,19 +801,19 @@
 			<xs:element name="debut_droit" type="AAAAMMJJ">
 				<xs:annotation>
 					<xs:documentation>* annonce CdC /
-						Meldung ZAS
-						Début de droit à la rente
-						Anspruchsbeginn
-					</xs:documentation>
+                        Meldung ZAS
+                        Début de droit à la rente
+                        Anspruchsbeginn
+                    </xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="fin_droit" type="AAAAMMJJ" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>* annonce CdC /
-						Meldung ZAS
-						fin de droit à la rente
-						Ende des Anspruchs
-					</xs:documentation>
+                        Meldung ZAS
+                        fin de droit à la rente
+                        Ende des Anspruchs
+                    </xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="fin_prevue" type="AAAAMMJJ" minOccurs="0">
@@ -776,17 +853,17 @@
 			<xs:element name="mois_rapport" type="AAAAMMJJ" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>* annonce CdC /
-						Meldung ZAS
-						Mois de rapport
-						Berichtsmonat
-					</xs:documentation>
+                        Meldung ZAS
+                        Mois de rapport
+                        Berichtsmonat
+                    </xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="restitution" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>montant à réclamer à l'assuré en cas de mutation d'une allocation de veuve à une
-						R50
-					</xs:documentation>
+                        R50
+                    </xs:documentation>
 				</xs:annotation>
 				<xs:simpleType>
 					<xs:restriction base="xs:int">
@@ -830,8 +907,8 @@
 			<xs:element name="surv_inv" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>code survivant invalide selon annonce au RR (présent seulement pour rente de
-						survivant)
-					</xs:documentation>
+                        survivant)
+                    </xs:documentation>
 				</xs:annotation>
 				<xs:simpleType>
 					<xs:restriction base="xs:int">
@@ -873,21 +950,21 @@
 			<xs:element name="d_cot_av_73" type="dcot" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>données figurant pour les rentes fournies en entrée : durée de cotisation avant
-						1973 (selon annonce au RR)
-					</xs:documentation>
+                        1973 (selon annonce au RR)
+                    </xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="d_cot_ap_73" type="dcot" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>données figurant pour les rentes fournies en entrée : durée de cotisation dès 1973
-						(selon annonce au RR)
-					</xs:documentation>
+                        (selon annonce au RR)
+                    </xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="m_app_av_73" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>données figurant pour les rentes fournies en entrée : mois d'appoint avant 1973
-					</xs:documentation>
+                    </xs:documentation>
 				</xs:annotation>
 				<xs:simpleType>
 					<xs:restriction base="xs:int">
@@ -898,7 +975,7 @@
 			<xs:element name="m_app_ap_73" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>données figurant pour les rentes fournies en entrée : mois d'appoint dès 1973
-					</xs:documentation>
+                    </xs:documentation>
 				</xs:annotation>
 				<xs:simpleType>
 					<xs:restriction base="xs:int">
@@ -909,22 +986,22 @@
 			<xs:element name="d_cot_etr_av_73" type="dcot" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>données figurant pour les rentes fournies en entrée : durée de cotisation
-						étrangères prises en considération pour le calcul de l'échelle avant 1973
-					</xs:documentation>
+                        étrangères prises en considération pour le calcul de l'échelle avant 1973
+                    </xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="d_cot_etr_ap_73" type="dcot" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>données figurant pour les rentes fournies en entrée : durée de cotisation
-						étrangères prises en considération pour le calcul de l'échelle dès 1973
-					</xs:documentation>
+                        étrangères prises en considération pour le calcul de l'échelle dès 1973
+                    </xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="an_cot_clss" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>données figurant pour les rentes fournies en entrée : années de cotisation de la
-						classe d'âge
-					</xs:documentation>
+                        classe d'âge
+                    </xs:documentation>
 				</xs:annotation>
 				<xs:simpleType>
 					<xs:restriction base="xs:int">
@@ -936,20 +1013,20 @@
 			<xs:element name="an_niveau" type="AAAA" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>données figurant pour les rentes fournies en entrée : année de niveau
-					</xs:documentation>
+                    </xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="d_cot_ram" type="dcot" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>données figurant pour les rentes fournies en entrée : durée de cotisation pour le
-						RAM
-					</xs:documentation>
+                        RAM
+                    </xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="degre_inv" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>données figurant pour les rentes fournies en entrée : degré d'invalidité
-					</xs:documentation>
+                    </xs:documentation>
 				</xs:annotation>
 				<xs:simpleType>
 					<xs:restriction base="xs:int">
@@ -961,8 +1038,8 @@
 			<xs:element name="cle_inf" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>données figurant pour les rentes fournies en entrée : code infirmité + atteinte
-						fonctionnelle
-					</xs:documentation>
+                        fonctionnelle
+                    </xs:documentation>
 				</xs:annotation>
 				<xs:simpleType>
 					<xs:restriction base="xs:int">
@@ -973,14 +1050,14 @@
 			<xs:element name="date_inv" type="AAAAMMJJ" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>données figurant pour les rentes fournies en entrée : date de survenance de
-						l'invalidité
-					</xs:documentation>
+                        l'invalidité
+                    </xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="inv_prec" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>données figurant pour les rentes fournies en entrée : code invalide précoce
-					</xs:documentation>
+                    </xs:documentation>
 				</xs:annotation>
 				<xs:simpleType>
 					<xs:restriction base="xs:int">
@@ -1003,34 +1080,39 @@
 			<xs:element name="bedu_mont" type="xs:int" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>données figurant pour les rentes fournies en entrée : montant de bonification pour
-						tâches éducatives (rentes 9ème seulement)
-					</xs:documentation>
+                        tâches éducatives (rentes 9ème seulement)
+                    </xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="bedu_an" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>données figurant pour les rentes fournies en entrée : nb d'années de bonification
-						pour tâches éducatives (AA.dd)
-					</xs:documentation>
+                        pour tâches éducatives (AA.dd)
+                    </xs:documentation>
 				</xs:annotation>
 				<xs:simpleType>
 					<xs:restriction base="xs:float">
-						<xs:pattern value="[0-9]+\.[0257][05]?"/>
+						<xs:pattern value="[0-9]+\.(0|25|5|75)"/>
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:element>
-			<xs:element name="bass_an" type="xs:float" minOccurs="0">
+			<xs:element name="bass_an" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>données figurant pour les rentes fournies en entrée : nb d'années de bonification
-						pour tâches d'assistance(AA.dd)
-					</xs:documentation>
+                        pour tâches d'assistance(AA.dd)
+                    </xs:documentation>
 				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:float">
+						<xs:pattern value="[0-9]+\.(0|25|5|75)"/>
+					</xs:restriction>
+				</xs:simpleType>
 			</xs:element>
 			<xs:element name="btr_an" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>données figurant pour les rentes fournies en entrée : nb d'années de bonification
-						pour transitoire (AA.dd)
-					</xs:documentation>
+                        pour transitoire (AA.dd)
+                    </xs:documentation>
 				</xs:annotation>
 				<xs:simpleType>
 					<xs:restriction base="xs:float">
@@ -1041,8 +1123,8 @@
 			<xs:element name="antic_an" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>données figurant pour les rentes fournies en entrée : Nombre d'années
-						d'anticipation.
-					</xs:documentation>
+                        d'anticipation.
+                    </xs:documentation>
 				</xs:annotation>
 				<xs:simpleType>
 					<xs:restriction base="xs:int">
@@ -1053,8 +1135,8 @@
 			<xs:element name="mont_red_ant" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>données figurant pour les rentes fournies en entrée : Montant de réduction pour
-						anticipation.
-					</xs:documentation>
+                        anticipation.
+                    </xs:documentation>
 				</xs:annotation>
 				<xs:simpleType>
 					<xs:restriction base="xs:int">
@@ -1065,8 +1147,8 @@
 			<xs:element name="bass_mont" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>données figurant pour les rentes fournies en entrée : nb d'années de bonification
-						pour tâches d'assistance(AA.dd)
-					</xs:documentation>
+                        pour tâches d'assistance(AA.dd)
+                    </xs:documentation>
 				</xs:annotation>
 				<xs:simpleType>
 					<xs:restriction base="xs:int">
@@ -1077,8 +1159,8 @@
 			<xs:element name="btr_mont" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>données figurant pour les rentes fournies en entrée : nb d'années de bonification
-						transitoire (AA.dd)
-					</xs:documentation>
+                        transitoire (AA.dd)
+                    </xs:documentation>
 				</xs:annotation>
 				<xs:simpleType>
 					<xs:restriction base="xs:int">
@@ -1089,7 +1171,7 @@
 			<xs:element name="rev_split" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>données figurant pour les rentes fournies en entrée : code revenus splittés
-					</xs:documentation>
+                    </xs:documentation>
 				</xs:annotation>
 				<xs:simpleType>
 					<xs:restriction base="xs:int">
@@ -1101,8 +1183,8 @@
 			<xs:element name="code_rev" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>données figurant pour les rentes fournies en entrée : code revenu, 9ème révision
-						seulement
-					</xs:documentation>
+                        seulement
+                    </xs:documentation>
 				</xs:annotation>
 				<xs:simpleType>
 					<xs:restriction base="xs:int">
@@ -1116,9 +1198,9 @@
 			<xs:element name="payee" type="xs:boolean" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>TRUE pour les rentes qui doivent être payées, FALSE pour les rentes ajournées ou
-						suspendues qui ne sont pas versées mais annoncées au RR. Facultatif pour les rentes en input
-						mais toujours produit en sortie.
-					</xs:documentation>
+                        suspendues qui ne sont pas versées mais annoncées au RR. Facultatif pour les rentes en input
+                        mais toujours produit en sortie.
+                    </xs:documentation>
 				</xs:annotation>
 			</xs:element>
 		</xs:sequence>
@@ -1126,15 +1208,15 @@
 	<xs:complexType name="indemnite_forfaitaire">
 		<xs:annotation>
 			<xs:documentation>Indemnité forfaitaire
-				Abfindung
-			</xs:documentation>
+                Abfindung
+            </xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
 			<xs:choice>
 				<xs:element name="genre" type="GenrePrestation">
 					<xs:annotation>
 						<xs:documentation>Pour les IF en historique il n'y a que le genre pas la rente
-						</xs:documentation>
+                        </xs:documentation>
 					</xs:annotation>
 				</xs:element>
 				<xs:element name="rente">
@@ -1143,10 +1225,10 @@
 							<xs:element name="genre" type="GenrePrestation">
 								<xs:annotation>
 									<xs:documentation>* annonce CdC /
-										Meldung ZAS
-										genre de prestation
-										Leistungsart
-									</xs:documentation>
+                                        Meldung ZAS
+                                        genre de prestation
+                                        Leistungsart
+                                    </xs:documentation>
 								</xs:annotation>
 							</xs:element>
 							<xs:element name="fraction" minOccurs="0">
@@ -1162,17 +1244,17 @@
 							<xs:element name="an" type="AAAA">
 								<xs:annotation>
 									<xs:documentation>année d'état du ram et du montant
-										Jahr des DJE und Betrags
-									</xs:documentation>
+                                        Jahr des DJE und Betrags
+                                    </xs:documentation>
 								</xs:annotation>
 							</xs:element>
 							<xs:element name="echelle">
 								<xs:annotation>
 									<xs:documentation>* annonce CdC /
-										Meldung ZAS
-										échelle de rente
-										Skala
-									</xs:documentation>
+                                        Meldung ZAS
+                                        échelle de rente
+                                        Skala
+                                    </xs:documentation>
 								</xs:annotation>
 								<xs:simpleType>
 									<xs:restriction base="xs:int">
@@ -1184,8 +1266,8 @@
 							<xs:element name="ram">
 								<xs:annotation>
 									<xs:documentation>revenu annuel moyen
-										Durchschnittliches Jahreseinkommen
-									</xs:documentation>
+                                        Durchschnittliches Jahreseinkommen
+                                    </xs:documentation>
 								</xs:annotation>
 								<xs:simpleType>
 									<xs:restriction base="xs:int">
@@ -1196,16 +1278,76 @@
 							<xs:element name="montant">
 								<xs:annotation>
 									<xs:documentation>* annonce CdC /
-										Meldung ZAS
-										montant mensuel de la rente correspondante
-										Monatlicher Rentenbetrag
-									</xs:documentation>
+                                        Meldung ZAS
+                                        montant mensuel de la rente correspondante
+                                        Monatlicher Rentenbetrag
+                                    </xs:documentation>
 								</xs:annotation>
 								<xs:simpleType>
 									<xs:restriction base="xs:int">
 										<xs:minInclusive value="0"/>
 									</xs:restriction>
 								</xs:simpleType>
+							</xs:element>
+							<xs:element name="red_ant" minOccurs="0">
+								<xs:simpleType>
+									<xs:restriction base="xs:int">
+										<xs:minInclusive value="0"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="sup_aj" minOccurs="0">
+								<xs:simpleType>
+									<xs:restriction base="xs:int">
+										<xs:minInclusive value="0"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="code_cas_special" minOccurs="0" maxOccurs="5">
+								<xs:annotation>
+									<xs:documentation>code pour cas spécial</xs:documentation>
+								</xs:annotation>
+								<xs:simpleType>
+									<xs:restriction base="xs:int">
+										<xs:minInclusive value="0"/>
+										<xs:maxInclusive value="99"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="code_mutation" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>code mutation</xs:documentation>
+								</xs:annotation>
+								<xs:simpleType>
+									<xs:restriction base="xs:int">
+										<xs:minInclusive value="0"/>
+										<xs:maxInclusive value="99"/>
+										<!-- 2020 TODO: Attention il y a des nouveaux codes spéciaux supérieurs à 99. Sous 2020, il faut donc adapter maxInclusive -->
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="surv_inv" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>code survivant invalide selon annonce au RR (présent seulement pour rente de
+                        survivant)
+                    </xs:documentation>
+								</xs:annotation>
+								<xs:simpleType>
+									<xs:restriction base="xs:int">
+										<xs:enumeration value="0"/>
+										<xs:enumeration value="1"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="ncpl1" type="id_acor" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>numéro d'assuré complémentaire 1</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="ncpl2" type="id_acor" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>numéro d'assuré complémentaire 2</xs:documentation>
+								</xs:annotation>
 							</xs:element>
 						</xs:sequence>
 					</xs:complexType>
@@ -1218,7 +1360,7 @@
 				<xs:complexType>
 					<xs:simpleContent>
 						<xs:extension base="xs:float">
-							<xs:attribute name="type" type="vact"/>
+							<xs:attribute name="type" type="vact" use="required"/>
 						</xs:extension>
 					</xs:simpleContent>
 				</xs:complexType>
@@ -1230,7 +1372,7 @@
 				<xs:complexType>
 					<xs:simpleContent>
 						<xs:extension base="xs:int">
-							<xs:attribute name="type" type="montant_r_if"/>
+							<xs:attribute name="type" type="montant_r_if" use="required"/>
 						</xs:extension>
 					</xs:simpleContent>
 				</xs:complexType>
@@ -1238,10 +1380,10 @@
 			<xs:element name="montant">
 				<xs:annotation>
 					<xs:documentation>* annonce CdC /
-						Meldung ZAS
-						Montant de l'indemnité forfaitaire
-						Abfindungbetrag
-					</xs:documentation>
+                        Meldung ZAS
+                        Montant de l'indemnité forfaitaire
+                        Abfindungbetrag
+                    </xs:documentation>
 				</xs:annotation>
 				<xs:simpleType>
 					<xs:restriction base="xs:int">
@@ -1252,10 +1394,10 @@
 			<xs:element name="date" type="AAAAMMJJ">
 				<xs:annotation>
 					<xs:documentation>* annonce CdC /
-						Meldung ZAS
-						Date de droit à l'IF
-						Anspruchsbeginn
-					</xs:documentation>
+                        Meldung ZAS
+                        Date de droit à l'IF
+                        Anspruchsbeginn
+                    </xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="moment_determinant" type="AAAAMMJJ" minOccurs="0">
@@ -1266,10 +1408,10 @@
 			<xs:element name="mois_rapport" type="AAAAMMJJ" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>* annonce CdC /
-						Meldung ZAS
-						Mois de rapport
-						Berichtsmonat
-					</xs:documentation>
+                        Meldung ZAS
+                        Mois de rapport
+                        Berichtsmonat
+                    </xs:documentation>
 				</xs:annotation>
 			</xs:element>
 		</xs:sequence>
@@ -1277,8 +1419,8 @@
 	<xs:complexType name="transfert_cotisations">
 		<xs:annotation>
 			<xs:documentation>transfert de cotisations
-				Beitragsüberweisung
-			</xs:documentation>
+                Beitragsüberweisung
+            </xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
 			<xs:element name="date" type="AAAAMMJJ"/>
@@ -1287,8 +1429,8 @@
 	<xs:complexType name="remboursement_cotisations">
 		<xs:annotation>
 			<xs:documentation>remboursement de cotisations
-				Beitragsrückvergütung
-			</xs:documentation>
+                Beitragsrückvergütung
+            </xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
 			<xs:element name="date" type="AAAAMMJJ"/>
@@ -1303,8 +1445,8 @@
 				<xs:element name="version_expert">
 					<xs:annotation>
 						<xs:documentation>version de ACOR
-							ACOR Version
-						</xs:documentation>
+                            ACOR Version
+                        </xs:documentation>
 					</xs:annotation>
 					<xs:simpleType>
 						<xs:restriction base="xs:string">
@@ -1316,22 +1458,22 @@
 				<xs:element name="demande">
 					<xs:annotation>
 						<xs:documentation>demande
-							Antrag
-						</xs:documentation>
+                            Antrag
+                        </xs:documentation>
 					</xs:annotation>
 					<xs:complexType>
 						<xs:sequence>
 							<xs:element name="genre">
 								<xs:annotation>
 									<xs:documentation>genre de demande:
-										v = vieillesse ;
-										s = survivant ;
-										i = invalidité ;
-										c = communication de périodes ;
-										r = remboursement de cotisations
-										t = transfert de cotisations
-										splitt = splitting
-									</xs:documentation>
+                                        v = vieillesse ;
+                                        s = survivant ;
+                                        i = invalidité ;
+                                        c = communication de périodes ;
+                                        r = remboursement de cotisations
+                                        t = transfert de cotisations
+                                        splitt = splitting
+                                    </xs:documentation>
 								</xs:annotation>
 								<xs:simpleType>
 									<xs:restriction base="xs:string">
@@ -1348,7 +1490,7 @@
 							<xs:element name="label" type="xs:string" minOccurs="0">
 								<xs:annotation>
 									<xs:documentation>label pour un titre dans la feuille de calcul ACOR
-									</xs:documentation>
+                                    </xs:documentation>
 								</xs:annotation>
 							</xs:element>
 							<xs:element name="requerant" type="id_acor">
@@ -1364,10 +1506,10 @@
 							<xs:element name="caisse">
 								<xs:annotation>
 									<xs:documentation>*annonce CdC /
-										Meldung ZAS
-										Numéro de caisse et agence
-										Nummer der AK und Zweigstelle
-									</xs:documentation>
+                                        Meldung ZAS
+                                        Numéro de caisse et agence
+                                        Nummer der AK und Zweigstelle
+                                    </xs:documentation>
 								</xs:annotation>
 								<xs:simpleType>
 									<xs:restriction base="xs:int">
@@ -1384,7 +1526,7 @@
 							<xs:element name="date_determinante_prescription" type="AAAAMMJJ" minOccurs="0">
 								<xs:annotation>
 									<xs:documentation>date déterminante pour le calcul de la prescription
-									</xs:documentation>
+                                    </xs:documentation>
 								</xs:annotation>
 							</xs:element>
 							<xs:element name="date_prescription" type="AAAAMMJJ" minOccurs="0">
@@ -1408,16 +1550,16 @@
 				<xs:element name="assure" maxOccurs="unbounded">
 					<xs:annotation>
 						<xs:documentation>Assuré: individu de la famille des assurés pris en compte dans le dossier
-							Versicherte(r)
-						</xs:documentation>
+                            Versicherte(r)
+                        </xs:documentation>
 					</xs:annotation>
 					<xs:complexType>
 						<xs:sequence>
 							<xs:element name="id">
 								<xs:annotation>
 									<xs:documentation>id de l'assure
-										VersicherterId
-									</xs:documentation>
+                                        VersicherterId
+                                    </xs:documentation>
 								</xs:annotation>
 								<xs:complexType>
 									<xs:simpleContent>
@@ -1434,6 +1576,11 @@
 													</xs:restriction>
 												</xs:simpleType>
 											</xs:attribute>
+											<xs:attribute name="valide" type="xs:boolean" use="required">
+												<xs:annotation>
+													<xs:documentation>Dit si l'identifiant est un Navs valide ou non</xs:documentation>
+												</xs:annotation>
+											</xs:attribute>
 										</xs:extension>
 									</xs:simpleContent>
 								</xs:complexType>
@@ -1441,8 +1588,8 @@
 							<xs:element name="nom" type="xs:string" minOccurs="0">
 								<xs:annotation>
 									<xs:documentation>nom de l'assure
-										Name der Versicherter
-									</xs:documentation>
+                                        Name der Versicherter
+                                    </xs:documentation>
 								</xs:annotation>
 							</xs:element>
 							<xs:element name="fonction" minOccurs="0" maxOccurs="unbounded">
@@ -1477,8 +1624,8 @@
 							<xs:element name="sexe" minOccurs="0">
 								<xs:annotation>
 									<xs:documentation>f=femme / Frau
-										h=homme / Mann
-									</xs:documentation>
+                                        h=homme / Mann
+                                    </xs:documentation>
 								</xs:annotation>
 								<xs:simpleType>
 									<xs:restriction base="xs:string">
@@ -1490,15 +1637,15 @@
 							<xs:element name="naissance" type="AAAAMMJJ" minOccurs="0">
 								<xs:annotation>
 									<xs:documentation>date de naissance
-										Geburtsdatum
-									</xs:documentation>
+                                        Geburtsdatum
+                                    </xs:documentation>
 								</xs:annotation>
 							</xs:element>
 							<xs:element name="etat_civil" minOccurs="0">
 								<xs:annotation>
 									<xs:documentation>etat-civil actuel/ aktueller Zivilstand
-										valeurs selon DR / Werte gemäss RWL
-									</xs:documentation>
+                                        valeurs selon DR / Werte gemäss RWL
+                                    </xs:documentation>
 								</xs:annotation>
 								<xs:simpleType>
 									<xs:restriction base="xs:int">
@@ -1522,8 +1669,8 @@
 							<xs:element name="refugie" type="CodePays" minOccurs="0">
 								<xs:annotation>
 									<xs:documentation>* annonce CdC / Meldung ZAS
-										Réfugié / Flüchtling
-									</xs:documentation>
+                                        Réfugié / Flüchtling
+                                    </xs:documentation>
 								</xs:annotation>
 							</xs:element>
 							<xs:element name="nationalite" minOccurs="0">
@@ -1540,8 +1687,8 @@
 							<xs:element name="domicile" minOccurs="0">
 								<xs:annotation>
 									<xs:documentation>* annonce CdC / Meldung ZAS
-										Canton/Etat de domicile / Wohnkanton bzw. -staat
-									</xs:documentation>
+                                        Canton/Etat de domicile / Wohnkanton bzw. -staat
+                                    </xs:documentation>
 								</xs:annotation>
 								<xs:simpleType>
 									<xs:restriction base="CodePlace">
@@ -1559,15 +1706,15 @@
 											<xs:attribute name="type">
 												<xs:annotation>
 													<xs:documentation>do=domicile en Suisse
-														na=nationalité suisse
-														af=assurance facultative
-														li=assuré au Liechtenstein
-														ex=exemption de cotisation et= étude
-														in=incarcération
-														rsm=recueilli par la belle-mère
-														rsp=recueilli par le beau père
-														rc=recueilli
-													</xs:documentation>
+                                                        na=nationalité suisse
+                                                        af=assurance facultative
+                                                        li=assuré au Liechtenstein
+                                                        ex=exemption de cotisation et= étude
+                                                        in=incarcération
+                                                        rsm=recueilli par la belle-mère
+                                                        rsp=recueilli par le beau père
+                                                        rc=recueilli
+                                                    </xs:documentation>
 												</xs:annotation>
 												<xs:simpleType>
 													<xs:restriction base="xs:string">
@@ -1636,12 +1783,12 @@
 							<xs:element name="genre_invalidite" minOccurs="0">
 								<xs:annotation>
 									<xs:documentation>code d'infirmité (3 positions) et code d'atteinte fonctionnelle (2
-										positions)
-									</xs:documentation>
+                                        positions)
+                                    </xs:documentation>
 								</xs:annotation>
 								<xs:simpleType>
 									<xs:restriction base="xs:int">
-										<xs:pattern value="[0-9]{5}"/>
+										<xs:pattern value="0|[0-9]{5}"/>
 									</xs:restriction>
 								</xs:simpleType>
 							</xs:element>
@@ -1686,7 +1833,7 @@
 							<xs:element name="reduction_non_coll" minOccurs="0">
 								<xs:annotation>
 									<xs:documentation>pourcentage de réduction pour manque de collaboration
-									</xs:documentation>
+                                    </xs:documentation>
 								</xs:annotation>
 								<xs:simpleType>
 									<xs:restriction base="xs:int">
@@ -1698,7 +1845,7 @@
 							<xs:element name="derniere_revision" type="AAAAMMJJ" minOccurs="0">
 								<xs:annotation>
 									<xs:documentation>dernière révision de l'invalidité, spécifique à la CSC
-									</xs:documentation>
+                                    </xs:documentation>
 								</xs:annotation>
 							</xs:element>
 							<xs:element name="retraite_legale" type="AAAAMMJJ" minOccurs="0">
@@ -1709,8 +1856,8 @@
 							<xs:element name="deces" type="AAAAMMJJ" minOccurs="0">
 								<xs:annotation>
 									<xs:documentation>date de décès
-										Todesdatum
-									</xs:documentation>
+                                        Todesdatum
+                                    </xs:documentation>
 								</xs:annotation>
 							</xs:element>
 							<xs:element name="veto" minOccurs="0">
@@ -1739,38 +1886,38 @@
 				<xs:element name="partenariat" minOccurs="0" maxOccurs="unbounded">
 					<xs:annotation>
 						<xs:documentation>lien de partenariat
-							Partnerschaft
-						</xs:documentation>
+                            Partnerschaft
+                        </xs:documentation>
 					</xs:annotation>
 					<xs:complexType>
 						<xs:sequence>
 							<xs:element name="conjoint" type="id_acor" maxOccurs="2">
 								<xs:annotation>
 									<xs:documentation>conjoint
-										Partner
-									</xs:documentation>
+                                        Partner
+                                    </xs:documentation>
 								</xs:annotation>
 							</xs:element>
 							<xs:element name="debut" type="AAAAMMJJ" minOccurs="0">
 								<xs:annotation>
 									<xs:documentation>début du partenariat. Peut être absent en cas de communication de
-										périodes.
-										Beginn des Partnerschafts
-									</xs:documentation>
+                                        périodes.
+                                        Beginn des Partnerschafts
+                                    </xs:documentation>
 								</xs:annotation>
 							</xs:element>
 							<xs:element name="separation" type="periodeAMJ" minOccurs="0" maxOccurs="unbounded">
 								<xs:annotation>
 									<xs:documentation>séparation
-										Trennung
-									</xs:documentation>
+                                        Trennung
+                                    </xs:documentation>
 								</xs:annotation>
 							</xs:element>
 							<xs:element name="fin" minOccurs="0">
 								<xs:annotation>
 									<xs:documentation>fin du partenariat
-										Ende des Partnerschafts
-									</xs:documentation>
+                                        Ende des Partnerschafts
+                                    </xs:documentation>
 								</xs:annotation>
 								<xs:complexType>
 									<xs:simpleContent>
@@ -1778,8 +1925,8 @@
 											<xs:attribute name="type">
 												<xs:annotation>
 													<xs:documentation>divorce = Scheidung
-														veuvage = Witwe(r)stand
-													</xs:documentation>
+                                                        veuvage = Witwe(r)stand
+                                                    </xs:documentation>
 												</xs:annotation>
 												<xs:simpleType>
 													<xs:restriction base="xs:string">
@@ -1796,8 +1943,8 @@
 						<xs:attribute name="type">
 							<xs:annotation>
 								<xs:documentation>mariage = Ehe
-									partenariat = Partnerschaftgesetz
-								</xs:documentation>
+                                    partenariat = Partnerschaftgesetz
+                                </xs:documentation>
 							</xs:annotation>
 							<xs:simpleType>
 								<xs:restriction base="xs:string">
@@ -1811,46 +1958,46 @@
 				<xs:element name="filiation" minOccurs="0" maxOccurs="unbounded">
 					<xs:annotation>
 						<xs:documentation>lien de filiation
-							Abstammung
-						</xs:documentation>
+                            Abstammung
+                        </xs:documentation>
 					</xs:annotation>
 					<xs:complexType>
 						<xs:sequence>
 							<xs:element name="enfant" type="id_acor">
 								<xs:annotation>
 									<xs:documentation>enfant
-										Kind
-									</xs:documentation>
+                                        Kind
+                                    </xs:documentation>
 								</xs:annotation>
 							</xs:element>
 							<xs:element name="pere" type="id_acor" minOccurs="0">
 								<xs:annotation>
 									<xs:documentation>père
-										élément absent si de père inconnu.
-										Vater
-									</xs:documentation>
+                                        élément absent si de père inconnu.
+                                        Vater
+                                    </xs:documentation>
 								</xs:annotation>
 							</xs:element>
 							<xs:element name="mere" type="id_acor" minOccurs="0">
 								<xs:annotation>
 									<xs:documentation>mère
-										élément absent si de mère inconnue.
-										Mutter
-									</xs:documentation>
+                                        élément absent si de mère inconnue.
+                                        Mutter
+                                    </xs:documentation>
 								</xs:annotation>
 							</xs:element>
 							<xs:element name="accueil" type="periodeAM" minOccurs="0" maxOccurs="unbounded">
 								<xs:annotation>
 									<xs:documentation>l'enfant est recueilli par les parents definis dans ce lien de
-										filiation
-									</xs:documentation>
+                                        filiation
+                                    </xs:documentation>
 								</xs:annotation>
 							</xs:element>
 							<xs:element name="adoption" type="AAAAMMJJ" minOccurs="0">
 								<xs:annotation>
 									<xs:documentation>Date d'adoption. L'enfant est adopte par les parents definis dans
-										ce lien de filiation.
-									</xs:documentation>
+                                        ce lien de filiation.
+                                    </xs:documentation>
 								</xs:annotation>
 							</xs:element>
 						</xs:sequence>
@@ -1859,16 +2006,16 @@
 				<xs:element name="prestation" minOccurs="0" maxOccurs="unbounded">
 					<xs:annotation>
 						<xs:documentation>prestation fournie à ACOR en entrée du calcul
-							Leistung
-						</xs:documentation>
+                            Leistung
+                        </xs:documentation>
 					</xs:annotation>
 					<xs:complexType>
 						<xs:sequence>
 							<xs:element name="beneficiaire" type="id_acor">
 								<xs:annotation>
 									<xs:documentation>bénéficiaire
-										Empfänger
-									</xs:documentation>
+                                        Empfänger
+                                    </xs:documentation>
 								</xs:annotation>
 							</xs:element>
 							<xs:choice>
@@ -1885,15 +2032,15 @@
 								<xs:element name="indemnite_journaliere" type="indemnite_journaliere">
 									<xs:annotation>
 										<xs:documentation>indemnité journalière de l'AI
-											IV-Taggeld
-										</xs:documentation>
+                                            IV-Taggeld
+                                        </xs:documentation>
 									</xs:annotation>
 								</xs:element>
 								<xs:element name="indemnite_forfaitaire" type="indemnite_forfaitaire">
 									<xs:annotation>
 										<xs:documentation>indemnité forfaitaire
-											Abfindung
-										</xs:documentation>
+                                            Abfindung
+                                        </xs:documentation>
 									</xs:annotation>
 								</xs:element>
 								<xs:element name="rente">
@@ -1906,8 +2053,8 @@
 												<xs:attribute name="type">
 													<xs:annotation>
 														<xs:documentation>standard
-															ajournee
-														</xs:documentation>
+                                                            ajournee
+                                                        </xs:documentation>
 													</xs:annotation>
 													<xs:simpleType>
 														<xs:restriction base="xs:string">
@@ -1927,7 +2074,7 @@
 				<xs:element name="analyse_periodes_splitting" minOccurs="0" maxOccurs="unbounded">
 					<xs:annotation>
 						<xs:documentation>analyse des périodes d'assurance pour les demandes de splittinng
-						</xs:documentation>
+                        </xs:documentation>
 					</xs:annotation>
 					<xs:complexType>
 						<xs:sequence>
@@ -1956,7 +2103,7 @@
 							<xs:element name="evenement" type="id_acor" minOccurs="0">
 								<xs:annotation>
 									<xs:documentation>événement auquel est rattaché l'analyse des périodes d'assurance
-									</xs:documentation>
+                                    </xs:documentation>
 								</xs:annotation>
 							</xs:element>
 							<xs:element name="an_ci" minOccurs="0" maxOccurs="unbounded">
@@ -1997,7 +2144,7 @@
 										<xs:element name="nmois">
 											<xs:annotation>
 												<xs:documentation>nombre de mois de cotisation durant l'année
-												</xs:documentation>
+                                                </xs:documentation>
 											</xs:annotation>
 											<xs:simpleType>
 												<xs:restriction base="xs:int">
@@ -2060,7 +2207,7 @@
 									<xs:sequence>
 										<xs:element name="debut" type="AAAA"/>
 										<xs:element name="fin" type="AAAA"/>
-										<xs:element name="code" type="xs:int" nillable="true"/>
+										<xs:element name="code" type="xs:int" minOccurs="0"/>
 										<xs:element name="mode_split">
 											<xs:simpleType>
 												<xs:restriction base="xs:string">
@@ -2072,7 +2219,7 @@
 										<xs:element name="signe" minOccurs="0">
 											<xs:annotation>
 												<xs:documentation>neg = revenus extournés pos = revenus crédités
-												</xs:documentation>
+                                                </xs:documentation>
 											</xs:annotation>
 											<xs:simpleType>
 												<xs:restriction base="xs:string">
@@ -2091,8 +2238,8 @@
 				<xs:element name="CI" minOccurs="0" maxOccurs="unbounded">
 					<xs:annotation>
 						<xs:documentation>compte individuel (CI)
-							Individuelles Konto (IK)
-						</xs:documentation>
+                            Individuelles Konto (IK)
+                        </xs:documentation>
 					</xs:annotation>
 					<xs:complexType>
 						<xs:sequence>
@@ -2109,9 +2256,9 @@
 							<xs:element name="etat">
 								<xs:annotation>
 									<xs:documentation>etat du CI
-										complet : toutes les inscriptions
-										split : inscriptions creees par le splitting
-									</xs:documentation>
+                                        complet : toutes les inscriptions
+                                        split : inscriptions creees par le splitting
+                                                </xs:documentation>
 								</xs:annotation>
 								<xs:simpleType>
 									<xs:restriction base="xs:string">
@@ -2169,7 +2316,7 @@
 													<xs:enumeration value="7"/>
 													<xs:enumeration value="8"/>
 													<xs:enumeration value="9"/>
-													<xs:enumeration value="A"/>
+													<xs:enumeration value="99"/>
 												</xs:restriction>
 											</xs:simpleType>
 										</xs:element>
@@ -2248,9 +2395,9 @@
 										<xs:element name="b_ass" minOccurs="0">
 											<xs:annotation>
 												<xs:documentation>participation aux bonus pour tâches d'assistance. Dans
-													les CI, la valeur est notée sur deux chiffre 01=entière, 02=demi,
-													03=un tiers,...
-												</xs:documentation>
+                                                    les CI, la valeur est notée sur deux chiffre 01=entière, 02=demi,
+                                                    03=un tiers,...
+                                                </xs:documentation>
 											</xs:annotation>
 											<xs:simpleType>
 												<xs:restriction base="xs:int">
@@ -2285,9 +2432,9 @@
 										<xs:element name="mxt" minOccurs="0">
 											<xs:annotation>
 												<xs:documentation>= champ No 20 des directives techniques : 1=
-													cotisations versées par les collectivités publiques 2= revenu non
-													formatteur d'un indépendant 3= revenu non formatteur d'un salarié
-												</xs:documentation>
+                                                    cotisations versées par les collectivités publiques 2= revenu non
+                                                    formatteur d'un indépendant 3= revenu non formatteur d'un salarié
+                                    </xs:documentation>
 											</xs:annotation>
 											<xs:simpleType>
 												<xs:restriction base="xs:string">
@@ -2308,14 +2455,14 @@
 										<xs:element name="origine">
 											<xs:annotation>
 												<xs:documentation>selon ACOR
-													0 = saisie ESCAL uniquement
-													1=ligne
-													2=saisie host
-													3=saisie ACOR
-													4=modifié dans ACOR 5=spécifique CdC
-													6 = généré par Acor (calcul prév)
+                                                    0 = saisie ESCAL uniquement
+                                                    1=ligne
+                                                    2=saisie host
+                                                    3=saisie ACOR
+                                                    4=modifié dans ACOR 5=spécifique CdC
+                                                    6 = généré par Acor (calcul prév) 
 													-1 = valeur non valide
-												</xs:documentation>
+                                    </xs:documentation>
 											</xs:annotation>
 											<xs:simpleType>
 												<xs:restriction base="xs:int">
@@ -2336,8 +2483,8 @@
 							<xs:element name="rev_tot_nosplit" minOccurs="0">
 								<xs:annotation>
 									<xs:documentation>revenu total non splitté. Présent s'il est différent du revenu
-										total
-									</xs:documentation>
+                                        total
+                                    </xs:documentation>
 								</xs:annotation>
 								<xs:simpleType>
 									<xs:restriction base="xs:int">
@@ -2348,7 +2495,7 @@
 							<xs:element name="n_caisses">
 								<xs:annotation>
 									<xs:documentation>nombre de caisses pour lesquelles il y a des inscriptions
-									</xs:documentation>
+                                    </xs:documentation>
 								</xs:annotation>
 								<xs:simpleType>
 									<xs:restriction base="xs:int">
@@ -2380,8 +2527,8 @@
 				<xs:element name="analyse_periodes" minOccurs="0" maxOccurs="unbounded">
 					<xs:annotation>
 						<xs:documentation>analyse des périodes d'assurance
-							Analyse der Versicherungszeiten
-						</xs:documentation>
+                            Analyse der Versicherungszeiten
+                        </xs:documentation>
 					</xs:annotation>
 					<xs:complexType>
 						<xs:sequence>
@@ -2407,7 +2554,7 @@
 							<xs:element name="evenement" type="id_acor" minOccurs="0">
 								<xs:annotation>
 									<xs:documentation>événement auquel est rattaché l'analyse des périodes d'assurance
-									</xs:documentation>
+                                    </xs:documentation>
 								</xs:annotation>
 							</xs:element>
 							<xs:element name="an_21" type="AAAA" minOccurs="0">
@@ -2423,7 +2570,7 @@
 							<xs:element name="type" minOccurs="0">
 								<xs:annotation>
 									<xs:documentation>utilisé seulement dans les cas s->s2 avec passé AI
-									</xs:documentation>
+                                    </xs:documentation>
 								</xs:annotation>
 								<xs:simpleType>
 									<xs:restriction base="xs:string">
@@ -2472,8 +2619,8 @@
 										</xs:element>
 										<xs:element name="nmois">
 											<xs:annotation>
-												<xs:documentation>nombre de mois comptant comme assurés
-												</xs:documentation>
+												<xs:documentation>nombre de mois comptant comme assurés 
+                        </xs:documentation>
 											</xs:annotation>
 											<xs:simpleType>
 												<xs:restriction base="xs:int">
@@ -2504,6 +2651,7 @@
 												</xs:restriction>
 											</xs:simpleType>
 										</xs:element>
+										<xs:element name="frac_ass" type="xs:int" minOccurs="0"/>
 										<xs:element name="rev_p" type="xs:int" minOccurs="0">
 											<xs:annotation>
 												<xs:documentation>revenus propres - non splittés - pour la feuille assuré</xs:documentation>
@@ -2561,8 +2709,8 @@
 							<xs:element name="annees_cotisation_dcm" minOccurs="0">
 								<xs:annotation>
 									<xs:documentation>nombre d'annees de cotisation pour la condition de duree minimale
-										de cotisation (DCM)
-									</xs:documentation>
+                                        de cotisation (DCM)
+                                    </xs:documentation>
 								</xs:annotation>
 								<xs:simpleType>
 									<xs:restriction base="xs:int">
@@ -2574,7 +2722,7 @@
 							<xs:element name="mois_cotisation_dcm" minOccurs="0">
 								<xs:annotation>
 									<xs:documentation>nombre de mois dépassant le nombre d'années entière
-									</xs:documentation>
+                                    </xs:documentation>
 								</xs:annotation>
 								<xs:simpleType>
 									<xs:restriction base="xs:int">
@@ -2586,8 +2734,8 @@
 							<xs:element name="annees_etr_dcm" minOccurs="0">
 								<xs:annotation>
 									<xs:documentation>nombre d'annees de cotisation étrangères pour la condition de
-										duree minimale de cotisation (DCM). Inclus dans annees_cotisation_dcm
-									</xs:documentation>
+                                        duree minimale de cotisation (DCM). Inclus dans annees_cotisation_dcm
+                                    </xs:documentation>
 								</xs:annotation>
 								<xs:simpleType>
 									<xs:restriction base="xs:int">
@@ -2599,7 +2747,7 @@
 							<xs:element name="mois_etr_dcm" minOccurs="0">
 								<xs:annotation>
 									<xs:documentation>nombre de mois dépassant le nombre d'années entière
-									</xs:documentation>
+                                    </xs:documentation>
 								</xs:annotation>
 								<xs:simpleType>
 									<xs:restriction base="xs:int">
@@ -2650,8 +2798,8 @@
 				<xs:element name="evenement" minOccurs="0" maxOccurs="unbounded">
 					<xs:annotation>
 						<xs:documentation>événement traité
-							Ereignis
-						</xs:documentation>
+                            Ereignis
+                        </xs:documentation>
 					</xs:annotation>
 					<xs:complexType>
 						<xs:sequence>
@@ -2674,24 +2822,25 @@
 							<xs:element name="operation" type="xs:string" minOccurs="0" maxOccurs="unbounded">
 								<xs:annotation>
 									<xs:documentation>titre facultatif de l'opération effectuée pour cet événement
-									</xs:documentation>
+                                                    </xs:documentation>
 								</xs:annotation>
 							</xs:element>
+							<xs:element name="diminution" type="DiminutionType" minOccurs="0" maxOccurs="unbounded"/>
 							<xs:element name="remarque" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
 							<xs:element name="bases_calcul" minOccurs="0" maxOccurs="unbounded">
 								<xs:annotation>
 									<xs:documentation>bases de calcul
-										Berechnungsgrundlagen
-									</xs:documentation>
+                            Berechnungsgrundlagen
+                        </xs:documentation>
 								</xs:annotation>
 								<xs:complexType>
 									<xs:sequence>
 										<xs:element name="transfert" minOccurs="0">
 											<xs:annotation>
 												<xs:documentation>la base de calcul est issue d'un transfert.
-													anticipe = issue d'un transfert anticipe;
-													normal = issue d'un transfert a temps (01/2001)
-												</xs:documentation>
+                                        anticipe = issue d'un transfert anticipe;
+                                        normal = issue d'un transfert a temps (01/2001)
+                                    </xs:documentation>
 											</xs:annotation>
 											<xs:simpleType>
 												<xs:restriction base="xs:string">
@@ -2713,7 +2862,7 @@
 										<xs:element name="type_base">
 											<xs:annotation>
 												<xs:documentation>pilotage du titre de la base sur la feuille de calcul
-												</xs:documentation>
+                                    </xs:documentation>
 											</xs:annotation>
 											<xs:simpleType>
 												<xs:restriction base="xs:string">
@@ -2740,11 +2889,11 @@
 										<xs:element name="genre">
 											<xs:annotation>
 												<xs:documentation>decision = base avec rentes à verser comparaison = base affichée
-													uniquement pour info lors de calcul comparatif. perdure = la/les rentes sont
-													inchangées par rapport à la base précédente.
-													perdure = rente identique
-													prescription = debut de droit déplacé : pas de rente à verser
-												</xs:documentation>
+                                        uniquement pour info lors de calcul comparatif. perdure = la/les rentes sont
+                                        inchangées par rapport à la base précédente.
+                                        perdure = rente identique
+                                        prescription = debut de droit déplacé : pas de rente à verser
+                                    </xs:documentation>
 											</xs:annotation>
 											<xs:simpleType>
 												<xs:restriction base="xs:string">
@@ -2753,6 +2902,7 @@
 													<xs:enumeration value="perdure"/>
 													<xs:enumeration value="prescription"/>
 													<xs:enumeration value="suspendue"/>
+													<xs:enumeration value="refusee"/>
 												</xs:restriction>
 											</xs:simpleType>
 										</xs:element>
@@ -2769,8 +2919,8 @@
 										<xs:element name="evenement_assure" minOccurs="0">
 											<xs:annotation>
 												<xs:documentation>événement assuré des bases du calcul (retraite, invalidité,
-													décès)
-												</xs:documentation>
+                                        décès)
+                                    </xs:documentation>
 											</xs:annotation>
 											<xs:complexType>
 												<xs:sequence>
@@ -2800,9 +2950,21 @@
 										</xs:element>
 										<xs:element name="sup_car" minOccurs="0">
 											<xs:simpleType>
-												<xs:restriction base="xs:float">
+												<xs:restriction base="xs:int">
 													<xs:minInclusive value="0"/>
 													<xs:maxInclusive value="100"/>
+													<xs:enumeration value="0"/>
+													<xs:enumeration value="5"/>
+													<xs:enumeration value="10"/>
+													<xs:enumeration value="20"/>
+													<xs:enumeration value="30"/>
+													<xs:enumeration value="40"/>
+													<xs:enumeration value="50"/>
+													<xs:enumeration value="60"/>
+													<xs:enumeration value="70"/>
+													<xs:enumeration value="80"/>
+													<xs:enumeration value="90"/>
+													<xs:enumeration value="100"/>
 												</xs:restriction>
 											</xs:simpleType>
 										</xs:element>
@@ -2823,11 +2985,11 @@
 													<xs:element name="genre_invalidite">
 														<xs:annotation>
 															<xs:documentation>clé d'infirmité + atteinte fonctionnelle
-															</xs:documentation>
+                                                </xs:documentation>
 														</xs:annotation>
 														<xs:simpleType>
 															<xs:restriction base="xs:int">
-																<xs:pattern value="[0-9]{5}"/>
+																<xs:pattern value="0|[0-9]{5}"/>
 															</xs:restriction>
 														</xs:simpleType>
 													</xs:element>
@@ -2849,8 +3011,8 @@
 													<xs:element name="invalide_precoce">
 														<xs:annotation>
 															<xs:documentation>selon définition du format d'annonce au RR 0= non
-																1=oui
-															</xs:documentation>
+                                                    1=oui
+                                                </xs:documentation>
 														</xs:annotation>
 														<xs:simpleType>
 															<xs:restriction base="xs:int">
@@ -2862,27 +3024,39 @@
 													<xs:element name="survenance_ev_ass" type="AAAAMMJJ">
 														<xs:annotation>
 															<xs:documentation>selon définition du format d'annonce au RR
-															</xs:documentation>
+                                                </xs:documentation>
 														</xs:annotation>
 													</xs:element>
 													<xs:element name="debut_invalidite" type="AAAAMMJJ" minOccurs="0">
 														<xs:annotation>
 															<xs:documentation>début de la période correspondant au degré et aux
-																bases actuels
-															</xs:documentation>
+                                                    bases actuels
+                                                </xs:documentation>
 														</xs:annotation>
 													</xs:element>
 													<xs:element name="fin_invalidite" type="AAAAMMJJ" minOccurs="0"/>
 													<xs:element name="remarque" type="xs:string" minOccurs="0"/>
 												</xs:sequence>
+												<xs:attribute name="type">
+													<xs:annotation>
+														<xs:documentation>absent par defaut, si présent vaut 'historique' cela signifie que les informations sont historique : non calculée par acor pour cette base (c'est-à-dire reprise de l'historique ou d'un calcul précédent</xs:documentation>
+													</xs:annotation>
+												</xs:attribute>
 											</xs:complexType>
 										</xs:element>
 										<xs:choice>
-											<xs:element name="no_cot" type="empty" minOccurs="0">
-												<xs:annotation>
-													<xs:documentation>remarque spéciale pour échelle =0</xs:documentation>
-												</xs:annotation>
-											</xs:element>
+											<xs:sequence>
+												<xs:element name="no_cot" type="empty" minOccurs="0">
+													<xs:annotation>
+														<xs:documentation>remarque spéciale pour échelle =0</xs:documentation>
+													</xs:annotation>
+												</xs:element>
+												<xs:element name="an_niveau" type="AAAA" minOccurs="0">
+													<xs:annotation>
+														<xs:documentation>Année de niveau pour les rentes extraordinaire</xs:documentation>
+													</xs:annotation>
+												</xs:element>
+											</xs:sequence>
 											<xs:sequence>
 												<xs:element name="recalc_int" type="xs:string" minOccurs="0">
 													<xs:annotation>
@@ -2893,16 +3067,16 @@
 													<xs:element name="base_echelle_calculee" type="BaseEchelle" minOccurs="0">
 														<xs:annotation>
 															<xs:documentation>Identique au tag base_echelle en cas de garantie
-																d'échelle.
-															</xs:documentation>
+                                                        d'échelle.
+                                                    </xs:documentation>
 														</xs:annotation>
 													</xs:element>
 													<xs:element name="echelle_calculee">
 														<xs:annotation>
 															<xs:documentation>echelle de rente. Distincte de base_echelle au cas
-																où on ne voudrait imprimer que l'echelle a l'exception des bases
-																(mutation). Cas de garantie.
-															</xs:documentation>
+                                                        où on ne voudrait imprimer que l'echelle a l'exception des bases
+                                                        (mutation). Cas de garantie.
+                                                    </xs:documentation>
 														</xs:annotation>
 														<xs:simpleType>
 															<xs:restriction base="xs:int">
@@ -2916,9 +3090,9 @@
 												<xs:element name="echelle">
 													<xs:annotation>
 														<xs:documentation>echelle de rente. Distincte de base_echelle au cas
-															où on ne voudrait imprimer que l'echelle a l'exception des bases
-															(mutation)
-														</xs:documentation>
+                                                        où on ne voudrait imprimer que l'echelle a l'exception des bases
+                                                        (mutation)
+                                                    </xs:documentation>
 													</xs:annotation>
 													<xs:simpleType>
 														<xs:restriction base="xs:int">
@@ -2936,7 +3110,7 @@
 															<xs:element name="ram_brut" minOccurs="0">
 																<xs:annotation>
 																	<xs:documentation>RAM avant recalcul : transfert anticipé, ...
-																	</xs:documentation>
+                                                        </xs:documentation>
 																</xs:annotation>
 																<xs:simpleType>
 																	<xs:restriction base="xs:int">
@@ -2955,10 +3129,10 @@
 															<xs:element name="rev_lucr" minOccurs="0">
 																<xs:complexType>
 																	<xs:sequence>
-																		<xs:element name="revenus">
+																		<xs:element name="revenus" minOccurs="0">
 																			<xs:annotation>
 																				<xs:documentation>somme des revenus standard
-																				</xs:documentation>
+                                                                    </xs:documentation>
 																			</xs:annotation>
 																			<xs:simpleType>
 																				<xs:restriction base="xs:int">
@@ -2969,8 +3143,8 @@
 																		<xs:element name="revenus_hai" minOccurs="0">
 																			<xs:annotation>
 																				<xs:documentation>somme des revenus hors période au
-																					bénéfice d'une rente AI
-																				</xs:documentation>
+                                                                        bénéfice d'une rente AI
+                                                                    </xs:documentation>
 																			</xs:annotation>
 																			<xs:simpleType>
 																				<xs:restriction base="xs:int">
@@ -2981,36 +3155,36 @@
 																		<xs:element name="an1ercot" type="AAAA">
 																			<xs:annotation>
 																				<xs:documentation>année de première cotisation
-																					standard
-																				</xs:documentation>
+                                                                        standard
+                                                                    </xs:documentation>
 																			</xs:annotation>
 																		</xs:element>
 																		<xs:element name="an1ercot_hai" type="AAAA" minOccurs="0">
 																			<xs:annotation>
 																				<xs:documentation>année de première cotisation hors
-																					pér. AI
-																				</xs:documentation>
+                                                                        pér. AI
+                                                                    </xs:documentation>
 																			</xs:annotation>
 																		</xs:element>
-																		<xs:element name="fac_rev" type="xs:float">
+																		<xs:element name="fac_rev" type="xs:float" minOccurs="0">
 																			<xs:annotation>
 																				<xs:documentation>facteur de revalorisation
-																					standard
-																				</xs:documentation>
+                                                                        standard
+                                                                    </xs:documentation>
 																			</xs:annotation>
 																		</xs:element>
 																		<xs:element name="fac_rev_hai" type="xs:float" minOccurs="0">
 																			<xs:annotation>
 																				<xs:documentation>facteur de revalorisation hors
-																					pér. AI
-																				</xs:documentation>
+                                                                        pér. AI
+                                                                    </xs:documentation>
 																			</xs:annotation>
 																		</xs:element>
-																		<xs:element name="revenus_rev">
+																		<xs:element name="revenus_rev" minOccurs="0">
 																			<xs:annotation>
 																				<xs:documentation>somme des revenus revalorisés
-																					standard
-																				</xs:documentation>
+                                                                        standard
+                                                                    </xs:documentation>
 																			</xs:annotation>
 																			<xs:simpleType>
 																				<xs:restriction base="xs:int">
@@ -3021,8 +3195,8 @@
 																		<xs:element name="revenus_rev_hai" minOccurs="0">
 																			<xs:annotation>
 																				<xs:documentation>somme des revenus revalorisés hors
-																					pér. AI
-																				</xs:documentation>
+                                                                        pér. AI
+                                                                    </xs:documentation>
 																			</xs:annotation>
 																			<xs:simpleType>
 																				<xs:restriction base="xs:int">
@@ -3032,24 +3206,48 @@
 																		</xs:element>
 																		<xs:element name="sup_carr">
 																			<xs:simpleType>
-																				<xs:restriction base="xs:float">
+																				<xs:restriction base="xs:int">
 																					<xs:minInclusive value="0"/>
 																					<xs:maxInclusive value="100"/>
+																					<xs:enumeration value="0"/>
+																					<xs:enumeration value="5"/>
+																					<xs:enumeration value="10"/>
+																					<xs:enumeration value="20"/>
+																					<xs:enumeration value="30"/>
+																					<xs:enumeration value="40"/>
+																					<xs:enumeration value="50"/>
+																					<xs:enumeration value="60"/>
+																					<xs:enumeration value="70"/>
+																					<xs:enumeration value="80"/>
+																					<xs:enumeration value="90"/>
+																					<xs:enumeration value="100"/>
 																				</xs:restriction>
 																			</xs:simpleType>
 																		</xs:element>
 																		<xs:element name="sup_carr_hai" minOccurs="0">
 																			<xs:simpleType>
-																				<xs:restriction base="xs:float">
+																				<xs:restriction base="xs:int">
 																					<xs:minInclusive value="0"/>
 																					<xs:maxInclusive value="100"/>
+																					<xs:enumeration value="0"/>
+																					<xs:enumeration value="5"/>
+																					<xs:enumeration value="10"/>
+																					<xs:enumeration value="20"/>
+																					<xs:enumeration value="30"/>
+																					<xs:enumeration value="40"/>
+																					<xs:enumeration value="50"/>
+																					<xs:enumeration value="60"/>
+																					<xs:enumeration value="70"/>
+																					<xs:enumeration value="80"/>
+																					<xs:enumeration value="90"/>
+																					<xs:enumeration value="100"/>
 																				</xs:restriction>
 																			</xs:simpleType>
 																		</xs:element>
 																		<xs:element name="duree">
 																			<xs:annotation>
 																				<xs:documentation>durée de cotisation standard
-																				</xs:documentation>
+                                                                    </xs:documentation>
 																			</xs:annotation>
 																			<xs:simpleType>
 																				<xs:restriction base="xs:int">
@@ -3061,21 +3259,21 @@
 																		<xs:element name="communique4" type="xs:float" minOccurs="0">
 																			<xs:annotation>
 																				<xs:documentation>Facteur spécifique pour événements
-																					en 1967, 1968, 1971, 1972
-																				</xs:documentation>
+                                                                        en 1967, 1968, 1971, 1972
+                                                                    </xs:documentation>
 																			</xs:annotation>
 																		</xs:element>
 																		<xs:element name="communique4_hai" type="xs:float" minOccurs="0">
 																			<xs:annotation>
 																				<xs:documentation>Facteur spécifique pour événements
-																					en 1967, 1968, 1971, 1972
-																				</xs:documentation>
+                                                                        en 1967, 1968, 1971, 1972
+                                                                    </xs:documentation>
 																			</xs:annotation>
 																		</xs:element>
 																		<xs:element name="duree_hai" minOccurs="0">
 																			<xs:annotation>
 																				<xs:documentation>durée de cotisation hors pér. AI
-																				</xs:documentation>
+                                                                    </xs:documentation>
 																			</xs:annotation>
 																			<xs:simpleType>
 																				<xs:restriction base="xs:int">
@@ -3084,10 +3282,10 @@
 																				</xs:restriction>
 																			</xs:simpleType>
 																		</xs:element>
-																		<xs:element name="revenus_moy">
+																		<xs:element name="revenus_moy" minOccurs="0">
 																			<xs:annotation>
 																				<xs:documentation>moyenne des revenus standard
-																				</xs:documentation>
+                                                                    </xs:documentation>
 																			</xs:annotation>
 																			<xs:simpleType>
 																				<xs:restriction base="xs:int">
@@ -3098,7 +3296,7 @@
 																		<xs:element name="revenus_moy_hai" minOccurs="0">
 																			<xs:annotation>
 																				<xs:documentation>moyenne des revenus hors pér. AI
-																				</xs:documentation>
+                                                                    </xs:documentation>
 																			</xs:annotation>
 																			<xs:simpleType>
 																				<xs:restriction base="xs:int">
@@ -3109,7 +3307,7 @@
 																		<xs:element name="code_split">
 																			<xs:annotation>
 																				<xs:documentation>revenus splittés 1=oui 0=non
-																				</xs:documentation>
+                                                                    </xs:documentation>
 																			</xs:annotation>
 																			<xs:simpleType>
 																				<xs:restriction base="xs:int">
@@ -3119,20 +3317,27 @@
 																			</xs:simpleType>
 																		</xs:element>
 																	</xs:sequence>
+																	<xs:attribute name="type">
+																		<xs:simpleType>
+																			<xs:restriction base="xs:string">
+																				<xs:enumeration value="historique"/>
+																			</xs:restriction>
+																		</xs:simpleType>
+																	</xs:attribute>
 																</xs:complexType>
 															</xs:element>
 															<xs:element name="bte" minOccurs="0">
 																<xs:annotation>
 																	<xs:documentation>bonfications pour taches educatives
-																	</xs:documentation>
+                                                        </xs:documentation>
 																</xs:annotation>
 																<xs:complexType>
 																	<xs:sequence>
-																		<xs:element name="an1" minOccurs="0">
+																		<xs:element name="an1">
 																			<xs:annotation>
 																				<xs:documentation>nombre d'années de bonif.
-																					entières, standard
-																				</xs:documentation>
+                                                                        entières, standard
+                                                                    </xs:documentation>
 																			</xs:annotation>
 																			<xs:simpleType>
 																				<xs:restriction base="xs:int">
@@ -3144,8 +3349,8 @@
 																		<xs:element name="an1_hai" minOccurs="0">
 																			<xs:annotation>
 																				<xs:documentation>nombre d'années de bonif.
-																					entières, hors pér. AI
-																				</xs:documentation>
+                                                                        entières, hors pér. AI
+                                                                    </xs:documentation>
 																			</xs:annotation>
 																			<xs:simpleType>
 																				<xs:restriction base="xs:int">
@@ -3154,11 +3359,11 @@
 																				</xs:restriction>
 																			</xs:simpleType>
 																		</xs:element>
-																		<xs:element name="an2" minOccurs="0">
+																		<xs:element name="an2">
 																			<xs:annotation>
 																				<xs:documentation>nombre d'années de bonif. 1/2,
-																					standard
-																				</xs:documentation>
+                                                                        standard
+                                                                    </xs:documentation>
 																			</xs:annotation>
 																			<xs:simpleType>
 																				<xs:restriction base="xs:int">
@@ -3170,8 +3375,8 @@
 																		<xs:element name="an2_hai" minOccurs="0">
 																			<xs:annotation>
 																				<xs:documentation>nombre d'années de bonif. 1/2,
-																					hors pér. AI
-																				</xs:documentation>
+                                                                        hors pér. AI
+                                                                    </xs:documentation>
 																			</xs:annotation>
 																			<xs:simpleType>
 																				<xs:restriction base="xs:int">
@@ -3180,11 +3385,11 @@
 																				</xs:restriction>
 																			</xs:simpleType>
 																		</xs:element>
-																		<xs:element name="an4" minOccurs="0">
+																		<xs:element name="an4">
 																			<xs:annotation>
 																				<xs:documentation>nombre d'années de bonif. 1/4,
-																					standard
-																				</xs:documentation>
+                                                                        standard
+                                                                    </xs:documentation>
 																			</xs:annotation>
 																			<xs:simpleType>
 																				<xs:restriction base="xs:int">
@@ -3196,8 +3401,8 @@
 																		<xs:element name="an4_hai" minOccurs="0">
 																			<xs:annotation>
 																				<xs:documentation>nombre d'années de bonif. 1/4,
-																					hors pér. AI
-																				</xs:documentation>
+                                                                        hors pér. AI
+                                                                    </xs:documentation>
 																			</xs:annotation>
 																			<xs:simpleType>
 																				<xs:restriction base="xs:int">
@@ -3209,8 +3414,8 @@
 																		<xs:element name="mont_stand">
 																			<xs:annotation>
 																				<xs:documentation>montant sur toutes les années
-																					concernées
-																				</xs:documentation>
+                                                                        concernées
+                                                                    </xs:documentation>
 																			</xs:annotation>
 																			<xs:simpleType>
 																				<xs:restriction base="xs:int">
@@ -3221,8 +3426,8 @@
 																		<xs:element name="mont_hai" minOccurs="0">
 																			<xs:annotation>
 																				<xs:documentation>montant hors années au bénéfice
-																					d'une rente AI
-																				</xs:documentation>
+                                                                        d'une rente AI
+                                                                    </xs:documentation>
 																			</xs:annotation>
 																			<xs:simpleType>
 																				<xs:restriction base="xs:int">
@@ -3233,8 +3438,8 @@
 																		<xs:element name="bon_edu_mont">
 																			<xs:annotation>
 																				<xs:documentation>montant retenu pour compléter le
-																					ram
-																				</xs:documentation>
+                                                                        ram
+                                                                    </xs:documentation>
 																			</xs:annotation>
 																			<xs:simpleType>
 																				<xs:restriction base="xs:int">
@@ -3245,8 +3450,8 @@
 																		<xs:element name="an_decimal">
 																			<xs:annotation>
 																				<xs:documentation>nombre d'années pondéré pour
-																					annonce au RR
-																				</xs:documentation>
+                                                                        annonce au RR
+                                                                    </xs:documentation>
 																			</xs:annotation>
 																			<xs:simpleType>
 																				<xs:restriction base="xs:float">
@@ -3257,24 +3462,31 @@
 																		<xs:element name="etat" type="AAAA" minOccurs="0">
 																			<xs:annotation>
 																				<xs:documentation>année correspondant au montant
-																				</xs:documentation>
+                                                                    </xs:documentation>
 																			</xs:annotation>
 																		</xs:element>
 																	</xs:sequence>
+																	<xs:attribute name="type">
+																		<xs:simpleType>
+																			<xs:restriction base="xs:string">
+																				<xs:enumeration value="historique"/>
+																			</xs:restriction>
+																		</xs:simpleType>
+																	</xs:attribute>
 																</xs:complexType>
 															</xs:element>
 															<xs:element name="bass" minOccurs="0">
 																<xs:annotation>
 																	<xs:documentation>bonifications pour tâches d'assistance
-																	</xs:documentation>
+                                                        </xs:documentation>
 																</xs:annotation>
 																<xs:complexType>
 																	<xs:sequence>
 																		<xs:element name="an_stand">
 																			<xs:annotation>
 																				<xs:documentation>nombre d'années de bonif.
-																					standard
-																				</xs:documentation>
+                                                                        standard
+                                                                    </xs:documentation>
 																			</xs:annotation>
 																			<xs:simpleType>
 																				<xs:restriction base="xs:int">
@@ -3286,8 +3498,8 @@
 																		<xs:element name="an_hai" minOccurs="0">
 																			<xs:annotation>
 																				<xs:documentation>nombre d'années de bonif. hors
-																					pér. AI
-																				</xs:documentation>
+                                                                        pér. AI
+                                                                    </xs:documentation>
 																			</xs:annotation>
 																			<xs:simpleType>
 																				<xs:restriction base="xs:int">
@@ -3299,15 +3511,15 @@
 																		<xs:element name="frs_stand" type="xs:float">
 																			<xs:annotation>
 																				<xs:documentation>fraction totale de bonif.
-																					standard
-																				</xs:documentation>
+                                                                        standard
+                                                                    </xs:documentation>
 																			</xs:annotation>
 																		</xs:element>
 																		<xs:element name="frs_hai" type="xs:float" minOccurs="0">
 																			<xs:annotation>
 																				<xs:documentation>fraction totale de bonif. hors
-																					pér. AI
-																				</xs:documentation>
+                                                                        pér. AI
+                                                                    </xs:documentation>
 																			</xs:annotation>
 																		</xs:element>
 																		<xs:element name="mont_stand">
@@ -3327,8 +3539,8 @@
 																		<xs:element name="bon_ass_mont">
 																			<xs:annotation>
 																				<xs:documentation>montant retenu pour compléter le
-																					ram
-																				</xs:documentation>
+                                                                        ram
+                                                                    </xs:documentation>
 																			</xs:annotation>
 																			<xs:simpleType>
 																				<xs:restriction base="xs:int">
@@ -3339,17 +3551,24 @@
 																		<xs:element name="an_decimal" type="xs:float">
 																			<xs:annotation>
 																				<xs:documentation>nombre d'années pondéré pour
-																					annonce au RR
-																				</xs:documentation>
+                                                                        annonce au RR
+                                                                    </xs:documentation>
 																			</xs:annotation>
 																		</xs:element>
 																		<xs:element name="etat" type="AAAA" minOccurs="0">
 																			<xs:annotation>
 																				<xs:documentation>année correspondant au montant
-																				</xs:documentation>
+                                                                    </xs:documentation>
 																			</xs:annotation>
 																		</xs:element>
 																	</xs:sequence>
+																	<xs:attribute name="type">
+																		<xs:simpleType>
+																			<xs:restriction base="xs:string">
+																				<xs:enumeration value="historique"/>
+																			</xs:restriction>
+																		</xs:simpleType>
+																	</xs:attribute>
 																</xs:complexType>
 															</xs:element>
 															<xs:element name="btrans" minOccurs="0">
@@ -3358,8 +3577,8 @@
 																		<xs:element name="an_stand">
 																			<xs:annotation>
 																				<xs:documentation>nombre d'années de bonif.
-																					standard
-																				</xs:documentation>
+                                                                        standard
+                                                                    </xs:documentation>
 																			</xs:annotation>
 																			<xs:simpleType>
 																				<xs:restriction base="xs:int">
@@ -3371,8 +3590,8 @@
 																		<xs:element name="an_hai" minOccurs="0">
 																			<xs:annotation>
 																				<xs:documentation>nombre d'années de bonif. hors
-																					pér. AI
-																				</xs:documentation>
+                                                                        pér. AI
+                                                                    </xs:documentation>
 																			</xs:annotation>
 																			<xs:simpleType>
 																				<xs:restriction base="xs:int">
@@ -3381,11 +3600,10 @@
 																				</xs:restriction>
 																			</xs:simpleType>
 																		</xs:element>
-																		<xs:element name="duree_stand">
+																		<xs:element name="duree_stand" minOccurs="0">
 																			<xs:annotation>
-																				<xs:documentation>durée utilisée comme diviseur
-																					standard
-																				</xs:documentation>
+																				<xs:documentation>durée utilisée comme diviseur standard
+toujours présent si le type n'est pas 'historique'</xs:documentation>
 																			</xs:annotation>
 																			<xs:simpleType>
 																				<xs:restriction base="xs:int">
@@ -3396,8 +3614,8 @@
 																		<xs:element name="duree_hai" minOccurs="0">
 																			<xs:annotation>
 																				<xs:documentation>durée utilisée comme diviseur hors
-																					pér. AI
-																				</xs:documentation>
+                                                                        pér. AI
+                                                                    </xs:documentation>
 																			</xs:annotation>
 																			<xs:simpleType>
 																				<xs:restriction base="xs:int">
@@ -3405,15 +3623,25 @@
 																				</xs:restriction>
 																			</xs:simpleType>
 																		</xs:element>
-																		<xs:element name="bon_annuelle" type="xs:int"/>
-																		<xs:element name="r0">
+																		<xs:element name="bon_annuelle" type="xs:int" minOccurs="0">
+																			<xs:annotation>
+																				<xs:documentation>toujours présent si le type n'est pas 'historique'</xs:documentation>
+																			</xs:annotation>
+																		</xs:element>
+																		<xs:element name="r0" minOccurs="0">
+																			<xs:annotation>
+																				<xs:documentation>toujours présent si le type n'est pas 'historique'</xs:documentation>
+																			</xs:annotation>
 																			<xs:simpleType>
 																				<xs:restriction base="xs:int">
 																					<xs:minInclusive value="40"/>
 																				</xs:restriction>
 																			</xs:simpleType>
 																		</xs:element>
-																		<xs:element name="mont_stand">
+																		<xs:element name="mont_stand" minOccurs="0">
+																			<xs:annotation>
+																				<xs:documentation>toujours présent si le type n'est pas 'historique'</xs:documentation>
+																			</xs:annotation>
 																			<xs:simpleType>
 																				<xs:restriction base="xs:int">
 																					<xs:minInclusive value="0"/>
@@ -3427,11 +3655,10 @@
 																				</xs:restriction>
 																			</xs:simpleType>
 																		</xs:element>
-																		<xs:element name="bon_trans_mont">
+																		<xs:element name="bon_trans_mont" minOccurs="0">
 																			<xs:annotation>
-																				<xs:documentation>montant retenu pour compléter le
-																					ram
-																				</xs:documentation>
+																				<xs:documentation>montant retenu pour compléter le ram
+toujours présent si le type n'est pas 'historique' </xs:documentation>
 																			</xs:annotation>
 																			<xs:simpleType>
 																				<xs:restriction base="xs:int">
@@ -3442,8 +3669,8 @@
 																		<xs:element name="an_decimal">
 																			<xs:annotation>
 																				<xs:documentation>nombre d'années pondéré pour
-																					annonce au RR
-																				</xs:documentation>
+                                                                        annonce au RR
+                                                                    </xs:documentation>
 																			</xs:annotation>
 																			<xs:simpleType>
 																				<xs:restriction base="xs:float">
@@ -3454,19 +3681,41 @@
 																		<xs:element name="etat" type="AAAA" minOccurs="0">
 																			<xs:annotation>
 																				<xs:documentation>année correspondant au montant
-																				</xs:documentation>
+                                                                    </xs:documentation>
 																			</xs:annotation>
 																		</xs:element>
 																	</xs:sequence>
+																	<xs:attribute name="type">
+																		<xs:simpleType>
+																			<xs:restriction base="xs:string">
+																				<xs:enumeration value="historique"/>
+																			</xs:restriction>
+																		</xs:simpleType>
+																	</xs:attribute>
 																</xs:complexType>
 															</xs:element>
+															<xs:element name="hors_ai" type="xs:boolean" minOccurs="0">
+																<xs:annotation>
+																	<xs:documentation>Dit si la ram hors ai est meilleures (false si absent)</xs:documentation>
+																</xs:annotation>
+															</xs:element>
 														</xs:sequence>
+														<xs:attribute name="type">
+															<xs:annotation>
+																<xs:documentation>absent par defaut, si présent vaut 'historique' cela signifie que les informations sont historique : non calculée par acor pour cette base (c'est-à-dire reprise de l'historique ou d'un calcul précédent</xs:documentation>
+															</xs:annotation>
+															<xs:simpleType>
+																<xs:restriction base="xs:string">
+																	<xs:enumeration value="historique"/>
+																</xs:restriction>
+															</xs:simpleType>
+														</xs:attribute>
 													</xs:complexType>
 												</xs:element>
 												<xs:element name="ram_standard" minOccurs="0">
 													<xs:annotation>
 														<xs:documentation>ram calculé sur toutes les périodes assurées
-														</xs:documentation>
+                                            </xs:documentation>
 													</xs:annotation>
 													<xs:simpleType>
 														<xs:restriction base="xs:int">
@@ -3477,7 +3726,7 @@
 												<xs:element name="ram_hai" minOccurs="0">
 													<xs:annotation>
 														<xs:documentation>ram sans les périodes au bénéfice de rente AI
-														</xs:documentation>
+                                            </xs:documentation>
 													</xs:annotation>
 													<xs:simpleType>
 														<xs:restriction base="xs:int">
@@ -3508,10 +3757,10 @@
 												<xs:element name="ram">
 													<xs:annotation>
 														<xs:documentation>revenu annuel moyen retenu pour le calcul de la rente,
-															dans l'état le plus récent (an de traitement ou de fin de droit).
-															Distincte de base_ram au cas où on ne voudrait imprimer que le ram a
-															l'exception des bases (mutation)
-														</xs:documentation>
+                                                dans l'état le plus récent (an de traitement ou de fin de droit).
+                                                Distincte de base_ram au cas où on ne voudrait imprimer que le ram a
+                                                l'exception des bases (mutation)
+                                            </xs:documentation>
 													</xs:annotation>
 													<xs:simpleType>
 														<xs:restriction base="xs:int">
@@ -3580,7 +3829,7 @@
 																							</xs:restriction>
 																						</xs:simpleType>
 																					</xs:element>
-																					<xs:element name="montant_reduction" type="xs:float" minOccurs="0"/>
+																					<xs:element name="montant_reduction" type="xs:double" minOccurs="0"/>
 																					<xs:element name="periode" minOccurs="0" maxOccurs="unbounded">
 																						<xs:complexType>
 																							<xs:sequence>
@@ -3622,7 +3871,7 @@
 																		</xs:element>
 																		<xs:element name="montant_reduction" minOccurs="0">
 																			<xs:simpleType>
-																				<xs:restriction base="xs:float">
+																				<xs:restriction base="xs:double">
 																					<xs:minInclusive value="0"/>
 																				</xs:restriction>
 																			</xs:simpleType>
@@ -3666,6 +3915,7 @@
 																			<xs:simpleType>
 																				<xs:restriction base="xs:string">
 																					<xs:enumeration value="courant"/>
+																					<xs:enumeration value="ancien"/>
 																				</xs:restriction>
 																			</xs:simpleType>
 																		</xs:element>
@@ -3710,8 +3960,16 @@
 																				</xs:sequence>
 																			</xs:complexType>
 																		</xs:element>
-																		<xs:element name="somme_rentes_ajournees" type="xs:int"/>
-																		<xs:element name="montant_supplement" type="xs:int"/>
+																		<xs:element name="somme_rentes_ajournees" type="xs:int" minOccurs="0">
+																			<xs:annotation>
+																				<xs:documentation>Absent uniquement si la tranche est indiquée pour historique : un évéenement après la revocation</xs:documentation>
+																			</xs:annotation>
+																		</xs:element>
+																		<xs:element name="montant_supplement" type="xs:int" minOccurs="0">
+																			<xs:annotation>
+																				<xs:documentation>Absent uniquement si la tranche est indiquée pour historique : un évéenement après la revocation</xs:documentation>
+																			</xs:annotation>
+																		</xs:element>
 																	</xs:sequence>
 																</xs:complexType>
 															</xs:element>
@@ -3720,8 +3978,8 @@
 															<xs:element name="type" minOccurs="0">
 																<xs:annotation>
 																	<xs:documentation>Si ce tag vaut true indique que nous sommes
-																		dans un cas d'une simulation d'une révocation complète
-																	</xs:documentation>
+                                                            dans un cas d'une simulation d'une révocation complète
+                                                        </xs:documentation>
 																</xs:annotation>
 																<xs:simpleType>
 																	<xs:restriction base="xs:string">
@@ -3758,8 +4016,8 @@
 										<xs:element name="red_comp" minOccurs="0">
 											<xs:annotation>
 												<xs:documentation>montant de réduction d'anticipation effectif en cas de R13 de
-													comparaison
-												</xs:documentation>
+                                        comparaison
+                                    </xs:documentation>
 											</xs:annotation>
 											<xs:simpleType>
 												<xs:restriction base="xs:int">
@@ -3770,8 +4028,8 @@
 										<xs:element name="sup_comp" minOccurs="0">
 											<xs:annotation>
 												<xs:documentation>montant de supplément d'ajournement effectif en cas de R13 de
-													comparaison
-												</xs:documentation>
+                                        comparaison
+                                    </xs:documentation>
 											</xs:annotation>
 											<xs:simpleType>
 												<xs:restriction base="xs:int">
@@ -3782,13 +4040,13 @@
 										<xs:element name="an_mont" type="AAAA" minOccurs="0">
 											<xs:annotation>
 												<xs:documentation>annee de reference pour le montant de comparaison
-												</xs:documentation>
+                                    </xs:documentation>
 											</xs:annotation>
 										</xs:element>
 										<xs:element name="type_mont_comp" minOccurs="0">
 											<xs:annotation>
 												<xs:documentation>genre de prestation associée au mont_comp . ex. 10 50 13 etc..
-												</xs:documentation>
+                                    </xs:documentation>
 											</xs:annotation>
 											<xs:simpleType>
 												<xs:restriction base="xs:int">
@@ -3800,7 +4058,6 @@
 										<xs:element name="if_comp" minOccurs="0">
 											<xs:complexType>
 												<xs:sequence>
-													<xs:element name="label" type="xs:string"/>
 													<xs:element name="mont_if" type="xs:int"/>
 													<xs:element name="rente">
 														<xs:complexType>
@@ -3841,7 +4098,7 @@
 											<xs:complexType>
 												<xs:sequence>
 													<xs:element name="id" type="id_acor"/>
-													<xs:element name="rente_p" minOccurs="0">
+													<xs:element name="rente_p">
 														<xs:annotation>
 															<xs:documentation>montant mensuel de la rente principale</xs:documentation>
 														</xs:annotation>
@@ -3851,7 +4108,7 @@
 															</xs:restriction>
 														</xs:simpleType>
 													</xs:element>
-													<xs:element name="rente_p_an" minOccurs="0">
+													<xs:element name="rente_p_an">
 														<xs:annotation>
 															<xs:documentation>montant annuel de la rente principale</xs:documentation>
 														</xs:annotation>
@@ -3881,7 +4138,7 @@
 													<xs:element name="nenf">
 														<xs:annotation>
 															<xs:documentation>nombre d'enfants avec nombre d'enfants ayant une rente
-															</xs:documentation>
+                                    </xs:documentation>
 														</xs:annotation>
 														<xs:simpleType>
 															<xs:restriction base="xs:int">
@@ -3912,7 +4169,7 @@
 													<xs:element name="montant_tot">
 														<xs:annotation>
 															<xs:documentation>montant annuel total de toutes les rentes associées à ce calcul
-															</xs:documentation>
+                                    </xs:documentation>
 														</xs:annotation>
 														<xs:simpleType>
 															<xs:restriction base="xs:int">
@@ -3962,21 +4219,80 @@
 												</xs:sequence>
 											</xs:complexType>
 										</xs:element>
+										<xs:element name="complement_differentiel" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>détails du complément différentiel</xs:documentation>
+											</xs:annotation>
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="montant_garanti">
+														<xs:annotation>
+															<xs:documentation>Somme des anciennes rentes AI</xs:documentation>
+														</xs:annotation>
+														<xs:simpleType>
+															<xs:restriction base="xs:int">
+																<xs:minInclusive value="0"/>
+															</xs:restriction>
+														</xs:simpleType>
+													</xs:element>
+													<xs:element name="montant_garanti_detail" type="xs:string" minOccurs="0">
+														<xs:annotation>
+															<xs:documentation>Détail des anciennes rentes AI</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+													<xs:element name="montant_rente_etrangere">
+														<xs:annotation>
+															<xs:documentation>Montant de la rente étrangère</xs:documentation>
+														</xs:annotation>
+														<xs:simpleType>
+															<xs:restriction base="xs:int">
+																<xs:minInclusive value="0"/>
+															</xs:restriction>
+														</xs:simpleType>
+													</xs:element>
+													<xs:element name="montant_rente_suisse">
+														<xs:annotation>
+															<xs:documentation>Somme des rentes V</xs:documentation>
+														</xs:annotation>
+														<xs:simpleType>
+															<xs:restriction base="xs:int">
+																<xs:minInclusive value="0"/>
+															</xs:restriction>
+														</xs:simpleType>
+													</xs:element>
+													<xs:element name="montant_rente_suisse_detail" type="xs:string" minOccurs="0">
+														<xs:annotation>
+															<xs:documentation>Détail des rentes V</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+													<xs:element name="complement_differentiel">
+														<xs:annotation>
+															<xs:documentation>complément différentiel</xs:documentation>
+														</xs:annotation>
+														<xs:simpleType>
+															<xs:restriction base="xs:int">
+																<xs:minInclusive value="0"/>
+															</xs:restriction>
+														</xs:simpleType>
+													</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
 										<xs:element name="decision" minOccurs="0" maxOccurs="unbounded">
 											<xs:annotation>
 												<xs:documentation>décision comportant les prestations à verser
-													Verfügung
-												</xs:documentation>
+                            Verfügung
+                        </xs:documentation>
 											</xs:annotation>
 											<xs:complexType>
 												<xs:sequence>
 													<xs:element name="type">
 														<xs:annotation>
 															<xs:documentation>1=proposition de decision
-																2=rentes ajournees
-																3=rentes futures ou hypothetiques selon le mode previsionnel
-																4=paiements provisiores
-															</xs:documentation>
+                                        2=rentes ajournees
+                                        3=rentes futures ou hypothetiques selon le mode previsionnel
+                                        4=paiements provisiores
+                                    </xs:documentation>
 														</xs:annotation>
 														<xs:simpleType>
 															<xs:restriction base="xs:int">
@@ -3990,8 +4306,8 @@
 													<xs:element name="groupe" minOccurs="0">
 														<xs:annotation>
 															<xs:documentation>1=rentes illimitées 2=rentes limitées 3=rentes débutant
-																postérieurement à l'événement
-															</xs:documentation>
+                                        postérieurement à l'événement
+                                    </xs:documentation>
 														</xs:annotation>
 														<xs:simpleType>
 															<xs:restriction base="xs:int">
@@ -4015,16 +4331,40 @@
 																<xs:element name="beneficiaire" type="id_acor">
 																	<xs:annotation>
 																		<xs:documentation>Bénéficiaire
-																			Empfänger
-																		</xs:documentation>
+                                                    Empfänger
+                                                </xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+																<xs:element name="etat_civil" type="xs:int">
+																	<xs:annotation>
+																		<xs:documentation>etat civil du bénéficiaire au moment du début de droit à la prestation</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+																<xs:element name="type_general">
+																	<xs:annotation>
+																		<xs:documentation>i=invalidite
+v=vieillesse
+s=survivant</xs:documentation>
+																	</xs:annotation>
+																	<xs:simpleType>
+																		<xs:restriction base="xs:string">
+																			<xs:enumeration value="v"/>
+																			<xs:enumeration value="i"/>
+																			<xs:enumeration value="s"/>
+																		</xs:restriction>
+																	</xs:simpleType>
+																</xs:element>
+																<xs:element name="annoncee" type="xs:boolean">
+																	<xs:annotation>
+																		<xs:documentation>Dit si la rente doit être annoncée : les rentes payées sont toujours annoncées, en revanche les rentes avec code spécial 07 avant 2004 ne sont pas annoncee, il en va de même pour les rentes avec code spécial 08 avant 2009</xs:documentation>
 																	</xs:annotation>
 																</xs:element>
 																<xs:choice>
 																	<xs:element name="indemnite_forfaitaire" type="indemnite_forfaitaire" minOccurs="0">
 																		<xs:annotation>
 																			<xs:documentation>Indemnité forfaitaire
-																				Abfindung
-																			</xs:documentation>
+                                                        Abfindung
+                                                    </xs:documentation>
 																		</xs:annotation>
 																	</xs:element>
 																	<xs:element name="rente" type="rente" minOccurs="0">
@@ -4035,7 +4375,7 @@
 																</xs:choice>
 																<xs:sequence>
 																	<xs:element name="remarque" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
-																	<xs:element name="lab_choix" type="xs:string" minOccurs="0"/>
+																	<xs:element name="lab_choix" type="empty" minOccurs="0"/>
 																</xs:sequence>
 															</xs:sequence>
 														</xs:complexType>
@@ -4049,8 +4389,8 @@
 							<xs:element name="splitting" minOccurs="0" maxOccurs="unbounded">
 								<xs:annotation>
 									<xs:documentation>partage des revenus
-										Einkommensteilung
-									</xs:documentation>
+                            Einkommensteilung
+                        </xs:documentation>
 								</xs:annotation>
 								<xs:complexType>
 									<xs:sequence>
@@ -4074,7 +4414,7 @@
 										<xs:element name="type" minOccurs="0">
 											<xs:annotation>
 												<xs:documentation>utilisé seulement dans les cas s->s2 avec passé AI
-												</xs:documentation>
+                                    </xs:documentation>
 											</xs:annotation>
 											<xs:simpleType>
 												<xs:restriction base="xs:string">
@@ -4222,8 +4562,8 @@
 							<xs:element name="comparaison_ai_v" minOccurs="0" maxOccurs="unbounded">
 								<xs:annotation>
 									<xs:documentation>comparaison globale des bases AI et AVS
-										Vergleich der AHV- und IV- Grundlagen für die integrale Neuberechnung
-									</xs:documentation>
+                            Vergleich der AHV- und IV- Grundlagen für die integrale Neuberechnung
+                        </xs:documentation>
 								</xs:annotation>
 								<xs:complexType>
 									<xs:sequence>
@@ -4307,8 +4647,8 @@
 							<xs:element name="plafonnement" minOccurs="0" maxOccurs="unbounded">
 								<xs:annotation>
 									<xs:documentation>plafonnement
-										Plafonierung
-									</xs:documentation>
+                            Plafonierung
+                        </xs:documentation>
 								</xs:annotation>
 								<xs:complexType>
 									<xs:sequence>
@@ -4433,18 +4773,18 @@
 							<xs:element name="comparaison" minOccurs="0" maxOccurs="unbounded">
 								<xs:annotation>
 									<xs:documentation>éléments de comparaisons de bases de calcul pour un événement
-									</xs:documentation>
+                        </xs:documentation>
 								</xs:annotation>
 								<xs:complexType>
 									<xs:sequence>
 										<xs:element name="type">
 											<xs:annotation>
 												<xs:documentation>type de comparaison :
-													0 : pas de comparaison répertoriée pour la motivation de la décision
-													1 : reprise AI comparaison des bases invalidité et vieillesse
-													2 : décès du conjoint d'un bénéficiaire d'une R10
-													3 : décès du conjoint d'un bénéficiaire d'une R50
-												</xs:documentation>
+                                            0 : pas de comparaison répertoriée pour la motivation de la décision
+                                            1 : reprise AI comparaison des bases invalidité et vieillesse
+                                            2 : décès du conjoint d'un bénéficiaire d'une R10
+                                            3 : décès du conjoint d'un bénéficiaire d'une R50
+                                                </xs:documentation>
 											</xs:annotation>
 											<xs:simpleType>
 												<xs:restriction base="xs:int">
@@ -4472,11 +4812,11 @@
 													<xs:element name="type">
 														<xs:annotation>
 															<xs:documentation>type de la base plus favorable :
-																i : base AI plus favorable
-																v : base vieillessse plus favorable
-																s : base survivant plus favorable
-																transf : base transférée
-															</xs:documentation>
+                                                        i : base AI plus favorable
+                                                        v : base vieillessse plus favorable
+                                                        s : base survivant plus favorable
+                                                        transf : base transférée
+                                                    </xs:documentation>
 														</xs:annotation>
 														<xs:simpleType>
 															<xs:restriction base="xs:string">
@@ -4522,9 +4862,9 @@
 							<xs:element name="refus" type="refus_type" minOccurs="0" maxOccurs="unbounded">
 								<xs:annotation>
 									<xs:documentation>refus de prestation : ne bloque pas nécessairement le traitement d'autres
-										prestations
-										Abgelehnte Leistungen / andere Leistungen können berrechnet werden
-									</xs:documentation>
+                            prestations
+                            Abgelehnte Leistungen / andere Leistungen können berrechnet werden
+                        </xs:documentation>
 								</xs:annotation>
 							</xs:element>
 							<xs:element name="info_remb_transf" type="info_remb_transf_type" minOccurs="0"/>
@@ -4534,8 +4874,8 @@
 				<xs:element name="communication_periodes" minOccurs="0" maxOccurs="unbounded">
 					<xs:annotation>
 						<xs:documentation>communication de périodes d'assurance
-							Beitragzeitenmeldung
-						</xs:documentation>
+                            Beitragzeitenmeldung
+                        </xs:documentation>
 					</xs:annotation>
 					<xs:complexType>
 						<xs:sequence>
@@ -4561,7 +4901,7 @@
 										<xs:element name="nmois">
 											<xs:annotation>
 												<xs:documentation>nombre de mois de cotisation durant l'année
-												</xs:documentation>
+                                                </xs:documentation>
 											</xs:annotation>
 											<xs:simpleType>
 												<xs:restriction base="xs:int">
@@ -4614,25 +4954,18 @@
 							<xs:element name="cot_mixte" type="empty" minOccurs="0">
 								<xs:annotation>
 									<xs:documentation>Tag présent si plusieurs gcot différent pour l'année.
-									</xs:documentation>
+                                    </xs:documentation>
 								</xs:annotation>
 							</xs:element>
 						</xs:sequence>
 					</xs:complexType>
 				</xs:element>
-				<xs:element name="refus" type="refus_type" minOccurs="0" maxOccurs="unbounded">
-					<xs:annotation>
-						<xs:documentation>refus de prestation : ne bloque pas nécessairement le traitement d'autres
-							prestations
-							Abgelehnte Leistungen / andere Leistungen können berrechnet werden
-						</xs:documentation>
-					</xs:annotation>
-				</xs:element>
+				<xs:element name="refus" type="refus_type" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element name="refus_bloquant" minOccurs="0">
 					<xs:annotation>
 						<xs:documentation>refus bloquant l'analyse ACOR, qui s'arrête sans attribution de prestations.
-							Weigerung : die Behandlung kann nicht weiter funktionieren
-						</xs:documentation>
+                            Weigerung : die Behandlung kann nicht weiter funktionieren
+                        </xs:documentation>
 					</xs:annotation>
 					<xs:complexType>
 						<xs:sequence>
@@ -4644,8 +4977,8 @@
 				<xs:element name="prochain_evenement_prevu" minOccurs="0">
 					<xs:annotation>
 						<xs:documentation>En cas d'aucune nouvelle pestation à allouer, indique le prochaine événement
-							selon ACOR.
-						</xs:documentation>
+                            selon ACOR.
+                        </xs:documentation>
 					</xs:annotation>
 					<xs:complexType>
 						<xs:sequence>
@@ -4661,6 +4994,137 @@
 					</xs:complexType>
 				</xs:element>
 				<xs:element name="remarque" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element name="communication_gui" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>divers info de communication à un éventuel GUI appelant.
+                        </xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="remarque" minOccurs="0" maxOccurs="unbounded">
+								<xs:annotation>
+									<xs:documentation>remarque à destination du GUI, comprenant un niveau (INFO, WARNING et ERROR) et un message
+                        </xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="niveau">
+											<xs:simpleType>
+												<xs:restriction base="xs:string">
+													<xs:enumeration value="INFO"/>
+													<xs:enumeration value="WARNING"/>
+													<xs:enumeration value="ERROR"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="message" type="xs:string"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="focalisation" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Indication d'un champ du GUI à focaliser (par exemple, si ACOR estime qu'un champ est erroné ou est manquant)
+                        </xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="composant_id" type="xs:string"/>
+										<xs:element name="champ" type="xs:string" minOccurs="0"/>
+										<xs:element name="message" type="xs:string" minOccurs="0"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="annexes" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Toutes les annexes, notamment annonce.pay, formulaire de compensation, formulaire euro</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="pay" type="xs:string" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>L'ancien fichier ".pay"</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="fcomp" type="xs:string" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>L'ancien fichier "formulair de compensation" (co_data)</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="cmm" type="xs:string" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>L'ancien fichier ".cmm"</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="periodes_suisses" type="xs:string" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Périodes suisses pour Aixpert</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="splitting_interne" type="splitting_interne:Dossier" minOccurs="0" maxOccurs="unbounded">
+								<xs:annotation>
+									<xs:documentation>Contenu du splitting interne</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="arc95" type="arc95:Dossier95" minOccurs="0" maxOccurs="unbounded">
+								<xs:annotation>
+									<xs:documentation>Contenu de l'arc95</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="interets_moratoires" type="im:AcorIm" minOccurs="0" maxOccurs="unbounded">
+								<xs:annotation>
+									<xs:documentation>Contenu des IM à calculer éventuellement5</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element ref="e202:M_E202" minOccurs="0" maxOccurs="unbounded">
+								<xs:annotation>
+									<xs:documentation>Contenu du formulaire e202</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element ref="e203:M_E203" minOccurs="0" maxOccurs="unbounded">
+								<xs:annotation>
+									<xs:documentation>Contenu du formulaire e203</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element ref="e205:M_E205" minOccurs="0" maxOccurs="unbounded">
+								<xs:annotation>
+									<xs:documentation>Contenu du formulaire e205</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element ref="e210:M_E210" minOccurs="0" maxOccurs="unbounded">
+								<xs:annotation>
+									<xs:documentation>Contenu du formulaire e210</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element ref="eahv-iv-2401-000501:message" minOccurs="0" maxOccurs="unbounded">
+								<xs:annotation>
+									<xs:documentation>Contenu du formulaire swap</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="erreurs" minOccurs="0">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="code">
+								<xs:annotation>
+									<xs:documentation>1 = Erreur attribuée à clips
+2 = Erreur non attribuée à clips</xs:documentation>
+								</xs:annotation>
+								<xs:simpleType>
+									<xs:restriction base="xs:int">
+										<xs:enumeration value="1"/>
+										<xs:enumeration value="2"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="message" type="xs:string"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
 			</xs:sequence>
 			<xs:attribute name="type_dem" use="required">
 				<xs:annotation>

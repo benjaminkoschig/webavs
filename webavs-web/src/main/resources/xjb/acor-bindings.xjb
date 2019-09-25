@@ -1,11 +1,270 @@
 <jaxb:bindings xmlns:xs="http://www.w3.org/2001/XMLSchema"
                xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" version="2.1">
 
+    <!--    <jaxb:globalBindings localScoping="toplevel"/>-->
+
     <!-- Configure our custom xsd -->
-    <jaxb:bindings schemaLocation="../xsd/acor/ACOR_rentes.xsd"
+    <jaxb:bindings schemaLocation="../xsd/acor/acor-rentes-out-f-calcul.xsd"
                    node="//xs:schema">
         <jaxb:schemaBindings>
-            <jaxb:package name="acor" />
+            <jaxb:package name="acor.fcalcul"/>
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+
+    <!-- specifique configuration pour cet xsd qui possède un complexType, un élément et un attribut du même nom -->
+    <jaxb:bindings schemaLocation="../xsd/acor/splitting-interne-out.xsd"
+                   node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="acor.splitting.interne"/>
+            <jaxb:nameXmlTransform>
+                <jaxb:elementName suffix="Element"/>
+            </jaxb:nameXmlTransform>
+        </jaxb:schemaBindings>
+        <jaxb:bindings node=".//xs:attribute[@name='assure']">
+            <jaxb:property name="assureAttribute"/>
+        </jaxb:bindings>
+        <jaxb:bindings node=".//xs:attribute[@name='conjoint']">
+            <jaxb:property name="conjointAttribute"/>
+        </jaxb:bindings>
+    </jaxb:bindings>
+
+
+    <!-- Configure le package swap.xsd -->
+
+        <jaxb:bindings schemaLocation="../xsd/acor/eahv-iv-2401-000101-2-0.xsd"
+                       node="//xs:schema">
+            <jaxb:schemaBindings>
+                <jaxb:package name="ch.eahv_iv.xmlns.eahv_iv_2401_000101._2" />
+            </jaxb:schemaBindings>
+        </jaxb:bindings>
+    <jaxb:bindings schemaLocation="../xsd/acor/eahv-iv-2401-000201-2-0.xsd"
+                   node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="ch.eahv_iv.xmlns.eahv_iv_2401_000201._2" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+    <jaxb:bindings schemaLocation="../xsd/acor/eahv-iv-2401-000301-2-0.xsd"
+                   node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="ch.eahv_iv.xmlns.eahv_iv_2401_000301._2" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+    <jaxb:bindings schemaLocation="../xsd/acor/eahv-iv-2401-000401-2-0.xsd"
+                   node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="ch.eahv_iv.xmlns.eahv_iv_2401_000401._2" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+    <jaxb:bindings schemaLocation="../xsd/acor/eahv-iv-2401-000501-1-1.xsd"
+                   node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="ch.eahv_iv.xmlns.eahv_iv_2401_000501._1" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+    <jaxb:bindings schemaLocation="../xsd/acor/eahv-iv-2401-000701-2-0.xsd"
+                   node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="ch.eahv_iv.xmlns.eahv_iv_2401_000701._2" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+    <jaxb:bindings schemaLocation="../xsd/acor/eahv-iv-2401-common-1-1.xsd"
+                   node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="ch.eahv_iv.xmlns.eahv_iv_2401_common._1" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+    <jaxb:bindings schemaLocation="../xsd/acor/eahv-iv-2401-common-2-0.xsd"
+                   node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="ch.eahv_iv.xmlns.eahv_iv_2401_common._2" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+    <jaxb:bindings schemaLocation="../xsd/acor/eahv-iv-common-4-0.xsd"
+                   node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="ch.eahv_iv.xmlns.eahv_iv_common._4" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+
+    <jaxb:bindings schemaLocation="../xsd/acor/eCH-0006-2-0.xsd"
+                   node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="ch.ech.xmlns.ech_0006._2" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+    <jaxb:bindings schemaLocation="../xsd/acor/eCH-0007-3-0.xsd"
+                   node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="ch.ech.xmlns.ech_0007._3" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+    <jaxb:bindings schemaLocation="../xsd/acor/eCH-0007-4-0.xsd"
+                   node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="ch.ech.xmlns.ech_0007._4" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+    <jaxb:bindings schemaLocation="../xsd/acor/eCH-0007-5-0f.xsd"
+                   node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="ch.ech.xmlns.ech_0007_f._5" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+    <jaxb:bindings schemaLocation="../xsd/acor/eCH-0008-2-0.xsd"
+                   node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="ch.ech.xmlns.ech_0008._2" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+    <jaxb:bindings schemaLocation="../xsd/acor/eCH-0008-3-0f.xsd"
+                   node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="ch.ech.xmlns.ech_0008_f._3" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+    <jaxb:bindings schemaLocation="../xsd/acor/eCH-0010-3-0.xsd"
+                   node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="ch.ech.xmlns.ech_0010._3" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+    <jaxb:bindings schemaLocation="../xsd/acor/eCH-0010-5-0f.xsd"
+                   node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="ch.ech.xmlns.ech_0010_f._5" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+    <jaxb:bindings schemaLocation="../xsd/acor/eCH-0010-6-0f.xsd"
+                   node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="ch.ech.xmlns.ech_0010_f._6" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+    <jaxb:bindings schemaLocation="../xsd/acor/eCH-0011-3-0f.xsd"
+                   node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="ch.ech.xmlns.ech_0011_f._3" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+    <jaxb:bindings schemaLocation="../xsd/acor/eCH-0011-7-0f.xsd"
+                   node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="ch.ech.xmlns.ech_0011_f._7" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+    <jaxb:bindings schemaLocation="../xsd/acor/eCH-0044-1-0f.xsd"
+                   node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="ch.ech.xmlns.ech_0044_f._1" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+    <jaxb:bindings schemaLocation="../xsd/acor/eCH-0044-2-0f.xsd"
+                   node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="ch.ech.xmlns.ech_0044_f._2" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+    <jaxb:bindings schemaLocation="../xsd/acor/eCH-0044-3-0f.xsd"
+                   node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="ch.ech.xmlns.ech_0044_f._3" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+    <jaxb:bindings schemaLocation="../xsd/acor/eCH-0044-4-1f.xsd"
+                   node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="ch.ech.xmlns.ech_0044_f._4" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+    <jaxb:bindings schemaLocation="../xsd/acor/eCH-0046-3-0f.xsd"
+                   node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="ch.ech.xmlns.ech_0046_f._3" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+    <jaxb:bindings schemaLocation="../xsd/acor/eCH-0058-4-0.xsd"
+                   node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="ch.ech.xmlns.ech_0058._4" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+    <jaxb:bindings schemaLocation="../xsd/acor/eCH-0090-1-0.xsd"
+                   node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="ch.ech.xmlns.ech_0090._1" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+    <jaxb:bindings schemaLocation="../xsd/acor/eCH-0097-1-0f.xsd"
+                   node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="ch.ech.xmlns.ech_0097_f._1" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+    <jaxb:bindings schemaLocation="../xsd/acor/eCH-0135-1-0.xsd"
+                   node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="ch.ech.xmlns.ech_0135._1" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+
+    <jaxb:bindings schemaLocation="../xsd/acor/swap-partner-spouse-history-0-9.xsd"
+                   node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="ch.swap.partner.spouse.history._9" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+
+    <!-- Configure le package xsd.euro -->
+
+    <jaxb:bindings schemaLocation="../xsd/acor/core.xsd"
+                   node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="org.gotess.xns.core" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+    <jaxb:bindings schemaLocation="../xsd/acor/e202.xsd"
+                   node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="org.gotess.xns.e202" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+    <jaxb:bindings schemaLocation="../xsd/acor/e203.xsd"
+                   node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="org.gotess.xns.e203" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+    <jaxb:bindings schemaLocation="../xsd/acor/e205.xsd"
+                   node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="org.gotess.xns.e205" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+    <jaxb:bindings schemaLocation="../xsd/acor/e210.xsd"
+                   node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="org.gotess.xns.e210" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+    <jaxb:bindings schemaLocation="../xsd/acor/xlink.xsd"
+                   node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="org.gotess.xns.xlink" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+
+    <!-- Configure le package xsd -->
+
+    <jaxb:bindings schemaLocation="../xsd/acor/acor-im.xsd"
+                   node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="acor.im" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+    <jaxb:bindings schemaLocation="../xsd/acor/arc95-out.xsd"
+                   node="//xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="acor.arc95.out" />
         </jaxb:schemaBindings>
     </jaxb:bindings>
 

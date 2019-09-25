@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:common="http://www.eahv-iv.ch/xmlns/eahv-iv-2401-common/1"
+	xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://www.eahv-iv.ch/xmlns/swap-partner-spouse-history/1"
+	elementFormDefault="qualified" attributeFormDefault="unqualified" version="2">
+	<xs:import namespace="http://www.eahv-iv.ch/xmlns/eahv-iv-2401-common/1" schemaLocation="eahv-iv-2401-common-1-1.xsd"/>
+	<xs:element name="partnerSpouseHistory">
+		<xs:annotation>
+			<xs:documentation xml:lang="de">Deklaration des Root-Elements für message.xml
+			</xs:documentation>
+			<xs:documentation xml:lang="fr">Déclaration de l'élément root pour message.xml
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="spouseHistoryItem" type="common:spouseHistoryType" nillable="false" minOccurs="1" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

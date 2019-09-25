@@ -1,6 +1,5 @@
 package globaz.corvus.helpers.acor;
 
-import java.io.File;
 import java.io.StringReader;
 import java.math.BigDecimal;
 import java.util.*;
@@ -10,7 +9,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
-import acor.FCalcul;
+import acor.fcalcul.FCalcul;
 import ch.globaz.common.domaine.Checkers;
 import ch.globaz.corvus.business.services.CorvusCrudServiceLocator;
 import ch.globaz.corvus.business.services.CorvusServiceLocator;
@@ -1880,7 +1879,7 @@ public class RECalculACORDemandeRenteHelper extends PRAbstractHelper {
      * @throws JAXBException
      */
     private FCalcul unmarshalXml(String xml) throws JAXBException {
-        JAXBContext jc = JAXBContext.newInstance(FCalcul.class);
+        JAXBContext jc = JAXBContext.newInstance("acor.fcalcul:org.gotess.xns.core");
         Unmarshaller unmarshaller = jc.createUnmarshaller();
         try {
             return (FCalcul) unmarshaller.unmarshal(new StringReader(xml));

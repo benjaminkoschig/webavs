@@ -186,13 +186,11 @@
 								<include>ree/*.xsd</include>
 								<include>P2020/annoncesRC/*.xsd</include>
 								<include>rpc/*.xsd</include>
-								<include>acor/*.xsd</include>
 							</schemaIncludes>
 							<bindingDirectory>src/main/resources/xjb</bindingDirectory>
 							<bindingIncludes>
 								<include>ree-bindings.xjb</include>
 								<include>rpc-bindings.xjb</include>
-								<include>acor-bindings.xjb</include>
 							</bindingIncludes>
 						</configuration>
 					</execution>
@@ -211,6 +209,24 @@
 							<bindingDirectory>src/main/resources/xjb</bindingDirectory>
 							<bindingIncludes>
 								<include>al-bindings.xjb</include> 
+							</bindingIncludes>
+						</configuration>
+					</execution>
+					<execution>
+						<id>generate-acor</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<specVersion>2.1</specVersion>
+							<schemaDirectory>src/main/resources/xsd</schemaDirectory>
+							<generateDirectory>target/generated-sources/xjc-acor</generateDirectory>
+							<schemaIncludes>
+								<include>acor/*.xsd</include>
+							</schemaIncludes>
+							<bindingDirectory>src/main/resources/xjb</bindingDirectory>
+							<bindingIncludes>
+								<include>acor-bindings.xjb</include>
 							</bindingIncludes>
 						</configuration>
 					</execution>
