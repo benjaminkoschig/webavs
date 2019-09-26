@@ -4,12 +4,14 @@
 
 package globaz.corvus.external;
 
+import ch.globaz.prestation.domaine.constantes.EtatPrestationAccordee;
 import globaz.corvus.api.basescalcul.IREPrestationAccordee;
 import globaz.corvus.db.rentesaccordees.REEnteteBlocage;
 import globaz.corvus.db.rentesaccordees.RERenteAccordee;
 import globaz.corvus.db.rentesaccordees.RERenteAccordeeManager;
 import globaz.corvus.process.REGenererAttestationProlongationEtudeProcess;
 import globaz.corvus.utils.REPmtMensuel;
+import globaz.corvus.utils.enumere.genre.prestations.REGenrePrestationEnum;
 import globaz.framework.bean.FWViewBeanInterface;
 import globaz.framework.util.FWCurrency;
 import globaz.globall.api.BITransaction;
@@ -30,6 +32,12 @@ import globaz.jade.prof.JadeProfiler;
 import globaz.prestation.interfaces.tiers.PRTiersHelper;
 import globaz.prestation.interfaces.tiers.PRTiersWrapper;
 import globaz.prestation.tools.PRDateFormater;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author SCR
@@ -348,15 +356,6 @@ public class ExternalServicePeriodeEtudeViewBean extends BAbstractEntityExternal
                             int resultCompar = j.compare(dateEcheance,
                                     REPmtMensuel.getDateDernierPmt(entity.getSession()));
 
-                            if (((JACalendar.COMPARE_FIRSTUPPER == resultCompar) || (JACalendar.COMPARE_EQUALS == resultCompar))) {
-                                REGenererAttestationProlongationEtudeProcess process = new REGenererAttestationProlongationEtudeProcess();
-                                process.setSession(entity.getSession());
-                                process.setIdTiers(mFam.getIdTiers());
-                                process.setDateEcheanceEtude(dEch);
-                                process.setEmailAdresse(entity.getSession().getUserEMail());
-                                BProcessLauncher.start(process, false);
-                            }
-
                             RERenteAccordeeManager mgr2 = new RERenteAccordeeManager();
                             mgr2.setSession(entity.getSession());
                             mgr2.setForCsEtatIn(IREPrestationAccordee.CS_ETAT_CALCULE + ", "
@@ -364,7 +363,22 @@ public class ExternalServicePeriodeEtudeViewBean extends BAbstractEntityExternal
                                     + IREPrestationAccordee.CS_ETAT_VALIDE);
                             mgr2.setForEnCoursAtMois(PRDateFormater.convertDate_AAAAMMJJ_to_MMxAAAA(dEch.toStrAMJ()));
                             mgr2.setForIdTiersBeneficiaire(mFam.getIdTiers());
+                            // uniquement pour rente enfant : formate la liste
+                            String listCodeEnfant = REGenrePrestationEnum.groupeEnfant.stream()
+                                    .map(n -> String.valueOf(n))
+                                    .collect(Collectors.joining("','", "'", "'"));
+                            mgr2.setForCodesPrestationsIn(listCodeEnfant);
                             mgr2.find(transaction);
+
+                            if (mgr2.size() > 0 &&
+                                    ((JACalendar.COMPARE_FIRSTUPPER == resultCompar) || (JACalendar.COMPARE_EQUALS == resultCompar))) {
+                                REGenererAttestationProlongationEtudeProcess process = new REGenererAttestationProlongationEtudeProcess();
+                                process.setSession(entity.getSession());
+                                process.setIdTiers(mFam.getIdTiers());
+                                process.setDateEcheanceEtude(dEch);
+                                process.setEmailAdresse(entity.getSession().getUserEMail());
+                                BProcessLauncher.start(process, false);
+                            }
 
                             // bz-5169
                             boolean stopTraitement = false;

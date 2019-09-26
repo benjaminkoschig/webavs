@@ -72,6 +72,7 @@ public class RERenteAccJoinTblTiersJoinDemRenteManager extends PRAbstractManager
     private int nbTiersFamille = 0;
     private String toDateFinDroit = "";
     private boolean isEtatCalculeForDateFinDroitNotEmpty = false;
+    private String forCodesPrestationsIn = "";
 
     @Override
     protected void _beforeFind(BTransaction transaction) throws Exception {
@@ -567,6 +568,16 @@ public class RERenteAccJoinTblTiersJoinDemRenteManager extends PRAbstractManager
             sqlWhere += ")";
         }
 
+        if (!JadeStringUtil.isEmpty(forCodesPrestationsIn)) {
+            if (sqlWhere.length() != 0) {
+                sqlWhere += " AND ";
+            }
+
+            sqlWhere += _getCollection() + REPrestationsAccordees.TABLE_NAME_PRESTATIONS_ACCORDEES
+                    + "."+REPrestationsAccordees.FIELDNAME_CODE_PRESTATION+" IN ("
+                    + forCodesPrestationsIn+" )";
+        }
+
         return sqlWhere;
     }
 
@@ -910,5 +921,13 @@ public class RERenteAccJoinTblTiersJoinDemRenteManager extends PRAbstractManager
 
     public void setEtatCalculeForDateFinDroitNotEmpty(boolean isEtatCalculeForDateFinDroitNotEmpty) {
         this.isEtatCalculeForDateFinDroitNotEmpty = isEtatCalculeForDateFinDroitNotEmpty;
+    }
+
+    public String getForCodesPrestationsIn() {
+        return forCodesPrestationsIn;
+    }
+
+    public void setForCodesPrestationsIn(final String forCodesPrestationsIn) {
+        this.forCodesPrestationsIn = forCodesPrestationsIn;
     }
 }

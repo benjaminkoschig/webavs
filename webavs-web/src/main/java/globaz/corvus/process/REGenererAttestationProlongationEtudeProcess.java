@@ -6,6 +6,7 @@ import globaz.corvus.db.rentesaccordees.RERenteAccJoinTblTiersJoinDemRenteManage
 import globaz.corvus.db.rentesaccordees.RERenteAccJoinTblTiersJoinDemandeRente;
 import globaz.corvus.topaz.REAttestationProlongationEtudeOO;
 import globaz.corvus.utils.REPmtMensuel;
+import globaz.corvus.utils.enumere.genre.prestations.REGenrePrestationEnum;
 import globaz.docinfo.TIDocumentInfoHelper;
 import globaz.globall.util.JACalendar;
 import globaz.globall.util.JADate;
@@ -20,6 +21,8 @@ import globaz.prestation.ged.PRGedHelper;
 import globaz.prestation.utils.ged.PRGedUtils;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import ch.globaz.common.domaine.Date;
 
 public class REGenererAttestationProlongationEtudeProcess extends AbstractJadeJob {
@@ -127,6 +130,11 @@ public class REGenererAttestationProlongationEtudeProcess extends AbstractJadeJo
             renteAccMgr.setForCsEtatIn(IREPrestationAccordee.CS_ETAT_VALIDE + ", "
                     + IREPrestationAccordee.CS_ETAT_PARTIEL);
             Date date = new Date(REPmtMensuel.getDateDernierPmt(getSession()));
+            // uniquement pour rente enfant : formate la liste
+            String listCodeEnfant = REGenrePrestationEnum.groupeEnfant.stream()
+                    .map(n -> String.valueOf(n))
+                    .collect(Collectors.joining("','", "'", "'"));
+            renteAccMgr.setForCodesPrestationsIn(listCodeEnfant);
             renteAccMgr.setForEnCoursAtMois(date.getMoisAnneeFormatte());
 
             renteAccMgr.find();
