@@ -154,9 +154,8 @@ function resetInfoAffilie() {
           	
           	<td>Typ</td>
           	<td><select name="type">
-          			<option value="<%=globaz.pyxis.process.maintenance.TIMaintenanceProcess.TYPE_LOCALITE%>"><ct:FWLabel key='FICHIER_MISE_JOUR_LOCALITES' /></option>
+          			<option value="<%=globaz.pyxis.process.maintenance.TIMaintenanceProcess.TYPE_LOCALITE_RUE%>"><ct:FWLabel key='FICHIER_MISE_JOUR_LOCALITES_RUES' /></option>
           			<option value="<%=globaz.pyxis.process.maintenance.TIMaintenanceProcess.TYPE_BANQUE%>"><ct:FWLabel key='FICHIER_BANQUES' /></option>
-          			<option value="<%=globaz.pyxis.process.maintenance.TIMaintenanceProcess.TYPE_RUE%>"><ct:FWLabel key='FICHER_RUES' /></option>
           		</select></td>
           	
           	<td><ct:FWLabel key='FICHIER_SOURCE' /></td>
