@@ -136,7 +136,7 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
                 } else {
                     uneFamille.setTiersPourCorrespondance(tiersPourCorrespondance);
                 }
-                if (REAttestationsFiscalesUtils.isAjournementMontant0(uneFamille, 0)) {
+                if (REAttestationsFiscalesUtils.isAjournementMontant0(uneFamille)) {
                     famillesSansLot.add(uneFamille);
                     continue;
                 }

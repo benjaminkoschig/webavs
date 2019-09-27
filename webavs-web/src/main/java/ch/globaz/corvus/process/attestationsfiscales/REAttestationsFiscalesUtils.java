@@ -7,12 +7,10 @@ import java.time.Month;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-import globaz.corvus.api.basescalcul.IREPrestationDue;
 import globaz.corvus.db.attestationsFiscales.REAttestationFiscaleRentAccordOrdreVerse;
 import globaz.corvus.db.attestationsFiscales.REAttestationFiscaleRentAccordOrdreVerseManager;
 import globaz.globall.db.BManager;
 import globaz.globall.db.BSession;
-import globaz.jade.client.util.JadeNumericUtil;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,8 +23,6 @@ import globaz.globall.db.BSessionUtil;
 import globaz.jade.client.util.JadeDateUtil;
 import globaz.jade.client.util.JadePeriodWrapper;
 import globaz.jade.client.util.JadeStringUtil;
-import globaz.jade.log.JadeLogger;
-import globaz.prestation.beans.PRPeriode;
 import globaz.prestation.tools.PRDateFormater;
 
 public class REAttestationsFiscalesUtils {
@@ -34,6 +30,15 @@ public class REAttestationsFiscalesUtils {
     private static final int YEAR_MONTH_MAX_VALUE = 999999;
 
     private static final Logger logger = LoggerFactory.getLogger(REAttestationsFiscalesUtils.class);
+
+    private static final String FIRST_JANUARY = "01.01.";
+    private static final String THIRTY_ONE_DECEMBER = "31.12.";
+    private static final String FRENCH_MONTH_PATTERN = "MM.yyyy";
+    private static final String ENGLISH_MONTH_PATTERN = "yyyyMM";
+    private static final String FRENCH_DAY_PATTERN = "dd.MM.yyyy";
+
+    private REAttestationsFiscalesUtils() {
+    }
 
     /**
      * <p>
@@ -53,12 +58,8 @@ public class REAttestationsFiscalesUtils {
                 if (!IRERetenues.CS_TYPE_IMPOT_SOURCE.equals(uneRetenue.getCsType())) {
                     continue;
                 }
-                try {
-                    if (isPeriodeDeRetenueDansAnnee(uneRetenue.getDateDebut(), uneRetenue.getDateFin(), annee)) {
-                        return true;
-                    }
-                } catch (Exception exception) {
-                    JadeLogger.error(REAttestationsFiscalesUtils.class, exception);
+                if (isPeriodeDeRetenueDansAnnee(uneRetenue.getDateDebut(), uneRetenue.getDateFin(), annee)) {
+                    return true;
                 }
             }
         }
@@ -87,11 +88,11 @@ public class REAttestationsFiscalesUtils {
         }
 
         boolean hasDateDeFin = !JadeStringUtil.isBlank(dateDeFin);
-        int annee = Integer.valueOf(anneeReference);
-        int anneeDeDebut = Integer.valueOf(dateDeDebut.substring(dateDeDebut.lastIndexOf(".") + 1));
+        int annee = Integer.parseInt(anneeReference);
+        int anneeDeDebut = Integer.parseInt(dateDeDebut.substring(dateDeDebut.lastIndexOf('.') + 1));
         int anneeDeFin = 0;
         if (hasDateDeFin) {
-            anneeDeFin = Integer.valueOf(dateDeFin.substring(dateDeFin.lastIndexOf(".") + 1));
+            anneeDeFin = Integer.valueOf(dateDeFin.substring(dateDeFin.lastIndexOf('.') + 1));
         }
 
         if (hasDateDeFin) {
@@ -120,7 +121,7 @@ public class REAttestationsFiscalesUtils {
 
     public static boolean hasPersonneDecedeeDurantAnneeFiscale(REFamillePourAttestationsFiscales famille,
                                                                String annee) {
-        JadePeriodWrapper anneeFiscale = new JadePeriodWrapper("01.01." + annee, "31.12." + annee);
+        JadePeriodWrapper anneeFiscale = new JadePeriodWrapper(FIRST_JANUARY + annee, THIRTY_ONE_DECEMBER + annee);
         for (RETiersPourAttestationsFiscales unTiers : famille.getTiersBeneficiaires()) {
             if (anneeFiscale.isDateDansLaPeriode(unTiers.getDateDeces())) {
                 return true;
@@ -165,7 +166,7 @@ public class REAttestationsFiscalesUtils {
      * @return
      */
     public static boolean hasRenteFinissantDansAnnee(REFamillePourAttestationsFiscales famille, String annee) {
-        Map<String, SortedSet<JadePeriodWrapper>> periodesDesRentesParTiers = new HashMap<String, SortedSet<JadePeriodWrapper>>();
+        Map<String, SortedSet<JadePeriodWrapper>> periodesDesRentesParTiers = new HashMap<>();
 
         // regroupement des périodes par tiers
         for (RERentePourAttestationsFiscales uneRente : famille.getRentesDeLaFamille()) {
@@ -176,7 +177,7 @@ public class REAttestationsFiscalesUtils {
                 if (periodesDesRentesParTiers.containsKey(uneRente.getIdTiersBeneficiaire())) {
                     periodeDuTiers = periodesDesRentesParTiers.get(uneRente.getIdTiersBeneficiaire());
                 } else {
-                    periodeDuTiers = new TreeSet<JadePeriodWrapper>();
+                    periodeDuTiers = new TreeSet<>();
                     periodesDesRentesParTiers.put(uneRente.getIdTiersBeneficiaire(), periodeDuTiers);
                 }
 
@@ -203,8 +204,8 @@ public class REAttestationsFiscalesUtils {
                         // Si l'union n'a rien donnée (période qui ne se suivent pas) et que la période globale
                         // se termine dans l'année fiscale, c'est qu'il y a un trou ou une fin de droit -> return true
                         if (unionDesPeriodes == null) {
-                            if (periodeGlobaleDuTiers.isDateDansLaPeriode("01.01." + annee) && !periodeGlobaleDuTiers
-                                    .isDateDansLaPeriode("01.01." + (Integer.parseInt(annee) + 1))) {
+                            if (periodeGlobaleDuTiers.isDateDansLaPeriode(FIRST_JANUARY + annee) && !periodeGlobaleDuTiers
+                                    .isDateDansLaPeriode(FIRST_JANUARY + (Integer.parseInt(annee) + 1))) {
                                 return true;
                             }
                         } else {
@@ -214,7 +215,7 @@ public class REAttestationsFiscalesUtils {
                 }
             }
 
-            JadePeriodWrapper periodeFiscale = new JadePeriodWrapper("01.01." + annee, "31.12." + annee);
+            JadePeriodWrapper periodeFiscale = new JadePeriodWrapper(FIRST_JANUARY + annee, THIRTY_ONE_DECEMBER + annee);
 
             String dateFinPeriodeGlobale = null;
 
@@ -233,12 +234,9 @@ public class REAttestationsFiscalesUtils {
         }
 
         if (!hasAuMoinsUnePeriodeValable) {
-            return hasUniquementRenteComplementaireAvecDateFin(famille, annee);
+            return hasUniquementRenteComplementaireAvecDateFin(famille);
         }
-        if (hasUniquementRenteComplementaireAvecDateFin(famille, annee)) {
-            return true;
-        }
-        return false;
+        return hasUniquementRenteComplementaireAvecDateFin(famille);
     }
 
     /**
@@ -252,7 +250,7 @@ public class REAttestationsFiscalesUtils {
         if (JadeStringUtil.isBlankOrZero(periode.getDateFin())) {
             return false;
         }
-        SimpleDateFormat reader = new SimpleDateFormat("MM.yyyy");
+        SimpleDateFormat reader = new SimpleDateFormat(FRENCH_MONTH_PATTERN);
         Date dateDebut = null;
         Date dateFin = null;
         try {
@@ -269,10 +267,10 @@ public class REAttestationsFiscalesUtils {
                     "Wrong dateFin format, expected [MM.yyyy], received value [" + periode.getDateFin() + "]", e);
         }
 
-        SimpleDateFormat writer = new SimpleDateFormat("yyyyMM");
+        SimpleDateFormat writer = new SimpleDateFormat(ENGLISH_MONTH_PATTERN);
 
-        int debut = Integer.valueOf(writer.format(dateDebut));
-        int fin = Integer.valueOf(writer.format(dateFin));
+        int debut = Integer.parseInt(writer.format(dateDebut));
+        int fin = Integer.parseInt(writer.format(dateFin));
 
         return fin < debut;
     }
@@ -315,11 +313,11 @@ public class REAttestationsFiscalesUtils {
     private static List<RERentePourAttestationsFiscales> rechercherLesrentesAvecRetro(
             REFamillePourAttestationsFiscales famille, int annee, boolean skipDecisionDecembre) {
 
-        List<RERentePourAttestationsFiscales> listeRentes = new LinkedList<RERentePourAttestationsFiscales>();
+        List<RERentePourAttestationsFiscales> listeRentes = new LinkedList<>();
 
-        SimpleDateFormat monthYearReader = new SimpleDateFormat("MM.yyyy");
-        SimpleDateFormat dayMonthYearReader = new SimpleDateFormat("dd.MM.yyyy");
-        SimpleDateFormat yearMonthFormatter = new SimpleDateFormat("yyyyMM");
+        SimpleDateFormat monthYearReader = new SimpleDateFormat(FRENCH_MONTH_PATTERN);
+        SimpleDateFormat dayMonthYearReader = new SimpleDateFormat(FRENCH_DAY_PATTERN);
+        SimpleDateFormat yearMonthFormatter = new SimpleDateFormat(ENGLISH_MONTH_PATTERN);
         SimpleDateFormat yearFormatter = new SimpleDateFormat("yyyy");
         SimpleDateFormat monthFormatter = new SimpleDateFormat("MM");
 
@@ -342,18 +340,16 @@ public class REAttestationsFiscalesUtils {
                 }
 
                 int anneeMoisDeLaDecisionInteger = Integer
-                        .valueOf(yearMonthFormatter.format(dayMonthYearReader.parse(dateDecision)));
+                        .parseInt(yearMonthFormatter.format(dayMonthYearReader.parse(dateDecision)));
 
                 // Si la date de décision n'est pas dans l'année fiscales on exclu la rente
-                if (Integer.valueOf(yearFormatter.format(dayMonthYearReader.parse(dateDecision))) != annee) {
+                if (Integer.parseInt(yearFormatter.format(dayMonthYearReader.parse(dateDecision))) != annee) {
                     continue;
                 }
 
                 // Si le mois de décision est décembre on ignore on exclu la rente
-                if (Integer.valueOf(monthFormatter.format(dayMonthYearReader.parse(dateDecision))) == 12) {
-                    if (skipDecisionDecembre) {
-                        continue;
-                    }
+                if (Integer.parseInt(monthFormatter.format(dayMonthYearReader.parse(dateDecision))) == 12 && skipDecisionDecembre) {
+                    continue;
                 }
 
                 // On recherche la date de début de droit la plus
@@ -364,7 +360,7 @@ public class REAttestationsFiscalesUtils {
                 }
 
                 int anneeMoisDebutRenteInteger = Integer
-                        .valueOf(yearMonthFormatter.format(monthYearReader.parse(dateDebutDroit)));
+                        .parseInt(yearMonthFormatter.format(monthYearReader.parse(dateDebutDroit)));
 
                 // Si la rente ne contient pas de retro on n'en tiens pas compte
                 if (anneeMoisDebutRenteInteger > anneeMoisDeLaDecisionInteger) {
@@ -392,7 +388,7 @@ public class REAttestationsFiscalesUtils {
      * @return
      */
     public static boolean hasDecisionEnDecembre(REFamillePourAttestationsFiscales famille, int annee) {
-        SimpleDateFormat dayMonthYearReader = new SimpleDateFormat("dd.MM.yyyy");
+        SimpleDateFormat dayMonthYearReader = new SimpleDateFormat(FRENCH_DAY_PATTERN);
         SimpleDateFormat yearFormatter = new SimpleDateFormat("yyyy");
         SimpleDateFormat monthFormatter = new SimpleDateFormat("MM");
 
@@ -438,7 +434,7 @@ public class REAttestationsFiscalesUtils {
      * méthode ignore les décision du mois de décembre de l'année fiscale
      *
      * @param famille           La famille à analyser
-     * @param surPlusieursAnnee Si le rétro doit s'étendre sur plusieurs années
+     * @param rechercherRetroSurUneAnneeUniquement Si le rétro doit s'étendre sur plusieurs années
      * @param annee             L'année fiscale
      * @return <code>true</code> si au moins une décision avec rétro est retrouvée
      */
@@ -451,8 +447,8 @@ public class REAttestationsFiscalesUtils {
             return false;
         }
 
-        SimpleDateFormat monthYearReader = new SimpleDateFormat("MM.yyyy");
-        SimpleDateFormat yearMonthFormatter = new SimpleDateFormat("yyyyMM");
+        SimpleDateFormat monthYearReader = new SimpleDateFormat(FRENCH_MONTH_PATTERN);
+        SimpleDateFormat yearMonthFormatter = new SimpleDateFormat(ENGLISH_MONTH_PATTERN);
 
         int dateDebutPlusAncienne = YEAR_MONTH_MAX_VALUE;
         for (RERentePourAttestationsFiscales rente : listeRentes) {
@@ -461,7 +457,7 @@ public class REAttestationsFiscalesUtils {
                 // On recherche la date de début de droit la plus
                 String dateDebutDroit = rente.getDateDebutDroit();
                 int anneeMoisDebutRenteInteger = Integer
-                        .valueOf(yearMonthFormatter.format(monthYearReader.parse(dateDebutDroit)));
+                        .parseInt(yearMonthFormatter.format(monthYearReader.parse(dateDebutDroit)));
 
                 if (anneeMoisDebutRenteInteger < dateDebutPlusAncienne) {
                     dateDebutPlusAncienne = anneeMoisDebutRenteInteger;
@@ -537,12 +533,10 @@ public class REAttestationsFiscalesUtils {
      * complémentaire ont une date de fin
      *
      * @param famille Les données de la famille à analyser
-     * @param annee   L'année concernée
      * @return <code>true</code> si la famille ne possède pas de rente principale et que toute les rentes
      * complémentaire ont une date de fin
      */
-    public static boolean hasUniquementRenteComplementaireAvecDateFin(REFamillePourAttestationsFiscales famille,
-                                                                      String annee) {
+    private static boolean hasUniquementRenteComplementaireAvecDateFin(REFamillePourAttestationsFiscales famille) {
         // En premier lieu on regarde déjà si une ou es rentes principales sont présentes
         for (RERentePourAttestationsFiscales rente : famille.getRentesDeLaFamille()) {
             if (RECodePrestationResolver.isPrestationPrincipale(rente.getCodePrestation())) {
@@ -573,11 +567,9 @@ public class REAttestationsFiscalesUtils {
             REFamillePourAttestationsFiscales uneFamille, String annee) {
         RETiersPourAttestationsFiscales tiersCorrespondance = REAttestationsFiscalesUtils
                 .getTiersCorrespondance(uneFamille, annee);
-        if (tiersCorrespondance != null) {
-            if (!JadeStringUtil.isBlank(tiersCorrespondance.getCodeIsoLangue())
-                    && !JadeStringUtil.isBlank(tiersCorrespondance.getAdresseCourrierFormatee())) {
-                return tiersCorrespondance;
-            }
+        if (tiersCorrespondance != null && !JadeStringUtil.isBlank(tiersCorrespondance.getCodeIsoLangue())
+                && !JadeStringUtil.isBlank(tiersCorrespondance.getAdresseCourrierFormatee())) {
+            return tiersCorrespondance;
         }
         return null;
     }
@@ -642,7 +634,7 @@ public class REAttestationsFiscalesUtils {
                         }
                     }
                     if (tiersBeneficiaire == null) {
-                        System.err.println();
+                        logger.error("Le tiers bénéficiaire est null.");
                     }
                 }
             }
@@ -658,12 +650,10 @@ public class REAttestationsFiscalesUtils {
                 for (RERentePourAttestationsFiscales uneRente : unTiers.getRentes()) {
                     CodePrestation codePrestation = CodePrestation
                             .getCodePrestation(Integer.parseInt(uneRente.getCodePrestation()));
-                    if (codePrestation.isSurvivant()) {
-                        if ((tiersBeneficiaire == null)
-                                || (codePrestation.getCodePrestation() < codePrestationDuTiersBeneficiaire)) {
-                            tiersBeneficiaire = unTiers;
-                            codePrestationDuTiersBeneficiaire = codePrestation.getCodePrestation();
-                        }
+                    if (codePrestation.isSurvivant() && ((tiersBeneficiaire == null)
+                            || (codePrestation.getCodePrestation() < codePrestationDuTiersBeneficiaire))) {
+                        tiersBeneficiaire = unTiers;
+                        codePrestationDuTiersBeneficiaire = codePrestation.getCodePrestation();
                     }
                 }
             }
@@ -679,7 +669,7 @@ public class REAttestationsFiscalesUtils {
      * @return boolean
      */
     public static boolean hasRenteDateFinAvantDebutUniquement(REFamillePourAttestationsFiscales famille) {
-        SimpleDateFormat reader1 = new SimpleDateFormat("MM.yyyy");
+        SimpleDateFormat reader1 = new SimpleDateFormat(FRENCH_MONTH_PATTERN);
         List<RERentePourAttestationsFiscales> listPeriodeInverse = new ArrayList<>();
         if (famille.getRentesDeLaFamille().isEmpty()) {
             return false;
@@ -705,7 +695,7 @@ public class REAttestationsFiscalesUtils {
         return listPeriodeInverse.size() == famille.getRentesDeLaFamille().size();
     }
 
-    public static boolean isAjournementMontant0(REFamillePourAttestationsFiscales uneFamille, int i) throws Exception {
+    public static boolean isAjournementMontant0(REFamillePourAttestationsFiscales uneFamille) throws Exception {
         boolean isAjournement = false;
         for (RERentePourAttestationsFiscales att : uneFamille.getRentesDeLaFamille()) {
             String montant = att.getMontantPrestation();
@@ -718,7 +708,7 @@ public class REAttestationsFiscalesUtils {
             if (mgr.size() > 0) {
                 re = (RERenteAccordee) mgr.getFirstEntity();
             }
-            if (JadeStringUtil.isBlankOrZero(montant) && re.contientCodeCasSpecial("08")) {
+            if (JadeStringUtil.isBlankOrZero(montant) && re != null && re.contientCodeCasSpecial("08")) {
                 isAjournement = true;
             } else {
                 isAjournement = false;
@@ -737,8 +727,8 @@ public class REAttestationsFiscalesUtils {
             Calendar dateDecision = JadeDateUtil.getGlobazCalendar(att.getDateDecision());
             if (dateDecision.get(Calendar.MONTH) == Calendar.DECEMBER
                     && dateDecision.get(Calendar.YEAR) == anneeNum) {
-                Calendar dateDebutRente = JadeDateUtil.getGlobazCalendar("01."+att.getDateDebutDroit());
-                if (dateDebutRente.get(Calendar.YEAR) == anneeNum && hasCreancier(att.getIdRenteAccordee(),session)) {
+                Calendar dateDebutRente = JadeDateUtil.getGlobazCalendar("01." + att.getDateDebutDroit());
+                if (dateDebutRente.get(Calendar.YEAR) == anneeNum && hasCreancier(att.getIdRenteAccordee(), session)) {
                     return true;
                 }
                 if (dateDebutRente.get(Calendar.YEAR) < anneeNum) {
@@ -749,6 +739,7 @@ public class REAttestationsFiscalesUtils {
         }
         return false;
     }
+
     private static boolean hasCreancier(String idRenteAccordee, BSession session) throws Exception {
         REAttestationFiscaleRentAccordOrdreVerseManager mgr = new REAttestationFiscaleRentAccordOrdreVerseManager();
         mgr.setSession(session);
@@ -770,19 +761,19 @@ public class REAttestationsFiscalesUtils {
      * On contrôle s'il existe un chevauchement de rente pour cette famille : même assuré, même type de rente et période qui se chevauche.
      *
      * @param uneFamille : la famille pour laquelle on teste le chevauchement.
-     * @param annee : l'année analysée.
+     * @param annee      : l'année analysée.
      * @return vrai s'il y a un chevauchement.
      */
     public static boolean hasRenteQuiSeChevauchent(REFamillePourAttestationsFiscales uneFamille, int annee) {
         List<RERentePourAttestationsFiscales> allRentes = uneFamille.getRentesDeLaFamille();
         RERentePourAttestationsFiscales rente1;
         RERentePourAttestationsFiscales rente2;
-        LocalDate anneeAnalyse = LocalDate.ofYearDay(annee,1);
+        LocalDate anneeAnalyse = LocalDate.ofYearDay(annee, 1);
         for (int i = 0; i < allRentes.size(); i++) {
             for (int j = i + 1; j < allRentes.size(); j++) {
                 rente1 = allRentes.get(i);
                 rente2 = allRentes.get(j);
-                if (hasSameAssure(rente1,rente2) && hasSameCodePrestation(rente1, rente2) && hasPeriodOverlap(rente1, rente2, anneeAnalyse)) {
+                if (hasSameAssure(rente1, rente2) && hasSameCodePrestation(rente1, rente2) && hasPeriodOverlap(rente1, rente2, anneeAnalyse)) {
                     return true;
                 }
             }
@@ -817,7 +808,7 @@ public class REAttestationsFiscalesUtils {
      *
      * @param rente1 : première rente à comparer.
      * @param rente2 : seconde rente à comparer.
-     * @param annee : l'année analysée.
+     * @param annee  : l'année analysée.
      * @return vrai si les deux rentes ont une période qui se chevauche, non sinon.
      */
     private static boolean hasPeriodOverlap(RERentePourAttestationsFiscales rente1, RERentePourAttestationsFiscales rente2, LocalDate annee) {
@@ -829,30 +820,25 @@ public class REAttestationsFiscalesUtils {
         LocalDate rente1DateDebut = getDateDebut(rente1.getDateDebutDroit());
         LocalDate rente2DateDebut = getDateDebut(rente2.getDateDebutDroit());
         LocalDate rente1DateFin = getDateFin(rente1.getDateFinDroit(), annee);
-        LocalDate rente2DateFin = getDateFin(rente2.getDateFinDroit() , annee);
+        LocalDate rente2DateFin = getDateFin(rente2.getDateFinDroit(), annee);
 
         if (rente1DateDebut.isAfter(rente1DateFin) || rente2DateDebut.isAfter(rente2DateFin)) {
             return false;
         }
 
-        if (!rente1DateDebut.isAfter(rente2DateFin) && !rente2DateDebut.isAfter(rente1DateFin)) {
-            return true;
-        }
-        return false;
+        return !rente1DateDebut.isAfter(rente2DateFin) && !rente2DateDebut.isAfter(rente1DateFin);
     }
 
     private static LocalDate getDateDebut(String dateDebutDroit) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-        LocalDate renteDateDebut = LocalDate.parse("01." + dateDebutDroit , formatter);
-        return renteDateDebut;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(FRENCH_DAY_PATTERN);
+        return LocalDate.parse("01." + dateDebutDroit, formatter);
     }
 
     private static LocalDate getDateFin(String dateFinDroit, LocalDate annee) {
         if (StringUtils.isNotEmpty(dateFinDroit)) {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-            LocalDate renteDateFin = LocalDate.parse("01." + dateFinDroit , formatter);
-                return renteDateFin;
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(FRENCH_DAY_PATTERN);
+            return LocalDate.parse("01." + dateFinDroit, formatter);
         }
-        return LocalDate.of(annee.getYear(), Month.DECEMBER,31);
+        return LocalDate.of(annee.getYear(), Month.DECEMBER, 31);
     }
 }

@@ -119,7 +119,7 @@ public class REListeExcelAttestationsFiscalesNonSorties extends ExcelAbstractDoc
 
     private String hasAjournement(REFamillePourAttestationsFiscales uneFamille) {
         try {
-            if (REAttestationsFiscalesUtils.isAjournementMontant0(uneFamille, anneeAsInteger)) {
+            if (REAttestationsFiscalesUtils.isAjournementMontant0(uneFamille)) {
                 return "X";
             }
         } catch (Exception e) {
