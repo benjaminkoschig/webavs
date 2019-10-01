@@ -211,7 +211,7 @@
 				</td>
 				<td>
 					<span>
-						<strong id="montantCreanciers">
+						<strong id="montantCreanciersEtAutresDettes">
 						</strong>
 					</span>
 				</td>

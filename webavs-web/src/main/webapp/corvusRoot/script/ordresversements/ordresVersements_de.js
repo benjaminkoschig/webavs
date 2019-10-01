@@ -26,7 +26,7 @@ function OrdreVersement(container,
 						$montantPrestationsDues, 
 						$montantPrestationsDejaVersees, 
 						$montantInteretsMoratoires, 
-						$montantCreanciers, 
+						$montantCreanciersEtAutresDettes,
 						$montantSolde,
 						$banniereModificationInterdite,
 						$banniereRetenuePresenteMaisModificationInterdite,
@@ -40,7 +40,7 @@ function OrdreVersement(container,
 	this.$montantPrestationsDues = $montantPrestationsDues;
 	this.$montantPrestationsDejaVersees = $montantPrestationsDejaVersees; 
 	this.$montantInteretsMoratoires = $montantInteretsMoratoires;
-	this.$montantCreanciers = $montantCreanciers;
+	this.$montantCreanciersEtAutresDettes = $montantCreanciersEtAutresDettes;
 	this.$montantSolde = $montantSolde;
 	this.$banniereModificationInterdite = $banniereModificationInterdite;
 	this.$banniereRetenuePresenteMaisModificationInterdite = $banniereRetenuePresenteMaisModificationInterdite;
@@ -312,7 +312,7 @@ function OrdreVersement(container,
 		this.$montantPrestationsDues.text($.trim($contenu.find('montantPrestationsDues').text()));
 		this.$montantPrestationsDejaVersees.text($.trim($contenu.find('montantPrestationsDejaVersees').text()));
 		this.$montantInteretsMoratoires.text($.trim($contenu.find('montantInteretsMoratoires').text()));
-		this.$montantCreanciers.text($.trim($contenu.find('montantCreanciers').text()));
+		this.$montantCreanciersEtAutresDettes.text($.trim($contenu.find('montantCreanciersEtAutresDettes').text()));
 		this.$montantSolde.text($.trim($contenu.find('montantSolde').text()));
 
 		if ($contenu.find('modificationPossible').text().replace(/\s+/g, '') == 'true') {
@@ -354,7 +354,7 @@ $(document).ready(function () {
 	var $montantPrestationsDues = $('#montantPrestationsDues');
 	var $montantPrestationsDejaVersees = $('#montantPrestationsDejaVersees'); 
 	var $montantInteretsMoratoires = $('#montantInteretsMoratoires');
-	var $montantCreanciers = $('#montantCreanciers');
+	var $montantCreanciersEtAutresDettes = $('#montantCreanciersEtAutresDettes');
 	var $montantSolde = $('#montantSolde');
 
 	var $zoneAjaxOrdreVersement = $('#zoneAjaxOrdreVersement');
@@ -362,7 +362,7 @@ $(document).ready(function () {
 									$montantPrestationsDues, 
 									$montantPrestationsDejaVersees, 
 									$montantInteretsMoratoires, 
-									$montantCreanciers,
+									$montantCreanciersEtAutresDettes,
 									$montantSolde,
 									$banniereModificationInterdite,
 									$banniereRetenuePresenteMaisModificationInterdite);
