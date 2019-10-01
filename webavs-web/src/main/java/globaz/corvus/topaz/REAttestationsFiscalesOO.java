@@ -214,7 +214,7 @@ public class REAttestationsFiscalesOO extends REAbstractJobOO {
                                 listRenteRetroDateDebutChanged.put(rente.getIdRenteAccordee(), dateDeDecision);
                                 hasRetroactifPlusieursAnneeeOuVersementCreancier = true;
                             } else {
-                                if (ovs.hasVersementCreancier()) {
+                                if (ovs.hasVersementCreancier() && !JadeStringUtil.isBlankOrZero(ovs.getMontantDette())) {
                                     listRenteRetroDateDebutChanged.put(rente.getIdRenteAccordee(), dateDeDecision);
                                     hasRetroactifPlusieursAnneeeOuVersementCreancier = true;
                                 }

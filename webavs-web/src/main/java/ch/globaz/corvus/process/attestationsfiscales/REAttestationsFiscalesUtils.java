@@ -749,7 +749,7 @@ public class REAttestationsFiscalesUtils {
             for (int i = 0; i < mgr.size(); i++) {
                 REAttestationFiscaleRentAccordOrdreVerse ovs = (REAttestationFiscaleRentAccordOrdreVerse) mgr
                         .get(i);
-                if (ovs.hasVersementCreancier() || !JadeStringUtil.isBlankOrZero(ovs.getMontantDette())) {
+                if (ovs.hasVersementCreancier() && !JadeStringUtil.isBlankOrZero(ovs.getMontantDette())) {
                     return true;
                 }
             }
