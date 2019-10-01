@@ -279,29 +279,23 @@ function postInit() {
 	</td>
 </tr>
 <tr>
-	<td>
-
-	</td>
-	<td>
-
-	</td>
+	<td></td>
+	<td></td>
+	<td></td>
 	<td>
 		<ct:FWLabel key="MENU_DATE_RECEPTION"/>
 	</td>
-	<td></td>
+	<td><ct:FWLabel key="DU"/></td>
 	<td>
-		<ct:FWLabel key="DU"/>
-		&nbsp;<input	id="forDateDebut"
+		<input	id="forDateDebut"
 						name="forDateDebut"
 						data-g-calendar="yearRange:¦1900:<%=java.util.Calendar.getInstance().get(java.util.Calendar.YEAR)%>¦"
 						class="obligatoirePourRecherche"
 						value="<%=Objects.isNull(forDateDebut)? "":forDateDebut%>" />
 	</td>
-	<td></td>
+	<td><ct:FWLabel key="AU"/></td>
 	<td>
-		<ct:FWLabel key="AU"/>
-
-		&nbsp;<input	id="forDateFin"
+		<input	id="forDateFin"
 						name="forDateFin"
 						data-g-calendar="yearRange:¦1900:<%=java.util.Calendar.getInstance().get(java.util.Calendar.YEAR)%>¦"
 						class="obligatoirePourRecherche"
