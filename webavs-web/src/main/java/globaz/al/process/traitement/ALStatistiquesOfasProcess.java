@@ -1684,7 +1684,7 @@ public class ALStatistiquesOfasProcess extends BProcess {
         if (!JadeStringUtil.isBlank(numeroCaisse)) {
             sql += " AND ( ppacdi like 'rubrique.multicaisse." + numeroCaisse + ".%' ) ";
         }
-        sql += " AND (nvalid between " + getStartDate(false) + " AND " + getEndDate(false) + ")" + " AND cstype  IN ("
+        sql += " AND cstype  IN ("
                 + ALCSDroit.TYPE_NAIS + ", " + ALCSDroit.TYPE_ACCE + ")" + " AND cscaal IN ("
                 + ALCSDossier.ACTIVITE_SALARIE + ", " + ALCSDossier.ACTIVITE_NONACTIF + ", "
                 + ALCSDossier.ACTIVITE_INDEPENDANT + ")" + " AND ((mdvc between " + getStartDate(true) + " AND "
@@ -1829,7 +1829,7 @@ public class ALStatistiquesOfasProcess extends BProcess {
         sql += " AND cstype  IN (" + ALCSDroit.TYPE_ENF + ", " + ALCSDroit.TYPE_FORM + ")" + " AND cscaal IN ("
                 + ALCSDossier.ACTIVITE_SALARIE + ", " + ALCSDossier.ACTIVITE_NONACTIF + ", "
                 + ALCSDossier.ACTIVITE_INDEPENDANT + ")" + " AND ((mdvc between " + getStartDate(true) + " AND "
-                + getEndDate(true) + ") or (ent.cstatu = 61230003)) " + " AND PCOUID = " + "'" + canton + "'"
+                + getEndDate(true) + ")) " + " AND PCOUID = " + "'" + canton + "'"
                 + " group by cscaal, ppacdi,dos.BID, dos.MALNAF" + " order by cscaal, ppacdi";
         sql = replaceSchemaInSqlQuery(sql);
         return sql;
