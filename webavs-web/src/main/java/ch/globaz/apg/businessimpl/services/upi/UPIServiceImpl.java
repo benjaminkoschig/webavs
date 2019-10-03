@@ -1,5 +1,8 @@
 package ch.globaz.apg.businessimpl.services.upi;
 
+import ch.globaz.common.business.services.upi.configuration.UPIProperties;
+import ch.globaz.common.properties.CommonProperties;
+import ch.globaz.common.properties.PropertiesException;
 import globaz.apg.pojo.Person;
 import globaz.globall.db.BSession;
 import globaz.globall.db.BSessionUtil;
@@ -29,6 +32,8 @@ public class UPIServiceImpl implements UPIService {
                 person = new Person();
                 person.setNss(nss);
                 session = BSessionUtil.getSessionFromThreadContext();
+
+                initializeUpiProperties();
 
                 GetInfoPersonResponseType personUpi = ch.globaz.common.business.services.upi.UPIService.getInstance()
                         .getInfoPerson(session.getUserId(), nss);
@@ -60,5 +65,15 @@ public class UPIServiceImpl implements UPIService {
             return null;
         }
 
+    }
+
+    private void initializeUpiProperties() throws PropertiesException {
+        UPIProperties.UPI_WEBSERVICE_NAMESPACE.setValue(CommonProperties.UPI_WEBSERVICE_NAMESPACE.getValue());
+        UPIProperties.UPI_WEBSERVICE_NAME.setValue(CommonProperties.UPI_WEBSERVICE_NAME.getValue());
+        UPIProperties.UPI_WEBSERVICE_SEDEX_SENDER_ID.setValue(CommonProperties.UPI_WEBSERVICE_SEDEX_SENDER_ID.getValue());
+        UPIProperties.UPI_KEYSTORE_PATH.setValue(CommonProperties.UPI_KEYSTORE_PATH.getValue());
+        UPIProperties.UPI_KEYSTORE_TYPE.setValue(CommonProperties.UPI_KEYSTORE_TYPE.getValue());
+        UPIProperties.UPI_KEYSTORE_PASSWORD.setValue(CommonProperties.UPI_KEYSTORE_PASSWORD.getValue());
+        UPIProperties.UPI_SSL_CONTEXT_TYPE.setValue(CommonProperties.UPI_SSL_CONTEXT_TYPE.getValue());
     }
 }

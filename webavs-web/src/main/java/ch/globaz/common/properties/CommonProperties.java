@@ -36,7 +36,16 @@ public enum CommonProperties implements IProperties {
     WIRR_KEYSTORE_TYPE("wirr.keystore.type", "Type du keystore"),
     WIRR_KEYSTORE_PASSWORD("wirr.keystore.password", "Password du keystore"),
     WIRR_SSL_CONTEXT_TYPE("wirr.ssl.context.type", "type du context ssl"),
-    EBUSINESS_CONNECTED("ebusiness.connected", "Indique si un EBusiness est connecté avec WebAVS");
+    EBUSINESS_CONNECTED("ebusiness.connected", "Indique si un EBusiness est connecté avec WebAVS"),
+
+    UPI_WEBSERVICE_NAMESPACE("upi.webservice.namespace", "name space du web service upi"),
+    UPI_WEBSERVICE_NAME("upi.webservice.name", "name du web service upi"),
+    UPI_WEBSERVICE_SEDEX_SENDER_ID("upi.webservice.sedex.sender.id", "sedex sender id pour le web service wirr"),
+
+    UPI_KEYSTORE_PATH("upi.keystore.path", "Chemin absolu du keystore"),
+    UPI_KEYSTORE_TYPE("upi.keystore.type", "Type du keystore"),
+    UPI_KEYSTORE_PASSWORD("upi.keystore.password", "Password du keystore"),
+    UPI_SSL_CONTEXT_TYPE("upi.ssl.context.type", "type du context ssl");
 
     private String description;
     private String propertyName;
