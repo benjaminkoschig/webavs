@@ -810,10 +810,8 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
         boolean hasRenteComplPourConjoint = false;
         for (REFamillePourAttestationsFiscales uneFamille : values) {
             boolean hasRentePrincipal = false;
-            boolean isRenteSurvivant = false;
-            boolean hasAdressePmtAZero = false;
 
-            Map<String, Set<RETiersPourAttestationsFiscales>> tiersParIdAdressePaiement = new HashMap<String, Set<RETiersPourAttestationsFiscales>>();
+            List<String> listIdAdressePaiement = new ArrayList<>();
 
             listCodesForRemarqueAdresseDiff.add(10);
             listCodesForRemarqueAdresseDiff.add(13);
@@ -821,20 +819,14 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
             listCodesForRemarqueAdresseDiff.add(23);
             listCodesForRemarqueAdresseDiff.add(50);
             listCodesForRemarqueAdresseDiff.add(70);
+            String idAdressePaiementRentePrincipal = null;
             for (RETiersPourAttestationsFiscales unTiersBeneficiaire : uneFamille.getTiersBeneficiaires()) {
                 for (RERentePourAttestationsFiscales uneRenteDuTiers : unTiersBeneficiaire.getRentes()) {
-
-                    if (JadeStringUtil.isBlankOrZero(uneRenteDuTiers.getIdTiersAdressePaiement())) {
-                        hasAdressePmtAZero = true;
-                    }
 
                     CodePrestation codePrestation = CodePrestation
                             .getCodePrestation(Integer.parseInt(uneRenteDuTiers.getCodePrestation()));
                     if (codePrestation.isAPI()) {
                         continue;
-                    }
-                    if (codePrestation.isSurvivant()) {
-                        isRenteSurvivant = true;
                     }
                     /**
                      * Vérifier si la famille une rente principal 10/20, 13/23 ou 50/70 et que l'adresse bénéficiaire de la rente correpond à l'adresse principal de l'attestation.
@@ -842,37 +834,27 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
                     if (listCodesForRemarqueAdresseDiff.contains(codePrestation.getCodePrestation())
                             && uneRenteDuTiers.getIdTiersAdressePaiement().equals(uneFamille.getTiersRequerant().getIdTiers())) {
                         hasRentePrincipal = true;
+                        idAdressePaiementRentePrincipal = uneRenteDuTiers.getIdTiersAdressePaiement();
                     }
 
                 }
                 List<RERentePourAttestationsFiscales> listRentesSorted = sortRentesForIdAdressePaiement(unTiersBeneficiaire.getRentes());
-                String idAdressePaiement = listRentesSorted.get(0).getIdTiersAdressePaiement();
 
-                if (tiersParIdAdressePaiement.containsKey(idAdressePaiement)) {
-                    Set<RETiersPourAttestationsFiscales> tiersAvecCetteAdressePaiement = tiersParIdAdressePaiement
-                            .get(idAdressePaiement);
-                    tiersAvecCetteAdressePaiement.add(unTiersBeneficiaire);
-                } else {
-                    tiersParIdAdressePaiement.put(idAdressePaiement,
-                            new HashSet<RETiersPourAttestationsFiscales>(Arrays.asList(unTiersBeneficiaire)));
+                for(RERentePourAttestationsFiscales rente : listRentesSorted) {
+                    String idAdressePaiement = rente.getIdTiersAdressePaiement();
+
+                    if(!listIdAdressePaiement.contains(idAdressePaiement)
+                        && !JadeStringUtil.isBlankOrZero(idAdressePaiement)) {
+                        listIdAdressePaiement.add(idAdressePaiement);
+                    }
                 }
             }
 
-            if (tiersParIdAdressePaiement.size() > 1) {
-                if (isRenteSurvivant) {
-                    for (Set<RETiersPourAttestationsFiscales> tiersPourUneAdresse : tiersParIdAdressePaiement
-                            .values()) {
-                        REFamillePourAttestationsFiscales nouvelleFamille = new REFamillePourAttestationsFiscales();
-                        for (RETiersPourAttestationsFiscales unTiers : tiersPourUneAdresse) {
-                            if (nouvelleFamille.getTiersRequerant() == null) {
-                                nouvelleFamille.setTiersRequerant(unTiers);
-                            }
-                            nouvelleFamille.getMapTiersBeneficiaire().put(unTiers.getIdTiers(), unTiers);
-                        }
-                        familles.add(nouvelleFamille);
-                    }
-                }
-                if (hasRentePrincipal) {
+            if (listIdAdressePaiement.size() > 1) {
+
+                splitSiOrphelin(familles, uneFamille, idAdressePaiementRentePrincipal);
+
+                if (isHasPlusieursAdresses(uneFamille) && hasRentePrincipal) {
                     /**
                      * Vérifier si il a des rentes complémentaires
                      */
@@ -883,11 +865,7 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
                             uneFamille.setHasRenteConjointAdressePaiementSepare(true);
                         }
                         if (codePrestation.isRenteComplementaires()) {
-                            if (hasAdressePmtAZero && tiersParIdAdressePaiement.size() == 2) {
-                                uneFamille.setHasPlusieursAdressePaiement(false);
-                            } else {
-                                uneFamille.setHasPlusieursAdressePaiement(true);
-                            }
+                            uneFamille.setHasPlusieursAdressePaiement(true);
                         }
                     }
                 }
@@ -900,6 +878,112 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
         return familles;
     }
 
+    /**
+     *  Test si plusieur adresses de paiement après le splitting
+     * @param uneFamille
+     * @return vrai si plusieurs adresses de paiement pour la famille
+     */
+    private boolean isHasPlusieursAdresses(REFamillePourAttestationsFiscales uneFamille) {
+        List<String> listIdAdressePaiement = new ArrayList<>();
+        for (RERentePourAttestationsFiscales rente : uneFamille.getRentesDeLaFamille()) {
+                String idAdressePaiement = rente.getIdTiersAdressePaiement();
+            if(!listIdAdressePaiement.contains(idAdressePaiement)
+                    && !JadeStringUtil.isBlankOrZero(idAdressePaiement)) {
+                listIdAdressePaiement.add(idAdressePaiement);
+            }
+        }
+        return listIdAdressePaiement.size() > 1;
+    }
+
+    /**
+     * Creer une nouvelle famille (= une attestation supplémentaire) si il y un cas orphelin avec une adresse différente
+     * @param familles
+     * @param uneFamille
+     * @param idAdressePaiementRentePrincipal
+     */
+    private void splitSiOrphelin(List<REFamillePourAttestationsFiscales> familles, REFamillePourAttestationsFiscales uneFamille, String idAdressePaiementRentePrincipal) {
+        Map<String, REFamillePourAttestationsFiscales> mapFamilleOrphelins = new HashMap<>();
+        for (RETiersPourAttestationsFiscales unTiers : uneFamille.getTiersBeneficiaires()) {
+            List<RERentePourAttestationsFiscales> listTmp = new ArrayList<>(unTiers.getRentes());
+            for(RERentePourAttestationsFiscales rente : listTmp){
+                CodePrestation codePrestation = CodePrestation
+                        .getCodePrestation(Integer.parseInt(rente.getCodePrestation()));
+                if(isOrphelin(idAdressePaiementRentePrincipal, rente, codePrestation)) {
+                    createNewAttestation(familles, mapFamilleOrphelins, rente, unTiers);
+                }
+            }
+        }
+    }
+
+    /**
+     * Test s'il s'agit d'un enfant avec une rente de survivant = orphelin
+     * @param idAdressePaiementRentePrincipal
+     * @param rente
+     * @param codePrestation
+     * @return vrai si orphelin
+     */
+    private boolean isOrphelin(String idAdressePaiementRentePrincipal, RERentePourAttestationsFiscales rente, CodePrestation codePrestation) {
+        return codePrestation.isSurvivant()
+                && idAdressePaiementRentePrincipal != null
+                && !idAdressePaiementRentePrincipal.equals(rente.getIdTiersAdressePaiement())
+                && !JadeStringUtil.isBlankOrZero(rente.getIdTiersAdressePaiement());
+    }
+
+    /**
+     * Crée une nouvelle attestation avec la reste de survivant. La rente est supprimée du Tiers lié à l'ancienne attestation
+     * @param familles
+     * @param mapFamilleOrphelins
+     * @param rente
+     * @param unTiers
+     */
+    private void createNewAttestation(List<REFamillePourAttestationsFiscales> familles, Map<String, REFamillePourAttestationsFiscales> mapFamilleOrphelins, RERentePourAttestationsFiscales rente, RETiersPourAttestationsFiscales unTiers) {
+        RETiersPourAttestationsFiscales newTiers = duplicateTierWithRente(unTiers, rente);
+        if(mapFamilleOrphelins.get(rente.getIdTiersAdressePaiement()) == null) {
+            // crée une nouvelle famille pour impression sur une autre attestation
+            REFamillePourAttestationsFiscales nouvelleFamille = new REFamillePourAttestationsFiscales();
+            nouvelleFamille.setTiersRequerant(newTiers);
+            nouvelleFamille.getMapTiersBeneficiaire().put(newTiers.getIdTiers(), newTiers);
+            familles.add(nouvelleFamille);
+            mapFamilleOrphelins.put(rente.getIdTiersAdressePaiement(), nouvelleFamille);
+        } else {
+            // Si plusieurs enfants orphelins avec même adresse de paiement, ajout dans la même attestation
+            mapFamilleOrphelins.get(rente.getIdTiersAdressePaiement()).getMapTiersBeneficiaire().put(newTiers.getIdTiers(), newTiers);
+        }
+    }
+
+    /**
+     * Duplique le tier
+     * @param tier
+     * @param rente
+     * @return Le nouveau tiers avec la rente de survivant
+     */
+    private RETiersPourAttestationsFiscales duplicateTierWithRente(RETiersPourAttestationsFiscales tier, RERentePourAttestationsFiscales rente) {
+        // retire la rente orphelin du tier lié à l'ancienne attestation
+        tier.getMapRentes().remove(rente.getIdRenteAccordee());
+
+        // créé un nouveau tier identique avec cette rente orphelin pour une nouvelle attestation
+        RETiersPourAttestationsFiscales newTier = new RETiersPourAttestationsFiscales();
+        newTier.setAdresseCourrierFormatee(tier.getAdresseCourrierFormatee());
+        newTier.setCodeIsoLangue(tier.getCodeIsoLangue());
+        newTier.setCsLangue(tier.getCsLangue());
+        newTier.setCsSexe(tier.getCsSexe());
+        newTier.setDateDeces(tier.getDateDeces());
+        newTier.setDateNaissance(tier.getDateNaissance());
+        newTier.setIdTiers(tier.getIdTiers());
+        newTier.setNom(tier.getNom());
+        newTier.setNumeroAvs(tier.getNumeroAvs());
+        newTier.setPrenom(tier.getPrenom());
+        newTier.setTitreTiers(tier.getTitreTiers());
+        newTier.setHasPcEnDecembre(tier.hasPcEnDecembre());
+        newTier.getMapRentes().put(rente.getIdRenteAccordee(), rente);
+        return newTier;
+    }
+
+    /**
+     * Trie les adresses de paiement. Ne retourne qu'une seul adresse (la plus récente) pour le requérant
+     * @param listRentes
+     * @return
+     */
     private List<RERentePourAttestationsFiscales> sortRentesForIdAdressePaiement(Collection<RERentePourAttestationsFiscales> listRentes) {
         List<RERentePourAttestationsFiscales> rentes = new ArrayList<>(listRentes);
         Collections.sort(rentes, new Comparator<RERentePourAttestationsFiscales>() {
@@ -911,24 +995,28 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
                         && !JadeStringUtil.isBlankOrZero(rente2.getIdTiersAdressePaiement())) {
                     return 1;
                 } else {
-                    CodePrestation code1 = CodePrestation.getCodePrestation(Integer.parseInt(rente1.getCodePrestation()));
-                    CodePrestation code2 = CodePrestation.getCodePrestation(Integer.parseInt(rente2.getCodePrestation()));
-                    if(code1.isSurvivant() && !code2.isSurvivant()) {
+                    Date date1 = JadeDateUtil.getGlobazDate("01." + rente1.getDateDebutDroit());
+                    Date date2 = JadeDateUtil.getGlobazDate("01." + rente2.getDateDebutDroit());
+                    if (date2.before(date1)) {
                         return -1;
-                    } else if(!code1.isSurvivant() && code2.isSurvivant()) {
-                        return 1;
                     } else {
-                        Date date1 = JadeDateUtil.getGlobazDate("01." + rente1.getDateDebutDroit());
-                        Date date2 = JadeDateUtil.getGlobazDate("01." + rente2.getDateDebutDroit());
-                        if (date2.before(date1)) {
-                            return -1;
-                        } else {
-                            return 1;
-                        }
+                        return 1;
                     }
+
                 }
             }
         });
+        boolean hasUniqueAdress = false;
+        for(RERentePourAttestationsFiscales rente : rentes) {
+            CodePrestation code = CodePrestation.getCodePrestation(Integer.parseInt(rente.getCodePrestation()));
+            if(code.isSurvivant() && code.isRentePrincipale()) {
+                hasUniqueAdress = true;
+            }
+        }
+        if(hasUniqueAdress) {
+            // ne prendre que la plus récente
+            return rentes.subList(0, 1);
+        }
         return rentes;
     }
 
