@@ -219,6 +219,30 @@ public class AnnonceRafamCreationServiceImpl extends ALAbstractBusinessServiceIm
                 ALServiceLocator.getDossierComplexModelService().read(droit.getDroitModel().getIdDossier()), droit);
     }
 
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * ch.globaz.al.business.services.rafam.AnnonceRafamCreationService#creerAnnonces(ch.globaz.al.business.constantes
+     * .enumerations.RafamEvDeclencheur, ch.globaz.al.business.models.droit.DroitComplexModel)
+     */
+    @Override
+    public void creerAnnoncesNaissanceOnly(RafamEvDeclencheur evDecl, DroitComplexModel droit) throws JadeApplicationException,
+            JadePersistenceException {
+
+        if (evDecl == null) {
+            throw new ALAnnonceRafamException("AnnonceRafamBusinessServiceImpl#creerAnnonces : evDecl is null");
+        }
+
+        if ((droit == null) || droit.isNew()) {
+            throw new ALAnnonceRafamException("AnnonceRafamBusinessServiceImpl#creerAnnonces : droit is null or new");
+        }
+
+        this.creerAnnonces(evDecl, RafamEtatAnnonce.A_TRANSMETTRE, ALServiceLocator.getDossierComplexModelService().read(droit.getDroitModel().getIdDossier()), droit, false, true);
+
+    }
+
     /*
      * (non-Javadoc)
      * 
@@ -230,17 +254,17 @@ public class AnnonceRafamCreationServiceImpl extends ALAbstractBusinessServiceIm
     @Override
     public void creerAnnonces(RafamEvDeclencheur evDecl, RafamEtatAnnonce etat, DossierComplexModel dossier,
                               DroitComplexModel droit) throws JadeApplicationException, JadePersistenceException {
-        creerAnnonces(evDecl, etat, dossier, droit, true);
+        creerAnnonces(evDecl, etat, dossier, droit, true, false);
     }
 
     @Override
     public void creerAnnoncesWithoutDelete(RafamEvDeclencheur evDecl, RafamEtatAnnonce etat, DossierComplexModel dossier,
                                            DroitComplexModel droit) throws JadeApplicationException, JadePersistenceException {
-        creerAnnonces(evDecl, etat, dossier, droit, false);
+        creerAnnonces(evDecl, etat, dossier, droit, false, false);
     }
 
     private void creerAnnonces(RafamEvDeclencheur evDecl, RafamEtatAnnonce etat, DossierComplexModel dossier,
-            DroitComplexModel droit, boolean deletePrevious) throws JadeApplicationException, JadePersistenceException {
+            DroitComplexModel droit, boolean deletePrevious, boolean primeNaisanceOnly) throws JadeApplicationException, JadePersistenceException {
 
         if (evDecl == null) {
             throw new ALAnnonceRafamException("AnnonceRafamBusinessServiceImpl#creerAnnonces : evDecl is null");
@@ -269,6 +293,12 @@ public class AnnonceRafamCreationServiceImpl extends ALAbstractBusinessServiceIm
 
 
             for (RafamFamilyAllowanceType type : types) {
+                if(primeNaisanceOnly && !((RafamFamilyAllowanceType.ADOPTION.equals(type)
+                        || RafamFamilyAllowanceType.NAISSANCE.equals(type)
+                        || RafamFamilyAllowanceType.DIFFERENCE_ADOPTION.equals(type)
+                        || RafamFamilyAllowanceType.DIFFERENCE_NAISSANCE.equals(type))) ) {
+                    continue;
+                }
                 if (JadeThread.logMessagesFromLevel(JadeBusinessMessageLevels.ERROR) == null) {
                     ContextAnnonceRafam context = ContextAnnonceRafam.getContext(evDecl, etat, dossier, droit, type);
                     AnnonceHandlerAbstract handler = (AnnonceHandlerFactory.getHandler(context));

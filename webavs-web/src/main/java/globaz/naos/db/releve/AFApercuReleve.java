@@ -2402,7 +2402,7 @@ public class AFApercuReleve extends BEntity {
         this.anneeReference = anneeReference;
     }
 
-    public void setApercuReleveLineFacturationList(List<?> apercuReleveLineFacturationList) {
+    public void setApercuReleveLineFacturationList(List<AFApercuReleveLineFacturation> apercuReleveLineFacturationList) {
         this.apercuReleveLineFacturationList = apercuReleveLineFacturationList;
     }
 

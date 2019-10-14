@@ -954,6 +954,10 @@ public class DroitBusinessServiceImpl implements DroitBusinessService {
             } else { //RafamTypeAction.CREATION + RafamTypeAction.MODIFICATION
                 ALServiceLocator.getAnnonceRafamCreationService().creerAnnonces(RafamEvDeclencheur.ANNULATION, droit);
             }
+            // Test si annonce naissance
+            if(hasAllocationNaissance(droit)) {
+                ALServiceLocator.getAnnonceRafamCreationService().creerAnnoncesNaissanceOnly(RafamEvDeclencheur.CREATION, droit);
+            }
         } else {
             if (RafamTypeAction.ANNULATION.equals(lastAnnonce.getTypeAnnonce())) {
                 if(hasAnnoncesATranmettre) {
@@ -966,6 +970,13 @@ public class DroitBusinessServiceImpl implements DroitBusinessService {
         }
 
     }
+
+    private boolean hasAllocationNaissance(DroitComplexModel droit) {
+        EnfantModel entant = droit.getEnfantComplexModel().getEnfantModel();
+        Montant montNaissance = new Montant(entant.getMontantAllocationNaissanceFixe());
+        return !montNaissance.isZero() && !entant.getAllocationNaissanceVersee();
+    }
+
 
 
 }
