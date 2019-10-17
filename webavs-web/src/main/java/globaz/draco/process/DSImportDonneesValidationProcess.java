@@ -7,6 +7,7 @@ import globaz.globall.db.BProcess;
 import globaz.globall.db.GlobazJobQueue;
 import globaz.globall.db.GlobazServer;
 import globaz.globall.util.JANumberFormatter;
+import globaz.jade.client.util.JadeStringUtil;
 import globaz.jade.properties.JadePropertiesService;
 import globaz.naos.db.affiliation.AFAffiliation;
 import globaz.naos.db.assurance.AFAssurance;
@@ -80,7 +81,7 @@ public class DSImportDonneesValidationProcess extends BProcess {
                     ligneDec.setIdDeclaration(declaration.getIdDeclaration());
                     // S'il s'agit de l'assurance chômage on prend masseACTotal
                     ligneDec.setAssuranceId(cotisation.getAssuranceId());
-                    if(cotisation.getAssurance().getTypeAssurance().equals(CodeSystem.TYPE_ASS_LAA)){
+                    if(cotisation.getAssurance().getTypeAssurance().equals(CodeSystem.TYPE_ASS_LAA) && !JadePropertiesService.getInstance().getProperty("draco.CotisationLAACatAgrivit").equals("0")){
                         ligneDec.setMontantDeclaration(getMasseLAA(String.valueOf(j)));
                     }else{
                         ligneDec.setMontantDeclaration(getMasseMoinsLesExclus(cotisation.getAssurance(), String.valueOf(j)));
