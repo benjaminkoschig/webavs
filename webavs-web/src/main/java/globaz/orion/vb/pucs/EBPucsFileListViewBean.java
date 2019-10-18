@@ -67,7 +67,7 @@ public class EBPucsFileListViewBean extends EBAbstractListViewBeanPagination {
 
             // La date de début ne peut pas être aprés la date de fin
             if (dateDebut.isAfter(dateFin)) {
-                throw new Exception("La date de fin ne peut pas être antérieur à la date de début");
+                throw new Exception("La date de fin ne peut pas être antérieure à la date de début");
             }
 
 
