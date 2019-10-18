@@ -1,7 +1,6 @@
 package ch.globaz.al.businessimpl.services.models.droit;
 
-import ch.globaz.al.business.constantes.ALCSDossier;
-import ch.globaz.al.business.constantes.ALConstCalcul;
+import ch.globaz.al.business.constantes.*;
 import ch.globaz.al.business.constantes.enumerations.RafamTypeAction;
 import ch.globaz.al.business.models.droit.*;
 import ch.globaz.al.business.models.rafam.AnnonceRafamComplexModel;
@@ -20,8 +19,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import ch.globaz.al.business.constantes.ALCSDroit;
-import ch.globaz.al.business.constantes.ALConstCaisse;
+
 import ch.globaz.al.business.constantes.enumerations.RafamEtatAnnonce;
 import ch.globaz.al.business.constantes.enumerations.RafamEvDeclencheur;
 import ch.globaz.al.business.constantes.enumerations.RafamFamilyAllowanceType;
@@ -912,7 +910,8 @@ public class DroitBusinessServiceImpl implements DroitBusinessService {
         try {
             ArrayList<CalculBusinessModel> droitsListTemp = ALServiceLocator.getCalculBusinessService().getCalcul(dossierComplexModel, dateCalcul);
             for(CalculBusinessModel calcul : droitsListTemp) {
-                if(calcul.getDroit().getId().equals(droit.getId())) {
+                if(calcul.getDroit().getId().equals(droit.getId())
+                    && !ALCSTarif.CATEGORIE_SUP_HORLO.equals(calcul.getTarif())) {
                     droitsList.add(calcul);
                 }
             }
