@@ -924,8 +924,8 @@ public class REGenererAttestationsFiscalesProcess extends BProcess {
      */
     private boolean isOrphelin(String idAdressePaiementRentePrincipal, RERentePourAttestationsFiscales rente, CodePrestation codePrestation) {
         return codePrestation.isSurvivant()
-                && idAdressePaiementRentePrincipal != null
-                && !idAdressePaiementRentePrincipal.equals(rente.getIdTiersAdressePaiement())
+               && (idAdressePaiementRentePrincipal == null
+                || !idAdressePaiementRentePrincipal.equals(rente.getIdTiersAdressePaiement()))
                 && !JadeStringUtil.isBlankOrZero(rente.getIdTiersAdressePaiement());
     }
 
