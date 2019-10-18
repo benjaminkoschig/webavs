@@ -343,7 +343,7 @@ public class ExternalServicePeriodeEtudeViewBean extends BAbstractEntityExternal
 
                                     pViewBean.setMsgType(FWViewBeanInterface.WARNING);
                                     pViewBean
-                                            .setDateFin(PRDateFormater.convertDate_AAAAMMJJ_to_MMxAAAA(dEch.toStrAMJ()));
+                                            .setDateFin(PRDateFormater.convertDate_AAAAMMJJ_to_JJxMMxAAAA(dEch.toStrAMJ()));
                                 }
                             }
 
