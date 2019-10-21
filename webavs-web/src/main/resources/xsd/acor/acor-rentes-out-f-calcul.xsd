@@ -1706,15 +1706,17 @@
 											<xs:attribute name="type">
 												<xs:annotation>
 													<xs:documentation>do=domicile en Suisse
-                                                        na=nationalité suisse
-                                                        af=assurance facultative
-                                                        li=assuré au Liechtenstein
-                                                        ex=exemption de cotisation et= étude
-                                                        in=incarcération
-                                                        rsm=recueilli par la belle-mère
-                                                        rsp=recueilli par le beau père
-                                                        rc=recueilli
-                                                    </xs:documentation>
+														na=nationalité suisse
+														af=assurance facultative
+														li=assuré au Liechtenstein
+														ex=exemption de cotisation et= étude
+														in=incarcération
+														rsm=recueilli par la belle-mère
+														rsp=recueilli par le beau père
+														rspm=recueilli par la partenaire de la mère
+														rspp=recueilli par la partenaire du père
+														rc=recueilli
+													</xs:documentation>
 												</xs:annotation>
 												<xs:simpleType>
 													<xs:restriction base="xs:string">
@@ -1733,6 +1735,8 @@
 														<xs:enumeration value="rc"/>
 														<xs:enumeration value="rsp"/>
 														<xs:enumeration value="rsm"/>
+														<xs:enumeration value="rspm"/>
+														<xs:enumeration value="rspp"/>
 													</xs:restriction>
 												</xs:simpleType>
 											</xs:attribute>
@@ -5073,7 +5077,7 @@ s=survivant</xs:documentation>
 									<xs:documentation>Contenu de l'arc95</xs:documentation>
 								</xs:annotation>
 							</xs:element>
-							<xs:element name="interets_moratoires" type="im:AcorIm" minOccurs="0" maxOccurs="unbounded">
+							<xs:element name="interets_moratoires" type="im:AcorIM" minOccurs="0" maxOccurs="unbounded">
 								<xs:annotation>
 									<xs:documentation>Contenu des IM à calculer éventuellement5</xs:documentation>
 								</xs:annotation>

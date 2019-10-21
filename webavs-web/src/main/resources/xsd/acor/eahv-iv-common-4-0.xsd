@@ -6,7 +6,7 @@
 	xmlns:eCH-0044="http://www.ech.ch/xmlns/eCH-0044-f/4" 
 	xmlns:eCH-0046="http://www.ech.ch/xmlns/eCH-0046-f/3" 
 	xmlns:eCH-0058="http://www.ech.ch/xmlns/eCH-0058/4" 
-	xmlns:eCH-0097="http://www.ech.ch/xmlns/eCH-0097/1"
+	xmlns:eCH-0097="http://www.ech.ch/xmlns/eCH-0097/1" 
 	xmlns:eahv-iv-common="http://www.eahv-iv.ch/xmlns/eahv-iv-common/4">
 	<xs:annotation>
 		<xs:documentation xml:lang="de">

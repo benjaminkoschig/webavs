@@ -115,6 +115,7 @@
 			<xs:element name="date_decompte" type="xs:date"/>
 			<xs:element name="date_paiement" type="xs:date" minOccurs="0"/>
 			<xs:element name="deduction_tiers" type="xs:float" minOccurs="0"/>
+			<xs:element name="remarque" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
 		</xs:sequence>
 	</xs:complexType>
 	<xs:complexType name="Prestation">
@@ -200,6 +201,7 @@
                                     </xs:documentation>
 				</xs:annotation>
 			</xs:element>
+			<xs:element name="id_dossier" type="im:ref_idType"/>
 			<xs:element name="depot_demande" type="xs:date"/>
 			<xs:element name="date_reception" type="xs:date" minOccurs="0"/>
 			<xs:element name="debut_droit" type="xs:date"/>
@@ -214,8 +216,8 @@
 						<xs:element name="montant_mensuel" type="xs:float"/>
 						<xs:element name="cumul_prestations" type="xs:float"/>
 						<xs:element name="taux_interets" type="xs:float"/>
-						<xs:element name="interets" type="xs:float"/>
-						<xs:element name="cumul_interets" type="xs:float"/>
+						<xs:element name="interets" type="xs:double"/>
+						<xs:element name="cumul_interets" type="xs:double"/>
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
@@ -231,7 +233,7 @@
 			<xs:element name="remarque" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
 		</xs:sequence>
 	</xs:complexType>
-	<xs:complexType name="AcorIm">
+	<xs:complexType name="AcorIM">
 		<xs:sequence>
 			<xs:element name="id_session" type="xs:string" minOccurs="0"/>
 			<xs:element name="version_expert" type="xs:string" minOccurs="0"/>
@@ -253,8 +255,8 @@
 			</xs:element>
 			<xs:element name="decision" type="im:Decision" maxOccurs="unbounded"/>
 			<xs:element name="interets_moratoires" type="im:InteretsMoratoires" minOccurs="0" maxOccurs="unbounded"/>
-			<xs:element name="remarque" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="remarque" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
 		</xs:sequence>
 	</xs:complexType>
-	<xs:element name="acor_im" type="im:AcorIm"/>
+	<xs:element name="acor_im" type="im:AcorIM"/>
 </xs:schema>
