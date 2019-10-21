@@ -21,6 +21,12 @@ insert into SCHEMA.FWCOUP(pcosid,plaide,pcouid,pcolut, pspy)values (623003,'D','
 insert into SCHEMA.FWCOUP(pcosid,plaide,pcouid,pcolut, pspy)values (623003,'F','NP','Non portail',(replace(char(current date), '-', '') concat replace(char(current time), '.', '') concat user));
 insert into SCHEMA.FWCOUP(pcosid,plaide,pcouid,pcolut, pspy)values (623003,'I','NP','Non portail',(replace(char(current date), '-', '') concat replace(char(current time), '.', '') concat user));
 
-
 INSERT INTO SCHEMA.CPCANTOP (SPINDE,SPTPAR,SPCCAN,SPCPAR,SPDDEB,PSPY,SPTGAF) VALUES ((SELECT COALESCE(MAX(SPINDE)+1,0) FROM SCHEMA.CPCANTOP),650001,505021,640001,0,'20180901120000globazf   ',602001);
 UPDATE SCHEMA.FWINCP SET PINCVA = (SELECT COALESCE(MAX(SPINDE),0) FROM SCHEMA.CPCANTOP) WHERE PINCID = 'CPCANTOP';
+
+-- PCA-584 - WEBAVS
+delete from SCHEMA.FWCOSP where pcosid in(818030);
+delete from SCHEMA.FWCOUP where pcosid in(818030);
+insert into SCHEMA.FWCOSP(pcosid,pptygr,pconcs,pptycn,pptycl,pptysa,pcosli,pcosdf,pcosdm,pcosdp,pcoian,pcoide,pcodfi,pcoitc,pcoise, pspy)values (818030,'VEPARTICUL',1,1,0,0,'CLOTURE_RECAP_MANUELLE',2,1,2,2,2,2,10800018,0, 'spy');
+insert into SCHEMA.FWCOUP(pcosid,plaide,pcouid,pcolut, pspy)values (818030,'F','CLOTRECAP','Clôture récap manuelle','spy');
+insert into SCHEMA.FWCOUP(pcosid,plaide,pcouid,pcolut, pspy)values (818030,'D','CLOTRECAP','[DE]Clôture récap manuelle','spy');
