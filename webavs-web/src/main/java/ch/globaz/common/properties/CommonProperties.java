@@ -45,7 +45,8 @@ public enum CommonProperties implements IProperties {
     UPI_KEYSTORE_PATH("upi.keystore.path", "Chemin absolu du keystore"),
     UPI_KEYSTORE_TYPE("upi.keystore.type", "Type du keystore"),
     UPI_KEYSTORE_PASSWORD("upi.keystore.password", "Password du keystore"),
-    UPI_SSL_CONTEXT_TYPE("upi.ssl.context.type", "type du context ssl");
+    UPI_SSL_CONTEXT_TYPE("upi.ssl.context.type", "type du context ssl"),
+    UPI_WSDL_RESOURCE_PATH("upi.wsdl.path", "Chemin de la wsdl");
 
     private String description;
     private String propertyName;

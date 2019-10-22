@@ -75,5 +75,6 @@ public class UPIServiceImpl implements UPIService {
         UPIProperties.UPI_KEYSTORE_TYPE.setValue(CommonProperties.UPI_KEYSTORE_TYPE.getValue());
         UPIProperties.UPI_KEYSTORE_PASSWORD.setValue(CommonProperties.UPI_KEYSTORE_PASSWORD.getValue());
         UPIProperties.UPI_SSL_CONTEXT_TYPE.setValue(CommonProperties.UPI_SSL_CONTEXT_TYPE.getValue());
+        UPIProperties.UPI_WSDL_RESOURCE_PATH.setValue(CommonProperties.UPI_WSDL_RESOURCE_PATH.getValue());
     }
 }
