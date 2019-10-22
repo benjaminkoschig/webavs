@@ -10,6 +10,9 @@ import ch.globaz.al.businessimpl.rafam.ContextAnnonceRafam;
 import ch.globaz.al.businessimpl.services.ALImplServiceLocator;
 import ch.globaz.al.utils.ALDateUtils;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
 /**
  * Gère les annonces de type enfant (code 10)
  * 
@@ -31,7 +34,7 @@ public class AnnonceEnfantHandler extends AnnonceHandlerAbstract {
     @Override
     protected void doCreation() throws JadeApplicationException, JadePersistenceException {
 
-        if (isCurrentAllowanceTypeActive()) {
+        if (isCurrentAllowanceTypeActive() && !AnnoncesChangeChecker.isDateFinDroitExpire(context.getDroit().getDroitModel().getFinDroitForcee())) {
 
             AnnonceRafamModel annonce = ALImplServiceLocator.getInitAnnoncesRafamService().initAnnonce68a(
                     context.getDossier(), context.getDroit(), getType(), context.getEtat());

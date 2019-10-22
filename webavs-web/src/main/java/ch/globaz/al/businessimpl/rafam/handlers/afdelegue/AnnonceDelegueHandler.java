@@ -15,6 +15,7 @@ import ch.globaz.al.business.services.ALServiceLocator;
 import ch.globaz.al.business.services.rafam.InitAnnoncesRafamService;
 import ch.globaz.al.businessimpl.rafam.ContextAnnonceRafamDelegue;
 import ch.globaz.al.businessimpl.rafam.handlers.AnnonceHandlerAbstract;
+import ch.globaz.al.businessimpl.rafam.handlers.AnnoncesChangeChecker;
 import ch.globaz.al.businessimpl.services.ALImplServiceLocator;
 import ch.globaz.al.utils.ALDateUtils;
 import globaz.jade.client.util.JadeDateUtil;
@@ -118,7 +119,7 @@ public class AnnonceDelegueHandler extends AnnonceHandlerAbstract {
 
     @Override
     protected void doCreation() throws JadeApplicationException, JadePersistenceException {
-        if (isCurrentAllowanceTypeActive()) {
+        if (isCurrentAllowanceTypeActive() && !AnnoncesChangeChecker.isDateFinDroitExpire(context.getDroit().getDroitModel().getFinDroitForcee())) {
 
             AnnonceRafamModel annonce = ALImplServiceLocator.getInitAnnoncesRafamService()
                     .initAnnonceDelegue68a(context.getBeneficiary(), context.getChild(), context.getAllowance());
@@ -226,7 +227,7 @@ public class AnnonceDelegueHandler extends AnnonceHandlerAbstract {
         InitAnnoncesRafamService s = ALImplServiceLocator.getInitAnnoncesRafamService();
         AnnonceRafamModel last = getLastAnnonce();
 
-        if (last.isNew()) {
+        if (last.isNew() || AnnoncesChangeChecker.isDateFinDroitExpire(last.getEcheanceDroit())) {
             return false;
         } else {
             if (!RafamFamilyAllowanceType.getFamilyAllowanceType(last.getGenrePrestation())

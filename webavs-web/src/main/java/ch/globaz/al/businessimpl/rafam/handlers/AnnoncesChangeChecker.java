@@ -45,11 +45,9 @@ public class AnnoncesChangeChecker {
             DossierComplexModel dossier, DroitComplexModel droit)
             throws JadeApplicationException, JadePersistenceException {
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-        LocalDate dateFinDroit = LocalDate.parse(lastAnnonce.getEcheanceDroit(), formatter);
-        LocalDate dateExpiration = LocalDate.now().minusYears(5).minusMonths(3).plusDays(1);
 
-        if (dateFinDroit.isBefore(dateExpiration) || lastAnnonce.isNew()) {
+
+        if (isDateFinDroitExpire(lastAnnonce.getEcheanceDroit()) || lastAnnonce.isNew()) {
             return false;
         }
 
@@ -100,6 +98,13 @@ public class AnnoncesChangeChecker {
 
         return false;
 
+    }
+
+    public static boolean isDateFinDroitExpire(String echeanceDroit) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        LocalDate dateFinDroit = LocalDate.parse(echeanceDroit, formatter);
+        LocalDate dateExpiration = LocalDate.now().minusYears(5).minusMonths(3).plusDays(1);
+        return dateFinDroit.isBefore(dateExpiration);
     }
 
     private static boolean paysResidenceEnfantChanged(AnnonceRafamModel annonce, AnnonceRafamModel lastAnnonce) {

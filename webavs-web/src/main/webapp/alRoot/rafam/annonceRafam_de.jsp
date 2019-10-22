@@ -55,7 +55,6 @@
 <%@ include file="/theme/detail/javascripts.jspf" %>
 <%-- tpl:insert attribute="zoneScripts" --%>
 <%@page import="globaz.fweb.util.JavascriptEncoder"%>
-<%@page import="globaz.jade.client.util.JadeUtil"%>
 <%@page import="globaz.jade.client.util.JadeStringUtil"%>
 
 <%@page import="globaz.al.vb.rafam.ALAnnonceRafamViewBean"%>
@@ -65,12 +64,6 @@
 
 
 
-<%@page import="globaz.jade.client.util.JadeDateUtil"%>
-<%@page import="ch.globaz.al.business.models.dossier.DossierComplexModel"%>
-<%@page import="ch.globaz.al.business.constantes.ALCSDossier"%>
-<%@page import="ch.globaz.al.business.services.ALServiceLocator"%>
-<%@page import="ch.globaz.al.business.constantes.ALCSDroit"%>
-<%@page import="ch.globaz.naos.business.service.AffiliationService"%>
 <script type="text/javascript" src="<%=servletContext%>/scripts/nss.js"></script>
 <script type="text/javascript" src="<%=servletContext%>/alRoot/util_webaf.js"></script>
 <script type="text/javascript" src="<%=servletContext%>/alRoot/ajax_webaf.js"></script>

@@ -24,7 +24,7 @@ public class ALAnnonceRafamHelper extends ALAbstractHelper {
 
     private static final String suspendreAnnonce = "suspendreAnnonce";
     private static final String validerAnnonce = "validerAnnonce";
-    private static final String archiver = "archiver";
+    public static final String archiver = "archiver";
     private static final String desarchiver = "desarchiver";
 
     /*

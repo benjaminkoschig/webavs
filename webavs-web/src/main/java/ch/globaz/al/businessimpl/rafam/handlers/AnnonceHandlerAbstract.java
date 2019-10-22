@@ -94,7 +94,7 @@ public abstract class AnnonceHandlerAbstract {
      */
     protected void doCreation() throws JadeApplicationException, JadePersistenceException {
 
-        if (isCurrentAllowanceTypeActive()) {
+        if (isCurrentAllowanceTypeActive() && !AnnoncesChangeChecker.isDateFinDroitExpire(context.getDroit().getDroitModel().getFinDroitForcee())) {
 
             AnnonceRafamModel annonce = ALImplServiceLocator.getInitAnnoncesRafamService().initAnnonce68a(
                     context.getDossier(), context.getDroit(), getType(), context.getEtat());

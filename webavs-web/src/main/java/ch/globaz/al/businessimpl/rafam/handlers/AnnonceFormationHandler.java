@@ -32,7 +32,7 @@ public class AnnonceFormationHandler extends AnnonceHandlerAbstract {
     @Override
     protected void doCreation() throws JadeApplicationException, JadePersistenceException {
 
-        if (isCurrentAllowanceTypeActive()) {
+        if (isCurrentAllowanceTypeActive() && !AnnoncesChangeChecker.isDateFinDroitExpire(context.getDroit().getDroitModel().getFinDroitForcee())) {
 
             String dateFinFormationAnticipee = ALServiceLocator.getDatesEcheanceService()
                     .getDateFinValiditeDroitCalculeeFormAnticipe(context.getDroit());

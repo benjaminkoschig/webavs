@@ -32,7 +32,7 @@ public class AnnonceFormationAnticipeeHandler extends AnnonceHandlerAbstract {
     protected void doCreation() throws JadeApplicationException, JadeApplicationException, JadePersistenceException {
 
         if (ALServiceLocator.getDroitBusinessService().isFormationAnticipee(context.getDroit())
-                && isCurrentAllowanceTypeActive()) {
+                && isCurrentAllowanceTypeActive() && !AnnoncesChangeChecker.isDateFinDroitExpire(context.getDroit().getDroitModel().getFinDroitForcee())) {
 
             AnnonceRafamModel annonce = ALImplServiceLocator.getInitAnnoncesRafamService().initAnnonce68a(
                     context.getDossier(), context.getDroit(), getType(), context.getEtat());

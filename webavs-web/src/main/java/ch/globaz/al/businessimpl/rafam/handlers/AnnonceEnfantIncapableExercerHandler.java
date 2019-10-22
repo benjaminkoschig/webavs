@@ -32,7 +32,7 @@ public class AnnonceEnfantIncapableExercerHandler extends AnnonceHandlerAbstract
     protected void doCreation() throws JadeApplicationException, JadePersistenceException {
 
         // si incapable d'exercer et échéance du droit au-delà des 16 ans
-        if (isIncapableExercer() && isCurrentAllowanceTypeActive()) {
+        if (isIncapableExercer() && isCurrentAllowanceTypeActive() && !AnnoncesChangeChecker.isDateFinDroitExpire(context.getDroit().getDroitModel().getFinDroitForcee())) {
 
             AnnonceRafamModel annonce = ALImplServiceLocator.getInitAnnoncesRafamService().initAnnonce68a(
                     context.getDossier(), context.getDroit(), getType(), context.getEtat());
