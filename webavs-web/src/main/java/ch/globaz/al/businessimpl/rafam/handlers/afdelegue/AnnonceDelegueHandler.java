@@ -32,7 +32,6 @@ import globaz.jade.service.provider.application.util.JadeApplicationServiceNotAv
  * les méthodes communes auxdifférents cas possibles (Enfant, Formation, Naissance, ...)
  *
  * @author gmo
- *
  */
 public class AnnonceDelegueHandler extends AnnonceHandlerAbstract {
 
@@ -53,13 +52,13 @@ public class AnnonceDelegueHandler extends AnnonceHandlerAbstract {
         try {
             if (
 
-            RafamFamilyAllowanceType.getFamilyAllowanceType(last.getGenrePrestation())
-                    .equals(RafamFamilyAllowanceType.ADOPTION)
-                    || RafamFamilyAllowanceType.getFamilyAllowanceType(last.getGenrePrestation())
+                    RafamFamilyAllowanceType.getFamilyAllowanceType(last.getGenrePrestation())
+                            .equals(RafamFamilyAllowanceType.ADOPTION)
+                            || RafamFamilyAllowanceType.getFamilyAllowanceType(last.getGenrePrestation())
                             .equals(RafamFamilyAllowanceType.NAISSANCE)
-                    || RafamFamilyAllowanceType.getFamilyAllowanceType(last.getGenrePrestation())
+                            || RafamFamilyAllowanceType.getFamilyAllowanceType(last.getGenrePrestation())
                             .equals(RafamFamilyAllowanceType.DIFFERENCE_ADOPTION)
-                    || RafamFamilyAllowanceType.getFamilyAllowanceType(last.getGenrePrestation())
+                            || RafamFamilyAllowanceType.getFamilyAllowanceType(last.getGenrePrestation())
                             .equals(RafamFamilyAllowanceType.DIFFERENCE_NAISSANCE)) {
                 // pas de mutation pour les naissances...
                 return false;
@@ -82,37 +81,39 @@ public class AnnonceDelegueHandler extends AnnonceHandlerAbstract {
 
     @Override
     protected void doAnnulation() throws JadeApplicationException, JadePersistenceException {
-        if (!getLastAnnonce().isNew() && !RafamTypeAnnonce._68C_ANNULATION
-                .equals(RafamTypeAnnonce.getRafamTypeAnnonce(getLastAnnonce().getTypeAnnonce()))) {
-            AnnonceRafamModel annonce = ALServiceLocator.getAnnonceRafamModelService().create(
-                    ALImplServiceLocator.getInitAnnoncesRafamService().initAnnonceDelegue68c(context.getBeneficiary(),
-                            context.getChild(), context.getAllowance(), getLastAnnonce()));
-            // TODOv2: gérer l'insertion par le modèle complexe AnnonceRafamDelegueComplexModel
-            try {
-                manageComplementAnnonceDelegue(annonce);
-            } catch (Exception e) {
-                JadeLogger.warn(this,
-                        "Impossible de générer les compléments af-délégué pour l'annonce n°" + annonce.getIdAnnonce());
-            }
-
-        } else {
-
-            if (isFichierDelegueDelta()) {
-                if (!getLastAnnonce().isNew() && RafamTypeAnnonce._68C_ANNULATION
-                        .equals(RafamTypeAnnonce.getRafamTypeAnnonce(getLastAnnonce().getTypeAnnonce()))) {
-
-                    if (RafamReturnCode.ANNULEE
-                            .equals(RafamReturnCode.getRafamReturnCode(getLastAnnonce().getCodeRetour()))) {
-                        throw new ALRafamException(
-                                "AnnonceDelegueHandler#doAnnulation: l'annonce est déjà annulée, la demande d'annulation est ignorée");
-                    } else {
-                        throw new ALRafamException(
-                                "AnnonceDelegueHandler#doAnnulation: une annulation a déjà été demandée, celle-ci est ignorée");
-                    }
-
+        if (!AnnoncesChangeChecker.isDateFinDroitExpire(context.getDroit().getDroitModel().getFinDroitForcee())) {
+            if (!getLastAnnonce().isNew() && !RafamTypeAnnonce._68C_ANNULATION
+                    .equals(RafamTypeAnnonce.getRafamTypeAnnonce(getLastAnnonce().getTypeAnnonce()))) {
+                AnnonceRafamModel annonce = ALServiceLocator.getAnnonceRafamModelService().create(
+                        ALImplServiceLocator.getInitAnnoncesRafamService().initAnnonceDelegue68c(context.getBeneficiary(),
+                                context.getChild(), context.getAllowance(), getLastAnnonce()));
+                // TODOv2: gérer l'insertion par le modèle complexe AnnonceRafamDelegueComplexModel
+                try {
+                    manageComplementAnnonceDelegue(annonce);
+                } catch (Exception e) {
+                    JadeLogger.warn(this,
+                            "Impossible de générer les compléments af-délégué pour l'annonce n°" + annonce.getIdAnnonce());
                 }
-                throw new ALRafamException(
-                        "AnnonceDelegueHandler#doAnnulation: l'annonce n'a jamais été enregistrée, la demande d'annulation est ignorée");
+
+            } else {
+
+                if (isFichierDelegueDelta()) {
+                    if (!getLastAnnonce().isNew() && RafamTypeAnnonce._68C_ANNULATION
+                            .equals(RafamTypeAnnonce.getRafamTypeAnnonce(getLastAnnonce().getTypeAnnonce()))) {
+
+                        if (RafamReturnCode.ANNULEE
+                                .equals(RafamReturnCode.getRafamReturnCode(getLastAnnonce().getCodeRetour()))) {
+                            throw new ALRafamException(
+                                    "AnnonceDelegueHandler#doAnnulation: l'annonce est déjà annulée, la demande d'annulation est ignorée");
+                        } else {
+                            throw new ALRafamException(
+                                    "AnnonceDelegueHandler#doAnnulation: une annulation a déjà été demandée, celle-ci est ignorée");
+                        }
+
+                    }
+                    throw new ALRafamException(
+                            "AnnonceDelegueHandler#doAnnulation: l'annonce n'a jamais été enregistrée, la demande d'annulation est ignorée");
+                }
             }
         }
     }
@@ -127,13 +128,13 @@ public class AnnonceDelegueHandler extends AnnonceHandlerAbstract {
             if (!JadeNumericUtil.isEmptyOrZero(annonce.getEcheanceDroit())
                     && !JadeDateUtil.isDateBefore(ALConstRafam.DATE_FIN_MINIMUM, annonce.getEcheanceDroit())
                     && !(RafamFamilyAllowanceType.getFamilyAllowanceType(annonce.getGenrePrestation())
-                            .equals(RafamFamilyAllowanceType.ADOPTION)
-                            || RafamFamilyAllowanceType.getFamilyAllowanceType(annonce.getGenrePrestation())
-                                    .equals(RafamFamilyAllowanceType.NAISSANCE)
-                            || RafamFamilyAllowanceType.getFamilyAllowanceType(annonce.getGenrePrestation())
-                                    .equals(RafamFamilyAllowanceType.DIFFERENCE_ADOPTION)
-                            || RafamFamilyAllowanceType.getFamilyAllowanceType(annonce.getGenrePrestation())
-                                    .equals(RafamFamilyAllowanceType.DIFFERENCE_NAISSANCE))
+                    .equals(RafamFamilyAllowanceType.ADOPTION)
+                    || RafamFamilyAllowanceType.getFamilyAllowanceType(annonce.getGenrePrestation())
+                    .equals(RafamFamilyAllowanceType.NAISSANCE)
+                    || RafamFamilyAllowanceType.getFamilyAllowanceType(annonce.getGenrePrestation())
+                    .equals(RafamFamilyAllowanceType.DIFFERENCE_ADOPTION)
+                    || RafamFamilyAllowanceType.getFamilyAllowanceType(annonce.getGenrePrestation())
+                    .equals(RafamFamilyAllowanceType.DIFFERENCE_NAISSANCE))
 
             ) {
                 throw new ALRafamException(
@@ -262,15 +263,15 @@ public class AnnonceDelegueHandler extends AnnonceHandlerAbstract {
 
     private static boolean paysResidenceEnfantChanged(AnnonceRafamModel annonce, AnnonceRafamModel lastAnnonce) {
         // Si les deux codes pays existent
-        if(!JadeStringUtil.isBlankOrZero(annonce.getCodeCentralePaysEnfant()) 
+        if (!JadeStringUtil.isBlankOrZero(annonce.getCodeCentralePaysEnfant())
                 && !JadeStringUtil.isBlankOrZero(lastAnnonce.getCodeCentralePaysEnfant())) {
             // On retourne s'ils sont identiques
             return !lastAnnonce.getCodeCentralePaysEnfant().equals(annonce.getCodeCentralePaysEnfant());
-        // Si le dernier est vide et que le nouveau est rempli
-        }else if(JadeStringUtil.isBlankOrZero(lastAnnonce.getCodeCentralePaysEnfant()) 
-                && !JadeStringUtil.isBlankOrZero(annonce.getCodeCentralePaysEnfant())){
+            // Si le dernier est vide et que le nouveau est rempli
+        } else if (JadeStringUtil.isBlankOrZero(lastAnnonce.getCodeCentralePaysEnfant())
+                && !JadeStringUtil.isBlankOrZero(annonce.getCodeCentralePaysEnfant())) {
             return true;
-        }else {
+        } else {
             return false;
         }
     }

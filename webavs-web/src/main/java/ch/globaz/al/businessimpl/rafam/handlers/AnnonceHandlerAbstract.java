@@ -17,46 +17,50 @@ import ch.globaz.al.businessimpl.services.ALImplServiceLocator;
 /**
  * Classe de base pour la gestion de l'enregistrement des annonces RAFam. Elle contient les m�thodes communes aux
  * diff�rents cas possibles (Enfant, Formation, Naissance, ...)
- * 
+ *
  * @author jts
- * 
  */
 public abstract class AnnonceHandlerAbstract {
 
-    /** Context contenant toutes les informations n�cessaire � la cr�ation d'annonces */
+    /**
+     * Context contenant toutes les informations n�cessaire � la cr�ation d'annonces
+     */
     protected ContextAnnonceRafam context = null;
 
-    /** derni�re annonce correspondant aux informations contenues dans le context */
+    /**
+     * derni�re annonce correspondant aux informations contenues dans le context
+     */
     protected AnnonceRafamModel lastAnnonce = null;
 
     protected void doRadiation(AnnonceRafamModel annonce) throws JadeApplicationException, JadePersistenceException {
+        if (!AnnoncesChangeChecker.isDateFinDroitExpire(context.getDroit().getDroitModel().getFinDroitForcee())) {
+            // si la date de d�but du droit est au-del� de la date de radiation
+            if (JadeDateUtil.isDateBefore(context.getDossier().getDossierModel().getFinValidite(), annonce.getDebutDroit())) {
 
-        // si la date de d�but du droit est au-del� de la date de radiation
-        if (JadeDateUtil.isDateBefore(context.getDossier().getDossierModel().getFinValidite(), annonce.getDebutDroit())) {
+                // si on est dans le cas d'une modification
+                if (RafamTypeAnnonce._68B_MUTATION.equals(RafamTypeAnnonce.getRafamTypeAnnonce(annonce.getTypeAnnonce()))) {
+                    doAnnulation();
+                }
 
-            // si on est dans le cas d'une modification
-            if (RafamTypeAnnonce._68B_MUTATION.equals(RafamTypeAnnonce.getRafamTypeAnnonce(annonce.getTypeAnnonce()))) {
-                doAnnulation();
-            }
+            } else {
 
-        } else {
+                boolean finValiditeDossierAvantFinDroit = JadeDateUtil.isDateBefore(context.getDossier().getDossierModel()
+                        .getFinValidite(), annonce.getEcheanceDroit());
+                String nouvelleEcheance = finValiditeDossierAvantFinDroit ? context.getDossier().getDossierModel()
+                        .getFinValidite() : annonce.getEcheanceDroit();
 
-            boolean finValiditeDossierAvantFinDroit = JadeDateUtil.isDateBefore(context.getDossier().getDossierModel()
-                    .getFinValidite(), annonce.getEcheanceDroit());
-            String nouvelleEcheance = finValiditeDossierAvantFinDroit ? context.getDossier().getDossierModel()
-                    .getFinValidite() : annonce.getEcheanceDroit();
+                annonce.setEcheanceDroit(nouvelleEcheance);
 
-            annonce.setEcheanceDroit(nouvelleEcheance);
-
-            // dans le cas d'une modification on v�rifie qu'il y ait eu un changement dans le droit
-            if (RafamTypeAnnonce._68B_MUTATION.equals(RafamTypeAnnonce.getRafamTypeAnnonce(annonce.getTypeAnnonce()))) {
-                if (AnnoncesChangeChecker.hasChanged(annonce, getLastAnnonce(), context.getDossier(),
-                        context.getDroit())) {
+                // dans le cas d'une modification on v�rifie qu'il y ait eu un changement dans le droit
+                if (RafamTypeAnnonce._68B_MUTATION.equals(RafamTypeAnnonce.getRafamTypeAnnonce(annonce.getTypeAnnonce()))) {
+                    if (AnnoncesChangeChecker.hasChanged(annonce, getLastAnnonce(), context.getDossier(),
+                            context.getDroit())) {
+                        enregistrerAnnonce(annonce);
+                    }
+                } else if (!JadeDateUtil.isDateBefore(annonce.getDebutDroit(), ALConstRafam.DATE_DEBUT_MINIMUM)
+                        && JadeDateUtil.isDateBefore(ALConstRafam.DATE_FIN_MINIMUM, annonce.getEcheanceDroit())) {
                     enregistrerAnnonce(annonce);
                 }
-            } else if (!JadeDateUtil.isDateBefore(annonce.getDebutDroit(), ALConstRafam.DATE_DEBUT_MINIMUM)
-                    && JadeDateUtil.isDateBefore(ALConstRafam.DATE_FIN_MINIMUM, annonce.getEcheanceDroit())) {
-                enregistrerAnnonce(annonce);
             }
         }
     }
@@ -64,17 +68,15 @@ public abstract class AnnonceHandlerAbstract {
     /**
      * Cr�e et enregistre une annonce d'annulation (68c) en se basant sur la derni�re annonce correspondant aux
      * informations du context. Si aucune annonce n'existe, rien n'est fait.
-     * 
-     * @throws JadeApplicationException
-     *             Exception lev�e par la couche m�tier lorsqu'elle n'a pu effectuer l'op�ration souhait�e
-     * @throws JadePersistenceException
-     *             Exception lev�e lorsque le chargement ou la mise � jour en DB par la couche de persistence n'a pu se
-     *             faire
+     *
+     * @throws JadeApplicationException Exception lev�e par la couche m�tier lorsqu'elle n'a pu effectuer l'op�ration souhait�e
+     * @throws JadePersistenceException Exception lev�e lorsque le chargement ou la mise � jour en DB par la couche de persistence n'a pu se
+     *                                  faire
      */
     protected void doAnnulation() throws JadeApplicationException, JadePersistenceException {
         if (!getLastAnnonce().isNew()
                 && !RafamTypeAnnonce._68C_ANNULATION.equals(RafamTypeAnnonce.getRafamTypeAnnonce(getLastAnnonce()
-                        .getTypeAnnonce()))) {
+                .getTypeAnnonce())) && !AnnoncesChangeChecker.isDateFinDroitExpire(context.getDroit().getDroitModel().getFinDroitForcee())) {
             ALServiceLocator.getAnnonceRafamModelService().create(
                     ALImplServiceLocator.getInitAnnoncesRafamService().initAnnonce68c(getLastAnnonce(),
                             context.getEtat()));
@@ -83,13 +85,10 @@ public abstract class AnnonceHandlerAbstract {
 
     /**
      * Cr�e une annonce de cr�ation (68a). Si aucun cas de radiation n'a �t� trait� elle est enregistr�e
-     * 
-     * @throws JadeApplicationException
-     *             Exception lev�e par la couche m�tier lorsqu'elle n'a pu effectuer l'op�ration souhait�e
-     * @throws JadePersistenceException
-     *             Exception lev�e lorsque le chargement ou la mise � jour en DB par la couche de persistence n'a pu se
-     *             faire
-     * 
+     *
+     * @throws JadeApplicationException Exception lev�e par la couche m�tier lorsqu'elle n'a pu effectuer l'op�ration souhait�e
+     * @throws JadePersistenceException Exception lev�e lorsque le chargement ou la mise � jour en DB par la couche de persistence n'a pu se
+     *                                  faire
      * @see AnnonceHandlerAbstract#isRadiation(AnnonceRafamModel)
      */
     protected void doCreation() throws JadeApplicationException, JadePersistenceException {
@@ -110,13 +109,10 @@ public abstract class AnnonceHandlerAbstract {
     /**
      * Cr�e une annonce de modification (68b). Si aucun cas de radiation n'a �t� trait� et qu'il y a eu des
      * modifications dans le droit ou le dossier depuis l'envoi de la derni�re annonce elle est enregistr�e
-     * 
-     * @throws JadeApplicationException
-     *             Exception lev�e par la couche m�tier lorsqu'elle n'a pu effectuer l'op�ration souhait�e
-     * @throws JadePersistenceException
-     *             Exception lev�e lorsque le chargement ou la mise � jour en DB par la couche de persistence n'a pu se
-     *             faire
-     * 
+     *
+     * @throws JadeApplicationException Exception lev�e par la couche m�tier lorsqu'elle n'a pu effectuer l'op�ration souhait�e
+     * @throws JadePersistenceException Exception lev�e lorsque le chargement ou la mise � jour en DB par la couche de persistence n'a pu se
+     *                                  faire
      * @see AnnonceHandlerAbstract#isRadiation(AnnonceRafamModel)
      */
     protected void doModification() throws JadeApplicationException, JadePersistenceException {
@@ -156,15 +152,11 @@ public abstract class AnnonceHandlerAbstract {
 
     /**
      * Enregistre l'annonce en persistance. L'�v�nement d�clencheur est remplac� par celui contenu dans le context.
-     * 
-     * @param annonce
-     *            l'annonce � enregistrer
-     * 
-     * @throws JadeApplicationException
-     *             Exception lev�e par la couche m�tier lorsqu'elle n'a pu effectuer l'op�ration souhait�e
-     * @throws JadePersistenceException
-     *             Exception lev�e lorsque le chargement ou la mise � jour en DB par la couche de persistence n'a pu se
-     *             faire
+     *
+     * @param annonce l'annonce � enregistrer
+     * @throws JadeApplicationException Exception lev�e par la couche m�tier lorsqu'elle n'a pu effectuer l'op�ration souhait�e
+     * @throws JadePersistenceException Exception lev�e lorsque le chargement ou la mise � jour en DB par la couche de persistence n'a pu se
+     *                                  faire
      */
     protected void enregistrerAnnonce(AnnonceRafamModel annonce) throws JadeApplicationException,
             JadePersistenceException {
@@ -176,12 +168,10 @@ public abstract class AnnonceHandlerAbstract {
     /**
      * Ex�cute le traitement du handler. L'ev�nement ayant d�clench� l'appel du service de gestion des annonces est
      * analys� afin de d�terminer l'action � ex�cuter
-     * 
-     * @throws JadeApplicationException
-     *             Exception lev�e par la couche m�tier lorsqu'elle n'a pu effectuer l'op�ration souhait�e
-     * @throws JadePersistenceException
-     *             Exception lev�e lorsque le chargement ou la mise � jour en DB par la couche de persistence n'a pu se
-     *             faire
+     *
+     * @throws JadeApplicationException Exception lev�e par la couche m�tier lorsqu'elle n'a pu effectuer l'op�ration souhait�e
+     * @throws JadePersistenceException Exception lev�e lorsque le chargement ou la mise � jour en DB par la couche de persistence n'a pu se
+     *                                  faire
      */
     public void creerAnnonce() throws JadeApplicationException, JadePersistenceException {
 
@@ -210,31 +200,32 @@ public abstract class AnnonceHandlerAbstract {
     }
 
     protected void updateNSSAnnonces() throws JadeApplicationException, JadePersistenceException {
+        if (!AnnoncesChangeChecker.isDateFinDroitExpire(context.getDroit().getDroitModel().getFinDroitForcee())){
+            String recordNumber = getLastAnnonce().getRecordNumber();
 
-        String recordNumber = getLastAnnonce().getRecordNumber();
+            AnnonceRafamSearchModel annonces = ALImplServiceLocator.getAnnoncesRafamSearchService()
+                    .getAnnoncesForRecordNumber(recordNumber);
 
-        AnnonceRafamSearchModel annonces = ALImplServiceLocator.getAnnoncesRafamSearchService()
-                .getAnnoncesForRecordNumber(recordNumber);
+            for (JadeAbstractModel item : annonces.getSearchResults()) {
+                AnnonceRafamModel annonce = (AnnonceRafamModel) item;
 
-        for (JadeAbstractModel item : annonces.getSearchResults()) {
-            AnnonceRafamModel annonce = (AnnonceRafamModel) item;
+                String nssEnfant = context.getDroit().getEnfantComplexModel().getPersonneEtendueComplexModel()
+                        .getPersonneEtendue().getNumAvsActuel();
+                String nssAllocataire = context.getDossier().getAllocataireComplexModel().getPersonneEtendueComplexModel()
+                        .getPersonneEtendue().getNumAvsActuel();
 
-            String nssEnfant = context.getDroit().getEnfantComplexModel().getPersonneEtendueComplexModel()
-                    .getPersonneEtendue().getNumAvsActuel();
-            String nssAllocataire = context.getDossier().getAllocataireComplexModel().getPersonneEtendueComplexModel()
-                    .getPersonneEtendue().getNumAvsActuel();
-
-            ALImplServiceLocator.getAnnonceRafamBusinessService().setNSS(annonce, nssAllocataire, nssEnfant);
+                ALImplServiceLocator.getAnnonceRafamBusinessService().setNSS(annonce, nssAllocataire, nssEnfant);
+            }
         }
     }
 
     /**
      * D�termine l'action � effectuer en cas de mutation.
-     * 
+     * <p>
      * En cas de modification de NSS cette proc�dure s'applique :
      * <a href="http://dev-confluence.ju.globaz.ch/display/APPLI/Gestion+des+changements+de+NSS">Gestion des changements
      * de NSS</a>
-     * 
+     *
      * @return l'action � ex�cuter
      * @throws JadeApplicationException
      * @throws JadePersistenceException
@@ -279,15 +270,12 @@ public abstract class AnnonceHandlerAbstract {
 
     /**
      * Recherche la derni�re annonce en fonction des informations (droit et type d'allocation) contenues dans le context
-     * 
+     *
      * @return La derni�re annonce. Si aucune annonce n'a �t� trouv�e une nouvelle instance de
-     *         <code>AnnonceRafamModel</code> est retourn�e
-     * 
-     * @throws JadeApplicationException
-     *             Exception lev�e par la couche m�tier lorsqu'elle n'a pu effectuer l'op�ration souhait�e
-     * @throws JadePersistenceException
-     *             Exception lev�e lorsque le chargement ou la mise � jour en DB par la couche de persistence n'a pu se
-     *             faire
+     * <code>AnnonceRafamModel</code> est retourn�e
+     * @throws JadeApplicationException Exception lev�e par la couche m�tier lorsqu'elle n'a pu effectuer l'op�ration souhait�e
+     * @throws JadePersistenceException Exception lev�e lorsque le chargement ou la mise � jour en DB par la couche de persistence n'a pu se
+     *                                  faire
      */
     protected AnnonceRafamModel getLastAnnonce() throws JadeApplicationException, JadePersistenceException {
 
@@ -302,14 +290,11 @@ public abstract class AnnonceHandlerAbstract {
     /**
      * Dans le cas d'une modification de droit ou de dossier, permet d'identifier l'action � ex�cuter en fonction de
      * l'�tat actuel des annonces
-     * 
+     *
      * @return L'action � ex�cuter
-     * 
-     * @throws JadeApplicationException
-     *             Exception lev�e par la couche m�tier lorsqu'elle n'a pu effectuer l'op�ration souhait�e
-     * @throws JadePersistenceException
-     *             Exception lev�e lorsque le chargement ou la mise � jour en DB par la couche de persistence n'a pu se
-     *             faire
+     * @throws JadeApplicationException Exception lev�e par la couche m�tier lorsqu'elle n'a pu effectuer l'op�ration souhait�e
+     * @throws JadePersistenceException Exception lev�e lorsque le chargement ou la mise � jour en DB par la couche de persistence n'a pu se
+     *                                  faire
      */
     protected RafamTypeAction getAction() throws JadeApplicationException, JadePersistenceException {
 
@@ -331,7 +316,7 @@ public abstract class AnnonceHandlerAbstract {
                 // cas en erreur (code 1 ou 2)
             } else {
                 if (returnCode.equals(RafamReturnCode.REJETEE)) {
-                    if(lastAnnonce.getEtat() != null &&!RafamEtatAnnonce.ARCHIVE.equals(RafamEtatAnnonce.getRafamEtatAnnonceCS(lastAnnonce.getEtat()))&&!lastAnnonce.getDelegated()){
+                    if (lastAnnonce.getEtat() != null && !RafamEtatAnnonce.ARCHIVE.equals(RafamEtatAnnonce.getRafamEtatAnnonceCS(lastAnnonce.getEtat())) && !lastAnnonce.getDelegated()) {
                         ALImplServiceLocator.getAnnonceRafamBusinessService().deleteRefusees(
                                 getLastAnnonce().getRecordNumber());
                         lastAnnonce = null;
@@ -354,18 +339,13 @@ public abstract class AnnonceHandlerAbstract {
      * en param�tre est modifi�e de fa�on � correspondre � la date de radiation du dossier et l'annonce est enregistr�e.
      * Dans le cas d'une annonce de modification, si la date de radiation est ant�rieur � la date de d�but du droit, une
      * annonce d'annulation est enregistr�e.
-     * 
-     * @param annonce
-     *            l'annonce � traiter
-     * 
+     *
+     * @param annonce l'annonce � traiter
      * @return <code>true</code> si un cas de radiation a �t� trait� par la m�thode, <code>false</code> si rien n'a �t�
-     *         fait
-     * 
-     * @throws JadeApplicationException
-     *             Exception lev�e par la couche m�tier lorsqu'elle n'a pu effectuer l'op�ration souhait�e
-     * @throws JadePersistenceException
-     *             Exception lev�e lorsque le chargement ou la mise � jour en DB par la couche de persistence n'a pu se
-     *             faire
+     * fait
+     * @throws JadeApplicationException Exception lev�e par la couche m�tier lorsqu'elle n'a pu effectuer l'op�ration souhait�e
+     * @throws JadePersistenceException Exception lev�e lorsque le chargement ou la mise � jour en DB par la couche de persistence n'a pu se
+     *                                  faire
      */
     protected boolean isRadiation() throws JadeApplicationException, JadePersistenceException {
 
@@ -407,20 +387,17 @@ public abstract class AnnonceHandlerAbstract {
     /**
      * V�rifie si l'�tat actuel du droit correspond bien au type d'annonce en cours de traitement. Cela permet de savoir
      * si l'appel du handler en cours est d� � une annonce existante ou � l'�tat du droit.
-     * 
+     *
      * @return <code>true</code> si le type en cours de traitement est actif
-     * 
-     * @throws JadeApplicationException
-     *             Exception lev�e si la v�rification n'a pas pu �tre effectu�e avec succ�s
+     * @throws JadeApplicationException Exception lev�e si la v�rification n'a pas pu �tre effectu�e avec succ�s
      */
     protected abstract boolean isCurrentAllowanceTypeActive() throws JadeApplicationException;
 
     /**
      * Retourne le type d'allocation g�r�e par une classe
-     * 
+     *
      * @return Le type d'allocation correspondant � la classe
-     * @throws JadeApplicationException
-     *             Exception lev�e par la couche m�tier lorsqu'elle n'a pu effectuer l'op�ration souhait�e
+     * @throws JadeApplicationException Exception lev�e par la couche m�tier lorsqu'elle n'a pu effectuer l'op�ration souhait�e
      */
     protected abstract RafamFamilyAllowanceType getType() throws JadeApplicationException;
 }
